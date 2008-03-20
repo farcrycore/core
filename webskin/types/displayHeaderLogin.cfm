@@ -31,7 +31,7 @@ START WEBSKIN
 
 <body id="sec-login">
 <div id="login">
-	
+
 	<h1>
 		<a href="#application.url.webroot#/index.cfm">
 			<!--- if there is a site logo, use it instead of the default placeholder --->       

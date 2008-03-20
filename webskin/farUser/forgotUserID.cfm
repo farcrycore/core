@@ -40,9 +40,9 @@
 
 <skin:view typename="farUser" template="displayHeaderLogin" />
 
-<ft:form>
-<cfoutput><div class="loginInfo"></cfoutput>
 
+<cfoutput><div class="loginInfo"></cfoutput>
+	<ft:form>
 	
 		
 		
@@ -85,10 +85,10 @@
 			<cfoutput></ul></cfoutput>
 		</ft:farcryButtonPanel>
 			
-	
+	</ft:form>
+
 	
 <cfoutput></div></cfoutput>
-</ft:form>
 
 
 <skin:view typename="farUser" template="displayFooterLogin" />

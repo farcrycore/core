@@ -7,13 +7,14 @@
 
 <skin:view typename="farUser" template="displayHeaderLogin" />
 
-<ft:form>
+
 	<cfoutput>
 		<div class="loginInfo">
 			Enter your details below to register for #application.config.general.siteTitle#
 		</div>
 	</cfoutput>
 
+<ft:form>
 	<cfoutput><br style="clear:both;" /></cfoutput>
 	<ft:object objectid="#stobj.objectid#" typename="farUser" lfields="userid,password" />
 	

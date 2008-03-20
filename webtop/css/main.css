@@ -137,7 +137,7 @@ body#sec-login {background: #5A7EB9 url("images/full_page_bg.gif") repeat-x 0 0;
 	#login h3 img {display:block;margin: 0 0 0 auto}
 	#login .loginInfo {font-weight:bold;margin-bottom: 10px;width:425px;float:right}
 	#login fieldset h5 {margin: 50px 0 0;padding:2px 5px}
-	
+	#login .loginInfo form {width:425px;min-width:425px;}
 	#login .loginInfo form.formtool fieldset {border-style:none;}
 
 	#login .error {clear:both;}
