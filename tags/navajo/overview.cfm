@@ -254,7 +254,7 @@ else
 				if( getParentObject(id) != 0 ) id = getParentObject(id)['OBJECTID']; else break;
 			}
 			
-			return permission;
+			return (permission == 1)?1:0;
 		}
 		//this is preparing for the ability to hode nodes that user doesn't have permission to edit
 	</script>
@@ -1140,7 +1140,7 @@ o = new Object();
 objectMenu['Cut'] = o;
 o.text = "Cut";
 o.js = "menuOption_Cut();";
-o.jsvalidate = "(objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
+o.jsvalidate = "(objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#' && hasPermission( lastSelectedId, #PermNavEdit# ))?1:0";
 o.bShowDisabled = "0";
 
 
@@ -1162,7 +1162,7 @@ o = new Object();
 objectMenu['Paste'] = o;
 o.text = "#application.adminBundle[session.dmProfile.locale].Paste#";
 o.js = "menuOption_Paste();";
-o.jsvalidate = "(copyNodeId.length == 35 && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
+o.jsvalidate = "(copyNodeId.length == 35 && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#' && hasPermission( lastSelectedId, #PermNavEdit# ))?1:0";
 o.bShowDisabled = "1";
 
 
@@ -1232,6 +1232,10 @@ function menuOption_PreviewDraft()
 	window.open('#application.url.conjurer#?objectId='+objects[lastSelectedId]['DRAFTOBJECTID']+"&flushcache=1&showDraft=1");
 }
 
+function returnLog(d) {
+	console.log(d);
+	return d;
+}
 
 o = new Object();
 objectMenu['Move'] = o;
@@ -1288,7 +1292,7 @@ o = new Object();
 objectMenu['Create'] = o;
 o.text = "#application.adminBundle[session.dmProfile.locale].create#";
 o.submenu = "Create";
-o.jsvalidate = "((hasPermission( lastSelectedId, #PermNavCreate# ) >=0) &&  (objects[lastSelectedId]['TYPENAME'].toLowerCase()=='#lcase(attributes.nodetype)#'))";
+o.jsvalidate = "(hasPermission( lastSelectedId, #PermNavCreate# ) &&  objects[lastSelectedId]['TYPENAME'].toLowerCase()=='#lcase(attributes.nodetype)#')";
 o.bShowDisabled = 1;
 
 	createMenu = new Object();
@@ -1391,7 +1395,7 @@ o.bShowDisabled = 1;
 	approveMenu['Request'] = o;
 	o.text = "#application.adminBundle[session.dmProfile.locale].request#";
 	o.js = "menuOption_Approve(\\'requestApproval\\')";
-	o.jsvalidate = "(hasPermission( lastSelectedId, #PermNavRequestApprove# )>=0 && ((objects[lastSelectedId]['STATUS'] == 'draft') || (objects[lastSelectedId]['DRAFTOBJECTID'] && objects[lastSelectedId]['DRAFTSTATUS']=='draft')) )?1:0";
+	o.jsvalidate = "(hasPermission( lastSelectedId, #PermNavRequestApprove# )>0 && ((objects[lastSelectedId]['STATUS'] == 'draft') || (objects[lastSelectedId]['DRAFTOBJECTID'] && objects[lastSelectedId]['DRAFTSTATUS']=='draft')) )?1:0";
 	o.bShowDisabled = 1;
 	o.bSeperator = 0;
 	
@@ -1399,28 +1403,28 @@ o.bShowDisabled = 1;
 	approveMenu['RequestBranch'] = o;
 	o.text = "#application.adminBundle[session.dmProfile.locale].requestApprovalForBranch#";
 	o.js = "menuOption_ApproveBranch(\\'requestApproval\\')";
-	o.jsvalidate = "(hasPermission( lastSelectedId, #PermNavRequestApprove# )>=0 && (objects[lastSelectedId]['STATUS'] == 'draft') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
+	o.jsvalidate = "(hasPermission( lastSelectedId, #PermNavRequestApprove# )>0 && (objects[lastSelectedId]['STATUS'] == 'draft') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	approveMenu['Decline'] = o;
 	o.text = "#application.adminBundle[session.dmProfile.locale].declineDraft#";
 	o.js = "menuOption_Approve(\\'draft\\')";
-    o.jsvalidate = "( hasPermission(lastSelectedId, #PermNavApprove#)>=0 && (hasDraft(lastSelectedId) && objects[lastSelectedId]['DRAFTSTATUS'] == 'pending') )?1:0";
+    o.jsvalidate = "( hasPermission(lastSelectedId, #PermNavApprove#)>0 && (hasDraft(lastSelectedId) && objects[lastSelectedId]['DRAFTSTATUS'] == 'pending') )?1:0";
 	o.bShowDisabled = 1;
 
 	o = new Object();
 	approveMenu['Cancel'] = o;
 	o.text = "#application.adminBundle[session.dmProfile.locale].sendToDraft#";
 	o.js = "menuOption_Approve(\\'draft\\')";
-	o.jsvalidate = "((hasPermission( lastSelectedId, #PermNavApprove# )>=0 || (hasPermission(lastSelectedId,#PermNavApproveOwn#) >=0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(stUser.userlogin)#'))&& !hasDraft(lastSelectedId) && (objects[lastSelectedId]['STATUS'] == 'approved' || objects[lastSelectedId]['STATUS'] == 'pending'))?1:0";
+	o.jsvalidate = "((hasPermission( lastSelectedId, #PermNavApprove# )>0 || (hasPermission(lastSelectedId,#PermNavApproveOwn#) >=0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(stUser.userlogin)#'))&& !hasDraft(lastSelectedId) && (objects[lastSelectedId]['STATUS'] == 'approved' || objects[lastSelectedId]['STATUS'] == 'pending'))?1:0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	approveMenu['CancelBranch'] = o;
 	o.text = "#application.adminBundle[session.dmProfile.locale].sendBranch2Draft#";
 	o.js = "menuOption_ApproveBranch(\\'draft\\')";
-	o.jsvalidate = "((hasPermission( lastSelectedId, #PermNavApprove# )>=0 || (hasPermission(lastSelectedId,#PermNavApproveOwn#) >=0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(stUser.userlogin)#')) && (objects[lastSelectedId]['STATUS'] == 'approved' || objects[lastSelectedId]['STATUS'] == 'pending') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
+	o.jsvalidate = "((hasPermission( lastSelectedId, #PermNavApprove# )>0 || (hasPermission(lastSelectedId,#PermNavApproveOwn#) >=0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(stUser.userlogin)#')) && (objects[lastSelectedId]['STATUS'] == 'approved' || objects[lastSelectedId]['STATUS'] == 'pending') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 	o.bShowDisabled = 1;
 
 	
