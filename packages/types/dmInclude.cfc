@@ -30,7 +30,7 @@ type properties
 <cfproperty ftSeq="6" ftFieldset="Include Details" name="catInclude" type="string" hint="category of the include" required="no" default="" ftType="category" ftlabel="Categorisation" />
 
 <!--- system only properties --->
-<cfproperty name="status" type="string" hint="Status of file - draft or approved" required="No" default="draft">
+<cfproperty name="status" type="string" hint="Status of file - draft or approved" required="true" default="draft" />
 
 <!--- deprecated legacy properties --->
 <cfproperty name="commentlog" type="longchar" hint="Workflow comment log." required="no" default=""> 
