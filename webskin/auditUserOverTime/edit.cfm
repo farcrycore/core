@@ -20,9 +20,9 @@
 	<ft:form>
 		<ft:object typename="auditUserOverTime" stObject="#stObj#" />
 		
-		<ft:farcrybuttonPanel>
-			<ft:farcrybutton value="Filter" />
-		</ft:farcrybuttonPanel>
+		<ft:farcryButtonPanel>
+			<ft:farcryButton value="Filter" />
+		</ft:farcryButtonPanel>
 	</ft:form>
 	
 	<cfset oLog = createObject("component", application.stcoapi["farLog"].packagePath)>

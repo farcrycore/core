@@ -27,10 +27,10 @@
 	
 		<ft:object objectid="#stObj.objectid#" typename="farUser" lfields="password" stPropMetadata="#stMetadata#" IncludeFieldSet="false"  />
 	
-		<ft:farcrybuttonPanel>
-			<ft:farcrybutton value="Save" />
-			<ft:farcrybutton value="Cancel" onclick="window.close()" />
-		</ft:farcrybuttonPanel>
+		<ft:farcryButtonPanel>
+			<ft:farcryButton value="Save" />
+			<ft:farcryButton value="Cancel" onclick="window.close()" />
+		</ft:farcryButtonPanel>
 	</ft:form>
 <cfelse>
 	<cfoutput>

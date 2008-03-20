@@ -31,10 +31,10 @@
 	<ft:form heading="#application.rb.getResource('coapi.dmProfile.general.editprofile@label','Edit your profile')#">
 		<skin:view stobject="#stObj#" webskin="editProfile" />
 		
-		<ft:farcrybuttonPanel>
-			<ft:farcrybutton value="Save" />
-			<ft:farcrybutton value="Cancel" onclick="window.close()" />
-		</ft:farcrybuttonPanel>
+		<ft:farcryButtonPanel>
+			<ft:farcryButton value="Save" />
+			<ft:farcryButton value="Cancel" onclick="window.close()" />
+		</ft:farcryButtonPanel>
 	</ft:form>
 <cfelse>
 	<cfoutput>

@@ -22,9 +22,9 @@
 	<ft:form>
 		<ft:object typename="bulkFileUpload" />
 		
-		<ft:farcrybuttonPanel>
-			<ft:farcrybutton value="Upload files" />
-		</ft:farcrybuttonPanel>
+		<ft:farcryButtonPanel>
+			<ft:farcryButton value="Upload files" />
+		</ft:farcryButtonPanel>
 	</ft:form>
 	
 	<cfoutput>

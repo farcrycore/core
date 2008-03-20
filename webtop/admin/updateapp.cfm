@@ -30,7 +30,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 	<ft:object typename="updateapp" />
 	
 	<ft:farcryButtonPanel>
-		<ft:farcrybutton value="Update Application" />
+		<ft:farcryButton value="Update Application" />
 	</ft:farcryButtonPanel>
 </ft:form>
 

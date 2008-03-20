@@ -36,7 +36,7 @@ START WEBSKIN
 				<ft:object typename="farLogin" lFields="username,password" legend="Login to #application.config.general.siteTitle#" />
 					
 				
-				<ft:farcrybuttonPanel>
+				<ft:farcryButtonPanel>
 				
 	
 					<cfif isdefined("arguments.stParam.message") and len(arguments.stParam.message)>
@@ -45,13 +45,13 @@ START WEBSKIN
 						</cfoutput>
 					</cfif>
 					
-					<ft:farcrybutton value="Log In" />
-				</ft:farcrybuttonPanel>
+					<ft:farcryButton value="Log In" />
+				</ft:farcryButtonPanel>
 				
 				<cfset stParameters = structNew() />
 				<cfset stParameters.returnUrl = "#url.returnUrl#" />
 				
-				<ft:farcrybuttonPanel>					
+				<ft:farcryButtonPanel>					
 					<cfoutput><ul class="fc"></cfoutput>
 						<sec:CheckPermission webskinpermission="forgotPassword" type="farUser">
 							<skin:buildLink type="farUser" view="forgotPassword" stParameters="#stParameters#"><cfoutput><li>Forgot Password</li></cfoutput></skin:buildLink>
@@ -64,7 +64,7 @@ START WEBSKIN
 						</sec:CheckPermission>
 					<cfoutput></ul></cfoutput>
 					
-				</ft:farcrybuttonPanel>
+				</ft:farcryButtonPanel>
 			</ft:form>
 			
 		<cfoutput>

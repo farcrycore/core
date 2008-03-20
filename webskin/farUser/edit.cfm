@@ -43,8 +43,8 @@
 	<skin:view stObject="#stProfile#" webskin="editProfile" />
 	
 	<ft:farcryButtonPanel>
-		<ft:farcrybutton value="Save" />
-		<ft:farcrybutton value="Cancel" />
+		<ft:farcryButton value="Save" />
+		<ft:farcryButton value="Cancel" />
 	</ft:farcryButtonPanel>
 </ft:form>
 
