@@ -135,7 +135,7 @@ form.formtool input[type=checkbox] {width: auto; margin: 0px; padding: 0px;}
 form.formtool .submit input.inputSubmit,
 	form.formtool .submit input.inputButton {margin: 0px 0px 0px 5px; float: right;}
 
-form.formtool small {margin: 0px 0px 5px 142px; padding: 1px 3px 1px 3px; height: 1%; display: block;}
+form.formtool small {margin: 0px 0px 5px 0px; padding: 1px 3px 1px 3px; height: 1%; display: block;}
 
 form.formtool textarea.expanding {overflow: auto; overflow-x: auto; overflow-y: visible;}
 

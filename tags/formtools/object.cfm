@@ -39,6 +39,7 @@
 	<cfparam name="attributes.bIncludeSystemProperties" default="false"><!--- Allow system properties to be displayed.. --->
 	<cfparam name="attributes.lock" default="true"><!--- Lock if editing. --->
 	<cfparam name="attributes.bShowLibraryLink" default="true" type="boolean"><!--- Flag to determine if the libraryLink is to be displayed. --->
+	<cfparam name="attributes.bShowFieldHints" default="true" type="boolean"><!--- Flag to determine if the field hints are display. --->
 	
 	
 	<!--- If the attributes [IncludeFieldSet] has not been explicitly defined, work out the value. --->
@@ -590,13 +591,13 @@
 						</cfif>
 						
 						#variables.returnHTML#
-						
+						<cfif attributes.bShowFieldHints AND structKeyExists(ftFieldMetadata,"ftHint") and len(ftFieldMetadata.ftHint)>
+							<cfoutput><small>#ftFieldMetadata.ftHint#</small></cfoutput>
+						</cfif>
 					</div>
 				</cfoutput>
 				
-				<cfif structKeyExists(ftFieldMetadata,"ftHint") and len(ftFieldMetadata.ftHint)>
-					<cfoutput><small>#ftFieldMetadata.ftHint#</small></cfoutput>
-				</cfif>
+
 				
 				<cfif Attributes.InTable EQ 1>
 					<cfoutput></td></tr></cfoutput>
