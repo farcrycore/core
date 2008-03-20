@@ -1037,9 +1037,11 @@ default handlers
 		<cfset var stObj = getData(objectid=arguments.objectid) />
 		<cfset var qMetadata = application.types[stobj.typename].qMetadata />
 		
-		
-		
-		
+		<!--- 
+			Always locking at the beginning of an edit 
+			Forms need to be manually unlocked. Wizards will unlock automatically.
+		--->
+		<cfset setLock(stObj=stObj,locked=true) />
 		
 		<!-------------------------------------------------- 
 		WIZARD:
@@ -1146,9 +1148,12 @@ default handlers
 			---------------------------------------->
 			<ft:processForm action="Save" Exit="true">
 				<ft:processFormObjects typename="#stobj.typename#" />
+				<cfset setLock(stObj=stObj,locked=false) />
 			</ft:processForm>
 
-			<ft:processForm action="Cancel" Exit="true" />
+			<ft:processForm action="Cancel" Exit="true" >
+				<cfset setLock(stObj=stObj,locked=false) />
+			</ft:processForm>
 			
 			
 			
