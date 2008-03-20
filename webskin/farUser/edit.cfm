@@ -42,10 +42,10 @@
 	
 	<skin:view stObject="#stProfile#" webskin="editProfile" />
 	
-	<ft:farcrybuttonpanel>
+	<ft:farcryButtonPanel>
 		<ft:farcrybutton value="Save" />
 		<ft:farcrybutton value="Cancel" />
-	</ft:farcrybuttonpanel>
+	</ft:farcryButtonPanel>
 </ft:form>
 
 <cfsetting enablecfoutputonly="false" />

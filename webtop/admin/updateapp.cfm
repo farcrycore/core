@@ -29,9 +29,9 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 <ft:form>
 	<ft:object typename="updateapp" />
 	
-	<ft:farcrybuttonpanel>
+	<ft:farcryButtonPanel>
 		<ft:farcrybutton value="Update Application" />
-	</ft:farcrybuttonpanel>
+	</ft:farcryButtonPanel>
 </ft:form>
 
 <admin:footer />
