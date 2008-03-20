@@ -49,7 +49,7 @@ this stylesheet defines the following page elements:
 /* start legacy formtool css  */
 form.formtool {}
 form.formtool fieldset {}
-form.formtool fieldset legend {font-weight: normal; color: #hexPrimaryDark#;}
+form.formtool fieldset legend {font-weight: bold; color: #hexPrimaryDark#;}
 
 form.formtool label u {font-style: normal; text-decoration: underline;}
 input, select, textarea {font-family: Tahoma, Arial, sans-serif; color: ##000000;}
@@ -69,7 +69,7 @@ form div.submit div {text-align: left;}
 form div input.inputSubmit, form div input.inputButton, input.inputSubmit, input.inputButton {color: ##000000;}
 form div small {}
 
-form fieldset legend {line-height: 150%;}
+form fieldset legend {line-height: 150%; font-size:110%;}
 form.formtool label.labelCheckbox, form.formtool label.labelRadio, form.formtool label.labelCheckbox, form.formtool label.labelRadio {text-indent: -18px; line-height: 120%;}
 form.formtool label.compact {text-indent: 0px;}
 form div.notes p, form div small {line-height: 125%;}

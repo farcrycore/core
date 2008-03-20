@@ -84,7 +84,7 @@ this stylesheet defines the following page elements:
 /*
 form skin styles
 */
-form.formtool fieldset {border-color: #hexPrimaryLighter#; border-width: 1px 0px 0px 0px; border-style: solid none none none;}
+form.formtool fieldset {border-color: #hexPrimaryLighter#; border-width: 3px 0px 0px 0px; border-style: solid none none none;}
 form.formtool fieldset.noLegend {border: none !important;}
 form.formtool fieldset fieldset {border: 1px solid #hexPrimaryLighter#;}
 <!--- form.formtool .password .fieldAlign {float: none; margin: 0px 0px 0px #columnLeftWidth#; padding: 0px;} --->
