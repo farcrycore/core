@@ -1,8 +1,11 @@
-test<cfcomponent displayname="FarcryUD User" hint="Used by FarcryUD to store user information" extends="types" output="false" description="Stores login information about a FarCry User Directory user, and the groups they are members of">
-	<cfproperty name="userid" type="string" default="" hint="The unique id for this user. Used for logging in" ftSeq="1" ftFieldset="" ftLabel="User ID" ftType="string" bLabel="true" />
-	<cfproperty name="password" type="string" default="" hint="" ftSeq="2" ftFieldset="" ftLabel="Password" ftType="password" ftRenderType="confirmpassword" ftShowLabel="false" />
-	<cfproperty name="userstatus" type="string" default="invactive" hint="The status of this user" ftSeq="3" ftFieldset="" ftLabel="User status" ftType="list" ftList="active:Active,inactive:Inactive,pending:Pending" />
-	<cfproperty name="aGroups" type="array" default="" hint="The groups this member is a member of" ftSeq="4" ftFieldset="" ftLabel="Groups" ftType="array" ftJoin="farGroup" />
+<!--- @@Copyright: Daemon Pty Limited 1995-2008, http://www.daemon.com.au --->
+<!--- @@License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php --->
+<!--- @@Developer: Blair Mackenzie (blair@daemon.com.au) --->
+<cfcomponent displayname="FarCry User" hint="User model for the Farcry User Directory." extends="types" output="false" description="">
+	<cfproperty ftSeq="1" ftFieldset="" name="userid" type="string" default="" hint="The unique id for this user. Used for logging in" ftLabel="User ID" ftType="string" bLabel="true" />
+	<cfproperty ftSeq="2" ftFieldset="" name="password" type="string" default="" hint="" ftLabel="Password" ftType="password" ftRenderType="confirmpassword" ftShowLabel="false" />
+	<cfproperty ftSeq="3" ftFieldset="" name="userstatus" type="string" default="inactive" hint="The status of this user; active, inactive, pending." ftLabel="User status" ftType="list" ftList="active:Active,inactive:Inactive,pending:Pending" />
+	<cfproperty ftSeq="4" ftFieldset="" name="aGroups" type="array" default="" hint="The groups this member is a member of" ftLabel="Groups" ftType="array" ftJoin="farGroup" />
 	<cfproperty name="lGroups" type="longchar" default="" hint="The groups this member is a member of (list generated automatically)" ftLabel="Groups" ftType="arrayList" ftArrayField="aGroups" ftJoin="farGroup" />
 	
 	<cffunction name="getByUserID" access="public" output="false" returntype="struct" hint="Returns the data struct for the specified user id">
