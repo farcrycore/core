@@ -321,14 +321,30 @@
 			<cfloop list="createdby,lastupdatedby,lockedby" index="property">
 				<!--- Update ownedby --->
 				<cfif oAlterType.isCFCDeployed(typename=typename) and not find("_",typename)>
-					<cfquery datasource="#application.dsn#">
-						update	type
-						set		#property# = dmProfile.username + '_' + dmProfile.userDirectory
-						from	#application.dbowner##typename# type
-								inner join 
-								#application.dbowner#dmProfile
-								on type.#property#=dmProfile.username
-					</cfquery>	
+
+					<cfswitch expression="#application.dbType#">
+						<cfcase value="mysql,mysql5">
+							<!--- Update profiles --->
+							<cfquery datasource="#application.dsn#">
+							update	#application.dbowner##typename# t inner join 
+									#application.dbowner#dmProfile
+									on t.#property#=dmProfile.username
+							set		t.#property# = concat(dmProfile.username, '_', dmProfile.userDirectory)							
+							</cfquery>
+						</cfcase>
+						<cfdefaultcase>
+							<!--- Update profiles --->
+							<cfquery datasource="#application.dsn#">
+								update	type
+								set		#property# = dmProfile.username + '_' + dmProfile.userDirectory
+								from	#application.dbowner##typename# type
+										inner join 
+										#application.dbowner#dmProfile
+										on type.#property#=dmProfile.username
+							</cfquery>	
+						</cfdefaultcase>
+					</cfswitch>
+										
 				</cfif>
 				
 			</cfloop>
