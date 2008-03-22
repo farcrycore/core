@@ -37,6 +37,9 @@
 <cfset stObj.userid = attributes.userid />
 <cfset stObj.notes = attributes.note & attributes.notes />
 
-<cfset createObject("component", application.stcoapi["farLog"].packagePath).createData(stProperties=stObj) />
-
+<cfif structKeyExists(application, "stcoapi") AND structKeyExists(application.stcoapi, "farLog")>
+	<cfset createObject("component", application.stcoapi["farLog"].packagePath).createData(stProperties=stObj) />
+<cfelse>
+	<cfset createObject("component", "farcry.core.packages.types.farLog").createData(stProperties=stObj) />
+</cfif>
 <cfsetting enablecfoutputonly="false" />
