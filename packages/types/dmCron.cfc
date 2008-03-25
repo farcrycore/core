@@ -32,9 +32,11 @@ object methods
 	
 	<!--- getData for object edit --->
 	<cfset stObj = getData(arguments.objectid)>
-	
+	<cftry>
 	<!--- include scheduled task code and pass in parameters --->
 	<cfinclude template="#stObj.template#">
+	<cfcatch type="any"><cfdump var="#cfcatch#"></cfcatch>
+	</cftry>
 </cffunction>
 
 <cffunction name="listTemplates" access="public" output="true" returntype="query" hint="Lists available scheduled tasks, both core and custom">

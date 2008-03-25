@@ -27,16 +27,48 @@ $out:$
 
 <cfparam name="url.oid" default="">
 
-
-<cfparam name="stargs.typename" default="dmXMLExport">
-
 <q4:contentobjectget objectid="#url.oid#" r_stobject="stObj">
 
-<cfif IsStruct(stObj) and not StructIsEmpty(stObj) and stObj.typename eq stArgs.typename>
+<cfif IsStruct(stObj) and not StructIsEmpty(stObj) and stObj.typename eq "dmXMLExport">
     <cfscript>
         o = createObject("component", application.types[stArgs.typename].typePath);
         o.generate(stObj.objectid);
     </cfscript>
+<cfelseif IsStruct(stObj) and not StructIsEmpty(stObj) and stObj.typename eq "farWebfeed">
+	<cfif not len(stObj.directory)>
+		<cfset stObj.directory = "/feeds/#rereplace(stObj.title,'[^\w]+','-','ALL')#" />
+	</cfif>
+	
+	<!--- Make sure the directory exists --->
+	<cfif not directoryexists("#application.path.project#/www#stObj.directory#")>
+		<cfdirectory action="create" directory="#application.path.project#/www#stObj.directory#" />
+	</cfif>
+	
+	<!--- RSS --->
+	<cfif not fileexists("#application.path.project#/www#stObj.directory#/rss.xml")>
+		<cffile action="write" file="#application.path.project#/www#stObj.directory#/rss.xml" output="" />
+	</cfif>
+	<cfhttp url="http://#cgi.http_host#/#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&format=rss" />
+	<cffile action="write" file="#application.path.project#/www#stObj.directory#/rss.xml" output="#cfhttp.fileContent#" />
+	<cfoutput><p>Created <a href="#stObj.directory#/rss.xml">RSS feed</a></p></cfoutput>
+	
+	<!--- Atom --->
+	<cfif not fileexists("#application.path.project#/www#stObj.directory#/atom.xml")>
+		<cffile action="write" file="#application.path.project#/www#stObj.directory#/atom.xml" output="" />
+	</cfif>
+	<cfhttp url="http://#cgi.http_host#/#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&format=atom" />
+	<cffile action="write" file="#application.path.project#/www#stObj.directory#/atom.xml" output="#cfhttp.fileContent#" />
+	<cfoutput><p>Created <a href="#stObj.directory#/atom.xml">Atom feed</a></p></cfoutput>
+	
+	<!--- RSS --->
+	<cfif len(stObj.mediaproperty)>
+		<cfif not fileexists("#application.path.project#/www#stObj.directory#/podcast.xml")>
+			<cffile action="write" file="#application.path.project#/www#stObj.directory#/podcast.xml" output="" />
+		</cfif>
+		<cfhttp url="http://#cgi.http_host#/#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&format=podcast" />
+		<cffile action="write" file="#application.path.project#/www#stObj.directory#/podcast.xml" output="#cfhttp.fileContent#" />
+		<cfoutput><p>Created <a href="#stObj.directory#/podcast.xml">iTunes podcast</a></p></cfoutput>
+	</cfif>
 <cfelse>
     <!--- not an XML feed --->
 	<cfdump var="#stobj#" label="Things did not go according to plan..">

@@ -261,7 +261,7 @@ $out:$
 	<cfset application.stcoapi = structNew() />
 	 
 	<!--- Find all types, base, extended & custom --->
-	<cfdirectory directory="#application.path.core#/packages/types" name="qDir" filter="dm*.cfc" sort="name" />
+	<cfdirectory directory="#application.path.core#/packages/types" name="qDir" filter="*.cfc" sort="name" />
 	<cfdirectory directory="#application.path.project#/packages/system" name="qExtendedTypesDir" filter="*.cfc" sort="name" />
 	<cfdirectory directory="#application.path.project#/packages/types" name="qCustomTypesDir" filter="*.cfc" sort="name" />
 
@@ -278,8 +278,10 @@ $out:$
 			<cfif NOT structkeyexists(application.types, typename)>
 				<cfset application.types[typename]=structNew() />
 			</cfif>
-			<cfset stTypeMD = o.initmetadata(application.types[typename]) />
-			<cfif not structKeyExists(stTypeMD,"bAbstract") or stTypeMD.bAbstract EQ "False">
+			<cfset stMetaData = getMetaData(o) />
+			<cfif not structKeyExists(stMetaData,"bAbstract") or stMetaData.bAbstract EQ "False">
+				<cfset stTypeMD = o.initmetadata(application.types[typename]) />
+				
 				<cfset stTypeMD.bCustomType = 0 />
 				<cfset stTypeMD.bLibraryType = 0 />
 				<cfset stTypeMD.typePath = "#application.packagepath#.types.#typename#" />
