@@ -4,7 +4,7 @@
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <cfif fileexists("#application.path.project#/webskin/includes/dmHeader.cfm")>
-	<cfmodule template="/farcry/projects/#application.applicationname#/webskin/includes/dmHeader.cfm" layoutClass="type-a" pageTitle="#stObj.title#" />
+	<cfmodule template="/farcry/projects/#application.applicationname#/webskin/includes/dmHeader.cfm" layoutClass="type-a" pageTitle="#stObj.title#" >
 <cfelse>
 	<skin:view stObject="#stObj#" webskin="displayHeader" alternateHTML="<html><body>" />
 </cfif>
@@ -92,7 +92,7 @@
 </cfoutput>
 
 <cfif fileexists("#application.path.project#/webskin/includes/dmFooter.cfm")>
-	<cfmodule template="/farcry/projects/#application.applicationname#/webskin/includes/dmFooter.cfm" />
+	<cfmodule template="/farcry/projects/#application.applicationname#/webskin/includes/dmFooter.cfm" >
 <cfelse>
 	<skin:view stObject="#stObj#" webskin="displayHeader" alternateHTML="<html><body>" />
 </cfif>
