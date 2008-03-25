@@ -316,6 +316,28 @@ a {color: ##116EAF;}
 	</cftry>	
 	<cfoutput>complete</p></cfoutput><cfflush>
 	
+	
+	
+	<!--- UPDATE dmNavigation --->
+	<cfoutput><p>updating dmNavigation Table...</cfoutput><cfflush>
+	<cftry>
+		<cfswitch expression="#application.dbtype#">
+			<cfcase value="ora">
+				<cfquery name="update" datasource="#application.dsn#">
+					ALTER TABLE #application.dbowner#dmNavigation ADD typewebskin VARCHAR2(255) NULL
+				</cfquery>
+			</cfcase>
+			<cfdefaultcase>
+				<cfquery name="update" datasource="#application.dsn#">
+					ALTER TABLE #application.dbowner#dmNavigation ADD typewebskin VARCHAR(255) NULL
+				</cfquery>
+			</cfdefaultcase>
+		</cfswitch>
+
+		<cfcatch><cfset error=1><cfoutput><strong>field already exist.</strong></p></cfoutput></cfcatch>
+	</cftry>	
+	<cfoutput>complete</p></cfoutput><cfflush>
+	
 	<!--- ============ DATA MIGRATION ============ --->
 	
 	<cfoutput><h1>Fetching results...</h1></cfoutput><cfflush>
