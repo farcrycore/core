@@ -616,8 +616,8 @@ $out:$
 				<cfset stTypeMD = oFactory.initmetadata(application.forms[formname]) />
 				<cfset stTypeMD.bCustomForm = 1 />
 				<cfset stTypeMD.bLibraryForm = 0 />
-				<cfset stTypeMD.formPath = "#application.custompackagepath#.formtools.#formname#" />
-				<cfset stTypeMD.packagePath = "#application.custompackagepath#.formtools.#formname#" />
+				<cfset stTypeMD.formPath = "#application.custompackagepath#.forms.#formname#" />
+				<cfset stTypeMD.packagePath = "#application.custompackagepath#.forms.#formname#" />
 				<cfset stTypeMD.qMetadata = setupMetadataQuery(typename=formname,stProps=stTypeMD.stProps) />
 				<cfset application.forms[formname] = duplicate(stTypeMD) />
 			</cfif>
