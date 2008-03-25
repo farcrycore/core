@@ -12,7 +12,7 @@
 
 <cfoutput>
 	<p>This feed functionality is deprecated as of FarCry 4.11, and will be not be included in FarCry from 5.0.</p>
-	<p>See <a href="#application.url.farcry#/customadmin/customlists/farWebfeed.cfm">RSS Feeds 2.0</a> for up to date functionality supporting RSS 2.0, Atom 1.0, and iTunes podcasts.</p>
+	<p>Use <a href="#application.url.farcry#/customadmin/customlists/farWebfeed.cfm">Web Feeds</a> for up to date functionality supporting RSS 2.0, Atom 1.0, and iTunes podcasts.</p>
 </cfoutput>
 
 <widgets:typeadmin 

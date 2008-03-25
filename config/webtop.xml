@@ -30,7 +30,7 @@
 		<subsection id="contentUtilities" sequence="30" permission="MainNavAdminTab" label="application.adminBundle[session.dmProfile.locale].ContentUtilities" labelType="evaluate" sidebar="content/sidebar.cfm" content="inc/content_overview.html">
 			<menu id="export" sequence="10" label="application.adminBundle[session.dmProfile.locale].Export" labelType="evaluate">
 				<menuitem id="exportrss" sequence="10" label="application.adminBundle[session.dmProfile.locale].RssFeeds" labelType="evaluate" link="/content/xmlFeedList.cfm" />
-				<menuitem id="exportwebfeed" sequence="15" label="RSS Feeds 2.0" link="/customadmin/customlists/farWebfeed.cfm" />
+				<menuitem id="exportwebfeed" sequence="15" label="Web Feeds" link="/customadmin/customlists/farWebfeed.cfm" />
 				<menuitem id="exportgeneral" sequence="20" label="application.adminBundle[session.dmProfile.locale].Export" labelType="evaluate" link="/content/export.cfm" />
 			</menu>
 			<menu id="categorisation" sequence="10" permission="ContentCategorisationTab" label="application.adminBundle[session.dmProfile.locale].CategoryManagement" labelType="evaluate">
