@@ -4,12 +4,11 @@
 	<cfproperty ftSeq="3" ftWizardStep="General" ftFieldset="Feed" name="directory" type="string" default="" hint="The directory the scheduled job should put the files" ftLabel="XML directory" ftType="string" ftHint="Path from the web root where xml files (rss.xml,atom.xml,itunes.xml) should be stored. Defaults to /feeds/##title-with-dashes##" />
 	<cfproperty ftSeq="4" ftWizardStep="General" ftFieldset="Feed" name="url" type="string" default="" ftDefault="" hint="The url associated with the webfeed" ftLabel="Feed linkback" ftType="string" />
 	<cfproperty ftSeq="5" ftWizardStep="General" ftFieldset="Feed" name="description" type="string" default="" hint="A description of the webfeed" ftLabel="Description" ftType="longchar" />
-	<cfproperty ftSeq="6" ftWizardStep="General" ftFieldset="Feed" name="sourceimage" type="string" default="" hint="Source image" ftLabel="Source image" ftType="image" ftDestination="/farWebfeed/sourceimage" />
-	<cfproperty ftSeq="7" ftWizardStep="General" ftFieldset="Feed" name="feedimage" type="string" default="" hint="Feed image" ftLabel="Feed image" ftType="image" ftDestination="/farWebfeed/feedimage" ftImageWidth="88" ftImageHeight="31" ftAutoGenerateType="FitInside" ftSourceField="SourceImage" ftCreateFromSourceDefault="true" ftAllowUpload="true" />
-	<cfproperty ftSeq="8" ftWizardStep="General" ftFieldset="Feed" name="editor" type="string" default="" hint="The editor / author of the webfeed" ftLabel="Editor / author" ftType="string" ftHint="Defaults to website name" />
-	<cfproperty ftSeq="9" ftWizardStep="General" ftFieldset="Feed" name="editoremail" type="string" default="" hint="The editor / author email" ftLabel="Editor / author email" ftType="string" />
-	<cfproperty ftSeq="10" ftWizardStep="General" ftFieldset="Feed" name="copyright" type="string" default="" hint="" ftLabel="Copyright" ftType="string" />
-	<cfproperty ftSeq="11" ftWizardStep="General" ftFieldset="Feed" name="keywords" type="string" default="" hint="" ftLabel="Keywords" ftType="string" ftHint="Maximum of 12 keywords" />
+	<cfproperty ftSeq="6" ftWizardStep="General" ftFieldset="Feed" name="feedimage" type="string" default="" hint="Feed image" ftLabel="Feed image" ftType="image" ftDestination="/farWebfeed/feedimage" ftCreateFromSourceOption="false" ftAutoGenerateType="" ftImageWidth="" ftImageHeight="" ftHint="Size must be 88-144px by 31-400px" />
+	<cfproperty ftSeq="7" ftWizardStep="General" ftFieldset="Feed" name="editor" type="string" default="" hint="The editor / author of the webfeed" ftLabel="Editor / author" ftType="string" ftHint="Defaults to website name" />
+	<cfproperty ftSeq="8" ftWizardStep="General" ftFieldset="Feed" name="editoremail" type="string" default="" hint="The editor / author email" ftLabel="Editor / author email" ftType="string" />
+	<cfproperty ftSeq="9" ftWizardStep="General" ftFieldset="Feed" name="copyright" type="string" default="" hint="" ftLabel="Copyright" ftType="string" />
+	<cfproperty ftSeq="10" ftWizardStep="General" ftFieldset="Feed" name="keywords" type="string" default="" hint="" ftLabel="Keywords" ftType="string" ftHint="List of keywords (max. 12)" />
 	
 	<cfproperty ftSeq="21" ftWizardStep="General" ftFieldset="Items" name="itemtype" type="string" default="" hint="The type that webfeed items are created from" ftLabel="Type" ftType="list" ftValidation="true" ftListData="getTypesList" />
 	<cfproperty ftSeq="22" ftWizardStep="General" ftFieldset="Items" name="titleproperty" type="string" default="title" hint="The property that contains the item's title" ftLabel="Title property" ftType="list" />
@@ -18,20 +17,20 @@
 	<cfproperty ftSeq="25" ftWizardStep="General" ftFieldset="Items" name="dateproperty" type="string" default="datetimecreated" hint="The property that contains the date to sort by" ftLabel="Published-date property" ftType="list" ftHint="The items in the webfeed will be ordered by this property" />
 	<cfproperty ftSeq="26" ftWizardStep="General" ftFieldset="Items" name="bAuthor" type="boolean" default="0" hint="Should the item creator be included in the item as the author" ftLabel="Include item creater as author" ftType="boolean" />
 	<cfproperty ftSeq="27" ftWizardStep="General" ftFieldset="Items" name="catFilter" type="longchar" default="" hint="Filter items by these categories. If none are selected all items will be included." ftLabel="Restrict by categories" ftType="category" />
-	<cfproperty ftSeq="28" ftWizardStep="General" ftFieldset="Items" name="keywordsproperty" type="string" default="" hint="The property that contains the item's keywords" ftLabel="Item keywords property" ftType="list" />
+	<cfproperty ftSeq="28" ftWizardStep="General" ftFieldset="Items" name="keywordsproperty" type="string" default="" hint="The property that contains the item's keywords" ftLabel="Item keywords property" ftType="list" ftHint="Property should contain a list of keywords" />
 	
 	<cfproperty ftSeq="31" ftWizardStep="RSS" ftFieldset="Feed" name="skiphours" type="string" default="" hint="The hours when the feed doesn't need to be checked" ftLabel="Skip hours" ftType="list" ftHint="The hours in the day when the feed doesn't need to be checked" ftListData="getHoursList" ftSelectMultiple="true" />
 	<cfproperty ftSeq="32" ftWizardStep="RSS" ftFieldset="Feed" name="skipdays" type="string" default="" hint="The days when the feed doesn't need to be checked" ftLabel="Skip days" ftType="list" ftHint="The days of the week when the feed doesn't need to be checked" ftListData="getDaysList" ftSelectMultiple="true" />
 	
 	<!--- 41 = RSS Items --->
 	
-	<cfproperty ftSeq="51" ftWizardStep="Atom" ftFieldset="Feed" name="atomicon" type="string" hint="The feed icon" required="no" default="" ftType="Image" ftDestination="/farWebfeed/atomicon" ftImageWidth="32" ftImageHeight="32" ftAutoGenerateType="FitInside" ftSourceField="SourceImage" ftCreateFromSourceDefault="true" ftAllowUpload="true" ftlabel="Feed icon" />  
+	<cfproperty ftSeq="51" ftWizardStep="Atom" ftFieldset="Feed" name="atomicon" type="string" hint="The feed icon" required="no" default="" ftType="Image" ftDestination="/farWebfeed/atomicon" ftCreateFromSourceOption="false" ftAutoGenerateType="" ftImageWidth="" ftImageHeight="" ftLabel="Feed icon" ftHint="Should be a square image and suitable for presentation at a small size" />  
 	
 	<!--- 61 = Atom Items --->
 	
 	<cfproperty ftSeq="71" ftWizardStep="iTunes" ftFieldset="Feed" name="itunescategories" type="string" default="" hint="Feed iTunes categories" ftLabel="iTune categories" ftType="list" ftListData="getiTunesCategoryList" ftSelectMultiple="true" ftHint="iTunes accepts a maximum of 3 categories" />
 	<cfproperty ftSeq="72" ftWizardStep="iTunes" ftFieldset="Feed" name="itunesauthor" type="string" default="" hint="" ftLabel="iTunes author" ftType="string" />
-	<cfproperty ftSeq="73" ftWizardStep="iTunes" ftFieldset="Feed" name="itunesimage" type="string" hint="The itunes image" required="no" default="" ftType="Image" ftDestination="/farWebfeed/itunesimage" ftImageWidth="600" ftImageHeight="600" ftAutoGenerateType="FitInside" ftSourceField="SourceImage" ftCreateFromSourceDefault="true" ftAllowUpload="true" ftlabel="iTunes image" />  
+	<cfproperty ftSeq="73" ftWizardStep="iTunes" ftFieldset="Feed" name="itunesimage" type="string" hint="The itunes image" required="no" default="" ftType="Image" ftDestination="/farWebfeed/itunesimage" ftCreateFromSourceOption="false" ftAutoGenerateType="" ftImageWidth="" ftImageHeight="" ftlabel="iTunes image" ftHint="Should be a square image and at least 600px by 600px" />  
 	
 	<cfproperty ftSeq="81" ftWizardStep="iTunes" ftFieldset="Items" name="itunessubtitleproperty" type="string" default="" hint="The property that contains the item's itunes subtitle" ftLabel="Item subtitle property" ftType="list" />
 	<cfproperty ftSeq="83" ftWizardStep="iTunes" ftFieldset="Items" name="itunesdurationproperty" type="string" default="" hint="The property that contains the item's duration" ftLabel="Item duration property" ftType="list" />
