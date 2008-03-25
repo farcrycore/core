@@ -123,8 +123,8 @@
 			<!--- Validate the data --->
 			<ft:validateFormObjects typename="#arguments.stFieldPost.stSupporting.formname#">
 				<cfloop collection="#stProperties#" item="prop">
-					<cfif not listcontains("typename,objectid",prop)>
-						<cfset stResult.bSuccess = stResult.bSuccess and request.stFarcryFormValidation[stProperties.objectid][prop].bSuccess />
+					<cfif not listcontainsnocase("typename,objectid",prop)>
+						<cfset stResult.bSuccess = stResult.bSuccess and request.stFarcryFormValidation[stProperties.ObjectID][prop].bSuccess />
 					</cfif>
 				</cfloop>
 				
