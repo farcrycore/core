@@ -49,7 +49,8 @@ $out:$
 		<cfset var WebskinPath = "" />
 		<cfset var webskinHTML = "" />
 		<cfset var oObjectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker").init() />
-		<cfset var stCurrentView = structNew() />		
+		<cfset var stCurrentView = structNew() />
+		<cfset var i = 0 />
 			
 		<!--- make sure that .cfm isn't passed to this method in the template argument --->
 		<cfif listLast(arguments.template,".") EQ "cfm">
@@ -69,6 +70,12 @@ $out:$
 
 		<!--- Check permissions on this webskin --->
 		<cfif arguments.template eq "deniedaccess" or not application.security.checkPermission(type=stObj.typename,webskin=arguments.template)>
+			<cfif structKeyExists(request, "aAncestorWebskins")>
+				<cfloop from="1" to="#arraylen(request.aAncestorWebskins)#" index="i">
+					<cfset request.aAncestorWebskins[i].okToCache = 0 />
+					<cfset request.aAncestorWebskins[i].timeout = stCurrentView.timeout />
+				</cfloop>
+			</cfif>
 			<cfsavecontent variable="webskinHTML"><cfinclude template="#application.coapi.coapiadmin.getWebskinPath(stObj.typename,'deniedaccess')#" /></cfsavecontent>
 			<cfreturn webskinHTML />
 		</cfif>
