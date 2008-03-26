@@ -22,10 +22,14 @@ $in: $
 $out:$
 --->
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/core/tags/container/" prefix="dm">
+<cfimport taglib="/farcry/core/tags/container/" prefix="con">
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs" />
 
 <!--- quit tag if running in end mode --->
-<cfif thistag.executionmode eq "end"><cfexit /></cfif>
+<cfif thistag.executionmode eq "end">
+	<cfexit />
+</cfif>
 
 <cfparam name="attributes.label" default="" type="string">
 <cfparam name="attributes.objectID" default="">
@@ -95,13 +99,107 @@ $out:$
 <cfset stConObj = oCon.getData(dsn=application.dsn,objectid=containerid)>
 <!--- if a mirrored container has been set then reset the container data --->
 <cfif (StructKeyExists(stConObj, "mirrorid") AND Len(stConObj.mirrorid))>
+	<cfset stOriginal = stConObj />
 	<cfset stConObj = oCon.getData(dsn=application.dsn,objectid=stConObj.mirrorid)>
+<cfelse>
+	<cfset stOriginal = structnew() />
 </cfif>
+
+<!--- quit tag if running in end mode --->
+<cfif thistag.executionmode eq "end">
+	<cfif structkeyexists(url,"ajaxcontainer") and (url.ajaxcontainer eq stConObj.objectid or (not structisempty(stOriginal) and url.ajaxcontainer eq stOriginal.objectid))>
+		<cfabort />
+	</cfif>
+	<cfexit />
+</cfif>
+
+<cfif not structisempty(stOriginal)>
+	<cfoutput><div id="#replace(stOriginal.objectid,'-','','ALL')#"></cfoutput>
+<cfelse>
+	<cfoutput><div id="#replace(stConObj.objectid,'-','','ALL')#"></cfoutput>
+</cfif>
+
+<con:isolate active="#structkeyexists(url,'ajaxcontainer') and (url.ajaxcontainer eq stConObj.objectid or (not structisempty(stOriginal) and url.ajaxcontainer eq stOriginal.objectid))#">
 
 <!--- display edit widget --->
 <cfif request.mode.design and request.mode.showcontainers gt 0>
-	<dm:containerControl objectID="#containerID#" label="#attributes.label#" mode="design">
-</cfif>	
+	<skin:view stObject="#stConObj#" webskin="displayAdminToolbar" alternatehtml="" original="#stOriginal#" />
+	<!--- Used by rules to reference the container they're a part of --->
+	<cfif structisempty(stOriginal)>
+		<cfset request.thiscontainer = stConObj.objectid />
+	<cfelse>
+		<cfset request.thiscontainer = stOriginal.objectid />
+	</cfif>
+	
+	<cfif structkeyexists(url,"rule_action") and structkeyexists(url,"rule_id") and structkeyexists(url,"rule_index") and url.rule_index lte arraylen(stConObj.aRules)>
+		<cfset redirecturl = "#cgi.script_name#" />
+		<cfif isdefined("url.objectid")>
+			<cfset redirecturl = "#redirecturl#?objectid=#url.objectid#" />
+		<cfelseif isdefined("url.type") and isdefined("url.view")>
+			<cfset redirecturl = "#redirecturl#?type=#url.type#&view=#url.method#" />
+		</cfif>
+		
+		<cfswitch expression="#url.rule_action#">
+			<cfcase value="moveup">
+				<cfif stConObj.aRules[url.rule_index] eq url.rule_id and url.rule_index gt 1>
+					<cfset temp = stConObj.aRules[url.rule_index] />
+					<cfset stConObj.aRules[url.rule_index] = stConObj.aRules[url.rule_index-1] />
+					<cfset stConObj.aRules[url.rule_index-1] = temp />
+					<cfset oCon.setData(stProperties=stConObj) />
+					<cfif structkeyexists(url,"ajax")>
+						<cfoutput><p class="success">The rule has been moved up</p></cfoutput>
+					<cfelse>
+						<extjs:bubble title="Container management"><cfoutput><p class="success">The rule has been moved up</p></cfoutput></extjs:bubble>
+						<cflocation url="#redirecturl#" />
+					</cfif>
+				</cfif>
+			</cfcase>
+			<cfcase value="movedown">
+				<cfif stConObj.aRules[url.rule_index] eq url.rule_id and url.rule_index lt arraylen(stConObj.aRules)>
+					<cfset temp = stConObj.aRules[url.rule_index] />
+					<cfset stConObj.aRules[url.rule_index] = stConObj.aRules[url.rule_index+1] />
+					<cfset stConObj.aRules[url.rule_index+1] = temp />
+					<cfset oCon.setData(stProperties=stConObj) />
+					<cfif structkeyexists(url,"ajax")>
+						<cfoutput><p class="success">The rule has been moved down</p></cfoutput>
+					<cfelse>
+						<extjs:bubble title="Container management"><cfoutput><p class="success">The rule has been moved down</p></cfoutput></extjs:bubble>
+						<cflocation url="#redirecturl#" />
+					</cfif>
+				</cfif>
+			</cfcase>
+			<cfcase value="delete">
+				<cfif stConObj.aRules[url.rule_index] eq url.rule_id>
+					<cfif structkeyexists(url,"confirm") and url.confirm eq "true">
+						<cfset oFourq = createObject("component", "farcry.core.packages.fourq.fourq") />
+						<cfset oRule = createObject("component", application.stcoapi[oFourq.findType(objectid=url.rule_id)].packagepath) />
+						<cfset oRule.delete(objectid=url.rule_id) />
+						<cfset arraydeleteat(stConObj.aRules,url.rule_index) />
+						<cfset oCon.setData(stProperties=stConObj) />
+						<cfif structkeyexists(url,"ajax")>
+							<cfoutput><p class="success">The rule has been deleted</p></cfoutput>
+						<cfelse>
+							<extjs:bubble title="Container management"><cfoutput><p class="success">The rule has been deleted</p></cfoutput></extjs:bubble>
+							<cflocation url="#redirecturl#" />
+						</cfif>
+					<cfelseif structkeyexists(url,"confirm") and url.confirm eq "false">
+						<extjs:bubble title="Container management"><cfoutput><p class="success">Deltion has been canceled</p></cfoutput></extjs:bubble>
+						<cflocation url="#redirecturl#" />
+					<cfelse>
+						<cfoutput>
+							<script type="text/javascript">
+								if (window.confirm(Are you sure you want to delete this rule?))
+									window.location = "#redirecturl#&rule_id=#url.rule_id#&rule_index=#url.rule_index#&rule_action=delete&confirm=true";
+								else
+									window.location = "#redirecturl#&rule_id=#url.rule_id#&rule_index=#url.rule_index#&rule_action=delete&confirm=false";"
+							</script>
+						</cfoutput>
+					</cfif>
+				</cfif>
+			</cfcase>
+		</cfswitch>
+	</cfif>
+</cfif>
 
 <cfif arrayLen(stConObj.aRules)>
 
@@ -125,3 +223,9 @@ $out:$
 		</cfif>
 	</cfif>
 </cfif>
+
+</con:isolate>
+
+<cfset structdelete(request,"thiscontainer") />
+
+<cfoutput></div></cfoutput>
