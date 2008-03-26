@@ -21,29 +21,38 @@
 	
 	<skin:htmlHead library="extJS" />
 
-	<skin:htmlHead id="iframedialog">
+	<skin:htmlHead>
 	<cfoutput>
 		<script language="javascript">
+			Ext.ux.IFrameComponent = Ext.extend(Ext.BoxComponent, {
+			     onRender : function(ct, position){
+			          this.el = ct.createChild({tag: 'iframe', id: 'iframe-'+ this.id, frameBorder: 0, src: this.url });
+			     }
+			});
 			
-			function openScaffoldDialog(url,title,width,height,resizable) {
-				
-		        var win = new Ext.Window({
+			var iFrameDialog;
+			function openScaffoldDialog(url,title,width,height,resizable,onclose) {
+		        iFrameDialog = new Ext.Window({
 		        	
 					height:		height,
 					width:		width,
-					modal:		true,
 					resizable:	resizable,
+					layout:		"fit",
 					title:		title,
 					collapsible: false,
-		            plain:true,
-		            modal:'false',
-		            autoScroll:'true',	
-		            overflow:'auto',
-		            html:"<iframe src='"+url+"' frameborder='0' scrolling='yes' id='scaffoldiframe' width='100%' height='100%'></iframe>"
+		            plain:		true,
+		            modal:		false,
+		            autoScroll:	false,
+		            id:			"iframedialog",
+		            items: 		[ new Ext.ux.IFrameComponent({ id: "iframedialog", url: url, width:'100%', height:'100%' }) ]
 		        });
-		
-		        win.show('');
-		        win.alignTo(Ext.getBody(), 't-t');
+				if (onclose) iFrameDialog.on("close",onclose);
+		        iFrameDialog.show('');
+		        iFrameDialog.alignTo(Ext.getBody(), 't-t');
+				Ext.select("##iframedialog .x-window-body").setStyle("overflow","auto");
+			}
+			function closeDialog() {
+				iFrameDialog.close();
 			}
 		</script>
 	</cfoutput>
