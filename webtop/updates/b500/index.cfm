@@ -136,7 +136,7 @@ a {color: ##116EAF;}
 	
 	
 	<!--- =========== DATABASE SCHEMA UPDATE ============= --->	
-	<cfoutput><p>updating secuirty...</cfoutput><cfflush>
+	<cfoutput><p>updating security...</cfoutput><cfflush>
 	<!--- LOG --->
 	<cfif NOT alterType.isCFCDeployed(typename="farLog")>
 		<cfset createobject("component","farcry.core.packages.types.farLog").deployType(btestRun="false") />
@@ -337,6 +337,12 @@ a {color: ##116EAF;}
 		<cfcatch><cfset error=1><cfoutput><strong>field already exist.</strong></p></cfoutput></cfcatch>
 	</cftry>	
 	<cfoutput>complete</p></cfoutput><cfflush>
+	
+	<!--- UPDATE farWebfeed --->
+	<cfoutput><p>Deploying farWebfeed Table...</cfoutput><cfflush>
+	<cfif NOT alterType.isCFCDeployed(typename="farWebfeed")>
+		<cfset createobject("component","farcry.core.packages.types.farWebfeed").deployType(btestRun="false") />
+	</cfif>
 	
 	<!--- ============ DATA MIGRATION ============ --->
 	
