@@ -135,6 +135,8 @@
 	
 	<cffunction name="fGetFUData" access="public" returntype="struct" hint="Returns a structure of internal data based on the FU passed in." output="false">
 		<cfargument name="friendlyURL" type="string" required="Yes">
+		<cfargument name="dsn" required="no" default="#application.dsn#"> 
+
 		<cfset var stReturn = StructNew()>
 		<cfset var stLocal = StructNew()>
 		<cfset stReturn.bSuccess = 1>
@@ -162,7 +164,7 @@
 			<cfset stReturn.query_string = application.FU.mappings[stLocal.strFriendlyURL_WSlash].query_string>
 		<cfelse> <!--- check in database [retired] .: redirect --->
 
-			<cfquery datasource="#application.dsn#" name="qGet">
+			<cfquery datasource="#arguments.dsn#" name="qGet">
 			SELECT	u.refobjectid
 			FROM	#application.dbowner#reffriendlyURL u inner join 
 					#application.dbowner#refObjects r on r.objectid = u.refobjectid

@@ -98,7 +98,7 @@ $in: objectid -- $
 					</cfloop>
 				<cfelse>
 					
-					<wiz:object ObjectID="#stwizard.PrimaryObjectID#" lfields="#valuelist(qwizardStep.propertyname)#" format="edit" intable="false" />
+					<wiz:object ObjectID="#stwizard.PrimaryObjectID#" lfields="#valuelist(qFields.propertyname)#" format="edit" intable="false" />
 				
 				</cfif>
 		

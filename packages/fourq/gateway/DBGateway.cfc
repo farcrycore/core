@@ -34,7 +34,7 @@
 	  <cfargument name="stProperties" type="struct" required="true" />
 	  <cfargument name="objectid" type="uuid" required="true" />
 	  <cfargument name="metadata" type="farcry.core.packages.fourq.TableMetadata" required="true" />
-	  
+	  <cfargument name="dsn" type="string" required="false" default="#variables.dsn#">
 	  
 			<cfset var stResult = structNew() />
 			<cfset var tablename=arguments.metadata.getTableName() />
@@ -64,7 +64,7 @@
 			
 			<!--- build query --->
 	
-				<cfquery datasource="#variables.dsn#" name="qCreateData">
+				<cfquery datasource="#arguments.dsn#" name="qCreateData">
 					INSERT INTO #variables.dbowner##tablename# ( 
 						objectID
 						<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
@@ -99,7 +99,7 @@
 				<cfloop collection="#stFields#" item="i">
 				  <cfif stFields[i].type eq 'array' AND structKeyExists(stProperties,i)>
 				  	<cfif IsArray(stProperties[i])>
-						<cfset createArrayTableData(tableName&"_"&i,currentObjectID,stFields[i].fields,stProperties[i]) />
+						<cfset createArrayTableData(tableName&"_"&i,currentObjectID,stFields[i].fields,stProperties[i],arguments.dsn) />
 					</cfif>
 				  </cfif>
 				</cfloop>
@@ -107,7 +107,7 @@
 				
 				<cftry>
 				<!--- create lookup ref for type --->			
-				<cfquery datasource="#variables.dsn#" name="qRefData">
+				<cfquery datasource="#arguments.dsn#" name="qRefData">
 					INSERT INTO #variables.dbowner#refObjects (
 						objectID, 
 						typename
@@ -134,7 +134,8 @@
 	    <cfargument name="tableName" type="string" required="true" />
 	    <cfargument name="objectid" type="uuid" required="true" />
 	    <cfargument name="tabledef" type="struct" required="true" />
-	    <cfargument name="aProps" type="array" required="true" />    
+	    <cfargument name="aProps" type="array" required="true" />
+	    <cfargument name="dsn" type="string" required="false" default="#variables.dsn#">
 	
 	    <cfset var i = 0 />
 	    <cfset var j = 0 />
@@ -194,7 +195,7 @@
 		
 
 				
-		    <cfquery datasource="#variables.dsn#" name="qCurrentArrayRecords">
+		    <cfquery datasource="#arguments.dsn#" name="qCurrentArrayRecords">
 		    SELECT * FROM #variables.dbowner##arguments.tableName#
 		    WHERE parentID = '#arguments.objectid#'
 		    </cfquery>
@@ -223,12 +224,12 @@
 		 --->	
 		<cfelse>
 		
-			<cfquery datasource="#variables.dsn#" name="qDeleteRecords">
+			<cfquery datasource="#arguments.dsn#" name="qDeleteRecords">
 		    DELETE FROM #variables.dbowner##arguments.tableName#
 		    WHERE parentID = '#arguments.objectid#'
 		    </cfquery>
 			
-		    <!--- <cfquery datasource="#variables.dsn#">
+		    <!--- <cfquery datasource="#arguments.dsn#">
 		    DELETE FROM #variables.dbowner##arguments.tableName#
 		    WHERE parentID = '#arguments.objectid#'
 			<cfif listlen(lNewData)>
@@ -237,16 +238,13 @@
 		    </cfquery> --->
 			
 		</cfif>
-	
-			
-	
 		
 			
 		<!--- MJB:
 		This will allow us to ensure that any new objects to be placed in the array table will have a unique SEQ by setting the start to qCurrentArrayRecords.RecordCount.
 		We could use a MAX(Seq) but unsure about DB compatibility.
 		 --->
-		<cfquery datasource="#variables.dsn#" name="qCurrentArrayRecords">
+		<cfquery datasource="#arguments.dsn#" name="qCurrentArrayRecords">
 	    SELECT *
 		FROM #variables.dbowner##arguments.tableName#
 	    WHERE parentID = '#arguments.objectid#'
@@ -297,7 +295,7 @@
 				<cfelse>
 					<cfset SQLArray = generateSQLNameValueArray(arguments.tableDef,arguments.aProps[i]) />
 					
-					<cfquery datasource="#variables.dsn#" name="qCreateData">
+					<cfquery datasource="#arguments.dsn#" name="qCreateData">
 					INSERT INTO #variables.dbowner##tablename# ( 
 						parentID
 						,seq
@@ -334,7 +332,7 @@
 		<cfswitch expression="#application.dbtype#">
 		<cfcase value="mysql,mysql5">
 			<!--- This works for mySQL 5; see mysql5 specific gateway --->
-			<cfquery name="update" datasource="#application.dsn#">
+			<cfquery name="update" datasource="#arguments.dsn#">
 			UPDATE #tablename# p
 			INNER JOIN refObjects pp
 			ON p.data = pp.objectid
@@ -344,20 +342,20 @@
 		</cfcase>
 		<cfcase value="postgresql">
 			
-			<cfquery name="qArrayData" datasource="#application.dsn#">
+			<cfquery name="qArrayData" datasource="#arguments.dsn#">
 			SELECT data as arrayobjid
 			FROM #variables.dbowner##tablename#
 			WHERE parentID = '#arguments.objectid#'
 			</cfquery>
 			
 			<cfloop query="qArrayData">
-				<cfquery name="qTypename" datasource="#application.dsn#">
+				<cfquery name="qTypename" datasource="#arguments.dsn#">
 				SELECT typename
 				FROM refobjects
 				WHERE objectID = '#qarraydata.arrayobjid#'
 				</cfquery>
 				
-				<cfquery name="update" datasource="#application.dsn#">
+				<cfquery name="update" datasource="#arguments.dsn#">
 				UPDATE #variables.dbowner##tablename#
 				SET 
 				typename = '#qtypename.typename#'
@@ -368,7 +366,7 @@
 			
 		</cfcase>
 		<cfcase value="mssql">
-			<cfquery name="update" datasource="#application.dsn#">
+			<cfquery name="update" datasource="#arguments.dsn#">
 				UPDATE #variables.dbowner##tablename#
 				SET #variables.dbowner##tablename#.typename = refObjects.typename		
 				FROM #variables.dbowner##tablename# INNER JOIN refObjects
@@ -377,7 +375,7 @@
 			</cfquery>
 		</cfcase>
 		<cfcase value="ora">
-			<cfquery name="update" datasource="#application.dsn#">
+			<cfquery name="update" datasource="#arguments.dsn#">
 			UPDATE #variables.dbowner##tablename#
 			SET #variables.dbowner##tablename#.typename =
 				(SELECT refObjects.typename
@@ -388,7 +386,7 @@
 		</cfcase>	
 		<cfdefaultcase>
 			<!--- anything else / needs to be checked as this does not work for all databases--->
-			<cfquery name="update" datasource="#application.dsn#">
+			<cfquery name="update" datasource="#arguments.dsn#">
 				UPDATE #variables.dbowner##tablename#
 				SET #variables.dbowner##tablename#.typename = refObjects.typename		
 				FROM #variables.dbowner##tablename# INNER JOIN refObjects
@@ -412,7 +410,7 @@
 		
 		<cfloop from ="1" to="#arrayLen(aProps)#" index="i">
 			<cfif not listContainsNoCase(variables.sorted,arguments.aProps[i].data)>		
-				<cfquery datasource="#variables.dsn#" name="qUpdateSeq">
+				<cfquery datasource="#arguments.dsn#" name="qUpdateSeq">
 				UPDATE #variables.dbowner##tablename#
 				SET seq = #sortorder#
 				WHERE parentID = '#arguments.objectid#'
@@ -495,7 +493,7 @@
 
 		<!--- build query --->
 		<cfset bFirst = true />
-		<cfquery datasource="#variables.dsn#" name="qSetData">
+		<cfquery datasource="#arguments.dsn#" name="qSetData">
 			UPDATE #variables.dbowner##tablename#
 			SET
 			<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
@@ -530,7 +528,7 @@
 		<!--- Insert any array property data. --->		
 		<cfloop collection="#stFields#" item="i">
 		  <cfif stFields[i].type eq 'array' AND structKeyExists(stProperties,i)>
-		      <cfset createArrayTableData(tableName&"_"&i,objectid,stFields[i].fields,stProperties[i]) />
+		      <cfset createArrayTableData(tableName&"_"&i,objectid,stFields[i].fields,stProperties[i],arguments.dsn) />
 		  </cfif>
 		</cfloop>
 			

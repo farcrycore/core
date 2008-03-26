@@ -1,4 +1,4 @@
-<cfcomponent name="coapiadmin">
+<cfcomponent name="coapiadmin" bDocument="true" scopelocation="application.coapi.coapiadmin">
 
 
 <cffunction name="init" access="public" output="false" hint="Initialise component." returntype="coapiadmin">
@@ -10,7 +10,7 @@
 
 </cffunction>
 
-<cffunction name="getCOAPIComponents" access="public" output="false" returntype="query" hint="Get query of COAPI components by package directory. Used by the installer.">
+<cffunction name="getCOAPIComponents" access="public" output="false" returntype="query" hint="Get query of COAPI components by package directory." bDocument="true">
 	<cfargument name="project" required="true" type="string" />
 	<cfargument name="package" required="true" type="string" />
 	<cfargument name="plugins" default="" type="string" />
