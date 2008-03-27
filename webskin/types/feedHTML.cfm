@@ -44,6 +44,7 @@
 			<dt>URL</dt>
 			<dd><skin:buildLink objectid="#stObj.objectid#">full article</skin:buildLink></dd>
 		</dl>
+		<br style="clear:both;" />
 	</div>
 </cfoutput>
 
