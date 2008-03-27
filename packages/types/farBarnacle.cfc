@@ -220,6 +220,20 @@
 		
 		<cfset var actual = -1 />
 		
+		<!--- Check existence of permission --->
+		<cfif not isvalid("uuid",arguments.permission)>
+			<cfset arguments.permission = application.security.factory.permission.getID(arguments.permission) />
+			
+			<!--- If permission doesn't exist grant it --->
+			<cfif not len(arguments.permission)>
+				<cfreturn 1 />
+			</cfif>
+		</cfif>
+		<!--- If permission is related to this type, grant it --->
+		<cfif not listcontains(application.security.factory.permission.getAllPermissions(typename),arguments.permission)>
+			<cfreturn 1 />
+		</cfif>
+		
 		<cfset actual = getRight(role=arguments.role,permission=arguments.permission,object=arguments.object) />
 		
 		<cfif actual eq 0>

@@ -116,7 +116,7 @@
 		<cfelseif len(arguments.type) and len(arguments.permission)>
 		
 			<cfif arguments.type eq "dmNews">
-				<cfset arguments.type = "news" />
+				<cfset arguments.type = "News" />
 			</cfif>
 		
 			<cfif this.factory.permission.permissionExists("#arguments.type##arguments.permission#")>

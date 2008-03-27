@@ -138,9 +138,16 @@
 		<cfargument name="forcerefresh" type="boolean" required="false" default="false" hint="Should the cache be forcably refreshed" />
 		
 		<cfset thisrole = "" />
-		<cfset result = 0 />
 		<cfset thisresult = -1 />
 		<cfset qRole = "" />
+		
+		<cfif not isvalid("uuid",arguments.permission)>
+			<cfset arguments.permission = application.security.factory.permission.getID(arguments.permission) />
+			
+			<cfif not len(arguments.permission)>
+				<cfreturn 1 />
+			</cfif>
+		</cfif>
 		
 		<cfloop list="#arguments.role#" index="thisrole">
 			<!--- If the name of the role was passed in, get the objectid --->
@@ -165,12 +172,10 @@
 			<!--- Result is the most permissable right granted. 1 is the most permissable, so if that is returned we don't need to check any more --->
 			<cfif thisresult eq 1>
 				<cfreturn 1 />
-			<cfelseif thisresult gt result>
-				<cfset result = thisresult />
 			</cfif>
 		</cfloop>
 		
-		<cfreturn result />
+		<cfreturn 0 />
 	</cffunction>
 	
 	<cffunction name="checkWebskin" access="public" output="false" returntype="boolean" hint="Returns true if this role grants access the the webskin">
