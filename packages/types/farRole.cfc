@@ -131,7 +131,35 @@
 			</cfif>
 		</cfif>
 	</cffunction>
+	
+	<cffunction name="getRolesWithPermission" access="public" returntype="string" description="Returns a list of the roles that have the specified permission" output="false">
+		<cfargument name="permission" type="string" required="true" hint="The permission to look for" />
 		
+		<cfset var qRoles = querynew("empty") />
+		
+		<cfif not isvalid("uuid",arguments.permission)>
+			<cfset arguments.permission = application.security.factory.permission.getID(arguments.permission) />
+		</cfif>
+		
+		<cfif len(arguments.permission)>
+			<cfquery datasource="#application.dsn#" name="qRoles">
+				select distinct r.objectid
+				from	#application.dbowner#farRole r
+						inner join
+						#application.dbowner#farRole_aPermissions ap
+						on r.objectid=ap.parentid
+				where	ap.data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.permission#" />
+			</cfquery>
+		<cfelse>
+			<cfquery datasource="#application.dsn#" name="qRoles">
+				select distinct r.objectid
+				from	#application.dbowner#farRole r
+			</cfquery>
+		</cfif>
+		
+		<cfreturn valuelist(qRoles.objectid) />
+	</cffunction>
+	
 	<cffunction name="getRight" access="public" output="false" returntype="numeric" hint="Returns the right for the specfied permission">
 		<cfargument name="role" type="string" required="true" hint="The roles to check" />
 		<cfargument name="permission" type="string" required="false" default="" hint="The permission to retrieve" />

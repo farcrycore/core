@@ -141,22 +141,30 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	
 	<cffunction name="fListProfileByPermission" hint="returns a query of users" access="public" output="false" returntype="struct">
 		<cfargument name="permissionName" required="false" default="" type="string">
-		<cfargument name="permissionID" required="false" default="0" type="numeric">
+		<cfargument name="permissionID" required="false" default="" type="string" hint="Deprecated">
 				
 		<cfset var stLocal = StructNew()>
 		<cfset var stReturn = StructNew()>
-
+		<cfset var lProfiles = "" />
+		
+		<!--- Get profiles --->
+		<cfif len(arguments.permissionID)>
+			<cfset arguments.permissionanme = arguments.permissionid />
+		</cfif>
+		<cfset lProfiles = application.security.factory.role.getAuthenticatedProfiles(roles=application.security.factory.role.getRolesWithPermission(permission=arguments.permissionname)) />
+		
 		<cfset stReturn.bSuccess = true>
 		<cfset stReturn.message = "">
-		<cftry>
-			
-			<cfinclude template="_dmProfile/fListProfileByPermission.cfm">
 
-			<cfcatch>
-				<cfset stReturn.bSuccess = false>
-				<cfset stReturn.message = cfcatch.message>						
-			</cfcatch>
-		</cftry>
+		<cfif len(lProfiles)>
+			<cfquery datasource="#application.dsn#" name="stReturn.queryObject">
+				select		*
+				from	 	#application.dbowner#dmProfile
+				where		objectid in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lProfiles#" />)
+			</cfquery>
+		<cfelse>
+			<cfset stResult.bSuccess = false />
+		</cfif>
 
 		<cfreturn stReturn>
 	</cffunction>
