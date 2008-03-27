@@ -138,8 +138,10 @@ $out:$
 		</cfoutput>
 	</cfsavecontent>
 	
-	<cfif FileExists("#application.path.project#/webskin/#stObj.Typename#/edit.cfm")>
-		<cfset oType.getDisplay(stObject=stobj, template="edit", onExit="#stOnExit#") />
+	<cfset html = oType.getView(stObject=stobj, template="edit", OnExit="#stOnExit#", alternateHTML="") />
+	
+	<cfif len(html)>
+		<cfoutput>#html#</cfoutput>
 	<cfelse>
 		<cfset oType.edit(objectid=attributes.objectid, onExit="#stOnExit#") />
 	</cfif>

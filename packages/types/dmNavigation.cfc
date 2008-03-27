@@ -395,7 +395,7 @@ $out:$
 						Ext.Ajax.request({
 							url: '#application.url.farcry#/facade/ftajax.cfm?formtool=string&typename='+typename+'&fieldname='+fieldname+'&property='+property,
 							success: function(response){
-								var el = Ext.get("displayMethods");
+								var el = Ext.get(fieldname+"displayMethods");
 								el.update(response.responseText);
 							},
 							params: { 
@@ -416,7 +416,7 @@ $out:$
 							<option value="#qTypes.typename#"<cfif qTypes.typename eq listfirst(arguments.stMetadata.value,'.')> selected="selected"</cfif>>#qTypes.description#</option>
 						</cfloop>	
 					</select><br/>
-					<div id="displayMethods">
+					<div id="#arguments.fieldname#displayMethods">
 						<input type="hidden" name="#arguments.fieldname#webskin" id="#arguments.fieldname#webskin" value="#listlast(arguments.stMetadata.value,'.')#" />
 					</div>
 					<script type="text/javascript">
@@ -543,6 +543,98 @@ $out:$
 			</cfif>
 		<cfelse>
 			<cfset stResult.value = arguments.stFieldPost.value />
+		</cfif>
+			
+		<!--- ----------------- --->
+		<!--- Return the Result --->
+		<!--- ----------------- --->
+		<cfreturn stResult>
+	</cffunction>
+
+	<cffunction name="ftEditaObjectIDs" access="public" returntype="string" description="This will return a string of formatted HTML text to enable the editing of the property" output="false">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+		
+		<cfset var html = "" />
+		<cfset var qTypes = querynew("typename,description","varchar,varchar") />
+		<cfset var thistype = "" />
+		
+		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+		
+		<cfloop list="#structkeylist(application.stcoapi)#" index="thistype">
+			<cfif structkeyexists(application.stCOAPI[thistype],"bUseInTree") and application.stCOAPI[thistype].bUseInTree>
+				<cfset queryaddrow(qTypes) />
+				<cfset querysetcell(qTypes,"typename",thistype) />
+				<cfif structkeyexists(application.stCOAPI[thistype],"displayname") and len(application.stCOAPI[thistype].displayname)>
+					<cfset querysetcell(qTypes,"description",application.stCOAPI[thistype].displayname) />
+				<cfelse>
+					<cfset querysetcell(qTypes,"description",thistype) />
+				</cfif>
+			</cfif>
+		</cfloop>
+		<cfquery dbtype="query" name="qTypes">
+			select		*
+			from		qTypes
+			order by	description
+		</cfquery>
+		
+		<cfif qTypes.recordcount>
+			<cfsavecontent variable="html">
+				<cfoutput>
+					<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value=" " />
+					<select name="#arguments.fieldname#typename" id="#arguments.fieldname#typename">
+						<option value="">None selected</option>
+						<cfloop query="qTypes">
+							<option value="#qTypes.typename#">#qTypes.description#</option>
+						</cfloop>	
+					</select><br/>
+				</cfoutput>
+			</cfsavecontent>
+		<cfelse>
+			<cfsavecontent variable="html">
+				<cfoutput>
+					<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value=" " />
+					<input type="hidden" name="#arguments.fieldname#typename" id="#arguments.fieldname#typename" value="" />
+					<div>No types available</div>
+				</cfoutput>
+			</cfsavecontent>
+		</cfif>
+		
+		<cfreturn html>
+	</cffunction>
+
+	<cffunction name="ftValidateaObjectIDs" access="public" output="true" returntype="struct" hint="This will return a struct with bSuccess and stError">
+		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		
+
+		<cfset var stResult = structnew() />
+		<cfset var stChild = structnew() />
+		<cfset var oType = "" />
+		
+		<cfset stResult.value = arraynew(1) />
+		<cfset stResult.bSuccess = true />
+		<cfset stResult.stError = structNew() />
+		<cfset stResult.stError.message = "" />
+		<cfset stResult.stError.class = "" />
+		
+		<!--- --------------------------- --->
+		<!--- Perform any validation here --->
+		<!--- --------------------------- --->
+		
+		<cfif structkeyexists(arguments.stFieldPost.stSupporting,"typename")>
+			<cfif len(arguments.stFieldPost.stSupporting.typename)>
+				<cfset oType = createobject("component",application.stCOAPI[arguments.stFieldPost.stSupporting.typename].packagepath) />
+				<cfset stChild = oType.getData(objectid=createuuid()) />
+				<cfset oType.setData(stProperties=stChild,bSessionOnly=true) />
+				
+				<cfset arrayappend(stResult.value,stChild.objectid) />
+			</cfif>
+		<cfelse>
+			<cfset stResult.stError.class = "validation-advice" />
+			<cfset stResult.stError.message = "The necessary fields were not present" />
 		</cfif>
 			
 		<!--- ----------------- --->
