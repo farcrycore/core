@@ -219,15 +219,7 @@
 		<cfargument name="role" type="string" required="false" hint="List of roles to check" />
 		
 		<cfset var actual = -1 />
-		<cfset var typename = findType(arguments.object) />
-		
-		<!--- Get object type --->
-		<cfif not len(typename)>
-			<cfset thisobject = getData(objectid=arguments.object) />
-			<cfif structkeyexists(thisobject,"typename")>
-				<cfset typename = thisobject.typename />
-			</cfif>
-		</cfif>
+		<cfset var typename = application.coapi.coapiAdmin.findType(arguments.object) />
 		
 		<!--- Check existence of permission --->
 		<cfif not isvalid("uuid",arguments.permission)>
