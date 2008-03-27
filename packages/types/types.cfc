@@ -1199,11 +1199,11 @@ default handlers
 			---------------------------------------->
 			<ft:processForm action="Save" Exit="true">
 				<ft:processFormObjects typename="#stobj.typename#" />
-				<cfset setLock(stObj=stObj,locked=false) />
+				<cfset setLock(objectid=stObj.objectid,locked=false) />
 			</ft:processForm>
 
 			<ft:processForm action="Cancel" Exit="true" >
-				<cfset setLock(stObj=stObj,locked=false) />
+				<cfset setLock(objectid=stObj.objectid,locked=false) />
 			</ft:processForm>
 			
 			
