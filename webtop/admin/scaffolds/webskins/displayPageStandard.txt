@@ -6,6 +6,8 @@
 <cfimport taglib="/farcry/core/tags/container" prefix="con">
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft">
 
-<ft:object stObject="#stobj#" format="display" />
-	
+<ft:form>
+	<ft:object stObject="#stobj#" format="display" />
+</ft:form>
+
 <cfsetting enablecfoutputonly="false" />
