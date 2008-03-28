@@ -30,7 +30,7 @@
 	
 	<cffile action="UPLOAD"
 		filefield="filedata" 
-		destination="#filePath##stMetadata.ftDestination#/#cleanFileName#"		        	
+		destination="#filePath##stMetadata.ftDestination#/"		        	
 		nameconflict="MakeUnique" />
 	<cffile action="rename" source="#filePath##stMetadata.ftDestination#/#File.ServerFile#" destination="#uploadFileName#" />
 	<cfset cleanFileName = uploadFileName />
@@ -39,8 +39,8 @@
 	<!--- There is no image currently so we simply upload the image and make it unique  --->
 	<cffile action="UPLOAD"
 		filefield="filedata" 
-		destination="#filePath##stMetadata.ftDestination#/#cleanFileName#"		        	
-		nameconflict="MakeUnique">
+		destination="#filePath##stMetadata.ftDestination#/"		        	
+		nameconflict="MakeUnique" result="File">
 	<cfset newFileName = File.ServerFile>
 </cfif>
 
@@ -59,4 +59,4 @@ Note: doing a quick check to make sure the cleanfilename doesnt exist. If it doe
 	<cffile action="rename" source="#filePath##stMetadata.ftDestination#/#newFileName#" destination="#cleanFileName#" />
 </cfif>			
 
-<cfset session[url.fieldname] = "#stMetadata.ftDestination#/#cleanFileName#">
+<cfset session[url.fieldname] = "#stMetadata.ftDestination#/#cleanFileName#" /><cfoutput>#session[url.fieldname]#</cfoutput>
