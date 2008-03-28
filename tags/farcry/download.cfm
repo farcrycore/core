@@ -55,7 +55,7 @@ accommodate legacy implementations
 
 <!--- check status of file --->
 <cfif structKeyExists(stFile, "status")>
-	<cfif NOT listFind(request.mode.lvalidstatus, stFile.status)>
+	<cfif NOT listFind(request.mode.lvalidstatus, stFile.status) or isdefined("session.dmsec.AUTHENTICATION.BADMIN") and session.dmsec.AUTHENTICATION.BADMIN)>
 		<cfthrow type="core.tags.farcry.download" message="File not available." detail="You are not authorised to view this file." />
 	</cfif>
 </cfif>
