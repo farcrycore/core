@@ -27,18 +27,6 @@
 
 <extjs:iframeDialog />
 
-<skin:htmlHead id="managerule"><cfoutput>
-	<style>
-		div.ruleadmin { background-color: ##ddd; font-weight:bold; padding:5px; color:##000; }
-		div.ruleadmin a { text-decoration:none; border: 0 none; display: block; padding-right:5px; float:left; color:##000; }
-		div.ruleadmin a img { border:0 none; }
-		div.ruleadmin div.type { width: 6.5em; float:left; }
-		div.ruleadmin div.title { padding-left:5px; padding-right:5px; }
-		div.ruleadmin div.title a { display:inline; float:none; }
-		div.ruleadmin div.title a:hover { text-decoration:underline; }
-	</style>
-</cfoutput></skin:htmlHead>
-
 <cfoutput>
 	<div class="ruleadmin">
 		<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editInPlace" target="_blank" title="Configure rule" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #application.stCOAPI[stObj.typename].displayname#',630,600,true,function(){ reloadContainer('#request.thiscontainer#'); });return false;">
