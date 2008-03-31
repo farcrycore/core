@@ -207,6 +207,7 @@
 function createFormtoolTree(fieldname,rootID,dataURL,rootNodeText,selectedIDs,iconCls){
 	// shorthand
     var Tree = Ext.tree;
+    var checkRoot = false;
     
     tree = new Tree.TreePanel({
         animate:true, 
@@ -243,13 +244,18 @@ function createFormtoolTree(fieldname,rootID,dataURL,rootNodeText,selectedIDs,ic
 		}	
 
 	});
+	
+	if(selectedIDs.match(rootID)){
+		checkRoot = true;
+	}
+	
     // set the root node
     var root = new Tree.AsyncTreeNode({
         text: rootNodeText,
         draggable:false,
         id:rootID,
         iconCls:iconCls,
-        checked:false
+        checked:checkRoot
     });
     tree.setRootNode(root);
 
