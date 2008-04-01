@@ -50,7 +50,7 @@
 			Ext.Ajax.request({
 				url: url,
 				success: function(response){
-					el.update(response.responseText);
+					el.update(response.responseText,true);
 				},
 				params:params
 			});
