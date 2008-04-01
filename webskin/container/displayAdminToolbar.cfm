@@ -42,20 +42,17 @@
 		function reloadContainer(objectid,params) {
 			var el = Ext.get(objectid.replace(/-/g,''));
 			var url = window.location.href.replace(/[&?]updateapp=[^&]*/,'').replace(/\/$/,'/index.cfm');
-			
-			url += (url.match(/\?/)?'&':'?')+'ajaxcontainer='+objectid;
-			
+						
 			params = params || {};
-			
-			for (param in params)
-				url += "&"+param+"="+params[param];
+			params.ajaxcontainer = objectid;
 			
 			el.update("<div id='ajaxindicator'><img src='#application.url.farcry#/images/loading.gif' /></div>");
 			Ext.Ajax.request({
 				url: url,
 				success: function(response){
 					el.update(response.responseText);
-				}
+				},
+				params:params
 			});
 		}
 	</script>
@@ -63,7 +60,7 @@
 
 <cfoutput>
 	<div class="containeradmin">
-		<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editAddRule" target="_blank" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #rereplace(stObj.label,"\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_","")#',630,600,true,function(){ reloadContainer('#originalcontainer#'); });return false;" title="Add a rule">
+		<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editAddRule&container=#originalcontainer#" target="_blank" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #rereplace(stObj.label,"\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_","")#',630,600,true,function(){ reloadContainer('#originalcontainer#'); });return false;" title="Add a rule">
 			<img src="#application.url.farcry#/images/crystal/22x22/actions/window_new.png" border="0" alt="Add a rule" />
 		</a>
 		<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#originalcontainer#&method=editManageReflection" target="_blank" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #rereplace(stObj.label,"\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_","")#',630,300,true,function(){ reloadContainer('#originalcontainer#'); });return false;" title="Manage reflection">

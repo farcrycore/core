@@ -9,19 +9,25 @@
 <ft:processform action="Save">
 	<cfif Trim(form.reflectionid) EQ ""> <!--- delete the reflection id --->
 		<cfset deleteReflection(objectid=stObj.objectid) />
-		<extjs:bubble title="Container management"><cfoutput>Reflection has been removed</cfoutput></extjs:bubble>
 	<cfelse> <!--- set the reflection id --->
 		<cfset setReflection(objectid=stObj.objectid,mirrorid=form.reflectionid) />
-		<extjs:bubble title="Container management"><cfoutput>Container has been reflected</cfoutput></extjs:bubble>
 	</cfif>
 	<cfset stObj.mirrorID = Trim(form.reflectionid)>
 	<cfset setData(stproperties=stObj)>
 	<cfoutput>
 		<script type="text/javascript">
 			<cfif structkeyexists(url,"iframe")>
-				parent.location.reload();
+				<!--- parent.location.reload(); --->
+				parent.reloadContainer('#stObj.objectid#')
 			<cfelse>
-				window.opener.location.reload();
+				<!--- window.opener.location.reload(); --->
+				window.opener.reloadContainer('#stObj.objectid#')
+			</cfif>
+			
+			<cfif structkeyexists(url,"iframe")>
+				parent.closeDialog();
+			<cfelse>
+				window.close();
 			</cfif>
 		</script>
 	</cfoutput>

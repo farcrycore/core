@@ -11,30 +11,6 @@
 	<admin:header title="EDIT: #stObj.typename#" />
 </cfif>
 
-<ft:processform action="Save">
-	<cfoutput>
-		<script type="text/javascript">
-			<cfif structkeyexists(url,"iframe")>
-				parent.location.reload();
-			<cfelse>
-				window.opener.location.reload();
-			</cfif>
-		</script>
-	</cfoutput>
-</ft:processform>
-
-<ft:processform action="Cancel">
-	<cfoutput>
-		<script type="text/javascript">
-			<cfif structkeyexists(url,"iframe")>
-				parent.closeDialog();
-			<cfelse>
-				window.close();
-			</cfif>
-		</script>
-	</cfoutput>
-</ft:processform>
-
 <cfoutput>
 	<div id="scrollcontrol">
 		<h1>EDIT: <cfif not structkeyexists(application.stCOAPI[stObj.typename],"displayname")>#application.stCOAPI[stObj.typename].displayname#<cfelse>#stObj.typename#</cfif></h1>

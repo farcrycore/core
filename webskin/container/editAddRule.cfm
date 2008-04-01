@@ -27,7 +27,7 @@
 			
 	<cfset setData(stProperties=stObj)>
 
-	<cflocation url="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stProps.objectid#&method=editInPlace" addtoken="false">
+	<cflocation url="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stProps.objectid#&method=editInPlace&container=#url.container#&iframe=1" addtoken="false">
 </ft:processform>
 
 <ft:processform action="Cancel">
