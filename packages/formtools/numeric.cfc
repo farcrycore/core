@@ -22,7 +22,7 @@
 		<cfparam name="arguments.stMetadata.ftMask" default="">
 		
 		<cfif len(arguments.stMetadata.ftMask)>
-			<cfset arguments.stMetadata.value = NumberFormat(arguments.stMetadata.value, arguments.stMetadata.ftMask)>
+			<cfset arguments.stMetadata.value = trim(NumberFormat(arguments.stMetadata.value, arguments.stMetadata.ftMask))>
 		<cfelse>
 			<!--- This is for legacy. You should use just ftPrefix and ftSuffix --->
 			<cfif len(arguments.stMetadata.ftCurrencySymbol)>
