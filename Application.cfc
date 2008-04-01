@@ -338,6 +338,7 @@
 		request.mode.design = 0;
 		request.mode.flushcache = 0;
 		request.mode.showdraft = 0;
+		request.mode.ajax = 0;
 		
 		// Developer Mode
 		request.mode.bDeveloper = 0;
@@ -400,7 +401,14 @@
 		} else {
 			request.mode.lValidStatus = "approved";
 		}
-		
+	
+		// ajaxmode
+		if ((isDefined("url.ajaxmode") and url.ajaxmode) or (isDefined("form.ajaxmode") and form.ajaxmode)) {
+			request.mode.ajax = true;
+		} else {
+			request.mode.ajax = false;
+		}
+			
 		// Deprecated variables
 		// TODO remove these when possible
 		request.lValidStatus = request.mode.lValidStatus; //deprecated
