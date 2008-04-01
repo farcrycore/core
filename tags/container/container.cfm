@@ -116,7 +116,7 @@ $out:$
 	<cfoutput><div id="#replace(stConObj.objectid,'-','','ALL')#"></cfoutput>
 </cfif>
 
-<con:isolate active="#structkeyexists(form,'ajaxcontainer') and (form.ajaxcontainer eq stConObj.objectid or (not structisempty(stOriginal) and form.ajaxcontainer eq stOriginal.objectid))#">
+<con:isolate active="#request.mode.ajax#">
 
 <!--- display edit widget --->
 <cfif request.mode.design and request.mode.showcontainers gt 0>
@@ -132,7 +132,6 @@ $out:$
 		<cfset url.rule_action = form.rule_action />
 		<cfset url.rule_id = form.rule_id />
 		<cfset url.rule_index = form.rule_index />
-		<cfset url.ajax = form.ajax />
 		<cfif isdefined("form.confirm")>
 			<cfset url.confirm = form.confirm />
 		</cfif>
@@ -152,10 +151,8 @@ $out:$
 					<cfset stConObj.aRules[url.rule_index] = stConObj.aRules[url.rule_index-1] />
 					<cfset stConObj.aRules[url.rule_index-1] = temp />
 					<cfset oCon.setData(stProperties=stConObj) />
-					<cfif structkeyexists(url,"ajax")>
-						<cfoutput><p class="success">The rule has been moved up</p></cfoutput>
-					<cfelse>
-						<extjs:bubble title="Container management"><cfoutput><p class="success">The rule has been moved up</p></cfoutput></extjs:bubble>
+					<extjs:bubble title="Container management"><cfoutput>The rule has been moved up</cfoutput></extjs:bubble>
+					<cfif not request.mode.ajax>
 						<cflocation url="#redirecturl#" />
 					</cfif>
 				</cfif>
@@ -166,10 +163,8 @@ $out:$
 					<cfset stConObj.aRules[url.rule_index] = stConObj.aRules[url.rule_index+1] />
 					<cfset stConObj.aRules[url.rule_index+1] = temp />
 					<cfset oCon.setData(stProperties=stConObj) />
-					<cfif structkeyexists(url,"ajax")>
-						<cfoutput><p class="success">The rule has been moved down</p></cfoutput>
-					<cfelse>
-						<extjs:bubble title="Container management"><cfoutput><p class="success">The rule has been moved down</p></cfoutput></extjs:bubble>
+					<extjs:bubble title="Container management"><cfoutput>The rule has been moved down</cfoutput></extjs:bubble>
+					<cfif not request.mode.ajax>
 						<cflocation url="#redirecturl#" />
 					</cfif>
 				</cfif>
@@ -182,14 +177,12 @@ $out:$
 						<cfset oRule.delete(objectid=url.rule_id) />
 						<cfset arraydeleteat(stConObj.aRules,url.rule_index) />
 						<cfset oCon.setData(stProperties=stConObj) />
-						<cfif structkeyexists(url,"ajax")>
-							<cfoutput><p class="success">The rule has been deleted</p></cfoutput>
-						<cfelse>
-							<extjs:bubble title="Container management"><cfoutput><p class="success">The rule has been deleted</p></cfoutput></extjs:bubble>
+						<extjs:bubble title="Container management"><cfoutput>The rule has been deleted</cfoutput></extjs:bubble>
+						<cfif not request.mode.ajax>
 							<cflocation url="#redirecturl#" />
 						</cfif>
 					<cfelseif structkeyexists(url,"confirm") and url.confirm eq "false">
-						<extjs:bubble title="Container management"><cfoutput><p class="success">Deltion has been canceled</p></cfoutput></extjs:bubble>
+						<extjs:bubble title="Container management"><cfoutput><p class="success">Deletion has been canceled</p></cfoutput></extjs:bubble>
 						<cflocation url="#redirecturl#" />
 					<cfelse>
 						<cfoutput>

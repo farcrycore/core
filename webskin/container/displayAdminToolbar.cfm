@@ -44,7 +44,8 @@
 			var url = window.location.href.replace(/[&?]updateapp=[^&]*/,'').replace(/\/$/,'/index.cfm');
 						
 			params = params || {};
-			params.ajaxcontainer = objectid;
+			params.container = objectid;
+			params.ajaxmode = "true";
 			
 			el.update("<div id='ajaxindicator'><img src='#application.url.farcry#/images/loading.gif' /></div>");
 			Ext.Ajax.request({
