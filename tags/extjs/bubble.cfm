@@ -20,6 +20,8 @@ FARCRY IMPORT FILES
 <cfparam name="attributes.pause" default="3" type="numeric" /><!--- How long the message appears before being removed --->
 <cfparam name="attributes.bAutoHide" default="true" type="boolean" /><!--- Automatically hide the message after the pause --->
 
+<cfparam name="request.mode.ajax" default="false" />
+
 <cfif thistag.executionMode eq "Start">
 	<!--- IGNORE START MODE --->
 </cfif>
