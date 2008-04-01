@@ -505,13 +505,13 @@ LIBRARY DATA
 						<cfquery dbtype="query" name="qFieldSets">
 						SELECT ftwizardStep, ftFieldset
 						FROM qMetadata
-						WHERE ftFieldset <> '#request.ftJoin#'
+						WHERE upper(ftFieldset) <> '#ucase(request.ftJoin)#'
 						AND ftType <> 'uuid'
 						AND ftType <> 'array'
 						Group By ftwizardStep, ftFieldset
 						ORDER BY ftSeq
 						</cfquery>				
-														
+									
 						<cfif qFieldSets.recordcount GTE 1>
 							
 							<cfloop query="qFieldSets">
@@ -523,7 +523,7 @@ LIBRARY DATA
 								AND ftType <> 'array'
 								ORDER BY ftSeq
 								</cfquery>
-								
+
 								<ft:object objectid="#stNew.objectid#" typename="#request.ftJoin#" format="edit"  lFields="#valuelist(qFieldset.propertyname)#" inTable=false IncludeFieldSet=1 Legend="#qFieldSets.ftFieldset#" />
 							</cfloop>
 							
