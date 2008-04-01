@@ -40,6 +40,7 @@
 		<cfparam name="arguments.stMetadata.ftSelectMultiple" default="true" type="string" />
 		<cfparam name="arguments.stMetadata.ftAllowLibraryEdit" default="false">
 		<cfparam name="arguments.stMetadata.ftLibraryEditWebskin" default="edit">
+		<cfparam name="arguments.stMetadata.ftFirstListLabel" default="-- SELECT --">
 		
 		<cfif arguments.stMetadata.ftRenderType eq "Library">
 			<cfparam name="application.stCOAPI.#arguments.typename#.stProps.#arguments.stMetadata.name#.metadata.ftShowLibraryLink" default="true" />
@@ -93,7 +94,7 @@
 				<div class="fieldsection optional">
 					<div class="fieldwrap">
 						<cfloop query="qLibraryList">
-							<input type="checkbox"  name="#arguments.fieldname#" value="#qLibraryList.objectid#"  class="formCheckbox" <cfif valuelist(qArrayField.data) contains qLibraryList.objectid>checked</cfif>>
+							<input type="checkbox"  id="#arguments.fieldname#"  name="#arguments.fieldname#" value="#qLibraryList.objectid#"  class="formCheckbox #arguments.stMetadata.ftClass#" <cfif valuelist(qArrayField.data) contains qLibraryList.objectid>checked</cfif>>
 							<cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif>
 							<br class="fieldsectionbreak" />
 						</cfloop>
@@ -105,10 +106,9 @@
 				<!--- todo: i18n --->
 				<cfoutput>
 				<em>No options available.</em>
-				<input type="hidden" name="#arguments.fieldname#" value="" />
 				</cfoutput>
 			</cfif>
-			
+			<cfoutput><input type="hidden" name="#arguments.fieldname#" value="" /></cfoutput>
 			</cfsavecontent>
 		
 		</cfcase>
@@ -132,9 +132,14 @@
 			<cfsavecontent variable="returnHTML">
 			<cfif qLibraryList.recordcount>
 				<cfoutput>
-				<select  id="#arguments.fieldname#" name="#arguments.fieldname#" size="#arguments.stMetadata.ftSelectSize#" multiple="#arguments.stMetadata.ftSelectMultiple#" style="width:auto;">
+				<div>
+				<select  id="#arguments.fieldname#" name="#arguments.fieldname#" size="#arguments.stMetadata.ftSelectSize#" multiple="#arguments.stMetadata.ftSelectMultiple#" style="width:auto;" class="#arguments.stMetadata.class#">
+				<cfif len(arguments.stMetadata.ftFirstListLabel)>
+					<option value="">#arguments.stMetadata.ftFirstListLabel#</option>
+				</cfif>
 				<cfloop query="qLibraryList"><option value="#qLibraryList.objectid#" <cfif valuelist(qArrayField.data) contains qLibraryList.objectid>selected</cfif>><cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif></option></cfloop>
 				</select>
+				</div>
 				</cfoutput>
 				
 			<cfelse>
@@ -286,7 +291,7 @@
 		<cfparam name="arguments.stMetadata.ftJoin" default="">
 		
 		<!--- We need to get the Array Field Items as a query --->
-		<cfset o = createObject("component",application.types[arguments.typename].typepath)>
+		<cfset o = createObject("component",application.stcoapi[arguments.typename].packagepath)>
 		<cfset q = o.getArrayFieldAsQuery(objectid="#arguments.stObject.ObjectID#", Typename="#arguments.typename#", Fieldname="#stMetadata.Name#", ftJoin="#stMetadata.ftJoin#")>
 	
 		
