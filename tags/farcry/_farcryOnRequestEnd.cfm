@@ -27,93 +27,11 @@ $out:$
 <cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 
 
-<cfparam name="request.mode.ajax" default="false" />
-
-
-
 <cfif structKeyExists(session, "aExtMessages") AND arrayLen(session.aExtMessages)>
 	<skin:htmlHead library="extjs" />
 
-	<skin:htmlHead id="extMsg">
-		<cfoutput>
-		<script type="text/javascript">
-		Ext.example = function(){
-		    var msgCt;
-		
-		    function createBox(t, s, c){
-		        return ['<div class="msg">',
-		                '<div class="x-box-tl"><div class="x-box-tr"><div class="x-box-tc"></div></div></div>',
-		                '<div class="x-box-ml"><div class="x-box-mr"><div class="x-box-mc">', c, '<h3>', t, '</h3>', s, '</div></div></div>',
-		                '<div class="x-box-bl"><div class="x-box-br"><div class="x-box-bc"></div></div></div>',
-		                '</div>'].join('');
-		    }
-		    return {
-		        msg : function(title, format, pause, autoHide){
-		            if(!msgCt){
-		                msgCt = Ext.DomHelper.insertFirst(document.body, {id:'msg-div'}, true);
-		            }
-		            msgCt.alignTo(document, 't-t');
-		            var s = String.format.apply(String, Array.prototype.slice.call(arguments, 1));
-		            
-		            if(autoHide){
-		            	var m = Ext.DomHelper.append(msgCt, {html:createBox(title, s, '')}, true);
-		           		m.slideIn('t').pause(pause).ghost("t", {remove:true});
-
-		            }
-		           	else {
-		           		var closer = '<img src="#application.url.webtop#/js/ext/resources/images/default/qtip/close.gif" width="15" height="15" style="float:right;" />';
-		           		var m = Ext.DomHelper.append(msgCt, {html:createBox(title, s, closer)}, true);
-		           		m.slideIn('t');
-					    m.on('click', function(){
-			                m.ghost("t", {remove:true});
-			            });
-		           	}
-		        },
-		
-		        init : function(){
-		            var t = Ext.get('exttheme');
-		            if(!t){ // run locally?
-		                return;
-		            }
-		            var theme = Cookies.get('exttheme') || 'aero';
-		            if(theme){
-		                t.dom.value = theme;
-		                Ext.getBody().addClass('x-'+theme);
-		            }
-		            t.on('change', function(){
-		                Cookies.set('exttheme', t.getValue());
-		                setTimeout(function(){
-		                    window.location.reload();
-		                }, 250);
-		            });
-		
-		            var lb = Ext.get('lib-bar');
-		            if(lb){
-		                lb.show();
-		            }
-		        }
-		    };
-		}();
-		</script>
-		<style type="text/css">
-		.msg .x-box-mc {
-		    font-size:14px;
-		}
-		##msg-div {
-		    position:absolute;	
-		    top:10px;
-		    width:250px;
-		    z-index:20000;
-		}
-		</style>
-		</cfoutput>
-	</skin:htmlHead>
-
 	<extjs:onReady>
 		<cfoutput>Ext.example.init, Ext.example;</cfoutput>
-	</extjs:onReady>
-	
-	<extjs:onReady>
 		<cfloop from="1" to="#arrayLen(session.aExtMessages)#" index="i">
 			<cfoutput>Ext.example.msg('#session.aExtMessages[i].title#','#session.aExtMessages[i].message#', #session.aExtMessages[i].pause#, #session.aExtMessages[i].bAutoHide#);</cfoutput>
 		</cfloop>		
@@ -357,10 +275,20 @@ $out:$
 				<cfoutput>
 				<link rel="stylesheet" type="text/css" href="#application.url.farcry#/js/ext/resources/css/ext-all.css">
 				
-				<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?library=ext&files=/adapter/ext/ext-base.js,/ext-all.js"></script>
+				<style type="text/css">
+				.msg .x-box-mc {
+				    font-size:14px;
+				}
+				##msg-div {
+				    position:absolute;	
+				    top:10px;
+				    width:250px;
+				    z-index:20000;
+				}
+				</style>
+				<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?library=ext&files=/adapter/ext/ext-base.js,/ext-all.js,/ext-bubble.cfm"></script>
 				<script type="text/javascript">Ext.BLANK_IMAGE_URL = '#application.url.webtop#/js/ext/resources/images/default/s.gif';</script>
-				<!--- <script type="text/javascript" src="#application.url.farcry#/js/ext/adapter/ext/ext-base.js"></script>
-				<script type="text/javascript" src="#application.url.farcry#/js/ext/ext-all.js"></script> ---></cfoutput>
+				</cfoutput>
 			</cfif>
 			<cfif isDefined("variables.stPlaceInHead.extPortalJS") AND variables.stPlaceInHead.extPortalJS>
 				<cfoutput>

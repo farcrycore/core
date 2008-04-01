@@ -21,7 +21,7 @@ FARCRY IMPORT FILES
 <cfparam name="attributes.bAutoHide" default="true" type="boolean" /><!--- Automatically hide the message after the pause --->
 
 <cfif thistag.executionMode eq "Start">
-
+	<!--- IGNORE START MODE --->
 </cfif>
 
 <cfif thistag.executionMode eq "End">
@@ -30,16 +30,27 @@ FARCRY IMPORT FILES
 		<cfset attributes.message = thisTag.generatedContent />
 	</cfif>
 	
-	<cfparam name="session.aExtMessages" default="#arrayNew(1)#" />
-	<cfset stMessage = structNew() />
-	<cfset stMessage.title = JSStringFormat(attributes.title) />
-	<cfset stMessage.message = JSStringFormat(attributes.message) />
-	<cfset stMessage.pause = attributes.pause />
-	<cfset stMessage.bAutoHide = attributes.bAutoHide />
-	<cfset arrayAppend(session.aExtMessages, stMessage) />
-	<!------------------ 
-	START WEBSKIN
-	 ------------------>
 	<cfset thisTag.generatedContent = "" />
+	
+	<cfif request.mode.ajax>
+		<cfoutput>
+			<script type="text/javascript">
+			Ext.example.init, Ext.example;
+			Ext.example.msg('#attributes.title#','#attributes.message#', #attributes.pause#, #attributes.bAutoHide#);
+			</script>
+		</cfoutput>	
+	<cfelse>
+		<cfparam name="session.aExtMessages" default="#arrayNew(1)#" />
+		<cfset stMessage = structNew() />
+		<cfset stMessage.title = JSStringFormat(attributes.title) />
+		<cfset stMessage.message = JSStringFormat(attributes.message) />
+		<cfset stMessage.pause = attributes.pause />
+		<cfset stMessage.bAutoHide = attributes.bAutoHide />
+		<cfset arrayAppend(session.aExtMessages, stMessage) />
+		
+		
+	</cfif>
+
+	
 </cfif>
 <cfsetting enablecfoutputonly="false">
