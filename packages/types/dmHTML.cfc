@@ -8,7 +8,7 @@ type properties
 <cfproperty ftSeq="1" ftwizardStep="Start" ftFieldset="General Details" name="Title" type="nstring" hint="Title of object.  *perhaps this should be deprecated for object label*" required="no" default="" ftValidation="required">
 <cfproperty ftSeq="2" ftwizardStep="Start" ftFieldset="General Details" name="reviewDate" type="date" hint="The date for which the object will be reviewed" required="no" default="" ftType="datetime" ftToggleOffDateTime="true" ftLabel="Review Date">
 <cfproperty ftSeq="3" ftwizardStep="Start" ftFieldset="General Details" name="ownedby" displayname="Owned by" type="string" hint="Username for owner." required="No" default="" ftLabel="Owned By" ftType="list" ftRenderType="dropdown" ftListData="getOwners">
-<cfproperty ftSeq="4" ftwizardStep="Start" ftFieldset="General Details" name="displayMethod" type="string" hint="Display method to render this HTML object with." required="yes" default="display" ftLabel="Display Method" ftType="webskin" ftPrefix="displayPage">
+<cfproperty ftSeq="4" ftwizardStep="Start" ftFieldset="General Details" name="displayMethod" type="string" hint="Display method to render this HTML object with." required="yes" default="displayPageStandard" ftLabel="Display Method" ftType="webskin" ftPrefix="displayPage">
 
 <cfproperty ftSeq="5" ftwizardStep="Start" ftFieldset="Metadata" name="metaKeywords" type="nstring" hint="HTML head section metakeywords." required="no" default="" ftLabel="Meta Keywords">
 <cfproperty ftSeq="6" ftwizardStep="Start" ftFieldset="Metadata" name="extendedmetadata" type="longchar" hint="HTML head section for extended keywords." required="no" default="" ftlabel="Extended Metadata" ftToggle="true">
