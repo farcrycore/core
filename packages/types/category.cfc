@@ -170,6 +170,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfargument name="maxRows" type="numeric" required="false" default="0" hint="maximum of rows returned">
 		<cfargument name="sqlWhere" required="No" type="string" default="1=1" hint="adds to the where clause of the query" />
 		<cfargument name="sqlOrderBy" required="No" type="string" default="datetimelastupdated desc" hint="Used by the query to sort." />
+		<cfargument name="lFields" type="string" required="false" default="" hint="the list of additional fields from the type if required.">
 		
 		<cfset var i=0>
 		<cfset var qGetData = QueryNew("objectid")>
@@ -214,6 +215,10 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		type.objectid
 		
 		,'#arguments.typename#' as typename
+		
+		<cfif len(trim(arguments.lFields))>
+			, #arguments.lFields#
+		</cfif>
 		
 		<cfif StructKeyExists(application.types[arguments.typename].stprops,"versionid")>
 			, 
