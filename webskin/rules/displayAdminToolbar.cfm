@@ -29,7 +29,7 @@
 
 <cfoutput>
 	<div class="ruleadmin">
-		<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editInPlace" target="_blank" title="Configure rule" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #application.stCOAPI[stObj.typename].displayname#',630,600,true,function(){ reloadContainer('#request.thiscontainer#'); });return false;">
+		<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editInPlace&container=#arguments.stParam.container#" target="_blank" title="Configure rule" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #application.stCOAPI[stObj.typename].displayname#',630,600,true,function(){ reloadContainer('#request.thiscontainer#'); });return false;">
 			<img src="#application.url.farcry#/images/crystal/22x22/actions/view_text.png" border="0" alt="Edit rule" />
 		</a>
 		<cfif arguments.stParam.index gt 1>
@@ -47,7 +47,7 @@
 		</a>
 		<div class="title">
 			<div class="type">RULE</div>
-			<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editInPlace" target="_blank" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #application.stCOAPI[stObj.typename].displayname#',630,600,true,function(){ reloadContainer('#request.thiscontainer#'); });return false;" title="{<cfif arraylen(aProps)>#htmleditformat(arraytolist(aProps,", "))#</cfif>}">#application.stCOAPI[stObj.typename].displayname#</a>
+			<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editInPlace&container=#arguments.stParam.container#" target="_blank" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #application.stCOAPI[stObj.typename].displayname#',630,600,true,function(){ reloadContainer('#request.thiscontainer#'); });return false;" title="{<cfif arraylen(aProps)>#htmleditformat(arraytolist(aProps,", "))#</cfif>}">#application.stCOAPI[stObj.typename].displayname#</a>
 		</div>
 	</div>
 </cfoutput>

@@ -275,8 +275,26 @@ $out:$
 			</cfif>
 			
 			<cfset onExit = StructNew() />		
-			<cfset onExit.Type = "URL" />
-			<cfset onExit.Content = "#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#" />
+			<cfset onExit.Type = "HTML" />
+			<cfsavecontent variable="onExit.content">
+				<cfoutput>
+					<script type="text/javascript">
+						<cfif structkeyexists(url,"iframe")>
+							<!--- parent.location.reload(); --->
+							parent.reloadContainer('#url.container#')
+						<cfelse>
+							<!--- window.opener.location.reload(); --->
+							window.opener.reloadContainer('#url.container#')
+						</cfif>
+						
+						<cfif structkeyexists(url,"iframe")>
+							parent.closeDialog();
+						<cfelse>
+							window.close();
+						</cfif>						
+					</script>
+				</cfoutput>
+			</cfsavecontent>
 			
 			
 			

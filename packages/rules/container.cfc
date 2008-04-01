@@ -466,7 +466,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 				<cfset oRule = createObject("component", application.stcoapi[rule].packagepath) />
 
 				<cfif request.mode.design and request.mode.showcontainers gt 0>
-					<skin:view objectid="#arguments.aRules[i]#" webskin="displayAdminToolbar" index="#i#" r_html="ruleHTML" arraylen="#arraylen(arguments.aRules)#" />
+					<!--- request.thiscontainer is set up in the container tag and corresponds to the page container, not the shared container --->
+					<skin:view objectid="#arguments.aRules[i]#" webskin="displayAdminToolbar" index="#i#" r_html="ruleHTML" arraylen="#arraylen(arguments.aRules)#" container="#request.thiscontainer#" />
 					
 					<cfset arrayappend(request.aInvocations, ruleHTML) />
 				</cfif>
