@@ -7,17 +7,6 @@
 
 <ft:object stObject="#stObj#" format="display" r_stFields="stProps" />
 
-<cfset aProps = arraynew(1) />
-<cfloop collection="#stProps#" item="prop">
-	<cfif len(stProps[prop].html) gt 0 and (not structkeyexists(stProps[prop],"ftDefault") or stProps[prop].value neq stProps[prop].ftDefault) and (not structkeyexists(stProps[prop],"default") or stProps[prop].value neq stProps[prop].default)>
-		<cfif len(stProps[prop].html) lt 20>
-			<cfset arrayappend(aProps,"#stProps[prop].ftLabel#=#stProps[prop].html#") />
-		<cfelse>
-			<cfset arrayappend(aProps,"#stProps[prop].ftLabel#=#left(rereplace(stProps[prop].html,"<[^>]*>","","ALL"),20)#...") />
-		</cfif>
-	</cfif>
-</cfloop>
-
 <cfset redirecturl = "#cgi.script_name#" />
 <cfif isdefined("url.objectid")>
 	<cfset redirecturl = "#redirecturl#?objectid=#url.objectid#" />
@@ -29,7 +18,7 @@
 
 <cfoutput>
 	<div class="ruleadmin">
-		<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editInPlace&container=#arguments.stParam.container#" target="_blank" title="Configure rule" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #application.stCOAPI[stObj.typename].displayname#',630,600,true,function(){ reloadContainer('#request.thiscontainer#'); });return false;">
+		<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editInPlace&container=#arguments.stParam.container#" target="_blank" title="Configure rule" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #application.stCOAPI[stObj.typename].displayname#',800,600,true,function(){ reloadContainer('#request.thiscontainer#'); });return false;">
 			<img src="#application.url.farcry#/images/crystal/22x22/actions/view_text.png" border="0" alt="Edit rule" />
 		</a>
 		<cfif arguments.stParam.index gt 1>
@@ -47,7 +36,7 @@
 		</a>
 		<div class="title">
 			<div class="type">RULE</div>
-			<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editInPlace&container=#arguments.stParam.container#" target="_blank" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #application.stCOAPI[stObj.typename].displayname#',630,600,true,function(){ reloadContainer('#request.thiscontainer#'); });return false;" title="{<cfif arraylen(aProps)>#htmleditformat(arraytolist(aProps,", "))#</cfif>}">#application.stCOAPI[stObj.typename].displayname#</a>
+			<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editInPlace&container=#arguments.stParam.container#" target="_blank" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #application.stCOAPI[stObj.typename].displayname#',800,600,true,function(){ reloadContainer('#request.thiscontainer#'); });return false;">#application.stCOAPI[stObj.typename].displayname#</a>
 		</div>
 	</div>
 </cfoutput>

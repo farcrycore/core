@@ -61,10 +61,10 @@
 
 <cfoutput>
 	<div class="containeradmin">
-		<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editAddRule&container=#originalcontainer#" target="_blank" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #rereplace(stObj.label,"\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_","")#',630,600,true,function(){ reloadContainer('#originalcontainer#'); });return false;" title="Add a rule">
+		<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editAddRule&container=#originalcontainer#" target="_blank" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #rereplace(stObj.label,"\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_","")#',800,600,true,function(){ reloadContainer('#originalcontainer#'); });return false;" title="Add a rule">
 			<img src="#application.url.farcry#/images/crystal/22x22/actions/window_new.png" border="0" alt="Add a rule" />
 		</a>
-		<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#originalcontainer#&method=editManageReflection" target="_blank" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #rereplace(stObj.label,"\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_","")#',630,300,true,function(){ reloadContainer('#originalcontainer#'); });return false;" title="Manage reflection">
+		<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#originalcontainer#&method=editManageReflection" target="_blank" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #rereplace(stObj.label,"\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_","")#',800,300,true,function(){ reloadContainer('#originalcontainer#'); });return false;" title="Manage reflection">
 			<img src="#application.url.farcry#/images/crystal/22x22/actions/editcopy.png" border="0" alt="Manage reflection" />
 		</a>
 		<a href="#cgi.SCRIPT_NAME#?#cgi.query_string#" onclick="reloadContainer('#originalcontainer#');return false;" title="Refresh container">
@@ -72,7 +72,7 @@
 		</a>
 		<div class="title">
 			<div class="type">CONTAINER</div>
-			<a id="#replace(stObj.objectid,'-','','ALL')#_title" title="{<cfif arraylen(aProps)>#htmleditformat(arraytolist(aProps,", "))#</cfif>}" href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editAddRule" target="_blank" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #rereplace(stObj.label,"\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_","")#',630,600,true,function(){ reloadContainer('#originalcontainer#'); });return false;">#rereplace(stObj.label,"\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_","")#</a>
+			<a id="#replace(stObj.objectid,'-','','ALL')#_title" title="{<cfif arraylen(aProps)>#htmleditformat(arraytolist(aProps,", "))#</cfif>}" href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editAddRule" target="_blank" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #rereplace(stObj.label,"\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_","")#',800,600,true,function(){ reloadContainer('#originalcontainer#'); });return false;">#rereplace(stObj.label,"\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_","")#</a>
 			<cfif not structisempty(arguments.stParam.original)>
 				<span>(Shared container)</span>
 			</cfif>
