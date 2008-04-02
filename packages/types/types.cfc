@@ -604,6 +604,8 @@ default handlers
 																					
 							<cfloop from="1" to="#arrayLen(stObject[iField])#" index="iArrayItem">
 								
+								<cfset iArrayTables = 0 />
+								
 								<cfloop list="#lArrayTables#" index="iArrayTable">
 									<!--- WE ARE ONLY GOING TO CHANGE THE STATUS IF THIS IS THE ONLY CONTENT ITEM THE RELATED OBJECT IS RELATED TO --->
 									<cfquery datasource="#application.dsn#" name="qDuplicate">
