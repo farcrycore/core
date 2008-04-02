@@ -4,17 +4,19 @@
 <!--- @@Description: Bulk image upload utility. Processes form posts from the bulk file upload flex ui. --->
 <!--- @@Developer: Geoff Bowers (modius@daemon.com.au) --->
 
+
 <cfif not StructIsEmpty(form)>
 	<cfset oImage = createObject("component", application.stCoapi.dmImage.packagePath) />
 	<cfset oImageFormtool = createObject("component", "farcry.core.packages.formtools.image") />
 
 	<cfset physicalPath = "#application.path.imageRoot#/#application.stCoapi.dmImage.STPROPS.SourceImage.METADATA.FTDESTINATION#" />
-	
-	<cfif not directoryExists("#physicalPath#")>
-		<cfset b = createFolderPath("#physicalPath#")>
-	</cfif>
-	
+
 	<cftry>
+		<cfif not directoryExists("#physicalPath#")>
+			<cfset b = oImageFormtool.createFolderPath("#physicalPath#") />
+		</cfif>
+	
+	
 		<cffile action="UPLOAD" filefield="FILEDATA" destination="#physicalPath#/#form.FILENAME#" nameconflict="MAKEUNIQUE" />
 			
 		<cfcatch>
@@ -48,6 +50,7 @@
 		<cfset stProperties = oImageFormtool.ImageAutoGenerateBeforeSave(stProperties=stProperties, stFields=application.stCoapi.dmImage.stProps,stFormPost=stFormPost) />	
 		<cfset stResult = oImage.createData(stProperties=stProperties,user="multiupload") />
 	</cflock>
+	
 	
 </cfif>
 
