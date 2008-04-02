@@ -4,13 +4,16 @@
 <cfprocessingDirective pageencoding="utf-8">
 
 <admin:header title="Category manager" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
-<cfif len(application.url.webroot)>
-	<cfset appRoot = right(application.url.webroot,len(application.url.webroot)-1)>
-	<cfset appRoot = replace(appRoot,"/",".")>
-	<skin:flexWrapper SWFSource="#application.url.farcry#/admin/ui/swf/Category.swf" id="FarcryCategory" flashVars="appRoot=#appRoot#">
-<cfelse>
-	<skin:flexWrapper SWFSource="#application.url.farcry#/admin/ui/swf/Category.swf" id="FarcryCategory" />
-</cfif>
+
+
+<sec:CheckPermission error="true" permission="AdminCOAPITab">
+	<cfset flexCategoryFacadePath = replaceNoCase('#application.url.webtop#.facade.flexCategory','/','.','all') />
+	<cfif left(flexCategoryFacadePath,1) EQ ".">
+		<cfset flexCategoryFacadePath = mid(flexCategoryFacadePath,2,len(flexCategoryFacadePath)) />
+	</cfif>
+	<skin:flexWrapper SWFSource="#application.url.farcry#/admin/ui/swf/Category.swf" id="FarcryCategory" flashVars="flexCategoryFacadePath=#flexCategoryFacadePath#">
+</sec:CheckPermission>
+
 
 <admin:footer>
 <cfsetting enablecfoutputonly="no">
