@@ -525,8 +525,6 @@ default handlers
 																		
 						<cfif arrayLen(stObject[iField]) AND structKeyExists(application.stcoapi[stProperties.typename].stprops[iField].metadata, "ftJoin")>
 						
-						
-
 							<cfloop list="#application.stcoapi[stProperties.typename].stprops[iField].metadata.ftJoin#" index="iJoinTypename">
 								
 								<!--- LOOP THROUGH ENTIRE APPLICATION STCOAPI FOR EACH KEY (TYPENAME) --->
@@ -556,6 +554,8 @@ default handlers
 							</cfloop>
 																					
 							<cfloop from="1" to="#arrayLen(stObject[iField])#" index="iArrayItem">
+								
+								<cfset iArrayTables = 0 />
 								
 								<cfloop list="#lArrayTables#" index="iArrayTable">
 									<!--- WE ARE ONLY GOING TO CHANGE THE STATUS IF THIS IS THE ONLY CONTENT ITEM THE RELATED OBJECT IS RELATED TO --->
