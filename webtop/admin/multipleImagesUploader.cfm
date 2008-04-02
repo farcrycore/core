@@ -11,7 +11,8 @@
 	<cfif len(application.url.webroot)>
 		<cfset appRoot = right(application.url.webroot,len(application.url.webroot)-1)>
 		<cfset appRoot = replace(appRoot,"/",".")>
-		<skin:flexWrapper SWFSource="#application.url.farcry#/admin/ui/swf/multipleUploader.swf" id="multiple" flashVars="#lcase(session.urltoken)#&appRoot=#appRoot#">
+
+		<skin:flexWrapper SWFSource="#application.url.farcry#/admin/ui/swf/multipleUploader.swf" id="multiple" flashVars="#lcase(session.urltoken)#&bulkimgUploadURL=#application.url.webtop#/admin/bulkimgUpload.cfm&flexCategoryFacadePath=#replaceNoCase('#application.url.webtop#.facade.flexCategory','/','.','all')#">
 	<cfelse>
 		<skin:flexWrapper SWFSource="#application.url.farcry#/admin/ui/swf/multipleUploader.swf" id="multiple" flashVars="#lcase(session.urltoken)#">
 	</cfif>
