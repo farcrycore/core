@@ -82,9 +82,7 @@
 		
 
 		<cfif len(arguments.stMetadata.value)>
-			<cfset oType=createobject("component", application.stCoapi[listfirst(webskinTypename)].packagePath) />
-			
-			<cfset displayname=oType.getWebskinDisplayname(typename=listfirst(webskinTypename), template="#arguments.stMetadata.value#") />
+			<cfset displayname=application.coapi.coapiadmin.getWebskinDisplayname(typename=listfirst(webskinTypename), template="#arguments.stMetadata.value#") />
 		</cfif>	
 		
 		
