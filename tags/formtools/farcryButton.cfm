@@ -8,7 +8,7 @@
 </cfif>
 
 <cfparam  name="attributes.id" default="#createUUID()#">
-<cfparam  name="attributes.Type" default="submit">
+<cfparam  name="attributes.Type" default="">
 <cfparam  name="attributes.Value" default="#Attributes.Type#">
 <cfparam  name="attributes.rbkey" default="forms.buttons.#rereplacenocase(attributes.value,'[^\w\d]','','ALL')#">
 <cfparam  name="attributes.Onclick" default="">
@@ -31,11 +31,17 @@
 	<cfsilent>
 
 	<!--- Include Prototype light in the head --->
-	<skin:htmlHead library="prototypelite" />
+	<skin:htmlHead library="prototype" />
 
 	<!--- If not in a farcry form, make it a button. --->
 	<cfif NOT isDefined("Request.farcryForm.Name")>
-		<cfset attributes.Type = "button" />
+		<cfif not len(attributes.type)>
+			<cfset attributes.Type = "button" />
+		</cfif>
+	<cfelse>
+		<cfif not len(attributes.type)>
+			<cfset attributes.Type = "submit" />
+		</cfif>
 	</cfif>
 
 	<!--- Default validate to true if submitting and false if just a button --->
@@ -96,12 +102,12 @@
 			
 									
 			<cfoutput>
-				<div id="#attributes.id#-outer" class="farcryButtonWrap-outer" onmouseover="farcryButtonOnMouseOver('#attributes.id#');" onmouseout="farcryButtonOnMouseOut('#attributes.id#');" onclick="farcryButtonOnClick('#attributes.id#');"><div id="#attributes.id#-inner" class="farcryButtonWrap-inner"><button id="#attributes.id#" type="#attributes.Type#" name="FarcryForm#attributes.Type#Button" onclick="#attributes.Onclick#" class="farcryButton #attributes.Class#" style="#attributes.Style#" value="#attributes.value#">#attributes.Value#</button></div></div>
+				<div id="#attributes.id#-outer" class="farcryButtonWrap-outer" onmouseover="farcryButtonOnMouseOver('#attributes.id#');" onmouseout="farcryButtonOnMouseOut('#attributes.id#');" onclick="farcryButtonOnClick('#attributes.id#');"><div id="#attributes.id#-inner" class="farcryButtonWrap-inner"><button id="#attributes.id#" type="#attributes.Type#" name="FarcryForm#attributes.Type#Button" onclick="#attributes.Onclick#;" class="farcryButton #attributes.Class#" style="#attributes.Style#" value="#attributes.value#">#attributes.Value#</button></div></div>
 			</cfoutput>
 			
 		</cfif>
 	<cfelse>
-		<cfoutput><button type="#attributes.Type#" name="FarcryForm#attributes.Type#Button" onclick="#attributes.Onclick#" class="formButton #attributes.Class#" style="#attributes.Style#" value="#attributes.value#">#attributes.Value#</button></cfoutput>
+		<cfoutput><button type="#attributes.Type#" name="FarcryForm#attributes.Type#Button" onclick="#attributes.Onclick#;" class="formButton #attributes.Class#" style="#attributes.Style#" value="#attributes.value#">#attributes.Value#</button></cfoutput>
 	</cfif>
 	</cfsavecontent>
 
