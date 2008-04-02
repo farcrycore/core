@@ -262,9 +262,32 @@ $out:$
 		
 		<cfset var qMetadata = application.rules[stobj.typename].qMetadata >
 		
-		<cfset var updateHTML = getView(stobject="#stobj#", template="update", alternateHTML="") />
+		<cfset var updateHTML = "" />
 		
+		<cfset var onExit = StructNew() />		
 		
+		<cfset onExit.Type = "HTML" />
+		<cfsavecontent variable="onExit.content">
+			<cfoutput>
+				<script type="text/javascript">
+					<cfif structkeyexists(url,"iframe")>
+						<!--- parent.location.reload(); --->
+						parent.reloadContainer('#url.container#')
+					<cfelse>
+						<!--- window.opener.location.reload(); --->
+						window.opener.reloadContainer('#url.container#')
+					</cfif>
+					
+					<cfif structkeyexists(url,"iframe")>
+						parent.closeDialog();
+					<cfelse>
+						window.close();
+					</cfif>						
+				</script>
+			</cfoutput>
+		</cfsavecontent>
+		
+		<cfset updateHTML = getView(stobject="#stobj#", template="update", alternateHTML="", OnExit="#onExit#") />
 		
 		<cfif len(updateHTML)>
 			<cfoutput>#updateHTML#</cfoutput>
@@ -273,30 +296,7 @@ $out:$
 			<cfif listLen(structKeyList(application.rules[stobj.typename].stProps)) LTE 2>
 				<cfoutput><h3>No Parameters required</h3></cfoutput>
 			</cfif>
-			
-			<cfset onExit = StructNew() />		
-			<cfset onExit.Type = "HTML" />
-			<cfsavecontent variable="onExit.content">
-				<cfoutput>
-					<script type="text/javascript">
-						<cfif structkeyexists(url,"iframe")>
-							<!--- parent.location.reload(); --->
-							parent.reloadContainer('#url.container#')
-						<cfelse>
-							<!--- window.opener.location.reload(); --->
-							window.opener.reloadContainer('#url.container#')
-						</cfif>
-						
-						<cfif structkeyexists(url,"iframe")>
-							parent.closeDialog();
-						<cfelse>
-							window.close();
-						</cfif>						
-					</script>
-				</cfoutput>
-			</cfsavecontent>
-			
-			
+		
 			
 			<cfquery dbtype="query" name="qwizardSteps">
 			SELECT ftwizardStep
@@ -603,4 +603,30 @@ $out:$
 		<cfreturn stProperties>
 	</cffunction>
 	
+
+	<cffunction name="getArrayFieldAsQuery" access="public" output="true" returntype="query">
+		
+		<cfargument name="ObjectID" required="no" type="string" default="" hint="This is the PK for which we are getting the linked FK's. If the ObjectID passed is empty, the we are creating a new object and it will therefore not have an objectID">
+		<cfargument name="Fieldname" required="yes" type="string">
+		<cfargument name="typename" required="yes" type="string" default="">
+		<cfargument name="ftJoin" required="yes" type="string" /><!--- This is a list of typenames as defined in the metadata of the property --->
+		
+		<cfset var q = queryNew("parentid,data,seq,typename") />
+		
+		<cfif NOT len(arguments.typename)>
+			<cfset arguments.typename  = findType(objectID="#arguments.ObjectID#")>
+		</cfif>
+		
+		<cfquery datasource="#application.dsn#" name="q">
+		SELECT *
+		FROM #arguments.typename#_#arguments.Fieldname#
+		WHERE #arguments.typename#_#arguments.Fieldname#.parentID = '#arguments.ObjectID#'
+		ORDER BY #arguments.typename#_#arguments.Fieldname#.seq ASC
+		</cfquery>		
+	
+		<cfreturn q />
+			
+	</cffunction>
+		
+			
 </cfcomponent>
