@@ -44,7 +44,7 @@
 	</cfif>
 	
 	<cfif len(arguments.stParam.keywords)>
-		<cfoutput><itunes:keywords>#stObj[arguments.stParam.ituneskeywords]#</itunes:keywords></cfoutput>
+		<cfoutput><itunes:keywords>#stObj[arguments.stParam.keywords]#</itunes:keywords></cfoutput>
 	</cfif>
 	
 	<cfif len(arguments.stParam.itunesduration)>
