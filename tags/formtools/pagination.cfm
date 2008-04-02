@@ -273,14 +273,14 @@ user defined functions
 						<cfif arguments.bShowPageDropdown>
 							<cfoutput>
 							<select name="paginationDropdown" onchange="javascript:paginationSubmission(this.value);return false;">
-								<cfloop from="#pFirstPage#" to="#pLastPage#" index="i">
+								<cfloop from="#pFirstPage#" to="#pLastPage#" index="i" step="#attributes.step#">
 									<option value="#i#" <cfif attributes.currentPage EQ i>selected</cfif> >&nbsp;#i#&nbsp;</option>
 								</cfloop>
 							</select>
 							</cfoutput>
 						<cfelse>
 							
-							<cfloop from="#pFirstPage#" to="#pLastPage#" index="i">
+							<cfloop from="#pFirstPage#" to="#pLastPage#" index="i" step="#attributes.step#">
 							    <cfif attributes.currentPage EQ i>
 									<cfoutput><span>#i#</span></cfoutput>
 							   <cfelse>
