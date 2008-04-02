@@ -5,6 +5,7 @@
 
 <!--- tag libraries --->
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft">
+<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs">
 
 
 
@@ -162,7 +163,7 @@
 
 		
 		<!--- COMPLETE --->
-		<cfoutput><h1>DONE</h1></cfoutput>
+		<extjs:bubble title="Skeleton Exported Successfully" bAutoHide="false" />
 
 	
 	</ft:processFormObjects>
