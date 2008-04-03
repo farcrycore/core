@@ -131,33 +131,38 @@
 		
 		<cfloop list="#lTypenamesToExport#" index="typename" >
 			<cfset aContent = arrayNew(1) />
-			<cftry>
-				
-				
-				<cfquery datasource="#application.dsn#" name="q">
-				SELECT *
-				FROM #application.dbowner##typeName#
-				</cfquery>
-				
-				<cfset o = createObject("component", application.stcoapi["#typeName#"].packagePath)>
-				
-				<cfloop query="q">
-					
-					<cfset st = o.getData(objectid="#q.objectid#", bArraysAsStructs="true") />
-				
-					<cfset arrayAppend(aContent, st) />
-					
-				</cfloop>
-				
-				<cfif arrayLen(aContent)>
-					<cfwddx action="cfml2wddx" input="#aContent#" output="wddxContent">
-					<cffile action="write" file="#skeletonInstallPath#/#typename#.wddx" output="#wddxContent#" addnewline="false" mode="777" >
-				</cfif>
 			
-							
-				<cfcatch type="database"><!--- ignore ---></cfcatch>
-				<cfcatch type="any"><cfdump var="#cfcatch#" label="typename: #typename#"><cfabort></cfcatch>
-			</cftry>
+			<!--- DO NOT EXPORT EXTENDED ARRAY TABLES. THESE WILL AUTOMATICALLLY BE EXPORTED WITH PARENT OBJECT --->
+			<cfif not listFindNoCase(arrayToList(application.stcoapi[typename].aExtends), "arrayTable")>
+
+				<cftry>
+					
+					
+					<cfquery datasource="#application.dsn#" name="q">
+					SELECT *
+					FROM #application.dbowner##typeName#
+					</cfquery>
+					
+					<cfset o = createObject("component", application.stcoapi["#typeName#"].packagePath)>
+					
+					<cfloop query="q">
+						
+						<cfset st = o.getData(objectid="#q.objectid#", bArraysAsStructs="true") />
+					
+						<cfset arrayAppend(aContent, st) />
+						
+					</cfloop>
+					
+					<cfif arrayLen(aContent)>
+						<cfwddx action="cfml2wddx" input="#aContent#" output="wddxContent">
+						<cffile action="write" file="#skeletonInstallPath#/#typename#.wddx" output="#wddxContent#" addnewline="false" mode="777" >
+					</cfif>
+				
+								
+					<cfcatch type="database"><!--- ignore ---></cfcatch>
+					<cfcatch type="any"><cfdump var="#cfcatch#" label="typename: #typename#"><cfabort></cfcatch>
+				</cftry>
+			</cfif>
 			
 		</cfloop>
 
