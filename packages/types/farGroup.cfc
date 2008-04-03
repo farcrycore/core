@@ -40,7 +40,7 @@
 			<cfset oUser.setData(stProperties=stUser) />
 		</cfloop>
 		
-		<cfreturn super.delete(objectid=arguments.objectid,user=arguments.user,audittype=arguments.audittype) />
+		<cfreturn super.delete(objectid=arguments.objectid,user=arguments.user,auditNote=arguments.audittype) />
 	</cffunction>
 	
 </cfcomponent>
