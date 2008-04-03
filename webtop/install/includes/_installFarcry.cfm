@@ -162,10 +162,8 @@ TODO:
 	<cfoutput>#updateProgressBar(value="0.9", text="#form.displayName# (CONFIG): Loading config data")#</cfoutput><cfflush>
 	<!--- Load config data --->
 	<cfset oConfig = createobject("component","farcry.core.packages.types.farConfig") />
-	<cfloop list="#application.factory.oUtils.getComponents('forms')#" index="configkey">
-		<cfif refindnocase("^config", configkey)>
-			<cfset application.config[configkey] = oConfig.getConfig(key=configkey,bAudit=false) />
-		</cfif>
+	<cfloop list="#oConfig.getConfigKeys()#" index="configkey">
+		<cfset application.config[configkey] = oConfig.getConfig(key=configkey,bAudit=false) />
 	</cfloop>
 
 
