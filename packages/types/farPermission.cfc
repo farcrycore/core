@@ -81,8 +81,14 @@
 		<cfreturn qPermissions.shortcut[1] />
 	</cffunction>	
 
-	<cffunction name="afterSave" access="public" output="false" returntype="struct" hint="Processes new type content">
-		<cfargument name="stProperties" type="struct" required="true" hint="The properties that have been saved" />
+	<cffunction name="setData" access="public" output="true" hint="Update the record for an objectID including array properties.  Pass in a structure of property values; arrays should be passed as an array.">
+		<cfargument name="stProperties" required="true">
+		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="">
+		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Updated">
+		<cfargument name="bAudit" type="boolean" required="No" default="1" hint="Pass in 0 if you wish no audit to take place">
+		<cfargument name="dsn" required="No" default="#application.dsn#">
+		<cfargument name="bSessionOnly" type="boolean" required="false" default="false"><!--- This property allows you to save the changes to the Temporary Object Store for the life of the current session. ---> 
+		<cfargument name="bAfterSave" type="boolean" required="false" default="true" hint="This allows the developer to skip running the types afterSave function.">	
 		
 		<cfset var qRoles = "" />
 		<cfset var qBarnacles = "" />
@@ -145,7 +151,7 @@
 		<!--- Remove objectid lookup --->
 		<cfset application.security.removelookup(permission=arguments.stProperties.objectid) />
 
-		<cfreturn arguments.stProperties />
+		<cfreturn super.setData(stProperties=arguments.stProperties,user=arguments.user,auditNote=arguments.auditNote,bAudit=arguments.bAudit,dsn=arguments.dsn,bSessionOnly=arguments.bSessionOnly,bAfterSave=arguments.bAfterSave) />
 	</cffunction>
 	
 	<cffunction name="getAllPermissions" access="public" output="false" returntype="string" hint="Returns a list of all permissions (optionally restricted by related type)">

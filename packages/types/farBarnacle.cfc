@@ -124,7 +124,7 @@
 			<cfif not qSecured.secured>
 				<cfreturn 1 />
 			</cfif>
-				
+			
 			<cfloop list="#arguments.role#" index="thisrole">
 				<!--- If the name of the role was passed in, get the objectid --->
 				<cfif not isvalid("uuid",thisrole)>
@@ -286,16 +286,22 @@
 		</cfquery>
 	</cffunction>
 
-	<cffunction name="AfterSave" access="public" output="false" returntype="struct" hint="Processes new type content">
-		<cfargument name="stProperties" type="struct" required="true" hint="The properties that have been saved" />
-
+	<cffunction name="setData" access="public" output="true" hint="Update the record for an objectID including array properties.  Pass in a structure of property values; arrays should be passed as an array.">
+		<cfargument name="stProperties" required="true">
+		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="">
+		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Updated">
+		<cfargument name="bAudit" type="boolean" required="No" default="1" hint="Pass in 0 if you wish no audit to take place">
+		<cfargument name="dsn" required="No" default="#application.dsn#">
+		<cfargument name="bSessionOnly" type="boolean" required="false" default="false"><!--- This property allows you to save the changes to the Temporary Object Store for the life of the current session. ---> 
+		<cfargument name="bAfterSave" type="boolean" required="false" default="true" hint="This allows the developer to skip running the types afterSave function.">	
+		
 		<!--- Update object type --->
 		<cfset arguments.stProperties.objecttype = findType(arguments.stProperties.referenceid) />
 		
 		<!--- Update permission cache --->
 		<cfset application.security.setCache(role=arguments.stProperties.roleid,permission=arguments.stProperties.permissionid,object=arguments.stProperties.referenceid,right=arguments.stProperties.barnaclevalue) />
 		
-		<cfreturn super.AfterSave(arguments.stProperties) />
+		<cfreturn super.setData(stProperties=arguments.stProperties,user=arguments.user,auditNote=arguments.auditNote,bAudit=arguments.bAudit,dsn=arguments.dsn,bSessionOnly=arguments.bSessionOnly,bAfterSave=arguments.bAfterSave) />
 	</cffunction>
 	
 </cfcomponent>
