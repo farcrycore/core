@@ -131,7 +131,7 @@
 		</subsection>
 	</section>
 	<section id="security" sequence="6000" permission="MainNavSecurityTab" label="Security">
-		<subsection id="managesecurity" sequence="0" permission="SecurityPolicyManagementTab" label="Manage Security">
+		<subsection id="managesecurity" sequence="100" permission="SecurityPolicyManagementTab" label="Manage Security">
 			<menu id="rolesandpermissions" sequence="100" label="Roles and Permissions">
 				<menuitem id="permissions" sequence="10" label="Roles" link="/admin/customadmin.cfm?module=customlists/farRole.cfm" relatedtype="farRole" />
 				<menuitem id="roles" sequence="20" label="Permissions" link="/admin/customadmin.cfm?module=customlists/farPermission.cfm" relatedtype="farPermission" />
@@ -140,6 +140,8 @@
 				<menuitem id="securitylogs" sequence="10" label="Security Logs" link="/admin/customadmin.cfm?module=customlists/farLog_security.cfm" />
 				<menuitem id="useractivityovertime" sequence="30" label="User Activity Over Time" link="/conjuror/invocation.cfm?typename=audituserovertime" />
 			</menu>
+		</subsection>
+		<subsection id="managefarcryud" sequence="200" permission="SecurityUserManagementTab" label="Manage FarCry UD">
 			<menu id="farcryud" sequence="300" label="FarCry User Directory">
 				<menuitem id="listfaruser" sequence="10" label="Users" link="/admin/customadmin.cfm?module=customlists/farUser.cfm" relatedtype="farUser" />
 				<menuitem id="listfargroup" sequence="20" label="Groups" link="/admin/customadmin.cfm?module=customlists/farGroup.cfm" relatedtype="farGroup" />
