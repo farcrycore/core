@@ -133,7 +133,33 @@ TODO:
 	GB 20061022
  --->
 	
-<cfoutput>#updateProgressBar(value="0.6", text="#form.displayName# (CONFIG): Loading config data")#</cfoutput><cfflush>
+	<cfoutput>#updateProgressBar(value="0.7", text="#form.displayName# (PLUGINS): Setting up plugins")#</cfoutput><cfflush>
+	<!----------------------------------------------------------------------
+	Plugin
+	 - search and install Plugin install data
+	----------------------------------------------------------------------->
+	<cfset qInstalls=application.coapi.coapiadmin.getPluginInstallers(plugins=form.plugins) />
+	<cfloop query="qInstalls">
+		<cfoutput>#updateProgressBar(value="0.7", text="PLUGINS: Setting up #qinstalls.Plugin#")#</cfoutput><cfflush>
+		<cfinclude template="/farcry/plugins/#qinstalls.Plugin#/config/install/#qinstalls.name#" />
+	</cfloop>
+
+
+	<cfoutput>#updateProgressBar(value="0.8", text="#form.displayName# (SKELETON): Installing Skeleton Data...")#</cfoutput><cfflush>
+	
+	<cfset oSkeletonManifest = createObject("component", "#form.skeleton#.install.manifest") />
+	<cfset result = oSkeletonManifest.install() />
+	<cfset application.navid = createObject("component", application.stcoapi["dmNavigation"].packagePath).getNavAlias() />
+	
+	
+	<cfoutput>#updateProgressBar(value="0.8", text="#form.displayName# (SKELETON): Removing the skelton instalation files")#</cfoutput><cfflush>
+	<!--- Remove the skelton instalation files --->
+	<cftry>
+		<cfdirectory action="delete" directory="#farcryProjectsPath#/#form.applicationName#/install" recurse="true" />
+		<cfcatch type="any"><!--- ignore ---></cfcatch>
+	</cftry>
+	 
+	<cfoutput>#updateProgressBar(value="0.9", text="#form.displayName# (CONFIG): Loading config data")#</cfoutput><cfflush>
 	<!--- Load config data --->
 	<cfset oConfig = createobject("component","farcry.core.packages.types.farConfig") />
 	<cfloop list="#application.factory.oUtils.getComponents('forms')#" index="configkey">
@@ -143,7 +169,7 @@ TODO:
 	</cfloop>
 
 
-	<cfoutput>#updateProgressBar(value="0.7", text="#form.displayName# (SECURITY): Setting up user directories")#</cfoutput><cfflush>
+	<cfoutput>#updateProgressBar(value="0.95", text="#form.displayName# (SECURITY): Setting up user directories")#</cfoutput><cfflush>
 
 	<!--- Get user directories --->
 	<cfset oUtils = createobject("component","farcry.core.packages.farcry.utils") />
@@ -158,32 +184,6 @@ TODO:
 
 	
 	
-	<cfoutput>#updateProgressBar(value="0.8", text="#form.displayName# (PLUGINS): Setting up plugins")#</cfoutput><cfflush>
-	<!----------------------------------------------------------------------
-	Plugin
-	 - search and install Plugin install data
-	----------------------------------------------------------------------->
-	<cfset qInstalls=application.coapi.coapiadmin.getPluginInstallers(plugins=form.plugins) />
-	<cfloop query="qInstalls">
-		<cfoutput>#updateProgressBar(value="0.8", text="PLUGINS: Setting up #qinstalls.Plugin#")#</cfoutput><cfflush>
-		<cfinclude template="/farcry/plugins/#qinstalls.Plugin#/config/install/#qinstalls.name#" />
-	</cfloop>
-
-
-	<cfoutput>#updateProgressBar(value="0.9", text="#form.displayName# (SKELETON): Installing Skeleton Data...")#</cfoutput><cfflush>
-	
-	<cfset oSkeletonManifest = createObject("component", "#form.skeleton#.install.manifest") />
-	<cfset result = oSkeletonManifest.install() />
-	<cfset application.navid = createObject("component", application.stcoapi["dmNavigation"].packagePath).getNavAlias() />
-	
-	
-	<cfoutput>#updateProgressBar(value="0.9", text="#form.displayName# (SKELETON): Removing the skelton instalation files")#</cfoutput><cfflush>
-	<!--- Remove the skelton instalation files --->
-	<cftry>
-		<cfdirectory action="delete" directory="#farcryProjectsPath#/#form.applicationName#/install" recurse="true" />
-		<cfcatch type="any"><!--- ignore ---></cfcatch>
-	</cftry>
-	 
 	<!--- Flag the app as uninitialised --->
 	<cfset application.bInit = false />
 
