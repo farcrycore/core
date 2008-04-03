@@ -168,7 +168,9 @@
 
 		
 		<!--- COMPLETE --->
-		<extjs:bubble title="Skeleton Exported Successfully" bAutoHide="false" />
+		<extjs:bubble title="#stProperties.name#" bAutoHide="false">
+			<cfoutput>Skeleton Exported Successfully</cfoutput>
+		</extjs:bubble>
 
 	
 	</ft:processFormObjects>
