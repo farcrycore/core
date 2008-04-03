@@ -286,7 +286,7 @@ $out:$
 				    z-index:20000;
 				}
 				</style>
-				<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?library=ext&files=/adapter/ext/ext-base.js,/ext-all.js,/ext-bubble.cfm"></script>
+				<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?library=ext&files=/adapter/ext/ext-base.js,/ext-all.js,/ext-bubble.cfm&randomID=#application.randomID#"></script>
 				<script type="text/javascript">Ext.BLANK_IMAGE_URL = '#application.url.webtop#/js/ext/resources/images/default/s.gif';</script>
 				</cfoutput>
 			</cfif>
@@ -354,7 +354,7 @@ $out:$
 			
 			<cfif len(lLibraries)>
 				<cfoutput>
-					<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?library=scriptaculous&files=#lLibraries#"></script></cfoutput>
+					<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?library=scriptaculous&files=#lLibraries#&randomID=#application.randomID#"></script></cfoutput>
 			</cfif>
 			
 			<cfif isDefined("variables.stPlaceInHead.lightboxJS") AND variables.stPlaceInHead.lightboxJS>
@@ -395,7 +395,7 @@ $out:$
 			</cfif>
 			<cfif len(lLibraries)>
 				<cfoutput>
-					<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?library=calendar&files=#lLibraries#"></script></cfoutput>
+					<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?library=calendar&files=#lLibraries#&randomID=#application.randomID#"></script></cfoutput>
 			</cfif>
 			<cfif isDefined("variables.stPlaceInHead.CalendarStyle1CSS") AND variables.stPlaceInHead.CalendarStyle1CSS>
 				<cfoutput>
@@ -405,7 +405,7 @@ $out:$
 			
 			<cfif isDefined("variables.stPlaceInHead.TinyMCEJS") AND variables.stPlaceInHead.TinyMCEJS>
 				<cfoutput>
-					<script src="#application.url.farcry#/js/tiny_mce/tiny_mce.js" type="text/javascript"></script></cfoutput>
+					<script src="#application.url.webtop#/js/tiny_mce/tiny_mce.js?randomID=#application.randomID#" type="text/javascript"></script></cfoutput>
 			</cfif>
 			<cfif isDefined("variables.stPlaceInHead.JSONJS") AND variables.stPlaceInHead.JSONJS>
 				<cfoutput>
@@ -440,7 +440,7 @@ $out:$
 			
 			<cfif isDefined("variables.stPlaceInHead.FormsCSS") AND variables.stPlaceInHead.FormsCSS>
 				<cfoutput>
-					<link rel="stylesheet" type="text/css" href="#application.url.farcry#/css/forms.cfm" media="all" />
+					<link rel="stylesheet" type="text/css" href="#application.url.farcry#/css/forms.cfm?randomID=#application.randomID#" media="all" />
 				</cfoutput>
 			</cfif>
 			
@@ -497,7 +497,7 @@ $out:$
 	
 			<cfif isDefined("variables.stPlaceInHead.farcryFormJS") AND variables.stPlaceInHead.farcryFormJS EQ "true">
 				<cfoutput>
-					<script src="#application.url.farcry#/js/farcryForm.cfm" type="text/javascript"></script>	</cfoutput>
+					<script src="#application.url.farcry#/js/farcryForm.cfm?randomID=#application.randomID#" type="text/javascript"></script>	</cfoutput>
 			</cfif>
 			
 			<cfif isDefined("variables.stPlaceInHead.flashWrapperToggle") and variables.stPlaceInHead.flashWrapperToggle EQ true>

@@ -535,6 +535,9 @@
 		<cfset application.projectDirectoryName =  this.projectDirectoryName />
 		<cfset application.displayName =  this.displayName />
 		
+		<!--- Set an application random string that can be used to force refresh of various browser caching. Restarting application will effectively flush those browser caches --->
+		<cfset application.randomID =  createUUID() />
+		
 		<!----------------------------------------
 		 SET THE DATABASE SPECIFIC INFORMATION 
 		---------------------------------------->

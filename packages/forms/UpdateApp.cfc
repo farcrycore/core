@@ -7,6 +7,7 @@
 	<cfproperty name="typemetadata" type="boolean" default="0" hint="Reload type metadata" ftSeq="11" ftFieldset="COAPI" ftLabel="COAPI metadata" ftType="boolean" />
 	
 	<cfproperty name="security" type="boolean" default="0" hint="Reload user directories" ftSeq="21" ftFieldset="Security" ftLabel="Security" ftType="boolean" />
+	<cfproperty name="javascript" type="boolean" default="0" hint="Reload javascript libraries" ftSeq="30" ftFieldset="Javascript" ftLabel="Javascript" ftType="boolean" />
 	
 	<cffunction name="process" access="public" output="true" returntype="struct" hint="Performs application refresh according to options selected">
 		<cfargument name="fields" type="struct" required="true" hint="The fields submitted" />
@@ -43,6 +44,11 @@
 		<!--- Resource bundles --->
 		<cfif structkeyexists(arguments.fields,"resourcebundles") and arguments.fields.resourcebundles>
 			<cfset application.rb=createObject("component",application.factory.oUtils.getPath("resources","RBCFC")).init(application.locales) />
+		</cfif>
+		
+		<!--- Javascript --->
+		<cfif structkeyexists(arguments.fields,"Javascript") and arguments.fields.Javascript>
+			<cfset application.randomID = createUUID() />
 		</cfif>
 		
 		<cfreturn arguments.fields />

@@ -31,7 +31,7 @@ $in: [bCacheControl] output cache control headers; default true. $
 </cfif>
 
 <cfparam name="attributes.title" default="#application.config.general.siteTitle# :: Administration" type="string">
-<cfparam name="attributes.bCacheControl" default="true" type="boolean">
+<cfparam name="attributes.bCacheControl" default="false" type="boolean">
 <cfparam name="attributes.jsshowhide" default="" type="string">
 <cfparam name="attributes.onLoad" type="string" default="">
 <!--- i18n --->
@@ -73,17 +73,10 @@ $in: [bCacheControl] output cache control headers; default true. $
 		</cfoutput><cfif attributes.bCacheControl><misc:cacheControl /></cfif><cfoutput>
 		<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
 		<title>#attributes.title#</title>
-		<script type="text/javascript" src="#application.url.farcry#/js/tabs.js"></script>
-		<!--- DataRequestor Object : used to retrieve xml data via javascript --->
-		<script type="text/javascript" src="#application.url.farcry#/includes/lib/DataRequestor.js"></script>
-		<!--- JSON javascript object --->
-		<script type="text/javascript" src="#application.url.farcry#/includes/lib/json.js"></script>
-		<style type="text/css" title="default" media="screen">@import url(#application.url.farcry#/css/main.css);</style><!--- 
-		<style type="text/css" title="default" media="screen">@import url(#application.url.farcry#/css/forms.css);</style> --->
-		<style type="text/css" title="default" media="screen">@import url(#application.url.farcry#/css/tabs.css);</style>
-		<script type="text/javascript" src="#application.url.farcry#/js/tables.js"></script>
-		<script type="text/javascript" src="#application.url.farcry#/js/showhide.js"></script>
-		<script type="text/javascript" src="#application.url.farcry#/js/fade.js"></script>
+
+		<style type="text/css">@import url(#application.url.webtop#/css/combine.cfm?files=/main.css,/tabs.css);</style>
+		<script type="text/javascript" src="#application.url.webtop#/js/combine.cfm?files=/tables.js,/showhide.js,/fade.js,/tabs.js"></script>		
+
 		#customCSS#
 		#customJS#
 </cfoutput>
