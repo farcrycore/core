@@ -116,7 +116,7 @@ START WEBSKIN
 		
 				<cfcase value="approved">	
 					<!--- check user can edit --->
-					<cfif stOverviewParams.stPermissions.iEdit EQ 1 AND stobj.bAlwaysShowEdit EQ 1>
+					<cfif stOverviewParams.stPermissions.iEdit EQ 1 AND (not structkeyexists(stObj,"versionid") or stobj.bAlwaysShowEdit EQ 1)>
 						<ft:farcryButton style="" value="#application.rb.getResource("editObj")#" bInPanel="true" url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=overview&typename=#stobj.typeName#" />
 					</cfif>
 					
