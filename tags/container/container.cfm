@@ -116,26 +116,32 @@ $out:$
 	<cfoutput><div id="#replace(stConObj.objectid,'-','','ALL')#"></cfoutput>
 </cfif>
 
-<con:isolate active="#request.mode.ajax#">
+<!--- Used by rules to reference the container they're a part of --->
+<cfif structisempty(stOriginal)>
+	<cfset request.thiscontainer = stConObj.objectid />
+<cfelse>
+	<cfset request.thiscontainer = stOriginal.objectid />
+</cfif>
 
+<cfif structkeyexists(form,"container")>
+	<cfset url.container = form.container />
+</cfif>
+
+<cfif structkeyexists(form,"rule_action")>
+	<cfset url.rule_action = form.rule_action />
+	<cfset url.rule_id = form.rule_id />
+	<cfset url.rule_index = form.rule_index />
+	<cfif isdefined("form.confirm")>
+		<cfset url.confirm = form.confirm />
+	</cfif>
+</cfif>
+
+<con:isolate active="#request.mode.ajax and url.container eq request.thiscontainer#">
+	
 <!--- display edit widget --->
 <cfif request.mode.design and request.mode.showcontainers gt 0>
 	<skin:view stObject="#stConObj#" webskin="displayAdminToolbar" alternatehtml="" original="#stOriginal#" />
-	<!--- Used by rules to reference the container they're a part of --->
-	<cfif structisempty(stOriginal)>
-		<cfset request.thiscontainer = stConObj.objectid />
-	<cfelse>
-		<cfset request.thiscontainer = stOriginal.objectid />
-	</cfif>
 	
-	<cfif structkeyexists(form,"rule_action")>
-		<cfset url.rule_action = form.rule_action />
-		<cfset url.rule_id = form.rule_id />
-		<cfset url.rule_index = form.rule_index />
-		<cfif isdefined("form.confirm")>
-			<cfset url.confirm = form.confirm />
-		</cfif>
-	</cfif>
 	<cfif structkeyexists(url,"rule_action") and structkeyexists(url,"rule_id") and structkeyexists(url,"rule_index") and url.rule_index lte arraylen(stConObj.aRules)>
 		<cfset redirecturl = "#cgi.script_name#" />
 		<cfif isdefined("url.objectid")>
