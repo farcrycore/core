@@ -12,7 +12,7 @@
 	<cfif left(flexCategoryFacadePath,1) EQ ".">
 		<cfset flexCategoryFacadePath = mid(flexCategoryFacadePath,2,len(flexCategoryFacadePath)) />
 	</cfif>
-	<skin:flexWrapper SWFSource="#application.url.farcry#/admin/ui/swf/multipleUploader.swf" id="multiple" flashVars="#lcase(session.urltoken)#&bulkimgUploadURL=#application.url.webtop#/admin/bulkimgUpload.cfm&flexCategoryFacadePath=#flexCategoryFacadePath#&cfid=#session.cfid#&cftoken=#session.cftoken#&farcryproject=#application.projectDirectoryName#">
+	<skin:flexWrapper SWFSource="#application.url.farcry#/admin/ui/swf/multipleUploader.swf" id="multiple" flashVars="#lcase(session.urltoken)#&bulkimgUploadURL=#application.url.webtop#/admin/bulkimgUpload.cfm&flexCategoryFacadePath=#flexCategoryFacadePath#&cfid=#session.cfid#&cftoken=#session.cftoken#&farcryproject=#application.projectDirectoryName#&webtop=#application.url.webtop#">
 </sec:CheckPermission>
 
 <admin:footer>
