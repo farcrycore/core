@@ -132,6 +132,20 @@ TODO:
 	am up to here for first pass refactoring
 	GB 20061022
  --->
+
+
+	<cfoutput>#updateProgressBar(value="0.65", text="#form.displayName# (SECURITY): Setting up user directories")#</cfoutput><cfflush>
+
+	<!--- Get user directories --->
+	<cfset oUtils = createobject("component","farcry.core.packages.farcry.utils") />
+	<cfset application.factory.oUtils = oUtils />
+	<cfset application.security = createobject("component","farcry.core.packages.security.security").init() />
+	<cfloop list="#oUtils.getComponents('security')#" index="comp">
+		<cfif oUtils.extends(oUtils.getPath("security",comp),"farcry.core.packages.security.UserDirectory")>
+			<cfset ud = createobject("component",oUtils.getPath("security",comp)).init() />
+			<cfset application.security.userdirectories[ud.key] = ud />
+		</cfif>
+	</cfloop>
 	
 	<cfoutput>#updateProgressBar(value="0.7", text="#form.displayName# (PLUGINS): Setting up plugins")#</cfoutput><cfflush>
 	<!----------------------------------------------------------------------
@@ -165,20 +179,6 @@ TODO:
 	<cfloop list="#oConfig.getConfigKeys()#" index="configkey">
 		<cfset application.config[configkey] = oConfig.getConfig(key=configkey,bAudit=false) />
 	</cfloop>
-
-
-	<!--- <cfoutput>#updateProgressBar(value="0.95", text="#form.displayName# (SECURITY): Setting up user directories")#</cfoutput><cfflush>
-
-	<!--- Get user directories --->
-	<cfset oUtils = createobject("component","farcry.core.packages.farcry.utils") />
-	<cfset application.factory.oUtils = oUtils />
-	<cfset application.security = createobject("component","farcry.core.packages.security.security").init() />
-	<cfloop list="#oUtils.getComponents('security')#" index="comp">
-		<cfif oUtils.extends(oUtils.getPath("security",comp),"farcry.core.packages.security.UserDirectory")>
-			<cfset ud = createobject("component",oUtils.getPath("security",comp)).init() />
-			<cfset application.security.userdirectories[ud.key] = ud />
-		</cfif>
-	</cfloop> --->
 
 	
 	
