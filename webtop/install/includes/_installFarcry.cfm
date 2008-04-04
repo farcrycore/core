@@ -167,7 +167,7 @@ TODO:
 	</cfloop>
 
 
-	<cfoutput>#updateProgressBar(value="0.95", text="#form.displayName# (SECURITY): Setting up user directories")#</cfoutput><cfflush>
+	<!--- <cfoutput>#updateProgressBar(value="0.95", text="#form.displayName# (SECURITY): Setting up user directories")#</cfoutput><cfflush>
 
 	<!--- Get user directories --->
 	<cfset oUtils = createobject("component","farcry.core.packages.farcry.utils") />
@@ -178,7 +178,7 @@ TODO:
 			<cfset ud = createobject("component",oUtils.getPath("security",comp)).init() />
 			<cfset application.security.userdirectories[ud.key] = ud />
 		</cfif>
-	</cfloop>
+	</cfloop> --->
 
 	
 	
