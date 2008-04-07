@@ -59,7 +59,7 @@
 .x-tab-panel-header{border:1px solid #8db2e3;padding-bottom:2px;}
 .x-tab-panel-footer{border:1px solid #8db2e3;padding-top:2px;}
 .x-tab-strip-wrap{width:100%;overflow:hidden;position:relative;zoom:1;}
-ul.x-tab-strip{display:block;width:5000px;zoom:1;}
+ul.x-tab-strip{display:block;width:5000px;zoom:1;margin:0;padding:0;list-style:none;}
 ul.x-tab-strip-top{padding-top:1px;background:url(../images/default/tabs/tab-strip-bg.gif) #cedff5 repeat-x bottom;border-bottom:1px solid #8db2e3;}
 ul.x-tab-strip-bottom{padding-bottom:1px;background:url(../images/default/tabs/tab-strip-btm-bg.gif) #cedff5 repeat-x top;border-top:1px solid #8db2e3;border-bottom:0 none;}
 .x-tab-panel-header-plain .x-tab-strip-top{background:transparent!important;padding-top:0!important;}
