@@ -340,6 +340,22 @@ LIBRARY DATA
 		<cfset SQLOrderBy = PrimaryPackage.stProps[url.primaryFieldName].Metadata.ftLibraryDataSQLOrderBy />
 	</cfif>
 	
+	<!--- By Default, the array will not allow duplicates. set ftJoinAllowDuplicates="true" on the array property metadata to allow duplicates. --->
+	<cfif listLen(lBasketIDs)>
+		<cfif structKeyExists(PrimaryPackage.stProps[url.primaryFieldName].Metadata, "ftJoinAllowDuplicates") AND PrimaryPackage.stProps[url.primaryFieldName].Metadata.ftJoinAllowDuplicates>
+			<!--- If allow duplicates, then DO NOT add clause --->
+		<cfelse>
+			<cfset strippedBasketIDS = "" /><!--- Need to remove seq from lBasketIDs --->
+			<cfloop list="#lBasketIDs#" index="basketID">
+				<cfset strippedBasketIDs = listAppend(strippedBasketIDs, listFirst(basketID,":")) />
+			</cfloop>
+			<cfset strippedBasketIDs = ListQualify(strippedBasketIDs,"'") />
+			<cfset SQLWhere = "#SQLWhere# AND objectid NOT IN (#strippedBasketIDs#)" />
+		</cfif>
+		
+	</cfif>
+	
+	
 	<cfset oFormTools = createObject("component","farcry.core.packages.farcry.formtools")>
 	<cfset stLibraryData = oFormTools.getRecordset(typename="#request.ftJoin#", sqlColumns="*", sqlOrderBy="#SQLOrderBy#", SQLWhere="#SQLWhere#", RecordsPerPage="20") />
 
