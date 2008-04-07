@@ -105,9 +105,9 @@
 	
 	<!--- Developer can pass in alternate HTML to render if the webskin does not exist --->
 	<cfif structKeyExists(attributes, "alternateHTML")>
-		<cfset html = o.getView(stObject=st, template="#attributes.webskin#", alternateHTML="#attributes.alternateHTML#",stParam=attributes.stParam)>
+		<cfset html = o.getView(objectid=st.objectid, template="#attributes.webskin#", alternateHTML="#attributes.alternateHTML#",stParam=attributes.stParam)>
 	<cfelse>
-		<cfset html = o.getView(stObject=st, template="#attributes.webskin#",stParam=attributes.stParam)>
+		<cfset html = o.getView(objectid=st.objectid, template="#attributes.webskin#",stParam=attributes.stParam)>
 	</cfif>		
 	</cfsilent>
 	
