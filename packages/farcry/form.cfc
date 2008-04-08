@@ -37,7 +37,7 @@ $out:$
 			<cfset validName = rereplace(arguments.serverfile,"[?\$\^\s\%\*''""<>,\&]","_","ALL")>
 				<!--- don't overwrite an existing filename --->
 			<cfset i = 1>
-			<cfloop condition="#fileexists('#file.ServerDirectory#/#validName#')#">
+			<cfloop condition="#fileexists('#cffile.ServerDirectory#/#validName#')#">
 			  <cfset validName = rereplace(arguments.clientfilename,"[?\$\^\s\%\*''""<>,\&]","_","ALL") & "#i#." & listlast(arguments.serverfile,".")>
 			  <cfset i = i + 1>
 			</cfloop>
@@ -70,32 +70,32 @@ $out:$
 				<cffile  action="UPLOAD" filefield="#arguments.formField#" destination="#arguments.destination#" nameconflict="#arguments.nameconflict#" accept="#arguments.accept#">
 
 				<!--- check if filename has bad characters --->
-				<cfif refindnocase("[\$\^\s\%\*''""<>,\&?]",file.serverfile) gt 0>
-					<cfset validName = rereplace(file.serverfile,"[?\$\^\s\%\*''""<>,\&]","_","ALL")>
+				<cfif refindnocase("[\$\^\s\%\*''""<>,\&?]",cffile.serverfile) gt 0>
+					<cfset validName = rereplace(cffile.serverfile,"[?\$\^\s\%\*''""<>,\&]","_","ALL")>
 					<!--- don't overwrite an existing filename --->
 					<cfset i = 1>
-					<cfloop condition="#fileexists('#file.ServerDirectory#/#validName#')#">
-					  <cfset validName = rereplace(file.clientfilename,"[?\$\^\s\%\*''""<>,\&]","_","ALL") & "#i#." & listlast(file.serverfile,".")>
+					<cfloop condition="#fileexists('#cffile.ServerDirectory#/#validName#')#">
+					  <cfset validName = rereplace(cffile.clientfilename,"[?\$\^\s\%\*''""<>,\&]","_","ALL") & "#i#." & listlast(cffile.serverfile,".")>
 					  <cfset i = i + 1>
 					</cfloop>
 					<!--- rename file --->
-					<cffile action="rename" source="#file.ServerDirectory#/#file.serverfile#" destination="#file.ServerDirectory#/#validName#">
+					<cffile action="rename" source="#cffile.ServerDirectory#/#cffile.serverfile#" destination="#cffile.ServerDirectory#/#validName#">
 				<cfelse>
 					<!--- keep existing filename --->
-					<cfset validName = file.serverfile>
+					<cfset validName = cffile.serverfile>
 				</cfif>
 
 				<cfscript>
 					stReturn.bSuccess = true;
 					stReturn.message = "File upload Successful";
 					stReturn.filename = validName;
-					stReturn.fileDirectory = file.ServerDirectory;
-					stReturn.fileSize = file.fileSize;
-					stReturn.contentType =  file.ContentType;
-					stReturn.clientFileName = file.clientFileName;
-					stReturn.contentSubType = file.contentSubType;
+					stReturn.fileDirectory = cffile.ServerDirectory;
+					stReturn.fileSize = cffile.fileSize;
+					stReturn.contentType =  cffile.ContentType;
+					stReturn.clientFileName = cffile.clientFileName;
+					stReturn.contentSubType = cffile.contentSubType;
 					stReturn.serverFile = validName;
-					stReturn.serverDirectory = file.ServerDirectory;
+					stReturn.serverDirectory = cffile.ServerDirectory;
 				</cfscript>
 
 				<cfcatch>
