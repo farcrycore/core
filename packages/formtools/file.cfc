@@ -211,7 +211,7 @@
 							filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
 							destination="#filePath##arguments.stMetadata.ftDestination#"		        	
 							nameconflict="MakeUnique" />
-						<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#File.ServerFile#" destination="#uploadFileName#" />
+						<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#cffile.ServerFile#" destination="#uploadFileName#" />
 						<cfset newFileName = uploadFileName>
 					<cfelse>
 						<!--- There is no image currently so we simply upload the image and make it unique  --->
@@ -219,7 +219,7 @@
 							filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
 							destination="#filePath##arguments.stMetadata.ftDestination#"		        	
 							nameconflict="MakeUnique">
-						<cfset newFileName = File.ServerFile>
+						<cfset newFileName = cffile.ServerFile>
 					</cfif>
 		
 			
