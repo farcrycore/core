@@ -589,7 +589,10 @@
 		<cfset application.path.core = expandpath("/farcry/core") />
 		<cfset application.path.plugins = expandpath("/farcry/plugins") />
 		
-		<cfif len(application.url.webroot)>
+		<cfif len(cgi.context_path)>
+		    <!--- remove the context path before expanding the path --->
+		    <cfset application.path.webroot = expandPath("#right(application.url.webroot, len(application.url.webroot)-len(cgi.context_path))#")>
+		<cfelseif len(application.url.webroot)>
 			<cfset application.path.webroot = expandPath("#application.url.webroot#")>
 		<cfelse>
 			<cfset application.path.webroot = expandPath("/")><!--- Doesnt work if empty string. Have to set to  "/" otherwise it returns cf root --->
