@@ -486,6 +486,7 @@ default handlers
 		<cfset var iArrayTables = 0 />
 		<cfset var lUUIDTables = "" />
 		<cfset var iUUIDTables = 0 />
+		<cfset var bExistsInArray = false />
 		<cfset var oType = "" />
 		<cfset var iField = "" />
 		<cfset var iJoinTypename = "" />
@@ -630,8 +631,33 @@ default handlers
 								
 							</cfloop>
 							
-							<cfif iArrayTables LTE 1 AND iUUIDTables LTE 1>
-								<cfset arrayAppend(aAllRelated, stObject[iField]) />
+							<!--- IF OBJECTS STATUS SHOULD BE CHANGED --->
+							<cfif iUUIDTables LTE 1>
+							
+								<cfset bExistsInArray = false />
+								
+								<cfloop from="1" to "#arrayLen(aAllRelated)#" index="i">
+									<cfif aAllRelated[i] EQ stObject[iField]>
+										<cfset bExistsInArray = true />
+										<cfset ArrayDeleteAt(aAllRelated, i) />
+										<cfbreak />
+									</cfif>
+								</cfloop>
+								
+								<cfif NOT bExistsInArray>
+									<cfset arrayAppend(aAllRelated, stObject[iField]) />
+								</cfif>
+								
+							<!--- ELSE IT SHOULD NOT BE IN THE ARRAY --->	
+							<cfelse>
+							
+								<cfloop from="1" to "#arrayLen(aAllRelated)#" index="i">
+									<cfif aAllRelated[i] EQ stObject[iField]>
+										<cfset ArrayDeleteAt(aAllRelated, i) />
+										<cfbreak />
+									</cfif>
+								</cfloop>
+								
 							</cfif>
 							
 						</cfif>
