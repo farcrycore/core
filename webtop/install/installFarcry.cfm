@@ -197,7 +197,8 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 	
 		
 	<cfset oZip = createObject("component", "farcry.core.packages.farcry.zip") />
-
+ 
+	<cfdirectory action="create" directory="#farcryProjectsPath#/#form.applicationName#" mode="777" />
 	<cfset oZip.AddFiles(zipFilePath="#farcryProjectsPath#/#form.applicationName#-skeleton.zip", directory="#form.skeletonPath#", recurse="true", compression=0, savePaths="false") />
 	<cfset oZip.Extract(zipFilePath="#farcryProjectsPath#/#form.applicationName#-skeleton.zip", extractPath="#farcryProjectsPath#/#form.applicationName#", overwriteFiles="true") />
 	<cffile action="delete" file="#farcryProjectsPath#/#form.applicationName#-skeleton.zip" />
