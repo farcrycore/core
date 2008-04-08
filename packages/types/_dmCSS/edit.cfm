@@ -70,7 +70,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 		<!--- check for file to upload --->
 		<cfif len(form.css_file_upload)>		
 			<cffile action="upload" filefield="css_file_upload" destination="#application.path.project#/www/css/" accept="text/css" nameConflict="Overwrite"> 
-			<cfset stProperties.filename = file.ServerFile>
+			<cfset stProperties.filename = cffile.ServerFile>
 		
 		<!--- else, update the css content of original file --->
 		<cfelseif len(stProperties.filename)>
