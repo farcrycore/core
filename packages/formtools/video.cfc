@@ -96,7 +96,7 @@
 				nameconflict="MAKEUNIQUE">					
 									
 			<!--- </cfif> --->
-			<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#File.ServerFile#">
+			<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#cffile.ServerFile#">
 			
 			
 		</cfif>
