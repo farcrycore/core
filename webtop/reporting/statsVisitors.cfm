@@ -61,8 +61,6 @@ out:
 		xAxisTitle = "#application.rb.getResource("Hour")#" 
 		yAxisTitle = "#application.rb.getResource("sessionNumbers")#" 
 		show3D = "yes"
-		xOffset = "0.15" 
-		yOffset = "0.15"
 		rotated = "no" 
 		showLegend = "yes" 
 		tipStyle = "MouseOver">

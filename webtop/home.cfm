@@ -398,8 +398,6 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
 						xAxisTitle = "#application.rb.getResource("date")#" 
 						yAxisTitle = "#application.rb.getResource("totalViews")#" 
 						show3D = "yes"
-						xOffset = "0.15" 
-						yOffset = "0.15"
 						rotated = "no" 
 						showLegend = "no" 
 						tipStyle = "MouseOver">

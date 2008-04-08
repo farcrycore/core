@@ -114,8 +114,6 @@ $out:$
 					labelFormat = "number"
 					yAxisTitle = "#application.rb.getResource("OS")#s" 
 					show3D = "yes"
-					xOffset = "0.15" 
-					yOffset = "0.15"
 					rotated = "no" 
 					showLegend = "no" 
 					tipStyle = "MouseOver"
