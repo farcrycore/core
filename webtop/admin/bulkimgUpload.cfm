@@ -28,9 +28,9 @@
 			
 	<cfset stProperties = structNew() />
 	<cfset stProperties.objectid = "#createUUID()#" />
-	<cfset stProperties.label = "#file.serverFile#" />
-	<cfset stProperties.title = "#file.serverFile#" />
-	<cfset stProperties.alt = "#file.serverFile#" />
+	<cfset stProperties.label = "#cffile.serverFile#" />
+	<cfset stProperties.title = "#cffile.serverFile#" />
+	<cfset stProperties.alt = "#cffile.serverFile#" />
 	
 	<cfif isdefined("form.categoryID")>
 		<cfset stProperties.catImage = form.categoryID />
@@ -38,7 +38,7 @@
 		<cfset objCategory.assignCategories(objectid=stProperties.objectid,lCategoryIDs=form.categoryID)>
 	</cfif>
 	
-	<cfset stProperties.sourceimage = "#application.stCoapi.dmImage.STPROPS.SourceImage.METADATA.FTDESTINATION#/#file.serverFile#" />
+	<cfset stProperties.sourceimage = "#application.stCoapi.dmImage.STPROPS.SourceImage.METADATA.FTDESTINATION#/#cffile.serverFile#" />
 
 	<!--- SETUP AUTO GENERATE INFORMATION --->
 	<cfset stFormPost = structNew() />
