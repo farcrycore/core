@@ -56,7 +56,7 @@
 		<cfloop list="#arguments.locales#" index="locale">
 			
 			<!--- Add the base for this set to the depreciated application.adminbundle variable --->
-			<cfparam name="application.adminBundle.#locale#" default="#structnew()#" />
+			<cfparam name="application.adminBundle['#locale#']" default="#structnew()#" />
 			<cfset structappend(application.adminBundle[locale],stResult['base'].bundle,true) />
 			
 			<!--- Get language resource --->
