@@ -166,7 +166,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfargument name="bMatchAll" type="boolean" required="false" default="0" hint="Does the object need to match all categories"> 
 		<cfargument name="bHasDescendants" type="boolean" required="false" default="0" hint="Should we match for the entire category branch or not."> 
 		<cfargument name="dsn" type="string" default="#application.dsn#" required="false" hint="Database DSN">
-		<cfargument name="lStatus" type="string" required="False" default="" hint="the list of statuses to match on. Will default to request.mode.lValidStatus if available">
+		<!--- <cfargument name="lStatus" type="string" required="False" default="" hint="the list of statuses to match on. Will default to request.mode.lValidStatus if available"> --->
 		<cfargument name="maxRows" type="numeric" required="false" default="0" hint="maximum of rows returned">
 		<cfargument name="sqlWhere" required="No" type="string" default="1=1" hint="adds to the where clause of the query" />
 		<cfargument name="sqlOrderBy" required="No" type="string" default="datetimelastupdated desc" hint="Used by the query to sort." />
@@ -179,13 +179,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfset var sqlMaxRows = "">
 		<cfset var bSqlMaxPre = 0>
 		
-		<cfif not listLen(arguments.lStatus)>
-			<cfif isDefined("request.mode.lValidStatus")>
-				<cfset arguments.lStatus = request.mode.lValidStatus />
-			<cfelse>
-				<cfset arguments.lStatus = "approved"/>
-			</cfif>
-		</cfif>
+		<cfparam name="request.mode.showdraft" default="false" />
 		
 		<cfif arguments.maxRows neq 0>
 			<cfswitch expression="#application.dbtype#">
@@ -206,60 +200,64 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 			<cfset arguments.lCategoryIDs = getCategoryBranchAsList(lCategoryIDs="#arguments.lCategoryIDs#") />
 		</cfif>
 	
-		<cfquery name="qGetData" datasource="#arguments.dsn#">
-			SELECT
-				<cfif sqlMaxRows NEQ "" AND bSqlMaxPre>
-					#sqlMaxRows#
-				</cfif>
-				type.objectid, '#arguments.typename#' AS typename, 0 AS bHasMultipleVersion
-				<cfif len(trim(arguments.lFields))>
-					, #arguments.lFields#
-				</cfif>
-			FROM #application.dbowner##arguments.typename# type
-			WHERE #preserveSingleQuotes(arguments.SqlWhere)#
-			
-			<cfif StructKeyExists(application.stcoapi[arguments.typename].stprops,"status") AND listLen(arguments.lstatus)>
-				AND type.status in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.lstatus#" />)
-			</cfif>
-	
-			<cfif len(arguments.lcategoryids)>
-				<cfif arguments.bMatchAll>						
-					<!--- loop over each category and make sure item has all categories --->
-					<cfloop from="1" to="#listlen(arguments.lCategoryIDs)#" index="i">
-						AND objectid IN (
-							    SELECT DISTINCT objectid 
-							   	FROM refCategories 
-							    WHERE categoryID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#listGetAt(arguments.lCategoryIDs, i)#" />
-						    )							
-					</cfloop>
-				<cfelse>					
-					AND objectid IN (
-						    SELECT DISTINCT objectid 
-						    FROM #application.dbowner#refCategories 
-						    WHERE categoryID IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.lcategoryids#">)
-					    )				
-				</cfif>
-			<cfelse>
-				<!--- ONLY GET OBJECTS THAT ARE NOT ASSIGNED --->
-				AND type.objectid NOT IN (SELECT objectid FROM #application.dbowner#refCategories)	
-			</cfif>	
-			
-			<!--- filter out objects that currently have a draft version --->
+		<cfquery name="qGetData" datasource="#arguments.dsn#" result="rData">
+		SELECT
+		<cfif sqlMaxRows NEQ "" AND bSqlMaxPre>
+			#sqlMaxRows#
+		</cfif>
+		
+		type.objectid ,'#arguments.typename#' as typename
+		
+		<cfif len(trim(arguments.lFields))>
+			, #arguments.lFields#
+		</cfif>
+		
+		
+		FROM 	#application.dbowner##arguments.typename# type
+		WHERE	#preserveSingleQuotes(arguments.SqlWhere)#
+		
+		<cfif StructKeyExists(application.stcoapi[arguments.typename].stprops,"status") AND request.mode.showdraft>
+
 			<cfif StructKeyExists(application.types[arguments.typename].stprops,"versionid")>
-				AND type.objectID NOT IN (
-					SELECT versionID 
-					FROM #application.dbowner##arguments.typename#
-					WHERE len(versionID) <> 0 
-				)
+				AND objectid not in (select versionid from #application.dbowner##arguments.typename#)
 			</cfif>
-	
-			<cfif len(trim(arguments.sqlOrderBy))>
-				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
+		<cfelse>
+			AND upper(type.status) = <cfqueryparam cfsqltype="cf_sql_varchar" value="APPROVED" />			
+		</cfif>
+
+		
+		<cfif len(arguments.lcategoryids)>
+		
+			<cfif arguments.bMatchAll>						
+				<!--- loop over each category and make sure item has all categories --->
+				<cfloop from="1" to="#listlen(arguments.lCategoryIDs)#" index="i">
+					AND objectid IN (
+					    select distinct objectid 
+					    from refCategories 
+					    where categoryID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#listGetAt(arguments.lCategoryIDs, i)#" />
+					    )							
+				</cfloop>
+			<cfelse>					
+				AND objectid IN (
+				    select distinct objectid 
+				    from #application.dbowner#refCategories 
+				    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.lcategoryids#">)
+				    )				
 			</cfif>
-					
-			<cfif sqlMaxRows NEQ "" AND NOT bSqlMaxPre>
-				#sqlMaxRows#
-			</cfif>
+		<cfelse>
+			<!--- ONLY GET OBJECTS THAT ARE NOT ASSIGNED --->
+			AND type.objectid NOT IN (SELECT objectid FROM #application.dbowner#refCategories)	
+		</cfif>	
+		
+		<!--- WHERE bHasMultipleVersion = <cfqueryparam cfsqltype="cf_sql_integer" value="0" /> --->
+		
+		<cfif len(trim(arguments.sqlOrderBy))>
+			ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
+		</cfif>
+				
+		<cfif sqlMaxRows NEQ "" AND NOT bSqlMaxPre>
+			#sqlMaxRows#
+		</cfif>
 		
 		</cfquery>
 		
@@ -322,7 +320,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 			SELECT	ntm.*, cat.alias
 			FROM 	#arguments.dbowner#nested_tree_objects ntm
 			LEFT JOIN #arguments.dbowner#dmCategory cat ON ntm.objectid = cat.objectid
-			WHERE lower(typename) = 'dmcategory'
+			WHERE lower(typename) = 'dmCategory'
 			ORDER BY nleft
 		</cfquery>
 
