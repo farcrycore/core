@@ -1,6 +1,12 @@
 
 <cfsetting requesttimeout="600" />
 
+<!--- IF THE INSTALLATION IS COMPLETE, SEND TO THE CONFIRMATION PAGE --->
+<cfif isDefined("session.stFarcryInstall.bComplete") and session.stFarcryInstall.bComplete>
+	<cflocation url="installFarcry.cfm" addToken="false" />
+</cfif>
+
+
 
 <cfoutput>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
