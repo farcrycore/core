@@ -160,7 +160,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfreturn st>
 	</cffunction>
 
-	<cffunction name="getDataQuery" access="public" output="false" returntype="query" hint="Return a query of objects in a specific content type that match a list of category objectids.">
+	<cffunction name="getDataQuery" access="public" output="true" returntype="query" hint="Return a query of objects in a specific content type that match a list of category objectids.">
 		<cfargument name="lCategoryIDs" type="string" required="true" hint="The list of categoryIDs you wish to match">
 		<cfargument name="typename" type="string" required="True" hint="The type of content to be returned"> 
 		<cfargument name="bMatchAll" type="boolean" required="false" default="0" hint="Does the object need to match all categories"> 
@@ -207,71 +207,61 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		</cfif>
 	
 		<cfquery name="qGetData" datasource="#arguments.dsn#">
-		SELECT
-		<cfif sqlMaxRows NEQ "" AND bSqlMaxPre>
-			#sqlMaxRows#
-		</cfif>
-		
-		type.objectid
-		
-		,'#arguments.typename#' as typename
-		
-		<cfif len(trim(arguments.lFields))>
-			, #arguments.lFields#
-		</cfif>
-		
-		<cfif StructKeyExists(application.types[arguments.typename].stprops,"versionid")>
-			, 
-				(
-				SELECT count(d.objectid) 
-				FROM #application.dbowner##arguments.typename# d 
-				WHERE d.versionid = type.objectid
-				) as bHasMultipleVersion
-		<cfelse>
-			,0 as bHasMultipleVersion
-		</cfif>
-		
-		FROM 	#application.dbowner##arguments.typename# type
-		WHERE	#preserveSingleQuotes(arguments.SqlWhere)#
-		<cfif StructKeyExists(application.stcoapi[arguments.typename].stprops,"status") AND listLen(arguments.lstatus)>
-			AND type.status in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.lstatus#" />)
-		</cfif>
-
-		<cfif len(arguments.lcategoryids)>
-		
-			<cfif arguments.bMatchAll>						
-				<!--- loop over each category and make sure item has all categories --->
-				<cfloop from="1" to="#listlen(arguments.lCategoryIDs)#" index="i">
-					AND objectid IN (
-					    select distinct objectid 
-					    from refCategories 
-					    where categoryID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#listGetAt(arguments.lCategoryIDs, i)#" />
-					    )							
-				</cfloop>
-			<cfelse>					
-				AND objectid IN (
-				    select distinct objectid 
-				    from #application.dbowner#refCategories 
-				    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.lcategoryids#">)
-				    )				
+			SELECT
+				<cfif sqlMaxRows NEQ "" AND bSqlMaxPre>
+					#sqlMaxRows#
+				</cfif>
+				type.objectid, '#arguments.typename#' AS typename, 0 AS bHasMultipleVersion
+				<cfif len(trim(arguments.lFields))>
+					, #arguments.lFields#
+				</cfif>
+			FROM #application.dbowner##arguments.typename# type
+			WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+			
+			<cfif StructKeyExists(application.stcoapi[arguments.typename].stprops,"status") AND listLen(arguments.lstatus)>
+				AND type.status in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.lstatus#" />)
 			</cfif>
-		<cfelse>
-			<!--- ONLY GET OBJECTS THAT ARE NOT ASSIGNED --->
-			AND type.objectid NOT IN (SELECT objectid FROM #application.dbowner#refCategories)	
-		</cfif>	
-		
-		HAVING bHasMultipleVersion = <cfqueryparam cfsqltype="cf_sql_integer" value="0" />
-		
-		<cfif len(trim(arguments.sqlOrderBy))>
-			ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
-		</cfif>
-				
-		<cfif sqlMaxRows NEQ "" AND NOT bSqlMaxPre>
-			#sqlMaxRows#
-		</cfif>
+	
+			<cfif len(arguments.lcategoryids)>
+				<cfif arguments.bMatchAll>						
+					<!--- loop over each category and make sure item has all categories --->
+					<cfloop from="1" to="#listlen(arguments.lCategoryIDs)#" index="i">
+						AND objectid IN (
+							    SELECT DISTINCT objectid 
+							   	FROM refCategories 
+							    WHERE categoryID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#listGetAt(arguments.lCategoryIDs, i)#" />
+						    )							
+					</cfloop>
+				<cfelse>					
+					AND objectid IN (
+						    SELECT DISTINCT objectid 
+						    FROM #application.dbowner#refCategories 
+						    WHERE categoryID IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.lcategoryids#">)
+					    )				
+				</cfif>
+			<cfelse>
+				<!--- ONLY GET OBJECTS THAT ARE NOT ASSIGNED --->
+				AND type.objectid NOT IN (SELECT objectid FROM #application.dbowner#refCategories)	
+			</cfif>	
+			
+			<!--- filter out objects that currently have a draft version --->
+			<cfif StructKeyExists(application.types[arguments.typename].stprops,"versionid")>
+				AND type.objectID NOT IN (
+					SELECT versionID 
+					FROM #application.dbowner##arguments.typename#
+					WHERE len(versionID) <> 0 
+				)
+			</cfif>
+	
+			<cfif len(trim(arguments.sqlOrderBy))>
+				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
+			</cfif>
+					
+			<cfif sqlMaxRows NEQ "" AND NOT bSqlMaxPre>
+				#sqlMaxRows#
+			</cfif>
 		
 		</cfquery>
-					
 		
 		<cfreturn qGetData>
 	</cffunction>
