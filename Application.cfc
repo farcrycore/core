@@ -2,6 +2,8 @@
  
 	<cfsetting enablecfoutputonly="true" />
 	
+	<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
+	
 	<!--- LOCATE THE PROJECTS CONSTRUCTOR FILE --->
 	<cfset this.projectConstructorLocation = getProjectConstructorLocation(plugin="webtop") />
 
@@ -269,21 +271,27 @@
 			<cfset url.updateapp=false />
 		</cfif>
 		
+		
+		
 		<cftry>
 		
 		<cfif (NOT structkeyexists(application, "bInit") OR NOT application.binit) OR url.updateapp>
 			<cflock name="#application.applicationName#_init" type="exclusive" timeout="3" throwontimeout="true">
 				<cfif (NOT structkeyexists(application, "bInit") OR NOT application.binit) OR url.updateapp>
 					
-					<!--- set binit to false to block users accessing on restart --->
-					<cfset application.bInit =  false />
-					
-	
-					<cfset OnApplicationStart() />
-					
-					
-					<!--- set the initialised flag --->
-					<cfset application.bInit = true />
+					<cfif isDefined("session.dmSec.Authentication.bAdmin") AND session.dmSec.Authentication.bAdmin>
+						<!--- set binit to false to block users accessing on restart --->
+						<cfset application.bInit =  false />
+						
+		
+						<cfset OnApplicationStart() />
+						
+						
+						<!--- set the initialised flag --->
+						<cfset application.bInit = true />
+					<cfelse>
+						<extjs:bubble title="YOU ARE NOT AN ADMINISTRATOR" message="Only administrators can update the application" />
+					</cfif>
 				</cfif>
 			</cflock>
 		</cfif>
@@ -303,6 +311,8 @@
 		</cfcatch>
 		
 		</cftry>
+		
+		
 		<!---------------------------------------- 
 		END: Application Initialise 
 		----------------------------------------->
