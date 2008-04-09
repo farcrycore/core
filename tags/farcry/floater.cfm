@@ -23,6 +23,8 @@ $out:$
 --->
 <cfsetting enablecfoutputonly="Yes">
 
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+
 <cfsilent>
 	<cfparam name="attributes.top" default="15">
 	<cfparam name="attributes.left" default="0">
@@ -31,7 +33,7 @@ $out:$
 	<cfparam name="attributes.trackerAcceleration" default="0.5">
 	<cfparam name="attributes.showHideAcceleration" default="0.7">
 	<cfparam name="attributes.opacity" default="90">
-	<cfparam name="usecontextmenu" default="false">
+	<cfparam name="attributes.usecontextmenu" default="false">
 	<cfparam name="attributes.imagedir" default="">
 	<cfparam name="attributes.buttonimage" default="menuopen.gif">
 	<cfparam name="attributes.prefix" default="dmfloater">
@@ -39,6 +41,8 @@ $out:$
 	<cfparam name="attributes.showDisableContext" default="true">
 </cfsilent>
 
+
+<skin:htmlHead id="floaterMenu">
 <cfoutput>
 <!--
  FarCry DHTML Float Menu
@@ -444,5 +448,5 @@ if(typeof(document.body.addEventListener) != 'undefined') {
 </script>
 
 </cfoutput>
-
+</skin:htmlHead>
 <cfsetting enablecfoutputonly="No">
