@@ -258,13 +258,15 @@ $out:$
 		<cfargument name="label" required="no" type="string" default="">
 
 		
-		<cfset var stObj = getData(objectid=arguments.objectid) />
-		
-		<cfset var qMetadata = application.rules[stobj.typename].qMetadata >
-		
-		<cfset var updateHTML = "" />
-		
-		<cfset var onExit = StructNew() />		
+		<cfset var stObj = getData(objectid=arguments.objectid) />		
+		<cfset var qMetadata = application.rules[stobj.typename].qMetadata >		
+		<cfset var updateHTML = "" />		
+		<cfset var onExit = StructNew() />	
+		<cfset var lWizardSteps = "" />
+		<cfset var iWizardStep = "" />
+		<cfset var lFieldSets = "" />
+		<cfset var iFieldSet = "" />
+			
 		
 		<cfset onExit.Type = "HTML" />
 		<cfsavecontent variable="onExit.content">
@@ -296,21 +298,25 @@ $out:$
 			<cfif listLen(structKeyList(application.rules[stobj.typename].stProps)) LTE 2>
 				<cfoutput><h3>No Parameters required</h3></cfoutput>
 			</cfif>
-		
-			
+
 			<cfquery dbtype="query" name="qwizardSteps">
 			SELECT ftwizardStep
 			FROM qMetadata
 			WHERE ftwizardStep <> '#stobj.typename#'
-			Group By ftwizardStep
 			ORDER BY ftSeq
 			</cfquery>
 			
+			<cfset lWizardSteps = "" />
+			<cfoutput query="qWizardSteps" group="ftWizardStep" groupcasesensitive="false">
+				<cfset lWizardSteps = listAppend(lWizardSteps,qWizardSteps.ftWizardStep) />
+			</cfoutput>
+			
+						
 			<!------------------------ 
 			Work out if we are creating a wizard or just a simple form.
 			If there are multiple wizard steps then we will be creating a wizard
 			 ------------------------>
-			<cfif qwizardSteps.recordcount GT 1>
+			<cfif listLen(lWizardSteps) GT 1>
 				
 				<!--- Always save wizard WDDX data --->
 				<wiz:processwizard>
@@ -334,12 +340,12 @@ $out:$
 				
 				<wiz:wizard ReferenceID="#stobj.objectid#">
 				
-					<cfloop query="qwizardSteps">
+					<cfloop list="#lWizardSteps#" index="iWizardStep">
 							
 						<cfquery dbtype="query" name="qwizardStep">
 						SELECT *
 						FROM qMetadata
-						WHERE ftwizardStep = '#qwizardSteps.ftwizardStep#'
+						WHERE ftwizardStep = '#iWizardStep#'
 						ORDER BY ftSeq
 						</cfquery>
 					
@@ -347,26 +353,38 @@ $out:$
 							
 	
 							<cfquery dbtype="query" name="qFieldSets">
-							SELECT ftwizardStep, ftFieldset
+							SELECT ftFieldset
 							FROM qMetadata
-							WHERE ftwizardStep = '#qwizardSteps.ftwizardStep#'
-							AND ftFieldset <> '#stobj.typename#'
-							Group By ftwizardStep, ftFieldset
+							WHERE ftwizardStep = '#iWizardStep#'
+							AND ftFieldset <> '#stobj.typename#'				
 							ORDER BY ftSeq
 							</cfquery>
-												
-							<cfloop query="qFieldSets">
+							<cfset lFieldSets = "" />
+							<cfoutput query="qFieldSets" group="ftFieldset" groupcasesensitive="false">
+								<cfset lFieldSets = listAppend(lFieldSets,qFieldSets.ftFieldset) />
+							</cfoutput>
 							
-								<cfquery dbtype="query" name="qFieldset">
-								SELECT *
-								FROM qMetadata
-								WHERE ftwizardStep = '#qwizardSteps.ftwizardStep#' and ftFieldset = '#qFieldsets.ftFieldset#'
-								ORDER BY ftSeq
-								</cfquery>
+							
+							<cfif listlen(lFieldSets)>
+												
+								<cfloop list="#lFieldSets#" index="iFieldSet">
+							
+									<cfquery dbtype="query" name="qFieldset">
+									SELECT *
+									FROM qMetadata
+									WHERE ftwizardStep = '#iWizardStep#' and ftFieldset = '#iFieldSet#'
+									ORDER BY ftSeq
+									</cfquery>
+									
+									
+									<wiz:object ObjectID="#stObj.ObjectID#" PackageType="rules" lfields="#valuelist(qFieldset.propertyname)#" format="edit" intable="false" legend="#iFieldSet#" />
+								</cfloop>
 								
+							<cfelse>
 								
-								<wiz:object ObjectID="#stObj.ObjectID#" PackageType="rules" lfields="#valuelist(qFieldset.propertyname)#" format="edit" intable="false" legend="#qFieldset.ftFieldset#" />
-							</cfloop>
+								<wiz:object ObjectID="#stObj.ObjectID#" lfields="#valuelist(qwizardStep.propertyname)#" format="edit" intable="false" />
+							
+							</cfif>
 							
 							
 						</wiz:step>
@@ -384,12 +402,16 @@ $out:$
 			<cfelse>
 			
 				<cfquery dbtype="query" name="qFieldSets">
-				SELECT ftwizardStep, ftFieldset
+				SELECT ftFieldset
 				FROM qMetadata
 				WHERE ftFieldset <> '#stobj.typename#'
-				Group By ftwizardStep, ftFieldset
-				ORDER BY ftSeq
+				ORDER BY ftseq
 				</cfquery>
+				
+				<cfset lFieldSets = "" />
+				<cfoutput query="qFieldSets" group="ftFieldset" groupcasesensitive="false">
+					<cfset lFieldSets = listAppend(lFieldSets,qFieldSets.ftFieldset) />
+				</cfoutput>
 			
 			
 				<!---------------------------------------
@@ -415,24 +437,25 @@ $out:$
 				
 				<ft:form>
 			
-					<cfif qFieldSets.recordcount GT 1>
+					<cfif listLen(lFieldSets)>
 						
-						<cfloop query="qFieldSets">
+						<cfloop list="#lFieldSets#" index="iFieldset">
+							
 							<cfquery dbtype="query" name="qFieldset">
 							SELECT *
 							FROM qMetadata
-							WHERE ftFieldset = '#qFieldsets.ftFieldset#'
+							WHERE ftFieldset = '#iFieldset#'
 							ORDER BY ftSeq
 							</cfquery>
 							
-							<ft:object ObjectID="#arguments.ObjectID#" PackageType="rules" format="edit" lExcludeFields="label" lFields="#valuelist(qFieldset.propertyname)#" inTable=false IncludeFieldSet=1 Legend="#qFieldSets.ftFieldset#" />
+							<ft:object ObjectID="#arguments.ObjectID#" PackageType="rules" format="edit" lExcludeFields="label" lFields="#valuelist(qFieldset.propertyname)#" IncludeFieldSet="true" Legend="#iFieldset#" />
 						</cfloop>
 						
 						
 					<cfelse>
 					
 						<!--- default edit handler --->
-						<ft:object ObjectID="#arguments.ObjectID#" PackageType="rules" format="edit" lExcludeFields="label" lFields="" inTable=false IncludeFieldSet=1 Legend="#stObj.Label#" />
+						<ft:object ObjectID="#arguments.ObjectID#" PackageType="rules" format="edit" lExcludeFields="label" lFields="" IncludeFieldSet="false" />
 					</cfif>
 					
 					<ft:farcryButtonPanel>
