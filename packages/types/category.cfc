@@ -166,7 +166,6 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfargument name="bMatchAll" type="boolean" required="false" default="0" hint="Does the object need to match all categories"> 
 		<cfargument name="bHasDescendants" type="boolean" required="false" default="0" hint="Should we match for the entire category branch or not."> 
 		<cfargument name="dsn" type="string" default="#application.dsn#" required="false" hint="Database DSN">
-		<!--- <cfargument name="lStatus" type="string" required="False" default="" hint="the list of statuses to match on. Will default to request.mode.lValidStatus if available"> --->
 		<cfargument name="maxRows" type="numeric" required="false" default="0" hint="maximum of rows returned">
 		<cfargument name="sqlWhere" required="No" type="string" default="1=1" hint="adds to the where clause of the query" />
 		<cfargument name="sqlOrderBy" required="No" type="string" default="datetimelastupdated desc" hint="Used by the query to sort." />
