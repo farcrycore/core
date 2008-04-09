@@ -86,13 +86,13 @@
 			</cfcase>
 			
 			<cfdefaultcase><!--- value="flash" --->
-				<cfparam name="arguments.stMetadata.ftFacade" default="#mid(application.url.farcry,len(application.url.webroot)+1,len(application.url.farcry))#/facade/fileUpload/upload.cfm" />
+				<cfparam name="arguments.stMetadata.ftFacade" default="#application.url.webtop#/facade/fileUpload/upload.cfm" />
 				<cfparam name="arguments.stMetadata.ftFileTypes" default="*.*" />
 				<cfparam name="arguments.stMetadata.ftFileDescription" default="File Types" />
 				<cfparam name="arguments.stMetadata.ftMaxSize" default="-1" />
 				<cfparam name="arguments.stMetadata.ftOnComplete" default="" />
 				
-				<cfset facade = "#application.url.webroot##arguments.stMetadata.ftFacade#?#session.urltoken#&typename=#arguments.typename#&property=#arguments.stMetadata.name#&fieldname=#arguments.fieldname#&current=#urlencodedformat(arguments.stMetadata.value)#">
+				<cfset facade = "#arguments.stMetadata.ftFacade#?#session.urltoken#&typename=#arguments.typename#&property=#arguments.stMetadata.name#&fieldname=#arguments.fieldname#&current=#urlencodedformat(arguments.stMetadata.value)#">
 				
 				<cfsavecontent variable="html">
 					<cfoutput>
