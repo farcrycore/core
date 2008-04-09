@@ -279,4 +279,18 @@
 		<cfreturn false />
 	</cffunction>
 
+	<cffunction name="listExtends" access="public" returntype="string" description="Returns a list of the components the specified one extends (inclusive)" output="true">
+		<cfargument name="path" type="string" required="true" hint="The package path of the component" />
+		
+		<cfset var stMeta = getMetadata(createobject("component",arguments.path)) />
+		<cfset var result = stMeta.fullname />
+		
+		<cfloop condition="structkeyexists(stMeta,'extends')">
+			<cfset stMeta = stMeta.extends />
+			<cfset result = listappend(result,stMeta.fullname) />
+		</cfloop>
+		
+		<cfreturn result />
+	</cffunction>
+
 </cfcomponent>
