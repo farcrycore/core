@@ -71,6 +71,8 @@ SETUP DEFAULTS FOR ALL INSTALLATION WIZARD FIELDS
 	<cfset session.stFarcryInstall.stConfig.plugins = "" />
 	<cfset session.stFarcryInstall.stConfig.projectInstallType = "subDirectory" />
 	<cfset session.stFarcryInstall.stConfig.webtopInstallType = "project" />
+	<cfset session.stFarcryInstall.stConfig.adminPassword = "#right(createUUID(),6)#" />
+	<cfset session.stFarcryInstall.stConfig.updateappKey = "#right(createUUID(),4)#" />
 	
 	<cflocation url="#cgi.SCRIPT_NAME#?#cgi.query_string#" addtoken="false">
 </cfif>
@@ -251,6 +253,22 @@ RENDER THE CURRENT STEP
 		<div class="field">
 			<input type="text" id="applicationName" name="applicationName" value="#session.stFarcryInstall.stConfig.applicationName#" />
 			<div class="fieldHint">Project folder name corresponds to the underlying installation folder and application name of your project.  It must adhere to the standard ColdFusion naming conventions for variables; namely start with a letter and consist of only letters, numbers and underscores.</div>
+		</div>
+		<div class="clear"></div>
+	</div>
+	<div class="item">
+      	<label for="displayName">Administrator Password <em>*</em></label>
+		<div class="field">
+			<input type="text" id="adminPassword" name="adminPassword" value="#session.stFarcryInstall.stConfig.adminPassword#" />
+			<div class="fieldHint">This is the password you will use to log in to your project with the "farcry" username.</div>
+		</div>
+		<div class="clear"></div>
+	</div>	
+	<div class="item">
+      	<label for="applicationName">Update Application Key <em>*</em></label>
+		<div class="field">
+			<input type="text" id="updateappKey" name="updateappKey" value="#session.stFarcryInstall.stConfig.updateappKey#" />
+			<div class="fieldHint">This is the key that can be used at the end of the url parameter [updateapp] to reinitialise your application. <strong>Administrators can use updateapp=1</strong></div>
 		</div>
 		<div class="clear"></div>
 	</div>
@@ -532,9 +550,15 @@ RENDER THE CURRENT STEP
 	
 	<div class="section">		
 		<h3>
-			<input type="radio" id="projectInstallType" name="projectInstallType" value="SubDirectory" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "SubDirectory">checked</cfif>>
-			Sub-Directory
+			<cfif fileExists(expandPath("/farcryConstructor.cfm"))>
+				<input type="radio" id="projectInstallType" name="projectInstallType" disabled="true" value="SubDirectory">
+				<span style="text-decoration:line-through;">Sub-Directory</span>
+			<cfelse>
+				<input type="radio" id="projectInstallType" name="projectInstallType" value="SubDirectory" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "SubDirectory">checked</cfif>>
+				Sub-Directory
+			</cfif>
 		</h3>
+		<p><strong style="color:red;">You can't install as a sub-directory when a project exists in the webroot</strong></p>
 		<p>For multiple application deployment under a single webroot.  If you only have a single web site configured for your server, and would like to run multiple FarCry applications select me.</p>
 		<p>Note each application will run under its own sub-directory, for example: http://localhost:8500/myproject</p>
 	</div>
@@ -542,13 +566,14 @@ RENDER THE CURRENT STEP
 	<div class="section">	
 		<h3>
 			<cfif fileExists(expandPath("/farcryConstructor.cfm"))>
-				<input type="radio" id="projectInstallType" name="projectInstallType" disabled="true" value="Standalone" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "Standalone">checked</cfif>>
-				<span style="text-decoration:line-through;">Standalone (A FarCry project already exists in the webroot)</span>
+				<input type="radio" id="projectInstallType" name="projectInstallType" disabled="true" value="Standalone">
+				<span style="text-decoration:line-through;">Standalone</span>
 			<cfelse>
 				<input type="radio" id="projectInstallType" name="projectInstallType" value="Standalone" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "Standalone">checked</cfif>>
 				Standalone
 			</cfif>
 		</h3>
+		<p><strong style="color:red;">You can't install as standalone when a project exists in the webroot</strong></p>
 		<p>Specifically aimed at one application per website. For standalone application deployment and/or shared hosting deployment that allows for a single project select me.</p>
 		<p>Note the application will run directly under the webroot, for example: http://localhost/</p>
 	</div>

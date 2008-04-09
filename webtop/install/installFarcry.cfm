@@ -76,6 +76,8 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 	<cfset form.skeleton = session.stFarcryInstall.stConfig.skeleton />
 	<cfset form.plugins = session.stFarcryInstall.stConfig.plugins />
 	<cfset form.projectInstallType = session.stFarcryInstall.stConfig.projectInstallType />
+	<cfset form.adminPassword = session.stFarcryInstall.stConfig.adminPassword />
+	<cfset form.updateappKey = session.stFarcryInstall.stConfig.updateappKey />
 	
 	<!--- Skeletons --->
 	<cfset form.skeletonPath = replaceNoCase(form.skeleton, ".", "/", "all") />
@@ -274,7 +276,7 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@plugins@@", "#form.plugins#", "all") />	
 	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@projectURL@@", "#application.url.webroot#", "all") />
 	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@webtopURL@@", "#application.url.webtop#", "all") />
-	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@updateappKey@@", "#createUUID()#", "all") />
+	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@updateappKey@@", "#form.updateappKey#", "all") />
 
 	<cffile action="write" file="#projectWebrootPath#/farcryConstructor.cfm" output="#farcryConstructorContent#" addnewline="false" mode="777" />	
 	
@@ -376,7 +378,7 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 				<div class="itemButtons">
 					<form name="installComplete" id="installComplete" method="post" action="">
 						<input type="button" name="login" value="LOGIN TO THE FARCRY WEBTOP" onClick="alert('Your default Farcry login is\n\n u: farcry\n p: farcry');window.open('#application.url.webtop#/login.cfm?farcryProject=#application.projectDirectoryName#')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
-						<input type="button" name="view" value="VIEW SITE" onClick="window.open('#application.url.webroot#/index.cfm?updateapp=1')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
+						<input type="button" name="view" value="VIEW SITE" onClick="window.open('#application.url.webroot#/index.cfm?updateapp=#form.updateappKey#')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
 						<input type="button" name="install" value="INSTALL ANOTHER PROJECT" onClick="window.open('#cgi.script_name#?restartInstaller=1', '_self')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
 					</form><br /> 
 				</div>
