@@ -274,6 +274,7 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@plugins@@", "#form.plugins#", "all") />	
 	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@projectURL@@", "#application.url.webroot#", "all") />
 	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@webtopURL@@", "#application.url.webtop#", "all") />
+	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@updateappKey@@", "#createUUID()#", "all") />
 
 	<cffile action="write" file="#projectWebrootPath#/farcryConstructor.cfm" output="#farcryConstructorContent#" addnewline="false" mode="777" />	
 	

@@ -42,6 +42,12 @@ THE VIRTUAL WEBSERVER PROJECT FOLDER
 <cfset THIS.webtopURL = "@@webtopURL@@" />
 
 <!--- 
+A key that can be used on updateapp url variable to update the application scope
+Only administrators can updateapp=1
+ --->
+<cfset THIS.updateappKey = "@@updateappKey@@" />
+
+<!--- 
 THE NAME OF THE FOLDER THAT CONTAINS YOUR FARCRY PROJECT
 SET THIS VALUE IF IT IS DIFFERENT FROM THE APPLICATION NAME
  --->

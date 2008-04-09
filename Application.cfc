@@ -267,31 +267,37 @@
 		<!---------------------------------------- 
 		BEGIN: Application Initialise 
 		----------------------------------------->
-		<cfif NOT structkeyExists(url, "updateapp")>
-			<cfset url.updateapp=false />
-		</cfif>
-		
-		
+		<cfparam name="url.updateapp" default="false" />
 		
 		<cftry>
+
+		<!--- TODO: this needs to be removed eventually. It is currently only in here so that users can updateapp when they upgrade without having to recycle CF --->
+		<cfparam name="application.updateappKey" default="1" />
+		
+		<cfif url.updateapp EQ application.updateappKey>
+			<!--- CAN FORCE AND UPDATE IF THE USER KNOWS THE updateappKey --->
+			<cfset url.updateapp = true>
+		<cfelse>		
+			<!--- CANT UPDATE APP IF NOT ADMINISTRATOR --->
+			<cfif not isDefined("session.dmSec.Authentication.bAdmin") OR NOT session.dmSec.Authentication.bAdmin>
+				<cfset url.updateapp = false>
+			</cfif>			
+		</cfif>
 		
 		<cfif (NOT structkeyexists(application, "bInit") OR NOT application.binit) OR url.updateapp>
 			<cflock name="#application.applicationName#_init" type="exclusive" timeout="3" throwontimeout="true">
 				<cfif (NOT structkeyexists(application, "bInit") OR NOT application.binit) OR url.updateapp>
+
+					<!--- set binit to false to block users accessing on restart --->
+					<cfset application.bInit =  false />
 					
-					<cfif isDefined("session.dmSec.Authentication.bAdmin") AND session.dmSec.Authentication.bAdmin>
-						<!--- set binit to false to block users accessing on restart --->
-						<cfset application.bInit =  false />
-						
-		
-						<cfset OnApplicationStart() />
-						
-						
-						<!--- set the initialised flag --->
-						<cfset application.bInit = true />
-					<cfelse>
-						<extjs:bubble title="YOU ARE NOT AN ADMINISTRATOR" message="Only administrators can update the application" />
-					</cfif>
+	
+					<cfset OnApplicationStart() />
+					
+					
+					<!--- set the initialised flag --->
+					<cfset application.bInit = true />
+
 				</cfif>
 			</cflock>
 		</cfif>
@@ -540,6 +546,9 @@
 		<!--- Option to archive --->
 		<cfparam name="this.bUseMediaArchive" default="false" />
 		
+		<!--- updateapp key used to updateapp without administrator privilages. Set to your own string in the farcryConstructor --->
+		<cfparam name="this.updateappKey" default="#createUUID()#" />
+		
 		
 		<!--- Project directory name can be changed from the default which is the applicationname --->
 		<cfset application.projectDirectoryName =  this.projectDirectoryName />
@@ -647,6 +656,14 @@
 		USE MEDIA ARCHIVE?
 		 ------------------------------------------>
 		<cfset application.bUseMediaArchive = this.bUseMediaArchive />
+		
+		
+		<!------------------------------------------ 
+		UPDATE APP KEY
+		 ------------------------------------------>
+		<cfset application.updateappKey = this.updateappKey />
+		
+		
 	
 		<!---------------------------------------------- 
 		INITIALISE THE COAPIUTILITIES SINGLETON
