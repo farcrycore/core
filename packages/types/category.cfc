@@ -298,7 +298,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfquery name="q" datasource="#arguments.dsn#">
 			SELECT objectID
 			FROM nested_tree_objects
-			WHERE nlevel = 1 AND lower(objectname) = '#lcase(arguments.objectname)#' AND lower(typename) = 'categories'
+			WHERE nlevel = 1 AND lower(objectname) = '#lcase(arguments.objectname)#' AND lower(typename) = 'dmcategory'
 		</cfquery>
 				
 		<cfif q.recordcount EQ 1>
@@ -319,7 +319,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 			SELECT	ntm.*, cat.alias
 			FROM 	#arguments.dbowner#nested_tree_objects ntm
 			LEFT JOIN #arguments.dbowner#dmCategory cat ON ntm.objectid = cat.objectid
-			WHERE lower(typename) = 'dmCategory'
+			WHERE lower(typename) = 'dmcategory'
 			ORDER BY nleft
 		</cfquery>
 
@@ -584,7 +584,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 			FROM #arguments.dbowner#nested_tree_objects
 			WHERE lower(objectname) = '#lcase(arguments.categoryName)#'
 			AND parentid = '#arguments.parentid#'
-			AND typeName = 'categories'
+			AND lower(typeName) = 'dmcategory'
 		</cfquery>
 		
 		<cfreturn qCheckCategoryName.objectid>
@@ -656,7 +656,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfset stLocal.strTables = "#application.dbowner#refObjects refObj JOIN #application.dbowner#refCategories refCat ON refObj.objectid = refCat.objectID JOIN #application.dbowner##arguments.typename# type ON refObj.objectid = type.ObjectID">
 		<cfset stLocal.strGroup = stLocal.strPK>
 		<!--- filter with sub select, using the nested tree model ie. all sub categorys are within the nleft and nright of the category id --->
-		<cfset stLocal.strFilter = "refObj.typename = ''#arguments.typename#'' AND refCat.categoryid IN (SELECT objectid FROM nested_tree_objects WHERE (nLeft >= (SELECT nLeft FROM nested_tree_objects WHERE (objectid = ''#arguments.categoryid#'') AND (TypeName = ''categories''))) AND (nRight <=  (SELECT  nRight FROM nested_tree_objects WHERE (objectid = ''#arguments.categoryid#'') AND (TypeName = ''categories''))) AND (TypeName = ''categories''))">
+		<cfset stLocal.strFilter = "refObj.typename = ''#arguments.typename#'' AND refCat.categoryid IN (SELECT objectid FROM nested_tree_objects WHERE (nLeft >= (SELECT nLeft FROM nested_tree_objects WHERE (objectid = ''#arguments.categoryid#'') AND (lower(TypeName) = ''dmcategory''))) AND (nRight <=  (SELECT  nRight FROM nested_tree_objects WHERE (objectid = ''#arguments.categoryid#'') AND (lower(TypeName) = ''dmcategory''))) AND (lower(TypeName) = ''dmcategory''))">
 																																																																						  
 		<!--- get all the content objectids for the particular page --->
 		<cfquery name="qGetDataPage" datasource="#application.dsn#">
