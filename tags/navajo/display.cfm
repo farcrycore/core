@@ -127,9 +127,9 @@
 			<cftrace var="application.navid.home" text="navid could not be determined; defaulting to application.navid.home." type="information" />
 		</cfif>
 
-	<cfelse>
+	<cfelseif not structKeyExists(request, "navid")>
 		<!--- otherwise, use the home node as a last resort --->
-		<cfparam name="request.navid" default="#application.navid.home#" type="uuid" />
+		<cfset request.navid = "#application.navid.home#" />
 		<cftrace var="application.navid.home" text="nav object corrupt; defaulting to application.navid.home." type="information" />
 		
 	</cfif>
