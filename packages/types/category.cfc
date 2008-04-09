@@ -332,7 +332,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 			SELECT	ntm.*, cat.alias
 			FROM 	#arguments.dbowner#nested_tree_objects ntm
 			LEFT JOIN #arguments.dbowner#dmCategory cat ON ntm.objectid = cat.objectid
-			WHERE lower(typename) = 'dmCategory'
+			WHERE lower(typename) = 'dmcategory'
 			ORDER BY nleft
 		</cfquery>
 
