@@ -298,8 +298,10 @@
 		<!--- Update object type --->
 		<cfset arguments.stProperties.objecttype = findType(arguments.stProperties.referenceid) />
 		
-		<!--- Update permission cache --->
-		<cfset application.security.setCache(role=arguments.stProperties.roleid,permission=arguments.stProperties.permissionid,object=arguments.stProperties.referenceid,right=arguments.stProperties.barnaclevalue) />
+		<cfif not arguments.bAfterSave>
+			<!--- Update permission cache --->
+			<cfset application.security.setCache(role=arguments.stProperties.roleid,permission=arguments.stProperties.permissionid,object=arguments.stProperties.referenceid,right=arguments.stProperties.barnaclevalue) />
+		</cfif>
 		
 		<cfreturn super.setData(stProperties=arguments.stProperties,user=arguments.user,auditNote=arguments.auditNote,bAudit=arguments.bAudit,dsn=arguments.dsn,bSessionOnly=arguments.bSessionOnly,bAfterSave=arguments.bAfterSave) />
 	</cffunction>
