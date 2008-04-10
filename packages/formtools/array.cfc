@@ -41,6 +41,7 @@
 		<cfparam name="arguments.stMetadata.ftAllowLibraryEdit" default="false">
 		<cfparam name="arguments.stMetadata.ftLibraryEditWebskin" default="edit">
 		<cfparam name="arguments.stMetadata.ftFirstListLabel" default="-- SELECT --">
+		<cfparam name="arguments.stMetadata.class" default="">
 		
 		<cfif arguments.stMetadata.ftRenderType eq "Library">
 			<cfparam name="application.stCOAPI.#arguments.typename#.stProps.#arguments.stMetadata.name#.metadata.ftShowLibraryLink" default="true" />
