@@ -50,9 +50,6 @@
 			
 		</cfif>
 		
-		<!--- If no list items are selected, an empty field is posted. --->
-		<cfoutput><input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" /></cfoutput>
-		
 		<cfif len(arguments.stMetadata.ftList)>
 			<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 				
@@ -67,7 +64,7 @@
 							</cfif>
 							<cfoutput><option value="#optionValue#" <cfif listFindNoCase(arguments.stMetadata.value, optionValue) or arguments.stMetadata.value eq optionValue> selected</cfif>>#ListLast(i , ":")#</option></cfoutput>
 						</cfloop>
-						<cfoutput></select><input type="hidden" name="#arguments.fieldname#" value=" "><br style="clear: both;"/></cfoutput>
+						<cfoutput></select><input type="hidden" name="#arguments.fieldname#" value=""><br style="clear: both;"/></cfoutput>
 						
 					</cfsavecontent>					
 				</cfcase>
@@ -92,7 +89,7 @@
 										#ListLast(i , ":")#
 										<br class="fieldsectionbreak" />
 									</cfloop>
-									<input type="hidden" name="#arguments.fieldname#" value=" ">
+									<input type="hidden" name="#arguments.fieldname#" value="">
 								</div>										
 							</div>																					
 						</cfoutput>
@@ -120,7 +117,7 @@
 										#ListLast(i , ":")#
 										<br class="fieldsectionbreak" />
 									</cfloop>
-									<input type="hidden" name="#arguments.fieldname#" value=" ">
+									<input type="hidden" name="#arguments.fieldname#" value="">
 								</div>
 							</div>
 						</cfoutput>
@@ -132,6 +129,7 @@
 					
 			</cfswitch>
 		</cfif>
+
 
 		<cfreturn html />
 
