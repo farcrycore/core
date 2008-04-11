@@ -91,9 +91,9 @@
 	CHECK TO SEE IF OBJECT IS IN DRAFT
 	- If the current user is not permitted to see draft objects, then make them login 
 	--->
-	<cfif structkeyexists(stObj,"status") and stObj.status EQ "draft" and NOT ListContains(request.mode.lValidStatus, stObj.status)>
+	<cfif structkeyexists(stObj,"status") and stObj.status EQ "draft" and NOT ListContainsnocase(request.mode.lValidStatus, stObj.status)>
 		<!--- send to login page and return in draft mode --->
-		<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#&error=draft&showdraft=1" addtoken="No" />
+		<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string&"&showdraft=1")#&error=draft" addtoken="No" />
 	</cfif>
 	
 	<!--- 
@@ -181,12 +181,18 @@
 		<!--- If a method has been passed in deliberately and is allowed use this --->
 		<cftrace var="attributes.method" text="Passed in attribute method used" />
 		<skin:view objectid="#attributes.objectid#" webskin="#attributes.method#" alternateHTML="" />
+		<cfif request.mode.bAdmin>
+			<skin:view objectid="#attributes.objectid#" webskin="displayAdminToolbar" alternateHTML="" />
+		</cfif>
 		
 	<cfelseif IsDefined("stObj.displayMethod") AND len(stObj.displayMethod)>
 	
 		<!--- Invoke display method of page --->
 		<cftrace var="stObj.displayMethod" text="Object displayMethod used" />
 		<skin:view objectid="#attributes.objectid#" webskin="#stObj.displayMethod#" />
+		<cfif request.mode.bAdmin>
+			<skin:view objectid="#attributes.objectid#" webskin="displayAdminToolbar" alternateHTML="" />
+		</cfif>
 		
 	<cfelse>
 	
@@ -194,7 +200,11 @@
 		
 		<cfif len(trim(HTML))>
 			<cfoutput>#HTML#</cfoutput>
-		<cfelse>		
+		
+			<cfif request.mode.bAdmin>
+				<skin:view objectid="#attributes.objectid#" webskin="displayAdminToolbar" alternateHTML="" />
+			</cfif>
+		<cfelse>
 			<cfthrow message="For the default view of an object, create a displayPageStandard webskin." />
 		</cfif>
 	</cfif>
@@ -230,7 +240,9 @@
 	<sec:CheckPermission type="#attributes.typename#" webskinpermission="#attributes.method#" result="bView" />
 	
 	<cfif bView>
+		<cfset request.typewebskin = "#attributes.typename#.#attributes.method#" />
 		<skin:view typename="#attributes.typename#" webskin="#attributes.method#" />
+		<skin:view typename="#attributes.typename#" webskin="displayAdminToolbar" alternateHTML="" />
 	<cfelse>
 		<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#&error=restricted" addtoken="No" />
 	</cfif>
