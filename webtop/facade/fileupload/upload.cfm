@@ -40,8 +40,8 @@
 	<cffile action="UPLOAD"
 		filefield="filedata" 
 		destination="#filePath##stMetadata.ftDestination#/"		        	
-		nameconflict="MakeUnique" result="File">
-	<cfset newFileName = File.ServerFile>
+		nameconflict="MakeUnique">
+	<cfset newFileName = cffile.ServerFile>
 </cfif>
 
 <!--- If the filename has changed, rename the file

@@ -92,7 +92,7 @@
 				<cfparam name="arguments.stMetadata.ftMaxSize" default="-1" />
 				<cfparam name="arguments.stMetadata.ftOnComplete" default="" />
 				
-				<cfset facade = "#arguments.stMetadata.ftFacade#?#session.urltoken#&typename=#arguments.typename#&property=#arguments.stMetadata.name#&fieldname=#arguments.fieldname#&current=#urlencodedformat(arguments.stMetadata.value)#">
+				<cfset facade = "#arguments.stMetadata.ftFacade#?#session.urltoken#&typename=#arguments.typename#&property=#arguments.stMetadata.name#&fieldname=#arguments.fieldname#&current=#urlencodedformat(arguments.stMetadata.value)#&farcryProject=#application.applicationName#">
 				
 				<cfsavecontent variable="html">
 					<cfoutput>
