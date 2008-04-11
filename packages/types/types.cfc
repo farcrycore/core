@@ -636,7 +636,7 @@ default handlers
 							
 								<cfset bExistsInArray = false />
 								
-								<cfloop from="1" to "#arrayLen(aAllRelated)#" index="i">
+								<cfloop from="1" to="#arrayLen(aAllRelated)#" index="i">
 									<cfif aAllRelated[i] EQ stObject[iField]>
 										<cfset bExistsInArray = true />
 										<cfset ArrayDeleteAt(aAllRelated, i) />
@@ -651,7 +651,7 @@ default handlers
 							<!--- ELSE IT SHOULD NOT BE IN THE ARRAY --->	
 							<cfelse>
 							
-								<cfloop from="1" to "#arrayLen(aAllRelated)#" index="i">
+								<cfloop from="1" to="#arrayLen(aAllRelated)#" index="i">
 									<cfif aAllRelated[i] EQ stObject[iField]>
 										<cfset ArrayDeleteAt(aAllRelated, i) />
 										<cfbreak />
