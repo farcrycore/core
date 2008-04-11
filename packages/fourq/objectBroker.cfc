@@ -371,6 +371,7 @@
 		<cfset var pos = "" />
 		<cfset var arrayList = "" />
 		<cfset var deleted = "" />
+		<cfset var oCaster = "" />
 
 		<cfif application.bObjectBroker>
 			<cfif structkeyexists(application.objectbroker, arguments.typename)>
@@ -396,7 +397,15 @@
 				<cfset aObjectIds = ListToArray(arguments.lObjectIDs)>
 				
 				<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
-					<cfset application.objectBroker[arguments.typename].aObjects.removeAll(aObjectIds) >
+					<cfswitch expression="#server.coldfusion.productname#">
+						<cfcase value="Railo">
+							<cfset oCaster = createObject('java','railo.runtime.op.Caster') />
+							<cfset application.objectBroker[arguments.typename].aObjects.removeAll(oCaster.toList(aObjectIds)) />
+						</cfcase>
+						<cfdefaultcase>
+							<cfset application.objectBroker[arguments.typename].aObjects.removeAll(aObjectIds) >
+						</cfdefaultcase>
+					</cfswitch>					
 				</cflock>
 				
 				<!--- 
