@@ -367,7 +367,7 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 					
 					<ul>
 						<li>Username: <strong>farcry</strong></li>
-						<li>Password: <strong>farcry</strong></li>
+						<li>Password: <strong>#form.adminPassword#</strong></li>
 					</ul>
 					
 					<p>&nbsp;</p>
@@ -377,7 +377,7 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 				</div>
 				<div class="itemButtons">
 					<form name="installComplete" id="installComplete" method="post" action="">
-						<input type="button" name="login" value="LOGIN TO THE FARCRY WEBTOP" onClick="alert('Your default Farcry login is\n\n u: farcry\n p: farcry');window.open('#application.url.webtop#/login.cfm?farcryProject=#application.projectDirectoryName#')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
+						<input type="button" name="login" value="LOGIN TO THE FARCRY WEBTOP" onClick="alert('Your default Farcry login is\n\n u: farcry\n p: #jsstringformat(form.adminPassword)#');window.open('#application.url.webtop#/login.cfm?farcryProject=#application.projectDirectoryName#')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
 						<input type="button" name="view" value="VIEW SITE" onClick="window.open('#application.url.webroot#/index.cfm?updateapp=#form.updateappKey#')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
 						<input type="button" name="install" value="INSTALL ANOTHER PROJECT" onClick="window.open('#cgi.script_name#?restartInstaller=1', '_self')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
 					</form><br /> 

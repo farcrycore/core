@@ -164,6 +164,10 @@ TODO:
 	<cfset oSkeletonManifest = createObject("component", "#form.skeleton#.install.manifest") />
 	<cfset result = oSkeletonManifest.install() />
 	<cfset application.navid = createObject("component", application.stcoapi["dmNavigation"].packagePath).getNavAlias() />
+	<cfset oUser = createobject("component","farcry.core.packages.types.farUser") />
+	<cfset stUser = oUser.getByUserID(userid="farcry") />
+	<cfset stUser.password = form.adminPassword />
+	<cfset oUser.setData(stProperties=stUser) />
 	
 	
 	<cfoutput>#updateProgressBar(value="0.8", text="#form.displayName# (SKELETON): Removing the skelton instalation files")#</cfoutput><cfflush>
