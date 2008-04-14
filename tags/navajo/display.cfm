@@ -181,18 +181,12 @@
 		<!--- If a method has been passed in deliberately and is allowed use this --->
 		<cftrace var="attributes.method" text="Passed in attribute method used" />
 		<skin:view objectid="#attributes.objectid#" webskin="#attributes.method#" alternateHTML="" />
-		<cfif request.mode.bAdmin>
-			<skin:view objectid="#attributes.objectid#" webskin="displayAdminToolbar" alternateHTML="" />
-		</cfif>
 		
 	<cfelseif IsDefined("stObj.displayMethod") AND len(stObj.displayMethod)>
 	
 		<!--- Invoke display method of page --->
 		<cftrace var="stObj.displayMethod" text="Object displayMethod used" />
 		<skin:view objectid="#attributes.objectid#" webskin="#stObj.displayMethod#" />
-		<cfif request.mode.bAdmin>
-			<skin:view objectid="#attributes.objectid#" webskin="displayAdminToolbar" alternateHTML="" />
-		</cfif>
 		
 	<cfelse>
 	
@@ -200,10 +194,6 @@
 		
 		<cfif len(trim(HTML))>
 			<cfoutput>#HTML#</cfoutput>
-		
-			<cfif request.mode.bAdmin>
-				<skin:view objectid="#attributes.objectid#" webskin="displayAdminToolbar" alternateHTML="" />
-			</cfif>
 		<cfelse>
 			<cfthrow message="For the default view of an object, create a displayPageStandard webskin." />
 		</cfif>
@@ -242,7 +232,6 @@
 	<cfif bView>
 		<cfset request.typewebskin = "#attributes.typename#.#attributes.method#" />
 		<skin:view typename="#attributes.typename#" webskin="#attributes.method#" />
-		<skin:view typename="#attributes.typename#" webskin="displayAdminToolbar" alternateHTML="" />
 	<cfelse>
 		<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#&error=restricted" addtoken="No" />
 	</cfif>
