@@ -713,7 +713,7 @@ RENDER THE CURRENT STEP
 			<cfcase value="SubDirectory">
 				A sub-directory under the web root
 			</cfcase>
-			<cfcase value="webroot">
+			<cfcase value="Standalone">
 				Directly into the web root
 			</cfcase>
 			<cfdefaultcase>
