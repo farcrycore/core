@@ -558,7 +558,9 @@ RENDER THE CURRENT STEP
 				Sub-Directory
 			</cfif>
 		</h3>
-		<p><strong style="color:red;">You can't install as a sub-directory when a project exists in the webroot</strong></p>
+		<cfif fileExists(expandPath("/farcryConstructor.cfm"))>
+			<p><strong style="color:red;">You can't install as a sub-directory when a project exists in the webroot</strong></p>
+		</cfif>
 		<p>For multiple application deployment under a single webroot.  If you only have a single web site configured for your server, and would like to run multiple FarCry applications select me.</p>
 		<p>Note each application will run under its own sub-directory, for example: http://localhost:8500/myproject</p>
 	</div>
@@ -573,7 +575,9 @@ RENDER THE CURRENT STEP
 				Standalone
 			</cfif>
 		</h3>
-		<p><strong style="color:red;">You can't install as standalone when a project exists in the webroot</strong></p>
+		<cfif fileExists(expandPath("/farcryConstructor.cfm"))>
+			<p><strong style="color:red;">You can't install as standalone when a project exists in the webroot</strong></p>
+		</cfif>
 		<p>Specifically aimed at one application per website. For standalone application deployment and/or shared hosting deployment that allows for a single project select me.</p>
 		<p>Note the application will run directly under the webroot, for example: http://localhost/</p>
 	</div>
