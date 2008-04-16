@@ -267,21 +267,26 @@
 		<!---------------------------------------- 
 		BEGIN: Application Initialise 
 		----------------------------------------->
-		<cfparam name="url.updateapp" default="false" />
+		<cfparam name="url.updateapp" default="" />
 		
 		<cftry>
 
 		<!--- TODO: this needs to be removed eventually. It is currently only in here so that users can updateapp when they upgrade without having to recycle CF --->
 		<cfparam name="application.updateappKey" default="1" />
-		
-		<cfif url.updateapp EQ application.updateappKey>
-			<!--- CAN FORCE AND UPDATE IF THE USER KNOWS THE updateappKey --->
-			<cfset url.updateapp = true>
-		<cfelse>		
-			<!--- CANT UPDATE APP IF NOT ADMINISTRATOR --->
-			<cfif not isDefined("session.dmSec.Authentication.bAdmin") OR NOT session.dmSec.Authentication.bAdmin>
-				<cfset url.updateapp = false>
-			</cfif>			
+		<cfif len(url.updateapp)>
+			<cfif url.updateapp EQ application.updateappKey>
+				<!--- CAN FORCE AND UPDATE IF THE USER KNOWS THE updateappKey --->
+				<cfset url.updateapp = true>
+			<cfelse>		
+				<cfif isBoolean(url.updateapp) AND isDefined("session.dmSec.Authentication.bAdmin") and session.dmSec.Authentication.bAdmin>
+					<!--- ADMINISTRATORS CAN ALWAYS UPDATE APP WITH 1 --->
+				<cfelse>
+					<!--- Not an adminstrator and didnt know the updateappkey --->
+					<cfset url.updateapp = false>
+				</cfif>			
+			</cfif>
+		<cfelse>
+			<cfset url.updateapp = false>
 		</cfif>
 		
 		<cfif (NOT structkeyexists(application, "bInit") OR NOT application.binit) OR url.updateapp>
