@@ -9,6 +9,8 @@
 	<cfproperty name="security" type="boolean" default="0" hint="Reload user directories" ftSeq="21" ftFieldset="Security" ftLabel="Security" ftType="boolean" />
 	<cfproperty name="javascript" type="boolean" default="0" hint="Reload javascript libraries" ftSeq="30" ftFieldset="Javascript" ftLabel="Javascript" ftType="boolean" />
 	
+	<cfproperty ftSeq="35" ftFieldset="" name="factories" type="boolean" default="0" hint="Reload factories" ftLabel="Factories" ftType="boolean" />
+	
 	<cffunction name="process" access="public" output="true" returntype="struct" hint="Performs application refresh according to options selected">
 		<cfargument name="fields" type="struct" required="true" hint="The fields submitted" />
 		
@@ -49,6 +51,30 @@
 		<!--- Javascript --->
 		<cfif structkeyexists(arguments.fields,"Javascript") and arguments.fields.Javascript>
 			<cfset application.randomID = createUUID() />
+		</cfif>
+		
+		<!--- initialise factory objects --->
+		<cfif structkeyexists(arguments.fields,"factories") and arguments.fields.factories>
+			<cfset application.factory.oAuthorisation = createobject("component","#application.packagepath#.security.authorisation") />
+			<cfset application.factory.oUtils = createobject("component","#application.packagepath#.farcry.utils") />
+			<cfset application.factory.oAudit = createObject("component","#application.packagepath#.farcry.audit") />
+			<cfset application.factory.oTree = createObject("component","#application.packagepath#.farcry.tree") />
+			<cfset application.factory.oCache = createObject("component","#application.packagepath#.farcry.cache") />
+			<cfset application.factory.oLocking = createObject("component","#application.packagepath#.farcry.locking") />
+			<cfset application.factory.oVersioning = createObject("component","#application.packagepath#.farcry.versioning") />
+			<cfset application.factory.oWorkflow = createObject("component","#application.packagepath#.farcry.workflow") />
+			<cfset application.factory.oStats = createObject("component","#application.packagepath#.farcry.stats") />
+			<cfset application.factory.oCategory = createObject("component","#application.packagepath#.farcry.category") />
+			<cfset application.factory.oGenericAdmin = createObject("component","#application.packagepath#.farcry.genericAdmin") />
+			<cfset application.factory.oVerity = createObject("component","#application.packagepath#.farcry.verity") />
+			<cfset application.factory.oCon = createObject("component","#application.packagepath#.rules.container") />
+			<cfset application.factory.oGeoLocator = createObject("component","#application.packagepath#.farcry.geoLocator") />
+			<cfset application.bGeoLocatorInit = application.factory.oGeoLocator.init() />
+			<cftry>
+				<cfset application.factory.oFU = createObject("component","#application.packagepath#.farcry.FU") />
+				<cfcatch>
+				</cfcatch>
+			</cftry>
 		</cfif>
 		
 		<cfreturn arguments.fields />
