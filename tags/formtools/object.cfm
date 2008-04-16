@@ -591,9 +591,11 @@
 					<cfoutput><td></cfoutput>
 				</cfif>
 	
+				<cfif bShowLabel>
+					<cfoutput><div class="fieldAlign"></cfoutput>
+				</cfif>
 				
-				<cfoutput>
-					<div class="fieldAlign">					
+				<cfoutput>				
 						
 						<cfif len(LibraryLink)>
 							#LibraryLink#					
@@ -603,9 +605,11 @@
 						<cfif attributes.bShowFieldHints AND structKeyExists(ftFieldMetadata,"ftHint") and len(ftFieldMetadata.ftHint)>
 							<cfoutput><small>#ftFieldMetadata.ftHint#</small></cfoutput>
 						</cfif>
-					</div>
 				</cfoutput>
 				
+				<cfif bShowLabel>
+					<cfoutput></div></cfoutput>
+				</cfif>
 
 				
 				<cfif Attributes.InTable EQ 1>
