@@ -218,11 +218,6 @@
 	<cffunction name="authenticate" access="public" output="true" returntype="struct" hint="Attempts to authenticate a user using each directory, and returns true if successful">
 		<cfset var ud = "" />
 		<cfset var stResult = structnew() />
-		<cfset var groups = "" />
-		<cfset var aUserGroups = arraynew(1) />
-		<cfset var i = 0 />
-		<cfset var oProfile = createObject("component", application.stcoapi["dmProfile"].packagePath) />
-		<cfset var stDefaultProfile = structnew() />
 		<cfset var udlist = structsort(this.userdirectories,"numeric","asc","seq") />
 		
 		<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
@@ -241,78 +236,8 @@
 					<cfbreak />
 				</cfif>
 				
-				<!--- Get user groups and convert them to Farcry roles --->
-				<cfset aUserGroups = this.userdirectories[ud].getUserGroups(stResult.userid) />
-				<cfloop from="1" to="#arraylen(aUserGroups)#" index="i">
-					<cfset groups = listappend(groups,"#aUserGroups[i]#_#ud#") />
-				</cfloop>
-				<cfset session.dmSec.authentication.lPolicyGroupIds = this.factory.role.groupsToRoles(groups) />
-				
-				<!--- New structure --->
-				<cfset session.security.userid = "#stResult.userid#_#ud#" />
-				<cfset session.security.roles = this.factory.role.groupsToRoles(groups) />
-				
-				<!--- Get users profile --->
-				<cfset session.dmProfile = oProfile.getProfile(userName=session.security.userid) />
-				<cfset stDefaultProfile = this.userdirectories[ud].getProfile(userid=stResult.userid) />
-				<cfparam name="stDefaultProfile.override" default="false" />
-				<cfif not session.dmProfile.bInDB>
-					<cfset structappend(session.dmProfile,stDefaultProfile,stDefaultProfile.override) />
-
-					<cfset session.dmProfile.userdirectory = ud />
-					<cfset session.dmProfile.username = "#stResult.userid#_#ud#" />
-					<cfset session.dmprofile = oProfile.createProfile(session.dmprofile) />
-				<cfelseif stDefaultProfile.override>
-					<cfset structappend(session.dmProfile,stDefaultProfile,true) />
-					<cfset oProfile.setData(stProperties=session.dmProfile) />
-				</cfif>
-			
-				<!--- i18n: find out this locale's writing system direction using our special psychic powers --->
-		        <cfif application.i18nUtils.isBIDI(session.dmProfile.locale)>
-		            <cfset session.writingDir = "rtl" />
-		        <cfelse>
-		            <cfset session.writingDir = "ltr" />
-		        </cfif>
-				
-		        <!--- i18n: final bit, grab user language from locale, tarts up html tag --->
-		        <cfset session.userLanguage = left(session.dmProfile.locale,2) />
-				
-				<!--- DEPRECATED - THESE VARIABLES SHOULD NOT BE USED --->
-				<!--- Retrieve user info --->
-				<cfif ud eq "CLIENTUD">
-					<cfset session.dmSec.authentication = createObject("component", application.stcoapi["farUser"].packagePath).getByUserID(stResult.userid) />
-					<cfif structkeyexists(session.dmSec.authentication,"password")>
-						<cfset structdelete(session.dmSec.authentication,"password") />
-					</cfif>
-				</cfif>
-				<cfset session.dmSec.authentication.userlogin = stResult.userid />
-				<cfset session.dmSec.authentication.canonicalname = "#stResult.userid#_#ud#" />
-				<cfset session.dmSec.authentication.userdirectory = ud />
-				
-				<!--- Admin flag --->
-				<cfset session.dmSec.authentication.bAdmin = checkPermission(permission="Admin") />
-				
-				<!--- /DEPRECATED --->
-				
-				<!--- First login flag --->
-				<cfif createObject("component", application.stcoapi["farLog"].packagePath).filterLog(userid=session.security.userid,type="security",event="login").recordcount>
-					<cfset session.security.firstlogin = false />
-					
-					<!--- DEPRECATED --->
-					<cfset session.firstLogin = false />
-				<cfelse>
-					<cfset session.security.firstlogin = true />
-					
-					<!--- DEPRECATED --->
-					<cfset session.firstlogin = true />
-				</cfif>
-				
-				<!--- Log the result --->
-				<cfif session.firstLogin>
-					<farcry:logevent type="security" event="login" userid="#session.security.userid#" notes="First login" />
-				<cfelse>
-					<farcry:logevent type="security" event="login" userid="#session.security.userid#" />
-				</cfif>
+				<!--- SUCCESS - log in user --->
+				<cfset login(userid=stResult.userid,ud=ud) />
 				
 				<!--- Return 'success' --->
 				<cfbreak />
@@ -321,6 +246,90 @@
 		
 		<!--- Returning an empty struct indicates that no authentication attempt was detected --->
 		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="login" access="public" returntype="void" description="Logs in the specified user" output="false">
+		<cfargument name="userid" type="string" required="true" hint="The UD specific user id" />
+		<cfargument name="ud" type="string" required="true" hint="The user directory" />
+		
+		<cfset var groups = "" />
+		<cfset var aUserGroups = arraynew(1) />
+		<cfset var i = 0 />
+		<cfset var oProfile = createObject("component", application.stcoapi["dmProfile"].packagePath) />
+		<cfset var stDefaultProfile = structnew() />
+		
+		<!--- Get user groups and convert them to Farcry roles --->
+		<cfset aUserGroups = this.userdirectories[arguments.ud].getUserGroups(arguments.userid) />
+		<cfloop from="1" to="#arraylen(aUserGroups)#" index="i">
+			<cfset groups = listappend(groups,"#aUserGroups[i]#_#arguments.ud#") />
+		</cfloop>
+		<cfset session.dmSec.authentication.lPolicyGroupIds = this.factory.role.groupsToRoles(groups) />
+		
+		<!--- New structure --->
+		<cfset session.security.userid = "#arguments.userid#_#arguments.ud#" />
+		<cfset session.security.roles = this.factory.role.groupsToRoles(groups) />
+		
+		<!--- Get users profile --->
+		<cfset session.dmProfile = oProfile.getProfile(userName=session.security.userid) />
+		<cfset stDefaultProfile = this.userdirectories[arguments.ud].getProfile(userid=arguments.userid) />
+		<cfparam name="stDefaultProfile.override" default="false" />
+		<cfif not session.dmProfile.bInDB>
+			<cfset structappend(session.dmProfile,stDefaultProfile,stDefaultProfile.override) />
+
+			<cfset session.dmProfile.userdirectory = arguments.ud />
+			<cfset session.dmProfile.username = "#arguments.userid#_#arguments.ud#" />
+			<cfset session.dmprofile = oProfile.createProfile(session.dmprofile) />
+		<cfelseif stDefaultProfile.override>
+			<cfset structappend(session.dmProfile,stDefaultProfile,true) />
+			<cfset oProfile.setData(stProperties=session.dmProfile) />
+		</cfif>
+	
+		<!--- i18n: find out this locale's writing system direction using our special psychic powers --->
+        <cfif application.i18nUtils.isBIDI(session.dmProfile.locale)>
+            <cfset session.writingDir = "rtl" />
+        <cfelse>
+            <cfset session.writingDir = "ltr" />
+        </cfif>
+		
+        <!--- i18n: final bit, grab user language from locale, tarts up html tag --->
+        <cfset session.userLanguage = left(session.dmProfile.locale,2) />
+		
+		<!--- DEPRECATED - THESE VARIABLES SHOULD NOT BE USED --->
+		<!--- Retrieve user info --->
+		<cfif ud eq "CLIENTUD">
+			<cfset session.dmSec.authentication = createObject("component", application.stcoapi["farUser"].packagePath).getByUserID(arguments.userid) />
+			<cfif structkeyexists(session.dmSec.authentication,"password")>
+				<cfset structdelete(session.dmSec.authentication,"password") />
+			</cfif>
+		</cfif>
+		<cfset session.dmSec.authentication.userlogin = arguments.userid />
+		<cfset session.dmSec.authentication.canonicalname = "#arguments.userid#_#arguments.ud#" />
+		<cfset session.dmSec.authentication.userdirectory = arguments.ud />
+		
+		<!--- Admin flag --->
+		<cfset session.dmSec.authentication.bAdmin = checkPermission(permission="Admin") />
+		
+		<!--- /DEPRECATED --->
+		
+		<!--- First login flag --->
+		<cfif createObject("component", application.stcoapi["farLog"].packagePath).filterLog(userid=session.security.userid,type="security",event="login").recordcount>
+			<cfset session.security.firstlogin = false />
+			
+			<!--- DEPRECATED --->
+			<cfset session.firstLogin = false />
+		<cfelse>
+			<cfset session.security.firstlogin = true />
+			
+			<!--- DEPRECATED --->
+			<cfset session.firstlogin = true />
+		</cfif>
+		
+		<!--- Log the result --->
+		<cfif session.firstLogin>
+			<farcry:logevent type="security" event="login" userid="#session.security.userid#" notes="First login" />
+		<cfelse>
+			<farcry:logevent type="security" event="login" userid="#session.security.userid#" />
+		</cfif>
 	</cffunction>
 
 	<cffunction name="logout" access="public" output="false" returntype="void" hint="" bDocument="true">
