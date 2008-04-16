@@ -1,0 +1,329 @@
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<head>
+
+<style>
+BODY, P, DIV, H1, H2, H3, H4, H5, H6, ADDRESS, OL, UL, TITLE, TD, OPTION, SELECT {
+ font-family: Verdana;
+ 
+}
+
+BODY, P, DIV, ADDRESS, OL, UL, LI, TITLE, TD, OPTION, SELECT {  
+  font-size: 10.0pt;
+  margin-top:0pt;  
+  margin-bottom:0pt;  
+} 
+
+BODY, P {
+  margin-left:0pt; 
+  margin-right:0pt;
+}
+
+BODY {
+  line-height: ;
+
+  margin: 6px;
+  padding: 0px;
+}
+
+h6 { font-size: 10pt }
+h5 { font-size: 11pt }
+h4 { font-size: 12pt }
+h3 { font-size: 13pt }
+h2 { font-size: 14pt }
+h1 { font-size: 16pt }
+
+blockquote {padding: 10px; border: 1px #DDDDDD dashed }
+
+a img {border: 0}
+
+</style>
+
+
+
+
+</head>
+
+
+<body>
+
+<div>
+  <p>
+    <strong>For full details of how CFFormProtect works, see the project page at
+    <a href=http://cfformprotect.riaforge.org/ target=_blank>http://cfformprotect.riaforge<wbr>.org/</a></strong>
+  </p>
+  <span style=FONT-WEIGHT:bold>Installation<br>
+  </span>
+  <ol>
+    <li>
+      Copy the cfformprotect folder into your web root.
+    </li>
+    <li>
+      Put &lt;cfinclude template="/cfformprotect/cffp.cfm"&gt; somewhere between
+      your form tags.
+    </li>
+    <li>
+      On your processing page include the following code:<br>
+      &lt;cfset Cffp =
+      CreateObject("component","cfformprotect.cffpVerify").init() /&gt;<br>
+      &lt;!--- now we can test the form submission ---&gt;<br>
+      &lt;cfif Cffp.testSubmission(form)&gt;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;!--- The submission has passed
+      the form test.&nbsp; Place processing here ---&gt;<br>
+      &lt;cfelse&gt;<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &lt;!--- The test failed.&nbsp; Take
+      appropriate failure action here. ---&gt;<br>
+      &lt;/cfif&gt;
+    </li>
+    <li>
+      Setup your email settings and Akismet in cffp.ini.cfm, if you want to use
+      those features (if you leave the email settings blank, you won't receive
+      an email when spammer tries to attack your forms)<br>
+    </li>
+  </ol>
+  <p>
+    <strong>Customization</strong>
+  </p>
+  <ul>
+    <li>
+      You can change the values in cffp.ini.cfm if you want to tweak how
+      CFFormProtect operates. Descriptions of the values are below.<br>
+    </li>
+    <li>
+      You'll probably want to change what happens when a spam message is found.
+      I have it set to display an error, send you an email (if you configured
+      this feature) and then cfabort. You can change this at the bottom of
+      cffpVerify.cfm. You can use two variables for information on why the
+      message was flagged as spam, testsThatFailed and totalPoints. This will
+      help you tweak the settings to your liking (to allow more or less messages
+      through)
+    </li>
+    <li>
+      If you use the Akismet feature, modify your site's "send email" code that
+      sends you good emails, so that it contains the Akismet link to notify
+      Akismet of spam that got through their filters. This step is optional but
+      very recommended, because Akismet is free, and all they ask is that you
+      feed data back into the system when necessary to help them improve it.
+      Here is the code I have in my sites for this:<br>
+      <pre>&lt;cfif Cffp.getConfig().akismet&gt;<br>	&lt;!--- The following few lines build the URL to allow the user to submit a missed spam notification to Akismet if this is not spam ---&gt;<br>	&lt;cfset missedSpamURL = replace("#Cffp.getConfig().akismetBlo<wbr>gURL##cffpPath#/akismetFailure<wbr>.cfm?type=spam","://","^^",<wbr>"all")&gt;<br>	&lt;cfset missedSpamURL = replace(missedSpamURL,"//","/"<wbr>,"all")&gt;<br>	&lt;cfset missedSpamURL = replace(missedSpamURL,"^^",":/<wbr>/","all")&gt;<br>	&lt;cfset missedSpamURL = missedSpamURL&amp;"&amp;user_ip=<wbr>#urlEncodedFormat(cgi.remote_addr,'utf-8')#"&gt;<br>	&lt;cfset missedSpamURL = missedSpamURL&amp;"&amp;referrer=<wbr>#urlEncodedFormat(cgi.http_referer,'utf-8')#"&gt;<br>	&lt;cfset missedSpamURL = missedSpamURL&amp;"&amp;comment_author<wbr>=#urlEncodedFormat(form[Cffp.getConfig().akismetFormNameField],'utf-8')#"&gt;<br>	&lt;cfif Cffp.getConfig().akismetFormEmailFiel<wbr>d neq ""&gt;<br>		&lt;cfset missedSpamURL = missedSpamURL&amp;"&amp;comment_author<wbr>_email=#urlEncodedFormat(form[Cffp.getConfig().akismetFormEmailFiel<wbr>d],'utf-8')#"&gt;<br>	&lt;/cfif&gt;<br>	&lt;cfif cffpConfig.akismetFormURLField neq ""&gt;<br>		&lt;cfset missedSpamURL = missedSpamURL&amp;"&amp;comment_author<wbr>_url=#urlEncodedFormat(form[cffpConfig.akismetFormURLField],'utf-8')#"&gt;<br>	&lt;/cfif&gt;<br>	&lt;cfset missedSpamURL = missedSpamURL&amp;"&amp;comment<wbr>_content=#urlEncodedFormat<wbr>(form[cffpConfig.akismetFormBodyField],'utf-8')#"&gt;<br>	&lt;p&gt;Akisment thinks this is not spam, if it is please mark this as<br>	missed spam by &lt;cfoutput&gt;&lt;a href="#missedSpamURL#"&gt;clicking here&lt;/a&gt;&lt;/cfoutput&gt;.&lt;/p&gt;<br>&lt;/cfif&gt;<br>   			</pre>
+    </li>
+  </ul>
+  <strong>Tip:</strong> You can enter "viagra-test-123" as your Name when
+  testing your form, and Akismet will automatically mark the form submission as
+  spam
+  <p>
+    <strong>INI File settings</strong> (cffp.ini.cfm)<br>
+    Most of the values can be left as default, if you want, but you'll need to
+    provide values for Akismet if you want to use that test.
+  </p>
+  <p>
+    <em>The first section of the ini allows you to set which tests to run. 1 is
+    enabled and 0 is disabled </em>:
+  </p>
+  <ul>
+    <li>
+      mouseMovement
+      <ul>
+        <li>
+          enable/disable the mouse test. This test makes sure the user moved
+          thier mouse
+        </li>
+      </ul>
+    </li>
+    <li>
+      usedKeyboard
+      <ul>
+        <li>
+          enable/disable the keyboard test. this test makes sure the user used
+          their keyboard
+        </li>
+      </ul>
+    </li>
+    <li>
+      timedFormSubmission
+      <ul>
+        <li>
+          enable/disable the test to check how long the form entry and
+          submission took
+        </li>
+      </ul>
+    </li>
+    <li>
+      hiddenFormField
+      <ul>
+        <li>
+          enable/disable hidden form field test. this test makes sure a CSS
+          hidden form field is empty
+        </li>
+      </ul>
+    </li>
+    <li>
+      akismet
+      <ul>
+        <li>
+          enable/disable the akismet test. uses the public Akismet service to
+          test if form contents are spam. This is off by default, because you
+          have to provide the details in the second section for Akistmet to
+          work.
+        </li>
+      </ul>
+    </li>
+    <li>
+      tooManyUrls
+      <ul>
+        <li>
+          enable/disable the tooManyUrls test. this test will add up the number
+          of URLs that are found in all of the submitted form fields, and 
+          mark the submission as spam if the total exceeds the limit configured
+          by the tooManyUrlsMaxUrls variable in the ini file.  This test was 
+          created by Dave Shuck.
+        </li>
+      </ul>
+    </li>
+    <li>
+      teststrings
+      <ul>
+        <li>
+          enable/disable the teststrings test. this test will compare the words
+          in the form submission to a list of configurable "spammy" words, and 
+          mark the submission as spam if one of these words is found.  you can 
+          modify the list by editing the spamstrings variable in the ini file.
+          This test was created by Mary Jo Sminkey.
+        </li>
+      </ul>
+    </li>
+  </ul>
+  <p>
+    <em>The 2nd section has settings for individual tests. All of the Akisment
+    settings are left blank on purpose. If you want to use Akismet (highly
+    recommended), please fill in these variables to match your environment</em>
+  </p>
+  <ul>
+    <li>
+      timedFormMinSeconds
+      <ul>
+        <li>
+          the minimum seconds allowed for a user to fill out the form
+        </li>
+      </ul>
+    </li>
+    <li>
+      timedFormMaxSeconds
+      <ul>
+        <li>
+          the maximum seconds allowed for a user to fill out the form
+        </li>
+      </ul>
+    </li>
+    <li>
+      encryptionKey
+      <ul>
+        <li>
+          used in the timedForm test, to encrypt the time so it can be stored in
+          a hidden form field (to help fool the spammers)
+        </li>
+      </ul>
+    </li>
+    <li>
+      akismetAPIKey
+      <ul>
+        <li>
+          this is the api key that you recieved from Akismet. it's blank by
+          default, because you have to get your own! ;)
+        </li>
+      </ul>
+    </li>
+    <li>
+      akismetBlogURL
+      <ul>
+        <li>
+          put the URL for your site here, it's a required value for the Akismet
+          service
+        </li>
+      </ul>
+    </li>
+    <li>
+      akismetFormNameField
+      <ul>
+        <li>
+          the name of your "Name" form field
+        </li>
+      </ul>
+    </li>
+    <li>
+      akismetFormEmailField
+      <ul>
+        <li>
+          the name of your "Email address" form field (optional)
+        </li>
+      </ul>
+    </li>
+    <li>
+      akismetFormURLField
+      <ul>
+        <li>
+          the name of your "URL" form field (optional)
+        </li>
+      </ul>
+    </li>
+    <li>
+      akismetFormBodyField
+      <ul>
+        <li>
+          the name of your "Comment" form field
+        </li>
+      </ul>
+    </li>
+    <li>
+      tooManyUrlsMaxUrls
+      <ul>
+        <li>
+          the maximum amount of URLs that can be passed in the form contents
+        </li>
+      </ul>
+    </li>
+    <li>
+      spamstrings
+      <ul>
+        <li>
+          a list of strings that form contents will be compared to
+        </li>
+      </ul>
+    </li>
+  </ul>
+  <p>
+    <em>The 3rd section allows you to modify how many penalty points each test
+    failure will receive</em>
+  </p>
+  <p>
+    <em>failureLimit</em>, is the total amount of points you will allow before
+    flagging a message as spam. Each test that fails will assign 'failure
+    points' to the form submission (see 3rd section of ini file). If the total
+    points exceeds the failureLimit, the message will not be sent.
+  </p>
+  <p>
+    <em>The 4th section</em> allows you to setup your email settings if you
+    want to have spam reports sent to you as they occur. Set
+    <em>emailFailedTests</em> to '1' if you want this feature enabled
+  </p>
+  <p>
+    <em>The final section allows you to setup logging.  By default, any failed
+    spam submissions will be logged to your server's default cflog location.</em>
+  </p>
+  <p>
+    <em>logFailedTests</em>, enable/disable logging of spam submissions
+  </p>
+  <p>
+    <em>logFile</em>, if you don't want to use the default cflog log file, you can
+    specify a different log file name here
+  </p>
+  <p>
+    &nbsp;
+  </p>
+  <p>
+    <strong>CFFormProtect is governed by the mozilla public license version 1.1.<br>
+    See the included License.txt or
+    <a href=http://www.mozilla.org/MPL/ target=_blank>http://www.mozilla.org/MPL/</a>
+    for details</strong>
+  </p>
+</div></body>
+</html>

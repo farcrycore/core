@@ -86,6 +86,10 @@ It just ignores the inner ones.
 			<skin:htmlHead library="FormValidation" />		
 		</cfif>
 		
+		<!--- ADD FORM PROTECTION --->
+		<cfparam name="session.stFarCryFormSpamProtection" default="#structNew()#" />
+		<cfparam name="session.stFarCryFormSpamProtection['#Request.farcryForm.Name#']" default="#structNew()#" />
+				
 		<ft:renderHTMLformStart onsubmit="#attributes.onsubmit#" class="#attributes.Class#" css="#attributes.css#" style="#attributes.style#" heading="#attributes.heading#" />
 	
 	</cfif>

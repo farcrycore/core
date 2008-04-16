@@ -1,4 +1,7 @@
 
+<!--- Import Tag Libraries --->
+<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
+
 <cfif not thistag.HasEndTag>
 
 	<cfabort showerror="Does not have an end tag..." >
@@ -49,6 +52,30 @@
 
 	<cfif NOT variables.EnterFormProcess>
 		<cfexit>
+	<cfelse>
+		
+		<cfif structKeyExists(session, "stFarCryFormSpamProtection") AND isDefined("FORM.FarcryFormSubmitted")>
+			<cfif structKeyExists(session.stFarCryFormSpamProtection, "#form.farcryFormSubmitted#")>
+
+				<!--- The form was submitted by this session --->
+				<cfif structKeyExists(session.stFarCryFormSpamProtection["#form.farcryFormSubmitted#"], FORM.FarcryFormSubmitButton) AND session.stFarCryFormSpamProtection["#form.farcryFormSubmitted#"]["#FORM.FarcryFormSubmitButton#"].bSpamProtect EQ true>
+					<!--- Supposed to enter form process but form protection is on so we need to protect --->
+					<cfset cffp = CreateObject("component","farcry.core.webtop.cffp.cfformprotect.cffpVerify").init(ConfigPath="#application.path.core#/webtop/cffp/cfformprotect", stConfig=session.stFarCryFormSpamProtection["#form.farcryFormSubmitted#"]["#FORM.FarcryFormSubmitButton#"]) />
+
+					<!--- now we can test the form submission --->
+					<cfif NOT Cffp.testSubmission(form)>
+						<!--- The submission has failed the form test. --->
+						<cfset variables.EnterFormProcess = false>
+						<cfexit>
+					</cfif>
+				</cfif>		
+			<cfelse>
+
+				<!--- The submission of the form was not made by the correct session. --->
+				<cfset variables.EnterFormProcess = false>
+				<cfexit>
+			</cfif>	
+		</cfif>	
 	</cfif>
 
 </cfif>
