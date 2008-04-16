@@ -314,9 +314,13 @@
 		<ft:processForm action="Cancel" Exit="true" />
 		
 		<ft:form>
-			
 			<!--- All Fields: default edit handler --->
-			<ft:object ObjectID="#arguments.ObjectID#" format="edit" lFields="#valuelist(qFields.propertyname)#" IncludeFieldSet=1 Legend="#displayname#" />
+			<ft:object objectID="#arguments.ObjectID#" format="edit" lFields="#valuelist(qFields.propertyname)#" r_stFields="stFields" />
+			
+			<cfoutput>
+				<h1>#displayName#</h1>
+				#stFields.configData.html#
+			</cfoutput>
 			
 			<ft:farcryButtonPanel>
 				<ft:farcryButton value="Save" /> 
