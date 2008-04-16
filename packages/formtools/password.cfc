@@ -47,21 +47,18 @@
 			</cfcase>
 			<cfcase value="confirmpassword">
 				<cfsavecontent variable="html">
-					<cfoutput>
-						<fieldset>
-							<legend>#arguments.stMetadata.ftLabel#</legend>							
-							<div class="fieldsection optional">
-								<label class="fieldsectionlabel" for="#arguments.fieldname#New">Password</label>
-								<div class="fieldwrap"><input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></div>
-								<br class="fieldsectionbreak" />
-							</div>
-							
-							<div class="fieldsection optional">
-								<label class="fieldsectionlabel" for="#arguments.fieldname#Confirm">Confirm Password</label>
-								<div class="fieldwrap"><input type="password" name="#arguments.fieldname#Confirm" id="#arguments.fieldname#Confirm" value="" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></div>
-								<br class="fieldsectionbreak" />
-							</div>
-						</fieldset>
+					<cfoutput>						
+						<div class="fieldsection password">
+							<label class="fieldsectionlabel" for="#arguments.fieldname#New">Password</label>
+							<div class="fieldAlign"><input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></div>
+							<br class="clearer" />
+						</div>
+						
+						<div class="fieldsection password">
+							<label class="fieldsectionlabel" for="#arguments.fieldname#Confirm">Confirm Password</label>
+							<div class="fieldAlign"><input type="password" name="#arguments.fieldname#Confirm" id="#arguments.fieldname#Confirm" value="" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></div>
+							<br class="clearer" />
+						</div>
 					</cfoutput>
 				</cfsavecontent>
 			</cfcase>
