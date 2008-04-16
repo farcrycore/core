@@ -33,7 +33,7 @@ START WEBSKIN
 				<sec:SelectUDLogin />
 				
 	
-				<ft:object typename="farLogin" lFields="username,password" legend="Login to #application.config.general.siteTitle#" />
+				<ft:object typename="farLogin" lFields="username,password" prefix="login" legend="Login to #application.config.general.siteTitle#" />
 					
 				
 				<ft:farcryButtonPanel>

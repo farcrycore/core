@@ -40,7 +40,7 @@
 	<cfparam name="attributes.lock" default="true"><!--- Lock if editing. --->
 	<cfparam name="attributes.bShowLibraryLink" default="true" type="boolean"><!--- Flag to determine if the libraryLink is to be displayed. --->
 	<cfparam name="attributes.bShowFieldHints" default="true" type="boolean"><!--- Flag to determine if the field hints are display. --->
-	
+	<cfparam name="attributes.prefix" default="" /><!--- Allows the developer to pass in the prefix they wish to use. Default is the objectid stripped of the dashes. --->
 	
 	<!--- If the attributes [IncludeFieldSet] has not been explicitly defined, work out the value. --->
 	<cfif attributes.includeFieldSet EQ "">
@@ -202,8 +202,17 @@
 	
 
 	<cfset Variables.CurrentCount = StructCount(request.farcryForm.stObjects) + 1>
-	<!--- <cfparam  name="variables.prefix" default="FFO#RepeatString('0', 3 - Len(Variables.CurrentCount))##Variables.CurrentCount#">	 --->
-	<cfparam  name="variables.prefix" default="#ReplaceNoCase(variables.ObjectID,'-', '', 'all')#">		
+
+	<!--- Determine the prefix to be used for this object --->
+	<cfparam name="variables.prefix" default="" />		
+	<cfif not len(variables.prefix)>
+		<cfif len(attributes.prefix)>
+			<cfset variables.prefix = attributes.prefix />
+		<cfelse>
+			<cfset variables.prefix = ReplaceNoCase(variables.ObjectID,'-', '', 'all') />
+		</cfif>
+	</cfif>
+	
 	<cfoutput><input type="hidden" name="FarcryFormPrefixes" value="#variables.prefix#" /></cfoutput>
 	<cfset Request.farcryForm.stObjects[variables.prefix] = StructNew()>
 		
