@@ -282,7 +282,7 @@ $in: objectid -- $
 				<cfsavecontent variable="ActionDropdown">
 					<cfset request.inhead.prototype = 1 />
 					<cfoutput>
-					<select name="action#variables.currentrow#" id="action#variables.currentrow#" class="actionDropdown" onchange="$('SelectedObjectID#Request.farcryForm.Name#').value='#attributes.qRecordSet.objectid[variables.currentrow]#';$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value=this.value;submit();">
+					<select name="action#variables.currentrow#" id="action#variables.currentrow#" class="actionDropdown" onchange="selectObjectID('#attributes.qRecordSet.objectid[variables.currentrow]#');$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value=this.value;submit();">
 						<option value="">-- action --</option>
 		
 						<option value="overview">Overview</option>
