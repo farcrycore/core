@@ -215,15 +215,15 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		FROM 	#application.dbowner##arguments.typename# type
 		WHERE	#preserveSingleQuotes(arguments.SqlWhere)#
 		
-		<cfif StructKeyExists(application.stcoapi[arguments.typename].stprops,"status") AND request.mode.showdraft>
-
-			<cfif StructKeyExists(application.types[arguments.typename].stprops,"versionid")>
-				AND objectid not in (select versionid from #application.dbowner##arguments.typename#)
+		<cfif StructKeyExists(application.stcoapi[arguments.typename].stprops,"status")>
+			<cfif request.mode.showdraft>	
+				<cfif StructKeyExists(application.types[arguments.typename].stprops,"versionid")>
+					AND objectid not in (select versionid from #application.dbowner##arguments.typename#)
+				</cfif>
+			<cfelse>
+				AND upper(type.status) = <cfqueryparam cfsqltype="cf_sql_varchar" value="APPROVED" />			
 			</cfif>
-		<cfelse>
-			AND upper(type.status) = <cfqueryparam cfsqltype="cf_sql_varchar" value="APPROVED" />			
 		</cfif>
-
 		
 		<cfif len(arguments.lcategoryids)>
 		
