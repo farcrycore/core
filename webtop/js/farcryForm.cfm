@@ -33,7 +33,13 @@
 						return false;
 					}
 				}						
-						
+							
+				function selectObjectID(objectid) {
+					f = $$('.fc-selected-object-id');
+					for(var i=0; i<f.length; i++){
+						f[i].value=objectid;
+					}
+				}	
 							
 				function openLibrary(target,ftJoin,url) {
 					win=window.open(url + '&ftJoin=' + ftJoin, target);

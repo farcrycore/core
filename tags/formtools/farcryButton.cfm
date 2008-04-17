@@ -54,8 +54,8 @@
 		</cfif>
 	</cfif>
 	
-	<cfif len(attributes.SelectedObjectID) AND isDefined("Request.farcryForm.Name")>		
-		<cfset attributes.Onclick = "#attributes.OnClick#;$('SelectedObjectID#Request.farcryForm.Name#').value='#attributes.SelectedObjectID#';">
+	<cfif len(attributes.SelectedObjectID)>		
+		<cfset attributes.Onclick = "#attributes.OnClick#;selectObjectID('#attributes.SelectedObjectID#');" />
 	</cfif>
 	
 	<cfif len(Attributes.ConfirmText)>
