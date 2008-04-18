@@ -89,6 +89,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.lCustomActions" default="" />
 <cfparam name="attributes.stFilterMetaData" default="#structNew()#" />
 <cfparam name="attributes.bShowActionList" default="true" />
+<cfparam name="attributes.qRecordset" default=""><!--- Used if the developer wants to pass in their own recordset --->
 
 <!--- I18 conversion off text output attributes --->
 <cfset attributes.description = application.rb.getResource("forms.text.#attributes.typename#.#left(rereplace(attributes.description,'[^\w\d]','','ALL'),10)#@text",attributes.description) />
@@ -632,50 +633,22 @@ user --->
 		</cfsavecontent>
 		
 		<cfoutput>#html_buttonbar#</cfoutput>
+
 	
 	
+		<cfif isQuery(attributes.qRecordset)>
+			<cfset stRecordSet.q = attributes.qRecordset>
+			<cfset stRecordSet.countAll = attributes.qRecordset.recordCount />
+			<cfset stRecordSet.currentPage = 0 />
+			<cfset stRecordSet.recordsPerPage = attributes.numitems />
+		<cfelse>
 	
-	<!--- output buttons for type admin pagination --->
-	<!---<cfif len(attributes.lButtons)>
-	
-		<cfoutput><div class="buttons"></cfoutput>
-			
-			<cfif listFindNoCase(attributes.lButtons, "add")>
-				<ft:farcryButton value="add" />
-			</cfif>
-			
-			<cfif listFindNoCase(attributes.lButtons, "unlock")>
-				<ft:farcryButton value="unlock" />
-			</cfif>
-			
-			<cfif listFindNoCase(attributes.lButtons, "delete")>
-				<ft:farcryButton value="delete" onclick="if(confirm('Are you sure you wish to delete these objects?')){return true};{return false};" />
-			</cfif>
-			
-		<cfoutput></div></cfoutput>
-	
-	</cfif>	 --->
-	
-	
-	
-		<cfset oFormtoolUtil = createObject("component", "farcry.core.packages.farcry.formtools") />
-		<cfset sqlColumns="objectid,locked,lockedby,#attributes.columnlist#" />
-		<!---<cfset bhasstatus=false />
-		<!--- check if the type has a status property --->
-		<cfif structKeyExists(application.types[attributes.typename].STPROPS, "status")>
-			<cfif not findNocase(attributes.ColumnList, "status") or not findNocase(attributes.ColumnList, "*")>
-				<cfset sqlColumns = listAppend(sqlColumns,"status")>
-				<cfset bhasstatus=true />
-			</cfif>
-		</cfif> --->
-	
-	
-	
-	
-		<cfset stRecordset = oFormtoolUtil.getRecordset(paginationID="#attributes.typename#", sqlColumns=sqlColumns, typename="#attributes.typename#", RecordsPerPage="#attributes.numitems#", sqlOrderBy="#session.objectadminFilterObjects[attributes.typename].sqlOrderBy#", sqlWhere="#attributes.sqlWhere#", lCategories="#attributes.lCategories#", bCheckVersions=true) />	
-	
-	
-	
+			<cfset oFormtoolUtil = createObject("component", "farcry.core.packages.farcry.formtools") />
+			<cfset sqlColumns="objectid,locked,lockedby,#attributes.columnlist#" />		
+		
+			<cfset stRecordset = oFormtoolUtil.getRecordset(paginationID="#attributes.typename#", sqlColumns=sqlColumns, typename="#attributes.typename#", RecordsPerPage="#attributes.numitems#", sqlOrderBy="#session.objectadminFilterObjects[attributes.typename].sqlOrderBy#", sqlWhere="#attributes.sqlWhere#", lCategories="#attributes.lCategories#", bCheckVersions=true) />	
+		</cfif>
+
 	
 	<ft:pagination 
 		paginationID="#attributes.typename#"
