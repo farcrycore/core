@@ -18,7 +18,7 @@
 		<cfset var html = "" />
 		<cfset var navid = "" />
 		<cfset var oCategory = createObject("component",'farcry.core.packages.farcry.category')>
-		<cfset var lSelectedCategoryID = oCategory.getCategories(objectid=arguments.stObject.ObjectID,bReturnCategoryIDs=true,alias=stMetaData.ftAlias)>
+		<cfset var lSelectedCategoryID = "">
 		<cfset var lCategoryBranch = "" />
 		<cfset var CategoryName = "" />
 		<cfset var i = "" />
@@ -32,6 +32,8 @@
 		<cfparam name="arguments.stMetadata.ftSelectSize" default="5" type="numeric" />
 		<cfparam name="arguments.stMetadata.ftDropdownFirstItem" default="" type="string" />
 
+		<cfset lSelectedCategoryID = oCategory.getCategories(objectid=arguments.stObject.ObjectID,bReturnCategoryIDs=true,alias=stMetaData.ftAlias)>
+		
 		<cfif structKeyExists(application.catid, arguments.stMetadata.ftAlias)>
 			<cfset navid = application.catid[arguments.stMetadata.ftAlias] >
 		<cfelse>
