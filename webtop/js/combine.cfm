@@ -29,6 +29,7 @@
 	
 	<cfset application.stCombinedFarcryJS[hashedURL] = stCombinedFarcryJS />
 </cfif>
-
+<cfcontent reset="yes" />
 <cfoutput>#application.stCombinedFarcryJS[hashedURL]#</cfoutput>
+<cfabort>
 <cfsetting enablecfoutputonly="false" />

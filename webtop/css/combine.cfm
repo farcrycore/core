@@ -31,6 +31,7 @@
 	
 	<cfset application.stCombinedFarcryCSS[hashedURL] = stCombinedFarcryCSS />
 </cfif>
-
+<cfcontent reset="yes" />
 <cfoutput>#application.stCombinedFarcryCSS[hashedURL]#</cfoutput>
+<cfabort>
 <cfsetting enablecfoutputonly="false" />
