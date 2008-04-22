@@ -32,6 +32,7 @@ $in: [bCacheControl] output cache control headers; default true. $
 
 <cfparam name="attributes.title" default="#application.config.general.siteTitle# :: Administration" type="string">
 <cfparam name="attributes.bCacheControl" default="false" type="boolean">
+<cfparam name="attributes.bDataRequestorJS" default="false" type="boolean">
 <cfparam name="attributes.jsshowhide" default="" type="string">
 <cfparam name="attributes.onLoad" type="string" default="">
 <!--- i18n --->
@@ -74,9 +75,14 @@ $in: [bCacheControl] output cache control headers; default true. $
 		<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
 		<title>#attributes.title#</title>
 
-		<style type="text/css">@import url(#application.url.webtop#/css/combine.cfm?files=/main.css,/tabs.css);</style>
-		<script type="text/javascript" src="#application.url.webtop#/js/combine.cfm?files=/tables.js,/showhide.js,/fade.js,/tabs.js"></script>		
-
+		<style type="text/css">@import url(#application.url.webtop#/css/combine.cfm?files=/main.css,/tabs.css&randomID=#application.randomID#);</style>
+		<script type="text/javascript" src="#application.url.webtop#/js/combine.cfm?files=/tables.js,/showhide.js,/fade.js,/tabs.js&randomID=#application.randomID#"></script>
+		
+		<cfif attributes.bDataRequestorJS>
+			<!--- DataRequestor and JSON : used to retrieve xml data via javascript --->
+			<script type="text/javascript" src="#application.url.webtop#/js/combine.cfm?files=/DataRequestor.js,/json.js&randomID=#application.randomID#"></script>		
+		</cfif>
+		
 		#customCSS#
 		#customJS#
 </cfoutput>

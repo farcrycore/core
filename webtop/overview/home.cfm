@@ -60,7 +60,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 
 <cfset ArrayPrepend(aObjectTypes,"All")>
 
-<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#" onload="doToggleContent(document.frm_pending,'pending');doToggleContent(document.frm_draft,'draft');">
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#" bDataRequestorJS="true" onload="doToggleContent(document.frm_pending,'pending');doToggleContent(document.frm_draft,'draft');">
 <cfoutput>
 <script type="text/javascript">
 function doToggleContent(objForm,content_status)
@@ -77,6 +77,7 @@ function doToggleContent(objForm,content_status)
     req.addArg(_GET,"content_status",content_status);
     req.addArg(_GET,"lcontent_type",lcontent_type);
     req.addArg(_GET,"maxReturnRecords",maxReturnRecords);
+    req.addArg(_GET,"ajaxmode",'true');
     req.onload = processReqChange;
     req.onfail = function (status){alert("Sorry and error occured while retrieving data [" + status + "]")};
     req.getURL(strURL,_RETURN_AS_TEXT);
