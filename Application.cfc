@@ -123,6 +123,18 @@
 			</cfif>
 		</cfif>
 		
+		<!----------------------------------- 
+		CALL THE PLUGINS AFTER INIT VARIABLES
+		 ----------------------------------->
+		<cfif isDefined("application.plugins")>
+			<cfloop list="#application.plugins#" index="plugin">
+				<cfif fileExists("#application.path.plugins#/#plugin#/config/_serverSpecificVarsAfterInit.cfm")>
+					<cfinclude template="/farcry/plugins/#plugin#/config/_serverSpecificVarsAfterInit.cfm">
+				</cfif>
+			</cfloop>
+		</cfif>
+		
+				
 		<!--- Return out. --->
 		<cfreturn true />
 
