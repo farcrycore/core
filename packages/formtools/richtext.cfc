@@ -13,18 +13,16 @@
 		<cfset var html = "" />	
 		<cfset var configJS = "" />
 		
-		<cfparam name="arguments.stMetadata.ftImageArrayField" default="">
-		<cfparam name="arguments.stMetadata.ftImageTypename" default="">
-		<cfparam name="arguments.stMetadata.ftImageField" default="">
-		<cfparam name="arguments.stMetadata.ftLinkListRelatedTypenames" default="">
+		<cfparam name="arguments.stMetadata.ftImageArrayField" default="" />
+		<cfparam name="arguments.stMetadata.ftImageTypename" default="" />
+		<cfparam name="arguments.stMetadata.ftImageField" default="" />
+		<cfparam name="arguments.stMetadata.ftLinkListRelatedTypenames" default="" />
 		
-		
-		<cfparam name="arguments.stMetadata.ftConfig" default=""><!--- tinyMCE.tinyMCE_config --->
-	
-		<cfif len(arguments.stMetadata.ftConfig) and isdefined("application.config.#arguments.stMetadata.ftConfig#")>
-			<cfset configJS =  Evaluate("application.config.#arguments.stMetadata.ftConfig#") />
+
+		<cfif isdefined("application.config.tinyMCE.tinyMCE_config") AND isdefined("application.config.tinyMCE.bUseConfig") and application.config.tinyMCE.bUseConfig and len(trim(application.config.tinyMCE.tinyMCE_config))>
+			<cfset configJS =  application.config.tinyMCE.tinyMCE_config />
 		<cfelse>
-			<cfset configJS = getConfig() />
+			<cfset configJS = getConfig(stMetadata="#arguments.stMetadata#") />
 		</cfif>	
 	
 		<cfset Request.InHead.TinyMCE = 1 />
@@ -99,9 +97,9 @@
 		
 	</cffunction>
 
-
 	<cffunction name="getConfig" access="public" output="false" returntype="string" hint="This will return the configuration that will be used by the richtext field">
-	
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		
 		<cfset var configJS = "" />
 		
 		<cfsavecontent variable="configJS">
