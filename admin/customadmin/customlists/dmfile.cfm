@@ -24,6 +24,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	columnList="title,datetimelastUpdated,status"   
 	sortableColumns="title,datetimelastUpdated,status"
 	lFilterFields="title"
-	sqlorderby="datetimelastUpdated desc" />
+	sqlorderby="datetimelastUpdated desc"
+	module="customlists/dmfile.cfm" />
 
 <admin:footer />
