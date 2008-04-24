@@ -25,7 +25,11 @@
 		<cfset var step=1>
 		
 		<cfparam name="arguments.stMetadata.ftRenderType" default="dateJS">	
-		<cfparam name="arguments.stMetadata.ftToggleOffDateTime" default="0">
+		<cfif structkeyexists(arguments.stMetadata,"ftValidation") and listcontains(arguments.stMetadata.ftValidation,"required")>
+			<cfparam name="arguments.stMetadata.ftToggleOffDateTime" default="0" />
+		<cfelse>
+			<cfparam name="arguments.stMetadata.ftToggleOffDateTime" default="1" />
+		</cfif>
 		
 			
 		<cfif arguments.stMetadata.ftToggleOffDateTime>
@@ -131,7 +135,7 @@
 			<cfparam name="arguments.stMetadata.ftShowTime" default="true">		
 			<cfparam name="arguments.stMetadata.ftDateLocale" default="">		
 			<cfparam name="arguments.stMetadata.ftShowCalendar" default="true">		
-			<cfparam name="arguments.stMetadata.ftShowSuggestions" default="false">	
+			<cfparam name="arguments.stMetadata.ftShowSuggestions" default="false">
 			
 			<!--- If no locale explicitly specified, set it to the dmProfile locale if available. Otherwise just use Australia. --->
 			<cfif not len(arguments.stMetadata.ftDateLocale)>
