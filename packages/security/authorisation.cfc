@@ -655,8 +655,7 @@ $out:$
 		<cfargument name="permissionID" required="false" default="" type="string">
 		
 		<cfset var stReturn = StructNew() />
-		<cfset var qRoles = "" />
-		<cfset var qGroups = "" />
+		<cfset var lRoles = "" />
 
 		<farcry:deprecated message="authorisation.fListUsersByPermssion() should be replaced by farPermission.getUsers()" />
 		
@@ -665,7 +664,8 @@ $out:$
 			<cfset arguments.permissionid = application.security.factory.permission.getID(arguments.permissionname) />
 		</cfif>
 		
-		<cfset stReturn.lObjectIDs = application.security.factory.permission.getUsers(arguments.permissionid) />
+		<cfset lRoles = application.security.factory.role.getRolesWithPermission(permission=arguments.permissionid) />
+		<cfset stReturn.lObjectIDs = application.security.factory.role.getAuthenticatedProfiles(roles=lRoles) />
 		<cfset stReturn.bSuccess = true />
 		<cfset stResurn.message = "" />
 
