@@ -73,7 +73,8 @@ default handlers
 	
 	<cffunction name="getView" access="public" output="true" returntype="string" hint="Returns the HTML of a view from the webskin content type folder.">
 		<cfargument name="objectid" required="no" type="UUID" hint="ObjectID of the object that is to be rendered by the webskin view." />
-		<cfargument name="template" required="yes" type="string" hint="Name of the template in the corresponding content type webskin folder, without the .cfm extension." />
+		<cfargument name="template" required="no" type="string" hint="Name of the template in the corresponding content type webskin folder, without the .cfm extension." />
+		<cfargument name="webskin" required="no" type="string" hint="Name of the template in the corresponding content type webskin folder, without the .cfm extension." />
 		<cfargument name="stparam" required="false" type="struct" default="#structNew()#" hint="Structure of parameters to be passed into the display handler." />
 		<cfargument name="stobject" required="no" type="struct" hint="Property structure to render in view.  Overrides any property structure mapped to arguments.objectid. Useful if you want to render a view with a modified content item.">
 		<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
@@ -89,6 +90,12 @@ default handlers
 		<cfset var bTypeWebskin = false />
 		<cfset var stArgs = structnew() />
 		<cfset var i = 0 />
+
+		<cfif structkeyexists(arguments,"webskin") and len(arguments.webskin)>
+			<cfset arguments.template = arguments.webskin />
+		<cfelseif not structkeyexists(arguments,"template") or not len(arguments.template)>
+			<cfthrow message="The getView function requires the template or webskin argument.">
+		</cfif>
 
 		<!--- make sure that .cfm isn't passed to this method in the template argument --->
 		<cfif listLast(arguments.template,".") EQ "cfm">
