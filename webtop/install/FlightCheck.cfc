@@ -214,6 +214,7 @@
 				<cfoutput>
 				<p>Your database does not appear to be #databaseTypeName#.</p>
 				<p>Please check the database type and try again.</p>
+				<cfif arguments.dbtype eq "MySQL"><p>Please check that the database user has permission to create temporary tables.</p></cfif>
 				</cfoutput>			
 			</cfsavecontent>
 		
