@@ -85,8 +85,12 @@
 			<cfparam name="arguments.stMetadata.ftDateFormatMask" default="dd mmm yyyy">
 			<cfparam name="arguments.stMetadata.ftTimeFormatMask" default="hh:mm tt">
 			<cfparam name="arguments.stMetadata.ftCalendarFormatMask" default="">
-			<cfparam name="arguments.stMetadata.ftCalendarShowTime" default="true">			
-			<cfparam name="arguments.stMetadata.ftToggleOffDateTime" default="0">
+			<cfparam name="arguments.stMetadata.ftCalendarShowTime" default="true">
+			<cfif structkeyexists(arguments.stMetadata,"ftValidation") and listcontains(arguments.stMetadata.ftValidation,"required")>
+				<cfparam name="arguments.stMetadata.ftToggleOffDateTime" default="0" />
+			<cfelse>
+				<cfparam name="arguments.stMetadata.ftToggleOffDateTime" default="1" />
+			</cfif>
 			
 			<!--------------------------------------------------------------------------------- 
 			This dynamically sets up the format of the date returned by the javascript calendar.
