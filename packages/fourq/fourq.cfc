@@ -912,6 +912,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			</cfif>
 		</cfloop>
 		
+		<!--- Param component metadata --->
+		<cfparam name="stReturnMetadata.displayname" default="#listlast(stReturnMetadata.fullname,'.')#" />
+		
 		<!--- This sets up the array which will contain the name of all types this type extends --->
 		<cfset stReturnMetadata.aExtends = application.coapi.coapiadmin.getExtendedTypeArray(packagePath=md.name)>
 		
