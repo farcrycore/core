@@ -346,8 +346,9 @@ RENDER THE CURRENT STEP
 			var field = Ext.get('DBType');
 			field.on('change', checkDBType);
 			
-		})
+		});
 		
+		var ownerout = false;
 		function checkDBType() {
 			
 			
@@ -355,41 +356,56 @@ RENDER THE CURRENT STEP
 			if(this.dom.value == "postgresql" || this.dom.value == "mysql" || this.dom.value == "")
 			{
 				var DBOwner = Ext.get('DBOwner');
-				DBOwner.dom.value = '';			
+				DBOwner.dom.value = '';		
 				
-				var el = Ext.get('divDBOwner');	
-				el.ghost('b', {
-				    easing: 'easeOut',
-				    duration: .5,
-				    remove: false,
-				    useDisplay: true
-				});
+				if (!ownerout) {	
+					var el = Ext.get('divDBOwner');	
+				
+					el.ghost('b', {
+					    easing: 'easeOut',
+					    duration: .5,
+					    remove: false,
+					    useDisplay: true
+					});
+					
+					ownerout = true;
+				}
 					
 			}
 			else if (this.dom.value == "ora")
 			{
 				var DBOwner = Ext.get('DBOwner');
-				DBOwner.dom.value = 'username';	
+				DBOwner.dom.value = 'username';		
+				
+				if (ownerout) {	
+					var el = Ext.get('divDBOwner');	
+				
+					el.slideIn('t', {
+					    easing: 'easeIn',
+					    duration: .5,
+					    useDisplay: true
+					});	
 					
-				var el = Ext.get('divDBOwner');	
-				el.slideIn('t', {
-				    easing: 'easeIn',
-				    duration: .5,
-				    useDisplay: true
-				});	
+					ownerout = false;
+				}
 			}
 			else 
 			{		
 				
 				var DBOwner = Ext.get('DBOwner');
-				DBOwner.dom.value = 'dbo.';			
+				DBOwner.dom.value = 'dbo.';		
+				
+				if (ownerout) {	
+					var el = Ext.get('divDBOwner');	
+				
+					el.slideIn('t', {
+					    easing: 'easeIn',
+					    duration: .5,
+					    useDisplay: true
+					});	
 					
-				var el = Ext.get('divDBOwner');	
-				el.slideIn('t', {
-				    easing: 'easeIn',
-				    duration: .5,
-				    useDisplay: true
-				});	
+					ownerout = false;
+				}
 			}
 		}
 	</script>	
