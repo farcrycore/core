@@ -167,7 +167,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfargument name="bHasDescendants" type="boolean" required="false" default="0" hint="Should we match for the entire category branch or not."> 
 		<cfargument name="dsn" type="string" default="#application.dsn#" required="false" hint="Database DSN">
 		<cfargument name="maxRows" type="numeric" required="false" default="0" hint="maximum of rows returned">
-		<cfargument name="sqlWhere" required="No" type="string" default="1=1" hint="adds to the where clause of the query" />
+		<cfargument name="sqlWhere" required="No" type="string" default="" hint="adds to the where clause of the query" />
 		<cfargument name="sqlOrderBy" required="No" type="string" default="datetimelastupdated desc" hint="Used by the query to sort." />
 		<cfargument name="lFields" type="string" required="false" default="" hint="the list of additional fields from the type if required.">
 		
@@ -179,6 +179,11 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfset var bSqlMaxPre = 0>
 		
 		<cfparam name="request.mode.showdraft" default="false" />
+		
+		<!--- Ensure there is always something in the sqlWhere Clause --->
+		<cfif not len(arguments.sqlWhere)>
+			<cfset arguments.sqlWhere = "1=1" />
+		</cfif>
 		
 		<cfif arguments.maxRows neq 0>
 			<cfswitch expression="#application.dbtype#">
