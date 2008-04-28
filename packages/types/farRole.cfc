@@ -110,7 +110,7 @@
 		<cfelse>
 			<cfloop from="1" to="#arraylen(users)#" index="i">
 				<cfif arguments.requireall and started>
-					<cfset result = application.factory.oUtils.listUnion(result,users[i]) />
+					<cfset result = application.factory.oUtils.listIntersection(result,users[i]) />
 				<cfelse>
 					<cfset result = application.factory.oUtils.listMerge(result,users[i]) />
 				</cfif>

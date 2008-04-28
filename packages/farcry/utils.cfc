@@ -49,7 +49,7 @@
 		<cfreturn result />
 	</cffunction>
 	
-	<cffunction name="listUnion" access="public" output="false" returntype="string" hint="Returns the items in list2 that are also in list2" bDocument="true">
+	<cffunction name="listIntersection" access="public" output="false" returntype="string" hint="Returns the items in list2 that are also in list2" bDocument="true">
 		<cfargument name="list1" type="string" required="true" />
 		<cfargument name="list2" type="string" required="true" />
 		<cfargument name="delimiters" type="string" required="false" default="," />
