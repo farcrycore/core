@@ -21,7 +21,7 @@
 			<div id="#Request.farcryForm.Name#formwrap" class="ajaxformwrap">
 		</cfif>
 		
-		<form action="#Request.farcryForm.Action#" method="#Request.farcryForm.Method#" id="#Request.farcryForm.Name#" name="#Request.farcryForm.Name#" target="#Request.farcryForm.Target#" enctype="multipart/form-data" onsubmit="#attributes.onSubmit#" class="#attributes.class#"  style="#attributes.style#">
+		<form action="#Request.farcryForm.Action#" method="#Request.farcryForm.Method#" id="#Request.farcryForm.Name#" name="#Request.farcryForm.Name#" <cfif len(request.farcryForm.Target)> target="#Request.farcryForm.Target#"</cfif> enctype="multipart/form-data" onsubmit="#attributes.onSubmit#" class="#attributes.class#"  style="#attributes.style#">
 		<cfif Request.farcryForm.bAjaxSubmission>
 			<div id="#Request.farcryForm.Name#ajaxsubmission" class="ajaxsubmission" style="position:absolute;width:100px;text-align:right;"></div>
 		</cfif>

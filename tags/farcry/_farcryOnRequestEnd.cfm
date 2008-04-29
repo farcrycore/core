@@ -273,7 +273,7 @@ $out:$
 		
 			<cfif isDefined("variables.stPlaceInHead.extJS") AND variables.stPlaceInHead.extJS>
 				<cfoutput>
-				<link rel="stylesheet" type="text/css" href="#application.url.farcry#/js/ext/resources/css/ext-all.css">
+				<link rel="stylesheet" type="text/css" href="#application.url.farcry#/js/ext/resources/css/ext-all.css" />
 				
 				<style type="text/css">
 				.msg .x-box-mc {
@@ -286,7 +286,7 @@ $out:$
 				    z-index:20000;
 				}
 				</style>
-				<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?library=ext&files=/adapter/ext/ext-base.js,/ext-all.js,/ext-bubble.cfm&randomID=#application.randomID#"></script>
+				<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?library=ext&amp;files=/adapter/ext/ext-base.js,/ext-all.js,/ext-bubble.cfm&amp;randomID=#application.randomID#"></script>
 				<script type="text/javascript">Ext.BLANK_IMAGE_URL = '#application.url.webtop#/js/ext/resources/images/default/s.gif';</script>
 				</cfoutput>
 			</cfif>
@@ -354,7 +354,7 @@ $out:$
 			
 			<cfif len(lLibraries)>
 				<cfoutput>
-					<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?library=scriptaculous&files=#lLibraries#&randomID=#application.randomID#"></script></cfoutput>
+					<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?library=scriptaculous&amp;files=#lLibraries#&amp;randomID=#application.randomID#"></script></cfoutput>
 			</cfif>
 			
 			<cfif isDefined("variables.stPlaceInHead.lightboxJS") AND variables.stPlaceInHead.lightboxJS>
@@ -395,7 +395,7 @@ $out:$
 			</cfif>
 			<cfif len(lLibraries)>
 				<cfoutput>
-					<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?library=calendar&files=#lLibraries#&randomID=#application.randomID#"></script></cfoutput>
+					<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?library=calendar&amp;files=#lLibraries#&amp;randomID=#application.randomID#"></script></cfoutput>
 			</cfif>
 			<cfif isDefined("variables.stPlaceInHead.CalendarStyle1CSS") AND variables.stPlaceInHead.CalendarStyle1CSS>
 				<cfoutput>
