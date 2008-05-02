@@ -142,6 +142,38 @@
 		<cfreturn result />
 	</cffunction>
 
+	<cffunction name="listContainsAny" access="public" returntype="boolean" description="Returns true if the first list contains any of the items in the second list" output="false" bDocument="true">
+		<cfargument name="list1" type="string" required="true" hint="The list being searched" />
+		<cfargument name="list2" type="string" required="true" hint="The list of search terms" />
+		<cfargument name="delimiters" type="string" required="false" default="," hint="Delimiters used by lists" />
+		
+		<cfset var thisitem = "" />
+		
+		<cfloop list="#arguments.list2#" index="thisitem" delimiters="#arguments.delimiters#">
+			<cfif listcontains(arguments.list1,thisitem,arguments.delimiters)>
+				<cfreturn true />
+			</cfif>
+		</cfloop>
+		
+		<cfreturn false />
+	</cffunction>
+
+	<cffunction name="listContainsAnyNoCase" access="public" returntype="boolean" description="Returns true if the first list contains any of the items in the second list" output="false" bDocument="true">
+		<cfargument name="list1" type="string" required="true" hint="The list being searched" />
+		<cfargument name="list2" type="string" required="true" hint="The list of search terms" />
+		<cfargument name="delimiters" type="string" required="false" default="," hint="Delimiters used by lists" />
+		
+		<cfset var thisitem = "" />
+		
+		<cfloop list="#arguments.list2#" index="thisitem" delimiters="#arguments.delimiters#">
+			<cfif listcontainsnocase(arguments.list1,thisitem,arguments.delimiters)>
+				<cfreturn true />
+			</cfif>
+		</cfloop>
+		
+		<cfreturn false />
+	</cffunction>
+
 	<!--- STRUCT ulilities --->
 	<cffunction name="structMerge" access="public" output="false" returntype="struct" hint="Performs a deep merge on two structs" bDocument="true">
 		<cfargument name="struct1" type="struct" required="true" />
@@ -283,7 +315,7 @@
 		<cfargument name="path" type="string" required="true" hint="The package path of the component" />
 		
 		<cfset var stMeta = getMetadata(createobject("component",arguments.path)) />
-		<cfset var result = stMeta.fullname />
+		<cfset var result = stMeta.name />
 		
 		<cfloop condition="structkeyexists(stMeta,'extends')">
 			<cfset stMeta = stMeta.extends />
