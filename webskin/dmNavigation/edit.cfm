@@ -66,12 +66,12 @@
 		<cfset stPropMetadata = structnew() />
 		<cfset stPropMetadata.aObjectIDs.ftLabel = "Create child" />
 		
-		<ft:object stObject="#stObj#" lFields="ExternalLink,typewebskin,aObjectIDs" legend="Advanced" stPropMetadata="#stPropMetadata#" bShowLibraryLink="false" />
+		<ft:object stObject="#stObj#" lFields="ExternalLink,typewebskin,aObjectIDs" legend="Advanced Options" stPropMetadata="#stPropMetadata#" bShowLibraryLink="false" />
 	</cfif>
 	
 	<ft:farcrybuttonpanel>
-		<ft:farcrybutton value="Save" />
-		<ft:farcrybutton value="Cancel" />
+		<ft:button value="Save" color="orange" /> 
+		<ft:button value="Cancel" validate="false" />
 	</ft:farcrybuttonpanel>
 </ft:form>
 

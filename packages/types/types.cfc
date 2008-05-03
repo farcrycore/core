@@ -30,7 +30,7 @@ system attributes
 <cfproperty name="createdby" displayname="Created by" type="nstring" hint="Username for creator." required="yes" default="">
 <!--- bowden --->
 <cfproperty name="ownedby" displayname="Owned by" type="nstring" hint="Username for owner." required="No" default="" ftLabel="Owned By" ftType="list" ftRenderType="dropdown" ftListData="getOwners">
-<cfproperty name="datetimelastupdated" displayname="Datetime lastupdated" type="date" hint="Timestamp for record last modified." required="yes" default="" ftType="datetime" ftLabel="Last Updated"> 
+<cfproperty name="datetimelastupdated" displayname="Datetime lastupdated" type="date" hint="Timestamp for record last modified." required="yes" default="" ftType="datetime" ftLabel="Last Updated" ftShowTime="true" ftTimeMask="long"> 
 <cfproperty name="lastupdatedby" displayname="Last updated by" type="nstring" hint="Username for modifier." required="yes" default="">
 <cfproperty name="lockedBy" displayname="Locked by" type="nstring" hint="Username for locker." required="no" default="">
 <cfproperty name="locked" displayname="Locked" type="boolean" hint="Flag for object locking." required="yes" default="0">
@@ -125,7 +125,9 @@ default handlers
 			<cfif structKeyExists(request, "aAncestorWebskins")>
 				<cfloop from="1" to="#arraylen(request.aAncestorWebskins)#" index="i">
 					<cfset request.aAncestorWebskins[i].okToCache = 0 />
-					<cfset request.aAncestorWebskins[i].timeout = stCurrentView.timeout />
+					<cfif structKeyExists(stCurrentView, "timeout")>
+						<cfset request.aAncestorWebskins[i].timeout = stCurrentView.timeout />
+					</cfif>
 				</cfloop>
 			</cfif>
 			<cfsavecontent variable="webskinHTML"><cfinclude template="#getWebskinPath(stObj.typename,'deniedaccess')#" /></cfsavecontent>
@@ -1261,8 +1263,8 @@ default handlers
 				</cfif>
 				
 				<ft:farcryButtonPanel>
-					<ft:farcryButton value="Save" /> 
-					<ft:farcryButton value="Cancel" validate="false" />
+					<ft:button value="Save" color="orange" /> 
+					<ft:button value="Cancel" validate="false" />
 				</ft:farcryButtonPanel>
 				
 			</ft:form>
