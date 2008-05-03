@@ -1,12 +1,3 @@
-<cfsetting enablecfoutputonly="true" />
-<cfsetting showdebugoutput="false" />
-<cfcontent type="application/x-javascript">
-	
-	<cfset offset = 315360000 />
-	<cfset expires = dateAdd('s', offset, now()) />	
-	<cfheader name="expires" value="#dateFormat(expires, 'ddd, d mmm yyyy')# #timeFormat(expires, 'HH:mm:ss')# GMT "> 
-	<cfheader name="cache-control" value="max-age=#offset#">
-
 <cfoutput>
 				function farcryButtonOnMouseOver(id) {
 					$(id + '-outer').addClassName('farcryButtonWrap-outer-hover');
@@ -270,6 +261,132 @@ function createFormtoolTree(fieldname,rootID,dataURL,rootNodeText,selectedIDs,ic
     root.expand();
     
 }
-</cfoutput>		
+
+
+	function fBtnURL(id,url,target) {
+		if (target == 'undefined' || target == '_self'){
+			location.href=url;			
+			return false;
+		} else {
+			win = window.open('',target);	
+			win.location=url;	
+			win.focus;			
+			return false;
+		}
+	}						
 				
-<cfsetting enablecfoutputonly="false" />				
+	function selectedObjectID(objectid) {
+		f = Ext.query('.fc-selected-object-id');
+		for(var i=0; i<f.length; i++){
+			f[i].value=objectid;
+		}
+	}	
+			
+function newFarcryButton (id,size,value,text,icon,overIcon,iconPos,sprite,width,formName,onClick,disabled) {
+	var dh = Ext.DomHelper;
+	
+	var btn = Ext.get(id);
+	var btnWrap = Ext.get(id + '-wrap');
+	var btnMarkup = btnWrap.dom.innerHTML;
+	var btnForm = Ext.get(formName);
+	
+	var newBtnMarkup = 	'<table style="width: auto;" id="' + id + '-tbl-wrap" class="f-btn " cellspacing="0">' +
+						'<tbody class="f-btn-' + size + ' f-btn-icon-' + size + '-' + iconPos +'">' +
+							'<tr>' +
+								'<td class="f-btn-tl f-btn-bg"><i>&nbsp;</i></td>' +
+								'<td class="f-btn-tc f-btn-bg"></td>' +
+								'<td class="f-btn-tr f-btn-bg"><i>&nbsp;</i></td>' +
+							'</tr>' +
+							'<tr>' +
+								'<td class="f-btn-ml f-btn-bg"><i>&nbsp;</i></td>' +
+								'<td class="f-btn-mc f-btn-bg" onclick="' + onClick + '"><em class="" unselectable="on">' +
+									btnMarkup  +
+								'</em></td>' +
+								'<td class="f-btn-mr f-btn-bg"><i>&nbsp;</i></td>' +
+							'</tr>' +
+							'<tr>' +
+								'<td class="f-btn-bl f-btn-bg"><i>&nbsp;</i></td>' +
+								'<td class="f-btn-bc f-btn-bg"></td>' +
+								'<td class="f-btn-br f-btn-bg"><i>&nbsp;</i></td>' +
+							'</tr>' +
+						'</tbody>' +
+					'</table>'
+					 
+	dh.overwrite(btnWrap,newBtnMarkup);
+
+	var newBtn = Ext.get(id + '-tbl-wrap');
+
+	
+	if (sprite != null && sprite != '') {
+		Ext.select('##' + id + '-tbl-wrap .f-btn-bg').applyStyles('background-image:url(' + sprite +');');
+	}
+	if (icon != null && icon != '') {
+		Ext.select('##' + id + '-tbl-wrap button').applyStyles('background-image:url(' + icon +');');
+		if (text != null && text != '') {
+			newBtn.addClass('f-btn-text-icon');
+		} else {
+			newBtn.addClass('f-btn-icon');
+		}
+	} else {
+		newBtn.addClass('f-btn-noicon');
+	}
+	
+	if (width != null && width != '') {
+		Ext.select('##' + id + '-tbl-wrap .f-btn-mc').applyStyles('width:' + width +';');
+	}
+
+	
+	if (disabled == 'yes') {
+		Ext.select('##' + id + '-tbl-wrap').addClass('f-btn-disabled');
+	} else {
+	
+		Ext.select('##' + id + '-tbl-wrap .f-btn-mc').on('mouseover', this.onClick, this, {
+		    fn: function() { 
+		    	newBtn.addClass('f-btn-over'); 
+				if (overIcon != null && overIcon != '') {
+					Ext.select('##' + id + '-tbl-wrap button').applyStyles('background-image:url(' + overIcon +');');		
+				}		    	
+		    }
+		});	
+		Ext.select('##' + id + '-tbl-wrap .f-btn-mc').on('mouseout', this.onClick, this, {
+		    fn: function() { 
+		    	newBtn.removeClass('f-btn-over'); 
+		    	newBtn.removeClass('f-btn-pressed');
+				if (overIcon != null && overIcon != '') {
+					Ext.select('##' + id + '-tbl-wrap button').applyStyles('background-image:url(' + icon +');');		
+				}		 
+		    }
+		});
+		Ext.select('##' + id + '-tbl-wrap .f-btn-mc').on('mousedown', this.onClick, this, {
+		    fn: function() { 
+		    	newBtn.addClass('f-btn-pressed'); 
+		    }
+		});
+		Ext.select('##' + id + '-tbl-wrap .f-btn-mc').on('mouseup', this.onClick, this, {
+		    fn: function() { 
+		    	newBtn.removeClass('f-btn-pressed'); 
+		    }
+		});
+	
+		Ext.select('##' + id + '-tbl-wrap button').on('click', this.onClick, this, {
+		    fn: function() { 
+		    	f = Ext.query('.fc-button-clicked');
+		    	for(var i=0; i<f.length; i++){
+					f[i].value = value;
+				}
+		    }
+		});
+	
+	}
+	
+
+<!--- 	Ext.select('##' + id + '-tbl-wrap .f-btn-mc').on('click', this.onClick, this, {
+	    fn: function() { 
+	    	btnForm.dom.submit();
+	    }
+	}); --->
+	
+	
+}
+
+</cfoutput>					
