@@ -1,12 +1,12 @@
 /*
- * Ext JS Library 2.0 Beta 1
- * Copyright(c) 2006-2007, Ext JS, LLC.
+ * Ext JS Library 2.0.2
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
  */
 
-/* Grid2 styles */
+/* Grid3 styles */
 .x-grid3 {
 	position:relative;
 	overflow:hidden;
@@ -89,6 +89,12 @@
 	
 }
 
+.x-grid-row-loading {
+    background: #fff url(../images/default/shared/loading-balls.gif) no-repeat center center;
+}
+.x-grid-page {
+    overflow:hidden;
+}
 .x-grid3-row {
 	cursor: default;
     border:1px solid #ededed;
@@ -97,7 +103,7 @@
     width:100%;
 }
 .x-grid3-row-alt{
-	/*background-color:#f1f2f4;*/
+	background-color:#fafafa;
 }
 
 .x-grid3-row-over {
@@ -200,6 +206,11 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
 	display: inline;
 }
 
+/* Header position fixes for IE strict mode */
+.ext-strict .ext-ie .x-grid3-header-inner{position:relative;}
+.ext-strict .ext-ie6 .x-grid3-hd{position:relative;}
+.ext-strict .ext-ie6 .x-grid3-hd-inner{position:static;}
+
 /* Body Styles */
 .x-grid3-body {
 	zoom:1;
@@ -264,16 +275,10 @@ td.x-grid3-hd-over .x-grid3-hd-inner, td.sort-desc .x-grid3-hd-inner, td.sort-as
 
 /* Selection Styles */
 .x-grid3-row-selected {
-	background: #DFE8F6;
+	background: #DFE8F6 !important;
 	border:1px dotted #a3bae9;
-}/*
-.x-grid3-row-selected td {
-	border-left:1px solid #c3daf9;
-    border-right:1px solid #719ad5;
-}*/
-.x-grid3-row-selected span, .x-grid3-row-selected b, .x-grid3-row-selected div, .x-grid3-row-selected strong, .x-grid3-row-selected i{
-
 }
+
 .x-grid3-cell-selected{
 	background-color: #B8CFEE !important;
 	color: black;
@@ -522,13 +527,23 @@ a.x-grid3-hd-btn:hover {
     background-image:url(../images/default/grid/group-by.gif);
 }
 
-.ext-ie .x-grid3 .x-editor .x-form-text { /* ie  bug */
+.ext-ie .x-grid3 .x-editor .x-form-text {
     position:relative;
     top:-1px;
+}
+.ext-ie .x-props-grid .x-editor .x-form-text {
+    position:static;
+    top:0;
 }
 
 .x-grid-empty {
     padding:10px;
     color:gray;
     font:normal 11px tahoma, arial, helvetica, sans-serif;
+}
+
+
+/* fix floating toolbar issue */
+.ext-ie7 .x-grid-panel .x-panel-bbar {
+    position:relative;
 }

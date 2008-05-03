@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 2.0 Beta 1
- * Copyright(c) 2006-2007, Ext JS, LLC.
+ * Ext JS Library 2.0.2
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -103,7 +103,7 @@
 /* Layout classes */
 
 .x-border-layout-ct {
-    background:#f1f2f4;
+    background:#f0f0f0;
 }
 
 .x-accordion-hd {

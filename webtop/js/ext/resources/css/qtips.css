@@ -1,6 +1,6 @@
 /*
- * Ext JS Library 2.0 Beta 1
- * Copyright(c) 2006-2007, Ext JS, LLC.
+ * Ext JS Library 2.0.2
+ * Copyright(c) 2006-2008, Ext JS, LLC.
  * licensing@extjs.com
  * 
  * http://extjs.com/license
@@ -88,38 +88,47 @@
     padding:0;
 }
 
+.x-tip .x-tip-body .loading-indicator {
+    margin:0;
+}
+
+.x-tip-draggable .x-tip-header,.x-tip-draggable .x-tip-header-text {
+    cursor:move;
+}
 
 .x-form-invalid-tip {
 }
 
-.x-form-invalid-tip .x-tip-top {
+.x-form-invalid-tip .x-tip-tc {
+	background: url(../images/default/form/error-tip-corners.gif) repeat-x 0 -12px;
+    padding-top:6px;
+}
+.x-form-invalid-tip .x-tip-tl {
 	background-image: url(../images/default/form/error-tip-corners.gif);
 }
-.x-form-invalid-tip .x-tip-top-left {
+.x-form-invalid-tip .x-tip-tr {
 	background-image: url(../images/default/form/error-tip-corners.gif);
 }
-.x-form-invalid-tip .x-tip-top-right {
+.x-form-invalid-tip .x-tip-bc {
+	background: url(../images/default/form/error-tip-corners.gif) repeat-x 0 -18px;
+    height:6px;
+}
+.x-form-invalid-tip .x-tip-bl {
+	background: url(../images/default/form/error-tip-corners.gif) no-repeat 0 -6px;
+}
+.x-form-invalid-tip .x-tip-br {
+	background: url(../images/default/form/error-tip-corners.gif) no-repeat right -6px;
+}
+.x-form-invalid-tip .x-tip-ml {
 	background-image: url(../images/default/form/error-tip-corners.gif);
 }
-.x-form-invalid-tip .x-tip-ft {
+.x-form-invalid-tip .x-tip-mr {
 	background-image: url(../images/default/form/error-tip-corners.gif);
 }
-.x-form-invalid-tip .x-tip-ft-left {
-	background-image: url(../images/default/form/error-tip-corners.gif);
+.x-form-invalid-tip .x-tip-body {
+    padding:2px;
 }
-.x-form-invalid-tip .x-tip-ft-right {
-	background-image: url(../images/default/form/error-tip-corners.gif);
-}
-.x-form-invalid-tip .x-tip-bd-left {
-	background-image: url(../images/default/form/error-tip-corners.gif);
-}
-.x-form-invalid-tip .x-tip-bd-right {
-	background-image: url(../images/default/form/error-tip-corners.gif);
-}
-.x-form-invalid-tip .x-tip-bd .x-tip-bd-inner {
+.x-form-invalid-tip .x-tip-body {
     padding-left:24px;
     background:transparent url(../images/default/form/exclamation.gif) no-repeat 2px 2px;
-}
-.x-form-invalid-tip .x-tip-bd-inner {
-    padding:2px;
 }
