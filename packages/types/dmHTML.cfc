@@ -14,6 +14,9 @@ type properties
 <cfproperty ftSeq="6" ftwizardStep="Start" ftFieldset="Metadata" name="extendedmetadata" type="longchar" hint="HTML head section for extended keywords." required="no" default="" ftlabel="Extended Metadata" ftToggle="true">
 
 
+<cfproperty ftSeq="10" ftwizardStep="Body" ftFieldset="Teaser" name="Teaser" type="longchar" hint="Teaser text." required="no" default="">
+<cfproperty ftSeq="11" ftwizardStep="Body" ftFieldset="Teaser" name="teaserImage" type="uuid" hint="UUID of image to display in teaser" required="no" default="" ftJoin="dmImage" ftLibraryData="getTeaserImageLibraryData" ftLibraryDataTypename="dmHTML">
+
 <cfproperty ftSeq="12" ftwizardStep="Body" ftFieldset="Body" name="Body" type="longchar" hint="Main body of content." required="no" default="" ftType="richtext" ftLabel="Body" 
 	ftImageArrayField="aObjectIDs" ftImageTypename="dmImage" ftImageField="StandardImage"
 	ftTemplateTypeList="dmImage,dmFile,dmFlash,dmNavigation,dmHTML" ftTemplateWebskinPrefixList="insertHTML"
@@ -22,9 +25,6 @@ type properties
 
 <cfproperty ftSeq="13" ftwizardStep="Body" ftFieldset="Relationships" name="aObjectIDs" type="array" hint="Holds objects to be displayed at this particular node.  Can be of mixed types." required="no" default="" ftLabel="Associated Media" ftJoin="dmImage,dmFile,dmFlash" bSyncStatus="true">
 <cfproperty ftSeq="14" ftwizardStep="Body" ftFieldset="Relationships" name="aRelatedIDs" type="array" hint="Holds object pointers to related objects.  Can be of mixed types." required="no" default="" ftJoin="dmNavigation,dmHTML" ftLabel="Associated Content">
-
-<cfproperty ftSeq="10" ftwizardStep="Body" ftFieldset="Teaser" name="Teaser" type="longchar" hint="Teaser text." required="no" default="">
-<cfproperty ftSeq="11" ftwizardStep="Body" ftFieldset="Teaser" name="teaserImage" type="uuid" hint="UUID of image to display in teaser" required="no" default="" ftJoin="dmImage" ftLibraryData="getTeaserImageLibraryData" ftLibraryDataTypename="dmHTML">
 
 <cfproperty ftSeq="20" ftwizardStep="Categorisation" name="catHTML" type="nstring" hint="Topic." required="no" default="" ftType="Category" ftAlias="root" ftLabel="Categories" />
 
