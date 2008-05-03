@@ -29,7 +29,7 @@ $in: id -- an id for the content to be added to the head. If the key already exi
 	<cfif request.mode.ajax>
 		<cfoutput><script type="text/javascript"></cfoutput>
 	<cfelse>
-		<skin:htmlHead library="extjs" />
+		<skin:htmlHead library="extCoreJS" />
 	</cfif>
 </cfif>
 

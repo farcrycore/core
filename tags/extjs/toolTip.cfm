@@ -10,6 +10,7 @@
 FARCRY IMPORT FILES
  ------------------>
 <cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 
 <cfparam name="attributes.title" default="" /><!--- The title of the message --->
@@ -27,7 +28,9 @@ FARCRY IMPORT FILES
 	<cfsavecontent variable="toolTipHTML">
 		
 		<cfoutput><span id="#toolTipID#">#thisTag.generatedContent#</span></cfoutput>
-
+		
+		<skin:htmlHead library="extJS" />
+		
 		<extjs:onReady>
 		<cfoutput>
 			 new Ext.ToolTip({   

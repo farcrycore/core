@@ -21,7 +21,7 @@
 	
 	<skin:htmlHead library="extJS" />
 
-	<skin:htmlHead>
+	<skin:htmlHead id="iFrameDialogJS">
 	<cfoutput>
 		<script language="javascript">
 			Ext.ux.IFrameComponent = Ext.extend(Ext.BoxComponent, {
