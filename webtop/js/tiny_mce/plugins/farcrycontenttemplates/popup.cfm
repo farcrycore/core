@@ -31,7 +31,7 @@
 			// Execute the mceTemplate command without UI this time
 			//tinyMCEPopup.execCommand('mceTemplate');
 			
-			url = '#application.url.farcry#/facade/tinyMCE.cfc?method=ajaxSetTemplatePreview';
+			url = '#application.url.farcry#/facade/tinyMCE.cfc?method=ajaxSetTemplatePreview&ajaxmode=1';
 			//alert('<sc'+'ript language="javascript" type="text/javascript" src="#application.url.farcry#/facade/tinyMCE.cfm?objectID=' + farcryobjectid + '&Typename=' + farcrytypename + '&richtextfield=' + farcryrichtextfield + '"></sc'+'ript>');
 			new Ajax.Updater('prev' + prevDIV + 'div', url, {
 				//onLoading:function(request){Element.show('indicator')},
