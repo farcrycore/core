@@ -24,6 +24,7 @@ $in: [title] page title for frame $
 $in: [bCacheControl] output cache control headers; default true. $
 --->
 <cfimport taglib="/farcry/core/tags/misc/" prefix="misc">
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 
 <!--- exit tag if its been closed, ie don't run twice --->
 <cfif thistag.executionmode eq "end">
@@ -70,7 +71,7 @@ $in: [bCacheControl] output cache control headers; default true. $
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" dir="#attributes.writingDir#" lang="#attributes.userLanguage#">
 	<head>
-		<!--- apply cach control metadata as required --->
+		<!---  apply cach control metadata as required --->
 		</cfoutput><cfif attributes.bCacheControl><misc:cacheControl /></cfif><cfoutput>
 		<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
 		<title>#attributes.title#</title>
@@ -79,8 +80,8 @@ $in: [bCacheControl] output cache control headers; default true. $
 		<script type="text/javascript" src="#application.url.webtop#/js/combine.cfm?files=/tables.js,/showhide.js,/fade.js,/tabs.js&randomID=#application.randomID#"></script>
 		
 		<cfif attributes.bDataRequestorJS>
-			<!--- DataRequestor and JSON : used to retrieve xml data via javascript --->
-			<script type="text/javascript" src="#application.url.webtop#/js/combine.cfm?files=/DataRequestor.js,/json.js&randomID=#application.randomID#"></script>		
+			<skin:htmlHead library="DataRequestor" />
+			<skin:htmlHead library="json" />
 		</cfif>
 		
 		#customCSS#
@@ -88,8 +89,8 @@ $in: [bCacheControl] output cache control headers; default true. $
 </cfoutput>
 
 <cfoutput>
-<!--- TODO: review these Javascript requirements -- remove if possible GB20050520 --->
-<!--- setup javascript source --->
+<!--- TODO: review these Javascript requirements -- remove if possible GB20050520 
+ setup javascript source --->
 	<script type="text/javascript">
 		//browser testing;
 		var ns6 = document.getElementById && ! document.all;
@@ -103,7 +104,7 @@ $in: [bCacheControl] output cache control headers; default true. $
 			}
 		}
 	</script>
-	
+
 </cfoutput>
 
 <cfoutput>
