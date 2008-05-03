@@ -540,7 +540,7 @@
 				<cfsavecontent variable="FieldLabelStart">
 					<cfoutput>
 						<label for="#variables.prefix##ftFieldMetadata.Name#" class="fieldsectionlabel #attributes.class#">
-							#ftFieldMetadata.ftlabel# :
+							#ftFieldMetadata.ftlabel#
 						</label>
 					</cfoutput>
 				</cfsavecontent>
