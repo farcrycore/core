@@ -8,6 +8,7 @@
 <cfheader name="cache-control" value="max-age=#offset#"> 
 
 <cfparam name="url.library" default="" />
+<cfparam name="url.files" default="" />
 
 <!---  type="text/javascript; charset=UTF-8" --->
 <cfset hashedURL = hash(cgi.QUERY_STRING) />
@@ -16,8 +17,8 @@
 
 <cfif not structKeyExists(application.stCombinedFarcryJS, hashedURL)>
 
-	<cfsavecontent variable="stCombinedFarcryJS">
-		<cfif structKeyExists(url, "library") AND  structKeyExists(url, "files") AND len(url.files)>
+	<cfsavecontent variable="hashedCombinedFarcryJS">
+		<cfif listLen(url.files)>
 			<cfloop list="#url.files#" index="i" >
 				<cfoutput>
 					//-------------#i#-------------//
@@ -27,7 +28,7 @@
 		</cfif>
 	</cfsavecontent>
 	
-	<cfset application.stCombinedFarcryJS[hashedURL] = stCombinedFarcryJS />
+	<cfset application.stCombinedFarcryJS[hashedURL] = hashedCombinedFarcryJS />
 </cfif>
 <cfcontent reset="yes" />
 <cfoutput>#application.stCombinedFarcryJS[hashedURL]#</cfoutput>
