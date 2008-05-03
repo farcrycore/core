@@ -75,13 +75,13 @@
 		<ft:farcryButtonPanel>
 			<cfoutput><ul class="fc"></cfoutput>
 			<sec:CheckPermission webskinpermission="forgotPassword" type="farUser">
-				<skin:buildLink type="farUser" view="forgotPassword" stParameters="#stParameters#"><cfoutput><li>Forgot Password</li></cfoutput></skin:buildLink>
+				<cfoutput><li><skin:buildLink type="farUser" view="forgotPassword" stParameters="#stParameters#">Forgot Password</skin:buildLink></li></cfoutput>
 			</sec:CheckPermission>		
 			<sec:CheckPermission webskinpermission="registerNewUser" type="farUser">
-				<skin:buildLink type="farUser" view="registerNewUser" stParameters="#stParameters#"><cfoutput><li>Register New User</li></cfoutput></skin:buildLink>
+				<cfoutput><li><skin:buildLink type="farUser" view="registerNewUser" stParameters="#stParameters#">Register New User</skin:buildLink></li></cfoutput>
 			</sec:CheckPermission>			
 				
-			<skin:buildLink href="/webtop/login.cfm" stParameters="#stParameters#"><cfoutput><li>Login</li></cfoutput></skin:buildLink>
+			<cfoutput><li><skin:buildLink href="/webtop/login.cfm" stParameters="#stParameters#">Login</skin:buildLink></li></cfoutput>
 			<cfoutput></ul></cfoutput>
 		</ft:farcryButtonPanel>
 			

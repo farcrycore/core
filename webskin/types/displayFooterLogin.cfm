@@ -17,10 +17,12 @@ START WEBSKIN
  ------------------>
 
 <cfoutput>
-		<br style="clear:both;" />
-		<h3><img src="images/powered_by_farcry_watermark.gif" />Tell it to someone who cares</h3>
-
-		<p style="text-align:right;border-top:1px solid ##e3e3e3;margin-top:25px;"><small>#createObject("component", "#application.packagepath#.farcry.sysinfo").getVersionTagline()#</small></p>
+		<div class="loginFooter">
+			<img src="images/powered_by_farcry_watermark.gif" />
+			<h3>Tell it to someone who cares</h3>
+			<p><small>Copyright &copy; Daemon 1997-#year(now())#<br />#createObject("component", "#application.packagepath#.farcry.sysinfo").getVersionTagline()#</small></p>
+		</div>
+		<br class="clearer" />
 	</div>
 
 	</body>

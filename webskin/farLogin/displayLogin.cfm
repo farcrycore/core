@@ -33,7 +33,7 @@ START WEBSKIN
 				<sec:SelectUDLogin />
 				
 	
-				<ft:object typename="farLogin" lFields="username,password" prefix="login" legend="Login to #application.config.general.siteTitle#" />
+				<ft:object typename="farLogin" lFields="username,password" prefix="login" legend="" />
 					
 				
 				<ft:farcryButtonPanel>
@@ -45,26 +45,26 @@ START WEBSKIN
 						</cfoutput>
 					</cfif>
 					
-					<ft:farcryButton value="Log In" />
+					<ft:button value="Log In" icon="#application.url.webtop#/images/crystal/22x22/actions/lock.png" />
 				</ft:farcryButtonPanel>
 				
 				<cfset stParameters = structNew() />
 				<cfset stParameters.returnUrl = "#url.returnUrl#" />
-				
+				<!--- 
 				<ft:farcryButtonPanel>					
 					<cfoutput><ul class="fc"></cfoutput>
 						<sec:CheckPermission webskinpermission="forgotPassword" type="farUser">
-							<skin:buildLink type="farUser" view="forgotPassword" stParameters="#stParameters#"><cfoutput><li>Forgot Password</li></cfoutput></skin:buildLink>
+							<cfoutput><li><skin:buildLink type="farUser" view="forgotPassword" stParameters="#stParameters#">Forgot Password</skin:buildLink></li></cfoutput>
 						</sec:CheckPermission>
 						<sec:CheckPermission webskinpermission="forgotUserID" type="farUser">
-							<skin:buildLink type="farUser" view="forgotUserID" stParameters="#stParameters#"><cfoutput><li>Forgot UserID</li></cfoutput></skin:buildLink>
+							<cfoutput><li><skin:buildLink type="farUser" view="forgotUserID" stParameters="#stParameters#">Forgot UserID</skin:buildLink></li></cfoutput>
 						</sec:CheckPermission>			
 						<sec:CheckPermission webskinpermission="registerNewUser" type="farUser">
-							<skin:buildLink type="farUser" view="registerNewUser" stParameters="#stParameters#"><cfoutput><li>Register New User</li></cfoutput></skin:buildLink>
+							<cfoutput><li><skin:buildLink type="farUser" view="registerNewUser" stParameters="#stParameters#">Register New User</skin:buildLink></li></cfoutput>
 						</sec:CheckPermission>
 					<cfoutput></ul></cfoutput>
 					
-				</ft:farcryButtonPanel>
+				</ft:farcryButtonPanel> --->
 			</ft:form>
 			
 		<cfoutput>

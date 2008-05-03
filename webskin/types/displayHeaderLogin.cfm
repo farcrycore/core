@@ -31,19 +31,18 @@ START WEBSKIN
 
 <body id="sec-login">
 <div id="login">
-
-	<h1>
+	<div class="loginLogo">		
 		<a href="#application.url.webroot#/index.cfm">
 			<!--- if there is a site logo, use it instead of the default placeholder --->       
 			<cfif structKeyExists(application.config.general,'siteLogoPath') and application.config.general.siteLogoPath NEQ "">
 				<img src="#application.config.general.siteLogoPath#" alt="#application.config.general.siteTitle#" />
+				<h1>#application.config.general.siteTitle#</h1>
+				<span>#application.config.general.siteTagLine#</span>	
 			<cfelse>
 				<img src="#application.url.webtop#/images/logo_placeholder.gif" alt="#application.config.general.siteTitle#" />
 			</cfif>
-		</a>
-		#application.config.general.siteTitle#
-		<span>#application.config.general.siteTagLine#</span>
-	</h1>
+		</a>	
+	</div>
 </cfoutput>
 
 <cfsetting enablecfoutputonly="false">

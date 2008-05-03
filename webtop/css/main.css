@@ -41,7 +41,7 @@ img {border:none}
 hr {margin: .3em 0 1em;background:#F1F1F1;height:1px;color:#F1F1F1;border:none}
 small, .small {font-size:11px}
 .clear {clear:both;position:relative;font-size:0;height:0;line-height:0} 
-br.clearer {clear: both;}
+br.clearer {clear: both;height:1px;line-height:1px;}
 .hidden {visibility:hidden} 
 .error {color:#c00}
 .success {color:#360}
@@ -127,15 +127,19 @@ p {margin: 0 0 1.5em}
     #nav li.active a {background-position:100% 0;padding-bottom:3px;color:#fff}
 
 /* =LAYOUT-LOGIN PAGE */
+
 body#sec-login {background: #5A7EB9 url("images/full_page_bg.gif") repeat-x 0 0;height:auto}
 	#login {border: 8px solid #eee;background:#fff;width:700px;margin: 50px auto;padding: 20px;color:#999}
-	
-	#login h1 {font-size:105%;color:#116EAF;margin: 0;float:left;display:inline;padding-bottom:10px}
-	#login h1 img {margin: 0 0 15px}
-	#login h1 img, #login h1 span {display:block;font: normal 80% arial;color:#999}
-	#login h3 {clear:both;font: normal 86% arial;text-align:right;margin: 15px 0 0 auto;padding: 15px 0 0;border-top: 1px solid #eee;color:#ccc}
-	#login h3 img {display:block;margin: 0 0 0 auto}
-	#login .loginInfo {font-weight:bold;margin-bottom: 10px;width:425px;float:right}
+	#login .loginLogo {float:left;width:265px;margin-right:10px;overflow:hidden;}
+	#login .loginInfo {float:left;width:415px;margin-right:0px;font-weight:bold;margin-bottom: 10px;}
+	#login .loginLogo h1 {font-size:105%;color:#116EAF;}
+	#login .loginLogo img {margin: 0 0 15px}
+	#login .loginLogo img, #login .loginLogo span {display:block;font: normal 80% arial;color:#999}
+
+
+	#login .loginFooter {clear:both;color:#ccc;border-top: 1px solid #eee;text-align:right;}
+	#login .loginFooter h3 { font: normal 80% arial;margin:0px;}
+	#login .loginFooter p { margin:10px 0px 0px 0px;}
 	#login fieldset h5 {margin: 50px 0 0;padding:2px 5px}
 	#login .loginInfo form {width:425px;min-width:425px;}
 	#login .loginInfo form.formtool fieldset {border-style:none;}
