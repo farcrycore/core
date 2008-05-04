@@ -50,22 +50,27 @@ START WEBSKIN
 				
 				<cfset stParameters = structNew() />
 				<cfset stParameters.returnUrl = "#url.returnUrl#" />
-				<!--- 
+				
 				<ft:farcryButtonPanel>					
-					<cfoutput><ul class="fc"></cfoutput>
+					<cfoutput><ul class="loginForgot"></cfoutput>
 						<sec:CheckPermission webskinpermission="forgotPassword" type="farUser">
-							<cfoutput><li><skin:buildLink type="farUser" view="forgotPassword" stParameters="#stParameters#">Forgot Password</skin:buildLink></li></cfoutput>
+							<cfoutput> 
+								<li><skin:buildLink type="farUser" view="forgotPassword" stParameters="#stParameters#">Forgot Password</skin:buildLink></li></cfoutput>
 						</sec:CheckPermission>
 						<sec:CheckPermission webskinpermission="forgotUserID" type="farUser">
-							<cfoutput><li><skin:buildLink type="farUser" view="forgotUserID" stParameters="#stParameters#">Forgot UserID</skin:buildLink></li></cfoutput>
+							<cfoutput> 
+								<li><skin:buildLink type="farUser" view="forgotUserID" stParameters="#stParameters#">Forgot UserID</skin:buildLink></li></cfoutput>
 						</sec:CheckPermission>			
 						<sec:CheckPermission webskinpermission="registerNewUser" type="farUser">
-							<cfoutput><li><skin:buildLink type="farUser" view="registerNewUser" stParameters="#stParameters#">Register New User</skin:buildLink></li></cfoutput>
+							<cfoutput> 
+								<li><skin:buildLink type="farUser" view="registerNewUser" stParameters="#stParameters#">Register New User</skin:buildLink></li></cfoutput>
 						</sec:CheckPermission>
 					<cfoutput></ul></cfoutput>
-					
-				</ft:farcryButtonPanel> --->
+
+				</ft:farcryButtonPanel>
 			</ft:form>
+			
+
 			
 		<cfoutput>
 		</div>

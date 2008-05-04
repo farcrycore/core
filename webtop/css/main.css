@@ -28,10 +28,10 @@ a,a:link,a:visited,a:hover,a:active {background:transparent;text-decoration:unde
 a:link, a:visited, a:hover, a:active {color:#E17000}
 a:hover {color:#fff;background:#E17000} 
 
-ul {position:relative;margin: 0 .3em 1em 0;padding: 0;list-style-type:none}
+ul {position:relative;margin: 0 .3em 1em 0;padding: 0;list-style-type:disc:}
 ol {margin: .5em .5em}
 ol li {margin-left: 2em;padding-left: 0;background: none; list-style-type: decimal}
-li, ul.fc li {line-height: 1.3em;padding-left: 20px;background: transparent url("images/sprites.gif") no-repeat 0 -100px}
+ul.li {padding-left: 20px; background: transparent url("images/sprites.gif") no-repeat 0 -100px}
 ul.nomarker li {background:none;padding-left:0}
 
 
@@ -133,6 +133,7 @@ body#sec-login {background: #5A7EB9 url("images/full_page_bg.gif") repeat-x 0 0;
 	#login .loginLogo {float:left;width:265px;margin-right:10px;overflow:hidden;}
 	#login .loginInfo {float:left;width:415px;margin-right:0px;font-weight:bold;margin-bottom: 10px;}
 	#login .loginLogo h1 {font-size:105%;color:#116EAF;}
+	#login .loginLogo a {text-decoration:none;background:none;}
 	#login .loginLogo img {margin: 0 0 15px}
 	#login .loginLogo img, #login .loginLogo span {display:block;font: normal 80% arial;color:#999}
 
@@ -143,7 +144,7 @@ body#sec-login {background: #5A7EB9 url("images/full_page_bg.gif") repeat-x 0 0;
 	#login fieldset h5 {margin: 50px 0 0;padding:2px 5px}
 	#login .loginInfo form {width:425px;min-width:425px;}
 	#login .loginInfo form.formtool fieldset {border-style:none;}
-
+	#login .loginForgot {margin-top:10px;}
 	#login .error {clear:both;}
 
 /* =LAYOUT-CONTENT-AREA */

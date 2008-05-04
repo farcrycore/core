@@ -78,7 +78,7 @@ body.ext-gecko .f-btn button {
     padding-left:0;
     padding-right:0;
 }
-body.ext-ie .f-btn button {
+body.ext-ie6 .f-btn button {
 	width:1px;
     padding-top:2px;
 }

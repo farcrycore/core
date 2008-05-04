@@ -20,15 +20,18 @@
 <cfparam name="url.returnUrl" default="/">
 
 <ft:farcryButtonPanel>
-	<cfoutput><ul class="fc"></cfoutput>
+	<cfoutput><ul class="loginForgot"></cfoutput>
 	<sec:CheckPermission webskinpermission="forgotUserID" type="farUser">
-		<cfoutput><li><skin:buildLink type="farUser" view="forgotUserID" urlParameters="returnUrl=#url.returnUrl#">Forgot UserID</skin:buildLink></li></cfoutput>
+		<cfoutput>
+			<li><skin:buildLink type="farUser" view="forgotUserID" urlParameters="returnUrl=#url.returnUrl#">Forgot UserID</skin:buildLink></li></cfoutput>
 	</sec:CheckPermission>			
 	<sec:CheckPermission webskinpermission="registerNewUser" type="farUser">
-		<cfoutput><li><skin:buildLink type="farUser" view="registerNewUser" urlParameters="returnUrl=#url.returnUrl#">Register New User</skin:buildLink></li></cfoutput>
+		<cfoutput>
+			<li><skin:buildLink type="farUser" view="registerNewUser" urlParameters="returnUrl=#url.returnUrl#">Register New User</skin:buildLink></li></cfoutput>
 	</sec:CheckPermission>			
 		
-	<cfoutput><li><skin:buildLink href="/webtop/login.cfm" urlParameters="returnUrl=#url.returnUrl#">Login</skin:buildLink></li></cfoutput>
+	<cfoutput>
+		<li><skin:buildLink href="/webtop/login.cfm" urlParameters="returnUrl=#url.returnUrl#">Login</skin:buildLink></li></cfoutput>
 	<cfoutput></ul></cfoutput>
 </ft:farcryButtonPanel>
 
