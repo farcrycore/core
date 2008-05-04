@@ -244,18 +244,12 @@
  
 
 	<cffunction name="OnError" access="public" returntype="void" output="true" hint="Fires when an exception occures that is not caught by a try/catch.">
-		<!--- Define arguments. --->
-
 		<cfargument name="Exception" type="any" required="true" />
-
-
 		<cfargument name="EventName" type="string" required="false" default="" />
 
-		<cfdump var="#arguments#" expand="false" label="arguments" />
-		<!--- Return out. --->
+		<cfdump var="#arguments.exception#" expand="true" label="arguments" />
 
 		<cfreturn />
-
 	</cffunction>
 
  
