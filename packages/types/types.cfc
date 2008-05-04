@@ -264,7 +264,9 @@ default handlers
 				<cfelseif structKeyExists(arguments, "alternateHTML")>
 					<cfset webskinHTML = arguments.alternateHTML />
 				<cfelse>
-					<cfthrow type="Application" detail="Error: Template not found [/webskin/#stObj.typename#/#arguments.template#.cfm] and no alternate html provided." />
+					<cfthrow type="Application" 
+							message="Error: Template not found [/webskin/#stObj.typename#/#arguments.template#.cfm] and no alternate html provided."
+							detail="Error: Template not found [/webskin/#stObj.typename#/#arguments.template#.cfm] and no alternate html provided. typename: #stobj.typename#. objectid: #stobj.objectid#." />
 				</cfif>	
 			</cfif>		
 			</cftimer>
