@@ -31,7 +31,7 @@ a:hover {color:#fff;background:#E17000}
 ul {position:relative;margin: 0 .3em 1em 0;padding: 0;list-style-type:disc:}
 ol {margin: .5em .5em}
 ol li {margin-left: 2em;padding-left: 0;background: none; list-style-type: decimal}
-ul.li {padding-left: 20px; background: transparent url("images/sprites.gif") no-repeat 0 -100px}
+ul li {padding-left: 20px; background: transparent url("images/sprites.gif") no-repeat 0 -100px}
 ul.nomarker li {background:none;padding-left:0}
 
 
