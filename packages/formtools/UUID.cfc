@@ -37,6 +37,8 @@
 		<cfparam name="arguments.stMetadata.ftAllowLibraryEdit" default="false">
 		<cfparam name="arguments.stMetadata.ftLibraryEditWebskin" default="edit">
 		
+		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+		
 		<cfif arguments.stMetadata.ftRenderType eq "Library">
 			<cfparam name="application.stCOAPI.#arguments.typename#.stProps.#arguments.stMetadata.name#.metadata.ftShowLibraryLink" default="true" />
 		<cfelse>
@@ -125,6 +127,84 @@
 				</cfif>
 				<cfloop query="qLibraryList"><option value="#qLibraryList.objectid#" <cfif arguments.stObject[arguments.stMetaData.Name] EQ qLibraryList.objectid>selected</cfif>><cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif></option></cfloop>
 				</select>
+				</cfoutput>
+				
+			<cfelse>
+				<!--- todo: i18n --->
+				<cfoutput>
+				<em>No options available.</em>
+				<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" />
+				</cfoutput>
+			</cfif>
+			
+			</cfsavecontent>
+		
+		</cfcase>
+		<cfcase value="radio">
+			<!-------------------------------------------------------------------------- 
+			generate library data query to populate library interface 
+			--------------------------------------------------------------------------->
+			<cfif structkeyexists(stMetadata, "ftLibraryData") AND len(stMetadata.ftLibraryData)>	
+				<cfset oPrimary = createObject("component", application.types[typename].typepath) />
+				<cfset stPrimary =  oPrimary.getData(objectid=stobject.objectid) />
+				
+				<!--- use ftlibrarydata method from primary content type --->
+				<cfif structkeyexists(oprimary, stMetadata.ftLibraryData)>
+					<cfinvoke component="#oPrimary#" method="#stMetadata.ftLibraryData#" returnvariable="libraryData">
+						<cfinvokeargument name="primaryID" value="#arguments.stobject.objectid#" />
+						<cfinvokeargument name="qFilter" value="#queryNew('blah')#" />
+					</cfinvoke>
+					
+					<cfif isStruct(libraryData)>
+						<cfset qLibraryList = libraryData.q>
+					<cfelse>
+						<cfset qLibraryList = libraryData />
+					</cfif>
+				</cfif>
+			<cfelse>
+				<!--- if nothing exists to generate library data then cobble something together --->
+				<cfloop list="#arguments.stMetadata.ftJoin#" index="i">
+					<cfset oData = createObject("component", application.stcoapi[i].packagePath) />					
+					<cfinvoke component="#oData#" method="getLibraryData" returnvariable="qLibraryList#i#" />
+				</cfloop>
+				<cfquery dbtype="query" name="qLibraryList">
+					<cfloop list="#arguments.stMetadata.ftJoin#" index="i">
+						SELECT objectid,label,'#i#' as typename FROM qLibraryList#i#
+						<cfif i NEQ listLast(arguments.stMetadata.ftJoin)>UNION</cfif>
+					</cfloop>
+				</cfquery>
+				
+				<cfquery dbtype="query" name="qLibraryList">
+				SELECT * FROM qLibraryList
+				ORDER BY typename,label
+				</cfquery>
+			</cfif>
+
+			<cfsavecontent variable="returnHTML">
+			<cfif qLibraryList.recordcount>
+				<cfoutput>
+				
+				<cfif len(arguments.stMetadata.ftFirstListLabel)>
+					<label for="#arguments.fieldname#_none">
+						<input type="radio" 
+							id="#arguments.fieldname#_none" 
+							name="#arguments.fieldname#" class="#arguments.stMetadata.ftclass#"
+							<cfif arguments.stObject[arguments.stMetaData.Name] EQ ""> checked</cfif> 
+							value="" />
+						<cfif isDefined("qLibraryList.label")>#arguments.stMetadata.ftFirstListLabel#</cfif>
+					</label>
+				</cfif>
+				<cfloop query="qLibraryList">
+					<label for="#arguments.fieldname#_#replace(qLibraryList.objectid,'-','','ALL')#">
+						<input type="radio" 
+							id="#arguments.fieldname#_#replace(qLibraryList.objectid,'-','','ALL')#" 
+							name="#arguments.fieldname#" class="#arguments.stMetadata.ftclass#"
+							<cfif arguments.stObject[arguments.stMetaData.Name] EQ qLibraryList.objectid> checked</cfif> 
+							value="#qLibraryList.objectid#" />
+						<skin:view objectid="#qLibraryList.objectid#" webskin="#arguments.stMetadata.ftLibrarySelectedWebskin#" alternateHTML="#qLibraryList.label#" />
+					</label>
+				</cfloop>
+				
 				</cfoutput>
 				
 			<cfelse>
