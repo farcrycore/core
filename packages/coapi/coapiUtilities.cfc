@@ -78,7 +78,7 @@
 		$
 		--->
 
-		<cfreturn qgetType.typename>
+		<cfreturn qFindType.typename>
 	</cffunction>
 	
 	<cffunction name="loadPlugin" access="public" output="false" returntype="void" hint="Loads a plugin; makes plugin active for application">
