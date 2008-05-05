@@ -1,7 +1,7 @@
 <cfsetting enablecfoutputonly="true" />
 <!--- @@displayname: Ajaxify generate content --->
 
-<cfparam name="attributes.active" default="false" />
+<cfparam name="attributes.active" default="#request.mode.ajax#" />
 <cfparam name="attributes.type" default="text/html" />
 <cfparam name="attributes.removewhitespace" default="false" />
 
