@@ -161,8 +161,9 @@ user --->
 	 /refactored --->
 	
 	
-	
-	<cfoutput><h1>#attributes.title#</h1></cfoutput>
+	<cfif len(attributes.title)>
+		<cfoutput><h1>#attributes.title#</h1></cfoutput>
+	</cfif>
 	
 	<cfset stPrefs = oTypeAdmin.getPrefs() />
 	<cfset stpermissions=oTypeAdmin.getBasePermissions()>
@@ -685,19 +686,37 @@ user --->
 				<cfif attributes.bViewCol><th>View</th></cfif>
 				<cfif attributes.bFlowCol><th>Flow</th></cfif> --->
 				
+				<cfset o = createobject("component",PrimaryPackagepath) />
+				
 				<cfif arrayLen(attributes.aCustomColumns)>
 					<cfloop from="1" to="#arrayLen(attributes.aCustomColumns)#" index="i">
 						
-						<cfif isStruct(attributes.aCustomColumns[i]) and structKeyExists(attributes.aCustomColumns[i], "title")>
-							<cfoutput><th>#application.rb.getResource("forms.columns.#rereplace(attributes.aCustomColumns[i].title,'[^\w\d]','','ALL')#@label",attributes.aCustomColumns[i].title)#</th></cfoutput>
-						<cfelse>
-							<cfoutput><th>&nbsp;</th></cfoutput>
+						<cfif isstruct(attributes.aCustomColumns[i])>
+						
+							<cfif structKeyExists(attributes.aCustomColumns[i], "title")>
+								<cfoutput><th>#application.rb.getResource("forms.columns.#rereplace(attributes.aCustomColumns[i].title,'[^\w\d]','','ALL')#@label",attributes.aCustomColumns[i].title)#</th></cfoutput>
+							<cfelse>
+								<cfoutput><th>&nbsp;</th></cfoutput>
+							</cfif>
+							
+						<cfelse><!--- Normal field --->
+							
+							<cfif isDefined("PrimaryPackage.stProps.#trim(attributes.aCustomColumns[i])#.metadata.ftLabel")>
+								<cfoutput><th>#o.getI18Property(attributes.aCustomColumns[i],"label")#</th></cfoutput>
+							<cfelse>
+								<cfoutput><th>#attributes.aCustomColumns[i]#</th></cfoutput>
+							</cfif>
+							
+							<!--- If this field is in the column list (and it should be) remove it so it won't get displayed elsewhere --->
+							<cfif listcontainsnocase(attributes.columnlist,attributes.aCustomColumns[i])>
+								<cfset attributes.columnlist = listdeleteat(attributes.columnlist,listfindnocase(attributes.columnlist,attributes.aCustomColumns[i])) />
+							</cfif>
+							
 						</cfif>
 						
 					</cfloop>
 				</cfif>
 				
-				<cfset o = createobject("component",PrimaryPackagepath) />
 				<cfloop list="#attributes.columnlist#" index="i">				
 						
 					<cfif isDefined("PrimaryPackage.stProps.#trim(i)#.metadata.ftLabel")>
@@ -732,18 +751,32 @@ user --->
 					<cfif arrayLen(attributes.aCustomColumns)>
 						<cfset oType = createObject("component", PrimaryPackagePath) />
 						<cfloop from="1" to="#arrayLen(attributes.aCustomColumns)#" index="i">
-							<cfif structKeyExists(attributes.aCustomColumns[i],"sortable") and attributes.aCustomColumns[i].sortable>
-								<cfoutput>
-								<th>
-								<select name="#attributes.aCustomColumns[i].property#sqlOrderBy" onchange="javascript:$('sqlOrderBy').value=this.value;submit();" style="width:80px;">
-									<option value=""></option>
-									<option value="#attributes.aCustomColumns[i].property# asc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i].property# asc">selected</cfif>>asc</option>
-									<option value="#attributes.aCustomColumns[i].property# desc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i].property# desc">selected</cfif>>desc</option>
-								</select>
-								</th>
-								</cfoutput>						
+							<cfif isstruct(attributes.aCustomColumns[i])>
+								<cfif structKeyExists(attributes.aCustomColumns[i],"sortable") and attributes.aCustomColumns[i].sortable>
+									<cfoutput>
+									<th>
+									<select name="#attributes.aCustomColumns[i].property#sqlOrderBy" onchange="javascript:$('sqlOrderBy').value=this.value;submit();" style="width:80px;">
+										<option value=""></option>
+										<option value="#attributes.aCustomColumns[i].property# asc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i].property# asc">selected</cfif>>asc</option>
+										<option value="#attributes.aCustomColumns[i].property# desc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i].property# desc">selected</cfif>>desc</option>
+									</select>
+									</th>
+									</cfoutput>						
+								<cfelse>
+									<cfoutput><th>&nbsp;</th></cfoutput>
+								</cfif>
 							<cfelse>
-								<cfoutput><th>&nbsp;</th></cfoutput>
+								<cfif listContainsNoCase(attributes.SortableColumns,attributes.aCustomColumns[i])><!--- Normal property in sortablecolumn list --->
+									<cfoutput>
+									<select name="#attributes.aCustomColumns[i]#sqlOrderBy" onchange="javascript:$('sqlOrderBy').value=this.value;submit();" style="width:80px;">
+										<option value=""></option>
+										<option value="#attributes.aCustomColumns[i]# asc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i]# asc">selected</cfif>>asc</option>
+										<option value="#attributes.aCustomColumns[i]# desc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i]# desc">selected</cfif>>desc</option>
+									</select>
+									</cfoutput>
+								<cfelse>
+									<cfoutput>&nbsp;</cfoutput>
+								</cfif>
 							</cfif>
 						</cfloop>
 					</cfif>
@@ -793,11 +826,19 @@ user --->
 							<cfset oType = createObject("component", PrimaryPackagePath) />
 							<cfloop from="1" to="#arrayLen(attributes.aCustomColumns)#" index="i">
 								
-								<cfif isStruct(attributes.aCustomColumns[i]) and structKeyExists(attributes.aCustomColumns[i], "webskin")>
-									<cfset HTML = oType.getView(objectid="#st.stFields.objectid.value#", template="#attributes.aCustomColumns[i].webskin#")>
-									<cfoutput><td>#HTML#</td></cfoutput>
-								<cfelse>
-									<cfoutput><td>&nbsp;</td></cfoutput>
+								<cfif isstruct(attributes.aCustomColumns[i])>
+									<cfif structKeyExists(attributes.aCustomColumns[i], "webskin")>
+										<cfset HTML = oType.getView(objectid="#st.stFields.objectid.value#", template="#attributes.aCustomColumns[i].webskin#")>
+										<cfoutput><td>#HTML#</td></cfoutput>
+									<cfelse>
+										<cfoutput><td>&nbsp;</td></cfoutput>
+									</cfif>
+								<cfelse><!--- Normal field --->
+									<cfif structKeyExists(st.stFields, attributes.aCustomColumns[i])>
+										<cfoutput><td>#st.stFields[attributes.aCustomColumns[i]].HTML#</td>	</cfoutput>			
+									<cfelse>
+										<cfoutput><td>-- not available --</td>	</cfoutput>			
+									</cfif>
 								</cfif>
 								
 							</cfloop>
