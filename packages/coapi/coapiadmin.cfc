@@ -759,7 +759,7 @@
 
 		<cfquery datasource="#arguments.dsn#" name="qFindType">
 		select typename from #arguments.dbowner#refObjects
-		where objectID = '#arguments.objectID#'
+		where objectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectID#" />
 		</cfquery>
 		
 		<cfreturn qFindType.typename>
