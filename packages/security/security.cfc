@@ -8,6 +8,9 @@
 		<cfset var stPermission = structnew() /><!--- Used in deprecated code --->
 		<cfset var i = 0 /><!--- Used in deprecated code --->
 		
+		<!--- This will store the cached security permissions --->
+		<cfset this.stPermissions = structNew() />
+		
 		<cfset initCache() />
 		
 		<!--- THE FOLLOWING VARIABLES ARE DEPRECATED --->
@@ -103,6 +106,19 @@
 		<cfargument name="role" type="string" required="false" default="" hint="List of roles to check" />
 		<cfargument name="type" type="string" required="false" default="" hint="The type for the webskin to check" />
 		<cfargument name="webskin" type="string" required="false" default="" hint="The webskin or permission set to check" />
+				
+		<cfset var hashKey = hash("#arguments.permission#-#arguments.object#-#arguments.role#-#arguments.type#-#arguments.webskin#") />
+		<cfset var result = -1 />
+				
+		<!--- RETURN THE CACHE IF ALREADY PROCESSED. --->
+		<cfif structKeyExists(this.stPermissions, "#hashKey#")>
+			<cfreturn this.stPermissions[hashKey] />
+		</cfif>
+		
+		<!--------------------------------------------------------------------------------------------------- 
+		IF WE MAKE IT TO HERE, WE NEED TO DETERMINE THE PERMISSION AND THEN STORE IT IN THE APPLICATION CACHE.
+		 --------------------------------------------------------------------------------------------------->
+
 		
 		<!--- If the role was left empty, use current user's roles --->
 		<cfif not len(arguments.role)>
@@ -111,7 +127,7 @@
 		
 		<cfif len(arguments.type) and len(arguments.webskin)>
 		
-			<cfreturn this.factory.role.checkWebskin(role=arguments.role,type=arguments.type,webskin=arguments.webskin) />
+			<cfset result = this.factory.role.checkWebskin(role=arguments.role,type=arguments.type,webskin=arguments.webskin) />
 			
 		<cfelseif len(arguments.type) and len(arguments.permission)>
 		
@@ -120,12 +136,12 @@
 			</cfif>
 		
 			<cfif this.factory.permission.permissionExists("#arguments.type##arguments.permission#")>
-				<cfreturn this.factory.role.getRight(role=arguments.role, permission=this.factory.permission.getID("#arguments.type##arguments.permission#")) />
+				<cfset result = this.factory.role.getRight(role=arguments.role, permission=this.factory.permission.getID("#arguments.type##arguments.permission#")) />
 			<cfelseif this.factory.permission.permissionExists("generic#arguments.permission#")>
-				<cfreturn this.factory.role.getRight(role=arguments.role, permission=this.factory.permission.getID("generic#arguments.permission#")) />
+				<cfset result = this.factory.role.getRight(role=arguments.role, permission=this.factory.permission.getID("generic#arguments.permission#")) />
 			<cfelse>
 				<!--- This should only happen for checks to object permissions that don't have corresponding type permissions --->
-				<cfreturn 1 />
+				<cfset result = 1 />
 			</cfif>
 		
 		<cfelseif len(arguments.permission)>
@@ -134,22 +150,28 @@
 			<cfif not isvalid("uuid",arguments.permission)>
 				<cfset arguments.permission = this.factory.permission.getID(arguments.permission) />
 				<cfif not len(arguments.permission)>
-					<cfreturn 0 />
+					<cfset result = 0 />
 				</cfif>
 			</cfif>
 			
-			<!--- If an object was provided check the barnacle for that object, otherwise check the basic permission --->
-			<cfif isvalid("uuid",arguments.object)>
-				<cfreturn this.factory.barnacle.checkPermission(object=arguments.object,permission=arguments.permission,role=arguments.role) />
-			<cfelse>
-				<cfreturn this.factory.role.getRight(role=arguments.role,permission=arguments.permission) />
+			<cfif result LT 0>
+				<!--- If an object was provided check the barnacle for that object, otherwise check the basic permission --->
+				<cfif isvalid("uuid",arguments.object)>
+					<cfset result = this.factory.barnacle.checkPermission(object=arguments.object,permission=arguments.permission,role=arguments.role) />
+				<cfelse>
+					<cfset result = this.factory.role.getRight(role=arguments.role,permission=arguments.permission) />
+				</cfif>
 			</cfif>
-			
 		<cfelse>
 		
 			<cfthrow message="Either a webskin or a permission are required for checkPermission" />
 			
 		</cfif>
+		
+		<cfset this.stPermissions[hashKey] = result />
+		
+		<cfreturn this.stPermissions[hashKey] />
+		
 	</cffunction>
 
 	<cffunction name="getCurrentRoles" access="public" output="true" returntype="string" hint="Returns the roles of the current logged in user" bDocument="true">
