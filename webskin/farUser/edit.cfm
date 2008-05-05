@@ -8,7 +8,7 @@
 
 <!--- Save user and profile --->
 <ft:processForm action="Save" Exit="true">
-	<ft:processFormObjects typename="farUser" r_stProperties="stUser" />
+	<ft:processFormObjects typename="farUser" r_stProperties="stUser" lArrayListGenerate="lGroups" />
 	<ft:processFormObjects typename="dmProfile" r_stProperties="stProfile">
 		<cfset stProfile.username = "#stUser.userid#_CLIENTUD" />
 		<cfset stProfile.userdirectory = "CLIENTUD" />
