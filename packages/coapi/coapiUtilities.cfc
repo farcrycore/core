@@ -63,7 +63,7 @@
 		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
 		<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
 		
-		<cfset var qgetType = queryNew("blah") />
+		<cfset var qFindType = queryNew("blah") />
 
 		<cfquery datasource="#arguments.dsn#" name="qFindType">
 		select typename from #arguments.dbowner#refObjects
