@@ -127,7 +127,7 @@
 				<cfquery datasource="#application.dsn#" name="qProfiles">
 					select	objectid
 					from	#application.dbowner#dmProfile
-					where	username in (<cfqueryparam cfsqltype="varchar" list="true" value="#result#" />)
+					where	username in (<cfqueryparam cfsqltype="CF_SQL_VARCHAR" list="true" value="#result#" />) 
 				</cfquery>
 				
 				<cfreturn valuelist(qProfiles.objectid) />
