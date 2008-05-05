@@ -168,6 +168,7 @@
 	<cffunction name="getRight" access="public" output="false" returntype="numeric" hint="Returns the right for the specfied permission">
 		<cfargument name="role" type="string" required="true" hint="The roles to check" />
 		<cfargument name="permission" type="string" required="false" default="" hint="The permission to retrieve" />
+		<cfargument name="forcerefresh" type="boolean" required="false" default="false" hint="Should the cache be forcably refreshed" />
 		
 		<cfset thisrole = "" />
 		<cfset thisresult = -1 />
@@ -188,14 +189,18 @@
 			</cfif>
 			
 			<!--- If possible use the cache, otherwise update cache --->
-			<cfquery datasource="#application.dsn#" name="qRole" result="stResult">
-				select	*
-				from	#application.dbowner#farRole_aPermissions
-				where	parentid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#thisrole#" />
-						and data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.permission#" />
-			</cfquery>
-			
-			<cfset thisresult = application.security.setCache(role=thisrole,permission=arguments.permission,right=qRole.recordcount) />
+			<cfif not arguments.forcerefresh and application.security.isCached(role=thisrole,permission=arguments.permission)>
+				<cfset thisresult = application.security.getCache(role=thisrole,permission=arguments.permission) />
+			<cfelse>
+				<cfquery datasource="#application.dsn#" name="qRole" result="stResult">
+					select	*
+					from	#application.dbowner#farRole_aPermissions
+					where	parentid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#thisrole#" />
+							and data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.permission#" />
+				</cfquery>
+				
+				<cfset thisresult = application.security.setCache(role=thisrole,permission=arguments.permission,right=qRole.recordcount) />
+			</cfif>
 			
 			<!--- Result is the most permissable right granted. 1 is the most permissable, so if that is returned we don't need to check any more --->
 			<cfif thisresult eq 1>
@@ -210,6 +215,7 @@
 		<cfargument name="role" type="string" required="true" hint="The roles to check" />
 		<cfargument name="type" type="string" required="true" hint="The type to check" />
 		<cfargument name="webskin" type="string" required="true" hint="The webskin to check" />
+		<cfargument name="forcerefresh" type="boolean" required="false" default="false" hint="Should the cache be forcably refreshed" />
 		
 		<cfset var thisrole = "" />
 		<cfset var stRole = structnew() />
@@ -221,16 +227,23 @@
 				<cfset thisrole = getID(thisrole) />
 			</cfif>
 			
-			
-			<cfset stRole = getData(thisrole) />
-			<cfloop list="#stRole.webskins#" index="filter" delimiters="#chr(10)##chr(13)#,">
-				<cfif (not find(".",filter) or listfirst(filter,".") eq "*" or listfirst(filter,".") eq arguments.type) and refind(replace(listlast(filter,"."),"*",".*","ALL"),arguments.webskin)>
-					<cfreturn 1 />
+			<cfif not arguments.forcerefresh and application.security.isCached(role=thisrole,webskin="#arguments.type#.#arguments.webskin#")>
+				<cfif application.security.getCache(role=thisrole,webskin="#arguments.type#.#arguments.webskin#")>
+					<cfreturn true />
 				</cfif>
-			</cfloop>
+			<cfelse>
+				<cfset stRole = getData(thisrole) />
+				<cfloop list="#stRole.webskins#" index="filter" delimiters="#chr(10)##chr(13)#,">
+					<cfif (not find(".",filter) or listfirst(filter,".") eq "*" or listfirst(filter,".") eq arguments.type) and refind(replace(listlast(filter,"."),"*",".*","ALL"),arguments.webskin)>
+						<cfreturn application.security.setCache(role=thisrole,webskin="#arguments.type#.#arguments.webskin#",right=1) />
+					<cfelse>
+						<cfset application.security.setCache(role=thisrole,webskin="#arguments.type#.#arguments.webskin#",right=0) />
+					</cfif>
+				</cfloop>
+			</cfif>
 		</cfloop>
 		
-		<cfreturn 0 />
+		<cfreturn false />
 	</cffunction>
 	
 	<cffunction name="getID" access="public" output="false" returntype="uuid" hint="Returns the objectid for the specified object">
@@ -329,9 +342,6 @@
 			<cfset arraydeleteat(stRole.aPermissions,qPermissions.seq) />
 			<cfset setData(stProperties=stRole) />
 		</cfif>
-		
-		<!--- Clear security cache --->
-		<cfset application.security.clearCache() />
 	</cffunction>
 
 	<cffunction name="copyRole" access="public" output="false" returntype="struct" hint="Copies a role and gives it a new name">
@@ -370,8 +380,8 @@
 		
 		<cfset var i = 0 />
 		
-		<!--- Clear security cache --->
-		<cfset application.security.clearCache() />
+		<!--- Clear the permission cache --->
+		<cfset application.security.deleteCache(role=arguments.stProperties.objectid) />
 		
 		<cfreturn arguments.stProperties />
 	</cffunction>
