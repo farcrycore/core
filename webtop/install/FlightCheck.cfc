@@ -169,7 +169,6 @@
 				<cfquery name="qCheckDSN" datasource="#arguments.DSN#">
 				SELECT 'patrick' AS theMAN from #arguments.DBOwner#dual
 				</cfquery>
-				<cfdump var="#qCheckDSN#"><cfabort>
 			</cfcase>
 			<cfcase value="MSSQL">
 				<cfset databaseTypeName = "MSSQL" />
