@@ -65,7 +65,7 @@
 					</cfoutput>
 					
 					<cfloop list="#permissions#" index="permission">
-						<cfset right = application.security.factory.barnacle.getRight(role=role,permission=permission,object=stObj.objectid) />
+						<cfset right = application.security.factory.barnacle.getRight(role=role,permission=permission,object=stObj.objectid,forcerefresh=true) />
 						<cfif stObj.typename neq "dmNavigation" and right eq 0>
 							<cfset right = -1 />
 						</cfif>
