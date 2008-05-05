@@ -319,7 +319,7 @@
 		
 		<cfloop condition="structkeyexists(stMeta,'extends')">
 			<cfset stMeta = stMeta.extends />
-			<cfset result = listappend(result,stMeta.fullname) />
+			<cfset result = listappend(result,stMeta.name) />
 		</cfloop>
 		
 		<cfreturn result />
