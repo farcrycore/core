@@ -213,7 +213,7 @@ Apps Processing
 <!-------------------------------------------------------
 Alert user that application scope has been refreshed
 -------------------------------------------------------->
-<cfif isDefined("URL.updateApp") AND URL.updateApp>
+<cfif isDefined("URL.updateApp") AND isBoolean(URL.updateApp) AND URL.updateApp>
 	<extjs:bubble title="Update App Complete" bAutoHide="false">
 		<cfoutput>The application scope has been refreshed</cfoutput>
 	</extjs:bubble>
