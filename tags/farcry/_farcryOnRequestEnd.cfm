@@ -220,16 +220,16 @@ $out:$
 			</cfif>
 			
 			<cfif isDefined("variables.stPlaceInHead.prototypeJS") AND variables.stPlaceInHead.prototypeJS>
-				<cfset lCoreLibraries = listAppend(lCoreLibraries, "/ext/adapter/prototype/prototype.js") />
+				<cfset lCoreLibraries = listAppend(lCoreLibraries, "/prototype/prototype.js") />
+				
 			</cfif>
 
-			
 			<!--- SCRIPTACULOUS --->			
 			<cfif isDefined("variables.stPlaceInHead.scriptaculousJS") AND variables.stPlaceInHead.scriptaculousJS>
-				<cfset lCoreLibraries = listAppend(lCoreLibraries, "/ext/adapter/prototype/scriptaculous.js") />
+				<cfset lCoreLibraries = listAppend(lCoreLibraries, "/scriptaculous/scriptaculous.js") /> 
 			</cfif>
 			<cfif isDefined("variables.stPlaceInHead.ScriptaculousEffectsJS") AND variables.stPlaceInHead.ScriptaculousEffectsJS>
-				<cfset lCoreLibraries = listAppend(lCoreLibraries, "/ext/adapter/prototype/effects.js") />
+				<cfset lCoreLibraries = listAppend(lCoreLibraries, "/scriptaculous/effects.js") />
 			</cfif>
 			<cfif isDefined("variables.stPlaceInHead.ScriptaculousDragAndDropJS") AND variables.stPlaceInHead.ScriptaculousDragAndDropJS>
 				<cfset lCoreLibraries = listAppend(lCoreLibraries, "/scriptaculous/dragdrop.js") />
