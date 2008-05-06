@@ -286,7 +286,9 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 			<cfif isDefined("session.stFarcryInstall.stConfig.addWebrootMapping#pluginName#") AND session.stFarcryInstall.stConfig["addWebrootMapping#pluginName#"]>
 				
 				<cfif directoryExists("#pluginPath#/#pluginName#/www")>
-					<cfdirectory action="create" directory="#projectWebrootPath#/#pluginName#" mode="777" />
+          <cfif not directoryExists("#projectWebrootPath#/#pluginName#")>
+					  <cfdirectory action="create" directory="#projectWebrootPath#/#pluginName#" mode="777" />
+          </cfif>
 					<cfset oZip = createObject("component", "farcry.core.packages.farcry.zip") />
 					<cfset oZip.AddFiles(zipFilePath="#projectWebrootPath#/plugin-webroot.zip", directory="#pluginPath#/#pluginName#/www", recurse="true", compression=0, savePaths="false") />
 					<cfset oZip.Extract(zipFilePath="#projectWebrootPath#/plugin-webroot.zip", extractPath="#projectWebrootPath#/#pluginName#", overwriteFiles="true") />
