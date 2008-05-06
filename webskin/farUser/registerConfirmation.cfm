@@ -12,8 +12,6 @@
 
 	<cfoutput><p>Thank you for registering. You should recieve a confirmation email shortly.</p></cfoutput>
 	
-	
-	<cfoutput><p><skin:buildLink objectid="#stobj.objectID#" urlParameters="view=registerConfirmationEmail">Resend</skin:buildLink> Confirmation email</p></cfoutput>
 </cfcase>
 
 <cfcase value="active">
