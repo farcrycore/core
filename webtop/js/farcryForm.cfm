@@ -282,13 +282,12 @@ function createFormtoolTree(fieldname,rootID,dataURL,rootNodeText,selectedIDs,ic
 		}
 	}	
 			
-function newFarcryButton (id,size,value,text,icon,overIcon,iconPos,sprite,width,formName,onClick,disabled) {
+function newFarcryButton (id,type,size,value,text,icon,overIcon,iconPos,sprite,width,formName,onClick,disabled) {
 	var dh = Ext.DomHelper;
 	
 	var btn = Ext.get(id);
 	var btnWrap = Ext.get(id + '-wrap');
 	var btnMarkup = btnWrap.dom.innerHTML;
-	var btnForm = Ext.get(formName);
 	
 	var newBtnMarkup = 	'<table style="width: auto;" id="' + id + '-tbl-wrap" class="f-btn " cellspacing="0">' +
 						'<tbody class="f-btn-' + size + ' f-btn-icon-' + size + '-' + iconPos +'">' +
@@ -368,25 +367,21 @@ function newFarcryButton (id,size,value,text,icon,overIcon,iconPos,sprite,width,
 		    }
 		});
 	
-		Ext.select('##' + id + '-tbl-wrap button').on('click', this.onClick, this, {
-		    fn: function() { 
-		    	f = Ext.query('.fc-button-clicked');
-		    	for(var i=0; i<f.length; i++){
-					f[i].value = value;
-				}
-		    }
-		});
-	
+		if (type == 'submit') {
+			Ext.select('##' + id + '-tbl-wrap .f-btn-mc ').on('click', this.onClick, this, {
+			    fn: function() { 
+			    	f = Ext.query('.fc-button-clicked');
+			    	for(var i=0; i<f.length; i++){
+						f[i].value = value;
+					}
+					if (formName != '') {	
+						Ext.get(formName).dom.submit();
+					}
+			    }
+			})		
+		};
 	}
-	
-
-<!--- 	Ext.select('##' + id + '-tbl-wrap .f-btn-mc').on('click', this.onClick, this, {
-	    fn: function() { 
-	    	btnForm.dom.submit();
-	    }
-	}); --->
-	
-	
+		
 }
 
 </cfoutput>					

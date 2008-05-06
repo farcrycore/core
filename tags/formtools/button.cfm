@@ -85,9 +85,9 @@
 		<cfset attributes.OnClick = "#attributes.OnClick#;return fBtnURL('#attributes.id#','#attributes.url#','#attributes.target#');">
 	</cfif>
 
-	<cfif isDefined("Request.farcryForm.Name") AND attributes.type EQ "submit">
+<!--- 	<cfif isDefined("Request.farcryForm.Name") AND attributes.type EQ "submit">
 		<cfset attributes.OnClick = "#attributes.OnClick#;document.#Request.farcryForm.Name#.submit();">
-	</cfif>
+	</cfif> --->
 	
 	
 	
@@ -120,7 +120,7 @@
 	</cfoutput>
 		
 	<extjs:onReady>
-		<cfoutput>newFarcryButton('#attributes.id#', '#lcase(attributes.size)#','#attributes.value#','#attributes.text#','#attributes.icon#','#attributes.overIcon#','#attributes.iconPos#', '#attributes.sprite#', '#attributes.width#','#farcryFormName#', '#jsStringFormat(attributes.OnClick)#', '#lcase(yesNoFormat(attributes.disabled))#');</cfoutput>
+		<cfoutput>newFarcryButton('#attributes.id#', '#lcase(attributes.type)#', '#lcase(attributes.size)#','#attributes.value#','#attributes.text#','#attributes.icon#','#attributes.overIcon#','#attributes.iconPos#', '#attributes.sprite#', '#attributes.width#','#farcryFormName#', '#jsStringFormat(attributes.OnClick)#', '#lcase(yesNoFormat(attributes.disabled))#');</cfoutput>
 	</extjs:onReady>
 
 </cfif>
