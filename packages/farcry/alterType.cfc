@@ -229,7 +229,7 @@ $out:$
 	   <cfset temp = QueryAddRow(qMetadataSetup)>
 	   <cfset Temp = QuerySetCell(qMetadataSetup,"typename", typename) />
 	   <cfset Temp = QuerySetCell(qMetadataSetup,"propertyname", i) />
-	   <cfset Temp = QuerySetCell(qMetadataSetup,"ftSeq", Seq) />
+	   <cfset Temp = QuerySetCell(qMetadataSetup,"ftSeq", val(Seq)) />
 	   <cfset Temp = QuerySetCell(qMetadataSetup,"ftFieldset", Fieldset) />
 	   <cfset Temp = QuerySetCell(qMetadataSetup,"ftwizardStep", wizardStep) />
 	   <cfset Temp = QuerySetCell(qMetadataSetup,"ftType", Type) />
