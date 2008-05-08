@@ -54,7 +54,7 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 SETUP DEFAULTS FOR ALL INSTALLATION WIZARD FIELDS 
 ------------------------------------------------>
 <!--- <cfset structDelete(session, "stFarcryInstall") /> --->
-
+<cfset session.stFarcryInstall.stConfig.DBOwner = "" />
 <cfif not structKeyExists(session, "stFarcryInstall")>
 	<cfset session.stFarcryInstall = "#structNew()#" />
 	<cfset session.stFarcryInstall.bComplete = false />
@@ -347,10 +347,15 @@ RENDER THE CURRENT STEP
 			field.on('change', checkDBType);
 			
 		});
+		<cfif session.stFarcryInstall.stConfig.dbType EQ "mssql" OR session.stFarcryInstall.stConfig.dbType EQ "ora">
+			var showingOwner = true;
+		<cfelse>
+			var showingOwner = false;
+		</cfif>
+				
 		
-		var ownerout = false;
+		
 		function checkDBType() {
-			
 			
 			
 			if(this.dom.value == "postgresql" || this.dom.value == "mysql" || this.dom.value == "")
@@ -358,7 +363,7 @@ RENDER THE CURRENT STEP
 				var DBOwner = Ext.get('DBOwner');
 				DBOwner.dom.value = '';		
 				
-				if (!ownerout) {	
+				if (showingOwner) {	
 					var el = Ext.get('divDBOwner');	
 				
 					el.ghost('b', {
@@ -368,7 +373,7 @@ RENDER THE CURRENT STEP
 					    useDisplay: true
 					});
 					
-					ownerout = true;
+					showingOwner = false;
 				}
 					
 			}
@@ -377,17 +382,17 @@ RENDER THE CURRENT STEP
 				var DBOwner = Ext.get('DBOwner');
 				DBOwner.dom.value = 'username';		
 				
-				if (ownerout) {	
-					var el = Ext.get('divDBOwner');	
 				
-					el.slideIn('t', {
-					    easing: 'easeIn',
-					    duration: .5,
-					    useDisplay: true
-					});	
-					
-					ownerout = false;
-				}
+				var el = Ext.get('divDBOwner');	
+			
+				el.slideIn('t', {
+				    easing: 'easeIn',
+				    duration: .5,
+				    useDisplay: true
+				});	
+				
+				showingOwner = true;
+				
 			}
 			else 
 			{		
@@ -395,17 +400,17 @@ RENDER THE CURRENT STEP
 				var DBOwner = Ext.get('DBOwner');
 				DBOwner.dom.value = 'dbo.';		
 				
-				if (ownerout) {	
-					var el = Ext.get('divDBOwner');	
+			
+				var el = Ext.get('divDBOwner');	
+			
+				el.slideIn('t', {
+				    easing: 'easeIn',
+				    duration: .5,
+				    useDisplay: true
+				});	
 				
-					el.slideIn('t', {
-					    easing: 'easeIn',
-					    duration: .5,
-					    useDisplay: true
-					});	
-					
-					ownerout = false;
-				}
+				showingOwner = true;
+				
 			}
 		}
 	</script>	
