@@ -82,6 +82,7 @@
 	</cfif>	
 
 	<cfif len(attributes.url)>
+		<cfset attributes.Type = "button" />
 		<cfset attributes.OnClick = "#attributes.OnClick#;return fBtnURL('#attributes.id#','#attributes.url#','#attributes.target#');">
 	</cfif>
 
