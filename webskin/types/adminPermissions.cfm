@@ -53,6 +53,13 @@
 				'0':'#application.url.webtop#/css/forms/images/f-btn-blue.gif',
 				'1':'#application.url.webtop#/css/forms/images/f-btn-green.gif'
 			}
+			
+			function changePermission(id, hiddenid,aHash){
+				Ext.get(id).dom.value=nextpermissiontype[Ext.get(id).dom.value];
+				Ext.get(hiddenid).dom.value=permissiontypevalue[Ext.get(id).dom.value];
+				Ext.get(id).dom.innerHTML=aHash[Ext.get(id).dom.value];
+				Ext.select('##' + id + '-tbl-wrap .f-btn-bg').applyStyles('background-image:url(' + permissiontypecolor[Ext.get(hiddenid).dom.value] + ')');
+			}
 		</script>
 		<style>
 			table.permissions { width: 100%; }
@@ -76,6 +83,7 @@
 					
 					<cfloop list="#permissions#" index="permission">
 						<cfset right = application.security.factory.barnacle.getRight(role=role,permission=permission,object=stObj.objectid,forcerefresh=true) />
+						<cfset inheritedRight = application.security.factory.barnacle.getInheritedRight(role=role,permission=permission,object=stObj.objectid,forcerefresh=true) />
 						<cfif stObj.typename neq "dmNavigation" and right eq 0>
 							<cfset right = -1 />
 						</cfif>
@@ -84,17 +92,53 @@
 							<tr class="permissions">
 								<td class="permissions">#application.security.factory.permission.getLabel(permission)#</td>
 								<td class="permissions">
+									
+									
+									
 									<cfset hiddenID = "#replace(role,'-','','ALL')#_#replace(permission,'-','','ALL')#" />
 									<cfset btnID = "btn-#role#_#permission#" />
+									<cfset btnIDHash = hash(btnID) />
 									<cfswitch expression="#right#">
-										<cfcase value="1"><cfset btnColor="green" /></cfcase>
-										<cfcase value="-1"><cfset btnColor="red" /></cfcase>
-										<cfdefaultcase><cfset btnColor="blue" /></cfdefaultcase>
+										<cfcase value="1">
+											<cfset btnColor="green" />
+										</cfcase>
+										<cfcase value="-1">
+											<cfset btnColor="red" />
+										</cfcase>
+										<cfdefaultcase>
+											<cfset btnColor="blue" />
+										</cfdefaultcase>
 									</cfswitch>
+									<cfswitch expression="#inheritedRight#">
+										<cfcase value="1">
+											<cfset inheritedRightText="grant" />
+										</cfcase>
+										<cfdefaultcase>
+											<cfset inheritedRightText="deny" />
+										</cfdefaultcase>
+									</cfswitch>
+
+									<script type="text/javascript">
+									<cfif stObj.typename eq "dmNavigation">
+										var btnHash#btnIDHash# = { 
+											'#application.rb.getResource("forms.labels.deny","Deny")#':'#application.rb.getResource("forms.labels.deny","Deny")#',
+											'#application.rb.getResource("forms.labels.inherit","Inherit")#':'#application.rb.getResource("forms.labels.inherit","Inherit")# (#application.rb.getResource("forms.labels.inherit","#inheritedRightText#")#)',
+											'#application.rb.getResource("forms.labels.grant","Grant")#':'#application.rb.getResource("forms.labels.grant","Grant")#'
+										}
+									<cfelse>
+										var btnHash#btnIDHash# = { 
+											'#application.rb.getResource("forms.labels.inherit","Deny")#':'#application.rb.getResource("forms.labels.grant","Deny")#',  
+											'#application.rb.getResource("forms.labels.grant","Grant")#':'#application.rb.getResource("forms.labels.deny","Grant")#'
+										}
+									</cfif> 
+									</script>										
+									<cfset buttonText = "#permissiontypes[right]#" />
+									<cfif right EQ 0>
+										<cfset buttonText = "#buttonText# (#inheritedRightText#)" />
+									</cfif>
 									<input type="hidden" name="#role#_#permission#" id="#hiddenID#" value="#right#" />
-									<ft:button type="button" id="#btnID#" color="#btnColor#" value="#permissiontypes[right]#" size="small" width="200px" 
-onclick="Ext.get('#btnID#').dom.value=nextpermissiontype[Ext.get('#btnID#').dom.value];Ext.get('#btnID#').dom.innerHTML=Ext.get('#btnID#').dom.value;Ext.get('#hiddenID#').dom.value=permissiontypevalue[Ext.get('#btnID#').dom.value];Ext.select('###btnID#-tbl-wrap .f-btn-bg').applyStyles('background-image:url(' + permissiontypecolor[Ext.get('#hiddenID#').dom.value] + ')');" />
-									<!--- <input type="button" value="#permissiontypes[right]#" onclick="this.value=nextpermissiontype[this.value];document.getElementById('#replace(role,'-','','ALL')#_#replace(permission,'-','','ALL')#').value=permissiontypevalue[this.value];" /> --->
+									<ft:button type="button" id="#btnID#" color="#btnColor#" value="#permissiontypes[right]#" text="#buttonText#" size="small" width="200px" onclick="changePermission('#btnID#', '#hiddenID#', btnHash#btnIDHash#)" />
+
 								</td>
 							</tr>
 						</cfoutput>
