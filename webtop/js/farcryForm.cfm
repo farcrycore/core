@@ -262,18 +262,7 @@ function createFormtoolTree(fieldname,rootID,dataURL,rootNodeText,selectedIDs,ic
     
 }
 
-
-	function fBtnURL(id,url,target) {
-		if (target == 'undefined' || target == '_self'){
-			location.href=url;			
-			return false;
-		} else {
-			win = window.open('',target);	
-			win.location=url;	
-			win.focus;			
-			return false;
-		}
-	}						
+				
 				
 	function selectedObjectID(objectid) {
 		f = Ext.query('.fc-selected-object-id');
@@ -314,7 +303,15 @@ function newFarcryButton (id,type,size,value,text,icon,overIcon,iconPos,sprite,w
 	dh.overwrite(btnWrap,newBtnMarkup);
 
 	var newBtn = Ext.get(id + '-tbl-wrap');
-
+	
+	
+	<!--- THIS STOPS SUBMIT BUTTONS SUBMITTING. ENABLING JS TO DO ALL THE WORK. --->
+	Ext.get(id).on('click', this.onClick, this, {
+		preventDefault:true,
+		fn: function() { 
+		}
+	});
+	
 	
 	if (sprite != null && sprite != '') {
 		Ext.select('##' + id + '-tbl-wrap .f-btn-bg').applyStyles('background-image:url(' + sprite +');');
@@ -343,7 +340,8 @@ function newFarcryButton (id,type,size,value,text,icon,overIcon,iconPos,sprite,w
 		    fn: function() { 
 		    	newBtn.addClass('f-btn-over'); 
 				if (overIcon != null && overIcon != '') {
-					Ext.select('##' + id + '-tbl-wrap button').applyStyles('background-image:url(' + overIcon +');');		
+					Ext.select('##' + id + '-tbl-wrap button').applyStyles('background-image:url(' + overIcon +');');	
+					
 				}		    	
 		    }
 		});	
@@ -367,21 +365,38 @@ function newFarcryButton (id,type,size,value,text,icon,overIcon,iconPos,sprite,w
 		    }
 		});
 	
-		if (type == 'submit') {
-			Ext.select('##' + id + '-tbl-wrap .f-btn-mc ').on('click', this.onClick, this, {
-			    fn: function() { 
-			    	f = Ext.query('.fc-button-clicked');
-			    	for(var i=0; i<f.length; i++){
-						f[i].value = value;
-					}
-					if (formName != '') {	
-						Ext.get(formName).dom.submit();
-					}
-			    }
-			})		
-		};
+
+
 	}
 		
 }
+
+	
+function validateBtnClick(formName) {
+	var btnValidation = new Validation(formName, {onSubmit:false});
+	if(btnValidation.validate()) {return true} else {return false};
+}
+	
+function btnURL(url,target) {
+	if (target == 'undefined' || target == '_self'){
+		location.href=url;			
+		return false;
+	} else {
+		win = window.open('',target);	
+		win.location=url;	
+		win.focus;			
+		return false;
+	}
+}		
+	
+function btnSubmit(formName,value) {
+   	f = Ext.query('.fc-button-clicked');
+   	for(var i=0; i<f.length; i++){
+		f[i].value = value;
+	}
+	if (formName != '') {	
+		Ext.get(formName).dom.submit();
+	}
+}		
 
 </cfoutput>					

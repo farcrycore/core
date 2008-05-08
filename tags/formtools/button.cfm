@@ -48,10 +48,6 @@
 			<cfset attributes.Type = "submit" />
 		</cfif>
 	</cfif>
-	
-	<cfif attributes.disabled>
-		<cfset attributes.onClick = "#attributes.onClick#;return false;" />
-	</cfif>
 
 	<!--- Default validate to true if submitting and false if just a button --->
 	<cfif not len(attributes.validate)>
@@ -62,33 +58,35 @@
 		</cfif>
 	</cfif>
 	
+	
+	<cfif isDefined("Request.farcryForm.Name") AND attributes.validate>
+		<cfset attributes.onClick = "#attributes.onClick#;if(!validateBtnClick('#Request.farcryForm.Name#')){return false};" />	
+	</cfif>
+	
+	
+	<cfif len(Attributes.ConfirmText)>
+		<!--- I18 conversion of label --->
+		<cfset Attributes.ConfirmText = application.rb.getResource('#attributes.rbkey#@confirmtext',Attributes.ConfirmText) />
+		<cfset attributes.confirmText = jsStringFormat(Attributes.ConfirmText) />
+		<cfset attributes.onClick = "#attributes.onClick#;if(!confirm('#Attributes.ConfirmText#')){return false};" />
+	</cfif>	
+	
 	<cfif len(attributes.SelectedObjectID)>		
 		<cfset attributes.Onclick = "#attributes.OnClick#;selectedObjectID('#attributes.SelectedObjectID#');" />
 	</cfif>
-	
-	<cfif len(Attributes.ConfirmText)>
-			<!--- I18 conversion of label --->
-	<cfset Attributes.ConfirmText = application.rb.getResource('#attributes.rbkey#@confirmtext',Attributes.ConfirmText) />
-	
-		<!--- Confirm the click before submitting --->
-		<cfset attributes.OnClick = "if(confirm('#Attributes.ConfirmText#')) {dummyconfirmvalue=1} else {return false};#attributes.OnClick#;">
-	</cfif>	
 
 	
-	<cfif isDefined("Request.farcryForm.Name") AND Request.farcryForm.Validation AND Attributes.validate>
-		<!--- Confirm the click before submitting --->
-		<cfset attributes.OnClick = "#attributes.OnClick#;if(realeasyvalidation#Request.farcryForm.Name#.validate()) {dummyconfirmvalue=1} else {return false};">
-
-	</cfif>	
-
 	<cfif len(attributes.url)>
 		<cfset attributes.Type = "button" />
-		<cfset attributes.OnClick = "#attributes.OnClick#;return fBtnURL('#attributes.id#','#attributes.url#','#attributes.target#');">
+		<cfset attributes.url = jsStringFormat(attributes.url) />
+		<cfset attributes.onClick = "#attributes.onClick#;btnURL('#attributes.url#','#attributes.target#');return false;" />
 	</cfif>
 
-<!--- 	<cfif isDefined("Request.farcryForm.Name") AND attributes.type EQ "submit">
-		<cfset attributes.OnClick = "#attributes.OnClick#;document.#Request.farcryForm.Name#.submit();">
-	</cfif> --->
+
+	<cfif attributes.type EQ "submit">
+		<cfset attributes.onClick = "#attributes.onClick#;btnSubmit('#Request.farcryForm.Name#','#jsStringFormat(attributes.value)#');" />	
+	</cfif>
+	
 	
 	
 	
@@ -116,12 +114,13 @@
 
 	<cfoutput>
 	<span id="#attributes.id#-wrap" class="#attributes.class#" style="#attributes.Style#">
-		<button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" class="f-btn-text">#attributes.text#</button>
+		<button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" class="f-btn-text" <cfif attributes.disabled>disabled</cfif>>#attributes.text#</button>
 	</span>
 	</cfoutput>
 		
 	<extjs:onReady>
-		<cfoutput>newFarcryButton('#attributes.id#', '#lcase(attributes.type)#', '#lcase(attributes.size)#','#attributes.value#','#attributes.text#','#attributes.icon#','#attributes.overIcon#','#attributes.iconPos#', '#attributes.sprite#', '#attributes.width#','#farcryFormName#', '#jsStringFormat(attributes.OnClick)#', '#lcase(yesNoFormat(attributes.disabled))#');</cfoutput>
+		<cfoutput>
+			newFarcryButton('#attributes.id#','#lcase(attributes.type)#','#lcase(attributes.size)#','#jsStringFormat(attributes.value)#','#jsStringFormat(attributes.text)#','#attributes.icon#','#attributes.overIcon#','#attributes.iconPos#', '#attributes.sprite#', '#attributes.width#','#farcryFormName#','#jsStringFormat(attributes.OnClick)#','#lcase(yesNoFormat(attributes.disabled))#');</cfoutput>
 	</extjs:onReady>
 
 </cfif>
