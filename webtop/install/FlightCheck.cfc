@@ -167,7 +167,7 @@
 				<cfset databaseTypeName = "Oracle" />
 				<!--- run an oracle specific query --->
 				<cfquery name="qCheckDSN" datasource="#arguments.DSN#">
-				SELECT 'aj' AS theMAN from #arguments.DBOwner#dual
+				SELECT 'aj' AS theMAN from dual
 				</cfquery>
 			</cfcase>
 			<cfcase value="MSSQL">

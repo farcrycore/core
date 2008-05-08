@@ -83,7 +83,7 @@ $out: stStatus			: struct to pass status report back to caller $
 			BEGIN
 				vhour := 0;
 				WHILE vHOUR < 24 LOOP
-					INSERT INTO statsHours (hour) VALUES (vhour);
+					INSERT INTO #application.dbowner#statsHours (hour) VALUES (vhour);
 					vhour := vHour + 1;
 				END LOOP;
 			END;
@@ -374,7 +374,7 @@ CONSTRAINT PK_STATS PRIMARY KEY (LOGID))
 				#sql#
 			</cfquery>
 			<cfscript>
-				sql = "CREATE INDEX #application.dbowner#IDX_STATS ON STATS(pageid,logdatetime)";
+				sql = "CREATE INDEX #application.dbowner#IDX_STATS ON #application.dbowner#STATS(pageid,logdatetime)";
 			</cfscript>
 			<cfquery datasource="#arguments.dsn#" name="qCreate">
 				#sql#

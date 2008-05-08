@@ -90,6 +90,9 @@ SAVE AND CONTROL THE INSTAL PROCESS WIZARD
 			<cfset session.stFarcryInstall.stConfig[field] = form[field] />
 		</cfif>
 		
+		<cfif len(session.stFarcryInstall.stConfig.DBOwner) AND right(session.stFarcryInstall.stConfig.DBOwner,1) NEQ ".">
+			<cfset session.stFarcryInstall.stConfig.DBOwner = "#session.stFarcryInstall.stConfig.DBOwner#." />
+		</cfif>
 	</cfloop>
 	
 </cf_processStep>
@@ -379,7 +382,7 @@ RENDER THE CURRENT STEP
 			else if (this.dom.value == "ora")
 			{
 				var DBOwner = Ext.get('DBOwner');
-				DBOwner.dom.value = 'username';		
+				DBOwner.dom.value = 'username.';		
 				
 				
 				var el = Ext.get('divDBOwner');	
