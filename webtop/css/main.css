@@ -141,6 +141,7 @@ body#sec-login {background: #5A7EB9 url("images/full_page_bg.gif") repeat-x 0 0;
 	#login .loginFooter {clear:both;color:#ccc;border-top: 1px solid #eee;text-align:right;}
 	#login .loginFooter h3 { font: normal 80% arial;margin:0px;}
 	#login .loginFooter p { margin:10px 0px 0px 0px;}
+	#login .loginFooter a,#login .loginFooter a:hover {color: #ccc; background-color:#fff;text-decoration: underline;}
 	#login fieldset h5 {margin: 50px 0 0;padding:2px 5px}
 	#login .loginInfo form {width:425px;min-width:425px;}
 	#login .loginInfo form.formtool fieldset {border-style:none;}
