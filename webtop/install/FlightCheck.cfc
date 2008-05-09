@@ -77,7 +77,7 @@
 					First check for oracle will fail. This is the oracle check.
 					Run any query to see if the DSN is valid --->
 					<cfquery name="qCheckDSN" datasource="#arguments.DSN#">
-						SELECT 'patrick' AS theMAN from #arguments.DBOwner#dual
+						SELECT 'patrick' AS theMAN from dual
 					</cfquery>
 					
 					<cfcatch type="database">
@@ -169,7 +169,7 @@
 				<cfset databaseTypeName = "Oracle" />
 				<!--- run an oracle specific query --->
 				<cfquery name="qCheckDSN" datasource="#arguments.DSN#">
-				SELECT 'aj' AS theMAN from #arguments.DBOwner#dual
+				SELECT 'aj' AS theMAN from dual
 				</cfquery>
 			</cfcase>
 			<cfcase value="MSSQL">
