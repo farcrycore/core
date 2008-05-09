@@ -55,6 +55,7 @@
 
 	<cffunction name="checkDSN" access="public" returntype="struct" output="false" hint="Check to see whether the DSN entered by the user is valid">
 		<cfargument name="DSN" type="string" required="true" hint="DSN to check" />
+		<cfargument name="DBOwner" type="string" required="true" hint="The database owner" />
 
 		<cfset var qCheckDSN = queryNew("blah") />
 		<cfset var stResult = structNew() />
@@ -76,7 +77,7 @@
 					First check for oracle will fail. This is the oracle check.
 					Run any query to see if the DSN is valid --->
 					<cfquery name="qCheckDSN" datasource="#arguments.DSN#">
-						SELECT 'patrick' AS theMAN from dual
+						SELECT 'patrick' AS theMAN from #arguments.DBOwner#dual
 					</cfquery>
 					
 					<cfcatch type="database">
@@ -96,7 +97,7 @@
 		</cftry>
 		
 		<cfif stResult.bSuccess>
-			<cfset stResult = checkExistingDatabase(arguments.DSN) />
+			<cfset stResult = checkExistingDatabase(dbOwner="#arguments.dbOwner#",dsn="#arguments.DSN#") />
 		</cfif>
 		
 		<cfreturn stResult />
@@ -107,6 +108,7 @@
 	
 	<cffunction name="checkExistingDatabase" access="public" returntype="struct" output="false" hint="Check to see whether a farcry database exists">
 		<cfargument name="DSN" type="string" required="true" hint="DSN to check" />
+		<cfargument name="DBOwner" type="string" required="true" hint="The database owner" />
 
 		<cfset var qCheckDSN = queryNew("blah") />
 		<cfset var bExists = true />
@@ -120,7 +122,7 @@
 			<!--- run any query to see if there is an existing farcry project in the database --->
 			<cfquery name="qCheckDSN" datasource="#arguments.DSN#">
 				SELECT	count(objectId) AS theCount
-				FROM	refObjects
+				FROM	#arguments.DBOwner#refObjects
 			</cfquery>
 			
 			<cfcatch type="database">
@@ -167,7 +169,7 @@
 				<cfset databaseTypeName = "Oracle" />
 				<!--- run an oracle specific query --->
 				<cfquery name="qCheckDSN" datasource="#arguments.DSN#">
-				SELECT 'aj' AS theMAN from dual
+				SELECT 'aj' AS theMAN from #arguments.DBOwner#dual
 				</cfquery>
 			</cfcase>
 			<cfcase value="MSSQL">
@@ -828,47 +830,6 @@
 	
 	
 	
-	<cffunction name="postFlightCheck" access="public" returntype="boolean" output="false" hint="Check for all post install form entries and paths">
-		<cfargument name="args" type="struct" required="true" hint="Structure of arguments, should default to form" />
-		
-		<cfset var bSuccess = 0 />
-		<cfset var a = 1 />
-		<cfset var b = 1 />
-		<cfset var c = 1 />
-		<cfset var d = 1 />
-		<cfset var e = 1 />
-		
-		<cfscript>
-			a = checkFarcryProject(arguments.args.siteName, arguments.args.appMapping);
-			
-			if (a)
-			{
-				b = checkWebMapping("#arguments.args.domain#", "#arguments.args.appMapping#");
-			}
-			
-			if (a AND b)
-			{
-				c = checkWebtop(serverName=arguments.args.domain, farcryMapping=arguments.args.farcryMapping, appMapping=arguments.args.appMapping);
-			}
-			
-			if (a AND b AND c)
-			{
-				d = checkDSN(arguments.args.appDSN);
-			}
-			
-			if (a AND b AND c AND d)
-			{
-				e = checkExistingDatabase(arguments.args.appDSN);	
-			}				
-			
-			//check whether an error was thrown
-			bSuccess = a AND b AND c AND d AND e;
-		</cfscript>
-
-		<cfreturn bSuccess />
-	
-	</cffunction>	
-
 
 
 	<cffunction name="validate" access="public" returntype="boolean" output="false" hint="Validate for all post install form entries.">
