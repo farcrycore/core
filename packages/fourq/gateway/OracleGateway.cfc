@@ -56,7 +56,7 @@
 
 		<cfsavecontent variable="result.sql">
 			<cfoutput>
-			CREATE TABLE #tablename#(
+			CREATE TABLE #arguments.dbowner##tablename#(
 			<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
 				<cfif i GT 1>,</cfif>#SQLArray[i].column# #SQLArray[i].datatype# #SQLArray[i].defaultValue# #SQLArray[i].nullable#
 			</cfloop>)
@@ -73,7 +73,7 @@
 				</cfquery>
 				<cfif local.qryTableExists1.recordcount gt 0 >
    				<cfquery datasource="#variables.dsn#">
-	   				DROP TABLE #tablename#
+	   				DROP TABLE #arguments.dbowner##tablename#
 		   		</cfquery>
 		   	</cfif>
 			</cfif>
@@ -97,10 +97,11 @@
 
 
  	<cffunction name="deployArrayTable" access="public" returntype="struct" output="false">
-   	<cfargument name="fields"     type="struct" required="true" />
-   	<cfargument name="tablename"  type="string" required="true" />
+	   	<cfargument name="fields"     type="struct" required="true" />
+	   	<cfargument name="tablename"  type="string" required="true" />
 		<cfargument name="bDropTable" type="boolean" required="false" default="false">
 		<cfargument name="bTestRun"   type="boolean" required="false" default="true">
+		<cfargument name="dbowner"    type="string" required="false" default="#variables.dbowner#">
 
 		<cfset var stResult  = structNew() />
 		<cfset var i         = "" />
@@ -108,11 +109,16 @@
 		<cfset var SQL       = "" />
 		<cfset var local     = structNew() />
 				
+		
+		<cfif arguments.dbowner is not ""> 
+			<cfset local.dbowner = left( arguments.dbowner, len(arguments.dbowner) - 1) />
+		<cfelse> 
+			<cfset local.dbowner = application.dbowner />
+		</cfif> 
+						
 		<cfif find(".",arguments.tablename) is not 0> 
-			<cfset local.dbowner = left(arguments.tablename, find(".",arguments.tablename) - 1) />
 			<cfset local.tablename = listLast(arguments.tablename,".") /> 
 		<cfelse> 
-			<cfset local.dbowner = "" />
 			<cfset local.tablename = arguments.tablename> 
 		</cfif> 
 
@@ -126,7 +132,7 @@
 			<cfif local.qryTableExists2.recordcount gt 0 >
 				<cftry>
 					<cfquery datasource="#variables.dsn#">
-						DROP TABLE #local.tablename#
+						DROP TABLE #arguments.dbowner##local.tablename#
 					</cfquery>
 					<cfcatch>
 					<cfrethrow /><!--- suppress error --->
@@ -138,7 +144,7 @@
 
 			<cfsavecontent variable="sql">
 			<cfoutput>
-				CREATE TABLE #arguments.tablename#
+				CREATE TABLE #arguments.dbowner##arguments.tablename#
 				(
 					<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
 				    <cfif i GT 1>,</cfif>#SQLArray[i].column# #SQLArray[i].datatype# #SQLArray[i].defaultValue# #SQLArray[i].nullable#
