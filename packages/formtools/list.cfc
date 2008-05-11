@@ -145,6 +145,7 @@
 		<cfset var i = "" />
 		<cfset var html = "" />
 		<cfset var oList = "" />
+		<cfset var rListData = "" />
 		
 		
 		<cfparam name="arguments.stMetadata.ftList" default="" />
@@ -154,9 +155,19 @@
 			
 			<cfset oList = createObject("component", application.stcoapi[arguments.stMetadata.ftListDataTypename].packagePath) />
 			
-			<cfinvoke component="#oList#" method="#arguments.stMetadata.ftListData#" returnvariable="arguments.stMetadata.ftList">
+			<cfinvoke component="#oList#" method="#arguments.stMetadata.ftListData#" returnvariable="rListData">
 				<cfinvokeargument name="objectid" value="#arguments.stObject.objectID#" />
 			</cfinvoke>
+
+			<cfif isQuery(rListData)>
+				<cfif rListData.recordCount AND listFindNoCase(rListData.columnList, "value") AND listFindNoCase(rListData.columnList, "name")>
+					<cfloop query="rListData">
+						<cfset arguments.stMetadata.ftList = listAppend(arguments.stMetadata.ftList, "#rListData.value#:#rListData.name#") />
+					</cfloop>
+				</cfif>
+			<cfelse>
+				<cfset arguments.stMetadata.ftList = rListData />
+			</cfif>			
 			
 		</cfif>
 		
