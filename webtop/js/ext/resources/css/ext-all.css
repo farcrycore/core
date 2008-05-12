@@ -77,7 +77,7 @@ ul.x-tab-strip-bottom{padding-bottom:1px;background:url(../images/default/tabs/t
 .x-tab-panel-header-plain{background:transparent!important;border-width:0!important;padding-bottom:0!important;}
 .x-tab-panel-header-plain .x-tab-strip-spacer{border:1px solid #8db2e3;border-top:0 none;height:2px;background:#deecfd;font-size:1px;line-height:1px;}
 .ext-border-box .x-tab-panel-header-plain .x-tab-strip-spacer{height:3px;}
-ul.x-tab-strip li{float:left;margin-left:2px;}
+ul.x-tab-strip li{float:left;margin-left:2px;list-style-type:none;}
 ul.x-tab-strip li.x-tab-edge{float:left;margin:0!important;padding:0!important;border:0 none!important;font-size:1px!important;line-height:1px!important;overflow:hidden;zoom:1;background:transparent!important;width:1px;}
 .x-tab-strip a,.x-tab-strip span,.x-tab-strip em{display:block;}
 .x-tab-strip a{text-decoration:none!important;-moz-outline:none;outline:none;cursor:pointer;}
