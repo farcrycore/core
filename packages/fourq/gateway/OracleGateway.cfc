@@ -56,7 +56,7 @@
 
 		<cfsavecontent variable="result.sql">
 			<cfoutput>
-			CREATE TABLE #arguments.dbowner##tablename#(
+			CREATE TABLE #tablename#(
 			<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
 				<cfif i GT 1>,</cfif>#SQLArray[i].column# #SQLArray[i].datatype# #SQLArray[i].defaultValue# #SQLArray[i].nullable#
 			</cfloop>)
@@ -73,7 +73,7 @@
 				</cfquery>
 				<cfif local.qryTableExists1.recordcount gt 0 >
    				<cfquery datasource="#variables.dsn#">
-	   				DROP TABLE #arguments.dbowner##tablename#
+	   				DROP TABLE #tablename#
 		   		</cfquery>
 		   	</cfif>
 			</cfif>
@@ -144,7 +144,7 @@
 
 			<cfsavecontent variable="sql">
 			<cfoutput>
-				CREATE TABLE #arguments.dbowner##arguments.tablename#
+				CREATE TABLE #arguments.dbowner##local.tablename#
 				(
 					<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
 				    <cfif i GT 1>,</cfif>#SQLArray[i].column# #SQLArray[i].datatype# #SQLArray[i].defaultValue# #SQLArray[i].nullable#
