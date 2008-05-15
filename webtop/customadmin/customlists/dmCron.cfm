@@ -13,9 +13,9 @@
 	typename="dmCron"
 	permissionset="news"
 	title="Scheduled Tasks Administration"
-	columnList="label,datetimelastUpdated,lastupdatedby"   
-	sortableColumns="label,datetimelastUpdated,lastupdatedby"
-	lFilterFields="label"
+	columnList="title,datetimelastUpdated,lastupdatedby"   
+	sortableColumns="title,datetimelastUpdated,lastupdatedby"
+	lFilterFields="title"
 	sqlorderby="datetimelastUpdated desc"
 	lCustomActions="Run Task" />
 
