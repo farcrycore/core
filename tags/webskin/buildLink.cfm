@@ -130,7 +130,7 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 		</cfloop>
 
 		<cfset existQS = false />
-		<cfif Find("?",href)>
+		<cfif Find("?",href) OR application.config.plugins.fu>
 			<cfset existQS = true />
 		</cfif>
 	
