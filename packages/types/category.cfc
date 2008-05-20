@@ -77,7 +77,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 
 	<cffunction name="getCategoryIDbyName" returntype="string" access="public" hint="Returns categoryid for a speicfic category name from nested tree table. Returns empty string if no match." output="No">
 		<cfargument name="categoryname" required="true" type="string" hint="Category label to match.">
-		<cfargument name="typename" required="false" default="categories" type="string" hint="nested_tree_objects typename to match.">
+		<cfargument name="typename" required="false" default="dmCategory" type="string" hint="nested_tree_objects typename to match.">
 		<cfargument name="dsn" required="no" default="#application.dsn#">
 		<cfargument name="dbowner" required="no" default="#application.dbowner#">
 
@@ -460,7 +460,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 	
 	<cffunction name="getCategoryByName" returntype="query" access="public" hint="Returns category info" output="No">
 		<cfargument name="name" required="true" type="string" hint="Name of the category you want returned">
-		<cfargument name="typename" required="false" default="categories" type="string" hint="nested_tree_objects typename to match">
+		<cfargument name="typename" required="false" default="dmCategory" type="string" hint="nested_tree_objects typename to match">
 		<cfargument name="dsn" required="no" default="#application.dsn#">
 		<cfargument name="dbowner" required="no" default="#application.dbowner#">
 		
