@@ -134,7 +134,7 @@
 			</cfloop>
 		</cfif>
 		
-				
+		<cfset application.bInit = true />
 		<!--- Return out. --->
 		<cfreturn true />
 
