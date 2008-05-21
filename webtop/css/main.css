@@ -576,6 +576,8 @@ body.container-management h1 {padding: 10px 0 14px 40px;background: transparent 
 		tr.alt {background: #f1f1f1} 
 		tr.ruled {background: #c00} 
 		tr {background:#fff}
+	
+	table.layout, table.layout th, table.layout td {border:none;margin:0pt;padding:0pt;}
 		
 	table.table-2 {width:100%}
 	table.table-2 th {white-space:nowrap}
