@@ -7,16 +7,16 @@
 </cfif>
 
 <cfif not len(url.icon)>
-	<cfset url.icon = LCase(Right(url.type,len(url.type)-2)) />
+	<cfset url.icon = url.type />
 </cfif>
 
-<cfif fileexists("#application.path.project#/www/images/icons/#url.icon#.png")>
-	<cfcontent file="#application.path.project#/www/images/icons/#url.icon#.png" />
+<cfif fileexists("#application.path.project#/www/wsimages/icons/#url.icon#.png")>
+	<cfcontent file="#application.path.project#/www/wsimages/icons/#url.icon#.png" />
 </cfif>
 
 <cfloop list="#application.factory.oUtils.listReverse(application.plugins)#" index="plugin">
-	<cfif fileexists("#application.path.plugins#/#plugin#/www/images/icon/#url.type#.png")>
-		<cfcontent file="#application.path.plugins#/#plugin#/www/images/icon/#url.type#.png" />
+	<cfif fileexists("#application.path.plugins#/#plugin#/www/wsimages/icons/#url.icon#.png")>
+		<cfcontent file="#application.path.plugins#/#plugin#/www/wsimages/icons/#url.icon#.png" />
 	</cfif>
 </cfloop>
 
