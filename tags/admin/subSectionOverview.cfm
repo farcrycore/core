@@ -44,6 +44,7 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 		<cfoutput><ul class="inlinedocs"></cfoutput>
 		
 		<!--- Loop through sections --->
+		<cfset count = 0 />
 		<admin:loopwebtop parent="#subsection#" item="menu">
 			<!--- Menu content --->
 			<!--- <cfoutput><h3>#menu.label#</h3></cfoutput>
@@ -74,6 +75,8 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 				</cfif>
 			
 				<cfif len(menuitem.description)>
+					<cfset count = count + 1 />
+					
 					<cfif not menuitem.linkType eq "External">
 						<cfset menuitem.link = "#application.url.farcry##ReplaceNoCase(menuitem.link,'#application.url.farcry#','')#" />
 					</cfif>
@@ -89,21 +92,24 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 					</cfif>
 					
 					<cfoutput>
-						<a href="#menuitem.link#" target="content">#menuitem.label#</a><br/>
-					</cfoutput>
-					
-					<cfif len(menuitem.description)>
-						<cfoutput>
+							<a href="#menuitem.link#" target="content">#menuitem.label#</a><br/>
 							<p>#menuitem.description#</p>
-						</cfoutput>
-					</cfif>
-					
-					<cfoutput></li></cfoutput>
+						</li>
+					</cfoutput>
 				</cfif>
 			</admin:loopwebtop>
 		</admin:loopwebtop>
 			
 		<cfoutput></ul></cfoutput>
+		
+		<cfif not count><!--- No docs --->
+			<cfset thisitem = subsection.children[listfirst(subsection.childorder)] />
+			<cfset thisitem = thisitem.children[listfirst(thisitem.childorder)] />
+			<cfif not thisitem.linkType eq "External">
+				<cfset thisitem.link = "#application.url.farcry##ReplaceNoCase(thisitem.link,'#application.url.farcry#','')#" />
+			</cfif>
+			<cflocation url="#thisitem.link#" />
+		</cfif>
 	</cfcase>
 </cfswitch>
 
