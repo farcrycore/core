@@ -1,5 +1,5 @@
 <cfsetting enablecfoutputonly="true">
-<cfparam name="url.rootObjectID" default="#application.navid.home#">
+<cfparam name="url.rootObjectID" default="#session.dmProfile.overviewhome#">
 
 
 <!--- Permissions --->

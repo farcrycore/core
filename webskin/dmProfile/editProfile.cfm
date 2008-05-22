@@ -3,6 +3,10 @@
 
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 
-<ft:object objectid="#stObj.objectid#" typename="dmProfile" lfields="firstname,lastname,breceiveemail,emailaddress,phone,fax,position,department,locale" includeFieldSet="false" />
+<cfif application.security.checkPermission("SecurityUserManagementTab")>
+	<ft:object objectid="#stObj.objectid#" typename="dmProfile" lfields="firstname,lastname,breceiveemail,emailaddress,phone,fax,position,department,locale,overviewHome" includeFieldSet="false" />
+<cfelse>
+	<ft:object objectid="#stObj.objectid#" typename="dmProfile" lfields="firstname,lastname,breceiveemail,emailaddress,phone,fax,position,department,locale" includeFieldSet="false" />
+</cfif>
 
 <cfsetting enablecfoutputonly="false" />

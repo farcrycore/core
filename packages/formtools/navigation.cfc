@@ -32,6 +32,7 @@
 		<cfparam name="arguments.stMetadata.ftDropdownFirstItem" default="" type="string" />
 		
 		<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
+		<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs" />
 		
 		<cfif structKeyExists(application.navid, arguments.stMetadata.ftAlias)>
 			<cfset rootID = application.navid[arguments.stMetadata.ftAlias] >
