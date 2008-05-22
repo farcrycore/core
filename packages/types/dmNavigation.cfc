@@ -364,7 +364,7 @@ $out:$
 		
 		<cfparam name="arguments.stMetadata.ftJoin" default="#structkeylist(application.types)#" /><!--- These types are allowed to be used for type webskins --->
 		<cfparam name="arguments.stMetadata.ftExcludeTypes" default="" /><!--- Remove this types --->
-		<cfparam name="arguments.stMetadata.ftPrefix" default="displayPage" /><!--- Webskin prefix --->
+		<cfparam name="arguments.stMetadata.ftPrefix" default="displayType" /><!--- Webskin prefix --->
 		
 		<cfloop list="#arguments.stMetadata.ftJoin#" index="thistype">
 			<cfif not listcontains(arguments.stMetadata.ftExcludeTypes,thistype)>
@@ -448,9 +448,10 @@ $out:$
 		
 		<cfparam name="form.typename" />
 		<cfparam name="form.value" />
+		<cfparam name="arguments.stMetadata.ftPrefix" default="displayType" /><!--- Webskin prefix --->
 		
 		<cfif len(form.typename)>
-			<nj:listTemplates typename="#form.typename#" prefix="displayPage" r_qMethods="qDisplayTypes">
+			<nj:listTemplates typename="#form.typename#" prefix="#arguments.stMetadata.ftPrefix#" r_qMethods="qDisplayTypes">
 		
 			<cfif qDisplayTypes.recordCount>
 				<cfsavecontent variable="html">
