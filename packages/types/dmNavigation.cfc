@@ -364,7 +364,7 @@ $out:$
 		
 		<cfparam name="arguments.stMetadata.ftJoin" default="#structkeylist(application.types)#" /><!--- These types are allowed to be used for type webskins --->
 		<cfparam name="arguments.stMetadata.ftExcludeTypes" default="" /><!--- Remove this types --->
-		<cfparam name="arguments.stMetadata.ftPrefix" default="displayType" /><!--- Webskin prefix --->
+		<cfparam name="arguments.stMetadata.ftPrefix" default="displayType,editType" /><!--- Webskin prefix --->
 		
 		<cfloop list="#arguments.stMetadata.ftJoin#" index="thistype">
 			<cfif not listcontains(arguments.stMetadata.ftExcludeTypes,thistype)>
@@ -442,27 +442,42 @@ $out:$
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
 		<cfset var html = "" />
-		<cfset var qDisplayTypes = querynew("empty") />
+		<cfset var qWebskins = querynew("methodName,displayName","varchar,varchar") />
+		<cfset var qDisplayTypes = querynew("methodName,displayName") />
+		<cfset var thisindex = "" />
 		
 		<cfimport taglib="/farcry/core/tags/navajo" prefix="nj" />
 		
 		<cfparam name="form.typename" />
 		<cfparam name="form.value" />
-		<cfparam name="arguments.stMetadata.ftPrefix" default="displayType" /><!--- Webskin prefix --->
+		<cfparam name="arguments.stMetadata.ftPrefix" default="displayType,editType" /><!--- Webskin prefix --->
 		
 		<cfif len(form.typename)>
-			<nj:listTemplates typename="#form.typename#" prefix="#arguments.stMetadata.ftPrefix#" r_qMethods="qDisplayTypes">
+			<cfloop list="#arguments.stMetadata.ftPrefix#" index="thisprefix">
+				<nj:listTemplates typename="#form.typename#" prefix="#thisprefix#" r_qMethods="qDisplayTypes">
+				<cfquery dbtype="query" name="qWebskins">
+					select	methodName,displayName
+					from	qDisplayTypes
+					
+					UNION
+					
+					select	methodName,displayName
+					from	qWebskins
+					
+					order by methodName
+				</cfquery>
+			</cfloop>
 		
-			<cfif qDisplayTypes.recordCount>
+			<cfif qWebskins.recordCount>
 				<cfsavecontent variable="html">
 					<cfoutput>
 						<select name="#arguments.fieldname#webskin" id="#arguments.fieldname#webskin">
 							<option value="">
 					</cfoutput>
 					
-					<cfloop query="qDisplayTypes">
+					<cfloop query="qWebskins">
 						<cfoutput>
-							<option value="#qDisplayTypes.methodName#"<cfif qDisplayTypes.methodName eq form.value> selected="selected"</cfif>>#qDisplayTypes.displayName#</option>
+							<option value="#qWebskins.methodName#"<cfif qWebskins.methodName eq form.value> selected="selected"</cfif>>#qWebskins.displayName#</option>
 						</cfoutput>
 					</cfloop>
 							
