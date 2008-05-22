@@ -1,4 +1,8 @@
 <cfsetting enablecfoutputonly="true">
+
+<cfif not len(session.dmProfile.overviewhome)>
+	<cfset session.dmProfile.overviewhome = application.navid.home />
+</cfif>
 <cfparam name="url.rootObjectID" default="#session.dmProfile.overviewhome#">
 
 
