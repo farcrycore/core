@@ -508,9 +508,14 @@
 		</cfif>
 
 		<cfif not len(loc)>				
+      <cfif fileExists(expandPath("#cgi.context_path#/webtop/install/index.cfm"))>
+        <cfset installLink = "#cgi.context_path#/webtop/install/index.cfm" />
+      <cfelse>
+        <cfset installLink = "#cgi.context_path#/farcry/core/webtop/install/index.cfm" />
+      </cfif>
 			<cfoutput>
 				<p>I can't find a FarCry project on this server to administer.</p>
-				<p><a href="#cgi.context_path#/farcry/core/webtop/install/index.cfm">CLICK HERE</a> TO INSTALL A NEW PROJECT.</p>
+				<p><a href="#installLink#">CLICK HERE</a> TO INSTALL A NEW PROJECT.</p>
 			</cfoutput>
 			<cfabort />		
 		</cfif>
