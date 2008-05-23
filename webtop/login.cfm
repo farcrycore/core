@@ -33,7 +33,6 @@ $out:$
 	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 	
 	<cfparam name="url.ud" default="#application.security.getDefaultUD()#" />
-	<cfparam name="url.returnURL" default="#application.url.webtop#/index.cfm" />
 	
 	
 	<cfif structKeyExists(url, "farcryProject") AND structKeyExists(server, "stFarcryProjects") AND structKeyExists(cookie, "currentFarcryProject") AND structKeyExists(server.stFarcryProjects, url.farcryProject) AND cookie.currentFarcryProject NEQ url.farcryProject>
@@ -51,15 +50,15 @@ $out:$
 	</cfif>
 	
 	<!--- set message [error], if user has logged out --->
-	<cfif structisempty(stResult) and url.returnUrl contains "logout=1">
+	<cfif structisempty(stResult) and session.loginReturnURL contains "logout=1">
 		<cfset application.security.logout() />
 		<cfset stResult.authenticated = false />
 	    <cfset stResult.message = "<b>OK:</b> You have successfully logged out." />
 	</cfif>
 	
-	<cfset stResult.returnUrl = URLDecode(url.returnUrl) />
-	<cfset stResult.returnUrl = replace( stResult.returnUrl, "logout=1", "" ) />
-	<cfset stResult.returnUrl = replace( stResult.returnUrl, "&&", "" ) />
+	<cfset session.loginReturnURL = URLDecode(session.loginReturnURL) />
+	<cfset session.loginReturnURL = replace( session.loginReturnURL, "logout=1", "" ) />
+	<cfset session.loginReturnURL = replace( session.loginReturnURL, "&&", "" ) />
 	
 	<cfif not structkeyexists(stResult,"authenticated") or not stResult.authenticated>
 	
@@ -67,7 +66,7 @@ $out:$
 
 	<cfelse>
 		<!--- relocate to original location --->
-		<cflocation url="#stResult.returnUrl#" addtoken="No">
+		<cflocation url="#session.loginReturnURL#" addtoken="No">
 		<cfabort>
 	</cfif>
 </cfif>
