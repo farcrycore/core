@@ -12,6 +12,7 @@ FARCRY IMPORT FILES
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs" />
 
 
 
@@ -40,30 +41,26 @@ START WEBSKIN
 				
 	
 					<cfif isdefined("arguments.stParam.message") and len(arguments.stParam.message)>
-						<cfoutput>
-							<div class="error">#arguments.stParam.message#</div>
-						</cfoutput>
+						<extjs:bubble message="#arguments.stParam.message#" />
 					</cfif>
 					
 					<ft:button value="Log In" icon="#application.url.webtop#/images/crystal/22x22/actions/lock.png" />
 				</ft:farcryButtonPanel>
-				
-				<cfset stParameters = structNew() />
-				<cfset stParameters.returnUrl = "#url.returnUrl#" />
+
 				
 				<ft:farcryButtonPanel>					
 					<cfoutput><ul class="loginForgot"></cfoutput>
 						<sec:CheckPermission webskinpermission="forgotPassword" type="farUser">
 							<cfoutput> 
-								<li><skin:buildLink type="farUser" view="forgotPassword" stParameters="#stParameters#">Forgot Password</skin:buildLink></li></cfoutput>
+								<li><skin:buildLink type="farUser" view="forgotPassword">Forgot Password</skin:buildLink></li></cfoutput>
 						</sec:CheckPermission>
 						<sec:CheckPermission webskinpermission="forgotUserID" type="farUser">
 							<cfoutput> 
-								<li><skin:buildLink type="farUser" view="forgotUserID" stParameters="#stParameters#">Forgot UserID</skin:buildLink></li></cfoutput>
+								<li><skin:buildLink type="farUser" view="forgotUserID">Forgot UserID</skin:buildLink></li></cfoutput>
 						</sec:CheckPermission>			
 						<sec:CheckPermission webskinpermission="registerNewUser" type="farUser">
 							<cfoutput> 
-								<li><skin:buildLink type="farUser" view="registerNewUser" stParameters="#stParameters#">Register New User</skin:buildLink></li></cfoutput>
+								<li><skin:buildLink type="farUser" view="registerNewUser">Register New User</skin:buildLink></li></cfoutput>
 						</sec:CheckPermission>
 					<cfoutput></ul></cfoutput>
 

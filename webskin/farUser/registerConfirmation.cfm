@@ -26,24 +26,19 @@
 </cfdefaultcase>
 </cfswitch>
 
-<cfparam name="url.returnURL" default="" />
-
-<cfset stParameters = structNew() />
-<cfset stParameters.returnUrl = "#url.returnUrl#" />
-
 <ft:farcryButtonPanel>
 	<cfoutput><ul class="loginForgot"></cfoutput>
 	<sec:CheckPermission webskinpermission="forgotUserID" type="farUser">
 		<cfoutput>
-			<li><skin:buildLink type="farUser" view="forgotUserID" stParameters="#stParameters#">Forgot UserID</skin:buildLink></li></cfoutput>
+			<li><skin:buildLink type="farUser" view="forgotUserID">Forgot UserID</skin:buildLink></li></cfoutput>
 	</sec:CheckPermission>			
 	<sec:CheckPermission webskinpermission="registerNewUser" type="farUser">
 		<cfoutput>
-			<li><skin:buildLink type="farUser" view="registerNewUser" stParameters="#stParameters#">Register New User</skin:buildLink></li></cfoutput>
+			<li><skin:buildLink type="farUser" view="registerNewUser">Register New User</skin:buildLink></li></cfoutput>
 	</sec:CheckPermission>			
 		
 	<cfoutput>
-		<li><skin:buildLink href="/webtop/login.cfm" stParameters="#stParameters#">Login</skin:buildLink></li></cfoutput>
+		<li><skin:buildLink href="/webtop/login.cfm">Login</skin:buildLink></li></cfoutput>
 	<cfoutput></ul></cfoutput>
 </ft:farcryButtonPanel>
 

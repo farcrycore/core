@@ -181,6 +181,11 @@
 		</cfif>
 		<cfset cookie.currentFarcryProject = application.projectDirectoryName />	
 	
+		<cfparam name="session.loginReturnURL" default="#application.url.webroot#/index.cfm" />
+		<cfif structKeyExists(url, "returnURL")>
+			<cfset session.loginReturnURL = url.returnURL />
+		</cfif>
+		
 		<!--- Return out. --->
 		<cfreturn true />
 
