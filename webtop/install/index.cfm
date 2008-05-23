@@ -214,7 +214,7 @@ SETUP THE FORM AND HIDDEN FIELDS TO CONTROL THE WIZARD
 <cfoutput>
 <form action="#cgi.script_name#" method="post" name="installForm">
 	
-	<input type="hidden" id="goToStep" name="goToStep" value="" >
+	<input type="hidden" id="goToStep" name="goToStep" value="" />
 	<input type="hidden" name="currentStep" value="#session.stFarcryInstall.currentStep#" />
 </cfoutput>
 
@@ -285,10 +285,10 @@ RENDER THE CURRENT STEP
 				</cfif>
 			</cfloop>
 			<cfset variables.lLocales = listSort(variables.lLocales,"textNoCase", "asc") />
-			<input type="hidden" name="locales" value="">
-			<select id="locales" name="locales" multiple="true" size="5">
+			<input type="hidden" name="locales" value="" />
+			<select id="locales" name="locales" multiple="multiple" size="5">
 				<cfloop list="#variables.lLocales#" index="i">
-					<option value="#listFirst(i, ":")#" <cfif listFindNoCase(session.stFarcryInstall.stConfig.locales, listFirst(i, ":"))>selected</cfif>>#listLast(i, ":")#</option>
+					<option value="#listFirst(i, ":")#" <cfif listFindNoCase(session.stFarcryInstall.stConfig.locales, listFirst(i, ":"))>selected="selected"</cfif>>#listLast(i, ":")#</option>
 				</cfloop>
 			</select>
 			<div class="fieldHint">Set the relevant locales for your application.  Just because the locale can be selected does not mean a relevant translation is available.  If in doubt just leave the defaults.</div>
@@ -324,7 +324,7 @@ RENDER THE CURRENT STEP
 			<div class="fieldHint">Funnily enough, your choice of database type must reflect the database your datasource is pointing to.</div>
 		</div>
 		<div class="clear"></div>
-		<input type="hidden" name="DBType" value="">
+		<input type="hidden" name="DBType" value="" />
 	</div>
 	
 	<cfif session.stFarcryInstall.stConfig.dbType EQ "mssql" OR session.stFarcryInstall.stConfig.dbType EQ "ora">
@@ -333,13 +333,13 @@ RENDER THE CURRENT STEP
 		<cfset ownerDisplay = 'none' />
 	</cfif>
     <div class="item" id="divDBOwner" style="display:#ownerDisplay#;">
-      	<label for="dbOwner">Database Owner</label>
+      	<label for="DBOwner">Database Owner</label>
 		<div class="field">
-			<input type="text" id="DBOwner" name="DBOwner" value="#session.stFarcryInstall.stConfig.DBOwner#">
+			<input type="text" id="DBOwner" name="DBOwner" value="#session.stFarcryInstall.stConfig.DBOwner#" />
 		</div>
 		<div class="clear"></div>
 	</div>
-	<input type="hidden" name="DBOwner" value=""><!--- Think makes sure that at the very least, an empty string is set for dbowner --->
+	<input type="hidden" name="DBOwner" value="" /><!--- Think makes sure that at the very least, an empty string is set for dbowner --->
 	</cfoutput>
 	
 	<cfoutput>
@@ -431,7 +431,7 @@ RENDER THE CURRENT STEP
 				<cfloop query="qSkeletons">
 					<cfif qSkeletons.type EQ "DIR" and fileExists("#skeletonPath#/#qSkeletons.name#/install/manifest.cfc")>
 						<cfset oManifest = createObject("component", "farcry.skeletons.#qSkeletons.name#.install.manifest") />
-						<option value="farcry.skeletons.#qSkeletons.name#" <cfif session.stFarcryInstall.stConfig.skeleton EQ "farcry.skeletons.#qSkeletons.name#">selected</cfif>>
+						<option value="farcry.skeletons.#qSkeletons.name#" <cfif session.stFarcryInstall.stConfig.skeleton EQ "farcry.skeletons.#qSkeletons.name#">selected="selected"</cfif>>
 							#oManifest.name# (#IIF(oManifest.isSupported(coreMajorVersion="#request.coreVersion.major#", coreMinorVersion="#request.coreVersion.minor#", corePatchVersion="#request.coreVersion.patch#"), de("Supported"), de("Unsupported"))#)
 						</option>
 					</cfif>
@@ -440,7 +440,7 @@ RENDER THE CURRENT STEP
 					<cfloop query="qProjectSkeletons">
 						<cfif qProjectSkeletons.type EQ "DIR" and fileExists("#projectsPath#/#qProjectSkeletons.name#/install/manifest.cfc")>
 							<cfset oManifest = createObject("component", "farcry.projects.#qProjectSkeletons.name#.install.manifest") />
-							<option value="farcry.projects.#qProjectSkeletons.name#" <cfif session.stFarcryInstall.stConfig.skeleton EQ "farcry.projects.#qProjectSkeletons.name#">selected</cfif>>
+							<option value="farcry.projects.#qProjectSkeletons.name#" <cfif session.stFarcryInstall.stConfig.skeleton EQ "farcry.projects.#qProjectSkeletons.name#">selected="selected"</cfif>>
 								#oManifest.name# (#IIF(oManifest.isSupported(coreMajorVersion="#request.coreVersion.major#", coreMinorVersion="#request.coreVersion.minor#", corePatchVersion="#request.coreVersion.patch#"), de("Supported"), de("Unsupported"))#)
 							</option>
 						</cfif>
@@ -477,7 +477,7 @@ RENDER THE CURRENT STEP
 					<table cellspacing="10" cellpadding="0" class="plugin">
 					<tr>
 						<td valign="top" width="25px;">
-							<input type="checkbox" id="plugin#qPlugins.name#" name="plugins" value="#qPlugins.name#" <cfif listContainsNoCase(session.stFarcryInstall.stConfig.plugins, qPlugins.name)>checked</cfif>>
+							<input type="checkbox" id="plugin#qPlugins.name#" name="plugins" value="#qPlugins.name#" <cfif listContainsNoCase(session.stFarcryInstall.stConfig.plugins, qPlugins.name)>checked</cfif> />
 						</td>
 						<td valign="top">
 							<p>
@@ -493,7 +493,7 @@ RENDER THE CURRENT STEP
 								<table cellspacing="10" cellpadding="0" id="plugin#qPlugins.name#AddWebroot" style="display:#pluginMappingDisplay#;">
 								<tr>
 									<td valign="top" width="25px;">
-										<input type="checkbox" id="addWebrootMapping#qPlugins.name#" name="addWebrootMapping#qPlugins.name#" value="1" <cfif not isDefined("session.stFarcryInstall.stConfig.addWebrootMapping#qPlugins.name#") or session.stFarcryInstall.stConfig["addWebrootMapping#qPlugins.name#"]>checked</cfif>>
+										<input type="checkbox" id="addWebrootMapping#qPlugins.name#" name="addWebrootMapping#qPlugins.name#" value="1" <cfif not isDefined("session.stFarcryInstall.stConfig.addWebrootMapping#qPlugins.name#") or session.stFarcryInstall.stConfig["addWebrootMapping#qPlugins.name#"]>checked</cfif> />
 									</td>
 									<td>
 										<p><strong>Copy Plugin Webroot to project</strong></p>
@@ -574,10 +574,10 @@ RENDER THE CURRENT STEP
 	<div class="section">		
 		<h3>
 			<cfif fileExists(expandPath("/farcryConstructor.cfm"))>
-				<input type="radio" id="projectInstallType" name="projectInstallType" disabled="true" value="SubDirectory">
+				<input type="radio" id="projectInstallType" name="projectInstallType" disabled="true" value="SubDirectory" />
 				<span style="text-decoration:line-through;">Sub-Directory</span>
 			<cfelse>
-				<input type="radio" id="projectInstallType" name="projectInstallType" value="SubDirectory" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "SubDirectory">checked</cfif>>
+				<input type="radio" id="projectInstallType" name="projectInstallType" value="SubDirectory" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "SubDirectory">checked</cfif> />
 				Sub-Directory
 			</cfif>
 		</h3>
@@ -591,10 +591,10 @@ RENDER THE CURRENT STEP
 	<div class="section">	
 		<h3>
 			<cfif fileExists(expandPath("/farcryConstructor.cfm"))>
-				<input type="radio" id="projectInstallType" name="projectInstallType" disabled="true" value="Standalone">
+				<input type="radio" id="projectInstallType" name="projectInstallType" disabled="true" value="Standalone" />
 				<span style="text-decoration:line-through;">Standalone</span>
 			<cfelse>
-				<input type="radio" id="projectInstallType" name="projectInstallType" value="Standalone" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "Standalone">checked</cfif>>
+				<input type="radio" id="projectInstallType" name="projectInstallType" value="Standalone" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "Standalone">checked</cfif> />
 				Standalone
 			</cfif>
 		</h3>
@@ -607,7 +607,7 @@ RENDER THE CURRENT STEP
 	
 	<div class="section">		
 		<h3>
-			<input type="radio" id="projectInstallType" name="projectInstallType" value="CFMapping" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "CFMapping">checked</cfif>>
+			<input type="radio" id="projectInstallType" name="projectInstallType" value="CFMapping" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "CFMapping">checked</cfif> />
 			Advanced Configuration (ColdFusion and/or Web Server Mappings)
 		</h3>
 		<p>An enterprise configuration that allows for an unlimited number of projects to share a single core framework and library of plugins. Sharing is done through common reference to specific ColdFusion mapping or specific web server mapping (aka web virtual directory) of /farcry.</p>
@@ -919,7 +919,7 @@ RENDER THE CURRENT STEP
 					<cfif iconType EQ 0>
 						<input type="image" name="farcrySubmitButton" value="goToStep" src="images/function_#i#_#iconType#.gif" onclick="Ext.get('goToStep').set({value:'#i#'},false);" />
 					<cfelse>
-						<img src="images/function_#i#_#iconType#.gif" />
+						<img src="images/function_#i#_#iconType#.gif" alt="" />
 					</cfif>
 					
 				</td>
