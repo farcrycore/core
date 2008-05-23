@@ -93,7 +93,8 @@
 	// initialise counters
 	currentlevel=0; // nLevel counter
 	ul=0; // nested list counter
-
+	bHomeFirst = false; // used to stop the first node being flagged as first if home link is inserted.
+	bFirstNodeInLevel = true; // used to track the first node in each level.						
 	// build menu [bb: this relies on nLevels, starting from nLevel 2]
 	for(i=1; i lt incrementvalue(qNav.recordcount); i=i+1){
 		
@@ -131,9 +132,7 @@
 					itemclass=itemclass & 'parent ';	
 				}
 				
-				if(i eq 1 and attributes.bFirst){
-					itemclass=itemclass & 'first ';
-				}
+
 				//this means it is the last column in nav
 				if(attributes.bLast and qNav.nRight[i] eq qMaxRight.maxRight){
 					itemclass=itemclass & 'last ';
@@ -161,10 +160,18 @@
 					writeOutput(">");
 					//include home if requested
 					if(attributes.bIncludeHome){
+						homeclass = 'home ';
+						
+						if(attributes.bFirst){
+							homeclass=homeclass & ' first ';
+							bHomeFirst = true;
+						}				
+						
 						writeOutput("<li");
 						if(request.sectionObjectID eq application.navid.home){
-							writeOutput(" class=""active home""");
+							homeclass=homeclass & ' active ';
 						}
+						writeOutput(" class="""&trim(homeclass)&"""");
 						writeOutput("><a href=""#application.url.webroot#/"">#homeNode.objectName#</a></li>");
 					}
 					ul=ul+1;
@@ -173,6 +180,7 @@
 					// if new level, open new list
 					writeOutput("<ul>");
 					ul=ul+1;
+					bFirstNodeInLevel = true;
 				}
 				else if(currentlevel lt previouslevel){
 					// if end of level, close current item
@@ -184,6 +192,17 @@
 				else{
 					// close item
 					writeOutput("</li>");
+				}
+				if(attributes.bFirst){
+					if(previouslevel eq 0 AND bHomeFirst) {
+						//top level and home link is first
+					} else {
+						if(bFirstNodeInLevel){
+							itemclass=itemclass & 'first ';
+							bFirstNodeInLevel=false;
+						}
+					}
+					
 				}
 				// open a list item
 				writeOutput("<li");
