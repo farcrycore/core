@@ -1,5 +1,6 @@
 <cfsetting enablecfoutputonly="true" />
 <!--- @@displayname: Edit form for profile --->
+<!--- @@description: Accessed throught the overview section of the webtop.  Primary edit handler for users interacting with their own profile. --->
 
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 
