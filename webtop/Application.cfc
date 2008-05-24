@@ -1,34 +1,27 @@
-<cfcomponent extends="farcry.core.proxyApplication" displayname="Application" output="true" hint="Handle the application.">
+<cfcomponent extends="farcry.core.proxyApplication" displayname="Application" output="false" hint="Extends proxy which in turn in extends core Application.cfc.">
 
-
-
-	<cffunction name="OnRequestStart" access="public" returntype="boolean" output="true" hint="Fires at first part of page processing.">
-		<!--- Define arguments. --->
-
+	<cffunction name="OnRequestStart" access="public" returntype="boolean" output="false">
 		<cfargument name="TargetPage" type="string" required="true" />
-		
-		
-		
 		
 		<!--- Call the main farcry Application.cfc --->
 		<cfset var b = super.OnRequestStart(argumentCollection=arguments) />
 
-		
-		<!--- i18n date/time format styles --->
+		<!--- I18N config for Webtop --->
+		<!--- TODO:	move all i18n vars into their own struct
+					are these used in the new i18n framework? eg. debugRB appears to be irrelevant 
+					perhaps these options should be set globally in the ./core/Application.cfc? --->
 		<cfset application.shortF=3>        <!--- 3/27/25 --->
-		<cfset application.mediumF=2>       <!--- Rabi' I 27, 1425 (yeah, i know) --->
+		<cfset application.mediumF=2>       <!--- Rabi' I 27, 1425 --->
 		<cfset application.longF=1>         <!--- Rabi' I 27, 1425 --->
 		<cfset application.fullF=0>         <!--- Monday, Rabi' I 27, 1425 --->
-		<cfset debugRB=true>    <!--- load rb with debug markup? --->
+		<cfset debugRB=true>    			<!--- load rb with debug markup? --->
+		<!--- /I18N config for Webtop --->
 		
-		<!--- check to see if the person has general admin permissions --->
+
+		<!--- webtop: check to see if the person has general admin permissions --->
 		<cfif not application.security.checkPermission("Admin")>
-		    <!--- logout illegal users --->
-		    <cfscript>
-		        application.factory.oAuthentication.logout();
-		    </cfscript>
-		
-		    <!--- redirect them to the login page --->
+			<!--- logout illegal users --->
+			<cfset application.factory.oAuthentication.logout() />
 		    <cfif not ListContains( cgi.script_name, "#application.url.farcry#/login.cfm" )>
 		        <cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#" addtoken="No">
 		        <cfabort>
@@ -48,12 +41,7 @@
 		</cfif>
 
 
-		<!--- Return out. --->
-
 		<cfreturn true />
-
 	</cffunction>
-
-
 
 </cfcomponent>

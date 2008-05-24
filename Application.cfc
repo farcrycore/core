@@ -1,38 +1,37 @@
-<cfcomponent displayname="Application" output="true" hint="Handle the application.">
- 
-	<cfsetting enablecfoutputonly="true" />
-	
+<!--- @@copyright: Daemon Internet 2002-2008, http://www.daemon.com.au --->
+<!--- @@license: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php --->
+<!--- @@description: Application initialisation. --->
+<cfcomponent displayname="Application" output="false" hint="Core Application.cfc.">
+
+	<!--- import tag libraries ---> 
 	<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 	
-	<!--- LOCATE THE PROJECTS CONSTRUCTOR FILE --->
+	<!--- run the active project's constructor --->
 	<cfset this.projectConstructorLocation = getProjectConstructorLocation(plugin="webtop") />
-
 	<cfinclude template="#this.projectConstructorLocation#" />	
 
 	
-	<cfsetting enablecfoutputonly="false" />
-	
-	
-	<cffunction name="OnApplicationStart" access="public" returntype="boolean" output="true" hint="Fires when the application is first created.">
+	<cffunction name="OnApplicationStart" access="public" returntype="boolean" output="false" hint="Fires when the application is first created.">
 
 		<cfset var qServerSpecific = queryNew("blah") />
 		<cfset var qServerSpecificAfterInit = queryNew("blah") />
-		<cfset var machineName = "" />
+		<cfset var machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
 
-
+		<!--- intialise application scope --->
 		<cfset initApplicationScope() />
 		
-
-		<!--- CALL THE PROJECTS SERVER SPECIFIC VARIABLES. --->
+		<!----------------------------------- 
+		CALL THE PROJECTS SERVER SPECIFIC VARIABLES
+		 ----------------------------------->
 		<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/_serverSpecificVars.cfm" />
 		
 		<!--- Add Server Specific Request Scope files --->
-		<cfset machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
 		<cfif directoryExists("#application.path.project#/config/#machineName#")>
 			<cfif fileExists("#application.path.project#/config/#machineName#/_serverSpecificVars.cfm")>
 				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/#machineName#/_serverSpecificVars.cfm" />
 			</cfif>
 		</cfif>
+		
 		
 		<!----------------------------------- 
 		INITIALISE THE REQUESTED PLUGINS
@@ -40,7 +39,7 @@
 		<cfif isDefined("application.plugins")>
 			<cfloop list="#application.plugins#" index="plugin">
 				<cfif fileExists("#application.path.plugins#/#plugin#/config/_serverSpecificVars.cfm")>
-					<cfinclude template="/farcry/plugins/#plugin#/config/_serverSpecificVars.cfm">
+					<cfinclude template="/farcry/plugins/#plugin#/config/_serverSpecificVars.cfm" />
 				</cfif>
 			</cfloop>
 		</cfif>
@@ -70,6 +69,7 @@
 		<cfset ps.permissionBarnacleTable = "dmPermissionBarnacle" />
 		<cfset ps.externalGroupToPolicyGroupTable = "dmExternalGroupToPolicyGroup" />								
 
+
 		<!---------------------------------------------- 
 		INITIALISE THE COAPIADMIN SINGLETON
 		----------------------------------------------->
@@ -97,7 +97,9 @@
 		</cfif>
 		
 
-		<!--- SETUP CATEGORY APPLICATION STRUCTURE --->
+		<!----------------------------------- 
+		SETUP CATEGORY APPLICATION STRUCTURE
+		 ----------------------------------->
 		<cfquery datasource="#application.dsn#" name="qCategories">
 		SELECT objectid, categoryLabel
 		FROM #application.dbowner#dmCategory
@@ -105,24 +107,28 @@
 		
 		<cfparam name="application.catid" default="#structNew()#" />
 		<cfloop query="qCategories">
-			<cfset application.catID[qCategories.objectid] = qCategories.categoryLabel>
+			<cfset application.catID[qCategories.objectid] = qCategories.categoryLabel />
 		</cfloop>
+
 		
-		
-		<!--- CALL THE PROJECTS AFTER INIT VARIABLES. --->
+		<!----------------------------------- 
+		CALL THE PROJECTS AFTER INIT VARIABLES
+		------------------------------------>
 		<cfif fileExists("#application.path.project#/config/_serverSpecificVarsAfterInit.cfm") >
 			<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/_serverSpecificVarsAfterInit.cfm" />
 		</cfif>
 
 
-		<!--- ADD SERVER SPECIFIC AFTER INIT VARIABLES --->
-		<cfset machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
+		<!----------------------------------- 
+		ADD SERVER SPECIFIC AFTER INIT VARIABLES
+		------------------------------------>
 		<cfif directoryExists("#application.path.project#/config/#machineName#")>
 			<cfif fileExists("#application.path.project#/config/#machineName#/_serverSpecificVarsAfterInit.cfm")>
 				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/#machineName#/_serverSpecificVarsAfterInit.cfm" />
 			</cfif>
 		</cfif>
-		
+
+
 		<!----------------------------------- 
 		CALL THE PLUGINS AFTER INIT VARIABLES
 		 ----------------------------------->
@@ -135,29 +141,17 @@
 		</cfif>
 		
 		<cfset application.bInit = true />
-		<!--- Return out. --->
 		<cfreturn true />
 
 	</cffunction>
-
- 
-
  
 
 	<cffunction name="OnSessionStart" access="public" returntype="void" output="false" hint="Fires when the session is first created.">
-		<!--- Return out. --->
-
 		<cfreturn />
-
 	</cffunction>
 
  
-
- 
-
-	<cffunction name="OnRequestStart" access="public" returntype="boolean" output="true" hint="Fires at first part of page processing.">
-		<!--- Define arguments. --->
-
+	<cffunction name="OnRequestStart" access="public" returntype="boolean" output="false" hint="Fires at first part of page processing.">
 		<cfargument name="TargetPage" type="string" required="true" />
 
 		<!--- Update the farcry application if instructed --->
@@ -167,9 +161,12 @@
 		<cfset farcryRequestInit() />
 	
 		
-		<!--- 
-		This sets up a cookie on the users system so that if they try and login to the webtop and the webtop can't determine which project it is trying to update,
-		it will know what projects they will be potentially trying to edit.  --->
+		<!---
+		SHARED WEBTOP LOGIN 
+		This sets up a cookie on the users system so that if they try and login to
+		the webtop and the webtop can't determine which project it is trying to update,
+		it will know what projects they will be potentially trying to edit.  
+		--->
 		<cfparam name="server.stFarcryProjects" default="#structNew()#" />
 		<cfif not structKeyExists(server.stFarcryProjects, application.projectDirectoryName) or not isstruct(server.stFarcryProjects[application.projectDirectoryName])>
 			<cfset server.stFarcryProjects[application.projectDirectoryName] = structnew() />
@@ -185,105 +182,60 @@
 		<cfif structKeyExists(url, "returnURL")>
 			<cfset session.loginReturnURL = url.returnURL />
 		</cfif>
-		
-		<!--- Return out. --->
+
 		<cfreturn true />
-
 	</cffunction>
-
  
 
-
- 
-
- 
-
-	<cffunction name="OnRequestEnd" access="public" returntype="void" output="true" hint="Fires after the page processing is complete.">
-		<!--- Return out. --->
+	<cffunction name="OnRequestEnd" access="public" returntype="void" output="false" hint="Fires after the page processing is complete.">
 		
 		<cfinclude template="/farcry/core/tags/farcry/_farcryOnRequestEnd.cfm">
 
 		<cfreturn />
-
 	</cffunction>
 
  
-
- 
-
 	<cffunction name="OnSessionEnd" access="public" returntype="void" output="false" hint="Fires when the session is terminated.">
-		<!--- Define arguments. --->
-
 		<cfargument name="SessionScope" type="struct" required="true" />
-
- 
-
 		<cfargument name="ApplicationScope" type="struct" required="false" default="#StructNew()#" />
  
-
-		<!--- Return out. --->
-
 		<cfreturn />
-
 	</cffunction>
 
  
-
- 
-
 	<cffunction name="OnApplicationEnd" access="public" returntype="void" output="false" hint="Fires when the application is terminated.">
-		<!--- Define arguments. --->
-
 		<cfargument name="ApplicationScope" type="struct" required="false" default="#StructNew()#" />
 
- 
-
-		<!--- Return out. --->
-
 		<cfreturn />
-
 	</cffunction>
 
- 
-
- 
 
 	<cffunction name="OnError" access="public" returntype="void" output="true" hint="Fires when an exception occures that is not caught by a try/catch.">
 		<cfargument name="Exception" type="any" required="true" />
 		<cfargument name="EventName" type="string" required="false" default="" />
 
+		<!--- rudimentary error handler --->
+		<!--- TODO: need a pretty error handler for the webtop --->
 		<cfdump var="#arguments.exception#" expand="true" label="arguments" />
 
 		<cfreturn />
 	</cffunction>
 
  
-
-
-
 	<cffunction name="farcryUpdateApp" access="private" output="false" hint="Initialise farcry Application." returntype="void">
-	
-	<!--- @@copyright: Daemon Internet 2002-2007, http://www.daemon.com.au --->
-	<!--- @@license: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php --->
-	<!--- @@displayname: farcryInit --->
-	<!--- @@description: Application initialisation tag. --->
-		
-		
 		<!--- USED TO DETERMINE OVERALL PAGE TICKCOUNT --->
 		<cfset request.farcryPageTimerStart = getTickCount() />
 			
-		
-		<!---<cferror type="request" template="/farcry/projects/#attributes.projectDirectoryName#/error/500.cfm"> --->
-		
 		<!---------------------------------------- 
 		BEGIN: Application Initialise 
 		----------------------------------------->
 		<cfparam name="url.updateapp" default="" />
 		
 		<cftry>
-
 		<!--- TODO: this needs to be removed eventually. It is currently only in here so that users can updateapp when they upgrade without having to recycle CF --->
 		<cfparam name="application.updateappKey" default="1" />
+		
+		<!--- determine if user has permission to perform updateapp; blocks potential denial of service attack --->
 		<cfif len(url.updateapp)>
 			<cfif url.updateapp EQ application.updateappKey>
 				<!--- CAN FORCE AND UPDATE IF THE USER KNOWS THE updateappKey --->
@@ -300,16 +252,15 @@
 			<cfset url.updateapp = false>
 		</cfif>
 		
+		<!--- force application start sequence to be single threaded --->
 		<cfif (NOT structkeyexists(application, "bInit") OR NOT application.binit) OR url.updateapp>
 			<cflock name="#application.applicationName#_init" type="exclusive" timeout="3" throwontimeout="true">
 				<cfif (NOT structkeyexists(application, "bInit") OR NOT application.binit) OR url.updateapp>
 
 					<!--- set binit to false to block users accessing on restart --->
 					<cfset application.bInit =  false />
-					
 	
 					<cfset OnApplicationStart() />
-					
 					
 					<!--- set the initialised flag --->
 					<cfset application.bInit = true />
@@ -333,30 +284,25 @@
 		</cfcatch>
 		
 		</cftry>
-		
-		
 		<!---------------------------------------- 
 		END: Application Initialise 
 		----------------------------------------->
-	
-	
 
-	
 	</cffunction>
-	
-	<cffunction name="farcryRequestInit" access="private" output="true" hint="Initialise farcry Application." returntype="void">
-	
+
+
+	<cffunction name="farcryRequestInit" access="private" output="false" hint="Initialise farcry Application." returntype="void">
 		<!---------------------------------------- 
 		GENERAL APPLICATION REQUEST PROCESSING
 		- formally /farcry/core/tags/farcry/_farcryApplication.cfm
 		----------------------------------------->
 		
-		<!--- set legacy logout/login parameters --->
+		<!----------------------------------------
+		EVENT: URL logout
+		----------------------------------------->
 		<cfif isDefined("url.logout") and url.logout eq 1>
 			<cfset application.security.logout() />
 		</cfif>
-		
-		
 		
 		<!-------------------------------------------------------
 		Run Request Processing
@@ -364,7 +310,6 @@
 		-------------------------------------------------------->
 		<!--- core request processing --->
 		<cfscript>
-
 		// init request.mode with defaults
 		request.mode = structNew();
 		request.mode.design = 0;
@@ -379,7 +324,7 @@
 		// default to off, conjurer determines permissions based on nav-node
 		request.mode.showcontainers = 0; 
 		
-		// TODO other options to be added
+		// miscellaneous options to be added
 		request.mode.showtables = 0;
 		request.mode.showerror = 0;
 		request.mode.showdebugoutput = 0;
@@ -390,8 +335,6 @@
 		} else {
 			request.mode.bAdmin = 0; // default to off
 		}
-		
-		
 			
 		// if user has admin priveleges, determine mode values
 		if (request.mode.bAdmin) {
@@ -445,11 +388,9 @@
 		// TODO remove these when possible
 		request.lValidStatus = request.mode.lValidStatus; //deprecated
 		</cfscript>
-		
-		
-		
-		
-		<!--- project and library request processing --->
+
+
+		<!--- project and plugin request processing --->
 		<cfif application.sysInfo.bServerSpecificRequestScope>
 			<cfloop from="1" to="#arraylen(application.sysinfo.aServerSpecificRequestScope)#" index="i">
 				<cfinclude template="#application.sysinfo.aServerSpecificRequestScope[i]#" />
@@ -466,15 +407,11 @@
 			<cfset createObject("component","#application.packagepath#.farcry.alterType").refreshAllCFCAppData() />
 		</cfif>
 
-
-
 	</cffunction>
 	
 	
-	<cffunction name="getProjectConstructorLocation" access="public" output="true" hint="returns the location of the farcry project''s constructor is located" returntype="string">
-		
+	<cffunction name="getProjectConstructorLocation" access="public" output="false" hint="Returns the location of the active project constructor." returntype="string">
 		<cfargument name="plugin" type="string" hint="The name of the plugin.">
-	
 		
 		<cfset var loc = "" />
 		<cfset var virtualDirectory = "" />
@@ -513,31 +450,31 @@
 		</cfif>
 
 		<cfif not len(loc)>				
-      <cfif fileExists(expandPath("#cgi.context_path#/webtop/install/index.cfm"))>
-        <cfset installLink = "#cgi.context_path#/webtop/install/index.cfm" />
-      <cfelse>
-        <cfset installLink = "#cgi.context_path#/farcry/core/webtop/install/index.cfm" />
-      </cfif>
+			<cfif fileExists(expandPath("#cgi.context_path#/webtop/install/index.cfm"))>
+				<cfset installLink = "#cgi.context_path#/webtop/install/index.cfm" />
+			<cfelse>
+				<cfset installLink = "#cgi.context_path#/farcry/core/webtop/install/index.cfm" />
+			</cfif>
+			
 			<cfoutput>
-				<p>I can't find a FarCry project on this server to administer.</p>
-				<p><a href="#installLink#">CLICK HERE</a> TO INSTALL A NEW PROJECT.</p>
+				<h1>FarCry Project Not Found</h1>
+				<p>I'm terribly sorry, I can't find a FarCry project on this server to administer.</p>
+				<p><a href="#installLink#">CLICK HERE TO INSTALL A NEW PROJECT</a></p>
 			</cfoutput>
 			<cfabort />		
 		</cfif>
-
 	
 		<cfreturn loc />
 	</cffunction>
 	
 
-	<cffunction name="getPluginName" access="public" output="true" hint="returns the name of this plugin" returntype="string">
+	<cffunction name="getPluginName" access="public" output="false" hint="Returns the name of this plugin; core returns 'farcry'." returntype="string">
 		<cfreturn "farcry" />
 	</cffunction>
 
+
 	<cffunction name="initApplicationScope" access="private" output="false" hint="Sets up the main farcry application scope variables." returntype="void">
-		
-		
-		
+
 		<!--- REQUIRED VARIABLES SETUP IN THE FARCRYCONSTRUCTOR --->
 		<cfif not isDefined("this.name")>
 			<cfabort showerror="this.name not defined in your projects farcryConstructor.">
@@ -548,7 +485,6 @@
 		
 		<cfparam name="this.displayName" default="#this.name#" />
 		
-
 		<cfparam name="this.dsn" default="#this.name#" />
 		<cfparam name="this.dbowner" default="" />
 		<cfparam name="this.locales" default="en_AU,en_US" />
@@ -559,17 +495,14 @@
 		<cfparam name="this.projectURL" default="" />
 		<cfparam name="this.webtopURL" default="" />
 		
-		
 		<cfparam name="this.bObjectBroker" default="true" />
 		<cfparam name="this.ObjectBrokerMaxObjectsDefault" default="100" />
 		
-	
 		<!--- Option to archive --->
 		<cfparam name="this.bUseMediaArchive" default="false" />
 		
 		<!--- updateapp key used to updateapp without administrator privilages. Set to your own string in the farcryConstructor --->
 		<cfparam name="this.updateappKey" default="#createUUID()#" />
-		
 		
 		<!--- Project directory name can be changed from the default which is the applicationname --->
 		<cfset application.projectDirectoryName =  this.projectDirectoryName />
@@ -580,7 +513,7 @@
 		
 		<!----------------------------------------
 		 SET THE DATABASE SPECIFIC INFORMATION 
-		---------------------------------------->
+		----------------------------------------->
 		<cfset application.dsn = this.dsn />
 		<cfset application.dbtype = this.dbtype />
 		<cfset application.dbowner = this.dbowner />
@@ -590,7 +523,11 @@
 			<cfset application.dbowner = "dbo." />
 		</cfif>
 
-		<!--- Append Locales currently used in the project --->
+
+		<!----------------------------------------
+		 LOCALES
+		 - Append Locales currently used in the project
+		----------------------------------------->
 		<cfswitch expression="#application.dbtype#">
 			<cfdefaultcase>
 				<cfquery datasource="#application.dsn#" name="qProfileLocales">
@@ -607,6 +544,7 @@
 				</cfif>
 			</cfdefaultcase>
 		</cfswitch>
+
 
 		<!----------------------------------------
 		 WEB URL PATHS
@@ -644,48 +582,47 @@
 		<cfset application.path.imageRoot = "#application.path.webroot#">
 		
 		<cfset application.path.mediaArchive = "#application.path.project#/mediaArchive">
-		
-		
-		
+
+
 		<!----------------------------------------
 		SHORTCUT PACKAGE PATHS
 		 ---------------------------------------->
 		<cfset application.packagepath = "farcry.core.packages" />
 		<cfset application.custompackagepath = "farcry.projects.#application.projectDirectoryName#.packages" />
 		<cfset application.securitypackagepath = "farcry.core.packages.security" />
-		
+
+
 		<!----------------------------------------
 		PLUGINS TO INCLUDE
 		 ---------------------------------------->
 		<cfset application.plugins = this.plugins />
-		
-		
+
+
 		<!------------------------------------------ 
 		USE OBJECT BROKER?
 		 ------------------------------------------>
 		<cfset application.bObjectBroker = this.bObjectBroker />
 		<cfset application.ObjectBrokerMaxObjectsDefault = this.ObjectBrokerMaxObjectsDefault />
-			
-		
+
+
 		<!------------------------------------------ 
 		INITIALISE THE COMBINED JS STRUCTURE USED TO COMBINE MULTIPLE JS FILES
 		 ------------------------------------------>
 		<cfset application.stCombinedFarcryJS = structNew() />
-		
-		
+
+
 		<!------------------------------------------ 
 		USE MEDIA ARCHIVE?
 		 ------------------------------------------>
 		<cfset application.bUseMediaArchive = this.bUseMediaArchive />
-		
-		
+
+
 		<!------------------------------------------ 
 		UPDATE APP KEY
 		 ------------------------------------------>
 		<cfset application.updateappKey = this.updateappKey />
-		
-		
-	
+
+
 		<!---------------------------------------------- 
 		INITIALISE THE COAPIUTILITIES SINGLETON
 		----------------------------------------------->
@@ -695,10 +632,11 @@
 
 		<!--- Initialise the stPlugins structure that will hold all the plugin specific settings. --->
 		<cfset application.stPlugins = structNew() />
-		
-		
+
+
 		<!--- ENSURE SYSINFO IS UPDATED EACH INITIALISATION --->
 		<cfset application.sysInfo = structNew() />
+
 	</cffunction>
 
 </cfcomponent>
