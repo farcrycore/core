@@ -1,37 +1,29 @@
-<!--- 
-|| LEGAL ||
-$Copyright: Daemon Pty Limited 1995-2003, http://www.daemon.com.au $
-$License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php$ 
-
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/webtop/login.cfm,v 1.10 2005/08/09 03:54:40 geoff Exp $
-
-$Author: geoff $
-$Date: 2005/08/09 03:54:40 $
-$Name: milestone_3-0-1 $
-$Revision: 1.10 $
-
-|| DESCRIPTION || 
-$Description: FarCry login screen. Tries to include a custom login screen, otherwise use the default.$
-
-
-|| DEVELOPER ||
-$Developer: Brendan Sisson (brendan@daemon.com.au)$
-$Developer: Gary Menzel (gmenzel@abnamromorgans.com.au)$
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
---->
-<cfsetting enablecfoutputonly="Yes">
+<cfsetting enablecfoutputonly="true" />
+<!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
+<!--- @@License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php ---> 
+<!--- @@Description: FarCry login screen. Tries to include a custom login screen, otherwise use the default. --->
 
 <cfprocessingDirective pageencoding="utf-8">
 
+<!--- import tag libraries --->
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
+
+<!--------------------------------------
+CUSTOM LOGIN
+- deprecated: Custom logins should be constructed using the login type webskins; displayHeaderLogin, displayFooterLogin.
+--------------------------------------->
 <cfif fileExists("#application.path.project#/customadmin/login/login.cfm")>
-	<cfinclude template="/farcry/projects/#application.projectDirectoryName#/customadmin/login/login.cfm">
-<cfelse>
-	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
+	<cfinclude template="/farcry/projects/#application.projectDirectoryName#/customadmin/login/login.cfm" />
 	
+	<!--- this approach is deprecated in 5.0 --->
+	<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
+	<farcry:deprecated message="Custom logins should be constructed using the login type webskins; displayHeaderLogin, displayFooterLogin." />
+
+<!--------------------------------------
+GENERIC LOGIN
+--------------------------------------->
+<cfelse>
+	<!--- environment variables --->
 	<cfparam name="url.ud" default="#application.security.getDefaultUD()#" />
 	
 	
@@ -66,9 +58,9 @@ $out:$
 
 	<cfelse>
 		<!--- relocate to original location --->
-		<cflocation url="#session.loginReturnURL#" addtoken="No">
+		<cflocation url="#session.loginReturnURL#" addtoken="false" />
 		<cfabort>
 	</cfif>
 </cfif>
 
-<cfsetting enablecfoutputonly="No">
+<cfsetting enablecfoutputonly="false" />
