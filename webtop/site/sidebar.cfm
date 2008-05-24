@@ -1,8 +1,14 @@
 <cfsetting enablecfoutputonly="true">
 
-<cfif not len(session.dmProfile.overviewhome)>
-	<cfset session.dmProfile.overviewhome = application.navid.home />
+<cfif len(session.dmProfile.overviewhome)>
+	<cfif NOT IsUUID(session.dmProfile.overviewhome) AND structKeyExists(application.navid, session.dmProfile.overviewhome)>
+		<cfset session.dmProfile.overviewhome = application.navid[session.dmProfile.overviewhome] />
+	</cfif>
 </cfif>
+<cfif not len(session.dmProfile.overviewhome)>
+	<cfset session.dmProfile.overviewhome = listFirst(application.navid.home) />
+</cfif>
+
 <cfparam name="url.rootObjectID" default="#session.dmProfile.overviewhome#">
 
 
@@ -167,3 +173,17 @@ function refreshiFrame(iFrameName){
 </body>
 </html>
 </cfoutput>
+
+
+<cfscript>
+/**
+* Returns TRUE if the string is a valid CF UUID.
+*
+* @param str String to be checked. (Required)
+* @return Returns a boolean.
+**/
+
+function IsUUID(str) {
+return REFindNoCase("^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$", str);
+}
+</cfscript>
