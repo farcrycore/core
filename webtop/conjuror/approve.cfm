@@ -5,6 +5,8 @@ Merge of ..admin/navajo/approve.cfm and ../tags/navajo/objectstatus.cfm
 <cfsetting enablecfoutputonly="Yes">
 <cfprocessingDirective pageencoding="utf-8">
 <cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
+<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">
+<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
 
 <!--- 
 || LEGAL ||
@@ -35,6 +37,7 @@ $out:$
 <cfprocessingDirective pageencoding="utf-8">
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
  
 <cfparam name="url.objectId">
 <cfparam name="url.status" default="0">
@@ -96,12 +99,7 @@ $out:$
 			<input type="submit" name="submit" value="#application.rb.getResource("submitUC")#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
 			<input type="button" name="Cancel" value="#application.rb.getResource("cancel")#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='../edittabOverview.cfm?objectid=#attributes.lobjectIDs#';"></div>     
 			<!--- display existing comments --->
-			<cfif structKeyExists(stObj,"commentLog")>
-				<cfif len(trim(stObj.commentLog)) AND structKeyExists(stObj,"commentLog")>
-					<p></p><span class="formTitle">#application.rb.getResource("previousComments")#</span><P></P>
-					#htmlcodeformat(stObj.commentLog)#
-				</cfif>
-			</cfif>
+			<nj:showcomments objectid="#attributes.lobjectIDs#" typename="#stObj.typename#" />
 			</form>
 		</cfoutput>
 		<cfset changestatus = false>
@@ -253,18 +251,8 @@ $out:$
 				</cfif>
 			</cfloop>
 			
-			<cfscript>
-				stObj.datetimelastupdated = createODBCDateTime(now());
-
-				//only if the comment log exists - do we actually append the entry
-				if (isDefined("FORM.commentLog")) {
-					if (structkeyexists(stObj, "commentLog")){
-						buildLog =  "#chr(13)##chr(10)##session.dmSec.authentication.canonicalName#" & "(#dateformat(now(),'dd/mm/yyyy')# #timeformat(now(), 'HH:mm:ss')#):#chr(13)##chr(10)#     Status changed: #stobj.status# -> #status##chr(13)##chr(10)# #FORM.commentLog#";
-						stObj.commentLog = buildLog & "#chr(10)##chr(13)#" & stObj.commentLog;
-						}
-				}
-				stObj.status = status;	
-			</cfscript>
+			<cfset stObj.datetimelastupdated = createODBCDateTime(now()) />
+			<cfset stObj.status = status />
 			
 			<cfinvoke component="#application.packagepath#.farcry.versioning" method="getVersioningRules" objectID="#key#" returnvariable="stRules">
 			
@@ -276,13 +264,16 @@ $out:$
 				<!--- a normal page, no underlying object --->
 				<cfscript>
 					oType = createobject("component", application.types[stObj.typename].typePath);
-					oType.setData(stProperties=stObj,auditNote="Status changed to #stObj.status#");
+					oType.setData(stProperties=stObj,bAudit=false);
 				</cfscript>
 				
 				<cfif stObj.typename neq "dmImage" and stObj.typename neq "dmFile">
 					<cfset returnObjectId= url.objectid>
 				</cfif>
 			</cfif>
+			
+			<extjs:bubble title="#stObj.label#" message="Status changed to #status#" />
+			<farcry:logevent object="#stObj.objectid#" type="types" event="to#status#" notes="#form.commentLog#" />
 		</cfloop>
 		
 	</cfloop>

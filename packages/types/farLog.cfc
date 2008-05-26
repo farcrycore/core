@@ -324,9 +324,9 @@
 			FROM 	#application.dbowner#farLog
 			WHERE 	1=1
 					<cfif structkeyexists(arguments,"objectid")>AND object = '#arguments.objectid#'</cfif>
-					<cfif structkeyexists(arguments,"type") and len(arguments.type) and arguments.type neq "all">AND type = '#arguments.type#'</cfif>
-					<cfif structkeyexists(arguments,"event") and len(arguments.event) and arguments.event neq "all">AND event = '#arguments.event#'</cfif>
-					<cfif structkeyexists(arguments,"userid") and len(arguments.userid) and arguments.userid neq "all">AND userid = '#arguments.userid#'</cfif>
+					<cfif structkeyexists(arguments,"type") and len(arguments.type) and arguments.type neq "all">AND type in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.type#" />)</cfif>
+					<cfif structkeyexists(arguments,"event") and len(arguments.event) and arguments.event neq "all">AND event in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.event#" />)</cfif>
+					<cfif structkeyexists(arguments,"userid") and len(arguments.userid) and arguments.userid neq "all">AND userid in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.userid#" />)</cfif>
 					<cfif structkeyexists(arguments,"location")>AND location = '#arguments.location#'</cfif>
 					<cfif structkeyexists(arguments,"before")>AND datetimecreated < #arguments.before#</cfif>
 					<cfif structkeyexists(arguments,"after")>AND datetimecreated > #arguments.after#</cfif>

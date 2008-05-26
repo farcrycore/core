@@ -98,12 +98,11 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 	<input type="submit" name="submit" value="#application.rb.getResource("submitUC")#" class="f-submit" />
 	<input type="submit" name="cancel" value="#application.rb.getResource("cancel")#" class="f-submit">
 </div>
-<cfif StructKeyExists(stObj,"commentLog")>
 <fieldset>
 	<label><b>#application.rb.getResource("prevCommentLog")#</b>
-		<xmp>#stObj.commentLog#</xmp>
+		<nj:showcomments objectid="#stObj.objectid#" typename="#stObj.typename#" />
 	</label>
-</fieldset></cfif>
+</fieldset>
 			</form>
 		</cfoutput>
 	<cfelse>

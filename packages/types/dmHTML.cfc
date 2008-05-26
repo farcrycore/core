@@ -28,8 +28,6 @@ type properties
 
 <cfproperty ftSeq="20" ftwizardStep="Categorisation" name="catHTML" type="nstring" hint="Topic." required="no" default="" ftType="Category" ftAlias="root" ftLabel="Categories" />
 
-<cfproperty name="commentlog" type="longchar" hint="Workflow comment log." required="no" default="">
-
 
 
 <!------------------------------------------------------------------------

@@ -7,7 +7,7 @@
 <q4:contentobjectgetmultiple bActiveOnly="0" lObjectIds="#url.lObjectIds#" r_stObjects="stObjs">
 <!--- Need to delete certain keys - one of these (not sure which) is breaking the javascript on the calling page
  --->
- <cfset filterList = "displayMethod,teaser,body,commentlog,VERSIONID,ATEASERIMAGEIDS,METAKEYWORDS">
+ <cfset filterList = "displayMethod,teaser,body,VERSIONID,ATEASERIMAGEIDS,METAKEYWORDS">
 <cfloop index="objId" list="#StructKeyList(stObjs)#">
 	<cfset obj = stObjs[objId]>
 	<cfloop list="#structKeyList(stObjs[objId])#" index="key">

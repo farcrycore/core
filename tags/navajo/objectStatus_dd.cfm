@@ -26,6 +26,8 @@ $out:$
 <cfprocessingDirective pageencoding="utf-8">
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">
+<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
 
 <cfparam name="attributes.lObjectIDs" default=""> <!---objects to have their status changed-required --->
 <cfparam name="attributes.status" default=""> <!--- status to change to - required --->
@@ -147,25 +149,24 @@ $out:$
 				<cfif relstObj.typename EQ "dmFile" OR relstObj.typename EQ "dmImage">
 					<cfset relstObj.status = status>
 					<cfset oType = createobject("component", application.types[relstObj.typename].typePath)>
-					<cfset oType.setData(stProperties=relstObj, auditNote="Status changed to #relstObj.status#")>
+					<cfset oType.setData(stProperties=relstObj,bAudit=false)>
+					
+					<extjs:bubble title="#relstObj.label#" message="Status changed to #status#" />
+					<farcry:logevent object="#stObj.objectid#" type="type" event="to#status#" note="#commentLog#" />
 				</cfif>
 			</cfloop>
 		</cfif>
 
-		<cfscript>
-		// update the structure data for object update
-		stObj.datetimelastupdated = now();
-		//only if the comment log exists - do we actually append the entry
-		if (structkeyexists(stObj, "commentLog")){
-			buildLog =  "#chr(13)##chr(10)##session.dmSec.authentication.canonicalName#" & "(#dateformat(now(),'dd/mm/yyyy')# #timeformat(now(), 'HH:mm:ss')#):#chr(13)##chr(10)#     Status changed: #stobj.status# -> #status##chr(13)##chr(10)# #attributes.commentLog#";
-			stObj.commentLog = buildLog & "#chr(10)##chr(13)#" & stObj.commentLog;
-		}
-		stObj.status = status;	
+		<!--- update the structure data for object update --->
+		<cfset stObj.datetimelastupdated = now() />
+		<cfset stObj.status = status />
 		
-		// update object	
-		oType = createobject("component", application.types[stObj.typename].typePath);
-		oType.setData(stProperties=stObj,auditNote="Status changed to #stObj.status#");
-		</cfscript>
+		<!--- update object --->	
+		<cfset oType = createobject("component", application.types[stObj.typename].typePath) />
+		<cfset oType.setData(stProperties=stObj) />
+		
+		<extjs:bubble title="#stObj.label#" message="Status changed to #status#" />
+		<farcry:logevent object="#stObj.objectid#" type="types" event="to#status#" note="#commentLog#" />
 		
 	</cfloop>
 	<cfset "caller.#attributes.rMsg#" = "#listLen(attributes.lObjectIds)# object(s) status changed"> 

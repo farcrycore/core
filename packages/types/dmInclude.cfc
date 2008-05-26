@@ -32,9 +32,6 @@ type properties
 <!--- system only properties --->
 <cfproperty name="status" type="string" hint="Status of file - draft or approved" required="true" default="draft" />
 
-<!--- deprecated legacy properties --->
-<cfproperty name="commentlog" type="longchar" hint="Workflow comment log." required="no" default=""> 
-
 
 <!--- Object Methods --->
 <cffunction access="public" name="getIncludeList" returntype="string" hint="returns a list (column name 'include') of available includes.">

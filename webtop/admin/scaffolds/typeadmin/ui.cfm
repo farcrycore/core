@@ -25,7 +25,7 @@
 			<td valign="top">
 				<select multiple="multiple" name="typeadminColumns" id="typeadminColumns" size="8">
 					<cfloop query="application.stCOAPI.#url.typename#.qMetaData">
-						<cfif not listcontains("commentlog,ObjectID,lockedBy,locked,ownedby,status",propertyname)>
+						<cfif not listcontains("ObjectID,lockedBy,locked,ownedby,status",propertyname)>
 							<option value="#propertyname#">#propertyname#</option>
 						</cfif>
 					</cfloop>

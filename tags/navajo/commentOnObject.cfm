@@ -3,6 +3,8 @@
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
+<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 <cfparam name="objectid" type="UUID">
 <cfparam name="formSubmitted" default="no">
@@ -15,19 +17,14 @@
 <cfelse>
 	<cfset objId = stObj.objectId>
 </cfif>
-		
+
 <cfif formSubmitted EQ "yes">
 	<cfif isDefined("submit")> <!--- added comment if submit button clicked //else just cancel out--->
 		<cfset stObj.datetimelastupdated = CreateODBCDate(now())>
 		<cfset stObj.datetimecreated = CreateODBCDate("#datepart('yyyy',stObj.datetimecreated)#-#datepart('m',stObj.datetimecreated)#-#datepart('d',stObj.datetimecreated)#")>
-		<!--- only if the comment log exists - do we actually append the entry --->
-		<cfif structkeyexists(stObj, "commentLog")>
-			<cfset buildLog =  "#chr(13)##chr(10)##session.dmSec.authentication.canonicalName#" & "(#application.thisCalendar.i18nDateFormat(now(),session.dmProfile.locale,application.mediumF)# #application.thisCalendar.i18nTimeFormat(now(),session.dmProfile.locale,application.mediumF)#:#chr(13)##chr(10)# #commentLog#">
-			<cfset stObj.commentLog = buildLog & "#chr(10)##chr(13)#" & stObj.commentLog>
-		</cfif>
-		<!--- update the OBJECT --->
-		<cfset oType = createobject("component", application.types[stObj.typename].typePath)>
-		<cfset oType.setData(stProperties=stObj,auditNote="Comment added")>
+		
+		<!--- Log comments --->
+		<farcry:logevent object="#stObj.objectid#" type="types" event="comment" note="#commentLog#" />
 	</cfif>
 	
 	<cflocation url="#application.url.farcry#/edittabOverview.cfm?objectid=#objId#" addtoken="no">
@@ -78,12 +75,12 @@
 <div class="f-submit-wrap">
 	<input type="submit" name="submit" value="#application.rb.getResource("submitUC")#" class="f-submit" />
 	<input type="submit" name="cancel" value="#application.rb.getResource("cancel")#" class="f-submit">
-</div><cfif len(trim(stObj.commentLog))>
+</div>
 <fieldset>
 	<label><b>#application.rb.getResource("prevCommentLog")#</b>
-		<xmp>#stObj.commentLog#</xmp>
+		<nj:showcomments objectid="#stObj.objectid#" typename="#stObj.typename#" />
 	</label>
-</fieldset></cfif>
+</fieldset>
 	<input type="hidden" name="formSubmitted" value="yes">
 	<input type="hidden" name="objectid" value="#stObj.objectid#">
 </form></cfoutput>

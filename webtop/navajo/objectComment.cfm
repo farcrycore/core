@@ -27,6 +27,7 @@ $out:$
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <cfparam name="url.finishURL" default="#application.url.farcry#/navajo/GenericAdmin.cfm">
@@ -91,12 +92,8 @@ $out:$
 			<input type="button" name="Cancel" value="#application.rb.getResource("cancel")#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='#application.url.farcry#/navajo/GenericAdmin.cfm?typename=#stObj.typename#';"></div>     
 			<cfif listlen(url.objectid) eq 1>
 				<!--- display existing comments --->
-				<cfif structKeyExists(stObj,"commentLog")>
-					<cfif len(trim(stObj.commentLog)) AND structKeyExists(stObj,"commentLog")>
-						<p></p><span class="formTitle">#application.rb.getResource("prevCommentLog")#</span><P></P>
-						#htmlcodeformat(stObj.commentLog)#
-					</cfif>
-				</cfif>
+				<p></p><span class="formTitle">#application.rb.getResource("prevCommentLog")#</span><P></P>
+				<nj:showcomments objectid="#stObj.objectid#" typename="#stObj.typename#" />
 			</cfif>
 			</form>
 		</cfoutput>

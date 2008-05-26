@@ -290,19 +290,13 @@ START WEBSKIN
 		</cfif>
 	</cfif>		
 	
-	<cfif StructKeyExists(stobj,"commentLog")>
-		<!--- add comments --->
-		
-		<extjs:item title="#application.rb.getResource("viewComments")#" autoScroll="true">
+	<!--- add comments --->
+	<extjs:item title="#application.rb.getResource("viewComments")#" autoScroll="true">
 
-			<ft:button width="240px" style="" value="#application.rb.getResource("addComments")#" bInPanel="true" url="#application.url.farcry#/navajo/commentOnContent.cfm?objectid=#stobj.objectid#" />					
-			
-			<cfif Trim(stobj.commentLog) NEQ "">
-				<cfoutput><p style="margin-bottom:10px;">#ReplaceNoCase(Trim(stobj.commentLog),"#chr(10)##chr(13)#","<br />", "all")#</p></cfoutput>
-			</cfif>
+		<ft:button width="240px" style="" value="#application.rb.getResource("addComments")#" bInPanel="true" url="#application.url.farcry#/navajo/commentOnContent.cfm?objectid=#stobj.objectid#" />					
+		<nj:showcomments objectid="#stObj.objectid#" typename="#stObj.typename#" />
 
-		</extjs:item>
-	</cfif>
+	</extjs:item>
 	
 	<extjs:item title="Miscellaneous" >	
 		

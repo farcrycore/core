@@ -8,7 +8,6 @@ stHTML.aObjectIDs = arrayNew(1);
 stHTML.aRelatedIDs = arrayNew(1);
 stHTML.aTeaserImageIDs = arrayNew(1);
 stHTML.body = '<P>Built from the ground up on the revolutionary ColdFusion MX server platform, <strong>farcry</strong> is the affordable, powerful site management solution that is quick to implement, and intuitive to use.</P><P><strong>farcry</strong> offers the advanced features of high-end site-management solutions, including sophisticated container management, publishing rules, version control and integrated search, at a small fraction of the cost.</P>';
-stHTML.commentLog = '';
 stHTML.createdBy = 'farcry';
 stHTML.datetimeCreated = now();
 stHTML.datetimeLastUpdated = now();
@@ -33,7 +32,6 @@ stHTML2.aRelatedIDs = arrayNew(1);
 stHTML2.aTeaserImageIDs = arrayNew(1);
 stHTML2.body = '<p>FarCry has an ever helpful, active and growing developer community.  Daemon provides a variety of community services including mailing lists for developers and users alike.</p>      <p>Each mailing list is available via email (obviously), a web based interface and NNTP (a newsgroup or USENET interface). Instructions for leaving every list are clearly given in the footer of every post.  DIGEST and other options are available.  Please refer to the web based interface for a full list of configuration options. Visitors are allowed, but you must join the list to post.</p>  <h3>farcry-dev (public)</h3>   <p>farcry-dev@googlegroups.com<br /> Aimed at managing support for FarCry open source developers.  Anyone making enquiries about modifying or extending or deploying the code base should be referred to this list.</p>      <ul>   <li>To join the mailing list, go to: <a href="http://groups.google.com/group/farcry-dev/about">http://groups.google.com/group/farcry-dev/about</a></li>     <li>Old web based archive: <a href="http://www.mail-archive.com/farcry-dev@lists.daemon.com.au/">http://www.mail-archive.com/farcry-dev@lists.daemon.com.au/</a></li>   <li>Web based interface: <a href="http://www.nabble.com/FarCry-f621.html">http://www.nabble.com/FarCry-f621.html</a><br /> </li> </ul>  <h3>farcry-user (public)</h3>   <p>farcry-user@googlegroups.com <br />  Aimed at managing support for FarCry open source users.  Anyone making enquiries about adding, editing or managing content should be referred to this list. </p>      <ul>   <li>To join the mailing list, go to: <span style="text-decoration: underline"><a href="http://groups.google.com/group/farcry-user/about">http://groups.google.com/group/farcry-user/about</a></span></li> <li>Web based interface: <a href="http://www.nabble.com/FarCry-f621.html">http://www.nabble.com/FarCry-f621.html</a></li> </ul>  <h3>farcry-beta (public)</h3>   <p>farcry-beta@googlegroups.com <br />  The beta list is focused at providing a discussion environment and ad hoc support forum for developers getting to grips with and developing changes for the next generation of FarCry CMS. </p>      <ul>   <li>To join the mailing list, go to: <a href="http://groups.google.com/group/farcry-beta/about">http://groups.google.com/group/farcry-beta/about</a></li> </ul>  <h3>farcry-de (public)</h3>  <p>farcry-de@googlegroups.com<br />farcry-de ist die deutschsprachige Mailingliste zu Problemen/L&ouml;sungen mit dem ColdFusion CMS Farcry. To join the mailing list, go to: </p>   <ul>  <li><a href="http://groups.google.com/group/farcry-de/about">http://groups.google.com/group/farcry-de/about</a></li> </ul>
 <h1>More information</h1><p>Check out <a href="http://www.farcrycms.org/">http://www.farcrycms.org/</a> for more information.</p>';
-stHTML2.commentLog = '';
 stHTML2.createdBy = 'farcry';
 stHTML2.datetimeCreated = now();
 stHTML2.datetimeLastUpdated = now();
@@ -65,7 +63,6 @@ stCSS.title = 'Default Styles';
 stCSS.typeName = 'dmCSS';
 
 stSearch = structNew();
-stSearch.commentLog = '';
 stSearch.createdBy = 'farcry';
 stSearch.datetimeCreated = now();
 stSearch.datetimeLastUpdated = now();

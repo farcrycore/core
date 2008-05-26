@@ -1347,17 +1347,6 @@ default handlers
 		<cfreturn stLocal.html>
 
 	</cffunction>
-		
-	<cffunction name="fDisplayObjectOverview" returntype="string" output="true">
-		<cfargument name="stObject" required="true" type="struct">
-		<cfargument name="stPermissions" required="true" type="struct">
-	
-		<cfset stObject = arguments.stObject>
-		<cfset stPermissions = arguments.stPermissions>
-		<cfset displayContent = "">
-		<cfinclude template="_types/_fDisplayObjectOverview.cfm">
-		<cfreturn displayContent>
-	</cffunction>
 	
 	<cffunction name="archiveObject" access="public" returntype="struct" hint="Archives any farcry object">
 		<!--- TODO: move out of this abstract class to proposed version abstract class 20050802 GB --->

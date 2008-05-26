@@ -26,7 +26,9 @@ $out:$
 <cfsetting enablecfoutputonly="Yes">
 <cfprocessingDirective pageencoding="utf-8">
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
  
 <cfparam name="url.objectId">
 <cfparam name="url.status" default="0">
@@ -116,15 +118,7 @@ $out:$
 			</div>			
 		
 			<!--- display existing comments --->
-			<cfif structKeyExists(astObj[1],"commentLog")>
-				<cfloop from="1" to="#arraylen(astObj)#" index="i">
-					<cfif len(trim(astObj[i].commentLog)) AND structKeyExists(astObj[i],"commentLog")>
-						<label><b>#application.rb.getResource("previousComments")#<cfif arraylen(astObj) neq 1> (#astObj[i].label#)</cfif></b>
-							#htmlcodeformat(astObj[i].commentLog)#
-						</label>
-					</cfif>
-				</cfloop>
-			</cfif>
+			<nj:showcomments objectid="#astObj[1].objectid#" typename="#astObj[1].typename#" />
 		</form>
 		</cfoutput>
 		<cfset changestatus = false>
@@ -325,18 +319,9 @@ $out:$
 							</cfif>
 						</cfloop>
 						
-						<cfscript>
-							stObj.datetimelastupdated = createODBCDateTime(now());
+						<cfset stObj.datetimelastupdated = createODBCDateTime(now()) />
 			
-							//only if the comment log exists - do we actually append the entry
-							if (isDefined("FORM.commentLog")) {
-								if (structkeyexists(stObj, "commentLog")){
-									buildLog =  "#chr(13)##chr(10)##session.dmSec.authentication.canonicalName#" & "(#dateformat(now(),'dd/mm/yyyy')# #timeformat(now(), 'HH:mm:ss')#):#chr(13)##chr(10)#     Status changed: #stobj.status# -> #status##chr(13)##chr(10)# #FORM.commentLog#";
-									stObj.commentLog = buildLog & "#chr(10)##chr(13)#" & stObj.commentLog;
-									}
-							}
-							stObj.status = status;	
-						</cfscript>
+						<cfset stObj.status = status />
 						
 
 						<cfif stRules.bLiveVersionExists and url.status eq "approved">
@@ -352,7 +337,7 @@ $out:$
 							
 							<cfscript>
 								oType = createobject("component", application.types[stObj.typename].typePath);
-								oType.setData(stProperties=stObj,auditNote="Status changed to #stObj.status#");
+								oType.setData(stProperties=stObj,bAudit=false);
 							</cfscript>
 							
 							<cfif stObj.typename neq "dmImage" and stObj.typename neq "dmFile">
@@ -360,6 +345,9 @@ $out:$
 							</cfif>
 							
 						</cfif>
+						
+						<extjs:bubble title="#stObj.label#" message="Status changed to #status#" />
+						<farcry:logevent object="#stObj.objectid#" type="types" event="to#status#" note="#form.commentLog#" />
 						
 					</cfif> <!--- // incomplete items check  --->
 					

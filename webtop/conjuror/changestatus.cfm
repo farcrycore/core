@@ -33,6 +33,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 <!--- imported tag libraries --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
+<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">
 
 <!--- required parameters as FORM or URL variables --->
 <cfif isDefined("url.objectid") AND len(url.objectid)>
@@ -209,12 +211,11 @@ function deSelectAll()
 <input type="submit" name="updatestatus" value="#application.rb.getResource("submitUC")#" class="f-submit" />
 <input type="submit" name="cancel" value="#application.rb.getResource("cancel")#" class="f-submit">
 </div>
-<cfif StructKeyExists(stObj,"commentLog") and len(stObj.commentLog)>
 <fieldset>
 	<label><b>#application.rb.getResource("prevCommentLog")#</b>
-		<xmp>#stObj.commentLog#</xmp>
+		<nj:showcomments objectid="#stObj.objectid#" typename="#stObj.typename#" />
 	</label>
-</fieldset></cfif>
+</fieldset>
 </form>
 </cfoutput>
 

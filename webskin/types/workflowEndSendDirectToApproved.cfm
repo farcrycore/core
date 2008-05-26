@@ -11,7 +11,7 @@
 	<cfset url.objectid = stobj.objectid />
 	<cfset url.status = "approved" />
 	<cfset form.submit = "submit" />
-	<cfset form.commentlog = "Workflow Complete. Sent to Approved" />
+	<cfset form.commentlog = "Workflow Complete." />
 
 	<nj:objectStatus>
 

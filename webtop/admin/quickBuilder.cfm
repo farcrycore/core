@@ -157,7 +157,6 @@ $out:$
 	                htmlItem.aRelatedIDs = arrayNew(1);
 	                htmlItem.aTeaserImageIDs = arrayNew(1);
 	                htmlItem.body = "";
-	                htmlItem.commentLog = "";
 	                htmlItem.createdBy = createdBy;
 	                htmlItem.datetimecreated = now();
 	                htmlItem.datetimelastupdated = now();

@@ -54,7 +54,6 @@ type properties
 <cfproperty ftSeq="40" ftFieldSet="Flash Player Settings"  name="flashMenu" type="boolean" hint="Display options menu in flash movie" required="yes" default="0" ftLabel="Menu" ftType="list" ftList="1:true,0:false"> 
 
 <!--- system properties --->
-<cfproperty name="commentlog" type="longchar" hint="Workflow comment log." required="no" default="">
 <cfproperty name="status" type="string" hint="Status of movie - draft,pending or approved" required="No" default="">
 
 <!------------------------------------------------------------------------

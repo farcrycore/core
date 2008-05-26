@@ -1,6 +1,7 @@
 <cfprocessingDirective pageencoding="utf-8">
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 <cfinclude template="/farcry/core/webtop/includes/utilityFunctions.cfm">
 
@@ -31,11 +32,7 @@
     <tr>
     	<td colspan="2">
     <br />
-	<cfif isdefined("stObj.status") AND trim(stObj.commentLog) neq "">
-        <cfoutput>#wrap(paragraphFormat2(stObj.commentLog),70)#</cfoutput>
-    <cfelse>
-        <cfoutput><strong>#application.rb.getResource("noComments")#</strong></cfoutput>
-    </cfif>
+	<nj:showcomments objectid="#stObj.objectid#" typename="#stObj.typename#" />
 		</td>
 	</tr>
 </table></cfoutput>
