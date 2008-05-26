@@ -95,9 +95,14 @@ object methods
 
 <cffunction name="setData" access="public" output="true" hint="Creates a scheduled task and actual dmCron object">
 	<cfargument name="stProperties" required="true">
+	<cfargument name="user" type="string" required="true" hint="Username for object creator" default="">
+	<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Updated">
+	<cfargument name="bAudit" type="boolean" required="No" default="1" hint="Pass in 0 if you wish no audit to take place">
+	<cfargument name="dsn" required="No" default="#application.dsn#">
+	<cfargument name="bSessionOnly" type="boolean" required="false" default="false"><!--- This property allows you to save the changes to the Temporary Object Store for the life of the current session. ---> 
+	<cfargument name="bAfterSave" type="boolean" required="false" default="true" hint="This allows the developer to skip running the types afterSave function.">	
 	
-	<cfif structKeyExists(arguments.stProperties,"title")>
-		
+	<cfif not arguments.bSessionOnly and structKeyExists(arguments.stProperties,"title")>
 		<!--- check if task has been renamed --->
 		<cfset stExistingObj = getData(arguments.stProperties.objectid)>	
 		<cfif stExistingObj.title neq arguments.stProperties.title>
@@ -122,8 +127,7 @@ object methods
 	</cfif>	
 	
 	<!--- update object --->
-	<cfset super.setData(arguments.stProperties)>
-	
+	<cfreturn super.setData(arguments.stProperties,arguments.user,arguments.auditNote,arguments.bAudit,arguments.dsn,arguments.bSessionOnly,arguments.bAfterSave) />
 </cffunction>
 
 </cfcomponent>
