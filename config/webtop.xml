@@ -143,7 +143,7 @@
 		</subsection>
 		<subsection id="managefarcryud" sequence="200" permission="SecurityUserManagementTab" label="Manage FarCry UD">
 			<menu id="farcryud" sequence="300" label="FarCry User Directory">
-				<menuitem id="listfaruser" sequence="10" label="Users" link="/admin/customadmin.cfm?module=customlists/farUser.cfm" relatedtype="farUser" />
+				<menuitem id="listprofiles" sequence="10" label="Users" link="/admin/customadmin.cfm?module=customlists/dmProfile.cfm" relatedtype="farUser" />
 				<menuitem id="listfargroup" sequence="20" label="Groups" link="/admin/customadmin.cfm?module=customlists/farGroup.cfm" relatedtype="farGroup" />
 			</menu>
 		</subsection>
