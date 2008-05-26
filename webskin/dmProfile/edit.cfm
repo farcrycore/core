@@ -29,8 +29,6 @@ ACTION
 <!----------------------------- 
 VIEW	
 ------------------------------>
-<admin:header />
-
 <cfoutput>
 	<h1>EDIT: #listfirst(stObj.username,"_")# - #stObj.userdirectory#</h1>
 </cfoutput>
@@ -57,7 +55,5 @@ VIEW
 		<ft:button value="Cancel" />
 	</ft:farcryButtonPanel>
 </ft:form>
-
-<admin:footer />
 
 <cfsetting enablecfoutputonly="false" />
