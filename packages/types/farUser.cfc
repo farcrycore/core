@@ -2,9 +2,9 @@
 <!--- @@License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php --->
 <!--- @@Developer: Blair Mackenzie (blair@daemon.com.au) --->
 <cfcomponent displayname="FarCry User" hint="User model for the Farcry User Directory." extends="types" output="false" description="">
-	<cfproperty ftSeq="1" ftFieldset="" name="userid" type="string" default="" hint="The unique id for this user. Used for logging in" ftLabel="User ID" ftType="string" bLabel="true" />
-	<cfproperty ftSeq="2" ftFieldset="" name="password" type="string" default="" hint="" ftLabel="Password" ftType="password" ftRenderType="confirmpassword" ftShowLabel="false" />
-	<cfproperty ftSeq="3" ftFieldset="" name="userstatus" type="string" default="inactive" hint="The status of this user; active, inactive, pending." ftLabel="User status" ftType="list" ftList="active:Active,inactive:Inactive,pending:Pending" />
+	<cfproperty ftSeq="1" ftFieldset="" name="userid" type="string" default="" hint="The unique id for this user. Used for logging in" ftLabel="User ID" ftType="string" bLabel="true" ftValidation="required" />
+	<cfproperty ftSeq="2" ftFieldset="" name="password" type="string" default="" hint="" ftLabel="Password" ftType="password" ftRenderType="confirmpassword" ftShowLabel="false" ftValidation="required" />
+	<cfproperty ftSeq="3" ftFieldset="" name="userstatus" type="string" default="active" hint="The status of this user; active, inactive, pending." ftLabel="User status" ftType="list" ftList="active:Active,inactive:Inactive,pending:Pending" />
 	<cfproperty ftSeq="4" ftFieldset="" name="aGroups" type="array" default="" hint="The groups this member is a member of" ftLabel="Groups" ftType="array" ftJoin="farGroup" />
 	<cfproperty name="lGroups" type="longchar" default="" hint="The groups this member is a member of (list generated automatically)" ftLabel="Groups" ftType="arrayList" ftArrayField="aGroups" ftJoin="farGroup" />
 	
@@ -34,7 +34,6 @@
 		<cfset var stUser = structnew() />
 		<cfset var stGroup = structnew() />
 		<cfset var oGroup = createObject("component", application.stcoapi["farGroup"].packagePath) />
-		<cfset var groupID = oGroup.getID(arguments.group) />
 		<cfset var i = 0 />
 		
 		<!--- Get the user by objectid or userid --->
@@ -44,8 +43,9 @@
 			<cfset stUser = getByUserID(arguments.user) />
 		</cfif>
 	
-		<cfset stGroup = oGroup.getData(objectid="#groupID#") />
-		<cfset arguments.group = stGroup.objectid />
+		<cfif not isvalid("uuid",arguments.group)>
+			<cfset arguments.group = oGroup.getID(arguments.group) />
+		</cfif>
 		
 		<!--- Check to see if they are already a member of the group --->
 		<cfparam name="stUser.aGroups" default="#arraynew(1)#" />
@@ -67,12 +67,17 @@
 		
 		<cfset var stUser = structnew() />
 		<cfset var i = 0 />
+		<cfset var oGroup = createObject("component", application.stcoapi["farGroup"].packagePath) />
 		
 		<!--- Get the user by objectid or userid --->
 		<cfif isvalid("uuid",arguments.user)>
 			<cfset stUser = getData(arguments.user) />
 		<cfelse>
 			<cfset stUser = getByUserID(arguments.user) />
+		</cfif>
+		
+		<cfif not isvalid("uuid",arguments.group)>
+			<cfset arguments.group = oGroup.getID(arguments.group) />
 		</cfif>
 		
 		<!--- Check to see if they are a member of the group --->
@@ -83,7 +88,7 @@
 			</cfif>
 		</cfloop>
 		
-		<cfset oUser.setData(stProperties=stUser) />
+		<cfset setData(stProperties=stUser) />
 	</cffunction>
 
 	<cffunction name="setData" access="public" output="true" hint="Update the record for an objectID including array properties.  Pass in a structure of property values; arrays should be passed as an array.">
@@ -103,18 +108,7 @@
 			<cfset arguments.stProperties.password = hash(arguments.stProperties.password) />
 		</cfif>
 		
-		<!--- This will create the users default profile if one does not yet exist --->
-		<cfif not arguments.bSessionOnly>			
-			<cfset stUsersProfile = oProfile.getProfile(userName=stUser.userid) />
-			
-			<cfif not stUsersProfile.bInDB>
-				<cfset stUsersProfile.objectid = createUUID() />
-				<cfset oProfile.setData(stProperties=stUsersProfile) />
-			</cfif>
-		</cfif>		
-		
 		<cfreturn super.setData(arguments.stProperties,arguments.user,arguments.auditNote,arguments.bAudit,arguments.dsn,arguments.bSessionOnly,arguments.bAfterSave) />
-		
 	</cffunction>
 	
 	<cffunction name="createData" access="public" returntype="any" output="false" hint="Creates an instance of an object">

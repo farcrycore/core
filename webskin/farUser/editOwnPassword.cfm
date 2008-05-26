@@ -13,15 +13,18 @@
 <!----------------------------- 
 ACTION	
 ------------------------------>
-<ft:validateFormObjects objectid="#stobj.objectid#" />
+<cfset onExit = "#application.url.webtop#/overview/home.cfm?UPDATEAPP=false&sec=home&SUB=overview" />
 
-<ft:processform action="Save">
+<ft:processform action="Save" exit="true">
+	<ft:validateFormObjects objectid="#stobj.objectid#" />
+	
 	<ft:processformobjects objectid="#stobj.objectid#" />
 	<cfoutput>
 		<span class="success">Your password has been updated.</span>
 	</cfoutput>
 </ft:processform>
 
+<ft:processform action="Cancel" exit="true" />
 
 <!----------------------------- 
 VIEW	
@@ -36,7 +39,7 @@ VIEW
 
 	<ft:farcryButtonPanel>
 		<ft:button value="Save" text="Change Password" color="orange" />
-		<ft:button value="Cancel" />
+		<ft:button value="Cancel" validate="false" />
 	</ft:farcryButtonPanel>
 </ft:form>
 
