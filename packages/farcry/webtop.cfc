@@ -262,8 +262,15 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		
 		<!--- Tag specfic defaults --->
 		<cfswitch expression="#arguments.item.itemtype#">
+			<cfcase value="section">
+				<cfparam name="arguments.item.description" default="" />
+				<cfparam name="arguments.item.icon" default="" />
+				<cfparam name="arguments.item.relatedType" default="" />
+			</cfcase>
 			<cfcase value="subsection">
 				<cfparam name="arguments.item.description" default="" />
+				<cfparam name="arguments.item.icon" default="" />
+				<cfparam name="arguments.item.relatedType" default="" />
 			</cfcase>
 			<cfcase value="menu">
 				<cfparam name="arguments.item.description" default="" />
@@ -286,15 +293,30 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		
 		<cfset var stResult = this.stWebtop />
 		<cfset var id = "" />
+		<cfset var stTempResult = structnew() />
 		
 		<cfif isstruct(arguments.parent)>
 			<!--- Use that as stResult --->
 			<cfset stResult = arguments.parent />
+			
+			<cfif structkeyexists(stResult,"dynamicmenu") and len(stResult.dynamicmenu) and structkeyexists(application.stCOAPI,listfirst(stResult.dynamicmenu,"."))>
+				<!--- If this is a dynamic menu, get the data --->
+				<cfinvoke component="#application.stCOAPI[listfirst(stResult.dynamicmenu,'.')].packagepath#" method="#listlast(stResult.dynamicmenu,'.')#" returnvariable="stTempResult" />
+				<cfset structappend(stResult,stTempResult,true) />
+				<cfset structdelete(stResult,"dynamicmenu") />
+			</cfif>
 		<cfelseif issimplevalue(arguments.parent)>
 			<!--- Traverse the webtop struct using the ids specified --->
 			<cfloop list="#arguments.parent#" delimiters="." index="id">
 				<cfif structkeyexists(stResult.children,id)>
 					<cfset stResult = stResult.children[id] />
+					
+					<cfif structkeyexists(stResult,"dynamicmenu") and len(stResult.dynamicmenu) and structkeyexists(application.stCOAPI,listfirst(stResult.dynamicmenu,"."))>
+						<!--- If this is a dynamic menu, get the data --->
+						<cfinvoke component="#application.stCOAPI[listfirst(stResult.dynamicmenu,'.')].packagepath#" method="#listlast(stResult.dynamicmenu,'.')#" returnvariable="stTempResult" />
+						<cfset structappend(stResult,stTempResult,true) />
+						<cfset structdelete(stResult,"dynamicmenu") />
+					</cfif>
 				<cfelse>
 					<cfthrow message="The parent argument must be a webtop struct or an id path specifying an existing webtop struct" />
 				</cfif>
@@ -381,10 +403,10 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfset var urlUtil = createobject("component","UrlUtility") />
 		<cfset var stParams = StructNew() />
 		<cfset var id = "" />
-		<cfset var stItem = this.stWebtop />
+		<cfset var stItem = getItem(arguments.item) />
 		
 		<!--- Item attribute may be webtop struct or an id path to the webtop struct --->
-		<cfif isstruct(arguments.item)>
+		<!--- <cfif isstruct(arguments.item)>
 			<!--- Use that struct --->
 			<cfset stItem = arguments.item />
 		<cfelseif issimplevalue(arguments.item)>
@@ -397,7 +419,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 					<cfthrow message="The item argument must be a webtop struct or an id path specifying a webtop struct" />
 				</cfif>
 			</cfloop>
-		</cfif>
+		</cfif> --->
 		
 		<!--- if the 'sidebar' attribute exists, make it the base url --->
 		<cfif StructKeyExists(stItem, arguments.attr)>
@@ -425,4 +447,3 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 	</cffunction>
 
 </cfcomponent>
-
