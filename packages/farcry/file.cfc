@@ -650,20 +650,22 @@ $out:$
 		<cfset var mimeStruct = getMimeTypes() />
 		<cfset var ext = listLast(arguments.filename, ".") />
 		
-		<cfif structKeyExists(mimeStruct,fileExtension>
+		<cfif structKeyExists(mimeStruct,ext)>
 			<cfreturn mimeStruct[ext] />
 		<cfelse>
 			<cfreturn "text/plain" />
 		</cfif>
 	</cffunction>
 
-	<cffunction name="getFileInfo" access="public" returntype="struct" description="Returns a struct of file information" output="false">
+	<cffunction name="getFileProperties" access="public" returntype="struct" description="Returns a struct of file information" output="false">
 		<cfargument name="filename" type="string" required="true" hint="The file to query" />
 		
 		<cfset var stResult = structnew() />
 		<cfset var qFile = querynew("empty") />
 		
-		<cfset arguments.filename = expandpath(arguments.filename) />
+		<cfif not fileexists(arguments.filename)>
+			<cfset arguments.filename = expandpath(arguments.filename) />
+		</cfif>
 		
 		<cfdirectory action="list" name="qFile" directory="#getDirectoryFromPath(arguments.filename)#" filter="#getFileFromPath(arguments.fileName)#" />
 		
@@ -685,7 +687,7 @@ $out:$
 	<cffunction name="getFileSize" access="public" returntype="numeric" description="Returns the size of the specified file" output="false">
 		<cfargument name="filename" type="string" required="true" hint="The file to query" />
 		
-		<cfset var fileinfo = getFileInfo(arguments.filename) />
+		<cfset var fileinfo = getFileProperties(arguments.filename) />
 		
 		<cfreturn fileinfo.size />
 	</cffunction>
