@@ -7,30 +7,40 @@
 	<cfproperty ftSeq="6" ftWizardStep="General" ftFieldset="Feed" name="feedimage" type="string" default="" hint="Feed image" ftLabel="Feed image" ftType="image" ftDestination="/farWebfeed/feedimage" ftCreateFromSourceOption="false" ftAutoGenerateType="" ftImageWidth="" ftImageHeight="" ftHint="Size must be 88-144px by 31-400px" />
 	<cfproperty ftSeq="7" ftWizardStep="General" ftFieldset="Feed" name="editor" type="string" default="" hint="The editor / author of the webfeed" ftLabel="Editor / author" ftType="string" ftHint="Defaults to website name" />
 	<cfproperty ftSeq="8" ftWizardStep="General" ftFieldset="Feed" name="editoremail" type="string" default="" hint="The editor / author email" ftLabel="Editor / author email" ftType="string" />
-	<cfproperty ftSeq="9" ftWizardStep="General" ftFieldset="Feed" name="copyright" type="string" default="" hint="" ftLabel="Copyright" ftType="string" />
-	<cfproperty ftSeq="10" ftWizardStep="General" ftFieldset="Feed" name="keywords" type="string" default="" hint="" ftLabel="Keywords" ftType="string" ftHint="List of keywords (max. 12)" />
+	<cfproperty ftSeq="9" ftWizardStep="General" ftFieldset="Feed" name="language" type="string" hint="" ftDefault="en-au" ftLabel="language" ftType="string" ftValidation="required" />
+	<cfproperty ftSeq="10" ftWizardStep="General" ftFieldset="Feed" name="copyright" type="string" default="" hint="" ftLabel="Copyright" ftType="string" />
+	<cfproperty ftSeq="11" ftWizardStep="General" ftFieldset="Feed" name="keywords" type="string" default="" hint="" ftLabel="Keywords" ftType="string" ftHint="List of keywords (max. 12)" />
+	<cfproperty ftSeq="12" ftwizardstep="General" ftFieldSet="Feed" name="generator" type="nstring" hint="Generator Info. Example: My Company - mycompany.com" required="false" default="http://www.farcrycms.org/" ftLabel="Generator" />
+
+	<cfproperty ftSeq="21" ftWizardStep="General" ftFieldset="Content Type" name="itemtype" type="string" default="" hint="The type that webfeed items are created from" ftLabel="Type" ftType="list" ftListData="getTypesList" ftValidation="required,validate-selection" />
+
+  <!--- Media --->
+
+	<cfproperty ftSeq="22" ftWizardStep="Media" ftFieldset="Media" name="titleproperty" type="string" default="title" hint="The property that contains the item's title" ftLabel="Title property" ftType="list" />
+	<cfproperty ftSeq="23" ftWizardStep="Media" ftFieldset="Media" name="contentproperty" type="string" default="teaser" hint="The property that contains the item's content" ftLabel="HTML Content property" ftHint="This can be a teaser or full text" ftType="list" />
+	<cfproperty ftSeq="24" ftWizardStep="Media" ftFieldset="Media" name="enclosurefileproperty" type="string" default="" hint="The property that contains the item's media location" ftLabel="Enclosure file property" ftType="list" />
+	<cfproperty ftSeq="25" ftWizardStep="Media" ftFieldset="Media" name="dateproperty" type="string" default="datetimecreated" hint="The property that contains the date to sort by" ftLabel="Published-date property" ftType="list" ftHint="The items in the webfeed will be ordered by this property" />
+	<cfproperty ftSeq="26" ftWizardStep="Media" ftFieldset="Media" name="bAuthor" type="boolean" default="0" hint="Should the item creator be included in the item as the author" ftLabel="Include item creator as author" ftType="boolean" />
+	<cfproperty ftSeq="27" ftWizardStep="Media" ftFieldset="Media" name="catFilter" type="longchar" default="" hint="Filter items by these categories. If none are selected all items will be included." ftLabel="Restrict by categories" ftType="category" ftAlias="root" />
+	<cfproperty ftSeq="28" ftWizardStep="Media" ftFieldset="Media" name="keywordsproperty" type="string" default="" hint="The property that contains the item's keywords" ftLabel="Item keywords property" ftType="list" ftHint="Property should contain a list of keywords" />
 	
-	<cfproperty ftSeq="21" ftWizardStep="General" ftFieldset="Items" name="itemtype" type="string" default="" hint="The type that webfeed items are created from" ftLabel="Type" ftType="list" ftValidation="true" ftListData="getTypesList" />
-	<cfproperty ftSeq="22" ftWizardStep="General" ftFieldset="Items" name="titleproperty" type="string" default="title" hint="The property that contains the item's title" ftLabel="Title property" ftType="list" />
-	<cfproperty ftSeq="23" ftWizardStep="General" ftFieldset="Items" name="contentproperty" type="string" default="teaser" hint="The property that contains the item's content" ftLabel="HTML Content property" ftHint="This can be a teaser or full text" ftType="list" />
-	<cfproperty ftSeq="24" ftWizardStep="General" ftFieldset="Items" name="mediaproperty" type="string" default="" hint="The property that contains the item's media location" ftLabel="Media property" ftType="list" />
-	<cfproperty ftSeq="25" ftWizardStep="General" ftFieldset="Items" name="dateproperty" type="string" default="datetimecreated" hint="The property that contains the date to sort by" ftLabel="Published-date property" ftType="list" ftHint="The items in the webfeed will be ordered by this property" />
-	<cfproperty ftSeq="26" ftWizardStep="General" ftFieldset="Items" name="bAuthor" type="boolean" default="0" hint="Should the item creator be included in the item as the author" ftLabel="Include item creater as author" ftType="boolean" />
-	<cfproperty ftSeq="27" ftWizardStep="General" ftFieldset="Items" name="catFilter" type="longchar" default="" hint="Filter items by these categories. If none are selected all items will be included." ftLabel="Restrict by categories" ftType="category" />
-	<cfproperty ftSeq="28" ftWizardStep="General" ftFieldset="Items" name="keywordsproperty" type="string" default="" hint="The property that contains the item's keywords" ftLabel="Item keywords property" ftType="list" ftHint="Property should contain a list of keywords" />
-	
+	<!--- RSS --->
+
 	<cfproperty ftSeq="31" ftWizardStep="RSS" ftFieldset="Feed" name="skiphours" type="string" default="" hint="The hours when the feed doesn't need to be checked" ftLabel="Skip hours" ftType="list" ftHint="The hours in the day when the feed doesn't need to be checked" ftListData="getHoursList" ftSelectMultiple="true" />
 	<cfproperty ftSeq="32" ftWizardStep="RSS" ftFieldset="Feed" name="skipdays" type="string" default="" hint="The days when the feed doesn't need to be checked" ftLabel="Skip days" ftType="list" ftHint="The days of the week when the feed doesn't need to be checked" ftListData="getDaysList" ftSelectMultiple="true" />
 	
-	<!--- 41 = RSS Items --->
 	
+	<!--- Atom --->
+
 	<cfproperty ftSeq="51" ftWizardStep="Atom" ftFieldset="Feed" name="atomicon" type="string" hint="The feed icon" required="no" default="" ftType="Image" ftDestination="/farWebfeed/atomicon" ftCreateFromSourceOption="false" ftAutoGenerateType="" ftImageWidth="" ftImageHeight="" ftLabel="Feed icon" ftHint="Should be a square image and suitable for presentation at a small size" />  
 	
-	<!--- 61 = Atom Items --->
-	
+	<!--- iTunes --->
+
+  <cfproperty ftSeq="70" ftwizardstep="iTunes" ftFieldSet="Feed" name="iTunesFeedId" type="integer" hint="iTunes Feed ID" required="false" ftLabel="iTunes Feed ID" ftHint="The iTunes Feed ID is only required if you wish to ping iTunes when you add or update podcast episodes" ftHelpSection="For more info on how to obtain an iTunes feed ID, see the following URL: <a href=""http://www.apple.com/itunes/store/podcaststechspecs.html"">http://www.apple.com/itunes/store/podcaststechspecs.html</a>" />
+
 	<cfproperty ftSeq="71" ftWizardStep="iTunes" ftFieldset="Feed" name="itunescategories" type="string" default="" hint="Feed iTunes categories" ftLabel="iTune categories" ftType="list" ftListData="getiTunesCategoryList" ftSelectMultiple="true" ftHint="iTunes accepts a maximum of 3 categories" />
 	<cfproperty ftSeq="72" ftWizardStep="iTunes" ftFieldset="Feed" name="itunesauthor" type="string" default="" hint="" ftLabel="iTunes author" ftType="string" />
-	<cfproperty ftSeq="73" ftWizardStep="iTunes" ftFieldset="Feed" name="itunesimage" type="string" hint="The itunes image" required="no" default="" ftType="Image" ftDestination="/farWebfeed/itunesimage" ftCreateFromSourceOption="false" ftAutoGenerateType="" ftImageWidth="" ftImageHeight="" ftlabel="iTunes image" ftHint="Should be a square image and at least 600px by 600px" />  
+	<cfproperty ftSeq="73" ftWizardStep="iTunes" ftFieldset="Feed" name="itunesimage" type="string" hint="The itunes image" required="no" default="" ftType="Image" ftDestination="/farWebfeed/itunesimage" ftCreateFromSourceOption="false" ftAutoGenerateType="FitInside" ftImageWidth="600" ftImageHeight="600" ftlabel="iTunes image" ftHint="Should be a square image and at least 600px by 600px" />  
 	
 	<cfproperty ftSeq="81" ftWizardStep="iTunes" ftFieldset="Items" name="itunessubtitleproperty" type="string" default="" hint="The property that contains the item's itunes subtitle" ftLabel="Item subtitle property" ftType="list" />
 	<cfproperty ftSeq="83" ftWizardStep="iTunes" ftFieldset="Items" name="itunesdurationproperty" type="string" default="" hint="The property that contains the item's duration" ftLabel="Item duration property" ftType="list" />
@@ -101,7 +111,7 @@
 				<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#"></cfoutput>
 				
 				<cfloop query="qProperties">
-					<cfoutput><option value="#qProperties.value#" <cfif arguments.stMetadata.value eq qProperties.value> selected</cfif>>#qProperties.name#</option></cfoutput>
+					<cfoutput><option value="#qProperties.value#"<cfif arguments.stMetadata.value eq qProperties.value> selected="selected"</cfif>>#qProperties.name#</option></cfoutput>
 				</cfloop>
 				
 				<cfoutput></select><input type="hidden" name="#arguments.fieldname#" value=" "><br style="clear: both;"/></cfoutput>
@@ -155,7 +165,7 @@
 				<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#"></cfoutput>
 				
 				<cfloop query="qProperties">
-					<cfoutput><option value="#qProperties.value#" <cfif arguments.stMetadata.value eq qProperties.value> selected</cfif>>#qProperties.name#</option></cfoutput>
+					<cfoutput><option value="#qProperties.value#"<cfif arguments.stMetadata.value eq qProperties.value> selected="selected"</cfif>>#qProperties.name#</option></cfoutput>
 				</cfloop>
 				
 				<cfoutput></select><input type="hidden" name="#arguments.fieldname#" value=" "><br style="clear: both;"/></cfoutput>
@@ -170,7 +180,7 @@
 		<cfreturn html />
 	</cffunction>
 	
-	<cffunction name="ftEditMediaProperty" access="public" returntype="string" description="Provides the edit skin for mediaproperty" output="false">
+	<cffunction name="ftEditEnclosureFileProperty" access="public" returntype="string" description="Provides the edit skin for enclosurefileproperty" output="false">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
@@ -201,10 +211,10 @@
 		
 			<cfsavecontent variable="html">
 				<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#"></cfoutput>
-				<cfoutput><option value="" <cfif arguments.stMetadata.value eq ""> selected</cfif>>&lt; No media &gt;</option></cfoutput>
+				<cfoutput><option value=""<cfif arguments.stMetadata.value eq ""> selected="selected"</cfif>>&lt; No media &gt;</option></cfoutput>
 				
 				<cfloop query="qProperties">
-					<cfoutput><option value="#qProperties.value#" <cfif arguments.stMetadata.value eq qProperties.value> selected</cfif>>#qProperties.name#</option></cfoutput>
+					<cfoutput><option value="#qProperties.value#"<cfif arguments.stMetadata.value eq qProperties.value> selected="selected"</cfif>>#qProperties.name#</option></cfoutput>
 				</cfloop>
 				
 				<cfoutput></select><input type="hidden" name="#arguments.fieldname#" value=" "><br style="clear: both;"/></cfoutput>
@@ -257,7 +267,7 @@
 				<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#"></cfoutput>
 				
 				<cfloop query="qProperties">
-					<cfoutput><option value="#qProperties.value#" <cfif arguments.stMetadata.value eq qProperties.value> selected</cfif>>#qProperties.name#</option></cfoutput>
+					<cfoutput><option value="#qProperties.value#"<cfif arguments.stMetadata.value eq qProperties.value> selected="selected"</cfif>>#qProperties.name#</option></cfoutput>
 				</cfloop>
 				
 				<cfoutput></select><input type="hidden" name="#arguments.fieldname#" value=" "><br style="clear: both;"/></cfoutput>
@@ -444,10 +454,10 @@
 		
 			<cfsavecontent variable="html">
 				<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#"></cfoutput>
-				<cfoutput><option value="" <cfif arguments.stMetadata.value eq ""> selected</cfif>>&lt; No media &gt;</option></cfoutput>
+				<cfoutput><option value=""<cfif arguments.stMetadata.value eq ""> selected="selected"</cfif>>&lt; No media &gt;</option></cfoutput>
 				
 				<cfloop query="qProperties">
-					<cfoutput><option value="#qProperties.value#" <cfif arguments.stMetadata.value eq qProperties.value> selected</cfif>>#qProperties.name#</option></cfoutput>
+					<cfoutput><option value="#qProperties.value#"<cfif arguments.stMetadata.value eq qProperties.value> selected="selected"</cfif>>#qProperties.name#</option></cfoutput>
 				</cfloop>
 				
 				<cfoutput></select><input type="hidden" name="#arguments.fieldname#" value=" "><br style="clear: both;"/></cfoutput>
@@ -495,10 +505,10 @@
 		
 			<cfsavecontent variable="html">
 				<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#"></cfoutput>
-				<cfoutput><option value="" <cfif arguments.stMetadata.value eq ""> selected</cfif>>&lt; No media &gt;</option></cfoutput>
+				<cfoutput><option value=""<cfif arguments.stMetadata.value eq ""> selected="selected"</cfif>>&lt; No media &gt;</option></cfoutput>
 				
 				<cfloop query="qProperties">
-					<cfoutput><option value="#qProperties.value#" <cfif arguments.stMetadata.value eq qProperties.value> selected</cfif>>#qProperties.name#</option></cfoutput>
+					<cfoutput><option value="#qProperties.value#"<cfif arguments.stMetadata.value eq qProperties.value> selected="selected"</cfif>>#qProperties.name#</option></cfoutput>
 				</cfloop>
 				
 				<cfoutput></select><input type="hidden" name="#arguments.fieldname#" value=" "><br style="clear: both;"/></cfoutput>
