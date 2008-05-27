@@ -405,22 +405,6 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfset var id = "" />
 		<cfset var stItem = getItem(arguments.item) />
 		
-		<!--- Item attribute may be webtop struct or an id path to the webtop struct --->
-		<!--- <cfif isstruct(arguments.item)>
-			<!--- Use that struct --->
-			<cfset stItem = arguments.item />
-		<cfelseif issimplevalue(arguments.item)>
-			<!--- Retrieve item --->
-			<cfloop list="#arguments.item#" delimiters="." index="id">
-				<cfif structkeyexists(stItem.children,id)>
-					<cfset stItem = stItem.children[id] />
-				<cfelse>
-					<!--- Item doesn't exist --->
-					<cfthrow message="The item argument must be a webtop struct or an id path specifying a webtop struct" />
-				</cfif>
-			</cfloop>
-		</cfif> --->
-		
 		<!--- if the 'sidebar' attribute exists, make it the base url --->
 		<cfif StructKeyExists(stItem, arguments.attr)>
 			<cfset sReturn = stItem[arguments.attr] />
