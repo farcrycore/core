@@ -16,7 +16,6 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
 <!--- @@displayname: Depricated Tag --->
 <!--- @@description:  As a core developer you can flag deprecated code by using this tag to pass in a depricated message --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->

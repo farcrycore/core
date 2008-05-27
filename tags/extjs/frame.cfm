@@ -16,7 +16,6 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
 <!--- @@displayname: extjs Pod Frame --->
 <!--- @@description: Places a nice curved border around content.  --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->

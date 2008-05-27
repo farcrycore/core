@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
+
 <!--- @@displayname: Security Initialisation --->
 <!--- @@Description: FarCry security intilisation functions. --->
 <!--- @@Developer: Geoff Bowers (modius@daemon.com.au) --->

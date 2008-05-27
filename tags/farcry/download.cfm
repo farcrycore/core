@@ -16,7 +16,6 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
 <!--- @@displayname: Tag for File Download --->
 <!--- @@Description: Locates the relevant file and delivers to the user. --->
 <!--- @@Developer: Geoff Bowers (modius@daemon.com.au) --->

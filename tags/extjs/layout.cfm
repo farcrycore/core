@@ -16,7 +16,6 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
 <!--- @@displayname:  --->
 <!--- @@description:  This is the primary tag to generate extjs layouts. By nesting item tags <extjs:item> within a layout tag, allows the developer to build a rich application layout. --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
