@@ -48,40 +48,11 @@
 		<cfreturn stBarnacle />
 	</cffunction>
 
-	<cffunction name="cacheObjectRights" access="public" output="false" returntype="void" hint="Caches all the permissions for a particular object">
-		<cfargument name="object" type="uuid" required="true" hint="The object to cache" />
-		
-		<cfset var qBarnacles = "" />
-		
-		<cfquery datasource="#application.dsn#" name="qBarnacles">
-			select		rp.role as roleid, rp.permission as permission, b.barnaclevalue
-			from		(
-							select	r.objectid as role, p.parentid as permission
-							from	#application.dbowner#farRole r, #application.dbowner#farPermission_aRelatedtypes pt
-							where	pt=<cfqueryparam cfsqltype="cf_sql_varchar" value="#findType(arguments.object)#" />
-						) rp
-						left outer join
-						#application.dbowner#farBarnacle b
-						on rp.role=b.roleid and rp.permission=b.permissionid
-			where		b.referenceid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.object#" />
-			order by	rp.role, rp.permission
-		</cfquery>
-		
-		<cfloop query="qBarnacles">
-			<cfif barnaclevalue eq "">
-				<cfset application.security.setCache(role=roleid,permission=permissionid,object=arguments.object,right=0) />
-			<cfelse>
-				<cfset application.security.setCache(role=roleid,permission=permissionid,object=arguments.object,right=barnaclevalue) />
-			</cfif>
-		</cfloop>
-	</cffunction>
-	
 	<cffunction name="getRight" access="public" output="false" returntype="numeric" hint="Returns the right for the specfied barnacle">
 		<cfargument name="barnacle" type="string" required="false" default="" hint="The barnacle being queried" />
 		<cfargument name="role" type="string" required="false" default="" hint="The role the barnacle is attached to" />
 		<cfargument name="permission" type="string" required="false" default="" hint="The permission the barnacle is based on" />
 		<cfargument name="object" type="string" required="false" default="" hint="The object the barnacle is attached to" />
-		<cfargument name="forcerefresh" type="boolean" required="false" default="false" hint="Should the cache be forcably refreshed" />
 		
 		<cfset var stBarnacle = structnew() />
 		<cfset var thisrole = "" />
@@ -131,12 +102,7 @@
 					<cfset thisrole = application.security.factory.role.getID(thisrole) />
 				</cfif>
 				
-				<!--- If possible use the cache, otherwise update cache --->
-				<cfif not arguments.forcerefresh and application.security.isCached(role=thisrole,permission=arguments.permission,object=arguments.object)>
-					<cfset thisresult = application.security.getCache(role=thisrole,permission=arguments.permission,object=arguments.object) />
-				<cfelse>
-					<cfset thisresult = application.security.setCache(role=thisrole,permission=arguments.permission,object=arguments.object,right=getBarnacle(thisrole,arguments.permission,arguments.object).barnaclevalue) />
-				</cfif>
+				<cfset thisresult = getBarnacle(thisrole,arguments.permission,arguments.object).barnaclevalue />
 				
 				<!--- Result is the most permissable right. 1 is the most permissable, so if that is returned we don't need to check any more --->
 				<cfif thisresult eq 1>
@@ -156,8 +122,7 @@
 		<cfargument name="role" type="string" required="false" default="" hint="The roles to check" />
 		<cfargument name="permission" type="string" required="false" default="" hint="The permission the barnacle is based on" />
 		<cfargument name="object" type="string" required="false" default="" hint="The object the barnacle is attached to" />
-		<cfargument name="forcerefresh" type="boolean" required="false" default="false" hint="Should the cache be forcably refreshed" />
-
+		
 		<cfset var stBarnacle = structnew() />
 		<cfset var thisobject = "" />
 		<cfset var thisresult = 0 />
@@ -200,7 +165,7 @@
 		<cfloop list="#arguments.object#" index="thisobject">
 		
 			<!--- Default is -1 when there is no barnacle --->
-			<cfset thisresult = getRight(role=arguments.role,permission=arguments.permission,object=thisobject,forcerefresh=arguments.forcerefresh) />
+			<cfset thisresult = getRight(role=arguments.role,permission=arguments.permission,object=thisobject) />
 		
 			<cfif thisresult neq 0>
 				<!--- If the permission is specified rather than inherited, return it --->
@@ -297,12 +262,7 @@
 		
 		<!--- Update object type --->
 		<cfset arguments.stProperties.objecttype = findType(arguments.stProperties.referenceid) />
-		
-		<cfif not arguments.bAfterSave>
-			<!--- Update permission cache --->
-			<cfset application.security.setCache(role=arguments.stProperties.roleid,permission=arguments.stProperties.permissionid,object=arguments.stProperties.referenceid,right=arguments.stProperties.barnaclevalue) />
-		</cfif>
-		
+				
 		<cfreturn super.setData(stProperties=arguments.stProperties,user=arguments.user,auditNote=arguments.auditNote,bAudit=arguments.bAudit,dsn=arguments.dsn,bSessionOnly=arguments.bSessionOnly,bAfterSave=arguments.bAfterSave) />
 	</cffunction>
 	

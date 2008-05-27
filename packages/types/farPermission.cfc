@@ -108,10 +108,6 @@
 				<cfset stRole = application.security.factory.role.getData(qRoles.objectid[currentrow]) />
 				<cfset arraydeleteat(stRole.aPermissions,qRoles.seq[currentrow]) />
 				<cfset application.security.factory.role.setData(stRole) />
-				
-				<cfif application.security.isCached(role=qRoles.objectid[currentrow],permission=arguments.stProperties.objectid)>
-					<cfset application.security.deleteCache(role=qRoles.objectid[currentrow],permission=arguments.stProperties.objectid) />
-				</cfif>
 			</cfloop>
 			
 			<!--- Find barnacles with types not in the new list --->
@@ -125,10 +121,6 @@
 			<!--- Remove barnacles --->
 			<cfloop query="qBarnacles">
 				<cfset application.security.factory.barnacle.delete(objectid=qBarnacles.objectid[currentrow]) />
-				
-				<cfif application.security.isCached(role=qBarnacles.roleid[currentrow],permission=arguments.stProperties.objectid,object=qBarnacles.referenceid[currentrow])>
-					<cfset application.security.deleteCache(role=qBarnacles.roleid[currentrow],permission=arguments.stProperties.objectid,object=qBarnacles.referenceid[currentrow]) />
-				</cfif>
 			</cfloop>
 		<cfelse>
 			<!--- Find related barnacles --->
@@ -141,10 +133,6 @@
 			<!--- Remove barnacles --->
 			<cfloop query="qBarnacles">
 				<cfset application.security.factory.barnacle.delete(objectid=qBarnacles.objectid[currentrow]) />
-				
-				<cfif application.security.isCached(role=qBarnacles.roleid[currentrow],permission=arguments.stProperties.objectid,object=qBarnacles.referenceid[currentrow])>
-					<cfset application.security.deleteCache(role=qBarnacles.roleid[currentrow],permission=arguments.stProperties.objectid,object=qBarnacles.referenceid[currentrow]) />
-				</cfif>
 			</cfloop>
 		</cfif>
 		
@@ -216,10 +204,6 @@
 			<cfset stRole = application.security.factory.role.getData(qRoles.objectid[currentrow]) />
 			<cfset arraydeleteat(stRole.aPermissions,qRoles.seq[currentrow]) />
 			<cfset application.security.factory.role.setData(stRole) />
-				
-			<cfif application.security.isCached(role=qRoles.objectid[currentrow],permission=arguments.objectid)>
-				<cfset application.security.deleteCache(role=qRoles.objectid[currentrow],permission=arguments.objectid) />
-			</cfif>
 		</cfloop>
 		
 		<!--- Find related barnacles --->
@@ -232,10 +216,6 @@
 		<!--- Remove barnacles --->
 		<cfloop query="qBarnacles">
 			<cfset application.security.factory.barnacle.delete(objectid=qBarnacles.objectid[currentrow]) />
-			
-			<cfif application.security.isCached(role=qBarnacles.roleid[currentrow],permission=arguments.objectid,object=qBarnacles.referenceid[currentrow])>
-				<cfset application.security.deleteCache(role=qBarnacles.roleid[currentrow],permission=arguments.objectid,object=qBarnacles.referenceid[currentrow]) />
-			</cfif>
 		</cfloop>
 		
 		<!--- Remove name lookup --->
