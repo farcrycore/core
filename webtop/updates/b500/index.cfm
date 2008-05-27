@@ -380,6 +380,51 @@ a {color: ##116EAF;}
 		<cfoutput>Config #configkey# migrated<br/></cfoutput>
 	</cfloop>
 	
+	<!--- COMMENTS --->
+	<cfset oLog = createobject("component",application.stCOAPI.farLog.packagepath)>
+	<cfloop list="dmFlash,dmHTML,dmInclude,dmNews,dmEvent,dmLink,dmFacts" index="thistype">
+		<cfif alterType.isCFCDeployed(typename=thistype)>
+			<cfquery datasource="#application.dsn#" name="qComments">
+				select	objectid, commentlog
+				from	#application.dbowner##thistype#
+			</cfquery>
+			
+			<cfloop query="qComments">
+				<cfif len(qComments.commentlog)>
+					<cfset stLog = structnew() />
+					<cfloop list="#qComments.commentlog#" index="thisline" delimiters="#chr(10)##chr(13)#">
+						<cfif refind("\w+\(\d\d/\d\d/\d\d\d\d \d\d:\d\d:\d\d\):",thisline)>
+							<cfif not structisempty(stLog)>
+								<cfparam name="oLog.event" default="comment" />
+								<cfset oLog.setData(stProperties=stLog) />
+							</cfif>
+							<cfset stLog = oLog.getData(objectid=createuuid()) />
+							<cfset stLog.type = "types" />
+							<cfset stLog.datetimecreated = lsparsedatetime(mid(thisline,find("(",thisline)+1,19)) />
+							<cfset stLog.datetimelastupdated = stLog.datetimecreated />
+							<cfset stLog.object = qComments.objectid />
+							<cfset stLog.userid = listfirst(thisline,'()') />
+							<cfif not find("_",stLog.userid)>
+								<cfset stLog.userid = "#stLog.userid#_CLIENTID" />
+							</cfif>
+						<cfelseif not structisempty(stLog) and not len(stLog.event)>
+							<cfif listcontains("draft,approved,pending",listlast(thisline," "))>
+								<cfset stLog.event = "to#listlast(thisline,' ')#" />
+							<cfelse>
+								<cfset stLog.event = "comment" />
+							</cfif>
+						<cfelse>
+							<cfset stLog.notes = "#stLog.notes##trim(thisline)#<br />" />
+						</cfif>
+					</cfloop>
+					<cfif not structisempty(stLog)>
+						<cfset oLog.setData(stProperties=stLog) />
+					</cfif>
+				</cfif>
+			</cfloop>
+		</cfif>
+	</cfloop>
+	
 	
 	
 	<!--- CREATE APPLICATION.CFC and FARCRYCONSTRUCTOR.CFM --->

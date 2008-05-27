@@ -7,6 +7,12 @@
 <cfparam name="attributes.typename" default="#application.coapi.coapiadmin.findtype(objectid=attributes.objectid)#" />
 
 <cfif thistag.ExecutionMode eq "start">
+	<cfset events = structnew() />
+	<cfset events.comment = "Comment" />
+	<cfset events.toapproved = "Approved" />
+	<cfset events.topending = "Requested approval" />
+	<cfset events.todraft = "Sent to draft" />
+
 	<cfset qComments = createobject("component",application.stCOAPI.farLog.packagepath).filterLog(objectid=attributes.objectid,event='comment,topending,toapproved,todraft') />
 	
 	<cfset oType = createobject("component",application.stCOAPI[attributes.typename].packagepath) />
@@ -25,9 +31,9 @@
 				<cfoutput>#stObj.label# </cfoutput>
 			</cfif>
 			
-			<cfoutput>#dateformat(qComments.datetimecreated,"yyyy-mm-dd")# #timeformat(qComments.datetimecreated,"hh:mm tt")# - #qComments.event# </cfoutput>
+			<cfoutput>#dateformat(qComments.datetimecreated,"yyyy-mm-dd")# #timeformat(qComments.datetimecreated,"hh:mm tt")# - #events[qComments.event]# </cfoutput>
 			
-			<cfif len(stProfile.firstname) or len(stProfile.lastname)>
+			<cfif structkeyexists(stProfile,"userdirectory") and (len(stProfile.firstname) or len(stProfile.lastname))>
 				<cfoutput>(#stProfile.firstname# #stProfile.lastname#)</dt></cfoutput>
 			<cfelse>
 				<cfoutput>(#listfirst(qComments.userid,'_')#)</dt></cfoutput>
