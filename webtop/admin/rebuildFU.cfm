@@ -56,6 +56,7 @@ $in: attribute -- description $
 				<cfset errormessage = errormessage & returnstruct.message>
 			</cfif>
 		</cfloop>
+		<cfset createObject("component","#application.packagepath#.farcry.fu").refreshApplicationScope() />
 	</cfif>
 	
 	<!--- build an array of content types that have friendly URLs enabled --->

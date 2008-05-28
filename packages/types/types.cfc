@@ -1500,38 +1500,41 @@ default handlers
 		<cfset stReturn.bSuccess = 1>
 		<cfset stReturn.message = "Set friendly URL for #arguments.objectid#.">
 
-		<!--- default stFriendlyURL structure --->
-		<cfset stFriendlyURL.objectid = stobj.objectid>
-		<cfset stFriendlyURL.friendlyURL = "">
-		<cfset stFriendlyURL.querystring = "">
+		<cfif not listcontains(application.config.fusettings.lExcludeObjectIDs,arguments.objectid)>
+			<!--- default stFriendlyURL structure --->
+			<cfset stFriendlyURL.objectid = stobj.objectid>
+			<cfset stFriendlyURL.friendlyURL = "">
+			<cfset stFriendlyURL.querystring = "">
 		
-		<!--- This determines the friendly url by where it sits in the navigation node  --->
-		<cfset qNavigation = objNavigation.getParent(stobj.objectid)>
-		
-		<!--- if its got a tree parent, build from navigation folders --->
-		<!--- TODO: this might be better done by checking for bUseInTree="true" 
-					or remove it entirely.. ie let tree content have its own fu as well as folder fu
-					or set up tree content to have like page1.cfm style suffixs
-					PLUS need collision detection so don't overwrite another tree based content item fro utility nav
-					PLUS need to exclude trash branch (perhaps just from total rebuild?
-					GB 20060117 --->
-		<cfif qNavigation.recordcount>
-			<cfset stFriendlyURL.friendlyURL = objFU.createFUAlias(qNavigation.parentid)>
-		
-		<!--- otherwise, generate friendly url based on content type --->
-		<cfelse> 
-			<cfif StructkeyExists(application.types[stobj.typename],"displayName")>
-				<cfset stFriendlyURL.friendlyURL = "/#application.types[stobj.typename].displayName#">
-			<cfelse>
-				<cfset stFriendlyURL.friendlyURL = "/#ListLast(application.types[stobj.typename].name,'.')#">
+			<!--- This determines the friendly url by where it sits in the navigation node  --->
+			<cfset qNavigation = objNavigation.getParent(stobj.objectid)>
+			
+			<!--- if its got a tree parent, build from navigation folders --->
+			<!--- TODO: this might be better done by checking for bUseInTree="true" 
+						or remove it entirely.. ie let tree content have its own fu as well as folder fu
+						or set up tree content to have like page1.cfm style suffixs
+						PLUS need collision detection so don't overwrite another tree based content item fro utility nav
+						PLUS need to exclude trash branch (perhaps just from total rebuild?
+						GB 20060117 --->
+			<cfif qNavigation.recordcount>
+				<cfset stFriendlyURL.friendlyURL = objFU.createFUAlias(qNavigation.parentid)>
+			
+			<!--- otherwise, generate friendly url based on content type --->
+			<cfelse> 
+				<cfif StructkeyExists(application.types[stobj.typename],"displayName")>
+					<cfset stFriendlyURL.friendlyURL = "/#application.types[stobj.typename].displayName#">
+				<cfelse>
+					<cfset stFriendlyURL.friendlyURL = "/#ListLast(application.types[stobj.typename].name,'.')#">
+				</cfif>
 			</cfif>
+			
+			<!--- set friendly url in database --->
+			<cfset stFriendlyURL.friendlyURL = stFriendlyURL.friendlyURL & "/#stobj.label#">
+			<cfset objFU.setFU(stFriendlyURL.objectid, stFriendlyURL.friendlyURL, stFriendlyURL.querystring)>
+			
+			<cflog application="true" file="futrace" text="types.setFriendlyURL: #stFriendlyURL.friendlyURL#" />
 		</cfif>
 		
-		<!--- set friendly url in database --->
-		<cfset stFriendlyURL.friendlyURL = stFriendlyURL.friendlyURL & "/#stobj.label#">
-		<cfset objFU.setFU(stFriendlyURL.objectid, stFriendlyURL.friendlyURL, stFriendlyURL.querystring)>
-		
-		<cflog application="true" file="futrace" text="types.setFriendlyURL: #stFriendlyURL.friendlyURL#" />
  		<cfreturn stReturn />
 	</cffunction>
 	
