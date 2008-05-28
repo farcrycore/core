@@ -195,7 +195,7 @@ START WEBSKIN
 								<cfif listContains(application.navid.home,stobj.objectid) EQ 0 AND listContains(application.navid.root,stobj.objectid) eq 0>
 								<!--- check user can delete --->
 									<cfif stOverviewParams.stPermissions.iDelete eq 1>
-										<cfif len(stObj.versionid)>
+										<cfif structkeyexists(stobj,"versionid") and len(stObj.versionid)>
 											<cfset returnto = "returnto=#urlencodedformat('#cgi.script_name#?objectid=#stObj.versionid#')#" />
 										<cfelse>
 											<cfset returnto = "" />
