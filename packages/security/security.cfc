@@ -293,7 +293,7 @@
 		<cfset session.security.roles = this.factory.role.groupsToRoles(groups) />
 		
 		<!--- Get users profile --->
-		<cfset session.dmProfile = oProfile.getProfile(userName=session.security.userid) />
+		<cfset session.dmProfile = oProfile.getProfile(userName=arguments.userid,ud=arguments.ud) />
 		<cfset stDefaultProfile = this.userdirectories[arguments.ud].getProfile(userid=arguments.userid) />
 		<cfparam name="stDefaultProfile.override" default="false" />
 		<cfif not session.dmProfile.bInDB>
