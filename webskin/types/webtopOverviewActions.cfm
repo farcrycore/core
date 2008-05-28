@@ -195,7 +195,7 @@ START WEBSKIN
 								<cfif listContains(application.navid.home,stobj.objectid) EQ 0 AND listContains(application.navid.root,stobj.objectid) eq 0>
 								<!--- check user can delete --->
 									<cfif stOverviewParams.stPermissions.iDelete eq 1>
-										<ft:button width="240px" style="" value="#application.rb.getResource("delete")#" bInPanel="true" url="navajo/delete.cfm?ObjectId=#stobj.objectId#" confirmText="#application.rb.getResource("confirmDeleteObj")#" />
+										<ft:button width="240px" style="" value="#application.rb.getResource("delete")#" bInPanel="true" url="navajo/delete.cfm?ObjectId=#stobj.objectId#&returnto=#urlencodedformat('#cgi.script_name#?objectid=#stObj.versionid#')#" confirmText="#application.rb.getResource("confirmDeleteObj")#" />
 									</cfif>
 											
 									<!--- check user can move to trash and is a navigation obj--->

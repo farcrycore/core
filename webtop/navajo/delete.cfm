@@ -4,6 +4,8 @@
 	<cfthrow detail="URL.objectID not passed">
 </cfif>
 
+<cfparam name="url.returnto" default="#application.url.farcry#/inc/content_overview.html?sec=site" />
+
 <cfif not isDefined("url.typename")>
 	<cfset url.typename = createObject("component", "farcry.core.packages.fourq.fourq").findType(objectid=url.objectid) />
 </cfif>
@@ -25,7 +27,7 @@
 		if(parent['sidebar'].frames['sideTree'])
 			parent['sidebar'].frames['sideTree'].location= parent['sidebar'].frames['sideTree'].location;
 		
-		window.location = "#application.url.farcry#/inc/content_overview.html?sec=site";
+		window.location = "#url.returnto#";
 		</script>		
 	</cfoutput>
 </cfif>
