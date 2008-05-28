@@ -26,7 +26,49 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
+<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 
+
+<!------------------------------------------------------------
+ACTION
+------------------------------------------------------------->
+<ft:processform action="Reload configuration">
+	<cfset oConfig = createobject("component",application.stCOAPI.farConfig.packagepath) />
+	<cfset structclear(application.config) />
+	<cfloop list="#oConfig.getConfigKeys()#" index="configkey">
+		<cfset application.config[configkey] = oConfig.getConfig(configkey) />
+	</cfloop>
+	
+	<extjs:bubble title="Configuration has been reloaded" />
+</ft:processform>
+
+<ft:processform action="Delete / reset">
+	<cfif structkeyexists(form,"objectid") and len(form.objectid)>
+		<cfset oConfig = createobject("component",application.stCOAPI.farConfig.packagepath) />
+		<cfloop list="#form.objectid#" index="thisconfig">
+			<cfset stConfig = oConfig.getData(objectid=thisconfig) />
+			<cfset oConfig.delete(objectid=thisconfig) />
+			
+			<cfset thisform = oConfig.getForm(key=stConfig.configkey) />
+			<cfif len(thisform)>
+				<cfset application.config[stConfig.configkey] = oConfig.getConfig(key=stConfig.configkey) />
+				<cfif structkeyexists(application.stCOAPI[thisform],"displayname")>
+					<cfset stConfig.configkey = application.stCOAPI[thisform].displayname />
+				</cfif>
+				<extjs:bubble title="Configuration reset" message="#stconfig.configkey# has been reset" />
+			<cfelse>
+				<cfset structdelete(application.config,stConfig.configkey) />
+				<extjs:bubble title="Configuration deleted" message="#stconfig.configkey# has been deleted" />
+			</cfif>
+		</cfloop>
+	<cfelse>
+		<extjs:bubble title="Error" message="No configurations selected" />
+	</cfif>
+</ft:processform>
+
+<!------------------------------------------------------------
+VIEW
+------------------------------------------------------------->
 <!--- set up page header --->
 <admin:header title="Permission Admin" />
 
@@ -42,6 +84,27 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 <cfset aCustomColumns[2].title = "Description" />
 <cfset aCustomColumns[2].webskin = "displayCellHint" />
 
-<ft:objectadmin typename="farConfig" title="Manage Configuration" columnList="datetimelastupdated" sqlorderby="configkey asc" sortableColumns="datetimelastupdated" aCustomColumns="#aCustomColumns#" bSelectCol="false" bShowActionList="false" lButtons="" />
+<cfset aButtons = arraynew(1) />
+
+<cfset aButtons[1] = structnew() />
+<cfset aButtons[1].value = "Delete / Reset" />
+<cfset aButtons[1].permission = 1 />
+<cfset aButtons[1].onclick = "" />
+
+<cfset aButtons[2] = structnew() />
+<cfset aButtons[2].value = "Reload configuration" />
+<cfset aButtons[2].permission = 1 />
+<cfset aButtons[2].onclick = "" />
+
+<ft:objectadmin typename="farConfig" 
+				title="Manage Configuration" 
+				columnList="datetimelastupdated" 
+				sqlorderby="configkey asc" 
+				sortableColumns="datetimelastupdated" 
+				aCustomColumns="#aCustomColumns#" 
+				bSelectCol="true" 
+				bShowActionList="false"
+				aButtons="#aButtons#"
+				lButtons="Delete / Reset,Reload configuration" />
 
 <admin:footer />
