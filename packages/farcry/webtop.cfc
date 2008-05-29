@@ -70,7 +70,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfset var xmlResult = xmlnew() />
 		
 		<!--- Load the file --->
-		<cffile action="read" file="#arguments.file#" variable="xmlResult">
+		<cffile action="read" file="#arguments.file#" variable="xmlResult" charset="utf-8" />
 		
 		<cftry>
 			<!--- validate custom admin xml --->
