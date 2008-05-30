@@ -73,13 +73,15 @@
 	padding:0 !important;
 	border:none !important;
 }
+* html .ext-ie .f-btn button {
+    width:1px;
+}
 
 body.ext-gecko .f-btn button {
     padding-left:0;
     padding-right:0;
 }
-body.ext-ie6 .f-btn button {
-	width:1px;
+body.ext-ie .f-btn button {
     padding-top:2px;
 }
 body.ext-opera .f-btn button {
