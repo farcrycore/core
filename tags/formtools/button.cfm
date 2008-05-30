@@ -107,20 +107,23 @@
 	<cfcase value="orange">
 		<cfset attributes.sprite = "#application.url.webtop#/css/forms/images/f-btn-orange.gif" />
 	</cfcase>
+	<cfcase value="grey">
+		<cfset attributes.sprite = "#application.url.webtop#/css/forms/images/f-btn-grey.gif" />
+	</cfcase>
 	<cfdefaultcase>
 		<!--- EVERYTHING ELSE IS BLUE --->
 	</cfdefaultcase>
 	</cfswitch>
 
 	<cfoutput>
-	<span id="#attributes.id#-wrap" class="#attributes.class#" style="#attributes.Style#">
+	<span id="#attributes.id#-wrap">
 		<button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" class="f-btn-text" <cfif attributes.disabled>disabled</cfif>>#attributes.text#</button>
 	</span>
 	</cfoutput>
 		
 	<extjs:onReady>
 		<cfoutput>
-			newFarcryButton('#attributes.id#','#lcase(attributes.type)#','#lcase(attributes.size)#','#jsStringFormat(attributes.value)#','#jsStringFormat(attributes.text)#','#attributes.icon#','#attributes.overIcon#','#attributes.iconPos#', '#attributes.sprite#', '#attributes.width#','#farcryFormName#','#jsStringFormat(attributes.OnClick)#','#lcase(yesNoFormat(attributes.disabled))#');</cfoutput>
+			newFarcryButton('#attributes.id#','#lcase(attributes.type)#','#lcase(attributes.size)#','#jsStringFormat(attributes.value)#','#jsStringFormat(attributes.text)#','#attributes.icon#','#attributes.overIcon#','#attributes.iconPos#', '#attributes.sprite#', '#attributes.width#','#farcryFormName#','#jsStringFormat(attributes.OnClick)#','#lcase(yesNoFormat(attributes.disabled))#','#jsStringFormat(attributes.class)#','#jsStringFormat(attributes.style)#');</cfoutput>
 	</extjs:onReady>
 
 </cfif>

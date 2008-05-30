@@ -271,14 +271,14 @@ function createFormtoolTree(fieldname,rootID,dataURL,rootNodeText,selectedIDs,ic
 		}
 	}	
 			
-function newFarcryButton (id,type,size,value,text,icon,overIcon,iconPos,sprite,width,formName,onClick,disabled) {
+function newFarcryButton (id,type,size,value,text,icon,overIcon,iconPos,sprite,width,formName,onClick,disabled,btnclass,btnstyle) {
 	var dh = Ext.DomHelper;
 	
 	var btn = Ext.get(id);
 	var btnWrap = Ext.get(id + '-wrap');
 	var btnMarkup = btnWrap.dom.innerHTML;
 	
-	var newBtnMarkup = 	'<table style="width: auto;" id="' + id + '-tbl-wrap" class="f-btn " cellspacing="0">' +
+	var newBtnMarkup = 	'<table style="width: auto;' + btnstyle + '" id="' + id + '-tbl-wrap" class="f-btn ' + btnclass + '" cellspacing="0">' +
 						'<tbody class="f-btn-' + size + ' f-btn-icon-' + size + '-' + iconPos +'">' +
 							'<tr>' +
 								'<td class="f-btn-tl f-btn-bg"><i>&nbsp;</i></td>' +
