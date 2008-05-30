@@ -621,29 +621,30 @@ user --->
 		
 		<cfsavecontent variable="html_buttonbar">
 		
-		<ft:farcryButtonPanel indentForLabel="false">
-		<cfloop from="1" to="#arraylen(attributes.aButtons)#" index="i">
-			
-			<cfif attributes.lButtons EQ "*" or listFindNoCase(attributes.lButtons,attributes.aButtons[i].value)>
-				<!--- (#attributes.aButtons[i].name#: #attributes.aButtons[i].permission#) --->
-				<cfif not len(attributes.aButtons[i].permission) or (isboolean(attributes.aButtons[i].permission) and attributes.aButtons[i].permission) or (not isboolean(attributes.aButtons[i].permission) and application.security.checkPermission(permission=attributes.aButtons[i].permission) EQ 1)>
+			<cfif len(attributes.lButtons)>
+				<ft:farcryButtonPanel indentForLabel="false">
+				<cfloop from="1" to="#arraylen(attributes.aButtons)#" index="i">
 					
-					<cfif len(attributes.aButtons[i].onclick)> 
-						<cfset onclickJS="#attributes.aButtons[i].onclick#" />
-					<cfelse>
-						<cfset onclickJS="" />
+					<cfif attributes.lButtons EQ "*" or listFindNoCase(attributes.lButtons,attributes.aButtons[i].value)>
+						<!--- (#attributes.aButtons[i].name#: #attributes.aButtons[i].permission#) --->
+						<cfif not len(attributes.aButtons[i].permission) or (isboolean(attributes.aButtons[i].permission) and attributes.aButtons[i].permission) or (not isboolean(attributes.aButtons[i].permission) and application.security.checkPermission(permission=attributes.aButtons[i].permission) EQ 1)>
+							
+							<cfif len(attributes.aButtons[i].onclick)> 
+								<cfset onclickJS="#attributes.aButtons[i].onclick#" />
+							<cfelse>
+								<cfset onclickJS="" />
+							</cfif>
+							<cfif not structKeyExists(attributes.aButtons[i], "confirmText")> 
+								<cfset attributes.aButtons[i].confirmText = "" />
+							</cfif>
+							
+							<ft:farcryButton value="#attributes.aButtons[i].value#"  onclick="#onclickJS#" confirmText="#attributes.aButtons[i].confirmText#" />
+							<!---<input type="#attributes.aButtons[i].type#" name="#attributes.aButtons[i].name#" value="#attributes.aButtons[i].value#" class="formButton"<cfif len(attributes.aButtons[i].onclick)> onclick="#attributes.aButtons[i].onclick#"</cfif> /> --->
+						</cfif>
 					</cfif>
-					<cfif not structKeyExists(attributes.aButtons[i], "confirmText")> 
-						<cfset attributes.aButtons[i].confirmText = "" />
-					</cfif>
-					
-					<ft:farcryButton value="#attributes.aButtons[i].value#"  onclick="#onclickJS#" confirmText="#attributes.aButtons[i].confirmText#" />
-					<!---<input type="#attributes.aButtons[i].type#" name="#attributes.aButtons[i].name#" value="#attributes.aButtons[i].value#" class="formButton"<cfif len(attributes.aButtons[i].onclick)> onclick="#attributes.aButtons[i].onclick#"</cfif> /> --->
-				</cfif>
+				</cfloop>
+				</ft:farcryButtonPanel>
 			</cfif>
-		</cfloop>
-		</ft:farcryButtonPanel>
-		
 		</cfsavecontent>
 		
 		<cfoutput>#html_buttonbar#</cfoutput>
@@ -684,6 +685,7 @@ user --->
 		
 		<cfoutput>
 		<table width="100%" class="objectAdmin">
+		<thead>
 			<tr>			
 		</cfoutput>
 		
@@ -814,12 +816,15 @@ user --->
 				</cfoutput>
 			</cfif>
 	
-		
+			<cfoutput>
+			</thead>
+			</cfoutput>
 		
 			
 			<ft:paginateLoop r_stObject="st" bIncludeFields="true" bIncludeObjects="false" stpermissions="#stpermissions#" lCustomActions="#attributes.lCustomActions#" bTypeAdmin="true">
 				
 					<cfoutput>
+					<tbody>
 					<tr>
 					</cfoutput>
 					
@@ -866,6 +871,7 @@ user --->
 						</cfloop>
 					<cfoutput>
 					</tr>
+					</tbody>
 					</cfoutput>
 				
 				
