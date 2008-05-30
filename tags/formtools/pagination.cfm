@@ -50,9 +50,9 @@ $Developer: Matthew Bryant (mat@daemon.com.au) $
 	<cfparam name="attributes.bShowPageDropdown" default="false" type="boolean" /><!--- uses a dropdown instead of links. --->
 	<cfparam name="attributes.paginationID" default="" />	
 	<cfparam name="attributes.CurrentPage" default="0" />
-	<cfparam name="attributes.maxPages" default="0" type="numeric">
+	<cfparam name="attributes.maxRecordsToDisplay" default="0" type="numeric">
 	<cfparam name="attributes.totalRecords" default="0" type="numeric">
-	<cfparam name="attributes.pageLinks" default="0" type="numeric">
+	<cfparam name="attributes.pageLinks" default="10" type="numeric">
 	<cfparam name="attributes.recordsPerPage" default="1" type="numeric">
 	<cfparam name="attributes.submissionType" default="url" type="string">
 	<cfparam name="attributes.actionURL" default="" type="string">
@@ -80,9 +80,6 @@ $Developer: Matthew Bryant (mat@daemon.com.au) $
 		<!--- This means we have passed in only the page of recordset information we need for rendering --->
 		<cfset attributes.startRow = 1 />
 		<cfset attributes.endRow = attributes.recordsPerPage />
-		<cfif attributes.endRow GT attributes.qRecordSet.recordcount>
-			<cfset attributes.endRow = attributes.qRecordSet.recordcount />
-		</cfif>
 			
 	<cfelse>
 		<!--- This means that we have passed in an entire recordset and not just the page of relevent data --->
@@ -93,10 +90,25 @@ $Developer: Matthew Bryant (mat@daemon.com.au) $
 		</cfif>
 		
 		<cfset attributes.endRow = attributes.currentPage * attributes.recordsPerPage />
-		<cfif attributes.endRow GT attributes.qRecordSet.recordcount>
-			<cfset attributes.endRow = attributes.qRecordSet.recordcount />
+	</cfif>
+
+	<!--- Determine the max records to display. Can be a maximum of the recordsPerPage --->
+	<cfif attributes.maxRecordsToDisplay GT attributes.recordsPerPage>
+		<cfset attributes.maxRecordsToDisplay = attributes.recordsPerPage />
+	</cfif>
+		
+	<cfif attributes.maxRecordsToDisplay GT 0>
+		<cfset attributes.endRow = attributes.startRow + attributes.maxRecordsToDisplay - 1 />
+		<cfif attributes.maxRecordsToDisplay LT attributes.totalRecords>
+			<cfset attributes.totalRecords = attributes.maxRecordsToDisplay />
 		</cfif>
 	</cfif>
+
+	<!--- Make sure the end row is not more than the recordcount --->
+	<cfif attributes.endRow GT attributes.qRecordSet.recordcount>
+		<cfset attributes.endRow = attributes.qRecordSet.recordcount />
+	</cfif>
+	
 	
 
 	<cfscript>
@@ -268,7 +280,14 @@ user defined functions
 			<cfcase value="inline">
 				
 				<cfoutput><div class="pagination"></cfoutput>			
-			
+
+
+					<cfif arguments.bShowResultTotal>
+						<cfoutput><h4>Displaying #fromRecord#-#toRecord# of #attributes.totalRecords# results</h4></cfoutput>
+					<cfelse>
+						<cfoutput><h4>Page #attributes.currentPage# of #pTotalPages#</h4></cfoutput>
+					</cfif>
+								
 					<cfoutput><p></cfoutput>
 					
 						<cfif attributes.currentPage EQ 1>
@@ -320,11 +339,6 @@ user defined functions
 					<cfoutput><p></cfoutput>
 	
 				
-					<cfif arguments.bShowResultTotal>
-						<cfoutput><h4>Displaying #fromRecord#-#toRecord# of #attributes.totalRecords# results</h4></cfoutput>
-					<cfelse>
-						<cfoutput><h4>Page #attributes.currentPage# of #pTotalPages#</h4></cfoutput>
-					</cfif>
 					
 								
 				<cfoutput>
