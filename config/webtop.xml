@@ -7,34 +7,30 @@
 		<subsection id="tree" sequence="100" permission="MainNavSiteTab" sidebar="site/sidebar.cfm" content="inc/content_overview.html" label="Site" />
 	</section>
 	<section id="content" sequence="3000" permission="MainNavContentTab" label="Content">
-		<subsection id="media" sequence="10" label="Content Publishing">
+		<subsection id="contentpublishing" sequence="10" label="Content Publishing">
+			<menu id="menuquickbuilder" sequence="10" label="Quick Site Builder">
+				<menuitem id="quicksitebuilder" sequence="10" label="Quick Site Builder" link="/admin/quickBuilder.cfm" icon="dmarchive" description="Build your information hierarchy with the Quick Site Builder.  Useful for rapidly creating new sites or branches of content in the site overview tree." />
+			</menu>
 			<menu id="MediaLibraryContent" sequence="20" label="Media Assets">
 				<menuitem id="listdmimage" sequence="10" label="Image Library" link="/admin/customadmin.cfm?module=customlists/dmimage.cfm" relatedtype="dmImage" />
-				<menuitem id="listdmfile" sequence="20" label="Document Library" link="/admin/customadmin.cfm?module=customlists/dmfile.cfm" relatedtype="dmFile" />
-				<menuitem id="listdmflash" sequence="30" label="Flash Library" link="/admin/customadmin.cfm?module=customlists/dmflash.cfm" relatedtype="dmFlash" />
-			</menu>
-			<menu id="MediaLibraryUpload" sequence="30" label="Bulk Upload">
 				<menuitem id="bulkimageupload" sequence="30" label="Bulk Image Upload" link="/admin/multipleImagesUploader.cfm" />
+				<menuitem id="listdmfile" sequence="20" label="Document Library" link="/admin/customadmin.cfm?module=customlists/dmfile.cfm" relatedtype="dmFile" />
 				<!-- removing bulk file uploader until UI is improved
 				<menuitem id="bulkfileupload" sequence="40" label="Bulk File Upload" link="/conjuror/invocation.cfm?typename=bulkFileUpload" />
 				 -->
+				<menuitem id="listdmflash" sequence="30" label="Flash Library" link="/admin/customadmin.cfm?module=customlists/dmflash.cfm" />
 			</menu>
 			<menu id="categorisation" sequence="40" permission="ContentCategorisationTab" label="Category Management">
-				<menuitem id="managekeywords" sequence="10" label="Manage Keywords" link="/navajo/keywords/hierarchyedit.cfm" />		
+				<menuitem id="managekeywords" sequence="10" label="Manage Keywords" link="/navajo/keywords/hierarchyedit.cfm" icon="custom" description="Manage your category keyword hierarchy and category aliases. You can have as many branches as you need, and the category tree can be created to any depth." />		
 				<menuitem id="managekeywordsFlexUI" sequence="20" label="Manage Keywords (Flex)" link="/admin/hierarchyFlexEditor.cfm" />
 				<menuitem id="quickcategorybuilder" sequence="30" label="Category Tree Quick Builder" link="/admin/quickBuilderCat.cfm" />	
 			</menu>
-		</subsection>
-		<subsection id="contentUtilities" sequence="30" permission="MainNavAdminTab" label="Advanced Publishing">
-			<menu id="menuquickbuilder" sequence="40" label="Quick Site Builder">
-				<menuitem id="quicksitebuilder" sequence="10" label="Quick Site Builder" link="/admin/quickBuilder.cfm" />
-			</menu>
-			<menu id="exportfeeds" sequence="10" label="Content Export">
-				<menuitem id="exportwebfeed" sequence="15" label="Web Feeds" link="/customadmin/customlists/farWebfeed.cfm" description="(RSS, ATOM, iTunes)" />
+			<menu id="exportfeeds" sequence="50" label="Content Export">
+				<menuitem id="exportwebfeed" sequence="15" label="Web Feeds" link="/customadmin/customlists/farWebfeed.cfm" relatedtype="farwebfeed" />
 				<menuitem id="exportSkeleton" sequence="21" label="Export As Project Skeleton" link="/content/exportSkeleton.cfm" />
 				<menuitem id="exportgeneral" sequence="20" label="General Export" link="/content/export.cfm" />
 			</menu>
-			<menu id="containermanagement" sequence="30" label="Container Management">
+			<menu id="containermanagement" sequence="60" label="Container Management">
 				<menuitem id="containerreflections" sequence="10" label="Shared Containers" link="/content/reflections.cfm" />		
 			</menu>
 		</subsection>
