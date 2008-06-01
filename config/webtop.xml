@@ -13,12 +13,6 @@
 				<menuitem id="listdmfile" sequence="20" label="Media Library Files" link="/admin/customadmin.cfm?module=customlists/dmfile.cfm" relatedtype="dmFile" />
 				<menuitem id="listdmflash" sequence="30" label="Media Library Flash" link="/admin/customadmin.cfm?module=customlists/dmflash.cfm" relatedtype="dmFlash" />
 			</menu>
-			<menu id="MediaLibraryMaintenance" sequence="20" permission="MainNavAdminTab" label="Media Library Maintenance">
-				<menuitem id="mediaresizethumbs" sequence="10" label="Image Resize" link="/content/dmimage_resize.cfm" />
-				<menuitem id="mediafileswithoutcontent" sequence="20" label="Files Without Content" link="/content/maintenance_report.cfm?reportType=filesWithOutContentItem" />
-				<menuitem id="mediacontentwithoutfiles" sequence="30" label="Content Without Files" link="/content/maintenance_report.cfm?reportType=contentWithoutFiles" />
-				<menuitem id="mediacontentnorelationship" sequence="40" label="Content Without Relationship" link="/content/maintenance_report.cfm?reportType=contentWithoutrelationship" />
-			</menu>
 		</subsection>
 		<subsection id="sitetreecontent" sequence="20" permission="MainNavAdminTab" label="Site Tree Content">
 			<menu id="sitetreetypes" sequence="10" label="Site Tree Content">
