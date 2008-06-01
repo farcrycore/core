@@ -7,48 +7,45 @@
 		<subsection id="tree" sequence="100" permission="MainNavSiteTab" sidebar="site/sidebar.cfm" content="inc/content_overview.html" label="Site" />
 	</section>
 	<section id="content" sequence="3000" permission="MainNavContentTab" label="Content">
-		<subsection id="media" sequence="10" label="Media Libraries">
-			<menu id="MediaLibraryContent" sequence="10" label="Media Assets">
+		<subsection id="media" sequence="10" label="Content Publishing">
+			<menu id="categorisation" sequence="10" permission="ContentCategorisationTab" label="Category Management">
+				<menuitem id="managekeywords" sequence="10" label="Manage Keywords" link="/navajo/keywords/hierarchyedit.cfm" />		
+				<menuitem id="managekeywordsFlexUI" sequence="20" label="Manage Keywords (Flex)" link="/admin/hierarchyFlexEditor.cfm" />
+				<menuitem id="quickcategorybuilder" sequence="30" label="Category Tree Quick Builder" link="/admin/quickBuilderCat.cfm" />	
+			</menu>
+			<menu id="MediaLibraryContent" sequence="20" label="Media Assets">
 				<menuitem id="listdmimage" sequence="10" label="Image Library" link="/admin/customadmin.cfm?module=customlists/dmimage.cfm" relatedtype="dmImage" />
 				<menuitem id="listdmfile" sequence="20" label="Document Library" link="/admin/customadmin.cfm?module=customlists/dmfile.cfm" relatedtype="dmFile" />
 				<menuitem id="listdmflash" sequence="30" label="Flash Library" link="/admin/customadmin.cfm?module=customlists/dmflash.cfm" relatedtype="dmFlash" />
 			</menu>
-			<menu id="MediaLibraryUpload" sequence="20" label="Bulk Upload">
+			<menu id="MediaLibraryUpload" sequence="30" label="Bulk Upload">
 				<menuitem id="bulkimageupload" sequence="30" label="Bulk Image Upload" link="/admin/multipleImagesUploader.cfm" />
 				<!-- removing bulk file uploader until UI is improved
 				<menuitem id="bulkfileupload" sequence="40" label="Bulk File Upload" link="/conjuror/invocation.cfm?typename=bulkFileUpload" />
 				 -->
 			</menu>
 		</subsection>
-		<subsection id="sitetreecontent" sequence="20" permission="MainNavAdminTab" label="Site Tree Content">
-			<menu id="sitetreetypes" sequence="10" label="Site Tree Content">
-				<menuitem id="listdmhtml" sequence="10" label="Site Tree Content Html Page" link="/content/dmhtml.cfm" relatedtype="dmHTML" />
-				<menuitem id="listdmcss" sequence="20" label="Site Tree Content CSS Stylesheet" link="/content/dmcss.cfm" relatedtype="dmCSS" />
-				<menuitem id="listdminclude" sequence="30" label="Site Tree Content dmIncludes" link="/content/dminclude.cfm" relatedtype="dmInclude" />
+		<subsection id="contentUtilities" sequence="30" permission="MainNavAdminTab" label="Advanced Publishing">
+			<menu id="menuquickbuilder" sequence="40" label="Quick Site Builder">
+				<menuitem id="quicksitebuilder" sequence="10" label="Quick Site Builder" link="/admin/quickBuilder.cfm" />
 			</menu>
-		</subsection>
-		<subsection id="contentUtilities" sequence="30" permission="MainNavAdminTab" label="Content Utilities">
-			<menu id="export" sequence="10" label="Export">
-				<menuitem id="exportrss" sequence="10" label="RSS Feeds" link="/content/xmlFeedList.cfm" />
-				<menuitem id="exportwebfeed" sequence="15" label="Web Feeds" link="/customadmin/customlists/farWebfeed.cfm" />
-				<menuitem id="exportgeneral" sequence="20" label="Export" link="/content/export.cfm" />
-				<menuitem id="exportSkeleton" sequence="21" label="Export As Skeleton" link="/content/exportSkeleton.cfm" />
-			</menu>
-			<menu id="categorisation" sequence="20" permission="ContentCategorisationTab" label="Category Management">
-				<menuitem id="managekeywords" sequence="10" label="Manage Keywords" link="/navajo/keywords/hierarchyedit.cfm" />		
-				<menuitem id="managekeywordsFlexUI" sequence="20" label="Manage keywords Flex beta" link="/admin/hierarchyFlexEditor.cfm" />		
+			<menu id="exportfeeds" sequence="10" label="Content Export">
+				<menuitem id="exportwebfeed" sequence="15" label="Web Feeds (RSS, ATOM, iTunes)" link="/customadmin/customlists/farWebfeed.cfm" />
+				<menuitem id="exportSkeleton" sequence="21" label="Export As Project Skeleton" link="/content/exportSkeleton.cfm" />
+				<menuitem id="exportgeneral" sequence="20" label="General Export" link="/content/export.cfm" />
 			</menu>
 			<menu id="containermanagement" sequence="30" label="Container Management">
 				<menuitem id="containerreflections" sequence="10" label="Shared Containers" link="/content/reflections.cfm" />		
-			</menu>
-			<menu id="menuquickbuilder" sequence="40" label="Quick Site Builder">
-				<menuitem id="quicksitebuilder" sequence="10" label="Quick Site Builder" link="/admin/quickBuilder.cfm" />
-				<menuitem id="quickcategorybuilder" sequence="20" label="Category Tree Quick Builder" link="/admin/quickBuilderCat.cfm" />
 			</menu>
 			<menu id="archiveutils" sequence="50" label="Archive Utilities">
 				<menuitem id="archiveall" sequence="10" label="All Archived Content" link="/content/dmarchive.cfm" />
 				<menuitem id="archivedeleted" sequence="20" label="Deleted Archived Content" link="/content/dmarchivedeleted.cfm" />
 				<menuitem id="archivedeleted" sequence="30" label="Archived Media Assets" link="/content/dmarchivemedia.cfm" />
+			</menu>
+			<menu id="sitetreetypes" sequence="60" label="Site Tree Content">
+				<menuitem id="listdmhtml" sequence="10" label="Site Tree Content Html Page" link="/content/dmhtml.cfm" relatedtype="dmHTML" />
+				<menuitem id="listdmcss" sequence="20" label="Site Tree Content CSS Stylesheet" link="/content/dmcss.cfm" relatedtype="dmCSS" />
+				<menuitem id="listdminclude" sequence="30" label="Site Tree Content dmIncludes" link="/content/dminclude.cfm" relatedtype="dmInclude" />
 			</menu>
 		</subsection>
 	</section>
