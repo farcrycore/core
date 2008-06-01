@@ -42,7 +42,6 @@
 			</menu>
 			<menu id="configuration" sequence="20" label="Configuration">
 				<menuitem id="listfarconfig" sequence="1" permission="developer" label="Edit Config" link="/admin/customadmin.cfm?module=customlists/farConfig.cfm" relatedtype="farConfig" />
-				<menuitem id="configdump" sequence="2" permission="developer" label="Dump Config" link="/admin/configDump.cfm" />
 			</menu>
 			<menu id="mennudump" sequence="40" permission="developer" label="Scope Dump">
 				<menuitem id="scopedump" label="Scope Dump" link="/admin/yxplorer.cfm" />
