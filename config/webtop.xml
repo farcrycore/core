@@ -7,11 +7,17 @@
 		<subsection id="tree" sequence="100" permission="MainNavSiteTab" sidebar="site/sidebar.cfm" content="inc/content_overview.html" label="Site" />
 	</section>
 	<section id="content" sequence="3000" permission="MainNavContentTab" label="Content">
-		<subsection id="media" sequence="10" label="Media Library">
-			<menu id="MediaLibraryContent" sequence="10" label="Media Library Content">
-				<menuitem id="listdmimage" sequence="10" label="Media Library Images" link="/admin/customadmin.cfm?module=customlists/dmimage.cfm" relatedtype="dmImage" />
-				<menuitem id="listdmfile" sequence="20" label="Media Library Files" link="/admin/customadmin.cfm?module=customlists/dmfile.cfm" relatedtype="dmFile" />
-				<menuitem id="listdmflash" sequence="30" label="Media Library Flash" link="/admin/customadmin.cfm?module=customlists/dmflash.cfm" relatedtype="dmFlash" />
+		<subsection id="media" sequence="10" label="Media Libraries">
+			<menu id="MediaLibraryContent" sequence="10" label="Media Assets">
+				<menuitem id="listdmimage" sequence="10" label="Image Library" link="/admin/customadmin.cfm?module=customlists/dmimage.cfm" relatedtype="dmImage" />
+				<menuitem id="listdmfile" sequence="20" label="Document Library" link="/admin/customadmin.cfm?module=customlists/dmfile.cfm" relatedtype="dmFile" />
+				<menuitem id="listdmflash" sequence="30" label="Flash Library" link="/admin/customadmin.cfm?module=customlists/dmflash.cfm" relatedtype="dmFlash" />
+			</menu>
+			<menu id="MediaLibraryUpload" sequence="20" label="Bulk Upload">
+				<menuitem id="bulkimageupload" sequence="30" label="Bulk Image Upload" link="/admin/multipleImagesUploader.cfm" />
+				<!-- removing bulk file uploader until UI is improved
+				<menuitem id="bulkfileupload" sequence="40" label="Bulk File Upload" link="/conjuror/invocation.cfm?typename=bulkFileUpload" />
+				 -->
 			</menu>
 		</subsection>
 		<subsection id="sitetreecontent" sequence="20" permission="MainNavAdminTab" label="Site Tree Content">
@@ -38,8 +44,6 @@
 			<menu id="menuquickbuilder" sequence="40" label="Quick Site Builder">
 				<menuitem id="quicksitebuilder" sequence="10" label="Quick Site Builder" link="/admin/quickBuilder.cfm" />
 				<menuitem id="quickcategorybuilder" sequence="20" label="Category Tree Quick Builder" link="/admin/quickBuilderCat.cfm" />
-				<menuitem id="bulkimageupload" sequence="30" label="Bulk Image Upload" link="/admin/multipleImagesUploader.cfm" />
-				<menuitem id="bulkfileupload" sequence="40" label="Bulk File Upload" link="/conjuror/invocation.cfm?typename=bulkFileUpload" />
 			</menu>
 			<menu id="archiveutils" sequence="50" label="Archive Utilities">
 				<menuitem id="archiveall" sequence="10" label="All Archived Content" link="/content/dmarchive.cfm" />

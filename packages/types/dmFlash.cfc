@@ -15,27 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/packages/types/dmFlash.cfc,v 1.13 2005/09/16 00:56:13 guy Exp $
-$Author: guy $
-$Date: 2005/09/16 00:56:13 $
-$Name: milestone_3-0-1 $
-$Revision: 1.13 $
-
-|| DESCRIPTION || 
-$Description: dmFlash type $
-
-
-|| DEVELOPER ||
-$Developer: Brendan Sisson (brendan@daemon.com.au) $
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
---->
-
-<cfcomponent extends="types" displayname="Flash" hint="Forms the basis of the content framework of the site.  Displays a flash movie in the page." bSchedule="1" bUseInTree="1">
+<cfcomponent extends="types" displayname="Flash" hint="A global Flash content library.  Flash items need to be embedded in your content appropriately, and the library allows you to nominae the correct Flash Player version and other settings." bSchedule="true">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->	
@@ -73,12 +53,5 @@ type properties
 object methods 
 ------------------------------------------------------------------------->	
 
-
-<!---
-><cffunction name="delete" access="public" hint="Specific delete method for dmFlash. Removes physical files from ther server." returntype="struct">
-	<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the object being deleted">
-	
-	<cfreturn stReturn>
-</cffunction> --->
 
 </cfcomponent>

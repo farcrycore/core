@@ -15,21 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header: $
-$Author:  $
-$Date: $
-$Name: $
-$Revision: $
-
-|| DESCRIPTION || 
-$Description: dmFile type $
-
-|| DEVELOPER ||
-$Developer: Geoff Bowers (modius@daemon.com.au) $
---->
-<cfcomponent extends="types" displayname="File"  hint="File objects" bUseInTree="false">
+<cfcomponent extends="types" displayname="File"  hint="A global document library that can be referenced from other content types.  Documents can be secured or open to all depending on your settings.">
 	
 <!------------------------------------------------------------------------
 type properties
@@ -42,16 +28,20 @@ type properties
 <cfproperty ftSeq="21" ftFieldset="Publishing Details" name="bLibrary" type="boolean" hint="Flag to make file shared." required="no" default="1" ftLabel="Add file to library?" ftType="boolean" />
 <cfproperty ftSeq="30" ftFieldset="Categorisation" name="catFile" type="string" hint="Flag to make file shared." required="no" ftLabel="Category" ftType="category" ftalias="dmfile" />
 
-<!--- deprecated properties --->
+<!--- system property --->
+<cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft">
+
+<!--- deprecated properties: these properties should not be referenced and are here for backward compatability only --->
 <cfproperty name="filepath" type="string" hint="The location of the file on the webserver" required="no" default="">  
 <cfproperty name="fileSize" type="numeric" hint="The size of the file on the webserver (in bytes)" required="no" default="0">  
 <cfproperty name="fileType" type="string" hint="MIME content type of the saved file" required="no" default="">
 <cfproperty name="fileSubType" type="string" hint="MIME content subtype of the saved file" required="no" default="">
 <cfproperty name="fileExt" type="string" hint="The extension of the file on the webserver (without the period)" required="no" default="">
 
-<!--- system property --->
-<cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft">
 
+<!------------------------------------------------------------------------
+object methods
+------------------------------------------------------------------------->
 <cffunction name="BeforeSave" access="public" output="true" returntype="struct">
 	<cfargument name="stProperties" required="true" type="struct">
 	<cfargument name="stFields" required="true" type="struct">
@@ -98,16 +88,18 @@ type properties
 </cffunction>
 
 <cffunction name="fileInfo" output="false" returntype="query" access="private">
-	<cfargument name="fileName" type="string" required="true">
+	<cfargument name="fileName" type="string" required="true" />
 	
-	<cfset var directory = "">
-	<cfset var getFile = queryNew("")>
+	<cfset var directory = "" />
+	<cfset var getFile = queryNew("blah") />
 	
 	<cfif not fileExists(fileName)>
-	<cfthrow message="fileInfo error: #fileName# does not exist.">
+		<cfthrow message="fileInfo error: #fileName# does not exist." />
 	</cfif>
+
 	<cfset directory = getDirectoryFromPath(fileName)>
-	<cfdirectory name="getFile" directory="#directory#" filter="#getFileFromPath(fileName)#">
+	<cfdirectory name="getFile" directory="#directory#" filter="#getFileFromPath(fileName)#" />
+
 	<cfreturn getFile>
 </cffunction>
 

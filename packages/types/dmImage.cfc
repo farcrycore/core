@@ -15,21 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header: $
-$Author: $
-$Date: $
-$Name: $
-$Revision: $
-
-|| DESCRIPTION || 
-$Description: dmImage type $
-
-|| DEVELOPER ||
-$Developer: Brendan Sisson (brendan@daemon.com.au) $
---->
-<cfcomponent extends="types" displayname="Image" hint="Image Media" bUseInTree="1">
+<cfcomponent extends="types" displayname="Image" hint="A global image library that can be referenced from other content types. All images have a source image and an automatically generated standard and thumbnail size image for use within your content.">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->
