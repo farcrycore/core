@@ -49,17 +49,24 @@
 				<menuitem id="cachesummary" sequence="200" label="Cache Summary" link="/admin/cacheSummary.cfm" />
 				<menuitem id="cacheauto" sequence="30" label="Auto Cache" link="/admin/cacheAll.cfm" />
 			</menu>
-
-			<menu id="messagecenter" sequence="70" label="Message Center">
-				<menuitem id="messages" sequence="10" label="Messages" link="/admin/messageCentre.cfm" />
-			</menu>
-			<menu id="menufumanagement" sequence="80" label="Manage Friendly URLs">
-				<menuitem id="fumanagement" sequence="10" label="Manage Friendly URLs" link="/admin/manageFU.cfm" />
-				<menuitem id="furebuild" sequence="20" label="Rebuild Friendly URLs" link="/admin/rebuildFU.cfm" />
-			</menu>
 		</subsection>
 
-		<subsection id="coapi" sequence="30" permission="AdminCOAPITab" label="Developer Utilities" >
+		<subsection id="managesecurity" sequence="20" permission="SecurityPolicyManagementTab" label="Manage Security">
+			<menu id="farcryud" sequence="10" label="FarCry User Directory">
+				<menuitem id="listprofiles" sequence="10" label="Users" link="/admin/customadmin.cfm?module=customlists/dmProfile.cfm" relatedtype="dmProfile" />
+				<menuitem id="listfargroup" sequence="20" label="Groups" link="/admin/customadmin.cfm?module=customlists/farGroup.cfm" relatedtype="farGroup" />
+			</menu>
+			<menu id="rolesandpermissions" sequence="20" label="Roles and Permissions">
+				<menuitem id="permissions" sequence="10" label="Roles" link="/admin/customadmin.cfm?module=customlists/farRole.cfm" relatedtype="farRole" />
+				<menuitem id="roles" sequence="20" label="Permissions" link="/admin/customadmin.cfm?module=customlists/farPermission.cfm" relatedtype="farPermission" />
+			</menu>
+			<menu id="securitylogs" sequence="30" label="Reporting">
+				<menuitem id="securitylogs" sequence="10" label="Security Logs" link="/admin/customadmin.cfm?module=customlists/farLog_security.cfm" />
+				<menuitem id="useractivityovertime" sequence="30" label="User Activity Over Time" link="/conjuror/invocation.cfm?typename=audituserovertime" />
+			</menu>
+		</subsection>
+		
+		<subsection id="coapi" sequence="100" permission="AdminCOAPITab" label="Developer Utilities" >
 			<menu id="application" sequence="10" label="Application">
 				<menuitem id="updateapp" sequence="10" label="Reload application" link="/admin/updateapp.cfm" />
 				<menuitem id="scopedump" label="Scope Dump" link="/admin/yxplorer.cfm" />
@@ -75,52 +82,11 @@
 				<menuitem id="reattachnodes" label="Reattach Orphan Folders" link="/admin/reattachnodes.cfm" />
 				<menuitem id="reattachnodescategory" label="Reattach Orphan Categories" link="/admin/reattachnodescategory.cfm" />
 			</menu>
-		</subsection>
-	</section>
-	<!-- <section id="reporting" sequence="5000" permission="MainNavReportingTab" label="Reporting">
-		<subsection id="webrpt" sequence="10" permission="ReportingStatsTab" label="Web Reporting">
-			<menu id="webrptgeneral" sequence="10" label="General">
-				<menuitem id="webrptoverviewreport" sequence="10" label="Overview Report" link="/reporting/statsOverview.cfm" />
-				<menuitem id="webrptviewsummary" sequence="20" label="View Summary" link="/reporting/statsMostPopular.cfm" />
-				<menuitem id="webrptreferersummary" sequence="30" label="Referer Summary" link="/reporting/statsReferer.cfm" />
-				<menuitem id="webrptlocalesummary" sequence="40" label="Locale Summary" link="/reporting/statsLocale.cfm" />
-				<menuitem id="webrptossummary" sequence="50" label="Operating System Summary" link="/reporting/statsOS.cfm" />
-				<menuitem id="webrptbrowsersummary" sequence="60" label="Browser Summary" link="/reporting/statsBrowsers.cfm" />
-			</menu>
-			<menu id="webrptsessions" sequence="20" label="Sessions">
-				<menuitem id="webrptsessionsummary" sequence="10" label="Session Summary" link="/reporting/statsVisitors.cfm" />
-				<menuitem id="webrptsessionpaths" sequence="20" label="Session Path" link="/reporting/statsVisitorPaths.cfm" />
-				<menuitem id="webrptwhosonnow" sequence="30" label="Who's On Now" link="/reporting/statsWhosOn.cfm" />
-			</menu>
-			<menu id="searchenginekeywords" sequence="40" label="Search Engine Keywords">
-				<menuitem id="google" sequence="10" label="Google Key Words" link="/reporting/statsGoogle.cfm" />
-			</menu>
-			<menu id="searchestats" sequence="50" label="In-Site Searches">
-				<menuitem id="searchrecent" sequence="10" label="Recent Searches" link="/reporting/statsSearches.cfm" />
-				<menuitem id="searchnoresults" sequence="20" label="Site Searches Returning No Results" link="/reporting/statsSearchesNoResults.cfm" />
-				<menuitem id="searchmostpopular" sequence="30" label="Most Popular Site Searches" link="/reporting/statsSearchesMostPopular.cfm" />
-			</menu>
-			<menu id="maintenance" sequence="60" label="Maintenance">
-				<menuitem id="clearstatslog" sequence="10" link="/reporting/statsClear.cfm" label="Clear Stats Log" />
+			<menu id="menufumanagement" sequence="80" label="Manage Friendly URLs">
+				<menuitem id="fumanagement" sequence="10" label="Manage Friendly URLs" link="/admin/manageFU.cfm" />
+				<menuitem id="furebuild" sequence="20" label="Rebuild Friendly URLs" link="/admin/rebuildFU.cfm" />
 			</menu>
 		</subsection>
-	</section> -->
-	<section id="security" sequence="6000" permission="MainNavSecurityTab" label="Security">
-		<subsection id="managesecurity" sequence="100" permission="SecurityPolicyManagementTab" label="Manage Security">
-			<menu id="rolesandpermissions" sequence="100" label="Roles and Permissions">
-				<menuitem id="permissions" sequence="10" label="Roles" link="/admin/customadmin.cfm?module=customlists/farRole.cfm" relatedtype="farRole" />
-				<menuitem id="roles" sequence="20" label="Permissions" link="/admin/customadmin.cfm?module=customlists/farPermission.cfm" relatedtype="farPermission" />
-			</menu>
-			<menu id="securitylogs" sequence="200" label="Reporting">
-				<menuitem id="securitylogs" sequence="10" label="Security Logs" link="/admin/customadmin.cfm?module=customlists/farLog_security.cfm" />
-				<menuitem id="useractivityovertime" sequence="30" label="User Activity Over Time" link="/conjuror/invocation.cfm?typename=audituserovertime" />
-			</menu>
-		</subsection>
-		<subsection id="managefarcryud" sequence="200" permission="SecurityUserManagementTab" label="Manage FarCry UD">
-			<menu id="farcryud" sequence="300" label="FarCry User Directory">
-				<menuitem id="listprofiles" sequence="10" label="Users" link="/admin/customadmin.cfm?module=customlists/dmProfile.cfm" relatedtype="farUser" />
-				<menuitem id="listfargroup" sequence="20" label="Groups" link="/admin/customadmin.cfm?module=customlists/farGroup.cfm" relatedtype="farGroup" />
-			</menu>
-		</subsection>
+
 	</section>
 </webtop>
