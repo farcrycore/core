@@ -49,9 +49,6 @@
 				<menuitem id="archiveall" sequence="10" label="All Archived Content" link="/content/dmarchive.cfm" />
 				<menuitem id="archivedeleted" sequence="20" label="Deleted Archived Content" link="/content/dmarchivedeleted.cfm" />
 				<menuitem id="archivedeleted" sequence="30" label="Archived Media Assets" link="/content/dmarchivemedia.cfm" />
-			</menu>			
-			<menu id="contentreporting" sequence="60" label="Content Utilities Reporting">
-				<menuitem id="rptownedby" sequence="10" label="Content Utilities Owned By" link="/reporting/statsOwnedBy.cfm" />
 			</menu>
 		</subsection>
 	</section>
