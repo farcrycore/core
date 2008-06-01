@@ -35,25 +35,21 @@
 			</menu>
 		</subsection>
 	</section>
+
 	<section id="admin" sequence="4000" permission="MainNavAdminTab" label="Admin">
 		<subsection id="general" sequence="10" label="General" permission="AdminGeneralTab">
-			<menu id="application" sequence="10" label="Application">
-				<menuitem id="updateapp" sequence="10" label="Reload application" link="/admin/updateapp.cfm" />
-			</menu>
 			<menu id="configuration" sequence="20" label="Configuration">
 				<menuitem id="listfarconfig" sequence="1" permission="developer" label="Edit Config" link="/admin/customadmin.cfm?module=customlists/farConfig.cfm" relatedtype="farConfig" />
 			</menu>
-			<menu id="mennudump" sequence="40" permission="developer" label="Scope Dump">
-				<menuitem id="scopedump" label="Scope Dump" link="/admin/yxplorer.cfm" />
+			<menu id="menuscheduledtasks" sequence="60" label="Scheduled Tasks">
+				<menuitem id="scheduledtasks" sequence="10" label="Scheduled Tasks" link="/customadmin/customlists/dmCron.cfm" relatedtype="dmCron" />
 			</menu>
 			<menu id="cachemanagement" sequence="50" label="Cache Management">
 				<menuitem id="objbrokersummary" sequence="10" label="Object Broker Report" link="/admin/objectBrokerReport.cfm" />
 				<menuitem id="cachesummary" sequence="200" label="Cache Summary" link="/admin/cacheSummary.cfm" />
 				<menuitem id="cacheauto" sequence="30" label="Auto Cache" link="/admin/cacheAll.cfm" />
 			</menu>
-			<menu id="menuscheduledtasks" sequence="60" label="Scheduled Tasks">
-				<menuitem id="scheduledtasks" sequence="10" label="Scheduled Tasks" link="/customadmin/customlists/dmCron.cfm" relatedtype="dmCron" />
-			</menu>
+
 			<menu id="messagecenter" sequence="70" label="Message Center">
 				<menuitem id="messages" sequence="10" label="Messages" link="/admin/messageCentre.cfm" />
 			</menu>
@@ -63,13 +59,15 @@
 			</menu>
 		</subsection>
 
-		<subsection id="coapi" sequence="30" permission="AdminCOAPITab" label="COAPI Management" >
+		<subsection id="coapi" sequence="30" permission="AdminCOAPITab" label="Developer Utilities" >
+			<menu id="application" sequence="10" label="Application">
+				<menuitem id="updateapp" sequence="10" label="Reload application" link="/admin/updateapp.cfm" />
+				<menuitem id="scopedump" label="Scope Dump" link="/admin/yxplorer.cfm" />
+			</menu>
 			<menu id="coapitools" sequence="10" label="COAPI Tools">
 				<menuitem id="typeclasses" sequence="10" label="Types" link="/admin/coapiTypes.cfm" />
 				<menuitem id="ruleclasses" sequence="20" label="Rules" link="/admin/coapiRules.cfm" />
-				<menuitem id="coapimetadata" sequence="30" label="COAPI Metadata" link="/admin/coapiMetaData.cfm" />
 				<menuitem id="coapiFlexUI" sequence="40" label="COAPI Flex beta" link="/admin/coapiFlexUI.cfm" />
-				<menuitem id="coapischema" sequence="50" label="COAPI Schema" link="/admin/coapiSchema.cfm" />
 			</menu>
 			<menu id="diagnostics" sequence="20" label="Diagnostics">
 				<menuitem id="rebuildtree" label="Rebuild Tree Metadata" link="/admin/rebuildTree.cfm" />
