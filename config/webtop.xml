@@ -42,11 +42,6 @@
 				<menuitem id="archivedeleted" sequence="20" label="Deleted Archived Content" link="/content/dmarchivedeleted.cfm" />
 				<menuitem id="archivedeleted" sequence="30" label="Archived Media Assets" link="/content/dmarchivemedia.cfm" />
 			</menu>
-			<menu id="sitetreetypes" sequence="60" label="Site Tree Content">
-				<menuitem id="listdmhtml" sequence="10" label="Site Tree Content Html Page" link="/content/dmhtml.cfm" relatedtype="dmHTML" />
-				<menuitem id="listdmcss" sequence="20" label="Site Tree Content CSS Stylesheet" link="/content/dmcss.cfm" relatedtype="dmCSS" />
-				<menuitem id="listdminclude" sequence="30" label="Site Tree Content dmIncludes" link="/content/dminclude.cfm" relatedtype="dmInclude" />
-			</menu>
 		</subsection>
 	</section>
 	<section id="admin" sequence="4000" permission="MainNavAdminTab" label="Admin">
