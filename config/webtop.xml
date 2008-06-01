@@ -37,29 +37,24 @@
 	</section>
 
 	<section id="admin" sequence="4000" permission="MainNavAdminTab" label="Admin">
-		<subsection id="general" sequence="10" label="General" permission="AdminGeneralTab">
-			<menu id="configuration" sequence="20" label="Configuration">
+		<subsection id="general" sequence="10" label="General Admin" permission="AdminGeneralTab">
+			<menu id="configuration" sequence="10" label="Configuration">
 				<menuitem id="listfarconfig" sequence="1" permission="developer" label="Edit Config" link="/admin/customadmin.cfm?module=customlists/farConfig.cfm" relatedtype="farConfig" />
-			</menu>
-			<menu id="menuscheduledtasks" sequence="60" label="Scheduled Tasks">
 				<menuitem id="scheduledtasks" sequence="10" label="Scheduled Tasks" link="/customadmin/customlists/dmCron.cfm" relatedtype="dmCron" />
 			</menu>
-			<menu id="cachemanagement" sequence="50" label="Cache Management">
+			<menu id="cachemanagement" sequence="20" label="Cache Management">
 				<menuitem id="objbrokersummary" sequence="10" label="Object Broker Report" link="/admin/objectBrokerReport.cfm" />
 				<menuitem id="cachesummary" sequence="200" label="Cache Summary" link="/admin/cacheSummary.cfm" />
 			</menu>
-		</subsection>
-
-		<subsection id="managesecurity" sequence="20" permission="SecurityPolicyManagementTab" label="Manage Security">
-			<menu id="farcryud" sequence="10" label="FarCry User Directory">
+			<menu id="farcryud" sequence="100" label="FarCry User Directory" permission="SecurityPolicyManagementTab">
 				<menuitem id="listprofiles" sequence="10" label="Users" link="/admin/customadmin.cfm?module=customlists/dmProfile.cfm" relatedtype="dmProfile" />
 				<menuitem id="listfargroup" sequence="20" label="Groups" link="/admin/customadmin.cfm?module=customlists/farGroup.cfm" relatedtype="farGroup" />
 			</menu>
-			<menu id="rolesandpermissions" sequence="20" label="Roles and Permissions">
+			<menu id="rolesandpermissions" sequence="120" label="Roles &amp; Permissions" permission="SecurityPolicyManagementTab">
 				<menuitem id="permissions" sequence="10" label="Roles" link="/admin/customadmin.cfm?module=customlists/farRole.cfm" relatedtype="farRole" />
 				<menuitem id="roles" sequence="20" label="Permissions" link="/admin/customadmin.cfm?module=customlists/farPermission.cfm" relatedtype="farPermission" />
 			</menu>
-			<menu id="securitylogs" sequence="30" label="Reporting">
+			<menu id="securitylogs" sequence="130" label="Audit Reporting" permission="SecurityPolicyManagementTab">
 				<menuitem id="securitylogs" sequence="10" label="Security Logs" link="/admin/customadmin.cfm?module=customlists/farLog_security.cfm" />
 				<menuitem id="useractivityovertime" sequence="30" label="User Activity Over Time" link="/conjuror/invocation.cfm?typename=audituserovertime" />
 			</menu>
@@ -73,7 +68,7 @@
 			<menu id="coapitools" sequence="10" label="COAPI Tools">
 				<menuitem id="typeclasses" sequence="10" label="Types" link="/admin/coapiTypes.cfm" />
 				<menuitem id="ruleclasses" sequence="20" label="Rules" link="/admin/coapiRules.cfm" />
-				<menuitem id="coapiFlexUI" sequence="40" label="COAPI Flex beta" link="/admin/coapiFlexUI.cfm" />
+				<menuitem id="coapiFlexUI" sequence="40" label="Types/Rules (Flex)" link="/admin/coapiFlexUI.cfm" />
 			</menu>
 			<menu id="diagnostics" sequence="20" label="Diagnostics">
 				<menuitem id="rebuildtree" label="Rebuild Tree Metadata" link="/admin/rebuildTree.cfm" />
