@@ -47,7 +47,6 @@
 			<menu id="cachemanagement" sequence="50" label="Cache Management">
 				<menuitem id="objbrokersummary" sequence="10" label="Object Broker Report" link="/admin/objectBrokerReport.cfm" />
 				<menuitem id="cachesummary" sequence="200" label="Cache Summary" link="/admin/cacheSummary.cfm" />
-				<menuitem id="cacheauto" sequence="30" label="Auto Cache" link="/admin/cacheAll.cfm" />
 			</menu>
 		</subsection>
 
