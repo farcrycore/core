@@ -15,30 +15,18 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/packages/types/dmProfile.cfc,v 1.20.2.1 2006/01/09 09:34:59 geoff Exp $
-$Author: geoff $
-$Date: 2006/01/09 09:34:59 $
-$Name: milestone_3-0-1 $
-$Revision: 1.20.2.1 $
-
-|| DESCRIPTION || 
-$Description: Generic member/user profile object $
-
-|| DEVELOPER ||
-$Developer: Geoff Bowers (modius@daemon.com.au) $
---->
-<cfcomponent extends="types" displayName="FarCry User Profile" hint="FarCry User Profile.  Authentication and authorisation handled seperately by associated user directory model.">
-
+<cfcomponent extends="types" displayName="User Profile" hint="FarCry User Profile.  Authentication and authorisation handled seperately by associated user directory model.">
+<!------------------------------
+TYPE PROPERTIES
+-------------------------------->
 	<cfproperty name="userName" type="string" default="" required="yes" hint="The username/login the profile is associated with" ftSeq="1" ftFieldset="Authentication" ftLabel="User ID" ftType="string" bLabel="true" />
     <cfproperty name="userDirectory" type="string" default="" required="yes" hint="The user directory the profile is associated with." ftSeq="2" ftFieldset="Authentication" ftLabel="User directory" ftType="string" />
     <cfproperty name="bActive" type="boolean" default="0" required="yes" hint="Is user active" ftSeq="3" ftFieldset="Authentication" ftLabel="Active" ftType="boolean" />
 	
-    <cfproperty name="firstName" type="string" default="" required="no" hint="Profile object first name" ftSeq="21" ftFieldset="Contact details" ftLabel="First name" />
-    <cfproperty name="lastName" type="string" default="" required="no" hint="Profile object last name" ftSeq="22" ftFieldset="Contact details" ftLabel="Last name" />
-    <cfproperty name="emailAddress" type="string" default="" required="no" hint="Profile object email address" ftSeq="23" ftFieldset="Contact details" ftLabel="Email address" />
-    <cfproperty name="bReceiveEmail" type="boolean" default="1" required="yes" hint="Does user receive workflow and system email notices" ftSeq="24" ftFieldset="Contact details" ftLabel="Receive emails" ftType="boolean" />
+    <cfproperty name="firstName" type="string" default="" required="no" hint="Profile object first name" ftSeq="21" ftFieldset="Contact details" ftLabel="First Name" />
+    <cfproperty name="lastName" type="string" default="" required="no" hint="Profile object last name" ftSeq="22" ftFieldset="Contact details" ftLabel="Last Name" />
+    <cfproperty name="emailAddress" type="string" default="" required="no" hint="Profile object email address" ftSeq="23" ftFieldset="Contact details" ftLabel="Email Address" />
+    <cfproperty ftSeq="24" ftFieldset="Contact details" name="bReceiveEmail" type="boolean" default="1" required="yes" ftType="boolean" hint="Does user receive workflow and system email notices." fthint="Select this option if you want to receive email notifications from FarCry." ftLabel="Receive Emails" />
     <cfproperty name="phone" type="string" default="" required="no" hint="Profile object phone number" ftSeq="25" ftFieldset="Contact details" ftLabel="Phone" />
     <cfproperty name="fax" type="string" default="" required="no" hint="Profile object fax number" ftSeq="26" ftFieldset="Contact details" ftLabel="Fax" />
     
@@ -49,7 +37,10 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfproperty name="overviewHome" type="string" default="" required="no" hint="Nav Alias name for this users home node in the overview tree" ftSeq="42" ftFieldSet="User settings" ftType="navigation" ftDefault="application.navid.home" ftDefaultType="evaluate" ftSelectMultiple="false" ftLabel="Default site tree location" ftAlias="root" />
 	
 	<cfproperty name="notes" type="longchar" default="" required="no" hint="Additional notes" ftSeq="51" ftType="lonchar" ftLabel="Notes" />
-	
+
+<!------------------------------
+OBJECT METHODS
+-------------------------------->
 	<cffunction name="getLocales" access="public" output="false" returntype="string" hint="Returns the list of supported locales">
 		<cfset var locales = application.i18nUtils.getLocales() />
 		<cfset var localeNames = application.i18nUtils.getLocaleNames() />
