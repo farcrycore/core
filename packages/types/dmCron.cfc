@@ -22,7 +22,7 @@ $Description: dmCron Type (scheduled tasks) $
 || DEVELOPER ||
 $Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
-<cfcomponent extends="types" displayname="Scheduled Tasks" hint="Scheduled tasks to maintain a FarCry site" bschedule="0" bsystem="true">
+<cfcomponent extends="types" displayname="Scheduled Tasks" hint="Scheduled tasks can be created to run periodic maintenance tasks unattended. Select from a list of available tasks and schedule when they should run." bsystem="true">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->	

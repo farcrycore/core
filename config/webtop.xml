@@ -42,11 +42,7 @@
 				<menuitem id="listfarconfig" sequence="1" permission="developer" label="Edit Config" link="/admin/customadmin.cfm?module=customlists/farConfig.cfm" relatedtype="farConfig" />
 				<menuitem id="scheduledtasks" sequence="10" label="Scheduled Tasks" link="/customadmin/customlists/dmCron.cfm" relatedtype="dmCron" />
 			</menu>
-			<menu id="cachemanagement" sequence="20" label="Cache Management">
-				<menuitem id="objbrokersummary" sequence="10" label="Object Broker Report" link="/admin/objectBrokerReport.cfm" />
-				<menuitem id="cachesummary" sequence="200" label="Cache Summary" link="/admin/cacheSummary.cfm" />
-			</menu>
-			<menu id="farcryud" sequence="100" label="FarCry User Directory" permission="SecurityPolicyManagementTab">
+			<menu id="farcryud" sequence="100" label="User Directory" permission="SecurityPolicyManagementTab">
 				<menuitem id="listprofiles" sequence="10" label="Users" link="/admin/customadmin.cfm?module=customlists/dmProfile.cfm" relatedtype="dmProfile" />
 				<menuitem id="listfargroup" sequence="20" label="Groups" link="/admin/customadmin.cfm?module=customlists/farGroup.cfm" relatedtype="farGroup" />
 			</menu>
@@ -57,6 +53,10 @@
 			<menu id="securitylogs" sequence="130" label="Audit Reporting" permission="SecurityPolicyManagementTab">
 				<menuitem id="securitylogs" sequence="10" label="Security Logs" link="/admin/customadmin.cfm?module=customlists/farLog_security.cfm" />
 				<menuitem id="useractivityovertime" sequence="30" label="User Activity Over Time" link="/conjuror/invocation.cfm?typename=audituserovertime" />
+			</menu>
+			<menu id="cachemanagement" sequence="220" label="Cache Management">
+				<menuitem id="objbrokersummary" sequence="10" label="Object Broker Report" link="/admin/objectBrokerReport.cfm" />
+				<menuitem id="cachesummary" sequence="200" label="Cache Summary" link="/admin/cacheSummary.cfm" />
 			</menu>
 		</subsection>
 		

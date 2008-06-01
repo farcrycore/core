@@ -1,7 +1,30 @@
-<cfcomponent displayname="Configuration" hint="Encapsulates all config value sets" extends="types" output="false">
+<!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
+<!--- @@License:
+    This file is part of FarCry.
+
+    FarCry is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    FarCry is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+--->
+<cfcomponent displayname="Configuration" extends="types" output="false" bSystem="true" hint="Many aspects of the application can be configured to behave specifically as you need them.  Modify the setup by tweaking the configuration just the way you need it.">
+<!---------------------------------------------- 
+type properties
+----------------------------------------------->
 	<cfproperty name="configkey" type="string" default="" hint="The variable used in the config struct" ftLabel="Key" ftType="string" ftValidation="required" bLabel="true" />
 	<cfproperty ftSeq="1" ftFieldSet="Config" name="configdata" type="longchar" default="" hint="The config values encoded in WDDX" ftLabel="Config" ftType="longchar" ftShowLabel="false" />
-	
+
+<!---------------------------------------------- 
+object methods
+----------------------------------------------->
 	<cffunction name="getForm" access="public" returntype="string" description="Returns the name of the form for the given key" output="false">
 		<cfargument name="key" type="string" required="true" hint="The key" />
 		
