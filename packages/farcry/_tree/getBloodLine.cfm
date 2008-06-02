@@ -80,7 +80,7 @@ $out:$
 	// Changed by bowden to use (+) syntax rather than inner join.
     //    Oracle didn't support the join syntax until version 9
 	if (application.dbtype is "ora") {
-		sql = "select distinct nto.*, j.objectid
+		sql = "select distinct nto.*, j.objectid, j.title, j.label, j.lNavIDAlias, j.externallink
 				from #arguments.dbowner#nested_tree_objects nto
 					, #arguments.dbowner##arguments.joinTable# j
 		#statusClause#
@@ -90,7 +90,8 @@ $out:$
 		#maxDepth#
 		order by nto.nleft";
 	} else {
-		sql = "select distinct nto.*, j.objectid from #arguments.dbowner#nested_tree_objects nto
+		sql = "select distinct nto.*, j.objectid, j.title, j.label, j.lNavIDAlias, j.externallink
+		from #arguments.dbowner#nested_tree_objects nto
 		inner join #arguments.dbowner##arguments.joinTable# j on nto.objectid = j.#joinTableObjectIDField# #statusClause#
 		and ( nto.parentid in (#vlParentID#)
 		or nto.objectid in (#vlObjectID#)	)
