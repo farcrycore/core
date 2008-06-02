@@ -41,7 +41,7 @@
 	<script type="text/javascript">
 		function reloadContainer(objectid,params) {
 			var el = Ext.get(objectid.replace(/-/g,''));
-			var url = window.location.href.replace(/[&?]updateapp=[^&]*/,'').replace(/\/$/,'/index.cfm');
+			var url = window.location.href.replace(/[&?]updateapp=[^&]*/,'');
 						
 			params = params || {};
 			params.container = objectid;
