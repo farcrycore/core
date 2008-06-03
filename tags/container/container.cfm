@@ -123,10 +123,12 @@ $out:$
 	<cfexit />
 </cfif>
 
-<cfif not structisempty(stOriginal)>
-	<cfoutput><div id="#replace(stOriginal.objectid,'-','','ALL')#"></cfoutput>
-<cfelse>
-	<cfoutput><div id="#replace(stConObj.objectid,'-','','ALL')#"></cfoutput>
+<cfif request.mode.design and request.mode.showcontainers gt 0>
+	<cfif not structisempty(stOriginal)>
+		<cfoutput><div id="#replace(stOriginal.objectid,'-','','ALL')#"></cfoutput>
+	<cfelse>
+		<cfoutput><div id="#replace(stConObj.objectid,'-','','ALL')#"></cfoutput>
+	</cfif>
 </cfif>
 
 <!--- Used by rules to reference the container they're a part of --->
@@ -246,4 +248,6 @@ $out:$
 
 <cfset structdelete(request,"thiscontainer") />
 
-<cfoutput></div></cfoutput>
+<cfif request.mode.design and request.mode.showcontainers gt 0>
+	<cfoutput></div></cfoutput>
+</cfif>
