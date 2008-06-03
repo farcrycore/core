@@ -121,7 +121,7 @@ $Developer: Pete Ottery (pot@daemon.com.au)$
 	</div>
 	
 	<div id="footer">
-		<p>Copyright &copy; Daemon 1997-#year(now())#, #createObject("component", "#application.packagepath#.farcry.sysinfo").getVersionTagline()#</p>
+		<p>Copyright &copy; <a href="http://www.daemon.com.au" target="_blank">Daemon</a> 1997-#year(now())#, #createObject("component", "#application.packagepath#.farcry.sysinfo").getVersionTagline()#</p>
 	</div>
 </cfoutput>
 

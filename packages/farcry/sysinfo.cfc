@@ -17,7 +17,7 @@
 </cffunction>
 
 <cffunction name="getVersionTagline" access="public" output="false" hint="Returns a string detailing the current FarCry CMS build details." returntype="string">
-	<cfreturn "You are currently running version <strong>#getMajorVersion()#-#getMinorVersion()#-#getPatchVersion()# (#getBuildNumber()#)</strong> of <a href='http://www.farcrycore.org'>Farcry Core</a>." />
+	<cfreturn "You are currently running version <strong>#getMajorVersion()#-#getMinorVersion()#-#getPatchVersion()# (#getBuildNumber()#)</strong> of <a href='http://www.farcrycore.org' target='_blank'>Farcry Core</a>." />
 </cffunction>
 
 <cffunction name="getBuildNumber" access="public" output="false" hint="Returns the contents of the build file if it exists, otherwise assumes it to be under subversion" returntype="string">
