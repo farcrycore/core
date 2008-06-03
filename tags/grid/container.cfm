@@ -16,8 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!--- @@displayname: html div --->
-<!--- @@description: A standard HTML div tag usefull when coding so that opening and closing cfoutput tags are not required thereby cleaning up output.  --->
+<!--- @@displayname: Grid Container --->
+<!--- @@description: Used to define a container which groups a set of columns.  --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
 <cfif thistag.executionMode eq "Start">
