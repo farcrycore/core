@@ -18,7 +18,16 @@
 	<cfparam name="attributes.stParam" default="#structNew()#">
 	<cfparam name="attributes.r_html" default=""><!--- Empty will render the html inline --->
 
-
+	<cfset lAttributes = "stobject,typename,objectid,key,template,webskin,stprops,stparam,r_html,r_objectid" />
+	<cfset attrib = "" />
+	
+	<!--- Setup custom attributes passed into view in stParam structure --->
+	<cfloop collection="#attributes#" item="attrib">
+		<cfif not listFindNoCase(lAttributes, attrib)>
+			<cfset attributes.stParam[attrib] = attributes[attrib] />
+		</cfif>
+	</cfloop>
+	
 	<cfparam name="session.tempObjectStore" default="#structNew()#">
 	
 	<cfif not len(attributes.typename)>
