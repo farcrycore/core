@@ -34,7 +34,7 @@ VIEW
 </cfoutput>
 
 <ft:form>
-	<ft:object objectid="#stObj.objectid#" typename="dmProfile" lfields="firstname,lastname,breceiveemail,emailaddress,phone,fax,position,department,locale,overviewHome" lhiddenFields="userdirectory" includeFieldSet="false" />
+	<ft:object objectid="#stObj.objectid#" typename="dmProfile" lfields="firstname,lastname,breceiveemail,emailaddress,phone,fax,position,department,locale,overviewHome" lhiddenFields="userdirectory" legend="User details" />
 	
 	<cfif stObj.userdirectory eq "CLIENTUD" or stObj.userdirectory eq "">
 		
@@ -47,7 +47,7 @@ VIEW
 			<cfset lFields = "userstatus,aGroups" />
 		</cfif>
 		
-		<ft:object stObject="#stUser#" typename="farUser" lfields="#lFields#" />
+		<ft:object stObject="#stUser#" typename="farUser" lfields="#lFields#" legend="Security" />
 	</cfif>
 	
 	<ft:farcryButtonPanel>
