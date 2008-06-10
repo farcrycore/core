@@ -69,7 +69,7 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 			<admin:loopwebtop parent="#menu#" item="menuitem">
 				<!--- If an icon was specified, convert it to the icon facade --->
 				<cfif len(menuitem.icon)>
-					<cfset menuitem.icon="#application.url.webroot##application.url.farcry#/facade/icon.cfm?icon=#menuitem.icon#" />
+					<cfset menuitem.icon="#application.url.webtop#/facade/icon.cfm?icon=#menuitem.icon#" />
 				</cfif>
 			
 				<!--- If a related type is specified, use that to fill description and icon attributes --->
@@ -81,7 +81,7 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 						<cfelseif structkeyexists(application.stCOAPI[menuitem.relatedType],"hint")>
 							<cfset menuitem.description = application.rb.getResource("coapi.#menuitem.relatedtype#@description",application.stCOAPI[menuitem.relatedType].hint) />
 						</cfif>
-						<cfset menuitem.icon="#application.url.webroot##application.url.farcry#/facade/icon.cfm?type=#menuitem.relatedType#&usecustom=true" />
+						<cfset menuitem.icon="#application.url.webtop#/facade/icon.cfm?type=#menuitem.relatedType#&usecustom=true" />
 					<cfelse>
 						<cfthrow message="Related type attribute for '#menuitem.id#' menu item does not specify a valid type" />
 					</cfif>

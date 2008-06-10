@@ -17,7 +17,7 @@
 <admin:loopwebtop item="section">
 	<!--- If an icon was specified, convert it to the icon facade --->
 	<cfif len(section.icon)>
-		<cfset section.icon="#application.url.webroot##application.url.farcry#/facade/icon.cfm?icon=#section.icon#" />
+		<cfset section.icon="#application.url.webtop#/facade/icon.cfm?icon=#section.icon#" />
 	</cfif>
 
 	<!--- If a related type is specified, use that to fill description and icon attributes --->
@@ -29,7 +29,7 @@
 			<cfelseif structkeyexists(application.stCOAPI[section.relatedType],"hint")>
 				<cfset section.description = application.rb.getResource("coapi.#section.relatedtype#@description",application.stCOAPI[section.relatedType].hint) />
 			</cfif>
-			<cfset section.icon="#application.url.webroot##application.url.farcry#/facade/icon.cfm?type=#section.relatedType#" />
+			<cfset section.icon="#application.url.webtop#/facade/icon.cfm?type=#section.relatedType#" />
 		<cfelse>
 			<cfthrow message="Related type attribute for '#section.id#' menu item does not specify a valid type" />
 		</cfif>
