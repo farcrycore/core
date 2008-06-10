@@ -41,91 +41,61 @@ SAMPLE USAGE:
 </cfif>
 
 <!--- required attributes --->
-<cfparam name="attributes.objectid" type="uuid" />
-<cfparam name="attributes.arrayProperty" type="string" /><!--- propertyname of the array to render --->
+<cfparam name="attributes.objectid" type="uuid" /><!--- The object for which related objects are to be found --->
 <cfparam name="attributes.webskin" type="string" /><!--- webskin to render related content view --->
 
 <!--- optional attributes --->
-<cfparam name="attributes.typename" default="" type="string" /><!--- content typename of parent; providing improves performance --->
-<cfparam name="attributes.filter" default="" type="string" /><!--- content typename to filter by for mixed type arrays --->
+<cfparam name="attributes.typename" type="string" default="" /><!--- content typename of parent; providing improves performance --->
+<cfparam name="attributes.arrayType" type="string" default="" /><!--- The typename containing the array property that defines the relationship we are looking for --->
+<cfparam name="attributes.arrayProperty" type="string" default="" /><!--- propertyname of the array to render --->
+<cfparam name="attributes.filter" type="string" default="" /><!--- The typename of related objects to find. Empty for ALL typenames. --->
+
 <cfparam name="attributes.rendertype" default="none" type="string" /><!--- render options: unordered, ordered, none --->
 <cfparam name="attributes.alternateHTML" default="#attributes.webskin# template unavailable." type="string" /><!--- alternative HTML if webskin is missing --->
-<cfparam name="attributes.r_html" default="" type="string" /><!--- Empty will render the html inline --->
+<cfparam name="attributes.r_html" type="string"  default=""/><!--- Empty will render the html inline --->
 
-<!--- determine typename if its not supplied --->
-<cfif not len(attributes.typename)>
-	<cfif structKeyExists(attributes.stObject, "typename")>
-		<cfset attributes.typename = stobject.typename />
-	<cfelseif len(attributes.objectid)>
-		<cfset attributes.typename = application.coapi.coapiUtilities.findType(objectid=attributes.objectid) />
-	</cfif>
-</cfif>
 
-<cfif not len(attributes.typename) or not structKeyExists(application.stCoapi, attributes.typename)>
-	<cfthrow message="relatedcontent: invalid typename attribute passed." />
-</cfif>	
+<!--- GET THE RELATED CONTENT --->
+<cfset qRelatedContent = application.coapi.coapiutilities.getRelatedContent(objectid="#attributes.objectid#", typename="#attributes.typename#", filter="#attributes.filter#", arrayType="#attributes.arrayType#", arrayProperty="#attributes.arrayProperty#")>
 
-<!--- create content type instance --->
-<cfset o[attributes.typename] = createObject("component", application.stcoapi["#attributes.typename#"].packagePath) />
-<cfset st = o[attributes.typename].getData(objectid=attributes.objectid, bArraysAsStructs=true) />
-
-<!--- validate attributes.arrayproperty --->
-<cfif NOT structKeyExists(st, attributes.arrayProperty) OR NOT isArray(st[attributes.arrayProperty], 1)>
-	<cfthrow message="relatedcontent: invalid arrayProperty attribute passed." detail="arrayProperty must be a valid one dimensional array of content objectids." />
-</cfif>
-
-<cfset aRelated = st[attributes.arrayProperty] />
-
-<!--- apply typename filter --->
-<cfset aFiltered = arrayNew(1) />
-<cfloop from="1" to="#arrayLen(aRelated)#" index="i">
-	<cfif len(aRelated[i].typename) AND (aRelated[i].typename eq attributes.filter OR NOT len(attributes.filter)) >
-		<!--- add matching keys --->
-		<cfset arrayAppend(aFiltered, aRelated[i]) />
-		<!--- instantiate an object for each content type to render --->
-		<cfif NOT structKeyExists(o, aRelated[i].typename)>
-			<cfset rendertype=aRelated[i].typename />
-			<cfset o["#aRelated[i].typename#"] = createObject("component", application.stcoapi["#aRelated[i].typename#"].packagePath) />
-		</cfif>
-	</cfif>
-</cfloop>
-<cfset aRelated = aFiltered />
-
-<!--- if nothing to process, exit immediately --->
-<cfif arrayIsEmpty(st[attributes.arrayProperty])>
-	<cfexit method="exittag" />
-</cfif>
 
 <!--- generate output by rendertype --->
 <cfset html="" />
 
-<cfswitch expression="#attributes.rendertype#">
-
-	<cfcase value="unordered">
-		<cfset html = html & "<ul>" />
-		<cfloop from="1" to="#arrayLen(aRelated)#" index="j">
-			<cfset html = html & "<li>" & o["#aRelated[j].typename#"].getView(objectid=aRelated[j].data, template="#attributes.webskin#", alternateHTML="#attributes.alternateHTML#") & "</li>" />
-		</cfloop>
-		<cfset html = html & "</ul>" />
-	</cfcase>
-
-	<cfcase value="ordered">
-		<cfset html = html & "<ol>" />
-		<cfloop from="1" to="#arrayLen(aRelated)#" index="k">
-			<cfset html = html & "<li>" & o["#aRelated[k].typename#"].getView(objectid=aRelated[k].data, template="#attributes.webskin#", alternateHTML="#attributes.alternateHTML#") & "</li>" />
-		</cfloop>
-		<cfset html = html & "</ol>" />
-	</cfcase>
+<cfif qRelatedContent.recordCount>
+	<cfswitch expression="#attributes.rendertype#">
 	
-	<cfdefaultcase>
-		<cfloop from="1" to="#arrayLen(aRelated)#" index="l">
-			<cfset html = html & " " & o["#aRelated[l].typename#"].getView(objectid=aRelated[l].data, template="#attributes.webskin#", alternateHTML="#attributes.alternateHTML#") />
-		</cfloop>
-	</cfdefaultcase>
-
-</cfswitch>
-
+		<cfcase value="unordered">
+			<cfset html = html & "<ul>" />
+			<cfloop query="qRelatedContent">
+				<skin:view objectid="#qRelatedContent.objectid#" typename="#qRelatedContent.typename#" webskin="#attributes.webskin#" alternateHTML="#attributes.alternateHTML#" r_html="htmlRelatedContent" />
+				<cfset html = html & "<li>#htmlRelatedContent#</li>" />
+			</cfloop>
+			<cfset html = html & "</ul>" />
+		</cfcase>
+	
+		<cfcase value="ordered">
+			<cfset html = html & "<ol>" />
+			<cfloop query="qRelatedContent">
+				<skin:view objectid="#qRelatedContent.objectid#" typename="#qRelatedContent.typename#" webskin="#attributes.webskin#" alternateHTML="#attributes.alternateHTML#" r_html="htmlRelatedContent" />
+				<cfset html = html & "<li>#htmlRelatedContent#</li>" />
+			</cfloop>
+			<cfset html = html & "</ol>" />
+		</cfcase>
+		
+		<cfdefaultcase>
+			<cfloop query="qRelatedContent">
+				<skin:view objectid="#qRelatedContent.objectid#" typename="#qRelatedContent.typename#" webskin="#attributes.webskin#" alternateHTML="#attributes.alternateHTML#" r_html="htmlRelatedContent" />
+				<cfset html = html & " #htmlRelatedContent# " />
+			</cfloop>
+		</cfdefaultcase>
+	
+	</cfswitch>
+</cfif>
 </cfsilent>
+
+<!--- TRIM THE HTML RESULT --->
+<cfset html = trim(html) />
 
 <!--- return to caller scope or output inline --->
 <cfif len(attributes.r_html)>
