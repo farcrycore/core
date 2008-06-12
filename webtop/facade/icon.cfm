@@ -10,6 +10,8 @@
 	<cfset url.icon = url.type />
 </cfif>
 
+<cfset url.icon = lcase(url.icon) />
+
 <cfif fileexists("#application.path.project#/www/wsimages/icons/#url.icon#.png")>
 	<cfcontent file="#application.path.project#/www/wsimages/icons/#url.icon#.png" />
 </cfif>
