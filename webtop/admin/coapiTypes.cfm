@@ -164,7 +164,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 		</tr>
 	</cfoutput>
 	
-	<cfset componentList = ListSort(lcase(StructKeyList(application.types)),"text") />	
+	<cfset componentList = ListSort(StructKeyList(application.types),"textnocase") />	
 	<cfloop list="#componentList#" index="componentname">
 	<cfif application.types[componentname].bcustomtype>
 		<cfscript>
