@@ -1131,7 +1131,7 @@ default handlers
 		<cfquery dbtype="query" name="qwizardSteps">
 		SELECT ftwizardStep
 		FROM qMetadata
-		WHERE ftwizardStep <> '#stobj.typename#'
+		WHERE lower(ftwizardStep) <> '#lcase(stobj.typename)#'
 		ORDER BY ftSeq
 		</cfquery>
 		
@@ -1165,7 +1165,7 @@ default handlers
 					<cfquery dbtype="query" name="qwizardStep">
 					SELECT *
 					FROM qMetadata
-					WHERE ftwizardStep = '#iWizardStep#'
+					WHERE lower(ftwizardStep) = '#lcase(iWizardStep)#'
 					ORDER BY ftSeq
 					</cfquery>
 				
@@ -1175,8 +1175,8 @@ default handlers
 						<cfquery dbtype="query" name="qFieldSets">
 						SELECT ftFieldset
 						FROM qMetadata
-						WHERE ftwizardStep = '#iWizardStep#'
-						AND ftFieldset <> '#stobj.typename#'				
+						WHERE lower(ftwizardStep) = '#lcase(iWizardStep)#'
+						AND lower(ftFieldset) <> '#lcase(stobj.typename)#'				
 						ORDER BY ftSeq
 						</cfquery>
 						<cfset lFieldSets = "" />
@@ -1192,7 +1192,8 @@ default handlers
 								<cfquery dbtype="query" name="qFieldset">
 								SELECT *
 								FROM qMetadata
-								WHERE ftwizardStep = '#iWizardStep#' and ftFieldset = '#iFieldSet#'
+								WHERE lower(ftwizardStep) = '#lcase(iWizardStep)#' 
+								and lower(ftFieldset) = '#lcase(iFieldSet)#'
 								ORDER BY ftSeq
 								</cfquery>
 								
@@ -1223,7 +1224,7 @@ default handlers
 			<cfquery dbtype="query" name="qFieldSets">
 			SELECT ftFieldset
 			FROM qMetadata
-			WHERE ftFieldset <> '#stobj.typename#'
+			WHERE lower(ftFieldset) <> '#lcase(stobj.typename)#'
 			ORDER BY ftseq
 			</cfquery>
 			
@@ -1262,7 +1263,7 @@ default handlers
 						<cfquery dbtype="query" name="qFieldset">
 						SELECT *
 						FROM qMetadata
-						WHERE ftFieldset = '#iFieldset#'
+						WHERE lower(ftFieldset) = '#lcase(iFieldset)#'
 						ORDER BY ftSeq
 						</cfquery>
 						
