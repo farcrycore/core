@@ -190,7 +190,31 @@
 			</cfif>
 		
 			<cfreturn qResult />
-		<cfelse>
+		</cfif>
+				
+		<!--- 
+		CACHING IN THE REQUEST SCOPE
+		WE ONLY WANT THIS TO BE RUN ONCE PER TYPE PER REQUEST AT THE MOST.		
+		THIS IS OFTEN THE CASE FOR ABSTRACT TYPES THAT ARE EXTENDED BY MULTIPLE TYPES
+		 --->		
+		<cfparam name="request.stcoapiWebskins" default="#structNew()#" />
+		<cfparam name="request.stcoapiWebskins[arguments.typename]" default="#structNew()#" />
+		
+		<cfif structKeyExists(request.stcoapiWebskins[arguments.typename], "qWebskins")>				
+
+			<cfset qResult = request.stcoapiWebskins[arguments.typename].qWebskins />
+			
+			<cfif len(arguments.prefix)>
+				<cfquery dbtype="query" name="qResult">
+				SELECT *
+				FROM qResult
+				WHERE lower(qResult.name) LIKE '#lCase(arguments.prefix)#%'
+				</cfquery>
+			</cfif>
+		
+			<cfreturn qResult />
+		</cfif>
+				
 			
 			<!--- check project webskins --->
 			<cfif directoryExists(webskinPath)>
@@ -321,7 +345,6 @@
 					<cfset querysetcell(qresult, 'Path', WebskinFilePath, qResult.currentRow) />								
 				</cfif>	
 			</cfoutput>
-		</cfif>
 		
 		<cfif listLen(arguments.excludeWebskins)>
 			<cfquery dbtype="query" name="qResult">
@@ -334,6 +357,11 @@
 		SELECT * FROM qResult
 		ORDER BY displayname
 		</cfquery>	
+		
+		<!--- 
+		PLACE IT IN THE REQUEST SCOPE JUST INCASE WE NEED THIS AGAIN THIS REQUEST.
+		 --->
+		<cfset request.stcoapiWebskins[arguments.typename].qWebskins = qresult />
 		
 		<cfreturn qresult />
 	</cffunction>
