@@ -13,7 +13,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+    along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
 <cfcomponent extends="types" displayname="Flash" hint="A global Flash content library.  Flash items need to be embedded in your content appropriately, and the library allows you to nominae the correct Flash Player version and other settings." bSchedule="true">
 <!------------------------------------------------------------------------

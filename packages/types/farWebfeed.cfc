@@ -13,7 +13,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+    along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
 <cfcomponent displayname="Webfeed" hint="Generate web feeds based on your content type. Feeds can be filtered by category. RSS, Atom and iTunes feeds are supported." extends="types" output="false" icon="webfeed" bFriendly="true" bUseInTree="true">
 	<cfproperty ftSeq="1" ftWizardStep="General" ftFieldset="Feed" name="title" type="string" default="" hint="The name of the feed" ftLabel="Title" ftType="string" ftValidation="required" />

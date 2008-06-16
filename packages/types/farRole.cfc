@@ -13,7 +13,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+    along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
 <cfcomponent displayname="Role" extends="types" output="false" hint="Groups can be assigned to any number of Roles.  Roles in turn are collections of permissions that determine what priveleges a specific group of users has within the system." bsystem="true">
 <!---------------------------------------------- 

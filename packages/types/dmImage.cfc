@@ -13,7 +13,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+    along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
 <cfcomponent extends="types" displayname="Image" hint="A global image library that can be referenced from other content types. All images have a source image and an automatically generated standard and thumbnail size image for use within your content.">
 <!------------------------------------------------------------------------

@@ -15,7 +15,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+    along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
 <!--- @@displayname: Edit Invocation --->
 <!--- @@Description: edit object invoker for primarily tree based content; on its way out the door 20050728 GB --->

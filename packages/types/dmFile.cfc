@@ -13,7 +13,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+    along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
 <cfcomponent extends="types" displayname="File"  hint="A global document library that can be referenced from other content types.  Documents can be secured or open to all depending on your settings.">
 	

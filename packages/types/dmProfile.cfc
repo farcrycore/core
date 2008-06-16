@@ -13,7 +13,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+    along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
 <cfcomponent extends="types" displayName="User Profile" hint="Every user in the system has their own profile from staff to community members. You can create new users, edit existing ones or change the group they belong to.">
 <!------------------------------

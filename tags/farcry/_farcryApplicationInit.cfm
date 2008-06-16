@@ -15,7 +15,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+    along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
 <!--- @@Description: initialise application level code. Sets up site config and permissions cache  --->
 <!--- @@Developer: Mat Bryant (mat@daemon.com.au) --->

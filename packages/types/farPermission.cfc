@@ -13,7 +13,7 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+    along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
 <cfcomponent displayname="Permission" extends="types" output="false" hint="Each permission corresponds to a right to perform an action, access a section of the webtop, or view a webskin. A collection of permssions is called a Role." bsystem="true">
 <!---------------------------------------------- 
