@@ -79,6 +79,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.sqlorderby" default="datetimelastupdated desc" type="string" />
 <cfparam name="attributes.sqlWhere" default="" />
 <cfparam name="attributes.lCategories" default="" />
+<cfparam name="attributes.name" default="objectadmin" />
 
 <!--- admin configuration options --->
 <cfparam name="attributes.numitems" default="#application.config.general.GENERICADMINNUMITEMS#" type="numeric">
@@ -610,7 +611,7 @@ user --->
 		<cfoutput>#attributes.description#</cfoutput>
 	</cfif>
 	
-	<ft:form style="width: 100%;" Name="objectadmin">
+	<ft:form style="width: 100%;" Name="#attributes.name#">
 	
 		<!--- output user responses --->
 		<cfif len(message_error)><cfoutput><p id="error" class="fade"><span class="error">#message_error#</span></p></cfoutput></cfif>
@@ -783,14 +784,16 @@ user --->
 							<cfelse>
 								<cfif listContainsNoCase(attributes.SortableColumns,attributes.aCustomColumns[i])><!--- Normal property in sortablecolumn list --->
 									<cfoutput>
+									<th>
 									<select name="#attributes.aCustomColumns[i]#sqlOrderBy" onchange="javascript:$('sqlOrderBy').value=this.value;submit();" style="width:80px;">
 										<option value=""></option>
 										<option value="#attributes.aCustomColumns[i]# asc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i]# asc">selected</cfif>>asc</option>
 										<option value="#attributes.aCustomColumns[i]# desc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i]# desc">selected</cfif>>desc</option>
 									</select>
+									</th>
 									</cfoutput>
 								<cfelse>
-									<cfoutput>&nbsp;</cfoutput>
+									<cfoutput><th>&nbsp;</th></cfoutput>
 								</cfif>
 							</cfif>
 						</cfloop>
