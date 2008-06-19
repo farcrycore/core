@@ -182,7 +182,7 @@ body.iframed-content h3 {margin-top:0;font-size:135%}
 	/* =SITE SECTION */
 	#sec-site #tree-button-max {display:block;position:absolute;top:299px;left:203px;width:29px;height:38px;background: transparent url("images/sprites.gif") no-repeat 0 -300px}
 	#sec-site #tree-button-max span {display:none}
-	#sec-site #tree-button-min {display:block;display:none;position:absolute;top:299px;left:503px;width:29px;height:38px;background: transparent url("images/sprites.gif") no-repeat 0 -350px}
+	#sec-site #tree-button-min {display:block;display:none;position:absolute;top:299px;left:402px;width:29px;height:38px;background: transparent url("images/sprites.gif") no-repeat 0 -350px}
 	#sec-site #tree-button-min span {display:none}
 	#sec-site #tree-button-max:hover {background-position: -50px -300px}
 	#sec-site #tree-button-min:hover {background-position: -50px -350px}
