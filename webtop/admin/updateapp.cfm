@@ -32,15 +32,10 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 
 <ft:processform action="Update Application">
 	<ft:processformobjects typename="updateapp" />
-	<cfoutput>
-		<p class="success">
-			Selected application variables and objects have been reloaded
-		</p>
-	</cfoutput>
 </ft:processform>
 
 <ft:form>
-	<ft:object typename="updateapp" />
+	<ft:object typename="updateapp" legend="Update application" />
 	
 	<ft:farcryButtonPanel>
 		<ft:farcryButton value="Update Application" />
