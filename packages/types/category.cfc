@@ -33,13 +33,13 @@ $
 $Developer: Paul Harrison (paul@daemon.com.au) $
 --->
 
-<cfcomponent displayname="category" extends="types" hint="Set of functions to perform metadata characterisation" bAbstract="true">
+<cfcomponent displayname="category" extends="types" hint="Set of functions to perform metadata characterisation" bAbstract="true" bDocument="true" scopelocation="application.factory.oCategory">
 	
 	<cfproperty ftseq="1" ftfieldset="General Details" name="categoryLabel" type="string" required="true" default="(incomplete)" hint="Label used in nested tree table." ftLabel="Label" bLabel="true" />
 	<cfproperty ftseq="2" ftfieldset="General Details" name="alias" type="string" hint="Alias used for application.catid" ftLabel="Alias" />
 	<cfproperty ftseq="3" ftfieldset="Media" name="imgCategory" type="string" hint="Image" ftType="image" ftLabel="Image" />
 	
-	<cffunction name="setData" access="public" output="false" returntype="struct" hint="Update the record for an objectID including array properties.  Pass in a structure of property values; arrays should be passed as an array.">
+	<cffunction name="setData" access="public" output="false" returntype="struct" hint="Update the record for an objectID including array properties.  Pass in a structure of property values; arrays should be passed as an array." bDocument="true">
 	
 		<cfset var stResult = structNew() />
 		<cfset var stSavedObject = structNew() />
@@ -66,7 +66,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 	
 	
 	
-	<cffunction name="getCategoryNamebyID" returntype="string" access="public" hint="Returns category label for a speicfic category object id from nested tree table. Returns empty string if no match." output="yes">
+	<cffunction name="getCategoryNamebyID" returntype="string" access="public" hint="Returns category label for a speicfic category object id from nested tree table. Returns empty string if no match." output="yes" bDocument="true">
 		<cfargument name="categoryid" required="true" type="uuid" hint="Categoryid for the matching category label.">
 		<cfargument name="typename" required="false" default="dmCategory" type="string" hint="nested_tree_objects typename to match.">
 		<cfargument name="dsn" required="no" default="#application.dsn#">
@@ -88,7 +88,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfreturn catname>
 	</cffunction>
 
-	<cffunction name="getCategoryIDbyName" returntype="string" access="public" hint="Returns categoryid for a speicfic category name from nested tree table. Returns empty string if no match." output="No">
+	<cffunction name="getCategoryIDbyName" returntype="string" access="public" hint="Returns categoryid for a speicfic category name from nested tree table. Returns empty string if no match." output="No" bDocument="true">
 		<cfargument name="categoryname" required="true" type="string" hint="Category label to match.">
 		<cfargument name="typename" required="false" default="dmCategory" type="string" hint="nested_tree_objects typename to match.">
 		<cfargument name="dsn" required="no" default="#application.dsn#">
@@ -109,7 +109,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfreturn objectid>
 	</cffunction>
 
-	<cffunction name="getCategoryBranchAsList" returntype="string" access="public" hint="Get all the descendants of the categoryids passed in." output="false">
+	<cffunction name="getCategoryBranchAsList" returntype="string" access="public" hint="Get all the descendants of the categoryids passed in." output="false" bDocument="true">
 		<cfargument name="lCategoryIDs" type="string" required="true" hint="List of categoryIDs to expand.">
 		<cfset var i=0>
 		<cfset var q="">
@@ -173,7 +173,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfreturn st>
 	</cffunction>
 
-	<cffunction name="getDataQuery" access="public" output="true" returntype="query" hint="Return a query of objects in a specific content type that match a list of category objectids.">
+	<cffunction name="getDataQuery" access="public" output="true" returntype="query" hint="Return a query of objects in a specific content type that match a list of category objectids." bDocument="true">
 		<cfargument name="lCategoryIDs" type="string" required="true" hint="The list of categoryIDs you wish to match">
 		<cfargument name="typename" type="string" required="True" hint="The type of content to be returned"> 
 		<cfargument name="bMatchAll" type="boolean" required="false" default="0" hint="Does the object need to match all categories"> 
@@ -290,7 +290,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfreturn stStatus>
 	</cffunction>
 
-	<cffunction name="getHierarchies" access="public" output="false" hint="Returns a query of all first level nodes keyed by typename 'categories' in the nested tree model." returntype="query">
+	<cffunction name="getHierarchies" access="public" output="false" hint="Returns a query of all first level nodes keyed by typename 'categories' in the nested tree model." returntype="query" bDocument="true">
 		<cfset var qroot="">
 		<cfset var qHierarchies="">
 		
@@ -307,7 +307,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		 <cfreturn qHierarchies>  
 	</cffunction>
 	
-	<cffunction name="getHierarchyRoot" hint="Returns objectid of hierarchy root ie. nlevel 2, by objectname." returntype="UUID" access="public" output="false">
+	<cffunction name="getHierarchyRoot" hint="Returns objectid of hierarchy root ie. nlevel 2, by objectname." returntype="UUID" access="public" output="false" bDocument="true">
 		<cfargument name="objectname" required="Yes" type="string">
 		<cfargument name="dsn" required="no" default="#application.dsn#" type="string">
 		<cfset var objectid="">
@@ -327,7 +327,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfreturn objectid>
 	</cffunction>	
 	
-	<cffunction name="getAllCategories" hint="Returns a query of the entire category tree, ordered by nLeft." returntype="query" output="false" access="public">
+	<cffunction name="getAllCategories" hint="Returns a query of the entire category tree, ordered by nLeft." returntype="query" output="false" access="public" bDocument="true">
 		<cfargument name="dsn" required="no" default="#application.dsn#" type="string">
 		<cfargument name="dbowner" required="No" default="#application.dbowner#">
 		<cfset var q="">
@@ -344,7 +344,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfreturn q>
 	</cffunction>
 		
-	<cffunction name="setAlias" access="public" returntype="void" output="false">
+	<cffunction name="setAlias" access="public" returntype="void" output="false" bDocument="true">
 		<cfargument name="categoryid" type="uuid" required="true" />
 		<cfargument name="alias" type="string" required="true" />
 		<cfargument name="dsn" required="false" type="string" default="#application.dsn#">
@@ -372,7 +372,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		
 	</cffunction>
 	
-	<cffunction name="addCategory" returntype="struct" access="public" hint="Creates a record in categories and attach as node in nested_tree_objects">
+	<cffunction name="addCategory" returntype="struct" access="public" hint="Creates a record in categories and attach as node in nested_tree_objects" bDocument="true">
 		<cfargument name="categoryID" type="uuid" required="true">
 		<cfargument name="categoryLabel" type="string" required="true" hint="label of category">
 		<cfargument name="parentID" type="uuid" required="true" hint="UUID of parent">
@@ -387,7 +387,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfreturn stStatus>
 	</cffunction>
 	
-	<cffunction name="deleteCategory" returntype="struct" access="public" hint="Remove category and all children from nested_tree_objects,delete all relevant objects from categories,delete all relevant records in refCategories">
+	<cffunction name="deleteCategory" returntype="struct" access="public" hint="Remove category and all children from nested_tree_objects,delete all relevant objects from categories,delete all relevant records in refCategories" bDocument="true">
 		<cfargument name="categoryID" type="uuid" hint="category ID" required="true">
 		<cfargument name="dsn" type="string" required="true" hint="Database DSN">
 		<cfargument name="bDeleteBranch" type="boolean" required="false" default="false">
@@ -397,7 +397,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfreturn stStatus>
 	</cffunction>
 	
-	<cffunction name="moveCategory" returntype="struct" access="public" hint="Moves a branch of categorys - a facade to tree.cfc.movebranch">
+	<cffunction name="moveCategory" returntype="struct" access="public" hint="Moves a branch of categorys - a facade to tree.cfc.movebranch" bDocument="true">
 		<cfargument name="categoryID" type="uuid" hint="Category ID" required="true">
 		<cfargument name="parentID" type="uuid" hint="New parent ID that branch will sit under">
 		
@@ -405,7 +405,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfreturn stStatus>
 	</cffunction>
 	
-	<cffunction name="copyCategories" access="public" hint="Copies categories from draft to live object or vice versa. Doesn't change the tree.">
+	<cffunction name="copyCategories" access="public" hint="Copies categories from draft to live object or vice versa. Doesn't change the tree." bDocument="true">
 		<cfargument name="srcObjectID" required="Yes" type="UUID" hint="Source object whose category data is to be copied">
 		<cfargument name="destObjectID" required="Yes" type="UUID" hint="Destination object for copied category data">
 		<cfargument name="dsn" required="no" default="#application.dsn#">
@@ -424,7 +424,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 
 	</cffunction>
 	
-	<cffunction name="getCategories" returntype="string" access="public" hint="Returns list of categories for a given content object instance" output="false">
+	<cffunction name="getCategories" returntype="string" access="public" hint="Returns list of categories for a given content object instance" output="false" bDocument="true">
 		<cfargument name="objectID" required="true" type="uuid">
 		<cfargument name="bReturnCategoryIDs" required="false" type="boolean" default="false" hint="Set flag to true if you want category objectids instead of category labels.">
 		<cfargument name="alias" type="string" hint="The alias of the section of the category tree that is going to be re-asigned." required="false" default="">  
@@ -471,7 +471,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		</cfquery> 
 	</cffunction>
 	
-	<cffunction name="getCategoryByName" returntype="query" access="public" hint="Returns category info" output="No">
+	<cffunction name="getCategoryByName" returntype="query" access="public" hint="Returns category info" output="No" bDocument="true">
 		<cfargument name="name" required="true" type="string" hint="Name of the category you want returned">
 		<cfargument name="typename" required="false" default="dmCategory" type="string" hint="nested_tree_objects typename to match">
 		<cfargument name="dsn" required="no" default="#application.dsn#">
@@ -588,7 +588,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 	
 	</cffunction>
 	
-	<cffunction name="getCategoryId" returnType="string" access="public" output="false">
+	<cffunction name="getCategoryId" returnType="string" access="public" output="false" bDocument="true">
 		<cfargument name="categoryName" required="true" type="string" />
 		<cfargument name="parentid" required="true" type="uuid" />
 		<cfargument name="dsn" type="string" required="false" default="#application.dsn#" />
@@ -609,7 +609,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		
 	</cffunction>
 	
-	<cffunction name="getObjectByCategory" returntype="query" hint="Returns a query containing objects for a list of categories, including all subcategories in a selected branch, for a specific content type." output="false" access="public">
+	<cffunction name="getObjectByCategory" returntype="query" hint="Returns a query containing objects for a list of categories, including all subcategories in a selected branch, for a specific content type." output="false" access="public" bDocument="true">
 	<!--- 
 		TODO: Investigate
 		How is this method different to category categor.getData() ???

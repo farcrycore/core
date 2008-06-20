@@ -1,4 +1,4 @@
-<cfcomponent hint="Manage resource bundles" output="false">
+<cfcomponent hint="Manage resource bundles" output="false" bDocument="true" scopelocation="application.rb">
 	
 	<cfset this.aSets = arraynew(1) />
 	<cfset this.lSets = "" />
@@ -73,7 +73,7 @@
 		<cfreturn stResult />
 	</cffunction>
 	
-	<cffunction name="getResource" access="public" output="false" returntype="string" hint="Returns the resource string">
+	<cffunction name="getResource" access="public" output="false" returntype="string" hint="Returns the resource string" bDocument="true">
 		<cfargument name="key" type="string" required="true" />
 		<cfargument name="default" type="string" required="false" default="#arguments.key#" />
 		<cfargument name="locale" type="string" required="false" default="" />
@@ -98,7 +98,7 @@
 		<cfreturn arguments.default />
 	</cffunction>
 
-	<cffunction name="formatRBString" access="public" output="no" returnType="string" hint="performs messageFormat like operation on compound rb string">
+	<cffunction name="formatRBString" access="public" output="no" returnType="string" hint="performs messageFormat like operation on compound rb string" bDocument="true">
 		<cfargument name="rbString" required="yes" type="string" />
 		<cfargument name="substituteValues" required="yes" />
 		<cfargument name="default" required="no" default="#arguments.rbString#" />

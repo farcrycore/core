@@ -36,9 +36,9 @@ $in: $
 $out:$
 --->
 
-<cfcomponent displayname="Nested Tree Model" hint="Database tree management based on Joe Celko's nested tree model.">
+<cfcomponent displayname="Nested Tree Model" hint="Database tree management based on Joe Celko's nested tree model." bDocument="true" scopelocation="application.factory.oTree">
 <cfinclude template="/farcry/core/webtop/includes/cfFunctionWrappers.cfm"><!--- changed from /farcry/includes/etc dan --->
-<cffunction name="deleteBranch" access="public" returntype="struct" hint="Delete a node and the branch beneath it." output="No">
+<cffunction name="deleteBranch" access="public" returntype="struct" hint="Delete a node and the branch beneath it." output="No" bDocument="true">
 	<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
 	<cfargument name="objectid" required="yes" type="UUID">
 	<cfargument name="dbowner" required="false" type="string" default="#application.dbowner#">
@@ -56,7 +56,7 @@ $out:$
 	<cfreturn stReturn>
 </cffunction>
 
-<cffunction name="deleteTree" output="No">
+<cffunction name="deleteTree" output="No" bDocument="true">
 	<cfargument name="typename" type="string" required="true">
 	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
 	<cfargument name="dbowner" required="no" type="string" default="#application.dbowner#">
@@ -72,7 +72,7 @@ $out:$
 	<cfreturn stReturn>
 </cffunction>
 
-<cffunction name="getAncestors" access="public" hint="Get a query of objects ordered from the root node to the current node." returntype="query" output="No">
+<cffunction name="getAncestors" access="public" hint="Get a query of objects ordered from the root node to the current node." returntype="query" output="No" bDocument="true">
 	<cfargument name="objectid" required="yes" type="UUID">
 	<cfargument name="bIncludeSelf" required="no" type="boolean" default="false">
 	<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
@@ -93,7 +93,7 @@ $out:$
 	<cfreturn qReturn>
 </cffunction>
 
-<cffunction name="getChildren" access="public" returntype="query" hint="Get children of the specified node." output="No">
+<cffunction name="getChildren" access="public" returntype="query" hint="Get children of the specified node." output="No" bDocument="true">
 	<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
 	<cfargument name="objectid" required="yes" type="UUID">
 	<cfargument name="dbowner" required="no" type="string" default="#application.dbowner#">
@@ -189,7 +189,7 @@ $out:$
 	<cfreturn qReturn>
 </cffunction> --->
 
-<cffunction name="getDescendants" access="public" output="false" returntype="query" hint="Get the entire branch with the option to hide empty nodes from the results">
+<cffunction name="getDescendants" access="public" output="false" returntype="query" hint="Get the entire branch with the option to hide empty nodes from the results" bDocument="true">
     <cfargument name="objectid" required="yes" type="UUID" />
     <cfargument name="depth" required="false" type="string" default="0" />
     <cfargument name="lColumns" required="false" type="string" default="" />
@@ -286,7 +286,7 @@ $out:$
     <cfreturn qReturn />
   </cffunction>
 
-<cffunction name="getSiblings" access="public" returntype="query" hint="Get siblings for the node specified.  That is, all nodes with the same parent." output="yes">
+<cffunction name="getSiblings" access="public" returntype="query" hint="Get siblings for the node specified.  That is, all nodes with the same parent." output="yes" bDocument="true">
 	<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
 	<cfargument name="objectid" required="yes" type="UUID">
 	<cfargument name="lColumns" required="no" type="string" default="">
@@ -335,7 +335,7 @@ $out:$
 	<cfreturn qReturn>
 </cffunction>
 
-<cffunction name="getParentID" access="public" returntype="query" hint="Get an objects parent ID in the NTM" output="No">
+<cffunction name="getParentID" access="public" returntype="query" hint="Get an objects parent ID in the NTM" output="No" bDocument="true">
 	<cfargument name="objectid" type="string" required="true">
 	<cfargument name="dsn" required="false" default="#application.dsn#">
 	<cfargument name="dbowner" required="false" type="string" default="#application.dbowner#">
@@ -346,7 +346,7 @@ $out:$
 	</cfquery>
 	<cfreturn q>
 </cffunction>
-<cffunction name="getRootNode" access="public" returntype="query" hint="Get root node for the specified typename." output="No">
+<cffunction name="getRootNode" access="public" returntype="query" hint="Get root node for the specified typename." output="No" bDocument="true">
 	<cfargument name="dsn" required="false" type="string" default="#application.dsn#">
 	<cfargument name="typename" required="yes" type="string">
 	<cfargument name="dbowner" required="false" type="string" default="#application.dbowner#">
@@ -363,7 +363,7 @@ $out:$
 	<cfreturn qReturn>
 </cffunction>
 
-<cffunction name="moveBranch" access="public" returntype="struct" hint="Prune and graft a node and the branch beneath it." output="No">
+<cffunction name="moveBranch" access="public" returntype="struct" hint="Prune and graft a node and the branch beneath it." output="No" bDocument="true">
 	<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
 	<cfargument name="objectid" required="yes" type="UUID" hint="The object that is at the head of the branch to be moved.">
 	<cfargument name="parentid" required="yes" type="UUID" hint="The node to which it will be attached as a child. Note this function attaches the node as an only child or as the first child to the left of a group of siblings.">
@@ -395,7 +395,7 @@ $out:$
 	<cfreturn stReturn>
 </cffunction>
 
-<cffunction name="numberOfNodesAtObjectLevel" hint="The number of nodes at the same level as an object" output="No">
+<cffunction name="numberOfNodesAtObjectLevel" hint="The number of nodes at the same level as an object" output="No" bDocument="true">
 	<cfargument name="objectid" required="true" type="uuid">
     <cfargument name="dsn" required="no" type="string" default="#application.dsn#">
 	<cfargument name="dbowner" required="no" type="string" default="#application.dbowner#">
@@ -410,7 +410,7 @@ $out:$
 	<cfreturn objCount>
 </cffunction>
 
-<cffunction name="rootNodeExists" hint="Checks to see if a root node of a given type already exists" output="No">
+<cffunction name="rootNodeExists" hint="Checks to see if a root node of a given type already exists" output="No" bDocument="true">
 	<cfargument name="typename" required="true">
     <cfargument name="dsn" required="false" type="string" default="#application.dsn#">
 	<cfargument name="dbowner" required="false" type="string" default="#application.dbowner#">
@@ -428,7 +428,7 @@ $out:$
 
 </cffunction>
 
-<cffunction name="setRootNode" access="public" returntype="struct" hint="Set root node for a specific object type." output="No">
+<cffunction name="setRootNode" access="public" returntype="struct" hint="Set root node for a specific object type." output="No" bDocument="true">
 	<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
 	<cfargument name="objectid" required="yes" type="UUID">
 	<cfargument name="objectname" required="yes" type="string">
@@ -445,7 +445,7 @@ $out:$
 </cffunction>
 
 
-<cffunction name="setChild" access="public" returntype="struct" hint="Set child node." output="No">
+<cffunction name="setChild" access="public" returntype="struct" hint="Set child node." output="No" bDocument="true">
 	<cfargument name="dsn" required="false" type="string" default="#application.dsn#">
 	<cfargument name="parentid" required="yes" type="UUID" hint="The tree node that is the parent.">
 	<cfargument name="objectid" required="yes" type="UUID" hint="The child node to be inserted.">
@@ -469,7 +469,7 @@ $out:$
 	<cfreturn stReturn>
 </cffunction>
 
-<cffunction name="setOldest" access="public" returntype="struct" hint="Set node as only or oldest child. That is, a child that appears first in the list of children under the parent (ie. the oldest). Use only for new objects" output="No">
+<cffunction name="setOldest" access="public" returntype="struct" hint="Set node as only or oldest child. That is, a child that appears first in the list of children under the parent (ie. the oldest). Use only for new objects" output="No" bDocument="true">
 	<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
 	<cfargument name="parentid" required="yes" type="UUID">
 	<cfargument name="objectid" required="yes" type="UUID">
@@ -491,7 +491,7 @@ $out:$
 	<cfreturn stReturn>
 </cffunction>
 
-<cffunction name="setYoungest" access="public" returntype="struct" hint="Set node as youngest child. That is, a child that appears last in the list of children under the parent (ie. the youngest)." output="No">
+<cffunction name="setYoungest" access="public" returntype="struct" hint="Set node as youngest child. That is, a child that appears last in the list of children under the parent (ie. the youngest)." output="No" bDocument="true">
 	<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
 	<cfargument name="parentid" required="yes" type="UUID">
 	<cfargument name="objectid" required="yes" type="UUID">
@@ -513,7 +513,7 @@ $out:$
 </cffunction>
 
 
-<cffunction name="getBloodLine" access="public" returntype="query" hint="Get the ancestors, the siblings of each older generation, the siblings and the children of a given objectid." output="No">
+<cffunction name="getBloodLine" access="public" returntype="query" hint="Get the ancestors, the siblings of each older generation, the siblings and the children of a given objectid." output="No" bDocument="true">
 	<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
 	<cfargument name="jointable" required="yes" type="string"><!--- the table to join to, so as to bring back other useful stuff (must have a field named objectid, to join on) --->
 	<cfargument name="ObjectID" required="yes" type="string">
@@ -538,7 +538,7 @@ $out:$
 	<cfreturn qReturn>
 </cffunction>
 
-<cffunction name="getLeaves" access="public" returntype="array" hint="Gets the leaf objects of the nodes passed in">
+<cffunction name="getLeaves" access="public" returntype="array" hint="Gets the leaf objects of the nodes passed in" bDocument="true">
 	<cfargument name="lNodeIds" type="string" required="true" hint="list of node ids, can be a single node id or just one">
 	<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
 	<cfargument name="dbowner" required="false" type="string" default="#application.dbowner#">
@@ -563,7 +563,7 @@ $out:$
 	<cfreturn aObjs>
 </cffunction>
 
-<cffunction name="rebuildTree" access="public" returntype="numeric" hint="Fixes tree using parentid/objectid relationship. If nodes returned is 0 then no tree found for typename" output="No">
+<cffunction name="rebuildTree" access="public" returntype="numeric" hint="Fixes tree using parentid/objectid relationship. If nodes returned is 0 then no tree found for typename" output="No" bDocument="true">
 	<cfargument name="typename" required="yes" type="string" default="dmNavigation">
 	<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
 	<cfargument name="dbowner" required="false" type="string" default="#application.dbowner#">
@@ -589,7 +589,7 @@ $out:$
 	<cfreturn nNodes>
 </cffunction>
 
-<cffunction name="fixBranch" access="public" returntype="numeric" hint="Fixes tree from passed root node down. Returns number of nodes below it." output="No">
+<cffunction name="fixBranch" access="public" returntype="numeric" hint="Fixes tree from passed root node down. Returns number of nodes below it." output="No" bDocument="true">
 	<cfargument name="parentid" required="yes" type="string">
 	<cfargument name="nLeft" required="yes" type="numeric">
 	<cfargument name="nLevel" required="yes" type="numeric">	

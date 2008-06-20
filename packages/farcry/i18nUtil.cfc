@@ -1,4 +1,4 @@
-<cfcomponent displayname="i18nUtil" hint="util I18N functions: version 1.1 mar-2005 Paul Hastings (paul@sustainbleGIS.com)" output="no">
+<cfcomponent displayname="i18nUtil" hint="util I18N functions: version 1.1 mar-2005 Paul Hastings (paul@sustainbleGIS.com)" output="no" bDocument="true" scopelocation="application.i18nUtils">
 <!--- 
 
 author:		paul hastings <paul@sustainableGIS.com>
@@ -32,7 +32,7 @@ methods in this CFC:
  --->
 <cfset variables.aLocale = createObject("java","java.util.Locale")>
 
-<cffunction access="public" name="getLocales" output="No" returntype="string" hint="returns list of locales">
+<cffunction access="public" name="getLocales" output="No" returntype="string" hint="returns list of locales" bDocument="true">
 	<cfscript>
 		var orgLocales=aLocale.getAvailableLocales();
 		var theseLocales="";	
@@ -46,7 +46,7 @@ methods in this CFC:
 	</cfscript>
 </cffunction> 
 
-<cffunction access="public" name="getLocaleNames" output="No" returntype="string" hint="returns list of locale names, UNICODE direction char (LRE/RLE) added as required">
+<cffunction access="public" name="getLocaleNames" output="No" returntype="string" hint="returns list of locale names, UNICODE direction char (LRE/RLE) added as required" bDocument="true">
 	<cfscript>
 		var orgLocales="";
 		var theseLocales="";	
@@ -66,7 +66,7 @@ methods in this CFC:
 	</cfscript>
 </cffunction> 
 
-<cffunction access="public" name="showCountry" output="No" returntype="string" hint="returns display country name for give locale">
+<cffunction access="public" name="showCountry" output="No" returntype="string" hint="returns display country name for give locale" bDocument="true">
 <cfargument name="thisLocale" required="yes" type="string">	
 	<cfscript>
 		var locale=aLocale.init(listFirst(arguments.thisLocale,"_"),listLast(arguments.thisLocale,"_"));	
@@ -74,13 +74,13 @@ methods in this CFC:
 	</cfscript>
 </cffunction> 
 
-<cffunction access="public" name="showLanguage" output="No" returntype="string" hint="returns display country name for give locale">
+<cffunction access="public" name="showLanguage" output="No" returntype="string" hint="returns display country name for give locale" bDocument="true">
 <cfargument name="thisLocale" required="yes" type="string">	
 	<cfset var locale=aLocale.init(listFirst(arguments.thisLocale,"_"),listLast(arguments.thisLocale,"_"))>	
 	<cfreturn locale.getDisplayLanguage()>	
 </cffunction>
 
-<cffunction access="public" name="isValidLocale" output="No" returntype="boolean">
+<cffunction access="public" name="isValidLocale" output="No" returntype="boolean" bDocument="true">
 <cfargument name="thisLocale" required="yes" type="string">
 	<cfset var isOK=false>
 	<cfif listFind(getLocales(),arguments.thisLocale)>
@@ -89,7 +89,7 @@ methods in this CFC:
 	<cfreturn isOK>
 </cffunction> 
 
-<cffunction access="public" name="isBidi" output="No" returntype="boolean" hint="determines if given locale is BIDI">
+<cffunction access="public" name="isBidi" output="No" returntype="boolean" hint="determines if given locale is BIDI" bDocument="true">
 <cfargument name="thisLocale" required="yes" type="string">
 	<cfif listFind("ar,he,fa,ps",left(arguments.thisLocale,2))> <!--- cldr 1.2 info --->
 		<cfreturn true>

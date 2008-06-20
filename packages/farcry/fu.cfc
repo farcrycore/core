@@ -23,7 +23,7 @@
 							changes to the mappings.
 --->
 
-<cfcomponent displayname="FriendlyURL" hint="FriendlyURLs manager">
+<cfcomponent displayname="FriendlyURL" hint="FriendlyURLs manager" bDocument="true" scopelocation="application.factory.oFU">
 	
 	<cfset init()>
 	
@@ -249,7 +249,7 @@
 		<cfreturn true>
 	</cffunction>
 	
-	<cffunction name="deleteFU" access="public" returntype="boolean" hint="Deletes a mappings and writes the map file to disk" output="No">
+	<cffunction name="deleteFU" access="public" returntype="boolean" hint="Deletes a mappings and writes the map file to disk" output="No" bDocument="true">
 		<cfargument name="alias" required="yes" type="string" hint="old alias of object to delete">
 		
 		<cfset var mappings = "">
@@ -272,7 +272,7 @@
 		<cfreturn true>
 	</cffunction>
 	
-   <cffunction name="refreshApplicationScope" access="public" hint="Updates the fu application scope with all the persistent FU mappings from the database." output="false">
+   <cffunction name="refreshApplicationScope" access="public" hint="Updates the fu application scope with all the persistent FU mappings from the database." output="false" bDocument="true">
 		<cfset var stTemp = StructNew()>
 		<cfset var stLocal = StructNew()>
 		<cfset stLocal.bSuccess = 1>
@@ -408,7 +408,7 @@
 		<cfreturn true />
 	</cffunction>
 	
-	<cffunction name="setFU" access="public" returntype="string" hint="Sets an fu" output="yes">
+	<cffunction name="setFU" access="public" returntype="string" hint="Sets an fu" output="yes" bDocument="true">
 		<cfargument name="objectid" required="yes" type="UUID" hint="objectid of object to link to">
 		<cfargument name="alias" required="yes" type="string" hint="alias of object to link to">
 		<cfargument name="querystring" required="no" type="string" default="" hint="extra querystring parameters">
@@ -441,7 +441,7 @@
 		<cflog application="true" file="futrace" text="fu.setfu">
 	</cffunction>
 	
-	<cffunction name="getFU" access="public" returntype="string" hint="Retrieves fu for a real url, returns original ufu if non existent." output="yes">
+	<cffunction name="getFU" access="public" returntype="string" hint="Retrieves fu for a real url, returns original ufu if non existent." output="yes" bDocument="true">
 		<cfargument name="objectid" required="yes" type="string" hint="objectid of object to link to">
 		<!--- <cfargument name="dom" required="yes" type="string" default="#cgi.server_name#"> --->
 		
