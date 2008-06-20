@@ -19,6 +19,7 @@
 	<cfproperty ftSeq="32" ftFieldset="Login Properties" name="showforgotpassword" type="boolean" default="1" hint="???" ftLabel="Show forgot password" ftType="boolean" />
 	<cfproperty ftSeq="33" ftFieldset="Login Properties" name="loginattemptsallowed" type="numeric" default="3" hint="???" ftLabel="Login attempts allowed" ftType="integer" />
 	<cfproperty ftSeq="34" ftFieldset="Login Properties" name="loginattemptstimeout" type="numeric" default="10" hint="???" ftLabel="Login attempts timeout" ftType="integer" />
+	<cfproperty ftSeq="35" ftFieldset="Login Properties" name="defaultUserDirectory" type="string" default="clientud" hint="User directory selected by default when multiple are available" ftLabel="Default user directory" ftType="list" ftListData="listUserDirectories" />
 
 
 <!--- file media properties --->
@@ -45,5 +46,18 @@
 	<cfproperty ftSeq="1010" ftFieldset="Deprecated Properties" name="exportpath" type="string" default="www/xml" hint="???" ftLabel="Export path" ftType="string" />
 	<cfproperty ftSeq="1011" ftFieldset="Deprecated Properties" name="locale" type="string" default="en_AU" hint="???" ftLabel="Locale" ftType="string" />
 
+	
+	<cffunction name="listUserDirectories" access="public" returntype="query" description="Returns the available user directories" output="false">
+		<cfset var qUD = querynew("name,value") />
+		<cfset var thisud = "" />
+		
+		<cfloop list="#application.security.getAllUD()#" index="thisud">
+			<cfset queryaddrow(qUD) />
+			<cfset querysetcell(qUD,"value",thisud) />
+			<cfset querysetcell(qUD,"name",application.security.userdirectories[thisud].displayname) />
+		</cfloop>
+		
+		<cfreturn qUD />
+	</cffunction>
 
 </cfcomponent>

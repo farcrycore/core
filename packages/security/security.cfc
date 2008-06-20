@@ -200,7 +200,11 @@
 	
 	<cffunction name="getDefaultUD" access="public" output="false" returntype="string" hint="Returns the default user directory for this application">
 		
-		<cfreturn listfirst(this.userdirectoryorder) />
+		<cfif isdefined("application.config.general.defaultUserDirectory") and len(application.config.general.defaultUserDirectory)>
+			<cfreturn application.config.general.defaultUserDirectory />
+		<cfelse>
+			<cfreturn listfirst(this.userdirectoryorder) />
+		</cfif>
 	</cffunction>
 	
 	<cffunction name="getGroupUsers" access="public" returntype="array" description="Returns an array of the members of the specified groups" output="false" bDocument="true">
