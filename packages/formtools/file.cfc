@@ -25,7 +25,7 @@
 		<cfset var facade = "" />
 		
 		<cfparam name="arguments.stMetadata.ftstyle" default="" />
-		<cfparam name="arguments.stMetadata.ftRenderType" default="flash" />
+		<cfparam name="arguments.stMetadata.ftRenderType" default="html" />
 		
 		<cfset Request.inHead.Scriptaculous = 1>
 		
