@@ -29,6 +29,7 @@
 <cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs" />
 
 <!--- run once only --->
 <cfif thistag.executionmode eq "end">
@@ -108,6 +109,7 @@
 	--->
 	<cfif structkeyexists(stObj,"status") and stObj.status EQ "draft" and NOT ListContainsnocase(request.mode.lValidStatus, stObj.status)>
 		<!--- send to login page and return in draft mode --->
+		<extjs:bubble title="Security" message="This object is in draft" />
 		<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string&"&showdraft=1")#&error=draft" addtoken="No" />
 	</cfif>
 	
@@ -248,6 +250,7 @@
 		<cfset request.typewebskin = "#attributes.typename#.#attributes.method#" />
 		<skin:view typename="#attributes.typename#" webskin="#attributes.method#" />
 	<cfelse>
+		<extjs:bubble title="Security" message="You do not have permission to access this view" />
 		<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#&error=restricted" addtoken="No" />
 	</cfif>
 	
