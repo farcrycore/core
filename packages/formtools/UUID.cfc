@@ -188,7 +188,7 @@
 					<label for="#arguments.fieldname#_none">
 						<input type="radio" 
 							id="#arguments.fieldname#_none" 
-							name="#arguments.fieldname#" class="#arguments.stMetadata.ftclass#"
+							name="#arguments.fieldname#" class="formCheckbox #arguments.stMetadata.ftclass#"
 							<cfif arguments.stObject[arguments.stMetaData.Name] EQ ""> checked</cfif> 
 							value="" />
 						<cfif isDefined("qLibraryList.label")>#arguments.stMetadata.ftFirstListLabel#</cfif>
@@ -198,13 +198,13 @@
 					<label for="#arguments.fieldname#_#replace(qLibraryList.objectid,'-','','ALL')#">
 						<input type="radio" 
 							id="#arguments.fieldname#_#replace(qLibraryList.objectid,'-','','ALL')#" 
-							name="#arguments.fieldname#" class="#arguments.stMetadata.ftclass#"
+							name="#arguments.fieldname#" class="formCheckbox #arguments.stMetadata.ftclass#"
 							<cfif arguments.stObject[arguments.stMetaData.Name] EQ qLibraryList.objectid> checked</cfif> 
 							value="#qLibraryList.objectid#" />
 						<skin:view objectid="#qLibraryList.objectid#" webskin="#arguments.stMetadata.ftLibrarySelectedWebskin#" alternateHTML="#qLibraryList.label#" />
 					</label>
 				</cfloop>
-				
+					<br class="clear" />
 				</cfoutput>
 				
 			<cfelse>
