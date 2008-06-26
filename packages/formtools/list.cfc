@@ -171,14 +171,11 @@
 			
 		</cfif>
 		
-				
-		<cfsavecontent variable="html">
-			<cfloop list="#arguments.stMetadata.ftList#" index="i">			
-				<cfif ListFirst(i,":") EQ arguments.stMetadata.value>
-					<cfoutput>#ListLast(i,":")#</cfoutput>
-				</cfif>
-			</cfloop>
-		</cfsavecontent>
+		<cfloop list="#arguments.stMetadata.ftList#" index="i">			
+			<cfif listcontainsnocase(arguments.stMetadata.value,ListFirst(i,":"))>
+				<cfset html = listappend(html,ListLast(i,":")) />
+			</cfif>
+		</cfloop>
 		
 		<cfreturn html>
 	</cffunction>
