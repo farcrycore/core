@@ -43,8 +43,15 @@ object methods
 <cffunction name="display" access="public" output="true" hint="runs the scheduled task">
 	<cfargument name="objectid" required="yes" type="UUID">
 	
+	<cfset var thisparam = "" />
+	
 	<!--- getData for object edit --->
-	<cfset stObj = getData(arguments.objectid)>
+	<cfset var stObj = getData(arguments.objectid)>
+	
+	<cfloop list="#stObj.parameters#" index="thisparam" delimiters="&">
+		<cfset url[listfirst(thisparam,"=")] = listlast(thisparam,"=") />
+	</cfloop>
+	
 	<cftry>
 	<!--- include scheduled task code and pass in parameters --->
 	<cfinclude template="#stObj.template#">
