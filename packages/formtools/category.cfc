@@ -60,12 +60,12 @@
 							<cfif len(arguments.stMetadata.ftDropdownFirstItem)>
 								<cfoutput><option value="">#arguments.stMetadata.ftDropdownFirstItem#</option></cfoutput>
 							<cfelse>
-								<cfset CategoryName = oCategory.getCategoryNamebyID(categoryid=i,typename='categories') />
+								<cfset CategoryName = oCategory.getCategoryNamebyID(categoryid=i,typename='dmCategory') />
 								<cfoutput><option value="">#CategoryName#</option></cfoutput>
 							</cfif>
 							
 						<cfelse>
-							<cfset CategoryName = oCategory.getCategoryNamebyID(categoryid=i,typename='categories') />
+							<cfset CategoryName = oCategory.getCategoryNamebyID(categoryid=i,typename='dmCategory') />
 							<cfoutput><option value="#i#" <cfif listContainsNoCase(lSelectedCategoryID, i)>selected</cfif>>#CategoryName#</option></cfoutput>
 						</cfif>
 						
