@@ -30,6 +30,7 @@
 	<cfparam name="attributes.id" default="layout#randrange(1,9999999)#" /><!--- Generate unique javascript id if required --->
 	<cfparam name="attributes.container" default="" />
 	<cfparam name="attributes.layout" default="" />
+	<cfparam name="attributes.bGlobalVar" default="false" />
 	
 
 	<cfparam name="request.extJS" default="#structNew()#" />
@@ -37,7 +38,6 @@
 	<!--- Generic config properties --->
 	<cfset stConfig = structNew() />
 	<cfset stConfig.var = "var">
-	
 	
 	<!--- tabPannel and inherited config properties --->
 	<cfset stConfig.activeItem = "activeItem">
@@ -56,12 +56,15 @@
 	<cfset stConfig.autoWidth = "autoWidth" />
 	<cfset stConfig.baseCls = "baseCls" />
 	<cfset stConfig.bbar = "bbar" />
+	<cfset stConfig.bGlobalVar = "bGlobalVar" />
 	<cfset stConfig.bodyBorder = "bodyBorder" />
 	<cfset stConfig.bodyStyle = "bodyStyle" />
 	<cfset stConfig.border = "border" />
 	<cfset stConfig.bufferResize = "bufferResize" />
 	<cfset stConfig.buttonAlign = "buttonAlign" />
 	<cfset stConfig.buttons = "buttons" />
+	<cfset stConfig.checked = "checked" />
+	<cfset stConfig.checkHandler = "checkHandler" />
 	<cfset stConfig.cls = "cls" />
 	<cfset stConfig.collapseFirst = "collapseFirst" />
 	<cfset stConfig.collapsed = "collapsed" />
@@ -75,6 +78,7 @@
 	<cfset stConfig.disabledClass = "disabledClass" />
 	<cfset stConfig.elements = "elements" />
 	<cfset stConfig.enableTabScroll = "enableTabScroll" />
+	<cfset stConfig.enableToggle = "enableToggle" />	
 	<cfset stConfig.floating = "floating" />
 	<cfset stConfig.footer = "footer" />
 	<cfset stConfig.frame = "frame" />
@@ -115,6 +119,7 @@
 	<cfset stConfig.tbar = "tbar" />
 	<cfset stConfig.title = "title" />
 	<cfset stConfig.titleCollapse = "titleCollapse" />
+	<cfset stConfig.toggleGroup = "toggleGroup" />
 	<cfset stConfig.tools =  "tools" />
 	<cfset stConfig.width =  "width" />
 	
@@ -174,18 +179,33 @@
 	 <cfif variables.primaryLayout>
 
 	 	<extjs:onReady>
-		<cfoutput>
 
-				var #attributes.id# = new Ext.#attributes.container#({
-					dummysothatcommaswork:'x'
+		<cfif NOT attributes.bGlobalVar>
+			<cfoutput>var </cfoutput>
+		</cfif>
+		
+		<cfif len(attributes.container)>
+			<cfoutput>#attributes.id# = new Ext.#attributes.container#({
+			</cfoutput>
+		<cfelse>
+			<cfoutput>#attributes.id# = {
+			</cfoutput>
+		</cfif>
+		
+		<cfoutput>dummysothatcommaswork:'x'
 		</cfoutput>
+		
 					<cfif len(attributes.layout)>
 						<cfoutput>,layout:'#attributes.layout#'
 						</cfoutput>
 					</cfif>
+					<cfif structKeyExists(attributes,"plugins") AND len(attributes.plugins)>
+						<cfoutput>,plugins:#attributes.plugins#
+						</cfoutput>
+					</cfif>
 					<cfloop list="#structKeyList(attributes)#" index="i">
-						<cfif not listFindNoCase("id,container,layout",i)>
-							<cfoutput>,#stConfig[i]#:<cfif isNumeric(attributes[i]) or left(trim(attributes[i]),1) EQ "{">#attributes[i]#<cfelse>'#attributes[i]#'</cfif>
+						<cfif not listFindNoCase("id,container,layout,plugins,bGlobalVar",i)>
+							<cfoutput>,#stConfig[i]#:<cfif isNumeric(attributes[i]) or left(trim(attributes[i]),1) EQ "{" OR  isBoolean(attributes[i])>#attributes[i]#<cfelse>'#attributes[i]#'</cfif>
 							</cfoutput>
 						</cfif>
 					</cfloop>
@@ -211,8 +231,15 @@
 						<cfif arrayLen(request.extJS.stLayout.aLayoutItems) GT 1><cfoutput>]</cfoutput></cfif>
 					</cfif>
 		<cfoutput>
-				})
+				}
 		</cfoutput>
+
+		<cfif len(attributes.container)>
+			<cfoutput>)
+			</cfoutput>
+		<cfelse>
+		</cfif>
+				
 		</extjs:onReady>
 	<cfelse>
 	
@@ -264,13 +291,14 @@
 	
 		<cfoutput>{</cfoutput>
 		<cfloop list="#structKeyList(arguments.stProperties)#" index="i">
-			<cfif NOT listFindNoCase("container,aItems,html,listeners,var", i) >
+			<cfif NOT listFindNoCase("container,aItems,html,listeners,var,plugins,bGlobalVar", i) >
 				<cfif firstConfigProperty>
 					<cfset firstConfigProperty = false />
 				<cfelse>
 					<cfoutput>,</cfoutput>
 				</cfif>
-				<cfoutput>#stConfig[i]#:'#arguments.stProperties[i]#'
+				<cfoutput>#stConfig[i]#:<cfif isNumeric(arguments.stProperties[i]) or left(trim(arguments.stProperties[i]),1) EQ "{" OR isBoolean(arguments.stProperties[i])>#arguments.stProperties[i]#<cfelse>'#arguments.stProperties[i]#'</cfif>
+					
 				</cfoutput>
 				
 			</cfif>
@@ -278,6 +306,10 @@
 		
 		<cfif structKeyExists(arguments.stProperties, "listeners") and len(arguments.stProperties.listeners)>
 			<cfoutput>,listeners:#arguments.stProperties.listeners#
+			</cfoutput>
+		</cfif>
+		<cfif structKeyExists(arguments.stProperties, "plugins") and len(arguments.stProperties.plugins)>
+			<cfoutput>,plugins:#arguments.stProperties.plugins#
 			</cfoutput>
 		</cfif>
 		
