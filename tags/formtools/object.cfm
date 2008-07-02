@@ -416,6 +416,7 @@
 						<cfinvokeargument name="stMetadata" value="#ftFieldMetadata#">
 						<cfinvokeargument name="fieldname" value="#variables.prefix##ftFieldMetadata.Name#">
 						<cfinvokeargument name="stPackage" value="#stPackage#">
+						<cfinvokeargument name="prefix" value="#variables.prefix#">
 					</cfinvoke>
 					<cfcatch><cfdump var="#cfcatch#" expand="false"></cfcatch>
 					
