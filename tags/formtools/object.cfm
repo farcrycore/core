@@ -248,6 +248,7 @@
 				</cfif>
 				<p>#attributes.HelpSection#</p>
 			</div>
+			<div class="fieldwrapper">
 		</cfoutput>
 	</cfif>
 	
@@ -669,8 +670,14 @@
 		</cfif>
 	</cfif>
 	
+	<cfif structKeyExists(attributes,"HelpSection") and len(attributes.HelpSection)>
+		<cfoutput></div></cfoutput>
+	</cfif>
+	
 		<cfif attributes.IncludeFieldSet>
-			<cfoutput></fieldset></cfoutput>
+			<cfoutput>
+				</fieldset>
+			</cfoutput>
 		</cfif>
 	
 	
