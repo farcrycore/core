@@ -132,9 +132,21 @@
 			
 		<cfelseif len(arguments.type) and len(arguments.permission)>
 		
-			<cfif arguments.type eq "dmNews">
-				<cfset arguments.type = "News" />
-			</cfif>
+			<!--- Aliasing of typename to permission name for backward compatibility --->
+			<cfswitch expression="#arguments.type#">
+				<cfcase value="dmNews">
+					<cfset arguments.type = "News" />
+				</cfcase>
+				<cfcase value="dmFacts">
+					<cfset arguments.type = "Fact" />
+				</cfcase>
+				<cfcase value="dmEvent">
+					<cfset arguments.type = "Event" />
+				</cfcase>
+				<cfcase value="dmLink">
+					<cfset arguments.type = "Link" />
+				</cfcase>
+			</cfswitch>
 		
 			<cfif this.factory.permission.permissionExists("#arguments.type##arguments.permission#")>
 				<cfset result = this.factory.role.getRight(role=arguments.role, permission=this.factory.permission.getID("#arguments.type##arguments.permission#")) />
