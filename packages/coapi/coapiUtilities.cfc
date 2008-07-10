@@ -177,7 +177,7 @@
 								<!--- IF THE PROPERTY IS A UUID, LOOK IN THIS OBJECTS PROPERTY FOR RELATED CONTENT --->
 								<cfif application.stcoapi[iType].stprops[iProp].metadata.Type EQ "uuid">
 									<cfquery datasource="#application.dsn#" name="q">
-									SELECT #iProp# as objectID, '#iType#' AS typename
+									SELECT #iProp# as objectID, refObjects.typename AS typename
 									FROM #iType# INNER JOIN refObjects
 									ON #iType#.#iProp#=refObjects.objectid
 									WHERE #iType#.objectid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
