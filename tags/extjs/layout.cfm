@@ -101,6 +101,7 @@
 	<cfset stConfig.minButtonWidth = "minButtonWidth" />
 	<cfset stConfig.minTabWidth = "minTabWidth" />
 	<cfset stConfig.monitorResize = "monitorResize" />
+	<cfset stConfig.onTriggerClick = "onTriggerClick" />	
 	<cfset stConfig.plain = "plain" />
 	<cfset stConfig.plugins = "plugins" />
 	<cfset stConfig.renderTo = "renderTo" />
@@ -121,6 +122,7 @@
 	<cfset stConfig.titleCollapse = "titleCollapse" />
 	<cfset stConfig.toggleGroup = "toggleGroup" />
 	<cfset stConfig.tools =  "tools" />
+	<cfset stConfig.triggerClass = "triggerClass" /> 
 	<cfset stConfig.width =  "width" />
 	
 	
@@ -205,7 +207,16 @@
 					</cfif>
 					<cfloop list="#structKeyList(attributes)#" index="i">
 						<cfif not listFindNoCase("id,container,layout,plugins,bGlobalVar",i)>
-							<cfoutput>,#stConfig[i]#:<cfif isNumeric(attributes[i]) or left(trim(attributes[i]),1) EQ "{" OR  isBoolean(attributes[i])>#attributes[i]#<cfelse>'#attributes[i]#'</cfif>
+							<cfoutput>,#stConfig[i]#:<cfif isNumeric(attributes[i]) 
+														OR left(trim(attributes[i]),1) EQ "{"
+									 					OR left(trim(attributes[i]),1) EQ "[" 
+									 					OR left(trim(attributes[i]),9) EQ "function(" 
+									 					OR left(trim(attributes[i]),8) EQ "new Ext." 
+									 					OR  isBoolean(attributes[i])>
+									 					#attributes[i]#
+										 			<cfelse>
+										 				'#attributes[i]#'
+													</cfif>
 							</cfoutput>
 						</cfif>
 					</cfloop>
@@ -213,8 +224,7 @@
 					<cfif arrayLen(request.extJS.stLayout.aLayoutItems)>
 						<cfoutput>,items:
 						</cfoutput>
-						<cfif arrayLen(request.extJS.stLayout.aLayoutItems) GT 1><cfoutput>[</cfoutput></cfif>
-						
+						<cfoutput>[</cfoutput>
 						<cfset firstItem = true />
 						<cfloop from="1" to="#arrayLen(request.extJS.stLayout.aLayoutItems)#" index="i">
 							<cfif firstItem>
@@ -227,8 +237,7 @@
 							<cfoutput>#itemHTML#
 							</cfoutput>
 						</cfloop>		
-						
-						<cfif arrayLen(request.extJS.stLayout.aLayoutItems) GT 1><cfoutput>]</cfoutput></cfif>
+						<cfoutput>]</cfoutput>
 					</cfif>
 		<cfoutput>
 				}
@@ -274,6 +283,7 @@
 	<cfset var firstConfigProperty = true />
 	<cfset var firstItem = true />
 	<cfset var itemHTML = "">
+	<cfset var configPropertyName = "">
 
 	<cfsavecontent variable="returnHTML">
 		<cfif structKeyExists(arguments.stProperties, "var") AND len(arguments.stProperties.var)>
@@ -297,7 +307,18 @@
 				<cfelse>
 					<cfoutput>,</cfoutput>
 				</cfif>
-				<cfoutput>#stConfig[i]#:<cfif isNumeric(arguments.stProperties[i]) or left(trim(arguments.stProperties[i]),1) EQ "{" OR isBoolean(arguments.stProperties[i])>#arguments.stProperties[i]#<cfelse>'#arguments.stProperties[i]#'</cfif>
+				<cfif structKeyExists(stConfig, i)>
+					<cfset configPropertyName = stConfig[i] />
+				<cfelse>
+					<cfset configPropertyName = lCase(i) />
+				</cfif>
+				<cfoutput>#configPropertyName#:<cfif isNumeric(arguments.stProperties[i]) 
+													OR left(trim(arguments.stProperties[i]),1) EQ "{" 
+													OR left(trim(arguments.stProperties[i]),1) EQ "[" 
+									 				OR left(trim(arguments.stProperties[i]),9) EQ "function(" 
+									 				OR left(trim(arguments.stProperties[i]),8) EQ "new Ext." 
+													OR isBoolean(arguments.stProperties[i])>#arguments.stProperties[i]#
+												<cfelse>'#arguments.stProperties[i]#'</cfif>
 					
 				</cfoutput>
 				
@@ -316,7 +337,7 @@
 		<cfif structKeyExists(arguments.stProperties, "aItems") and arrayLen(arguments.stProperties.aItems)>
 			<cfoutput>,items:
 			</cfoutput>
-			<cfif arrayLen(arguments.stProperties.aItems) GT 1><cfoutput>[</cfoutput></cfif>
+			<cfoutput>[</cfoutput>
 			<cfset firstItem = true />
 			<cfloop from="1" to="#arrayLen(arguments.stProperties.aItems)#" index="i">
 				<cfif firstItem>
@@ -328,8 +349,7 @@
 				<cfset itemHTML = renderItem(stProperties=arguments.stProperties.aItems[i]) />
 				<cfoutput>#itemHTML#</cfoutput>
 			</cfloop>
-			
-			<cfif arrayLen(arguments.stProperties.aItems) GT 1><cfoutput>]</cfoutput></cfif>
+			<cfoutput>]</cfoutput>
 		</cfif>
 		<cfoutput>}</cfoutput>
 		<cfif structKeyExists(arguments.stProperties, "container") AND len(arguments.stProperties.container)>
