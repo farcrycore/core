@@ -5,7 +5,7 @@
  * 
  * http://extjs.com/license
  */
-/*
+/* REMOVED AND YOUR PROJECT SHOULD INCLUDE YOUR OWN RESET
 html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,blockquote,th,td{margin:0;padding:0;}
 img,body,html{border:0;}
 address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}
@@ -69,14 +69,14 @@ q:before,q:after{content:'';}
 .x-tab-panel-header{border:1px solid #8db2e3;padding-bottom:2px;}
 .x-tab-panel-footer{border:1px solid #8db2e3;padding-top:2px;}
 .x-tab-strip-wrap{width:100%;overflow:hidden;position:relative;zoom:1;}
-ul.x-tab-strip{display:block;width:5000px;zoom:1;}
+ul.x-tab-strip{display:block;width:5000px;zoom:1;margin:0;padding:0;list-style:none;}
 ul.x-tab-strip-top{padding-top:1px;background:url(../images/default/tabs/tab-strip-bg.gif) #cedff5 repeat-x bottom;border-bottom:1px solid #8db2e3;}
 ul.x-tab-strip-bottom{padding-bottom:1px;background:url(../images/default/tabs/tab-strip-btm-bg.gif) #cedff5 repeat-x top;border-top:1px solid #8db2e3;border-bottom:0 none;}
 .x-tab-panel-header-plain .x-tab-strip-top{background:transparent!important;padding-top:0!important;}
 .x-tab-panel-header-plain{background:transparent!important;border-width:0!important;padding-bottom:0!important;}
 .x-tab-panel-header-plain .x-tab-strip-spacer{border:1px solid #8db2e3;border-top:0 none;height:2px;background:#deecfd;font-size:1px;line-height:1px;}
 .ext-border-box .x-tab-panel-header-plain .x-tab-strip-spacer{height:3px;}
-ul.x-tab-strip li{float:left;margin-left:2px;}
+ul.x-tab-strip li{float:left;margin-left:2px;list-style-type:none;}
 ul.x-tab-strip li.x-tab-edge{float:left;margin:0!important;padding:0!important;border:0 none!important;font-size:1px!important;line-height:1px!important;overflow:hidden;zoom:1;background:transparent!important;width:1px;}
 .x-tab-strip a,.x-tab-strip span,.x-tab-strip em{display:block;}
 .x-tab-strip a{text-decoration:none!important;-moz-outline:none;outline:none;cursor:pointer;}
