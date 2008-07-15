@@ -7,6 +7,8 @@
 	<cfabort showerror="Does not have an end tag..." />
 </cfif>
 
+<!--- import Javascript Libraries libraries --->
+<skin:htmlHead library="farcryForm" />
 
 <!--- MJB
 This enables the developer to wrap a <ft:form> around anything without worrying about whether it will be called within an outer <ft:form>. 
@@ -33,6 +35,8 @@ It just ignores the inner ones.
 		<cfparam name="attributes.Heading" default="">
 		<cfparam name="attributes.Validation" default="1">
 		<cfparam name="attributes.bAjaxSubmission" default="false">
+		<cfparam name="attributes.ajaxMaskMsg" default="Saving Changes">
+		<cfparam name="attributes.ajaxMaskCls" default="x-mask-loading">
 		
 		<!--- We only render the form if FarcryForm OnExit has not been Fired. --->
 		<cfif isDefined("Request.FarcryFormOnExitRun") AND Request.FarcryFormOnExitRun >			
@@ -50,18 +54,22 @@ It just ignores the inner ones.
 		IF SUBMITTING BY AJAX, SET REQUIRED VARIABLES.
 		 --------------------------------------------->
 		<cfif attributes.bAjaxSubmission>
-		
-			<!--- If the form is contained in a webskin, these variables can be determined automatically. --->
-			<cfparam name="attributes.typename" default="#caller.stobj.typename#" />
-			<cfparam name="attributes.webskin" default="#caller.arguments.template#" />
-			<cfparam name="attributes.objectid" default="#caller.stobj.objectid#" />
-			
-			<!---<cfdump var="#attributes#"> --->
+
 			<cfif NOT len(attributes.Action)>
-				<cfset attributes.Action = "#application.url.farcry#/facade/ajaxFormSubmission.cfm?typename=#attributes.typename#&webskin=#attributes.webskin#&objectid=#attributes.ObjectID#&ajaxmode=1" />
+				<cfabort showerror="You must provide the action for an ajax form submission" />
+			<cfelse>
+				<cfif NOT findNoCase("?",attributes.action)>
+					<cfset attributes.action = "#attributes.action#?" />
+				</cfif>
+				<cfif NOT findNoCase("ajaxmode=true",attributes.action)>
+					<cfset attributes.action = "#attributes.action#&ajaxmode=true" />
+				</cfif>
 			</cfif>
-			<skin:htmlHead library="prototypelite" />
-			<cfset attributes.onSubmit = "#attributes.onSubmit#;$('#attributes.Name#ajaxsubmission').innerHTML='saving changes';new Ajax.Updater('#attributes.Name#formwrap', '#attributes.Action#', {asynchronous:true, parameters:Form.serialize(this)}); return false;" />
+			
+			
+			<skin:htmlHead library="extJS" />
+
+			<cfset attributes.onSubmit = "#attributes.onSubmit#;farcryForm_ajaxSubmission('#attributes.Name#','#attributes.Action#','#attributes.ajaxMaskMsg#','#attributes.ajaxMaskCls#');return false;" />
 			
 		<cfelseif NOT len(attributes.Action)>
 			<cfset attributes.Action = "#cgi.SCRIPT_NAME#?#cgi.query_string#" />				
@@ -75,6 +83,7 @@ It just ignores the inner ones.
 			<cfparam name="Request.farcryForm.Target" default="#attributes.Target#">
 			<cfparam name="Request.farcryForm.Action" default="#attributes.Action#">
 			<cfparam name="Request.farcryForm.Method" default="#attributes.Method#">
+			<cfparam name="Request.farcryForm.onSubmit" default="#attributes.onSubmit#">
 			<cfparam name="Request.farcryForm.Validation" default="#attributes.Validation#">
 			<cfparam name="Request.farcryForm.stObjects" default="#StructNew()#">		
 			<cfparam name="Request.farcryForm.bAjaxSubmission" default="#attributes.bAjaxSubmission#">		
@@ -90,7 +99,7 @@ It just ignores the inner ones.
 		<cfparam name="session.stFarCryFormSpamProtection" default="#structNew()#" />
 		<cfparam name="session.stFarCryFormSpamProtection['#Request.farcryForm.Name#']" default="#structNew()#" />
 				
-		<ft:renderHTMLformStart onsubmit="#attributes.onsubmit#" class="#attributes.Class#" css="#attributes.css#" style="#attributes.style#" heading="#attributes.heading#" />
+		<ft:renderHTMLformStart attributeCollection="#attributes#" onsubmit="#attributes.onsubmit#" class="#attributes.Class#" css="#attributes.css#" style="#attributes.style#" heading="#attributes.heading#" />
 	
 	</cfif>
 	
@@ -117,7 +126,7 @@ It just ignores the inner ones.
 			</cfloop>
 		</cfif> --->
 		
-		<ft:renderHTMLformEnd />
+		<ft:renderHTMLformEnd attributeCollection="#attributes#" />
 	
 	
 		<cfset dummy = structdelete(request,"farcryForm")>

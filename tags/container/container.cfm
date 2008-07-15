@@ -141,6 +141,7 @@ $out:$
 <cfif structkeyexists(form,"container")>
 	<cfset url.container = form.container />
 </cfif>
+<cfparam name="url.container" default="" />
 
 <cfif structkeyexists(form,"rule_action")>
 	<cfset url.rule_action = form.rule_action />

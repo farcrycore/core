@@ -56,6 +56,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au) $
 	<cfparam name="attributes.recordsPerPage" default="1" type="numeric">
 	<cfparam name="attributes.submissionType" default="url" type="string">
 	<cfparam name="attributes.actionURL" default="" type="string">
+	<cfparam name="attributes.typename" default="" type="string">
 	
 
 	<cfparam name="attributes.scrollPrefix" default="" type="string" />
@@ -65,9 +66,6 @@ $Developer: Matthew Bryant (mat@daemon.com.au) $
 	
 	<cfif not isDefined("attributes.qRecordSet") or not isQuery(attributes.qRecordSet)>
 		<cfabort showerror="you must pass a recordset into pagination." />
-	</cfif>
-	<cfif not isDefined("attributes.typename") or not len(attributes.typename)>
-		<cfabort showerror="you must pass a typename into pagination." />
 	</cfif>
 
 	<!--- import function libraries --->
@@ -248,16 +246,20 @@ user defined functions
 	<cfif toRecord GT attributes.totalRecords>
 		<cfset toRecord = attributes.totalRecords />
 	</cfif>
+	
+	
+	<cfsavecontent variable="scrollinnards">
+	
 
-	<cfif pTotalPages GT 1>
-		<skin:htmlHead library="prototypelite" />
-		
-		<skin:htmlHead id="paginationpageInputFieldRendered">
+		<cfif bShowPaginate AND pTotalPages GT 1>
+			<skin:htmlHead library="prototypelite" />
+			
 			<cfoutput>
 			<script type="text/javascript">
-			function paginationSubmission (page) {
+			paginationSubmission = function(page){
 				<cfif attributes.submissionType EQ "form">
 					$('paginationpage').value=page;
+					#Request.farcryForm.onSubmit#				
 					$('#Request.farcryForm.Name#').submit();
 				<cfelseif attributes.submissionType eq "url">
 					window.location = '#arguments.actionURL#&page=' + page;
@@ -265,12 +267,12 @@ user defined functions
 					// No js code nothing
 				</cfif>
 			}
+	
 			</script>
 			</cfoutput>
-		</skin:htmlHead>
-	</cfif>
-	
-	<cfsavecontent variable="scrollinnards">
+			
+		</cfif>	
+		
 	
 		<!--- required for JS pagination --->
 		<cfoutput><input type="hidden" name="paginationpage" id="paginationpage" value="" /></cfoutput>

@@ -84,7 +84,7 @@
 
 
 	<cfif attributes.type EQ "submit">
-		<cfset attributes.onClick = "#attributes.onClick#;btnSubmit('#Request.farcryForm.Name#','#jsStringFormat(attributes.value)#');" />	
+		<cfset attributes.onClick = "#attributes.onClick#;#request.farcryForm.onSubmit#;btnSubmit('#Request.farcryForm.Name#','#jsStringFormat(attributes.value)#');" />	
 	</cfif>
 	
 	

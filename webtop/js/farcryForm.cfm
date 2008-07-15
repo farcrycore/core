@@ -397,6 +397,30 @@ function btnSubmit(formName,value) {
 	if (formName != '') {	
 		Ext.get(formName).dom.submit();
 	}
-}		
+}
+	
+function farcryForm_ajaxSubmission(formname,action,maskMsg,maskCls){
+	if (maskMsg == undefined){var maskMsg = 'Saving Changes'};
+	if (maskCls == undefined){var maskCls = 'x-mask-loading'};
+	
+	var myForm = Ext.get(formname);						
+	var mgr = myForm.getUpdater();
 
+	mgr.showLoadIndicator = false;
+	myForm.mask(maskMsg, maskCls);
+	mgr.on("update", 
+		function(el,oResponseObject) {
+			myForm.unmask();
+		}
+	);
+	
+	mgr.update(
+	{
+		url: action,
+		nocache: true,
+		scrips: true,				
+		timeout: 30,
+		params: Ext.Ajax.serializeForm(formname)
+	});
+}		
 </cfoutput>					
