@@ -63,7 +63,7 @@ object methods
 			<cfset oUser.setData(stProperties=stUser) />
 		</cfloop>
 		
-		<cfreturn super.delete(objectid=arguments.objectid,user=arguments.user,auditNote=arguments.audittype) />
+		<cfreturn super.delete(objectid=arguments.objectid,user=arguments.user,auditNote=arguments.auditNote) />
 	</cffunction>
 	
 </cfcomponent>
