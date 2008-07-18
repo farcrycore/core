@@ -10,7 +10,7 @@
 	<ul class="inlinedocs">
 		<li>
 			<a href="#application.url.webtop#/overview/home.cfm" target="content">Overview</a><br/>
-			<p>Overview of content you have in draft or pending approval.</p>
+			<p>Review content you have in draft or pending approval.</p>
 		</li>
 </cfoutput>
 
