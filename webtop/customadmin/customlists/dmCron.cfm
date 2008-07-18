@@ -6,7 +6,7 @@
 <admin:header />
 
 <ft:processform action="Run Task">
-<cfdump var="#form#">
+	<cfset stCron = createobject("component",application.stCOAPI.dmCron.packagepath).display(objectid=form.selectedobjectid) />
 </ft:processform>
 
 <ft:objectadmin 
