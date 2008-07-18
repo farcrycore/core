@@ -17,7 +17,7 @@
 					<div class="fieldSection string">
 						<label class="fieldsectionlabel" for="selectFarcryProject"> Project  : </label>
 						<div class="fieldAlign">
-							<select id="selectFarcryProject" onchange="window.location='#application.url.webtop#/login.cfm?farcryProject='+this.value;">						
+							<select name="selectFarcryProject" id="selectFarcryProject" onchange="window.location='#application.url.webtop#/login.cfm?farcryProject='+this.value;">						
 								<cfloop from="1" to="#arraylen(aDomainProjects)#" index="i">
 									<option value="#thisProject#"<cfif cookie.currentFarcryProject eq thisProject> selected</cfif>>#server.stFarcryProjects[aDomainProjects[i]].displayname#</option>
 								</cfloop>						
