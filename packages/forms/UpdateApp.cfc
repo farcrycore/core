@@ -19,13 +19,13 @@
 		<!--- Webtop reload --->
 		<cfif structkeyexists(arguments.fields,"webtop") and arguments.fields.webtop>
 			<cfset application.factory.oWebtop = createobject("component","#application.packagepath#.farcry.webtop").init() />
-			<extjs:bubble title="Reloaded webtop" />
+			<extjs:bubble title="#application.stCOAPI.UpdateApp.stProps['webtop'].metadata.ftLabel#" message="Done" />
 		</cfif>
 		
 		<!--- Friendly URLs --->
 		<cfif structkeyexists(arguments.fields,"friendlyurls") and arguments.fields.friendlyurls>
 			<cfset createObject("component","#application.packagepath#.farcry.fu").refreshApplicationScope() />
-			<extjs:bubble title="Reloaded friendly URLs" />
+			<extjs:bubble title="#application.stCOAPI.UpdateApp.stProps['friendlyurls'].metadata.ftLabel#" message="Done" />
 		</cfif>
 		
 		<!--- Config settings --->
@@ -35,31 +35,31 @@
 			<cfloop list="#oConfig.getConfigKeys()#" index="configkey">
 				<cfset application.config[configkey] = oConfig.getConfig(configkey) />
 			</cfloop>
-			<extjs:bubble title="Reloaded config settings" />
+			<extjs:bubble title="#application.stCOAPI.UpdateApp.stProps['config'].metadata.ftLabel#" message="Done" />
 		</cfif>
 		
 		<!--- Type metadata --->
 		<cfif structkeyexists(arguments.fields,"typemetadata") and arguments.fields.typemetadata>
 			<cfset createObject("component", "#application.packagepath#.farcry.alterType").refreshAllCFCAppData() />
-			<extjs:bubble title="Reloaded COAPI metadata" />
+			<extjs:bubble title="#application.stCOAPI.UpdateApp.stProps['typemetadata'].metadata.ftLabel#" message="Done" />
 		</cfif>
 		
 		<!--- User directories --->
 		<cfif structkeyexists(arguments.fields,"security") and arguments.fields.security>	
 			<cfset application.security = createobject("component",application.factory.oUtils.getPath("security","security")).init() />
-			<extjs:bubble title="Reloaded security components and cache" />
+			<extjs:bubble title="#application.stCOAPI.UpdateApp.stProps['security'].metadata.ftLabel#" message="Done" />
 		</cfif>
 		
 		<!--- Resource bundles --->
 		<cfif structkeyexists(arguments.fields,"resourcebundles") and arguments.fields.resourcebundles>
 			<cfset application.rb=createObject("component",application.factory.oUtils.getPath("resources","RBCFC")).init(application.locales) />
-			<extjs:bubble title="Reloaded resource bundles" />
+			<extjs:bubble title="#application.stCOAPI.UpdateApp.stProps['resourcebundles'].metadata.ftLabel#" message="Done" />
 		</cfif>
 		
 		<!--- Javascript --->
 		<cfif structkeyexists(arguments.fields,"Javascript") and arguments.fields.Javascript>
 			<cfset application.randomID = createUUID() />
-			<extjs:bubble title="Reloaded javascript" />
+			<extjs:bubble title="#application.stCOAPI.UpdateApp.stProps['Javascript'].metadata.ftLabel#" message="Done" />
 		</cfif>
 		
 		<!--- initialise factory objects --->
@@ -84,7 +84,7 @@
 				<cfcatch>
 				</cfcatch>
 			</cftry>
-			<extjs:bubble title="Reloaded factories" />
+			<extjs:bubble title="#application.stCOAPI.UpdateApp.stProps['factories'].metadata.ftLabel#" message="Done" />
 		</cfif>
 		
 		<cfreturn arguments.fields />
