@@ -36,7 +36,7 @@
 	request.formtool.widthLeft = "25%";
 
 	/* right column */
-	request.formtool.widthRight = "70%";
+	request.formtool.widthRight = "72%";
 
 
 </cfscript>
