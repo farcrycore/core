@@ -46,7 +46,8 @@ author:		pete ottery | daemon | pottery at daemon dot com dot au
 .tab-panes hr {clear:both;width:20%;visibility:hidden;margin:0}
 
 /* apply padding to tab pane content */
-.tab-panes {clear:left;padding: 20px 20px 0;border: 1px solid #E17000;position:relative}
+/* tab-panes had a position:relative, removed due to problems in ie6 */
+.tab-panes {clear:left;padding: 20px 20px 0;border: 1px solid #E17000;}
 .tab-panes li {font-size:86%}
 .tab-container {margin: 0 0 15px}
 
