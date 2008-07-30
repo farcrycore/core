@@ -33,6 +33,7 @@
 
 <!--- run once only --->
 <cfif thistag.executionmode eq "end">
+	<cfsetting enablecfoutputonly="false" />
 	<cfexit method="exittag" />
 </cfif>
 
@@ -92,6 +93,7 @@
 
 			<cfif fileexists("#application.path.project#/errors/404.cfm")>
 				<cfinclude template="#application.path.project#/errors/404.cfm" />
+				<cfsetting enablecfoutputonly="false" />
 				<cfexit method="exittag" />
 
 			<cfelseif isDefined("application.navid.home")>
@@ -157,6 +159,7 @@
 	<!--- if the user is unable to view the object, then show the denied access webskin --->
 	<cfif iHasViewPermission NEQ 1>
 		<skin:view objectid="#attributes.objectid#" webskin="deniedaccess" />
+		<cfsetting enablecfoutputonly="false" />
 		<cfexit method="exittag" />
 	</cfif>
 		
@@ -186,6 +189,7 @@
 			</cfif>
 			
 			<nj:display objectid="#qHasDraft.objectid[1]#" />
+			<cfsetting enablecfoutputonly="false" />
 			<cfexit method="exittemplate">
 		</cfif>
 	</cfif>
@@ -216,33 +220,16 @@
 		</cfif>
 	</cfif>
 	
-	<!---------------------------
-	Build floatMenu, as required
-	$TODO: This should respond to request.mode settings and not require a
-	a whole new set of permission checks, have trapped any errors and suppressed GB 20031024 $
-	---------------------------->
-	<cftry>	
-		<cfif len(application.security.getCurrentUserID()) AND NOT request.bHideContextMenu>
-			<!--- check they are admin --->
-			<!--- check they are able to comment --->
-		
-			<cfset iAdmin = application.security.checkPermission(permission="Admin") />
-			<cfset iCanCommentOnContent = application.security.checkPermission(object=request.navid,permission='CanCommentOnContent') />
-		
-			<cfif (iAdmin eq 1 or iCanCommentOnContent eq 1)>
-				<cfset request.floaterIsOnPage = true>
-				<cfinclude template="floatMenu.cfm">
-			</cfif>
-		</cfif>
-		<!--- end: logged in user? --->
-		<cfcatch>
-		<!--- suppress error --->
-		<cftrace text="Float menu failed: #cfcatch.message#" />
-		</cfcatch>
-	</cftry>
 
 <cfelse>
 
+	<!--- If we are in designmode then check the containermanagement permissions --->
+	<cfif request.mode.design>
+		<!--- set the users container management permission --->
+		<sec:CheckPermission type="#attributes.typename#" permission="ContainerManagement" result="iShowContainers" />
+		<cfset request.mode.showcontainers = iShowContainers />
+	</cfif>
+	
 	<!--- Handle type webskins --->
 	<sec:CheckPermission type="#attributes.typename#" webskinpermission="#attributes.method#" result="bView" />
 	
@@ -256,6 +243,34 @@
 	
 </cfif>
 
+
+
+<!---------------------------
+Build floatMenu, as required
+$TODO: This should respond to request.mode settings and not require a
+a whole new set of permission checks, have trapped any errors and suppressed GB 20031024 $
+---------------------------->
+<cftry>	
+	<cfif len(application.security.getCurrentUserID()) AND NOT request.bHideContextMenu>
+		<!--- check they are admin --->
+		<!--- check they are able to comment --->
+	
+		<cfset iAdmin = application.security.checkPermission(permission="Admin") />
+		<cfset iCanCommentOnContent = application.security.checkPermission(object=request.navid,permission='CanCommentOnContent') />
+	
+		<cfif (iAdmin eq 1 or iCanCommentOnContent eq 1)>
+			<cfset request.floaterIsOnPage = true>
+			<cfinclude template="floatMenu.cfm">
+		</cfif>
+	</cfif>
+	<!--- end: logged in user? --->
+	<cfcatch>
+	<!--- suppress error --->
+	<cftrace text="Float menu failed: #cfcatch.message#" />
+	</cfcatch>
+</cftry>
+
+	
 </cftimer>
 
 <cfsetting enablecfoutputonly="No">

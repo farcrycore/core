@@ -40,10 +40,10 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfset aItems[arrayLen(aItems)].icon = "design.gif">
 <!--- check current design mode state --->
 <cfif isDefined("request.mode.design") and (request.mode.design eq "1")>
-	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&designmode=0">
+	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#attributes.objectid#&designmode=0">
 	<cfset aItems[arrayLen(aItems)].text = "#application.rb.getResource("hidedesign")#">
 <cfelse>
-	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&designmode=1">
+	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#attributes.objectid#&designmode=1">
 	<cfset aItems[arrayLen(aItems)].text = "#application.rb.getResource("showdesign")#">
 </cfif>
 
@@ -52,10 +52,10 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfset aItems[arrayLen(aItems)].icon = "cache.gif">
 <!--- check current cache state --->
 <cfif isDefined("request.mode.flushcache") AND request.mode.flushcache eq 0>
-	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&flushcache=1">
+	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#attributes.objectid#&flushcache=1">
 	<cfset aItems[arrayLen(aItems)].text = "#application.rb.getResource("showlatest")#">
 <cfelse>
-	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&flushcache=0">
+	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#attributes.objectid#&flushcache=0">
 	<cfset aItems[arrayLen(aItems)].text = "#application.rb.getResource("showcached")#">
 </cfif>
 
@@ -64,10 +64,10 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfset aItems[arrayLen(aItems)].icon = "draft.gif">
 <!--- check current state of draft mode --->
 <cfif isDefined("request.mode.showdraft") AND request.mode.showdraft eq 0>
-	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&flushcache=1&showdraft=1">
+	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#attributes.objectid#&flushcache=1&showdraft=1">
 	<cfset aItems[arrayLen(aItems)].text = "#application.rb.getResource("showDraft")#">
 <cfelse>
-	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&flushcache=0&showdraft=0">
+	<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#attributes.objectid#&flushcache=0&showdraft=0">
 	<cfset aItems[arrayLen(aItems)].text = "#application.rb.getResource("hideDraft")#">
 </cfif>
 
@@ -77,23 +77,24 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfset aItems[arrayLen(aItems)].icon = "admin.gif">
 <cfset aItems[arrayLen(aItems)].target = "farcry_webtop">
 
-
-<cfset aItems[arrayLen(aItems)+1] = structNew()>
-<cfif structKeyExists(request, "stobj") and isDefined("application.stcoapi.#request.stobj.typename#.bUseInTree") AND application.stCoapi[request.stobj.typename].bUseInTree>
-	<cfset aItems[arrayLen(aItems)].text = "#application.rb.getResource("editPage")#">
+<cfif structKeyExists(request, "stobj")>
+	<cfset aItems[arrayLen(aItems)+1] = structNew()>
+	<cfif structKeyExists(request, "stobj") and isDefined("application.stcoapi.#request.stobj.typename#.bUseInTree") AND application.stCoapi[request.stobj.typename].bUseInTree>
+		<cfset aItems[arrayLen(aItems)].text = "#application.rb.getResource("editPage")#">
+		<cfset aItems[arrayLen(aItems)].target = "farcry_webtop">
+		<cfset aItems[arrayLen(aItems)].href = "#application.url.farcry#/index.cfm?sec=site&rootobjectid=#request.navid#">
+	<cfelse>
+		<cfset aItems[arrayLen(aItems)].text = "Edit Content">
+		<cfset aItems[arrayLen(aItems)].target = "farcry_webtop_overview">
+		<cfset aItems[arrayLen(aItems)].href = "#application.url.farcry#/edittabOverview.cfm?objectid=#request.stobj.objectid#&ref=overview&typename=#request.stobj.typename#">
+	</cfif>
+	<cfset aItems[arrayLen(aItems)].icon = "edit.gif">
 	<cfset aItems[arrayLen(aItems)].target = "farcry_webtop">
-	<cfset aItems[arrayLen(aItems)].href = "#application.url.farcry#/index.cfm?sec=site&rootobjectid=#request.navid#">
-<cfelse>
-	<cfset aItems[arrayLen(aItems)].text = "Edit Content">
-	<cfset aItems[arrayLen(aItems)].target = "farcry_webtop_overview">
-	<cfset aItems[arrayLen(aItems)].href = "#application.url.farcry#/edittabOverview.cfm?objectid=#request.stobj.objectid#&ref=overview&typename=#request.stobj.typename#">
 </cfif>
-<cfset aItems[arrayLen(aItems)].icon = "edit.gif">
-<cfset aItems[arrayLen(aItems)].target = "farcry_webtop">
 
 <cfset aItems[arrayLen(aItems)+1] = structNew()>
 <cfset aItems[arrayLen(aItems)].text = "#application.rb.getResource("logout")#">
-<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&logout=1">
+<cfset aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#attributes.objectid#&logout=1">
 <cfset aItems[arrayLen(aItems)].icon = "logout.gif">
 
 <cfscript>
@@ -102,7 +103,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	{
 		 aItems[arrayLen(aItems)+1] = structNew();
 		 aItems[arrayLen(aItems)].text = "#application.rb.getResource("refreshAppScope")#";
-		 aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#url.ObjectID#&updateapp=1";
+		 aItems[arrayLen(aItems)].href = "#application.url.conjurer#?objectID=#attributes.objectid#&updateapp=1";
 		 if (isDefined("url.view")) {
 		 	aItems[arrayLen(aItems)].href = "#aItems[arrayLen(aItems)].href#&view=#url.view#";
 		 }

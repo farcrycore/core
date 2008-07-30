@@ -11,7 +11,7 @@
 <cfif isdefined("url.objectid")>
 	<cfset redirecturl = "#redirecturl#?objectid=#url.objectid#" />
 <cfelseif isdefined("url.type") and isdefined("url.view")>
-	<cfset redirecturl = "#redirecturl#?type=#url.type#&view=#url.method#" />
+	<cfset redirecturl = "#redirecturl#?type=#url.type#&view=#url.view#" />
 </cfif>
 
 <extjs:iframeDialog />
