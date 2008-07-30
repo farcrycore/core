@@ -635,6 +635,16 @@
 								<cfloop list="#qlibresult.columnlist#" index="col">
 									<cfset querysetcell(qresult, col, qlibresult[col][qLibResult.currentrow]) />
 								</cfloop>
+							<cfelse>
+								<!--- overwrite record since its being extended --->
+								<cfquery dbtype="query" name="qFindDupe">
+								SELECT name
+								FROM qResult
+								</cfquery>
+								<cfset recordNum = listFindNoCase(valueList(qFindDupe.name),qDupe.name) />
+								<cfloop list="#qLibResult.columnList#" index="col">
+									<cfset querySetCell(qResult, col, qLibResult[col][qLibResult.currentRow],recordNum) />
+								</cfloop>
 							</cfif>
 							
 						</cfloop>
