@@ -1,6 +1,6 @@
 <cfsetting enablecfoutputonly="true" /> 
 
-<!--- @@displayname: Core standard HTML display --->
+<!--- @@displayname: Core standard display --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au)--->
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
@@ -10,8 +10,10 @@
 	<skin:breadcrumb separator=" / ">
 	
 	<cfoutput>
-	<h1>#stObj.title#</h1>
-	<div class="fc-richtext">#stObj.body#</div>
+	<h1>#stObj.label#</h1>
+	<cfif structKeyExists(stobj, "body")>
+		#stObj.body#
+	</cfif>
 	</cfoutput>
 
 <skin:view objectid="#stobj.objectid#" typename="#stobj.typename#" template="displayFooterStandard" />
