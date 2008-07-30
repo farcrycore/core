@@ -567,6 +567,8 @@
 		<cfset var includeDescription = "" />
 		<cfset var includeHashURL = "" />
 		<cfset var includeFilePath = "" />
+		<cfset var recordNum = 0 />
+		<cfset var qFindDupe = queryNew("") />
 
 
 			<!--- check project includes --->
@@ -598,15 +600,25 @@
 						
 						<cfloop query="qLibResult">
 							<cfquery dbtype="query" name="qDupe">
-							SELECT *
-							FROM qResult
-							WHERE name = '#qLibResult.name#'
+								SELECT *
+								FROM qResult
+								WHERE name = '#qLibResult.name#'
 							</cfquery>
 							
 							<cfif NOT qDupe.Recordcount>
 								<cfset queryaddrow(qresult,1) />
 								<cfloop list="#qlibresult.columnlist#" index="col">
 									<cfset querysetcell(qresult, col, qlibresult[col][qLibResult.currentrow]) />
+								</cfloop>
+							<cfelse>
+								<!--- overwrite record since its being extended --->
+								<cfquery dbtype="query" name="qFindDupe">
+									SELECT name
+									FROM qResult
+								</cfquery>
+								<cfset recordNum = listFindNoCase(valueList(qFindDupe.name),qDupe.name) />
+								<cfloop list="#qLibResult.columnList#" index="col">
+									<cfset querySetCell(qResult, col, qLibResult[col][qLibResult.currentRow],recordNum) />
 								</cfloop>
 							</cfif>
 							
