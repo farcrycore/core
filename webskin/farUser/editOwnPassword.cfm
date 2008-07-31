@@ -5,6 +5,11 @@
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 
+<cfset stUser = getByUserId(listfirst(session.security.userid,"_")) />
+<cfif structkeyexists(stObj,"bDefaultObject") and stObj.bDefaultObject>
+	<cfset stObj = stUser />
+</cfif>
+
 <!--- user can only update their own password --->	
 <cfif NOT listfirst(application.security.getCurrentUserID(),"_") eq stObj.userid>
 	<cfthrow message="Invalid Password Change" detail="You cannot edit other user passwords." />
