@@ -125,4 +125,6 @@
 </rss>
 </cfoutput>
 
+<cfabort />
+
 <cfsetting enablecfoutputonly="false" />

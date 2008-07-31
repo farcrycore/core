@@ -57,4 +57,6 @@
 
 <cfoutput></feed></cfoutput>
 
+<cfabort />
+
 <cfsetting enablecfoutputonly="false" />
