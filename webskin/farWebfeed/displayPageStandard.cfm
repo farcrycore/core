@@ -14,8 +14,8 @@
 	<cfquery dbtype="query" name="stObjParam.qObjects">
 		select		objectid,datetimelastupdated
 		from		stObjParam.qObjects
-		<cfif url.format eq "podcast" and len(stObj.mediaproperty)>
-			where	#stObj.mediaproperty# like '%.mp3' or #stObj.mediaproperty# like '%.m4v'
+		<cfif url.format eq "podcast" and len(stObj.enclosurefileproperty)>
+			where	#stObj.enclosurefileproperty# like '%.mp3' or #stObj.enclosurefileproperty# like '%.m4v'
 		</cfif>
 		order by	#stObj.dateproperty# desc
 	</cfquery>
@@ -23,8 +23,8 @@
 	<cfquery datasource="#application.dsn#" name="stObjParam.qObjects">
 		select		objectid,datetimelastupdated
 		from		#application.dbowner##stObj.itemtype#
-		<cfif url.format eq "podcast" and len(stObj.mediaproperty)>
-			where	#stObj.mediaproperty# like '%.mp3' or #stObj.mediaproperty# like '%.m4v'
+		<cfif url.format eq "podcast" and len(stObj.enclosurefileproperty)>
+			where	#stObj.enclosurefileproperty# like '%.mp3' or #stObj.enclosurefileproperty# like '%.m4v'
 		</cfif>
 		order by	#stObj.dateproperty# desc
 	</cfquery>

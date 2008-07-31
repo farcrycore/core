@@ -38,7 +38,7 @@
 			</li>
 </cfoutput>
 
-<cfif len(stObj.mediaproperty)>
+<cfif len(stObj.enclosurefileproperty)>
 	<cfoutput>
 		<li>
 			<a href="#arguments.stParam.itunespath#">
@@ -77,7 +77,7 @@
 <cfset stObjParam.directory = stObj.directory />
 <cfset stObjParam.title = stObj.titleproperty />
 <cfset stObjParam.content = stObj.contentproperty />
-<cfset stObjParam.media = stObj.mediaproperty />
+<cfset stObjParam.media = stObj.enclosurefileproperty />
 <cfset stObjParam.date = stObj.dateproperty />
 <cfset stObjParam.bAuthor = stObj.bAuthor />
 <cfset stObjParam.keywords = stObj.keywordsproperty />

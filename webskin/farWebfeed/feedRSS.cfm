@@ -55,7 +55,7 @@
 </cfif>
 
 <!--- ITUNES ELEMENTS --->
-<cfif len(stObj.mediaproperty)>
+<cfif len(stObj.enclosurefileproperty)>
 	<cfif len(stObj.subtitle)>
 		<cfoutput><itunes:subtitle>#stObj.subtitle#</itunes:subtitle></cfoutput>
 	</cfif>
@@ -110,7 +110,7 @@
 <cfset stObjParam.directory = stObj.directory />
 <cfset stObjParam.title = stObj.titleproperty />
 <cfset stObjParam.content = stObj.contentproperty />
-<cfset stObjParam.media = stObj.mediaproperty />
+<cfset stObjParam.media = stObj.enclosurefileproperty />
 <cfset stObjParam.date = stObj.dateproperty />
 <cfset stObjParam.bAuthor = stObj.bAuthor />
 <cfset stObjParam.keywords = stObj.keywordsproperty />
