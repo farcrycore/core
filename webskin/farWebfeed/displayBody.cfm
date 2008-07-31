@@ -48,10 +48,7 @@
 	<cfset itunespath = replace("#feedurl#&amp;view=feedPodcast","http","itpc") />
 </cfif>
 
-<skin:htmlHead><cfoutput>
-	<link rel="alternate" type="application/rss+xml" title="RSS" href="#rsspath#" />
-	<link rel="alternate" type="application/atom+xml" title="Atom" href="#atompath#" />
-</cfoutput></skin:htmlHead>
+<skin:view stObject="#stObj#" webskin="displayMetatags" />
 
 <cfoutput>
 	<h1>#stObj.title#</h1>
