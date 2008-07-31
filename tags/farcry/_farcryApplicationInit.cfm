@@ -79,6 +79,7 @@ test for the existance of each and act accordingly
 	application.url.conjurer = application.url.webroot & "/index.cfm"; // general invoker
 	
 	//initialise factory objects 
+	application.factory.oAlterType = createobject("component","#application.packagepath#.farcry.alterType");
 	application.factory.oAuthorisation = createobject("component","#application.packagepath#.security.authorisation");
 	application.factory.oWebtop = createobject("component","#application.packagepath#.farcry.webtop").init();
 	application.factory.oUtils = createobject("component","#application.packagepath#.farcry.utils");
