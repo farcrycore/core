@@ -1,22 +1,60 @@
 <cfsetting enablecfoutputonly="true" />
-<!--- @@displayname: Display HTML version of feed --->
+<!--- @@displayname: HTML body --->
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
-<cfif fileexists("#application.path.project#/webskin/includes/dmHeader.cfm")>
-	<cfmodule template="/farcry/projects/#application.applicationname#/webskin/includes/dmHeader.cfm" layoutClass="type-a" pageTitle="#stObj.title#" >
+<!--- Get objects --->
+<cfset qObjects = getFeedObjects(stObj=stObj) />
+
+<!--- Get editor --->
+<cfif len(stObj.editor)>
+	<cfset stObj.editor = application.config.general.sitetitle />
+</cfif>
+
+<!--- Get last changed date --->
+<cfquery dbtype="query" name="qLatest">
+	select		max(datetimelastupdated) as latest
+	from		qObjects
+</cfquery>
+<cfif qLatest.recordcount>
+	<cfset builddate = qLatest.latest />
 <cfelse>
-	<skin:view stObject="#stObj#" webskin="displayHeader" alternateHTML="<html><body>" />
+	<cfset builddate = now() />
+</cfif>
+<cfset tz = getTimeZoneInfo() />
+<cfset builddate = dateAdd('s',tz.utcTotalOffset,builddate) />
+
+<!--- Get URL --->
+<skin:buildLink objectid="#stObj.objectid#" r_url="feedurl" includeDomain="true" />
+<cfif len(stObj.url)>
+	<cfset linkbackurl = stObj.url />
+<cfelse>
+	<cfset linkbackurl = feedurl />
+</cfif>
+
+<!--- Get feed directory --->
+<cfif not len(stObj.directory)>
+	<cfset stObj.directory = "/feeds/#rereplace(stObj.title,'[^\w]+','-','ALL')#" />
+</cfif>
+
+<!--- Get feed paths --->
+<cfif fileexists("#application.path.project#/www#stObj.directory#/rss.xml") or request.stObj.typename eq "dmCron">
+	<cfset rsspath = "http://#cgi.http_host##stObj.directory#/rss.xml" />
+	<cfset atompath = "http://#cgi.http_host##stObj.directory#/atom.xml" />
+	<cfset itunespath = "itpc://#cgi.http_host##stObj.directory#/podcast.xml" />
+<cfelse>
+	<cfset rsspath = "#feedurl#&amp;view=feedRSS" />
+	<cfset atompath = "#feedurl#&amp;view=feedAtom" />
+	<cfset itunespath = replace("#feedurl#&amp;view=feedPodcast","http","itpc") />
 </cfif>
 
 <skin:htmlHead><cfoutput>
-	<link rel="alternate" type="application/rss+xml" title="RSS" href="#arguments.stParam.rsspath#" />
-	<link rel="alternate" type="application/atom+xml" title="Atom" href="#arguments.stParam.atompath#" />
+	<link rel="alternate" type="application/rss+xml" title="RSS" href="#rsspath#" />
+	<link rel="alternate" type="application/atom+xml" title="Atom" href="#atompath#" />
 </cfoutput></skin:htmlHead>
 
 <cfoutput>
-	<div id="content">
-		<h1>#stObj.title#</h1>
+	<h1>#stObj.title#</h1>
 </cfoutput>
 
 <cfif len(stObj.subtitle)>
@@ -27,12 +65,12 @@
 		<p class="keywords">#stObj.keywords#</p>
 		<ul class="feedlist">
 			<li>
-				<a href="#arguments.stParam.rsspath#">
+				<a href="#rsspath#">
 					<img src="#application.url.farcry#/images/icons/rss.gif" /> RSS Feed
 				</a>
 			</li>
 			<li>
-				<a href="#arguments.stParam.atompath#">
+				<a href="#atompath#">
 					<img src="#application.url.farcry#/images/icons/atom.gif" /> Atom Feed
 				</a>
 			</li>
@@ -41,7 +79,7 @@
 <cfif len(stObj.enclosurefileproperty)>
 	<cfoutput>
 		<li>
-			<a href="#arguments.stParam.itunespath#">
+			<a href="#itunespath#">
 				<img src="#application.url.farcry#/images/icons/podcast.gif" /> Subscribe in iTunes
 			</a>
 		</li>
@@ -83,18 +121,8 @@
 <cfset stObjParam.keywords = stObj.keywordsproperty />
 <cfset stObjParam.itunessubtitle = stObj.itunessubtitleproperty />
 <cfset stObjParam.itunesduration = stObj.itunesdurationproperty />
-<cfloop query="arguments.stParam.qObjects">
-	<skin:view objectid="#arguments.stParam.qObjects.objectid#" webskin="feedHTML" stParam="#stObjParam#" />
+<cfloop query="qObjects">
+	<skin:view objectid="#qObjects.objectid#" webskin="feedHTML" stParam="#stObjParam#" />
 </cfloop>
-
-<cfoutput>
-	</div>
-</cfoutput>
-
-<cfif fileexists("#application.path.project#/webskin/includes/dmFooter.cfm")>
-	<cfmodule template="/farcry/projects/#application.applicationname#/webskin/includes/dmFooter.cfm" >
-<cfelse>
-	<skin:view stObject="#stObj#" webskin="displayHeader" alternateHTML="<html><body>" />
-</cfif>
 
 <cfsetting enablecfoutputonly="false" />
