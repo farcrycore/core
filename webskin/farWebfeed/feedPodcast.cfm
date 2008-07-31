@@ -3,6 +3,53 @@
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
+<!--- Get objects --->
+<cfset qObjects = getFeedObjects(stObj=stObj) />
+
+<!--- Get editor --->
+<cfif len(stObj.editor)>
+	<cfset stObj.editor = application.config.general.sitetitle />
+</cfif>
+
+<!--- Get last changed date --->
+<cfquery dbtype="query" name="qLatest">
+	select		max(datetimelastupdated) as latest
+	from		qObjects
+</cfquery>
+<cfif qLatest.recordcount>
+	<cfset builddate = qLatest.latest />
+<cfelse>
+	<cfset builddate = now() />
+</cfif>
+<cfset tz = getTimeZoneInfo() />
+<cfset builddate = dateAdd('s',tz.utcTotalOffset,builddate) />
+
+<!--- Get URL --->
+<skin:buildLink objectid="#stObj.objectid#" r_url="feedurl" includeDomain="true" />
+<cfif len(stObj.url)>
+	<cfset linkbackurl = stObj.url />
+<cfelse>
+	<cfset linkbackurl = feedurl />
+</cfif>
+
+<!--- Get feed directory --->
+<cfif not len(stObj.directory)>
+	<cfset stObj.directory = "/feeds/#rereplace(stObj.title,'[^\w]+','-','ALL')#" />
+</cfif>
+
+<!--- Get feed paths --->
+<cfif fileexists("#application.path.project#/www#stObj.directory#/rss.xml") or request.stObj.typename eq "dmCron">
+	<cfset rsspath = "http://#cgi.http_host##stObj.directory#/rss.xml" />
+	<cfset atompath = "http://#cgi.http_host##stObj.directory#/atom.xml" />
+	<cfset itunespath = "itpc://#cgi.http_host##stObj.directory#/podcast.xml" />
+<cfelse>
+	<cfset rsspath = "#feedurl#&amp;view=feedRSS" />
+	<cfset atompath = "#feedurl#&amp;view=feedAtom" />
+	<cfset itunespath = replace("#feedurl#&amp;view=feedPodcast","http","itpc") />
+</cfif>
+
+<cfset request.mode.ajax = true />
+
 <cfcontent type="application/rss+xml" reset="true" /><cfoutput><?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0"
 	xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"
@@ -10,12 +57,12 @@
 	xmlns:atom="http://www.w3.org/2005/Atom">
 	<channel>
 		<title>#stObj.title#</title>
-		<link>#arguments.stParam.url#</link>
-		<atom:link href="#arguments.stParam.itunespath#" rel="self" type="application/rss+xml" />
+		<link>#linkbackurl#</link>
+		<atom:link href="#itunespath#" rel="self" type="application/rss+xml" />
 		<description><![CDATA[#stObj.description# ]]></description>
-		<lastBuildDate>#lsdateformat(arguments.stParam.builddate,"ddd, dd mmm yyyy")# #lstimeformat(arguments.stParam.builddate,"HH:mm:ss")# GMT</lastBuildDate>
+		<lastBuildDate>#lsdateformat(builddate,"ddd, dd mmm yyyy")# #lstimeformat(builddate,"HH:mm:ss")# GMT</lastBuildDate>
 		<language>#replace(lcase(application.config.general.locale),"_","-")#</language>
-		<generator>FarCry WebFeed</generator>
+		<generator>#stObj.generator#</generator>
 </cfoutput>
 
 <cfif len(stObj.copyright)>
@@ -27,7 +74,7 @@
 		<image>
 			<url>http://#cgi.http_host#/#application.url.imageRoot##stObj.feedimage#</url>
 			<title>#stObj.title#</title>
-			<link>#arguments.stParam.url#</link>
+			<link>#linkbackurl#</link>
 		</image>
 	</cfoutput>
 </cfif>
@@ -116,15 +163,13 @@
 <cfset stObjParam.keywords = stObj.keywordsproperty />
 <cfset stObjParam.itunessubtitle = stObj.itunessubtitleproperty />
 <cfset stObjParam.itunesduration = stObj.itunesdurationproperty />
-<cfloop query="arguments.stParam.qObjects">
-	<skin:view objectid="#arguments.stParam.qObjects.objectid#" webskin="feedPodcast" stParam="#stObjParam#" />
+<cfloop query="qObjects">
+	<skin:view objectid="#qObjects.objectid#" webskin="feedPodcast" stParam="#stObjParam#" />
 </cfloop>
 
 <cfoutput>
 	</channel>
 </rss>
 </cfoutput>
-
-<cfabort />
 
 <cfsetting enablecfoutputonly="false" />

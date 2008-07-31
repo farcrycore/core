@@ -592,4 +592,42 @@
 		<cfreturn html />
 	</cffunction>
 
+	<cffunction name="getFeedObjects" access="public" returntype="query" description="Returns a query of objects to output in the feed" output="false">
+		<cfargument name="objectid" type="uuid" required="false" hint="The objectid of the feed to process" />
+		<cfargument name="stObj" type="struct" required="false" hint="A webfeed object struct to process" />
+		
+		<cfset var qResult = querynew("empty") />
+		
+		<cfif not structkeyexists(arguments,"objectid") and not structkeyexists(arguments,"stObj")>
+			<cfthrow message="getFeedObjects requires the objectid or stObj argument" />
+		<cfelseif not structkeyexists(arguments,"stObj")>
+			<cfset arguments.stObj = getData(arguments.objectid) />
+		</cfif>
+		
+		<!--- Get objects --->
+		<cfif len(arguments.stObj.catFilter)>
+			<cfset qResult = application.factory.oCategory.getObjectByCategory(lCategories=arguments.stObj.catFilter,typename=arguments.stObj.itemtype,bHasAny=true) />
+			
+			<cfquery dbtype="query" name="qResult" maxrows="10">
+				select		objectid,datetimelastupdated
+				from		qResult
+				<cfif len(arguments.stObj.enclosurefileproperty)>
+					where	#arguments.stObj.enclosurefileproperty# like '%.mp3' or #arguments.stObj.enclosurefileproperty# like '%.m4v'
+				</cfif>
+				order by	#arguments.stObj.dateproperty# desc
+			</cfquery>
+		<cfelse>
+			<cfquery datasource="#application.dsn#" name="qResult" maxrows="10">
+				select		objectid,datetimelastupdated
+				from		#application.dbowner##arguments.stObj.itemtype#
+				<cfif len(arguments.stObj.enclosurefileproperty)>
+					where	#arguments.stObj.enclosurefileproperty# like '%.mp3' or #arguments.stObj.enclosurefileproperty# like '%.m4v'
+				</cfif>
+				order by	#arguments.stObj.dateproperty# desc
+			</cfquery>
+		</cfif>
+		
+		<cfreturn qResult />
+	</cffunction>
+
 </cfcomponent>

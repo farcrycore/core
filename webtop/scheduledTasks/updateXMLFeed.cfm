@@ -61,7 +61,7 @@ $out:$
 	<cfif not fileexists("#application.path.project#/www#stObj.directory#/rss.xml")>
 		<cffile action="write" file="#application.path.project#/www#stObj.directory#/rss.xml" output="" />
 	</cfif>
-	<cfhttp url="http://#cgi.http_host#/#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&format=rss" />
+	<cfhttp url="http://#cgi.http_host#/#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&view=feedRSS" />
 	<cffile action="write" file="#application.path.project#/www#stObj.directory#/rss.xml" output="#cfhttp.fileContent#" />
 	<cfoutput><p>Created <a href="#stObj.directory#/rss.xml">RSS feed</a></p></cfoutput>
 	
@@ -69,7 +69,7 @@ $out:$
 	<cfif not fileexists("#application.path.project#/www#stObj.directory#/atom.xml")>
 		<cffile action="write" file="#application.path.project#/www#stObj.directory#/atom.xml" output="" />
 	</cfif>
-	<cfhttp url="http://#cgi.http_host#/#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&format=atom" />
+	<cfhttp url="http://#cgi.http_host#/#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&view=feedAtom" />
 	<cffile action="write" file="#application.path.project#/www#stObj.directory#/atom.xml" output="#cfhttp.fileContent#" />
 	<cfoutput><p>Created <a href="#stObj.directory#/atom.xml">Atom feed</a></p></cfoutput>
 	
@@ -78,7 +78,7 @@ $out:$
 		<cfif not fileexists("#application.path.project#/www#stObj.directory#/podcast.xml")>
 			<cffile action="write" file="#application.path.project#/www#stObj.directory#/podcast.xml" output="" />
 		</cfif>
-		<cfhttp url="http://#cgi.http_host#/#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&format=podcast" />
+		<cfhttp url="http://#cgi.http_host#/#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&view=feedPodcast" />
 		<cffile action="write" file="#application.path.project#/www#stObj.directory#/podcast.xml" output="#cfhttp.fileContent#" />
 		<cfoutput><p>Created <a href="#stObj.directory#/podcast.xml">iTunes podcast</a></p></cfoutput>
 	</cfif>
