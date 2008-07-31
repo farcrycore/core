@@ -27,6 +27,7 @@
 <cfparam name="attributes.stSpamProtectConfig" default="#structNew()#" /><!--- config data that will override the config set in the webtop. --->
 <cfparam name="attributes.rbkey" default="forms.buttons.#rereplacenocase(attributes.value,'[^\w\d]','','ALL')#">
 <cfparam name="attributes.disabled" default="false"><!--- Should the button be disabled --->
+<cfparam name="attributes.r_stButton" default=""><!--- the name of the calling scope variable name to return the details of the farcry button --->
 
 
 <cfif thistag.executionMode eq "End">
@@ -115,15 +116,19 @@
 	</cfdefaultcase>
 	</cfswitch>
 
-	<cfoutput>
-	<span id="#attributes.id#-wrap">
-		<button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" class="f-btn-text" <cfif attributes.disabled>disabled</cfif>>#attributes.text#</button>
-	</span>
-	</cfoutput>
-		
-	<extjs:onReady>
+	<cfif not len(attributes.r_stButton)>
 		<cfoutput>
-			newFarcryButton('#attributes.id#','#lcase(attributes.type)#','#lcase(attributes.size)#','#jsStringFormat(attributes.value)#','#jsStringFormat(attributes.text)#','#attributes.icon#','#attributes.overIcon#','#attributes.iconPos#', '#attributes.sprite#', '#attributes.width#','#farcryFormName#','#jsStringFormat(attributes.OnClick)#','#lcase(yesNoFormat(attributes.disabled))#','#jsStringFormat(attributes.class)#','#jsStringFormat(attributes.style)#');</cfoutput>
-	</extjs:onReady>
-
+		<span id="#attributes.id#-wrap">
+			<button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" class="f-btn-text" <cfif attributes.disabled>disabled</cfif>>#attributes.text#</button>
+		</span>
+		</cfoutput>
+			
+		<extjs:onReady>
+			<cfoutput>
+				newFarcryButton('#attributes.id#','#lcase(attributes.type)#','#lcase(attributes.size)#','#jsStringFormat(attributes.value)#','#jsStringFormat(attributes.text)#','#attributes.icon#','#attributes.overIcon#','#attributes.iconPos#', '#attributes.sprite#', '#attributes.width#','#farcryFormName#','#jsStringFormat(attributes.OnClick)#','#lcase(yesNoFormat(attributes.disabled))#','#jsStringFormat(attributes.class)#','#jsStringFormat(attributes.style)#');</cfoutput>
+		</extjs:onReady>
+	<cfelse>
+		<cfset caller[attributes.r_stButton] = duplicate(attributes) />
+		<cfset caller[attributes.r_stButton].name = "FarcryForm#attributes.Type#Button=#attributes.value#">
+	</cfif>
 </cfif>
