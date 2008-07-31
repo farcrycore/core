@@ -3,10 +3,10 @@
 	<section id="home" sequence="1000" permission="MainNavMyFarcryTab" label="Overview">
 		<subsection id="overview" sequence="100" sidebar="overview/sidebar.cfm" content="overview/content.cfm" label="Overview" />
 	</section>
-	<section id="site" sequence="2000" permission="MainNavSiteTab" label="Site" altexpansion="400" description="Manage your website's menu structure and HTML content">
+	<section id="site" sequence="2000" permission="MainNavSiteTab" label="Site" altexpansion="400" icon="site" description="Manage your website's menu structure and HTML content">
 		<subsection id="tree" sequence="100" permission="MainNavSiteTab" sidebar="site/sidebar.cfm" content="inc/content_overview.html" label="Site" />
 	</section>
-	<section id="content" sequence="3000" permission="MainNavContentTab" label="Content" description="Edit and add to your library of media and general content">
+	<section id="content" sequence="3000" permission="MainNavContentTab" label="Content" icon="content" description="Edit and add to your library of media and general content">
 		<subsection id="contentpublishing" sequence="10" label="Content Publishing">
 			<menu id="menuquickbuilder" sequence="10" label="Quick Site Builder">
 				<menuitem id="quicksitebuilder" sequence="10" label="Quick Site Builder" link="/admin/quickBuilder.cfm" icon="dmarchive" description="Build your information hierarchy with the Quick Site Builder.  Useful for rapidly creating new sites or branches of content in the site overview tree." />
@@ -36,7 +36,7 @@
 		</subsection>
 	</section>
 
-	<section id="admin" sequence="4000" permission="MainNavAdminTab" label="Admin" description="Configure and secure your website">
+	<section id="admin" sequence="4000" permission="MainNavAdminTab" label="Admin" icon="config" description="Configure and secure your website">
 		<subsection id="general" sequence="10" label="General Admin" permission="AdminGeneralTab">
 			<menu id="configuration" sequence="10" label="Configuration">
 				<menuitem id="listfarconfig" sequence="1" permission="developer" label="Edit Config" link="/admin/customadmin.cfm?module=customlists/farConfig.cfm" relatedtype="farConfig" />

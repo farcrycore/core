@@ -1,7 +1,10 @@
 <cfsetting enablecfoutputonly="true" />
 <!--- @@displayname: Adds metatags to HTML head --->
 
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+
 <!--- Get feed paths --->
+<skin:buildLink objectid="#stObj.objectid#" r_url="feedurl" includeDomain="true" />
 <cfif fileexists("#application.path.project#/www#stObj.directory#/rss.xml") or request.stObj.typename eq "dmCron">
 	<cfset rsspath = "http://#cgi.http_host##stObj.directory#/rss.xml" />
 	<cfset atompath = "http://#cgi.http_host##stObj.directory#/atom.xml" />

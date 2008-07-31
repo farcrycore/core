@@ -67,11 +67,6 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 			<cfoutput><ul class="overviewlist"></cfoutput> --->
 			
 			<admin:loopwebtop parent="#menu#" item="menuitem">
-				<!--- If an icon was specified, convert it to the icon facade --->
-				<cfif len(menuitem.icon)>
-					<cfset menuitem.icon="#application.url.webtop#/facade/icon.cfm?icon=#menuitem.icon#" />
-				</cfif>
-			
 				<!--- If a related type is specified, use that to fill description and icon attributes --->
 				<cfif len(menuitem.relatedType)>
 					<cfif structkeyexists(application.stCOAPI,menuitem.relatedtype)>
@@ -81,7 +76,7 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 						<cfelseif structkeyexists(application.stCOAPI[menuitem.relatedType],"hint")>
 							<cfset menuitem.description = application.rb.getResource("coapi.#menuitem.relatedtype#@description",application.stCOAPI[menuitem.relatedType].hint) />
 						</cfif>
-						<cfset menuitem.icon="#application.url.webtop#/facade/icon.cfm?type=#menuitem.relatedType#&usecustom=true" />
+						<cfset menuitem.icon = menuitem.relatedType />
 					<cfelse>
 						<cfthrow message="Related type attribute for '#menuitem.id#' menu item does not specify a valid type" />
 					</cfif>
@@ -99,7 +94,7 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 					<cfif len(menuitem.icon)>
 						<cfoutput>
 							<a href="#menuitem.link#" target="content">
-								<img src="#menuitem.icon#" class="overviewicon" border="0" style="float:left;" />
+								<img src="#application.url.webtop#/facade/icon.cfm?icon=#menuitem.icon#" class="overviewicon" border="0" style="float:left;" />
 							</a>
 						</cfoutput>
 					</cfif>

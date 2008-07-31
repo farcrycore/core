@@ -65,7 +65,7 @@
 <li>
 <cfif bCollapsable GT 0>
 <a href="javascript:void(0);" onclick="showHide('collapse_#attributes.moduleCounter#_#iCurrentObjectID#','#iCurrentObjectID#_#iCounter#-a');return false;" style="background:transparent">
-<img id="#iCurrentObjectID#_#iCounter#-a" src="#application.url.farcry#/images/icons/xsmall/expand.png" alt="" /></a>
+<img id="#iCurrentObjectID#_#iCounter#-a" src="#application.url.webtop#/facade/icon.cfm?icon=expand&size=16" alt="" /></a>
 <a href="javascript:void(0);" onclick="showHide('collapse_#attributes.moduleCounter#_#iCurrentObjectID#','#iCurrentObjectID#_#iCounter#-a');return false;"></a>
 </cfif>
 <cfif naviagtionURL EQ "">

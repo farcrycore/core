@@ -8,18 +8,15 @@
 <cfoutput>
 	<h1>Welcome to FarCry</h1>
 	<ul class="inlinedocs">
-		<li>
-			<a href="#application.url.webtop#/overview/home.cfm" target="content">Overview</a><br/>
+			<li><a href="#application.url.webtop#/overview/home.cfm" target="_top">
+				<img class="overviewicon" border="0" style="float: left;" src="/webtop/facade/icon.cfm?icon=overview"/>
+			</a>
+			<a href="#application.url.webtop#/overview/home.cfm" target="_top">Overview</a><br/>
 			<p>Review content you have in draft or pending approval.</p>
 		</li>
 </cfoutput>
 
 <admin:loopwebtop item="section">
-	<!--- If an icon was specified, convert it to the icon facade --->
-	<cfif len(section.icon)>
-		<cfset section.icon="#application.url.webtop#/facade/icon.cfm?icon=#section.icon#" />
-	</cfif>
-
 	<!--- If a related type is specified, use that to fill description and icon attributes --->
 	<cfif len(section.relatedType)>
 		<cfif structkeyexists(application.stCOAPI,section.relatedtype)>
@@ -29,7 +26,7 @@
 			<cfelseif structkeyexists(application.stCOAPI[section.relatedType],"hint")>
 				<cfset section.description = application.rb.getResource("coapi.#section.relatedtype#@description",application.stCOAPI[section.relatedType].hint) />
 			</cfif>
-			<cfset section.icon="#application.url.webtop#/facade/icon.cfm?type=#section.relatedType#" />
+			<cfset section.icon = section.relatedType />
 		<cfelse>
 			<cfthrow message="Related type attribute for '#section.id#' menu item does not specify a valid type" />
 		</cfif>
@@ -40,14 +37,14 @@
 		
 		<cfif len(section.icon)>
 			<cfoutput>
-				<a href="#application.url.webtop#/index.cfm?sec=#section.id#" target="content">
-					<img src="#section.icon#" class="overviewicon" border="0" style="float:left;" />
+				<a href="#application.url.webtop#/index.cfm?sec=#section.id#" target="_top">
+					<img src="#application.url.webtop#/facade/icon.cfm?icon=#section.icon#" class="overviewicon" border="0" style="float:left;" />
 				</a>
 			</cfoutput>
 		</cfif>
 		
 		<cfoutput>
-			<a href="#application.url.webtop#/index.cfm?sec=#section.id#" target="content">#section.label#</a><br/>
+			<a href="#application.url.webtop#/index.cfm?sec=#section.id#" target="_top">#section.label#</a><br/>
 			<p>#section.description#</p>
 			<ul class="inlinedocs">
 		</cfoutput>

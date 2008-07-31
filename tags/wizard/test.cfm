@@ -127,7 +127,7 @@ input.f-submit {padding: 1px 3px;background:##666;color:##fff;font-weight:bold;f
 				<ul><li class="li-next"><a href=" javascript:document.forms.editform.plpAction.value='next';document.forms.editform.buttonSubmit.click();">Next</a></li></ul>
 			</div>
 
-			<h1><img src="#application.url.farcry#/images/icons/HTML.png" alt="HTML" />Breathe Creativity - Welcome</h1>			
+			<h1><img src="#application.url.webtop#/facade/icon.cfm?icon=dmHTML" alt="HTML" />Breathe Creativity - Welcome</h1>			
 			<div id="plp-nav">
 				<ul>
 		<li><a href=" javascript:document.forms.editform.plpAction.value='step:1';document.forms.editform.buttonSubmit.click();"><strong>start</strong></a></li><li><a href=" javascript:document.forms.editform.plpAction.value='step:2';document.forms.editform.buttonSubmit.click();">body</a></li><li><a href=" javascript:document.forms.editform.plpAction.value='step:3';document.forms.editform.buttonSubmit.click();">related</a></li><li><a href=" javascript:document.forms.editform.plpAction.value='step:4';document.forms.editform.buttonSubmit.click();">categories</a></li><li class="li-complete"><a href=" javascript:document.forms.editform.plpAction.value='step:5';document.forms.editform.buttonSubmit.click();">Save</a></li><li class="li-cancel"><a href=" javascript:document.forms.editform.plpAction.value='cancel';document.forms.editform.submit();" onclick="return fPLPCancelConfirm();">Cancel</a></li>

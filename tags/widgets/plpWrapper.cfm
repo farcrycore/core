@@ -101,7 +101,7 @@ $out:$
 			<div class="pagination">
 				<ul>#variables.paginationButtons#</ul>
 			</div>
-			<h1><img src="#application.url.farcry#/images/icons/#iconTypename#.png" alt="#iconTypename#" />#caller.output.label#</h1>			
+			<h1><img src="#application.url.webtop#/facade/icon.cfm?icon=#iconTypename#" alt="#iconTypename#" />#caller.output.label#</h1>			
 			<div id="plp-nav">
 				<ul>
 		</cfoutput>

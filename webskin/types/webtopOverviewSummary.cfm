@@ -31,7 +31,7 @@ START WEBSKIN
 
 	<cfset iDeveloperPermission = application.security.checkPermission(permission="developer") />
 		
-	<cfoutput><img src="#application.stCOAPI[stObj.typename].icon#" alt="alt text" class="icon" style="float: right; padding: 10px;" /></cfoutput>
+	<cfoutput><img src="#application.url.webtop#/facade/icon.cfm?icon=#application.stCOAPI[stObj.typename].icon#" alt="" class="icon" style="float: right; padding: 10px;" /></cfoutput>
 	
 	<cfoutput>
 	<dl class="dl-style1" style="padding: 10px;">

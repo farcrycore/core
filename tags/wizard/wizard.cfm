@@ -214,7 +214,7 @@ $in: SessionID -- $
 			</ul>
 		</div>
 
-		<h1><img src="#application.url.farcry#/images/icons/html.png" alt="HTML" />
+		<h1><img src="#application.url.webtop#/facade/icon.cfm?icon=html" alt="HTML" />
 			<cfif len(attributes.title)>
 				#attributes.title#
 			<cfelse>

@@ -63,12 +63,12 @@
 		<ul class="feedlist">
 			<li>
 				<a href="#rsspath#">
-					<img src="#application.url.farcry#/images/icons/rss.gif" /> RSS Feed
+					<img src="#application.url.webtop#/facade/icon.cfm?icon=rss.gif&size=16" /> RSS Feed
 				</a>
 			</li>
 			<li>
 				<a href="#atompath#">
-					<img src="#application.url.farcry#/images/icons/atom.gif" /> Atom Feed
+					<img src="#application.url.webtop#/facade/icon.cfm?icon=atom.gif&size=16" /> Atom Feed
 				</a>
 			</li>
 </cfoutput>
@@ -77,7 +77,7 @@
 	<cfoutput>
 		<li>
 			<a href="#itunespath#">
-				<img src="#application.url.farcry#/images/icons/podcast.gif" /> Subscribe in iTunes
+				<img src="#application.url.webtop#/facade/icon.cfm?icon=podcast.gif&size=16" /> Subscribe in iTunes
 			</a>
 		</li>
 	</cfoutput>
