@@ -269,6 +269,7 @@ IT IS SET IN  AJAXUPDATEARRAY FUNCTION OF THE LIBRARY.CFC
 	<cfquery datasource="#application.dsn#" name="q">
 	SELECT * FROM #url.primaryTypeName#_#url.primaryFieldName#
 	WHERE parentID = '#url.primaryObjectID#'
+	ORDER BY seq
 	</cfquery>
 	
 	<cfloop query="q">	
