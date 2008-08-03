@@ -103,6 +103,7 @@ default handlers
 		<cfset var bTypeWebskin = false />
 		<cfset var stArgs = structnew() />
 		<cfset var i = 0 />
+		<cfset var stLocal = structNew() /><!--- A local scope that can be used in webskins to ensure against race conditions. --->
 
 		<cfif structkeyexists(arguments,"webskin") and len(arguments.webskin)>
 			<cfset arguments.template = arguments.webskin />
