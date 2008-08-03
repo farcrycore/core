@@ -65,12 +65,12 @@
 				<menuitem id="updateapp" sequence="10" label="Reload application" link="/admin/updateapp.cfm" />
 				<menuitem id="scopedump" label="Scope Dump" link="/admin/yxplorer.cfm" />
 			</menu>
-			<menu id="coapitools" sequence="10" label="COAPI Tools">
+			<menu id="coapitools" sequence="20" label="COAPI Tools">
 				<menuitem id="typeclasses" sequence="10" label="Types" link="/admin/coapiTypes.cfm" />
 				<menuitem id="ruleclasses" sequence="20" label="Rules" link="/admin/coapiRules.cfm" />
 				<menuitem id="coapiFlexUI" sequence="40" label="Types/Rules (Flex)" link="/admin/coapiFlexUI.cfm" />
 			</menu>
-			<menu id="diagnostics" sequence="20" label="Diagnostics">
+			<menu id="diagnostics" sequence="30" label="Diagnostics">
 				<menuitem id="rebuildtree" label="Rebuild Tree Metadata" link="/admin/rebuildTree.cfm" />
 				<menuitem id="fixrefObjects" label="Fix RefObjects Table" link="/admin/fixRefObjects.cfm" />
 				<menuitem id="reattachnodes" label="Reattach Orphan Folders" link="/admin/reattachnodes.cfm" />
