@@ -169,6 +169,9 @@ $out:$
 		<cfif fileexists("#application.path.project#/www/#thisplugin#/wsimages/icons/#arguments.size#/#arguments.iconname#")>
 			<cfreturn "#application.url.webroot#/#thisplugin#/wsimages/icons/#arguments.size#/#arguments.iconname#" />
 		</cfif>
+		<cfif fileexists("#application.path.plugins#/#thisplugin#/www/wsimages/icons/#arguments.size#/#arguments.iconname#")>
+			<cfreturn "#application.url.webroot#/#thisplugin#/wsimages/icons/#arguments.size#/#arguments.iconname#" />
+		</cfif>
 	</cfloop>
 	
 	<cfif fileexists("#application.path.core#/webtop/icons/#arguments.size#/#arguments.iconname#")>
