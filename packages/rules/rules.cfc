@@ -369,7 +369,7 @@ $out:$
 						ORDER BY ftSeq
 						</cfquery>
 					
-						<wiz:step name="#qwizardSteps.ftwizardStep#">
+						<wiz:step name="#iWizardStep#">
 							
 	
 							<cfquery dbtype="query" name="qFieldSets">
