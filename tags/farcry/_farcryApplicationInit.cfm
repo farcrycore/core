@@ -101,7 +101,7 @@ test for the existance of each and act accordingly
 	}
 	catch (Any excpt) {}
 	
-	application.security = createobject("component","#application.packagepath#.security.security").init();
+	application.security = createobject("component",application.factory.oUtils.getPath("security","security")).init();
 
 	// load TYPE and RULE metadata structures into memory
 	oAlterType = createObject("component", "#application.packagepath#.farcry.alterType");
