@@ -42,11 +42,11 @@
 
 	<cffunction name="getLoginForm" access="public" output="false" returntype="string" hint="Returns the form component to use for login">
 		
-		<cfthrow message="The #variables.metadata.displayname# user directory needs to implement the getLoginForm function" />
+		<cfthrow message="The #this.title# user directory needs to implement the getLoginForm function" />
 	</cffunction>
 	
 	<cffunction name="authenticate" access="public" output="false" returntype="struct" hint="Attempts to process a user. Runs every time the login form is loaded.">
-		<cfthrow message="The #variables.metadata.displayname# user directory needs to implement the authenticate function" />
+		<cfthrow message="The #this.title# user directory needs to implement the authenticate function" />
 		
 		<!--- This function should return a struct in the form: 
 				.AUTHENTICATED = false
@@ -65,13 +65,13 @@
 	<cffunction name="getUserGroups" access="public" output="false" returntype="array" hint="Returns the groups that the specified user is a member of">
 		<cfargument name="UserID" type="string" required="true" hint="The user being queried" />
 		
-		<cfthrow message="The #variables.metadata.displayname# user directory needs to implement the getUserGroups function" />
+		<cfthrow message="The #this.title# user directory needs to implement the getUserGroups function" />
 		
 		<cfreturn arraynew(1) />
 	</cffunction>
 	
 	<cffunction name="getAllGroups" access="public" output="false" returntype="array" hint="Returns all the groups that this user directory supports">
-		<cfthrow message="The #variables.metadata.displayname# user directory needs to implement the getAllGroups function" />
+		<cfthrow message="The #this.title# user directory needs to implement the getAllGroups function" />
 		
 		<cfreturn arraynew(1) />
 	</cffunction>
@@ -79,7 +79,7 @@
 	<cffunction name="getGroupUsers" access="public" output="false" returntype="array" hint="Returns all the users in a particular group">
 		<cfargument name="group" type="string" required="true" hint="The group to query" />
 		
-		<cfthrow message="The #variables.metadata.displayname# user directory needs to implement the getGroupUsers function" />
+		<cfthrow message="The #this.title# user directory needs to implement the getGroupUsers function" />
 		
 		<cfreturn arraynew(1) />
 	</cffunction>
