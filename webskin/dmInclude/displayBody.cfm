@@ -21,6 +21,10 @@
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
 
+<!--- INCLUDE TAG LIBRARIES --->
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+
+
 <!--- USE skin:include tag to include the file. --->
 <skin:include template="#stObj.include#" />
 
