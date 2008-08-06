@@ -3,6 +3,8 @@
 
 <cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 
+<cfset request.mode.ajax = true />
+
 <cftry>
 	<cfif request.mode.bAdmin OR (structkeyexists(url,"key") and url.key eq application.updateappKey) OR (structkeyexists(form,"key") and form.key eq application.updateappKey)>
 		<cfset structappend(form,url,false) /><!--- If resets are being passed in via URL, copy them to form scope --->
