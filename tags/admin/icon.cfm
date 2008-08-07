@@ -3,7 +3,7 @@
 
 <cfparam name="attributes.icon" />
 <cfparam name="attributes.size" default="48" />
-<cfparam name="attributes.usecustom" default="48" />
+<cfparam name="attributes.usecustom" default="false" />
 
 <cfparam name="attributes.id" default="" />
 <cfparam name="attributes.class" default="" />
