@@ -171,6 +171,7 @@
 									<cfif len(arguments.filter)>
 										AND typename = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.filter#" />
 									</cfif>
+									ORDER BY seq
 									</cfquery>
 								</cfif>
 		
