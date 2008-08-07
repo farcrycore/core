@@ -11,4 +11,10 @@
 	<cfset url.icon = url.type />
 </cfif>
 
-<cfcontent file="#expandpath(application.factory.oAlterType.getIconPath(iconname=url.icon,size=url.size))#" />
+<cfif url.usecustom>
+	<cfset defaulticon = "custom.png" />
+<cfelse>
+	<cfset defaulticon = "blank.png" />
+</cfif>
+
+<cfcontent file="#expandpath(application.factory.oAlterType.getIconPath(iconname=url.icon,size=url.size,default=defaulticon))#" />
