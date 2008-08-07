@@ -388,7 +388,7 @@ object methods
 	<cffunction name="afterSave" access="public" output="false" returntype="struct" hint="Processes new type content">
 		<cfargument name="stProperties" type="struct" required="true" hint="The properties that have been saved" />
 		
-		<cfset var i = 0 />
+		<cfset application.security.initCache() />
 		
 		<cfreturn arguments.stProperties />
 	</cffunction>

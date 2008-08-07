@@ -123,6 +123,9 @@
 			<cfset arguments.stProperties.password = hash(arguments.stProperties.password) />
 		</cfif>
 		
+		<!--- Clear security cache --->
+		<cfset application.security.initCache() />
+		
 		<cfreturn super.setData(arguments.stProperties,arguments.user,arguments.auditNote,arguments.bAudit,arguments.dsn,arguments.bSessionOnly,arguments.bAfterSave) />
 	</cffunction>
 	

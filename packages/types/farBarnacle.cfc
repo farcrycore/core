@@ -262,6 +262,9 @@
 		
 		<!--- Update object type --->
 		<cfset arguments.stProperties.objecttype = findType(arguments.stProperties.referenceid) />
+		
+		<!--- Clear security cache --->
+		<cfset application.security.initCache() />
 				
 		<cfreturn super.setData(stProperties=arguments.stProperties,user=arguments.user,auditNote=arguments.auditNote,bAudit=arguments.bAudit,dsn=arguments.dsn,bSessionOnly=arguments.bSessionOnly,bAfterSave=arguments.bAfterSave) />
 	</cffunction>
