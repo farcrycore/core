@@ -355,6 +355,41 @@ $out:$
 
 		<cfloop list="#application.plugins#" index="plugin">
 			
+            
+            <cfif directoryExists("#application.path.plugins#/#plugin#/packages/system")>            
+                <!--- Look in the system folder. --->
+                <cfdirectory directory="#application.path.plugins#/#plugin#/packages/system" name="qDir" filter="*.cfc" sort="name">
+                    
+                <cfloop query="qDir">
+                    <cftry>
+                        <cfset typename = left(qDir.name, len(qDir.name)-4) /> <!---remove the .cfc from the filename --->
+                        <cfset o = createObject("Component", "farcry.plugins.#plugin#.packages.system.#typename#") />            
+                        <cfset stMetaData = getMetaData(o) />
+                        <cfif not structKeyExists(stMetadata,"bAbstract") or stMetadata.bAbstract EQ "False">
+                            
+                            <cfset stTypeMD = structNew() />
+                            <cfparam name="application.types.#typename#" default="#structNew()#" />
+                            
+                            <cfset stTypeMD = o.initmetadata(application.types[typename]) />
+                            <cfset stTypeMD.bCustomType = 1 />
+                            <cfset stTypeMD.bLibraryType = 1 />
+                            <cfset stTypeMD.typePath = "farcry.plugins.#plugin#.packages.system.#typename#" />                            
+                            <cfset stTypeMD.packagePath = "farcry.plugins.#plugin#.packages.system.#typename#" />
+                
+                            <cfparam name="stTypeMD.icon" default="#LCase(typename)#" />
+                            <cfset stTypeMD.icon = getIconPath(iconname=stTypeMD.icon) />
+                
+                            <cfset stTypeMD.qMetadata = setupMetadataQuery(typename=typename,stProps=stTypeMD.stProps) />
+                            <cfset application.types[typename]=duplicate(stTypeMD) />
+                        </cfif>    
+                    
+                    <cfcatch>
+                        <cflog application="true" log="Application" type="warning" text="Failed to initialise #plugin# component #qDir.name#; #cfcatch.message# (#cfcatch.detail#).">
+                    </cfcatch>
+                    </cftry>
+                </cfloop>
+            </cfif>			
+			
 			<cfif directoryExists("#application.path.plugins#/#plugin#/packages/types")>
 			
 				<cfdirectory directory="#application.path.plugins#/#plugin#/packages/types" name="qDir" filter="*.cfc" sort="name">
