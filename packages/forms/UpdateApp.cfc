@@ -14,80 +14,98 @@
 	<cffunction name="process" access="public" output="true" returntype="struct" hint="Performs application refresh according to options selected">
 		<cfargument name="fields" type="struct" required="true" hint="The fields submitted" />
 		
+		<cfset var thisprop = "" />
+		<cfset var bSuccess = false />
+		
 		<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 		
-		<!--- Webtop reload --->
-		<cfif structkeyexists(arguments.fields,"webtop") and arguments.fields.webtop>
-			<cfset application.factory.oWebtop = createobject("component","#application.packagepath#.farcry.webtop").init() />
-			<extjs:bubble title="#application.stCOAPI.UpdateApp.stProps['webtop'].metadata.ftLabel#" message="Done" />
-		</cfif>
+		<cfparam name="arguments.fields.bOutput" default="false" />
 		
-		<!--- Friendly URLs --->
-		<cfif structkeyexists(arguments.fields,"friendlyurls") and arguments.fields.friendlyurls>
-			<cfset createObject("component","#application.packagepath#.farcry.fu").refreshApplicationScope() />
-			<extjs:bubble title="#application.stCOAPI.UpdateApp.stProps['friendlyurls'].metadata.ftLabel#" message="Done" />
-		</cfif>
-		
-		<!--- Config settings --->
-		<cfif structkeyexists(arguments.fields,"config") and arguments.fields.config>
-			<cfset oConfig = createobject("component",application.stCOAPI.farConfig.packagepath) />
-			<cfset structclear(application.config) />
-			<cfloop list="#oConfig.getConfigKeys()#" index="configkey">
-				<cfset application.config[configkey] = oConfig.getConfig(configkey) />
-			</cfloop>
-			<extjs:bubble title="#application.stCOAPI.UpdateApp.stProps['config'].metadata.ftLabel#" message="Done" />
-		</cfif>
-		
-		<!--- Type metadata --->
-		<cfif structkeyexists(arguments.fields,"typemetadata") and arguments.fields.typemetadata>
-			<cfset createObject("component", "#application.packagepath#.farcry.alterType").refreshAllCFCAppData() />
-			<extjs:bubble title="#application.stCOAPI.UpdateApp.stProps['typemetadata'].metadata.ftLabel#" message="Done" />
-		</cfif>
-		
-		<!--- User directories --->
-		<cfif structkeyexists(arguments.fields,"security") and arguments.fields.security>	
-			<cfset application.security = createobject("component",application.factory.oUtils.getPath("security","security")).init() />
-			<extjs:bubble title="#application.stCOAPI.UpdateApp.stProps['security'].metadata.ftLabel#" message="Done" />
-		</cfif>
-		
-		<!--- Resource bundles --->
-		<cfif structkeyexists(arguments.fields,"resourcebundles") and arguments.fields.resourcebundles>
-			<cfset application.rb=createObject("component",application.factory.oUtils.getPath("resources","RBCFC")).init(application.locales) />
-			<extjs:bubble title="#application.stCOAPI.UpdateApp.stProps['resourcebundles'].metadata.ftLabel#" message="Done" />
-		</cfif>
-		
-		<!--- Javascript --->
-		<cfif structkeyexists(arguments.fields,"Javascript") and arguments.fields.Javascript>
-			<cfset application.randomID = createUUID() />
-			<extjs:bubble title="#application.stCOAPI.UpdateApp.stProps['Javascript'].metadata.ftLabel#" message="Done" />
-		</cfif>
-		
-		<!--- initialise factory objects --->
-		<cfif structkeyexists(arguments.fields,"factories") and arguments.fields.factories>
-			<cfset application.factory.oAuthorisation = createobject("component","#application.packagepath#.security.authorisation") />
-			<cfset application.factory.oUtils = createobject("component","#application.packagepath#.farcry.utils") />
-			<cfset application.factory.oAudit = createObject("component","#application.packagepath#.farcry.audit") />
-			<cfset application.factory.oTree = createObject("component","#application.packagepath#.farcry.tree") />
-			<cfset application.factory.oCache = createObject("component","#application.packagepath#.farcry.cache") />
-			<cfset application.factory.oLocking = createObject("component","#application.packagepath#.farcry.locking") />
-			<cfset application.factory.oVersioning = createObject("component","#application.packagepath#.farcry.versioning") />
-			<cfset application.factory.oWorkflow = createObject("component","#application.packagepath#.farcry.workflow") />
-			<cfset application.factory.oStats = createObject("component","#application.packagepath#.farcry.stats") />
-			<cfset application.factory.oCategory = createObject("component","#application.packagepath#.farcry.category") />
-			<cfset application.factory.oGenericAdmin = createObject("component","#application.packagepath#.farcry.genericAdmin") />
-			<cfset application.factory.oVerity = createObject("component","#application.packagepath#.farcry.verity") />
-			<cfset application.factory.oCon = createObject("component","#application.packagepath#.rules.container") />
-			<cfset application.factory.oGeoLocator = createObject("component","#application.packagepath#.farcry.geoLocator") />
-			<cfset application.bGeoLocatorInit = application.factory.oGeoLocator.init() />
-			<cftry>
-				<cfset application.factory.oFU = createObject("component","#application.packagepath#.farcry.FU") />
-				<cfcatch>
-				</cfcatch>
-			</cftry>
-			<extjs:bubble title="#application.stCOAPI.UpdateApp.stProps['factories'].metadata.ftLabel#" message="Done" />
-		</cfif>
+		<cfloop collection="#application.stCOAPI.UpdateApp.stProps#" item="thisprop">
+			<cfif not listcontains("objectid,label,datetimecreated,createdby,ownedby,datetimelastupdated,lastupdatedby,lockedby,locked",thisprop) and structkeyexists(this,"process#thisprop#")>
+				<cfinvoke component="#this#" method="process#thisprop#" returnvariable="bSuccess" />
+				<cfif bSuccess and arguments.bOutput>
+					<extjs:bubble title="#application.stCOAPI.UpdateApp.stProps[thisprop].metadata.ftLabel#" message="Done" />
+				</cfif>
+			</cfif>
+		</cfloop>
 		
 		<cfreturn arguments.fields />
+	</cffunction>
+
+	<cffunction name="processWebtop" access="public" returntype="boolean" description="Resets the webtop" output="false">
+		<cfset application.factory.oWebtop = createobject("component","#application.packagepath#.farcry.webtop").init() />
+		
+		<cfreturn true />
+	</cffunction>
+
+	<cffunction name="processFriendlyURLs" access="public" returntype="boolean" description="Resets friendly urls" output="false">
+		<cfset createObject("component","#application.packagepath#.farcry.fu").refreshApplicationScope() />
+		
+		<cfreturn true />
+	</cffunction>
+
+	<cffunction name="processReloadConfig" access="public" returntype="boolean" description="Resets config" output="false">
+		<cfset var oConfig = "" />
+		<cfset var configkey = "" />
+		
+		<cfset oConfig = createobject("component",application.stCOAPI.farConfig.packagepath) />
+		<cfset structclear(application.config) />
+		<cfloop list="#oConfig.getConfigKeys()#" index="configkey">
+			<cfset application.config[configkey] = oConfig.getConfig(configkey) />
+		</cfloop>
+		
+		<cfreturn true />
+	</cffunction>
+
+	<cffunction name="processTypeMetadata" access="public" returntype="boolean" description="Resets type metadata" output="false">
+		<cfset createObject("component", "#application.packagepath#.farcry.alterType").refreshAllCFCAppData() />
+		
+		<cfreturn true />
+	</cffunction>
+
+	<cffunction name="processSecurity" access="public" returntype="boolean" description="Resets security" output="false">
+		<cfset application.security = createobject("component",application.factory.oUtils.getPath("security","security")).init() />
+		
+		<cfreturn true />
+	</cffunction>
+
+	<cffunction name="processResourceBundle" access="public" returntype="boolean" description="Resets resource bundles" output="false">
+		<cfset application.rb=createObject("component",application.factory.oUtils.getPath("resources","RBCFC")).init(application.locales) />
+		
+		<cfreturn true />
+	</cffunction>
+
+	<cffunction name="processJavaScript" access="public" returntype="boolean" description="Resets JavaScript caching" output="false">
+		<cfset application.randomID = createUUID() />
+		
+		<cfreturn true />
+	</cffunction>
+
+	<cffunction name="processFactories" access="public" returntype="boolean" description="Resets FarCry factories" output="false">
+		<cfset application.factory.oAlterType = createobject("component","#application.packagepath#.farcry.alterType") />
+		<cfset application.factory.oAuthorisation = createobject("component","#application.packagepath#.security.authorisation") />
+		<cfset application.factory.oUtils = createobject("component","#application.packagepath#.farcry.utils") />
+		<cfset application.factory.oAudit = createObject("component","#application.packagepath#.farcry.audit") />
+		<cfset application.factory.oTree = createObject("component","#application.packagepath#.farcry.tree") />
+		<cfset application.factory.oCache = createObject("component","#application.packagepath#.farcry.cache") />
+		<cfset application.factory.oLocking = createObject("component","#application.packagepath#.farcry.locking") />
+		<cfset application.factory.oVersioning = createObject("component","#application.packagepath#.farcry.versioning") />
+		<cfset application.factory.oWorkflow = createObject("component","#application.packagepath#.farcry.workflow") />
+		<cfset application.factory.oStats = createObject("component","#application.packagepath#.farcry.stats") />
+		<cfset application.factory.oCategory = createObject("component","#application.packagepath#.farcry.category") />
+		<cfset application.factory.oGenericAdmin = createObject("component","#application.packagepath#.farcry.genericAdmin") />
+		<cfset application.factory.oVerity = createObject("component","#application.packagepath#.farcry.verity") />
+		<cfset application.factory.oCon = createObject("component","#application.packagepath#.rules.container") />
+		<cfset application.factory.oGeoLocator = createObject("component","#application.packagepath#.farcry.geoLocator") />
+		<cfset application.bGeoLocatorInit = application.factory.oGeoLocator.init() />
+		<cftry>
+			<cfset application.factory.oFU = createObject("component","#application.packagepath#.farcry.FU") />
+			<cfcatch>
+			</cfcatch>
+		</cftry>
+		
+		<cfreturn true />
 	</cffunction>
 
 </cfcomponent>
