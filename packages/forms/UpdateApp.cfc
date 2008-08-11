@@ -19,12 +19,12 @@
 		
 		<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 		
-		<cfparam name="arguments.fields.bOutput" default="false" />
+		<cfparam name="arguments.fields.bOutput" default="true" />
 		
 		<cfloop collection="#application.stCOAPI.UpdateApp.stProps#" item="thisprop">
-			<cfif not listcontains("objectid,label,datetimecreated,createdby,ownedby,datetimelastupdated,lastupdatedby,lockedby,locked",thisprop) and structkeyexists(this,"process#thisprop#")>
+			<cfif not listcontainsnocase("objectid,label,datetimecreated,createdby,ownedby,datetimelastupdated,lastupdatedby,lockedby,locked",thisprop) and structkeyexists(arguments.fields,thisprop) and arguments.fields[thisprop] and structkeyexists(this,"process#thisprop#")>
 				<cfinvoke component="#this#" method="process#thisprop#" returnvariable="bSuccess" />
-				<cfif bSuccess and arguments.bOutput>
+				<cfif bSuccess and arguments.fields.bOutput>
 					<extjs:bubble title="#application.stCOAPI.UpdateApp.stProps[thisprop].metadata.ftLabel#" message="Done" />
 				</cfif>
 			</cfif>
