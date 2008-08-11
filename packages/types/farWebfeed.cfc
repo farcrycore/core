@@ -161,7 +161,7 @@
 					<cfset fttype = application.stCOAPI[arguments.stObject.itemtype].stProps[propname].metadata.type />
 				</cfif>
 				
-				<cfif structkeyexists(application.stCOAPI[arguments.stObject.itemtype].stProps[propname].metadata,"ftSeq") and listcontains("nstring,string,longchar,richtext",fttype)>
+				<cfif structkeyexists(application.stCOAPI[arguments.stObject.itemtype].stProps[propname].metadata,"ftSeq") and listcontainsnocase("nstring,string,longchar,richtext",fttype)>
 					<cfset queryaddrow(qProperties) />
 					<cfset querysetcell(qProperties,"value",propname) />
 					<cfif len(application.stCOAPI[arguments.stObject.itemtype].stProps[propname].metadata.ftLabel)>
