@@ -609,6 +609,10 @@ table.objectAdmin th, table.objectAdmin td {padding:3px;}
 ul.inlinedocs {list-style:none;}
 ul.inlinedocs li {background-image:none;}
 
+img.overviewicon {
+	margin-right: 10px;
+}
+
 /* EXT JS SPECIFIC MODIFICATIONS */
 ul.x-tab-strip{margin:0px;}
 ul.x-tab-strip li{padding-left:0px;}

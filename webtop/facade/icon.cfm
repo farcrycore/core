@@ -1,6 +1,6 @@
 <cfparam name="url.type" default="" />
 <cfparam name="url.icon" default="" />
-<cfparam name="url.usecustom" default="false" />
+<cfparam name="url.usecustom" default="true" />
 <cfparam name="url.size" default="48" />
 
 <cfif not len(url.type) and not len(url.icon)>
@@ -12,7 +12,7 @@
 </cfif>
 
 <cfif url.usecustom>
-	<cfset defaulticon = "custom.png" />
+	<cfset defaulticon = "farcrycore.png" />
 <cfelse>
 	<cfset defaulticon = "blank.png" />
 </cfif>

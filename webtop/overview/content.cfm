@@ -8,10 +8,10 @@
 <cfoutput>
 	<h1>Welcome to FarCry</h1>
 	<ul class="inlinedocs">
-			<li><a href="#application.url.webtop#/overview/home.cfm" target="_top">
+			<li><a href="#application.url.webtop#/overview/home.cfm">
 				<img class="overviewicon" border="0" style="float: left;" src="/webtop/facade/icon.cfm?icon=overview"/>
 			</a>
-			<a href="#application.url.webtop#/overview/home.cfm" target="_top">Overview</a><br/>
+			<a href="#application.url.webtop#/overview/home.cfm">Overview</a><br/>
 			<p>Review content you have in draft or pending approval.</p>
 		</li>
 </cfoutput>
@@ -43,34 +43,38 @@
 			</cfoutput>
 		</cfif>
 		
+		<cfsavecontent variable="subsections">
+			<admin:loopwebtop parent="#section#" item="subsection">
+				<cfif len(subsection.description)>
+					<cfoutput><li></cfoutput>
+					
+					<cfif len(subsection.icon)>
+						<cfoutput>
+							<a href="#application.url.webtop#/index.cfm?sec=#section.id#&subsection=#subsection.id#" target="content">
+								<img src="#subsection.icon#" class="overviewicon" border="0" style="float:left;" />
+							</a>
+						</cfoutput>
+					</cfif>
+					
+					<cfoutput>
+							<a href="#application.url.webtop#/index.cfm?sec=#section.id#&subsection=#subsection.id#" target="content">#subsection.label#</a><br/>
+							<p>#subsection.description#</p>
+						</li>
+					</cfoutput>
+				</cfif>
+			</admin:loopwebtop>
+		</cfsavecontent>
+		
 		<cfoutput>
 			<a href="#application.url.webtop#/index.cfm?sec=#section.id#" target="_top">#section.label#</a><br/>
 			<p>#section.description#</p>
-			<ul class="inlinedocs">
 		</cfoutput>
 		
-		<admin:loopwebtop parent="#section#" item="subsection">
-			<cfif len(subsection.description)>
-				<cfoutput><li></cfoutput>
-				
-				<cfif len(subsection.icon)>
-					<cfoutput>
-						<a href="#application.url.webtop#/index.cfm?sec=#section.id#&subsection=#subsection.id#" target="content">
-							<img src="#subsection.icon#" class="overviewicon" border="0" style="float:left;" />
-						</a>
-					</cfoutput>
-				</cfif>
-				
-				<cfoutput>
-						<a href="#application.url.webtop#/index.cfm?sec=#section.id#&subsection=#subsection.id#" target="content">#subsection.label#</a><br/>
-						<p>#subsection.description#</p>
-					</li>
-				</cfoutput>
-			</cfif>
-		</admin:loopwebtop>
+		<cfif len(trim(subsections))>
+			<cfoutput><ul class="inlinedocs">#subsections#</ul></cfoutput>
+		</cfif>
 				
 		<cfoutput>
-				</ul>
 			</li>
 		</cfoutput>
 	</cfif>
