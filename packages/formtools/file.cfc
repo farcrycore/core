@@ -158,7 +158,7 @@
 		
 		<cfparam name="arguments.stMetadata.ftSecure" default="false" />
 		<cfparam name="arguments.stMetadata.ftDestination" default="" />
-		<cfparam name="arguments.stMetadata.ftRenderType" default="flash" />
+		<cfparam name="arguments.stMetadata.ftRenderType" default="html" />
 		
 		<cfif len(arguments.stMetadata.ftDestination) and right(arguments.stMetadata.ftDestination,1) EQ "/">
 			<cfset arguments.stMetadata.ftDestination = left(arguments.stMetadata.ftDestination, (len(arguments.stMetadata.ftDestination) - 1)) />
