@@ -167,7 +167,7 @@ OBJECT METHODS
 				where		objectid in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lProfiles#" />)
 			</cfquery>
 		<cfelse>
-			<cfset stResult.bSuccess = false />
+			<cfset stReturn.bSuccess = false />
 		</cfif>
 
 		<cfreturn stReturn>
