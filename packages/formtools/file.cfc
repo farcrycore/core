@@ -225,7 +225,7 @@
 			
 					
 					<!--- Replace all none alphanumeric characters --->
-					<cfset cleanFileName = reReplaceNoCase(newFileName, "[^a-z0-9.]", "", "all") />
+					<cfset cleanFileName = reReplaceNoCase(newFileName, "[^a-z0-9.\-\_]","", "all") />
 					
 					<!--- If the filename has changed, rename the file
 					Note: doing a quick check to make sure the cleanfilename doesnt exist. If it does, prepend the count+1 to the end.
