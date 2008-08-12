@@ -493,10 +493,6 @@ $out:$
 </cfif>
 
 
-<!--- log visit to page --->
-<cf_statsLog>
-
-
 
 <!--- USED TO DETERMINE OVERALL PAGE TICKCOUNT --->
 <cfset request.farcryPageTimerEnd = getTickCount() />
