@@ -82,7 +82,7 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 	<cfif structKeyExists(attributes,"href")>
 		<cfset href = attributes.href>
 		
-		<cfif NOT FindNoCase(attributes.href,"?")>
+		<cfif NOT FindNoCase("?",attributes.href)>
 			<cfset href = "#href#?">
 		</cfif>
 	<cfelse>
