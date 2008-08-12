@@ -94,7 +94,7 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 					<cfif len(menuitem.icon)>
 						<cfoutput>
 							<a href="#menuitem.link#" target="content">
-								<img src="#application.url.webtop#/facade/icon.cfm?icon=#menuitem.icon#" class="overviewicon" border="0" style="float:left;" />
+								<img src="#application.url.webtop#/facade/icon.cfm?icon=#menuitem.icon#" class="overviewicon" border="0" style="float:left;" alt="" />
 							</a>
 						</cfoutput>
 					</cfif>

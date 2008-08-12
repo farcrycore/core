@@ -9,7 +9,7 @@
 	<h1>Welcome to FarCry</h1>
 	<ul class="inlinedocs">
 			<li><a href="#application.url.webtop#/overview/home.cfm">
-				<img class="overviewicon" border="0" style="float: left;" src="/webtop/facade/icon.cfm?icon=overview"/>
+				<img class="overviewicon" border="0" style="float: left;" src="/webtop/facade/icon.cfm?icon=overview" alt="" />
 			</a>
 			<a href="#application.url.webtop#/overview/home.cfm">Overview</a><br/>
 			<p>Review content you have in draft or pending approval.</p>
@@ -38,7 +38,7 @@
 		<cfif len(section.icon)>
 			<cfoutput>
 				<a href="#application.url.webtop#/index.cfm?sec=#section.id#" target="_top">
-					<img src="#application.url.webtop#/facade/icon.cfm?icon=#section.icon#" class="overviewicon" border="0" style="float:left;" />
+					<img src="#application.url.webtop#/facade/icon.cfm?icon=#section.icon#" class="overviewicon" border="0" style="float:left;" alt="" />
 				</a>
 			</cfoutput>
 		</cfif>
@@ -50,14 +50,14 @@
 					
 					<cfif len(subsection.icon)>
 						<cfoutput>
-							<a href="#application.url.webtop#/index.cfm?sec=#section.id#&subsection=#subsection.id#" target="content">
-								<img src="#subsection.icon#" class="overviewicon" border="0" style="float:left;" />
+							<a href="#application.url.webtop#/index.cfm?sec=#section.id#&subsection=#subsection.id#" target="_top">
+								<img src="#subsection.icon#" class="overviewicon" border="0" style="float:left;" alt="" />
 							</a>
 						</cfoutput>
 					</cfif>
 					
 					<cfoutput>
-							<a href="#application.url.webtop#/index.cfm?sec=#section.id#&subsection=#subsection.id#" target="content">#subsection.label#</a><br/>
+							<a href="#application.url.webtop#/index.cfm?sec=#section.id#&subsection=#subsection.id#" target="_top">#subsection.label#</a><br/>
 							<p>#subsection.description#</p>
 						</li>
 					</cfoutput>
