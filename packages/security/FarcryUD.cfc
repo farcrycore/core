@@ -332,6 +332,22 @@
 							set		t.#property# = concat(dmProfile.username, '_', dmProfile.userDirectory)							
 							</cfquery>
 						</cfcase>
+						<cfcase value="ora">
+							<!--- Update profiles --->
+							<cfquery datasource="#application.dsn#">
+								UPDATE #typename# t
+								SET	t.#property# = (
+									SELECT u.username || '_' || u.userDirectory
+									FROM dmProfile u
+									WHERE to_char(t.#property#) = to_char(u.username)
+								)
+								WHERE EXISTS (
+									SELECT u.username || '_' || u.userDirectory
+									FROM dmProfile u
+									WHERE to_char(t.#property#) = to_char(u.username)
+								)
+							</cfquery>
+						</cfcase>
 						<cfdefaultcase>
 							<!--- Update profiles --->
 							<cfquery datasource="#application.dsn#">
