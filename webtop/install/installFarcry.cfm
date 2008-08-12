@@ -363,7 +363,7 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 			<p>&nbsp;</p>
 			<div>
 				<div class="item">
-					<h2><strong>Congratualations!</strong>  Your application has sucessfully installed.</h2>
+					<h2><strong>Congratulations!</strong>  Your application has sucessfully installed.</h2>
 					<p>The installer has created an administration account for you to logon to the FarCry webtop:</p>
 					<p>&nbsp;</p>
 					
