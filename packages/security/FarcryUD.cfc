@@ -351,6 +351,14 @@
 		</cfloop>	
 		
 		<cfswitch expression="#application.dbType#">
+			<cfcase value="mysql,mysql5">
+				<!--- Update profiles --->
+				<cfquery datasource="#application.dsn#">
+					UPDATE	#application.dbowner#dmProfile
+					SET		userName = CONCAT(userName, '_', userDirectory)
+					WHERE	userName NOT LIKE <cfqueryparam value="%\_%" cfsqltype="cf_sql_varchar" />
+				</cfquery>
+			</cfcase>
 			<cfcase value="mssql">
 				<!--- Update profiles --->
 				<cfquery datasource="#application.dsn#">
