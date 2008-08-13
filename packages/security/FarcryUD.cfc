@@ -383,6 +383,14 @@
 					where	username not like '%[_]%'
 				</cfquery>
 			</cfcase>
+			<cfcase value="ora">
+				<!--- Update profiles --->
+				<cfquery datasource="#application.dsn#">
+					UPDATE	#application.dbowner#dmProfile
+					SET		username=username || '_' || userDirectory
+					WHERE	username NOT LIKE '%!_%' ESCAPE '!'
+				</cfquery>
+			</cfcase>
 			<cfdefaultcase>
 				<!--- Update profiles --->
 				<cfquery datasource="#application.dsn#">
