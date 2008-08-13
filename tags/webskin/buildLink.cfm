@@ -17,45 +17,23 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/tags/webskin/buildLink.cfm,v 1.16.2.2 2006/01/26 06:49:20 geoff Exp $
-$Author: geoff $
-$Date: 2006/01/26 06:49:20 $
-$Name:  $
-$Revision: 1.16.2.2 $
-
-|| DESCRIPTION || 
-$Description: Helps to construct a FarCry style link -- works out whether the links is a symlink or normal farcry link and checks for friendly url$
-$TODO: make a corresponding UDF $
-
-|| DEVELOPER ||
-$Developer: Brendan Sisson (brendan@daemon.com.au)$
-
-|| ATTRIBUTES ||
-$in: objectid -- navigation obj id$
-$in: title -- link text $
-$in: external -- external link for nav node $
-$in: class -- css class for link$
-$in: target -- target window for link$
-$in: xCode -- eXtra code to be placed inside the anchor tag $
---->
+<!--- @@hint: Builds a link to farcry content; works out whether the link is a symlink or normal farcry link and checks for friendly url. --->
 
 <cfif thistag.executionMode eq "Start">
 
 	<cfparam name="attributes.href" default=""><!--- the actual href to link to --->
-	<cfparam name="attributes.objectid" default=""><!--- Added to url parameters --->
+	<cfparam name="attributes.objectid" default=""><!--- Added to url parameters; navigation obj id --->
 	<cfparam name="attributes.type" default=""><!--- Added to url parameters: Typename used with type webskin views --->
 	<cfparam name="attributes.view" default=""><!--- Added to url parameters: Webskin name used with type webskin views --->
-	<cfparam name="attributes.linktext" default="">
-	<cfparam name="attributes.target" default="_self">
-	<cfparam name="attributes.bShowTarget" default="false">
+	<cfparam name="attributes.linktext" default=""><!--- Text used for the link --->
+	<cfparam name="attributes.target" default="_self"><!--- target window for link --->
+	<cfparam name="attributes.bShowTarget" default="false"><!--- @@attrhint: Show the target link in the anchor tag  @@options: false,true --->
 	<cfparam name="attributes.externallink" default="">
-	<cfparam name="attributes.id" default="">
-	<cfparam name="attributes.class" default="">
+	<cfparam name="attributes.id" default=""><!--- Anchor tag ID --->
+	<cfparam name="attributes.class" default=""><!--- Anchor tag classes --->
 	<cfparam name="attributes.urlOnly" default="false">
 	<cfparam name="attributes.r_url" default="">
-	<cfparam name="attributes.xCode" default="">
+	<cfparam name="attributes.xCode" default=""><!--- eXtra code to be placed inside the anchor tag --->
 	<cfparam name="attributes.includeDomain" default="false">
 	<cfparam name="attributes.Domain" default="#cgi.http_host#">
 	<cfparam name="attributes.stParameters" default="#StructNew()#">
@@ -98,8 +76,8 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 	
 	<cfif len(attributes.href)>
 		<cfset href = attributes.href>
-		
-		<cfif NOT FindNoCase(attributes.href,"?")>
+
+		<cfif NOT FindNoCase("?", attributes.href)>
 			<cfset href = "#href#?">
 		</cfif>
 	<cfelse>
