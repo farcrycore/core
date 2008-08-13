@@ -35,6 +35,7 @@ $in: SessionID -- $
 --->
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 <cfimport taglib="/farcry/core/tags/wizard/" prefix="wiz" >
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
 
 <cfset owizard = createObject("component",application.types['dmWizard'].typepath)>
 
@@ -214,7 +215,7 @@ $in: SessionID -- $
 			</ul>
 		</div>
 
-		<h1><img src="#application.url.webtop#/facade/icon.cfm?icon=html" alt="HTML" />
+		<h1><admin:icon icon="#application.stCOAPI[stwizard.Data[stWizard.primaryobjectid].typename].icon#" usecustom="true" />
 			<cfif len(attributes.title)>
 				#attributes.title#
 			<cfelse>
