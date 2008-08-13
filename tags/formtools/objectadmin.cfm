@@ -176,7 +176,7 @@ user --->
 	
 	
 	<cfif len(attributes.title)>
-		<cfoutput><h1>#attributes.title#</h1></cfoutput>
+		<cfoutput><h1><admin:icon icon="#application.stCOAPI[attributes.typename].icon#" usecustom="true" />#attributes.title#</h1></cfoutput>
 	</cfif>
 	
 	<cfset stPrefs = oTypeAdmin.getPrefs() />
