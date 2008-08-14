@@ -864,11 +864,15 @@ $out:$
 		<cfset application.stcoapi[i] = duplicate(application.forms[i]) />
 	</cfloop>
 	
+	<!--- Inititalise the coapi id aliases --->
+	<cfset application.coapiID = structNew() />
+	
 	<cfloop list="#structKeyList(application.stcoapi)#" index="i">	
 		<cfset o = createObject("Component", "#application.stcoapi[i].packagePath#") />	
 		<cfset variables.tableMetadata = createobject('component','farcry.core.packages.fourq.TableMetadata').init() />
 		<cfset variables.tableMetadata.parseMetadata(getMetadata(o)) />
 		<cfset application.stcoapi[i].tableDefinition = variables.tableMetadata.getTableDefinition() />
+		<cfset application.stcoapi[i].coapiID = createObject("component", "farcry.core.packages.types.farCoapi").getCoapiObjectID(name="#i#") />
 	</cfloop>
 	
 
