@@ -86,7 +86,7 @@
 
 	<cffunction name="listSlice" access="public" output="false" returntype="string" hint="Returns the specified elements of the list" bDocument="true">
 		<cfargument name="list" type="string" required="true" hint="The list being sliced" />
-		<cfargument name="start" type="numeric" required="false" defaykt="1" hint="The start index of the slice. Negative numbers are reverse indexes: -1 is last item." />
+		<cfargument name="start" type="numeric" required="false" default="1" hint="The start index of the slice. Negative numbers are reverse indexes: -1 is last item." />
 		<cfargument name="end" type="numeric" required="false" default="-1" hint="The end index of the slice. Negative values are reverse indexes: -1 is last item." />
 		<cfargument name="delimiters" type="string" required="false" default="," hint="Delimiters used by list" />
 		
