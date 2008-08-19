@@ -250,7 +250,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 				<cfloop from="1" to="#listlen(arguments.lCategoryIDs)#" index="i">
 					AND objectid IN (
 					    select distinct objectid 
-					    from refCategories 
+					    from #application.dbowner#refCategories 
 					    where categoryID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#listGetAt(arguments.lCategoryIDs, i)#" />
 					    )							
 				</cfloop>
@@ -315,7 +315,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		
 		<cfquery name="q" datasource="#arguments.dsn#">
 			SELECT objectID
-			FROM nested_tree_objects
+			FROM #application.dbowner#nested_tree_objects
 			WHERE nlevel = 1 AND lower(objectname) = '#lcase(arguments.objectname)#' AND lower(typename) = 'dmcategory'
 		</cfquery>
 				
@@ -641,8 +641,8 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfset stLocal.lcategories = ListQualify(stLocal.lcategories,"'")>
 
 		<cfquery datasource="#application.dsn#" name="stLocal.qList">
-		SELECT	l.*
-		FROM	#arguments.typename# l <cfif stLocal.lcategories NEQ "" AND stLocal.bRootNode EQ 0>, refCategories c
+		SELECT l.*
+		FROM	#application.dbowner##arguments.typename# l <cfif stLocal.lcategories NEQ "" AND stLocal.bRootNode EQ 0>, #application.dbowner#refCategories c
 		WHERE	c.objectid = l.objectid
 				AND c.categoryid IN (#preservesinglequotes(stLocal.lcategories)#)</cfif>		
 		</cfquery>
@@ -685,8 +685,8 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		
 		<!--- get all the content object  --->
 		<cfquery name="qGetData" datasource="#application.dsn#">
-		SELECT	type.*
-		FROM	#application.dbowner##arguments.typename# type
+		SELECT type.*
+		FROM #application.dbowner##arguments.typename# type
 		WHERE 	type.objectid IN (#PreserveSingleQuotes(stLocal.lObjectIDs)#)
 		</cfquery>
 		
@@ -696,7 +696,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfset stLocal.strFilter = ReplaceNoCase(stLocal.strFilter,"''","'","All")>
 
 		<cfquery name="qGetCount" datasource="#application.dsn#">
-		SELECT	count(DISTINCT #stLocal.strFields#) as numberofrecords
+		SELECT count(DISTINCT #stLocal.strFields#) as numberofrecords
 		FROM	#stLocal.strTables#
 		WHERE	#preservesinglequotes(stLocal.strFilter)#
 		</cfquery>
