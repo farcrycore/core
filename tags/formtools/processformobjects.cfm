@@ -250,14 +250,14 @@
 				<cfset caller[attributes.r_stObject] = stType.getData(objectid=Caller[attributes.r_stProperties].objectid) />
 			</cfif>
 			
-			
-			<cftry>
-				<cfset stType.setlock(stObj=Caller[attributes.r_stProperties],locked="false",lockedby=Variables.LockedBy)>
-				<cfcatch >
-					<!--- TODO: Rules do not currently have the ability to be locked. --->					
-				</cfcatch>
-			</cftry>
-		
+			<cfif not variables.bSessionOnly>
+				<cftry>
+					<cfset stType.setlock(stObj=Caller[attributes.r_stProperties],locked="false",lockedby=Variables.LockedBy)>
+					<cfcatch >
+						<!--- TODO: Rules do not currently have the ability to be locked. --->					
+					</cfcatch>
+				</cftry>
+			</cfif>
 			
 			
 		</cfif>	
