@@ -1,4 +1,4 @@
-<cfsetting enablecfoutputonly="yes" />
+<cfsetting enablecfoutputonly="true" />
 
 <!--- 
 || DESCRIPTION || 
@@ -45,7 +45,7 @@ $in: libraryState -- used to turn predefined libraries on or off. Default turns 
 		</cfif>
 		
 		<cfif NOT structKeyExists(request.inhead.stCustom, attributes.id)>
-			<cfset request.inHead.stCustom[attributes.id] = thisTag.generatedContent />
+			<cfset request.inHead.stCustom[attributes.id] = attributes.text />
 			<cfif attributes.position EQ "first">
 				<cfset arrayPrepend(request.inHead.aCustomIDs, attributes.id) />
 			<cfelse>
@@ -63,4 +63,4 @@ $in: libraryState -- used to turn predefined libraries on or off. Default turns 
 	
 </cfif>
 
-<cfsetting enablecfoutputonly="no" />
+<cfsetting enablecfoutputonly="false" />
