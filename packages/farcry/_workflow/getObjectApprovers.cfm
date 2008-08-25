@@ -58,14 +58,8 @@ $out:$
 	r_lObjectIds="ParentID"
 	bInclusive="1">
 
-<!--- Get the roles that have permission to approve objects --->
-<cfset approverroles = "" />
-<cfloop list="#application.security.factory.role.getAllRoles()#" index="thisrole">
-	<cfif application.security.checkPermission(role=thisrole,permission="Approve",object=stObj.objectid)>
-		<cfset approverroles = listappend(approverroles,thisrole) />
-	</cfif>
-</cfloop>
-<cfset aUsers = application.security.getGroupUsers(groups=application.security.factory.role.rolesToGroups(roles=approverroles)) />
+<!--- Get the users that have permission to approve objects --->
+<cfset aUsers = application.security.getGroupUsers(groups=application.security.factory.role.rolesToGroups(application.security.factory.role.getRolesWithPermission("Approve"))) />
 
 <!--- build struct of dmProfile objects for each user --->
 <cfset stApprovers = structNew()>
