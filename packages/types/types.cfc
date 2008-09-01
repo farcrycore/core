@@ -495,8 +495,8 @@ default handlers
 		<cfif not len(arguments.User)>
 			
 			<!--- If a user has logged in then use them --->
-			<cfif isDefined("session.dmSec.authentication.userlogin")>
-				<cfset arguments.User = session.dmSec.authentication.userlogin>
+			<cfif application.security.isLoggedIn()>
+				<cfset arguments.User = application.security.getCurrentUserID()>
 				
 			<!--- 
 			No user is logged in so use anonymous user. 
@@ -765,8 +765,8 @@ default handlers
 		
 		<!--- Determine who the record is being locked/unlocked by --->		
 		<cfif not len(arguments.lockedBy)>
-			<cfif isDefined("session.dmSec.authentication.userlogin") AND isDefined("session.dmSec.authentication.userDirectory")>
-				<cfset arguments.lockedBy = "application.security.getCurrentUserID()" />
+			<cfif application.security.isLoggedIn()>
+				<cfset arguments.lockedBy = application.security.getCurrentUserID() />
 			<cfelse>
 				<cfset arguments.lockedBy = "anonymous" />
 			</cfif>
@@ -824,7 +824,7 @@ default handlers
 		</ft:processForm>
 		
 		<ft:processForm action="cancel" >
-			<cfset oType.setlock(stObj=stObj,locked="false",lockedby=#session.dmSec.authentication.userlogin#)>
+			<cfset oType.setlock(stObj=stObj,locked="false",lockedby=#application.security.getCurrentUserID()#)>
 			<cfoutput><h3>Object Not Saved!</h3></cfoutput>
 		</ft:processForm>
 		
@@ -1311,8 +1311,8 @@ default handlers
 		<cfset var stReturn = StructNew()>
 		
 		<cfif not len(arguments.user)>
-			<cfif isDefined("session.dmSec.authentication.userlogin")>
-				<cfset arguments.user = session.dmSec.authentication.userlogin />
+			<cfif application.security.isLoggedIn()>
+				<cfset arguments.user = application.security.getCurrentUserID() />
 			<cfelse>
 				<cfset arguments.user = 'anonymous' />
 			</cfif>

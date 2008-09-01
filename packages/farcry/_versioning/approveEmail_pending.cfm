@@ -71,7 +71,7 @@ $out:$
 <cfset emailObj = CreateObject("component","#application.packagepath#.farcry.email")>
 <cfloop collection="#stApprovers#" item="item">
 	<!--- check user had email profile and is in list of approvers --->
-	<cfif stApprovers[item].emailAddress neq "" AND stApprovers[item].bReceiveEmail and stApprovers[item].userName neq session.dmSec.authentication.userLogin AND (arguments.lApprovers eq "all" or listFind(arguments.lApprovers,stApprovers[item].userName))>
+	<cfif stApprovers[item].emailAddress neq "" AND stApprovers[item].bReceiveEmail and stApprovers[item].userName neq application.security.getCurrentUserID() AND (arguments.lApprovers eq "all" or listFind(arguments.lApprovers,stApprovers[item].userName))>
 	    <cfif session.dmProfile.emailAddress neq "">
 	        <cfset fromEmail = session.dmProfile.emailAddress>
 	    <cfelse>

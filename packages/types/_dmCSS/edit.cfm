@@ -76,7 +76,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	<cfset stProperties.filename = form.css_file_original>
 	<cfset stProperties.mediaType = form.mediaType>
 	<cfset stProperties.datetimelastupdated = Now()>
-	<cfset stProperties.lastupdatedby = session.dmSec.authentication.userlogin>
+	<cfset stProperties.lastupdatedby = application.security.getCurrentUserID()>
 	<cfset stProperties.bThisNodeOnly = bThisNodeOnly>
 		
 	<cftry> 

@@ -23,8 +23,8 @@
 		<cfif not len(arguments.typename)>
 			<cfset arguments.typename = findType(objectid=arguments.objectid) />
 		</cfif>
-		<cfif isDefined("session.dmSec.authentication.userlogin")>
-			<cfset userlogin = session.dmSec.authentication.userlogin />
+		<cfif application.security.isLoggedIn()>
+			<cfset userlogin = application.security.getCurrentUserID() />
 		</cfif>
 		
 		<cfif len(arguments.typename)>

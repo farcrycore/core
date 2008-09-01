@@ -1,5 +1,5 @@
-<cfif isDefined("session.dmSec.authentication.userlogin")>
-	<cfset Variables.LockedBy = session.dmSec.authentication.userlogin>
+<cfif application.security.isLoggedIn()>
+	<cfset Variables.LockedBy = application.security.getCurrentUserID()>
 <cfelse>
 	<cfset Variables.LockedBy = "anonymous">
 </cfif>
@@ -134,8 +134,8 @@
 	<cfelse>
 
 		<cfset oType = createobject("component",application.stcoapi[typename].packagepath)>
-		<cfif isDefined("session.dmSec.authentication.userlogin")>
-			<cfset "CALLER.stProperties.lastupdatedby" = session.dmSec.authentication.userlogin>
+		<cfif application.security.isLoggedIn()>
+			<cfset "CALLER.stProperties.lastupdatedby" = application.security.getCurrentUserID()>
 		<cfelse>
 			<cfset CALLER.stProperties.lastupdatedby = "anonymous">
 		</cfif>

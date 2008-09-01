@@ -45,7 +45,7 @@ $in: url.killplp (optional)$
 </cfif>
 
 <widgets:plp 
-	owner="#session.dmSec.authentication.userlogin#_#stObj.objectID#"
+	owner="#application.security.getCurrentUserID()#_#stObj.objectID#"
 	stepDir="/farcry/core/packages/types/_dmXMLExport/plpEdit"
 	cancelLocation="#application.url.farcry#/content/xmlFeedList.cfm"
 	iTimeout="15"

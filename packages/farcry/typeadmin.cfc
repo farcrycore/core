@@ -326,7 +326,7 @@ environment references (might be nice to clean these up)
 		stCol=structNew();
 		stCol.columnType="evaluate";
 		stCol.title="#application.rb.getResource("edit")#";
-		stCol.value="iif(stPermissions.iEdit eq 1,DE(iif(locked and lockedby neq '##session.dmSec.authentication.userlogin##_##session.dmSec.authentication.userDirectory##',DE('<span style=""color:red"">Locked</span>'),DE('<a href=''#editObjectURL#''><img src=""#application.url.farcry#/images/treeImages/edit.gif"" alt=""#application.rb.getResource("edit")#"" title=""#application.rb.getResource("edit")#""/></a>'))),DE('-'))";
+		stCol.value="iif(stPermissions.iEdit eq 1,DE(iif(locked and lockedby neq '##application.security.getCurrentUserID()##',DE('<span style=""color:red"">Locked</span>'),DE('<a href=''#editObjectURL#''><img src=""#application.url.farcry#/images/treeImages/edit.gif"" alt=""#application.rb.getResource("edit")#"" title=""#application.rb.getResource("edit")#""/></a>'))),DE('-'))";
 		stCol.style="text-align: center;";
 		//stCol.orderby="";
 		arrayAppend(aDefaultColumns,stCol);
@@ -344,7 +344,7 @@ environment references (might be nice to clean these up)
 		stCol=structNew();
 		stCol.columnType="evaluate";
 		stCol.title="#application.rb.getResource("label")#";
-		stCol.value = "iif(stPermissions.iEdit eq 1,DE(iif(locked and lockedby neq 'application.security.getCurrentUserID()',DE('##replace(recordset.label[recordset.currentrow],'####','','all')##'),DE('<a href=''#editObjectURL#''>##replace(recordset.label[recordset.currentrow],'####','','all')##</a>'))),DE('##replace(recordset.label[recordset.currentrow],'####','','all')##'))";
+		stCol.value = "iif(stPermissions.iEdit eq 1,DE(iif(locked and lockedby neq '##application.security.getCurrentUserID()##',DE('##replace(recordset.label[recordset.currentrow],'####','','all')##'),DE('<a href=''#editObjectURL#''>##replace(recordset.label[recordset.currentrow],'####','','all')##</a>'))),DE('##replace(recordset.label[recordset.currentrow],'####','','all')##'))";
 		stCol.style="text-align: left;";
 		stCol.orderby="label";
 		arrayAppend(aDefaultColumns,stCol);

@@ -172,10 +172,7 @@ IT IS SET IN  AJAXUPDATEARRAY FUNCTION OF THE LIBRARY.CFC
 						
 			</cfif>
 		
-			
-			
-			<cfparam name="session.dmSec.authentication.userlogin" default="anonymous" />
-			<cfset oPrimary.setData(objectID=stPrimary.ObjectID,stProperties="#stPrimary#",user="#session.dmSec.authentication.userlogin#")>
+			<cfset oPrimary.setData(objectID=stPrimary.ObjectID,stProperties="#stPrimary#",user="#application.security.getCurrentUserID()#")>
 			
 		</cfif>
 	</cfloop>

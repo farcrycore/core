@@ -130,7 +130,7 @@ accommodate legacy implementations
 	</cftry>
 	<!--- check is a user is logged in --->
 	<cfif application.security.isLoggedIn()>
-		<cfinvokeargument name="userid" value="#session.dmSec.authentication.userlogin#"/>
+		<cfinvokeargument name="userid" value="#application.security.getCurrentUserID()#"/>
 	<cfelse>
 		<cfinvokeargument name="userid" value="Anonymous"/>
 	</cfif>

@@ -54,8 +54,8 @@ $in: SessionID -- $
 	</cfif>
 	
 	<!--- Set User login to current user --->
-	<cfif isDefined("session.dmSec.authentication.userlogin")>
-		<cfset attributes.UserLogin = session.dmSec.authentication.userlogin>
+	<cfif application.security.isLoggedIn()>
+		<cfset attributes.UserLogin = application.security.getCurrentUserID()>
 	<cfelse>
 		<cfset attributes.UserLogin = "Unknown#cfid##cftoken#" />
 	</cfif>

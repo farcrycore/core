@@ -56,7 +56,7 @@ $out:$
 <!--- update locking fields (unlock) --->
 <cfset stProperties.locked = 0>
 <cfset stProperties.lockedBy = "">
-<cfset stProperties.lastUpdatedBy = session.dmSec.authentication.userlogin>
+<cfset stProperties.lastUpdatedBy = application.security.getCurrentUserID()>
 <cfset stProperties.dateTimeLastUpdated = createodbcdatetime(now())>
 
 <!--- hack to get dates correct --->

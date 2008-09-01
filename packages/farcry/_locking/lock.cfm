@@ -49,7 +49,7 @@ $out:$
 	<cfscript>
 	stProperties.objectid = stObj.objectid;
 	stProperties.locked = 1;
-	stProperties.lockedBy = "application.security.getCurrentUserID()";
+	stProperties.lockedBy = application.security.getCurrentUserID();
 
 	// update the OBJECT	
 	oType.setData(stProperties=stProperties);	

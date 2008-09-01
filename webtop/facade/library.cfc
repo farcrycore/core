@@ -143,10 +143,8 @@
 								
 				</cfif>			
 			</cfif>
-		
-		
-			<cfparam name="session.dmSec.authentication.userlogin" default="anonymous" />
-			<cfset stResult = oPrimary.setData(stProperties="#stPrimary#",user="#session.dmSec.authentication.userlogin#")>
+	
+			<cfset stResult = oPrimary.setData(stProperties="#stPrimary#",user="#application.security.getCurrentUserID()#")>
 
 
 		</cfif>

@@ -12,9 +12,9 @@
 </cfif>
 <cfset stProps.label = "(incomplete)">
 <cfset stProps.title = "">
-<cfset stProps.lastupdatedby = session.dmSec.authentication.userlogin>
+<cfset stProps.lastupdatedby = application.security.getCurrentUserID()>
 <cfset stProps.datetimelastupdated = Now()>
-<cfset stProps.createdby = session.dmSec.authentication.userlogin>
+<cfset stProps.createdby = application.security.getCurrentUserID()>
 <cfset stProps.datetimecreated = Now()>
 <cfset stProps.documentDate = Now()>
 <!--- dmHTML specific props --->

@@ -32,8 +32,8 @@ return REFindNoCase("^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$", str);
 	<cfargument name="UserLogin" required="no" type="String" default="unknown">
 	<cfargument name="ReferenceID" required="no" type="String">
 	
-	<cfif arguments.userLogin EQ "unknown" AND isDefined("session.dmSec.authentication.userlogin")>
-		<cfset arguments.userlogin = session.dmSec.authentication.userlogin>
+	<cfif arguments.userLogin EQ "unknown" AND application.security.isLoggedIn()>
+		<cfset arguments.userlogin = application.security.getCurrentUserID()>
 	</cfif>
 	
 	<cfif isDefined("arguments.wizardID") and len(arguments.wizardID)>

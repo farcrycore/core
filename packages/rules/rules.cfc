@@ -263,7 +263,7 @@ $out:$
 		
 	<cffunction name="delete" access="public" hint="Basic delete method for all objects.">
 		<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the object being deleted">
-		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="#session.dmSec.authentication.userlogin#">
+		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="#application.security.getCurrentUserID()#">
 		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Deleted">
 		<cfargument name="dsn" required="No" default="#application.dsn#"> 
 		
@@ -501,8 +501,8 @@ $out:$
 		
 		<!--- Determine who the record is being locked/unlocked by --->		
 		<cfif not len(arguments.lockedBy)>
-			<cfif isDefined("session.dmSec.authentication.userlogin") AND isDefined("session.dmSec.authentication.userDirectory")>
-				<cfset arguments.lockedBy = "application.security.getCurrentUserID()" />
+			<cfif application.security.isLoggedIn()>
+				<cfset arguments.lockedBy = application.security.getCurrentUserID() />
 			<cfelse>
 				<cfset arguments.lockedBy = "anonymous" />
 			</cfif>
@@ -576,7 +576,7 @@ $out:$
 	
 	<cffunction name="setData" access="public" output="false" hint="Update the record for an objectID including array properties.  Pass in a structure of property values; arrays should be passed as an array." returntype="struct">
 		<cfargument name="stProperties" required="true">
-		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="#session.dmSec.authentication.userlogin#">
+		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="#application.security.getCurrentUserID()#">
 		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Updated publishing rule.">
 		<cfargument name="bAudit" type="boolean" required="No" default="1" hint="Pass in 0 if you wish no audit to take place">
 		<cfargument name="dsn" required="No" default="#application.dsn#"> 

@@ -26,7 +26,7 @@ $out: $
 <cfparam name="url.killplp" default="0">
 
 <widgets:plp 
-	owner="#session.dmSec.authentication.userlogin#_#stObj.objectID#"
+	owner="#application.security.getCurrentUserID()#_#stObj.objectID#"
 	stepDir="/farcry/core/packages/types/_dmEmail/plpEdit"
 	cancelLocation="#application.url.farcry#/admin/messageCentre.cfm"
 	iTimeout="15"

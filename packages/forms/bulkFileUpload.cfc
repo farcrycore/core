@@ -80,9 +80,9 @@
 							<cfset stProps.objectid = createUUID() />
 							<cfset stProps.label = folderName />
 							<cfset stProps.title = folderName />
-							<cfset stProps.lastupdatedby = session.dmSec.authentication.userlogin />
+							<cfset stProps.lastupdatedby = application.security.getCurrentUserID() />
 							<cfset stProps.datetimelastupdated = Now() />
-							<cfset stProps.createdby = session.dmSec.authentication.userlogin />
+							<cfset stProps.createdby = application.security.getCurrentUserID() />
 							<cfset stProps.datetimecreated = Now() />
 							
 							<!--- create the new dmNavigation object --->
@@ -148,9 +148,9 @@
 						<cfset stFileProps.filesize = entry.getSize() />
 						<cfset stFileProps.datetimecreated = Now() />
 						<cfset stFileProps.documentDate = createODBCDate(now()) />
-						<cfset stFileProps.createdby = session.dmSec.authentication.userlogin />
+						<cfset stFileProps.createdby = application.security.getCurrentUserID() />
 						<cfset stFileProps.datetimelastupdated = Now() />
-						<cfset stFileProps.lastupdatedby = session.dmSec.authentication.userlogin />
+						<cfset stFileProps.lastupdatedby = application.security.getCurrentUserID() />
 						<cfset stFileProps.bLibrary = arguments.fields.bLibrary />
 						
 						<!--- Create the file object --->

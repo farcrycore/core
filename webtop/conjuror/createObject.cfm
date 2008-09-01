@@ -87,9 +87,9 @@ $out:$
 		stProps.objectid = createUUID();
 		stProps.label = "(incomplete)";
 		stProps.title = "";
-		stProps.lastupdatedby = session.dmSec.authentication.userlogin;
+		stProps.lastupdatedby = application.security.getCurrentUserID();
 		stProps.datetimelastupdated = Now();
-		stProps.createdby = session.dmSec.authentication.userlogin;
+		stProps.createdby = application.security.getCurrentUserID();
 		stProps.datetimecreated = Now();
 
 		// dmHTML specific props

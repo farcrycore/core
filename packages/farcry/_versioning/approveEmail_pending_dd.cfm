@@ -52,7 +52,7 @@ $out:$
 
 <cfloop collection="#stApprovers#" item="user">
     <!--- check user had email profile and is in list of approvers --->
-    <cfif stApprovers[user].emailAddress neq "" AND stApprovers[user].bReceiveEmail and stApprovers[user].userName neq session.dmSec.authentication.userLogin AND (arguments.lApprovers eq "all" or listFind(arguments.lApprovers,stApprovers[user].userName))>
+    <cfif stApprovers[user].emailAddress neq "" AND stApprovers[user].bReceiveEmail and stApprovers[user].userName neq application.security.getCurrentUserID() AND (arguments.lApprovers eq "all" or listFind(arguments.lApprovers,stApprovers[user].userName))>
 
 	    <cfif isdefined("session.dmProfile.emailAddress") and session.dmProfile.emailAddress neq "">
 	        <cfset fromEmail = session.dmProfile.emailAddress>

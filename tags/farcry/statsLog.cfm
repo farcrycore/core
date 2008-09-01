@@ -77,7 +77,7 @@ $out:$
 			<cfscript>
 			// check is a user is logged in
 			if (application.security.isLoggedIn())
-				userid = session.dmSec.authentication.userlogin;
+				userid = application.security.getCurrentUserID();
 			else
 				userid="Anonymous";
 			

@@ -88,9 +88,9 @@ Parent Object: URL.OBJECTID
 	<cfset stProps.objectid = createUUID()>
 	<cfset stProps.label = "(incomplete)">
 	<cfset stProps.title = "">
-	<cfset stProps.lastupdatedby = session.dmSec.authentication.userlogin>
+	<cfset stProps.lastupdatedby = application.security.getCurrentUserID()>
 	<cfset stProps.datetimelastupdated = Now()>
-	<cfset stProps.createdby = session.dmSec.authentication.userlogin>
+	<cfset stProps.createdby = application.security.getCurrentUserID()>
 	<cfset stProps.datetimecreated = Now()>
 	<cfset stProps.ownedby = session.dmProfile.objectid>
 	<cfset stDefaultProperties = application.types[url.typename].stProps>

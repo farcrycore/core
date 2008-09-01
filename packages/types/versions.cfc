@@ -91,8 +91,8 @@ default handlers
 		
 
 		<cfif not len(arguments.user)>
-			<cfif isDefined("session.dmSec.authentication.userlogin")>
-				<cfset arguments.user = session.dmSec.authentication.userlogin />
+			<cfif application.security.isLoggedIn()>
+				<cfset arguments.user = application.security.getCurrentUserID() />
 			<cfelse>
 				<cfset arguments.user = 'anonymous' />
 			</cfif>

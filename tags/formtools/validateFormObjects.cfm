@@ -1,5 +1,5 @@
-<cfif isDefined("session.dmSec.authentication.userlogin")>
-	<cfset Variables.LockedBy = session.dmSec.authentication.userlogin>
+<cfif application.security.isLoggedIn()>
+	<cfset Variables.LockedBy = application.security.getCurrentUserID()>
 <cfelse>
 	<cfset Variables.LockedBy = "anonymous">
 </cfif>

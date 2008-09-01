@@ -61,7 +61,7 @@ $out:$
 		<cfset stProperties.externalLink = form.externalLink>
 		<cfset stProperties.lNavIDAlias = form.lNavIDAlias>
 		<cfset stProperties.datetimelastupdated = Now()>
-		<cfset stProperties.lastupdatedby = session.dmSec.authentication.userlogin>
+		<cfset stProperties.lastupdatedby = application.security.getCurrentUserID()>
 		<cfset stProperties.fu = form.fu>
 		<!--- unlock object --->
 		<cfset stProperties.locked = 0>

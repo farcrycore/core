@@ -6,7 +6,7 @@
 
 <body bgcolor="#789">
 <cfimport taglib="/farcry/core/tags/" prefix="farcry">
-<div class="countDown">Logged in as: <cfoutput><strong>#session.dmSec.authentication.userlogin#</strong><br></cfoutput>
+<div class="countDown">Logged in as: <cfoutput><strong>#application.security.getCurrentUserID()#</strong><br></cfoutput>
 <form name="test" style="display:inline"><farcry:countdown Formname="test" Timeout="60"><cfoutput>#application.rb.getResource("sessionRemaining")#</cfoutput></form></div>
 
 <!--- setup footer --->

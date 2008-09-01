@@ -173,7 +173,7 @@ $in: objectid -- $
 							
 							<!--- We do not include the Edit Link if workflow is available for this content item. The user must go to the overview page. --->
 							<cfif not listLen(variables.lWorkflowTypenames)>	
-								<cfif listFindNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] neq 0 AND attributes.qRecordSet.lockedby[variables.currentRow] neq 'application.security.getCurrentUserID()'>
+								<cfif listFindNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] neq 0 AND attributes.qRecordSet.lockedby[variables.currentRow] neq '#application.security.getCurrentUserID()#'>
 									<cfif structKeyExists(thistag.stPermissions, "iApprove") AND thistag.stPermissions.iApprove>
 										<option value="unlock">Unlock</option>
 									</cfif>		
@@ -319,7 +319,7 @@ $in: objectid -- $
 										
 							<!--- We do not include the Edit Link if workflow is available for this content item. The user must go to the overview page. --->
 							<cfif not listLen(variables.lWorkflowTypenames)>										
-								<cfif listFindNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] neq 0 AND attributes.qRecordSet.lockedby[variables.currentRow] neq 'application.security.getCurrentUserID()'>
+								<cfif listFindNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] neq 0 AND attributes.qRecordSet.lockedby[variables.currentRow] neq '#application.security.getCurrentUserID()#'>
 									<cfif structKeyExists(thistag.stPermissions, "iApprove") AND thistag.stPermissions.iApprove>
 										<option value="unlock">Unlock</option>
 									</cfif>		

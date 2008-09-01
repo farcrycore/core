@@ -67,7 +67,7 @@ $Developer: Guy (guy@daemon.com.au)$
 	<cfset stProperties.bAutoGenerateThumbnail = form.bAutoGenerateThumbnail>
 
 	<cfset stProperties.datetimelastupdated = Now()>
-	<cfset stProperties.lastupdatedby = session.dmSec.authentication.userlogin>
+	<cfset stProperties.lastupdatedby = application.security.getCurrentUserID()>
 	<cfset stProperties.imageFile = stObj.imageFile>
 	<cfset stProperties.originalImagePath = stObj.originalImagePath>
 

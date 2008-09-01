@@ -478,8 +478,8 @@
 		</cfquery>
 		
 		<cfif qRecordExists.RecordCount EQ 0>
-			<cfif isDefined("session.dmSec.authentication.userlogin")>
-				<cfset userLogin = session.dmSec.authentication.userlogin>
+			<cfif application.security.isLoggedIn()>
+				<cfset userLogin = application.security.getCurrentUserID()>
 			<cfelse>
 				<cfset userLogin = "Unknown">
 			</cfif>

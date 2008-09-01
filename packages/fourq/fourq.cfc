@@ -94,8 +94,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		
 		
-		<cfif isDefined("session.dmSec.authentication.userlogin")>
-			<cfset userlogin = session.dmSec.authentication.userlogin>
+		<cfif application.security.isLoggedIn()>
+			<cfset userlogin = application.security.getCurrentUserID()>
 		<cfelse>
 			<cfset userlogin = "Unknown">
 		</cfif>

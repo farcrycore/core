@@ -10,7 +10,7 @@
 
 		<cfif stLocal.bPLPStorage>
 			<cflock name="_plpaccess" timeout="10">
-				<cffile action="read" file="#application.path.plpstorage#/#session.dmSec.authentication.userlogin#_#arguments.objectid#.plp" variable="stLocal.wddxPLP" charset="utf-8">
+				<cffile action="read" file="#application.path.plpstorage#/#application.security.getCurrentUserID()#_#arguments.objectid#.plp" variable="stLocal.wddxPLP" charset="utf-8">
 				<cfwddx action="wddx2cfml" input="#stLocal.wddxPLP#" output="stLocal.stPLP">
 			</cflock>
 		<cfelse>
@@ -28,7 +28,7 @@
 			
 			
 		</cfif>
-		<cfoutput>reading file: #application.path.plpstorage#/#session.dmSec.authentication.userlogin#_#arguments.objectid#.plp<br /></cfoutput>
+		<cfoutput>reading file: #application.path.plpstorage#/#application.security.getCurrentUserID()#_#arguments.objectid#.plp<br /></cfoutput>
 		<cfreturn stLocal.stPLP>
 	</cffunction>
 
@@ -42,7 +42,7 @@
 			<cfif arguments.bPLPStorage>
 				<cflock name="_plpaccess" timeout="10">
 					<cfwddx action="cfml2wddx" input="#arguments.stPLP#" output="stLocal.wddxPLP">
-					<cffile action="write" file="#application.path.plpstorage#/#session.dmSec.authentication.userlogin#_#arguments.stPLP.plp.output.objectID#.plp" output="#stLocal.wddxPLP#" addnewline="No" charset="utf-8">
+					<cffile action="write" file="#application.path.plpstorage#/#application.security.getCurrentUserID()#_#arguments.stPLP.plp.output.objectID#.plp" output="#stLocal.wddxPLP#" addnewline="No" charset="utf-8">
 				</cflock>
 
 			<cfelse>

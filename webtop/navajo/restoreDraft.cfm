@@ -30,7 +30,7 @@
 		
 		<!--- Need to try and delete the PLP if it exists - relies on people sticking to this naming convention though so not rock solid. --->
 		<cftry>
-			<cffile action="DELETE" file="#application.path.plpstorage#/#session.dmSec.authentication.userlogin#_#stObj.objectID#.plp">
+			<cffile action="DELETE" file="#application.path.plpstorage#/#application.security.getCurrentUserID()#_#stObj.objectID#.plp">
 			<cfcatch><!--- dont do anything ---></cfcatch>
 		</cftry>
 	
