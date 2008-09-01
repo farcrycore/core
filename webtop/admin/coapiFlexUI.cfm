@@ -8,7 +8,8 @@
 <admin:header title="#application.rb.getResource("COAPIrules")#" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <sec:CheckPermission error="true" permission="AdminCOAPITab">
-	<skin:flexWrapper SWFSource="#application.url.webtop#/admin/ui/swf/Coapi.swf" id="CoapiUI">
+	<cfset connectString = "#replace(replace(application.url.webtop,"/",""),"/",".","all")#.facade.coapiFacade">
+	<skin:flexWrapper SWFSource="#application.url.webtop#/admin/ui/swf/Coapi.swf" flashVars="connectString=#connectString#" id="CoapiUI">
 </sec:CheckPermission>
 
 <admin:footer>
