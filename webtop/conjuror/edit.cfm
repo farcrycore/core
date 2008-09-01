@@ -127,7 +127,7 @@ $out:$
 			<cfelse>
 				<cfdump var="#packagepath#" />
 			</cfif>
-		<cfelseif not checkForLockRet.bSuccess and checkForLockRet.lockedBy eq "#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#">
+		<cfelseif not checkForLockRet.bSuccess and checkForLockRet.lockedBy eq "application.security.getCurrentUserID()">
 			<cfset oType.edit(objectid=url.objectid) />
 		<cfelse>
 			<cfoutput>#checkForLockRet.message#</cfoutput>

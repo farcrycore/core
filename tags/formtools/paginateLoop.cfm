@@ -137,7 +137,7 @@ $in: objectid -- $
 					</cfif>
 					
 					
-			<!---		<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] AND attributes.qRecordSet.lockedby[variables.currentRow] eq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#'>
+			<!---		<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] AND attributes.qRecordSet.lockedby[variables.currentRow] eq 'application.security.getCurrentUserID()'>
 						<cfset caller[attributes.r_stObject].editLink = "<span style='color:red'>Locked</span>" />		
 					<cfelse>
 						<cfset caller[attributes.r_stObject].editLink = "<a href='#application.url.farcry#/conjuror/invocation.cfm?objectid=#attributes.qRecordSet.objectid[variables.currentrow]#&typename=#attributes.typename#&method=#attributes.editWebskin#&ref=typeadmin&module=customlists/#attributes.customList#.cfm'><img src='#application.url.farcry#/images/treeImages/edit.gif' alt='Edit' title='Edit' /></a>" />
@@ -173,7 +173,7 @@ $in: objectid -- $
 							
 							<!--- We do not include the Edit Link if workflow is available for this content item. The user must go to the overview page. --->
 							<cfif not listLen(variables.lWorkflowTypenames)>	
-								<cfif listFindNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] neq 0 AND attributes.qRecordSet.lockedby[variables.currentRow] neq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#'>
+								<cfif listFindNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] neq 0 AND attributes.qRecordSet.lockedby[variables.currentRow] neq 'application.security.getCurrentUserID()'>
 									<cfif structKeyExists(thistag.stPermissions, "iApprove") AND thistag.stPermissions.iApprove>
 										<option value="unlock">Unlock</option>
 									</cfif>		
@@ -284,7 +284,7 @@ $in: objectid -- $
 					</cfif>
 					
 					
-			<!---		<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] AND attributes.qRecordSet.lockedby[variables.currentRow] eq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#'>
+			<!---		<cfif listContainsNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] AND attributes.qRecordSet.lockedby[variables.currentRow] eq 'application.security.getCurrentUserID()'>
 						<cfset caller[attributes.r_stObject].editLink = "<span style='color:red'>Locked</span>" />		
 					<cfelse>
 						<cfset caller[attributes.r_stObject].editLink = "<a href='#application.url.farcry#/conjuror/invocation.cfm?objectid=#attributes.qRecordSet.objectid[variables.currentrow]#&typename=#attributes.typename#&method=#attributes.editWebskin#&ref=typeadmin&module=customlists/#attributes.customList#.cfm'><img src='#application.url.farcry#/images/treeImages/edit.gif' alt='Edit' title='Edit' /></a>" />
@@ -319,7 +319,7 @@ $in: objectid -- $
 										
 							<!--- We do not include the Edit Link if workflow is available for this content item. The user must go to the overview page. --->
 							<cfif not listLen(variables.lWorkflowTypenames)>										
-								<cfif listFindNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] neq 0 AND attributes.qRecordSet.lockedby[variables.currentRow] neq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#'>
+								<cfif listFindNoCase(attributes.qRecordSet.columnlist,"locked") AND attributes.qRecordSet.locked[variables.currentRow] neq 0 AND attributes.qRecordSet.lockedby[variables.currentRow] neq 'application.security.getCurrentUserID()'>
 									<cfif structKeyExists(thistag.stPermissions, "iApprove") AND thistag.stPermissions.iApprove>
 										<option value="unlock">Unlock</option>
 									</cfif>		

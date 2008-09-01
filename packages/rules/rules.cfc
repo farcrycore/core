@@ -502,7 +502,7 @@ $out:$
 		<!--- Determine who the record is being locked/unlocked by --->		
 		<cfif not len(arguments.lockedBy)>
 			<cfif isDefined("session.dmSec.authentication.userlogin") AND isDefined("session.dmSec.authentication.userDirectory")>
-				<cfset arguments.lockedBy = "#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#" />
+				<cfset arguments.lockedBy = "application.security.getCurrentUserID()" />
 			<cfelse>
 				<cfset arguments.lockedBy = "anonymous" />
 			</cfif>

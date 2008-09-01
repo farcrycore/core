@@ -24,7 +24,7 @@
 		<!--- check locked --->
 		<cfif stObj.locked>
 			<!--- check if locked by current user --->
-			<cfif stObj.lockedby eq "#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#">
+			<cfif stObj.lockedby eq "application.security.getCurrentUserID()">
 				<!--- user can unlock there own objects --->
 				<cfset permission = true>
 			<cfelse>

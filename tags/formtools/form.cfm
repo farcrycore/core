@@ -121,7 +121,7 @@ It just ignores the inner ones.
 					
 					<cfset oType = createObject("component", application.types[Request.farcryForm.stObjects[i].FarcryFormObjectInfo.typename].packagepath) />
 					<cfset stType = oType.getData(objectid=Request.farcryForm.stObjects[i].FarcryFormObjectInfo.objectID) />
-					<cfset oType.setLock(locked=true,lockedby="#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#") >
+					<cfset oType.setLock(locked=true,lockedby="application.security.getCurrentUserID()") >
 				</cfif>
 			</cfloop>
 		</cfif> --->

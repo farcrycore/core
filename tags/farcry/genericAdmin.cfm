@@ -134,7 +134,7 @@ $TODO: there shouldn't be anything scoped from outside of the tag! Make this an 
 	st = structNew();
 	st.heading = '#application.rb.getResource("label")#';
 	st.columnType = 'eval';
-	st.value = "iif(iObjectEditPermission eq 1,DE(iif(locked and lockedby neq '#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#',DE('##replace(recordset.label[recordset.currentrow],'####','','all')##'),DE('<a href=''#editObjectURL#''>##replace(recordset.label[recordset.currentrow],'####','','all')##</a>'))),DE('##replace(recordset.label[recordset.currentrow],'####','','all')##'))";
+	st.value = "iif(iObjectEditPermission eq 1,DE(iif(locked and lockedby neq 'application.security.getCurrentUserID()',DE('##replace(recordset.label[recordset.currentrow],'####','','all')##'),DE('<a href=''#editObjectURL#''>##replace(recordset.label[recordset.currentrow],'####','','all')##</a>'))),DE('##replace(recordset.label[recordset.currentrow],'####','','all')##'))";
 	st.align = "left";
 	arrayAppend(stGrid.aTable,st);
 
@@ -236,7 +236,7 @@ if (isDefined("form.unlock") AND isDefined("form.objectid"))
 		if(stObj.locked)
 		{
 			permission = false;
-			if (stObj.lockedby IS "#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#")
+			if (stObj.lockedby IS "application.security.getCurrentUserID()")
 			{
 				permission = true;
 			}

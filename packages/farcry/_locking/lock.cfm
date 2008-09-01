@@ -49,7 +49,7 @@ $out:$
 	<cfscript>
 	stProperties.objectid = stObj.objectid;
 	stProperties.locked = 1;
-	stProperties.lockedBy = "#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#";
+	stProperties.lockedBy = "application.security.getCurrentUserID()";
 
 	// update the OBJECT	
 	oType.setData(stProperties=stProperties);	

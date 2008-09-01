@@ -562,8 +562,8 @@ user --->
 				if(stObj.locked)
 				{
 					// allow owner of the object or the person who has locked the content item to unlock
-					if (stObj.lockedby IS "#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#"
-						OR stObj.ownedby IS "#session.dmSec.authentication.userlogin#_#session.dmSec.authentication.userDirectory#") {
+					if (stObj.lockedby IS "application.security.getCurrentUserID()"
+						OR stObj.ownedby IS "application.security.getCurrentUserID()") {
 						bAllowUnlock=true;
 					// allow users with approve permission to unlock
 					} else if (stPermissions.iApprove eq 1) {
