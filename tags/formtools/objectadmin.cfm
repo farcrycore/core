@@ -563,7 +563,7 @@ user --->
 				{
 					// allow owner of the object or the person who has locked the content item to unlock
 					if (stObj.lockedby IS "#application.security.getCurrentUserID()#"
-						OR stObj.ownedby IS "#application.security.getCurrentUserID()##") {
+						OR stObj.ownedby IS "#application.security.getCurrentUserID()#") {
 						bAllowUnlock=true;
 					// allow users with approve permission to unlock
 					} else if (stPermissions.iApprove eq 1) {
