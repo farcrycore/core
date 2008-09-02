@@ -389,9 +389,9 @@ $out:$
 	<cfelse>
 		<cfparam name="returnObjectId" default="#attributes.lObjectIDs#"><cfoutput>
 		<script type="text/javascript">
-		if(window.opener && window.opener.parent)
+		if(top == self) {
 			window.close();
-		else{
+		} else{
 			location.href = "#application.url.farcry#/edittabOverview.cfm?objectid=#returnObjectId#";
 		}
 		</script></cfoutput>
