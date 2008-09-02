@@ -378,7 +378,7 @@ $out:$
 	<cfif listlen(url.objectid) gt 1 and not find(cgi.SCRIPT_NAME,cgi.http_referer)>
 		<cfparam name="returnObjectId" default="#attributes.lObjectIDs#"><cfoutput>
 		<script type="text/javascript">
-		if(window.opener && window.opener.parent)
+		if(top == self)
 			window.close();
 		else{
 			location.href = "#cgi.http_referer#;
