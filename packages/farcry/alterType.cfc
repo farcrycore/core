@@ -159,26 +159,26 @@ $out:$
 	</cfif>
 
 	<cfif fileexists("#application.path.project#/www/wsimages/icons/#arguments.size#/#arguments.iconname#")>
-		<cfreturn "#application.url.webroot#/wsimages/icons/#arguments.size#/#arguments.iconname#" />
+		<cfreturn "#application.path.webroot#/wsimages/icons/#arguments.size#/#arguments.iconname#" />
 	</cfif>
 	<cfif fileexists("#application.path.project#/www/images/icons/#arguments.iconname#")>
-		<cfreturn "#application.url.webroot#/images/icons/#arguments.size#/#arguments.iconname#" />
+		<cfreturn "#application.path.webroot#/images/icons/#arguments.size#/#arguments.iconname#" />
 	</cfif>
 	
 	<cfloop list="#application.factory.oUtils.listReverse(application.plugins)#" index="thisplugin">
 		<cfif fileexists("#application.path.project#/www/#thisplugin#/wsimages/icons/#arguments.size#/#arguments.iconname#")>
-			<cfreturn "#application.url.webroot#/#thisplugin#/wsimages/icons/#arguments.size#/#arguments.iconname#" />
+			<cfreturn "#application.path.project#/www/#thisplugin#/wsimages/icons/#arguments.size#/#arguments.iconname#" />
 		</cfif>
 		<cfif fileexists("#application.path.plugins#/#thisplugin#/www/wsimages/icons/#arguments.size#/#arguments.iconname#")>
-			<cfreturn "#application.url.webroot#/#thisplugin#/wsimages/icons/#arguments.size#/#arguments.iconname#" />
+			<cfreturn "#application.path.plugins#/#thisplugin#/www/wsimages/icons/#arguments.size#/#arguments.iconname#" />
 		</cfif>
 	</cfloop>
 	
 	<cfif fileexists("#application.path.core#/webtop/icons/#arguments.size#/#arguments.iconname#")>
-		<cfreturn "#application.url.webtop#/icons/#arguments.size#/#arguments.iconname#" />
+		<cfreturn "#application.path.core#/webtop/icons/#arguments.size#/#arguments.iconname#" />
 	</cfif>
 	
-	<cfreturn "#application.url.webtop#/icons/#arguments.size#/#arguments.default#" />
+	<cfreturn "#application.path.webtop#/icons/#arguments.size#/#arguments.default#" />
 </cffunction>
 
 <cffunction name="setupMetadataQuery" output="false" displayname="Sets up the metadata query containing formtool structure information" returntype="query" access="private">

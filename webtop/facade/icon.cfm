@@ -17,4 +17,4 @@
 	<cfset defaulticon = "blank.png" />
 </cfif>
 
-<cfcontent file="#expandpath(application.factory.oAlterType.getIconPath(iconname=url.icon,size=url.size,default=defaulticon))#" />
+<cfcontent file="#application.factory.oAlterType.getIconPath(iconname=url.icon,size=url.size,default=defaulticon)#" />
