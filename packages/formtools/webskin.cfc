@@ -18,6 +18,7 @@
 		
 		<cfparam name="arguments.stMetadata.ftPrefix" default="">
 		<cfparam name="arguments.stMetadata.ftTypename" default="#arguments.typename#"><!--- The typename that the webskin is to be selected for. It defaults to the typename of the object this field is contained in. --->
+		<cfparam name="arguments.stMetadata.bExcludeCoreViews" default="false">
 	
 		<cfif NOT len(arguments.stMetadata.ftTypename)>
 			<cfset arguments.stMetadata.ftTypename = arguments.typename />
@@ -32,6 +33,7 @@
 						select	*
 						from	qWebskins
 						where	name in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#valuelist(qWebskinsTemp.name)#">)
+						<cfif structKeyExists(arguments.stMetadata, "bExcludeCoreViews") and arguments.stMetadata.bExcludeCoreViews>and path not like '/farcry/core/%'</cfif>
 					</cfquery>
 				<cfelse>
 					<cfquery dbtype="query" name="qWebskins">
@@ -43,6 +45,12 @@
 			<cfelse>
 				<cfset oType=createobject("component", application.stCoapi[thistype].packagepath) />
 				<cfset qWebskins=oType.getWebskins(typename='#thistype#', prefix=arguments.stMetadata.ftPrefix) />
+				<cfquery dbtype="query" name="qWebskins">
+						select	*
+						from	qWebskins
+						where	name in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#valuelist(qWebskins.name)#">)
+						<cfif structKeyExists(arguments.stMetadata, "bExcludeCoreViews") and arguments.stMetadata.bExcludeCoreViews>and path not like '/farcry/core/%'</cfif>
+				</cfquery>
 			</cfif>
 		</cfloop>
 
