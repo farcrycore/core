@@ -178,7 +178,7 @@ $out:$
 		<cfreturn "#application.path.core#/webtop/icons/#arguments.size#/#arguments.iconname#" />
 	</cfif>
 	
-	<cfreturn "#application.path.webtop#/icons/#arguments.size#/#arguments.default#" />
+	<cfreturn "#application.path.core#/webtop/icons/#arguments.size#/#arguments.default#" />
 </cffunction>
 
 <cffunction name="setupMetadataQuery" output="false" displayname="Sets up the metadata query containing formtool structure information" returntype="query" access="private">
