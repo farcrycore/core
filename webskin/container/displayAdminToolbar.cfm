@@ -16,10 +16,10 @@
 
 <extjs:iframeDialog />
 
-<skin:htmlHead id="managecontainer"><cfoutput>
+<skin:htmlHead><cfoutput>
 	<!-- Container styles / javascript -->
 	<style>
-		div.containeradmin { background-color: ##ccc; font-weight:bold; padding:5px; color:##000; }
+		div.containeradmin { background-color: ##ccc; font-weight:bold; padding:2px; color:##000; }
 		div.containeradmin a { text-decoration:none; border: 0 none; display: block; padding-right:5px; float:left; color:##000; }
 		div.containeradmin a img { border:0 none; }
 		div.containeradmin div.type { width: 6.5em; float:left; }
@@ -30,10 +30,11 @@
 		##ajaxindicator { text-align: center; padding: 10px; }
 		##ajaxindicator img { border: 0 none; }
 		
-		div.ruleadmin { background-color: ##ddd; font-weight:bold; padding:5px; color:##000; }
+		div.ruleadmin { background-color: ##ddd; font-weight:bold; padding:2px; color:##000; }
+		div.ruleadmin * { vertical-align: middle; }
 		div.ruleadmin a { text-decoration:none; border: 0 none; display: block; padding-right:5px; float:left; color:##000; }
 		div.ruleadmin a img { border:0 none; }
-		div.ruleadmin div.type { width: 6.5em; float:left; }
+		div.ruleadmin div.type { float:left; }
 		div.ruleadmin div.title { padding-left:5px; padding-right:5px; }
 		div.ruleadmin div.title a { display:inline; float:none; }
 		div.ruleadmin div.title a:hover { text-decoration:underline; }
@@ -62,13 +63,13 @@
 <cfoutput>
 	<div class="containeradmin">
 		<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editAddRule&container=#originalcontainer#" target="_blank" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #rereplace(stObj.label,"\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_","")#',800,600,true,function(){ reloadContainer('#originalcontainer#'); });return false;" title="Add a rule">
-			<img src="#application.url.farcry#/images/crystal/22x22/actions/window_new.png" border="0" alt="Add a rule" />
+			<img src="#application.url.webtop#/facade/icon.cfm?icon=addrule&size=16" border="0" alt="Add a rule" />
 		</a>
 		<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#originalcontainer#&method=editManageReflection" target="_blank" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #rereplace(stObj.label,"\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_","")#',800,300,true,function(){ reloadContainer('#originalcontainer#'); });return false;" title="Manage reflection">
-			<img src="#application.url.farcry#/images/crystal/22x22/actions/editcopy.png" border="0" alt="Manage reflection" />
+			<img src="#application.url.webtop#/facade/icon.cfm?icon=managereflection&size=16" border="0" alt="Manage reflection" />
 		</a>
 		<a href="#cgi.SCRIPT_NAME#?#cgi.query_string#" onclick="reloadContainer('#originalcontainer#');return false;" title="Refresh container">
-			<img src="#application.url.farcry#/images/crystal/22x22/actions/reload.png" border="0" alt="Refresh container" />
+			<img src="#application.url.webtop#/facade/icon.cfm?icon=refresh&size=16" border="0" alt="Refresh container" />
 		</a>
 		<div class="title">
 			<div class="type">CONTAINER</div>
