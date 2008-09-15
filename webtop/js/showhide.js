@@ -3,12 +3,12 @@ function showHide(theTable,theImg)
 	if (document.getElementById(theTable).style.display == 'none') 
 	{ 
 		document.getElementById(theTable).style.display = 'block'; 
-		document.getElementById(theImg).src='../images/icons/xsmall/collapse.png'; 
+		document.getElementById(theImg).src='#application.url.webtop#/facade/icon.cfm?icon=collapse&size=16'; 
 	} 
 	else 
 	{ 
 		document.getElementById(theTable).style.display = 'none'; 
-		document.getElementById(theImg).src='../images/icons/xsmall/expand.png'; 
+		document.getElementById(theImg).src='#application.url.webtop#/facade/icon.cfm?icon=expand&size=16'; 
 	} 
 }
 

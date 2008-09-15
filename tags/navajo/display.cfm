@@ -196,6 +196,10 @@
 	
 	<!--- determine display method for object --->
 	<cfset request.stObj = stObj>
+		
+	<cfif request.mode.bAdmin>
+		<skin:view objectid="#attributes.objectid#" webskin="displayAdminToolbar" />
+	</cfif>
 
 	<cfif len(attributes.method)>
 	
@@ -219,7 +223,6 @@
 			<cfthrow message="For the default view of an object, create a displayPageStandard webskin." />
 		</cfif>
 	</cfif>
-	
 
 <cfelse>
 
@@ -234,6 +237,10 @@
 	<sec:CheckPermission type="#attributes.typename#" webskinpermission="#attributes.method#" result="bView" />
 	
 	<cfif bView>
+		<cfif request.mode.bAdmin>
+			<skin:view typename="#attributes.typename#" webskin="displayAdminToolbar" />
+		</cfif>
+		
 		<cfset request.typewebskin = "#attributes.typename#.#attributes.method#" />
 		<skin:view typename="#attributes.typename#" webskin="#attributes.method#" />
 	<cfelse>
@@ -243,34 +250,6 @@
 	
 </cfif>
 
-
-
-<!---------------------------
-Build floatMenu, as required
-$TODO: This should respond to request.mode settings and not require a
-a whole new set of permission checks, have trapped any errors and suppressed GB 20031024 $
----------------------------->
-<cftry>	
-	<cfif len(application.security.getCurrentUserID()) AND NOT request.bHideContextMenu>
-		<!--- check they are admin --->
-		<!--- check they are able to comment --->
-	
-		<cfset iAdmin = application.security.checkPermission(permission="Admin") />
-		<cfset iCanCommentOnContent = application.security.checkPermission(object=request.navid,permission='CanCommentOnContent') />
-	
-		<cfif (iAdmin eq 1 or iCanCommentOnContent eq 1)>
-			<cfset request.floaterIsOnPage = true>
-			<cfinclude template="floatMenu.cfm">
-		</cfif>
-	</cfif>
-	<!--- end: logged in user? --->
-	<cfcatch>
-	<!--- suppress error --->
-	<cftrace text="Float menu failed: #cfcatch.message#" />
-	</cfcatch>
-</cftry>
-
-	
 </cftimer>
 
 <cfsetting enablecfoutputonly="No">

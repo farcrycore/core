@@ -1125,6 +1125,19 @@ default handlers
 			Forms need to be manually unlocked. Wizards will unlock automatically.
 		--->
 		<cfset setLock(stObj=stObj,locked=true) />
+			
+		<cfif structkeyexists(url,"iframe")>
+			<cfset onExit.Type = "HTML" />
+			<cfsavecontent variable="onExit.content">
+				<cfoutput>
+					<script type="text/javascript">
+						<!--- parent.location.reload(); --->
+						parent.location = parent.location;
+						parent.closeDialog();		
+					</script>
+				</cfoutput>
+			</cfsavecontent>
+		</cfif>
 		
 		<!-------------------------------------------------- 
 		WIZARD:
