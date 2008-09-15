@@ -5,6 +5,8 @@
 <cfimport taglib="/farcry/core/tags/security" prefix="sec" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
+<cfset iDeveloperPermission = application.security.checkPermission(permission="developer") />
+
 <extjs:iframeDialog />
 
 
