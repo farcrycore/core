@@ -97,8 +97,10 @@
 		<cfelse>
 			<cfset editableid = "" />
 		</cfif>
-	<cfelse>
+	<cfelseif not structkeyexists(stObj,"status")>
 		<cfset editableid = stObj.objectid />
+	<cfelse>
+		<cfset editableid = "" />
 	</cfif>
 	
 	<cfif len(editableid)>
