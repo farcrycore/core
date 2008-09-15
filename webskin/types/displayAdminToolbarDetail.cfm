@@ -197,7 +197,7 @@
 <sec:CheckPermission objectid="#stObj.objectid#" typename="#stObj.typename#" permission="Edit">
 	<cfif structkeyexists(stObj,"status") and stObj.status eq "draft">
 		<cfset editableid = stObj.objectid />
-	<cfelseif structkeyexists(stObj,"status")>
+	<cfelseif structkeyexists(stObj,"versionid")>
 		<cfset qDraft = createObject("component", "#application.packagepath#.farcry.versioning").checkIsDraft(objectid=stobj.objectid,type=stobj.typename)>
 		<cfif qDraft.recordcount>
 			<cfset editableid = qDraft.objectid />
