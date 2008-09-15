@@ -113,6 +113,12 @@
 		</cfif>
 		
 		<cfif structkeyexists(stObj,"displaymethod")>
+			<cfquery dbtype="query" name="qWebskin">
+				select		displayname
+				from		application.stCOAPI.#stObj.typename#.qWebskins
+				where		name='#stObj.displaymethod#.cfm'
+			</cfquery>
+			
 			<cfoutput>
 				,{
 					xtype:"panel",
@@ -122,7 +128,7 @@
 				},{
 					xtype:"panel",
 					cls:"htmlpanel",
-					html:"#stobj.displaymethod#",
+					html:"#qWebskin.displayname#",
 					cellCls:"value"
 				}
 			</cfoutput>
