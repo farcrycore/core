@@ -141,7 +141,7 @@
 	<cfoutput>
 		{
 			xtype:"tbbutton",
-			iconCls:"previewmode_icon",
+			<cfif request.mode.showdraft>iconCls:"previewmode_icon",<cfelse>iconCls:"previewmodedisabled_icon",</cfif>
 			text:"Preview mode",
 			enableToggle:true,
 			allowDepress:true,
@@ -170,7 +170,7 @@
 		<cfoutput>
 			{
 				xtype:"tbbutton",
-				iconCls:"designmode_icon",
+				<cfif request.mode.design and request.mode.showcontainers gt 0>iconCls:"designmode_icon",<cfelse>iconCls:"designmodedisabled_icon",</cfif>
 				text:"Design mode",
 				enableToggle:true,
 				allowDepress:true,

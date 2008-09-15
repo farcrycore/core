@@ -23,7 +23,9 @@
 				##farcrytray .lessdetail_icon { background:transparent url(#application.url.webtop#/js/ext/resources/images/default/panel/tool-sprites.gif) no-repeat scroll 0 -195px; height:15px; width:15px; }
 				##farcrytray .edit_icon { background-image:url(#application.url.webtop#/facade/icon.cfm?icon=edit&size=16) !important; }
 				##farcrytray .designmode_icon { background-image:url(#application.url.webtop#/facade/icon.cfm?icon=designmode&size=16) !important; }
+				##farcrytray .designmodedisabled_icon { background-image:url(#application.url.webtop#/facade/icon.cfm?icon=designmodedisabled&size=16) !important; }
 				##farcrytray .previewmode_icon { background-image:url(#application.url.webtop#/facade/icon.cfm?icon=draftmode&size=16) !important; }
+				##farcrytray .previewmodedisabled_icon { background-image:url(#application.url.webtop#/facade/icon.cfm?icon=draftmodedisabled&size=16) !important; }
 				##farcrytray { border-top: 1px solid ##0F7BD5; }
 				##farcrytray .traytypeicon { margin-top:2px; vertical-align:middle; }
 				##farcrytray .htmlpanel .x-panel-body { padding-left:5px; }
