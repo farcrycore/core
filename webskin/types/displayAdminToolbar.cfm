@@ -30,15 +30,18 @@
 				##farcrytray .traytypeicon { margin-top:2px; vertical-align:middle; }
 				##farcrytray .htmlpanel .x-panel-body { padding-left:5px; }
 				##farcrytray .htmlpanel .x-panel-body, ##farcrytray .x-toolbar, ##farcrytray .x-table-layout-ct { background:##D7E4F3 none; border:0 none; }
-				.separator { padding-left:5px; padding-right:5px; }
+				##farcrytray .separator { padding-left:5px; padding-right:5px; }
 				##farcrytray a, ##farcrytray a:hover, ##farcrytray a:active, ##farcrytray a:visited { color: blue; font-weight:bold; }
 				##farcrytray a, ##farcrytray a:active, ##farcrytray a:visited { text-decoration:none; }
 				##farcrytray a:hover { text-decoration:underline; }
 				##farcrytray a.webtoplink:hover { text-decoration:none; }
+				##farcrytray img { border: 0 none; }
+				##farcrytray * { font-family: arial; }
 			</style>
 		</cfoutput></skin:htmlHead>
 		<extjs:onReady><cfoutput>
 			var bodyhtml = Ext.getBody().dom.innerHTML;
+			var bodystyles = Ext.getBody().getStyles("background");
 			
 			var summary = #summarytoolbar#;
 			summary.region = "center";
@@ -56,7 +59,8 @@
 					xtype:"panel",
 					html:bodyhtml,
 					autoScroll:true,
-					border:false
+					border:false,
+					id:"farcrybody"
 				},{
 					region:"south",
 					xtype:"panel",
@@ -124,6 +128,7 @@
 				
 				}]
 			});
+			Ext.select("##farcrybody > .x-panel-bwrap > .x-panel-body").applyStyles(bodystyles);
 		</cfoutput></extjs:onReady>
 		
 		<!--- <skin:htmlHead library="extjs" />

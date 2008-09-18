@@ -130,7 +130,7 @@
 	items:[{
 		xtype:"panel",
 		region:"center",
-		html:"<a href='#application.url.webtop#/' class='webtoplink' title='Webtop'><img class='traytypeicon' src='#application.url.webtop#/facade/icon.cfm?icon=farcrycore&size=16' alt='#stObj.typename#' /></a>#jsstringformat(arraytolist(aItems,'<span class=''separator''>|</span>'))#",
+		html:"<a href='#application.url.webtop#/' class='webtoplink' title='Webtop'><img class='traytypeicon' src='#application.url.webtop#/facade/icon.cfm?icon=#stObj.typename#&size=16' alt='#stObj.typename#' /></a>#jsstringformat(arraytolist(aItems,'<span class=''separator''>|</span>'))#",
 		cls:"htmlpanel"
 	}<cfif arraylen(aActions)>,{
 		xtype:"toolbar",
