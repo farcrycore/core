@@ -13,14 +13,19 @@
 <!----------------------------- 
 ACTION	
 ------------------------------>
+<ft:serverSideValidation />
+
 <ft:processform action="Save" exit="true">
-	<ft:processformobjects typename="farUser" r_stProperties="stUser" />
-	<ft:processformobjects typename="dmProfile">
-		<cfif stProperties.userdirectory eq ""><!--- New user --->
-			<cfset stProperties.username = "#stUser.userid#_CLIENTUD" />
-			<cfset stProperties.userdirectory = "CLIENTUD" />
-		</cfif>
-	</ft:processformobjects>
+	<ft:processformobjects typename="farUser" lArrayListGenerate="lgroups" />
+	<cfif len(lsavedobjectids)>
+		<cfset stUser = oUser.getData(objectid=lsavedobjectids) />
+		<ft:processformobjects typename="dmProfile">
+			<cfif stProperties.userdirectory eq ""><!--- New user --->
+				<cfset stProperties.username = "#stUser.userid#_CLIENTUD" />
+				<cfset stProperties.userdirectory = "CLIENTUD" />
+			</cfif>
+		</ft:processformobjects>
+	</cfif>
 </ft:processform>
 
 <ft:processform action="Cancel" exit="true" />
@@ -39,20 +44,19 @@ VIEW
 	<cfif stObj.userdirectory eq "CLIENTUD" or stObj.userdirectory eq "">
 		
 		<cfif stObj.username eq "">
-			<cfset stUser = oUser.getData(objectid=createuuid()) />
-			<cfset stUser.userdirectory = "CLIENTUD" />
-			<cfset lFields = "userid,password,userstatus,aGroups" />
+			<skin:view key="newprofileuser" typename="farUser" webskin="editProfileUser" />
 		<cfelse>
 			<cfset stUser = oUser.getByUserID(listfirst(stObj.username,"_")) />
 			<cfset lFields = "userstatus,aGroups" />
+		
+			<ft:object stObject="#stUser#" typename="farUser" lfields="#lFields#" legend="Security" />
 		</cfif>
 		
-		<ft:object stObject="#stUser#" typename="farUser" lfields="#lFields#" legend="Security" />
 	</cfif>
 	
 	<ft:farcryButtonPanel>
 		<ft:button value="Save" color="orange" />
-		<ft:button value="Cancel" />
+		<ft:button value="Cancel" validate="false" />
 	</ft:farcryButtonPanel>
 </ft:form>
 
