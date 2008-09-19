@@ -40,7 +40,7 @@ system attributes
 <cfproperty name="ObjectID" type="UUID" hint="Primary key." required="yes">
 <cfproperty name="label" displayname="Label" type="nstring" hint="Object label or title." required="no" default=""> 
 <cfproperty name="datetimecreated" displayname="Datetime created" type="date" hint="Timestamp for record creation." required="yes" default="" ftType="datetime" ftLabel="Created"> 
-<cfproperty name="createdby" displayname="Created by" type="nstring" hint="Username for creator." required="yes" default="">
+<cfproperty name="createdby" displayname="Created by" type="nstring" hint="Username for creator." required="yes" default="" ftLabel="Created By">
 <!--- bowden --->
 <cfproperty name="ownedby" displayname="Owned by" type="nstring" hint="Username for owner." required="No" default="" ftLabel="Owned By" ftType="list" ftRenderType="dropdown" ftListData="getOwners">
 <cfproperty name="datetimelastupdated" displayname="Datetime lastupdated" type="date" hint="Timestamp for record last modified." required="yes" default="" ftType="datetime" ftLabel="Last Updated" ftShowTime="true" ftTimeMask="long"> 
