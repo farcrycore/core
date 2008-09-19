@@ -172,4 +172,21 @@ OBJECT METHODS
 
 		<cfreturn stReturn>
 	</cffunction>
+
+	<cffunction name="delete" access="public" hint="Basic delete method for all objects. Deletes content item and removes Verity entries." returntype="struct" output="false">
+		<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the object being deleted">
+		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="">
+		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="">
+		
+		<cfset stObj = getData(objectid=arguments.objectid) />
+		<cfset oUser = createobject("component",application.stCOAPI.farUser.packagepath) />
+		<cfset stUser = oUser.getByUserID(application.factory.oUtils.listSlice(stObj.userName,1,-2,"_")) />
+		
+		<cfif listlast(stObj.username,"_") eq "CLIENT" and not structisempty(stUser)>
+			<cfset oUser.delete(objectid=stUser.objectid,user=arguments.user,auditNote=arguments.auditNote) />
+		</cfif>
+		
+		<cfreturn super.delete(objectid=arguments.objectid,user=arguments.user,auditNote=arguments.auditNote) />
+	</cffunction>
+		
 </cfcomponent>
