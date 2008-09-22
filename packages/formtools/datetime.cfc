@@ -66,7 +66,7 @@
 				</cfoutput>
 			</cfsavecontent>
 			
-			<cfhtmlHead text="#ToggleOffDateTimeJS#">
+			<skin:htmlHead text="#ToggleOffDateTimeJS#" />
 		</cfif>		
 		
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
