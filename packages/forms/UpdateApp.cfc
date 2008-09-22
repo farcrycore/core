@@ -1,16 +1,16 @@
 <cfcomponent displayname="Update App" hint="Provides a granular way to update parts of the application state" extends="forms" output="false">
-	<cfproperty name="webtop" type="boolean" default="0" hint="Reload webtop data" ftSeq="1" ftFieldset="Data" ftLabel="Webtop" ftType="boolean" />
-	<cfproperty name="friendlyurls" type="boolean" default="0" hint="Reload friendly urls" ftSeq="2" ftFieldset="Data" ftLabel="Friendly URLs" ftType="boolean" />
-	<cfproperty name="reloadconfig" type="boolean" default="0" hint="Reloads config data" ftSeq="3" ftFieldset="Data" ftLabel="Config settings" ftType="boolean" />
-	<cfproperty name="resourcebundle" type="boolean" default="0" hint="Reloads resource bundles" ftSeq="4" ftFieldset="Data" ftLabel="Resource bundles" ftType="boolean" />
 	
-	<cfproperty name="typemetadata" type="boolean" default="0" hint="Reload type metadata" ftSeq="11" ftFieldset="COAPI" ftLabel="COAPI metadata" ftType="boolean" />
+	<cfproperty ftSeq="1" ftFieldset="COAPI" name="typemetadata" type="boolean" default="0" hint="Reload type metadata" ftLabel="COAPI metadata" ftType="boolean" />
 	
-	<cfproperty name="security" type="boolean" default="0" hint="Reload user directories" ftSeq="21" ftFieldset="Security" ftLabel="Security" ftType="boolean" />
-	<cfproperty name="javascript" type="boolean" default="0" hint="Reload javascript libraries" ftSeq="30" ftFieldset="Javascript" ftLabel="Javascript" ftType="boolean" />
+	<cfproperty ftSeq="2" ftFieldset="Security" name="security" type="boolean" default="0" hint="Reload user directories" ftLabel="Security" ftType="boolean" />
 	
-	<cfproperty ftSeq="35" ftFieldset="" name="factories" type="boolean" default="0" hint="Reload factories" ftLabel="Factories" ftType="boolean" />
-	
+	<cfproperty ftSeq="10" ftFieldset="Miscellaneous" name="webtop" type="boolean" default="0" hint="Reload webtop data" ftLabel="Webtop" ftType="boolean" />
+	<cfproperty ftSeq="11" ftFieldset="Miscellaneous" name="friendlyurls" type="boolean" default="0" hint="Reload friendly urls" ftLabel="Friendly URLs" ftType="boolean" />
+	<cfproperty ftSeq="12" ftFieldset="Miscellaneous" name="reloadconfig" type="boolean" default="0" hint="Reloads config data" ftLabel="Config settings" ftType="boolean" />
+	<cfproperty ftSeq="13" ftFieldset="Miscellaneous" name="resourcebundle" type="boolean" default="0" hint="Reloads resource bundles" ftLabel="Resource bundles" ftType="boolean" />
+	<cfproperty ftSeq="14" ftFieldset="Miscellaneous" name="javascript" type="boolean" default="0" hint="Reload javascript libraries" ftLabel="Javascript" ftType="boolean" />
+	<cfproperty ftSeq="15" ftFieldset="Miscellaneous" name="factories" type="boolean" default="0" hint="Reload factories" ftLabel="Factories" ftType="boolean" />
+	<cfproperty ftSeq="16" ftFieldset="Miscellaneous" name="wizards" type="boolean" default="0" hint="Re-Initialize all Wizards" ftLabel="Wizards" ftType="boolean" ftHint="This will reset all wizards. Any changes currently in progress will be deleted." />
 	<cffunction name="process" access="public" output="true" returntype="struct" hint="Performs application refresh according to options selected">
 		<cfargument name="fields" type="struct" required="true" hint="The fields submitted" />
 		
@@ -108,4 +108,18 @@
 		<cfreturn true />
 	</cffunction>
 
+
+
+	<cffunction name="processWizards" access="public" returntype="boolean" description="Resets Wizard Table" output="false">
+		<!--- Wizards --->
+		<cfif structkeyexists(arguments.fields,"wizards") and arguments.fields.wizards>
+			
+			<cfquery datasource="#application.dsn#" name="qDeleteWizards">
+			delete from dmWizard
+			</cfquery>
+			<extjs:bubble title="Re-Initialized Wizards" />
+		</cfif>
+		
+		<cfreturn true />
+	</cffunction>
 </cfcomponent>
