@@ -58,6 +58,66 @@ default handlers
   handlers that all types require
   these will likely be overloaded in production
 --------------------------------------------------------------------->	
+
+	<cffunction name="getNavID" access="public" output="false" returntype="string" hint="Returns the default Navigation objectID for the objectID passed in. Empty if it cant find anything applicable.">
+		<cfargument name="objectid" required="no" type="string" default="" hint="The objectid for which the navigation objectid is to be found." />
+		<cfargument name="typename" required="no" type="string" default="" hint="The typename of the object for which the navigation objectid is to be found." />
+		<cfargument name="stObject" required="no" type="struct" default="#structNew()#"  hint="The object for which the navigation objectid is to be found." />
+		
+		<cfset var stNav = structNew() />
+		<cfset var navID = "" />
+		<cfset var objectTypename = arguments.typename />		
+		
+		<cfif len(arguments.objectid)>
+			<cfif not len(arguments.typename)>
+				<cfset arguments.typename = application.coapi.utilities.findType(objectid="#arguments.objectid#") />
+			</cfif>
+			<cfset arguments.stObject = createObject("component", application.stcoapi["#arguments.typename#"].packagePath).getData(objectid="#arguments.objectid#") />
+		</cfif>
+		
+		<cfif not structIsEmpty(arguments.stObject)>
+			<cfset objectTypename = arguments.stObject.typename />
+		</cfif>
+	
+		
+		<cfif structkeyexists(url, "navid")>		
+			<!--- ie. this is a dynamic object looking for context, passing nav on the URL --->
+			<cfset navID = url.navid />
+		
+		<cfelseif structkeyexists(url, "navAlias") AND structKeyExists(application.navid, "#url.navAlias#")>		
+			<!--- ie. this is a dynamic object looking for context, passing nav on the URL --->
+			<cfset navID = listFirst(application.navid["#url.navAlias#"]) />
+		
+		</cfif>
+		
+		<!--- If we still havnt found the navid and we actually have an object --->
+		<cfif NOT len(navID) AND NOT structIsEmpty(arguments.stObject)>
+			<cfif objectTypename eq "dmNavigation">
+				<!--- Use the navigation objectid if its a navigation object --->
+				<cfset navID = arguments.stObject.objectid />
+	
+			<cfelseif structKeyExists(application.stCoapi["#objectTypename#"], "bUseInTree") AND application.stCoapi["#objectTypename#"].bUseInTree>
+			
+				<nj:getNavigation objectId="#arguments.stObject.objectId#" r_stobject="stNav" />
+				
+				<!--- if the object is in the tree this will give us the node --->
+				<cfif structKeyExists(stNav, "objectid") AND len(stNav.objectid)>
+					<cfset navID = stNav.objectID>
+				</cfif>
+			</cfif>
+		</cfif>
+
+		<!--- If we still havnt found the navID, see if we can find a nav alias matching the typename --->
+		<cfif not len(navID)>
+			<cfif structKeyExists(application.navid, "#objectTypename#")>
+				<cfset navID = listFirst(application.navid["#objectTypename#"]) />
+			</cfif>
+		</cfif>
+		
+		<cfreturn navID />
+	
+	</cffunction>
+
 	<cffunction name="getDisplay" access="public" output="yes" returntype="void" hint="Renders a view from the webskin content type folder.">
 		<cfargument name="objectid" required="no" type="UUID" hint="ObjectID of the object that is to be rendered by the webskin view." />
 		<cfargument name="template" required="yes" type="string" hint="Name of the template in the corresponding content type webskin folder, without the .cfm extension." />
@@ -86,7 +146,7 @@ default handlers
 	</cffunction>
 	
 	<cffunction name="getView" access="public" output="true" returntype="string" hint="Returns the HTML of a view from the webskin content type folder.">
-		<cfargument name="objectid" required="no" type="UUID" hint="ObjectID of the object that is to be rendered by the webskin view." />
+		<cfargument name="objectid" required="no" type="string" default="" hint="ObjectID of the object that is to be rendered by the webskin view." />
 		<cfargument name="template" required="no" type="string" hint="Name of the template in the corresponding content type webskin folder, without the .cfm extension." />
 		<cfargument name="webskin" required="no" type="string" hint="Name of the template in the corresponding content type webskin folder, without the .cfm extension." />
 		<cfargument name="stparam" required="false" type="struct" default="#structNew()#" hint="Structure of parameters to be passed into the display handler." />
@@ -105,7 +165,13 @@ default handlers
 		<cfset var stArgs = structnew() />
 		<cfset var i = 0 />
 		<cfset var stLocal = structNew() /><!--- A local scope that can be used in webskins to ensure against race conditions. --->
+		<cfset var webskinTypename = "" /><!--- This will store the typename of the webskin to be called. Required in the case of Type Webskins. --->
 
+		<!--- init fourq --->
+		<cfset fourqInit() />	
+		<cfset webskinTypename = "#variables.typename#" /><!--- Set the typename to the typename of this object instance --->
+		
+		
 		<cfif structkeyexists(arguments,"webskin") and len(arguments.webskin)>
 			<cfset arguments.template = arguments.webskin />
 		<cfelseif not structkeyexists(arguments,"template") or not len(arguments.template)>
@@ -118,24 +184,35 @@ default handlers
 		</cfif>
 		
 
-		<cfif isDefined("arguments.stobject")>
+		<cfif isDefined("arguments.stobject") and not structIsEmpty(arguments.stObject)>
 			<cfset stobj=arguments.stobject />
 			<cfset instance.stobj = stObj />
 		<cfelse>
-			<cfif not structKeyExists(arguments, "objectid") or not len(arguments.objectid)>
+			<cfif not len(arguments.objectid)>
+				<!--- 
+				WE WANT TO CALL A TYPE WEBSKIN
+				THIS MEANS THAT THE OBJECT THAT WE ARE PASSING TO THE WEBSKIN IS ACTUALLY THE farCOAPI object.
+				THE WEBSKIN CACHING IS ALSO DONE AGAINST THE farCOAPI object.
+				 --->
+				<cfset stObj = createObject("component", application.stcoapi["farCoapi"].packagePath).getCoapiObject(name="#variables.typename#") />
+				
 				<!--- If the objectid has not been sent, we need to create a default object. --->
+				
+<!--- 				
 				<cfset arguments.objectid = createUUID() />
 				
-				<cfset bTypeWebskin = true />
+				<cfset bTypeWebskin = true /> --->
+			<cfelse>			
+				<!--- get the data for this instance --->
+				<cfset stObj = getData(objectid=arguments.objectID,dsn=arguments.dsn)>
 			</cfif>		
-			
-			<!--- get the data for this instance --->
-			<cfset stObj = getData(objectid=arguments.objectID,dsn=arguments.dsn)>
+
 			
 		</cfif>
 
+		
 		<!--- Check permissions on this webskin --->
-		<cfif arguments.template eq "deniedaccess" or not application.security.checkPermission(type=stObj.typename,webskin=arguments.template)>
+		<cfif arguments.template eq "deniedaccess" or not application.security.checkPermission(type=webskinTypename,webskin=arguments.template)>
 			<!--- Make sure this page doesn't get cached --->
 			<cfif structKeyExists(request, "aAncestorWebskins")>
 				<cfloop from="1" to="#arraylen(request.aAncestorWebskins)#" index="i">
@@ -145,22 +222,23 @@ default handlers
 					</cfif>
 				</cfloop>
 			</cfif>
-			<cfsavecontent variable="webskinHTML"><cfinclude template="#getWebskinPath(stObj.typename,'deniedaccess')#" /></cfsavecontent>
+			<cfsavecontent variable="webskinHTML"><cfinclude template="#getWebskinPath(webskinTypename,'deniedaccess')#" /></cfsavecontent>
 			<cfreturn webskinHTML />
 		</cfif>
 			
 		<cfif NOT structIsEmpty(stObj)>	
 		
 			<!--- Check to see if the webskin is in the object broker --->
-			<cfif bTypeWebskin>
+<!--- 			<cfif bTypeWebskin>
 				<cfset webskinHTML = application.coapi.objectBroker.getWebskin(typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
 			<cfelse>
 				<cfset webskinHTML = application.coapi.objectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
-			</cfif>
-
-			<cftimer label="getView: #stobj.typename# (#arguments.template#)">
+			</cfif> --->
+			<cfset webskinHTML = application.coapi.objectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
+			
+			<cftimer label="getView(#len(webskinHTML)#): #stobj.objectid# #stobj.typename# (#arguments.template#): ">
 			<cfif not len(webskinHTML)>
-				<cfset webskinPath = application.coapi.coapiadmin.getWebskinPath(typename=stObj.typename, template=arguments.template) />
+				<cfset webskinPath = application.coapi.coapiadmin.getWebskinPath(typename=webskinTypename, template=arguments.template) />
 						
 				<cfif len(webskinPath)>
 					
@@ -172,11 +250,11 @@ default handlers
 					<cfif not bTypeWebskin>
 						<cfset stCurrentView.objectid = stobj.objectid />
 					</cfif>
-					<cfset stCurrentView.typename = stobj.typename />
+					<cfset stCurrentView.typename = webskinTypename />
 					<cfset stCurrentView.template = arguments.template />
 					<cfset stCurrentView.hashKey = arguments.hashKey />
-					<cfset stCurrentView.timeout = application.coapi.coapiadmin.getWebskinTimeOut(typename=stObj.typename, template=arguments.template) />
-					<cfset stCurrentView.hashURL = application.coapi.coapiadmin.getWebskinHashURL(typename=stObj.typename, template=arguments.template) />
+					<cfset stCurrentView.timeout = application.coapi.coapiadmin.getWebskinTimeOut(typename=webskinTypename, template=arguments.template) />
+					<cfset stCurrentView.hashURL = application.coapi.coapiadmin.getWebskinHashURL(typename=webskinTypename, template=arguments.template) />
 					<cfset stCurrentView.okToCache = 1 />
 					<cfset stCurrentView.inHead = structNew() />
 					<cfset stCurrentView.inHead.stCustom = structNew() />
@@ -193,11 +271,12 @@ default handlers
 					<!--- If the current view (Last Item In the array) is still OkToCache --->
 					<cfif request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].okToCache>
 						<!--- Add the webskin to the object broker if required --->
-						<cfif bTypeWebskin>
+						<!--- <cfif bTypeWebskin>
 							<cfset bAdded = application.coapi.objectBroker.addWebskin(typename=stobj.typename, template=arguments.template, html=webskinHTML, stCurrentView=stCurrentView) />	
 						<cfelse>
 							<cfset bAdded = application.coapi.objectBroker.addWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, html=webskinHTML, stCurrentView=stCurrentView) />	
-						</cfif>
+						</cfif> --->
+						<cfset bAdded = application.coapi.objectBroker.addWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, html=webskinHTML, stCurrentView=stCurrentView) />
 					</cfif>
 					
 					<cfif arrayLen(request.aAncestorWebskins)>
@@ -217,12 +296,13 @@ default handlers
 									<cfif application.stcoapi[request.aAncestorWebskins[i].typename].stObjectBrokerWebskins[request.aAncestorWebskins[i].template].timeout NEQ 0>
 										
 										<cfset stArgs = structnew() />
-										<cfif bTypeWebskin>
+										<!--- <cfif bTypeWebskin>
 											<cfset stArgs.webskinTypename = stObj.typename />
 											<cfset stArgs.webskintemplate = arguments.template />
 										<cfelse>
 											<cfset stArgs.webskinObjectID = stobj.objectid />
-										</cfif>
+										</cfif> --->
+										<cfset stArgs.webskinObjectID = stobj.objectid />
 										<cfif structkeyexists(request.aAncestorWebskins[i],"objectid")>
 											<cfset stArgs.ancestorID = request.aAncestorWebskins[i].objectID />
 										<cfelse>
@@ -233,11 +313,12 @@ default handlers
 											
 										<cfif not bAncestorExists>
 											<cfset stProperties = structNew() />
-											<cfif bTypeWebskin>
+											<!--- <cfif bTypeWebskin>
 												<cfset stProperties.webskinObjectID = "" />
 											<cfelse>
 												<cfset stProperties.webskinObjectID = stobj.objectid />
-											</cfif>
+											</cfif> --->
+											<cfset stProperties.webskinObjectID = stobj.objectid />
 											<cfset stProperties.webskinTypename = stobj.typename />
 											<cfset stProperties.webskinTemplate = arguments.template />
 											<cfif structkeyexists(request.aAncestorWebskins[i],"objectid")>
