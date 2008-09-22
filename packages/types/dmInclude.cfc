@@ -39,8 +39,10 @@ type properties
 <cfproperty ftSeq="2" ftFieldset="Include Details" name="teaser" type="string" hint="A brief description of the nature of the include file" required="no" default="" ftType="longchar" ftlabel="Teaser" />  
 <cfproperty ftSeq="3" ftFieldset="Include Details" name="teaserImage" type="uuid" hint="UUID of image to display in teaser" required="no" default="" fttype="uuid" ftjoin="dmimage" ftlabel="Teaser Image">
 <cfproperty ftSeq="4" ftFieldset="Include Details" name="displayMethod" type="string" hint="" required="No" default="" ftType="webskin" ftPrefix="displayPage" ftlabel="Content Template" /> 
-<cfproperty ftSeq="5" ftFieldset="Include Details" name="include" type="string" hint="The name of the include file" required="No" default="" ftType="list" ftListData="getIncludeList" ftLabel="Included CF Template" /> 
-<cfproperty ftSeq="6" ftFieldset="Include Details" name="catInclude" type="string" hint="category of the include" required="no" default="" ftType="category" ftlabel="Categorisation" />
+<cfproperty ftSeq="10" ftFieldset="Content" name="include" type="string" hint="The name of the include file" required="No" default="" ftType="list" ftListData="getIncludeList" ftLabel="Included CF Template" /> 
+<cfproperty ftSeq="11" ftFieldset="Content" name="webskinTypename" type="string" hint="The content type to run the selected type view against" required="No" default="" ftType="list" ftListData="getTypenameList" ftLabel="Content Type" /> 
+<cfproperty ftSeq="12" ftFieldset="Content" name="webskin" type="string" hint="The content view to be run on the selected typename" required="no" default="" ftType="list" ftListData="getWebskinList" ftlabel="Content View" />
+<cfproperty ftSeq="20" ftFieldset="Categorisation" name="catInclude" type="string" hint="category of the include" required="no" default="" ftType="category" ftlabel="Categorisation" />
 
 <!--- system only properties --->
 <cfproperty name="status" type="string" hint="Status of file - draft or approved" required="true" default="draft" />
@@ -49,7 +51,7 @@ type properties
 <!--- Object Methods --->
 <cffunction access="public" name="getIncludeList" returntype="string" hint="returns a list (column name 'include') of available includes.">
 	
-	<cfset var returnList = "" />
+	<cfset var returnList = ":none selected" />
 	<cfset var includePath = application.path.project & "/includedObj">
 	<cfset var qDir = queryNew("blah") />
 	<cfset var includeAlias = "" />
@@ -64,5 +66,87 @@ type properties
 	
 	<cfreturn returnList>	
 </cffunction>
+
+<cffunction access="public" name="getTypenameList" returntype="string" hint="returns a list typenames that have type webskins available..">
 	
+	<cfset var returnList = "type1,type2,type3" />
+
+	<cfreturn returnList>	
+</cffunction>
+
+<cffunction access="public" name="getWebskinList" returntype="string" hint="returns a list typenames that have type webskins available..">
+	
+	<cfset var returnList = "skin1,skin2,skin3" />
+	
+	<cfreturn returnList>	
+</cffunction>
+	
+	<cffunction name="ftAjaxWebskin" access="public" output="true" returntype="string" hint="his will return a string of formatted HTML text to enable the user to edit the data">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+
+		<cfset var html = "" />
+		<cfset var qWebskins = querynew("methodName,displayName","varchar,varchar") />
+		<cfset var qDisplayTypes = querynew("methodName,displayName") />
+		<cfset var thisindex = "" />
+		
+		<cfimport taglib="/farcry/core/tags/navajo" prefix="nj" />
+		
+		<cfparam name="form.typename" default="" />
+		<cfparam name="form.value" default="" />
+		<cfparam name="arguments.stMetadata.ftPrefix" default="displayType,editType" /><!--- Webskin prefix --->
+		
+		<cfif len(form.typename)>
+			<cfloop list="#arguments.stMetadata.ftPrefix#" index="thisprefix">
+				<nj:listTemplates typename="#form.typename#" prefix="#thisprefix#" r_qMethods="qDisplayTypes">
+				<cfquery dbtype="query" name="qWebskins">
+					select	methodName,displayName
+					from	qDisplayTypes
+					
+					UNION
+					
+					select	methodName,displayName
+					from	qWebskins
+					
+					order by methodName
+				</cfquery>
+			</cfloop>
+		
+			<cfif qWebskins.recordCount>
+				<cfsavecontent variable="html">
+					<cfoutput>
+						<select name="#arguments.fieldname#" id="#arguments.fieldname#">
+					</cfoutput>
+					
+					<cfloop query="qWebskins">
+						<cfoutput>
+							<option value="#qWebskins.methodName#"<cfif qWebskins.methodName eq form.value> selected="selected"</cfif>>#qWebskins.displayName#</option>
+						</cfoutput>
+					</cfloop>
+							
+					<cfoutput>
+						</select>
+					</cfoutput>
+				</cfsavecontent>
+			<cfelse>
+				<cfsavecontent variable="html">
+					<cfoutput>
+						<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" />
+						<div>No Webskins Available</div>
+					</cfoutput>
+				</cfsavecontent>
+			</cfif>
+		<cfelse>
+			<cfsavecontent variable="html">
+				<cfoutput>
+					<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" />
+					<div>No type selected</div>
+				</cfoutput>
+			</cfsavecontent>
+		</cfif>
+		
+		<cfreturn html>
+	</cffunction>	
+		
 </cfcomponent>

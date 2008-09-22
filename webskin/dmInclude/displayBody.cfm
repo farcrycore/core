@@ -25,7 +25,11 @@
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 
-<!--- USE skin:include tag to include the file. --->
-<skin:include template="#stObj.include#" />
+<cfif structKeyExists(stobj, "webskinTypename") AND structKeyExists(stobj, "webskin") AND len(stobj.webskinTypename) AND len(stobj.webskin)>	
+	<skin:view typename="#stobj.webskinTypename#" webskin="#stobj.webskin#" />
+<cfelseif len(stobj.include)>
+	<!--- USE skin:include tag to include the file. --->
+	<skin:include template="#stObj.include#" />
+</cfif>
 
 <cfsetting enablecfoutputonly="false" /> 
