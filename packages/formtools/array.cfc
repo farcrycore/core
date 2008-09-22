@@ -36,8 +36,8 @@
 		<cfparam name="arguments.stMetadata.ftLibraryListItemWidth" default="" type="string" />
 		<cfparam name="arguments.stMetadata.ftLibraryListItemHeight" default="" type="string" />
 		<cfparam name="arguments.stMetadata.ftRenderType" default="Library" type="string" />
-		<cfparam name="arguments.stMetadata.ftSelectSize" default="10" type="numeric" />
-		<cfparam name="arguments.stMetadata.ftSelectMultiple" default="true" type="string" />
+		<cfparam name="arguments.stMetadata.ftSelectSize" default="" type="string" />
+		<cfparam name="arguments.stMetadata.ftSelectMultiple" default="true" type="boolean" />
 		<cfparam name="arguments.stMetadata.ftAllowLibraryEdit" default="false">
 		<cfparam name="arguments.stMetadata.ftLibraryEditWebskin" default="edit">
 		<cfparam name="arguments.stMetadata.ftFirstListLabel" default="-- SELECT --">
@@ -134,7 +134,7 @@
 			<cfif qLibraryList.recordcount>
 				<cfoutput>
 				<div>
-				<select  id="#arguments.fieldname#" name="#arguments.fieldname#" size="#arguments.stMetadata.ftSelectSize#" multiple="#arguments.stMetadata.ftSelectMultiple#" style="width:auto;" class="#arguments.stMetadata.class#">
+				<select  id="#arguments.fieldname#" name="#arguments.fieldname#" <cfif len(arguments.stMetadata.ftSelectSize)> size="#arguments.stMetadata.ftSelectSize#"</cfif> <cfif arguments.stMetadata.ftSelectMultiple>multiple="multiple"</cfif> style="width:auto;" class="#arguments.stMetadata.class#">
 				<cfif len(arguments.stMetadata.ftFirstListLabel)>
 					<option value="">#arguments.stMetadata.ftFirstListLabel#</option>
 				</cfif>
