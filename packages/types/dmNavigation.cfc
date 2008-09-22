@@ -57,10 +57,11 @@ $out:$
 	
 		<cfset var lResult = ":#application.rb.getResource("noneForSelect")#" />
 		<cfset var aNavalias = listToArray(listSort(structKeyList(application.navid),'textnocase'))>
-		
+		<cfset var oNav = createObject("component", application.stcoapi["dmNavigation"].packagePath) />
 	
 		<cfloop from="1" to="#arraylen(aNavalias)#" index="i">
-			<cfset lResult = listAppend(lResult, "#application.navid[aNavalias[i]]#:#aNavalias[i]#") />
+			<cfset stNav = oNav.getData(objectid="#application.navid[aNavalias[i]]#") />
+			<cfset lResult = listAppend(lResult, "#application.navid[aNavalias[i]]#:#stNav.title# (#aNavalias[i]#)") />
 		</cfloop>
 	
 		<cfreturn lResult />
@@ -424,7 +425,7 @@ $out:$
 				<cfoutput>
 					<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#listfirst(arguments.stMetadata.value,'.')#" />
 					<select name="#arguments.fieldname#typename" id="#arguments.fieldname#typename" onchange="getDisplayMethod('#arguments.typename#','#arguments.fieldname#','#arguments.stMetadata.name#')">
-						<option value=""<cfif "" eq listfirst(arguments.stMetadata.value,'.')> selected="selected"</cfif>>None selected</option>
+						<option value=""<cfif "" eq listfirst(arguments.stMetadata.value,'.')> selected="selected"</cfif>>#application.rb.getResource("noneForSelect")#</option>
 						<cfloop query="qTypes">
 							<option value="#qTypes.typename#"<cfif qTypes.typename eq listfirst(arguments.stMetadata.value,'.')> selected="selected"</cfif>>#qTypes.description#</option>
 						</cfloop>	
@@ -614,7 +615,7 @@ $out:$
 				<cfoutput>
 					<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value=" " />
 					<select name="#arguments.fieldname#typename" id="#arguments.fieldname#typename">
-						<option value="">None selected</option>
+						<option value="">#application.rb.getResource("noneForSelect")#</option>
 						<cfloop query="qTypes">
 							<option value="#qTypes.typename#">#qTypes.description#</option>
 						</cfloop>	
