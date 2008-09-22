@@ -47,18 +47,18 @@ $out:$
 	//preserve old nleft for later
 	sql = "
 	select nleft, typename from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.objectid#'";
-	q = query(sql=sql, dsn=arguments.dsn);
+	q = scriptQuery(sql=sql, dsn=arguments.dsn);
 	
 	oldleft = q.nleft;
 	typename = q.typename;
 	
 	// get nleft
 	nLeftSql = "select nleft from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.objectid#' and typename = '#typename#'";
-	qNLeft = query(sql=nLeftSql, dsn=arguments.dsn);
+	qNLeft = scriptQuery(sql=nLeftSql, dsn=arguments.dsn);
 	
 	// get nright
 	nRightSql = "select nright from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.objectid#' and typename = '#typename#'";
-	qNRight = query(sql=nRightSql, dsn=arguments.dsn);
+	qNRight = scriptQuery(sql=nRightSql, dsn=arguments.dsn);
 	
 	// get the number of objects that are descendants of the object, plus the object itself. times 2, so that we can 
 	// move the lefts and rights back of the remaining nodes.
@@ -68,7 +68,7 @@ $out:$
 		where nleft between #qNleft.nleft#
 		and #qNRight.nright# 
 		and typename = '#typename#'";
-	q = query(sql=sql, dsn=arguments.dsn);	
+	q = scriptQuery(sql=sql, dsn=arguments.dsn);	
 	count = q.objCount;
 	
 	// delete the object itself, and its spawn

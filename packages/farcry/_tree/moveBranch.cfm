@@ -62,7 +62,7 @@ $out:$
 		source_parentid = q.parentID;
 		
 		sql = "select objectID from #arguments.dbowner#nested_tree_objects where parentid = '#arguments.parentid#'";
-		q = query(sql=sql,dsn=arguments.dsn);
+		q = scriptQuery(sql=sql,dsn=arguments.dsn);
 		destChildrenCount = q.recordCount;
 
 		qDestDescendants = getDescendants(objectid=arguments.parentid,dsn=application.dsn);
@@ -81,7 +81,7 @@ $out:$
 		// get the left and right of the object. this span defines the branch (object including its descendants). Also get typename, 
 		//to differentiate between trees (there may be more than one tree, and we don't want to change the values of the other trees)
 		sql = "select nleft, nright, typename from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.objectid#'";
-		q = query(sql=sql, dsn=arguments.dsn);
+		q = scriptQuery(sql=sql, dsn=arguments.dsn);
 				
 		nleft = q.nleft;
 		nright = q.nright;
@@ -95,7 +95,7 @@ $out:$
 		and typename = '#typename#'";
 	
 		
-		qBranchIDs = query(sql=sql, dsn=arguments.dsn);
+		qBranchIDs = scriptQuery(sql=sql, dsn=arguments.dsn);
 			
 		//check destination is not a descendant of the source node
 		q = queryofquery2("select count(*) AS ObjCount",qBranchIDs,"where objectid = '#arguments.parentid#'");	
@@ -126,13 +126,13 @@ $out:$
 			select nlevel from #arguments.dbowner#nested_tree_objects 
 			where objectid = '#arguments.parentid#'";
 			
-			q = query(sql=sql, dsn=arguments.dsn);
+			q = scriptQuery(sql=sql, dsn=arguments.dsn);
 			dest_parent_level = q.nlevel;
 			
 			sql = "
 				select nlevel from #arguments.dbowner#nested_tree_objects 
 				where objectid = '#source_parentid#'";
-			q = query(sql=sql, dsn=arguments.dsn);
+			q = scriptQuery(sql=sql, dsn=arguments.dsn);
 			source_parent_level = q.nlevel;
 		
 			//fix the levels of the branch that is moving
@@ -178,7 +178,7 @@ $out:$
 		if (arguments.pos LT 2)
 		{	
 			sql = "select nleft + 1 AS nleft from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.parentid#'";
-			q = query(sql=sql, dsn=arguments.dsn);
+			q = scriptQuery(sql=sql, dsn=arguments.dsn);
 			dest_left = q.nleft;
 		}	
 		else
@@ -189,7 +189,7 @@ $out:$
 			sql = "
 				select #rowindex# AS seq, min(nright) AS nright 
 				FROM #arguments.dbowner#nested_tree_objects where parentID = '#arguments.parentid#' AND objectID <> '#arguments.objectid#'";
-			qTemp = query(sql=sql, dsn=arguments.dsn); 	
+			qTemp = scriptQuery(sql=sql, dsn=arguments.dsn); 	
 			//smoke up some sequence numbers for the latter
 			for (i = 1;i LTE qTemp.recordCount;i=i+1)
 			{
@@ -206,7 +206,7 @@ $out:$
 					select	min(nright) AS minr 
 					from #arguments.dbowner#nested_tree_objects where parentid = '#arguments.parentID#' and objectid <> '#arguments.objectid#'
 					and nright not in (#quotedValueList(qTemp.nright)#)";
-				q = query(sql=sql, dsn=arguments.dsn);	
+				q = scriptQuery(sql=sql, dsn=arguments.dsn);	
 				
 				
 				if (q.recordcount AND len(q.minr))
@@ -247,7 +247,7 @@ $out:$
 		arrayAppend(aSQL,sql);
 		
 		//sql = "select objectid,objectname,nlevel,nleft,nright from nested_tree_objects where objectid = '#arguments.parentID#'";
-		//qpar = query(sql=sql, dsn=arguments.dsn);	
+		//qpar = scriptQuery(sql=sql, dsn=arguments.dsn);	
 		//dump(qpar);
 	
 		// deal with the parent's right hand value if it is a new parent, and has a different level 
@@ -302,7 +302,7 @@ $out:$
 					where parentid =  '#arguments.parentid#'
 					order by nleft";
 					
-			qChildren = query(sql=sql,dsn=arguments.dsn);
+			qChildren = scriptQuery(sql=sql,dsn=arguments.dsn);
 			
 			if(arguments.pos EQ qChildren.recordCount)
 			{

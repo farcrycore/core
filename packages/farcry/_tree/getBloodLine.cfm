@@ -52,7 +52,7 @@ $out:$
 	qTemp = getAncestors(objectID=arguments.objectID, dsn=arguments.dsn);
 
 	sql = "select objectid, objectname, nlevel 	from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.objectid#'";
-	q = query(sql=sql, dsn=arguments.dsn);
+	q = scriptQuery(sql=sql, dsn=arguments.dsn);
 
 	queryAddRow(qTemp);
 	querySetCell(qTemp,'objectid',q.objectid);
@@ -99,7 +99,7 @@ $out:$
 		order by nto.nleft";
 	}
 
-	bloodline = query(sql=sql, dsn=arguments.dsn);
+	bloodline = scriptQuery(sql=sql, dsn=arguments.dsn);
 </cfscript>
 
 <!--- set return variable --->

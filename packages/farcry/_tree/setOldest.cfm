@@ -70,7 +70,7 @@ $out:$
 				case "mysql":
 				{
 					tempsql = "select nleft from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#'";
-					tempResult = query(sql=tempsql, dsn=arguments.dsn);
+					tempResult = scriptQuery(sql=tempsql, dsn=arguments.dsn);
 					sql = "
 						update nested_tree_objects
 						set nright = nright + 2 
@@ -79,7 +79,7 @@ $out:$
 					query(sql=sql, dsn=arguments.dsn);	
 					
 					tempsql = "select nleft from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#'";
-					tempResult = query(sql=tempsql, dsn=arguments.dsn);
+					tempResult = scriptQuery(sql=tempsql, dsn=arguments.dsn);
 					
 					sql = "
 						update #arguments.dbowner#nested_tree_objects
@@ -93,7 +93,7 @@ $out:$
 				 case "postgresql":
 				{
 					tempsql = "select nleft from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#'";
-					tempResult = query(sql=tempsql, dsn=arguments.dsn);
+					tempResult = scriptQuery(sql=tempsql, dsn=arguments.dsn);
 					sql = "
 						update #arguments.dbowner#nested_tree_objects
 						set nright = nright + 2 
@@ -102,7 +102,7 @@ $out:$
 					query(sql=sql, dsn=arguments.dsn);	
 					
 					tempsql = "select nleft from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#'";
-					tempResult = query(sql=tempsql, dsn=arguments.dsn);
+					tempResult = scriptQuery(sql=tempsql, dsn=arguments.dsn);
 					
 					sql = "
 						update #arguments.dbowner#nested_tree_objects
@@ -136,7 +136,7 @@ $out:$
 			select nleft, nlevel
 			from #arguments.dbowner#nested_tree_objects 
 			where objectid = '#arguments.parentid#'";
-		q = query(sql=sql, dsn=arguments.dsn);
+		q = scriptQuery(sql=sql, dsn=arguments.dsn);
 		
 		pleft = q.nleft;
 		plevel = q.nlevel;

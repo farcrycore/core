@@ -45,7 +45,7 @@ $out:$
    
 	//if object is a leaf, there will be no room between its left and right values
 	sql = "select  nleft, nright from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.objectid#'";
-	q = query(sql=sql, dsn=arguments.dsn);
+	q = scriptQuery(sql=sql, dsn=arguments.dsn);
 	nleft = q.nleft;
 	nright = q.nright;
 	
@@ -56,14 +56,14 @@ $out:$
 	
 	// get parent	
 	sql = "select parentid from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.objectid#'";
-	qParent = query(sql=sql, dsn=arguments.dsn);
+	qParent = scriptQuery(sql=sql, dsn=arguments.dsn);
 	parent = qParent.parentId;	
 	
 	//get its grandparent. we will need this for both cases.
 	sql =  "
 		select parentid from #arguments.dbowner#nested_tree_objects
 		where objectid = '#parent#'";
-	q = query(sql=sql, dsn=arguments.dsn);	
+	q = scriptQuery(sql=sql, dsn=arguments.dsn);	
 	grandpa = q.parentID;	
 	
 	if (leaf EQ 1) // the object has no children. 
@@ -101,7 +101,7 @@ $out:$
 		where parentid =  '#arguments.objectid#'
 		order by  nleft";
 	}	
-	secondaryNav = query(sql=sql, dsn=arguments.dsn);
+	secondaryNav = scriptQuery(sql=sql, dsn=arguments.dsn);
 </cfscript>
 
 <!--- set return variable --->

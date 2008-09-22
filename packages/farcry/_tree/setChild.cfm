@@ -63,7 +63,7 @@ $out:$
     	sql = "
 			select #rowindex# AS seq, min(nright) as nright
   		    from #arguments.dbowner#nested_tree_objects where parentid = '#arguments.parentid#'";
-    	qNrightSeq = query(sql=sql, dsn=arguments.dsn);
+    	qNrightSeq = scriptQuery(sql=sql, dsn=arguments.dsn);
     	minr = 1; // dummy value to start loop
     
     	// each iteration of the following loop inserts the next youngest child's right hand value into the temp table until we run 
@@ -77,7 +77,7 @@ $out:$
 			select  min(nright) AS minr 
 			from #arguments.dbowner#nested_tree_objects where parentid = '#arguments.parentid#'
 			and nright not in (#quotedValueList(q.nright)#)";
-			q = query(sql=sql, dsn=arguments.dsn);
+			q = scriptQuery(sql=sql, dsn=arguments.dsn);
 		
 			if (q.recordCount)
 			{
@@ -113,7 +113,7 @@ $out:$
 			select nlevel
 			from #arguments.dbowner#nested_tree_objects 
 			where objectid = '#arguments.parentid#'";
-		q = query(sql=sql, dsn=arguments.dsn);		
+		q = scriptQuery(sql=sql, dsn=arguments.dsn);		
 		pLevel = q.Plevel;	
 		
 		sql ="

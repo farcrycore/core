@@ -44,6 +44,23 @@
 	
 	<cfreturn q>
 </cffunction>
+<cffunction name="scriptQuery" hint="a wrapper for cfquery tag for use in cfscript">
+	<cfargument name="sql" type="string" required="true">
+	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+	<cfset var q = ''>
+		
+	<cfquery name="q" datasource="#arguments.dsn#">
+		#preserveSingleQuotes(arguments.sql)#
+	</cfquery>
+	
+	<!--- This is so we always return a query object - ie update statements may not return a result --->
+	
+	<cfif not isDefined("q.recordcount")>
+		<cfset q = queryNew('acoloumn')>
+	</cfif>
+	
+	<cfreturn q>
+</cffunction>
 
 
 <cffunction name="queryofquery" hint="a wrapper for cfquery of queries for use in cfscript">

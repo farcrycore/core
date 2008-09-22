@@ -51,7 +51,7 @@ $out:$
 	stReturn = structNew();
 	sql = "
 	select max(nright) AS nright from #arguments.dbowner#nested_tree_objects where parentid = '#arguments.parentid#'";
-	q = query(sql=sql, dsn=arguments.dsn);
+	q = scriptQuery(sql=sql, dsn=arguments.dsn);
 	maxr = q.nRight;
 	qCHildren = getChildren(objectid=arguments.parentid,dsn=arguments.dsn);
 		   
@@ -78,7 +78,7 @@ $out:$
 			select nlevel
 			from #arguments.dbowner#nested_tree_objects 
 			where objectid = '#arguments.parentid#'";
-		q = query(sql=sql, dsn=arguments.dsn);	
+		q = scriptQuery(sql=sql, dsn=arguments.dsn);	
 		pLevel = q.nlevel;	
 		
 		switch (application.dbType)
