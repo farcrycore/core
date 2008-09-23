@@ -3,14 +3,13 @@
 <cfcontent type="application/x-javascript">
 
 <cfset offset = 315360000 />
-<cfset expires = dateAdd('s', offset, now()) />	
-<cfheader name="expires" value="#dateFormat(expires, 'ddd, d mmm yyyy')# #timeFormat(expires, 'HH:mm:ss')# GMT "> 
-<cfheader name="cache-control" value="max-age=#offset#"> 
+<cfset expires = dateAdd('s', offset, "01/01/2008") />	
+<cfheader name="Cache-Control" value="private,max-age=#offset#"> 
+<cfheader name="Expires" value="#dateFormat(expires, 'ddd, d mmm yyyy')# #timeFormat(expires, 'HH:mm:ss')# GMT">
 
 <cfparam name="url.library" default="" />
 <cfparam name="url.files" default="" />
 
-<!---  type="text/javascript; charset=UTF-8" --->
 <cfset hashedURL = hash(cgi.QUERY_STRING) />
 
 <cfparam name="application.stCombinedFarcryJS" default="#structNew()#" />
@@ -32,5 +31,5 @@
 </cfif>
 <cfcontent reset="yes" />
 <cfoutput>#application.stCombinedFarcryJS[hashedURL]#</cfoutput>
-<cfabort>
-<cfsetting enablecfoutputonly="false" />
+<cfexit>
+<cfsetting enablecfoutputonly="false" /> 
