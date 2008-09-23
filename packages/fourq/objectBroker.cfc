@@ -61,6 +61,16 @@
 		<cfset var k = "" />
 		<cfset var bFlushCache = 0 />
 		<cfset var stCacheWebskin = structNew() />
+		<cfset var webskinTypename = arguments.typename /><!--- Default to the typename passed in --->
+		<cfset var stCoapi = structNew() />
+		
+		<cfif arguments.typename EQ "farCoapi">
+			<!--- This means its a type webskin and we need to look for the timeout value on the related type. --->			
+			<cfset stCoapi = createObject("component", application.stcoapi["farCoapi"].packagePath).getData(objectid="#arguments.objectid#") />
+			<cfset webskinTypename = stCoapi.name />
+		</cfif>
+
+		
 		
 		<cfif application.bObjectBroker>
 		
@@ -68,10 +78,10 @@
 				<cfset bFlushCache = removeWebskin(objectid=arguments.objectid, typename=arguments.typename, template=template) />
 			</cfif>
 		
-			<cfif request.mode.design eq 1 OR request.mode.lvalidstatus NEQ "approved">
-				<!--- DO NOT USE CACHE IF IN DESIGN MODE --->
+			<cfif request.mode.design eq 1 OR request.mode.lvalidstatus NEQ "approved" OR (structKeyExists(url, "updateapp") AND url.updateapp EQ 1)>
+				<!--- DO NOT USE CACHE IF IN DESIGN MODE or SHOWING MORE THAN APPROVED OBJECTS or UPDATING APP --->
 			<cfelse>
-				<cfif listFindNoCase(application.stcoapi[arguments.typename].lObjectBrokerWebskins, arguments.template)>
+				<cfif listFindNoCase(application.stcoapi[webskinTypename].lObjectBrokerWebskins, arguments.template)>
 					<cfif structkeyexists(arguments,"objectid")>
 						<cfif structKeyExists(application.objectbroker, arguments.typename)
 							AND 	structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)
@@ -85,19 +95,6 @@
 							<cfelseif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], "standard") >
 								<cfset stCacheWebskin = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].standard />
 							</cfif>
-						</cfif>
-					<cfelse>
-						<cfif structKeyExists(application.objectbroker, arguments.typename)>
-								AND 	structKeyExists(application.objectbroker[arguments.typename], "stTypeWebskins")
-								AND 	structKeyExists(application.objectbroker[arguments.typename].stTypeWebskins, arguments.template)>
-													
-								<cfif len(arguments.hashKey) AND structKeyExists(application.objectbroker[arguments.typename].stTypeWebskins[arguments.template], hash("#arguments.hashKey#"))>							
-									<cfset stCacheWebskin = application.objectbroker[arguments.typename].stTypeWebskins[arguments.template]["#hash('#arguments.hashKey#')#"] />
-								<cfelseif structKeyExists(application.objectbroker[arguments.typename].stTypeWebskins[arguments.template], hash("#arguments.hashKey##cgi.http_host##cgi.script_name##cgi.query_string#"))>
-									<cfset stCacheWebskin = application.objectbroker[arguments.typename].stTypeWebskins[arguments.template]["#hash('#arguments.hashKey##cgi.http_host##cgi.script_name##cgi.query_string#')#"] />
-								<cfelseif structKeyExists(application.objectbroker[arguments.typename].stTypeWebskins[arguments.template], "standard") >
-									<cfset stCacheWebskin = application.objectbroker[arguments.typename].stTypeWebskins[arguments.template].standard />
-								</cfif>
 						</cfif>
 					</cfif>
 					
@@ -218,13 +215,21 @@
 		<cfset var bAdded = "false" />
 		<cfset var stCacheWebskin = structNew() />
 		<cfset var hashString = "" />
+		<cfset var webskinTypename = arguments.typename /><!--- Default to the typename passed in --->
+		<cfset var stCoapi = structNew() />
+		
+		<cfif arguments.typename EQ "farCoapi">
+			<!--- This means its a type webskin and we need to look for the timeout value on the related type. --->			
+			<cfset stCoapi = createObject("component", application.stcoapi["farCoapi"].packagePath).getData(objectid="#arguments.objectid#") />
+			<cfset webskinTypename = stCoapi.name />
+		</cfif>
 		
 		<cfif application.bObjectBroker>
-			<cfif request.mode.design eq 1 OR request.mode.lvalidstatus NEQ "approved" OR structKeyExists(url, "updateapp") AND url.updateapp EQ 1>
-				<!--- DO NOT ADD TO CACHE IF IN DESIGN MODE or UPDATING APP --->
-			<cfelse>
-				<cfif listFindNoCase(application.stcoapi[arguments.typename].lObjectBrokerWebskins, arguments.template) and len(arguments.HTML)>
-					<cfif application.stcoapi[arguments.typename].stObjectBrokerWebskins[arguments.template].timeout NEQ 0>
+			<cfif request.mode.design eq 1 OR request.mode.lvalidstatus NEQ "approved" OR (structKeyExists(url, "updateapp") AND url.updateapp EQ 1)>
+				<!--- DO NOT ADD TO CACHE IF IN DESIGN MODE or SHOWING MORE THAN APPROVED OBJECTS or UPDATING APP --->
+			<cfelseif len(arguments.HTML)>
+				<cfif listFindNoCase(application.stcoapi[webskinTypename].lObjectBrokerWebskins, arguments.template)>
+					<cfif application.stcoapi[webskinTypename].stObjectBrokerWebskins[arguments.template].timeout NEQ 0>
 						<cfif structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)>
 							<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
 								<cfif not structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")>
