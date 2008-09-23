@@ -7,7 +7,10 @@
 <cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
 
 <!--- quit tag if its not start mode --->
-<cfif thistag.ExecutionMode eq "end"><cfexit /></cfif>
+<cfif thistag.ExecutionMode eq "end">
+	<cfsetting enablecfoutputonly="false" />
+	<cfexit />
+</cfif>
 
 <cfparam name="attributes.typename" default="">
 <cfparam name="attributes.prefix" default="">

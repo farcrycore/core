@@ -837,12 +837,14 @@ Revision Information (Changelog):
 <!--- START Custom Tag Variable verification --->
   <cfif not IsDefined("attributes.QueryRecordCount")>
     <cfoutput><br /><span style="background-color: ##fff; color: ##000;"><strong>Error in Custom Tag CF_Search_NextPrevious:</strong> The attribute <strong><em>QueryRecordCount</em></strong> is required.</span></cfoutput>
-    <cfexit />
+    <cfsetting enablecfoutputonly="false" />
+	<cfexit />
   </cfif>
   <cfif IsDefined("attributes.FirstLastPage")>
     <cfif ListFindNoCase("none,text,numeric", attributes.FirstLastPage) EQ 0>
       <cfoutput><br /><span style="background-color: ##fff; color: ##000;"><strong>Error in Custom Tag CF_Search_NextPrevious:</strong> The attribute <strong><em>FirstLastPage</em></strong> can only be one of the following "none,text,numeric"<br />However, the Attribute is not required (default = "none")</span></cfoutput>
-      <cfexit />
+      <cfsetting enablecfoutputonly="false" />
+		<cfexit />
     </cfif>
   </cfif>
 <!--- END Custom Tag Variable verification --->

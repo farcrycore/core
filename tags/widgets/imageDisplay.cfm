@@ -9,7 +9,10 @@
 --->
 
 <!--- make sure the tag only runs once --->
-<cfif thistag.ExecutionMode eq "end"><cfexit></cfif>
+<cfif thistag.ExecutionMode eq "end">
+	<cfsetting enablecfoutputonly="false" />
+	<cfexit>
+</cfif>
 
 <cfparam name="attributes.ImageSize" default="thumb"> <!--- thumb, optimised or large --->
 <cfparam name="attributes.onclick" default="no"> <!--- yes or no --->
