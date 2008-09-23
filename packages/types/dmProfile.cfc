@@ -105,12 +105,12 @@ OBJECT METHODS
 		</cfif>
     </cffunction>
 
-    <cffunction name="getProfile" access="PUBLIC" hint="Retrieve profile data for given username">
+    <cffunction name="getProfileID" access="public" returntype="string" hint="Returns the objectid of a profile for a given username. Returns empty string if username not found">
         <cfargument name="userName" type="string" required="yes" hint="The username unique for the user directory.">
         <cfargument name="ud" type="string" required="no" default="clientUD" hint="The user directory to search for the profile.">
-
-		<cfset var stobj = structNew() />
+		
 		<cfset var combinedUsername = "#arguments.username#_#arguments.ud#" />
+		<cfset var profileID = "" />
 		
 		<!--- Use the  --->
 		<cfquery name="qProfile" datasource="#application.dsn#">
@@ -126,7 +126,22 @@ OBJECT METHODS
 		</cfif>
 		
 		<cfif qProfile.recordCount>
-		    <cfset stObj = this.getData(qProfile.objectID)>
+			<cfset profileID = qProfile.objectID />
+		</cfif>
+		
+		<cfreturn profileID />
+		
+	</cffunction>
+
+    <cffunction name="getProfile" access="PUBLIC" hint="Retrieve profile data for given username">
+        <cfargument name="userName" type="string" required="yes" hint="The username unique for the user directory.">
+        <cfargument name="ud" type="string" required="no" default="clientUD" hint="The user directory to search for the profile.">
+
+		<cfset var stobj = structNew() />
+		<cfset var profileID = getProfileID(arguments.username, arguments.ud) />
+			
+		<cfif len(profileID)>
+		    <cfset stObj = this.getData(profileID)>
 		    <cfset stObj.bInDB = "true">
 		<cfelse>
 		    <cfscript>
@@ -137,6 +152,7 @@ OBJECT METHODS
 		    stObj.locale = 'en_AU';
 		    stObj.bInDB = 'false';
 		    stObj.userName = arguments.userName;
+		    stObj.userDirectory = arguments.ud;
 		    </cfscript>
 		</cfif>
 
