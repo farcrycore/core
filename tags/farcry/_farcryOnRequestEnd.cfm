@@ -280,7 +280,7 @@ $out:$
 			------------------------------------------------>
 			<cfif len(lCoreLibraries)>
 				<cfoutput>
-					<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?files=#lCoreLibraries#&amp;randomID=#application.randomID#"></script></cfoutput>
+					<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?ajaxmode=1&amp;files=#lCoreLibraries#&amp;randomID=#application.randomID#"></script></cfoutput>
 			</cfif>
 			
 						
