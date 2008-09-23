@@ -248,7 +248,6 @@
 				</cfif>
 				<p>#attributes.HelpSection#</p>
 			</div>
-			<div class="fieldwrapper">
 		</cfoutput>
 	</cfif>
 	
@@ -566,7 +565,7 @@
 						<cfset helpSectionClass = "helpsectionmargin">
 					</cfif>	
 								
-					<cfoutput><div class="fieldSection #lcase(ftFieldMetadata.ftType)# #ftFieldMetadata.ftClass# #helpSectionClass#"></cfoutput>
+					<cfoutput><div class="fieldSection #lcase(ftFieldMetadata.ftType)# #helpSectionClass#"></cfoutput>
 				</cfif>
 	
 	
@@ -670,22 +669,16 @@
 		</cfif>
 	</cfif>
 	
-	<cfif structKeyExists(attributes,"HelpSection") and len(attributes.HelpSection)>
-		<cfoutput></div></cfoutput>
-	</cfif>
-	
 		<cfif attributes.IncludeFieldSet>
-			<cfoutput>
-				</fieldset>
-			</cfoutput>
+			<cfoutput></fieldset></cfoutput>
 		</cfif>
 	
 	
-	<cfparam name="Request.lFarcryObjectsRendered" default="">
+	<cfparam name="Request.farcryForm.lFarcryObjectsRendered" default="">
 
 	<cfif attributes.format EQ "edit"
 		AND StructKeyExists(Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo,"ObjectID")
-		AND  NOT ListContains(Request.lFarcryObjectsRendered, Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID)>
+		AND  NOT ListContains(Request.farcryForm.lFarcryObjectsRendered, Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID)>
 			
 		<cfoutput>
 			<input type="hidden" name="#variables.prefix#ObjectID" value="#Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID#">
@@ -694,7 +687,7 @@
 		
 
 		
-		<cfset Request.lFarcryObjectsRendered = ListAppend(Request.lFarcryObjectsRendered,Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID)>
+		<cfset Request.farcryForm.lFarcryObjectsRendered = ListAppend(Request.farcryForm.lFarcryObjectsRendered,Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID)>
 	</cfif>
 	
 	<cfif isDefined("Request.tmpDeleteFarcryForm") AND Request.tmpDeleteFarcryForm EQ attributes.ObjectID AND  isDefined("Request.farcryForm")>
