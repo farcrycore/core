@@ -15,14 +15,7 @@
 	<cfset request.externalLinkNavid = stObj.objectid>
 	
 	<nj:display objectid="#stObj.externalLink#" />
-	<cfexit method="exittemplate" />
-	
-<cfelseif structkeyexists(stObj,"typewebskin") and len(stObj.typewebskin)>
-
-	<cftrace var="attributes.objectid" text="Setting navid to attributes.objectid as type webskin is specified" />
-	<cfset request.navid = stObj.objectid>
-	
-	<skin:view typename="#listfirst(stObj.typewebskin,'.')#" webskin="#listlast(stObj.typewebskin,'.')#" />
+	<cfsetting enablecfoutputonly="false" />
 	<cfexit method="exittemplate" />
 
 <cfelseif structKeyExists(stObj,"aObjectIds") AND arrayLen(stObj.aObjectIds)>
@@ -35,6 +28,7 @@
 		
 			<!--- Otherwise just show this one --->
 			<nj:display objectid="#stObjTemp.objectid#" />
+			<cfsetting enablecfoutputonly="false" />
 			<cfexit method="exittemplate">
 			
 		<cfelseif stObjTemp.typename neq "dmCSS">
@@ -51,6 +45,7 @@
 			
 			<!--- reset stObj to appropriate object to be displayed --->
 			<nj:display objectid="#stObjTemp.objectid#" />
+			<cfsetting enablecfoutputonly="false" />
 			<cfexit method="exittemplate" />
 			
 		</cfif>
@@ -63,7 +58,8 @@
 <cfif NOT isDefined("request.navid")>
 	<cfset request.navid = stobj.objectid />
 </cfif>
-<!--- 
-<cfthrow message="This object does not have any valid children" /> --->
+
+<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="displayBody" />
+
 
 <cfsetting enablecfoutputonly="false" />
