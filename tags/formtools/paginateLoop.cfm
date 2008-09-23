@@ -232,6 +232,7 @@ $in: objectid -- $
 					
 			<cfset variables.currentRow = variables.CurrentRow + 1 />
 		<cfelse>
+			<cfsetting enablecfoutputonly="false" />
 			<cfexit method="exittag" />
 		</cfif>
 	
@@ -379,6 +380,7 @@ $in: objectid -- $
 			
 			<cfset variables.currentRow = variables.CurrentRow + 1 />
 			
+			<cfsetting enablecfoutputonly="false" />
 			<cfexit method="loop" />
 		</cfif>
 
