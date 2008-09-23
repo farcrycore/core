@@ -23,6 +23,7 @@
 		<cfset stResult.userid = "" />
 		<cfset stResult.authenticated = false />
 		<cfset stResult.message = "" />
+		<cfset stResult.UD = "CLIENTUD" />
 		
 		<!--- For backward compatability, check for userlogin and password in form. This should be removed once we're willing to not support pre 4.1 login templates --->
 		<cfif structkeyexists(form,"userlogin") and structkeyexists(form,"password")>

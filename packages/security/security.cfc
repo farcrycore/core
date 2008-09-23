@@ -234,17 +234,20 @@
 			<cfset arguments.groups = listtoarray(arguments.groups) />
 		</cfif>
 		
-		<cfloop from="1" to="#arraylen(arguments.groups)#" index="i">
-			<cfset ud = listlast(arguments.groups[i],"_") />
-			<cfset group = listfirst(arguments.groups[i],"_") />
-			<cfif structkeyexists(this.userdirectories,ud)>
-				<cfset aUsers = this.userdirectories[ud].getGroupUsers(group=group) />
-				<cfloop from="1" to="#arraylen(aUsers)#" index="j">
-					<cfset arrayappend(aResult,"#aUsers[j]#_#ud#") />
-				</cfloop>
-			</cfif>
-		</cfloop>
-		
+		<cfif arraylen(arguments.groups)>
+			<cfloop from="1" to="#arraylen(arguments.groups)#" index="i">
+				<cfset ud = listlast(arguments.groups[i],"_") />
+				<cfset group = listfirst(arguments.groups[i],"_") />
+				<cfif structkeyexists(this.userdirectories,ud)>
+					<cfset aUsers = this.userdirectories[ud].getGroupUsers(group=group) />
+					<cfif arraylen(aUsers)>
+						<cfloop from="1" to="#arraylen(aUsers)#" index="j">
+							<cfset arrayappend(aResult,"#aUsers[j]#_#ud#") />
+						</cfloop>
+					</cfif>
+				</cfif>
+			</cfloop>
+		</cfif>
 		<cfreturn aResult />
 	</cffunction>
 	
@@ -264,19 +267,28 @@
 		<cfif structkeyexists(url,"ud")>
 			<cfset udlist = url.ud />
 		</cfif>
+
+		<cfif isArray(udlist)>
+			<cfset udlist = arrayToList(udlist) />
+		</cfif>
 		
 		<cfloop list="#udlist#" index="ud">
 			<!--- Authenticate user --->
 			<cfset stResult = this.userdirectories[ud].authenticate() />
 			
+			<!--- This allows your userdirectory check multiple user directories and pass back the successfull one. --->
+			<cfif not structKeyExists(stResult, "UD")>
+				<cfset stResult.UD = ud />
+			</cfif>
+			
 			<cfif structkeyexists(stResult,"authenticated")>
 				<cfif not stResult.authenticated>
-					<farcry:logevent type="security" event="loginfailed" userid="#stResult.userid#_#ud#" notes="#stResult.message#" />
+					<farcry:logevent type="security" event="loginfailed" userid="#stResult.userid#_#stResult.UD#" notes="#stResult.message#" />
 					<cfbreak />
 				</cfif>
 				
 				<!--- SUCCESS - log in user --->
-				<cfset login(userid=stResult.userid,ud=ud) />
+				<cfset login(userid=stResult.userid,ud=stResult.UD) />
 				
 				<!--- Return 'success' --->
 				<cfbreak />
