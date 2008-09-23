@@ -178,6 +178,7 @@ r_output			: optional, return variable to put the cached content into.
 			<cfset caller.cacheRead = false>
 		</cfif>	
 		<cfif caller.cacheRead>
+			<cfsetting enablecfoutputonly="false" />
 			<cfexit>
 		</cfif>
 	</cfif>
@@ -202,3 +203,6 @@ r_output			: optional, return variable to put the cached content into.
 		</cfscript>
 	</cfif>
 </cfif>
+
+
+<cfsetting enablecfoutputonly="false" />

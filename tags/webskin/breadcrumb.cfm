@@ -32,6 +32,7 @@ out:
 
 <!--- allow developers to close custom tag by exiting on end --->
 <cfif thistag.ExecutionMode eq "end">
+	<cfsetting enablecfoutputonly="false" />
 	<cfexit method="exittag" />
 </cfif>
 

@@ -25,6 +25,7 @@
 
 <!--- run once only --->
 <cfif thistag.ExecutionMode eq "end">
+	<cfsetting enablecfoutputonly="false" />
 	<cfexit method="exittag" />
 </cfif>
 

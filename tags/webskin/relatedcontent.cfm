@@ -37,6 +37,7 @@ SAMPLE USAGE:
 
 <!--- only run tag once --->
 <cfif thistag.executionMode eq "end">
+	<cfsetting enablecfoutputonly="false" />
 	<cfexit method="exittag" />
 </cfif>
 
