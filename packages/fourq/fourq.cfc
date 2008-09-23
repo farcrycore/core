@@ -91,6 +91,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var stProps = structNew() />
 		<cfset var PrimaryPackage = "" />
 		<cfset var PrimaryPackagePath = "" />
+		<cfset var propertie = "" />
 		
 		
 		
@@ -249,11 +250,18 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
     
     	<cfset var stResult = structNew()>
 		<cfset var gateway = "" />
+		<cfset var stClass = "" />
     
     	<cfset fourqInit() />
     
 		<cfset gateway = getGateway(arguments.dsn,arguments.dbtype,arguments.dbowner)  />
 		<cfset stResult = gateway.deployType(variables.tableMetaData,arguments.bDropTable,arguments.bTestRun) />
+		
+		<cfif stResult.bSuccess>
+			<!--- MAKE SURE THAT THE farCOAPI record exists for this type. --->
+			<cfset stClass = createObject("component", application.stcoapi.farCoapi.packagepath).getCoapiObject(name="#variables.typename#") />
+		</cfif>
+		
 		<cfreturn stResult>
 	</cffunction>
 	
