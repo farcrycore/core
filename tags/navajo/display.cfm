@@ -202,7 +202,6 @@
 	</cfif>
 
 <cfelse>
-
 	<!--- If we are in designmode then check the containermanagement permissions --->
 	<cfif request.mode.design>
 		<!--- set the users container management permission --->
@@ -214,12 +213,6 @@
 	<sec:CheckPermission type="#attributes.typename#" webskinpermission="#attributes.method#" result="bView" />
 	
 	<cfif bView>
-		<cfif request.mode.bAdmin>
-			<skin:view typename="#attributes.typename#" webskin="displayAdminToolbar" />
-		</cfif>
-		
-		<cfset request.typewebskin = "#attributes.typename#.#attributes.method#" />
-		
 		<cfif not structKeyExists(request, "navID")>
 			<cfset request.navid = createObject("component", application.stcoapi["#attributes.typename#"].packagePath).getNavID(typename="#attributes.typename#") />
 			<cfif not len(request.navID)>
@@ -230,6 +223,11 @@
 				</cfif>
 			</cfif>		
 		</cfif>
+		
+		<cfif request.mode.bAdmin>
+			<skin:view typename="#attributes.typename#" webskin="displayAdminToolbar" />
+		</cfif>
+		
 		<skin:view typename="#attributes.typename#" webskin="#attributes.method#" />
 	<cfelse>
 		<extjs:bubble title="Security" message="You do not have permission to access this view" />
