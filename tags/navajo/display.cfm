@@ -118,39 +118,16 @@
 	<!--- 
 	DETERMINE request.navid
 	- Get the navigational context of the content object 
-	--->
-	<!--- passed on the url? --->
-	<cfif stObj.typename eq "dmNavigation">
-		<cfset request.navid = stobj.objectid />
-		<cftrace var="stobj.objectid" text="Content item is a navigation node." type="information" />	
-	
-	<cfelseif not structkeyexists(request,"navid") and structkeyexists(url,"navid")>
-	
-		<!--- ie. this is a dynamic object looking for context, passing nav on the URL --->
-		<cfset request.navid = url.navid />
-		<cftrace var="url.navid" text="navid passed on the URL." />
-	
-	<!--- otherwise get the navigation point for this object --->
-	<cfelseif not stObj.typename eq "dmNavigation" and not structkeyexists(request,"navid")>
-	
-		<nj:getNavigation objectId="#stObj.objectId#" r_stobject="stNav" />
-		
-		<!--- if the object is in the tree this will give us the node --->
-		<cfif isDefined("stNav.objectid") AND len(stNav.objectid)>
-			<cfset request.navid = stNav.objectID>
-			<cftrace var="stNav.objectid" text="url.navid is not defined, getNavigation called to find navid." type="information" />
-	
-		<!--- otherwise, use the home node as a last resort --->
-		<cfelse>
-			<cfset request.navid = application.navid.home />
-			<cftrace var="application.navid.home" text="navid could not be determined; defaulting to application.navid.home." type="information" />
+	--->	
+	<cfif not structKeyExists(request, "navID")>
+		<cfset request.navid = createObject("component", application.stcoapi["#stObj.typename#"].packagePath).getNavID(stobject="#stobj#") />
+		<cfif not len(request.navID)>
+			<cfif structKeyExists(application.navid, "home")>
+				<cfset request.navID = listFirst(application.navid.home) />
+			<cfelse>
+				<cfthrow type="FarCry Controller" message="No Navigation ID can be found. Please see administrator." />
+			</cfif>
 		</cfif>
-
-	<cfelseif not structKeyExists(request, "navid")>
-		<!--- otherwise, use the home node as a last resort --->
-		<cfset request.navid = "#application.navid.home#" />
-		<cftrace var="application.navid.home" text="nav object corrupt; defaulting to application.navid.home." type="information" />
-		
 	</cfif>
 	
 	<!--- Check security --->
@@ -242,6 +219,17 @@
 		</cfif>
 		
 		<cfset request.typewebskin = "#attributes.typename#.#attributes.method#" />
+		
+		<cfif not structKeyExists(request, "navID")>
+			<cfset request.navid = createObject("component", application.stcoapi["#attributes.typename#"].packagePath).getNavID(typename="#attributes.typename#") />
+			<cfif not len(request.navID)>
+				<cfif structKeyExists(application.navid, "home")>
+					<cfset request.navID = listFirst(application.navid.home) />
+				<cfelse>
+					<cfthrow type="FarCry Controller" message="No Navigation ID can be found. Please see administrator." />
+				</cfif>
+			</cfif>		
+		</cfif>
 		<skin:view typename="#attributes.typename#" webskin="#attributes.method#" />
 	<cfelse>
 		<extjs:bubble title="Security" message="You do not have permission to access this view" />
