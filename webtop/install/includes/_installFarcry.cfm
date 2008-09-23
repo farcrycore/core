@@ -94,6 +94,10 @@ DEPLOY SYSTEM TABLES
 <cfflush />
 
 
+<!--- SETUP farCoapi table first --->
+<cfoutput>#updateProgressBar(value="0.4", text="#form.displayName# (COAPI): Creating COAPI table.")#</cfoutput><cfflush>
+<cfset oCoapi = createObject("component", "#application.stcoapi.farCoapi.packagePath#") />
+<cfset stResult = oCoapi.deployType(dsn=application.dsn,bDropTable=true,bTestRun=false,dbtype=application.dbtype) />
 
 
 <!--- // deploy rule tables --->
@@ -128,16 +132,19 @@ TODO:
 <cfoutput>#updateProgressBar(value="0.6", text="#form.displayName# (TYPES): Creating types tables.")#</cfoutput><cfflush>
 
 <cfloop query="qTypes">
-	<cfset oType = createObject("component", qtypes.typepath) />
-	<cftry>
-		<cfset stResult = oType.deployType(dsn=application.dsn,bDropTable=true,bTestRun=false,dbtype=application.dbtype) />
-		<cfoutput>#updateProgressBar(value="0.6", text="#form.displayName# (TYPES): Creating #listfirst(qtypes.name,".")# table.")#</cfoutput><cfflush>
-
-		<cfcatch type="farcry.core.packages.fourq.tablemetadata.abstractTypeException">
-			<cfset stResult.bsucess="false" />
-			<cfset stResult.message=cfcatch.message />
-		</cfcatch>
-	</cftry>
+	<!--- Already deployed farCoapi. --->
+	<cfif qtypes.name NEQ "farCoapi.cfc">
+		<cfset oType = createObject("component", qtypes.typepath) />
+		<cftry>
+			<cfset stResult = oType.deployType(dsn=application.dsn,bDropTable=true,bTestRun=false,dbtype=application.dbtype) />
+			<cfoutput>#updateProgressBar(value="0.6", text="#form.displayName# (TYPES): Creating #listfirst(qtypes.name,".")# table.")#</cfoutput><cfflush>
+	
+			<cfcatch type="farcry.core.packages.fourq.tablemetadata.abstractTypeException">
+				<cfset stResult.bsucess="false" />
+				<cfset stResult.message=cfcatch.message />
+			</cfcatch>
+		</cftry>
+	</cfif>
 </cfloop>
 <cfoutput></ul></cfoutput>
 
