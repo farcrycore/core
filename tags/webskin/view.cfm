@@ -61,53 +61,47 @@
 
 	<cfif structKeyExists(attributes.stObject, "objectid") and len(attributes.stObject.objectid)>
 		<cfset st = attributes.stObject />	
-	<cfelse>
-			
-		<cfif not len(attributes.objectID)>
-			<cfparam name="session.stTempObjectStoreKeys" default="#structNew()#" />
-			<cfparam name="session.stTempObjectStoreKeys[attributes.typename]" default="#structNew()#" />
-			
-			<cfif not len(attributes.key)>
-				<cfset attributes.key = attributes.typename />
-			</cfif>
-			
-			<cfif structKeyExists(session.stTempObjectStoreKeys[attributes.typename], attributes.key)>
-				<cfif structKeyExists(Session.TempObjectStore, session.stTempObjectStoreKeys[attributes.typename][attributes.key])>
-					<cfset attributes.objectid = session.stTempObjectStoreKeys[attributes.typename][attributes.key] />
-				</cfif>
-			</cfif>		
-			<cfif not len(attributes.objectid)>
-				<cfset attributes.objectid = createUUID() />
-				<cfset session.stTempObjectStoreKeys[attributes.typename][attributes.key] = attributes.objectid>
-				<cfset st = o.getData(objectID = attributes.objectid) />
-				<cfset stResult = o.setData(stProperties=st, bSessionOnly="true") />
-			</cfif>
-		</cfif>
+	<cfelseif len(attributes.objectID)>
+		<cfset st = o.getData(objectID = attributes.objectid) />	
+	<cfelseif len(attributes.key)>
+		<cfparam name="session.stTempObjectStoreKeys" default="#structNew()#" />
+		<cfparam name="session.stTempObjectStoreKeys[attributes.typename]" default="#structNew()#" />
 		
-		<cfif structIsEmpty(st)>
-			<!--- Go get a default object --->
+		<cfif structKeyExists(session.stTempObjectStoreKeys[attributes.typename], attributes.key)>
+			<cfif structKeyExists(Session.TempObjectStore, session.stTempObjectStoreKeys[attributes.typename][attributes.key])>
+				<cfset attributes.objectid = session.stTempObjectStoreKeys[attributes.typename][attributes.key] />
+			</cfif>
+		</cfif>		
+		
+		<cfif not len(attributes.objectid)>
+			<cfset attributes.objectid = createUUID() />
+			<cfset session.stTempObjectStoreKeys[attributes.typename][attributes.key] = attributes.objectid>
 			<cfset st = o.getData(objectID = attributes.objectid) />
-		</cfif>	
+			<cfset stResult = o.setData(stProperties=st, bSessionOnly="true") />
+		</cfif>		
 	</cfif>
 	
-						
-	
-	<cfif not structIsEmpty(attributes.stProps)>
 		
-		<cfif structKeyExists(attributes.stProps, "objectid") or structKeyExists(attributes.stProps, "typename")>
-			<cfthrow type="application" message="You can not override the objectid or typename with attributes.stProps" />
+	<cfif not structIsEmpty(st)>			
+		
+		<cfset attributes.objectid = st.objectid />
+		
+		<cfif not structIsEmpty(attributes.stProps)>
+			<cfif structKeyExists(attributes.stProps, "objectid") or structKeyExists(attributes.stProps, "typename")>
+				<cfthrow type="application" message="You can not override the objectid or typename with attributes.stProps" />
+			</cfif>
+			<!--- If attributes.stProps has been passed in, then append them to the struct --->
+			<cfset StructAppend(attributes.stProps, st, false)>
+			
+			<cfset stResult = o.setData(stProperties=attributes.stProps, bSessionOnly=true) />
 		</cfif>
-		<!--- If attributes.stProps has been passed in, then append them to the struct --->
-		<cfset StructAppend(attributes.stProps, st, false)>
-		
-		<cfset stResult = o.setData(stProperties=attributes.stProps, bSessionOnly=true) />
-	</cfif>
+	</cfif>	
 	
 	<!--- Developer can pass in alternate HTML to render if the webskin does not exist --->
 	<cfif structKeyExists(attributes, "alternateHTML")>
-		<cfset html = o.getView(objectid=st.objectid, template="#attributes.webskin#", alternateHTML="#attributes.alternateHTML#",stParam=attributes.stParam)>
+		<cfset html = o.getView(typename="#attributes.typename#", objectid="#attributes.objectid#", template="#attributes.webskin#", stParam="#attributes.stParam#", alternateHTML="#attributes.alternateHTML#")>
 	<cfelse>
-		<cfset html = o.getView(objectid=st.objectid, template="#attributes.webskin#",stParam=attributes.stParam)>
+		<cfset html = o.getView(typename="#attributes.typename#", objectid="#attributes.objectid#", template="#attributes.webskin#", stParam="#attributes.stParam#")>
 	</cfif>		
 	</cfsilent>
 	
