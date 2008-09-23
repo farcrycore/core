@@ -16,8 +16,8 @@
 		
 		
 		<cfparam name="arguments.stMetadata.ftLabel" default="#arguments.stMetadata.name#" />
-		<cfparam name="arguments.stMetadata.ftRenderType" default="changepassord" />
-	
+		<cfparam name="arguments.stMetadata.ftRenderType" default="changepassword" />
+
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 			<cfcase value="changepassword">
 				<cfsavecontent variable="html">
