@@ -121,7 +121,7 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		<farcry:deprecated message="authentication.deleteUser() should be replaced by calls to farUser.delete()" />
 		
 		<cfif findnocase(arguments.userdirectory,arguments.userid)>
-			<cfset arguments.userid = listfirst(arguments.userid,"_") />
+			<cfset arguments.userid = application.factory.oUtils.listSlice(arguments.userid,1,-2,"_") />
 		</cfif>
 		
 		<cfset oUser.delete(objectid=oUser.getByUserID(arguments.userid)) />
@@ -190,7 +190,7 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 			
 			<cfif structKeyExists(arguments, "userLogin") and len(arguments.userLogin)>
 				<cfif findnocase(arguments.userdirectory,arguments.userlogin)>
-					<cfset arguments.userlogin = listfirst(arguments.userlogin,"_") />
+					<cfset arguments.userlogin = application.factory.oUtils.listSlice(arguments.userlogin,1,-2,"_") />
 				</cfif>
 				
 				<cfset aUserGroups = application.security.userdirectories[arguments.userdirectory].getUserGroups(arguments.userlogin) />
@@ -246,7 +246,7 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		
 		<cfif not isvalid("uudi",arguments.userid)>
 			<cfif findnocase(arguments.userdirectory,arguments.userlogin)>
-				<cfset arguments.userlogin = listfirst(arguments.userlogin,"_") />
+				<cfset arguments.userlogin = application.factory.oUtils.listSlice(arguments.userlogin,1,-2,"_") />
 			</cfif>
 			<cfset stUser = oUser.getByUserID(arguments.userlogin) />
 		<cfelse>
@@ -334,7 +334,7 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		<farcry:deprecated message="authentication.removeUserFromGroup() has been deprectated in favor of farUser.removeGroup()" />
 		
 		<cfif findnocase(arguments.userdirectory,arguments.userlogin)>
-			<cfset arguments.userlogin = listfirst(arguments.userlogin,"_") />
+			<cfset arguments.userlogin = application.factory.oUtils.listSlice(arguments.userlogin,1,-2,"_") />
 		</cfif>
 		<cfif findnocase(arguments.userdirectory,arguments.groupName)>
 			<cfset arguments.groupName = listfirst(arguments.groupName,"_") />
