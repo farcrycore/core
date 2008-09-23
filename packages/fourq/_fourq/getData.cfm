@@ -75,7 +75,7 @@ $
 	<cfquery datasource="#arguments.dsn#" name="qgetData">
 		SELECT #sqlSelect# 
 		FROM #arguments.dbowner##tablename#
-		WHERE ObjectID = '#arguments.objectID#'
+		WHERE ObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectID#" />
 	</cfquery>
 	
  	<cfcatch type="database">
@@ -84,7 +84,7 @@ $
 		<cfquery datasource="#arguments.dsn#" name="qgetData">
 			SELECT *
 			FROM #arguments.dbowner##tablename#
-			WHERE ObjectID = '#arguments.objectID#'
+			WHERE ObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectID#" />
 		</cfquery>
 	</cfcatch>
 </cftry>
@@ -113,7 +113,7 @@ $
 			<!--- getdata for array properties --->
 			<cfquery datasource="#arguments.dsn#" name="qArrayData">
   			select * from #arguments.dbowner##tablename#_#key#
-			where parentID = '#arguments.objectID#'
+			where parentID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectID#" />
 			order by seq
 			</cfquery>
 		
