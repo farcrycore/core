@@ -89,6 +89,7 @@
 		
 		<cfif permitted>
 			<!--- Permission granted - skip to content --->
+			<cfsetting enablecfoutputonly="false" />
 			<cfexit method="exittemplate" />
 		</cfif>
 	<cfelse><!--- attributes.require = "any" --->
@@ -101,6 +102,7 @@
 				</cfif>
 				
 				<!--- Permission granted - skip straight to content --->
+				<cfsetting enablecfoutputonly="false" />
 				<cfexit method="exittemplate" />
 			</cfif>
 		</cfloop>
@@ -114,6 +116,7 @@
 				</cfif>
 				
 				<!--- Permission granted - skip straight to content --->
+				<cfsetting enablecfoutputonly="false" />
 				<cfexit method="exittemplate" />
 			</cfif>
 		</cfloop>
@@ -127,6 +130,7 @@
 				</cfif>
 				
 				<!--- Permission granted - skip straight to content --->
+				<cfsetting enablecfoutputonly="false" />
 				<cfexit method="exittemplate" />
 			</cfif>
 		</cfloop>
@@ -140,6 +144,7 @@
 				</cfif>
 				
 				<!--- Permission granted - skip straight to content --->
+				<cfsetting enablecfoutputonly="false" />
 				<cfexit method="exittemplate" />
 			</cfif>
 		</cfloop>
@@ -154,7 +159,7 @@
 	<cfif structkeyexists(attributes,"result")>
 		<cfset evaluate("caller.#attributes.result#=0") />
 	</cfif>
-	
+	<cfsetting enablecfoutputonly="false" />
 	<cfexit method="exittag" />
 </cfif>
 
