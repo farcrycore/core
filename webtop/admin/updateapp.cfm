@@ -26,17 +26,35 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
+<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 
 <!--- set up page header --->
 <admin:header title="Update application" />
 
-<ft:processform action="Update Application">
+<ft:processform action="Update Application" url="refresh">
 	<ft:processformobjects typename="updateapp" />
 </ft:processform>
 
-<ft:form>
-	<ft:object typename="updateapp" legend="Update application" />
+<ft:form>	
+	<cfset qMetadata = application.forms['UpdateApp'].qMetadata />
+	<cfquery dbtype="query" name="qFieldSets">
+		SELECT 		ftwizardStep, ftFieldset
+		FROM 		qMetadata
+		WHERE 		lower(ftFieldset) <> '#lcase("UpdateApp")#'
+		Group By 	ftwizardStep, ftFieldset
+		ORDER BY 	ftSeq
+	</cfquery>
+	<cfloop query="qFieldSets">
+		<cfquery dbtype="query" name="qFieldset">
+			SELECT 		*
+			FROM 		qMetadata
+			WHERE 		lower(ftFieldset) = '#lcase(qFieldsets.ftFieldset)#'
+			ORDER BY 	ftSeq
+		</cfquery>
+		
+		<ft:object typename="updateapp" format="edit" lExcludeFields="label" lFields="#valuelist(qFieldset.propertyname)#" inTable="false" IncludeFieldSet="true" Legend="#qFieldSets.ftFieldset#" helptitle="#qFieldset.fthelptitle#" helpsection="#qFieldset.fthelpsection#" />
 	
+	</cfloop>
 	<ft:farcryButtonPanel>
 		<ft:farcryButton value="Update Application" />
 	</ft:farcryButtonPanel>
