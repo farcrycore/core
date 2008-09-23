@@ -79,6 +79,7 @@
 	<cfset stConfig.elements = "elements" />
 	<cfset stConfig.enableTabScroll = "enableTabScroll" />
 	<cfset stConfig.enableToggle = "enableToggle" />	
+	<cfset stConfig.extraCls = "extraCls" />	
 	<cfset stConfig.floating = "floating" />
 	<cfset stConfig.footer = "footer" />
 	<cfset stConfig.frame = "frame" />
