@@ -553,7 +553,15 @@
 			<cfset webskinHTML = application.coapi.objectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
 			
 			<cftimer label="getView: #stobj.typename# (#arguments.template#)">
-			<cfif not len(webskinHTML)>
+			<cfif not len(webskinHTML)>		
+			
+				<cfif stobj.typename EQ "farCoapi">
+					<!--- This means its a type webskin and we need to look for the timeout value on the related type. --->			
+					<cfset stCoapi = createObject("component", application.stcoapi["farCoapi"].packagePath).getData(objectid="#stobj.objectid#") />
+					<cfset webskinTypename = stCoapi.name />
+				</cfif>
+				
+				
 				<cfset webskinPath = application.coapi.coapiadmin.getWebskinPath(typename=webskinTypename, template=arguments.template) />
 						
 				<cfif len(webskinPath)>
@@ -668,12 +676,12 @@
 				<cfelseif structKeyExists(arguments, "alternateHTML")>
 					<cfset webskinHTML = arguments.alternateHTML />
 				<cfelse>
-					<cfthrow type="Application" detail="Error: Template not found [/webskin/#stObj.typename#/#arguments.template#.cfm] and no alternate html provided." />
+					<cfthrow type="Application" detail="Error: Template not found [/webskin/#webskinTypename#/#arguments.template#.cfm] and no alternate html provided." />
 				</cfif>	
 			</cfif>		
 			</cftimer>
 		<cfelse>
-			<cfthrow type="Application" detail="Error: When trying to render [/webskin/#stObj.typename#/#arguments.template#.cfm] the object was not created correctly." />	
+			<cfthrow type="Application" detail="Error: When trying to render [/webskin/#webskinTypename#/#arguments.template#.cfm] the object was not created correctly." />	
 		</cfif>
 		<cfreturn webskinHTML />
 	</cffunction>
