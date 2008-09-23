@@ -402,13 +402,18 @@ LIBRARY DATA
 	<table>
 	<tr>
 		<td>
-			<select name="ftJoin" id="ftJoin" onchange="javascript:window.location='#cgi.script_name#?#querystring#&ftJoin=' + this[selectedIndex].value;">
-				<cfloop list="#PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin#" index="i">
-					<option value="#i#" <cfif url.ftJoin EQ i>selected</cfif>>#application.stcoapi[i].displayname# Library</option>
-				</cfloop>
-			</select>
-		</td>
-		<td>Search: <input type="text" name="criteria" id="criteria" value="#session.stLibraryFilter[request.ftJoin].Criteria#" /></td>
+			Search: 
+			<cfif listLen(PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin) GT 1>
+				<select name="ftJoin" id="ftJoin" onchange="javascript:window.location='#cgi.script_name#?#querystring#&ftJoin=' + this[selectedIndex].value;">
+					<cfloop list="#PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin#" index="i">
+						<option value="#i#" <cfif url.ftJoin EQ i>selected</cfif>>#application.stcoapi[i].displayname# Library</option>
+					</cfloop>
+				</select>
+			<cfelse>
+				<input type="hidden" name="ftJoin" id="ftJoin" value="#application.stcoapi['#PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin#'].displayname# Library">
+				#application.stcoapi['#PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin#'].displayname# Library
+			</cfif>
+			<input type="text" name="criteria" id="criteria" value="#session.stLibraryFilter[request.ftJoin].Criteria#" /></td>
 		<td>
 			<ft:farcryButton value="Search" />
 			<ft:farcryButton value="Refresh" />
