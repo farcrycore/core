@@ -606,11 +606,11 @@
 		<cfoutput></fieldset></cfoutput>
 	</cfif>
 	
-	<cfparam name="Request.lFarcryObjectsRendered" default="">
+	<cfparam name="Request.farcryForm.lFarcryObjectsRendered" default="">
 
 	<cfif attributes.format EQ "edit"
 		AND StructKeyExists(Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo,"ObjectID")
-		AND  NOT ListContains(Request.lFarcryObjectsRendered, Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID)>
+		AND  NOT ListContains(Request.farcryForm.lFarcryObjectsRendered, Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID)>
 			
 		<cfoutput>
 			<input type="hidden" name="#variables.prefix#ObjectID" value="#Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectID#">
