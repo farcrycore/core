@@ -39,7 +39,6 @@ $Developer: Matthew Bryant (mat@daemon.com.au) $
 <cfif thistag.executionMode eq "Start">
 
 	<!--- optional attributes --->
-	<cfparam name="attributes.Step" default="1" type="numeric">
 	<cfparam name="attributes.Top" default="true">
 	<cfparam name="attributes.Bottom" default="true">
 	<cfparam name="attributes.htmlFirst" default="&laquo;">
@@ -48,7 +47,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au) $
 	<cfparam name="attributes.htmlLast" default="&raquo;">
 	<cfparam name="attributes.bShowResultTotal" default="false" type="boolean" /><!--- Shows the details of the current rendered records instead of the page details --->
 	<cfparam name="attributes.bShowPageDropdown" default="false" type="boolean" /><!--- uses a dropdown instead of links. --->
-	<cfparam name="attributes.paginationID" default="" />	
+	<cfparam name="attributes.paginationID" default="" /><!--- Keeps track of the page the user is currently on in session against this key. --->
 	<cfparam name="attributes.CurrentPage" default="0" />
 	<cfparam name="attributes.maxRecordsToDisplay" default="0" type="numeric">
 	<cfparam name="attributes.totalRecords" default="0" type="numeric">
@@ -62,6 +61,9 @@ $Developer: Matthew Bryant (mat@daemon.com.au) $
 	<cfparam name="attributes.scrollPrefix" default="" type="string" />
 	<cfparam name="attributes.scrollSuffix" default="" type="string" />
 	<cfparam name="attributes.renderType" default="list" type="string" />
+	
+	
+	<cfparam name="attributes.Step" default="1" type="numeric">
 	
 	
 	<cfif not isDefined("attributes.qRecordSet") or not isQuery(attributes.qRecordSet)>
@@ -142,11 +144,13 @@ $Developer: Matthew Bryant (mat@daemon.com.au) $
 				bShowDropDown = false;
 			}
 			
+			/*
+			TODO: MODIUS Determine if step is still valid
 			if(len(attributes.step)){
 				if(pTotalPages GTE (attributes.recordsPerPage * attributes.pageLinks)){attributes.step = attributes.pageLinks;}
 				else attributes.step = 1;
-			}
-			
+			} 
+			*/
 		}
 	</cfscript>
 	
@@ -316,7 +320,7 @@ user defined functions
 							
 							<cfloop from="#pFirstPage#" to="#pLastPage#" index="i" step="#attributes.step#">
 							    <cfif attributes.currentPage EQ i>
-									<cfoutput><span>#i#</span></cfoutput>
+									<cfoutput><span class="current-page">#i#</span></cfoutput>
 							   <cfelse>
 							   	<cfoutput><a href="#arguments.actionURL#&amp;page=#i#" #IIF(attributes.submissionType neq "link",DE('onclick="javascript:paginationSubmission(#i#);return false;"'),DE(""))#>#i#</a></cfoutput>	   
 							    </cfif>
@@ -338,7 +342,7 @@ user defined functions
 						   	</cfif>
 						</cfif>
 				
-					<cfoutput><p></cfoutput>
+					<cfoutput></p></cfoutput>
 	
 				
 					
