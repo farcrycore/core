@@ -1,3 +1,5 @@
+<cfsetting enablecfoutputonly="true" />
+
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
@@ -39,7 +41,8 @@ It just ignores the inner ones.
 		<cfparam name="attributes.ajaxMaskCls" default="x-mask-loading">
 		
 		<!--- We only render the form if FarcryForm OnExit has not been Fired. --->
-		<cfif isDefined("Request.FarcryFormOnExitRun") AND Request.FarcryFormOnExitRun >			
+		<cfif isDefined("Request.FarcryFormOnExitRun") AND Request.FarcryFormOnExitRun >
+			<cfsetting enablecfoutputonly="false" />			
 			<cfexit method="exittag">			
 		</cfif>
 		
@@ -86,7 +89,8 @@ It just ignores the inner ones.
 			<cfparam name="Request.farcryForm.onSubmit" default="#attributes.onSubmit#">
 			<cfparam name="Request.farcryForm.Validation" default="#attributes.Validation#">
 			<cfparam name="Request.farcryForm.stObjects" default="#StructNew()#">		
-			<cfparam name="Request.farcryForm.bAjaxSubmission" default="#attributes.bAjaxSubmission#">		
+			<cfparam name="Request.farcryForm.bAjaxSubmission" default="#attributes.bAjaxSubmission#">	
+			<cfparam name="Request.farcryForm.lFarcryObjectsRendered" default="">		
 		</cfif>
 	
 		
@@ -98,7 +102,7 @@ It just ignores the inner ones.
 		<!--- ADD FORM PROTECTION --->
 		<cfparam name="session.stFarCryFormSpamProtection" default="#structNew()#" />
 		<cfparam name="session.stFarCryFormSpamProtection['#Request.farcryForm.Name#']" default="#structNew()#" />
-				
+			
 		<ft:renderHTMLformStart attributeCollection="#attributes#" onsubmit="#attributes.onsubmit#" class="#attributes.Class#" css="#attributes.css#" style="#attributes.style#" heading="#attributes.heading#" />
 	
 	</cfif>
@@ -137,3 +141,4 @@ It just ignores the inner ones.
 </cfif>
 
 
+<cfsetting enablecfoutputonly="false" />
