@@ -5,6 +5,7 @@
 
 <!--- run once only --->
 <cfif thistag.executionmode eq "end">
+	<cfsetting enablecfoutputonly="false" />
 	<cfexit method="exittag" />
 </cfif>
 

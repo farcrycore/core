@@ -38,6 +38,7 @@ $in: attributes.objectid$
 $out:$
 --->
 <cfif thistag.ExecutionMode eq "end">
+	<cfsetting enablecfoutputonly="false" />
 	<cfexit method="exittag">
 </cfif>
 

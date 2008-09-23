@@ -55,6 +55,7 @@ $out:$
 				 alert("#application.rb.getResource("objNoApprovalProcess")#");
 			</script>
 			</cfoutput>
+			<cfsetting enablecfoutputonly="false" />
 			<cfexit>
 		</cfif>
 
