@@ -86,7 +86,7 @@ form div.notes p, form div small {line-height: 125%;}
 	/* formtool input : formButton layout styles */	
 	form.formtool input.formButton {color: ##30326F; background-color: inherit;}
 	/* formtool select layout styles */
-	form.formtool select {color: ##324e7c; line-height: normal; background-color: inherit;}
+	form.formtool select {color: ##324e7c; line-height: normal; background-color: ##fff;}
 
 /* formtool html button formatting styles */
 	/* formtool default html button formatting styles */
