@@ -11,6 +11,8 @@
 	<cfproperty ftSeq="14" ftFieldset="Miscellaneous" name="javascript" type="boolean" default="0" hint="Reload javascript libraries" ftLabel="Javascript" ftType="boolean" />
 	<cfproperty ftSeq="15" ftFieldset="Miscellaneous" name="factories" type="boolean" default="0" hint="Reload factories" ftLabel="Factories" ftType="boolean" />
 	<cfproperty ftSeq="16" ftFieldset="Miscellaneous" name="wizards" type="boolean" default="0" hint="Re-Initialize all Wizards" ftLabel="Wizards" ftType="boolean" ftHint="This will reset all wizards. Any changes currently in progress will be deleted." />
+	
+	
 	<cffunction name="process" access="public" output="true" returntype="struct" hint="Performs application refresh according to options selected">
 		<cfargument name="fields" type="struct" required="true" hint="The fields submitted" />
 		
@@ -108,18 +110,13 @@
 		<cfreturn true />
 	</cffunction>
 
-
-
 	<cffunction name="processWizards" access="public" returntype="boolean" description="Resets Wizard Table" output="false">
 		<!--- Wizards --->
-		<cfif structkeyexists(arguments.fields,"wizards") and arguments.fields.wizards>
-			
-			<cfquery datasource="#application.dsn#" name="qDeleteWizards">
+		<cfquery datasource="#application.dsn#" name="qDeleteWizards">
 			delete from dmWizard
-			</cfquery>
-			<extjs:bubble title="Re-Initialized Wizards" />
-		</cfif>
+		</cfquery>
 		
 		<cfreturn true />
 	</cffunction>
+	
 </cfcomponent>
