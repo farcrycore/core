@@ -58,22 +58,18 @@ $out:$
 	r_lObjectIds="ParentID"
 	bInclusive="1">
 
-<!--- Get the roles that have permission to approve objects --->
-<cfset approverroles = "" />
-<cfloop list="#application.security.factory.role.getAllRoles()#" index="thisrole">
-	<cfif application.security.checkPermission(role=thisrole,permission="Approve",object=stObj.objectid)>
-		<cfset approverroles = listappend(approverroles,thisrole) />
-	</cfif>
-</cfloop>
-<cfset aUsers = application.security.getGroupUsers(groups=application.security.factory.role.rolesToGroups(roles=approverroles)) />
+<!--- Get the users that have permission to approve objects --->
+<cfset aUsers = application.security.getGroupUsers(groups=application.security.factory.role.rolesToGroups(application.security.factory.role.getRolesWithPermission("Approve"))) />
 
 <!--- build struct of dmProfile objects for each user --->
 <cfset stApprovers = structNew()>
 
-<cfloop index="i" from="1" to="#arrayLen(aUsers)#">
-    <cfscript>
-    o_profile = createObject("component", application.types.dmProfile.typePath);
-    stProfile = o_profile.getProfile(aUsers[i]);
-	if (not structIsEmpty(stProfile) AND stProfile.bActive) stApprovers[aUsers[i]] = stProfile;
-    </cfscript>
-</cfloop>
+<cfif arrayLen(aUsers)>
+	<cfloop index="i" from="1" to="#arrayLen(aUsers)#">
+	    <cfscript>
+	    o_profile = createObject("component", application.types.dmProfile.typePath);
+	    stProfile = o_profile.getProfile(aUsers[i]);
+		if (not structIsEmpty(stProfile) AND stProfile.bActive) stApprovers[aUsers[i]] = stProfile;
+	    </cfscript>
+	</cfloop>
+</cfif>
