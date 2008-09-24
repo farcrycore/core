@@ -389,10 +389,10 @@ $out:$
 	<cfelse>
 		<cfparam name="returnObjectId" default="#attributes.lObjectIDs#"><cfoutput>
 		<script type="text/javascript">
-		if(window.opener && window.opener.parent)
+		if(top == self)
 			window.close();
 		else{
-			location.href = "#application.url.farcry#/edittabOverview.cfm?objectid=#returnObjectId#";
+			location.href = "#cgi.http_referer#;
 		}
 		</script></cfoutput>
 	</cfif>
