@@ -65,18 +65,20 @@ $out:$
 		<q4:contentobjectget objectid="#thisobjectid#" r_stobject="stObj">
 		<cfset arrayappend(astObj,stObj) />
 		
-		<!--- get list of approvers for this object --->
-		<cfset stApproversThisObject = oWorkflow.getObjectApprovers(objectID=thisobjectid) />
-		<cfif isstruct(stApprovers)>
-			<!--- Update stApprovers as the intersection of stApprovers and stApproversThisObject --->
-			<cfloop collection="#stApprovers#" item="approver">
-				<cfif not structkeyexists(stApproversThisObject,approver)>
-					<cfset structdelete(stApprovers,approver) />
-				</cfif>
-			</cfloop>
-		<cfelse>
-			<!--- The intersection of one set is that set :) --->
-			<cfset stApprovers = duplicate(stApproversThisObject) />
+		<cfif url.status eq "requestApproval">
+			<!--- get list of approvers for this object --->
+			<cfset stApproversThisObject = oWorkflow.getObjectApprovers(objectID=thisobjectid) />
+			<cfif isstruct(stApprovers)>
+				<!--- Update stApprovers as the intersection of stApprovers and stApproversThisObject --->
+				<cfloop collection="#stApprovers#" item="approver">
+					<cfif not structkeyexists(stApproversThisObject,approver)>
+						<cfset structdelete(stApprovers,approver) />
+					</cfif>
+				</cfloop>
+			<cfelse>
+				<!--- The intersection of one set is that set :) --->
+				<cfset stApprovers = duplicate(stApproversThisObject) />
+			</cfif>
 		</cfif>
 	</cfloop>
 	
