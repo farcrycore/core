@@ -381,18 +381,18 @@ $out:$
 		if(top == self)
 			window.close();
 		else{
-			location.href = "#cgi.http_referer#;
+			location.href = "#cgi.http_referer#";
 		}
 		</script></cfoutput>
 	<cfelseif listlen(url.objectid) gt 1>
 		<cfoutput><p class="success">Objects updated: #listlen(url.objectid)#</p></cfoutput>
 	<cfelse>
 		<cfparam name="returnObjectId" default="#attributes.lObjectIDs#"><cfoutput>
-		<script type="text/javascript">
+		<script type="text/javascript">		
 		if(top == self)
 			window.close();
 		else{
-			location.href = "#cgi.http_referer#;
+			location.href = "#application.url.farcry#/edittabOverview.cfm?objectid=#returnObjectId#";
 		}
 		</script></cfoutput>
 	</cfif>
