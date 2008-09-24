@@ -36,7 +36,7 @@
 				##farcrytray a:hover { text-decoration:underline; }
 				##farcrytray a.webtoplink:hover { text-decoration:none; }
 				##farcrytray img { border: 0 none; }
-				##farcrytray * { font-family: arial; }
+				##farcrytray * { color: ##333; font-family: arial,tahoma,helvetica,sans-serif; text-align: left; }
 			</style>
 		</cfoutput></skin:htmlHead>
 		<extjs:onReady><cfoutput>
