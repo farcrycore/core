@@ -381,7 +381,7 @@ $out:$
 		if(top == self)
 			window.close();
 		else{
-			location.href = "#cgi.http_referer#;
+			location.href = "#cgi.http_referer#";
 		}
 		</script></cfoutput>
 	<cfelseif listlen(url.objectid) gt 1>
