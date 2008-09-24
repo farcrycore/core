@@ -32,8 +32,8 @@
 			</cfif>
 			
 			<cfoutput>#dateformat(qComments.datetimecreated,"yyyy-mm-dd")# #timeformat(qComments.datetimecreated,"hh:mm tt")# - #events[qComments.event]# </cfoutput>
-			
-			<cfif structkeyexists(stProfile,"userdirectory") and (len(stProfile.firstname) or len(stProfile.lastname))>
+
+			<cfif structkeyexists(stProfile,"lastname") and len(stProfile.lastname)>
 				<cfoutput>(#stProfile.firstname# #stProfile.lastname#)</dt></cfoutput>
 			<cfelse>
 				<cfoutput>(#listfirst(qComments.userid,'_')#)</dt></cfoutput>
