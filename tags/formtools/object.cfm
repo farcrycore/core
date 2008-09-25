@@ -565,7 +565,7 @@
 						<cfset helpSectionClass = "helpsectionmargin">
 					</cfif>	
 								
-					<cfoutput><div class="fieldSection #lcase(ftFieldMetadata.ftType)# #helpSectionClass#"></cfoutput>
+					<cfoutput><div class="fieldSection #lcase(ftFieldMetadata.ftType)# #ftFieldMetadata.ftClass# #helpSectionClass#"></cfoutput>
 				</cfif>
 	
 	
