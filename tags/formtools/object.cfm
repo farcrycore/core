@@ -604,7 +604,7 @@
 						
 						#variables.returnHTML#
 						<cfif attributes.bShowFieldHints AND structKeyExists(ftFieldMetadata,"ftHint") and len(ftFieldMetadata.ftHint)>
-							<cfoutput><small>#ftFieldMetadata.ftHint#</small></cfoutput>
+							<cfoutput><small class="ftHint">#ftFieldMetadata.ftHint#</small></cfoutput>
 						</cfif>
 				</cfoutput>
 				
