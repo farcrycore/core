@@ -16,11 +16,9 @@
 
 		<cfparam name="arguments.stMetadata.ftClass" default="" />
 		<cfparam name="arguments.stMetadata.ftStyle" default="width:50px;" />
-		<cfparam name="arguments.stMetadata.ftPrefix" default="">
-		<cfparam name="arguments.stMetadata.ftSuffix" default="">
 
 		<cfsavecontent variable="html">
-			<cfoutput><input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.ftPrefix##arguments.stMetadata.value##arguments.stMetadata.ftSuffix#" style="#arguments.stMetadata.ftstyle#" class="#arguments.stMetadata.ftClass#" /></cfoutput>
+			<cfoutput><input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" style="#arguments.stMetadata.ftstyle#" class="#arguments.stMetadata.ftClass#" /></cfoutput>
 		</cfsavecontent>
 
 		<cfreturn html />
