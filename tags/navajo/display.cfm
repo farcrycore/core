@@ -212,6 +212,11 @@
 		<cfset request.mode.showcontainers = iShowContainers />
 	</cfif>
 	
+	<!--- Default method for typewebskins is displayPageStandard --->
+	<cfif not len(attributes.method)>
+		<cfset attributes.method = "displayPageStandard" />
+	</cfif>
+	
 	<!--- Handle type webskins --->
 	<sec:CheckPermission type="#attributes.typename#" webskinpermission="#attributes.method#" result="bView" />
 	
