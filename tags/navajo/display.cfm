@@ -42,7 +42,7 @@
 <!--- environment variables --->
 <cfparam name="request.bHideContextMenu" default="false" type="boolean" />
 
-<cfparam name="url.bodyView" default="#attributes.bodyView#" /><!--- The webskin name that can be used as the body view webskin --->
+<cfparam name="url.bodyView" default="bodyView" /><!--- The webskin name that can be used as the body view webskin --->
 
 <!--- optional attributes --->
 <cfparam name="attributes.objectid" default="" />
