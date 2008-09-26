@@ -42,12 +42,13 @@
 <!--- environment variables --->
 <cfparam name="request.bHideContextMenu" default="false" type="boolean" />
 
+<cfparam name="url.bodyView" default="#attributes.bodyView#" /><!--- The webskin name that can be used as the body view webskin --->
+
 <!--- optional attributes --->
 <cfparam name="attributes.objectid" default="" />
 <cfparam name="attributes.typename" default="" />
 <cfparam name="attributes.method" default="" type="string" />
 <cfparam name="attributes.loginpath" default="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#" type="string">
-
 
 
 <!--- Handle options for passing object/type in --->
@@ -60,6 +61,8 @@
 <cfif structkeyexists(url,"view")>
 	<cfset attributes.method = url.view />
 </cfif>
+
+
 
 <!--- method for dealing with the missing url param... redirect to home page --->
 <cfif not len(attributes.objectid)>
