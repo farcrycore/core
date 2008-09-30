@@ -95,7 +95,7 @@ type properties
 		
 		<cfparam name="form.typename" default="" />
 		<cfparam name="form.value" default="" />
-		<cfparam name="arguments.stMetadata.ftPrefix" default="displayType,editType" /><!--- Webskin prefix --->
+		<cfparam name="arguments.stMetadata.ftPrefix" default="displayTypeBody,editTypeBody" /><!--- Webskin prefix --->
 		
 		<cfif len(form.typename)>
 			<cfloop list="#arguments.stMetadata.ftPrefix#" index="thisprefix">
