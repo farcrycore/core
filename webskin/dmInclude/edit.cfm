@@ -102,7 +102,7 @@
 			</skin:htmlHead>
 		
 	
-			<cfoutput>
+			<cfoutput>	
 			<fieldset class="formSection">
 				<legend class="">OPTION 1: Content View</legend>
 				<div class="fieldSection list">
@@ -128,6 +128,7 @@
 						</div>
 					</div>
 				</div>
+			
 			</fieldset>
 			</cfoutput>
 					
@@ -139,15 +140,18 @@
 		<cfelse>
 	
 			<cfoutput>
+			<fieldset class="formSection">
+				<legend class="">OPTION 1 (NOT AVAILABLE): Content View</legend>
 				<input type="hidden" name="#stFields.webskin.FORMFIELDNAME#webskin" id="#stFields.webskin.FORMFIELDNAME#webskin" value="" />
-				<div>No types available</div>
+				<label>No Type Webskins Available</label>
+			</fieldset>
 			</cfoutput>
 	
 		</cfif>
 	<cfelse>
 		<cfoutput>
 			<fieldset class="formSection">
-				<legend class="">OPTION 1: Content View</legend>	
+				<legend class="">OPTION 1 (NOT AVAILABLE): Content View</legend>	
 				<p>This is option has not been deployed. Please contact your administrator.</p>
 			</fieldset>
 		</cfoutput>
