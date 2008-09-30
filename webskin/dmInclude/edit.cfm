@@ -44,7 +44,7 @@
 		<cfparam name="application.stCoapi['dmInclude'].stProps.webskinTypename.metadata.ftExcludeTypes" default="" /><!--- Remove this types --->
 	
 		<!--- view metadata --->
-		<cfparam name="application.stCoapi['dmInclude'].stProps.webskin.metadata.ftPrefix" default="displayType,editType" /><!--- Webskin prefix --->
+		<cfparam name="application.stCoapi['dmInclude'].stProps.webskin.metadata.ftPrefix" default="displayTypeBody,editTypeBody" /><!--- Webskin prefix --->
 	
 		<cfset qTypes = querynew("typename,description","varchar,varchar") />
 		<cfset thistype = "" />
