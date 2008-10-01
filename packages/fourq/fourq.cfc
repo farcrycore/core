@@ -247,6 +247,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
     	<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#">
 		<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
+		<cfargument name="bDeployCoapiRecord" type="boolean" required="false" default="true">
     
     	<cfset var stResult = structNew()>
 		<cfset var gateway = "" />
@@ -257,7 +258,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset gateway = getGateway(arguments.dsn,arguments.dbtype,arguments.dbowner)  />
 		<cfset stResult = gateway.deployType(variables.tableMetaData,arguments.bDropTable,arguments.bTestRun) />
 		
-		<cfif stResult.bSuccess>
+		<cfif stResult.bSuccess AND bDeployCoapiRecord>
 			<!--- MAKE SURE THAT THE farCOAPI record exists for this type. --->
 			<cfset stClass = createObject("component", application.stcoapi.farCoapi.packagepath).getCoapiObject(name="#variables.typename#") />
 		</cfif>

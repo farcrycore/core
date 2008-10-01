@@ -317,6 +317,16 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 	    <cfinclude template="includes/_installFarcry.cfm" />
 	
 	    <cfcatch type="any">
+		    <cfset request.bSuccess = false />
+		    
+		    <cfdirectory action="delete" directory="#farcryProjectsPath#/#form.applicationName#" mode="777" recurse="yes" />
+		    <cfswitch expression="#form.projectInstallType#">
+				<cfcase value="subDirectory">
+					<cfdirectory action="delete" directory="#webrootPath#/#form.applicationName#" mode="777" recurse="yes" />
+		   
+				</cfcase>
+		    </cfswitch>
+		   
 			<cfdump var="#cfcatch#">
 	    </cfcatch>
 	
@@ -329,6 +339,7 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 			<cfoutput>#updateProgressBar(value="0.9", text="#form.displayName# (Friendly URL): Installing Friendly URLs")#</cfoutput><cfflush>
 		   	<cfinclude template="fu.cfm" />
 		   	<cfcatch>
+		    	<cfset request.bSuccess = false />
 				<!--- display form with error message --->
 				<cfset errorMsg = "Problem building friendly URL table.">
 		 	   	<cfdump var="#cfcatch#">
