@@ -72,4 +72,4 @@ $out:$
 			<cfset stApprovers[aUsers[i]] = stProfile />
 		</cfif>
 	</cfloop>
-</cfif><cfdump var="#stApprovers#">
+</cfif>
