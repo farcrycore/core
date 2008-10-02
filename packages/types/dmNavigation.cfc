@@ -55,7 +55,7 @@ $out:$
 	------------------------------------------------------------------------->
 	<cffunction name="getExternalLinks" access="public" returntype="string" output="false" hint="Returns a list of all navigation nodes in the system with an alias">
 	
-		<cfset var lResult = ":#application.rb.getResource("noneForSelect")#" />
+		<cfset var lResult = ":#application.rb.getResource('coapi.dmNavigation.properties.externallink@nooptions','-- None --')#" />
 		<cfset var aNavalias = listToArray(listSort(structKeyList(application.navid),'textnocase'))>
 		<cfset var oNav = createObject("component", application.stcoapi["dmNavigation"].packagePath) />
 	

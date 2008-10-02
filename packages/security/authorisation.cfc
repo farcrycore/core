@@ -226,7 +226,7 @@ $out:$
 		<farcry:deprecated message="authorisation.createPolicyGroupMapping() should be replaced by call to farRole.setData()" />
 		
 		<cfset stReturn.returncode = 1 />
-		<cfset stReturn.returnmessage = application.rb.getResource('forms.message.policygroupadded','Policy Group Added') />
+		<cfset stReturn.returnmessage = application.rb.getResource('security.message.policygroupadded','Policy Group Added') />
 		
 		<cfparam name="stRole.aGroups" default="#arraynew(1)#" />
 		<cfloop from="1" to="#arraylen(stRole.aGroups)#" index="i">

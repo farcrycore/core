@@ -313,7 +313,7 @@ environment references (might be nice to clean these up)
 		//select
 		stCol=structNew();
 		stCol.columnType="expression";
-		stCol.title="#application.rb.getResource("select")#";
+		stCol.title="#application.rb.getResource('objectadmin.columns.select@heading','Select')#";
 		stCol.value="<input type=""checkbox"" class=""f-checkbox"" name=""objectid"" value=""##recordset.objectid##"" onclick=""setRowBackground(this);"" />";
 		stCol.style="text-align: center;";
 		//stCol.orderby="";
@@ -322,7 +322,7 @@ environment references (might be nice to clean these up)
 		//edit icon
 		stCol=structNew();
 		stCol.columnType="evaluate";
-		stCol.title="#application.rb.getResource("edit")#";
+		stCol.title="#application.rb.getResource('objectadmin.columns.edit@heading','Edit')#";
 		stCol.value="iif(stPermissions.iEdit eq 1,DE(iif(locked and lockedby neq '##application.security.getCurrentUserID()##',DE('<span style=""color:red"">Locked</span>'),DE('<a href=''#editObjectURL#''><img src=""#application.url.farcry#/images/treeImages/edit.gif"" alt=""#application.rb.getResource("edit")#"" title=""#application.rb.getResource("edit")#""/></a>'))),DE('-'))";
 		stCol.style="text-align: center;";
 		//stCol.orderby="";
@@ -331,7 +331,7 @@ environment references (might be nice to clean these up)
 		//preview
 		stCol=structNew();
 		stCol.columnType="expression";
-		stCol.title="#application.rb.getResource("view")#";
+		stCol.title="#application.rb.getResource('objectadmin.columns.view@heading','View')#";
 		stCol.value="<a href=""#application.url.webroot#/index.cfm?objectID=##recordset.objectID##&flushcache=1"" target=""_blank""><img src=""#application.url.farcry#/images/treeImages/preview.gif"" alt=""#application.rb.getResource("view")#"" title=""#application.rb.getResource("view")#"" /></a>";
 		stCol.style="text-align: center;";
 		//stCol.orderby="";
@@ -340,7 +340,7 @@ environment references (might be nice to clean these up)
 		//label and edit
 		stCol=structNew();
 		stCol.columnType="evaluate";
-		stCol.title="#application.rb.getResource("label")#";
+		stCol.title="#application.rb.getResource('objectadmin.columns.label@heading','Label')#";
 		stCol.value = "iif(stPermissions.iEdit eq 1,DE(iif(locked and lockedby neq '##application.security.getCurrentUserID()##',DE('##replace(recordset.label[recordset.currentrow],'####','','all')##'),DE('<a href=''#editObjectURL#''>##replace(recordset.label[recordset.currentrow],'####','','all')##</a>'))),DE('##replace(recordset.label[recordset.currentrow],'####','','all')##'))";
 		stCol.style="text-align: left;";
 		stCol.orderby="label";
@@ -349,7 +349,7 @@ environment references (might be nice to clean these up)
 		//datetimelastupdated
 		stCol=structNew();
 		stCol.columnType="evaluate";
-		stCol.title="#application.rb.getResource("lastUpdatedLC")#";
+		stCol.title="#application.rb.getResource('objectadmin.columns.datetimelastupdated@heading','Last Updated')#";
 		stCol.value="application.thisCalendar.i18nDateFormat('##datetimelastupdated##',session.dmProfile.locale,application.mediumF)";
 		stCol.style="text-align: center;";
 		stCol.orderby="datetimelastupdated";
@@ -359,7 +359,7 @@ environment references (might be nice to clean these up)
 		if (structKeyExists(variables.PrimaryPackage.stprops, "status")) {
 			stCol=structNew();
 			stCol.columnType="value";
-			stCol.title="#application.rb.getResource("status")#";
+			stCol.title="#application.rb.getResource('objectadmin.columns.status@heading','Status')#";
 			stCol.value="status";
 			stCol.style="text-align: center;";
 			stCol.orderby="status";
@@ -369,7 +369,7 @@ environment references (might be nice to clean these up)
 		//lastupdatedby
 		stCol=structNew();
 		stCol.columnType="value";
-		stCol.title="#application.rb.getResource("by")#";
+		stCol.title="#application.rb.getResource('objectadmin.columns.lastupdatedby@heading','Last Updated By')#";
 		stCol.value="lastupdatedby";
 		stCol.style="text-align: center;";
 		stCol.orderby="lastupdatedby";
@@ -400,7 +400,7 @@ environment references (might be nice to clean these up)
 			stBut=structNew();
 			stBut.type="button";
 			stBut.name="add";
-			stBut.value="#application.rb.getResource("add")#";
+			stBut.value="#application.rb.getResource('objectadmin.buttons.add@label','Add')#";
 			stBut.class="f-submit";
 			stBut.onClick="";
 			stBut.permission=application.security.checkPermission(permission="Create",type=attributes.typename);
@@ -411,11 +411,11 @@ environment references (might be nice to clean these up)
 			stBut=structNew();
 			stBut.type="button";
 			stBut.name="deleteAction";
-			stBut.value="#application.rb.getResource("delete")#";
+			stBut.value="#application.rb.getResource('objectadmin.buttons.delete@label','Delete')#";
 			stBut.class="f-submit";
 			// todo: i18n
 			stBut.onClick="";
-			stBut.confirmText="Are you sure you wish to delete these objects?";
+			stBut.confirmText="#application.rb.getResource('objectadmin.buttons.delete@confirmtext','Are you sure you wish to delete these objects?')#";
 			stBut.permission=application.security.checkPermission(permission="Delete",type=attributes.typename);
 			stBut.buttontype="delete";
 			arrayAppend(aDefaultButtons,stBut);
@@ -426,7 +426,7 @@ environment references (might be nice to clean these up)
 				stBut=structNew();
 				stBut.type="submit";
 				stBut.name="status";
-				stBut.value="#application.rb.getResource("requestApproval")#";
+				stBut.value="#application.rb.getResource('objectadmin.buttons.requestapproval@label','Request Approval')#";
 				stBut.class="f-submit";
 				stBut.onClick="";
 				stBut.permission=application.security.checkPermission(permission="RequestApproval",type=attributes.typename);
@@ -437,7 +437,7 @@ environment references (might be nice to clean these up)
 				stBut=structNew();
 				stBut.type="submit";
 				stBut.name="status";
-				stBut.value="#application.rb.getResource("approve")#";
+				stBut.value="#application.rb.getResource('objectadmin.buttons.approve@label','Approve')#";
 				stBut.class="f-submit";
 				stBut.onClick="";
 				stBut.permission=application.security.checkPermission(permission="Approve",type=attributes.typename);
@@ -447,7 +447,7 @@ environment references (might be nice to clean these up)
 				stBut=structNew();
 				stBut.type="submit";
 				stBut.name="status";
-				stBut.value="#application.rb.getResource("sendToDraft")#";
+				stBut.value="#application.rb.getResource('objectadmin.buttons.sendtodraft@label','Send to Draft')#";
 				stBut.class="f-submit";
 				stBut.onClick="";
 				stBut.permission=application.security.checkPermission(permission="Approve",type=attributes.typename);
@@ -459,7 +459,7 @@ environment references (might be nice to clean these up)
 			stBut=structNew();
 			stBut.type="submit";
 			stBut.name="dump";
-			stBut.value="#application.rb.getResource("dump")#";
+			stBut.value="#application.rb.getResource('objectadmin.buttons.dump@label','Properties')#";
 			stBut.class="f-submit";
 			stBut.onClick="";
 			stBut.permission="ObjectDumpTab";
@@ -471,7 +471,7 @@ environment references (might be nice to clean these up)
 			stBut=structNew();
 			stBut.type="Submit";
 			stBut.name="unlock";
-			stBut.value="#application.rb.getResource("unlockUC")#";
+			stBut.value="#application.rb.getResource('objectadmin.buttons.unlock@label','Unlock')#";
 			stBut.class="f-submit";
 			stBut.onClick="";
 			stBut.permission="";
