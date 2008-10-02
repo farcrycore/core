@@ -33,6 +33,8 @@
 
 <cfset THIS.dbType = "@@dbType@@" /> 
 
+<cfset THIS.dbOwner = "@@dbOwner@@" /> 
+
 <cfset THIS.plugins = "@@plugins@@" /> 
 
 <!--- 

@@ -52,6 +52,7 @@
 <cfparam name="attributes.plugins" default="farcrycms"  />
 
 <cfparam name="attributes.projectURL" default="" />
+<cfparam name="attributes.webtopURL" default="/webtop" />
 
 
 <cfparam name="attributes.bObjectBroker" default="true" />
@@ -149,6 +150,7 @@ a {color: ##116EAF;}
 			<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@plugins", "#attributes.plugins#") />
 			<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@projectDirectoryName", "#attributes.projectDirectoryName#") />
 			<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@projectURL", "#attributes.projectURL#") />
+			<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@webtopURL", "#attributes.webtopURL#") />
 			<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@dsn", "#attributes.dsn#") />
 			<cfset sFarcryConstructor = replaceNoCase(sFarcryConstructor, "@@dsn", "#attributes.dsn#") />
 			
