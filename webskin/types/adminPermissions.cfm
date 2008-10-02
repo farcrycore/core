@@ -76,7 +76,7 @@
 			
 			<cfloop list="#application.security.factory.role.getAllRoles()#" index="role">
 
-				<extjs:item  title="#application.security.factory.role.getLabel(role)#" autoScroll="false">
+				<extjs:item  title="#application.security.factory.role.getLabel(role)#" autoScroll="true">
 					<cfoutput>
 						<table class="permissions">
 					</cfoutput>

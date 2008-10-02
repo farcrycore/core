@@ -36,9 +36,6 @@
 			xtype:"tbbutton",
 			<cfif request.mode.showdraft>iconCls:"previewmode_icon",<cfelse>iconCls:"previewmodedisabled_icon",</cfif>
 			text:"Preview mode",
-			enableToggle:true,
-			allowDepress:true,
-			pressed:#request.mode.showdraft#,
 			listeners:{
 				"click":{
 					fn:function(){

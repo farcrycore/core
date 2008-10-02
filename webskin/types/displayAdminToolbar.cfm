@@ -26,10 +26,16 @@
 				##farcrytray .designmodedisabled_icon { background-image:url(#application.url.webtop#/facade/icon.cfm?icon=designmodedisabled&size=16) !important; }
 				##farcrytray .previewmode_icon { background-image:url(#application.url.webtop#/facade/icon.cfm?icon=draftmode&size=16) !important; }
 				##farcrytray .previewmodedisabled_icon { background-image:url(#application.url.webtop#/facade/icon.cfm?icon=draftmodedisabled&size=16) !important; }
-				##farcrytray { border-top: 1px solid ##0F7BD5; }
+				
+				##farcrytray.previewmodeon { border-top: 1px solid ##A291AB; }
+				##farcrytray.previewmodeoff { border-top: 1px solid ##0F7BD5; }
+				##farcrytray.previewmodeon .htmlpanel .x-panel-body, ##farcrytray.previewmodeon .x-toolbar, ##farcrytray.previewmodeon .x-table-layout-ct { background:##DAC3E6 none; border:0 none; }
+				##farcrytray.previewmodeoff .htmlpanel .x-panel-body, ##farcrytray.previewmodeoff .x-toolbar, ##farcrytray.previewmodeoff .x-table-layout-ct { background:##D7E4F3 none; border:0 none; }
+				
+				.htmlpanel td { background:transparent; padding:0; }
+				
 				##farcrytray .traytypeicon { margin-top:2px; vertical-align:middle; }
 				##farcrytray .htmlpanel .x-panel-body { padding-left:5px; }
-				##farcrytray .htmlpanel .x-panel-body, ##farcrytray .x-toolbar, ##farcrytray .x-table-layout-ct { background:##D7E4F3 none; border:0 none; }
 				##farcrytray .separator { padding-left:5px; padding-right:5px; }
 				##farcrytray a, ##farcrytray a:hover, ##farcrytray a:active, ##farcrytray a:visited { color: blue; font-weight:bold; }
 				##farcrytray a, ##farcrytray a:active, ##farcrytray a:visited { text-decoration:none; }
@@ -69,6 +75,7 @@
 					height:25,
 					border:false,
 					id:"farcrytray",
+					cls:<cfif request.mode.showdraft>"previewmodeon"<cfelse>"previewmodeoff"</cfif>,
 					
 					items:[{
 					
