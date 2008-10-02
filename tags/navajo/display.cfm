@@ -115,7 +115,7 @@
 	<cfif structkeyexists(stObj,"status") and stObj.status EQ "draft" and NOT ListContainsnocase(request.mode.lValidStatus, stObj.status)>
 		<!--- send to login page and return in draft mode --->
 		<extjs:bubble title="Security" message="This object is in draft" />
-		<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string&"&showdraft=1")#&error=draft" addtoken="No" />
+		<cflocation url="#attributes.loginpath#&showdraft=1&error=draft" addtoken="No" />
 	</cfif>
 	
 	<!--- 
@@ -138,7 +138,7 @@
 	
 	<!--- if the user is unable to view the object, then show the denied access webskin --->
 	<cfif iHasViewPermission NEQ 1>
-		<skin:view objectid="#attributes.objectid#" webskin="deniedaccess" />
+		<skin:view objectid="#attributes.objectid#" webskin="deniedaccess" loginpath="#attributes.loginpath#"/>
 		<cfsetting enablecfoutputonly="false" />
 		<cfexit method="exittag" />
 	</cfif>
@@ -239,7 +239,7 @@
 		<skin:view typename="#attributes.typename#" webskin="#attributes.method#" />
 	<cfelse>
 		<extjs:bubble title="Security" message="You do not have permission to access this view" />
-		<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#&error=restricted" addtoken="No" />
+		<cflocation url="#attributes.loginpath#&error=restricted" addtoken="No" />
 	</cfif>
 	
 </cfif>
