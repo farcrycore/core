@@ -529,11 +529,11 @@ user --->
 		statusurl="";
 		if (isDefined("form.status")) {
 			if (isDefined("form.objectID")) {
-				if (form.status contains application.rb.getResource("approve"))
+				if (form.status contains application.rb.getResource('objectadmin.buttons.approve@label','Approve''))
 					status = 'approved';
-				else if (form.status contains application.rb.getResource("sendToDraft"))
+				else if (form.status contains application.rb.getResource('objectadmin.buttons.sendtodraft@label','Send to Draft''))
 					status = 'draft';
-				else if (form.status contains application.rb.getResource("requestApproval"))
+				else if (form.status contains application.rb.getResource('objectadmin.buttons.requestapproval@label','Request Approval'))
 					status = 'requestApproval';
 				else
 					status = 'unknown';
@@ -542,7 +542,7 @@ user --->
 				if (isDefined("stgrid.approveURL"))
 					statusurl = statusurl & "&approveURL=#URLEncodedFormat(stGrid.approveURL)#";
 			} else
-				response = "#application.rb.getResource("noObjSelected")#";
+				response = "#application.rb.getResource('objectadmin.messages.noobjectselected@text','No content items were selected for this operation')#";
 		}
 		</cfscript>
 		<!--- redirect user on status change --->
@@ -570,7 +570,7 @@ user --->
 						bAllowUnlock=true;
 					// if the user doesn't have permission, push error response
 					} else {
-						response=application.rb.getResource("noPermissionUnlockAll");
+						response=application.rb.getResource('objectadmin.messages.nopermissionunlockall@text','You do not have permission to unlock all content items');
 					}
 				}
 				if (bAllowUnlock) {
@@ -578,7 +578,7 @@ user --->
 					oLocking=createObject("component",'#application.packagepath#.farcry.locking');
 					oLocking.unLock(objectid=aObjectids[i],typename=stObj.typename);
 					// TODO: i18n
-					response="#application.rb.getResource('forms.response.contentitemsunlocked@text','Content items unlocked.')#";
+					response="#application.rb.getResource('objectadmin.messages.contentitemsunlocked@text','Content items unlocked.')#";
 				}
 			}
 		}
@@ -692,11 +692,11 @@ user --->
 		
 		 		<cfif attributes.bSelectCol><cfoutput><th>Select</th></cfoutput></cfif>
 		 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
-			 		<cfoutput><th>#application.rb.getResource("forms.columns.Status@label","Status")#</th></cfoutput>
+			 		<cfoutput><th>#application.rb.getResource('objectadmin.columns.status@label',"Status")#</th></cfoutput>
 				</cfif>
 				
 				<cfif attributes.bShowActionList>
-					<cfoutput><th>#application.rb.getResource("forms.columns.Action@label","Action")#</th></cfoutput>
+					<cfoutput><th>#application.rb.getResource('objectadmin.columns.action@label','Action')#</th></cfoutput>
 				</cfif>
 				<!---<cfif attributes.bEditCol><th>Edit</th></cfif>
 				<cfif attributes.bViewCol><th>View</th></cfif>
@@ -710,7 +710,7 @@ user --->
 						<cfif isstruct(attributes.aCustomColumns[i])>
 						
 							<cfif structKeyExists(attributes.aCustomColumns[i], "title")>
-								<cfoutput><th>#application.rb.getResource("forms.columns.#rereplace(attributes.aCustomColumns[i].title,'[^\w\d]','','ALL')#@label",attributes.aCustomColumns[i].title)#</th></cfoutput>
+								<cfoutput><th>#application.rb.getResource("objectadmin.columns.#rereplace(attributes.aCustomColumns[i].title,'[^\w\d]','','ALL')#@label",attributes.aCustomColumns[i].title)#</th></cfoutput>
 							<cfelse>
 								<cfoutput><th>&nbsp;</th></cfoutput>
 							</cfif>

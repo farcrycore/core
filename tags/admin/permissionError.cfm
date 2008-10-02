@@ -37,4 +37,4 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<cfoutput>#application.rb.getResource("noPageViewPermissions")#</cfoutput>
+<cfoutput>#application.rb.getResource('security.messages.nopageviewpermissions@text','You don''t have permission to view this page.')#</cfoutput>

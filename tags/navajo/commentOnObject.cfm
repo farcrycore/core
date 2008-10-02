@@ -61,23 +61,23 @@
 
 <cfif iCanCommentOnContent EQ 0><cfoutput>
 <script type="text/javascript">
-	alert("#application.rb.getResource("cantCommentOnObject")#");
+	alert("#application.rb.getResource('security.messages.cantcommentonobject@text','You Cannot Comment On This Content')#");
 	window.close();
 </script></cfoutput><cfabort>
 </cfif>
 <cfoutput>
 <form action="#cgi.script_name#?#cgi.query_string#" class="f-wrap-1 wider f-bg-medium" method="post">
 <fieldset>
-	<label for="commentLog"><b>#application.rb.getResource("addComment")#</b>
+	<label for="commentLog"><b>#application.rb.getResource('workflow.buttons.addcomment@label',"Add Comments")#</b>
 		<textarea id="commentLog" name="commentLog"></textarea>
 	</label>
 </fieldset>
 <div class="f-submit-wrap">
-	<input type="submit" name="submit" value="#application.rb.getResource("submitUC")#" class="f-submit" />
-	<input type="submit" name="cancel" value="#application.rb.getResource("cancel")#" class="f-submit">
+	<input type="submit" name="submit" value="#application.rb.getResource('workflow.buttons.submit@label','Submit')#" class="f-submit" />
+	<input type="submit" name="cancel" value="#application.rb.getResource('workflow.buttons.cancel@label','Cancel')#" class="f-submit">
 </div>
 <fieldset>
-	<label><b>#application.rb.getResource("prevCommentLog")#</b>
+	<label><b>#application.rb.getResource('workflow.messages.previouscommentlog@text',"Previous Comment Log")#</b>
 		<nj:showcomments objectid="#stObj.objectid#" typename="#stObj.typename#" />
 	</label>
 </fieldset>
