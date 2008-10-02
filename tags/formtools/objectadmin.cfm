@@ -529,20 +529,26 @@ user --->
 		statusurl="";
 		if (isDefined("form.status")) {
 			if (isDefined("form.objectID")) {
-				if (form.status contains application.rb.getResource('objectadmin.buttons.approve@label','Approve''))
+				if (form.status contains application.rb.getResource('objectadmin.buttons.approve@label','Approve')) {
 					status = 'approved';
-				else if (form.status contains application.rb.getResource('objectadmin.buttons.sendtodraft@label','Send to Draft''))
+				}	
+				else if (form.status contains application.rb.getResource('objectadmin.buttons.sendtodraft@label','Send to Draft')) {
 					status = 'draft';
-				else if (form.status contains application.rb.getResource('objectadmin.buttons.requestapproval@label','Request Approval'))
+				}
+				else if (form.status contains application.rb.getResource('objectadmin.buttons.requestapproval@label','Request Approval')) {
 					status = 'requestApproval';
-				else
+				}
+				else {
 					status = 'unknown';
+				}
 				// pass list of objectids to comment template to add user comments
 				statusurl = "#application.url.farcry#/conjuror/changestatus.cfm?typename=#attributes.typename#&status=#status#&objectID=#form.objectID#&finishURL=#URLEncodedFormat(cgi.script_name)#?#URLEncodedFormat(cgi.query_string)#";
-				if (isDefined("stgrid.approveURL"))
+				if (isDefined("stgrid.approveURL")) {
 					statusurl = statusurl & "&approveURL=#URLEncodedFormat(stGrid.approveURL)#";
-			} else
+				}
+			} else {
 				response = "#application.rb.getResource('objectadmin.messages.noobjectselected@text','No content items were selected for this operation')#";
+			}
 		}
 		</cfscript>
 		<!--- redirect user on status change --->
