@@ -209,7 +209,7 @@
 		<cfargument name="onExit" required="no" type="any" default="Refresh" />
 		
 		<cfset var stObj = getData(objectid=arguments.objectid) />
-		<cfset var qMetadata = application.types[stobj.typename].qMetadata />
+		<cfset var qMetadata = application.stCOAPI[stobj.typename].qMetadata />
 		
 		<!-------------------------------------------------- 
 		WIZARD:
