@@ -59,17 +59,17 @@ $out:$
 	bInclusive="1">
 
 <!--- Get the users that have permission to approve objects --->
-<cfset aUsers = application.security.getGroupUsers(groups=application.security.factory.role.rolesToGroups(application.security.factory.role.getRolesWithPermission("Approve"))) />
+<cfset aUsers = application.security.getGroupUsers(groups=application.security.factory.role.rolesToGroups(application.security.factory.role.getRolesWithPermission("Approve",stObj.typename,objecttest))) />
 
 <!--- build struct of dmProfile objects for each user --->
 <cfset stApprovers = structNew()>
 
 <cfif arrayLen(aUsers)>
 	<cfloop index="i" from="1" to="#arrayLen(aUsers)#">
-	    <cfscript>
-	    o_profile = createObject("component", application.types.dmProfile.typePath);
-	    stProfile = o_profile.getProfile(aUsers[i]);
-		if (not structIsEmpty(stProfile) AND stProfile.bActive) stApprovers[aUsers[i]] = stProfile;
-	    </cfscript>
+	    <cfset o_profile = createObject("component", application.types.dmProfile.typePath) />
+		<cfset stProfile = o_profile.getProfile(aUsers[i]) />
+		<cfif not structIsEmpty(stProfile)>
+			<cfset stApprovers[aUsers[i]] = stProfile />
+		</cfif>
 	</cfloop>
-</cfif>
+</cfif><cfdump var="#stApprovers#">

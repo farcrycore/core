@@ -161,6 +161,7 @@
 					#application.dbowner#farGroup g
 					on ug.data=g.objectid
 			where	g.title=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.group#" />
+					and u.userstatus=<cfqueryparam cfsqltype="cf_sql_varchar" value="active" />
 		</cfquery>
 		
 		<cfreturn listtoarray(valuelist(qUsers.userid)) />

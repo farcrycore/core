@@ -162,30 +162,30 @@ object methods
 	
 	<cffunction name="getRolesWithPermission" access="public" returntype="string" description="Returns a list of the roles that have the specified permission" output="false">
 		<cfargument name="permission" type="string" required="true" hint="The permission to look for" />
+		<cfargument name="type" type="string" required="false" default="" hint="The type of related object" />
+		<cfargument name="objectid" type="uuid" required="false" default="" hint="The objectid of the related object" />
 		
 		<cfset var qRoles = querynew("empty") />
+		<cfset var result = "" />
+		<cfset var haspermission = "" />
 		
-		<cfif not isvalid("uuid",arguments.permission)>
-			<cfset arguments.permission = application.security.factory.permission.getID(arguments.permission) />
-		</cfif>
+		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
+		
+		<cfquery datasource="#application.dsn#" name="qRoles">
+			select distinct objectid,title
+			from	#application.dbowner#farRole
+		</cfquery>
 		
 		<cfif len(arguments.permission)>
-			<cfquery datasource="#application.dsn#" name="qRoles">
-				select distinct r.objectid
-				from	#application.dbowner#farRole r
-						inner join
-						#application.dbowner#farRole_aPermissions ap
-						on r.objectid=ap.parentid
-				where	ap.data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.permission#" />
-			</cfquery>
-		<cfelse>
-			<cfquery datasource="#application.dsn#" name="qRoles">
-				select distinct r.objectid
-				from	#application.dbowner#farRole r
-			</cfquery>
+			<cfloop query="qRoles">
+				<sec:CheckPermission permission="#arguments.permission#" type="#arguments.type#" objectid="#arguments.objectid#" roles="#qRoles.title#" result="haspermission" />
+				<cfif haspermission>
+					<cfset result = listappend(result,qRoles.objectid) />
+				</cfif>
+			</cfloop>
 		</cfif>
 		
-		<cfreturn valuelist(qRoles.objectid) />
+		<cfreturn result />
 	</cffunction>
 	
 	<cffunction name="getRight" access="public" output="false" returntype="numeric" hint="Returns the right for the specfied permission">

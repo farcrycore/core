@@ -9,6 +9,9 @@
 <!--- General "I don't want to figure out the right permission attribute" attribute --->
 <cfparam name="attributes.permission" default="" />
 
+<!--- Override roles --->
+<cfparam name="attributes.roles" default="" />
+
 <!--- Four kinds of permission --->
 <cfparam name="attributes.typepermission" default="" />
 <cfparam name="attributes.type" default="" />
@@ -25,7 +28,8 @@
 <cfparam name="attributes.error" default="false" />
 <cfparam name="attributes.errormessage" default="You don't have permission to view this page" />
 
-<!--- <cfparam name="attributes.result" type="variablename" /> ---><!--- Set to a variable name to output result of check --->
+<!--- Result variable --->
+<cfparam name="attributes.result" type="string" default="" /><!--- Set to a variable name to output result. Defaults to nothing. --->
 
 <cfif thistag.ExecutionMode EQ "Start">
 	<cfset permitted = true />
@@ -64,26 +68,26 @@
 	<cfif attributes.require eq "all">
 		<!--- Check general permissions --->
 		<cfloop list="#attributes.generalpermission#" index="perm">
-			<cfset permitted = permitted and application.security.checkPermission(permission=perm) />
+			<cfset permitted = permitted and application.security.checkPermission(permission=perm,role=attributes.roles) />
 		</cfloop>
 		
 		<!--- Check object permissions --->
 		<cfloop list="#attributes.objectpermission#" index="perm">
-			<cfset permitted = permitted and application.security.checkPermission(permission=perm,object=attributes.objectid) />
+			<cfset permitted = permitted and application.security.checkPermission(permission=perm,object=attributes.objectid,role=attributes.roles) />
 		</cfloop>
 		
 		<!--- Check type permissions --->
 		<cfloop list="#attributes.typepermission#" index="perm">
-			<cfset permitted = permitted and application.security.checkPermission(permission=perm,type=attributes.type) />
+			<cfset permitted = permitted and application.security.checkPermission(permission=perm,type=attributes.type,role=attributes.roles) />
 		</cfloop>
 		
 		<!--- Check webskin permissions --->
 		<cfloop list="#attributes.webskinpermission#" index="perm">
-			<cfset permitted = permitted and application.security.checkPermission(webskin=perm,type=attributes.type) />
+			<cfset permitted = permitted and application.security.checkPermission(webskin=perm,type=attributes.type,role=attributes.roles) />
 		</cfloop>
 		
 		<!--- Save result of check --->
-		<cfif structkeyexists(attributes,"result")>
+		<cfif len(attributes.result)>
 			<cfset evaluate("caller.#attributes.result#=#iif(permitted,"1","0")#") />
 		</cfif>
 		
@@ -95,9 +99,9 @@
 	<cfelse><!--- attributes.require = "any" --->
 		<!--- Check general permissions --->
 		<cfloop list="#attributes.generalpermission#" index="perm">
-			<cfif application.security.checkPermission(permission=perm)>
+			<cfif application.security.checkPermission(permission=perm,role=attributes.roles)>
 				<!--- Save result of check --->
-				<cfif structkeyexists(attributes,"result")>
+				<cfif len(attributes.result)>
 					<cfset evaluate("caller.#attributes.result#=1") />
 				</cfif>
 				
@@ -109,9 +113,9 @@
 		
 		<!--- Check object permissions --->
 		<cfloop list="#attributes.objectpermission#" index="perm">
-			<cfif application.security.checkPermission(permission=perm,object=attributes.objectid)>
+			<cfif application.security.checkPermission(permission=perm,object=attributes.objectid,role=attributes.roles)>
 				<!--- Save result of check --->
-				<cfif structkeyexists(attributes,"result")>
+				<cfif len(attributes.result)>
 					<cfset evaluate("caller.#attributes.result#=1") />
 				</cfif>
 				
@@ -123,9 +127,9 @@
 		
 		<!--- Check type permissions --->
 		<cfloop list="#attributes.typepermission#" index="perm">
-			<cfif  application.security.checkPermission(permission=perm,type=attributes.type)>
+			<cfif  application.security.checkPermission(permission=perm,type=attributes.type,role=attributes.roles)>
 				<!--- Save result of check --->
-				<cfif structkeyexists(attributes,"result")>
+				<cfif len(attributes.result)>
 					<cfset evaluate("caller.#attributes.result#=1") />
 				</cfif>
 				
@@ -137,9 +141,9 @@
 		
 		<!--- Check webskin permissions --->
 		<cfloop list="#attributes.webskinpermission#" index="perm">
-			<cfif application.security.checkPermission(webskin=perm)>
+			<cfif application.security.checkPermission(webskin=perm,role=attributes.roles)>
 				<!--- Save result of check --->
-				<cfif structkeyexists(attributes,"result")>
+				<cfif len(attributes.result)>
 					<cfset evaluate("caller.#attributes.result#=1") />
 				</cfif>
 				
@@ -156,7 +160,7 @@
 		<cfoutput>#application.rb.getResource("general.errors.#rereplace(attributes.errormessage,'[^\w]','','ALL')#",attributes.errormessage)#</cfoutput>
 	</cfif>
 	<!--- Save result of check --->
-	<cfif structkeyexists(attributes,"result")>
+	<cfif len(attributes.result)>
 		<cfset evaluate("caller.#attributes.result#=0") />
 	</cfif>
 	<cfsetting enablecfoutputonly="false" />
