@@ -256,10 +256,11 @@ object methods
 		<cfreturn false />
 	</cffunction>
 	
-	<cffunction name="getID" access="public" output="false" returntype="uuid" hint="Returns the objectid for the specified object">
+	<cffunction name="getID" access="public" output="false" returntype="string" hint="Returns the objectid for the specified object. Will return empty string if the role is not found">
 		<cfargument name="name" type="string" required="true" hint="Pass in a role name and the objectid will be returned" />
 		
 		<cfset var qRoles = "" />
+		<cfset var result = "" />
 		
 		<cfif not application.security.hasLookup(role=arguments.name)>
 			<cfquery datasource="#application.dsn#" name="qRoles">
@@ -268,10 +269,15 @@ object methods
 				where	lower(title)=<cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(arguments.name)#" />
 			</cfquery>
 			
-			<cfreturn application.security.setLookup(role=arguments.name,objectid=qRoles.objectid[1]) />
+			<cfif qRoles.recordCount>			
+				<cfset result = application.security.setLookup(role=arguments.name,objectid=qRoles.objectid[1]) />
+			</cfif>
 		<cfelse>
-			<cfreturn application.security.getLookup(role=arguments.name) />
+			<cfset result = application.security.getLookup(role=arguments.name) />
 		</cfif>
+		
+		<cfreturn result />
+		
 	</cffunction>
 
 	<cffunction name="getLabel" access="public" output="false" returntype="string" hint="Returns the label for the specified object">
