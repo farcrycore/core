@@ -40,9 +40,9 @@
 		<ft:object objectid="#stObj.objectid#" lFields="webskinTypename,webskin" legend="Content View" r_stFields="stFields" />
 
 		<!--- viewTypename metadata --->	
-		<cfparam name="application.stCoapi['dmInclude'].stProps.webskinTypename.metadata.ftJoin" default="#structkeylist(application.types)#" /><!--- These types are allowed to be used for type webskins --->
+		<cfparam name="application.stCoapi['dmInclude'].stProps.webskinTypename.metadata.ftJoin" default="#structkeylist(application.stcoapi)#" /><!--- These types are allowed to be used for type webskins --->
 		<cfparam name="application.stCoapi['dmInclude'].stProps.webskinTypename.metadata.ftExcludeTypes" default="" /><!--- Remove this types --->
-	
+
 		<!--- view metadata --->
 		<cfparam name="application.stCoapi['dmInclude'].stProps.webskin.metadata.ftPrefix" default="displayTypeBody,editTypeBody" /><!--- Webskin prefix --->
 	
