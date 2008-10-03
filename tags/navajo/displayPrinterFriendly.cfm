@@ -58,7 +58,7 @@ DEPRECATED:  this code should no longer be used.
 	<!--- if request.navid is not set, then no valid objects available for 
 	this node. --->
 	<cfif NOT isDefined("request.navid")>
-		<cfabort showerror="#application.rb.getResource("errorNavNodeNoContent")#">
+		<cfabort showerror="#application.rb.getResource('coapi.messages.errornavnodenocontent@text','Error: This navigation node has no viewable content attached. If you believe that some content should exist at this point it is more than likely that it is in DRAFT and needs to be approved.')#">
 	</cfif>
 
 <!--- else get the navigation point from the URL --->
@@ -153,7 +153,7 @@ the latter is the policy group for anonymous...
 	
 		
 <cfelse>
-	<cfabort showerror="#application.rb.getResource("badCOAPI")#">
+	<cfabort showerror="#application.rb.getResource('coapi.messages.badcoapi@text','Error: COAPI returned a malformed or empty object instance.')#">
 </cfif> 
 <!--- end: of if object exists... --->
 

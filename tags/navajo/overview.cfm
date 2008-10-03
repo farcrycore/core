@@ -316,7 +316,7 @@ function frameopen(a,b)
 	if(contentFrame && !heldEvent.ctrlKey ){
 		strLocation = "'" + contentFrame + "'";
 		if(b == 'content' && strLocation.toLowerCase().indexOf( "edit.cfm" ) != -1 )
-			alert("#application.rb.getResource("currentlyEditingObj")#" );
+			alert("#application.rb.getResource('sitetree.messages.currentlyEditingObj@text','You are currently editing a content item.\nPlease complete or cancel editing before doing anything else.\n')#" );
 		else			
 			contentFrame.location = a;
 	}
@@ -486,14 +486,14 @@ function dropDrag(aDropObjectId)
 {	
 	if(!bEnableDragAndDrop)
 	{
-		alert("#application.rb.getResource("branchLockoutBlurb")#");
+		alert("#application.rb.getResource('sitetree.messages.branchLockoutBlurb@text','Another editor is currently modifying the hierarchy. Please refresh the site overview tree and try again.')#");
 		return false;
 	}
 	<!--- eliminate default action of ondrop so we can customize: --->
 	//double checking here - shouldn't ever need to though
 	if (objects[dragObjectId]['TYPENAME'] == 'dmHTML' && objects[aDropObjectId]['TYPENAME'].toLowerCase() != '#lCase(attributes.nodetype)#')
 	{
-		alert('#application.rb.getResource("canOnlyDragHTMLObj")#');
+		alert('#application.rb.getResource("sitetree.messages.canOnlyDragHTMLObj@text","You may only drag a HTML object to a Navigation node")#');
 		window.event.returnValue = false;
 		return;
 	}
@@ -501,7 +501,7 @@ function dropDrag(aDropObjectId)
 			
 	if(aDropObjectId == getParentObject(dragObjectId)['OBJECTID'])
 	{
-		alert('#application.rb.getResource("parentDestinationSame")#');
+		alert('#application.rb.getResource("sitetree.messages.parentDestinationSame@text","Content Item parent and destination parent cannot be the same")#');
 		return;
 	}
 	
@@ -511,14 +511,14 @@ function dropDrag(aDropObjectId)
 		permcheck = "hasPermission( aDropObjectId, '#PermNavCreate#' ) > 0";
 	
 	if (eval(permcheck))
-	{	if( dragObjectId != aDropObjectId && confirm('#application.rb.getResource("confirmMoveObj")#'))
+	{	if( dragObjectId != aDropObjectId && confirm('#application.rb.getResource("sitetree.messages.confirmMoveObj@text","Are you sure you wish to move this item?")#'))
 		{		
 			disableDragAndDrop();	
 			popupopen('#application.url.farcry#/navajo/move.cfm?srcObjectId='+dragObjectId+'&destObjectId='+aDropObjectId,'NavajoExt','#smallPopupFeatures#');
 		}
 	}	
 	else
-		alert('#application.rb.getResource("noNodePermission")#');	
+		alert('#application.rb.getResource("sitetree.messages.noNodePermission@text","You do not have permission to move content items to this node")#');	
 	
 	window.event.returnValue = false;
 }
@@ -1068,7 +1068,7 @@ objectMenu.menuInfo.name = "ObjectMenu";
 <cfif isDefined("url.insertonly")>
 o = new Object();
 objectMenu['Insert'] = o;
-o.text = "#application.rb.getResource("insert")#";
+o.text = "#application.rb.getResource('sitetree.contextmenu.insert@label','Insert')#";
 o.js = "menuOption_Insert()";
 o.jsvalidate = "(contentFrame.insertObjId || contentFrame.insertObjIds || contentFrame.insertHTML)?1:0";
 o.bShowDisabled = 1;
@@ -1136,7 +1136,7 @@ function menuOption_Insert()
 
 o = new Object();
 objectMenu['Edit'] = o;
-o.text = "#application.rb.getResource("Edit")#";
+o.text = "#application.rb.getResource('sitetree.contextmenu.edit@label','Edit')#";
 o.js = "menuOption_Edit();";
 o.jsvalidate = "hasPermission( lastSelectedId, '#PermNavEdit#' );";
 o.bShowDisabled = "1";
@@ -1151,7 +1151,7 @@ function menuOption_Edit()
 
 o = new Object();
 objectMenu['Copy'] = o;
-o.text = "#application.rb.getResource("copy")#";
+o.text = "#application.rb.getResource('sitetree.contextmenu.copy@label','Copy')#";
 o.js = "menuOption_Copy();";
 o.jsvalidate = "(objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 o.bShowDisabled = "0";
@@ -1179,7 +1179,7 @@ if( hasPermission( lastSelectedId, '#PermNavCreate#' ) > 0 )
 pasteAction = 'cut';
 return true; }
 else
-{ alert('#application.rb.getResource("noModifyNodePermission")#');
+{ alert('#application.rb.getResource("sitetree.messages.noModifyNodePermission@text","You do not have permission to modify the node.")#');
 copyNodeId = 0;
 pasteAction = 'cut';
 return false; }
@@ -1188,7 +1188,7 @@ return false; }
 
 o = new Object();
 objectMenu['Paste'] = o;
-o.text = "#application.rb.getResource("Paste")#";
+o.text = "#application.rb.getResource('sitetree.contextmenu.paste@label','Paste')#";
 o.js = "menuOption_Paste();";
 o.jsvalidate = "(copyNodeId.length == 35 && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 o.bShowDisabled = "1";
@@ -1220,7 +1220,7 @@ function menuOption_Paste()
 		}
 		else
 		{
-			alert('#application.rb.getResource("noModifyNodePermission")#');
+			alert('#application.rb.getResource("sitetree.messages.noModifyNodePermission@text","You do not have permission to modify the node.")#');
 		}
 	}
 }	
@@ -1229,7 +1229,7 @@ function menuOption_Paste()
 
 o = new Object();
 objectMenu['Preview'] = o;
-o.text = "#application.rb.getResource("preview")#";
+o.text = "#application.rb.getResource('sitetree.contextmenu.preview@label','Preview')#";
 o.js = "menuOption_Preview()";
 o.jsvalidate = "hasPermission( lastSelectedId, '#PermNavView#' );";
 o.bShowDisabled = 1;
@@ -1242,7 +1242,7 @@ function menuOption_Preview()
 
 o = new Object();
 objectMenu['Preview Draft'] = o;
-o.text = "#application.rb.getResource("previewDraft")#";
+o.text = "#application.rb.getResource('sitetree.contextmenu.previewDraft@label','Preview Draft')#";
 o.js = "menuOption_PreviewDraft()";
 o.jsvalidate = "hasDraft(lastSelectedId);";
 o.bShowDisabled = 1;
@@ -1263,7 +1263,7 @@ function menuOption_PreviewDraft()
 
 o = new Object();
 objectMenu['Move'] = o;
-o.text = "#application.rb.getResource("move")#";
+o.text = "#application.rb.getResource('sitetree.contextmenu.move@label','Move')#";
 o.submenu = "Move";
 o.jsvalidate = "((objects[lastSelectedId]['TYPENAME'].toLowerCase()=='#lCase(attributes.nodetype)#' && hasPermission(getParentObject(lastSelectedId)['OBJECTID'], '#PermNavEdit#' ) && countNodes(getParentObject(lastSelectedId)['OBJECTID']) > 1) || (hasPermission(getParentObject(lastSelectedId)['OBJECTID'], '#PermNavEdit#' ) && countObjects(getParentObject(lastSelectedId)['OBJECTID']) > 1))?1:0";
 
@@ -1278,14 +1278,14 @@ o.bSeperator = 0;
 
 	o = new Object();
 	moveMenu['MoveUp'] = o;
-	o.text = "#application.rb.getResource("moveUp")#";
+	o.text = "#application.rb.getResource('sitetree.contextmenu.moveup@label','Move Up')#";
 	o.js = "menuOption_MoveInternal(\\'up\\');";
 	o.jsvalidate = "objectIndex(lastSelectedId)>0||nodeIndex(lastSelectedId)>0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	moveMenu['MoveDown'] = o;
-	o.text = "#application.rb.getResource("moveDown")#";
+	o.text = "#application.rb.getResource('sitetree.contextmenu.moveDown@label','Move Down')#";
 	o.js = "menuOption_MoveInternal(\\'down\\');";
 	o.jsvalidate = 	"(objectIndex(lastSelectedId)!=-1 && objectIndex(lastSelectedId)+1 < countObjects(getParentObject(lastSelectedId)['OBJECTID'])) || "+
 					"(nodeIndex(lastSelectedId)!=-1 && nodeIndex(lastSelectedId)+1 < countNodes(getParentObject(lastSelectedId)['OBJECTID']))";
@@ -1294,14 +1294,14 @@ o.bSeperator = 0;
 	
 	o = new Object();
 	moveMenu['MoveToTop'] = o;
-	o.text = "#application.rb.getResource("moveToTop")#";
+	o.text = "#application.rb.getResource('sitetree.contextmenu.moveToTop@label','Move To Top')#";
 	o.js = "menuOption_MoveInternal(\\'top\\');";
 	o.jsvalidate = "objectIndex(lastSelectedId)>0||nodeIndex(lastSelectedId)>0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	moveMenu['MoveToBottom'] = o;
-	o.text = "#application.rb.getResource("moveToBottom")#";
+	o.text = "#application.rb.getResource('sitetree.contextmenu.moveToBottom@label','Move To Bottom')#";
 	o.js = "menuOption_MoveInternal(\\'bottom\\');";
 	o.jsvalidate = "(objectIndex(lastSelectedId)!=-1 && objectIndex(lastSelectedId)+1 < countObjects(getParentObject(lastSelectedId)['OBJECTID'])) || "+
 					"(nodeIndex(lastSelectedId)!=-1 && nodeIndex(lastSelectedId)+1 < countNodes(getParentObject(lastSelectedId)['OBJECTID']))";
@@ -1314,7 +1314,7 @@ o.bSeperator = 0;
 
 o = new Object();
 objectMenu['Create'] = o;
-o.text = "#application.rb.getResource("create")#";
+o.text = "#application.rb.getResource('sitetree.contextmenu.create@label','Create')#";
 o.submenu = "Create";
 o.jsvalidate = "((hasPermission( lastSelectedId, '#PermNavCreate#' ) >=0) &&  (objects[lastSelectedId]['TYPENAME'].toLowerCase()=='#lcase(attributes.nodetype)#'))";
 o.bShowDisabled = 1;
@@ -1367,7 +1367,7 @@ function menuOption_CreatePopup( id )
 
 o = new Object();
 objectMenu['Approve'] = o;
-o.text = "#application.rb.getResource("status")#";
+o.text = "#application.rb.getResource('sitetree.contextmenu.status@label','Status')#";
 o.submenu = "Approve";
 o.jsvalidate = "(objects[lastSelectedId]['STATUS'] && (objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#' || objects[lastSelectedId]['TYPENAME'] == 'dmHTML'))?1:0";
 o.bShowDisabled = 1;
@@ -1378,21 +1378,21 @@ o.bShowDisabled = 1;
 
 	o = new Object();
 	approveMenu['ApproveItem'] = o;
-	o.text = "#application.rb.getResource("approve")#";
+	o.text = "#application.rb.getResource('sitetree.contextmenu.approve@label','Approve')#";
 	o.js = "menuOption_Approve(\\'approved\\')";
 	o.jsvalidate = "((hasPermission( lastSelectedId, '#PermNavApprove#' )> 0 || (hasPermission(lastSelectedId,'#PermNavApproveOwn#') >0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(application.security.getCurrentUserID())#')) && (objects[lastSelectedId]['STATUS'] == 'draft' || objects[lastSelectedId]['STATUS'] == 'pending'))?1:0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	approveMenu['ApproveDraft'] = o;
-	o.text = "#application.rb.getResource("approveDraft")#";
+	o.text = "#application.rb.getResource('sitetree.contextmenu.approveDraft@label','Approve Draft')#";
 	o.js = "menuOption_Approve(\\'approved\\')";
     o.jsvalidate = "( hasPermission(lastSelectedId, '#PermNavApprove#')>0 && (hasDraft(lastSelectedId) && objects[lastSelectedId]['DRAFTSTATUS'] == 'pending') )?1:0";
 	o.bShowDisabled = 1;
 
 	o = new Object();
 	approveMenu['ApproveBranch'] = o;
-	o.text = "#application.rb.getResource("approveBranch")#";
+	o.text = "#application.rb.getResource('sitetree.contextmenu.approveBranch@label','Approve Branch')#";
 	o.js = "menuOption_ApproveBranch(\\'approved\\')";
 	o.jsvalidate = "(hasPermission( lastSelectedId, '#PermNavApprove#' )>0 && (objects[lastSelectedId]['STATUS'] == 'draft' || objects[lastSelectedId]['STATUS'] == 'pending') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 	o.bShowDisabled = 1;
@@ -1410,14 +1410,14 @@ o.bShowDisabled = 1;
 	}
 
 	function menuOption_ApproveBranch( status ) {
-		if( confirm('#application.rb.getResource("confirmStatusChange")#' + status))
+		if( confirm('#application.rb.getResource("sitetree.contextmenu.approvebranch@confirmtext","Are you sure you wish to change the status of all content items in this branch?")#' + status))
 			//popupopen( 'approve.cfm?approveBranch=1&objectId='+lastSelectedId+'&status='+status, '_blank', '#smallpopupfeatures#' );
 			frameopen( '#application.url.farcry#/navajo/approve.cfm?approveBranch=1&objectId='+lastSelectedId+'&status='+status, 'editFrame' );
 	}
 	
 	o = new Object();
 	approveMenu['Request'] = o;
-	o.text = "#application.rb.getResource("request")#";
+	o.text = "#application.rb.getResource('sitetree.contextmenu.requestApproval@label','Request Approval')#";
 	o.js = "menuOption_Approve(\\'requestApproval\\')";
 	o.jsvalidate = "(hasPermission( lastSelectedId, '#PermNavRequestApprove#' )>=0 && ((objects[lastSelectedId]['STATUS'] == 'draft') || (objects[lastSelectedId]['DRAFTOBJECTID'] && objects[lastSelectedId]['DRAFTSTATUS']=='draft')) )?1:0";
 	o.bShowDisabled = 1;
@@ -1425,28 +1425,28 @@ o.bShowDisabled = 1;
 	
 	o = new Object();
 	approveMenu['RequestBranch'] = o;
-	o.text = "#application.rb.getResource("requestApprovalForBranch")#";
+	o.text = "#application.rb.getResource('sitetree.contextmenu.requestApprovalForBranch@label','Request Approval for Branch')#";
 	o.js = "menuOption_ApproveBranch(\\'requestApproval\\')";
 	o.jsvalidate = "(hasPermission( lastSelectedId, '#PermNavRequestApprove#' )>=0 && (objects[lastSelectedId]['STATUS'] == 'draft') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	approveMenu['Decline'] = o;
-	o.text = "#application.rb.getResource("declineDraft")#";
+	o.text = "#application.rb.getResource('sitetree.contextmenu.declineDraft@label','Decline Draft')#";
 	o.js = "menuOption_Approve(\\'draft\\')";
     o.jsvalidate = "( hasPermission(lastSelectedId, '#PermNavApprove#')>=0 && (hasDraft(lastSelectedId) && objects[lastSelectedId]['DRAFTSTATUS'] == 'pending') )?1:0";
 	o.bShowDisabled = 1;
 
 	o = new Object();
 	approveMenu['Cancel'] = o;
-	o.text = "#application.rb.getResource("sendToDraft")#";
+	o.text = "#application.rb.getResource('sitetree.contextmenu.sendToDraft@label','Send to Draft')#";
 	o.js = "menuOption_Approve(\\'draft\\')";
 	o.jsvalidate = "((hasPermission( lastSelectedId, '#PermNavApprove#' )>=0 || (hasPermission(lastSelectedId,'#PermNavApproveOwn#') >=0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(application.security.getCurrentUserID())#'))&& !hasDraft(lastSelectedId) && (objects[lastSelectedId]['STATUS'] == 'approved' || objects[lastSelectedId]['STATUS'] == 'pending'))?1:0";
 	o.bShowDisabled = 1;
 	
 	o = new Object();
 	approveMenu['CancelBranch'] = o;
-	o.text = "#application.rb.getResource("sendBranch2Draft")#";
+	o.text = "#application.rb.getResource('sitetree.contextmenu.sendBranch2Draft@label','Send Branch to Draft')#";
 	o.js = "menuOption_ApproveBranch(\\'draft\\')";
 	o.jsvalidate = "((hasPermission( lastSelectedId, '#PermNavApprove#' )>=0 || (hasPermission(lastSelectedId,'#PermNavApproveOwn#') >=0 && objects[lastSelectedId]['ATTR_LASTUPDATEDBY'].toLowerCase() == '#lCase(application.security.getCurrentUserID())#')) && (objects[lastSelectedId]['STATUS'] == 'approved' || objects[lastSelectedId]['STATUS'] == 'pending') && objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 	o.bShowDisabled = 1;
@@ -1454,7 +1454,7 @@ o.bShowDisabled = 1;
 	
 o = new Object();
 objectMenu['Insert'] = o;
-o.text = "#application.rb.getResource("insert")#";
+o.text = "#application.rb.getResource('sitetree.contextmenu.insert@label','Insert')#";
 o.js = "menuOption_Insert()";
 o.jsvalidate = "(contentFrame.insertObjId || contentFrame.insertObjIds || contentFrame.insertHTML)?1:0";
 o.bShowDisabled = 1;
@@ -1518,7 +1518,7 @@ function menuOption_Insert()
 
 o = new Object();
 objectMenu['Permissions'] = o;
-o.text = "#application.rb.getResource("permissions")#";
+o.text = "#application.rb.getResource('sitetree.contextmenu.permissions@label','Permissions')#";
 o.js = "menuOption_Permissions()";
 o.jsvalidate = "(#iModifyPermissionsState# > -1 && objects[lastSelectedId]['TYPENAME'].toLowerCase()=='#lcase(attributes.nodetype)#')?1:0";
 o.bShowDisabled = 1;
@@ -1531,7 +1531,7 @@ function menuOption_Permissions()
 
 o = new Object();
 objectMenu['Dump'] = o;
-o.text = "#application.rb.getResource("dump")#";
+o.text = "#application.rb.getResource('sitetree.contextmenu.properties@label','Properties')#";
 o.js = "menuOption_Dump();";
 o.jsvalidate = "#iDeveloperState#";
 o.bShowDisabled = 0;
@@ -1544,7 +1544,7 @@ function menuOption_Dump()
 
 o = new Object();
 objectMenu['Delete'] = o;
-o.text = "#application.rb.getResource("delete")#";
+o.text = "#application.rb.getResource('sitetree.contextmenu.delete@label','Delete')#";
 o.js = "menuOption_Delete()"; //  && countObjects(lastSelectedId) <=0  && countNodes(lastSelectedId) <=0
 o.jsvalidate = "hasPermission(lastSelectedId, '#PermNavDelete#')";
 o.bShowDisabled = 1;
@@ -1553,13 +1553,13 @@ o.bSeperator = 0;
 function menuOption_Delete()
 {
 	// if( confirm('Are you sure you wish to delete this object(s)?') ) popupopen( 'delete.cfm?objectId='+lastSelectedId, '_blank', '#smallpopupfeatures#' );
-	if(confirm('#application.rb.getResource("confirmDeleteAllObj")#') )
+	if(confirm('#application.rb.getResource("sitetree.contextmenu.delete@confirmtext","Are you sure you wish to delete this content item(s)?")#') )
 		frameopen('#application.url.farcry#/navajo/delete.cfm?objectId='+lastSelectedId,'content');
 }
 
 o = new Object();
 objectMenu['Trash'] = o;
-o.text = "#application.rb.getResource("sendToTrash")#";
+o.text = "#application.rb.getResource('sitetree.contextmenu.sendToTrash@label','Send to trash')#";
 o.js = "menuOption_Trash()"; 
 o.jsvalidate = "hasPermission( lastSelectedId, '#PermSendToTrash#' );";
 o.bShowDisabled = 0;
@@ -1567,13 +1567,13 @@ o.bSeperator = 0;
 
 function menuOption_Trash()
 {
-	if( confirm('#application.rb.getResource("confirmSendToTrash")#') ) popupopen( '#application.url.farcry#/navajo/move.cfm?srcObjectId='+lastSelectedId+'&destObjectId=#application.navid.rubbish#', '_blank', '#smallpopupfeatures#' );
+	if( confirm('#application.rb.getResource("sitetree.contextmenu.sendToTrash@confirmtext","Are you sure you wish to send this content item to the trash?")#') ) popupopen( '#application.url.farcry#/navajo/move.cfm?srcObjectId='+lastSelectedId+'&destObjectId=#application.navid.rubbish#', '_blank', '#smallpopupfeatures#' );
 }
 
 
 o = new Object();
 objectMenu['EmptyTrash'] = o;
-o.text = "#application.rb.getResource("emptyTrash")#";
+o.text = "#application.rb.getResource('sitetree.contextmenu.emptyTrash@label','Empty Trash')#";
 o.js = "menuOption_EmptyTrash()"; 
 o.jsvalidate = "(hasPermission( lastSelectedId, '#PermNavDelete#') > 0 && lastSelectedId == '#application.navid.rubbish#')?1:0";
 o.bShowDisabled = 0;
@@ -1581,14 +1581,14 @@ o.bSeperator = 0;
 
 function menuOption_EmptyTrash()
 {
-	if( confirm('#application.rb.getResource("confirmDeleteTrash")#') ) popupopen( '#application.url.farcry#/navajo/treeEmptyTrash.cfm', '_blank', '#smallpopupfeatures#' );
+	if( confirm('#application.rb.getResource("sitetree.contextmenu.emptyTrash@confirmtext","Are you sure you wish to delete all items in the trash?")#') ) popupopen( '#application.url.farcry#/navajo/treeEmptyTrash.cfm', '_blank', '#smallpopupfeatures#' );
 }
 
 
 
 o = new Object();
 objectMenu['Zoom'] = o;
-o.text = "#application.rb.getResource("zoom")#";
+o.text = "#application.rb.getResource('sitetree.contextmenu.zoom@label','Zoom')#";
 o.js = "menuOption_Zoom()"; 
 o.jsvalidate = "objects[lastSelectedId]['TYPENAME'].toLowerCase()=='#lcase(attributes.nodetype)#'?1:0";
 o.bShowDisabled = 0;

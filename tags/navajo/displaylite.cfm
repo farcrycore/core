@@ -60,7 +60,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 
 	<!--- check that an appropriate result was returned from COAPI --->
 	<cfif NOT IsStruct(stObj) OR StructIsEmpty(stObj)>
-		<cfthrow message="#application.rb.getResource("badCOAPI")#">
+		<cfthrow message="#application.rb.getResource('coapi.messages.badcoapi@text','Error: COAPI returned a malformed or empty object instance')#">
 	</cfif>
 	<cfcatch type="Any">
 		<cflocation url="#application.url.webroot#/" addtoken="No">

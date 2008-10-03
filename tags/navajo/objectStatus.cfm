@@ -98,19 +98,19 @@ $out:$
 		<form action="#cgi.script_name#?#cgi.query_string#" class="f-wrap-1 wider f-bg-medium" name="form" method="post">
 		<h3>
 			<cfif isDefined("URL.draftObjectID")>
-				#application.rb.getResource("objStatusRequest")#
+				#application.rb.getResource("workflow.messages.objStatusRequest@text","Set content item status for underlying draft content item to 'request'")#
 			<cfelse>
-				#application.rb.formatRBString("setObjStatus","#url.status#")#
+				#application.rb.formatRBString("workflow.messages.setObjStatus@text",url.status,"Set content item status to {1}")#
 			</cfif>
 		</h3>
 			<fieldset>
-				<label for="commentLog"><b>#application.rb.getResource("addCommentsLabel")#</b>
+				<label for="commentLog"><b>#application.rb.getResource("workflow.fields.addComments@label","Add your comments:")#</b>
 					<textarea name="commentLog" id="commentLog" cols="80" rows="10"></textarea><br />
 				</label>
 				<!--- if requesting approval, list approvers --->
 				<cfif url.status eq "requestApproval" and structcount(stApprovers)>
-					<label for="Log"><b>#application.rb.getResource("requestApprovalFrom")#</b>
-						<input type="checkbox" onclick="if(this.checked)deSelectAll();" name="lApprovers" value="all" checked="checked">#application.rb.getResource("allApprovers")#<br />
+					<label for="Log"><b>#application.rb.getResource("workflow.fields.requestApprovalFrom@label","Request Approval From")#</b>
+						<input type="checkbox" onclick="if(this.checked)deSelectAll();" name="lApprovers" value="all" checked="checked">#application.rb.getResource("workflow.fields.requestApprovalFrom@allApprovers","All approvers")#<br />
 							<!--- loop over approvers and display ones that have email profiles --->
 							<cfloop collection="#stApprovers#" item="item">
 							    <cfif stApprovers[item].emailAddress neq "" AND stApprovers[item].bReceiveEmail and stApprovers[item].userName neq application.security.isLoggedIn()>
@@ -124,11 +124,11 @@ $out:$
 			</fieldset>
 		
 			<div class="f-submit-wrap">
-				<input type="submit" name="submit" value="#application.rb.getResource("submitUC")#" class="f-submit" />
+				<input type="submit" name="submit" value="#application.rb.getResource('forms.buttons.submit@label','Submit')#" class="f-submit" />
 				<cfif listlen(attributes.lObjectIDs) gt 1 and len(cgi.HTTP_REFERER)>
-					<input type="submit" name="cancel" value="#application.rb.getResource("cancel")#" class="f-submit" onClick="location.href='#cgi.http_referer#';" />
+					<input type="submit" name="cancel" value="#application.rb.getResource('forms.buttons.cancel@label','Cancel')#" class="f-submit" onClick="location.href='#cgi.http_referer#';" />
 				<cfelse>
-					<input type="submit" name="cancel" value="#application.rb.getResource("cancel")#" class="f-submit" onClick="location.href='../edittabOverview.cfm?objectid=#attributes.lobjectIDs#';" />
+					<input type="submit" name="cancel" value="#application.rb.getResource('forms.buttons.cancel@label','Cancel')#" class="f-submit" onClick="location.href='../edittabOverview.cfm?objectid=#attributes.lobjectIDs#';" />
 				</cfif>
 			</div>			
 		
@@ -151,7 +151,7 @@ $out:$
 			<cfif not structkeyexists(stObj, "status")>
 				<cfoutput>
 				<script type="text/javascript">
-					alert("#application.rb.getResource("objNoApprovalProcess")#");
+					alert("#application.rb.getResource('workflow.messages.objNoApprovalProcess@text','This content item type has no approval process attached to it.')#");
 					window.close();
 				</script>
 				</cfoutput>
@@ -262,7 +262,7 @@ $out:$
 						</cfif>
 					<cfelse><cfoutput>
 						<script type="text/javascript">
-							alert("#application.rb.getResource("notLoggedIn")#");
+							alert("#application.rb.getResource('security.messages.notLoggedIn@text','You aren't logged in')#");
 							window.close();
 						</script></cfoutput><cfabort>
 					</cfif>

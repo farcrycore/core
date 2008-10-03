@@ -62,7 +62,7 @@ $out:$
 
 <cfif listContainsNoCase(lExclude,destObj.typename)>
 	<cfoutput><h3>#application.rb.getResource("cantDragObjectsBelowFileImage")# </h3>
-	<div align="center"> <input type="button" value="#application.rb.getResource("close")#" class="normalBttnStyle" onClick="window.close();" ></div>
+	<div align="center"> <input type="button" value="#application.rb.getResource('forms.buttons.close@label','Close')#" class="normalBttnStyle" onClick="window.close();" ></div>
 	</cfoutput>
 	<cfabort>
 </cfif>
@@ -115,7 +115,7 @@ $out:$
 	<cfif url.srcObjectId eq url.destObjectId OR ListFind( lAncestorIds, url.srcObjectId )>
 		<cfoutput>
 			<script>
-			parent.alert("#application.rb.getResource("destinationNodeCantBeChild")#");
+			parent.alert("#application.rb.getResource('sitetree.messages.destinationNodeCantBeChild@text','Destination node cannot be a child of or same as the Source node!')#");
 			window.close();
 			</script>
 		</cfoutput>
@@ -166,10 +166,10 @@ $out:$
 			 <cfcatch>
 			 	<cfdump var="#cfcatch#">
 			 	<cfoutput>
-				<h2>#application.rb.getResource("moveBranchLockout")#</h2>
-				<p>#application.rb.getResource("branchLockoutBlurb")#</p>
+				<h2>#application.rb.getResource('sitetree.messages.branchLockoutBlurb@heading','Branch Lockout')#</h2>
+				<p>#application.rb.getResource('sitetree.messages.branchLockoutBlurb@text','Another editor is currently modifying the hierarchy. Please refresh the site overview tree and try again.')#</p>
 				<script>
-					top['frames']['treeFrame'].alert("#application.rb.getResource("branchLockoutBlurb")#");
+					top['frames']['treeFrame'].alert("#application.rb.getResource('sitetree.messages.branchLockoutBlurb@text','Another editor is currently modifying the hierarchy. Please refresh the site overview tree and try again.')#");
 					top['frames']['treeFrame'].enableDragAndDrop();
 				</script>
 				</cfoutput>

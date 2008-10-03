@@ -52,7 +52,7 @@ $out:$
 		<cfif not structkeyexists(stObj, "status")>
 			<cfoutput>
 			<script>
-				 alert("#application.rb.getResource("objNoApprovalProcess")#");
+				 alert("#application.rb.getResource('workflow.messages.objNoApprovalProcess@text','This content item type has no approval process attached to it.')#");
 			</script>
 			</cfoutput>
 			<cfsetting enablecfoutputonly="false" />
@@ -146,7 +146,7 @@ $out:$
 				</cfif>	
 			</cfinvoke>
 		<cfelse>
-			<cfthrow errorcode="navajo" message="#application.rb.getResource("passedUnknownStatus")#">
+			<cfthrow errorcode="navajo" message="#application.rb.getResource('workflow.messages.passedUnknownStatus@text','Unknown status passed')#">
 		</cfif>
 
 		<!--- prepare date fields --->

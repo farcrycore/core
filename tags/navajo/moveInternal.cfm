@@ -83,7 +83,7 @@ $out:$
 
 <cfif iState NEQ 1><cfoutput>
 <script type="text/javascript">
-	alert("#application.rb.getResource("noModifyNodePermission")#");
+	alert("#application.rb.getResource('sitetree.messages.noModifyNodePermission@text','You do not have permission to modify the node.')#");
 </script></cfoutput>
 <cfelse>
 	<cfif len(parentObjectID)>
