@@ -793,15 +793,26 @@
 		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
 		<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
 		
-		<cfset var qFindType = queryNew("init") />
-
+		<cfset var qFindType=queryNew("init") />
+		<cfset var result = "" />
+		
 		<cfquery datasource="#arguments.dsn#" name="qFindType">
 		select typename from #arguments.dbowner#refObjects
 		where objectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectID#" />
 		</cfquery>
 		
-		<cfreturn qFindType.typename>
+		<cfif qFindType.recordCount>
+			<cfset result = qFindType.typename />
+		<cfelse>		
+			<cfif structKeyExists(Session, "TempObjectStore") 
+				AND structKeyExists(Session.TempObjectStore, "#arguments.objectid#")
+				AND structKeyExists(Session.TempObjectStore["#arguments.objectid#"], "typename")>
+				
+				<cfset result = Session.TempObjectStore["#arguments.objectid#"].typename />
+			</cfif>
+		</cfif>	
 		
+		<cfreturn result />	
 	</cffunction>
 
 
