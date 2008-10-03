@@ -54,7 +54,7 @@
 <cfset o = createObject("component", "#application.packagepath#.farcry.tree")>
 <cfset navFilter=duplicate(attributes.afilter)>
 <cfset arrayAppend(navFilter, "status IN (#listQualify(request.mode.lvalidstatus, '''')#)") />
-<cfset qNav = evaluate("o."&attributes.functionMethod&"(objectid=attributes.navID, lColumns='externallink', "&attributes.functionArgs&", afilter=navFilter)")>
+<cfset qNav = evaluate("o."&attributes.functionMethod&"(objectid=attributes.navID, lColumns='externallink,lNavIDAlias', "&attributes.functionArgs&", afilter=navFilter)")>
 
 <!--- // get ansestors of attributes.navID --->
 <cfset qAncestors = o.getAncestors(attributes.sectionObjectID)>
@@ -129,6 +129,11 @@
 				}
 				itemclass='';
 				
+				if(listLen(qNav.lNavIDAlias[i])){
+					for (j = 1; j LTE listLen(qNav.lNavIDAlias[i]); j = j + 1){
+						itemclass=itemclass & listGetAt(qNav.lNavIDAlias[i],j) & " ";
+					}	
+				}
 				if(qNav.nLevel[i] lt attributes.startlevel+attributes.depth - 1  and qNav.nRight[i]-qNav.nleft[i] neq 1) {
 					itemclass=itemclass & 'parent ';	
 				}
@@ -173,7 +178,7 @@
 							homeclass=homeclass & ' active ';
 						}
 						writeOutput(" class="""&trim(homeclass)&"""");
-						writeOutput("><a href=""#application.url.webroot#/"">#homeNode.objectName#</a></li>");
+						writeOutput("><a href=""#application.url.webroot#/""><span>#homeNode.objectName#</span></a></li>");
 					}
 					ul=ul+1;
 				}
@@ -212,7 +217,7 @@
 					writeOutput(" class="""&trim(itemclass)&"""");
 				}
 				// write the link
-				writeOutput("><a href="""&href&""">"&trim(qNav.ObjectName[i]) & "</a>");
+				writeOutput("><a href="""&href&"""><span>"&trim(qNav.ObjectName[i]) & "</span></a>");
 			}
 		}
 	}
@@ -240,7 +245,7 @@
 			{
 				writeOutput(" class=""active""");
 			}
-			writeOutput("><a href=""#application.url.webroot#/"">#homeNode.objectName#</a></li></ul>");
+			writeOutput("><a href=""#application.url.webroot#/""><span>#homeNode.objectName#</span></a></li></ul>");
 		}
 			
 </cfscript>
