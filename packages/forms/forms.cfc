@@ -182,7 +182,7 @@
 				</cfif>
 			</cfloop>
 			
-			<cfparam name="stObj.objectid" default="#createuuid()#" />
+			<cfset stObj.objectid = arguments.objectid />
 
 		</cfif>
 

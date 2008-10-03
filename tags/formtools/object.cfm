@@ -17,6 +17,7 @@
 	<cfparam name="attributes.ObjectID" default=""><!--- ObjectID of object to render --->
 	<cfparam name="attributes.stObject" default=""><!--- Object to render --->
 	<cfparam name="attributes.typename" default=""><!--- Type of Object to render --->
+	<cfparam name="attributes.key" default=""><!--- Used to generate a new object --->
 	<cfparam name="attributes.ObjectLabel" default=""><!--- Used to group and label rendered object if required --->
 	<cfparam name="attributes.lFields" default=""><!--- List of fields to render --->
 	<cfparam name="attributes.lExcludeFields" default="label"><!--- List of fields to exclude from render --->
@@ -101,6 +102,8 @@
 
 	<cfelseif len(attributes.typename)>
 	<!--- build metadata from type details --->
+	
+			
 		<cfset stPackage = application.stcoapi[attributes.typename] />
 		<cfset packagePath = application.stcoapi[attributes.typename].packagepath />
 	
@@ -109,10 +112,34 @@
 		<cfset stFields = stPackage.stprops>
 		<cfset typename = attributes.typename>
 		
-		<cfset stObj = oType.getData(objectID="#CreateUUID()#")>
+		
+		<cfif len(attributes.key)>
+			<cfparam name="session.stTempObjectStoreKeys" default="#structNew()#" />
+			<cfparam name="session.stTempObjectStoreKeys[attributes.typename]" default="#structNew()#" />
+
+			<cfif structKeyExists(session.stTempObjectStoreKeys[attributes.typename], attributes.key)>
+				<cfif structKeyExists(Session.TempObjectStore, session.stTempObjectStoreKeys[attributes.typename][attributes.key])>
+					<cfset attributes.objectid = session.stTempObjectStoreKeys[attributes.typename][attributes.key] />
+				</cfif>
+			</cfif>	
+				
+			
+			<cfif not len(attributes.objectid)>
+				<cfset attributes.objectid = createUUID() />
+				<cfset session.stTempObjectStoreKeys[attributes.typename][attributes.key] = attributes.objectid>
+				<cfset st = oType.getData(objectID = attributes.objectid) />
+				<cfset stResult = oType.setData(stProperties=st, bSessionOnly="true") />
+			</cfif>	
+		<cfelse>	
+			<cfset attributes.objectid = createUUID() />		
+		</cfif>
+		
+		<cfset stObj = oType.getData(objectID="#attributes.objectid#")>
+		
 		
 		<cfset ObjectID = stObj.objectID>
-
+			
+		
 	
 	<cfelse>
 	<!--- nothing relevant passed into tag; throw --->
