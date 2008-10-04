@@ -163,7 +163,7 @@ object methods
 	<cffunction name="getRolesWithPermission" access="public" returntype="string" description="Returns a list of the roles that have the specified permission" output="false">
 		<cfargument name="permission" type="string" required="true" hint="The permission to look for" />
 		<cfargument name="type" type="string" required="false" default="" hint="The type of related object" />
-		<cfargument name="objectid" type="uuid" required="false" default="" hint="The objectid of the related object" />
+		<cfargument name="objectid" type="string" required="false" default="" hint="The objectid of the related object" />
 		
 		<cfset var qRoles = querynew("empty") />
 		<cfset var result = "" />
