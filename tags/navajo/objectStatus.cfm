@@ -262,7 +262,8 @@ $out:$
 						</cfif>
 					<cfelse><cfoutput>
 						<script type="text/javascript">
-							alert("#application.rb.getResource('security.messages.notLoggedIn@text','You aren't logged in')#");
+							<cfset defaultText="You aren't logged in" />
+							alert("#application.rb.getResource('security.messages.notLoggedIn@text','#defaultText#')#");
 							window.close();
 						</script></cfoutput><cfabort>
 					</cfif>
