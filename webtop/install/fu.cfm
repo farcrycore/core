@@ -5,38 +5,17 @@
 	
 	<cfparam name="bTableExists" default="1" type="boolean" />
 	
-	<!--- bowden --->
-	<cfswitch expression="#application.dbtype#">
-		
-		<cfcase value="ora">
-			<cfquery name="qTableExists" datasource="#application.dsn#">
-				select 1
-				from user_tables
-				where table_name =  'REFFRIENDLYURL' 
-			</cfquery>
-			<cfif qTableExists.recordcount gt 0>
-				<cfquery name="qDrop" datasource="#application.dsn#">
-					DROP TABLE #application.dbOwner#reffriendlyURL
-				</cfquery>
-				<cfset bTableExists = 0 />
-			</cfif>
-		</cfcase>
-		
-		<cfdefaultcase>
-			<!--- not a great way, but this (at this stage) is quicker and easier that doing a case for all DB vendors. Error will be thown if table doesn't exist --->
-			<cfquery name="qCheck" datasource="#application.dsn#" maxrows="1">
-				SELECT objectid 
-				FROM #application.dbOwner#reffriendlyURL
-			</cfquery>
-			<cfif qCheck.recordCount>
-				<cfquery name="qDrop" datasource="#application.dsn#">
-					DROP TABLE #application.dbOwner#reffriendlyURL
-				</cfquery>
-				<cfset bTableExists = 0 />
-			</cfif>
-		</cfdefaultcase>
-		
-	</cfswitch>
+	<!--- not a great way, but this (at this stage) is quicker and easier that doing a case for all DB vendors. Error will be thown if table doesn't exist --->
+	<cfquery name="qCheck" datasource="#application.dsn#" maxrows="1">
+		SELECT objectid 
+		FROM #application.dbOwner#reffriendlyURL
+	</cfquery>
+	<cfif qCheck.recordCount>
+		<cfquery name="qDrop" datasource="#application.dsn#">
+			DROP TABLE #application.dbOwner#reffriendlyURL
+		</cfquery>
+		<cfset bTableExists = 0 />
+	</cfif>
 
 	<cfcatch type="database">
 		<cfset bTableExists = 0 />
