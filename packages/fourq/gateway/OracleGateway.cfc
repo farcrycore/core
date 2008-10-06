@@ -59,7 +59,13 @@
 			CREATE TABLE #tablename#(
 			<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
 				<cfif i GT 1>,</cfif>#SQLArray[i].column# #SQLArray[i].datatype# #SQLArray[i].defaultValue# #SQLArray[i].nullable#
-			</cfloop>)
+			</cfloop>
+			
+			
+			<cfif structKeyExists(fields,"objectid") AND structKeyExists(fields.objectid,  "nullable") AND NOT fields.objectid.nullable>
+				,PRIMARY KEY (ObjectID)
+			</cfif>
+			)
 			</cfoutput>
 		</cfsavecontent>
 

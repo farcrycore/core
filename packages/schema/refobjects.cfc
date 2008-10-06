@@ -59,7 +59,8 @@
 	<cfquery datasource="#application.dsn#">
 	CREATE TABLE refObjects (
 		objectid VARCHAR(50) NOT NULL, 
-		typename VARCHAR(50) NOT NULL
+		typename VARCHAR(50) NOT NULL,
+		PRIMARY KEY (objectid)
 		)
 	</cfquery>
 
@@ -79,7 +80,8 @@
 	<cfquery datasource="#application.dsn#">
 		CREATE TABLE refObjects (
 		objectid VARCHAR(50) NOT NULL,
-		typename VARCHAR(50) NOT NULL
+		typename VARCHAR(50) NOT NULL,
+		PRIMARY KEY (objectid)
 		)
 	</cfquery>
 
@@ -129,7 +131,8 @@
 	<cfquery datasource="#application.dsn#">
 		CREATE TABLE #variables.dbowner#refObjects (
 		objectid VARCHAR(50) NOT NULL,
-		typename VARCHAR(50) NOT NULL
+		typename VARCHAR(50) NOT NULL,
+		PRIMARY KEY (objectid)
 		)
 	</cfquery>
 
