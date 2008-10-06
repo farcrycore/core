@@ -17,27 +17,27 @@
     along with FarCry CMS Plugin.  If not, see <http://www.gnu.org/licenses/>.
 --->
 
-<!--- @@displayname: Title and teaser and thumbnail --->
+<!--- @@displayname: Standard Teaser --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au)--->
 
 
 <!--- IMPORT TAG LIBRARIES --->
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
 
-
 <cfif structKeyExists(stobj, "title")>
-	<cfoutput><h4>#stObj.Title#</h4></cfoutput>
+	<cfset teaserTitle = stObj.Title />
 <cfelse>
-	<cfoutput><h4>#stobj.label#</h4></cfoutput>
+	<cfset teaserTitle = stObj.label />
 </cfif>
 
 <cfoutput>
-<p>
-<cfif structKeyExists(stobj, "Teaser")>
-	#stObj.Teaser#	
-	<skin:buildLink objectid="#stobj.objectID#" class="morelink">More<span>about:#stObj.Title#</span></skin:buildLink>
-</cfif>
-</p>
+	<h4>#teaserTitle#</h4>
+	<p>
+		<cfif structKeyExists(stobj, "Teaser")>
+			#stObj.Teaser#			
+		</cfif>
+		<skin:buildLink objectid="#stobj.objectID#" class="morelink">More<span>about:#teaserTitle#</span></skin:buildLink>
+	</p>
 </cfoutput>
 
 
