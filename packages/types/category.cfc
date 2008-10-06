@@ -189,7 +189,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<cfset var strSQL = "">
 		<cfset var stLocal = StructNew()>
 		<cfset var sqlMaxRows = "">
-		<cfset var bSqlMaxPre = 0>
+		<cfset var bSqlMax = 0>
 		
 		<cfparam name="request.mode.showdraft" default="false" />
 		
@@ -202,10 +202,16 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 			<cfswitch expression="#application.dbtype#">
 				<cfcase value="mssql">
 					<cfset sqlMaxRows = " top #numberFormat(arguments.maxRows)# ">
-					<cfset bSqlMaxPre = 1>
+					<cfset bSqlMax = 1>
 				</cfcase>
-				<cfcase value="mysql,oracle,postgres">
+				<cfcase value="mysql,postgres">
 					<cfset sqlMaxRows = " LIMIT #numberFormat(arguments.maxRows)# ">
+					<cfset bSqlMax = 0>
+				</cfcase>
+				<cfcase value="ora,oracle">
+					<!--- This goes in the WHERE clause, not right at the SELECT statemetn --->
+					<cfset sqlMaxRows = " ROWNUM <= #numberFormat(arguments.maxRows)# ">
+					<cfset bSqlMax = 2>
 				</cfcase>
 				<cfdefaultcase>
 					<cfthrow detail="The method getData of  category.cfc does not support your database type" type="Application" />				
@@ -219,7 +225,8 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 	
 		<cfquery name="qGetData" datasource="#arguments.dsn#" result="rData">
 		SELECT
-		<cfif sqlMaxRows NEQ "" AND bSqlMaxPre>
+		<cfif sqlMaxRows NEQ "" AND bSqlMax EQ 1>
+			<!--- mssql --->
 			#sqlMaxRows#
 		</cfif>
 		
@@ -268,11 +275,18 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		
 		<!--- WHERE bHasMultipleVersion = <cfqueryparam cfsqltype="cf_sql_integer" value="0" /> --->
 		
+
+		<cfif sqlMaxRows NEQ "" AND bSqlMax EQ 2>
+			<!--- Oracle --->
+			AND #sqlMaxRows#
+		</cfif>
+		
 		<cfif len(trim(arguments.sqlOrderBy))>
 			ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
 		</cfif>
 				
-		<cfif sqlMaxRows NEQ "" AND NOT bSqlMaxPre>
+		<cfif sqlMaxRows NEQ "" AND bSqlMax EQ 0>
+			<!--- mysql,postgres --->
 			#sqlMaxRows#
 		</cfif>
 		
