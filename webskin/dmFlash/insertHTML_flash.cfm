@@ -9,6 +9,10 @@ $Developer: Matthew Bryant (mbryant@daemon.com.au) $
 <!--- @@displayname: Render Flash Object --->
 <!--- @@author: Matthew Bryant --->
 
+<!--- Make sure the swfobject library is added --->
+<cfoutput><script type="text/javascript" src="#application.url.webtop#/js/swfobject.js"></script>
+</cfoutput>
+
 <cfif len(stobj.flashmovie)>
 	<cfset swfpath = application.url.fileroot & stobj.flashMovie />
 <cfelse>

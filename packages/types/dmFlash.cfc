@@ -21,7 +21,7 @@ type properties
 ------------------------------------------------------------------------->	
 <cfproperty ftSeq="1" ftFieldSet="General Details" name="title" type="string" hint="Title of content item." required="no" default="" ftlabel="Title" ftvalidation="required" />
 <cfproperty ftSeq="2" ftFieldSet="General Details" name="teaser" type="longchar" hint="Teaser text." required="no" default="" ftlabel="Teaser" />
-<cfproperty ftSeq="3" ftFieldSet="General Details" name="displayMethod" type="string" hint="Display template to render this Flash content." required="yes" default="" ftType="webskin" ftPrefix="displayPage" ftlabel="Display" />
+<cfproperty ftSeq="3" ftFieldSet="General Details" name="displayMethod" type="string" hint="Display template to render this Flash content." required="yes" default="displayPageStandard" ftType="webskin" ftPrefix="displayPage" ftlabel="Display" />
 <cfproperty ftSeq="4" ftFieldSet="General Details" name="metaKeywords" type="nstring" hint="Keywords or tags to describe this content." required="no" default="" ftlabel="Keywords/Tags">
 <cfproperty ftSeq="5" ftFieldSet="General Details" name="bLibrary" type="boolean" hint="Flag to make the Flash movie shared." required="no" default="1" ftlabel="Add to Shared Library">
 
