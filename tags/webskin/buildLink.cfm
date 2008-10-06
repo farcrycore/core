@@ -31,6 +31,7 @@
 	<cfparam name="attributes.externallink" default="">
 	<cfparam name="attributes.id" default=""><!--- Anchor tag ID --->
 	<cfparam name="attributes.class" default=""><!--- Anchor tag classes --->
+	<cfparam name="attributes.style" default=""><!--- Anchor tag styles --->
 	<cfparam name="attributes.urlOnly" default="false">
 	<cfparam name="attributes.r_url" default="">
 	<cfparam name="attributes.xCode" default=""><!--- eXtra code to be placed inside the anchor tag --->
@@ -162,6 +163,9 @@
 		</cfif>
 		<cfif len(attributes.class)>
 			<cfset tagoutput=tagoutput & ' class="#attributes.class#"'>
+		</cfif>
+		<cfif len(attributes.style)>
+			<cfset tagoutput=tagoutput & ' style="#attributes.style#"'>
 		</cfif>
 		<cfif len(attributes.xCode)>
 			<cfset tagoutput=tagoutput & ' #attributes.xCode#'>
