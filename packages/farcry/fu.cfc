@@ -58,24 +58,52 @@
 		<cfset stLocal.friendlyURL = Right(stLocal.friendlyURL,stLocal.friendlyURL_length)>
 
 		<!--- check if friendly url is currently active AND that no change has occured to the friendlyurl --->
-		<cfquery name="qCheck" datasource="#application.dsn#">
-		SELECT	r.objectid
-		FROM	#application.dbowner#reffriendlyURL u inner join 
-				#application.dbowner#refObjects r on r.objectid = u.refobjectid
-		WHERE	refObjectID = <cfqueryparam value="#stLocal.refObjectID#" cfsqltype="cf_sql_varchar">
-				AND friendlyurl = <cfqueryparam value="#stLocal.friendlyURL#" cfsqltype="cf_sql_varchar">
-				AND status = <cfqueryparam value="#stLocal.status#" cfsqltype="cf_sql_integer">
-		</cfquery>
-
-		<cfif qCheck.recordCount EQ 0>
-			<!--- get exitsing friendly ONLINE urls for the objectid --->
-			<cfquery datasource="#application.dsn#" name="qCheckCurrent">
-			SELECT	friendlyurl
+		<cfswitch expression="#application.dbtype#">
+		<cfcase value="ora,oracle">
+			<cfquery name="qCheck" datasource="#application.dsn#">
+			SELECT	r.objectid
+			FROM	#application.dbowner#reffriendlyURL u,
+					#application.dbowner#refObjects r 
+			WHERE	r.objectid = u.refobjectid
+					AND u.refObjectID = <cfqueryparam value="#stLocal.refObjectID#" cfsqltype="cf_sql_varchar">
+					AND u.friendlyurl = <cfqueryparam value="#stLocal.friendlyURL#" cfsqltype="cf_sql_varchar">
+					AND u.status = <cfqueryparam value="#stLocal.status#" cfsqltype="cf_sql_integer">
+			</cfquery>
+		</cfcase>
+		<cfdefaultcase>
+			<cfquery name="qCheck" datasource="#application.dsn#">
+			SELECT	r.objectid
 			FROM	#application.dbowner#reffriendlyURL u inner join 
 					#application.dbowner#refObjects r on r.objectid = u.refobjectid
 			WHERE	refObjectID = <cfqueryparam value="#stLocal.refObjectID#" cfsqltype="cf_sql_varchar">
-				AND status = <cfqueryparam value="#stLocal.status#" cfsqltype="cf_sql_integer">
+					AND friendlyurl = <cfqueryparam value="#stLocal.friendlyURL#" cfsqltype="cf_sql_varchar">
+					AND status = <cfqueryparam value="#stLocal.status#" cfsqltype="cf_sql_integer">
 			</cfquery>
+		</cfdefaultcase>
+		</cfswitch>
+		<cfif qCheck.recordCount EQ 0>
+			<!--- get exitsing friendly ONLINE urls for the objectid --->
+			<cfswitch expression="#application.dbtype#">
+			<cfcase value="ora,oracle">
+				<cfquery datasource="#application.dsn#" name="qCheckCurrent">
+				SELECT	friendlyurl
+				FROM	#application.dbowner#reffriendlyURL u, 
+						#application.dbowner#refObjects r 
+				WHERE	r.objectid = u.refobjectid
+						AND u.refObjectID = <cfqueryparam value="#stLocal.refObjectID#" cfsqltype="cf_sql_varchar">
+						AND u.status = <cfqueryparam value="#stLocal.status#" cfsqltype="cf_sql_integer">
+				</cfquery>
+			</cfcase>
+			<cfdefaultcase>
+				<cfquery datasource="#application.dsn#" name="qCheckCurrent">
+				SELECT	friendlyurl
+				FROM	#application.dbowner#reffriendlyURL u inner join 
+						#application.dbowner#refObjects r on r.objectid = u.refobjectid
+				WHERE	refObjectID = <cfqueryparam value="#stLocal.refObjectID#" cfsqltype="cf_sql_varchar">
+						AND status = <cfqueryparam value="#stLocal.status#" cfsqltype="cf_sql_integer">
+				</cfquery>
+			</cfdefaultcase>
+			</cfswitch>
 
 			<!--- remove from app scope --->
 			<cfloop query="qCheckCurrent">
@@ -163,26 +191,53 @@
 			<cfset stReturn.refObjectID = application.FU.mappings[stLocal.strFriendlyURL_WSlash].refObjectID>
 			<cfset stReturn.query_string = application.FU.mappings[stLocal.strFriendlyURL_WSlash].query_string>
 		<cfelse> <!--- check in database [retired] .: redirect --->
-
-			<cfquery datasource="#arguments.dsn#" name="qGet">
-			SELECT	u.refobjectid
-			FROM	#application.dbowner#reffriendlyURL u inner join 
-					#application.dbowner#refObjects r on r.objectid = u.refobjectid
-			WHERE	friendlyURL = <cfqueryparam value="#stLocal.strFriendlyURL#" cfsqltype="cf_sql_varchar">
-				OR 	friendlyURL = <cfqueryparam value="#stLocal.strFriendlyURL_WSlash#" cfsqltype="cf_sql_varchar">
-			ORDER BY status DESC
-			</cfquery>
-
-			<cfif qGet.recordCount>
-				<!--- get the new friendly url for the retired friendly url --->
-				<cfquery datasource="#application.dsn#" name="qGetRedirectFU">
-				SELECT	refobjectid, friendlyURL, query_string, status
+			<cfswitch expression="#application.dbtype#">
+			<cfcase value="ora,oracle">
+				<cfquery datasource="#arguments.dsn#" name="qGet">
+				SELECT	u.refobjectid
+				FROM	#application.dbowner#reffriendlyURL u, 
+						#application.dbowner#refObjects r
+				WHERE	 r.objectid = u.refobjectid
+						AND 
+							(u.friendlyURL = <cfqueryparam value="#stLocal.strFriendlyURL#" cfsqltype="cf_sql_varchar">
+							OR 	u.friendlyURL = <cfqueryparam value="#stLocal.strFriendlyURL_WSlash#" cfsqltype="cf_sql_varchar">)
+				ORDER BY u.status DESC
+				</cfquery>
+			</cfcase>
+			<cfdefaultcase>
+				<cfquery datasource="#arguments.dsn#" name="qGet">
+				SELECT	u.refobjectid
 				FROM	#application.dbowner#reffriendlyURL u inner join 
-					    #application.dbowner#refObjects r on r.objectid = u.refobjectid
-				WHERE	refobjectid = <cfqueryparam value="#qGet.refobjectid#" cfsqltype="cf_sql_varchar">
+						#application.dbowner#refObjects r on r.objectid = u.refobjectid
+				WHERE	friendlyURL = <cfqueryparam value="#stLocal.strFriendlyURL#" cfsqltype="cf_sql_varchar">
+						OR 	friendlyURL = <cfqueryparam value="#stLocal.strFriendlyURL_WSlash#" cfsqltype="cf_sql_varchar">
 				ORDER BY status DESC
 				</cfquery>
-
+			</cfdefaultcase>
+			</cfswitch>
+			<cfif qGet.recordCount>
+				<!--- get the new friendly url for the retired friendly url --->
+				<cfswitch expression="#application.dbtype#">
+				<cfcase value="ora,oracle">				
+					<cfquery datasource="#application.dsn#" name="qGetRedirectFU">
+					SELECT	refobjectid, friendlyURL, query_string, status
+					FROM	#application.dbowner#reffriendlyURL u, 
+						    #application.dbowner#refObjects r 
+					WHERE	r.objectid = u.refobjectid
+							AND u.refobjectid = <cfqueryparam value="#qGet.refobjectid#" cfsqltype="cf_sql_varchar">
+					ORDER BY status DESC
+					</cfquery>
+				</cfcase>
+				<cfdefaultcase>
+					<cfquery datasource="#application.dsn#" name="qGetRedirectFU">
+					SELECT	refobjectid, friendlyURL, query_string, status
+					FROM	#application.dbowner#reffriendlyURL u inner join 
+						    #application.dbowner#refObjects r on r.objectid = u.refobjectid
+					WHERE	refobjectid = <cfqueryparam value="#qGet.refobjectid#" cfsqltype="cf_sql_varchar">
+					ORDER BY status DESC
+					</cfquery>
+				</cfdefaultcase>
+				</cfswitch>
 				<cfif qGetRedirectFU.recordCount>
 					<cfif qGetRedirectFU.status EQ 1 OR qGetRedirectFU.status EQ 2>
 						<cfset stReturn.refObjectID = qGetRedirectFU.refObjectID>
@@ -284,12 +339,25 @@
 		
 		<cftry>
 			<!--- retrieve list of all FU that is not retired --->
-			<cfquery name="stLocal.qListFU" datasource="#application.dsn#">
-			SELECT	friendlyurl, refobjectid, query_string
-			FROM	#application.dbowner#reffriendlyURL u inner join 
-					#application.dbowner#refObjects r on r.objectid = u.refobjectid
-			WHERE	status > 0
-			</cfquery>
+			<cfswitch expression="#application.dbtype#">
+			<cfcase value="ora,oracle">							
+				<cfquery name="stLocal.qListFU" datasource="#application.dsn#">
+				SELECT	friendlyurl, refobjectid, query_string
+				FROM	#application.dbowner#reffriendlyURL u, 
+						#application.dbowner#refObjects r
+				WHERE	r.objectid = u.refobjectid
+						AND u.status > 0
+				</cfquery>
+			</cfcase>
+			<cfdefaultcase>
+				<cfquery name="stLocal.qListFU" datasource="#application.dsn#">
+				SELECT	friendlyurl, refobjectid, query_string
+				FROM	#application.dbowner#reffriendlyURL u inner join 
+						#application.dbowner#refObjects r on r.objectid = u.refobjectid
+				WHERE	status > 0
+				</cfquery>
+			</cfdefaultcase>
+			</cfswitch>
 			
 			<!--- load mappings to application scope --->
 			<cfloop query="stLocal.qListFU">
@@ -333,6 +401,17 @@
 
 			<cfif stLocal.lNavID NEQ "" AND arguments.objectid NEQ application.navid.home>
 				<!--- optimisation: get all dmnavgiation data to avoid a getData() call --->
+				<cfswitch expression="#application.dbtype#">
+				<cfcase value="ora,oracle">		
+					<cfquery name="stLocal.qListNavAlias" datasource="#application.dsn#">
+			    	SELECT	dm.objectid, dm.label, dm.fu 
+			    	FROM	#application.dbowner#dmNavigation dm, #application.dbowner#nested_tree_objects nto
+			    	WHERE	dm.objectid = nto.objectid
+			    			AND dm.objectid IN (#preserveSingleQuotes(stLocal.lNavID)#)
+			    	ORDER by nto.nlevel ASC
+					</cfquery>
+				</cfcase>
+				<cfdefaultcase>
 				<cfquery name="stLocal.qListNavAlias" datasource="#application.dsn#">
 			    SELECT	dm.objectid, dm.label, dm.fu 
 			    FROM	#application.dbowner#dmNavigation dm
@@ -340,6 +419,8 @@
 			    WHERE	dm.objectid IN (#preserveSingleQuotes(stLocal.lNavID)#)
 			    ORDER by nto.nlevel ASC
 				</cfquery>
+				</cfdefaultcase>
+				</cfswitch>
 		
 				<cfloop query="stLocal.qListNavAlias">
 					<!--- check if has FU if so use it --->
@@ -462,14 +543,28 @@
 		<cfelse>
 		<!--- <cftrace inline="true" text="fu db lookup!"> --->
 			<!--- get friendly url based on the objectid --->
-			<cfquery datasource="#application.dsn#" name="qGet">
-			SELECT	friendlyURL, refobjectid, query_string
-			FROM	#application.dbowner#reffriendlyURL u inner join 
-					#application.dbowner#refObjects r on r.objectid = u.refobjectid
-			WHERE
-				refobjectid = <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
-				AND status != 0
-			</cfquery>
+			<cfswitch expression="#application.dbtype#">
+			<cfcase value="ora,oracle">					
+				<cfquery datasource="#application.dsn#" name="qGet">
+				SELECT	friendlyURL, refobjectid, query_string
+				FROM	#application.dbowner#reffriendlyURL u, 
+						#application.dbowner#refObjects r 
+				WHERE r.objectid = u.refobjectid
+					AND u.refobjectid = <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
+					AND u.status != 0
+				</cfquery>
+			</cfcase>
+			<cfdefaultcase>
+				<cfquery datasource="#application.dsn#" name="qGet">
+				SELECT	friendlyURL, refobjectid, query_string
+				FROM	#application.dbowner#reffriendlyURL u inner join 
+						#application.dbowner#refObjects r on r.objectid = u.refobjectid
+				WHERE
+					refobjectid = <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
+					AND status != 0
+				</cfquery>
+			</cfdefaultcase>
+			</cfswitch>
 			<cfif qGet.recordCount>
 				<cfset fuURL = "#qGet.friendlyURL#">
 			</cfif>
@@ -512,14 +607,29 @@
 		
 		<cftry>
 			<!--- get friendly url based on the objectid --->
-			<cfquery datasource="#application.dsn#" name="stLocal.qList">
-			SELECT	u.objectid, friendlyURL, refobjectid, query_string, u.datetimelastupdated, u.status
-			FROM	#application.dbowner#reffriendlyURL u inner join 
-					#application.dbowner#refObjects r on r.objectid = u.refobjectid
-			WHERE	refobjectid = <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
-				AND status IN (#stLocal.friendly_status#)
-			ORDER BY status DESC
-			</cfquery>
+			<cfswitch expression="#application.dbtype#">
+			<cfcase value="ora,oracle">					
+				<cfquery datasource="#application.dsn#" name="stLocal.qList">
+				SELECT	u.objectid, friendlyURL, refobjectid, query_string, u.datetimelastupdated, u.status
+				FROM	#application.dbowner#reffriendlyURL u, 
+						#application.dbowner#refObjects r
+				WHERE	r.objectid = u.refobjectid
+						AND u.refobjectid = <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
+						AND u.status IN (#stLocal.friendly_status#)
+				ORDER BY status DESC
+				</cfquery>
+			</cfcase>
+			<cfdefaultcase>
+				<cfquery datasource="#application.dsn#" name="stLocal.qList">
+				SELECT	u.objectid, friendlyURL, refobjectid, query_string, u.datetimelastupdated, u.status
+				FROM	#application.dbowner#reffriendlyURL u inner join 
+						#application.dbowner#refObjects r on r.objectid = u.refobjectid
+				WHERE	refobjectid = <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
+					AND status IN (#stLocal.friendly_status#)
+				ORDER BY status DESC
+				</cfquery>
+			</cfdefaultcase>
+			</cfswitch>
 
 			<cfset stLocal.returnstruct.queryObject = stLocal.qList>
 
