@@ -28,7 +28,7 @@
 			(ParentID, ObjectID, ObjectName, TypeName, nLevel, nRight, nLeft)
 			SELECT 
 				'#form.parentid_lost#' AS ParentID, 
-				categoryID AS ObjectID, 
+				objectid AS ObjectID, 
 				categoryLabel AS ObjectName, 
 				'categories' AS TypeName, 
 				0 AS nLevel, 
@@ -36,10 +36,10 @@
 				1 AS nLeft
 			FROM categories
 			WHERE 
-			categoryid IN 
-				(	SELECT categoryid
+			objectid IN 
+				(	SELECT objectid
 					FROM categories 
-					WHERE categoryid NOT IN
+					WHERE objectid NOT IN
 					(	SELECT objectid 
 						FROM nested_tree_objects
 					)
@@ -58,17 +58,17 @@
 --->
 <!--- get nav aliases --->
 <cfquery datasource="#application.dsn#" name="qCatAlias">
-SELECT categoryid, categoryLabel + ' (' + alias + ')' AS display
-FROM categories
+SELECT objectid, categoryLabel + ' (' + alias + ')' AS display
+FROM dmCategory
 WHERE alias <> ''
 ORDER BY categoryLabel
 </cfquery>
 
-<!--- orphan nodes and exist in categories --->
+<!--- orphan nodes and exist in dmCategory --->
 <cfquery datasource="#application.dsn#" name="ntmorphans">
-SELECT ntm.parentid, c.categoryid, c.categoryLabel, c.alias
-FROM nested_tree_objects ntm, categories c
-WHERE ntm.objectid = c.categoryid
+SELECT ntm.parentid, c.objectid, c.categoryLabel, c.alias
+FROM nested_tree_objects ntm, dmCategory c
+WHERE ntm.objectid = c.objectid
 	AND ntm.parentid not in
 		(select objectid from nested_tree_objects)
 	AND NOT (ntm.parentid is NULL OR ntm.parentid = '') -- ie. not ROOT
@@ -76,12 +76,12 @@ WHERE ntm.objectid = c.categoryid
 
 <!--- show parent of all orphans; information only --->
 <cfquery datasource="#application.dsn#" name="ntmparents">
-SELECT categoryid, categoryLabel, alias
-FROM categories
-where categoryid IN
+SELECT objectid, categoryLabel, alias
+FROM dmCategory
+where objectid IN
 	(	SELECT ntm.parentid
-		FROM nested_tree_objects ntm, categories c
-		WHERE ntm.objectid = c.categoryid
+		FROM nested_tree_objects ntm, dmCategory c
+		WHERE ntm.objectid = c.objectid
 			AND parentid not in
 				(select objectid from nested_tree_objects)
 	)
@@ -89,18 +89,18 @@ where categoryid IN
 
 <!--- objects not in ntm that should be there --->
 <cfquery datasource="#application.dsn#" name="lostcontent">
-select categoryid, categoryLabel, alias from categories 
-where categoryid not in 
+select objectid, categoryLabel, alias from dmCategory 
+where objectid not in 
 	(select objectid from nested_tree_objects)
 </cfquery>
 
 <cfform format="flash" height="800">
-	<cfformgroup type="panel" label="Orphan Utility (Categories Only)">
+	<cfformgroup type="panel" label="Orphan Utility (dmCategory Only)">
 		<!--- nested tree model orphans --->
 		<cfformitem type="html"><b>Nested Tree Orphans</b></cfformitem>
 		<cfgrid query="ntmorphans" name="ntmorphans"  />
 		<cfformgroup type="horizontal">
-			<cfselect name="parentid_orphan" query="qCatAlias" value="categoryid" display="display" label="Select Parent: " />
+			<cfselect name="parentid_orphan" query="qCatAlias" value="objectid" display="display" label="Select Parent: " />
 			<cfinput type="submit" name="attachntmorphans" value="Re-attach Content">
 		</cfformgroup>
 		
@@ -108,11 +108,11 @@ where categoryid not in
 		<cfformitem type="html">(Nothing to do here... orphan parent information just provides a bit of insight.)</cfformitem>
 		<cfgrid query="ntmparents" name="ntmparents"  />
 	
-		<!--- lost categories content items --->
+		<!--- lost dmCategory content items --->
 		<cfformitem type="html"><b>Lost Category Content</b></cfformitem>
 		<cfgrid query="lostcontent" name="lostcontent"  />
 		<cfformgroup type="horizontal">
-			<cfselect name="parentid_lost" query="qCatAlias" value="categoryid" display="display" label="Select Parent: " />
+			<cfselect name="parentid_lost" query="qCatAlias" value="objectid" display="display" label="Select Parent: " />
 			<cfinput type="submit" name="attachlostcontent" value="Re-attach Content">
 		</cfformgroup>
 	</cfformgroup>
