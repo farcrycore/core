@@ -108,7 +108,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.rbkey" default="coapi.#attributes.typename#.objectadmin" />
 
 <!--- I18 conversion off text output attributes --->
-<cfset attributes.description = application.rb.getResource("#attributes.rbkey#.description#@text",attributes.description) />
+<cfset attributes.description = application.rb.getResource("#attributes.rbkey#.description@text",attributes.description) />
 
 
 <cfif NOT structKeyExists(session.objectadmin, attributes.typename)>
