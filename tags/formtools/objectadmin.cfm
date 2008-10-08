@@ -105,8 +105,10 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.bShowActionList" default="true" />
 <cfparam name="attributes.qRecordset" default=""><!--- Used if the developer wants to pass in their own recordset --->
 
+<cfparam name="attributes.rbkey" default="coapi.#attributes.typename#.objectadmin" />
+
 <!--- I18 conversion off text output attributes --->
-<cfset attributes.description = application.rb.getResource("forms.text.#attributes.typename#.#left(rereplace(attributes.description,'[^\w\d]','','ALL'),10)#@text",attributes.description) />
+<cfset attributes.description = application.rb.getResource("#attributes.rbkey#.description#@text",attributes.description) />
 
 
 <cfif NOT structKeyExists(session.objectadmin, attributes.typename)>
@@ -283,14 +285,14 @@ user --->
 		
 			
 			<cfif trim(HTMLfiltersAttributes) neq "">
-				<cfset HTMLfiltersAttributes = "<div style='display:inline;color:##000'>#application.rb.getResource('forms.text.resultfilteredby@text','result filtered by')#:</div> " & HTMLfiltersAttributes >
+				<cfset HTMLfiltersAttributes = "<div style='display:inline;color:##000'>#application.rb.getResource('objectadmin.messages.resultfilteredby@text','result filtered by')#:</div> " & HTMLfiltersAttributes >
 			</cfif>
 		
 	
 			<ft:form style="padding:10px; border: 1px solid ##000;margin-bottom:10px; ">
 				<cfoutput>
 				<div style="display:inline;color:##E17000">
-					#application.rb.getResource('forms.text.ListingFilter@text','Listing Filter')#:
+					#application.rb.getResource('objectadmin.messages.ListingFilter@text','Listing Filter')#:
 					<cfif HTMLfiltersAttributes eq "">
 						<a onclick="Effect.toggle('filterForm','blind');">set</a>
 					<cfelse>

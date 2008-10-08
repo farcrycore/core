@@ -397,7 +397,7 @@ $out:$
 				<cfoutput>
 					<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value=" " />
 					<select name="#arguments.fieldname#typename" id="#arguments.fieldname#typename">
-						<option value="">#application.rb.getResource("noneForSelect")#</option>
+						<option value="">#application.rb.getResource("coapi.dmNavigation.properties.aObjectIDs@noneForSelect","-- None --")#</option>
 						<cfloop query="qTypes">
 							<option value="#qTypes.typename#">#qTypes.description#</option>
 						</cfloop>	

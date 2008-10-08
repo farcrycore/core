@@ -61,7 +61,7 @@ $out:$
 <cfset lExclude = "dmImage,dmFile">
 
 <cfif listContainsNoCase(lExclude,destObj.typename)>
-	<cfoutput><h3>#application.rb.getResource("cantDragObjectsBelowFileImage")# </h3>
+	<cfoutput><h3>#application.rb.getResource("sitetree.messages.cantDragObjectsBelowFileImage@text","File or Image content items may not have objects dragged beneath them")# </h3>
 	<div align="center"> <input type="button" value="#application.rb.getResource('forms.buttons.close@label','Close')#" class="normalBttnStyle" onClick="window.close();" ></div>
 	</cfoutput>
 	<cfabort>

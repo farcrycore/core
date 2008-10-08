@@ -157,7 +157,7 @@
 	<!--- If we get to this point, no permissions were granted - throw an error and exit the tag --->
 	<cfif attributes.error>
 		<!--- Translate and output error message --->
-		<cfoutput>#application.rb.getResource("general.errors.#rereplace(attributes.errormessage,'[^\w]','','ALL')#",attributes.errormessage)#</cfoutput>
+		<cfoutput>#application.rb.getResource("security.messages.#rereplace(attributes.errormessage,'[^\w]','','ALL')#@text",attributes.errormessage)#</cfoutput>
 	</cfif>
 	<!--- Save result of check --->
 	<cfif len(attributes.result)>
