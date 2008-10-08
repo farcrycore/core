@@ -38,13 +38,13 @@ $out:$
 <cfsetting enablecfoutputonly="Yes">
 <!--- display all images --->
 <cfif stObj.thumbnailimage neq "">
-	<cfoutput>#application.rb.getResource("thumbnailLabel")# <br /><div style="margin-left:20px;margin-top:20px;"><img src="#application.url.webroot##stObj.thumbnailimage#" alt="#stObj.alt#" border="0"></div></cfoutput>
+	<cfoutput>#getI18Property("thumbnailimage","label")# <br /><div style="margin-left:20px;margin-top:20px;"><img src="#application.url.webroot##stObj.thumbnailimage#" alt="#stObj.alt#" border="0"></div></cfoutput>
 </cfif>
 <cfif stObj.standardimage neq "">
-	<cfoutput>Standard Image <br /><div style="margin-left:20px;margin-top:20px;"><img src="#application.url.webroot##stObj.StandardImage#" alt="#stObj.alt#" border="0"></div></cfoutput>
+	<cfoutput>getI18Property("standardimage","label") <br /><div style="margin-left:20px;margin-top:20px;"><img src="#application.url.webroot##stObj.StandardImage#" alt="#stObj.alt#" border="0"></div></cfoutput>
 </cfif>
 <cfif stObj.sourceimage neq "">
-	<cfoutput>#application.rb.getResource("imageLabel")# <br /><div style="margin-left:20px;margin-top:20px;"><img src="#application.url.webroot##stObj.sourceimage#" alt="#stObj.alt#" border="0"></div></cfoutput>
+	<cfoutput>#getI18Property("sourceimage","label")# <br /><div style="margin-left:20px;margin-top:20px;"><img src="#application.url.webroot##stObj.sourceimage#" alt="#stObj.alt#" border="0"></div></cfoutput>
 </cfif>
 
 <cfif stObj.sourceimage eq "" and stObj.thumbnailimage eq "" and stObj.standardimage eq "">
