@@ -323,7 +323,7 @@ environment references (might be nice to clean these up)
 		stCol=structNew();
 		stCol.columnType="evaluate";
 		stCol.title="#application.rb.getResource('objectadmin.columns.edit@heading','Edit')#";
-		stCol.value="iif(stPermissions.iEdit eq 1,DE(iif(locked and lockedby neq '##application.security.getCurrentUserID()##',DE('<span style=""color:red"">Locked</span>'),DE('<a href=''#editObjectURL#''><img src=""#application.url.farcry#/images/treeImages/edit.gif"" alt=""#application.rb.getResource("edit")#"" title=""#application.rb.getResource("edit")#""/></a>'))),DE('-'))";
+		stCol.value="iif(stPermissions.iEdit eq 1,DE(iif(locked and lockedby neq '##application.security.getCurrentUserID()##',DE('<span style=""color:red"">Locked</span>'),DE('<a href=''#editObjectURL#''><img src=""#application.url.farcry#/images/treeImages/edit.gif"" alt=""#application.rb.getResource("objectadmin.buttons.edit@label","Edit")#"" title=""#application.rb.getResource("objectadmin.buttons.edit@label","Edit")#""/></a>'))),DE('-'))";
 		stCol.style="text-align: center;";
 		//stCol.orderby="";
 		arrayAppend(aDefaultColumns,stCol);
@@ -332,7 +332,7 @@ environment references (might be nice to clean these up)
 		stCol=structNew();
 		stCol.columnType="expression";
 		stCol.title="#application.rb.getResource('objectadmin.columns.view@heading','View')#";
-		stCol.value="<a href=""#application.url.webroot#/index.cfm?objectID=##recordset.objectID##&flushcache=1"" target=""_blank""><img src=""#application.url.farcry#/images/treeImages/preview.gif"" alt=""#application.rb.getResource("view")#"" title=""#application.rb.getResource("view")#"" /></a>";
+		stCol.value="<a href=""#application.url.webroot#/index.cfm?objectID=##recordset.objectID##&flushcache=1"" target=""_blank""><img src=""#application.url.farcry#/images/treeImages/preview.gif"" alt=""#application.rb.getResource("objectadmin.buttons.view@label","View")#"" title=""#application.rb.getResource("objectadmin.buttons.view@label","View")#"" /></a>";
 		stCol.style="text-align: center;";
 		//stCol.orderby="";
 		arrayAppend(aDefaultColumns,stCol);
