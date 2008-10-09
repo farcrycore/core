@@ -79,7 +79,7 @@ Parent Object: URL.OBJECTID
 	ie. by default checks aObjectIDs is a property
  --->	
 <cfif len(url.objectId) AND not structKeyExists(stParent,url.parentproperty)>
-	<cfthrow type="evocation" message="<strong>Error:</strong> #application.rb.getResource("noaObjectIds")#">
+	<cfthrow type="evocation" message="<strong>Error:</strong> #application.rb.getResource('workflow.messages.noaObjectIds@text','You cannot create an item inside this content item as it has no aObjectIds property.')#">
 <cfelse>
 <!--- populate stproperties with default values from component metadata --->
 	<!--- default properties (common to all types) --->
@@ -167,7 +167,7 @@ Parent Object: URL.OBJECTID
 		<!--- relationship is same content type, eg dmnavigation and dmnavigation --->
 			<cfif NOT stParent.typename IS url.parenttype>
 				<!--- if content typs of parent is not actually the spcified parenttype then fail --->
-				<cfthrow type="evocation" message="#application.rb.getResource("cantCreateNavObj")#">
+				<cfthrow type="evocation" message="#application.rb.getResource('workflow.messages.cantCreateNavObj@text','Cannot create navigation nodes in content items!')#">
 			<cfelse>
 				<!--- TODO: 
 						we're assuming this is an NTM based content type and it might not be. 

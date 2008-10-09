@@ -3,7 +3,7 @@
 <cfoutput>
 function confirmRestore(navid,draftObjectID)
 {
-	confirmmsg = "#application.rb.getResource("confirmRestoreLiveObjToDraft")#";
+	confirmmsg = "#application.rb.getResource("workflow.buttons.restorelivecontent@confirmtext","This will restore the current live items data to this draft. The draft content will be replaced and any changes you have made lost.\nAre you sure you wish to do this?")#";
 	if(confirm(confirmmsg))
 	{
 		strURL = "#application.url.farcry#/navajo/restoreDraft.cfm";

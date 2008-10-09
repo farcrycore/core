@@ -33,7 +33,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 <ft:objectadmin 
 	typename="dmFile"
 	permissionset="news"
-	title="#application.rb.getResource("MediaLibraryFileAdministration")#"
 	columnList="title,datetimelastUpdated,status"   
 	sortableColumns="title,datetimelastUpdated,status"
 	lFilterFields="title"

@@ -39,7 +39,6 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 
 
 <cfif thistag.executionMode eq "Start">
-	<cfparam name="attributes.title" default="Type Admin" />
 	<cfparam name="attributes.typename" default="" />
 	<cfparam name="attributes.columnlist" default="label,datetimelastupdated" />
 
@@ -58,7 +57,12 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 
 <cfparam name="session.objectadmin" default="#structnew()#" type="struct">
 
-<cfparam name="attributes.title" default="#application.rb.formatRBString('forms.headings.typeadministration@text',attributes.typename,'{1} Administration')#" type="string">
+<cfif structkeyexists(application.stCOAPI[attributes.typename],"displayname") and len(application.stCOAPI[attributes.typename].displayname)>
+	<cfparam name="attributes.title" default="#application.rb.formatRBString('coapi.#attributes.typename#.headings.typeadministration@text',application.stCOAPI[attributes.typename].displayname,'{1} Administration')#">
+<cfelse>
+	<cfparam name="attributes.title" default="#application.rb.formatRBString('coapi.#attributes.typename#.headings.typeadministration@text',attributes.typename,'{1} Administration')#">
+</cfif>
+
 <cfparam name="attributes.ColumnList" default="" type="string">
 <cfparam name="attributes.SortableColumns" default="" type="string">
 <cfparam name="attributes.lFilterFields" default="" type="string">

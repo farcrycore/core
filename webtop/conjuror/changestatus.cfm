@@ -212,7 +212,7 @@ function deSelectAll()
 	<input type="hidden" name="finishURL" value="#finishURL#">
 
 <fieldset>
-<label for="commentLog"><b>#application.rb.getResource("addComment")#:</b>
+<label for="commentLog"><b>#application.rb.getResource("workflow.labels.addComments@label","Add your comments")#:</b>
 	<textarea id="commentLog" name="commentLog" rows="10" cols="60"></textarea>
 </label>
 </fieldset>
@@ -221,11 +221,11 @@ function deSelectAll()
 <cfif isDefined("approvers")>#approvers#</cfif>
 
 <div class="f-submit-wrap">
-<input type="submit" name="updatestatus" value="#application.rb.getResource("submitUC")#" class="f-submit" />
-<input type="submit" name="cancel" value="#application.rb.getResource("cancel")#" class="f-submit">
+<input type="submit" name="updatestatus" value="#application.rb.getResource('workflow.buttons.submit@label','submit')#" class="f-submit" />
+<input type="submit" name="cancel" value="#application.rb.getResource('workflow.buttons.cancel@label','cancel')#" class="f-submit">
 </div>
 <fieldset>
-	<label><b>#application.rb.getResource("prevCommentLog")#</b>
+	<label><b>#application.rb.getResource("workflow.headings.prevCommentLog@text","Previous Comment Log")#</b>
 		<nj:showcomments objectid="#stObj.objectid#" typename="#stObj.typename#" />
 	</label>
 </fieldset>

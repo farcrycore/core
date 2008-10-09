@@ -33,7 +33,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 <ft:objectadmin
 	typename="dmImage"
 	permissionset="news"
-	title="#application.rb.getResource("MediaLibraryImageAdministration")#"
 	columnList="title,datetimelastUpdated,status,ThumbnailImage" 
 	sortableColumns="title,datetimelastUpdated,status"
 	lFilterFields="title"

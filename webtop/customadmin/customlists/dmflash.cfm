@@ -33,7 +33,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 <ft:objectadmin 
 	typename="dmFlash"
 	permissionset="news"
-	title="#application.rb.getResource("MediaLibraryFlashAdministration")#"
 	columnList="label,datetimelastUpdated,status" 
 	sortableColumns="label,datetimelastUpdated,status"
 	lFilterFields="label"

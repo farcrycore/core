@@ -51,6 +51,7 @@ $out:$
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 <cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
+<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
  
 <cfparam name="url.objectId">
 <cfparam name="url.status" default="0">
@@ -63,9 +64,9 @@ $out:$
 <cfoutput>
 <span class="FormTitle">
 <cfif isDefined("URL.draftObjectID")>
-	#application.rb.getResource("objStatusRequest")#
+	<admin:resource key="workflow.messages.objStatusRequest@text">Set content item status for underlying draft content item to 'request'</admin:resource>
 <cfelse>	
-	#application.rb.formatRBString("setObjStatus","#url.status#")#
+	<admin:resource key="workflow.messages.setObjStatus@text" variables="url.status">Set content item status to {1}</admin:resource>
 </cfif>	
 </span><p></p>
 </cfoutput>
@@ -100,7 +101,7 @@ $out:$
 	<cfif isdefined("stObj.status")>
 		<cfoutput>
 			<form name="form" action="" method="post">
-			<span class="formLabel">#application.rb.getResource("addCommentsLabel")#</span><br>
+			<span class="formLabel">#application.rb.getResource("workflow.labels.addComments@label","Add your comments")#:</span><br>
 			<textarea rows="8" cols="50"  name="commentLog"></textarea><br />
 			
 			<!--- if requesting approval, list approvers --->
@@ -109,8 +110,8 @@ $out:$
 			
 			</cfif>
 			
-			<input type="submit" name="submit" value="#application.rb.getResource("submitUC")#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
-			<input type="button" name="Cancel" value="#application.rb.getResource("cancel")#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='../edittabOverview.cfm?objectid=#attributes.lobjectIDs#';"></div>     
+			<input type="submit" name="submit" value="#application.rb.getResource('workflow.buttons.submit@label','Submit')#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
+			<input type="button" name="Cancel" value="#application.rb.getResource('workflow.buttons.cancel@label','Cancel')#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='../edittabOverview.cfm?objectid=#attributes.lobjectIDs#';"></div>     
 			<!--- display existing comments --->
 			<nj:showcomments objectid="#attributes.lobjectIDs#" typename="#stObj.typename#" />
 			</form>
@@ -126,7 +127,7 @@ $out:$
 		
 		
 		<cfif not structkeyexists(stObj, "status")>
-			<cfoutput><script> alert("#application.rb.getResource("objNoApprovalProcess")#");
+			<cfoutput><script> alert("#application.rb.getResource('workflow.messages.objNoApprovalProcess@text','This content item type has no approval process attached to it.')#");
 				               window.close();
 			</script></cfoutput><cfabort>
 		</cfif>

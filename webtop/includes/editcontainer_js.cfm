@@ -92,7 +92,7 @@ function BumpUp(box)
 }
 
 function confirmDelete(){
-	var msg = "#application.rb.getResource("confirmDeletePackage")#";
+	var msg = "#application.rb.getResource('workflow.messages.confirmDeletePackage@text','Are you sure you wish to delete this package?')#";
 	if (confirm(msg))
 		return true;
 	else
@@ -108,7 +108,7 @@ function selectAll(dest){
  
  function deleteRule(fbox)
  {
- 	if (confirm("#application.rb.getResource("confirmDeleteRuleInstance")#"))
+ 	if (confirm("#application.rb.getResource('workflow.messages.confirmDeleteRuleInstance@text','Are you sure you wish to delete this rule instance?')#"))
 	{
 		 for(var i=0; i<fbox.options.length; i++)
 		 {

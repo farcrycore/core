@@ -76,7 +76,7 @@ $out:$
 <!--- make sure parent can hold an object before doing anything... --->	
 <cfif len(url.objectId) AND not structKeyExists(stParent,"aObjectIds")>
 	<cfoutput>
-		#application.rb.getResource("noaObjectIds")#
+		#application.rb.getResource("workflow.messages.noaObjectIds@text","You cannot create an item inside this content item as it has no aObjectIds property.")#
 	</cfoutput>
 	<cfabort>
 
@@ -111,7 +111,7 @@ $out:$
 		<cfif url.typename IS url.nodetype>
 			
 			<cfif NOT stParent.typename IS url.nodetype>
-				<cfoutput><b>#application.rb.getResource("cantCreateNavObj")#</b></cfoutput>
+				<cfoutput><b>#application.rb.getResource("workflow.messages.cantCreateNavObj@text","Cannot create navigation nodes in content items!")#</b></cfoutput>
 				<cfabort>
 			<cfelse>
 				<!--- Insert this node into the tree --->
