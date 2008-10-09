@@ -56,7 +56,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 		hack allows you to set metadata in the content type of bSystem="true" to exclude it from being addressed here
 		need to just rip out this cancer along with farcry.workflow GB 20060414
  --->	
-<cfif NOT structKeyExists(application.types[iType],"bSystem")>
+	<cfif NOT structKeyExists(application.types[iType],"bSystem")>
 		<cfset application.types[iType].bSystem="false">
 	</cfif>
     <cfif StructKeyExists(application.types[iType].stProps,"status") AND NOT application.types[iType].bSystem>
@@ -66,7 +66,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 
 <cfparam name="url.lockedEndRow" default="5">
 <cfset application.factory.oWorkFlow = createObject("component","#application.packagepath#.farcry.workflow")>
-<cfset returnstruct = application.factory.oWorkFlow.getLockedObjects("#session.dmProfile.userName#_#session.dmProfile.userDirectory#")>
+<cfset returnstruct = application.factory.oWorkFlow.getLockedObjects("#session.dmProfile.userName#")>
 <cfif returnstruct.bSuccess>
     <cfset qLockedObjects = returnstruct.qList>
 </cfif>
