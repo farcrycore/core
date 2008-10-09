@@ -108,7 +108,7 @@
 				},{
 					xtype:"panel",
 					cls:"htmlpanel",
-					html:"#application.rb.getResource('workflow.constants.#stobj.status#@label',stObj.status)
+					html:"#application.rb.getResource('workflow.constants.#stobj.status#@label',stObj.status)#",
 					cellCls:"value"
 				}
 			</cfoutput>
