@@ -35,59 +35,59 @@ START WEBSKIN
 	
 	<cfoutput>
 	<dl class="dl-style1" style="padding: 10px;">
-		<dt>#application.rb.getResource("objTitleLabel")#</dt>
+		<dt>#getI18Property("label","label")#</dt>
 		<dd><cfif stobj.label NEQ "">
 			#stobj.label#<cfelse>
-			<i>#application.rb.getResource("undefined")#</i></cfif>
+			<i>#application.rb.getResource("coapi.constants.undefined@label","undefined")#</i></cfif>
 		</dd>
-		<dt>#application.rb.getResource("objTypeLabel")#</dt>
+		<dt>#application.rb.getResource("coapi.labels.contentitemtype@label","Content Item Type")#</dt>
 		<dd><cfif structKeyExists(application.types[stobj.typename],"displayname")>
-			#application.types[stobj.typename].displayname#<cfelse>
-			#stobj.typename#</cfif>
+			#application.rb.getResource("coapi.#stobj.typename#.displayname@label",application.types[stobj.typename].displayname)#<cfelse>
+			#application.rb.getResource("coapi.#stobj.typename#.displayname@label",stobj.typename)#</cfif>
 		</dd><cfif StructKeyExists(stobj,"lnavidalias")>
-		<dt>Navigation Alias(es):</dt>
+		<dt>#getI18Property("lNavIDAlias","label")#:</dt>
 		<dd>#stobj.lnavidalias#</dd></cfif>
-		<dt>#application.rb.getResource("createdByLabel")#</dt>
+		<dt>#getI18Property("createdBy","Label")#</dt>
 		<dd>#stobj.createdby#</dd>
-		<dt>#application.rb.getResource("dateCreatedLabel")#</dt>
+		<dt>#getI18Property("datetimeCreated","Label")#</dt>
 		<dd>#application.thisCalendar.i18nDateFormat(stobj.datetimecreated,session.dmProfile.locale,application.shortF)#</dd>
-		<dt>#application.rb.getResource("lockingLabel")#</dt>
+		<dt>#application.rb.getResource("workflow.labels.locking@label","Locking")#</dt>
 		<dd><cfif stobj.locked and stobj.lockedby eq session.security.userid>
 				<!--- locked by current user --->
 				<cfset tDT=application.thisCalendar.i18nDateTimeFormat(stobj.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)>
-			<span style="color:red">#application.rb.formatRBString("locked",tDT)#</span> <a href="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#">[#application.rb.getResource("unLock")#]</a>
+			<span style="color:red">#application.rb.formatRBString("workflow.labels.lockedwhen@label",tDT,"Locked ({1})")#</span> <a href="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#">[#application.rb.getResource("workflow.buttons.unlock@label","Unlock")#]</a>
 			<cfelseif stobj.locked>
 				<!--- locked by another user --->
 				<cfset subS=listToArray('#application.thisCalendar.i18nDateFormat(stobj.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)#,#stobj.lockedby#')>
-			#application.rb.formatRBString("lockedBy",subS)#
+			#application.rb.formatRBString('workflow.labels.lockedby@label',subS,'<span style="color:red">Locked ({1})</span> by {2}')#
 				<!--- check if current user is a sysadmin so they can unlock --->
 				<cfif iDeveloperPermission eq 1><!--- show link to unlock --->
-				<a href="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#">[#application.rb.getResource("unlockUC")#]</a>
+				<a href="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#">[#application.rb.getResource("workflow.buttons.unlock@label","Unlock")#]</a>
 				</cfif><cfelse><!--- no locking --->
-				#application.rb.getResource("unlocked")#</cfif>
+				#application.rb.getResource("workflow.labels.unlocked@unlocked","Unlocked")#</cfif>
 		</dd>
 		<cfif StructKeyExists(stobj, "datetimelastupdated")>
-			<dt>#application.rb.getResource("lastUpdatedLabel")#</dt>
+			<dt>#getI18Property("datetimelastupdated","label")#</dt>
 			<dd>#application.thisCalendar.i18nDateFormat(stobj.datetimelastupdated,session.dmProfile.locale,application.mediumF)#</dd>
 		</cfif>
 		<cfif StructKeyExists(stobj, "lastupdatedby")>
-			<dt>#application.rb.getResource("lastUpdatedByLabel")#</dt>
+			<dt>#getI18Property("lastUpdatedBy","Label")#</dt>
 			<dd>#stobj.lastupdatedby#</dd>
 		</cfif>
 		<cfif StructKeyExists(stobj, "status")>	
-			<dt>#application.rb.getResource("currentStatusLabel")#</dt>
+			<dt>#getI18Property("status","label")#</dt>
 			<dd>#stobj.status#</dd>
 		</cfif>
 		<cfif StructKeyExists(stobj, "displaymethod")>		
-			<dt>#application.rb.getResource("templateLabel")#</dt>
+			<dt>#getI18Property("displaymethod","label")#</dt>
 			<dd>#stobj.displaymethod#</dd>
 		</cfif>
 		<cfif StructKeyExists(stobj, "teaser")>
-			<dt>#application.rb.getResource("teaserLabel")#</dt>
+			<dt>#getI18Property("teaser","label")#</dt>
 			<dd>#stobj.teaser#</dd>
 		</cfif>
 		<cfif StructKeyExists(stobj, "thumbnailimagepath") AND stobj.thumbnailimagepath NEQ "">
-			<dt>#application.rb.getResource("thumbnailLabel")#</dt>
+			<dt>#getI18Property("thumbnailimagepath","label")#</dt>
 			<dd><img src="#application.url.webroot#/images/#stobj.thumbnail#"></dd>
 		</cfif>
 		<cfif iDeveloperPermission eq 1>

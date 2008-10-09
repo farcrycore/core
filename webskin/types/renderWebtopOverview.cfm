@@ -76,7 +76,7 @@ START WEBSKIN
 
 						
 				<cfif stobj.status NEQ "" AND NOT structIsEmpty(stDraftObject)>
-					<extjs:item title="#stDraftObject.status#" container="Panel" layout="border">
+					<extjs:item title="#application.rb.getResource('workflow.constants.#stDraftObject.status#@label',stDraftObject.status)#" container="Panel" layout="border">
 
  						<extjs:item region="center" container="Panel" layout="border">			
 							<extjs:item region="center" autoScroll="true">
@@ -101,7 +101,7 @@ START WEBSKIN
 
 	
 							
-			<extjs:item title="#mainTabStatus#" container="Panel" layout="border">
+			<extjs:item title="#application.rb.getResource('workflow.constants.#mainTabStatus#@label',mainTabStatus)#" container="Panel" layout="border">
 				<extjs:item region="center" container="Panel" layout="border">			
 					<extjs:item region="center" autoScroll="true">
 						<cfset workflowHTML = oWorkflow.renderWorkflow(referenceID="#stobj.objectid#", referenceTypename="#stobj.typename#") />

@@ -6,9 +6,9 @@
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 
 <cfset permissiontypes = structnew() />
-<cfset permissiontypes["-1"] = application.rb.getResource("forms.labels.deny","Deny") />
-<cfset permissiontypes["0"] = application.rb.getResource("forms.labels.inherit","Inherit") />
-<cfset permissiontypes["1"] = application.rb.getResource("forms.labels.grant","Grant") />
+<cfset permissiontypes["-1"] = application.rb.getResource("security.constants.deny@label","Deny") />
+<cfset permissiontypes["0"] = application.rb.getResource("security.constants.inherit@label","Inherit") />
+<cfset permissiontypes["1"] = application.rb.getResource("security.constants.grant@label","Grant") />
 
 <sec:CheckPermission error="true" permission="ModifyPermissions">
 
@@ -32,20 +32,20 @@
 	<cfoutput>
 		<script type="text/javascript">
 			var permissiontypevalue = { 
-				'#application.rb.getResource("forms.labels.deny","Deny")#':-1,  
-				<cfif stObj.typename eq "dmNavigation">'#application.rb.getResource("forms.labels.inherit","Inherit")#':0,</cfif>
-				'#application.rb.getResource("forms.labels.grant","Grant")#':1
+				'#application.rb.getResource("security.constants.deny@label","Deny")#':-1,  
+				<cfif stObj.typename eq "dmNavigation">'#application.rb.getResource("security.constants.inherit@label","Inherit")#':0,</cfif>
+				'#application.rb.getResource("security.constants.grant@label","Grant")#':1
 			}
 			<cfif stObj.typename eq "dmNavigation">
 				var nextpermissiontype = { 
-					'#application.rb.getResource("forms.labels.deny","Deny")#':'#application.rb.getResource("forms.labels.inherit","Inherit")#',
-					'#application.rb.getResource("forms.labels.inherit","Inherit")#':'#application.rb.getResource("forms.labels.grant","Grant")#',  
-					'#application.rb.getResource("forms.labels.grant","Grant")#':'#application.rb.getResource("forms.labels.deny","Deny")#'
+					'#application.rb.getResource("security.constants.deny@label","Deny")#':'#application.rb.getResource("security.constants.inherit@label","Inherit")#',
+					'#application.rb.getResource("security.constants.inherit@label","Inherit")#':'#application.rb.getResource("security.constants.grant@label","Grant")#',  
+					'#application.rb.getResource("security.constants.grant@label","Grant")#':'#application.rb.getResource("security.constants.deny@label","Deny")#'
 				}
 			<cfelse>
 				var nextpermissiontype = { 
-					'#application.rb.getResource("forms.labels.inherit","Deny")#':'#application.rb.getResource("forms.labels.grant","Grant")#',  
-					'#application.rb.getResource("forms.labels.grant","Grant")#':'#application.rb.getResource("forms.labels.deny","Deny")#'
+					'#application.rb.getResource("security.constants.deny@label","Deny")#':'#application.rb.getResource("security.constants.grant@label","Grant")#',  
+					'#application.rb.getResource("security.constants.grant@label","Grant")#':'#application.rb.getResource("security.constants.deny@label","Deny")#'
 				}
 			</cfif>  
 			var permissiontypecolor = { 
@@ -121,14 +121,14 @@
 									<script type="text/javascript">
 									<cfif stObj.typename eq "dmNavigation">
 										var btnHash#btnIDHash# = { 
-											'#application.rb.getResource("forms.labels.deny","Deny")#':'#application.rb.getResource("forms.labels.deny","Deny")#',
-											'#application.rb.getResource("forms.labels.inherit","Inherit")#':'#application.rb.getResource("forms.labels.inherit","Inherit")# (#application.rb.getResource("forms.labels.inherit","#inheritedRightText#")#)',
-											'#application.rb.getResource("forms.labels.grant","Grant")#':'#application.rb.getResource("forms.labels.grant","Grant")#'
+											'#application.rb.getResource("security.constants.deny@label","Deny")#':'#application.rb.getResource("security.constants.deny@label","Deny")#',
+											'#application.rb.getResource("security.constants.inherit@label","Inherit")#':'#application.rb.getResource("security.constants.inherit@label","Inherit")# (#application.rb.getResource("security.constants.#inheritedRightText#@label",inheritedRightText)#)',
+											'#application.rb.getResource("security.constants.grant@label","Grant")#':'#application.rb.getResource("security.constants.grant@label","Grant")#'
 										}
 									<cfelse>
 										var btnHash#btnIDHash# = { 
-											'#application.rb.getResource("forms.labels.inherit","Deny")#':'#application.rb.getResource("forms.labels.grant","Deny")#',  
-											'#application.rb.getResource("forms.labels.grant","Grant")#':'#application.rb.getResource("forms.labels.deny","Grant")#'
+											'#application.rb.getResource("security.constants.deny@label","Deny")#':'#application.rb.getResource("security.constants.deny@label","Deny")#',  
+											'#application.rb.getResource("security.constants.grant@label","Grant")#':'#application.rb.getResource("security.constants.grant@label","Grant")#'
 										}
 									</cfif> 
 									</script>										

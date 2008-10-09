@@ -10,7 +10,7 @@
 <sec:CheckPermission error="true" permission="developer">
 
 	<cfoutput>
-		<h2>#application.rb.getResource("coapi.bulkFileUpload.general.heading","Bulk File Upload")#</h2>
+		<h2>#application.rb.getResource("coapi.bulkFileUpload.headings.bulkfileupload@text","Bulk File Upload")#</h2>
 	</cfoutput>
 	
 	<ft:processform action="Upload files">
@@ -28,8 +28,11 @@
 	</ft:form>
 	
 	<cfoutput>
-		<h3>#application.rb.getResource("coapi.bulkFileUpload.general.instructions","Instructions:")#</h3>
-		<p>#application.rb.getResource("coapi.bulkFileUpload.general.uploadfileblurb","<p>This utility will quickly upload multiple files into Farcry</p><p>You will need to supply a .zip file that contains the files to be uploaded. Files and Directories contained in the .zip file will be recreated within Farcry under the selected node.</p>")#</p>
+		<h3>#application.rb.getResource("coapi.bulkFileUpload.labels.instructions@text","Instructions:")#</h3>
+		<admin:resource key="coapi.bulkFileUpload.messages.uploadfileblurb@text">
+			<p>This utility will quickly upload multiple files into Farcry</p>
+			<p>You will need to supply a .zip file that contains the files to be uploaded. Files and Directories contained in the .zip file will be recreated within Farcry under the selected node.</p>
+		</admin:resource/>
 	</cfoutput>
 	
 </sec:CheckPermission>

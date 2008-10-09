@@ -36,7 +36,7 @@ system attributes
   properties that all content types require in FarCry
 --------------------------------------------------------------------->	
 <cfproperty name="versionID" type="uuid" hint="objectID of live object - used for versioning" required="no" default="" />
-<cfproperty name="status" type="string" hint=" Status of the object (draft, pending, approved)." required="yes" default="draft" />
+<cfproperty name="status" type="string" hint=" Status of the object (draft, pending, approved)." required="yes" default="draft" ftLabel="Status" />
 <!--------------------------------------------------------------------
 default handlers
   handlers that all types require

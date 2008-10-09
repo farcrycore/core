@@ -46,7 +46,7 @@
 		},{
 			xtype:"panel",
 			cls:"htmlpanel",
-			html:"#application.rb.getResource("lockingLabel")#",
+			html:"#application.rb.getResource("workflow.labels.locking@label","Locking")#",
 			cellCls:"label"
 		},{
 			xtype:"panel",
@@ -57,21 +57,21 @@
 				<!--- locked by current user --->
 				<cfset tDT=application.thisCalendar.i18nDateTimeFormat(stobj.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)>
 				<cfoutput>
-					"<span style='color:red'>#application.rb.formatRBString("locked",tDT)#</span> <a href='navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#'>[#application.rb.getResource("unLock")#]</a>"
+					"<span style='color:red'>#application.rb.formatRBString("workflow.labels.lockedwhen@label",tDT,"Locked ({1})")#</span> <a href='navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#'>[#application.rb.getResource("workflow.buttons.unlock@label","Unlock")#]</a>"
 				</cfoutput>
 			<cfelseif stobj.locked>
 				<!--- locked by another user --->
 				<cfset subS=listToArray('#application.thisCalendar.i18nDateFormat(stobj.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)#,#stobj.lockedby#')>
-				<cfoutput>"#application.rb.formatRBString("lockedBy",subS)#"</cfoutput>
+				<cfoutput>"#application.rb.formatRBString('workflow.labels.lockedby@label',subS,'<span style="color:red">Locked ({1})</span> by {2}')#"</cfoutput>
 				
 				<!--- check if current user is a sysadmin so they can unlock --->
 				<cfif iDeveloperPermission eq 1><!--- show link to unlock --->
 					<cfoutput>
-						"<a href='navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#'>[#application.rb.getResource("unlockUC")#]</a>"
+						"<a href='navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#'>[#application.rb.getResource("workflow.buttons.unlock@label","Unlock")#]</a>"
 					</cfoutput>
 				</cfif>
 			<cfelse><!--- no locking --->
-				<cfoutput>"#application.rb.getResource("unlocked")#"</cfoutput>
+				<cfoutput>"#application.rb.getResource("workflow.labels.unlocked@unlocked","Unlocked")#"</cfoutput>
 			</cfif>
 		
 		<cfoutput>,
@@ -79,7 +79,7 @@
 		},{
 			xtype:"panel",
 			cls:"htmlpanel",
-			html:"#application.rb.getResource("lastUpdatedLabel")#",
+			html:"#getI18Property('datetimelastupdated','label')#",
 			cellCls:"label"
 		},{
 			xtype:"panel",
@@ -89,7 +89,7 @@
 		},{
 			xtype:"panel",
 			cls:"htmlpanel",
-			html:"#application.rb.getResource("lastUpdatedByLabel")#",
+			html:"#getI18Property('lastupdatedby','label')#",
 			cellCls:"label"
 		},{
 			xtype:"panel",
@@ -103,12 +103,12 @@
 				,{
 					xtype:"panel",
 					cls:"htmlpanel",
-					html:"#application.rb.getResource("currentStatusLabel")#",
+					html:"#getI18Property('status','label')#",
 					cellCls:"label"
 				},{
 					xtype:"panel",
 					cls:"htmlpanel",
-					html:"#stobj.status#",
+					html:"#application.rb.getResource('workflow.constants.#stobj.status#@label',stObj.status)
 					cellCls:"value"
 				}
 			</cfoutput>
@@ -125,7 +125,7 @@
 				,{
 					xtype:"panel",
 					cls:"htmlpanel",
-					html:"#application.rb.getResource("templateLabel")#",
+					html:"#getI18Property('displaymethod','label')#",
 					cellCls:"label"
 				},{
 					xtype:"panel",

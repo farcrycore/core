@@ -10,7 +10,7 @@
 <cfparam  name="attributes.id" default="#createUUID()#">
 <cfparam  name="attributes.Type" default="">
 <cfparam  name="attributes.Value" default="#Attributes.Type#">
-<cfparam  name="attributes.rbkey" default="forms.buttons.#rereplacenocase(attributes.value,'[^\w\d]','','ALL')#">
+<cfparam  name="attributes.rbkey" default="forms.buttons.#rereplacenocase(attributes.value,'[^\w\d]','','ALL')#"><!--- The resource path for this button. Default is forms.buttons.value. --->
 <cfparam  name="attributes.Onclick" default="">
 <cfparam  name="attributes.Class" default="">
 <cfparam  name="attributes.Style" default="">
