@@ -52,7 +52,7 @@ out:
 	</cfif>
 	
 	<!--- display form --->
-	<cfoutput><h3>#application.rb.getResource("contentCacheSummary")#</h3></cfoutput>
+	<cfoutput><h3>#application.rb.getResource("cache.headings.contentCacheSummary@text","Content Cache Summary")#</h3></cfoutput>
 	
 	<!--- block caches --->
 	<!--- check a block cache exists --->
@@ -62,11 +62,11 @@ out:
 		<form action="" method="post" name="BlockForm">
 		<table class="table-4" cellspacing="0">
 		<tr>
-			<th>#application.rb.getResource("Block")#</th>
-			<th>#application.rb.getResource("numberCaches")#</th>
-			<th>#application.rb.getResource("expiredCaches")#</th>
-			<th>#application.rb.getResource("clean")#</th>
-			<th>#application.rb.getResource("flush")#</th>
+			<th>#application.rb.getResource("cache.labels.Block@label","Block")#</th>
+			<th>#application.rb.getResource("cache.labels.numberCaches@label","Number of Caches")#</th>
+			<th>#application.rb.getResource("cache.labels.expiredCaches@label","Expired Caches")#</th>
+			<th>#application.rb.getResource("cache.labels.clean@label","Clean")#</th>
+			<th>#application.rb.getResource("cache.labels.flush@label","Flush")#</th>
 		</tr>
 		</cfoutput>
 		
@@ -128,7 +128,7 @@ out:
 		</form>
 		</cfoutput>
 	<cfelse>
-		<cfoutput><p>#application.rb.getResource("noBlockCachesNow")#</p></cfoutput>
+		<cfoutput><p>#application.rb.getResource("cache.messages.noBlockCachesNow@text","No block caches at this time.")#</p></cfoutput>
 	</cfif>
 </sec:CheckPermission>
 

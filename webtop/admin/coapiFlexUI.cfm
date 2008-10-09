@@ -5,7 +5,7 @@
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<admin:header title="#application.rb.getResource("COAPIrules")#" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
+<admin:header title="#application.rb.getResource('coapiadmin.headings.COAPIrules@text','COAPI Rules')#" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <sec:CheckPermission error="true" permission="AdminCOAPITab">
 	<cfset connectString = "#replace(replace(application.url.webtop,"/",""),"/",".","all")#.facade.coapiFacade">

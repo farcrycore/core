@@ -102,20 +102,20 @@ $out:$
 		<cfif form.debug eq 1>
 			<!--- show debug only, don't fix tree --->
 			<cfoutput>
-			<h3>#application.rb.getResource("debugComplete")#</h3>
-	     <p>#application.rb.getResource("objRemovedList")#</p></cfoutput>
+			<h3>#application.rb.getResource("fixtree.headings.debugComplete@text","Debug Complete")#</h3>
+	     <p>#application.rb.getResource("fixtree.messages.objRemovedList@text","These are the content items that would be removed if run out of debug mode")#:</p></cfoutput>
 	       	
 			<cfif qRogue.recordcount>
 				<!--- show dump --->
-	        	<cfdump var="#qRogue#" label="#application.rb.getResource("rogueTreeObj")#"> 
+	        	<cfdump var="#qRogue#" label="#application.rb.getResource('fixtree.messages.noRogueTreeObj@text','There are no rogue objects in your tree')#"> 
 				<cfoutput>
 				<form action="cleanTree.cfm" method="post">
-		            <input type="submit" name="submit" class="f-submit" value="#application.rb.getResource("removeObj")#" />
+		            <input type="submit" name="submit" class="f-submit" value="#application.rb.getResource('fixtree.messages.removeObj@text','Remove these content items')#" />
 		        </form>
 				</cfoutput>
 			<cfelse>
 				<!--- no rogue objects --->
-				<cfoutput>#application.rb.getResource("noRogueTreeObj")#</cfoutput>
+				<cfoutput>#application.rb.getResource('fixtree.messages.noRogueTreeObj@text','There are no rogue objects in your tree')#</cfoutput>
 			</cfif>	
 	    <cfelse>                
 		   	<!--- delete rogue objects --->
@@ -128,8 +128,8 @@ $out:$
 				</cfquery>
 			</cfloop>
 	        <cfoutput>
-			<div class="formtitle">#application.rb.getResource("treeFixed")#</div>
-			#application.rb.getResource("rogueTreeDataRemoved")#</cfoutput>
+			<div class="formtitle">#application.rb.getResource('fixtree.messages.treeFixed@text','Tree Fixed')#</div>
+			#application.rb.getResource("fixtree.messages.rogueTreeDataRemoved@text","Rogue tree data has been removed.")#</cfoutput>
 	    </cfif>
 	<cfelse>
 		<!--- show the form --->
@@ -140,20 +140,20 @@ $out:$
 	        <form action="cleanTree.cfm" method="post" class="f-wrap-1 f-bg-short wider">
 			<fieldset>
 			 	
-				<h3>#application.rb.getResource("cleanNestedTree")#</h3>
+				<h3>#application.rb.getResource("fixtree.headings.cleanNestedTree@text","Clean a Nested Tree")#</h3>
 				
 				<fieldset class="f-checkbox-wrap">
 					<b>&nbsp;</b>
 						<fieldset>
 						<label for="debug">
 						<input type="checkbox" name="debug" id="debug" value="1" checked="checked" />
-						#application.rb.getResource("showDebugOnly")#
+						#application.rb.getResource("fixtree.labels.showDebugOnly@label","Show debug only (don't fix the table)")#
 						</label>
 						</fieldset>
 	        	</fieldset>
 				
 				<div class="f-submit-wrap">
-			    <input type="submit" name="submit" class="f-submit" value="#application.rb.getResource("submit")#" />
+			    <input type="submit" name="submit" class="f-submit" value="#application.rb.getResource('fixtree.buttons.submit@label','Submit')#" />
 	     		</div>
 				
 		 	</fieldset>
@@ -161,7 +161,9 @@ $out:$
 			
 			<hr />
 			
-			<p>#application.rb.getResource("nestedTreeBlurb")#</p>
+			<admin:resource key="fixtree.messages.nestedTreeBlurb@text">
+				<p>Use this function if your nested tree ever gets corrupted data. It loops through all tree nodes and looks for associated content items that may no longer exist and removes them. You may want to make a backup of your database before fixing the tree. Please be patient, this process can take a few minutes!</p>
+			</admin:resource>
 	    </cfoutput>
 	</cfif>
 </sec:CheckPermission>

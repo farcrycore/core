@@ -153,10 +153,8 @@ $out:$
 	    </cfscript>
 	
 	    <cfoutput>
-	        <div class="formTitle">#application.rb.getResource("catTreeQuickBuilder")#</div>
-	        <p>
-	            #application.rb.getResource("followingItemsCreated")#
-	        </p>
+	        <div class="formTitle">#application.rb.getResource("quickbuilder.headings.catTreeQuickBuilder@text","Category Tree Quick Builder")#</div>
+	        <p>#application.rb.getResource("quickbuilder.labels.followingItemsCreated@text","The following items have been created")#:</p>
 	        <ul>
 				<cfset subS=listToArray('#arrayLen(items)#,"Category"')>
 				<li>#application.rb.formatRBString("objects",subS)#</li>
@@ -185,11 +183,11 @@ $out:$
 	<form method="post" class="f-wrap-1 f-bg-long wider" action="" name="theForm">
 	<fieldset>
 	
-		<h3>#application.rb.getResource("catTreeQuickBuilder")#</h3>
+		<h3>#application.rb.getResource("quickbuilder.headings.catTreeQuickBuilder@text","Category Tree Quick Builder")#</h3>
 		
-		<label for="startPoint"><b>#application.rb.getResource("createStructureWithin")#</b>
+		<label for="startPoint"><b>#application.rb.getResource("quickbuilder.labels.createStructureWithin@label","Create structure within")#</b>
 		<select name="startPoint" id="startPoint">
-		<option value="#application.catid.root#" selected>#application.rb.getResource("Root")#</option>
+		<option value="#application.catid.root#" selected>#application.rb.getResource("quickbuilder.labels.root@label","Root")#</option>
 		<cfloop query="qNodes">
 		<option value="#qNodes.objectId#">#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #qNodes.objectName#</option>
 		</cfloop>
@@ -198,17 +196,17 @@ $out:$
 		
 		<fieldset class="f-checkbox-wrap">
 		
-			<b>#application.rb.getResource("navAliases")#</b>
+			<b>#application.rb.getResource("quickbuilder.labels.navAliases@label","Nav Aliases")#</b>
 			
 			<fieldset>
 			
 			<label for="makenavaliases">
 			<input type="checkbox" name="makenavaliases" id="makenavaliases" checked="checked" value="1" onclick="updateNavTreeDepthBox()" class="f-checkbox" />
-			#application.rb.getResource("createNavAliases")#
+			#application.rb.getResource("quickbuilder.labels.createNavAliases@label","Create nav aliases for category nodes down")#
 			</label>
 			
 			<select name="navaliaseslevel">
-	            <option value="0">#application.rb.getResource("all")#</option>
+	            <option value="0">#application.rb.getResource("quickbuilder.labels.all@label","All")#</option>
 	            <option value="1" selected >1</option>
 	            <option value="2">2</option>
 	            <option value="3">3</option>
@@ -216,25 +214,25 @@ $out:$
 	            <option value="5">5</option>
 	            <option value="6">6</option>
 	          </select><br />
-	          #application.rb.getResource("levels")#
+	          #application.rb.getResource("quickbuilder.labels.levels@label","levels")#
 			  <script>updateNavTreeDepthBox()</script>
 			
 			</fieldset>
 		
 		</fieldset>
 		
-		<label for="levelToken"><b>#application.rb.getResource("levelToken")#</b>
+		<label for="levelToken"><b>#application.rb.getResource("quickbuilder.labels.levelToken@label","Level Token")#</b>
 		<select name="levelToken" id="levelToken">
 		<option>#levelToken#</option>
 		</select><br />
 		</label>
 		
-		<label for="structure"><b>#application.rb.getResource("structure")#</b>
+		<label for="structure"><b>#application.rb.getResource("quickbuilder.labels.structure@label","Structure")#</b>
 		<textarea name="structure" id="structure" rows="10" cols="40" class="f-comments"></textarea><br />
 		</label>
 		
 		<div class="f-submit-wrap">
-		<input type="submit" value="#application.rb.getResource("buildSiteStructure")#" name="submit" class="f-submit" /><br />
+		<input type="submit" value="#application.rb.getResource('quickbuilder.labels.buildCategoryStructure@label','Build Category Structure')#" name="submit" class="f-submit" /><br />
 		</div>
 		
 	</fieldset>
@@ -242,14 +240,15 @@ $out:$
 	
 	<hr />
 
-	<h4>#application.rb.getResource("instructions")#</h4>
-	<p>
-	#application.rb.getResource("quicklyBuildFarCrySiteBlurb")#
-	</p>
+	<h4>#application.rb.getResource("quickbuilder.headings.instructions@text","Instructions")#</h4>
+	<admin:resource key="quickbuilder.messages.quicklyBuildFarCryCategoryBlurb@text">
+		<p>To quickly build a FarCry category structure, enter each node title on a new line. The hierarchy is determined by the characters in front of an item.</p>
+		<p>Hierarchy can either descend (1 or more levels), ascend (1 level at most), or stay the same. To ascend one level, increase the number of levelToken occurrences on the item by 1 compared to the previous item. To descend, keep the number of level token occurrences in front to be the same as a previous item on the same level you wish to go back to. To stay in the same level, keep the levelToken occurrences the same.</p>
+	</admin:resource>
 	
 	<hr />
 	
-	<h4>#application.rb.getResource("example")#</h4>
+	<h4>#application.rb.getResource("quickbuilder.headings.example@text","Example")#</h4>
 	<p>
 	<pre>
 	Item 1
@@ -263,9 +262,9 @@ $out:$
 	</pre>
 	</p>
 	
-	<p>
-	#application.rb.getResource("visualPurposesBlurb")#
-	</p>
+	<admin:resource key="quickbuilder.messages.@text">
+		<p>For visual purposes spaces can be included between the item and the levelToken. Example:</p>
+	</admin:resource>
 	
 	<p>
 	<pre>

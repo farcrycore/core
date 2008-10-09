@@ -45,7 +45,7 @@ out:
 	</cfif>
 	
 	<!--- display form --->
-	<cfoutput><span class="Formtitle">#application.rb.getResource("contentCacheDetail")#</span><p></p></cfoutput>
+	<cfoutput><span class="Formtitle">#application.rb.getResource("cache.headings.contentCacheDetail@text","Content Cache Detail")#</span><p></p></cfoutput>
 	
 	<!--- get individual caches from block--->
 	<cfif structkeyexists(server,"dm_CacheBlock")>
@@ -54,9 +54,9 @@ out:
 		<table cellpadding="5" cellspacing="0" border="1" style="margin-left:30px;">
 		<tr class="dataheader">
 			<td>#application.rb.getResource("cache")#</td>
-			<td align="center">#application.rb.getResource("timeoutPeriod")#</td>
-			<td align="center">#application.rb.getResource("willExpire")#</td>
-			<td align="center">#application.rb.getResource("flush")#</td>
+			<td align="center">#application.rb.getResource("cache.labels.timeoutPeriod@label","Timeout Period")#</td>
+			<td align="center">#application.rb.getResource("cache.labels.willExpire@label","Will Expire")#</td>
+			<td align="center">#application.rb.getResource("cache.labels.flush@label","Flush")#</td>
 		</tr>
 		</cfoutput>
 		<!--- check there are caches to display --->
@@ -90,7 +90,7 @@ out:
 								#application.thisCalendar.i18nTimeFormat(expire,session.dmProfile.locale,application.longF)# 
 								#application.thisCalendar.i18nDateFormat(expire,session.dmProfile.locale,application.fullF)#
 							<cfelse>
-								<span style="color:red;">#application.rb.getResource("expired")#</span>
+								<span style="color:red;">#application.rb.getResource("cache.constants.expired@label","Expired!")#</span>
 							</cfif>
 						</td>
 						<td align="center"><input type="checkbox" value="#actualCacheName#" name="flush"></td>
@@ -101,14 +101,14 @@ out:
 			</cfloop>
 			<cfoutput>
 			<tr style="border: none;">
-				<td style="border-right: none;" colspan="3"><input type="button" value="#application.rb.getResource("refresh")#" name="refresh" class="normalbttnstyle" onClick="forms.cacheForm.submitButton.name='refresh';forms.cacheForm.submitButton.click()"></td>
-				<td  style="border-left: none;" align="center"><input type="button" value="#application.rb.getResource("flush")#" name="flush" class="normalbttnstyle" onClick="forms.cacheForm.submitButton.name='flush';forms.cacheForm.submitButton.click()"></td>
+				<td style="border-right: none;" colspan="3"><input type="button" value="#application.rb.getResource('cache.buttons.refresh@label','Refresh')#" name="refresh" class="normalbttnstyle" onClick="forms.cacheForm.submitButton.name='refresh';forms.cacheForm.submitButton.click()"></td>
+				<td  style="border-left: none;" align="center"><input type="button" value="#application.rb.getResource('cache.buttons.flush@label','Flush')#" name="flush" class="normalbttnstyle" onClick="forms.cacheForm.submitButton.name='flush';forms.cacheForm.submitButton.click()"></td>
 			</tr>
 			</cfoutput>
 		<cfelse>
 			<cfoutput>
 			<tr>
-				<td colspan="5">#application.rb.getResource("noCachesToDisplay")#</td>
+				<td colspan="5">#application.rb.getResource("cache.messages.noCachesToDisplay@text","No caches to display")#</td>
 			</tr>
 			</cfoutput>
 		</cfif>
@@ -119,11 +119,11 @@ out:
 		</form>
 		</cfoutput>
 	<cfelse>
-		<cfoutput>#application.rb.getResource("noCachesNow")#</cfoutput>
+		<cfoutput>#application.rb.getResource("cache.messages.noCachesNow@text","No caches at this time.")#</cfoutput>
 	</cfif>
 	
 	<!--- show link back to summary page --->
-	<cfoutput><p><span class="frameMenuBullet">&raquo;</span> <a href="cacheSummary.cfm">#application.rb.getResource("returnCacheSummaryPage")#</a></p></cfoutput>
+	<cfoutput><p><span class="frameMenuBullet">&raquo;</span> <a href="cacheSummary.cfm">#application.rb.getResource("cache.buttons.returntocachesummary@label","Return to Cache Summary page")#</a></p></cfoutput>
 </sec:CheckPermission>
 
 <admin:footer>

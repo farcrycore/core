@@ -76,7 +76,7 @@ $out:$
 		</cfdefaultcase>
 	</cfswitch>
 	
-	<cfoutput><h3>#application.rb.getResource("diagOrphanNotes")#</h3></cfoutput>
+	<cfoutput><h3>#application.rb.getResource("fixtree.headings.diagOrphanNodes@text","Diagnostics :: Orphaned Nodes")#</h3></cfoutput>
 	
 	<!--- if requested, attach orphans to navnode in tree --->
 	<cfif isDefined("form.objectid")>
@@ -92,20 +92,22 @@ $out:$
 			<cfoutput>#listlen(form.objectid)# nav node orphan<cfif qOrphans.recordCount neq 1>s</cfif> attached to #form.navalias#.</cfoutput>
 		</cflock>
 			<cfcatch>
-				<cfoutput><h2>#application.rb.getResource("moveBranchLockout")#</h2>
-				<p>#application.rb.getResource("branchLockoutBlurb")#</p></cfoutput>
+				<cfoutput><h2>#application.rb.getResource("fixtree.headings.moveBranchLockout","Move-branch lockout")#</h2></cfoutput>
+				<admin:resource key="fixtree.messages.branchLockout">
+					<cfoutput><p>Another editor is currently modifying the hierarchy. Please refresh the site overview tree and try again.</p></cfoutput>
+				</admin:resource>
 				<cfabort>
 			</cfcatch>
 		</cftry>
 		
 	<cfelse>
-		<cfoutput>
-			<p>#application.rb.getResource("noParentNestedTreeBlurb")#</p>
-		</cfoutput>
+		<admin:resource key="fixtree.messages.noParentNestedTree@text">
+			<cfoutput><p>Use this function if your nested tree ever gets objects with no parents. It will give all your orphaned objects parents again. You may want to make a backup of your database before fixing the tree.</p></cfoutput>
+		</admin:resource>
 		
 		<cfif qOrphans.recordcount>
 			<!--- show orphaned nodes --->
-			<cfoutput><p>#application.rb.getResource("currentOrphanedNodes")#</p></cfoutput>
+			<cfoutput><p>#application.rb.getResource("fixtree.headings.currentOrphanedNodes@text","Current Orphaned Nodes")#:</p></cfoutput>
 			<!--- <cfdump var="#qOrphans#" label="Orphaned Nodes"> --->
 			<!--- show form to attach orphans to a known node --->
 			<cfoutput>
@@ -115,9 +117,9 @@ $out:$
 				<tr>
 					<th>&nbsp;</th>
 					<!--- 18n: can these be localized?  --->
-					<th>#application.rb.getResource("objID")#</th>
-					<th>#application.rb.getResource("parentID")#</th>
-					<th>#application.rb.getResource("title")#</th>
+					<th>#application.rb.getResource("fixtree.labels.currentid@label","Current Item ID")#</th>
+					<th>#application.rb.getResource("fixtree.labels.parentID@label","Parent ID")#</th>
+					<th>#application.rb.getResource("fixtree.labels.title@label","Title")#</th>
 				</tr>
 				<cfloop query="qOrphans">
 					<tr class="#IIF(qOrphans.currentRow MOD 2, de("dataOddRow"), de("dataEvenRow"))#">
@@ -139,7 +141,7 @@ $out:$
 			</form>
 			</cfoutput>
 		<cfelse>
-			<cfoutput>#application.rb.getResource("noOrphansNow")#</cfoutput>
+			<cfoutput>#application.rb.getResource("fixtree.messages.noOrphansNow@text","There are no orphans at the moment.")#</cfoutput>
 		</cfif>
 		
 	</cfif>

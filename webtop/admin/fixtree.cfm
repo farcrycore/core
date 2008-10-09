@@ -274,8 +274,11 @@ $out:$
 	    <cfif form.debug eq 1>
 	        <!--- show debug only, don't fix tree --->
 	        <cfoutput>
-	        <div class="formtitle">#application.rb.getResource("debugComplete")#</div>
-	        #application.rb.getResource("showNoDebugLook")#<p></cfoutput>
+	        	<div class="formtitle">#application.rb.getResource("fixtree.headings.debugComplete@text","Debug Complete")#</div>
+	       	</cfoutput>
+	        <admin:resource key="fixtree.messages.showNoDebugLook@text">
+	        	<cfoutput><p>This is how the table would look if you ran this function without debug turned on</p></cfoutput>
+	        </admin:resource>
 	        <cfquery name="qDisplayIndentedTree" datasource="#dsn#">
 	            SELECT objectname as a_objectname, objectid as b_objectID, parentid as c_parentid,
 	            nleft as d_nleft, nright as e_nright, nlevel as f_nlevel
@@ -322,8 +325,11 @@ $out:$
 	            from #temptablename#
 	        </cfquery>
 	        <cfoutput>
-	        <div class="formtitle">#application.rb.getResource("treeFixed")#</div>
-	        #application.rb.formatRBString("nestedTreeTableUpdated","#form.typename#")#</cfoutput>
+	        	<div class="formtitle">#application.rb.getResource("fixtree.headings.treeFixed@text","Tree Fixed")#</div>
+	        </cfoutput>
+	        <admin:resource key="fixtree.messages.nestedTreeTableUpdated@text" variables="#form.typename#">
+	        	<cfoutput><p>The nested tree table has been updated for the typename <strong>{1}</strong>.</p></cfoutput>
+	        </admin:resource>
 	    </cfif>
 	
 	<cfelse><!--- show the form --->
@@ -334,9 +340,9 @@ $out:$
 	    </cfquery>
 		
 	    <cfif qTypeNames.recordCount eq 0>
-	        <cfoutput>
-	            #application.rb.getResource("noTreeItemsBadBlurb")#
-	        </cfoutput>
+	    	<admin:resource key="fixtree.messages.noTreeItemsBadBlurb@text">
+	        	<cfoutput><p>No items were found in your nested tree. This is bad.</p></cfoutput>
+	        </admin:resource>
 	    <cfelse>
 			<!--- show form --->
 	        <cfset defaultType = 'dmNavigation' />
@@ -345,9 +351,9 @@ $out:$
 	            
 	            <form action="fixtree.cfm" method="post" class="f-wrap-1 f-bg-short wider">
 				<fieldset>
-				<h3>#application.rb.getResource("fixNestedTree")#</h3>
+				<h3>#application.rb.getResource("fixtree.headings.fixNestedTree@text","Fix a Nested Tree")#</h3>
 				
-	            <label for="startPoint"><b>#application.rb.getResource("enterTreeTypeName")#</b>
+	            <label for="startPoint"><b>#application.rb.getResource("fixtree.labels.enterTreeTypeName@label","Enter a typename to fix the tree of")#:</b>
 				<select name="typename">
 					<cfloop query="qTypeNames">
 						<option value="#qTypeNames.typename#" <cfif qTypeNames.typename eq defaultType>selected</cfif>>#qTypeNames.typename#</option>
@@ -360,21 +366,23 @@ $out:$
 						<fieldset>
 				  		<label for="debug">
 						<input type="checkbox" class="f-checkbox" name="debug" value="1" checked="checked" />
-						#application.rb.getResource("showDebugOnly")#
+						#application.rb.getResource("fixtree.labels.showDebugOnly@label","Show debug only (don't fix the table)")#
 						</label>
 	               		</fieldset>
 				    </fieldset>
 					
 					<div class="f-submit-wrap">
-					<input type="submit" name="submit" class="f-submit" value="#application.rb.getResource("submit")#" />
+					<input type="submit" name="submit" class="f-submit" value="#application.rb.getResource('fixtree.buttons.submit@label','Submit')#" />
 					</div>
 					
 			    </fieldset>
 				</form>
 				<hr />
-				<p>#application.rb.getResource("nestedTreeFunctionBlurb")#</p>
-	
-	        </cfoutput>
+				<admin:resource key="fixtree.messages.nestedTreeFunctionBlurb@text">
+					<p>Use this function if your nested tree ever gets confused about where its branches are supposed to live. It puts them all back together again, rebuilding the tree from the roots up. You may want to make a backup of your database before fixing the tree. Please be patient, this process can take a few minutes!</p>
+				</admin:resource>
+			</cfoutput>
+			
 	    </cfif>
 	</cfif>
 </sec:CheckPermission>

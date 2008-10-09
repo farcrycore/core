@@ -52,26 +52,26 @@ $out:$
 	<form method="post" class="f-wrap-1 f-bg-short" action="">
 	<fieldset>
 	
-		<h3>#application.rb.getResource("scopeDump")#</h3>
+		<h3>#application.rb.getResource("general.headings.scopeDump@text","Scope Dump")#</h3>
 		
 		<label for="permname"><b>Choose scope:</b>
 		<select name="scope">
-			<option value="application" <cfif isdefined("form.scope") and form.scope eq "application">selected</cfif>>#application.rb.getResource("application")#</option>
-			<option value="request" <cfif isdefined("form.scope") and form.scope eq "request">selected</cfif>>#application.rb.getResource("request")#</option>
-			<option value="session" <cfif isdefined("form.scope") and form.scope eq "session">selected</cfif>>#application.rb.getResource("session")#</option>
-			<option value="server" <cfif isdefined("form.scope") and form.scope eq "server">selected</cfif>>#application.rb.getResource("server")#</option>
+			<option value="application" <cfif isdefined("form.scope") and form.scope eq "application">selected</cfif>>#application.rb.getResource("general.constants.application@label","Application")#</option>
+			<option value="request" <cfif isdefined("form.scope") and form.scope eq "request">selected</cfif>>#application.rb.getResource("general.constants.request@label","Request")#</option>
+			<option value="session" <cfif isdefined("form.scope") and form.scope eq "session">selected</cfif>>#application.rb.getResource("general.constants.session@label","Session")#</option>
+			<option value="server" <cfif isdefined("form.scope") and form.scope eq "server">selected</cfif>>#application.rb.getResource("general.constants.server@label","Server")#</option>
 		</select><br />
 		</label>
 		
 		<div class="f-submit-wrap">
-		<input type="submit" value="#application.rb.getResource("dump")#" class="f-submit" />
+		<input type="submit" value="#application.rb.getResource('general.labels.dump@label','Dump')#" class="f-submit" />
 		</div>
 		
 		</form>
 	</cfoutput>
 	
 	<cfif isdefined("form.scope")>
-		<cfdump var="#evaluate(form.scope)#" label=" #application.rb.formatRBString("scopeLabel",'#form.scope#')#">
+		<cfdump var="#evaluate(form.scope)#" label=" #application.rb.formatRBString('general.labels.xscope@label',form.scope,'{1} scope')#">
 	</cfif>			
 </sec:CheckPermission>
 

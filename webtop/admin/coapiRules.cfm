@@ -42,10 +42,10 @@ $out:$
 
 <cfprocessingDirective pageencoding="utf-8">
 
-<admin:header title="#application.rb.getResource("COAPIrules")#" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
+<admin:header title="#application.rb.getResource('coapiadmin.headings.COAPIrules@text','COAPI Rules')#" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <sec:CheckPermission error="true" permission="AdminCOAPITab">
-	<cfoutput><h3>#application.rb.getResource("ruleClasses")#</h3></cfoutput>
+	<cfoutput><h3>#application.rb.getResource("coapiadmin.headings.ruleClasses@text","Rule Classes")#</h3></cfoutput>
 	
 	<cfparam name="FORM.action" default="">
 	
@@ -112,10 +112,10 @@ $out:$
 	
 	<table class="table-5" cellspacing="0">
 	<tr>
-		<th>#application.rb.getResource("integrity")#</th>
-		<th>#application.rb.getResource("component")#</th>
-		<th>#application.rb.getResource("deployed")#</th>
-		<th style="border-right:none">#application.rb.getResource("deploy")#</th>
+		<th>#application.rb.getResource("coapiadmin.labels.integrity@text","Integrity")#</th>
+		<th>#application.rb.getResource("coapiadmin.labels.component@text","Component")#</th>
+		<th>#application.rb.getResource("coapiadmin.labels.deployed@text","Deployed")#</th>
+		<th style="border-right:none">#application.rb.getResource("coapiadmin.labels.deploy@text","Deploy")#</th>
 	</tr>
 	</cfoutput>
 	
@@ -132,7 +132,7 @@ $out:$
 			<td align="center">
 				<!--- i18n:  yes/no images? check vs x ok across all locales?  --->
 				<cfif alterType.isCFCConflict(stConflicts=stConflicts,typename=componentName)>
-					<img src="#application.url.farcry#/images/no.gif" /> #application.rb.getResource("seeBelow")#
+					<img src="#application.url.farcry#/images/no.gif" /> #application.rb.getResource("coapiadmin.labels.seeBelow@label","See Below")#
 				<cfelse>
 					<img src="#application.url.farcry#/images/yes.gif" />
 				</cfif>
@@ -149,9 +149,9 @@ $out:$
 			
 			<td style="border-right:none">
 				<cfif NOT alterType.isCFCDeployed(typename=componentName)>
-					<a href="#CGI.SCRIPT_NAME#?deploy=#componentName#">#application.rb.getResource("Deploy")#</a>
+					<a href="#CGI.SCRIPT_NAME#?deploy=#componentName#">#application.rb.getResource("coapiadmin.buttons.deploy@label","Deploy")#</a>
 				<cfelse>
-					#application.rb.getResource("notAvailable")#
+					#application.rb.getResource("coapiadmin.labels.notAvailable@label","n/a")#
 				</cfif>
 			</td>
 		</tr>

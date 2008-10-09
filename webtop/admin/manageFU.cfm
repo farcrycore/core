@@ -68,12 +68,12 @@ $out:$
 	<form method="post" class="f-wrap-1 f-bg-short" action="">
 	<fieldset>
 	
-		<h3>#application.rb.getResource("manageURLs")#</h3>
+		<h3>#application.rb.getResource("fuadmin.headings.manageURLs@text","Manage Friendly URLs")#</h3>
 
 		<label for="searchIn"><b>&nbsp;</b>
 		<select name="searchIn" id="searchIn">
-		<option value="#application.rb.getResource("alias")#" <cfif form.searchIn eq "mapping">selected</cfif>>#application.rb.getResource("alias")#
-		<option value="#application.rb.getResource("objectLC")#" <cfif form.searchIn eq "object">selected</cfif>>#application.rb.getResource("objectLC")#
+		<option value="#application.rb.getResource("alias")#" <cfif form.searchIn eq "mapping">selected</cfif>>#application.rb.getResource("fuadmin.labels.alias@lable","Alias")#
+		<option value="#application.rb.getResource("objectLC")#" <cfif form.searchIn eq "object">selected</cfif>>#application.rb.getResource("fuadmin.labels.contentitem@label","Content Item")#
 		</select>
 		<br />
 		</label>
@@ -83,7 +83,7 @@ $out:$
 		</label>
 		
 		<div class="f-submit-wrap">
-		<input type="submit" value="#application.rb.getResource("filter")#" class="f-submit" />
+		<input type="submit" value="#application.rb.getResource('fuadmin.labels.filter@label','Filter')#" class="f-submit" />
 		</div>
 		
 	</fieldset>
@@ -93,9 +93,9 @@ $out:$
 	<!--- set up results table --->
 	<table class="table-2" cellspacing="0">
 	<tr>
-		<th style="text-align:center">#application.rb.getResource("delete")#</th>
-		<th>#application.rb.getResource("alias")#</th>
-		<th>#application.rb.getResource("objectLC")#</th>
+		<th style="text-align:center">#application.rb.getResource("fuadmin.labels.delete@label","Delete")#</th>
+		<th>#application.rb.getResource("fuadmin.labels.alias@label","Alias")#</th>
+		<th>#application.rb.getResource("fuadmin.labels.contentitem@label","Content Item")#</th>
 	</tr>
 	</cfoutput>
 
@@ -140,7 +140,7 @@ $out:$
 	<cfoutput>
 		</table>
 		
-		<input type="submit" value="#application.rb.getResource("delete")#" class="f-submit" />
+		<input type="submit" value="#application.rb.getResource('fuadmin.buttons.delete@label','Delete')#" class="f-submit" />
 		
 		
 		</form>

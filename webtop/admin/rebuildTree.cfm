@@ -19,7 +19,7 @@
 		
 	    <cfif qTypeNames.recordCount eq 0>
 	        <cfoutput>
-	            #application.rb.getResource("noTreeItemsBadBlurb")#
+	            #application.rb.getResource("fixtree.messages.noTreeItemsBadBlurb@text","No items were found in your nested tree. This is bad.")#
 	        </cfoutput>
 	    <cfelse>
 			<!--- show form --->
