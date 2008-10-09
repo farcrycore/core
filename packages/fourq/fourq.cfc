@@ -1050,7 +1050,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfreturn stResult>
 	</cffunction>
 
-	<cffunction name="getI18Property" access="public" output="true" returntype="string" hint="Provides access to I18 values for properties">
+	<cffunction name="getI18Property" access="public" output="false" returntype="string" hint="Provides access to I18 values for properties">
 		<cfargument name="property" type="string" required="true" hint="The property being queried" default="" />
 		<cfargument name="value" type="string" required="false" hint="The value required i.e. label, helptitle, helpsection" default="label" />
 
