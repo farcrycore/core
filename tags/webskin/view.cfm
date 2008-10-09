@@ -36,12 +36,6 @@
 		<cfset attributes.webskin = attributes.template />
 	</cfif>
 	
-	<cfif len(attributes.typename) and len(attributes.template) and not len(attributes.objectid)>
-		<cfset bTypeWebskin = true />
-	<cfelse>
-		<cfset bTypeWebskin = false />
-	</cfif>
-	
 	<cfif not len(attributes.typename)>
 		<cfif structKeyExists(attributes.stObject, "typename")>
 			<cfset attributes.typename = attributes.stobject.typename />
@@ -53,6 +47,17 @@
 	<cfif not len(attributes.typename)>
 		<cfabort showerror="invalid typename passed" />
 	</cfif>	
+	
+	<cfif attributes.typename EQ "farCoapi">
+		<cfif structKeyExists(attributes.stObject, "objectid") and len(attributes.stObject.objectid)>
+			<cfset attributes.objectid = attributes.stObject.objectid />
+		</cfif>
+		<!--- If we are calling a view directly on a farCoapi object, we need to change to a typeskin view on the relevent content type. --->
+		<cfset stCoapiObject = createObject("component", application.stcoapi["farCoapi"].packagePath).getData(objectid="#attributes.objectid#") />
+		<cfset attributes.typename = stCoapiObject.name />
+		<cfset attributes.stObject = structNew() />
+		<cfset attributes.objectid = ""/>
+	</cfif>
 	
 	<cfif structKeyExists(application.stCoapi, attributes.typename)>
 		<!--- Initialise variables --->
