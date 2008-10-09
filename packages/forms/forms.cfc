@@ -638,17 +638,17 @@
 											
 										<cfif not bAncestorExists>
 											<cfset stProperties = structNew() />
-											<!--- <cfif bTypeWebskin>
-												<cfset stProperties.webskinObjectID = "" />
-											<cfelse>
-												<cfset stProperties.webskinObjectID = stobj.objectid />
-											</cfif> --->
-											<cfset stProperties.webskinObjectID = stobj.objectid />											
-											<cfset stProperties.ancestorID = request.aAncestorWebskins[i].objectID />
+											<cfset stProperties.webskinObjectID = stobj.objectid />
+											<cfset stProperties.webskinTypename = stobj.typename />
+											<cfset stProperties.webskinTemplate = arguments.template />
+											<cfif structkeyexists(request.aAncestorWebskins[i],"objectid")>
+												<cfset stProperties.ancestorID = request.aAncestorWebskins[i].objectID />
+											</cfif>
 											<cfset stProperties.ancestorTypename = request.aAncestorWebskins[i].typename />
 											<cfset stProperties.ancestorTemplate = request.aAncestorWebskins[i].template />
 											
 											<cfset stResult = oWebskinAncestor.createData(stProperties=stProperties) />
+
 										</cfif>
 									</cfif>
 								</cfif>
