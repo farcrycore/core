@@ -403,6 +403,7 @@ a {color: ##116EAF;}
 							<cfset stLog.datetimecreated = lsparsedatetime(mid(thisline,find("(",thisline)+1,19)) />
 							<cfset stLog.datetimelastupdated = stLog.datetimecreated />
 							<cfset stLog.object = qComments.objectid />
+							<cfset stLog.notes = "" />
 							<cfset stLog.userid = listfirst(thisline,'()') />
 							<cfif not find("_",stLog.userid)>
 								<cfset stLog.userid = "#stLog.userid#_CLIENTID" />
