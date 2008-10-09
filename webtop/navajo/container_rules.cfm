@@ -107,12 +107,12 @@ for(i=0;i < objSelect.length;i++)
 	<p id="fading1" class="fade"><span class="error">#errormessage#</span></p>
 <cfelse> <!--- all good show form --->
 	<cfif bAllowUpdateName>
-	<label for="label"><b>#application.rb.getResource("title")#</b>
+	<label for="label"><b>#application.rb.getResource("containers.labels.title@label","Title")#</b>
 		<input type="textbox" name="label" id="label" value="#stobj.label#"><br />
 	</label><cfelse>
 	<input type="hidden" name="label" value="#stobj.label#"></cfif>
 
-	<label for="source"><b>#application.rb.getResource("availableRuleTypes")#:</b>
+	<label for="source"><b>#application.rb.getResource("containers.labels.availableRuleTypes@label","Available Rule Types")#:</b>
 	<select multiple id="source" name="source" size="6" style="width:200px" onchange="renderHint(this.value);"><cfloop query="qRules">
 	<option value="#qRules.rulename#"><cfif structKeyExists(application.rules[qRules.rulename],'displayname')>#application.rules[qRules.rulename].displayname#<cfelse>#qRules.rulename#</cfif></option></cfloop>
 	</select><br />
@@ -123,7 +123,7 @@ for(i=0;i < objSelect.length;i++)
 		</span>
 		
 	</label>
-	<label for="dest"><b>#application.rb.getResource("activeRules")#</b>
+	<label for="dest"><b>#application.rb.getResource("containers.labels.activeRules@label","Active Rules")#</b>
 	<select multiple name="dest" id="dest" size="6" style="width:200px"><cfloop query="qActiveRules"><!--- need check here for displayname key --->
 	<option value="#qActiveRules.objectid#"><cfif structKeyExists(application.stcoapi, qActiveRules.typename)>#application.stcoapi[qActiveRules.typename].displayname#<cfelse>RULE NO LONGER EXISTS(#qActiveRules.typename#)</cfif></option></cfloop>
 	</select><br />
@@ -131,11 +131,11 @@ for(i=0;i < objSelect.length;i++)
 		<!-- TODO: i18n -->
 		<input type="button" value="Move up" onClick="moveindex(this.form.dest.selectedIndex,-1)" onmouseover="this.className='f-uparrow f-uparrowhover'" onmouseout="this.className='f-uparrow'" class="f-uparrow" style="padding-right:81px" />
 		<input type="button" value="Move down" onClick="moveindex(this.form.dest.selectedIndex,+1)" onmouseover="this.className='f-downarrow f-downarrowhover'" onmouseout="this.className='f-downarrow'" class="f-downarrow" style="padding-right:65px" />
-		<input type="button" value="#application.rb.getResource("deleteRule")#" onClick="deleteRule(this.form.dest);" onmouseover="this.className='f-delete f-deletehover'" onmouseout="this.className='f-delete'" class="f-delete" style="padding-right:65px" />					 
+		<input type="button" value="#application.rb.getResource('containers.buttons.deleteRule@label','Delete Rule')#" onClick="deleteRule(this.form.dest);" onmouseover="this.className='f-delete f-deletehover'" onmouseout="this.className='f-delete'" class="f-delete" style="padding-right:65px" />					 
 		</span>
 	</label>
 	<div class="f-submit-wrap">
-	<input type="Submit" name="Update" value="#application.rb.getResource("commitChanges")#" class="f-submit">
+	<input type="Submit" name="Update" value="#application.rb.getResource('containers.buttons.commitChanges@label','Commit Changes')#" class="f-submit">
 	</div>
 </cfif>
 	<input type="hidden" name="reflectionID" value="">

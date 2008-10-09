@@ -93,7 +93,7 @@ $out:$
 				<input type="hidden" name="approveURL" value="#URLEncodedFormat(url.approveURL)#">
 			</cfif>
 			
-			<span class="formTitle">#application.rb.getResource("addComment")#:</span><br>
+			<span class="formTitle">#application.rb.getResource("workflow.labels.addComment@label","Add Comment")#:</span><br>
 			<textarea rows="8" cols="50"  name="commentLog"></textarea><br>
 			
 			<!--- if requesting approval, list approvers --->
@@ -101,11 +101,11 @@ $out:$
 	
 			</cfif>
 			
-			<input type="submit" name="submit" value="#application.rb.getResource("submitUC")#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
-			<input type="button" name="Cancel" value="#application.rb.getResource("cancel")#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='#application.url.farcry#/navajo/GenericAdmin.cfm?typename=#stObj.typename#';"></div>     
+			<input type="submit" name="submit" value="#application.rb.getResource('workflow.buttons.submit@label','Submit')#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';">
+			<input type="button" name="Cancel" value="#application.rb.getResource('workflow.buttons.cancel@label','Cancel')#" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle';" onMouseOut="this.className='normalbttnstyle';" onClick="location.href='#application.url.farcry#/navajo/GenericAdmin.cfm?typename=#stObj.typename#';"></div>     
 			<cfif listlen(url.objectid) eq 1>
 				<!--- display existing comments --->
-				<p></p><span class="formTitle">#application.rb.getResource("prevCommentLog")#</span><P></P>
+				<p></p><span class="formTitle">#application.rb.getResource("workflow.headings.prevCommentLog@text","Previous Comment Log")#</span><P></P>
 				<nj:showcomments objectid="#stObj.objectid#" typename="#stObj.typename#" />
 			</cfif>
 			</form>

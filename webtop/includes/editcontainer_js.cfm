@@ -108,7 +108,7 @@ function selectAll(dest){
  
  function deleteRule(fbox)
  {
- 	if (confirm("#application.rb.getResource('workflow.messages.confirmDeleteRuleInstance@text','Are you sure you wish to delete this rule instance?')#"))
+ 	if (confirm("#application.rb.getResource('containers.buttons.deleteRule@confirmtext','Are you sure you wish to delete this rule instance?')#"))
 	{
 		 for(var i=0; i<fbox.options.length; i++)
 		 {

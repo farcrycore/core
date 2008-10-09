@@ -9,7 +9,7 @@
 		<cfinvokeargument name="dsn" value="#application.dsn#"/>
 	</cfinvoke>
 		<!--- <cfdump var="#stStatus#"> --->
-		<cfset message = "#application.rb.getResource("deleteCategoryOK")#">
+		<cfset message = "#application.rb.getResource('categorytree.messages.deleteCategoryOK@text','Category deletion successful')#">
 		<cfoutput>
 		<script language="javascript">
 			parent.cattreeframe.location.reload();

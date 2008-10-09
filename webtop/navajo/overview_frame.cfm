@@ -34,6 +34,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 --->
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
+<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
 <cftry>
 <!--- TODO: not sure how beneficial this lock is. not sure of its history either :( GB --->
@@ -44,7 +45,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	<cfoutput>
 	<html dir="#session.writingDir#" lang="#session.userLanguage#">
 	<HEAD>
-	<TITLE>#application.rb.getResource("overviewTree")#</TITLE>
+	<TITLE>#application.rb.getResource("sitetree.headings.overviewTree@text","Overview Tree")#</TITLE>
 	<LINK href="#application.url.farcry#/css/overviewFrame.css" rel="stylesheet" type="text/css">
 	<meta content="text/html; charset=UTF-8" http-equiv="content-type">
 	</HEAD>
@@ -61,8 +62,16 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 </cflock>
 
 	<cfcatch type="Lock">
+		<admin:resource key="sitetree.messages.overviewTreeLoadingBlurb@text">
+			<cfoutput>
+				<p>The system has detected the <b>Overview Tree</b> is already loading.</p>
+				<p>The <b>Overview Tree</b> cannot be loaded more than once per user at a time.</p>
+				<p>You are probably receiving this error because you have pushed the refresh button half way through loading. Pressing the refresh button in the middle of loading can have a significant performance impact on the website as your previous requests must be serviced before your new requests.  Therefore, we have implemented this restriction.</p>
+				<p>You will now have to wait for your previous request to complete before you will be allowed to reload this screen.</p>
+				<p><b>Please try again in 30 seconds.</b></p>
+			</cfoutput>
+		</admin:resource>
 		<cfoutput>
-		<p>#application.rb.getResource("overviewTreeLoadingBlurb")#</p>
 		<p><a href="">Refresh Tree</a></p>
 		</cfoutput>
 	</cfcatch>

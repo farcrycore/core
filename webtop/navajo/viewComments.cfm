@@ -20,11 +20,11 @@
 		<br />
 		<!--- i18n: double check logic, geez i HATE compound rb string --->
 		<cfif stObj.label eq "">
-		#application.rb.getResource("comments")#
+		#application.rb.getResource("workflow.headings.comments@text","COMMENTS")#
 		<cfelseif stObj.label neq "" AND (NOT isdefined("stObj.versionId") OR stObj.versionID eq "")>
-		#application.rb.formatRBString("commentsFor","#stObj.label#")#
+		#application.rb.formatRBString("workflow.headings.commentsFor@text",stObj.label,"COMMENTS FOR <strong>{1}</strong>")#
 		<cfelseif stObj.label neq "" AND (isdefined("stObj.versionId") AND stObj.versionID eq "")>
-		#application.rb.formatRBString("draftCommentsFor","#stObj.label#")#
+		#application.rb.formatRBString("workflow.headings.draftCommentsFor@text",stObj.label,"COMMENTS FOR <strong>{1} (DRAFT)</strong>")#
 		</cfif>
 		</td>
 		<td align="left"><a href="##" title="Close Window" onclick="window.close();">[X]</a></td>

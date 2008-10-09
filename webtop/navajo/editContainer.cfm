@@ -144,11 +144,11 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 
 	<cfcase value="update">
 		<cfif NOT len(trim(stobj.mirrorid))>
-			<farcry:tabitem class="activetab" href="#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&mode=update" target="" text="#application.rb.getResource("containerContent")#">	
+			<farcry:tabitem class="activetab" href="#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&mode=update" target="" text="#application.rb.getResource('containers.headings.containerContent@text','Container Content')#">	
 			<cfif bDisplaySkins>
 			<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?mode=skin&containerID=#URL.containerID#" target="" text="Skin">
 			</cfif>
-			<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?mode=configure&containerID=#URL.containerID#" target="" text="#application.rb.getResource("configureRulesList")#">
+			<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?mode=configure&containerID=#URL.containerID#" target="" text="#application.rb.getResource('containers.headings.configureRulesList@text','Configure Rules List')#">
 		</cfif>
 		<cfif len(stobj.bshared) and stobj.bshared>
 			<!--- don't show reflection options for shared container --->
@@ -159,11 +159,11 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 	
 	<cfcase value="skin">
 		<cfif NOT len(trim(stobj.mirrorid))>
-			<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&mode=update" target="" text="#application.rb.getResource("containerContent")#">	
+			<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&mode=update" target="" text="#application.rb.getResource('containers.headings.containerContent@text','Container Content')#">	
 			<cfif bDisplaySkins>
 			<farcry:tabitem class="activetab" href="#CGI.SCRIPT_NAME#?mode=skin&containerID=#URL.containerID#" target="" text="Skin">
 			</cfif>
-			<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?mode=configure&containerID=#URL.containerID#" target="" text="#application.rb.getResource("configureRulesList")#">
+			<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?mode=configure&containerID=#URL.containerID#" target="" text="#application.rb.getResource('containers.headings.configureRulesList@text','Configure Rules List')#">
 		</cfif>
 		<cfif len(stobj.bshared) and stobj.bshared>
 			<!--- don't show reflection options for shared container --->
@@ -174,11 +174,11 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 
 	<cfcase value="configure">
 		<cfif NOT len(trim(stobj.mirrorid))>
-			<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&mode=update" target="" text="#application.rb.getResource("containerContent")#">
+			<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&mode=update" target="" text="#application.rb.getResource('containers.headings.containerContent@text','Container Content')#">
 			<cfif bDisplaySkins>
 				<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?mode=skin&containerID=#URL.containerID#" target="" text="Skin">
 			</cfif>
-			<farcry:tabitem class="activetab" href="#CGI.SCRIPT_NAME#?mode=configure&containerID=#URL.containerID#" target="" text="#application.rb.getResource("configureRulesList")#">
+			<farcry:tabitem class="activetab" href="#CGI.SCRIPT_NAME#?mode=configure&containerID=#URL.containerID#" target="" text="#application.rb.getResource('containers.headings.configureRulesList@text','Configure Rules List')#">
 		</cfif>
 		<cfif len(stobj.bshared) and stobj.bshared>
 			<!--- don't show reflection options for shared container --->
@@ -189,11 +189,11 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 
 	<cfcase value="mirror">
 		<cfif NOT len(trim(stobj.mirrorid))>
-			<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&mode=update" target="" text="#application.rb.getResource("containerContent")#">
+			<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&mode=update" target="" text="#application.rb.getResource('containers.headings.containerContent@text','Container Content')#">
 			<cfif bDisplaySkins>
 				<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?mode=skin&containerID=#URL.containerID#" target="" text="Skin">
 			</cfif>
-			<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?mode=configure&containerID=#URL.containerID#" target="" text="#application.rb.getResource("configureRulesList")#">
+			<farcry:tabitem class="tab" href="#CGI.SCRIPT_NAME#?mode=configure&containerID=#URL.containerID#" target="" text="#application.rb.getResource('containers.headings.configureRulesList@text','Configure Rules List')#">
 		</cfif>
 		<farcry:tabitem class="activetab" href="#CGI.SCRIPT_NAME#?containerID=#URL.containerID#&mode=mirror" target="" text="Reflection">
 	</cfcase>
@@ -284,14 +284,14 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 	<cfoutput>
 	<div class="tabTitle" id="EditFrameTitle" align="center">
 		<form action="" method="post">
-			#application.rb.getResource("containerActiveRules")# 
+			#application.rb.getResource("containers.label.containerActiveRules@label","Active Rules For This Container")# 
 			<select name="ruleID" onChange="form.submit();" class="field">
 			<cfif arrayLen(stObj.aRules) GT 0>
 				<cfloop query="qActiveRules" >
 					<option value="#objectID#" <cfif updateType IS objectID>selected</cfif>><cfif structKeyExists(application.rules[typename],'displayname')>#evaluate("application.rules." & typename & ".displayname")#<cfelse>#typename#</cfif></option>	
 				</cfloop>
 			<cfelse>
-				<option>#application.rb.getResource("noContainerRules")#</option>
+				<option>#application.rb.getResource("containers.labels.noContainerRules@label","No rules selected for this container")#</option>
 			</cfif>
 			</select>
 		</form>
@@ -379,7 +379,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 			<table border="0" cellspacing="0" cellpadding="5" align="center">
 			<tr>
 				<td  align="center" valign="top">
-					<strong>#application.rb.getResource("availableRuleTypes")#</strong><br>
+					<strong>#application.rb.getResource("containers.labels.availableRuleTypes@label","Available Rule Types")#</strong><br>
 					<select name="source" size="12" style="font-size:7pt; border: 0px none;" onchange="renderHint(this.value);" >
 						<cfloop query="qRules">
 							<option value="#rulename#" ><cfif structKeyExists(application.rules[rulename],'displayname')>#evaluate("application.rules." & rulename & ".displayname")#<cfelse>#rulename#</cfif>
@@ -390,7 +390,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 					<input type="button" name="B1" value="   >>>>    " class="normalBttnStyle"  onClick="move(this.form.source,this.form.dest)"><br><br>
 				</td>
 				<td valign="top" align="center">		
-						<strong>#application.rb.getResource("activeRules")#</strong><br>
+						<strong>#application.rb.getResource("containers.labels.activeRules@label","Active Rules")#</strong><br>
 						<select multiple name="dest" size="12"  style="font-size:7pt;">
 						<cfloop query="qActiveRules">
 							<!--- need check here for displayname key --->
@@ -403,14 +403,14 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 					onClick="moveindex(this.form.dest.selectedIndex,-1)"><br><br>
 					<input class="normalBttnStyle"  type="button" value="&##8595;"
 					onClick="moveindex(this.form.dest.selectedIndex,+1)"><br><br>
-					<input class="normalBttnStyle"  type="button" value="#application.rb.getResource("deleteRule")#"
+					<input class="normalBttnStyle"  type="button" value="#application.rb.getResource('containers.buttons.deleteRule','Delete Rule')#"
 					 onClick="deleteRule(this.form.dest);">
 				</td>	
 			</tr>		
 			
 			<tr>
 				<td colspan="4" align="center">
-					<input class="normalbttnstyle" name="update" type="submit" value="#application.rb.getResource("commitChanges")#" onclick="selectAll(this.form.dest);">
+					<input class="normalbttnstyle" name="update" type="submit" value="#application.rb.getResource('containers.buttons.commitChanges@label','Commit Changes')#" onclick="selectAll(this.form.dest);">
 				</td>
 			</tr>
 			</table>

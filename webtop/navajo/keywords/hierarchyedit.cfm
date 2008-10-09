@@ -80,9 +80,9 @@ $out:$
 			<cfinvoke component="#application.packagepath#.farcry.category" method="getHierarchies"  returnvariable="qHierarchies">
 			<cfoutput>
 			<form action="" method="post">
-			#application.rb.getResource("existingHierarchies")#
+			#application.rb.getResource("categorytree.labels.existingHierarchies@label","Existing Hierarchies")#:
 			<select name="hierarchyID" class="formfield" onchange="showTree(this.value);">
-			<option value="#catRootObjectID#">#application.rb.getResource("showAllHierarchies")#
+			<option value="#catRootObjectID#">#application.rb.getResource("categorytree.labels.showAllHierarchies@label","Show All Hierarchies")#
 			<cfloop query="qHierarchies">
 				<option value="#objectID#">#objectName#</option>
 			</cfloop>
