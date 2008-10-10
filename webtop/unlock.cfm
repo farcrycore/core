@@ -34,7 +34,7 @@
 					<cfset permission = true>
 				<cfelse>
 					<cfset permission = false>
-					<cfset message = "#application.rb.getResource("noPermissionUnlockAll")#">
+					<cfset message = "#application.rb.getResource('security.messages.noPermissionUnlockAll@text','You do not have permission to unlock all content items')#">
 				</cfif>
 			</cfif>
 			<!--- check permission --->

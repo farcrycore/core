@@ -42,7 +42,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 
 <sec:CheckPermission error="true" permission="ObjectDumpTab">
 	<cfoutput>
-	<h3>#application.rb.getResource("objectDump")#</h3>
+	<h3>#application.rb.getResource("workflow.headings.objectDump@text","Content Item Properties")#</h3>
 	</cfoutput>
 	
 	<!--- get object details and dump results --->

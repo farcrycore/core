@@ -72,8 +72,8 @@ $out:$
 
 		<label for="searchIn"><b>&nbsp;</b>
 		<select name="searchIn" id="searchIn">
-		<option value="#application.rb.getResource("alias")#" <cfif form.searchIn eq "mapping">selected</cfif>>#application.rb.getResource("fuadmin.labels.alias@lable","Alias")#
-		<option value="#application.rb.getResource("objectLC")#" <cfif form.searchIn eq "object">selected</cfif>>#application.rb.getResource("fuadmin.labels.contentitem@label","Content Item")#
+		<option value="#application.rb.getResource('fuadmin.labels.alias@label','Alias')#" <cfif form.searchIn eq "mapping">selected</cfif>>#application.rb.getResource("fuadmin.labels.alias@lable","Alias")#
+		<option value="#application.rb.getResource('fuadmin.labels.contentitem@label','Content Item')#" <cfif form.searchIn eq "object">selected</cfif>>#application.rb.getResource("fuadmin.labels.contentitem@label","Content Item")#
 		</select>
 		<br />
 		</label>

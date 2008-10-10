@@ -92,7 +92,7 @@ $out:$
 			<cfoutput>#listlen(form.objectid)# nav node orphan<cfif qOrphans.recordCount neq 1>s</cfif> attached to #form.navalias#.</cfoutput>
 		</cflock>
 			<cfcatch>
-				<cfoutput><h2>#application.rb.getResource("fixtree.headings.moveBranchLockout","Move-branch lockout")#</h2></cfoutput>
+				<cfoutput><h2>#application.rb.getResource("fixtree.headings.moveBranchLockout@text","Move-branch lockout")#</h2></cfoutput>
 				<admin:resource key="fixtree.messages.branchLockout">
 					<cfoutput><p>Another editor is currently modifying the hierarchy. Please refresh the site overview tree and try again.</p></cfoutput>
 				</admin:resource>

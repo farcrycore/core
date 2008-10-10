@@ -403,7 +403,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 					onClick="moveindex(this.form.dest.selectedIndex,-1)"><br><br>
 					<input class="normalBttnStyle"  type="button" value="&##8595;"
 					onClick="moveindex(this.form.dest.selectedIndex,+1)"><br><br>
-					<input class="normalBttnStyle"  type="button" value="#application.rb.getResource('containers.buttons.deleteRule','Delete Rule')#"
+					<input class="normalBttnStyle"  type="button" value="#application.rb.getResource('containers.buttons.deleteRule@label','Delete Rule')#"
 					 onClick="deleteRule(this.form.dest);">
 				</td>	
 			</tr>		

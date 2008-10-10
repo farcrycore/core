@@ -44,7 +44,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 
 <sec:CheckPermission error="true" permission="ObjectArchiveTab">
 	<cfoutput>
-	<h3>#application.rb.getResource("archive")#</h3>
+	<h3>#application.rb.getResource("workflow.headings.archive@text","Archive")#</h3>
 	</cfoutput>
 	
 	<!--- check if rollback is required --->
@@ -72,9 +72,9 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 		<!--- setup table --->
 		<cfoutput>
 		<tr>
-			<th>#application.rb.getResource("Date")#</th>
-			<th>#application.rb.getResource("Label")#</th>
-			<th>#application.rb.getResource("User")#</th>
+			<th>#application.rb.getResource("workflow.labels.date@label","Date")#</th>
+			<th>#application.rb.getResource("workflow.labels.label@label","Label")#</th>
+			<th>#application.rb.getResource("workflow.labels.user@label","User")#</th>
 			<th>&nbsp;</th>
 			<th>&nbsp;</th>
 			<th>&nbsp;</th>
@@ -89,13 +89,13 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 			</td>
 			<td>#label#</td>
 			<td>#lastupdatedby#</td>
-			<td><a href="edittabArchiveDetail.cfm?archiveid=#objectid#">#application.rb.getResource("moreDetail")#</a></td>
-			<td><a href="#application.url.conjurer#?archiveid=#objectid#" target="_blank">#application.rb.getResource("archivePreview")#</a></td>
+			<td><a href="edittabArchiveDetail.cfm?archiveid=#objectid#">#application.rb.getResource("workflow.buttons.moreDetail@label","More Detail")#</a></td>
+			<td><a href="#application.url.conjurer#?archiveid=#objectid#" target="_blank">#application.rb.getResource("workflow.buttons.archivePreview@label","Preview")#</a></td>
 			<td>
 				<a href="edittabArchive.cfm?objectid=#url.objectid#&archiveid=#objectid#">Rollback</a>
 				<!--- check if archive has been rolled back successfully --->
 				<cfif isdefined("url.archiveid") and stRollback.result and url.archiveId eq objectid>
-					<span style="color:Red">#application.rb.getResource("rolledBackOK")#</span>
+					<span style="color:Red">#application.rb.getResource("workflow.messages.rolledBackOK@text","Successfully Rolled Back")#</span>
 				</cfif>
 			</td>
 		</tr>
@@ -103,7 +103,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 	<cfelse>
 	<cfoutput>
 		<tr>
-			<td colspan="6">#application.rb.getResource("noArchiveRecorded")#</td>
+			<td colspan="6">#application.rb.getResource("workflow.messages.noArchiveRecorded@text","No archive recorded.")#</td>
 		</tr>
 	</cfoutput>
 	</cfif>

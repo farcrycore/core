@@ -210,7 +210,7 @@ $out:$
 				<cfelse>
 					<cfoutput>
 					<script>
-						alert("#application.rb.getResource("notLoggedIn")#");
+						alert("#application.rb.getResource('workflow.messages.notLoggedIn@text','You''re not logged in')#");
 						window.close();
 					</script>
 					</cfoutput>

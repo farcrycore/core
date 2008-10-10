@@ -106,7 +106,7 @@ function reinstateRuleListing()
 		</cfscript>
 		
 		<cfoutput>
-		<div align="center" class="formtitle">#application.rb.getResource("publishingRuleDeleted")#</div>
+		<div align="center" class="formtitle">#application.rb.getResource("containers.messages.publishingRuleDeleted@text","Publishing rule has been deleted.")#</div>
 		</cfoutput>
 	</cfcase>
 	
@@ -132,9 +132,9 @@ function reinstateRuleListing()
 					<span class="FormTitle" style="margin-left:30px;">#q.label#</span><br>
 					<table cellpadding="5" cellspacing="0" border="1" style="margin-left:30px;margin-top:5px" width="400">
 					<tr class="dataheader">
-						<td align="center"><strong>#application.rb.getResource("ruleType")#</strong></td>
-						<td align="center" width="75"><strong>#application.rb.getResource("edit")#</strong></td>
-						<td align="center" width="75"><strong>#application.rb.getResource("delete")#</strong></td>
+						<td align="center"><strong>#application.rb.getResource("containers.labels.ruleType@label","Rule Type")#</strong></td>
+						<td align="center" width="75"><strong>#application.rb.getResource("containers.labels.edit@label","Edit")#</strong></td>
+						<td align="center" width="75"><strong>#application.rb.getResource("containers.labels.delete@label","Delete")#</strong></td>
 					</tr>
 					</cfoutput>
 					
@@ -146,10 +146,10 @@ function reinstateRuleListing()
 					<tr>
 						<td>#typename#</td>
 						<td align="center">
-							<a onclick="executeRuleUpdate('#typename#','#stCon.aRules[i]#')" href="javascript:void(0);">#application.rb.getResource("edit")#</a> 
+							<a onclick="executeRuleUpdate('#typename#','#stCon.aRules[i]#')" href="javascript:void(0);">#application.rb.getResource("containers.buttons.edit@label","Edit")#</a> 
 						</td>
 						<td align="center">
-							<a href="#cgi.script_name#?action=delete&ruleid=#stCon.aRules[i]#&containerid=#stCon.objectid#&typename=#typename#">#application.rb.getResource("delete")#</a>
+							<a href="#cgi.script_name#?action=delete&ruleid=#stCon.aRules[i]#&containerid=#stCon.objectid#&typename=#typename#">#application.rb.getResource("containers.buttons.delete@label","Delete")#</a>
 						</td>
 					</tr>
 					</cfoutput>
@@ -168,7 +168,7 @@ function reinstateRuleListing()
 <cfoutput>
 </div>
 <div id="editruleframe" style="display:none">
-	<span id="editrulemsg"></span>. <a onclick="reinstateRuleListing()" href="javascript:void(0)">#application.rb.getResource("returnRuleList")#</a>
+	<span id="editrulemsg"></span>. <a onclick="reinstateRuleListing()" href="javascript:void(0)">#application.rb.getResource("containers.buttons.returnRuleList@label","Return to rule listing.")#</a>
 	<iframe name="ruleFrame" id="ruleFrame" src="#application.url.farcry#/admin/editrule.cfm" frameborder="0" width="100%" height="100%"></iframe>
 </div>
 </cfoutput>

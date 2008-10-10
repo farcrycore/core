@@ -53,7 +53,7 @@ out:
 		<form action="" method="post" name="cacheForm">
 		<table cellpadding="5" cellspacing="0" border="1" style="margin-left:30px;">
 		<tr class="dataheader">
-			<td>#application.rb.getResource("cache")#</td>
+			<td>#application.rb.getResource("cache.labels.cache@label","Cache")#</td>
 			<td align="center">#application.rb.getResource("cache.labels.timeoutPeriod@label","Timeout Period")#</td>
 			<td align="center">#application.rb.getResource("cache.labels.willExpire@label","Will Expire")#</td>
 			<td align="center">#application.rb.getResource("cache.labels.flush@label","Flush")#</td>
