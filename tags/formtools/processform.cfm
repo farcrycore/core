@@ -38,8 +38,8 @@
 
 		<cfparam name="form.FarcryFormSubmitButton" default="" />	
 		
-		<cfif isDefined("FarcryFormSubmitButtonClicked#FORM.FarcryFormSubmitted#") AND len(evaluate("FarcryFormSubmitButtonClicked#FORM.FarcryFormSubmitted#"))>
-			<cfset FORM.FarcryFormSubmitButton = evaluate("FarcryFormSubmitButtonClicked#FORM.FarcryFormSubmitted#") />
+		<cfif structKeyExists(form, "FarcryFormSubmitButtonClicked#FORM.FarcryFormSubmitted#") AND len(form["FarcryFormSubmitButtonClicked#FORM.FarcryFormSubmitted#"])>
+			<cfset FORM.FarcryFormSubmitButton = form["FarcryFormSubmitButtonClicked#FORM.FarcryFormSubmitted#"] />
 		</cfif>
 		
 		<cfif NOT len(form.FarcryFormSubmitButton)>
