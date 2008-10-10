@@ -240,8 +240,9 @@ $out:$
 				</cfscript>
 				
 				<cfif iState neq 1><cfoutput>
-					<script type="text/javascript">
-						alert("#application.rb.formatRBString('security.messages.nosubNodeApprovalPermission@text',stNav.title,'You don't have approval permission on the subnode {1}')#");
+					<script type="text/javascript">						
+						<cfset defaultText="You don't have approval permission on the subnode {1}" />
+						alert("#application.rb.formatRBString('security.messages.nosubNodeApprovalPermission@text',stNav.title,'#defaultText#')#");
 						window.close();
 					</script></cfoutput><cfabort>
 				</cfif>
@@ -256,7 +257,8 @@ $out:$
 					<cfif request.bLoggedIn>
 						<cfif session.security.userid eq stObj.attr_lastUpdatedBy><cfoutput>
 							<script type="text/javascript">
-								alert("#application.rb.formatRBString('security.messages.canApproveOwnContent@text',stNav.title,'You don't have permission to approve your own content on {1}')#");
+								<cfset defaultText="You don't have permission to approve your own content on {1}" />
+								alert("#application.rb.formatRBString('security.messages.canApproveOwnContent@text',stNav.title,'#defaultText#')#");
 								window.close();
 							</script></cfoutput><cfabort>
 						</cfif>
