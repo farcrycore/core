@@ -157,7 +157,7 @@ $out:$
 	        <p>#application.rb.getResource("quickbuilder.labels.followingItemsCreated@text","The following items have been created")#:</p>
 	        <ul>
 				<cfset subS=listToArray('#arrayLen(items)#,"Category"')>
-				<li>#application.rb.formatRBString("objects",subS)#</li>
+				<li>#application.rb.formatRBString("quickbuilder.messages.objects@text",subS,"{1} <strong>{2}</strong> content items")#</li>
 	        </ul>
 	    </cfoutput>
 	<cfelse>

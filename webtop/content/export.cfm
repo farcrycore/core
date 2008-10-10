@@ -47,7 +47,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 		<cfset errormessage = errormessage & "Please enter a Send To email address.<br />">
 	<cfelseif (NOT REFindNoCase('^[A-Za-z0-9_\.\-]+@([A-Za-z0-9_\.\-]+\.)+[A-Za-z]{2,4}$', sendTo))>
 		<cfset subS = listToArray('#application.path.project#,#application.config.general.exportPath#')>
-		<cfset errormessage = errormessage & "#application.rb.formatRBString("exportDirNotExists",subS)#">
+		<cfset errormessage = errormessage & "#application.rb.formatRBString('content.messages.exportDirNotExists@text',subS,'{1}/{2} directory doesn''t exist. Please create before trying to export.')#">
 	</cfif>
 
 	<cfif contentType EQ "">
@@ -89,7 +89,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 					<cffile action="write" file="#filePath#" output="#toString(stExport)#" addnewline="no" nameconflict="OVERWRITE">
 					<cfcatch>
 					<cfset subS=listToArray('#application.path.project#,#application.config.general.exportPath#')>			
-					<cfoutput>#application.rb.formatRBString("exportDirNotExists",subS)#</cfoutput>
+					<cfoutput>#application.rb.formatRBString('content.messages.exportDirNotExists@text',subS,'{1}/{2} directory doesn''t exist. Please create before trying to export.')#</cfoutput>
 					</cfcatch>
 				</cftry>
 			</cfcase>
@@ -97,10 +97,10 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 
 		<!--- send export file --->
 		<cfmail from="#form.sendTo#" to="#form.sendTo#" subject="#form.contentType# export" mimeattach="#filePath#">
-#application.rb.formatRBString("exportAttached","#form.contentType#")#		
+#application.rb.formatRBString("content.messages.exportAttached@text",form.contentType,"Export of {1} attached.")#		
 		</cfmail>
 		<!--- success message --->		
-		<cfset successmessage = application.rb.formatRBString("exportFileSent","#sendTo#")>
+		<cfset successmessage = application.rb.formatRBString("content.messages.exportFileSent@text",sendTo,"Export file has been sent to {1}")>
 	</cfif>
 </cfif>
 

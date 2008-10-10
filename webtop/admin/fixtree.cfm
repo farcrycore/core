@@ -285,7 +285,7 @@ $out:$
 	            FROM #temptablename#
 	            order by nleft
 	        </cfquery>
-	        <cfdump var="#qDisplayIndentedTree#" label="#application.rb.formatRBString("nestedTree",'#form.typename#')#">
+	        <cfdump var="#qDisplayIndentedTree#" label="#application.rb.formatRBString('fixtree.messages.nestedTreeFor@text',form.typename,'Nested Tree for {1}')#">
 	    <cfelse>
 	        <!--- update the real table --->
 	        <cfswitch expression="#application.dbtype#">

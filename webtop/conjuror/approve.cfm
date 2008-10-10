@@ -169,7 +169,7 @@ $out:$
 			</cfif>
 				
 		<cfelse>
-			<cfoutput><b>#application.rb.formatRBString("unknownStatusPassed","#url.status#")#<b><br></cfoutput><cfabort>
+			<cfoutput><b>#application.rb.formatRBString("workflow.messages.unknownStatusPassed@text",url.status,"Unknown status passed. ({1})")#<b><br></cfoutput><cfabort>
 		</cfif>
 		
 		<cfif isstruct(stNav)>
@@ -185,7 +185,7 @@ $out:$
 			</cfscript>
 			
 			<cfif iState neq 1>
-				<cfoutput><script> alert("#application.rb.formatRBString("nosubNodeApprovalPermission","#stNav.title#")#");
+				<cfoutput><script> alert("#application.rb.formatRBString('security.messages.nosubNodeApprovalPermission@text',stNav.title,'You don''t have approval permission on the subnode {1}')#");
 					               window.close();
 				</script></cfoutput><cfabort>
 			</cfif>
@@ -201,7 +201,7 @@ $out:$
 					<cfif session.security.userid eq stObj.attr_lastUpdatedBy>
 						<cfoutput>
 						<script>
-							alert("#application.rb.formatRBString("canApproveOwnContent",stNav.title)#");
+							alert("#application.rb.formatRBString('security.messages.cantApproveOwnContent@text',stNav.title,'You don''t have permission to approve your own content on {1}')#");
 							window.close();
 						</script>
 						</cfoutput>
@@ -210,7 +210,7 @@ $out:$
 				<cfelse>
 					<cfoutput>
 					<script>
-						alert("#application.rb.getResource('workflow.messages.notLoggedIn@text','You''re not logged in')#");
+						alert("#application.rb.getResource('security.messages.notLoggedIn@text','You''re not logged in')#");
 						window.close();
 					</script>
 					</cfoutput>

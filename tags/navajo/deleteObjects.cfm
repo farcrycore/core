@@ -40,7 +40,7 @@ Intended for use with daemon dynamic data.
 		</cfcase>
 	</cfswitch>
 	<q4:contentobjectdelete objectID="#i#">
-	<cfset "caller.#attributes.rMsg#" = "#application.rb.formatRBString("objectsDeleted",listLen(attributes.lObjectIds))#"> 
+	<cfset "caller.#attributes.rMsg#" = application.rb.formatRBString('workflow.messages.objectsDeleted@text',listLen(attributes.lObjectIds),'{1} content item(s) deleted') /> 
 </cfloop>
 
 
