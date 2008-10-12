@@ -1,13 +1,14 @@
 <cfcomponent name="objectBroker" displayname="objectBroker" access="public" hint="Stores and manages cache of objects to enable faster access">
 
 	<cffunction name="init" access="public" output="false" returntype="struct">
-				
-		<cfif not structKeyExists(application, "objectBroker")>
+		<cfargument name="bFlush" default="false" type="boolean" hint="Allows the application to force a total flush of the objectbroker." />
+
+		<cfif arguments.bFlush OR NOT structKeyExists(application, "objectBroker")>
 			<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">	
 				<cfset application.objectbroker =  structNew() />
 			</cflock>
 		</cfif>	
-		
+
 		<cfreturn this />
 	</cffunction>
 	

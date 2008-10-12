@@ -89,7 +89,7 @@
 		INITIALISE THE COAPIADMIN SINGLETON
 		----------------------------------------------->
 		<cfset application.coapi.coapiadmin = createObject("component", "farcry.core.packages.coapi.coapiadmin").init() />
-		<cfset application.coapi.objectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker").init() />
+		<cfset application.coapi.objectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker").init(bFlush="true") />
 
 	
 		<!--------------------------------- 
@@ -105,12 +105,13 @@
 			<cfset objectBroker = createObject("component","farcry.core.packages.fourq.objectBroker")>
 			
 			<cfloop list="#structKeyList(application.stcoapi)#" index="typename">
+
 				<cfif application.stcoapi[typename].bObjectBroker>
+					
 					<cfset bSuccess = objectBroker.configureType(typename=typename, MaxObjects=application.stcoapi[typename].ObjectBrokerMaxObjects) />
 				</cfif>
 			</cfloop>
 		</cfif>
-		
 
 		<!----------------------------------- 
 		SETUP CATEGORY APPLICATION STRUCTURE
