@@ -914,7 +914,7 @@ function menuOption_Edit()
 
 o = new Object();
 objectMenu['Insert'] = o;
-o.text = "#application.rb.getResource('categorytree.contextmenu.insert@label','insert')#";
+o.text = "#application.rb.getResource('categorytree.contextmenu.insert@label','Insert')#";
 o.js = "menuOption_Insert()";
 o.jsvalidate = "1";
 o.bShowDisabled = 1;
@@ -959,7 +959,7 @@ function menuOption_Delete()
 
 o = new Object();
 objectMenu['Move'] = o;
-o.text = "#application.rb.getResource('categorytree.contextmenu.move@label','move')#";
+o.text = "#application.rb.getResource('categorytree.contextmenu.move@label','Move')#";
 o.submenu = "Move";
 o.jsvalidate = 1;
 
@@ -995,7 +995,7 @@ o.bSeperator = 0;
 	
 	o = new Object();
 	moveMenu['MoveToBottom'] = o;
-	o.text = "#application.rb.getResource('categorytree.contextmenu.movetobottom@label','moveToBottom')#";
+	o.text = "#application.rb.getResource('categorytree.contextmenu.movetobottom@label','Move To Bottom')#";
 	o.js = "menuOption_MoveInternal(\\'bottom\\');";
 	o.jsvalidate = "(objectIndex(lastSelectedId)!=-1 && objectIndex(lastSelectedId)+1 < countObjects(getParentObject(lastSelectedId)['OBJECTID'])) || "+
 					"(nodeIndex(lastSelectedId)!=-1 && nodeIndex(lastSelectedId)+1 < countNodes(getParentObject(lastSelectedId)['OBJECTID']))";

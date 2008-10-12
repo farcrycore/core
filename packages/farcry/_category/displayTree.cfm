@@ -944,7 +944,7 @@ function menuOption_CreatePopup( id )
 
 o = new Object();
 objectMenu['Delete'] = o;
-o.text = "#application.rb.getResource('categorytree.contextmenu.delete@label','Delete'')#";
+o.text = "#application.rb.getResource('categorytree.contextmenu.delete@label','Delete')#";
 o.js = "menuOption_Delete()"; //  && countObjects(lastSelectedId) <=0  && countNodes(lastSelectedId) <=0
 o.jsvalidate = "(objects[lastSelectedId]['OBJECTID'] != '#rootobjectid#')?1:0";
 o.bShowDisabled = 1;
@@ -979,7 +979,7 @@ o.bSeperator = 0;
 	
 	o = new Object();
 	moveMenu['MoveDown'] = o;
-	o.text = "#application.rb.getResource('categorytree.contextmenu.movedown@label','moveDown')#";
+	o.text = "#application.rb.getResource('categorytree.contextmenu.movedown@label','Move Down')#";
 	o.js = "menuOption_MoveInternal(\\'down\\');";
 	o.jsvalidate = 	"(objectIndex(lastSelectedId)!=-1 && objectIndex(lastSelectedId)+1 < countObjects(getParentObject(lastSelectedId)['OBJECTID'])) || "+
 					"(nodeIndex(lastSelectedId)!=-1 && nodeIndex(lastSelectedId)+1 < countNodes(getParentObject(lastSelectedId)['OBJECTID']))";
@@ -995,7 +995,7 @@ o.bSeperator = 0;
 	
 	o = new Object();
 	moveMenu['MoveToBottom'] = o;
-	o.text = "#application.rb.getResource('categorytree.contextmenu.movetobottom@label','moveToBottom')#";
+	o.text = "#application.rb.getResource('categorytree.contextmenu.movetobottom@label','Move To Bottom')#";
 	o.js = "menuOption_MoveInternal(\\'bottom\\');";
 	o.jsvalidate = "(objectIndex(lastSelectedId)!=-1 && objectIndex(lastSelectedId)+1 < countObjects(getParentObject(lastSelectedId)['OBJECTID'])) || "+
 					"(nodeIndex(lastSelectedId)!=-1 && nodeIndex(lastSelectedId)+1 < countNodes(getParentObject(lastSelectedId)['OBJECTID']))";
