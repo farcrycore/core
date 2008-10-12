@@ -1,6 +1,8 @@
 <!--- 
 // ACTION: update nested tree model //
 --->
+<cfdump var="#form#" expand="false" label="form" />
+<cfabort showerror="debugging" />
 <cfif NOT structIsEmpty(form)>
 
 	<cfif isDefined("attachntmorphans")>
@@ -38,7 +40,7 @@
 			WHERE 
 			objectid IN 
 				(	SELECT objectid
-					FROM dmnavigation 
+					FROM dmNavigation 
 					WHERE objectid NOT IN
 					(	SELECT objectid 
 						FROM nested_tree_objects
@@ -64,10 +66,10 @@ WHERE lnavidalias <> ''
 ORDER BY label
 </cfquery>
 
-<!--- orphan nodes and exist in dmnavigation --->
+<!--- orphan nodes and exist in dmNavigation --->
 <cfquery datasource="#application.dsn#" name="ntmorphans">
 SELECT ntm.parentid, n.objectid, n.label, n.status, n.lnavidalias, n.datetimelastupdated
-FROM nested_tree_objects ntm, dmnavigation n
+FROM nested_tree_objects ntm, dmNavigation n
 WHERE ntm.objectid = n.objectid
 	AND ntm.parentid not in
 		(select objectid from nested_tree_objects)
@@ -77,10 +79,10 @@ WHERE ntm.objectid = n.objectid
 <!--- show parent of all orphans; information only --->
 <cfquery datasource="#application.dsn#" name="ntmparents">
 SELECT objectid, label, status, lnavidalias, datetimelastupdated
-FROM dmnavigation
+FROM dmNavigation
 where objectid IN
 	(	SELECT ntm.parentid
-		FROM nested_tree_objects ntm, dmnavigation n
+		FROM nested_tree_objects ntm, dmNavigation n
 		WHERE ntm.objectid = n.objectid
 			AND parentid not in
 				(select objectid from nested_tree_objects)
@@ -89,7 +91,7 @@ where objectid IN
 
 <!--- objects not in ntm that should be there --->
 <cfquery datasource="#application.dsn#" name="lostcontent">
-select objectid, label, status, lnavidalias, datetimelastupdated from dmnavigation 
+select objectid, label, status, lnavidalias, datetimelastupdated from dmNavigation 
 where objectid not in 
 	(select objectid from nested_tree_objects)
 </cfquery>
@@ -108,7 +110,7 @@ where objectid not in
 		<cfformitem type="html">(Nothing to do here... orphan parent information just provides a bit of insight.)</cfformitem>
 		<cfgrid query="ntmparents" name="ntmparents"  />
 	
-		<!--- lost dmnavigation content items --->
+		<!--- lost dmNavigation content items --->
 		<cfformitem type="html"><b>Lost Navigation Content</b></cfformitem>
 		<cfgrid query="lostcontent" name="lostcontent"  />
 		<cfformgroup type="horizontal">
