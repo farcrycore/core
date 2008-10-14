@@ -413,11 +413,17 @@
 			<!--- If the field is supposed to be hidden --->
 		<cfif ListContainsNoCase(attributes.lHiddenFields,i)>
 			<cfsavecontent variable="variables.returnHTML">
+				
 				<cfif isArray(variables.stObj[i])>
+					<cfset hiddenValue = arrayToList(Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].value) />
+				<cfelse>
+					<cfset hiddenValue = Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].value />
+				</cfif>
+				<!--- <cfif isArray(variables.stObj[i])>
 					<cfset hiddenValue = arrayToList(variables.stObj[i]) />
 				<cfelse>
 					<cfset hiddenValue = variables.stObj[i] />
-				</cfif>
+				</cfif> --->
 				<cfoutput><input type="hidden" id="#variables.prefix##ftFieldMetadata.Name#" name="#variables.prefix##ftFieldMetadata.Name#" value="#hiddenValue#" /></cfoutput>
 			</cfsavecontent>
 			
