@@ -101,7 +101,7 @@ default handlers
 				<nj:getNavigation objectId="#arguments.stObject.objectId#" r_stobject="stNav" />
 				
 				<!--- if the object is in the tree this will give us the node --->
-				<cfif structKeyExists(stNav, "objectid") AND len(stNav.objectid)>
+				<cfif isStruct(stNav) and structKeyExists(stNav, "objectid") AND len(stNav.objectid)>
 					<cfset navID = stNav.objectID>
 				</cfif>
 			</cfif>
