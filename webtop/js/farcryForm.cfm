@@ -388,17 +388,22 @@ function btnURL(url,target) {
 		return false;
 	}
 }		
+
 	
-function btnSubmit(formName,value) {
+function btnClick(formName,value) {
    	f = Ext.query('.fc-button-clicked');
    	for(var i=0; i<f.length; i++){
 		f[i].value = value;
 	}
+}
+		
+function btnSubmit(formName,value) {
+   	btnClick(formName,value);
 	if (formName != '') {	
 		Ext.get(formName).dom.submit();
 	}
 }
-	
+		
 function farcryForm_ajaxSubmission(formname,action,maskMsg,maskCls){
 	if (maskMsg == undefined){var maskMsg = 'Saving Changes'};
 	if (maskCls == undefined){var maskCls = 'x-mask-loading'};
