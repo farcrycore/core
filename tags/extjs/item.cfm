@@ -26,11 +26,6 @@
 	<cfparam name="attributes.id" default="itemID#randRange(1,9999999)#" />
 	<cfparam name="attributes.container" default="" />	
 	
-<!--- 	<cfif isdefined("attributes.title") AND attributes.title EQ "Approval & Work Flow">
-		<cfoutput>#getbasetaglist()#</cfoutput>
-		<cfabort showerror="debugging" />
-	</cfif> --->
-	
 	<cfset arrayAppend(request.extJS.stLayout.aItems, attributes) />
 
 </cfif>

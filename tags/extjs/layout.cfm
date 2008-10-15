@@ -23,6 +23,8 @@
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 <cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">
 
+<cfset oExtJS = createObject("component", "farcry.core.packages.farcry.extjs") />
+
 <cfif thistag.executionMode eq "Start">
 
 	<skin:htmlHead library="extJS" />
@@ -35,131 +37,7 @@
 
 	<cfparam name="request.extJS" default="#structNew()#" />
 	
-	<!--- Generic config properties --->
-	<cfset stConfig = structNew() />
-	<cfset stConfig.var = "var">
-	
-	<!--- tabPannel and inherited config properties --->
-	<cfset stConfig.activeItem = "activeItem">
-	<cfset stConfig.activeTab = "activeTab" />
-	<cfset stConfig.allowDomMove = "allowDomMove" />
-	<cfset stConfig.animCollapse = "animCollapse" />
-	<cfset stConfig.animScroll = "animScroll" />
-	<cfset stConfig.applyTo = "applyTo" />
-	<cfset stConfig.autoDestroy = "autoDestroy" />
-	<cfset stConfig.autoHeight = "autoHeight" />
-	<cfset stConfig.autoLoad = "autoLoad" />
-	<cfset stConfig.autoScroll = "autoScroll" />
-	<cfset stConfig.autoShow = "autoShow" />
-	<cfset stConfig.autoTabSelector = "autoTabSelector" />
-	<cfset stConfig.autoTabs = "autoTabs" />
-	<cfset stConfig.autoWidth = "autoWidth" />
-	<cfset stConfig.baseCls = "baseCls" />
-	<cfset stConfig.bbar = "bbar" />
-	<cfset stConfig.bGlobalVar = "bGlobalVar" />
-	<cfset stConfig.bodyBorder = "bodyBorder" />
-	<cfset stConfig.bodyStyle = "bodyStyle" />
-	<cfset stConfig.border = "border" />
-	<cfset stConfig.bufferResize = "bufferResize" />
-	<cfset stConfig.buttonAlign = "buttonAlign" />
-	<cfset stConfig.buttons = "buttons" />
-	<cfset stConfig.checked = "checked" />
-	<cfset stConfig.checkHandler = "checkHandler" />
-	<cfset stConfig.cls = "cls" />
-	<cfset stConfig.collapseFirst = "collapseFirst" />
-	<cfset stConfig.collapsed = "collapsed" />
-	<cfset stConfig.collapsedCls = "collapsedCls" />
-	<cfset stConfig.collapsible = "collapsible" />
-	<cfset stConfig.contentEl = "contentEl" />
-	<cfset stConfig.ctCls = "ctCls" />
-	<cfset stConfig.defaultType = "defaultType" />
-	<cfset stConfig.defaults = "defaults" />
-	<cfset stConfig.deferredRender = "deferredRender" />
-	<cfset stConfig.disabledClass = "disabledClass" />
-	<cfset stConfig.elements = "elements" />
-	<cfset stConfig.enableTabScroll = "enableTabScroll" />
-	<cfset stConfig.enableToggle = "enableToggle" />	
-	<cfset stConfig.extraCls = "extraCls" />	
-	<cfset stConfig.floating = "floating" />
-	<cfset stConfig.footer = "footer" />
-	<cfset stConfig.frame = "frame" />
-	<cfset stConfig.header = "header" />
-	<cfset stConfig.headerAsText = "headerAsText" />
-	<cfset stConfig.height = "height" />
-	<cfset stConfig.hideBorders = "hideBorders" />
-	<cfset stConfig.hideCollapseTool = "hideCollapseTool" />
-	<cfset stConfig.hideMode = "hideMode" />
-	<cfset stConfig.hideParent = "hideParent" />
-	<cfset stConfig.html = "html" />
-	<cfset stConfig.iconCls = "iconCls" />
-	<cfset stConfig.id = "id" />
-	<cfset stConfig.items = "items" />
-	<cfset stConfig.keys = "keys" />
-	<cfset stConfig.layout = "layout" />
-	<cfset stConfig.layoutConfig = "layoutConfig" />
-	<cfset stConfig.listeners = "listeners">
-	<cfset stConfig.maskDisabled = "maskDisabled" />
-	<cfset stConfig.minButtonWidth = "minButtonWidth" />
-	<cfset stConfig.minTabWidth = "minTabWidth" />
-	<cfset stConfig.monitorResize = "monitorResize" />
-	<cfset stConfig.onTriggerClick = "onTriggerClick" />	
-	<cfset stConfig.plain = "plain" />
-	<cfset stConfig.plugins = "plugins" />
-	<cfset stConfig.renderTo = "renderTo" />
-	<cfset stConfig.resizeTabs = "resizeTabs" />
-	<cfset stConfig.scrollDuration = "scrollDuration" />
-	<cfset stConfig.scrollIncrement = "scrollIncrement" />
-	<cfset stConfig.scrollRepeatInterval = "scrollRepeatInterval" />
-	<cfset stConfig.shadow = "shadow" />
-	<cfset stConfig.shim = "shim" />
-	<cfset stConfig.stateEvents = "stateEvents" />
-	<cfset stConfig.stateId = "stateId" />
-	<cfset stConfig.style = "style" />
-	<cfset stConfig.tabMargin = "tabMargin" />
-	<cfset stConfig.tabPosition = "tabPosition" />
-	<cfset stConfig.tabWidth = "tabWidth" />
-	<cfset stConfig.tbar = "tbar" />
-	<cfset stConfig.title = "title" />
-	<cfset stConfig.titleCollapse = "titleCollapse" />
-	<cfset stConfig.toggleGroup = "toggleGroup" />
-	<cfset stConfig.tools =  "tools" />
-	<cfset stConfig.triggerClass = "triggerClass" /> 
-	<cfset stConfig.width =  "width" />
-	
-	
-	<!--- accordion config properties --->
-	<cfset stConfig.activeOnTop = "activeOnTop" />
-	<cfset stConfig.animate = "animate" />
-	<cfset stConfig.autoWidth = "autoWidth" />
-	<cfset stConfig.collapseFirst = "collapseFirst" />
-	<cfset stConfig.fill = "fill" />
-	<cfset stConfig.hideCollapseTool = "hideCollapseTool" />
-	<cfset stConfig.titleCollapse = "titleCollapse" />	
-	
-	<!--- BorderLayout.Region config properties --->
-	<cfset stConfig.region = "region" />
-	<cfset stConfig.animFloat = "animFloat" />
-	<cfset stConfig.autoHide = "autoHide" />
-	<cfset stConfig.cmargins = "cmargins" />
-	<cfset stConfig.collapseMode = "collapseMode" />
-	<cfset stConfig.collapsible = "collapsible" />
-	<cfset stConfig.floatable = "floatable" />
-	<cfset stConfig.margins = "margins" />
-	<cfset stConfig.minHeight = "minHeight" />
-	<cfset stConfig.minWidth = "minWidth" />
-	<cfset stConfig.minSize= "minSize" />
-	<cfset stConfig.maxSize = "maxSize" />
-	<cfset stConfig.split = "split" />
-	
-	<!--- Button config properties --->
-	<cfset stConfig.text = "text" />
-	<cfset stConfig.handler = "handler" />
-	
-	<!--- Portal config properties --->
-	<cfset stConfig.xtype = "xtype" />
-	<cfset stConfig.columnWidth = "columnWidth" />
-	
-	
+
 	<cfset aItems = arrayNew(1) />
 	<cfset aHTML = arrayNew(1) />
 	
@@ -171,8 +49,136 @@
 	
 		<cfset request.extJS.stLayout = structNew() />
 		<cfset request.extJS.stLayout.aItems = arrayNew(1) />
+		<cfset request.extJS.stLayout.aHTML = arrayNew(1) />
 		<cfset request.extJS.stLayout.aLayoutItems = arrayNew(1) />
-	</cfif>
+	
+	
+		<!--- Generic config properties --->
+		<cfset request.extJS.stLayout.stConfig = structNew() />
+		<cfset request.extJS.stLayout.stConfig.var = "var">
+		
+		<!--- tabPannel and inherited config properties --->
+		<cfset request.extJS.stLayout.stConfig.activeItem = "activeItem">
+		<cfset request.extJS.stLayout.stConfig.activeTab = "activeTab" />
+		<cfset request.extJS.stLayout.stConfig.allowDomMove = "allowDomMove" />
+		<cfset request.extJS.stLayout.stConfig.animCollapse = "animCollapse" />
+		<cfset request.extJS.stLayout.stConfig.animScroll = "animScroll" />
+		<cfset request.extJS.stLayout.stConfig.applyTo = "applyTo" />
+		<cfset request.extJS.stLayout.stConfig.autoDestroy = "autoDestroy" />
+		<cfset request.extJS.stLayout.stConfig.autoHeight = "autoHeight" />
+		<cfset request.extJS.stLayout.stConfig.autoLoad = "autoLoad" />
+		<cfset request.extJS.stLayout.stConfig.autoScroll = "autoScroll" />
+		<cfset request.extJS.stLayout.stConfig.autoShow = "autoShow" />
+		<cfset request.extJS.stLayout.stConfig.autoTabSelector = "autoTabSelector" />
+		<cfset request.extJS.stLayout.stConfig.autoTabs = "autoTabs" />
+		<cfset request.extJS.stLayout.stConfig.autoWidth = "autoWidth" />
+		<cfset request.extJS.stLayout.stConfig.baseCls = "baseCls" />
+		<cfset request.extJS.stLayout.stConfig.bbar = "bbar" />
+		<cfset request.extJS.stLayout.stConfig.bGlobalVar = "bGlobalVar" />
+		<cfset request.extJS.stLayout.stConfig.bodyBorder = "bodyBorder" />
+		<cfset request.extJS.stLayout.stConfig.bodyStyle = "bodyStyle" />
+		<cfset request.extJS.stLayout.stConfig.border = "border" />
+		<cfset request.extJS.stLayout.stConfig.bufferResize = "bufferResize" />
+		<cfset request.extJS.stLayout.stConfig.buttonAlign = "buttonAlign" />
+		<cfset request.extJS.stLayout.stConfig.buttons = "buttons" />
+		<cfset request.extJS.stLayout.stConfig.checked = "checked" />
+		<cfset request.extJS.stLayout.stConfig.checkHandler = "checkHandler" />
+		<cfset request.extJS.stLayout.stConfig.cls = "cls" />
+		<cfset request.extJS.stLayout.stConfig.collapseFirst = "collapseFirst" />
+		<cfset request.extJS.stLayout.stConfig.collapsed = "collapsed" />
+		<cfset request.extJS.stLayout.stConfig.collapsedCls = "collapsedCls" />
+		<cfset request.extJS.stLayout.stConfig.collapsible = "collapsible" />
+		<cfset request.extJS.stLayout.stConfig.contentEl = "contentEl" />
+		<cfset request.extJS.stLayout.stConfig.ctCls = "ctCls" />
+		<cfset request.extJS.stLayout.stConfig.defaultType = "defaultType" />
+		<cfset request.extJS.stLayout.stConfig.defaults = "defaults" />
+		<cfset request.extJS.stLayout.stConfig.deferredRender = "deferredRender" />
+		<cfset request.extJS.stLayout.stConfig.disabledClass = "disabledClass" />
+		<cfset request.extJS.stLayout.stConfig.elements = "elements" />
+		<cfset request.extJS.stLayout.stConfig.enableTabScroll = "enableTabScroll" />
+		<cfset request.extJS.stLayout.stConfig.enableToggle = "enableToggle" />	
+		<cfset request.extJS.stLayout.stConfig.extraCls = "extraCls" />	
+		<cfset request.extJS.stLayout.stConfig.floating = "floating" />
+		<cfset request.extJS.stLayout.stConfig.footer = "footer" />
+		<cfset request.extJS.stLayout.stConfig.frame = "frame" />
+		<cfset request.extJS.stLayout.stConfig.header = "header" />
+		<cfset request.extJS.stLayout.stConfig.headerAsText = "headerAsText" />
+		<cfset request.extJS.stLayout.stConfig.height = "height" />
+		<cfset request.extJS.stLayout.stConfig.hideBorders = "hideBorders" />
+		<cfset request.extJS.stLayout.stConfig.hideCollapseTool = "hideCollapseTool" />
+		<cfset request.extJS.stLayout.stConfig.hideMode = "hideMode" />
+		<cfset request.extJS.stLayout.stConfig.hideParent = "hideParent" />
+		<cfset request.extJS.stLayout.stConfig.html = "html" />
+		<cfset request.extJS.stLayout.stConfig.iconCls = "iconCls" />
+		<cfset request.extJS.stLayout.stConfig.id = "id" />
+		<cfset request.extJS.stLayout.stConfig.items = "items" />
+		<cfset request.extJS.stLayout.stConfig.keys = "keys" />
+		<cfset request.extJS.stLayout.stConfig.layout = "layout" />
+		<cfset request.extJS.stLayout.stConfig.layoutConfig = "layoutConfig" />
+		<cfset request.extJS.stLayout.stConfig.listeners = "listeners">
+		<cfset request.extJS.stLayout.stConfig.maskDisabled = "maskDisabled" />
+		<cfset request.extJS.stLayout.stConfig.minButtonWidth = "minButtonWidth" />
+		<cfset request.extJS.stLayout.stConfig.minTabWidth = "minTabWidth" />
+		<cfset request.extJS.stLayout.stConfig.monitorResize = "monitorResize" />
+		<cfset request.extJS.stLayout.stConfig.onTriggerClick = "onTriggerClick" />	
+		<cfset request.extJS.stLayout.stConfig.plain = "plain" />
+		<cfset request.extJS.stLayout.stConfig.plugins = "plugins" />
+		<cfset request.extJS.stLayout.stConfig.renderTo = "renderTo" />
+		<cfset request.extJS.stLayout.stConfig.resizeTabs = "resizeTabs" />
+		<cfset request.extJS.stLayout.stConfig.scrollDuration = "scrollDuration" />
+		<cfset request.extJS.stLayout.stConfig.scrollIncrement = "scrollIncrement" />
+		<cfset request.extJS.stLayout.stConfig.scrollRepeatInterval = "scrollRepeatInterval" />
+		<cfset request.extJS.stLayout.stConfig.stateEvents = "stateEvents" />
+		<cfset request.extJS.stLayout.stConfig.shadow = "shadow" />
+		<cfset request.extJS.stLayout.stConfig.shim = "shim" />
+		<cfset request.extJS.stLayout.stConfig.stateEvents = "stateEvents" />
+		<cfset request.extJS.stLayout.stConfig.stateId = "stateId" />
+		<cfset request.extJS.stLayout.stConfig.style = "style" />
+		<cfset request.extJS.stLayout.stConfig.tabMargin = "tabMargin" />
+		<cfset request.extJS.stLayout.stConfig.tabPosition = "tabPosition" />
+		<cfset request.extJS.stLayout.stConfig.tabWidth = "tabWidth" />
+		<cfset request.extJS.stLayout.stConfig.tbar = "tbar" />
+		<cfset request.extJS.stLayout.stConfig.title = "title" />
+		<cfset request.extJS.stLayout.stConfig.titleCollapse = "titleCollapse" />
+		<cfset request.extJS.stLayout.stConfig.toggleGroup = "toggleGroup" />
+		<cfset request.extJS.stLayout.stConfig.tools =  "tools" />
+		<cfset request.extJS.stLayout.stConfig.triggerClass = "triggerClass" /> 
+		<cfset request.extJS.stLayout.stConfig.width =  "width" />
+		
+		
+		<!--- accordion config properties --->
+		<cfset request.extJS.stLayout.stConfig.activeOnTop = "activeOnTop" />
+		<cfset request.extJS.stLayout.stConfig.animate = "animate" />
+		<cfset request.extJS.stLayout.stConfig.autoWidth = "autoWidth" />
+		<cfset request.extJS.stLayout.stConfig.collapseFirst = "collapseFirst" />
+		<cfset request.extJS.stLayout.stConfig.fill = "fill" />
+		<cfset request.extJS.stLayout.stConfig.hideCollapseTool = "hideCollapseTool" />
+		<cfset request.extJS.stLayout.stConfig.titleCollapse = "titleCollapse" />	
+		
+		<!--- BorderLayout.Region config properties --->
+		<cfset request.extJS.stLayout.stConfig.region = "region" />
+		<cfset request.extJS.stLayout.stConfig.animFloat = "animFloat" />
+		<cfset request.extJS.stLayout.stConfig.autoHide = "autoHide" />
+		<cfset request.extJS.stLayout.stConfig.cmargins = "cmargins" />
+		<cfset request.extJS.stLayout.stConfig.collapseMode = "collapseMode" />
+		<cfset request.extJS.stLayout.stConfig.collapsible = "collapsible" />
+		<cfset request.extJS.stLayout.stConfig.floatable = "floatable" />
+		<cfset request.extJS.stLayout.stConfig.margins = "margins" />
+		<cfset request.extJS.stLayout.stConfig.minHeight = "minHeight" />
+		<cfset request.extJS.stLayout.stConfig.minWidth = "minWidth" />
+		<cfset request.extJS.stLayout.stConfig.minSize= "minSize" />
+		<cfset request.extJS.stLayout.stConfig.maxSize = "maxSize" />
+		<cfset request.extJS.stLayout.stConfig.split = "split" />
+		
+		<!--- Button config properties --->
+		<cfset request.extJS.stLayout.stConfig.text = "text" />
+		<cfset request.extJS.stLayout.stConfig.handler = "handler" />
+		
+		<!--- Portal config properties --->
+		<cfset request.extJS.stLayout.stConfig.xtype = "xtype" />
+		<cfset request.extJS.stLayout.stConfig.columnWidth = "columnWidth" />
+	
+	</cfif>	
 			
 </cfif>
 
@@ -207,12 +213,13 @@
 						</cfoutput>
 					</cfif>
 					<cfloop list="#structKeyList(attributes)#" index="i">
-						<cfif not listFindNoCase("id,container,layout,plugins,bGlobalVar",i)>
-							<cfoutput>,#stConfig[i]#:<cfif isNumeric(attributes[i]) 
+						<cfif not listFindNoCase("id,container,layout,plugins,bGlobalVar",i) AND structKeyExists(request.extJS.stLayout.stConfig, i)>
+							<cfoutput>,#request.extJS.stLayout.stConfig[i]#:<cfif isNumeric(attributes[i]) 
 														OR left(trim(attributes[i]),1) EQ "{"
 									 					OR left(trim(attributes[i]),1) EQ "[" 
 									 					OR left(trim(attributes[i]),9) EQ "function(" 
 									 					OR left(trim(attributes[i]),8) EQ "new Ext." 
+									 					OR left(trim(attributes[i]),4) EQ "Ext." 
 									 					OR  isBoolean(attributes[i])>
 									 					#attributes[i]#
 										 			<cfelse>
@@ -234,7 +241,7 @@
 								<cfoutput>,
 								</cfoutput>
 							</cfif>
-							<cfset itemHTML = renderItem(stProperties=request.extJS.stLayout.aLayoutItems[i]) />
+							<cfset itemHTML = oExtJS.renderItem(stProperties="#request.extJS.stLayout.aLayoutItems[i]#") />
 							<cfoutput>#itemHTML#
 							</cfoutput>
 						</cfloop>		
@@ -256,9 +263,9 @@
 	</cfif>
 	
 	
-	<cfif arrayLen(aHTML)>
-		<cfloop from="1" to="#arrayLen(aHTML)#" index="i">
-			<cfoutput>#aHTML[i]#</cfoutput>
+	<cfif arrayLen(request.extJS.stLayout.aHTML)>
+		<cfloop from="1" to="#arrayLen(request.extJS.stLayout.aHTML)#" index="i">
+			<cfoutput>#request.extJS.stLayout.aHTML[i]#</cfoutput>
 		</cfloop>
 	</cfif>
 	
@@ -277,93 +284,3 @@
 </cfif>
 
 
-<cffunction name="renderItem" access="private" returntype="string">
-	<cfargument name="stProperties" type="struct" required="true" />
-	
-	<cfset var returnHTML = "">
-	<cfset var firstConfigProperty = true />
-	<cfset var firstItem = true />
-	<cfset var itemHTML = "">
-	<cfset var configPropertyName = "">
-
-	<cfsavecontent variable="returnHTML">
-		<cfif structKeyExists(arguments.stProperties, "var") AND len(arguments.stProperties.var)>
-			<cfoutput>var #arguments.stProperties.var# =</cfoutput>
-		</cfif>
-		<cfif structKeyExists(arguments.stProperties, "container") AND len(arguments.stProperties.container)>
-			<cfoutput>new Ext.#arguments.stProperties.container#(</cfoutput>
-		</cfif>
-	
-	
-		<cfif structKeyExists(arguments.stProperties, "html") AND len(arguments.stProperties.html)>
-			<cfset arrayAppend(aHTML, arguments.stProperties.html) />
-		</cfif>
-	
-	
-		<cfoutput>{</cfoutput>
-		
-		<cfif structKeyExists(arguments.stProperties, "itemConfig") and len(arguments.stProperties.itemConfig)>
-			<cfoutput>#arguments.stProperties.itemConfig#</cfoutput>
-		<cfelse>
-		
-		
-			<cfloop list="#structKeyList(arguments.stProperties)#" index="i">
-				<cfif NOT listFindNoCase("container,aItems,html,listeners,var,plugins,bGlobalVar", i) >
-					<cfif firstConfigProperty>
-						<cfset firstConfigProperty = false />
-					<cfelse>
-						<cfoutput>,</cfoutput>
-					</cfif>
-					<cfif structKeyExists(stConfig, i)>
-						<cfset configPropertyName = stConfig[i] />
-					<cfelse>
-						<cfset configPropertyName = lCase(i) />
-					</cfif>
-					<cfoutput>#configPropertyName#:<cfif isNumeric(arguments.stProperties[i]) 
-														OR left(trim(arguments.stProperties[i]),1) EQ "{" 
-														OR left(trim(arguments.stProperties[i]),1) EQ "[" 
-										 				OR left(trim(arguments.stProperties[i]),9) EQ "function(" 
-										 				OR left(trim(arguments.stProperties[i]),8) EQ "new Ext." 
-														OR isBoolean(arguments.stProperties[i])>#arguments.stProperties[i]#
-													<cfelse>'#arguments.stProperties[i]#'</cfif>
-						
-					</cfoutput>
-					
-				</cfif>
-			</cfloop>
-			
-			<cfif structKeyExists(arguments.stProperties, "listeners") and len(arguments.stProperties.listeners)>
-				<cfoutput>,listeners:#arguments.stProperties.listeners#
-				</cfoutput>
-			</cfif>
-			<cfif structKeyExists(arguments.stProperties, "plugins") and len(arguments.stProperties.plugins)>
-				<cfoutput>,plugins:#arguments.stProperties.plugins#
-				</cfoutput>
-			</cfif>
-			
-			<cfif structKeyExists(arguments.stProperties, "aItems") and arrayLen(arguments.stProperties.aItems)>
-				<cfoutput>,items:
-				</cfoutput>
-				<cfoutput>[</cfoutput>
-				<cfset firstItem = true />
-				<cfloop from="1" to="#arrayLen(arguments.stProperties.aItems)#" index="i">
-					<cfif firstItem>
-						<cfset firstItem = false />
-					<cfelse>
-						<cfoutput>,
-						</cfoutput>
-					</cfif>
-					<cfset itemHTML = renderItem(stProperties=arguments.stProperties.aItems[i]) />
-					<cfoutput>#itemHTML#</cfoutput>
-				</cfloop>
-				<cfoutput>]</cfoutput>
-			</cfif>
-		</cfif>
-		<cfoutput>}</cfoutput>
-		<cfif structKeyExists(arguments.stProperties, "container") AND len(arguments.stProperties.container)>
-			<cfoutput>)</cfoutput>
-		</cfif>
-	</cfsavecontent>
-	
-	<cfreturn returnHTML /> 
-</cffunction>
