@@ -199,7 +199,7 @@
 		<cfreturn arguments.struct1 />
 	</cffunction>
 
-	<cffunction name="structCreate" returntype="struct" output="false" access="public" hint="Creates and populates a struct with the provided arguments">
+	<cffunction name="structCreate" returntype="struct" output="false" access="public" hint="Creates and populates a struct with the provided arguments" bDocument="true">
 		
 		<cfreturn duplicate(arguments) />
 	</cffunction>
