@@ -418,7 +418,7 @@ function farcryForm_ajaxSubmission(formname,action,maskMsg,maskCls){
 	{
 		url: action,
 		nocache: true,
-		scrips: true,				
+		scripts: true,				
 		timeout: 30,
 		params: Ext.Ajax.serializeForm(formname)
 	});
