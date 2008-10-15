@@ -1,17 +1,18 @@
 <cfsetting enablecfoutputonly="true" />
 <!--- @@displayname: Filter loop --->
+<!--- @@description: Loops over a set of values allowing enclosed code to process them and return new values. These new values are collected into an output set. --->
 
 <cfif not thistag.HasEndTag>
 	<cfthrow message="The map tag must have an end element">
 </cfif>
 
-<cfparam name="attributes.values" />
-<cfparam name="attributes.index" default="index" />
-<cfparam name="attributes.value" default="value" />
-<cfparam name="attributes.sendback" default="sendback" />
-<cfparam name="attributes.resulttype" default="" />
-<cfparam name="attributes.result" default="result" />
-<cfparam name="attributes.delimiters" default="," />
+<cfparam name="attributes.values" /><!--- The set of source values. Can be a struct, array, list, or query. Lists must be comma delimited. --->
+<cfparam name="attributes.index" default="index" /><!--- The variable that will contain the index of the source item. For structs this is the key. Defaults to "index" --->
+<cfparam name="attributes.value" default="value" /><!--- The variable that will contain the value of the source item. For queries this is a struct of the column values. If this value is a non-simple value (e.g. struct) editing it will alter the source set. Defaults to "value" --->
+<cfparam name="attributes.sendback" default="sendback" /><!--- The variable that enclosed code will add output items to. The type of this variable depends on the output set type. For structs, this is a struct which gets merged into the output set. For arrays, this is an array that gets appended to the output set. For lists this is a string that gets appended to the output list. For queries this is an array of row structs (containing one empty struct by default), each of which is appended to the output query. If this variable is "empty" (e.g. empty struct) no items are added to the output set. Defaults to "sendback" --->
+<cfparam name="attributes.resulttype" default="" /><!--- The output set type. Defaults to the same type as the source set. Values: "struct", "array", "list", or "querynew('col1,col2')" --->
+<cfparam name="attributes.result" default="result" /><!--- The variable the output set is stored in once this tag has finished execution. Defaults to "result" --->
+<cfparam name="attributes.delimiters" default="," /><!--- Only applies for resulttype="list". Specifies an alternate delimiter for the output set. --->
 
 <cffunction name="initMap" access="public" resulttype="boolean" description="Type specific initialisation for map. Returns true if there are items to process." output="false">
 	<cfif isstruct(attributes.values)>

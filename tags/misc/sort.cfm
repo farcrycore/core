@@ -1,11 +1,17 @@
 <cfsetting enablecfoutputonly="true" />
 <!--- @@displayname: Quicksort tag --->
+<!--- @@description: This tag provides "anonymous comparison function" sorting 
+functionality using the quick sort algorithm. It is useful for situations where 
+the requirements for a sort are too complex for the native functions. The quick 
+sort algorithm has been abstracted so that the comparisons between items can be 
+performed by the enclosed code. The enclosed code is executed for each 
+comparison. Note: This tag DOES alter array type source sets. --->
 
-<cfparam name="attributes.values" />
-<cfparam name="attributes.value1" default="value1" />
-<cfparam name="attributes.value2" default="value2" />
-<cfparam name="attributes.sendback" default="sendback" />
-<cfparam name="attributes.result" default="result" />
+<cfparam name="attributes.values" /><!--- The source set. Can be a list, array, or struct. --->
+<cfparam name="attributes.value1" default="value1" /><!--- The variable that will contain the first value to be compared for an iteration. Defaults to "value1" --->
+<cfparam name="attributes.value2" default="value2" /><!--- The variable that will contain the second value to be compared for an iteration. Defaults to "value2" --->
+<cfparam name="attributes.sendback" default="sendback" /><!--- The variable that will contain the result of the comparison. Should be set to 0 for "equal" values, less than 0 if the first value is "less" than the second, and more than 0 if the first value is "more" than the second. Defaults to "sendback" --->
+<cfparam name="attributes.result" default="result" /><!--- The result of the sort. For lists and arrays this is the sorted set. For structs this is an ordered list of keys. --->
 
 <cfif not thistag.HasEndTag>
 	<cfthrow message="The sort tag must have an end element" />

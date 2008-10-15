@@ -199,6 +199,11 @@
 		<cfreturn arguments.struct1 />
 	</cffunction>
 
+	<cffunction name="structCreate" returntype="struct" output="false" access="public" hint="Creates and populates a struct with the provided arguments">
+		
+		<cfreturn duplicate(arguments) />
+	</cffunction>
+
 	<!--- PACKAGE utilities --->
 	<cffunction name="getPath" access="public" output="false" returntype="string" hint="Finds the component in core/plugins/project, and returns its path" bDocument="true">
 		<cfargument name="package" type="string" required="true" />
