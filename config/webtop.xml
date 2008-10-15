@@ -47,8 +47,8 @@
 				<menuitem id="listfargroup" sequence="20" label="Groups" link="/admin/customadmin.cfm?module=customlists/farGroup.cfm" relatedtype="farGroup" />
 			</menu>
 			<menu id="rolesandpermissions" sequence="120" label="Roles &amp; Permissions" permission="SecurityPolicyManagementTab">
-				<menuitem id="permissions" sequence="10" label="Roles" link="/admin/customadmin.cfm?module=customlists/farRole.cfm" relatedtype="farRole" />
-				<menuitem id="roles" sequence="20" label="Permissions" link="/admin/customadmin.cfm?module=customlists/farPermission.cfm" relatedtype="farPermission" />
+				<menuitem id="roles" sequence="10" label="Roles" link="/admin/customadmin.cfm?module=customlists/farRole.cfm" relatedtype="farRole" />
+				<menuitem id="permissions" sequence="20" label="Permissions" link="/admin/customadmin.cfm?module=customlists/farPermission.cfm" relatedtype="farPermission" />
 			</menu>
 			<menu id="securitylogs" sequence="130" label="Audit Reporting" permission="SecurityPolicyManagementTab">
 				<menuitem id="securitylogs" sequence="10" label="Security Logs" link="/admin/customadmin.cfm?module=customlists/farLog_security.cfm" />

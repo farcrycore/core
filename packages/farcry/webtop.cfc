@@ -386,9 +386,9 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 					<cftry>
 						<cfif attr eq "label" and len(stResult.labelType) and listcontains("evaluate,expression",stResult.labelType)>
 							<cfset stResult[attr] = application.rb.getResource("#stResult.rbkey#@#attr#",Evaluate(stResult[attr])) />
+						<cfelse>
+							<cfset stResult[attr] = application.rb.getResource("#stResult.rbkey#@#attr#",stResult[attr]) />
 						</cfif>
-						
-						<cfset stResult[attr] = application.rb.getResource("#stResult.rbkey#@#attr#",stResult[attr]) />
 						
 						<cfcatch type="any">
 							<cfset stResult[attr] = "<font color='red'>#stResult[attr]#</font>" />
