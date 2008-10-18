@@ -25,12 +25,6 @@
 FARCRY INCLUDE FILES
  ------------------>
 <cfparam name="attributes.id" default="tabPanel-#arrayLen(request.extJS.stLayout.aLayoutItems)#">
-<cfparam name="attributes.title" default="">
-<cfparam name="attributes.icon" default="">
-<cfparam name="attributes.style" default="">
-<cfparam name="attributes.class" default="">
-<cfparam name="attributes.html" default="">
-
 
 <cfinclude template="item.cfm" />
 

@@ -27,7 +27,7 @@
 <cfparam name="attributes.bGlobalVar" default="true" />
 <cfparam name="attributes.id" default="tab-#createUUID()#" />
 <cfparam name="attributes.renderTo" default="#attributes.id#-div" />
-<cfparam name="attributes.activeTab" default="Ext.state.Manager.get('active_tab', 0)" />
+<cfparam name="attributes.activeTab" default="" />
 <cfparam name="attributes.width" default="100%" />
 <cfparam name="attributes.frame" default="true" />
 <cfparam name="attributes.defaults" default="{autoHeight: true}" />
@@ -36,6 +36,9 @@
 <cfset attributes.container = "TabPanel" />
 <cfset attributes.stateEvents = "['tabchange']" />
 
+<cfif not len(attributes.activeTab)>
+	<cfset attributes.activeTab = "Ext.state.Manager.get('active_tab', 0)" />
+</cfif>
 
 <cfsavecontent variable="attributes.stListeners.tabchange">
 	<cfoutput>function(){Ext.state.Manager.set('active_tab', this.getActiveTab().getId());}</cfoutput>
