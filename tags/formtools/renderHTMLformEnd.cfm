@@ -20,7 +20,7 @@
 			</script>
 		</cfif>
 
-		<cfif Request.farcryForm.bAjaxSubmission>
+		<cfif Request.farcryForm.bAjaxSubmission AND NOT request.mode.ajax>
 			</div>
 		</cfif>
 		

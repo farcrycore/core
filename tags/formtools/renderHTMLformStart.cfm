@@ -17,7 +17,7 @@
 <cfif thistag.ExecutionMode EQ "Start">
 	
 	<cfoutput>
-		<cfif Request.farcryForm.bAjaxSubmission>
+		<cfif Request.farcryForm.bAjaxSubmission AND NOT request.mode.ajax>
 			<div id="#Request.farcryForm.Name#formwrap" class="ajaxformwrap">
 		</cfif>
 		

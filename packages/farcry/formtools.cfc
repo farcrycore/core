@@ -11,10 +11,10 @@
 	
 	
 	<cfif arguments.CurrentPage eq 0 or not isNumeric(arguments.currentPage)>
-		<cfif isDefined("url.page")>
-			<cfset arguments.CurrentPage = url.page>
-		<cfelseif isDefined("form.paginationpage")>
-			<cfset arguments.CurrentPage = form.paginationpage>		
+		<cfif structKeyExists(url,"page#arguments.paginationID#")>
+			<cfset arguments.CurrentPage = url["page#arguments.paginationID#"]>
+		<cfelseif structKeyExists(form, "paginationpage#arguments.paginationID#")>
+			<cfset arguments.CurrentPage = form["paginationpage#arguments.paginationID#"]>		
 		</cfif>
 	</cfif>
 		

@@ -408,16 +408,17 @@ function farcryForm_ajaxSubmission(formname,action,maskMsg,maskCls){
 	if (maskMsg == undefined){var maskMsg = 'Saving Changes'};
 	if (maskCls == undefined){var maskCls = 'x-mask-loading'};
 	
-	var myForm = Ext.get(formname);						
+	var myForm = Ext.get(formname+ 'formwrap');						
 	var mgr = myForm.getUpdater();
 
-	mgr.showLoadIndicator = false;
-	myForm.mask(maskMsg, maskCls);
-	mgr.on("update", 
-		function(el,oResponseObject) {
-			myForm.unmask();
-		}
-	);
+	// Not working correctly in IE
+	//mgr.showLoadIndicator = true;
+	//myForm.mask(maskMsg, maskCls);
+	//mgr.on("update", 
+	//	function(el,oResponseObject) {
+	//		myForm.unmask();
+	//	}
+	//);
 	
 	mgr.update(
 	{
