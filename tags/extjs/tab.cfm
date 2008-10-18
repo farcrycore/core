@@ -39,7 +39,7 @@
 <cfif not len(attributes.activeTab)>
 	<cfset attributes.activeTab = "Ext.state.Manager.get('active_tab_#attributes.id#', 0)" />
 </cfif>
-<cfdump var="#cookie#" expand="false" label="#attributes.id#" />
+
 <cfsavecontent variable="attributes.stListeners.tabchange">
 	<cfoutput>function(){Ext.state.Manager.set('active_tab_#attributes.id#', this.getActiveTab().getId());}</cfoutput>
 </cfsavecontent>
