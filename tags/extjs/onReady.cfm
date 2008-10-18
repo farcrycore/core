@@ -27,7 +27,9 @@ $in: id -- an id for the content to be added to the head. If the key already exi
 	<cfparam name="request.inhead.aOnReadyIDs" default="#arrayNew(1)#" /><!--- This array allows us to keep track of the order in which the ids were generated --->
 	
 	<cfif request.mode.ajax>
-		<cfoutput><script type="text/javascript"></cfoutput>
+		<cfif NOT structKeyExists(request.inhead.stOnReady, attributes.id)>
+			<cfoutput><script type="text/javascript"></cfoutput>
+		</cfif>
 	<cfelse>
 		<skin:htmlHead library="extCoreJS" />
 	</cfif>
@@ -37,8 +39,12 @@ $in: id -- an id for the content to be added to the head. If the key already exi
 
 	
 	<cfif request.mode.ajax>
-		<!--- Dont put into the head, just output directly --->
-		<cfoutput></script></cfoutput>
+		<cfif NOT structKeyExists(request.inhead.stOnReady, attributes.id)>
+			<!--- Dont put into the head, just output directly --->
+			<cfoutput></script></cfoutput>
+		
+			<cfset request.inHead.stOnReady[attributes.id] = thisTag.generatedContent />
+		</cfif>
 	<cfelse>
 		<cfif NOT structKeyExists(request.inhead.stOnReady, attributes.id)>
 			<cfset request.inHead.stOnReady[attributes.id] = thisTag.generatedContent />
