@@ -57,12 +57,15 @@ $out:$
 		<cfset var lResult = ":#application.rb.getResource('coapi.dmNavigation.properties.externallink@nooptions','-- None --')#" />
 		<cfset var aNavalias = listToArray(listSort(structKeyList(application.navid),'textnocase'))>
 		<cfset var oNav = createObject("component", application.stcoapi["dmNavigation"].packagePath) />
-	
+		<cfset var i = "" />
+		<cfset var j = "" />
+		
 		<cfloop from="1" to="#arraylen(aNavalias)#" index="i">
-			<cfset stNav = oNav.getData(objectid="#application.navid[aNavalias[i]]#") />
-			<cfset lResult = listAppend(lResult, "#application.navid[aNavalias[i]]#:#stNav.title# (#aNavalias[i]#)") />
+			<cfloop list="#application.navid[aNavalias[i]]#" index="j">
+				<cfset stNav = oNav.getData(objectid="#j#") />
+				<cfset lResult = listAppend(lResult, "#j#:#stNav.title# (#aNavalias[i]#)") />
+			</cfloop>
 		</cfloop>
-	
 		<cfreturn lResult />
 	</cffunction>
 	
