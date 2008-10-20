@@ -329,6 +329,8 @@
 		-------------------------------------------------------->
 		<!--- core request processing --->
 		<cfscript>
+		request.fc.bShowTray = true;
+			
 		// init request.mode with defaults
 		request.mode = structNew();
 		request.mode.design = 0;
