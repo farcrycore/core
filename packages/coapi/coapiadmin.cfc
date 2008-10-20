@@ -383,7 +383,7 @@
 			<cfquery dbtype="query" name="qWebskinPath">
 			SELECT * 
 			FROM qWebskinMetadata
-			WHERE methodname = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.template#" />
+			WHERE lower(methodname) = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lCase(arguments.template)#" />
 			</cfquery>
 			
 			<cfif qWebskinPath.recordCount>
