@@ -176,10 +176,6 @@
 	
 	<!--- determine display method for object --->
 	<cfset request.stObj = stObj>
-		
-	<cfif request.mode.bAdmin>
-		<skin:view objectid="#attributes.objectid#" webskin="displayAdminToolbar" />
-	</cfif>
 
 	<cfif len(attributes.method)>
 	
@@ -202,6 +198,10 @@
 		<cfelse>
 			<cfthrow message="For the default view of an object, create a displayPageStandard webskin." />
 		</cfif>
+	</cfif>
+		
+	<cfif request.mode.bAdmin and request.fc.bShowTray>
+		<skin:view objectid="#attributes.objectid#" webskin="displayAdminToolbar" />
 	</cfif>
 
 <cfelse>
@@ -232,11 +232,11 @@
 			</cfif>		
 		</cfif>
 		
-		<cfif request.mode.bAdmin>
+		<skin:view typename="#attributes.typename#" webskin="#attributes.method#" />
+		
+		<cfif request.mode.bAdmin and request.fc.bShowTray>
 			<skin:view typename="#attributes.typename#" webskin="displayAdminToolbar" />
 		</cfif>
-		
-		<skin:view typename="#attributes.typename#" webskin="#attributes.method#" />
 	<cfelse>
 		<extjs:bubble title="Security" message="You do not have permission to access this view" />
 		<cflocation url="#attributes.loginpath#&error=restricted" addtoken="No" />

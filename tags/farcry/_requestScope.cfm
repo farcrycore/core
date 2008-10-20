@@ -56,6 +56,9 @@ TODO:
  - rebuild floater menu
 --------------------------------------------------------------------->
 <cfscript>
+// init request.fc vars
+request.fc.bShowTray = true;
+
 
 // init request.mode with defaults
 request.mode = structNew();
