@@ -170,6 +170,9 @@
 	<cffunction name="OnRequestStart" access="public" returntype="boolean" output="false" hint="Fires at first part of page processing.">
 		<cfargument name="TargetPage" type="string" required="true" />
 
+		<!--- Setup FarCry Namespace in the request scope --->
+		<cfparam name="request.fc" default="#structNew()#" />
+		
 		<!--- Update the farcry application if instructed --->
 		<cfset farcryUpdateApp() />		
 		
