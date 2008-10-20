@@ -55,6 +55,7 @@ TODO:
  - check security for access to parameters
  - rebuild floater menu
 --------------------------------------------------------------------->
+<cfparam name="request.fc" default="#structnew()#" />
 <cfscript>
 // init request.fc vars
 request.fc.bShowTray = true;
