@@ -200,7 +200,7 @@
 		</cfif>
 	</cfif>
 		
-	<cfif request.mode.bAdmin and request.fc.bShowTray>
+	<cfif request.mode.bAdmin and request.fc.bShowTray and not (structkeyexists(request,"bHideContextMenu") and request.bHideContextMenu)>
 		<skin:view objectid="#attributes.objectid#" webskin="displayAdminToolbar" />
 	</cfif>
 
@@ -234,7 +234,7 @@
 		
 		<skin:view typename="#attributes.typename#" webskin="#attributes.method#" />
 		
-		<cfif request.mode.bAdmin and request.fc.bShowTray>
+		<cfif request.mode.bAdmin and request.fc.bShowTray and not (structkeyexists(request,"bHideContextMenu") and request.bHideContextMenu)>
 			<skin:view typename="#attributes.typename#" webskin="displayAdminToolbar" />
 		</cfif>
 	<cfelse>
