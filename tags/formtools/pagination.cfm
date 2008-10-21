@@ -260,8 +260,8 @@ user defined functions
 	<cfsavecontent variable="scrollinnards">
 	
 	
+		<ft:form>
 		
-	
 		<!--- required for JS pagination --->
 		<cfoutput>
 			<input type="hidden" name="paginationpage#attributes.paginationID#" id="paginationpage#Request.farcryForm.Name#" value="" />
@@ -296,7 +296,7 @@ user defined functions
 						
 						<cfif arguments.bShowPageDropdown>
 							<cfoutput>
-							<select name="paginationDropdown" onchange="getPaginationLinkOnClick(this.value);">
+							<select name="paginationDropdown" onchange="Ext.get('paginationpage#Request.farcryForm.Name#').dom.value=this.value;#Request.farcryForm.onSubmit#;return farcryps(this.value,'#Request.farcryForm.Name#','#attributes.submissionType#','#attributes.actionURL#');">
 								<cfloop from="#pFirstPage#" to="#pLastPage#" index="i" step="#attributes.step#">
 									<option value="#i#" <cfif attributes.currentPage EQ i>selected</cfif> >&nbsp;#i#&nbsp;</option>
 								</cfloop>
@@ -357,24 +357,24 @@ user defined functions
 					<cfoutput><li><a href="javascript:void(0)">#attributes.htmlPrevious#</a></li></cfoutput>
 				<cfelse>
 					<cfif pTotalPages GT attributes.pageLinks>
-						<cfoutput><li><a href="#arguments.actionURL#&amp;page=1" #IIF(attributes.submissionType neq "link",DE('onclick="javascript:paginationSubmission(1);return false;"'),DE(""))#>#attributes.htmlFirst#</a></li></cfoutput>
+						<cfoutput><li><a href="#getPaginationLinkHREF(1)#" onclick="#getPaginationLinkOnClick(1)#;">#attributes.htmlFirst#</a></li></cfoutput>
 				   	</cfif>
-				   	<cfoutput><li><a href="#arguments.actionURL#&amp;page=#attributes.currentPage-1#" #IIF(attributes.submissionType neq "link",DE('onclick="javascript:paginationSubmission(#attributes.currentPage-1#);return false;"'),DE(""))#>#attributes.htmlPrevious#</a></li></cfoutput>
+				   	<cfoutput><li><a href="#getPaginationLinkHREF(attributes.currentPage-1)#" onclick="#getPaginationLinkOnClick(attributes.currentPage-1)#;">#attributes.htmlPrevious#</a></li></cfoutput>
 				</cfif>		
 				
 				<cfloop from="#pFirstPage#" to="#pLastPage#" index="i">
 				    <cfif attributes.currentPage EQ i>
 						<cfoutput><li class="active"><a href="javascript:void(0)">#i#</a></li></cfoutput>
 				   <cfelse>
-				   	<cfoutput><li><a href="#arguments.actionURL#&amp;page=#i#" #IIF(attributes.submissionType neq "link",DE('onclick="javascript:paginationSubmission(#i#);return false;"'),DE(""))#>#i#</a></li></cfoutput>	   
+				   	<cfoutput><li><a href="#getPaginationLinkHREF(i)#" onclick="#getPaginationLinkOnClick(i)#;">#i#</a></li></cfoutput>	   
 				    </cfif>
 				</cfloop>
 			
 				<cfif attributes.currentPage * attributes.recordsPerPage LT attributes.totalRecords>
 				
-				   	<cfoutput><li><a href="#arguments.actionURL#&amp;page=#attributes.currentPage+1#" #IIF(attributes.submissionType neq "link",DE('onclick="javascript:paginationSubmission(#attributes.currentPage+1#);return false;"'),DE(""))#>#attributes.htmlNext#</a></li></cfoutput>
+				   	<cfoutput><li><a href="#getPaginationLinkHREF(attributes.currentPage+1)#" onclick="#getPaginationLinkOnClick(attributes.currentPage+1)#;">#attributes.htmlNext#</a></li></cfoutput>
 				   <cfif pTotalPages GT attributes.pageLinks>
-					   <cfoutput><li><a href="#arguments.actionURL#&amp;page=#pTotalPages#" #IIF(attributes.submissionType neq "link",DE('onclick="javascript:paginationSubmission(#pTotalPages#);return false;"'),DE(""))#>#attributes.htmlLast#</a></li></cfoutput>
+					   <cfoutput><li><a href="#getPaginationLinkHREF(pTotalPages)#" onclick="#getPaginationLinkOnClick(pTotalPages)#;">#attributes.htmlLast#</a></li></cfoutput>
 				   	</cfif>
 				<cfelse>
 					<cfoutput><li><a href="javascript:void(0)">#attributes.htmlNext#</a></li></cfoutput>
@@ -392,6 +392,8 @@ user defined functions
 			</cfdefaultcase>	
 		
 		</cfswitch>
+		
+		</ft:form>
 	</cfsavecontent>
 	
 	
@@ -427,7 +429,7 @@ user defined functions
 	
 	
 	<cfif attributes.submissionType eq "form">
-		<cfset result = "Ext.get('paginationpage#Request.farcryForm.Name#').dom.value=#arguments.page#;#Request.farcryForm.onSubmit#;return farcryps(arguments.page,'#Request.farcryForm.Name#','#attributes.submissionType#','#getPaginationLinkHREF(arguments.page)#');" />
+		<cfset result = "Ext.get('paginationpage#Request.farcryForm.Name#').dom.value=#arguments.page#;#Request.farcryForm.onSubmit#;return farcryps(arguments.page,'#Request.farcryForm.Name#','#attributes.submissionType#','#attributes.actionURL#');" />
 	</cfif>
 	
 	<cfreturn result />
