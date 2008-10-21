@@ -72,7 +72,7 @@
 			
 			<script type="text/javascript">
 				jQ(function(){
-					var $content = jQ("body > *");
+					var $content = jQ("body > *:not(script)");
 					jQ(document.body).append("<div id='loggedin_pagecontent'></div><div id='loggedin_tray'></div>");
 					$content.appendTo("##loggedin_pagecontent");
 					
