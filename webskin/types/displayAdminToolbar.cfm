@@ -51,6 +51,8 @@
 				##farcrytray .designmodedisabled_icon { background-image:url(#application.url.webtop#/facade/icon.cfm?icon=designmodedisabled&size=16) !important; }
 				##farcrytray .previewmode_icon { background-image:url(#application.url.webtop#/facade/icon.cfm?icon=draftmode&size=16) !important; }
 				##farcrytray .previewmodedisabled_icon { background-image:url(#application.url.webtop#/facade/icon.cfm?icon=draftmodedisabled&size=16) !important; }
+				##farcrytray .updateapp_icon { background-image:url(#application.url.webtop#/facade/icon.cfm?icon=updateapp&size=16) !important; }
+				##farcrytray .logout_icon { background-image:url(#application.url.webtop#/facade/icon.cfm?icon=logout&size=16) !important; }
 				
 				##farcrytray.previewmodeon { border-top: 1px solid ##A291AB; }
 				##farcrytray.previewmodeoff { border-top: 1px solid ##0F7BD5; }
@@ -68,6 +70,7 @@
 				##farcrytray a.webtoplink:hover { text-decoration:none; }
 				##farcrytray img { border: 0 none; }
 				##farcrytray * { color: ##333; font-family: arial,tahoma,helvetica,sans-serif; text-align: left; }
+				##farcrytray .x-toolbar { padding:0; }
 			</style>
 			
 			<script type="text/javascript">
@@ -101,7 +104,7 @@
 								summary,
 							{
 								xtype:"toolbar",
-								region:"east",
+								region:"west",
 								items:[{
 									xtype:"tbbutton",
 									iconCls:"moredetail_icon",
@@ -110,11 +113,35 @@
 										"click":{
 											fn:function(){
 												var farcrytray = Ext.getCmp("farcrytray");
-												Ext.getBody().setStyle("padding-bottom","150px");
+												//Ext.getBody().setStyle("padding-bottom","150px");
 												Ext.get("loggedin_tray").setStyle("height","150px");
 												farcrytray.setHeight(150);
 												tray.doLayout();
 												farcrytray.getLayout().setActiveItem(1);
+											}
+										}
+									}
+								},{
+									xtype:"tbbutton",
+									iconCls:"updateapp_icon",
+									tooltip:"Update App",
+									listeners:{
+										"click":{
+											fn:function(){
+												if (confirm('Are you sure you want to update the appication?'))
+													window.location = "#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&updateapp=1";
+											}
+										}
+									}
+								},{
+									xtype:"tbbutton",
+									iconCls:"logout_icon",
+									tooltip:"Logout",
+									listeners:{
+										"click":{
+											fn:function(){
+												if (confirm('Are you sure you want to log out of FarCry?'))
+													window.location = "#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&logout=1";
 											}
 										}
 									}
@@ -129,28 +156,66 @@
 							items:[
 								details,
 							{
-								xtype:"toolbar",
-								region:"east",
+								xtype:"panel",
+								region:"west",
+								layout:"table",
+								border:"none",
+								layoutConfig:{
+									columns:1
+								},
 								items:[{
-									xtype:"tbbutton",
-									iconCls:"lessdetail_icon",
-									tooltip:"Less detail",
-									listeners:{
-										"click":{
-											fn:function(){
-												var farcrytray = Ext.getCmp("farcrytray");
-												Ext.getBody().setStyle("padding-bottom","25px");
-												Ext.get("loggedin_tray").setStyle("height","25px");
-												farcrytray.setHeight(25);
-												tray.doLayout();
-												farcrytray.getLayout().setActiveItem(0);
+									xtype:"toolbar",
+									border:"none",
+									items:[{
+										xtype:"tbbutton",
+										iconCls:"lessdetail_icon",
+										tooltip:"Less detail",
+										listeners:{
+											"click":{
+												fn:function(){
+													var farcrytray = Ext.getCmp("farcrytray");
+													//Ext.getBody().setStyle("padding-bottom","25px");
+													Ext.get("loggedin_tray").setStyle("height","25px");
+													farcrytray.setHeight(25);
+													tray.doLayout();
+													farcrytray.getLayout().setActiveItem(0);
+												}
 											}
 										}
-									}
+									}]
+								},{
+									xtype:"toolbar",
+									items:[{
+										xtype:"tbbutton",
+										iconCls:"updateapp_icon",
+										tooltip:"Update App",
+										listeners:{
+											"click":{
+												fn:function(){
+													if (confirm('Are you sure you want to update the appication?'))
+														window.location = "#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&updateapp=1";
+												}
+											}
+										}
+									}]
+								},{
+									xtype:"toolbar",
+									items:[{
+										xtype:"tbbutton",
+										iconCls:"logout_icon",
+										tooltip:"Logout",
+										listeners:{
+											"click":{
+												fn:function(){
+													if (confirm('Are you sure you want to log out of FarCry?'))
+														window.location = "#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&logout=1";
+												}
+											}
+										}
+									}]
 								}]
 							}],
 							border:false
-						
 						}]
 					})
 				});
