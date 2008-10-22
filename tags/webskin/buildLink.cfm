@@ -114,7 +114,7 @@
 		</cfloop>
 
 		<cfset existQS = false />
-		<cfif Find("?",href) OR aapplication.fc.factory.farFU.isUsingFU()>
+		<cfif Find("?",href) OR application.fc.factory.farFU.isUsingFU()>
 			<cfset existQS = true />
 		</cfif>
 	
