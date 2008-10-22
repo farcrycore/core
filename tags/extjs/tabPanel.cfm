@@ -20,11 +20,30 @@
 <!--- @@description: A facade call for item  --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
+<!--- Import Tag Libraries --->
+<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">
 
 <!------------------ 
 FARCRY INCLUDE FILES
  ------------------>
 <cfparam name="attributes.id" default="tabPanel-#arrayLen(request.extJS.stLayout.aLayoutItems)#">
+
+
+<cfoutput>
+<cfif structKeyExists(attributes, "autoLoad") AND not findNoCase("ajaxMode", attributes.autoload)>
+	<cfif not findNoCase("?", attributes.autoLoad)>
+		<cfset attributes.autoLoad = "#attributes.autoLoad#?" />
+	</cfif>
+	<cfset attributes.autoLoad = "#attributes.autoLoad#&ajaxMode=1" />
+	
+	<!--- The Following ensures that any ExtJS ajax tabs load javascripts that are returned  --->
+	<extjs:onReady>
+		<cfoutput>Ext.Updater.defaults.loadScripts = true;</cfoutput>
+	</extjs:onReady>
+
+</cfif>
+</cfoutput>
+
 
 <cfinclude template="item.cfm" />
 
