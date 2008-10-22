@@ -295,9 +295,8 @@ START WEBSKIN
 		</cfif>
 	</cfif>	
 	
-	<cfif stOverviewParams.stPermissions.iEdit EQ 1 AND Application.config.plugins.fu>
-		<cfset objectFU = CreateObject("component","#Application.packagepath#.farcry.fu")>
-		<cfset stResult = objectFU.fListFriendlyURL(stobj.objectid,"current")>
+	<cfif stOverviewParams.stPermissions.iEdit EQ 1 AND application.fc.factory.farFU.isUsingFU()>
+		<cfset stResult = application.fc.factory.farFU.fListFriendlyURL(stobj.objectid,"current")>
 		<cfif stResult.bSuccess>
 			<cfset qListFriendlyURL = stResult.queryObject>
 			<extjs:item title="Current Friendly URLs">

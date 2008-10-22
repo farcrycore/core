@@ -48,8 +48,7 @@ $in: attribute -- description $
 	<!--- ENGAGE: make it happen --->
 	<cfif form.bFormSubmitted EQ "true">
 		<cfloop index="currentType" list="#content_types#">
-			<cfset objType = CreateObject("component", application.types[currentType].typepath)>
-			<cfset returnstruct = objType.fRebuildFriendlyURLs(currentType)>
+			<cfset returnstruct = application.fc.factory.farFU.rebuildFU(currentType)>
 			<cfif returnstruct.bSuccess>
 				<cfset successmessage = successmessage & returnstruct.message>
 			<cfelse>

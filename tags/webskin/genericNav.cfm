@@ -44,11 +44,6 @@
 <cfparam name="attributes.afilter" default="#arrayNew(1)#">
 
 
-<cfif application.config.plugins.fu>
-	<cfset fu = createObject("component","#application.packagepath#.farcry.fu")>
-</cfif>
-
-
 		
 <!--- // get navigation items --->
 <cfset o = createObject("component", "#application.packagepath#.farcry.tree")>
@@ -78,8 +73,8 @@
 </cffunction>
 <cfif attributes.displayStyle EQ "aLink">
 	<cfloop query="qNav">
-		<cfif application.config.plugins.fu>
-			<cfset strhref = fu.getFU(qNav.objectid)>
+		<cfif application.fc.factory.farFU.isUsingFU()>
+			<cfset strhref = application.fc.factory.farFU.getFU(qNav.objectid)>
 		<cfelse>
 			<cfset strhref = application.url.conjurer & "?objectid=" & qNav.objectid>
 		</cfif>
@@ -121,8 +116,8 @@
 					object = trim(qNav.ObjectID[i]);
 				}
 				//check for friendly urls
-				if(application.config.plugins.fu){
-					href = fu.getFU(object);
+				if(application.fc.factory.farFU.isUsingFU()){
+					href = application.fc.factory.farFU.getFU(object);
 				}
 				else{
 					href = application.url.conjurer & "?objectid=" & object;

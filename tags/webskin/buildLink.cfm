@@ -66,15 +66,7 @@
 		<cfparam name="Attributes.stJSParameters.Height" default="700">
 	</cfif>
 	
-	
-	<!---
-	Only initialize FU if we're using Friendly URL's
-	We cannot guarantee the Friendly URL Servlet exists otherwise
-	--->
-	<cfif application.config.plugins.fu>
-		<cfset objFU = CreateObject("component","#Application.packagepath#.farcry.fu")>
-	</cfif>
-	
+
 	<cfif len(attributes.href)>
 		<cfset href = attributes.href>
 
@@ -91,8 +83,8 @@
 		<!--- check for sim link --->
 		<cfif len(attributes.externallink)>
 			<!--- check for friendly url --->
-			<cfif application.config.plugins.fu>
-				<cfset href = href & objFU.getFU(attributes.externallink)>
+			<cfif application.fc.factory.farFU.isUsingFU()>
+				<cfset href = href & application.fc.factory.farFU.getFU(attributes.externallink)>
 			<cfelse>
 				<cfset href = href & application.url.conjurer & "?objectid=" & attributes.externallink>
 			</cfif>
@@ -100,8 +92,8 @@
 			<cfset href = href & application.url.conjurer & "?type=" & attributes.type & "&view=" & attributes.view>
 		<cfelseif len(attributes.objectid)>
 			<!--- check for friendly url --->
-			<cfif application.config.plugins.fu>
-				<cfset href = href & objFU.getFU(attributes.objectid)>
+			<cfif application.fc.factory.farFU.isUsingFU()>
+				<cfset href = href & application.fc.factory.farFU.getFU(attributes.objectid)>
 			<cfelse>
 				<cfset href = href & application.url.conjurer & "?objectid=" & attributes.objectid>
 			</cfif>
@@ -122,7 +114,7 @@
 		</cfloop>
 
 		<cfset existQS = false />
-		<cfif Find("?",href) OR application.config.plugins.fu>
+		<cfif Find("?",href) OR aapplication.fc.factory.farFU.isUsingFU()>
 			<cfset existQS = true />
 		</cfif>
 	

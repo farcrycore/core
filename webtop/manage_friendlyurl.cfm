@@ -7,45 +7,44 @@ manage friednly urls for a particular object id
 <cfparam name="fatalerrormessage" default="">
 <cfparam name="errormessage" default="">
 <cfparam name="bFormSubmitted" default="no">
-<cfparam name="friendly_url" default="#application.config.fusettings.urlpattern#">
+<cfparam name="friendly_url" default=""><!--- #application.config.fusettings.urlpattern# --->
 <cfparam name="additional_params" default="">
 <cfparam name="lDeleteObjectid" default="">
-<cfparam name="status" default="2">
+<cfparam name="fuStatus" default="2">
 
 <cfif trim(objectid) EQ "">
 	<cfset fatalerrormessage = "Invalid ObjectID.">
 <cfelse>
-	<cfset objFU = CreateObject("component","#application.packagepath#.farcry.fu")>
 
 	<!--- form submission check --->
 	<cfif bFormSubmitted EQ "yes">
 		<cfif buttonSubmit EQ "delete">
 			<cfset stForm = StructNew()>		
 			<cfset stForm.lDeleteObjectid = trim(lDeleteObjectid)>
-			<cfset returnstruct = objFU.fDelete(stForm)>
+			<cfset returnstruct = application.fc.factory.farFU.fDelete(stForm)>
 			<cfif returnstruct.bSuccess EQ 0>
 				<cfset errormessage = errormessage & returnstruct.message>
 			</cfif>
 		<cfelseif buttonSubmit EQ "add">
-			<cfif Trim(friendly_url) NEQ application.config.fusettings.urlpattern>
+			<!--- <cfif Trim(friendly_url) NEQ application.config.fusettings.urlpattern> --->
 				<cfset stForm = StructNew()>
 				<cfset stForm.refobjectid = objectid>
 				<cfset stForm.friendlyUrl = trim(friendly_url)>
 				<cfset stForm.querystring = trim(additional_params)>
-				<cfset stForm.status = status>
-				<cfset returnstruct = objFU.fInsert(stForm)>
+				<cfset stForm.fuStatus = fuStatus>
+				<cfset returnstruct = application.fc.factory.farFU.fInsert(stForm)>
 				<cfif returnstruct.bSuccess>
-					<cfset friendly_url = application.config.fusettings.urlpattern>
+					<cfset friendly_url = "" ><!--- application.config.fusettings.urlpattern --->
 					<cfset additional_params = "">
-					<cfset status = 1>
+					<cfset fuStatus = 1>
 				<cfelse>
 					<cfset errormessage = errormessage & returnstruct.message>
 				</cfif>
-			</cfif>
+			<!--- </cfif> --->
 		</cfif>
 	</cfif>
 
-	<cfset returnstruct = objFU.fListFriendlyURL(objectid,"all")>
+	<cfset returnstruct = application.fc.factory.farFU.fListFriendlyURL(objectid,"all")>
 	<cfif returnstruct.bSuccess>
 		<cfset qList = returnstruct.queryObject>
 	<cfelse>
@@ -141,11 +140,11 @@ function doSubmit(objForm)
 <tr>
 	<td><label for="friendly_url"><b>Friendly URL:</b> <input type="text" name="friendly_url" id="friendly_url" value="<cfoutput>#friendly_url#</cfoutput>"></label></td>
 	<td><label for="additional_params"><b>Additional Parameters:</b> <input type="text" name="additional_params" id="additional_params" value="<cfoutput>#additional_params#</cfoutput>"></label></td>
-	<td><label for="status"><b>Status:</b> 
-		<select name="status" id="status">
+	<td><label for="fuStatus"><b>Status:</b> 
+		<select name="fuStatus" id="fuStatus">
 			<!--- <option value="1"<cfif status EQ 1> selected="selected"</cfif>>Active</option> --->
-			<option value="2"<cfif status EQ 2> selected="selected"</cfif>>Permanent</option>
-			<option value="0"<cfif status EQ 0> selected="selected"</cfif>>Archived</option>			
+			<option value="2"<cfif fuStatus EQ 2> selected="selected"</cfif>>Permanent</option>
+			<option value="0"<cfif fuStatus EQ 0> selected="selected"</cfif>>Archived</option>			
 		</select>	
 	</label></td>
 	<td><input type="submit" name="buttonSubmit" value="Add"></td>
@@ -160,9 +159,9 @@ function doSubmit(objForm)
 	<th>FRIENDLY URL</th>
 	<th>QUERYSTRING</th>
 	<th>LAST UPDATED</th>
-</tr><cfoutput query="qList" group="status">
+</tr><cfoutput query="qList" group="fuStatus">
 <tr>
-	<td><strong><cfif qList.status EQ 2>Permanent<cfelseif qList.status EQ 1>Active<cfelseif qList.status EQ 0>Archived</cfif></strong></td>
+	<td><strong><cfif qList.fuStatus EQ 2>Permanent<cfelseif qList.fuStatus EQ 1>Active<cfelseif qList.fuStatus EQ 0>Archived</cfif></strong></td>
 	<td></td>
 	<td></td>
 	<td></td>	
@@ -170,7 +169,7 @@ function doSubmit(objForm)
 <tr class="alt">
 	<td><input type="checkbox" name="lDeleteObjectID" value="#qList.objectid#"></td>
 	<td>#qList.friendlyurl#</td>
-	<td>#qList.query_string#</td>
+	<td>#qList.queryString#</td>
 	<td>#DateFormat(qList.datetimelastupdated,"dddd dd mmmm yyyy")#</td>
 </tr></cfoutput></cfoutput><br />
 <input type="hidden" name="objectid" value="<cfoutput>#objectid#</cfoutput>">
@@ -184,7 +183,7 @@ function doSubmit(objForm)
 <tr class="alt">
 	<td></td>
 	<td>#qList_permanent.friendlyurl#</td>
-	<td>#qList_permanent.query_string#</td>
+	<td>#qList_permanent.queryString#</td>
 	<td>#DateFormat(qList_permanent.datetimelastupdated,"dddd dd mmmm yyyy")#</td>
 </tr></cfoutput></tbody>
 <tr><!--- active urls --->
@@ -196,7 +195,7 @@ function doSubmit(objForm)
 <tr class="alt">
 	<td></td>
 	<td>#qList_active.friendlyurl#</td>
-	<td>#qList_active.query_string#</td>
+	<td>#qList_active.queryString#</td>
 	<td>#DateFormat(qList_active.datetimelastupdated,"dddd dd mmmm yyyy")#</td>
 </tr></cfoutput></tbody>
 <tr><!--- archived urls --->
@@ -208,6 +207,6 @@ function doSubmit(objForm)
 <tr class="alt">
 	<td></td>
 	<td>#qList_archived.friendlyurl#</td>
-	<td>#qList_archived.query_string#</td>
+	<td>#qList_archived.queryString#</td>
 	<td>#DateFormat(qList_archived.datetimelastupdated,"dddd dd mmmm yyyy")#</td>
 </tr></cfoutput></tbody> --->

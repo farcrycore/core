@@ -115,6 +115,13 @@ test for the existance of each and act accordingly
 
 </cfscript>
 
+
+	
+<!--- Initialize the Friendly URL Alias in the farcry application namespace --->
+<cfset application.fc.factory.farFU = createObject("component", application.stcoapi["farFU"].packagePath).onAppInit() />
+
+
+
 <!--- Load config data --->
 <cfset oConfig = createobject("component",application.stCOAPI.farConfig.packagepath) />
 <cfloop list="#oConfig.getConfigKeys()#" index="configkey">

@@ -55,10 +55,6 @@
 	if(not isDefined("attributes.bAllowRootSelection") or not isBoolean(attributes.bAllowRootSelection)) 
 		attributes.bAllowRootSelection=0;
 
-	// check if Friendly URLs enabled
-	if(application.config.plugins.fu)
-		fu = createObject("component","#application.packagepath#.farcry.fu");
-
 	// get navigation items
 	o = createObject("component", "#application.packagepath#.farcry.tree");
 	navFilter=arrayNew(1);

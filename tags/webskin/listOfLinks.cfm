@@ -64,9 +64,6 @@ Optional attributes
 	// initial values
 	qData = attributes.qData;
 	
-	if(application.config.plugins.fu) {
-		fu = createObject("component","#application.packagepath#.farcry.fu");
-	}
 	
 	currentlevel = -1; // set less than first possible nLevel (Root's nLevel is 0)
 	list = 0; // number of open UL elements
@@ -106,8 +103,8 @@ Optional attributes
 			}
 			
 			// are we using Friendly URLs or objectIDs?
-			if(application.config.plugins.fu) {
-				href = fu.getFU(object);
+			if(application.fc.factory.farFU.isUsingFU()) {
+				href = application.fc.factory.farFU.getFU(object);
 			}
 			else {
 				href = application.url.conjurer & "?objectid=" & object;

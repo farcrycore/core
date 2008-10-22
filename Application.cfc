@@ -21,10 +21,22 @@
 	<!--- import tag libraries ---> 
 	<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 	
+	
+	<!--- 
+	IF WE HAVE RECEIVED A PING TO CHECK FOR FRIENDLY URL's SEND BACK A RESPONSE.
+	THIS MUST BE DONE OUTSIDE OF THE APPLICATION AS IT MAY BE CALLED BEFORE THE APPLICATION IS INITIALISED
+	 --->
+	<cfif structKeyExists(url, "furl") AND url.furl EQ "/pingFU">				
+		<cfoutput>PING FU SUCCESS</cfoutput>
+		<cfabort>
+	</cfif>
+	
+	
 	<!--- run the active project's constructor --->
 	<cfset this.projectConstructorLocation = getProjectConstructorLocation(plugin="webtop") />
 	<cfinclude template="#this.projectConstructorLocation#" />	
 
+	
 	
 	<cffunction name="OnApplicationStart" access="public" returntype="boolean" output="false" hint="Fires when the application is first created.">
 
@@ -526,6 +538,9 @@
 		
 		<!--- updateapp key used to updateapp without administrator privilages. Set to your own string in the farcryConstructor --->
 		<cfparam name="this.updateappKey" default="#createUUID()#" />
+		
+		<cfset application.fc = structNew() /><!--- FarCry Namespace in the application scope --->
+		<cfset application.fc.factory = structNew() /><!--- Struct to contain any factory classes that can be used by the application --->
 		
 		<!--- Project directory name can be changed from the default which is the applicationname --->
 		<cfset application.projectDirectoryName =  this.projectDirectoryName />

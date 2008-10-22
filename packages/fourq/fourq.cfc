@@ -1020,6 +1020,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfparam name="stReturnMetadata.lObjectBrokerWebskins" default="" />
 		<cfparam name="stReturnMetadata.ObjectBrokerWebskinTimeOut" default="1400" /> <!--- This a value in minutes (ie. 1 day) --->
  		<cfparam name="stReturnMetadata.excludeWebskins" default="" /> <!--- This enables projects to exclude webskins that may be contained in plugins. ---> 
+ 		<cfparam name="stReturnMetadata.fuAlias" default="#stReturnMetadata.displayname#" /> <!--- This will store the alias of the typename that can be used by Friendly URLS ---> 
 
 		<!--- Get webkins: webskins for this type, then webskins for extends types --->
 		<cfset stReturnMetadata.qWebskins = application.coapi.coapiAdmin.getWebskins(typename="#componentname#", bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#") />

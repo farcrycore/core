@@ -49,14 +49,14 @@ $out:$
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <sec:CheckPermission error="true" permission="AdminGeneralTab">
-	<cfset objFU = createObject("component","#application.packagepath#.farcry.FU")>
+	
 	
 	<!--- check if items have been marked for deletion --->
 	<cfif isDefined("form.lMappings") and len(form.lMappings)>
 		<!--- loop over marked items --->
 		<cfloop list="#form.lMappings#" index="i">
 			<!--- delete fu --->
-			<cfset objFU.deleteMapping(i)>
+			<cfset application.fc.factory.farFU.deleteMapping(i)>
 		</cfloop>
 		<!--- update fu mappings in app scope --->
 		<!--- <cfset objFU.updateAppScope()> --->
@@ -100,16 +100,16 @@ $out:$
 	</cfoutput>
 
 	<!--- check mappings are loaded --->
-	<cfif isDefined("application.fu.mappings")>
+	<cfif isDefined("application.fc.factory.farFU.stMappings")>
 		<!--- loop over mappings --->
-		<cfloop collection="#application.fu.mappings#" item="key">
+		<cfloop collection="#application.fc.factory.farFU.stMappings#" item="key">
 			<!--- check if filter has been entered --->
 			<cfif len(form.searchText)>
 				<!--- check filter against mapping --->
 				<cfif form.searchIn eq "mapping" and findNoCase(form.searchText,key)>
 					<cfset bShow = 1>
 				<!--- check filter against object --->
-				<cfelseIf form.searchIn eq "object" and findNoCase(form.searchText,application.fu.mappings[key])>
+				<cfelseIf form.searchIn eq "object" and findNoCase(form.searchText,application.fc.factory.farFU.stMappings[key])>
 					<cfset bShow = 1>
 				<cfelse>
 					<!--- no match so don't show --->
@@ -124,7 +124,7 @@ $out:$
 					<tr>
 						<td style="text-align:center"><input type="checkbox" name="lMappings" value="#key#" /></td>
 						<td>#key#</td>
-						<td>#application.url.conjurer#?objectid=#application.fu.mappings[key].refObjectID#<cfif application.fu.mappings[key].query_string NEQ "">&#application.fu.mappings[key].query_string#</cfif></td>
+						<td>#application.url.conjurer#?objectid=#application.fc.factory.farFU.stMappings[key].refObjectID#<cfif application.fc.factory.farFU.stMappings[key].queryString NEQ "">&#application.fc.factory.farFU.stMappings[key].queryString#</cfif></td>
 					</tr>
 				</cfoutput>
 			</cfif>

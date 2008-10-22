@@ -39,6 +39,9 @@
 
 <cftimer label="NAVAJO DISPLAY">
 
+<cfset application.fc.factory.farFU.parseURL() />
+<cfset StructAppend(url, request.fc, "true") />
+
 <!--- environment variables --->
 <cfparam name="request.bHideContextMenu" default="false" type="boolean" />
 

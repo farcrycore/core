@@ -45,9 +45,9 @@ $out:$
 	super.delete(stObj.objectId);
 	
 	// delete fu
-	if (application.config.plugins.fu) {
-		fuUrl = application.factory.oFU.getFU(objectid=stObj.objectid);
-		application.factory.oFU.deleteFu(fuUrl);
+	if (application.fc.factory.farFU.isUsingFU()) {
+		fuUrl = application.fc.factory.farFU.getFU(objectid=stObj.objectid);
+		application.fc.factory.farFU.deleteFu(fuUrl);
 	}
 	
 	// delete branch
@@ -96,9 +96,9 @@ $out:$
 			}
 			
 			// delete fu
-			if (application.config.plugins.fu) {
-				fuUrl = application.factory.oFU.getFU(objectid=qGetDescendants.objectId[loop0]);
-				application.factory.oFU.deleteFu(fuUrl);
+			if (application.fc.factory.farFU.isUsingFU()) {
+				fuUrl = application.fc.factory.farFU.getFU(objectid=qGetDescendants.objectId[loop0]);
+				application.fc.factory.farFU.deleteFu(fuUrl);
 			}
 			
 			// remove permissions

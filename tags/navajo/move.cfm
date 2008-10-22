@@ -131,32 +131,32 @@ $out:$
 		
 		<cflock scope="Application"  type="EXCLUSIVE" timeout="1" throwontimeout="Yes">
 			<cfscript>
-				if (application.config.plugins.fu)
+				if (application.fc.factory.farFU.isUsingFU())
 				{
 					//first delete all old fu's
-					fuUrl = application.factory.oFU.getFU(objectid=srcObj.objectid);
-					application.factory.oFU.deleteFu(fuUrl);
+					fuUrl = application.fc.factory.farFU.getFU(objectid=srcObj.objectid);
+					application.fc.factory.farFU.deleteFu(fuUrl);
 					//now the descendants if they exist
 					for (i=1;i LTE qGetDescendants.recordcount;i=i+1)
 					{
-						fuUrl = application.factory.oFU.getFU(objectid=qGetDescendants.objectid[i]);
-						application.factory.oFU.deleteFu(fuUrl);
+						fuUrl = application.fc.factory.farFU.getFU(objectid=qGetDescendants.objectid[i]);
+						application.fc.factory.farFU.deleteFu(fuUrl);
 					}
 				}
 				
 				application.factory.oTree.moveBranch(dsn=application.dsn,objectID=URL.srcObjectID,parentID=URL.destObjectID);
 				
-				if (application.config.plugins.fu)
+				if (application.fc.factory.farFU.isUsingFU())
 				{		
 					//now create the new fu branch	
 	
-					fuAlias = application.factory.oFU.createFUAlias(srcObj.objectid);
-					application.factory.oFU.setFU(objectid=srcObj.objectid,alias=fuAlias);
+					fuAlias = application.fc.factory.farFU.createFUAlias(srcObj.objectid);
+					application.fc.factory.farFU.setFU(objectid=srcObj.objectid,alias=fuAlias);
 	
 					for (i=1;i LTE qGetDescendants.recordcount;i=i+1)
 					{
-						fuAlias = application.factory.oFU.createFUAlias(objectid=qGetDescendants.objectid[i]);
-						application.factory.oFU.setFu(objectid=qGetDescendants.objectid[i],alias=fuAlias);
+						fuAlias = application.fc.factory.farFU.createFUAlias(objectid=qGetDescendants.objectid[i]);
+						application.fc.factory.farFU.setFu(objectid=qGetDescendants.objectid[i],alias=fuAlias);
 					}
 	
 				}	

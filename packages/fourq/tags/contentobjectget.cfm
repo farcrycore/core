@@ -43,19 +43,6 @@ A wrapper to get a content object instance and return its structure.
 	<cfparam name="attributes.r_stObject" default="stObject" />
 	<cfparam name="attributes.dsn" default="#application.dsn#" /> 
 	
-	<cfif not len(attributes.typename)>
-		<cfset variables.oFourQ = createObject("component", "farcry.core.packages.fourq.fourq") />
-		<cfset attributes.typename = variables.oFourQ.findType(objectid=attributes.objectid,dsn=attributes.dsn) />
-	</cfif>
-	
-	<cfif len(attributes.typename)>
-		<!--- Just in case the whole package path has been passed in, we only need the actual typename --->
-		<cfset attributes.typename = listLast(attributes.typename,".") />
-	
-		<cfset oType  = createObject("component", application.stcoapi[attributes.typename].packagePath) />
-		<cfset caller[attributes.r_stObject] = oType.getData(objectid=attributes.objectid,dsn=attributes.dsn) />
-	<cfelse>
-		<cfset caller[attributes.r_stObject] = structNew() />
-	</cfif>
+	<cfset caller[attributes.r_stObject] = application.coapi.coapiUtilities.getContentObject(argumentCollection="#attributes#") />
 
 </cfif>

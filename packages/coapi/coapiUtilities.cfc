@@ -300,4 +300,25 @@
 		
 	</cffunction>
 		
+	<cffunction name="getContentObject" access="public" output="false" returnType="struct" hint="Allows you to fetch a content object with only the objectID">
+		<cfargument name="objectid" type="UUID" required="true" hint="The object for which object is to be found" />
+		<cfargument name="typename" type="string" required="false" default="" hint="The typename of the objectid. Pass in to avoid having to lookup the type." />
+		
+		<cfset var stResult = structNew() />
+		<cfset var oCO = structNew() />
+		
+		<cfif not len(arguments.typename)>
+			<cfset arguments.typename = findType(argumentCollection="#arguments#") />
+		</cfif>
+		
+		<cfif len(arguments.typename)>
+			<!--- Just in case the whole package path has been passed in, we only need the actual typename --->
+			<cfset arguments.typename = listLast(arguments.typename,".") />
+		
+			<cfset oCO  = createObject("component", application.stcoapi[arguments.typename].packagePath) />
+			<cfset stResult = oCO.getData(argumentCollection="#arguments#") />
+		</cfif>
+		
+		<cfreturn stResult />
+	</cffunction>
 </cfcomponent>

@@ -867,6 +867,7 @@ $out:$
 	<!--- Inititalise the coapi id aliases --->
 	<cfset application.coapiID = structNew() />
 	
+	<!--- Initialise the farCoapi metadata --->
 	<cfloop list="#structKeyList(application.stcoapi)#" index="i">	
 		<cfset o = createObject("Component", "#application.stcoapi[i].packagePath#") />	
 		<cfset variables.tableMetadata = createobject('component','farcry.core.packages.fourq.TableMetadata').init() />

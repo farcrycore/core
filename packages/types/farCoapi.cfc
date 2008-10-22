@@ -83,7 +83,7 @@
 			
 			<cfquery datasource="#application.dsn#" name="q">
 			SELECT objectid
-			FROM farCoapi
+			FROM #application.dbowner#farCoapi
 			WHERE name = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.name#" />
 			</cfquery>
 			
