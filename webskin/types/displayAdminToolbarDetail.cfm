@@ -36,8 +36,8 @@
 			cellCls:"typename",
 			html:</cfoutput>
 			
-			<cfif structKeyExists(application.types[stobj.typename],"displayname")>
-				<cfoutput>"#application.types[stobj.typename].displayname#"</cfoutput>
+			<cfif structKeyExists(application.stcoapi,"#stobj.typename#") AND structKeyExists(application.stcoapi[stobj.typename],"displayname")>
+				<cfoutput>"#application.stcoapi[stobj.typename].displayname#"</cfoutput>
 			<cfelse>
 				<cfoutput>"#stobj.typename#"</cfoutput>
 			</cfif>
