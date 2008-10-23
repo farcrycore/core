@@ -46,6 +46,16 @@
 		},{
 			xtype:"panel",
 			cls:"htmlpanel",
+			html:"#application.rb.getResource("workflow.labels.locking@label","URL")#",
+			cellCls:"label"
+		},{
+			xtype:"panel",
+			cls:"htmlpanel",
+			html:"#session.fc.requests[url.key].url#",
+			cellCls:"value"
+		},{
+			xtype:"panel",
+			cls:"htmlpanel",
 			html:"#application.rb.getResource("workflow.labels.locking@label","Locking")#",
 			cellCls:"label"
 		},{

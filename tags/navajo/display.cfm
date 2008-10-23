@@ -219,7 +219,7 @@
 				if (top.location == location)
 					location = "#application.url.webtop#/adminproxy.cfm?h=#thiskey#";
 				else
-					parent.updateTray('#session.fc.requests[thiskey].tray#');
+					parent.updateTray('#session.fc.requests[thiskey].tray#',document.title);
 			</script>
 		</cfoutput></skin:htmlHead>
 	</cfif>
@@ -270,7 +270,7 @@
 					if (top.location == location)
 						location = "#application.url.webtop#/adminproxy.cfm?h=#thiskey#";
 					else
-						parent.updateTray('#session.fc.requests[thiskey].tray#','#thiskey#');
+						parent.updateTray('#session.fc.requests[thiskey].tray#',document.title);
 				</script>
 			</cfoutput></skin:htmlHead>
 		</cfif>

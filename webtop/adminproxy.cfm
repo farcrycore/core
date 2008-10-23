@@ -20,9 +20,10 @@
 	<script type="text/javascript">
 		var traystate = "summary";
 		
-		function updateTray(newtray) {
+		function updateTray(newtray,title) {
 			// update the tray
 			document.getElementById("farcry_tray").src = newtray+(newtray.indexOf("?")?"&":"?")+"&tray="+traystate;
+			document.title = 'Administration View - '+title;
 		};
 		
 		function resizeTray(height) {
@@ -75,7 +76,7 @@
 <cfoutput>
 	<html>
 		<head>
-			<title>Administration Proxy</title>
+			<title>Administration View</title>
 		</head>
 		<body>
 		</body>
