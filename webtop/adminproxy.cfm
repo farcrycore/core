@@ -27,7 +27,7 @@
 		};
 		
 		function resizeTray(height) {
-			Ext.get("farcrytraypanel").setHeight(height);
+			Ext.getCmp("farcrytraypanel").setHeight(height);
 			Ext.getCmp("farcrylayout").doLayout();
 		};
 		
