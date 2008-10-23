@@ -550,7 +550,11 @@ default handlers
 			if(NOT structKeyExists(arguments.stProperties,"typename"))			
 				arguments.stProperties.typename = findType(objectid=arguments.stProperties.objectid);
 				
-		</cfscript>				
+		</cfscript>	
+		
+		<cfif not structKeyExists(arguments.stProperties, "typename") OR not len(arguments.stProperties.typename)>
+			<cfset arguments.stProperties.typename = getTablename() />
+		</cfif>			
 				
 		<cfset stresult = super.setData(stProperties=arguments.stProperties, dsn=arguments.dsn, bSessionOnly=arguments.bSessionOnly) />
 		
