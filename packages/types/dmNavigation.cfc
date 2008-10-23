@@ -297,12 +297,14 @@ $out:$
 		
 		<cfloop list="#structkeylist(application.stcoapi)#" index="thistype">
 			<cfif structkeyexists(application.stCOAPI[thistype],"bUseInTree") and application.stCOAPI[thistype].bUseInTree>
-				<cfset queryaddrow(qTypes) />
-				<cfset querysetcell(qTypes,"typename",thistype) />
-				<cfif structkeyexists(application.stCOAPI[thistype],"displayname") and len(application.stCOAPI[thistype].displayname)>
-					<cfset querysetcell(qTypes,"description",application.stCOAPI[thistype].displayname) />
-				<cfelse>
-					<cfset querysetcell(qTypes,"description",thistype) />
+				<cfif thistype NEQ "dmNavigation">
+					<cfset queryaddrow(qTypes) />
+					<cfset querysetcell(qTypes,"typename",thistype) />
+					<cfif structkeyexists(application.stCOAPI[thistype],"displayname") and len(application.stCOAPI[thistype].displayname)>
+						<cfset querysetcell(qTypes,"description",application.stCOAPI[thistype].displayname) />
+					<cfelse>
+						<cfset querysetcell(qTypes,"description",thistype) />
+					</cfif>
 				</cfif>
 			</cfif>
 		</cfloop>
