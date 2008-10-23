@@ -136,7 +136,7 @@
 										"click":{
 											fn:function(){
 												if (confirm('Are you sure you want to log out of FarCry?'))
-													window.location = "#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&logout=1";
+													top.location = "#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&logout=1";
 											}
 										}
 									}
@@ -198,7 +198,7 @@
 											"click":{
 												fn:function(){
 													if (confirm('Are you sure you want to log out of FarCry?'))
-														window.location = "#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&logout=1";
+														top.location = "#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&logout=1";
 												}
 											}
 										}

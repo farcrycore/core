@@ -22,7 +22,7 @@
 		
 		function updateTray(newtray,title) {
 			// update the tray
-			document.getElementById("farcry_tray").src = newtray+(newtray.indexOf("?")?"&":"?")+"&tray="+traystate;
+			frames['farcry_tray'].location.href = newtray+(newtray.indexOf("?")?"&":"?")+"&tray="+traystate;
 			document.title = 'Administration View - '+title;
 		};
 		
@@ -32,7 +32,7 @@
 		};
 		
 		function updateContent(url) {
-			document.getElementById("farcry_content").src = url;
+			frames['farcry_content'].location.href = url;
 		};
 		
 		function editContent(url,title,width,height,modal) {
