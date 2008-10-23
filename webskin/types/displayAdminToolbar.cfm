@@ -45,7 +45,7 @@
 				
 				.htmlpanel td { background:transparent; padding:0; }
 				
-				##farcrytray .traytypeicon { margin-top:2px; vertical-align:middle; }
+				##farcrytray .traytypeicon { vertical-align:middle; }
 				##farcrytray .htmlpanel .x-panel-body { padding-left:5px; }
 				##farcrytray .separator { padding-left:5px; padding-right:5px; }
 				##farcrytray a, ##farcrytray a:hover, ##farcrytray a:active, ##farcrytray a:visited { color: blue; font-weight:bold; }
