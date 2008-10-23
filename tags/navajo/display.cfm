@@ -81,6 +81,7 @@
 	</cfif>
 </cfif>
 
+
 <cfif len(attributes.objectid)>
 
 	<!--- grab the object we are displaying --->
@@ -110,7 +111,7 @@
 			</cfif>
 		</cfcatch>
 	</cftry>
-	
+
 	<!--- 
 	CHECK TO SEE IF OBJECT IS IN DRAFT
 	- If the current user is not permitted to see draft objects, then make them login 
@@ -121,6 +122,7 @@
 		<cflocation url="#attributes.loginpath#&showdraft=1&error=draft" addtoken="No" />
 	</cfif>
 	
+
 	<!--- 
 	DETERMINE request.navid
 	- Get the navigational context of the content object 
@@ -138,7 +140,7 @@
 	
 	<!--- Check security --->
 	<sec:CheckPermission permission="View" objectID="#attributes.objectid#" typename="#stObj.typename#" result="iHasViewPermission" />
-	
+
 	<!--- if the user is unable to view the object, then show the denied access webskin --->
 	<cfif iHasViewPermission NEQ 1>
 		<skin:view objectid="#attributes.objectid#" webskin="deniedaccess" loginpath="#attributes.loginpath#"/>
@@ -194,7 +196,7 @@
 		
 	<cfelse>
 	
-		<skin:view objectid="#attributes.objectid#" webskin="displayPageStandard" r_html="HTML" alternateHTML="" />
+		<skin:view objectid="#attributes.objectid#" typename="#stObj.typename#" webskin="displayPageStandard" r_html="HTML" alternateHTML="" />
 		
 		<cfif len(trim(HTML))>
 			<cfoutput>#HTML#</cfoutput>

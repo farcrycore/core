@@ -562,9 +562,9 @@ default handlers
 		<!--- set friendly url for content item,if applicable 
 		TODO: sort out FU allocation.. have moved this to status approval step for now.. so introducing a catch all for non-status based content types. --->
 		<cfif NOT structkeyexists(arguments.stproperties, "status")>
-			<cfif application.fc.factory.farFU.isUsingFU() AND (NOT StructKeyExists(application.types[arguments.stProperties.typename].stprops,"status")) AND StructKeyExists(application.types[arguments.stProperties.typename],"bFriendly") AND application.types[arguments.stProperties.typename].bFriendly AND NOT ListFindNoCase(application.config.fusettings.lExcludeObjectIDs,arguments.stProperties.objectid)>
+			<cfif application.fc.factory.farFU.isUsingFU() AND (NOT StructKeyExists(application.types[arguments.stProperties.typename].stprops,"status")) AND StructKeyExists(application.types[arguments.stProperties.typename],"bFriendly") AND application.types[arguments.stProperties.typename].bFriendly>
 				<cfif StructKeyExists(arguments.stProperties,"label") AND Trim(arguments.stProperties.label) NEQ "" AND arguments.stProperties.label NEQ "incomplete">
-					<cfset stresult_friendly = setFriendlyURL(arguments.stProperties.objectid)>
+					<cfset stresult_friendly = application.fc.factory.farFU.setFriendlyURL(arguments.stProperties.objectid)>
 				</cfif>
 			</cfif>
 		</cfif>
@@ -1512,121 +1512,15 @@ default handlers
 			<cfset fuoid=stobj.objectid>
 		</cfif>
 		
-		<!--- make sure objectid is not specifically excluded from FU --->
-		<cfset bExclude = 0>
-		<cfif ListFindNoCase(application.config.fusettings.lExcludeObjectIDs,fuoid)>
-			<cfset bExclude = 1>
-		</cfif>
-		
-		<!--- make sure content type requires friendly url --->
-		<cfif NOT StructKeyExists(application.types[stObj.typename],"bFriendly") OR NOT application.types[stObj.typename].bFriendly>
-			<cfset bExclude = 1>
-		</cfif> 
-		
+
 		<!--- set friendly url --->
-		<cfif NOT bExclude>
-			<cfset objTypes = CreateObject("component","#application.types[stObj.typename].typepath#")>
-			<cfset stresult_friendly = objTypes.setFriendlyURL(objectid=fuoid)>
+		<cfif StructKeyExists(application.stcoapi[stObj.typename],"bFriendly") AND application.stcoapi[stObj.typename].bFriendly>
+			<cfset stresult_friendly = application.fc.factory.farFU.setFriendlyURL(objectid=fuoid)>
 		</cfif>
 
  		<cfreturn stResult>
 	</cffunction>
-
-	<cffunction name="setFriendlyURL" access="public" returntype="struct" hint="Default setfriendlyurl() method for content items." output="false">
-		<cfargument name="objectid" required="false" default="#instance.stobj.objectid#" type="uuid" hint="Content item objectid.">
-		<cfset var stReturn = StructNew()>
-		<cfset var stobj = getdata(arguments.objectid)>
-		<cfset var stFriendlyURL = StructNew()>
-		<cfset var objFU = CreateObject("component","#Application.packagepath#.farcry.fu")>
-		<cfset var objNavigation = CreateObject("component","#Application.packagepath#.types.dmNavigation")>
-		<cfset var qNavigation=querynew("parentid")>
-		
-		<!--- default return structure --->
-		<cfset stReturn.bSuccess = 1>
-		<cfset stReturn.message = "Set friendly URL for #arguments.objectid#.">
-
-		<cfif not listcontains(application.config.fusettings.lExcludeObjectIDs,arguments.objectid)>
-			<!--- default stFriendlyURL structure --->
-			<cfset stFriendlyURL.objectid = stobj.objectid>
-			<cfset stFriendlyURL.friendlyURL = "">
-			<cfset stFriendlyURL.querystring = "">
-		
-			<!--- This determines the friendly url by where it sits in the navigation node  --->
-			<cfset qNavigation = objNavigation.getParent(stobj.objectid)>
-			
-			<!--- if its got a tree parent, build from navigation folders --->
-			<!--- TODO: this might be better done by checking for bUseInTree="true" 
-						or remove it entirely.. ie let tree content have its own fu as well as folder fu
-						or set up tree content to have like page1.cfm style suffixs
-						PLUS need collision detection so don't overwrite another tree based content item fro utility nav
-						PLUS need to exclude trash branch (perhaps just from total rebuild?
-						GB 20060117 --->
-			<cfif qNavigation.recordcount>
-				<cfset stFriendlyURL.friendlyURL = objFU.createFUAlias(qNavigation.parentid)>
-			
-			<!--- otherwise, generate friendly url based on content type --->
-			<cfelse> 
-				<cfif StructkeyExists(application.types[stobj.typename],"displayName")>
-					<cfset stFriendlyURL.friendlyURL = "/#application.types[stobj.typename].displayName#">
-				<cfelse>
-					<cfset stFriendlyURL.friendlyURL = "/#ListLast(application.types[stobj.typename].name,'.')#">
-				</cfif>
-			</cfif>
-			
-			<!--- set friendly url in database --->
-			<cfset stFriendlyURL.friendlyURL = stFriendlyURL.friendlyURL & "/#stobj.label#">
-			<cfset objFU.setFU(stFriendlyURL.objectid, stFriendlyURL.friendlyURL, stFriendlyURL.querystring)>
-			
-			<cflog application="true" file="futrace" text="types.setFriendlyURL: #stFriendlyURL.friendlyURL#" />
-		</cfif>
-		
- 		<cfreturn stReturn />
-	</cffunction>
 	
-	<cffunction name="fRebuildFriendlyURLs" access="public" returntype="struct" hint="rebuilds friendly urls for a particular type" output="true">
-		<!--- TODO: this is the wrong place for this method! try fu.cfc maybe? GB 20060117 --->
-		<cfargument name="typeName" required="true" type="string">
-		
-		<cfset var stLocal = structnew()>
-		<cfset stLocal.returnstruct = StructNew()>
-		<cfset stLocal.returnstruct.bSuccess = 1>
-		<cfset stLocal.returnstruct.message = "">
-
-		<cfquery name="stLocal.qList" datasource="#application.dsn#">
-		SELECT	objectid, label
-		FROM	#application.dbowner##arguments.typeName#
-		WHERE	label != '(incomplete)'
-		</cfquery>
-
-		<!--- clean out any friendly url for objects that have been deleted --->
-		<cfquery name="stLocal.qDelete" datasource="#application.dsn#">
-		DELETE
-		FROM	#application.dbowner#reffriendlyURL
-		WHERE	refobjectid NOT IN (SELECT objectid FROM #application.dbowner#refObjects)
-		</cfquery>
-
-		<!--- delete old friendly url for this type --->
-		<cfquery name="stLocal.qDelete" datasource="#application.dsn#">
-		DELETE
-		FROM	#application.dbowner#reffriendlyURL
-		WHERE	refobjectid IN (SELECT objectid FROM #application.dbowner##arguments.typeName#)
-		</cfquery>
-		
-		<cfset stLocal.iCounterUnsuccess = 0>
-		<cftry>
-			<cfloop query="stLocal.qList">
-				<cfset stlocal.stInstance = getData(objectid=stLocal.qList.objectid,bShallow=true)>
-				<cfset setFriendlyURL(stlocal.stInstance.objectid)>
-			</cfloop>
-			<cfcatch>
-				<cfset stLocal.iCounterUnsuccess = stLocal.iCounterUnsuccess + 1>
-			</cfcatch>
-		</cftry>
-		<cfset stLocal.iCounterSuccess = stLocal.qList.recordcount - stLocal.iCounterUnsuccess>
-		<cfset stLocal.returnstruct.message = "#stLocal.iCounterSuccess# #arguments.typeName# rebuilt successfully.<br />">
- 		<cfreturn stLocal.returnstruct>
-	</cffunction>
-
 	<cffunction name="getArrayFieldAsQuery" access="public" output="true" returntype="query">
 		
 		<cfargument name="ObjectID" required="no" type="string" default="" hint="This is the PK for which we are getting the linked FK's. If the ObjectID passed is empty, the we are creating a new object and it will therefore not have an objectID">

@@ -144,7 +144,9 @@ function doSubmit(objForm)
 		<select name="fuStatus" id="fuStatus">
 			<!--- <option value="1"<cfif status EQ 1> selected="selected"</cfif>>Active</option> --->
 			<option value="2"<cfif fuStatus EQ 2> selected="selected"</cfif>>Permanent</option>
-			<option value="0"<cfif fuStatus EQ 0> selected="selected"</cfif>>Archived</option>			
+			<option value="1"<cfif fuStatus EQ 1> selected="selected"</cfif>>Active</option>		
+			<option value="0"<cfif fuStatus EQ 0> selected="selected"</cfif>>Archived</option>	
+			<option value="-1"<cfif fuStatus EQ -1> selected="selected"</cfif>>Exclusion</option>		
 		</select>	
 	</label></td>
 	<td><input type="submit" name="buttonSubmit" value="Add"></td>
@@ -161,7 +163,7 @@ function doSubmit(objForm)
 	<th>LAST UPDATED</th>
 </tr><cfoutput query="qList" group="fuStatus">
 <tr>
-	<td><strong><cfif qList.fuStatus EQ 2>Permanent<cfelseif qList.fuStatus EQ 1>Active<cfelseif qList.fuStatus EQ 0>Archived</cfif></strong></td>
+	<td><strong><cfif qList.fuStatus EQ 1>Active<cfelseif qList.fuStatus EQ 2>Permanent<cfelseif qList.fuStatus EQ 0>Archived<cfelseif qList.fuStatus EQ -1>Exclusion</cfif></strong></td>
 	<td></td>
 	<td></td>
 	<td></td>	

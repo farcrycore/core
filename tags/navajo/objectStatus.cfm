@@ -184,22 +184,8 @@ $out:$
 					<cfset fuoid=stobj.objectid>
 				</cfif>
 				
-				<!--- make sure objectid is not specifically excluded from FU --->
-				<cfset bExclude = 0>
-				<cfif ListFindNoCase(application.config.fusettings.lExcludeObjectIDs,fuoid)>
-					<cfset bExclude = 1>
-				</cfif>
-				
-				<!--- make sure content type requires friendly url --->
-				<cfif NOT StructKeyExists(application.types[stObj.typename],"bFriendly") OR NOT application.types[stObj.typename].bFriendly>
-					<cfset bExclude = 1>
-				</cfif> 
-				
 				<!--- set friendly url --->
-				<cfif NOT bExclude>
-					<cfset objTypes = CreateObject("component","#application.types[stObj.typename].typepath#")>
-					<cfset stresult_friendly = objTypes.setFriendlyURL(objectid=fuoid)>
-				</cfif>
+				<cfset stresult_friendly = application.fc.factory.farFU.setFriendlyURL(objectid=fuoid)>
 
 			<cfelseif url.status eq "draft">
 				<cfset status = 'draft'>

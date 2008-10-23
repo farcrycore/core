@@ -123,7 +123,7 @@
 									listeners:{
 										"click":{
 											fn:function(){
-												if (confirm('Are you sure you want to update the appication?'))
+												if (confirm('Are you sure you want to update the application?'))
 													parent.updateContent("#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&updateapp=1");
 											}
 										}
@@ -183,7 +183,7 @@
 										listeners:{
 											"click":{
 												fn:function(){
-													if (confirm('Are you sure you want to update the appication?'))
+													if (confirm('Are you sure you want to update the application?'))
 														parent.updateContent("#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&updateapp=1");
 												}
 											}

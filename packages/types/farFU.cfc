@@ -2,7 +2,7 @@
 	<cfproperty ftSeq="1" name="refobjectid" type="uuid" default="" hint="stores the objectid of the related object" ftLabel="Ref ObjectID" />
 	<cfproperty ftSeq="2" name="friendlyURL" type="string" default="" hint="The Actual Friendly URL" ftLabel="Friendly URL" />		
 	<cfproperty ftSeq="3" name="queryString" type="string" default="" hint="The query string that will be parsed and placed in the url scope of the request" ftLabel="Query String" />		
-	<cfproperty ftSeq="4" name="fuStatus" type="numeric" default="" hint="Status of the Friendly URL." ftType="list" ftList="-1:exception,0:archived,1:active,2:permenant" ftLabel="Status" />		
+	<cfproperty ftSeq="4" name="fuStatus" type="numeric" default="" hint="Status of the Friendly URL." ftType="list" ftList="1:active,2:permanent,0:archived,-1:exclusion" ftLabel="Status" />		
 
 
 	<cffunction name="onAppInit" returntype="any" access="public" output="false" hint="Initializes the friendly url scopes and returns a copy of this initialised object">
@@ -288,7 +288,7 @@
 				SELECT	fu.refobjectid, fu.friendlyURL, fu.queryString, fu.fuStatus
 				FROM	#application.dbowner#farFu fu, 
 					    #application.dbowner#refObjects r 
-				WHERE	r.objectid = fuu.refobjectid
+				WHERE	r.objectid = fu.refobjectid
 						AND fu.refobjectid = <cfqueryparam value="#stLocal.qGet.refobjectid#" cfsqltype="cf_sql_varchar">
 				ORDER BY fu.fuStatus DESC
 				</cfquery>
@@ -374,42 +374,57 @@
 		<cfset var objNavigation = CreateObject("component", application.stcoapi['dmNavigation'].packagePath) />
 		<cfset var qNavigation=querynew("parentid")>
 		
+		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+		
 		<!--- default return structure --->
 		<cfset stReturn.bSuccess = 1>
 		<cfset stReturn.message = "Set friendly URL for #arguments.objectid#.">
 
-		<cfif not listcontains(application.config.fusettings.lExcludeObjectIDs,arguments.objectid)>
+		<cfif isDefined("application.stCoapi.#stObj.typename#.bFriendly") AND application.stCoapi[stObj.typename].bFriendly>
+		
 			<!--- default stFriendlyURL structure --->
 			<cfset stFriendlyURL.objectid = stobj.objectid>
 			<cfset stFriendlyURL.friendlyURL = "">
 			<cfset stFriendlyURL.querystring = "">
 		
-			<!--- This determines the friendly url by where it sits in the navigation node  --->
-			<cfset qNavigation = objNavigation.getParent(stobj.objectid)>
+
 			
-			<!--- if its got a tree parent, build from navigation folders --->
-			<!--- TODO: this might be better done by checking for bUseInTree="true" 
-						or remove it entirely.. ie let tree content have its own fu as well as folder fu
-						or set up tree content to have like page1.cfm style suffixs
-						PLUS need collision detection so don't overwrite another tree based content item fro utility nav
-						PLUS need to exclude trash branch (perhaps just from total rebuild?
-						GB 20060117 --->
-			<cfif qNavigation.recordcount>
-				<cfset stFriendlyURL.friendlyURL = createFUAlias(qNavigation.parentid)>
+			<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="displayDefaultFU" r_html="stFriendlyURL.friendlyURL" alternateHTML="">
 			
-			<!--- otherwise, generate friendly url based on content type --->
-			<cfelse> 
-				<cfif StructkeyExists(application.stcoapi[stobj.typename],"fuAlias")>
-					<cfset stFriendlyURL.friendlyURL = "/#application.stcoapi[stobj.typename].fuAlias#" />
-				<cfelseif StructkeyExists(application.stcoapi[stobj.typename],"displayName")>
-					<cfset stFriendlyURL.friendlyURL = "/#application.stcoapi[stobj.typename].displayName#" />
+			<cfif NOT len(stFriendlyURL.friendlyURL)>
+				<!--- This determines the friendly url by where it sits in the navigation node  --->
+				<cfset qNavigation = objNavigation.getParent(stobj.objectid)>
+				
+				<!--- if its got a tree parent, build from navigation folders --->
+				<!--- TODO: this might be better done by checking for bUseInTree="true" 
+							or remove it entirely.. ie let tree content have its own fu as well as folder fu
+							or set up tree content to have like page1.cfm style suffixs
+							PLUS need collision detection so don't overwrite another tree based content item fro utility nav
+							PLUS need to exclude trash branch (perhaps just from total rebuild?
+							GB 20060117 --->
+				<cfif qNavigation.recordcount>
+					<cfset stFriendlyURL.friendlyURL = createFUAlias(qNavigation.parentid)>
+				
+				<!--- otherwise, generate friendly url based on content type --->
+				<cfelse> 
+					<cfif StructkeyExists(application.stcoapi[stobj.typename],"fuAlias")>
+						<cfset stFriendlyURL.friendlyURL = "/#application.stcoapi[stobj.typename].fuAlias#" />
+					<cfelseif StructkeyExists(application.stcoapi[stobj.typename],"displayName")>
+						<cfset stFriendlyURL.friendlyURL = "/#application.stcoapi[stobj.typename].displayName#" />
+					<cfelse>
+						<cfset stFriendlyURL.friendlyURL = "/#ListLast(application.stcoapi[stobj.typename].name,'.')#" />
+					</cfif>
+					
+				</cfif>				
+			
+				<cfif structKeyExists(stobj, "fu") AND trim(stobj.fu) neq "">
+					<cfset stFriendlyURL.friendlyURL = stFriendlyURL.friendlyURL & "/#stobj.fu#">
 				<cfelse>
-					<cfset stFriendlyURL.friendlyURL = "/#ListLast(application.stcoapi[stobj.typename].name,'.')#" />
+					<cfset stFriendlyURL.friendlyURL = stFriendlyURL.friendlyURL & "/#stobj.label#">
 				</cfif>
 			</cfif>
-			
 			<!--- set friendly url in database --->
-			<cfset stFriendlyURL.friendlyURL = stFriendlyURL.friendlyURL & "/#stobj.label#">
+			
 			<cfset setFU(stFriendlyURL.objectid, stFriendlyURL.friendlyURL, stFriendlyURL.querystring)>
 			
 			<cflog application="true" file="futrace" text="types.setFriendlyURL: #stFriendlyURL.friendlyURL#" />
