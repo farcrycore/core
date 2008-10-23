@@ -92,6 +92,7 @@
 						height:22,
 						border:false,
 						id:"farcrytray",
+						hideMode:"offsets",
 						cls:<cfif request.mode.showdraft>"previewmodeon"<cfelse>"previewmodeoff"</cfif>,
 						
 						items:[{
@@ -103,6 +104,7 @@
 							{
 								xtype:"toolbar",
 								region:"west",
+								width:65,
 								items:[{
 									xtype:"tbbutton",
 									iconCls:"moredetail_icon",
@@ -151,6 +153,7 @@
 							{
 								xtype:"panel",
 								region:"west",
+								width:22,
 								layout:"table",
 								border:"none",
 								layoutConfig:{

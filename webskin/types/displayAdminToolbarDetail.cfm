@@ -251,12 +251,14 @@
 	items:[{
 		xtype:"panel",
 		region:"west",
+		width:48,
 		html:"<a href='#application.url.webtop#/' class='webtoplink' title='Webtop' target='_top'><img class='traytypeicon' src='#application.url.webtop#/facade/icon.cfm?icon=#stObj.typename#&size=48' alt='#stObj.typename#' /></a>",
 		cls:"htmlpanel"
 	},#dataconfig#
 	<cfif arraylen(aActions)>,{
 		xtype:"panel",
 		region:"east",
+		width:112,
 		layout:"table",
 		border:"none",
 		layoutConfig:{

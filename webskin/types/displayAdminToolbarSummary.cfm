@@ -131,6 +131,7 @@
 	}<cfif arraylen(aActions)>,{
 		xtype:"toolbar",
 		region:"east",
+		width:271,
 		items:[
 			#arraytolist(aActions)#
 		]

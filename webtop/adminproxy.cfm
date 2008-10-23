@@ -55,6 +55,7 @@
 		layout:"border",
 		border:false,
 		id:"farcrylayout",
+		hideMode:"offsets",
 		items:[{
 			region:"center",
 			xtype:"panel",
