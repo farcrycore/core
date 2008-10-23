@@ -40,12 +40,13 @@
 				"click":{
 					fn:function(){
 						<cfif request.mode.showdraft and structkeyexists(stObj,"versionid")>
-							window.location = "#application.url.webroot#/index.cfm?objectid=#stObj.versionid#&flushcache=1&showdraft=0";
+							parent.updateContent("#session.fc.requests[url.key].url#&flushcache=1&showdraft=0");
 						<cfelseif request.mode.showdraft>
-							window.location = "#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&flushcache=1&showdraft=0";
+							parent.updateContent("#session.fc.requests[url.key].url#&flushcache=1&showdraft=0");
 						<cfelse>
-							window.location = "#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&flushcache=0&showdraft=1";
+							parent.updateContent("#session.fc.requests[url.key].url#&flushcache=0&showdraft=1");
 						</cfif>
+						Ext.getBody().mask("Loading...");
 					}
 				}
 			}
@@ -62,17 +63,15 @@
 				xtype:"tbbutton",
 				<cfif request.mode.design and request.mode.showcontainers gt 0>iconCls:"designmode_icon",<cfelse>iconCls:"designmodedisabled_icon",</cfif>
 				text:"Design mode",
-				enableToggle:true,
-				allowDepress:true,
-				pressed:#request.mode.design and request.mode.showcontainers#,
 				listeners:{
 					"click":{
 						fn:function(){
 							<cfif request.mode.design and request.mode.showcontainers gt 0>
-								window.location = "#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&designmode=0";
+								parent.updateContent("#session.fc.requests[url.key].url#&designmode=0");
 							<cfelse>
-								window.location = "#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&designmode=1";
+								parent.updateContent("#session.fc.requests[url.key].url#&designmode=1");
 							</cfif>
+							Ext.getBody().mask("Loading...");
 						}
 					}
 				}
@@ -110,7 +109,7 @@
 					listeners:{
 						"click":{
 							fn:function(){
-								openScaffoldDialog("#application.url.webtop#/conjuror/invocation.cfm?objectid=#editableid#&method=edit&ref=&finishurl=&iframe=true","Edit #stObj.label#",800,600,true);
+								parent.editContent("#application.url.webtop#/conjuror/invocation.cfm?objectid=#editableid#&method=edit&ref=&finishurl=&iframe=true","Edit #stObj.label#",800,600,true);
 							}
 						}
 					}
@@ -127,7 +126,7 @@
 	items:[{
 		xtype:"panel",
 		region:"center",
-		html:"<a href='#application.url.webtop#/' class='webtoplink' title='Webtop'><img class='traytypeicon' src='#application.url.webtop#/facade/icon.cfm?icon=#stObj.typename#&size=16' alt='#stObj.typename#' /></a>#jsstringformat(arraytolist(aItems,'<span class=''separator''>|</span>'))#",
+		html:"<div class='traytext'><a href='#application.url.webtop#/' class='webtoplink' title='Webtop' target='_top'><img class='traytypeicon' src='#application.url.webtop#/facade/icon.cfm?icon=#stObj.typename#&size=16' alt='#stObj.typename#' /></a>#jsstringformat(arraytolist(aItems,'<span class=''separator''>|</span>'))#</div>",
 		cls:"htmlpanel"
 	}<cfif arraylen(aActions)>,{
 		xtype:"toolbar",

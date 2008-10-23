@@ -11,6 +11,8 @@
 <cfif not structkeyexists(request,"addedtoolbar") and not stObj.typename eq "dmNavigation">
 	<cfset request.addedtoolbar = true />
 	
+	<cfparam name="url.tray" default="summary" />
+	
 	<sec:CheckPermission generalpermission="Admin">
 		<skin:view stObject="#stObj#" webskin="displayAdminToolbarSummary" r_html="summarytoolbar" />
 		<skin:view stObject="#stObj#" webskin="displayAdminToolbarDetail" r_html="detailstoolbar" />
@@ -21,26 +23,8 @@
 				/* Tray layout */
 				body{
 					margin:0;
-					padding:0 0 25px 0;
-				}
-				div##loggedin_tray{
-					position:absolute;
-					bottom:0;
-					left:0;
-					width:100%;
-					height:25px;
-				}
-				@media screen{
-					body>div##loggedin_tray{
-					position: fixed;
-				}
-				}
-				* html body{
-					overflow:hidden;
-				} 
-				* html div##loggedin_pagecontent{
-					height:100%;
-					overflow:auto;
+					padding:0 0 0 0;
+					font
 				}
 				
 				/* Tray style */
@@ -69,15 +53,31 @@
 				##farcrytray a:hover { text-decoration:underline; }
 				##farcrytray a.webtoplink:hover { text-decoration:none; }
 				##farcrytray img { border: 0 none; }
-				##farcrytray * { color: ##333; font-family: arial,tahoma,helvetica,sans-serif; text-align: left; }
+				##farcrytray * { color: ##333; font-family: arial,tahoma,helvetica,sans-serif; text-align: left; font-size:13px; }
 				##farcrytray .x-toolbar { padding:0; }
+				##farcrytray .traytext { padding:3px; }
 			</style>
 			
 			<script type="text/javascript">
+				var tray = "";
+				
+				function changeView(view) {
+					var info = { 
+						"summary":{ index:0, height:22 }, 
+						"detail":{ index:1, height:150 } 
+					}[view];
+					var farcrytray = Ext.getCmp("farcrytray");
+					
+					parent.resizeTray(info.height);
+					farcrytray.setHeight(info.height);
+					farcrytray.doLayout();
+					farcrytray.getLayout().setActiveItem(info.index);
+					
+					parent.rememberTrayState(view);
+				};
+				
 				jQ(function(){
-					var $content = jQ("body > *:not(script)");
-					jQ(document.body).append("<div id='loggedin_pagecontent'></div><div id='loggedin_tray'></div>");
-					$content.appendTo("##loggedin_pagecontent");
+					jQ(document.body).append("</div><div id='loggedin_tray'></div>");
 					
 					var summary = #summarytoolbar#;
 					summary.region = "center";
@@ -91,7 +91,7 @@
 						renderTo:"loggedin_tray",
 						layout:"card",
 						activeItem:0,
-						height:25,
+						height:22,
 						border:false,
 						id:"farcrytray",
 						cls:<cfif request.mode.showdraft>"previewmodeon"<cfelse>"previewmodeoff"</cfif>,
@@ -112,12 +112,7 @@
 									listeners:{
 										"click":{
 											fn:function(){
-												var farcrytray = Ext.getCmp("farcrytray");
-												//Ext.getBody().setStyle("padding-bottom","150px");
-												Ext.get("loggedin_tray").setStyle("height","150px");
-												farcrytray.setHeight(150);
-												tray.doLayout();
-												farcrytray.getLayout().setActiveItem(1);
+												changeView("detail");
 											}
 										}
 									}
@@ -129,7 +124,7 @@
 										"click":{
 											fn:function(){
 												if (confirm('Are you sure you want to update the appication?'))
-													window.location = "#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&updateapp=1";
+													parent.updateContent("#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&updateapp=1");
 											}
 										}
 									}
@@ -173,12 +168,7 @@
 										listeners:{
 											"click":{
 												fn:function(){
-													var farcrytray = Ext.getCmp("farcrytray");
-													//Ext.getBody().setStyle("padding-bottom","25px");
-													Ext.get("loggedin_tray").setStyle("height","25px");
-													farcrytray.setHeight(25);
-													tray.doLayout();
-													farcrytray.getLayout().setActiveItem(0);
+													changeView("summary");
 												}
 											}
 										}
@@ -193,7 +183,7 @@
 											"click":{
 												fn:function(){
 													if (confirm('Are you sure you want to update the appication?'))
-														window.location = "#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&updateapp=1";
+														parent.updateContent("#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&updateapp=1");
 												}
 											}
 										}
@@ -217,7 +207,10 @@
 							}],
 							border:false
 						}]
-					})
+					});
+					<cfif url.tray neq "summary">
+						changeView("detail");
+					</cfif>
 				});
 			</script>
 		</cfoutput></skin:htmlHead>

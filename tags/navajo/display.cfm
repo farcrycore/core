@@ -203,8 +203,25 @@
 		</cfif>
 	</cfif>
 		
-	<cfif request.mode.bAdmin and request.fc.bShowTray and not (structkeyexists(request,"bHideContextMenu") and request.bHideContextMenu)>
-		<skin:view objectid="#attributes.objectid#" webskin="displayAdminToolbar" />
+	<cfif request.mode.bAdmin and request.fc.bShowTray and not (structkeyexists(request,"bHideContextMenu") and request.bHideContextMenu) and not attributes.method eq "displayAdminToolbar">
+		<!--- Show tray once for this request --->
+		<cfset request.fc.bShowTray = false />
+		
+		<!--- Output tray info --->
+		<cfset thiskey = createuuid() />
+		<cfparam name="session.fc" default="#structnew()#" />
+		<cfparam name="session.fc.proxy" default="#structnew()#" />
+		<cfset session.fc.requests[thiskey] = structnew() />
+		<cfset session.fc.requests[thiskey].url = "#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode)=[^&]*','','ALL')#" />
+		<cfset session.fc.requests[thiskey].tray = "#application.url.webroot#/index.cfm?objectid=#attributes.objectid#&view=displayAdminToolbar&key=#thiskey#" />
+		<skin:htmlHead><cfoutput>
+			<script type="text/javascript">
+				if (top.location == location)
+					location = "#application.url.webtop#/adminproxy.cfm?h=#thiskey#";
+				else
+					parent.updateTray('#session.fc.requests[thiskey].tray#');
+			</script>
+		</cfoutput></skin:htmlHead>
 	</cfif>
 
 <cfelse>
@@ -232,13 +249,30 @@
 				<cfelse>
 					<cfthrow type="FarCry Controller" message="No Navigation ID can be found. Please see administrator." />
 				</cfif>
-			</cfif>		
+			</cfif>
 		</cfif>
 		
 		<skin:view typename="#attributes.typename#" webskin="#attributes.method#" />
 		
-		<cfif request.mode.bAdmin and request.fc.bShowTray and not (structkeyexists(request,"bHideContextMenu") and request.bHideContextMenu)>
-			<skin:view typename="#attributes.typename#" webskin="displayAdminToolbar" />
+		<cfif request.mode.bAdmin and request.fc.bShowTray and not (structkeyexists(request,"bHideContextMenu") and request.bHideContextMenu) and not attributes.method eq "displayAdminToolbar">
+			<!--- Show tray once for this request --->
+			<cfset request.fc.bShowTray = false />
+			
+			<!--- Output tray info --->
+			<cfset thiskey = createuuid() />
+			<cfparam name="session.fc" default="#structnew()#" />
+			<cfparam name="session.fc.proxy" default="#structnew()#" />
+			<cfset session.fc.requests[thiskey] = structnew() />
+			<cfset session.fc.requests[thiskey].url = "#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode)=[^&]*','','ALL')#" />
+			<cfset session.fc.requests[thiskey].tray = "#application.url.webroot#/index.cfm?type=#attributes.typename#&view=displayAdminToolbar" />
+			<skin:htmlHead><cfoutput>
+				<script type="text/javascript">
+					if (top.location == location)
+						location = "#application.url.webtop#/adminproxy.cfm?h=#thiskey#";
+					else
+						parent.updateTray('#session.fc.requests[thiskey].tray#','#thiskey#');
+				</script>
+			</cfoutput></skin:htmlHead>
 		</cfif>
 	<cfelse>
 		<extjs:bubble title="Security" message="You do not have permission to access this view" />
