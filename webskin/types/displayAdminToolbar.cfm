@@ -77,8 +77,6 @@
 				};
 				
 				jQ(function(){
-					jQ(document.body).append("</div><div id='loggedin_tray'></div>");
-					
 					var summary = #summarytoolbar#;
 					summary.region = "center";
 					summary.border = false;
@@ -215,6 +213,7 @@
 			</script>
 		</cfoutput></skin:htmlHead>
 		
+		<cfoutput><div id='loggedin_tray'></div></cfoutput>
 	</sec:CheckPermission>
 </cfif>
 
