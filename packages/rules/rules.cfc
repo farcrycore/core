@@ -297,7 +297,7 @@ $out:$
 						parent.reloadContainer('#url.container#')
 					<cfelse>
 						<!--- window.opener.location.reload(); --->
-						window.opener.reloadContainer('#url.container#')
+						window.opener.reloadContainer('#url.containerID#')
 					</cfif>
 					
 					<cfif structkeyexists(url,"iframe")>
