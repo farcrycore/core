@@ -85,6 +85,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var navID = "" />
 		<cfset var objectTypename = arguments.typename />		
 		
+		<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj" />
+
 		<cfif len(arguments.objectid)>
 			<cfif not len(arguments.typename)>
 				<cfset arguments.typename = application.coapi.utilities.findType(objectid="#arguments.objectid#") />
