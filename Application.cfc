@@ -401,6 +401,16 @@
 				request.mode.showdraft = 0;
 			}
 		
+		// disable tray
+			if (isDefined("url.bShowTray")) {
+				request.fc.bShowTray = val(url.bShowTray);
+				session.dmProfile.bShowTray = request.fc.bShowTray;
+			} else if (isDefined("session.dmProfile.bShowTray")) {
+				request.fc.bShowTray = session.dmProfile.bShowTray;
+			} else {
+				request.fc.bShowTray = 1;
+			}
+		
 		}
 		
 		// set valid status for content
