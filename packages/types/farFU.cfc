@@ -202,32 +202,29 @@
 					<cfif isUUID(i)>
 						<cfset request.fc.objectid = i />
 						
-					<cfelse>
-						<cfif structKeyExists(request.fc, "view")>
-						
-							<!--- Only check for other attributes once the type is determined. --->				
-							<cfif len(application.coapi.coapiAdmin.getWebskinPath(typename="#request.fc.type#", template="#i#"))>
-								<!--- THIS MEANS ITS A WEBSKIN --->
-								<cfset request.fc.bodyView = i />
-							</cfif>
-								
-				
-						<cfelseif structKeyExists(request.fc, "type")>
-						
+					<cfelseif structKeyExists(application.stCoapi, "#i#")>
+						<!--- CHECK FOR TYPENAME FIRST --->
+						<cfset request.fc.type = i />
+			
+					<cfelseif structKeyExists(application.fc.fuID, "#i#")>
+						<cfset request.fc.type = application.fc.fuID[i] />
+					<cfelse>	
+						<cfif not structKeyExists(request.fc, "view")>
 							<!--- Only check for other attributes once the type is determined. --->				
 							<cfif len(application.coapi.coapiAdmin.getWebskinPath(typename="#request.fc.type#", template="#i#"))>
 								<!--- THIS MEANS ITS A WEBSKIN --->
 								<cfset request.fc.view = i />
 							</cfif>
+
+						<cfelse>
+							<!--- Only check for other attributes once the type is determined. --->				
+							<cfif len(application.coapi.coapiAdmin.getWebskinPath(typename="#request.fc.type#", template="#i#"))>
+								<!--- THIS MEANS ITS A WEBSKIN --->
+								<cfset request.fc.bodyView = i />
+							</cfif>
 							
-				
-						<cfelseif structKeyExists(application.stCoapi, "#i#")>
-							<!--- CHECK FOR TYPENAME FIRST --->
-							<cfset request.fc.type = i />
-				
-						<cfelseif structKeyExists(application.fc.fuID, "#i#")>
-							<cfset request.fc.type = application.fc.fuID[i] />
-						</cfif>	
+						</cfif>
+
 					</cfif>	
 			
 							
@@ -328,12 +325,21 @@
 		<cfset stLocal.returnstruct.bSuccess = 1>
 		<cfset stLocal.returnstruct.message = "">
 
+		<cftry>
 		<cfquery name="stLocal.qList" datasource="#application.dsn#">
 		SELECT	objectid, label
 		FROM	#application.dbowner##arguments.typeName#
 		WHERE	label != '(incomplete)'
 		</cfquery>
-
+		<cfcatch type="database">
+			<cfoutput>
+					SELECT	objectid, label
+		FROM	#application.dbowner##arguments.typeName#
+		WHERE	label != '(incomplete)'
+			</cfoutput>
+			<cfabort showerror="debugging" />
+		</cfcatch>
+		</cftry>
 		<!--- clean out any friendly url for objects that have been deleted --->
 		<cfquery name="stLocal.qDelete" datasource="#application.dsn#">
 		DELETE
@@ -743,54 +749,92 @@
 	</cffunction>
 	
 	<cffunction name="getFU" access="public" returntype="string" hint="Retrieves fu for a real url, returns original ufu if non existent." output="yes" bDocument="true">
-		<cfargument name="objectid" required="yes" type="string" hint="objectid of object to link to">
-		<!--- <cfargument name="dom" required="yes" type="string" default="#cgi.server_name#"> --->
+		<cfargument name="objectid" required="false" type="string" default="" hint="objectid of object to link to">
+		<cfargument name="type" required="false" type="string" default="" hint="typename of object to link to">
+		<cfargument name="view" required="false" type="string" default="" hint="view used to render the page layout">
+		<cfargument name="bodyView" required="false" type="string" default="" hint="view used to render the body content">
 		
 		<!--- set base URL --->
-		<cfset var fuURL = "#application.url.conjurer#?objectid=#arguments.objectid#">
+		<cfset var returnURL = "">
 		
-		<!--- if FU mappings are not in memory load them into memory.. --->
-		<!--- TODO: wrong place for this! GB 20060117 --->
-		<cfif NOT isDefined("variables.stMappings")>
-			<cfset onAppInit()>
-		</cfif>
+		<cfif application.fc.factory.farFU.isUsingFU()>
+			
+			<cfif len(arguments.objectid)>
+				<!--- look up in memory cache --->
+				<cfif structKeyExists(variables.stLookup, arguments.objectid)>
+					<cfset returnURL = variables.stLookup[arguments.objectid]>
+				
+				<!--- if not in cache check the database --->
+				<cfelse>
+				<!--- <cftrace inline="true" text="fu db lookup!"> --->
+					<!--- get friendly url based on the objectid --->
+					<cfquery datasource="#application.dsn#" name="qGet">
+					SELECT	friendlyURL, refobjectid, queryString
+					FROM	#application.dbowner#farFu u, 
+							#application.dbowner#refObjects r 
+					WHERE r.objectid = u.refobjectid
+						AND u.refobjectid = <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
+						AND u.fuStatus > 0
+					</cfquery>
+					
+					<cfif qGet.recordCount>
+						<cfset returnURL = "#qGet.friendlyURL#">
+					</cfif>
+				</cfif>
+				
+				<cfif not len(returnURL)>
+					<cfset returnURL = "/#arguments.objectid#">
+				</cfif>
+			</cfif>
+			
+			<cfif len(arguments.type) OR  len(arguments.view) OR len(arguments.bodyView)>
+				<cfif NOT FindNoCase("?", returnURL)>
+					<cfif len(arguments.type)>
+						<cfset returnURL = "#returnURL#/#arguments.type#" />
+					</cfif>
+					<cfif len(arguments.view)>
+						<cfset returnURL = "#returnURL#/#arguments.view#" />
+					</cfif>
+					<cfif len(arguments.bodyView)>
+						<cfif NOT len(arguments.view)>
+							<!--- If we have a bodyView, we must include the view for the syntax to work. --->
+							<cfset returnURL = "#returnURL#/displayPageStandard" />
+						</cfif>
+						<cfset returnURL = "#returnURL#/#arguments.bodyView#" />
+					</cfif>
+				<cfelse>
+					<cfif len(arguments.type)>
+						<cfset returnURL = "#returnURL#&type=#arguments.type#" />
+					</cfif>
+					<cfif len(arguments.view)>
+						<cfset returnURL = "#returnURL#&view=#arguments.view#" />
+					</cfif>
+					<cfif len(arguments.bodyView)>
+						<cfset returnURL = "#returnURL#&bodyView=#arguments.bodyView#" />
+					</cfif>				
+				</cfif>
 		
-		<!--- look up in memory cache --->
-		<cfif structKeyExists(variables.stLookup, arguments.objectid)>
-			<cfset fuURL = variables.stLookup[arguments.objectid]>
-		
-		<!--- if not in cache check the database --->
+
+			</cfif>
+			
 		<cfelse>
-		<!--- <cftrace inline="true" text="fu db lookup!"> --->
-			<!--- get friendly url based on the objectid --->
-			<cfswitch expression="#application.dbtype#">
-			<cfcase value="ora,oracle">					
-				<cfquery datasource="#application.dsn#" name="qGet">
-				SELECT	friendlyURL, refobjectid, queryString
-				FROM	#application.dbowner#farFu u, 
-						#application.dbowner#refObjects r 
-				WHERE r.objectid = u.refobjectid
-					AND u.refobjectid = <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
-					AND u.fuStatus != 0
-				</cfquery>
-			</cfcase>
-			<cfdefaultcase>
-				<cfquery datasource="#application.dsn#" name="qGet">
-				SELECT	friendlyURL, refobjectid, queryString
-				FROM	#application.dbowner#farFu u inner join 
-						#application.dbowner#refObjects r on r.objectid = u.refobjectid
-				WHERE
-					refobjectid = <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
-					AND fuStatus != 0
-				</cfquery>
-			</cfdefaultcase>
-			</cfswitch>
-			<cfif qGet.recordCount>
-				<cfset fuURL = "#qGet.friendlyURL#">
+			<cfset returnURL = "#application.url.conjurer#?" />
+			
+			<cfif len(arguments.objectid)>
+				<cfset returnURL = "#returnURL#objectid=#arguments.objectid#" />
+			</cfif>
+			<cfif len(arguments.type)>
+				<cfset returnURL = "#returnURL#&type=#arguments.type#" />
+			</cfif>
+			<cfif len(arguments.view)>
+				<cfset returnURL = "#returnURL#&view=#arguments.view#" />
+			</cfif>
+			<cfif len(arguments.bodyView)>
+				<cfset returnURL = "#returnURL#&bodyView=#arguments.bodyView#" />
 			</cfif>
 		</cfif>
 		
-		<cfreturn fuURL>
+		<cfreturn returnURL>
 	</cffunction>
 
 	<cffunction name="fListFriendlyURL" access="public" returntype="struct" hint="returns a query of FU for a particular objectid" output="No">

@@ -24,7 +24,8 @@
 	<cfparam name="attributes.href" default=""><!--- the actual href to link to --->
 	<cfparam name="attributes.objectid" default=""><!--- Added to url parameters; navigation obj id --->
 	<cfparam name="attributes.type" default=""><!--- Added to url parameters: Typename used with type webskin views --->
-	<cfparam name="attributes.view" default=""><!--- Added to url parameters: Webskin name used with type webskin views --->
+	<cfparam name="attributes.view" default=""><!--- Added to url parameters: Webskin name used to render the page layout --->
+	<cfparam name="attributes.bodyView" default=""><!--- Added to url parameters: Webskin name used to render the body content --->
 	<cfparam name="attributes.linktext" default=""><!--- Text used for the link --->
 	<cfparam name="attributes.target" default="_self"><!--- target window for link --->
 	<cfparam name="attributes.bShowTarget" default="false"><!--- @@attrhint: Show the target link in the anchor tag  @@options: false,true --->
@@ -79,25 +80,18 @@
 	    <cfelse>
 	        <cfset href = "">
 	    </cfif>
-	
-		<!--- check for sim link --->
-		<cfif len(attributes.externallink)>
-			<!--- check for friendly url --->
-			<cfif application.fc.factory.farFU.isUsingFU()>
-				<cfset href = href & application.fc.factory.farFU.getFU(attributes.externallink)>
-			<cfelse>
-				<cfset href = href & application.url.conjurer & "?objectid=" & attributes.externallink>
-			</cfif>
-		<cfelseif len(attributes.type) AND  len(attributes.view)>
-			<cfset href = href & application.url.conjurer & "?type=" & attributes.type & "&view=" & attributes.view>
+	    
+	    <cfset linkID = "" />
+	    
+	    <cfif len(attributes.externallink)>
+			<cfset linkID = attributes.externallink />
 		<cfelseif len(attributes.objectid)>
-			<!--- check for friendly url --->
-			<cfif application.fc.factory.farFU.isUsingFU()>
-				<cfset href = href & application.fc.factory.farFU.getFU(attributes.objectid)>
-			<cfelse>
-				<cfset href = href & application.url.conjurer & "?objectid=" & attributes.objectid>
-			</cfif>
+			<cfset linkID = attributes.objectid />
 		</cfif>
+
+
+		<cfset href = href & application.fc.factory.farFU.getFU(objectid="#linkID#", type="#attributes.type#", view="#attributes.view#", bodyView="#attributes.bodyView#")>
+
 	</cfif>
 	
 	<!--- check for extra URL parameters --->
@@ -113,14 +107,10 @@
 			<cfset stLocal.iCount = stLocal.iCount + 1>
 		</cfloop>
 
-		<cfset existQS = false />
-		<cfif Find("?",href) OR application.fc.factory.farFU.isUsingFU()>
-			<cfset existQS = true />
-		</cfif>
 	
 		<cfif ListFind("&,?",Right(href,1))><!--- check to see if the last character is a ? or & and don't append one between the params and the href --->
 			<cfset href=href&stLocal.parameters>
-		<cfelseif existQS> <!--- If there is already a ? in the href, just concat the params with & --->
+		<cfelseif Find("?",href)> <!--- If there is already a ? in the href, just concat the params with & --->
 			<cfset href=href&"&"&stLocal.parameters>
 		<cfelse> <!--- No query string on the href, so add a new one using ? and the params --->
 			<cfset href=href&"?"&stLocal.parameters>		
