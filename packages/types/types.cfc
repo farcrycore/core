@@ -568,7 +568,7 @@ default handlers
 		<cfif NOT structkeyexists(arguments.stproperties, "status")>
 			<cfif application.fc.factory.farFU.isUsingFU() AND (NOT StructKeyExists(application.types[arguments.stProperties.typename].stprops,"status")) AND StructKeyExists(application.types[arguments.stProperties.typename],"bFriendly") AND application.types[arguments.stProperties.typename].bFriendly>
 				<cfif StructKeyExists(arguments.stProperties,"label") AND Trim(arguments.stProperties.label) NEQ "" AND arguments.stProperties.label NEQ "incomplete">
-					<cfset stresult_friendly = application.fc.factory.farFU.setFriendlyURL(arguments.stProperties.objectid)>
+					<cfset stresult_friendly = application.fc.factory.farFU.setSystemFU(arguments.stProperties.objectid)>
 				</cfif>
 			</cfif>
 		</cfif>
@@ -1519,7 +1519,7 @@ default handlers
 
 		<!--- set friendly url --->
 		<cfif StructKeyExists(application.stcoapi[stObj.typename],"bFriendly") AND application.stcoapi[stObj.typename].bFriendly>
-			<cfset stresult_friendly = application.fc.factory.farFU.setFriendlyURL(objectid=fuoid)>
+			<cfset stresult_friendly = application.fc.factory.farFU.setSystemFU(objectid=fuoid)>
 		</cfif>
 
  		<cfreturn stResult>

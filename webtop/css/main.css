@@ -615,4 +615,5 @@ img.overviewicon {
 
 /* EXT JS SPECIFIC MODIFICATIONS */
 ul.x-tab-strip{margin:0px;}
-ul.x-tab-strip li{padding-left:0px;}
+ul.x-tab-strip li{padding:0px;}
+ul.x-tab-strip li a {padding:0px;}

@@ -2,14 +2,15 @@
 	<cfproperty ftSeq="1" name="refobjectid" type="uuid" default="" hint="stores the objectid of the related object" ftLabel="Ref ObjectID" />
 	<cfproperty ftSeq="2" name="friendlyURL" type="string" default="" hint="The Actual Friendly URL" ftLabel="Friendly URL" />		
 	<cfproperty ftSeq="3" name="queryString" type="string" default="" hint="The query string that will be parsed and placed in the url scope of the request" ftLabel="Query String" />		
-	<cfproperty ftSeq="4" name="fuStatus" type="numeric" default="" hint="Status of the Friendly URL." ftType="list" ftList="1:active,2:permanent,0:archived,-1:exclusion" ftLabel="Status" />		
-
+	<cfproperty ftSeq="4" name="fuStatus" type="numeric" default="" hint="Status of the Friendly URL." ftType="list" ftDefault="2" ftList="1:System Generated,2:Custom,0:archived" ftLabel="Status" />
+	<cfproperty ftSeq="5" name="redirectionType" type="string" default="" hint="Type of Redirection" ftType="list" ftDefault="301" ftList="none:None,301:Moved Permanently,307:Temporary Redirect" ftLabel="Type of Redirection" />
+	<cfproperty ftSeq="6" name="redirectTo" type="string" default="" hint="Where to redirect to" ftType="list" ftList="default:To the default FU,objectid:Direct to the object ID" ftLabel="Redirect To" />
+	<cfproperty ftSeq="7" name="bDefault" type="boolean" default="0" hint="Only 1 Friendly URL can be the default that will be used by the system" ftDefault="0" ftLabel="Default" />
 
 	<cffunction name="onAppInit" returntype="any" access="public" output="false" hint="Initializes the friendly url scopes and returns a copy of this initialised object">
 
 		<cfset variables.stMappings = structNew() />
 		<cfset variables.stLookup = structNew() />
-		<cfset variables.stExclusion = structNew() />
 		
 		<cfset setupCoapiAlias() />
 		<cfset setupMappings() />		
@@ -63,6 +64,155 @@
 		<cfreturn bAvailable />
 	</cffunction>
 	
+
+	
+	<cffunction name="archiveFU" access="public" returntype="struct" hint="Archives the FU passed in" output="No">
+		<cfargument name="objectID" required="true" hint="ObjectID of FU to archive" type="string" />
+
+		<cfset var stLocal = StructNew()>
+		<cfset stLocal.stReturn = StructNew()>
+		<cfset stLocal.stReturn.bSuccess = 1>
+		<cfset stLocal.stReturn.message = "">
+
+		<!--- SET THE STATUS OF THE FU OBJECT TO 0 (archived) --->
+		<cfset stLocal.stProperties = structNew() />
+		<cfset stLocal.stProperties.objectid = arguments.objectID />
+		<cfset stLocal.stProperties.fuStatus = 0 />
+		<cfset stLocal.stResult = setData(stProperties="#stLocal.stProperties#") />
+	
+		<cfreturn stLocal.stReturn>
+	</cffunction>
+	
+			
+	<cffunction name="setDefaultFU" returnType="struct" access="public" output="false" hint="Returns successful status of attempt to make a FU the default for that objectid">
+		<cfargument name="objectid" required="yes" hint="Objectid of Friendly URL to make the default" />
+			
+		<cfset var stLocal = structNew() />
+
+		<cfset stLocal.stReturn = StructNew()>
+		<cfset stLocal.stReturn.bSuccess = 1>
+		<cfset stLocal.stReturn.message = "">
+		
+		<cfset stLocal.stFU = getData(objectid="#arguments.objectID#") />
+		
+		<cfif stLocal.stFU.fuStatus GT 0>
+			<cfset stLocal.qFUs = getFUList(objectID="#stLocal.stFU.refobjectid#", status="current") />
+			
+			<!--- REMOVE THE CURRENT DEFAULT FU --->
+			<cfloop query="stLocal.qFUs">
+				<cfif stLocal.qFUs.bDefault>
+					<cfset stLocal.stProps = structNew() />
+					<cfset stLocal.stProps.objectID = stLocal.qFUs.objectid />
+					<cfset stLocal.stProps.bDefault = 0 />
+					<cfset stLocal.stResult = setData(stProperties="#stLocal.stProps#") />
+				</cfif>
+			</cfloop>
+
+			<!--- SET THE NEW DEFAULT FU --->
+			<cfset stLocal.stProps = structNew() />
+			<cfset stLocal.stProps.objectID = stLocal.stFU.objectid />
+			<cfset stLocal.stProps.bDefault = 1 />
+			<cfset stLocal.stResult = setData(stProperties="#stLocal.stProps#") />
+			
+		</cfif>
+		
+		<cfreturn stLocal.stReturn />
+		
+	</cffunction>
+	
+
+	<cffunction name="getDefaultFU" returnType="struct" access="public" output="false" hint="Returns the default FU objectid for an object. Returns empty string if no default is set.">
+		<cfargument name="refObjectID" required="yes" hint="Objectid of the RefObject to retrieve the default" />
+			
+		<cfset var stLocal = structNew() />
+		<cfset stLocal.stResult = structNew() />
+
+		<cfquery datasource="#application.dsn#" name="stLocal.qDefault">
+		SELECT * FROM farFU
+		WHERE refObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.refObjectID#" />
+		AND bDefault = 1
+		</cfquery>
+		
+		<cfif stLocal.qDefault.recordCount>
+			<cfset stLocal.stResult = getData(objectid="#stLocal.qDefault.objectID#") />
+		</cfif>
+		
+		
+		<cfreturn stLocal.stResult />
+		
+	</cffunction>
+	
+	<cffunction name="setSystemFU" access="public" returntype="struct" hint="Returns the success state of setting the System FU of an object" output="false">
+		<cfargument name="objectid" required="true" type="uuid" hint="Content item objectid.">
+		<cfargument name="typename" required="false" default="" type="string" hint="Content item typename if known.">
+		
+		<cfset var stobj = application.coapi.coapiUtilities.getContentObject(objectID="#arguments.objectid#", typename="#arguments.typename#") />
+		<cfset var friendlyURL = getSystemFU(objectID="#stobj.objectid#", typename="#stobj.typename#") />
+		
+		<cfset var stProperties = structNew() />
+		
+		<cfset >
+	</cffunction>
+
+	<cffunction name="getSystemFU" access="private" returntype="string" hint="Returns the FU of an object generated by the system" output="false">
+		<cfargument name="objectid" required="true" type="uuid" hint="Content item objectid.">
+		<cfargument name="typename" required="false" default="" type="string" hint="Content item typename if known.">
+		
+		<cfset var systemFU = "" />
+		<cfset var stobj = application.coapi.coapiUtilities.getContentObject(objectID="#arguments.objectid#", typename="#arguments.typename#") />
+		<cfset var stFriendlyURL = StructNew()>
+		<cfset var objNavigation = CreateObject("component", application.stcoapi['dmNavigation'].packagePath) />
+		<cfset var qNavigation=querynew("parentid")>
+		
+		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+		
+
+		<cfif isDefined("application.stCoapi.#stObj.typename#.bFriendly") AND application.stCoapi[stObj.typename].bFriendly>
+		
+			<!--- default stFriendlyURL structure --->
+			<cfset stFriendlyURL.objectid = stobj.objectid>
+			<cfset stFriendlyURL.friendlyURL = "">
+			<cfset stFriendlyURL.querystring = "">
+	
+			<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="displaySystemFU" r_html="systemFU" alternateHTML="">
+			
+			<cfif NOT len(systemFU)>
+				<!--- This determines the friendly url by where it sits in the navigation node  --->
+				<cfset qNavigation = objNavigation.getParent(stobj.objectid)>
+				
+				<!--- if its got a tree parent, build from navigation folders --->
+				<!--- TODO: this might be better done by checking for bUseInTree="true" 
+							or remove it entirely.. ie let tree content have its own fu as well as folder fu
+							or set up tree content to have like page1.cfm style suffixs
+							PLUS need collision detection so don't overwrite another tree based content item fro utility nav
+							PLUS need to exclude trash branch (perhaps just from total rebuild?
+							GB 20060117 --->
+				<cfif qNavigation.recordcount>
+					<!--- The object is in the tree so prefix the objects FU with the navigation FU --->
+					<skin:view typename="dmNavigation" objectid="#qNavigation.parentid#" webskin="displaySystemFU" r_html="systemFU">
+				
+				<!--- otherwise, generate friendly url based on content type --->
+				<cfelse> 
+					<cfif StructkeyExists(application.stcoapi[stobj.typename],"fuAlias")>
+						<cfset systemFU = "/#application.stcoapi[stobj.typename].fuAlias#" />
+					<cfelseif StructkeyExists(application.stcoapi[stobj.typename],"displayName")>
+						<cfset systemFU = "/#application.stcoapi[stobj.typename].displayName#" />
+					<cfelse>
+						<cfset systemFU = "/#ListLast(application.stcoapi[stobj.typename].name,'.')#" />
+					</cfif>	
+				</cfif>			
+			
+				<cfif structKeyExists(stobj, "fu") AND len(trim(stobj.fu))>
+					<cfset systemFU = systemFU & "/#stobj.fu#">
+				<cfelse>
+					<cfset systemFU = systemFU & "/#stobj.label#">
+				</cfif>
+			</cfif>
+		</cfif>
+		
+ 		<cfreturn systemFU />
+	</cffunction>	
+	
 	
 	<cffunction name="migrate">
 		<cfquery datasource="#application.dsn#" name="qLegacy">
@@ -76,6 +226,17 @@
 			</cfloop>
 			<cfset stProps.fuStatus = qLegacy.status />
 			<cfset stProps.queryString = qLegacy.query_string />
+			
+			<cfif qLegacy.status EQ 1>
+				<cfset stProps.redirectionType = "none" />
+				<cfset stProps.redirectTo = "system" />
+				<cfset stProps.bDefault = 1 />
+			<cfelse>
+				<cfset stProps.redirectionType = "301" />
+				<cfset stProps.redirectTo = "system" />
+				<cfset stProps.bDefault = 0 />
+			</cfif>
+			
 			<cfset stResult = createData(stProperties="#stProps#") />
 		</cfloop>
 		
@@ -151,21 +312,6 @@
 			<cfset variables.stMappings[stLocal.q.friendlyURL].queryString = stLocal.q.queryString />
 			<!--- fu lookup --->
 			<cfset variables.stLookup[stLocal.q.refobjectid] = stLocal.q.friendlyurl />
-		</cfloop>
-
-
-
-		<cfquery name="stLocal.qExclusion" datasource="#application.dsn#">
-		SELECT	fu.friendlyurl, fu.refobjectid, fu.queryString
-		FROM	#application.dbowner#farFU fu inner join 
-				#application.dbowner#refObjects r on r.objectid = fu.refobjectid
-		WHERE	fu.fuStatus = -1
-		</cfquery>
-		
-		<!--- load exclusion mappings to application scope --->
-		<cfloop query="stLocal.qExclusion">
-			<!--- fu lookup --->
-			<cfset variables.fuExlusions[stLocal.q.refobjectid] = stLocal.q.friendlyurl />
 		</cfloop>
 		
 	</cffunction>
@@ -448,18 +594,12 @@
 		<cfargument name="alias" required="yes" type="string">
 		<cfargument name="mapping" required="yes" type="string">
 		<cfargument name="querystring" required="no" type="string" default="">
-		<cfargument name="bPermantLink" required="no" type="boolean" default="0" hint="used to set the FU to be either 1 or 2">
 		
 		<cfset var stLocal = StructNew()>
 		<cfset stLocal.objectid = CreateUUID()>
 		<cfset stLocal.friendlyURL = arguments.alias>
 		<cfset stLocal.querystring = arguments.querystring>
-		<cfif arguments.bPermantLink>
-			<cfset stLocal.fuStatus = 2> <!--- permanent --->
-		<cfelse>
-			<cfset stLocal.fuStatus = 1> <!--- active --->
-		</cfif>
-		
+	
 
 		<cfif left(stLocal.friendlyURL,1) NEQ "/">
 			<cfset stLocal.friendlyURL = "/#stLocal.friendlyURL#" />
@@ -627,26 +767,13 @@
 
 			<cfif stLocal.lNavID NEQ "" AND arguments.objectid NEQ application.navid.home>
 				<!--- optimisation: get all dmnavgiation data to avoid a getData() call --->
-				<cfswitch expression="#application.dbtype#">
-				<cfcase value="ora,oracle">		
-					<cfquery name="stLocal.qListNavAlias" datasource="#application.dsn#">
-			    	SELECT	dm.objectid, dm.label, dm.fu 
-			    	FROM	#application.dbowner#dmNavigation dm, #application.dbowner#nested_tree_objects nto
-			    	WHERE	dm.objectid = nto.objectid
-			    			AND dm.objectid IN (#preserveSingleQuotes(stLocal.lNavID)#)
-			    	ORDER by nto.nlevel ASC
-					</cfquery>
-				</cfcase>
-				<cfdefaultcase>
 				<cfquery name="stLocal.qListNavAlias" datasource="#application.dsn#">
-			    SELECT	dm.objectid, dm.label, dm.fu 
-			    FROM	#application.dbowner#dmNavigation dm
-			    JOIN #application.dbowner#nested_tree_objects nto on dm.objectid = nto.objectid
-			    WHERE	dm.objectid IN (#preserveSingleQuotes(stLocal.lNavID)#)
-			    ORDER by nto.nlevel ASC
+		    	SELECT	dm.objectid, dm.label, dm.fu 
+		    	FROM	#application.dbowner#dmNavigation dm, #application.dbowner#nested_tree_objects nto
+		    	WHERE	dm.objectid = nto.objectid
+		    			AND dm.objectid IN (#preserveSingleQuotes(stLocal.lNavID)#)
+		    	ORDER by nto.nlevel ASC
 				</cfquery>
-				</cfdefaultcase>
-				</cfswitch>
 		
 				<cfloop query="stLocal.qListNavAlias">
 					<!--- check if has FU if so use it --->
@@ -719,7 +846,6 @@
 		<cfargument name="objectid" required="yes" type="UUID" hint="objectid of object to link to">
 		<cfargument name="alias" required="yes" type="string" hint="alias of object to link to">
 		<cfargument name="querystring" required="no" type="string" default="" hint="extra querystring parameters">
-		<cfargument name="bPermantLink" required="no" type="boolean" default="0" hint="used to set the FU to be either 1 or 2">
 		
 		<cfset var dom = "">
 		<!--- replace spaces in title --->
@@ -742,7 +868,7 @@
 		<cfset newAlias = ReReplaceNoCase(newAlias," ","-","all")>		
 		<!--- loop over domains and set fu ---> 
 		<!--- <cfloop list="#application.config.fusettings.domains#" index="dom"> --->
-			<cfset setMapping(alias=newAlias,mapping="#application.url.conjurer#?objectid=#arguments.objectid#",querystring=arguments.querystring,bPermantLink=bPermantLink)>
+			<cfset setMapping(alias=newAlias,mapping="#application.url.conjurer#?objectid=#arguments.objectid#",querystring=arguments.querystring)>
 		<!--- </cfloop> --->
 		<!--- <cfset updateAppScope()> --->
 		<cflog application="true" file="futrace" text="fu.setfu">
@@ -837,14 +963,11 @@
 		<cfreturn returnURL>
 	</cffunction>
 
-	<cffunction name="fListFriendlyURL" access="public" returntype="struct" hint="returns a query of FU for a particular objectid" output="No">
+	<cffunction name="getFUList" access="public" returntype="query" hint="returns a query of FU for a particular objectid and status" output="false">
 		<cfargument name="objectid" required="yes" hint="Objectid of object" />
-		<cfargument name="fuStatus" required="no" default="current" hint="status of friendly you want, [all (0,1,2), current (1,2), active (1), permanent (2), archived (0), exclusion(-1)]" />
+		<cfargument name="fuStatus" required="no" default="current" hint="status of friendly you want, [all (0,1,2), current (1,2), system (1), custom (2), archived (0)]" />
 			   
 		<cfset var stLocal = StructNew()>
-		<cfset stLocal.returnstruct = StructNew()>
-		<cfset stLocal.returnstruct.bSuccess = 1>
-		<cfset stLocal.returnstruct.message = "">
 		<cfset stLocal.fuStatus = "">
 
 		<cfswitch expression="#arguments.fuStatus#">
@@ -852,62 +975,50 @@
 				<cfset stLocal.fuStatus = "1,2">
 			</cfcase>
 		
-			<cfcase value="active">
+			<cfcase value="system">
 				<cfset stLocal.fuStatus = "1">
 			</cfcase>
 		
-			<cfcase value="permanent">
+			<cfcase value="custom">
 				<cfset stLocal.fuStatus = "2">
 			</cfcase>
 		
 			<cfcase value="archived">
 				<cfset stLocal.fuStatus = "0">
 			</cfcase>
-		
-			<cfcase value="exclusion">
-				<cfset stLocal.fuStatus = "-1">
-			</cfcase>
 					
 			<cfdefaultcase>
-				<cfset stLocal.fuStatus = "-1,0,1,2">
+				<cfset stLocal.fuStatus = "0,1,2">
 			</cfdefaultcase>
 		</cfswitch>
 		
-		<cftry>
-			<!--- get friendly url based on the objectid --->
-			<cfswitch expression="#application.dbtype#">
-			<cfcase value="ora,oracle">					
-				<cfquery datasource="#application.dsn#" name="stLocal.qList">
-				SELECT	u.objectid, friendlyURL, refobjectid, queryString, u.datetimelastupdated, u.fuStatus
-				FROM	#application.dbowner#farFu u, 
-						#application.dbowner#refObjects r
-				WHERE	r.objectid = u.refobjectid
-						AND u.refobjectid = <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
-						AND u.fuStatus IN (#stLocal.fuStatus#)
-				ORDER BY fuStatus DESC
-				</cfquery>
-			</cfcase>
-			<cfdefaultcase>
-				<cfquery datasource="#application.dsn#" name="stLocal.qList">
-				SELECT	u.objectid, friendlyURL, refobjectid, queryString, u.datetimelastupdated, u.fuStatus
-				FROM	#application.dbowner#farFu u inner join 
-						#application.dbowner#refObjects r on r.objectid = u.refobjectid
-				WHERE	refobjectid = <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
-					AND fuStatus IN (#stLocal.fuStatus#)
-				ORDER BY fuStatus DESC
-				</cfquery>
-			</cfdefaultcase>
-			</cfswitch>
-
-			<cfset stLocal.returnstruct.queryObject = stLocal.qList>
-
-			<cfcatch>
-				<cfset stLocal.returnstruct.bSuccess = 0>
-				<cfset stLocal.returnstruct.message = "#cfcatch.message# - #cfcatch.detail#">
-			</cfcatch>
-		</cftry>
+		<!--- get friendly url based on the objectid --->
+		<cfswitch expression="#application.dbtype#">
+		<cfcase value="ora,oracle">					
+			<cfquery datasource="#application.dsn#" name="stLocal.qList">
+			SELECT	u.*
+			FROM	#application.dbowner#farFu u, 
+					#application.dbowner#refObjects r
+			WHERE	r.objectid = u.refobjectid
+					AND u.refobjectid = <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
+					AND u.fuStatus IN (<cfqueryparam value="#stLocal.fuStatus#" list="true">)
+			ORDER BY fuStatus DESC
+			</cfquery>
+		</cfcase>
+		<cfdefaultcase>
+			<cfquery datasource="#application.dsn#" name="stLocal.qList">
+			SELECT	u.*
+			FROM	#application.dbowner#farFu u inner join 
+					#application.dbowner#refObjects r on r.objectid = u.refobjectid
+			WHERE	refobjectid = <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
+				AND fuStatus IN (<cfqueryparam value="#stLocal.fuStatus#" list="true">)
+			ORDER BY fuStatus DESC
+			</cfquery>
+		</cfdefaultcase>
+		</cfswitch>
 		
-		<cfreturn stLocal.returnstruct>
+		<cfreturn stLocal.qList>
+		
 	</cffunction>
 	
 	<cffunction name="fInsert" access="public" returntype="struct" hint="returns a query of FU for a particular objectid" output="No">
@@ -918,11 +1029,15 @@
 		<cfset stLocal.returnstruct.bSuccess = 1>
 		<cfset stLocal.returnstruct.message = "">
 
+		<!--- If the ref object does not currently have a default FU, set this as the default --->
+		<cfif structKeyExists(arguments.stForm, "refObjectID")>
+			<cfset stLocal.defaultFU = getDefault(refObjectID="#arguments.stForm.refObjectID#") />
+			<cfif not len(stLocal.defaultFU)>
+				<cfset arguments.stForm.bDefault = 1 />
+			</cfif>
+		</cfif>
+		
 		<cftry>
-			<!--- check if that friendly url exists --->
-			<!--- IS THIS JUST TOO FUNNY? --->
-<!--- 			<cfset arguments.stForm.friendlyUrl = ReplaceNoCase(arguments.stForm.friendlyUrl,application.config.fusettings.urlpattern,"")>
-			<cfset arguments.stForm.friendlyUrl = application.config.fusettings.urlpattern & arguments.stForm.friendlyUrl> --->
 
 			<cfif left(arguments.stForm.friendlyURL,1) NEQ "/">
 				<cfset arguments.stForm.friendlyURL = "/#arguments.stForm.friendlyURL#" />
@@ -932,7 +1047,7 @@
 			SELECT	objectid
 			FROM	#application.dbowner#farFu
 			WHERE	lower(friendlyURL) = <cfqueryparam value="#LCase(arguments.stForm.friendlyurl)#" cfsqltype="cf_sql_varchar">
-				AND fuStatus != 0
+				AND fuStatus > 0
 			</cfquery>
 			
 			<cfif stLocal.qCheck.recordcount EQ 0>

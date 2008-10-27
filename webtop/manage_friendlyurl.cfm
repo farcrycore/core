@@ -1,214 +1,184 @@
 <cfsetting enablecfoutputonly="true">
+
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">
+<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">
+
+
 <!--- 
 manage friednly urls for a particular object id
  --->
 
-<cfparam name="objectid" default="">
+<cfparam name="url.objectid" default="">
 <cfparam name="fatalerrormessage" default="">
 <cfparam name="errormessage" default="">
 <cfparam name="bFormSubmitted" default="no">
 <cfparam name="friendly_url" default=""><!--- #application.config.fusettings.urlpattern# --->
 <cfparam name="additional_params" default="">
-<cfparam name="lDeleteObjectid" default="">
+<cfparam name="lArchiveObjectID" default="">
 <cfparam name="fuStatus" default="2">
+<cfparam name="redirectionType" default="301">
+<cfparam name="redirectTo" default="system">
 
-<cfif trim(objectid) EQ "">
-	<cfset fatalerrormessage = "Invalid ObjectID.">
-<cfelse>
 
-	<!--- form submission check --->
-	<cfif bFormSubmitted EQ "yes">
-		<cfif buttonSubmit EQ "delete">
-			<cfset stForm = StructNew()>		
-			<cfset stForm.lDeleteObjectid = trim(lDeleteObjectid)>
-			<cfset returnstruct = application.fc.factory.farFU.fDelete(stForm)>
-			<cfif returnstruct.bSuccess EQ 0>
-				<cfset errormessage = errormessage & returnstruct.message>
-			</cfif>
-		<cfelseif buttonSubmit EQ "add">
-			<!--- <cfif Trim(friendly_url) NEQ application.config.fusettings.urlpattern> --->
-				<cfset stForm = StructNew()>
-				<cfset stForm.refobjectid = objectid>
-				<cfset stForm.friendlyUrl = trim(friendly_url)>
-				<cfset stForm.querystring = trim(additional_params)>
-				<cfset stForm.fuStatus = fuStatus>
-				<cfset returnstruct = application.fc.factory.farFU.fInsert(stForm)>
-				<cfif returnstruct.bSuccess>
-					<cfset friendly_url = "" ><!--- application.config.fusettings.urlpattern --->
-					<cfset additional_params = "">
-					<cfset fuStatus = 1>
-				<cfelse>
-					<cfset errormessage = errormessage & returnstruct.message>
-				</cfif>
-			<!--- </cfif> --->
-		</cfif>
-	</cfif>
+<cfset stRefObject = application.coapi.coapiUtilities.getContentObject(objectid="#url.objectid#") />
 
-	<cfset returnstruct = application.fc.factory.farFU.fListFriendlyURL(objectid,"all")>
-	<cfif returnstruct.bSuccess>
-		<cfset qList = returnstruct.queryObject>
-	<cfelse>
-		<cfset fatalerrormessage = fatalerrormessage & returnstruct.returnmessage>
-	</cfif>
-</cfif>
-<cfsetting enablecfoutputonly="false">
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
-<title>FarCry</title><cfoutput>
-<style type="text/css" title="default" media="screen">@import url(#application.url.farcry#/css/main.css);</style>
-<style type="text/css" title="default" media="screen">@import url(#application.url.farcry#/css/tabs.css);</style></cfoutput>
-<!--- 
-todo: maybe use javascript remoting
-
-<script type="text/javascript">
-function add_friendlyUrl(fu_status)
-{
-	var mytable = document.getElementById('table_friendlyurl');	
-	var mytbody = document.getElementById('tbody_friendlyurl_'+ fu_status);
-	var docFragment = document.createDocumentFragment();
-	var trElem, tdElem, txtNode;
-	/**********************************************************************/
-	/*** CREATE TR ***/
-	trElem = document.createElement("tr");
-	trElem.setAttribute('class','alt');
+<ft:processForm action="Add" url="refresh">
 	
-	/*** CREATE & SET TD TEXT ***/
-	tdElem = td_CreateSetText(' ');
-	trElem.appendChild(tdElem);
+	<ft:processFormObjects typename="farFU">
 
-	/*** CREATE & SET TD TEXT ***/
-	tdElem = td_CreateSetFormElement("text", "friendlyurl_" + fu_status, "/go/")
-	trElem.appendChild(tdElem);
-	
-	/*** CREATE & SET TD TEXT ***/
-	tdElem = td_CreateSetFormElement("text", "qstring_" + fu_status, "")
-	trElem.appendChild(tdElem);
-	
-	/*** CREATE & SET TD TEXT ***/
-	tdElem = td_CreateSetFormElement("submit", "buttonSubmit", fu_status)
-	trElem.appendChild(tdElem);
-	
-	docFragment.appendChild(trElem);
-	/**********************************************************************/
-	mytbody.appendChild(docFragment);
-}
-
-function td_CreateSetText(str)
-{
-	/*** CREATE & SET TD TEXT ***/
-	tdElem = document.createElement("td");
-	tdElem.setAttribute('style','text-align: left;');
-	txtNode = document.createTextNode(str);
-	tdElem.appendChild(txtNode);
-	return tdElem;
-}
-
-function td_CreateSetFormElement(element_type, element_name, element_value)
-{		
-	form_element = document.createElement("input");
-	form_element.type = element_type;
-	form_element.setAttribute('id',element_name);
-	form_element.setAttribute('name',element_name);
-	form_element.value = element_value;
-	if(element_type == 'submit')
-		form_element.setAttribute('onclick', "alert('guy');");		
 		
-	/*** CREATE & SET TD TEXT ***/
-	tdElem = document.createElement("td");
-	tdElem.setAttribute('style','text-align: left;');
-	tdElem.appendChild(form_element);
-	return tdElem;
-}
+		<cfset stProperties.refObjectID = form.selectedObjectID />
+		<cfset stProperties.fuStatus = 2 />
+		
+		<!--- If there is currently no default, set this as the default --->
+		<cfset stDefaultFU = application.fc.factory.farFU.getDefaultFU(refObjectID="#form.selectedObjectID#") />
+		<cfif structIsEmpty(stDefaultFU)>
+			<cfset stProperties.bDefault = 1 />
+		</cfif>
+		<cfset returnstruct = application.fc.factory.farFU.fInsert(stProperties)>
+		
+		<cfif not returnstruct.bSuccess>
+			<extjs:bubble title="#returnstruct.message#" autoHide="false" />
+		</cfif>
+		
+		<ft:break />
+	</ft:processFormObjects>
+</ft:processForm>
 
-function doSubmit(objForm)
-{
-	alert(objForm.buttonSubmit.value);
-	return false;
-}
-</script>
- --->
-</head>
-<body class="iframed-content"
-<h3>Friendly URLs Management</h3>
-	<cfif fatalerrormessage NEQ "">
-<span class="error"><cfoutput>#fatalerrormessage#</cfoutput></span><cfelse><cfif errormessage NEQ "">
-<span class="error"><cfoutput>#errormessage#</cfoutput></span></cfif>
-<form name="frm" id="frm" method="post">
-<table cellpadding="0" cellspacing="0" border="0">
-<tr>
-	<td><label for="friendly_url"><b>Friendly URL:</b> <input type="text" name="friendly_url" id="friendly_url" value="<cfoutput>#friendly_url#</cfoutput>"></label></td>
-	<td><label for="additional_params"><b>Additional Parameters:</b> <input type="text" name="additional_params" id="additional_params" value="<cfoutput>#additional_params#</cfoutput>"></label></td>
-	<td><label for="fuStatus"><b>Status:</b> 
-		<select name="fuStatus" id="fuStatus">
-			<!--- <option value="1"<cfif status EQ 1> selected="selected"</cfif>>Active</option> --->
-			<option value="2"<cfif fuStatus EQ 2> selected="selected"</cfif>>Permanent</option>
-			<option value="1"<cfif fuStatus EQ 1> selected="selected"</cfif>>Active</option>		
-			<option value="0"<cfif fuStatus EQ 0> selected="selected"</cfif>>Archived</option>	
-			<option value="-1"<cfif fuStatus EQ -1> selected="selected"</cfif>>Exclusion</option>		
-		</select>	
-	</label></td>
-	<td><input type="submit" name="buttonSubmit" value="Add"></td>
-</tr>
-<input type="hidden" name="objectid" value="<cfoutput>#objectid#</cfoutput>">
-<input type="hidden" name="bFormSubmitted" value="yes">
-</form>
-<form name="frm_friendly_url" id="frm_friendly_url" method="post">
-<table class="table-2" cellspacing="0" id="table_friendlyurl">
-<tr>
-	<th>&nbsp;</th>
-	<th>FRIENDLY URL</th>
-	<th>QUERYSTRING</th>
-	<th>LAST UPDATED</th>
-</tr><cfoutput query="qList" group="fuStatus">
-<tr>
-	<td><strong><cfif qList.fuStatus EQ 1>Active<cfelseif qList.fuStatus EQ 2>Permanent<cfelseif qList.fuStatus EQ 0>Archived<cfelseif qList.fuStatus EQ -1>Exclusion</cfif></strong></td>
-	<td></td>
-	<td></td>
-	<td></td>	
-</tr><cfoutput>
-<tr class="alt">
-	<td><input type="checkbox" name="lDeleteObjectID" value="#qList.objectid#"></td>
-	<td>#qList.friendlyurl#</td>
-	<td>#qList.queryString#</td>
-	<td>#DateFormat(qList.datetimelastupdated,"dddd dd mmmm yyyy")#</td>
-</tr></cfoutput></cfoutput><br />
-<input type="hidden" name="objectid" value="<cfoutput>#objectid#</cfoutput>">
-</table>
-<input type="hidden" name="bFormSubmitted" value="yes">
-<input type="submit" name="buttonSubmit" value="Delete">&nbsp;<input type="button" name="buttonClose" value="Close" onclick="window.close();"></form>
+<ft:processForm action="Archive Selected" url="refresh">
+	
+	<cfif structKeyExists(form, "lArchiveObjectID") AND len(form.lArchiveObjectID)>
+		<cfloop list="#form.lArchiveObjectID#" index="i">
+			<cfset returnstruct = application.fc.factory.farFU.archiveFU(lObjectIDs="#i#")>
+		</cfloop>
+
+	</cfif>
+</ft:processForm>
+
+<ft:processForm action="Make Default" url="refresh">
+	<cfif structKeyExists(form, "selectedObjectID") AND len(form.selectedObjectID)>
+		<cfset returnstruct = application.fc.factory.farFU.setDefault(objectID="#form.selectedObjectID#")>
+	</cfif>
+</ft:processForm>
+
+
+<cfif not len(url.objectid)>
+	<extjs:bubble title="Invalid ObjectID" autoHide="false" />
 </cfif>
-</body>
-</html>
-<!--- <tbody id="tbody_friendlyurl_permanent"><cfoutput query="qList_permanent">
-<tr class="alt">
-	<td></td>
-	<td>#qList_permanent.friendlyurl#</td>
-	<td>#qList_permanent.queryString#</td>
-	<td>#DateFormat(qList_permanent.datetimelastupdated,"dddd dd mmmm yyyy")#</td>
-</tr></cfoutput></tbody>
-<tr><!--- active urls --->
-	<td><strong>Active</strong> <a href="##" onclick="add_friendlyUrl('active');">[+]</a></td>
-	<td></td>
-	<td></td>
-	<td></td>	
-</tr><tbody id="tbody_friendlyurl_active"><cfoutput query="qList_active">
-<tr class="alt">
-	<td></td>
-	<td>#qList_active.friendlyurl#</td>
-	<td>#qList_active.queryString#</td>
-	<td>#DateFormat(qList_active.datetimelastupdated,"dddd dd mmmm yyyy")#</td>
-</tr></cfoutput></tbody>
-<tr><!--- archived urls --->
-	<td><strong>Archived</strong></td>
-	<td></td>
-	<td></td>
-	<td></td>	
-</tr><tbody id="tbody_friendlyurl_archived"><cfoutput query="qList_archived">
-<tr class="alt">
-	<td></td>
-	<td>#qList_archived.friendlyurl#</td>
-	<td>#qList_archived.queryString#</td>
-	<td>#DateFormat(qList_archived.datetimelastupdated,"dddd dd mmmm yyyy")#</td>
-</tr></cfoutput></tbody> --->
+
+
+<admin:header title="Manage Friendly URL's">
+	
+
+	<cfoutput><h1>Manage Friendly URL's for #stRefObject.label# (#stRefObject.typename#)</h1></cfoutput>
+	
+	<extjs:tab id="manageFriendlyURLs">
+		<extjs:tabPanel id="createCustom" title="Create Custom" autoheight="true" style="padding:10px;">
+			<ft:form name="frm">
+				
+				<ft:object typename="farFU" key="newFU" lexcludeFields="label,refObjectID,fuStatus" includeFieldSet="false" />
+				<ft:farcryButtonPanel>
+					<ft:button value="Add" selectedObjectID="#url.objectid#" />
+				</ft:farcryButtonPanel>
+
+			</ft:form>
+		</extjs:tabPanel>
+
+		
+		<cfset qFUList = application.fc.factory.farFU.getFUList(objectid="#url.objectid#", fuStatus="current") />
+		
+		<cfif qFUList.recordCount>
+			<extjs:tabPanel id="current" title="Current" autoheight="true" style="padding:10px;">
+
+				<ft:form>
+					
+					
+					<cfoutput query="qFUList" group="fuStatus">
+						<h3>
+							<cfif qFUList.fuStatus EQ 1>
+								System Generated
+							<cfelseif qFUList.fuStatus EQ 2>
+								Custom
+							</cfif>
+						</h3>
+						<table class="table-2" cellspacing="0" id="table_friendlyurl">
+						<tr>
+							<th>&nbsp;</th>
+							<th>Friendly URL</th>
+							<th>Query String</th>
+							<th>Redirection Type:</th>
+							<th>Redirect To:</th>
+							<th>Default:</th>
+						</tr>
+						
+						<cfoutput>
+						<tr class="alt">
+							<td><input type="checkbox" name="lArchiveObjectID" value="#qFUList.objectid#"></td>
+							<td>#qFUList.friendlyurl#</td>
+							<td>#qFUList.queryString#</td>
+							<td>#qFUList.redirectionType#</td>
+							<td>#qFUList.redirectTo#</td>
+							<cfif qFUList.bDefault>
+								<td>>>>DEFAULT<<<</td>
+							<cfelse>
+								<td><ft:button value="Make Default" selectedObjectID="#qFUList.objectid#" size="small" /></td>
+							</cfif>
+							
+						</tr>
+						</cfoutput>
+						
+						
+						</table>
+					</cfoutput>
+					
+					<ft:farcryButtonPanel indentForLabel="false">
+						<ft:button value="Archive Selected" />
+					</ft:farcryButtonPanel>
+				
+				</ft:form>
+			</extjs:tabPanel>
+		</cfif>
+		
+		
+		<cfset qFUList = application.fc.factory.farFU.getFUList(objectid="#url.objectid#", fuStatus="archived") />
+		
+		<cfif qFUList.recordCount>
+			<extjs:tabPanel id="archive" title="Archive" autoheight="true" style="padding:10px;">
+		
+				
+				<ft:form>
+					
+					<cfoutput query="qFUList" group="fuStatus">
+						<h3>Archived</h3>
+						<table class="table-2" cellspacing="0" id="table_friendlyurl">
+						<tr>
+							<th>Friendly URL</th>
+							<th>Query String</th>
+							<th>Redirection Type:</th>
+							<th>Redirect To:</th>
+						</tr>
+						
+						<cfoutput>
+						<tr class="alt">
+							<td>#qFUList.friendlyurl#</td>
+							<td>#qFUList.queryString#</td>
+							<td>#qFUList.redirectionType#</td>
+							<td>#qFUList.redirectTo#</td>
+							<td>N/A</td>
+							
+						</tr>
+						</cfoutput>
+						
+						
+						</table>
+					</cfoutput>
+					
+				
+				</ft:form>
+			</extjs:tabPanel>
+		</cfif>
+	</extjs:tab>
+
+<admin:footer>
+<cfsetting enablecfoutputonly="false">

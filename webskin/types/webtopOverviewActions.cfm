@@ -296,17 +296,14 @@ START WEBSKIN
 	</cfif>	
 	
 	<cfif stOverviewParams.stPermissions.iEdit EQ 1 AND application.fc.factory.farFU.isUsingFU()>
-		<cfset stResult = application.fc.factory.farFU.fListFriendlyURL(stobj.objectid,"current")>
-		<cfif stResult.bSuccess>
-			<cfset qListFriendlyURL = stResult.queryObject>
-			<extjs:item title="Current Friendly URLs">
-				<cfloop query="qListFriendlyURL">
-					<cfoutput>#qListFriendlyURL.friendlyURL#<br /></cfoutput>
-				</cfloop>
-				<ft:button width="240px" style="" value="Manage" bInPanel="true" url="" onclick="window.open('#application.url.farcry#/manage_friendlyurl.cfm?objectid=#stobj.objectid#','_win_friendlyurl','height=500,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=no,status=yes').focus();" />		
-			</extjs:item>
-	
-		</cfif>
+		<cfset qFUs = application.fc.factory.farFU.getFUList(objectID="#stobj.objectid#", fuStatus="current")>
+
+		<extjs:item title="Current Friendly URLs">
+			<cfloop query="qFUs">
+				<cfoutput>#qFUs.friendlyURL#<br /></cfoutput>
+			</cfloop>
+			<ft:button width="240px" style="" value="Manage" bInPanel="true" url="" onclick="window.open('#application.url.farcry#/manage_friendlyurl.cfm?objectid=#stobj.objectid#','_win_friendlyurl','height=500,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=no,status=yes').focus();" />		
+		</extjs:item>
 	</cfif>		
 	
 	<!--- add comments --->
