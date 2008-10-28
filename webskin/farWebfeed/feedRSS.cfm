@@ -50,7 +50,7 @@
 
 <cfset request.mode.ajax = true />
 
-<cfcontent type="application/rss+xml" reset="true" /><cfoutput><?xml version="1.0" encoding="utf-8"?>
+<cfcontent type="application/rss+xml:UTF-8" reset="true" /><cfoutput><?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0"
 	xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd"
 	xmlns:dc="http://purl.org/dc/elements/1.1/" 
