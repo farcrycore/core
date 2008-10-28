@@ -210,18 +210,48 @@
 		<cfset request.fc.bShowTray = false />
 		
 		<!--- Output tray info --->
-		<cfset thiskey = createuuid() />
+		<cfset thiskey = hash(createuuid()) />
 		<cfparam name="session.fc" default="#structnew()#" />
 		<cfparam name="session.fc.proxy" default="#structnew()#" />
 		<cfset session.fc.requests[thiskey] = structnew() />
-		<cfset session.fc.requests[thiskey].url = "#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode)=[^&]*','','ALL')#" />
+		<cfset session.fc.requests[thiskey].url = "#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray)=[^&]*','','ALL')#" />
 		<cfset session.fc.requests[thiskey].tray = "#application.url.webroot#/index.cfm?objectid=#attributes.objectid#&view=displayAdminToolbar&key=#thiskey#" />
 		<skin:htmlHead><cfoutput>
 			<script type="text/javascript">
 				if (top.location == location)
 					location = "#application.url.webtop#/adminproxy.cfm?h=#thiskey#";
 				else
-					parent.updateTray('#session.fc.requests[thiskey].tray#',document.title);
+					parent.updateTray('#session.fc.requests[thiskey].tray#',document.title,'#thiskey#');
+			</script>
+		</cfoutput></skin:htmlHead>
+	<cfelseif request.mode.bAdmin and not session.dmProfile.bShowTray><!--- Tray will only be disabled for admins if the admin has turned it off --->
+		<skin:htmlHead library="jQueryJS" />
+		<skin:htmlHead id="enabletray"><cfoutput>
+			<style type="text/css">
+				##enabletray {
+					position: fixed;
+					bottom: 0; left: 0;
+					z-index: 10;
+					padding:5px;
+					border:0 none;
+				}
+			</style>
+			<!--[if gte IE 5.5]>
+			<![if lt IE 7]>
+			<style type="text/css">
+			div##enabletray {
+				/* IE5.5+/Win - this is more specific than the IE 5.0 version */
+				right: auto; bottom: auto;
+				left: expression( ( 5 + ( ignoreMe2 = document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft ) ) + 'px' );
+				top: expression( ( -5 - enabletray.offsetHeight + ( document.documentElement.clientHeight ? document.documentElement.clientHeight : document.body.clientHeight ) + ( ignoreMe = document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop ) ) + 'px' );
+			}
+			</style>
+			<![endif]>
+			<![endif]-->
+			<script type="text/javascript">
+				jQ(function(){
+					jQ("body").append("<a href='#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray)=[^&]*','','ALL')#&bShowTray=1' id='enabletray' title='Enable tray'><img src='#application.url.webtop#/facade/icon.cfm?icon=toggletray&size=64' /></a>")
+				});
 			</script>
 		</cfoutput></skin:htmlHead>
 	</cfif>
@@ -261,18 +291,48 @@
 			<cfset request.fc.bShowTray = false />
 			
 			<!--- Output tray info --->
-			<cfset thiskey = createuuid() />
+			<cfset thiskey = hash(createuuid()) />
 			<cfparam name="session.fc" default="#structnew()#" />
 			<cfparam name="session.fc.proxy" default="#structnew()#" />
 			<cfset session.fc.requests[thiskey] = structnew() />
-			<cfset session.fc.requests[thiskey].url = "#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode)=[^&]*','','ALL')#" />
+			<cfset session.fc.requests[thiskey].url = "#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray)=[^&]*','','ALL')#" />
 			<cfset session.fc.requests[thiskey].tray = "#application.url.webroot#/index.cfm?type=#attributes.typename#&view=displayAdminToolbar" />
 			<skin:htmlHead><cfoutput>
 				<script type="text/javascript">
 					if (top.location == location)
 						location = "#application.url.webtop#/adminproxy.cfm?h=#thiskey#";
 					else
-						parent.updateTray('#session.fc.requests[thiskey].tray#',document.title);
+						parent.updateTray('#session.fc.requests[thiskey].tray#',document.title,'#thiskey#');
+				</script>
+			</cfoutput></skin:htmlHead>
+		<cfelseif request.mode.bAdmin and not session.dmProfile.bShowTray><!--- Tray will only be disabled for admins if the admin has turned it off --->
+			<skin:htmlHead library="jQueryJS" />
+			<skin:htmlHead id="enabletray"><cfoutput>
+				<style type="text/css">
+					##enabletray {
+						position: fixed;
+						bottom: 0; left: 0;
+						z-index: 10;
+						padding:5px;
+						border:0 none;
+					}
+				</style>
+				<!--[if gte IE 5.5]>
+				<![if lt IE 7]>
+				<style type="text/css">
+				div##enabletray {
+					/* IE5.5+/Win - this is more specific than the IE 5.0 version */
+					right: auto; bottom: auto;
+					left: expression( ( 5 + ( ignoreMe2 = document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft ) ) + 'px' );
+					top: expression( ( -5 - enabletray.offsetHeight + ( document.documentElement.clientHeight ? document.documentElement.clientHeight : document.body.clientHeight ) + ( ignoreMe = document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop ) ) + 'px' );
+				}
+				</style>
+				<![endif]>
+				<![endif]-->
+				<script type="text/javascript">
+					jQ(function(){
+						jQ("body").append("<a href='#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray)=[^&]*','','ALL')#&bShowTray=1' id='enabletray' title='Enable tray'><img src='#application.url.webtop#/facade/icon.cfm?icon=toggletray&size=64' /></a>")
+					});
 				</script>
 			</cfoutput></skin:htmlHead>
 		</cfif>
