@@ -23,6 +23,10 @@ manage friednly urls for a particular object id
 
 <cfset stRefObject = application.coapi.coapiUtilities.getContentObject(objectid="#url.objectid#") />
 
+<ft:processForm action="Save Changes,Make Default,Archive Selected">
+	<ft:processFormObjects typename="farFU" />
+</ft:processForm>
+
 <ft:processForm action="Add" url="refresh">
 	
 	<ft:processFormObjects typename="farFU">
@@ -65,6 +69,8 @@ manage friednly urls for a particular object id
 		<cfset returnstruct = application.fc.factory.farFU.setDefaultFU(objectID="#form.selectedObjectID#")>
 	</cfif>
 </ft:processForm>
+
+<ft:processForm action="Save Changes" url="refresh" />
 
 
 <cfif not len(url.objectid)>
@@ -111,18 +117,41 @@ manage friednly urls for a particular object id
 							<th>&nbsp;</th>
 							<th>Friendly URL</th>
 							<th>Query String</th>
-							<th>Redirection Type:</th>
-							<th>Redirect To:</th>
-							<th>Default:</th>
+							<th>Redirection</th>
+							<th>Default</th>
 						</tr>
 						
 						<cfoutput>
+						<ft:object objectid="#qFUList.objectid[currentRow]#" typename="farFU" r_stFields="stFields" r_stPrefix="prefix" />
 						<tr class="alt">
 							<td><input type="checkbox" name="lArchiveObjectID" value="#qFUList.objectid#"></td>
-							<td>#qFUList.friendlyurl#</td>
-							<td>#qFUList.queryString#</td>
-							<td>#qFUList.redirectionType#</td>
-							<td>#qFUList.redirectTo#</td>
+							<td>#stFields.friendlyurl.html#</td>
+							<td>#stFields.queryString.html#</td>
+							<td>
+								#stFields.redirectionType.html#
+								<div id="#prefix#-redirect-to-wrap" style="<cfif qFUList.redirectionType[currentRow] EQ 'none'>display:none;</cfif>">#stFields.redirectTo.html#</div>
+								
+								<extjs:onReady>
+									var el = Ext.get('#stFields.redirectionType.FORMFIELDNAME#');	
+									el.on('change', function(n,c) {
+										var currentValue = Ext.getDom('#stFields.redirectionType.FORMFIELDNAME#').value;
+										if (currentValue != 'none') {
+											
+											Ext.get('#prefix#-redirect-to-wrap').slideIn('t', {
+											    easing: 'easeIn',
+											    duration: .5,
+											    useDisplay: true
+											});
+										} else {
+											Ext.get('#prefix#-redirect-to-wrap').slideOut('t', {
+											    easing: 'easeOut',
+											    duration: .5,
+											    useDisplay: true
+											});
+										}
+									});	
+								</extjs:onReady>
+							</td>
 							<cfif qFUList.bDefault>
 								<td>>>>DEFAULT<<<</td>
 							<cfelse>
@@ -138,6 +167,7 @@ manage friednly urls for a particular object id
 					
 					<ft:farcryButtonPanel indentForLabel="false">
 						<ft:button value="Archive Selected" />
+						<ft:button value="Save Changes" />
 					</ft:farcryButtonPanel>
 				
 				</ft:form>

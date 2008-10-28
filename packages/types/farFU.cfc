@@ -3,7 +3,7 @@
 	<cfproperty ftSeq="2" name="friendlyURL" type="string" default="" hint="The Actual Friendly URL" ftLabel="Friendly URL" />		
 	<cfproperty ftSeq="3" name="queryString" type="string" default="" hint="The query string that will be parsed and placed in the url scope of the request" ftLabel="Query String" />		
 	<cfproperty ftSeq="4" name="fuStatus" type="numeric" default="" hint="Status of the Friendly URL." ftType="list" ftDefault="2" ftList="1:System Generated,2:Custom,0:archived" ftLabel="Status" />
-	<cfproperty ftSeq="5" name="redirectionType" type="string" default="" hint="Type of Redirection" ftType="list" ftDefault="301" ftList="none:None,301:Moved Permanently,307:Temporary Redirect" ftLabel="Type of Redirection" />
+	<cfproperty ftSeq="5" name="redirectionType" type="string" default="" hint="Type of Redirection" ftType="list" ftDefault="301" ftList="none:None,301:Moved Permanently (301),307:Temporary Redirect (307)" ftLabel="Type of Redirection" />
 	<cfproperty ftSeq="6" name="redirectTo" type="string" default="" hint="Where to redirect to" ftType="list" ftList="default:To the default FU,objectid:Direct to the object ID" ftLabel="Redirect To" />
 	<cfproperty ftSeq="7" name="bDefault" type="boolean" default="0" hint="Only 1 Friendly URL can be the default that will be used by the system" ftDefault="0" ftLabel="Default" />
 
@@ -75,9 +75,11 @@
 		<cfset stLocal.stReturn.message = "">
 
 		<!--- SET THE STATUS OF THE FU OBJECT TO 0 (archived) --->
-		<cfset stLocal.stProperties = structNew() />
-		<cfset stLocal.stProperties.objectid = arguments.objectID />
+		<cfset stLocal.stProperties = getData(objectID="#arguments.objectID#") />
+		<cfset stLocal.stProperties.objectid = createUUID() />
 		<cfset stLocal.stProperties.fuStatus = 0 />
+		<cfset stLocal.stProperties.redirectionType = "301" />
+		<cfset stLocal.stProperties.redirectTo =  "default" />
 		<cfset stLocal.stResult = setData(stProperties="#stLocal.stProperties#") />
 	
 		<cfreturn stLocal.stReturn>
@@ -112,9 +114,14 @@
 			<cfset stLocal.stProps = structNew() />
 			<cfset stLocal.stProps.objectID = stLocal.stFU.objectid />
 			<cfset stLocal.stProps.bDefault = 1 />
+			<!--- JUST IN CASE THE USER WANTS TO REDIRECT, WE DONT WANT THEM REDIRECTING TO THE DEFAULT (WHICH IS NOW THIS OBJECT) --->
+			<cfset stLocal.stProps.redirectionType = "none" />
+			<cfset stLocal.stProps.redirectTo = "objectid" />
 			<cfset stLocal.stResult = setData(stProperties="#stLocal.stProps#") />
 			
 		</cfif>
+		
+		<cfset variables.stLookup[stLocal.stFU.refObjectID] = stLocal.stFU.friendlyurl />
 		
 		<cfreturn stLocal.stReturn />
 		
@@ -193,7 +200,9 @@
 
 		<cfif arguments.bCheckUnique>
 			<cfset stLocal.stFU = getFUData(arguments.friendlyURL) />
-			<cfif stLocal.stFU.bSuccess>
+			
+			<!--- IF WE FOUND ONE WITH THIS FRIENDLY URL, MAKE THE NEW ONE UNIQUE --->
+			<cfif not structIsEmpty(stLocal.stFU)>
 				<cfquery datasource="#application.dsn#" name="stLocal.qDuplicates">
 				SELECT objectid
 				FROM farFU
@@ -219,13 +228,22 @@
 		<cfset stLocal.newFriendlyURL = getSystemFU(objectID="#arguments.objectid#", typename="#arguments.typename#") />
 		
 		<cfif structIsEmpty(stLocal.stCurrentSystemObject)>
+		
+			<!--- See if their is a current default object --->
+			<cfset stLocal.stCurrentDefaultObject = getDefaultFUObject(refObjectID="#arguments.objectid#") />
+		
 			<!--- No System FU object currently set --->
 			<cfset stLocal.stCurrentSystemObject.objectid = createUUID() />
-			<cfset stLocal.stCurrentSystemObject.refObjectID = stobj.objectid />
+			<cfset stLocal.stCurrentSystemObject.refObjectID = arguments.objectid />
 			<cfset stLocal.stCurrentSystemObject.fuStatus = 1 />
 			<cfset stLocal.stCurrentSystemObject.redirectionType = "none" />
 			<cfset stLocal.stCurrentSystemObject.redirectTo = "default" />
 			<cfset stLocal.stCurrentSystemObject.friendlyURL = stLocal.newFriendlyURL />
+			
+			<!--- If no default object, set this as the default --->
+			<cfif structIsEmpty(stLocal.stCurrentDefaultObject)>
+				<cfset stLocal.stCurrentSystemObject.bDefault = 1 />
+			</cfif>
 			
 			<cfset stLocal.stResult = setData(stProperties="#stLocal.stCurrentSystemObject#") />
 		
@@ -391,30 +409,19 @@
 		</cftry>
 		
 		<!--- retrieve list of all FU that is not retired --->
-		<cfswitch expression="#application.dbtype#">
-		<cfcase value="ora,oracle">							
-			<cfquery name="stLocal.q" datasource="#application.dsn#">
-			SELECT	fu.friendlyurl, fu.refobjectid, fu.queryString
-			FROM	#application.dbowner#farFU fu, 
-					#application.dbowner#refObjects r
-			WHERE	r.objectid = u.refobjectid
-					AND fu.fuStatus > 0
-			</cfquery>
-		</cfcase>
-		<cfdefaultcase>
-			<cfquery name="stLocal.q" datasource="#application.dsn#">
-			SELECT	fu.friendlyurl, fu.refobjectid, fu.queryString
-			FROM	#application.dbowner#farFU fu inner join 
-					#application.dbowner#refObjects r on r.objectid = fu.refobjectid
-			WHERE	fu.fuStatus > 0
-			</cfquery>
-		</cfdefaultcase>
-		</cfswitch>
+		<cfquery name="stLocal.q" datasource="#application.dsn#">
+		SELECT	fu.objectid, fu.friendlyurl, fu.refobjectid, fu.queryString
+		FROM	#application.dbowner#farFU fu, 
+				#application.dbowner#refObjects r
+		WHERE	r.objectid = fu.refobjectid
+		AND fu.bDefault = 1
+		</cfquery>
 		
 		<!--- load mappings to application scope --->
 		<cfloop query="stLocal.q">
 			<!--- fu mappings --->
 			<cfset variables.stMappings[stLocal.q.friendlyURL] = StructNew() />
+			<cfset variables.stMappings[stLocal.q.friendlyURL].objectid = stLocal.q.objectid />
 			<cfset variables.stMappings[stLocal.q.friendlyURL].refobjectid = stLocal.q.refObjectID />
 			<cfset variables.stMappings[stLocal.q.friendlyURL].queryString = stLocal.q.queryString />
 			<!--- fu lookup --->
@@ -429,18 +436,43 @@
 		<cfset var oFU = createObject("component","#application.packagepath#.farcry.fu") />
 		<cfset var stFU = structNew() />
 		<cfset var stURL = structNew() />	
+		<cfset var stLocal = structNew() />
 		
 		<cfif structKeyExists(url, "furl") AND len(url.furl) AND url.furl NEQ "/">
 					
 			<cfset stFU = getFUData(url.furl) />
 
-			<cfif stFU.bSuccess>
-			
+			<cfif not structIsEmpty(stFU)>
+				
+				<cfset request.fc.objectid = stFU.refobjectid>
+				<cfloop index="iQstr" list="#stFU.queryString#" delimiters="&">
+					<cfset url["#listFirst(iQstr,'=')#"] = listLast(iQstr,"=")>
+				</cfloop>
+
 				<!--- check if this friendly url is a retired link.: if not then show page --->
-				<cfif stFU.redirectFUURL NEQ "">
-					<cfheader statuscode="301" statustext="Moved permanently">
-					<cfheader name="Location" value="#stFU.redirectFUURL#">
-					<cfabort>
+				<cfif stFU.redirectionType NEQ "none">
+					<cfif stFU.redirectTo EQ "default">
+						<cfset stLocal.stDefaultFU = getDefaultFUObject(refObjectID="#stFU.refObjectID#") />
+						<cfif not structIsEmpty(stLocal.stDefaultFU) AND stLocal.stDefaultFU.objectid NEQ stFU.objectid>
+							<cfset stLocal.redirectURL = "#application.url.webroot##stLocal.stDefaultFU.friendlyURL#?#stLocal.stDefaultFU.queryString#" />
+							<cfloop collection="#url#" item="i">
+								<cfif i NEQ "furl">
+									<cfset stLocal.redirectURL = "#stLocal.redirectURL#&#i#=#url[i]#" />
+								</cfif>
+							</cfloop>
+							<cflocation url="#stLocal.redirectURL#" addtoken="false" statusCode="#stFU.redirectionType#" />
+						</cfif>
+					<cfelse>
+						<cfset stLocal.redirectURL = "#application.url.webroot#/index.cfm?objectid=#stFU.refObjectID#" />
+						<cfoutput><p>#stLocal.redirectURL#</p></cfoutput>
+						<cfloop collection="#url#" item="i">
+							<cfif i NEQ "furl">
+								<cfset stLocal.redirectURL = "#stLocal.redirectURL#&#i#=#url[i]#" />
+							</cfif>
+						</cfloop>
+						<cflocation url="#stLocal.redirectURL#" addtoken="false" statusCode="#stFU.redirectionType#" />
+					</cfif>
+
 				<cfelse>
 					<cfset request.fc.objectid = stFU.refobjectid>
 					<cfloop index="iQstr" list="#stFU.queryString#" delimiters="&">
@@ -491,80 +523,32 @@
 	
 	
 	
-	<cffunction name="getFUData" access="public" returntype="struct" hint="Returns a structure of internal data based on the FU passed in." output="false">
+	<cffunction name="getFUData" access="public" returntype="struct" hint="Returns the farFU object based on the FU passed in." output="false">
 		<cfargument name="friendlyURL" type="string" required="Yes">
 		<cfargument name="dsn" required="no" default="#application.dsn#"> 
 
-		<cfset var stReturn = StructNew()>
+		<cfset var stReturnFU = StructNew()>
 		<cfset var stLocal = StructNew()>
-		<cfset stReturn.bSuccess = 1>
-		<cfset stReturn.message = "">
-		<cfset stReturn.refObject = "">
-		<cfset stReturn.queryString = "">
-		<cfset stReturn.redirectFUURL = "">
 		
 
-		<!--- correct internal var for presence/absence of trailing slash in URL --->
-		<cfif Right(arguments.friendlyURL,1) EQ "/">
-			<cfset stLocal.strFriendlyURL_WSlash = arguments.friendlyURL>
-			<cfset stLocal.strFriendlyURL = Left(arguments.friendlyURL,Len(arguments.friendlyURL)-1)>
-		<cfelse>
-			<cfset stLocal.strFriendlyURL_WSlash = arguments.friendlyURL & "/">
-			<cfset stLocal.strFriendlyURL = arguments.friendlyURL>
-		</cfif>
-
 		<!--- check if the FU exists in the applictaion scope [currently active] --->
-		<cfif StructKeyExists(variables.stMappings,stLocal.strFriendlyURL)>
-			<cfset stReturn.refObjectID = variables.stMappings[stLocal.strFriendlyURL].refObjectID>
-			<cfset stReturn.queryString = variables.stMappings[stLocal.strFriendlyURL].queryString>
-		<cfelseif StructKeyExists(variables.stMappings,stLocal.strFriendlyURL_WSlash)>
-			<cfset stReturn.refObjectID = variables.stMappings[stLocal.strFriendlyURL_WSlash].refObjectID>
-			<cfset stReturn.queryString = variables.stMappings[stLocal.strFriendlyURL_WSlash].queryString>
-		<cfelse> <!--- check in database [retired] .: redirect --->
+		<cfif StructKeyExists(variables.stMappings,arguments.friendlyURL)>
+			<cfset stReturnFU = getData(objectid="#variables.stMappings[arguments.friendlyURL].objectid#") />
+		<cfelse> 
 			<cfquery datasource="#arguments.dsn#" name="stLocal.qGet">
-			SELECT	fu.refobjectid
+			SELECT	fu.objectid
 			FROM	#application.dbowner#farFU fu, 
 					#application.dbowner#refObjects r
-			WHERE	 r.objectid = fu.refobjectid
-					AND 
-						(fu.friendlyURL = <cfqueryparam value="#stLocal.strFriendlyURL#" cfsqltype="cf_sql_varchar">
-						OR 	fu.friendlyURL = <cfqueryparam value="#stLocal.strFriendlyURL_WSlash#" cfsqltype="cf_sql_varchar">)
-			ORDER BY fu.fuStatus DESC
+			WHERE	r.objectid = fu.refobjectid
+			AND fu.friendlyURL = <cfqueryparam value="#arguments.friendlyURL#" cfsqltype="cf_sql_varchar">
 			</cfquery>
 			
 			<cfif stLocal.qGet.recordCount>
-				<!--- get the new friendly url for the retired friendly url --->
-				<cfquery datasource="#application.dsn#" name="stLocal.qGetRedirectFU">
-				SELECT	fu.refobjectid, fu.friendlyURL, fu.queryString, fu.fuStatus
-				FROM	#application.dbowner#farFu fu, 
-					    #application.dbowner#refObjects r 
-				WHERE	r.objectid = fu.refobjectid
-						AND fu.refobjectid = <cfqueryparam value="#stLocal.qGet.refobjectid#" cfsqltype="cf_sql_varchar">
-				ORDER BY fu.fuStatus DESC
-				</cfquery>
-				
-				<cfif stLocal.qGetRedirectFU.recordCount>
-					<cfif stLocal.qGetRedirectFU.fuStatus EQ 1 OR stLocal.qGetRedirectFU.fuStatus EQ 2>
-						<cfset stReturn.refObjectID = stLocal.qGetRedirectFU.refObjectID>
-						<cfset stReturn.queryString = stLocal.qGetRedirectFU.queryString>
-						<!--- add to applicatiuon scope --->
-						<cfset variables.stMappings[stLocal.qGetRedirectFU.friendlyURL] = StructNew()>
-						<cfset variables.stMappings[stLocal.qGetRedirectFU.friendlyURL].refObjectID = stLocal.qGetRedirectFU.refObjectID>
-						<cfset variables.stMappings[stLocal.qGetRedirectFU.friendlyURL].queryString = stLocal.qGetRedirectFU.queryString>
-					<cfelse>
-						<cfset stReturn.redirectFUURL = "http://" & cgi.server_name & stLocal.qGetRedirectFU.friendlyURL>
-					</cfif>
-				<cfelse>
-					<cfset stReturn.bSuccess = 0>
-					<cfset stReturn.message = "Sorry your requested page could not be found.">
-				</cfif>
-			<cfelse>
-				<cfset stReturn.bSuccess = 0>
-				<cfset stReturn.message = "Sorry your requested page could not be found.">
+				<cfset stReturnFU = getData(objectid="#stLocal.qGet.objectid#") />
 			</cfif>
 		</cfif>
 
-		<cfreturn stReturn>
+		<cfreturn stReturnFU>
 	</cffunction>
 	
 
@@ -577,45 +561,32 @@
 		<cfset stLocal.returnstruct.bSuccess = 1>
 		<cfset stLocal.returnstruct.message = "">
 
-		<cftry>
 		<cfquery name="stLocal.qList" datasource="#application.dsn#">
 		SELECT	objectid, label
 		FROM	#application.dbowner##arguments.typeName#
 		WHERE	label != '(incomplete)'
 		</cfquery>
-		<cfcatch type="database">
-			<cfoutput>
-					SELECT	objectid, label
-		FROM	#application.dbowner##arguments.typeName#
-		WHERE	label != '(incomplete)'
-			</cfoutput>
-			<cfabort showerror="debugging" />
-		</cfcatch>
-		</cftry>
+
 		<!--- clean out any friendly url for objects that have been deleted --->
-		<cfquery name="stLocal.qDelete" datasource="#application.dsn#">
+		<!--- <cfquery name="stLocal.qDelete" datasource="#application.dsn#">
 		DELETE
 		FROM	#application.dbowner#farFU
 		WHERE	refobjectid NOT IN (SELECT objectid FROM #application.dbowner#refObjects)
 		</cfquery>
-
+ --->
 		<!--- delete old friendly url for this type --->
-		<cfquery name="stLocal.qDelete" datasource="#application.dsn#">
+		<!--- <cfquery name="stLocal.qDelete" datasource="#application.dsn#">
 		DELETE
 		FROM	#application.dbowner#farFU
 		WHERE	refobjectid IN (SELECT objectid FROM #application.dbowner##arguments.typeName#)
-		</cfquery>
+		</cfquery> --->
 		
 		<cfset stLocal.iCounterUnsuccess = 0>
-		<cftry>
-			<cfloop query="stLocal.qList">
-				<cfset stlocal.stInstance = getData(objectid=stLocal.qList.objectid,bShallow=true)>
-				<cfset setFriendlyURL(stlocal.stInstance.objectid)>
-			</cfloop>
-			<cfcatch>
-				<cfset stLocal.iCounterUnsuccess = stLocal.iCounterUnsuccess + 1>
-			</cfcatch>
-		</cftry>
+
+		<cfloop query="stLocal.qList">
+			<cfset setSystemFU(objectid="#stLocal.qList.objectid#", typename="#arguments.typeName#") />
+		</cfloop>
+
 		<cfset stLocal.iCounterSuccess = stLocal.qList.recordcount - stLocal.iCounterUnsuccess>
 		<cfset stLocal.returnstruct.message = "#stLocal.iCounterSuccess# #arguments.typeName# rebuilt successfully.<br />">
  		<cfreturn stLocal.returnstruct>
@@ -1000,17 +971,14 @@
 				<cfelse>
 				<!--- <cftrace inline="true" text="fu db lookup!"> --->
 					<!--- get friendly url based on the objectid --->
-					<cfquery datasource="#application.dsn#" name="qGet">
-					SELECT	friendlyURL, refobjectid, queryString
-					FROM	#application.dbowner#farFu u, 
-							#application.dbowner#refObjects r 
-					WHERE r.objectid = u.refobjectid
-						AND u.refobjectid = <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
-						AND u.fuStatus > 0
-					</cfquery>
 					
-					<cfif qGet.recordCount>
-						<cfset returnURL = "#qGet.friendlyURL#">
+					<cfset stFUObject = getDefaultFUObject(refObjectID="#arguments.objectid#") />
+					<cfif structIsEmpty(stFUObject)>
+						<cfset stFUObject = getSystemObject(refObjectID="#arguments.objectid#") />
+					</cfif>
+					
+					<cfif NOT structIsEmpty(stFUObject)>
+						<cfset returnURL = "#stFUObject.friendlyURL#">
 					</cfif>
 				</cfif>
 				

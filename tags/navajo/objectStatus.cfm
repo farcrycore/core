@@ -185,7 +185,7 @@ $out:$
 				</cfif>
 				
 				<!--- set friendly url --->
-				<cfset stresult_friendly = application.fc.factory.farFU.setFriendlyURL(objectid=fuoid)>
+				<cfset stresult_friendly = application.fc.factory.farFU.setSystemFU(objectid=fuoid)>
 
 			<cfelseif url.status eq "draft">
 				<cfset status = 'draft'>
