@@ -127,7 +127,7 @@
 		xtype:"panel",
 		region:"center",
 		html:"<div class='traytext'><a href='#application.url.webtop#/' class='webtoplink' title='Webtop' target='_top'><img class='traytypeicon' src='#application.url.webtop#/facade/icon.cfm?icon=#stObj.typename#&size=16' alt='#stObj.typename#' /></a>#jsstringformat(arraytolist(aItems,'<span class=''separator''>|</span>'))#</div>",
-		cls:"htmlpanel"
+		cls:"htmlpanel detailview"
 	}<cfif arraylen(aActions)>,{
 		xtype:"toolbar",
 		region:"east",

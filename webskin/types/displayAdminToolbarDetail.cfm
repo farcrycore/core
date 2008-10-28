@@ -11,21 +11,13 @@
 
 
 <!--- DATA --->
-<skin:htmlHead><cfoutput>
-	<style>
-		##farcrytray dt { margin-top: 2px; float:left; clear: left; width:120px; }
-		##farcrytray .typename { font-size:113%; font-weight:bold; }
-		##farcrytray .label { font-weight:bold; }
-		##farcrytray .value {}
-	</style>
-</cfoutput></skin:htmlHead>
 <cfsavecontent variable="dataconfig"><cfoutput>
 	{
 		xtype:"panel",
 		region:"center",
 		layout:"table",
 		border:"none",
-		cls:"htmlpanel",
+		cls:"htmlpanel detailview",
 		layoutConfig:{
 			columns:2
 		},

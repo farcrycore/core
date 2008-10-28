@@ -14,13 +14,17 @@
 	<cfset trayurl = "#application.url.webroot#/index.cfm?objectid=#application.navid.home#&view=displayAdminToolbar" />
 </cfif>
 
+<cfif not session.dmProfile.bShowTray>
+	<cflocation url="#thisurl#" addtoken="false" />
+</cfif>
+
 <skin:htmlHead library="ExtJS" />
 <extjs:iframeDialog />
 <skin:htmlHead><cfoutput>
 	<script type="text/javascript">
 		var traystate = "summary";
 		
-		function updateTray(newtray,title) {
+		function updateTray(newtray,title,key) {
 			// update the tray
 			frames['farcry_tray'].location.href = newtray+(newtray.indexOf("?")?"&":"?")+"&tray="+traystate;
 			document.title = 'Administration View - '+title;
