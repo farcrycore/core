@@ -572,7 +572,6 @@
 	<cffunction name="rebuildFU" access="public" returntype="struct" hint="rebuilds friendly urls for a particular type" output="true">
 
 		<cfargument name="typeName" required="true" type="string">
-		
 		<cfset var stLocal = structnew()>
 		<cfset stLocal.returnstruct = StructNew()>
 		<cfset stLocal.returnstruct.bSuccess = 1>
