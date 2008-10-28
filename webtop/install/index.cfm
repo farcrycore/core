@@ -314,12 +314,14 @@ RENDER THE CURRENT STEP
   	<div class="item">
       	<label for="DBType">Database Type <em>*</em></label>
 		<div class="field">
+			<!--- TODO: should the database name/key be in a conifg file or something? --->
 	      	<select name="DBType" id="DBType" class="selectOne">
 		        <option value="">-- Select --</option>
 		        <option value="mssql" <cfif session.stFarcryInstall.stConfig.dbType EQ "mssql"> selected="selected"</cfif>>Microsoft SQL Server</option>
 		        <option value="ora" <cfif session.stFarcryInstall.stConfig.dbType EQ "ora"> selected="selected"</cfif>>Oracle</option>
 		        <option value="mysql" <cfif session.stFarcryInstall.stConfig.dbType EQ "mysql"> selected="selected"</cfif>>MySQL</option>
 		        <option value="postgresql" <cfif session.stFarcryInstall.stConfig.dbType EQ "postgresql"> selected="selected"</cfif>>PostgreSQL</option>
+				<!--- <option value="HSQLDB" <cfif session.stFarcryInstall.stConfig.dbType EQ "HSQLDB"> selected="selected"</cfif>>HSQLDB</option> --->
 			</select>
 			<div class="fieldHint">Funnily enough, your choice of database type must reflect the database your datasource is pointing to.</div>
 		</div>
@@ -360,7 +362,8 @@ RENDER THE CURRENT STEP
 		function checkDBType() {
 			
 			
-			if(this.dom.value == "postgresql" || this.dom.value == "mysql" || this.dom.value == "")
+			//if(this.dom.value == "postgresql" || this.dom.value == "mysql" || this.dom.value == "")
+			if(this.dom.value != "ora" && this.dom.value != "mssql")
 			{
 				var DBOwner = Ext.get('DBOwner');
 				DBOwner.dom.value = '';		

@@ -65,7 +65,6 @@
 		
 
 		<cftry>
-		
 			<!--- run any query to see if the DSN is valid --->
 			<cfquery name="qCheckDSN" datasource="#arguments.DSN#">
 				SELECT 'patrick' AS theMAN
@@ -73,22 +72,30 @@
 			
 			<cfcatch type="database">
 				<cftry>						
-					<!--- 
-					First check for oracle will fail. This is the oracle check.
+					<!--- First check for oracle will fail. This is the oracle check.
 					Run any query to see if the DSN is valid --->
 					<cfquery name="qCheckDSN" datasource="#arguments.DSN#">
 						SELECT 'patrick' AS theMAN from dual
 					</cfquery>
 					
 					<cfcatch type="database">
-						<cfset stResult.bSuccess = false />
-						<cfset stResult.errorTitle = "Invalid Datasource (DSN)" />
-						<cfsavecontent variable="stResult.errorDescription">
-							<cfoutput>
-							<p>Your DSN (#arguments.DSN#) is invalid.</p>
-							<p>Please check it is setup and verifies within the ColdFusion Administrator.</p>
-							</cfoutput>			
-						</cfsavecontent>
+						<cftry>
+							<!--- Both checks for HSQLDB will fail. see if this might an HSQLDB --->
+							<cfquery name="qCheckDSN" datasource="#arguments.DSN#">
+								SET READONLY FALSE;
+							</cfquery>
+							
+							<cfcatch type="database">
+								<cfset stResult.bSuccess = false />
+								<cfset stResult.errorTitle = "Invalid Datasource (DSN)" />
+								<cfsavecontent variable="stResult.errorDescription">
+									<cfoutput>
+									<p>Your DSN (#arguments.DSN#) is invalid.</p>
+									<p>Please check it is setup and verifies within the ColdFusion Administrator.</p>
+									</cfoutput>
+								</cfsavecontent>
+							</cfcatch>
+						</cftry>
 					</cfcatch>
 					
 				</cftry>
@@ -196,9 +203,14 @@
 			</cfcase>
 			<cfcase value="Postgres">
 				<cfset databaseTypeName = "Postgres" />						
-				<!--- TODO: perform test to validate dbtype is postgres --->
-									
+				<!--- TODO: perform test to validate dbtype is postgres --->									
 			</cfcase>
+			
+			<cfcase value="HSQLDB">
+				<cfset databaseTypeName = "HSQLDB" />
+				<!--- TODO: perform test to validate dbtype is HSQLDB --->									
+			</cfcase>
+			
 			</cfswitch>
 			
 			<cfcatch type="database">

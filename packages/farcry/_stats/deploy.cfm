@@ -68,6 +68,14 @@ $out: stStatus			: struct to pass status report back to caller $
 			drop table #application.dbowner#statsHours
 		</cfquery>
 	</cfcase>
+	
+	<!--- TODO: Move to gateway? --->
+	<cfcase value="HSQLDB">
+		<cfquery datasource="#arguments.dsn#" name="qDropTemp">
+			DROP TABLE statsHours IF EXISTS;
+		</cfquery>
+	</cfcase>
+	
 	<cfdefaultcase>
 		<cfquery datasource="#arguments.dsn#" name="qDropTemp">
 			drop table #application.dbowner#statsHours
@@ -303,6 +311,91 @@ $out: stStatus			: struct to pass status report back to caller $
 			</cfcatch>
 		</cftry>
 	</cfcase>
+	
+	
+	<!--- TODO: move to gateway? --->
+	<cfcase value="HSQLDB">
+		<cfquery datasource="#arguments.dsn#" name="qCreateTemp">
+			DROP TABLE #application.dbowner#statsHours IF EXISTS;
+		</cfquery>
+
+		<cfquery datasource="#arguments.dsn#" name="qCreateTemp">
+			CREATE TABLE statsHours(HOUR INTEGER NOT NULL PRIMARY KEY)
+		</cfquery>
+
+		<!--- populate table --->
+		<cfloop index="vHour" from="0" to="23">
+			<cfscript>
+				sql = "";
+				sql = sql & "INSERT INTO statsHours (hour) VALUES (" & vhour & ")";
+			</cfscript>
+			<cfquery datasource="#arguments.dsn#" name="qPopulateTemp">
+				#sql#
+			</cfquery>
+		</cfloop>
+
+		<!--- make a dummy tblexists --->
+		<cftry>
+			<cfparam name="qCheck.tblExists" default="0">
+
+			<cfquery datasource="#arguments.dsn#" name="qCheck">
+				SELECT count(*) AS tblexists FROM stats
+			</cfquery>
+
+			<cfcatch>
+				<cflog text="#cfcatch.message# #cfcatch.detail# [SQL: #cfcatch.sql#]" file="coapi" type="warning" application="yes">
+			</cfcatch>
+		</cftry>
+
+		<!--- create the stats days table and populate it--->
+		<cfquery datasource="#arguments.dsn#" name="qDrop">
+			DROP TABLE statsDays IF EXISTS
+		</cfquery>
+
+		<cftry>
+			<cfquery datasource="#arguments.dsn#" name="qCreate">
+				CREATE TABLE statsDays (Day int NOT NULL, Name varchar(10) NOT NULL)
+			</cfquery>
+
+			<cfquery datasource="#arguments.dsn#" name="qPop">
+				INSERT INTO statsDays (day,name) VALUES (1,'Sunday')
+			</cfquery>
+
+			<cfquery datasource="#arguments.dsn#" name="qPop">
+				INSERT INTO statsDays (day,name) VALUES (2,'Monday')
+			</cfquery>
+
+			<cfquery datasource="#arguments.dsn#" name="qPop">
+				INSERT INTO statsDays (day,name) VALUES (3,'Tuesday')
+			</cfquery>
+
+			<cfquery datasource="#arguments.dsn#" name="qPop">
+				INSERT INTO statsDays (day,name) VALUES (4,'Wednesday')
+			</cfquery>
+
+			<cfquery datasource="#arguments.dsn#" name="qPop">
+				INSERT INTO statsDays (day,name) VALUES (5,'Thursday')
+			</cfquery>
+
+			<cfquery datasource="#arguments.dsn#" name="qPop">
+				INSERT INTO statsDays (day,name) VALUES (6,'Friday')
+			</cfquery>
+
+			<cfquery datasource="#arguments.dsn#" name="qPop">
+				INSERT INTO statsDays (day,name) VALUES (7,'Saturday')
+			</cfquery>
+
+			<cfcatch>
+				<cflog text="#cfcatch.message# #cfcatch.detail# [SQL: #cfcatch.sql#]" file="coapi" type="error" application="yes">
+			</cfcatch>
+		</cftry>
+	</cfcase>
+	
+	
+	
+	
+	
+	
 	<cfdefaultcase>
 		<cfquery datasource="#arguments.dsn#" name="qCreateTemp">
 			create table #application.dbowner#statsHours (hour tinyint identity(0,1))
@@ -466,6 +559,41 @@ OS VARCHAR(50) NOT NULL)
 
 		</cfcase>
 
+		<!--- TODO: move to gateway? --->
+		<cfcase value="HSQLDB">
+			<cfquery datasource="#arguments.dsn#" name="qDrop">
+				DROP TABLE stats IF EXISTS
+			</cfquery>
+
+			<!--- create the stats --->
+			<cfscript>
+				sql = "CREATE TABLE stats (
+LOGID VARCHAR(50) NOT NULL PRIMARY KEY,
+PAGEID VARCHAR(50) NOT NULL ,
+NAVID VARCHAR(50) NOT NULL ,
+USERID VARCHAR(50) NOT NULL ,
+REMOTEIP VARCHAR(50) NOT NULL,
+LOGDATETIME timestamp NOT NULL,
+SESSIONID VARCHAR(100) NOT NULL,
+BROWSER VARCHAR(100) NOT NULL,
+REFERER LONGVARCHAR,
+LOCALE VARCHAR(100) NOT NULL,
+OS VARCHAR(50) NOT NULL)";
+
+			</cfscript>
+
+			<cfquery datasource="#arguments.dsn#" name="qCreate">
+				#sql#
+			</cfquery>
+			<cfscript>
+				sql = "CREATE INDEX IDX_STATS ON stats(pageid,logdatetime)";
+			</cfscript>
+			<cfquery datasource="#arguments.dsn#" name="qCreate">
+				#sql#
+			</cfquery>
+		</cfcase>
+
+
 		<cfdefaultcase>
 
 			<cfquery datasource="#arguments.dsn#" name="qDrop">
@@ -537,6 +665,16 @@ OS VARCHAR(50) NOT NULL)
 				create table #application.dbowner#statsCountries (
 					COUNTRY VARCHAR(255) NOT NULL,
 					ISOCODE CHAR (2) NOT NULL
+				)
+			</cfquery>
+		</cfcase>
+		
+		<!--- TODO: move to gatway --->
+		<cfcase value="HSQLDB">
+			<cfquery name="update" datasource="#application.dsn#">
+				create table statsCountries (
+					COUNTRY VARCHAR(255) NOT NULL,
+					ISOCODE CHAR(2) NOT NULL
 				)
 			</cfquery>
 		</cfcase>
@@ -709,7 +847,7 @@ OS VARCHAR(50) NOT NULL)
 		insert into statsCountries (country,isoCode) values ('COSTA RICA','CR')
 	</cfquery>
 	<cfquery name="update" datasource="#application.dsn#">
-		insert into statsCountries (country,isoCode) values ('CÔTE D''IVOIRE','CI')
+		insert into statsCountries (country,isoCode) values ('Cï¿½TE D''IVOIRE','CI')
 	</cfquery>
 	<cfquery name="update" datasource="#application.dsn#">
 		insert into statsCountries (country,isoCode) values ('CROATIA','HR')
@@ -1075,7 +1213,7 @@ OS VARCHAR(50) NOT NULL)
 		insert into statsCountries (country,isoCode) values ('QATAR','QA')
 	</cfquery>
 	<cfquery name="update" datasource="#application.dsn#">
-		insert into statsCountries (country,isoCode) values ('RÉUNION','RE')
+		insert into statsCountries (country,isoCode) values ('Rï¿½UNION','RE')
 	</cfquery>
 	<cfquery name="update" datasource="#application.dsn#">
 		insert into statsCountries (country,isoCode) values ('ROMANIA','RO')
@@ -1381,6 +1519,38 @@ LOCALE VARCHAR(100) NOT NULL)
 		</cfquery>
 
 	</cfcase>
+	
+	
+	<cfcase value="HSQLDB">
+		<cfquery datasource="#arguments.dsn#" name="qDrop">
+			DROP TABLE statsSearch IF EXISTS;
+		</cfquery>
+
+		<!--- create the stats --->
+		<cfscript>
+			sql = "CREATE TABLE statsSearch (
+LOGID VARCHAR(50) NOT NULL PRIMARY KEY,
+SEARCHSTRING VARCHAR(255) NOT NULL ,
+LCOLLECTIONS LONGVARCHAR,
+RESULTS INT NOT NULL,
+REMOTEIP VARCHAR(50) NOT NULL,
+LOGDATETIME TIMESTAMP NOT NULL,
+REFERER LONGVARCHAR,
+LOCALE VARCHAR(100) NOT NULL)
+";
+		</cfscript>
+
+		<cfquery datasource="#arguments.dsn#" name="qCreate">
+			#sql#
+		</cfquery>
+		<cfscript>
+			sql = "CREATE INDEX IDX_STATSSEARCH ON statsSearch(searchString,logdatetime)";
+		</cfscript>
+		<cfquery datasource="#arguments.dsn#" name="qCreate">
+			#sql#
+		</cfquery>
+	</cfcase>
+	
 
 	<cfdefaultcase>
 

@@ -70,7 +70,12 @@
 						<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
 							<!--- Check to make sure property is to be saved in the db. --->
 							<cfif not structKeyExists(application, "stcoapi") OR  not structKeyExists(application.stCoapi, tablename) OR not structKeyExists(application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA,"BSAVE") OR application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA.bSave>
-							  , #sqlArray[i].column#	
+								<!--- TODO: hsqldb hack - this will likely break other db engines --->
+								<cfif sqlArray[i].column eq "position">
+								  , "#sqlArray[i].column#"
+								<cfelse>
+								  , #sqlArray[i].column#	
+							  	</cfif>
 							</cfif>
 						</cfloop>
 					)
@@ -80,7 +85,8 @@
 						<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
 							<!--- Check to make sure property is to be saved in the db. --->
 							<cfif not structKeyExists(application, "stcoapi") OR  not structKeyExists(application.stCoapi, tablename) OR not structKeyExists(application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA,"BSAVE") OR application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA.bSave>
-							  <!--- temp fix for mySQL, looks as though the datatype decimal and bind type float don't live peacefully together :( --->
+							  <!--- temp fix for mySQL, looks as though the datatype decimal and bind type 
+							  	float don't live peacefully together :( --->
 							  <cfif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype NEQ "CF_SQL_FLOAT">
 							    , <cfqueryparam cfsqltype="#sqlArray[i].cfsqltype#" value="#sqlArray[i].value#" />
 							  <cfelseif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype EQ "CF_SQL_FLOAT">
@@ -340,6 +346,32 @@
 			WHERE p.parentID = '#arguments.objectid#'
 			</cfquery> 
 		</cfcase>
+		
+		<!--- TODO: Gateway? --->
+		<cfcase value="HSQLDB">
+			
+			<cfquery name="qArrayData" datasource="#arguments.dsn#">
+				SELECT data as arrayobjid
+				FROM #tablename#
+				WHERE parentID = '#arguments.objectid#'
+			</cfquery>
+			
+			<cfloop query="qArrayData">
+				<cfquery name="qTypename" datasource="#arguments.dsn#">
+					SELECT typename
+					FROM refobjects
+					WHERE objectID = '#qarraydata.arrayobjid#'
+				</cfquery>
+				
+				<cfquery name="update" datasource="#arguments.dsn#">
+					UPDATE #variables.dbowner##tablename#
+					SET typename = '#qtypename.typename#'
+					WHERE data = '#qarraydata.arrayobjid#'
+				</cfquery>
+			</cfloop>
+		</cfcase>
+		
+		
 		<cfcase value="postgresql">
 			
 			<cfquery name="qArrayData" datasource="#arguments.dsn#">

@@ -28,6 +28,11 @@
 		<cfcase value="ora">
 			<cfset dbutils=createobject("component", "oracle").init(arguments.dsn) />
 		</cfcase>
+		
+		<!--- TODO: shouldn't this be in gateway too? --->
+		<cfcase value="HSQLDB">
+			<cfset dbutils=createobject("component", "hsqldb").init(arguments.dsn) />
+		</cfcase>
 
 		<cfdefaultcase>
 			<cfthrow detail="Not yet implemented for #arguments.dbtype#" />

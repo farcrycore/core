@@ -32,6 +32,10 @@
 		<cfcase value="ora, oracle">
 			<cfset streturn = createTableOracle(argumentcollection=arguments) />
 		</cfcase>
+		
+		<cfcase value="HSQLDB">
+			<cfset streturn = createTableOracle(argumentcollection=arguments) />
+		</cfcase>
 
 		<cfdefaultcase>
 			<cfthrow detail="Create sample: #variables.dbtype# not yet implemented.">
@@ -40,6 +44,16 @@
 	
 	<cfreturn streturn />
 </cffunction>
+
+
+<cffunction name="createTableHSQLDB" access="public" output="false" returntype="struct" hint="Create table; MSSQL.">
+	<cfargument name="bDropTable" default="true" type="boolean" hint="Flag to drop table before creating." />
+	<cfset var stReturn = structNew() />
+	
+
+	<cfreturn stReturn />
+</cffunction>
+
 
 <cffunction name="createTablePostgresql" access="public" output="false" returntype="struct" hint="Create table; postgresql.">
 	<cfargument name="bDropTable" default="true" type="boolean" hint="Flag to drop table before creating." />

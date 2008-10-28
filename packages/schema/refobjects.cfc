@@ -37,12 +37,37 @@
 			<cfset streturn = createTableOracle(argumentcollection=arguments) />
 		</cfcase>
 
+		<cfcase value="HSQLDB">
+			<cfset streturn = createTableHSQLDB(argumentcollection=arguments) />
+		</cfcase>
+
 		<cfdefaultcase>
 			<cfthrow detail="Create sample: #variables.dbtype# not yet implemented.">
 		</cfdefaultcase>
 	</cfswitch>
 	
 	<cfreturn streturn />
+</cffunction>
+
+<!--- --->
+<cffunction name="createTableHSQLDB" access="public" output="false" returntype="struct" hint="Create table; HSQLDB.">
+	<cfargument name="bDropTable" default="true" type="boolean" hint="Flag to drop table before creating." />
+	<cfset var stReturn = structNew() />
+	
+	<cfif arguments.bDropTable>
+		<cfquery datasource="#variables.dsn#">
+		      DROP TABLE refObjects IF EXISTS;
+		</cfquery>
+	</cfif>
+	
+	<cfquery datasource="#application.dsn#">
+		CREATE TABLE refObjects (
+			objectid VARCHAR(50) NOT NULL PRIMARY KEY,
+			typename VARCHAR(50) NOT NULL
+		);
+	</cfquery>
+
+	<cfreturn stReturn />
 </cffunction>
 
 <cffunction name="createTablePostgresql" access="public" output="false" returntype="struct" hint="Create table; postgresql.">

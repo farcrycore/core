@@ -393,6 +393,20 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 					) 
 				</cfquery>	 
 			</cfcase>
+			
+			<!--- TODO: this should be in gateway or something --->
+			<cfcase value="HSQLDB">
+				<cfquery datasource="#arguments.dsn#">
+					DROP TABLE refContainers IF EXISTS
+				</cfquery>
+				<cfquery datasource="#arguments.dsn#">
+					CREATE TABLE refContainers (
+						objectid VARCHAR(50) NOT NULL, 
+						containerid VARCHAR(50) NOT NULL 
+					) 
+				</cfquery>	 
+			</cfcase>
+			
 			<cfdefaultcase>
 				<cfquery name="qCreateTables" datasource="#arguments.dsn#">
 				if exists (select * from sysobjects where id = object_id(N'#application.dbowner#refContainers') and OBJECTPROPERTY(id, N'IsUserTable') = 1)

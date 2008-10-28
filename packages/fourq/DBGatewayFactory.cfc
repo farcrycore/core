@@ -33,6 +33,14 @@
 			<cfcase value="PostgreSQL">
 				<cfset connection = createObject('component','farcry.core.packages.fourq.gateway.PostgreSQLGateway').init(arguments.dsn,arguments.dbowner) />
 			</cfcase>
+			
+			<cfcase value="HSQLDB">
+				<cfset connection = createObject(
+					'component',
+					'farcry.core.packages.fourq.gateway.HSQLDBGateway'
+				).init(arguments.dsn,arguments.dbowner) />
+			</cfcase>
+			
 			<cfdefaultcase>
 				<cfset connection = createobject('component','farcry.core.packages.fourq.gateway.MSSQLGateway').init(arguments.dsn,arguments.dbowner) />
 				<cftrace type="warning" inline="false" text="DBGatewayFactory creating farcry.core.packages.fourq.gateway.MSSQLGateway connection because no recognized connection type was specified in argument 'dbtype' to method getGateway(). Connection type passed was <b>#arguments.dbtype#</b>">

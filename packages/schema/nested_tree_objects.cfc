@@ -36,6 +36,10 @@
 			<cfset streturn = createTableOracle(argumentcollection=arguments) />
 		</cfcase>
 
+		<cfcase value="HSQLDB">
+			<cfset streturn = createTableHSQLDB(argumentcollection=arguments) />
+		</cfcase>
+
 		<cfdefaultcase>
 			<cfthrow detail="Create nested_tree_objects: #variables.dbtype# not yet implemented.">
 		</cfdefaultcase>
@@ -43,6 +47,38 @@
 	
 	<cfreturn streturn />
 </cffunction>
+
+<!--- ? --->
+<cffunction name="createTableHSQLDB" access="public" output="false" returntype="struct" hint="Create table; HSQLDB.">
+	<cfargument name="bDropTable" default="true" type="boolean" hint="Flag to drop table before creating." />
+	<cfset var stReturn = structNew() />
+	
+	<cfif arguments.bDropTable>
+		<cfquery name="dropExisting" datasource="#variables.dsn#">
+			DROP TABLE nested_tree_objects IF EXISTS
+		</cfquery>
+	</cfif>
+	
+	<cfquery datasource="#variables.dsn#" name="qCreateTable">
+		CREATE TABLE nested_tree_objects (
+			OBJECTID CHAR(35) not null PRIMARY KEY,
+			PARENTID CHAR(35) null,
+			OBJECTNAME VARCHAR(255) not null,
+			TYPENAME VARCHAR(255) not null,
+			NLEFT INTEGER not null,
+			NRIGHT INTEGER not null,
+			NLEVEL INTEGER not null
+		)
+	</cfquery>
+	
+	<!--- CREATE [UNIQUE] INDEX <index> ON <table> (<column> [DESC] [, ...]) [DESC]; --->
+	<cfquery datasource="#variables.dsn#">
+	 	CREATE INDEX IDX_NTO ON nested_tree_objects (nLeft, nRight)
+	</cfquery>
+
+	<cfreturn stReturn />
+</cffunction>
+
 
 <cffunction name="createTablePostgresql" access="public" output="false" returntype="struct" hint="Create table; postgresql.">
 	<cfargument name="bDropTable" default="true" type="boolean" hint="Flag to drop table before creating." />

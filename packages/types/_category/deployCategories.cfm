@@ -87,6 +87,14 @@ $out: <separate entry for each variable>$
         	DROP TABLE refCategories
 		</cfquery><cfcatch></cfcatch></cftry>
 	</cfcase>
+	
+	<!--- oi... --->
+	<cfcase value="HSQLDB">
+		<cfquery datasource="#arguments.dsn#">
+        	DROP TABLE refCategories IF EXISTS
+		</cfquery>
+	</cfcase>
+	
 	<cfdefaultcase>
 	<cftransaction>
 <!--- 		<cfquery datasource="#arguments.dsn#">
@@ -165,6 +173,18 @@ $out: <separate entry for each variable>$
 		)
 		</cfquery>
 	</cfcase>
+	
+	<!--- TODO: --->
+	<cfcase value="HSQLDB">
+		<cfquery datasource="#arguments.dsn#">
+		CREATE TABLE refCategories (
+			categoryid VARCHAR(50) NOT NULL,
+			objectID VARCHAR(50) NOT NULL
+		)
+		</cfquery>
+	</cfcase>
+	
+	
 	<cfdefaultcase>
 	<cftransaction>
 	<!--- Create category and refCategories Tables --->

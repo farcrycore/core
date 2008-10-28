@@ -39,6 +39,10 @@ audit stuff directly under core. GB 20061022
 		<cfcase value="ora, oracle">
 			<cfset streturn = createTableOracle(argumentcollection=arguments) />
 		</cfcase>
+		
+		<cfcase value="HSQLDB">
+			<cfset streturn = createTableHSQLDB(argumentcollection=arguments) />
+		</cfcase>
 
 		<cfdefaultcase>
 			<cfthrow detail="Create fqaudit: #variables.dbtype# not yet implemented.">
@@ -48,6 +52,35 @@ audit stuff directly under core. GB 20061022
 	<cfset streturn.bsuccess="true" />
 	<cfreturn streturn />
 </cffunction>
+
+<!--- TODO: shouldn't this be in the gateway? --->
+<cffunction name="createTableHSQLDB" access="public" output="false" returntype="struct" hint="Create table; hsqldb.">
+	<cfargument name="bDropTable" default="true" type="boolean" hint="Flag to drop table before creating." />
+	
+	<cfset var stReturn = structNew() />
+	
+	<cfif arguments.bdroptable>
+		<cfquery datasource="#variables.dsn#" name="qDrop">
+			DROP TABLE fqAudit IF EXISTS;
+		</cfquery>
+	</cfif>
+			
+	<!--- create the audit tables --->
+	<cfquery datasource="#variables.dsn#" name="qCreate">
+		CREATE TABLE fqAudit (
+			AUDITID VARCHAR(50) NOT NULL PRIMARY KEY,
+			OBJECTID VARCHAR(50) NULL,
+			DATETIMESTAMP TIMESTAMP NOT NULL,
+			USERNAME VARCHAR(255) NOT NULL ,
+			LOCATION VARCHAR(255) NULL ,
+			AUDITTYPE VARCHAR(50) NOT NULL ,
+			NOTE VARCHAR(255) NULL
+		) 
+	</cfquery>
+
+	<cfreturn stReturn />
+</cffunction>
+
 
 <cffunction name="createTablePostgresql" access="public" output="false" returntype="struct" hint="Create table; postgresql.">
 	<cfargument name="bDropTable" default="true" type="boolean" hint="Flag to drop table before creating." />
