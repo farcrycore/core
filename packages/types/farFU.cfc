@@ -121,14 +121,15 @@
 	</cffunction>
 	
 
-	<cffunction name="getDefaultFU" returnType="struct" access="public" output="false" hint="Returns the default FU objectid for an object. Returns empty string if no default is set.">
+	<cffunction name="getDefaultFUObject" returnType="struct" access="public" output="false" hint="Returns the default FU objectid for an object. Returns empty string if no default is set.">
 		<cfargument name="refObjectID" required="yes" hint="Objectid of the RefObject to retrieve the default" />
 			
 		<cfset var stLocal = structNew() />
 		<cfset stLocal.stResult = structNew() />
 
 		<cfquery datasource="#application.dsn#" name="stLocal.qDefault">
-		SELECT * FROM farFU
+		SELECT objectid 
+		FROM farFU
 		WHERE refObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.refObjectID#" />
 		AND bDefault = 1
 		</cfquery>
@@ -142,18 +143,124 @@
 		
 	</cffunction>
 	
+	<cffunction name="createCustomFU" access="public" returntype="struct" hint="Returns the success state of creating a new Custom FU of an object" output="false">
+		<cfargument name="refObjectID" required="true" type="uuid" hint="Content item objectid.">
+		<cfargument name="friendlyURL" required="true" type="string" hint="The Friendly URL to create" />
+		<cfargument name="queryString" required="false" type="string" default="" hint="The query string that will be parsed and placed in the url scope of the request" />		
+		<cfargument name="fuStatus" required="false" type="numeric" default="2" hint="Status of the Friendly URL" />
+		<cfargument name="redirectionType" required="false" type="string" default="301" hint="Type of Redirection" />
+		<cfargument name="redirectTo" required="false" type="string" default="default" hint="Where to redirect to" />
+		<cfargument name="bDefault" required="false" type="boolean" default="0" hint="Only 1 Friendly URL can be the default that will be used by the system" />
+
+		<cfset var stResult = structNew() />
+		
+		<cfset arguments.friendlyURL = cleanFU(friendlyURL="#arguments.friendlyURL#", bCheckUnique="true") />
+		
+		<cfset stResult = setData(stProperties="#arguments#") />
+		
+		<cfreturn stResult />
+	</cffunction>
+	
+	
+	<cffunction name="cleanFU" access="public" returntype="string" hint="Cleans up the Friendly URL and ensures it is Unique." output="yes" bDocument="true">
+		<cfargument name="friendlyURL" required="yes" type="string" hint="The actual Friendly URL to use">
+		<cfargument name="bCheckUnique" required="false" type="boolean" default="true" hint="Check to see if the Friendly URL has already been taken">
+		
+		<cfset var stLocal = structNew() />
+		<cfset var cleanFU = "">
+		<!--- replace spaces in title --->
+		<cfset cleanFU = replace(arguments.friendlyURL,' ','-',"all")>
+		<!--- replace duplicate dashes with a single dash --->
+		<cfset cleanFU = REReplace(cleanFU,"-+","-","all")>
+		<!--- replace the html entity (&amp;) with and --->
+		<cfset cleanFU = reReplaceNoCase(cleanFU,'&amp;','and',"all")>
+		<!--- remove illegal characters in titles --->
+		<cfset cleanFU = reReplaceNoCase(cleanFU,'[,:\?##ï¿½ï¿½®™]','',"all")>
+		<!--- change & to "and" in title --->
+		<cfset cleanFU = reReplaceNoCase(cleanFU,'[&]','and',"all")>
+		<!--- prepend fu url pattern and add suffix --->
+		<cfset cleanFU = cleanFU>
+		<cfset cleanFU = ReplaceNocase(cleanFU,"//","/","All")>
+		<cfset cleanFU = LCase(cleanFU)>
+		<cfset cleanFU = ReReplaceNoCase(cleanFU,"[^a-z0-9/]"," ","all")>
+		<cfset cleanFU = ReReplaceNoCase(cleanFU,"  "," ","all")>
+		<cfset cleanFU = Trim(cleanFU)>
+		<cfset cleanFU = ReReplaceNoCase(cleanFU," ","-","all")>
+		
+		<cfif left(cleanFU,1) NEQ "/">
+			<cfset cleanFU = "/#cleanFU#" />
+		</cfif>		
+
+		<cfif arguments.bCheckUnique>
+			<cfset stLocal.stFU = getFUData(arguments.friendlyURL) />
+			<cfif stLocal.stFU.bSuccess>
+				<cfquery datasource="#application.dsn#" name="stLocal.qDuplicates">
+				SELECT objectid
+				FROM farFU
+				WHERE friendlyURL LIKE <cfqueryparam value="#arguments.friendlyURL#%" cfsqltype="cf_sql_varchar">
+				</cfquery>
+				<cfset cleanFU = "#cleanFU##stLocal.qDuplicates.recordCount#">
+			</cfif>
+		</cfif>
+		<cfreturn cleanFU />
+	</cffunction>
+	
 	<cffunction name="setSystemFU" access="public" returntype="struct" hint="Returns the success state of setting the System FU of an object" output="false">
 		<cfargument name="objectid" required="true" type="uuid" hint="Content item objectid.">
 		<cfargument name="typename" required="false" default="" type="string" hint="Content item typename if known.">
 		
-		<cfset var stobj = application.coapi.coapiUtilities.getContentObject(objectID="#arguments.objectid#", typename="#arguments.typename#") />
-		<cfset var friendlyURL = getSystemFU(objectID="#stobj.objectid#", typename="#stobj.typename#") />
+		<cfset var stLocal = structNew() />
 		
-		<cfset var stProperties = structNew() />
+		<cfset stLocal.stResult = structNew() />
+		<cfset stLocal.stResult.bSuccess = true />
+		<cfset stLocal.stResult.message = "" />
 		
-		<cfset >
+		<cfset stLocal.stCurrentSystemObject = getSystemObject(refObjectID="#arguments.objectid#") />
+		<cfset stLocal.newFriendlyURL = getSystemFU(objectID="#arguments.objectid#", typename="#arguments.typename#") />
+		
+		<cfif structIsEmpty(stLocal.stCurrentSystemObject)>
+			<!--- No System FU object currently set --->
+			<cfset stLocal.stCurrentSystemObject.objectid = createUUID() />
+			<cfset stLocal.stCurrentSystemObject.refObjectID = stobj.objectid />
+			<cfset stLocal.stCurrentSystemObject.fuStatus = 1 />
+			<cfset stLocal.stCurrentSystemObject.redirectionType = "none" />
+			<cfset stLocal.stCurrentSystemObject.redirectTo = "default" />
+			<cfset stLocal.stCurrentSystemObject.friendlyURL = stLocal.newFriendlyURL />
+			
+			<cfset stLocal.stResult = setData(stProperties="#stLocal.stCurrentSystemObject#") />
+		
+		<cfelseif stLocal.newFriendlyURL NEQ stLocal.stCurrentSystemObject.friendlyURL>
+			<!--- NEED TO ARCHIVE OLD SYSTEM OBJECT AND UPDATE --->
+			<cfset stLocal.stResult = archiveFU(objectid="#stLocal.stCurrentSystemObject.objectid#") />
+			<cfset stLocal.stCurrentSystemObject.friendlyURL = stLocal.newFriendlyURL />
+			<cfset stLocal.stResult = setData(stProperties="#stLocal.stCurrentSystemObject#") />
+		</cfif>
+		
+			
+		<cfreturn stLocal.stResult />
 	</cffunction>
 
+	<cffunction name="getSystemObject" access="public" returntype="struct" hint="Returns the current system fu object for a given refobjectid" output="false">
+		<cfargument name="refObjectID" required="true" type="uuid" hint="Content item objectid.">
+		
+		<cfset var stLocal = structNew() />
+		
+		<cfset stLocal.stResult = structNew() />
+		
+		<cfquery datasource="#application.dsn#" name="stLocal.q">
+		SELECT objectid
+		FROM farFU
+		WHERE refObjectID = <cfqueryparam value="#arguments.refObjectID#" cfsqltype="cf_sql_varchar">
+		AND fuStatus = 1
+		</cfquery>
+		
+		<cfif stLocal.q.recordCount EQ 1>
+			<cfset stLocal.stResult = getData(objectid="#stLocal.q.objectid#") />
+		</cfif>
+		
+		<cfreturn stLocal.stResult />
+	</cffunction>
+	
 	<cffunction name="getSystemFU" access="private" returntype="string" hint="Returns the FU of an object generated by the system" output="false">
 		<cfargument name="objectid" required="true" type="uuid" hint="Content item objectid.">
 		<cfargument name="typename" required="false" default="" type="string" hint="Content item typename if known.">
@@ -354,7 +461,7 @@
 			
 					<cfelseif structKeyExists(application.fc.fuID, "#i#")>
 						<cfset request.fc.type = application.fc.fuID[i] />
-					<cfelse>	
+					<cfelseif structKeyExists(request.fc, "type")>	
 						<cfif not structKeyExists(request.fc, "view")>
 							<!--- Only check for other attributes once the type is determined. --->				
 							<cfif len(application.coapi.coapiAdmin.getWebskinPath(typename="#request.fc.type#", template="#i#"))>

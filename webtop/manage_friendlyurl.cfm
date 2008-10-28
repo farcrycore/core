@@ -32,14 +32,18 @@ manage friednly urls for a particular object id
 		<cfset stProperties.fuStatus = 2 />
 		
 		<!--- If there is currently no default, set this as the default --->
-		<cfset stDefaultFU = application.fc.factory.farFU.getDefaultFU(refObjectID="#form.selectedObjectID#") />
+		<cfset stDefaultFU = application.fc.factory.farFU.getDefaultFUObject(refObjectID="#form.selectedObjectID#") />
 		<cfif structIsEmpty(stDefaultFU)>
 			<cfset stProperties.bDefault = 1 />
 		</cfif>
-		<cfset returnstruct = application.fc.factory.farFU.fInsert(stProperties)>
+		<cfset stResult = application.fc.factory.farFU.createCustomFU(argumentCollection="#stProperties#") />
 		
-		<cfif not returnstruct.bSuccess>
-			<extjs:bubble title="#returnstruct.message#" autoHide="false" />
+		<cfif not stResult.bSuccess>
+			<extjs:bubble title="#stResult.message#" autoHide="false" />
+		<cfelse>
+			<extjs:bubble title="Custom Friendly URL Created" autoHide="true">
+				<cfoutput>Your Friendly URL (#stProperties.friendlyURL#) has been created.</cfoutput>
+			</extjs:bubble>
 		</cfif>
 		
 		<ft:break />
@@ -50,7 +54,7 @@ manage friednly urls for a particular object id
 	
 	<cfif structKeyExists(form, "lArchiveObjectID") AND len(form.lArchiveObjectID)>
 		<cfloop list="#form.lArchiveObjectID#" index="i">
-			<cfset returnstruct = application.fc.factory.farFU.archiveFU(lObjectIDs="#i#")>
+			<cfset returnstruct = application.fc.factory.farFU.archiveFU(objectID="#i#")>
 		</cfloop>
 
 	</cfif>
@@ -58,7 +62,7 @@ manage friednly urls for a particular object id
 
 <ft:processForm action="Make Default" url="refresh">
 	<cfif structKeyExists(form, "selectedObjectID") AND len(form.selectedObjectID)>
-		<cfset returnstruct = application.fc.factory.farFU.setDefault(objectID="#form.selectedObjectID#")>
+		<cfset returnstruct = application.fc.factory.farFU.setDefaultFU(objectID="#form.selectedObjectID#")>
 	</cfif>
 </ft:processForm>
 
@@ -155,17 +159,12 @@ manage friednly urls for a particular object id
 						<tr>
 							<th>Friendly URL</th>
 							<th>Query String</th>
-							<th>Redirection Type:</th>
-							<th>Redirect To:</th>
 						</tr>
 						
 						<cfoutput>
 						<tr class="alt">
 							<td>#qFUList.friendlyurl#</td>
 							<td>#qFUList.queryString#</td>
-							<td>#qFUList.redirectionType#</td>
-							<td>#qFUList.redirectTo#</td>
-							<td>N/A</td>
 							
 						</tr>
 						</cfoutput>
