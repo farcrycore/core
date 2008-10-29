@@ -71,7 +71,7 @@
 							<!--- Check to make sure property is to be saved in the db. --->
 							<cfif not structKeyExists(application, "stcoapi") OR  not structKeyExists(application.stCoapi, tablename) OR not structKeyExists(application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA,"BSAVE") OR application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA.bSave>
 								<!--- TODO: hsqldb hack - this will likely break other db engines --->
-								<cfif sqlArray[i].column eq "position">
+								<cfif application.dbtype eq "HSQLDB" AND sqlArray[i].column eq "position">
 								  , "#sqlArray[i].column#"
 								<cfelse>
 								  , #sqlArray[i].column#	
