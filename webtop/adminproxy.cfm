@@ -14,6 +14,7 @@
 	<cfset trayurl = "#application.url.webroot#/index.cfm?objectid=#application.navid.home#&view=displayAdminToolbar" />
 </cfif>
 
+<cfparam name="session.dmProfile.bShowTray" default="true" />
 <cfif not session.dmProfile.bShowTray>
 	<cflocation url="#thisurl#" addtoken="false" />
 </cfif>

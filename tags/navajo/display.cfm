@@ -224,7 +224,7 @@
 					parent.updateTray('#session.fc.requests[thiskey].tray#',document.title,'#thiskey#');
 			</script>
 		</cfoutput></skin:htmlHead>
-	<cfelseif request.mode.bAdmin and not session.dmProfile.bShowTray><!--- Tray will only be disabled for admins if the admin has turned it off --->
+	<cfelseif request.mode.bAdmin and structkeyexists(session.dmProfile,"bShowTray") and not session.dmProfile.bShowTray><!--- Tray will only be disabled for admins if the admin has turned it off --->
 		<skin:htmlHead library="jQueryJS" />
 		<skin:htmlHead id="enabletray"><cfoutput>
 			<style type="text/css">
@@ -305,7 +305,7 @@
 						parent.updateTray('#session.fc.requests[thiskey].tray#',document.title,'#thiskey#');
 				</script>
 			</cfoutput></skin:htmlHead>
-		<cfelseif request.mode.bAdmin and not session.dmProfile.bShowTray><!--- Tray will only be disabled for admins if the admin has turned it off --->
+		<cfelseif request.mode.bAdmin and structkeyexists(session.dmProfile,"bShowTray") and not session.dmProfile.bShowTray><!--- Tray will only be disabled for admins if the admin has turned it off --->
 			<skin:htmlHead library="jQueryJS" />
 			<skin:htmlHead id="enabletray"><cfoutput>
 				<style type="text/css">
