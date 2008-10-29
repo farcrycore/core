@@ -53,7 +53,7 @@
 				<p>So you forgot your password. Please enter your userid below to reset. An email with your new password will be sent to your email address.</p>
 			</cfoutput>
 
-			<ft:object typename="farUser" lfields="userID" />
+			<ft:object typename="farUser" lfields="userID" includeFieldSet="false" />
 
 			<ft:farcryButtonPanel>
 				<ft:farcryButton value="Reset Password" />
