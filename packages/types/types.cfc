@@ -566,7 +566,7 @@ default handlers
 		<!--- set friendly url for content item,if applicable 
 		TODO: sort out FU allocation.. have moved this to status approval step for now.. so introducing a catch all for non-status based content types. --->
 		<cfif NOT structkeyexists(arguments.stproperties, "status")>
-			<cfif application.fc.factory.farFU.isUsingFU() AND (NOT StructKeyExists(application.types[arguments.stProperties.typename].stprops,"status")) AND StructKeyExists(application.types[arguments.stProperties.typename],"bFriendly") AND application.types[arguments.stProperties.typename].bFriendly>
+			<cfif isDefined("application.fc.factory.farFU") AND application.fc.factory.farFU.isUsingFU() AND (NOT StructKeyExists(application.types[arguments.stProperties.typename].stprops,"status")) AND StructKeyExists(application.types[arguments.stProperties.typename],"bFriendly") AND application.types[arguments.stProperties.typename].bFriendly>
 				<cfif StructKeyExists(arguments.stProperties,"label") AND Trim(arguments.stProperties.label) NEQ "" AND arguments.stProperties.label NEQ "incomplete">
 					<cfset stresult_friendly = application.fc.factory.farFU.setSystemFU(arguments.stProperties.objectid)>
 				</cfif>
