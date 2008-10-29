@@ -40,8 +40,8 @@ type properties
 <cfproperty ftSeq="3" ftFieldset="Include Details" name="teaserImage" type="uuid" hint="UUID of image to display in teaser" required="no" default="" fttype="uuid" ftjoin="dmimage" ftlabel="Teaser Image">
 <cfproperty ftSeq="4" ftFieldset="Include Details" name="displayMethod" type="string" hint="" required="No" default="" ftType="webskin" ftPrefix="displayPage" ftlabel="Content Template" /> 
 <cfproperty ftSeq="10" ftFieldset="Content" name="include" type="string" hint="The name of the include file" required="No" default="" ftType="list" ftListData="getIncludeList" ftLabel="Included CF Template" /> 
-<cfproperty ftSeq="11" ftFieldset="Content" name="webskinTypename" type="string" hint="The content type to run the selected type view against" required="No" default="" ftType="list" ftListData="getTypenameList" ftLabel="Content Type" /> 
-<cfproperty ftSeq="12" ftFieldset="Content" name="webskin" type="string" hint="The content view to be run on the selected typename" required="no" default="" ftType="list" ftListData="getWebskinList" ftlabel="Content View" />
+<cfproperty ftSeq="11" ftFieldset="Content" name="webskinTypename" type="string" hint="The content type to run the selected type view against" required="No" default="" ftLabel="Content Type" /> 
+<cfproperty ftSeq="12" ftFieldset="Content" name="webskin" type="string" hint="The content view to be run on the selected typename" required="no" default=""  ftlabel="Content View" ftPrefix="displayType,editType" />
 <cfproperty ftSeq="20" ftFieldset="Categorisation" name="catInclude" type="string" hint="category of the include" required="no" default="" ftType="category" ftlabel="Categorisation" />
 
 <!--- system only properties --->
@@ -67,19 +67,6 @@ type properties
 	<cfreturn returnList>	
 </cffunction>
 
-<cffunction access="public" name="getTypenameList" returntype="string" hint="returns a list typenames that have type webskins available..">
-	
-	<cfset var returnList = "type1,type2,type3" />
-
-	<cfreturn returnList>	
-</cffunction>
-
-<cffunction access="public" name="getWebskinList" returntype="string" hint="returns a list typenames that have type webskins available..">
-	
-	<cfset var returnList = "skin1,skin2,skin3" />
-	
-	<cfreturn returnList>	
-</cffunction>
 	
 	<cffunction name="ftAjaxWebskin" access="public" output="true" returntype="string" hint="his will return a string of formatted HTML text to enable the user to edit the data">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
@@ -95,8 +82,8 @@ type properties
 		
 		<cfparam name="form.typename" default="" />
 		<cfparam name="form.value" default="" />
-		<cfparam name="arguments.stMetadata.ftPrefix" default="displayTypeBody,editTypeBody" /><!--- Webskin prefix --->
-		
+		<cfparam name="arguments.stMetadata.ftPrefix" default="displayType,editType" /><!--- Webskin prefix --->
+
 		<cfif len(form.typename)>
 			<cfloop list="#arguments.stMetadata.ftPrefix#" index="thisprefix">
 				<nj:listTemplates typename="#form.typename#" prefix="#thisprefix#" r_qMethods="qDisplayTypes">
