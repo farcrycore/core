@@ -460,7 +460,11 @@
 									<cfset stLocal.redirectURL = "#stLocal.redirectURL#&#i#=#url[i]#" />
 								</cfif>
 							</cfloop>
-							<cflocation url="#stLocal.redirectURL#" addtoken="false" /><!---  statusCode="#stFU.redirectionType#" --->
+							
+							<cfheader statuscode="#stFU.redirectionType#"><!--- statustext="Moved permanently" --->
+							<cfheader name="Location" value="#stLocal.redirectURL#">
+							<cfabort>
+							
 						</cfif>
 					<cfelse>
 						<cfset stLocal.redirectURL = "#application.url.webroot#/index.cfm?objectid=#stFU.refObjectID#" />
@@ -470,7 +474,11 @@
 								<cfset stLocal.redirectURL = "#stLocal.redirectURL#&#i#=#url[i]#" />
 							</cfif>
 						</cfloop>
-						<cflocation url="#stLocal.redirectURL#" addtoken="false" /><!---  statusCode="#stFU.redirectionType#" --->
+					
+						<cfheader statuscode="#stFU.redirectionType#"><!--- statustext="Moved permanently" --->
+						<cfheader name="Location" value="#stLocal.redirectURL#">
+						<cfabort>						
+						
 					</cfif>
 
 				<cfelse>
