@@ -116,14 +116,14 @@
 		<cfelse> <!--- No query string on the href, so add a new one using ? and the params --->
 			<cfset href=href&"?"&stLocal.parameters>		
 		</cfif>
-		
-		<!--- Append the anchor to the end of the URL. --->
-		<cfif len(attributes.anchor)>
-			<cfif left(attributes.anchor,1) NEQ "##">
-				<cfset attributes.anchor = "###attributes.anchor#">
-			</cfif>
-			<cfset href = "#href##attributes.anchor#" />		
+	</cfif>
+	
+	<!--- Append the anchor to the end of the URL. --->
+	<cfif len(attributes.anchor)>
+		<cfif left(attributes.anchor,1) NEQ "##">
+			<cfset attributes.anchor = "###attributes.anchor#">
 		</cfif>
+		<cfset href = "#href##attributes.anchor#" />		
 	</cfif>
 	
 	<!--- Are we meant to use the Javascript Popup Window? --->
