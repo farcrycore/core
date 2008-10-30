@@ -42,7 +42,8 @@
 	<cfparam name="attributes.urlParameters" default="">
 	<cfparam name="attributes.JSWindow" default="0"><!--- Default to not using a Javascript Window popup --->
 	<cfparam name="attributes.stJSParameters" default="#StructNew()#">
-
+	<cfparam name="attributes.anchor" default=""><!--- Anchor to place at the end of the URL string. --->
+	
 
 	<!--- Setup URL Parameters --->
 	<cfif listLen(attributes.urlParameters, "&")>
@@ -114,6 +115,14 @@
 			<cfset href=href&"&"&stLocal.parameters>
 		<cfelse> <!--- No query string on the href, so add a new one using ? and the params --->
 			<cfset href=href&"?"&stLocal.parameters>		
+		</cfif>
+		
+		<!--- Append the anchor to the end of the URL. --->
+		<cfif len(attributes.anchor)>
+			<cfif left(attributes.anchor,1) NEQ "##">
+				<cfset attributes.anchor = "###attributes.anchor#">
+			</cfif>
+			<cfset href = "#href##attributes.anchor#" />		
 		</cfif>
 	</cfif>
 	
