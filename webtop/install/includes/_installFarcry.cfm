@@ -113,9 +113,11 @@ TODO:
 <cfloop query="qRules">
 	<cfset oRule = createObject("component", qrules.typepath) />
 	<cftry>
-		<cfset stResult = oRule.deployType(dsn=application.dsn,bDropTable=true,bTestRun=false,dbtype=application.dbtype, bDeployCoapiRecord="false") />
-		<cfoutput>#updateProgressBar(value="0.5", text="RULES): Creating #listfirst(qrules.name,".")# table.")#</cfoutput><cfflush>
-	
+		<cfif NOT oRule.isDeployed()>
+			<cfset stResult = oRule.deployType(dsn=application.dsn,bDropTable=true,bTestRun=false,dbtype=application.dbtype, bDeployCoapiRecord="false") />
+			<cfoutput>#updateProgressBar(value="0.5", text="RULES): Creating #listfirst(qrules.name,".")# table.")#</cfoutput><cfflush>
+		</cfif>
+		
 		<cfcatch type="farcry.core.packages.fourq.tablemetadata.abstractTypeException">
 			<cfset stResult.bsucess="false" />
 			<cfset stResult.message=cfcatch.message />
@@ -135,15 +137,19 @@ TODO:
 	<!--- Already deployed farCoapi. --->
 	<cfif qtypes.name NEQ "farCoapi.cfc">
 		<cfset oType = createObject("component", qtypes.typepath) />
+
 		<cftry>
-			<cfset stResult = oType.deployType(dsn=application.dsn,bDropTable=true,bTestRun=false,dbtype=application.dbtype, bDeployCoapiRecord="false") />
-			<cfoutput>#updateProgressBar(value="0.6", text="#form.displayName# (TYPES): Creating #listfirst(qtypes.name,".")# table.")#</cfoutput><cfflush>
-	
+			<cfif NOT oType.isDeployed()>
+				<cfset stResult = oType.deployType(dsn=application.dsn,bDropTable=true,bTestRun=false,dbtype=application.dbtype, bDeployCoapiRecord="false") />
+				<cfoutput>#updateProgressBar(value="0.6", text="#form.displayName# (TYPES): Creating #listfirst(qtypes.name,".")# table.")#</cfoutput><cfflush>
+			</cfif>
+		
 			<cfcatch type="farcry.core.packages.fourq.tablemetadata.abstractTypeException">
 				<cfset stResult.bsucess="false" />
 				<cfset stResult.message=cfcatch.message />
-			</cfcatch>
+			</cfcatch>			
 		</cftry>
+		
 	</cfif>
 </cfloop>
 <cfoutput></ul></cfoutput>

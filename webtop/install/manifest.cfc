@@ -68,12 +68,25 @@
 			</cfloop>
 
 		</cfif>
+		<cfif fileExists("#GetDirectoryFromPath(GetCurrentTemplatePath())#refCategories.wddx")>
+
+			<cffile action="read" file="#GetDirectoryFromPath(GetCurrentTemplatePath())#refCategories.wddx" variable="wddxRefCat" />
+			<cfwddx action="wddx2cfml" input="#wddxRefCat#" output="qRefCat" />
+			<cfloop query="qRefCat">
+				<cfquery datasource="#application.dsn#" name="qInsertTree">
+				INSERT INTO #application.dbowner#refCategories
+			  	(categoryID, objectID)
+			  	VALUES  ('#qRefCat.categoryID#','#qRefCat.objectid#')
+				</cfquery>
+			</cfloop>
+
+		</cfif>
 
 		<cfdirectory directory="#GetDirectoryFromPath(GetCurrentTemplatePath())#" name="qWDDX" filter="*.wddx" sort="name">
 		
 		<cfloop query="qWDDX">
 		
-			<cfif qWDDX.name NEQ "nested_tree_objects.wddx">
+			<cfif len(qWDDX.name) AND NOT listFindNoCase('nested_tree_objects.wddx,refCategories.wddx', qWDDX.name)>
 				<cffile action="read" file="#GetDirectoryFromPath(GetCurrentTemplatePath())##qWDDX.name#" variable="wddxContent" />
 				<cfwddx action="wddx2cfml" input="#wddxContent#" output="aContent" />
 				<cfif arrayLen(aContent)>
