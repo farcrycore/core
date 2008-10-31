@@ -295,13 +295,18 @@ START WEBSKIN
 		</cfif>
 	</cfif>	
 	
-	<cfif stOverviewParams.stPermissions.iEdit EQ 1 AND application.fc.factory.farFU.isUsingFU()>
+	<cfif stOverviewParams.stPermissions.iEdit EQ 1>
 		<cfset qFUs = application.fc.factory.farFU.getFUList(objectID="#stobj.objectid#", fuStatus="current")>
 
 		<extjs:item title="Current Friendly URLs">
+			<cfif NOT application.fc.factory.farFU.isUsingFU()>
+				<cfoutput><p class="highlight">You do not currently have Friendly URLs available. Ask your administrator to add the required webserver rewrite.</p></cfoutput>
+			</cfif>
+			<cfoutput><ul></cfoutput>
 			<cfloop query="qFUs">
-				<cfoutput>#qFUs.friendlyURL#<br /></cfoutput>
+				<cfoutput><li>#qFUs.friendlyURL#</li></cfoutput>
 			</cfloop>
+			<cfoutput></ul></cfoutput>
 			<ft:button width="240px" style="" value="Manage" bInPanel="true" url="" onclick="window.open('#application.url.farcry#/manage_friendlyurl.cfm?objectid=#stobj.objectid#','_win_friendlyurl','height=500,width=600,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=no,status=yes').focus();" />		
 		</extjs:item>
 	</cfif>		
