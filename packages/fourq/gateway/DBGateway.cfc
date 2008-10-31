@@ -21,7 +21,34 @@
 			<cfthrow type="farcry.core.packages.fourq.DBGATEWAY.UNIMPLEMENTED" message="DBGateway deployType() unimplemented"
 				 detail="The method deployType() was not implemented in a child of DBGateway." />
 	</cffunction>
-	
+
+
+	<cffunction name="isDeployed" access="public" output="false" returntype="boolean" hint="Returns True if the table is already deployed">
+		<cfargument name="metadata" type="farcry.core.packages.fourq.TableMetadata" required="true" />
+		<cfargument name="dsn" type="string" required="false" default="#variables.dsn#">
+		<cfargument name="dbowner" type="string" required="false" default="#variables.dbowner#">
+		
+		
+		<cfset var tablename = arguments.dbowner & arguments.metadata.getTableName() />
+		<cfset var stLocal = structNew() />
+		
+		<cfset stLocal.bDeployed = true />
+		
+		<cftry>
+			<cfquery datasource="#application.dsn#" name="stLocal.qDeployed">
+			SELECT count(*)
+			FROM #tablename#
+			</cfquery>
+			
+			<cfcatch type="database">
+				<cfset stLocal.bDeployed = false />
+			</cfcatch>
+		</cftry>
+		
+		<cfreturn stLocal.bDeployed />
+		
+	</cffunction>
+		
 
 	<!---
 	 ************************************************************

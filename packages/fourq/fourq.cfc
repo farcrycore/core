@@ -329,6 +329,20 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfreturn stResult>
 	</cffunction>
 	
+ 	<cffunction name="isDeployed" access="public" returntype="boolean" output="false" hint="Returns True if the table is already deployed">
+		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+    	<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#">
+		<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
+    
+    	<cfset var stLocal = structNew()>
+    
+    	<cfset fourqInit() />
+    
+		<cfset stLocal.gateway = getGateway(arguments.dsn,arguments.dbtype,arguments.dbowner)  />
+		<cfset stLocal.bDeployed = stLocal.gateway.isDeployed(metadata=variables.tableMetaData, dsn=arguments.dsn, dbowner=arguments.dbowner) />
+		
+		<cfreturn stLocal.bDeployed>
+	</cffunction>
 	
 
  	<cffunction name="deployRefObjects" access="public" returntype="struct" output="false">
