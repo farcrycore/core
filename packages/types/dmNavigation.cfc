@@ -184,22 +184,15 @@ $out:$
 	
 		<!--- $TODO: all app vars should be passed in as arguments! 
 		move application.dbowner (and others no doubt) GB$ --->
-		<cfswitch expression="#application.dbtype#">
-			<cfcase value="ora">
-				<cfquery datasource="#arguments.dsn#" name="q">
-					SELECT objectID, lNavIDAlias
-					FROM #application.dbowner#dmNavigation
-					WHERE lNavIDAlias IS NOT NULL
-				</cfquery>
-			</cfcase>
-			<cfdefaultcase>
-				<cfquery datasource="#arguments.dsn#" name="q">
-					SELECT objectID, lNavIDAlias
-					FROM #application.dbowner#dmNavigation
-					WHERE lNavIDAlias <> ''
-				</cfquery>
-			</cfdefaultcase>
-		</cfswitch>
+		<cfquery datasource="#arguments.dsn#" name="q">
+		SELECT nav.objectID, nav.lNavIDAlias, ntm.nLeft
+		FROM	#application.dbowner#dmNavigation nav, 
+				#application.dbowner#nested_tree_objects ntm
+		WHERE	nav.objectid = ntm.objectid
+		AND lNavIDAlias <> ''
+		AND lNavIDAlias IS NOT NULL
+		ORDER BY ntm.nLeft
+		</cfquery>
 	
 		<cfloop query="q">
 			<cfscript>
@@ -208,10 +201,11 @@ $out:$
 					for( i=1; i le ListLen(q.lNavIdAlias); i=i+1 )
 					{
 						alias = Trim(ListGetAt(q.lNavIdAlias,i));
-						if (NOT StructKeyExists(stResult, alias))
+						if (NOT StructKeyExists(stResult, alias)) {
 							stResult[alias] = q.objectID;
-						else 
-							stResult[alias] = ListAppend(stResult[alias], q.objectID);
+						} else { 
+							//stResult[alias] = ListAppend(stResult[alias], q.objectID);
+						}
 					}
 				}
 			</cfscript>
