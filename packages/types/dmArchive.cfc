@@ -98,10 +98,6 @@ type properties
 			<cfset stLocal.stFile.action = "move">
 		</cfif>
 		
-		<!--- testing jwmedia archiving --->
-		<cfset application.config.jwmedia = structNew() />
-		<cfset application.config.jwmedia.archivefiles = "" />
-
 		<cfswitch expression="#stLocal.stObj.typename#">
 			<!--- archive file --->
 			<cfcase value="dmFile">
@@ -115,7 +111,7 @@ type properties
 			
 			<!--- archive jwmedia --->
 			<cfcase value="jwmedia">
-				<cfif StructKeyExists(application.config.jwmedia,"archivefiles") AND application.config.file.archivefiles EQ "true">
+				<cfif StructKeyExists(application.config.file,"archivefiles") AND application.config.file.archivefiles EQ "true">
 					<cfset stLocal.stFile.sourceDir = "#application.path.project##pathSep#www#pathSep#files#pathSep#jwmedia#pathSep#" />
 					<cfset stLocal.stFile.sourceFileName = "#replaceNoCase(stLocal.stObj.filePath,'/jwmedia/','')#" />
 					<cfset stLocal.stFile.destinationFileName = "#stLocal.stProps.archiveID#.#ListLast(stLocal.stFile.sourceFileName,'.')#" />
