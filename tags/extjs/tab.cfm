@@ -25,7 +25,7 @@
 
 
 <cfparam name="attributes.bGlobalVar" default="true" />
-<cfparam name="attributes.id" default="tab-#createUUID()#" />
+<cfparam name="attributes.id" default="#replace('tab_' & createUUID(),'-','_','ALL')#" />
 <cfparam name="attributes.renderTo" default="#attributes.id#-div" />
 <cfparam name="attributes.activeTab" default="" />
 <cfparam name="attributes.width" default="100%" />
