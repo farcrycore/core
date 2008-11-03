@@ -202,7 +202,17 @@
 			<cfreturn "" />
 		</cfif>		
 	</cffunction>
-
+	
+	<cffunction name="hasRole" returntype="boolean" output="false" access="public" hint="Returns true if the current user has the specified role">
+		<cfargument name="role" type="string" required="false" default="" hint="Roles to check" />
+		
+		<cfif isvalid("uuid",arguments.role)>
+			<cfreturn listcontainsnocase(getCurrentRoles(),arguments.role) />
+		<cfelse>
+			<cfreturn listcontainsnocase(getCurrentRoles(),this.factory.role.getID(arguments.role)) />
+		</cfif>
+	</cffunction>
+	
 
 	<!--- User Directory functions --->
 	<cffunction name="getAllUD" access="public" output="false" returntype="string" hint="Returns a list of the user directories this application supports">
