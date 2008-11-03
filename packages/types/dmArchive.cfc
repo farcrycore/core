@@ -78,7 +78,7 @@ type properties
 	<!--- //end dmArchive struct --->  
 
 	<cfset createData(stProperties=stLocal.stProps)>
-	<cfif stLocal.stObj.typename EQ "dmFile" OR stLocal.stObj.typename EQ "dmImage" OR stLocal.stObj.typename EQ "bslSurelineVideo">
+	<cfif stLocal.stObj.typename EQ "dmFile" OR stLocal.stObj.typename EQ "dmImage" OR stLocal.stObj.typename EQ "jwmedia">
 
 		<!--- struct to hold the information on where to move files to --->
 		<cfset stLocal.stFile = StructNew()>
