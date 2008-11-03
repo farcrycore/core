@@ -33,10 +33,11 @@ type properties
 <cffunction name="fArchiveObject" access="public" hint="archiving of related items to content types (eg. files and images)" returntype="struct">
 	<cfargument name="stObj" required="yes" type="struct">
 
-	<cfset var stLocal = StructNew()>
-	<cfset var pathSep = "\"><!--- default is windows path separator --->
-	<cfset var archiveDirectory = application.config.general.archivedirectory><!--- archive directory from config --->
-	
+	<cfset var stLocal = StructNew() />
+	<cfset var pathSep = "\" /><!--- default is windows path separator --->
+	<cfset var temp = "" />
+	<cfset var archiveDirectory = application.config.general.archivedirectory /><!--- archive directory from config --->
+
 	<cfif not directoryExists("#archiveDirectory#")>
 		<cfset archiveDirectory = "#application.path.project#/archive" />
 	</cfif>
@@ -55,9 +56,9 @@ type properties
 		<cfset archiveDirectory= "#archiveDirectory##pathSep#">
 	</cfif>
 
-		<cfset stLocal.directoryToCheck = ListDeleteAt(archiveDirectory,ListLen(archiveDirectory,pathSep),pathSep)>
-		<cfset stLocal.directoryNameToCheck = ListLast(archiveDirectory,pathSep)>
-	
+	<cfset stLocal.directoryToCheck = ListDeleteAt(archiveDirectory,ListLen(archiveDirectory,pathSep),pathSep)>
+	<cfset stLocal.directoryNameToCheck = ListLast(archiveDirectory,pathSep)>
+
 	<!--- create archive directorys if needed --->
 	<cfdirectory action="list" directory="#stLocal.directoryToCheck#" name="stLocal.qDirectory" filter="#stLocal.directoryNameToCheck#">
 
@@ -65,7 +66,7 @@ type properties
 	<cfif stLocal.qDirectory.recordcount EQ 0>
 		<cfdirectory action="create" directory="#archiveDirectory#">
 	</cfif>
-		
+
 	<cfwddx input="#stLocal.stObj#" output="stLocal.stLiveWDDX"  action="cfml2wddx">
 
 	<!--- set up the dmArchive structure to save --->
@@ -77,7 +78,7 @@ type properties
 	<!--- //end dmArchive struct --->  
 
 	<cfset createData(stProperties=stLocal.stProps)>
-	<cfif stLocal.stObj.typename EQ "dmFile" OR stLocal.stObj.typename EQ "dmImage">
+	<cfif stLocal.stObj.typename EQ "dmFile" OR stLocal.stObj.typename EQ "dmImage" OR stLocal.stObj.typename EQ "bslSurelineVideo">
 
 		<!--- struct to hold the information on where to move files to --->
 		<cfset stLocal.stFile = StructNew()>
@@ -96,6 +97,10 @@ type properties
 		<cfelse>
 			<cfset stLocal.stFile.action = "move">
 		</cfif>
+		
+		<!--- testing jwmedia archiving --->
+		<cfset application.config.jwmedia = structNew() />
+		<cfset application.config.jwmedia.archivefiles = "" />
 
 		<cfswitch expression="#stLocal.stObj.typename#">
 			<!--- archive file --->
@@ -104,10 +109,20 @@ type properties
 					<cfset stLocal.stFile.sourceDir = "#application.path.project##pathSep#www#pathSep#files#pathSep#">
 					<cfset stLocal.stFile.sourceFileName = "#stLocal.stObj.fileName#">
 					<cfset stLocal.stFile.destinationFileName = "#stLocal.stProps.archiveID#.#ListLast(stLocal.stFile.sourceFileName,'.')#">
-					<cfset stLocal.fReturnStruct = fMoveFile(stLocal.stFile)>
+					<cfset temp = fMoveFile(stLocal.stFile)>
 				</cfif>
 			</cfcase>
-	
+			
+			<!--- archive jwmedia --->
+			<cfcase value="jwmedia">
+				<cfif StructKeyExists(application.config.jwmedia,"archivefiles") AND application.config.file.archivefiles EQ "true">
+					<cfset stLocal.stFile.sourceDir = "#application.path.project##pathSep#www#pathSep#files#pathSep#jwmedia#pathSep#" />
+					<cfset stLocal.stFile.sourceFileName = "#replaceNoCase(stLocal.stObj.filePath,'/jwmedia/','')#" />
+					<cfset stLocal.stFile.destinationFileName = "#stLocal.stProps.archiveID#.#ListLast(stLocal.stFile.sourceFileName,'.')#" />
+					<cfset temp = fMoveFile(stLocal.stFile)>
+				</cfif>
+			</cfcase>	
+			
 			<!--- archive image --->
 			<cfcase value="dmimage">
 				<cfif StructKeyExists(application.config.image,"archivefiles") AND application.config.file.archivefiles EQ "true">
@@ -115,19 +130,19 @@ type properties
 					<cfset stLocal.stFile.sourceDir = "#stLocal.stObj.originalImagePath##pathSep#">
 					<cfset stLocal.stFile.sourceFileName = "#stLocal.stObj.imageFile#">
 					<cfset stLocal.stFile.destinationFileName = "#stLocal.stProps.archiveID#_default.#ListLast(stLocal.stFile.sourceFileName,'.')#">
-					<cfset stLocal.fReturnStruct = fMoveFile(stLocal.stFile)>
+					<cfset temp = fMoveFile(stLocal.stFile)>
 		
 					<!--- thumbnail image --->
 					<cfset stLocal.stFile.sourceDir = "#stLocal.stObj.thumbnailImagePath##pathSep#">
 					<cfset stLocal.stFile.sourceFileName = "#stLocal.stObj.thumbnail#">
 					<cfset stLocal.stFile.destinationFileName = "#stLocal.stProps.archiveID#_thumb.#ListLast(stLocal.stFile.sourceFileName,'.')#">
-					<cfset stLocal.fReturnStruct = fMoveFile(stLocal.stFile)>
+					<cfset temp = fMoveFile(stLocal.stFile)>
 		
 					<!--- optimised image --->				
 					<cfset stLocal.stFile.sourceDir = "#stLocal.stObj.optimisedImagePath##pathSep#">
 					<cfset stLocal.stFile.sourceFileName = "#stLocal.stObj.optimisedImage#">
 					<cfset stLocal.stFile.destinationFileName = "#stLocal.stProps.archiveID#_optimised.#ListLast(stLocal.stFile.sourceFileName,'.')#">
-					<cfset stLocal.fReturnStruct = fMoveFile(stLocal.stFile)>
+					<cfset temp = fMoveFile(stLocal.stFile)>
 				</cfif>
 			</cfcase>
 			
@@ -152,6 +167,8 @@ type properties
 	</cfif>
 	
 	<cfset stLocal.stObj = StructCopy(arguments.stObj)>
+
+
 
 	<cfif StructKeyExists(stLocal.stObj,"aObjectIDs")>
 		<cfloop index="stLocal.i" from="1" to="#ArrayLen(stLocal.stObj.aObjectIDs)#">
@@ -284,7 +301,7 @@ type properties
 			<cfdump var="#cfcatch#">
 		</cfcatch>
 	</cftry>
-
+	
 </cffunction>
 
 </cfcomponent>
