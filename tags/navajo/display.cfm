@@ -296,7 +296,7 @@
 			<cfparam name="session.fc.proxy" default="#structnew()#" />
 			<cfset session.fc.requests[thiskey] = structnew() />
 			<cfset session.fc.requests[thiskey].url = "#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray)=[^&]*','','ALL')#" />
-			<cfset session.fc.requests[thiskey].tray = "#application.url.webroot#/index.cfm?type=#attributes.typename#&view=displayAdminToolbar" />
+			<cfset session.fc.requests[thiskey].tray = "#application.url.webroot#/index.cfm?type=#attributes.typename#&view=displayAdminToolbar&key=#thiskey#" />
 			<skin:htmlHead><cfoutput>
 				<script type="text/javascript">
 					if (top.location == location)
