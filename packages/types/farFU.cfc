@@ -335,7 +335,7 @@
 			</cfif>
 		</cfif>
 		
- 		<cfreturn systemFU />
+ 		<cfreturn cleanFU(systemFU) />
 	</cffunction>	
 	
 	
