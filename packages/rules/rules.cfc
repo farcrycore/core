@@ -102,6 +102,7 @@ $out:$
 					
 		<cfif NOT structIsEmpty(stObj)>		
 		
+			<cftimer label="getView: #stobj.objectid# #stobj.typename# (#arguments.template#): ">
 			<!--- Check to see if the webskin is in the object broker --->
 			<cfset webskinHTML = oObjectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
 
@@ -151,8 +152,7 @@ $out:$
 							
 							<!--- Add the ancestor records so we know where this webskin is located throughout the site. --->
 							<cfif not structkeyexists(request.aAncestorWebskins[i],"objectid") or stobj.objectid NEQ request.aAncestorWebskins[i].objectID>
-								<cftimer label="Indexing webskin: #request.aAncestorWebskins[i].typename#/request.aAncestorWebskins[i].template "/>
-							
+								
 								<cfif listFindNoCase(application.stcoapi[request.aAncestorWebskins[i].typename].lObjectBrokerWebskins, request.aAncestorWebskins[i].template)>
 									<cfif application.stcoapi[request.aAncestorWebskins[i].typename].stObjectBrokerWebskins[request.aAncestorWebskins[i].template].timeout NEQ 0>
 							
@@ -207,7 +207,8 @@ $out:$
 				<cfelse>
 					<cfthrow type="Application" detail="Error: Template not found [/webskin/#stObj.typename#/#arguments.template#.cfm] and no alternate html provided." />
 				</cfif>	
-			</cfif>		
+			</cfif>	
+			</cftimer>	
 		<cfelse>
 			<cfthrow type="Application" detail="Error: When trying to render [/webskin/#stObj.typename#/#arguments.template#.cfm] the object was not created correctly." />	
 		</cfif>

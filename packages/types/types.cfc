@@ -176,9 +176,10 @@ default handlers
 			<cfelse>
 				<cfset webskinHTML = application.coapi.objectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
 			</cfif> --->
+			<cftimer label="getView: #stobj.objectid# #stobj.typename# (#arguments.template#): ">
 			<cfset webskinHTML = application.coapi.objectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
 			
-			<cftimer label="getView(#len(webskinHTML)#): #stobj.objectid# #stobj.typename# (#arguments.template#): ">
+			
 			<cfif not len(webskinHTML)>			
 			
 				<cfif stobj.typename EQ "farCoapi">
@@ -239,7 +240,7 @@ default handlers
 							
 							<!--- Add the ancestor records so we know where this webskin is located throughout the site. --->
 							<cfif bTypeWebskin or not structkeyexists(request.aAncestorWebskins[i],"objectid") or stobj.objectid NEQ request.aAncestorWebskins[i].objectID>
-								<cftimer label="Indexing webskin: #request.aAncestorWebskins[i].typename#/request.aAncestorWebskins[i].template "/>
+								
 								<cfif listFindNoCase(application.stcoapi[request.aAncestorWebskins[i].typename].lObjectBrokerWebskins, request.aAncestorWebskins[i].template)>
 									<cfif application.stcoapi[request.aAncestorWebskins[i].typename].stObjectBrokerWebskins[request.aAncestorWebskins[i].template].timeout NEQ 0>
 										
