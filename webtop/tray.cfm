@@ -24,7 +24,7 @@
 		var traystate = "summary";
 		
 		// On page refresh, if there is a URL in the hash, reuse that url instead;
-		if (window.location.hash.length and window.location.hash!=="##")
+		if (window.location.hash.length && window.location.hash!=="##")
 			window.location = "tray.cfm?url="+window.location.hash.slice(1);
 		
 		function updateTray(newtray,title,newurl) {
