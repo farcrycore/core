@@ -210,7 +210,7 @@
 		<cfset request.fc.bShowTray = false />
 		
 		<!--- Output tray info --->
-		<cfset thisurl = "#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray)=[^&]*','','ALL')#" />
+		<cfset thisurl = "#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray|updateapp)=[^&]*','','ALL')#" />
 		<cfset thistray = "#application.url.webroot#/index.cfm?objectid=#attributes.objectid#&view=displayAdminToolbar&key=#hash(createuuid())#" />
 		<skin:htmlHead><cfoutput>
 			<script type="text/javascript">
@@ -287,7 +287,7 @@
 			<cfset request.fc.bShowTray = false />
 			
 			<!--- Output tray info --->
-			<cfset thisurl = "#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray)=[^&]*','','ALL')#" />
+			<cfset thisurl = "#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray|updateapp)=[^&]*','','ALL')#" />
 			<cfset thistray = "#application.url.webroot#/index.cfm?objectid=#attributes.objectid#&view=displayAdminToolbar&key=#hash(createuuid())#" />
 			<skin:htmlHead><cfoutput>
 				<script type="text/javascript">

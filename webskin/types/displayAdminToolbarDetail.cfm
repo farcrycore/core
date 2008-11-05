@@ -152,10 +152,10 @@
 		{
 			xtype:"tbbutton",
 			iconCls:<cfif request.mode.showdraft>"previewmode_icon"<cfelse>"previewmodedisabled_icon"</cfif>,
-			text:<cfif request.mode.showdraft>"Show Drafts"<cfelse>"Show Drafts"</cfif>,
-			enableToggle:true,
-			allowDepress:true,
-			pressed:#request.mode.showdraft#,
+			text:<cfif request.mode.showdraft>"Hide Draft"<cfelse>"Show Draft"</cfif>,
+			//enableToggle:true,
+			//allowDepress:true,
+			//pressed:#request.mode.showdraft#,
 			listeners:{
 				"click":{
 					fn:function(){
@@ -182,10 +182,10 @@
 			{
 				xtype:"tbbutton",
 				iconCls:<cfif request.mode.design and request.mode.showcontainers gt 0>"designmode_icon"<cfelse>"designmodedisabled_icon"</cfif>,
-				text:<cfif request.mode.design and request.mode.showcontainers gt 0>"Show Rules"<cfelse>"Show Rules"</cfif>,
-				enableToggle:true,
-				allowDepress:true,
-				pressed:#request.mode.design and request.mode.showcontainers#,
+				text:<cfif request.mode.design and request.mode.showcontainers gt 0>"Hide Rules"<cfelse>"Show Rules"</cfif>,
+				//enableToggle:true,
+				//allowDepress:true,
+				//pressed:#request.mode.design and request.mode.showcontainers#,
 				listeners:{
 					"click":{
 						fn:function(){

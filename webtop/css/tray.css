@@ -8,10 +8,10 @@ body{
 #farcrytray .moredetail_icon { background:transparent url(../js/ext/resources/images/default/panel/tool-sprites.gif) no-repeat scroll 0 -210px; height:15px; width:15px; }
 #farcrytray .lessdetail_icon { background:transparent url(../js/ext/resources/images/default/panel/tool-sprites.gif) no-repeat scroll 0 -195px; height:15px; width:15px; }
 #farcrytray .edit_icon { background-image:url(../facade/icon.cfm?icon=edit&size=16) !important; }
-#farcrytray .designmode_icon { background-image:url(../facade/icon.cfm?icon=designmode&size=16) !important; }
-#farcrytray .designmodedisabled_icon { background-image:url(../facade/icon.cfm?icon=designmodedisabled&size=16) !important; }
-#farcrytray .previewmode_icon { background-image:url(../facade/icon.cfm?icon=draftmode&size=16) !important; }
-#farcrytray .previewmodedisabled_icon { background-image:url(../facade/icon.cfm?icon=draftmodedisabled&size=16) !important; }
+#farcrytray .designmode_icon { background-image:url(../facade/icon.cfm?icon=greenled&size=16) !important; }
+#farcrytray .designmodedisabled_icon { background-image:url(../facade/icon.cfm?icon=redled&size=16) !important; }
+#farcrytray .previewmode_icon { background-image:url(../facade/icon.cfm?icon=greenled&size=16) !important; }
+#farcrytray .previewmodedisabled_icon { background-image:url(../facade/icon.cfm?icon=redled&size=16) !important; }
 #farcrytray .updateapp_icon { background-image:url(../facade/icon.cfm?icon=updateapp&size=16) !important; }
 #farcrytray .logout_icon { background-image:url(../facade/icon.cfm?icon=logout&size=16) !important; }
 #farcrytray .toggletray_icon { background-image:url(../facade/icon.cfm?icon=toggletray&size=16) !important; }

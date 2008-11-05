@@ -23,10 +23,6 @@
 	<script type="text/javascript">
 		var traystate = "summary";
 		
-		// On page refresh, if there is a URL in the hash, reuse that url instead;
-		if (window.location.hash.length && window.location.hash!=="##")
-			window.location = "tray.cfm?url="+window.location.hash.slice(1);
-		
 		function updateTray(newtray,title,newurl) {
 			// update the tray
 			frames['farcry_tray'].location.href = newtray+(newtray.indexOf("?")?"&":"?")+"&tray="+traystate+"&url="+encodeURIComponent(newurl);
@@ -59,6 +55,12 @@
 		}
 	});
 	
+	// On page refresh, if there is a URL in the hash, reuse that url instead;
+	if (window.location.hash.length && window.location.hash!=="##")
+		thisurl = window.location.hash.slice(1);
+	else
+		thisurl = "#thisurl#";
+		
 	var all = new Ext.Viewport({
 		layout:"border",
 		border:false,
@@ -69,7 +71,7 @@
 			xtype:"panel",
 			layout:"fit",
 			border:false,
-			items:[new Ext.ux.IFrameComponent({ id: "farcry_content", url: "#thisurl#" })]
+			items:[new Ext.ux.IFrameComponent({ id: "farcry_content", url: thisurl })]
 		},{
 			region:"south",
 			xtype:"panel",
