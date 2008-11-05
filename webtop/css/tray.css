@@ -16,10 +16,12 @@ body{
 #farcrytray .logout_icon { background-image:url(../facade/icon.cfm?icon=logout&size=16) !important; }
 #farcrytray .toggletray_icon { background-image:url(../facade/icon.cfm?icon=toggletray&size=16) !important; }
 
-#farcrytray.previewmodeon { border-top: 1px solid #A291AB; }
-#farcrytray.previewmodeoff { border-top: 1px solid #0F7BD5; }
-#farcrytray.previewmodeon .htmlpanel .x-panel-body, #farcrytray.previewmodeon .x-toolbar, #farcrytray.previewmodeon .x-table-layout-ct { background:#DAC3E6 none; border:0 none; }
-#farcrytray.previewmodeoff .htmlpanel .x-panel-body, #farcrytray.previewmodeoff .x-toolbar, #farcrytray.previewmodeoff .x-table-layout-ct { background:#D7E4F3 none; border:0 none; }
+/*#farcrytray.previewmodeon { border-top: 1px solid #A291AB; }*/
+#farcrytray.previewmodeoff, 
+#farcrytray.previewmodeon { border-top: 1px solid #0F7BD5; }
+/*#farcrytray.previewmodeon .htmlpanel .x-panel-body, #farcrytray.previewmodeon .x-toolbar, #farcrytray.previewmodeon .x-table-layout-ct { background:#DAC3E6 none; border:0 none; }*/
+#farcrytray.previewmodeoff .htmlpanel .x-panel-body, #farcrytray.previewmodeoff .x-toolbar, #farcrytray.previewmodeoff .x-table-layout-ct,
+#farcrytray.previewmodeon .htmlpanel .x-panel-body, #farcrytray.previewmodeon .x-toolbar, #farcrytray.previewmodeon .x-table-layout-ct { background:#D7E4F3 none; border:0 none; }
 
 .htmlpanel td { background:transparent; padding:0; }
 
@@ -34,6 +36,11 @@ body{
 #farcrytray * { color: #333; font-family: arial,tahoma,helvetica,sans-serif; text-align: left; font-size:13px; }
 #farcrytray .x-toolbar { padding:0; }
 #farcrytray .traytext { padding:3px; }
+
+/* General styels */
+#farcrytray .status.approved { font-weight: bold; color:#00bb00; }
+#farcrytray .status.pending { font-weight: bold; color:#ff9900; }
+#farcrytray .status.draft { font-weight: bold; color:#ff0000; }
 
 /* Detail view styles */
 #farcrytray .detailview dt { margin-top: 2px; float:left; clear: left; width:120px; }

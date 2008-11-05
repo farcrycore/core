@@ -11,7 +11,7 @@
 
 <!--- Status --->
 <cfif structkeyexists(stObj,"status")>
-	<cfset arrayappend(aItems,"Status: #stObj.status#") />
+	<cfset arrayappend(aItems,"Status: <span class='status #stObj.status#'>#application.rb.getResource('workflow.constants.#stObj.status#@label',stObj.status)#</span>") />
 </cfif>
 
 <!--- Current template --->
@@ -34,17 +34,20 @@
 	<cfoutput>
 		{
 			xtype:"tbbutton",
-			<cfif request.mode.showdraft>iconCls:"previewmode_icon",<cfelse>iconCls:"previewmodedisabled_icon",</cfif>
-			text:"Preview mode",
+			iconCls:<cfif request.mode.showdraft>"previewmode_icon"<cfelse>"previewmodedisabled_icon"</cfif>,
+			text:<cfif request.mode.showdraft>"Show Drafts"<cfelse>"Show Drafts"</cfif>,
+			enableToggle:true,
+			allowDepress:true,
+			pressed:#request.mode.showdraft#,
 			listeners:{
 				"click":{
 					fn:function(){
 						<cfif request.mode.showdraft and structkeyexists(stObj,"versionid")>
-							parent.updateContent("#session.fc.requests[url.key].url#&flushcache=1&showdraft=0");
+							parent.updateContent("#url.url#&flushcache=1&showdraft=0");
 						<cfelseif request.mode.showdraft>
-							parent.updateContent("#session.fc.requests[url.key].url#&flushcache=1&showdraft=0");
+							parent.updateContent("#url.url#&flushcache=1&showdraft=0");
 						<cfelse>
-							parent.updateContent("#session.fc.requests[url.key].url#&flushcache=0&showdraft=1");
+							parent.updateContent("#url.url#&flushcache=0&showdraft=1");
 						</cfif>
 						Ext.getBody().mask("Loading...");
 					}
@@ -61,15 +64,18 @@
 		<cfoutput>
 			{
 				xtype:"tbbutton",
-				<cfif request.mode.design and request.mode.showcontainers gt 0>iconCls:"designmode_icon",<cfelse>iconCls:"designmodedisabled_icon",</cfif>
-				text:"Design mode",
+				iconCls:<cfif request.mode.design and request.mode.showcontainers gt 0>"designmode_icon"<cfelse>"designmodedisabled_icon"</cfif>,
+				text:<cfif request.mode.design and request.mode.showcontainers gt 0>"Show Rules"<cfelse>"Show Rules"</cfif>,
+				enableToggle:true,
+				allowDepress:true,
+				pressed:#request.mode.design and request.mode.showcontainers#,
 				listeners:{
 					"click":{
 						fn:function(){
 							<cfif request.mode.design and request.mode.showcontainers gt 0>
-								parent.updateContent("#session.fc.requests[url.key].url#&designmode=0");
+								parent.updateContent("#url.url#&designmode=0");
 							<cfelse>
-								parent.updateContent("#session.fc.requests[url.key].url#&designmode=1");
+								parent.updateContent("#url.url#&designmode=1");
 							</cfif>
 							Ext.getBody().mask("Loading...");
 						}

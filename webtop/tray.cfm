@@ -6,12 +6,10 @@
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <cfparam name="url.h" default="" /><!--- The page request hash --->
-<cfif len(url.h)>
-	<cfset thisurl = session.fc.requests[url.h].url />
-	<cfset trayurl = session.fc.requests[url.h].tray />
+<cfif structkeyexists(url,"url") and len(url.url)>
+	<cfset thisurl = url.url />
 <cfelse>
 	<cfset thisurl = "#application.url.webroot#/" />
-	<cfset trayurl = "#application.url.webroot#/index.cfm?objectid=#application.navid.home#&view=displayAdminToolbar" />
 </cfif>
 
 <cfparam name="session.dmProfile.bShowTray" default="true" />
@@ -25,10 +23,15 @@
 	<script type="text/javascript">
 		var traystate = "summary";
 		
-		function updateTray(newtray,title,key) {
+		// On page refresh, if there is a URL in the hash, reuse that url instead;
+		if (window.location.hash.length and window.location.hash!=="##")
+			window.location = "tray.cfm?url="+window.location.hash.slice(1);
+		
+		function updateTray(newtray,title,newurl) {
 			// update the tray
-			frames['farcry_tray'].location.href = newtray+(newtray.indexOf("?")?"&":"?")+"&tray="+traystate;
+			frames['farcry_tray'].location.href = newtray+(newtray.indexOf("?")?"&":"?")+"&tray="+traystate+"&url="+encodeURIComponent(newurl);
 			document.title = 'Administration View - '+title;
+			window.location.hash = encodeURIComponent(newurl);
 		};
 		
 		function resizeTray(height) {
