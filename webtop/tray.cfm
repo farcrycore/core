@@ -21,13 +21,18 @@
 <extjs:iframeDialog />
 <skin:htmlHead><cfoutput>
 	<script type="text/javascript">
-		var traystate = "summary";
+		if (window.location.hash.length && window.location.hash!=="##" && window.location.hash.indexOf("|"))
+			traystate = window.location.hash.slice(1).split("|")[1];
+		else
+			traystate = "summary";
+		currenturl = "";
 		
 		function updateTray(newtray,title,newurl) {
 			// update the tray
 			frames['farcry_tray'].location.href = newtray+(newtray.indexOf("?")?"&":"?")+"&tray="+traystate+"&url="+encodeURIComponent(newurl);
 			document.title = 'Administration View - '+title;
-			window.location.hash = encodeURIComponent(newurl);
+			currenturl = newurl;
+			window.location.hash = encodeURIComponent(currenturl)+"|"+traystate;
 		};
 		
 		function resizeTray(height) {
@@ -39,12 +44,13 @@
 			frames['farcry_content'].location.href = url;
 		};
 		
-		function editContent(url,title,width,height,modal) {
-			frames.farcry_content.openScaffoldDialog(url,title,width,height,modal);
+		function editContent(url,title,width,height,modal,onclose) {
+			frames.farcry_content.openScaffoldDialog(url,title,width,height,modal,onclose);
 		};
 		
 		function rememberTrayState(state) {
 			traystate = state;
+			window.location.hash = encodeURIComponent(currenturl)+"|"+traystate;
 		};
 	</script>
 </cfoutput></skin:htmlhead>
@@ -57,7 +63,7 @@
 	
 	// On page refresh, if there is a URL in the hash, reuse that url instead;
 	if (window.location.hash.length && window.location.hash!=="##")
-		thisurl = window.location.hash.slice(1);
+		thisurl = window.location.hash.slice(1).split("|")[0];
 	else
 		thisurl = "#thisurl#";
 		

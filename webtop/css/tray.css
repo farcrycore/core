@@ -12,6 +12,8 @@ body{
 #farcrytray .designmodedisabled_icon { background-image:url(../facade/icon.cfm?icon=redled&size=16) !important; }
 #farcrytray .previewmode_icon { background-image:url(../facade/icon.cfm?icon=greenled&size=16) !important; }
 #farcrytray .previewmodedisabled_icon { background-image:url(../facade/icon.cfm?icon=redled&size=16) !important; }
+#farcrytray .cacheon_icon { background-image:url(../facade/icon.cfm?icon=greenled&size=16) !important; }
+#farcrytray .cacheoff_icon { background-image:url(../facade/icon.cfm?icon=redled&size=16) !important; }
 #farcrytray .updateapp_icon { background-image:url(../facade/icon.cfm?icon=updateapp&size=16) !important; }
 #farcrytray .logout_icon { background-image:url(../facade/icon.cfm?icon=logout&size=16) !important; }
 #farcrytray .toggletray_icon { background-image:url(../facade/icon.cfm?icon=toggletray&size=16) !important; }

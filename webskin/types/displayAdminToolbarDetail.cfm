@@ -59,7 +59,7 @@
 				<!--- locked by current user --->
 				<cfset tDT=application.thisCalendar.i18nDateTimeFormat(stobj.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)>
 				<cfoutput>
-					"<span style='color:red'>#application.rb.formatRBString("workflow.labels.lockedwhen@label",tDT,"Locked ({1})")#</span> <a href='navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#'>[#application.rb.getResource("workflow.buttons.unlock@label","Unlock")#]</a>"
+					"<span style='color:red'>#application.rb.formatRBString("workflow.labels.lockedwhen@label",tDT,"Locked ({1})")#</span> <a href='#application.url.webtop#/navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#' onclick='Ext.getBody().mask(\"Working...\");Ext.Ajax.request({url:this.href,success:function(){ location.href=location.href; } });return false;' target='_top'>[#application.rb.getResource("workflow.buttons.unlock@label","Unlock")#]</a>"
 				</cfoutput>
 			<cfelseif stobj.locked>
 				<!--- locked by another user --->
@@ -69,7 +69,7 @@
 				<!--- check if current user is a sysadmin so they can unlock --->
 				<cfif iDeveloperPermission eq 1><!--- show link to unlock --->
 					<cfoutput>
-						"<a href='navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#'>[#application.rb.getResource("workflow.buttons.unlock@label","Unlock")#]</a>"
+						"<a href='#application.url.webtop#/navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#' onclick='Ext.getBody().mask(\"Working...\");Ext.Ajax.request({url:this.href,success:function(){ location.href=location.href; } });return false;' target='_top'>[#application.rb.getResource("workflow.buttons.unlock@label","Unlock")#]</a>"
 					</cfoutput>
 				</cfif>
 			<cfelse><!--- no locking --->
@@ -145,6 +145,32 @@
 
 <!--- ACTIONS --->
 <cfset aActions = arraynew(1) />
+<!--- Caching --->
+<cfsavecontent variable="html">
+	<cfoutput>
+		{
+			xtype:"tbbutton",
+			iconCls:<cfif request.mode.flushcache>"cacheoff_icon"<cfelse>"cacheon_icon"</cfif>,
+			text:<cfif request.mode.flushcache>"Cache On"<cfelse>"Cache Off"</cfif>,
+			//enableToggle:true,
+			//allowDepress:true,
+			//pressed:#request.mode.showdraft#,
+			listeners:{
+				"click":{
+					fn:function(){
+						<cfif request.mode.flushcache>
+							parent.updateContent("#url.url#&flushcache=0");
+						<cfelse>
+							parent.updateContent("#url.url#&flushcache=1");
+						</cfif>
+						Ext.getBody().mask("Working...");
+					}
+				}
+			}
+		}
+	</cfoutput>
+</cfsavecontent>
+<cfset arrayappend(aActions,html) />
 
 <!--- View drafts --->
 <cfsavecontent variable="html">
@@ -166,7 +192,7 @@
 						<cfelse>
 							parent.updateContent("#url.url#&flushcache=0&showdraft=1");
 						</cfif>
-						Ext.getBody().mask("Loading...");
+						Ext.getBody().mask("Working...");
 					}
 				}
 			}
@@ -194,7 +220,7 @@
 							<cfelse>
 								parent.updateContent("#url.url#&designmode=1");
 							</cfif>
-							Ext.getBody().mask("Loading...");
+							Ext.getBody().mask("Working...");
 						}
 					}
 				}
@@ -205,24 +231,30 @@
 </sec:CheckPermission>
 
 <!--- Editing the object --->
-
 <sec:CheckPermission objectid="#stObj.objectid#" typename="#stObj.typename#" permission="Edit">
-	<cfif structkeyexists(stObj,"status") and stObj.status eq "draft">
-		<cfset editableid = stObj.objectid />
-	<cfelseif structkeyexists(stObj,"versionid")>
-		<cfset qDraft = createObject("component", "#application.packagepath#.farcry.versioning").checkIsDraft(objectid=stobj.objectid,type=stobj.typename)>
-		<cfif qDraft.recordcount>
-			<cfset editableid = qDraft.objectid />
+	<cfif not stObj.typename eq "farCOAPI">
+		<cfif structkeyexists(stObj,'status') and stObj.status eq "draft">
+			<!--- If this is an unversioned object, ignore the status, just edit it --->
+			<cfset editobjectid = stObj.objectid />
+			<cfset editurl = "#application.url.webtop#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=edit&ref=&finishurl=&iframe=true" />
+		<cfelseif structkeyexists(stObj,"versionid")>
+			<!--- This object is versioned, but isn't in draft. Is there a draft version? --->
+			<cfset qDraft = createObject("component", "#application.packagepath#.farcry.versioning").checkIsDraft(objectid=stobj.objectid,type=stobj.typename)>
+			<cfif qDraft.recordcount>
+				<!--- There is a draft version - edit that --->
+				<cfset editobjectid = qDraft.objectid />
+				<cfset editurl = "#application.url.webtop#/conjuror/invocation.cfm?objectid=#qDraft.objectid#&method=edit&ref=&finishurl=&iframe=true" />
+			<cfelse>
+				<!--- There isn't a draft version - create one --->
+				<cfset editobjectid = "" />
+				<cfset editurl = "#application.url.webtop#/conjuror/createDraftObject.cfm?objectid=#stObj.objectid#&ref=&finishurl=&iframe=true" />
+			</cfif>
 		<cfelse>
-			<cfset editableid = "" />
+			<!--- If this is an unversioned object, ignore the status, just edit it --->
+			<cfset editobjectid = stObj.objectid />
+			<cfset editurl = "#application.url.webtop#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=edit&ref=&finishurl=&iframe=true" />
 		</cfif>
-	<cfelseif not structkeyexists(stObj,"status")>
-		<cfset editableid = stObj.objectid />
-	<cfelse>
-		<cfset editableid = "" />
-	</cfif>
-	
-	<cfif len(editableid)>
+		
 		<cfsavecontent variable="html">
 			<cfoutput>
 				{
@@ -232,7 +264,15 @@
 					listeners:{
 						"click":{
 							fn:function(){
-								parent.openScaffoldDialog("#application.url.webtop#/conjuror/invocation.cfm?objectid=#editableid#&method=edit&ref=&finishurl=&iframe=true","Edit #stObj.label#",800,600,true);
+								parent.editContent("#editurl#","Edit #stObj.label#",800,600,true,<cfif len(editobjectid)>function(){
+									// make sure the object is unlocked
+									Ext.Ajax.request({ 
+										url: "#application.url.webtop#/navajo/unlock.cfm?objectid=#editobjectid#&typename=#stObj.typename#", 
+										success: function() {
+											location.href = location.href;
+										}
+									});
+								}</cfif>);
 							}
 						}
 					}

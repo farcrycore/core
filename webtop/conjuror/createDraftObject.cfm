@@ -58,7 +58,7 @@ Creates a draft object
 
 	<cfoutput>
 	<script>
-		window.location="#application.url.farcry#/navajo/edit.cfm?objectId=#NewObjID#&type=#stProps.typename#<cfif isDefined('url.finishUrl')>&finishUrl=#url.finishUrl#</cfif>";
+		window.location="#application.url.farcry#/navajo/edit.cfm?objectId=#NewObjID#&type=#stProps.typename#<cfif isDefined('url.finishUrl')>&finishUrl=#url.finishUrl#</cfif><cfif isDefined('url.iframe')>&iframe=#url.iframe#</cfif>";
 	</script>
 	</cfoutput>
 </cfif>
