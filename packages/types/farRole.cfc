@@ -295,16 +295,24 @@ object methods
 	</cffunction>
 
 	<cffunction name="getDefaultRoles" access="public" output="false" returntype="string" hint="Returns a list of the default roles">
+
 		<cfset var qRoles = "" />
 		
-		<cfquery datasource="#application.dsn#" name="qRoles">
-			select	objectid
-			from	#application.dbowner#farRole
-			where	isdefault=1
-		</cfquery>
+		<cfif not structKeyExists(variables, "lDefaultRoles")>
+
+			<cfquery datasource="#application.dsn#" name="qRoles">
+				select	objectid
+				from	#application.dbowner#farRole
+				where	isdefault=1
+			</cfquery>
+			
+			<cfset variables.lDefaultRoles = valuelist(qRoles.objectid) />
+			
+		</cfif>
 		
-		<cfreturn valuelist(qRoles.objectid) />
+		<cfreturn variables.lDefaultRoles />
 	</cffunction>
+	
 	
 	<cffunction name="getAllRoles" access="public" output="false" returntype="string" hint="Returns list of all role objectids">
 		<cfset var qRoles = "" />

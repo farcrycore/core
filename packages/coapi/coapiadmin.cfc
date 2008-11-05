@@ -377,42 +377,33 @@
 		<cfset var plugin = "" />
 	
 		<!--- If the webskin is in the application.stcoapi then just use it --->
-		<cfif isdefined("application.stcoapi.#arguments.typename#.qWebskins")>
-			<cfset qWebskinMetadata = application.stcoapi[arguments.typename].qWebskins />
+		<cfif isdefined("application.stcoapi.#arguments.typename#.stWebskins") and structKeyExists(application.stcoapi[arguments.typename].stWebskins, arguments.template)>
+			<cfset webskinPath = application.stcoapi[arguments.typename].stWebskins[arguments.template].path />
+		<cfelse>
 		
-			<cfquery dbtype="query" name="qWebskinPath">
-			SELECT * 
-			FROM qWebskinMetadata
-			WHERE lower(methodname) = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lCase(arguments.template)#" />
-			</cfquery>
-			
-			<cfif qWebskinPath.recordCount>
-				<cfreturn qWebskinPath.path />
-			</cfif>
-		</cfif>
+			<cfif fileExists("#application.path.project#/webskin/#arguments.typename#/#arguments.template#.cfm")>
+				
+				<cfset webskinPath = "/farcry/projects/#application.projectDirectoryName#/webskin/#arguments.typename#/#arguments.template#.cfm" />
+				
+			<cfelseif structKeyExists(application, "plugins") and listLen(application.plugins)>
 	
-		<cfif fileExists("#application.path.project#/webskin/#arguments.typename#/#arguments.template#.cfm")>
-			
-			<cfset webskinPath = "/farcry/projects/#application.projectDirectoryName#/webskin/#arguments.typename#/#arguments.template#.cfm" />
-			
-		<cfelseif structKeyExists(application, "plugins") and listLen(application.plugins)>
-
-			<cfloop list="#application.plugins#" index="plugin">
+				<cfloop list="#application.plugins#" index="plugin">
+					
+					<cfif fileExists(ExpandPath("/farcry/plugins/#plugin#/webskin/#arguments.typename#/#arguments.template#.cfm"))>
+					
+						<cfset webskinPath = "/farcry/plugins/#plugin#/webskin/#arguments.typename#/#arguments.template#.cfm" />
+					</cfif>	
+					
+				</cfloop>
 				
-				<cfif fileExists(ExpandPath("/farcry/plugins/#plugin#/webskin/#arguments.typename#/#arguments.template#.cfm"))>
+			</cfif>
+			
+			<!--- If it hasnt been found yet, check in core. --->
+			<cfif not len(webskinPath) AND fileExists(ExpandPath("/farcry/core/webskin/#arguments.typename#/#arguments.template#.cfm"))>
 				
-					<cfset webskinPath = "/farcry/plugins/#plugin#/webskin/#arguments.typename#/#arguments.template#.cfm" />
-				</cfif>	
+				<cfset webskinPath = "/farcry/core/webskin/#arguments.typename#/#arguments.template#.cfm" />
 				
-			</cfloop>
-			
-		</cfif>
-		
-		<!--- If it hasnt been found yet, check in core. --->
-		<cfif not len(webskinPath) AND fileExists(ExpandPath("/farcry/core/webskin/#arguments.typename#/#arguments.template#.cfm"))>
-			
-			<cfset webskinPath = "/farcry/core/webskin/#arguments.typename#/#arguments.template#.cfm" />
-			
+			</cfif>
 		</cfif>
 		
 		<cfreturn webskinPath>

@@ -1006,6 +1006,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var extendedWebskinName = "">
 		<cfset var aFilteredWebskins = arrayNew(1) />
 		<cfset var stFilterDetails = structNew() />
+		<cfset var ixCol = "">
 		
 		<!--- If we are updating a type that already exists then we need to update only the metadata that has changed. --->
 		<cfparam name="stReturnMetadata.stProps" default="#structnew()#" />
@@ -1044,7 +1045,16 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfloop list="#arrayToList(stReturnMetadata.aExtends)#" index="i">
 			<cfset stReturnMetaData.qWebskins = mergeWebskins(stReturnMetaData.qWebskins, application.coapi.coapiAdmin.getWebskins(typename=i, bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#")) />
 		</cfloop>
-
+		
+		<!--- Setup a struct to store all the webskins --->
+		<cfset stReturnMetadata.stWebskins = structNew() />
+		<cfloop query="stReturnMetadata.qWebskins">
+			<cfset stReturnMetadata.stWebskins[stReturnMetadata.qWebskins.METHODNAME[currentRow]] = structNew() />
+			<cfloop list="#stReturnMetadata.qWebskins.columnList#" index="ixCol">
+				<cfset stReturnMetadata.stWebskins[stReturnMetadata.qWebskins.METHODNAME[currentRow]][ixCol] = stReturnMetadata.qWebskins[ixCol][currentRow] />
+			</cfloop>
+		</cfloop>
+		
 		<!--- 
 		NEED TO LOOP THROUGH ALL THE WEBSKINS AND CHECK EACH ONE FOR WILDCARDS.
 		IF WILD CARDS EXIST, FIND ALL WEBSKINS THAT MATCH AND ADD THEM TO THE LIST
