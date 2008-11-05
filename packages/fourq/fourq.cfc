@@ -729,12 +729,15 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfif qFindType.recordCount>
 			<cfset result = qFindType.typename />
 		<cfelse>		
+			<cftry>
 			<cfif structKeyExists(Session, "TempObjectStore") 
 				AND structKeyExists(Session.TempObjectStore, "#arguments.objectid#")
 				AND structKeyExists(Session.TempObjectStore["#arguments.objectid#"], "typename")>
 				
 				<cfset result = Session.TempObjectStore["#arguments.objectid#"].typename />
 			</cfif>
+			<cfcatch type="any"><!--- ignore as session scope may not yet be available. ---></cfcatch>
+			</cftry>
 		</cfif>
 		
 		<!--- 
