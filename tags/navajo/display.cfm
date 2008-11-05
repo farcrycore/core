@@ -210,18 +210,14 @@
 		<cfset request.fc.bShowTray = false />
 		
 		<!--- Output tray info --->
-		<cfset thiskey = hash(createuuid()) />
-		<cfparam name="session.fc" default="#structnew()#" />
-		<cfparam name="session.fc.proxy" default="#structnew()#" />
-		<cfset session.fc.requests[thiskey] = structnew() />
-		<cfset session.fc.requests[thiskey].url = "#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray)=[^&]*','','ALL')#" />
-		<cfset session.fc.requests[thiskey].tray = "#application.url.webroot#/index.cfm?objectid=#attributes.objectid#&view=displayAdminToolbar&key=#thiskey#" />
+		<cfset thisurl = "#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray)=[^&]*','','ALL')#" />
+		<cfset thistray = "#application.url.webroot#/index.cfm?objectid=#attributes.objectid#&view=displayAdminToolbar&key=#hash(createuuid())#" />
 		<skin:htmlHead><cfoutput>
 			<script type="text/javascript">
 				if (top.location == location)
-					location = "#application.url.webtop#/adminproxy.cfm?h=#thiskey#";
+					location = "#application.url.webtop#/tray.cfm?url=#urlencodedformat(thisurl)#";
 				else
-					parent.updateTray('#session.fc.requests[thiskey].tray#',document.title,'#thiskey#');
+					parent.updateTray('#thistray#',document.title,'#thisurl#');
 			</script>
 		</cfoutput></skin:htmlHead>
 	<cfelseif request.mode.bAdmin and structkeyexists(session.dmProfile,"bShowTray") and not session.dmProfile.bShowTray><!--- Tray will only be disabled for admins if the admin has turned it off --->
@@ -291,18 +287,14 @@
 			<cfset request.fc.bShowTray = false />
 			
 			<!--- Output tray info --->
-			<cfset thiskey = hash(createuuid()) />
-			<cfparam name="session.fc" default="#structnew()#" />
-			<cfparam name="session.fc.proxy" default="#structnew()#" />
-			<cfset session.fc.requests[thiskey] = structnew() />
-			<cfset session.fc.requests[thiskey].url = "#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray)=[^&]*','','ALL')#" />
-			<cfset session.fc.requests[thiskey].tray = "#application.url.webroot#/index.cfm?type=#attributes.typename#&view=displayAdminToolbar&key=#thiskey#" />
+			<cfset thisurl = "#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray)=[^&]*','','ALL')#" />
+			<cfset thistray = "#application.url.webroot#/index.cfm?objectid=#attributes.objectid#&view=displayAdminToolbar&key=#hash(createuuid())#" />
 			<skin:htmlHead><cfoutput>
 				<script type="text/javascript">
 					if (top.location == location)
-						location = "#application.url.webtop#/adminproxy.cfm?h=#thiskey#";
+						location = "#application.url.webtop#/tray.cfm?url=#urlencodedformat(thisurl)#";
 					else
-						parent.updateTray('#session.fc.requests[thiskey].tray#',document.title,'#thiskey#');
+						parent.updateTray('#thistray#',document.title,'#thisurl#');
 				</script>
 			</cfoutput></skin:htmlHead>
 		<cfelseif request.mode.bAdmin and structkeyexists(session.dmProfile,"bShowTray") and not session.dmProfile.bShowTray><!--- Tray will only be disabled for admins if the admin has turned it off --->
