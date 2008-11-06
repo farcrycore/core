@@ -148,7 +148,7 @@
 					listeners:{
 						"click":{
 							fn:function(){
-								parent.editContent("#editurl#","Edit #stObj.label#",800,600,true,<cfif len(editobjectid)>function(){
+								parent.editContent("#editurl#","Edit #stObj.label#",800,600,true<cfif len(editobjectid)>,function(){
 									// make sure the object is unlocked
 									Ext.Ajax.request({ 
 										url: "#application.url.webtop#/navajo/unlock.cfm?objectid=#editobjectid#&typename=#stObj.typename#", 
