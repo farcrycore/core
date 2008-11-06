@@ -146,10 +146,6 @@
 		<cfthrow type="Application" errorcode="tags.formtools.object" message="Object metadata could not be determined." detail="Make sure you actually passed in a value for either objectid, stobject or typename attributes." />
 	</cfif>
 	
-	<!--- I18 conversion of field labels --->
-	<cfloop collection="#stFields#" item="prop">
-		<cfset stFields[prop].metadata.ftLabel = oType.getI18Property(property=prop,value='label') />
-	</cfloop>
 
 	<cfset lFieldsToRender =  "">
 
@@ -203,6 +199,11 @@
 			</cfif>
 		</cfloop>
 	</cfif>
+	
+	<!--- I18 conversion of field labels --->
+	<cfloop list="#lFieldsToRender#" index="prop">
+		<cfset stFields[prop].metadata.ftLabel = oType.getI18Property(property=prop,value='label') />
+	</cfloop>
 		
 	<!--- CHECK TO SEE IF OBJECTED HAS ALREADY BEEN RENDERED. IF SO, USE SAME PREFIX --->
 	<cfif isDefined("variables.stObj") and not structIsEmpty(variables.stObj)>
