@@ -77,7 +77,7 @@ out:
 	<cfset iCount = 1>
 	</cfsilent>
 	<cfloop query="qCrumb">
-		<cfoutput><skin:buildLink objectid="#qCrumb.objectid#" class="#attributes.linkClass#">#trim(qCrumb.objectName)#</skin:buildLink><cfif iCount neq qCrumb.recordCount>#attributes.separator#</cfif></cfoutput>
+		<cfoutput><skin:buildLink objectid="#qCrumb.objectid#" class="#attributes.linkClass#" /><cfif iCount neq qCrumb.recordCount>#attributes.separator#</cfif></cfoutput>
 		<cfsilent><cfset iCount = iCount + 1></cfsilent>
 	</cfloop>
 	<cfif attributes.includeSelf>
@@ -93,7 +93,7 @@ out:
 	</cfif>
 <cfelse>
 	<!--- output home only --->
-	<cfoutput>#attributes.prefix# <a href="#application.url.webroot#/" class="#attributes.linkClass#">Home</a></cfoutput>
+	<cfoutput>#attributes.prefix# <skin:buildLink objectid="#application.navid.home#" class="#attributes.linkClass#" /></cfoutput>
 	<!--- #FC-611 if calling page is including itself, display page linked title --->
 	<cfif attributes.includeSelf>
 		<cfoutput>#attributes.separator#</cfoutput>

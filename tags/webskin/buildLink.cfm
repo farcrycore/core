@@ -170,18 +170,30 @@
 <!--- thistag.ExecutionMode is END --->
 <cfelse>
 	<cfif not len(attributes.r_url)>
+	
+
 		<!--- Was only the URL requested? If so, we don't need to close any tags --->
 		<cfif attributes.urlOnly EQ false>
+			
+			<!--- USE THE LINKTEXT AS GENERATED CONTENT IF AVAILABLE --->
 			<cfif len(attributes.linktext)>
-				<cfset tagoutput=tagoutput & trim(attributes.linktext) & '</a>'>
-			<cfelse>
-				<cfset tagoutput=tagoutput & trim(thistag.generatedcontent) & '</a>'>
+				<cfset thistag.GeneratedContent = attributes.linktext />
 			</cfif>
+			
+			<!--- IF WE DONT HAVE ANY GENERATED CONTENT, GO FIND THE LABEL OF THE OBJECT --->
+			<cfif not len(thistag.GeneratedContent) and len(attributes.objectid)>
+				<cfset stLinkObject = application.coapi.coapiUtilities.getContentObject(objectid="#attributes.objectid#", typeanme="#attributes.type#") />
+				<cfset thistag.GeneratedContent=stLinkObject.label />
+			</cfif>		
+		
+			<cfset tagoutput = tagoutput & trim(thistag.generatedcontent) & '</a>'>
 		</cfif>
-
+		
+		
 		<!--- clean up whitespace --->
 		<cfset thistag.GeneratedContent=tagoutput>
 	</cfif>
 </cfif>
 </cfsilent>
+
 <cfsetting enablecfoutputonly="No">
