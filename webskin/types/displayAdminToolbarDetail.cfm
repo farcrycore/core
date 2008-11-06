@@ -64,7 +64,7 @@
 			<cfelseif stobj.locked>
 				<!--- locked by another user --->
 				<cfset subS=listToArray('#application.thisCalendar.i18nDateFormat(stobj.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)#,#stobj.lockedby#')>
-				<cfoutput>"#application.rb.formatRBString('workflow.labels.lockedby@label',subS,'<span style="color:red">Locked ({1})</span> by {2}')#"</cfoutput>
+				<cfoutput>"#application.rb.formatRBString('workflow.labels.lockedby@label',subS,'<span style=\"color:red\">Locked ({1})</span> by {2}')#"</cfoutput>
 				
 				<!--- check if current user is a sysadmin so they can unlock --->
 				<cfif iDeveloperPermission eq 1><!--- show link to unlock --->
