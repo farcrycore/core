@@ -199,14 +199,15 @@
 		</cfif>		
 
 		<cfif arguments.bCheckUnique>
-			<cfset stLocal.stFU = getFUData(arguments.friendlyURL) />
+			<cfset stLocal.stFU = getFUData(cleanFU) />
 			
 			<!--- IF WE FOUND ONE WITH THIS FRIENDLY URL, MAKE THE NEW ONE UNIQUE --->
 			<cfif not structIsEmpty(stLocal.stFU)>
 				<cfquery datasource="#application.dsn#" name="stLocal.qDuplicates">
 				SELECT objectid
 				FROM farFU
-				WHERE friendlyURL LIKE <cfqueryparam value="#arguments.friendlyURL#%" cfsqltype="cf_sql_varchar">
+				WHERE friendlyURL LIKE <cfqueryparam value="#cleanFU#" cfsqltype="cf_sql_varchar">
+				AND fuStatus > 0
 				</cfquery>
 				<cfset cleanFU = "#cleanFU##stLocal.qDuplicates.recordCount#">
 			</cfif>
