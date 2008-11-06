@@ -64,14 +64,16 @@
 			<cfelseif stobj.locked>
 				<!--- locked by another user --->
 				<cfset subS=listToArray('#application.thisCalendar.i18nDateFormat(stobj.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)#,#stobj.lockedby#')>
-				<cfoutput>"#application.rb.formatRBString('workflow.labels.lockedby@label',subS,'<span style=\"color:red\">Locked ({1})</span> by {2}')#"</cfoutput>
+				<cfoutput>"#application.rb.formatRBString('workflow.labels.lockedby@label',subS,'<span style=\"color:red\">Locked ({1})</span> by {2}')#</cfoutput>
 				
 				<!--- check if current user is a sysadmin so they can unlock --->
 				<cfif iDeveloperPermission eq 1><!--- show link to unlock --->
 					<cfoutput>
-						"<a href='#application.url.webtop#/navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#' onclick='Ext.getBody().mask(\"Working...\");Ext.Ajax.request({url:this.href,success:function(){ location.href=location.href; } });return false;' target='_top'>[#application.rb.getResource("workflow.buttons.unlock@label","Unlock")#]</a>"
+						<a href='#application.url.webtop#/navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#' onclick='Ext.getBody().mask(\"Working...\");Ext.Ajax.request({url:this.href,success:function(){ location.href=location.href; } });return false;' target='_top'>[#application.rb.getResource("workflow.buttons.unlock@label","Unlock")#]</a>
 					</cfoutput>
 				</cfif>
+				
+				<cfoutput>"</cfoutput>
 			<cfelse><!--- no locking --->
 				<cfoutput>"#application.rb.getResource("workflow.labels.unlocked@unlocked","Unlocked")#"</cfoutput>
 			</cfif>
