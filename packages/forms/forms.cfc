@@ -387,22 +387,24 @@
 		<cfargument name="property" type="string" required="true" hint="The property being queried" default="" />
 		<cfargument name="value" type="string" required="false" hint="The value required i.e. label, helptitle, helpsection" default="label" />
 
-		<cfset meta = "" />
-		<cfset prop = arguments.value />
-
+		<cfset var result = "" />
+		
 		<cfset init() />
 
-		<cfswitch expression="#arguments.value#">
-			<cfcase value="label">
-				<cfif len(application.stCOAPI[variables.typename].stProps[arguments.property].metadata["ftLabel"])>
-					<cfreturn application.rb.getResource("coapi.#variables.typename#.properties.#arguments.property#@#arguments.value#",application.stCOAPI[variables.typename].stProps[arguments.property].metadata["ftLabel"]) />
-				<cfelse>
-					<cfreturn application.rb.getResource("coapi.#variables.typename#.properties.#arguments.property#@#arguments.value#",application.stCOAPI[variables.typename].stProps[arguments.property].metadata["name"]) />
-				</cfif>
-			</cfcase>
-		</cfswitch>
+		<cfif arguments.value EQ "label">
+			<cfif len(application.stCOAPI[variables.typename].stProps[arguments.property].metadata["ftLabel"])>
+				<cfset result = application.rb.getResource("coapi.#variables.typename#.properties.#arguments.property#@#arguments.value#",application.stCOAPI[variables.typename].stProps[arguments.property].metadata["ftLabel"]) />
+			<cfelse>
+				<cfset result = application.rb.getResource("coapi.#variables.typename#.properties.#arguments.property#@#arguments.value#",application.stCOAPI[variables.typename].stProps[arguments.property].metadata["name"]) />
+			</cfif>
+		<cfelse>
+			<cfset result = application.rb.getResource("coapi.#variables.typename#.properties.#arguments.property#@#arguments.value#","") />
+		</cfif>
 		
-		<cfreturn application.rb.getResource("coapi.#variables.typename#.properties.#arguments.property#@#arguments.value#","") />
+		<cfreturn result />
+		
+
+		
 	</cffunction>
 
 	<cffunction name="getI18Step" access="public" output="false" returntype="string" hint="Provides access to I18 values for labels etc">
