@@ -66,7 +66,10 @@
 		thisurl = window.location.hash.slice(1).split("|")[0];
 	else
 		thisurl = "#thisurl#";
-		
+	
+	if (!thisurl.match(/^\\/))
+		thisurl = decodeURIComponent(thisurl);
+	
 	var all = new Ext.Viewport({
 		layout:"border",
 		border:false,

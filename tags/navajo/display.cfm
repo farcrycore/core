@@ -216,7 +216,7 @@
 		<skin:htmlHead><cfoutput>
 			<script type="text/javascript">
 				if (top.location == location)
-					location = "#application.url.webtop#/tray.cfm###urlencodedformat(thisurl)#";
+					location = "#application.url.webtop#/tray.cfm###urlencodedformat(thisurl)#|summary";
 				else
 					parent.updateTray('#thistray#',document.title,'#thisurl#');
 			</script>
@@ -298,7 +298,7 @@
 			<skin:htmlHead><cfoutput>
 				<script type="text/javascript">
 					if (top.location == location)
-						location = "#application.url.webtop#/tray.cfm###urlencodedformat(thisurl)#";
+						location = "#application.url.webtop#/tray.cfm###urlencodedformat(thisurl)#|summary";
 					else
 						top.updateTray('#thistray#',document.title,'#thisurl#');
 				</script>

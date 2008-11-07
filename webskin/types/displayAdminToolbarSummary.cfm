@@ -76,7 +76,7 @@
 		{
 			xtype:"tbbutton",
 			iconCls:<cfif request.mode.showdraft>"previewmode_icon"<cfelse>"previewmodedisabled_icon"</cfif>,
-			text:<cfif request.mode.showdraft>"Hiding Drafts"<cfelse>"Showing Drafts"</cfif>,
+			text:<cfif request.mode.showdraft>"Showing Drafts"<cfelse>"Hiding Drafts"</cfif>,
 			listeners:{
 				"click":{
 					fn:function(){
