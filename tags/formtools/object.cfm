@@ -651,7 +651,7 @@
 					<cfoutput></td></tr></cfoutput>
 				<cfelse>
 					<cfoutput>
-						<br class="clearer" />
+						<cfif Attributes.IncludeBR EQ 1><br class="clearer" /></cfif>
 					</div>
 					</cfoutput>
 				</cfif>
