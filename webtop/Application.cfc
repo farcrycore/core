@@ -23,7 +23,7 @@
 			<!--- logout illegal users --->
 			<cfset application.factory.oAuthentication.logout() />
 		    <cfif not ListContains( cgi.script_name, "#application.url.farcry#/login.cfm" )>
-		        <cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#" addtoken="No">
+		        <cflocation url="#application.url.farcry#/login.cfm?returnUrl=#replace(URLEncodedFormat(cgi.script_name&'?'&cgi.query_string),'##','%23','ALL')#" addtoken="No">
 		        <cfabort>
 		    </cfif>
 		</cfif>
