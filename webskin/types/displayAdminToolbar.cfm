@@ -14,8 +14,13 @@
 	<cfparam name="url.tray" default="summary" />
 	
 	<sec:CheckPermission generalpermission="Admin">
-		<skin:view stObject="#stObj#" webskin="displayAdminToolbarSummary" r_html="summarytoolbar" />
-		<skin:view stObject="#stObj#" webskin="displayAdminToolbarDetail" r_html="detailstoolbar" />
+		<cfif stObj.typename eq "farCOAPI">
+			<skin:view typename="#stObj.name#" webskin="displayAdminToolbarSummary" r_html="summarytoolbar" />
+			<skin:view typename="#stObj.name#" webskin="displayAdminToolbarDetail" r_html="detailstoolbar" />
+		<cfelse>
+			<skin:view stObject="#stObj#" webskin="displayAdminToolbarSummary" r_html="summarytoolbar" />
+			<skin:view stObject="#stObj#" webskin="displayAdminToolbarDetail" r_html="detailstoolbar" />
+		</cfif>
 		
 		<skin:htmlHead library="jQueryJS" />
 		<skin:htmlHead><cfoutput>
@@ -87,7 +92,7 @@
 									listeners:{
 										"click":{
 											fn:function(){
-												top.location = "#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&bShowTray=0";
+												top.location = "#application.url.webroot##url.url#&bShowTray=0";
 											}
 										}
 									}
@@ -99,7 +104,7 @@
 										"click":{
 											fn:function(){
 												if (confirm('Are you sure you want to update the application?'))
-													parent.updateContent("#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&updateapp=1");
+													parent.updateContent("#application.url.webroot##url.url#&updateapp=1");
 											}
 										}
 									}
@@ -111,7 +116,7 @@
 										"click":{
 											fn:function(){
 												if (confirm('Are you sure you want to log out of FarCry?'))
-													top.location = "#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&logout=1";
+													top.location = "#application.url.webroot##url.url#&logout=1";
 											}
 										}
 									}
@@ -158,7 +163,7 @@
 										listeners:{
 											"click":{
 												fn:function(){
-													top.location = "#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&bShowTray=0";
+													top.location = "#application.url.webroot##url.url#&bShowTray=0";
 												}
 											}
 										}
@@ -173,7 +178,7 @@
 											"click":{
 												fn:function(){
 													if (confirm('Are you sure you want to update the application?'))
-														parent.updateContent("#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&updateapp=1");
+														parent.updateContent("#application.url.webroot##url.url#&updateapp=1");
 												}
 											}
 										}
@@ -188,7 +193,7 @@
 											"click":{
 												fn:function(){
 													if (confirm('Are you sure you want to log out of FarCry?'))
-														top.location = "#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&logout=1";
+														top.location = "#application.url.webroot##url.url#&logout=1";
 												}
 											}
 										}

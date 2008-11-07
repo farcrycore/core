@@ -9,6 +9,11 @@
 
 <extjs:iframeDialog />
 
+<cfif stObj.typename eq "farCOAPI">
+	<cfset currenttype = stObj.name />
+<cfelse>
+	<cfset currenttype = stObj.typename />
+</cfif>
 
 <!--- DATA --->
 <cfsavecontent variable="dataconfig"><cfoutput>
@@ -28,10 +33,10 @@
 			cellCls:"typename",
 			html:</cfoutput>
 			
-			<cfif structKeyExists(application.stcoapi,"#stobj.typename#") AND structKeyExists(application.stcoapi[stobj.typename],"displayname")>
-				<cfoutput>"#application.stcoapi[stobj.typename].displayname#"</cfoutput>
+			<cfif structKeyExists(application.stcoapi,"#currenttype#") AND structKeyExists(application.stcoapi[currenttype],"displayname")>
+				<cfoutput>"#application.stcoapi[currenttype].displayname#"</cfoutput>
 			<cfelse>
-				<cfoutput>"#stobj.typename#"</cfoutput>
+				<cfoutput>"#currenttype#"</cfoutput>
 			</cfif>
 		
 		<cfoutput>
@@ -45,91 +50,20 @@
 			cls:"htmlpanel",
 			html:"#url.url#",
 			cellCls:"value"
-		},{
-			xtype:"panel",
-			cls:"htmlpanel",
-			html:"#application.rb.getResource("workflow.labels.locking@label","Locking")#",
-			cellCls:"label"
-		},{
-			xtype:"panel",
-			cls:"htmlpanel",
-			html:</cfoutput>
-			
-			<cfif stobj.locked and stobj.lockedby eq session.security.userid>
-				<!--- locked by current user --->
-				<cfset tDT=application.thisCalendar.i18nDateTimeFormat(stobj.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)>
-				<cfoutput>
-					"<span style='color:red'>#application.rb.formatRBString("workflow.labels.lockedwhen@label",tDT,"Locked ({1})")#</span> <a href='#application.url.webtop#/navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#' onclick='Ext.getBody().mask(\"Working...\");Ext.Ajax.request({url:this.href,success:function(){ location.href=location.href; } });return false;' target='_top'>[#application.rb.getResource("workflow.buttons.unlock@label","Unlock")#]</a>"
-				</cfoutput>
-			<cfelseif stobj.locked>
-				<!--- locked by another user --->
-				<cfset subS=listToArray('#application.thisCalendar.i18nDateFormat(stobj.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)#,#stobj.lockedby#')>
-				<cfoutput>"#application.rb.formatRBString('workflow.labels.lockedby@label',subS,'<span style=\"color:red\">Locked ({1})</span> by {2}')#</cfoutput>
-				
-				<!--- check if current user is a sysadmin so they can unlock --->
-				<cfif iDeveloperPermission eq 1><!--- show link to unlock --->
-					<cfoutput>
-						<a href='#application.url.webtop#/navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#' onclick='Ext.getBody().mask(\"Working...\");Ext.Ajax.request({url:this.href,success:function(){ location.href=location.href; } });return false;' target='_top'>[#application.rb.getResource("workflow.buttons.unlock@label","Unlock")#]</a>
-					</cfoutput>
-				</cfif>
-				
-				<cfoutput>"</cfoutput>
-			<cfelse><!--- no locking --->
-				<cfoutput>"#application.rb.getResource("workflow.labels.unlocked@unlocked","Unlocked")#"</cfoutput>
-			</cfif>
-		
-		<cfoutput>,
-			cellCls:"value"
-		},{
-			xtype:"panel",
-			cls:"htmlpanel",
-			html:"#getI18Property('datetimelastupdated','label')#",
-			cellCls:"label"
-		},{
-			xtype:"panel",
-			cls:"htmlpanel",
-			html:"#application.thisCalendar.i18nDateFormat(stobj.datetimelastupdated,session.dmProfile.locale,application.mediumF)#",
-			cellCls:"value"
-		},{
-			xtype:"panel",
-			cls:"htmlpanel",
-			html:"#getI18Property('lastupdatedby','label')#",
-			cellCls:"label"
-		},{
-			xtype:"panel",
-			cls:"htmlpanel",
-			html:"#stobj.lastupdatedby#",
-			cellCls:"value"
 		}</cfoutput>
 		
-		<cfif structkeyexists(stObj,"status")>
-			<cfoutput>
-				,{
-					xtype:"panel",
-					cls:"htmlpanel",
-					html:"#getI18Property('status','label')#",
-					cellCls:"label"
-				},{
-					xtype:"panel",
-					cls:"htmlpanel",
-					html:"#application.rb.getResource('workflow.constants.#stobj.status#@label',stObj.status)#",
-					cellCls:"value"
-				}
-			</cfoutput>
-		</cfif>
-		
-		<cfif structkeyexists(stObj,"displaymethod")>
+		<cfif stObj.typename eq "farCOAPI">
 			<cfquery dbtype="query" name="qWebskin">
 				select		displayname
-				from		application.stCOAPI.#stObj.typename#.qWebskins
-				where		name='#stObj.displaymethod#.cfm'
+				from		application.stCOAPI.#currenttype#.qWebskins
+				where		name='#url.webskinused#.cfm'
 			</cfquery>
 			
 			<cfoutput>
 				,{
 					xtype:"panel",
 					cls:"htmlpanel",
-					html:"#getI18Property('displaymethod','label')#",
+					html:"#application.rb.getResource('coapi.farCOAPI.properties.typewebskin@label','Type webskin:')#",
 					cellCls:"label"
 				},{
 					xtype:"panel",
@@ -138,7 +72,103 @@
 					cellCls:"value"
 				}
 			</cfoutput>
+		<cfelse>
+			<cfoutput>,{
+				xtype:"panel",
+				cls:"htmlpanel",
+				html:"#application.rb.getResource("workflow.labels.locking@label","Locking")#",
+				cellCls:"label"
+			},{
+				xtype:"panel",
+				cls:"htmlpanel",
+				html:</cfoutput>
+				
+				<cfif stobj.locked and stobj.lockedby eq session.security.userid>
+					<!--- locked by current user --->
+					<cfset tDT=application.thisCalendar.i18nDateTimeFormat(stobj.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)>
+					<cfoutput>
+						"<span style='color:red'>#application.rb.formatRBString("workflow.labels.lockedwhen@label",tDT,"Locked ({1})")#</span> <a href='#application.url.webtop#/navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#' onclick='Ext.getBody().mask(\"Working...\");Ext.Ajax.request({url:this.href,success:function(){ location.href=location.href; } });return false;' target='_top'>[#application.rb.getResource("workflow.buttons.unlock@label","Unlock")#]</a>"
+					</cfoutput>
+				<cfelseif stobj.locked>
+					<!--- locked by another user --->
+					<cfset subS=listToArray('#application.thisCalendar.i18nDateFormat(stobj.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)#,#stobj.lockedby#')>
+					<cfoutput>"#application.rb.formatRBString('workflow.labels.lockedby@label',subS,'<span style=\"color:red\">Locked ({1})</span> by {2}')#</cfoutput>
+					
+					<!--- check if current user is a sysadmin so they can unlock --->
+					<cfif iDeveloperPermission eq 1><!--- show link to unlock --->
+						<cfoutput>
+							<a href='#application.url.webtop#/navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#' onclick='Ext.getBody().mask(\"Working...\");Ext.Ajax.request({url:this.href,success:function(){ location.href=location.href; } });return false;' target='_top'>[#application.rb.getResource("workflow.buttons.unlock@label","Unlock")#]</a>
+						</cfoutput>
+					</cfif>
+					
+					<cfoutput>"</cfoutput>
+				<cfelse><!--- no locking --->
+					<cfoutput>"#application.rb.getResource("workflow.labels.unlocked@unlocked","Unlocked")#"</cfoutput>
+				</cfif>
+			
+			<cfoutput>,
+				cellCls:"value"
+			},{
+				xtype:"panel",
+				cls:"htmlpanel",
+				html:"#getI18Property('datetimelastupdated','label')#",
+				cellCls:"label"
+			},{
+				xtype:"panel",
+				cls:"htmlpanel",
+				html:"#application.thisCalendar.i18nDateFormat(stobj.datetimelastupdated,session.dmProfile.locale,application.mediumF)#",
+				cellCls:"value"
+			},{
+				xtype:"panel",
+				cls:"htmlpanel",
+				html:"#getI18Property('lastupdatedby','label')#",
+				cellCls:"label"
+			},{
+				xtype:"panel",
+				cls:"htmlpanel",
+				html:"#stobj.lastupdatedby#",
+				cellCls:"value"
+			}</cfoutput>
+			
+			<cfif structkeyexists(stObj,"status")>
+				<cfoutput>
+					,{
+						xtype:"panel",
+						cls:"htmlpanel",
+						html:"#getI18Property('status','label')#",
+						cellCls:"label"
+					},{
+						xtype:"panel",
+						cls:"htmlpanel",
+						html:"#application.rb.getResource('workflow.constants.#stobj.status#@label',stObj.status)#",
+						cellCls:"value"
+					}
+				</cfoutput>
+			</cfif>
+			
+			<cfif structkeyexists(stObj,"displaymethod")>
+				<cfquery dbtype="query" name="qWebskin">
+					select		displayname
+					from		application.stCOAPI.#stObj.typename#.qWebskins
+					where		name='#stObj.displaymethod#.cfm'
+				</cfquery>
+				
+				<cfoutput>
+					,{
+						xtype:"panel",
+						cls:"htmlpanel",
+						html:"#getI18Property('displaymethod','label')#",
+						cellCls:"label"
+					},{
+						xtype:"panel",
+						cls:"htmlpanel",
+						html:"#qWebskin.displayname#",
+						cellCls:"value"
+					}
+				</cfoutput>
+			</cfif>
 		</cfif>
+		
 	<cfoutput>
 		]
 	}

@@ -6,6 +6,12 @@
 
 <extjs:iframeDialog />
 
+<cfif stObj.typename eq "farCOAPI">
+	<cfset currenttype = stObj.name />
+<cfelse>
+	<cfset currenttype = stObj.typename />
+</cfif>
+
 <!--- DATA --->
 <cfset aItems = arraynew(1) />
 
@@ -15,16 +21,27 @@
 </cfif>
 
 <!--- Current template --->
-<cfif structkeyexists(stObj,"displayMethod")>
-	<cfquery dbtype="query" name="qWebskin">
-		select		displayname
-		from		application.stCOAPI.#stObj.typename#.qWebskins
-		where		name='#stObj.displaymethod#.cfm'
-	</cfquery>
-	
-	<cfset arrayappend(aItems,"Template: #qWebskin.displayname#") />
+<cfif stObj.typename eq "farCOAPI">
+	<cfif structkeyexists(url,"webskinused")>
+		<cfquery dbtype="query" name="qWebskin">
+			select		displayname
+			from		application.stCOAPI.#currenttype#.qWebskins
+			where		name='#url.webskinused#.cfm'
+		</cfquery>
+		
+		<cfset arrayappend(aItems,"Type webskin: #qWebskin.displayname#") />
+	</cfif>
+<cfelse>
+	<cfif structkeyexists(stObj,"displayMethod")>
+		<cfquery dbtype="query" name="qWebskin">
+			select		displayname
+			from		application.stCOAPI.#stObj.typename#.qWebskins
+			where		name='#stObj.displaymethod#.cfm'
+		</cfquery>
+		
+		<cfset arrayappend(aItems,"Template: #qWebskin.displayname#") />
+	</cfif>
 </cfif>
-
 
 <!--- ACTIONS --->
 <cfset aActions = arraynew(1) />
