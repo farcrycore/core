@@ -183,10 +183,7 @@
 		{
 			xtype:"tbbutton",
 			iconCls:<cfif request.mode.flushcache>"cacheoff_icon"<cfelse>"cacheon_icon"</cfif>,
-			text:<cfif request.mode.flushcache>"Cache On"<cfelse>"Cache Off"</cfif>,
-			//enableToggle:true,
-			//allowDepress:true,
-			//pressed:#request.mode.showdraft#,
+			text:<cfif request.mode.flushcache>"Cache Off"<cfelse>"Cache On"</cfif>,
 			listeners:{
 				"click":{
 					fn:function(){
@@ -210,10 +207,7 @@
 		{
 			xtype:"tbbutton",
 			iconCls:<cfif request.mode.showdraft>"previewmode_icon"<cfelse>"previewmodedisabled_icon"</cfif>,
-			text:<cfif request.mode.showdraft>"Hide Draft"<cfelse>"Show Draft"</cfif>,
-			//enableToggle:true,
-			//allowDepress:true,
-			//pressed:#request.mode.showdraft#,
+			text:<cfif request.mode.showdraft>"Showing Drafts"<cfelse>"Hiding Drafts"</cfif>,
 			listeners:{
 				"click":{
 					fn:function(){
@@ -240,10 +234,7 @@
 			{
 				xtype:"tbbutton",
 				iconCls:<cfif request.mode.design and request.mode.showcontainers gt 0>"designmode_icon"<cfelse>"designmodedisabled_icon"</cfif>,
-				text:<cfif request.mode.design and request.mode.showcontainers gt 0>"Hide Rules"<cfelse>"Show Rules"</cfif>,
-				//enableToggle:true,
-				//allowDepress:true,
-				//pressed:#request.mode.design and request.mode.showcontainers#,
+				text:<cfif request.mode.design and request.mode.showcontainers gt 0>"Showing Rules"<cfelse>"Hiding Rules"</cfif>,
 				listeners:{
 					"click":{
 						fn:function(){
