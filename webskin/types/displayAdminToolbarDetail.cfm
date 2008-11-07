@@ -96,9 +96,7 @@
 					
 					<!--- check if current user is a sysadmin so they can unlock --->
 					<cfif iDeveloperPermission eq 1><!--- show link to unlock --->
-						<cfoutput>
-							<a href='#application.url.webtop#/navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#' onclick='Ext.getBody().mask(\"Working...\");Ext.Ajax.request({url:this.href,success:function(){ location.href=location.href; } });return false;' target='_top'>[#application.rb.getResource("workflow.buttons.unlock@label","Unlock")#]</a>
-						</cfoutput>
+						<cfoutput><a href='#application.url.webtop#/navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#' onclick='Ext.getBody().mask(\"Working...\");Ext.Ajax.request({url:this.href,success:function(){ location.href=location.href; } });return false;' target='_top'>[#application.rb.getResource("workflow.buttons.unlock@label","Unlock")#]</a></cfoutput>
 					</cfif>
 					
 					<cfoutput>"</cfoutput>
