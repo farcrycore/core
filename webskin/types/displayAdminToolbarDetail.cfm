@@ -319,7 +319,7 @@
 	<cfif arraylen(aActions)>,{
 		xtype:"panel",
 		region:"east",
-		width:112,
+		width:120,
 		layout:"table",
 		border:"none",
 		layoutConfig:{
