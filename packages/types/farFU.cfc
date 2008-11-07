@@ -186,13 +186,12 @@
 		<!--- change & to "and" in title --->
 		<cfset cleanFU = reReplaceNoCase(cleanFU,'[&]','and',"all")>
 		<!--- prepend fu url pattern and add suffix --->
-		<cfset cleanFU = cleanFU>
 		<cfset cleanFU = ReplaceNocase(cleanFU,"//","/","All")>
 		<cfset cleanFU = LCase(cleanFU)>
-		<cfset cleanFU = ReReplaceNoCase(cleanFU,"[^a-z0-9/]"," ","all")>
+		<cfset cleanFU = ReReplaceNoCase(cleanFU,"[^a-z0-9/]","-","all")>
 		<cfset cleanFU = ReReplaceNoCase(cleanFU,"  "," ","all")>
-		<cfset cleanFU = Trim(cleanFU)>
 		<cfset cleanFU = ReReplaceNoCase(cleanFU," ","-","all")>
+		<cfset cleanFU = Trim(cleanFU)>
 		
 		<cfif left(cleanFU,1) NEQ "/">
 			<cfset cleanFU = "/#cleanFU#" />
