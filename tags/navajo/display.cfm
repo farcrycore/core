@@ -245,12 +245,10 @@
 			</style>
 			<![endif]>
 			<![endif]-->
-			<script type="text/javascript">
-				jQ(function(){
-					jQ("body").append("<a href='#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray)=[^&]*','','ALL')#&bShowTray=1' id='enabletray' title='Enable tray'><img src='#application.url.webtop#/facade/icon.cfm?icon=toggletray&size=64' /></a>")
-				});
-			</script>
 		</cfoutput></skin:htmlHead>
+		<extjs:onReady><cfoutput>
+			Ext.DomHelper.append(Ext.getBody(),"<a href='#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray)=[^&]*','','ALL')#&bShowTray=1' id='enabletray' title='Enable tray'><img src='#application.url.webtop#/facade/icon.cfm?icon=toggletray&size=64' /></a>");
+		</cfoutput></extjs:onReady>
 	</cfif>
 
 <cfelse>
@@ -327,12 +325,10 @@
 				</style>
 				<![endif]>
 				<![endif]-->
-				<script type="text/javascript">
-					jQ(function(){
-						jQ("body").append("<a href='#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray)=[^&]*','','ALL')#&bShowTray=1' id='enabletray' title='Enable tray'><img src='#application.url.webtop#/facade/icon.cfm?icon=toggletray&size=64' /></a>")
-					});
-				</script>
 			</cfoutput></skin:htmlHead>
+			<extjs:onReady><cfoutput>
+				Ext.DomHelper.append(Ext.getBody(),"<a href='#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray)=[^&]*','','ALL')#&bShowTray=1' id='enabletray' title='Enable tray'><img src='#application.url.webtop#/facade/icon.cfm?icon=toggletray&size=64' /></a>");
+			</cfoutput></extjs:onReady>
 		</cfif>
 	<cfelse>
 		<extjs:bubble title="Security" message="You do not have permission to access this view" />
