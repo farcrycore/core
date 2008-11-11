@@ -340,22 +340,22 @@
 		
 		<!--- Remove values --->
 		<cfloop list="#arguments.removevalues#" index="key">
-			<cfset arguments.url = rereplacenocase(arguments.url,"(?:\?&)#key#=[^&]+","") />
+			<cfset arguments.url = rereplacenocase(arguments.url,"&?#key#=[^&]+","") />
 		</cfloop>
 		
 		<!--- Add and replace values --->
 		<cfif structkeyexists(arguments,"addvalues") and isstruct(arguments.addvalues)>
 			<cfloop collection="#arguments.addvalues#" item="key">
-				<cfset arguments.url = rereplacenocase(arguments.url,"(?:\?&)#key#=[^&]+","") & "#key#=#urlencodedformat(arguments.addvalues[key])#" />
+				<cfset arguments.url = rereplacenocase(arguments.url,"&?#key#=[^&]+","") & "#key#=#urlencodedformat(arguments.addvalues[key])#" />
 			</cfloop>
 		<cfelseif structkeyexists(arguments,"addvalues")><!--- Query string format --->
 			<cfloop list="#arguments.addvalues#" index="key" delimiters="&">
-				<cfset arguments.url = rereplacenocase(arguments.url,"(?:\?&)#listfirst(key,'=')#=[^&]+","") & "#listfirst(key,'=')#=#listlast(key,'=')#" />
+				<cfset arguments.url = rereplacenocase(arguments.url,"&?#listfirst(key,'=')#=[^&]+","") & "#listfirst(key,'=')#=#listlast(key,'=')#" />
 			</cfloop>
 		<cfelse>
 			<cfloop collection="#arguments#" item="key">
 				<cfif not listcontainsnocase("url,removevalues,addvalues",key)>
-					<cfset arguments.url = rereplacenocase(arguments.url,"(?:\?&)#key#=[^&]+","") & "#key#=#urlencodedformat(arguments.params[key])#" />
+					<cfset arguments.url = rereplacenocase(arguments.url,"&?#key#=[^&]+","") & "#key#=#urlencodedformat(arguments.params[key])#" />
 				</cfif>
 			</cfloop>
 		</cfif>
