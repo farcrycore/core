@@ -330,4 +330,37 @@
 		<cfreturn result />
 	</cffunction>
 
+	<!--- MISCELLANEOUS utilities --->
+	<cffunction name="fixURL" returntype="string" output="false" access="public" hint="Refreshes the page with the specified query string values removed, replaced, or added. New values can be specified with a query string, struct, or named arguments." bDocument="true">
+		<cfargument name="url" type="string" required="false" default="#cgi.script_name#?#cgi.query_string#" hint="The url to use" />
+		<cfargument name="removevalues" type="string" required="false" default="flushcache,bAjax,designmode,draftmode,updateapp,bShowTray" hint="List of values to remove from the query string" />
+		<cfargument name="addvalues" type="any" required="false" hint="A query string or a struct of values, to add to the query string" />
+		
+		<cfset var key = "" />
+		
+		<!--- Remove values --->
+		<cfloop list="#arguments.removevalues#" index="key">
+			<cfset arguments.baseURL = rereplace(arguments.baseURL,"(?:\?&)#key#=[^&]+","") />
+		</cfloop>
+		
+		<!--- Add and replace values --->
+		<cfif structkeyexists(arguments,"addvalues") and isstruct(arguments.addvalues)>
+			<cfloop collection="#arguments.addvalues#" item="key">
+				<cfset arguments.baseURL = rereplace(arguments.baseURL,"(?:\?&)#key#=[^&]+","") & "#key#=#urlencodedformat(arguments.addvalues[key])#" />
+			</cfloop>
+		<cfelseif structkeyexists(arguments,"addvalues")><!--- Query string format --->
+			<cfloop list="#arguments.addvalues#" index="key" delimiters="&">
+				<cfset arguments.baseURL = rereplace(arguments.baseURL,"(?:\?&)#listfirst(key,'=')#=[^&]+","") & "#listfirst(key,'=')#=#listlast(key,'=')#" />
+			</cfloop>
+		<cfelse>
+			<cfloop collection="#arguments#" item="key">
+				<cfif not listcontainsnocase("baseURL,removevalues,addvalues",key)>
+					<cfset arguments.baseURL = rereplace(arguments.baseURL,"(?:\?&)#key#=[^&]+","") & "#key#=#urlencodedformat(arguments.params[key])#" />
+				</cfif>
+			</cfloop>
+		</cfif>
+		
+		<cfreturn arguments.baseURL />
+	</cffunction>
+
 </cfcomponent>
