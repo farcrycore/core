@@ -22,6 +22,7 @@ q:before,q:after{content:'';}
 /* =THE BIG GUYS */
 html {margin:0;padding:0;height:100%}
 body {height:100%;background: #fff url("images/body_bg.gif") repeat-y -404px 0;margin:0;padding:0;color:#000;font:83%/1.5 arial,tahoma,verdana,sans-serif}
+body.type-popup {background:#fff none;}
 
 /* =LINKS */
 a,a:link,a:visited,a:hover,a:active {background:transparent;text-decoration:underline;cursor:pointer;padding:2px 0} 
