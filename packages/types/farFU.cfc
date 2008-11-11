@@ -462,7 +462,7 @@
 							</cfloop>
 							
 							<cfheader statuscode="#stFU.redirectionType#"><!--- statustext="Moved permanently" --->
-							<cfheader name="Location" value="#stLocal.redirectURL#">
+							<cfheader name="Location" value="#application.factory.outils.fixURL(stLocal.redirectURL)#">
 							<cfabort>
 							
 						</cfif>
@@ -476,7 +476,7 @@
 						</cfloop>
 					
 						<cfheader statuscode="#stFU.redirectionType#"><!--- statustext="Moved permanently" --->
-						<cfheader name="Location" value="#stLocal.redirectURL#">
+						<cfheader name="Location" value="#application.factory.outils.fixURL(stLocal.redirectURL)#">
 						<cfabort>						
 						
 					</cfif>
