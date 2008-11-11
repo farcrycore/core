@@ -10,7 +10,7 @@
 	<cffunction name="onAppInit" returntype="any" access="public" output="false" hint="Initializes the friendly url scopes and returns a copy of this initialised object">
 
 		<cfset variables.stMappings = structNew() />
-		<cfset variables.stLookup = structNew() />
+		<cfset variables.stLookup = structNew() /><!--- SHOULD ONLY CONTAIN THE DEFAULT FU TO BE USED FOR THIS OBJECT --->
 		
 		<cfset setupCoapiAlias() />
 		<cfset setupMappings() />		
@@ -121,7 +121,10 @@
 			
 		</cfif>
 		
-		<cfset variables.stLookup[stLocal.stFU.refObjectID] = stLocal.stFU.friendlyurl />
+		<cfset variables.stLookup[stLocal.stFU.refObjectID] = structNew() />
+		<cfset variables.stLookup[stLocal.stFU.refObjectID].objectid = stLocal.stFU.objectid />
+		<cfset variables.stLookup[stLocal.stFU.refObjectID].friendlyURL = stLocal.stFU.friendlyurl />
+		<cfset variables.stLookup[stLocal.stFU.refObjectID].queryString = stLocal.stFU.queryString />
 		
 		<cfreturn stLocal.stReturn />
 		
@@ -425,7 +428,10 @@
 			<cfset variables.stMappings[stLocal.q.friendlyURL].refobjectid = stLocal.q.refObjectID />
 			<cfset variables.stMappings[stLocal.q.friendlyURL].queryString = stLocal.q.queryString />
 			<!--- fu lookup --->
-			<cfset variables.stLookup[stLocal.q.refobjectid] = stLocal.q.friendlyurl />
+			<cfset variables.stLookup[stLocal.q.refobjectid] = structNew() />
+			<cfset variables.stLookup[stLocal.q.refobjectid].objectid = stLocal.q.objectid />
+			<cfset variables.stLookup[stLocal.q.refobjectid].friendlyURL = stLocal.q.friendlyurl />
+			<cfset variables.stLookup[stLocal.q.refobjectid].queryString = stLocal.q.queryString />
 		</cfloop>
 		
 	</cffunction>
@@ -468,7 +474,6 @@
 						</cfif>
 					<cfelse>
 						<cfset stLocal.redirectURL = "#application.url.webroot#/index.cfm?objectid=#stFU.refObjectID#" />
-						<cfoutput><p>#stLocal.redirectURL#</p></cfoutput>
 						<cfloop collection="#url#" item="i">
 							<cfif i NEQ "furl">
 								<cfset stLocal.redirectURL = "#stLocal.redirectURL#&#i#=#url[i]#" />
@@ -524,6 +529,23 @@
 							
 				</cfloop>
 			
+			</cfif>
+			
+		<cfelseif isUsingFU()>
+			<cfif structKeyExists(url, "objectid") AND structKeyExists(variables.stLookup, url.objectid)>
+				<cfset stLocal.stDefaultFU = getData(objectid="#stobj.objectid#") />
+				<cfif stLocal.stDefaultFU.redirectTo NEQ "objectID">
+						<cfset stLocal.redirectURL = "#application.url.webroot##stLocal.stDefaultFU.friendlyURL#?#stLocal.stDefaultFU.queryString#" />
+						<cfloop collection="#url#" item="i">
+							<cfif i NEQ "furl">
+								<cfset stLocal.redirectURL = "#stLocal.redirectURL#&#i#=#url[i]#" />
+							</cfif>
+						</cfloop>
+											
+						<cfheader statuscode="301"><!--- statustext="Moved permanently" --->
+						<cfheader name="Location" value="#application.factory.outils.fixURL(stLocal.redirectURL)#">
+						<cfabort>		
+				</cfif>
 			</cfif>
 		</cfif>
 		
@@ -743,11 +765,10 @@
 			
 			<!--- add to app scope --->
 			<cfset variables.stMappings[stLocal.friendlyURL] = StructNew()>
+			<cfset variables.stMappings[stLocal.friendlyURL].objectid = stNewFU.objectid>
 			<cfset variables.stMappings[stLocal.friendlyURL].refobjectid = stNewFU.refObjectID>
 			<cfset variables.stMappings[stLocal.friendlyURL].queryString = stNewFU.querystring>
 			
-			<!--- fu lookup --->
-			<cfset variables.stLookup[stLocal.refobjectid] = stNewFU.friendlyURL>
 		</cfif>
 
 		<cfreturn true>
@@ -973,7 +994,7 @@
 			<cfif len(arguments.objectid)>
 				<!--- look up in memory cache --->
 				<cfif structKeyExists(variables.stLookup, arguments.objectid)>
-					<cfset returnURL = variables.stLookup[arguments.objectid]>
+					<cfset returnURL = variables.stLookup[arguments.objectid].friendlyURL />
 				
 				<!--- if not in cache check the database --->
 				<cfelse>
