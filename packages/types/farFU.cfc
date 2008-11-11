@@ -1,8 +1,8 @@
 <cfcomponent displayname="FarCry Friendly URL Table" hint="Manages FarCry Friendly URL's" extends="types" output="false" bDocument="true" scopelocation="application.fc.factory.farFU">
-	<cfproperty ftSeq="1" name="refobjectid" type="uuid" default="" hint="stores the objectid of the related object" ftLabel="Ref ObjectID" />
-	<cfproperty ftSeq="2" name="friendlyURL" type="string" default="" hint="The Actual Friendly URL" ftLabel="Friendly URL" />		
+	<cfproperty ftSeq="1" name="refobjectid" type="string" default="" hint="stores the objectid of the related object" ftLabel="Ref ObjectID" />
+	<cfproperty ftSeq="2" name="friendlyURL" type="string" default="" hint="The Actual Friendly URL" ftLabel="Friendly URL" bLabel="true" />		
 	<cfproperty ftSeq="3" name="queryString" type="string" default="" hint="The query string that will be parsed and placed in the url scope of the request" ftLabel="Query String" />		
-	<cfproperty ftSeq="4" name="fuStatus" type="numeric" default="" hint="Status of the Friendly URL." ftType="list" ftDefault="2" ftList="1:System Generated,2:Custom,0:archived" ftLabel="Status" />
+	<cfproperty ftSeq="4" name="fuStatus" type="integer" default="" hint="Status of the Friendly URL." ftType="list" ftDefault="2" ftList="1:System Generated,2:Custom,0:archived" ftLabel="Status" />
 	<cfproperty ftSeq="5" name="redirectionType" type="string" default="" hint="Type of Redirection" ftType="list" ftDefault="301" ftList="none:None,301:Moved Permanently (301),307:Temporary Redirect (307)" ftLabel="Type of Redirection" />
 	<cfproperty ftSeq="6" name="redirectTo" type="string" default="" hint="Where to redirect to" ftType="list" ftList="default:To the default FU,objectid:Direct to the object ID" ftLabel="Redirect To" />
 	<cfproperty ftSeq="7" name="bDefault" type="boolean" default="0" hint="Only 1 Friendly URL can be the default that will be used by the system" ftDefault="0" ftLabel="Default" />
@@ -203,12 +203,12 @@
 		<cfif arguments.bCheckUnique>
 			<cfset stLocal.stFU = getFUData(cleanFU) />
 			
-			<!--- IF WE FOUND ONE WITH THIS FRIENDLY URL, MAKE THE NEW ONE UNIQUE --->
-			<cfif not structIsEmpty(stLocal.stFU)>
+			<!--- IF WE FOUND A CURRENT ONE WITH THIS FRIENDLY URL, MAKE THE NEW ONE UNIQUE --->
+			<cfif not structIsEmpty(stLocal.stFU) AND stLocal.stFU.fuStatus GT 0>
 				<cfquery datasource="#application.dsn#" name="stLocal.qDuplicates">
 				SELECT objectid
 				FROM farFU
-				WHERE friendlyURL LIKE <cfqueryparam value="#cleanFU#" cfsqltype="cf_sql_varchar">
+				WHERE friendlyURL LIKE <cfqueryparam value="#cleanFU#%" cfsqltype="cf_sql_varchar">
 				AND fuStatus > 0
 				</cfquery>
 				<cfset cleanFU = "#cleanFU##stLocal.qDuplicates.recordCount#">
@@ -305,22 +305,26 @@
 			<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="displaySystemFU" r_html="systemFU" alternateHTML="">
 			
 			<cfif NOT len(systemFU)>
-				<!--- This determines the friendly url by where it sits in the navigation node  --->
-				<cfset qNavigation = objNavigation.getParent(stobj.objectid)>
-				
-				<!--- if its got a tree parent, build from navigation folders --->
-				<!--- TODO: this might be better done by checking for bUseInTree="true" 
-							or remove it entirely.. ie let tree content have its own fu as well as folder fu
-							or set up tree content to have like page1.cfm style suffixs
-							PLUS need collision detection so don't overwrite another tree based content item fro utility nav
-							PLUS need to exclude trash branch (perhaps just from total rebuild?
-							GB 20060117 --->
-				<cfif qNavigation.recordcount>
-					<!--- The object is in the tree so prefix the objects FU with the navigation FU --->
-					<skin:view typename="dmNavigation" objectid="#qNavigation.parentid#" webskin="displaySystemFU" r_html="systemFU">
+			
+				<cfif StructKeyExists(application.stcoapi[stobj.typename], "bUseInTree") AND application.stcoapi[stobj.typename].bUseInTree>
+					<!--- This determines the friendly url by where it sits in the navigation node  --->
+					<cfset qNavigation = objNavigation.getParent(stobj.objectid)>
+
+					<!--- if its got a tree parent, build from navigation folders --->
+					<!--- TODO: this might be better done by checking for bUseInTree="true" 
+								or remove it entirely.. ie let tree content have its own fu as well as folder fu
+								or set up tree content to have like page1.cfm style suffixs
+								PLUS need collision detection so don't overwrite another tree based content item fro utility nav
+								PLUS need to exclude trash branch (perhaps just from total rebuild?
+								GB 20060117 --->
+					<cfif qNavigation.recordcount>
+						<!--- The object is in the tree so prefix the objects FU with the navigation FU --->
+						<skin:view typename="dmNavigation" objectid="#qNavigation.parentid#" webskin="displaySystemFU" r_html="systemFU">
+					</cfif>
+				</cfif>
 				
 				<!--- otherwise, generate friendly url based on content type --->
-				<cfelse> 
+				<cfif NOT len(systemFU)>
 					<cfif StructkeyExists(application.stcoapi[stobj.typename],"fuAlias")>
 						<cfset systemFU = "/#application.stcoapi[stobj.typename].fuAlias#" />
 					<cfelseif StructkeyExists(application.stcoapi[stobj.typename],"displayName")>
@@ -367,6 +371,37 @@
 			
 			<cfset stResult = createData(stProperties="#stProps#") />
 		</cfloop>
+		
+		<cfif isDefined("application.config.fuSettings.lExcludeObjectIDs") AND listLen(application.config.fuSettings.lExcludeObjectIDs)>
+			<cfloop list="#application.config.fuSettings.lExcludeObjectIDs#" index="excludeObjectID">
+
+				<cfquery datasource="#application.dsn#" name="qExcludeFUs">
+				select * from farFU
+				where refObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#trim(excludeObjectID)#" />
+				AND bDefault = 1
+				</cfquery>
+				
+				<cfif qExcludeFUs.recordCount>
+					<!--- Need to change to redirect to objectid --->
+					<cfset stProperties = structNew() />
+					<cfset stProperties.objectid = qExcludeFUs.objectid />
+					<cfset stProperties.redirectionType = "301" />
+					<cfset stProperties.redirectTo = "objectid" />
+					<cfset stResult = setData(stProperties="#stProperties#") />
+				<cfelse>
+					<!--- Need to create and redirect to objectID --->
+					<cfset stProperties = structNew() />
+					<cfset stProperties.objectid = createUUID() />
+					<cfset stProperties.refObjectID = trim(excludeObjectID) />
+					<cfset stProperties.bDefault = 1 />
+					<cfset stProperties.redirectionType = "301" />
+					<cfset stProperties.redirectTo = "objectid" />
+					<cfset stProperties.friendlyURL = getSystemFU(objectid="#excludeObjectID#") />
+					<cfset stResult = setData(stProperties="#stProperties#") />
+				</cfif>
+				
+			</cfloop>
+		</cfif>
 		
 	</cffunction>
   
@@ -574,6 +609,7 @@
 					#application.dbowner#refObjects r
 			WHERE	r.objectid = fu.refobjectid
 			AND fu.friendlyURL = <cfqueryparam value="#arguments.friendlyURL#" cfsqltype="cf_sql_varchar">
+			ORDER BY fu.bDefault DESC, fu.fuStatus DESC
 			</cfquery>
 			
 			<cfif stLocal.qGet.recordCount>

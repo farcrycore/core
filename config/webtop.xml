@@ -77,7 +77,7 @@
 				<menuitem id="reattachnodescategory" label="Reattach Orphan Categories" link="/admin/reattachnodescategory.cfm" />
 			</menu>
 			<menu id="menufumanagement" sequence="80" label="Manage Friendly URLs">
-				<menuitem id="fumanagement" sequence="10" label="Manage Friendly URLs" link="/admin/manageFU.cfm" />
+				<menuitem id="fumanagement" sequence="10" label="Manage Friendly URLs" link="/admin/customadmin.cfm?module=customlists/farFU.cfm" />
 				<menuitem id="furebuild" sequence="20" label="Rebuild Friendly URLs" link="/admin/rebuildFU.cfm" />
 			</menu>
 		</subsection>
