@@ -532,14 +532,14 @@
 			</cfif>
 			
 		<cfelseif isUsingFU()>
-			<cfif structKeyExists(url, "objectid") AND structKeyExists(variables.stLookup, url.objectid)>
+			<cfif structKeyExists(url, "objectid") AND url.objectid NEQ application.navid.home AND structKeyExists(variables.stLookup, url.objectid)>
 				<cfset stLocal.stDefaultFU = getData(objectid="#variables.stLookup[url.objectid].objectid#") />
 			
 				<cfif stLocal.stDefaultFU.redirectionType EQ "none">
 				
 						<cfset stLocal.redirectURL = "#application.url.webroot##stLocal.stDefaultFU.friendlyURL#?#stLocal.stDefaultFU.queryString#" />
 						<cfloop collection="#url#" item="i">
-							<cfif i NEQ "objectid" and i NEQ "fURL">
+							<cfif i NEQ "objectid" and i NEQ "fURL">				
 								<cfset stLocal.redirectURL = "#stLocal.redirectURL#&#i#=#url[i]#" />
 							</cfif>
 						</cfloop>
