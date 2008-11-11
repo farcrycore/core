@@ -106,8 +106,16 @@ $in: attribute -- description $
 			<a href="##" onclick="return fSelectSelection('inverse');">[INVERSE SELECTION]</a>
 	
 			<div class="imageWrap">
-				<ul><cfloop index="i" from="1" to="#ArrayLen(aFUTypes)#">
-					<li><label for="content_types_#i#"><input type="checkbox" name="content_types" id="content_types_#i#" value="#aFUTypes[i]#">#aFUTypes[i]#</label></li></cfloop>
+				<ul>
+					<cfloop index="i" from="1" to="#ArrayLen(aFUTypes)#">
+						<li>
+							<cfquery datasource="#application.dsn#" name="qCount">
+							SELECT count(objectid) as counter
+							FROM #application.dbOwner##aFUTypes[i]#
+							</cfquery>
+							<label for="content_types_#i#"><input type="checkbox" name="content_types" id="content_types_#i#" value="#aFUTypes[i]#">#aFUTypes[i]# (#qCount.counter#)</label>
+						</li>
+					</cfloop>
 				</ul>
 			</div>
 	
