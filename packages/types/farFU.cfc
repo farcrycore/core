@@ -533,21 +533,24 @@
 			
 		<cfelseif isUsingFU()>
 			<cfif structKeyExists(url, "objectid") AND structKeyExists(variables.stLookup, url.objectid)>
-				<cfset stLocal.stDefaultFU = getData(objectid="#stobj.objectid#") />
-				<cfif stLocal.stDefaultFU.redirectTo NEQ "objectID">
+				<cfset stLocal.stDefaultFU = getData(objectid="#variables.stLookup[url.objectid].objectid#") />
+			
+				<cfif stLocal.stDefaultFU.redirectionType EQ "none">
+				
 						<cfset stLocal.redirectURL = "#application.url.webroot##stLocal.stDefaultFU.friendlyURL#?#stLocal.stDefaultFU.queryString#" />
 						<cfloop collection="#url#" item="i">
-							<cfif i NEQ "furl">
+							<cfif i NEQ "objectid" and i NEQ "fURL">
 								<cfset stLocal.redirectURL = "#stLocal.redirectURL#&#i#=#url[i]#" />
 							</cfif>
 						</cfloop>
-											
+
 						<cfheader statuscode="301"><!--- statustext="Moved permanently" --->
 						<cfheader name="Location" value="#application.factory.outils.fixURL(stLocal.redirectURL)#">
 						<cfabort>		
 				</cfif>
 			</cfif>
 		</cfif>
+		
 		
 	</cffunction>
 	
