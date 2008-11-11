@@ -22,15 +22,17 @@
 
 <cfparam name="attributes.url" type="string" default="" />
 <cfparam name="attributes.id" type="string" default="" />
-<cfparam name="attributes.event" type="string" default="click" />
-<cfparam name="attributes.width" type="integer" default="500" />
-<cfparam name="attributes.height" type="integer" default="500" />
+<cfparam name="attributes.event" type="string" default="" />
+<cfparam name="attributes.width" default="500" />
+<cfparam name="attributes.height" default="500" />
 <cfparam name="attributes.title" type="string" default="" />
 <cfparam name="attributes.resizable" type="boolean" default="false" />
+<cfparam name="attributes.onClose" type="string" default="" />
 
-<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 	
-	
+					
 <cfif thistag.executionMode eq "start">
 	
 	
@@ -47,15 +49,43 @@
 			
 			var iFrameDialog;
 			function openScaffoldDialog(url,title,width,height,resizable,onclose) {
+		        currentBody = Ext.getBody();
+
+		        if (width == 'undefined' || width.length == 0){
+		        	width = '95%';
+		        } else {
+		        	width = width.toString();
+		        }
+		        if (width.charAt(width.length - 1) == '%') {
+		        	width = currentBody.getWidth() * (parseFloat(width)/100);
+		        }
+		        if (width > currentBody.getWidth()){
+		        	width = currentBody.getWidth();
+		        }
+		        
+		        if (height == 'undefined' || height.length == 0){
+		        	height = '95%';
+		        } else {
+		        	height = height.toString();
+		        }
+
+		        if (height.charAt(height.length - 1) == '%') {
+		        	height = currentBody.getHeight() * (parseFloat(height)/100);
+		        }
+		        if (height > currentBody.getHeight()){
+		        	height = currentBody.getHeight();
+		        }
+
 		        iFrameDialog = new Ext.Window({
 		        	
-					height:		height,
-					width:		width,
+					height:		parseFloat(height),
+					width:		parseFloat(width),
 					resizable:	resizable,
 					layout:		"fit",
 					title:		title,
 					collapsible: false,
 		            plain:		true,
+		            draggable:	true,
 		            modal:		false,
 		            autoScroll:	false,
 		            id:			"iframedialog",
@@ -63,7 +93,7 @@
 		        });
 				if (onclose) iFrameDialog.on("close",onclose);
 		        iFrameDialog.show('');
-		        iFrameDialog.alignTo(Ext.getBody(), 't-t');
+		        iFrameDialog.alignTo(currentBody, 't-t');
 				Ext.select("##iframedialog .x-window-body").setStyle("overflow","auto");
 			}
 			function closeDialog() {
@@ -76,8 +106,8 @@
 
 	
 	
-	<!--- If the user has passed an id, attach the event. --->
-	<cfif len(attributes.id) and len(attributes.url)>	
+	<!--- If the user has passed a url, setup the link --->
+	<cfif len(attributes.url)>	
 			
 		<cfif find("?",attributes.url)>
 			<cfset attributes.url = attributes.url & "&iframe" />
@@ -85,15 +115,29 @@
 			<cfset attributes.url = attributes.url & "?iframe" />
 		</cfif>
 		
-		<cfoutput>
-			<script language="javascript">
-				Ext.addBehaviors({ 
-					'###attributes.id#@#attributes.event#' : function(e,t){
-						openScaffoldDialog('#attributes.url#','#attributes.title#',#attributes.width#,#attributes.height#,#attributes.resizable#);
-						e.preventDefault();
-					}
-				});
-			</script>
-		</cfoutput>
+	<cfif len(attributes.onClose) AND attributes.onClose EQ "refresh">
+		<cfsavecontent variable="attributes.onClose">
+			<cfoutput>function(){location.href = location.href;}</cfoutput>	
+		</cfsavecontent>
+	</cfif>		
+		
+		<extjs:onReady>
+			<!--- if the user has passed an event and an id to attach it too, attach the event. --->
+			<cfif len(attributes.id) and len(attributes.event)>
+				<cfoutput>
+					Ext.addBehaviors({ 
+						'###attributes.id#@#attributes.event#' : function(e,t){
+							openScaffoldDialog('#attributes.url#','#attributes.title#','#attributes.width#','#attributes.height#',#attributes.resizable#<cfif len(attributes.onClose)>,#attributes.onClose#</cfif>);
+							e.preventDefault();
+						}
+					});
+				</cfoutput>
+			<cfelse>
+				<!--- Otherwise just open directly. --->
+				<cfoutput>
+				openScaffoldDialog('#attributes.url#','#attributes.title#','#attributes.width#','#attributes.height#',#attributes.resizable#<cfif len(attributes.onClose)>,#attributes.onClose#</cfif>);
+				</cfoutput>
+			</cfif>
+		</extjs:onReady>
 	</cfif>
 </cfif>
