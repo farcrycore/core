@@ -132,6 +132,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfset var containerData = "" />
 		<cfset var temp = "" />
 		<cfset var oCategories = "" />
+		<cfset var propertyName = "" />
 		
 		<cfscript>
 			//Get the containers in the source object
