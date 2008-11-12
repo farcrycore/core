@@ -104,7 +104,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	</cffunction>
 		
 	
-	<cffunction name="copyContainers" hint="makes a duplicate of all container data in source object and copies to destination object" />
+	<cffunction name="copyContainers" hint="makes a duplicate of all container data in source object and copies to destination object">
 		<cfargument name="srcObjectID" required="Yes" type="UUID" hint="Source object whose container data is to be copied" />
 		<cfargument name="destObjectID" required="Yes" type="UUID" hint="Destination object whose container data is to be copied" />
 		<cfargument name="bDeleteDestData" required="No" default="1" type="boolean" hint="Effectively overwrites destination data" />
