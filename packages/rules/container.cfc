@@ -123,13 +123,15 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfargument name="bDeleteDestData" required="No" default="1" type="boolean" hint="Effectively overwrites destination data">
 		<cfargument name="bDeleteSrcData" required="No" default="0" type="boolean" hint="Removes source container after copy">
 		<cfargument name="dsn" required="No" default="#application.dsn#">
-		<cfset var index = 1>
-		<cfset var x = 1>
-		<cfset var qSrcCon = ''>
-		<cfset var qDestCon = ''>
-		<cfset var aRules = arrayNew(1)>
-		<cfset var stRule = structNew()>
-		<cfset var containerData = ''>
+		<cfset var index = 1 />
+		<cfset var x = 1 />
+		<cfset var qSrcCon = "" />
+		<cfset var qDestCon = "" />
+		<cfset var aRules = arrayNew(1) /> 
+		<cfset var stRule = structNew() />
+		<cfset var containerData = "" />
+		<cfset var temp = "" />
+		<cfset var oCategories = "" />
 		
 		<cfscript>
 			//Get the containers in the source object
@@ -172,14 +174,22 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 				<!--- //dump(st,'before'); --->
 				<!--- //need to copy all rules now. --->
 				<cfset aRules = arrayNew(1) />
-				<cfif (not structIsEmpty(st))>
+				<cfif (NOT structIsEmpty(st))>
 				
 					<cfloop from="1" to="#arrayLen(st.aRules)#" index="x">
 						<cfset ruletype = findType(objectid=st.aRules[x]) />
 						<cfif (structKeyExists(application.rules,ruletype))>
-						
 							<cfset o = createObject("component",application.rules[ruletype].rulepath) />
-							<cfset stRule = application.coapi.coapiUtilities.createCopy(objectid=st.aRules[x]) />							
+							<cfset stRule = application.coapi.coapiUtilities.createCopy(objectid=st.aRules[x]) />
+							
+							<!--- if rule has a property of ftType category then create relevant entries in refCategories --->
+							<cfloop list="#structKeyList(application.stCoapi[ruletype].stProps)#" index="propertyName">
+								<cfif structKeyExists(application.stCoapi[ruletype].stProps[propertyName].metadata,"ftType") AND application.stCoapi[ruletype].stProps[propertyName].metadata.ftType EQ "category">
+									<cfset oCategories = createObject("component","#application.packagepath#.farcry.category") />
+									<cfset temp = oCategories.copyCategories(srcObjectID=st.aRules[x],destObjectID=stRule.objectID) />
+								</cfif>
+							</cfloop> 
+														
 							<!--- //create the rule --->
 							<cfset o.createData(stProperties=stRule,dsn=arguments.dsn) />
 							<!--- //now create the new array reference to it --->
