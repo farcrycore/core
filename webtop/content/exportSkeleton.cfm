@@ -108,13 +108,22 @@
 			
 		
 		<!--- ADD NESTED TREE TABLE --->
-		<cfquery datasource="#application.dsn#" name="qTree">
+		<cfquery datasource="#application.dsn#" name="q">
 		SELECT *
 		FROM #application.dbowner#nested_tree_objects
 		ORDER BY nLeft
 		</cfquery>
-		<cfwddx action="cfml2wddx" input="#qTree#" output="wddxTree">			
+		<cfwddx action="cfml2wddx" input="#q#" output="wddxTree">			
 		<cffile action="write" file="#skeletonInstallPath#/nested_tree_objects.wddx" output="#wddxTree#" addnewline="false" mode="777" >
+		
+		<!--- ADD REFCATEGORIES TABLE --->
+		<cfquery datasource="#application.dsn#" name="q">
+		SELECT *
+		FROM #application.dbowner#refCategories
+		</cfquery>
+		<cfwddx action="cfml2wddx" input="#q#" output="wddxTree">			
+		<cffile action="write" file="#skeletonInstallPath#/refCategories.wddx" output="#wddxTree#" addnewline="false" mode="777" >
+
 
 
 		<cfset lTypenamesToExport = structKeyList(application.stCoapi) />
