@@ -555,13 +555,14 @@
 		<cfset application.fc = structNew() /><!--- FarCry Namespace in the application scope --->
 		<cfset application.fc.factory = structNew() /><!--- Struct to contain any factory classes that can be used by the application --->
 		<cfset application.fc.subsites = this.subsites /><!--- Struct to contain any subsites that may be included with the application --->
+		<cfset application.fc.utils = createObject("component", "farcry.core.packages.farcry.utils").init() /><!--- FarCry Utility Functions --->
 		
 		<!--- Project directory name can be changed from the default which is the applicationname --->
 		<cfset application.projectDirectoryName =  this.projectDirectoryName />
 		<cfset application.displayName =  this.displayName />
 		
 		<!--- Set an application random string that can be used to force refresh of various browser caching. Restarting application will effectively flush those browser caches --->
-		<cfset application.randomID =  createUUID() />
+		<cfset application.randomID =  application.fc.utils.createJavaUUID() />
 		
 		<!----------------------------------------
 		 SET THE DATABASE SPECIFIC INFORMATION 

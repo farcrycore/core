@@ -1,5 +1,35 @@
 <cfcomponent displayname="Utilities" hint="Packages generic utilities" output="true" bDocument="true" scopelocation="application.factory.oUtils">
 
+
+	<cffunction access="public" returntype="utils" name="init" output="false" hint="Constructor">
+		<cfargument name="jarPath" type="string" required="yes" default="uuid/uuid-3.0.jar" />
+		
+		<cfset var paths = arrayNew(1) />
+		
+		<!--- This points to the jar we want to load. Could also load a directory of .class files --->
+		<cfset paths[1] = expandPath(arguments.jarPath) />
+		
+		<!--- create the loader --->
+		<cfset variables.loader = createObject("component", "farcry.core.packages.farcry.javaloader.JavaLoader").init(paths) />
+		
+		<!--- at this stage we only have access to the class, but we don't have an instance --->
+		<!--- <cfset variables.uuidGen = loader.create("com.eaio.uuid.UUID") /> --->
+		
+		<cfreturn this />
+	</cffunction>
+
+	<cffunction name="createJavaUUID" access="public" returntype="any" output="false" hint="">
+		<cfset var oUUID = loader.create("com.eaio.uuid.UUID") />
+		<cfset var myUUID = oUUID.init() />
+		<cfset var rMyUUID = reverse(myUUID) />
+		
+		<cfset myUUID = replace(rMyUUID,"-","") />
+		
+		<cfreturn uCase(reverse(myUUID)) />
+	</cffunction>
+
+
+
 	<!--- ARRAY utilities --->
 	<cffunction name="arrayFind" access="public" output="false" returntype="numeric" hint="Returns the index of the first element that matches the specified value. 0 if not found." bDocument="true">
 		<cfargument name="ar" type="array" required="true" hint="The array to search" />
