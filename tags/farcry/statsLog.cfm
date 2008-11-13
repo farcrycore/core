@@ -43,7 +43,7 @@ $out:$
 		<!--- check if session exists --->
 		<cfif NOT isdefined("session.statsSession")>
 			<!--- create unique session id --->
-			<cfset session.statsSession = createUUID()>
+			<cfset session.statsSession = application.fc.utils.createJavaUUID()>
 			
 			<!--- get browser --->
 			<cfset stBrowser = application.factory.oStats.getBrowser()>

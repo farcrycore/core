@@ -77,7 +77,7 @@
 							
 							<!--- Construct navigation object --->
 							<cfset stProps=structNew() />
-							<cfset stProps.objectid = createUUID() />
+							<cfset stProps.objectid = application.fc.utils.createJavaUUID() />
 							<cfset stProps.label = folderName />
 							<cfset stProps.title = folderName />
 							<cfset stProps.lastupdatedby = application.security.getCurrentUserID() />
@@ -137,7 +137,7 @@
 						<cfset arguments.fields.result = arguments.fields.result & "Creating dmFile (#sFileName#)<br>" />
 						
 						<cfset stFileProps = structNew() />
-						<cfset stFileProps.objectID = createUUID() />
+						<cfset stFileProps.objectID = application.fc.utils.createJavaUUID() />
 						<cfset stFileProps.fileName = createObject("component","#application.packagepath#.farcry.form").sanitiseFileName(sFileName,listFirst(sFileName,"."),sFilePath) />
 						<cfset stFileProps.title = listFirst(stFileProps.fileName,".") />
 						<cfset stFileProps.label = listFirst(stFileProps.fileName,".") />

@@ -62,7 +62,7 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au) $
 						<cfset stProps[aProps[j].name] = aProps[j].default>
 					</cfif>
 				</cfloop>
-				<cfset stProps.objectid = CreateUUID()>
+				<cfset stProps.objectid = application.fc.utils.createJavaUUID()>
 				<cfset obj.createData(stProperties=stProps)>
 				<cfset ArrayAppend(stObj.aRules,stProps.objectID)>
 			<cfelse>

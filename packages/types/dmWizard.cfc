@@ -92,7 +92,7 @@ return REFindNoCase("^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$", str);
 <cfelse>
 	<cfif structKeyExists(application.stcoapi,arguments.ReferenceID)>
 		<cfset o = createObject("component",application.stcoapi["#arguments.ReferenceID#"].packagepath) />
-		<cfset st = o.getData(objectid=CreateUUID()) />
+		<cfset st = o.getData(objectid=application.fc.utils.createJavaUUID()) />
 	</cfif>
 </cfif>
 

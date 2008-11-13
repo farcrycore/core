@@ -28,7 +28,7 @@
 	<cfabort showerror="Does not have an end tag...">
 </cfif>
 
-<cfparam name="attributes.id" default="#createUUID()#" />
+<cfparam name="attributes.id" default="#application.fc.utils.createJavaUUID()#" />
 <cfparam name="attributes.indentForLabel" default="true" />
 
 <cfif thistag.ExecutionMode EQ "Start">

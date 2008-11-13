@@ -39,7 +39,7 @@ START TAG
 
 <cfif thistag.executionMode eq "Start">
 
-	<cfparam name="attributes.id" default="#createUUID()#">
+	<cfparam name="attributes.id" default="#application.fc.utils.createJavaUUID()#">
 	<cfparam name="attributes.title" default="">
 	<cfparam name="attributes.icon" default="">
 	<cfparam name="attributes.aPanels" default="#arrayNew(1)#"><!--- An array of Panels --->

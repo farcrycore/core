@@ -29,7 +29,7 @@
 <cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
 
 <!--- check for content type and objectid--->
-<cfparam name="url.objectid" type="uuid" default="#createuuid()#" />
+<cfparam name="url.objectid" type="uuid" default="#application.fc.utils.createJavaUUID()#" />
 <!--- type deprecated in favour of typename --->
 <cfparam name="url.type" default="" type="string">
 <cfparam name="url.typename" default="#url.type#" type="string">

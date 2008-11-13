@@ -368,7 +368,7 @@ $out:$
 			</cfsavecontent>
 			<cfhtmlHead text="#htmlAreaScript#">
 
-			<cfset uniqueId = replace(createUUID(),'-','','all')>
+			<cfset uniqueId = replace(application.fc.utils.createJavaUUID(),'-','','all')>
 			<!--- display text area --->
 			<cfoutput><div id="htmlareawrapper"><textarea id="#attributes.textareaname#" name="#attributes.textareaname#" id="#uniqueID#">#attributes.value#</textarea></div></cfoutput>
 

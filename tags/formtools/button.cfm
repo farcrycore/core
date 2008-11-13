@@ -12,7 +12,7 @@
 <cfparam name="attributes.overIcon" default="" />
 <cfparam name="attributes.iconPos" default="left" /><!--- left,right,top,bottom --->
 <cfparam name="attributes.sprite" default="" />
-<cfparam name="attributes.id" default="f-btn-#createUUID()#">
+<cfparam name="attributes.id" default="f-btn-#application.fc.utils.createJavaUUID()#">
 <cfparam name="attributes.width" default="auto">
 <cfparam name="attributes.validate" default="">
 <cfparam name="attributes.SelectedObjectID" default="">

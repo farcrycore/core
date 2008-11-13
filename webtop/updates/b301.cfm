@@ -179,7 +179,7 @@ Updates FCKEditor config<br />
             </cfif>
             <cfscript>
             stImage = structNew();
-            stImage.objectID = createUUID();
+            stImage.objectID = application.fc.utils.createJavaUUID();
             stImage.label = "#qFacts.title# dmFacts image";
             stImage.title = stImage.label;
             stImage.alt = qFacts.title;

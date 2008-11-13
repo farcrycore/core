@@ -529,7 +529,7 @@ LIBRARY DATA
 						<cfoutput>#HTML#</cfoutput>
 					<cfelse>
 					
-						<cfset stNew = oData.getData(objectid=createUUID()) />
+						<cfset stNew = oData.getData(objectid=application.fc.utils.createJavaUUID()) />
 					
 						<cfset qMetadata = application.stcoapi[request.ftJoin].qMetadata >
 		

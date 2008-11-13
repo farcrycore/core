@@ -47,7 +47,7 @@ $in: objectid -- $
 
 
 <cfif thistag.executionMode eq "Start">
-	<cfparam name="attributes.id" default="#createUUID()#"><!--- This is the id that will be used in the form field. --->
+	<cfparam name="attributes.id" default="#application.fc.utils.createJavaUUID()#"><!--- This is the id that will be used in the form field. --->
 	<cfparam name="attributes.text" default="default text"><!--- The text that will be displayed in the tree node. --->
 	<cfparam name="attributes.lSelectedItems" default=""><!--- The list of items that have already been selected in the tree. --->
 	<cfparam name="attributes.bSelectMultiple" default="true"><!--- Can the user select multiple items in the tree.. --->

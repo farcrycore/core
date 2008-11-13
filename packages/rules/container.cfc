@@ -200,7 +200,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 					<cfset st.aRules = aRules />
 					<!--- //change the label - containers are currently obtained by label --->
 					<cfset st.label = replace(st.label,arguments.srcObjectId,arguments.destObjectId,"ALL") />
-					<cfset st.objectid = createUUID() />
+					<cfset st.objectid = application.fc.utils.createJavaUUID() />
 					<!--- //now we want to create this new container --->
 					<cfset qGetContainer = getContainer(dsn=arguments.dsn,label=st.label) />
 					
@@ -657,7 +657,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfelse>
 			<cfif not structKeyExists(arguments, "objectid") or not len(arguments.objectid)>
 				<!--- If the objectid has not been sent, we need to create a default object. --->
-				<cfset arguments.objectid = createUUID() />
+				<cfset arguments.objectid = application.fc.utils.createJavaUUID() />
 				
 				<cfset bTypeWebskin = true />
 			</cfif>		
@@ -682,7 +682,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 				<cfset webskinHTML = application.coapi.objectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
 			</cfif>
 
-			<cftimer label="getView: #stobj.typename# (#arguments.template#)">
 			<cfif not len(webskinHTML)>
 				<cfset webskinPath = application.coapi.coapiadmin.getWebskinPath(typename=stObj.typename, template=arguments.template) />
 						
@@ -806,7 +805,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 					<cfthrow type="Application" detail="Error: Template not found [/webskin/#stObj.typename#/#arguments.template#.cfm] and no alternate html provided." />
 				</cfif>	
 			</cfif>		
-			</cftimer>
 		<cfelse>
 			<cfthrow type="Application" detail="Error: When trying to render [/webskin/#stObj.typename#/#arguments.template#.cfm] the object was not created correctly." />	
 		</cfif>

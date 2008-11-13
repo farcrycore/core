@@ -10,7 +10,7 @@
 <cfloop list="#permissionspossible#" index="permission">
 	<cfif structkeyexists(form,"generatePermission#permission#") and form["generatePermission#permission#"]>
 		<cfset stPermission = structnew() />
-		<cfset stPermission.objectid = createuuid() />
+		<cfset stPermission.objectid = application.fc.utils.createJavaUUID() />
 		<cfset stPermission.title = "#mid(permission,len(url.typename)+1,len(permission))# #application.stCOAPI[url.typename].displayname#" />
 		<cfset stPermission.shortcut = permission />
 		<cfset application.security.factory.permission.createData(stProperties=stPermission) />

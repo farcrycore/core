@@ -104,7 +104,7 @@
 		<cfset stFields = duplicate(application.stcoapi[attributes.typename].stprops) />
 		<cfset typename = attributes.typename>
 		
-		<cfset stObj = oType.getData(objectID="#CreateUUID()#")>
+		<cfset stObj = oType.getData(objectID="#application.fc.utils.createJavaUUID()#")>
 		
 		<cfset ObjectID = stObj.objectID>
 	</cfif>

@@ -85,7 +85,7 @@ Parent Object: URL.OBJECTID
 	<!--- default properties (common to all types) --->
 	
 	<cfset stProps=structNew()>
-	<cfset stProps.objectid = createUUID()>
+	<cfset stProps.objectid = application.fc.utils.createJavaUUID()>
 	<cfset stProps.label = "(incomplete)">
 	<cfset stProps.title = "">
 	<cfset stProps.lastupdatedby = application.security.getCurrentUserID()>

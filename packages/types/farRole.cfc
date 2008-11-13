@@ -377,7 +377,7 @@ object methods
 		<cfset var stBarnacle = structnew() />
 		
 		<!--- Update and save --->
-		<cfset stObj.objectid = createuuid() />
+		<cfset stObj.objectid = application.fc.utils.createJavaUUID() />
 		<cfset stObj.title = arguments.title />
 		<cfset createData(stProperties=stObj) />
 		
@@ -391,7 +391,7 @@ object methods
 		<!--- Create copies of the barnacles for the new role --->
 		<cfloop query="qBarnacles">
 			<cfset stBarnacle = application.security.factory.barnacle.getData(qBarnacles.objectid[currentrow]) />
-			<cfset stBarnacle.objectid = createuuid() />
+			<cfset stBarnacle.objectid = application.fc.utils.createJavaUUID() />
 			<cfset stBarnacle.roleid = stObj.objectid />
 			<cfset application.security.factory.barnacle.createData(stBarnacle) />
 		</cfloop>

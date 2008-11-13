@@ -76,7 +76,7 @@
 
 		<!--- SET THE STATUS OF THE FU OBJECT TO 0 (archived) --->
 		<cfset stLocal.stProperties = getData(objectID="#arguments.objectID#") />
-		<cfset stLocal.stProperties.objectid = createUUID() />
+		<cfset stLocal.stProperties.objectid = application.fc.utils.createJavaUUID() />
 		<cfset stLocal.stProperties.fuStatus = 0 />
 		<cfset stLocal.stProperties.redirectionType = "301" />
 		<cfset stLocal.stProperties.redirectTo =  "default" />
@@ -236,7 +236,7 @@
 			<cfset stLocal.stCurrentDefaultObject = getDefaultFUObject(refObjectID="#arguments.objectid#") />
 		
 			<!--- No System FU object currently set --->
-			<cfset stLocal.stCurrentSystemObject.objectid = createUUID() />
+			<cfset stLocal.stCurrentSystemObject.objectid = application.fc.utils.createJavaUUID() />
 			<cfset stLocal.stCurrentSystemObject.refObjectID = arguments.objectid />
 			<cfset stLocal.stCurrentSystemObject.fuStatus = 1 />
 			<cfset stLocal.stCurrentSystemObject.redirectionType = "none" />
@@ -391,7 +391,7 @@
 				<cfelse>
 					<!--- Need to create and redirect to objectID --->
 					<cfset stProperties = structNew() />
-					<cfset stProperties.objectid = createUUID() />
+					<cfset stProperties.objectid = application.fc.utils.createJavaUUID() />
 					<cfset stProperties.refObjectID = trim(excludeObjectID) />
 					<cfset stProperties.bDefault = 1 />
 					<cfset stProperties.redirectionType = "301" />
@@ -742,7 +742,7 @@
 		<cfargument name="querystring" required="no" type="string" default="">
 		
 		<cfset var stLocal = StructNew()>
-		<cfset stLocal.objectid = CreateUUID()>
+		<cfset stLocal.objectid = application.fc.utils.createJavaUUID()>
 		<cfset stLocal.friendlyURL = arguments.alias>
 		<cfset stLocal.querystring = arguments.querystring>
 	
@@ -1193,7 +1193,7 @@
 			</cfquery>
 			
 			<cfif stLocal.qCheck.recordcount EQ 0>
-				<cfset arguments.stForm.objectID = CreateUUID()>
+				<cfset arguments.stForm.objectID = application.fc.utils.createJavaUUID()>
 				<cfset stResult = createData(stProperties="#arguments.stForm#") />
 				
 			

@@ -41,7 +41,7 @@ $out:$
 		insert into #application.dbowner#stats
 		(logID,logdatetime,pageID,navid,remoteip,userid,sessionId,browser,referer,locale,os)
 		values
-		(<cfoutput>'#CreateUUID()#',#createodbcdatetime(now())#,'#arguments.pageID#','#arguments.navid#','#arguments.remoteip#','#arguments.userid#','#arguments.sessionId#','#arguments.browser#','#arguments.referer#','#arguments.locale#','#arguments.os#'</cfoutput>)
+		(<cfoutput>'#application.fc.utils.createJavaUUID()#',#createodbcdatetime(now())#,'#arguments.pageID#','#arguments.navid#','#arguments.remoteip#','#arguments.userid#','#arguments.sessionId#','#arguments.browser#','#arguments.referer#','#arguments.locale#','#arguments.os#'</cfoutput>)
 	</cfquery>
 	<cfcatch></cfcatch>
 </cftry>

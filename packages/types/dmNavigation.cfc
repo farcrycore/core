@@ -355,7 +355,7 @@ $out:$
 		<cfif structkeyexists(arguments.stFieldPost.stSupporting,"typename")>
 			<cfif len(arguments.stFieldPost.stSupporting.typename)>
 				<cfset oType = createobject("component",application.stCOAPI[arguments.stFieldPost.stSupporting.typename].packagepath) />
-				<cfset stChild = oType.getData(objectid=createuuid()) />
+				<cfset stChild = oType.getData(objectid=application.fc.utils.createJavaUUID()) />
 				<cfset oType.setData(stProperties=stChild,bSessionOnly=true) />
 				
 				<cfset arrayappend(stResult.value,stChild.objectid) />

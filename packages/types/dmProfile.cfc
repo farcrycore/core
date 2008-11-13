@@ -76,7 +76,7 @@ OBJECT METHODS
 		</cfif>
 		
 		
-		<cfparam name="stProfile.objectID" default="#createUUID()#" />
+		<cfparam name="stProfile.objectID" default="#application.fc.utils.createJavaUUID()#" />
 		<cfparam name="stProfile.label" default="#stProfile.userLogin#" />
 		
 		<cfif structkeyexists(stProfile,"userlogin") and not refind(stProfile.userDirectory,stProfile.userlogin)>

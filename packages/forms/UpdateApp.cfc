@@ -79,7 +79,7 @@
 	</cffunction>
 
 	<cffunction name="processJavaScript" access="public" returntype="boolean" description="Resets JavaScript caching" output="false">
-		<cfset application.randomID = createUUID() />
+		<cfset application.randomID = application.fc.utils.createJavaUUID() />
 		
 		<cfreturn true />
 	</cffunction>

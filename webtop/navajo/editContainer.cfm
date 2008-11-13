@@ -346,7 +346,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 					obj = createObject("Component", application.rules[key].rulePath);
 				 	typeProps = obj.getProperties();
 			 		stProps = structNew();
-			 		stProps.objectid = createUUID();
+			 		stProps.objectid = application.fc.utils.createJavaUUID();
 					for(j=1;j LTE arrayLen(typeProps);j=j+1)
 					{
 						if (structKeyExists(typeProps[j],"default"))

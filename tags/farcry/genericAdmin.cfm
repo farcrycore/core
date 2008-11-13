@@ -569,7 +569,7 @@ if (recordSet.recordCount GT 0)
 						<td>
 						<cfparam name="form.categoryid" default="">
 						<!--- display tree --->
-						<cfinvoke component="#application.packagepath#.farcry.category" method="displayTree" bShowCheckBox="true" objectID="#createUUID()#" lSelectedCategories="#form.categoryid#"/>
+						<cfinvoke component="#application.packagepath#.farcry.category" method="displayTree" bShowCheckBox="true" objectID="#application.fc.utils.createJavaUUID()#" lSelectedCategories="#form.categoryid#"/>
 						</td>
 					</tr>
 					<tr>

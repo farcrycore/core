@@ -42,7 +42,7 @@
 		<cfargument name="bPermantLink" required="no" type="boolean" default="0" hint="used to set the FU to be either 1 or 2">
 		
 		<cfset var stLocal = StructNew()>
-		<cfset stLocal.objectid = CreateUUID()>
+		<cfset stLocal.objectid = application.fc.utils.createJavaUUID()>
 		<cfset stLocal.friendlyURL = arguments.alias>
 		<cfset stLocal.querystring = arguments.querystring>
 		<cfif arguments.bPermantLink>
@@ -663,7 +663,7 @@
 			</cfquery>
 			
 			<cfif stLocal.qCheck.recordcount EQ 0>
-				<cfset arguments.stForm.objectID = CreateUUID()>
+				<cfset arguments.stForm.objectID = application.fc.utils.createJavaUUID()>
 				<cfquery datasource="#application.dsn#" name="stLocal.qInsert">
 				INSERT	INTO #application.dbowner#reffriendlyURL(
 					objectid,

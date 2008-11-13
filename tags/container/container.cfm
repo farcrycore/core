@@ -85,7 +85,7 @@ $out:$
 	<cfif NOT StructKeyExists(stMirror, "objectid")>
 		<!--- create the default mirror container --->
 		<cfset stMirror = StructNew()>
-		<cfset stMirror.objectid = createUUID()>
+		<cfset stMirror.objectid = application.fc.utils.createJavaUUID()>
 		<cfset stMirror.label = attributes.defaultmirrorlabel>
 		<cfif Len(stMirror.label) EQ 0>
 			<cfset stMirror.label="Mirror Container: #stMirror.objectid#">
@@ -98,7 +98,7 @@ $out:$
 
 	<!--- set default container properties --->
 	<cfset stProps = structNew()>
-	<cfset stProps.objectid = createUUID()>
+	<cfset stProps.objectid = application.fc.utils.createJavaUUID()>
 	<cfset stProps.label = attributes.label>
 	<cfset stProps.mirrorid = stmirror.objectid>
 	<cfset stProps.bShared = 0>

@@ -169,7 +169,7 @@
 	</cffunction>
 			
 	<cffunction name="addhtmlHeadToWebskins" access="public" output="true" returntype="void" hint="Adds the result of a skin:htmlHead to all relevent webskin caches">
-		<cfargument name="id" type="string" required="false" default="#createUUID()#" />
+		<cfargument name="id" type="string" required="false" default="#application.fc.utils.createJavaUUID()#" />
 		<cfargument name="text" type="string" required="false" default="" />
 		<cfargument name="library" type="string" required="false" default="" />
 		<cfargument name="libraryState" type="boolean" required="false" default="true" />

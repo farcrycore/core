@@ -86,7 +86,7 @@
 			<cfelseif structKeyExists(arguments,"objectid")>
 				<cfset currentObjectID=arguments.objectid>
 			<cfelse>
-				<cfset currentObjectID = CreateUUID()>
+				<cfset currentObjectID = application.fc.utils.createJavaUUID()>
 			</cfif>
 			
 			<!--- build query --->

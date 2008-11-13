@@ -48,7 +48,7 @@
 
 <cfif structkeyexists(url,"createtask") and url.createtask eq attributes.id>
 	<cfset stCron = structnew() />
-	<cfset stCron.objectid = createuuid() />
+	<cfset stCron.objectid = application.fc.utils.createJavaUUID() />
 	<cfset stCron.label = attributes.title />
 	<cfset stCron.title = attributes.title />
 	<cfset stCron.template = attributes.task />

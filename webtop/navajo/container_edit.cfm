@@ -63,7 +63,7 @@ $out:$
 <!--- get object data --->
 <cfif containerID EQ ""> <!--- containerid not passed in .: create reflection --->
 	<cfset stProps = StructNew()>
-	<cfset stProps.objectid = CreateUUID()>
+	<cfset stProps.objectid = application.fc.utils.createJavaUUID()>
 	<cfset stProps.bShared = 1>
 	<cfset stProps.label = "(Incomplete)">
 	<cfset oCon.CreateData(stProperties=stProps)>

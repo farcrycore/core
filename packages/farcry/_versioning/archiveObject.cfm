@@ -56,7 +56,7 @@ $out:$
 <cfscript>
 	//set up the dmArchive structure to save
 	stProps = structNew();
-	stProps.objectID = createUUID();
+	stProps.objectID = application.fc.utils.createJavaUUID();
 	stProps.archiveID = stObj.objectID;
 	stProps.objectWDDX = stLiveWDDX;
 	stProps.label = stObj.label;

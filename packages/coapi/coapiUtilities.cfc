@@ -30,7 +30,7 @@
 		<cfif len(arguments.typename)>
 			<cfset o = createObject("component", application.stcoapi["#arguments.typename#"].packagePath) />
 			<cfset st = duplicate(o.getData(objectid=arguments.objectid)) />
-			<cfset st.objectid = createUUID() />
+			<cfset st.objectid = application.fc.utils.createJavaUUID() />
 			
 			<cfset st.lastupdatedby = userlogin />
 			<cfset st.datetimelastupdated = now() />
@@ -43,7 +43,7 @@
 				<cfif isArray(st[iField]) AND arrayLen(st[iField])>
 					<cfloop from="1" to="#arrayLen(st[iField])#" index="pos">
 						<cfif isStruct(st[iField][pos]) and structKeyExists(st[iField][pos], "objectid")>
-							<cfset st[iField][pos].objectid = createUUID() />
+							<cfset st[iField][pos].objectid = application.fc.utils.createJavaUUID() />
 						</cfif>
 						<cfif isStruct(st[iField][pos]) and structKeyExists(st[iField][pos], "parentid")>
 							<cfset st[iField][pos].parentid = st.objectid />

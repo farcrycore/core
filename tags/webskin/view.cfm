@@ -79,7 +79,7 @@
 			</cfif>		
 			
 			<cfif not len(attributes.objectid)>
-				<cfset attributes.objectid = createUUID() />
+				<cfset attributes.objectid = application.fc.utils.createJavaUUID() />
 				<cfset session.stTempObjectStoreKeys[attributes.typename][attributes.key] = attributes.objectid>
 				<cfset st = o.getData(objectID = attributes.objectid) />
 				<cfset stResult = o.setData(stProperties=st, bSessionOnly="true") />

@@ -42,7 +42,7 @@
 	</cftry>
 			
 	<cfset stProperties = structNew() />
-	<cfset stProperties.objectid = "#createUUID()#" />
+	<cfset stProperties.objectid = "#application.fc.utils.createJavaUUID()#" />
 	<cfset stProperties.label = "#cffile.serverFile#" />
 	<cfset stProperties.title = "#cffile.serverFile#" />
 	<cfset stProperties.alt = "#cffile.serverFile#" />

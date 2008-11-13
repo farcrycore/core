@@ -190,7 +190,7 @@
 
 
 <!--- FORM --->
-<cfparam name="session.skeletonID" default="#createUUID()#" />
+<cfparam name="session.skeletonID" default="#application.fc.utils.createJavaUUID()#" />
 <ft:form>
 	<ft:object typename="farSkeleton" objectid="#session.skeletonID#" legend="Skeleton Details" />
 	

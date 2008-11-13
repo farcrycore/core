@@ -48,7 +48,7 @@ A wrapper to create a content object instance.
 	if (IsDefined("args.stProperties.objectid"))
 		args.objectid=args.stProperties.objectid; 
 	else
-		args.objectid=CreateUUID(); 
+		args.objectid=application.fc.utils.createJavaUUID(); 
 	
 // using type
 	o = createObject("component", "#attributes.typename#");

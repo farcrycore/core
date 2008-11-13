@@ -8,7 +8,7 @@
 	<!--- grab data from db --->
 	<cfset stProps.objectid = plpObjectID>
 <cfelse>
-	<cfset stProps.objectid = createUUID()>
+	<cfset stProps.objectid = application.fc.utils.createJavaUUID()>
 </cfif>
 <cfset stProps.label = "(incomplete)">
 <cfset stProps.title = "">

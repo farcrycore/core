@@ -62,7 +62,7 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		
 		<farcry:deprecated message="authentication.createGroup() should be replaced by calls to farGroup.createData()" />
 		
-		<cfset stGroup.objectid = createuuid() />
+		<cfset stGroup.objectid = application.fc.utils.createJavaUUID() />
 		<cfset stGroup.title = arguments.groupname />
 		
 		<cfset stGroup = createObject("component", application.stcoapi["farGroup"].packagePath).createData(stProperties=stGroup) />
@@ -82,7 +82,7 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		
 		<farcry:deprecated message="authentication.createUser() should be replaced by calls to farUser.createData()" />
 		
-		<cfset stUser.objectid = createuuid() />
+		<cfset stUser.objectid = application.fc.utils.createJavaUUID() />
 		<cfset stUser.userid = arguments.userlogin />
 		<cfif stUser.userstatus eq 4>
 			<cfset stUser.userstatus = "active" />

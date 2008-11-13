@@ -33,7 +33,7 @@
 	<cfargument name="newCategoryName" required="true" type="string">
 	<cfargument name="categoryAlias" required="false" type="string" default="">
 	<cfset var stResult = structNew()>
-	<cfset var catObjectID = createUUID()>
+	<cfset var catObjectID = application.fc.utils.createJavaUUID()>
 	
  	<cfscript>
 		stResult["objectId"] = catObjectID;

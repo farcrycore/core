@@ -109,7 +109,7 @@ $out: <separate entry for each variable>$
 	<cfset stStatus.message = "refCategories,categories tables successfully dropped <br>">
 
 </cfif> 
-<cflock name="#createUUID()#" type="exclusive" timeout="50">
+<cflock name="#application.fc.utils.createJavaUUID()#" type="exclusive" timeout="50">
 <cftry>
 	<cfswitch expression="#application.dbtype#">
 	<cfcase value="ora">
@@ -187,7 +187,7 @@ $out: <separate entry for each variable>$
 	</cfdefaultcase>
 	</cfswitch>
 	
-	<cfset rootUUID = createUUID()>
+	<cfset rootUUID = application.fc.utils.createJavaUUID()>
 	<cfquery datasource="#application.dsn#" name="qUpdate">
 		insert into #application.dbowner#categories
 		(categoryid,alias,categorylabel)

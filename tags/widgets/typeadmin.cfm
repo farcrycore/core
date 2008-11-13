@@ -323,7 +323,7 @@ if (isDefined("form.unlock") AND isDefined("form.objectid")) {
 <cfif NOT structisempty(form)>
 	<cfif NOT isDefined("form.objectid")>
 		<cfscript>
-			form.objectid = createUUID();
+			form.objectid = application.fc.utils.createJavaUUID();
 		</cfscript>
 	</cfif>
 	<cfloop collection="#form#" item="fieldname">

@@ -48,7 +48,7 @@ entry in the refObjects table
 <cfelseif IsDefined("arguments.objectid")>
 	<cfset objectid=arguments.objectid>
 <cfelse>
-	<cfset objectid = CreateUUID()>
+	<cfset objectid = application.fc.utils.createJavaUUID()>
 </cfif>
 
 <!--- build query --->
@@ -192,5 +192,5 @@ entry in the refObjects table
 
 </cftransaction>
 
-<!--- this is a bit redundant as using createUUID() --->
+<!--- this is a bit redundant as using application.fc.utils.createJavaUUID() --->
 <cfset primarykey=objectid>

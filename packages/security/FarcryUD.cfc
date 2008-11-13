@@ -187,7 +187,7 @@
 		<!--- Add data --->
 		<cfloop query="qPermissions">
 			<cfset stObj = structnew() />
-			<cfset stObj.objectid = createuuid() />
+			<cfset stObj.objectid = application.fc.utils.createJavaUUID() />
 			<cfset stObj.title = permissionname />
 			<cfset stObj.shortcut = permissionname />
 			<cfset stObj.label = permissionname />
@@ -204,7 +204,7 @@
 		<!--- Add new permisions - the generic permission set --->
 		<cfloop list="Approve,Create,Delete,Edit,RequestApproval,CanApproveOwnContent" index="perm">
 			<cfset stObj = structnew() />
-			<cfset stObj.objectid = createuuid() />
+			<cfset stObj.objectid = application.fc.utils.createJavaUUID() />
 			<cfset stObj.title = "Generic #perm#" />
 			<cfset stObj.shortcut = "generic#perm#" />
 			<cfset stObj.label = "Generic #perm#" />
@@ -230,7 +230,7 @@
 		<!--- Add data --->
 		<cfloop query="qPolicyGroups">
 			<cfset stObj = structnew() />
-			<cfset stObj.objectid = createuuid() />
+			<cfset stObj.objectid = application.fc.utils.createJavaUUID() />
 			<cfset stObj.title = policygroupname />
 			<cfset stObj.label = policygroupname />
 			<cfif policygroupname eq "Anonymous">
@@ -273,7 +273,7 @@
 		<!--- Add data --->
 		<cfloop query="qGroups">
 			<cfset stObj = structnew() />
-			<cfset stObj.objectid = createuuid() />
+			<cfset stObj.objectid = application.fc.utils.createJavaUUID() />
 			<cfset stObj.title = groupname />
 			<cfset stObj.label = groupname />
 			
@@ -304,7 +304,7 @@
 		<!--- Add data --->
 		<cfloop query="qUsers">
 			<cfset stObj = structnew() />
-			<cfset stObj.objectid = createuuid() />
+			<cfset stObj.objectid = application.fc.utils.createJavaUUID() />
 			<cfset stObj.userid = userlogin />
 			<cfset stObj.password = userpassword />
 			<cfset stObj.label = userlogin />

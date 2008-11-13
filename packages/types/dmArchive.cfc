@@ -83,7 +83,7 @@ type properties
 
 	<!--- set up the dmArchive structure to save --->
 	<cfset stLocal.stProps = structNew()>
-	<cfset stLocal.stProps.objectID = createUUID()>
+	<cfset stLocal.stProps.objectID = application.fc.utils.createJavaUUID()>
 	<cfset stLocal.stProps.archiveID = stLocal.stObj.objectID>
 	<cfset stLocal.stProps.objectWDDX = stLocal.stLiveWDDX>
 	<cfset stLocal.stProps.label = stLocal.stObj.label>
@@ -178,7 +178,7 @@ type properties
 				<cfdirectory action="create" directory="#archiveDirectory#/#stLocal.archiveType#">
 			</cfif>
 
-			<cfset stLocal.archiveObjectId = createUUID()>
+			<cfset stLocal.archiveObjectId = application.fc.utils.createJavaUUID()>
 
 			<!--- create object specific object content type and then get data --->
 			<cfset stLocal.instanceObject = createobject("component",application.types[stLocal.archiveType].typepath)>

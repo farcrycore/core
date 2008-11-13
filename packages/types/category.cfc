@@ -312,7 +312,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 			// Get root node
 			qRoot = application.factory.oTree.getRootNode(typename="dmCategory");
 			if (not qRoot.recordcount) {
-				application.factory.oTree.setRootNode(typename="dmCategory",objectid=createUUID(),objectName="root");
+				application.factory.oTree.setRootNode(typename="dmCategory",objectid=application.fc.utils.createJavaUUID(),objectName="root");
 				qRoot = application.factory.oTree.getRootNode(typename="dmCategory");
 			}
 			qHierarchies = application.factory.oTree.getChildren(objectid=qRoot.objectID);

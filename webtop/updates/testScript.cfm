@@ -17,7 +17,7 @@
 		stHTML.label = arguments.title;
 		stHTML.lastUpdatedBy = 'farcry';
 		stHTML.metaKeywords = '';
-		stHTML.objectID = createUUID();
+		stHTML.objectID = application.fc.utils.createJavaUUID();
 		stHTML.status = 'approved';
 		stHTML.teaser = '<p>Teaser teaser teaser</p>';
 		stHTML.title = arguments.title;
@@ -33,7 +33,7 @@
 	<cfargument name="child" required="yes" type="UUID">
 	<cfscript>
 		stHomeNode = structNew();
-		stHomeNode.objectID = createUUID();
+		stHomeNode.objectID = application.fc.utils.createJavaUUID();
 		stHomeNode.aObjectIDs = arrayNew(1);
 		stHomeNode.aObjectIDs[1] = arguments.child;
 		stHomeNode.status = 'approved';

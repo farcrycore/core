@@ -3,7 +3,7 @@
 
 <cfif structkeyexists(url,"createdmcron") and url.createdmcron eq stObj.objectid>
 	<cfset stCron = structnew() />
-	<cfset stCron.objectid = createuuid() />
+	<cfset stCron.objectid = application.fc.utils.createJavaUUID() />
 	<cfset stCron.label = "Generate #stObj.title# XML" />
 	<cfset stCron.title = "Generate #stObj.title# XML" />
 	<cfset stCron.template = "/farcry/core/admin/scheduledTasks/updateXMLFeed.cfm" />

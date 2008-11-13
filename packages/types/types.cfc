@@ -74,7 +74,7 @@ default handlers
 			<cfset stobj=arguments.stobject />
 		<cfelse>
 			<!--- If the objectid has not been sent, we need to create a default object. --->
-			<cfparam name="arguments.objectid" default="#CreateUUID()#" type="uuid">
+			<cfparam name="arguments.objectid" default="#application.fc.utils.createJavaUUID()#" type="uuid">
 			<!--- get the data for this instance --->
 			<cfset stObj = getData(objectid=arguments.objectID,dsn=arguments.dsn)>		
 		</cfif>
@@ -141,7 +141,7 @@ default handlers
 				<!--- If the objectid has not been sent, we need to create a default object. --->
 				
 <!--- 				
-				<cfset arguments.objectid = createUUID() />
+				<cfset arguments.objectid = application.fc.utils.createJavaUUID() />
 				
 				<cfset bTypeWebskin = true /> --->
 			<cfelse>			
@@ -169,16 +169,8 @@ default handlers
 		</cfif>
 			
 		<cfif NOT structIsEmpty(stObj)>	
-		
-			<!--- Check to see if the webskin is in the object broker --->
-<!--- 			<cfif bTypeWebskin>
-				<cfset webskinHTML = application.coapi.objectBroker.getWebskin(typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
-			<cfelse>
-				<cfset webskinHTML = application.coapi.objectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
-			</cfif> --->
-			<cftimer label="getView: #stobj.objectid# #stobj.typename# (#arguments.template#): ">
+
 			<cfset webskinHTML = application.coapi.objectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
-			
 			
 			<cfif not len(webskinHTML)>			
 			
@@ -314,7 +306,6 @@ default handlers
 							detail="Error: Template not found [/webskin/#webskinTypename#/#arguments.template#.cfm] and no alternate html provided. typename: #stobj.typename#. objectid: #stobj.objectid#." />
 				</cfif>	
 			</cfif>		
-			</cftimer>
 		<cfelse>
 			<cfthrow type="Application" detail="Error: When trying to render [/webskin/#webskinTypename#/#arguments.template#.cfm] the object was not created correctly." />	
 		</cfif>
@@ -481,7 +472,7 @@ default handlers
 		
 		<cfscript>			
 			if(NOT structKeyExists(arguments.stProperties,"objectid"))
-				arguments.stProperties.objectid = createUUID();
+				arguments.stProperties.objectid = application.fc.utils.createJavaUUID();
 			if(NOT structKeyExists(arguments.stProperties,"datetimecreated"))
 				arguments.stProperties.datetimecreated = createODBCDateTime(now());	
 			if(NOT structKeyExists(arguments.stProperties,"datetimelastupdated"))

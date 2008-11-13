@@ -57,7 +57,7 @@
 							<cfif qTask.recordCount>
 								<cfset taskID = qTask.objectid />
 							<cfelse>
-								<cfset taskID = createUUID() />
+								<cfset taskID = application.fc.utils.createJavaUUID() />
 								<cfset stProperties = structNew() />
 								<cfset stProperties.objectid = taskID />
 								<cfset stProperties.title = stTaskDef.title />

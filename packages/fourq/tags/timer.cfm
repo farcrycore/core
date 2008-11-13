@@ -44,7 +44,7 @@
 	<cfswitch expression="#thisTag.executionMode#">
 		<cfcase value="start">
 			<!--- ///	create unique ID for this instance of <cf_timer>	/// --->
-			<cfset timerid = replace(createuuid(), "-", "", "ALL")>
+			<cfset timerid = replace(application.fc.utils.createJavaUUID(), "-", "", "ALL")>
 
 			<!--- //	Fieldset logic for IE	//--->
 			<cfif attributes.bBox and cgi.HTTP_User_Agent contains "MSIE">

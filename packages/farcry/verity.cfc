@@ -125,7 +125,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfset var rpt1 = "">
 	<cfset var rpt2 = "">
 	<cfset var q = getCollectionData(typename=arguments.collection,maxrows=arguments.maxrows)>
-	<cfset var builstatusid=createUUID()>
+	<cfset var builstatusid=application.fc.utils.createJavaUUID()>
 	<cfset var typename=arguments.collection />
 	<cfset stresult.bsuccess="true">
 
@@ -250,7 +250,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfset var custom3=application.config.verity.contenttype[typename].custom3 />
 	<cfset var custom4=application.config.verity.contenttype[typename].custom4 />
 	<cfset var title="">
-	<cfset var builstatusid=createUUID()>
+	<cfset var builstatusid=application.fc.utils.createJavaUUID()>
 	<cfset var filecounter=1 />
 	
 	<!--- determine files built to date --->

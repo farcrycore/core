@@ -173,7 +173,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfif isDefined("arguments.ObjectID") and len(arguments.ObjectID)>
 			<cfset stProps.objectid = arguments.ObjectID>
 		<cfelse>
-			<cfset stProps.objectid = CreateUUID()>
+			<cfset stProps.objectid = application.fc.utils.createJavaUUID()>
 		</cfif>
 		
 		<cfset stProps.typename = arguments.typename>
@@ -401,7 +401,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
  
 	<cffunction name="createData" access="public" output="true" returntype="struct" hint="Create an object including array properties.  Pass in a structure of property values; arrays should be passed as an array. The objectID can be ommitted and one will be created, passed in as an argument or passed in as a key of stProperties argument.">
 		<cfargument name="stProperties" type="struct" required="true">
-		<cfargument name="objectid" type="UUID" required="false" default="#createUUID()#">
+		<cfargument name="objectid" type="UUID" required="false" default="#application.fc.utils.createJavaUUID()#">
 		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
 		<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#">
 		<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
@@ -577,7 +577,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfif arguments.bSessionOnly>
 		
 			<!--- Make sure an object id exists. --->
-			<cfparam name="stProperties.ObjectID" default="#CreateUUID()#" />				
+			<cfparam name="stProperties.ObjectID" default="#application.fc.utils.createJavaUUID()#" />				
 			
 			<!--- Get the default properties for this object --->
 			<cfset stDefaultProperties = this.getData(objectid=arguments.stProperties.ObjectID,typename=variables.typename) />

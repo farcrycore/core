@@ -57,7 +57,7 @@ $out:$
 		refactor the lot. 20050728 GB	--->
 <cfif isdefined("url.objectid")><cfset attributes.objectid=url.objectid></cfif>
 <cfif isdefined("url.typename")><cfset attributes.typename=url.typename></cfif>
-<cfparam name="attributes.objectid" type="uuid" default="#createuuid()#">
+<cfparam name="attributes.objectid" type="uuid" default="#application.fc.utils.createJavaUUID()#">
 <cfparam name="attributes.typename" default="" type="string">
 
 <!--- Legacy support for old pages referring to URL.type--->

@@ -46,7 +46,7 @@ $out:$
 	
 	<cfscript>
 		aFilename = listToArray(arguments.filename,".");
-		uniqueFilename = aFileName[1] & right(createUUID(),4);
+		uniqueFilename = aFileName[1] & right(application.fc.utils.createJavaUUID(),4);
 		uniqueFilename = uniqueFilename & "." & afilename[arrayLen(aFilename)];
 	</cfscript>
 	<cfreturn uniqueFilename>
@@ -76,7 +76,7 @@ $out:$
 	stBranch = structNew();
 	for(i=1;i LTE qGetDescendants.recordCount;i=i+1)
 	{
-		stBranch[qGetDescendants.objectid[i]] = createUUID();
+		stBranch[qGetDescendants.objectid[i]] = application.fc.utils.createJavaUUID();
 	}
 	//dump(stBranch);
 	stNewBranch = structNew();
@@ -147,7 +147,7 @@ $out:$
 								break;
 							}
 						}
-						stObj.objectid = createUUID();
+						stObj.objectid = application.fc.utils.createJavaUUID();
 						//update the parent objects reference
 						st.aObjectids[y] = stObj.objectid;
 						//and add to the collection of objects to be created

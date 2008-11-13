@@ -38,7 +38,7 @@ FARCRY IMPORT FILES
 
 <cfif thistag.executionMode eq "End">
 	
-	<cfset toolTipID = createUUID() />	
+	<cfset toolTipID = application.fc.utils.createJavaUUID() />	
 	
 	<cfsavecontent variable="toolTipHTML">
 		

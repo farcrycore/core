@@ -38,7 +38,7 @@ $in: objectid -- $
 
 
 <cfif thistag.executionMode eq "Start">
-	<cfparam name="attributes.ID"  default="pt_#CreateUUID()#">
+	<cfparam name="attributes.ID"  default="pt_#application.fc.utils.createJavaUUID()#">
 	<cfparam name="attributes.bAllowRootSelection"  default="false">
 	
 	<cfset variables.stPrototypeTree = structNew() />

@@ -131,7 +131,7 @@
 				<cftry>
 					<cfquery name="qCreateFUTable" datasource="#application.dsn#">
 					INSERT INTO #application.dbOwner#URL(objectid, refObjectID, friendlyURL, datetimelastupdated, status)
-					VALUES (<cfqueryparam value="#createUUID()#" cfsqltype="cf_sql_varchar">,<cfqueryparam value="#refObjectID#" cfsqltype="cf_sql_varchar">,<cfqueryparam value="#friendlyURL#" cfsqltype="cf_sql_varchar">,<cfqueryparam value="#CreateODBCDateTime(now())#" cfsqltype="cf_sql_timestamp">,1)
+					VALUES (<cfqueryparam value="#application.fc.utils.createJavaUUID()#" cfsqltype="cf_sql_varchar">,<cfqueryparam value="#refObjectID#" cfsqltype="cf_sql_varchar">,<cfqueryparam value="#friendlyURL#" cfsqltype="cf_sql_varchar">,<cfqueryparam value="#CreateODBCDateTime(now())#" cfsqltype="cf_sql_timestamp">,1)
 					</cfquery>
 					<cfset iCounter_Success = iCounter_Success + 1>
 					<cfcatch>

@@ -7,7 +7,7 @@
 	<cfabort showerror="Does not have an end tag..." >
 </cfif>
 
-<cfparam  name="attributes.id" default="#createUUID()#">
+<cfparam  name="attributes.id" default="#application.fc.utils.createJavaUUID()#">
 <cfparam  name="attributes.Type" default="">
 <cfparam  name="attributes.Value" default="#Attributes.Type#">
 <cfparam  name="attributes.rbkey" default="forms.buttons.#rereplacenocase(attributes.value,'[^\w\d]','','ALL')#"><!--- The resource path for this button. Default is forms.buttons.value. --->

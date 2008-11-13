@@ -125,13 +125,13 @@
 				
 			
 			<cfif not len(attributes.objectid)>
-				<cfset attributes.objectid = createUUID() />
+				<cfset attributes.objectid = application.fc.utils.createJavaUUID() />
 				<cfset session.stTempObjectStoreKeys[attributes.typename][attributes.key] = attributes.objectid>
 				<cfset st = oType.getData(objectID = attributes.objectid) />
 				<cfset stResult = oType.setData(stProperties=st, bSessionOnly="true") />
 			</cfif>	
 		<cfelse>	
-			<cfset attributes.objectid = createUUID() />		
+			<cfset attributes.objectid = application.fc.utils.createJavaUUID() />		
 		</cfif>
 		
 		<cfset stObj = oType.getData(objectID="#attributes.objectid#")>

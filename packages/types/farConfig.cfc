@@ -154,7 +154,7 @@ object methods
 				<cfset stObj = duplicate(stProperties) />
 			</ft:validateFormObjects>
 		<cfelse>
-			<cfset stObj = createobject("component",application.stCOAPI[arguments.stFieldPost.stSupporting.formname].packagepath).getData(createuuid()) />
+			<cfset stObj = createobject("component",application.stCOAPI[arguments.stFieldPost.stSupporting.formname].packagepath).getData(application.fc.utils.createJavaUUID()) />
 			<cfset stObj.typename = arguments.stFieldPost.stSupporting.formname />
 			
 			<!--- No validation required --->
@@ -182,7 +182,7 @@ object methods
 		
 		<cfif qConfig.recordcount>
 			<!--- Set up the config item values --->
-			<cfset stObj.objectid = createuuid() />
+			<cfset stObj.objectid = application.fc.utils.createJavaUUID() />
 			<cfset stObj.typename = "farConfig" />
 			<cfset stObj.configkey = trim(arguments.key) />
 			
@@ -192,7 +192,7 @@ object methods
 			<!--- Find the config form component with that key and get the default values --->
 			<cfloop list="#application.factory.oUtils.getComponents('forms')#" index="thisform">
 				<cfif left(thisform,6) eq "config" and application.stCOAPI[thisform].key eq trim(arguments.key)>
-					<cfset structappend(stResult,createobject("component",application.stCOAPI[thisform].packagepath).getData(createuuid()),false) />
+					<cfset structappend(stResult,createobject("component",application.stCOAPI[thisform].packagepath).getData(application.fc.utils.createJavaUUID()),false) />
 					<cfset stResult.typename = thisform />
 				</cfif>
 			</cfloop>
@@ -238,7 +238,7 @@ object methods
 		<cfloop list="#application.factory.oUtils.getComponents('forms')#" index="thisform">
 			<cfif left(thisform,6) eq "config" and application.stCOAPI[thisform].key eq arguments.key>
 				<!--- Append defaults - ensures that new properties are picked up --->
-				<cfset structappend(stResult,createobject("component",application.stCOAPI[thisform].packagepath).getData(createuuid()),false) />
+				<cfset structappend(stResult,createobject("component",application.stCOAPI[thisform].packagepath).getData(application.fc.utils.createJavaUUID()),false) />
 				<cfset stResult.typename = thisform />
 			</cfif>
 		</cfloop>
@@ -250,7 +250,7 @@ object methods
 		<cfif qConfig.recordcount>
 			<cfset stObj.objectid = qConfig.objectid[1] />
 		<cfelse>
-			<cfset stObj.objectid = createuuid() />
+			<cfset stObj.objectid = application.fc.utils.createJavaUUID() />
 		</cfif>
 		<cfset stObj.typename = "farConfig" />
 		<cfset stObj.configkey = arguments.key />

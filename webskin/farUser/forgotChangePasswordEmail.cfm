@@ -4,7 +4,7 @@
 
 <cfset stProperties = structNew() />
 <cfset stProperties.objectid = stobj.objectid />
-<cfset stProperties.password = "#right(createUUID(),8)#" />
+<cfset stProperties.password = "#right(application.fc.utils.createJavaUUID(),8)#" />
 
 <cfset stResult = setData(stProperties="#stProperties#") />
 

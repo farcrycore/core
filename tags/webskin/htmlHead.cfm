@@ -17,7 +17,7 @@ $in: libraryState -- used to turn predefined libraries on or off. Default turns 
 <cfif thistag.executionMode eq "Start">
 
 	<cfparam name="attributes.text" default="" />
-	<cfparam name="attributes.id" default="#createUUID()#" />
+	<cfparam name="attributes.id" default="#application.fc.utils.createJavaUUID()#" />
 	<cfparam name="attributes.library" default="" />
 	<cfparam name="attributes.libraryState" default="true" />
 	<cfparam name="attributes.position" default="last" /><!--- first or last --->

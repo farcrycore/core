@@ -29,7 +29,7 @@
 </cfif>
 
 <cfset stObj = structnew() />
-<cfset stObj.objectid = createuuid() />
+<cfset stObj.objectid = application.fc.utils.createJavaUUID() />
 <cfset stObj.object = attributes.object />
 <cfset stObj.type = attributes.type />
 <cfset stObj.event = attributes.event />

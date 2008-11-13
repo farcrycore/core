@@ -83,7 +83,7 @@ $out:$
 			<cfset instance.stobj = stObj />
 		<cfelse>
 			<!--- If the objectid has not been sent, we need to create a default object. --->
-			<cfparam name="arguments.objectid" default="#CreateUUID()#" type="uuid">
+			<cfparam name="arguments.objectid" default="#application.fc.utils.createJavaUUID()#" type="uuid">
 			<!--- get the data for this instance --->
 			<cfset stObj = getData(objectid=arguments.objectID,dsn=arguments.dsn)>
 		</cfif>
@@ -102,7 +102,6 @@ $out:$
 					
 		<cfif NOT structIsEmpty(stObj)>		
 		
-			<cftimer label="getView: #stobj.objectid# #stobj.typename# (#arguments.template#): ">
 			<!--- Check to see if the webskin is in the object broker --->
 			<cfset webskinHTML = oObjectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
 
@@ -182,9 +181,6 @@ $out:$
 							
 							<!--- If the timeout of this webskin is less than its parents, reset the parents timeout so timeout propogates upwards --->
 							<cfif stCurrentView.timeout LT request.aAncestorWebskins[i].timeout>
-								<cfif stCurrentView.timeout EQ "">
-									<cfdump var="#stCurrentView#" expand="false" label="stCurrentView" />
-<cfabort showerror="debugging" />								</cfif>
 								<cfset request.aAncestorWebskins[i].timeout = stCurrentView.timeout />
 							</cfif>
 							
@@ -208,7 +204,6 @@ $out:$
 					<cfthrow type="Application" detail="Error: Template not found [/webskin/#stObj.typename#/#arguments.template#.cfm] and no alternate html provided." />
 				</cfif>	
 			</cfif>	
-			</cftimer>	
 		<cfelse>
 			<cfthrow type="Application" detail="Error: When trying to render [/webskin/#stObj.typename#/#arguments.template#.cfm] the object was not created correctly." />	
 		</cfif>
@@ -252,7 +247,7 @@ $out:$
 		<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
 		
 		<cfif not structKeyExists(arguments.stProperties,"objectid")>
-			<cfset arguments.stProperties.objectid = createUUID() />
+			<cfset arguments.stProperties.objectid = application.fc.utils.createJavaUUID() />
 		</cfif>
 		
 		<cfset stNewObject = super.createData(arguments.stProperties) />

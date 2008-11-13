@@ -398,7 +398,7 @@ a {color: ##116EAF;}
 								<cfparam name="oLog.event" default="comment" />
 								<cfset oLog.setData(stProperties=stLog) />
 							</cfif>
-							<cfset stLog = oLog.getData(objectid=createuuid()) />
+							<cfset stLog = oLog.getData(objectid=application.fc.utils.createJavaUUID()) />
 							<cfset stLog.type = "types" />
 							<cfset stLog.datetimecreated = lsparsedatetime(mid(thisline,find("(",thisline)+1,19)) />
 							<cfset stLog.datetimelastupdated = stLog.datetimecreated />

@@ -84,7 +84,7 @@ $out:$
 	<!--- default properties --->
 	<cfscript>
 		stProps=structNew();
-		stProps.objectid = createUUID();
+		stProps.objectid = application.fc.utils.createJavaUUID();
 		stProps.label = "(incomplete)";
 		stProps.title = "";
 		stProps.lastupdatedby = application.security.getCurrentUserID();

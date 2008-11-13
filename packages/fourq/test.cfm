@@ -216,7 +216,7 @@ module works correctly as long as the data passed to them is correct.
 
 
 
-<cfset complexObjectid = createUUID() />
+<cfset complexObjectid = application.fc.utils.createJavaUUID() />
 	<!--- Insert a complex record. --->
 	<dl>
 		<dt>Create a new record for the test component with complex array data.</dt>
@@ -234,7 +234,7 @@ module works correctly as long as the data passed to them is correct.
 		<cfset stArrayProp.age = 32 />
 		<cfset stArrayProp.fname = "Spike" />
 		<cfset stArrayProp.lname = "Milligan" />
-		<cfset stArrayProp.data = createUUID() />
+		<cfset stArrayProp.data = application.fc.utils.createJavaUUID() />
 		<cfset arrayAppend(stProperties.arrayTest,stArrayProp) />
 		<cftry>
 		  <cfset test = createObject('component','farcry.core.packages.fourq.test.ValidTest') />
@@ -255,7 +255,7 @@ module works correctly as long as the data passed to them is correct.
 
 
 
-  <cfset simpleObjectid = createUUID() />
+  <cfset simpleObjectid = application.fc.utils.createJavaUUID() />
 	<!--- Insert a simple record. --->
 	<dl>
 		<dt>Create a new record for the test component with simple array data.</dt>
@@ -302,7 +302,7 @@ module works correctly as long as the data passed to them is correct.
 		<cfset stArrayProp.age = 302 />
 		<cfset stArrayProp.fname = "Bob" />
 		<cfset stArrayProp.lname = "Cratchitt" />
-		<cfset stArrayProp.data = createUUID() />
+		<cfset stArrayProp.data = application.fc.utils.createJavaUUID() />
 		<cfset arrayAppend(stProperties.arrayTest,stArrayProp) />
 		<cftry>
 		  <cfset test = createObject('component','farcry.core.packages.fourq.test.ValidTest') />

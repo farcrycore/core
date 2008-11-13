@@ -99,7 +99,7 @@ $out:$
 	                else item.navAlias = "";
 	               
 	                item.level = level;
-	                item.objectid = createuuid();
+	                item.objectid = application.fc.utils.createJavaUUID();
 	                item.parentid = '';
 	                arrayAppend(items, item);
 	                lastlevel = item.level;
@@ -178,7 +178,7 @@ $out:$
 	                htmlItem.label = htmlItem.title;
 	                htmlItem.lastUpdatedBy = createdBy;
 	                htmlItem.metaKeywords = "";
-	                htmlItem.objectID = createUUID();
+	                htmlItem.objectID = application.fc.utils.createJavaUUID();
 	                htmlItem.status = status;
 	                htmlItem.teaser = "";
 	                htmlItem.typeName = form.makeHtml;

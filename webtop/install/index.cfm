@@ -70,8 +70,8 @@ SETUP DEFAULTS FOR ALL INSTALLATION WIZARD FIELDS
 	<cfset session.stFarcryInstall.stConfig.plugins = "" />
 	<cfset session.stFarcryInstall.stConfig.projectInstallType = "subDirectory" />
 	<cfset session.stFarcryInstall.stConfig.webtopInstallType = "project" />
-	<cfset session.stFarcryInstall.stConfig.adminPassword = "#right(createUUID(),6)#" />
-	<cfset session.stFarcryInstall.stConfig.updateappKey = "#right(createUUID(),4)#" />
+	<cfset session.stFarcryInstall.stConfig.adminPassword = "#right(application.fc.utils.createJavaUUID(),6)#" />
+	<cfset session.stFarcryInstall.stConfig.updateappKey = "#right(application.fc.utils.createJavaUUID(),4)#" />
 	
 	<cflocation url="#cgi.SCRIPT_NAME#?#cgi.query_string#" addtoken="false">
 </cfif>

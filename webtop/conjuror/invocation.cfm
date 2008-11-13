@@ -35,7 +35,7 @@ Pseudo:
 
 <!--- required environment parameters --->
 <cfparam name="url.typename" default="" type="string">
-<cfparam name="url.objectid" default="#createuuid()#" type="string">
+<cfparam name="url.objectid" default="#application.fc.utils.createJavaUUID()#" type="string">
 
 <cfif structIsEmpty(form)>
 	<cfparam name="url.method" default="#variables.defMethod#" type="string">

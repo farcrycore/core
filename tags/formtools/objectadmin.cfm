@@ -245,7 +245,7 @@ user --->
 		
 			<cfif not structKeyExists(session.objectadminFilterObjects[attributes.typename], "stObject")>
 				
-				<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectid="#createUUID()#") />
+				<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectid="#application.fc.utils.createJavaUUID()#") />
 				
 							
 				<cfset session.objectadminFilterObjects[attributes.typename].stObject.label = "" />
@@ -413,7 +413,7 @@ user --->
 		
 		
 		
-		<cfset addURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=#createUUID()#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=#attributes.module#" />	
+		<cfset addURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=#application.fc.utils.createJavaUUID()#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=#attributes.module#" />	
 		<cfif Len(attributes.plugin)>
 			<cfset addURL = addURL&"&plugin=#attributes.plugin#" />
 			<cfset pluginURL = "&plugin=#attributes.plugin#" /><!--- we need this when using a plugin like farcrycms, to be able to redirect back to the plugin object admin instead of the project or core object admin --->
@@ -601,7 +601,7 @@ user --->
 		<cfif NOT structisempty(form)>
 			<cfif NOT isDefined("form.objectid")>
 				<cfscript>
-					form.objectid = createUUID();
+					form.objectid = application.fc.utils.createJavaUUID();
 				</cfscript>
 			</cfif>
 			<cfloop collection="#form#" item="fieldname">

@@ -38,7 +38,7 @@
 			</cfloop>
 		<cfelse>
 			<!--- Barnacle didn't exist - create it --->
-			<cfset stBarnacle = getData(objectid=createuuid()) />
+			<cfset stBarnacle = getData(objectid=application.fc.utils.createJavaUUID()) />
 			<cfset stBarnacle.roleid = arguments.role />
 			<cfset stBarnacle.permissionid = arguments.permission />
 			<cfset stBarnacle.referenceid = arguments.object />

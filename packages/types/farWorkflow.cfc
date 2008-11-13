@@ -162,7 +162,7 @@
 			<cfif not structIsEmpty(stInstance)>
 				<cfset stWorkflow.objectid = stInstance.objectID />
 			<cfelse>
-				<cfset stWorkflow.objectid = createUUID() />
+				<cfset stWorkflow.objectid = application.fc.utils.createJavaUUID() />
 			</cfif>		
 			<cfset stWorkflow.referenceID = arguments.referenceID />
 			<cfset stResult = setData(stProperties="#stWorkflow#") />

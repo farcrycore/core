@@ -29,7 +29,7 @@ Creates a draft object
 	
 	<cfscript>
 		stProps=structCopy(stObject);
-		stProps.objectid = createUUID();
+		stProps.objectid = application.fc.utils.createJavaUUID();
 		stProps.lastupdatedby = application.security.getCurrentUserID();
 		stProps.datetimelastupdated = Now();
 		stProps.createdby = application.security.getCurrentUserID();

@@ -19,7 +19,7 @@ $in: id -- an id for the content to be added to the head. If the key already exi
 
 <cfif thistag.executionMode eq "Start">
 
-	<cfparam name="attributes.id" default="#createUUID()#" />
+	<cfparam name="attributes.id" default="#application.fc.utils.createJavaUUID()#" />
 	
 	<!--- Make sure the request.inhead.stCustom exists --->
 	<cfparam name="request.inhead" default="#structNew()#" />

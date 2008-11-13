@@ -2,7 +2,7 @@
 
 
 	<cffunction access="public" returntype="utils" name="init" output="false" hint="Constructor">
-		<cfargument name="jarPath" type="string" required="yes" default="uuid/uuid-3.0.jar" />
+		<cfargument name="jarPath" type="string" required="yes" default="/farcry/core/packages/farcry/uuid/uuid-3.0.jar" />
 		
 		<cfset var paths = arrayNew(1) />
 		
