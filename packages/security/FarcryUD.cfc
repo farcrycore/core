@@ -431,8 +431,11 @@
 				<cfparam name="stObj.aGroups" default="#arraynew(1)#" />
 				
 				<cfoutput>
-					<cfset arrayappend(stObj.aGroups,arguments.groups[qUserGroups.groupid]) />
-					<cfset result = result + 1 />
+					<!--- Make sure group still exists before migrating --->
+					<cfif structKeyExists(arguments.groups, qUserGroups.groupid)>
+  						<cfset arrayappend(stObj.aGroups,arguments.groups[qUserGroups.groupid]) />
+	  					<cfset result = result + 1 />
+					</cfif>
 				</cfoutput>
 				
 				<cfset oUser.setData(stProperties=stObj,user="migratescript",auditNote="Data migrated from pre 4.1") />
