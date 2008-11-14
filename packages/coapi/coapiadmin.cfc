@@ -6,6 +6,8 @@
 	<cfset variables.qIncludedObjects = initializeIncludes() />
 	<cfset this.qIncludedObjects = variables.qIncludedObjects />
 	
+	<cfset variables.stWebskinDetails = structNew() />
+	
 	<cfreturn this />
 
 </cffunction>
@@ -436,7 +438,8 @@
 		<cfset var result = "false" />
 		<cfset var templateCode = "" />
 		<cfset var pos = "" />	
-		<cfset var count = "" />	
+		<cfset var count = "" />
+		<cfset var pathHash = "" />	
 		
 		
 		<cfif NOT structKeyExists(arguments, "path")>
@@ -447,21 +450,85 @@
 			</cfif>
 		</cfif>
 		
-		<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
-			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
+		<cfset pathHash = hash(arguments.path) />
 		
-			<cfset pos = findNoCase('@@hashURL:', templateCode)>
-			<cfif pos GT 0>
-				<cfset pos = pos + 10>
-				<cfset count = findNoCase('--->', templateCode, pos)-pos>
-				<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
-			</cfif>	
+		<cfif structKeyExists(variables.stWebskinDetails, pathHash) AND structKeyExists(variables.stWebskinDetails[pathHash], "hashURL")>
+			<cfset result = variables.stWebskinDetails[pathHash].hashURL />
+		<cfelse>
+			<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
+				<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
+			
+				<cfset pos = findNoCase('@@hashURL:', templateCode)>
+				<cfif pos GT 0>
+					<cfset pos = pos + 10>
+					<cfset count = findNoCase('--->', templateCode, pos)-pos>
+					<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
+				</cfif>	
+			</cfif>
+			
+			<cfif not isBoolean(result)>
+				<cfset result = false>
+			</cfif>
+			
+			<cfif NOT structKeyExists(variables.stWebskinDetails, pathHash)>
+				<cfset variables.stWebskinDetails[pathHash] = structNew() />
+			</cfif>
+			<cfset variables.stWebskinDetails[pathHash].hashURL = result />
+			
 		</cfif>
 		
-		<cfif not isBoolean(result)>
-			<cfset result = false>
-		</cfif>
+		
 	
+	
+		<cfreturn result />
+	</cffunction>
+	
+	<cffunction name="getWebskinHashRoles" returntype="string" access="public" output="false" hint="Returns the objectbroker HashRoles boolean value of a webskin. A result of true will HASH the session.security.roles on all ancestor webskins in the cache.">
+		<cfargument name="typename" type="string" required="false" default="" />
+		<cfargument name="template" type="string" required="false" default="" />
+		<cfargument name="path" type="string" required="false" />
+	
+		<cfset var result = "false" />
+		<cfset var templateCode = "" />
+		<cfset var pos = "" />	
+		<cfset var count = "" />
+		<cfset var pathHash = "" />		
+		
+		<cfif NOT structKeyExists(arguments, "path")>
+			<cfif len(arguments.typename) AND len(arguments.template)>
+				<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
+			<cfelse>
+				<cfthrow type="Application" detail="Error: [getWebskinHashRoles] You must pass in a path or both the typename and template" />	
+			</cfif>
+		</cfif>
+		
+		<cfset pathHash = hash(arguments.path) />
+		
+		<cfif structKeyExists(variables.stWebskinDetails, pathHash) AND structKeyExists(variables.stWebskinDetails[pathHash], "hashRoles")>
+			<cfset result = variables.stWebskinDetails[pathHash].hashRoles />
+		<cfelse>
+		
+			<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
+				<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
+			
+				<cfset pos = findNoCase('@@hashRoles:', templateCode)>
+				<cfif pos GT 0>
+					<cfset pos = pos + 12>
+					<cfset count = findNoCase('--->', templateCode, pos)-pos>
+					<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
+				</cfif>	
+			</cfif>
+			
+			<cfif not isBoolean(result)>
+				<cfset result = false>
+			</cfif>
+			
+			<cfif NOT structKeyExists(variables.stWebskinDetails, pathHash)>
+				<cfset variables.stWebskinDetails[pathHash] = structNew() />
+			</cfif>
+			<cfset variables.stWebskinDetails[pathHash].hashRoles = result />
+			
+		</cfif>
 	
 		<cfreturn result />
 	</cffunction>
@@ -477,6 +544,7 @@
 		<cfset var templateCode = "" />
 		<cfset var pos = "" />	
 		<cfset var count = "" />
+		<cfset var pathHash = "" />	
 		
 		<cfif NOT structKeyExists(arguments, "path")>
 			<cfif len(arguments.typename) AND len(arguments.template)>
@@ -486,15 +554,28 @@
 			</cfif>
 		</cfif>
 		
-		<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
-			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
+		<cfset pathHash = hash(arguments.path) />
 		
-			<cfset pos = findNoCase('@@displayname:', templateCode)>
-			<cfif pos GT 0>
-				<cfset pos = pos + 14>
-				<cfset count = findNoCase('--->', templateCode, pos)-pos>
-				<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
-			</cfif>	
+		<cfif structKeyExists(variables.stWebskinDetails, pathHash) AND structKeyExists(variables.stWebskinDetails[pathHash], "displayName")>
+			<cfset result = variables.stWebskinDetails[pathHash].displayName />
+		<cfelse>
+		
+			<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
+				<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
+			
+				<cfset pos = findNoCase('@@displayname:', templateCode)>
+				<cfif pos GT 0>
+					<cfset pos = pos + 14>
+					<cfset count = findNoCase('--->', templateCode, pos)-pos>
+					<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
+				</cfif>	
+			</cfif>
+			
+			<cfif NOT structKeyExists(variables.stWebskinDetails, pathHash)>
+				<cfset variables.stWebskinDetails[pathHash] = structNew() />
+			</cfif>
+			<cfset variables.stWebskinDetails[pathHash].displayName = result />
+			
 		</cfif>
 		
 		<cfreturn result />
@@ -510,6 +591,7 @@
 		<cfset var templateCode = "" />
 		<cfset var pos = "" />	
 		<cfset var count = "" />
+		<cfset var pathHash = "" />	
 		
 		<cfif NOT structKeyExists(arguments, "path")>
 			<cfif len(arguments.typename) AND len(arguments.template)>
@@ -519,19 +601,34 @@
 			</cfif>
 		</cfif>
 		
-		<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
-			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
+		<cfset pathHash = hash(arguments.path) />
 		
-			<cfset pos = findNoCase('@@author:', templateCode)>
-			<cfif pos GT 0>
-				<cfset pos = pos + 9>
-				<cfset count = findNoCase('--->', templateCode, pos)-pos>
-				<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
-			</cfif>	
+		<cfif structKeyExists(variables.stWebskinDetails, pathHash) AND structKeyExists(variables.stWebskinDetails[pathHash], "author")>
+			<cfset result = variables.stWebskinDetails[pathHash].author />
+		<cfelse>
+			
+			<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
+				<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
+			
+				<cfset pos = findNoCase('@@author:', templateCode)>
+				<cfif pos GT 0>
+					<cfset pos = pos + 9>
+					<cfset count = findNoCase('--->', templateCode, pos)-pos>
+					<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
+				</cfif>	
+			</cfif>
+			
+			<cfif NOT structKeyExists(variables.stWebskinDetails, pathHash)>
+				<cfset variables.stWebskinDetails[pathHash] = structNew() />
+			</cfif>
+			<cfset variables.stWebskinDetails[pathHash].author = result />
+			
 		</cfif>
 		
 		<cfreturn result />
 	</cffunction>
+	
+	
 	<cffunction name="getWebskinDescription" returntype="string" access="public" output="false" hint="">
 		<cfargument name="typename" type="string" required="false" />
 		<cfargument name="template" type="string" required="false" />
@@ -541,6 +638,7 @@
 		<cfset var templateCode = "" />
 		<cfset var pos = "" />	
 		<cfset var count = "" />
+		<cfset var pathHash = "" />	
 		
 		<cfif NOT structKeyExists(arguments, "path")>
 			<cfif len(arguments.typename) AND len(arguments.template)>
@@ -550,15 +648,28 @@
 			</cfif>
 		</cfif>
 		
-		<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
-			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
+		<cfset pathHash = hash(arguments.path) />
 		
-			<cfset pos = findNoCase('@@description:', templateCode)>
-			<cfif pos GT 0>
-				<cfset pos = pos + 14>
-				<cfset count = findNoCase('--->', templateCode, pos)-pos>
-				<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
-			</cfif>	
+		<cfif structKeyExists(variables.stWebskinDetails, pathHash) AND structKeyExists(variables.stWebskinDetails[pathHash], "description")>
+			<cfset result = variables.stWebskinDetails[pathHash].description />
+		<cfelse>
+			
+			<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
+				<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
+			
+				<cfset pos = findNoCase('@@description:', templateCode)>
+				<cfif pos GT 0>
+					<cfset pos = pos + 14>
+					<cfset count = findNoCase('--->', templateCode, pos)-pos>
+					<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
+				</cfif>	
+			</cfif>
+			
+			<cfif NOT structKeyExists(variables.stWebskinDetails, pathHash)>
+				<cfset variables.stWebskinDetails[pathHash] = structNew() />
+			</cfif>
+			<cfset variables.stWebskinDetails[pathHash].description = result />
+			
 		</cfif>
 		
 		<cfreturn result />

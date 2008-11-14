@@ -64,6 +64,7 @@
 		<cfset var stCacheWebskin = structNew() />
 		<cfset var webskinTypename = arguments.typename /><!--- Default to the typename passed in --->
 		<cfset var stCoapi = structNew() />
+		<cfset var hashRolesString = "" />
 		
 		<cfif arguments.typename EQ "farCoapi">
 			<!--- This means its a type webskin and we need to look for the timeout value on the related type. --->			
@@ -88,11 +89,21 @@
 							AND 	structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)
 							AND 	structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")
 							AND 	structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins, arguments.template)>
-												
+									
+
+
+							<cfif application.security.isLoggedIn()>
+								<cfset hashRolesString = "#session.security.roles#" />
+							<cfelse>
+								<cfset hashRolesString = "anonymous" />
+							</cfif>		
+							
 							<cfif len(arguments.hashKey) AND structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], hash("#arguments.hashKey#"))>							
 								<cfset stCacheWebskin = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template]["#hash('#arguments.hashKey#')#"] />
 							<cfelseif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], hash("#arguments.hashKey##cgi.http_host##cgi.script_name##cgi.query_string#"))>
 								<cfset stCacheWebskin = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template]["#hash('#arguments.hashKey##cgi.http_host##cgi.script_name##cgi.query_string#')#"] />
+							<cfelseif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], hash("#arguments.hashKey##hashRolesString#"))>
+								<cfset stCacheWebskin = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template]["#hash('#arguments.hashKey##hashRolesString#')#"] />
 							<cfelseif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], "standard") >
 								<cfset stCacheWebskin = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].standard />
 							</cfif>
@@ -251,6 +262,15 @@
 								<cfif arguments.stCurrentView.hashURL>
 									<cfset hashString = "#hashString##cgi.http_host##cgi.script_name##cgi.query_string#" />
 								</cfif>
+								<cfif arguments.stCurrentView.hashRoles>
+									<cfif application.security.isLoggedIn()>
+										<cfset hashString = "#hashString##session.security.roles#" />
+									<cfelse>
+										<cfset hashString = "#hashString#anonymous" />
+									</cfif>									
+								</cfif>
+								
+								<cfset stCacheWebskin.hashString = hashString />
 								
 								<cfif len(hashString)>
 									<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template][hash("#hashString#")] = stCacheWebskin />
