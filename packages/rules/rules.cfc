@@ -121,7 +121,7 @@ $out:$
 					<cfset stCurrentView.hashKey = arguments.hashKey />
 					<cfset stCurrentView.timeout = application.coapi.coapiadmin.getWebskinTimeOut(typename=stObj.typename, template=arguments.template) />
 					<cfset stCurrentView.hashURL = application.coapi.coapiadmin.getWebskinHashURL(typename=stObj.typename, template=arguments.template) />
-					<cfset stCurrentView.hashRoles = application.coapi.coapiadmin.getWebskinHashRoles(typename=webskinTypename, template=arguments.template) />
+					<cfset stCurrentView.hashRoles = application.coapi.coapiadmin.getWebskinHashRoles(typename=stObj.typename, template=arguments.template) />
 					<cfset stCurrentView.okToCache = 1 />
 					<cfset stCurrentView.inHead = structNew() />
 					<cfset stCurrentView.inHead.stCustom = structNew() />
