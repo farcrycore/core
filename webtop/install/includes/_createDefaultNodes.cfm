@@ -15,7 +15,7 @@ stHTML.displayMethod = 'displayPageTypeA';
 stHTML.label = 'farcry - open source';
 stHTML.lastUpdatedBy = 'farcry';
 stHTML.metaKeywords = '';
-stHTML.objectID = application.fc.utils.createJavaUUID();
+stHTML.objectID = createUUID();
 stHTML.status = 'approved';
 stHTML.teaser = 'Built from the ground up on the revolutionary ColdFusion MX server platform, <strong>farcry</strong> is the affordable, powerful site management solution that is quick to implement, and intuitive to use.';
 stHTML.title = 'farcry - open source';
@@ -39,7 +39,7 @@ stHTML2.displayMethod = 'displayPageTypeB';
 stHTML2.label = 'FarCry Support';
 stHTML2.lastUpdatedBy = 'farcry';
 stHTML2.metaKeywords = '';
-stHTML2.objectID = application.fc.utils.createJavaUUID();
+stHTML2.objectID = createUUID();
 stHTML2.status = 'approved';
 stHTML2.teaser = 'An example page';
 stHTML2.title = 'FarCry Support';
@@ -58,7 +58,7 @@ stCSS.description = 'Default stylesheet for farCry content management system.';
 stCSS.fileName = 'main.css';
 stCSS.label = 'Default Styles';
 stCSS.lastUpdatedBy = 'farcry';
-stCSS.objectID = application.fc.utils.createJavaUUID();
+stCSS.objectID = createUUID();
 stCSS.title = 'Default Styles';
 stCSS.typeName = 'dmCSS';
 
@@ -70,7 +70,7 @@ stSearch.displayMethod = 'displayDefault';
 stSearch.include = '_search.cfm';
 stSearch.label = 'Search';
 stSearch.lastUpdatedBy = 'farcry';
-stSearch.objectID = application.fc.utils.createJavaUUID();
+stSearch.objectID = createUUID();
 stSearch.status = 'approved';
 stSearch.teaser = '';
 stSearch.title = 'Search';
@@ -91,7 +91,7 @@ o_farcrytree = createObject("component", "#application.packagepath#.farcry.tree"
 
 // define default navigation nodes
 stRootNode = structNew();
-stRootNode.objectID = application.fc.utils.createJavaUUID();
+stRootNode.objectID = createUUID();
 stRootNode.aObjectIDs = arrayNew(1);
 stRootNode.aObjectIDs[1] = stCSS.objectID;
 stRootNode.status = 'approved';
@@ -107,7 +107,7 @@ stRootNode.datetimelastupdated = now();
 stRootNode.lastupdatedby = 'farcry';
 
 stHomeNode = structNew();
-stHomeNode.objectID = application.fc.utils.createJavaUUID();
+stHomeNode.objectID = createUUID();
 stHomeNode.aObjectIDs = arrayNew(1);
 stHomeNode.aObjectIDs[1] = stHTML.objectID;
 stHomeNode.status = 'approved';
@@ -123,7 +123,7 @@ stHomeNode.datetimelastupdated = now();
 stHomeNode.lastupdatedby = 'farcry';
 
 stHomeNode2 = structNew();
-stHomeNode2.objectID = application.fc.utils.createJavaUUID();
+stHomeNode2.objectID = createUUID();
 stHomeNode2.aObjectIDs = arrayNew(1);
 stHomeNode2.aObjectIDs[1] = stHTML2.objectID;
 stHomeNode2.status = 'approved';
@@ -139,7 +139,7 @@ stHomeNode2.datetimelastupdated = now();
 stHomeNode2.lastupdatedby = 'farcry';
 
 stUtilNode = structNew();
-stUtilNode.objectID = application.fc.utils.createJavaUUID();
+stUtilNode.objectID = createUUID();
 stUtilNode.status = 'approved';
 stUtilNode.ExternalLink = '';
 stUtilNode.target = '';
@@ -153,7 +153,7 @@ stUtilNode.datetimelastupdated = now();
 stUtilNode.lastupdatedby = 'farcry';
 
 stSearchNode = structNew();
-stSearchNode.objectID = application.fc.utils.createJavaUUID();
+stSearchNode.objectID = createUUID();
 stSearchNode.aObjectIDs = arrayNew(1);
 stSearchNode.aObjectIDs[1] = stSearch.objectID;
 stSearchNode.status = 'approved';
@@ -169,7 +169,7 @@ stSearchNode.datetimelastupdated = now();
 stSearchNode.lastupdatedby = 'farcry';
 
 stFooterNode = structNew();
-stFooterNode.objectID = application.fc.utils.createJavaUUID();
+stFooterNode.objectID = createUUID();
 stFooterNode.status = 'approved';
 stFooterNode.ExternalLink = '';
 stFooterNode.target = '';
@@ -183,7 +183,7 @@ stFooterNode.datetimelastupdated = now();
 stFooterNode.lastupdatedby = 'farcry';
 
 stImageNode = structNew();
-stImageNode.objectID = application.fc.utils.createJavaUUID();
+stImageNode.objectID = createUUID();
 stImageNode.status = 'approved';
 stImageNode.ExternalLink = '';
 stImageNode.target = '';
@@ -197,7 +197,7 @@ stImageNode.datetimelastupdated = now();
 stImageNode.lastupdatedby = 'farcry';
 
 stFileNode = structNew();
-stFileNode.objectID = application.fc.utils.createJavaUUID();
+stFileNode.objectID = createUUID();
 stFileNode.status = 'approved';
 stFileNode.ExternalLink = '';
 stFileNode.target = '';
@@ -211,7 +211,7 @@ stFileNode.datetimelastupdated = now();
 stFileNode.lastupdatedby = 'farcry';
 
 stTrashNode = structNew();
-stTrashNode.objectID = application.fc.utils.createJavaUUID();
+stTrashNode.objectID = createUUID();
 stTrashNode.status = 'approved';
 stTrashNode.ExternalLink = '';
 stTrashNode.target = '';

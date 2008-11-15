@@ -39,6 +39,8 @@ DEPLOY SYSTEM TABLES
 
 
 <!--- instantiate singletons needed for install --->
+<cfset application.fc = structNew() />
+<cfset application.fc.utils = createobject("component","farcry.core.packages.farcry.utils").init() />
 <cfset application.factory.oUtils = createobject("component","farcry.core.packages.farcry.utils") />
 <cfset application.factory.oAudit = createObject("component","#application.packagepath#.farcry.audit") />
 
