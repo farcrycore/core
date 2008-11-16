@@ -177,8 +177,10 @@
 		<cfset var WebskinDescription = "" />
 		<cfset var WebskinHashURL = "" />
 		<cfset var WebskinFilePath = "" />
-
-
+		<cfset var sortedPlugins = "" />
+		<cfset var stWebskinDetails = structNew() />
+		<cfset var webskinRelativePath = "" />
+		
 		<cfif not bForceRefresh AND isdefined("application.stcoapi.#arguments.typename#.qWebskins")>
 			
 			<cfset qResult = application.stcoapi[arguments.typename].qWebskins />
@@ -218,135 +220,130 @@
 		</cfif>
 				
 			
-			<!--- check project webskins --->
-			<cfif directoryExists(webskinPath)>
-				<cfdirectory action="list" directory="#webskinPath#" name="qResult" recurse="true" sort="asc" />
-				
-				<cfquery name="qResult" dbtype="query">
-					SELECT *
-					FROM qResult
-					WHERE lower(qResult.name) LIKE '#lCase(arguments.prefix)#%'
-					AND lower(qResult.name) LIKE '%.cfm'
-				</cfquery>
-				
-			</cfif>
-	
-			<!--- check library webskins --->
-			<cfif structKeyExists(application, "plugins") and Len(application.plugins)>
-	
-				<cfloop list="#application.plugins#" index="library">
-					<cfset webskinpath=ExpandPath("/farcry/plugins/#library#/webskin/#arguments.typename#") />
-					
-					<cfif directoryExists(webskinpath)>
-						<cfdirectory action="list" directory="#webskinPath#" name="qLibResult" sort="asc" />
-	
-						<cfquery name="qLibResult" dbtype="query">
-							SELECT *
-							FROM qLibResult
-							WHERE lower(qLibResult.name) LIKE '#lCase(arguments.prefix)#%'
-							AND lower(qLibResult.name) LIKE '%.cfm'
-						</cfquery>
-						
-						<cfloop query="qLibResult">
-							<cfquery dbtype="query" name="qDupe">
-							SELECT *
-							FROM qResult
-							WHERE name = '#qLibResult.name#'
-							</cfquery>
-							
-							<cfif NOT qDupe.Recordcount>
-								<cfset queryaddrow(qresult,1) />
-								<cfloop list="#qlibresult.columnlist#" index="col">
-									<cfset querysetcell(qresult, col, qlibresult[col][qLibResult.currentrow]) />
-								</cfloop>
-							</cfif>
-							
-						</cfloop>
-					</cfif>	
-					
-				</cfloop>
-				
-			</cfif>
+		<!--- CHECK PROJECT WEBSKINS --->
+		<cfset webskinRelativePath = "/farcry/projects/#application.projectDirectoryName#/webskin/#arguments.typename#" />
+		
+		<cfif directoryExists(webskinPath)>
+			<cfdirectory action="list" directory="#webskinPath#" name="qResult" recurse="true" sort="asc" />
 			
+			<cfquery name="qResult" dbtype="query">
+				SELECT *, '#webskinRelativePath#' as path
+				FROM qResult
+				WHERE lower(qResult.name) LIKE '#lCase(arguments.prefix)#%'
+				AND lower(qResult.name) LIKE '%.cfm'
+			</cfquery>
 			
-			<!--- CHECK CORE WEBSKINS --->		
-			<cfset webskinpath=ExpandPath("/farcry/core/webskin/#arguments.typename#") />
+		</cfif>
+
+		<!--- check library webskins --->
+		<cfif structKeyExists(application, "plugins") and Len(application.plugins)>
+
+			<cfset sortedPlugins = application.fc.utils.listReverse(list="#application.plugins#") />
 			
-			<cfif directoryExists(webskinpath)>
-				<cfdirectory action="list" directory="#webskinPath#" name="qCoreResult" sort="asc" />
-	
-				<cfquery name="qCoreResult" dbtype="query">
-					SELECT *
-					FROM qCoreResult
-					WHERE lower(qCoreResult.name) LIKE '#lCase(arguments.prefix)#%'
-					AND lower(qCoreResult.name) LIKE '%.cfm'
-				</cfquery>
+			<cfloop list="#sortedPlugins#" index="library">
+				<cfset webskinRelativePath = "/farcry/plugins/#library#/webskin/#arguments.typename#" />
+				<cfset webskinpath=ExpandPath(webskinRelativePath) />
 				
-				<cfloop query="qCoreResult">
-					<cfquery dbtype="query" name="qDupe">
-					SELECT *
-					FROM qResult
-					WHERE name = '#qCoreResult.name#'
+				<cfif directoryExists(webskinpath)>
+					<cfdirectory action="list" directory="#webskinPath#" name="qLibResult" sort="asc" />
+
+					<cfquery name="qLibResult" dbtype="query">
+						SELECT *, '#webskinRelativePath#' as path
+						FROM qLibResult
+						WHERE lower(qLibResult.name) LIKE '#lCase(arguments.prefix)#%'
+						AND lower(qLibResult.name) LIKE '%.cfm'
 					</cfquery>
 					
-					<cfif NOT qDupe.Recordcount>
-						<cfset queryaddrow(qresult,1) />
-						<cfloop list="#qCoreResult.columnlist#" index="col">
-							<cfset querysetcell(qresult, trim(col), qCoreResult[col][qCoreResult.currentRow]) />
-						</cfloop>
-					</cfif>
-					
-				</cfloop>
-			</cfif>	
+					<cfloop query="qLibResult">
+						<cfquery dbtype="query" name="qDupe">
+						SELECT *
+						FROM qResult
+						WHERE name = '#qLibResult.name#'
+						</cfquery>
+						
+						<cfif NOT qDupe.Recordcount>
+							<cfset queryaddrow(qresult,1) />
+							<cfloop list="#qlibresult.columnlist#" index="col">
+								<cfset querysetcell(qresult, col, qlibresult[col][qLibResult.currentrow]) />
+							</cfloop>
+						</cfif>
+						
+					</cfloop>
+				</cfif>	
+				
+			</cfloop>
 			
-			
-			<!--- ORDER AND SET DISPLAYNAME FOR COMBINED WEBSKIN RESULTS --->		
-	 		<cfquery dbtype="query" name="qResult">
-			SELECT attributes,'anonymous' as author,datelastmodified,'' as description,directory,name as displayname,'0' as HashURL,name as methodname,mode,name,'' as path,size,type
-			FROM qResult
-			ORDER BY name
+		</cfif>
+		
+		
+		<!--- CHECK CORE WEBSKINS --->	
+		<cfset webskinRelativePath = "/farcry/core/webskin/#arguments.typename#" />	
+		<cfset webskinpath=ExpandPath(webskinRelativePath) />
+		
+		<cfif directoryExists(webskinpath)>
+			<cfdirectory action="list" directory="#webskinPath#" name="qCoreResult" sort="asc" />
+
+			<cfquery name="qCoreResult" dbtype="query">
+				SELECT *, '#webskinRelativePath#' as path
+				FROM qCoreResult
+				WHERE lower(qCoreResult.name) LIKE '#lCase(arguments.prefix)#%'
+				AND lower(qCoreResult.name) LIKE '%.cfm'
 			</cfquery>
+			
+			<cfloop query="qCoreResult">
+				<cfquery dbtype="query" name="qDupe">
+				SELECT *
+				FROM qResult
+				WHERE name = '#qCoreResult.name#'
+				</cfquery>
+				
+				<cfif NOT qDupe.Recordcount>
+					<cfset queryaddrow(qresult,1) />
+					<cfloop list="#qCoreResult.columnlist#" index="col">
+						<cfset querysetcell(qresult, trim(col), qCoreResult[col][qCoreResult.currentRow]) />
+					</cfloop>
+				</cfif>
+				
+			</cfloop>
+		</cfif>	
+		
+		
+		<!--- ORDER AND SET DISPLAYNAME FOR COMBINED WEBSKIN RESULTS --->		
+ 		<cfquery dbtype="query" name="qResult">
+		SELECT attributes, 'anonymous' as author, datelastmodified, '' as description, directory, name as displayname, '0' as HashURL, name as methodname, mode, name, path, size, type
+		FROM qResult
+		ORDER BY name
+		</cfquery>
+		
+		<cfoutput query="qResult">				
 
-			<cfoutput query="qResult">				
-
-				<!--- Strip the .cfm from the filename --->
-				<cfset querysetcell(qresult, 'methodname', ReplaceNoCase(qResult.name, '.cfm', '','ALL'), qResult.currentRow) />	
-
-				<!--- See if the DisplayName is defined in the webskin and if so, replace displayName field in the query. --->
-				<cfset WebskinDisplayName = getWebskinDisplayname(typename="#arguments.typename#", template="#ReplaceNoCase(qResult.name, '.cfm', '','ALL')#") />
-				<cfif len(WebskinDisplayName)>
-					<cfset querysetcell(qresult, 'displayname', WebskinDisplayName, qResult.currentRow) />			
-				</cfif>	
-				
-				<!--- See if the Author is defined in the webskin and if so, replace author field in the query. --->
-				<cfset WebskinAuthor = getWebskinAuthor(typename="#arguments.typename#", template="#ReplaceNoCase(qResult.name, '.cfm', '','ALL')#") />
-				<cfif len(WebskinAuthor)>
-					<cfset querysetcell(qresult, 'author', WebskinAuthor, qResult.currentRow) />			
-				</cfif>	
-				
-				<!--- See if the description is defined in the webskin and if so, replace author field in the query. --->
-				<cfset WebskinDescription = getWebskinAuthor(typename="#arguments.typename#", template="#ReplaceNoCase(qResult.name, '.cfm', '','ALL')#") />
-				<cfif len(WebskinDescription)>
-					<cfset querysetcell(qresult, 'description', WebskinDescription, qResult.currentRow) />			
-				</cfif>	
-				
-				<!--- See if the description is defined in the webskin and if so, replace author field in the query. --->
-				<cfset WebskinHashURL = getWebskinHashURL(typename="#arguments.typename#", template="#ReplaceNoCase(qResult.name, '.cfm', '','ALL')#") />
-				<cfif isBoolean(WebskinHashURL)>
-					<cfif WebskinHashURL>
-						<cfset querysetcell(qresult, 'HashURL', 1, qResult.currentRow) />
-					<cfelse>
-						<cfset querysetcell(qresult, 'HashURL', 0, qResult.currentRow) />
-					</cfif>
-								
-				</cfif>	
-				
-				<!--- See if the description is defined in the webskin and if so, replace author field in the query. --->
-				<cfset WebskinFilePath = getWebskinPath(typename="#arguments.typename#", template="#ReplaceNoCase(qResult.name, '.cfm', '','ALL')#") />
-				<cfif len(WebskinFilePath)>
-					<cfset querysetcell(qresult, 'Path', WebskinFilePath, qResult.currentRow) />								
-				</cfif>	
-			</cfoutput>
+			<!--- GET THE METADATA INFO --->
+			<cfset stWebskinDetails = structNew() />
+			<cfset stWebskinDetails.path = "#qResult.path#/#qResult.name#" />
+			<cfset stWebskinDetails.methodname = ReplaceNoCase(qResult.name, '.cfm', '','ALL') />
+			<cfset stWebskinDetails.displayname = getWebskinDisplayname(typename="#arguments.typename#", template="#methodname#", path="#qResult.path#") />
+			<cfset stWebskinDetails.author = getWebskinAuthor(typename="#arguments.typename#", template="#methodname#", path="#qResult.path#") />
+			<cfset stWebskinDetails.description = getWebskinDescription(typename="#arguments.typename#", template="#methodname#", path="#qResult.path#") />
+			<cfset stWebskinDetails.HashURL = getWebskinHashURL(typename="#arguments.typename#", template="#methodname#", path="#qResult.path#") />
+			
+			
+			<!--- UPDATE THE METADATA QUERY --->				
+			<cfset querysetcell(qresult, 'path', stWebskinDetails.path, qResult.currentRow) />	
+			<cfset querysetcell(qresult, 'methodname', stWebskinDetails.methodname, qResult.currentRow) />	
+			<cfif len(stWebskinDetails.displayname)>
+				<cfset querysetcell(qresult, 'displayname', stWebskinDetails.displayname, qResult.currentRow) />			
+			</cfif>	
+			<cfif len(stWebskinDetails.author)>
+				<cfset querysetcell(qresult, 'author', stWebskinDetails.author, qResult.currentRow) />			
+			</cfif>	
+			<cfif len(stWebskinDetails.description)>
+				<cfset querysetcell(qresult, 'description', stWebskinDetails.description, qResult.currentRow) />			
+			</cfif>	
+			<cfif isBoolean(stWebskinDetails.HashURL)>
+				<cfset querysetcell(qresult, 'HashURL', stWebskinDetails.HashURL, qResult.currentRow) />								
+			</cfif>	
+							
+		</cfoutput>
 		
 		<cfif listLen(arguments.excludeWebskins)>
 			<cfquery dbtype="query" name="qResult">
@@ -416,16 +413,58 @@
 	<cffunction name="getWebskinTimeOut" returntype="string" access="public" output="false" hint="Returns the objectbroker timeout value of a webskin. A result of 0 will FORCE any ancestor webskins to NEVER cache. The default value is the objectBrokerWebskinTimeout value set in the type cfc which defaults to 1400 minutes">
 		<cfargument name="typename" type="string" required="true" />
 		<cfargument name="template" type="string" required="true" />
+		<cfargument name="path" type="string" required="false" />
 		
-		<cfset var webskinTimeOut = "1440" />
+		<cfset var result = "" />
+		<cfset var templateCode = "" />
+		<cfset var pos = "" />	
+		<cfset var count = "" />
+		<cfset var pathHash = "" />	
+		
+		
+		<cfif NOT structKeyExists(arguments, "path")>
+			<cfif len(arguments.typename) AND len(arguments.template)>
+				<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
+			<cfelse>
+				<cfthrow type="Application" detail="Error: [getWebskinHashURL] You must pass in a path or both the typename and template" />	
+			</cfif>
+		</cfif>
+		
+		<cfset pathHash = hash(arguments.path) />
+		
+		<cfif structKeyExists(variables.stWebskinDetails, pathHash) AND structKeyExists(variables.stWebskinDetails[pathHash], "timeout")>
+			<cfset result = variables.stWebskinDetails[pathHash].timeout />
+		<cfelse>
 
- 		<cfif structKeyExists(application.stcoapi[arguments.typename].stObjectBrokerWebskins, arguments.template)>
-			<cfset webskinTimeOut = application.stcoapi[arguments.typename].stObjectBrokerWebskins[arguments.template].timeout />
-		<cfelseif structKeyExists(application.stcoapi[arguments.typename], "ObjectBrokerWebskinTimeOut")>
-			<cfset webskinTimeOut = application.stcoapi[arguments.typename].ObjectBrokerWebskinTimeOut />
+			<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
+				<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
+			
+				<cfset pos = findNoCase('@@timeout:', templateCode)>
+				<cfif pos GT 0>
+					<cfset pos = pos + 10>
+					<cfset count = findNoCase('--->', templateCode, pos)-pos>
+					<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
+				</cfif>	
+			</cfif>
+			
+			<cfif not isNumeric(result)>
+		 		<cfif structKeyExists(application.stcoapi[arguments.typename].stObjectBrokerWebskins, arguments.template)>
+					<cfset result = application.stcoapi[arguments.typename].stObjectBrokerWebskins[arguments.template].timeout />
+				<cfelseif structKeyExists(application.stcoapi[arguments.typename], "ObjectBrokerWebskinTimeOut")>
+					<cfset result = application.stcoapi[arguments.typename].ObjectBrokerWebskinTimeOut />
+				<cfelse>
+					<cfset result = 1440 />
+				</cfif>
+			</cfif>
+			
+			<cfif NOT structKeyExists(variables.stWebskinDetails, pathHash)>
+				<cfset variables.stWebskinDetails[pathHash] = structNew() />
+			</cfif>
+			<cfset variables.stWebskinDetails[pathHash].timeout = result />
+			
 		</cfif>
 				
-		<cfreturn webskinTimeOut>
+		<cfreturn result />
 		
 	</cffunction>
 		

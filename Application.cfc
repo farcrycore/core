@@ -286,6 +286,7 @@
 		<!--- force application start sequence to be single threaded --->
 		<cfif (NOT structkeyexists(application, "bInit") OR NOT application.binit) OR url.updateapp>
 			<cflock name="#application.applicationName#_init" type="exclusive" timeout="3" throwontimeout="true">
+				<cftimer label="updateApp">
 				<cfif (NOT structkeyexists(application, "bInit") OR NOT application.binit) OR url.updateapp>
 
 					<!--- set binit to false to block users accessing on restart --->
@@ -297,6 +298,7 @@
 					<cfset application.bInit = true />
 
 				</cfif>
+				</cftimer>
 			</cflock>
 		</cfif>
 		
