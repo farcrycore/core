@@ -34,7 +34,7 @@
 	<cfparam name="attributes.class" default=""><!--- Anchor tag classes --->
 	<cfparam name="attributes.style" default=""><!--- Anchor tag styles --->
 	<cfparam name="attributes.urlOnly" default="false">
-	<cfparam name="attributes.r_url" default="">
+	<cfparam name="attributes.r_url" default=""><!--- Define a variable to pass the link back (instead of writting out via the tag). Note setting urlOnly invalidates this setting --->
 	<cfparam name="attributes.xCode" default=""><!--- eXtra code to be placed inside the anchor tag --->
 	<cfparam name="attributes.includeDomain" default="false">
 	<cfparam name="attributes.Domain" default="#cgi.http_host#">
