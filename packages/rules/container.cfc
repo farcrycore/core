@@ -698,6 +698,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 					<cfset stCurrentView.typename = stobj.typename />
 					<cfset stCurrentView.template = arguments.template />
 					<cfset stCurrentView.hashKey = arguments.hashKey />
+					<cfset stCurrentView.cacheStatus = application.coapi.coapiadmin.getWebskinCacheStatus(typename=stObj.typename, template=arguments.template) />
 					<cfset stCurrentView.cacheTimeout = application.coapi.coapiadmin.getWebskinCacheTimeOut(typename=stObj.typename, template=arguments.template) />
 					<cfset stCurrentView.cacheByURL = application.coapi.coapiadmin.getWebskincacheByURL(typename=stObj.typename, template=arguments.template) />
 					<cfset stCurrentView.cacheByRoles = application.coapi.coapiadmin.getWebskincacheByRoles(typename=stObj.typename, template=arguments.template) />
