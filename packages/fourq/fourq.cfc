@@ -1007,9 +1007,11 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var qFilter = queryNew("blah") />
 		<cfset var qExtendedWebskin = queryNew("blah") />
 		<cfset var extendedWebskinName = "">
-		<cfset var aFilteredWebskins = arrayNew(1) />
 		<cfset var stFilterDetails = structNew() />
 		<cfset var ixCol = "">
+		<cfset var defaultWebskinCacheStatus = 0 />
+		<cfset var webskinCacheStatus = 0 />
+		<cfset var stFilteredWebskins = structNew() />
 		
 		<!--- If we are updating a type that already exists then we need to update only the metadata that has changed. --->
 		<cfparam name="stReturnMetadata.stProps" default="#structnew()#" />
@@ -1038,7 +1040,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfparam name="stReturnMetadata.bAutoSetLabel" default="true" />
 		<cfparam name="stReturnMetadata.bObjectBroker" default="false" />
 		<cfparam name="stReturnMetadata.lObjectBrokerWebskins" default="" />
-		<cfparam name="stReturnMetadata.ObjectBrokerWebskinTimeOut" default="1400" /> <!--- This a value in minutes (ie. 1 day) --->
+		<cfparam name="stReturnMetadata.objectBrokerWebskinCacheTimeout" default="1400" /> <!--- This a value in minutes (ie. 1 day) --->
  		<cfparam name="stReturnMetadata.excludeWebskins" default="" /> <!--- This enables projects to exclude webskins that may be contained in plugins. ---> 
  		<cfparam name="stReturnMetadata.fuAlias" default="#stReturnMetadata.displayname#" /> <!--- This will store the alias of the typename that can be used by Friendly URLS ---> 
 
@@ -1061,16 +1063,15 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<!--- 
 		NEED TO LOOP THROUGH ALL THE WEBSKINS AND CHECK EACH ONE FOR WILDCARDS.
 		IF WILD CARDS EXIST, FIND ALL WEBSKINS THAT MATCH AND ADD THEM TO THE LIST
-		 --->
-		<cfset aFilteredWebskins = arrayNew(1) />
-		
+		THIS WILL OVERRIDE ANY METADATA SPECIFIED IN THE ACTUAL WEBSKIN
+		 --->		
 		<cfloop list="#stReturnMetadata.lObjectBrokerWebskins#" index="ixFilter">
 		
 			<cfset filterWebskinName = replaceNoCase(listFirst(ixFilter,":"),"*", "%", "all") />
 			<cfif listLast(ixFilter,":") NEQ listFirst(ixFilter,":") AND isNumeric(listLast(ixFilter,":")) AND listLast(ixFilter,":") GTE 0>
 				<cfset filterWebskinTimeout = listLast(ixFilter,":")>
 			<cfelse>
-				<cfset filterWebskinTimeout = stReturnMetadata.ObjectBrokerWebskinTimeOut />
+				<cfset filterWebskinTimeout = stReturnMetadata.objectBrokerWebskinCacheTimeout />
 			</cfif>
 			
 			<cfquery dbtype="query" name="qFilter" result="res">
@@ -1084,36 +1085,24 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			</cfquery>
 			
 			<cfloop query="qFilter">
-				
-				<cfset stFilterDetails = structNew() />
-				<cfset stFilterDetails.methodname = qFilter.methodname />
-				<cfset stFilterDetails.WebskinTimeout = filterWebskinTimeout />
-				<cfset arrayAppend(aFilteredWebskins, stFilterDetails) />
-
+				<cfset stFilteredWebskins[qFilter.methodname] = filterWebskinTimeout />
 			</cfloop>
 		</cfloop>
 	
-		<!--- NOW THAT WE HAVE ALL THE WEBSKINS TO BE CACHED, ADD THE DETAILS TO stObjectBrokerWebskins --->
-		<cfset stReturnMetadata.stObjectBrokerWebskins = structNew() />
-		
 		<!--- Initialize lObjectBrokerWebskins because we are going to re-add them without any timeout values in the list --->
 		<cfset stReturnMetadata.lObjectBrokerWebskins = "" />
 		
-		<cfif arrayLen(aFilteredWebskins)>
-			<cfloop from="1" to="#arrayLen(aFilteredWebskins)#" index="i">
-			
-				<cfif not structKeyExists(stReturnMetadata.stObjectBrokerWebskins, aFilteredWebskins[i].methodname)>
-					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname] = structNew() />
-					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].timeout = aFilteredWebskins[i].webskinTimeout>
-					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].hashURL = application.coapi.coapiadmin.getWebskinHashURL(typename="#componentname#", template="#aFilteredWebskins[i].methodname#") />
-					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].hashRoles = application.coapi.coapiadmin.getWebskinDisplayname(typename="#componentname#", template="#aFilteredWebskins[i].methodname#") />
-					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].displayName = application.coapi.coapiadmin.getWebskinDisplayname(typename="#componentname#", template="#aFilteredWebskins[i].methodname#") />
-					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].author = application.coapi.coapiadmin.getWebskinAuthor(typename="#componentname#", template="#aFilteredWebskins[i].methodname#") />
-					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].description = application.coapi.coapiadmin.getWebskinDescription(typename="#componentname#", template="#aFilteredWebskins[i].methodname#") />
-					<cfset stReturnMetadata.lObjectBrokerWebskins = listAppend(stReturnMetadata.lObjectBrokerWebskins, aFilteredWebskins[i].methodname)>
-				</cfif>
-			</cfloop>
-		</cfif>
+		
+		<cfloop collection="#stFilteredWebskins#" item="webskinToCache">
+			<cfif stFilteredWebskins[webskinToCache] EQ 0>
+				<cfset stReturnMetadata.stWebskins[webskinToCache].cacheStatus = -1 />
+				<cfset stReturnMetadata.stWebskins[webskinToCache].cacheTimeout = 0 />
+			<cfelse>
+				<cfset stReturnMetadata.stWebskins[webskinToCache].cacheStatus = 1 />
+				<cfset stReturnMetadata.stWebskins[webskinToCache].cacheTimeout = stFilteredWebskins[webskinToCache] />
+			</cfif>
+			<cfset stReturnMetadata.lObjectBrokerWebskins = listAppend(stReturnMetadata.lObjectBrokerWebskins, webskinToCache) />
+		</cfloop>
 
 		<cfif stReturnMetadata.bObjectBroker>
 			<cfparam name="stReturnMetadata.ObjectBrokerMaxObjects" default="#application.ObjectBrokerMaxObjectsDefault#" />

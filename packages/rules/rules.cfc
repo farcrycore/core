@@ -93,7 +93,7 @@ $out:$
 			<cfif structKeyExists(request, "aAncestorWebskins")>
 				<cfloop from="1" to="#arraylen(request.aAncestorWebskins)#" index="i">
 					<cfset request.aAncestorWebskins[i].okToCache = 0 />
-					<cfset request.aAncestorWebskins[i].timeout = stCurrentView.timeout />
+					<cfset request.aAncestorWebskins[i].cacheTimeout = stCurrentView.cacheTimeout />
 				</cfloop>
 			</cfif>
 			<cfsavecontent variable="webskinHTML"><cfinclude template="#application.coapi.coapiadmin.getWebskinPath(stObj.typename,'deniedaccess')#" /></cfsavecontent>
@@ -119,9 +119,10 @@ $out:$
 					<cfset stCurrentView.typename = stobj.typename />
 					<cfset stCurrentView.template = arguments.template />
 					<cfset stCurrentView.hashKey = arguments.hashKey />
-					<cfset stCurrentView.timeout = application.coapi.coapiadmin.getWebskinTimeOut(typename=stObj.typename, template=arguments.template) />
-					<cfset stCurrentView.hashURL = application.coapi.coapiadmin.getWebskinHashURL(typename=stObj.typename, template=arguments.template) />
-					<cfset stCurrentView.hashRoles = application.coapi.coapiadmin.getWebskinHashRoles(typename=stObj.typename, template=arguments.template) />
+					<cfset stCurrentView.cacheStatus = application.coapi.coapiadmin.getWebskinCacheStatus(typename=stObj.typename, template=arguments.template) />
+					<cfset stCurrentView.cacheTimeout = application.coapi.coapiadmin.getWebskinCacheTimeOut(typename=stObj.typename, template=arguments.template) />
+					<cfset stCurrentView.cacheByURL = application.coapi.coapiadmin.getWebskincacheByURL(typename=stObj.typename, template=arguments.template) />
+					<cfset stCurrentView.cacheByRoles = application.coapi.coapiadmin.getWebskincacheByRoles(typename=stObj.typename, template=arguments.template) />
 					<cfset stCurrentView.okToCache = 1 />
 					<cfset stCurrentView.inHead = structNew() />
 					<cfset stCurrentView.inHead.stCustom = structNew() />
@@ -153,8 +154,8 @@ $out:$
 							<!--- Add the ancestor records so we know where this webskin is located throughout the site. --->
 							<cfif not structkeyexists(request.aAncestorWebskins[i],"objectid") or stobj.objectid NEQ request.aAncestorWebskins[i].objectID>
 								
-								<cfif listFindNoCase(application.stcoapi[request.aAncestorWebskins[i].typename].lObjectBrokerWebskins, request.aAncestorWebskins[i].template)>
-									<cfif application.stcoapi[request.aAncestorWebskins[i].typename].stObjectBrokerWebskins[request.aAncestorWebskins[i].template].timeout NEQ 0>
+								<cfif structKeyExists(application.stcoapi[request.aAncestorWebskins[i].typename].stWebskins, request.aAncestorWebskins[i].template)>
+									<cfif application.stcoapi[request.aAncestorWebskins[i].typename].stWebskins[request.aAncestorWebskins[i].template].cacheStatus GTE 0>
 							
 										<cfset bAncestorExists = oWebskinAncestor.checkAncestorExists(webskinObjectID=stobj.objectid, ancestorID=request.aAncestorWebskins[i].objectID, ancestorTemplate=request.aAncestorWebskins[i].template) />
 											
@@ -176,21 +177,21 @@ $out:$
 							</cfif>
 							
 							<!--- If this webskin is to never cache, make sure all ancestors also never cache --->
-							<cfif stCurrentView.timeout EQ 0>
+							<cfif stCurrentView.cacheStatus EQ -1>
 								<cfset request.aAncestorWebskins[i].okToCache = 0 />
 							</cfif>
 							
 							<!--- If the timeout of this webskin is less than its parents, reset the parents timeout so timeout propogates upwards --->
-							<cfif stCurrentView.timeout LT request.aAncestorWebskins[i].timeout>
-								<cfset request.aAncestorWebskins[i].timeout = stCurrentView.timeout />
+							<cfif stCurrentView.cacheTimeout LT request.aAncestorWebskins[i].cacheTimeout>
+								<cfset request.aAncestorWebskins[i].cacheTimeout = stCurrentView.cacheTimeout />
 							</cfif>
 							
 							<!--- If this webskin is to have its url hashed, make sure all ancestors also have their webskins hashed --->
-							<cfif stCurrentView.hashURL>
-								<cfset request.aAncestorWebskins[i].hashURL = true />
+							<cfif stCurrentView.cacheByURL>
+								<cfset request.aAncestorWebskins[i].cacheByURL = true />
 							</cfif>
-							<cfif stCurrentView.hashRoles>
-								<cfset request.aAncestorWebskins[i].hashRoles = true />
+							<cfif stCurrentView.cacheByRoles>
+								<cfset request.aAncestorWebskins[i].cacheByRoles = true />
 							</cfif>
 							<!--- If this webskin is to add a hashKey, make sure all ancestors also have the hashKey added --->
 							<cfif len(stCurrentView.hashKey)>

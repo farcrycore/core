@@ -83,94 +83,95 @@
 			<cfif request.mode.design eq 1 OR request.mode.lvalidstatus NEQ "approved" OR (structKeyExists(url, "updateapp") AND url.updateapp EQ 1)>
 				<!--- DO NOT USE CACHE IF IN DESIGN MODE or SHOWING MORE THAN APPROVED OBJECTS or UPDATING APP --->
 			<cfelse>
-				<cfif listFindNoCase(application.stcoapi[webskinTypename].lObjectBrokerWebskins, arguments.template)>
-					<cfif structkeyexists(arguments,"objectid")>
-						<cfif structKeyExists(application.objectbroker, arguments.typename)
-							AND 	structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)
-							AND 	structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")
-							AND 	structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins, arguments.template)>
-									
-
-
-							<cfif application.security.isLoggedIn()>
-								<cfset hashRolesString = "#session.security.roles#" />
-							<cfelse>
-								<cfset hashRolesString = "anonymous" />
-							</cfif>		
-							
-							<cfif len(arguments.hashKey) AND structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], hash("#arguments.hashKey#"))>							
-								<cfset stCacheWebskin = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template]["#hash('#arguments.hashKey#')#"] />
-							<cfelseif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], hash("#arguments.hashKey##cgi.http_host##cgi.script_name##cgi.query_string#"))>
-								<cfset stCacheWebskin = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template]["#hash('#arguments.hashKey##cgi.http_host##cgi.script_name##cgi.query_string#')#"] />
-							<cfelseif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], hash("#arguments.hashKey##hashRolesString#"))>
-								<cfset stCacheWebskin = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template]["#hash('#arguments.hashKey##hashRolesString#')#"] />
-							<cfelseif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], "standard") >
-								<cfset stCacheWebskin = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].standard />
+				
+				<cfif structKeyExists(application.stcoapi[webskinTypename].stWebskins, arguments.template)>
+					<cfif application.stcoapi[webskinTypename].stWebskins[arguments.template].cacheStatus EQ 1>
+						<cfif structkeyexists(arguments,"objectid")>
+							<cfif structKeyExists(application.objectbroker, arguments.typename)
+								AND 	structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)
+								AND 	structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")
+								AND 	structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins, arguments.template)>
+	
+								<cfif application.security.isLoggedIn()>
+									<cfset hashRolesString = "#session.security.roles#" />
+								<cfelse>
+									<cfset hashRolesString = "anonymous" />
+								</cfif>		
+								
+								<cfif len(arguments.hashKey) AND structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], hash("#arguments.hashKey#"))>							
+									<cfset stCacheWebskin = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template]["#hash('#arguments.hashKey#')#"] />
+								<cfelseif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], hash("#arguments.hashKey##cgi.http_host##cgi.script_name##cgi.query_string#"))>
+									<cfset stCacheWebskin = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template]["#hash('#arguments.hashKey##cgi.http_host##cgi.script_name##cgi.query_string#')#"] />
+								<cfelseif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], hash("#arguments.hashKey##hashRolesString#"))>
+									<cfset stCacheWebskin = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template]["#hash('#arguments.hashKey##hashRolesString#')#"] />
+								<cfelseif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], "standard") >
+									<cfset stCacheWebskin = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template].standard />
+								</cfif>
 							</cfif>
 						</cfif>
-					</cfif>
-					
-					<cfif not structisempty(stCacheWebskin)>
-						<cfif structKeyExists(stCacheWebskin, "datetimecreated")
-							AND structKeyExists(stCacheWebskin, "webskinHTML") >
-
-							<cfif DateDiff('n', stCacheWebskin.datetimecreated, now()) LT stCacheWebskin.timeout >
-								<cfset webskinHTML = stCacheWebskin.webskinHTML />
-								
-								<!--- Place any request.inHead variables back into the request scope from which it came. --->
-								<cfparam name="request.inHead" default="#structNew()#" />
-								<cfparam name="request.inhead.stCustom" default="#structNew()#" />
-								<cfparam name="request.inhead.aCustomIDs" default="#arrayNew(1)#" />
-								<cfparam name="request.inhead.stOnReady" default="#structNew()#" />
-								<cfparam name="request.inhead.aOnReadyIDs" default="#arrayNew(1)#" />
-								
-								<cfloop list="#structKeyList(stCacheWebskin.inHead)#" index="i">
-									<cfswitch expression="#i#">
-										<cfcase value="stCustom">
-											<cfloop list="#structKeyList(stCacheWebskin.inHead.stCustom)#" index="j">
-												<cfif not structKeyExists(request.inHead.stCustom, j)>
-													<cfset request.inHead.stCustom[j] = stCacheWebskin.inHead.stCustom[j] />
-												</cfif>
-												
-												<cfset application.coapi.objectbroker.addhtmlHeadToWebskins(id="#j#", text="#stCacheWebskin.inHead.stCustom[j]#") />
-	
-											</cfloop>
-										</cfcase>
-										<cfcase value="aCustomIDs">
-											<cfloop from="1" to="#arrayLen(stCacheWebskin.inHead.aCustomIDs)#" index="k">
-												<cfif NOT listFindNoCase(arrayToList(request.inHead.aCustomIDs), stCacheWebskin.inHead.aCustomIDs[k])>
-													<cfset arrayAppend(request.inHead.aCustomIDs,stCacheWebskin.inHead.aCustomIDs[k]) />
-												</cfif>
-											</cfloop>
-										</cfcase>
-										<cfcase value="stOnReady">
-											<cfloop list="#structKeyList(stCacheWebskin.inHead.stOnReady)#" index="j">
-												<cfif not structKeyExists(request.inHead.stOnReady, j)>
-													<cfset request.inHead.stOnReady[j] = stCacheWebskin.inHead.stOnReady[j] />
-												</cfif>
-												
-												<cfset application.coapi.objectbroker.addhtmlHeadToWebskins(id="#j#", onReady="#stCacheWebskin.inHead.stOnReady[j]#") />
-	
-											</cfloop>
-										</cfcase>
-										<cfcase value="aOnReadyIDs">
-											<cfloop from="1" to="#arrayLen(stCacheWebskin.inHead.aOnReadyIDs)#" index="k">
-												<cfif NOT listFindNoCase(arrayToList(request.inHead.aOnReadyIDs), stCacheWebskin.inHead.aOnReadyIDs[k])>
-													<cfset arrayAppend(request.inHead.aOnReadyIDs,stCacheWebskin.inHead.aOnReadyIDs[k]) />
-												</cfif>
-											</cfloop>
-										</cfcase>
-										<cfdefaultcase>
-											<cfset application.coapi.objectbroker.addhtmlHeadToWebskins(library=i) />
-											<cfset request.inHead[i] = stCacheWebskin.inHead[i] />
-										</cfdefaultcase>
-									</cfswitch>
 						
-								</cfloop>
-
-							</cfif>	
+						<cfif not structisempty(stCacheWebskin)>
+							<cfif structKeyExists(stCacheWebskin, "datetimecreated")
+								AND structKeyExists(stCacheWebskin, "webskinHTML") >
+	
+								<cfif DateDiff('n', stCacheWebskin.datetimecreated, now()) LT stCacheWebskin.cacheTimeout >
+									<cfset webskinHTML = stCacheWebskin.webskinHTML />
+									
+									<!--- Place any request.inHead variables back into the request scope from which it came. --->
+									<cfparam name="request.inHead" default="#structNew()#" />
+									<cfparam name="request.inhead.stCustom" default="#structNew()#" />
+									<cfparam name="request.inhead.aCustomIDs" default="#arrayNew(1)#" />
+									<cfparam name="request.inhead.stOnReady" default="#structNew()#" />
+									<cfparam name="request.inhead.aOnReadyIDs" default="#arrayNew(1)#" />
+									
+									<cfloop list="#structKeyList(stCacheWebskin.inHead)#" index="i">
+										<cfswitch expression="#i#">
+											<cfcase value="stCustom">
+												<cfloop list="#structKeyList(stCacheWebskin.inHead.stCustom)#" index="j">
+													<cfif not structKeyExists(request.inHead.stCustom, j)>
+														<cfset request.inHead.stCustom[j] = stCacheWebskin.inHead.stCustom[j] />
+													</cfif>
+													
+													<cfset application.coapi.objectbroker.addhtmlHeadToWebskins(id="#j#", text="#stCacheWebskin.inHead.stCustom[j]#") />
+		
+												</cfloop>
+											</cfcase>
+											<cfcase value="aCustomIDs">
+												<cfloop from="1" to="#arrayLen(stCacheWebskin.inHead.aCustomIDs)#" index="k">
+													<cfif NOT listFindNoCase(arrayToList(request.inHead.aCustomIDs), stCacheWebskin.inHead.aCustomIDs[k])>
+														<cfset arrayAppend(request.inHead.aCustomIDs,stCacheWebskin.inHead.aCustomIDs[k]) />
+													</cfif>
+												</cfloop>
+											</cfcase>
+											<cfcase value="stOnReady">
+												<cfloop list="#structKeyList(stCacheWebskin.inHead.stOnReady)#" index="j">
+													<cfif not structKeyExists(request.inHead.stOnReady, j)>
+														<cfset request.inHead.stOnReady[j] = stCacheWebskin.inHead.stOnReady[j] />
+													</cfif>
+													
+													<cfset application.coapi.objectbroker.addhtmlHeadToWebskins(id="#j#", onReady="#stCacheWebskin.inHead.stOnReady[j]#") />
+		
+												</cfloop>
+											</cfcase>
+											<cfcase value="aOnReadyIDs">
+												<cfloop from="1" to="#arrayLen(stCacheWebskin.inHead.aOnReadyIDs)#" index="k">
+													<cfif NOT listFindNoCase(arrayToList(request.inHead.aOnReadyIDs), stCacheWebskin.inHead.aOnReadyIDs[k])>
+														<cfset arrayAppend(request.inHead.aOnReadyIDs,stCacheWebskin.inHead.aOnReadyIDs[k]) />
+													</cfif>
+												</cfloop>
+											</cfcase>
+											<cfdefaultcase>
+												<cfset application.coapi.objectbroker.addhtmlHeadToWebskins(library=i) />
+												<cfset request.inHead[i] = stCacheWebskin.inHead[i] />
+											</cfdefaultcase>
+										</cfswitch>
 							
-						</cfif>	
+									</cfloop>
+	
+								</cfif>	
+								
+							</cfif>	
+						</cfif>
 					</cfif>
 				</cfif>
 			</cfif>
@@ -240,8 +241,8 @@
 			<cfif request.mode.design eq 1 OR request.mode.lvalidstatus NEQ "approved" OR (structKeyExists(url, "updateapp") AND url.updateapp EQ 1)>
 				<!--- DO NOT ADD TO CACHE IF IN DESIGN MODE or SHOWING MORE THAN APPROVED OBJECTS or UPDATING APP --->
 			<cfelseif len(arguments.HTML)>
-				<cfif listFindNoCase(application.stcoapi[webskinTypename].lObjectBrokerWebskins, arguments.template)>
-					<cfif application.stcoapi[webskinTypename].stObjectBrokerWebskins[arguments.template].timeout NEQ 0>
+				<cfif structKeyExists(application.stcoapi[webskinTypename].stWebskins, arguments.template) >
+					<cfif application.stcoapi[webskinTypename].stWebskins[arguments.template].cacheStatus EQ 1>
 						<cfif structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)>
 							<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
 								<cfif not structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")>
@@ -254,15 +255,16 @@
 								<cfset stCacheWebskin.datetimecreated = now() />
 								<cfset stCacheWebskin.webskinHTML = trim(arguments.HTML) />	
 								<cfset stCacheWebskin.inHead = duplicate(arguments.stCurrentView.inHead) />
-								<cfset stCacheWebskin.timeout = arguments.stCurrentView.timeout />
+								<cfset stCacheWebskin.cacheStatus = arguments.stCurrentView.cacheStatus />
+								<cfset stCacheWebskin.cacheTimeout = arguments.stCurrentView.cacheTimeout />
 	
 								<cfif len(arguments.stCurrentView.hashKey)>
 									<cfset hashString = arguments.stCurrentView.hashKey />
 								</cfif>
-								<cfif arguments.stCurrentView.hashURL>
+								<cfif arguments.stCurrentView.cacheByURL>
 									<cfset hashString = "#hashString##cgi.http_host##cgi.script_name##cgi.query_string#" />
 								</cfif>
-								<cfif arguments.stCurrentView.hashRoles>
+								<cfif arguments.stCurrentView.cacheByRoles>
 									<cfif application.security.isLoggedIn()>
 										<cfset hashString = "#hashString##session.security.roles#" />
 									<cfelse>
