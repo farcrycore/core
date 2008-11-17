@@ -59,6 +59,7 @@ manage friednly urls for a particular object id
 	<cfif structKeyExists(form, "lArchiveObjectID") AND len(form.lArchiveObjectID)>
 		<cfloop list="#form.lArchiveObjectID#" index="i">
 			<cfset returnstruct = application.fc.factory.farFU.archiveFU(objectID="#i#")>
+			<cfset returnstruct = application.fc.factory.farFU.delete(objectID="#i#")>
 		</cfloop>
 
 	</cfif>
