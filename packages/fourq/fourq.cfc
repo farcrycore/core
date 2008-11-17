@@ -1106,6 +1106,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname] = structNew() />
 					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].timeout = aFilteredWebskins[i].webskinTimeout>
 					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].hashURL = application.coapi.coapiadmin.getWebskinHashURL(typename="#componentname#", template="#aFilteredWebskins[i].methodname#") />
+					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].hashRoles = application.coapi.coapiadmin.getWebskinDisplayname(typename="#componentname#", template="#aFilteredWebskins[i].methodname#") />
 					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].displayName = application.coapi.coapiadmin.getWebskinDisplayname(typename="#componentname#", template="#aFilteredWebskins[i].methodname#") />
 					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].author = application.coapi.coapiadmin.getWebskinAuthor(typename="#componentname#", template="#aFilteredWebskins[i].methodname#") />
 					<cfset stReturnMetadata.stObjectBrokerWebskins[aFilteredWebskins[i].methodname].description = application.coapi.coapiadmin.getWebskinDescription(typename="#componentname#", template="#aFilteredWebskins[i].methodname#") />

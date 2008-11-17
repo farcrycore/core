@@ -165,10 +165,10 @@
 		<cfargument name="bForceRefresh" type="boolean" required="false" default="false" hint="Force to reload and not use application scope." />
 		<cfargument name="excludeWebskins" type="string" required="false" default="" hint="Allows developers to exclude webskins that might be contained in plugins." />
 								
-		<cfset var qResult=queryNew("attributes,author,datelastmodified,description,directory,displayname,hashurl,methodname,mode,name,path,size,type","VarChar,VarChar,date,VarChar,VarChar,VarChar,Integer,VarChar,VarChar,VarChar,VarChar,BigInt,VarChar") />
-		<cfset var qLibResult=queryNew("attributes,author,datelastmodified,description,directory,displayname,hashurl,methodname,mode,name,path,size,type","VarChar,VarChar,date,VarChar,VarChar,VarChar,Integer,VarChar,VarChar,VarChar,VarChar,BigInt,VarChar") />
-		<cfset var qCoreResult=queryNew("attributes,author,datelastmodified,description,directory,displayname,hashurl,methodname,mode,name,path,size,type","VarChar,VarChar,date,VarChar,VarChar,VarChar,Integer,VarChar,VarChar,VarChar,VarChar,BigInt,VarChar") />
-		<cfset var qDupe=queryNew("attributes,author,datelastmodified,description,directory,displayname,hashurl,methodname,mode,name,path,size,type","VarChar,VarChar,date,VarChar,VarChar,VarChar,Integer,VarChar,VarChar,VarChar,VarChar,BigInt,VarChar") />
+		<cfset var qResult=queryNew("attributes,author,datelastmodified,description,directory,displayname,hashurl,hashroles,methodname,mode,name,path,size,type","VarChar,VarChar,date,VarChar,VarChar,VarChar,Integer,Integer,VarChar,VarChar,VarChar,VarChar,BigInt,VarChar") />
+		<cfset var qLibResult=queryNew("attributes,author,datelastmodified,description,directory,displayname,hashurl,hashroles,methodname,mode,name,path,size,type","VarChar,VarChar,date,VarChar,VarChar,VarChar,Integer,Integer,VarChar,VarChar,VarChar,VarChar,BigInt,VarChar") />
+		<cfset var qCoreResult=queryNew("attributes,author,datelastmodified,description,directory,displayname,hashurl,hashroles,methodname,mode,name,path,size,type","VarChar,VarChar,date,VarChar,VarChar,VarChar,Integer,Integer,VarChar,VarChar,VarChar,VarChar,BigInt,VarChar") />
+		<cfset var qDupe=queryNew("attributes,author,datelastmodified,description,directory,displayname,hashurl,hashroles,methodname,mode,name,path,size,type","VarChar,VarChar,date,VarChar,VarChar,VarChar,Integer,Integer,VarChar,VarChar,VarChar,VarChar,BigInt,VarChar") />
 		<cfset var webskinPath = "#application.path.project#/webskin/#arguments.typename#" />
 		<cfset var library="" />
 		<cfset var col="" />
@@ -321,10 +321,11 @@
 			<cfset stWebskinDetails = structNew() />
 			<cfset stWebskinDetails.path = "#qResult.path#/#qResult.name#" />
 			<cfset stWebskinDetails.methodname = ReplaceNoCase(qResult.name, '.cfm', '','ALL') />
-			<cfset stWebskinDetails.displayname = getWebskinDisplayname(typename="#arguments.typename#", template="#methodname#", path="#qResult.path#") />
-			<cfset stWebskinDetails.author = getWebskinAuthor(typename="#arguments.typename#", template="#methodname#", path="#qResult.path#") />
-			<cfset stWebskinDetails.description = getWebskinDescription(typename="#arguments.typename#", template="#methodname#", path="#qResult.path#") />
-			<cfset stWebskinDetails.HashURL = getWebskinHashURL(typename="#arguments.typename#", template="#methodname#", path="#qResult.path#") />
+			<cfset stWebskinDetails.displayname = getWebskinDisplayname(typename="#arguments.typename#", template="#stWebskinDetails.methodname#", path="#qResult.path#") />
+			<cfset stWebskinDetails.author = getWebskinAuthor(typename="#arguments.typename#", template="#stWebskinDetails.methodname#", path="#qResult.path#") />
+			<cfset stWebskinDetails.description = getWebskinDescription(typename="#arguments.typename#", template="#stWebskinDetails.methodname#", path="#qResult.path#") />
+			<cfset stWebskinDetails.hashURL = getWebskinHashURL(typename="#arguments.typename#", template="#stWebskinDetails.methodname#", path="#qResult.path#") />
+			<cfset stWebskinDetails.hashRoles = getWebskinHashRoles(typename="#arguments.typename#", template="#stWebskinDetails.methodname#", path="#qResult.path#") />
 			
 			
 			<!--- UPDATE THE METADATA QUERY --->				
@@ -340,7 +341,10 @@
 				<cfset querysetcell(qresult, 'description', stWebskinDetails.description, qResult.currentRow) />			
 			</cfif>	
 			<cfif isBoolean(stWebskinDetails.HashURL)>
-				<cfset querysetcell(qresult, 'HashURL', stWebskinDetails.HashURL, qResult.currentRow) />								
+				<cfset querysetcell(qresult, 'hashURL', stWebskinDetails.hashURL, qResult.currentRow) />								
+			</cfif>	
+			<cfif isBoolean(stWebskinDetails.hashRoles)>
+				<cfset querysetcell(qresult, 'hashRoles', stWebskinDetails.hashRoles, qResult.currentRow) />								
 			</cfif>	
 							
 		</cfoutput>
@@ -376,7 +380,7 @@
 		<cfset var plugin = "" />
 	
 		<!--- If the webskin is in the application.stcoapi then just use it --->
-		<cfif isdefined("application.stcoapi.#arguments.typename#.stWebskins") and structKeyExists(application.stcoapi[arguments.typename].stWebskins, arguments.template)>
+		<cfif isdefined("application.stcoapi.#arguments.typename#.stWebskins.#arguments.template#.path")>
 			<cfset webskinPath = application.stcoapi[arguments.typename].stWebskins[arguments.template].path />
 		<cfelse>
 		
@@ -418,23 +422,20 @@
 		<cfset var result = "" />
 		<cfset var templateCode = "" />
 		<cfset var pos = "" />	
-		<cfset var count = "" />
-		<cfset var pathHash = "" />	
+		<cfset var count = "" />		
 		
-		
-		<cfif NOT structKeyExists(arguments, "path")>
-			<cfif len(arguments.typename) AND len(arguments.template)>
-				<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
-			<cfelse>
-				<cfthrow type="Application" detail="Error: [getWebskinHashURL] You must pass in a path or both the typename and template" />	
+		<cfif isDefined("application.stcoapi.#typename#.stWebskins.#template#.timeout")>
+			<cfset result = application.stcoapi['#typename#'].stWebskins['#template#'].timeout />
+		<cfelse>			
+			
+			<cfif NOT structKeyExists(arguments, "path")>
+				<cfif len(arguments.typename) AND len(arguments.template)>
+					<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
+				<cfelse>
+					<cfthrow type="Application" detail="Error: [getWebskinTimeOut] You must pass in a path or both the typename and template" />	
+				</cfif>
 			</cfif>
-		</cfif>
-		
-		<cfset pathHash = hash(arguments.path) />
-		
-		<cfif structKeyExists(variables.stWebskinDetails, pathHash) AND structKeyExists(variables.stWebskinDetails[pathHash], "timeout")>
-			<cfset result = variables.stWebskinDetails[pathHash].timeout />
-		<cfelse>
+			
 
 			<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
 				<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
@@ -457,13 +458,8 @@
 				</cfif>
 			</cfif>
 			
-			<cfif NOT structKeyExists(variables.stWebskinDetails, pathHash)>
-				<cfset variables.stWebskinDetails[pathHash] = structNew() />
-			</cfif>
-			<cfset variables.stWebskinDetails[pathHash].timeout = result />
-			
 		</cfif>
-				
+			
 		<cfreturn result />
 		
 	</cffunction>
@@ -478,22 +474,20 @@
 		<cfset var templateCode = "" />
 		<cfset var pos = "" />	
 		<cfset var count = "" />
-		<cfset var pathHash = "" />	
 		
 		
-		<cfif NOT structKeyExists(arguments, "path")>
-			<cfif len(arguments.typename) AND len(arguments.template)>
-				<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
-			<cfelse>
-				<cfthrow type="Application" detail="Error: [getWebskinHashURL] You must pass in a path or both the typename and template" />	
-			</cfif>
-		</cfif>
-		
-		<cfset pathHash = hash(arguments.path) />
-		
-		<cfif structKeyExists(variables.stWebskinDetails, pathHash) AND structKeyExists(variables.stWebskinDetails[pathHash], "hashURL")>
-			<cfset result = variables.stWebskinDetails[pathHash].hashURL />
+		<cfif isDefined("application.stcoapi.#typename#.stWebskins.#template#.hashURL")>
+			<cfset result = application.stcoapi['#typename#'].stWebskins['#template#'].hashURL />
 		<cfelse>
+			
+			<cfif NOT structKeyExists(arguments, "path")>
+				<cfif len(arguments.typename) AND len(arguments.template)>
+					<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
+				<cfelse>
+					<cfthrow type="Application" detail="Error: [getWebskinHashURL] You must pass in a path or both the typename and template" />	
+				</cfif>
+			</cfif>
+			
 			<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
 				<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
 			
@@ -508,14 +502,8 @@
 			<cfif not isBoolean(result)>
 				<cfset result = false>
 			</cfif>
-			
-			<cfif NOT structKeyExists(variables.stWebskinDetails, pathHash)>
-				<cfset variables.stWebskinDetails[pathHash] = structNew() />
-			</cfif>
-			<cfset variables.stWebskinDetails[pathHash].hashURL = result />
-			
+
 		</cfif>
-		
 		
 	
 	
@@ -531,22 +519,20 @@
 		<cfset var templateCode = "" />
 		<cfset var pos = "" />	
 		<cfset var count = "" />
-		<cfset var pathHash = "" />		
 		
-		<cfif NOT structKeyExists(arguments, "path")>
-			<cfif len(arguments.typename) AND len(arguments.template)>
-				<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
-			<cfelse>
-				<cfthrow type="Application" detail="Error: [getWebskinHashRoles] You must pass in a path or both the typename and template" />	
+		
+		<cfif isDefined("application.stcoapi.#typename#.stWebskins.#template#.hashRoles")>
+			<cfset result = application.stcoapi['#typename#'].stWebskins['#template#'].hashRoles />
+		<cfelse>	
+			
+			<cfif NOT structKeyExists(arguments, "path")>
+				<cfif len(arguments.typename) AND len(arguments.template)>
+					<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
+				<cfelse>
+					<cfthrow type="Application" detail="Error: [getWebskinHashRoles] You must pass in a path or both the typename and template" />	
+				</cfif>
 			</cfif>
-		</cfif>
-		
-		<cfset pathHash = hash(arguments.path) />
-		
-		<cfif structKeyExists(variables.stWebskinDetails, pathHash) AND structKeyExists(variables.stWebskinDetails[pathHash], "hashRoles")>
-			<cfset result = variables.stWebskinDetails[pathHash].hashRoles />
-		<cfelse>
-		
+			
 			<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
 				<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
 			
@@ -561,14 +547,9 @@
 			<cfif not isBoolean(result)>
 				<cfset result = false>
 			</cfif>
-			
-			<cfif NOT structKeyExists(variables.stWebskinDetails, pathHash)>
-				<cfset variables.stWebskinDetails[pathHash] = structNew() />
-			</cfif>
-			<cfset variables.stWebskinDetails[pathHash].hashRoles = result />
-			
+
 		</cfif>
-	
+		
 		<cfreturn result />
 	</cffunction>
 	
@@ -582,23 +563,20 @@
 		<cfset var result = "" />
 		<cfset var templateCode = "" />
 		<cfset var pos = "" />	
-		<cfset var count = "" />
-		<cfset var pathHash = "" />	
+		<cfset var count = "" />		
 		
-		<cfif NOT structKeyExists(arguments, "path")>
-			<cfif len(arguments.typename) AND len(arguments.template)>
-				<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
-			<cfelse>
-				<cfthrow type="Application" detail="Error: [getWebskinDisplayname] You must pass in a path or both the typename and template" />	
+		<cfif isDefined("application.stcoapi.#typename#.stWebskins.#template#.displayname")>
+			<cfset result = application.stcoapi['#typename#'].stWebskins['#template#'].displayname />
+		<cfelse>	
+			
+			<cfif NOT structKeyExists(arguments, "path")>
+				<cfif len(arguments.typename) AND len(arguments.template)>
+					<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
+				<cfelse>
+					<cfthrow type="Application" detail="Error: [getWebskinDisplayname] You must pass in a path or both the typename and template" />	
+				</cfif>
 			</cfif>
-		</cfif>
-		
-		<cfset pathHash = hash(arguments.path) />
-		
-		<cfif structKeyExists(variables.stWebskinDetails, pathHash) AND structKeyExists(variables.stWebskinDetails[pathHash], "displayName")>
-			<cfset result = variables.stWebskinDetails[pathHash].displayName />
-		<cfelse>
-		
+			
 			<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
 				<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
 			
@@ -610,13 +588,8 @@
 				</cfif>	
 			</cfif>
 			
-			<cfif NOT structKeyExists(variables.stWebskinDetails, pathHash)>
-				<cfset variables.stWebskinDetails[pathHash] = structNew() />
-			</cfif>
-			<cfset variables.stWebskinDetails[pathHash].displayName = result />
-			
 		</cfif>
-		
+			
 		<cfreturn result />
 	</cffunction>
 	
@@ -629,22 +602,19 @@
 		<cfset var result = "" />
 		<cfset var templateCode = "" />
 		<cfset var pos = "" />	
-		<cfset var count = "" />
-		<cfset var pathHash = "" />	
+		<cfset var count = "" />	
 		
-		<cfif NOT structKeyExists(arguments, "path")>
-			<cfif len(arguments.typename) AND len(arguments.template)>
-				<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
-			<cfelse>
-				<cfthrow type="Application" detail="Error: [getWebskinAuthor] You must pass in a path or both the typename and template" />	
+		<cfif isDefined("application.stcoapi.#typename#.stWebskins.#template#.author")>
+			<cfset result = application.stcoapi['#typename#'].stWebskins['#template#'].author />
+		<cfelse>	
+		
+			<cfif NOT structKeyExists(arguments, "path")>
+				<cfif len(arguments.typename) AND len(arguments.template)>
+					<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
+				<cfelse>
+					<cfthrow type="Application" detail="Error: [getWebskinAuthor] You must pass in a path or both the typename and template" />	
+				</cfif>
 			</cfif>
-		</cfif>
-		
-		<cfset pathHash = hash(arguments.path) />
-		
-		<cfif structKeyExists(variables.stWebskinDetails, pathHash) AND structKeyExists(variables.stWebskinDetails[pathHash], "author")>
-			<cfset result = variables.stWebskinDetails[pathHash].author />
-		<cfelse>
 			
 			<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
 				<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
@@ -656,12 +626,6 @@
 					<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
 				</cfif>	
 			</cfif>
-			
-			<cfif NOT structKeyExists(variables.stWebskinDetails, pathHash)>
-				<cfset variables.stWebskinDetails[pathHash] = structNew() />
-			</cfif>
-			<cfset variables.stWebskinDetails[pathHash].author = result />
-			
 		</cfif>
 		
 		<cfreturn result />
@@ -677,22 +641,20 @@
 		<cfset var templateCode = "" />
 		<cfset var pos = "" />	
 		<cfset var count = "" />
-		<cfset var pathHash = "" />	
 		
-		<cfif NOT structKeyExists(arguments, "path")>
-			<cfif len(arguments.typename) AND len(arguments.template)>
-				<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
-			<cfelse>
-				<cfthrow type="Application" detail="Error: [getWebskinDescription] You must pass in a path or both the typename and template" />	
-			</cfif>
-		</cfif>
-		
-		<cfset pathHash = hash(arguments.path) />
-		
-		<cfif structKeyExists(variables.stWebskinDetails, pathHash) AND structKeyExists(variables.stWebskinDetails[pathHash], "description")>
-			<cfset result = variables.stWebskinDetails[pathHash].description />
-		<cfelse>
+		<cfif isDefined("application.stcoapi.#typename#.stWebskins.#template#.description")>
+			<cfset result = application.stcoapi['#typename#'].stWebskins['#template#'].description />
+		<cfelse>	
 			
+			<cfif NOT structKeyExists(arguments, "path")>
+				<cfif len(arguments.typename) AND len(arguments.template)>
+					<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
+				<cfelse>
+					<cfthrow type="Application" detail="Error: [getWebskinDescription] You must pass in a path or both the typename and template" />	
+				</cfif>
+			</cfif>
+			
+				
 			<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
 				<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
 			
@@ -703,12 +665,6 @@
 					<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
 				</cfif>	
 			</cfif>
-			
-			<cfif NOT structKeyExists(variables.stWebskinDetails, pathHash)>
-				<cfset variables.stWebskinDetails[pathHash] = structNew() />
-			</cfif>
-			<cfset variables.stWebskinDetails[pathHash].description = result />
-			
 		</cfif>
 		
 		<cfreturn result />

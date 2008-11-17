@@ -700,6 +700,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 					<cfset stCurrentView.hashKey = arguments.hashKey />
 					<cfset stCurrentView.timeout = application.coapi.coapiadmin.getWebskinTimeOut(typename=stObj.typename, template=arguments.template) />
 					<cfset stCurrentView.hashURL = application.coapi.coapiadmin.getWebskinHashURL(typename=stObj.typename, template=arguments.template) />
+					<cfset stCurrentView.hashRoles = application.coapi.coapiadmin.getWebskinHashRoles(typename=stObj.typename, template=arguments.template) />
 					<cfset stCurrentView.okToCache = 1 />
 					<cfset stCurrentView.inHead = structNew() />
 					<cfset stCurrentView.inHead.stCustom = structNew() />
@@ -788,6 +789,9 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 							<!--- If this webskin is to have its url hashed, make sure all ancestors also have their webskins hashed --->
 							<cfif stCurrentView.hashURL>
 								<cfset request.aAncestorWebskins[i].hashURL = true />
+							</cfif>
+							<cfif stCurrentView.hashRoles>
+								<cfset request.aAncestorWebskins[i].hashRoles = true />
 							</cfif>
 							<!--- If this webskin is to add a hashKey, make sure all ancestors also have the hashKey added --->
 							<cfif len(stCurrentView.hashKey)>

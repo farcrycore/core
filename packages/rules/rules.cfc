@@ -189,6 +189,9 @@ $out:$
 							<cfif stCurrentView.hashURL>
 								<cfset request.aAncestorWebskins[i].hashURL = true />
 							</cfif>
+							<cfif stCurrentView.hashRoles>
+								<cfset request.aAncestorWebskins[i].hashRoles = true />
+							</cfif>
 							<!--- If this webskin is to add a hashKey, make sure all ancestors also have the hashKey added --->
 							<cfif len(stCurrentView.hashKey)>
 								<cfset request.aAncestorWebskins[i].hashKey = "#request.aAncestorWebskins[i].hashKey##stCurrentView.hashKey#" />
