@@ -11,7 +11,7 @@
 		<cfset variables.dataMappings.date = "[DATETIME]" />
 		<cfset variables.dataMappings.integer = "[INT]" />
 		<cfset variables.dataMappings.numeric = "[NUMERIC] (10,2)" />
-		<cfset variables.dataMappings.string = "[VARCHAR] (255)" />
+		<cfset variables.dataMappings.string = "[NVARCHAR] (512)" />
 		<cfset variables.dataMappings.nstring = "[NVARCHAR] (512)" />
 		<cfset variables.dataMappings.uuid = "[VARCHAR] (50)" />
 		<cfset variables.dataMappings.variablename = "[VARCHAR] (64)" />
