@@ -11,14 +11,18 @@
 		
 		<!--- create the loader --->
 		<cfset variables.loader = createObject("component", "farcry.core.packages.farcry.javaloader.JavaLoader").init(paths) />
-		
-		<!--- at this stage we only have access to the class, but we don't have an instance --->
-		<!--- <cfset variables.uuidGen = loader.create("com.eaio.uuid.UUID") /> --->
-		
+				
 		<cfreturn this />
 	</cffunction>
 
 	<cffunction name="createJavaUUID" access="public" returntype="any" output="false" hint="">
+		<!--- TODO: RR We might want to check the current java version and only use
+			this UUID library if we are running verison 1.5 or 1.6. We still
+			need to work this out, but this is how you check.
+		<cfset theSystem = "#createObject('java','java.lang.System')#" />
+    	<cfdump var="#theSystem.getProperty('java.runtime.version')#"> 
+		--->
+		
 		<cfset var oUUID = loader.create("com.eaio.uuid.UUID") />
 		<cfset var myUUID = oUUID.init() />
 		<cfset var rMyUUID = reverse(myUUID) />
