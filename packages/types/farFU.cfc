@@ -1,4 +1,4 @@
-<cfcomponent displayname="FarCry Friendly URL Table" hint="Manages FarCry Friendly URL's" extends="types" output="false" bDocument="true" scopelocation="application.fc.factory.farFU">
+<cfcomponent displayname="FarCry Friendly URL Table" hint="Manages FarCry Friendly URL's" extends="types" output="false" bDocument="true" scopelocation="application.fc.factory.farFU" bObjectBroker="true" objectBrokerMaxObjects="1000">
 	<cfproperty ftSeq="1" name="refobjectid" type="string" default="" hint="stores the objectid of the related object" ftLabel="Ref ObjectID" />
 	<cfproperty ftSeq="2" name="friendlyURL" type="string" default="" hint="The Actual Friendly URL" ftLabel="Friendly URL" bLabel="true" />		
 	<cfproperty ftSeq="3" name="queryString" type="string" default="" hint="The query string that will be parsed and placed in the url scope of the request" ftLabel="Query String" />		
@@ -480,9 +480,9 @@
 		<cfset var stLocal = structNew() />
 		
 		<cfif structKeyExists(url, "furl") AND len(url.furl) AND url.furl NEQ "/">
-					
+			
 			<cfset stFU = getFUData(url.furl) />
-
+			
 			<cfif not structIsEmpty(stFU)>
 				
 				<cfset request.fc.objectid = stFU.refobjectid>
@@ -565,7 +565,6 @@
 				</cfloop>
 			
 			</cfif>
-			
 		<cfelseif isUsingFU()>
 			<cfif structKeyExists(url, "objectid") AND url.objectid NEQ application.navid.home AND structKeyExists(variables.stLookup, url.objectid)>
 				<cfset stLocal.stDefaultFU = getData(objectid="#variables.stLookup[url.objectid].objectid#") />
@@ -603,6 +602,7 @@
 		<cfif StructKeyExists(variables.stMappings,arguments.friendlyURL)>
 			<cfset stReturnFU = getData(objectid="#variables.stMappings[arguments.friendlyURL].objectid#") />
 		<cfelse> 
+			
 			<cfquery datasource="#arguments.dsn#" name="stLocal.qGet">
 			SELECT	fu.objectid
 			FROM	#application.dbowner#farFU fu, 
