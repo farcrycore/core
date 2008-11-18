@@ -136,7 +136,7 @@ default handlers
 				THIS MEANS THAT THE OBJECT THAT WE ARE PASSING TO THE WEBSKIN IS ACTUALLY THE farCOAPI object.
 				THE WEBSKIN CACHING IS ALSO DONE AGAINST THE farCOAPI object.
 				 --->
-				<cfset stObj = createObject("component", application.stcoapi["farCoapi"].packagePath).getCoapiObject(name="#variables.typename#") />
+				<cfset stObj = application.fc.factory['farCoapi'].getCoapiObject(name="#variables.typename#") />
 				
 				<!--- If the objectid has not been sent, we need to create a default object. --->
 				
@@ -174,7 +174,7 @@ default handlers
 			
 				<cfif stobj.typename EQ "farCoapi">
 					<!--- This means its a type webskin and we need to look for the timeout value on the related type. --->			
-					<cfset stCoapi = createObject("component", application.stcoapi["farCoapi"].packagePath).getData(objectid="#stobj.objectid#") />
+					<cfset stCoapi = application.fc.factory['farCoapi'].getData(objectid="#stobj.objectid#") />
 					<cfset webskinTypename = stCoapi.name />
 				</cfif>
 				<cfset webskinPath = application.coapi.coapiadmin.getWebskinPath(typename=webskinTypename, template=arguments.template) />
@@ -205,9 +205,15 @@ default handlers
 					<cfset arrayAppend(request.aAncestorWebskins, stCurrentView) />					
 					
 					<!--- Include the View --->
-					<cfsavecontent variable="webskinHTML">
-						<cfinclude template="#WebskinPath#">
-					</cfsavecontent>
+                    <cfsavecontent variable="webskinHTML">
+                        <cfif isdefined("request.mode.design") AND request.mode.design>
+                            <cfoutput><webskin typename="#stobj.typename#" Template="#arguments.template#" Path="#WebskinPath#"></cfoutput>
+                        </cfif>
+                        <cfinclude template="#WebskinPath#">
+                        <cfif isdefined("request.mode.design") AND request.mode.design>
+                            <cfoutput></webskin></cfoutput>
+                        </cfif>
+                    </cfsavecontent>					
 										
 					<!--- If the current view (Last Item In the array) is still OkToCache --->
 					<cfif request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].okToCache>

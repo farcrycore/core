@@ -873,7 +873,7 @@ $out:$
 		<cfset variables.tableMetadata = createobject('component','farcry.core.packages.fourq.TableMetadata').init() />
 		<cfset variables.tableMetadata.parseMetadata(getMetadata(o)) />
 		<cfset application.stcoapi[i].tableDefinition = variables.tableMetadata.getTableDefinition() />
-		<cfset application.stcoapi[i].coapiID = createObject("component", "farcry.core.packages.types.farCoapi").getCoapiObjectID(name="#i#") />
+		<cfset application.stcoapi[i].coapiID = application.fc.factory['farCoapi'].getCoapiObjectID(name="#i#") />
 	</cfloop>
 	
 

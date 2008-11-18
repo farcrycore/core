@@ -523,7 +523,7 @@
 				THIS MEANS THAT THE OBJECT THAT WE ARE PASSING TO THE WEBSKIN IS ACTUALLY THE farCOAPI object.
 				THE WEBSKIN CACHING IS ALSO DONE AGAINST THE farCOAPI object.
 				 --->
-				<cfset stObj = createObject("component", application.stcoapi["farCoapi"].packagePath).getCoapiObject(name="#variables.typename#") />
+				<cfset stObj = application.fc.factory['farCoapi'].getCoapiObject(name="#variables.typename#") />
 				
 				<!--- If the objectid has not been sent, we need to create a default object. --->
 				
@@ -552,7 +552,7 @@
 			
 				<cfif stobj.typename EQ "farCoapi">
 					<!--- This means its a type webskin and we need to look for the timeout value on the related type. --->			
-					<cfset stCoapi = createObject("component", application.stcoapi["farCoapi"].packagePath).getData(objectid="#stobj.objectid#") />
+					<cfset stCoapi = application.fc.factory['farCoapi'].getData(objectid="#stobj.objectid#") />
 					<cfset webskinTypename = stCoapi.name />
 				</cfif>
 				

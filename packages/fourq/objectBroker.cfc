@@ -68,7 +68,7 @@
 		
 		<cfif arguments.typename EQ "farCoapi">
 			<!--- This means its a type webskin and we need to look for the timeout value on the related type. --->			
-			<cfset stCoapi = createObject("component", application.stcoapi["farCoapi"].packagePath).getData(objectid="#arguments.objectid#") />
+			<cfset stCoapi = application.fc.factory['farCoapi'].getData(objectid="#arguments.objectid#") />
 			<cfset webskinTypename = stCoapi.name />
 		</cfif>
 
@@ -232,8 +232,8 @@
 		<cfset var stCoapi = structNew() />
 		
 		<cfif arguments.typename EQ "farCoapi">
-			<!--- This means its a type webskin and we need to look for the timeout value on the related type. --->			
-			<cfset stCoapi = createObject("component", application.stcoapi["farCoapi"].packagePath).getData(objectid="#arguments.objectid#") />
+			<!--- This means its a type webskin and we need to look for the timeout value on the related type. --->		
+			<cfset stCoapi = application.fc.factory['farCoapi'].getData(objectid="#arguments.objectid#") />
 			<cfset webskinTypename = stCoapi.name />
 		</cfif>
 		

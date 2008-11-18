@@ -321,13 +321,13 @@
 			<cfset stWebskinDetails = structNew() />
 			<cfset stWebskinDetails.path = "#qResult.path#/#qResult.name#" />
 			<cfset stWebskinDetails.methodname = ReplaceNoCase(qResult.name, '.cfm', '','ALL') />
-			<cfset stWebskinDetails.displayname = getWebskinDisplayname(typename="#arguments.typename#", template="#stWebskinDetails.methodname#", path="#qResult.path#") />
-			<cfset stWebskinDetails.author = getWebskinAuthor(typename="#arguments.typename#", template="#stWebskinDetails.methodname#", path="#qResult.path#") />
-			<cfset stWebskinDetails.description = getWebskinDescription(typename="#arguments.typename#", template="#stWebskinDetails.methodname#", path="#qResult.path#") />
-			<cfset stWebskinDetails.cacheStatus = getWebskinCacheStatus(typename="#arguments.typename#", template="#stWebskinDetails.methodname#", path="#qResult.path#") />
-			<cfset stWebskinDetails.cacheTimeout = getWebskinCacheTimeout(typename="#arguments.typename#", template="#stWebskinDetails.methodname#", path="#qResult.path#") />
-			<cfset stWebskinDetails.cacheByURL = getWebskinCacheByURL(typename="#arguments.typename#", template="#stWebskinDetails.methodname#", path="#qResult.path#") />
-			<cfset stWebskinDetails.cacheByRoles = getWebskinCacheByRoles(typename="#arguments.typename#", template="#stWebskinDetails.methodname#", path="#qResult.path#") />
+			<cfset stWebskinDetails.displayname = getWebskinDisplayname(typename="#arguments.typename#", template="#stWebskinDetails.methodname#", path="#stWebskinDetails.path#") />
+			<cfset stWebskinDetails.author = getWebskinAuthor(typename="#arguments.typename#", template="#stWebskinDetails.methodname#", path="#stWebskinDetails.path#") />
+			<cfset stWebskinDetails.description = getWebskinDescription(typename="#arguments.typename#", template="#stWebskinDetails.methodname#", path="#stWebskinDetails.path#") />
+			<cfset stWebskinDetails.cacheStatus = getWebskinCacheStatus(typename="#arguments.typename#", template="#stWebskinDetails.methodname#", path="#stWebskinDetails.path#") />
+			<cfset stWebskinDetails.cacheTimeout = getWebskinCacheTimeout(typename="#arguments.typename#", template="#stWebskinDetails.methodname#", path="#stWebskinDetails.path#") />
+			<cfset stWebskinDetails.cacheByURL = getWebskinCacheByURL(typename="#arguments.typename#", template="#stWebskinDetails.methodname#", path="#stWebskinDetails.path#") />
+			<cfset stWebskinDetails.cacheByRoles = getWebskinCacheByRoles(typename="#arguments.typename#", template="#stWebskinDetails.methodname#", path="#stWebskinDetails.path#") />
 			
 			
 			<!--- UPDATE THE METADATA QUERY --->				
@@ -538,20 +538,22 @@
 			
 			<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
 				<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
-			
-				<!--- LEGACY VERSION TO CACHE BY URL WAS hashURL --->
-				<cfset pos = findNoCase('@@hashURL:', templateCode)>
-				<cfif pos GT 0>
-					<cfset pos = pos + 10>
-					<cfset count = findNoCase('--->', templateCode, pos)-pos>
-					<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
-				</cfif>	
+				
 				
 				<cfset pos = findNoCase('@@cacheByURL:', templateCode)>
 				<cfif pos GT 0>
 					<cfset pos = pos + 13>
 					<cfset count = findNoCase('--->', templateCode, pos)-pos>
 					<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
+				<cfelse>
+	
+					<!--- LEGACY VERSION TO CACHE BY URL WAS hashURL --->
+					<cfset pos = findNoCase('@@hashURL:', templateCode)>
+					<cfif pos GT 0>
+						<cfset pos = pos + 10>
+						<cfset count = findNoCase('--->', templateCode, pos)-pos>
+						<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
+					</cfif>					
 				</cfif>	
 			</cfif>
 			
