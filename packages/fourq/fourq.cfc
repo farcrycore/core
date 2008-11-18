@@ -718,35 +718,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
 		<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
 		
-		<cfset var qFindType="">
-		<cfset var result = "" />
-		
-		<cfquery datasource="#arguments.dsn#" name="qFindType">
-		select typename from #arguments.dbowner#refObjects
-		where objectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectID#" />
-		</cfquery>
-		
-		<cfif qFindType.recordCount>
-			<cfset result = qFindType.typename />
-		<cfelse>		
-			<cftry>
-			<cfif structKeyExists(Session, "TempObjectStore") 
-				AND structKeyExists(Session.TempObjectStore, "#arguments.objectid#")
-				AND structKeyExists(Session.TempObjectStore["#arguments.objectid#"], "typename")>
-				
-				<cfset result = Session.TempObjectStore["#arguments.objectid#"].typename />
-			</cfif>
-			<cfcatch type="any"><!--- ignore as session scope may not yet be available. ---></cfcatch>
-			</cftry>
-		</cfif>
-		
-		<!--- 
-		$ TODO: resolve upstream errors
-		<cfif NOT qgetType.recordCount>
-			<cfthrow type="fourq" detail="<b>Invalid reference:</b> object #arguments.objectID# is not in refObjects table">
-		</cfif> 
-		$
-		--->
+		<cfset var result = application.coapi.coapiUtilities.findType(argumentCollection=arguments) />
 
 		<cfreturn result />
 	</cffunction>

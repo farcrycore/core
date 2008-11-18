@@ -941,31 +941,14 @@
 		<cfreturn result />
 	</cffunction>
 
-	<cffunction name="findType" access="public" output="false" returntype="string" hint="Determine the typename for an objectID. Returns empty string if object not found">
+	<cffunction name="findType" access="public" output="false" returntype="string" hint="Determine the typename for an objectID.">
 		<cfargument name="objectid"  required="true">
 		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
 		<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
 		
-		<cfset var qFindType=queryNew("init") />
-		<cfset var result = "" />
-		
-		<cfquery datasource="#arguments.dsn#" name="qFindType">
-		select typename from #arguments.dbowner#refObjects
-		where objectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectID#" />
-		</cfquery>
-		
-		<cfif qFindType.recordCount>
-			<cfset result = qFindType.typename />
-		<cfelse>		
-			<cfif structKeyExists(Session, "TempObjectStore") 
-				AND structKeyExists(Session.TempObjectStore, "#arguments.objectid#")
-				AND structKeyExists(Session.TempObjectStore["#arguments.objectid#"], "typename")>
-				
-				<cfset result = Session.TempObjectStore["#arguments.objectid#"].typename />
-			</cfif>
-		</cfif>	
-		
-		<cfreturn result />	
+		<cfset var result = application.coapi.coapiUtilities.findType(argumentCollection=arguments) />
+
+		<cfreturn result />
 	</cffunction>
 
 
