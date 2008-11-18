@@ -27,7 +27,7 @@
 		<cfif StructKeyExists(stObjTemp,"status") AND ListContains(request.mode.lValidStatus, stObjTemp.status)>
 		
 			<!--- Otherwise just show this one --->
-			<nj:display objectid="#stObjTemp.objectid#" />
+			<nj:display objectid="#stObjTemp.objectid#" typename="#stObjTemp.typename#" />
 			<cfsetting enablecfoutputonly="false" />
 			<cfexit method="exittemplate">
 			
@@ -44,7 +44,7 @@
 			</cfif>
 			
 			<!--- reset stObj to appropriate object to be displayed --->
-			<nj:display objectid="#stObjTemp.objectid#" />
+			<nj:display objectid="#stObjTemp.objectid#" typename="#stObjTemp.typename#" />
 			<cfsetting enablecfoutputonly="false" />
 			<cfexit method="exittemplate" />
 			
