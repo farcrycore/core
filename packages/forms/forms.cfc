@@ -585,9 +585,15 @@
 					<cfset arrayAppend(request.aAncestorWebskins, stCurrentView) />					
 					
 					<!--- Include the View --->
-					<cfsavecontent variable="webskinHTML">
-						<cfinclude template="#WebskinPath#">
-					</cfsavecontent>
+                    <cfsavecontent variable="webskinHTML">
+                        <cfif isdefined("request.mode.design") AND request.mode.design>
+                            <cfoutput><webskin typename="#stobj.typename#" Template="#arguments.template#" Path="#WebskinPath#"></cfoutput>
+                        </cfif>
+                        <cfinclude template="#WebskinPath#">
+                        <cfif isdefined("request.mode.design") AND request.mode.design>
+                            <cfoutput></webskin></cfoutput>
+                        </cfif>
+                    </cfsavecontent>	
 										
 					<!--- If the current view (Last Item In the array) is still OkToCache --->
 					<cfif request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].okToCache>
