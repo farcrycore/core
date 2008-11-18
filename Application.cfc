@@ -559,6 +559,8 @@
 		<cfset application.fc.subsites = this.subsites /><!--- Struct to contain any subsites that may be included with the application --->
 		<cfset application.fc.utils = createObject("component", "farcry.core.packages.farcry.utils").init() /><!--- FarCry Utility Functions --->
 		
+		<cfset application.fc.factory['farCoapi'] = createObject("component", "farcry.core.packages.types.farCoapi") />
+		
 		<!--- Project directory name can be changed from the default which is the applicationname --->
 		<cfset application.projectDirectoryName =  this.projectDirectoryName />
 		<cfset application.displayName =  this.displayName />
