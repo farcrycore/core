@@ -86,7 +86,7 @@
 
 	<!--- grab the object we are displaying --->
 	<cftry>
-		<q4:contentobjectget objectid="#attributes.objectid#" r_stobject="stObj">
+		<q4:contentobjectget objectid="#attributes.objectid#" typename="#attributes.typename#" r_stobject="stObj">
 		
 		<cftrace var="stobj.typename" text="Object typename determined." type="information" />
 	
@@ -186,13 +186,13 @@
 	
 		<!--- If a method has been passed in deliberately and is allowed use this --->
 		<cftrace var="attributes.method" text="Passed in attribute method used" />
-		<skin:view objectid="#attributes.objectid#" webskin="#attributes.method#" alternateHTML="" />
+		<skin:view objectid="#attributes.objectid#" typename="#stObj.typename#" webskin="#attributes.method#" alternateHTML="" />
 		
 	<cfelseif IsDefined("stObj.displayMethod") AND len(stObj.displayMethod)>
 	
 		<!--- Invoke display method of page --->
 		<cftrace var="stObj.displayMethod" text="Object displayMethod used" />
-		<skin:view objectid="#attributes.objectid#" webskin="#stObj.displayMethod#" />
+		<skin:view objectid="#attributes.objectid#" typename="#stObj.typename#" webskin="#stObj.displayMethod#" />
 		
 	<cfelse>
 	
