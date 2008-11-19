@@ -40,6 +40,9 @@ DEPLOY SYSTEM TABLES
 
 <!--- instantiate singletons needed for install --->
 <cfset application.fc = structNew() />
+<cfset application.fc.factory = structNew() />
+<cfset application.fc.factory.farCoapi = createobject("component","farcry.core.packages.types.farCoapi").init() />
+
 <cfset application.fc.utils = createobject("component","farcry.core.packages.farcry.utils").init() />
 <cfset application.factory.oUtils = createobject("component","farcry.core.packages.farcry.utils") />
 <cfset application.factory.oAudit = createObject("component","#application.packagepath#.farcry.audit") />
