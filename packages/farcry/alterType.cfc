@@ -1701,7 +1701,9 @@ $out:$
 					<!--- alter column --->
 					<cfquery NAME="qAlter" DATASOURCE="#application.dsn#">
 						ALTER TABLE #application.dbowner##arguments.typename#
-						ALTER COLUMN #arguments.srcColumn# #arguments.srcColumnType# <cfif NOT listContainsNoCase("NTEXT,INT,INTEGER,NUMBER",arguments.srcColumnType)>(#length#)</cfif>
+						ALTER COLUMN #arguments.srcColumn# #arguments.srcColumnType# 
+							<cfif NOT listContainsNoCase("NTEXT,INT,INTEGER,NUMBER",arguments.srcColumnType) 
+								AND find("(",arguments.srcColumnType) lte 0>(#length#)</cfif>
 					</cfquery>
 
 					<!--- add constraint --->
