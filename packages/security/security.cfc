@@ -332,7 +332,7 @@
 		
 		<!--- Get users profile --->
 		<cfset session.dmProfile = oProfile.getProfile(userName=arguments.userid,ud=arguments.ud) />
-		<cfset stDefaultProfile = this.userdirectories[arguments.ud].getProfile(userid=arguments.userid) />
+		<cfset stDefaultProfile = this.userdirectories[arguments.ud].getProfile(arguments.userid,duplicate(session.dmProfile)) />
 		<cfparam name="stDefaultProfile.override" default="false" />
 		<cfif not session.dmProfile.bInDB>
 			<cfset structappend(session.dmProfile,stDefaultProfile,stDefaultProfile.override) />
