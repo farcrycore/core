@@ -46,11 +46,11 @@
 				};
 				
 				jQ(function(){
-					var summary = #summarytoolbar#;
+					var summary = #reReplace(summarytoolbar,"</?webskin.*?>","","ALL")#;
 					summary.region = "center";
 					summary.border = false;
 					
-					var details = #detailstoolbar#;
+					var details = #reReplace(detailstoolbar,"</?webskin.*?>","","ALL")#;
 					details.region = "center";
 					details.border = false;
 					
