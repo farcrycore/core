@@ -86,7 +86,7 @@
 	
 	<cffunction name="getProfile" access="public" output="false" returntype="struct" hint="Returns profile data available through the user directory">
 		<cfargument name="userid" type="string" required="true" hint="The user directory specific user id" />
-		<cfargument name="currentprofile" type="string" required="false" hint="The current user profile" />
+		<cfargument name="currentprofile" type="struct" required="false" hint="The current user profile" />
 		
 		<!---
 			This struct should contain values that do (or can) map to dmProfile properties.
