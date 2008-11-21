@@ -168,10 +168,10 @@
 	<ft:object objectid="#stObj.objectid#" lFields="catInclude" legend="Categorisation" />
 			
 	
-	<ft:farcrybuttonpanel>
+	<ft:buttonPanel>
 		<ft:button value="Save" color="orange" /> 
 		<ft:button value="Cancel" validate="false" />
-	</ft:farcrybuttonpanel>
+	</ft:buttonPanel>
 </ft:form>
 
 

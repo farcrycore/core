@@ -185,7 +185,7 @@
 		<!--- replace the html entity (&amp;) with and --->
 		<cfset cleanFU = reReplaceNoCase(cleanFU,'&amp;','and',"all")>
 		<!--- remove illegal characters in titles --->
-		<cfset cleanFU = reReplaceNoCase(cleanFU,'[,:\?##ï¿½ï¿½®™]','',"all")>
+		<cfset cleanFU = reReplaceNoCase(cleanFU,'[,:\?##ï¿½ï¿½ï¿½ï¿½]','',"all")>
 		<!--- change & to "and" in title --->
 		<cfset cleanFU = reReplaceNoCase(cleanFU,'[&]','and',"all")>
 		<!--- prepend fu url pattern and add suffix --->
@@ -1000,7 +1000,7 @@
 		<!--- replace the html entity (&amp;) with and --->
 		<cfset newAlias = reReplaceNoCase(newAlias,'&amp;','and',"all")>
 		<!--- remove illegal characters in titles --->
-		<cfset newAlias = reReplaceNoCase(newAlias,'[,:\?##ï¿½ï¿½®™]','',"all")>
+		<cfset newAlias = reReplaceNoCase(newAlias,'[,:\?##ï¿½ï¿½ï¿½ï¿½]','',"all")>
 		<!--- change & to "and" in title --->
 		<cfset newAlias = reReplaceNoCase(newAlias,'[&]','and',"all")>
 		<!--- prepend fu url pattern and add suffix --->
@@ -1139,7 +1139,7 @@
 		<cfcase value="ora,oracle">					
 			<cfquery datasource="#application.dsn#" name="stLocal.qList">
 			SELECT	u.*
-			FROM	#application.dbowner#farFu u, 
+			FROM	#application.dbowner#farFU u, 
 					#application.dbowner#refObjects r
 			WHERE	r.objectid = u.refobjectid
 					AND u.refobjectid = <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
@@ -1150,7 +1150,7 @@
 		<cfdefaultcase>
 			<cfquery datasource="#application.dsn#" name="stLocal.qList">
 			SELECT	u.*
-			FROM	#application.dbowner#farFu u inner join 
+			FROM	#application.dbowner#farFU u inner join 
 					#application.dbowner#refObjects r on r.objectid = u.refobjectid
 			WHERE	refobjectid = <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
 				AND fuStatus IN (<cfqueryparam value="#stLocal.fuStatus#" list="true">)
