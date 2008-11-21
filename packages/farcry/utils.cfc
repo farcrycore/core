@@ -12,40 +12,20 @@
 		<!--- create the loader --->
 		<cfset variables.loader = createObject("component", "farcry.core.packages.farcry.javaloader.JavaLoader").init(paths) />
 		
-		<cfset theSystem = createObject("java","java.lang.System") />
-		<cfset jvmVersion = "#theSystem.getProperty('java.runtime.version')#" /> 
-		<cfset aMajorMinor = listToArray(jvmVersion,".") />
-		
-		<cfset variables.aJVMMajorMinor = aMajorMinor />
-		
-		<cfset variables.JVM1_5 = false />
-		<cfif variables.aJVMMajorMinor[1] gt 1 
-			or (variables.aJVMMajorMinor[1] eq 1 and variables.aJVMMajorMinor[1] gte 5)>
-			<cfset variables.JVM1_5 = true />
-		</cfif>
+		<!--- at this stage we only have access to the class, but we don't have an instance --->
+		<!--- <cfset variables.uuidGen = loader.create("com.eaio.uuid.UUID") /> --->
 		
 		<cfreturn this />
 	</cffunction>
 
 	<cffunction name="createJavaUUID" access="public" returntype="any" output="false" hint="">
-		<cfset var newUUID = "" />
-		<cfset var oUUID = "" />
-		<cfset var rMyUUID =  "" />
+		<cfset var oUUID = loader.create("com.eaio.uuid.UUID") />
+		<cfset var myUUID = oUUID.init() />
+		<cfset var rMyUUID = reverse(myUUID) />
 		
-		<!--- We need to check the current java version and only use
-			the fast UUID library if we are running verison 1.5 or 1.6. --->
-		<cfif variables.JVM1_5>
-			<cfset oUUID = loader.create("com.eaio.uuid.UUID") />
-			<cfset newUUID = oUUID.init() />
-			<cfset rMyUUID = reverse(myUUID) />
-			
-			<cfset newUUID = replace(rMyUUID,"-","") />
-			<cfset newUUID = uCase(reverse(newUUID)) />
-		<cfelse>
-			<cfset newUUID = createUUID() />
-		</cfif>
+		<cfset myUUID = replace(rMyUUID,"-","") />
 		
-		<cfreturn newUUID />
+		<cfreturn uCase(reverse(myUUID)) />
 	</cffunction>
 
 
