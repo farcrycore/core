@@ -26,7 +26,7 @@ It just ignores the inner ones.
 		
 		<cfparam name="attributes.Name" default="farcryForm#randrange(1,999999999)#">
 		<cfparam name="attributes.Target" default="">
-		<cfparam name="attributes.Action" default="">
+		<cfparam name="attributes.Action" default="#application.factory.oUtils.fixURL()#">
 		<cfparam name="attributes.method" default="post">
 		
 	
