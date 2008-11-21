@@ -382,7 +382,7 @@
 	<!--- MISCELLANEOUS utilities --->
 	<cffunction name="fixURL" returntype="string" output="false" access="public" hint="Refreshes the page with the specified query string values removed, replaced, or added. New values can be specified with a query string, struct, or named arguments." bDocument="true">
 		<cfargument name="url" type="string" required="false" default="#cgi.script_name#?#cgi.query_string#" hint="The url to use" />
-		<cfargument name="removevalues" type="string" required="false" default="flushcache,bAjax,designmode,draftmode,updateapp,bShowTray,bodyView=displayBody,view=displayPageStandard" hint="List of values to remove from the query string" />
+		<cfargument name="removevalues" type="string" required="false" default="flushcache,bAjax,designmode,draftmode,updateapp,bShowTray,bodyView=displayBody,view=displayPageStandard,logout" hint="List of values to remove from the query string" />
 		<cfargument name="addvalues" type="any" required="false" hint="A query string or a struct of values, to add to the query string" />
 		
 		<cfset var key = "" />
