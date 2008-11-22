@@ -370,7 +370,7 @@
 		<!--- Remove values --->
 		<cfloop list="#arguments.removevalues#" index="key">
 			<cfif find("=",key)>
-				<cfset arguments.url = rereplacenocase(arguments.url,"&?#key#","") />
+				<cfset arguments.url = rereplacenocase(arguments.url,"&?#key#(&|$)","") />
 			<cfelse>
 				<cfset arguments.url = rereplacenocase(arguments.url,"&?#key#=[^&]+","") />
 			</cfif>
