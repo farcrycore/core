@@ -417,31 +417,39 @@ default handlers
 		<cfset var stObj = getData(objectid=arguments.objectid) />
 		<cfset var HTML = "" />
 		<cfset var qMetadata = queryNew("objectID") />
+		<cfset var lFieldSets = "" />
+		<cfset var iFieldset = "" />
 		
 		<farcry:deprecated message="types.display() should no longer be used. For the default view of an object, create a displayPageStandard webskin." />
 
 		<cfset qMetadata = application.types[stobj.typename].qMetadata >
 		
 		<ft:form>
+
 		<cfquery dbtype="query" name="qFieldSets">
-		SELECT ftwizardStep, ftFieldset
+		SELECT ftFieldset
 		FROM qMetadata
 		WHERE ftFieldset <> '#stobj.typename#'
-		Group By ftwizardStep, ftFieldset
-		ORDER BY ftSeq
+		ORDER BY ftseq
 		</cfquery>
 		
-		<cfif qFieldSets.recordcount GTE 1>
-			
-			<cfloop query="qFieldSets">
+		<cfset lFieldSets = "" />
+		<cfoutput query="qFieldSets" group="ftFieldset" groupcasesensitive="false">
+			<cfset lFieldSets = listAppend(lFieldSets,qFieldSets.ftFieldset) />
+		</cfoutput>
+		
+		<cfif listLen(lFieldSets)>
+						
+			<cfloop list="#lFieldSets#" index="iFieldset">
+
 				<cfquery dbtype="query" name="qFieldset">
 				SELECT *
 				FROM qMetadata
-				WHERE ftFieldset = '#qFieldsets.ftFieldset#'
+				WHERE ftFieldset = '#iFieldset#'
 				ORDER BY ftSeq
 				</cfquery>
 				
-				<ft:object ObjectID="#arguments.ObjectID#" format="display" lExcludeFields="label" lFields="#valuelist(qFieldset.propertyname)#" inTable=false IncludeFieldSet=1 Legend="#qFieldSets.ftFieldset#" />
+				<ft:object ObjectID="#arguments.ObjectID#" format="display" lExcludeFields="label" lFields="#valuelist(qFieldset.propertyname)#" inTable=false IncludeFieldSet=1 Legend="#iFieldset#" />
 			</cfloop>
 			
 			
