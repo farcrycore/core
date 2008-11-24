@@ -66,35 +66,41 @@ object methods
 		
 			<cfset qMetadata = application.stCOAPI[stobj.typename].qMetadata />
 		
-			<cfsavecontent variable="ReturnHTML">				
+			<cfsavecontent variable="ReturnHTML">		
+				<ft:form>
+					
 				<cfquery dbtype="query" name="qFieldSets">
-					SELECT		ftwizardStep, ftFieldset
-					FROM 		qMetadata
-					WHERE 		ftFieldset <> '#stobj.typename#'
-					Group By 	ftwizardStep, ftFieldset
-					ORDER BY 	ftSeq
+				SELECT ftFieldset
+				FROM qMetadata
+				WHERE ftFieldset <> '#stobj.typename#'
+				ORDER BY ftseq
 				</cfquery>
 				
-				<ft:form>
-					<cfif qFieldSets.recordcount GTE 1>
+				<cfset lFieldSets = "" />
+				<cfoutput query="qFieldSets" group="ftFieldset" groupcasesensitive="false">
+					<cfset lFieldSets = listAppend(lFieldSets,qFieldSets.ftFieldset) />
+				</cfoutput>
+				
+				<cfif listLen(lFieldSets)>
+								
+					<cfloop list="#lFieldSets#" index="iFieldset">	
+
+						<cfquery dbtype="query" name="qFieldset">
+							SELECT 		*
+							FROM 		qMetadata
+							WHERE 		ftFieldset = '#iFieldset#'
+							ORDER BY 	ftSeq
+						</cfquery>
 						
-						<cfloop query="qFieldSets">
-							<cfquery dbtype="query" name="qFieldset">
-								SELECT 		*
-								FROM 		qMetadata
-								WHERE 		ftFieldset = '#qFieldsets.ftFieldset#'
-								ORDER BY 	ftSeq
-							</cfquery>
-							
-							<ft:object stObject="#stObj#" lExcludeFields="label" lFields="#valuelist(qFieldset.propertyname)#" inTable="false" IncludeFieldSet="true" Legend="#qFieldSets.ftFieldset#" helptitle="#qFieldset.fthelptitle#" helpsection="#qFieldset.fthelpsection#" />
-						</cfloop>
+						<ft:object stObject="#stObj#" lExcludeFields="label" lFields="#valuelist(qFieldset.propertyname)#" inTable="false" IncludeFieldSet="true" Legend="#iFieldset#" helptitle="#qFieldset.fthelptitle#" helpsection="#qFieldset.fthelpsection#" />
+					</cfloop>
 						
-					<cfelse>
+				<cfelse>
+				
+					<!--- All Fields: default edit handler --->
+					<ft:object stObject="#stObj#" lExcludeFields="label" IncludeFieldSet="true" Legend="#stObj.Label#" />
 					
-						<!--- All Fields: default edit handler --->
-						<ft:object stObject="#stObj#" lExcludeFields="label" IncludeFieldSet="true" Legend="#stObj.Label#" />
-						
-					</cfif>
+				</cfif>
 					
 				</ft:form>
 				

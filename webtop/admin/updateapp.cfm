@@ -37,24 +37,35 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 
 <ft:form>	
 	<cfset qMetadata = application.forms['UpdateApp'].qMetadata />
+
 	<cfquery dbtype="query" name="qFieldSets">
-		SELECT 		ftwizardStep, ftFieldset
-		FROM 		qMetadata
-		WHERE 		lower(ftFieldset) <> '#lcase("UpdateApp")#'
-		Group By 	ftwizardStep, ftFieldset
-		ORDER BY 	ftSeq
+	SELECT ftFieldset
+	FROM qMetadata
+	WHERE lower(ftFieldset) <> '#lcase("UpdateApp")#'
+	ORDER BY ftseq
 	</cfquery>
-	<cfloop query="qFieldSets">
-		<cfquery dbtype="query" name="qFieldset">
-			SELECT 		*
-			FROM 		qMetadata
-			WHERE 		lower(ftFieldset) = '#lcase(qFieldsets.ftFieldset)#'
-			ORDER BY 	ftSeq
-		</cfquery>
-		
-		<ft:object typename="updateapp" format="edit" lExcludeFields="label" lFields="#valuelist(qFieldset.propertyname)#" inTable="false" IncludeFieldSet="true" Legend="#qFieldSets.ftFieldset#" helptitle="#qFieldset.fthelptitle#" helpsection="#qFieldset.fthelpsection#" />
 	
-	</cfloop>
+	<cfset lFieldSets = "" />
+	<cfoutput query="qFieldSets" group="ftFieldset" groupcasesensitive="false">
+		<cfset lFieldSets = listAppend(lFieldSets,qFieldSets.ftFieldset) />
+	</cfoutput>
+	
+	<cfif listLen(lFieldSets)>
+					
+		<cfloop list="#lFieldSets#" index="iFieldset">	
+	
+			<cfquery dbtype="query" name="qFieldset">
+				SELECT 		*
+				FROM 		qMetadata
+				WHERE 		lower(ftFieldset) = '#lcase(iFieldset)#'
+				ORDER BY 	ftSeq
+			</cfquery>
+			
+			<ft:object typename="updateapp" format="edit" lExcludeFields="label" lFields="#valuelist(qFieldset.propertyname)#" inTable="false" IncludeFieldSet="true" Legend="#iFieldset#" helptitle="#qFieldset.fthelptitle#" helpsection="#qFieldset.fthelpsection#" />
+	
+		</cfloop>
+	</cfif>
+	
 	<ft:farcryButtonPanel>
 		<ft:farcryButton value="Update Application" />
 	</ft:farcryButtonPanel>
