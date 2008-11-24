@@ -14,19 +14,20 @@
 	<!--- Get the User --->
 	<ft:processFormObjects typename="farUser">
 		<cfset stProperties.userstatus = "pending" />
-		
+		<cfset stProperties.userid = trim(stProperties.userid) />
+
 		<cfset newUserID = stProperties.objectid />
 		<cfset newUserName = stProperties.userid />
-		
+
 		<cfset createObject("component", application.stcoapi["farUser"].packagePath).addGroup(user="#newUserID#", group="member") />
 	</ft:processFormObjects>
-		
-	
+
+
 	<ft:processFormObjects typename="dmProfile">
 		<cfset stProperties.userDirectory = "CLIENTUD" />
 		<cfset stProperties.username = "#newUserName#_CLIENTUD" />
 	</ft:processFormObjects>
-	
+
 	<!--- This will send the confirmation email and then redirect to the confirmation page --->
 	<skin:view objectid="#newUserID#" webskin="registerConfirmationEmail" />
 </ft:processForm>

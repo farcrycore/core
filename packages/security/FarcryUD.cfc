@@ -36,11 +36,11 @@
 			<cfquery datasource="#application.dsn#" name="qUser">
 				select	*
 				from	#application.dbowner#farUser
-				where	userid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#form.userlogin#" />
+				where	userid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#trim(form.userlogin)#" />
 						and password=<cfqueryparam cfsqltype="cf_sql_varchar" value="#form.password#" />
 			</cfquery>
 			
-			<cfset stResult.userid = form.userlogin />
+			<cfset stResult.userid = trim(form.userlogin) />
 		<cfelse>
 			<ft:processform>
 				<ft:processformObjects typename="#getLoginForm()#">
@@ -53,11 +53,11 @@
 					<cfquery datasource="#application.dsn#" name="qUser">
 						select	*
 						from	#application.dbowner#farUser
-						where	userid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#stProperties.username#" />
+						where	userid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#trim(stProperties.username)#" />
 								and password=<cfqueryparam cfsqltype="cf_sql_varchar" value="#stProperties.password#" />
 					</cfquery>
 					
-					<cfset stResult.userid = stProperties.username />
+					<cfset stResult.userid = trim(stProperties.username) />
 				</ft:processformObjects>
 			</ft:processform>
 		</cfif>
