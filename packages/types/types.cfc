@@ -240,7 +240,7 @@ default handlers
 							<cfif bTypeWebskin or not structkeyexists(request.aAncestorWebskins[i],"objectid") or stobj.objectid NEQ request.aAncestorWebskins[i].objectID>
 								
 								<cfif structKeyExists(application.stcoapi[request.aAncestorWebskins[i].typename].stWebskins, request.aAncestorWebskins[i].template)>
-									<cfif application.stcoapi[request.aAncestorWebskins[i].typename].stWebskins[request.aAncestorWebskins[i].template].cacheStatus GTE 0>
+									<cfif application.stcoapi[request.aAncestorWebskins[i].typename].stWebskins[request.aAncestorWebskins[i].template].cacheStatus GT 0>
 										
 										<cfset stArgs = structnew() />
 										<!--- <cfif bTypeWebskin>
