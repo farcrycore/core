@@ -9,21 +9,22 @@
 		<!--- This points to the jar we want to load. Could also load a directory of .class files --->
 		<cfset paths[1] = expandPath(arguments.jarPath) />
 		
-		<cfset variable.isCustomUUIDAvailable = true />
+		<!--- create the loader --->
+		<cfset variables.loader = createObject("component", "farcry.core.packages.farcry.javaloader.JavaLoader").init(paths) />
 		
-		<cftry>
-			<!--- create the loader --->
-			<cfset variables.loader = createObject(
-				"component", 
-				"farcry.core.packages.farcry.javaloader.JavaLoader"
-			).init(paths) />
-			
-			<cfset oUUID = loader.create("com.eaio.uuid.UUID") />
-			
-			<cfcatch>
-				<cfset variable.isCustomUUIDAvailable = false />
-			</cfcatch>
-		</cftry>
+		
+		<!--- Please don't take this out.  It wont run on the AOC server without it --->
+		<cfset theSystem = createObject("java","java.lang.System") />
+		<cfset jvmVersion = "#theSystem.getProperty('java.runtime.version')#" /> 
+		<cfset aMajorMinor = listToArray(jvmVersion,".") />
+		
+		<cfset variables.aJVMMajorMinor = aMajorMinor />
+		
+		<cfset variables.JVM1_5 = false />
+		<cfif variables.aJVMMajorMinor[1] gt 1 
+			or (variables.aJVMMajorMinor[1] eq 1 and variables.aJVMMajorMinor[1] gte 5)>
+			<cfset variables.JVM1_5 = true />
+		</cfif>
 		
 		<cfreturn this />
 	</cffunction>
@@ -35,7 +36,7 @@
 		
 		<!--- We need to check the current java version and only use
 			the fast UUID library if we are running verison 1.5 or 1.6. --->
-		<cfif variable.isCustomUUIDAvailable>
+		<cfif variables.JVM1_5>
 			<cfset oUUID = loader.create("com.eaio.uuid.UUID") />
 			<cfset newUUID = oUUID.init() />
 			<cfset rMyUUID = reverse(newUUID) />
