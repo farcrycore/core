@@ -5,24 +5,32 @@
 		<cfargument name="jarPath" type="string" required="yes" default="/farcry/core/packages/farcry/uuid/uuid-3.0.jar" />
 		
 		<cfset var paths = arrayNew(1) />
+		<cfset var theSystem = "" />
+		<cfset var jvmVersion = "" /> 
+		<cfset var aMajorMinor = "" />
 		
 		<!--- This points to the jar we want to load. Could also load a directory of .class files --->
 		<cfset paths[1] = expandPath(arguments.jarPath) />
 		
 		<!--- create the loader --->
-		<cfset variables.loader = createObject("component", "farcry.core.packages.farcry.javaloader.JavaLoader").init(paths) />
+		<cfset variables.loader = createObject(
+			"component", 
+			"farcry.core.packages.farcry.javaloader.JavaLoader"
+		).init(paths) />
 		
-		
-		<!--- Please don't take this out.  It wont run on the AOC server without it --->
+		<!--- get the system object so we can get the runtime version --->
 		<cfset theSystem = createObject("java","java.lang.System") />
 		<cfset jvmVersion = "#theSystem.getProperty('java.runtime.version')#" /> 
+		<!--- split the version string into an array.  We only care about the first
+			two digits --->
 		<cfset aMajorMinor = listToArray(jvmVersion,".") />
 		
 		<cfset variables.aJVMMajorMinor = aMajorMinor />
 		
+		<!--- if the JVM is above 1 or above 1.5 the uuid bit will work --->
 		<cfset variables.JVM1_5 = false />
 		<cfif variables.aJVMMajorMinor[1] gt 1 
-			or (variables.aJVMMajorMinor[1] eq 1 and variables.aJVMMajorMinor[1] gte 5)>
+			or (variables.aJVMMajorMinor[1] eq 1 and variables.aJVMMajorMinor[2] gte 5)>
 			<cfset variables.JVM1_5 = true />
 		</cfif>
 		
@@ -32,16 +40,18 @@
 	<cffunction name="createJavaUUID" access="public" returntype="any" output="false" hint="">
 		<cfset var newUUID = "" />
 		<cfset var oUUID = "" />
-		<cfset var rMyUUID =  "" />
 		
 		<!--- We need to check the current java version and only use
 			the fast UUID library if we are running verison 1.5 or 1.6. --->
 		<cfif variables.JVM1_5>
 			<cfset oUUID = loader.create("com.eaio.uuid.UUID") />
-			<cfset newUUID = oUUID.init() />
-			<cfset rMyUUID = reverse(newUUID) />
 			
-			<cfset newUUID = replace(rMyUUID,"-","") />
+			<cfset newUUID = oUUID.init() />
+			<!--- reverse the uuid because we need to remove the last dash --->
+			<cfset newUUID = reverse(newUUID) />
+			<!--- remove the first dash (which will be the last dash in the end) --->
+			<cfset newUUID = replace(newUUID,"-","") />
+			<!--- now upper case and reverse it back --->
 			<cfset newUUID = uCase(reverse(newUUID)) />
 		<cfelse>
 			<cfset newUUID = createUUID() />
