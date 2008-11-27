@@ -78,6 +78,7 @@
 		<cfset stLocal.stProperties = getData(objectID="#arguments.objectID#") />
 		<cfset stLocal.stProperties.objectid = application.fc.utils.createJavaUUID() />
 		<cfset stLocal.stProperties.fuStatus = 0 />
+		<cfset stLocal.stProperties.bDefault = 0 />
 		<cfset stLocal.stProperties.redirectionType = "301" />
 		<cfset stLocal.stProperties.redirectTo =  "default" />
 		<cfset stLocal.stResult = setData(stProperties="#stLocal.stProperties#") />
