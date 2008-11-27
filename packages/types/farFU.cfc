@@ -361,11 +361,11 @@
 			
 			<cfif qLegacy.status EQ 1>
 				<cfset stProps.redirectionType = "none" />
-				<cfset stProps.redirectTo = "system" />
+				<cfset stProps.redirectTo = "default" />
 				<cfset stProps.bDefault = 1 />
 			<cfelse>
 				<cfset stProps.redirectionType = "301" />
-				<cfset stProps.redirectTo = "system" />
+				<cfset stProps.redirectTo = "default" />
 				<cfset stProps.bDefault = 0 />
 			</cfif>
 			
