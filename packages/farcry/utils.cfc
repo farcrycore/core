@@ -405,6 +405,7 @@
 		</cfif>
 		
 		<!--- Remove values --->
+		<cfset arguments.url = rereplace(arguments.url,"&?[^=]+=($|&)","&","ALL") />
 		<cfloop list="#arguments.removevalues#" index="key">
 			<cfif find("=",key)>
 				<cfset arguments.url = rereplacenocase(arguments.url,"&?#key#(&|$)","") />
@@ -430,7 +431,7 @@
 			</cfloop>
 		</cfif>
 		
-		<cfreturn rereplace(replacelist(arguments.url,"?&,&&","?,&"),"[?&]$","") />
+		<cfreturn rereplace(replacelist(arguments.url,"?&,&&","?,&"),"[?&]+$","") />
 	</cffunction>
 
 </cfcomponent>
