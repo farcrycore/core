@@ -93,7 +93,9 @@ $out:$
 			<cfif structKeyExists(request, "aAncestorWebskins")>
 				<cfloop from="1" to="#arraylen(request.aAncestorWebskins)#" index="i">
 					<cfset request.aAncestorWebskins[i].okToCache = 0 />
-					<cfset request.aAncestorWebskins[i].cacheTimeout = stCurrentView.cacheTimeout />
+					<cfif structKeyExists(stCurrentView, "cacheTimeout")>
+						<cfset request.aAncestorWebskins[i].cacheTimeout = stCurrentView.cacheTimeout />
+					</cfif>
 				</cfloop>
 			</cfif>
 			<cfsavecontent variable="webskinHTML"><cfinclude template="#application.coapi.coapiadmin.getWebskinPath(stObj.typename,'deniedaccess')#" /></cfsavecontent>
