@@ -417,21 +417,37 @@
 		<!--- Add and replace values --->
 		<cfif structkeyexists(arguments,"addvalues") and isstruct(arguments.addvalues)>
 			<cfloop collection="#arguments.addvalues#" item="key">
-				<cfset arguments.url = rereplacenocase(arguments.url,"&?#key#=[^&]+","") & "#key#=#urlencodedformat(arguments.addvalues[key])#" />
+				<cfset arguments.url = insertQueryVariable(arguments.url,key,arguments.addvalues[key]) />
 			</cfloop>
 		<cfelseif structkeyexists(arguments,"addvalues")><!--- Query string format --->
 			<cfloop list="#arguments.addvalues#" index="key" delimiters="&">
-				<cfset arguments.url = rereplacenocase(arguments.url,"&?#listfirst(key,'=')#=[^&]+","") & "#listfirst(key,'=')#=#listlast(key,'=')#" />
+				<cfset arguments.url = insertQueryVariable(arguments.url,listfirst(key,'='),listlast(key,'=')) />
 			</cfloop>
 		<cfelse>
 			<cfloop collection="#arguments#" item="key">
 				<cfif not listcontainsnocase("url,removevalues,addvalues",key)>
-					<cfset arguments.url = rereplacenocase(arguments.url,"&?#key#=[^&]+","") & "#key#=#urlencodedformat(arguments.params[key])#" />
+					<cfset arguments.url = insertQueryVariable(arguments.url,key,arguments[key]) />
 				</cfif>
 			</cfloop>
 		</cfif>
 		
 		<cfreturn rereplace(replacelist(arguments.url,"?&,&&","?,&"),"[?&]+$","") />
 	</cffunction>
-
+	
+	<cffunction name="insertQueryVariable" returntype="string" output="false" access="public" hint="Inserts the specified key and value, replacing the existing value for that key">
+		<cfargument name="url" type="string" required="true" hint="The url to modify" />
+		<cfargument name="key" type="string" required="true" hint="The key to insert" />
+		<cfargument name="value" type="string" required="true" hint="The value to insert" />
+		
+		<cfif refindnocase("&?#arguments.key#=",arguments.url)>
+			<cfset arguments.url = rereplacenocase(arguments.url,"&?#arguments.key#=[^&]+","") & "&#arguments.key#=#urlencodedformat(arguments.value)#" />
+		<cfelseif find("?",arguments.url)>
+			<cfset arguments.url = "#arguments.url#&#arguments.key#=#urlencodedformat(arguments.value)#" />
+		<cfelse>
+			<cfset arguments.url = "#arguments.url#&#arguments.key#=#urlencodedformat(arguments.value)#" />
+		</cfif>
+		
+		<cfreturn arguments.url />
+	</cffunction>
+	
 </cfcomponent>
