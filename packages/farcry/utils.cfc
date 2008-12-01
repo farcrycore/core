@@ -265,6 +265,11 @@
 		<cfreturn duplicate(arguments) />
 	</cffunction>
 
+	<cffunction name="struct" returntype="struct" output="false" access="public" hint="Shortcut for creating structs">
+		
+		<cfreturn duplicate(arguments) />
+	</cffunction>
+
 	<!--- PACKAGE utilities --->
 	<cffunction name="getPath" access="public" output="false" returntype="string" hint="Finds the component in core/plugins/project, and returns its path" bDocument="true">
 		<cfargument name="package" type="string" required="true" />
@@ -392,7 +397,7 @@
 	</cffunction>
 
 	<!--- MISCELLANEOUS utilities --->
-	<cffunction name="fixURL" returntype="string" output="false" access="public" hint="Refreshes the page with the specified query string values removed, replaced, or added. New values can be specified with a query string, struct, or named arguments." bDocument="true">
+	<cffunction name="fixURL" returntype="string" output="true" access="public" hint="Refreshes the page with the specified query string values removed, replaced, or added. New values can be specified with a query string, struct, or named arguments." bDocument="true">
 		<cfargument name="url" type="string" required="false" default="#cgi.script_name#?#cgi.query_string#" hint="The url to use" />
 		<cfargument name="removevalues" type="string" required="false" hint="List of values to remove from the query string. Prefix with '+' to remove these values in addition to the defaults." />
 		<cfargument name="addvalues" type="any" required="false" hint="A query string or a struct of values, to add to the query string" />
@@ -411,12 +416,14 @@
 		</cfif>
 		
 		<!--- Remove values --->
-		<cfset arguments.url = rereplace(arguments.url,"&?[^=]+=($|&)","&","ALL") />
+		<cfloop condition="refind('(&|\?)[^=]+=($|&)',arguments.url)">
+			<cfset arguments.url = rereplace(arguments.url,"(&|\?)[^=]+=($|&)","\1") />
+		</cfloop>
 		<cfloop list="#arguments.removevalues#" index="key">
 			<cfif find("=",key)>
-				<cfset arguments.url = rereplacenocase(arguments.url,"&?#key#(&|$)","") />
+				<cfset arguments.url = rereplacenocase(arguments.url,"(&|\?)#key#(&|$)","\1") />
 			<cfelse>
-				<cfset arguments.url = rereplacenocase(arguments.url,"&?#key#=[^&]+","") />
+				<cfset arguments.url = rereplacenocase(arguments.url,"(&|\?)#key#=[^&]+","\1") />
 			</cfif>
 		</cfloop>
 		
@@ -446,7 +453,7 @@
 		<cfargument name="value" type="string" required="true" hint="The value to insert" />
 		
 		<cfif refindnocase("&?#arguments.key#=",arguments.url)>
-			<cfset arguments.url = rereplacenocase(arguments.url,"&?#arguments.key#=[^&]+","") & "&#arguments.key#=#urlencodedformat(arguments.value)#" />
+			<cfset arguments.url = rereplacenocase(arguments.url,"(?:&)?(\?)?#arguments.key#=[^&]+","\1") & "&#arguments.key#=#urlencodedformat(arguments.value)#" />
 		<cfelseif find("?",arguments.url)>
 			<cfset arguments.url = "#arguments.url#&#arguments.key#=#urlencodedformat(arguments.value)#" />
 		<cfelse>
