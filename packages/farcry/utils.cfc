@@ -1,8 +1,7 @@
 <cfcomponent displayname="Utilities" hint="Packages generic utilities" output="true" bDocument="true" scopelocation="application.factory.oUtils">
 
-
 	<cffunction access="public" returntype="utils" name="init" output="false" hint="Constructor">
-		<cfargument name="jarPath" type="string" required="yes" default="/farcry/core/packages/farcry/uuid/uuid-3.0.jar" />
+		<cfargument name="aJarPaths" type="array" required="no" default="#arrayNew(1)#" />
 		
 		<cfset var paths = arrayNew(1) />
 		<cfset var theSystem = "" />
@@ -10,7 +9,15 @@
 		<cfset var aMajorMinor = "" />
 		
 		<!--- This points to the jar we want to load. Could also load a directory of .class files --->
-		<cfset paths[1] = expandPath(arguments.jarPath) />
+		<cfset paths[1] = expandPath("/farcry/core/packages/farcry/uuid/uuid-3.0.jar") />
+		<cfset paths[2] = expandPath("/farcry/core/packages/farcry/uuid/jug.jar") />
+		
+		<cfset arrlen = arrayLen(aJarPaths) />
+		<cfif arrlen>
+			<cfloop from="1" to="#arrlen#" index="a">
+				<cfset arrayappend(paths, expandPath(aJarPaths[a])) />
+			</cfloop>
+		</cfif>
 		
 		<!--- create the loader --->
 		<cfset variables.loader = createObject(
@@ -37,7 +44,7 @@
 		<cfreturn this />
 	</cffunction>
 
-	<cffunction name="createJavaUUID" access="public" returntype="any" output="false" hint="">
+	<cffunction name="createJavaUUID" access="public" returntype="uuid" output="false" hint="">
 		<cfset var newUUID = "" />
 		<cfset var oUUID = "" />
 		
@@ -47,15 +54,29 @@
 			<cfset oUUID = loader.create("com.eaio.uuid.UUID") />
 			
 			<cfset newUUID = oUUID.init() />
-			<!--- reverse the uuid because we need to remove the last dash --->
-			<cfset newUUID = reverse(newUUID) />
-			<!--- remove the first dash (which will be the last dash in the end) --->
-			<cfset newUUID = replace(newUUID,"-","") />
-			<!--- now upper case and reverse it back --->
-			<cfset newUUID = uCase(reverse(newUUID)) />
+			<cfset newUUID = javaUUIDtoCFUUID(newUUID) />
+			
+		<cfelseif (variables.aJVMMajorMinor[1] eq 1 and variables.aJVMMajorMinor[2] lte 4)>
+			<cfset oUUID = loader.create("org.doomdark.uuid.UUIDGenerator").getInstance() />
+			<cfset newUUID = oUUID.generateTimeBasedUUID().toString() />
+			<cfset newUUID = javaUUIDtoCFUUID(newUUID) />
 		<cfelse>
 			<cfset newUUID = createUUID() />
 		</cfif>
+		
+		<cfreturn newUUID />
+	</cffunction>
+	
+	<cffunction name="javaUUIDtoCFUUID" returntype="uuid" access="private" output="false" hint="Most java generators generate UUIDs in a form that do not conform to CFs UUID format. This fixes them.">
+		<cfargument name="sJavaUUID" required="yes">
+		<cfset var newUUID = "" />
+		
+		<!--- reverse the uuid because we need to remove the last dash --->
+		<cfset newUUID = reverse(sJavaUUID) />
+		<!--- remove the first dash (which will be the last dash in the end) --->
+		<cfset newUUID = replace(newUUID,"-","") />
+		<!--- now upper case and reverse it back --->
+		<cfset newUUID = uCase(reverse(newUUID)) />
 		
 		<cfreturn newUUID />
 	</cffunction>
