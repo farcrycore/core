@@ -37,7 +37,7 @@ out:
 </cfif>
 
 <!--- optional attributes --->
-<cfparam name="attributes.separator" default=" &raquo; ">
+<cfparam name="attributes.separator" default=" &raquo; "><!--- @@attrhint: The separator for the steps in the bread crumb.  Can be a snippet of html (an image tag for example) --->
 <cfparam name="attributes.here" default=""><!--- @@attrhint: set the text for the last item in the breadcrumb --->
 <cfparam name="attributes.linkClass" default="">
 <cfif structKeyExists(request,"navid")>
