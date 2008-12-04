@@ -664,23 +664,23 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 							</cftry>
 			
 							<!--- set the session login information --->
-							<cflock timeout="45" throwontimeout="No" type="EXCLUSIVE" scope="SESSION">
-								<cfscript>
-								//name = o_NTsec.getUserFullName(userName=userLogin, domain=domain);
-								//if (name eq "") name = "<not specified>";
-								//notes = o_NTsec.getUserDescription(userName=userLogin, domain=domain);
-				
-								session.dmSec.authentication = structNew();
-								session.dmSec.authentication.userID = userLogin;
-								session.dmSec.authentication.userLogin = userLogin;
-								session.dmSec.authentication.canonicalName = userLogin;
-								session.dmSec.authentication.userNotes = "";
-								session.dmSec.authentication.lPolicyGroupIDs = lPolicyGroupIDs;
-								session.dmSec.authentication.userDirectory = validUD;
-				
-								bhasLoggedIn = 1;
-								</cfscript>
-							</cflock>
+							
+							<cfscript>
+							//name = o_NTsec.getUserFullName(userName=userLogin, domain=domain);
+							//if (name eq "") name = "<not specified>";
+							//notes = o_NTsec.getUserDescription(userName=userLogin, domain=domain);
+			
+							session.dmSec.authentication = structNew();
+							session.dmSec.authentication.userID = userLogin;
+							session.dmSec.authentication.userLogin = userLogin;
+							session.dmSec.authentication.canonicalName = userLogin;
+							session.dmSec.authentication.userNotes = "";
+							session.dmSec.authentication.lPolicyGroupIDs = lPolicyGroupIDs;
+							session.dmSec.authentication.userDirectory = validUD;
+			
+							bhasLoggedIn = 1;
+							</cfscript>
+							
 			
 							<cfif listLen(lPolicyGroupIDs) eq 0>
 								<cfif arguments.bAudit>
@@ -754,43 +754,43 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 														
 								<!--- set the session login information --->
 								
-								<cflock timeout="45" throwontimeout="No" type="EXCLUSIVE" scope="SESSION">
-									<cfif application.dbtype eq "mssql">
-										<cfquery name="qLoginCount" datasource="#application.dsn#">
-											IF EXISTS (	SELECT username FROM DBO.fqAudit
-	   													WHERE auditType = 'dmSec.login'
-														AND username = '#arguments.userLogin#' )
-												SELECT 1 as bCount
-											ELSE
-												SELECT 0 as bCount
-										</cfquery>
-									<cfelse>
-										<cfquery name="qLoginExists" datasource="#application.dsn#">
-											SELECT count(username) as bCount
-											FROM DBO.fqAudit
-	   										WHERE auditType = 'dmSec.login'
-											AND username = '#arguments.userLogin#'
-										</cfquery>
-									</cfif>										
+								
+								<cfif application.dbtype eq "mssql">
+									<cfquery name="qLoginCount" datasource="#application.dsn#">
+										IF EXISTS (	SELECT username FROM DBO.fqAudit
+   													WHERE auditType = 'dmSec.login'
+													AND username = '#arguments.userLogin#' )
+											SELECT 1 as bCount
+										ELSE
+											SELECT 0 as bCount
+									</cfquery>
+								<cfelse>
+									<cfquery name="qLoginExists" datasource="#application.dsn#">
+										SELECT count(username) as bCount
+										FROM DBO.fqAudit
+   										WHERE auditType = 'dmSec.login'
+										AND username = '#arguments.userLogin#'
+									</cfquery>
+								</cfif>										
+								
+								<cfscript>
+									session.dmSec.authentication = duplicate( stUser );
+									if( structKeyExists( session.dmSec.authentication, "userPassword"))
+										structDelete( session.dmSec.authentication, "userPassword" );
+									session.dmSec.authentication.lPolicyGroupIds=lPolicyGroupIds;
+									session.dmSec.authentication.canonicalName = arguments.userlogin;
 									
-									<cfscript>
-										session.dmSec.authentication = duplicate( stUser );
-										if( structKeyExists( session.dmSec.authentication, "userPassword"))
-											structDelete( session.dmSec.authentication, "userPassword" );
-										session.dmSec.authentication.lPolicyGroupIds=lPolicyGroupIds;
-										session.dmSec.authentication.canonicalName = arguments.userlogin;
-										
-										//Check the audit log to see if this user has logged in before.
-										//If they have not then set the firstLogin flag
-										if (qLoginCount.recordcount and qLoginCount.bCount)
-										
-											session.firstLogin = false;
-										else
-											session.firstLogin = true;
-										
-										bHasLoggedIn = 1;
-									</cfscript>
-								</cflock>
+									//Check the audit log to see if this user has logged in before.
+									//If they have not then set the firstLogin flag
+									if (qLoginCount.recordcount and qLoginCount.bCount)
+									
+										session.firstLogin = false;
+									else
+										session.firstLogin = true;
+									
+									bHasLoggedIn = 1;
+								</cfscript>
+				
 								
 								<!--- login has succeded so stop searching the user directories --->
 								<cfif arguments.bAudit>
@@ -879,30 +879,29 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 		<cfset var bLoggedIn = 0 />
 		<cfset var username =  ""/>
 		
-		<cflock timeout=20 scope="Session" type="Exclusive">		
+			
 
-			
-			<cfif isDefined("session.dmSec") AND isDefined("session.dmSec.authentication")>
-				<cfset bLoggedIn=1 />
-			</cfif>
-			
-			<cfif bLoggedin>
-				<cfset username =  session.dmSec.authentication.userlogin />
-				
-				<cfset session.dmSec = structNew() />
-				
-				<cfset structDelete(session, "dmProfile") />
-				<!--- // remove editing preferences --->
-				<cfset structDelete(session,"genericadmin") />
-				<cfset structDelete(session,"typeadmin") />
-				<!--- // audit logout --->
-				<cfif (arguments.bAudit) >
-					<cfset oAudit = createObject("component","#application.packagepath#.farcry.audit") />
-					<cfset oAudit.logActivity(auditType="dmSec.logout", username=username, location=cgi.remote_host, note="#arguments.note#") />
-				</cfif>
-			</cfif>		
 		
-		</cflock>
+		<cfif isDefined("session.dmSec") AND isDefined("session.dmSec.authentication")>
+			<cfset bLoggedIn=1 />
+		</cfif>
+		
+		<cfif bLoggedin>
+			<cfset username =  session.dmSec.authentication.userlogin />
+			
+			<cfset session.dmSec = structNew() />
+			
+			<cfset structDelete(session, "dmProfile") />
+			<!--- // remove editing preferences --->
+			<cfset structDelete(session,"genericadmin") />
+			<cfset structDelete(session,"typeadmin") />
+			<!--- // audit logout --->
+			<cfif (arguments.bAudit) >
+				<cfset oAudit = createObject("component","#application.packagepath#.farcry.audit") />
+				<cfset oAudit.logActivity(auditType="dmSec.logout", username=username, location=cgi.remote_host, note="#arguments.note#") />
+			</cfif>
+		</cfif>		
+		
 	</cffunction>
 	
 	<cffunction name="removeUserFromGroup" output="No">
