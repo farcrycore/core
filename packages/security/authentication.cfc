@@ -755,6 +755,24 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 								<!--- set the session login information --->
 								
 								<cflock timeout="45" throwontimeout="No" type="EXCLUSIVE" scope="SESSION">
+									<cfif application.dbtype eq "mssql">
+										<cfquery name="qLoginCount" datasource="#application.dsn#">
+											IF EXISTS (	SELECT username FROM DBO.fqAudit
+	   													WHERE auditType = 'dmSec.login'
+														AND username = '#arguments.userLogin#' )
+												SELECT 1 as bCount
+											ELSE
+												SELECT 0 as bCount
+										</cfquery>
+									<cfelse>
+										<cfquery name="qLoginExists" datasource="#application.dsn#">
+											SELECT count(username) as bCount
+											FROM DBO.fqAudit
+	   										WHERE auditType = 'dmSec.login'
+											AND username = '#arguments.userLogin#'
+										</cfquery>
+									</cfif>										
+									
 									<cfscript>
 										session.dmSec.authentication = duplicate( stUser );
 										if( structKeyExists( session.dmSec.authentication, "userPassword"))
@@ -764,7 +782,8 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 										
 										//Check the audit log to see if this user has logged in before.
 										//If they have not then set the firstLogin flag
-										if(oAudit.getAuditLog(username=arguments.userLogin, auditType="dmSec.login").recordcount neq 0)
+										if (qLoginCount.recordcount and qLoginCount.bCount)
+										
 											session.firstLogin = false;
 										else
 											session.firstLogin = true;
