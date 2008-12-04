@@ -9,6 +9,19 @@
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
+<skin:buildlink objectid="#stObj.objectid#" view="feedRSS" r_url="urlRSSFeed" includeDomain="true" />
+<skin:buildlink objectid="#stObj.objectid#" view="feedAtom" r_url="urlAtomFeed" includeDomain="true" />
+
+
+<cfsavecontent variable="linksText">
+	<cfoutput>
+	<link rel="alternate" type="application/rss+xml" title="RSS" href="#urlRSSFeed#" />
+	<link rel="alternate" type="application/atom+xml" title="Atom" href="#urlAtomFeed#" />
+	</cfoutput>
+</cfsavecontent>
+
+<skin:htmlhead text="#linksText#" />
+
 <div class="feedRSSTeaser">
 	<skin:buildlink objectid="#stObj.objectid#" view="feedRSS"  />
 </div>
