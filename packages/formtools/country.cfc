@@ -291,6 +291,7 @@
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","UA") /><cfset querysetcell(q,"name","Ukraine") />
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","AE") /><cfset querysetcell(q,"name","United Arab Emirates") />
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","UK") /><cfset querysetcell(q,"name","United Kingdom (Great Britain)") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","US") /><cfset querysetcell(q,"name","United States of America") />
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","UY") /><cfset querysetcell(q,"name","Uruguay") />
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","UZ") /><cfset querysetcell(q,"name","Uzbekistan") />
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","VU") /><cfset querysetcell(q,"name","Vanuatu") />
@@ -317,6 +318,7 @@
 				where	code in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.countries#">)
 						OR name in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.countries#">)
 			</cfif>
+			order by	name
 		</cfquery>
 		
 		<cfreturn q />
