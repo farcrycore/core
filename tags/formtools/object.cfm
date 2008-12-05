@@ -452,6 +452,7 @@
 						<cfinvokeargument name="stPackage" value="#stPackage#">
 						<cfinvokeargument name="prefix" value="#variables.prefix#">
 					</cfinvoke>
+					<cfset variables.returnHTML = application.formtools[ftFieldMetadata.ftType].oFactory.addWatch(typename=typename,stObject=stObj,stMetadata=ftFieldMetadata,fieldname="#variables.prefix##ftFieldMetadata.Name#",html=variables.returnHTML) />
 					<cfcatch><cfdump var="#cfcatch#" expand="false"></cfcatch>
 					
 				</cftry>

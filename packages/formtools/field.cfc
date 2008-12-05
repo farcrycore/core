@@ -87,4 +87,145 @@
 		
 		<cfreturn r_stResult />
 	</cffunction>
+
+
+
+
+	<cffunction name="addWatch" access="public" output="true" returntype="string" hint="Adds ajax update functionality for the field">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+		<cfargument name="html" type="string" required="true" hint="The html to wrap" />
+		
+		<cfset var prefix = left(arguments.fieldname,len(arguments.fieldname)-len(arguments.stMetadata.name)) />
+		
+		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+		<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
+		
+		<cfparam name="arguments.stMetadata.ftWatch" default="" /><!--- Set this value to a list of property names. Formtool will attempt to update with the ajax function when those properties change. --->
+		<cfparam name="arguments.stMetadata.ftLoaderHTML" default="Loading..." /><!--- The HTML displayed in the field while the new UI is being ajaxed in --->
+		
+		<cfif not structkeyexists(arguments.stMetadata,"ajaxrequest") and len(arguments.stMetadata.ftWatch)>
+			<skin:htmlHead library="extCoreJS" />
+			<extjs:onReady id="ftWatch"><cfoutput>
+				function getInputValue(name) {
+					var objs = Ext.select("[name="+name+"]");
+					var result = "";
+					
+					// input doesn't exist
+					if (!objs.getCount()) {
+						return "";
+					}
+					// checkbox
+					else if (objs.item(0).dom.tagName=="INPUT" && objs.item(0).dom.type == 'checkbox') {
+						result = [];
+						objs.each(function(el){
+							if (el.dom.checked) result.push(el.dom.value);
+						});
+						return result.join();
+					}
+					// radio
+					else if (objs.item(0).dom.tagName=="INPUT" && objs.item(0).dom.type == 'radio') {
+						objs = Ext.select("[name="+name+"][type=radio]");
+						if (objs.getCount())
+							return objs.item(0).dom.value;
+						else
+							return "";
+					}
+					// select
+					else if (objs.item(0).dom.tagName=="SELECT") {
+						return objs.item(0).dom.options[objs.item(0).dom.selectedIndex].value;
+					}
+					// everything else: text, password, hidden, etc
+					else {
+						result = [];
+						objs.each(function(el){
+							if (el.dom.checked) result.push(el.dom.value);
+						});
+						return result.join();
+					}
+				};
+				
+				function ajaxUpdate(event,el,opt) {
+					var values = {};
+					var watches = opt.ftWatch.split(",");
+					for (var i=0; i<watches.length; i++)
+						values[watches[i]] = getInputValue(opt.prefix+watches[i]);
+					values[opt.property] = getInputValue(opt.prefix+opt.property);
+					
+					document.getElementById(opt.fieldname+"ajaxdiv").innerHTML = opt.ftLoaderHTML;
+					Ext.Ajax.request({
+						url: '#application.url.farcry#/facade/ftajax.cfm?formtool='+opt.formtool+'&typename='+opt.typename+'&fieldname='+opt.fieldname+'&property='+opt.property+'&objectid='+opt.objectid,
+						success: function(response){
+							this.update(response.responseText);
+						},
+						params: values,
+						scope: document.getElementById(opt.fieldname+"ajaxdiv")
+					});
+				};
+			</cfoutput></extjs:onReady>
+			<extjs:onReady><cfoutput>
+				var opts#arguments.fieldname# = { 
+					prefix:'#prefix#',
+					objectid:'#arguments.stObject.objectid#', 
+					fieldname:'#arguments.fieldname#',
+					ftLoaderHTML:'#jsstringformat(arguments.stMetadata.ftLoaderHTML)#',
+					ftWatch:'#arguments.stMetadata.ftWatch#',
+					typename:'#arguments.typename#',
+					property:'#arguments.stMetadata.name#',
+					formtool:'#arguments.stMetadata.ftType#'
+				};
+				<cfloop list="#arguments.stMetadata.ftWatch#" index="thisprop">
+					Ext.select("select[name=#prefix##thisprop#], input[name=#prefix##thisprop#][type=text], input[name=#prefix##thisprop#][type=password]").on("change",ajaxUpdate,this,opts#arguments.fieldname#);
+					Ext.select("input[name=#prefix##thisprop#][type=checkbox], input[name=#prefix##thisprop#][type=radio]").on("click",ajaxUpdate,this,opts#arguments.fieldname#);
+				</cfloop>
+			</cfoutput></extjs:onReady>
+		
+			<cfreturn "<div id='#arguments.fieldname#ajaxdiv'>#arguments.html#</div>" />
+		<cfelse>
+			<cfreturn arguments.html />
+		</cfif>
+	</cffunction>
+	
+	<cffunction name="ajax" output="false" returntype="string" hint="Response to ajax requests for this formtool">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+
+		<cfset var stMD = duplicate(arguments.stMetadata) />
+		<cfset var oType = createobject("component",application.stCOAPI[arguments.typename].packagepath) />
+		<cfset var FieldMethod = "" />
+		<cfset var html = "" />
+		
+		<cfset stMD.ajaxrequest = "true" />
+		
+		<cfif structKeyExists(stMetadata,"ftEditMethod")>
+			<cfset FieldMethod = stMetadata.ftAjaxMethod />
+			
+			<!--- Check to see if this method exists in the current oType CFC. If not, use the formtool --->
+			<cfif not structKeyExists(oType,stMetadata.ftAjaxMethod)>
+				<cfset oType = this />
+			</cfif>
+		<cfelse>
+			<cfif structKeyExists(oType,"ftEdit#url.property#")>
+				<cfset FieldMethod = "ftEdit#url.property#">
+			<cfelse>
+				<cfset FieldMethod = "edit" />
+				<cfset oType = application.formtools[url.formtool].oFactory />
+			</cfif>
+		</cfif>
+		
+		<cfinvoke component="#oType#" method="#FieldMethod#" returnvariable="html">
+			<cfinvokeargument name="typename" value="#arguments.typename#" />
+			<cfinvokeargument name="stObject" value="#arguments.stObject#" />
+			<cfinvokeargument name="stMetadata" value="#stMD#" />
+			<cfinvokeargument name="fieldname" value="#arguments.fieldname#" />
+		</cfinvoke>
+		
+		<cfreturn html />
+	</cffunction>
+	
+
 </cfcomponent> 
