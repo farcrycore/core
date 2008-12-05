@@ -307,12 +307,12 @@
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","ZM") /><cfset querysetcell(q,"name","Zambia") />
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","ZW") /><cfset querysetcell(q,"name","Zimbabwe") />
 			
-			<cfset this.qCountry = q />
+			<cfset this.qCountries = q />
 		</cfif>
 		
 		<cfquery dbtype="query" name="q">
 			select		code,name
-			from		this.qCountry
+			from		this.qCountries
 			<cfif structkeyexists(arguments,"countries") and len(arguments.countries)>
 				where	code in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.countries#">)
 						OR name in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.countries#">)
