@@ -9,6 +9,16 @@
 <cfset stMetadata = application.stCOAPI[url.typename].stProps[url.property].metadata />
 <cfset oType = createobject("component",application.stCOAPI[url.typename].packagepath) />
 
+<cfif structkeyexists(url,"objectid")>
+	<cfset stObj = oType.getData(objectid=url.objectid) />
+<cfelse>
+	<cfset stObj = structnew() />
+</cfif>
+
+<cfloop list="#form.fieldnames#" index="key">
+	<cfset stObj[key] = form[key] />
+</cfloop>
+
 <cfif structKeyExists(stMetadata,"ftAjaxMethod")>
 	<cfset FieldMethod = stMetadata.ftAjaxMethod />
 	
@@ -21,12 +31,13 @@
 		<cfset FieldMethod = "ftAjax#url.property#">
 	<cfelse>
 		<cfset FieldMethod = "ajax" />
-		<cfset oType = application.stCOAPI[url.formtool].oFactory />
+		<cfset oType = application.formtools[url.formtool].oFactory />
 	</cfif>
 </cfif>
 
 <cfinvoke component="#oType#" method="#FieldMethod#" returnvariable="out">
 	<cfinvokeargument name="typename" value="#url.typename#" />
+	<cfinvokeargument name="stObject" value="#stObj#" />
 	<cfinvokeargument name="stMetadata" value="#stMetadata#" />
 	<cfinvokeargument name="fieldname" value="#url.fieldname#" />
 </cfinvoke>
