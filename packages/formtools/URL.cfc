@@ -1,5 +1,5 @@
 
-<cfcomponent name="URL" displayname="URL" hint="Field component to liase with all URL types"> 
+<cfcomponent name="URL" extends="field" displayname="URL" hint="Field component to liase with all URL types"> 
 	
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.URL" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
