@@ -109,10 +109,10 @@
 							</cfoutput>
 							
 							<cfif structKeyExists(arguments.stMetadata, "ftImagewidth") AND arguments.stMetadata.ftImageWidth GT 0>
-								<cfoutput><div>width:#arguments.stMetadata.ftImageWidth#</div></cfoutput>
+								<cfoutput><div>width:#arguments.stMetadata.ftImageWidth#px</div></cfoutput>
 							</cfif>
 							<cfif structKeyExists(arguments.stMetadata, "ftImageHeight") AND arguments.stMetadata.ftImageHeight GT 0>
-								<cfoutput><div>height:#arguments.stMetadata.ftImageHeight#</div></cfoutput>
+								<cfoutput><div>height:#arguments.stMetadata.ftImageHeight#px</div></cfoutput>
 							</cfif>
 							<cfif structKeyExists(arguments.stMetadata, "ftAutoGenerateType")>
 								<cfif arguments.stMetadata.ftAutoGenerateType EQ "Pad">
