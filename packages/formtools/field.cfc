@@ -161,7 +161,7 @@
 							this.update(response.responseText);
 						},
 						params: values,
-						scope: document.getElementById(opt.fieldname+"ajaxdiv")
+						scope: Ext.get(opt.fieldname+"ajaxdiv")
 					});
 				};
 			</cfoutput></extjs:onReady>
