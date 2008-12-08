@@ -15,9 +15,11 @@
 	<cfset stObj = structnew() />
 </cfif>
 
-<cfloop list="#form.fieldnames#" index="key">
-	<cfset stObj[key] = form[key] />
-</cfloop>
+<cfif structkeyexists(form,"fieldnames")>
+	<cfloop list="#form.fieldnames#" index="key">
+		<cfset stObj[key] = form[key] />
+	</cfloop>
+</cfif>
 
 <cfif structKeyExists(stMetadata,"ftAjaxMethod")>
 	<cfset FieldMethod = stMetadata.ftAjaxMethod />
