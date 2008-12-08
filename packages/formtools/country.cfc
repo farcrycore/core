@@ -230,7 +230,6 @@
 		<cfset queryaddrow(q) /><cfset querysetcell(q,"code","UG") /><cfset querysetcell(q,"name","Uganda") />
 		<cfset queryaddrow(q) /><cfset querysetcell(q,"code","UA") /><cfset querysetcell(q,"name","Ukraine") />
 		<cfset queryaddrow(q) /><cfset querysetcell(q,"code","AE") /><cfset querysetcell(q,"name","United Arab Emirates") />
-		<cfset queryaddrow(q) /><cfset querysetcell(q,"code","UK") /><cfset querysetcell(q,"name","United Kingdom (Great Britain)") />
 		<cfset queryaddrow(q) /><cfset querysetcell(q,"code","US") /><cfset querysetcell(q,"name","United States of America") />
 		<cfset queryaddrow(q) /><cfset querysetcell(q,"code","UY") /><cfset querysetcell(q,"name","Uruguay") />
 		<cfset queryaddrow(q) /><cfset querysetcell(q,"code","UZ") /><cfset querysetcell(q,"name","Uzbekistan") />
@@ -289,9 +288,8 @@
 			</cfif>
 			
 			<cfoutput query="qAll">
-				<cfif not listcontainsnocase(arguments.stMetadata.ftCommon,qAll.code) and not listcontainsnocase(arguments.stMetadata.ftCommon,qAll.name)>
-					<option value="#qAll[arguments.stMetadata.ftValue][qAll.currentrow]#">#qAll.name[qAll.currentrow]#</option>
-				</cfif>
+				<option value="#qAll[arguments.stMetadata.ftValue][qAll.currentrow]#">#qAll.name[qAll.currentrow]#</option>
+				
 			</cfoutput>
 			
 			<cfif qCommon.recordcount>
