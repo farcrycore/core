@@ -147,38 +147,75 @@
 					}
 				};
 				
+				var watchedfields = {};
+				var watchingfields = {}
+				function addWatch(prefix,property,opts) {
+					watchedfields[prefix] = watchedfields[prefix] || {};
+					watchingfields[prefix] = watchingfields[prefix] || {};
+					
+					if (!watchedfields[prefix][property]) { // if the property doesn't have a watch attached already, do so
+						Ext.select("select[name="+prefix+property+"], input[name="+prefix+property+"][type=text], input[name="+prefix+property+"][type=password]").on("change",ajaxUpdate,this,{ prefix:prefix, property: property });
+						Ext.select("input[name="+prefix+property+"][type=checkbox], input[name="+prefix+property+"][type=radio]").on("click",ajaxUpdate,this,{ prefix:prefix, property: property });
+					}
+					
+					watchedfields[prefix][property] = watchedfields[prefix][property] || [];
+					watchedfields[prefix][property].push(opts);
+					
+					watchingfields[prefix][opts.property] = watchingfields[prefix][opts.property] || [];
+					watchingfields[prefix][opts.property].push(opts);
+				};
+				
 				function ajaxUpdate(event,el,opt) {
 					var values = {};
-					var watches = opt.ftWatch.split(",");
-					for (var i=0; i<watches.length; i++)
-						values[watches[i]] = getInputValue(opt.prefix+watches[i]);
-					values[opt.property] = getInputValue(opt.prefix+opt.property);
 					
-					document.getElementById(opt.fieldname+"ajaxdiv").innerHTML = opt.ftLoaderHTML;
-					Ext.Ajax.request({
-						url: '#application.url.farcry#/facade/ftajax.cfm?formtool='+opt.formtool+'&typename='+opt.typename+'&fieldname='+opt.fieldname+'&property='+opt.property+'&objectid='+opt.objectid,
-						success: function(response){
-							this.update(response.responseText);
-						},
-						params: values,
-						scope: Ext.get(opt.fieldname+"ajaxdiv")
-					});
+					// for each watcher
+					for (var i=0; i<watchedfields[opt.prefix][opt.property].length; i++) {
+						watcher = watchedfields[opt.prefix][opt.property][i];
+						
+						// include the watcher in the form post
+						values[watcher.property] = "";
+						
+						// find out what each one is watching
+						for (var j=0; j<watchingfields[opt.prefix][watcher.property].length; j++)
+							// add these properties to the form post
+							values[watchingfields[opt.prefix][watcher.property][j].watchedproperty] = "";
+					}
+					
+					// get the post values
+					for (var property in values)
+						values[property] = getInputValue(opt.prefix+property);
+					
+					// for each watcher
+					for (var i=0; i<watchedfields[opt.prefix][opt.property].length; i++) {
+						watcher = watchedfields[opt.prefix][opt.property][i];
+							
+						// set the loading html
+						document.getElementById(watcher.prefix+watcher.property+"ajaxdiv").innerHTML = watcher.ftLoaderHTML;
+						
+						// post the AJAX request
+						Ext.Ajax.request({
+							url: '#application.url.farcry#/facade/ftajax.cfm?formtool='+watcher.formtool+'&typename='+watcher.typename+'&fieldname='+watcher.fieldname+'&property='+watcher.property+'&objectid='+watcher.objectid,
+							success: function(response){
+								this.update(response.responseText);
+							},
+							params: values,
+							scope: document.getElementById(watcher.fieldname+"ajaxdiv")
+						});
+					}
 				};
 			</cfoutput></extjs:onReady>
 			<extjs:onReady><cfoutput>
-				var opts#arguments.fieldname# = { 
-					prefix:'#prefix#',
-					objectid:'#arguments.stObject.objectid#', 
-					fieldname:'#arguments.fieldname#',
-					ftLoaderHTML:'#jsstringformat(arguments.stMetadata.ftLoaderHTML)#',
-					ftWatch:'#arguments.stMetadata.ftWatch#',
-					typename:'#arguments.typename#',
-					property:'#arguments.stMetadata.name#',
-					formtool:'#arguments.stMetadata.ftType#'
-				};
 				<cfloop list="#arguments.stMetadata.ftWatch#" index="thisprop">
-					Ext.select("select[name=#prefix##thisprop#], input[name=#prefix##thisprop#][type=text], input[name=#prefix##thisprop#][type=password]").on("change",ajaxUpdate,this,opts#arguments.fieldname#);
-					Ext.select("input[name=#prefix##thisprop#][type=checkbox], input[name=#prefix##thisprop#][type=radio]").on("click",ajaxUpdate,this,opts#arguments.fieldname#);
+					addWatch("#prefix#","#thisprop#",{ 
+						prefix:'#prefix#',
+						objectid:'#arguments.stObject.objectid#', 
+						fieldname:'#arguments.fieldname#',
+						ftLoaderHTML:'#jsstringformat(arguments.stMetadata.ftLoaderHTML)#',
+						typename:'#arguments.typename#',
+						property:'#arguments.stMetadata.name#',
+						formtool:'#arguments.stMetadata.ftType#',
+						watchedproperty:'#thisprop#'
+					});
 				</cfloop>
 			</cfoutput></extjs:onReady>
 		
