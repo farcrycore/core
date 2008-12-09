@@ -107,6 +107,9 @@ $in: xCode -- eXtra code to be placed inside the anchor tag $
 			<cfelse>
 				<cfset href = href & application.url.conjurer & "?objectid=" & attributes.objectid>
 			</cfif>
+			
+			<!--- add the typename to class --->
+			<cfset attributes.class = listappend(attributes.class,application.coapi.coapiadmin.findType(attributes.objectid)," ") />
 		</cfif>
 	</cfif>
 	
