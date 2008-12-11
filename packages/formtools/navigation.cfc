@@ -16,12 +16,13 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 		
-		<cfset var navid = "" />
+		<cfset var oTree = createObject("component", "#application.packagepath#.farcry.tree") />
+		<cfset var oNav = createObject("component",application.stCOAPI.dmNavigation.packagepath) />
+		<cfset var stNav = structNew() />
+		<cfset var qNodes = queryNew("") />
 		<cfset var lSelectedNaviIDs = "" />
-		<cfset var i = "" />
+		<cfset var navID = "" />
 		<cfset var html = "" />
-		<cfset var lCategoryBranch = "" />
-		<cfset var CategoryName = "" />
 		
 		<cfparam name="arguments.stMetadata.ftAlias" default="" type="string" />
 		<cfparam name="arguments.stMetadata.ftLegend" default="" type="string" />
@@ -31,10 +32,13 @@
 		<cfparam name="arguments.stMetadata.ftDropdownFirstItem" default="" type="string" />
 		
 		<cfif structKeyExists(application.navid, arguments.stMetadata.ftAlias)>
-			<cfset navid = application.navid[arguments.stMetadata.ftAlias] >
+			<cfset navid = application.navid[arguments.stMetadata.ftAlias] />
 		<cfelse>
 			<cfset navid = application.navid['root'] >
 		</cfif>
+		
+		<cfset stNav = oNav.getData(objectid=navID) />
+		<cfset rootNodeText = stNav.label />
 
 		<cfif isArray(arguments.stObject['#arguments.stMetadata.name#'])>
 			<cfset lSelectedNaviIDs = arrayToList(arguments.stObject['#arguments.stMetadata.name#']) />
@@ -44,38 +48,21 @@
 
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 			
-			<cfcase value="dropdownDoesNotWorkJustNow">
-				<cfset lCategoryBranch = oCategory.getCategoryBranchAsList(lCategoryIDs=navid) />
-							
+			<cfcase value="dropdown">
+				<cfset qNodes = oTree.getDescendants(dsn=application.dsn, objectid=navID) />
+				
 				<cfsavecontent variable="html">
-					<cfoutput><fieldset>
-					<p>Not quite ready yet.  Please use tree option.</p>
-					</cfoutput>
-					<!--- 
-					TODO: 
-						- this is slap dash copy from category picker; needs to be updated to Navigation nodes GB 20070511
-						- see http://bugs.farcrycms.org:8080/browse/FC-731
-					--->	
-					<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#"  <cfif arguments.stMetadata.ftSelectMultiple>size="#arguments.stMetadata.ftSelectSize#" multiple="true"</cfif>></cfoutput>
-					<cfloop list="#lCategoryBranch#" index="i">
-						<!--- If the item is the actual alias requested then it is not selectable. --->
-						<cfif i EQ navid>
-							<cfif len(arguments.stMetadata.ftDropdownFirstItem)>
-								<cfoutput><option value="">#arguments.stMetadata.ftDropdownFirstItem#</option></cfoutput>
-							<cfelse>
-								<cfset CategoryName = oCategory.getCategoryNamebyID(categoryid=i,typename='categories') />
-								<cfoutput><option value="">#CategoryName#</option></cfoutput>
+					<cfoutput>
+						<select id="#arguments.fieldname#" name="#arguments.fieldname#" <cfif arguments.stMetadata.ftSelectMultiple>size="#arguments.stMetadata.ftSelectSize#" multiple="true"</cfif>>
+							<cfif structKeyExists(application.navid, arguments.stMetadata.ftAlias)>
+								<option value="#navID#">#rootNodeText#</option>
 							</cfif>
-							
-						<cfelse>
-							<cfset CategoryName = oCategory.getCategoryNamebyID(categoryid=i,typename='categories') />
-							<cfoutput><option value="#i#" <cfif listContainsNoCase(lSelectedNaviIDs, i)>selected</cfif>>#CategoryName#</option></cfoutput>
-						</cfif>
-						
-					</cfloop>
-					<cfoutput></select></cfoutput>
-					 
-					<cfoutput></fieldset></cfoutput>
+							<cfloop query="qNodes">
+								<option value="#qNodes.objectId#" <cfif listFind(lSelectedNaviIDs,qNodes.objectID)>selected</cfif>>#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #qNodes.objectName#</option>
+							</cfloop>
+						</select>
+						<br />
+					</cfoutput>
 				</cfsavecontent>
 			</cfcase>
 			
