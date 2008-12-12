@@ -24,13 +24,13 @@
 		div.containeradmin a img { border:0 none; }
 		div.containeradmin div.type { width: 6.5em; float:left; }
 		div.containeradmin div.title { padding-left:5px; padding-right:5px; }
-		div.containeradmin div.title a { display:inline; float:none; }
+		div.containeradmin div.title a { padding-left:5px; display:inline; float:none; }
 		div.containeradmin div.title a:hover { text-decoration:underline; }
 		
 		##ajaxindicator { text-align: center; padding: 10px; }
 		##ajaxindicator img { border: 0 none; }
 		
-		div.ruleadmin { background-color: ##ddd; font-weight:bold; padding:2px; color:##000; }
+		div.ruleadmin { background-color: ##ddd; font-weight:bold; padding:2px; color:##000; clear:both; padding-bottom:4px; }
 		div.ruleadmin * { vertical-align: middle; }
 		div.ruleadmin a { text-decoration:none; border: 0 none; display: block; padding-right:5px; float:left; color:##000; }
 		div.ruleadmin a img { border:0 none; }
