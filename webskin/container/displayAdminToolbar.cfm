@@ -19,7 +19,7 @@
 <skin:htmlHead><cfoutput>
 	<!-- Container styles / javascript -->
 	<style>
-		div.containeradmin { background-color: ##ccc; font-weight:bold; padding:2px; color:##000; }
+		div.containeradmin { background-color: ##ccc; font-weight:bold; padding:2px; color:##000; padding-bottom:5px; }
 		div.containeradmin a { text-decoration:none; border: 0 none; display: block; padding-right:5px; float:left; color:##000; }
 		div.containeradmin a img { border:0 none; }
 		div.containeradmin div.type { width: 6.5em; float:left; }
@@ -30,10 +30,10 @@
 		##ajaxindicator { text-align: center; padding: 10px; }
 		##ajaxindicator img { border: 0 none; }
 		
-		div.ruleadmin { background-color: ##ddd; font-weight:bold; padding:2px; color:##000; clear:both; padding-bottom:4px; }
+		div.ruleadmin { background-color: ##ddd; font-weight:bold; padding:2px; color:##000; clear:both; padding-bottom:5px; }
 		div.ruleadmin * { vertical-align: middle; }
 		div.ruleadmin a { text-decoration:none; border: 0 none; display: block; padding-right:5px; float:left; color:##000; }
-		div.ruleadmin a img { border:0 none; }
+		div.ruleadmin a img { border:0 none; clear:right;}
 		div.ruleadmin div.type { float:left; }
 		div.ruleadmin div.title { padding-left:5px; padding-right:5px; }
 		div.ruleadmin div.title a { display:inline; float:none; }
