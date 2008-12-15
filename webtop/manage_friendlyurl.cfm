@@ -24,22 +24,20 @@ manage friednly urls for a particular object id
 <cfset stRefObject = application.coapi.coapiUtilities.getContentObject(objectid="#url.objectid#") />
 
 <ft:processForm action="Save Changes,Make Default,Archive Selected">
-	<ft:processFormObjects typename="farFU" />
+	<ft:processFormObjects typename="farFU">
+		<cfset stProperties.friendlyURL = application.fc.factory.farFU.cleanFU(friendlyURL="#stProperties.friendlyURL#",objectid="#stProperties.objectid#") />
+		
+		<cfset application.fc.factory.farFU.setMapping(objectid="#stProperties.objectid#") />
+		
+	</ft:processFormObjects>
 </ft:processForm>
 
 <ft:processForm action="Add" url="refresh">
 	
 	<ft:processFormObjects typename="farFU">
-
 		
 		<cfset stProperties.refObjectID = form.selectedObjectID />
-		<cfset stProperties.fuStatus = 2 />
 		
-		<!--- If there is currently no default, set this as the default --->
-		<cfset stDefaultFU = application.fc.factory.farFU.getDefaultFUObject(refObjectID="#form.selectedObjectID#") />
-		<cfif structIsEmpty(stDefaultFU)>
-			<cfset stProperties.bDefault = 1 />
-		</cfif>
 		<cfset stResult = application.fc.factory.farFU.createCustomFU(argumentCollection="#stProperties#") />
 		
 		<cfif not stResult.bSuccess>
