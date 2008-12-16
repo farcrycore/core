@@ -62,7 +62,7 @@
 			}
 		</script>
 		<style>
-			table.permissions { width: 100%; }
+			table.permissions {}
 			table.permissions, tr.permissions, td.permissions { background: transparent none;border:0px solid ##e3e3e3; border-bottom: 1px dotted ##e3e3e3; vertical-align:middle;}
 			td.permissions { padding: 3px;  }
 		</style>
@@ -72,11 +72,11 @@
 
 	<ft:form>
 
-		<extjs:layout id="roleAccordion" container="Panel" layout="accordion" width="400" height="550" renderTo="roleAccordion" autoScroll="false">
+		<extjs:tab id="roleTabs"  enableTabScroll="true">
 			
 			<cfloop list="#application.security.factory.role.getAllRoles()#" index="role">
 
-				<extjs:item  title="#application.security.factory.role.getLabel(role)#" autoScroll="true">
+				<extjs:tabPanel  title="#application.security.factory.role.getLabel(role)#" autoScroll="true">
 					<cfoutput>
 						<table class="permissions">
 					</cfoutput>
@@ -147,10 +147,10 @@
 					<cfoutput>
 						</table>
 					</cfoutput>
-				</extjs:item>
+				</extjs:tabPanel>
 			</cfloop>
 			
-		</extjs:layout>
+		</extjs:tab>
 		
 		<ft:farcryButtonPanel indentForLabel="false">
 			<ft:button value="Save" color="orange" size="large" width="380px" />
