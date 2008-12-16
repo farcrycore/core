@@ -28,7 +28,7 @@
 		<cfsavecontent variable="html">
 			<cfoutput>
 				<cfdump var="#arguments#">
-				<input type="Text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="HERE#arguments.stMetadata.ftCurrencySymbol##arguments.stMetadata.value#" <cfif structKeyExists(arguments.stMetadata,'ftStyle')>style="#arguments.stMetadata.ftstyle#"</cfif> /></cfoutput>
+				<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="HERE#arguments.stMetadata.ftCurrencySymbol##arguments.stMetadata.value#" <cfif structKeyExists(arguments.stMetadata,'ftStyle')>style="#arguments.stMetadata.ftstyle#"</cfif> /></cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html>
