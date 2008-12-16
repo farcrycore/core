@@ -23,7 +23,7 @@ manage friednly urls for a particular object id
 
 <cfset stRefObject = application.coapi.coapiUtilities.getContentObject(objectid="#url.objectid#") />
 
-<ft:processForm action="Save Changes,Make Default,Archive Selected">
+<ft:processForm action="Save Changes,Make Default,Archive Selected,Delete Selected Archives">
 	<ft:processFormObjects typename="farFU">
 		<cfset stProperties.friendlyURL = application.fc.factory.farFU.cleanFU(friendlyURL="#stProperties.friendlyURL#",objectid="#stProperties.objectid#") />
 		
@@ -63,11 +63,26 @@ manage friednly urls for a particular object id
 	</cfif>
 </ft:processForm>
 
+
+<ft:processForm action="Delete Selected Archives" url="refresh">
+	
+	<cfif structKeyExists(form, "lDeleteObjectID") AND len(form.lDeleteObjectID)>
+		<cfloop list="#form.lDeleteObjectID#" index="i">
+			<cfset returnstruct = application.fc.factory.farFU.delete(objectID="#i#")>
+		</cfloop>
+
+	</cfif>
+</ft:processForm>
+
+
+
 <ft:processForm action="Make Default" url="refresh">
 	<cfif structKeyExists(form, "selectedObjectID") AND len(form.selectedObjectID)>
 		<cfset returnstruct = application.fc.factory.farFU.setDefaultFU(objectID="#form.selectedObjectID#")>
 	</cfif>
 </ft:processForm>
+
+
 
 <ft:processForm action="Save Changes" url="refresh" />
 
@@ -186,12 +201,14 @@ manage friednly urls for a particular object id
 						<h3>Archived</h3>
 						<table class="table-2" cellspacing="0" id="table_friendlyurl">
 						<tr>
+							<th>&nbsp;</th>
 							<th>Friendly URL</th>
 							<th>Query String</th>
 						</tr>
 						
 						<cfoutput>
 						<tr class="alt">
+							<td><input type="checkbox" name="lDeleteObjectID" value="#qFUList.objectid#"></td>
 							<td>#qFUList.friendlyurl#</td>
 							<td>#qFUList.queryString#</td>
 							
@@ -202,6 +219,10 @@ manage friednly urls for a particular object id
 						</table>
 					</cfoutput>
 					
+					
+					<ft:farcryButtonPanel indentForLabel="false">
+						<ft:button value="Delete Selected Archives" />
+					</ft:farcryButtonPanel>
 				
 				</ft:form>
 			</extjs:tabPanel>
