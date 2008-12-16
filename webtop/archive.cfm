@@ -99,7 +99,7 @@ $out:$
 			<td>#label#</td>
 			<td>#lastupdatedby#</td>
 			<!--- <td><a href="edittabArchiveDetail.cfm?archiveid=#objectid#">#application.rb.getResource("moreDetail")#</a></td> --->
-			<td><a href="#application.url.conjurer#?archiveid=#objectid#" target="_blank">#application.rb.getResource("workflow.buttons.archivePreview@label","Preview")#</a></td>
+			<td><a href="#application.url.conjurer#?objectid=#objectid#" target="_blank">#application.rb.getResource("workflow.buttons.archivePreview@label","Preview")#</a></td>
 			<td>
 				<a href="archive.cfm?objectid=#url.objectid#&amp;archiveid=#objectid#&amp;finish_url=#cgi.http_referer#" onclick="return confirm('#application.rb.getResource("workflow.buttons.rollback@confirmtext","Are you sure you want to rollback to this version?")#')">#application.rb.getResource("workflow.buttons.rollback@label","Rollback")#</a></cfoutput>
 				<!--- check if archive has been rolled back successfully --->
