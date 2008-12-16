@@ -6,6 +6,7 @@
 	<cfproperty ftSeq="5" name="redirectionType" type="string" default="" hint="Type of Redirection" ftType="list" ftDefault="301" ftList="none:None,301:Moved Permanently (301),307:Temporary Redirect (307)" ftLabel="Type of Redirection" />
 	<cfproperty ftSeq="6" name="redirectTo" type="string" default="" hint="Where to redirect to" ftType="list" ftList="default:To the default FU,objectid:Direct to the object ID" ftLabel="Redirect To" />
 	<cfproperty ftSeq="7" name="bDefault" type="boolean" default="0" hint="Only 1 Friendly URL can be the default that will be used by the system" ftDefault="0" ftLabel="Default" />
+	<cfproperty ftSeq="8" name="applicationName" type="string" default="" hint="The application name that the friendly URL is a part of. Useful for subsites.">
 
 	<cffunction name="onAppInit" returntype="any" access="public" output="false" hint="Initializes the friendly url scopes and returns a copy of this initialised object">
 
