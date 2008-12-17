@@ -172,20 +172,6 @@ $out:$
 					<cfinvokeargument name="comment" value="#form.commentlog#"/>
 				</cfinvoke>
 
-				<!--- 
-				// Set Friendly URL 
-				 - TODO: this is going to cause issues if the approval process fails or is not confirmed GB20060123
-				--->
-				<!--- versioned objects use parent live object for fu --->
-				<cfif StructKeyExists(stObj,"versionid") AND len(stobj.versionid)>
-					<cfset fuoid=stobj.versionid>
-				<!--- use objectid if no versionid --->
-				<cfelse>
-					<cfset fuoid=stobj.objectid>
-				</cfif>
-				
-				<!--- set friendly url --->
-				<cfset stresult_friendly = application.fc.factory.farFU.setSystemFU(objectid=fuoid)>
 
 			<cfelseif url.status eq "draft">
 				<cfset status = 'draft'>
