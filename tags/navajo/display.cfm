@@ -45,7 +45,6 @@
 <!--- environment variables --->
 <cfparam name="request.bHideContextMenu" default="false" type="boolean" />
 
-<cfparam name="url.bodyView" default="displayBody" /><!--- The webskin name that can be used as the body view webskin --->
 
 <!--- optional attributes --->
 <cfparam name="attributes.objectid" default="" />
@@ -84,6 +83,12 @@
 
 <cfif len(attributes.objectid)>
 
+	<!---
+	The webskin name that can be used as the body view webskin
+	Default for call on objectid is "DISPLAYBODY"
+	 --->
+	<cfparam name="url.bodyView" default="displayBody" />
+	
 	<!--- grab the object we are displaying --->
 	<cftry>
 		<q4:contentobjectget objectid="#attributes.objectid#" typename="#attributes.typename#" r_stobject="stObj">
@@ -252,6 +257,13 @@
 	</cfif>
 
 <cfelse>
+
+	<!---
+	The webskin name that can be used as the body view webskin
+	Default for call on type webskin is "DISPLAYTYPEBODY"
+	 --->
+	<cfparam name="url.bodyView" default="displayTypeBody" />
+	
 	<!--- If we are in designmode then check the containermanagement permissions --->
 	<cfif request.mode.design>
 		<!--- set the users container management permission --->
