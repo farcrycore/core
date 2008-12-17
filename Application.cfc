@@ -291,7 +291,7 @@
 
 					<!--- set binit to false to block users accessing on restart --->
 					<cfset application.bInit =  false />
-	
+					<cfset url.updateapp = true />
 					<cfset OnApplicationStart() />
 					
 					<!--- set the initialised flag --->

@@ -1,8 +1,10 @@
 <cfcomponent displayname="Update App" hint="Provides a granular way to update parts of the application state" extends="forms" output="false">
+		
+	<cfproperty ftSeq="1" ftFieldset="Reinitialize" name="reinit" type="boolean" default="0" hint="Re-Initialize the entire application" ftLabel="Reinitialize Application" ftType="boolean" ftHint="This will reinitialize the entire application. It should be used when manually changing the FarCry Contructor located in the webroot of your project." />
 	
-	<cfproperty ftSeq="1" ftFieldset="COAPI" name="typemetadata" type="boolean" default="0" hint="Reload type metadata" ftLabel="COAPI metadata" ftType="boolean" />
+	<cfproperty ftSeq="5" ftFieldset="COAPI" name="typemetadata" type="boolean" default="0" hint="Reload type metadata" ftLabel="COAPI metadata" ftType="boolean" />
 	
-	<cfproperty ftSeq="2" ftFieldset="Security" name="security" type="boolean" default="0" hint="Reload user directories" ftLabel="Security" ftType="boolean" />
+	<cfproperty ftSeq="6" ftFieldset="Security" name="security" type="boolean" default="0" hint="Reload user directories" ftLabel="Security" ftType="boolean" />
 	
 	<cfproperty ftSeq="10" ftFieldset="Miscellaneous" name="webtop" type="boolean" default="0" hint="Reload webtop data" ftLabel="Webtop" ftType="boolean" />
 	<cfproperty ftSeq="11" ftFieldset="Miscellaneous" name="friendlyurls" type="boolean" default="0" hint="Reload friendly urls" ftLabel="Friendly URLs" ftType="boolean" />
@@ -11,7 +13,7 @@
 	<cfproperty ftSeq="14" ftFieldset="Miscellaneous" name="javascript" type="boolean" default="0" hint="Reload javascript libraries" ftLabel="Javascript" ftType="boolean" />
 	<cfproperty ftSeq="15" ftFieldset="Miscellaneous" name="factories" type="boolean" default="0" hint="Reload factories" ftLabel="Factories" ftType="boolean" />
 	<cfproperty ftSeq="16" ftFieldset="Miscellaneous" name="wizards" type="boolean" default="0" hint="Re-Initialize all Wizards" ftLabel="Wizards" ftType="boolean" ftHint="This will reset all wizards. Any changes currently in progress will be deleted." />
-	
+
 	
 	<cffunction name="process" access="public" output="true" returntype="struct" hint="Performs application refresh according to options selected">
 		<cfargument name="fields" type="struct" required="true" hint="The fields submitted" />
@@ -37,6 +39,15 @@
 
 	<cffunction name="processWebtop" access="public" returntype="boolean" description="Resets the webtop" output="false">
 		<cfset application.factory.oWebtop = createobject("component","#application.packagepath#.farcry.webtop").init() />
+		
+		<cfreturn true />
+	</cffunction>
+	
+	<cffunction name="processReinit" access="public" returntype="boolean" description="Reinitializes the entire application" output="false">
+		
+		<cfset application.binit = false />
+		
+		<cflocation url="#cgi.script_name#?#cgi.query_string#" addtoken="false" />
 		
 		<cfreturn true />
 	</cffunction>
