@@ -16,7 +16,7 @@
 
 <extjs:iframeDialog />
 
-<skin:htmlHead><cfoutput>
+<skin:htmlHead id="containers"><cfoutput>
 	<!-- Container styles / javascript -->
 	<style>
 		div.containeradmin { background-color: ##ccc; font-weight:bold; padding:2px; color:##000; padding-bottom:5px; }
@@ -30,12 +30,12 @@
 		##ajaxindicator { text-align: center; padding: 10px; }
 		##ajaxindicator img { border: 0 none; }
 		
-		div.ruleadmin { background-color: ##ddd; font-weight:bold; padding:2px; color:##000; clear:both; padding-bottom:5px; }
+		div.ruleadmin { background-color: ##ddd; font-weight:bold; padding:2px 2px 0; color:##000; clear:both; padding-bottom:3px; }
 		div.ruleadmin * { vertical-align: middle; }
 		div.ruleadmin a { text-decoration:none; border: 0 none; display: block; padding-right:5px; float:left; color:##000; }
-		div.ruleadmin a img { border:0 none; clear:right;}
+		div.ruleadmin a img { border:0 none; clear:right; margin:0; }
 		div.ruleadmin div.type { float:left; }
-		div.ruleadmin div.title { padding-left:5px; padding-right:5px; }
+		div.ruleadmin div.title { padding:2px 5px 1px; }
 		div.ruleadmin div.title a { display:inline; float:none; }
 		div.ruleadmin div.title a:hover { text-decoration:underline; }
 	</style>
@@ -73,7 +73,7 @@
 		</a>
 		<div class="title">
 			<div class="type">CONTAINER</div>
-			<a id="#replace(stObj.objectid,'-','','ALL')#_title" title="{<cfif arraylen(aProps)>#htmleditformat(arraytolist(aProps,", "))#</cfif>}" href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editAddRule" target="_blank" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #rereplace(stObj.label,"\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_","")#',800,600,true,function(){ reloadContainer('#originalcontainer#'); });return false;">#rereplace(stObj.label,"\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_","")#</a>
+			<a id="#replace(stObj.objectid,'-','','ALL')#_title" title="{<cfif arraylen(aProps)>#htmleditformat(arraytolist(aProps,", "))#</cfif>}" href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editAddRule&container=#originalcontainer#" target="_blank" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #rereplace(stObj.label,"\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_","")#',800,600,true,function(){ reloadContainer('#originalcontainer#'); });return false;">#rereplace(stObj.label,"\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_","")#</a>
 			<cfif not structisempty(arguments.stParam.original)>
 				<span>(Shared container)</span>
 			</cfif>
