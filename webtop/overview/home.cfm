@@ -167,7 +167,7 @@ function updateTbody(content_status,arItem){
         tdElem.setAttribute('colspan','3');
         tdElem.setAttribute('style','text-align: left;');
 
-        txtNode = document.createTextNode('Currently Non In [' + content_status + '] Status');
+        txtNode = document.createTextNode('Currently None In [' + content_status + '] Status');
 
         tdElem.appendChild(txtNode);
         trElem.appendChild(tdElem);
