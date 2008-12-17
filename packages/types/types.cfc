@@ -574,9 +574,12 @@ default handlers
 	   	 	<cfset stAfterSave = afterSave(argumentCollection=arguments) />
 		</cfif>
 		
-		<!--- set friendly url for content item  --->	
-		<cfset stresult_friendly = application.fc.factory.farFU.setSystemFU(arguments.stProperties.objectid)>
-
+		<!--- set friendly url for content item. --->
+		<!--- TODO: Checking for application.fc so that it is ignored on Install. This needs to be more eloquent --->	
+		<cfif isDefined("application.fc.factory.farFU")>
+			<cfset stresult_friendly = application.fc.factory.farFU.setSystemFU(arguments.stProperties.objectid) />
+		</cfif>
+		
 		<!--- log update --->
 		<cfif arguments.bAudit>
 			<farcry:logevent object="#arguments.stProperties.objectid#" type="types" event="update" notes="#arguments.auditNote#" />
