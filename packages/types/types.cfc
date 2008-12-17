@@ -574,14 +574,8 @@ default handlers
 	   	 	<cfset stAfterSave = afterSave(argumentCollection=arguments) />
 		</cfif>
 		
-		<!--- set friendly url for content item,if applicable  --->	
-		<cfif StructKeyExists(application.types[arguments.stProperties.typename],"bFriendly") AND application.types[arguments.stProperties.typename].bFriendly>
-			<cfif StructKeyExists(arguments.stProperties,"label") AND Trim(arguments.stProperties.label) NEQ "" AND arguments.stProperties.label NEQ "incomplete">
-				<cfif not structKeyExists(arguments.stProperties, "status") OR arguments.stProperties.status EQ "approved">
-					<cfset stresult_friendly = application.fc.factory.farFU.setSystemFU(arguments.stProperties.objectid)>
-				</cfif>
-			</cfif>
-		</cfif>
+		<!--- set friendly url for content item  --->	
+		<cfset stresult_friendly = application.fc.factory.farFU.setSystemFU(arguments.stProperties.objectid)>
 
 		<!--- log update --->
 		<cfif arguments.bAudit>
