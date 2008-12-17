@@ -32,7 +32,7 @@
 		<admin:resource key="coapi.bulkFileUpload.messages.uploadfileblurb@text">
 			<p>This utility will quickly upload multiple files into Farcry</p>
 			<p>You will need to supply a .zip file that contains the files to be uploaded. Files and Directories contained in the .zip file will be recreated within Farcry under the selected node.</p>
-		</admin:resource/>
+		</admin:resource>
 	</cfoutput>
 	
 </sec:CheckPermission>
