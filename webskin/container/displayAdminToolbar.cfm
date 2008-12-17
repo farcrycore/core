@@ -19,23 +19,23 @@
 <skin:htmlHead id="containers"><cfoutput>
 	<!-- Container styles / javascript -->
 	<style>
-		div.containeradmin { background-color: ##ccc; font-weight:bold; padding:2px; color:##000; padding-bottom:5px; }
+		div.containeradmin { background-color: ##ccc; font-weight:bold; padding:2px 2px 0; color:##000; padding-bottom:2px; }
 		div.containeradmin a { text-decoration:none; border: 0 none; display: block; padding-right:5px; float:left; color:##000; }
-		div.containeradmin a img { border:0 none; }
+		div.containeradmin a img { border:0 none; margin:0; }
 		div.containeradmin div.type { width: 6.5em; float:left; }
-		div.containeradmin div.title { padding-left:5px; padding-right:5px; }
+		div.containeradmin div.title { padding:1px 5px; }
 		div.containeradmin div.title a { padding-left:5px; display:inline; float:none; }
 		div.containeradmin div.title a:hover { text-decoration:underline; }
 		
 		##ajaxindicator { text-align: center; padding: 10px; }
 		##ajaxindicator img { border: 0 none; }
 		
-		div.ruleadmin { background-color: ##ddd; font-weight:bold; padding:2px 2px 0; color:##000; clear:both; padding-bottom:3px; }
+		div.ruleadmin { background-color: ##ddd; font-weight:bold; padding:2px 2px 0; color:##000; clear:both; padding-bottom:2px; }
 		div.ruleadmin * { vertical-align: middle; }
 		div.ruleadmin a { text-decoration:none; border: 0 none; display: block; padding-right:5px; float:left; color:##000; }
 		div.ruleadmin a img { border:0 none; clear:right; margin:0; }
 		div.ruleadmin div.type { float:left; }
-		div.ruleadmin div.title { padding:2px 5px 1px; }
+		div.ruleadmin div.title { padding:1px 5px; }
 		div.ruleadmin div.title a { display:inline; float:none; }
 		div.ruleadmin div.title a:hover { text-decoration:underline; }
 	</style>
