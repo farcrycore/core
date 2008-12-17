@@ -51,12 +51,23 @@
 	
 	<cffunction name="getTypeEventList" access="public" output="false" returntype="string" hint="Returns a list of types and events that can be filtered by">
 		<cfset var qTypes = "" />
-		
-		<cfquery datasource="#application.dsn#" name="qTypes">
-			select distinct type + '.' + event as typeevent
-			from		#application.dbowner#farLog
-			order by	type + '.' + event
-		</cfquery>
+		<cfswitch expression="#application.dbtype#">
+		    <cfcase value="ora">
+				<cfquery datasource="#application.dsn#" name="qTypes">
+				select distinct CONCAT(CONCAT(type,'.'),event) typeevent
+				from #application.dbowner#farLog
+				order by typeevent
+				</cfquery>
+			</cfcase>
+			
+			<cfdefaultcase>
+				<cfquery datasource="#application.dsn#" name="qTypes">
+					select distinct type + '.' + event as typeevent
+					from		#application.dbowner#farLog
+					order by	type + '.' + event
+				</cfquery>
+			</cfdefaultcase>
+		</cfswitch>
 		
 		<cfreturn ":All,#valuelist(qTypes.typeevent)#" />
 	</cffunction>
@@ -91,7 +102,7 @@
 		   			from 		#application.dbowner#statsHours
 					   			left join (
 									select	* 
-									from 	#application.dbowner#farLogin
+									from 	#application.dbowner#farLog
 									where 	1=1
 											<cfif structkeyexists(arguments,"type")>and upper(type)=<cfqueryparam cfsqltype="cf_sql_varchar" value="#ucase(arguments.type)#"></cfif>
 											<cfif structkeyexists(arguments,"event")>and upper(event)=<cfqueryparam cfsqltype="cf_sql_varchar" value="#ucase(arguments.event)#"></cfif>
