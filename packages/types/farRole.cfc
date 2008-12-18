@@ -23,7 +23,7 @@ type properties
 	<cfproperty name="isdefault" type="boolean" default="0" hint="True if this is a default role. Every user will be assigned these permissions." ftSeq="2" ftWizardStep="Groups" ftLabel="Default role" ftType="boolean" />
 	<cfproperty name="aGroups" type="array" default="" hint="The user directory groups that this role has been assigned to" ftSeq="3" ftWizardStep="Groups" ftLabel="Groups" ftType="array" ftJoin="farRole" ftRenderType="list" ftLibraryData="getGroups" ftShowLibraryLink="false" />
 	<cfproperty name="aPermissions" type="array" hint="The simple permissions that are granted as part of this role" ftSeq="11" ftWizardStep="Permissions" ftLabel="Permissions" ftJoin="farPermission" />
-	<cfproperty name="webskins" type="longchar" default="" hint="A list of wildcard items that match the webkins this role can access" ftSeq="21" ftWizardStep="Webskins" ftLabel="Webskins" ftType="webskinfilter" />
+	<cfproperty name="webskins" type="longchar" default="" hint="A list of wildcard items that match the webkins this role can access" ftSeq="21" ftWizardStep="Webskins" ftLabel="Webskins" ftType="longchar" ftHint="Filters should be in the form: [type.][prefix*|webskin]<br />e.g. display* grants access to all webskins prefixed with display<br />dmNews.stats grants access to the stats dmNews webskin<br />dmEvent.* grants access to all event webskins" />
 
 <!---------------------------------------------- 
 object methods
@@ -420,6 +420,82 @@ object methods
 		</cfquery>
 		
 		<cfreturn super.delete(objectid=arguments.objectid,user=arguments.user,auditNote=arguments.audittype) />
+	</cffunction>
+
+
+	<cffunction name="filterWebskins" access="public" output="false" returntype="query" hint="Returns a query of the webskins that match this filter">
+		<cfargument name="webskins" type="query" required="true" hint="The webskin query" />
+		<cfargument name="filter" type="string" required="true" hint="The filter to apply" />
+		
+		<cfset var qResult = "" />
+		
+		<cfquery dbtype="query" name="qResult">
+			select	methodname
+			from	arguments.webskins
+			where 	methodname like <cfqueryparam cfsqltype="cf_sql_varchar" value="#replace(arguments.filter,'*','%')#" />
+		</cfquery>
+		
+		<cfreturn qResult />
+	</cffunction>
+
+	<cffunction name="ftAjaxWebskins" output="false" returntype="string" hint="Response to ajax requests for this formtool">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+		
+		<cfset var thistype = "" />
+		<cfset var stWebskins = structnew() />
+		<cfset var methodname = "" />
+		<cfset var types = "" />
+		<cfset var filter = "" />
+		<cfset var qWebskins = querynew("empty") />
+		<cfset var rows = "" />
+		<cfset var total = 0 />
+		<cfset var webskin = "" />
+		
+		<cfimport taglib="/farcry/core/tags/misc" prefix="misc" />
+		
+		<cfparam name="form.filters" default="" />
+		
+		<!--- Initialize webskin result set --->
+		<misc:map values="#application.stCOAPI#" index="thistype" value="metadata" result="stWebskins" resulttype="struct" sendback="typesendback">
+			<misc:map values="#metadata.qWebskins#" index="currentrow" value="webskin" result="typesendback.#thistype#" resulttype="struct" sendback="webskinsendback">
+				<cfif len(webskin.methodname) and webskin.methodname neq "deniedaccess">
+					<cfset webskinsendback[webskin.methodname] = "Denied" />
+				</cfif>
+			</misc:map>
+		</misc:map>
+		
+		<!--- Update granted webskins --->
+		<cfloop list="#form.filters#" index="filter" delimiters="#chr(10)##chr(13)#,">
+			<cfif not find(".",filter) or listfirst(filter,".") eq "*">
+				<cfset types = structkeylist(application.stCOAPI) />
+			<cfelse>
+				<cfset types = listfirst(filter,".") />
+			</cfif>
+			
+			<cfloop list="#types#" index="thistype">
+				<cfset qWebskins = filterWebskins(application.stCOAPI[thistype].qWebskins,listlast(filter,".")) />
+				<cfloop query="qWebskins">
+					<cfif methodname neq "deniedaccess">
+						<cfset stWebskins[thistype][methodname] = "Granted" />
+					</cfif>
+				</cfloop>
+			</cfloop>
+		</cfloop>
+		
+		<!--- Output result --->
+		<cfset rows = "" />
+		<cfset total = 0 />
+		<cfloop collection="#stWebskins#" item="thistype">
+			<cfloop collection="#stWebskins[thistype]#" item="webskin">
+				<cfset rows = listappend(rows,"{Type:'#thistype#',Webskin:'#Webskin#',Right:'#stWebskins[thistype][webskin]#'}") />
+				<cfset total = total + 1 />
+			</cfloop>
+		</cfloop>
+		
+		<cfreturn "{rows:[#rows#],total:#total#}" />
 	</cffunction>
 
 </cfcomponent>
