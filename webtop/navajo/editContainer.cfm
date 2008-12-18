@@ -344,6 +344,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 				{
 					// Get the properties for this type - and create a rule instance --->
 					obj = createObject("Component", application.rules[key].rulePath);
+				 	// TODO: getProperties() is deprecated. Should be using tableMetadata.getTableDefinition() --->
 				 	typeProps = obj.getProperties();
 			 		stProps = structNew();
 			 		stProps.objectid = application.fc.utils.createJavaUUID();

@@ -1857,7 +1857,7 @@ $out:$
 			<CFQUERY NAME="GetTables" DATASOURCE="#application.dsn#">
 			SELECT dbo.sysobjects.name AS TableName,
 						dbo.syscolumns.Name AS ColumnName,
-						dbo.syscolumns.length,
+						dbo.syscolumns.prec as length,
 						dbo.syscolumns.isnullable,
 						dbo.systypes.name AS Type
 			FROM dbo.sysobjects
@@ -1868,7 +1868,7 @@ $out:$
 			AND dbo.sysobjects.name <> 'dtproperties'
 			GROUP BY dbo.sysobjects.name,
         					dbo.syscolumns.name,
-	        				dbo.syscolumns.length,
+	        				dbo.syscolumns.prec,
 		        			dbo.syscolumns.isnullable,
 			        		dbo.systypes.name
 			</CFQUERY>

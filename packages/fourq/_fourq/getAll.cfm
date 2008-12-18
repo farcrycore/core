@@ -52,7 +52,7 @@ got to move metadata into a more persistent scope
 // get table name for db schema
 	tablename = this.getTablename();
 // get extended properties for this instance
-	aProps = this.getProperties();
+	stProps = variables.tableMetadata.getTableDefinition();
 </cfscript>
 
 <cfquery datasource="#arguments.dsn#" name="qgetData">
@@ -77,9 +77,9 @@ select * from #tablename#
 <!--- begin: process array data --->
 <!--- determine array properties --->
 <cfset lArrayProps="">
-<cfloop from="1" to="#ArrayLen(aProps)#" index="i">
-	<cfif aProps[i].type contains "array">
-		<cfset lArrayProps = listAppend(lArrayProps, aProps[i].name)>
+<cfloop collection="#stProps#" item="prop">
+	<cfif stProps[prop].type contains "array">
+		<cfset lArrayProps = listAppend(lArrayProps, stProps[prop].name)>
 	</cfif>
 </cfloop>
 

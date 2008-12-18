@@ -38,7 +38,7 @@ Set method to update a record instance in the COAPI
 	// get table name for db schema
 	tablename =  getTablename();
 	// get extended properties for this instance
-	aProps = getProperties();
+	stProps = variables.tableMetadata.getTableDefinition();
 </cfscript>
 
 <!--- check objectid passed --->
@@ -59,18 +59,18 @@ Set method to update a record instance in the COAPI
 	loop through introspected properties 
 	 - that way incorrectly specified properties are ignored
 	--->	
-	<cfloop from="1" to="#ArrayLen(aProps)#" index="i">
-		<cfset propertyname = aProps[i].name>
+	<cfloop collection="#stProps#" item="prop">
+		<cfset propertyname = stProps[prop].name>
 		<!--- check to see if property has been passed for update --->
 		<cfif StructKeyExists(arguments.stProperties, propertyName) AND propertyName neq "ObjectID">
 			<cfset propertyValue = arguments.stProperties[propertyName]>
 			<!--- determine sql treatment --->
-			<cfswitch expression="#aProps[i].type#">
+			<cfswitch expression="#stProps[prop].type#">
 			
 				<cfcase value="date">
 					<cfif IsDate(propertyValue)>
 						, #propertyName# = <cfqueryparam value="#propertyValue#" cfsqltype="CF_SQL_TIMESTAMP">
-					<cfelseif NOT IsDate(propertyValue) AND aProps[i].required EQ "no">
+					<cfelseif NOT IsDate(propertyValue) AND stProps[prop].required EQ "no">
 						, #propertyName# = ''
 					<cfelse>
 						<cfabort showerror="Error: #propertyName# must be a date (#propertyValue#).">

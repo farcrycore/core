@@ -20,11 +20,11 @@
 	
 	<cffunction name="parseMetadata" access="public" returntype="void" output="false" hint="Parses the given structure and generates metadata that can be used by the DBGateway components." >
 		<cfargument name="md" type="struct" required="true" hint="Metadata for a component that follows the farcry convention of using <cfproperty> tags to declare database specific information. This would typically be the result of calling getMetaData() on the component.">
-		<cfargument name="bThrowOnAbstract" required="false" default="true" hint="Indicates whether or not to throw an error if an abstract component is passed." />
-		
+		<cfargument name="bForceRefresh" type="boolean" required="false" default="false" hint="Flag that will force a refresh of the metadata if required." />
 		<cfset var i = "" />
+		<cfset var prop = "" />
 		
-		<cfif structKeyExists(arguments.md,'bAbstract') and arguments.bThrowOnAbstract>
+		<cfif structKeyExists(arguments.md,'bAbstract')>
 			<cfthrow type="farcry.core.packages.fourq.tablemetadata.abstractTypeException" message="Abstract components cannot be used for table definitions." detail="An attempt was made to generate database table information for an abstract component #md.name# (#md.path#). Abstract components cannot be used for table definitions. Either extend the component or set the bAbstract attribute of the cfcomponent tag to false.">
 		</cfif>
 		
@@ -32,66 +32,86 @@
 		<cfif not structKeyExists(variables,'tablename')>
 			<cfset variables.tableName = listLast(arguments.md.name,'.') />
 		</cfif>
-		
-			
+
 		<!--- 
 		REPLACED WITH SIMPLE CALL FROM THE APPLICATION.STCOAPI IF ALREADY AVAILABLE
 		 --->
-		<cfif structKeyExists(application, "stcoapi") AND structKeyExists(application.stcoapi, variables.tablename) AND structKeyExists(application.stcoapi[variables.tablename], "tableDefinition")>
+		<cfif NOT bForceRefresh AND structKeyExists(application, "stcoapi") AND structKeyExists(application.stcoapi, variables.tablename) AND structKeyExists(application.stcoapi[variables.tablename], "tableDefinition")>
 			<cfset variables.tableDefinition = application.stcoapi[variables.tablename].tableDefinition />
 		<cfelse>
-			<!--- If there are no properties at this level go to the next level --->
-			<cfif structKeyExists(md,'properties')>
+		
+			<cfset parseComponentMetadata(md=arguments.md) />
+			<cfif structKeyExists(variables, "tableDefinition")>
+				<cfloop collection="#variables.tableDefinition#" item="prop">
+					<cfif NOT structKeyExists(variables.tableDefinition[prop],'type')>
+						<cfthrow type="farcry.core.packages.fourq.TableMetadata.InvalidPropertyException" message="PLEASER: The cfproperty tag for #variables.tableDefinition[prop].name# does not have a type attribute." detail="The type attribute of the cfproperty tag is required for the fourq persistence layer." />
+					</cfif>
+					<cfif NOT structKeyExists(variables.tableDefinition[prop],'default')>
+						<cfset variables.tableDefinition[prop].default = "" />
+					</cfif>
+					<cfif NOT structKeyExists(variables.tableDefinition[prop],'required')>
+						<cfset variables.tableDefinition[prop].required = false />
+					</cfif>
+					<cfif NOT structKeyExists(variables.tableDefinition[prop],'nullable')>
 			
-				<!--- If we got to here there should be some properties to parse --->
-				<cfloop from="1" to="#arrayLen(arguments.md.properties)#" index="i">
-					<cfif not structKeyExists(variables.tableDefinition,arguments.md.properties[i].name)>
-						<cfset variables.tableDefinition[arguments.md.properties[i].name] = parseProperty(arguments.md.properties[i])>
+						<cfif variables.tableDefinition[prop].required>
+							<cfset variables.tableDefinition[prop].nullable = false />
+						<cfelse>
+							<cfset variables.tableDefinition[prop].nullable = true />
+						</cfif>
 					</cfif>
 				</cfloop>
-				
-				
-			</cfif>
-				
-			<!--- Parse the next level if it exists --->
-			<cfif structKeyExists(arguments.md,'extends')>
-				<cfset parseMetadata(arguments.md.extends,false) />
-			</cfif>
-			
+			</cfif>			
 		</cfif>
 			
 	</cffunction>
-	
+
+	<cffunction name="parseComponentMetadata" access="private" output="false" returntype="void" hint="Parses the given component metadata structure and generates metadata that can be used by the DBGateway components." >
+		<cfargument name="md" type="struct" required="true" hint="Metadata for a component that follows the farcry convention of using <cfproperty> tags to declare database specific information. This would typically be the result of calling getMetaData() on the component.">
+		
+		<cfset var i = "" />
+		<cfset var bSuccess = true />
+
+		<!--- Make sure we set the table name first time through --->
+		<cfif not structKeyExists(variables,'tablename')>
+			<cfset variables.tableName = listLast(arguments.md.name,'.') />
+		</cfif>
+		
+			
+		<cfif structKeyExists(arguments.md,'properties')>
+		
+			<!--- If we got to here there should be some properties to parse --->
+			<cfloop from="1" to="#arrayLen(arguments.md.properties)#" index="i">
+				<cfparam name="variables.tableDefinition[arguments.md.properties[i].name]" default="#structNew()#" />
+
+				<cfset bSuccess = StructAppend(variables.tableDefinition[arguments.md.properties[i].name],parseProperty(arguments.md.properties[i]),false)>
+
+			</cfloop>
+			
+			
+		</cfif>
+			
+		<!--- Parse the next level if it exists --->
+		<cfif structKeyExists(arguments.md,'extends')>
+			<cfset parseComponentMetadata(arguments.md.extends) />
+		</cfif>
+			
+	</cffunction>
 	
 	<cffunction name="parseProperty" access="private" output="false" returntype="struct" hint="Parses the data out of cfproperty tag metadata and inserts default values for unspecified attributes">
 		<cfargument name="data" required="true" type="struct" />
 		<cfset var prop = structNew() />
 
-		<cfif NOT structKeyExists(arguments.data,'type')>
-			<cfthrow type="farcry.core.packages.fourq.TableMetadata.InvalidPropertyException" message="The cfproperty tag for #arguments.data.name# does not have a type attribute." detail="The type attribute of the cfproperty tag is required for the fourq persistence layer." />
+		<cfif structKeyExists(arguments.data,'type')>
+			<cfif listFindNoCase(variables.validDataTypes,arguments.data.type)>
+				<cfset prop.type = arguments.data.type />
+			</cfif>
 		</cfif>
 		
-		<cfif not listFindNoCase(variables.validDataTypes,arguments.data.type)>
-			<cfthrow type="farcry.core.packages.fourq.TableMetadata.InvalidPropertyException" message="The cfproperty tag for #arguments.data.name# has an invalid value for the type attribute." detail="The list of valid datatypes is #variables.validDataTypes#. The type attribute has a value of ""#arguments.data.type#""." />
-		</cfif>
-		
-		<cfset prop.type = arguments.data.type />
 		<cfset prop.name = arguments.data.name />
 		
-		<cfif prop.type eq 'array'>
+		<cfif structKeyExists(arguments.data,'type') AND prop.type eq 'array'>
 		  <cfreturn parseArrayProperty(arguments.data) />
-		</cfif>
-		
-		<cfif structKeyExists(arguments.data,'default')>
-			<cfset prop.default = arguments.data.default />
-		<cfelse>
-			<cfset prop.default = "NULL" />
-		</cfif>
-		
-		<cfif structKeyExists(arguments.data,'required') AND arguments.data.required>
-			<cfset prop.nullable = false />
-		<cfelse>
-			<cfset prop.nullable = true />
 		</cfif>
 		
 		<cfreturn prop />
@@ -155,11 +175,11 @@
 			</cfloop>
 		</cfif>
 		
-		<cfif structKeyExists(arguments.data,'required') AND arguments.data.required>
+<!--- 		<cfif structKeyExists(arguments.data,'required') AND arguments.data.required>
 			<cfset prop.nullable = false />
 		<cfelse>
 			<cfset prop.nullable = true />
-		</cfif>
+		</cfif> --->
 		
 		<cfreturn prop />
 	</cffunction>

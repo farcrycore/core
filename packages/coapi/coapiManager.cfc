@@ -79,7 +79,7 @@
 					stDBMapping.date = "DATETIME";
 					stDBMapping.numeric = "NUMERIC";
 					stDBMapping.string = "VARCHAR|255";
-					stDBMapping.nstring = "NVARCHAR|1024";
+					stDBMapping.nstring = "NVARCHAR|512";
 					stDBMapping.uuid = "VARCHAR|50";
 					stDBMapping.variablename = "VARCHAR|64";
 					stDBMapping.color = "VARCHAR|20";
@@ -147,7 +147,14 @@
 		<cfset var structDBProp = structNew()>
 		<cfset var thisProp = "">
 		<cfset var tmpPropObj = "">
+		<cfset var md = "" />
+		<cfset var prop = "" />
 		
+		<cfset var o = createObject("Component", "#application.stcoapi[arguments.cfcName].packagePath#") />	
+		<cfset var tableMetadata = createobject('component','farcry.core.packages.fourq.TableMetadata').init() />
+		<cfset tableMetadata.parseMetadata(md=getMetadata(o), bForceRefresh=true) />
+		<cfset md = tableMetadata.getTableDefinition() />
+				
 		<cfscript>
 			if(not structKeyExists(variables.stDB,arguments.scope))setFarcryScopeDbStruct(arguments.scope);
 			if(arguments.bUpdateStDBTable)updateStDBTable(arguments.scope,arguments.cfcName);
@@ -173,40 +180,23 @@
 		
 		<!--- create a struct to flag checked properties/dbfields  --->
 		<cfset checkedDbProps = structNew()>
-		
-			<!--- parse component properties including properties inherited from parents until it reaches fourq parent type--->		
-		<cfset propKey = "stMetaData">
-		<cfset DbTypeConflict = tmpObj["dbStatus"]>
-		<!--- looping over type struct including parent classes structs--->
-		<cfloop from="0" to="#extendsDepth#" index="depth">
-			<cfif depth GT 0>
-				<cfset propKey = listAppend(propKey,"Extends",".")>
-			</cfif>					
-			<cfset struct2Parse = evaluate(propKey)>
-			<cfif struct2Parse.name eq variables.MAXEXTCLASS>
-				
-				<cfbreak><!--- reached maximum inheritence for class so exit loop and do not check DB properties for parents class --->
-			</cfif>								
-			<!--- looping over properties of class incl extended classes is properties struct exists--->
-			<cfif structKeyExists(struct2Parse,"properties")>
-				
-				<cfloop from="1" to="#arrayLen(struct2Parse.properties)#" index="propId">
-					<cfset thisPropName = trim(struct2Parse.properties[propId].name)>
 
-					<cfif tmpObj["dbStatus"] eq "deployed" and structKeyExists(variables.stDB[arguments.scope][arguments.cfcName],thisPropName)>
-						<cfset structDBProp = variables.stDB[arguments.scope][arguments.cfcName][thisPropName]>
-					<cfelse>
-						<cfset structDBProp = structNew()>
-					</cfif>
-	
-					<cfset thisProp = setProperty(cfcName=arguments.cfcName,propName=thisPropName, dbStruct=structDBProp, metaStruct=struct2Parse.properties[propId], typeDeployed=tmpObj["dbStatus"])>
-					<cfif thisProp.propDBType eq "n/a" or thisProp.cfc2Db eq "conflict">
-						<cfset DbTypeConflict = propNotFoundMess>
-					</cfif>
-					<cfset checkedDbProps[trim(thisPropName)] = true>
-					<cfset arrayAppend( tmpObj["props"],thisProp)>
-				</cfloop>
-				
+		<cfloop collection="#md#" item="prop">
+			<cfset thisPropName = prop>
+
+			<cfif tmpObj["dbStatus"] eq "deployed" and structKeyExists(variables.stDB[arguments.scope][arguments.cfcName],thisPropName)>
+				<cfset structDBProp = variables.stDB[arguments.scope][arguments.cfcName][thisPropName]>
+			<cfelse>
+				<cfset structDBProp = structNew()>
+			</cfif>
+
+			<cfif structKeyExists(md[prop], "type")>
+				<cfset thisProp = setProperty(cfcName=arguments.cfcName,propName=thisPropName, dbStruct=structDBProp, metaStruct=md[prop], typeDeployed=tmpObj["dbStatus"])>
+				<cfif thisProp.propDBType eq "n/a" or thisProp.cfc2Db eq "conflict">
+					<cfset DbTypeConflict = propNotFoundMess>
+				</cfif>
+				<cfset checkedDbProps[trim(thisPropName)] = true>
+				<cfset arrayAppend( tmpObj["props"],thisProp)>
 			</cfif>
 		</cfloop>
 		<cfset tmpObj["dbStatus"] = DbTypeConflict>	
@@ -227,7 +217,7 @@
 					<cfset tmpPropObj["propAppDefault"] = "">
 					<cfset tmpPropObj["cfc2Db"] = "n/a">
 					<cfset arrayAppend( tmpObj["props"],tmpPropObj)>
-					<cfif  tmpObj["dbStatus"] eq "deployed">
+					<cfif not len(tmpObj["dbStatus"]) or  tmpObj["dbStatus"] eq "deployed">
 						<cfset tmpObj["dbStatus"] = "conflict">
 					</cfif>	
 					
@@ -311,14 +301,13 @@
 		
 		<cfset var stObjResult = structNew()>
 		<!--- set DB properties --->
-		<cfset var isPropDeployed = false>
 		<cfset var typeMatch = "" />
 		<cfset var bPrecision = "" />
-		
 		<cfset stObjResult["propName"] = arguments.propName>
 		<cfset stObjResult["propCfcType"] = arguments.metaStruct.type>
-
+		
 		<cfif arguments.typeDeployed eq "deployed" and not structIsEmpty(arguments.dbStruct)>
+
 			<!--- setting local variables to gain visual clarity in next conditional statement --->
 			<cfset typeMatch = listFirst(variables.stCfc2Db[arguments.metaStruct.type],"|") eq arguments.dbStruct.type>
 			<cfset bPrecision = listLen(variables.stCfc2Db[arguments.metaStruct.type],"|") eq 2>
@@ -331,9 +320,12 @@
 				<cfset stObjResult["cfc2Db"] = "ok">	
 			</cfif>
 			
-			<cfset isPropDeployed = true>
-			<cfset stObjResult["propDBType"] = arguments.dbStruct.type>
-			<cfset stObjResult["propDBPrecision"] = arguments.dbStruct.LENGTH>
+			<cfset stObjResult["propDBType"] = listFirst(variables.stCfc2Db[arguments.metaStruct.type],"|") />
+			<cfif bPrecision>
+				<cfset stObjResult["propDBPrecision"] = listLast(variables.stCfc2Db[arguments.metaStruct.type],"|") />
+			<cfelse>
+				<cfset stObjResult["propDBPrecision"] = arguments.dbStruct.LENGTH>
+			</cfif>
 		<cfelse>	
 			<cfset stObjResult["propDBType"] = "n/a">
 			<cfset stObjResult["propDBPrecision"] = "n/a">
@@ -471,12 +463,10 @@
 		<cfargument name="farcryType" required="true" type="string"><!--- a list with delimited by "|". 2nd element is optional for the precision --->
 		<cfset var SLQTypeValue = listFirst(arguments.farcryType,"|")>
 
-		<cfif listLen(arguments.farcryType,"|") eq 2 and SLQTypeValue eq "NVARCHAR"><!---  Precision with nvarchar  --->	
-			<cfset  SLQTypeValue = SLQTypeValue & "(" & (listLast(arguments.farcryType,"|")/2) & ")">		
-		<cfelseif listLen(arguments.farcryType,"|") eq 2>
+		<cfif listLen(arguments.farcryType,"|") eq 2>
 			<cfset SLQTypeValue = SLQTypeValue & "(" & listLast(arguments.farcryType,"|") & ")">	
 		</cfif>
-		
+
 		<cfreturn SLQTypeValue>
 	</cffunction>
 	
@@ -487,8 +477,8 @@
 		<cfscript>
 			var stResult = structNew();
 			
-			variables.oAltType.repairProperty(typename=arguments.componentName,srcColumn=arguments.propertyName,srcColumnType=arguments.dbType);
 			refreshCFCMetaData(componentName=arguments.componentName);
+			variables.oAltType.repairProperty(typename=arguments.componentName,srcColumn=arguments.propertyName,srcColumnType=arguments.dbType);
 			
 			stResult["success"] = true;
 			stResult["message"] = "property #propertyName# for type #arguments.dbType# repaired";			

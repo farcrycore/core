@@ -55,6 +55,7 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au) $
 			<cfset key = listGetAt(dest,i)>
 			<cfif NOT IsCFUUID(key)> <!--- Get the properties for this type - and create a rule instance --->
 				<cfset obj = createObject("component", application.rules[key].rulePath)>
+				<!--- TODO: getProperties() is deprecated. Should be using tableMetadata.getTableDefinition() --->
 				<cfset aProps = obj.getProperties()>
 				<cfset stProps = StructNew()>
 				<cfloop index="j" from="1" to="#ArrayLen(aProps)#">

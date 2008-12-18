@@ -38,7 +38,7 @@ entries in the refObjects and array properties tables
 // get table name for db schema
 	tablename = arguments.dbowner& this.getTablename();
 // get extended properties for this instance
-	aProps = this.getProperties();
+	stProps = variables.tableMetadata.getTableDefinition();
 </cfscript>
 
 <cftransaction>
@@ -53,10 +53,10 @@ entries in the refObjects and array properties tables
 	</cfquery>
 
 	<!--- begin: process array data --->
-	<cfloop from="1" to="#arraylen(aProps)#" index="i">
-		<cfif aProps[i].type eq 'array'>
+	<cfloop collection="#stProps#" item="prop">
+		<cfif stProps[prop].type eq 'array'>
 			<cfquery datasource="#arguments.dsn#" name="qDeleteArrayData">
-			DELETE FROM #tablename#_#aProps[i].name#
+			DELETE FROM #tablename#_#stProps[prop].name#
 			WHERE parentid = '#arguments.objectid#'
 			</cfquery>
 		</cfif>

@@ -55,7 +55,7 @@ Need to add code for ARRAY data type deployment.
 // get table name for db schema deployment
 	tablename = arguments.dbowner&this.getTablename();
 // get extended properties for this instance
-	aProps = this.getProperties();
+	stProps = variables.tableMetadata.getTableDefinition();
 // cfc property type to db data type translation
 	switch(arguments.dbtype){
 		case "ora":
@@ -124,9 +124,11 @@ Need to add code for ARRAY data type deployment.
 	}	
 </cfscript>
 
+<cfset bFirstProp = true />
+
 <!--- build column statements for object type--->
-<cfloop from=1 to="#arraylen(aProps)#" index="prop">
-	<cfset thisprop = aProps[prop]>
+<cfloop collection="#stProps#" item="prop">
+	<cfset thisprop = stProps[prop]>
 	<!--- add property as db column? --->
 	<cfif not isDefined('thisprop.addToDb')>
 		<cfset thisprop.addToDb = true>
@@ -161,7 +163,15 @@ Need to add code for ARRAY data type deployment.
 	<cfelse>
 	
 		<cfif thisprop.addToDb>
+			
+			<cfif bFirstProp>
+				<cfset bFirstProp = false />
+			<cfelse>
+				<cfset sql = ",#sql#" />
+			</cfif>
+
 			<cfscript>
+					
 				switch(arguments.dbtype){
 					case "ora" :
 					{
@@ -182,9 +192,7 @@ Need to add code for ARRAY data type deployment.
 						sql = sql & "[#thisprop.name#] #db[thisprop.type]# #nullable# #default#";
 					}
 				} //end case
-				
-				if (prop NEQ arrayLen(aProps))
-					sql = sql & ",";		
+						
 			</cfscript>
 		</cfif>
 	</cfif>

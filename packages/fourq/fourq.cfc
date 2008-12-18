@@ -634,6 +634,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<!--- set status here... if something goes wrong expect a thrown error --->
 		<cfset var stResult = structNew()>
 		<cfset var stobj = structNew() />
+		<cfset var stProps = structNew() />
+		<cfset var prop = "" />
+		<cfset var tablename = "" />
 		
 		<cfset stResult.bSuccess = true>
 		<cfset stResult.message = "Object deleted successfully">
@@ -878,26 +881,33 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var curProperty = "">
 		<cfset var i = "">
 		<cfset var j = "">
+		<cfset var prop = "">
+		<cfset var success = "">
 		
 		<cfloop index="i" from="1" to="#ArrayLen(aAncestors)#">
-			<cfset curAncestor = aAncestors[i]>
+			<cfset curAncestor = duplicate(aAncestors[i])>
+			
 			<cfif StructKeyExists(curAncestor,"properties")>
 				<cfloop index="j" from="1" to="#ArrayLen(curAncestor.properties)#">
-					<cfset curProperty = StructNew()>
-
-					<!--- make sure all metadata has a default and required --->
-					<cfif NOT StructKeyExists(curAncestor.properties[j],"required")>
-						<cfset curAncestor.properties[j].required = "no">
+					<cfif not structKeyExists(stProperties, curAncestor.properties[j].name)>
+						<cfset stProperties[curAncestor.properties[j].name] = structNew() />
+						<cfset stProperties[curAncestor.properties[j].name].metadata = structNew() />
+						<cfset stProperties[curAncestor.properties[j].name].origin = "" />
 					</cfif>
-					
-					<cfif NOT StructKeyExists(curAncestor.properties[j],"default")>
-						<cfset curAncestor.properties[j].default = "">
-					</cfif>
-				
-					<cfset curProperty.metadata = curAncestor.properties[j]>
-					<cfset curProperty.origin = curAncestor.name>
-					<cfset stProperties[curProperty.metadata.name] = curProperty>
+					<cfset stProperties[curAncestor.properties[j].name].origin = curAncestor.name />
+					<cfset success = structAppend(stProperties[curAncestor.properties[j].name].metadata, curAncestor.properties[j]) />
 				</cfloop>
+			</cfif>
+		</cfloop>
+
+		<cfloop collection="#stProperties#" item="prop">
+			<!--- make sure all metadata has a default and required --->
+			<cfif NOT StructKeyExists(stProperties[prop].metadata,"required")>
+				<cfset stProperties[prop].metadata.required = "no">
+			</cfif>
+			
+			<cfif NOT StructKeyExists(stProperties[prop].metadata,"default")>
+				<cfset stProperties[prop].metadata.default = "">
 			</cfif>
 		</cfloop>
 
