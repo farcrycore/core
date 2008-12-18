@@ -62,7 +62,8 @@ $out:$
 	get="parents"
 	r_lObjectIds="ParentID"
 	bInclusive="1">
-			
+
+		
 <!--- get list of approvers for this object --->
 <cfinvoke component="#application.packagepath#.farcry.workflow" method="getObjectApprovers" returnvariable="stApprovers">
 	<cfinvokeargument name="objectID" value="#arguments.objectID#"/>
@@ -89,13 +90,17 @@ Hi <cfif len(stApprovers[item].firstName) gt 0>#stApprovers[item].firstName#<cfe
 Page "<cfif isDefined("stObj.title") and len(trim(stObj.title))>#stObj.title#<cfelseif isDefined("stObj.label") and len(trim(stObj.label))>#stObj.label#<cfelse>undefined</cfif>" is awaiting your approval
 
 You may approve/decline this page by browsing to the following location:
-
-#application.config.general.adminServer##application.url.farcry#/index.cfm?sec=site&rootObjectID=#ParentID#
+<cfif len(parentID)>
+	http://#cgi.http_host##application.url.webtop#/index.cfm?sec=site&rootObjectID=#parentID#
+<cfelse>
+	http://#cgi.http_host##application.url.webtop#/edittabOverview.cfm?objectid=#arguments.objectID#
+</cfif>
 
 	<cfif arguments.comment neq "">
 Comments added on status change:
 #arguments.comment#
 	</cfif>
+	
 		</cfoutput></cfsavecontent>
 
 		<!--- send email alerting them to object is waiting approval  --->
