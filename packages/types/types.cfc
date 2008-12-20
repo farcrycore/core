@@ -801,6 +801,7 @@ default handlers
 		<cfargument name="objectid" required="No" default=""><!--- objectid of the object to be locked/unlocked ---> 
 		
 		<cfset var stCurrentObject = structNew() />
+		<cfset var stObject = duplicate(arguments.stobj) /><!--- Duplicating so that we are not referencing the passed object --->
 		<cfset var bSessionOnly = false />
 		
 		<!--- Determine who the record is being locked/unlocked by --->		
@@ -813,34 +814,34 @@ default handlers
 		</cfif>
 		
 		<cfif len(arguments.objectid)>
-			<cfset arguments.stObj = getData(objectid="#arguments.objectid#") />
+			<cfset stObject = getData(objectid="#arguments.objectid#") />
 		</cfif>
 		
 		<!--- if the properties struct not passed in grab the instance --->
-		<cfif StructIsEmpty(arguments.stObj) AND structKeyExists(instance, "stobj")>
-			<cfset arguments.stobj = instance.stobj />
+		<cfif StructIsEmpty(stObject) AND structKeyExists(instance, "stobj")>
+			<cfset stObject = instance.stobj />
 		</cfif>
 		
-		<cfif not StructIsEmpty(arguments.stObj)>
+		<cfif not StructIsEmpty(stObject)>
 			<!--- We need to get the object from memory to see if it is a default object. If so, we are only saving to the session. --->
-			<cfset stCurrentObject = getData(stobj.objectid) />
+			<cfset stCurrentObject = getData(stObject.objectid) />
 			<cfif structKeyExists(stCurrentObject, "bDefaultObject") AND stCurrentObject.bDefaultObject>
 				<cfset bSessionOnly = true />
 			</cfif>
-			<cfset arguments.stobj.locked = arguments.locked>
+			<cfset stObject.locked = arguments.locked>
 			<cfif arguments.locked>
-				<cfset arguments.stobj.lockedby=arguments.lockedby>
+				<cfset stObject.lockedby=arguments.lockedby>
 			<cfelse>
-				<cfset arguments.stobj.lockedby="">
+				<cfset stObject.lockedby="">
 			</cfif>
 			<!--- call fourq.setdata() (ie super) to bypass prepop of sys attributes by types.setdata() --->
-			<cfset setdata(stProperties="#arguments.stobj#", user="#arguments.lockedby#", bAudit="#arguments.bAudit#", dsn="#arguments.dsn#", bAfterSave="false", bSessionOnly="#bSessionOnly#")>
+			<cfset setdata(stProperties="#stObject#", user="#arguments.lockedby#", bAudit="#arguments.bAudit#", dsn="#arguments.dsn#", bAfterSave="false", bSessionOnly="#bSessionOnly#")>
 
 		</cfif>
 
 		<!--- log event --->
 		<cfif arguments.bAudit and isDefined("instance.stobj.objectid")>
-			<farcry:logevent object="#arguments.stobj.objectid#" type="types" event="lock" notes="Locked: #yesnoformat(arguments.locked)#" />
+			<farcry:logevent object="#stObject.objectid#" type="types" event="lock" notes="Locked: #yesnoformat(arguments.locked)#" />
 		</cfif>
 	</cffunction>
 	
