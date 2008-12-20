@@ -281,14 +281,14 @@ RENDER THE CURRENT STEP
 			<cfset variables.lLocales = "" />
 			<cfloop from="1" to="#arrayLen(variables.aLocales)#" index="i">
 				<cfif listLen(variables.aLocales[i],"_") EQ 2>
-					<cfset variables.lLocales = listAppend(variables.lLocales, "#variables.aLocales[i].toString()#:#variables.aLocales[i].getDisplayName()#") />
+					<cfset variables.lLocales = listAppend(variables.lLocales, "#variables.aLocales[i].getDisplayName()#:#variables.aLocales[i].toString()#") />
 				</cfif>
 			</cfloop>
 			<cfset variables.lLocales = listSort(variables.lLocales,"textNoCase", "asc") />
 			<input type="hidden" name="locales" value="" />
 			<select id="locales" name="locales" multiple="multiple" size="5">
 				<cfloop list="#variables.lLocales#" index="i">
-					<option value="#listFirst(i, ":")#" <cfif listFindNoCase(session.stFarcryInstall.stConfig.locales, listFirst(i, ":"))>selected="selected"</cfif>>#listLast(i, ":")#</option>
+					<option value="#listLast(i, ":")#" <cfif listFindNoCase(session.stFarcryInstall.stConfig.locales, listLast(i, ":"))>selected="selected"</cfif>>#listFirst(i, ":")#</option>
 				</cfloop>
 			</select>
 			<div class="fieldHint">Set the relevant locales for your application.  Just because the locale can be selected does not mean a relevant translation is available.  If in doubt just leave the defaults.</div>
