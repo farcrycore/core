@@ -402,11 +402,12 @@ $out:$
 	<cfset var q = queryNew("blah")>
 	<cfset var sql = ''>
 	<cfset var objCount = 0>
-	<cfscript>
-	sql = "select count(*) + 1 AS objCount from #arguments.dbowner#nested_tree_objects where parentid = '#arguments.objectid#'";
-	q = query(sql=sql, dsn=arguments.dsn);
-	objCount = q.objCount;
-	</cfscript>
+	<cfquery datasource="#application.dsn#" name="q">
+	select count(*) + 1 AS objCount 
+	from #arguments.dbowner#nested_tree_objects 
+	where parentid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
+	</cfquery>
+	<cfset objCount = q.objCount />
 	<cfreturn objCount>
 </cffunction>
 
@@ -417,12 +418,16 @@ $out:$
 	<cfset var bRootNodeExists = false>
 	<cfset var q = queryNew("blah")>
 	<cfset var sql = ''>
-	<cfscript>
-	bRootNodeExists = false;
-	sql = "select * from #arguments.dbowner#nested_tree_objects where nlevel = 0 and typename = '#arguments.typename#'";
-	q = query(sql=sql, dsn=arguments.dsn);
-	if (q.recordCount) bRootNodeExists = true;
-	</cfscript>
+	
+	<cfquery datasource="#application.dsn#" name="q">
+	select * 
+	from #arguments.dbowner#nested_tree_objects 
+	where nlevel = 0 
+	and typename = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.typename#" />
+	</cfquery>
+	<cfif q.recordCount>
+		<cfset bRootNodeExists = true />
+	</cfif>
 
 	<cfreturn bRootNodeExists>
 

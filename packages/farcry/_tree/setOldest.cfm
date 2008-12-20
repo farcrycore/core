@@ -56,14 +56,14 @@ $out:$
 						set nright = nright + 2 
 						where nright > (select nleft from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#')
 						and typename = '#arguments.typeName#'";
-					query(sql=sql, dsn=arguments.dsn);	
+					scriptQuery(sql=sql, dsn=arguments.dsn);	
 					
 					sql = "
 						update #arguments.dbowner#nested_tree_objects
 						set nleft = nleft + 2
 						where nleft > (select nleft from nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#')
 						and typename = '#arguments.typeName#'";
-					query(sql=sql, dsn=arguments.dsn);	
+					scriptQuery(sql=sql, dsn=arguments.dsn);	
 					break;
 				}
 				
@@ -76,7 +76,7 @@ $out:$
 						set nright = nright + 2 
 						where nright > #tempResult.nleft#
 						and typename = '#arguments.typeName#'";
-					query(sql=sql, dsn=arguments.dsn);	
+					scriptQuery(sql=sql, dsn=arguments.dsn);	
 					
 					tempsql = "select nleft from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#'";
 					tempResult = scriptQuery(sql=tempsql, dsn=arguments.dsn);
@@ -86,7 +86,7 @@ $out:$
 						set nleft = nleft + 2
 						where nleft > #tempResult.nleft#
 						and typename = '#arguments.typeName#'";
-					query(sql=sql, dsn=arguments.dsn);	
+					scriptQuery(sql=sql, dsn=arguments.dsn);	
 					break;
 				}
 				
@@ -99,7 +99,7 @@ $out:$
 						set nright = nright + 2 
 						where nright > #tempResult.nleft#
 						and typename = '#arguments.typeName#'";
-					query(sql=sql, dsn=arguments.dsn);	
+					scriptQuery(sql=sql, dsn=arguments.dsn);	
 					
 					tempsql = "select nleft from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#'";
 					tempResult = scriptQuery(sql=tempsql, dsn=arguments.dsn);
@@ -109,7 +109,7 @@ $out:$
 						set nleft = nleft + 2
 						where nleft > #tempResult.nleft#
 						and typename = '#arguments.typeName#'";
-					query(sql=sql, dsn=arguments.dsn);	
+					scriptQuery(sql=sql, dsn=arguments.dsn);	
 					break;
 				}
 				
@@ -120,14 +120,14 @@ $out:$
 						set nright = nright + 2 
 						where nright > (select nleft from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#')
 						and typename = '#arguments.typeName#'";
-					query(sql=sql, dsn=arguments.dsn);	
+					scriptQuery(sql=sql, dsn=arguments.dsn);	
 					
 					sql = "
 						update #arguments.dbowner#nested_tree_objects
 						set nleft = nleft + 2
 						where nleft > (select nleft from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.parentid#' and typename = '#arguments.typename#')
 						and typename = '#arguments.typeName#'";
-					query(sql=sql, dsn=arguments.dsn);	
+					scriptQuery(sql=sql, dsn=arguments.dsn);	
 				}
 			}
 		
@@ -174,7 +174,7 @@ $out:$
 					select 	'#arguments.objectid#', '#arguments.parentid#', '#arguments.objectName#', '#arguments.typeName#', #pleft# + 1, #pleft# + 2,  #plevel# + 1";
 				}
 			}
-		query(sql=sql, dsn=arguments.dsn);		
+		scriptQuery(sql=sql, dsn=arguments.dsn);		
 		</cfscript>
 
 		<cfcatch>

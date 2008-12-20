@@ -78,7 +78,7 @@ $out:$
 		or nleft between #qNleft.nleft#
 		and #qNRight.nright# 
 		and typename = '#typename#'";
-	query(sql=sql, dsn=arguments.dsn);	
+	scriptQuery(sql=sql, dsn=arguments.dsn);	
 	
 	// contract the other nodes left hands
 	sql = "
@@ -86,7 +86,7 @@ $out:$
 		set 	nleft = nleft - #count#
 		where  nleft > #oldleft#
 		and typename = '#typename#'";
-	query(sql=sql, dsn=arguments.dsn);	
+	scriptQuery(sql=sql, dsn=arguments.dsn);	
 	
 	// contract the other nodes right hands
 	sql = "
@@ -94,7 +94,7 @@ $out:$
 		set 	nright = nright - #count#
 		where  nright > #oldleft#
 		and typename = '#typename#'";
-	query(sql=sql, dsn=arguments.dsn);	
+	scriptQuery(sql=sql, dsn=arguments.dsn);	
 	</cfscript>
 
 	<cfcatch>

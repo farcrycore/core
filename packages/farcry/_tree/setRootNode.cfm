@@ -52,7 +52,7 @@ $out:$
 		  insert into #arguments.dbowner#nested_tree_objects
 		  (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
 		  values  ('#arguments.objectid#',null, '#arguments.objectName#','#arguments.typeName#',1, 2, 0)" ; 
-		query(sql=sql, dsn=arguments.dsn);
+		scriptQuery(sql=sql, dsn=arguments.dsn);
 	}
 	else
 	{

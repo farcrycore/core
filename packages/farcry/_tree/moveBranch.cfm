@@ -116,7 +116,7 @@ $out:$
 				update #arguments.dbowner#nested_tree_objects
 				set parentid = '#arguments.parentid#'
 				where objectid = '#arguments.objectid#'"; 
-			query(sql=sql, dsn=arguments.dsn);
+			scriptQuery(sql=sql, dsn=arguments.dsn);
 			arrayAppend(aSQL,sql);	
 		
 			//check the level of the new parent. if its level is different than that of the original parent, change levels of 
@@ -143,7 +143,7 @@ $out:$
 				set nlevel = (nlevel + #leveldiff#)
 				where nleft between #nleft# and #nright#
 				and typename = '#typename#'";
-			query(sql=sql, dsn=arguments.dsn);
+			scriptQuery(sql=sql, dsn=arguments.dsn);
 			arrayAppend(aSQL,sql);	
 		}    
 		
@@ -158,7 +158,7 @@ $out:$
 		if(qBranchIds.recordCount)	
 			sql = sql & "and objectid not in (#quotedValueList(qBranchIds.objectid)#)";
 		
-		query(sql=sql, dsn=arguments.dsn);	
+		scriptQuery(sql=sql, dsn=arguments.dsn);	
 		arrayAppend(aSQL,sql);
 		
 		sql = "
@@ -170,7 +170,7 @@ $out:$
 		if(qBranchIds.recordCount)	
 			sql = sql & "and objectid not in (#quotedValueList(qBranchIds.objectid)#)";	
 					
-		query(sql=sql, dsn=arguments.dsn);
+		scriptQuery(sql=sql, dsn=arguments.dsn);
 		arrayAppend(aSQL,sql);	
 			
 		// if pos is 1 or less, assume it is 1. This means we move the branch to the top position amongst the siblings 
@@ -243,7 +243,7 @@ $out:$
 			sql = sql & "and objectid not in (#quotedValueList(qBranchIds.objectid)#)";
 		
 		//dump(sql);
-		query(sql=sql, dsn=arguments.dsn);
+		scriptQuery(sql=sql, dsn=arguments.dsn);
 		arrayAppend(aSQL,sql);
 		
 		//sql = "select objectid,objectname,nlevel,nleft,nright from nested_tree_objects where objectid = '#arguments.parentID#'";
@@ -261,7 +261,7 @@ $out:$
 				update #arguments.dbowner#nested_tree_objects
 				set 	nright = nright + #count#
 				where objectid = '#arguments.parentid#'";
-				query(sql=sql, dsn=arguments.dsn);
+				scriptQuery(sql=sql, dsn=arguments.dsn);
 				arrayAppend(aSQL,sql);
 			}
 		}
@@ -277,7 +277,7 @@ $out:$
 		if(qBranchIds.recordCount)	
 			sql = sql & "and objectid not in (#quotedValueList(qBranchIds.objectid)#)";	
 			
-		query(sql=sql, dsn=arguments.dsn);
+		scriptQuery(sql=sql, dsn=arguments.dsn);
 		arrayAppend(aSQL,sql);	
 	
 		// change the nlefts and nrights of the branch itself
@@ -292,7 +292,7 @@ $out:$
 				nright = (nright + #diff#)
 				where 	objectid in (#quotedValueList(qBranchIds.objectid)#)";  
 					
-			query(sql=sql, dsn=arguments.dsn);
+			scriptQuery(sql=sql, dsn=arguments.dsn);
 			arrayAppend(aSQL,sql);
 		}	
 		//Fixing a problem where when moving to bottom, the parent node nright value does not get correctly updated
@@ -312,7 +312,7 @@ $out:$
 				set 	nright = nright + #count#
 				where objectid = '#arguments.parentid#'";
 			
-			query(sql=sql, dsn=arguments.dsn);
+			scriptQuery(sql=sql, dsn=arguments.dsn);
 			arrayAppend(aSQL,sql);
 			}
 		}

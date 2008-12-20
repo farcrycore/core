@@ -102,13 +102,13 @@ $out:$
 			set nright = nright + 2 
 			where nright > #maxr#
 			and typename = '#arguments.typename#'";
-		query(sql=sql, dsn=arguments.dsn);
+		scriptQuery(sql=sql, dsn=arguments.dsn);
 		sql = "
 			update #arguments.dbowner#nested_tree_objects
 			set nleft = nleft + 2
 			where nleft > #maxr#
 			and typename = '#arguments.typename#'";
-		query(sql=sql, dsn=arguments.dsn);
+		scriptQuery(sql=sql, dsn=arguments.dsn);
 		sql = "
 			select nlevel
 			from #arguments.dbowner#nested_tree_objects 
@@ -119,7 +119,7 @@ $out:$
 		sql ="
 		   insert #arguments.dbowner#nested_tree_objects (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
 		  values ('#arguments.objectid#', '#arguments.parentid#', '#arguments.objectName#', '#arguments.typeName#', #maxr# + 1, #maxr# + 2,  #plevel# + 1)";  
-		query(sql=sql, dsn=arguments.dsn);	  
+		scriptQuery(sql=sql, dsn=arguments.dsn);	  
 	}
 	</cfscript>
 	

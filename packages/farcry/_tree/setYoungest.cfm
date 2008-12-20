@@ -65,14 +65,14 @@ $out:$
 		set nright = nright + 2 
 		where nright > #maxr#
 		and typeName = '#arguments.typeName#'";
-		query(sql=sql, dsn=arguments.dsn);
+		scriptQuery(sql=sql, dsn=arguments.dsn);
 		
 		sql = "
 		update #arguments.dbowner#nested_tree_objects
 		set nleft = nleft + 2
 		where nleft > #maxr#
 		and typeName = '#arguments.typeName#'";
-		query(sql=sql, dsn=arguments.dsn);
+		scriptQuery(sql=sql, dsn=arguments.dsn);
 		
 		sql = "		
 			select nlevel
@@ -115,7 +115,7 @@ $out:$
 				}
 			}
 			
-		query(sql=sql, dsn=arguments.dsn);		
+		scriptQuery(sql=sql, dsn=arguments.dsn);		
 		
 	}	
 
