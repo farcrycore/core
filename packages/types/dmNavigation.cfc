@@ -52,21 +52,33 @@ $out:$
 	<!------------------------------------------------------------------------
 	object methods 
 	------------------------------------------------------------------------->
-	<cffunction name="getExternalLinks" access="public" returntype="string" output="false" hint="Returns a list of all navigation nodes in the system with an alias">
+	<cffunction name="getExternalLinks" access="public" returntype="query" output="false" hint="Returns a list of all navigation nodes in the system with an alias">
 	
-		<cfset var lResult = ":#application.rb.getResource('coapi.dmNavigation.properties.externallink@nooptions','-- None --')#" />
-		<cfset var aNavalias = listToArray(listSort(structKeyList(application.navid),'textnocase'))>
 		<cfset var oNav = createObject("component", application.stcoapi["dmNavigation"].packagePath) />
 		<cfset var i = "" />
 		<cfset var j = "" />
+		<cfset var q = queryNew("value,name") />
 		
-		<cfloop from="1" to="#arraylen(aNavalias)#" index="i">
-			<cfloop list="#application.navid[aNavalias[i]]#" index="j">
+		<cfset queryaddrow(q,1) />
+		<cfset querysetcell(q, "value", "") />
+		<cfset querysetcell(q, "name", "#application.rb.getResource('coapi.dmNavigation.properties.externallink@nooptions','-- None --')#") />
+		
+		<cfloop collection="#application.navid#" item="i">
+			<cfloop list="#application.navid[i]#" index="j">
 				<cfset stNav = oNav.getData(objectid="#j#") />
-				<cfset lResult = listAppend(lResult, "#j#:#stNav.title# (#aNavalias[i]#)") />
-			</cfloop>
+				<cfset queryaddrow(q,1) />
+				<cfset querysetcell(q, "value", j) />
+				<cfset querysetcell(q, "name", "#stNav.title# (#i#)") />	
+			</cfloop>		
 		</cfloop>
-		<cfreturn lResult />
+		
+		<cfquery dbtype="query" name="q">
+		SELECT *
+		FROM q
+		ORDER BY name
+		</cfquery>
+
+		<cfreturn q />
 	</cffunction>
 	
 	
