@@ -637,23 +637,28 @@
 			
 					<cfelseif structKeyExists(application.fc.fuID, "#i#")>
 						<cfset request.fc.type = application.fc.fuID[i] />
-					<cfelseif structKeyExists(request.fc, "type")>	
-						<cfif not structKeyExists(request.fc, "view")>
-							<!--- Only check for other attributes once the type is determined. --->				
-							<cfif len(application.coapi.coapiAdmin.getWebskinPath(typename="#request.fc.type#", template="#i#"))>
-								<!--- THIS MEANS ITS A WEBSKIN --->
-								<cfset request.fc.view = i />
-							</cfif>
-
-						<cfelse>
-							<!--- Only check for other attributes once the type is determined. --->				
-							<cfif len(application.coapi.coapiAdmin.getWebskinPath(typename="#request.fc.type#", template="#i#"))>
-								<!--- THIS MEANS ITS A WEBSKIN --->
-								<cfset request.fc.bodyView = i />
-							</cfif>
-							
+					<cfelse>
+						<!--- If we get to here, then we need to confirm we have a type defined. If not, we need to determine from objectid --->
+						<cfif not structKeyExists(request.fc, "type") or not len(request.fc.type)>
+							<cfset request.fc.type = application.coapi.coapiUtilities.findType(objectid="#request.fc.objectid#") />
 						</cfif>
-
+						<cfif structKeyExists(request.fc, "type") and len(request.fc.type)>	
+							<cfif not structKeyExists(request.fc, "view")>
+								<!--- Only check for other attributes once the type is determined. --->				
+								<cfif len(application.coapi.coapiAdmin.getWebskinPath(typename="#request.fc.type#", template="#i#"))>
+									<!--- THIS MEANS ITS A WEBSKIN --->
+									<cfset request.fc.view = i />
+								</cfif>
+	
+							<cfelse>
+								<!--- Only check for other attributes once the type is determined. --->				
+								<cfif len(application.coapi.coapiAdmin.getWebskinPath(typename="#request.fc.type#", template="#i#"))>
+									<!--- THIS MEANS ITS A WEBSKIN --->
+									<cfset request.fc.bodyView = i />
+								</cfif>
+								
+							</cfif>
+						</cfif>
 					</cfif>	
 			
 							

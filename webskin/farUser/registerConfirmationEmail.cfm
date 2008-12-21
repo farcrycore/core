@@ -9,4 +9,4 @@
 	<skin:buildlink objectid="#stobj.objectid#" urlParameters="view=registerConfirmationAccepted" includeDomain="true">CLICK HERE</skin:buildlink> TO CONFIRM YOUR REGISTRATION
 </cfmail>
 
-<cflocation url="#application.url.webroot#?objectid=#stobj.objectid#&view=registerConfirmation" addtoken="false" />
+<skin:location objectid="#stobj.objectid#" type="farUser" view="registerConfirmation" /> 
