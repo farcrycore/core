@@ -242,7 +242,7 @@
 				<!--- DO NOT ADD TO CACHE IF IN DESIGN MODE or SHOWING MORE THAN APPROVED OBJECTS or UPDATING APP --->
 			<cfelseif len(arguments.HTML)>
 				<cfif structKeyExists(application.stcoapi[webskinTypename].stWebskins, arguments.template) >
-					<cfif application.stcoapi[webskinTypename].stWebskins[arguments.template].cacheStatus EQ 1>
+					<cfif application.stcoapi[webskinTypename].bObjectBroker AND application.stcoapi[webskinTypename].stWebskins[arguments.template].cacheStatus EQ 1>
 						<cfif structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)>
 							<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
 								<cfif not structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")>
