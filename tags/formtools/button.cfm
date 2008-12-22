@@ -63,8 +63,13 @@
 		<cfset attributes.onClick = "#attributes.onClick#;btnClick('#Request.farcryForm.Name#','#jsStringFormat(attributes.value)#');" />
 	</cfif>
 	
-	<cfif isDefined("Request.farcryForm.Name") AND attributes.validate>
-		<cfset attributes.onClick = "#attributes.onClick#;if(!validateBtnClick('#Request.farcryForm.Name#')){return false};" />	
+	<cfif isDefined("Request.farcryForm.Name")>
+		<cfif attributes.validate>
+			<cfset attributes.onClick = "#attributes.onClick#;if(!validateBtnClick('#Request.farcryForm.Name#')){return false};" />	
+		<cfelse>
+			<cfset attributes.onClick = "#attributes.onClick#;btnTurnOffServerSideValidation();" />	
+		</cfif>
+		
 	</cfif>
 	
 	
