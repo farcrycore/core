@@ -10,7 +10,7 @@
 			<input type="hidden" name="FarcryFormSubmitted"  value="#Request.farcryForm.Name#" /><!--- Contains the name of the farcry form submitted --->
 			<input type="hidden" name="SelectedObjectID" class="fc-selected-object-id" value="" /><!--- Hidden Field to take a UUID from the attributes.SelectedObjectID on ft:farcryButton --->
 		
-			<input type="hidden" name="farcryFormValidation" id="farcryFormValidation#Request.farcryForm.Name#" value="#Request.farcryForm.Validation#" /><!--- Let the form submission know if it to perform serverside validation --->
+			<input type="hidden" name="farcryFormValidation" id="farcryFormValidation#Request.farcryForm.Name#" class="fc-server-side-validation" value="#Request.farcryForm.Validation#" /><!--- Let the form submission know if it to perform serverside validation --->
 
 		</form>
 		

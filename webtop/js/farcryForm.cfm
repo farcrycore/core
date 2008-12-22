@@ -396,6 +396,14 @@ function btnClick(formName,value) {
 		f[i].value = value;
 	}
 }
+
+function btnTurnOffServerSideValidation() {
+	f = Ext.query('.fc-server-side-validation');
+   	for(var i=0; i<f.length; i++){
+		f[i].value = 0;
+	}
+}
+	
 		
 function btnSubmit(formName,value) {
    	btnClick(formName,value);
