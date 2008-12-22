@@ -60,6 +60,7 @@ SETUP DEFAULTS FOR ALL INSTALLATION WIZARD FIELDS
 	<cfset session.stFarcryInstall.currentStep = "1" />
 	<cfset session.stFarcryInstall.lCompletedSteps = "" />
 	<cfset session.stFarcryInstall.stConfig = "#structNew()#" />
+	<cfset session.stFarcryInstall.stConfig.bInstallDBOnly = false />	
 	<cfset session.stFarcryInstall.stConfig.applicationName = "" />
 	<cfset session.stFarcryInstall.stConfig.displayName = "" />
 	<cfset session.stFarcryInstall.stConfig.locales = "en_AU,en_US" />
@@ -84,7 +85,7 @@ SAVE AND CONTROL THE INSTAL PROCESS WIZARD
 <cf_processStep step="ALL">
 	
 	<cfloop collection="#form#" item="field">
-		<cfif findNoCase("addWebrootMapping", field)>
+		<cfif findNoCase("addWebrootMapping", field) OR findNoCase("bInstallDBOnly", field)>
 			<cfset session.stFarcryInstall.stConfig[field] = listFirst(form[field]) />
 		<cfelse>
 			<cfset session.stFarcryInstall.stConfig[field] = form[field] />
@@ -100,38 +101,39 @@ SAVE AND CONTROL THE INSTAL PROCESS WIZARD
 
 
 <cf_processStep step="1,6">
-	
-	<cfif not len(session.stFarcryInstall.stConfig.displayName)>		
-		<cf_redoStep step="1" field="displayName" errorTitle="REQUIRED" errorDescription="You must select the project name." />
-	</cfif>
+	<cfif not session.stFarcryInstall.stConfig.bInstallDBOnly>
+		<cfif not len(session.stFarcryInstall.stConfig.displayName)>		
+			<cf_redoStep step="1" field="displayName" errorTitle="REQUIRED" errorDescription="You must select the project name." />
+		</cfif>
+			
+		<!--- Check Its not empty --->
 		
-	<!--- Check Its not empty --->
-	<cfif not len(session.stFarcryInstall.stConfig.applicationName)>		
-		<cf_redoStep step="1" field="applicationName" errorTitle="REQUIRED" errorDescription="You must select the project folder name." />
-	<cfelse>
-		<!--- Check its a valid variable name --->
-		<cftry>
-			<cfset "variables.#session.stFarcryInstall.stConfig.applicationName#" = 1 />
-			<cfset bValidApplicationName = true />
-			<cfcatch type="any">
-				<!--- Means it wasnt a valide application name --->
-				<cfset bValidApplicationName = false />
-			</cfcatch>
-		</cftry>
-		<cfif not bValidApplicationName>
-			<cf_redoStep step="1" field="applicationName" errorTitle="INVALID PROJECT FOLDER NAME" errorDescription="- no spaces<br />- only alpha numerics and _ (underscore)<br />- must start with an alpha" />
+		<cfif not len(session.stFarcryInstall.stConfig.applicationName)>		
+			<cf_redoStep step="1" field="applicationName" errorTitle="REQUIRED" errorDescription="You must select the project folder name." />
 		<cfelse>
-			<!--- Check its not already created. --->
-			<cfif directoryExists(expandPath("/farcry/projects/#session.stFarcryInstall.stConfig.applicationName#"))>
-				<cf_redoStep step="1" field="applicationName" errorTitle="INVALID PROJECT FOLDER NAME" errorDescription="The project folder name <b>#session.stFarcryInstall.stConfig.applicationName#</b> is invalid or already exists on this server. Please remove this project folder or select an alternative name." />
+			<!--- Check its a valid variable name --->
+			<cftry>
+				<cfset "variables.#session.stFarcryInstall.stConfig.applicationName#" = 1 />
+				<cfset bValidApplicationName = true />
+				<cfcatch type="any">
+					<!--- Means it wasnt a valide application name --->
+					<cfset bValidApplicationName = false />
+				</cfcatch>
+			</cftry>
+			<cfif not bValidApplicationName>
+				<cf_redoStep step="1" field="applicationName" errorTitle="INVALID PROJECT FOLDER NAME" errorDescription="- no spaces<br />- only alpha numerics and _ (underscore)<br />- must start with an alpha" />
+			<cfelse>
+				<!--- Check its not already created. --->
+				<cfif directoryExists(expandPath("/farcry/projects/#session.stFarcryInstall.stConfig.applicationName#"))>
+					<cf_redoStep step="1" field="applicationName" errorTitle="INVALID PROJECT FOLDER NAME" errorDescription="The project folder name <b>#session.stFarcryInstall.stConfig.applicationName#</b> is invalid or already exists on this server. Please remove this project folder or select an alternative name." />
+				</cfif>
 			</cfif>
 		</cfif>
+	
+		<cfif not len(session.stFarcryInstall.stConfig.locales)>
+			<cf_redoStep step="1" field="locales" errorTitle="INVALID LOCALE" errorDescription="You must select at lease 1 locale." />
+		</cfif>
 	</cfif>
-
-	<cfif not len(session.stFarcryInstall.stConfig.locales)>
-		<cf_redoStep step="1" field="locales" errorTitle="INVALID LOCALE" errorDescription="You must select at lease 1 locale." />
-	</cfif>
-
 </cf_processStep>
 
 
@@ -241,60 +243,107 @@ RENDER THE CURRENT STEP
 
 	<cfoutput>	
 	<h1>Project Details</h1>
-	
-	<div class="item">
-      	<label for="displayName">Project Name <em>*</em></label>
-		<div class="field">
-			<input type="text" id="displayName" name="displayName" value="#session.stFarcryInstall.stConfig.displayName#" />
-			<div class="fieldHint">Project name is for display purposes only, and can be just about anything you like.</div>
+	<div id="project-details" <cfif session.stFarcryInstall.stConfig.bInstallDBOnly>style="display:none;"</cfif>>
+		<div class="item">
+	      	<label for="displayName">Project Name <em>*</em></label>
+			<div class="field">
+				<input type="text" id="displayName" name="displayName" value="#session.stFarcryInstall.stConfig.displayName#" />
+				<div class="fieldHint">Project name is for display purposes only, and can be just about anything you like.</div>
+			</div>
+			<div class="clear"></div>
+		</div>	
+		<div class="item">
+	      	<label for="applicationName">Project Folder Name <em>*</em></label>
+			<div class="field">
+				<input type="text" id="applicationName" name="applicationName" value="#session.stFarcryInstall.stConfig.applicationName#" />
+				<div class="fieldHint">Project folder name corresponds to the underlying installation folder and application name of your project.  It must adhere to the standard ColdFusion naming conventions for variables; namely start with a letter and consist of only letters, numbers and underscores.</div>
+			</div>
+			<div class="clear"></div>
 		</div>
-		<div class="clear"></div>
-	</div>	
-	<div class="item">
-      	<label for="applicationName">Project Folder Name <em>*</em></label>
-		<div class="field">
-			<input type="text" id="applicationName" name="applicationName" value="#session.stFarcryInstall.stConfig.applicationName#" />
-			<div class="fieldHint">Project folder name corresponds to the underlying installation folder and application name of your project.  It must adhere to the standard ColdFusion naming conventions for variables; namely start with a letter and consist of only letters, numbers and underscores.</div>
+		<div class="item">
+	      	<label for="displayName">Administrator Password <em>*</em></label>
+			<div class="field">
+				<input type="text" id="adminPassword" name="adminPassword" value="#session.stFarcryInstall.stConfig.adminPassword#" />
+				<div class="fieldHint">This is the password you will use to log in to your project with the "farcry" username.</div>
+			</div>
+			<div class="clear"></div>
+		</div>	
+		<div class="item">
+	      	<label for="applicationName">Update Application Key <em>*</em></label>
+			<div class="field">
+				<input type="text" id="updateappKey" name="updateappKey" value="#session.stFarcryInstall.stConfig.updateappKey#" />
+				<div class="fieldHint">This is the key that can be used at the end of the url parameter [updateapp] to reinitialise your application. <strong>Administrators can use updateapp=1</strong></div>
+			</div>
+			<div class="clear"></div>
 		</div>
-		<div class="clear"></div>
-	</div>
-	<div class="item">
-      	<label for="displayName">Administrator Password <em>*</em></label>
-		<div class="field">
-			<input type="text" id="adminPassword" name="adminPassword" value="#session.stFarcryInstall.stConfig.adminPassword#" />
-			<div class="fieldHint">This is the password you will use to log in to your project with the "farcry" username.</div>
-		</div>
-		<div class="clear"></div>
-	</div>	
-	<div class="item">
-      	<label for="applicationName">Update Application Key <em>*</em></label>
-		<div class="field">
-			<input type="text" id="updateappKey" name="updateappKey" value="#session.stFarcryInstall.stConfig.updateappKey#" />
-			<div class="fieldHint">This is the key that can be used at the end of the url parameter [updateapp] to reinitialise your application. <strong>Administrators can use updateapp=1</strong></div>
-		</div>
-		<div class="clear"></div>
-	</div>
-	<div class="item">
-      	<label for="applicationName">Locales <em>*</em></label>
-		<div class="field">
-			<cfset variables.aLocales = createObject("java","java.util.Locale").getAvailableLocales() />
-			<cfset variables.lLocales = "" />
-			<cfloop from="1" to="#arrayLen(variables.aLocales)#" index="i">
-				<cfif listLen(variables.aLocales[i],"_") EQ 2>
-					<cfset variables.lLocales = listAppend(variables.lLocales, "#variables.aLocales[i].getDisplayName()#:#variables.aLocales[i].toString()#") />
-				</cfif>
-			</cfloop>
-			<cfset variables.lLocales = listSort(variables.lLocales,"textNoCase", "asc") />
-			<input type="hidden" name="locales" value="" />
-			<select id="locales" name="locales" multiple="multiple" size="5">
-				<cfloop list="#variables.lLocales#" index="i">
-					<option value="#listLast(i, ":")#" <cfif listFindNoCase(session.stFarcryInstall.stConfig.locales, listLast(i, ":"))>selected="selected"</cfif>>#listFirst(i, ":")#</option>
+		<div class="item">
+	      	<label for="applicationName">Locales <em>*</em></label>
+			<div class="field">
+				<cfset variables.aLocales = createObject("java","java.util.Locale").getAvailableLocales() />
+				<cfset variables.lLocales = "" />
+				<cfloop from="1" to="#arrayLen(variables.aLocales)#" index="i">
+					<cfif listLen(variables.aLocales[i],"_") EQ 2>
+						<cfset variables.lLocales = listAppend(variables.lLocales, "#variables.aLocales[i].getDisplayName()#:#variables.aLocales[i].toString()#") />
+					</cfif>
 				</cfloop>
-			</select>
-			<div class="fieldHint">Set the relevant locales for your application.  Just because the locale can be selected does not mean a relevant translation is available.  If in doubt just leave the defaults.</div>
+				<cfset variables.lLocales = listSort(variables.lLocales,"textNoCase", "asc") />
+				<input type="hidden" name="locales" value="" />
+				<select id="locales" name="locales" multiple="multiple" size="5">
+					<cfloop list="#variables.lLocales#" index="i">
+						<option value="#listLast(i, ":")#" <cfif listFindNoCase(session.stFarcryInstall.stConfig.locales, listLast(i, ":"))>selected="selected"</cfif>>#listFirst(i, ":")#</option>
+					</cfloop>
+				</select>
+				<div class="fieldHint">Set the relevant locales for your application.  Just because the locale can be selected does not mean a relevant translation is available.  If in doubt just leave the defaults.</div>
+			</div>
+			<div class="clear"></div>
+		</div>	
+	</div>
+
+	
+	<div class="item" style="border-top: 1px solid rgb(227, 227, 227);margin-top: 25px;">
+      	<label for="displayName">Install DB Only <em>*</em></label>
+		<div class="field">
+			<input type="checkbox" id="bInstallDBOnly" name="bInstallDBOnly" value="1" <cfif session.stFarcryInstall.stConfig.bInstallDBOnly>checked</cfif> />
+			<input type="hidden" id="bInstallDBOnly" name="bInstallDBOnly" value="0" />
+			<div class="fieldHint">If you already have a project set and simply want to install the application into a new datasource, select this option. <strong>Advanced users only.</strong></div>
 		</div>
 		<div class="clear"></div>
-	</div>			
+	</div>		
+
+	<script type="text/javascript">
+	Ext.onReady(function(){	
+		var field = Ext.get('bInstallDBOnly');
+		field.on('change', checkDBOnly);		
+	})
+	
+	
+		
+	function checkDBOnly() {
+		
+		
+		
+		if(this.dom.checked)
+		{
+			Ext.get('project-details').slideOut('t', {
+			    easing: 'easeIn',
+			    duration: .5,
+			    useDisplay: true
+			});	
+				
+		}
+		else 
+		{
+			
+			Ext.get('project-details').slideIn('t', {
+			    easing: 'easeOut',
+			    duration: .5,
+			    remove: false,
+			    useDisplay: true
+			});
+		}
+	}
+	
+	</script>	
 	</cfoutput>
 </cf_displayStep>
 
@@ -487,33 +536,34 @@ RENDER THE CURRENT STEP
 								<strong>#oManifest.name#</strong> <cfif not pluginSupported>(unsupported)</cfif> <br />
 								<em>#oManifest.description#</em>
 							</p>
-							<cfif directoryExists("#pluginPath#/#qPlugins.name#/www") >
-								<cfif listContainsNoCase(session.stFarcryInstall.stConfig.plugins, qPlugins.name)>
-									<cfset pluginMappingDisplay = 'block' />
-								<cfelse>
-									<cfset pluginMappingDisplay = 'none' />
+							<cfif not session.stFarcryInstall.stConfig.bInstallDBOnly>
+								<cfif directoryExists("#pluginPath#/#qPlugins.name#/www") >
+									<cfif listContainsNoCase(session.stFarcryInstall.stConfig.plugins, qPlugins.name)>
+										<cfset pluginMappingDisplay = 'block' />
+									<cfelse>
+										<cfset pluginMappingDisplay = 'none' />
+									</cfif>
+									<table cellspacing="10" cellpadding="0" id="plugin#qPlugins.name#AddWebroot" style="display:#pluginMappingDisplay#;">
+									<tr>
+										<td valign="top" width="25px;">
+											<input type="checkbox" id="addWebrootMapping#qPlugins.name#" name="addWebrootMapping#qPlugins.name#" value="1" <cfif not isDefined("session.stFarcryInstall.stConfig.addWebrootMapping#qPlugins.name#") or session.stFarcryInstall.stConfig["addWebrootMapping#qPlugins.name#"]>checked</cfif> />
+										</td>
+										<td>
+											<p><strong>Copy Plugin Webroot to project</strong></p>
+											<div class="fieldHint">This plugin requires a webroot mapping. You can create the webroot mapping on your webserver, or alteratively you can select to have the webroot copied into your project to avoid having to create the mapping.</div>
+										</td>
+									</tr>
+									</table>
+									<input type="hidden" name="addWebrootMapping#qPlugins.name#" value="0" />
+										<script type="text/javascript">
+										Ext.onReady(function(){	
+											var field = Ext.get('plugin#qPlugins.name#');
+											field.on('change', checkPluginWebroot);
+											
+										})
+										</script>
 								</cfif>
-								<table cellspacing="10" cellpadding="0" id="plugin#qPlugins.name#AddWebroot" style="display:#pluginMappingDisplay#;">
-								<tr>
-									<td valign="top" width="25px;">
-										<input type="checkbox" id="addWebrootMapping#qPlugins.name#" name="addWebrootMapping#qPlugins.name#" value="1" <cfif not isDefined("session.stFarcryInstall.stConfig.addWebrootMapping#qPlugins.name#") or session.stFarcryInstall.stConfig["addWebrootMapping#qPlugins.name#"]>checked</cfif> />
-									</td>
-									<td>
-										<p><strong>Copy Plugin Webroot to project</strong></p>
-										<div class="fieldHint">This plugin requires a webroot mapping. You can create the webroot mapping on your webserver, or alteratively you can select to have the webroot copied into your project to avoid having to create the mapping.</div>
-									</td>
-								</tr>
-								</table>
-								<input type="hidden" name="addWebrootMapping#qPlugins.name#" value="0" />
-									<script type="text/javascript">
-									Ext.onReady(function(){	
-										var field = Ext.get('plugin#qPlugins.name#');
-										field.on('change', checkPluginWebroot);
-										
-									})
-									</script>
 							</cfif>
-							
 
 						</td>
 					</tr>
@@ -570,53 +620,57 @@ RENDER THE CURRENT STEP
 <cf_displayStep step="5">
 	<cfoutput>
 	<h1>Deployment Configuration</h1>
-	<p>FarCry Core can support a variety of different configurations for deployment.  The installer supports three options.  If you are after a custom deployment option select "Advanced Configuration".</p>
-	<p>&nbsp;</p>
+
 	
-	
-	<div class="section">		
-		<h3>
+	<cfif session.stFarcryInstall.stConfig.bInstallDBOnly>
+		<p><strong>This step is only relevent when NOT installing the database only.</strong></p>
+	<cfelse>
+		<p>FarCry Core can support a variety of different configurations for deployment.  The installer supports three options.  If you are after a custom deployment option select "Advanced Configuration".</p>
+		<p>&nbsp;</p>
+		
+		<div class="section">		
+			<h3>
+				<cfif fileExists(expandPath("/farcryConstructor.cfm"))>
+					<input type="radio" id="projectInstallType" name="projectInstallType" disabled="true" value="SubDirectory" />
+					<span style="text-decoration:line-through;">Sub-Directory</span>
+				<cfelse>
+					<input type="radio" id="projectInstallType" name="projectInstallType" value="SubDirectory" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "SubDirectory">checked</cfif> />
+					Sub-Directory
+				</cfif>
+			</h3>
 			<cfif fileExists(expandPath("/farcryConstructor.cfm"))>
-				<input type="radio" id="projectInstallType" name="projectInstallType" disabled="true" value="SubDirectory" />
-				<span style="text-decoration:line-through;">Sub-Directory</span>
-			<cfelse>
-				<input type="radio" id="projectInstallType" name="projectInstallType" value="SubDirectory" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "SubDirectory">checked</cfif> />
-				Sub-Directory
+				<p><strong style="color:red;">You can't install as a sub-directory when a project exists in the webroot</strong></p>
 			</cfif>
-		</h3>
-		<cfif fileExists(expandPath("/farcryConstructor.cfm"))>
-			<p><strong style="color:red;">You can't install as a sub-directory when a project exists in the webroot</strong></p>
-		</cfif>
-		<p>For multiple application deployment under a single webroot.  If you only have a single web site configured for your server, and would like to run multiple FarCry applications select me.</p>
-		<p>Note each application will run under its own sub-directory, for example: http://localhost:8500/myproject</p>
-	</div>
-	
-	<div class="section">	
-		<h3>
+			<p>For multiple application deployment under a single webroot.  If you only have a single web site configured for your server, and would like to run multiple FarCry applications select me.</p>
+			<p>Note each application will run under its own sub-directory, for example: http://localhost:8500/myproject</p>
+		</div>
+		
+		<div class="section">	
+			<h3>
+				<cfif fileExists(expandPath("/farcryConstructor.cfm"))>
+					<input type="radio" id="projectInstallType" name="projectInstallType" disabled="true" value="Standalone" />
+					<span style="text-decoration:line-through;">Standalone</span>
+				<cfelse>
+					<input type="radio" id="projectInstallType" name="projectInstallType" value="Standalone" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "Standalone">checked</cfif> />
+					Standalone
+				</cfif>
+			</h3>
 			<cfif fileExists(expandPath("/farcryConstructor.cfm"))>
-				<input type="radio" id="projectInstallType" name="projectInstallType" disabled="true" value="Standalone" />
-				<span style="text-decoration:line-through;">Standalone</span>
-			<cfelse>
-				<input type="radio" id="projectInstallType" name="projectInstallType" value="Standalone" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "Standalone">checked</cfif> />
-				Standalone
+				<p><strong style="color:red;">You can't install as standalone when a project exists in the webroot</strong></p>
 			</cfif>
-		</h3>
-		<cfif fileExists(expandPath("/farcryConstructor.cfm"))>
-			<p><strong style="color:red;">You can't install as standalone when a project exists in the webroot</strong></p>
-		</cfif>
-		<p>Specifically aimed at one application per website. For standalone application deployment and/or shared hosting deployment that allows for a single project select me.</p>
-		<p>Note the application will run directly under the webroot, for example: http://localhost/</p>
-	</div>
-	
-	<div class="section">		
-		<h3>
-			<input type="radio" id="projectInstallType" name="projectInstallType" value="CFMapping" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "CFMapping">checked</cfif> />
-			Advanced Configuration (ColdFusion and/or Web Server Mappings)
-		</h3>
-		<p>An enterprise configuration that allows for an unlimited number of projects to share a single core framework and library of plugins. Sharing is done through common reference to specific ColdFusion mapping or specific web server mapping (aka web virtual directory) of /farcry.</p>
-		<p>Note this is an advanced option for custom configurations and deployments.  You may need to perform additional configuration to make your FarCry application operational.  Only select me if you know what you are doing.
-	</div>
-			
+			<p>Specifically aimed at one application per website. For standalone application deployment and/or shared hosting deployment that allows for a single project select me.</p>
+			<p>Note the application will run directly under the webroot, for example: http://localhost/</p>
+		</div>
+		
+		<div class="section">		
+			<h3>
+				<input type="radio" id="projectInstallType" name="projectInstallType" value="CFMapping" <cfif session.stFarcryInstall.stConfig.projectInstallType EQ "CFMapping">checked</cfif> />
+				Advanced Configuration (ColdFusion and/or Web Server Mappings)
+			</h3>
+			<p>An enterprise configuration that allows for an unlimited number of projects to share a single core framework and library of plugins. Sharing is done through common reference to specific ColdFusion mapping or specific web server mapping (aka web virtual directory) of /farcry.</p>
+			<p>Note this is an advanced option for custom configurations and deployments.  You may need to perform additional configuration to make your FarCry application operational.  Only select me if you know what you are doing.
+		</div>
+	</cfif>		
 	
 	<!--- <div class="item">
       	<label>Project Install Type</label>
@@ -647,41 +701,48 @@ RENDER THE CURRENT STEP
 
 <cfoutput>
 <h1>Installation Confirmation</h1>
-<div class="section">
-<div class="item summary">
-	<label>Project Name:</label>
-	<div class="field fieldDisplay">#session.stFarcryInstall.stConfig.displayName#</div>
-	<div class="clear">&nbsp;</div>
-</div>
-<div class="item summary">
-	<label>Project Folder Name:</label>
-	<div class="field fieldDisplay">#session.stFarcryInstall.stConfig.applicationName#</div>
-	<div class="clear">&nbsp;</div>
-</div>
-<div class="item summary">
-	<label>Locales:</label>
-	<div class="field fieldDisplay">
-			<cfset variables.aLocales = createObject("java","java.util.Locale").getAvailableLocales() />
-			<cfset variables.lLocales = "" />
-			<cfloop from="1" to="#arrayLen(variables.aLocales)#" index="i">
-				<cfif listLen(variables.aLocales[i],"_") EQ 2>
-					<cfset variables.lLocales = listAppend(variables.lLocales, "#variables.aLocales[i].toString()#:#variables.aLocales[i].getDisplayName()#") />
-				</cfif>
-			</cfloop>
-			<cfset variables.lLocales = listSort(variables.lLocales,"textNoCase", "asc") />
-			<cfloop list="#variables.lLocales#" index="i">
-				<cfif listFindNoCase(session.stFarcryInstall.stConfig.locales, listFirst(i, ":"))>
-					#listLast(i, ":")#<br />
-				</cfif>
-			</cfloop>
-
+<cfif NOT session.stFarcryInstall.stConfig.bInstallDBOnly>
+	<div class="section">
+	
+		<div class="item summary">
+			<label>Project Name:</label>
+			<div class="field fieldDisplay">#session.stFarcryInstall.stConfig.displayName#</div>
+			<div class="clear">&nbsp;</div>
+		</div>
+	
+		<div class="item summary">
+			<label>Project Folder Name:</label>
+			<div class="field fieldDisplay">#session.stFarcryInstall.stConfig.applicationName#</div>
+			<div class="clear">&nbsp;</div>
+		</div>
+		<div class="item summary">
+			<label>Locales:</label>
+			<div class="field fieldDisplay">
+					<cfset variables.aLocales = createObject("java","java.util.Locale").getAvailableLocales() />
+					<cfset variables.lLocales = "" />
+					<cfloop from="1" to="#arrayLen(variables.aLocales)#" index="i">
+						<cfif listLen(variables.aLocales[i],"_") EQ 2>
+							<cfset variables.lLocales = listAppend(variables.lLocales, "#variables.aLocales[i].toString()#:#variables.aLocales[i].getDisplayName()#") />
+						</cfif>
+					</cfloop>
+					<cfset variables.lLocales = listSort(variables.lLocales,"textNoCase", "asc") />
+					<cfloop list="#variables.lLocales#" index="i">
+						<cfif listFindNoCase(session.stFarcryInstall.stConfig.locales, listFirst(i, ":"))>
+							#listLast(i, ":")#<br />
+						</cfif>
+					</cfloop>
+		
+			</div>
+			<div class="clear">&nbsp;</div>
+		</div>
 	</div>
-	<div class="clear">&nbsp;</div>
-</div>
-</div>
+</cfif>
 
 <div class="section">
 <div class="item summary">
+	<cfif session.stFarcryInstall.stConfig.bInstallDBOnly>
+		<p style="text-align:center;"><strong>DATABASE ONLY INSTALLATION</strong></p>
+	</cfif>
 	<label>DSN:</label>
 	<div class="field fieldDisplay">#session.stFarcryInstall.stConfig.dsn#</div>
 	<div class="clear">&nbsp;</div>
@@ -730,26 +791,27 @@ RENDER THE CURRENT STEP
 </div>
 </div>
 
-
-<div class="section">
-<div class="item summary">
-	<label>Project Webroot Install Type:</label>
-	<div class="field fieldDisplay">
-		<cfswitch expression="#session.stFarcryInstall.stConfig.projectInstallType#">
-			<cfcase value="SubDirectory">
-				A sub-directory under the web root
-			</cfcase>
-			<cfcase value="Standalone">
-				Directly into the web root
-			</cfcase>
-			<cfdefaultcase>
-				Into /farcry/projects/#session.stFarcryInstall.stConfig.applicationName#/www
-			</cfdefaultcase>
-		</cfswitch>
+<cfif NOT session.stFarcryInstall.stConfig.bInstallDBOnly>
+	<div class="section">
+	<div class="item summary">
+		<label>Project Webroot Install Type:</label>
+		<div class="field fieldDisplay">
+			<cfswitch expression="#session.stFarcryInstall.stConfig.projectInstallType#">
+				<cfcase value="SubDirectory">
+					A sub-directory under the web root
+				</cfcase>
+				<cfcase value="Standalone">
+					Directly into the web root
+				</cfcase>
+				<cfdefaultcase>
+					Into /farcry/projects/#session.stFarcryInstall.stConfig.applicationName#/www
+				</cfdefaultcase>
+			</cfswitch>
+		</div>
+		<div class="clear">&nbsp;</div>
 	</div>
-	<div class="clear">&nbsp;</div>
-</div>
-</div>
+	</div>
+</cfif>
 </cfoutput>	
 </cf_displayStep>
 

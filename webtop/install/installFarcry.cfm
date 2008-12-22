@@ -67,6 +67,7 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 
 
 <cfif not session.stFarcryInstall.bComplete>
+	<cfset form.bInstallDBOnly = session.stFarcryInstall.stConfig.bInstallDBOnly />
 	<cfset form.applicationName = session.stFarcryInstall.stConfig.applicationName />
 	<cfset form.displayName = session.stFarcryInstall.stConfig.displayName />
 	<cfset form.locales = session.stFarcryInstall.stConfig.locales />
@@ -195,111 +196,114 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 	<!--- Webtop --->
 	<cfset webtopPath = expandPath('/farcry/core/webtop') />
 	
-	<cfoutput>#updateProgressBar(value="0.1", text="#form.displayName# (SETUP): Creating your project")#</cfoutput><cfflush>
 	
+	<cfif NOT form.bInstallDBOnly>
 		
-	<cfset oZip = createObject("component", "farcry.core.packages.farcry.zip") />
- 
-	<cfdirectory action="create" directory="#farcryProjectsPath#/#form.applicationName#" mode="777" />
-	<cfset oZip.AddFiles(zipFilePath="#farcryProjectsPath#/#form.applicationName#-skeleton.zip", directory="#form.skeletonPath#", recurse="true", compression=0, savePaths="false") />
-	<cfset oZip.Extract(zipFilePath="#farcryProjectsPath#/#form.applicationName#-skeleton.zip", extractPath="#farcryProjectsPath#/#form.applicationName#", overwriteFiles="true") />
-	<cffile action="delete" file="#farcryProjectsPath#/#form.applicationName#-skeleton.zip" />
-
-
-	<cfset directoryRemoveSVN(source="#farcryProjectsPath#/#form.applicationName#") />
-
-
-
-
-
-	<cfswitch expression="#form.projectInstallType#">
-	<cfcase value="subDirectory">
-		<cfoutput>#updateProgressBar(value="0.2", text="#form.displayName# (SETUP): Copying your project to a subdirectory under the webroot")#</cfoutput><cfflush>
+		<cfoutput>#updateProgressBar(value="0.1", text="#form.displayName# (SETUP): Creating your project")#</cfoutput><cfflush>
 		
-		
-		<cfset projectWebrootPath = "#webrootPath#/#form.applicationName#" />
-		<cfset projectWebrootURL = "http://#cgi.server_name#/#form.applicationName#" />
-		<cfdirectory action="create" directory="#webrootPath#/#form.applicationName#" mode="777" />
+			
 		<cfset oZip = createObject("component", "farcry.core.packages.farcry.zip") />
-		<cfset oZip.AddFiles(zipFilePath="#projectWebrootPath#/project-webroot.zip", directory="#farcryProjectsPath#/#form.applicationName#/www", recurse="true", compression=0, savePaths="false") />
-		<cfset oZip.Extract(zipFilePath="#projectWebrootPath#/project-webroot.zip", extractPath="#projectWebrootPath#", overwriteFiles="true") />
-		<cffile action="delete" file="#projectWebrootPath#/project-webroot.zip" />
-		<cfif directoryExists("#farcryProjectsPath#/#form.applicationName#/wwwCopiedToFolderUnderWebroot")>
-			<cfdirectory action="delete" directory="#farcryProjectsPath#/#form.applicationName#/wwwCopiedToFolderUnderWebroot" recurse="true" />
-		</cfif>
-		<cfdirectory action="rename" directory="#farcryProjectsPath#/#form.applicationName#/www" newdirectory="#farcryProjectsPath#/#form.applicationName#/wwwCopiedToFolderUnderWebroot" />
-		
-				
-<!--- 	
-		<cfset directoryCopy(source="#farcryProjectsPath#/#form.applicationName#/www", destination="#projectWebrootPath#", nameconflict="overwrite") /> --->
-
-	</cfcase>
-	<cfcase value="standalone">
-		<cfoutput>#updateProgressBar(value="0.2", text="#form.displayName# (SETUP): Copying your project to the webroot")#</cfoutput><cfflush>
-		<cfset projectWebrootPath = "#webrootPath#" />
-		<cfset projectWebrootURL = "http://#cgi.server_name#" />
-		
-		<cfset oZip = createObject("component", "farcry.core.packages.farcry.zip") />
-		<cfset oZip.AddFiles(zipFilePath="#projectWebrootPath#/project-webroot.zip", directory="#farcryProjectsPath#/#form.applicationName#/www", recurse="true", compression=0, savePaths="false") />
-		<cfset oZip.Extract(zipFilePath="#projectWebrootPath#/project-webroot.zip", extractPath="#projectWebrootPath#", overwriteFiles="true") />
-		<cffile action="delete" file="#projectWebrootPath#/project-webroot.zip" />
-		<cfif directoryExists("#farcryProjectsPath#/#form.applicationName#/wwwCopiedToWebroot")>
-			<cfdirectory action="delete" directory="#farcryProjectsPath#/#form.applicationName#/wwwCopiedToWebroot" recurse="true" />
-		</cfif>		
-		<cfdirectory action="rename" directory="#farcryProjectsPath#/#form.applicationName#/www" newdirectory="#farcryProjectsPath#/#form.applicationName#/wwwCopiedToWebroot" />
-	
-	</cfcase>
-	<cfcase value="CFMapping">
-		<cfset projectWebrootPath = "#farcryProjectsPath#/#form.applicationName#/www" />
-		<cfset projectWebrootURL = "http://#cgi.server_name#" />
-		<!--- Leave as is --->
-	</cfcase>
-	<cfcase value="webserverMapping">
-		<cfset projectWebrootPath = "#farcryProjectsPath#/#form.applicationName#/www" />
-		<cfset projectWebrootURL = "http://#cgi.server_name#" />
-		<!--- Leave as is --->
-	</cfcase>
-	</cfswitch>
+	 
+		<cfdirectory action="create" directory="#farcryProjectsPath#/#form.applicationName#" mode="777" />
+		<cfset oZip.AddFiles(zipFilePath="#farcryProjectsPath#/#form.applicationName#-skeleton.zip", directory="#form.skeletonPath#", recurse="true", compression=0, savePaths="false") />
+		<cfset oZip.Extract(zipFilePath="#farcryProjectsPath#/#form.applicationName#-skeleton.zip", extractPath="#farcryProjectsPath#/#form.applicationName#", overwriteFiles="true") />
+		<cffile action="delete" file="#farcryProjectsPath#/#form.applicationName#-skeleton.zip" />
 	
 	
-
-	<!--- read the master farcryConstructor file --->
-	<cfset farcryConstructorLoc = "#installPath#/config_files/farcryConstructor.cfm" />
-	<cffile action="read" file="#farcryConstructorLoc#" variable="farcryConstructorContent" />
-
-	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@applicationName@@", "#form.applicationName#", "all") />
-	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@applicationDisplayName@@", "#form.displayName#", "all") />
-	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@locales@@", "#form.locales#", "all") />
-	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DSN@@", "#form.DSN#", "all") />
-	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DBType@@", "#form.DBType#", "all") />
-	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DBOwner@@", "#form.DBOwner#", "all") />
-	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@plugins@@", "#form.plugins#", "all") />	
-	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@projectURL@@", "#application.url.webroot#", "all") />
-	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@webtopURL@@", "#application.url.webtop#", "all") />
-	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@updateappKey@@", "#form.updateappKey#", "all") />
-
-	<cffile action="write" file="#projectWebrootPath#/farcryConstructor.cfm" output="#farcryConstructorContent#" addnewline="false" mode="777" />	
+		<cfset directoryRemoveSVN(source="#farcryProjectsPath#/#form.applicationName#") />
 	
-	<cfoutput>#updateProgressBar(value="0.2", text="#form.displayName# (SETUP): Copying your plugins under the webroot")#</cfoutput><cfflush>
-	<cfif listLen(session.stFarcryInstall.stConfig.plugins)>
-		<cfloop list="#session.stFarcryInstall.stConfig.plugins#" index="pluginName">
-			<cfif isDefined("session.stFarcryInstall.stConfig.addWebrootMapping#pluginName#") AND session.stFarcryInstall.stConfig["addWebrootMapping#pluginName#"]>
-				
-				<cfif directoryExists("#pluginPath#/#pluginName#/www")>
-          <cfif not directoryExists("#projectWebrootPath#/#pluginName#")>
-					  <cfdirectory action="create" directory="#projectWebrootPath#/#pluginName#" mode="777" />
-          </cfif>
-					<cfset oZip = createObject("component", "farcry.core.packages.farcry.zip") />
-					<cfset oZip.AddFiles(zipFilePath="#projectWebrootPath#/plugin-webroot.zip", directory="#pluginPath#/#pluginName#/www", recurse="true", compression=0, savePaths="false") />
-					<cfset oZip.Extract(zipFilePath="#projectWebrootPath#/plugin-webroot.zip", extractPath="#projectWebrootPath#/#pluginName#", overwriteFiles="true") />
-					<cffile action="delete" file="#projectWebrootPath#/plugin-webroot.zip" />
-					<cfset directoryRemoveSVN(source="#projectWebrootPath#/#pluginName#") />
-				</cfif>
+	
+	
+	
+	
+		<cfswitch expression="#form.projectInstallType#">
+		<cfcase value="subDirectory">
+			<cfoutput>#updateProgressBar(value="0.2", text="#form.displayName# (SETUP): Copying your project to a subdirectory under the webroot")#</cfoutput><cfflush>
+			
+			
+			<cfset projectWebrootPath = "#webrootPath#/#form.applicationName#" />
+			<cfset projectWebrootURL = "http://#cgi.server_name#/#form.applicationName#" />
+			<cfdirectory action="create" directory="#webrootPath#/#form.applicationName#" mode="777" />
+			<cfset oZip = createObject("component", "farcry.core.packages.farcry.zip") />
+			<cfset oZip.AddFiles(zipFilePath="#projectWebrootPath#/project-webroot.zip", directory="#farcryProjectsPath#/#form.applicationName#/www", recurse="true", compression=0, savePaths="false") />
+			<cfset oZip.Extract(zipFilePath="#projectWebrootPath#/project-webroot.zip", extractPath="#projectWebrootPath#", overwriteFiles="true") />
+			<cffile action="delete" file="#projectWebrootPath#/project-webroot.zip" />
+			<cfif directoryExists("#farcryProjectsPath#/#form.applicationName#/wwwCopiedToFolderUnderWebroot")>
+				<cfdirectory action="delete" directory="#farcryProjectsPath#/#form.applicationName#/wwwCopiedToFolderUnderWebroot" recurse="true" />
 			</cfif>
-		</cfloop>
+			<cfdirectory action="rename" directory="#farcryProjectsPath#/#form.applicationName#/www" newdirectory="#farcryProjectsPath#/#form.applicationName#/wwwCopiedToFolderUnderWebroot" />
+			
+					
+	<!--- 	
+			<cfset directoryCopy(source="#farcryProjectsPath#/#form.applicationName#/www", destination="#projectWebrootPath#", nameconflict="overwrite") /> --->
+	
+		</cfcase>
+		<cfcase value="standalone">
+			<cfoutput>#updateProgressBar(value="0.2", text="#form.displayName# (SETUP): Copying your project to the webroot")#</cfoutput><cfflush>
+			<cfset projectWebrootPath = "#webrootPath#" />
+			<cfset projectWebrootURL = "http://#cgi.server_name#" />
+			
+			<cfset oZip = createObject("component", "farcry.core.packages.farcry.zip") />
+			<cfset oZip.AddFiles(zipFilePath="#projectWebrootPath#/project-webroot.zip", directory="#farcryProjectsPath#/#form.applicationName#/www", recurse="true", compression=0, savePaths="false") />
+			<cfset oZip.Extract(zipFilePath="#projectWebrootPath#/project-webroot.zip", extractPath="#projectWebrootPath#", overwriteFiles="true") />
+			<cffile action="delete" file="#projectWebrootPath#/project-webroot.zip" />
+			<cfif directoryExists("#farcryProjectsPath#/#form.applicationName#/wwwCopiedToWebroot")>
+				<cfdirectory action="delete" directory="#farcryProjectsPath#/#form.applicationName#/wwwCopiedToWebroot" recurse="true" />
+			</cfif>		
+			<cfdirectory action="rename" directory="#farcryProjectsPath#/#form.applicationName#/www" newdirectory="#farcryProjectsPath#/#form.applicationName#/wwwCopiedToWebroot" />
+		
+		</cfcase>
+		<cfcase value="CFMapping">
+			<cfset projectWebrootPath = "#farcryProjectsPath#/#form.applicationName#/www" />
+			<cfset projectWebrootURL = "http://#cgi.server_name#" />
+			<!--- Leave as is --->
+		</cfcase>
+		<cfcase value="webserverMapping">
+			<cfset projectWebrootPath = "#farcryProjectsPath#/#form.applicationName#/www" />
+			<cfset projectWebrootURL = "http://#cgi.server_name#" />
+			<!--- Leave as is --->
+		</cfcase>
+		</cfswitch>
+		
+		
+	
+		<!--- read the master farcryConstructor file --->
+		<cfset farcryConstructorLoc = "#installPath#/config_files/farcryConstructor.cfm" />
+		<cffile action="read" file="#farcryConstructorLoc#" variable="farcryConstructorContent" />
+	
+		<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@applicationName@@", "#form.applicationName#", "all") />
+		<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@applicationDisplayName@@", "#form.displayName#", "all") />
+		<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@locales@@", "#form.locales#", "all") />
+		<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DSN@@", "#form.DSN#", "all") />
+		<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DBType@@", "#form.DBType#", "all") />
+		<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DBOwner@@", "#form.DBOwner#", "all") />
+		<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@plugins@@", "#form.plugins#", "all") />	
+		<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@projectURL@@", "#application.url.webroot#", "all") />
+		<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@webtopURL@@", "#application.url.webtop#", "all") />
+		<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@updateappKey@@", "#form.updateappKey#", "all") />
+	
+		<cffile action="write" file="#projectWebrootPath#/farcryConstructor.cfm" output="#farcryConstructorContent#" addnewline="false" mode="777" />	
+		
+		<cfoutput>#updateProgressBar(value="0.2", text="#form.displayName# (SETUP): Copying your plugins under the webroot")#</cfoutput><cfflush>
+		<cfif listLen(session.stFarcryInstall.stConfig.plugins)>
+			<cfloop list="#session.stFarcryInstall.stConfig.plugins#" index="pluginName">
+				<cfif isDefined("session.stFarcryInstall.stConfig.addWebrootMapping#pluginName#") AND session.stFarcryInstall.stConfig["addWebrootMapping#pluginName#"]>
+					
+					<cfif directoryExists("#pluginPath#/#pluginName#/www")>
+	          <cfif not directoryExists("#projectWebrootPath#/#pluginName#")>
+						  <cfdirectory action="create" directory="#projectWebrootPath#/#pluginName#" mode="777" />
+	          </cfif>
+						<cfset oZip = createObject("component", "farcry.core.packages.farcry.zip") />
+						<cfset oZip.AddFiles(zipFilePath="#projectWebrootPath#/plugin-webroot.zip", directory="#pluginPath#/#pluginName#/www", recurse="true", compression=0, savePaths="false") />
+						<cfset oZip.Extract(zipFilePath="#projectWebrootPath#/plugin-webroot.zip", extractPath="#projectWebrootPath#/#pluginName#", overwriteFiles="true") />
+						<cffile action="delete" file="#projectWebrootPath#/plugin-webroot.zip" />
+						<cfset directoryRemoveSVN(source="#projectWebrootPath#/#pluginName#") />
+					</cfif>
+				</cfif>
+			</cfloop>
+		</cfif>
+	
 	</cfif>
-
-
 	
 	
 	
