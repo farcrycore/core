@@ -42,10 +42,10 @@
 				}
 				case "mysql":
 				{
-					stDBMapping.boolean = "INT";
+					stDBMapping.boolean = "TINYINT";
 					stDBMapping.integer = "INT";
 					stDBMapping.date = "DATETIME";
-					stDBMapping.numeric = "NUMERIC|(10,2)";
+					stDBMapping.numeric = "DECIMAL|10,2";
 					stDBMapping.string = "VARCHAR|255";
 					stDBMapping.nstring = "VARCHAR|255";
 					stDBMapping.uuid = "VARCHAR|50";
