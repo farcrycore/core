@@ -830,8 +830,6 @@
 			<!--- set friendly url in database --->
 			
 			<cfset setFU(stFriendlyURL.objectid, stFriendlyURL.friendlyURL, stFriendlyURL.querystring)>
-			
-			<cflog application="true" file="futrace" text="types.setFriendlyURL: #stFriendlyURL.friendlyURL#" />
 		</cfif>
 		
  		<cfreturn stReturn />
@@ -1041,7 +1039,6 @@
 			<cfset setMapping(alias=newAlias,mapping="#application.url.conjurer#?objectid=#arguments.objectid#",querystring=arguments.querystring)>
 		<!--- </cfloop> --->
 		<!--- <cfset updateAppScope()> --->
-		<cflog application="true" file="futrace" text="fu.setfu">
 	</cffunction>
 	
 	<cffunction name="getFU" access="public" returntype="string" hint="Retrieves fu for a real url, returns original ufu if non existent." output="yes" bDocument="true">
