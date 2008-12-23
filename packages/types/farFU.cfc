@@ -575,8 +575,8 @@
 		<cfset var stURL = structNew() />	
 		<cfset var stLocal = structNew() />
 		
-		<!--- If the browser has added a trailing /, strip it out. --->
-		<cfif right(url.furl,1) EQ "/">
+		<!--- If the browser has added a trailing / to a friendly URL, strip it out. --->
+		<cfif structKeyExists(url, "furl") AND len(url.furl) GT 1 AND right(url.furl,1) EQ "/">
 			<cfset url.furl = left(url.furl,len(url.furl) -1) />
 		</cfif>
 		
@@ -644,7 +644,7 @@
 						<cfset request.fc.type = application.fc.fuID[i] />
 					<cfelse>
 						<!--- If we get to here, then we need to confirm we have a type defined. If not, we need to determine from objectid --->
-						<cfif not structKeyExists(request.fc, "type") or not len(request.fc.type)>
+						<cfif structKeyExists(request.fc, "objectid") AND (not structKeyExists(request.fc, "type") or not len(request.fc.type))>
 							<cfset request.fc.type = application.coapi.coapiUtilities.findType(objectid="#request.fc.objectid#") />
 						</cfif>
 						<cfif structKeyExists(request.fc, "type") and len(request.fc.type)>	
