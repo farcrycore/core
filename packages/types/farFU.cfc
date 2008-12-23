@@ -575,6 +575,11 @@
 		<cfset var stURL = structNew() />	
 		<cfset var stLocal = structNew() />
 		
+		<!--- If the browser has added a trailing /, strip it out. --->
+		<cfif right(url.furl,1) EQ "/">
+			<cfset url.furl = left(url.furl,len(url.furl) -1) />
+		</cfif>
+		
 		<cfif structKeyExists(url, "furl") AND len(url.furl) AND url.furl NEQ "/">
 			
 			<cfset stFU = getFUData(url.furl) />
