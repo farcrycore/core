@@ -42,7 +42,7 @@ GENERIC LOGIN
 	<cfparam name="url.ud" default="#application.security.getDefaultUD()#" />
 	
 	
-	<cfif structKeyExists(url, "farcryProject") AND structKeyExists(server, "stFarcryProjects") AND structKeyExists(cookie, "currentFarcryProject") AND structKeyExists(server.stFarcryProjects, url.farcryProject) AND cookie.currentFarcryProject NEQ url.farcryProject>
+	<cfif structKeyExists(url, "farcryProject") AND len(url.farcryProject) AND structKeyExists(server, "stFarcryProjects") AND structKeyExists(cookie, "currentFarcryProject") AND structKeyExists(server.stFarcryProjects, url.farcryProject) AND cookie.currentFarcryProject NEQ url.farcryProject>
 		<cfset cookie.currentFarcryProject = url.farcryProject />
 		<cflocation url="#cgi.SCRIPT_NAME#?#cgi.query_string#" addtoken="false" />
 	</cfif>

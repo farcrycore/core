@@ -244,22 +244,60 @@ RENDER THE CURRENT STEP
 	<cfoutput>	
 	<h1>Project Details</h1>
 	<div id="project-details" <cfif session.stFarcryInstall.stConfig.bInstallDBOnly>style="display:none;"</cfif>>
-		<div class="item">
-	      	<label for="displayName">Project Name <em>*</em></label>
-			<div class="field">
-				<input type="text" id="displayName" name="displayName" value="#session.stFarcryInstall.stConfig.displayName#" />
-				<div class="fieldHint">Project name is for display purposes only, and can be just about anything you like.</div>
+		<div class="item" style="border-top: 1px solid rgb(227, 227, 227);margin-top: 25px;">
+			<div class="item">
+		      	<label for="displayName">Project Name <em>*</em></label>
+				<div class="field">
+					<input type="text" id="displayName" name="displayName" value="#session.stFarcryInstall.stConfig.displayName#" />
+					<div class="fieldHint">Project name is for display purposes only, and can be just about anything you like.</div>
+				</div>
+				<div class="clear"></div>
+			</div>	
+			<div class="item">
+		      	<label for="applicationName">Project Folder Name <em>*</em></label>
+				<div class="field">
+					<input type="text" id="applicationName" name="applicationName" value="#session.stFarcryInstall.stConfig.applicationName#" />
+					<div class="fieldHint">Project folder name corresponds to the underlying installation folder and application name of your project.  It must adhere to the standard ColdFusion naming conventions for variables; namely start with a letter and consist of only letters, numbers and underscores.</div>
+				</div>
+				<div class="clear"></div>
 			</div>
-			<div class="clear"></div>
-		</div>	
-		<div class="item">
-	      	<label for="applicationName">Project Folder Name <em>*</em></label>
-			<div class="field">
-				<input type="text" id="applicationName" name="applicationName" value="#session.stFarcryInstall.stConfig.applicationName#" />
-				<div class="fieldHint">Project folder name corresponds to the underlying installation folder and application name of your project.  It must adhere to the standard ColdFusion naming conventions for variables; namely start with a letter and consist of only letters, numbers and underscores.</div>
-			</div>
-			<div class="clear"></div>
+			<div class="item">
+		      	<label for="applicationName">Locales <em>*</em></label>
+				<div class="field">
+					<cfset variables.aLocales = createObject("java","java.util.Locale").getAvailableLocales() />
+					<cfset variables.lLocales = "" />
+					<cfloop from="1" to="#arrayLen(variables.aLocales)#" index="i">
+						<cfif listLen(variables.aLocales[i],"_") EQ 2>
+							<cfset variables.lLocales = listAppend(variables.lLocales, "#variables.aLocales[i].getDisplayName()#:#variables.aLocales[i].toString()#") />
+						</cfif>
+					</cfloop>
+					<cfset variables.lLocales = listSort(variables.lLocales,"textNoCase", "asc") />
+					<input type="hidden" name="locales" value="" />
+					<select id="locales" name="locales" multiple="multiple" size="5">
+						<cfloop list="#variables.lLocales#" index="i">
+							<option value="#listLast(i, ":")#" <cfif listFindNoCase(session.stFarcryInstall.stConfig.locales, listLast(i, ":"))>selected="selected"</cfif>>#listFirst(i, ":")#</option>
+						</cfloop>
+					</select>
+					<div class="fieldHint">Set the relevant locales for your application.  Just because the locale can be selected does not mean a relevant translation is available.  If in doubt just leave the defaults.</div>
+				</div>
+				<div class="clear"></div>
+			</div>	
 		</div>
+		
+		<div class="item" style="border-top: 1px solid rgb(227, 227, 227);margin-top: 25px;">
+			<div class="item">
+		      	<label for="applicationName">Update Application Key <em>*</em></label>
+				<div class="field">
+					<input type="text" id="updateappKey" name="updateappKey" value="#session.stFarcryInstall.stConfig.updateappKey#" />
+					<div class="fieldHint">This is the key that can be used at the end of the url parameter [updateapp] to reinitialise your application. <strong>Administrators can use updateapp=1</strong></div>
+				</div>
+				<div class="clear"></div>
+			</div>
+		</div>	
+	</div>
+	
+	
+	<div class="item" style="border-top: 1px solid rgb(227, 227, 227);margin-top: 25px;">
 		<div class="item">
 	      	<label for="displayName">Administrator Password <em>*</em></label>
 			<div class="field">
@@ -268,39 +306,11 @@ RENDER THE CURRENT STEP
 			</div>
 			<div class="clear"></div>
 		</div>	
-		<div class="item">
-	      	<label for="applicationName">Update Application Key <em>*</em></label>
-			<div class="field">
-				<input type="text" id="updateappKey" name="updateappKey" value="#session.stFarcryInstall.stConfig.updateappKey#" />
-				<div class="fieldHint">This is the key that can be used at the end of the url parameter [updateapp] to reinitialise your application. <strong>Administrators can use updateapp=1</strong></div>
-			</div>
-			<div class="clear"></div>
-		</div>
-		<div class="item">
-	      	<label for="applicationName">Locales <em>*</em></label>
-			<div class="field">
-				<cfset variables.aLocales = createObject("java","java.util.Locale").getAvailableLocales() />
-				<cfset variables.lLocales = "" />
-				<cfloop from="1" to="#arrayLen(variables.aLocales)#" index="i">
-					<cfif listLen(variables.aLocales[i],"_") EQ 2>
-						<cfset variables.lLocales = listAppend(variables.lLocales, "#variables.aLocales[i].getDisplayName()#:#variables.aLocales[i].toString()#") />
-					</cfif>
-				</cfloop>
-				<cfset variables.lLocales = listSort(variables.lLocales,"textNoCase", "asc") />
-				<input type="hidden" name="locales" value="" />
-				<select id="locales" name="locales" multiple="multiple" size="5">
-					<cfloop list="#variables.lLocales#" index="i">
-						<option value="#listLast(i, ":")#" <cfif listFindNoCase(session.stFarcryInstall.stConfig.locales, listLast(i, ":"))>selected="selected"</cfif>>#listFirst(i, ":")#</option>
-					</cfloop>
-				</select>
-				<div class="fieldHint">Set the relevant locales for your application.  Just because the locale can be selected does not mean a relevant translation is available.  If in doubt just leave the defaults.</div>
-			</div>
-			<div class="clear"></div>
-		</div>	
 	</div>
 
 	
 	<div class="item" style="border-top: 1px solid rgb(227, 227, 227);margin-top: 25px;">
+		<h2>Advanced Users Only</h2>
       	<label for="displayName">Install DB Only <em>*</em></label>
 		<div class="field">
 			<input type="checkbox" id="bInstallDBOnly" name="bInstallDBOnly" value="1" <cfif session.stFarcryInstall.stConfig.bInstallDBOnly>checked</cfif> />
@@ -623,7 +633,7 @@ RENDER THE CURRENT STEP
 
 	
 	<cfif session.stFarcryInstall.stConfig.bInstallDBOnly>
-		<p><strong>This step is only relevent when NOT installing the database only.</strong></p>
+		<p><strong>This is not relevent when performing a database only installation.</strong></p>
 	<cfelse>
 		<p>FarCry Core can support a variety of different configurations for deployment.  The installer supports three options.  If you are after a custom deployment option select "Advanced Configuration".</p>
 		<p>&nbsp;</p>

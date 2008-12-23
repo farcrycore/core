@@ -483,7 +483,7 @@
 			<cfset loc = trim("/farcryConstructor.cfm") />
 		<cfelse>
 			<!--- If all else fails, see if the user has a cookie telling us what project to look at. --->
-			<cfif structKeyExists(url, "farcryProject")>
+			<cfif structKeyExists(url, "farcryProject") AND len(url.farcryProject)>
 				<cfset cookie.currentFarcryProject = url.farcryProject />
 			</cfif>
 			<cfif arguments.plugin EQ "webtop" AND structKeyExists(cookie, "currentFarcryProject")>
