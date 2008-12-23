@@ -339,6 +339,8 @@ RENDER THE CURRENT STEP
 			    duration: .5,
 			    useDisplay: true
 			});	
+			
+			Ext.get('applicationName').dom.value = 'dbinstallonly_#right(createUUID(), 5)#';
 				
 		}
 		else 
@@ -350,6 +352,7 @@ RENDER THE CURRENT STEP
 			    remove: false,
 			    useDisplay: true
 			});
+			Ext.get('applicationName').dom.value = '';
 		}
 	}
 	

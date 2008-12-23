@@ -197,32 +197,34 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 	<cfset webtopPath = expandPath('/farcry/core/webtop') />
 	
 	
-	<cfif NOT form.bInstallDBOnly>
+	
+	
+	<cfoutput>#updateProgressBar(value="0.1", text="#form.displayName# (SETUP): Creating your project")#</cfoutput><cfflush>
+	
 		
-		<cfoutput>#updateProgressBar(value="0.1", text="#form.displayName# (SETUP): Creating your project")#</cfoutput><cfflush>
+	<cfset oZip = createObject("component", "farcry.core.packages.farcry.zip") />
+ 
+	<cfdirectory action="create" directory="#farcryProjectsPath#/#form.applicationName#" mode="777" />
+	<cfset oZip.AddFiles(zipFilePath="#farcryProjectsPath#/#form.applicationName#-skeleton.zip", directory="#form.skeletonPath#", recurse="true", compression=0, savePaths="false") />
+	<cfset oZip.Extract(zipFilePath="#farcryProjectsPath#/#form.applicationName#-skeleton.zip", extractPath="#farcryProjectsPath#/#form.applicationName#", overwriteFiles="true") />
+	<cffile action="delete" file="#farcryProjectsPath#/#form.applicationName#-skeleton.zip" />
+
+
+	<cfset directoryRemoveSVN(source="#farcryProjectsPath#/#form.applicationName#") />
+
+
+
+
+
+	<cfswitch expression="#form.projectInstallType#">
+	<cfcase value="subDirectory">
+		<cfoutput>#updateProgressBar(value="0.2", text="#form.displayName# (SETUP): Copying your project to a subdirectory under the webroot")#</cfoutput><cfflush>
 		
-			
-		<cfset oZip = createObject("component", "farcry.core.packages.farcry.zip") />
-	 
-		<cfdirectory action="create" directory="#farcryProjectsPath#/#form.applicationName#" mode="777" />
-		<cfset oZip.AddFiles(zipFilePath="#farcryProjectsPath#/#form.applicationName#-skeleton.zip", directory="#form.skeletonPath#", recurse="true", compression=0, savePaths="false") />
-		<cfset oZip.Extract(zipFilePath="#farcryProjectsPath#/#form.applicationName#-skeleton.zip", extractPath="#farcryProjectsPath#/#form.applicationName#", overwriteFiles="true") />
-		<cffile action="delete" file="#farcryProjectsPath#/#form.applicationName#-skeleton.zip" />
-	
-	
-		<cfset directoryRemoveSVN(source="#farcryProjectsPath#/#form.applicationName#") />
-	
-	
-	
-	
-	
-		<cfswitch expression="#form.projectInstallType#">
-		<cfcase value="subDirectory">
-			<cfoutput>#updateProgressBar(value="0.2", text="#form.displayName# (SETUP): Copying your project to a subdirectory under the webroot")#</cfoutput><cfflush>
-			
-			
-			<cfset projectWebrootPath = "#webrootPath#/#form.applicationName#" />
-			<cfset projectWebrootURL = "http://#cgi.server_name#/#form.applicationName#" />
+		
+		<cfset projectWebrootPath = "#webrootPath#/#form.applicationName#" />
+		<cfset projectWebrootURL = "http://#cgi.server_name#/#form.applicationName#" />
+		
+		<cfif NOT form.bInstallDBOnly>
 			<cfdirectory action="create" directory="#webrootPath#/#form.applicationName#" mode="777" />
 			<cfset oZip = createObject("component", "farcry.core.packages.farcry.zip") />
 			<cfset oZip.AddFiles(zipFilePath="#projectWebrootPath#/project-webroot.zip", directory="#farcryProjectsPath#/#form.applicationName#/www", recurse="true", compression=0, savePaths="false") />
@@ -232,17 +234,18 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 				<cfdirectory action="delete" directory="#farcryProjectsPath#/#form.applicationName#/wwwCopiedToFolderUnderWebroot" recurse="true" />
 			</cfif>
 			<cfdirectory action="rename" directory="#farcryProjectsPath#/#form.applicationName#/www" newdirectory="#farcryProjectsPath#/#form.applicationName#/wwwCopiedToFolderUnderWebroot" />
-			
-					
-	<!--- 	
-			<cfset directoryCopy(source="#farcryProjectsPath#/#form.applicationName#/www", destination="#projectWebrootPath#", nameconflict="overwrite") /> --->
-	
-		</cfcase>
-		<cfcase value="standalone">
-			<cfoutput>#updateProgressBar(value="0.2", text="#form.displayName# (SETUP): Copying your project to the webroot")#</cfoutput><cfflush>
-			<cfset projectWebrootPath = "#webrootPath#" />
-			<cfset projectWebrootURL = "http://#cgi.server_name#" />
-			
+		</cfif>	
+				
+<!--- 	
+		<cfset directoryCopy(source="#farcryProjectsPath#/#form.applicationName#/www", destination="#projectWebrootPath#", nameconflict="overwrite") /> --->
+
+	</cfcase>
+	<cfcase value="standalone">
+		<cfoutput>#updateProgressBar(value="0.2", text="#form.displayName# (SETUP): Copying your project to the webroot")#</cfoutput><cfflush>
+		<cfset projectWebrootPath = "#webrootPath#" />
+		<cfset projectWebrootURL = "http://#cgi.server_name#" />
+		
+		<cfif NOT form.bInstallDBOnly>
 			<cfset oZip = createObject("component", "farcry.core.packages.farcry.zip") />
 			<cfset oZip.AddFiles(zipFilePath="#projectWebrootPath#/project-webroot.zip", directory="#farcryProjectsPath#/#form.applicationName#/www", recurse="true", compression=0, savePaths="false") />
 			<cfset oZip.Extract(zipFilePath="#projectWebrootPath#/project-webroot.zip", extractPath="#projectWebrootPath#", overwriteFiles="true") />
@@ -251,48 +254,49 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 				<cfdirectory action="delete" directory="#farcryProjectsPath#/#form.applicationName#/wwwCopiedToWebroot" recurse="true" />
 			</cfif>		
 			<cfdirectory action="rename" directory="#farcryProjectsPath#/#form.applicationName#/www" newdirectory="#farcryProjectsPath#/#form.applicationName#/wwwCopiedToWebroot" />
-		
-		</cfcase>
-		<cfcase value="CFMapping">
-			<cfset projectWebrootPath = "#farcryProjectsPath#/#form.applicationName#/www" />
-			<cfset projectWebrootURL = "http://#cgi.server_name#" />
-			<!--- Leave as is --->
-		</cfcase>
-		<cfcase value="webserverMapping">
-			<cfset projectWebrootPath = "#farcryProjectsPath#/#form.applicationName#/www" />
-			<cfset projectWebrootURL = "http://#cgi.server_name#" />
-			<!--- Leave as is --->
-		</cfcase>
-		</cfswitch>
-		
-		
+		</cfif>
+	</cfcase>
+	<cfcase value="CFMapping">
+		<cfset projectWebrootPath = "#farcryProjectsPath#/#form.applicationName#/www" />
+		<cfset projectWebrootURL = "http://#cgi.server_name#" />
+		<!--- Leave as is --->
+	</cfcase>
+	<cfcase value="webserverMapping">
+		<cfset projectWebrootPath = "#farcryProjectsPath#/#form.applicationName#/www" />
+		<cfset projectWebrootURL = "http://#cgi.server_name#" />
+		<!--- Leave as is --->
+	</cfcase>
+	</cfswitch>
 	
-		<!--- read the master farcryConstructor file --->
-		<cfset farcryConstructorLoc = "#installPath#/config_files/farcryConstructor.cfm" />
-		<cffile action="read" file="#farcryConstructorLoc#" variable="farcryConstructorContent" />
 	
-		<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@applicationName@@", "#form.applicationName#", "all") />
-		<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@applicationDisplayName@@", "#form.displayName#", "all") />
-		<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@locales@@", "#form.locales#", "all") />
-		<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DSN@@", "#form.DSN#", "all") />
-		<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DBType@@", "#form.DBType#", "all") />
-		<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DBOwner@@", "#form.DBOwner#", "all") />
-		<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@plugins@@", "#form.plugins#", "all") />	
-		<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@projectURL@@", "#application.url.webroot#", "all") />
-		<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@webtopURL@@", "#application.url.webtop#", "all") />
-		<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@updateappKey@@", "#form.updateappKey#", "all") />
+
+	<!--- read the master farcryConstructor file --->
+	<cfset farcryConstructorLoc = "#installPath#/config_files/farcryConstructor.cfm" />
+	<cffile action="read" file="#farcryConstructorLoc#" variable="farcryConstructorContent" />
+
+	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@applicationName@@", "#form.applicationName#", "all") />
+	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@applicationDisplayName@@", "#form.displayName#", "all") />
+	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@locales@@", "#form.locales#", "all") />
+	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DSN@@", "#form.DSN#", "all") />
+	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DBType@@", "#form.DBType#", "all") />
+	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@DBOwner@@", "#form.DBOwner#", "all") />
+	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@plugins@@", "#form.plugins#", "all") />	
+	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@projectURL@@", "#application.url.webroot#", "all") />
+	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@webtopURL@@", "#application.url.webtop#", "all") />
+	<cfset farcryConstructorContent = replaceNoCase(farcryConstructorContent, "@@updateappKey@@", "#form.updateappKey#", "all") />
+
+	<cffile action="write" file="#projectWebrootPath#/farcryConstructor.cfm" output="#farcryConstructorContent#" addnewline="false" mode="777" />	
 	
-		<cffile action="write" file="#projectWebrootPath#/farcryConstructor.cfm" output="#farcryConstructorContent#" addnewline="false" mode="777" />	
-		
+	<cfif NOT form.bInstallDBOnly>
 		<cfoutput>#updateProgressBar(value="0.2", text="#form.displayName# (SETUP): Copying your plugins under the webroot")#</cfoutput><cfflush>
 		<cfif listLen(session.stFarcryInstall.stConfig.plugins)>
 			<cfloop list="#session.stFarcryInstall.stConfig.plugins#" index="pluginName">
 				<cfif isDefined("session.stFarcryInstall.stConfig.addWebrootMapping#pluginName#") AND session.stFarcryInstall.stConfig["addWebrootMapping#pluginName#"]>
 					
 					<cfif directoryExists("#pluginPath#/#pluginName#/www")>
-	          <cfif not directoryExists("#projectWebrootPath#/#pluginName#")>
+	          			<cfif not directoryExists("#projectWebrootPath#/#pluginName#")>
 						  <cfdirectory action="create" directory="#projectWebrootPath#/#pluginName#" mode="777" />
-	          </cfif>
+	          			</cfif>
 						<cfset oZip = createObject("component", "farcry.core.packages.farcry.zip") />
 						<cfset oZip.AddFiles(zipFilePath="#projectWebrootPath#/plugin-webroot.zip", directory="#pluginPath#/#pluginName#/www", recurse="true", compression=0, savePaths="false") />
 						<cfset oZip.Extract(zipFilePath="#projectWebrootPath#/plugin-webroot.zip", extractPath="#projectWebrootPath#/#pluginName#", overwriteFiles="true") />
@@ -302,7 +306,6 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 				</cfif>
 			</cfloop>
 		</cfif>
-	
 	</cfif>
 	
 	
@@ -351,6 +354,11 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 		</cftry>
 	</cfif>
 	
+	
+	<!--- IF WE ONLY WANTED A DB INSTALL, WE NEED TO DELETE THE TEMPORARY APPLICATION --->
+	<cfif form.bInstallDBOnly>
+		<cfdirectory action="delete" directory="#farcryProjectsPath#/#form.applicationName#" mode="777" recurse="yes" />
+	</cfif>
 <cfelse>
 	<cfset request.bSuccess = true>
 </cfif>
@@ -362,13 +370,16 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 		This sets up a cookie on the users system so that if they try and login to the webtop and the webtop can't determine which project it is trying to update,
 		it will know what projects they will be potentially trying to edit.  --->
 		<cfparam name="server.stFarcryProjects" default="#structNew()#" />
-		<cfif not structKeyExists(server.stFarcryProjects, application.projectDirectoryName)>
-			<cfset server.stFarcryProjects[application.projectDirectoryName] = structnew() />
-			<cfset server.stFarcryProjects[application.projectDirectoryName].displayname = application.displayName />
-			<cfset server.stFarcryProjects[application.projectDirectoryName].domains = "" />
-		</cfif>
-		<cfif not listcontains(server.stFarcryProjects[application.projectDirectoryName].domains,cgi.http_host)>
-			<cfset server.stFarcryProjects[application.projectDirectoryName].domains = listappend(server.stFarcryProjects[application.projectDirectoryName].domains,cgi.http_host) />
+		
+		<cfif NOT form.bInstallDBOnly>
+			<cfif not structKeyExists(server.stFarcryProjects, application.projectDirectoryName)>
+				<cfset server.stFarcryProjects[application.projectDirectoryName] = structnew() />
+				<cfset server.stFarcryProjects[application.projectDirectoryName].displayname = application.displayName />
+				<cfset server.stFarcryProjects[application.projectDirectoryName].domains = "" />
+			</cfif>
+			<cfif not listcontains(server.stFarcryProjects[application.projectDirectoryName].domains,cgi.http_host)>
+				<cfset server.stFarcryProjects[application.projectDirectoryName].domains = listappend(server.stFarcryProjects[application.projectDirectoryName].domains,cgi.http_host) />
+			</cfif>
 		</cfif>
 	
 		<cfoutput>#updateProgressBar(value="1", text="INSTALLATION SUCCESS")#</cfoutput><cfflush>
@@ -394,8 +405,8 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 				</div>
 				<div class="itemButtons">
 					<form name="installComplete" id="installComplete" method="post" action="">
-						<input type="button" name="login" value="LOGIN TO THE FARCRY WEBTOP" onClick="alert('Your default Farcry login is\n\n u: farcry\n p: #jsstringformat(session.stFarcryInstall.stConfig.adminPassword)#');window.open('http://#cgi.http_host##application.url.webtop#/login.cfm<cfif len(application.projectDirectoryName)>?farcryProject=#application.projectDirectoryName#</cfif>')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
-						<input type="button" name="view" value="VIEW SITE" onClick="window.open('http://#cgi.http_host##application.url.webroot#index.cfm?updateapp=#session.stFarcryInstall.stConfig.updateappKey#')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
+						<input type="button" name="login" value="LOGIN TO THE FARCRY WEBTOP" onClick="alert('Your default Farcry login is\n\n u: farcry\n p: #jsstringformat(session.stFarcryInstall.stConfig.adminPassword)#');window.open('http://#cgi.http_host##application.url.webtop#/login.cfm<cfif NOT form.bInstallDBOnly>?farcryProject=#application.projectDirectoryName#</cfif>')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
+						<input type="button" name="view" value="VIEW SITE" onClick="window.open('http://#cgi.http_host##application.url.webroot#/index.cfm?updateapp=#session.stFarcryInstall.stConfig.updateappKey#')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
 						<input type="button" name="install" value="INSTALL ANOTHER PROJECT" onClick="window.open('#cgi.script_name#?restartInstaller=1', '_self')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
 					</form><br /> 
 				</div>
