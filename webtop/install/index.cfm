@@ -96,6 +96,10 @@ SAVE AND CONTROL THE INSTAL PROCESS WIZARD
 		</cfif>
 	</cfloop>
 	
+	<cfif session.stFarcryInstall.stConfig.bInstallDBOnly>
+		<cfset session.stFarcryInstall.stConfig.projectInstallType = "CFMapping" />
+	</cfif>
+	
 </cf_processStep>
 
 
