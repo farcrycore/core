@@ -105,7 +105,7 @@
 		</cfif>	
 
 		<!--- If we are potentially caching this webskin, and we have passed in parameters, we need to create a hash key that uniquely identifies these parameters and cache agains them --->
-		<cfif application.bObjectBroker AND application.stcoapi[attributes.typename].bObjectBroker AND len(attributes.webskin) AND application.stcoapi[attributes.typename].stWebskins[attributes.webskin].cacheStatus EQ 1>
+		<cfif application.bObjectBroker AND application.stcoapi[attributes.typename].bObjectBroker AND len(attributes.webskin) AND structKeyExists(application.stcoapi[attributes.typename].stWebskins, attributes.webskin) AND application.stcoapi[attributes.typename].stWebskins[attributes.webskin].cacheStatus EQ 1>
 			<cfif not structIsEmpty(attributes.stParam)>
 				<cfset lHashString = "" />
 				<cfset lHashKeys = listSort(structKeyList(attributes.stParam),"text", "asc") />
@@ -119,7 +119,7 @@
 				<cfset attributes.hashKey = hash(lHashString) />			
 			</cfif>
 		</cfif>
-
+		
 		<!--- Developer can pass in alternate HTML to render if the webskin does not exist --->
 		<cfif structKeyExists(attributes, "alternateHTML")>
 			<cfset html = o.getView(typename="#attributes.typename#", 
