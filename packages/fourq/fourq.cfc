@@ -82,8 +82,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="stObject" required="no" type="struct" default="#structNew()#"  hint="The object for which the navigation objectid is to be found." />
 		
 		<cfset var stNav = structNew() />
-		<cfset var navID = "" />
-		<cfset var objectTypename = arguments.typename />		
+		<cfset var navID = "" />	
 		
 		<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj" />
 
@@ -91,11 +90,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfif not len(arguments.typename)>
 				<cfset arguments.typename = application.coapi.utilities.findType(objectid="#arguments.objectid#") />
 			</cfif>
-			<cfset arguments.stObject = createObject("component", application.stcoapi["#arguments.typename#"].packagePath).getData(objectid="#arguments.objectid#") />
-		</cfif>
-		
-		<cfif not structIsEmpty(arguments.stObject)>
-			<cfset objectTypename = arguments.stObject.typename />
+			<cfif structIsEmpty(arguments.stObject)>
+				<cfset arguments.stObject = createObject("component", application.stcoapi["#arguments.typename#"].packagePath).getData(objectid="#arguments.objectid#") />
+			</cfif>
 		</cfif>
 	
 		
@@ -110,12 +107,12 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		</cfif>
 		
 		<!--- If we still havnt found the navid and we actually have an object --->
-		<cfif NOT len(navID) AND NOT structIsEmpty(arguments.stObject)>
-			<cfif objectTypename eq "dmNavigation">
+		<cfif NOT len(navID) AND structKeyExists(arguments.stObject, "typename")>
+			<cfif arguments.stObject.typename eq "dmNavigation">
 				<!--- Use the navigation objectid if its a navigation object --->
 				<cfset navID = arguments.stObject.objectid />
 	
-			<cfelseif structKeyExists(application.stCoapi["#objectTypename#"], "bUseInTree") AND application.stCoapi["#objectTypename#"].bUseInTree>
+			<cfelseif structKeyExists(application.stCoapi["#arguments.stObject.typename#"], "bUseInTree") AND application.stCoapi["#arguments.stObject.typename#"].bUseInTree>
 			
 				<nj:getNavigation objectId="#arguments.stObject.objectId#" r_stobject="stNav" />
 				
@@ -127,9 +124,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		</cfif>
 
 		<!--- If we still havnt found the navID, see if we can find a nav alias matching the typename --->
-		<cfif not len(navID)>
-			<cfif structKeyExists(application.navid, "#objectTypename#")>
-				<cfset navID = listFirst(application.navid["#objectTypename#"]) />
+		<cfif not len(navID) and structKeyExists(arguments.stObject, "typename")>
+			<cfif structKeyExists(application.navid, "#arguments.stObject.typename#")>
+				<cfset navID = listFirst(application.navid["#arguments.stObject.typename#"]) />
 			</cfif>
 		</cfif>
 		
