@@ -133,7 +133,7 @@
 	- Get the navigational context of the content object 
 	--->	
 	<cfif not structKeyExists(request, "navID")>
-		<cfset request.navid = createObject("component", application.stcoapi["#stObj.typename#"].packagePath).getNavID(stobject="#stobj#") />
+		<cfset request.navid = createObject("component", application.stcoapi["#stObj.typename#"].packagePath).getNavID(objectid="#stobj.objectid#", typename="#stobj.typename#", stobject="#stobj#") />
 		<cfif not len(request.navID)>
 			<cfif structKeyExists(application.navid, "home")>
 				<cfset request.navID = listFirst(application.navid.home) />
