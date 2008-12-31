@@ -45,10 +45,13 @@
 	<cfparam name="attributes.anchor" default=""><!--- Anchor to place at the end of the URL string. --->
 	
 
+	<!--- Change any "&amp;" or "&#38;" to "&" --->
+	<cfset attributes.urlParameters = replaceNoCase(attributes.urlParameters,"&amp;","&","all") />
+	<cfset attributes.urlParameters = replace(attributes.urlParameters,"&##38;","&","all") />
 	<!--- Setup URL Parameters --->
 	<cfif listLen(attributes.urlParameters, "&")>
 		<cfloop list="#attributes.urlParameters#" delimiters="&" index="i">
-			<cfset attributes.stParameters[listFirst(i, "=")] = listLast(i, "=")>
+			<cfset attributes.stParameters[listFirst(i, "=")] = listLast(i, "=") />
 		</cfloop>
 	</cfif>
 	
@@ -77,19 +80,18 @@
 		</cfif>
 	<cfelse>
 		<cfif attributes.includeDomain>
-	        <cfset href = "http://#attributes.Domain#">
-	    <cfelse>
-	        <cfset href = "">
-	    </cfif>
+			<cfset href = "http://#attributes.Domain#">
+		<cfelse>
+			<cfset href = "">
+		</cfif>
+
+		<cfset linkID = "" />
 	    
-	    <cfset linkID = "" />
-	    
-	    <cfif len(attributes.externallink)>
+		<cfif len(attributes.externallink)>
 			<cfset linkID = attributes.externallink />
 		<cfelseif len(attributes.objectid)>
 			<cfset linkID = attributes.objectid />
 		</cfif>
-
 
 		<cfset href = href & application.fc.factory.farFU.getFU(objectid="#linkID#", type="#attributes.type#", view="#attributes.view#", bodyView="#attributes.bodyView#")>
 
