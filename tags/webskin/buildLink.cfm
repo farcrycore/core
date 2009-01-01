@@ -104,17 +104,17 @@
 		<cfset stLocal.iCount = 0>
 		<cfloop collection="#attributes.stParameters#" item="stLocal.key">
 			<cfif stLocal.iCount GT 0>
-				<cfset stLocal.parameters = stLocal.parameters & "&">
+				<cfset stLocal.parameters = stLocal.parameters & "&amp;" />
 			</cfif>
 			<cfset stLocal.parameters = stLocal.parameters & stLocal.key & "=" & URLEncodedFormat(attributes.stParameters[stLocal.key])>
 			<cfset stLocal.iCount = stLocal.iCount + 1>
 		</cfloop>
 
 	
-		<cfif ListFind("&,?",Right(href,1))><!--- check to see if the last character is a ? or & and don't append one between the params and the href --->
+		<cfif listFind("&,?",Right(href,1)) or findNoCase("&amp;", right(href,5))><!--- check to see if the last character is a ?, &, or &amp; and don't append one between the params and the href --->
 			<cfset href=href&stLocal.parameters>
-		<cfelseif Find("?",href)> <!--- If there is already a ? in the href, just concat the params with & --->
-			<cfset href=href&"&"&stLocal.parameters>
+		<cfelseif Find("?",href)> <!--- If there is already a ? in the href, just concat the params with &amp; --->
+			<cfset href=href&"&amp;"&stLocal.parameters />
 		<cfelse> <!--- No query string on the href, so add a new one using ? and the params --->
 			<cfset href=href&"?"&stLocal.parameters>		
 		</cfif>
