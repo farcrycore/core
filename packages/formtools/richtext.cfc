@@ -116,6 +116,7 @@
 				theme_advanced_resizing : true,
 				extended_valid_elements: "code,colgroup,col,thead,tfoot,tbody,abbr,blockquote,cite,button,textarea[name|class|cols|rows],script[type],img[style|class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name]",
 				remove_linebreaks : false,
+				forced_root_block : 'p',
 				relative_urls : false
 			</cfoutput>
 		</cfsavecontent>
