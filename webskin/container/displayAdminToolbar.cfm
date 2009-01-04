@@ -33,7 +33,7 @@
 		div.ruleadmin { background-color: ##ddd; font-weight:bold; padding:2px 2px 0; color:##000; clear:both; padding-bottom:2px; }
 		div.ruleadmin * { vertical-align: middle; }
 		div.ruleadmin a { text-decoration:none; border: 0 none; display: block; padding-right:5px; float:left; color:##000; }
-		div.ruleadmin a img { border:0 none; clear:right; margin:0; }
+		div.ruleadmin a img { clear:right; border:0 none !important; margin:0 !important; padding: 0 !important; background: transparent none repeat scroll 0 0 !important; }
 		div.ruleadmin div.type { float:left; }
 		div.ruleadmin div.title { padding:1px 5px; }
 		div.ruleadmin div.title a { display:inline; float:none; }
