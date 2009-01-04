@@ -21,7 +21,7 @@
 	<style>
 		div.containeradmin { background-color: ##ccc; font-weight:bold; padding:2px 2px 0; color:##000; padding-bottom:2px; }
 		div.containeradmin a { text-decoration:none; border: 0 none; display: block; padding-right:5px; float:left; color:##000; }
-		div.containeradmin a img { border:0 none; margin:0; }
+		div.containeradmin a img { border:0 none !important; margin: 0 !important; padding: 0 !important; background: transparent none repeat scroll 0 0 !important; }
 		div.containeradmin div.type { width: 6.5em; float:left; }
 		div.containeradmin div.title { padding:1px 5px; }
 		div.containeradmin div.title a { padding-left:5px; display:inline; float:none; }
