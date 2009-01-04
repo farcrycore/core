@@ -70,6 +70,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.datasource" default="#application.dsn#" type="string">
 <cfparam name="attributes.aColumns" default="#arrayNew(1)#" type="array">
 <cfparam name="attributes.aCustomColumns" default="#arrayNew(1)#" type="array">
+<cfparam name="attributes.lCustomColumns" default="" type="string"><!--- A list of column label:webskin values --->
 <cfparam name="attributes.aButtons" default="#arrayNew(1)#" type="array">
 <cfparam name="attributes.bdebug" default="false" type="boolean">
 <cfparam name="attributes.bFilterCategories" default="true" type="boolean">
@@ -110,6 +111,16 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.qRecordset" default=""><!--- Used if the developer wants to pass in their own recordset --->
 
 <cfparam name="attributes.rbkey" default="coapi.#attributes.typename#.objectadmin" />
+
+<!--- Convert attributes.lCustomColumns to array of structs --->
+<cfif listLen(attributes.lCustomColumns)>
+	<cfloop list="#attributes.lCustomColumns#" index="i">
+		<cfset stCustomColumn = structNew() />
+		<cfset stCustomColumn.label = listFirst(i,":") />
+		<cfset stCustomColumn.webskin = listLast(i,":") />
+		<cfset arrayAppend(attributes.aCustomColumns, stCustomColumn) />
+	</cfloop>
+</cfif>
 
 <!--- I18 conversion off text output attributes --->
 <cfset attributes.description = application.rb.getResource("#attributes.rbkey#.description@text",attributes.description) />
