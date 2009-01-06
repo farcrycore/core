@@ -237,6 +237,11 @@
 		
 		<cfif left(cleanFU,1) NEQ "/">
 			<cfset cleanFU = "/#cleanFU#" />
+		</cfif>	
+		
+		<!--- Remove Trailing Slashes --->
+		<cfif right(cleanFU,1) EQ "/">
+			<cfset cleanFU = left(cleanFU,len(cleanFU) -1) />
 		</cfif>		
 
 		<cfif arguments.bCheckUnique>
