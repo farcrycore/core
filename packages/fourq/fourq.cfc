@@ -558,6 +558,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	    <cfset var stResult = StructNew() />
 	    <cfset var gateway = "" />
 	    <cfset var stDefaultProperties = "" />
+	    <cfset var lockName = "SetData" />
 
 	    
 	    <cfset fourqInit() />
@@ -568,56 +569,72 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfparam name="Session.TempObjectStore" default="#structNew()#" />
 
 		
-		<!--------------------------------------- 
-		If the object is to be stored in the session scope only.
-		----------------------------------------->		
-		<cfif arguments.bSessionOnly>
+		<!--- 
+		NAMED LOCK
+		Set data does a get then set to make sure the entire object is correctly populated. 
+		Simultaneous sets under load may lead to conditions where objects are not correctly updated. 
+		setdata() uses this named lock (named by objectid) to ensure internal processing within setdata() is sequential rather than parallel.
+		 --->
+		<cfif structkeyexists(stProperties, "objectid")>
+			<cfset lockName = "SetData_#stProperties.objectid#" />
+		<cfelse>
+			<cfset lockName = "SetData_#application.fc.utils.createJavaUUID()#">
+		</cfif>
 		
-			<!--- Make sure an object id exists. --->
-			<cfparam name="stProperties.ObjectID" default="#application.fc.utils.createJavaUUID()#" />				
+		<cflock name="#lockName#" timeout="10" throwontimeout="true">
+		
 			
-			<!--- Get the default properties for this object --->
-			<cfset stDefaultProperties = this.getData(objectid=arguments.stProperties.ObjectID,typename=variables.typename) />
-		  	
-		  	<!--- need to add this in case the object has been put in the instance cache in the getdata above. --->
-	   	 	<cfset structdelete(instance,"bgetdata")>
-	    	
-			<!--- 
-			Append the default properties of this object into the properties that have been passed.
-			The overwrite flag is set to false so that the default properties do not overwrite the ones passed in.
-			 --->
-			<cfset StructAppend(arguments.stProperties,stDefaultProperties,false)>	
-						
-			<!--- Add object to temporary object store --->
-			<cfset Session.TempObjectStore[arguments.stProperties.ObjectID] = arguments.stProperties />
+			<!--------------------------------------- 
+			If the object is to be stored in the session scope only.
+			----------------------------------------->		
+			<cfif arguments.bSessionOnly>
 			
-			<cfset stResult.bSuccess = true />
-			<cfset stResult.message = "Object Saved to the Temporary Object Store." />
-			<cfset stResult.ObjectID = arguments.stProperties.ObjectID />
-			
-			
-			
-		<!--------------------------------------- 
-		If the object is to be stored in the Database then run the appropriate gateway
-		----------------------------------------->	
-	   	<cfelse>			<!--- Make sure we remove the object from the objectBroker if we update something --->
-		    <cfif structkeyexists(stProperties, "objectid")>
-			    <cfset variables.objectBroker.RemoveFromObjectBroker(lObjectIDs=arguments.stProperties.ObjectID,typename=variables.typename)>
-		    </cfif>	    	   	
+				<!--- Make sure an object id exists. --->
+				<cfparam name="stProperties.ObjectID" default="#application.fc.utils.createJavaUUID()#" />				
+				
+				<!--- Get the default properties for this object --->
+				<cfset stDefaultProperties = this.getData(objectid=arguments.stProperties.ObjectID,typename=variables.typename) />
+			  	
+			  	<!--- need to add this in case the object has been put in the instance cache in the getdata above. --->
+		   	 	<cfset structdelete(instance,"bgetdata")>
+		    	
+				<!--- 
+				Append the default properties of this object into the properties that have been passed.
+				The overwrite flag is set to false so that the default properties do not overwrite the ones passed in.
+				 --->
+				<cfset StructAppend(arguments.stProperties,stDefaultProperties,false)>	
+							
+				<!--- Add object to temporary object store --->
+				<cfset Session.TempObjectStore[arguments.stProperties.ObjectID] = arguments.stProperties />
+				
+				<cfset stResult.bSuccess = true />
+				<cfset stResult.message = "Object Saved to the Temporary Object Store." />
+				<cfset stResult.ObjectID = arguments.stProperties.ObjectID />
+				
+				
+				
+			<!--------------------------------------- 
+			If the object is to be stored in the Database then run the appropriate gateway
+			----------------------------------------->	
+		   	<cfelse>				<!--- Make sure we remove the object from the objectBroker if we update something --->
+			    <cfif structkeyexists(stProperties, "objectid")>
+				    <cfset variables.objectBroker.RemoveFromObjectBroker(lObjectIDs=arguments.stProperties.ObjectID,typename=variables.typename)>
+			    </cfif>	    	   	
+			   	
+			    <!--- need to add this in case the object has been put in the instance cache. --->
+			    <cfset structdelete(instance,"bgetdata")>	
 		   	
-		    <!--- need to add this in case the object has been put in the instance cache. --->
-		    <cfset structdelete(instance,"bgetdata")>	
-	   	
-	   		
-	   		<cfset stResult = gateway.setData(stProperties=arguments.stProperties,metadata=variables.tableMetadata,dsn=arguments.dsn) />	   	
-	   	 
-	    
-		   	<!--- Make sure we remove the object from the TempObjectStore if we update something --->
-	   		<cfif structKeyExists(session, "TempObjectStore") AND structKeyExists(Session.TempObjectStore,arguments.stProperties.ObjectID)>
-		   		<cfset structdelete(Session.TempObjectStore, arguments.stProperties.ObjectID) />
-		   	</cfif>
-		   		   	 
-	   	</cfif>		   	
+		   		
+		   		<cfset stResult = gateway.setData(stProperties=arguments.stProperties,metadata=variables.tableMetadata,dsn=arguments.dsn) />	   	
+		   	 
+		    
+			   	<!--- Make sure we remove the object from the TempObjectStore if we update something --->
+		   		<cfif structKeyExists(session, "TempObjectStore") AND structKeyExists(Session.TempObjectStore,arguments.stProperties.ObjectID)>
+			   		<cfset structdelete(Session.TempObjectStore, arguments.stProperties.ObjectID) />
+			   	</cfif>
+			   		   	 
+		   	</cfif>		   	
+	   	</cflock>
 	   	
 		<cfreturn stResult />
 		
