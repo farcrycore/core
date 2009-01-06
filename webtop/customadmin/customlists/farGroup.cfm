@@ -32,7 +32,6 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 
 <ft:objectadmin 
 	typename="farGroup"
-	permissionset="news"
 	title="Group Administration"
 	columnList="title" 
 	sortableColumns="title"

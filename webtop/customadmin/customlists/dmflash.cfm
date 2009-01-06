@@ -32,7 +32,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 
 <ft:objectadmin 
 	typename="dmFlash"
-	permissionset="news"
 	columnList="label,datetimelastUpdated,status" 
 	sortableColumns="label,datetimelastUpdated,status"
 	lFilterFields="label"

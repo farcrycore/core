@@ -11,7 +11,6 @@
 
 <ft:objectadmin 
 	typename="dmCron"
-	permissionset="news"
 	title="Scheduled Tasks Administration"
 	columnList="title,datetimelastUpdated,lastupdatedby"   
 	sortableColumns="title,datetimelastUpdated,lastupdatedby"

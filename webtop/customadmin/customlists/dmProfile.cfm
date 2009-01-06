@@ -46,7 +46,6 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 
 <ft:objectadmin 
 	typename="dmProfile"
-	permissionset="news"
 	title="User Administration"
 	columnList="username,userdirectory,firstname,lastname" 
 	sortableColumns="userid,userstatus"

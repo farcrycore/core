@@ -38,7 +38,6 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 
 <ft:objectadmin 
 	typename="farPermission"
-	permissionset="news"
 	title="Permission Admin"
 	columnList="title"
 	aCustomColumns="#aCustomColumns#"

@@ -32,7 +32,6 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 
 <ft:objectadmin 
 	typename="farRole"
-	permissionset="news"
 	title="Role Admin"
 	columnList="title" 
 	sortableColumns="title"
