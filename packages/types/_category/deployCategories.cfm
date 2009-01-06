@@ -104,7 +104,7 @@ $out: <separate entry for each variable>$
     	-- return recordset to stop CF bombing out?!?
     	select count(*) as blah from sysobjects
 		</cfquery> --->
-		<cfquery datasource="#arguments.dsn#">
+		<cfquery datasource="#arguments.dsn#" name="qTempOutput">
         if exists (select * from sysobjects where name = 'refCategories')
         DROP TABLE refCategories
 
