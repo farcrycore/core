@@ -122,9 +122,16 @@
 	- If the current user is not permitted to see draft objects, then make them login 
 	--->
 	<cfif structkeyexists(stObj,"status") and stObj.status EQ "draft" and NOT ListContainsnocase(request.mode.lValidStatus, stObj.status)>
-		<!--- send to login page and return in draft mode --->
-		<extjs:bubble title="Security" message="This object is in draft" />
-		<cflocation url="#attributes.loginpath#&showdraft=1&error=draft" addtoken="No" />
+		<cfif request.mode.bAdmin>
+			<cfset request.mode.showdraft = 1 />
+			<cfset session.dmSec.Authentication.showdraft = request.mode.showdraft />
+			<cfset request.mode.lValidStatus = "draft,pending,approved" />
+			<extjs:bubble title="Currently Viewing a Draft Object" message="You are currently viewing a draft object. Your profile has now been changed to 'Showing Drafts'." />
+		<cfelse>			
+			<!--- send to login page and return in draft mode --->
+			<extjs:bubble title="Security" message="This object is in draft" />
+			<cflocation url="#attributes.loginpath#&showdraft=1&error=draft" addtoken="No" />
+		</cfif>
 	</cfif>
 	
 
