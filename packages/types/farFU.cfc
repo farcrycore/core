@@ -240,7 +240,7 @@
 		</cfif>	
 		
 		<!--- Remove Trailing Slashes --->
-		<cfif right(cleanFU,1) EQ "/">
+		<cfif len(cleanFU) GT 1 AND right(cleanFU,1) EQ "/">
 			<cfset cleanFU = left(cleanFU,len(cleanFU) -1) />
 		</cfif>		
 
@@ -436,7 +436,7 @@
 	</cffunction>	
 	
 	
-	<cffunction name="migrate">
+	<cffunction name="migrate" access="private" hint="Migrates the legacy reffriendlyURL table to the new hotness farFU">
 		<cfquery datasource="#application.dsn#" name="qLegacy">
 		SELECT * FROM reffriendlyURL
 		</cfquery>
@@ -446,6 +446,13 @@
 			<cfloop list="#lLegacyFields#" index="i">
 				<cfset stProps[i] = qLegacy[i][currentRow] />
 			</cfloop>
+			<cfif structKeyExists(stProps, "friendlyURL")>
+				<!--- Remove Trailing Slashes --->
+				<cfset stProps.friendlyURL = trim(stProps.friendlyURL) />
+				<cfif len(stProps.friendlyURL) GT 1 AND right(stProps.friendlyURL,1) EQ "/">
+					<cfset stProps.friendlyURL = left(stProps.friendlyURL,len(stProps.friendlyURL) -1) />
+				</cfif>		
+			</cfif>
 			<cfset stProps.fuStatus = qLegacy.status />
 			<cfset stProps.queryString = qLegacy.query_string />
 			
