@@ -76,7 +76,7 @@
 	<cffunction name="getResource" access="public" output="false" returntype="string" hint="Returns the resource string" bDocument="true">
 		<cfargument name="key" type="string" required="true" />
 		<cfargument name="default" type="string" required="false" default="#arguments.key#" />
-		<cfargument name="locale" type="string" required="false" default="" />
+		<cfargument name="locale" type="string" required="false" />
 		
 		<cfset var i = 0 />
 		
