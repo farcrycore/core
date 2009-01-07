@@ -1623,8 +1623,11 @@ default handlers
 
 	<cffunction name="showFarcryDate" access="public" output="false" returntype="boolean" hint="Returns boolean as to whether to show the date based on how farcry stores dates. ie, 2050 or +200 years.">
 		<cfargument name="date" required="true" hint="The date to check" />
-
 		<cfset var bShowDate = true />
+		
+		<cfif isSimpleValue(date) and len(date) eq 0>
+			<cfreturn false />
+		</cfif>
 		
 		<!--- Check for old method using 2050 or 4.0 method of adding 200 years allowing you to check for GT 100 years --->
 		<cfif year(arguments.date) EQ 2050 OR dateDiff("yyyy", now(), arguments.date) GT 100>
