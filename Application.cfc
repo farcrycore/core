@@ -558,6 +558,7 @@
 		<cfset application.fc.factory = structNew() /><!--- Struct to contain any factory classes that can be used by the application --->
 		<cfset application.fc.subsites = this.subsites /><!--- Struct to contain any subsites that may be included with the application --->
 		<cfset application.fc.utils = createObject("component", "farcry.core.packages.farcry.utils").init() /><!--- FarCry Utility Functions --->
+		<cfset application.fapi = createObject("component", "farcry.core.packages.farcry.fapi").init() /><!--- FarCry API Functions --->
 		
 		<cfset application.fc.factory['farCoapi'] = createObject("component", "farcry.core.packages.types.farCoapi") />
 		
