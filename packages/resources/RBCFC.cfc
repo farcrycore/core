@@ -76,14 +76,16 @@
 	<cffunction name="getResource" access="public" output="false" returntype="string" hint="Returns the resource string" bDocument="true">
 		<cfargument name="key" type="string" required="true" />
 		<cfargument name="default" type="string" required="false" default="#arguments.key#" />
-		<cfargument name="locale" type="string" required="false" />
+		<cfargument name="locale" type="string" required="false" default="" />
 		
 		<cfset var i = 0 />
 		
-		<cfif structkeyexists(session,"dmProfile")>
-			<cfparam name="arguments.locale" default="#session.dmProfile.locale#" />
-		<cfelse>
-			<cfparam name="arguments.locale" default="#application.config.general.locale#" />
+		<cfif not len(arguments.locale)>
+			<cfif structkeyexists(session,"dmProfile")>
+				<cfparam name="arguments.locale" default="#session.dmProfile.locale#" />
+			<cfelse>
+				<cfparam name="arguments.locale" default="#application.config.general.locale#" />
+			</cfif>
 		</cfif>
 		
 		<cfloop from="#arraylen(this.aSets)#" to="1" step="-1" index="i">
