@@ -51,7 +51,7 @@ Pseudo:
 	
 	<cfset typename=form.typename>
 	<cfset objectid=form.objectid>
-	<cfset method=form.method>85///7
+	<cfset method=form.method>
 </cfif>
 
 <!--- auto-typename lookup if required --->
@@ -94,7 +94,7 @@ Pseudo:
 		<cfset lWorkflowTypenames = createObject("component", application.stcoapi.farWorkflow.packagepath).getWorkflowList(typename="#typename#") />	
 		<cfif listLen(lWorkflowTypenames) OR (StructKeyExists(returnStruct, "versionid") AND StructKeyExists(returnStruct, "status") AND ListContains("approved,pending",returnStruct.status))>
 			<!--- any pending/approve items should go to overview --->
-			<cflocation url="#application.url.farcry#/edittabOverview.cfm?objectid=#URL.objectid#">
+			<cflocation url="#application.url.farcry#/edittabOverview.cfm?objectid=#URL.objectid#&ref=#url.ref#">
 			<cfabort>
 		<cfelse>
 			<!--- go to edit --->
@@ -106,7 +106,7 @@ Pseudo:
 			<cfif url.ref eq "typeadmin" AND (isDefined("url.module") AND Len(url.module))>
 				<!--- typeadmin redirect --->
 				<cfset stOnExit.Type = "URL" />
-				<cfset stOnExit.Content = "#application.url.farcry#/admin/customadmin.cfm?module=#url.module#" />
+				<cfset stOnExit.Content = "#application.url.farcry#/admin/customadmin.cfm?module=#url.module#&ref=#url.ref#" />
 				<cfif isDefined("URL.plugin")>
 					<cfset stOnExit.Content = stOnExit.Content & "&plugin=" & url.plugin />
 				</cfif>
@@ -121,7 +121,17 @@ Pseudo:
 					</script>
 					</cfoutput>
 				</cfsavecontent>
-			<cfelse> 
+			<cfelseif url.ref eq "iframe"> 
+				<!--- site tree redirect --->
+				<cfset stOnExit.Type = "HTML" />
+				<cfsavecontent variable="stOnExit.Content">
+					<cfoutput>
+					<script type="text/javascript">
+						location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#returnStruct.ObjectID#&ref=#url.ref#';
+					</script>
+					</cfoutput>
+				</cfsavecontent>
+			<cfelse>
 				<!--- site tree redirect --->
 				<cfset stOnExit.Type = "HTML" />
 				<cfsavecontent variable="stOnExit.Content">
@@ -131,7 +141,7 @@ Pseudo:
 					<nj:updateTree objectId="#parentID#">
 					<cfoutput>
 					<script type="text/javascript">
-						parent['content'].location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#returnStruct.ObjectID#';
+						parent['content'].location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#returnStruct.ObjectID#&ref=#url.ref#;
 					</script>
 					</cfoutput>
 				</cfsavecontent>

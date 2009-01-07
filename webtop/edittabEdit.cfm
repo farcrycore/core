@@ -40,7 +40,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 <!--- check for content type and objectid--->
 <cfparam name="url.objectid" type="uuid" />
 <cfparam name="url.typename" type="string" />
-
+<cfparam name="url.ref" default="overview" />
 
 <cfif NOT len(url.typename)>
 	<cfinvoke 
@@ -55,7 +55,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <sec:CheckPermission error="true" permission="ObjectEditTab">
-	<nj:edit objectid="#url.objectid#" typename="#url.typename#" cancelCompleteURL="#application.url.farcry#/edittabOverview.cfm?objectid=#url.objectid#" />
+	<nj:edit objectid="#url.objectid#" typename="#url.typename#" cancelCompleteURL="#application.url.farcry#/edittabOverview.cfm?objectid=#url.objectid#&ref=#url.ref#" />
 </sec:CheckPermission>
 
 <!--- setup footer --->

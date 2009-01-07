@@ -254,27 +254,7 @@
 <!--- Editing the object --->
 <sec:CheckPermission objectid="#stObj.objectid#" typename="#stObj.typename#" permission="Edit">
 	<cfif not stObj.typename eq "farCOAPI">
-		<cfif structkeyexists(stObj,'status') and stObj.status eq "draft">
-			<!--- If this is an unversioned object, ignore the status, just edit it --->
-			<cfset editobjectid = stObj.objectid />
-			<cfset editurl = "#application.url.webtop#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=edit&ref=&finishurl=&iframe=true" />
-		<cfelseif structkeyexists(stObj,"versionid")>
-			<!--- This object is versioned, but isn't in draft. Is there a draft version? --->
-			<cfset qDraft = createObject("component", "#application.packagepath#.farcry.versioning").checkIsDraft(objectid=stobj.objectid,type=stobj.typename)>
-			<cfif qDraft.recordcount>
-				<!--- There is a draft version - edit that --->
-				<cfset editobjectid = qDraft.objectid />
-				<cfset editurl = "#application.url.webtop#/conjuror/invocation.cfm?objectid=#qDraft.objectid#&method=edit&ref=&finishurl=&iframe=true" />
-			<cfelse>
-				<!--- There isn't a draft version - create one --->
-				<cfset editobjectid = "" />
-				<cfset editurl = "#application.url.webtop#/conjuror/createDraftObject.cfm?objectid=#stObj.objectid#&ref=&finishurl=&iframe=true" />
-			</cfif>
-		<cfelse>
-			<!--- If this is an unversioned object, ignore the status, just edit it --->
-			<cfset editobjectid = stObj.objectid />
-			<cfset editurl = "#application.url.webtop#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=edit&ref=&finishurl=&iframe=true" />
-		</cfif>
+		<cfset editurl = "#application.url.webtop#/edittabOverview.cfm?objectid=#stObj.objectid#&typename=#stObj.typename#&method=edit&ref=typeadmin" />
 		
 		<cfsavecontent variable="html">
 			<cfoutput>
@@ -285,15 +265,15 @@
 					listeners:{
 						"click":{
 							fn:function(){
-								parent.editContent("#editurl#","Edit #stObj.label#",800,600,true<cfif len(editobjectid)>,function(){
+								parent.editContent("#editurl#","Edit #stObj.label#",800,600,true,function(){
 									// make sure the object is unlocked
 									Ext.Ajax.request({ 
-										url: "#application.url.webtop#/navajo/unlock.cfm?objectid=#editobjectid#&typename=#stObj.typename#", 
+										url: "#application.url.webtop#/navajo/unlock.cfm?objectid=#stObj.objectid#&typename=#stObj.typename#", 
 										success: function() {
-											location.href = location.href;
+											parent.refreshContent();
 										}
 									});
-								}</cfif>);
+								});
 							}
 						}
 					}

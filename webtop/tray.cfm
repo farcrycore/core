@@ -48,6 +48,10 @@
 			frames.farcry_content.openScaffoldDialog(url,title,width,height,modal,onclose);
 		};
 		
+		function refreshContent() {
+			frames['farcry_content'].location.href = frames['farcry_content'].location.href;
+		};
+		
 		function rememberTrayState(state) {
 			traystate = state;
 			window.location.hash = encodeURIComponent(currenturl)+"|"+traystate;

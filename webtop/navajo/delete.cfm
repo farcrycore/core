@@ -5,6 +5,7 @@
 </cfif>
 
 <cfparam name="url.returnto" default="#application.url.farcry#/inc/content_overview.html?sec=site" />
+<cfparam name="url.ref" default="overview" />
 
 <cfif not isDefined("url.typename")>
 	<cfset url.typename = createObject("component", "farcry.core.packages.fourq.fourq").findType(objectid=url.objectid) />
@@ -20,16 +21,29 @@
 	<cfoutput><div class="error">#stResult.message#</div></cfoutput>
 
 <cfelse>
-
-	<cfoutput>
-		<script type="text/javascript">
-		// check if edited from Content or Site (via sidetree)
-		if(parent['sidebar'].frames['sideTree'])
-			parent['sidebar'].frames['sideTree'].location= parent['sidebar'].frames['sideTree'].location;
+	
+	<cfswitch expression="#url.ref#">
+		<cfcase value="iframe">
+			<cfoutput>
+				<script type="text/javascript">
+				location = "#url.returnto#";
+				</script>		
+			</cfoutput>
+		</cfcase>
 		
-		window.location = "#url.returnto#";
-		</script>		
-	</cfoutput>
+		<cfdefaultcase>
+			<cfoutput>
+				<script type="text/javascript">
+				// check if edited from Content or Site (via sidetree)
+				if(parent['sidebar'].frames['sideTree'])
+					parent['sidebar'].frames['sideTree'].location= parent['sidebar'].frames['sideTree'].location;
+				
+				window.location = "#url.returnto#";
+				</script>		
+			</cfoutput>
+		</cfdefaultcase>
+	</cfswitch>
+
 </cfif>
 
 	
