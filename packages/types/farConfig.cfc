@@ -106,7 +106,7 @@ object methods
 						<cfset legend = "" />
 						<cfset IncludeFieldSet = false />
 					</cfif>
-					<ft:object stObject="#stObj#" lExcludeFields="label" Legend="" IncludeFieldSet="#IncludeFieldSet#"  />
+					<ft:object stObject="#stObj#" lExcludeFields="label" Legend="#legend#" IncludeFieldSet="#IncludeFieldSet#"  />
 					
 				</cfif>
 					
