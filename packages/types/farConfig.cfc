@@ -51,6 +51,8 @@ object methods
 		<cfset var thisform = "" /><!--- Loop variable for form names --->
 		<cfset var qMetadata = querynew("empty") /><!--- Config metadata --->
 		<cfset var qFieldSets = querynew("empty") /><!--- The fieldsets supported by the config --->
+		<cfset var legend = "" />
+		<cfset var IncludeFieldSet = true />
 		
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 		
@@ -98,7 +100,13 @@ object methods
 				<cfelse>
 				
 					<!--- All Fields: default edit handler --->
-					<ft:object stObject="#stObj#" lExcludeFields="label" IncludeFieldSet="true" Legend="#stObj.Label#" />
+					<cfif structKeyExists(stObj, "label")>
+						<cfset legend = stObj.label />
+					<cfelse>
+						<cfset legend = "" />
+						<cfset IncludeFieldSet = false />
+					</cfif>
+					<ft:object stObject="#stObj#" lExcludeFields="label" Legend="" IncludeFieldSet="#IncludeFieldSet#"  />
 					
 				</cfif>
 					
