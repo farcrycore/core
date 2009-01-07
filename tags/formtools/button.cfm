@@ -37,7 +37,7 @@
 	<skin:htmlHead library="farcryForm" />
 
 	<!--- I18 conversion of label --->
-	<cfset attributes.value = application.rb.getResource('#attributes.rbkey#@label',attributes.value) />
+	<cfset attributes.text = application.rb.getResource('#attributes.rbkey#@label',attributes.text) />
 	
 	<!--- If not in a farcry form, make it a button. --->
 	<cfif NOT isDefined("Request.farcryForm.Name")>

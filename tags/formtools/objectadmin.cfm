@@ -661,8 +661,13 @@ user --->
 							<cfif not structKeyExists(attributes.aButtons[i], "confirmText")> 
 								<cfset attributes.aButtons[i].confirmText = "" />
 							</cfif>
+							<cfif structkeyexists(attributes.aButtons[i],"text")>
+								<cfset buttontext = attributes.aButtons[i].text />
+							<cfelse>
+								<cfset buttontext = attributes.aButtons[i].value />
+							</cfif>
 							
-							<ft:farcryButton value="#attributes.aButtons[i].value#"  onclick="#onclickJS#" confirmText="#attributes.aButtons[i].confirmText#" />
+							<ft:button text="#attributes.aButtons[i].value#" value="#attributes.aButtons[i].value#" rbkey="objectadmin.buttons.#rereplace(attributes.aButtons[i].value,'[^\w]+','','ALL')#" size="small" colour="grey" onclick="#onclickJS#" confirmText="#attributes.aButtons[i].confirmText#" />
 							<!---<input type="#attributes.aButtons[i].type#" name="#attributes.aButtons[i].name#" value="#attributes.aButtons[i].value#" class="formButton"<cfif len(attributes.aButtons[i].onclick)> onclick="#attributes.aButtons[i].onclick#"</cfif> /> --->
 						</cfif>
 					</cfif>

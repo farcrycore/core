@@ -400,7 +400,7 @@ environment references (might be nice to clean these up)
 			stBut=structNew();
 			stBut.type="button";
 			stBut.name="add";
-			stBut.value="#application.rb.getResource('objectadmin.buttons.add@label','Add')#";
+			stBut.value="Add";
 			stBut.class="f-submit";
 			stBut.onClick="";
 			stBut.permission=application.security.checkPermission(permission="Create",type=attributes.typename);
@@ -411,11 +411,11 @@ environment references (might be nice to clean these up)
 			stBut=structNew();
 			stBut.type="button";
 			stBut.name="deleteAction";
-			stBut.value="#application.rb.getResource('objectadmin.buttons.delete@label','Delete')#";
+			stBut.value="Delete";
 			stBut.class="f-submit";
 			// todo: i18n
 			stBut.onClick="";
-			stBut.confirmText="#application.rb.getResource('objectadmin.buttons.delete@confirmtext','Are you sure you wish to delete these objects?')#";
+			stBut.confirmText="Are you sure you wish to delete these objects?";
 			stBut.permission=application.security.checkPermission(permission="Delete",type=attributes.typename);
 			stBut.buttontype="delete";
 			arrayAppend(aDefaultButtons,stBut);
@@ -426,7 +426,7 @@ environment references (might be nice to clean these up)
 				stBut=structNew();
 				stBut.type="submit";
 				stBut.name="status";
-				stBut.value="#application.rb.getResource('objectadmin.buttons.requestapproval@label','Request Approval')#";
+				stBut.value="Request Approval";
 				stBut.class="f-submit";
 				stBut.onClick="";
 				stBut.permission=application.security.checkPermission(permission="RequestApproval",type=attributes.typename);
@@ -437,7 +437,7 @@ environment references (might be nice to clean these up)
 				stBut=structNew();
 				stBut.type="submit";
 				stBut.name="status";
-				stBut.value="#application.rb.getResource('objectadmin.buttons.approve@label','Approve')#";
+				stBut.value="Approve";
 				stBut.class="f-submit";
 				stBut.onClick="";
 				stBut.permission=application.security.checkPermission(permission="Approve",type=attributes.typename);
@@ -447,7 +447,7 @@ environment references (might be nice to clean these up)
 				stBut=structNew();
 				stBut.type="submit";
 				stBut.name="status";
-				stBut.value="#application.rb.getResource('objectadmin.buttons.sendtodraft@label','Send to Draft')#";
+				stBut.value="Send to Draft";
 				stBut.class="f-submit";
 				stBut.onClick="";
 				stBut.permission=application.security.checkPermission(permission="Approve",type=attributes.typename);
@@ -459,7 +459,7 @@ environment references (might be nice to clean these up)
 			stBut=structNew();
 			stBut.type="submit";
 			stBut.name="dump";
-			stBut.value="#application.rb.getResource('objectadmin.buttons.dump@label','Properties')#";
+			stBut.value="Properties";
 			stBut.class="f-submit";
 			stBut.onClick="";
 			stBut.permission="ObjectDumpTab";
@@ -471,7 +471,7 @@ environment references (might be nice to clean these up)
 			stBut=structNew();
 			stBut.type="Submit";
 			stBut.name="unlock";
-			stBut.value="#application.rb.getResource('objectadmin.buttons.unlock@label','Unlock')#";
+			stBut.value="Unlock";
 			stBut.class="f-submit";
 			stBut.onClick="";
 			stBut.permission="";
