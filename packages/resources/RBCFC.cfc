@@ -82,9 +82,9 @@
 		
 		<cfif not len(arguments.locale)>
 			<cfif structkeyexists(session,"dmProfile")>
-				<cfparam name="arguments.locale" default="#session.dmProfile.locale#" />
+				<cfset arguments.locale = session.dmProfile.locale />
 			<cfelse>
-				<cfparam name="arguments.locale" default="#application.config.general.locale#" />
+				<cfset arguments.locale = application.config.general.locale />
 			</cfif>
 		</cfif>
 		
