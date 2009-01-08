@@ -261,6 +261,14 @@
 	</cffunction>
 	
 	
+	<cffunction name="getContentObject" access="public" output="false" returnType="struct" hint="Allows you to fetch a content object with only the objectID">
+		<cfargument name="objectid" type="UUID" required="true" hint="The objectid for which object is to be found" />
+		<cfargument name="typename" type="string" required="false" default="" hint="The typename of the objectid. Pass in to avoid having to lookup the type." />
+		
+		<cfreturn application.coapi.coapiutilities.getContentObject(argumentCollection="#arguments#") />
+	</cffunction>
+	
+	
 
 	
 	<cffunction name="array">
