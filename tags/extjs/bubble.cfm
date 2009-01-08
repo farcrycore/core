@@ -53,7 +53,7 @@ FARCRY IMPORT FILES
 		<cfoutput>
 			<script type="text/javascript">
 			Ext.example.init, Ext.example;
-			Ext.example.msg('#attributes.title#','#attributes.message#', #attributes.pause#, #attributes.bAutoHide#);
+			Ext.example.msg('#jsstringformat(attributes.title)#','#jsstringformat(attributes.message)#', #attributes.pause#, #attributes.bAutoHide#);
 			</script>
 		</cfoutput>	
 	<cfelse>
