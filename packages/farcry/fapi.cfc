@@ -5,6 +5,15 @@
 		<cfreturn this />
 	</cffunction>
 	
+	
+	<cffunction name="findType" access="public" output="false" returntype="string" hint="Returns the typename for an objectID. Returns empty string if objectid is not found.">
+		<cfargument name="objectid" required="true" />
+		
+		<cfreturn application.coapi.coapiUtilities.findType(argumentCollection=arguments) />
+	
+	</cffunction>
+	
+	
 	<cffunction name="checkPermission" access="public" output="false" returntype="boolean" hint="Checks the permission against a role. The roles defaults to the currently logged in users assigned roles.">
 		<cfargument name="permission" required="true" />
 		<cfargument name="role" required="false" default="" hint="Defaults to the currently logged in users assigned roles" />
@@ -64,21 +73,6 @@
 		<cfreturn result />
 		
 	</cffunction>
-	
-	
-	<cffunction name="CheckNavID" access="public" returntype="boolean" output="false" hint="Returns true if the navigation alias is found.">
-		<cfargument name="alias" required="true" hint="The navigation alias" />
-
-		<cfset result = "" />
-		
-		<cfif structKeyExists(application, "navID") AND len(arguments.alias)>
-			<cfset result = structKeyExists(application.navid, arguments.alias) />
-		<cfelse>
-			<cfset result = false />
-		</cfif>
-		
-		<cfreturn result />
-	</cffunction>	
 	
 	
 	<cffunction name="throw" access="public" returntype="void" output="false" hint="Provides similar functionality to the cfthrow tag but is automatically incorporated to use the resource bundles.">
@@ -178,6 +172,21 @@
 		
 		<cfreturn application.rb.formatRBString(argumentCollection="#arguments#") />
 	</cffunction>
+	
+	
+	<cffunction name="CheckNavID" access="public" returntype="boolean" output="false" hint="Returns true if the navigation alias is found.">
+		<cfargument name="alias" required="true" hint="The navigation alias" />
+
+		<cfset result = "" />
+		
+		<cfif structKeyExists(application, "navID") AND len(arguments.alias)>
+			<cfset result = structKeyExists(application.navid, arguments.alias) />
+		<cfelse>
+			<cfset result = false />
+		</cfif>
+		
+		<cfreturn result />
+	</cffunction>	
 	
 		
 	<cffunction name="getNavID" access="public" returntype="string" output="false" hint="Returns the objectID of the dmNavigation record for the passed alias. If the alias does not exist, the alternate alias will be used. ">
