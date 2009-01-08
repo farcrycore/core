@@ -299,15 +299,19 @@
 		<!--- get the object --->
 		<cfset stLocal.stObj = application.coapi.coapiutilities.getContentObject(objectid="#arguments.objectid#", typename="#arguments.typename#") />
 		
+		<!--- Make sure we want friendly urls on this content type --->
 		<cfif StructKeyExists(application.stcoapi[stLocal.stObj.typename],"bFriendly") AND application.stcoapi[stLocal.stObj.typename].bFriendly>
 			
-			
+			<!--- Only create friendly urls on approved content --->
 			<cfif not StructKeyExists(stLocal.stObj,"status") OR stLocal.stObj.status EQ "approved">
 
-				
+				<!--- Get the current system fu object for a given refobjectid --->
 				<cfset stLocal.stCurrentSystemObject = getSystemObject(refObjectID="#arguments.objectid#") />
+				
+				<!--- Generate the new system FU for the current object --->
 				<cfset stLocal.newFriendlyURL = getSystemFU(objectID="#arguments.objectid#", typename="#arguments.typename#") />
 				
+
 				<cfif structIsEmpty(stLocal.stCurrentSystemObject)>
 				
 					<!--- See if their is a current default object --->
@@ -327,7 +331,7 @@
 					</cfif>
 					
 					<cfset stLocal.stResult = setData(stProperties="#stLocal.stCurrentSystemObject#") />
-				
+
 				<cfelseif stLocal.newFriendlyURL NEQ stLocal.stCurrentSystemObject.friendlyURL>
 					<!--- NEED TO ARCHIVE OLD SYSTEM OBJECT AND UPDATE --->
 					<cfset stLocal.stResult = archiveFU(objectid="#stLocal.stCurrentSystemObject.objectid#") />
@@ -432,7 +436,7 @@
 			</cfif>
 		</cfif>
 		
- 		<cfreturn cleanFU(systemFU) />
+ 		<cfreturn cleanFU(FriendlyURL="#systemFU#", objectid="#arguments.objectid#") />
 	</cffunction>	
 	
 	

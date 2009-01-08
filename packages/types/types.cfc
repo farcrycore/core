@@ -572,13 +572,16 @@ default handlers
 		<!--- ONLY RUN THROUGH IF SAVING TO DB --->
 		<cfif not arguments.bSessionOnly AND arguments.bAfterSave>				   	
 	   	 	<cfset stAfterSave = afterSave(argumentCollection=arguments) />
+	   	 	
+	   	 			
+			<!--- set friendly url for content item. --->
+			<!--- TODO: Checking for application.fc so that it is ignored on Install. This needs to be more eloquent --->	
+			<cfif isDefined("application.fc.factory.farFU")>
+				<cfset stresult_friendly = application.fc.factory.farFU.setSystemFU(arguments.stProperties.objectid) />
+			</cfif>
+			
 		</cfif>
-		
-		<!--- set friendly url for content item. --->
-		<!--- TODO: Checking for application.fc so that it is ignored on Install. This needs to be more eloquent --->	
-		<cfif isDefined("application.fc.factory.farFU")>
-			<cfset stresult_friendly = application.fc.factory.farFU.setSystemFU(arguments.stProperties.objectid) />
-		</cfif>
+
 		
 		<!--- log update --->
 		<cfif arguments.bAudit>
