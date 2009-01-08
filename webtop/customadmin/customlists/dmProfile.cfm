@@ -42,15 +42,23 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 <!--- set up page header --->
 <admin:header title="User Admin" />
 
-<cfset aCustomColumns = arraynew(1) />
 
-<ft:objectadmin 
+<!--- ONLY ALLOW DELETE BUTTON FOR PERMISSION NAME dmProfileDelete --->
+<cfif application.fapi.checkTypePermission(typename="dmProfile", permission="dmProfileDelete")>
+	<cfset lButtons = "Add,Delete,Properties,Unlock" />
+<cfelse>
+	<cfset lButtons = "Add,Properties,Unlock" />
+</cfif>
+
+<ft:objectadmin
 	typename="dmProfile"
 	title="User Administration"
 	columnList="username,userdirectory,firstname,lastname" 
 	sortableColumns="userid,userstatus"
 	lFilterFields="username"
 	sqlorderby="username asc" 
-	lCustomActions="Change password" />
+	lCustomActions="Change password"
+	lButtons="#lButtons#"
+ />
 
 <admin:footer />

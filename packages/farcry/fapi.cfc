@@ -5,6 +5,38 @@
 		<cfreturn this />
 	</cffunction>
 	
+	<cffunction name="checkPermission" access="public" output="false" returntype="boolean" hint="Checks the permission against a role. The roles defaults to the currently logged in users assigned roles.">
+		<cfargument name="permission" required="true" />
+		<cfargument name="role" required="false" default="" hint="Defaults to the currently logged in users assigned roles" />
+		
+		<cfreturn application.security.checkPermission(permission=arguments.permission, role=arguments.role) />
+
+	</cffunction>
+	
+	<cffunction name="CheckWebskinPermission" access="public" output="false" returntype="boolean" hint="Checks the view can be accessed by the role. The roles defaults to the currently logged in users assigned roles.">
+		<cfargument name="webkskin" required="true" />
+		<cfargument name="role" required="false" default="" hint="Defaults to the currently logged in users assigned roles" />
+		
+		<cfreturn application.security.checkPermission(webkskin=arguments.webkskin, role=arguments.role) />
+	</cffunction>
+	
+	
+	<cffunction name="checkTypePermission" access="public" output="false" returntype="boolean" hint="Checks the permission against the type for a given role. The roles defaults to the currently logged in users assigned roles.">
+		<cfargument name="typename" required="true" />
+		<cfargument name="permission" required="true" /><!--- create,edit,delete,approve,canapproveowncontent,requestapproval,view --->
+		<cfargument name="role" required="false" default="" hint="Defaults to the currently logged in users assigned roles" />
+		
+		<cfreturn application.security.checkPermission(typename=arguments.typename, permission=arguments.permission, role=arguments.role) />
+	</cffunction>
+	
+	
+	<cffunction name="checkObjectPermission" access="public" output="false" returntype="boolean" hint="Checks the permission against the objectid for a given role. The roles defaults to the currently logged in users assigned roles.">
+		<cfargument name="objectid" required="true" />
+		<cfargument name="permission" required="true"><!--- Approve,CanApproveOwnContent,ContainerManagement,Create,delete,edit RequestApproval,SendToTrash,view --->
+		<cfargument name="role" required="false" default="" hint="Defaults to the currently logged in users assigned roles" />
+		
+		<cfreturn application.security.checkPermission(objectid=arguments.objectid, permission=arguments.permission, role=arguments.role) />
+	</cffunction>
 	
 	
 	<cffunction name="showFarcryDate" access="public" output="false" returntype="boolean" hint="Returns boolean as to whether to show the date based on how farcry stores dates. ie, 2050 or +200 years.">

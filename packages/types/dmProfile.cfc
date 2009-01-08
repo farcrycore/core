@@ -194,15 +194,27 @@ OBJECT METHODS
 		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="">
 		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="">
 		
-		<cfset stObj = getData(objectid=arguments.objectid) />
-		<cfset oUser = createobject("component",application.stCOAPI.farUser.packagepath) />
-		<cfset stUser = oUser.getByUserID(application.factory.oUtils.listSlice(stObj.userName,1,-2,"_")) />
+		<cfset var stObj = getData(objectid=arguments.objectid) />
+		<cfset var oUser = createobject("component",application.stCOAPI.farUser.packagepath) />
+		<cfset var stUser = oUser.getByUserID(application.factory.oUtils.listSlice(stObj.userName,1,-2,"_")) />
+		<cfset var stReturn = structNew() />
 		
-		<cfif listlast(stObj.username,"_") eq "CLIENT" and not structisempty(stUser)>
-			<cfset oUser.delete(objectid=stUser.objectid,user=arguments.user,auditNote=arguments.auditNote) />
+		<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
+		
+		<cfif stobj.username EQ "farcry_CLIENTUD">
+			<!--- DO NOT ALLOW FARCRY USER TO BE DELETED. IT SHOULD ONLY BE PERMITTED TO BE FLAGGED AS INACTIVE --->
+			<cfset stReturn.bSuccess = false>
+			<cfset stReturn.message = "The user farcry is protected by the system and can only be de-activated.">
+			
+			<cfreturn stReturn />
+		<cfelse>
+		
+			<cfif listlast(stObj.username,"_") eq "CLIENTUD" and not structisempty(stUser)>
+				<cfset oUser.delete(objectid=stUser.objectid,user=arguments.user,auditNote=arguments.auditNote) />
+			</cfif>
+			
+			<cfreturn super.delete(objectid=arguments.objectid,user=arguments.user,auditNote=arguments.auditNote) />
 		</cfif>
-		
-		<cfreturn super.delete(objectid=arguments.objectid,user=arguments.user,auditNote=arguments.auditNote) />
 	</cffunction>
 		
 </cfcomponent>
