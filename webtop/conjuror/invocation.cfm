@@ -141,7 +141,7 @@ Pseudo:
 					<nj:updateTree objectId="#parentID#">
 					<cfoutput>
 					<script type="text/javascript">
-						parent['content'].location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#returnStruct.ObjectID#&ref=#url.ref#;
+						parent['content'].location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#returnStruct.ObjectID#&ref=#url.ref#';
 					</script>
 					</cfoutput>
 				</cfsavecontent>
