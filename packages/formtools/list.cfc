@@ -189,16 +189,24 @@
 		
 		<cfset var stResult = structNew()>		
 		<cfset stResult.bSuccess = true>
-		<cfset stResult.value = "#arguments.stFieldPost.Value#">
-		<cfset stResult.stError = StructNew()>			
-		
-		<cfparam name="arguments.stMetadata.ftRenderType" default="dropdown">
-		
+		<cfset stResult.value = arguments.stFieldPost.Value />
+		<cfset stResult.stError = StructNew()>	
+
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
-		<cfif len(trim(stFieldPost.value))>
-			<cfset stResult.value = stFieldPost.Value />
+		<cfif len(trim(stResult.value))>
+		
+			<!--- Remove any leading or trailing empty list items --->
+			<cfif stResult.value EQ ",">
+				<cfset stResult.value = "" />
+			</cfif>
+			<cfif left(stResult.value,1) EQ ",">
+				<cfset stResult.value = right(stResult.value,len(stResult.value)-1) />
+			</cfif>
+			<cfif right(stResult.value,1) EQ ",">
+				<cfset stResult.value = left(stResult.value,len(stResult.value)-1) />
+			</cfif>			
 		<cfelse>
 			<cfset stResult.value = "" />
 		</cfif>
