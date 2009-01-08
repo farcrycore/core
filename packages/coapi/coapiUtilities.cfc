@@ -11,6 +11,95 @@
 		<cfreturn this>
 	</cffunction>
 	
+	<cffunction name="typeInRefObjects" access="public" output="false" returntype="boolean" hint="Returns true/false as to whether the type is to add a reference in the refObjects table">
+		<cfargument name="typename" required="true" hint="The name of the type to check" />
+		
+		<cfset var result = true /><!--- Assume true unless specifically instructed not too. --->
+		
+		<cfif isDefined("application.stCoapi.#arguments.typename#.bRefObjects") AND NOT application.stCoapi[arguments.typename].bRefObjects>
+			<cfset result = false />
+		</cfif>
+		
+		<cfreturn result />
+	</cffunction>
+	
+
+	<cffunction name="createRefObjectID" access="public" output="false" returntype="boolean" hint="Ensures objectid is unique and creates a refObject reference record.">
+		<cfargument name="objectid" required="true" hint="The objectID to check" />
+		<cfargument name="typename" required="yes" type="string" default="#getTablename()#">	
+		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+	   	<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#">
+		<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
+		
+		<cfset var qRefDataDupe = "" />
+		<cfset var qRefData = "" />
+		<cfset var qObjectDupe = "" />
+		<cfset var bSuccess = true />
+		
+		<cfif application.coapi.coapiUtilities.typeInRefObjects(arguments.typename)>
+
+			<cftry>
+				
+				<cfquery datasource="#arguments.dsn#" name="qRefDataDupe">
+				SELECT ObjectID FROM #arguments.dbowner#refObjects
+				WHERE ObjectID = <cfqueryparam value="#arguments.objectid#" cfsqltype="CF_SQL_VARCHAR">
+				</cfquery>
+				
+				<cfif NOT qRefDataDupe.RecordCount>			
+				<!--- If note in refObjects we have no problem --->
+					
+					<!--- create lookup ref for default type --->
+					<cfquery datasource="#arguments.dsn#" name="qRefData">
+						INSERT INTO #arguments.dbowner#refObjects (
+							objectID, 
+							typename
+						)
+						VALUES (
+							<cfqueryparam value="#arguments.objectid#" cfsqltype="CF_SQL_VARCHAR">,
+							<cfqueryparam value="#arguments.typename#" cfsqltype="CF_SQL_VARCHAR">
+						)
+					</cfquery>
+				
+				 
+				<cfelse>
+					<!--- 
+						If its already in Ref Objects we have to work out if it was created during a previous Default Object Call
+						We do this by seeing if the objectID exists in the actual type table. If it does, then it means it was a real objectID and we have a problem.
+					--->
+					<cfquery datasource="#arguments.dsn#" name="qObjectDupe">
+					SELECT ObjectID FROM #arguments.dbowner##arguments.typename#
+					WHERE ObjectID = <cfqueryparam value="#arguments.objectid#" cfsqltype="CF_SQL_VARCHAR">
+					</cfquery>
+					
+					<cfif qObjectDupe.RecordCount>
+						<cfset bSuccess = false />
+					</cfif>
+				
+				</cfif>
+				
+				<cfcatch type="database">
+					<!--- This simply means the refObjects table has not been deployed so .  --->
+				</cfcatch>
+				
+			</cftry>
+		<cfelse>
+			<!--- 
+				Check if the objectid exists in the type table.
+			--->
+			<cfquery datasource="#arguments.dsn#" name="qObjectDupe">
+			SELECT ObjectID FROM #arguments.dbowner##arguments.typename#
+			WHERE ObjectID = <cfqueryparam value="#arguments.objectid#" cfsqltype="CF_SQL_VARCHAR">
+			</cfquery>
+			
+			<cfif qObjectDupe.RecordCount>
+				<cfset bSuccess = false />
+			</cfif>
+		</cfif>
+		
+		<cfreturn bSuccess />
+		
+	</cffunction>
+		
 	<cffunction name="createCopy" access="public" output="false" returntype="struct" hint="Returns a duplicated struct with any extended array properties changed to point to the new struct.">
 		<cfargument name="objectid" type="uuid" required="true" default="#application.dsn#" />
 		<cfargument name="typename" type="string" required="false" default="" />

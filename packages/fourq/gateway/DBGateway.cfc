@@ -74,7 +74,8 @@
       		<cfset var qRefData = queryNew("blah") />
       		<cfset var createDataResult = structNew() />
       		<cfset var currentObjectID = "" />
-	    
+	    	<cfset var bRefCreated = "" />
+	    	
 			<!--- set defaults for status --->
 			<cfset createDataResult.bSuccess = true>
 			<cfset createDataResult.message = "Object created successfully">
@@ -138,24 +139,12 @@
 				</cfloop>
 					
 				
-				<cftry>
-				<!--- create lookup ref for type --->			
-				<cfquery datasource="#arguments.dsn#" name="qRefData">
-					INSERT INTO #variables.dbowner#refObjects (
-						objectID, 
-						typename
-					)
-					VALUES (
-						<cfqueryparam value="#currentObjectID#" cfsqltype="CF_SQL_VARCHAR">,
-						<cfqueryparam value="#tablename#" cfsqltype="CF_SQL_VARCHAR">
-					)
-				</cfquery>
-					<cfcatch type="any">
-						<!--- This error can occur because of a duplicate already in the refObjects table caused by the initial create data saving to session.
+				<cfset bRefCreated = application.coapi.coapiutilities.createRefObjectID(objectID="#currentObjectID#", typename="#tablename#") />
+				<cfif NOT bRefCreated>
+					<!--- This error can occur because of a duplicate already in the refObjects table caused by the initial create data saving to session.
 						TODO: need a more elegent solution to handle this.
-						 --->
-					</cfcatch>	
-				</cftry>
+					 --->
+				</cfif>
 
 			<cfset createDataResult.objectid = currentObjectID>
 			

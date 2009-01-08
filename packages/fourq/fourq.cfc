@@ -152,6 +152,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var PrimaryPackage = "" />
 		<cfset var PrimaryPackagePath = "" />
 		<cfset var propertie = "" />
+		<cfset var bRefCreated = "" />
 		
 		
 		
@@ -167,10 +168,17 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		</cfif>
 		
 		<cfset stProps=structNew()>
-		<cfif isDefined("arguments.ObjectID") and len(arguments.ObjectID)>
-			<cfset stProps.objectid = arguments.ObjectID>
+		
+		<cfif isDefined("arguments.ObjectID") and len(arguments.ObjectID)>		
+			<cfset stProps.objectid = arguments.ObjectID>		
 		<cfelse>
 			<cfset stProps.objectid = application.fc.utils.createJavaUUID()>
+		</cfif>
+		
+		<!--- Create a Reference in the RefObjects Table --->
+		<cfset bRefCreated = application.coapi.coapiutilities.createRefObjectID(argumentCollection="#arguments#") />
+		<cfif not bRefCreated>
+			<cfabort showerror="Error Executing Database Query. Duplicate ObjectID #arguments.objectid#" />
 		</cfif>
 		
 		<cfset stProps.typename = arguments.typename>
@@ -234,47 +242,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			</cfif>
 		</cfloop>
 				
-
-
-		<cfquery datasource="#arguments.dsn#" name="qRefDataDupe">
-		SELECT ObjectID FROM #arguments.dbowner#refObjects
-		WHERE ObjectID = <cfqueryparam value="#stProps.objectid#" cfsqltype="CF_SQL_VARCHAR">
-		</cfquery>
-		
-		<cfif NOT qRefDataDupe.RecordCount>			
-		<!--- If note in refObjects we have no problem --->
-			
-			<!--- create lookup ref for default type --->
-			<cfquery datasource="#arguments.dsn#" name="qRefData">
-				INSERT INTO #arguments.dbowner#refObjects (
-					objectID, 
-					typename
-				)
-				VALUES (
-					<cfqueryparam value="#stProps.objectid#" cfsqltype="CF_SQL_VARCHAR">,
-					<cfqueryparam value="#stProps.typename#" cfsqltype="CF_SQL_VARCHAR">
-				)
-			</cfquery>
-		
-		 
-		<cfelse>
-			<!--- 
-				If its already in Ref Objects we have to work out if it was created during a previous Default Object Call
-				We do this by seeing if the objectID exists in the actual type table. If it does, then it means it was a real objectID and we have a problem.
-			--->
-			<cfquery datasource="#arguments.dsn#" name="qObjectDupe">
-			SELECT ObjectID FROM #arguments.dbowner##stProps.typename#
-			WHERE ObjectID = <cfqueryparam value="#stProps.objectid#" cfsqltype="CF_SQL_VARCHAR">
-			</cfquery>
-			
-			<cfif qObjectDupe.RecordCount>
-				<cfabort showerror="Error Executing Database Query. Duplicate ObjectID #stProps.objectid#" />
-			</cfif>
-		
-		</cfif>
-		
 		<cfreturn stProps>
 	</cffunction>
+	
 	
 	
 	<cffunction name="getGateway" access="private" output="false" returntype="farcry.core.packages.fourq.gateway.DBGateway" hint="Gets the gateway for the given db connection parameters">
