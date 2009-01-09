@@ -718,7 +718,7 @@ user --->
 			<tr>			
 		</cfoutput>
 		
-		 		<cfif attributes.bSelectCol><cfoutput><th>Select</th></cfoutput></cfif>
+		 		<cfif attributes.bSelectCol><cfoutput><th><input type="checkbox" id="checkall" name="checkall" onclick="checkUncheckAll(this);" title="Check All" /></th></cfoutput></cfif>
 		 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
 			 		<cfoutput><th>#application.rb.getResource('objectadmin.columns.status@label',"Status")#</th></cfoutput>
 				</cfif>
