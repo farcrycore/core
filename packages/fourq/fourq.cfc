@@ -173,6 +173,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfset stProps.objectid = arguments.ObjectID>		
 		<cfelse>
 			<cfset stProps.objectid = application.fc.utils.createJavaUUID()>
+			<cfset arguments.objectid = stProps.objectid />
 		</cfif>
 		
 		<!--- Create a Reference in the RefObjects Table --->
