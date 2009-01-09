@@ -427,4 +427,15 @@
 		<cfreturn application.fc.utils.insertQueryVariable(argumentCollection="#arguments#") />
 	</cffunction>
 	
+	
+	<cffunction name="getCurrentUser" access="public" returntype="struct" hint="Gets the currently logged in user's dmProfile or a blank structure if the user is not logged in.">
+		<cfif structKeyExists(session, "dmProfile")>
+			<cfreturn session.dmProfile />
+		<cfelse>
+			<cfreturn structNew() />
+		</cfif>
+	</cffunction>
+	
+	
+	
 </cfcomponent>
