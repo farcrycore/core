@@ -195,7 +195,11 @@
 	<cffunction name="insertQueryVariableTest" access="public" hint="Inserts the specified key and value, replacing the existing value for that key">
 		<cfset assertEquals(true, false) />
 	</cffunction>
-
+	
+	<cffunction name="getCurrentUserTest">
+		<cfset var currentUser = this.myComp.getCurrentUser() />
+		<cfset assertEquals(isStruct(currentUser), true) />
+	</cffunction>
 	
 	<cffunction name="showFarcryDateTestEmptyString" returntype="void" access="public">
 		<cfset assertEquals(
