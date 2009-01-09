@@ -93,6 +93,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.lButtons" default="*" type="string">
 <cfparam name="attributes.bPaginateTop" default="true" type="boolean">
 <cfparam name="attributes.bPaginateBottom" default="true" type="boolean">
+<cfparam name="attributes.bCheckAll" default="true" type="boolean" />
 <cfparam name="attributes.bSelectCol" default="true" type="boolean">
 <cfparam name="attributes.bEditCol" default="true" type="boolean">
 <cfparam name="attributes.bViewCol" default="true" type="boolean">
@@ -718,7 +719,7 @@ user --->
 			<tr>			
 		</cfoutput>
 		
-		 		<cfif attributes.bSelectCol><cfoutput><th><input type="checkbox" id="checkall" name="checkall" onclick="checkUncheckAll(this);" title="Check All" /></th></cfoutput></cfif>
+		 		<cfif attributes.bSelectCol><cfoutput><th><cfif attributes.bCheckAll><input type="checkbox" id="checkall" name="checkall" onclick="checkUncheckAll(this);" title="Check All" /><cfelse>Select</cfif></th></cfoutput></cfif>
 		 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
 			 		<cfoutput><th>#application.rb.getResource('objectadmin.columns.status@label',"Status")#</th></cfoutput>
 				</cfif>
