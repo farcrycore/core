@@ -39,6 +39,14 @@
 	</cffunction>
 
 	<cffunction name="throwTest" access="public" hint="Provides similar functionality to the cfthrow tag but is automatically incorporated to use the resource bundles.">
+		
+		<cftry>
+			<cfset this.myComp.throw("This should get the data from the resource bundle.") />
+			<cfcatch type="any">
+				<!--- <cfdump var="#cfcatch#" /> --->
+			</cfcatch>
+		</cftry>
+		
 		<cfset assertEquals(true, false) />
 	</cffunction>
 
@@ -67,25 +75,35 @@
 	</cffunction>
 
 	<cffunction name="getContentObjectTest" access="public" hint="Allows you to fetch a content object with only the objectID">
+		<!--- <cfset var myobj = this.myComp.getContentObject() /> --->
 		<cfset assertEquals(true, false) />
 	</cffunction>
 
 	<cffunction name="arrayTest">
-		<cfset assertEquals(true, false) />
+		<cfset var myarray = this.myComp.array("Thing 1","Thing 2","Thing 3") />
+		<cfset assertEquals(arrayLen(myarray), 3) />
 	</cffunction>
 
 	<cffunction name="getUUIDTest" access="public" hint="">
-		<cfset assertEquals(true, false) />
+		<cfset assertEquals(isValid("UUID",this.myComp.getUUID()), true) />
 	</cffunction>
 
 	<!--- ARRAY utilities --->
 	<cffunction name="arrayFindTest" access="public" hint="Returns the index of the first element that matches the specified value. 0 if not found." >
-		<cfset assertEquals(true, false) />
+		<cfset var myArray = arrayNew(1) />
+		<cfset myArray[1] = "Value 1" />
+		<cfset myArray[2] = "Value 3" />
+		
+		<cfset assertEquals(this.myComp.arrayFind(myArray,"Value 1"), 1) />
+		<cfset assertEquals(this.myComp.arrayFind(myArray,"Value 10"), 0) />
 	</cffunction>
 
 	<!--- LIST utilities --->
 	<cffunction name="listReverseTest" access="public" hint="Reverses a list">
-		<cfset assertEquals(true, false) />
+		<cfset var mylist = "Thing 1,Thing 2,Thing 3,Thing 4" />
+		<cfset mylist = this.myComp.listReverse(mylist) />
+		
+		<cfset assertEquals(listFirst(mylist), "Thing 4") />
 	</cffunction>
 
 	<cffunction name="listDiffTest" access="public" hint="Returns the items in list2 that aren't in list2">
@@ -109,16 +127,39 @@
 	</cffunction>
 
 	<cffunction name="listContainsAnyTest" access="public" description="Returns true if the first list contains any of the items in the second list">
-		<cfset assertEquals(true, false) />
+		<cfset var listOne = "Thing,Thang,Thong,Ding,Dang,Dong" />
+		<cfset var listTwo = "他,是,我,的,妹妹" />
+		<cfset var listThree = "我们,去,澳洲,thing" />
+		<cfset var listFour = "我们,去,Thang,澳洲" />
+		
+		<cfset assertEquals(this.myComp.listContainsAny(listOne,listTwo), false) />
+		<cfset assertEquals(this.myComp.listContainsAny(listOne,listThree), false) />
+		<cfset assertEquals(this.myComp.listContainsAny(listOne,listFour), true) />
 	</cffunction>
 
 	<cffunction name="listContainsAnyNoCaseTest" access="public" description="Returns true if the first list contains any of the items in the second list">
-		<cfset assertEquals(true, false) />
+		<cfset var listOne = "Thing,Thang,Thong,Ding,Dang,Dong" />
+		<cfset var listTwo = "他,是,我,的,妹妹" />
+		<cfset var listThree = "我们,去,澳洲,thing" />
+		<cfset var listFour = "我们,去,Thang,澳洲" />
+		
+		<cfset assertEquals(this.myComp.listContainsAnyNoCase(listOne,listTwo), false) />
+		<cfset assertEquals(this.myComp.listContainsAnyNoCase(listOne,listThree), true) />
+		<cfset assertEquals(this.myComp.listContainsAnyNoCase(listOne,listFour), true) />
 	</cffunction>
 
 	<!--- STRUCT ulilities --->
 	<cffunction name="structMergeTest" access="public" hint="Performs a deep merge on two structs">
-		<cfset assertEquals(true, false) />
+		<cfset var myStructOne = structNew() />
+		<cfset var myStructTwo = structNew() />
+		<cfset var myMerged = "" />
+		
+		<cfset myStructOne.substruct = structNew() />
+		<cfset myStructTwo.toplevel = "Yadda" />
+		
+		<cfset myMerged = this.myComp.structMerge(myStructOne, myStructTwo) />
+		
+		<cfset assertEquals(isStruct(myMerged.substruct), true) />
 	</cffunction>
 
 	<cffunction name="structCreateTest" access="public" hint="Creates and populates a struct with the provided arguments">
