@@ -33,6 +33,7 @@
 	<cfparam name="attributes.id" default=""><!--- Anchor tag ID --->
 	<cfparam name="attributes.class" default=""><!--- Anchor tag classes --->
 	<cfparam name="attributes.style" default=""><!--- Anchor tag styles --->
+	<cfparam name="attributes.title" default=""><!--- Anchor tag title text --->
 	<cfparam name="attributes.urlOnly" default="false">
 	<cfparam name="attributes.r_url" default=""><!--- Define a variable to pass the link back (instead of writting out via the tag). Note setting urlOnly invalidates this setting --->
 	<cfparam name="attributes.xCode" default=""><!--- eXtra code to be placed inside the anchor tag --->
@@ -159,6 +160,9 @@
 		</cfif>
 		<cfif len(attributes.style)>
 			<cfset tagoutput=tagoutput & ' style="#attributes.style#"'>
+		</cfif>
+		<cfif len(attributes.title)>
+			<cfset tagoutput=tagoutput & ' title="#attributes.title#"'>
 		</cfif>
 		<cfif len(attributes.xCode)>
 			<cfset tagoutput=tagoutput & ' #attributes.xCode#'>
