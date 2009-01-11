@@ -9,14 +9,13 @@
 <!------------------ 
 FARCRY IMPORT FILES
  ------------------>
-<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
-<cfimport taglib="/farcry/plugins/farcryShop/tags" prefix="pag" />
 
 <!------------------ 
 START WEBSKIN
  ------------------>
 
+<skin:htmlHead id="paginationCSS">
 <cfoutput>
 <style type="text/css">
 .pagination {background: ##f2f2f2;color:##666;padding: 4px 2px 4px 7px;border: 1px solid ##ddd;margin: 0 0 1.5em}
@@ -39,49 +38,24 @@ START WEBSKIN
 .pagination h4 {margin-top:-1.4em;padding:0;border:none}
 </style>
 </cfoutput>
+</skin:htmlHead>
 
 <cfoutput>
 	<div class="pagination">	
 		
 		<p>
-			<cfif getFirstPage() GT 1>
-				<pag:buildPaginationLink stLink="#getLink('first')#" linkText="1" />...
-			</cfif>
+			<skin:buildPaginationLink stLink="#getLink('first')#" linkText="1" />			
+			<skin:buildPaginationLink stLink="#getLink('previous')#" linkText="<<" />
 			
 			<cfloop from="#getPageFrom()#" to="#getPageTo()#" index="i">
-				<pag:buildPaginationLink stLink="#getLink(i)#" />
+				<skin:buildPaginationLink stLink="#getLink(i)#" />
 			</cfloop>
 			
-			<cfif getLastPage() LT getTotalPages()>
-				...<pag:buildPaginationLink stLink="#getLink('last')#" linkText="#getTotalPages()#" />
-			</cfif>
-			
-			
-			
-			<pag:buildPaginationLink stLink="#getLink('previous')#" linkText="<<" />
-			<pag:buildPaginationLink stLink="#getLink('next')#" linkText=">>" />
+			<skin:buildPaginationLink stLink="#getLink('next')#" linkText=">>" />
+			<skin:buildPaginationLink stLink="#getLink('last')#" linkText="#getTotalPages()#" />
 		</p>
 		<h4>Page #getCurrentPage()# of #getTotalPages()#</h4>
 	</div>
 </cfoutput>		
-
-<cfoutput>
-	<div class="pagination">	
-		
-		<p>
-			<pag:buildPaginationLink stLink="#getLink('first')#" />
-			<pag:buildPaginationLink stLink="#getLink('previous')#" linkText="<<" />
-			
-			<cfloop from="#getPageFrom()#" to="#getPageTo()#" index="i">
-				<pag:buildPaginationLink stLink="#getLink(i)#" />
-			</cfloop>			
-			
-			<pag:buildPaginationLink stLink="#getLink('next')#" linkText=">>" />			
-			<pag:buildPaginationLink stLink="#getLink('last')#" />
-		</p>
-		<h4>Page #getCurrentPage()# of #getTotalPages()#</h4>
-	</div>
-</cfoutput>			
-
 
 <cfsetting enablecfoutputonly="false">
