@@ -142,7 +142,9 @@
 		
 	</cfif>
 	
-	
+	<cfset href = application.fapi.fixURL(href) />
+
+
 	<!--- Are we mean to display an a tag or the URL only? --->
 	<cfif attributes.urlOnly EQ true>
 		<!--- display the URL only --->
