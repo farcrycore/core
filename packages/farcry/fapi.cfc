@@ -77,8 +77,8 @@
 	
 	<cffunction name="throw" access="public" returntype="void" output="false" hint="Provides similar functionality to the cfthrow tag but is automatically incorporated to use the resource bundles.">
 		
-		<cfargument name="errorcode" type="string" required="false" default="" />
 		<cfargument name="message" type="string" required="false" default="" />
+		<cfargument name="errorcode" type="string" required="false" default="" />
 		<cfargument name="detail" type="string" required="false" default="" />
 		<cfargument name="extendedinfo" type="string" required="false" default="" />
 		<cfargument name="object" type="object" required="false" />
@@ -436,6 +436,48 @@
 		</cfif>
 	</cffunction>
 	
+
+
+	<cffunction name="filterStructure" returntype="struct" output="false" hint="Removes specified structure elements">
+		<cfargument name="st" required="Yes" hint="The structure to parse">
+		<cfargument name="lKeys" required="Yes" hint="A list of structure keys to delete">
+		
+		<cfset var i = 1>
+		<cfset var aKeys = "" />
+		
+		<cfscript>
+			aKeys = listToArray(arguments.lKeys);	
+			for(i = 1;i LTE arrayLen(aKeys);i=i+1)
+			{
+				if(structKeyExists(arguments.st,aKeys[i]))
+					structDelete(arguments.st,aKeys[i]);
+			}
+				
+		</cfscript>
+		<cfreturn arguments.st>
+	</cffunction>
 	
+	<cffunction name="structToNamePairs" returntype="string" output="false" hint="Builds a named pair string from a structure">
+		<cfargument name="st" type="struct" required="true">
+		<cfargument name="delimiter" default="&" required="false">
+		<cfargument name="Quotes" default="" required="false">
+		<cfset var keyindex = 1 />
+		<cfset var namepair = "" />
+		<cfset var keyCount = 0 />
+		<cfset var key = "" />
+		
+		<cfscript>
+			namepair = '';
+			keyCount = structCount(arguments.st);
+			for(key in arguments.st)
+			{	
+				namepair = namepair & "#key#=#arguments.quotes##arguments.st[key]##arguments.quotes#";
+				if(keyIndex LT keyCount)
+					namepair = namepair & "#arguments.delimiter#";
+				keyIndex = keyIndex + 1;		
+			}
+		</cfscript>
+		<cfreturn trim(namepair)>
 	
+	</cffunction>	
 </cfcomponent>
