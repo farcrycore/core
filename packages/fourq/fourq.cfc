@@ -683,7 +683,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
 		<cfargument name="lObjectIDs" type="string" required="false" default="" hint="Restrict resultset to a comma delimited list of objectids.">
 		<cfargument name="OrderBy" type="string" required="false" default="" hint="Comma delimited list of properties to order by. Known issue: method returns a struct which randomises sort order :(">
-		<cfargument name="SortOrder" type="string" required="false" default="asc" hint="asc or desc options.">
+		<cfargument name="SortOrder" type="string" required="false" default="" hint="asc or desc options.">
 		<cfargument name="conditions" type="struct" required="false" default="#structNew()#" hint="Query filter; pass in structure keyed by property and with a value equal to the desired filter.">
 		<cfargument name="whereclause" type="string" required="false" default="">
 		<cfargument name ="maxRows" required="false" type="numeric" default="-1">
