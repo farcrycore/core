@@ -39,7 +39,11 @@ $in: Recordset -- The recordset that is going to be paginated (if that's a real 
 
 <cfif thistag.executionMode eq "Start">
 	<cfparam name="attributes.paramname" default="">
-
+	
+	<!--- ---------- --->
+	<!--- DEPRECATED --->
+	<!--- ---------- --->
+	<cfset application.fapi.deprecated("skin:paginate") />
 
 </cfif>
 

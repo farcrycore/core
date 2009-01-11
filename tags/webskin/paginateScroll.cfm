@@ -42,6 +42,11 @@ $in:  $
 <cfif thistag.executionMode eq "Start">
 	<cfparam name="attributes.r_stRecord" default="stRecord">
 	
+	<!--- ---------- --->
+	<!--- DEPRECATED --->
+	<!--- ---------- --->
+	<cfset application.fapi.deprecated("skin:paginateScroll") />
+	
 	
 	<cfinclude template="/farcry/core/webtop/includes/utilityFunctions.cfm" >
 

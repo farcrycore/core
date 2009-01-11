@@ -40,6 +40,12 @@ $in: r_stRecord -- the name of the structure to return to the caller $
 <cfif thistag.executionMode eq "Start">
 	<cfparam name="attributes.r_stRecord" default="stRecord">
 	
+	<!--- ---------- --->
+	<!--- DEPRECATED --->
+	<!--- ---------- --->
+	<cfset application.fapi.deprecated("skin:paginateAllRecords") />
+	
+	
 	<!--- Get the BaseTagData  --->
 	<cfset PaginateData = getBaseTagData("cf_paginate")>
 	
