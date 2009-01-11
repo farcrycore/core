@@ -426,13 +426,13 @@
 		<cfset var key = "" />
 		
 		<cfif not structkeyexists(arguments,"removevalues")>
-			<cfset arguments.removevalues = "furl,flushcache,bAjax,designmode,draftmode,updateapp,bShowTray,bodyView=displayBody,view=displayPageStandard,logout" />
+			<cfset arguments.removevalues = "furl,flushcache,bAjax,designmode,draftmode,updateapp,bShowTray,bodyView=displayBody,bodyView=displayTypeBody,view=displayPageStandard,logout" />
 		<cfelseif left(arguments.removevalues,1) eq "+">
-			<cfset arguments.removevalues = "furl,flushcache,bAjax,designmode,draftmode,updateapp,bShowTray,bodyView=displayBody,view=displayPageStandard,logout,#mid(arguments.removevalues,2,len(arguments.removevalues))#">
+			<cfset arguments.removevalues = "furl,flushcache,bAjax,designmode,draftmode,updateapp,bShowTray,bodyView=displayBody,bodyView=displayTypeBody,view=displayPageStandard,logout,#mid(arguments.removevalues,2,len(arguments.removevalues))#">
 		</cfif>
 		
 		<!--- Normalise FU --->
-		<cfif find("furl=",arguments.url)>
+		<cfif findNoCase("furl=",arguments.url)>
 			<cfset arguments.url = replacenocase(arguments.url,"/index.cfm",rereplacenocase(arguments.url,"(.*(\?|&)furl\=)([^&]+)(.*)","\3")) />
 		</cfif>
 		
@@ -464,8 +464,8 @@
 				</cfif>
 			</cfloop>
 		</cfif>
-		
-		<cfreturn rereplace(replacelist(arguments.url,"?&,&&","?,&"),"[?&]+$","") />
+
+		<cfreturn rereplace(replacelist(arguments.url,"?&,&&&,&&","?,&,&"),"[?&]+$","") />
 	</cffunction>
 	
 	<cffunction name="insertQueryVariable" returntype="string" output="false" access="public" hint="Inserts the specified key and value, replacing the existing value for that key">
