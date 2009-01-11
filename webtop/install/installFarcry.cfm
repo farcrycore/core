@@ -365,13 +365,13 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 	
 	
 	<cfif request.bSuccess>
-	
+			
 		<!--- 
 		This sets up a cookie on the users system so that if they try and login to the webtop and the webtop can't determine which project it is trying to update,
 		it will know what projects they will be potentially trying to edit.  --->
 		<cfparam name="server.stFarcryProjects" default="#structNew()#" />
 		
-		<cfif NOT form.bInstallDBOnly>
+		<cfif NOT session.stFarcryInstall.stConfig.bInstallDBOnly>
 			<cfif not structKeyExists(server.stFarcryProjects, application.projectDirectoryName)>
 				<cfset server.stFarcryProjects[application.projectDirectoryName] = structnew() />
 				<cfset server.stFarcryProjects[application.projectDirectoryName].displayname = application.displayName />
@@ -405,7 +405,7 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 				</div>
 				<div class="itemButtons">
 					<form name="installComplete" id="installComplete" method="post" action="">
-						<input type="button" name="login" value="LOGIN TO THE FARCRY WEBTOP" onClick="alert('Your default Farcry login is\n\n u: farcry\n p: #jsstringformat(session.stFarcryInstall.stConfig.adminPassword)#');window.open('http://#cgi.http_host##application.url.webtop#/login.cfm<cfif NOT form.bInstallDBOnly>?farcryProject=#application.projectDirectoryName#</cfif>')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
+						<input type="button" name="login" value="LOGIN TO THE FARCRY WEBTOP" onClick="alert('Your default Farcry login is\n\n u: farcry\n p: #jsstringformat(session.stFarcryInstall.stConfig.adminPassword)#');window.open('http://#cgi.http_host##application.url.webtop#/login.cfm<cfif NOT session.stFarcryInstall.stConfig.bInstallDBOnly>?farcryProject=#application.projectDirectoryName#</cfif>')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
 						<input type="button" name="view" value="VIEW SITE" onClick="window.open('http://#cgi.http_host##application.url.webroot#/index.cfm?updateapp=#session.stFarcryInstall.stConfig.updateappKey#')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
 						<input type="button" name="install" value="INSTALL ANOTHER PROJECT" onClick="window.open('#cgi.script_name#?restartInstaller=1', '_self')" class="normalbttnstyle" onMouseOver="this.className='overbttnstyle'" onMouseOut="this.className='normalbttnstyle'" />
 					</form><br /> 
