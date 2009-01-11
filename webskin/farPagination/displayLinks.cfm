@@ -44,7 +44,7 @@ START WEBSKIN
 	<div class="pagination">	
 		
 		<p>
-			<skin:buildPaginationLink stLink="#getLink('first')#" linkText="1" />			
+			<skin:buildPaginationLink stLink="#getLink('first')#" />			
 			<skin:buildPaginationLink stLink="#getLink('previous')#" linkText="<<" />
 			
 			<cfloop from="#getPageFrom()#" to="#getPageTo()#" index="i">
@@ -52,7 +52,7 @@ START WEBSKIN
 			</cfloop>
 			
 			<skin:buildPaginationLink stLink="#getLink('next')#" linkText=">>" />
-			<skin:buildPaginationLink stLink="#getLink('last')#" linkText="#getTotalPages()#" />
+			<skin:buildPaginationLink stLink="#getLink('last')#" />
 		</p>
 		<h4>Page #getCurrentPage()# of #getTotalPages()#</h4>
 	</div>
