@@ -480,4 +480,16 @@
 		<cfreturn trim(namepair)>
 	
 	</cffunction>	
+	
+	
+	<cffunction name="deprecated" returntype="string" output="false" hint="As a core developer you can flag deprecated code by using this function to pass in a depricated message">
+		<cfargument name="message" default="" required="false">
+	
+		<cfif isdefined("application.log.bDeprecated") AND application.log.bDeprecated>		
+			<cftrace type="warning" inline="false" text="#GetBaseTemplatePath()# - #arguments.message#" abort="false" />
+			<cflog file="deprecated" application="true" type="warning" text="#GetBaseTemplatePath()# - #arguments.message#" />
+			<cf_logevent location="#getPageContext().getPage().getCurrentTemplatePath()#" type="application" event="deprecated" notes="#arguments.message#" />
+		</cfif>	
+		
+	</cffunction>	
 </cfcomponent>
