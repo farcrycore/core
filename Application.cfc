@@ -71,6 +71,29 @@
 			</cfloop>
 		</cfif>
 		
+		
+
+		<!----------------------------------------
+		 LOCALES
+		 - Append Locales currently used in the project
+		----------------------------------------->
+		<cfswitch expression="#application.dbtype#">
+			<cfdefaultcase>
+				<cfquery datasource="#application.dsn#" name="qProfileLocales">
+				SELECT distinct(locale) as locale
+				from #application.dbowner#dmProfile
+				</cfquery>
+				
+				<cfif qProfileLocales.recordCount>
+					<cfloop query="qProfileLocales">
+						<cfif not listFindNoCase(application.locales, qProfileLocales.locale)>
+							<cfset application.locales = listAppend(application.locales,qProfileLocales.locale) />
+						</cfif>
+					</cfloop>
+				</cfif>
+			</cfdefaultcase>
+		</cfswitch>
+		
 						
 		<!----------------------------------------
 		SECURITY
@@ -423,6 +446,14 @@
 		}
 	
 		// ajaxmode
+		// Ensure that if ajaxmode is defined multiple times, then we only get the last one.
+		if (structKeyExists(url, "ajaxmode")) {
+			url.ajaxmode = listLast(url.ajaxmode);		
+		}
+		if (structKeyExists(form, "ajaxmode")) {
+			form.ajaxmode = listLast(form.ajaxmode);		
+		}
+		
 		if ((isDefined("url.ajaxmode") and url.ajaxmode) or (isDefined("form.ajaxmode") and form.ajaxmode)) {
 			request.mode.ajax = true;
 		} else {
@@ -581,27 +612,6 @@
 			<cfset application.dbowner = "dbo." />
 		</cfif>
 
-
-		<!----------------------------------------
-		 LOCALES
-		 - Append Locales currently used in the project
-		----------------------------------------->
-		<cfswitch expression="#application.dbtype#">
-			<cfdefaultcase>
-				<cfquery datasource="#application.dsn#" name="qProfileLocales">
-				SELECT distinct(locale) as locale
-				from #application.dbowner#dmProfile
-				</cfquery>
-				
-				<cfif qProfileLocales.recordCount>
-					<cfloop query="qProfileLocales">
-						<cfif not listFindNoCase(application.locales, qProfileLocales.locale)>
-							<cfset application.locales = listAppend(application.locales,qProfileLocales.locale) />
-						</cfif>
-					</cfloop>
-				</cfif>
-			</cfdefaultcase>
-		</cfswitch>
 
 
 		<!----------------------------------------
