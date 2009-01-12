@@ -249,8 +249,8 @@
 			
 			<!--- IF WE FOUND A CURRENT ONE WITH THIS FRIENDLY URL, MAKE THE NEW ONE UNIQUE --->
 			<cfif not structIsEmpty(stLocal.stFU) AND stLocal.stFU.fuStatus GT 0>
-				
-				<cfif not len(arguments.objectid) OR arguments.objectid NEQ stLocal.stFU.objectid>
+
+				<cfif not len(arguments.objectid) OR arguments.objectid NEQ stLocal.stFU.refObjectID>
 					
 					<cfset bDuplicate = true />
 					<cfset duplicateCounter = "" />
@@ -310,7 +310,6 @@
 				
 				<!--- Generate the new system FU for the current object --->
 				<cfset stLocal.newFriendlyURL = getSystemFU(objectID="#arguments.objectid#", typename="#arguments.typename#") />
-				
 
 				<cfif structIsEmpty(stLocal.stCurrentSystemObject)>
 				
@@ -723,7 +722,7 @@
 		<!--- check if the FU exists in the applictaion scope [currently active] --->
 		<cfif StructKeyExists(variables.stMappings,arguments.friendlyURL)>
 			<cfset stReturnFU = getData(objectid="#variables.stMappings[arguments.friendlyURL].objectid#") />
-		<cfelse> 
+		<cfelse>
 			
 			<cfquery datasource="#arguments.dsn#" name="stLocal.qGet">
 			SELECT	fu.objectid
@@ -733,7 +732,7 @@
 			AND fu.friendlyURL = <cfqueryparam value="#arguments.friendlyURL#" cfsqltype="cf_sql_varchar">
 			ORDER BY fu.bDefault DESC, fu.fuStatus DESC
 			</cfquery>
-			
+
 			<cfif stLocal.qGet.recordCount>
 				<cfset stReturnFU = getData(objectid="#stLocal.qGet.objectid#") />
 			</cfif>
