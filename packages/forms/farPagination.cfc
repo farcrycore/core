@@ -133,9 +133,7 @@
 	<cfreturn stLink />
 </cffunction>
 	
-<!--- <cffunction name="getLink" access="public" output="false" returntype="struct" hint="Get a specific link">
-	<cfargument name="linkID" required="true" type="any" hint="Can be either first, last, next, previous or a page number" />	
-	 --->
+
 <!--- //////////////////////////////////////////// --->
 <cffunction name="setRecordset" access="private" output="false" returntype="void" hint="Setup the recordset">
 	
