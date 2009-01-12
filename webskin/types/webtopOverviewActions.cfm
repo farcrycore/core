@@ -316,7 +316,7 @@ START WEBSKIN
 				<cfoutput><li>#qFUs.friendlyURL#</li></cfoutput>
 			</cfloop>
 			<cfoutput></ul></cfoutput>
-			<ft:button width="240px" style="" value="Manage" bInPanel="true" url="" onclick="window.open('#application.url.farcry#/manage_friendlyurl.cfm?objectid=#stobj.objectid#','_win_friendlyurl','height=500,width=850,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=no,status=yes').focus();" />		
+			<ft:button width="240px" style="" value="Manage" bInPanel="true" url="" onclick="window.open('#application.url.farcry#/manage_friendlyurl.cfm?objectid=#stobj.objectid#','_win_friendlyurl','height=500,width=700,left=100,top=100,resizable=yes,scrollbars=yes,toolbar=no,status=yes').focus();" />		
 		</extjs:item>
 	</cfif>		
 	
