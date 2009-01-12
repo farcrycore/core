@@ -25,8 +25,9 @@ manage friednly urls for a particular object id
 
 <ft:processForm action="Save Changes,Make Default,Archive Selected,Delete Selected Archives">
 	<ft:processFormObjects typename="farFU">
-		<cfset stProperties.friendlyURL = application.fc.factory.farFU.cleanFU(friendlyURL="#stProperties.friendlyURL#",objectid="#stProperties.objectid#") />
-		
+		<cfif structKeyExists(stProperties, "friendlyURL")>
+			<cfset stProperties.friendlyURL = application.fc.factory.farFU.cleanFU(friendlyURL="#stProperties.friendlyURL#",objectid="#stProperties.objectid#") />
+		</cfif>
 		<cfset application.fc.factory.farFU.setMapping(objectid="#stProperties.objectid#") />
 		
 	</ft:processFormObjects>
@@ -101,7 +102,7 @@ manage friednly urls for a particular object id
 		<extjs:tabPanel id="createCustom" title="Create Custom" autoheight="true" style="padding:10px;">
 			<ft:form name="frm">
 				
-				<ft:object typename="farFU" key="newFU" lexcludeFields="label,refObjectID,fuStatus" includeFieldSet="false" />
+				<ft:object typename="farFU" key="newFU" lexcludeFields="label,refObjectID,fuStatus,querystring,applicationname" includeFieldSet="false" />
 				<ft:farcryButtonPanel>
 					<ft:button value="Add" selectedObjectID="#url.objectid#" />
 				</ft:farcryButtonPanel>
@@ -128,19 +129,27 @@ manage friednly urls for a particular object id
 						</h3>
 						<table class="table-2" cellspacing="0" id="table_friendlyurl">
 						<tr>
-							<th>&nbsp;</th>
-							<th>Friendly URL</th>
-							<th>Query String</th>
-							<th>Redirection</th>
+							<th style="width:20px;">&nbsp;</th>
+							<th style="width:40%;">Friendly URL</th>
+							<th style="width:30%;">Redirection</th>
 							<th>Default</th>
 						</tr>
 						
 						<cfoutput>
 						<ft:object objectid="#qFUList.objectid[currentRow]#" typename="farFU" r_stFields="stFields" r_stPrefix="prefix" />
 						<tr class="alt">
-							<td><input type="checkbox" name="lArchiveObjectID" value="#qFUList.objectid#"></td>
-							<td>#stFields.friendlyurl.html#</td>
-							<td>#stFields.queryString.html#</td>
+							<cfif qFUList.fuStatus EQ 1>
+								<td>&nbsp;</td>
+							<cfelse>
+								<td><input type="checkbox" name="lArchiveObjectID" value="#qFUList.objectid#"></td>
+							</cfif>
+							
+							<cfif qFUList.fuStatus EQ 1>
+								<td>#stFields.friendlyurl.value#</td>
+							<cfelse>
+								<td>#stFields.friendlyurl.html#</td>
+							</cfif>
+							
 							<td>
 								#stFields.redirectionType.html#
 								<div id="#prefix#-redirect-to-wrap" style="<cfif qFUList.redirectionType[currentRow] EQ 'none'>display:none;</cfif>">#stFields.redirectTo.html#</div>
@@ -201,17 +210,14 @@ manage friednly urls for a particular object id
 						<h3>Archived</h3>
 						<table class="table-2" cellspacing="0" id="table_friendlyurl">
 						<tr>
-							<th>&nbsp;</th>
+							<th style="width:20px;">&nbsp;</th>
 							<th>Friendly URL</th>
-							<th>Query String</th>
 						</tr>
 						
 						<cfoutput>
 						<tr class="alt">
 							<td><input type="checkbox" name="lDeleteObjectID" value="#qFUList.objectid#"></td>
-							<td>#qFUList.friendlyurl#</td>
-							<td>#qFUList.queryString#</td>
-							
+							<td>#qFUList.friendlyurl#</td>							
 						</tr>
 						</cfoutput>
 						
