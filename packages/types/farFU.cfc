@@ -217,6 +217,9 @@
 		
 		<cfset var stLocal = structNew() />
 		<cfset var cleanFU = "">
+		<cfset var bDuplicate = true />
+		<cfset var duplicateCounter = "" />
+		
 		<!--- replace spaces in title --->
 		<cfset cleanFU = replace(arguments.friendlyURL,' ','-',"all")>
 		<!--- replace duplicate dashes with a single dash --->
@@ -245,44 +248,37 @@
 		</cfif>		
 
 		<cfif arguments.bCheckUnique>
-			<cfset stLocal.stFU = getFUData(cleanFU) />
 			
-			<!--- IF WE FOUND A CURRENT ONE WITH THIS FRIENDLY URL, MAKE THE NEW ONE UNIQUE --->
-			<cfif not structIsEmpty(stLocal.stFU) AND stLocal.stFU.fuStatus GT 0>
-
-				<cfif not len(arguments.objectid) OR arguments.objectid NEQ stLocal.stFU.refObjectID>
+			<cfset bDuplicate = true />
+			<cfset duplicateCounter = "" />
 					
-					<cfset bDuplicate = true />
-					<cfset duplicateCounter = "" />
-					
-					<cfloop condition="#bDuplicate#">						
+			<cfloop condition="#bDuplicate#">	
+				<cfquery datasource="#application.dsn#" name="stLocal.qDuplicates">
+				SELECT objectid
+				FROM farFU
+				WHERE friendlyURL = <cfqueryparam value="#cleanFU##duplicateCounter#" cfsqltype="cf_sql_varchar">	
+				<cfif len(arguments.objectid)>
+					AND objectid <> <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
+				</cfif>				
+				AND fuStatus > 0
+				</cfquery>
+		
 						
-						<cfquery datasource="#application.dsn#" name="stLocal.qDuplicates">
-						SELECT objectid
-						FROM farFU
-						WHERE friendlyURL = <cfqueryparam value="#cleanFU##duplicateCounter#" cfsqltype="cf_sql_varchar">	
-						<cfif len(arguments.objectid)>
-							AND objectID <> <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
-						</cfif>				
-						AND fuStatus > 0
-						</cfquery>
-						
-						<cfset bDuplicate = stLocal.qDuplicates.recordCount />
-						
-						<cfif bDuplicate>			
-							<cfif isNumeric(duplicateCounter)>
-								<cfset duplicateCounter = duplicateCounter + 1 />
-							<cfelse>
-								<cfset duplicateCounter = 1 />
-							</cfif>				
-						</cfif>
-					</cfloop>
-					
-					<cfset cleanFU = "#cleanFU##duplicateCounter#">					
+				<cfset bDuplicate = stLocal.qDuplicates.recordCount />
 				
-				</cfif>
-			</cfif>
+				<cfif bDuplicate>			
+					<cfif isNumeric(duplicateCounter)>
+						<cfset duplicateCounter = duplicateCounter + 1 />
+					<cfelse>
+						<cfset duplicateCounter = 1 />
+					</cfif>				
+				</cfif>	
+			</cfloop>
+			
+			<cfset cleanFU = "#cleanFU##duplicateCounter#" />			
+			
 		</cfif>
+		
 		<cfreturn cleanFU />
 	</cffunction>
 	
@@ -723,7 +719,6 @@
 		<cfif StructKeyExists(variables.stMappings,arguments.friendlyURL)>
 			<cfset stReturnFU = getData(objectid="#variables.stMappings[arguments.friendlyURL].objectid#") />
 		<cfelse>
-			
 			<cfquery datasource="#arguments.dsn#" name="stLocal.qGet">
 			SELECT	fu.objectid
 			FROM	#application.dbowner#farFU fu, 
