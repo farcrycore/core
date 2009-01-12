@@ -449,6 +449,7 @@ $out:$
 				 - default form processing
 				---------------------------------------->
 				<ft:processForm action="Save" Exit="true">
+					
 					<ft:processFormObjects typename="#stobj.typename#" PackageType="rules" />
 
 					<extjs:bubble title="Rule Saved" bAutoHide="true">
@@ -508,6 +509,11 @@ $out:$
 		<cfargument name="bAudit" type="boolean" required="No" default="1" hint="Pass in 0 if you wish no audit to take place">
 		<cfargument name="dsn" required="No" default="#application.dsn#"> 
 		<cfargument name="stobj" required="No" default="#StructNew()#"> 
+		<cfargument name="objectid" required="No" default=""><!--- objectid of the object to be locked/unlocked ---> 
+		
+		<cfset var stCurrentObject = structNew() />
+		<cfset var stObject = duplicate(arguments.stobj) /><!--- Duplicating so that we are not referencing the passed object --->
+		<cfset var bSessionOnly = false />
 		
 		<!--- Determine who the record is being locked/unlocked by --->		
 		<cfif not len(arguments.lockedBy)>
@@ -518,35 +524,35 @@ $out:$
 			</cfif>
 		</cfif>
 		
+		<cfif len(arguments.objectid)>
+			<cfset stObject = getData(objectid="#arguments.objectid#") />
+		</cfif>
 		
 		<!--- if the properties struct not passed in grab the instance --->
-		<cfif StructIsEmpty(arguments.stObj)>
-			<!--- Default Objects should not be locked as this will create a record in the database. --->
-			<cfif structKeyExists(instance, "stobj") AND (NOT structKeyExists(instance.stobj, "bDefaultObject") OR NOT instance.stobj.bDefaultObject)>
-				<cfset instance.stobj.locked=arguments.locked>
-				<cfif arguments.locked>
-					<cfset instance.stobj.lockedby=arguments.lockedby>
-				<cfelse>
-					<cfset instance.stobj.lockedby="">
-				</cfif>
-				<!--- call fourq.setdata() (ie super) to bypass prepop of sys attributes by types.setdata() --->
-				<cfset setdata(instance.stobj, arguments.lockedby, 0)>
+		<cfif StructIsEmpty(stObject) AND structKeyExists(instance, "stobj")>
+			<cfset stObject = instance.stobj />
+		</cfif>
+		
+		<cfif not StructIsEmpty(stObject)>
+			<!--- We need to get the object from memory to see if it is a default object. If so, we are only saving to the session. --->
+			<cfset stCurrentObject = getData(stObject.objectid) />
+			<cfif structKeyExists(stCurrentObject, "bDefaultObject") AND stCurrentObject.bDefaultObject>
+				<cfset bSessionOnly = true />
 			</cfif>
-		<cfelseif NOT structKeyExists(arguments.stobj, "bDefaultObject") or NOT arguments.stobj.bDefaultObject >
-			<cfset arguments.stobj.locked = arguments.locked>
+			<cfset stObject.locked = arguments.locked>
 			<cfif arguments.locked>
-				<cfset arguments.stobj.lockedby=arguments.lockedby>
+				<cfset stObject.lockedby=arguments.lockedby>
 			<cfelse>
-				<cfset arguments.stobj.lockedby="">
+				<cfset stObject.lockedby="">
 			</cfif>
 			<!--- call fourq.setdata() (ie super) to bypass prepop of sys attributes by types.setdata() --->
-			<cfset setdata(arguments.stobj, arguments.lockedby, 0)>
+			<cfset setdata(stProperties="#stObject#", user="#arguments.lockedby#", bAudit="#arguments.bAudit#", dsn="#arguments.dsn#", bAfterSave="false", bSessionOnly="#bSessionOnly#")>
+
 		</cfif>
 
-	
 		<!--- log event --->
 		<cfif arguments.bAudit and isDefined("instance.stobj.objectid")>
-			<farcry:logevent object="#instance.stObj.objectid#" type="rules" event="lock" notes="Locked: #yesnoformat(arguments.locked)#" />
+			<farcry:logevent object="#stObject.objectid#" type="types" event="lock" notes="Locked: #yesnoformat(arguments.locked)#" />
 		</cfif>
 	</cffunction>
 		
