@@ -39,31 +39,31 @@ $out:$
 	<cffunction name="lock" access="public" returntype="struct" hint="Locks object to current user">
 		<cfargument name="objectId" type="uuid" required="true">
 		<cfargument name="typeName" type="string" required="true">
+		<cfargument name="locked" type="boolean" default="1" />
 		
-		<cfset var stObj = "">
-		<cfset var stLock = structNew()>
-		<cfset var stProperties = structNew()>
-		<cfset var oType = createobject("component", application.types[arguments.typename].typePath)>
+		<cfset var stLock = structNew() />
 		
-		<cfinclude template="_locking/lock.cfm">
+		<cfset createobject("component", application.stCoapi[arguments.typename].typePath).setLock(argumentCollection="#arguments#") />
 		
-		<cfreturn stLock>
+		<cfset stLock.bSuccess=true />
+		
+		<cfreturn stLock />
+		
 	</cffunction>
 	
 	<cffunction name="unlock" access="public" returntype="struct" hint="Unlocks specified object">
 		<cfargument name="objectId" type="uuid" required="false">
 		<cfargument name="typeName" type="string" required="true">
-		<cfargument name="stObj" type="struct" required="false">
+		<cfargument name="locked" type="boolean" default="0" />
 		
-		<cfset var stLock = structNew()>
-		<cfset var stProperties = "">
-		<cfset var field = "">
-		<cfset var fieldType = "">		
-		<cfset var oType = createobject("component", application.types[arguments.typename].typePath)>
+		<cfset var stLock = structNew() />
 		
-		<cfinclude template="_locking/unlock.cfm">
+		<cfset createobject("component", application.stCoapi[arguments.typename].typePath).setLock(argumentCollection="#arguments#") />
 		
-		<cfreturn stLock>
+		<cfset stLock.bSuccess=true />
+		
+		<cfreturn stLock />
+				
 	</cffunction>
 	
 	<cffunction name="checkForLock" access="public" returntype="struct" hint="Checks if specified object is locked by another user on the system">
