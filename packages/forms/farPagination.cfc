@@ -187,23 +187,6 @@
 			<cfset this.CurrentPage = form["paginationpage#this.paginationID#"]>		
 		</cfif>
 	</cfif>
-		
-	<cfif this.paginationID neq ""> <!--- use session key --->
-		<cfparam name="session.ftPagination" default="#structNew()#" />
-		<cfif not structKeyExists(session.ftPagination, this.paginationID)>
-			<cfset session.ftPagination[this.paginationID] = 1 />
-		</cfif>
-		
-
-		<cfif this.currentPage GT 0 and isNumeric(this.CurrentPage)>
-			<cfset session.ftPagination[this.paginationID] = this.currentPage />
-			
-			
-		<cfelseif session.ftPagination[paginationID] GT 1><!--- use the last url page after leaving master page --->
-			<cfset this.CurrentPage = session.ftPagination[this.paginationID]>
-		</cfif>	
-		
-	</cfif>	
 
 	<cfif this.CurrentPage eq 0 or not isNumeric(this.currentPage)>
 		<cfset this.CurrentPage = 1>
