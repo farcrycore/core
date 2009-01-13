@@ -212,8 +212,8 @@
 	
 	<cffunction name="cleanFU" access="public" returntype="string" hint="Cleans up the Friendly URL and ensures it is Unique." output="yes" bDocument="true">
 		<cfargument name="friendlyURL" required="yes" type="string" hint="The actual Friendly URL to use">
-		<cfargument name="objectid" required="false" type="string" default="" hint="The objectid of the farFU object the friendly URL is attached to.">
 		<cfargument name="bCheckUnique" required="false" type="boolean" default="true" hint="Check to see if the Friendly URL has already been taken">
+		<cfargument name="fuID" required="false" type="string" default="" hint="The objectid of the farFU object the friendly URL is attached to. This is used to exclude from the check unique function.">
 		
 		<cfset var stLocal = structNew() />
 		<cfset var cleanFU = "">
@@ -248,38 +248,48 @@
 		</cfif>		
 
 		<cfif arguments.bCheckUnique>
-			
-			<cfset bDuplicate = true />
-			<cfset duplicateCounter = "" />
-					
-			<cfloop condition="#bDuplicate#">	
-				<cfquery datasource="#application.dsn#" name="stLocal.qDuplicates">
-				SELECT objectid
-				FROM farFU
-				WHERE friendlyURL = <cfqueryparam value="#cleanFU##duplicateCounter#" cfsqltype="cf_sql_varchar">	
-				<cfif len(arguments.objectid)>
-					AND objectid <> <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
-				</cfif>				
-				AND fuStatus > 0
-				</cfquery>
-		
-						
-				<cfset bDuplicate = stLocal.qDuplicates.recordCount />
-				
-				<cfif bDuplicate>			
-					<cfif isNumeric(duplicateCounter)>
-						<cfset duplicateCounter = duplicateCounter + 1 />
-					<cfelse>
-						<cfset duplicateCounter = 1 />
-					</cfif>				
-				</cfif>	
-			</cfloop>
-			
-			<cfset cleanFU = "#cleanFU##duplicateCounter#" />			
-			
+			<cfset cleanFU = getUniqueFU(friendlyURL="#cleanFU#", fuID="#arguments.fuID#") />			
 		</cfif>
 		
 		<cfreturn cleanFU />
+	</cffunction>
+	
+	<cffunction name="getUniqueFU" access="private" returntype="string" hint="Returns a unique friendly url. The objectid of the current friendly url can be passed in to make sure we are not picking it up in the unique query">
+		<cfargument name="friendlyURL" required="true" hint="The friendly URL we are trying to make unique" />
+		<cfargument name="fuID" required="false" default="" hint="The objectid of the farFU record to exclude from the db query" />
+		
+		<cfset var qDuplicates = "" />
+		<cfset var bDuplicate = true />
+		<cfset var duplicateCounter = "" />
+		<cfset var cleanFU = arguments.friendlyURL />
+		
+		<cfloop condition="#bDuplicate#">	
+			<cfquery datasource="#application.dsn#" name="qDuplicates">
+			SELECT objectid
+			FROM farFU
+			WHERE friendlyURL = <cfqueryparam value="#cleanFU##duplicateCounter#" cfsqltype="cf_sql_varchar">	
+			<cfif len(arguments.fuID)>
+				AND objectid <> <cfqueryparam value="#arguments.fuID#" cfsqltype="cf_sql_varchar">
+			</cfif>				
+			AND fuStatus > 0
+			</cfquery>
+	
+					
+			<cfset bDuplicate = qDuplicates.recordCount />
+			
+			<cfif bDuplicate GT 0>			
+				<cfif isNumeric(duplicateCounter)>
+					<cfset duplicateCounter = duplicateCounter + 1 />
+				<cfelse>
+					<cfset duplicateCounter = 1 />
+				</cfif>				
+			</cfif>	
+		</cfloop>
+		
+		<cfset cleanFU = "#cleanFU##duplicateCounter#" />			
+		
+		<cfreturn cleanFU />	
+			
 	</cffunction>
 	
 	<cffunction name="setSystemFU" access="public" returntype="struct" hint="Returns the success state of setting the System FU of an object" output="false">
@@ -306,7 +316,7 @@
 				
 				<!--- Generate the new system FU for the current object --->
 				<cfset stLocal.newFriendlyURL = getSystemFU(objectID="#arguments.objectid#", typename="#arguments.typename#") />
-
+				
 				<cfif structIsEmpty(stLocal.stCurrentSystemObject)>
 				
 					<!--- See if their is a current default object --->
@@ -318,7 +328,7 @@
 					<cfset stLocal.stCurrentSystemObject.fuStatus = 1 />
 					<cfset stLocal.stCurrentSystemObject.redirectionType = "none" />
 					<cfset stLocal.stCurrentSystemObject.redirectTo = "default" />
-					<cfset stLocal.stCurrentSystemObject.friendlyURL = stLocal.newFriendlyURL />
+					<cfset stLocal.stCurrentSystemObject.friendlyURL = getUniqueFU(friendlyURL="#stLocal.newFriendlyURL#") />
 					
 					<!--- If no default object, set this as the default --->
 					<cfif structIsEmpty(stLocal.stCurrentDefaultObject)>
@@ -327,11 +337,14 @@
 					
 					<cfset stLocal.stResult = setData(stProperties="#stLocal.stCurrentSystemObject#") />
 
-				<cfelseif stLocal.newFriendlyURL NEQ stLocal.stCurrentSystemObject.friendlyURL>
-					<!--- NEED TO ARCHIVE OLD SYSTEM OBJECT AND UPDATE --->
-					<cfset stLocal.stResult = archiveFU(objectid="#stLocal.stCurrentSystemObject.objectid#") />
-					<cfset stLocal.stCurrentSystemObject.friendlyURL = stLocal.newFriendlyURL />
-					<cfset stLocal.stResult = setData(stProperties="#stLocal.stCurrentSystemObject#") />
+				<cfelse>
+					<cfset stLocal.newFriendlyURL = getUniqueFU(friendlyURL="#stLocal.newFriendlyURL#", FUID="#stLocal.stCurrentSystemObject.objectid#") />
+					<cfif stLocal.newFriendlyURL NEQ stLocal.stCurrentSystemObject.friendlyURL>
+						<!--- NEED TO ARCHIVE OLD SYSTEM OBJECT AND UPDATE --->
+						<cfset stLocal.stResult = archiveFU(objectid="#stLocal.stCurrentSystemObject.objectid#") />
+						<cfset stLocal.stCurrentSystemObject.friendlyURL = stLocal.newFriendlyURL />
+						<cfset stLocal.stResult = setData(stProperties="#stLocal.stCurrentSystemObject#") />
+					</cfif>
 				</cfif>
 		
 				<cfset setMapping(objectid="#stLocal.stCurrentSystemObject.objectid#") />				
@@ -431,7 +444,7 @@
 			</cfif>
 		</cfif>
 		
- 		<cfreturn cleanFU(FriendlyURL="#systemFU#", objectid="#arguments.objectid#") />
+ 		<cfreturn cleanFU(friendlyURL=systemFU, bCheckUnique="false") />
 	</cffunction>	
 	
 	
@@ -492,7 +505,8 @@
 					<cfset stProperties.bDefault = 1 />
 					<cfset stProperties.redirectionType = "301" />
 					<cfset stProperties.redirectTo = "objectid" />
-					<cfset stProperties.friendlyURL = getSystemFU(objectid="#excludeObjectID#") />
+					<cfset stProperties.friendlyURL = getSystemFU(objectid="#excludeObjectID#",bCheckUnique="true") />
+					
 					<cfset stResult = setData(stProperties="#stProperties#") />
 				</cfif>
 				
@@ -1056,39 +1070,57 @@
 		<cfargument name="type" required="false" type="string" default="" hint="typename of object to link to">
 		<cfargument name="view" required="false" type="string" default="" hint="view used to render the page layout">
 		<cfargument name="bodyView" required="false" type="string" default="" hint="view used to render the body content">
-		
-		<!--- set base URL --->
+
 		<cfset var returnURL = "">
+		<cfset var bFoundFU = false /><!--- State used to determine if we found a friendly URL --->
 		
 		<cfif application.fc.factory.farFU.isUsingFU()>
 			
 			<cfif len(arguments.objectid)>
-				<!--- look up in memory cache --->
+				<!--- LOOK UP IN MEMORY CACHE ---> 
 				<cfif structKeyExists(variables.stLookup, arguments.objectid)>
 					<cfset returnURL = variables.stLookup[arguments.objectid].friendlyURL />
+					<cfset bFoundFU = true />
 				
-				<!--- if not in cache check the database --->
+				<!--- IF NOT IN CACHE CHECK THE DATABASE --->
 				<cfelse>
-				<!--- <cftrace inline="true" text="fu db lookup!"> --->
-					<!--- get friendly url based on the objectid --->
-					
+
+					<!--- GET FRIENDLY URL BASED ON THE OBJECTID --->					
 					<cfset stFUObject = getDefaultFUObject(refObjectID="#arguments.objectid#") />
+					
+					<!--- JUST IN CASE WE DONT HAVE A DEFAULT FU SET, USE THE SYSTEM OBJECT IF AVAILABLE --->
 					<cfif structIsEmpty(stFUObject)>
 						<cfset stFUObject = getSystemObject(refObjectID="#arguments.objectid#") />
 					</cfif>
 					
+					<!--- IF WE FOUND AN FU, THE USE IT, OTHERWISE START THE URL SYNTAX --->
 					<cfif NOT structIsEmpty(stFUObject)>
-						<cfset returnURL = "#stFUObject.friendlyURL#">
-					</cfif>
-				</cfif>
-				
-				<cfif not len(returnURL)>
-					<cfset returnURL = "/#arguments.objectid#">
-				</cfif>
+						<cfset returnURL = "#stFUObject.friendlyURL#">			
+						<cfset bFoundFU = true />
+					<cfelse>
+						<cfset returnURL = "/#arguments.objectid#">
+					</cfif>					
+				</cfif>				
 			</cfif>
 			
+			<!---------------------------------------------------------------------
+			 IF WE HAVE OUR OTHER URL SYNTAX ATTRIBUTES, APPEND THEM TO THE URL
+			 --------------------------------------------------------------------->			
 			<cfif len(arguments.type) OR  len(arguments.view) OR len(arguments.bodyView)>
-				<cfif NOT FindNoCase("?", returnURL)>
+			
+				<!--- IF WE ARE USING A FRIENDLY URL OR OUR URL ALREADY CONTAINS A QUESTION MARK, THEN WE CAN USE REGULAR URL VARIABLES  --->
+				<cfif bFoundFU OR FindNoCase("?", returnURL)>
+					<cfif len(arguments.type)>
+						<cfset returnURL = "#returnURL#&type=#arguments.type#" />
+					</cfif>
+					<cfif len(arguments.view)>
+						<cfset returnURL = "#returnURL#&view=#arguments.view#" />
+					</cfif>
+					<cfif len(arguments.bodyView)>
+						<cfset returnURL = "#returnURL#&bodyView=#arguments.bodyView#" />
+					</cfif>		
+				<cfelse>
+					<!--- OTHERWISE WE CAN USE THE URL SYNTAX OF /OBJECTID/TYPE/VIEW/BODYVIEW --->
 					<cfif len(arguments.type)>
 						<cfset returnURL = "#returnURL#/#arguments.type#" />
 					</cfif>
@@ -1101,23 +1133,14 @@
 							<cfset returnURL = "#returnURL#/displayPageStandard" />
 						</cfif>
 						<cfset returnURL = "#returnURL#/#arguments.bodyView#" />
-					</cfif>
-				<cfelse>
-					<cfif len(arguments.type)>
-						<cfset returnURL = "#returnURL#&type=#arguments.type#" />
-					</cfif>
-					<cfif len(arguments.view)>
-						<cfset returnURL = "#returnURL#&view=#arguments.view#" />
-					</cfif>
-					<cfif len(arguments.bodyView)>
-						<cfset returnURL = "#returnURL#&bodyView=#arguments.bodyView#" />
-					</cfif>				
+					</cfif>		
 				</cfif>
-		
-
-			</cfif>
+			</cfif>			
 			
-		<cfelse>
+		<!------------------------------------------------------------------------------------------ 
+		WE ARE NOT USING FRIENDLY URLS SO SIMPLY SETUP THE URL STRING WITH THE ARGUMENTS PASSED IN
+		 ------------------------------------------------------------------------------------------>
+		<cfelse>			
 			<cfset returnURL = "#application.url.conjurer#?" />
 			
 			<cfif len(arguments.objectid)>

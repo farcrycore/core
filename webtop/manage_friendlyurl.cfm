@@ -26,7 +26,7 @@ manage friednly urls for a particular object id
 <ft:processForm action="Save Changes,Make Default,Archive Selected,Delete Selected Archives">
 	<ft:processFormObjects typename="farFU">
 		<cfif structKeyExists(stProperties, "friendlyURL")>
-			<cfset stProperties.friendlyURL = application.fc.factory.farFU.cleanFU(friendlyURL="#stProperties.friendlyURL#",objectid="#stProperties.objectid#") />
+			<cfset stProperties.friendlyURL = application.fc.factory.farFU.cleanFU(friendlyURL="#stProperties.friendlyURL#",fuID="#stProperties.objectid#", bCheckUnique="true") />
 		</cfif>
 		<cfset application.fc.factory.farFU.setMapping(objectid="#stProperties.objectid#") />
 		
