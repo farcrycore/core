@@ -6,9 +6,9 @@
  The List of IP Addresses that are permitted to install new applications 
 ADD YOUR IP TO THE LIST
 ------------------------------------------------------------------------>
-<cfset lAllowHosts = "127.0.0.1" />
+<cfset variables.lAllowHosts = "127.0.0.1" />
 
-<cfif NOT IsLocalHost(cgi.remote_addr) AND NOT listFind(lAllowHosts, cgi.remote_addr)>
+<cfif NOT IsLocalHost(cgi.remote_addr) AND NOT listFind(variables.lAllowHosts, cgi.remote_addr)>
 
 
 	
@@ -45,7 +45,7 @@ ADD YOUR IP TO THE LIST
 			<cfoutput>
 				<h1>Installation Is Secured</h1>
 				<p>Your IP address (#cgi.remote_addr#) is not permitted to access the install directory.</p>
-				<p>By default, installation is only permitted to the following hosts : 127.0.0.1 </p>
+				<p>By default, installation is only permitted to the localhost </p>
 				<p>To give access to other hosts, then append the desired IP address to the variable lAllowHosts in: <br />
 				<strong>[farcry]/core/install/Application.cfm.</strong>
 				</p>
