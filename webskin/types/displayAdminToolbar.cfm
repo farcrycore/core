@@ -92,7 +92,7 @@
 									listeners:{
 										"click":{
 											fn:function(){
-												top.location = "#application.url.webroot##url.url#&bShowTray=0";
+												top.location = "#url.url#&bShowTray=0";
 											}
 										}
 									}
@@ -104,7 +104,7 @@
 										"click":{
 											fn:function(){
 												if (confirm('Are you sure you want to update the application?'))
-													parent.updateContent("#application.url.webroot##url.url#&updateapp=1");
+													parent.updateContent("#url.url#&updateapp=1");
 											}
 										}
 									}
@@ -116,7 +116,7 @@
 										"click":{
 											fn:function(){
 												if (confirm('Are you sure you want to log out of FarCry?'))
-													top.location = "#application.url.webroot##url.url#&logout=1";
+													top.location = "#url.url#&logout=1";
 											}
 										}
 									}
@@ -163,7 +163,7 @@
 										listeners:{
 											"click":{
 												fn:function(){
-													top.location = "#application.url.webroot##url.url#&bShowTray=0";
+													top.location = "#url.url#&bShowTray=0";
 												}
 											}
 										}
@@ -178,7 +178,7 @@
 											"click":{
 												fn:function(){
 													if (confirm('Are you sure you want to update the application?'))
-														parent.updateContent("#application.url.webroot##url.url#&updateapp=1");
+														parent.updateContent("#url.url#&updateapp=1");
 												}
 											}
 										}
@@ -193,7 +193,7 @@
 											"click":{
 												fn:function(){
 													if (confirm('Are you sure you want to log out of FarCry?'))
-														top.location = "#application.url.webroot##url.url#&logout=1";
+														top.location = "#url.url#&logout=1";
 												}
 											}
 										}
