@@ -51,6 +51,10 @@ entries in the refObjects and array properties tables
 	DELETE FROM #arguments.dbowner#refObjects
 	WHERE objectID = '#arguments.objectID#'
 	</cfquery>
+	<cfquery datasource="#arguments.dsn#" name="qdeleteFUs">
+	DELETE FROM #arguments.dbowner#farFU
+	WHERE refObjectID = '#arguments.objectID#'
+	</cfquery>
 
 	<!--- begin: process array data --->
 	<cfloop collection="#stProps#" item="prop">
