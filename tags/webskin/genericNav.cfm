@@ -117,7 +117,7 @@
 				}
 				//check for friendly urls
 				if(application.fc.factory.farFU.isUsingFU()){
-					href = application.fc.factory.farFU.getFU(object);
+					href = application.url.webroot & application.fc.factory.farFU.getFU(object);
 				}
 				else{
 					href = application.url.conjurer & "?objectid=" & object;
