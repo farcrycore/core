@@ -83,7 +83,7 @@
 		<cfif attributes.includeDomain>
 			<cfset href = "http://#attributes.Domain#">
 		<cfelse>
-			<cfset href = "">
+			<cfset href = application.url.webroot />
 		</cfif>
 
 		<cfset linkID = "" />
