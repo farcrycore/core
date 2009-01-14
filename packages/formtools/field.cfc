@@ -141,7 +141,7 @@
 					else {
 						result = [];
 						objs.each(function(el){
-							if (el.dom.checked) result.push(el.dom.value);
+							result.push(el.dom.value);
 						});
 						return result.join();
 					}
