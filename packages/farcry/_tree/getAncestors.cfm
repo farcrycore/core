@@ -44,7 +44,7 @@ $out:$
 	 --->
 	
 	<cfset qNode = getNode(objectid=arguments.objectid,dsn=arguments.dsn) />
-	<cfif qNode.recordCount EQ 1 AND isDefined('qNode.nlevel')>
+		<cfif qNode.recordCount EQ 1 AND isDefined('qNode.nlevel')>
 		<cfset rowindex=1 />
 		<cfset parentID = qNode.parentID />	
 		<cfset nlev = qNode.nlevel />
@@ -74,9 +74,12 @@ $out:$
 		<cfquery datasource="#arguments.dsn#" name="ancestors">
 		select objectid, objectname, nlevel 
 		from #arguments.dbowner#nested_tree_objects 
-		where 1 = 1
+
 		<cfif listLen(ValueList(qParentIDs.parentID))>
-			AND objectID IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#ValueList(qParentIDs.parentID)#" />)
+			WHERE objectID IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#ValueList(qParentIDs.parentID)#" />)
+		<cfelse>
+			<!--- NO PARENT, therefore we are at the root node and do not have any ancestors. Return empty query.  --->
+			WHERE 1=2
 		</cfif>
 		<cfif isdefined("arguments.nLevel") and isNumeric(arguments.nLevel)>
 			and nLevel = #arguments.nLevel#
