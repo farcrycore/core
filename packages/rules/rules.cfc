@@ -135,11 +135,11 @@ $out:$
 	
 					<!--- Include the View --->
                     <cfsavecontent variable="webskinHTML">
-                        <cfif isdefined("request.mode.design") AND request.mode.design>
+                        <cfif isdefined("request.mode.design") AND request.mode.design AND structKeyExists(url, "bWebskinTrace") AND url.bWebskinTrace EQ true>
                             <cfoutput><webskin typename="#stobj.typename#" Template="#arguments.template#" Path="#WebskinPath#"></cfoutput>
                         </cfif>
                         <cfinclude template="#WebskinPath#">
-                        <cfif isdefined("request.mode.design") AND request.mode.design>
+                        <cfif isdefined("request.mode.design") AND request.mode.design AND structKeyExists(url, "bWebskinTrace") AND url.bWebskinTrace EQ true>
                             <cfoutput></webskin></cfoutput>
                         </cfif>
                     </cfsavecontent>	
