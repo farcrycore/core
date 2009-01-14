@@ -1,4 +1,4 @@
-<cfsetting enablecfoutputonly="true">
+<cfsetting enablecfoutputonly="true" showdebugoutput="false"> 
 <!--- @@Copyright: Daemon Pty Limited 1995-2007, http://www.daemon.com.au --->
 <!--- @@License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php --->
 <!--- @@displayname: Default Friendly URL --->
@@ -42,15 +42,17 @@ START WEBSKIN
 	<!--- output breadcrumb --->
 	<cfset iCount = 0>
 	
+	<cfset friendlyURLString = "" />
+	
 	<cfloop query="qCrumb">
-		<cfif iCount LT qCrumb.recordCount><cfoutput>#separator#</cfoutput></cfif>
-		<cfoutput>#qCrumb.objectname#</cfoutput>
+		<cfif iCount LT qCrumb.recordCount><cfset friendlyURLString = "#friendlyURLString##separator#" /></cfif>
+		<cfset friendlyURLString = "#friendlyURLString##qCrumb.objectname#" />
 		<cfset iCount = iCount + 1 />
 	</cfloop>
 	
-		
-	<cfoutput>#separator##hereText#</cfoutput>
+	<cfset friendlyURLString = "#friendlyURLString##separator##hereText#" />
 
-	
+	<cfoutput>#friendlyURLString#</cfoutput>
+
 </cfif>
 <cfsetting enablecfoutputonly="false" /> 
