@@ -465,7 +465,7 @@ user --->
 			</ft:processForm>
 		</cfif>
 		
-		<ft:processForm action="requestapproval">
+		<ft:processForm action="requestapproval,request approval">
 			<!--- TODO: Check Permissions. --->
 			<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=requestapproval" addtoken="false" />
 		</ft:processForm>
@@ -475,7 +475,7 @@ user --->
 			<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=approved" addtoken="false" />
 		</ft:processForm>
 		
-		<ft:processForm action="createdraft">
+		<ft:processForm action="createdraft,create draft">
 			<!--- TODO: Check Permissions. --->
 			<cflocation URL="#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#form.objectID#" addtoken="false" />
 		</ft:processForm>
@@ -547,13 +547,13 @@ user --->
 		statusurl="";
 		if (isDefined("form.status")) {
 			if (isDefined("form.objectID")) {
-				if (form.status contains application.rb.getResource('objectadmin.buttons.approve@label','Approve')) {
+				if (form.status contains 'Approve') {
 					status = 'approved';
 				}	
-				else if (form.status contains application.rb.getResource('objectadmin.buttons.sendtodraft@label','Send to Draft')) {
+				else if (form.status contains 'Send to Draft') {
 					status = 'draft';
 				}
-				else if (form.status contains application.rb.getResource('objectadmin.buttons.requestapproval@label','Request Approval')) {
+				else if (form.status contains 'Request Approval') {
 					status = 'requestApproval';
 				}
 				else {
