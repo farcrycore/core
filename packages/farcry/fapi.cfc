@@ -165,7 +165,7 @@
 	<cffunction name="getResource" access="public" output="false" returntype="string" hint="Returns the resource string" bDocument="true">
 		<cfargument name="key" type="string" required="true" />
 		<cfargument name="default" type="string" required="false" default="#arguments.key#" />
-		<cfargument name="locale" type="string" required="false" default="" />		
+		<cfargument name="locale" type="string" required="false" default="" />
 		<cfargument name="substituteValues" required="no" default="#arrayNew(1)#" />
 		
 		<cfset arguments.rbString = arguments.key />
@@ -173,6 +173,10 @@
 		<cfreturn application.rb.formatRBString(argumentCollection="#arguments#") />
 	</cffunction>
 	
+	
+	<cffunction name="getCurrentLocale" access="public" output="false" returntype="string" hint="Returns the current locale string based on if the client is logged in or not">
+		<cfreturn application.rb.getCurrentLocale() />
+	</cffunction>
 	
 	<cffunction name="CheckNavID" access="public" returntype="boolean" output="false" hint="Returns true if the navigation alias is found.">
 		<cfargument name="alias" required="true" hint="The navigation alias" />

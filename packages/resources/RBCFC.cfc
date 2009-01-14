@@ -81,11 +81,7 @@
 		<cfset var i = 0 />
 		
 		<cfif not len(arguments.locale)>
-			<cfif structkeyexists(session,"dmProfile")>
-				<cfset arguments.locale = session.dmProfile.locale />
-			<cfelse>
-				<cfset arguments.locale = application.config.general.locale />
-			</cfif>
+			<cfset arguments.locale = getCurrentLocale() />
 		</cfif>
 		
 		<cfloop from="#arraylen(this.aSets)#" to="1" step="-1" index="i">
@@ -98,6 +94,18 @@
 		</cfloop>
 		
 		<cfreturn arguments.default />
+	</cffunction>
+	
+	<cffunction name="getCurrentLocale" access="public" output="false" returntype="string" hint="Returns the current locale string based on if the client is logged in or not" bDocument="true">
+		<cfset var currentLocale = "" />
+		
+		<cfif structkeyexists(session,"dmProfile")>
+			<cfset currentLocale = session.dmProfile.locale />
+		<cfelse>
+			<cfset currentLocale = application.config.general.locale />
+		</cfif>
+		
+		<cfreturn currentLocale />
 	</cffunction>
 
 	<cffunction name="formatRBString" access="public" output="no" returnType="string" hint="performs messageFormat like operation on compound rb string" bDocument="true">

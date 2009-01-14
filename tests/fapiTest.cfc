@@ -50,8 +50,32 @@
 		<cfset assertEquals(true, false) />
 	</cffunction>
 
-	<cffunction name="getResourceTest" access="public" hint="Returns the resource string">
-		<cfset assertEquals(true, false) />
+	<cffunction name="getResourceTestFullAU" access="public">
+		<cfset var mystring = this.myComp.getResource("testMXUnit.test1@label","","en_AU", "Rob") />
+		<cfset assertEquals(mystring, "G'day Rob") />
+	</cffunction>
+	
+	<cffunction name="getResourceTestFullUS" access="public">
+		<cfset var mystring = this.myComp.getResource("testMXUnit.test1@label","","en_US", "Rob") />
+		<cfset assertEquals(mystring, "Rob, Howdy Pa'dna") />
+	</cffunction>
+
+	<cffunction name="getResourceTestBasic" access="public">
+		<cfset var mystring = this.myComp.getResource("testMXUnit.test2@label") />
+		
+		<cfif this.myComp.getCurrentLocale() eq "en_AU">
+			<cfset assertEquals(mystring, "Bob's your uncle") />
+		<cfelseif this.myComp.getCurrentLocale() eq "en_US">
+			<cfset assertEquals(mystring, "You're all set") />
+		<cfelse>
+			<cfset assertEquals(true, false) />
+		</cfif>
+	</cffunction>
+
+	<cffunction name="getCurrentLocaleTest" access="public">
+		<cfset var mylocale = this.myComp.getCurrentLocale() />
+		
+		<cfset assertEquals(arrayLen(listToArray(mylocale,"_")), 2) />
 	</cffunction>
 
 	<cffunction name="checkNavIDTest" access="public" hint="Returns true if the navigation alias is found.">
