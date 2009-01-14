@@ -85,10 +85,10 @@
 		<script type="text/javascript">renderHint('#qRules.rulename[1]#');</script>
 	</cfoutput>
 	
-	<ft:farcrybuttonpanel indentForLabel="true">
-		<ft:farcrybutton value="Save" />
-		<ft:farcrybutton value="Cancel" />
-	</ft:farcrybuttonpanel>
+	<ft:farcryButtonPanel indentForLabel="true">
+		<ft:farcryButton value="Save" />
+		<ft:farcryButton value="Cancel" />
+	</ft:farcryButtonPanel>
 </ft:form>
 
 <admin:footer />
