@@ -48,8 +48,6 @@ test for the existance of each and act accordingly
 <!--- File path first --->
 <cfif structKeyExists(application.path, "defaultFilePath")>
 	<cfset application.defaultFilePath = application.path.defaultFilePath>
-<cfelseif structKeyExists(application, "defaultFilePath")>
-	<cfset application.path.defaultFilePath = application.defaultFilePath>
 <cfelse>
 	<!--- Defaults --->
 	<cfset application.path.defaultFilePath = "#application.path.webroot#/files">
@@ -60,8 +58,6 @@ test for the existance of each and act accordingly
 <!--- Image Path --->
 <cfif structKeyExists(application.path, "defaultImagePath")>
 	<cfset application.defaultImagePath = application.path.defaultImagePath>
-<cfelseif structKeyExists(application, "defaultImagePath")>
-	<cfset application.path.defaultImagePath = application.defaultImagePath>
 <cfelse>
 	<!--- Defaults --->
 	<cfset application.path.defaultImagePath = "#application.path.webroot#/images">

@@ -631,6 +631,7 @@
 		<!----------------------------------------
 		 SET THE MAIN PHYSICAL PATH INFORMATION
 		 ---------------------------------------->
+		<cfset application.path = structNew() />
 		<cfset application.path.project = expandpath("/farcry/projects/#application.projectDirectoryName#") />
 		<cfset application.path.core = expandpath("/farcry/core") />
 		<cfset application.path.plugins = expandpath("/farcry/plugins") />
@@ -644,6 +645,19 @@
 			<cfset application.path.webroot = expandPath("/")><!--- Doesnt work if empty string. Have to set to  "/" otherwise it returns cf root --->
 		</cfif>
 		
+		<!--- If installing in a subdirectory, the index.cfm seems to be included in the expandPath() above. Need to strip it out. --->		
+		<cfif right(application.path.webroot,9) EQ "index.cfm">
+			<cfset application.path.webroot = left(application.path.webroot,len(application.path.webroot)-10) />
+		</cfif>
+		
+		<!--- Strip out trailing slashes --->
+		<cfif right(application.path.webroot,1) EQ "/">
+			<cfset application.path.webroot = left(application.path.webroot,len(application.path.webroot)-1) />
+		</cfif>		
+		<cfif right(application.path.webroot,1) EQ "\">
+			<cfset application.path.webroot = left(application.path.webroot,len(application.path.webroot)-1) />
+		</cfif>	
+			
 		<cfset application.path.defaultFilePath = "#application.path.webroot#/files">
 		<cfset application.path.secureFilePath = "#application.path.project#/securefiles">		
 		
