@@ -23,7 +23,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	title="#application.adminBundle[session.dmProfile.locale].MediaLibraryFileAdministration#"
 	columnList="title,datetimelastUpdated,status"   
 	sortableColumns="title,datetimelastUpdated,status"
-	lFilterFields="title"
+	lFilterFields="title,catFile"
 	sqlorderby="datetimelastUpdated desc"
 	module="customlists/dmfile.cfm" />
 

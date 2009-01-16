@@ -23,7 +23,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	title="#application.adminBundle[session.dmProfile.locale].MediaLibraryFlashAdministration#"
 	columnList="label,datetimelastUpdated,status" 
 	sortableColumns="label,datetimelastUpdated,status"
-	lFilterFields="label"
+	lFilterFields="label,catFlash"
 	sqlorderby="datetimelastUpdated desc"
 	module="customlists/dmflash.cfm" />
 

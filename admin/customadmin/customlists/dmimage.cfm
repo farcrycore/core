@@ -23,7 +23,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	title="#application.adminBundle[session.dmProfile.locale].MediaLibraryImageAdministration#"
 	columnList="title,datetimelastUpdated,status,ThumbnailImage" 
 	sortableColumns="title,datetimelastUpdated,status"
-	lFilterFields="title"
+	lFilterFields="title,catImage"
 	sqlorderby="datetimelastUpdated desc"
 	module="customlists/dmimage.cfm" />
 
