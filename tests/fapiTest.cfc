@@ -36,8 +36,8 @@
 
 	<cffunction name="getConfigTest" access="public" hint="Returns the value of any config item. If no default is sent and the property is not found, an error is thrown.">
 		<!--- getConfig(key,name,[default]) --->
-		<cfset assertTrue( len(getConfig('general','locale')) neq 0 ) />
-		<cfset assertTrue( len(getConfig('general','adminemail')) neq 0 ) />
+		<cfset assertTrue( len(this.myComp.getConfig('general','locale')) neq 0 ) />
+		<cfset assertTrue( len(this.myComp.getConfig('general','adminemail')) neq 0 ) />
 	</cffunction>
 
 	<cffunction name="throwTest" access="public" hint="Provides similar functionality to the cfthrow tag but is automatically incorporated to use the resource bundles.">
