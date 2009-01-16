@@ -113,6 +113,13 @@ a {color: ##116EAF;}
 	<cfset application.coapi.coapiadmin = createObject("component", "farcry.core.packages.coapi.coapiadmin").init() />
 	<cfset application.coapi.objectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker").init() />
 		
+	<cfset application.fc = structNew() /><!--- FarCry Namespace in the application scope --->
+	<cfset application.fc.factory = structNew() /><!--- Struct to contain any factory classes that can be used by the application --->
+	<cfset application.fc.utils = createObject("component", "farcry.core.packages.farcry.utils").init() /><!--- FarCry Utility Functions --->
+	<cfset application.fapi = createObject("component", "farcry.core.packages.farcry.fapi").init() /><!--- FarCry API Functions --->
+	
+	<cfset application.fc.factory['farCoapi'] = createObject("component", "farcry.core.packages.types.farCoapi") />		
+		
 	<cfset oAlterType = createObject("component", "#application.packagepath#.farcry.alterType") />
 	<cfset oAlterType.refreshAllCFCAppData(dsn=form.dsn, dbowner=form.dbowner) />
 
