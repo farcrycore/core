@@ -39,15 +39,30 @@
 	</cffunction>
 
 	<cffunction name="throwTest" access="public" hint="Provides similar functionality to the cfthrow tag but is automatically incorporated to use the resource bundles.">
+		<cfset var sv = arrayNew(1) />
 		
 		<cftry>
-			<cfset this.myComp.throw("This should get the data from the resource bundle.") />
+			<cfset sv[1] = "Done blown up!" />
+			<cfset this.myComp.throw(
+				type="test", 
+				key="testMXUnit.test3",
+				message="My Default Message",
+				substituteValues=sv
+			) />
+			<cfcatch type="test">
+				<cfif this.myComp.getCurrentLocale() eq "en_AU">
+					<cfset assertEquals(cfcatch.message, "Error mate! It's Done blown up!") />
+				<cfelseif this.myComp.getCurrentLocale() eq "en_US">
+					<cfset assertEquals(cfcatch.message, "Error: Done blown up!") />
+				<cfelse>
+					<cfset assertEquals("Bad locale or something", false) />
+				</cfif>
+			</cfcatch>
 			<cfcatch type="any">
-				<!--- <cfdump var="#cfcatch#" /> --->
+				<cfset assertEquals("Didn't catch correctly", false) />
 			</cfcatch>
 		</cftry>
 		
-		<cfset assertEquals(true, false) />
 	</cffunction>
 
 	<cffunction name="getResourceTestFullAU" access="public">
@@ -99,8 +114,21 @@
 	</cffunction>
 
 	<cffunction name="getContentObjectTest" access="public" hint="Allows you to fetch a content object with only the objectID">
-		<!--- <cfset var myobj = this.myComp.getContentObject() /> --->
-		<cfset assertEquals(true, false) />
+		<cfquery datasource="#application.dsn#" name="refobjects">
+			SELECT max(objectID) as objectid
+			FROM refobjects 
+		</cfquery>
+		
+		<cfset myobj = this.myComp.getContentObject(refobjects.objectid) />
+		
+		<cfset assertIsStruct(myobj) />
+		
+		<cfloop list="CREATEDBY,DATETIMECREATED,DATETIMELASTUPDATED,EVENT,IPADDRESS,LABEL,LASTUPDATEDBY,LOCATION,LOCKED,LOCKEDBY,NOTES,OBJECT,OBJECTID,OWNEDBY,TYPE,TYPENAME,USERID" index="x">
+			<cfset assertTrue( structKeyExists(myobj, x), true) />
+		</cfloop>
+		
+		<cfset assertTrue( len(myobj.type) gt 0 ) />
+		<cfset assertTrue( len(myobj.typename) gt 0 ) />
 	</cffunction>
 
 	<cffunction name="arrayTest">
