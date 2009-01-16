@@ -34,7 +34,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	typename="dmFlash"
 	columnList="label,datetimelastUpdated,status" 
 	sortableColumns="label,datetimelastUpdated,status"
-	lFilterFields="label"
+	lFilterFields="label,catFlash"
 	sqlorderby="datetimelastUpdated desc"
 	module="customlists/dmflash.cfm" />
 

@@ -34,7 +34,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	typename="dmFile"
 	columnList="title,datetimelastUpdated,status"   
 	sortableColumns="title,datetimelastUpdated,status"
-	lFilterFields="title"
+	lFilterFields="title,catFile"
 	sqlorderby="datetimelastUpdated desc"
 	module="customlists/dmfile.cfm" />
 
