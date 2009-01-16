@@ -46,22 +46,3 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 
 
 
-<cffunction name="getCoreVersion" access="private" returntype="struct" hint="returns a structure containing the major, minor and patch version of farcry.">
-	
-	<cfset var coreVersion = structNew() />
-	
-	<cftry>	
-		<cffile action="read" file="#expandPath('/farcry/core/major.version')#" variable="coreVersion.major">
-		<cffile action="read" file="#expandPath('/farcry/core/minor.version')#" variable="coreVersion.minor">
-		<cffile action="read" file="#expandPath('/farcry/core/patch.version')#" variable="coreVersion.patch">
-
-		<cfcatch>		
-			<cfset coreVersion.major = 0 />
-			<cfset coreVersion.minor = 0 />
-			<cfset coreVersion.patch = 0 />
-		</cfcatch>
-	</cftry>
-	
-	<cfreturn coreVersion>
-</cffunction>
-
