@@ -1,4 +1,4 @@
-<cfsetting enablecfoutputonly="true">
+<cfsetting enablecfoutputonly="true" />
 <!--- @@Copyright: Daemon Pty Limited 1995-2007, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -20,7 +20,6 @@
 <!--- @@description: Used within a pagination webskin, this tag allows the developer to build a link to a specific page in their paginated recordset.  --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
-
 <!------------------ 
 FARCRY IMPORT FILES
  ------------------>
@@ -30,15 +29,13 @@ FARCRY IMPORT FILES
 <!------------------ 
 START WEBSKIN
  ------------------>
-
 <cfif thistag.executionMode eq "Start">
 	<cfparam name="attributes.stLink" type="struct" /><!--- The link to render --->
 	<cfparam name="attributes.linkText" default="" /><!--- The text to use as the link. defaults to defaultLinktext but can be overridden by generatedContent --->
 	<cfparam name="attributes.title" default="" /><!--- The title of the anchor tag --->
-	
-	
-	
+	<cfparam name="attributes.bHideSpan" default="false" /><!--- Hides span tag around non-link --->
 </cfif>
+
 <cfif thistag.executionMode eq "end">
 	<!--- USE THE LINKTEXT AS GENERATED CONTENT IF AVAILABLE --->
 	<cfif not structIsEmpty(attributes.stLink) and NOT attributes.stLink.bHidden>
@@ -49,23 +46,20 @@ START WEBSKIN
 			<cfset thistag.GeneratedContent = attributes.stLink.defaultLinktext />
 		</cfif>	
 		
-		<!--- Determine title --->	
-		<cfoutput>
-			
-			<cfif attributes.stLink.bDisabled>
-				<span class="#attributes.stLink.class#" title="#attributes.title#">#thistag.GeneratedContent#</span>
-			<cfelse>
-				<skin:buildLink href="#attributes.stLink.href#" onclick="#attributes.stLink.onclick#;" linktext="#thistag.GeneratedContent#" class="#attributes.stLink.class#" title="#attributes.title#" />
-			</cfif>
-			
-		</cfoutput>
+		<!--- Determine link or text --->
+		<cfif attributes.stLink.bDisabled>
+       <cfif attributes.bHideSpan>
+				<cfoutput>#thistag.GeneratedContent#</cfoutput>
+       <cfelse>
+				<cfoutput><span class="#attributes.stLink.class#" title="#attributes.title#">#thistag.GeneratedContent#</span></cfoutput>
+       </cfif>
+		<cfelse>
+			<skin:buildLink href="#attributes.stLink.href#" onclick="#attributes.stLink.onclick#;" linktext="#thistag.GeneratedContent#" class="#attributes.stLink.class#" title="#attributes.title#" />
+		</cfif>	
 
 	</cfif>
 	
 	<cfset thistag.GeneratedContent = "" />
 </cfif>
 
-
-
-
-<cfsetting enablecfoutputonly="false">
+<cfsetting enablecfoutputonly="false" />
