@@ -424,7 +424,7 @@
 		<cfargument name="addvalues" type="any" required="false" hint="A query string or a struct of values, to add to the query string" />
 		
 		<cfset var key = "" />
-		
+
 		<cfif not structkeyexists(arguments,"removevalues")>
 			<cfset arguments.removevalues = "furl,flushcache,bAjax,designmode,draftmode,updateapp,bShowTray,bodyView=displayBody,bodyView=displayTypeBody,view=displayPageStandard,logout" />
 		<cfelseif left(arguments.removevalues,1) eq "+">
@@ -465,7 +465,7 @@
 			</cfloop>
 		</cfif>
 
-		<cfreturn rereplace(replacelist(arguments.url,"?&,&&&,&&","?,&,&"),"[?&]+$","") />
+		<cfreturn rereplace(replacelist(arguments.url,"&&&,&&","&,&"),"[?&]+$","") />
 	</cffunction>
 	
 	<cffunction name="insertQueryVariable" returntype="string" output="false" access="public" hint="Inserts the specified key and value, replacing the existing value for that key">
