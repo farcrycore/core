@@ -173,7 +173,7 @@
 							homeclass=homeclass & ' active ';
 						}
 						writeOutput(" class="""&trim(homeclass)&"""");
-						writeOutput("><a href=""#application.url.webroot#/""><span>#homeNode.objectName#</span></a></li>");
+						writeOutput("><a href=""#application.url.webroot#/"">#homeNode.objectName#</a></li>");
 					}
 					ul=ul+1;
 				}
@@ -212,7 +212,7 @@
 					writeOutput(" class="""&trim(itemclass)&"""");
 				}
 				// write the link
-				writeOutput("><a href="""&href&"""><span>"&trim(qNav.ObjectName[i]) & "</span></a>");
+				writeOutput("><a href="""&href&""">"&trim(qNav.ObjectName[i]) & "</a>");
 			}
 		}
 	}
@@ -240,7 +240,7 @@
 			{
 				writeOutput(" class=""active""");
 			}
-			writeOutput("><a href=""#application.url.webroot#/""><span>#homeNode.objectName#</span></a></li></ul>");
+			writeOutput("><a href=""#application.url.webroot#/"">#homeNode.objectName#</a></li></ul>");
 		}
 			
 </cfscript>
