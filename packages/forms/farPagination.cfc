@@ -3,7 +3,7 @@
 
 
 <cffunction name="setup" access="public" output="false" returntype="farPagination" hint="Initialises a farPagination object">
-	<cfargument name="qRecordset" default="" hint="The recordset to be paginated" />
+	<cfargument name="query" default="" hint="The recordset to be paginated" />
 	<cfargument name="typename" default="" />	
 	<cfargument name="paginationID" default="" /><!--- Keeps track of the page the user is currently on in session against this key. --->
 	<cfargument name="currentPage" default="0" />
@@ -41,8 +41,11 @@
 	
 </cffunction>
 	
-<cffunction name="getRecordSet" access="public" output="false" returntype="query" hint="Get the start page of the pagination loop">
-	<cfreturn this.qRecordset />
+<cffunction name="getQuery" access="public" output="false" returntype="query" hint="Returns the entire recordset">
+	<cfreturn this.query />
+</cffunction>
+<cffunction name="getRecordSet" access="public" output="false" returntype="query" hint="Returns the entire recordset">
+	<cfreturn getQuery() />
 </cffunction>
 <cffunction name="getPageFrom" access="public" output="false" returntype="numeric" hint="Get the start page of the pagination loop">
 	<cfreturn 1 />
@@ -140,13 +143,15 @@
 	<cfset var o = "" />
 	
 	<!--- ENSURE WE HAVE A RECORDSET --->
-	<cfif isQuery(this.qRecordset)>
+	<cfif isQuery(this.query)>
 		<!--- ALL OK --->
+	<cfelseif structKeyExists(this, "qRecordset") AND isQuery(this.qRecordset)>
+		<cfset this.query = this.qRecordset />
 	<cfelseif len(this.typename)>
 		<cfset o = application.fapi.getContentType("#this.typename#") />		
-		<cfset this.qRecordSet = o.getMultipleByQuery(OrderBy="datetimecreated desc") />
+		<cfset this.query = o.getMultipleByQuery(OrderBy="datetimecreated desc") />
 	<cfelse>
-		<cfthrow message="You must initialise pagination with qRecordset (query) or typename (string)." />
+		<cfthrow message="You must initialise pagination with query or typename (string)." />
 	</cfif>
 </cffunction>
 
@@ -201,7 +206,7 @@
 	<cfset var stPageLink = "" />
 	<cfset var i = "" />
 	
-	<cfset this.totalRecords = this.qRecordset.recordCount />
+	<cfset this.totalRecords = this.query.recordCount />
 
 	<cfset this.totalPages = 1 />
 	<cfset this.firstPage = 1 />

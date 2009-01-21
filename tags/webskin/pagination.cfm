@@ -34,7 +34,7 @@ START WEBSKIN
 <cfif thistag.executionMode eq "Start">
 	
 	<!--- OPTIONAL ATTRIBUTES --->
-	<cfparam name="attributes.qRecordSet" default="" />
+	<cfparam name="attributes.query" default="" />
 	<cfparam name="attributes.typename" default="" />	
 	<cfparam name="attributes.paginationID" default="" /><!--- Keeps track of the page the user is currently on in session against this key. --->
 	<cfparam name="attributes.currentPage" default="0" />
@@ -46,6 +46,16 @@ START WEBSKIN
 	<cfparam name="attributes.recordsPerPage" default="10" type="numeric">
 	<cfparam name="attributes.submissionType" default="url" type="string">
 	<cfparam name="attributes.Step" default="1" type="numeric">
+
+	<!------------------------------------------------------------------------------------ 
+		Check if they have passed in the attribute as the NAME of a query in the caller.
+		IF SO, change it to the reference to the calling query.
+	 ------------------------------------------------------------------------------------>
+	<cfif isSimpleValue(attributes.query) AND len(attributes.query)>
+		<cfif structKeyExists(caller, attributes.query)>
+			<cfset attributes.query = caller[attributes.query] />
+		</cfif>
+	</cfif>
 
 	<!--- INITIALISE THE PAGINATION OBJECT WITH ALL THE REQUIRED VALUES BASED ON THE ATTRIBUTES PASSED INTO THIS TAG. --->
 	<cfset oPagination = application.fapi.getContentType("farPagination").setup(argumentCollection="#attributes#") />
