@@ -158,10 +158,10 @@ $out:$
 		<cfset arguments.iconname = "#arguments.iconname#.png" />
 	</cfif>
 
-	<cfif fileexists("#application.path.project#/www/wsimages/icons/#arguments.size#/#arguments.iconname#")>
+	<cfif fileexists("#application.path.webroot#/wsimages/icons/#arguments.size#/#arguments.iconname#")>
 		<cfreturn "#application.path.webroot#/wsimages/icons/#arguments.size#/#arguments.iconname#" />
 	</cfif>
-	<cfif fileexists("#application.path.project#/www/images/icons/#arguments.iconname#")>
+	<cfif fileexists("#application.path.webroot#/images/icons/#arguments.iconname#")>
 		<cfreturn "#application.path.webroot#/images/icons/#arguments.size#/#arguments.iconname#" />
 	</cfif>
 	
