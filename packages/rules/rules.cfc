@@ -66,6 +66,17 @@ $out:$
 		<cfset var stCurrentView = structNew() />
 		<cfset var i = 0 />
 
+		<!--- The following allows additional arguments passed in to be transferred to the stParam struct --->
+		<cfset var lStandardArguments = "stobject,typename,objectid,key,template,webskin,stprops,stparam,r_html,r_objectid,hashKey,alternateHTML,dsn,onExit" />
+		<cfset var attrib = "" />
+		
+		<!--- Setup custom attributes passed into view in stParam structure --->
+		<cfloop collection="#arguments#" item="attrib">
+			<cfif not listFindNoCase(lStandardArguments, attrib)>
+				<cfset arguments.stParam[attrib] = arguments[attrib] />
+			</cfif>
+		</cfloop>
+
 		<cfif structkeyexists(arguments,"webskin") and len(arguments.webskin)>
 			<cfset arguments.template = arguments.webskin />
 		<cfelseif not structkeyexists(arguments,"template") or not len(arguments.template)>

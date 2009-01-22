@@ -503,6 +503,17 @@
 		<cfset var stLocal = structNew() /><!--- A local scope that can be used in webskins to ensure against race conditions. --->
 		<cfset var webskinTypename = "" /><!--- This will store the typename of the webskin to be called. Required in the case of Type Webskins. --->
 
+		<!--- The following allows additional arguments passed in to be transferred to the stParam struct --->
+		<cfset var lStandardArguments = "stobject,typename,objectid,key,template,webskin,stprops,stparam,r_html,r_objectid,hashKey,alternateHTML,dsn,onExit" />
+		<cfset var attrib = "" />
+		
+		<!--- Setup custom attributes passed into view in stParam structure --->
+		<cfloop collection="#arguments#" item="attrib">
+			<cfif not listFindNoCase(lStandardArguments, attrib)>
+				<cfset arguments.stParam[attrib] = arguments[attrib] />
+			</cfif>
+		</cfloop>
+		
 		<!--- init fourq --->
 		<cfset fourqInit() />	
 		<cfset webskinTypename = "#variables.typename#" /><!--- Set the typename to the typename of this object instance --->
