@@ -6,6 +6,24 @@
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
 
+<!--------------------------------------------- 
+AVAILABLE INFORMATION
+------------------------------------------------>
+<!--- 
+getQuery()			Get the start page of the pagination loop
+getTotalRecords()	Return the number of records in the entire pagination set
+getPageFrom()		Get the start page of the pagination loop
+getPageTo() 		Get the end page of the pagination loop
+getCurrentPage() 	Get the current page
+getTotalPages() 	Get the total number of pages
+getFirstPage() 		Get the first page in the pagination loop
+getLastPage() 		Get the last page in the pagination loop
+getRecordFrom() 	Get the first row of the recordset for the current page of the pagination.
+getRecordTo() 		Get the last row of the recordset for the current page of the pagination.
+getCurrentRow() 	Get the current row of the recordset for the current page of the pagination.
+ --->
+
+
 <!------------------ 
 FARCRY IMPORT FILES
  ------------------>
@@ -15,47 +33,54 @@ FARCRY IMPORT FILES
 START WEBSKIN
  ------------------>
 
-<skin:htmlHead id="paginationCSS">
+<!--- INCLUDE THE CSS IN THE HEADER --->
+<skin:htmlHead id="pagination-css">
 <cfoutput>
 <style type="text/css">
-.pagination {background: ##f2f2f2;color:##666;padding: 4px 2px 4px 7px;border: 1px solid ##ddd;margin: 0 0 1.5em}
-.pagination p {position:relative;text-align:right}
-
-.pagination p span {text-decoration:none;background:##fff;padding:2px 5px;border: 1px solid ##ccc;color:##ccc;}
-
-.pagination p a:link, 
-.pagination p a:visited, 
-.pagination p a:hover, 
-.pagination p a:active {
-	text-decoration:none;background:##fff;padding:2px 5px;border: 1px solid ##ccc;color:##777;
-}
-.pagination p a:hover,
-.pagination p .p-current{
-	background:##c00;color:##fff
-}
-
-.pagination * {margin:0}
-.pagination h4 {margin-top:-1.4em;padding:0;border:none}
+.paginator-wrap {text-align:center;margin-bottom:20px;margin-top:20px;}
+.paginator {font-size:12px;padding-top:10px;margin-left:auto;margin-right:auto;color:##aaa;}
+.paginator a {padding:2px 6px;border:solid 1px ##ddd;background:##fff;text-decoration:none;color:##aaa;}
+.paginator span.p-first {margin-right:20px;padding:4px 8px;background:##fff;color:##aaa;}
+.paginator a.p-first {margin-right:20px;padding:2px 6px;border:solid 1px ##ddd;background:##fff;}
+.paginator span.p-last {margin-left:20px;padding:4px 8px;background:##fff;color:##aaa;}
+.paginator a.p-last	{margin-left:20px;padding:2px 6px;border:solid 1px ##ddd;background:##fff;}
+.paginator span.p-previous {margin-right:20px;padding:4px 8px;background:##fff;color:##aaa;}
+.paginator a.p-previous {margin-right:20px;padding:2px 6px;border:solid 1px ##ddd;background:##fff;}
+.paginator span.p-next {margin-left:20px;padding:4px 8px;background:##fff;color:##aaa;}
+.paginator a.p-next {margin-left:20px;padding:2px 6px;border:solid 1px ##ddd;background:##fff;}
+.paginator span.p-page{
+	background:##FFFFFF none repeat scroll 0 0;
+	color:##ff0000;
+	font-size:12px;
+	font-weight:bold;
+	padding:4px 8px;
+	vertical-align:top;}	
+.paginator a.p-page{padding:2px 6px;
+	border-color:##ddd;
+	font-weight:normal;
+	font-size:12px;
+	vertical-align:top;
+	background:##fff;
+	}
+.paginator a:hover {color:##fff;background:##0063DC;border-color:##036;text-decoration:none;}
 </style>
 </cfoutput>
 </skin:htmlHead>
 
+<!--- OUTPUT THE MARKUP FOR THE PAGINATOR --->
 <cfoutput>
-	<div class="pagination">	
+<div class="paginator-wrap">
+	<div class="paginator">	
+		#renderLink(linkid="previous", linkText="< previous")#
 		
-		<p>
-			<skin:buildPaginationLink stLink="#getLink('first')#" />			
-			<skin:buildPaginationLink stLink="#getLink('previous')#" linkText="<<" />
-			
-			<cfloop from="#getPageFrom()#" to="#getPageTo()#" index="i">
-				<skin:buildPaginationLink stLink="#getLink(i)#" />
-			</cfloop>
-			
-			<skin:buildPaginationLink stLink="#getLink('next')#" linkText=">>" />
-			<skin:buildPaginationLink stLink="#getLink('last')#" />
-		</p>
-		<h4>Page #getCurrentPage()# of #getTotalPages()#</h4>
+		<cfloop from="#getPageFrom()#" to="#getPageTo()#" index="i">
+			#renderLink(linkid=i)#
+		</cfloop>
+		
+		#renderLink(linkid="next", linkText="next >")#		
 	</div>
-</cfoutput>		
+</div>
+</cfoutput>	
+
 
 <cfsetting enablecfoutputonly="false">

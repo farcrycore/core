@@ -47,6 +47,9 @@
 <cffunction name="getRecordSet" access="public" output="false" returntype="query" hint="Returns the entire recordset">
 	<cfreturn getQuery() />
 </cffunction>
+<cffunction name="getTotalRecords" access="public" output="false" returntype="numeric" hint="Returns the number of records in the entire recordset">
+	<cfreturn this.totalRecords />
+</cffunction>
 <cffunction name="getPageFrom" access="public" output="false" returntype="numeric" hint="Get the start page of the pagination loop">
 	<cfreturn 1 />
 </cffunction>
@@ -104,6 +107,48 @@
 	<cfreturn stResult />
 </cffunction>
 
+
+<cffunction name="renderLink" access="public" output="false" hint="Writes out the actual link">
+	<cfargument name="linkID" type="string" required="true" /><!--- The link to render --->
+	<cfargument name="linkText" default="" /><!--- The text to use as the link. defaults to defaultLinktext but can be overridden by generatedContent --->
+	<cfargument name="title" default="" /><!--- The title of the anchor tag --->
+	<cfargument name="class" default="" /><!--- Allows a class to be added to the link --->
+	<cfargument name="style" default="" /><!--- Allows a style to be added to the link --->
+	<cfargument name="bIncludeSpan" default="true" /><!--- Add span tag around disabled links --->
+	
+	<cfset var stLink = getLink(arguments.linkID) />
+	<cfset var result = "" />
+	
+	<!--- IMPORT TAG LIRARIES --->
+	<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+	
+	<cfsavecontent variable="result">
+	<!--- USE THE LINKTEXT AS GENERATED CONTENT IF AVAILABLE --->
+	<cfif not structIsEmpty(stLink) and NOT stLink.bHidden>
+		<cfif not len(arguments.linktext)>
+			<cfset arguments.linktext = stLink.defaultLinktext />
+		</cfif>
+		
+		<!--- Determine link or text --->
+		<cfif stLink.bDisabled>
+			<cfif arguments.bIncludeSpan>
+		    	<cfoutput><span class="#stLink.class# #arguments.class#" style="#arguments.style#">#arguments.linktext#</span></cfoutput>
+			<cfelse>
+		    	<cfoutput>#arguments.linktext#</cfoutput>
+			</cfif>
+
+		<cfelse>
+			<skin:buildLink href="#stLink.href#" onclick="#stLink.onclick#;" class="#stLink.class# #arguments.class#" style="#arguments.style#" title="#arguments.title#" linktext="#arguments.linktext#" />
+		</cfif>	
+
+	</cfif>
+	</cfsavecontent>
+	
+	<cfreturn trim(result) />
+	
+</cffunction>
+
+
 <cffunction name="getLink" access="public" output="false" returntype="struct" hint="Get a specific link">
 	<cfargument name="linkID" required="true" type="any" hint="Can be either first, last, next, previous or a page number" />
 	
@@ -135,6 +180,50 @@
 	
 	<cfreturn stLink />
 </cffunction>
+
+<cffunction name="isLinkDisabled" access="public" output="false" returntype="boolean" hint="Returns TRUE if the link is disabled">
+	<cfargument name="linkID" required="true" type="any" hint="Can be either first, last, next, previous or a page number" />
+
+	<cfset stLink = getLink(arguments.linkID) />
+	
+	<cfreturn stLink.bDisabled />
+</cffunction>
+<cffunction name="isLinkHidden" access="public" output="false" returntype="boolean" hint="Returns TRUE if the link is hidden (ie. never going to be used)">
+	<cfargument name="linkID" required="true" type="any" hint="Can be either first, last, next, previous or a page number" />
+
+	<cfset stLink = getLink(arguments.linkID) />
+	
+	<cfreturn stLink.bHidden />
+</cffunction>
+<cffunction name="isLinkCurrent" access="public" output="false" returntype="boolean" hint="Returns TRUE if the page is the current page">
+	<cfargument name="linkID" required="true" type="any" hint="Can be either first, last, next, previous or a page number" />
+
+	<cfset stLink = getLink(arguments.linkID) />
+	
+	<cfreturn stLink.bCurrent />
+</cffunction>
+<cffunction name="getLinkClass" access="public" output="false" returntype="string" hint="Get a specific link Class">
+	<cfargument name="linkID" required="true" type="any" hint="Can be either first, last, next, previous or a page number" />
+
+	<cfset stLink = getLink(arguments.linkID) />
+	
+	<cfreturn stLink.class />
+</cffunction>
+<cffunction name="getLinkHREF" access="public" output="false" returntype="string" hint="Get a specific link HREF">
+	<cfargument name="linkID" required="true" type="any" hint="Can be either first, last, next, previous or a page number" />
+
+	<cfset stLink = getLink(arguments.linkID) />
+	
+	<cfreturn stLink.href />
+</cffunction>
+<cffunction name="getLinkOnClick" access="public" output="false" returntype="string" hint="Get a specific link onClick">
+	<cfargument name="linkID" required="true" type="any" hint="Can be either first, last, next, previous or a page number" />
+
+	<cfset stLink = getLink(arguments.linkID) />
+	
+	<cfreturn stLink.onClick />
+</cffunction>
+
 	
 
 <!--- //////////////////////////////////////////// --->
@@ -341,7 +430,6 @@
 		<cfset stLink.bCurrent = arguments.bCurrent />
 		<cfif arguments.bCurrent>
 			<cfset stLink.bDisabled = true />
-			<cfset stLink.class = listAppend(stLink.class, "p-current", " ") />
 		<cfelse>
 			<cfset stLink.bDisabled = arguments.bDisabled />
 		</cfif>
@@ -374,7 +462,7 @@
 			<cfthrow message="The linkID must be either 'first', 'last', 'next', 'previous' or a page number" />
 		</cfif>
 		
-		<cfset stLink.class = listAppend(stLink.class, "p-link", " ") />
+		<cfset stLink.class = listAppend(stLink.class, "p-page", " ") />
 		
 		<cfset arrayAppend(this.stLinks.aPages, stLink)>
 		
