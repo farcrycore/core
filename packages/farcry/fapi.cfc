@@ -485,6 +485,54 @@
 	
 	</cffunction>	
 	
+		
+	<cffunction name="success" returntype="struct" output="false" hint="Returns a standard return structure from a function when it is successfull">
+		<cfargument name="message" type="string" default="" />
+		<cfargument name="detail" type="string" default="" />
+		<cfargument name="type" type="string" default="" />
+		<cfargument name="name" type="string" default="" />
+		<cfargument name="errNumber" type="string" default="" />
+		<cfargument name="stackTrace" type="string" default="" />
+		<cfargument name="tagContext" type="array" default="#arrayNew(1)#" />
+		
+		<cfset var stResult = structNew() />
+		
+		<cfset stResult.bSuccess = true />
+		<cfset stResult.message = arguments.message />
+		<cfset stResult.detail = arguments.detail />
+		<cfset stResult.type = arguments.type />
+		<cfset stResult.name = arguments.name />
+		<cfset stResult.errNumber = arguments.errNumber />
+		<cfset stResult.stackTrace = arguments.stackTrace />
+		<cfset stResult.tagContext = arguments.tagContext />
+		
+		<cfreturn stResult />
+	
+	</cffunction>	
+		
+	<cffunction name="fail" returntype="struct" output="false" hint="Returns a standard return structure from a function when it fails">
+		<cfargument name="message" type="string" default="" />
+		<cfargument name="detail" type="string" default="" />
+		<cfargument name="type" type="string" default="" />
+		<cfargument name="name" type="string" default="" />
+		<cfargument name="errNumber" type="string" default="" />
+		<cfargument name="stackTrace" type="string" default="" />
+		<cfargument name="tagContext" type="array" default="#arrayNew(1)#" />
+		
+		<cfset var stResult = structNew() />
+		
+		<cfset stResult.bSuccess = false />
+		<cfset stResult.message = arguments.message />
+		<cfset stResult.detail = arguments.detail />
+		<cfset stResult.type = arguments.type />
+		<cfset stResult.name = arguments.name />
+		<cfset stResult.errNumber = arguments.errNumber />
+		<cfset stResult.stackTrace = arguments.stackTrace />
+		<cfset stResult.tagContext = arguments.tagContext />
+		
+		<cfreturn stResult />
+	
+	</cffunction>	
 	
 	<cffunction name="deprecated" returntype="string" output="false" hint="As a core developer you can flag deprecated code by using this function to pass in a depricated message">
 		<cfargument name="message" default="" required="false">
