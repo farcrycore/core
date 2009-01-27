@@ -9,7 +9,7 @@
 	<h1>Welcome to FarCry</h1>
 	<ul class="inlinedocs">
 			<li><a href="#application.url.webtop#/overview/home.cfm">
-				<img class="overviewicon" border="0" style="float: left;" src="/webtop/facade/icon.cfm?icon=overview" alt="" />
+				<img class="overviewicon" border="0" style="float: left;" src="#application.url.webtop#/facade/icon.cfm?icon=overview" alt="" />
 			</a>
 			<a href="#application.url.webtop#/overview/home.cfm">Overview</a><br/>
 			<p>Review content you have in draft or pending approval.</p>
