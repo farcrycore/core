@@ -15,4 +15,6 @@
 	<cfcatch type="any"><cfdump var="#cfcatch#"></cfcatch>
 </cftry>
 
+<cfoutput>Done</cfoutput>
+
 <cfsetting enablecfoutputonly="false" /> 
