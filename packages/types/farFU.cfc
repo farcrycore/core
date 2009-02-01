@@ -617,7 +617,7 @@
 				</cfloop>
 
 				<!--- check if this friendly url is a retired link.: if not then show page --->
-				<cfif stFU.redirectionType NEQ "none">
+				<cfif stFU.redirectionType NEQ "none" and not request.mode.ajax>
 					<cfif stFU.redirectTo EQ "default">
 						<cfset stLocal.stDefaultFU = getDefaultFUObject(refObjectID="#stFU.refObjectID#") />
 						<cfif not structIsEmpty(stLocal.stDefaultFU) AND stLocal.stDefaultFU.objectid NEQ stFU.objectid>
