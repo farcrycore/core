@@ -696,7 +696,7 @@
 				</cfloop>
 			
 			</cfif>
-		<cfelseif isUsingFU()>
+		<cfelseif isUsingFU() and not request.mode.ajax>
 			<cfif structKeyExists(url, "objectid") AND url.objectid NEQ application.navid.home AND structKeyExists(variables.stLookup, url.objectid)>
 				<cfset stLocal.stDefaultFU = getData(objectid="#variables.stLookup[url.objectid].objectid#") />
 			
