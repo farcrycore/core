@@ -513,15 +513,24 @@
 			<!--- Otherwise we check in the webroot --->
 			<cfset loc = trim("/farcryConstructor.cfm") />
 		<cfelse>
-			<!--- If all else fails, see if the user has a cookie telling us what project to look at. --->
+			<!--- If all else fails... --->
+			<!--- 1. See if the user has a cookie telling us what project to look at. --->
 			<cfif structKeyExists(url, "farcryProject") AND len(url.farcryProject)>
 				<cfset cookie.currentFarcryProject = url.farcryProject />
 			</cfif>
 			<cfif arguments.plugin EQ "webtop" AND structKeyExists(cookie, "currentFarcryProject")>
-		
 				<cfif fileExists(expandPath("/#currentFarcryProject#/farcryConstructor.cfm"))>
 					<cfset loc = trim("/#currentFarcryProject#/farcryConstructor.cfm") />
 				</cfif>
+			</cfif>
+			<!--- 2. If no cookie exists, see if server.stFarcryProjects holds any project names and list the first one found --->
+			<cfif loc eq "" and arguments.plugin EQ "webtop" and structKeyExists(server, "stFarcryProjects") and structcount(server.stFarcryProjects) GT 0>
+				<cfloop collection="#server.stFarcryProjects#" item="thisproject">
+					<cfif fileExists(expandPath("/#thisproject#/farcryConstructor.cfm"))>
+						<cfset loc = trim("/#thisproject#/farcryConstructor.cfm") />
+						<cfbreak />
+					</cfif>
+				</cfloop>
 			</cfif>
 		</cfif>
 
