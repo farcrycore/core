@@ -262,7 +262,7 @@
 				listeners:{
 					"click":{
 						fn:function(){
-							<cfif request.mode.design and request.mode.showcontainers gt 0>
+							<cfif findnocase("bdebug=1",url.url)>
 								parent.updateContent("#application.fapi.fixURL(url=url.url,addvalues='bDebug=0')#");
 							<cfelse>
 								parent.updateContent("#application.fapi.fixURL(url=url.url,addvalues='bDebug=1')#");
@@ -285,10 +285,10 @@
 				listeners:{
 					"click":{
 						fn:function(){
-							<cfif request.mode.design and request.mode.showcontainers gt 0>
+							<cfif findnocase("bwebskintrace=1",url.url)>
 								parent.updateContent("#application.fapi.fixURL(url=url.url,addvalues='bWebskinTrace=0')#");
 							<cfelse>
-								parent.updateContent("#application.fapi.fixURL(url=url.url,addvalues='bWebskinTrace=1')#");
+								parent.updateContent("#application.fapi.fixURL(url=url.url,addvalues='designmode=1&bWebskinTrace=1')#");
 							</cfif>
 						}
 					}
