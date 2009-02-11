@@ -251,6 +251,54 @@
 	<cfset arrayappend(aActions,html) />
 </sec:CheckPermission>
 
+<!--- Developer options --->
+<sec:CheckPermission objectid="#stObj.objectid#" permission="Developer">
+	<cfsavecontent variable="html">
+		<cfoutput>
+			{
+				xtype:"tbbutton",
+				iconCls:<cfif findnocase("bdebug=1",url.url)>"genericenabled_icon"<cfelse>"genericdisabled_icon"</cfif>,
+				text:"Show errors",
+				listeners:{
+					"click":{
+						fn:function(){
+							<cfif request.mode.design and request.mode.showcontainers gt 0>
+								parent.updateContent("#application.fapi.fixURL(url=url.url,addvalues='bDebug=0')#");
+							<cfelse>
+								parent.updateContent("#application.fapi.fixURL(url=url.url,addvalues='bDebug=1')#");
+							</cfif>
+							Ext.getBody().mask("Working...");
+						}
+					}
+				}
+			}
+		</cfoutput>
+	</cfsavecontent>
+	<cfset arrayappend(aActions,html) />
+	
+	<cfsavecontent variable="html">
+		<cfoutput>
+			{
+				xtype:"tbbutton",
+				iconCls:<cfif findnocase("bwebskintrace=1",url.url)>"genericenabled_icon"<cfelse>"genericdisabled_icon"</cfif>,
+				text:"Webskin trace",
+				listeners:{
+					"click":{
+						fn:function(){
+							<cfif request.mode.design and request.mode.showcontainers gt 0>
+								parent.updateContent("#application.fapi.fixURL(url=url.url,addvalues='bWebskinTrace=0')#");
+							<cfelse>
+								parent.updateContent("#application.fapi.fixURL(url=url.url,addvalues='bWebskinTrace=1')#");
+							</cfif>
+						}
+					}
+				}
+			}
+		</cfoutput>
+	</cfsavecontent>
+	<cfset arrayappend(aActions,html) />
+</sec:CheckPermission>
+
 <!--- Editing the object --->
 <sec:CheckPermission objectid="#stObj.objectid#" typename="#stObj.typename#" permission="Edit">
 	<cfif not stObj.typename eq "farCOAPI">
