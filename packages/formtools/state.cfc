@@ -1,4 +1,6 @@
-<cfcomponent name="state" displayname="State" hint="Field containing a state or province" extends="farcry.core.packages.formtools.field"> > 
+<cfcomponent name="state" displayname="State" hint="Field containing a state or province" extends="farcry.core.packages.formtools.field">
+	
+	<cfprocessingdirective pageencoding="utf-8" />
 		
 	<cffunction name="init" access="public" returntype="any" output="false" hint="Returns a copy of this initialised object">
 	
@@ -100,6 +102,27 @@
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","UT") /><cfset querysetcell(q,"name","Utrecht") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","ZE") /><cfset querysetcell(q,"name","Zeeland") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","ZH") /><cfset querysetcell(q,"name","Zuid Holland") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
+			
+			<!--- Norway --->
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","02") /><cfset querysetcell(q,"name","Akershus") /><cfset querysetcell(q,"countrycode","NO") /><cfset querysetcell(q,"countryname","Norway") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","09") /><cfset querysetcell(q,"name","Aust-Agder") /><cfset querysetcell(q,"countrycode","NO") /><cfset querysetcell(q,"countryname","Norway") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","06") /><cfset querysetcell(q,"name","Buskerud") /><cfset querysetcell(q,"countrycode","NO") /><cfset querysetcell(q,"countryname","Norway") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","20") /><cfset querysetcell(q,"name","Finnmark") /><cfset querysetcell(q,"countrycode","NO") /><cfset querysetcell(q,"countryname","Norway") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","04") /><cfset querysetcell(q,"name","Hedmark") /><cfset querysetcell(q,"countrycode","NO") /><cfset querysetcell(q,"countryname","Norway") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","12") /><cfset querysetcell(q,"name","Hordaland") /><cfset querysetcell(q,"countrycode","NO") /><cfset querysetcell(q,"countryname","Norway") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","15") /><cfset querysetcell(q,"name","Møre og Romsdal") /><cfset querysetcell(q,"countrycode","NO") /><cfset querysetcell(q,"countryname","Norway") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","18") /><cfset querysetcell(q,"name","Nordland") /><cfset querysetcell(q,"countrycode","NO") /><cfset querysetcell(q,"countryname","Norway") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","17") /><cfset querysetcell(q,"name","Nord-Trøndelag") /><cfset querysetcell(q,"countrycode","NO") /><cfset querysetcell(q,"countryname","Norway") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","05") /><cfset querysetcell(q,"name","Oppland") /><cfset querysetcell(q,"countrycode","NO") /><cfset querysetcell(q,"countryname","Norway") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","03") /><cfset querysetcell(q,"name","Oslo") /><cfset querysetcell(q,"countrycode","NO") /><cfset querysetcell(q,"countryname","Norway") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","11") /><cfset querysetcell(q,"name","Rogaland") /><cfset querysetcell(q,"countrycode","NO") /><cfset querysetcell(q,"countryname","Norway") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","14") /><cfset querysetcell(q,"name","Sogn og Fjordane") /><cfset querysetcell(q,"countrycode","NO") /><cfset querysetcell(q,"countryname","Norway") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","16") /><cfset querysetcell(q,"name","Sør-Trøndelag") /><cfset querysetcell(q,"countrycode","NO") /><cfset querysetcell(q,"countryname","Norway") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","08") /><cfset querysetcell(q,"name","Telemark") /><cfset querysetcell(q,"countrycode","NO") /><cfset querysetcell(q,"countryname","Norway") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","19") /><cfset querysetcell(q,"name","Troms") /><cfset querysetcell(q,"countrycode","NO") /><cfset querysetcell(q,"countryname","Norway") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","10") /><cfset querysetcell(q,"name","Vest-Agder") /><cfset querysetcell(q,"countrycode","NO") /><cfset querysetcell(q,"countryname","Norway") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","07") /><cfset querysetcell(q,"name","Vestfold") /><cfset querysetcell(q,"countrycode","NO") /><cfset querysetcell(q,"countryname","Norway") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","01") /><cfset querysetcell(q,"name","Østfold") /><cfset querysetcell(q,"countrycode","NO") /><cfset querysetcell(q,"countryname","Norway") />
 			
 			<cfset this.qStates = q />
 		</cfif>
