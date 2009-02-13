@@ -18,7 +18,7 @@
 		<cfset var thisprop = "" />
 		
 		<cfparam name="arguments.stMetadata.ftCountries" default="" /><!--- Defaults to all --->
-		<cfparam name="arguments.stMetadata.ftValue" default="name" /><!--- "code" | "name" --->
+		<cfparam name="arguments.stMetadata.ftValue" default="name" /><!--- "code" | "fullcode" | "name" --->
 		
 		<cfif structkeyexists(arguments.stMetadata,"ftWatch") and len(arguments.stMetadata.ftWatch)>
 			<cfset arguments.stMetadata.ftCountries = arguments.stObject[listfirst(arguments.stMetadata.ftWatch)] />
@@ -57,7 +57,7 @@
 	<cffunction name="getStates" returntype="query" output="false" access="public" hint="Returns states and acronyms">
 		<cfargument name="countries" type="string" required="false" hint="Including this argument restricts the states to certain countries or country codes" />
 		
-		<cfset var q = querynew("countrycode,countryname,code,name") />
+		<cfset var q = querynew("countrycode,countryname,code,fullcode,name") />
 		
 		<cfif not structkeyexists(this,"qStates")>
 			<!--- Australia --->
@@ -87,11 +87,25 @@
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","WGN") /><cfset querysetcell(q,"name","Wellington") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","WTC") /><cfset querysetcell(q,"name","West Coast") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
 			
+			<!--- Netherlands --->
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","DR") /><cfset querysetcell(q,"name","Drenthe") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","FL") /><cfset querysetcell(q,"name","Flevoland") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","FR") /><cfset querysetcell(q,"name","Friesland") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","GE") /><cfset querysetcell(q,"name","Gelderland") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","GR") /><cfset querysetcell(q,"name","Groningen") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","LI") /><cfset querysetcell(q,"name","Limburg") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","NB") /><cfset querysetcell(q,"name","Noord Brabant") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","NH") /><cfset querysetcell(q,"name","Noord Holland") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","OV") /><cfset querysetcell(q,"name","Overijssel") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","UT") /><cfset querysetcell(q,"name","Utrecht") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","ZE") /><cfset querysetcell(q,"name","Zeeland") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","ZH") /><cfset querysetcell(q,"name","Zuid Holland") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
+			
 			<cfset this.qStates = q />
 		</cfif>
 		
 		<cfquery dbtype="query" name="q">
-			select		countrycode,countryname,code,name
+			select		countrycode,countryname,code,name,countrycode + '-' + code as fullcode
 			from		this.qStates
 			<cfif structkeyexists(arguments,"countries") and len(arguments.countries)>
 				where	countrycode in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.countries#">)
