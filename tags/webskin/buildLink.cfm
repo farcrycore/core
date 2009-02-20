@@ -33,7 +33,6 @@
 	<cfparam name="attributes.id" default=""><!--- Anchor tag ID --->
 	<cfparam name="attributes.class" default=""><!--- Anchor tag classes --->
 	<cfparam name="attributes.style" default=""><!--- Anchor tag styles --->
-	<cfparam name="attributes.title" default=""><!--- Anchor tag title text --->
 	<cfparam name="attributes.urlOnly" default="false">
 	<cfparam name="attributes.r_url" default=""><!--- Define a variable to pass the link back (instead of writting out via the tag). Note setting urlOnly invalidates this setting --->
 	<cfparam name="attributes.xCode" default=""><!--- eXtra code to be placed inside the anchor tag --->
@@ -105,17 +104,17 @@
 		<cfset stLocal.iCount = 0>
 		<cfloop collection="#attributes.stParameters#" item="stLocal.key">
 			<cfif stLocal.iCount GT 0>
-				<cfset stLocal.parameters = stLocal.parameters & "&amp;" />
+				<cfset stLocal.parameters = stLocal.parameters & "&">
 			</cfif>
 			<cfset stLocal.parameters = stLocal.parameters & stLocal.key & "=" & URLEncodedFormat(attributes.stParameters[stLocal.key])>
 			<cfset stLocal.iCount = stLocal.iCount + 1>
 		</cfloop>
 
 	
-		<cfif listFind("&,?",Right(href,1)) or findNoCase("&amp;", right(href,5))><!--- check to see if the last character is a ?, &, or &amp; and don't append one between the params and the href --->
+		<cfif ListFind("&,?",Right(href,1))><!--- check to see if the last character is a ? or & and don't append one between the params and the href --->
 			<cfset href=href&stLocal.parameters>
-		<cfelseif Find("?",href)> <!--- If there is already a ? in the href, just concat the params with &amp; --->
-			<cfset href=href&"&amp;"&stLocal.parameters />
+		<cfelseif Find("?",href)> <!--- If there is already a ? in the href, just concat the params with & --->
+			<cfset href=href&"&"&stLocal.parameters>
 		<cfelse> <!--- No query string on the href, so add a new one using ? and the params --->
 			<cfset href=href&"?"&stLocal.parameters>		
 		</cfif>
