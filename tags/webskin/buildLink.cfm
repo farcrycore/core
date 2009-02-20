@@ -43,6 +43,7 @@
 	<cfparam name="attributes.JSWindow" default="0"><!--- Default to not using a Javascript Window popup --->
 	<cfparam name="attributes.stJSParameters" default="#StructNew()#">
 	<cfparam name="attributes.anchor" default=""><!--- Anchor to place at the end of the URL string. --->
+	<cfparam name="attributes.title" default=""><!--- Link title --->
 	
 
 	<!--- Change any "&amp;" or "&#38;" to "&" --->
