@@ -68,6 +68,7 @@
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","NT") /><cfset querysetcell(q,"name","Northern Territory") /><cfset querysetcell(q,"countrycode","AU") /><cfset querysetcell(q,"countryname","Australia") />
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","QLD") /><cfset querysetcell(q,"name","Queensland") /><cfset querysetcell(q,"countrycode","AU") /><cfset querysetcell(q,"countryname","Australia") />
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","SA") /><cfset querysetcell(q,"name","South Australia") /><cfset querysetcell(q,"countrycode","AU") /><cfset querysetcell(q,"countryname","Australia") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","TAS") /><cfset querysetcell(q,"name","Tasmania") /><cfset querysetcell(q,"countrycode","AU") /><cfset querysetcell(q,"countryname","Australia") />
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","VIC") /><cfset querysetcell(q,"name","Victoria") /><cfset querysetcell(q,"countrycode","AU") /><cfset querysetcell(q,"countryname","Australia") />
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","WA") /><cfset querysetcell(q,"name","Western Australia") /><cfset querysetcell(q,"countrycode","AU") /><cfset querysetcell(q,"countryname","Australia") />
 			
