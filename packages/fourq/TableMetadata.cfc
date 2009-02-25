@@ -30,7 +30,7 @@
 		
 		<!--- Make sure we set the table name first time through --->
 		<cfif not structKeyExists(variables,'tablename')>
-			<cfset variables.tableName = listLast(arguments.md.name,'.') />
+			<cfset variables.tableName = listfirst(listlast(arguments.md.path,'\/'),'.') />
 		</cfif>
 
 		<!--- 
