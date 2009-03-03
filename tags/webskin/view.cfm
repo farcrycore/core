@@ -114,6 +114,7 @@
 		<cfinvoke component="#o#" method="getView" returnvariable="html">
 			<cfinvokeargument name="typename" value="#attributes.typename#" />
 			<cfinvokeargument name="objectid" value="#attributes.objectid#" />
+			<cfinvokeargument name="st" value="#st#" />
 			<cfinvokeargument name="template" value="#attributes.webskin#" />
 			<cfinvokeargument name="onExit" value="#attributes.onExit#" />
 			<cfinvokeargument name="stParam" value="#attributes.stParam#" />
