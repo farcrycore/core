@@ -638,15 +638,15 @@
 						</cfif>
 						
 						#variables.returnHTML#
-						<cfif attributes.bShowFieldHints AND structKeyExists(ftFieldMetadata,"ftHint") and len(ftFieldMetadata.ftHint)>
-							<cfoutput><small class="ftHint">#ftFieldMetadata.ftHint#</small></cfoutput>
-						</cfif>
 				</cfoutput>
 				
 				<cfif bShowLabel>
 					<cfoutput></div></cfoutput>
 				</cfif>
 
+				<cfif attributes.bShowFieldHints AND structKeyExists(ftFieldMetadata,"ftHint") and len(ftFieldMetadata.ftHint)>
+					<cfoutput><div class="fieldAlign"><small class="ftHint">#ftFieldMetadata.ftHint#</small></div></cfoutput>
+				</cfif>
 				
 				<cfif Attributes.InTable EQ 1>
 					<cfoutput></td></tr></cfoutput>

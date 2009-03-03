@@ -551,6 +551,7 @@ $out:$
 	<cfset var q=queryNew("blah")>
 	<cfset var aObjs = arraynew(1)>
 	<cfset var stObj = structnew()>
+	
 	<cfquery datasource="#arguments.dsn#" name="q">
 		SELECT r.* 
 		FROM         
@@ -559,12 +560,12 @@ $out:$
 		WHERE  o.parentid IN ('#ListChangeDelims(arguments.lNodeIds,"','",",")#')
 		ORDER BY seq
 	</cfquery>
+	
 	<cfloop query="q">
-		<cfset sTypePath = evaluate("application.types.#q.TypeName#.typePath")>
-		<cfset oType = createObject("component", "#sTypePath#")>
-		<cfset stObj = oType.getData(q.ObjectID)>
+		<cfset stObj = application.fapi.getContentObject(objectid="#q.objectID#", typename="#q.Typename#") />
 		<cfset arrayappend(aObjs,stObj)>
 	</cfloop>
+	
 	<cfreturn aObjs>
 </cffunction>
 

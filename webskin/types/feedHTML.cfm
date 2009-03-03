@@ -37,7 +37,7 @@
 	<cfoutput><dd><p>#stObj[arguments.stParam.content]#</p></dd></cfoutput>
 </cfif>
 <cfif len(arguments.stParam.media)>
-	<cfoutput><dt>Media</dt><dd><a href="#application.url.fileRoot##stObj[arguments.stParam.media]#">Download file</a><cfif len(arguments.stParam.itunesduration)>(stObj[arguments.stParam.duration)</cfif></dd></cfoutput>
+	<cfoutput><dt>Media</dt><dd><a href="#application.fapi.getFileWebRoot()##stObj[arguments.stParam.media]#">Download file</a><cfif len(arguments.stParam.itunesduration)>(stObj[arguments.stParam.duration)</cfif></dd></cfoutput>
 </cfif>
 
 <cfoutput>

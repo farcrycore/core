@@ -384,7 +384,7 @@
 						<cfinvokeargument name="fieldname" value="#variables.prefix##ftFieldMetadata.Name#">
 						<cfinvokeargument name="stPackage" value="#stPackage#">
 					</cfinvoke>
-				
+					<cfset variables.returnHTML = application.formtools[ftFieldMetadata.ftType].oFactory.addWatch(typename=typename,stObject=stObj,stMetadata=ftFieldMetadata,fieldname="#variables.prefix##ftFieldMetadata.Name#",html=variables.returnHTML) />
 				
 			</cfif>
 				
@@ -548,7 +548,7 @@
 				</cfoutput>
 				
 				<cfif structKeyExists(ftFieldMetadata,"ftHint") and len(ftFieldMetadata.ftHint)>
-					<cfoutput><small>#ftFieldMetadata.ftHint#</small></cfoutput>
+					<cfoutput><div class="fieldAlign"><small>#ftFieldMetadata.ftHint#</small></div></cfoutput>
 				</cfif>
 				
 				<cfif Attributes.InTable EQ 1>

@@ -117,7 +117,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfif listLen(attributes.lCustomColumns)>
 	<cfloop list="#attributes.lCustomColumns#" index="i">
 		<cfset stCustomColumn = structNew() />
-		<cfset stCustomColumn.label = listFirst(i,":") />
+		<cfset stCustomColumn.title = listFirst(i,":") />
 		<cfset stCustomColumn.webskin = listLast(i,":") />
 		<cfset arrayAppend(attributes.aCustomColumns, stCustomColumn) />
 	</cfloop>
@@ -496,7 +496,7 @@ user --->
 				<skin:htmlHead>
 					<cfoutput>
 					<script type="text/javascript">
-						openScaffoldDialog('#application.url.farcry#/object_dump.cfm?objectid=#form.objectid#','Properties',500,500,true);
+						openScaffoldDialog('#application.url.farcry#/object_dump.cfm?objectid=#form.objectid#&typename=#attributes.typename#','Properties',500,500,true);
 					</script>
 					</cfoutput>
 				</skin:htmlHead>

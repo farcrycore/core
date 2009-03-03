@@ -4,6 +4,7 @@
 
 <cfparam name="attributes.onsubmit" default="">
 <cfparam name="attributes.css" default="">
+<cfparam name="attributes.bAddFormCSS" default="true" />
 <cfparam name="attributes.class" default="">
 <cfparam name="attributes.style" default="">
 <cfparam name="attributes.heading" default="">
@@ -29,18 +30,19 @@
 		<cfif len(attributes.heading)><h3>#attributes.Heading#</h3></cfif>
 	</cfoutput> 
 		
-	<cfif len(attributes.css)>
-		<cfloop list="#attributes.css#" index="i">
-			<skin:htmlHead id="FormsCSS_#i#">
-				<cfoutput>
-					<link rel="stylesheet" href="#application.url.webroot#/css/#i#" type="text/css" media="all" />
-				</cfoutput>
-			</skin:htmlHead>
-		</cfloop>
-	<cfelse>
-		<skin:htmlHead library="FormsCSS" />
+	<cfif attributes.bAddFormCSS>
+		<cfif len(attributes.css)>
+			<cfloop list="#attributes.css#" index="i">
+				<skin:htmlHead id="FormsCSS_#i#">
+					<cfoutput>
+						<link rel="stylesheet" href="#application.url.webroot#/css/#i#" type="text/css" media="all" />
+					</cfoutput>
+				</skin:htmlHead>
+			</cfloop>
+		<cfelse>
+			<skin:htmlHead library="FormsCSS" />
+		</cfif>
 	</cfif>
-	
 </cfif>
 
 <cfsetting enablecfoutputonly="false" />

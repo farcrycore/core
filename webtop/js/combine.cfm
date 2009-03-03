@@ -21,7 +21,7 @@
 			<cfloop list="#url.files#" index="i" >
 				<cfoutput>
 					//-------------#i#-------------//
-					<cfinclude template="/farcry/core/webtop/js/#url.library##i#" />
+					<cfinclude template="/farcry/core/webtop/js#url.library##i#" />
 				</cfoutput>	
 			</cfloop>
 		</cfif>
@@ -31,5 +31,6 @@
 </cfif>
 <cfcontent reset="yes" />
 <cfoutput>#application.stCombinedFarcryJS[hashedURL]#</cfoutput>
-<cfexit>
 <cfsetting enablecfoutputonly="false" /> 
+<cfexit>
+

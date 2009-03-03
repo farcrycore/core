@@ -73,7 +73,7 @@
 <cfif len(stObj.feedimage)>
 	<cfoutput>
 		<image>
-			<url>http://#cgi.http_host#/#application.url.imageRoot##stObj.feedimage#</url>
+			<url>http://#cgi.http_host##application.fapi.getImageWebRoot()##stObj.feedimage#</url>
 			<title>#stObj.title#</title>
 			<link>#linkbackurl#</link>
 		</image>
@@ -130,7 +130,7 @@
 	
 	<!--- Image --->
 	<cfif len(stObj.itunesimage)>
-		<cfoutput><itunes:image href="http://#cgi.http_host#/#application.url.webroot##application.url.imageRoot##stObj.itunesimage#" /></cfoutput>
+		<cfoutput><itunes:image href="http://#cgi.http_host##application.fapi.getImageWebRoot()##stObj.itunesimage#" /></cfoutput>
 	</cfif>
 	
 	<!--- Keywords --->

@@ -33,7 +33,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 <ft:objectadmin 
 	typename="farRole"
 	title="Role Admin"
-	columnList="title" 
+	columnList="title,isdefault"
 	sortableColumns="title"
 	lFilterFields="title"
 	sqlorderby="title asc" />

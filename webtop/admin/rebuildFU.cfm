@@ -47,6 +47,7 @@ $in: attribute -- description $
 <sec:CheckPermission error="true" permission="AdminGeneralTab">
 	<!--- ENGAGE: make it happen --->
 	<cfif form.bFormSubmitted EQ "true">
+	
 		<cfloop index="currentType" list="#content_types#">
 			<cfset returnstruct = application.fc.factory.farFU.rebuildFU(currentType)>
 			<cfif returnstruct.bSuccess>

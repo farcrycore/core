@@ -10,7 +10,7 @@
 AVAILABLE INFORMATION
 ------------------------------------------------>
 <!--- 
-getQuery()		Get the start page of the pagination loop
+getQuery()			Get the start page of the pagination loop
 getTotalRecords()	Return the number of records in the entire pagination set
 getPageFrom()		Get the start page of the pagination loop
 getPageTo() 		Get the end page of the pagination loop
@@ -39,15 +39,15 @@ START WEBSKIN
 <style type="text/css">
 .paginator-wrap {text-align:center;margin-bottom:20px;margin-top:20px;}
 .paginator {font-size:12px;padding-top:10px;margin-left:auto;margin-right:auto;color:##aaa;}
-.paginator a {padding:2px 6px;border:solid 1px ##ddd;background:##fff;text-decoration:none;}
+.paginator a {padding:2px 6px;border:solid 1px ##ddd;background:##fff;text-decoration:none;color:##aaa;}
 .paginator span.p-first {margin-right:20px;padding:4px 8px;background:##fff;color:##aaa;}
-.paginator a.p-first {margin-right:20px;padding:2px 6px;border:solid 1px ##ddd;background:##fff;color:##aaa;}
+.paginator a.p-first {margin-right:20px;padding:2px 6px;border:solid 1px ##ddd;background:##fff;}
 .paginator span.p-last {margin-left:20px;padding:4px 8px;background:##fff;color:##aaa;}
-.paginator a.p-last	{margin-left:20px;padding:2px 6px;border:solid 1px ##ddd;background:##fff;color:##aaa;}
+.paginator a.p-last	{margin-left:20px;padding:2px 6px;border:solid 1px ##ddd;background:##fff;}
 .paginator span.p-previous {margin-right:20px;padding:4px 8px;background:##fff;color:##aaa;}
-.paginator a.p-previous {margin-right:20px;padding:2px 6px;border:solid 1px ##ddd;background:##fff;color:##aaa;}
+.paginator a.p-previous {margin-right:20px;padding:2px 6px;border:solid 1px ##ddd;background:##fff;}
 .paginator span.p-next {margin-left:20px;padding:4px 8px;background:##fff;color:##aaa;}
-.paginator a.p-next {margin-left:20px;padding:2px 6px;border:solid 1px ##ddd;background:##fff;color:##aaa;}
+.paginator a.p-next {margin-left:20px;padding:2px 6px;border:solid 1px ##ddd;background:##fff;}
 .paginator span.p-page{
 	background:##FFFFFF none repeat scroll 0 0;
 	color:##ff0000;
@@ -61,7 +61,6 @@ START WEBSKIN
 	font-size:12px;
 	vertical-align:top;
 	background:##fff;
-	color:##aaa;
 	}
 .paginator a:hover {color:##fff;background:##0063DC;border-color:##036;text-decoration:none;}
 </style>

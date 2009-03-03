@@ -5,7 +5,8 @@
 <cffunction name="setup" access="public" output="false" returntype="farPagination" hint="Initialises a farPagination object">
 	<cfargument name="query" default="" hint="The recordset to be paginated" />
 	<cfargument name="typename" default="" />	
-	<cfargument name="paginationID" default="" /><!--- Keeps track of the page the user is currently on in session against this key. --->
+	<cfargument name="paginationID" default="fc-pagination" /><!--- Uniquely identifies this pagination set. Set if using sticky pages or if multiple pagination sets on a single page. --->
+	<cfargument name="bStickyPages" default="false" /><!--- Keeps track of the page the user is currently on in session against this key. --->
 	<cfargument name="currentPage" default="0" />
 	<cfargument name="actionURL" default="" />
 	<cfargument name="r_stObject" default="stObject" /><!--- The name of the calling page structure that will contain the current row of the recordset as struct --->
@@ -36,7 +37,14 @@
 	<!--- SETUP OF PAGINATION INFO AND GENERATES THE LINK INFO STRUCTURE THAT IS PASSED INTO THE DISPLAYLINKS WEBSKIN --->
 	<cfset setPageInfo() />
 	
+	<!--- ADD THE URL AND FORM VARIABLES TO THE DYNAMIC CACHE VARS --->
+	<cfset application.fapi.setCacheByVar(keys='form.paginationpage#this.paginationID#,url.page#this.paginationID#') />
 		
+	<cfif this.bStickyPages AND len(this.paginationID)>
+		<cfset application.fapi.setCacheByVar(keys='session.fcpagination.#this.paginationID#') />
+	</cfif>
+	
+			
 	<cfreturn this />
 	
 </cffunction>
@@ -78,6 +86,9 @@
 </cffunction>
 <cffunction name="getCurrentRow" access="public" output="false" returntype="numeric" hint="Get the current row of the recordset for the current page of the pagination.">
 	<cfreturn this.currentRow />
+</cffunction>
+<cffunction name="getPaginationID" access="public" output="false" returntype="string" hint="Get the PaginationID for this instance of the pagination.">
+	<cfreturn this.paginationID />
 </cffunction>
 	
 <cffunction name="incrementCurrentRow" access="public" output="false" returntype="void" hint="Increments the current row of the recordset for the current page of the pagination.">
@@ -283,9 +294,18 @@
 	</cfif>
 
 	<cfif this.CurrentPage eq 0 or not isNumeric(this.currentPage)>
-		<cfset this.CurrentPage = 1>
+		
+		<cfif this.bStickyPages AND len(this.paginationID) AND isDefined("session.fcpagination") AND structKeyExists(session.fcpagination, this.paginationID)>
+			<cfset this.currentPage = session.fcpagination[this.paginationID] />
+		<cfelse>		
+			<cfset this.CurrentPage = 1>
+		</cfif>
+		
 	</cfif>
 	
+	<cfif this.bStickyPages AND len(this.paginationID)>
+		<cfset session.fcpagination[this.paginationID] = this.currentPage />
+	</cfif>
 		
 </cffunction>
 
@@ -437,38 +457,40 @@
 		<cfset stLink.href = getPaginationLinkHREF(arguments.page) />
 		<cfset stLink.onclick = getPaginationLinkOnClick(arguments.page) />
 
+	
+	
+	
+		<cfswitch expression="#arguments.linkID#">
+		<cfcase value="first">
+			<cfset stLink.class = listAppend(stLink.class, "p-first", " ") />
+			<cfset this.stLinks.stFirst = stLink />
+		</cfcase>
+		<cfcase value="last">
+			<cfset stLink.class = listAppend(stLink.class, "p-last", " ") />
+			<cfset this.stLinks.stLast = stLink />
+		</cfcase>
+		<cfcase value="next">
+			<cfset stLink.class = listAppend(stLink.class, "p-next", " ") />
+			<cfset this.stLinks.stNext = stLink />
+		</cfcase>
+		<cfcase value="previous">
+			<cfset stLink.class = listAppend(stLink.class, "p-previous", " ") />
+			<cfset this.stLinks.stPrevious = stLink />
+		</cfcase>
+		<cfdefaultcase>
+			<cfif not isNumeric(arguments.linkID)>
+				<cfthrow message="The linkID must be either 'first', 'last', 'next', 'previous' or a page number" />
+			</cfif>
+			
+			<cfset stLink.class = listAppend(stLink.class, "p-page", " ") />
+			
+			<cfset arrayAppend(this.stLinks.aPages, stLink)>
+			
+		</cfdefaultcase>
+		</cfswitch>	
+
 	</cfif>
 	
-
-	<cfswitch expression="#arguments.linkID#">
-	<cfcase value="first">
-		<cfset stLink.class = listAppend(stLink.class, "p-first", " ") />
-		<cfset this.stLinks.stFirst = stLink />
-	</cfcase>
-	<cfcase value="last">
-		<cfset stLink.class = listAppend(stLink.class, "p-last", " ") />
-		<cfset this.stLinks.stLast = stLink />
-	</cfcase>
-	<cfcase value="next">
-		<cfset stLink.class = listAppend(stLink.class, "p-next", " ") />
-		<cfset this.stLinks.stNext = stLink />
-	</cfcase>
-	<cfcase value="previous">
-		<cfset stLink.class = listAppend(stLink.class, "p-previous", " ") />
-		<cfset this.stLinks.stPrevious = stLink />
-	</cfcase>
-	<cfdefaultcase>
-		<cfif not isNumeric(arguments.linkID)>
-			<cfthrow message="The linkID must be either 'first', 'last', 'next', 'previous' or a page number" />
-		</cfif>
-		
-		<cfset stLink.class = listAppend(stLink.class, "p-page", " ") />
-		
-		<cfset arrayAppend(this.stLinks.aPages, stLink)>
-		
-	</cfdefaultcase>
-	</cfswitch>	
-
 </cffunction>
 
 

@@ -29,6 +29,8 @@
 
 	<cfset variables.EnterwizardProcess = false>
 	
+	<cfparam name="form.FarcryFormSubmitButton" default="" />	
+	
 	<!--- If the String to check is an empty string, we accept everything. --->
 	<cfif not len(StringToCheck)>
 		<cfset StringToCheck = "*" />

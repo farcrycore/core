@@ -57,7 +57,7 @@ $Developer: Matthew Bryant (mbryant@daemon.com.au) $
 				<cfset variables.webskinObjectID = arguments.webskinObjectID />
 				
 				<cfquery datasource="#application.dsn#" name="variables.qCurrentAncestors">
-					SELECT 	*
+					SELECT 	objectid,ancestorID,ancestorTemplate,ancestorTypename
 					FROM 	dmWebskinAncestor
 					WHERE 	webskinObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#variables.webskinObjectID#">
 				</cfquery>			
@@ -69,7 +69,7 @@ $Developer: Matthew Bryant (mbryant@daemon.com.au) $
 				<cfset variables.webskinTemplate = arguments.webskinTemplate />
 				
 				<cfquery datasource="#application.dsn#" name="variables.qCurrentAncestors">
-					SELECT 	*
+					SELECT 	objectid,ancestorID,ancestorTemplate,ancestorTypename
 					FROM 	dmWebskinAncestor
 					WHERE 	webskinObjectID = ''
 							and webskinTypename = <cfqueryparam cfsqltype="cf_sql_varchar" value="#variables.webskinTypename#">

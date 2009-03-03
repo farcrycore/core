@@ -19,8 +19,8 @@
 <!---------------------------------------------- 
 type properties
 ----------------------------------------------->
-	<cfproperty name="title" type="string" default="" hint="The name of this permission" bLabel="true" ftSeq="1" ftFieldset="" ftLabel="Title" ftType="string" />
-	<cfproperty name="shortcut" type="string" default="" hint="Shortcut for permission to use in code" ftSeq="2" ftFieldset="" ftLabel="Shortcut" ftType="string" />
+	<cfproperty name="title" type="string" default="" hint="The name of this permission" bLabel="true" ftSeq="1" ftFieldset="" ftLabel="Title" ftType="string" fthint="Title is a descriptive label only." />
+	<cfproperty name="shortcut" type="string" default="" hint="Shortcut for permission to use in code" ftSeq="2" ftFieldset="" ftLabel="Code Shortcut" ftType="string" fthint="The shortcut is the variable name for the permission used in programming. It must adhere to the standard CF variable naming convention." />
 	<cfproperty name="aRelatedtypes" type="array" default="" hint="If this permission is item-specific set this field to the types that it can be applied to" ftSeq="3" ftFieldset="" ftLabel="Join on" ftType="array" ftJoin="farPermission" ftRenderType="list" ftLibraryData="getRelatedTypeList" ftShowLibraryLink="false" />
 	<cfproperty name="aRoles" type="string" default="" hint="Meta-property for managing this properties relationships with roles" ftSeq="4" ftFieldset="" ftLabel="Roles" ftType="reversearray" ftSelectMultiple="true" ftJoin="farRole" ftJoinProperty="aPermissions" bSave="false" />
 

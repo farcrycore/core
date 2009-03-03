@@ -341,7 +341,7 @@ START WEBSKIN
 		<cfif stOverviewParams.stPermissions.iObjectDumpTab>
 			<!--- dump content --->
 			
-			<ft:button width="240px" style="" type="button" value="Properties" rbkey="workflow.buttons.properties" onclick="openScaffoldDialog('#application.url.farcry#/object_dump.cfm?objectid=#stobj.objectid#','Properties',400,400,true);" />		
+			<ft:button width="240px" style="" type="button" value="Properties" rbkey="workflow.buttons.properties" onclick="openScaffoldDialog('#application.url.farcry#/object_dump.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#','Properties',400,400,true);" />		
 			<!--- <li id="tgl_dumpobject_#stobj.objectid#" style="display:none;"><cfdump var="#stobj#"></li> --->
 		</cfif>
 		

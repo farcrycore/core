@@ -17,6 +17,8 @@ START WEBSKIN
  ------------------>
 <cfif len(stobj.fu)>
 	<cfoutput>/#stobj.fu#</cfoutput>
+<cfelseif stobj.objectid EQ application.fapi.getNavID('home')>
+	<cfoutput>/</cfoutput>
 <cfelse>
 
 	<cfset separator = "/" />

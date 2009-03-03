@@ -33,6 +33,7 @@
 	<cfparam name="attributes.id" default=""><!--- Anchor tag ID --->
 	<cfparam name="attributes.class" default=""><!--- Anchor tag classes --->
 	<cfparam name="attributes.style" default=""><!--- Anchor tag styles --->
+	<cfparam name="attributes.title" default=""><!--- Anchor tag title text --->
 	<cfparam name="attributes.urlOnly" default="false">
 	<cfparam name="attributes.r_url" default=""><!--- Define a variable to pass the link back (instead of writting out via the tag). Note setting urlOnly invalidates this setting --->
 	<cfparam name="attributes.xCode" default=""><!--- eXtra code to be placed inside the anchor tag --->
@@ -43,106 +44,9 @@
 	<cfparam name="attributes.JSWindow" default="0"><!--- Default to not using a Javascript Window popup --->
 	<cfparam name="attributes.stJSParameters" default="#StructNew()#">
 	<cfparam name="attributes.anchor" default=""><!--- Anchor to place at the end of the URL string. --->
-	<cfparam name="attributes.title" default=""><!--- Link title --->
 	
 
-	<!--- Change any "&amp;" or "&#38;" to "&" --->
-	<cfset attributes.urlParameters = replaceNoCase(attributes.urlParameters,"&amp;","&","all") />
-	<cfset attributes.urlParameters = replace(attributes.urlParameters,"&##38;","&","all") />
-	<!--- Setup URL Parameters --->
-	<cfif listLen(attributes.urlParameters, "&")>
-		<cfloop list="#attributes.urlParameters#" delimiters="&" index="i">
-			<cfset attributes.stParameters[listFirst(i, "=")] = listLast(i, "=") />
-		</cfloop>
-	</cfif>
-	
-	<cfif attributes.target NEQ "_self" AND NOT attributes.urlOnly> <!--- If target is defined and the user doesn't just want the URL then it is a popup window and must therefore have the following parameters --->		
-		<cfset attributes.JSWindow = 1>
-		
-		<cfparam name="Attributes.stJSParameters.Toolbar" default="0">
-		<cfparam name="Attributes.stJSParameters.Status" default="1">
-		<cfparam name="Attributes.stJSParameters.Location" default="0">
-		<cfparam name="Attributes.stJSParameters.Menubar" default="0">
-		<cfparam name="Attributes.stJSParameters.Directories" default="0">
-		<cfparam name="Attributes.stJSParameters.Scrollbars" default="1">
-		<cfparam name="Attributes.stJSParameters.Resizable" default="1">
-		<cfparam name="Attributes.stJSParameters.Top" default="0">
-		<cfparam name="Attributes.stJSParameters.Left" default="0">
-		<cfparam name="Attributes.stJSParameters.Width" default="700">
-		<cfparam name="Attributes.stJSParameters.Height" default="700">
-	</cfif>
-	
-
-	<cfif len(attributes.href)>
-		<cfset href = attributes.href>
-
-		<cfif NOT FindNoCase("?", attributes.href)>
-			<cfset href = "#href#?">
-		</cfif>
-	<cfelse>
-		<cfif attributes.includeDomain>
-			<cfset href = "http://#attributes.Domain#">
-		<cfelse>
-			<cfset href = application.url.webroot />
-		</cfif>
-
-		<cfset linkID = "" />
-	    
-		<cfif len(attributes.externallink)>
-			<cfset linkID = attributes.externallink />
-		<cfelseif len(attributes.objectid)>
-			<cfset linkID = attributes.objectid />
-		</cfif>
-
-		<cfset href = href & application.fc.factory.farFU.getFU(objectid="#linkID#", type="#attributes.type#", view="#attributes.view#", bodyView="#attributes.bodyView#")>
-
-	</cfif>
-	
-	<!--- check for extra URL parameters --->
-	<cfif NOT StructIsEmpty(attributes.stParameters)>
-		<cfset stLocal = StructNew()>
-		<cfset stLocal.parameters = "">
-		<cfset stLocal.iCount = 0>
-		<cfloop collection="#attributes.stParameters#" item="stLocal.key">
-			<cfif stLocal.iCount GT 0>
-				<cfset stLocal.parameters = stLocal.parameters & "&">
-			</cfif>
-			<cfset stLocal.parameters = stLocal.parameters & stLocal.key & "=" & URLEncodedFormat(attributes.stParameters[stLocal.key])>
-			<cfset stLocal.iCount = stLocal.iCount + 1>
-		</cfloop>
-
-	
-		<cfif ListFind("&,?",Right(href,1))><!--- check to see if the last character is a ? or & and don't append one between the params and the href --->
-			<cfset href=href&stLocal.parameters>
-		<cfelseif Find("?",href)> <!--- If there is already a ? in the href, just concat the params with & --->
-			<cfset href=href&"&"&stLocal.parameters>
-		<cfelse> <!--- No query string on the href, so add a new one using ? and the params --->
-			<cfset href=href&"?"&stLocal.parameters>		
-		</cfif>
-	</cfif>
-	
-	<!--- Append the anchor to the end of the URL. --->
-	<cfif len(attributes.anchor)>
-		<cfif left(attributes.anchor,1) NEQ "##">
-			<cfset attributes.anchor = "###attributes.anchor#">
-		</cfif>
-		<cfset href = "#href##attributes.anchor#" />		
-	</cfif>
-	
-	<!--- Are we meant to use the Javascript Popup Window? --->
-	<cfif attributes.JSWindow>
-	
-		<cfset attributes.bShowTarget = 0><!--- No need to add the target to the <a href> as it is handled in the javascript --->
-		
-		<cfset jsParameters = "">
-		<cfloop list="#structKeyList(Attributes.stJSParameters)#" index="i">
-			<cfset jsParameters = ListAppend(jsParameters, "#i#=#attributes.stJSParameters[i]#")>
-		</cfloop>
-		<cfset href = "javascript:win=window.open('#href#', '#attributes.Target#', '#jsParameters#'); win.focus();">
-		
-	</cfif>
-	
-	<cfset href = application.fapi.fixURL(href) />
+	<cfset href = application.fapi.getLink(argumentCollection="#attributes#") />
 
 
 	<!--- Are we mean to display an a tag or the URL only? --->
@@ -190,7 +94,7 @@
 			
 			<!--- IF WE DONT HAVE ANY GENERATED CONTENT, GO FIND THE LABEL OF THE OBJECT --->
 			<cfif not len(thistag.GeneratedContent) and len(attributes.objectid)>
-				<cfset stLinkObject = application.coapi.coapiUtilities.getContentObject(objectid="#attributes.objectid#", typename="#attributes.type#") />
+				<cfset stLinkObject = application.fapi.getContentObject(objectid="#attributes.objectid#", typename="#attributes.type#") />
 				<cfset thistag.GeneratedContent=stLinkObject.label />
 			</cfif>		
 		

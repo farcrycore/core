@@ -144,16 +144,18 @@ OBJECT METHODS
 		    <cfset stObj = this.getData(profileID)>
 		    <cfset stObj.bInDB = "true">
 		<cfelse>
+		
+			<!--- GET A DEFAULT OBJECT --->
+			<cfset stObj = this.getData(application.fapi.getUUID()) />
+						
+			<!--- Force in the correct values --->
 		    <cfscript>
-		    stObj = structNew();
-		    stObj.emailAddress = '';
-		    stObj.bReceiveEmail = 0;
 		    stObj.bActive = 0;
-		    stObj.locale = 'en_AU';
 		    stObj.bInDB = 'false';
 		    stObj.userName = arguments.userName;
 		    stObj.userDirectory = arguments.ud;
 		    </cfscript>
+		    
 		</cfif>
 
         <cfreturn stObj>
@@ -216,5 +218,23 @@ OBJECT METHODS
 			<cfreturn super.delete(objectid=arguments.objectid,user=arguments.user,auditNote=arguments.auditNote) />
 		</cfif>
 	</cffunction>
+
+	
+ 	<cffunction name="autoSetLabel" access="public" output="false" returntype="string" hint="Automagically sets the label">
+		<cfargument name="stProperties" required="true" type="struct">
+
+		<!--- 
+			This will set the default Label value. It first looks form the bLabel associated metadata.
+			Otherwise it will look for title, then name and then anything with the substring Name.
+		 --->
+		<cfset var newLabel = "" />
 		
+		<cfif structKeyExists(arguments.stProperties, "firstname") AND structKeyExists(arguments.stProperties, "lastname")>
+			<cfset newLabel = "#arguments.stProperties.firstname# #arguments.stProperties.lastname#" />
+		<cfelseif structKeyExists(arguments.stProperties, "label")>
+			<cfset newLabel = arguments.stProperties.label />
+		</cfif>
+		
+		<cfreturn trim(newLabel) />
+	</cffunction>		
 </cfcomponent>

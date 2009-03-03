@@ -82,7 +82,7 @@
 </cfloop>
 
 <cfif len(stObj.atomicon)>
-	<cfoutput><icon>http://#cgi.http_host#/#application.url.imageRoot##stObj.atomicon#</icon></cfoutput>
+	<cfoutput><icon>http://#cgi.http_host##application.fapi.getImageWebRoot()##stObj.atomicon#</icon></cfoutput>
 </cfif>
 
 <cfif len(stObj.copyright)>

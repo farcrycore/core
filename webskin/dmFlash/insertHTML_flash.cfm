@@ -14,7 +14,7 @@ $Developer: Matthew Bryant (mbryant@daemon.com.au) $
 </cfoutput>
 
 <cfif len(stobj.flashmovie)>
-	<cfset swfpath = application.url.fileroot & stobj.flashMovie />
+	<cfset swfpath = application.fapi.getFileWebRoot() & stobj.flashMovie />
 <cfelse>
 	<cfset swfpath = stobj.flashURL />
 </cfif>

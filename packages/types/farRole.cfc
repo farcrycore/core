@@ -20,7 +20,7 @@
 type properties
 ----------------------------------------------->
 	<cfproperty name="title" type="string" default="" hint="The name of the role" bLabel="true" ftSeq="1" ftWizardStep="Groups" ftLabel="Title" ftType="string" />
-	<cfproperty name="isdefault" type="boolean" default="0" hint="True if this is a default role. Every user will be assigned these permissions." ftSeq="2" ftWizardStep="Groups" ftLabel="Default role" ftType="boolean" />
+	<cfproperty name="isdefault" type="boolean" default="0" hint="True if this is a default role. Every user will be assigned these permissions." ftSeq="2" ftWizardStep="Groups" ftLabel="Default Role" ftType="boolean" />
 	<cfproperty name="aGroups" type="array" default="" hint="The user directory groups that this role has been assigned to" ftSeq="3" ftWizardStep="Groups" ftLabel="Groups" ftType="array" ftJoin="farRole" ftRenderType="list" ftLibraryData="getGroups" ftShowLibraryLink="false" />
 	<cfproperty name="aPermissions" type="array" hint="The simple permissions that are granted as part of this role" ftSeq="11" ftWizardStep="Permissions" ftLabel="Permissions" ftJoin="farPermission" />
 	<cfproperty name="webskins" type="longchar" default="" hint="A list of wildcard items that match the webkins this role can access" ftSeq="21" ftWizardStep="Webskins" ftLabel="Webskins" ftType="longchar" ftHint="Filters should be in the form: [type.][prefix*|webskin]<br />e.g. display* grants access to all webskins prefixed with display<br />dmNews.stats grants access to the stats dmNews webskin<br />dmEvent.* grants access to all event webskins" />
@@ -245,7 +245,8 @@ object methods
 			
 			<cfset stRole = getData(thisrole) />
 			<cfloop list="#stRole.webskins#" index="filter" delimiters="#chr(10)##chr(13)#,">
-				<cfif (not find(".",filter) or listfirst(filter,".") eq "*" or listfirst(filter,".") eq arguments.type) and reFindNoCase(replace(listlast(filter,"."),"*",".*","ALL"),arguments.webskin)>
+				<cfif (not find(".",filter) or listfirst(filter,".") eq "*" or listfirst(filter,".") eq arguments.type or reFindNoCase(replace(listFirst(filter,"."),"*",".*","ALL"),arguments.type)) 
+						and reFindNoCase(replace(listlast(filter,"."),"*",".*","ALL"),arguments.webskin)>
 					<cfreturn 1 />
 				<cfelse>
 					<cfset 0 />

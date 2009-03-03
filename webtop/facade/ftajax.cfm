@@ -6,8 +6,13 @@
 <cfparam name="url.property" />
 <cfparam name="url.fieldname" />
 
-<cfset stMetadata = application.stCOAPI[url.typename].stProps[url.property].metadata />
+<cfset stMetadata = duplicate(application.stCOAPI[url.typename].stProps[url.property].metadata) />
 <cfset oType = createobject("component",application.stCOAPI[url.typename].packagepath) />
+
+<!--- SET THE VALUE PASSED INTO THE FORMTOOL --->
+<cfif len(url.property) AND structKeyExists(form, url.property)>
+	<cfset stMetadata.value = form[url.property] />
+</cfif>
 
 <cfif structkeyexists(url,"objectid")>
 	<cfset stObj = oType.getData(objectid=url.objectid) />

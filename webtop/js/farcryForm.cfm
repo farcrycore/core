@@ -37,11 +37,17 @@
 					win.focus();
 				}
 				
+				function openLibraryEditWindow(primaryID,primaryTypename,dataID,ftLibraryEditWebskin,primaryFieldName,primaryFormFieldName,LibraryType) {
+
+					url = '#application.url.webtop#/facade/libraryEdit.cfm?primaryID=' + primaryID + '&primaryTypename=' + primaryTypename + '&dataID=' + dataID + '&ftLibraryEditWebskin=' + ftLibraryEditWebskin + '&primaryFieldName=' + primaryFieldName + '&primaryFormFieldName=' + primaryFormFieldName + '&LibraryType=' + LibraryType;
+					openLibrary('_blank', '', url);
+					return true;
+				}
 				function editLibrarySelected (aSelected,primaryID,primaryTypename,ftLibraryEditWebskin,primaryFieldName,primaryFormFieldName,LibraryType) {
 					for (i=0; i<aSelected.length; i++) {
 						if (aSelected[i].checked) {
 
-							openLibraryEditWindow(primaryID,primaryTypename,aSelected[i].value,ftLibraryEditWebskin,primaryFieldName,primaryFormFieldName,LibraryType)
+							openLibraryEditWindow(primaryID,primaryTypename,aSelected[i].value,ftLibraryEditWebskin,primaryFieldName,primaryFormFieldName,LibraryType);
 
 							//only edit first selected item
 							return true;
@@ -52,62 +58,9 @@
 					return false;
 				}
 				
-				function openLibraryEditWindow(primaryID,primaryTypename,dataID,ftLibraryEditWebskin,primaryFieldName,primaryFormFieldName,LibraryType) {
-
-					url = '#application.url.webtop#/facade/libraryEdit.cfm?primaryID=' + primaryID + '&primaryTypename=' + primaryTypename + '&dataID=' + dataID + '&ftLibraryEditWebskin=' + ftLibraryEditWebskin + '&primaryFieldName=' + primaryFieldName + '&primaryFormFieldName=' + primaryFormFieldName + '&LibraryType=' + LibraryType;
-					openLibrary('_blank', '', url);
-					return true;
-				}
-				
-				function initArrayField(fieldname,virtualDir) {
-						// <![CDATA[
-							 if(virtualDir==null){virtualDir="";}
-							  Sortable.create(fieldname + '_list',
-							  	{ghosting:false,constraint:false,hoverclass:'over',handle:fieldname + '_listhandle',
-							    onChange:function(element){
-							    	$(fieldname).value = Sortable.sequence(fieldname + '_list');
-							    },
-							    onUpdate:function(element){
-							    	libraryCallbackArray(fieldname, 'sort', $(fieldname).value,virtualDir);
-							    }
-							  });
-						// ]]>
-
-				}
-
-						
-							function toggleOnArrayField(fieldname) {
-								aInputs = $$("##" + fieldname + "_list input");
-								aInputs.each(function(child) {
-									child.checked = true;
-								});
-							}
-							function toggleOffArrayField(fieldname) {
-								aInputs = $$("##" + fieldname + "_list input");
-								aInputs.each(function(child) {
-									child.checked = false;
-								});
-							}
-							
-							function deleteSelectedFromArrayField(fieldname,virtualDir){
-								if(virtualDir==null){virtualDir="";}							
-								aInputs = $$("##" + fieldname + "_list input");
-								aInputs.each(function(child) {
-									if(child.checked == true){
-										Element.remove(fieldname + '_' + child.value);
-									}
-								});
-								
-								libraryCallbackArray(fieldname,'sort',Sortable.sequence(fieldname + '_list'),virtualDir);
-								
-							}
-						
-						
-
-									
 						function libraryCallbackArray(fieldname,action,ids,virtualDir,callingWindow){
 							$(fieldname).value = ids;						
-							if(virtualDir==null){virtualDir="";}				
+							if(virtualDir===null){virtualDir="";}				
 							var objParams = eval('obj' + fieldname);
 							var sURLParams = "LibraryType=Array&Action=" + action + '&DataObjectID=' + encodeURIComponent($(fieldname).value);
 							for (i in objParams){
@@ -142,7 +95,54 @@
 							})
 											
 						}
+								
+				
+				function initArrayField(fieldname,virtualDir) {
+						// <![CDATA[
+							 if(virtualDir===null){virtualDir="";}
+							  Sortable.create(fieldname + '_list',
+							  	{ghosting:false,constraint:false,hoverclass:'over',handle:fieldname + '_listhandle',
+							    onChange:function(element){
+							    	$(fieldname).value = Sortable.sequence(fieldname + '_list');
+							    },
+							    onUpdate:function(element){
+							    	libraryCallbackArray(fieldname, 'sort', $(fieldname).value,virtualDir);
+							    }
+							  });
+						// ]]>
+
+				}
+
 						
+							function toggleOnArrayField(fieldname) {
+								aInputs = $$("##" + fieldname + "_list input");
+								aInputs.each(function(child) {
+									child.checked = true;
+								});
+							}
+							function toggleOffArrayField(fieldname) {
+								aInputs = $$("##" + fieldname + "_list input");
+								aInputs.each(function(child) {
+									child.checked = false;
+								});
+							}
+							
+							function deleteSelectedFromArrayField(fieldname,virtualDir){
+								if(virtualDir===null){virtualDir="";}							
+								aInputs = $$("##" + fieldname + "_list input");
+								aInputs.each(function(child) {
+									if(child.checked === true){
+										Element.remove(fieldname + '_' + child.value);
+									}
+								});
+								
+								libraryCallbackArray(fieldname,'sort',Sortable.sequence(fieldname + '_list'),virtualDir);
+								
+							}
+						
+						
+
+							
 				
 				function initUUIDField(fieldname,virtualDir) {
 						// <![CDATA[

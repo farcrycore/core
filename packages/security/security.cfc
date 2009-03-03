@@ -258,6 +258,7 @@
 				</cfif>
 			</cfloop>
 		</cfif>
+
 		<cfreturn aResult />
 	</cffunction>
 	
@@ -343,6 +344,7 @@
 			
 			<!--- Go and get it again now its in the db --->
 			<cfset stDefaultProfile = this.userdirectories[arguments.ud].getProfile(userid=arguments.userid) />
+			<cfparam name="stDefaultProfile.override" default="false" />
 			<cfset structappend(session.dmProfile,stDefaultProfile,stDefaultProfile.override) />
 			<cfset oProfile.setData(stProperties=session.dmProfile) />
 		<cfelseif stDefaultProfile.override>

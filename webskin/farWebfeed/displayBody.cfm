@@ -88,7 +88,7 @@
 </cfoutput>
 
 <cfif len(stObj.feedimage)>
-	<cfoutput><img class="feedimage" src="#application.url.imageRoot##stobj.feedimage#" alt="#stObj.title#" /></cfoutput>
+	<cfoutput><img class="feedimage" src="#application.fapi.getImageWebRoot()##stobj.feedimage#" alt="#stObj.title#" /></cfoutput>
 </cfif>
 <cfif len(stObj.url)>
 	<cfoutput><p>URL: <a href="#stObj.url#">#stObj.url#</a></p></cfoutput>

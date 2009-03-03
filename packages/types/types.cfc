@@ -87,7 +87,7 @@ default handlers
 		</cfif>
 	</cffunction>
 	
-	<cffunction name="getView" access="public" output="true" returntype="string" hint="Returns the HTML of a view from the webskin content type folder.">
+<!--- 	<cffunction name="getView" access="public" output="true" returntype="string" hint="Returns the HTML of a view from the webskin content type folder.">
 		<cfargument name="objectid" required="no" type="string" default="" hint="ObjectID of the object that is to be rendered by the webskin view." />
 		<cfargument name="template" required="no" type="string" hint="Name of the template in the corresponding content type webskin folder, without the .cfm extension." />
 		<cfargument name="webskin" required="no" type="string" hint="Name of the template in the corresponding content type webskin folder, without the .cfm extension." />
@@ -103,11 +103,22 @@ default handlers
 		<cfset var WebskinPath = "" />
 		<cfset var webskinHTML = "" />
 		<cfset var stCurrentView = structNew() />
-		<cfset var bTypeWebskin = false />
 		<cfset var stArgs = structnew() />
 		<cfset var i = 0 />
 		<cfset var stLocal = structNew() /><!--- A local scope that can be used in webskins to ensure against race conditions. --->
 		<cfset var webskinTypename = "" /><!--- This will store the typename of the webskin to be called. Required in the case of Type Webskins. --->
+		<cfset var iViewState = "" /><!--- iterator used when adding to ancestor cacheBySessionVar lists --->
+		
+		<!--- The following allows additional arguments passed in to be transferred to the stParam struct --->
+		<cfset var lStandardArguments = "stobject,typename,objectid,key,template,webskin,stprops,stparam,r_html,r_objectid,hashKey,alternateHTML,dsn,onExit" />
+		<cfset var attrib = "" />
+		
+		<!--- Setup custom attributes passed into view in stParam structure --->
+		<cfloop collection="#arguments#" item="attrib">
+			<cfif not listFindNoCase(lStandardArguments, attrib)>
+				<cfset arguments.stParam[attrib] = arguments[attrib] />
+			</cfif>
+		</cfloop>
 
 		<!--- The following allows additional arguments passed in to be transferred to the stParam struct --->
 		<cfset var lStandardArguments = "stobject,typename,objectid,key,template,webskin,stprops,stparam,r_html,r_objectid,hashKey,alternateHTML,dsn,onExit" />
@@ -148,13 +159,7 @@ default handlers
 				THE WEBSKIN CACHING IS ALSO DONE AGAINST THE farCOAPI object.
 				 --->
 				<cfset stObj = application.fc.factory['farCoapi'].getCoapiObject(name="#variables.typename#") />
-				
-				<!--- If the objectid has not been sent, we need to create a default object. --->
-				
-<!--- 				
-				<cfset arguments.objectid = application.fc.utils.createJavaUUID() />
-				
-				<cfset bTypeWebskin = true /> --->
+	
 			<cfelse>			
 				<!--- get the data for this instance --->
 				<cfset stObj = getData(objectid=arguments.objectID,dsn=arguments.dsn)>
@@ -194,21 +199,24 @@ default handlers
 						
 				<cfif len(webskinPath)>
 					
+					<cfset webskinHTML = runView(stobj="#stobj#", webskinTypename="#webskinTypename#", webskinTemplate="#arguments.template#", webskinPath="#webskinPath#", hashKey="#arguments.hashKey#") />
+					<!--- 
 					<!--- Setup the current request.aAncestorWebskins in case this does not yet exist --->
 					<cfif not structKeyExists(request, "aAncestorWebskins")>
 						<cfset request.aAncestorWebskins = arrayNew(1) />
 					</cfif>	
 					<!--- Add the current view to the array --->
-					<cfif not bTypeWebskin>
-						<cfset stCurrentView.objectid = stobj.objectid />
-					</cfif>
+					<cfset stCurrentView.objectid = stobj.objectid />
 					<cfset stCurrentView.typename = webskinTypename />
 					<cfset stCurrentView.template = arguments.template />
 					<cfset stCurrentView.hashKey = arguments.hashKey />
 					<cfset stCurrentView.cacheStatus = application.coapi.coapiadmin.getWebskinCacheStatus(typename=webskinTypename, template=arguments.template) />
 					<cfset stCurrentView.cacheTimeout = application.coapi.coapiadmin.getWebskinCacheTimeOut(typename=webskinTypename, template=arguments.template) />
 					<cfset stCurrentView.cacheByURL = application.coapi.coapiadmin.getWebskincacheByURL(typename=webskinTypename, template=arguments.template) />
+					<cfset stCurrentView.cacheByForm = application.coapi.coapiadmin.getWebskincacheByForm(typename=webskinTypename, template=arguments.template) />
 					<cfset stCurrentView.cacheByRoles = application.coapi.coapiadmin.getWebskincacheByRoles(typename=webskinTypename, template=arguments.template) />
+					<cfset stCurrentView.cacheByVars = application.coapi.coapiadmin.getWebskincacheByVars(typename=webskinTypename, template=arguments.template) />
+					<cfset stCurrentView.lFarcryViewStates = "" />
 					<cfset stCurrentView.okToCache = 1 />
 					<cfset stCurrentView.inHead = structNew() />
 					<cfset stCurrentView.inHead.stCustom = structNew() />
@@ -217,6 +225,11 @@ default handlers
 					<cfset stCurrentView.inHead.aOnReadyIDs = arrayNew(1) />
 					<cfset arrayAppend(request.aAncestorWebskins, stCurrentView) />					
 					
+					<!--- Here we are initialising the viewStates. After the call to the webskin, we will know which view states were used  --->
+					<cfset request.currentViewTypename = "#stCurrentView.typename#" />
+					<cfset request.currentViewTemplate = "#stCurrentView.template#" />
+					
+
 					<!--- Include the View --->
                     <cfsavecontent variable="webskinHTML">
                         <cfif isdefined("request.mode.design") AND request.mode.design AND structKeyExists(url, "bWebskinTrace") AND url.bWebskinTrace EQ true>
@@ -226,16 +239,13 @@ default handlers
                         <cfif isdefined("request.mode.design") AND request.mode.design AND structKeyExists(url, "bWebskinTrace") AND url.bWebskinTrace EQ true>
                             <cfoutput></webskin></cfoutput>
                         </cfif>
-                    </cfsavecontent>
-										
+						
+                    </cfsavecontent>					
+
+					
 					<!--- If the current view (Last Item In the array) is still OkToCache --->
 					<cfif request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].okToCache>
 						<!--- Add the webskin to the object broker if required --->
-						<!--- <cfif bTypeWebskin>
-							<cfset bAdded = application.coapi.objectBroker.addWebskin(typename=stobj.typename, template=arguments.template, html=webskinHTML, stCurrentView=stCurrentView) />	
-						<cfelse>
-							<cfset bAdded = application.coapi.objectBroker.addWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, html=webskinHTML, stCurrentView=stCurrentView) />	
-						</cfif> --->
 						<cfset bAdded = application.coapi.objectBroker.addWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, html=webskinHTML, stCurrentView=stCurrentView) />
 					</cfif>
 					
@@ -250,18 +260,13 @@ default handlers
 						<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="i">
 							
 							<!--- Add the ancestor records so we know where this webskin is located throughout the site. --->
-							<cfif bTypeWebskin or not structkeyexists(request.aAncestorWebskins[i],"objectid") or stobj.objectid NEQ request.aAncestorWebskins[i].objectID>
+							<cfif not structkeyexists(request.aAncestorWebskins[i],"objectid") or stobj.objectid NEQ request.aAncestorWebskins[i].objectID>
 								
 								<cfif structKeyExists(application.stcoapi[request.aAncestorWebskins[i].typename].stWebskins, request.aAncestorWebskins[i].template)>
 									<cfif application.stcoapi[request.aAncestorWebskins[i].typename].stWebskins[request.aAncestorWebskins[i].template].cacheStatus GT 0>
 										
 										<cfset stArgs = structnew() />
-										<!--- <cfif bTypeWebskin>
-											<cfset stArgs.webskinTypename = stObj.typename />
-											<cfset stArgs.webskintemplate = arguments.template />
-										<cfelse>
-											<cfset stArgs.webskinObjectID = stobj.objectid />
-										</cfif> --->
+
 										<cfset stArgs.webskinObjectID = stobj.objectid />
 										<cfif structkeyexists(request.aAncestorWebskins[i],"objectid")>
 											<cfset stArgs.ancestorID = request.aAncestorWebskins[i].objectID />
@@ -307,19 +312,32 @@ default handlers
 							<cfif stCurrentView.cacheByURL>
 								<cfset request.aAncestorWebskins[i].cacheByURL = true />
 							</cfif>
+							<cfif stCurrentView.cacheByForm>
+								<cfset request.aAncestorWebskins[i].cacheByForm = true />
+							</cfif>
 							<cfif stCurrentView.cacheByRoles>
 								<cfset request.aAncestorWebskins[i].cacheByRoles = true />
 							</cfif>
+							
+							<cfif listLen(stCurrentView.cacheByVars)>
+								<cfloop list="#stCurrentView.cacheByVars#" index="iViewState">
+									<cfif not listFindNoCase(request.aAncestorWebskins[i].cacheByVars,iViewState)>
+										<cfset request.aAncestorWebskins[i].cacheByVars = listAppend(request.aAncestorWebskins[i].cacheByVars, iViewState)	/>
+									</cfif>								
+								</cfloop>
+							</cfif>
+							
+							<!--- 
 							<!--- If this webskin is to add a hashKey, make sure all ancestors also have the hashKey added --->
 							<cfif len(stCurrentView.hashKey)>
-								<cfset request.aAncestorWebskins[i].hashKey = "#request.aAncestorWebskins[i].hashKey##stCurrentView.hashKey#" />
-							</cfif>
+								<cfset request.aAncestorWebskins[i].hashKey = listAppend(request.aAncestorWebskins[i].hashKey, stCurrentView.hashKey) />
+							</cfif> --->
 						</cfloop>
 					</cfif>
 					
 					<!--- Remove the current view (last item in the array) from the Ancestor Webskins array --->
 					<cfset ArrayDeleteAt(request.aAncestorWebskins, arrayLen(request.aAncestorWebskins)) />
-					
+					 --->
 				<cfelseif structKeyExists(arguments, "alternateHTML")>
 					<cfset webskinHTML = arguments.alternateHTML />
 				<cfelse>
@@ -331,8 +349,14 @@ default handlers
 		<cfelse>
 			<cfthrow type="Application" detail="Error: When trying to render [/webskin/#webskinTypename#/#arguments.template#.cfm] the object was not created correctly." />	
 		</cfif>
+		
+		<cfif structKeyExists(request, "aAncestorWebskins") AND arrayLen(request.aAncestorWebskins)>
+			<cfset request.currentViewTypename = request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].typename />
+			<cfset request.currentViewTemplate = request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].template />
+		</cfif>
+		
 		<cfreturn webskinHTML />
-	</cffunction>
+	</cffunction> --->
 		
 	<cffunction name="getWebskinPath" returntype="string" access="public" output="false" hint="This tag is depricated, you should be calling farcry.core.packages.coapi.coapiadmin.getWebskinpath()">
 		<cfargument name="typename" type="string" required="true" />
@@ -588,7 +612,7 @@ default handlers
 			<!--- set friendly url for content item. --->
 			<!--- TODO: Checking for application.fc so that it is ignored on Install. This needs to be more eloquent --->	
 			<cfif isDefined("application.fc.factory.farFU")>
-				<cfset stresult_friendly = application.fc.factory.farFU.setSystemFU(arguments.stProperties.objectid) />
+				<cfset stresult_friendly = application.fc.factory.farFU.setSystemFU(objectID="#arguments.stProperties.objectid#", typename="#arguments.stProperties.typename#") />
 			</cfif>
 			
 		</cfif>
@@ -1267,12 +1291,12 @@ default handlers
 								ORDER BY ftSeq
 								</cfquery>
 								
-								<wiz:object ObjectID="#stObj.ObjectID#" lfields="#valuelist(qFieldset.propertyname)#" format="edit" intable="false" legend="#iFieldSet#" helptitle="#qFieldset.fthelptitle#" helpsection="#qFieldset.fthelpsection#" />
+								<wiz:object typename="#stobj.typename#" ObjectID="#stobj.objectID#" lfields="#valuelist(qFieldset.propertyname)#" format="edit" intable="false" legend="#iFieldSet#" helptitle="#qFieldset.fthelptitle#" helpsection="#qFieldset.fthelpsection#" />
 							</cfloop>
 							
 						<cfelse>
 							
-							<wiz:object ObjectID="#stObj.ObjectID#" lfields="#valuelist(qwizardStep.propertyname)#" format="edit" intable="false" />
+							<wiz:object typename="#stobj.typename#" ObjectID="#stobj.objectID#" lfields="#valuelist(qwizardStep.propertyname)#" format="edit" intable="false" />
 						
 						</cfif>
 						
@@ -1337,14 +1361,14 @@ default handlers
 						ORDER BY ftSeq
 						</cfquery>
 						
-						<ft:object ObjectID="#arguments.ObjectID#" format="edit" lExcludeFields="label" lFields="#valuelist(qFieldset.propertyname)#" inTable="false" IncludeFieldSet="true" Legend="#iFieldset#" helptitle="#qFieldset.fthelptitle#" helpsection="#qFieldset.fthelpsection#" />
+						<ft:object typename="#stobj.typename#" ObjectID="#stobj.objectID#" format="edit" lExcludeFields="label" lFields="#valuelist(qFieldset.propertyname)#" inTable="false" IncludeFieldSet="true" Legend="#iFieldset#" helptitle="#qFieldset.fthelptitle#" helpsection="#qFieldset.fthelpsection#" />
 					</cfloop>
 					
 					
 				<cfelse>
 				
 					<!--- All Fields: default edit handler --->
-					<ft:object ObjectID="#arguments.ObjectID#" format="edit" lExcludeFields="label" lFields="" IncludeFieldSet="false" />
+					<ft:object typename="#stobj.typename#" ObjectID="#stobj.objectID#" format="edit" lExcludeFields="label" lFields="" IncludeFieldSet="false" />
 					
 				</cfif>
 				

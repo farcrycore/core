@@ -59,7 +59,7 @@
 <cfif arguments.stParam.bCustomOnClick>
 	<cfset onClickImagePath = "#application.url.webroot#/index.cfm?objectID=#stObj.objectid#&resize=0">
 <cfelse>
-	<cfset onClickImagePath = "#application.url.imageroot##stObj[arguments.stParam.onclickDisplay]#">
+	<cfset onClickImagePath = "#application.fapi.getImageWebRoot()##stObj[arguments.stParam.onclickDisplay]#">
 </cfif>
 
 <!--- output image --->
@@ -68,20 +68,20 @@
 		<!--- if onclick event, see if a popup window --->
 		<cfif arguments.stParam.popup>
 			<cfif arguments.stParam.autosize>
-				<cfoutput><a href="##" onclick="openNewWindow('#onClickImagePath#','popup','height=#imageSizeStruct.height#,width=#imageSizeStruct.width#,channelmode=no,directories=no,fullscreen=no,location=no,menubar=no,resizable=yes,status=no,titlebar=no,toolbar=no')"><img src="#application.url.imageroot##stObj[arguments.stParam.ImageSize]#" class="#arguments.stParam.class#" alt="#arguments.stParam.alt#" /></a></cfoutput>
+				<cfoutput><a href="##" onclick="openNewWindow('#onClickImagePath#','popup','height=#imageSizeStruct.height#,width=#imageSizeStruct.width#,channelmode=no,directories=no,fullscreen=no,location=no,menubar=no,resizable=yes,status=no,titlebar=no,toolbar=no')"><img src="#application.fapi.getImageWebRoot()##stObj[arguments.stParam.ImageSize]#" class="#arguments.stParam.class#" alt="#arguments.stParam.alt#" /></a></cfoutput>
 			<cfelse>
-				<cfoutput><a href="##" onclick="openNewWindow('#onClickImagePath#',null,'height=#arguments.stParam.height#,width=#arguments.stParam.width#,status=yes,toolbar=no,menubar=no,resizable=yes,location=no')"><img src="#application.url.imageroot##stObj[arguments.stParam.ImageSize]#" class="#arguments.stParam.class#" alt="#arguments.stParam.alt#" /></a></cfoutput>
+				<cfoutput><a href="##" onclick="openNewWindow('#onClickImagePath#',null,'height=#arguments.stParam.height#,width=#arguments.stParam.width#,status=yes,toolbar=no,menubar=no,resizable=yes,location=no')"><img src="#application.fapi.getImageWebRoot()##stObj[arguments.stParam.ImageSize]#" class="#arguments.stParam.class#" alt="#arguments.stParam.alt#" /></a></cfoutput>
 			</cfif>
 		<cfelse>
-			<cfoutput><a href="#onClickImagePath#"><img src="#application.url.imageroot##stObj[arguments.stParam.ImageSize]#" height="#stObj.height#" width="#stObj.width#" class="#arguments.stParam.class#" alt="#arguments.stParam.alt#" /></a></cfoutput>
+			<cfoutput><a href="#onClickImagePath#"><img src="#application.fapi.getImageWebRoot()##stObj[arguments.stParam.ImageSize]#" height="#stObj.height#" width="#stObj.width#" class="#arguments.stParam.class#" alt="#arguments.stParam.alt#" /></a></cfoutput>
 		</cfif>
 	</cfcase>
 	<cfcase value="no">
 		<!--- if no onclick event, just display image --->
-		<cfoutput><img src="#application.url.imageroot##stObj[arguments.stParam.ImageSize]#" class="#arguments.stParam.class#" alt="#arguments.stParam.alt#" /></cfoutput>
+		<cfoutput><img src="#application.fapi.getImageWebRoot()##stObj[arguments.stParam.ImageSize]#" class="#arguments.stParam.class#" alt="#arguments.stParam.alt#" /></cfoutput>
 	</cfcase>
 	<cfdefaultcase>
-		<cfoutput><img src="#application.url.imageroot##stObj[arguments.stParam.ImageSize]#" class="#arguments.stParam.class#" alt="#arguments.stParam.alt#" /></cfoutput>
+		<cfoutput><img src="#application.fapi.getImageWebRoot()##stObj[arguments.stParam.ImageSize]#" class="#arguments.stParam.class#" alt="#arguments.stParam.alt#" /></cfoutput>
 		<cftrace text="onClick attribute is not valid which will cause incorrect behaviour when clicking on image">
 	</cfdefaultcase>
 </cfswitch>

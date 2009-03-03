@@ -36,7 +36,8 @@ START WEBSKIN
 	<!--- OPTIONAL ATTRIBUTES --->
 	<cfparam name="attributes.query" default="" />
 	<cfparam name="attributes.typename" default="" />	
-	<cfparam name="attributes.paginationID" default="" /><!--- Keeps track of the page the user is currently on in session against this key. --->
+	<cfparam name="attributes.paginationID" default="fc-pagination" /><!--- Uniquely identifies this pagination set. Set if using sticky pages or if multiple pagination sets on a single page. --->
+	<cfparam name="attributes.bStickyPages" default="false" /><!--- Keeps track of the page the user is currently on in session against this key. --->
 	<cfparam name="attributes.currentPage" default="0" />
 	<cfparam name="attributes.actionURL" default="" />
 	<cfparam name="attributes.r_stObject" default="stObject" /><!--- The name of the calling page structure that will contain the current row of the recordset as struct --->
@@ -71,16 +72,40 @@ START WEBSKIN
 	<cfset topPagination = oPagination.getView(template="displayLinks", position="top" ) />
 	<cfoutput>#topPagination#</cfoutput>
 	
-	<cfset caller[attributes.r_stObject] = oPagination.getNextRowAsStruct() />
+	<!--- CHECK TO ENSURE THERE ARE ACTUALLY RECORDS TO LOOP THROUGH --->
+	<cfif oPagination.getCurrentRow() LTE oPagination.getRecordTo()>
+		<cfset currentRow = 1 />
+		<cfset recordCount = oPagination.getRecordTo() - oPagination.getCurrentRow() + 1 />
+		<cfset recordsetRow = oPagination.getCurrentRow() />
+		<cfset recordsetCount = oPagination.getTotalRecords() />
+		<cfset caller[attributes.r_stObject] = oPagination.getNextRowAsStruct() />
+		<cfset caller[attributes.r_stObject].currentRow = currentRow />
+		<cfset caller[attributes.r_stObject].recordCount = recordCount />
+		<cfset caller[attributes.r_stObject].recordsetRow = recordsetRow />
+		<cfset caller[attributes.r_stObject].recordsetCount = recordsetCount />
+	<cfelse>
 	
+		<!--- MEANS THERE WERE NO RECORDS SO SIMPLY CALL THE BOTTOM --->
+		<cfset bottomPagination = oPagination.getView(template="displayLinks", position="bottom" ) />
+		<cfoutput>#bottomPagination#</cfoutput>	
+		<cfexit method="exittag" />
+	</cfif>
 	
 </cfif>
 
-<cfif thistag.executionMode eq "End">	
+<cfif thistag.executionMode eq "End">
+	
 	<!--- Check to see if we still have more rows to process --->
 	<cfif oPagination.getCurrentRow() LTE oPagination.getRecordTo()>
 		
+		<cfset currentRow = currentRow + 1 />
+		<cfset recordsetRow = oPagination.getCurrentRow() />
+		
 		<cfset caller[attributes.r_stObject] = oPagination.getNextRowAsStruct() />
+		<cfset caller[attributes.r_stObject].currentRow = currentRow />
+		<cfset caller[attributes.r_stObject].recordCount = recordCount />
+		<cfset caller[attributes.r_stObject].recordsetRow = recordsetRow />
+		<cfset caller[attributes.r_stObject].recordsetCount = recordsetCount />
 		
 		<cfsetting enablecfoutputonly="false" />
 		<cfexit method="loop" />

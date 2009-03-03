@@ -46,7 +46,7 @@ fixed methodology to work... need to refine
 <cfinclude template="_funclibrary.cfm">
 
 <cfscript>
-// attributes
+	// attributes
 	reqParam("lobjectids");
 	optParam("typename", "");
 	optParam("r_stObjects", "stObjects");
@@ -55,41 +55,53 @@ fixed methodology to work... need to refine
 	optParam("dsn", application.dsn);
 	optParam("bShallow", false);
 
-// return structure
+	// return structure
 	stTmp = StructNew();
 </cfscript>
+
+
+<!--- MPS: Single query to load objectId typename map. Note to Daemon: this could (should?) be intergrated as a new method in fourq.cfc --->
+<cfquery name="qGetTypename" datasource="#application.dsn#">
+	SELECT	typename, objectId
+	FROM	refObjects
+	WHERE	objectID IN (<cfqueryparam cfsqltype="cf_sql_varchar" value="#attributes.lObjectIds#" list="true" />)
+</cfquery>
+
+<!--- MPS: Create a map of objectId's and their respective 'typename'. This will prevent having to query this simple metadata on every objectid iteration --->
+<cfset stObjectMeta = structNew() />
+<cfloop query="qGetTypename">
+	<cfset stObjectMeta[qGetTypename.objectId] = qGetTypename.typename />
+</cfloop>
+
+<!--- MPS: Struct to hold request based singletons of each content type cfc, we don't need to have instance objects in this scenario --->
+<cfset stObjectComponents = structNew() />
+
+
 <cfloop list="#attributes.lObjectIDs#" index="i">
-
-<cfscript>
-// initialise vars
-	/* 
-	$TODO: - currently doing a typename lookup for each objectid - this 
-	will get horrifically inneficient. Find a better solution. $
-	*/
-	contenttype="";
-	q4 = createObject("component", "farcry.core.packages.fourq.fourq");
-	contenttype = q4.findType(objectid=i,dsn=attributes.dsn);
-	
-	if (not len(contenttype)) {
-		continue; // ie. go to next iteration
-	}
-	setVariable("attributes.typename", application.types[contenttype].typePath);
-
-	// using typename
-	o = createObject("component", "#attributes.typename#");
-	stObj = o.getData(objectid=i,dsn=attributes.dsn,bshallow=attributes.bShallow);
-	// dump(o, "object");
-	// dump(i, "getData");
-	if (NOT len(attributes.lstatus) OR NOT isDefined("stObJ.status")) {
-		// if there is no status specified or the obj has no status property
-		stTmp[stObj.objectid] = Duplicate(stObj);
-	} else {
-		// check status of the obj before including
-		if (attributes.lstatus contains stObJ.status)
-			stTmp[stObj.objectid] = Duplicate(stObj);
-	}
-</cfscript>
-
+	<cfscript>
+		contenttype = stObjectMeta[i];
+		if (len(contenttype)) 
+		{
+			if (NOT structKeyExists(stObjectComponents, contenttype))
+			{
+				stObjectComponents[contenttype] = createObject("component", application.types[contenttype].typePath);
+			}
+			o = stObjectComponents[contenttype];
+			stObj = o.getData(objectid=i,dsn=attributes.dsn,bshallow=attributes.bShallow);
+			
+			if (NOT len(attributes.lstatus) OR NOT isDefined("stObJ.status")) 
+			{
+				// if there is no status specified or the obj has no status property
+				stTmp[stObj.objectid] = Duplicate(stObj);
+			} 
+			else 
+			{
+				// check status of the obj before including
+				if (attributes.lstatus contains stObJ.status)
+					stTmp[stObj.objectid] = Duplicate(stObj);
+			}	
+		}
+	</cfscript>
 </cfloop>
 
 <cfscript>

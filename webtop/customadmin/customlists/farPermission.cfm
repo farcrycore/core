@@ -33,16 +33,16 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 <cfset aCustomColumns = arraynew(1) />
 <cfset aCustomColumns[1] = structnew() />
 <cfset aCustomColumns[1].webskin = "displayRelatedTypes" />
-<cfset aCustomColumns[1].title = "Join on" />
+<cfset aCustomColumns[1].title = "Join On" />
 <cfset aCustomColumns[1].sortable = false />
 
 <ft:objectadmin 
 	typename="farPermission"
 	title="Permission Admin"
-	columnList="title"
+	columnList="shortcut,title"
 	aCustomColumns="#aCustomColumns#"
-	sortableColumns="title"
-	lFilterFields="title"
+	sortableColumns="shortcut,title"
+	lFilterFields="title,shortcut"
 	sqlorderby="title asc" />
 
 <admin:footer />

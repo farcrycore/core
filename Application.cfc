@@ -448,10 +448,10 @@
 		// ajaxmode
 		// Ensure that if ajaxmode is defined multiple times, then we only get the last one.
 		if (structKeyExists(url, "ajaxmode")) {
-			url.ajaxmode = listLast(url.ajaxmode);		
+			url.ajaxmode = listLast(url.ajaxmode);
 		}
-		if (structKeyExists(form, "ajaxmode")) {
-			form.ajaxmode = listLast(form.ajaxmode);		
+		if (isDefined("form") and structKeyExists(form, "ajaxmode")) {
+			form.ajaxmode = listLast(form.ajaxmode);
 		}
 		
 		if ((isDefined("url.ajaxmode") and url.ajaxmode) or (isDefined("form.ajaxmode") and form.ajaxmode)) {

@@ -16,6 +16,10 @@
 
 		<cfset var html = "" />
 		<cfset var qObjects = "" />
+		<cfset var oPrimary = "" />
+		<cfset var libraryData = "" />
+		<cfset var qLibraryList = "" />
+		<cfset var qCurrentlyAssigned = "" />
 
 		<cfparam name="arguments.stMetadata.ftRenderType" default="dropdown" />
 		<cfparam name="arguments.stMetadata.ftSelectMultiple" default="false" />
@@ -23,26 +27,56 @@
 		<cfparam name="arguments.stMetadata.ftstyle" default="" />
 		<cfparam name="arguments.stMetadata.ftJoin" />
 		<cfparam name="arguments.stMetadata.ftJoinProperty" />
+		<cfparam name="arguments.stMetadata.ftFirstListLabel" default="-- SELECT --">
 		
-		<cfquery datasource="#application.dsn#" name="qObjects">
-			select		o.objectid,o.label,op.data
-			from		#application.dbowner##arguments.stMetadata.ftJoin# o
-						left outer join
-						#application.dbowner##arguments.stMetadata.ftJoin#_#arguments.stMetadata.ftJoinProperty# op
-						on o.objectid=op.parentid and op.data = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.stObject.objectid#" />
-			order by	o.label
+		<cfif structkeyexists(arguments.stMetadata, "ftLibraryData") AND len(arguments.stMetadata.ftLibraryData)>	
+			<cfset oPrimary = application.fapi.getContentType(arguments.typename) />
+			
+			<!--- use ftlibrarydata method from primary content type --->
+			<cfif structkeyexists(oPrimary, arguments.stMetadata.ftLibraryData)>
+				<cfinvoke component="#oPrimary#" method="#arguments.stMetadata.ftLibraryData#" returnvariable="libraryData">
+					<cfinvokeargument name="primaryID" value="#arguments.stobject.objectid#" />
+				</cfinvoke>					
+				
+				<cfif isStruct(libraryData)>
+					<cfset qLibraryList = libraryData.q>
+				<cfelse>
+					<cfset qLibraryList = libraryData />
+				</cfif>		
+			</cfif>
+		<cfelse>
+			<!--- if nothing exists to generate library data then cobble something together --->
+			<cfquery datasource="#application.dsn#" name="qLibraryList">
+				select		o.objectid,o.label
+				from		#application.dbowner##arguments.stMetadata.ftJoin# o
+				order by	o.label
+			</cfquery>
+		</cfif>		
+		
+		<cfquery datasource="#application.dsn#" name="qCurrentlyAssigned">
+		SELECT distinct parentID as objectid
+		FROM #application.dbowner##arguments.stMetadata.ftJoin#_#arguments.stMetadata.ftJoinProperty#
+		WHERE data = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.stObject.objectid#" />
 		</cfquery>
+		
 		
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 			
-			<cfcase value="dropdown">								
+			<cfcase value="dropdown,list">								
 				<cfsavecontent variable="html">
-					<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#" class="formList #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#"<cfif arguments.stMetadata.ftSelectMultiple> multiple="multiple"</cfif>></cfoutput>
-					<cfloop query="qObjects">
-						<cfoutput><option value="#objectid#" <cfif len(data)> selected</cfif>>#label#</option></cfoutput>
-					</cfloop>
-					<cfoutput></select><br style="clear: both;"/></cfoutput>
-					
+					<cfif qLibraryList.recordCount>
+						<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#" class="formList #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#"<cfif arguments.stMetadata.ftSelectMultiple> multiple="multiple"</cfif>></cfoutput>
+						<cfif len(arguments.stMetadata.ftFirstListLabel)>
+							<cfoutput><option value="">#arguments.stMetadata.ftFirstListLabel#</option></cfoutput>
+						</cfif>					
+						<cfloop query="qLibraryList">
+							<cfoutput><option value="#qLibraryList.objectid#" <cfif listFindNoCase(valueList(qCurrentlyAssigned.objectid),qLibraryList.objectID)> selected</cfif>>#qLibraryList.label#</option></cfoutput>
+						</cfloop>
+						<cfoutput></select></cfoutput>
+					<cfelse>
+						<cfoutput><input type="hidden" name="#arguments.fieldname#" value=""><em>No options available.</em></cfoutput>
+					</cfif>
+					<cfoutput><br style="clear: both;"/></cfoutput>
 				</cfsavecontent>					
 			</cfcase>
 			
@@ -53,8 +87,8 @@
 						<div class="fieldsection optional">
 							<div class="fieldwrap">
 								<cfset tmpCount=0>
-								<cfloop query="qObjects">
-									<input type="checkbox" name="#arguments.fieldname#" class="formCheckbox #IIF(qObjects.recordcount eq currentrow ,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" id="#arguments.fieldname#" value="#objectid#"<cfif len(data)> checked="checked"</cfif> />										
+								<cfloop query="qLibraryList">
+									<input type="checkbox" name="#arguments.fieldname#" class="formCheckbox #IIF(qLibraryList.recordcount eq currentrow ,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" id="#arguments.fieldname#" value="#qLibraryList.objectid#" <cfif listFindNoCase(valueList(qCurrentlyAssigned.objectid),qLibraryList.objectID)> checked="checked"</cfif> />										
 									#label#
 									<br class="fieldsectionbreak" />
 								</cfloop>
@@ -71,8 +105,8 @@
 					<cfoutput>
 						<div class="fieldsection optional">
 							<div class="fieldwrap">
-								<cfloop query="qObjects">
-									<input type="radio" name="#arguments.fieldname#" id="#arguments.fieldname#"  class="formCheckbox #IIF(qObjects.recordcount eq currentrow,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" value="#objectid#"<cfif len(data)> checked="checked"</cfif> />
+								<cfloop query="qLibraryList">
+									<input type="radio" name="#arguments.fieldname#" id="#arguments.fieldname#"  class="formCheckbox #IIF(qLibraryList.recordcount eq currentrow,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" value="#qLibraryList.objectid#" <cfif listFindNoCase(valueList(qCurrentlyAssigned.objectid),qLibraryList.objectID)> checked="checked"</cfif> />
 									<br class="fieldsectionbreak" />
 								</cfloop>												
 							</div>

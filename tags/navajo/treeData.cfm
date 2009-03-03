@@ -29,16 +29,40 @@
 <cffunction name="mungeobjects">
 <!--- this is crack - if you have to smoke it talk to grb first --->
 	<cfargument name="stObjs" required="Yes">
-	<cfloop collection="#stObjs#" item="key">
+	
+	<cfset var stResult = "#structNew()#" />
+	<cfset var key = "" />
+	<cfset var typename = "" />
+	<cfset var oTree = createObject("component","farcry.core.packages.farcry.tree") />
+	<cfset var qChildren = "" />
+	
+	<cfloop collection="#arguments.stObjs#" item="key">
+		
+		<cfset stResult[key] = structNew() />
+		
 		<cfscript>
-			if (StructKeyExists(stObjs['#key#'], "CREATEDBY"))
-				stObjs['#key#'].ATTR_CREATEDBY = stObjs['#key#'].createdby;
-			if (StructKeyExists(stObjs['#key#'], "DATETIMECREATED"))
-				stObjs['#key#'].ATTR_DATETIMECREATED = stObjs['#key#'].datetimecreated;
-			if (StructKeyExists(stObjs['#key#'], "LASTUPDATEDBY"))
-				stObjs['#key#'].ATTR_LASTUPDATEDBY = stObjs['#key#'].lastupdatedby;
-			if (StructKeyExists(stObjs['#key#'], "DATETIMELASTUPDATED"))
-				stObjs['#key#'].ATTR_DATETIMELASTUPDATED = stObjs['#key#'].datetimelastupdated;
+			if (StructKeyExists(stObjs['#key#'], "OBJECTID"))
+				stResult['#key#'].OBJECTID = stObjs['#key#'].OBJECTID;
+			if (StructKeyExists(stObjs['#key#'], "LABEL"))
+				stResult['#key#'].LABEL = stObjs['#key#'].LABEL;
+			if (StructKeyExists(stObjs['#key#'], "TYPENAME"))
+				stResult['#key#'].TYPENAME = stObjs['#key#'].TYPENAME;
+			if (StructKeyExists(stObjs['#key#'], "aObjectIDs"))
+				stResult['#key#'].aObjectIDs = stObjs['#key#'].aObjectIDs;
+			if (StructKeyExists(stObjs['#key#'], "VERSIONID"))
+				stResult['#key#'].VERSIONID = stObjs['#key#'].VERSIONID;
+			if (StructKeyExists(stObjs['#key#'], "STATUS"))
+				stResult['#key#'].STATUS = stObjs['#key#'].STATUS;
+			//if (StructKeyExists(stObjs['#key#'], "CREATEDBY"))
+			//	stResult['#key#'].ATTR_CREATEDBY = stObjs['#key#'].createdby;
+			//if (StructKeyExists(stObjs['#key#'], "CREATEDBY"))
+			//	stResult['#key#'].ATTR_CREATEDBY = stObjs['#key#'].createdby;
+			//if (StructKeyExists(stObjs['#key#'], "DATETIMECREATED"))
+			//	stResult['#key#'].ATTR_DATETIMECREATED = stObjs['#key#'].datetimecreated;
+			//if (StructKeyExists(stObjs['#key#'], "LASTUPDATEDBY"))
+			//	stResult['#key#'].ATTR_LASTUPDATEDBY = stObjs['#key#'].lastupdatedby;
+			//if (StructKeyExists(stObjs['#key#'], "DATETIMELASTUPDATED"))
+			//	stResult['#key#'].ATTR_DATETIMELASTUPDATED = stObjs['#key#'].datetimelastupdated;
 			
 			
 			
@@ -46,24 +70,24 @@
 		
 		// if navigation item smoke the object up with some aNavChild entries
 		if (typename is attributes.nodetype) { 
-			oTree = createObject("component","#application.packagepath#.farcry.tree");
+			
 			qChildren = oTree.getChildren(objectid=key);
-			stObjs['#key#'].aNavChild = ListToArray(ValueList(qChildren.ObjectID));
-			if (NOT ArrayLen(stObjs['#key#'].aNavChild))
-				stObjs['#key#'].aNavChild = ""; // tree seems to barf on empty array
-			if (NOT ArrayLen(stObjs['#key#'].aObjectIDs))
-				stObjs['#key#'].aObjectIDs = ""; // tree seems to barf on empty array	
+			stResult['#key#'].aNavChild = ListToArray(ValueList(qChildren.ObjectID));
+			if (NOT ArrayLen(stResult['#key#'].aNavChild))
+				stResult['#key#'].aNavChild = ""; // tree seems to barf on empty array
+			if (NOT ArrayLen(stResult['#key#'].aObjectIDs))
+				stResult['#key#'].aObjectIDs = ""; // tree seems to barf on empty array	
 		 }
-		 if (StructKeyExists(stObjs['#key#'], "VERSIONID") AND StructKeyExists(stObjs['#key#'], "STATUS"))
+		 if (StructKeyExists(stResult['#key#'], "VERSIONID") AND StructKeyExists(stResult['#key#'], "STATUS"))
 		 {
-		 	if (stObjs['#key#'].status IS "approved")
+		 	if (stResult['#key#'].status IS "approved")
 			{
-				draftObject = checkForDraft(stObjs['#key#']);
+				draftObject = checkForDraft(stResult['#key#']);
 				if (draftObject.objectID NEQ 0)
 				{
-					stObjs['#key#'].BHASDRAFT = 1;
-					stObjs['#key#'].DRAFTOBJECTID = draftObject.objectID;
-					stObjs['#key#'].DRAFTSTATUS = draftObject.status;
+					stResult['#key#'].BHASDRAFT = 1;
+					stResult['#key#'].DRAFTOBJECTID = draftObject.objectID;
+					stResult['#key#'].DRAFTSTATUS = draftObject.status;
 				}
 			}
 		}	
@@ -72,7 +96,7 @@
 		</cfscript>
 	</cfloop>
 	<!--- <cfdump var="#stObjs#">	 --->
-	<cfreturn stObjs>
+	<cfreturn stResult>
 </cffunction>
 
 

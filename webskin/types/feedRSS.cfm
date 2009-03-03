@@ -25,9 +25,9 @@
 </cfif>
 
 <cfif len(arguments.stParam.media)>
-	<cfset stFileInfo = createobject("component","farcry.core.packages.farcry.file").getFileProperties("#application.url.fileroot##stObj[arguments.stParam.media]#") />
+	<cfset stFileInfo = createobject("component","farcry.core.packages.farcry.file").getFileProperties("#application.fapi.getFileWebRoot()##stObj[arguments.stParam.media]#") />
 
-	<cfoutput><enclosure url="http://#cgi.http_host##application.url.fileroot##stObj[arguments.stParam.media]#" length="#stFileInfo.size#" type="#stFileInfo.mimetype#" /></cfoutput>
+	<cfoutput><enclosure url="http://#cgi.http_host##application.fapi.getFileWebRoot()##stObj[arguments.stParam.media]#" length="#stFileInfo.size#" type="#stFileInfo.mimetype#" /></cfoutput>
 	
 	<cfif len(arguments.stParam.itunessubtitle)>
 		<cfoutput><itunes:subtitle>#stObj[arguments.stParam.itunessubtitle]#</itunes:subtitle></cfoutput>

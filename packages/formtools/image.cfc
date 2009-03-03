@@ -151,7 +151,7 @@
 		<cfif len(#arguments.stMetadata.value#)>
 			<cfoutput>
 				<div id="#arguments.fieldname#previewimage">
-					<img src="#application.url.webroot##arguments.stMetadata.value#" width="50px" title="#listLast(arguments.stMetadata.value,"/")#"><br>
+					<img src="#application.fapi.getImageWebRoot()##arguments.stMetadata.value#" width="50px" title="#listLast(arguments.stMetadata.value,"/")#"><br>
 					#listLast(arguments.stMetadata.value,"/")#
 					<ft:farcryButton type="button" value="Delete Image" onclick="if(confirm('Are you sure you want to remove this image?')) {} else {return false};$('#arguments.fieldname#DELETE').value=$('#arguments.fieldname#').value;$('#arguments.fieldname#').value='';Effect.Fade('#arguments.fieldname#previewimage');" />
 				</div>
@@ -183,12 +183,12 @@
 		
 		<cfsavecontent variable="html">
 			<cfif len(arguments.stMetadata.value)>
-				<cfoutput><img src="#application.url.webroot##arguments.stMetadata.value#" border="0"
+				<cfoutput><img src="#application.fapi.getImageWebRoot()##arguments.stMetadata.value#" border="0"
 					<cfif arguments.stMetadata.ftAutoGenerateType EQ "ForceSize" OR arguments.stMetadata.ftAutoGenerateType EQ "Pad" >
 						<cfif len(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth GT 0>width="#arguments.stMetadata.ftImageWidth#"</cfif>
 						<cfif len(arguments.stMetadata.ftImageHeight) and arguments.stMetadata.ftImageHeight GT 0>height="#arguments.stMetadata.ftImageHeight#"</cfif>
 					</cfif>
-				/></cfoutput>			
+				/></cfoutput>
 			</cfif>
 		</cfsavecontent>
 		

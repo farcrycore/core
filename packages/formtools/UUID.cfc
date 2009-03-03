@@ -50,11 +50,7 @@
 		<cfif not structKeyExists(stMetadata,"ftJoin")>
 			<cfreturn "" />
 		</cfif>
-		
-		<!--- Make sure scriptaculous libraries are included. --->
-		<cfset Request.InHead.ScriptaculousDragAndDrop = 1>
-		<cfset Request.InHead.ScriptaculousEffects = 1>	
-		
+				
 		<!--- Determine the the type we are using --->
 		<cfif listLen(arguments.stMetadata.ftJoin) GT 1>
 			<cfif len(arguments.stObject[arguments.stMetaData.Name])>
@@ -83,7 +79,11 @@
 			generate library data query to populate library interface 
 			--------------------------------------------------------------------------->
 			<cfif structkeyexists(stMetadata, "ftLibraryData") AND len(stMetadata.ftLibraryData)>	
-				<cfset oPrimary = createObject("component", application.types[typename].typepath) />
+				<cfif not structKeyExists(stMetadata, "ftLibraryDataTypename") OR not len(stMetadata.ftLibraryDataTypename)>
+					<cfset stMetadata.ftLibraryDataTypename = arguments.typename />
+				</cfif>
+				<cfset oPrimary = application.fapi.getContentType(stMetadata.ftLibraryDataTypename) />
+				
 				<cfset stPrimary =  oPrimary.getData(objectid=stobject.objectid) />
 				
 				<!--- use ftlibrarydata method from primary content type --->
@@ -145,7 +145,10 @@
 			generate library data query to populate library interface 
 			--------------------------------------------------------------------------->
 			<cfif structkeyexists(stMetadata, "ftLibraryData") AND len(stMetadata.ftLibraryData)>	
-				<cfset oPrimary = createObject("component", application.types[typename].typepath) />
+				<cfif not structKeyExists(stMetadata, "ftLibraryDataTypename") OR not len(stMetadata.ftLibraryDataTypename)>
+					<cfset stMetadata.ftLibraryDataTypename = arguments.typename />
+				</cfif>
+				<cfset oPrimary = application.fapi.getContentType(stMetadata.ftLibraryDataTypename) />
 				<cfset stPrimary =  oPrimary.getData(objectid=stobject.objectid) />
 				
 				<!--- use ftlibrarydata method from primary content type --->
@@ -220,6 +223,14 @@
 		</cfcase>
 		
 		<cfdefaultcase>
+			
+		
+			<!--- Make sure scriptaculous libraries are included. --->
+			<cfset Request.InHead.ScriptaculousDragAndDrop = 1>
+			<cfset Request.InHead.ScriptaculousEffects = 1>	
+			
+			
+				
 			<!--- ID of the unordered list. Important to use this so that the object can be referenced even if their are multiple objects referencing the same field. --->
 			<cfset ULID = "#arguments.fieldname#_list">
 			
@@ -462,7 +473,10 @@
 			generate library data query to populate library interface 
 			--------------------------------------------------------------------------->
 			<cfif structkeyexists(stMetadata, "ftLibraryData") AND len(stMetadata.ftLibraryData)>	
-				<cfset oPrimary = createObject("component", arguments.stPackage.packagePath) />
+				<cfif not structKeyExists(stMetadata, "ftLibraryDataTypename") OR not len(stMetadata.ftLibraryDataTypename)>
+					<cfset stMetadata.ftLibraryDataTypename = arguments.typename />
+				</cfif>
+				<cfset oPrimary = application.fapi.getContentType(stMetadata.ftLibraryDataTypename) />
 				
 				<!--- use ftlibrarydata method from primary content type --->
 				<cfif structkeyexists(oprimary, stMetadata.ftLibraryData)>

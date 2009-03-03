@@ -165,10 +165,10 @@
 		<cfargument name="bForceRefresh" type="boolean" required="false" default="false" hint="Force to reload and not use application scope." />
 		<cfargument name="excludeWebskins" type="string" required="false" default="" hint="Allows developers to exclude webskins that might be contained in plugins." />
 								
-		<cfset var qResult=queryNew("attributes,author,datelastmodified,description,directory,displayname,cacheStatus,cacheTimeout,cacheByURL,cacheByRoles,methodname,mode,name,path,size,type","VarChar,VarChar,date,VarChar,VarChar,VarChar,Integer,Integer,Integer,Integer,VarChar,VarChar,VarChar,VarChar,BigInt,VarChar") />
-		<cfset var qLibResult=queryNew("attributes,author,datelastmodified,description,directory,displayname,cacheStatus,cacheTimeout,cacheByURL,cacheByRoles,methodname,mode,name,path,size,type","VarChar,VarChar,date,VarChar,VarChar,VarChar,Integer,Integer,Integer,Integer,VarChar,VarChar,VarChar,VarChar,BigInt,VarChar") />
-		<cfset var qCoreResult=queryNew("attributes,author,datelastmodified,description,directory,displayname,cacheStatus,cacheTimeout,cacheByURL,cacheByRoles,methodname,mode,name,path,size,type","VarChar,VarChar,date,VarChar,VarChar,VarChar,Integer,Integer,Integer,Integer,VarChar,VarChar,VarChar,VarChar,BigInt,VarChar") />
-		<cfset var qDupe=queryNew("attributes,author,datelastmodified,description,directory,displayname,cacheStatus,cacheTimeout,cacheByURL,cacheByRoles,methodname,mode,name,path,size,type","VarChar,VarChar,date,VarChar,VarChar,VarChar,Integer,Integer,Integer,Integer,VarChar,VarChar,VarChar,VarChar,BigInt,VarChar") />
+		<cfset var qResult=queryNew("attributes,author,datelastmodified,description,directory,displayname,cacheStatus,cacheTimeout,cacheByURL,cacheByForm,cacheByRoles,cacheByVars,methodname,mode,name,path,size,type","VarChar,VarChar,date,VarChar,VarChar,VarChar,Integer,Integer,Integer,Integer,Integer,VarChar,VarChar,VarChar,VarChar,VarChar,BigInt,VarChar") />
+		<cfset var qLibResult=queryNew("attributes,author,datelastmodified,description,directory,displayname,cacheStatus,cacheTimeout,cacheByURL,cacheByForm,cacheByRoles,cacheByVars,methodname,mode,name,path,size,type","VarChar,VarChar,date,VarChar,VarChar,VarChar,Integer,Integer,Integer,Integer,Integer,VarChar,VarChar,VarChar,VarChar,VarChar,BigInt,VarChar") />
+		<cfset var qCoreResult=queryNew("attributes,author,datelastmodified,description,directory,displayname,cacheStatus,cacheTimeout,cacheByURL,cacheByForm,cacheByRoles,cacheByVars,methodname,mode,name,path,size,type","VarChar,VarChar,date,VarChar,VarChar,VarChar,Integer,Integer,Integer,Integer,Integer,VarChar,VarChar,VarChar,VarChar,VarChar,BigInt,VarChar") />
+		<cfset var qDupe=queryNew("attributes,author,datelastmodified,description,directory,displayname,cacheStatus,cacheTimeout,cacheByURL,cacheByForm,cacheByRoles,cacheByVars,methodname,mode,name,path,size,type","VarChar,VarChar,date,VarChar,VarChar,VarChar,Integer,Integer,Integer,Integer,Integer,VarChar,VarChar,VarChar,VarChar,VarChar,BigInt,VarChar") />
 		<cfset var webskinPath = "#application.path.project#/webskin/#arguments.typename#" />
 		<cfset var library="" />
 		<cfset var col="" />
@@ -310,7 +310,7 @@
 		
 		<!--- ORDER AND SET DISPLAYNAME FOR COMBINED WEBSKIN RESULTS --->		
  		<cfquery dbtype="query" name="qResult">
-		SELECT attributes, 'anonymous' as author, datelastmodified, '' as description, directory, name as displayname, 0 as cacheStatus, 0 as cacheTimeout, 0 as cacheByURL, 0 as cacheByRoles, name as methodname, mode, name, path, size, type
+		SELECT attributes, 'anonymous' as author, datelastmodified, '' as description, directory, name as displayname, 0 as cacheStatus, 0 as cacheTimeout, 0 as cacheByURL, 0 as cacheByForm, 0 as cacheByRoles, '' as cacheByVars, name as methodname, mode, name, path, size, type
 		FROM qResult
 		ORDER BY name
 		</cfquery>
@@ -327,9 +327,10 @@
 			<cfset stWebskinDetails.cacheStatus = getWebskinCacheStatus(typename="#arguments.typename#", template="#stWebskinDetails.methodname#", path="#stWebskinDetails.path#") />
 			<cfset stWebskinDetails.cacheTimeout = getWebskinCacheTimeout(typename="#arguments.typename#", template="#stWebskinDetails.methodname#", path="#stWebskinDetails.path#") />
 			<cfset stWebskinDetails.cacheByURL = getWebskinCacheByURL(typename="#arguments.typename#", template="#stWebskinDetails.methodname#", path="#stWebskinDetails.path#") />
+			<cfset stWebskinDetails.cacheByForm = getWebskinCacheByForm(typename="#arguments.typename#", template="#stWebskinDetails.methodname#", path="#stWebskinDetails.path#") />
 			<cfset stWebskinDetails.cacheByRoles = getWebskinCacheByRoles(typename="#arguments.typename#", template="#stWebskinDetails.methodname#", path="#stWebskinDetails.path#") />
-			
-			
+			<cfset stWebskinDetails.cacheByVars = getWebskincacheByVars(typename="#arguments.typename#", template="#stWebskinDetails.methodname#", path="#stWebskinDetails.path#") />
+
 			<!--- UPDATE THE METADATA QUERY --->				
 			<cfset querysetcell(qresult, 'path', stWebskinDetails.path, qResult.currentRow) />	
 			<cfset querysetcell(qresult, 'methodname', stWebskinDetails.methodname, qResult.currentRow) />	
@@ -351,9 +352,13 @@
 			<cfif isBoolean(stWebskinDetails.cacheByURL)>
 				<cfset querysetcell(qresult, 'cacheByURL', stWebskinDetails.cacheByURL, qResult.currentRow) />								
 			</cfif>	
+			<cfif isBoolean(stWebskinDetails.cacheByForm)>
+				<cfset querysetcell(qresult, 'cacheByForm', stWebskinDetails.cacheByForm, qResult.currentRow) />								
+			</cfif>	
 			<cfif isBoolean(stWebskinDetails.cacheByRoles)>
 				<cfset querysetcell(qresult, 'cacheByRoles', stWebskinDetails.cacheByRoles, qResult.currentRow) />								
 			</cfif>	
+			<cfset querysetcell(qresult, 'cacheByVars', stWebskinDetails.cacheByVars, qResult.currentRow) />
 							
 		</cfoutput>
 		
@@ -513,7 +518,7 @@
 	</cffunction>
 		
 	
-	<cffunction name="getWebskinCacheByURL" returntype="string" access="public" output="false" hint="Returns the objectbroker cacheByURL boolean value of a webskin. A result of true will HASH the cgi.QUERY_STRING on all ancestor webskins in the cache.">
+	<cffunction name="getWebskinCacheByURL" returntype="boolean" access="public" output="false" hint="Returns the objectbroker cacheByURL boolean value of a webskin. A result of true will HASH the cgi.QUERY_STRING on all ancestor webskins in the cache.">
 		<cfargument name="typename" type="string" required="false" default="" />
 		<cfargument name="template" type="string" required="false" default="" />
 		<cfargument name="path" type="string" required="false" />
@@ -568,7 +573,53 @@
 		<cfreturn result />
 	</cffunction>
 	
-	<cffunction name="getWebskinCacheByRoles" returntype="string" access="public" output="false" hint="Returns the objectbroker cacheByRoles boolean value of a webskin. A result of true will HASH the session.security.roles on all ancestor webskins in the cache.">
+	<cffunction name="getWebskinCacheByForm" returntype="boolean" access="public" output="false" hint="Returns the objectbroker cacheByForm boolean value of a webskin. A result of true will HASH all simple form scope variables on all ancestor webskins in the cache.">
+		<cfargument name="typename" type="string" required="false" default="" />
+		<cfargument name="template" type="string" required="false" default="" />
+		<cfargument name="path" type="string" required="false" />
+	
+		<cfset var result = "false" />
+		<cfset var templateCode = "" />
+		<cfset var pos = "" />	
+		<cfset var count = "" />
+		
+		
+		<cfif isDefined("application.stcoapi.#typename#.stWebskins.#template#.cacheByForm")>
+			<cfset result = application.stcoapi['#typename#'].stWebskins['#template#'].cacheByForm />
+		<cfelse>
+			
+			<cfif NOT structKeyExists(arguments, "path")>
+				<cfif len(arguments.typename) AND len(arguments.template)>
+					<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
+				<cfelse>
+					<cfthrow type="Application" detail="Error: [getWebskincacheByForm] You must pass in a path or both the typename and template" />	
+				</cfif>
+			</cfif>
+			
+			<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
+				<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
+				
+				
+				<cfset pos = findNoCase('@@cacheByForm:', templateCode)>
+				<cfif pos GT 0>
+					<cfset pos = pos + 14>
+					<cfset count = findNoCase('--->', templateCode, pos)-pos>
+					<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>				
+				</cfif>	
+			</cfif>
+			
+			<cfif not isBoolean(result)>
+				<cfset result = false>
+			</cfif>
+
+		</cfif>
+		
+	
+	
+		<cfreturn result />
+	</cffunction>
+	
+	<cffunction name="getWebskinCacheByRoles" returntype="boolean" access="public" output="false" hint="Returns the objectbroker cacheByRoles boolean value of a webskin. A result of true will HASH the session.security.roles on all ancestor webskins in the cache.">
 		<cfargument name="typename" type="string" required="false" default="" />
 		<cfargument name="template" type="string" required="false" default="" />
 		<cfargument name="path" type="string" required="false" />
@@ -611,8 +662,58 @@
 		<cfreturn result />
 	</cffunction>
 	
-		
+	<cffunction name="getWebskinCacheByVars" returntype="string" access="public" output="false" hint="Returns the objectbroker cacheByVars list of a webskin. The list of session vars will HASH the values of those vars on all ancestor webskins in the cache.">
+		<cfargument name="typename" type="string" required="false" default="" />
+		<cfargument name="template" type="string" required="false" default="" />
+		<cfargument name="path" type="string" required="false" />
 	
+		<cfset var result = "" />
+		<cfset var templateCode = "" />
+		<cfset var pos = "" />	
+		<cfset var count = "" />
+		<cfset var iViewState = "" />
+		
+		<cfif isDefined("application.stcoapi.#arguments.typename#.stWebskins.#arguments.template#.cacheByVars")>
+			<cfset result = application.stcoapi['#arguments.typename#'].stWebskins['#arguments.template#'].cacheByVars />
+			
+			<!--- ALSO INCLUDE ANY DYNAMICALLY INCLUDED CACHE VARIABLES SETUP BY USING THE FAPI.setCacheByVar --->
+			<cflock name="cacheByViewStates_#arguments.typename#_#arguments.template#" timeout="1" throwontimeout="false" type="read">	
+				<cfif isDefined("application.fc.cacheByViewStates.#arguments.typename#.#arguments.template#")>
+					<cfloop list="#application.fc.cacheByViewStates['#arguments.typename#']['#arguments.template#']#" index="iViewState">
+						<cfif not listFindNoCase(result, iViewState)>
+							<cfset result = listAppend(result, iViewState) />
+						</cfif>
+					</cfloop>
+				</cfif>
+			</cflock>
+		<cfelse>	
+			
+			<cfif NOT structKeyExists(arguments, "path")>
+				<cfif len(arguments.typename) AND len(arguments.template)>
+					<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
+				<cfelse>
+					<cfthrow type="Application" detail="Error: [getWebskincacheByVars] You must pass in a path or both the typename and template" />	
+				</cfif>
+			</cfif>
+			
+			<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
+				<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
+			
+				<cfset pos = findNoCase('@@cacheByVars:', templateCode)>
+				<cfif pos GT 0>
+					<cfset pos = pos + 14>
+					<cfset count = findNoCase('--->', templateCode, pos)-pos>
+					<cfset result = trim(listLast(mid(templateCode,  pos, count), ":"))>
+				</cfif>	
+			</cfif>
+		</cfif>
+
+		
+			
+		
+		<cfreturn result />
+	</cffunction>
+
 	<cffunction name="getWebskinDisplayname" returntype="string" access="public" output="false" hint="">
 		<cfargument name="typename" type="string" required="false" />
 		<cfargument name="template" type="string" required="false" />

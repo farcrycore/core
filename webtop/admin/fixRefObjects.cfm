@@ -23,31 +23,46 @@
 				<cfif NOT listFindNoCase(Form.lExcludeItems,key)>
 					<cfoutput>Started #key#<br /></cfoutput><cfflush>
 					<cftry>
+						
 						<cfset oType = createObject("component", application.types[key].typepath) >
 						<cfset safeName = oType.getTableName() >
-						<!--- get objectId list for removal --->
-						<cfquery name="qTypes" datasource="#application.dsn#">
-							SELECT ObjectID 
-							FROM #application.dbowner##safeName#
-						</cfquery>
-					
-						<cfif qTypes.recordCount GT 0>
-							<cfset lObjectIDs = quotedValueList(qTypes.ObjectID) >
+						
+						<cfset bRefObjects = true /><!--- Assume true unless specifically instructed not too. --->
+						
+						<cfif isDefined("application.stCoapi.#safeName#.bRefObjects") AND NOT application.stCoapi[safeName].bRefObjects>
+							<cfset bRefObjects = false />
+						</cfif>
+						
+						<cfif bRefObjects>
+							<!--- get objectId list for removal --->
+							<cfquery name="qTypes" datasource="#application.dsn#">
+								SELECT count(ObjectID) as counter 
+								FROM #application.dbowner##safeName#
+							</cfquery>
+						
+							<cfif qTypes.counter GT 0>
+								<!--- remove references from refObjects --->
+								<cfquery name="qDelRefs" datasource="#application.dsn#">
+									DELETE FROM #application.dbowner#refObjects
+									WHERE typename = '#safeName#'
+								</cfquery>
+								<!--- Do bulk insert into refObjects --->
+								<cfquery name="qInsertRefs" datasource="#application.dsn#">
+									INSERT INTO refObjects (objectid, typename)
+										SELECT ObjectID as objectid, '#safeName#' as typename
+										FROM #application.dbowner##safeName#
+								</cfquery>
+							</cfif>
+							<cfoutput>Finished #key# - #qTypes.counter# records<br /><hr /></cfoutput><cfflush>
+						<cfelse>
 							<!--- remove references from refObjects --->
 							<cfquery name="qDelRefs" datasource="#application.dsn#">
 								DELETE FROM #application.dbowner#refObjects
 								WHERE typename = '#safeName#'
 							</cfquery>
-							<!--- Do bulk insert into refObjects --->
-							<cfquery name="qInsertRefs" datasource="#application.dsn#">
-								INSERT INTO refObjects (objectid, typename)
-									SELECT ObjectID as objectid, '#safeName#' as typename
-									FROM #application.dbowner##safeName#
-							</cfquery>
+							<cfoutput>IGNORED #key# - bRefObjects has been set to false. RefObjects cleared.<br /><hr /></cfoutput><cfflush>	
 						</cfif>
-						<cfoutput>Finished #key# - #qTypes.recordCount# records<br /><hr /></cfoutput><cfflush>
-	
-						<cfcatch><cfoutput>Error fixing #key# - perhaps type has not been deployed<br /><hr /></cfoutput></cfcatch>
+						<cfcatch><cfoutput>Error fixing #key# - perhaps type has not been deployed #cfcatch.toString()#<br /><hr /></cfoutput></cfcatch>
 					</cftry>
 				</cfif>
 			</cfloop>
@@ -61,28 +76,46 @@
 					<cftry>
 						<cfset oRule = createObject("component", application.rules[key].rulepath) >
 						<cfset safeName = oRule.getTableName() >
-						<!--- get objectId list for removal --->
-						<cfquery name="qRules" datasource="#application.dsn#">
-							SELECT ObjectID 
-							FROM #application.dbowner##safeName#
-						</cfquery>
-					
-						<cfif qRules.recordCount GT 0>
-							<cfset lObjectIDs = quotedValueList(qRules.ObjectID) >
+						
+						
+						<cfset bRefObjects = true /><!--- Assume true unless specifically instructed not too. --->
+						
+						<cfif isDefined("application.stCoapi.#safeName#.bRefObjects") AND NOT application.stCoapi[safeName].bRefObjects>
+							<cfset bRefObjects = false />
+						</cfif>
+						
+						<cfif bRefObjects>
+							<!--- get objectId list for removal --->
+							<cfquery name="qRules" datasource="#application.dsn#">
+								SELECT count(ObjectID) as counter 
+								FROM #application.dbowner##safeName#
+							</cfquery>
+						
+							<cfif qRules.counter GT 0>
+								<!--- remove references from refObjects --->
+								<cfquery name="qDelRefs" datasource="#application.dsn#">
+									DELETE FROM #application.dbowner#refObjects
+									WHERE typename = '#safeName#'
+								</cfquery>
+								<!--- Do bulk insert into refObjects --->
+								<cfquery name="qInsertRefs" datasource="#application.dsn#">
+									INSERT INTO refObjects (objectid, typename)
+										SELECT ObjectID as objectid, '#safeName#' as typename
+										FROM #application.dbowner##safeName#
+								</cfquery>
+							</cfif>
+						
+							<cfoutput>Finished #key# - #qRules.counter# records<br /><hr /></cfoutput><cfflush>
+						
+						<cfelse>
 							<!--- remove references from refObjects --->
 							<cfquery name="qDelRefs" datasource="#application.dsn#">
 								DELETE FROM #application.dbowner#refObjects
 								WHERE typename = '#safeName#'
 							</cfquery>
-							<!--- Do bulk insert into refObjects --->
-							<cfquery name="qInsertRefs" datasource="#application.dsn#">
-								INSERT INTO refObjects (objectid, typename)
-									SELECT ObjectID as objectid, '#safeName#' as typename
-									FROM #application.dbowner##safeName#
-							</cfquery>
+							<cfoutput>IGNORED #key# - bRefObjects has been set to false. RefObjects cleared.<br /><hr /></cfoutput><cfflush>	
 						</cfif>
-					
-						<cfoutput>Finished #key# - #qRules.recordCount# records<br /><hr /></cfoutput><cfflush>
+						
 						<cfcatch><cfoutput>Error fixing #key# - perhaps rule has not been deployed<br /><hr /></cfoutput></cfcatch>
 					</cftry>
 				</cfif>

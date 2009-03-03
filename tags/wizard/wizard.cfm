@@ -47,6 +47,7 @@ $in: SessionID -- $
 	<cfparam name="attributes.Timeout" default="15" /><!--- Default timeout of wizard of 15 minutes --->
 	<cfparam name="attributes.r_stwizard" default="stwizard" /><!--- this is the WDDX packet that will be returned --->
 	<cfparam name="attributes.title" default="" />
+	<cfparam name="attributes.icon" default="" />
 
 	<!--- We only render the form if Farcrywizard OnExit has not been Fired. --->
 	<cfif isDefined("Request.FarcrywizardOnExitRun") AND Request.FarcrywizardOnExitRun >			
@@ -66,6 +67,12 @@ $in: SessionID -- $
 	<cfset stwizard = owizard.Read(ReferenceID=attributes.ReferenceID,UserLogin=attributes.UserLogin)>
 	
 	<cfset CALLER[attributes.r_stwizard] = stwizard>
+	
+	
+	<!--- SETUP THE DEFAULT ICON IF NOTHING PASSED --->
+	<cfif not len(attributes.icon)>
+		<cfset attributes.icon = "#application.stCOAPI[stwizard.Data[stWizard.primaryobjectid].typename].icon#" />
+	</cfif>
 	
 	
 	<!--- Need Create a Form. Cant use <ft:form> because of incorrect nesting --->
@@ -215,7 +222,7 @@ $in: SessionID -- $
 			</ul>
 		</div>
 
-		<h1><admin:icon icon="#application.stCOAPI[stwizard.Data[stWizard.primaryobjectid].typename].icon#" usecustom="true" />
+		<h1><admin:icon icon="#attributes.icon#" usecustom="true" />
 			<cfif len(attributes.title)>
 				#attributes.title#
 			<cfelse>

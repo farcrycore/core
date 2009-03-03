@@ -21,6 +21,7 @@
 		<cfset var qArrayField = queryNew("blah") />
 		<cfset var oPrimary = "" />
 		<cfset var qLibraryList = queryNew("blah") />
+		<cfset var libraryData = "" />
 		<cfset var ULID = "" />
 		<cfset var HTML = "" />
 		<cfset var stTemp = structNew() />
@@ -42,6 +43,8 @@
 		<cfparam name="arguments.stMetadata.ftLibraryEditWebskin" default="edit">
 		<cfparam name="arguments.stMetadata.ftFirstListLabel" default="-- SELECT --">
 		<cfparam name="arguments.stMetadata.class" default="">
+		<cfparam name="arguments.stMetadata.ftLibraryData" default="" /><!--- Name of a function to return the library data --->
+		<cfparam name="arguments.stMetadata.ftLibraryDataTypename" default="" /><!--- Typename containing the function defined in ftLibraryData --->
 		
 		<cfif arguments.stMetadata.ftRenderType eq "Library">
 			<cfparam name="application.stCOAPI.#arguments.typename#.stProps.#arguments.stMetadata.name#.metadata.ftShowLibraryLink" default="true" />
@@ -54,10 +57,6 @@
 		<cfif not structKeyExists(arguments.stMetadata,"ftJoin") or not len(arguments.stMetadata.ftJoin)>
 			<cfreturn "">
 		</cfif>
-		
-		<!--- Make sure scriptaculous libraries are included. --->
-		<cfset Request.InHead.ScriptaculousDragAndDrop = 1>
-		<cfset Request.InHead.ScriptaculousEffects = 1>	
 		
 			
 		<cfquery datasource="#application.dsn#" name="qArrayField">
@@ -78,11 +77,23 @@
 			generate library data query to populate library interface 
 			--------------------------------------------------------------------------->
 			<cfif structkeyexists(stMetadata, "ftLibraryData") AND len(stMetadata.ftLibraryData)>	
-				<cfset oPrimary = createObject("component", arguments.stPackage.packagePath) />
+				<cfif not structKeyExists(stMetadata, "ftLibraryDataTypename") OR not len(stMetadata.ftLibraryDataTypename)>
+					<cfset stMetadata.ftLibraryDataTypename = arguments.typename />
+				</cfif>
+				<cfset oPrimary = application.fapi.getContentType(stMetadata.ftLibraryDataTypename) />
 				
 				<!--- use ftlibrarydata method from primary content type --->
 				<cfif structkeyexists(oprimary, stMetadata.ftLibraryData)>
-					<cfinvoke component="#oPrimary#" method="#stMetadata.ftLibraryData#" returnvariable="qLibraryList" />
+					<cfinvoke component="#oPrimary#" method="#stMetadata.ftLibraryData#" returnvariable="libraryData">
+						<cfinvokeargument name="primaryID" value="#arguments.stobject.objectid#" />
+						<cfinvokeargument name="qFilter" value="#queryNew('objectid')#" />
+					</cfinvoke>					
+					
+					<cfif isStruct(libraryData)>
+						<cfset qLibraryList = libraryData.q>
+					<cfelse>
+						<cfset qLibraryList = libraryData />
+					</cfif>		
 				</cfif>
 			<cfelse>
 				<!--- if nothing exists to generate library data then cobble something together --->
@@ -119,11 +130,24 @@
 			generate library data query to populate library interface 
 			--------------------------------------------------------------------------->
 			<cfif structkeyexists(stMetadata, "ftLibraryData") AND len(stMetadata.ftLibraryData)>	
-				<cfset oPrimary = createObject("component", arguments.stPackage.packagePath) />
+			
+				<cfif not structKeyExists(stMetadata, "ftLibraryDataTypename") OR not len(stMetadata.ftLibraryDataTypename)>
+					<cfset stMetadata.ftLibraryDataTypename = arguments.typename />
+				</cfif>
+				<cfset oPrimary = application.fapi.getContentType(stMetadata.ftLibraryDataTypename) />
 				
 				<!--- use ftlibrarydata method from primary content type --->
 				<cfif structkeyexists(oprimary, stMetadata.ftLibraryData)>
-					<cfinvoke component="#oPrimary#" method="#stMetadata.ftLibraryData#" returnvariable="qLibraryList" />
+					<cfinvoke component="#oPrimary#" method="#stMetadata.ftLibraryData#" returnvariable="libraryData">
+						<cfinvokeargument name="primaryID" value="#arguments.stobject.objectid#" />
+						<cfinvokeargument name="qFilter" value="#queryNew('objectid')#" />
+					</cfinvoke>					
+					
+					<cfif isStruct(libraryData)>
+						<cfset qLibraryList = libraryData.q>
+					<cfelse>
+						<cfset qLibraryList = libraryData />
+					</cfif>					
 				</cfif>
 			<cfelse>
 				<!--- if nothing exists to generate library data then cobble something together --->
@@ -140,8 +164,10 @@
 				</cfif>
 				<cfloop query="qLibraryList"><option value="#qLibraryList.objectid#" <cfif valuelist(qArrayField.data) contains qLibraryList.objectid>selected</cfif>><cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif></option></cfloop>
 				</select>
+				<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" />
 				</div>
 				</cfoutput>
+				
 				
 			<cfelse>
 				<!--- todo: i18n --->
@@ -156,6 +182,10 @@
 		</cfcase>
 		
 		<cfdefaultcase>
+		
+			<!--- Make sure scriptaculous libraries are included. --->
+			<cfset Request.InHead.ScriptaculousDragAndDrop = 1>
+			<cfset Request.InHead.ScriptaculousEffects = 1>	
 		
 			<!--- ID of the unordered list. Important to use this so that the object can be referenced even if their are multiple objects referencing the same field. --->
 			<cfset ULID = "#arguments.fieldname#_list">
@@ -365,7 +395,17 @@
 		 --->
 		
 		<cfif listLen(stFieldPost.value)>
-		
+			<!--- Remove any leading or trailing empty list items --->
+			<cfif stFieldPost.value EQ ",">
+				<cfset stFieldPost.value = "" />
+			</cfif>
+			<cfif left(stFieldPost.value,1) EQ ",">
+				<cfset stFieldPost.value = right(stFieldPost.value,len(stFieldPost.value)-1) />
+			</cfif>
+			<cfif right(stFieldPost.value,1) EQ ",">
+				<cfset stFieldPost.value = left(stFieldPost.value,len(stFieldPost.value)-1) />
+			</cfif>	
+					
 			<cfquery datasource="#application.dsn#" name="qArrayRecords">
 		    SELECT * 
 		    FROM #application.dbowner##arguments.typename#_#stMetadata.name#
@@ -436,6 +476,7 @@
 		<cfset var dataSEQ = "" />
 		<cfset var oData = "" />
 		<cfset var stO = structNew() />
+		<cfset var libraryData = "" />
 		
 		
 		
@@ -452,6 +493,8 @@
 		<cfparam name="arguments.stMetadata.ftSelectMultiple" default="true" type="string" />
 		<cfparam name="arguments.stMetadata.ftAllowLibraryEdit" default="false">
 		<cfparam name="arguments.stMetadata.ftLibraryEditWebskin" default="edit">
+		<cfparam name="arguments.stMetadata.ftLibraryData" default="" /><!--- Name of a function to return the library data --->
+		<cfparam name="arguments.stMetadata.ftLibraryDataTypename" default="" /><!--- Typename containing the function defined in ftLibraryData --->
 
 		<!--- An array type MUST have a 'ftJoin' property --->
 		<cfif not structKeyExists(arguments.stMetadata,"ftJoin") or not len(arguments.stMetadata.ftJoin)>
@@ -481,11 +524,24 @@
 			generate library data query to populate library interface 
 			--------------------------------------------------------------------------->
 			<cfif structkeyexists(stMetadata, "ftLibraryData") AND len(stMetadata.ftLibraryData)>	
-				<cfset oPrimary = createObject("component", arguments.stPackage.packagePath) />
+				<cfif not structKeyExists(stMetadata, "ftLibraryDataTypename") OR not len(stMetadata.ftLibraryDataTypename)>
+					<cfset stMetadata.ftLibraryDataTypename = arguments.typename />
+				</cfif>
+				<cfset oPrimary = application.fapi.getContentType(stMetadata.ftLibraryDataTypename) />
 				
 				<!--- use ftlibrarydata method from primary content type --->
 				<cfif structkeyexists(oprimary, stMetadata.ftLibraryData)>
-					<cfinvoke component="#oPrimary#" method="#stMetadata.ftLibraryData#" returnvariable="qLibraryList" />
+					<cfinvoke component="#oPrimary#" method="#stMetadata.ftLibraryData#" returnvariable="libraryData">
+						<cfinvokeargument name="primaryID" value="#arguments.stobject.objectid#" />
+						<cfinvokeargument name="qFilter" value="#queryNew('objectid')#" />
+					</cfinvoke>	
+						
+					<cfif isStruct(libraryData)>
+						<cfset qLibraryList = libraryData.q>
+					<cfelse>
+						<cfset qLibraryList = libraryData />
+					</cfif>		
+					
 				</cfif>
 			</cfif>
 			<!--- if nothing exists to generate library data then cobble something together --->

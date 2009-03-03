@@ -26,12 +26,13 @@ It just ignores the inner ones.
 		
 		<cfparam name="attributes.Name" default="farcryForm#randrange(1,999999999)#">
 		<cfparam name="attributes.Target" default="">
-		<cfparam name="attributes.Action" default="#application.factory.oUtils.fixURL()#">
+		<cfparam name="attributes.Action" default="#application.fapi.fixURL()#">
 		<cfparam name="attributes.method" default="post">
 		
 	
 		<cfparam name="attributes.onsubmit" default="">
-		<cfparam name="attributes.css" default="">
+		<cfparam name="attributes.css" default=""><!--- To Override pass in the name of custom css file located in /projectWebRoot/css/ . Empty string will stop a css file being loaded. --->
+		<cfparam name="attributes.bAddFormCSS" default="true" />
 		<cfparam name="attributes.Class" default="">
 		<cfparam name="attributes.Style" default="">
 		<cfparam name="attributes.Heading" default="">
@@ -103,7 +104,7 @@ It just ignores the inner ones.
 		<cfparam name="session.stFarCryFormSpamProtection" default="#structNew()#" />
 		<cfparam name="session.stFarCryFormSpamProtection['#Request.farcryForm.Name#']" default="#structNew()#" />
 			
-		<ft:renderHTMLformStart attributeCollection="#attributes#" onsubmit="#attributes.onsubmit#" class="#attributes.Class#" css="#attributes.css#" style="#attributes.style#" heading="#attributes.heading#" />
+		<ft:renderHTMLformStart attributeCollection="#attributes#" />
 	
 	</cfif>
 	

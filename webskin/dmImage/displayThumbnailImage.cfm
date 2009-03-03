@@ -23,7 +23,7 @@
 
 
 <cfoutput>
-<img src="#application.url.imageroot##stobj.thumbnailImage#" alt="#stobj.alt#" title="#stobj.title#" />
+<img src="#application.fapi.getImageWebRoot()##stobj.thumbnailImage#" alt="#stobj.alt#" title="#stobj.title#" />
 </cfoutput>
 
 <cfsetting enablecfoutputonly="false">

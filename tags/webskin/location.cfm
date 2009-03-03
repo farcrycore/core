@@ -33,6 +33,7 @@
 	<cfparam name="attributes.objectid" default=""><!--- Added to url parameters; navigation obj id --->
 	<cfparam name="attributes.type" default=""><!--- Added to url parameters: Typename used with type webskin views --->
 	<cfparam name="attributes.view" default=""><!--- Added to url parameters: Webskin name used with type webskin views --->
+	<cfparam name="attributes.bodyView" default=""><!--- Added to url parameters: Webskin name used with type webskin views --->
 	<cfparam name="attributes.externallink" default="">
 	<cfparam name="attributes.stParameters" default="#StructNew()#">
 	<cfparam name="attributes.urlParameters" default="">
@@ -45,6 +46,7 @@
 			objectid="#attributes.objectid#" 
 			type="#attributes.type#" 
 			view="#attributes.view#" 
+			bodyView="#attributes.bodyView#" 
 			externallink="#attributes.externallink#" 
 			stParameters="#attributes.stParameters#" 
 			urlParameters="#attributes.urlParameters#" 

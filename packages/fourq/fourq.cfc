@@ -76,6 +76,346 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	</cffunction>
 
 
+	<cffunction name="getView" access="public" output="true" returntype="string" hint="Returns the HTML of a view from the webskin content type folder.">
+		<cfargument name="objectid" required="no" type="string" default="" hint="ObjectID of the object that is to be rendered by the webskin view." />
+		<cfargument name="template" required="no" type="string" default="" hint="Name of the template in the corresponding content type webskin folder, without the .cfm extension." />
+		<cfargument name="webskin" required="no" type="string" default="" hint="Name of the template in the corresponding content type webskin folder, without the .cfm extension." />
+		<cfargument name="stparam" required="false" type="struct" default="#structNew()#" hint="Structure of parameters to be passed into the display handler." />
+		<cfargument name="stobject" required="no" type="struct" hint="Property structure to render in view.  Overrides any property structure mapped to arguments.objectid. Useful if you want to render a view with a modified content item.">
+		<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
+		<cfargument name="OnExit" required="no" type="any" default="">
+		<cfargument name="alternateHTML" required="no" type="string" hint="If the webskin template does not exist, if this argument is sent in, its value will be passed back as the result.">
+		<cfargument name="hashKey" required="no" default="" type="string" hint="Pass in a key to be used to hash the objectBroker webskin cache">
+		<cfargument name="bAjax" required="no" default="0" type="boolean" hint="Flag to determine whether to render an ajax call to load the webskin instead of inline." />
+		<cfargument name="ajaxID" required="no" default="" type="string" hint="The id to give the div that will call the ajaxed webskin" />
+		<cfargument name="ajaxShowloadIndicator" required="no" default="false" type="boolean" hint="Should the ajax loading indicator be shown" />
+		<cfargument name="ajaxindicatorText" required="no" default="loading..." type="string" hint="What should be text of the loading indicator" />		
+		<cfargument name="bIgnoreSecurity" required="false" type="boolean" default="false" hint="Should the getView() ignore webskin security" />
+			
+		<cfset var stResult = structNew() />
+		<cfset var stObj = StructNew() />
+		<cfset var WebskinPath = "" />
+		<cfset var stWebskin = structNew() />
+		<cfset var stCurrentView = structNew() />
+		<cfset var stArgs = structnew() />
+		<cfset var i = 0 />
+		<cfset var stLocal = structNew() /><!--- A local scope that can be used in webskins to ensure against race conditions. --->
+		<cfset var webskinTypename = "" /><!--- This will store the typename of the webskin to be called. Required in the case of Type Webskins. --->
+		<cfset var iViewState = "" /><!--- iterator used when adding to ancestor cacheBySessionVar lists --->
+		<cfset var lAttributes = "stobject,typename,objectid,key,template,webskin,stprops,stparam,r_html,r_objectid,hashKey,alternateHTML,OnExit,dsn,bAjax,ajaxID,ajaxShowloadIndicator,ajaxindicatorText,bIgnoreSecurity" />
+		<cfset var attrib = "" />
+		<cfset var lHashKeys = "" />
+		<cfset var iHashKey = "" />
+		
+		<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
+		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+		
+		<!--- init fourq --->
+		<cfset fourqInit() />	
+		<cfset webskinTypename = "#variables.typename#" /><!--- Set the typename to the typename of this object instance --->
+		
+		
+		<cfif len(arguments.webskin)>
+			<cfset arguments.template = arguments.webskin />
+		<cfelseif not len(arguments.template)>
+			<cfthrow message="The getView function requires the template or webskin argument.">
+		</cfif>
+
+		<!--- make sure that .cfm isn't passed to this method in the template argument --->
+		<cfif listLast(arguments.template,".") EQ "cfm">
+			<cfset arguments.template = ReplaceNoCase(arguments.template,".cfm", "", "all") />
+		</cfif>
+		
+
+		<cfif isDefined("arguments.stobject") and not structIsEmpty(arguments.stObject)>
+			<cfset stobj=arguments.stobject />
+			<cfset instance.stobj = stObj />
+		<cfelse>
+			<cfif not len(arguments.objectid)>
+				<!--- 
+				WE WANT TO CALL A TYPE WEBSKIN
+				THIS MEANS THAT THE OBJECT THAT WE ARE PASSING TO THE WEBSKIN IS ACTUALLY THE farCOAPI object.
+				THE WEBSKIN CACHING IS ALSO DONE AGAINST THE farCOAPI object.
+				 --->
+				<cfset stObj = application.fc.factory['farCoapi'].getCoapiObject(name="#webskinTypename#") />
+	
+			<cfelse>			
+				<!--- get the data for this instance --->
+				<cfset stObj = getData(objectid=arguments.objectID,dsn=arguments.dsn)>
+			</cfif>		
+
+			
+		</cfif>
+
+		<cfif arguments.bAjax>
+			<cfif not len(arguments.ajaxID)>
+				<cfset arguments.ajaxID = "#stobj.typename#_#stobj.objectid#_#arguments.template#" />
+			</cfif>
+			<skin:htmlHead library="extjsCore" />
+			<skin:htmlHead id="webskinAjaxLoader">
+			<cfoutput>		
+			<script type="text/javascript">
+			function webskinAjaxLoader(divID,action,timeout,showLoadIndicator,indicatorText){
+				if (timeout == undefined){var timeout = 30};
+				if (showLoadIndicator == undefined){var showLoadIndicator = false};
+				if (indicatorText == undefined){var indicatorText = 'loading...'};
+									
+				var mgr = Ext.get(divID).getUpdater();
+
+				mgr.showLoadIndicator = showLoadIndicator;
+				if (showLoadIndicator==true){
+					mgr.indicatorText = indicatorText;
+				}
+				mgr.update(
+				{
+					url: action,
+					nocache: true,
+					scripts: true,				
+					timeout: timeout
+				});
+			}
+			</script>
+			</cfoutput>
+			</skin:htmlHead>
+			<cfsavecontent variable="stWebskin.webskinHTML">
+				<cfoutput><div id="#arguments.ajaxID#"></div></cfoutput>
+				
+				<skin:buildLink type="#stobj.typename#" objectid="#stobj.objectid#" urlParameters="view=#arguments.template#&ajaxmode=1" r_url="urlAjaxLoader">
+				<extjs:onReady>
+					<cfoutput>
+						webskinAjaxLoader('#arguments.ajaxID#', '#urlAjaxLoader#', 30, #arguments.ajaxShowLoadIndicator#, '#arguments.ajaxIndicatorText#');
+					</cfoutput>
+				</extjs:onReady>
+			</cfsavecontent>
+		<cfelse>
+			
+	
+		
+			<!--- Setup custom attributes passed into getView in stParam structure --->
+			<cfloop collection="#arguments#" item="attrib">
+				<cfif not listFindNoCase(lAttributes, attrib)>
+					<cfset arguments.stParam[attrib] = arguments[attrib] />
+				</cfif>
+			</cfloop>
+			
+			<!--- If we are potentially caching this webskin, and we have passed in parameters, we need to create a hash key that uniquely identifies these parameters and cache agains them --->
+			<cfif application.bObjectBroker AND application.stcoapi[webskinTypename].bObjectBroker AND len(arguments.template) AND structKeyExists(application.stcoapi[webskinTypename].stWebskins, arguments.template) AND application.stcoapi[webskinTypename].stWebskins[arguments.template].cacheStatus EQ 1>
+				<cfif not structIsEmpty(arguments.stParam)>
+					<cfset lHashKeys = listSort(structKeyList(arguments.stParam),"text", "asc") />
+					<cfloop list="#lHashKeys#" index="iHashKey">
+						<cfif IsSimpleValue(arguments.stParam[iHashKey])>
+							<cfset arguments.hashKey = listAppend(arguments.hashKey, "stParam[#iHashKey#]:#arguments.stParam[iHashKey]#") />
+						<cfelse>
+							<cfset arguments.hashKey = listAppend(arguments.hashKey, "stParam[#iHashKey#]:{complex}") />
+						</cfif>
+					</cfloop>
+				</cfif>
+			</cfif>
+	
+			
+			<!--- Check permissions on this webskin --->
+			<cfif not bIgnoreSecurity>
+				<cfif arguments.template eq "deniedaccess" or not application.security.checkPermission(type=webskinTypename,webskin=arguments.template)>
+					<!--- Make sure this page doesn't get cached --->
+					<cfif structKeyExists(request, "aAncestorWebskins")>
+						<cfloop from="1" to="#arraylen(request.aAncestorWebskins)#" index="i">
+							<cfset request.aAncestorWebskins[i].okToCache = 0 />
+							<cfif structKeyExists(stCurrentView, "cacheTimeout")>
+								<cfset request.aAncestorWebskins[i].cacheTimeout = stCurrentView.cacheTimeout />
+							</cfif>
+						</cfloop>
+					</cfif>
+
+					<cfsavecontent variable="stWebskin.webskinHTML"><cfinclude template="#getWebskinPath(webskinTypename,'deniedaccess')#" /></cfsavecontent>
+					<cfreturn stWebskin.webskinHTML />
+				</cfif>
+			</cfif>
+				
+			<cfif NOT structIsEmpty(stObj)>	
+	
+				<cfset stWebskin = application.coapi.objectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
+				
+				<cfif not len(stWebskin.webskinHTML)>			
+	
+					<cfif stobj.typename EQ "farCoapi">
+						<!--- This means its a type webskin and we need to look for the timeout value on the related type. --->			
+						<cfset stCoapi = application.fc.factory['farCoapi'].getData(objectid="#stobj.objectid#") />
+						<cfset webskinTypename = stCoapi.name />
+					</cfif>
+					<cfset webskinPath = application.coapi.coapiadmin.getWebskinPath(typename=webskinTypename, template=arguments.template) />
+							
+					<cfif len(webskinPath)>
+	
+						<cfset stWebskin.webskinHTML = runView(stobj="#stobj#", webskinTypename="#webskinTypename#", webskinTemplate="#arguments.template#", webskinPath="#webskinPath#", webskinCacheID="#stWebskin.webskinCacheID#", hashKey="#arguments.hashKey#", stParam="#arguments.stParam#", OnExit="#arguments.onExit#") />
+						
+					<cfelseif structKeyExists(arguments, "alternateHTML")>
+						<cfset stWebskin.webskinHTML = arguments.alternateHTML />
+					<cfelse>
+						<cfthrow type="Application" 
+								message="Error: Template not found [/webskin/#webskinTypename#/#arguments.template#.cfm] and no alternate html provided."
+								detail="Error: Template not found [/webskin/#webskinTypename#/#arguments.template#.cfm] and no alternate html provided. typename: #stobj.typename#. objectid: #stobj.objectid#." />
+					</cfif>	
+				</cfif>		
+			<cfelse>
+				<cfthrow type="Application" detail="Error: When trying to render [/webskin/#webskinTypename#/#arguments.template#.cfm] the object was not created correctly." />	
+			</cfif>
+			
+			<cfif structKeyExists(request, "aAncestorWebskins") AND arrayLen(request.aAncestorWebskins)>
+				<cfset request.currentViewTypename = request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].typename />
+				<cfset request.currentViewTemplate = request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].template />
+			</cfif>
+		
+		</cfif>
+		<cfreturn stWebskin.webskinHTML />
+	</cffunction>
+	
+		
+	<cffunction name="runView" access="private" output="false" returntype="string" hint="Calls the current view and returns the generated content. Used by getView on types, forms and rules.">
+	
+		<cfargument name="stobj" required="true" />
+		<cfargument name="webskinTypename" required="true" />
+		<cfargument name="webskinTemplate" required="true" />
+		<cfargument name="webskinPath" required="true" />
+		<cfargument name="webskinCacheID" required="true" />
+		<cfargument name="hashKey" required="true" />
+		<cfargument name="stparam" required="false" type="struct" default="#structNew()#" hint="Structure of parameters to be passed into the display handler." />	
+		<cfargument name="OnExit" required="false" type="any" default="" />
+		
+		<cfset var stCurrentView = structNew() />
+		<cfset var webskinHTML = "" />
+		
+		<!--- Setup the current request.aAncestorWebskins in case this does not yet exist --->
+		<cfif not structKeyExists(request, "aAncestorWebskins")>
+			<cfset request.aAncestorWebskins = arrayNew(1) />
+		</cfif>	
+		
+		<!--- Add the current view to the array --->
+		<cfset stCurrentView.objectid = arguments.stobj.objectid />
+		<cfset stCurrentView.typename = arguments.webskinTypename />
+		<cfset stCurrentView.template = arguments.webskinTemplate />
+		<cfset stCurrentView.hashKey = arguments.hashKey />
+		<cfset stCurrentView.cacheStatus = application.coapi.coapiadmin.getWebskinCacheStatus(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
+		<cfset stCurrentView.cacheTimeout = application.coapi.coapiadmin.getWebskinCacheTimeOut(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
+		<cfset stCurrentView.cacheByURL = application.coapi.coapiadmin.getWebskincacheByURL(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
+		<cfset stCurrentView.cacheByForm = application.coapi.coapiadmin.getWebskincacheByForm(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
+		<cfset stCurrentView.cacheByRoles = application.coapi.coapiadmin.getWebskincacheByRoles(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
+		<cfset stCurrentView.cacheByVars = application.coapi.coapiadmin.getWebskincacheByVars(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
+		<cfset stCurrentView.lFarcryViewStates = "" />
+		<cfset stCurrentView.okToCache = 1 />
+		<cfset stCurrentView.inHead = structNew() />
+		<cfset stCurrentView.inHead.stCustom = structNew() />
+		<cfset stCurrentView.inHead.aCustomIDs = arrayNew(1) />
+		<cfset stCurrentView.inHead.stOnReady = structNew() />
+		<cfset stCurrentView.inHead.aOnReadyIDs = arrayNew(1) />
+		<cfset arrayAppend(request.aAncestorWebskins, stCurrentView) />					
+		
+		<!--- Here we are initialising the viewStates. After the call to the webskin, we will know which view states were used  --->
+		<cfset request.currentViewTypename = "#stCurrentView.typename#" />
+		<cfset request.currentViewTemplate = "#stCurrentView.template#" />
+		
+	
+		<!--- Include the View --->
+		<cfsavecontent variable="webskinHTML">
+			<cfif isdefined("request.mode.design") AND request.mode.design AND structKeyExists(url, "bWebskinTrace") AND url.bWebskinTrace EQ true>
+				<cfoutput><webskin typename="#arguments.webskinTypename#" Template="#arguments.webskinTemplate#" Path="#arguments.WebskinPath#"></cfoutput>
+			</cfif>
+			<cfinclude template="#arguments.WebskinPath#">
+			<cfif isdefined("request.mode.design") AND request.mode.design AND structKeyExists(url, "bWebskinTrace") AND url.bWebskinTrace EQ true>
+				<cfoutput></webskin></cfoutput>
+			</cfif>
+		
+		</cfsavecontent>					
+	
+		
+		<!--- If the current view (Last Item In the array) is still OkToCache --->
+		<cfif request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].okToCache>
+			<!--- Add the webskin to the object broker if required --->
+			<cfset bAdded = application.coapi.objectBroker.addWebskin(objectid=arguments.stobj.objectid, typename=arguments.stobj.typename, template=arguments.webskinTemplate, webskinCacheID=arguments.webskinCacheID, html=webskinHTML, stCurrentView=stCurrentView) />
+		</cfif>
+		
+		<cfif arrayLen(request.aAncestorWebskins)>
+			
+			<cfset oWebskinAncestor = createObject("component", application.stcoapi.dmWebskinAncestor.packagePath) />						
+			
+			<!--- 
+			Loop through ancestors to determine whether to add to dmWebskinAncestor Table
+			Only webskins that are cached are added to the table.
+			 --->
+			<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="i">
+				
+				<!--- Add the ancestor records so we know where this webskin is located throughout the site. --->
+				<cfif not structkeyexists(request.aAncestorWebskins[i],"objectid") or arguments.stobj.objectid NEQ request.aAncestorWebskins[i].objectID>
+					
+					<cfif structKeyExists(application.stcoapi[request.aAncestorWebskins[i].typename].stWebskins, request.aAncestorWebskins[i].template)>
+						<cfif application.stcoapi[request.aAncestorWebskins[i].typename].stWebskins[request.aAncestorWebskins[i].template].cacheStatus GT 0>
+							
+							<cfset stArgs = structnew() />
+	
+							<cfset stArgs.webskinObjectID = arguments.stobj.objectid />
+							<cfif structkeyexists(request.aAncestorWebskins[i],"objectid")>
+								<cfset stArgs.ancestorID = request.aAncestorWebskins[i].objectID />
+							<cfelse>
+								<cfset stArgs.ancestorTypename = request.aAncestorWebskins[i].typename />
+							</cfif>
+							<cfset stArgs.ancestorTemplate = request.aAncestorWebskins[i].template />
+							<cfset bAncestorExists = oWebskinAncestor.checkAncestorExists(argumentCollection=stArgs) />
+								
+							<cfif not bAncestorExists>
+								<cfset stProperties = structNew() />
+								<cfset stProperties.webskinObjectID = arguments.stobj.objectid />
+								<cfset stProperties.webskinTypename = arguments.stobj.typename />
+								<cfset stProperties.webskinTemplate = arguments.webskinTemplate />
+								<cfif structkeyexists(request.aAncestorWebskins[i],"objectid")>
+									<cfset stProperties.ancestorID = request.aAncestorWebskins[i].objectID />
+								</cfif>
+								<cfset stProperties.ancestorTypename = request.aAncestorWebskins[i].typename />
+								<cfset stProperties.ancestorTemplate = request.aAncestorWebskins[i].template />
+								
+								<cfset stResult = oWebskinAncestor.createData(stProperties=stProperties) />
+							</cfif>
+						</cfif>
+					</cfif>
+				</cfif>
+				
+				<!--- If this webskin is to never cache, make sure all ancestors also never cache --->
+				<cfif stCurrentView.cacheStatus EQ -1>
+					<cfset request.aAncestorWebskins[i].okToCache = 0 />
+				</cfif>
+				
+				<!--- If the timeout of this webskin is less than its parents, reset the parents timeout so timeout propogates upwards --->
+				<cfif stCurrentView.cacheTimeout LT request.aAncestorWebskins[i].cacheTimeout>
+					<cfset request.aAncestorWebskins[i].cacheTimeout = stCurrentView.cacheTimeout />
+				</cfif>
+				
+				<!--- If this webskin is to have its url hashed, make sure all ancestors also have their webskins hashed --->
+				<cfif stCurrentView.cacheByURL>
+					<cfset request.aAncestorWebskins[i].cacheByURL = true />
+				</cfif>
+				<cfif stCurrentView.cacheByForm>
+					<cfset request.aAncestorWebskins[i].cacheByForm = true />
+				</cfif>
+				<cfif stCurrentView.cacheByRoles>
+					<cfset request.aAncestorWebskins[i].cacheByRoles = true />
+				</cfif>
+				
+				<cfif listLen(stCurrentView.cacheByVars)>
+					<cfloop list="#stCurrentView.cacheByVars#" index="iViewState">
+						<cfif not listFindNoCase(request.aAncestorWebskins[i].cacheByVars,iViewState)>
+							<cfset request.aAncestorWebskins[i].cacheByVars = listAppend(request.aAncestorWebskins[i].cacheByVars, iViewState)	/>
+						</cfif>								
+					</cfloop>
+				</cfif>
+	
+			</cfloop>
+		</cfif>
+		
+		<!--- Remove the current view (last item in the array) from the Ancestor Webskins array --->
+		<cfset ArrayDeleteAt(request.aAncestorWebskins, arrayLen(request.aAncestorWebskins)) />
+	
+		<cfreturn webskinHTML />
+	
+	</cffunction>
+
 	<cffunction name="getNavID" access="public" output="false" returntype="string" hint="Returns the default Navigation objectID for the objectID passed in. Empty if it cant find anything applicable.">
 		<cfargument name="objectid" required="no" type="string" default="" hint="The objectid for which the navigation objectid is to be found." />
 		<cfargument name="typename" required="no" type="string" default="" hint="The typename of the object for which the navigation objectid is to be found." />
@@ -123,10 +463,13 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			</cfif>
 		</cfif>
 
+		<cfif structKeyExists(arguments.stObject, "typename")>
+			<cfset arguments.typename = arguments.stObject.typename />
+		</cfif>
 		<!--- If we still havnt found the navID, see if we can find a nav alias matching the typename --->
-		<cfif not len(navID) and structKeyExists(arguments.stObject, "typename")>
-			<cfif structKeyExists(application.navid, "#arguments.stObject.typename#")>
-				<cfset navID = listFirst(application.navid["#arguments.stObject.typename#"]) />
+		<cfif not len(navID) and len(arguments.typename)>
+			<cfif structKeyExists(application.navid, "#arguments.typename#")>
+				<cfset navID = listFirst(application.navid["#arguments.typename#"]) />
 			</cfif>
 		</cfif>
 		
@@ -1061,7 +1404,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		
 		<cfloop collection="#stFilteredWebskins#" item="webskinToCache">
-			<cfif stFilteredWebskins[webskinToCache] EQ 0>
+			<cfif stFilteredWebskins[webskinToCache] EQ 0><!--- ie. if the timeout is set to 0 --->
 				<cfset stReturnMetadata.stWebskins[webskinToCache].cacheStatus = -1 />
 				<cfset stReturnMetadata.stWebskins[webskinToCache].cacheTimeout = 0 />
 			<cfelse>

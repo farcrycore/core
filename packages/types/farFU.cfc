@@ -334,9 +334,13 @@
 					<cfif structIsEmpty(stLocal.stCurrentDefaultObject)>
 						<cfset stLocal.stCurrentSystemObject.bDefault = 1 />
 					</cfif>
-					
+					<cftry>
 					<cfset stLocal.stResult = setData(stProperties="#stLocal.stCurrentSystemObject#") />
-
+					<cfcatch type="any">
+						<cfoutput><p>#getUniqueFU(friendlyURL="#stLocal.newFriendlyURL#")#</p></cfoutput>
+						<cfdump var="#stLocal#" expand="false" label="stLocal" /><cfabort showerror="debugging" />
+					</cfcatch>
+					</cftry>
 				<cfelse>
 					<cfset stLocal.newFriendlyURL = getUniqueFU(friendlyURL="#stLocal.newFriendlyURL#", FUID="#stLocal.stCurrentSystemObject.objectid#") />
 					<cfif stLocal.newFriendlyURL NEQ stLocal.stCurrentSystemObject.friendlyURL>
@@ -1110,6 +1114,9 @@
 			
 				<!--- IF WE ARE USING A FRIENDLY URL OR OUR URL ALREADY CONTAINS A QUESTION MARK, THEN WE CAN USE REGULAR URL VARIABLES  --->
 				<cfif bFoundFU OR FindNoCase("?", returnURL)>
+					<cfif NOT FindNoCase("?", returnURL)>
+						<cfset returnURL = "#returnURL#?" />
+					</cfif>
 					<cfif len(arguments.type)>
 						<cfset returnURL = "#returnURL#&type=#arguments.type#" />
 					</cfif>

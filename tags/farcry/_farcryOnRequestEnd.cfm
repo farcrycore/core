@@ -57,6 +57,9 @@ $out:$
 
 <cfif structKeyExists(Request,"inHead") AND len(structKeyList(Request.InHead)) AND NOT request.mode.ajax>		
 
+		<!--- THIS VERSION NUMBER IS USED TO MAKE SURE IF WE EVER REPLACE JAVASCRIPT LIBRARIES, THAT THE USERS CACHE WILL BE FLUSHED --->
+		<cfset farcryJSVersion = "511a" />
+
 		<cfparam name="variables.stPlaceInHead" default="#StructNew()#">		
 		
 		<cfparam name="variables.stPlaceInHead.extCoreJS" default="0">
@@ -132,7 +135,6 @@ $out:$
 		<cfif isdefined("Request.InHead.FormValidation") AND Request.InHead.FormValidation>
 			<cfset variables.stPlaceInHead.FormValidationJS = 1>
 			<cfset variables.stPlaceInHead.prototypeJS = 1>
-			<cfset variables.stPlaceInHead.scriptaculousEffectsJS = 1>
 		</cfif>
 		<cfif isDefined("Request.InHead.swfObject") AND Request.InHead.swfObject>
 			<cfset variables.stPlaceInHead.swfObjectJS = 1>
@@ -280,32 +282,32 @@ $out:$
 			------------------------------------------------>
 			<cfif len(lCoreLibraries)>
 				<cfoutput>
-					<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?ajaxmode=1&amp;files=#lCoreLibraries#&amp;randomID=#application.randomID#"></script></cfoutput>
+					<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?ajaxmode=1&amp;files=#lCoreLibraries#&amp;fjsv=#farcryJSVersion#"></script></cfoutput>
 			</cfif>
 			
 						
 			<!--- Prototype Tree --->
 			<cfif isDefined("variables.stPlaceInHead.prototypeTreeJS") AND variables.stPlaceInHead.prototypeTreeJS>
 				<cfoutput>
-					<script src="#application.url.farcry#/js/prototypeTree/prototypeTree.js?randomID=#application.randomID#" type="text/javascript"></script></cfoutput>
+					<script src="#application.url.farcry#/js/prototypeTree/prototypeTree.js?fjsv=#farcryJSVersion#" type="text/javascript"></script></cfoutput>
 			</cfif>
 			
 			<!--- LIGHTBOX --->
 			<cfif isDefined("variables.stPlaceInHead.lightboxJS") AND variables.stPlaceInHead.lightboxJS>
 				<cfoutput>
-					<script type="text/javascript" src="#application.url.farcry#/js/lightbox/lightbox.js?randomID=#application.randomID#"></script></cfoutput>
+					<script type="text/javascript" src="#application.url.farcry#/js/lightbox/lightbox.js?fjsv=#farcryJSVersion#"></script></cfoutput>
 			</cfif>
 			
 			<!--- TABS --->
 			<cfif isDefined("variables.stPlaceInHead.TabsJS") AND variables.stPlaceInHead.TabsJS>
 				<cfoutput>
-					<script type="text/javascript" src="#application.url.farcry#/js/tabs/tabs.js?randomID=#application.randomID#"></script></cfoutput>
+					<script type="text/javascript" src="#application.url.farcry#/js/tabs/tabs.js?fjsv=#farcryJSVersion#"></script></cfoutput>
 			</cfif>
 			
 			<!--- DATE PICKER --->
 			<cfif isDefined("variables.stPlaceInHead.DateTimePickerJS") AND variables.stPlaceInHead.DateTimePickerJS>
 				<cfoutput>
-					<script type="text/javascript" src="#application.url.farcry#/js/DateTimePicker/DateTimePicker.js?randomID=#application.randomID#"></script></cfoutput>
+					<script type="text/javascript" src="#application.url.farcry#/js/DateTimePicker/DateTimePicker.js?fjsv=#farcryJSVersion#"></script></cfoutput>
 			</cfif>
 			
 			
@@ -320,7 +322,7 @@ $out:$
 			</cfif>			
 			<cfif len(lLibraries)>
 				<cfoutput>
-					<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?files=#lLibraries#&amp;randomID=#application.randomID#"></script></cfoutput>
+					<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?files=#lLibraries#&amp;fjsv=#farcryJSVersion#"></script></cfoutput>
 			</cfif>
 			
 			
@@ -328,14 +330,14 @@ $out:$
 			<!--- TINY MCE --->
 			<cfif isDefined("variables.stPlaceInHead.TinyMCEJS") AND variables.stPlaceInHead.TinyMCEJS>
 				<cfoutput>
-					<script src="#application.url.webtop#/js/tiny_mce/tiny_mce.js?randomID=#application.randomID#" type="text/javascript"></script></cfoutput>
+					<script src="#application.url.webtop#/js/tiny_mce/tiny_mce.js?fjsv=#farcryJSVersion#" type="text/javascript"></script></cfoutput>
 			</cfif>
 
 
 			<!--- JQUERY --->
 			<cfif isDefined("variables.stPlaceInHead.jQueryJS") AND variables.stPlaceInHead.jQueryJS>
 				<cfoutput>
-					<script src="#application.url.farcry#/js/jquery/jquery.js?randomID=#application.randomID#" type="text/javascript"></script></cfoutput>
+					<script src="#application.url.farcry#/js/jquery/jquery.js?fjsv=#farcryJSVersion#" type="text/javascript"></script></cfoutput>
 			</cfif>
 			
 	
@@ -390,38 +392,38 @@ $out:$
 		
 			<cfif isDefined("variables.stPlaceInHead.prototypeTreeCSS") AND variables.stPlaceInHead.prototypeTreeCSS>
 				<cfoutput>
-					<link rel="stylesheet" href="#application.url.farcry#/js/prototypeTree/prototypeTree.css?randomID=#application.randomID#" type="text/css" media="screen" /></cfoutput>
+					<link rel="stylesheet" href="#application.url.farcry#/js/prototypeTree/prototypeTree.css?fjsv=#farcryJSVersion#" type="text/css" media="screen" /></cfoutput>
 			</cfif>			
 			
 			<cfif isDefined("variables.stPlaceInHead.WizardCSS") AND variables.stPlaceInHead.WizardCSS>
 				<cfoutput>
-					<link rel="stylesheet" href="#application.url.farcry#/css/wizard.css?randomID=#application.randomID#" type="text/css" media="screen" /></cfoutput>
+					<link rel="stylesheet" href="#application.url.farcry#/css/wizard.css?fjsv=#farcryJSVersion#" type="text/css" media="screen" /></cfoutput>
 			</cfif>
 			
 			<cfif isDefined("variables.stPlaceInHead.FormsCSS") AND variables.stPlaceInHead.FormsCSS>
 				<cfoutput>
-					<link rel="stylesheet" type="text/css" href="#application.url.farcry#/css/forms.cfm?randomID=#application.randomID#" media="all" />
+					<link rel="stylesheet" type="text/css" href="#application.url.farcry#/css/forms.cfm?fjsv=#farcryJSVersion#" media="all" />
 				</cfoutput>
 			</cfif>
 			
 			<cfif isDefined("variables.stPlaceInHead.lightboxCSS") AND variables.stPlaceInHead.lightboxCSS>
 				<cfoutput>
-					<link rel="stylesheet" href="#application.url.farcry#/css/lightbox/lightbox.css?randomID=#application.randomID#" type="text/css" media="screen" /></cfoutput>
+					<link rel="stylesheet" href="#application.url.farcry#/css/lightbox/lightbox.css?fjsv=#farcryJSVersion#" type="text/css" media="screen" /></cfoutput>
 			</cfif>
 			<cfif isDefined("variables.stPlaceInHead.TabStyle1CSS") AND variables.stPlaceInHead.TabStyle1CSS>
 				<cfoutput>
-					<link rel="stylesheet" href="#application.url.farcry#/css/tabs/TabStyle1.css?randomID=#application.randomID#" type="text/css" media="screen" /></cfoutput>
+					<link rel="stylesheet" href="#application.url.farcry#/css/tabs/TabStyle1.css?fjsv=#farcryJSVersion#" type="text/css" media="screen" /></cfoutput>
 			</cfif>
 			<cfif isDefined("variables.stPlaceInHead.CalendarStyle1CSS") AND variables.stPlaceInHead.CalendarStyle1CSS>
 				<cfoutput>
-					<link rel="stylesheet" href="#application.url.farcry#/css/calendar/calendar-win2k-1.css?randomID=#application.randomID#" type="text/css" media="screen" /></cfoutput>
+					<link rel="stylesheet" href="#application.url.farcry#/css/calendar/calendar-win2k-1.css?fjsv=#farcryJSVersion#" type="text/css" media="screen" /></cfoutput>
 			</cfif>
 						
 	
 			<cfif isDefined("variables.stPlaceInHead.iehtcCSS") AND variables.stPlaceInHead.iehtcCSS>
 				<cfoutput>
 					<!--[if lt IE 7]>
-					<link rel="stylesheet" href="#application.url.farcry#/css/htc/iehtc.cfm?randomID=#application.randomID#" type="text/css" media="screen" />
+					<link rel="stylesheet" href="#application.url.farcry#/css/htc/iehtc.cfm?fjsv=#farcryJSVersion#" type="text/css" media="screen" />
 					<![endif]-->				
 				</cfoutput>
 			</cfif>
