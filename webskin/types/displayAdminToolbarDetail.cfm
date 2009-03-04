@@ -263,9 +263,11 @@
 					"click":{
 						fn:function(){
 							<cfif findnocase("bdebug=1",url.url)>
-								parent.updateContent("#application.fapi.fixURL(url=url.url,addvalues='bDebug=0')#");
+								<cfset rurl = application.fapi.fixURL(url=url.url,addvalues='bDebug=0') />
+								parent.updateContent("#rurl#");
 							<cfelse>
-								parent.updateContent("#application.fapi.fixURL(url=url.url,addvalues='bDebug=1')#");
+								<cfset rurl = application.fapi.fixURL(url=url.url,addvalues='bDebug=1') />
+								parent.updateContent("#rurl#");
 							</cfif>
 							Ext.getBody().mask("Working...");
 						}
@@ -286,9 +288,11 @@
 					"click":{
 						fn:function(){
 							<cfif findnocase("bwebskintrace=1",url.url)>
-								parent.updateContent("#application.fapi.fixURL(url=url.url,addvalues='bWebskinTrace=0')#");
+								<cfset rurl = application.fapi.fixURL(url=url.url,addvalues='bWebskinTrace=0') />
+								parent.updateContent("#rurl#");
 							<cfelse>
-								parent.updateContent("#application.fapi.fixURL(url=url.url,addvalues='designmode=1&bWebskinTrace=1')#");
+								<cfset rurl = application.fapi.fixURL(url=url.url,addvalues='bWebskinTrace=1') />
+								parent.updateContent("#rurl#");
 							</cfif>
 						}
 					}
