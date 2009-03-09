@@ -103,7 +103,7 @@
 								AND 	structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins, arguments.template)>
 							
 								<cfset stResult.webskinCacheID = generateWebskinCacheID(
-										typename="#arguments.typename#", 
+										typename="#webskinTypename#", 
 										template="#arguments.template#",
 										hashKey="#arguments.hashKey#"
 								) />
