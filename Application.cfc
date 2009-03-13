@@ -433,7 +433,8 @@
 			} else if (isDefined("session.dmProfile.bShowTray")) {
 				request.fc.bShowTray = session.dmProfile.bShowTray;
 			} else {
-				request.fc.bShowTray = 1;
+				request.fc.bShowTray = 0;
+				session.dmProfile.bShowTray = request.fc.bShowTray;
 			}
 		
 		}
