@@ -645,7 +645,7 @@
 				</cfif>
 
 				<cfif attributes.bShowFieldHints AND structKeyExists(ftFieldMetadata,"ftHint") and len(ftFieldMetadata.ftHint)>
-					<cfoutput><div class="fieldAlign"><small class="ftHint">#ftFieldMetadata.ftHint#</small></div></cfoutput>
+					<cfoutput><div class="ftHint"><small>#ftFieldMetadata.ftHint#</small></div></cfoutput>
 				</cfif>
 				
 				<cfif Attributes.InTable EQ 1>
