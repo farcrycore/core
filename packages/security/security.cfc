@@ -285,7 +285,7 @@
 		
 		<cfloop list="#udlist#" index="ud">
 			<!--- Authenticate user --->
-			<cfset stResult = this.userdirectories[ud].authenticate() />
+			<cfset stResult = this.userdirectories[ud].authenticate(argumentCollection="#arguments#") />
 			
 			<!--- This allows your userdirectory check multiple user directories and pass back the successfull one. --->
 			<cfif not structKeyExists(stResult, "UD")>
