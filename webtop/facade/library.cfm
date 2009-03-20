@@ -229,7 +229,7 @@ IT IS SET IN  AJAXUPDATEARRAY FUNCTION OF THE LIBRARY.CFC
 		</cfquery>
 	<cfelse> <!--- Dirty hack to get this query working for MySQL and possibly Postgres --->
 		<cfquery datasource="#application.dsn#" name="qSearchResults">
-			SELECT objectID as `key` , label FROM #application.dbowner#`#request.ftJoin#`	
+			SELECT objectID as "key" , label FROM #application.dbowner##request.ftJoin#	
 			WHERE label like <cfqueryparam cfsqltype="cf_sql_varchar" value="%#filterCriteria#%">
 			Order by label
 		</cfquery>
