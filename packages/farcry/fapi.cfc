@@ -289,7 +289,7 @@
 	
 
 	<cffunction name="setData" access="public" output="false" returnType="struct" hint="Allows you to run setData() on a type for an objectID">
-		<cfargument name="objectid" type="UUID" required="true" hint="The objectid for which object is to be set" />
+		<cfargument name="objectid" type="string" required="false" default="" hint="The objectid for which object is to be set" />
 		<cfargument name="typename" type="string" required="false" default="" hint="The typename of the objectid. Pass in to avoid having to lookup the type." />
 
 		<cfargument name="stProperties" required="false" default="#structNew()#">
@@ -307,8 +307,12 @@
 		
 		<cfset o = getContentType(arguments.typename) />
 		
-		<cfset arguments.stProperties.objectid = arguments.objectid />
-		<cfset arguments.stProperties.typename = arguments.typename />
+		<cfif len(arguments.objectid)>
+			<cfset arguments.stProperties.objectid = arguments.objectid />
+		</cfif>
+		<cfif len(arguments.typename)>
+			<cfset arguments.stProperties.typename = arguments.typename />
+		</cfif>
 		
 		<cfloop collection="#arguments#" item="i">
 			<cfif NOT listFindNoCase(lReserved, i)>
@@ -681,7 +685,9 @@
 		<cfargument name="tagContext" type="array" default="#arrayNew(1)#" />
 		
 		<cfset var stResult = structNew() />
+		<cfset var lReserved = "message,detail,type,name,errNumber,stackTrace,tagContext" />
 		
+
 		<cfset stResult.bSuccess = true />
 		<cfset stResult.message = arguments.message />
 		<cfset stResult.detail = arguments.detail />
@@ -690,6 +696,12 @@
 		<cfset stResult.errNumber = arguments.errNumber />
 		<cfset stResult.stackTrace = arguments.stackTrace />
 		<cfset stResult.tagContext = arguments.tagContext />
+		
+		<cfloop collection="#arguments#" item="i">
+			<cfif NOT listFindNoCase(lReserved, i)>
+				<cfset stResult[i] = arguments[i] />
+			</cfif>
+		</cfloop>
 		
 		<cfreturn stResult />
 	
@@ -705,6 +717,7 @@
 		<cfargument name="tagContext" type="array" default="#arrayNew(1)#" />
 		
 		<cfset var stResult = structNew() />
+		<cfset var lReserved = "message,detail,type,name,errNumber,stackTrace,tagContext" />
 		
 		<cfset stResult.bSuccess = false />
 		<cfset stResult.message = arguments.message />
@@ -714,6 +727,12 @@
 		<cfset stResult.errNumber = arguments.errNumber />
 		<cfset stResult.stackTrace = arguments.stackTrace />
 		<cfset stResult.tagContext = arguments.tagContext />
+		
+		<cfloop collection="#arguments#" item="i">
+			<cfif NOT listFindNoCase(lReserved, i)>
+				<cfset stResult[i] = arguments[i] />
+			</cfif>
+		</cfloop>
 		
 		<cfreturn stResult />
 	
