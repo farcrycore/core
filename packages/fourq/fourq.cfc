@@ -160,21 +160,21 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				if (showLoadIndicator == undefined){var showLoadIndicator = false};
 				if (indicatorText == undefined){var indicatorText = 'loading...'};
 				
-				var mgr = Ext.get(divID);
+				var el = Ext.get(divID);
 				
-				if(mgr) {
-					mgr.getUpdater();
+				if(el) {
+					var mgr = el.getUpdater();
 					
 					mgr.showLoadIndicator = showLoadIndicator;
 					if (showLoadIndicator==true){
 						mgr.indicatorText = indicatorText;
-					}
+					}					
 					mgr.update(
 					{
 						url: action,
 						nocache: true,
 						scripts: true,
-						timeout: timeout
+						timeout: timeout						
 					});
 				}
 			}
@@ -1458,7 +1458,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfswitch expression="#arguments.value#">
 			<cfcase value="label">
 				<cfif len(application.stCOAPI[variables.typename].stProps[arguments.property].metadata["ftLabel"])>
-					<cfreturn application.rb.getResource("coapi.#variables.typename#.properties.#arguments.property#@#arguments.value#",application.stCOAPI[variables.typename].stProps[arguments.property].metadata["ftLabel"]) />
+					<cfreturn application.rb.getResource("coapi.#variables.typename#.properties.#arguments.property#@#application.stCOAPI[variables.typename].stProps[arguments.property].metadata["ftLabel"]#",application.stCOAPI[variables.typename].stProps[arguments.property].metadata["ftLabel"]) />
 				<cfelse>
 					<cfreturn application.rb.getResource("coapi.#variables.typename#.properties.#arguments.property#@#arguments.value#",application.stCOAPI[variables.typename].stProps[arguments.property].metadata["name"]) />
 				</cfif>
