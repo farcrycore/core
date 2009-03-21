@@ -40,7 +40,7 @@
 				<cfoutput query="qAll" group="countryname">
 					<cfif qCountries.recordcount gt 1><optgroup label="#qAll.countryname[qAll.currentrow]#"></cfif>
 					
-					<cfoutput><option value="#qAll[arguments.stMetadata.ftValue][qAll.currentrow]#">#qAll.name[qAll.currentrow]#</option></cfoutput>
+					<cfoutput><option value="#qAll[arguments.stMetadata.ftValue][qAll.currentrow]#" <cfif qAll[arguments.stMetadata.ftValue][qAll.currentrow] EQ arguments.stMetadata.value>selected='selected'</cfif>>#qAll.name[qAll.currentrow]#</option></cfoutput>
 				
 					<cfif qCountries.recordcount gt 1></optgroup></cfif>
 				</cfoutput>
