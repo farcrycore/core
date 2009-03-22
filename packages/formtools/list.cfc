@@ -172,7 +172,7 @@
 		</cfif>
 		
 		<cfloop list="#arguments.stMetadata.ftList#" index="i">			
-			<cfif listcontainsnocase(arguments.stMetadata.value,ListFirst(i,":"))>
+			<cfif listFindNoCase(arguments.stMetadata.value,ListFirst(i,":"))>
 				<cfset html = listappend(html,ListLast(i,":")) />
 			</cfif>
 		</cfloop>
