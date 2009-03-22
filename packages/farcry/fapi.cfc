@@ -300,17 +300,11 @@
 		
 		<cfset var o = "" />
 		<cfset var lReserved = "objectid,typename,stProperties,dsn,dbtype,dbowner,bSessionOnly" />
-		
-		<cfif not len(arguments.typename)>
-			<cfset arguments.typename = findType(objectid="#arguments.objectid#") />
-		</cfif>
-		
-		<cfset o = getContentType(arguments.typename) />
-		
-		<cfif len(arguments.objectid)>
+	
+		<cfif not structKeyExists(arguments.stProperties, "objectid")>
 			<cfset arguments.stProperties.objectid = arguments.objectid />
 		</cfif>
-		<cfif len(arguments.typename)>
+		<cfif not structKeyExists(arguments.stProperties, "typename")>
 			<cfset arguments.stProperties.typename = arguments.typename />
 		</cfif>
 		
@@ -319,13 +313,19 @@
 				<cfset arguments.stProperties[i] = arguments[i] />
 			</cfif>
 		</cfloop>
+
+		<cfif not len(arguments.stProperties.typename)>
+			<cfset arguments.stProperties.typename = findType(objectid="#arguments.stProperties.objectid#") />
+		</cfif>		
+		
+		<cfset o = getContentType(arguments.stProperties.typename) />
 		
 		<cfreturn o.setData(
 			stProperties="#arguments.stProperties#",
 			dsn="#arguments.dsn#",
 			dbtype="#arguments.dbtype#",
 			dbowner="#arguments.dbowner#",
-			bSessionOnly="#arguments.bSessionOnly#"		
+			bSessionOnly="#arguments.bSessionOnly#"
 		)>
 		
 		<cfreturn application.coapi.coapiutilities.getContentObject(argumentCollection="#arguments#") />
