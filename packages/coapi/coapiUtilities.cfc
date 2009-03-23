@@ -168,7 +168,7 @@
 			<cfif qFindType.recordCount>
 				<cfset result = qFindType.typename />
 			<cfelse>		
-				<cfif structKeyExists(Session, "TempObjectStore") 
+				<cfif isDefined("Session") AND structKeyExists(Session, "TempObjectStore") 
 					AND structKeyExists(Session.TempObjectStore, "#arguments.objectid#")
 					AND structKeyExists(Session.TempObjectStore["#arguments.objectid#"], "typename")>
 					

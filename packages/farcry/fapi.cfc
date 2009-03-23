@@ -289,7 +289,7 @@
 	
 
 	<cffunction name="setData" access="public" output="false" returnType="struct" hint="Allows you to run setData() on a type for an objectID">
-		<cfargument name="objectid" type="UUID" required="true" hint="The objectid for which object is to be set" />
+		<cfargument name="objectid" type="string" required="false" default="" hint="The objectid for which object is to be set" />
 		<cfargument name="typename" type="string" required="false" default="" hint="The typename of the objectid. Pass in to avoid having to lookup the type." />
 
 		<cfargument name="stProperties" required="false" default="#structNew()#">
@@ -300,28 +300,32 @@
 		
 		<cfset var o = "" />
 		<cfset var lReserved = "objectid,typename,stProperties,dsn,dbtype,dbowner,bSessionOnly" />
-		
-		<cfif not len(arguments.typename)>
-			<cfset arguments.typename = findType(objectid="#arguments.objectid#") />
+	
+		<cfif not structKeyExists(arguments.stProperties, "objectid")>
+			<cfset arguments.stProperties.objectid = arguments.objectid />
 		</cfif>
-		
-		<cfset o = getContentType(arguments.typename) />
-		
-		<cfset arguments.stProperties.objectid = arguments.objectid />
-		<cfset arguments.stProperties.typename = arguments.typename />
+		<cfif not structKeyExists(arguments.stProperties, "typename")>
+			<cfset arguments.stProperties.typename = arguments.typename />
+		</cfif>
 		
 		<cfloop collection="#arguments#" item="i">
 			<cfif NOT listFindNoCase(lReserved, i)>
 				<cfset arguments.stProperties[i] = arguments[i] />
 			</cfif>
 		</cfloop>
+
+		<cfif not len(arguments.stProperties.typename)>
+			<cfset arguments.stProperties.typename = findType(objectid="#arguments.stProperties.objectid#") />
+		</cfif>		
+		
+		<cfset o = getContentType(arguments.stProperties.typename) />
 		
 		<cfreturn o.setData(
 			stProperties="#arguments.stProperties#",
 			dsn="#arguments.dsn#",
 			dbtype="#arguments.dbtype#",
 			dbowner="#arguments.dbowner#",
-			bSessionOnly="#arguments.bSessionOnly#"		
+			bSessionOnly="#arguments.bSessionOnly#"
 		)>
 		
 		<cfreturn application.coapi.coapiutilities.getContentObject(argumentCollection="#arguments#") />
@@ -332,6 +336,7 @@
 	
 		<cfargument name="href" default=""><!--- the actual href to link to --->
 		<cfargument name="objectid" default=""><!--- Added to url parameters; navigation obj id --->
+		<cfargument name="alias" default=""><!--- Navigation alias to use to find the objectid --->
 		<cfargument name="type" default=""><!--- Added to url parameters: Typename used with type webskin views --->
 		<cfargument name="view" default=""><!--- Added to url parameters: Webskin name used to render the page layout --->
 		<cfargument name="bodyView" default=""><!--- Added to url parameters: Webskin name used to render the body content --->
@@ -402,6 +407,8 @@
 				<cfset linkID = arguments.externallink />
 			<cfelseif len(arguments.objectid)>
 				<cfset linkID = arguments.objectid />
+			<cfelseif len(arguments.alias)>
+				<cfset linkID = getNavID(alias="#arguments.alias#") />
 			</cfif>
 	
 			<cfset returnURL = returnURL & application.fc.factory.farFU.getFU(objectid="#linkID#", type="#arguments.type#", view="#arguments.view#", bodyView="#arguments.bodyView#")>
@@ -681,7 +688,9 @@
 		<cfargument name="tagContext" type="array" default="#arrayNew(1)#" />
 		
 		<cfset var stResult = structNew() />
+		<cfset var lReserved = "message,detail,type,name,errNumber,stackTrace,tagContext" />
 		
+
 		<cfset stResult.bSuccess = true />
 		<cfset stResult.message = arguments.message />
 		<cfset stResult.detail = arguments.detail />
@@ -690,6 +699,12 @@
 		<cfset stResult.errNumber = arguments.errNumber />
 		<cfset stResult.stackTrace = arguments.stackTrace />
 		<cfset stResult.tagContext = arguments.tagContext />
+		
+		<cfloop collection="#arguments#" item="i">
+			<cfif NOT listFindNoCase(lReserved, i)>
+				<cfset stResult[i] = arguments[i] />
+			</cfif>
+		</cfloop>
 		
 		<cfreturn stResult />
 	
@@ -705,6 +720,7 @@
 		<cfargument name="tagContext" type="array" default="#arrayNew(1)#" />
 		
 		<cfset var stResult = structNew() />
+		<cfset var lReserved = "message,detail,type,name,errNumber,stackTrace,tagContext" />
 		
 		<cfset stResult.bSuccess = false />
 		<cfset stResult.message = arguments.message />
@@ -714,6 +730,12 @@
 		<cfset stResult.errNumber = arguments.errNumber />
 		<cfset stResult.stackTrace = arguments.stackTrace />
 		<cfset stResult.tagContext = arguments.tagContext />
+		
+		<cfloop collection="#arguments#" item="i">
+			<cfif NOT listFindNoCase(lReserved, i)>
+				<cfset stResult[i] = arguments[i] />
+			</cfif>
+		</cfloop>
 		
 		<cfreturn stResult />
 	

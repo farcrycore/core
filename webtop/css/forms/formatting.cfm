@@ -67,7 +67,7 @@ form div.error {color: ##666666;}
 form div.error p.error {font-weight: bold; color: ##ff0000;}
 form div.submit div {text-align: left;}
 form div input.inputSubmit, form div input.inputButton, input.inputSubmit, input.inputButton {color: ##000000;}
-form div small {}
+form div.ftHint small {color: ##666666;}
 
 form fieldset legend {line-height: 150%; font-size:110%;}
 form.formtool label.labelCheckbox, form.formtool label.labelRadio, form.formtool label.labelCheckbox, form.formtool label.labelRadio {text-indent: -18px; line-height: 120%;}

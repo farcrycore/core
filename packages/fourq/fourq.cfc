@@ -159,20 +159,24 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				if (timeout == undefined){var timeout = 30};
 				if (showLoadIndicator == undefined){var showLoadIndicator = false};
 				if (indicatorText == undefined){var indicatorText = 'loading...'};
-									
-				var mgr = Ext.get(divID).getUpdater();
-
-				mgr.showLoadIndicator = showLoadIndicator;
-				if (showLoadIndicator==true){
-					mgr.indicatorText = indicatorText;
+				
+				var el = Ext.get(divID);
+				
+				if(el) {
+					var mgr = el.getUpdater();
+					
+					mgr.showLoadIndicator = showLoadIndicator;
+					if (showLoadIndicator==true){
+						mgr.indicatorText = indicatorText;
+					}					
+					mgr.update(
+					{
+						url: action,
+						nocache: true,
+						scripts: true,
+						timeout: timeout						
+					});
 				}
-				mgr.update(
-				{
-					url: action,
-					nocache: true,
-					scripts: true,				
-					timeout: timeout
-				});
 			}
 			</script>
 			</cfoutput>
@@ -930,7 +934,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<!--------------------------------------- 
 			If the object is to be stored in the Database then run the appropriate gateway
 			----------------------------------------->	
-		   	<cfelse>				<!--- Make sure we remove the object from the objectBroker if we update something --->
+		   	<cfelse>
+				<!--- Make sure we remove the object from the objectBroker if we update something --->
 			    <cfif structkeyexists(stProperties, "objectid")>
 				    <cfset variables.objectBroker.RemoveFromObjectBroker(lObjectIDs=arguments.stProperties.ObjectID,typename=variables.typename)>
 			    </cfif>	    	   	
@@ -1453,7 +1458,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfswitch expression="#arguments.value#">
 			<cfcase value="label">
 				<cfif len(application.stCOAPI[variables.typename].stProps[arguments.property].metadata["ftLabel"])>
-					<cfreturn application.rb.getResource("coapi.#variables.typename#.properties.#arguments.property#@#arguments.value#",application.stCOAPI[variables.typename].stProps[arguments.property].metadata["ftLabel"]) />
+					<cfreturn application.rb.getResource("coapi.#variables.typename#.properties.#arguments.property#@#application.stCOAPI[variables.typename].stProps[arguments.property].metadata["ftLabel"]#",application.stCOAPI[variables.typename].stProps[arguments.property].metadata["ftLabel"]) />
 				<cfelse>
 					<cfreturn application.rb.getResource("coapi.#variables.typename#.properties.#arguments.property#@#arguments.value#",application.stCOAPI[variables.typename].stProps[arguments.property].metadata["name"]) />
 				</cfif>

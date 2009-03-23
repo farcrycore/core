@@ -44,6 +44,7 @@
 	<cfparam name="attributes.JSWindow" default="0"><!--- Default to not using a Javascript Window popup --->
 	<cfparam name="attributes.stJSParameters" default="#StructNew()#">
 	<cfparam name="attributes.anchor" default=""><!--- Anchor to place at the end of the URL string. --->
+	<cfparam name="attributes.onclick" default=""><!--- the js code to place in onclick --->
 	
 
 	<cfset href = application.fapi.getLink(argumentCollection="#attributes#") />
@@ -75,6 +76,9 @@
 		</cfif>
 		<cfif attributes.bShowTarget eq true>
 			<cfset tagoutput=tagoutput & ' target="#attributes.target#"'>
+		</cfif>
+		<cfif len(attributes.onclick)>
+			<cfset tagoutput=tagoutput & ' onclick="#attributes.onclick#"'>
 		</cfif>
 		<cfset tagoutput=tagoutput & '>'>
 	</cfif>

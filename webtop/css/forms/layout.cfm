@@ -86,6 +86,7 @@ form.formtool div.fieldSection {margin: 0px; padding: 0px; display: block; heigh
 form.formtool label {margin: 0px 0px 5px 0px; padding: 0px 10px 3px 5px; width: #request.formtool.widthLeft#; display: block; float: left; text-align: right;}
 /* formtool form right column layout styles */
 form.formtool div.fieldAlign {margin: 0px; padding: 0px; width: #request.formtool.widthRight#; display: block; float: left;}
+form.formtool div.ftHint {clear:both;float:none; margin-left: #request.formtool.widthLeft#;padding-left:10px;}
 
 <!--- form.formtool label {margin: 0px 0px 5px 0px; padding: 0px 5px 3px 5px; width: #columnLeftWidth#; display: block; float: left;} --->
 <!--- form.formtool .optional label, label.optional {}

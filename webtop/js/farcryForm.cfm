@@ -276,97 +276,102 @@ function newFarcryButton (id,type,size,value,text,icon,overIcon,iconPos,sprite,w
 	
 	var btn = Ext.get(id);
 	var btnWrap = Ext.get(id + '-wrap');
-	var btnMarkup = btnWrap.dom.innerHTML;
+		
+	if (btnWrap) {
+		
+		var btnMarkup = btnWrap.dom.innerHTML;
+		
+		var newBtnMarkup = 	'<table style="width: auto;' + btnstyle + '" id="' + id + '-tbl-wrap" class="f-btn ' + btnclass + '" cellspacing="0">' +
+							'<tbody class="f-btn-' + size + ' f-btn-icon-' + size + '-' + iconPos +'">' +
+								'<tr>' +
+									'<td class="f-btn-tl f-btn-bg"><i>&nbsp;</i></td>' +
+									'<td class="f-btn-tc f-btn-bg"></td>' +
+									'<td class="f-btn-tr f-btn-bg"><i>&nbsp;</i></td>' +
+								'</tr>' +
+								'<tr>' +
+									'<td class="f-btn-ml f-btn-bg"><i>&nbsp;</i></td>' +
+									'<td class="f-btn-mc f-btn-bg" onclick="' + onClick + '"><em class="" unselectable="on">' +
+										btnMarkup  +
+									'</em></td>' +
+									'<td class="f-btn-mr f-btn-bg"><i>&nbsp;</i></td>' +
+								'</tr>' +
+								'<tr>' +
+									'<td class="f-btn-bl f-btn-bg"><i>&nbsp;</i></td>' +
+									'<td class="f-btn-bc f-btn-bg"></td>' +
+									'<td class="f-btn-br f-btn-bg"><i>&nbsp;</i></td>' +
+								'</tr>' +
+							'</tbody>' +
+						'</table>'
+						 
+		dh.overwrite(btnWrap,newBtnMarkup);
 	
-	var newBtnMarkup = 	'<table style="width: auto;' + btnstyle + '" id="' + id + '-tbl-wrap" class="f-btn ' + btnclass + '" cellspacing="0">' +
-						'<tbody class="f-btn-' + size + ' f-btn-icon-' + size + '-' + iconPos +'">' +
-							'<tr>' +
-								'<td class="f-btn-tl f-btn-bg"><i>&nbsp;</i></td>' +
-								'<td class="f-btn-tc f-btn-bg"></td>' +
-								'<td class="f-btn-tr f-btn-bg"><i>&nbsp;</i></td>' +
-							'</tr>' +
-							'<tr>' +
-								'<td class="f-btn-ml f-btn-bg"><i>&nbsp;</i></td>' +
-								'<td class="f-btn-mc f-btn-bg" onclick="' + onClick + '"><em class="" unselectable="on">' +
-									btnMarkup  +
-								'</em></td>' +
-								'<td class="f-btn-mr f-btn-bg"><i>&nbsp;</i></td>' +
-							'</tr>' +
-							'<tr>' +
-								'<td class="f-btn-bl f-btn-bg"><i>&nbsp;</i></td>' +
-								'<td class="f-btn-bc f-btn-bg"></td>' +
-								'<td class="f-btn-br f-btn-bg"><i>&nbsp;</i></td>' +
-							'</tr>' +
-						'</tbody>' +
-					'</table>'
-					 
-	dh.overwrite(btnWrap,newBtnMarkup);
-
-	var newBtn = Ext.get(id + '-tbl-wrap');
-	
-	
-	<!--- THIS STOPS SUBMIT BUTTONS SUBMITTING. ENABLING JS TO DO ALL THE WORK. --->
-	Ext.get(id).on('click', this.onClick, this, {
-		preventDefault:true,
-		fn: function() { 
+		var newBtn = Ext.get(id + '-tbl-wrap');
+		
+		
+		<!--- THIS STOPS SUBMIT BUTTONS SUBMITTING. ENABLING JS TO DO ALL THE WORK. --->
+		Ext.get(id).on('click', this.onClick, this, {
+			preventDefault:true,
+			fn: function() { 
+			}
+		});
+		
+		
+		if (sprite != null && sprite != '') {
+			Ext.select('##' + id + '-tbl-wrap .f-btn-bg').applyStyles('background-image:url(' + sprite +');');
 		}
-	});
-	
-	
-	if (sprite != null && sprite != '') {
-		Ext.select('##' + id + '-tbl-wrap .f-btn-bg').applyStyles('background-image:url(' + sprite +');');
-	}
-	if (icon != null && icon != '') {
-		Ext.select('##' + id + '-tbl-wrap button').applyStyles('background-image:url(' + icon +');');
-		if (text != null && text != '') {
-			newBtn.addClass('f-btn-text-icon');
+		if (icon != null && icon != '') {
+			Ext.select('##' + id + '-tbl-wrap button').applyStyles('background-image:url(' + icon +');');
+			if (text != null && text != '') {
+				newBtn.addClass('f-btn-text-icon');
+			} else {
+				newBtn.addClass('f-btn-icon');
+			}
 		} else {
-			newBtn.addClass('f-btn-icon');
+			newBtn.addClass('f-btn-noicon');
 		}
-	} else {
-		newBtn.addClass('f-btn-noicon');
-	}
+		
+		if (width != null && width != '') {
+			Ext.select('##' + id + '-tbl-wrap .f-btn-mc').applyStyles('width:' + width +';');
+		}
 	
-	if (width != null && width != '') {
-		Ext.select('##' + id + '-tbl-wrap .f-btn-mc').applyStyles('width:' + width +';');
-	}
-
+		
+		if (disabled == 'yes') {
+			Ext.select('##' + id + '-tbl-wrap').addClass('f-btn-disabled');
+		} else {
+		
+			Ext.select('##' + id + '-tbl-wrap .f-btn-mc').on('mouseover', this.onClick, this, {
+			    fn: function() { 
+			    	newBtn.addClass('f-btn-over'); 
+					if (overIcon != null && overIcon != '') {
+						Ext.select('##' + id + '-tbl-wrap button').applyStyles('background-image:url(' + overIcon +');');	
+						
+					}		    	
+			    }
+			});	
+			Ext.select('##' + id + '-tbl-wrap .f-btn-mc').on('mouseout', this.onClick, this, {
+			    fn: function() { 
+			    	newBtn.removeClass('f-btn-over'); 
+			    	newBtn.removeClass('f-btn-pressed');
+					if (overIcon != null && overIcon != '') {
+						Ext.select('##' + id + '-tbl-wrap button').applyStyles('background-image:url(' + icon +');');		
+					}		 
+			    }
+			});
+			Ext.select('##' + id + '-tbl-wrap .f-btn-mc').on('mousedown', this.onClick, this, {
+			    fn: function() { 
+			    	newBtn.addClass('f-btn-pressed'); 
+			    }
+			});
+			Ext.select('##' + id + '-tbl-wrap .f-btn-mc').on('mouseup', this.onClick, this, {
+			    fn: function() { 
+			    	newBtn.removeClass('f-btn-pressed'); 
+			    }
+			});
+		
 	
-	if (disabled == 'yes') {
-		Ext.select('##' + id + '-tbl-wrap').addClass('f-btn-disabled');
-	} else {
 	
-		Ext.select('##' + id + '-tbl-wrap .f-btn-mc').on('mouseover', this.onClick, this, {
-		    fn: function() { 
-		    	newBtn.addClass('f-btn-over'); 
-				if (overIcon != null && overIcon != '') {
-					Ext.select('##' + id + '-tbl-wrap button').applyStyles('background-image:url(' + overIcon +');');	
-					
-				}		    	
-		    }
-		});	
-		Ext.select('##' + id + '-tbl-wrap .f-btn-mc').on('mouseout', this.onClick, this, {
-		    fn: function() { 
-		    	newBtn.removeClass('f-btn-over'); 
-		    	newBtn.removeClass('f-btn-pressed');
-				if (overIcon != null && overIcon != '') {
-					Ext.select('##' + id + '-tbl-wrap button').applyStyles('background-image:url(' + icon +');');		
-				}		 
-		    }
-		});
-		Ext.select('##' + id + '-tbl-wrap .f-btn-mc').on('mousedown', this.onClick, this, {
-		    fn: function() { 
-		    	newBtn.addClass('f-btn-pressed'); 
-		    }
-		});
-		Ext.select('##' + id + '-tbl-wrap .f-btn-mc').on('mouseup', this.onClick, this, {
-		    fn: function() { 
-		    	newBtn.removeClass('f-btn-pressed'); 
-		    }
-		});
+		}
 	
-
-
 	}
 		
 }

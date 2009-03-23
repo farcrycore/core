@@ -421,7 +421,8 @@ a {color: ##116EAF;}
 							<cfelse>
 								<cfset stLog.event = "comment" />
 							</cfif>
-						<cfelse>
+						<cfelseif len(trim(thisline))>
+							<cfparam name="stLog.notes" default="" />
 							<cfset stLog.notes = "#stLog.notes##trim(thisline)#<br />" />
 						</cfif>
 					</cfloop>

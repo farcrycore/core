@@ -200,10 +200,7 @@
 		</cfloop>
 	</cfif>
 	
-	<!--- I18 conversion of field labels --->
-	<cfloop list="#lFieldsToRender#" index="prop">
-		<cfset stFields[prop].metadata.ftLabel = oType.getI18Property(property=prop,value='label') />
-	</cfloop>
+
 		
 	<!--- CHECK TO SEE IF OBJECTED HAS ALREADY BEEN RENDERED. IF SO, USE SAME PREFIX --->
 	<cfif isDefined("variables.stObj") and not structIsEmpty(variables.stObj)>
@@ -292,7 +289,10 @@
 		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i] = StructNew()>
 
 		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i] = Duplicate(stFields[i].MetaData)>
-
+		
+		<!--- I18 conversion of field labels --->
+		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].ftLabel = oType.getI18Property(property=i,value='label') />
+		
 		
 		<!--- If we have been sent stPropValues for this field then we need to set it to this value  --->
 		<cfif structKeyExists(request, "stFarcryFormValidation")
@@ -645,7 +645,7 @@
 				</cfif>
 
 				<cfif attributes.bShowFieldHints AND structKeyExists(ftFieldMetadata,"ftHint") and len(ftFieldMetadata.ftHint)>
-					<cfoutput><div class="fieldAlign"><small class="ftHint">#ftFieldMetadata.ftHint#</small></div></cfoutput>
+					<cfoutput><div class="ftHint"><small>#ftFieldMetadata.ftHint#</small></div></cfoutput>
 				</cfif>
 				
 				<cfif Attributes.InTable EQ 1>

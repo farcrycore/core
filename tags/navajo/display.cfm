@@ -233,7 +233,7 @@
 					parent.updateTray('#thistray#',document.title,'#thisurl#');
 			</script>
 		</cfoutput></skin:htmlHead>
-	<cfelseif request.mode.bAdmin and structkeyexists(session.dmProfile,"bShowTray") and not session.dmProfile.bShowTray and not request.mode.ajax><!--- Tray will only be disabled for admins if the admin has turned it off --->
+	<cfelseif request.mode.bAdmin and structkeyexists(session.dmProfile,"bShowTray") and not session.dmProfile.bShowTray and not (structkeyexists(request,"bHideContextMenu") and request.bHideContextMenu) and not request.mode.ajax><!--- Tray will only be disabled for admins if the admin has turned it off --->
 		<skin:htmlHead library="jQueryJS" />
 		<skin:htmlHead id="enabletray"><cfoutput>
 			<style type="text/css">
@@ -320,7 +320,7 @@
 						top.updateTray('#thistray#',document.title,'#thisurl#');
 				</script>
 			</cfoutput></skin:htmlHead>
-		<cfelseif request.mode.bAdmin and structkeyexists(session.dmProfile,"bShowTray") and not session.dmProfile.bShowTray and not request.mode.ajax><!--- Tray will only be disabled for admins if the admin has turned it off --->
+		<cfelseif request.mode.bAdmin and structkeyexists(session.dmProfile,"bShowTray") and not session.dmProfile.bShowTray and not (structkeyexists(request,"bHideContextMenu") and request.bHideContextMenu) and not request.mode.ajax><!--- Tray will only be disabled for admins if the admin has turned it off --->
 			<skin:htmlHead library="jQueryJS" />
 			<skin:htmlHead id="enabletray"><cfoutput>
 				<style type="text/css">
