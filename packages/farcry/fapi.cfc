@@ -336,6 +336,7 @@
 	
 		<cfargument name="href" default=""><!--- the actual href to link to --->
 		<cfargument name="objectid" default=""><!--- Added to url parameters; navigation obj id --->
+		<cfargument name="alias" default=""><!--- Navigation alias to use to find the objectid --->
 		<cfargument name="type" default=""><!--- Added to url parameters: Typename used with type webskin views --->
 		<cfargument name="view" default=""><!--- Added to url parameters: Webskin name used to render the page layout --->
 		<cfargument name="bodyView" default=""><!--- Added to url parameters: Webskin name used to render the body content --->
@@ -406,6 +407,8 @@
 				<cfset linkID = arguments.externallink />
 			<cfelseif len(arguments.objectid)>
 				<cfset linkID = arguments.objectid />
+			<cfelseif len(arguments.alias)>
+				<cfset linkID = getNavID(alias="#arguments.alias#") />
 			</cfif>
 	
 			<cfset returnURL = returnURL & application.fc.factory.farFU.getFU(objectid="#linkID#", type="#arguments.type#", view="#arguments.view#", bodyView="#arguments.bodyView#")>
