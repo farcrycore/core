@@ -399,6 +399,7 @@ a {color: ##116EAF;}
 			<cfloop query="qComments">
 				<cfif len(qComments.commentlog)>
 					<cfset stLog = structnew() />
+					<cfset stLog.notes = "" />
 					<cfloop list="#qComments.commentlog#" index="thisline" delimiters="#chr(10)##chr(13)#">
 						<cfif refind("\w+\(\d\d/\d\d/\d\d\d\d \d\d:\d\d:\d\d\):",thisline)>
 							<cfif not structisempty(stLog)>
