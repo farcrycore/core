@@ -22,7 +22,7 @@ $Developer: Matthew Bryant (mbryant@daemon.com.au) $
 	<cfoutput>	
 	<div id="#stobj.objectid#_flashMovieContainer"><img src="#application.url.farcry#/images/shim.gif" style="border: 1px dotted ##cc0000;background: ##ffffcc url('#application.url.webroot#/wsimages/flash.gif') center no-repeat;width:#stobj.flashWidth#px;height:#stobj.flashHeight#px;" /></div>
 
-	<script type="text/javascript">
+	<script type="text/javascript" defer="true">
 		
 		if(typeof SWFObject != "undefined") {
 			var so = new SWFObject("#swfpath#", "#stobj.objectid#_flashMovie", "#stobj.flashWidth#", "#stobj.flashHeight#", "#stobj.FlashVersion#", "#stobj.flashBgcolor#");
