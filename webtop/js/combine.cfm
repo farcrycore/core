@@ -20,8 +20,11 @@
 		<cfif listLen(url.files)>
 			<cfloop list="#url.files#" index="i" >
 				<cfoutput>
-					//-------------#i#-------------//
-					<cfinclude template="/farcry/core/webtop/js#url.library##i#" />
+					<cftry>
+						//-------------#i#-------------//
+						<cfinclude template="/farcry/core/webtop/js#replaceNoCase(url.library, '..', '', 'all')##replaceNoCase(i, '..', '', 'all')#" />
+						<cfcatch type="any">//-------------File Not Found-------------//</cfcatch>
+					</cftry>
 				</cfoutput>	
 			</cfloop>
 		</cfif>
