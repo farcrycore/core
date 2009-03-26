@@ -287,10 +287,12 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		<cfset var stCurrentView = structNew() />
 		<cfset var webskinHTML = "" />
+		<cfset var stTrace = "" />
 		
 		<!--- Setup the current request.aAncestorWebskins in case this does not yet exist --->
 		<cfif not structKeyExists(request, "aAncestorWebskins")>
 			<cfset request.aAncestorWebskins = arrayNew(1) />
+			<cfset request.aAncestorWebskinsTrace = arrayNew(1) /><!--- To Be Used for Trace Tree --->
 		</cfif>	
 		
 		<!--- Add the current view to the array --->
@@ -317,16 +319,42 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset request.currentViewTypename = "#stCurrentView.typename#" />
 		<cfset request.currentViewTemplate = "#stCurrentView.template#" />
 		
+		
 	
 		<!--- Include the View --->
 		<cfsavecontent variable="webskinHTML">
-			<cfif isdefined("request.mode.design") AND request.mode.design AND structKeyExists(url, "bWebskinTrace") AND url.bWebskinTrace EQ true>
-				<cfoutput><webskin typename="#arguments.webskinTypename#" Template="#arguments.webskinTemplate#" Path="#arguments.WebskinPath#"></cfoutput>
+			<cfif isdefined("request.mode.design") AND request.mode.design AND structKeyExists(url, "bWebskinTrace") AND url.bWebskinTrace EQ true>				
+				<cfset stTrace = structNew() />
+				<cfset stTrace.objectid = application.fapi.getUUID() />
+				<cfset stTrace.typename = stCurrentView.typename />
+				<cfset stTrace.template = stCurrentView.template />
+				<cfset stTrace.path = arguments.WebskinPath />
+				<cfset stTrace.cacheStatus = stCurrentView.cacheStatus />
+				<cfset stTrace.cacheByVars = stCurrentView.cacheByVars />
+				<cfset stTrace.cacheByRoles = stCurrentView.cacheByRoles />
+				<cfset stTrace.level = arrayLen(request.aAncestorWebskins) />
+				<cfset arrayAppend(request.aAncestorWebskinsTrace, stTrace) />	
+				<cfoutput>
+				<div id="#stTrace.objectid#" class="webskin-tracer" style="display:none;">
+					<div id="#stTrace.objectid#-highlight" style="border:2px solid red;background-color:##fff;opacity:0.9;height: 175px;width:250px;">
+						<div style="padding:50px 10px 10px 10px;font-size:10px;">
+							<span style="font-weight:bold;">#stTrace.objectid#</span><br />
+							<span style="font-weight:bold;">Type</span>: #stTrace.typename#<br />
+							<span style="font-weight:bold;">Webskin</span>: #stTrace.template#<br />
+							<span style="font-weight:bold;">Path</span>: #stTrace.path#<br />
+							<span style="font-weight:bold;">Caching</span>: #stTrace.cacheStatus#<br />
+							<cfif len(stTrace.cacheByVars)>
+								<span style="font-weight:bold;">Cache by vars</span>: #stTrace.cacheByVars#<br />
+							</cfif>
+							<cfif stTrace.cacheByRoles>
+								<span style="font-weight:bold;">Cache by roles</span>: #yesNoFormat(stTrace.cacheByRoles)#<br />
+							</cfif>
+						</div>
+					</div>
+				</div>
+				</cfoutput>
 			</cfif>
 			<cfinclude template="#arguments.WebskinPath#">
-			<cfif isdefined("request.mode.design") AND request.mode.design AND structKeyExists(url, "bWebskinTrace") AND url.bWebskinTrace EQ true>
-				<cfoutput></webskin></cfoutput>
-			</cfif>
 		
 		</cfsavecontent>					
 	
