@@ -250,7 +250,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 							
 					<cfif len(webskinPath)>
 	
-						<cfset stWebskin.webskinHTML = runView(stobj="#stobj#", webskinTypename="#webskinTypename#", webskinTemplate="#arguments.template#", webskinPath="#webskinPath#", webskinCacheID="#stWebskin.webskinCacheID#", hashKey="#arguments.hashKey#", stParam="#arguments.stParam#", OnExit="#arguments.onExit#") />
+						<cfset stWebskin.webskinHTML = runView(stobj="#stobj#", webskinTypename="#webskinTypename#", webskinTemplate="#arguments.template#", webskinPath="#webskinPath#", webskinCacheID="#stWebskin.webskinCacheID#", hashKey="#arguments.hashKey#", stParam="#arguments.stParam#", OnExit="#arguments.onExit#", dsn="#arguments.dsn#") />
 						
 					<cfelseif structKeyExists(arguments, "alternateHTML")>
 						<cfset stWebskin.webskinHTML = arguments.alternateHTML />
@@ -284,6 +284,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="hashKey" required="true" />
 		<cfargument name="stparam" required="false" type="struct" default="#structNew()#" hint="Structure of parameters to be passed into the display handler." />	
 		<cfargument name="OnExit" required="false" type="any" default="" />
+		<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
 		
 		<cfset var stCurrentView = structNew() />
 		<cfset var webskinHTML = "" />
