@@ -15,11 +15,11 @@
 	
 	<sec:CheckPermission generalpermission="Admin">
 		<cfif stObj.typename eq "farCOAPI">
-			<skin:view typename="#stObj.name#" webskin="displayAdminToolbarSummary" r_html="summarytoolbar" />
-			<skin:view typename="#stObj.name#" webskin="displayAdminToolbarDetail" r_html="detailstoolbar" />
+			<skin:view typename="#stObj.name#" webskin="displayAdminToolbarSummary" r_html="summarytoolbar" bAllowTrace="false" />
+			<skin:view typename="#stObj.name#" webskin="displayAdminToolbarDetail" r_html="detailstoolbar" bAllowTrace="false" />
 		<cfelse>
-			<skin:view stObject="#stObj#" webskin="displayAdminToolbarSummary" r_html="summarytoolbar" />
-			<skin:view stObject="#stObj#" webskin="displayAdminToolbarDetail" r_html="detailstoolbar" />
+			<skin:view stObject="#stObj#" webskin="displayAdminToolbarSummary" r_html="summarytoolbar" bAllowTrace="false" />
+			<skin:view stObject="#stObj#" webskin="displayAdminToolbarDetail" r_html="detailstoolbar" bAllowTrace="false" />
 		</cfif>
 		
 		<skin:htmlHead library="jQueryJS" />

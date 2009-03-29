@@ -90,7 +90,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="ajaxID" required="no" default="" type="string" hint="The id to give the div that will call the ajaxed webskin" />
 		<cfargument name="ajaxShowloadIndicator" required="no" default="false" type="boolean" hint="Should the ajax loading indicator be shown" />
 		<cfargument name="ajaxindicatorText" required="no" default="loading..." type="string" hint="What should be text of the loading indicator" />		
-		<cfargument name="bIgnoreSecurity" required="false" type="boolean" default="false" hint="Should the getView() ignore webskin security" />
+		<cfargument name="bIgnoreSecurity" required="false" type="boolean" default="false" hint="Should the getView() ignore webskin security" />	
+		<cfargument name="bAllowTrace" required="false" type="boolean" default="true" hint="Sometimes having webskin trace information can break the integrity of a page. This allows you to turn it off." />
 			
 		<cfset var stResult = structNew() />
 		<cfset var stObj = StructNew() />
@@ -109,6 +110,10 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+		<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
+		
+		<!--- Initialise webskin trace array --->
+		<cfparam name="request.aAncestorWebskinsTrace" default="#arrayNew(1)#" /><!--- To Be Used for Trace Tree --->
 		
 		<!--- init fourq --->
 		<cfset fourqInit() />	
@@ -181,15 +186,27 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			</script>
 			</cfoutput>
 			</skin:htmlHead>
-			<cfsavecontent variable="stWebskin.webskinHTML">
-				<cfoutput><div id="#arguments.ajaxID#"></div></cfoutput>
+			
+			<!--- Get the url for the ajax webskin loader --->
+			<cfset urlAjaxLoader = application.fapi.getLink(type="#stobj.typename#", objectid="#stobj.objectid#", urlParameters="view=#arguments.template#&ajaxmode=1") />,
 				
-				<skin:buildLink type="#stobj.typename#" objectid="#stobj.objectid#" urlParameters="view=#arguments.template#&ajaxmode=1" r_url="urlAjaxLoader">
+			<cfsavecontent variable="stWebskin.webskinHTML">
+				<cfoutput>
+				<farcry:traceWebskin 
+							objectid="#stobj.objectid#" 
+							typename="#stobj.typename#" 
+							template="#arguments.template#">
+				
+					<div id="#arguments.ajaxID#"></div>
+				
+				</farcry:traceWebskin>
+				
 				<extjs:onReady>
 					<cfoutput>
 						webskinAjaxLoader('#arguments.ajaxID#', '#urlAjaxLoader#', 30, #arguments.ajaxShowLoadIndicator#, '#arguments.ajaxIndicatorText#');
 					</cfoutput>
 				</extjs:onReady>
+				</cfoutput>
 			</cfsavecontent>
 		<cfelse>
 			
@@ -250,7 +267,17 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 							
 					<cfif len(webskinPath)>
 	
-						<cfset stWebskin.webskinHTML = runView(stobj="#stobj#", webskinTypename="#webskinTypename#", webskinTemplate="#arguments.template#", webskinPath="#webskinPath#", webskinCacheID="#stWebskin.webskinCacheID#", hashKey="#arguments.hashKey#", stParam="#arguments.stParam#", OnExit="#arguments.onExit#", dsn="#arguments.dsn#") />
+						<cfset stWebskin.webskinHTML = runView(
+															stobj="#stobj#", 
+															webskinTypename="#webskinTypename#", 
+															webskinTemplate="#arguments.template#", 
+															webskinPath="#webskinPath#", 
+															webskinCacheID="#stWebskin.webskinCacheID#", 
+															hashKey="#arguments.hashKey#", 
+															stParam="#arguments.stParam#", 
+															OnExit="#arguments.onExit#",
+															dsn="#arguments.dsn#",
+															bAllowTrace="#arguments.bAllowTrace#") />
 						
 					<cfelseif structKeyExists(arguments, "alternateHTML")>
 						<cfset stWebskin.webskinHTML = arguments.alternateHTML />
@@ -285,15 +312,18 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="stparam" required="false" type="struct" default="#structNew()#" hint="Structure of parameters to be passed into the display handler." />	
 		<cfargument name="OnExit" required="false" type="any" default="" />
 		<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
+		<cfargument name="bAllowTrace" required="false" type="boolean" default="true" hint="Sometimes having webskin trace information can break the integrity of a page. This allows you to turn it off." />
 		
 		<cfset var stCurrentView = structNew() />
 		<cfset var webskinHTML = "" />
 		<cfset var stTrace = "" />
+				
+		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+		<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
 		
 		<!--- Setup the current request.aAncestorWebskins in case this does not yet exist --->
 		<cfif not structKeyExists(request, "aAncestorWebskins")>
 			<cfset request.aAncestorWebskins = arrayNew(1) />
-			<cfset request.aAncestorWebskinsTrace = arrayNew(1) /><!--- To Be Used for Trace Tree --->
 		</cfif>	
 		
 		<!--- Add the current view to the array --->
@@ -324,39 +354,18 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	
 		<!--- Include the View --->
 		<cfsavecontent variable="webskinHTML">
-			<cfif isdefined("request.mode.design") AND request.mode.design AND structKeyExists(url, "bWebskinTrace") AND url.bWebskinTrace EQ true>				
-				<cfset stTrace = structNew() />
-				<cfset stTrace.objectid = application.fapi.getUUID() />
-				<cfset stTrace.typename = stCurrentView.typename />
-				<cfset stTrace.template = stCurrentView.template />
-				<cfset stTrace.path = arguments.WebskinPath />
-				<cfset stTrace.cacheStatus = stCurrentView.cacheStatus />
-				<cfset stTrace.cacheByVars = stCurrentView.cacheByVars />
-				<cfset stTrace.cacheByRoles = stCurrentView.cacheByRoles />
-				<cfset stTrace.level = arrayLen(request.aAncestorWebskins) />
-				<cfset arrayAppend(request.aAncestorWebskinsTrace, stTrace) />	
-				<cfoutput>
-				<div id="#stTrace.objectid#" class="webskin-tracer" style="display:none;">
-					<div id="#stTrace.objectid#-highlight" style="border:2px solid red;background-color:##fff;opacity:0.9;height: 175px;width:250px;">
-						<div style="padding:50px 10px 10px 10px;font-size:10px;">
-							<span style="font-weight:bold;">#stTrace.objectid#</span><br />
-							<span style="font-weight:bold;">Type</span>: #stTrace.typename#<br />
-							<span style="font-weight:bold;">Webskin</span>: #stTrace.template#<br />
-							<span style="font-weight:bold;">Path</span>: #stTrace.path#<br />
-							<span style="font-weight:bold;">Caching</span>: #stTrace.cacheStatus#<br />
-							<cfif len(stTrace.cacheByVars)>
-								<span style="font-weight:bold;">Cache by vars</span>: #stTrace.cacheByVars#<br />
-							</cfif>
-							<cfif stTrace.cacheByRoles>
-								<span style="font-weight:bold;">Cache by roles</span>: #yesNoFormat(stTrace.cacheByRoles)#<br />
-							</cfif>
-						</div>
-					</div>
-				</div>
-				</cfoutput>
-			</cfif>
+			
+			<farcry:traceWebskin 
+						objectid="#arguments.stobj.objectid#"
+						typename="#stCurrentView.typename#"
+						template="#stCurrentView.template#"
+						bAllowTrace="#arguments.bAllowTrace#"
+			>
+						
+			<!--- INCLUDE THE WEBSKIN --->
 			<cfinclude template="#arguments.WebskinPath#">
-		
+			
+			</farcry:traceWebskin>
 		</cfsavecontent>					
 	
 		
