@@ -174,7 +174,7 @@
 					
 					<!--- Also check the permission on the parent nav node --->
 					<cfset arguments.type = application.fapi.findType(arguments.object) />
-					<cfif application.stCOAPI[arguments.type].bUseInTree>
+					<cfif structKeyExists(application.stCOAPI[arguments.type], "bUseInTree") AND application.stCOAPI[arguments.type].bUseInTree>
 						<cfset oType = application.fapi.getContentType(arguments.type) />
 						<cfset result = result and this.factory.barnacle.checkPermission(object=oType.getNavID(objectid=arguments.object,typename=arguments.type),permission=arguments.permission,role=arguments.role) />
 					</cfif>
