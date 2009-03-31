@@ -282,10 +282,6 @@
 		
 		<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
 		
-		<cfif structkeyexists(url,"ud")>
-			<cfset udlist = url.ud />
-		</cfif>
-
 		<cfif isArray(udlist)>
 			<cfset udlist = arrayToList(udlist) />
 		</cfif>
