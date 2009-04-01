@@ -14,6 +14,11 @@
 	<cfset arrayappend(aProps,"reflected=true") />
 </cfif>
 
+<!--- Allows the container description to be different to the actual label. Defaults to the label --->
+<cfif not structKeyExists(stParam, "desc") OR not len(stparam.desc)>
+	<cfset stParam.desc = "#rereplace(stObj.label,'\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_','')#" />
+</cfif>
+
 <extjs:iframeDialog />
 
 <skin:htmlHead id="containers"><cfoutput>
@@ -73,7 +78,7 @@
 		</a>
 		<div class="title">
 			<div class="type">CONTAINER</div>
-			<a id="#replace(stObj.objectid,'-','','ALL')#_title" title="{<cfif arraylen(aProps)>#htmleditformat(arraytolist(aProps,", "))#</cfif>}" href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editAddRule&container=#originalcontainer#" target="_blank" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #rereplace(stObj.label,"\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_","")#',800,600,true,function(){ reloadContainer('#originalcontainer#'); });return false;">#rereplace(stObj.label,"\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_","")#</a>
+			<a id="#replace(stObj.objectid,'-','','ALL')#_title" title="{<cfif arraylen(aProps)>#htmleditformat(arraytolist(aProps,", "))#</cfif>}" href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editAddRule&container=#originalcontainer#" target="_blank" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #rereplace(stObj.label,"\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_","")#',800,600,true,function(){ reloadContainer('#originalcontainer#'); });return false;">#stparam.desc#</a><!---  --->
 			<cfif not structisempty(arguments.stParam.original)>
 				<span>(Shared container)</span>
 			</cfif>
