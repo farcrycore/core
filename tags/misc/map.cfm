@@ -1,18 +1,49 @@
 <cfsetting enablecfoutputonly="true" />
-<!--- @@displayname: Filter loop --->
-<!--- @@description: Loops over a set of values allowing enclosed code to process them and return new values. These new values are collected into an output set. --->
+<!---
+	@@displayname: Map
+	@@bDocument: true
+	
+	@@description:
+	<p>Loops over a set of values and gathers return values from enclosed code. These new values are collected into an output set.</p>
+	
+	@@examples:
+	<p>The basic use case is converting between complex data types. The following snippet creates a query from the url struct:</p>
+	<code>
+		<misc:map values="#url#" resulttype="querynew('key,value')">
+			<cfset sendback[1].key = index />
+			<cfset sendback[1].value = value />
+		</misc:map>
+		<cfdump var="#result#" />
+	</code>
+	
+	
+	<p>This is a more complex example from core .This snippet loops through the application.stCOAPI struct, then through the qWebskins query. As it goes through it is constructing a struct of webskin permissions:</p>
+	<code>
+		<misc:map values="#application.stCOAPI#" index="thistype" value="metadata" result="stWebskins" resulttype="struct" sendback="typesendback">
+			<misc:map values="#metadata.qWebskins#" index="currentrow" value="webskin" result="typesendback.#thistype#" resulttype="struct" sendback="webskinsendback">
+				<cfif len(webskin.methodname) and webskin.methodname neq "deniedaccess">
+					<cfset webskinsendback[webskin.methodname] = "Denied" />
+				</cfif>
+			</misc:map>
+		</misc:map>
+		<cfdump var="#stWebskins#" />
+	</code>
+	<p></p>
+--->
 
 <cfif not thistag.HasEndTag>
 	<cfthrow message="The map tag must have an end element">
 </cfif>
 
-<cfparam name="attributes.values" /><!--- The set of source values. Can be a struct, array, list, or query. Lists must be comma delimited. --->
-<cfparam name="attributes.index" default="index" /><!--- The variable that will contain the index of the source item. For structs this is the key. Defaults to "index" --->
-<cfparam name="attributes.value" default="value" /><!--- The variable that will contain the value of the source item. For queries this is a struct of the column values. If this value is a non-simple value (e.g. struct) editing it will alter the source set. Defaults to "value" --->
-<cfparam name="attributes.sendback" default="sendback" /><!--- The variable that enclosed code will add output items to. The type of this variable depends on the output set type. For structs, this is a struct which gets merged into the output set. For arrays, this is an array that gets appended to the output set. For lists this is a string that gets appended to the output list. For queries this is an array of row structs (containing one empty struct by default), each of which is appended to the output query. If this variable is "empty" (e.g. empty struct) no items are added to the output set. Defaults to "sendback" --->
-<cfparam name="attributes.resulttype" default="" /><!--- The output set type. Defaults to the same type as the source set. Values: "struct", "array", "list", or "querynew('col1,col2')" --->
+<cfparam name="attributes.values" /><!--- The set of source values. Can be a struct, array, list, or query. --->
+<cfparam name="attributes.index" default="index" /><!--- @@hint: The variable that will contain the index of the source item. For structs this is the key. --->
+<cfparam name="attributes.value" default="value" /><!--- @@hint: The variable that will contain the value of the source item. For queries this is a struct of the column values. If this value is a non-simple value (e.g. struct) editing it will alter the source set. Defaults to "value" --->
+<cfparam name="attributes.sendback" default="sendback" /><!--- @@hint: The variable that enclosed code will add output items to. The type of this variable depends on the output set type: For structs this is a struct which gets merged into the output set. For arrays this is an array that gets appended to the output set. For lists this is a string that gets appended to the output list. For queries this is an array of row structs (containing one empty struct by default), each of which is appended to the output query. If this variable is "empty" (e.g. empty struct) no items are added to the output set. Defaults to "sendback" --->
+<cfparam name="attributes.resulttype" default="" /><!--- @@hint: The output set type. Defaults to the same type as the source set. @@options: struct, array, list, querynew('col1,col2') @@default: Same as values --->
 <cfparam name="attributes.result" default="result" /><!--- The variable the output set is stored in once this tag has finished execution. Defaults to "result" --->
-<cfparam name="attributes.delimiters" default="," /><!--- Only applies for resulttype="list". Specifies an alternate delimiter for the output set. --->
+<cfparam name="attributes.delimiters" default="," /><!--- Only applies for resulttype="list". Specifies an alternate delimiter. --->
+<cfparam name="attributes.delimitersin" default="#attributes.delimiters#" /><!--- Only applies when values is a list. Specifies an alternate delimiter for the input list only. --->
+<cfparam name="attributes.delimitersout" default="#attributes.delimiters#" /><!--- Only applies for resulttype="list". Specifies an alternate delimiter for the output list only. --->
 
 <cffunction name="initMap" access="public" resulttype="boolean" description="Type specific initialisation for map. Returns true if there are items to process." output="false">
 	<cfif isstruct(attributes.values)>
@@ -87,7 +118,7 @@
 			<cfreturn attributes.values[arguments.index] />
 		</cfcase>
 		<cfcase value="list">
-			<cfreturn listgetat(attributes.values,arguments.index) />
+			<cfreturn listgetat(attributes.values,arguments.index,attributes.delimitersin) />
 		</cfcase>
 		<cfcase value="query">
 			<cfloop list="#attributes.values.columnlist#" index="thiscol">
@@ -146,7 +177,7 @@
 			</cfloop>
 		</cfcase>
 		<cfcase value="list">
-			<cfset thistag.result = listappend(thistag.result,caller[attributes.sendback],attributes.delimiters) />
+			<cfset thistag.result = listappend(thistag.result,caller[attributes.sendback],attributes.delimitersout) />
 		</cfcase>
 		<cfcase value="query">
 			<cfloop from="1" to="#arraylen(caller[attributes.sendback])#" index="i">
