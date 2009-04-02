@@ -1,11 +1,40 @@
 <cfsetting enablecfoutputonly="true" />
-<!--- @@displayname: Quicksort tag --->
-<!--- @@description: This tag provides "anonymous comparison function" sorting 
-functionality using the quick sort algorithm. It is useful for situations where 
-the requirements for a sort are too complex for the native functions. The quick 
-sort algorithm has been abstracted so that the comparisons between items can be 
-performed by the enclosed code. The enclosed code is executed for each 
-comparison. Note: This tag DOES alter array type source sets. --->
+<!--- 
+	@@displayname: Quicksort tag
+	@@bDocument: true
+	
+	@@description: 
+	<p>
+		This tag provides "anonymous comparison function" sorting 
+		functionality using the quick sort algorithm. It is useful for situations where 
+		the sort definition is too complex for the native functions. The quick 
+		sort algorithm has been abstracted so that the comparisons between items can be 
+		performed by the code enclosed by the tag. That code is executed for each 
+		comparison. Note: This tag DOES alter array type source sets.
+	</p>
+	
+	@@examples:
+	<p>This example sorts an array by the maximum of two struct variables:</p>
+	<code>
+		<cfset values = arraynew(1) />
+		<cfset values[1] = structnew() />
+		<cfset values[1].a = 10 />
+		<cfset values[1].b = 30 />
+		
+		<cfset values[2] = structnew() />
+		<cfset values[2].a = 25 />
+		<cfset values[2].b = 5 />
+		
+		<cfset values[3] = structnew() />
+		<cfset values[3].a = 15 />
+		<cfset values[3].b = 20 />
+		
+		<misc:sort values="#values#">
+			<cfset sendback = max(value2.a,value2.b) - max(value1.a,value1.b) />
+		</misc:sort>
+		<cfdump var="#result#" />
+	</code>
+ --->
 
 <cfparam name="attributes.values" /><!--- The source set. Can be a list, array, or struct. --->
 <cfparam name="attributes.value1" default="value1" /><!--- The variable that will contain the first value to be compared for an iteration. Defaults to "value1" --->

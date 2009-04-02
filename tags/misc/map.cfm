@@ -17,12 +17,12 @@
 	</code>
 	
 	
-	<p>This is a more complex example from core .This snippet loops through the application.stCOAPI struct, then through the qWebskins query. As it goes through it is constructing a struct of webskin permissions:</p>
+	<p>This is a more complex example from core .This snippet loops through the application.stCOAPI struct, then through the qWebskins query. As it goes through it is constructing a struct of webskin paths:</p>
 	<code>
 		<misc:map values="#application.stCOAPI#" index="thistype" value="metadata" result="stWebskins" resulttype="struct" sendback="typesendback">
 			<misc:map values="#metadata.qWebskins#" index="currentrow" value="webskin" result="typesendback.#thistype#" resulttype="struct" sendback="webskinsendback">
 				<cfif len(webskin.methodname) and webskin.methodname neq "deniedaccess">
-					<cfset webskinsendback[webskin.methodname] = "Denied" />
+					<cfset webskinsendback[webskin.methodname] = webskin.path />
 				</cfif>
 			</misc:map>
 		</misc:map>
