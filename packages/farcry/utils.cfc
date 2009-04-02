@@ -1,4 +1,4 @@
-<cfcomponent displayname="Utilities" hint="Packages generic utilities" output="true" bDocument="true" scopelocation="application.factory.oUtils">
+<cfcomponent displayname="Utilities" hint="Packages generic utilities" output="true">
 
 	<cffunction access="public" returntype="utils" name="init" output="false" hint="Constructor">
 		<cfargument name="aJarPaths" type="array" required="no" default="#arrayNew(1)#" />

@@ -1,4 +1,4 @@
-<cfcomponent displayName="Security Scope" hint="Encapsulates the generic higher-level security functions and variables" output="false" bDocument="true" scopelocation="application.security">
+<cfcomponent displayName="Security Scope" hint="Encapsulates the generic higher-level security functions and variables" output="false" scopelocation="application.security">
 
 	<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
 	

@@ -9,12 +9,24 @@
 	</cffunction>
 	
 	<!--- COAPI --->
-		<cffunction name="findType" access="public" output="false" returntype="string" hint="Returns the typename for an objectID. Returns empty string if objectid is not found.">
+		<!--- @@examples:
+			<p>The following snippet shows how to get the type of a related content item in a webskin:</p>
+			<code>
+				<cfset othertype = application.fapi.findType(stObj.aObjectIDs[1]) />
+			</code>
+		 --->
+		<cffunction name="findType" access="public" output="false" returntype="string" hint="Returns the typename for an objectID. Returns empty string if objectid is not found." bDocument="true">
 			<cfargument name="objectid" required="true" />
 			
 			<cfreturn application.coapi.coapiUtilities.findType(argumentCollection=arguments) />
 		</cffunction>
 		
+		<!--- @@examples:
+			<p>Instantiate a dmFile component:</p>
+			<code>
+				<cfset oFile = application.fapi.getContentType("dmFile") />
+			</code>
+		 --->
 		<cffunction name="getContentType" access="public" output="false" returntype="any" hint="Returns the an instantiated content type" bDocument="true">
 			<cfargument name="typename" type="string" required="true" />
 			
@@ -30,14 +42,27 @@
 			<cfreturn oResult />
 		</cffunction>
 		
-		<cffunction name="getContentObject" access="public" output="false" returnType="struct" hint="Allows you to fetch a content object with only the objectID">
+		<!--- @@examples:
+			<p>Retrieve the properties of the selected object after an objectadmin action:</p>
+			<code>
+				<cfset stObj = application.fapi.getContentType(form.selectedobjectid,"thistype") />
+			</code>
+			<p>Remember: if you know what the type is, pass it in to avoid an unnecessary database calls.</p>
+		 --->
+		<cffunction name="getContentObject" access="public" output="false" returnType="struct" hint="Allows you to fetch a content object with only the objectID" bDocument="true">
 			<cfargument name="objectid" type="UUID" required="true" hint="The objectid for which object is to be found" />
 			<cfargument name="typename" type="string" required="false" default="" hint="The typename of the objectid. Pass in to avoid having to lookup the type." />
 			
 			<cfreturn application.coapi.coapiutilities.getContentObject(argumentCollection="#arguments#") />
 		</cffunction>
 		
-		<cffunction name="setData" access="public" output="false" returnType="struct" hint="Allows you to run setData() on a type for an objectID">
+		<!--- @@examples:
+			<p>Save changes to an object:</p>
+			<code>
+				<cfset application.fapi.setData(stProperties=stObj) />
+			</code>
+		 --->
+		<cffunction name="setData" access="public" output="false" returnType="struct" hint="Allows you to run setData() on a type for an objectID" bDocument="true">
 			<cfargument name="objectid" type="string" required="false" default="" hint="The objectid for which object is to be set" />
 			<cfargument name="typename" type="string" required="false" default="" hint="The typename of the objectid. Pass in to avoid having to lookup the type." />
 	
@@ -128,7 +153,13 @@
 			<cfreturn application.coapi.coapiadmin.getWebskinCacheStatus(argumentCollection="#arguments#") />
 		</cffunction>
 		
-		<cffunction name="RemoveFromObjectBroker" access="public" output="false" returntype="struct" hint="Removes a list of objectids with their webskins from the object broker">
+		<!--- @@examples:
+			<p>Clear the object and it's webskins from the cache:</p>
+			<code>
+				<cfset application.fapi.removeFromObjectBroker(stObj.objectid) />
+			</code>
+		 --->
+		<cffunction name="removeFromObjectBroker" access="public" output="false" returntype="struct" hint="Removes a list of objectids with their webskins from the object broker" bDocument="true">
 			<cfargument name="lObjectIDs" required="true" type="string">
 			<cfargument name="typename" required="true" type="string" default="">
 			
@@ -155,7 +186,15 @@
 	</cffunction>
 	
 	<!--- SECURITY --->
-		<cffunction name="checkPermission" access="public" output="false" returntype="boolean" hint="Checks the permission against a role. The roles defaults to the currently logged in users assigned roles.">
+		<!--- @@examples:
+			<p>Show a link to the webtop if the current user has permission to access it:</p>
+			<code>
+				<cfif application.fapi.checkPermission("Admin")>
+					<a href="#application.url.webtop#/">Webtop</a>
+				</cfif>
+			</code>
+		 --->
+		<cffunction name="checkPermission" access="public" output="false" returntype="boolean" hint="Checks the permission against a role. The roles defaults to the currently logged in users assigned roles." bDocument="true">
 			<cfargument name="permission" required="true" />
 			<cfargument name="role" required="false" default="" hint="Defaults to the currently logged in users assigned roles" />
 			
@@ -163,14 +202,30 @@
 	
 		</cffunction>
 		
-		<cffunction name="CheckWebskinPermission" access="public" output="false" returntype="boolean" hint="Checks the view can be accessed by the role. The roles defaults to the currently logged in users assigned roles.">
+		<!--- @@examples:
+			<p>Only show a link if the user has permission to view the webskin:</p>
+			<code>
+				<cfif application.fapi.checkWebskinPermission("displaySensitiveDetails")>
+					<skin:buildLink type="dmProfile" view="displaySensitiveDetails">Show me everything</a>
+				</cfif>
+			</code>
+		 --->
+		<cffunction name="checkWebskinPermission" access="public" output="false" returntype="boolean" hint="Checks the view can be accessed by the role. The roles defaults to the currently logged in users assigned roles." bDocument="true">
 			<cfargument name="webkskin" required="true" />
 			<cfargument name="role" required="false" default="" hint="Defaults to the currently logged in users assigned roles" />
 			
 			<cfreturn application.security.checkPermission(webkskin=arguments.webkskin, role=arguments.role) />
 		</cffunction>
 		
-		<cffunction name="checkTypePermission" access="public" output="false" returntype="boolean" hint="Checks the permission against the type for a given role. The roles defaults to the currently logged in users assigned roles.">
+		<!--- @@examples:
+			<p>Include a webskin if the user has permission to add a news item:</p>
+			<code>
+				<cfif application.fapi.checkTypePermission("dmNews","Create")>
+					<skin:view typename="dmNews" webskin="displayAddNewsForm" />
+				</cfif>
+			</code>
+		 --->
+		<cffunction name="checkTypePermission" access="public" output="false" returntype="boolean" hint="Checks the permission against the type for a given role. The roles defaults to the currently logged in users assigned roles." bDocument="true">
 			<cfargument name="typename" required="true" />
 			<cfargument name="permission" required="true" /><!--- create,edit,delete,approve,canapproveowncontent,requestapproval,view --->
 			<cfargument name="role" required="false" default="" hint="Defaults to the currently logged in users assigned roles" />
@@ -178,7 +233,15 @@
 			<cfreturn application.security.checkPermission(typename=arguments.typename, permission=arguments.permission, role=arguments.role) />
 		</cffunction>
 		
-		<cffunction name="checkObjectPermission" access="public" output="false" returntype="boolean" hint="Checks the permission against the objectid for a given role. The roles defaults to the currently logged in users assigned roles.">
+		<!--- @@examples:
+			<p>If the user can access a node, show a link to it:</p>
+			<code>
+				<cfif application.fapi.checkObjectPermission(application.fapi.getNavID("archives","home"),"View")>
+					<skin:buildLink objectid="#application.fapi.getNavID("archives","home")#">Archives</skin:buildLink>
+				</cfif>
+			</code>
+		 --->
+		<cffunction name="checkObjectPermission" access="public" output="false" returntype="boolean" hint="Checks the permission against the objectid for a given role. The roles defaults to the currently logged in users assigned roles." bDocument="true">
 			<cfargument name="objectid" required="true" />
 			<cfargument name="permission" required="true"><!--- Approve,CanApproveOwnContent,ContainerManagement,Create,delete,edit RequestApproval,SendToTrash,view --->
 			<cfargument name="role" required="false" default="" hint="Defaults to the currently logged in users assigned roles" />
@@ -187,34 +250,80 @@
 		</cffunction>
 	
 		<!--- Current user queries --->
+		<!--- @@examples:
+			<p>Show a profile webskin if a user is logged in:</p>
+			<code>
+				<cfif application.fapi.isloggedIn()>
+					<skin:view stObject="#application.fapi.getCurrentUser()#" webskin="displayProfilePod" />
+				</cfif>
+			</code>
+		 --->
 		<cffunction name="isLoggedIn" access="public" output="false" returntype="boolean" hint="Returns true if a user has logged in." bDocument="true">
 			
 			<cfreturn application.security.isLoggedIn() />
 		</cffunction>
 			
-		<cffunction name="hasRole" returntype="boolean" output="false" access="public" hint="Returns true if the current user has the specified role">
+		<!--- @@examples:
+			<p>Show content if the current user has a specified role:</p>
+			<code>
+				<cfif application.fapi.hasRole("Member")>
+					<p>Welcome back!</p>
+				</cfif>
+			</code>
+		 --->
+		<cffunction name="hasRole" returntype="boolean" output="false" access="public" hint="Returns true if the current user has the specified role. This function should be used sparingly - adding and using permissions instead can make debugging security functionality much easier." bDocument="true">
 			<cfargument name="role" type="string" required="false" default="" hint="Roles to check" />
 			
 			<cfreturn application.security.hasRole(argumentCollection="#arguments#") />
-		
 		</cffunction>
 		
-		<cffunction name="getCurrentUser" access="public" returntype="struct" hint="Gets the currently logged in user's dmProfile or a blank structure if the user is not logged in.">
-		<cfif structKeyExists(session, "dmProfile")>
-			<cfreturn session.dmProfile />
-		<cfelse>
-			<cfreturn structNew() />
-		</cfif>
-	</cffunction>
+		<!--- @@examples:
+			<p>Get the current user:</p>
+			<code>
+				<cfset stProfile = application.fapi.getCurrentUser() />
+				<cfif not isstructempty(stProfile)>
+					<cfoutput>Hello #stProfile.firstname#</cfoutput>
+				</cfif>
+			</code>
+		 --->
+		<cffunction name="getCurrentUser" access="public" returntype="struct" hint="Gets the currently logged in user's dmProfile or a blank structure if the user is not logged in." bDocument="true">
+			<cfif structKeyExists(session, "dmProfile")>
+				<cfreturn session.dmProfile />
+			<cfelse>
+				<cfreturn structNew() />
+			</cfif>
+		</cffunction>
 	
 	<!--- GENERAL FARCRY --->
-		<cffunction name="showFarcryDate" access="public" output="false" returntype="boolean" hint="Returns boolean as to whether to show the date based on how farcry stores dates. ie, 2050 or +200 years.">
+		<!--- @@description:
+			<p>Due to restrictions across the various databases FarCry supports, null dates are NOT supported. To deal with this the formtools have been designed to use certain dates as null. Pass a date into this function to determine if it is a FarCry null date.</p>
+			
+			@@examples:
+			<p>In a news webskin check to see if it should still be published:</p>
+			<code>
+				<cfif not application.fapi.showFarcryDate(stObj.expirydate) or stObj.expirydate() gt now()>
+					<cfoutput>
+						<h2>#stObj.title#</h2>
+						<p>#stObj.teaser#</p>
+					</cfoutput>
+				</cfif>
+			</code>
+		 --->
+		<cffunction name="showFarcryDate" access="public" output="false" returntype="boolean" hint="Returns boolean as to whether to show the date based on how farcry stores dates. ie, 2050 or +200 years." bDocumented="true">
 			<cfargument name="date" required="true" hint="The date to check" />
-	
+			
 			<cfreturn createObject("component", "farcry.core.packages.types.types").showFarcryDate(argumentCollection="#arguments#") />
 		</cffunction>
 		
-		<cffunction name="getConfig" access="public" returntype="any" output="false" hint="Returns the value of any config item. If no default is sent and the property is not found, an error is thrown.">
+		<!--- @@examples:
+			<p>Retrieve a config value:</p>
+			<code>
+				<cfmail to="abc@def.com" to="#application.fapi.getConfig('admin','adminemail')#" subject="Hello">
+					Hello world.
+				</cfmail>
+			</code>
+		 --->
+		<cffunction name="getConfig" access="public" returntype="any" output="false" hint="Returns the value of any config item. If no default is sent and the property is not found, an error is thrown." bDocument="true">
 			<cfargument name="key" required="true" hint="The Config Key identifying the config form the property is located in." />
 			<cfargument name="name" required="true" hint="The name of the config property you wish to retrieve a value for." />
 			<cfargument name="default" required="false" hint="If the config item is not found, use this as the default." />
@@ -230,10 +339,17 @@
 			</cfif>
 			
 			<cfreturn result />
-			
 		</cffunction>
 		
-		<cffunction name="CheckNavID" access="public" returntype="boolean" output="false" hint="Returns true if the navigation alias is found.">
+		<!--- @@examples:
+			<p>Link to the archive navigation node if it has been defined:</p>
+			<code>
+				<cfif not application.fapi.checkNavID("archive")>
+					<skin:buildLink objectid="#application.fapi.getNavID("archive")#">Archive</skin:buildLink>
+				</cfif>
+			</code>
+		 --->
+		<cffunction name="checkNavID" access="public" returntype="boolean" output="false" hint="Returns true if the navigation alias is found." bDocument="true">
 			<cfargument name="alias" required="true" hint="The navigation alias" />
 	
 			<cfset result = "" />
@@ -247,7 +363,15 @@
 			<cfreturn result />
 		</cffunction>	
 		
-		<cffunction name="getNavID" access="public" returntype="string" output="false" hint="Returns the objectID of the dmNavigation record for the passed alias. If the alias does not exist, the alternate alias will be used. ">
+		<!--- @@examples:
+			<p>Link to the archive navigation node if it has been defined:</p>
+			<code>
+				<cfif not application.fapi.checkNavID("archive")>
+					<skin:buildLink objectid="#application.fapi.getNavID("archive")#">Archive</skin:buildLink>
+				</cfif>
+			</code>
+		 --->
+		<cffunction name="getNavID" access="public" returntype="string" output="false" hint="Returns the objectID of the dmNavigation record for the passed alias. If the alias does not exist, the alternate alias will be used." bDocument="true">
 			<cfargument name="alias" required="true" hint="The navigation alias" />
 			<cfargument name="alternateAlias" required="false" default="home" />
 			
@@ -265,7 +389,7 @@
 			<cfreturn result />
 		</cffunction>	
 		
-		<cffunction name="CheckCatID" access="public" returntype="boolean" output="false" hint="Returns true if the category alias is found.">
+		<cffunction name="checkCatID" access="public" returntype="boolean" output="false" hint="Returns true if the category alias is found.">
 			<cfargument name="alias" required="true" hint="The category alias" />
 	
 			<cfset result = "" />
@@ -298,8 +422,33 @@
 			<cfreturn result />
 		</cffunction>	
 		
-		<cffunction name="getLink" access="public" returntype="string" output="false" hint="returns the href of a link based on the arguments passed in. Acts as a facade call to build link with r_url.">
-		
+		<!--- @@examples:
+			<p>Home:</p>
+			<code>
+				<cfset urlHome = application.fapi.getLink(alias="home") />
+			</code>
+			
+			<p>A related object:</p>
+			<code>
+				<cfset urlRelated = application.fapi.getLink(objectid=stObj.relatedIDs[1]) />
+			</code>
+			
+			<p>An alternative page view of a related object:</p>
+			<code>
+				<cfset urlRelatedAlternate = application.fapi.getLink(objectid=stObj.aRelatedIDs[2],view="displayPageXML") />
+			</code>
+			
+			<p>An alternate body of a related object:</p>
+			<code>
+				<cfset urlRelatedSwitchBody = application.fapi.getLink(objectid=stObj.aRelatedIDs[3],bodyview="displayBodyFullDetail") />
+			</code>
+			
+			<p>Get a link to a type webskin:</p>
+			<code>
+				<cfset urlListing = application.fapi.getLink(type="dmNews",bodyview="displayTypeLatest") />
+			</code>
+		 --->
+		<cffunction name="getLink" access="public" returntype="string" output="false" hint="Returns the href of a link based on the arguments passed in. Acts as a facade call to build link with r_url." bDocument="true">
 			<cfargument name="href" default=""><!--- the actual href to link to --->
 			<cfargument name="objectid" default=""><!--- Added to url parameters; navigation obj id --->
 			<cfargument name="alias" default=""><!--- Navigation alias to use to find the objectid --->
@@ -433,17 +582,39 @@
 			
 		</cffunction>
 		
-		<cffunction name="getWebRoot" access="public" returntype="string" output="false" hint="Returns the url path to the webroot.">
+		<!--- @@examples:
+			<p>Redirect to the project webroot:</p>
+			<code>
+				<cflocation url="#application.fapi.getWebRoot()#" />
+			</code>
+		 --->
+		<cffunction name="getWebRoot" access="public" returntype="string" output="false" hint="Returns the url path to the webroot." bDocument="true">
 		
 			<cfreturn application.url.webroot />
 		</cffunction>	
 		
-		<cffunction name="getImageWebRoot" access="public" returntype="string" output="false" hint="Returns the path inside the webroot where all image property paths are relative to. By default, this is the webroot of the project.">
+		<!--- @@examples:
+			<p>In a webskin output an image tag for an image property:</p>
+			<code>
+				<cfif len(stObj.logo)>
+					<cfoutput><img src="#application.fapi.getImageWebRoot()##stObj.logo#" alt="#stObj.title#" /></cfoutput>
+				</cfif>
+			</code>
+		 --->
+		<cffunction name="getImageWebRoot" access="public" returntype="string" output="false" hint="Returns the path inside the webroot where all image property paths are relative to. By default, this is the webroot of the project." bDocument="true">
 		
 			<cfreturn application.url.imageRoot />
 		</cffunction>
 			
-		<cffunction name="getFileWebRoot" access="public" returntype="string" output="false" hint="Returns the path inside the webroot where all file property paths are relative to. By default, this is /files insite the webroot of the project.">
+		<!--- @@examples:
+			<p>In a webskin output a link for a file property:</p>
+			<code>
+				<cfif len(stObj.brochure)>
+					<cfoutput><a href="#application.fapi.getFileWebRoot()##stObj.brochure#">Brochure</a></cfoutput>
+				</cfif>
+			</code>
+		 --->
+		<cffunction name="getFileWebRoot" access="public" returntype="string" output="false" hint="Returns the path inside the webroot where all file property paths are relative to. By default, this is /files insite the webroot of the project." bDocument="true">
 	
 		<cfreturn application.url.fileRoot />
 	</cffunction>
@@ -535,12 +706,61 @@
 		
 		</cffunction>
 		
-		<cffunction name="getUUID" access="public" returntype="uuid" output="false" hint="">
+		<!--- @@description:
+			<p>The native createUUID is very usefull - unfortunately it always takes 10-15ms to run. This is fine for once off calls, but not for the frequent usage that might happen during an import.</p>
+			<p>This function bypasses that problem by accessing the Java equivilent directly.</p>
+			
+			@@examples:
+			<p>Generating many UUIDs:</p>
+			<code>
+				<cftimer label="createUUID()" type="inline">
+					<cfloop from="1" to="10000" index="i">
+						<cfset anotheruuid = createuuid() />
+					</cfloop>
+				</cftimer>
+				
+				<cftimer label="application.fapi.getUUID()" type="inline">
+					<cfloop from="1" to="10000" index="i">
+						<cfset anotheruuid = application.fapi.getUUID() />
+					</cfloop>
+				</cftimer>
+			</code>
+		 --->
+		<cffunction name="getUUID" access="public" returntype="uuid" output="false" hint="A fast createUUID alternative." bDocument="true">
 			
 			<cfreturn application.fc.utils.createJavaUUID() />
 		</cffunction>
 		
-		<cffunction name="fixURL" returntype="string" output="false" access="public" hint="Refreshes the page with the specified query string values removed, replaced, or added. New values can be specified with a query string, struct, or named arguments." bDocument="true">
+		<!--- @@examples:
+			<p>Refresh the current FarCry page:</p>
+			<code>
+				<cflocation url="#application.fapi.fixURL()#" />
+			</code>
+			
+			<p>Remove a query variable from a custom URL:</p>
+			<code>
+				<cfset formurl = application.fapi.fixURL(removevalues="searchstring") />
+			</code>
+			
+			<p>Remove your own query variables as well as FarCry query variables:</p>
+			<code>
+				<cfset docs = application.fapi.fixURL(removevalues="+searchstring") />
+			</code>
+			
+			<p>Replace or add query variables by specifying a query string:</p>
+			<code>
+				<cfset nextpage = application.fapi.fixURL(addvalues="page=#url.page+1#") />
+			</code>
+			
+			<p>Replace or add query variables by specifying a struct:</p>
+			<code>
+				<cfset st = structnew() />
+				<cfset st.a = 1 />
+				<cfset st.b = black />
+				<cfset newpage = application.fapi.fixURL("/otherpage.cfm?a=9",addvalues=st) />
+			</code>
+		 --->
+		<cffunction name="fixURL" returntype="string" output="false" access="public" hint="Corrects a URL with the specified query string values removed, replaced, or added. New values can be specified with a query string, struct, or named arguments. Also fixes friendly url query variables." bDocument="true">
 			<cfargument name="url" type="string" required="false" default="#cgi.script_name#?#cgi.query_string#" hint="The url to use" />
 			<cfargument name="removevalues" type="string" required="false" hint="List of values to remove from the query string. Prefix with '+' to remove these values in addition to the defaults." />
 			<cfargument name="addvalues" type="any" required="false" hint="A query string or a struct of values, to add to the query string" />
@@ -630,6 +850,22 @@
 	</cffunction>	
 
 	<!--- I18N --->
+		<!--- @@examples:
+			<p>Get a translated string:</p>
+			<code>
+				<cfoutput>#application.fapi.getResource("project.homepage.welcome","Welcome!")#</cfoutput>
+			</code>
+			
+			<p>Get a simple translated message:</p>
+			<code>
+				<cfoutput>#application.fapi.getResource("project.homepage.newmessages","You have {1} new messages",5)#</cfoutput>
+			</code>
+			
+			<p>Get a complex translated message:</p>
+			<code>
+				<cfoutput>#application.fapi.getResource("project.news.currentpage","Page {1} of {2}",application.fapi.array(3,5))#</cfoutput>
+			</code>
+		 --->
 		<cffunction name="getResource" access="public" output="false" returntype="string" hint="Returns the resource string" bDocument="true">
 			<cfargument name="key" type="string" required="true" />
 			<cfargument name="default" type="string" required="false" default="#arguments.key#" />
@@ -647,8 +883,13 @@
 	</cffunction>
 	
 	<!--- ARRAY FUNCTIONS --->
-		<cffunction name="array" access="public" output="false" returntype="array" hint="Creates an array from the passed in arguments">
-			
+		<!--- @@examples:
+			<p>Create and populate an array:</p>
+			<code>
+				<cfdump var="#application.fapi.array(5,"How now brown cow",url)#" />
+			</code>
+		 --->
+		<cffunction name="array" access="public" output="false" returntype="array" hint="Creates an array from the passed in arguments" bDocument="true">
 			<cfset var aResult = arrayNew(1) />
 			<cfset var i = "" />
 			
@@ -659,14 +900,27 @@
 			<cfreturn aResult />
 		</cffunction>
 	
+		<!--- @@examples:
+			<p>Search an array:</p>
+			<code>
+				<cfset a = application.fapi.array(4,3,2,1) />
+				<cfdump var="#application.fapi.arrayFind(a,2)#" />
+			</code>
+		 --->
 		<cffunction name="arrayFind" access="public" output="false" returntype="numeric" hint="Returns the index of the first element that matches the specified value. 0 if not found." bDocument="true">
-		<cfargument name="ar" type="array" required="true" hint="The array to search" />
-		<cfargument name="value" type="Any" required="true" hint="The value to find" />
-		
-		<cfreturn application.fc.utils.arrayFind(argumentCollection="#arguments#") />
-	</cffunction>
+			<cfargument name="ar" type="array" required="true" hint="The array to search" />
+			<cfargument name="value" type="Any" required="true" hint="The value to find" />
+			
+			<cfreturn application.fc.utils.arrayFind(argumentCollection="#arguments#") />
+		</cffunction>
 
 	<!--- LIST UTILITIES --->
+		<!--- @@examples:
+			<p>Put the list of plugins in order of greatest precendence:</p>
+			<code>
+				<cfdump var="#application.fapi.listReverse(application.plugins)#" />
+			</code>
+		 --->
 		<cffunction name="listReverse" access="public" output="false" returntype="string" hint="Reverses a list" bDocument="true">
 			<cfargument name="list" type="string" required="true" />
 			<cfargument name="delimiters" type="string" required="false" default="," />
@@ -698,6 +952,17 @@
 			<cfreturn application.fc.utils.listMerge(argumentCollection="#arguments#") />
 		</cffunction>
 	
+		<!--- @@examples:
+			<p>Get the first two, last three, and second through forth items in a list:</p>
+			<code>
+				<cfset colours = "blue,green,yellow,orange,red,purple" />
+				<cfoutput>
+					#application.fapi.listSlice(list=colours,end=2)#<br />
+					#application.fapi.listSlice(list=colours,start=-3)#<br />
+					#application.fapi.listSlice(list=colours,start=2,end=4)#<br />
+				</cfoutput>
+			</code>
+		 --->
 		<cffunction name="listSlice" access="public" output="false" returntype="string" hint="Returns the specified elements of the list" bDocument="true">
 			<cfargument name="list" type="string" required="true" hint="The list being sliced" />
 			<cfargument name="start" type="numeric" required="false" default="1" hint="The start index of the slice. Negative numbers are reverse indexes: -1 is last item." />
@@ -740,12 +1005,18 @@
 			<cfreturn application.fc.utils.listDiff(argumentCollection="#arguments#") />
 		</cffunction>
 	
-		<cffunction name="structCreate" returntype="struct" output="false" access="public" hint="Creates and populates a struct with the provided arguments" bDocument="true">
+		<cffunction name="structCreate" returntype="struct" output="false" access="public" hint="Creates and populates a struct with the provided arguments">
 			
 			<cfreturn application.fc.utils.structCreate(argumentCollection="#arguments#") />
 		</cffunction>
 	
-		<cffunction name="struct" returntype="struct" output="false" access="public" hint="Shortcut for creating structs">
+		<!--- @@examples:
+			<p>Create and populate a struct:</p>
+			<code>
+				<cfdump var="#application.fapi.struct(a=5,b="How now brown cow",c=url)#" />
+			</code>
+		 --->
+		<cffunction name="struct" returntype="struct" output="false" access="public" hint="Shortcut for creating structs" bDocument="true">
 			
 			<cfreturn application.fc.utils.struct(argumentCollection="#arguments#") />
 		</cffunction>
@@ -794,6 +1065,12 @@
 	</cffunction>	
 	
 	<!--- PACKAGE UTILITIES --->
+		<!--- @@examples:
+			<p>Find the version of a custom component with the most precedence:</p>
+			<code>
+				<cfoutput>#application.fapi.getPath("custom","myfactory")#</cfoutput>
+			</code>
+		 --->
 		<cffunction name="getPath" access="public" output="false" returntype="string" hint="Finds the component in core/plugins/project, and returns its path" bDocument="true">
 			<cfargument name="package" type="string" required="true" />
 			<cfargument name="component" type="string" required="true" />
@@ -802,6 +1079,12 @@
 			<cfreturn application.fc.utils.getPath(argumentCollection="#arguments#") />
 		</cffunction>
 	
+		<!--- @@examples:
+			<p>Get a list of all the components in types:</p>
+			<code>
+				<cfoutput>#application.fapi.getComponents("types")#</cfoutput>
+			</code>
+		 --->
 		<cffunction name="getComponents" access="public" output="false" returntype="string" hint="Returns a list of components for a package" bDocument="true">
 			<cfargument name="package" type="string" required="true" />
 			<cfargument name="locations" type="string" required="false" default="" />
@@ -809,6 +1092,12 @@
 			<cfreturn application.fc.utils.getComponents(argumentCollection="#arguments#") />
 		</cffunction>
 	
+		<!--- @@examples:
+			<p>Find out if a component is a FarCry content type:</p>
+			<code>
+				<cfdump var="#application.fapi.extends(mycomponent path,'farcry.core.packages.types.types')#" />
+			</code>
+		 --->
 		<cffunction name="extends" access="public" output="false" returntype="boolean" hint="Returns true if the specified component extends another" bDocument="true">
 			<cfargument name="desc" type="string" required="true" hint="The component to test" />
 			<cfargument name="anc" type="string" required="true" hint="The ancestor to check for" />
@@ -817,9 +1106,9 @@
 		</cffunction>
 		
 		<cffunction name="listExtends" access="public" returntype="string" description="Returns a list of the components the specified one extends (inclusive)" output="false">
-		<cfargument name="path" type="string" required="true" hint="The package path of the component" />
+			<cfargument name="path" type="string" required="true" hint="The package path of the component" />
 		
-		<cfreturn application.fc.utils.listExtends(argumentCollection="#arguments#") />
-	</cffunction>
+			<cfreturn application.fc.utils.listExtends(argumentCollection="#arguments#") />
+		</cffunction>
 	
 </cfcomponent>
