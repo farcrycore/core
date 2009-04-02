@@ -71,11 +71,17 @@
 	<cfif len(attributes.typename)>
 		<cfset attributes.objectid = "" />
 	<cfelse>
-		<cfif isDefined("application.navid.home")>
-			<cfset url.objectid = application.navid.home />
-			<cfset attributes.objectid = application.navid.home />
+		<cfif fileexists("#application.path.project#/errors/404.cfm")>
+			<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/404.cfm" />
+			<cfsetting enablecfoutputonly="false" />
+			<cfexit method="exittag" />
 		<cfelse>
-			<cflocation url="#application.url.webroot#/" addtoken="No">
+			<cfif isDefined("application.navid.home")>
+				<cfset url.objectid = application.navid.home />
+				<cfset attributes.objectid = application.navid.home />
+			<cfelse>
+				<cflocation url="#application.url.webroot#/" addtoken="No">
+			</cfif>
 		</cfif>
 	</cfif>
 </cfif>
