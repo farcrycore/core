@@ -128,7 +128,7 @@
 			<cfreturn application.coapi.coapiadmin.getWebskinCacheStatus(argumentCollection="#arguments#") />
 		</cffunction>
 		
-		<cffunction name="RemoveFromObjectBroker" access="public" output="true" returntype="struct" hint="Removes a list of objectids with their webskins from the object broker">
+		<cffunction name="RemoveFromObjectBroker" access="public" output="false" returntype="struct" hint="Removes a list of objectids with their webskins from the object broker">
 			<cfargument name="lObjectIDs" required="true" type="string">
 			<cfargument name="typename" required="true" type="string" default="">
 			
@@ -137,7 +137,7 @@
 			<cfreturn success("objectids successfully removed from objectbroker") />
 		</cffunction>
 		
-		<cffunction name="getPropertyMetadata" access="public" output="true" returntype="string" hint="Returns the value of the metadata for a typename/property passed in">
+		<cffunction name="getPropertyMetadata" access="public" output="false" returntype="string" hint="Returns the value of the metadata for a typename/property passed in">
 		<cfargument name="typename" required="true" type="string" hint="The typename containing the property" />
 		<cfargument name="property" required="true" type="string" hint="The property for which we want metadata for" />
 		<cfargument name="md" required="true" type="string" hint="The name of the piece of metadata we want" />
@@ -540,7 +540,7 @@
 			<cfreturn application.fc.utils.createJavaUUID() />
 		</cffunction>
 		
-		<cffunction name="fixURL" returntype="string" output="true" access="public" hint="Refreshes the page with the specified query string values removed, replaced, or added. New values can be specified with a query string, struct, or named arguments." bDocument="true">
+		<cffunction name="fixURL" returntype="string" output="false" access="public" hint="Refreshes the page with the specified query string values removed, replaced, or added. New values can be specified with a query string, struct, or named arguments." bDocument="true">
 			<cfargument name="url" type="string" required="false" default="#cgi.script_name#?#cgi.query_string#" hint="The url to use" />
 			<cfargument name="removevalues" type="string" required="false" hint="List of values to remove from the query string. Prefix with '+' to remove these values in addition to the defaults." />
 			<cfargument name="addvalues" type="any" required="false" hint="A query string or a struct of values, to add to the query string" />
@@ -815,8 +815,8 @@
 			
 			<cfreturn application.fc.utils.extends(argumentCollection="#arguments#") />
 		</cffunction>
-	
-		<cffunction name="listExtends" access="public" returntype="string" description="Returns a list of the components the specified one extends (inclusive)" output="true">
+		
+		<cffunction name="listExtends" access="public" returntype="string" description="Returns a list of the components the specified one extends (inclusive)" output="false">
 		<cfargument name="path" type="string" required="true" hint="The package path of the component" />
 		
 		<cfreturn application.fc.utils.listExtends(argumentCollection="#arguments#") />
