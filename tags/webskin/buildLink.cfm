@@ -23,6 +23,7 @@
 
 	<cfparam name="attributes.href" default=""><!--- the actual href to link to --->
 	<cfparam name="attributes.objectid" default=""><!--- Added to url parameters; navigation obj id --->
+	<cfparam name="attributes.alias" default=""><!--- Navigation alias to use to find the objectid --->
 	<cfparam name="attributes.type" default=""><!--- Added to url parameters: Typename used with type webskin views --->
 	<cfparam name="attributes.view" default=""><!--- Added to url parameters: Webskin name used to render the page layout --->
 	<cfparam name="attributes.bodyView" default=""><!--- Added to url parameters: Webskin name used to render the body content --->
