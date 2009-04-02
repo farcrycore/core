@@ -109,6 +109,9 @@
 				<cfset StructAppend(attributes.stProps, st, false)>
 				
 				<cfset stResult = o.setData(stProperties=attributes.stProps, bSessionOnly=true) />
+				
+				<!--- Updating struct with latest properties --->
+				<cfset st = attributes.stProps />
 			</cfif>
 		</cfif>	
 		
