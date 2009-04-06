@@ -19,12 +19,6 @@
 			<cfset this.bEncrypted = Application.dmSec.UserDirectory.CLIENTUD.bEncrypted />
 		</cfif>
 		
-		<!--- Return struct --->
-		<cfset stResult.userid = "" />
-		<cfset stResult.authenticated = false />
-		<cfset stResult.message = "" />
-		<cfset stResult.UD = "CLIENTUD" />
-		
 		<!--- For backward compatability, check for userlogin and password in form. This should be removed once we're willing to not support pre 4.1 login templates --->
 		<cfif structkeyexists(form,"userlogin") and structkeyexists(form,"password")>
 			<!--- If password encryption is enabled, hash the password --->
@@ -64,7 +58,13 @@
 		
 		<!--- If (somehow) a login was submitted, process the result --->
 		<cfif isquery(qUser)>
-		
+			
+			<!--- Return struct --->
+			<cfset stResult.userid = "" />
+			<cfset stResult.authenticated = false />
+			<cfset stResult.message = "" />
+			<cfset stResult.UD = "CLIENTUD" />
+			
 	        <cfset dateTolerance = DateAdd("n","-#application.config.general.loginAttemptsTimeOut#",Now()) />
 	        
    			<cfquery name="qLogAudit" datasource="#application.dsn#">
