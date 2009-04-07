@@ -57,10 +57,9 @@
 		</cfif>
 		
 		<!--- If (somehow) a login was submitted, process the result --->
-		<cfif isquery(qUser)>
+		<cfif structKeyExists(stResult, "userid") AND len(stResult.userid)>
 			
 			<!--- Return struct --->
-			<cfset stResult.userid = "" />
 			<cfset stResult.authenticated = false />
 			<cfset stResult.message = "" />
 			<cfset stResult.UD = "CLIENTUD" />
