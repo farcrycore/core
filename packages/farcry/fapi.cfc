@@ -35,7 +35,7 @@
 			<cfif structKeyExists(application.stCoapi, arguments.typename)>
 				<cfset oResult = createObject("component", application.stcoapi["#arguments.typename#"].packagePath) />
 			<cfelse>
-				<cfset message = getResource("FAPI.messages.contentTypeNotFound@text", "The content type [{1}] is not available","", array(arguments.typename)) />
+				<cfset message = getResource(key="FAPI.messages.contentTypeNotFound@text", default="The content type [{1}] is not available",locale="", substituteValues=array(arguments.typename)) />
 				<cfthrow message="#message#" />
 			</cfif>		
 	
@@ -382,7 +382,7 @@
 			<cfelseif CheckNavID(arguments.alternateAlias)>
 				<cfset result = application.navid[arguments.alternateAlias] />
 			<cfelse>
-				<cfset message = getResource("FAPI.messages.NavigationAliasNotFound@text", "The Navigation alias [{1}] and alternate alias [{2}] was not found", array(arguments.alias, arguments.alternateAlias)) />
+				<cfset message = getResource(key="FAPI.messages.NavigationAliasNotFound@text", default="The Navigation alias [{1}] and alternate alias [{2}] was not found", substituteValues=array(arguments.alias, arguments.alternateAlias)) />
 				<cfthrow message="#message#" />
 			</cfif>
 			
@@ -415,7 +415,7 @@
 			<cfelseif CheckCatID(arguments.alternateAlias)>
 				<cfset result = application.catID[arguments.alternateAlias] />
 			<cfelse>			
-				<cfset message = getResource("FAPI.messages.CategoryAliasNotFound@text", "The category alias [{1}] and alternate alias [{2}] was not found","", array(arguments.alias, arguments.alternateAlias)) />
+				<cfset message = getResource(key="FAPI.messages.CategoryAliasNotFound@text", default="The category alias [{1}] and alternate alias [{2}] was not found",locale="", substituteValuesarray(arguments.alias, arguments.alternateAlias)) />
 				<cfthrow message="#message#" />
 			</cfif>
 			
@@ -640,10 +640,10 @@
 					<cfset arguments.key = "FAPI.throw.#rereplaceNoCase(arguments.message, '[^/w]+', '_', 'all')#" />
 				</cfif>
 				
-				<cfset arguments.message = getResource("#arguments.key#@message", arguments.message, arguments.locale, arguments.substituteValues) />
+				<cfset arguments.message = getResource(key="#arguments.key#@message", default=arguments.message, locale=arguments.locale, substituteValues=arguments.substituteValues) />
 				
 				<cfif len(arguments.detail)>
-					<cfset arguments.detail = getResource("#arguments.key#@detail", arguments.detail, arguments.locale, arguments.substituteValues) />
+					<cfset arguments.detail = getResource(key="#arguments.key#@detail", default=arguments.detail, locale=arguments.locale, substituteValues=arguments.substituteValues) />
 				</cfif>
 			</cfif>
 			
