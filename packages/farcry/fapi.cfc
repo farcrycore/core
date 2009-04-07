@@ -71,7 +71,8 @@
 			<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#">
 			<cfargument name="dbowner" type="string" required="false" default="#application.dbowner#">
 			<cfargument name="bSessionOnly" type="string" required="false" default="false">
-			
+			<cfargument name="bAfterSave" type="boolean" required="false" default="true" hint="This allows the developer to skip running the types afterSave function.">	
+		
 			<cfset var o = "" />
 			<cfset var lReserved = "objectid,typename,stProperties,dsn,dbtype,dbowner,bSessionOnly" />
 		
@@ -94,7 +95,7 @@
 			
 			<cfset o = getContentType(arguments.stProperties.typename) />
 			
-			<cfreturn o.setData(stProperties=arguments.stProperties,dsn=arguments.dsn,dbtype=arguments.dbtype,dbowner=arguments.dbowner,bSessionOnly=arguments.bSessionOnly) />
+			<cfreturn o.setData(stProperties=arguments.stProperties,dsn=arguments.dsn,dbtype=arguments.dbtype,dbowner=arguments.dbowner,bSessionOnly=arguments.bSessionOnly,bAfterSave=arguments.bAfterSave) />
 		</cffunction>
 	
 		<cffunction name="setCacheByVar" access="public" returntype="void" output="false" hint="This is generally used by tags to dynamically assign cacheByVar's to the webskin that called it and its ancestors.">
