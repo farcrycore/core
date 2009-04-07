@@ -32,8 +32,15 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 	<cfset stProfile = createobject("component",application.stCOAPI.dmProfile.packagepath).getData(form.selectedobjectid) />
 	
 	<cfif stProfile.userdirectory eq "CLIENTUD">
-		<cfset stUser = createobject("component",application.stCOAPI.farUser.packagepath).getByUserID(listfirst(stProfile.username,"_")) />
-		<cflocation url="#application.url.webtop#/conjuror/invocation.cfm?objectid=#stUser.objectid#&typename=farUser&method=editPassword&ref=typeadmin&module=customlists/dmProfile.cfm" />
+		<cfset userID = application.factory.oUtils.listSlice(stProfile.username,1,-2,"_") />
+		<cfset stUser = createobject("component",application.stCOAPI.farUser.packagepath).getByUserID(userID) />
+		
+		<cfif structIsEmpty(stUser)>
+			<extjs:bubble title="Error" message="This profile does not have a valid user attached. Please edit this profile to create a username/password." />
+		<cfelse>
+			<cflocation url="#application.url.webtop#/conjuror/invocation.cfm?objectid=#stUser.objectid#&typename=farUser&method=editPassword&ref=typeadmin&module=customlists/dmProfile.cfm" />
+		</cfif>
+		
 	<cfelse>
 		<extjs:bubble title="Error" message="'Change password' only applies to CLIENTUD users." />
 	</cfif>

@@ -17,15 +17,24 @@ ACTION
 
 <ft:processform action="Save" exit="true">
 	<ft:processformobjects typename="farUser" lArrayListGenerate="lgroups" />
-	<cfif len(lsavedobjectids)>
-		<cfset stUser = oUser.getData(objectid=lsavedobjectids) />
-		<ft:processformobjects typename="dmProfile">
-			<cfif stProperties.userdirectory eq ""><!--- New user --->
+	
+	<!--- track whether we have saved a farUser record--->
+	<cfset savedUserID = lsavedobjectids />
+	
+	<ft:processformobjects typename="dmProfile">
+		
+		<!--- We only check the profile/faruser relationship if we saved a CLIENTUD user --->
+		<cfif len(savedUserID)>
+			<cfset stUser = oUser.getData(objectid=savedUserID) />
+			
+			<!--- If the current username is not the same one we saved (ie. new user) --->
+			<cfif stProperties.username NEQ "#stUser.userid#_CLIENTUD"><!--- New user --->
 				<cfset stProperties.username = "#stUser.userid#_CLIENTUD" />
 				<cfset stProperties.userdirectory = "CLIENTUD" />
 			</cfif>
-		</ft:processformobjects>
-	</cfif>
+		</cfif>			
+		
+	</ft:processformobjects>
 </ft:processform>
 
 <ft:processform action="Cancel" exit="true" />
@@ -39,17 +48,17 @@ VIEW
 </cfoutput>
 
 <ft:form>
-	<ft:object objectid="#stObj.objectid#" typename="dmProfile" lfields="firstname,lastname,breceiveemail,emailaddress,phone,fax,position,department,locale,overviewHome" lhiddenFields="userdirectory" legend="User details" />
+	<ft:object objectid="#stObj.objectid#" typename="dmProfile" lfields="firstname,lastname,breceiveemail,emailaddress,phone,fax,position,department,locale,overviewHome" lhiddenFields="username,userdirectory" legend="User details" />
 	
 	<cfif stObj.userdirectory eq "CLIENTUD" or stObj.userdirectory eq "">
+
+		<cfset userID = application.factory.oUtils.listSlice(stObj.username,1,-2,"_") />
+		<cfset stUser = oUser.getByUserID(userID) />
 		
-		<cfif stObj.username eq "">
+		<cfif structIsEmpty(stUser)>
 			<skin:view key="newprofileuser" typename="farUser" webskin="editProfileUser" />
 		<cfelse>
-			<cfset stUser = oUser.getByUserID(listfirst(stObj.username,"_")) />
-			<cfset lFields = "userstatus,aGroups" />
-		
-			<ft:object stObject="#stUser#" typename="farUser" lfields="#lFields#" legend="Security" />
+			<ft:object stObject="#stUser#" typename="farUser" lfields="userstatus,aGroups" legend="Security" />
 		</cfif>
 		
 	</cfif>
