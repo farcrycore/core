@@ -415,7 +415,11 @@
 			<cfelseif CheckCatID(arguments.alternateAlias)>
 				<cfset result = application.catID[arguments.alternateAlias] />
 			<cfelse>			
-				<cfset message = getResource(key="FAPI.messages.CategoryAliasNotFound@text", default="The category alias [{1}] and alternate alias [{2}] was not found",locale="", substituteValuesarray(arguments.alias, arguments.alternateAlias)) />
+				<cfset message = getResource(key="FAPI.messages.CategoryAliasNotFound@text", 
+					default="The category alias [{1}] and alternate alias [{2}] was not found",
+					locale="", 
+					substituteValues=array(arguments.alias, arguments.alternateAlias)) />
+				
 				<cfthrow message="#message#" />
 			</cfif>
 			
