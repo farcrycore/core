@@ -220,20 +220,8 @@ IT IS SET IN  AJAXUPDATEARRAY FUNCTION OF THE LIBRARY.CFC
 
 <cfif len(session.stLibraryFilter[request.ftJoin].Criteria)>
 	<cfset filterCriteria = session.stLibraryFilter[request.ftJoin].Criteria />
-	<!--- <cfsearch collection="#application.applicationName#_#request.ftJoin#" criteria="#filterCriteria#" name="qSearchResults" type="internet"  /> --->
-	<cfif lcase(application.dbtype) EQ "mssql"> <!--- Dodgy MS SQL only code --->
-		<cfquery datasource="#application.dsn#" name="qSearchResults">
-			SELECT objectID as [key] , label FROM #application.dbowner#[#request.ftJoin#]	
-			WHERE label like <cfqueryparam cfsqltype="cf_sql_varchar" value="%#filterCriteria#%">
-			Order by label
-		</cfquery>
-	<cfelse> <!--- Dirty hack to get this query working for MySQL and possibly Postgres --->
-		<cfquery datasource="#application.dsn#" name="qSearchResults">
-			SELECT objectID as "key" , label FROM #application.dbowner##request.ftJoin#	
-			WHERE label like <cfqueryparam cfsqltype="cf_sql_varchar" value="%#filterCriteria#%">
-			Order by label
-		</cfquery>
-	</cfif>
+	
+	<cfset qSearchResults = application.fapi.getContentType("request.ftJoin").getLibrarySearchResults(criteria="#filterCriteria#") />
 
 	<cfif NOT qSearchResults.RecordCount>
 		<cfoutput><h3>No Results matched search. All records have been returned</h3></cfoutput>
