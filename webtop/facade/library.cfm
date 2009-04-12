@@ -221,7 +221,7 @@ IT IS SET IN  AJAXUPDATEARRAY FUNCTION OF THE LIBRARY.CFC
 <cfif len(session.stLibraryFilter[request.ftJoin].Criteria)>
 	<cfset filterCriteria = session.stLibraryFilter[request.ftJoin].Criteria />
 	
-	<cfset qSearchResults = application.fapi.getContentType("request.ftJoin").getLibrarySearchResults(criteria="#filterCriteria#") />
+	<cfset qSearchResults = application.fapi.getContentType(request.ftJoin).getLibrarySearchResults(criteria="#filterCriteria#") />
 
 	<cfif NOT qSearchResults.RecordCount>
 		<cfoutput><h3>No Results matched search. All records have been returned</h3></cfoutput>
