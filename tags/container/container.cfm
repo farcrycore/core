@@ -1,3 +1,4 @@
+<cfsetting enablecfoutputonly="true" />
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -41,6 +42,7 @@ $out:$
 
 <!--- quit tag if running in end mode --->
 <cfif thistag.executionmode eq "end">
+	<cfsetting enablecfoutputonly="false" />
 	<cfexit />
 </cfif>
 
@@ -253,3 +255,5 @@ $out:$
 <cfif request.mode.design and request.mode.showcontainers gt 0>
 	<cfoutput></div></cfoutput>
 </cfif>
+
+<cfsetting enablecfoutputonly="false" />
