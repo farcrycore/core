@@ -157,7 +157,7 @@
 						Ext.select("select[name="+prefix+property+"], input[name="+prefix+property+"][type=text], input[name="+prefix+property+"][type=password]").on("change",ajaxUpdate,this,{ prefix:prefix, property: property });
 						Ext.select("input[name="+prefix+property+"][type=checkbox], input[name="+prefix+property+"][type=radio]").on("click",ajaxUpdate,this,{ prefix:prefix, property: property });
 						Ext.select("input[name="+prefix+property+"][type=hidden]").each(function(el){
-							el = el.dom;console.log(el);
+							el = el.dom;
 							var lastvalue = el.value;
 							setInterval(function(){
 								if (el.value !== lastvalue) {
@@ -175,7 +175,7 @@
 					watchingfields[prefix][opts.property].push(opts);
 				};
 				
-				function ajaxUpdate(event,el,opt) {console.log(event,el,opt);
+				function ajaxUpdate(event,el,opt) {
 					var values = {};
 					
 					// for each watcher
