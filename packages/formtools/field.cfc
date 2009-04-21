@@ -156,6 +156,16 @@
 					if (!watchedfields[prefix][property]) { // if the property doesn't have a watch attached already, do so
 						Ext.select("select[name="+prefix+property+"], input[name="+prefix+property+"][type=text], input[name="+prefix+property+"][type=password]").on("change",ajaxUpdate,this,{ prefix:prefix, property: property });
 						Ext.select("input[name="+prefix+property+"][type=checkbox], input[name="+prefix+property+"][type=radio]").on("click",ajaxUpdate,this,{ prefix:prefix, property: property });
+						Ext.select("input[name="+prefix+property+"][type=hidden]").each(function(el){
+							el = el.dom;console.log(el);
+							var lastvalue = el.value;
+							setInterval(function(){
+								if (el.value !== lastvalue) {
+									lastvalue = el.value;
+									ajaxUpdate({},el,{ prefix:prefix, property: property });
+								}
+							},100);
+						});
 					}
 					
 					watchedfields[prefix][property] = watchedfields[prefix][property] || [];
@@ -165,7 +175,7 @@
 					watchingfields[prefix][opts.property].push(opts);
 				};
 				
-				function ajaxUpdate(event,el,opt) {
+				function ajaxUpdate(event,el,opt) {console.log(event,el,opt);
 					var values = {};
 					
 					// for each watcher
