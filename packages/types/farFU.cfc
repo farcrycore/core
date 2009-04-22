@@ -1117,7 +1117,8 @@
 					<cfif NOT FindNoCase("?", returnURL)>
 						<cfset returnURL = "#returnURL#?" />
 					</cfif>
-					<cfif len(arguments.type)>
+					<!--- WE DONT APPEND TYPENAME IF WE FOUND AN FU --->
+					<cfif NOT bFoundFU AND len(arguments.type)>
 						<cfset returnURL = "#returnURL#&type=#arguments.type#" />
 					</cfif>
 					<cfif len(arguments.view)>

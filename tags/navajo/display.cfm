@@ -41,7 +41,6 @@
 
 <cfset application.fc.factory.farFU.parseURL() />
 <cfset StructAppend(url, request.fc, "true") />
-
 <!--- environment variables --->
 <cfparam name="request.bHideContextMenu" default="false" type="boolean" />
 
@@ -64,18 +63,28 @@
 	<cfset attributes.method = url.view />
 </cfif>
 
-
-
 <!--- method for dealing with the missing url param... redirect to home page --->
 <cfif not len(attributes.objectid)>
 	<cfif len(attributes.typename)>
 		<cfset attributes.objectid = "" />
 	<cfelse>
-		<cfif isDefined("application.navid.home")>
-			<cfset url.objectid = application.navid.home />
-			<cfset attributes.objectid = application.navid.home />
+		<!--- IF THIS IS NOT THE HOME PAGE AND WE HAVE A 404 PAGE, THEN CALL THE 404 --->
+		<cfif len(attributes.typename) 
+			or len(attributes.objectid) 
+			or (structKeyExists(url, "furl") AND url.furl NEQ "/") 
+			AND fileexists("#application.path.project#/errors/404.cfm")>
+			<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/404.cfm" />
+			<cfsetting enablecfoutputonly="false" />
+			<cfexit method="exittag" />
+		
+		<!--- OTHERWISE JUST CALL THE HOME PAGE --->
 		<cfelse>
-			<cflocation url="#application.url.webroot#/" addtoken="No">
+			<cfif isDefined("application.navid.home")>
+				<cfset url.objectid = application.navid.home />
+				<cfset attributes.objectid = application.navid.home />
+			<cfelse>
+				<cflocation url="#application.url.webroot#/" addtoken="No">
+			</cfif>
 		</cfif>
 	</cfif>
 </cfif>

@@ -374,6 +374,7 @@
 		request.mode.flushcache = 0;
 		request.mode.showdraft = 0;
 		request.mode.ajax = 0;
+		request.mode.tracewebskins = 0;
 		
 		// Developer Mode
 		request.mode.bDeveloper = 0;
@@ -404,6 +405,15 @@
 				request.mode.design = session.dmSec.Authentication.designmode;
 			} else {
 				request.mode.design = 0;
+			}
+		// webskintrace
+			if (isDefined("url.tracewebskins")) {
+				request.mode.tracewebskins = val(url.tracewebskins);
+				session.dmSec.Authentication.tracewebskins = request.mode.tracewebskins;
+			} else if (isDefined("session.dmSec.Authentication.tracewebskins")) {
+				request.mode.tracewebskins = session.dmSec.Authentication.tracewebskins;
+			} else {
+				request.mode.tracewebskins = 0;
 			}
 		
 		// bypass caching

@@ -1676,4 +1676,30 @@ default handlers
 	
 	</cffunction>
 
+
+
+	<cffunction name="getLibrarySearchResults" access="public" output="false" returntype="query" hint="Returns a query containing all the objectids for the type matching the library filter criteria.">
+		<cfargument name="criteria" required="true" type="string" hint="The criteria to search" />
+		
+		<cfset var qSearchResults = "" />
+		
+		<cfset fourqInit() />
+		
+		<cfif lcase(application.dbtype) EQ "mssql"> <!--- Dodgy MS SQL only code --->
+			<cfquery datasource="#application.dsn#" name="qSearchResults">
+				SELECT objectID as [key] , label FROM #application.dbowner#[#variables.typename#]	
+				WHERE label like <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.criteria#%">
+				Order by label
+			</cfquery>
+		<cfelse> <!--- Dirty hack to get this query working for MySQL and possibly Postgres --->
+			<cfquery datasource="#application.dsn#" name="qSearchResults">
+				SELECT objectID as "key" , label FROM #application.dbowner##variables.typename#	
+				WHERE label like <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.criteria#%">
+				Order by label
+			</cfquery>
+		</cfif>
+		
+		<cfreturn qSearchResults>
+	
+	</cffunction>
 </cfcomponent>

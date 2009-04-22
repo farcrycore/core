@@ -1,3 +1,4 @@
+<cfsetting enablecfoutputonly="true" />
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -41,6 +42,7 @@ $out:$
 
 <!--- quit tag if running in end mode --->
 <cfif thistag.executionmode eq "end">
+	<cfsetting enablecfoutputonly="false" />
 	<cfexit />
 </cfif>
 
@@ -51,6 +53,7 @@ $out:$
 <cfparam name="attributes.bShowIfEmpty" type="boolean" default="true">
 <cfparam name="attributes.defaultMirrorID" default="" type="string"><!--- optional UUID --->
 <cfparam name="attributes.defaultMirrorLabel" default="" type="string">
+<cfparam name="attributes.desc" default="" type="string"><!--- Allows the container description to be different to the actual label. --->
 
 <!--- try and set objectid by looking for request.stobj.objectid --->
 <cfif NOT len(attributes.objectid) AND isDefined("request.stobj.objectid")>
@@ -156,7 +159,7 @@ $out:$
 	
 <!--- display edit widget --->
 <cfif request.mode.design and request.mode.showcontainers gt 0>
-	<skin:view stObject="#stConObj#" webskin="displayAdminToolbar" alternatehtml="" original="#stOriginal#" />
+	<skin:view stObject="#stConObj#" webskin="displayAdminToolbar" alternatehtml="" original="#stOriginal#" desc="#attributes.desc#" />
 	
 	<cfif structkeyexists(url,"rule_action") and structkeyexists(url,"rule_id") and structkeyexists(url,"rule_index") and url.rule_index lte arraylen(stConObj.aRules)>
 		<cfset redirecturl = "#cgi.script_name#" />
@@ -252,3 +255,5 @@ $out:$
 <cfif request.mode.design and request.mode.showcontainers gt 0>
 	<cfoutput></div></cfoutput>
 </cfif>
+
+<cfsetting enablecfoutputonly="false" />

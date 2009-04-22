@@ -15,7 +15,8 @@
 	
 	<!--- ////////////////////////////////////////////////////////////////// --->
 	<cffunction name="findTypeTest" access="public">
-		<cfset assertEquals(true, false) />
+		<!--- <cfset assertEquals(true, false) /> --->
+		<cfset assertEquals(this.myComp.findType(createUUID()), "") />
 	</cffunction>
 
 	<cffunction name="checkPermissionTest" access="public" hint="Checks the permission against a role. The roles defaults to the currently logged in users assigned roles.">

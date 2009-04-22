@@ -23,7 +23,7 @@
 			</cfquery>
 			
 			<cfif qProfileFromEmail.recordCount>
-				<cfset stUser = createObject("component", application.stcoapi["farUser"].packagePath).getByUserID(userID="#application.factory.oUtils.listSlice(qProfileFromEmail.username(),1,-2,"_")#") />
+				<cfset stUser = createObject("component", application.stcoapi["farUser"].packagePath).getByUserID(userID="#application.factory.oUtils.listSlice(qProfileFromEmail.username,1,-2,"_")#") />
 				
 				<skin:view objectid="#stUser.objectid#" typename="farUser" webskin="forgotChangePasswordEmail" />
 				

@@ -1,4 +1,4 @@
-<cfcomponent hint="Manage resource bundles" output="false" bDocument="true" scopelocation="application.rb">
+<cfcomponent hint="Manage resource bundles" output="false">
 	
 	<cfset this.aSets = arraynew(1) />
 	<cfset this.lSets = "" />

@@ -562,9 +562,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 					<cfoutput>#request.aInvocations[i].postHTML#</cfoutput>
 				</cfif>
 			<cfelse>
-				<cfoutput>
-					#request.aInvocations[i]#
-				</cfoutput>	
+				<cfoutput>#request.aInvocations[i]#</cfoutput>	
 			</cfif>	 
 		</cfloop>				
 	</cffunction>

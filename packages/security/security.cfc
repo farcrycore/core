@@ -1,4 +1,4 @@
-<cfcomponent displayName="Security Scope" hint="Encapsulates the generic higher-level security functions and variables" output="false" bDocument="true" scopelocation="application.security">
+<cfcomponent displayName="Security Scope" hint="Encapsulates the generic higher-level security functions and variables" output="false" scopelocation="application.security">
 
 	<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
 	
@@ -109,7 +109,7 @@
 				
 		<cfset var hashKey = "" />
 		<cfset var result = -1 />
-
+		<cfset var oType = "" />
 		
 		<!--- If the role was left empty, use current user's roles --->
 		<cfif not len(arguments.role)>
@@ -171,6 +171,14 @@
 				<!--- If an object was provided check the barnacle for that object, otherwise check the basic permission --->
 				<cfif isvalid("uuid",arguments.object)>
 					<cfset result = this.factory.barnacle.checkPermission(object=arguments.object,permission=arguments.permission,role=arguments.role) />
+					
+					<!--- Also check the permission on the parent nav node --->
+					<cfset arguments.type = application.fapi.findType(arguments.object) />
+
+					<cfif len(arguments.type) AND structKeyExists(application.stCOAPI[arguments.type], "bUseInTree") AND application.stCOAPI[arguments.type].bUseInTree>
+						<cfset oType = application.fapi.getContentType(arguments.type) />
+						<cfset result = result and this.factory.barnacle.checkPermission(object=oType.getNavID(objectid=arguments.object,typename=arguments.type),permission=arguments.permission,role=arguments.role) />
+					</cfif>
 				<cfelse>
 					<cfset result = this.factory.role.getRight(role=arguments.role,permission=arguments.permission) />
 				</cfif>
@@ -275,10 +283,6 @@
 		
 		<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
 		
-		<cfif structkeyexists(url,"ud")>
-			<cfset udlist = url.ud />
-		</cfif>
-
 		<cfif isArray(udlist)>
 			<cfset udlist = arrayToList(udlist) />
 		</cfif>

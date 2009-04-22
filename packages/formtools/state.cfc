@@ -91,19 +91,19 @@
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","WTC") /><cfset querysetcell(q,"name","West Coast") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
 			
 			<!--- Netherlands --->
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","DR") /><cfset querysetcell(q,"name","Drenthe") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","FL") /><cfset querysetcell(q,"name","Flevoland") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","FR") /><cfset querysetcell(q,"name","Friesland") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","GE") /><cfset querysetcell(q,"name","Gelderland") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","GR") /><cfset querysetcell(q,"name","Groningen") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","LI") /><cfset querysetcell(q,"name","Limburg") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","NB") /><cfset querysetcell(q,"name","Noord Brabant") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","NH") /><cfset querysetcell(q,"name","Noord Holland") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","OV") /><cfset querysetcell(q,"name","Overijssel") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","UT") /><cfset querysetcell(q,"name","Utrecht") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","ZE") /><cfset querysetcell(q,"name","Zeeland") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","ZH") /><cfset querysetcell(q,"name","Zuid Holland") /><cfset querysetcell(q,"countrycode","DR") /><cfset querysetcell(q,"countryname","Netherlands") />
-			
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","DR") /><cfset querysetcell(q,"name","Drenthe") /><cfset querysetcell(q,"countrycode","NL") /><cfset querysetcell(q,"countryname","Netherlands") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","FL") /><cfset querysetcell(q,"name","Flevoland") /><cfset querysetcell(q,"countrycode","NL") /><cfset querysetcell(q,"countryname","Netherlands") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","FR") /><cfset querysetcell(q,"name","Friesland") /><cfset querysetcell(q,"countrycode","NL") /><cfset querysetcell(q,"countryname","Netherlands") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","GE") /><cfset querysetcell(q,"name","Gelderland") /><cfset querysetcell(q,"countrycode","NL") /><cfset querysetcell(q,"countryname","Netherlands") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","GR") /><cfset querysetcell(q,"name","Groningen") /><cfset querysetcell(q,"countrycode","NL") /><cfset querysetcell(q,"countryname","Netherlands") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","LI") /><cfset querysetcell(q,"name","Limburg") /><cfset querysetcell(q,"countrycode","NL") /><cfset querysetcell(q,"countryname","Netherlands") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","NB") /><cfset querysetcell(q,"name","Noord Brabant") /><cfset querysetcell(q,"countrycode","NL") /><cfset querysetcell(q,"countryname","Netherlands") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","NH") /><cfset querysetcell(q,"name","Noord Holland") /><cfset querysetcell(q,"countrycode","NL") /><cfset querysetcell(q,"countryname","Netherlands") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","OV") /><cfset querysetcell(q,"name","Overijssel") /><cfset querysetcell(q,"countrycode","NL") /><cfset querysetcell(q,"countryname","Netherlands") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","UT") /><cfset querysetcell(q,"name","Utrecht") /><cfset querysetcell(q,"countrycode","NL") /><cfset querysetcell(q,"countryname","Netherlands") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","ZE") /><cfset querysetcell(q,"name","Zeeland") /><cfset querysetcell(q,"countrycode","NL") /><cfset querysetcell(q,"countryname","Netherlands") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","ZH") /><cfset querysetcell(q,"name","Zuid Holland") /><cfset querysetcell(q,"countrycode","NL") /><cfset querysetcell(q,"countryname","Netherlands") /> 
+
 			<!--- Norway --->
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","02") /><cfset querysetcell(q,"name","Akershus") /><cfset querysetcell(q,"countrycode","NO") /><cfset querysetcell(q,"countryname","Norway") />
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","09") /><cfset querysetcell(q,"name","Aust-Agder") /><cfset querysetcell(q,"countrycode","NO") /><cfset querysetcell(q,"countryname","Norway") />

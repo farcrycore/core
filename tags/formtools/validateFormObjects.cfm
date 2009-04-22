@@ -59,6 +59,13 @@
 	<cfparam name="REQUEST.stFarcryFormValidation" default="#structNew()#" />
 	<cfparam name="REQUEST.stFarcryFormValidation.bSuccess" default="true" />
 
+
+	 
+	<!--- Check to see if we should be performing server side validation --->
+	<cfif structKeyExists(form, "FARCRYFORMVALIDATION") AND NOT form.FARCRYFORMVALIDATION >
+		<cfexit method="exittag">
+	</cfif>
+	
 	<!--- ------------------------------------------------- --->
 	<!--- Setup the main parameters used by this custom tag --->
 	<!--- ------------------------------------------------- --->

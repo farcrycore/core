@@ -282,16 +282,16 @@
 		<cfoutput>
 			{
 				xtype:"tbbutton",
-				iconCls:<cfif findnocase("bwebskintrace=1",url.url)>"genericenabled_icon"<cfelse>"genericdisabled_icon"</cfif>,
+				iconCls:<cfif request.mode.traceWebskins EQ 1>"genericenabled_icon"<cfelse>"genericdisabled_icon"</cfif>,
 				text:"Webskin trace",
 				listeners:{
 					"click":{
 						fn:function(){
-							<cfif findnocase("bwebskintrace=1",url.url)>
-								<cfset rurl = application.fapi.fixURL(url=url.url,addvalues='bWebskinTrace=0') />
+							<cfif request.mode.traceWebskins EQ 1>
+								<cfset rurl = application.fapi.fixURL(url=url.url,addvalues='tracewebskins=0') />
 								parent.updateContent("#rurl#");
 							<cfelse>
-								<cfset rurl = application.fapi.fixURL(url=url.url,addvalues='bWebskinTrace=1') />
+								<cfset rurl = application.fapi.fixURL(url=url.url,addvalues='tracewebskins=1') />
 								parent.updateContent("#rurl#");
 							</cfif>
 						}
