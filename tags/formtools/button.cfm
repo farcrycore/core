@@ -146,6 +146,27 @@
 			</extjs:onReady>
 		</cfdefaultcase>
 		</cfswitch>
+		
+
+		<cfif attributes.bSpamProtect AND isDefined("Request.farcryForm.Name")>
+		
+			<cfif not structKeyExists(request, "bRenderFormSpamProtection")>
+				<cfinclude template="#application.url.webtop#/cffp/cfformprotect/cffp.cfm" /> 
+				<cfset request.bRenderFormSpamProtection = "rendered" />
+			</cfif>
+			
+			<cfset session.stFarCryFormSpamProtection['#Request.farcryForm.Name#']['#attributes.Value#'] = structNew() />
+			<cfset session.stFarCryFormSpamProtection['#Request.farcryForm.Name#']['#attributes.Value#'].bSpamProtect = true />
+			<cfloop list="#structKeyList(attributes)#" index="protectionAttribute">
+				<cfif findNoCase("protection_", protectionAttribute)>
+					<cfset protectionAttributeName = mid(protectionAttribute,12,len(protectionAttribute)) />
+					<cfset session.stFarCryFormSpamProtection['#Request.farcryForm.Name#']['#attributes.Value#']['#protectionAttributeName#'] = attributes["#protectionAttribute#"] />
+				</cfif>
+			</cfloop>
+			<cfloop collection="#attributes.stSpamProtectConfig#" item="protectionAttributeName">
+				<cfset session.stFarCryFormSpamProtection['#Request.farcryForm.Name#']['#attributes.Value#']['#protectionAttributeName#'] = attributes.stSpamProtectConfig["#protectionAttribute#"] />
+			</cfloop>
+		</cfif>		
 	<cfelse>
 		<cfset caller[attributes.r_stButton] = duplicate(attributes) />
 		<cfset caller[attributes.r_stButton].name = "FarcryForm#attributes.Type#Button=#attributes.value#">
