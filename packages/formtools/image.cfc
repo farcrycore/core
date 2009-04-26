@@ -32,6 +32,7 @@
 		<cfparam name="arguments.stMetadata.ftImageHeight" default="#application.config.image.standardImageHeight#">
 		<cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside">
 		<cfparam name="arguments.stMetadata.ftPadColor" default="##ffffff">
+		<cfparam name="arguments.stMetadata.ftShowConversionInfo" default="true"><!--- Set to false to hide the conversion information that will be applied to the uploaded image --->
 		
 
 		<cfset Request.inHead.Scriptaculous = 1>
@@ -108,19 +109,21 @@
 							<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" value="" class="formFile" style="#arguments.stMetadata.ftstyle#" onchange="ftCheckFileName('#arguments.fieldname#');" />
 							</cfoutput>
 							
-							<cfif structKeyExists(arguments.stMetadata, "ftImagewidth") AND arguments.stMetadata.ftImageWidth GT 0>
-								<cfoutput><div>width:#arguments.stMetadata.ftImageWidth#px</div></cfoutput>
-							</cfif>
-							<cfif structKeyExists(arguments.stMetadata, "ftImageHeight") AND arguments.stMetadata.ftImageHeight GT 0>
-								<cfoutput><div>height:#arguments.stMetadata.ftImageHeight#px</div></cfoutput>
-							</cfif>
-							<cfif structKeyExists(arguments.stMetadata, "ftAutoGenerateType")>
-								<cfif arguments.stMetadata.ftAutoGenerateType EQ "Pad">
-									<cfoutput><div>Padding image with #arguments.stMetadata.ftPadColor#</div></cfoutput>
-								<cfelse>
-									<cfoutput><div>#arguments.stMetadata.ftAutoGenerateType#</div></cfoutput>
+							<cfif arguments.stMetadata.ftShowConversionInfo>
+								<cfif structKeyExists(arguments.stMetadata, "ftImagewidth") AND arguments.stMetadata.ftImageWidth GT 0>
+									<cfoutput><div>width:#arguments.stMetadata.ftImageWidth#px</div></cfoutput>
 								</cfif>
-								
+								<cfif structKeyExists(arguments.stMetadata, "ftImageHeight") AND arguments.stMetadata.ftImageHeight GT 0>
+									<cfoutput><div>height:#arguments.stMetadata.ftImageHeight#px</div></cfoutput>
+								</cfif>
+								<cfif structKeyExists(arguments.stMetadata, "ftAutoGenerateType")>
+									<cfif arguments.stMetadata.ftAutoGenerateType EQ "Pad">
+										<cfoutput><div>Padding image with #arguments.stMetadata.ftPadColor#</div></cfoutput>
+									<cfelse>
+										<cfoutput><div>#arguments.stMetadata.ftAutoGenerateType#</div></cfoutput>
+									</cfif>
+									
+								</cfif>
 							</cfif>
 						</cfif>
 						
