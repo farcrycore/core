@@ -10,7 +10,7 @@
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
 
-<ft:processForm action="Reset Password">
+<ft:processForm action="Retrieve User ID">
 	
 	<ft:processFormObjects typename="dmProfile">
 		
@@ -25,9 +25,9 @@
 			<cfif qProfileFromEmail.recordCount>
 				<cfset stUser = createObject("component", application.stcoapi["farUser"].packagePath).getByUserID(userID="#application.factory.oUtils.listSlice(qProfileFromEmail.username,1,-2,"_")#") />
 				
-				<skin:view objectid="#stUser.objectid#" typename="farUser" webskin="forgotChangePasswordEmail" />
+				<skin:view objectid="#stUser.objectid#" typename="farUser" webskin="forgotUserIDEmail" />
 				
-				<cfset request.passwordChanged = true />
+				<cfset request.emailSent = true />
 			<cfelse>
 				<cfset request.notFound = true />
 			</cfif>
@@ -52,9 +52,9 @@
 			</cfoutput>
 		</cfif>	
 			
-		<cfif structKeyExists(request, "passwordChanged")>
+		<cfif structKeyExists(request, "emailSent")>
 			<cfoutput>
-				<p>A confirmation email with your NEW password has been sent to your email address and should arrive shortly.</p>
+				<p>A confirmation email with your User ID has been sent to your email address and should arrive shortly.</p>
 			</cfoutput>
 		<cfelse>
 			<cfoutput>
@@ -64,7 +64,7 @@
 				<ft:object typename="dmProfile" lfields="emailAddress" />
 
 				<ft:farcryButtonPanel>
-					<ft:farcryButton value="Reset Password" />
+					<ft:farcryButton value="Retrieve User ID" />
 				</ft:farcryButtonPanel>
 
 		</cfif>
