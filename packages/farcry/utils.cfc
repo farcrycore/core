@@ -478,7 +478,7 @@
 		<cfelseif find("?",arguments.url)>
 			<cfset arguments.url = "#arguments.url#&#arguments.key#=#urlencodedformat(arguments.value)#" />
 		<cfelse>
-			<cfset arguments.url = "#arguments.url#&#arguments.key#=#urlencodedformat(arguments.value)#" />
+			<cfset arguments.url = "#arguments.url#?#arguments.key#=#urlencodedformat(arguments.value)#" />
 		</cfif>
 		
 		<cfreturn arguments.url />
