@@ -566,6 +566,8 @@
 				<cfset returnURL = "#returnURL##arguments.anchor#" />		
 			</cfif>
 			
+			<cfset returnURL = fixURL(returnURL) />
+			
 			<!--- Are we meant to use the Javascript Popup Window? --->
 			<cfif arguments.JSWindow>
 			
@@ -578,10 +580,6 @@
 				<cfset returnURL = "javascript:win=window.open('#returnURL#', '#arguments.Target#', '#jsParameters#'); win.focus();">
 				
 			</cfif>
-			
-			<cfset returnURL = fixURL(returnURL) />
-		
-				
 				
 			<cfreturn returnURL />
 			
