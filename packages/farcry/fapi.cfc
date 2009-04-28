@@ -186,6 +186,30 @@
 		<cfreturn result />
 	</cffunction>
 	
+	
+	
+		<!--- @@examples:
+			<p>Fetch all the related image records attached to the current stObj:</p>
+			<code>
+				<cfset qContent = application.fapi.getRelatedContent(objectid=stobj.objectid, filter='dmImage') />
+				
+				<cfloop query="qContent">
+					<skin:view objectid=qContent.objectid webskin="displayTeaserStandard" />
+				</cfloop>
+			</code>
+		 --->
+		<cffunction name="getRelatedContent" access="public" output="false" returntype="query" hint="Returns a query containing all the objects related to the objectid passed in.">
+			<cfargument name="objectid" type="uuID" required="true" hint="The object for which related objects are to be found" />
+			<cfargument name="typename" type="string" required="false" default="" hint="The typename of the objectid. Pass in to avoid having to lookup the type." />
+			<cfargument name="filter" type="string" required="false" default="" hint="The typename of related objects to find. Empty for ALL typenames." />
+			<cfargument name="arrayType" type="string" required="false" default="" hint="The typename containing the property that defines the relationship we are looking for" />
+			<cfargument name="arrayProperty" type="string" required="false" default="" hint="The property that defines the relationship we are looking for" />
+					
+			<cfset var qRelatedContent = application.coapi.coapiutilities.getRelatedContent(objectid="#attributes.objectid#", typename="#attributes.typename#", filter="#attributes.filter#", arrayType="#attributes.arrayType#", arrayProperty="#attributes.arrayProperty#") />
+			
+			<cfreturn qRelatedContent />
+		</cffunction>			
+						
 	<!--- SECURITY --->
 		<!--- @@examples:
 			<p>Show a link to the webtop if the current user has permission to access it:</p>
@@ -580,7 +604,7 @@
 				<cfset returnURL = "javascript:win=window.open('#returnURL#', '#arguments.Target#', '#jsParameters#'); win.focus();">
 				
 			</cfif>
-				
+			
 			<cfreturn returnURL />
 			
 		</cffunction>
