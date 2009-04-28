@@ -205,7 +205,7 @@
 			<cfargument name="arrayType" type="string" required="false" default="" hint="The typename containing the property that defines the relationship we are looking for" />
 			<cfargument name="arrayProperty" type="string" required="false" default="" hint="The property that defines the relationship we are looking for" />
 					
-			<cfset var qRelatedContent = application.coapi.coapiutilities.getRelatedContent(objectid="#attributes.objectid#", typename="#attributes.typename#", filter="#attributes.filter#", arrayType="#attributes.arrayType#", arrayProperty="#attributes.arrayProperty#") />
+			<cfset var qRelatedContent = application.coapi.coapiutilities.getRelatedContent(objectid="#arguments.objectid#", typename="#arguments.typename#", filter="#arguments.filter#", arrayType="#arguments.arrayType#", arrayProperty="#arguments.arrayProperty#") />
 			
 			<cfreturn qRelatedContent />
 		</cffunction>			
