@@ -535,7 +535,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 						<cfset arrayappend(request.aInvocations, "#ruleError#") />
 						
 				  	<cfelseif request.mode.design and request.mode.showcontainers gt 0>
-						<extjs:bubble title="Error with rule '#application.stcoapi[rule].displayName#'" bAutoHide="true">
+						<extjs:bubble title="Error with rule '#rule#'" bAutoHide="true">
 							<cfoutput>#cfcatch.message#<br />#cfcatch.detail#</cfoutput>
 						</extjs:bubble>
 					</cfif>

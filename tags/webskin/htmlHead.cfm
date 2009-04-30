@@ -36,7 +36,7 @@ $in: libraryState -- used to turn predefined libraries on or off. Default turns 
 		<!--- Adding predefined library --->
 		<cfloop list="#attributes.library#" index="i">
 			<cfset request.inHead[i] = attributes.libraryState />
-			<cfset application.coapi.objectbroker.addhtmlHeadToWebskins(library="#i#", libraryState="#attributes.libraryState#") />
+			<cfset application.fapi.objectbroker.addhtmlHeadToWebskins(library="#i#", libraryState="#attributes.libraryState#") />
 		</cfloop>
 	<cfelse>
 		<!--- Adding developers own html to header --->	
@@ -53,7 +53,7 @@ $in: libraryState -- used to turn predefined libraries on or off. Default turns 
 			</cfif>
 		</cfif>
 		
-		<cfset application.coapi.objectbroker.addhtmlHeadToWebskins(id="#attributes.id#", text="#attributes.text#") />
+		<cfset application.fapi.objectbroker.addhtmlHeadToWebskins(id="#attributes.id#", text="#attributes.text#") />
 		
 	</cfif>	
 	

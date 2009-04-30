@@ -2,6 +2,18 @@
 
 	<cffunction name="init" access="public" returntype="fapi" output="false" hint="FAPI Constructor">
 		
+		<!--- INITIALISE LIBRARIES --->
+		<cfset var libraries = getComponents("lib") />
+		
+		<cfloop list="#libraries#" index="libraryname">
+			<cfif libraryname neq "fapi">
+				<cfset this[libraryname] = createobject("component",getPackagePath("lib",libraryname)) />
+				<cfif structkeyexists(this[libraryname],"init")>
+					<cfset this[libraryname].init() />
+				</cfif>
+			</cfif>
+		</cfloop>
+		
 		<!--- INITIALISE GLOBAL OBJECTS --->
 		<cfset variables.oObjectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker") />
 		
@@ -186,6 +198,30 @@
 		<cfreturn result />
 	</cffunction>
 	
+	
+	
+		<!--- @@examples:
+			<p>Fetch all the related image records attached to the current stObj:</p>
+			<code>
+				<cfset qContent = application.fapi.getRelatedContent(objectid=stobj.objectid, filter='dmImage') />
+				
+				<cfloop query="qContent">
+					<skin:view objectid=qContent.objectid webskin="displayTeaserStandard" />
+				</cfloop>
+			</code>
+		 --->
+		<cffunction name="getRelatedContent" access="public" output="false" returntype="query" hint="Returns a query containing all the objects related to the objectid passed in.">
+			<cfargument name="objectid" type="uuID" required="true" hint="The object for which related objects are to be found" />
+			<cfargument name="typename" type="string" required="false" default="" hint="The typename of the objectid. Pass in to avoid having to lookup the type." />
+			<cfargument name="filter" type="string" required="false" default="" hint="The typename of related objects to find. Empty for ALL typenames." />
+			<cfargument name="arrayType" type="string" required="false" default="" hint="The typename containing the property that defines the relationship we are looking for" />
+			<cfargument name="arrayProperty" type="string" required="false" default="" hint="The property that defines the relationship we are looking for" />
+					
+			<cfset var qRelatedContent = application.coapi.coapiutilities.getRelatedContent(objectid="#arguments.objectid#", typename="#arguments.typename#", filter="#arguments.filter#", arrayType="#arguments.arrayType#", arrayProperty="#arguments.arrayProperty#") />
+			
+			<cfreturn qRelatedContent />
+		</cffunction>			
+						
 	<!--- SECURITY --->
 		<!--- @@examples:
 			<p>Show a link to the webtop if the current user has permission to access it:</p>
@@ -566,6 +602,8 @@
 				<cfset returnURL = "#returnURL##arguments.anchor#" />		
 			</cfif>
 			
+			<cfset returnURL = fixURL(returnURL) />
+			
 			<!--- Are we meant to use the Javascript Popup Window? --->
 			<cfif arguments.JSWindow>
 			
@@ -579,10 +617,6 @@
 				
 			</cfif>
 			
-			<cfset returnURL = fixURL(returnURL) />
-		
-				
-				
 			<cfreturn returnURL />
 			
 		</cffunction>
@@ -1073,10 +1107,10 @@
 		<!--- @@examples:
 			<p>Find the version of a custom component with the most precedence:</p>
 			<code>
-				<cfoutput>#application.fapi.getPath("custom","myfactory")#</cfoutput>
+				<cfoutput>#application.fapi.getPackagePath("custom","myfactory")#</cfoutput>
 			</code>
 		 --->
-		<cffunction name="getPath" access="public" output="false" returntype="string" hint="Finds the component in core/plugins/project, and returns its path" bDocument="true">
+		<cffunction name="getPackagePath" access="public" output="false" returntype="string" hint="Finds the component in core/plugins/project, and returns its path" bDocument="true">
 			<cfargument name="package" type="string" required="true" />
 			<cfargument name="component" type="string" required="true" />
 			<cfargument name="locations" type="string" required="false" default="" />

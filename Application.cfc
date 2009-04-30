@@ -124,8 +124,7 @@
 		INITIALISE THE COAPIADMIN SINGLETON
 		----------------------------------------------->
 		<cfset application.coapi.coapiadmin = createObject("component", "farcry.core.packages.coapi.coapiadmin").init() />
-		<cfset application.coapi.objectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker").init(bFlush="true") />
-
+		
 	
 		<!--------------------------------- 
 		FARCRY CORE INITIALISATION
@@ -609,7 +608,6 @@
 		<cfset application.fc.factory = structNew() /><!--- Struct to contain any factory classes that can be used by the application --->
 		<cfset application.fc.subsites = this.subsites /><!--- Struct to contain any subsites that may be included with the application --->
 		<cfset application.fc.utils = createObject("component", "farcry.core.packages.farcry.utils").init() /><!--- FarCry Utility Functions --->
-		<cfset application.fapi = createObject("component", "farcry.core.packages.farcry.fapi").init() /><!--- FarCry API Functions --->
 		
 		<cfset application.fc.factory['farCoapi'] = createObject("component", "farcry.core.packages.types.farCoapi") />
 		
@@ -699,7 +697,11 @@
 		 ---------------------------------------->
 		<cfset application.plugins = this.plugins />
 
-
+		
+		<!--- FAPI INIT --->
+		<cfset application.fapi = createObject("component", "farcry.core.packages.lib.fapi").init() /><!--- FarCry API Functions --->
+		
+		
 		<!------------------------------------------ 
 		USE OBJECT BROKER?
 		 ------------------------------------------>

@@ -349,6 +349,7 @@
 		<cfset var item = "" />
 		<cfset var list = "" />
 		<cfset var qItems = querynew("name","varchar") />
+		<cfset var qItemsSystem = querynew("name","varchar") />
 
 		<cfif not len(arguments.locations) and structkeyexists(application,"plugins")>
 			<cfset arguments.locations = "project,#listreverse(application.plugins)#,core" />
@@ -367,17 +368,41 @@
 					<cfif directoryexists("#application.path.project#/packages/#arguments.package#/")>
 						<cfdirectory action="list" directory="#application.path.project#/packages/#arguments.package#/" filter="*.cfc" name="qItems" />
 					</cfif>
+					<cfif arguments.package eq "types" and directoryexists("#application.path.project#/packages/system/")>
+						<cfdirectory action="list" directory="#application.path.project#/packages/system/" filter="*.cfc" name="qItemsSystem" />
+						<cfquery dbtype="query" name="qItems">
+							select	*
+							from	qItems
+							
+							UNION
+							
+							select	*
+							from	qItemsSystem
+						</cfquery>
+					</cfif>
 				</cfcase>
 				<cfdefaultcase><!--- Plugin --->
 					<cfif listcontainsnocase(application.plugins,item)>
 						<cfif directoryexists("#application.path.plugins#/#item#/packages/#arguments.package#/")>
 							<cfdirectory action="list" directory="#application.path.plugins#/#item#/packages/#arguments.package#/" filter="*.cfc" name="qItems" />
 						</cfif>
+						<cfif arguments.package eq "types" and directoryexists("#application.path.plugins#/#item#/packages/system/")>
+							<cfdirectory action="list" directory="#application.path.plugins#/#item#/packages/system/" filter="*.cfc" name="qItemsSystem" />
+							<cfquery dbtype="query" name="qItems">
+								select	*
+								from	qItems
+								
+								UNION
+								
+								select	*
+								from	qItemsSystem
+							</cfquery>
+						</cfif>
 					</cfif>
 				</cfdefaultcase>
 			</cfswitch>
 			<cfloop query="qItems">
-				<cfif not listcontainsnocase(list,listfirst(name,"."))>
+				<cfif not refindnocase("(^|,)#listfirst(name,'.')#($|,)",list)>
 					<cfset list = listappend(list,listfirst(name,".")) />
 				</cfif>
 			</cfloop>
