@@ -305,6 +305,8 @@ $out:$
 				<cfif listcontains("types,rules,forms",arguments.package)>
 					<cfset stResult = o.initmetadata(stResult) />
 					
+					<cfparam name="stResult.icon" default="#arguments.name#" />
+					
 					<cfset stResult.qMetadata = setupMetadataQuery(typename=arguments.name,stProps=stResult.stProps) />
 					
 					<cfset tableMetadata.parseMetadata(stMetaData) />
