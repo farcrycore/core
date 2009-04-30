@@ -2,6 +2,18 @@
 
 	<cffunction name="init" access="public" returntype="fapi" output="false" hint="FAPI Constructor">
 		
+		<!--- INITIALISE LIBRARIES --->
+		<cfset var libraries = getComponents("lib") />
+		
+		<cfloop list="#libraries#" index="libraryname">
+			<cfif libraryname neq "fapi">
+				<cfset this[libraryname] = createobject("component",getPackagePath("lib",libraryname)) />
+				<cfif structkeyexists(this[libraryname],"init")>
+					<cfset this[libraryname].init() />
+				</cfif>
+			</cfif>
+		</cfloop>
+		
 		<!--- INITIALISE GLOBAL OBJECTS --->
 		<cfset variables.oObjectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker") />
 		
@@ -1095,10 +1107,10 @@
 		<!--- @@examples:
 			<p>Find the version of a custom component with the most precedence:</p>
 			<code>
-				<cfoutput>#application.fapi.getPath("custom","myfactory")#</cfoutput>
+				<cfoutput>#application.fapi.getPackagePath("custom","myfactory")#</cfoutput>
 			</code>
 		 --->
-		<cffunction name="getPath" access="public" output="false" returntype="string" hint="Finds the component in core/plugins/project, and returns its path" bDocument="true">
+		<cffunction name="getPackagePath" access="public" output="false" returntype="string" hint="Finds the component in core/plugins/project, and returns its path" bDocument="true">
 			<cfargument name="package" type="string" required="true" />
 			<cfargument name="component" type="string" required="true" />
 			<cfargument name="locations" type="string" required="false" default="" />

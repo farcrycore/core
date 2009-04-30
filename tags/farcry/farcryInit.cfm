@@ -362,8 +362,7 @@ BEGIN: Application Initialise
 			INITIALISE THE COAPIADMIN SINGLETON
 			----------------------------------------------->
 			<cfset application.coapi.coapiadmin = createObject("component", "farcry.core.packages.coapi.coapiadmin").init() />
-			<cfset application.coapi.objectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker").init() />
-
+			
 		
 			<!--------------------------------- 
 			FARCRY CORE INITIALISATION

@@ -168,7 +168,6 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 	<cfset application.coapi = structNew() />
 	<cfset application.coapi.coapiUtilities = createObject("component", "farcry.core.packages.coapi.coapiUtilities").init() />
 	<cfset application.coapi.coapiadmin = createObject("component", "farcry.core.packages.coapi.coapiadmin").init() />
-	<cfset application.coapi.objectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker").init() />
 	
 	
 	<!------------------------------------------ 
