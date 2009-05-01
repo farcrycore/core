@@ -321,16 +321,19 @@ $out:$
 						<cfset stResult.typepath = stResult.packagepath />
 						<cfset stResult.bCustomType = stResult.bCustom />
 						<cfset stResult.bLibraryType = stResult.bLibrary />
+						<cfset stResult.class = "type" />
 					</cfcase>
 					<cfcase value="rules">
 						<cfset stResult.rulepath = stResult.packagepath />
 						<cfset stResult.bCustomRule = stResult.bCustom />
 						<cfset stResult.bLibraryRule = stResult.bLibrary />
+						<cfset stResult.class = "rule" />
 					</cfcase>
 					<cfcase value="forms">
 						<cfset stResult.formpath = stResult.packagepath />
 						<cfset stResult.bCustomForm = stResult.bCustom />
 						<cfset stResult.bLibraryForm = stResult.bLibrary />
+						<cfset stResult.class = "form" />
 					</cfcase>
 					<cfcase value="formtools">
 						<cfset stResult.formtoolpath = stResult.packagepath />
@@ -338,6 +341,7 @@ $out:$
 						<cfset stResult.bLibraryFormTool = stResult.bLibrary />
 						<cfset stResult.fuAlias = arguments.name />
 						<cfset stResult.oFactory = o.init() />
+						<cfset stResult.class = "formtool" />
 					</cfcase>
 				</cfswitch>
 				

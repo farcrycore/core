@@ -52,9 +52,9 @@
 		<cfset lTypes = "" /><!--- Used to make sure we dont get duplicates for all the prefixes --->
 		
 		<cfloop list="#application.stCoapi['dmInclude'].stProps.webskinTypename.metadata.ftJoin#" index="thistype">
-			<cfif not listcontains(application.stCoapi['dmInclude'].stProps.webskinTypename.metadata.ftExcludeTypes,thistype)>
+			<cfif not listcontains(application.stCoapi['dmInclude'].stProps.webskinTypename.metadata.ftExcludeTypes,thistype) and application.stCOAPI[thistype].class eq "type">
 				<cfloop list="#application.stCoapi['dmInclude'].stProps.webskin.metadata.ftPrefix#" index="prefix">
-					<cfset qTypeWebskins = application.coapi.coapiAdmin.getWebskins(typename='#thistype#', prefix="#prefix#")>
+					<cfset qTypeWebskins = application.coapi.coapiAdmin.getWebskins(typename=thistype, prefix=prefix,packagepath=application.stCOAPI[thistype].packagepath) />
 					
 					<cfif qTypeWebskins.recordCount and not listFindNoCase(lTypes, thistype)>
 						<cfset lTypes = listAppend(lTypes, thistype) />

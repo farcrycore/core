@@ -224,7 +224,9 @@
 		</cfif>
 		
 		
-				
+		<cfif not structkeyexists(arguments,"aExtends") and structkeyexists(arguments,"packagepath")>
+			<cfset arguments.aExtends = getExtendedTypeArray(packagePath=arguments.packagepath) />
+		</cfif>
 		
 		
 		<cfif not structKeyExists(request.fc, "stProjectDirectorys")>
