@@ -165,7 +165,7 @@
 		<cfargument name="bForceRefresh" type="boolean" required="false" default="false" hint="Force to reload and not use application scope." />
 		<cfargument name="excludeWebskins" type="string" required="false" default="" hint="Allows developers to exclude webskins that might be contained in plugins." />
 		<cfargument name="packagePath" type="string" required="false" hint="The path to the type." />
-		<cfargument name="aExtends" type="array" required="true" hint="The components this type extends" />
+		<cfargument name="aExtends" type="array" required="false" hint="The components this type extends" />
 		
 		<cfset var qResult="" />
 		<cfset var qLibResult="" />
