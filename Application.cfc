@@ -700,6 +700,7 @@
 		
 		<!--- FAPI INIT --->
 		<cfset application.fapi = createObject("component", "farcry.core.packages.lib.fapi").init() /><!--- FarCry API Functions --->
+		<cfset application.fc.lib = createObject("component", "farcry.core.packages.lib.lib").init() /><!--- FarCry libraries --->
 		
 		
 		<!------------------------------------------ 

@@ -51,7 +51,7 @@ $in: id -- an id for the content to be added to the head. If the key already exi
 			<cfset arrayAppend(request.inHead.aOnReadyIDs, attributes.id) />
 		</cfif>
 		
-		<cfset application.fapi.objectbroker.addhtmlHeadToWebskins(id="#attributes.id#", onReady="#thisTag.generatedContent#") />
+		<cfset application.fc.lib.objectbroker.addhtmlHeadToWebskins(id="#attributes.id#", onReady="#thisTag.generatedContent#") />
 	
 		
 		

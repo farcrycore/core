@@ -252,7 +252,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				
 			<cfif NOT structIsEmpty(stObj)>	
 	
-				<cfset stWebskin = application.fapi.objectBroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
+				<cfset stWebskin = application.fc.lib.objectbroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
 				
 				<cfif not len(stWebskin.webskinHTML)>			
 	
@@ -370,7 +370,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<!--- If the current view (Last Item In the array) is still OkToCache --->
 		<cfif request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].okToCache>
 			<!--- Add the webskin to the object broker if required --->
-			<cfset bAdded = application.fapi.objectBroker.addWebskin(objectid=arguments.stobj.objectid, typename=arguments.stobj.typename, template=arguments.webskinTemplate, webskinCacheID=arguments.webskinCacheID, html=webskinHTML, stCurrentView=stCurrentView) />
+			<cfset bAdded = application.fc.lib.objectbroker.addWebskin(objectid=arguments.stobj.objectid, typename=arguments.stobj.typename, template=arguments.webskinTemplate, webskinCacheID=arguments.webskinCacheID, html=webskinHTML, stCurrentView=stCurrentView) />
 		</cfif>
 		
 		<cfif arrayLen(request.aAncestorWebskins)>
@@ -829,7 +829,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfif arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs>
 				<!--- Attempt to get the object from the ObjectBroker --->
 				<!--- getFromObjectBroker returns an empty struct if the object is not in the broker --->
-				<cfset stobj = application.fapi.objectbroker.getFromObjectBroker(ObjectID=arguments.objectid,typename=variables.typename)>
+				<cfset stobj = application.fc.lib.objectbroker.getFromObjectBroker(ObjectID=arguments.objectid,typename=variables.typename)>
 			</cfif>
 
 			<cfif structisEmpty(stObj)>
@@ -868,7 +868,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			
 				<!--- Attempt to add the object to the broker --->
 				<cfif NOT arguments.bArraysAsStructs AND NOT arguments.bShallow>
-					<cfset addedtoBroker = application.fapi.objectbroker.AddToObjectBroker(stobj=stobj,typename=variables.typename)>
+					<cfset addedtoBroker = application.fc.lib.objectbroker.AddToObjectBroker(stobj=stobj,typename=variables.typename)>
 	
 					
 					<!--- <cfif addedToBroker> --->
@@ -973,7 +973,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		   	<cfelse>
 				<!--- Make sure we remove the object from the objectBroker if we update something --->
 			    <cfif structkeyexists(stProperties, "objectid")>
-				    <cfset application.fapi.objectbroker.RemoveFromObjectBroker(lObjectIDs=arguments.stProperties.ObjectID,typename=variables.typename)>
+				    <cfset application.fc.lib.objectbroker.RemoveFromObjectBroker(lObjectIDs=arguments.stProperties.ObjectID,typename=variables.typename)>
 			    </cfif>	    	   	
 			   	
 			    <!--- need to add this in case the object has been put in the instance cache. --->
@@ -1019,7 +1019,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	   	</cfif>
 	   				
 	    <!--- Make sure we remove the object from the objectBroker if we update something --->
-	    <cfset application.fapi.objectBroker.RemoveFromObjectBroker(lObjectIDs=arguments.ObjectID,typename=variables.typename)>
+	    <cfset application.fc.lib.objectbroker.RemoveFromObjectBroker(lObjectIDs=arguments.ObjectID,typename=variables.typename)>
 	    
 		<cfinclude template="_fourq/deleteData.cfm">
 		

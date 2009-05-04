@@ -2,21 +2,6 @@
 
 	<cffunction name="init" access="public" returntype="fapi" output="false" hint="FAPI Constructor">
 		
-		<!--- INITIALISE LIBRARIES --->
-		<cfset var libraries = getComponents("lib") />
-		
-		<cfloop list="#libraries#" index="libraryname">
-			<cfif libraryname neq "fapi">
-				<cfset this[libraryname] = createobject("component",getPackagePath("lib",libraryname)) />
-				<cfif structkeyexists(this[libraryname],"init")>
-					<cfset this[libraryname].init() />
-				</cfif>
-			</cfif>
-		</cfloop>
-		
-		<!--- INITIALISE GLOBAL OBJECTS --->
-		<cfset variables.oObjectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker") />
-		
 		<cfreturn this />
 	</cffunction>
 	
@@ -176,7 +161,7 @@
 			<cfargument name="lObjectIDs" required="true" type="string">
 			<cfargument name="typename" required="true" type="string" default="">
 			
-			<cfset variables.oObjectBroker.RemoveFromObjectBroker(argumentCollection="#arguments#") />
+			<cfset application.fc.lib.objectbroker.RemoveFromObjectBroker(argumentCollection="#arguments#") />
 			
 			<cfreturn success("objectids successfully removed from objectbroker") />
 		</cffunction>

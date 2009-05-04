@@ -96,8 +96,7 @@ object methods
 			</cfquery>
 						
 			<!--- Remove deleted objects from object broker if required --->
-			<cfset oObjectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker") />
-			<cfset oObjectBroker.RemoveFromObjectBroker(lObjectIDs="#valueList(qRelated.parentID)#", typename="dmHTML") />
+			<cfset application.fc.lib.objectbroker.RemoveFromObjectBroker(lObjectIDs="#valueList(qRelated.parentID)#", typename="dmHTML") />
 			
 			
 			
