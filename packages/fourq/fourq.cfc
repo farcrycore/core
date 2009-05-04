@@ -1363,6 +1363,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var defaultWebskinCacheStatus = 0 />
 		<cfset var webskinCacheStatus = 0 />
 		<cfset var stFilteredWebskins = structNew() />
+		<cfset var mdExtend = structnew() />
 		
 		<!--- If we are updating a type that already exists then we need to update only the metadata that has changed. --->
 		<cfparam name="stReturnMetadata.stProps" default="#structnew()#" />
@@ -1375,9 +1376,17 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset stReturnMetadata.stMethods = getMethods()>	
 		
 		<!--- add any extended component metadata --->
-		<cfloop collection="#md#" item="key">
-			<cfif key neq "PROPERTIES" AND key neq "EXTENDS" AND key neq "FUNCTIONS" AND key neq "TYPE">
-				<cfset stReturnMetadata[key] = md[key] />				
+		<cfset mdExtend = md />
+		<cfloop condition="not structisempty(mdExtend)">
+			<cfloop collection="#md#" item="key">
+				<cfif key neq "PROPERTIES" AND key neq "EXTENDS" AND key neq "FUNCTIONS" AND key neq "TYPE">
+					<cfparam name="stReturnMetadata.#key#" default="#md[key]#" />				
+				</cfif>
+			</cfloop>
+			<cfif structkeyexists(mdExtend,"extends") and not findnocase(mdExtend.extends.fullname,"fourq")>
+				<cfset mdExtend = mdExtend.extends />
+			<cfelse>
+				<cfset mdExtend = structnew() />
 			</cfif>
 		</cfloop>
 		
