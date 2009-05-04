@@ -335,6 +335,14 @@ $out:$
 						<cfset stResult.bLibraryForm = stResult.bLibrary />
 						<cfset stResult.class = "form" />
 					</cfcase>
+					<cfcase value="formtools">
+						<cfset stResult.formtoolpath = stResult.packagepath />
+						<cfset stResult.bCustomFormTool = stResult.bCustom />
+						<cfset stResult.bLibraryFormTool = stResult.bLibrary />
+						<cfset stResult.fuAlias = arguments.name />
+						<cfset stResult.oFactory = o.init() />
+						<cfset stResult.class = "formtool" />
+					</cfcase>
 				</cfswitch>
 				
 			</cfif>
