@@ -31,7 +31,7 @@
 	
 	<!--- Check to see if this method exists in the current oType CFC. If not, use the formtool --->
 	<cfif not structKeyExists(oType,stMetadata.ftAjaxMethod)>
-		<cfset oType = application.stCOAPI[url.formtool].oFactory />
+		<cfset oType = application.formtools[url.formtool].oFactory />
 	</cfif>
 <cfelse>
 	<cfif structKeyExists(oType,"ftAjax#url.property#")>
