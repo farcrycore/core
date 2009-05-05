@@ -236,7 +236,9 @@
 			<cfset b = createFolderPath("#application.path.imageRoot##arguments.stMetadata.ftDestination#")>
 		</cfif>
 
-		<cfif len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#Delete"]) AND fileExists("#application.path.imageRoot##FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Delete']#")>
+		<cfif
+			structKeyExists(form, "#stMetadata.FormFieldPrefix##stMetadata.Name#Delete")
+			AND	len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#Delete"]) AND fileExists("#application.path.imageRoot##FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Delete']#")>
 					
 			<cfif NOT DirectoryExists("#application.path.mediaArchive#")>
 				<cfdirectory action="create" directory="#application.path.mediaArchive#">
@@ -255,7 +257,9 @@
 
 		</cfif>
 				
-		<cfif len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#New"]) gt 0>
+		<cfif
+			structKeyExists(form, "#stMetadata.FormFieldPrefix##stMetadata.Name#New")
+			AND	len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#New"]) gt 0>
 		
 			<cfif structKeyExists(form, "#stMetadata.FormFieldPrefix##stMetadata.Name#") AND  len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#"])>
 				<!--- This means there is currently a file associated with this object. We need to override this file --->
@@ -557,7 +561,15 @@
 
 		<cfif structKeyExists(arguments.stFields[i].metadata, "ftType") AND arguments.stFields[i].metadata.ftType EQ "Image" >
 
-			<cfif structKeyExists(arguments.stFormPost, i) AND structKeyExists(arguments.stFormPost[i].stSupporting, "CreateFromSource") AND ListFirst(arguments.stFormPost[i].stSupporting.CreateFromSource)>	
+			<cfif structKeyExists(arguments.stFormPost, i) 
+				AND 
+				(
+					<!--- Either we are always creating from source image --->
+					(structKeyExists(arguments.stFields[i].metadata, "ftAlwaysCreateFromSource") AND arguments.stFields[i].metadata.ftAlwaysCreateFromSource)
+					OR
+					<!--- Or the contributor has selected to create from source image --->
+					structKeyExists(arguments.stFormPost[i].stSupporting, "CreateFromSource") AND ListFirst(arguments.stFormPost[i].stSupporting.CreateFromSource)
+				)>	
 			
 				<!--- Make sure a ftSourceField --->
 				<cfparam name="arguments.stFields.#i#.metadata.ftSourceField" default="sourceImage" />
