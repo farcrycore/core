@@ -1383,7 +1383,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					<cfparam name="stReturnMetadata.#key#" default="#md[key]#" />				
 				</cfif>
 			</cfloop>
-			<cfif structkeyexists(mdExtend,"extends") and not findnocase(mdExtend.extends.fullname,"fourq")>
+			<cfif structkeyexists(mdExtend,"extends") and not findnocase(mdExtend.extends.name,"fourq")>
 				<cfset mdExtend = mdExtend.extends />
 			<cfelse>
 				<cfset mdExtend = structnew() />

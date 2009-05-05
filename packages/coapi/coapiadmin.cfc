@@ -273,12 +273,16 @@
 						<cfset querysetcell(request.fc.stProjectDirectorys[pluginName], 'path', "/farcry/plugins/#pluginName#/webskin/#request.fc.stProjectDirectorys[pluginName].typename#", request.fc.stProjectDirectorys[pluginName].currentRow) />	
 					</cfloop>
 					
-					<cfquery dbtype="query" name="request.fc.stProjectDirectorys.qAll">
-					SELECT * FROM request.fc.stProjectDirectorys.qAll
-					UNION
-					SELECT * FROM request.fc.stProjectDirectorys.#pluginName#
-					WHERE	webskin not in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#valuelist(request.fc.stProjectDirectorys.qAll.webskin)#" />)
-					</cfquery>
+					<cfif request.fc.stProjectDirectorys.qAll.recordcount>
+						<cfquery dbtype="query" name="request.fc.stProjectDirectorys.qAll">
+							SELECT * FROM request.fc.stProjectDirectorys.qAll
+							UNION
+							SELECT * FROM request.fc.stProjectDirectorys.#pluginName#
+							WHERE	not webskin in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#valuelist(request.fc.stProjectDirectorys.qAll.webskin)#" />)
+						</cfquery>
+					<cfelse>
+						<cfset request.fc.stProjectDirectorys.qAll = request.fc.stProjectDirectorys[pluginName] />
+					</cfif>
 				</cfloop>
 				
 				
