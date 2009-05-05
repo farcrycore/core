@@ -34,7 +34,8 @@ START WEBSKIN
 <cfif thistag.executionMode eq "Start">
 	
 	<!--- OPTIONAL ATTRIBUTES --->
-	<cfparam name="attributes.query" default="" />
+	<cfparam name="attributes.query" default="" /><!--- A query name that contains the objectids to loop over. --->
+	<cfparam name="attributes.array" default="" /><!--- An array of objectids to loop over. Can be used instead of query. --->
 	<cfparam name="attributes.typename" default="" />	
 	<cfparam name="attributes.paginationID" default="fc-pagination" /><!--- Uniquely identifies this pagination set. Set if using sticky pages or if multiple pagination sets on a single page. --->
 	<cfparam name="attributes.bStickyPages" default="false" /><!--- Keeps track of the page the user is currently on in session against this key. --->
@@ -47,14 +48,22 @@ START WEBSKIN
 	<cfparam name="attributes.recordsPerPage" default="10" type="numeric">
 	<cfparam name="attributes.submissionType" default="url" type="string">
 	<cfparam name="attributes.Step" default="1" type="numeric">
+	<cfparam name="attributes.oddRowClass" default="oddrow" type="string"><!--- The class name returned in stobjects for each "even" current row --->
+	<cfparam name="attributes.evenRowClass" default="evenrow" type="string"><!--- The class name returned in stobjects for each "odd" current row --->
+	
 
 	<!------------------------------------------------------------------------------------ 
-		Check if they have passed in the attribute as the NAME of a query in the caller.
-		IF SO, change it to the reference to the calling query.
+		Check if they have passed in the attribute as the NAME of a query/array in the caller.
+		IF SO, change it to the reference to the calling query/array.
 	 ------------------------------------------------------------------------------------>
 	<cfif isSimpleValue(attributes.query) AND len(attributes.query)>
 		<cfif structKeyExists(caller, attributes.query)>
 			<cfset attributes.query = caller[attributes.query] />
+		</cfif>
+	</cfif>
+	<cfif isSimpleValue(attributes.array) AND len(attributes.array)>
+		<cfif structKeyExists(caller, attributes.array)>
+			<cfset attributes.array = caller[attributes.array] />
 		</cfif>
 	</cfif>
 
@@ -83,6 +92,21 @@ START WEBSKIN
 		<cfset caller[attributes.r_stObject].recordCount = recordCount />
 		<cfset caller[attributes.r_stObject].recordsetRow = recordsetRow />
 		<cfset caller[attributes.r_stObject].recordsetCount = recordsetCount />
+		<cfif currentRow mod 2>
+			<cfset caller[attributes.r_stObject].currentRowClass = attributes.oddRowClass />
+		<cfelse>
+			<cfset caller[attributes.r_stObject].currentRowClass = attributes.evenRowClass />
+		</cfif>
+		<cfif currentRow EQ 1>
+			<cfset caller[attributes.r_stObject].bFirst = true />
+		<cfelse>
+			<cfset caller[attributes.r_stObject].bFirst = false />
+		</cfif>
+		<cfif currentRow EQ recordCount>
+			<cfset caller[attributes.r_stObject].bLast = true />
+		<cfelse>
+			<cfset caller[attributes.r_stObject].bLast = false />
+		</cfif>
 	<cfelse>
 	
 		<!--- MEANS THERE WERE NO RECORDS SO SIMPLY CALL THE BOTTOM --->
@@ -106,6 +130,21 @@ START WEBSKIN
 		<cfset caller[attributes.r_stObject].recordCount = recordCount />
 		<cfset caller[attributes.r_stObject].recordsetRow = recordsetRow />
 		<cfset caller[attributes.r_stObject].recordsetCount = recordsetCount />
+		<cfif currentRow mod 2>
+			<cfset caller[attributes.r_stObject].currentRowClass = attributes.oddRowClass />
+		<cfelse>
+			<cfset caller[attributes.r_stObject].currentRowClass = attributes.evenRowClass />
+		</cfif>
+		<cfif currentRow EQ 1>
+			<cfset caller[attributes.r_stObject].bFirst = true />
+		<cfelse>
+			<cfset caller[attributes.r_stObject].bFirst = false />
+		</cfif>
+		<cfif currentRow EQ recordCount>
+			<cfset caller[attributes.r_stObject].bLast = true />
+		<cfelse>
+			<cfset caller[attributes.r_stObject].bLast = false />
+		</cfif>
 		
 		<cfsetting enablecfoutputonly="false" />
 		<cfexit method="loop" />

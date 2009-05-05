@@ -4,6 +4,7 @@
 
 <cffunction name="setup" access="public" output="false" returntype="farPagination" hint="Initialises a farPagination object">
 	<cfargument name="query" default="" hint="The recordset to be paginated" />
+	<cfargument name="array" default="" hint="The array of objectids to be paginated" />
 	<cfargument name="typename" default="" />	
 	<cfargument name="paginationID" default="fc-pagination" /><!--- Uniquely identifies this pagination set. Set if using sticky pages or if multiple pagination sets on a single page. --->
 	<cfargument name="bStickyPages" default="false" /><!--- Keeps track of the page the user is currently on in session against this key. --->
@@ -241,10 +242,18 @@
 <cffunction name="setRecordset" access="private" output="false" returntype="void" hint="Setup the recordset">
 	
 	<cfset var o = "" />
+	<cfset var i = "" />
 	
 	<!--- ENSURE WE HAVE A RECORDSET --->
 	<cfif isQuery(this.query)>
 		<!--- ALL OK --->
+	<cfelseif isArray(this.array)>
+		<!--- Convert the array to a query of objectids --->
+		<cfset this.query = queryNew("objectid") />
+		<cfloop from="1" to="#arrayLen(this.array)#" index="i">
+			<cfset queryAddRow(this.query) />
+			<cfset querySetCell(this.query,"objectid",this.array[i],i) />	
+		</cfloop>	
 	<cfelseif structKeyExists(this, "qRecordset") AND isQuery(this.qRecordset)>
 		<cfset this.query = this.qRecordset />
 	<cfelseif len(this.typename)>
