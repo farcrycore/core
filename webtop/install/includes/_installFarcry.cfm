@@ -39,7 +39,14 @@ DEPLOY SYSTEM TABLES
 
 
 <!--- instantiate singletons needed for install --->
+<cfset application.fapi = createobject("component","farcry.core.packages.lib.fapi") />
+
 <cfset application.fc = structNew() />
+
+<cfset application.fc.lib = createobject("component","farcry.core.packages.lib.lib").init() />
+
+<cfset application.fc.utils = createobject("component","farcry.core.packages.farcry.utils") />
+
 <cfset application.fc.factory = structNew() />
 <cfset application.fc.factory.farCoapi = createobject("component","farcry.core.packages.types.farCoapi").init() />
 
