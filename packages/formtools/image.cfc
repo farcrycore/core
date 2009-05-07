@@ -32,6 +32,7 @@
 		<cfparam name="arguments.stMetadata.ftImageHeight" default="#application.config.image.standardImageHeight#">
 		<cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside">
 		<cfparam name="arguments.stMetadata.ftPadColor" default="##ffffff">
+		<cfparam name="arguments.stMetadata.ftShowConversionInfo" default="true"><!--- Set to false to hide the conversion information that will be applied to the uploaded image --->
 		
 
 		<cfset Request.inHead.Scriptaculous = 1>
@@ -108,19 +109,21 @@
 							<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" value="" class="formFile" style="#arguments.stMetadata.ftstyle#" onchange="ftCheckFileName('#arguments.fieldname#');" />
 							</cfoutput>
 							
-							<cfif structKeyExists(arguments.stMetadata, "ftImagewidth") AND arguments.stMetadata.ftImageWidth GT 0>
-								<cfoutput><div>width:#arguments.stMetadata.ftImageWidth#px</div></cfoutput>
-							</cfif>
-							<cfif structKeyExists(arguments.stMetadata, "ftImageHeight") AND arguments.stMetadata.ftImageHeight GT 0>
-								<cfoutput><div>height:#arguments.stMetadata.ftImageHeight#px</div></cfoutput>
-							</cfif>
-							<cfif structKeyExists(arguments.stMetadata, "ftAutoGenerateType")>
-								<cfif arguments.stMetadata.ftAutoGenerateType EQ "Pad">
-									<cfoutput><div>Padding image with #arguments.stMetadata.ftPadColor#</div></cfoutput>
-								<cfelse>
-									<cfoutput><div>#arguments.stMetadata.ftAutoGenerateType#</div></cfoutput>
+							<cfif arguments.stMetadata.ftShowConversionInfo>
+								<cfif structKeyExists(arguments.stMetadata, "ftImagewidth") AND arguments.stMetadata.ftImageWidth GT 0>
+									<cfoutput><div>width:#arguments.stMetadata.ftImageWidth#px</div></cfoutput>
 								</cfif>
-								
+								<cfif structKeyExists(arguments.stMetadata, "ftImageHeight") AND arguments.stMetadata.ftImageHeight GT 0>
+									<cfoutput><div>height:#arguments.stMetadata.ftImageHeight#px</div></cfoutput>
+								</cfif>
+								<cfif structKeyExists(arguments.stMetadata, "ftAutoGenerateType")>
+									<cfif arguments.stMetadata.ftAutoGenerateType EQ "Pad">
+										<cfoutput><div>Padding image with #arguments.stMetadata.ftPadColor#</div></cfoutput>
+									<cfelse>
+										<cfoutput><div>#arguments.stMetadata.ftAutoGenerateType#</div></cfoutput>
+									</cfif>
+									
+								</cfif>
 							</cfif>
 						</cfif>
 						
@@ -153,7 +156,7 @@
 				<div id="#arguments.fieldname#previewimage">
 					<img src="#application.fapi.getImageWebRoot()##arguments.stMetadata.value#" width="50px" title="#listLast(arguments.stMetadata.value,"/")#"><br>
 					#listLast(arguments.stMetadata.value,"/")#
-					<ft:farcryButton type="button" value="Delete Image" onclick="if(confirm('Are you sure you want to remove this image?')) {} else {return false};$('#arguments.fieldname#DELETE').value=$('#arguments.fieldname#').value;$('#arguments.fieldname#').value='';Effect.Fade('#arguments.fieldname#previewimage');" />
+					<ft:farcryButton type="button" value="Delete Image" onclick="if(confirm('Are you sure you want to remove this image?')) {} else {return false};$('#arguments.fieldname#DELETE').value=$('#arguments.fieldname#').value;$('#arguments.fieldname#').value='';$('#arguments.fieldname#previewimage').hide();" />
 				</div>
 			</cfoutput>
 		<cfelse>
@@ -233,7 +236,9 @@
 			<cfset b = createFolderPath("#application.path.imageRoot##arguments.stMetadata.ftDestination#")>
 		</cfif>
 
-		<cfif len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#Delete"]) AND fileExists("#application.path.imageRoot##FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Delete']#")>
+		<cfif
+			structKeyExists(form, "#stMetadata.FormFieldPrefix##stMetadata.Name#Delete")
+			AND	len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#Delete"]) AND fileExists("#application.path.imageRoot##FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Delete']#")>
 					
 			<cfif NOT DirectoryExists("#application.path.mediaArchive#")>
 				<cfdirectory action="create" directory="#application.path.mediaArchive#">
@@ -252,7 +257,9 @@
 
 		</cfif>
 				
-		<cfif len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#New"]) gt 0>
+		<cfif
+			structKeyExists(form, "#stMetadata.FormFieldPrefix##stMetadata.Name#New")
+			AND	len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#New"]) gt 0>
 		
 			<cfif structKeyExists(form, "#stMetadata.FormFieldPrefix##stMetadata.Name#") AND  len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#"])>
 				<!--- This means there is currently a file associated with this object. We need to override this file --->
@@ -554,7 +561,15 @@
 
 		<cfif structKeyExists(arguments.stFields[i].metadata, "ftType") AND arguments.stFields[i].metadata.ftType EQ "Image" >
 
-			<cfif structKeyExists(arguments.stFormPost, i) AND structKeyExists(arguments.stFormPost[i].stSupporting, "CreateFromSource") AND ListFirst(arguments.stFormPost[i].stSupporting.CreateFromSource)>	
+			<cfif structKeyExists(arguments.stFormPost, i) 
+				AND 
+				(
+					<!--- Either we are always creating from source image --->
+					(structKeyExists(arguments.stFields[i].metadata, "ftAlwaysCreateFromSource") AND arguments.stFields[i].metadata.ftAlwaysCreateFromSource)
+					OR
+					<!--- Or the contributor has selected to create from source image --->
+					structKeyExists(arguments.stFormPost[i].stSupporting, "CreateFromSource") AND ListFirst(arguments.stFormPost[i].stSupporting.CreateFromSource)
+				)>	
 			
 				<!--- Make sure a ftSourceField --->
 				<cfparam name="arguments.stFields.#i#.metadata.ftSourceField" default="sourceImage" />

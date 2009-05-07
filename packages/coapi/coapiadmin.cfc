@@ -164,8 +164,8 @@
 		<cfargument name="prefix" type="string" required="false" default="" hint="Prefix to filter template results." />
 		<cfargument name="bForceRefresh" type="boolean" required="false" default="false" hint="Force to reload and not use application scope." />
 		<cfargument name="excludeWebskins" type="string" required="false" default="" hint="Allows developers to exclude webskins that might be contained in plugins." />
-		<cfargument name="packagePath" type="string" required="true" hint="The path to the type." />
-		<cfargument name="aExtends" type="array" required="true" hint="The components this type extends" />
+		<cfargument name="packagePath" type="string" required="false" hint="The path to the type." />
+		<cfargument name="aExtends" type="array" required="false" hint="The components this type extends" />
 		
 		<cfset var qResult="" />
 		<cfset var qLibResult="" />
@@ -224,7 +224,9 @@
 		</cfif>
 		
 		
-				
+		<cfif not structkeyexists(arguments,"aExtends") and structkeyexists(arguments,"packagepath")>
+			<cfset arguments.aExtends = getExtendedTypeArray(packagePath=arguments.packagepath) />
+		</cfif>
 		
 		
 		<cfif not structKeyExists(request.fc, "stProjectDirectorys")>
@@ -271,12 +273,16 @@
 						<cfset querysetcell(request.fc.stProjectDirectorys[pluginName], 'path', "/farcry/plugins/#pluginName#/webskin/#request.fc.stProjectDirectorys[pluginName].typename#", request.fc.stProjectDirectorys[pluginName].currentRow) />	
 					</cfloop>
 					
-					<cfquery dbtype="query" name="request.fc.stProjectDirectorys.qAll">
-					SELECT * FROM request.fc.stProjectDirectorys.qAll
-					UNION
-					SELECT * FROM request.fc.stProjectDirectorys.#pluginName#
-					WHERE	webskin not in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#valuelist(request.fc.stProjectDirectorys.qAll.webskin)#" />)
-					</cfquery>
+					<cfif request.fc.stProjectDirectorys.qAll.recordcount>
+						<cfquery dbtype="query" name="request.fc.stProjectDirectorys.qAll">
+							SELECT * FROM request.fc.stProjectDirectorys.qAll
+							UNION
+							SELECT * FROM request.fc.stProjectDirectorys.#pluginName#
+							WHERE	not webskin in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#valuelist(request.fc.stProjectDirectorys.qAll.webskin)#" />)
+						</cfquery>
+					<cfelse>
+						<cfset request.fc.stProjectDirectorys.qAll = request.fc.stProjectDirectorys[pluginName] />
+					</cfif>
 				</cfloop>
 				
 				

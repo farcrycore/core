@@ -2,21 +2,6 @@
 
 	<cffunction name="init" access="public" returntype="fapi" output="false" hint="FAPI Constructor">
 		
-		<!--- INITIALISE LIBRARIES --->
-		<cfset var libraries = getComponents("lib") />
-		
-		<cfloop list="#libraries#" index="libraryname">
-			<cfif libraryname neq "fapi">
-				<cfset this[libraryname] = createobject("component",getPackagePath("lib",libraryname)) />
-				<cfif structkeyexists(this[libraryname],"init")>
-					<cfset this[libraryname].init() />
-				</cfif>
-			</cfif>
-		</cfloop>
-		
-		<!--- INITIALISE GLOBAL OBJECTS --->
-		<cfset variables.oObjectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker") />
-		
 		<cfreturn this />
 	</cffunction>
 	
@@ -176,7 +161,7 @@
 			<cfargument name="lObjectIDs" required="true" type="string">
 			<cfargument name="typename" required="true" type="string" default="">
 			
-			<cfset variables.oObjectBroker.RemoveFromObjectBroker(argumentCollection="#arguments#") />
+			<cfset application.fc.lib.objectbroker.RemoveFromObjectBroker(argumentCollection="#arguments#") />
 			
 			<cfreturn success("objectids successfully removed from objectbroker") />
 		</cffunction>
@@ -953,6 +938,37 @@
 			<cfreturn application.fc.utils.arrayFind(argumentCollection="#arguments#") />
 		</cffunction>
 
+		<!--- @@examples:
+			<p>remove items from an array:</p>
+			<code>
+				<cfset a = application.fapi.array(4,3,2,1) />
+				<cfdump var="#application.fapi.arrayRemove(a,'2,3')#" />
+			</code>
+		 --->
+		<cffunction name="arrayRemove" access="public" output="false" returntype="array" hint="Returns the array with the elements passed in removed." bDocument="true">
+			<cfargument name="array" type="array" required="true" hint="The array to remove elements from" />
+			<cfargument name="elements" type="Any" required="true" hint="The elements in the array to remove. Can be an array or a list." />
+			
+			<cfset var oCaster = "" /><!--- Used in case of Railo --->
+			
+			
+			<cfif isSimpleValue(arguments.elements)>
+				<cfset arguments.elements = listToArray(arguments.elements) />
+			</cfif>
+
+			<cfswitch expression="#server.coldfusion.productname#">
+				<cfcase value="Railo">
+					<cfset oCaster = createObject('java','railo.runtime.op.Caster') />
+					<cfset arguments.array.removeAll(oCaster.toList(arguments.elements)) />
+				</cfcase>
+				<cfdefaultcase>
+					<cfset arguments.array.removeAll(arguments.elements) >
+				</cfdefaultcase>
+			</cfswitch>		
+			
+			<cfreturn arguments.array />
+		</cffunction>
+		
 	<!--- LIST UTILITIES --->
 		<!--- @@examples:
 			<p>Put the list of plugins in order of greatest precendence:</p>
@@ -1087,7 +1103,7 @@
 		<cfset var namepair = "" />
 		<cfset var keyCount = 0 />
 		<cfset var key = "" />
-		
+
 		<cfscript>
 			namepair = '';
 			keyCount = structCount(arguments.st);
@@ -1099,7 +1115,7 @@
 				keyIndex = keyIndex + 1;		
 			}
 		</cfscript>
-		
+
 		<cfreturn trim(namepair)>
 	</cffunction>	
 	

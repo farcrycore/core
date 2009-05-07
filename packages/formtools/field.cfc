@@ -135,7 +135,10 @@
 					}
 					// select
 					else if (objs.item(0).dom.tagName=="SELECT") {
-						return objs.item(0).dom.options[objs.item(0).dom.selectedIndex].value;
+						result = [];
+						for (var i=0;i<objs.item(0).dom.options.length;i++)
+							if (objs.item(0).dom.options[i].selected) result.push(objs.item(0).dom.options[i].value);
+						return result;
 					}
 					// everything else: text, password, hidden, etc
 					else {

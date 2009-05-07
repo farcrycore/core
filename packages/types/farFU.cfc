@@ -597,12 +597,15 @@
 		
 	</cffunction>
 
-	<cffunction name="parseURL" returntype="void" access="public" output="false" hint="Parses the url.furl and places relevent keys into request.fc namespace.">
+	<cffunction name="parseURL" returntype="struct" access="public" output="false" hint="Parses the url.furl and returns all relevent url variables.">
 		
 		<cfset var oFU = createObject("component","#application.packagepath#.farcry.fu") />
 		<cfset var stFU = structNew() />
 		<cfset var stURL = structNew() />	
 		<cfset var stLocal = structNew() />
+		<cfset var iQstr = "" />
+		<cfset var i = "" />
+		<cfset var stResult = structNew() />
 		
 		<!--- If the browser has added a trailing / to a friendly URL, strip it out. --->
 		<cfif structKeyExists(url, "furl") AND len(url.furl) GT 1 AND right(url.furl,1) EQ "/">
@@ -615,7 +618,7 @@
 		
 			<cfif not structIsEmpty(stFU)>
 				
-				<cfset request.fc.objectid = stFU.refobjectid>
+				<cfset stResult.objectid = stFU.refobjectid>
 				<cfloop index="iQstr" list="#stFU.queryString#" delimiters="&">
 					<cfset url["#listFirst(iQstr,'=')#"] = listLast(iQstr,"=")>
 				</cfloop>
@@ -652,7 +655,7 @@
 					</cfif>
 
 				<cfelse>
-					<cfset request.fc.objectid = stFU.refobjectid>
+					<cfset stResult.objectid = stFU.refobjectid>
 					<cfloop index="iQstr" list="#stFU.queryString#" delimiters="&">
 						<cfset url["#listFirst(iQstr,'=')#"] = listLast(iQstr,"=")>
 					</cfloop>
@@ -663,32 +666,32 @@
 						
 				<cfloop list="#url.furl#" index="i" delimiters="/">
 					<cfif isUUID(i)>
-						<cfset request.fc.objectid = i />
+						<cfset stResult.objectid = i />
 						
 					<cfelseif structKeyExists(application.stCoapi, "#i#")>
 						<!--- CHECK FOR TYPENAME FIRST --->
-						<cfset request.fc.type = i />
+						<cfset stResult.type = i />
 			
 					<cfelseif structKeyExists(application.fc.fuID, "#i#")>
-						<cfset request.fc.type = application.fc.fuID[i] />
+						<cfset stResult.type = application.fc.fuID[i] />
 					<cfelse>
 						<!--- If we get to here, then we need to confirm we have a type defined. If not, we need to determine from objectid --->
-						<cfif structKeyExists(request.fc, "objectid") AND (not structKeyExists(request.fc, "type") or not len(request.fc.type))>
-							<cfset request.fc.type = application.coapi.coapiUtilities.findType(objectid="#request.fc.objectid#") />
+						<cfif structKeyExists(stResult, "objectid") AND (not structKeyExists(stResult, "type") or not len(stResult.type))>
+							<cfset stResult.type = application.coapi.coapiUtilities.findType(objectid="#stResult.objectid#") />
 						</cfif>
-						<cfif structKeyExists(request.fc, "type") and len(request.fc.type)>	
-							<cfif not structKeyExists(request.fc, "view")>
+						<cfif structKeyExists(stResult, "type") and len(stResult.type)>	
+							<cfif not structKeyExists(stResult, "view")>
 								<!--- Only check for other attributes once the type is determined. --->				
-								<cfif len(application.coapi.coapiAdmin.getWebskinPath(typename="#request.fc.type#", template="#i#"))>
+								<cfif len(application.coapi.coapiAdmin.getWebskinPath(typename="#stResult.type#", template="#i#"))>
 									<!--- THIS MEANS ITS A WEBSKIN --->
-									<cfset request.fc.view = i />
+									<cfset stResult.view = i />
 								</cfif>
 	
 							<cfelse>
 								<!--- Only check for other attributes once the type is determined. --->				
-								<cfif len(application.coapi.coapiAdmin.getWebskinPath(typename="#request.fc.type#", template="#i#"))>
+								<cfif len(application.coapi.coapiAdmin.getWebskinPath(typename="#stResult.type#", template="#i#"))>
 									<!--- THIS MEANS ITS A WEBSKIN --->
-									<cfset request.fc.bodyView = i />
+									<cfset stResult.bodyView = i />
 								</cfif>
 								
 							</cfif>
@@ -720,7 +723,7 @@
 			</cfif>
 		</cfif>
 		
-		
+		<cfreturn stResult />
 	</cffunction>
 	
 	

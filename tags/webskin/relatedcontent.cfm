@@ -57,7 +57,7 @@ SAMPLE USAGE:
 
 
 <!--- GET THE RELATED CONTENT --->
-<cfset qRelatedContent = application.coapi.coapiutilities.getRelatedContent(objectid="#attributes.objectid#", typename="#attributes.typename#", filter="#attributes.filter#", arrayType="#attributes.arrayType#", arrayProperty="#attributes.arrayProperty#")>
+<cfset qRelatedContent = application.fapi.getRelatedContent(objectid="#attributes.objectid#", typename="#attributes.typename#", filter="#attributes.filter#", arrayType="#attributes.arrayType#", arrayProperty="#attributes.arrayProperty#")>
 
 
 <!--- generate output by rendertype --->
