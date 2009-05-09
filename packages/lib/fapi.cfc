@@ -293,12 +293,46 @@
 				</cfif>
 			</code>
 		 --->
-		<cffunction name="hasRole" returntype="boolean" output="false" access="public" hint="Returns true if the current user has the specified role. This function should be used sparingly - adding and using permissions instead can make debugging security functionality much easier." bDocument="true">
+		<cffunction name="hasRole" returntype="boolean" output="false" access="public" hint="Returns true if the current user has ANY of the roles passed in. This function should be used sparingly - adding and using permissions instead can make debugging security functionality much easier." bDocument="true">
 			<cfargument name="role" type="string" required="false" default="" hint="Roles to check" />
 			
-			<cfreturn application.security.hasRole(argumentCollection="#arguments#") />
+			<cfset var permitted = false />
+			<cfset var i = "" />
+			
+			<cfloop list="#arguments.role#" index="i">
+				<cfif application.security.hasRole(role="#i#")>
+					<cfset permitted = true />
+				</cfif>
+			</cfloop>
+			
+			<cfreturn permitted />
 		</cffunction>
 		
+
+		<!--- @@examples:
+			<p>Show content if the current user has a specified permission:</p>
+			<code>
+				<cfif application.fapi.hasPermission("welcomemessage")>
+					<p>Welcome back!</p>
+				</cfif>
+			</code>
+		 --->
+		<cffunction name="hasPermission" returntype="boolean" output="false" access="public" hint="Returns true if the current user has ANY of the permissions passed in." bDocument="true">
+			<cfargument name="permission" type="string" required="false" default="" hint="permissions to check" />
+			
+			<cfset var permitted = false />
+			<cfset var i = "" />
+			
+			<cfloop list="#arguments.permission#" index="i">
+				<cfif application.security.checkPermission(permission="#i#")>
+					<cfset permitted = true />
+				</cfif>
+			</cfloop>
+			
+			<cfreturn permitted />
+		</cffunction>
+		
+				
 		<!--- @@examples:
 			<p>Get the current user:</p>
 			<code>
