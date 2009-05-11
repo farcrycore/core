@@ -262,6 +262,9 @@ default handlers
 		
 		<cfset var stResult = StructNew()>
 		<cfset var stresult_friendly = StructNew()>
+		<cfset var stObj = structnew() />
+		<cfset var fnStatusChange = "" />
+		<cfset var previousstatus = "" />
 		
 		<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
 		
@@ -300,11 +303,35 @@ default handlers
 		<cfif not structKeyExists(arguments.stProperties, "typename") OR not len(arguments.stProperties.typename)>
 			<cfset arguments.stProperties.typename = getTablename() />
 		</cfif>			
+		
+		<cfif structkeyexists(arguments.stProperties,"status") and len(arguments.stProperties.status)>
+			<cfset stObj = getData(objectid=arguments.stProperties.objectid) />
+			<cfif arguments.stProperties.status neq stObj.status>
+				<cfset previousstatus = stObj.status />
+				<cfset structappend(stObj,arguments.stProperties,true) />
+				
+				<cfif structkeyexists(this,"on#arguments.stProperties.status#")>
+					<cfinvoke component="#this#" method="on#arguments.stProperties.status#">
+						<cfinvokeargument name="typename" value="#arguments.stProperties.typename#" />
+						<cfinvokeargument name="stProperties" value="#stObj#" />
+						<cfinvokeargument name="previousStatus" value="#previousstatus#" />
+					</cfinvoke>
+				<cfelse>
+					<cfinvoke component="#this#" method="onStatusChange">
+						<cfinvokeargument name="typename" value="#arguments.stProperties.typename#" />
+						<cfinvokeargument name="stProperties" value="#stObj#" />
+						<cfinvokeargument name="newstatus" value="#stObj.status#" />
+						<cfinvokeargument name="previousStatus" value="#previousstatus#" />
+					</cfinvoke>
+				</cfif>
+			</cfif>
+		</cfif>
 				
 		<cfset stresult = super.setData(stProperties=arguments.stProperties, dsn=arguments.dsn, bSessionOnly=arguments.bSessionOnly) />
 		
 		<!--- ONLY RUN THROUGH IF SAVING TO DB --->
-		<cfif not arguments.bSessionOnly AND arguments.bAfterSave>				   	
+		<cfif not arguments.bSessionOnly AND arguments.bAfterSave>
+			
 	   	 	<cfset stAfterSave = afterSave(argumentCollection=arguments) />
 	   	 	
 	   	 			
@@ -528,7 +555,43 @@ default handlers
 		<cfreturn stProperties />
 	</cffunction>
 
-			
+	
+	<cffunction name="onStatusChange" access="public" output="false" returntype="void" hint="Called from setData when an object's status is changed">
+		<cfargument name="typename" type="string" required="true" hint="The type of the object" />
+		<cfargument name="stProperties" type="struct" required="true" hint="The object" />
+		<cfargument name="newStatus" type="string" required="true" hint="The new status of the object" />
+		<cfargument name="previousStatus" type="string" required="true" hint="The previous status of the object" />
+		
+		<cfset var thisprop = "" />
+		<cfset var oFactory = "" />
+		<cfset var stMetadata = "" />
+		
+		<cfloop collection="#application.stCOAPI[arguments.typename].stProps#" item="thisprop">
+			<cfif isdefined("application.stCOAPI.#arguments.typename#.stProps.#thisprop#.metadata.ftType") and len(application.stCOAPI[arguments.typename].stProps[thisprop].metadata.ftType)>
+				<cfset stMetadata = application.stCOAPI[arguments.typename].stProps[thisprop].metadata />
+				<cfset oFactory = application.formtools[stMetadata.ftType].oFactory />
+				<cfif structkeyexists(oFactory,"on#arguments.newStatus#")>
+					<cfinvoke component="#oFactory#" method="on#arguments.newStatus#">
+						<cfinvokeargument name="typename" value="#arguments.typename#" />
+						<cfinvokeargument name="stObject" value="#arguments.stProperties#" />
+						<cfinvokeargument name="stMetadata" value="#stMetadata#" />
+						<cfinvokeargument name="previousStatus" value="#arguments.previousstatus#" />
+					</cfinvoke>
+				<cfelseif structkeyexists(oFactory,"onStatusChange")>
+					<cfinvoke component="#this#" method="onStatusChange">
+						<cfinvokeargument name="typename" value="#arguments.typename#" />
+						<cfinvokeargument name="stObject" value="#arguments.stProperties#" />
+						<cfinvokeargument name="stMetadata" value="#stMetadata#" />
+						<cfinvokeargument name="newstatus" value="#arguments.newStatus#" />
+						<cfinvokeargument name="previousStatus" value="#arguments.previousStatus#" />
+					</cfinvoke>
+				</cfif>
+			</cfif>
+		</cfloop>
+		
+	</cffunction>
+	
+	
 	<cffunction name="setLock" access="public" output="true" hint="Lock a content item to prevent simultaneous editing." returntype="void">
 		<cfargument name="locked" type="boolean" required="true" hint="Turn the lock on or off.">
 		<cfargument name="lockedby" type="string" required="false" hint="Name of the user locking the object." default="">

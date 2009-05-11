@@ -194,22 +194,22 @@
 	
 		<cfreturn html>
 	</cffunction>
-
+	
 	<cffunction name="display" access="public" output="true" returntype="string" hint="This will return a string of formatted HTML text to display.">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
-
+	
 		<cfset var html = "" />
-
+	
 		<cfsavecontent variable="html">
 			<cfoutput><a target="_blank" href="#application.url.webroot#/download.cfm?downloadfile=#arguments.stobject.objectid#&typename=#arguments.typename#&fieldname=#arguments.stmetadata.name#">#arguments.stMetadata.value#</a></cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html>
 	</cffunction>
-
+	
 	<cffunction name="validate" access="public" output="true" returntype="struct" hint="This will return a struct with bSuccess and stError">
 		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type. Includes Value and stSupporting">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
@@ -221,6 +221,7 @@
 		<cfset var cleanFileName = "" />
 		<cfset var newFileName = "" />
 		<cfset var lFormField = "" />
+		<cfset var stObj = application.fapi.getContentObject(objectid=arguments.objectid,typename=arguments.typename) />
 			
 		<cfset stResult.bSuccess = true>
 		<cfset stResult.value = stFieldPost.value>
@@ -233,11 +234,11 @@
 		<cfif len(arguments.stMetadata.ftDestination) and right(arguments.stMetadata.ftDestination,1) EQ "/">
 			<cfset arguments.stMetadata.ftDestination = left(arguments.stMetadata.ftDestination, (len(arguments.stMetadata.ftDestination) - 1)) />
 		</cfif>
-
-		<cfif arguments.stMetadata.ftSecure>
-			<cfset filePath = application.path.secureFilePath />
-		<cfelse>
+	
+		<cfif arguments.stMetadata.ftSecure eq "false" and (not structkeyexists(stObj,"status") or stObj.status eq "approved")>
 			<cfset filePath = application.path.defaultFilePath />
+		<cfelse>
+			<cfset filePath = application.path.secureFilePath />
 		</cfif>
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
@@ -263,7 +264,7 @@
 			   action = "move"
 			   source = "#filePath##FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Delete']#"
 			   destination = "#application.path.mediaArchive##arguments.stMetadata.ftDestination#/#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#listLast(FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Delete'], '/')#">
-
+	
 		</cfif>
 			
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
@@ -329,7 +330,7 @@
 			</cfdefaultcase>
 		
 		</cfswitch>
-
+	
 	
 		<!--- ----------------- --->
 		<!--- Return the Result --->
@@ -337,6 +338,122 @@
 		<cfreturn stResult>
 		
 	</cffunction>
-
-
+	
+	
+	<cffunction name="onDraft" access="public" output="false" returntype="void" hint="Called from setData when an object's status is changed">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="previousStatus" type="string" required="true" hint="The previous status of the object" />
+		
+		<cfset var oldPath = application.path.defaultFilePath />
+		<cfset var newPath = application.path.secureFilePath />
+		
+		<cfparam name="arguments.stMetadata.ftSecure" default="false" />
+		
+		<!--- Draft content should always be secured --->
+		<cfif len(arguments.stObject[arguments.stMetadata.name]) and arguments.previousStatus eq "approved" and not arguments.stMetadata.ftSecure and fileexists("#oldPath##arguments.stObject[arguments.stMetadata.name]#")>
+			<cffile action="move" source="#oldPath##arguments.stObject[arguments.stMetadata.name]#" destination="#newPath##arguments.stObject[arguments.stMetadata.name]#" />
+		</cfif>
+	</cffunction>
+	
+	<cffunction name="onApproved" access="public" output="false" returntype="void" hint="Called from setData when an object's status is changed">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="previousStatus" type="string" required="true" hint="The previous status of the object" />
+		
+		<cfset var oldPath = application.path.secureFilePath />
+		<cfset var newPath = application.path.defaultFilePath />
+		
+		<cfparam name="arguments.stMetadata.ftSecure" default="false" />
+		
+		<!--- Approved content should be moved to public if not secured --->
+		<cfif len(arguments.stObject[arguments.stMetadata.name]) and not arguments.stMetadata.ftSecure and fileexists("#oldPath##arguments.stObject[arguments.stMetadata.name]#")>
+			<cffile action="move" source="#oldPath##arguments.stObject[arguments.stMetadata.name]#" destination="#newPath##arguments.stObject[arguments.stMetadata.name]#" />
+		</cfif>
+	</cffunction>
+	
+	
+	<cffunction name="getFileLocation" access="public" output="false" returntype="struct" hint="Returns information used to access the file: type (stream | redirect), path (file system path | absolute URL), filename, mime type">
+		<cfargument name="objectid" type="string" required="false" default="" hint="Object to retrieve" />
+		<cfargument name="typename" type="string" required="false" default="" hint="Type of the object to retrieve" />
+		<!--- OR --->
+		<cfargument name="stObject" type="struct" required="false" hint="Provides the object" />
+		
+		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
+		
+		<cfset var stResult = structnew() />
+		<cfset var i = "" />
+		
+		<!--- Get the object if not passed in --->
+		<cfif not structkeyexists(arguments,"stObject")>
+			<cfset arguments.stObject = application.fapi.getContentObject(objectid=arguments.objectid,typename=arguments.typename) />
+		</cfif>
+		
+		<!--- Determine which property to use if not passed in --->
+		<cfif not structkeyexists(arguments,"stMetadata")>
+			<!--- Name of the file field has not been sent. We need to loop though the type to determine which field contains the file path --->
+			<cfloop list="#structKeyList(application.types[arguments.stObject.typename].stprops)#" index="i">
+				<cfif application.fapi.getPropertyMetadata(arguments.stObject.typename,i,"ftType","") EQ "file">
+					<cfset arguments.stMetadata = application.types[arguments.stObject.typename].stprops[i].metadata />
+					<cfbreak />
+				</cfif>
+			</cfloop>
+			
+			<!--- Throw an error if the field couldn't be determined --->
+			<cfif not structkeyexists(arguments,"stMetadata")>
+				<cfthrow type="core.tags.farcry.download" message="File not found." detail="Fieldname for the file reference could not be determined." />
+			</cfif>
+		</cfif>
+		
+		<!--- Throw an error if the field is empty --->
+		<cfif NOT len(arguments.stObject[arguments.stMetadata.name])>
+			<cfthrow type="core.tags.farcry.download" message="File not found." detail="Fieldname for the file reference was empty." />
+		</cfif>
+		
+		<!--- Ensure that the first character of the path in the DB is a  "/" --->
+		<cfif left(arguments.stObject[arguments.stMetadata.name],1) NEQ "/">
+			<cfset arguments.stObject[arguments.stMetadata.name] = "/#arguments.stObject[arguments.stMetadata.name]#" />
+		</cfif>
+		<!--- Replace any  "\" with "/" for compatibility with everything --->
+		<cfset arguments.stObject[arguments.stMetadata.name] = replace(arguments.stObject[arguments.stMetadata.name],"\","/","all")>
+		
+		<!--- Determine the ACTUAL filename --->
+		<cfset stResult.filename = listLast(arguments.stObject[arguments.stMetadata.name],"/")>
+		
+		<cfif arguments.stMetadata.ftSecure eq "false" and (not structkeyexists(arguments.stObject,"status") or arguments.stObject.status eq "approved")>
+			<!--- check file exists --->
+			<cfif NOT fileExists("#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#")>
+				<cfthrow type="core.tags.farcry.download" message="File not found." detail="The physical file is missing." />
+			</cfif>
+			
+			<!--- Objects that are not ALWAYS secured and have been approved should be available under the webroot --->
+			<cfset stResult.type = "redirect" />
+			<cfset stResult.path = "#application.fapi.getFileWebRoot()##arguments.stObject[arguments.stMetadata.name]#" />
+			
+			<!--- determine mime type --->
+			<cfset stResult.mimeType=getPageContext().getServletContext().getMimeType("#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#") />
+		<cfelse>
+			<!--- Everything else must be streamed from a path --->
+			<cfset stResult.type = "stream" />
+			
+			<!--- check file exists --->
+			<cfif fileExists("#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#")>
+				<cfset stResult.path = "#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#" />
+			<cfelse>
+				<cfif fileexists("#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#")>
+					<cfset stResult.path = "#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#" />
+				<cfelse>
+					<cfthrow type="core.tags.farcry.download" message="File not found." detail="The physical file is missing." />
+				</cfif>
+			</cfif>
+			
+			<!--- determine mime type --->
+			<cfset stResult.mimeType=getPageContext().getServletContext().getMimeType("#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#") />
+		</cfif>
+		
+		<cfreturn stResult />
+	</cffunction>
+	
 </cfcomponent> 

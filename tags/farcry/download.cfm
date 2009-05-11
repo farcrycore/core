@@ -76,45 +76,11 @@ accommodate legacy implementations
 </cfif>
 
 <!--- determine the fieldname --->
-<cfif NOT len(attributes.fieldname)>
-	<!--- Name of the file field has not been sent. We need to loop though the type to determine which field contains the file path --->
-	<cfloop list="#structKeyList(application.types[attributes.typename].stprops)#" index="i">
-		<cfif structKeyExists(application.types[attributes.typename].stprops[i].metadata, "ftType") AND application.types[attributes.typename].stprops[i].metadata.ftType EQ "file">
-			<cfset attributes.fieldname = i />
-		</cfif>
-	</cfloop>
-</cfif>
-<cfif NOT len(attributes.fieldname)>
-	<cfthrow type="core.tags.farcry.download" message="File not found." detail="Fieldname for the file reference could not be determined." />
-</cfif>
-<cfif NOT len(stfile[attributes.fieldname])>
-	<cfthrow type="core.tags.farcry.download" message="File not found." detail="Fieldname for the file reference was empty." />
-</cfif>
-
-
-<!--- determine the base filepath --->
-<cfif structKeyExists(application.types[attributes.typename].stprops[attributes.fieldname].metadata, "ftSecure") AND application.types[attributes.typename].stprops[attributes.fieldname].metadata.ftSecure>
-	<cfset baseFilepath = application.path.secureFilePath />
+<cfif len(attributes.fieldname)>
+	<cfset stLocation = application.formtools.file.oFactory.getFileLocation(stObject=stFile,stMetadata=application.stCOAPI[stFile.typename].stProps[attributes.fieldname].metadata) />
 <cfelse>
-	<cfset baseFilepath = application.path.defaultFilePath />
+	<cfset stLocation = application.formtools.file.oFactory.getFileLocation(stObject=stFile) />
 </cfif>
-
-<!--- Ensure that the first character of the path in the DB is a  "/" --->
-<cfif left(stFile[attributes.fieldname],1) NEQ "/">
-	<cfset stFile[attributes.fieldname] = "/#stFile[attributes.fieldname]#" />
-</cfif>
-<!--- Replace any  "\" with "/" for compatibility with everything --->
-<cfset filepath = replace("#baseFilepath##stFile[attributes.fieldname]#","\","/","all")>
-<!--- Determine the ACTUAL filename --->
-<cfset fileName = listLast(filepath,"/")>
-
-<!--- check file exists --->
-<cfif NOT fileExists(filepath)>
-	<cfthrow type="core.tags.farcry.download" message="File not found." detail="The physical file is missing." />
-</cfif>
-
-<!--- determine mime type --->
-<cfset mimeType=getPageContext().getServletContext().getMimeType(filePath) />
 
 
 <!--- todo: determine config for logging options; stats is being deprecated --->
@@ -140,14 +106,17 @@ accommodate legacy implementations
 <!------------------------------------
 DOWNLOAD FILE
 ------------------------------------->
-<cfheader name="content-disposition" VALUE='attachment; filename="#fileName#"' />
-<cfheader name="cache-control" value="" />
-<cfheader name="pragma" value="" />
-<cftry>
-<cfcontent type="#mimeType#" file="#filepath#" deletefile="No" reset="Yes" />
-<cfcatch><!--- prevent unnecessary log entries when user cancels download whilst it is in progress ---></cfcatch>
-</cftry>
-
+<cfif stLocation.type eq "stream">
+	<cfheader name="content-disposition" VALUE='attachment; filename="#stLocation.fileName#"' />
+	<cfheader name="cache-control" value="" />
+	<cfheader name="pragma" value="" />
+	<cftry>
+	<cfcontent type="#stLocation.mimeType#" file="#stLocation.path#" deletefile="No" reset="Yes" />
+	<cfcatch><!--- prevent unnecessary log entries when user cancels download whilst it is in progress ---></cfcatch>
+	</cftry>
+<cfelse>
+	<cflocation url="#stLocation.path#" addtoken="false" />
+</cfif>
 
 
 
