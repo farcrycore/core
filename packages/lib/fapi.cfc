@@ -343,6 +343,19 @@
 			</code>
 		 --->
 		<cffunction name="getCurrentUser" access="public" returntype="struct" hint="Gets the currently logged in user's dmProfile or a blank structure if the user is not logged in." bDocument="true">
+			<cfreturn getCurrentUsersProfile() />
+		</cffunction>
+				
+		<!--- @@examples:
+			<p>Get the current logged in users profile:</p>
+			<code>
+				<cfset stProfile = application.fapi.getCurrentUsersProfile() />
+				<cfif not isstructempty(stProfile)>
+					<cfoutput>Hello #stProfile.firstname#</cfoutput>
+				</cfif>
+			</code>
+		 --->
+		<cffunction name="getCurrentUsersProfile" access="public" returntype="struct" hint="Gets the currently logged in user's dmProfile or a blank structure if the user is not logged in." bDocument="true">
 			<cfif structKeyExists(session, "dmProfile")>
 				<cfreturn session.dmProfile />
 			<cfelse>
