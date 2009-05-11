@@ -8,9 +8,6 @@
 		<cfset var stPermission = structnew() /><!--- Used in deprecated code --->
 		<cfset var i = 0 /><!--- Used in deprecated code --->
 		
-		<!--- This will store the cached security permissions --->
-		<cfset this.stPermissions = structNew() />
-		
 		<cfset initCache() />
 		
 		<!--- THE FOLLOWING VARIABLES ARE DEPRECATED --->
@@ -48,6 +45,7 @@
 		<cfset var comp = "" />
 		
 		<!--- Cache --->
+		<cfset this.stPermissions = structNew() />
 		<cfset this.cache = structnew() />
 		<cfset this.cache.roles = structnew() />
 		<cfset this.cache.permissionlookup = structnew() />
