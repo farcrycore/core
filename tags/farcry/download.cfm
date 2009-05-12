@@ -102,22 +102,29 @@ accommodate legacy implementations
 	</cfif>
 </cfinvoke>
 	
+
+<!--- What to do if the returned struct is empty (i.e. user doesn't have permission) --->
+<cfif structisempty(stLocation)>
 	
-<!------------------------------------
-DOWNLOAD FILE
-------------------------------------->
-<cfif stLocation.type eq "stream">
-	<cfheader name="content-disposition" VALUE='attachment; filename="#stLocation.fileName#"' />
-	<cfheader name="cache-control" value="" />
-	<cfheader name="pragma" value="" />
-	<cftry>
-	<cfcontent type="#stLocation.mimeType#" file="#stLocation.path#" deletefile="No" reset="Yes" />
-	<cfcatch><!--- prevent unnecessary log entries when user cancels download whilst it is in progress ---></cfcatch>
-	</cftry>
+	<!--- Do nothing --->
+	
 <cfelse>
-	<cflocation url="#stLocation.path#" addtoken="false" />
+
+	<!------------------------------------
+	DOWNLOAD FILE
+	------------------------------------->
+	<cfif stLocation.type eq "stream">
+		<cfheader name="content-disposition" VALUE='attachment; filename="#stLocation.fileName#"' />
+		<cfheader name="cache-control" value="" />
+		<cfheader name="pragma" value="" />
+		<cftry>
+		<cfcontent type="#stLocation.mimeType#" file="#stLocation.path#" deletefile="No" reset="Yes" />
+		<cfcatch><!--- prevent unnecessary log entries when user cancels download whilst it is in progress ---></cfcatch>
+		</cftry>
+	<cfelse>
+		<cflocation url="#stLocation.path#" addtoken="false" />
+	</cfif>
+
 </cfif>
-
-
 
 <cfsetting enablecfoutputonly="false" />
