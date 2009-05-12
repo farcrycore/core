@@ -90,7 +90,7 @@
 			<cfcatch type="database">
 				<cflock name="deployCoapiTable" timeout="30">
 					<!--- The table has not been deployed. We need to deploy it now --->
-					<cfset stDeployResult = deployType(dsn=application.dsn,bDropTable=true,bTestRun=false,dbtype=application.dbtype) />		
+					<cfset stDeployResult = deployType(dsn=application.dsn,bDropTable=true,bTestRun=false,dbtype=application.dbtype,bDeployCoapiRecord=false) />		
 				</cflock>		
 			</cfcatch>
 		</cftry>
