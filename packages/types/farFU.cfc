@@ -1152,7 +1152,7 @@
 		WE ARE NOT USING FRIENDLY URLS SO SIMPLY SETUP THE URL STRING WITH THE ARGUMENTS PASSED IN
 		 ------------------------------------------------------------------------------------------>
 		<cfelse>			
-			<cfset returnURL = "#application.url.conjurer#?" />
+			<cfset returnURL = "/index.cfm?" />
 			
 			<cfif len(arguments.objectid)>
 				<cfset returnURL = "#returnURL#objectid=#arguments.objectid#" />
