@@ -286,7 +286,11 @@
 		</cffunction>
 			
 		<!--- @@examples:
-			<p>Show content if the current user has a specified role:</p>
+			<p>Show a block of content if the current user has a specified role. As seen in the 
+			example the "Welcome Back" message is only displayed if the current, view user has been 
+			assigned the role of "Member". The "Member" part gets defined in the webtop under "roles" and
+			the value you pass to this function is the Title of the role.  In other words, the role
+			you are checking for needs to be setup per installation and is completely user defined.</p>
 			<code>
 				<cfif application.fapi.hasRole("Member")>
 					<p>Welcome back!</p>
