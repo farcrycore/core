@@ -100,7 +100,7 @@ $in: objectid -- $
 			<cfset caller[attributes.r_stobject] = structNew() />
 			
 
-			<cfif structKeyExists(attributes.qRecordSet, "objectid")>
+			<cfif listFindNoCase(attributes.qRecordSet.columnList, "objectid")>
 				<cfset caller[attributes.r_stobject].objectid = attributes.qRecordSet.objectid[variables.currentRow] />
 				
 				<cfif variables.bIncludeTypeSpecific>
@@ -255,7 +255,7 @@ $in: objectid -- $
 			
 			<cfset caller[attributes.r_stobject] = structNew() />
 			
-			<cfif structKeyExists(attributes.qRecordSet, "objectid")>
+			<cfif listFindNoCase(attributes.qRecordSet.columnList, "objectid")>
 			
 				<cfset caller[attributes.r_stobject].objectid = attributes.qRecordSet.objectid[variables.currentRow] />
 				
