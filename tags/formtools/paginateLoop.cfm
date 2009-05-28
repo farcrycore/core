@@ -93,14 +93,12 @@ $in: objectid -- $
 		<!--- <cfset o = createObject("component", PrimaryPackagePath) /> --->
 
 	
-	
-	
 		<cfif len(attributes.r_stobject) and variables.currentRow LTE attributes.totalRecords AND attributes.totalRecords>
-	
+		
 			<cfset caller[attributes.r_stobject] = structNew() />
 			
 
-			<cfif structKeyExists(attributes.qRecordSet, "objectid")>
+			<cfif listFindNoCase(attributes.qRecordSet.columnList, "objectid")>
 				<cfset caller[attributes.r_stobject].objectid = attributes.qRecordSet.objectid[variables.currentRow] />
 				
 				<cfif variables.bIncludeTypeSpecific>
@@ -255,7 +253,7 @@ $in: objectid -- $
 			
 			<cfset caller[attributes.r_stobject] = structNew() />
 			
-			<cfif structKeyExists(attributes.qRecordSet, "objectid")>
+			<cfif listFindNoCase(attributes.qRecordSet.columnList, "objectid")>
 			
 				<cfset caller[attributes.r_stobject].objectid = attributes.qRecordSet.objectid[variables.currentRow] />
 				
