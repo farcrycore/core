@@ -8,6 +8,7 @@
 	<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs" >
 	
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.file" output="false" hint="Returns a copy of this initialised object">
+		
 		<cfreturn this>
 	</cffunction>
 	
@@ -222,10 +223,13 @@
 		<cfset var newFileName = "" />
 		<cfset var lFormField = "" />
 		<cfset var stObj = application.fapi.getContentObject(objectid=arguments.objectid,typename=arguments.typename) />
+		<cfset var filepermission = 0 />
 			
 		<cfset stResult.bSuccess = true>
 		<cfset stResult.value = stFieldPost.value>
 		<cfset stResult.stError = StructNew()>
+		
+		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
 		
 		<cfparam name="arguments.stMetadata.ftSecure" default="false" />
 		<cfparam name="arguments.stMetadata.ftDestination" default="" />
@@ -234,8 +238,9 @@
 		<cfif len(arguments.stMetadata.ftDestination) and right(arguments.stMetadata.ftDestination,1) EQ "/">
 			<cfset arguments.stMetadata.ftDestination = left(arguments.stMetadata.ftDestination, (len(arguments.stMetadata.ftDestination) - 1)) />
 		</cfif>
-	
-		<cfif arguments.stMetadata.ftSecure eq "false" and (not structkeyexists(stObj,"status") or stObj.status eq "approved")>
+		
+		<sec:CheckPermission objectid="#arguments.objectid#" type="#arguments.typename#" permission="View" roles="Anonymous" result="filepermission" />
+		<cfif arguments.stMetadata.ftSecure eq "false" and (not structkeyexists(stObj,"status") or stObj.status eq "approved") and filepermission>
 			<cfset filePath = application.path.defaultFilePath />
 		<cfelse>
 			<cfset filePath = application.path.secureFilePath />
@@ -346,14 +351,18 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="previousStatus" type="string" required="true" hint="The previous status of the object" />
 		
-		<cfset var oldPath = application.path.defaultFilePath />
-		<cfset var newPath = application.path.secureFilePath />
+		<cfset var filepermission = 0 />
+		
+		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
 		
 		<cfparam name="arguments.stMetadata.ftSecure" default="false" />
 		
 		<!--- Draft content should always be secured --->
-		<cfif len(arguments.stObject[arguments.stMetadata.name]) and arguments.previousStatus eq "approved" and not arguments.stMetadata.ftSecure and fileexists("#oldPath##arguments.stObject[arguments.stMetadata.name]#")>
-			<cffile action="move" source="#oldPath##arguments.stObject[arguments.stMetadata.name]#" destination="#newPath##arguments.stObject[arguments.stMetadata.name]#" />
+		<!--- ftSecure=true will already be secured --->
+		<!--- anonymous access=false will already be secured --->
+		<sec:CheckPermission objectid="#arguments.stObject.objectid#" type="#arguments.typename#" permission="View" roles="Anonymous" result="filepermission" />
+		<cfif len(arguments.stObject[arguments.stMetadata.name]) and arguments.previousStatus eq "approved" and not arguments.stMetadata.ftSecure and filepermission>
+			<cfset moveToSecure(argumentCollection=arguments) />
 		</cfif>
 	</cffunction>
 	
@@ -363,15 +372,139 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="previousStatus" type="string" required="true" hint="The previous status of the object" />
 		
-		<cfset var oldPath = application.path.secureFilePath />
-		<cfset var newPath = application.path.defaultFilePath />
+		<cfset var filepermission = 0 />
+		
+		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
 		
 		<cfparam name="arguments.stMetadata.ftSecure" default="false" />
 		
 		<!--- Approved content should be moved to public if not secured --->
-		<cfif len(arguments.stObject[arguments.stMetadata.name]) and not arguments.stMetadata.ftSecure and fileexists("#oldPath##arguments.stObject[arguments.stMetadata.name]#")>
-			<cffile action="move" source="#oldPath##arguments.stObject[arguments.stMetadata.name]#" destination="#newPath##arguments.stObject[arguments.stMetadata.name]#" />
+		<!--- ftSecure=true should not be moved --->
+		<!--- anonymous access=false should not be moved --->
+		<sec:CheckPermission objectid="#arguments.stObject.objectid#" type="#arguments.stObject.typename#" permission="View" roles="Anonymous" result="filepermission" />
+		<cfif len(arguments.stObject[arguments.stMetadata.name]) and not arguments.stMetadata.ftSecure and filepermission>
+			<cfset moveToPublic(argumentCollection=arguments) />
 		</cfif>
+	</cffunction>
+	
+	<cffunction name="onDelete" access="public" output="false" returntype="void" hint="Called from setData when an object is deleted">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		
+		<cfset var stLocation = "" />
+		<cfset var filepermission = 0 />
+		
+		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
+		
+		<cfif not len(arguments.stObject[arguments.stMetadata.name])>
+			<cfreturn /><!--- No file attached --->
+		</cfif>
+		
+		<cftry>
+			<cfset stLocation = getFileLocation(argumentCollection=arguments) />
+			
+			<cfcatch>
+				<cfset stLocation = structnew() />
+			</cfcatch>
+		</cftry>
+		
+		<!--- Delete file --->
+		<cfif not structisempty(stLocation)>
+			<cffile action="delete" file="#stLocation.fullpath#" />
+		</cfif>
+	</cffunction>
+	
+	<cffunction name="onSecurityChange" returntype="void" access="public" output="false" hint="Performs any updates necessary for a security change">
+		<cfargument name="changetype" type="string" required="true" hint="type | object" />
+		<cfargument name="objectid" type="uuid" required="false" hint="Object being changed" />
+		<cfargument name="stObject" type="struct" required="false" hint="Object being changed" />
+		<cfargument name="typename" type="string" required="false" hint="Type of object being changed" />
+		<cfargument name="farRoleID" type="uuid" required="true" hint="The objectid of the role" />
+		<cfargument name="farPermissionID" type="uuid" required="true" hint="The objectid of the permission" />
+		<cfargument name="oldRight" type="numeric" required="true" hint="The old status" />
+		<cfargument name="newRight" type="numeric" required="true" hint="The new status" />
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		
+		<cfset var access = 0 />
+		<cfset var stPermission = "" />
+		
+		<cfif not structkeyexists(arguments,"stObject")>
+			<cfset arguments.stObject = getData(objectid=arguments.objectid) />
+		</cfif>
+		
+		<!--- Check for the other permission --->
+		<cfset stPermission = application.security.factory.permission.getData(objectid=arguments.farPermissionID) />
+		<cfif changetype eq "type">
+			<cfset access = arguments.newRight and application.security.checkPermission(object=arguments.stObject.objectid,role=arguments.farRoleID,permission=right(stPermission.shortcut,len(stPermission.shortcut)-len(arguments.stObject.typename))) />
+		<cfelse><!--- changetype eq "object" --->
+			<cfif arguments.newRight eq -1>
+				<cfset access = 0 />
+			<cfelse>
+				<cfset access = 1 />
+			</cfif>
+			<cfset access = access and application.security.checkPermission(permission=stPermission.shortcut,type=arguments.stObject.typename,role=arguments.farRoleID) />
+		</cfif>
+		
+		<!--- If it is the anonymous role and the view permission that has changed, move the file --->
+		<cfif arguments.farRoleID eq application.security.factory.role.getID("anonymous") 
+			and (
+				( changetype eq "object" and stPermission.shortcut eq "View" ) or
+				( changetype eq "type" and arguments.farPermissionID eq application.security.factory.permission.getTypePermission(arguments.stObject.typename,"View") )
+			)>
+			<cfif access eq 1>
+				<cfset moveToPublic(argumentCollection=arguments) />
+			<cfelse>
+				<cfset moveToSecure(argumentCollection=arguments) />
+			</cfif>
+		</cfif>
+	</cffunction>
+	
+	
+	<cffunction name="moveToSecure" access="public" output="false" returntype="void" hint="Moves the specified file to the secure location">
+		<cfargument name="objectid" type="string" required="false" default="" hint="Object to retrieve" />
+		<cfargument name="typename" type="string" required="false" default="" hint="Type of the object to retrieve" />
+		<!--- OR --->
+		<cfargument name="stObject" type="struct" required="false" hint="Provides the object" />
+		
+		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
+		
+		
+		<cfset var stLocation = getFileLocation(argumentCollection=arguments) />
+		<cfset var newPath = application.path.secureFilePath />
+		
+		<cfif structisempty(stLocation)>
+			<cfreturn />
+		</cfif>
+		
+		<cfif not directoryexists("#newPath##arguments.stMetadata.ftDestination#")>
+			<cfdirectory action="create" directory="#newPath##arguments.stMetadata.ftDestination#" mode="777" />
+		</cfif>
+		
+		<cffile action="move" source="#stLocation.fullpath#" destination="#newPath##arguments.stObject[arguments.stMetadata.name]#" />
+	</cffunction>
+	
+	<cffunction name="moveToPublic" access="public" output="false" returntype="void" hint="Moves the specified file to the public location">
+		<cfargument name="objectid" type="string" required="false" default="" hint="Object to retrieve" />
+		<cfargument name="typename" type="string" required="false" default="" hint="Type of the object to retrieve" />
+		<!--- OR --->
+		<cfargument name="stObject" type="struct" required="false" hint="Provides the object" />
+		
+		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
+		
+		
+		<cfset var stLocation = getFileLocation(argumentCollection=arguments) />
+		<cfset var newPath = application.path.defaultFilePath />
+		
+		<cfif structisempty(stLocation)><cfabort showerror="shouldn't be here">
+			<cfreturn />
+		</cfif>
+		
+		<cfif not directoryexists("#newPath##arguments.stMetadata.ftDestination#")>
+			<cfdirectory action="create" directory="#newPath##arguments.stMetadata.ftDestination#" mode="777" />
+		</cfif>
+		
+		<cffile action="move" source="#stLocation.fullpath#" destination="#newPath##arguments.stObject[arguments.stMetadata.name]#" />
 	</cffunction>
 	
 	
@@ -385,6 +518,9 @@
 		
 		<cfset var stResult = structnew() />
 		<cfset var i = "" />
+		<cfset var filepermission = 0 />
+		
+		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
 		
 		<!--- Get the object if not passed in --->
 		<cfif not structkeyexists(arguments,"stObject")>
@@ -403,13 +539,27 @@
 			
 			<!--- Throw an error if the field couldn't be determined --->
 			<cfif not structkeyexists(arguments,"stMetadata")>
-				<cfthrow type="core.tags.farcry.download" message="File not found." detail="Fieldname for the file reference could not be determined." />
+				<cfset stResult = structnew() />
+				<cfset stResult.message = "Fieldname for the file reference could not be determined" />
+				<cfreturn stResult />
 			</cfif>
+		</cfif>
+		
+		<!--- Does the user have access to this object --->
+		<sec:CheckPermission objectid="#arguments.stObject.objectid#" type="#arguments.stObject.typename#" permission="View" result="filepermission" />
+		<cfif not filepermission>
+			<cfset stResult = structnew() />
+			<cfset stResult.message = "Permission denied" />
+			<cfreturn structnew() />
 		</cfif>
 		
 		<!--- Throw an error if the field is empty --->
 		<cfif NOT len(arguments.stObject[arguments.stMetadata.name])>
-			<cfthrow type="core.tags.farcry.download" message="File not found." detail="Fieldname for the file reference was empty." />
+			<cfset stResult = structnew() />
+			<cfset stResult.message = "No file defined" />
+			<cfreturn stResult />
+		<cfelse>
+			<cfset stResult.relativepath = arguments.stObject[arguments.stMetadata.name] />
 		</cfif>
 		
 		<!--- Ensure that the first character of the path in the DB is a  "/" --->
@@ -422,15 +572,30 @@
 		<!--- Determine the ACTUAL filename --->
 		<cfset stResult.filename = listLast(arguments.stObject[arguments.stMetadata.name],"/")>
 		
-		<cfif arguments.stMetadata.ftSecure eq "false" and (not structkeyexists(arguments.stObject,"status") or arguments.stObject.status eq "approved")>
+		<!--- draft will be secured --->
+		<!--- ftSecure=true will always be secured --->
+		<!--- anonymous access=false will always be secured --->
+		<sec:CheckPermission objectid="#arguments.stObject.objectid#" type="#arguments.stObject.typename#" permission="View" roles="Anonymous" result="filepermission" />
+		<cfif arguments.stMetadata.ftSecure eq "false" and (not structkeyexists(arguments.stObject,"status") or arguments.stObject.status eq "approved") and filepermission>
+			<!--- Objects that are not ALWAYS secured and have been approved should be available under the webroot --->
+			
 			<!--- check file exists --->
-			<cfif NOT fileExists("#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#")>
-				<cfthrow type="core.tags.farcry.download" message="File not found." detail="The physical file is missing." />
+			<cfif fileExists("#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#")>
+				<cfset stResult.type = "redirect" />
+				<cfset stResult.path = "#application.fapi.getFileWebRoot()##arguments.stObject[arguments.stMetadata.name]#" />
+				<cfset stResult.fullpath = "#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#" />
+			<cfelseif fileExists("#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#")>
+				<!--- If the permission gets assigned AFTER the object is sent to approved the file may still be in the secured directory. --->
+				<cfset stResult.type = "stream" />
+				<cfset stResult.path = "#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#" />
+				<cfset stResult.fullpath = "#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#" />
+			<cfelse>
+				<cfset stResult = structnew() />
+				<cfset stResult.message = "File is missing" />
+				<cfreturn stResult />
 			</cfif>
 			
-			<!--- Objects that are not ALWAYS secured and have been approved should be available under the webroot --->
-			<cfset stResult.type = "redirect" />
-			<cfset stResult.path = "#application.fapi.getFileWebRoot()##arguments.stObject[arguments.stMetadata.name]#" />
+			
 			
 			<!--- determine mime type --->
 			<cfset stResult.mimeType=getPageContext().getServletContext().getMimeType("#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#") />
@@ -445,7 +610,9 @@
 				<cfif fileexists("#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#")>
 					<cfset stResult.path = "#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#" />
 				<cfelse>
-					<cfthrow type="core.tags.farcry.download" message="File not found." detail="The physical file is missing." />
+					<cfset stResult = structnew() />
+					<cfset stResult.message = "File is missing" />
+					<cfreturn stResult />
 				</cfif>
 			</cfif>
 			

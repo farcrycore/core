@@ -334,6 +334,9 @@ object methods
 		
 		<cfset var qPermissions = "" />
 		<cfset var stRole = structnew() />
+		<cfset var typepermissiontype = "" />
+		<cfset var stO = structnew() />
+		<cfset var qObjects = "" />
 		
 		<!--- If the name of the role was passed in, get the objectid --->
 		<cfif not isvalid("uuid",arguments.role)>
@@ -361,11 +364,35 @@ object methods
 			<!--- Add the permission --->
 			<cfset arrayappend(stRole.aPermissions,arguments.permission) />
 			<cfset setData(stProperties=stRole) />
+			
+			<!--- Notify objects of permission change --->
+			<cfset typepermissiontype = application.security.factory.permission.getTypePermissionType(objectid=stObj.aPermissions[i]) />
+			<cfif len(typepermissiontype)>
+				<cfquery datasource="#application.dsn#" name="qObjects">
+					select		objectid
+					from		#application.dbowner##typepermissiontype#
+				</cfquery>
+				
+				<cfparam name="stO.#typepermissiontype#" default="#application.fapi.getContentType(typename=typepermissiontype)#" />
+				<cfset stO[typepermissiontype].onSecurityChange(changetype="type",objectid=qObjects.objectid,typename=typepermissiontype,farRoleID=arguments.role,farPermissionID=arguments.permission,oldright=0,newright=1) />
+			</cfif>
 		</cfif>
 		<cfif not arguments.has and qPermissions.recordcount>
 			<!--- Remove the permission --->
 			<cfset arraydeleteat(stRole.aPermissions,qPermissions.seq) />
 			<cfset setData(stProperties=stRole) />
+			
+			<!--- Notify objects of permission change --->
+			<cfset typepermissiontype = application.security.factory.permission.getTypePermissionType(objectid=stObj.aPermissions[i]) />
+			<cfif len(typepermissiontype)>
+				<cfquery datasource="#application.dsn#" name="qObjects">
+					select		objectid
+					from		#application.dbowner##typepermissiontype#
+				</cfquery>
+				
+				<cfparam name="stO.#typepermissiontype#" default="#application.fapi.getContentType(typename=typepermissiontype)#" />
+				<cfset stO[typepermissiontype].onSecurityChange(changetype="type",objectid=qObjects.objectid,typename=typepermissiontype,farRoleID=arguments.role,farPermissionID=arguments.permission,oldright=1,newright=0) />
+			</cfif>
 		</cfif>
 	</cffunction>
 
@@ -413,16 +440,91 @@ object methods
 		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="">
 		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="">
 		
+		<cfset var qBarnacles = "" />
+		<cfset var stObj = getData(objectid=arguments.objectid) />
+		<cfset var typepermission = "" />
+		<cfset var i = 0 />
+		<cfset var qObjects = "" />
+		<cfset var stO = structnew() />
+		
 		<!--- Remove related barnacles --->
 		<cfquery datasource="#application.dsn#" name="qBarnacles">
-			delete
+			select	objectid
 			from	#application.dbowner#farBarnacle
 			where	roleid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
 		</cfquery>
 		
+		<cfloop query="qBarnacles">
+			<cfset application.security.factory.barnacle.delete(objectid=qBarnacles.objectid) />
+		</cfloop>
+		
+		<!--- Notify objects of permission change --->
+		<cfloop from="1" to="#arraylen(stObj.aPermissions)#" index="i">
+			<cfset typepermissiontype = application.security.factory.permission.getTypePermissionType(objectid=stObj.aPermissions[i]) />
+			<cfif len(typepermissiontype)>
+				<cfquery datasource="#application.dsn#" name="qObjects">
+					select		objectid
+					from		#application.dbowner##typepermissiontype#
+				</cfquery>
+				
+				<cfparam name="stO.#typepermissiontype#" default="#application.fapi.getContentType(typename=typepermissiontype)#" />
+				<cfset stO[typepermissiontype].onSecurityChange(changetype="type",objectid=qObjects.objectid,typename=typepermissiontype,farRoleID=arguments.objectid,farPermissionID=stObj.aPermissions[i],oldright=1,newright=0) />
+			</cfif>
+		</cfloop>
+		
 		<cfreturn super.delete(objectid=arguments.objectid,user=arguments.user,auditNote=arguments.auditNote) />
 	</cffunction>
 
+	<cffunction name="setData" access="public" output="true" hint="Update the record for an objectID including array properties.  Pass in a structure of property values; arrays should be passed as an array.">
+		<cfargument name="stProperties" required="true">
+		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="">
+		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Updated">
+		<cfargument name="bAudit" type="boolean" required="No" default="1" hint="Pass in 0 if you wish no audit to take place">
+		<cfargument name="dsn" required="No" default="#application.dsn#">
+		<cfargument name="bSessionOnly" type="boolean" required="false" default="false"><!--- This property allows you to save the changes to the Temporary Object Store for the life of the current session. ---> 
+		<cfargument name="bAfterSave" type="boolean" required="false" default="true" hint="This allows the developer to skip running the types afterSave function.">	
+		
+		<cfset var stOld = getData(objectid=arguments.stProperties.objectid) />
+		<cfset var thisperm = "" />
+		<cfset var typepermissiontype = "" />
+		<cfset var qObjects = "" />
+		<cfset var stO = structnew() />
+		
+		<cfif structkeyexists(arguments.stProperties,"aPermissions")>
+			<!--- Removed permissions --->
+			<cfloop list="#application.fapi.listDiff(arraytolist(arguments.stProperties.aPermissions),arraytolist(stOld.aPermissions))#" index="thisperm">
+				<!--- Notify objects of permission change --->
+				<cfset typepermissiontype = application.security.factory.permission.getTypePermissionType(objectid=thisperm) />
+				<cfif len(typepermissiontype)>
+					<cfquery datasource="#application.dsn#" name="qObjects">
+						select		objectid
+						from		#application.dbowner##typepermissiontype#
+					</cfquery>
+					
+					<cfparam name="stO.#typepermissiontype#" default="#application.fapi.getContentType(typename=typepermissiontype)#" />
+					<cfset stO[typepermissiontype].onSecurityChange(changetype="type",objectid=qObjects.objectid,typename=typepermissiontype,farRoleID=arguments.stProperties.objectid,farPermissionID=thisperm,oldright=1,newright=0) />
+				</cfif>
+			</cfloop>
+			
+			<!--- Added permissions --->
+			<cfloop list="#application.fapi.listDiff(arraytolist(stOld.aPermissions),arraytolist(arguments.stProperties.aPermissions))#" index="thisperm">
+				<!--- Notify objects of permission change --->
+				<cfset typepermissiontype = application.security.factory.permission.getTypePermissionType(objectid=thisperm) />
+				<cfif len(typepermissiontype)>
+					<cfquery datasource="#application.dsn#" name="qObjects">
+						select		objectid
+						from		#application.dbowner##typepermissiontype#
+					</cfquery>
+					
+					<cfparam name="stO.#typepermissiontype#" default="#application.fapi.getContentType(typename=typepermissiontype)#" />
+					<cfset stO[typepermissiontype].onSecurityChange(changetype="type",objectid=qObjects.objectid,typename=typepermissiontype,farRoleID=arguments.stProperties.objectid,farPermissionID=thisperm,oldright=0,newright=1) />
+				</cfif>
+			</cfloop>
+		</cfif>
+		
+		<cfreturn super.setData(stProperties=arguments.stProperties,user=arguments.user,auditNote=arguments.auditNote,bAudit=arguments.bAudit,dsn=arguments.dsn,bSessionOnly=arguments.bSessionOnly,bAfterSave=arguments.bAfterSave) />
+	</cffunction>
+	
 
 	<cffunction name="filterWebskins" access="public" output="false" returntype="query" hint="Returns a query of the webskins that match this filter">
 		<cfargument name="webskins" type="query" required="true" hint="The webskin query" />

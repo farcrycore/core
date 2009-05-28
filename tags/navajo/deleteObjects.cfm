@@ -18,31 +18,10 @@ Intended for use with daemon dynamic data.
 <cfif len(attributes.lObjectIDs) eq 0>
 	<cfset "caller.#attributes.rMsg#" = "#application.rb.getResource('workflow.messages.noobjectselectedfordeletion@text','No content items were selected for deletion')#">
 	<cfexit>
-</cfif>
-
-<!--- Now loop through the list and delete object --->
-<cfloop list="#attributes.lObjectIDs#" index="i">
-	<q4:contentobjectget objectID="#i#" r_stobject="stObj">
-	<cfset errorFlag = false>
-	<!--- delete actual file --->
-	<cfswitch expression="#attributes.typename#">
-		<cfcase value="dmFile">
-			<cftry>
-				<cffile action="delete" file="#application.path.defaultFilePath#/#stObj.filename#">
-				<cfcatch type="any"></cfcatch>
-			</cftry>
-		</cfcase>
-		<cfcase value="dmImage">
-			<cftry>
-				<cffile action="delete" file="#application.path.defaultImagePath#/#stObj.filename#">
-				<cfcatch type="any"></cfcatch>
-			</cftry>
-		</cfcase>
-	</cfswitch>
-	<q4:contentobjectdelete objectID="#i#">
+<cfelse>
+	<!--- Now loop through the list and delete object --->
+	<cfloop list="#attributes.lObjectIDs#" index="i">
+		<q4:contentobjectdelete objectID="#i#">
+	</cfloop>
 	<cfset "caller.#attributes.rMsg#" = application.rb.formatRBString('workflow.messages.objectsDeleted@text',listLen(attributes.lObjectIds),'{1} content item(s) deleted') /> 
-</cfloop>
-
-
-
-
+</cfif>

@@ -620,4 +620,22 @@
 	
 </cffunction>
 	
+	<cffunction name="onDelete" access="public" output="false" returntype="void" hint="Called from setData when an object is deleted">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		
+		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
+		
+		<cfif not len(arguments.stObject[arguments.stMetadata.name])>
+			<cfreturn /><!--- No file attached --->
+		</cfif>
+		
+		<cfif fileexists("#application.path.defaultImagePath#/#arguments.stObject[arguments.stMetadata.name]#")>
+			<cffile action="delete" file="#application.path.defaultImagePath#/#arguments.stObject[arguments.stMetadata.name]#" />
+		<cfelse>
+			<cfreturn /><!--- File doesn't actually exist --->
+		</cfif>
+	</cffunction>
+	
 </cfcomponent> 

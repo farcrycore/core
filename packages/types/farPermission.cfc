@@ -68,6 +68,41 @@ object methods
 		</cfif>
 	</cffunction>
 	
+	<cffunction name="getTypePermission" access="public" output="false" returntype="string" hint="Returns the objectid for the specified type permission">
+		<cfargument name="typename" type="string" required="true" hint="The content type" />
+		<cfargument name="permission" type="string" required="true" hint="The permission name" />
+		
+		<cfif permissionExists("#arguments.typename##arguments.permission#")>
+			<cfreturn getID("#arguments.typename##arguments.permission#") />
+		<cfelseif this.factory.permission.permissionExists("generic#arguments.permission#")>
+			<cfreturn getID("generic#arguments.permission#") />
+		<cfelse>
+			<cfreturn "" />
+		</cfif>
+	</cffunction>
+	
+	<cffunction name="getTypePermissionType" access="public" output="false" returntype="string" hint="Returns the type for a type permission, an empty string if it isn't one">
+		<cfargument name="objectid" type="string" required="false" hint="The objectid of the permission to check" />
+		<cfargument name="stObject" type="struct" required="false" hint="The permission to check" />
+		
+		<cfset var shortcut = "" />
+		<cfset var thistype = "" />
+		
+		<cfif structkeyexists(arguments,"objectid")>
+			<cfset shortcut = getData(objectid=arguments.objectid).shortcut />
+		<cfelse>
+			<cfset shortcut = arguments.stObject.shortcut />
+		</cfif>
+		
+		<cfloop collection="#application.stCOAPI#" item="thistype">
+			<cfif application.stCOAPI[thistype].class eq "type" and refindnocase("^#thistype#",shortcut)>
+				<cfreturn thistype />
+			</cfif>
+		</cfloop>
+		
+		<cfreturn "" />
+	</cffunction>
+	
 	<cffunction name="getID" access="public" output="false" returntype="string" hint="Returns the objectid for the specified object">
 		<cfargument name="name" type="string" required="true" hint="Pass in a permission name and the objectid will be returned" />
 		
@@ -116,6 +151,7 @@ object methods
 		<cfset var qRoles = "" />
 		<cfset var qBarnacles = "" />
 		<cfset var stRole = structnew() />
+		<cfset var stO = structnew() />
 		
 		<cfif arraylen(arguments.stProperties.aRelatedtypes)>
 			<!--- Find related role-permissions --->
@@ -144,11 +180,17 @@ object methods
 			<!--- Remove barnacles --->
 			<cfloop query="qBarnacles">
 				<cfset application.security.factory.barnacle.delete(objectid=qBarnacles.objectid[currentrow]) />
+				
+				<!--- Update permissions on objects --->
+				<cfif qBarnacles.barnaclevalue neq 1>
+					<cfparam name="stO.#qBarnacles.objecttype#" default="#application.fapi.getContentType(typename=qBarnacles.objecttype)#" />
+					<cfset stO[qBarnacles.objecttype].onSecurityChange(changetype="object",objectid=qBarnacles.referenceid,typename=qBarnacles.objecttype,farRoleID=qBarnacles.roleid,farPermissionID=qBarnacles.permissionid,oldright=qBarnacles.barnaclevalue,newright=1) />
+				</cfif>
 			</cfloop>
 		<cfelse>
 			<!--- Find related barnacles --->
 			<cfquery datasource="#application.dsn#" name="qBarnacles">
-				select	objectid,referenceid,roleid
+				select	*
 				from	#application.dbowner#farBarnacle
 				where	permissionid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.stProperties.objectid#" />
 			</cfquery>
@@ -156,6 +198,12 @@ object methods
 			<!--- Remove barnacles --->
 			<cfloop query="qBarnacles">
 				<cfset application.security.factory.barnacle.delete(objectid=qBarnacles.objectid[currentrow]) />
+				
+				<!--- Update permissions on objects --->
+				<cfif qBarnacles.barnaclevalue neq 1>
+					<cfparam name="stO.#qBarnacles.objecttype#" default="#application.fapi.getContentType(typename=qBarnacles.objecttype)#" />
+					<cfset stO[qBarnacles.objecttype].onSecurityChange(changetype="object",objectid=qBarnacles.referenceid,typename=qBarnacles.objecttype,farRoleID=qBarnacles.roleid,farPermissionID=qBarnacles.permissionid,oldright=qBarnacles.barnaclevalue,newright=1) />
+				</cfif>
 			</cfloop>
 		</cfif>
 		
@@ -212,7 +260,8 @@ object methods
 		<cfset var qRoles = "" />
 		<cfset var qBarnacles = "" />
 		<cfset var stRole = structnew() />
-		<cfset var stPermission = structnew() />
+		<cfset var stPermission = getData(objectid=arguments.objectid) />
+		<cfset var stO = structnew() />
 		
 		<!--- Find related role-permissions --->
 		<cfquery datasource="#application.dsn#" name="qRoles">
@@ -223,7 +272,7 @@ object methods
 		
 		<!--- Remove them from the roles --->
 		<cfloop query="qRoles">
-			<!--- Delete the barnacle --->
+			<!--- Delete the permission --->
 			<cfset stRole = application.security.factory.role.getData(qRoles.objectid[currentrow]) />
 			<cfset arraydeleteat(stRole.aPermissions,qRoles.seq[currentrow]) />
 			<cfset application.security.factory.role.setData(stRole) />
@@ -231,7 +280,7 @@ object methods
 		
 		<!--- Find related barnacles --->
 		<cfquery datasource="#application.dsn#" name="qBarnacles">
-			select	objectid,referenceid,roleid
+			select	*
 			from	#application.dbowner#farBarnacle
 			where	permissionid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
 		</cfquery>
@@ -239,6 +288,12 @@ object methods
 		<!--- Remove barnacles --->
 		<cfloop query="qBarnacles">
 			<cfset application.security.factory.barnacle.delete(objectid=qBarnacles.objectid[currentrow]) />
+				
+			<!--- Update permissions on objects --->
+			<cfif qBarnacles.barnaclevalue neq 1>
+				<cfparam name="stO.#qBarnacles.objecttype#" default="#application.fapi.getContentType(typename=qBarnacles.objecttype)#" />
+				<cfset stO[qBarnacles.objecttype].onSecurityChange(changetype="object",objectid=qBarnacles.referenceid,typename=qBarnacles.objecttype,farRoleID=qBarnacles.roleid,farPermissionID=qBarnacles.permissionid,oldright=qBarnacles.barnaclevalue,newright=1) />
+			</cfif>
 		</cfloop>
 		
 		<!--- Remove name lookup --->

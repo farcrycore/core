@@ -1190,7 +1190,7 @@ default handlers
 		</cfif>
 		
 		<farcry:logevent object="#arguments.objectid#" type="types" event="delete" notes="#arguments.auditNote#" />
-
+		
 		<!--- done first cause need to remove associtaion to library object --->
 		<cfinclude template="_types/delete.cfm">
 
@@ -1199,13 +1199,66 @@ default handlers
 			<cfset stLocal.archiveObject = createobject("component",application.types.dmArchive.typepath)>
 			<cfset stLocal.returnVar = stLocal.archiveObject.fArchiveObject(stObj)>
 		</cfif>
-
+		
+		<cfset onDelete(typename=stObj.typename,stObject=stObj) />
+		
 		<cfset stReturn.bSuccess = true>
 		<cfset stReturn.message = "#stObj.label# (#stObj.typename#) deleted.">
 		<cfreturn stReturn>
 	</cffunction>
 	
-
+	<cffunction name="onDelete" returntype="void" access="public" output="false" hint="Is called after the object has been removed from the database">
+		<cfargument name="typename" type="string" required="true" hint="The type of the object" />
+		<cfargument name="stObject" type="struct" required="true" hint="The object" />
+		
+		<cfset var thisprop = "" />
+		<cfset var oFactory = "" />
+		<cfset var stMetadata = "" />
+		
+		<cfloop collection="#application.stCOAPI[arguments.typename].stProps#" item="thisprop">
+			<cfif isdefined("application.stCOAPI.#arguments.typename#.stProps.#thisprop#.metadata.ftType") and len(application.stCOAPI[arguments.typename].stProps[thisprop].metadata.ftType)>
+				<cfset stMetadata = application.stCOAPI[arguments.typename].stProps[thisprop].metadata />
+				<cfset oFactory = application.formtools[stMetadata.ftType].oFactory />
+				<cfif structkeyexists(oFactory,"onDelete")>
+					<cfinvoke component="#oFactory#" method="onDelete">
+						<cfinvokeargument name="typename" value="#arguments.typename#" />
+						<cfinvokeargument name="stObject" value="#arguments.stObject#" />
+						<cfinvokeargument name="stMetadata" value="#stMetadata#" />
+					</cfinvoke>
+				</cfif>
+			</cfif>
+		</cfloop>
+	</cffunction>
+	
+	<cffunction name="onSecurityChange" returntype="void" access="public" output="false" hint="Performs any updates necessary for a security change">
+		<cfargument name="changetype" type="string" required="true" hint="type | object" />
+		<cfargument name="objectid" type="uuid" required="false" hint="Object being changed" />
+		<cfargument name="typename" type="string" required="false" hint="Type of object being changed" />
+		<cfargument name="stObject" type="struct" required="false" hint="Object being changed" />
+		<cfargument name="farRoleID" type="uuid" required="true" hint="The objectid of the role" />
+		<cfargument name="farPermissionID" type="uuid" required="true" hint="The objectid of the permission" />
+		<cfargument name="oldRight" type="numeric" required="true" hint="The old status" />
+		<cfargument name="newRight" type="numeric" required="true" hint="The new status" />
+		
+		<cfset var thisprop = "" />
+		<cfset var oFactory = "" />
+		<cfset var stMetadata = "" />
+		
+		<cfif not structkeyexists(arguments,"stObject")>
+			<cfset arguments.stObject = getData(objectid=arguments.objectid) />
+		</cfif>
+		
+		<cfloop collection="#application.stCOAPI[arguments.typename].stProps#" item="thisprop">
+			<cfif isdefined("application.stCOAPI.#arguments.typename#.stProps.#thisprop#.metadata.ftType") and len(application.stCOAPI[arguments.typename].stProps[thisprop].metadata.ftType)>
+				<cfset arguments.stMetadata = application.stCOAPI[arguments.typename].stProps[thisprop].metadata />
+				<cfset oFactory = application.formtools[arguments.stMetadata.ftType].oFactory />
+				<cfif structkeyexists(oFactory,"onDelete")>
+					<cfset oFactory.onSecurityChange(argumentCollection=arguments) />
+				</cfif>
+			</cfif>
+		</cfloop>
+	</cffunction>
+	
 	<cffunction name="renderObjectOverview" access="public" hint="Renders entire object overiew" output="true">
 		<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the selected object">
 			

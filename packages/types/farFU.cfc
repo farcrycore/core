@@ -527,7 +527,7 @@
 		
 		<cfif structKeyExists(application, "stCoapi")>
 			<cfloop list="#structKeyList(application.stcoapi)#" index="i">	
-				<cfset application.fc.fuID[application.stcoapi[i].fuAlias] = i />
+				<cftry><cfset application.fc.fuID[application.stcoapi[i].fuAlias] = i /><cfcatch><cfdump var="#i#"><cfdump var="#application.stcoapi[i]#"><cfabort></cfcatch></cftry>
 			</cfloop>
 		</cfif>		
 		

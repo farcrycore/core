@@ -48,18 +48,61 @@
 		<cfreturn stBarnacle />
 	</cffunction>
 
+	<cffunction name="cacheNodeBarnacles" access="public" output="false" returntype="void" hint="Grabs the barnacle information for a node and it's ancestors and caches it in the request scope">
+		<cfargument name="referenceid" type="uuid" required="true" hint="The object to cache" />
+		
+		<cfquery datasource="#application.dsn#" name="request.barnaclecache">
+			select		*
+			from		#application.dbowner#nested_tree_objects t
+						inner join
+						#application.dbowner#farBarnacle b
+						on t.objectid=b.referenceid
+			where		nleft <= (
+						    select	nleft
+						    from	nested_tree_objects
+						    where	objectid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.referenceid#" />
+						)
+						and nright >= (
+						    select	nright
+						    from	nested_tree_objects
+						    where	objectid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.referenceid#" />
+						)
+		</cfquery>
+	</cffunction>
+	
 	<cffunction name="getRight" access="public" output="false" returntype="numeric" hint="Returns the right for the specfied barnacle">
 		<cfargument name="barnacle" type="string" required="false" default="" hint="The barnacle being queried" />
 		<cfargument name="role" type="string" required="false" default="" hint="The role the barnacle is attached to" />
 		<cfargument name="permission" type="string" required="false" default="" hint="The permission the barnacle is based on" />
 		<cfargument name="object" type="string" required="false" default="" hint="The object the barnacle is attached to" />
+		<cfargument name="requestcache" type="boolean" required="false" default="false" hint="Use request cache" />
 		
 		<cfset var stBarnacle = structnew() />
 		<cfset var thisrole = "" />
 		<cfset var result = -1 />
 		<cfset var thisresult = -1 />
-		<cfset var qSequred = "" />
+		<cfset var qSecured = "" />
 		<cfset var typename = "" />
+		
+		<!--- If request cache is turned on (mainly for Manage Permissions) use that --->
+		<cfif arguments.requestcache>
+			<cfif not structkeyexists(request,"barnaclecache")>
+				<cfset cacheNodeBarnacles(arguments.object) />
+			</cfif>
+			<cfquery dbtype="query" name="qSecured">
+				select		barnaclevalue
+				from		request.barnaclecache
+				where		roleid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.role#" />
+							and permissionid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.permission#" />
+							and referenceid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.object#" />
+			</cfquery>
+			
+			<cfif qSecured.recordcount>
+				<cfreturn qSecured.barnaclevalue[1] />
+			<cfelse>
+				<cfreturn 0 />
+			</cfif>
+		</cfif>
 		
 		<!--- Either barnacle or role+permission+object must be specified --->
 		<cfif isvalid("uuid",arguments.barnacle)><!--- Barnacle specified by objectid --->
@@ -122,6 +165,7 @@
 		<cfargument name="role" type="string" required="false" default="" hint="The roles to check" />
 		<cfargument name="permission" type="string" required="false" default="" hint="The permission the barnacle is based on" />
 		<cfargument name="object" type="string" required="false" default="" hint="The object the barnacle is attached to" />
+		<cfargument name="requestcache" type="boolean" required="false" default="false" hint="Use request cache" />
 		
 		<cfset var stBarnacle = structnew() />
 		<cfset var thisobject = "" />
@@ -129,6 +173,28 @@
 		<cfset var result = -1 />
 		<cfset var typename = "" />
 		<cfset var qAncestors = "" />
+		
+		<!--- If request cache is turned on (mainly for Manage Permissions) use that --->
+		<cfif arguments.requestcache>
+			<cfif not structkeyexists(request,"barnaclecache")>
+				<cfset cacheNodeBarnacles(arguments.object) />
+			</cfif>
+			<cfquery dbtype="query" name="qSecured">
+				select		barnaclevalue
+				from		request.barnaclecache
+				where		roleid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.role#" />
+							and permissionid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.permission#" />
+							and referenceid<><cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.object#" />
+							and barnaclevalue<>0
+				order by	nlevel desc
+			</cfquery>
+			
+			<cfif qSecured.recordcount>
+				<cfreturn qSecured.barnaclevalue[1] />
+			<cfelse>
+				<cfreturn 0 />
+			</cfif>
+		</cfif>
 		
 		<!--- Either barnacle or role+permission+object must be specified --->
 		<cfif isvalid("uuid",arguments.barnacle)><!--- Barnacle specified by objectid --->
@@ -222,7 +288,8 @@
 		<cfargument name="object" type="string" required="false" default="" hint="The object the barnacle is attached to" />
 		<cfargument name="right" type="numeric" required="true" hint="Deny: -1, inherit: 0, grant: 1" />
 		
-		<cfset stBarnacle = structnew() />
+		<cfset var stBarnacle = structnew() />
+		<cfset var oldright = 0 />
 		
 		<!--- Either barnacle or role+permission+object must be specified --->
 		<cfif isvalid("uuid",arguments.barnacle)>
@@ -237,8 +304,14 @@
 		</cfif>
 		
 		<!--- Update barnacle --->
+		<cfset oldright = stBarnacle.barnaclevalue />
 		<cfset stBarnacle.barnaclevalue = arguments.right />
 		<cfset setData(stBarnacle) />
+		
+		<!--- Notify object of change --->
+		<cfif oldright neq arguments.right>
+			<cfset application.fapi.getContentType(typename=stBarnacle.objecttype).onSecurityChange(changetype="object",objectid=stBarnacle.referenceid,typename=stBarnacle.objecttype,farRoleID=stBarnacle.roleid,farPermissionID=stBarnacle.permissionid,oldright=oldright,newright=arguments.newright) />
+		</cfif>
 	</cffunction>
 
 	<cffunction name="deleteObjectBarnacles" access="public" output="false" returntype="void" hint="Deletes the barnacles for the specified object">

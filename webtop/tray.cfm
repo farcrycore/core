@@ -57,7 +57,7 @@
 			window.location.hash = encodeURIComponent(currenturl)+"|"+traystate;
 		};
 	</script>
-</cfoutput></skin:htmlhead>
+</cfoutput></skin:htmlHead>
 <extjs:onReady><cfoutput>
 	Ext.ux.IFrameComponent = Ext.extend(Ext.BoxComponent, {
 		onRender : function(ct, position){
