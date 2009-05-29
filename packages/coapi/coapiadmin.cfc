@@ -416,6 +416,7 @@
 		<cfset arrayPrepend(aExtends, arguments.typename) />
 
 		<cfloop from="1" to="#arrayLen(aExtends)#" index="i">
+			
 			<cfquery dbtype="query" name="qTypeSpecific">
 			SELECT min(id) as id, name
 			FROM request.fc.stProjectDirectorys.qAll
@@ -425,20 +426,11 @@
 			</cfif>
 			GROUP BY name		
 			</cfquery>
-			
 			<cfset ids = listAppend(ids,valueList(qTypeSpecific.id)) />
 			<cfset webskins = listAppend(webskins,valueList(qTypeSpecific.name)) />
 		</cfloop>
 		
 		<cfif listLen(ids)>
-			<cfquery dbtype="query" name="qTypeSpecific">
-			SELECT min(id) as id
-			FROM request.fc.stProjectDirectorys.qAll
-			WHERE id IN (<cfqueryparam cfsqltype="cf_sql_integer" list="true" value="#ids#">)
-			GROUP BY name	
-			</cfquery>
-			
-			
 			<cfquery dbtype="query" name="qResult">
 			SELECT *
 			FROM request.fc.stProjectDirectorys.qAll
