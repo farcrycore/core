@@ -6,7 +6,10 @@
 	<cffunction name="init" access="public" returntype="OracleGateway" output="false" hint="Initializes the db specific data mappings for this db type">
 		<cfargument name="dsn" type="string" required="true" />
 		<cfargument name="dbowner" type="string" required="true" />
-		<cfset super.init(arguments.dsn,arguments.dbowner) />
+		<cfargument name="dbtype" type="string" required="true" />
+		
+		<cfset super.init(argumentCollection=arguments) />
+		
 		<cfset variables.dataMappings = structNew() />
 		<!--- in DBGateway, booleans are 1 or 0 --->
 		<cfset variables.dataMappings.boolean      = "number" />

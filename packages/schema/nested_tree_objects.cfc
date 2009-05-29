@@ -124,12 +124,12 @@
 	
 	<cfif arguments.bDropTable>
 		<cfquery name="dropExisting" datasource="#variables.dsn#">
-			DROP TABLE IF EXISTS #application.dbowner#nested_tree_objects
+			DROP TABLE IF EXISTS #variables.dbowner#nested_tree_objects
 		</cfquery>
 	</cfif>
 	
 	<cfquery datasource="#variables.dsn#" name="qCreateTable">
-		CREATE TABLE #application.dbowner#nested_tree_objects (
+		CREATE TABLE #variables.dbowner#nested_tree_objects (
 			OBJECTID CHAR(35) not null,
 			PARENTID CHAR(35) null,
 			OBJECTNAME VARCHAR(255) not null,
@@ -141,7 +141,7 @@
 	</cfquery>
 	
 	<cfquery datasource="#variables.dsn#">
-	 	CREATE INDEX IDX_NTO ON #application.dbowner#nested_tree_objects (nLeft, nRight)
+	 	CREATE INDEX IDX_NTO ON #variables.dbowner#nested_tree_objects (nLeft, nRight)
 	</cfquery>
 
 	<cfreturn stReturn />
@@ -155,7 +155,7 @@
 		<cfquery name="dropExisting" datasource="#variables.dsn#">
 			-- drop nested_tree_objects
 			if exists (select * from sysobjects where name = 'nested_tree_objects') 
-			drop table #application.dbowner#nested_tree_objects
+			drop table #variables.dbowner#nested_tree_objects
 			
 			-- drop nested_tree_objects index
 			if exists (select * from sysindexes where name = 'ix_nto') 
@@ -167,7 +167,7 @@
 	</cfif>
 	
 	<cfquery name="nested_tree_objects" datasource="#variables.dsn#">
-		create table #application.dbowner#nested_tree_objects (
+		create table #variables.dbowner#nested_tree_objects (
 			[ObjectID] [char] (35) not null primary key nonclustered,
 			[ParentID] [char] (35) null ,
 			[ObjectName] [nvarchar] (512) not null ,
@@ -180,7 +180,7 @@
 	</cfquery>
 	
 	<cfquery name="nested_tree_objects_index" datasource="#variables.dsn#">
-		create clustered index ix_nto on #application.dbowner#nested_tree_objects (nLeft, nRight) 
+		create clustered index ix_nto on #variables.dbowner#nested_tree_objects (nLeft, nRight) 
 	</cfquery> 
 
 	<cfreturn stReturn />

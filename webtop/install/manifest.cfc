@@ -34,17 +34,30 @@
 	</cffunction>
 	
 	<cffunction name="install">
+		<cfargument name="dsn" type="string" required="false" default="#application.dsn#" hint="The datasource name" />
+		<cfargument name="dbowner" type="string" required="false" default="#application.dbowner#" hint="The database owner" />
+		<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#" hint="The database type" />
+		<cfargument name="path" type="struct" required="false" default="#application.path#" hint="Application file paths" />
+		<cfargument name="factory" type="any" required="false" hint="The factory to use for DB" />
+		<cfargument name="stTableMetadata" type="struct" required="false" default="#structnew()#" hint="The metadata needed for createData" />
 		
 		<cfset var result = "" />	
 		
-		<cfset result = createContent() />
+		<cfset result = createContent(argumentCollection=arguments) />
 		
 		<cfreturn result />
 	</cffunction>
 	
 	
 	<cffunction name="createContent" access="public" returntype="string" output="false">
-	
+		<cfargument name="dsn" type="string" required="false" default="#application.dsn#" hint="The datasource name" />
+		<cfargument name="dbowner" type="string" required="false" default="#application.dbowner#" hint="The database owner" />
+		<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#" hint="The database type" />
+		<cfargument name="path" type="struct" required="false" default="#application.path#" hint="Application file paths" />
+		<cfargument name="factory" type="any" required="false" hint="The factory to use for DB" />
+		<cfargument name="stTableMetadata" type="struct" required="false" default="#structnew()#" hint="The metadata needed for createData" />
+		
+		
 		<cfset var result = "success" />
 		<cfset var oContent = "" />
 		<cfset var aContent = arrayNew(1) />
@@ -54,14 +67,15 @@
 		<cfset var qInsertTree = queryNew("blah") />
 		<cfset var qWDDX = queryNew("blah") />
 		<cfset var wddxTree = "" />
+		<cfset var coapiutilities = createobject("component","farcry.core.packages.coapi.coapiUtilities") />
 		
 		<cfif fileExists("#GetDirectoryFromPath(GetCurrentTemplatePath())#nested_tree_objects.wddx")>
 
 			<cffile action="read" file="#GetDirectoryFromPath(GetCurrentTemplatePath())#nested_tree_objects.wddx" variable="wddxTree" />
 			<cfwddx action="wddx2cfml" input="#wddxTree#" output="qTree" />
 			<cfloop query="qTree">
-				<cfquery datasource="#application.dsn#" name="qInsertTree">
-				INSERT INTO #application.dbowner#nested_tree_objects
+				<cfquery datasource="#arguments.dsn#" name="qInsertTree">
+				INSERT INTO #arguments.dbowner#nested_tree_objects
 			  	(ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
 			  	VALUES  ('#qTree.objectid#','#qTree.parentID#', '#qTree.objectName#','#qTree.typeName#',#qTree.nLeft#, #qTree.nRight#, #qTree.nLevel#)
 				</cfquery>
@@ -73,8 +87,8 @@
 			<cffile action="read" file="#GetDirectoryFromPath(GetCurrentTemplatePath())#refCategories.wddx" variable="wddxRefCat" />
 			<cfwddx action="wddx2cfml" input="#wddxRefCat#" output="qRefCat" />
 			<cfloop query="qRefCat">
-				<cfquery datasource="#application.dsn#" name="qInsertTree">
-				INSERT INTO #application.dbowner#refCategories
+				<cfquery datasource="#arguments.dsn#" name="qInsertTree">
+				INSERT INTO #arguments.dbowner#refCategories
 			  	(categoryID, objectID)
 			  	VALUES  ('#qRefCat.categoryID#','#qRefCat.objectid#')
 				</cfquery>
@@ -94,16 +108,19 @@
 						
 						<cfset stProperties = aContent[i] />
 						
-						<cfset oContent = createObject("component", application.stcoapi["#stProperties.typeName#"].packagePath) />
-						
-						<cfset stResult = oContent.createData(stProperties=stProperties) />
+						<cfif structkeyexists(arguments,"factory")>
+							<cfset arguments.factory.createData(stProperties=stProperties,objectid=stProperties.objectid,metadata=arguments.stTableMetadata[stProperties.typename],dsn=arguments.dsn,coapiutilities=coapiutilities) />
+						<cfelse>
+							<cfset oContent = createObject("component", application.stcoapi["#stProperties.typeName#"].packagePath) />
+							
+							<cfset stResult = oContent.createData(stProperties=stProperties) /><br />
+						</cfif>
 					</cfloop>
 				</cfif>
 			</cfif>
 		</cfloop>
 		
-
-		
 		<cfreturn result />
 	</cffunction>
+	
 </cfcomponent>

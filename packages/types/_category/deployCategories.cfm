@@ -48,41 +48,25 @@ $out: <separate entry for each variable>$
 
 <cfif arguments.bDropTables>
 
-	<cfswitch expression="#application.dbtype#">
+	<cfswitch expression="#arguments.dbtype#">
 	<cfcase value="ora">
-<!--- 		<cfquery datasource="#arguments.dsn#" name="qExists">
-			SELECT * FROM USER_TABLES
-			WHERE TABLE_NAME = 'dmCategory'
-		</cfquery>
-		<cfif qExists.recordCount>
-			<cfquery datasource="#arguments.dsn#">
-			DROP TABLE #application.dbowner#dmCategory
-			</cfquery>
-		</cfif>	 --->
 		<cfquery datasource="#arguments.dsn#" name="qExists">
 			SELECT * FROM USER_TABLES
 			WHERE TABLE_NAME = 'REFCATEGORIES'
 		</cfquery>
 		<cfif qExists.recordCount>
 			<cfquery datasource="#arguments.dsn#">
-				DROP TABLE #application.dbowner#REFCATEGORIES
+				DROP TABLE #arguments.dbowner#REFCATEGORIES
 			</cfquery>
 			
 		</cfif>	
 	</cfcase>
 	<cfcase value="mysql,mysql5">
-<!--- 		<cfquery datasource="#arguments.dsn#">
-        	DROP TABLE IF EXISTS dmCategory	
-		</cfquery> --->
 		<cfquery datasource="#arguments.dsn#">
         	DROP TABLE IF EXISTS refCategories
 		</cfquery>
 	</cfcase>
 	<cfcase value="postgresql">
-<!--- 		<cftry>
-      <cfquery datasource="#arguments.dsn#">
-        	DROP TABLE dmCategory	
-		</cfquery><cfcatch></cfcatch></cftry> --->
 		<cftry><cfquery datasource="#arguments.dsn#">
         	DROP TABLE refCategories
 		</cfquery><cfcatch></cfcatch></cftry>
@@ -97,13 +81,6 @@ $out: <separate entry for each variable>$
 	
 	<cfdefaultcase>
 	<cftransaction>
-<!--- 		<cfquery datasource="#arguments.dsn#">
-        if exists (select * from sysobjects where name = 'dmCategory')
-		DROP TABLE dmCategory	
-
-    	-- return recordset to stop CF bombing out?!?
-    	select count(*) as blah from sysobjects
-		</cfquery> --->
 		<cfquery datasource="#arguments.dsn#" name="qTempOutput">
         if exists (select * from sysobjects where name = 'refCategories')
         DROP TABLE refCategories
@@ -117,39 +94,21 @@ $out: <separate entry for each variable>$
 	<cfset stStatus.message = "refCategories,categories tables successfully dropped <br>">
 
 </cfif> 
-<cflock name="#application.fc.utils.createJavaUUID()#" type="exclusive" timeout="50">
+<cflock name="#createuuid()#" type="exclusive" timeout="50">
 <cftry>
-	<cfswitch expression="#application.dbtype#">
+	<cfswitch expression="#arguments.dbtype#">
 	<cfcase value="ora">
-<!--- 		
 		<cfquery datasource="#arguments.dsn#">
-			CREATE TABLE #application.dbowner#dmCategory
-			(
-			objectid VARCHAR2(50) NOT NULL,
-			ALIAS VARCHAR2(50) NULL,
-			CATEGORYLABEL VARCHAR2(255) NOT NULL
-			)
-		</cfquery> --->
-		<cfquery datasource="#arguments.dsn#">
-			CREATE TABLE #application.dbowner#REFCATEGORIES
+			CREATE TABLE #arguments.dbowner#REFCATEGORIES
 			(
 			CATEGORYID VARCHAR2(50) NOT NULL,
 			OBJECTID VARCHAR2(50) NOT NULL
 			)
 		</cfquery>
-		
 	</cfcase>
 	<cfcase value="mysql,mysql5">
-<!--- 		<cfquery datasource="#arguments.dsn#">
-		CREATE TABLE #application.dbowner#dmCategory
-		(
-			objectid VARCHAR(50) NOT NULL,
-			alias VARCHAR(50) NULL,
-			categoryLabel VARCHAR(255) NOT NULL
-		)
-		</cfquery> --->
 		<cfquery datasource="#arguments.dsn#">
-		CREATE TABLE #application.dbowner#refCategories
+		CREATE TABLE #arguments.dbowner#refCategories
 		(
 			categoryid VARCHAR (50) NOT NULL,
 			objectID VARCHAR(50) NOT NULL
@@ -157,16 +116,8 @@ $out: <separate entry for each variable>$
 		</cfquery>
 	</cfcase>
 	<cfcase value="postgresql">
-<!--- 		<cfquery datasource="#arguments.dsn#">
-		CREATE TABLE #application.dbowner#dmCategory
-		(
-			objectid VARCHAR (50) NOT NULL,
-			categoryLabel VARCHAR (255) NOT NULL,
-			alias VARCHAR (50) NULL
-		)
-		</cfquery> --->
 		<cfquery datasource="#arguments.dsn#">
-		CREATE TABLE #application.dbowner#refCategories
+		CREATE TABLE #arguments.dbowner#refCategories
 		(
 			categoryid VARCHAR (50) NOT NULL,
 			objectID VARCHAR (50) NOT NULL
@@ -187,17 +138,9 @@ $out: <separate entry for each variable>$
 	
 	<cfdefaultcase>
 	<cftransaction>
-	<!--- Create category and refCategories Tables --->
-<!--- 	<cfquery datasource="#arguments.dsn#">
-	CREATE TABLE #application.dbowner#dmCategory
-	(
-		[objectid] [VARCHAR] (50) NOT NULL,
-		[alias] [VARCHAR] (50) NULL,
-		[categoryLabel] [NVARCHAR] (512) NOT NULL
-	);
-	</cfquery> --->
+	
 	<cfquery datasource="#arguments.dsn#">
-	CREATE TABLE #application.dbowner#refCategories
+	CREATE TABLE #arguments.dbowner#refCategories
 	(
 		[categoryid] [VARCHAR] (50) NOT NULL,
 		[objectID] [VARCHAR] (50) NOT NULL
@@ -206,20 +149,7 @@ $out: <separate entry for each variable>$
 	</cftransaction>
 	</cfdefaultcase>
 	</cfswitch>
-	<!--- 
-	<cfset rootUUID = application.fc.utils.createJavaUUID()>
-	<cfquery datasource="#application.dsn#" name="qUpdate">
-		insert into #application.dbowner#dmCategory
-		(objectid,alias,categorylabel)
-		values 
-		('#rootUUID#','root' ,'root')
-	</cfquery>
 	
-	<cfinvoke component="#application.packagepath#.farcry.tree"	 method="setRootNode" objectName = "root" typename = "dmCategory" objectID="#rootUUID#" returnvariable="stReturn">
-	<cfscript> 
-		stStatus.status = true;
-		stStatus.message = stStatus.message & stReturn.message & '<br>' & 'categories, refCategory tables successfully created';
-	</cfscript>--->
 	<cfcatch type="database">
 		<cfscript>
 			//TODO - put some details of the cfcatch.Message 

@@ -5,8 +5,9 @@
 		
 		<cfargument name="dsn" type="string" required="true" />
 		<cfargument name="dbowner" type="string" required="true" />
+		<cfargument name="dbtype" type="string" required="true" />
 		
-		<cfset super.init(arguments.dsn,arguments.dbowner) />
+		<cfset super.init(argumentCollection=arguments) />
 		
 		<cfset variables.dataMappings = structNew() />
 		<cfset variables.dataMappings.boolean = "BOOLEAN" />

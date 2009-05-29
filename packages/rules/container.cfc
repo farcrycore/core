@@ -375,7 +375,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 					<cfcatch></cfcatch>
 				</cftry>
 				<cfquery datasource="#arguments.dsn#">
-					CREATE TABLE #application.dbowner#refContainers(
+					CREATE TABLE #arguments.dbowner#refContainers(
 					OBJECTID VARCHAR2(35) NOT NULL,
 					CONTAINERID VARCHAR2(35) NOT NULL
 					)
@@ -420,14 +420,14 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 			
 			<cfdefaultcase>
 				<cfquery name="qCreateTables" datasource="#arguments.dsn#">
-				if exists (select * from sysobjects where id = object_id(N'#application.dbowner#refContainers') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
-				drop table #application.dbowner#refContainers
+				if exists (select * from sysobjects where id = object_id(N'#arguments.dbowner#refContainers') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+				drop table #arguments.dbowner#refContainers
 		
 				-- return recordset to stop CF bombing out?!?
 				select count(*) as blah from sysobjects
 				</cfquery>
 				<cfquery name="qCreateTables" datasource="#arguments.dsn#">
-				CREATE TABLE #application.dbowner#refContainers (
+				CREATE TABLE #arguments.dbowner#refContainers (
 					[objectid] [varchar] (35) NOT NULL ,
 					[containerid] [varchar] (35) NOT NULL 
 				)

@@ -4,8 +4,10 @@
 	<cffunction name="init" access="public" returntype="MSSQLGateway" output="false" hint="Initializes the db specific data mappings for this db type">
 		<cfargument name="dsn" type="string" required="true" />
 		<cfargument name="dbowner" type="string" required="true" />
+		<cfargument name="dbtype" type="string" required="true" />
 		
-		<cfset super.init(arguments.dsn,arguments.dbowner) />
+		<cfset super.init(argumentCollection=arguments) />
+		
 		<cfset variables.dataMappings = structNew() />
 		<cfset variables.dataMappings.boolean = "[int]" />
 		<cfset variables.dataMappings.date = "[DATETIME]" />

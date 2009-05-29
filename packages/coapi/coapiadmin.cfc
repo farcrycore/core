@@ -176,6 +176,7 @@
 		<cfset var thisvar = "" />
 		<cfset var webskinpath = "" />
 		<cfset var webskinrel = "" />
+		<cfset var fapi = createobject("component","farcry.core.packages.lib.fapi") />
 		
 		
 		<!--- If the webskins are available from the application or request scope, just use those --->
@@ -215,7 +216,7 @@
 				
 				<cfset request.stPluginDirectorys = structNew() />
 				<cfparam name="application.plugins" default="" />
-				<cfloop list="project,#application.fapi.listReverse(list='#application.plugins#')#,core" index="pluginName">
+				<cfloop list="project,#fapi.listReverse(list='#application.plugins#')#,core" index="pluginName">
 					
 					<!--- Find the webskin path for the source --->
 					<cfswitch expression="#pluginName#">
@@ -283,7 +284,7 @@
 				<cfset request.pluginPath=replaceNoCase(ExpandPath('/farcry/plugins'),"\","/","all") />	
 				<cfset request.corePath=replaceNoCase(ExpandPath('/farcry/core'),"\","/","all") />	
 				<cfset request.projectPath=replaceNoCase(ExpandPath('/farcry/projects'),"\","/","all") />	
-				<cfset request.sortedPlugins = application.fapi.listReverse(list='#application.plugins#') />
+				<cfset request.sortedPlugins = fapi.listReverse(list='#application.plugins#') />
 				
 				
 				<cfloop query="request.fc.stProjectDirectorys.qAll">				

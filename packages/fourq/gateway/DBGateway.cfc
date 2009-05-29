@@ -4,8 +4,10 @@
 	<cffunction name="init" access="public" returntype="farcry.core.packages.fourq.gateway.DBGateway" output="false" hint="Initializes the instance data">
 		<cfargument name="dsn" type="string" required="true" />
 		<cfargument name="dbowner" type="string" required="true" />
+		<cfargument name="dbtype" type="string" required="true" />
 		<cfset variables.dbowner = arguments.dbowner />
 		<cfset variables.dsn = arguments.dsn />
+		<cfset variables.dbtype = arguments.dbtype />
 		<cfset variables.numericTypes = "boolean,date,numeric,integer" />
 		<cfreturn this />
 	</cffunction>
@@ -61,6 +63,7 @@
 	  <cfargument name="stProperties" type="struct" required="true" />
 	  <cfargument name="objectid" type="uuid" required="true" />
 	  <cfargument name="metadata" type="farcry.core.packages.fourq.TableMetadata" required="true" />
+	  <cfargument name="coapiutilities" type="coapiUtilities" required="false" default="#application.coapi.coapiutilities#" />
 	  <cfargument name="dsn" type="string" required="false" default="#variables.dsn#">
 	  
 			<cfset var stResult = structNew() />
@@ -99,7 +102,7 @@
 							<!--- Check to make sure property is to be saved in the db. --->
 							<cfif not structKeyExists(application, "stcoapi") OR  not structKeyExists(application.stCoapi, tablename) OR not structKeyExists(application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA,"BSAVE") OR application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA.bSave>
 								<!--- TODO: hsqldb hack - this will likely break other db engines --->
-								<cfif application.dbtype eq "HSQLDB" AND sqlArray[i].column eq "position">
+								<cfif variables.dbtype eq "HSQLDB" AND sqlArray[i].column eq "position">
 								  , "#sqlArray[i].column#"
 								<cfelse>
 								  , #sqlArray[i].column#	
@@ -137,9 +140,9 @@
 					</cfif>
 				  </cfif>
 				</cfloop>
-					
 				
-				<cfset bRefCreated = application.coapi.coapiutilities.createRefObjectID(objectID="#currentObjectID#", typename="#tablename#") />
+				<cfparam name="arguments.metadata.bRefObjects" default="true" />
+				<cfset bRefCreated = arguments.coapiutilities.createRefObjectID(objectID="#currentObjectID#", typename="#tablename#", dsn=variables.dsn, dbowner=variables.dbowner, dbtype=variables.dbtype, typeInRefObjects=arguments.metadata.bRefObjects) />
 				<cfif NOT bRefCreated>
 					<!--- This error can occur because of a duplicate already in the refObjects table caused by the initial create data saving to session.
 						TODO: need a more elegent solution to handle this.
@@ -351,7 +354,7 @@
 		WE NEED TO UPDATE THE TYPENAME OF EACH RECORD IN THE ARRAY TABLE
 		 --------------------------------------------------------------->	
 		<!--- todo: work out most efficient way for each dbtype and break out into the relevant gateway --->
-		<cfswitch expression="#application.dbtype#">
+		<cfswitch expression="#variables.dbtype#">
 		<cfcase value="mysql,mysql5">
 			<!--- This works for mySQL 5; see mysql5 specific gateway --->
 			<cfquery name="update" datasource="#arguments.dsn#">

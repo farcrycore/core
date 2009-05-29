@@ -296,9 +296,10 @@
 		<cfargument name="package" type="string" required="true" />
 		<cfargument name="component" type="string" required="true" />
 		<cfargument name="locations" type="string" required="false" default="" />
+		<cfargument name="path" type="struct" required="false" default="#application.path#" hint="Application file paths" />
 		
 		<cfset var item = "" />
-
+		
 		<cfif not len(arguments.locations) and structkeyexists(application,"plugins")>
 			<cfset arguments.locations = "project,#listreverse(application.plugins)#,core" />
 		<cfelseif not len(arguments.locations)>
@@ -308,32 +309,30 @@
 		<cfloop list="#arguments.locations#" index="item">
 			<cfswitch expression="#item#">
 				<cfcase value="core">
-					<cfif fileexists("#application.path.core#/packages/#arguments.package#/#arguments.component#.cfc")>
+					<cfif fileexists("#arguments.path.core#/packages/#arguments.package#/#arguments.component#.cfc")>
 						<cfreturn "farcry.core.packages.#arguments.package#.#arguments.component#" />
 					</cfif>
 				</cfcase>
 				<cfcase value="project">
-					<cfif fileexists("#application.path.project#/packages/#arguments.package#/#arguments.component#.cfc")>
-						<cfreturn "farcry.projects.#application.projectDirectoryName#.packages.#arguments.package#.#arguments.component#" />
-					<cfelseif arguments.package eq "types" and fileexists("#application.path.project#/packages/system/#arguments.component#.cfc")>
+					<cfif fileexists("#arguments.path.project#/packages/#arguments.package#/#arguments.component#.cfc")>
+						<cfreturn "farcry.projects.#arguments.projectDirectoryName#.packages.#arguments.package#.#arguments.component#" />
+					<cfelseif arguments.package eq "types" and fileexists("#arguments.path.project#/packages/system/#arguments.component#.cfc")>
 						<!--- Best practice is to put extensions of core types into the system package --->
-						<cfreturn "farcry.projects.#application.projectDirectoryName#.packages.system.#arguments.component#" />
-					<cfelseif arguments.package eq "system" and fileexists("#application.path.project#/packages/types/#arguments.component#.cfc")>
+						<cfreturn "farcry.projects.#arguments.projectDirectoryName#.packages.system.#arguments.component#" />
+					<cfelseif arguments.package eq "system" and fileexists("#arguments.path.project#/packages/types/#arguments.component#.cfc")>
 						<!--- Best practice is to put extensions of core types into the system package --->
-						<cfreturn "farcry.projects.#application.projectDirectoryName#.packages.types.#arguments.component#" />
+						<cfreturn "farcry.projects.#arguments.projectDirectoryName#.packages.types.#arguments.component#" />
 					</cfif>
 				</cfcase>
 				<cfdefaultcase><!--- Plugin --->
-					<cfif listcontainsnocase(application.plugins,item)>
-						<cfif fileexists("#application.path.plugins#/#item#/packages/#arguments.package#/#arguments.component#.cfc")>
-							<cfreturn "farcry.plugins.#item#.packages.#arguments.package#.#arguments.component#" />
-						<cfelseif arguments.package eq "types" and fileexists("#application.path.plugins#/#item#/packages/system/#arguments.component#.cfc")>
-							<!--- Best practice is to put extensions of core types into the system package --->
-							<cfreturn "farcry.plugins.#item#.packages.system.#arguments.component#" />
-						<cfelseif arguments.package eq "system" and fileexists("#application.path.plugins#/#item#/packages/types/#arguments.component#.cfc")>
-							<!--- Best practice is to put extensions of core types into the system package --->
-							<cfreturn "farcry.plugins.#item#.packages.types.#arguments.component#" />
-						</cfif>
+					<cfif fileexists("#arguments.path.plugins#/#item#/packages/#arguments.package#/#arguments.component#.cfc")>
+						<cfreturn "farcry.plugins.#item#.packages.#arguments.package#.#arguments.component#" />
+					<cfelseif arguments.package eq "types" and fileexists("#arguments.path.plugins#/#item#/packages/system/#arguments.component#.cfc")>
+						<!--- Best practice is to put extensions of core types into the system package --->
+						<cfreturn "farcry.plugins.#item#.packages.system.#arguments.component#" />
+					<cfelseif arguments.package eq "system" and fileexists("#arguments.path.plugins#/#item#/packages/types/#arguments.component#.cfc")>
+						<!--- Best practice is to put extensions of core types into the system package --->
+						<cfreturn "farcry.plugins.#item#.packages.types.#arguments.component#" />
 					</cfif>
 				</cfdefaultcase>
 			</cfswitch>
@@ -345,12 +344,23 @@
 	<cffunction name="getComponents" access="public" output="false" returntype="string" hint="Returns a list of components for a package" bDocument="true">
 		<cfargument name="package" type="string" required="true" />
 		<cfargument name="locations" type="string" required="false" default="" />
+		<cfargument name="path" type="struct" required="false" default="#structnew()#" />
 
 		<cfset var item = "" />
 		<cfset var list = "" />
 		<cfset var qItems = querynew("name","varchar") />
 		<cfset var qItemsSystem = querynew("name","varchar") />
-
+		
+		<cfif not isdefined("arguments.path.core")>
+			<cfset arguments.path.core = application.path.core />
+		</cfif>
+		<cfif not isdefined("arguments.path.plugins")>
+			<cfset arguments.path.plugins = application.path.plugins />
+		</cfif>
+		<cfif not isdefined("arguments.path.project")>
+			<cfset arguments.path.project = application.path.project />
+		</cfif>
+		
 		<cfif not len(arguments.locations) and structkeyexists(application,"plugins")>
 			<cfset arguments.locations = "project,#listreverse(application.plugins)#,core" />
 		<cfelseif not len(arguments.locations)>
@@ -360,16 +370,16 @@
 		<cfloop list="#arguments.locations#" index="item">
 			<cfswitch expression="#item#">
 				<cfcase value="core">
-					<cfif directoryexists("#application.path.core#/packages/#arguments.package#/")>
-						<cfdirectory action="list" directory="#application.path.core#/packages/#arguments.package#/" filter="*.cfc" name="qItems" />
+					<cfif directoryexists("#arguments.path.core#/packages/#arguments.package#/")>
+						<cfdirectory action="list" directory="#arguments.path.core#/packages/#arguments.package#/" filter="*.cfc" name="qItems" />
 					</cfif>
 				</cfcase>
 				<cfcase value="project">
-					<cfif directoryexists("#application.path.project#/packages/#arguments.package#/")>
-						<cfdirectory action="list" directory="#application.path.project#/packages/#arguments.package#/" filter="*.cfc" name="qItems" />
+					<cfif directoryexists("#arguments.path.project#/packages/#arguments.package#/")>
+						<cfdirectory action="list" directory="#arguments.path.project#/packages/#arguments.package#/" filter="*.cfc" name="qItems" />
 					</cfif>
-					<cfif arguments.package eq "types" and directoryexists("#application.path.project#/packages/system/")>
-						<cfdirectory action="list" directory="#application.path.project#/packages/system/" filter="*.cfc" name="qItemsSystem" />
+					<cfif arguments.package eq "types" and directoryexists("#arguments.path.project#/packages/system/")>
+						<cfdirectory action="list" directory="#arguments.path.project#/packages/system/" filter="*.cfc" name="qItemsSystem" />
 						<cfquery dbtype="query" name="qItems">
 							select	*
 							from	qItems
@@ -382,22 +392,20 @@
 					</cfif>
 				</cfcase>
 				<cfdefaultcase><!--- Plugin --->
-					<cfif listcontainsnocase(application.plugins,item)>
-						<cfif directoryexists("#application.path.plugins#/#item#/packages/#arguments.package#/")>
-							<cfdirectory action="list" directory="#application.path.plugins#/#item#/packages/#arguments.package#/" filter="*.cfc" name="qItems" />
-						</cfif>
-						<cfif arguments.package eq "types" and directoryexists("#application.path.plugins#/#item#/packages/system/")>
-							<cfdirectory action="list" directory="#application.path.plugins#/#item#/packages/system/" filter="*.cfc" name="qItemsSystem" />
-							<cfquery dbtype="query" name="qItems">
-								select	*
-								from	qItems
-								
-								UNION
-								
-								select	*
-								from	qItemsSystem
-							</cfquery>
-						</cfif>
+					<cfif directoryexists("#arguments.path.plugins#/#item#/packages/#arguments.package#/")>
+						<cfdirectory action="list" directory="#arguments.path.plugins#/#item#/packages/#arguments.package#/" filter="*.cfc" name="qItems" />
+					</cfif>
+					<cfif arguments.package eq "types" and directoryexists("#arguments.path.plugins#/#item#/packages/system/")>
+						<cfdirectory action="list" directory="#arguments.path.plugins#/#item#/packages/system/" filter="*.cfc" name="qItemsSystem" />
+						<cfquery dbtype="query" name="qItems">
+							select	*
+							from	qItems
+							
+							UNION
+							
+							select	*
+							from	qItemsSystem
+						</cfquery>
 					</cfif>
 				</cfdefaultcase>
 			</cfswitch>

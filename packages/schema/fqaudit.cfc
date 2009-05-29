@@ -135,12 +135,12 @@ audit stuff directly under core. GB 20061022
     <cfset temp = QueryAddColumn(qCheck,'tblExists',result)>
 
 			<cfquery datasource="#variables.dsn#" name="qDrop">
-				DROP TABLE if exists #application.dbowner#fqAudit
+				DROP TABLE if exists #variables.dbowner#fqAudit
 			</cfquery>
 			
 			<!--- create the audit tables --->
 			<cfquery datasource="#variables.dsn#" name="qCreate">
-				CREATE TABLE #application.dbowner#fqAudit (
+				CREATE TABLE #variables.dbowner#fqAudit (
 					AuditID char (50) NOT NULL ,
 					objectid char (50) NULL ,
 					datetimeStamp datetime NOT NULL ,
@@ -165,9 +165,9 @@ audit stuff directly under core. GB 20061022
 
 			<cfif qCheck.tblExists>
 			<cfquery datasource="#variables.dsn#" name="qDrop">
-			<!--- if exists (select * from sysobjects where name = '#application.dbowner#fqAudit') --->
+			<!--- if exists (select * from sysobjects where name = '#variables.dbowner#fqAudit') --->
 			If exists (select * from INFORMATION_SCHEMA.TABLES where table_name = 'fqAudit')
-			DROP TABLE #application.dbowner#fqAudit;
+			DROP TABLE #variables.dbowner#fqAudit;
 	
 			<!--- return recordset to stop CF bombing out?!? --->
 			select count(*) as blah from INFORMATION_SCHEMA.TABLES where table_name = 'fqAudit'
@@ -175,7 +175,7 @@ audit stuff directly under core. GB 20061022
 			</cfif>
 			<!--- create the audit tables --->
 			<cfquery datasource="#variables.dsn#" name="qCreate">
-			CREATE TABLE #application.dbowner#fqAudit (
+			CREATE TABLE #variables.dbowner#fqAudit (
 				[AuditID] [char] (50) NOT NULL ,
 				[objectid] [char] (50) NULL ,
 				[datetimeStamp] [datetime] NOT NULL ,
@@ -185,7 +185,7 @@ audit stuff directly under core. GB 20061022
 				[note] [varchar] (255) NULL 
 			) ON [PRIMARY];
 			
-			ALTER TABLE #application.dbowner#fqAudit WITH NOCHECK ADD 
+			ALTER TABLE #variables.dbowner#fqAudit WITH NOCHECK ADD 
 				CONSTRAINT [PK_fqAudit] PRIMARY KEY NONCLUSTERED 
 				(
 					[AuditID]

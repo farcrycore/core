@@ -53,7 +53,9 @@ object methods
 <cffunction name="deploy" access="public" output="false" returntype="struct" hint="Deploy table structure for stats subsystem.">
 	<!--- arguments --->
 	<cfargument name="bDropTable" default="false" type="boolean" required="No">
-	<cfargument name="dsn" type="string" required="false" default="#application.dsn#" hint="Database DSN">
+	<cfargument name="dsn" required="Yes" >
+	<cfargument name="dbtype" required="Yes"> 
+	<cfargument name="dbowner" required="Yes"> 
 	
 	<cfinclude template="_stats/deploy.cfm">
 

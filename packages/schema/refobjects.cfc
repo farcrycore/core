@@ -60,7 +60,7 @@
 		</cfquery>
 	</cfif>
 	
-	<cfquery datasource="#application.dsn#">
+	<cfquery datasource="#variables.dsn#">
 		CREATE TABLE refObjects (
 			objectid VARCHAR(50) NOT NULL PRIMARY KEY,
 			typename VARCHAR(50) NOT NULL
@@ -81,7 +81,7 @@
 		</cfquery>
 	</cfif>
 	
-	<cfquery datasource="#application.dsn#">
+	<cfquery datasource="#variables.dsn#">
 	CREATE TABLE refObjects (
 		objectid VARCHAR(50) NOT NULL, 
 		typename VARCHAR(50) NOT NULL,
@@ -102,7 +102,7 @@
 		</cfquery>
 	</cfif>
 	
-	<cfquery datasource="#application.dsn#">
+	<cfquery datasource="#variables.dsn#">
 		CREATE TABLE refObjects (
 		objectid VARCHAR(50) NOT NULL,
 		typename VARCHAR(50) NOT NULL,
@@ -124,7 +124,7 @@
 		</cfquery>
 	</cfif>
 	
-	<cfquery datasource="#application.dsn#">
+	<cfquery datasource="#variables.dsn#">
 		CREATE TABLE #variables.dbowner#refObjects (
 		objectid VARCHAR(50) NOT NULL,
 		typename VARCHAR(50) NOT NULL,
@@ -153,7 +153,7 @@
 		</cfif>
 	</cfif>
 
-	<cfquery datasource="#application.dsn#">
+	<cfquery datasource="#variables.dsn#">
 		CREATE TABLE #variables.dbowner#refObjects (
 		objectid VARCHAR(50) NOT NULL,
 		typename VARCHAR(50) NOT NULL,

@@ -19,30 +19,30 @@
 		
 		<cfswitch expression="#arguments.dbtype#">
 			<cfcase value="MSSQL">
-				<cfset connection = createObject('component','farcry.core.packages.fourq.gateway.MSSQLGateway').init(arguments.dsn,arguments.dbowner) />
+				<cfset connection = createObject('component','farcry.core.packages.fourq.gateway.MSSQLGateway').init(argumentCollection=arguments) />
 			</cfcase>
 			<cfcase value="mysql">
-				<cfset connection = createObject('component','farcry.core.packages.fourq.gateway.MySQLGateway').init(arguments.dsn,arguments.dbowner) />
+				<cfset connection = createObject('component','farcry.core.packages.fourq.gateway.MySQLGateway').init(argumentCollection=arguments) />
 			</cfcase>
 			<cfcase value="mysql5">
-				<cfset connection = createObject('component','farcry.core.packages.fourq.gateway.MySQL5Gateway').init(arguments.dsn,arguments.dbowner) />
+				<cfset connection = createObject('component','farcry.core.packages.fourq.gateway.MySQL5Gateway').init(argumentCollection=arguments) />
 			</cfcase>
 			<cfcase value="Oracle,ora">
-				<cfset connection = createObject('component','farcry.core.packages.fourq.gateway.OracleGateway').init(arguments.dsn,arguments.dbowner) />
+				<cfset connection = createObject('component','farcry.core.packages.fourq.gateway.OracleGateway').init(argumentCollection=arguments) />
 			</cfcase>
 			<cfcase value="PostgreSQL">
-				<cfset connection = createObject('component','farcry.core.packages.fourq.gateway.PostgreSQLGateway').init(arguments.dsn,arguments.dbowner) />
+				<cfset connection = createObject('component','farcry.core.packages.fourq.gateway.PostgreSQLGateway').init(argumentCollection=arguments) />
 			</cfcase>
 			
 			<cfcase value="HSQLDB">
 				<cfset connection = createObject(
 					'component',
 					'farcry.core.packages.fourq.gateway.HSQLDBGateway'
-				).init(arguments.dsn,arguments.dbowner) />
+				).init(argumentCollection=arguments) />
 			</cfcase>
 			
 			<cfdefaultcase>
-				<cfset connection = createobject('component','farcry.core.packages.fourq.gateway.MSSQLGateway').init(arguments.dsn,arguments.dbowner) />
+				<cfset connection = createobject('component','farcry.core.packages.fourq.gateway.MSSQLGateway').init(argumentCollection=arguments) />
 				<cftrace type="warning" inline="false" text="DBGatewayFactory creating farcry.core.packages.fourq.gateway.MSSQLGateway connection because no recognized connection type was specified in argument 'dbtype' to method getGateway(). Connection type passed was <b>#arguments.dbtype#</b>">
 			</cfdefaultcase>
 		</cfswitch>

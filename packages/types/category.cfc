@@ -297,7 +297,9 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 	
 	<cffunction name="deployCategories" access="public" output="false" returntype="struct" hint="Creates tables required for categorisation actions">
 		<cfargument name="bDropTables" type="boolean" required="false" default="false">
-		<cfargument name="dsn" type="string" required="true" hint="Database DSN">
+		<cfargument name="dsn" required="Yes" >
+		<cfargument name="dbtype" required="Yes"> 
+		<cfargument name="dbowner" required="Yes"> 
 		
 		<cfinclude template="_category/deployCategories.cfm">
 		
