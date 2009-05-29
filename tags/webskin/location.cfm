@@ -30,6 +30,7 @@
 
 	<cfparam name="attributes.url" default=""><!--- the actual href to link to --->
 	<cfparam name="attributes.href" default=""><!--- the actual href to link to --->
+	<cfparam name="attributes.alias" default=""><!--- Navigation alias to use to find the objectid --->
 	<cfparam name="attributes.objectid" default=""><!--- Added to url parameters; navigation obj id --->
 	<cfparam name="attributes.type" default=""><!--- Added to url parameters: Typename used with type webskin views --->
 	<cfparam name="attributes.view" default=""><!--- Added to url parameters: Webskin name used with type webskin views --->
@@ -41,8 +42,11 @@
 	<cfparam name="attributes.Domain" default="#cgi.http_host#">
 	<cfparam name="attributes.addToken" default="false" />
 	
+	
+
 	<cfif not len(attributes.url)>
 		<skin:buildLink href="#attributes.href#" 
+			alias="#attributes.alias#" 
 			objectid="#attributes.objectid#" 
 			type="#attributes.type#" 
 			view="#attributes.view#" 
@@ -53,7 +57,8 @@
 			includeDomain="#attributes.includeDomain#" 
 			Domain="#attributes.Domain#" 
 			r_url="attributes.url" />
-	</cfif>				
+	</cfif>			
+	
 	<cflocation url="#attributes.url#" addtoken="#attributes.addToken#" />
 	
 </cfif>
