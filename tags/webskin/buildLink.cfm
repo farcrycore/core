@@ -56,7 +56,7 @@
 		<!--- display the URL only --->
 		<cfset tagoutput=href>
 	<cfelseif len(attributes.r_url)>
-		<cfset caller[attributes.r_url] = href />	
+		<cfset "caller.#attributes.r_url#" = href />
 	<cfelse>
 		<!--- display link --->
 		<cfset tagoutput='<a href="#href#"'>
