@@ -297,6 +297,7 @@
 		<cfargument name="component" type="string" required="true" />
 		<cfargument name="locations" type="string" required="false" default="" />
 		<cfargument name="path" type="struct" required="false" default="#application.path#" hint="Application file paths" />
+		<cfargument name="projectDirectoryName" type="string" required="false" default="#application.projectDirectoryName#" hint="" />
 		
 		<cfset var item = "" />
 		
