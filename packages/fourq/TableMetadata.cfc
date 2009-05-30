@@ -110,7 +110,7 @@
 		
 		<cfset prop.name = arguments.data.name />
 		
-		<cfif structKeyExists(arguments.data,'type') AND prop.type eq 'array'>
+		<cfif structKeyExists(arguments.data,'type') AND structKeyExists(prop,'type') AND prop.type eq 'array'>
 		  <cfreturn parseArrayProperty(arguments.data) />
 		</cfif>
 		
