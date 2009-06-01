@@ -220,22 +220,14 @@
 		<cfset var bDuplicate = true />
 		<cfset var duplicateCounter = "" />
 		
-		<!--- replace spaces in title --->
-		<cfset cleanFU = replace(arguments.friendlyURL,' ','-',"all")>
-		<!--- replace duplicate dashes with a single dash --->
-		<cfset cleanFU = REReplace(cleanFU,"-+","-","all")>
+		<cfset cleanFU = LCase(arguments.friendlyURL)>
 		<!--- replace the html entity (&amp;) with and --->
 		<cfset cleanFU = reReplaceNoCase(cleanFU,'&amp;','and',"all")>
-		<!--- remove illegal characters in titles --->
-		<cfset cleanFU = reReplaceNoCase(cleanFU,'[,:\?##����]','',"all")>
 		<!--- change & to "and" in title --->
 		<cfset cleanFU = reReplaceNoCase(cleanFU,'[&]','and',"all")>
 		<!--- prepend fu url pattern and add suffix --->
-		<cfset cleanFU = ReplaceNocase(cleanFU,"//","/","All")>
-		<cfset cleanFU = LCase(cleanFU)>
-		<cfset cleanFU = ReReplaceNoCase(cleanFU,"[^a-z0-9/]","-","all")>
-		<cfset cleanFU = ReReplaceNoCase(cleanFU,"  "," ","all")>
-		<cfset cleanFU = ReReplaceNoCase(cleanFU," ","-","all")>
+		<cfset cleanFU = ReReplaceNocase(cleanFU,"/{2,}","/","All")>
+		<cfset cleanFU = ReReplaceNoCase(cleanFU,"[^a-z0-9/]+","-","all")>
 		<cfset cleanFU = Trim(cleanFU)>
 		
 		<cfif left(cleanFU,1) NEQ "/">
@@ -527,7 +519,7 @@
 		
 		<cfif structKeyExists(application, "stCoapi")>
 			<cfloop list="#structKeyList(application.stcoapi)#" index="i">	
-				<cftry><cfset application.fc.fuID[application.stcoapi[i].fuAlias] = i /><cfcatch><cfdump var="#i#"><cfdump var="#application.stcoapi[i]#"><cfabort></cfcatch></cftry>
+				<cfset application.fc.fuID[application.stcoapi[i].fuAlias] = i />
 			</cfloop>
 		</cfif>		
 		
