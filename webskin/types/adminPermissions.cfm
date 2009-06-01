@@ -82,8 +82,8 @@
 					</cfoutput>
 					
 					<cfloop list="#permissions#" index="permission">
-						<cfset right = application.security.factory.barnacle.getRight(role=role,permission=permission,object=stObj.objectid,requestcache=1) />
-						<cfset inheritedRight = application.security.factory.barnacle.getInheritedRight(role=role,permission=permission,object=stObj.objectid,requestcache=1) />
+						<cfset right = application.security.factory.barnacle.getRight(role=role,permission=permission,object=stObj.objectid) />
+						<cfset inheritedRight = application.security.factory.barnacle.getInheritedRight(role=role,permission=permission,object=stObj.objectid) />
 						<cfif stObj.typename neq "dmNavigation" and right eq 0>
 							<cfset right = -1 />
 						</cfif>
