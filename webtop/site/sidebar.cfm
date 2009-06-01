@@ -1,13 +1,20 @@
 <cfsetting enablecfoutputonly="true">
 
+<!--- Make sure that if the user has somehow selected 2 root nodes... only use the first. --->
+<cfset session.dmProfile.overviewhome = listFirst(session.dmProfile.overviewhome) />
+
+
+<!--- This is for backwards compatibility when this was stored as an Alias. --->
 <cfif len(session.dmProfile.overviewhome)>
 	<cfif NOT IsUUID(session.dmProfile.overviewhome) AND structKeyExists(application.navid, session.dmProfile.overviewhome)>
 		<cfset session.dmProfile.overviewhome = application.navid[session.dmProfile.overviewhome] />
 	</cfif>
 </cfif>
+
 <cfif not len(session.dmProfile.overviewhome)>
 	<cfset session.dmProfile.overviewhome = listFirst(application.navid.home) />
 </cfif>
+
 
 <cfparam name="url.rootObjectID" default="#session.dmProfile.overviewhome#">
 
