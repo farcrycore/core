@@ -64,7 +64,6 @@ $out:$
 				if (dateAdd(url.timePart, url.timeValue, stChild.dateTimeLastUpdated) lt now()) {
 					// try to delete object					
 						o.delete(objectid=stObj.aObjectIds[i]);
-						dump(stChild);
 				} else {
 					// keep in new aObjectids
 					arrayAppend(aNewObjectids,stObj.aObjectids[i]);		
@@ -89,7 +88,6 @@ $out:$
 		try {
 			// check if object older than value set above
 			if (dateAdd(url.timePart, url.timeValue, stChild.dateTimeLastUpdated) lt now()) {
-				dump(stChild);
 				oNav.delete(objectid=qDesc.objectid[i]);
 			}
 		}
