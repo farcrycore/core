@@ -30,14 +30,14 @@
 		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
 	   	<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#">
 		<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
-		<cfargument name="typeInRefObjects" type="boolean" required="false" default="#typeInRefObjects(arguments.typename)#" />
+		<cfargument name="bTypeInRefObjects" type="boolean" required="false" default="#typeInRefObjects(arguments.typename)#" />
 		
 		<cfset var qRefDataDupe = "" />
 		<cfset var qRefData = "" />
 		<cfset var qObjectDupe = "" />
 		<cfset var bSuccess = true />
 		
-		<cfif arguments.typeInRefObjects>
+		<cfif arguments.bTypeInRefObjects>
 
 			<cftry>
 				

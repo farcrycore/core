@@ -63,7 +63,7 @@
 	  <cfargument name="stProperties" type="struct" required="true" />
 	  <cfargument name="objectid" type="uuid" required="true" />
 	  <cfargument name="metadata" type="farcry.core.packages.fourq.TableMetadata" required="true" />
-	  <cfargument name="coapiutilities" type="coapiUtilities" required="false" default="#application.coapi.coapiutilities#" />
+	  <cfargument name="coapiutilities" type="any" required="false" default="#application.coapi.coapiutilities#" />
 	  <cfargument name="dsn" type="string" required="false" default="#variables.dsn#">
 	  
 			<cfset var stResult = structNew() />
