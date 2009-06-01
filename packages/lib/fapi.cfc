@@ -349,7 +349,8 @@
 		<cffunction name="getCurrentUser" access="public" returntype="struct" hint="Gets the currently logged in user's dmProfile or a blank structure if the user is not logged in." bDocument="true">
 			<cfreturn getCurrentUsersProfile() />
 		</cffunction>
-				
+			
+			
 		<!--- @@examples:
 			<p>Get the current logged in users profile:</p>
 			<code>
