@@ -286,19 +286,57 @@
 		</cffunction>
 			
 		<!--- @@examples:
-			<p>Show content if the current user has a specified role:</p>
+			<p>Show a block of content if the current user has a specified role. As seen in the 
+			example the "Welcome Back" message is only displayed if the current, view user has been 
+			assigned the role of "Member". The "Member" part gets defined in the webtop under "roles" and
+			the value you pass to this function is the Title of the role.  In other words, the role
+			you are checking for needs to be setup per installation and is completely user defined.</p>
 			<code>
 				<cfif application.fapi.hasRole("Member")>
 					<p>Welcome back!</p>
 				</cfif>
 			</code>
 		 --->
-		<cffunction name="hasRole" returntype="boolean" output="false" access="public" hint="Returns true if the current user has the specified role. This function should be used sparingly - adding and using permissions instead can make debugging security functionality much easier." bDocument="true">
+		<cffunction name="hasRole" returntype="boolean" output="false" access="public" hint="Returns true if the current user has ANY of the roles passed in. This function should be used sparingly - adding and using permissions instead can make debugging security functionality much easier." bDocument="true">
 			<cfargument name="role" type="string" required="false" default="" hint="Roles to check" />
 			
-			<cfreturn application.security.hasRole(argumentCollection="#arguments#") />
+			<cfset var permitted = false />
+			<cfset var i = "" />
+			
+			<cfloop list="#arguments.role#" index="i">
+				<cfif application.security.hasRole(role="#i#")>
+					<cfset permitted = true />
+				</cfif>
+			</cfloop>
+			
+			<cfreturn permitted />
 		</cffunction>
 		
+
+		<!--- @@examples:
+			<p>Show content if the current user has a specified permission:</p>
+			<code>
+				<cfif application.fapi.hasPermission("welcomemessage")>
+					<p>Welcome back!</p>
+				</cfif>
+			</code>
+		 --->
+		<cffunction name="hasPermission" returntype="boolean" output="false" access="public" hint="Returns true if the current user has ANY of the permissions passed in." bDocument="true">
+			<cfargument name="permission" type="string" required="false" default="" hint="permissions to check" />
+			
+			<cfset var permitted = false />
+			<cfset var i = "" />
+			
+			<cfloop list="#arguments.permission#" index="i">
+				<cfif application.security.checkPermission(permission="#i#")>
+					<cfset permitted = true />
+				</cfif>
+			</cfloop>
+			
+			<cfreturn permitted />
+		</cffunction>
+		
+				
 		<!--- @@examples:
 			<p>Get the current user:</p>
 			<code>
@@ -309,6 +347,19 @@
 			</code>
 		 --->
 		<cffunction name="getCurrentUser" access="public" returntype="struct" hint="Gets the currently logged in user's dmProfile or a blank structure if the user is not logged in." bDocument="true">
+			<cfreturn getCurrentUsersProfile() />
+		</cffunction>
+				
+		<!--- @@examples:
+			<p>Get the current logged in users profile:</p>
+			<code>
+				<cfset stProfile = application.fapi.getCurrentUsersProfile() />
+				<cfif not isstructempty(stProfile)>
+					<cfoutput>Hello #stProfile.firstname#</cfoutput>
+				</cfif>
+			</code>
+		 --->
+		<cffunction name="getCurrentUsersProfile" access="public" returntype="struct" hint="Gets the currently logged in user's dmProfile or a blank structure if the user is not logged in." bDocument="true">
 			<cfif structKeyExists(session, "dmProfile")>
 				<cfreturn session.dmProfile />
 			<cfelse>
