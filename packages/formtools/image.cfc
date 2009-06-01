@@ -239,16 +239,13 @@
 		<cfif
 			structKeyExists(form, "#stMetadata.FormFieldPrefix##stMetadata.Name#Delete")
 			AND	len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#Delete"]) AND fileExists("#application.path.imageRoot##FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Delete']#")>
-					
-			<cfif NOT DirectoryExists("#application.path.mediaArchive#")>
-				<cfdirectory action="create" directory="#application.path.mediaArchive#">
-			</cfif>
-
-			<cfif NOT DirectoryExists("#application.path.mediaArchive##arguments.stMetadata.ftDestination#")>
-				<cfdirectory action="create" directory="#application.path.mediaArchive##arguments.stMetadata.ftDestination#">
-			</cfif>	
+				
 		 	<cfif fileExists("#application.path.imageRoot##FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Delete']#")>
-			 	
+			 			
+				<cfif NOT DirectoryExists("#application.path.mediaArchive##arguments.stMetadata.ftDestination#")>
+					<cfdirectory action="create" directory="#application.path.mediaArchive##arguments.stMetadata.ftDestination#">
+				</cfif>	
+				
 			 	<cffile 
 				   action = "move"
 				   source = "#application.path.imageRoot##FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Delete']#"
@@ -270,6 +267,11 @@
 		 	
 				<!--- MOVE THE OLD FILE INTO THE ARCHIVE --->
 		 		<cfif fileExists("#application.path.imageRoot##arguments.stMetadata.ftDestination#/#uploadFileName#")>
+			 			
+					<cfif NOT DirectoryExists("#application.path.mediaArchive##arguments.stMetadata.ftDestination#")>
+						<cfdirectory action="create" directory="#application.path.mediaArchive##arguments.stMetadata.ftDestination#">
+					</cfif>	
+					
 				 	<cffile 
 					   action = "move"
 					   source = "#application.path.imageRoot##arguments.stMetadata.ftDestination#/#uploadFileName#"
