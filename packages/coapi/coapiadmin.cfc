@@ -323,7 +323,7 @@
 			<cfset arguments.aExtends = getExtendedTypeArray(packagePath=arguments.packagepath) />
 		</cfif>
 		<cfset arrayPrepend(arguments.aExtends, arguments.typename) />
-		
+
 		
 		<!--- Loop through ancestors in order of precedence, only adding webskins that have not already been defined --->
 		<cfloop from="1" to="#arrayLen(aExtends)#" index="i">
