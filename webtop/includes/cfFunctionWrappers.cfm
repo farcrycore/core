@@ -27,23 +27,6 @@
 	<cfthrow detail="#arguments.detail#"  errorcode="#arguments.errorcode#">
 </cffunction>
 
-<cffunction name="query" hint="a wrapper for cfquery tag for use in cfscript">
-	<cfargument name="sql" type="string" required="true">
-	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
-	<cfset var q = ''>
-		
-	<cfquery name="q" datasource="#arguments.dsn#">
-		#preserveSingleQuotes(arguments.sql)#
-	</cfquery>
-	
-	<!--- This is so we always return a query object - ie update statements may not return a result --->
-	
-	<cfif not isDefined("q.recordcount")>
-		<cfset q = queryNew('acoloumn')>
-	</cfif>
-	
-	<cfreturn q>
-</cffunction>
 <cffunction name="scriptQuery" hint="a wrapper for cfquery tag for use in cfscript">
 	<cfargument name="sql" type="string" required="true">
 	<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
@@ -121,16 +104,6 @@
 	<cfreturn q>
 </cffunction>
 
-
-
-
-<cffunction name="dump" hint="wrapper for cfdump">
-	<cfargument name="object" required="true">
-	<cfargument name="label" required="false" default="">
-	<!--- reset dump variable in request scope to try cf into thinking it hasn't already dumped on the page --->
-	<cfset request.cfdumpinited = false>
-	<cfdump var="#arguments.object#" label="#arguments.label#">
-</cffunction>
 
 <cffunction name="abort" hint="wrapper for cfdump">
 	<cfabort>
