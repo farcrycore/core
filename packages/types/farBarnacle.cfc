@@ -310,7 +310,7 @@
 		
 		<!--- Notify object of change --->
 		<cfif oldright neq arguments.right>
-			<cfset application.fapi.getContentType(typename=stBarnacle.objecttype).onSecurityChange(changetype="object",objectid=stBarnacle.referenceid,typename=stBarnacle.objecttype,farRoleID=stBarnacle.roleid,farPermissionID=stBarnacle.permissionid,oldright=oldright,newright=arguments.newright) />
+			<cfset application.fapi.getContentType(typename=stBarnacle.objecttype).onSecurityChange(changetype="object",objectid=stBarnacle.referenceid,typename=stBarnacle.objecttype,farRoleID=stBarnacle.roleid,farPermissionID=stBarnacle.permissionid,oldright=oldright,newright=arguments.right) />
 		</cfif>
 	</cffunction>
 

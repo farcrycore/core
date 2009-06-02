@@ -20,6 +20,7 @@
 		<cfset var supportedpermissions = application.security.factory.permission.getAllPermissions(arguments.typename) />
 		
 		<cfparam name="arguments.stMetadata.ftPermissions" />
+		<cfparam name="arguments.stMetadata.ftRoles" default="#application.security.factory.role.getAllRoles()#" />
 		<cfparam name="arguments.stMetadata.ftIncludePermissionLabel" default="#listlen(arguments.stMetadata.ftPermissions) neq 1#" />
 		
 		<cfsavecontent variable="html">
@@ -43,7 +44,7 @@
 						<select name="#arguments.fieldname##replace(thispermission,'-','','ALL')#" multiple="true">
 					</cfoutput>
 					
-					<cfloop list="#application.security.factory.role.getAllRoles()#" index="thisrole">
+					<cfloop list="#arguments.stMetadata.ftRoles#" index="thisrole">
 					
 						<cfoutput><option value="#thisrole#"<cfif application.security.factory.barnacle.getRight(role=thisrole,permission=thispermission,object=arguments.stObject.objectid) eq 1> selected</cfif>>#application.security.factory.role.getLabel(thisrole)#</option></cfoutput>
 					
@@ -81,6 +82,7 @@
 		<cfset var supportedpermissions = application.security.factory.permission.getAllPermissions(arguments.typename) />
 		
 		<cfparam name="arguments.stMetadata.ftPermissions" />
+		<cfparam name="arguments.stMetadata.ftRoles" default="#application.security.factory.role.getAllRoles()#" />
 		<cfparam name="arguments.stMetadata.ftIncludePermissionLabel" default="#listlen(arguments.stMetadata.ftPermissions) neq 1#" />
 		
 		<cfsavecontent variable="html">
@@ -103,7 +105,7 @@
 					</tr>
 			</cfoutput>
 			
-			<cfloop list="#application.security.factory.role.getAllRoles()#" index="thisrole">
+			<cfloop list="#arguments.stMetadata.ftRoles#" index="thisrole">
 				
 				<cfoutput>
 					<tr>
@@ -151,11 +153,12 @@
 		<cfset stResult.stError = StructNew() />
 		
 		<cfparam name="arguments.stMetadata.ftPermissions" />
+		<cfparam name="arguments.stMetadata.ftRoles" default="#application.security.factory.role.getAllRoles()#" />
 		<cfparam name="arguments.stMetadata.ftIncludePermissionLabel" default="#listlen(arguments.stMetadata.ftPermissions) neq 1#" />
 		
 		<cfloop list="#application.security.factory.permission.getAllPermissions(arguments.typename)#" index="thispermission">
 			<cfif structkeyexists(arguments.stFieldPost.stSupporting,replace(thispermission,'-','','ALL'))>
-				<cfloop list="#application.security.factory.role.getAllRoles()#" index="thisrole">
+				<cfloop list="#arguments.stMetadata.ftRoles#" index="thisrole">
 					<cfif not listcontains(arguments.stFieldPost.stSupporting[replace(thispermission,'-','','ALL')],thisrole)>
 						<cfset application.security.factory.barnacle.updateRight(role=thisrole,permission=thispermission,object=arguments.objectid,right=0) />
 					<cfelse>
