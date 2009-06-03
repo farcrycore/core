@@ -67,20 +67,23 @@ START WEBSKIN
 </cfoutput>
 </skin:htmlHead>
 
+
 <!--- OUTPUT THE MARKUP FOR THE PAGINATOR --->
-<cfoutput>
-<div class="paginator-wrap">
-	<div class="paginator">	
-		#renderLink(linkid="previous", linkText="< previous")#
-		
-		<cfloop from="#getPageFrom()#" to="#getPageTo()#" index="i">
-			#renderLink(linkid=i)#
-		</cfloop>
-		
-		#renderLink(linkid="next", linkText="next >")#		
+<cfif getPageTo() GT 1>
+	<cfoutput>
+	<div class="paginator-wrap">
+		<div class="paginator">	
+			#renderLink(linkid="previous", linkText="< previous")#
+			
+			<cfloop from="#getPageFrom()#" to="#getPageTo()#" index="i">
+				#renderLink(linkid=i)#
+			</cfloop>
+			
+			#renderLink(linkid="next", linkText="next >")#
+		</div>
 	</div>
-</div>
-</cfoutput>	
+	</cfoutput>	
+</cfif>
 
 
 <cfsetting enablecfoutputonly="false">
