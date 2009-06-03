@@ -244,7 +244,6 @@ Doesn't appear to be used: _genericAdmin/changeStatus.cfm not in code base!
 			
 			st = application.factory.oAuthorisation.getPermission(permissionName=permissionName,permissionType='#arguments.permissionType#');
 			//create permission if it doesn't exist
-			dump(st);
 			if (structIsEmpty(st))
 			{	
 				application.factory.oAuthorisation.createPermission(permissionName=permissionName, permissionType=arguments.permissionType, permissionNotes=""); 
