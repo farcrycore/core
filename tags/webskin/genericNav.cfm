@@ -66,11 +66,7 @@
 		select max(nRight) as maxRight from qNav
 	</cfquery>
 </cfif>
-<cffunction name="dump">
-	<cfargument name="arg">
-	<cfdump var="#arg#">
-	<cfabort/>
-</cffunction>
+
 <cfif attributes.displayStyle EQ "aLink">
 	<cfloop query="qNav">
 		<cfif application.fc.factory.farFU.isUsingFU()>
