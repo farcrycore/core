@@ -311,7 +311,6 @@ $out:$
 					
 					<cfset tableMetadata.parseMetadata(stMetaData) />
 					<cfset stResult.tableDefinition = tableMetadata.getTableDefinition() />
-					<cfset stResult.coapiID = application.fc.factory['farCoapi'].getCoapiObjectID(name=arguments.name) />
 				</cfif>
 					
 				<cfparam name="stResult.bObjectBroker" default="false" />
