@@ -209,10 +209,16 @@
 						Ext.Ajax.request({
 							url: '#application.url.farcry#/facade/ftajax.cfm?formtool='+watcher.formtool+'&typename='+watcher.typename+'&fieldname='+watcher.fieldname+'&property='+watcher.property+'&objectid='+watcher.objectid,
 							success: function(response){
-								this.update(response.responseText);
+								document.getElementById(this.fieldname+"ajaxdiv").update(response.responseText);
+								
+								// if the updated field is also being watched, reattach the events
+								if (watchedfields[this.prefix] && watchedfields[this.prefix][this.property] && watchedfields[this.prefix][this.property].length){
+									Ext.select("select[name="+this.prefix+this.property+"], input[name="+this.prefix+this.property+"][type=text], input[name="+this.prefix+this.property+"][type=password]").on("change",ajaxUpdate,this,{ prefix: this.prefix, property: this.property });
+									Ext.select("input[name="+this.prefix+this.property+"][type=checkbox], input[name="+this.prefix+this.property+"][type=radio]").on("click",ajaxUpdate,this,{ prefix: this.prefix, property: this.property });
+								}
 							},
 							params: values,
-							scope: document.getElementById(watcher.fieldname+"ajaxdiv")
+							scope: watcher
 						});
 					}
 				};
