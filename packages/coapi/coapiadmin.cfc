@@ -255,8 +255,8 @@
 						<cfset querysetcell(qThis, 'id', webskinID, qThis.currentRow) />		
 						<cfset querysetcell(qThis, 'directory', replaceNoCase(qThis.directory,"\","/","all"), qThis.currentRow) />		
 						<cfset querysetcell(qThis, 'typename', "#listLast(qThis.directory,"/")#", qThis.currentRow) />		
-						<cfset querysetcell(qThis, 'webskin', "/#qThis.typename#/#qThis.name#", qThis.currentRow) />		
-						<cfset querysetcell(qThis, 'path', "#replace(qThis.directory,expandpath('/farcry'),'/farcry')#", qThis.currentRow) />			
+						<cfset querysetcell(qThis, 'webskin', "/#qThis.typename#/#qThis.name#", qThis.currentRow) />	
+						<cfset querysetcell(qThis, 'path', "#webskinrel#/#listLast(qThis.directory,"/")#", qThis.currentRow) />			
 					</cfloop>
 					
 					<!--- Add new webskins to summary --->
