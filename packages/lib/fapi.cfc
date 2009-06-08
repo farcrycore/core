@@ -53,6 +53,28 @@
 			<cfreturn application.coapi.coapiutilities.getContentObject(argumentCollection="#arguments#") />
 		</cffunction>
 		
+	
+		<!--- @@examples:
+			<p>Instantiate a list formtool component:</p>
+			<code>
+				<cfset oList = application.fapi.getFormtool("list") />
+			</code>
+		 --->
+		<cffunction name="getFormtool" access="public" output="false" returntype="any" hint="Returns the an instantiated formtool" bDocument="true">
+			<cfargument name="formtool" type="string" required="true" />
+			
+			<cfset var oResult = "" />
+			
+			<cfif structKeyExists(application.formtools, arguments.formtool)>
+				<cfset oResult = createObject("component", application.formtools["#arguments.formtool#"].packagePath).init() />
+			<cfelse>
+				<!--- USE THE DEFAULT IF REQUESTED FORMTOOL DOES NOT EXIST --->
+				<cfset oResult = createObject("component", application.formtools["field"].packagePath).init() />
+			</cfif>		
+	
+			<cfreturn oResult />
+		</cffunction>
+				
 		<!--- @@examples:
 			<p>Save changes to an object:</p>
 			<code>
