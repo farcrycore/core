@@ -1,4 +1,118 @@
 <cfoutput>
+	function getInputValue(name) {
+					var objs = Ext.select("[name="+name+"]");
+					var result = "";
+					
+					// input doesn't exist
+					if (!objs.getCount()) {
+						return "";
+					}
+					// checkbox
+					else if (objs.item(0).dom.tagName=="INPUT" && objs.item(0).dom.type == 'checkbox') {
+						result = [];
+						objs.each(function(el){
+							if (el.dom.checked) result.push(el.dom.value);
+						});
+						return result.join();
+					}
+					// radio
+					else if (objs.item(0).dom.tagName=="INPUT" && objs.item(0).dom.type == 'radio') {
+						objs = Ext.select("[name="+name+"][type=radio]");
+						if (objs.getCount())
+							return objs.item(0).dom.value;
+						else
+							return "";
+					}
+					// select
+					else if (objs.item(0).dom.tagName=="SELECT") {
+						result = [];
+						for (var i=0;i<objs.item(0).dom.options.length;i++)
+							if (objs.item(0).dom.options[i].selected) result.push(objs.item(0).dom.options[i].value);
+						return result;
+					}
+					// everything else: text, password, hidden, etc
+					else {
+						result = [];
+						objs.each(function(el){
+							result.push(el.dom.value);
+						});
+						return result.join();
+					}
+				};
+				
+				var watchedfields = {};
+				var watchingfields = {}
+				function addWatch(prefix,property,opts) {
+					watchedfields[prefix] = watchedfields[prefix] || {};
+					watchingfields[prefix] = watchingfields[prefix] || {};
+					
+					//if (!watchedfields[prefix][property]) { // if the property doesn't have a watch attached already, do so
+						Ext.select("select[name="+prefix+property+"], input[name="+prefix+property+"][type=text], input[name="+prefix+property+"][type=password]").on("change",ajaxUpdate,this,{ prefix:prefix, property: property });
+						Ext.select("input[name="+prefix+property+"][type=checkbox], input[name="+prefix+property+"][type=radio]").on("click",ajaxUpdate,this,{ prefix:prefix, property: property });
+						Ext.select("input[name="+prefix+property+"][type=hidden]").each(function(el){
+							el = el.dom;
+							var lastvalue = el.value;
+							setInterval(function(){
+								if (el.value !== lastvalue) {
+									lastvalue = el.value;
+									ajaxUpdate({},el,{ prefix:prefix, property: property });
+								}
+							},100);
+						});
+					//}
+					
+					watchedfields[prefix][property] = watchedfields[prefix][property] || [];
+					watchedfields[prefix][property].push(opts);
+					
+					watchingfields[prefix][opts.property] = watchingfields[prefix][opts.property] || [];
+					watchingfields[prefix][opts.property].push(opts);
+				};
+				
+				function ajaxUpdate(event,el,opt) {
+					var values = {};
+					
+					// for each watcher
+					for (var i=0; i<watchedfields[opt.prefix][opt.property].length; i++) {
+						watcher = watchedfields[opt.prefix][opt.property][i];
+						
+						// include the watcher in the form post
+						values[watcher.property] = "";
+						
+						// find out what each one is watching
+						for (var j=0; j<watchingfields[opt.prefix][watcher.property].length; j++)
+							// add these properties to the form post
+							values[watchingfields[opt.prefix][watcher.property][j].watchedproperty] = "";
+					}
+					
+					// get the post values
+					for (var property in values)
+						values[property] = getInputValue(opt.prefix+property);
+					
+					// for each watcher
+					for (var i=0; i<watchedfields[opt.prefix][opt.property].length; i++) {
+						watcher = watchedfields[opt.prefix][opt.property][i];
+							
+						// set the loading html
+						document.getElementById(watcher.prefix+watcher.property+"ajaxdiv").innerHTML = watcher.ftLoaderHTML;
+						
+						// post the AJAX request
+						Ext.Ajax.request({
+							url: '#application.url.farcry#/facade/ftajax.cfm?formtool='+watcher.formtool+'&typename='+watcher.typename+'&fieldname='+watcher.fieldname+'&property='+watcher.property+'&objectid='+watcher.objectid,
+							success: function(response){
+								document.getElementById(this.fieldname+"ajaxdiv").update(response.responseText);
+								
+								// if the updated field is also being watched, reattach the events
+								if (watchedfields[this.prefix] && watchedfields[this.prefix][this.property] && watchedfields[this.prefix][this.property].length){
+									Ext.select("select[name="+this.prefix+this.property+"], input[name="+this.prefix+this.property+"][type=text], input[name="+this.prefix+this.property+"][type=password]").on("change",ajaxUpdate,this,{ prefix: this.prefix, property: this.property });
+									Ext.select("input[name="+this.prefix+this.property+"][type=checkbox], input[name="+this.prefix+this.property+"][type=radio]").on("click",ajaxUpdate,this,{ prefix: this.prefix, property: this.property });
+								}
+							},
+							params: values,
+							scope: watcher
+						});
+					}
+				};
+					
 				function farcryButtonOnMouseOver(id) {
 					$(id + '-outer').addClassName('farcryButtonWrap-outer-hover');
 					$(id + '-inner').addClassName('farcryButtonWrap-inner-hover');

@@ -99,6 +99,7 @@
 		<cfargument name="html" type="string" required="true" hint="The html to wrap" />
 		
 		<cfset var prefix = left(arguments.fieldname,len(arguments.fieldname)-len(arguments.stMetadata.name)) />
+		<cfset var result = "" />
 		
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
@@ -106,142 +107,33 @@
 		<cfparam name="arguments.stMetadata.ftWatch" default="" /><!--- Set this value to a list of property names. Formtool will attempt to update with the ajax function when those properties change. --->
 		<cfparam name="arguments.stMetadata.ftLoaderHTML" default="Loading..." /><!--- The HTML displayed in the field while the new UI is being ajaxed in --->
 		
-		<cfif not structkeyexists(arguments.stMetadata,"ajaxrequest") and len(arguments.stMetadata.ftWatch)>
+		<cfif len(arguments.stMetadata.ftWatch)>
+			
 			<skin:htmlHead library="extCoreJS" />
-			<extjs:onReady id="ftWatch"><cfoutput>
-				function getInputValue(name) {
-					var objs = Ext.select("[name="+name+"]");
-					var result = "";
-					
-					// input doesn't exist
-					if (!objs.getCount()) {
-						return "";
-					}
-					// checkbox
-					else if (objs.item(0).dom.tagName=="INPUT" && objs.item(0).dom.type == 'checkbox') {
-						result = [];
-						objs.each(function(el){
-							if (el.dom.checked) result.push(el.dom.value);
+			
+			<cfsavecontent variable="result">
+				<extjs:onReady><cfoutput>
+					<cfloop list="#arguments.stMetadata.ftWatch#" index="thisprop">
+						addWatch("#prefix#","#thisprop#",{ 
+							prefix:'#prefix#',
+							objectid:'#arguments.stObject.objectid#', 
+							fieldname:'#arguments.fieldname#',
+							ftLoaderHTML:'#jsstringformat(arguments.stMetadata.ftLoaderHTML)#',
+							typename:'#arguments.typename#',
+							property:'#arguments.stMetadata.name#',
+							formtool:'#arguments.stMetadata.ftType#',
+							watchedproperty:'#thisprop#'
 						});
-						return result.join();
-					}
-					// radio
-					else if (objs.item(0).dom.tagName=="INPUT" && objs.item(0).dom.type == 'radio') {
-						objs = Ext.select("[name="+name+"][type=radio]");
-						if (objs.getCount())
-							return objs.item(0).dom.value;
-						else
-							return "";
-					}
-					// select
-					else if (objs.item(0).dom.tagName=="SELECT") {
-						result = [];
-						for (var i=0;i<objs.item(0).dom.options.length;i++)
-							if (objs.item(0).dom.options[i].selected) result.push(objs.item(0).dom.options[i].value);
-						return result;
-					}
-					// everything else: text, password, hidden, etc
-					else {
-						result = [];
-						objs.each(function(el){
-							result.push(el.dom.value);
-						});
-						return result.join();
-					}
-				};
-				
-				var watchedfields = {};
-				var watchingfields = {}
-				function addWatch(prefix,property,opts) {
-					watchedfields[prefix] = watchedfields[prefix] || {};
-					watchingfields[prefix] = watchingfields[prefix] || {};
-					
-					if (!watchedfields[prefix][property]) { // if the property doesn't have a watch attached already, do so
-						Ext.select("select[name="+prefix+property+"], input[name="+prefix+property+"][type=text], input[name="+prefix+property+"][type=password]").on("change",ajaxUpdate,this,{ prefix:prefix, property: property });
-						Ext.select("input[name="+prefix+property+"][type=checkbox], input[name="+prefix+property+"][type=radio]").on("click",ajaxUpdate,this,{ prefix:prefix, property: property });
-						Ext.select("input[name="+prefix+property+"][type=hidden]").each(function(el){
-							el = el.dom;
-							var lastvalue = el.value;
-							setInterval(function(){
-								if (el.value !== lastvalue) {
-									lastvalue = el.value;
-									ajaxUpdate({},el,{ prefix:prefix, property: property });
-								}
-							},100);
-						});
-					}
-					
-					watchedfields[prefix][property] = watchedfields[prefix][property] || [];
-					watchedfields[prefix][property].push(opts);
-					
-					watchingfields[prefix][opts.property] = watchingfields[prefix][opts.property] || [];
-					watchingfields[prefix][opts.property].push(opts);
-				};
-				
-				function ajaxUpdate(event,el,opt) {
-					var values = {};
-					
-					// for each watcher
-					for (var i=0; i<watchedfields[opt.prefix][opt.property].length; i++) {
-						watcher = watchedfields[opt.prefix][opt.property][i];
-						
-						// include the watcher in the form post
-						values[watcher.property] = "";
-						
-						// find out what each one is watching
-						for (var j=0; j<watchingfields[opt.prefix][watcher.property].length; j++)
-							// add these properties to the form post
-							values[watchingfields[opt.prefix][watcher.property][j].watchedproperty] = "";
-					}
-					
-					// get the post values
-					for (var property in values)
-						values[property] = getInputValue(opt.prefix+property);
-					
-					// for each watcher
-					for (var i=0; i<watchedfields[opt.prefix][opt.property].length; i++) {
-						watcher = watchedfields[opt.prefix][opt.property][i];
-							
-						// set the loading html
-						document.getElementById(watcher.prefix+watcher.property+"ajaxdiv").innerHTML = watcher.ftLoaderHTML;
-						
-						// post the AJAX request
-						Ext.Ajax.request({
-							url: '#application.url.farcry#/facade/ftajax.cfm?formtool='+watcher.formtool+'&typename='+watcher.typename+'&fieldname='+watcher.fieldname+'&property='+watcher.property+'&objectid='+watcher.objectid,
-							success: function(response){
-								document.getElementById(this.fieldname+"ajaxdiv").update(response.responseText);
-								
-								// if the updated field is also being watched, reattach the events
-								if (watchedfields[this.prefix] && watchedfields[this.prefix][this.property] && watchedfields[this.prefix][this.property].length){
-									Ext.select("select[name="+this.prefix+this.property+"], input[name="+this.prefix+this.property+"][type=text], input[name="+this.prefix+this.property+"][type=password]").on("change",ajaxUpdate,this,{ prefix: this.prefix, property: this.property });
-									Ext.select("input[name="+this.prefix+this.property+"][type=checkbox], input[name="+this.prefix+this.property+"][type=radio]").on("click",ajaxUpdate,this,{ prefix: this.prefix, property: this.property });
-								}
-							},
-							params: values,
-							scope: watcher
-						});
-					}
-				};
-			</cfoutput></extjs:onReady>
-			<extjs:onReady><cfoutput>
-				<cfloop list="#arguments.stMetadata.ftWatch#" index="thisprop">
-					addWatch("#prefix#","#thisprop#",{ 
-						prefix:'#prefix#',
-						objectid:'#arguments.stObject.objectid#', 
-						fieldname:'#arguments.fieldname#',
-						ftLoaderHTML:'#jsstringformat(arguments.stMetadata.ftLoaderHTML)#',
-						typename:'#arguments.typename#',
-						property:'#arguments.stMetadata.name#',
-						formtool:'#arguments.stMetadata.ftType#',
-						watchedproperty:'#thisprop#'
-					});
-				</cfloop>
-			</cfoutput></extjs:onReady>
-		
-			<cfreturn "<div id='#arguments.fieldname#ajaxdiv'>#arguments.html#</div>" />
+					</cfloop>
+				</cfoutput></extjs:onReady>
+			
+				<cfoutput><div id='#arguments.fieldname#ajaxdiv'>#arguments.html#</div></cfoutput>
+			</cfsavecontent>
 		<cfelse>
-			<cfreturn arguments.html />
+			<cfset result = arguments.html />
 		</cfif>
+		
+		<cfreturn result />
 	</cffunction>
 	
 	<cffunction name="ajax" output="false" returntype="string" hint="Response to ajax requests for this formtool">
@@ -283,5 +175,68 @@
 		<cfreturn html />
 	</cffunction>
 	
+	<cffunction name="getFilterUIOptions">
+		<cfreturn "contains" />
+	</cffunction>
+	
+	<cffunction name="getFilterUI">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+		<cfargument name="stPackage" required="false" type="struct" hint="Contains the metadata for the all fields for the current typename.">
+				
+		<cfargument name="filterTypename" />
+		<cfargument name="filterProperty" />
+		<cfargument name="renderType" />
+		<cfargument name="stProps" />
+		
+		<cfset var resultHTML = "" />
+		
+		<cfsavecontent variable="resultHTML">
+			
+			<cfswitch expression="#arguments.renderType#">
+				
+				<cfcase value="contains">
+					<cfparam name="arguments.stProps.contains" default="" />
+					<cfoutput>
+					<input type="string" name="#arguments.fieldname#contains" value="#arguments.stProps.contains#" />
+					</cfoutput>
+				</cfcase>
+							
+			</cfswitch>
+		</cfsavecontent>
+		
+		<cfreturn resultHTML />
+	</cffunction>
+	
 
+	<cffunction name="getFilterSQL">
+		
+		<cfargument name="filterTypename" />
+		<cfargument name="filterProperty" />
+		<cfargument name="renderType" />
+		<cfargument name="stProps" />
+		
+		<cfset var resultHTML = "" />
+		
+		<cfsavecontent variable="resultHTML">
+			
+			<cfswitch expression="#arguments.renderType#">
+				
+				<cfcase value="contains">
+					<cfparam name="arguments.stProps.contains" default="" />
+					<cfif len(arguments.stProps.contains)>
+						<cfoutput>#arguments.filterProperty# LIKE '%#arguments.stProps.contains#%'</cfoutput>
+					</cfif>
+				</cfcase>
+				
+			
+			</cfswitch>
+			
+		</cfsavecontent>
+		
+		<cfreturn resultHTML />
+	</cffunction>
+		
 </cfcomponent> 
