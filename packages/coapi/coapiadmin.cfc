@@ -135,6 +135,7 @@
 	<cfset var aExtends = arrayNew(1) />
 	<cfset var extendedMD = "">
 	<cfset var extendedTypeName = "" />
+	<cfset var bFourQ = false />
 	
 	<cfif structKeyExists(md, "extends")>
 		
@@ -142,7 +143,11 @@
 		<cfset extendedTypeName = extendedMD.name />
 		
 		<!--- Loop through the type extends heirachy until we hit fourq --->
-		<cfloop condition="extendedTypeName NEQ 'farcry.core.packages.fourq.fourq'">
+		<cfloop condition="NOT bFourQ">
+			<cfif extendedTypeName EQ 'farcry.core.packages.fourq.fourq'>
+				<cfset bFourQ = true />
+			</cfif>
+			
 			<cfset arrayAppend(aExtends, listLast(extendedTypeName , ".")) />
 			
 			<cfif structKeyExists(extendedMD, "extends") AND structKeyExists(extendedMD.extends, "name")>		
