@@ -65,6 +65,9 @@
 <cffunction name="getPageTo" access="public" output="false" returntype="numeric" hint="Get the end page of the pagination loop">
 	<cfreturn arrayLen(this.stLinks.aPages) />
 </cffunction>
+<cffunction name="getRecordsPerPage" access="public" output="false" returntype="numeric" hint="Returns the number of records to be displayed per page">
+	<cfreturn this.recordsPerPage />
+</cffunction>
 
 <cffunction name="getCurrentPage" access="public" output="false" returntype="numeric" hint="Get the current page">
 	<cfreturn this.currentPage />
@@ -513,27 +516,6 @@
 	
 	<!--- ENSURE WE ARE DOING A FORM SUBMISSION AND THAT WE ARE CURRENTLY IN THE MIDDLE OF AN FT:FORM --->
 	<cfif this.submissionType eq "form" and structKeyExists(Request, "farcryForm") and not structIsEmpty(request.farcryForm)>
-		<skin:htmlHead library="ExtCoreJS" />
-		
-		<skin:htmlHead id="pageSubmitJS">
-		<cfoutput>
-		<script type="text/javascript">
-		farcryps = function(page,formname,type,actionURL){
-			if(type=='form'){					
-				Ext.get(formname).dom.submit();
-				return false;
-			} else if(type=='url'){
-				window.location = actionURL + '&page=' + page;
-				return false;
-			} else {
-				return true;
-			}				
-		}	
-		</script>
-		</cfoutput>
-		</skin:htmlHead>
-	
-	
 		<cfset result = "Ext.get('paginationpage#Request.farcryForm.Name#').dom.value=#arguments.page#;#Request.farcryForm.onSubmit#;return farcryps(arguments.page,'#Request.farcryForm.Name#','#this.submissionType#','#this.actionURL#');" />
 	</cfif>
 	

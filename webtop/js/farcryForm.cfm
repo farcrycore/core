@@ -530,7 +530,8 @@ function btnSubmit(formName,value) {
 		Ext.get(formName).dom.submit();
 	}
 }
-		
+	
+	
 function farcryForm_ajaxSubmission(formname,action,maskMsg,maskCls){
 	if (maskMsg == undefined){var maskMsg = 'Saving Changes'};
 	if (maskCls == undefined){var maskCls = 'x-mask-loading'};
@@ -557,6 +558,18 @@ function farcryForm_ajaxSubmission(formname,action,maskMsg,maskCls){
 	});
 }
 
+farcryps = function(page,formname,type,actionURL){
+	if(type=='form'){					
+		Ext.get(formname).dom.submit();
+		return false;
+	} else if(type=='url'){
+		window.location = actionURL + '&page=' + page;
+		return false;
+	} else {
+		return true;
+	}				
+}	
+	
 <!--- A function to check all checkboxes on a form --->
 function checkUncheckAll(theElement) {
 	var theForm = theElement.form, z = 0;
@@ -566,4 +579,5 @@ function checkUncheckAll(theElement) {
 		}
 	}
 }
+	
 </cfoutput>					

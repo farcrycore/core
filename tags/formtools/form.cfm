@@ -10,6 +10,7 @@
 </cfif>
 
 <!--- import Javascript Libraries libraries --->
+<skin:htmlHead library="extJSCore" />
 <skin:htmlHead library="farcryForm" />
 
 <!--- MJB
