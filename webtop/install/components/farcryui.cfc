@@ -29,7 +29,7 @@
 	</cffunction>
 	
 	
-	<cffunction name="setError" returntype="void" output="false" access="public" hint="Notifies the UI of an installation error">
+	<cffunction name="setError" returntype="void" output="true" access="public" hint="Notifies the UI of an installation error">
 		<cfargument name="error" type="struct" required="true" hint="CFCatch struct" />
 		
 		<cfdump var="#arguments.error#"><cfabort>

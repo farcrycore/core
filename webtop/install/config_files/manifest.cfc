@@ -14,7 +14,7 @@
 		
 		<cfset var result = "DONE" />
 		
-		<cfset result = createContent() />
+		<cfset result = createContent(argumentCollection=arguments) />
 				
 		
 		<cfreturn result />

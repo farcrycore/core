@@ -3,7 +3,7 @@
 <!--------------------------------------- 
 DETERMINE THE CURRENT VERSION OF FARCRY
  --------------------------------------->
-<cfset request.coreVersion = getCoreVersion() />
+<cfset request.coreVersion = createobject("component","components.install").getCoreVersion() />
 
 
 

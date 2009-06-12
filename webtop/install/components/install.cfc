@@ -26,21 +26,32 @@
 	<cffunction name="getPaths" returntype="struct" output="false" access="private" hint="Returns the file system paths required for installation">
 		<cfargument name="webroot" type="string" required="true" hint="The full webroot path" />
 		<cfargument name="projectdirectory" type="string" required="true" hint="The project directory name" />
+		<cfargument name="projectInstallType" type="string" required="true" hint="Application setup (subDirectory|standalone|CFMapping|webserverMapping)" />
 		
 		<cfset var stResult = structnew() />
 		
 		<cfset stResult.webroot = arguments.webroot />
-		<cfset stResult.farcry= "#arguments.webroot#/farcry" />
-		<cfset stResult.webtop= "#arguments.webroot#/farcry/core/webtop" />
+		
+		<cfif listcontainsnocase("cfmapping,webservermapping",arguments.projectInstallType)>
+			
+			<cfset stResult.farcry = expandpath("/farcry") />
+			<cfset stResult.webtop = expandpath("/farcry/core/webtop") />
+			
+		<cfelse>
+			
+			<cfset stResult.farcry = "#arguments.webroot#/farcry" />
+			<cfset stResult.webtop = "#arguments.webroot#/farcry/core/webtop" />
+		
+		</cfif>
 		
 		<cfset stResult.projects = "#stResult.farcry#/projects" />
 		<cfset stResult.project = "#stResult.projects#/#arguments.projectdirectory#" />
 		<cfset stResult.core = "#stResult.farcry#/core" />
 		<cfset stResult.plugins = "#stResult.farcry#/plugins" />
 		
-		<cfset stResult.defaultFilePath = "#stResult.project#/www/files" />
+		<cfset stResult.defaultFilePath = "#arguments.webroot#/files" />
 		<cfset stResult.secureFilePath = "#stResult.project#/securefiles" />
-		<cfset stResult.imageRoot = "#stResult.project#/www" />
+		<cfset stResult.imageRoot = "#arguments.webroot#" />
 		<cfset stResult.mediaArchive = "#stResult.project#/mediaArchive" />
 		
 		<cfset stResult.install = "#stResult.core#/webtop/install" />
@@ -203,7 +214,7 @@
 	</cffunction>
 	
 	
-	<cffunction name="install" returntype="struct" access="public" output="no" hint="called from Railo to install application">
+	<cffunction name="install" returntype="struct" access="public" output="true" hint="called from Railo to install application">
 		<cfargument name="webroot" type="string" required="true" hint="Website webroot path" />
 		<cfargument name="bInstallDBOnly" type="boolean" required="true" hint="Database setup only, no files" />
 		<cfargument name="applicationName" type="string" required="true" hint="The name of the application in FarCry" />
@@ -225,7 +236,7 @@
 			<cfreturn installInternal(argumentCollection=arguments) />
 			
 			<cfcatch>
-				<cfset this.uicomponent.setError(error=cfcatch) />
+				<cfset this.uicomponent.setError(error=duplicate(cfcatch)) />
 				
 				<!--- Return results --->
 				<cfset stResult.bSuccess = false />
@@ -277,7 +288,7 @@
 		<cfset var oDBFactory = "" />
 		
 		<!--- Path information --->
-		<cfset var path = getPaths(webroot=arguments.webroot,projectdirectory=projectDirectoryName) />
+		<cfset var path = getPaths(webroot=arguments.webroot,projectdirectory=projectDirectoryName,projectInstallType=arguments.projectInstallType) />
 		<cfset var urls = getURLS(installtype=arguments.projectInstallType,projectdirectory=projectDirectoryName) />
 		<cfset var pp = getPackagePaths(projectDirectory=projectDirectoryName) />
 		
@@ -435,7 +446,7 @@
 				<cfset this.uiComponent.setProgress(progressmessage="#arguments.displayName# (TYPES): Creating content tables",progress=0.6) />
 			</cfif>
 			<cfloop list="#utils.getComponents(package=thispackage,locations=locations,path=path)#" index="thiscomponent">
-				<cfset o = createObject("component",utils.getPath(package=thispackage,component=thiscomponent,locations=locations,path=path)) />
+				<cfset o = createObject("component",utils.getPath(package=thispackage,component=thiscomponent,locations=locations,path=path,projectDirectoryName=projectDirectoryName)) />
 				<cfset stMD = getMetadata(o) />
 				
 				<cfif not structkeyexists(stMD,"bAbstract") or not stMD.bAbstract>
