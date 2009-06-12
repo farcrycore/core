@@ -32,7 +32,7 @@
 	<cffunction name="setError" returntype="void" output="false" access="public" hint="Notifies the UI of an installation error">
 		<cfargument name="error" type="struct" required="true" hint="CFCatch struct" />
 		
-		<cfdump var="#argumens.error#"><cfabort>
+		<cfdump var="#arguments.error#"><cfabort>
 	</cffunction>
 	
 	<cffunction name="setProgress" returntype="void" output="true" access="public" hint="Notifies the UI of installation progress">
