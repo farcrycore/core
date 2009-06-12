@@ -267,13 +267,11 @@
 		
 		<cfset var stResult = structnew() />
 		<cfset var o = "" /><!--- Object placeholder for looped or generic operations --->
-		<cfset var oDBFactory = "" />
 		<cfset var utils = createobject("component","farcry.core.packages.farcry.utils") />
-		<cfset var bInstallDBOnly = false />
+		<cfset var result = structnew() /><!--- Generic function result --->
 		
 		<!--- Project directory name can be changed from the default which is the applicationname --->
 		<cfset var projectDirectoryName =  arguments.applicationName />
-		<cfset var displayName =  arguments.displayName />
 		
 		<!--- Database sql --->
 		<cfset var oDBFactory = "" />
@@ -285,13 +283,13 @@
 		
 		<!--- Plugins --->
 		<cfset var pluginName="" />
-		<cfset var plugins = arguments.plugins />
 		
 		<!--- For use in COAPI deployment --->
 		<cfset var locations = 'project,#utils.listReverse(plugins)#,core' />
 		<cfset var thispackage = "" />	
 		<cfset var thiscomponent = "" />
 		<cfset var stTableMetadata = structnew() />
+		<cfset var qCreateFUTable = "" />
 		
 		
 		<!--- Update dbowner for various databases --->
@@ -408,7 +406,7 @@
 			<cfset this.uiComponent.setProgress(progressmessage="#arguments.displayName# (DATABASE): Creating nested tree objects table",progress=0.4) />
 			<cfset o = createObject("component", "farcry.core.packages.schema.nested_tree_objects").init(dsn=arguments.dsn,dbtype=arguments.dbtype,dbowner=arguments.dbowner) />
 			<cfset o.createTable() />
-			application
+			
 			<!--- Setup refObjects table --->
 			<cfset this.uiComponent.setProgress(progressmessage="#arguments.displayName# (DATABASE): Creating refObjects table",progress=0.4) />
 			<cfset o = createObject("component", "farcry.core.packages.schema.refobjects").init(dsn=arguments.dsn,dbtype=arguments.dbtype,dbowner=arguments.dbowner) />
@@ -454,8 +452,8 @@
 		
 		<!--- Import skeleton data into the database --->
 		<cfset this.uiComponent.setProgress(progressmessage="#arguments.displayName# (SKELETON): Installing Skeleton Data...",progress=0.8) />
-		<cfset var oSkeletonManifest = createObject("component", "#arguments.skeleton#.install.manifest") />
-		<cfset var result = oSkeletonManifest.install(dsn=arguments.dsn,dbowner=arguments.dbowner,dbtype=arguments.dbtype,path=path,factory=oDBFactory,stTableMetadata=stTableMetadata) />
+		<cfset o = createObject("component", "#arguments.skeleton#.install.manifest") />
+		<cfset result = o.install(dsn=arguments.dsn,dbowner=arguments.dbowner,dbtype=arguments.dbtype,path=path,factory=oDBFactory,stTableMetadata=stTableMetadata) />
 		
 		<!--- Update the farcry password --->
 		<cfquery datasource="#arguments.dsn#">
@@ -503,8 +501,6 @@
 			<cfif NOT bTableExists>
 				<!--- only create table if one doesnt exist --->
 				<!--- bowden --->
-				
-				<cfset var qCreateFUTable = "" />
 				
 				<cfswitch expression="#arguments.dbtype#">
 					<cfcase value="ora">
@@ -580,7 +576,7 @@
 		<cfreturn 'Farcry is now successfully removed' />
 	</cffunction>
 	
-	no
+	
 	<!--- Sanity checks --->
 	<cffunction name="checkDSN" access="private" returntype="struct" output="false" hint="Check to see whether the DSN entered by the user is valid">
 		<cfargument name="DSN" type="string" required="true" hint="DSN to check" />
