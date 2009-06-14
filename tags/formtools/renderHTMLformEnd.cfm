@@ -20,7 +20,7 @@
 			</script>
 		</cfif>
 
-		<cfif Request.farcryForm.bAjaxSubmission><!---  AND NOT request.mode.ajax --->
+		<cfif Request.farcryForm.bAjaxSubmission AND NOT structKeyExists(form, "farcryformajaxsubmission")>
 			</div>
 		</cfif>
 		

@@ -18,12 +18,15 @@
 <cfif thistag.ExecutionMode EQ "Start">
 	
 	<cfoutput>
-		<cfif Request.farcryForm.bAjaxSubmission><!---  AND NOT request.mode.ajax --->
+		<cfif Request.farcryForm.bAjaxSubmission AND NOT structKeyExists(form, "farcryformajaxsubmission")>
 			<div id="#Request.farcryForm.Name#formwrap" class="ajaxformwrap">
 		</cfif>
 		
 		<form action="#Request.farcryForm.Action#" method="#Request.farcryForm.Method#" id="#Request.farcryForm.Name#" name="#Request.farcryForm.Name#" <cfif len(request.farcryForm.Target)> target="#Request.farcryForm.Target#"</cfif> enctype="multipart/form-data" onsubmit="#attributes.onSubmit#" class="#attributes.class#"  style="#attributes.style#">
 		<cfif Request.farcryForm.bAjaxSubmission>
+			<!--- We use the hidden field to tell the submission that we do not need to include the wrap. --->
+			<input type="hidden" name="farcryformajaxsubmission" value="1" />
+			
 			<div id="#Request.farcryForm.Name#ajaxsubmission" class="ajaxsubmission" style="position:absolute;width:100px;text-align:right;"></div>
 		</cfif>
 		
