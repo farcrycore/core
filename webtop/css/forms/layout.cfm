@@ -131,7 +131,8 @@ form.formtool input.inputSubmit,
 	input.inputSubmit,
 	input.inputButton {margin: 0px 0px 0px 0px; padding: 0px 6px 0px 6px; width: auto;}
 
-form.formtool input[type=checkbox] {width: auto; margin: 0px; padding: 0px;}
+form.formtool input[type=checkbox],
+form.formtool input[type=radio] {width: auto; margin: 0px; padding: 0px;}
 
 form.formtool .submit input.inputSubmit,
 	form.formtool .submit input.inputButton {margin: 0px 0px 0px 5px; float: right;}
