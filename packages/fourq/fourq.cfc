@@ -834,10 +834,11 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 
 			<cfif structisEmpty(stObj)>
 				
-				<!--- Didn't find the object in the objectBroker --->
-				<!--- build a local instance cache --->
-				<cfinclude template="_fourq/getData.cfm">	
-				
+				<cflock name="LockData_#arguments.objectid#" timeout="10" throwontimeout="true">
+					<!--- Didn't find the object in the objectBroker --->
+					<!--- build a local instance cache --->
+					<cfinclude template="_fourq/getData.cfm">	
+				</cflock>
 				
 				<!--- MJB TODO: This piece of code needs to be added somewhere to allow the access to any field that has been run through the relevent display function of its formtool cfc  --->
 				<!--- 
@@ -930,9 +931,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		setdata() uses this named lock (named by objectid) to ensure internal processing within setdata() is sequential rather than parallel.
 		 --->
 		<cfif structkeyexists(stProperties, "objectid")>
-			<cfset lockName = "SetData_#stProperties.objectid#" />
+			<cfset lockName = "LockData_#stProperties.objectid#" />
 		<cfelse>
-			<cfset lockName = "SetData_#application.fc.utils.createJavaUUID()#">
+			<cfset lockName = "LockData_#application.fc.utils.createJavaUUID()#">
 		</cfif>
 		
 		<cflock name="#lockName#" timeout="10" throwontimeout="true">
