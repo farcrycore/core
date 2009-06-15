@@ -441,6 +441,28 @@
 			<cfreturn result />
 		</cffunction>
 		
+
+		<!--- @@examples:
+			<p>Set a config value:</p>
+			<code>
+				<cfset application.fapi.setConfig('admin','adminemail', 'info@daemon.com.au') />
+			</code>
+		 --->
+		<cffunction name="setConfig" access="public" returntype="void" output="false" hint="Returns the value of any config item. If no default is sent and the property is not found, an error is thrown." bDocument="true">
+			<cfargument name="key" required="true" hint="The Config Key identifying the config form the property is located in." />
+			<cfargument name="name" required="true" hint="The name of the config property you wish to retrieve a value for." />
+			<cfargument name="value" required="true" hint="The value to set the config item to." />
+			
+			
+			<cfif isDefined("application.config.#arguments.key#.#arguments.name#")>
+				<cfset application.config[arguments.key][arguments.name] = arguments.value />
+			<cfelse>
+				<cfthrow message="The config item [#arguments.key#:#arguments.name#] was not found." />
+			</cfif>
+			
+			<cfreturn />
+		</cffunction>		
+		
 		<!--- @@examples:
 			<p>Link to the archive navigation node if it has been defined:</p>
 			<code>
