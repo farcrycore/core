@@ -42,7 +42,7 @@
 		<!--- @@examples:
 			<p>Retrieve the properties of the selected object after an objectadmin action:</p>
 			<code>
-				<cfset stObj = application.fapi.getContentType(form.selectedobjectid,"thistype") />
+				<cfset stObj = application.fapi.getContentObject(form.selectedobjectid,"thistype") />
 			</code>
 			<p>Remember: if you know what the type is, pass it in to avoid an unnecessary database calls.</p>
 		 --->
@@ -52,6 +52,53 @@
 			
 			<cfreturn application.coapi.coapiutilities.getContentObject(argumentCollection="#arguments#") />
 		</cffunction>
+		
+	
+		<!--- @@examples:
+			<p>Retrieve a new content object:</p>
+			<code>
+				<cfset stObj = application.fapi.getNewContentObject("thistype","key") />
+			</code>
+			<p>If you want to make sure you keep retrieving the same new object each time until you end up saving to the database, pass in a key.</p>
+		 --->
+		<cffunction name="getNewContentObject" access="public" output="false" returnType="struct" hint="Allows you to fetch a content object with only the objectID" bDocument="true">
+			<cfargument name="typename" type="string" required="true" hint="The typename of the new object to be created." />
+			<cfargument name="key" type="string" required="false" default="" hint="The key for the new object. Subsequent calls for a new object of the same type will return the same object until it is saved to the database." />
+			
+			<cfset var newObjectID = "" />
+			<cfset var stNewObject = "" />
+			<cfset var stResult = "" />
+			<cfset var o = application.fapi.getContentType("#arguments.typename#") />
+
+			<cfparam name="session.stTempObjectStoreKeys" default="#structNew()#" />
+			<cfparam name="session.stTempObjectStoreKeys[arguments.typename]" default="#structNew()#" />
+			
+			
+			<cfif len(arguments.key)>
+				<cfif structKeyExists(session.stTempObjectStoreKeys[arguments.typename], arguments.key)>
+					<cfif structKeyExists(Session.TempObjectStore, session.stTempObjectStoreKeys[arguments.typename][arguments.key])>
+						<cfset newObjectID = session.stTempObjectStoreKeys[arguments.typename][arguments.key] />
+					</cfif>
+				</cfif>	
+				
+				<cfif not len(newObjectID)>				
+					<cfset newObjectID = application.fc.utils.createJavaUUID() />
+					<cfset session.stTempObjectStoreKeys[arguments.typename][arguments.key] = newObjectID>
+				</cfif>	
+				
+				<cfset stNewObject = o.getData(objectID = newObjectID) />
+				<!--- Save it to the session --->
+				<cfset stResult = o.setData(stProperties=stNewObject, bSessionOnly="true") />
+			<cfelse>
+				<cfset stNewObject = o.getData(objectID=application.fc.utils.createJavaUUID()) />	
+			</cfif>
+						
+			
+			<cfreturn stNewObject />
+		</cffunction>
+		
+		
+		
 		
 	
 		<!--- @@examples:
