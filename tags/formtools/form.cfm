@@ -9,6 +9,13 @@
 	<cfabort showerror="Does not have an end tag..." />
 </cfif>
 
+
+<!--- We only render the form if FarcryForm OnExit has not been Fired. --->
+<cfif structKeyExists(request, "FarcryFormOnExitRun") AND Request.FarcryFormOnExitRun>
+	<cfsetting enablecfoutputonly="false" />			
+	<cfexit method="exittag">			
+</cfif>
+
 <!--- import Javascript Libraries libraries --->
 <skin:htmlHead library="extJSCore" />
 <skin:htmlHead library="farcryForm" />
@@ -42,11 +49,6 @@ It just ignores the inner ones.
 		<cfparam name="attributes.ajaxMaskMsg" default="Saving Changes">
 		<cfparam name="attributes.ajaxMaskCls" default="x-mask-loading">
 		
-		<!--- We only render the form if FarcryForm OnExit has not been Fired. --->
-		<cfif isDefined("Request.FarcryFormOnExitRun") AND Request.FarcryFormOnExitRun >
-			<cfsetting enablecfoutputonly="false" />			
-			<cfexit method="exittag">			
-		</cfif>
 		
 
 		<cfparam name="Request.farcryFormList" default="">
