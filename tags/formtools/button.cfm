@@ -74,13 +74,6 @@
 	</cfif>
 	
 	
-	<cfif len(Attributes.ConfirmText)>
-		<!--- I18 conversion of label --->
-		<cfset Attributes.ConfirmText = application.rb.getResource('#attributes.rbkey#@confirmtext',Attributes.ConfirmText) />
-		<cfset attributes.confirmText = jsStringFormat(Attributes.ConfirmText) />
-		<cfset attributes.onClick = "#attributes.onClick#;if(!confirm('#Attributes.ConfirmText#')){return false};" />
-	</cfif>	
-	
 	<cfif len(attributes.SelectedObjectID)>		
 		<cfset attributes.Onclick = "#attributes.OnClick#;selectedObjectID('#attributes.SelectedObjectID#');" />
 	</cfif>
@@ -96,6 +89,14 @@
 	<cfif attributes.type EQ "submit">
 		<cfset attributes.onClick = "#attributes.onClick#;#request.farcryForm.onSubmit#;btnSubmit('#Request.farcryForm.Name#','#jsStringFormat(attributes.value)#');" />	
 	</cfif>
+	
+	<!--- Make sure that confirmation is run first for a button --->
+	<cfif len(Attributes.ConfirmText)>
+		<!--- I18 conversion of label --->
+		<cfset Attributes.ConfirmText = application.rb.getResource('#attributes.rbkey#@confirmtext',Attributes.ConfirmText) />
+		<cfset attributes.confirmText = jsStringFormat(Attributes.ConfirmText) />
+		<cfset attributes.onClick = "if(!confirm('#Attributes.ConfirmText#')){return false};#attributes.onClick#;" />
+	</cfif>	
 	
 	
 	
