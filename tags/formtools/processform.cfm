@@ -100,14 +100,9 @@
 
 <cfif thistag.ExecutionMode EQ "End">
 	<!--- Was a simple URL redirect requested? --->
-	<cfif isDefined("attributes.URL") AND len(attributes.URL)>
-
-		<cfif attributes.URL EQ "refresh">
-			<cflocation url="#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#" addtoken="false">
-		<cfelse>
-			<cflocation url="#attributes.URL#" addtoken="false">
-		</cfif>
-		
+	<cfif isDefined("attributes.URL")>
+		<cfset attributes.exit = true />
+		<cfset caller.onExit = "#attributes.URL#" />
 	</cfif>
 	
 
@@ -128,7 +123,8 @@
 		</cfif>
 		
 		<!--- If the onExit doesnt exist, default to Refreshing the page. --->
-		<cfparam name="Caller.onExit" default="Refresh" />
+		
+		<cfparam name="Caller.onExit" default="#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#" />
 		
 		<!--- If the onExit is not a struct we assume it is a URL to redirect to and we convert it too a struct. --->
 		<cfif NOT isStruct(Caller.onExit)>
@@ -163,10 +159,14 @@
 						
 			<cfcase value="URL">
 				<cfif structKeyExists(stOnExit, "Content")>
-					<cfif not len(stOnExit.Content) OR stOnExit.Content EQ "refresh">
-						<cflocation url="#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#" addtoken="false">
+					<cfif len(stOnExit.Content)>
+						<cfif stOnExit.Content EQ "refresh">
+							<cflocation url="#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#" addtoken="false">
+						<cfelse>
+							<cflocation url="#stOnExit.Content#" addtoken="false">
+						</cfif>
 					<cfelse>
-						<cflocation url="#stOnExit.Content#" addtoken="false">
+						<!--- DO NOTHING --->
 					</cfif>
 				</cfif>
 			</cfcase>				
