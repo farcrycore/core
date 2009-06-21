@@ -300,16 +300,17 @@
 		<!--- @@examples:
 			<p>Only show a link if the user has permission to view the webskin:</p>
 			<code>
-				<cfif application.fapi.checkWebskinPermission("displaySensitiveDetails")>
+				<cfif application.fapi.checkWebskinPermission("dmProfile", "displaySensitiveDetails")>
 					<skin:buildLink type="dmProfile" view="displaySensitiveDetails">Show me everything</a>
 				</cfif>
 			</code>
 		 --->
 		<cffunction name="checkWebskinPermission" access="public" output="false" returntype="boolean" hint="Checks the view can be accessed by the role. The roles defaults to the currently logged in users assigned roles." bDocument="true">
-			<cfargument name="webkskin" required="true" />
+			<cfargument name="type" required="true" />
+			<cfargument name="webskin" required="true" />
 			<cfargument name="role" required="false" default="" hint="Defaults to the currently logged in users assigned roles" />
 			
-			<cfreturn application.security.checkPermission(webkskin=arguments.webkskin, role=arguments.role) />
+			<cfreturn application.security.checkPermission(type=arguments.type,webskin=arguments.webskin, role=arguments.role) />
 		</cffunction>
 		
 		<!--- @@examples:
