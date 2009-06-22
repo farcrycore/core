@@ -54,8 +54,6 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 
 <cfcomponent displayname="FourQ COAPI" bAbstract="true">
 
-	<!--- constructor --->
-	<cfset instance=structnew()>
 
 
 	<cffunction name="fourqInit" access="public" returntype="fourq" output="false" hint="Initializes the component instance data">
@@ -132,7 +130,6 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 
 		<cfif isDefined("arguments.stobject") and not structIsEmpty(arguments.stObject)>
 			<cfset stobj=arguments.stobject />
-			<cfset instance.stobj = stObj />
 		<cfelse>
 			<cfif not len(arguments.objectid)>
 				<!--- 
@@ -795,9 +792,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var oType = "" />
 		<cfset var addedtoBroker = "" />
 		<cfset var tempObjectStore = structNew() />
-		
-		<cfset instance = structNew() />
-		
+				
 		<!--- init fourq --->
 		<cfset fourqInit() />	
 		
@@ -816,12 +811,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		</cftry>
 		
 		
-		<cfif isdefined("instance.bgetdata") AND instance.bgetdata EQ arguments.objectid AND arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs>
-			<!--- get local instance cache --->
-			<cfset stObj = instance.stobj>
-
 		<!--- Check to see if the object is in the temporary object store --->
-		<cfelseif arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs AND structKeyExists(tempObjectStore,arguments.objectid)>
+		<cfif arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs AND structKeyExists(tempObjectStore,arguments.objectid)>
 			<!--- get from the temp object stroe --->
 			<cfset stObj = tempObjectStore[arguments.objectid] />
 
@@ -892,12 +883,6 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		</cfif>
 		
 
-		<cfif NOT structisempty(stobj)>
-			<cfset instance.stobj = stobj>
-			<cfset instance.stobj.typename = variables.typename>
-			<cfset instance.bgetData = arguments.objectid>
-		</cfif>	
-
 		<cfreturn stObj>
 	</cffunction>
 
@@ -950,9 +935,6 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				<!--- Get the default properties for this object --->
 				<cfset stDefaultProperties = this.getData(objectid=arguments.stProperties.ObjectID,typename=variables.typename) />
 			  	
-			  	<!--- need to add this in case the object has been put in the instance cache in the getdata above. --->
-		   	 	<cfset structdelete(instance,"bgetdata")>
-		    	
 				<!--- 
 				Append the default properties of this object into the properties that have been passed.
 				The overwrite flag is set to false so that the default properties do not overwrite the ones passed in.
@@ -975,11 +957,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				<!--- Make sure we remove the object from the objectBroker if we update something --->
 			    <cfif structkeyexists(stProperties, "objectid")>
 				    <cfset application.fc.lib.objectbroker.RemoveFromObjectBroker(lObjectIDs=arguments.stProperties.ObjectID,typename=variables.typename)>
-			    </cfif>	    	   	
-			   	
-			    <!--- need to add this in case the object has been put in the instance cache. --->
-			    <cfset structdelete(instance,"bgetdata")>	
-		   	
+			    </cfif>	    
 		   		
 		   		<cfset stResult = gateway.setData(stProperties=arguments.stProperties,metadata=variables.tableMetadata,dsn=arguments.dsn) />	   	
 		   	 
