@@ -47,7 +47,7 @@ ADD YOUR IP TO THE LIST
 				<p>Your IP address (#cgi.remote_addr#) is not permitted to access the install directory.</p>
 				<p>By default, installation is only permitted to the localhost </p>
 				<p>To give access to other hosts, then append the desired IP address to the variable lAllowHosts in: <br />
-				<strong>[farcry]/core/install/Application.cfm.</strong>
+				<strong>[farcry]/core/webtop/install/Application.cfm.</strong>
 				</p>
 				<p><a href="index.cfm">CLICK HERE</a> when you have added the your IP (#cgi.remote_addr#) to the list</p>
 			</cfoutput>
