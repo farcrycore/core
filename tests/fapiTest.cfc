@@ -119,18 +119,17 @@
 	<cffunction name="getContentObjectTest" access="public" hint="Allows you to fetch a content object with only the objectID">
 		<cfquery datasource="#application.dsn#" name="refobjects">
 			SELECT max(objectID) as objectid
-			FROM refobjects 
+			FROM refObjects 
 		</cfquery>
 		
 		<cfset myobj = this.myComp.getContentObject(refobjects.objectid) />
 		
 		<cfset assertIsStruct(myobj) />
 		
-		<cfloop list="CREATEDBY,DATETIMECREATED,DATETIMELASTUPDATED,EVENT,IPADDRESS,LABEL,LASTUPDATEDBY,LOCATION,LOCKED,LOCKEDBY,NOTES,OBJECT,OBJECTID,OWNEDBY,TYPE,TYPENAME,USERID" index="x">
+		<cfloop list="OBJECTID,DATETIMECREATED,CREATEDBY,OWNEDBY,DATETIMELASTUPDATED,LASTUPDATEDBY,LOCKEDBY,LOCKED" index="x">
 			<cfset assertTrue( structKeyExists(myobj, x), true) />
 		</cfloop>
 		
-		<cfset assertTrue( len(myobj.type) gt 0 ) />
 		<cfset assertTrue( len(myobj.typename) gt 0 ) />
 	</cffunction>
 
