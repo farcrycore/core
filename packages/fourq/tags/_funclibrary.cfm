@@ -42,10 +42,5 @@ some point so the general public don't get confused.
 	<cfargument name="default" required="true">
 	<cfparam name="attributes.#arguments[1]#" default="#arguments[2]#">
 </cffunction>
-<cffunction name="dump">
-	<cfargument name="var" required="true">
-	<cfargument name="label" required="false" default="#arguments[1]#">
-	<cfargument name="expand" required="false" default="yes">
-	<cfdump var="#arguments[1]#" label="#arguments[2]#" expand="#arguments[3]#">
-</cffunction>
+
 
