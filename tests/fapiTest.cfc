@@ -6,7 +6,7 @@
 	<!--- setup and teardown --->
 	<cffunction name="setUp" returntype="void" access="public">
 		<!--- Any code needed to return your environment to normal goes here --->
-		<cfset this.myComp = createObject("component", "farcry.core.packages.farcry.fapi") />
+		<cfset this.myComp = createObject("component", "farcry.core.packages.lib.fapi") />
 	</cffunction>
 
 	<cffunction name="tearDown" returntype="void" access="public">
