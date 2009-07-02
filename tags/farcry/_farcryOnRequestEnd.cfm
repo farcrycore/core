@@ -340,26 +340,26 @@ $out:$
 					<script src="#application.url.farcry#/js/jquery/jquery.js?fjsv=#farcryJSVersion#" type="text/javascript"></script></cfoutput>
 			</cfif>
 			
-	
-			
-			
-						
-	
-
 			
 			
 			<cfif variables.stPlaceInHead.extCoreJS OR  variables.stPlaceInHead.extJS>
 				<cfoutput>
-					<link rel="stylesheet" type="text/css" href="#application.url.farcry#/js/ext/resources/css/ext-all.css" />
+					<cfif application.fapi.getDocType().type eq "xhtml">
+						<link rel="stylesheet" type="text/css" href="#application.url.farcry#/js/ext/resources/css/ext-all.css" />
+					<cfelse>
+						<link rel="stylesheet" type="text/css" href="#application.url.farcry#/js/ext/resources/css/ext-all.css">
+					</cfif>
+					
 					<style type="text/css">
-					.msg .x-box-mc {font-size:14px;}
-					##msg-div {position:absolute;top:10px;width:250px;z-index:20000;}
+						.msg .x-box-mc {font-size:14px;}
+						##msg-div {position:absolute;top:10px;width:250px;z-index:20000;}
 					</style>
+					
 					<script type="text/javascript">Ext.BLANK_IMAGE_URL = '#application.url.webtop#/js/ext/resources/images/default/s.gif';</script>
 				</cfoutput>
-			</cfif>		
+			</cfif>
 			
-						
+			
 			
 			<cfif isDefined("variables.stPlaceInHead.flashWrapperToggle") and variables.stPlaceInHead.flashWrapperToggle EQ true>
 				<cfoutput>
