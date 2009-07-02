@@ -1248,7 +1248,7 @@
 		URI              | http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd
 		VERSION          | 1.0
 	--->
-	<cffunction name="getDocType" access="public" returntype="any">
+	<cffunction name="getDocType" access="public" returntype="struct" output="false">
 		<cfargument name="docTypeString" type="string" required="no" default="#application.fc.doctype#" />
 		
 		<!---
