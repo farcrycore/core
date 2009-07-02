@@ -297,4 +297,65 @@
 		) />
 	</cffunction>
 	
+	<cffunction name="getDocTypeTest" returntype="void" access="public">
+		<!--- 
+			HTML 2.0
+			HTML PUBLIC "-//IETF//DTD HTML 2.0 Level 2//EN"
+			HTML PUBLIC "-//IETF//DTD HTML//EN"
+			HTML PUBLIC "-//IETF//DTD HTML 2.0//EN"
+			HTML PUBLIC "-//IETF//DTD HTML Level 2//EN"
+			
+			HTML 3.0
+			HTML PUBLIC "-//IETF//DTD HTML 3.0//EN"
+			
+			HTML 3.2
+			HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN"
+			
+			HTML 4.01
+			HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"
+			HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"
+			HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd"
+			
+			XHTML 1.0
+			html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
+			html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+			html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd"
+			
+			XHTML 1.1
+			html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"
+			
+			XHTML 2.0
+			html PUBLIC "-//W3C//DTD XHTML 2.0//EN" "http://www.w3.org/MarkUp/DTD/xhtml2.dtd"
+		--->
+		<cfset var stDT = this.myComp.getDocType('html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd"') />
+		
+		<cfset assertEquals(stDT.type, "xhtml") />
+		<cfset assertEquals(stDT.version, "1.0") />
+		<cfset assertEquals(stDT.subtype, "Frameset") />
+		
+		<cfset stDT = this.myComp.getDocType('HTML PUBLIC "-//IETF//DTD HTML 2.0 Level 2//EN"') />
+		
+		<cfset assertEquals(stDT.type, "html") />
+		<cfset assertEquals(stDT.version, "2.0") />
+		
+		<cfset stDT = this.myComp.getDocType('HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN"') />
+		
+		<cfset assertEquals(stDT.type, "html") />
+		<cfset assertEquals(stDT.version, "3.2") />
+		
+		<cfset stDT = this.myComp.getDocType('html PUBLIC "-//W3C//DTD XHTML 2.0//EN" "http://www.w3.org/MarkUp/DTD/xhtml2.dtd"') />
+		
+		<cfset assertEquals(stDT.type, "xhtml") />
+		<cfset assertEquals(stDT.version, "2.0") />
+		
+		<cfset stDT = this.myComp.getDocType('html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"') />
+		
+		<cfset assertEquals(stDT.type, "xhtml") />
+		<cfset assertEquals(stDT.version, "1.1") />
+		
+		<cfset stDT = this.myComp.getDocType('html') />
+		
+		<cfset assertEquals(stDT.type, "html") />
+	</cffunction>
+	
 </cfcomponent>

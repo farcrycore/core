@@ -1163,7 +1163,7 @@
 				namepair = namepair & "#key#=#arguments.quotes##arguments.st[key]##arguments.quotes#";
 				if(keyIndex LT keyCount)
 					namepair = namepair & "#arguments.delimiter#";
-				keyIndex = keyIndex + 1;		
+				keyIndex = keyIndex + 1;
 			}
 		</cfscript>
 
@@ -1171,50 +1171,170 @@
 	</cffunction>	
 	
 	<!--- PACKAGE UTILITIES --->
-		<!--- @@examples:
-			<p>Find the version of a custom component with the most precedence:</p>
-			<code>
-				<cfoutput>#application.fapi.getPackagePath("custom","myfactory")#</cfoutput>
-			</code>
-		 --->
-		<cffunction name="getPackagePath" access="public" output="false" returntype="string" hint="Finds the component in core/plugins/project, and returns its path" bDocument="true">
-			<cfargument name="package" type="string" required="true" />
-			<cfargument name="component" type="string" required="true" />
-			<cfargument name="locations" type="string" required="false" default="" />
-			
-			<cfreturn application.fc.utils.getPath(argumentCollection="#arguments#") />
-		</cffunction>
-	
-		<!--- @@examples:
-			<p>Get a list of all the components in types:</p>
-			<code>
-				<cfoutput>#application.fapi.getComponents("types")#</cfoutput>
-			</code>
-		 --->
-		<cffunction name="getComponents" access="public" output="false" returntype="string" hint="Returns a list of components for a package" bDocument="true">
-			<cfargument name="package" type="string" required="true" />
-			<cfargument name="locations" type="string" required="false" default="" />
-			
-			<cfreturn application.fc.utils.getComponents(argumentCollection="#arguments#") />
-		</cffunction>
-	
-		<!--- @@examples:
-			<p>Find out if a component is a FarCry content type:</p>
-			<code>
-				<cfdump var="#application.fapi.extends(mycomponent path,'farcry.core.packages.types.types')#" />
-			</code>
-		 --->
-		<cffunction name="extends" access="public" output="false" returntype="boolean" hint="Returns true if the specified component extends another" bDocument="true">
-			<cfargument name="desc" type="string" required="true" hint="The component to test" />
-			<cfargument name="anc" type="string" required="true" hint="The ancestor to check for" />
-			
-			<cfreturn application.fc.utils.extends(argumentCollection="#arguments#") />
-		</cffunction>
+	<!--- @@examples:
+		<p>Find the version of a custom component with the most precedence:</p>
+		<code>
+			<cfoutput>#application.fapi.getPackagePath("custom","myfactory")#</cfoutput>
+		</code>
+	 --->
+	<cffunction name="getPackagePath" access="public" output="false" returntype="string" hint="Finds the component in core/plugins/project, and returns its path" bDocument="true">
+		<cfargument name="package" type="string" required="true" />
+		<cfargument name="component" type="string" required="true" />
+		<cfargument name="locations" type="string" required="false" default="" />
 		
-		<cffunction name="listExtends" access="public" returntype="string" description="Returns a list of the components the specified one extends (inclusive)" output="false">
-			<cfargument name="path" type="string" required="true" hint="The package path of the component" />
+		<cfreturn application.fc.utils.getPath(argumentCollection="#arguments#") />
+	</cffunction>
+	
+	<!--- @@examples:
+		<p>Get a list of all the components in types:</p>
+		<code>
+			<cfoutput>#application.fapi.getComponents("types")#</cfoutput>
+		</code>
+	 --->
+	<cffunction name="getComponents" access="public" output="false" returntype="string" hint="Returns a list of components for a package" bDocument="true">
+		<cfargument name="package" type="string" required="true" />
+		<cfargument name="locations" type="string" required="false" default="" />
 		
-			<cfreturn application.fc.utils.listExtends(argumentCollection="#arguments#") />
-		</cffunction>
+		<cfreturn application.fc.utils.getComponents(argumentCollection="#arguments#") />
+	</cffunction>
+	
+	<!--- @@examples:
+		<p>Find out if a component is a FarCry content type:</p>
+		<code>
+			<cfdump var="#application.fapi.extends(mycomponent path,'farcry.core.packages.types.types')#" />
+		</code>
+	 --->
+	<cffunction name="extends" access="public" output="false" returntype="boolean" hint="Returns true if the specified component extends another" bDocument="true">
+		<cfargument name="desc" type="string" required="true" hint="The component to test" />
+		<cfargument name="anc" type="string" required="true" hint="The ancestor to check for" />
+		
+		<cfreturn application.fc.utils.extends(argumentCollection="#arguments#") />
+	</cffunction>
+		
+	<cffunction name="listExtends" access="public" returntype="string" description="Returns a list of the components the specified one extends (inclusive)" output="false">
+		<cfargument name="path" type="string" required="true" hint="The package path of the component" />
+	
+		<cfreturn application.fc.utils.listExtends(argumentCollection="#arguments#") />
+	</cffunction>
+	
+	<!---
+		This function is used to get information about the doctype the system should be
+		generating. This value, by default, uses the application.fc.doctype variable
+		The default variable is set in core and is by default the latest version of html
+		(html 4.01 at the time of this writing.).  You can change this by setting the
+		value in your _serverSpecificVars file.
+		
+		This turns the doctype tag contents into a struct.  The parts you'll likely use,
+		and will be there for sure are:
+		
+		doctype.type     - html, xhtml
+		doctype.version  - 1.0, 1.1, 3.2, blank
+		doctype.subtype  - Frameset, Transitional, blank
+		
+		Example output:
+		
+		AVAILABILITY     | PUBLIC
+		PUBLICIDENTIFIER |
+		       | LABEL        | XHTML 1.0 Frameset
+		       | LANGUAGE     | EN
+		       | ORGANIZATION | W3C
+		       | RAW          | -//W3C//DTD XHTML 1.0 Frameset//EN
+		       | REGISTRATION | -
+		       | TYPE         | DTD
+		RAW              | html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd"
+		SUBTYPE          | Frameset
+		TOPLEVEL         | html
+		TYPE             | XHTML
+		URI              | http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd
+		VERSION          | 1.0
+	--->
+	<cffunction name="getDocType" access="public" returntype="any">
+		<cfargument name="docTypeString" type="string" required="no" default="#application.fc.doctype#" />
+		
+		<!---
+			Example of what we are parsing here: 
+			
+			html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd"
+			
+			Pretty good easy to follow explaination of what these parts mean: 
+			http://webdesign.about.com/od/dtds/qt/tipdoctype.htm
+		--->
+		<cfset var doctype = structNew() />
+		
+		<cfset var spaceParts = listToArray(arguments.docTypeString, ' ') />
+		<cfset var topLevelElement = spaceParts[1] />
+		<cfset var availability = "" />
+		<!--- formal Public Identifier --->
+		<cfset var FPI = "" />
+		<cfset var URI = "" />
+		<!---  --->
+		<cfset var endpart = "" />
+		<cfset var registration = "" />
+		<cfset var organization = "" />
+		<cfset var type = "" />
+		<cfset var label = "" />
+		<cfset var language = "" />
+		
+		<cfset doctype.type = topLevelElement />
+		<cfset doctype.topLevel = topLevelElement />
+		<cfset doctype.subtype = "" />
+		<cfset doctype.version = "" />
+		<cfset doctype.raw = "#arguments.docTypeString#" />
+		
+		<!--- HTML5 is going to change the doctype to just be "html" so we wont
+			need the rest of this logic for html5 docs --->
+		<cfif arrayLen(spaceParts) gt 1>
+			<!--- remove the "html" / "xhtml" or whatever string --->
+			<cfset arrayDeleteAt(spaceParts, 1) />
+			<!--- remove The Availability part (we don't really care about this) PUBLIC or SYSTEM part --->
+			<cfset availability = spaceParts[1] />
+			<cfset arrayDeleteAt(spaceParts, 1) />
+			
+			<cfset doctype.availability = availability />
+			
+			<!--- make sure single quotes are double quotes --->
+			<cfset endpart = arrayToList(spaceParts, " ") />
+			<cfset endpart = replace(endpart, "'", """", "ALL") />
+			
+			<!--- Now, split the identifier and dtd into thier own bits, and remove the blank item --->
+			<cfset spaceParts = listToArray(endpart, """") />
+			
+			<!--- The second item will be blank because it's the space between the ident and URI. 
+				Sometimes no URI is defined.--->
+			<cfif arraylen(spaceParts) gt 1>
+				<cfset arrayDeleteAt(spaceParts, 2) />
+				<cfset URI = spaceParts[2] />
+				<cfset doctype.uri = URI />
+			</cfif>
+			
+			<cfset FPI = spaceParts[1] />
+			<cfset doctype.publicidentifier.raw = FPI />
+			
+			<!--- Almost done, now we need to check if we are doing strict, loose, etc --->
+			<cfset spaceParts = listToArray(FPI, "//") />
+			
+			<cfset registration = spaceParts[1] />
+			<cfset organization = spaceParts[2] />
+			<cfset type = listFirst(spaceParts[3], " ") />
+			<cfset label = replace(spaceParts[3], type, "") />
+			<cfset language = spaceParts[4] />
+			
+			<cfset doctype.publicidentifier.registration = registration />
+			<cfset doctype.publicidentifier.organization = organization />
+			<cfset doctype.publicidentifier.type = type />
+			<cfset doctype.publicidentifier.label = label />
+			<cfset doctype.publicidentifier.language = language />
+			
+			<cfset spaceParts = listToArray(label, " ") />
+			
+			<cfset doctype.type = spaceParts[1] />
+			<cfset doctype.version = spaceParts[2] />
+			<cfif arrayLen(spaceParts) gte 3>
+				<cfset doctype.subtype = spaceParts[3] />
+			</cfif>
+		</cfif>
+		
+		<cfreturn doctype />
+	</cffunction>
 	
 </cfcomponent>
