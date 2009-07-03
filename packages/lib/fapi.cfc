@@ -66,7 +66,7 @@
 			<cfargument name="key" type="string" required="false" default="" hint="The key for the new object. Subsequent calls for a new object of the same type will return the same object until it is saved to the database." />
 			<cfargument name="stProperties" required="false" default="#structNew()#">
 			
-			<cfset var lReserved = "typename,key" />
+			<cfset var lReserved = "typename,key,stProperties" />
 			<cfset var i = "" />
 			<cfset var newObjectID = "" />
 			<cfset var stNewObject = "" />
