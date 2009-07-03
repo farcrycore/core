@@ -64,15 +64,24 @@
 		<cffunction name="getNewContentObject" access="public" output="false" returnType="struct" hint="Allows you to fetch a content object with only the objectID" bDocument="true">
 			<cfargument name="typename" type="string" required="true" hint="The typename of the new object to be created." />
 			<cfargument name="key" type="string" required="false" default="" hint="The key for the new object. Subsequent calls for a new object of the same type will return the same object until it is saved to the database." />
+			<cfargument name="stProperties" required="false" default="#structNew()#">
 			
+			<cfset var lReserved = "typename,key" />
+			<cfset var i = "" />
 			<cfset var newObjectID = "" />
 			<cfset var stNewObject = "" />
 			<cfset var stResult = "" />
 			<cfset var o = application.fapi.getContentType("#arguments.typename#") />
-
+			
 			<cfparam name="session.stTempObjectStoreKeys" default="#structNew()#" />
 			<cfparam name="session.stTempObjectStoreKeys[arguments.typename]" default="#structNew()#" />
 			
+			
+			<cfloop collection="#arguments#" item="i">
+				<cfif NOT listFindNoCase(lReserved, i)>
+					<cfset arguments.stProperties[i] = arguments[i] />
+				</cfif>
+			</cfloop>
 			
 			<cfif len(arguments.key)>
 				<cfif structKeyExists(session.stTempObjectStoreKeys[arguments.typename], arguments.key)>
@@ -87,6 +96,8 @@
 				</cfif>	
 				
 				<cfset stNewObject = o.getData(objectID = newObjectID) />
+				<cfset stNewObject = structMerge(stNewObject,arguments.stProperties,true) />
+				
 				<!--- Save it to the session --->
 				<cfset stResult = o.setData(stProperties=stNewObject, bSessionOnly="true") />
 			<cfelse>
@@ -1205,7 +1216,7 @@
 			<cfargument name="struct2" type="struct" required="true" />
 			<cfargument name="replace" type="boolean" required="false" default="true" />
 			
-			<cfreturn application.fc.utils.listDiff(argumentCollection="#arguments#") />
+			<cfreturn application.fc.utils.structMerge(argumentCollection="#arguments#") />
 		</cffunction>
 	
 		<cffunction name="structCreate" returntype="struct" output="false" access="public" hint="Creates and populates a struct with the provided arguments">
