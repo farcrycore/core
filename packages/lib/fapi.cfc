@@ -73,8 +73,8 @@
 			<cfset var stResult = "" />
 			<cfset var o = application.fapi.getContentType("#arguments.typename#") />
 			
-			<cfparam name="session.stTempObjectStoreKeys" default="#structNew()#" />
-			<cfparam name="session.stTempObjectStoreKeys[arguments.typename]" default="#structNew()#" />
+			<cfparam name="Session.TempObjectStore" default="#structNew()#" />
+			<cfparam name="Session.TempObjectStore[arguments.typename]" default="#structNew()#" />
 			
 			
 			<cfloop collection="#arguments#" item="i">
@@ -84,13 +84,13 @@
 			</cfloop>
 			
 			<cfif len(arguments.key)>
-				<cfif structKeyExists(session.stTempObjectStoreKeys[arguments.typename], arguments.key)>
-					<cfset newObjectID = session.stTempObjectStoreKeys[arguments.typename][arguments.key] />
+				<cfif structKeyExists(Session.TempObjectStore[arguments.typename], arguments.key)>
+					<cfset newObjectID = Session.TempObjectStore[arguments.typename][arguments.key] />
 				</cfif>	
 				
 				<cfif not len(newObjectID)>				
 					<cfset newObjectID = application.fc.utils.createJavaUUID() />
-					<cfset session.stTempObjectStoreKeys[arguments.typename][arguments.key] = newObjectID>
+					<cfset Session.TempObjectStore[arguments.typename][arguments.key] = newObjectID>
 				</cfif>	
 				
 				<cfset stNewObject = o.getData(objectID = newObjectID) />
