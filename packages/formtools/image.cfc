@@ -259,11 +259,7 @@
 			</cfif>
 
 		</cfif>
-			
-		<cfoutput>
-		<p>#structKeyExists(form, "#stMetadata.FormFieldPrefix##stMetadata.Name#New")#
-			AND	#len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#New"])# gt 0</p>
-		</cfoutput>	
+		
 		<cfif
 			structKeyExists(form, "#stMetadata.FormFieldPrefix##stMetadata.Name#New")
 			AND	len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#New"]) gt 0>
