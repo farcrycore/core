@@ -125,6 +125,12 @@
 									
 								</cfif>
 							</cfif>
+						<cfelse>
+							<cfoutput>
+							<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
+							<input type="hidden" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" value="" />
+							</cfoutput>
+							
 						</cfif>
 						
 					<cfoutput>
@@ -253,7 +259,11 @@
 			</cfif>
 
 		</cfif>
-				
+			
+		<cfoutput>
+		<p>#structKeyExists(form, "#stMetadata.FormFieldPrefix##stMetadata.Name#New")#
+			AND	#len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#New"])# gt 0</p>
+		</cfoutput>	
 		<cfif
 			structKeyExists(form, "#stMetadata.FormFieldPrefix##stMetadata.Name#New")
 			AND	len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#New"]) gt 0>
