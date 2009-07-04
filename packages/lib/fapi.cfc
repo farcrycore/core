@@ -64,7 +64,7 @@
 		<cffunction name="getNewContentObject" access="public" output="false" returnType="struct" hint="Allows you to fetch a content object with only the objectID" bDocument="true">
 			<cfargument name="typename" type="string" required="true" hint="The typename of the new object to be created." />
 			<cfargument name="key" type="string" required="false" default="" hint="The key for the new object. Subsequent calls for a new object of the same type will return the same object until it is saved to the database." />
-			<cfargument name="stProperties" required="false" default="#structNew()#">
+			<cfargument name="stProperties" required="false" default="#structNew()#" hint="A structure containing default values for the new object.">
 			
 			<cfset var lReserved = "typename,key,stProperties" />
 			<cfset var i = "" />
@@ -85,9 +85,7 @@
 			
 			<cfif len(arguments.key)>
 				<cfif structKeyExists(session.stTempObjectStoreKeys[arguments.typename], arguments.key)>
-					<cfif structKeyExists(Session.TempObjectStore, session.stTempObjectStoreKeys[arguments.typename][arguments.key])>
-						<cfset newObjectID = session.stTempObjectStoreKeys[arguments.typename][arguments.key] />
-					</cfif>
+					<cfset newObjectID = session.stTempObjectStoreKeys[arguments.typename][arguments.key] />
 				</cfif>	
 				
 				<cfif not len(newObjectID)>				
@@ -96,14 +94,20 @@
 				</cfif>	
 				
 				<cfset stNewObject = o.getData(objectID = newObjectID) />
-				<cfset stNewObject = structMerge(stNewObject,arguments.stProperties,true) />
 				
 				<!--- Save it to the session --->
-				<cfset stResult = o.setData(stProperties=stNewObject, bSessionOnly="true") />
+				<cfset stResult = o.setData(stProperties=stNewObject, bSessionOnly="true") />	
+				
 			<cfelse>
 				<cfset stNewObject = o.getData(objectID=application.fc.utils.createJavaUUID()) />	
 			</cfif>
-						
+				
+				
+			<cfif not structIsEmpty(arguments.stProperties)>
+				<cfset stNewObject = structMerge(stNewObject,arguments.stProperties,true) />			
+				<!--- Save it to the session --->
+				<cfset stResult = o.setData(stProperties=stNewObject, bSessionOnly="true") />		
+			</cfif>
 			
 			<cfreturn stNewObject />
 		</cffunction>
