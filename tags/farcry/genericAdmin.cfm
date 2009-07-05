@@ -1,3 +1,5 @@
+<cfsetting enablecfoutputonly="false" />
+<cfprocessingDirective pageencoding="utf-8" />
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -15,23 +17,9 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
+<!--- @@DEPRECATED: generic admin was replaced by typeadmin in v4, and objectadmin in v5 --->
+<!--- @@Description: generic admin for all types. If there is a display method called "display" on the type, it can be previewed....--->
 <!---
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/tags/farcry/genericAdmin.cfm,v 1.72 2005/05/24 02:59:01 gstewart Exp $
-$Author: gstewart $
-$Date: 2005/05/24 02:59:01 $
-$Name: milestone_3-0-1 $
-$Revision: 1.72 $
-
-|| DESCRIPTION ||
-$Description: generic admin for all types. If there is a display method called "display" on the type, it can be previewed.... $
-$TODO:$
-
-|| DEVELOPER ||
-$Developer: Geoff Bowers (modius@daemon.com.au) $
-$Developer: Brendan Sisson (brendan@daemon.com.au) $
-$Developer: Paul Harrison (paul@daemon.com.au) $
-
 || ATTRIBUTES ||
 $in: [user]: optional, a filter by user. $
 $in: [typename]: required, title for the type of admin. $
@@ -46,10 +34,6 @@ $in: [stGrid]: optional, structure to specify grid for admin interface $
 
 $TODO: there shouldn't be anything scoped from outside of the tag! Make this an attribute GB031101 $
 --->
-
-<cfsetting enablecfoutputonly="No">
-
-<cfprocessingDirective pageencoding="utf-8">
 
 <cfinclude template="/farcry/core/webtop/includes/cfFunctionWrappers.cfm">
 <cfinclude template="/farcry/core/webtop/includes/utilityFunctions.cfm">
@@ -301,7 +285,8 @@ if (isDefined("form.status"))
 		statusurl = "#application.url.farcry#/navajo/objectComment.cfm?status=#status#&objectID=#form.objectID#&finishURL=#URLEncodedFormat(stGrid.finishURL)#";
 		if (isDefined("stgrid.approveURL"))
 			statusurl = statusurl & "&approveURL=#URLEncodedFormat(stGrid.approveURL)#";
-		location(url=statusurl);
+
+		far_location(url=statusurl);
 
 		structDelete(form,'objectid');
 	}

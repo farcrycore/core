@@ -114,7 +114,8 @@
 	<cfflush>
 </cffunction>
 
-<cffunction name="location" hint="wrapper for cflocation">
+<cffunction name="far_location" hint="wrapper for cflocation">
+	<!--- @@deprecated: Conflicts with native cf9 function; this should be replaced with location() in cf9 or cflocation tag in earlier releases. --->
 	<cfargument name="url" required="true">
 	<cfargument name="addtoken" required="false" default="no">
 	
@@ -128,7 +129,8 @@
 	<nj:updateTree objectId="#arguments.objectid#">
 </cffunction>
 
-<cffunction name="trace">
+<cffunction name="far_trace">
+	<!--- deprecated: does not appear to be used in any core code from 5.1 --->
 	<cfargument name="var">
 	
 	<cftrace inline="no" var="#arguments.var#">
