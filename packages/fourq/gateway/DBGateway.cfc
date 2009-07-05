@@ -142,7 +142,7 @@
 				</cfloop>
 				
 				<cfparam name="arguments.metadata.bRefObjects" default="true" />
-				<cfset bRefCreated = arguments.coapiutilities.createRefObjectID(objectID="#currentObjectID#", typename="#tablename#", dsn=variables.dsn, dbowner=variables.dbowner, dbtype=variables.dbtype, typeInRefObjects=arguments.metadata.bRefObjects) />
+				<cfset bRefCreated = arguments.coapiutilities.createRefObjectID(objectID="#currentObjectID#", typename="#tablename#", dsn=variables.dsn, dbowner=variables.dbowner, dbtype=variables.dbtype, btypeInRefObjects=arguments.metadata.bRefObjects) />
 				<cfif NOT bRefCreated>
 					<!--- This error can occur because of a duplicate already in the refObjects table caused by the initial create data saving to session.
 						TODO: need a more elegent solution to handle this.
