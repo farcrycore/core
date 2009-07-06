@@ -1064,11 +1064,15 @@
 		<!--- <cfset updateAppScope()> --->
 	</cffunction>
 	
-	<cffunction name="getFU" access="public" returntype="string" hint="Retrieves fu for a real url, returns original ufu if non existent." output="yes" bDocument="true">
+	<cffunction name="getFU" access="public" returntype="string" 
+		hint="Retrieves fu for a real url, returns original ufu if non existent." 
+		output="false" bDocument="true"
+	>
 		<cfargument name="objectid" required="false" type="string" default="" hint="objectid of object to link to">
 		<cfargument name="type" required="false" type="string" default="" hint="typename of object to link to">
 		<cfargument name="view" required="false" type="string" default="" hint="view used to render the page layout">
 		<cfargument name="bodyView" required="false" type="string" default="" hint="view used to render the body content">
+		<cfargument name="ampDelim" default="&amp;" required="true" />
 
 		<cfset var returnURL = "">
 		<cfset var bFoundFU = false /><!--- State used to determine if we found a friendly URL --->
@@ -1105,31 +1109,48 @@
 			<!---------------------------------------------------------------------
 			 IF WE HAVE OUR OTHER URL SYNTAX ATTRIBUTES, APPEND THEM TO THE URL
 			 --------------------------------------------------------------------->			
-			<cfif len(arguments.type) OR  len(arguments.view) OR len(arguments.bodyView)>
-			
+			<cfif len(arguments.type) OR len(arguments.view) OR len(arguments.bodyView)>
+				
 				<!--- IF WE ARE USING A FRIENDLY URL OR OUR URL ALREADY CONTAINS A QUESTION MARK, THEN WE CAN USE REGULAR URL VARIABLES  --->
 				<cfif bFoundFU OR FindNoCase("?", returnURL)>
 					<cfif NOT FindNoCase("?", returnURL)>
 						<cfset returnURL = "#returnURL#?" />
 					</cfif>
+					
 					<!--- WE DONT APPEND TYPENAME IF WE FOUND AN FU --->
 					<cfif NOT bFoundFU AND len(arguments.type)>
-						<cfset returnURL = "#returnURL#&type=#arguments.type#" />
+						<cfif FindNoCase("?", returnURL) eq len(returnURL)>
+							<cfset returnURL = "#returnURL#type=#arguments.type#" />
+						<cfelse>
+							<cfset returnURL = "#returnURL##arguments.ampDelim#type=#arguments.type#" />
+						</cfif>
 					</cfif>
+					
 					<cfif len(arguments.view)>
-						<cfset returnURL = "#returnURL#&view=#arguments.view#" />
+						<cfif FindNoCase("?", returnURL) eq len(returnURL)>
+							<cfset returnURL = "#returnURL#view=#arguments.view#" />
+						<cfelse>
+							<cfset returnURL = "#returnURL##arguments.ampDelim#view=#arguments.view#" />
+						</cfif>
 					</cfif>
+					
 					<cfif len(arguments.bodyView)>
-						<cfset returnURL = "#returnURL#&bodyView=#arguments.bodyView#" />
+						<cfif FindNoCase("?", returnURL) eq len(returnURL)>
+							<cfset returnURL = "#returnURL#bodyView=#arguments.bodyView#" />
+						<cfelse>
+							<cfset returnURL = "#returnURL##arguments.ampDelim#bodyView=#arguments.bodyView#" />						
+						</cfif>
 					</cfif>		
 				<cfelse>
 					<!--- OTHERWISE WE CAN USE THE URL SYNTAX OF /OBJECTID/TYPE/VIEW/BODYVIEW --->
 					<cfif len(arguments.type)>
 						<cfset returnURL = "#returnURL#/#arguments.type#" />
 					</cfif>
+					
 					<cfif len(arguments.view)>
 						<cfset returnURL = "#returnURL#/#arguments.view#" />
 					</cfif>
+					
 					<cfif len(arguments.bodyView)>
 						<cfif NOT len(arguments.view)>
 							<!--- If we have a bodyView, we must include the view for the syntax to work. --->
@@ -1143,24 +1164,39 @@
 		<!------------------------------------------------------------------------------------------ 
 		WE ARE NOT USING FRIENDLY URLS SO SIMPLY SETUP THE URL STRING WITH THE ARGUMENTS PASSED IN
 		 ------------------------------------------------------------------------------------------>
-		<cfelse>			
+		<cfelse>
 			<cfset returnURL = "/index.cfm?" />
 			
 			<cfif len(arguments.objectid)>
 				<cfset returnURL = "#returnURL#objectid=#arguments.objectid#" />
 			</cfif>
+			
 			<cfif len(arguments.type)>
-				<cfset returnURL = "#returnURL#&type=#arguments.type#" />
+				<cfif FindNoCase("?", returnURL) eq len(returnURL)>
+					<cfset returnURL = "#returnURL#type=#arguments.type#" />
+				<cfelse>
+					<cfset returnURL = "#returnURL##arguments.ampDelim#type=#arguments.type#" />
+				</cfif>
 			</cfif>
+			
 			<cfif len(arguments.view)>
-				<cfset returnURL = "#returnURL#&view=#arguments.view#" />
+				<cfif FindNoCase("?", returnURL) eq len(returnURL)>
+					<cfset returnURL = "#returnURL#view=#arguments.view#" />
+				<cfelse>
+					<cfset returnURL = "#returnURL##arguments.ampDelim#view=#arguments.view#" />
+				</cfif>
 			</cfif>
+			
 			<cfif len(arguments.bodyView)>
-				<cfset returnURL = "#returnURL#&bodyView=#arguments.bodyView#" />
+				<cfif FindNoCase("?", returnURL) eq len(returnURL)>
+					<cfset returnURL = "#returnURL#bodyView=#arguments.bodyView#" />
+				<cfelse>
+					<cfset returnURL = "#returnURL##arguments.ampDelim#bodyView=#arguments.bodyView#" />
+				</cfif>
 			</cfif>
 		</cfif>
 		
-		<cfreturn returnURL>
+		<cfreturn returnURL />
 	</cffunction>
 
 	<cffunction name="getFUList" access="public" returntype="query" hint="returns a query of FU for a particular objectid and status" output="false">

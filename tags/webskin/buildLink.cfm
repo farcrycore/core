@@ -21,31 +21,32 @@
 
 <cfif thistag.executionMode eq "Start">
 
-	<cfparam name="attributes.href" default=""><!--- the actual href to link to --->
-	<cfparam name="attributes.objectid" default=""><!--- Added to url parameters; navigation obj id --->
-	<cfparam name="attributes.alias" default=""><!--- Navigation alias to use to find the objectid --->
-	<cfparam name="attributes.type" default=""><!--- Added to url parameters: Typename used with type webskin views --->
-	<cfparam name="attributes.view" default=""><!--- Added to url parameters: Webskin name used to render the page layout --->
-	<cfparam name="attributes.bodyView" default=""><!--- Added to url parameters: Webskin name used to render the body content --->
-	<cfparam name="attributes.linktext" default=""><!--- Text used for the link --->
-	<cfparam name="attributes.target" default="_self"><!--- target window for link --->
-	<cfparam name="attributes.bShowTarget" default="false"><!--- @@attrhint: Show the target link in the anchor tag  @@options: false,true --->
+	<cfparam name="attributes.href" default=""><!--- @@attrhint: a hard coded href to link to (Note using href will cause other params to be ignored) --->
+	<cfparam name="attributes.objectid" default=""><!--- @@attrhint: Adds the given objectid to url parameters --->
+	<cfparam name="attributes.alias" default=""><!--- @@attrhint: Navigation alias to use to find the objectid. The objectid is then added to the URL --->
+	<cfparam name="attributes.type" default=""><!--- @@attrhint: Added to url parameters: Typename used with type webskin views, dmProfile for example. --->
+	<cfparam name="attributes.view" default=""><!--- @@attrhint: Added to url parameters: Webskin name used to render the page layout, for example displayPage3Col. Note if you use "displayPageStandard" for this value it will not be added to the link --->
+	<cfparam name="attributes.bodyView" default=""><!--- @@attrhint: Added to url parameters: Webskin name used to render the body content, for example displayBody. Note if you use "displayBody" for this value it will not be added to the link --->
+	<!---  --->
+	<cfparam name="attributes.linktext" default=""><!--- @@attrhint: Text used for the link --->
+	<cfparam name="attributes.target" default="_self"><!--- @@attrhint: target window for link --->
+	<cfparam name="attributes.bShowTarget" default="false"><!--- @@attrhint: Show the target link in the anchor tag @@options: false,true @@type: boolean --->
 	<cfparam name="attributes.externallink" default="">
-	<cfparam name="attributes.id" default=""><!--- Anchor tag ID --->
-	<cfparam name="attributes.class" default=""><!--- Anchor tag classes --->
-	<cfparam name="attributes.style" default=""><!--- Anchor tag styles --->
-	<cfparam name="attributes.title" default=""><!--- Anchor tag title text --->
+	<cfparam name="attributes.id" default=""><!--- @@attrhint: Anchor tag ID --->
+	<cfparam name="attributes.class" default=""><!--- @@attrhint: Anchor tag classes --->
+	<cfparam name="attributes.style" default=""><!--- @@attrhint: Anchor tag styles --->
+	<cfparam name="attributes.title" default=""><!--- @@attrhint: Anchor tag title text --->
 	<cfparam name="attributes.urlOnly" default="false">
-	<cfparam name="attributes.r_url" default=""><!--- Define a variable to pass the link back (instead of writting out via the tag). Note setting urlOnly invalidates this setting --->
-	<cfparam name="attributes.xCode" default=""><!--- eXtra code to be placed inside the anchor tag --->
+	<cfparam name="attributes.r_url" default=""><!--- @@attrhint: Define a variable to pass the link back (instead of writting out via the tag). Note setting urlOnly invalidates this setting --->
+	<cfparam name="attributes.xCode" default=""><!--- @@attrhint: eXtra code to be placed inside the anchor tag --->
 	<cfparam name="attributes.includeDomain" default="false">
 	<cfparam name="attributes.Domain" default="#cgi.http_host#">
 	<cfparam name="attributes.stParameters" default="#StructNew()#">
 	<cfparam name="attributes.urlParameters" default="">
-	<cfparam name="attributes.JSWindow" default="0"><!--- Default to not using a Javascript Window popup --->
+	<cfparam name="attributes.JSWindow" default="0"><!--- @@attrhint: Default to not using a Javascript Window popup --->
 	<cfparam name="attributes.stJSParameters" default="#StructNew()#">
-	<cfparam name="attributes.anchor" default=""><!--- Anchor to place at the end of the URL string. --->
-	<cfparam name="attributes.onclick" default=""><!--- the js code to place in onclick --->
+	<cfparam name="attributes.anchor" default=""><!--- @@attrhint: Anchor to place at the end of the URL string. --->
+	<cfparam name="attributes.onclick" default=""><!--- @@attrhint: the js code to place in onclick --->
 	
 
 	<cfset href = application.fapi.getLink(argumentCollection="#attributes#") />

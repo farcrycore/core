@@ -186,7 +186,17 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			</skin:htmlHead>
 			
 			<!--- Get the url for the ajax webskin loader --->
-			<cfset urlAjaxLoader = application.fapi.getLink(type="#stobj.typename#", objectid="#stobj.objectid#", urlParameters="view=#arguments.template#&ajaxmode=1") />,
+			<!--- TODO: The ampDelim variable causes the link to be in the & 
+				instead of &amp; form.  This is a bit of a hack as &amp;
+				should work but currently causes an error.  It will take some
+				digging into why that is; however, for now this will validate 
+				and work. --->
+			<cfset urlAjaxLoader = application.fapi.getLink(
+				type="#stobj.typename#", 
+				objectid="#stobj.objectid#", 
+				urlParameters="view=#arguments.template#&ajaxmode=1",
+				ampDelim="&"
+			) />,
 				
 			<cfsavecontent variable="stWebskin.webskinHTML">
 				<cfoutput>

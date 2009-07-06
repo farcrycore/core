@@ -297,6 +297,68 @@
 		) />
 	</cffunction>
 	
+	
+	<cffunction name="getLinkTest" returntype="void" access="public">
+		<!--- fake parameters used in some of the tests --->
+		<cfset var st = {blarg="123", other="他是澳大利亚人"} />
+	
+		<cfset var lnk = this.myComp.getLink(href="http://daemon.com.au") />
+		<cfset assertEquals(lnk, "http://daemon.com.au") />
+		
+		<!--- Note we are not passing in href --->
+		<cfset lnk = this.myComp.getLink(objectid="3f27474f-6a87-4291-a35f9722971fd7c5") />
+		<cfset assertEquals(lnk, "/index.cfm?objectid=3f27474f-6a87-4291-a35f9722971fd7c5") />
+		
+		<!--- this should work regardless of alias existing.  should return a link to some object --->
+		<cfset lnk = this.myComp.getLink(alias="home") />
+		<cfset assertEquals((lnk contains "/index.cfm?objectid="), true) />
+		
+		
+		<cfset lnk = this.myComp.getLink(
+			objectid="3f27474f-6a87-4291-a35f9722971fd7c5",
+			type="dmProfile",
+			ampDelim="&"
+		) />
+		<cfset assertEquals(lnk, "/index.cfm?objectid=3f27474f-6a87-4291-a35f9722971fd7c5&type=dmProfile") />
+		
+		
+		<cfset lnk = this.myComp.getLink(
+			objectid="3f27474f-6a87-4291-a35f9722971fd7c5",
+			type="dmProfile",
+			view="displayPage3Col",
+			ampDelim="&"
+		) />
+		<cfset assertEquals(lnk, "/index.cfm?objectid=3f27474f-6a87-4291-a35f9722971fd7c5&type=dmProfile&view=displayPage3Col") />
+		
+		
+		<cfset lnk = this.myComp.getLink(
+			objectid="3f27474f-6a87-4291-a35f9722971fd7c5",
+			type="dmProfile",
+			view="displayPage3Col",
+			bodyView="displayBody1",
+			ampDelim="&"
+		) />
+		<cfset assertEquals(lnk, "/index.cfm?objectid=3f27474f-6a87-4291-a35f9722971fd7c5&type=dmProfile&view=displayPage3Col&bodyView=displayBody1") />
+		
+		<!--- Using get link to build a "normal" url with st params --->
+		<cfset lnk = this.myComp.getLink(
+			href="http://daemon.com.au",
+			stParameters=st,
+			ampDelim="&"
+		) />
+		<!--- <cfset assertEquals(lnk, "http://daemon.com.au?OTHER=%E4%BB%96%E6%98%AF%E6%BE%B3%E5%A4%A7%E5%88%A9%E4%BA%9A%E4%BA%BA&BLARG=123") /> --->
+			
+			
+		<cfset lnk = this.myComp.getLink(
+			type="dmProfile",
+			view="displayPage3Col",
+			bodyView="displayBody1"
+		) />
+		<cfset assertEquals(lnk, "/index.cfm?type=dmProfile&amp;view=displayPage3Col&amp;bodyView=displayBody1") />
+		
+	</cffunction>
+	
+	
 	<cffunction name="getDocTypeTest" returntype="void" access="public">
 		<!--- 
 			HTML 2.0

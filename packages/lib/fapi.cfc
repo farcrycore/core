@@ -525,24 +525,32 @@
 				<cfset urlListing = application.fapi.getLink(type="dmNews",bodyview="displayTypeLatest") />
 			</code>
 		 --->
-		<cffunction name="getLink" access="public" returntype="string" output="false" hint="Returns the href of a link based on the arguments passed in. Acts as a facade call to build link with r_url." bDocument="true">
+		<cffunction name="getLink" access="public" returntype="string" output="true" 
+			hint="Returns the href of a link based on the arguments passed in. Acts as a facade call to build link with r_url." 
+			bDocument="true"
+		>
 			<cfargument name="href" default=""><!--- the actual href to link to --->
 			<cfargument name="objectid" default=""><!--- Added to url parameters; navigation obj id --->
 			<cfargument name="alias" default=""><!--- Navigation alias to use to find the objectid --->
 			<cfargument name="type" default=""><!--- Added to url parameters: Typename used with type webskin views --->
 			<cfargument name="view" default=""><!--- Added to url parameters: Webskin name used to render the page layout --->
 			<cfargument name="bodyView" default=""><!--- Added to url parameters: Webskin name used to render the body content --->
-			<cfargument name="linktext" default=""><!--- Text used for the link --->
-			<cfargument name="target" default="_self"><!--- target window for link --->
-			<cfargument name="bShowTarget" default="false"><!--- @@attrhint: Show the target link in the anchor tag  @@options: false,true --->
-			<cfargument name="externallink" default="">
-			<cfargument name="id" default=""><!--- Anchor tag ID --->
-			<cfargument name="class" default=""><!--- Anchor tag classes --->
-			<cfargument name="style" default=""><!--- Anchor tag styles --->
-			<cfargument name="title" default=""><!--- Anchor tag title text --->
-			<cfargument name="urlOnly" default="false">
-			<cfargument name="r_url" default=""><!--- Define a variable to pass the link back (instead of writting out via the tag). Note setting urlOnly invalidates this setting --->
-			<cfargument name="xCode" default=""><!--- eXtra code to be placed inside the anchor tag --->
+			<!---  --->
+			<!--- 
+				Most of the following don't make any sense since this has been moved into a function. This function 
+				returns a URL not an HTML fragment so just about anything here is deprecated
+			--->
+			<cfargument name="linktext" default="" deprecated="true"><!--- Text used for the link --->
+			<cfargument name="target" default="_self" deprecated="true"><!--- target window for link --->
+			<cfargument name="bShowTarget" default="false" deprecated="true"><!--- @@attrhint: Show the target link in the anchor tag  @@options: false,true --->
+			<cfargument name="externallink" default="" deprecated="true">
+			<cfargument name="id" default="" deprecated="true"><!--- Anchor tag ID --->
+			<cfargument name="class" default="" deprecated="true"><!--- Anchor tag classes --->
+			<cfargument name="style" default="" deprecated="true"><!--- Anchor tag styles --->
+			<cfargument name="title" default="" deprecated="true"><!--- Anchor tag title text --->
+			<cfargument name="urlOnly" default="false" deprecated="true">
+			<cfargument name="r_url" default="" deprecated="true"><!--- Define a variable to pass the link back (instead of writting out via the tag). Note setting urlOnly invalidates this setting --->
+			<cfargument name="xCode" default="" deprecated="true"><!--- eXtra code to be placed inside the anchor tag --->
 			<cfargument name="includeDomain" default="false">
 			<cfargument name="Domain" default="#cgi.http_host#">
 			<cfargument name="stParameters" default="#StructNew()#">
@@ -550,20 +558,29 @@
 			<cfargument name="JSWindow" default="0"><!--- Default to not using a Javascript Window popup --->
 			<cfargument name="stJSParameters" default="#StructNew()#">
 			<cfargument name="anchor" default=""><!--- Anchor to place at the end of the URL string. --->
+			<cfargument name="ampDelim" default="&amp;" required="true" />
 			
 			<cfset var returnURL = "" />
 			<cfset var linkID = "" />
-			<cfset var stLocal = StructNew()>
-			<cfset var jsParameters = "">
+			<cfset var stLocal = StructNew() />
+			<cfset var jsParameters = "" />
 			
 			<!--- Setup URL Parameters --->
+			<!--- 
+				If they passed in a string of URL parameters, loop over them and add them 
+				to the stParameters struct 
+			--->
 			<cfif listLen(arguments.urlParameters, "&")>
 				<cfloop list="#arguments.urlParameters#" delimiters="&" index="i">
 					<cfset arguments.stParameters[listFirst(i, "=")] = listLast(i, "=") />
 				</cfloop>
 			</cfif>
 			
-			<cfif arguments.target NEQ "_self" AND NOT arguments.urlOnly> <!--- If target is defined and the user doesn't just want the URL then it is a popup window and must therefore have the following parameters --->		
+			<!--- 
+				If target is defined and the user doesn't just want the URL then it is a popup 
+				window and must therefore have the following parameters 
+			--->
+			<cfif arguments.target NEQ "_self" AND NOT arguments.urlOnly> 
 				<cfset arguments.JSWindow = 1>
 				
 				<cfparam name="arguments.stJSParameters.Toolbar" default="0">
@@ -579,7 +596,7 @@
 				<cfparam name="arguments.stJSParameters.Height" default="700">
 			</cfif>
 			
-		
+			<!--- If they passed in an href, just use that as the base return url --->
 			<cfif len(arguments.href)>
 				<cfset returnURL = arguments.href>
 		
@@ -602,31 +619,44 @@
 				<cfelseif len(arguments.alias)>
 					<cfset linkID = getNavID(alias="#arguments.alias#") />
 				</cfif>
-		
-				<cfset returnURL = returnURL & application.fc.factory.farFU.getFU(objectid="#linkID#", type="#arguments.type#", view="#arguments.view#", bodyView="#arguments.bodyView#")>
-		
+				
+				<!--- 
+					Using what we know, lookup in the friendly URL to see if we
+					have a better link than what we've built so far 
+				--->
+				<cfset returnURL = returnURL & application.fc.factory.farFU.getFU(
+					objectid="#linkID#", 
+					type="#arguments.type#", 
+					view="#arguments.view#", 
+					bodyView="#arguments.bodyView#",
+					ampDelim="#arguments.ampDelim#"
+				) />
+				
 			</cfif>
 			
-			<!--- check for extra URL parameters --->
+			<!--- 
+				check for extra URL parameters - note this is only the stParameters passed in not
+				objectid, view, etc 
+			--->
 			<cfif NOT StructIsEmpty(arguments.stParameters)>
 				<cfset stLocal = StructNew()>
 				<cfset stLocal.parameters = "">
 				<cfset stLocal.iCount = 0>
 				<cfloop collection="#arguments.stParameters#" item="stLocal.key">
-					<cfif stLocal.iCount GT 0>
-						<cfset stLocal.parameters = stLocal.parameters & "&">
+					<cfif stLocal.iCount neq 0>
+						<cfset stLocal.parameters = stLocal.parameters & arguments.ampDelim />
 					</cfif>
 					<cfset stLocal.parameters = stLocal.parameters & stLocal.key & "=" & URLEncodedFormat(arguments.stParameters[stLocal.key])>
 					<cfset stLocal.iCount = stLocal.iCount + 1>
 				</cfloop>
 		
 			
-				<cfif ListFind("&,?",Right(returnURL,1))><!--- check to see if the last character is a ? or & and don't append one between the params and the returnURL --->
-					<cfset returnURL=returnURL&stLocal.parameters>
-				<cfelseif Find("?",returnURL)> <!--- If there is already a ? in the returnURL, just concat the params with & --->
-					<cfset returnURL=returnURL&"&"&stLocal.parameters>
+				<cfif ListFind("&,?", Right(returnURL,1))><!--- check to see if the last character is a ? or & and don't append one between the params and the returnURL --->
+					<cfset returnURL = returnURL & stLocal.parameters />
+				<cfelseif Find("?", returnURL)> <!--- If there is already a ? in the returnURL, just concat the params with & --->
+					<cfset returnURL = returnURL & arguments.ampDelim & stLocal.parameters />
 				<cfelse> <!--- No query string on the returnURL, so add a new one using ? and the params --->
-					<cfset returnURL=returnURL&"?"&stLocal.parameters>		
+					<cfset returnURL = returnURL & "?" & stLocal.parameters />
 				</cfif>
 			</cfif>
 			
