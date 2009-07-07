@@ -1367,4 +1367,39 @@
 		<cfreturn doctype />
 	</cffunction>
 	
+	<!---
+		Things like RSS feeds will have the date displayed in this format:
+		Tue, 07 Jul 2009 10:35:38 +0800
+		This function is used to parse that information into a coldfusion datetime
+	--->
+	<cffunction name="RFC822ToDate" access="public" returntype="string" output="false">
+		<cfargument name="dt" type="string" required="yes" default="#GetHttpTimeString()#" />
+		
+		<cfset var sdf = "" />
+		<cfset var pos = "" />
+		<cfset var rdate = "" />
+		
+		<cfset sdf = CreateObject("java", "java.text.SimpleDateFormat").init("EEE, dd MMM yyyy HH:mm:ss Z") />
+		<cfset pos = CreateObject("java", "java.text.ParsePosition").init(0) />
+		<cfset rdate = sdf.parse(dt, pos) />
+		
+		<cfreturn rdate />
+	</cffunction>
+	
+	<!---
+		Things like RSS feeds need to have the date displayed in this format:
+		Tue, 07 Jul 2009 10:35:38 +0800
+		This funciton takes a coldfusion date and formats it properly. Note you
+		need to pass in the Timezone either as an offset like "+0800", "-0700", etc
+		or as a string like "EST", "PDT", etc
+	--->
+	<cffunction name="dateToRFC822" access="public" returntype="string" output="false">
+		<cfargument name="dt" type="date" required="yes" default="#now()#" />
+		<cfargument name="timezone" type="string" required="yes" default="+0800" />
+		
+		<cfset var rdate = DateFormat(dt, "ddd, dd mmm yyyy") & " " & TimeFormat(dt, "HH:mm:ss") & " " & timezone />
+		
+		<cfreturn rdate />
+	</cffunction>
+	
 </cfcomponent>

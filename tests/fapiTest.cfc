@@ -420,4 +420,24 @@
 		<cfset assertEquals(stDT.type, "html") />
 	</cffunction>
 	
+	
+	<cffunction name="RFC822ToDateTest" access="public" returntype="void" output="false">
+		<cfset var tdate = this.myComp.RFC822toDate() />
+		
+		<cfset assertEquals(year(tdate), year(now())) />	
+		<cfset assertEquals(month(tdate), month(now())) />
+		<cfset assertEquals(day(tdate), day(now())) />
+	</cffunction>
+	
+	
+	<cffunction name="dateToRFC822Test" access="public" returntype="void" output="false">
+		<cfset var tdate = this.myComp.dateToRFC822(now()) />
+		
+		<!--- 
+			This is a really lazy test, but I am in a bit of a rush 
+			TODO: make this a real test
+		--->
+		<cfset assertEquals(arrayLen(listToArray(tdate," ")), 6) />	
+	</cffunction>
+	
 </cfcomponent>
