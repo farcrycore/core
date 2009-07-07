@@ -383,11 +383,7 @@ $out:$
 				</cfoutput>
 			</cfif>
 			
-			
-			
-			
 
-			
 			<!--- INCLUDE CSS --->
 		
 			<cfif isDefined("variables.stPlaceInHead.prototypeTreeCSS") AND variables.stPlaceInHead.prototypeTreeCSS>

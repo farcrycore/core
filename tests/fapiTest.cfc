@@ -454,5 +454,4 @@
 		
 	</cffunction>
 	
-	
 </cfcomponent>
