@@ -1402,4 +1402,25 @@
 		<cfreturn rdate />
 	</cffunction>
 	
+	<!---
+		Attempts to clean out all MS Word chars that tend to mess up html display and cause
+		xhtml validation to fail.
+	--->
+	<cffunction name="removeMSWordChars" access="public" returntype="string" output="false">
+		<cfargument name="dirtyText" required="true" type="string" default="" />
+		
+		<cfset var cleanText = arguments.dirtyText />
+		
+		<cfset cleanText = replace(cleanText, chr(8220), chr(34), "all") />
+		<cfset cleanText = replace(cleanText, chr(8221), chr(34), "all") />
+		<cfset cleanText = replace(cleanText, chr(8216), chr(39), "all") />
+		<cfset cleanText = replace(cleanText, chr(96),   chr(39), "all") />
+		<cfset cleanText = replace(cleanText, chr(8217), chr(39), "all") />
+		<cfset cleanText = replace(cleanText, chr(8230), '...',   "all") />
+		<cfset cleanText = replace(cleanText, chr(8211), '-',     "all") />
+		
+		<cfreturn cleanText />
+	</cffunction>
+	
+	
 </cfcomponent>

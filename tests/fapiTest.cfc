@@ -440,4 +440,19 @@
 		<cfset assertEquals(arrayLen(listToArray(tdate," ")), 6) />	
 	</cffunction>
 	
+	
+	<cffunction name="removeMSWordCharsTest" access="public" returntype="void" output="false">
+		<cfset var rval = this.myComp.removeMSWordChars("This String should be unchanged.") />
+		<cfset assertEquals(rval, "This String should be unchanged.") />
+		
+		<cfset rval = this.myComp.removeMSWordChars("这个需要看书这个需要看书……") />
+		<!--- the elips is replaced with periods --->
+		<cfset assertEquals(rval, "这个需要看书这个需要看书......") />
+		
+		<cfset rval = this.myComp.removeMSWordChars("Schultz, Helen O’Neil, Frank") />
+		<cfset assertEquals(rval, "Schultz, Helen O'Neil, Frank") />
+		
+	</cffunction>
+	
+	
 </cfcomponent>
