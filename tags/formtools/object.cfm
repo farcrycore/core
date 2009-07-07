@@ -234,7 +234,7 @@
 		<cfif len(attributes.prefix)>
 			<cfset variables.prefix = attributes.prefix />
 		<cfelse>
-			<cfset variables.prefix = ReplaceNoCase(variables.ObjectID,'-', '', 'all') />
+			<cfset variables.prefix = "fc#ReplaceNoCase(variables.ObjectID,'-', '', 'all')#" />
 		</cfif>
 	</cfif>
 	
