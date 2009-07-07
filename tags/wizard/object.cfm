@@ -192,7 +192,7 @@
 
 	<cfset Variables.CurrentCount = StructCount(request.farcryForm.stObjects) + 1>
 	<!--- <cfparam  name="variables.prefix" default="FFO#RepeatString('0', 3 - Len(Variables.CurrentCount))##Variables.CurrentCount#">	 --->
-	<cfparam  name="variables.prefix" default="#ReplaceNoCase(variables.ObjectID,'-', '', 'all')#">			
+	<cfparam  name="variables.prefix" default="fc#ReplaceNoCase(variables.ObjectID,'-', '', 'all')#">			
 	<cfset Request.farcryForm.stObjects[variables.prefix] = StructNew()>
 	<cfoutput><input type="hidden" name="FarcryFormPrefixes" value="#variables.prefix#" /></cfoutput>	
 	
