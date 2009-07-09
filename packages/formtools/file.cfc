@@ -411,7 +411,7 @@
 		
 		<!--- Delete file --->
 		<cfif not structisempty(stLocation)>
-			<cffile action="delete" file="#stLocation.fullpath#" />
+			<cftry><cffile action="delete" file="#stLocation.fullpath#" /><cfcatch><cfdump var="#arguments#"><cfdump var="#stLocation#"><cfabort></cfcatch></cftry>
 		</cfif>
 	</cffunction>
 	
@@ -595,8 +595,6 @@
 				<cfreturn stResult />
 			</cfif>
 			
-			
-			
 			<!--- determine mime type --->
 			<cfset stResult.mimeType=getPageContext().getServletContext().getMimeType("#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#") />
 		<cfelse>
@@ -606,9 +604,11 @@
 			<!--- check file exists --->
 			<cfif fileExists("#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#")>
 				<cfset stResult.path = "#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#" />
+				<cfset stResult.fullpath = stResult.path />
 			<cfelse>
 				<cfif fileexists("#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#")>
 					<cfset stResult.path = "#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#" />
+					<cfset stResult.fullpath = stResult.path />
 				<cfelse>
 					<cfset stResult = structnew() />
 					<cfset stResult.message = "File is missing" />
