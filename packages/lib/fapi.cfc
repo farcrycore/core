@@ -115,7 +115,17 @@
 		</cffunction>
 		
 		
-		
+<cffunction name="registerCSS" returntype="struct" hint="Adds the CSS file to the farcry css library to be used by your application.">
+	<cfargument name="id" required="true" />
+	<cfargument name="path" default="" />
+	<cfargument name="lFiles" default="" />
+	
+	<cfparam name="application.fc.stCSSLibraries" default="#structNew()#" />
+	
+	<cfset application.fc.stCSSLibraries[arguments.id] = duplicate(arguments) />
+	
+	<cfreturn success("library added") />
+</cffunction>		
 		
 	
 		<!--- @@examples:

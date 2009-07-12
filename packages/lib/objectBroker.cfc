@@ -131,6 +131,10 @@
 									<cfparam name="request.inhead.stOnReady" default="#structNew()#" />
 									<cfparam name="request.inhead.aOnReadyIDs" default="#arrayNew(1)#" />
 									
+									<!--- CSS --->
+									<cfparam name="request.inhead.stCSSLibraries" default="#structNew()#" />
+									<cfparam name="request.inhead.aCSSLibraries" default="#arrayNew(1)#" />
+									
 									<cfloop list="#structKeyList(stCacheWebskin.inHead)#" index="i">
 										<cfswitch expression="#i#">
 											<cfcase value="stCustom">
@@ -164,6 +168,26 @@
 												<cfloop from="1" to="#arrayLen(stCacheWebskin.inHead.aOnReadyIDs)#" index="k">
 													<cfif NOT listFindNoCase(arrayToList(request.inHead.aOnReadyIDs), stCacheWebskin.inHead.aOnReadyIDs[k])>
 														<cfset arrayAppend(request.inHead.aOnReadyIDs,stCacheWebskin.inHead.aOnReadyIDs[k]) />
+													</cfif>
+												</cfloop>
+											</cfcase>
+											
+											<!--- CSS LIBRARIES --->
+											
+											<cfcase value="stCSSLibraries">
+												<cfloop list="#structKeyList(stCacheWebskin.inHead.stCSSLibraries)#" index="j">
+													<cfif not structKeyExists(request.inHead.stCSSLibraries, j)>
+														<cfset request.inHead.stCSSLibraries[j] = stCacheWebskin.inHead.stCSSLibraries[j] />
+													</cfif>
+													
+													<cfset addCSSHeadToWebskins(request.inHead.stCSSLibraries[j]) />
+		
+												</cfloop>
+											</cfcase>
+											<cfcase value="aCSSLibraries">
+												<cfloop from="1" to="#arrayLen(stCacheWebskin.inHead.aCSSLibraries)#" index="k">
+													<cfif NOT listFindNoCase(arrayToList(request.inHead.aCSSLibraries), stCacheWebskin.inHead.aCSSLibraries[k])>
+														<cfset arrayAppend(request.inHead.aCSSLibraries,stCacheWebskin.inHead.aCSSLibraries[k]) />
 													</cfif>
 												</cfloop>
 											</cfcase>
@@ -294,7 +318,27 @@
 		</cfif>
 		
 	</cffunction>		
-	
+			
+	<cffunction name="addCSSHeadToWebskins" access="public" output="true" returntype="void" hint="Adds the result of a skin:loadCSS to all relevent webskin caches">
+		<cfargument name="stCSS" type="struct" required="true" />
+		
+		<cfset var iWebskin = "">
+
+		<cfif structKeyExists(request, "aAncestorWebskins") AND arrayLen(request.aAncestorWebskins)>
+			<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="iWebskin">
+				<!--- If we are currently inside of a webskin we need to add this id to the current webskin --->					
+				<cfif NOT structKeyExists(request.aAncestorWebskins[iWebskin].inhead.stCSSLibraries, arguments.id)>
+					
+					<!--- Add the id to the array to make sure we keep track of the order in which these libraries need to appear. --->
+					<cfset arrayAppend(request.aAncestorWebskins[iWebskin].inHead.aCSSLibraries, arguments.stCSS.id) />
+					
+					<!--- Add the css information to the struct so we will be able to load it all correctly into the header at the end of the request. --->
+					<cfset request.aAncestorWebskins[iWebskin].inHead.stCSSLibraries[stCSS.id] = arguments.stCSS />
+					
+				</cfif>
+			</cfloop>
+		</cfif>	
+	</cffunction>
 	
 	<cffunction name="addWebskin" access="public" output="true" returntype="boolean" hint="Adds webskin to object broker if all conditions are met">
 		<cfargument name="ObjectID" required="false" type="UUID">
