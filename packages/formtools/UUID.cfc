@@ -304,9 +304,7 @@
 					<skin:htmlHead library="farcryForm" />
 					
 					<cfoutput>
-					<script type="text/javascript" language="javascript" charset="utf-8">
-					initUUIDField('#arguments.fieldname#','#application.url.webroot#');
-								
+					<script type="text/javascript" language="javascript" charset="utf-8">								
 					var obj#arguments.fieldname# = new Object();					
 					obj#arguments.fieldname#.primaryFormFieldname="#arguments.fieldname#";
 					obj#arguments.fieldname#.primaryObjectID="#arguments.stObject.ObjectID#";
@@ -314,6 +312,7 @@
 					obj#arguments.fieldname#.primaryFieldname="#arguments.stMetaData.Name#";
 					obj#arguments.fieldname#.wizardID="";
 					obj#arguments.fieldname#.DataTypename="#ListFirst(arguments.stMetadata.ftJoin)#";
+					initUUIDField('#arguments.fieldname#','#application.url.webroot#');
 					</script>
 					</cfoutput>	
 					
