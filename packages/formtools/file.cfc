@@ -311,28 +311,28 @@
 					</cfif>
 		
 			
-					
-					<!--- Replace all none alphanumeric characters --->
-					<cfset cleanFileName = reReplaceNoCase(newFileName, "[^a-z0-9.\-\_]","", "all") />
-					
-					<!--- If the filename has changed, rename the file
-					Note: doing a quick check to make sure the cleanfilename doesnt exist. If it does, prepend the count+1 to the end.
-					 --->
-					<cfif cleanFileName NEQ newFileName>
-						<cfif fileExists("#filePath##arguments.stMetadata.ftDestination#/#cleanFileName#")>
-							<cfdirectory action="list" directory="#filePath##arguments.stMetadata.ftDestination#" filter="#listFirst(cleanFileName, '.')#*" name="qDuplicates" />
-							<cfif qDuplicates.RecordCount>
-								<cfset cleanFileName = "#listFirst(cleanFileName, '.')##qDuplicates.recordCount+1#.#listLast(cleanFileName,'.')#">
-							</cfif>
-							 
-						</cfif>
+					<cfif len(newFileName)>
+						<!--- Replace all none alphanumeric characters --->
+						<cfset cleanFileName = reReplaceNoCase(newFileName, "[^a-z0-9.\-\_]","", "all") />
 						
-						<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#newFileName#" destination="#cleanFileName#" />
-					</cfif>			
-											
-					<!--- </cfif> --->
-					<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#cleanFileName#">
-		
+						<!--- If the filename has changed, rename the file
+						Note: doing a quick check to make sure the cleanfilename doesnt exist. If it does, prepend the count+1 to the end.
+						 --->
+						<cfif cleanFileName NEQ newFileName>
+							<cfif fileExists("#filePath##arguments.stMetadata.ftDestination#/#cleanFileName#")>
+								<cfdirectory action="list" directory="#filePath##arguments.stMetadata.ftDestination#" filter="#listFirst(cleanFileName, '.')#*" name="qDuplicates" />
+								<cfif qDuplicates.RecordCount>
+									<cfset cleanFileName = "#listFirst(cleanFileName, '.')##qDuplicates.recordCount+1#.#listLast(cleanFileName,'.')#">
+								</cfif>
+								 
+							</cfif>
+							
+							<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#newFileName#" destination="#cleanFileName#" />
+						</cfif>			
+												
+						<!--- </cfif> --->
+						<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#cleanFileName#">
+					</cfif>
 					
 				</cfif>
 			</cfcase>
