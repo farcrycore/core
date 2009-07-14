@@ -234,6 +234,7 @@
 		<cfparam name="arguments.stMetadata.ftSecure" default="false" />
 		<cfparam name="arguments.stMetadata.ftDestination" default="" />
 		<cfparam name="arguments.stMetadata.ftRenderType" default="html" />
+		<cfparam name="arguments.stMetadata.ftAllowedExtensions" default="pdf,doc,ppt,xls,docx,pptx,xlsx,jpg,jpeg,png,gif,zip,rar,flv,swf,mpg,mpe,mpeg,m1s,mpa,mp2,m2a,mp2v,m2v,m2s,mov,qt,asf,asx,wmv,wma,wmx,rm,ra,ram,rmvb,mp3,mp4,3gp,ogm,mkv,avi"><!--- The extentions allowed to be uploaded --->
 		
 		<cfif len(arguments.stMetadata.ftDestination) and right(arguments.stMetadata.ftDestination,1) EQ "/">
 			<cfset arguments.stMetadata.ftDestination = left(arguments.stMetadata.ftDestination, (len(arguments.stMetadata.ftDestination) - 1)) />
@@ -287,15 +288,26 @@
 							filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
 							destination="#filePath##arguments.stMetadata.ftDestination#"		        	
 							nameconflict="MakeUnique" />
-						<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#cffile.ServerFile#" destination="#uploadFileName#" />
-						<cfset newFileName = uploadFileName>
+					
+						<cfif listFindNoCase(arguments.stMetadata.ftAllowedExtensions,cffile.serverFileExt)>
+							<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#cffile.ServerFile#" destination="#uploadFileName#" />
+							<cfset newFileName = uploadFileName>
+						<cfelse>
+							<cffile action="delete" file="#filePath##arguments.stMetadata.ftDestination#/#cffile.ServerFile#" />
+						</cfif>
 					<cfelse>
 						<!--- There is no image currently so we simply upload the image and make it unique  --->
 						<cffile action="UPLOAD"
 							filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
 							destination="#filePath##arguments.stMetadata.ftDestination#"		        	
 							nameconflict="MakeUnique">
-						<cfset newFileName = cffile.ServerFile>
+					
+						<cfif listFindNoCase(arguments.stMetadata.ftAllowedExtensions,cffile.serverFileExt)>
+							<cfset newFileName = cffile.ServerFile>
+						<cfelse>
+							<cffile action="delete" file="#filePath##arguments.stMetadata.ftDestination#/#cffile.ServerFile#" />
+						</cfif>
+						
 					</cfif>
 		
 			

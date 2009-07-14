@@ -33,6 +33,7 @@
 		<cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside">
 		<cfparam name="arguments.stMetadata.ftPadColor" default="##ffffff">
 		<cfparam name="arguments.stMetadata.ftShowConversionInfo" default="true"><!--- Set to false to hide the conversion information that will be applied to the uploaded image --->
+		<cfparam name="arguments.stMetadata.ftAllowedExtensions" default="jpg,jpeg,png,gif"><!--- The extentions allowed to be uploaded --->
 		
 
 		<cfset Request.inHead.Scriptaculous = 1>
@@ -227,7 +228,8 @@
 		<cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside" />
 		<cfparam name="arguments.stMetadata.ftPadColor" default="##ffffff" />
 		<cfparam name="arguments.stMetadata.ftThumbnailBevel" default="No" />
-
+		<cfparam name="arguments.stMetadata.ftAllowedExtensions" default="jpg,jpeg,png,gif"><!--- The extentions allowed to be uploaded --->
+		
 
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
@@ -289,8 +291,13 @@
 					filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
 					destination="#application.path.imageRoot##arguments.stMetadata.ftDestination#"		        	
 					nameconflict="MakeUnique">
-				<cffile action="rename" source="#application.path.imageRoot##arguments.stMetadata.ftDestination#/#cffile.ServerFile#" destination="#uploadFileName#" />
-				<cfset newFileName = uploadFileName>
+					
+				<cfif listFindNoCase(arguments.stMetadata.ftAllowedExtensions,cffile.serverFileExt)>
+					<cffile action="rename" source="#application.path.imageRoot##arguments.stMetadata.ftDestination#/#cffile.ServerFile#" destination="#uploadFileName#" />
+					<cfset newFileName = uploadFileName>
+				<cfelse>
+					<cffile action="delete" file="#application.path.imageRoot##arguments.stMetadata.ftDestination#/#cffile.ServerFile#" />
+				</cfif>
 								
 			<cfelse>
 				<!--- There is no image currently so we simply upload the image and make it unique  --->
@@ -298,10 +305,15 @@
 					filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
 					destination="#application.path.imageRoot##arguments.stMetadata.ftDestination#"		        	
 					nameconflict="MakeUnique">
-				<cfset newFileName = cffile.ServerFile>
+				
+				<cfif listFindNoCase(arguments.stMetadata.ftAllowedExtensions,cffile.serverFileExt)>					
+					<cfset newFileName = cffile.ServerFile>
+				<cfelse>
+					<cffile action="delete" file="#application.path.imageRoot##arguments.stMetadata.ftDestination#/#cffile.ServerFile#" />
+				</cfif>
 			</cfif>
 
-				
+			<cfif len(newFileName)>
 				<cfif len(arguments.stMetaData.ftImageWidth) OR len(arguments.stMetaData.ftImageHeight)>
 					<cfset stGeneratedImageArgs.Source = "#application.path.imageRoot##arguments.stMetadata.ftDestination#/#newFileName#" />
 					<cfset stGeneratedImageArgs.Destination = "" />			
@@ -324,7 +336,7 @@
 				<cfelse>
 					<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#newFileName#" />	
 				</cfif>
-			
+			</cfif>	
 		</cfif>
 	
 		<!--- ----------------- --->
