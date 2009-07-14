@@ -52,7 +52,7 @@
 			cellCls:"value"
 		}</cfoutput>
 		
-		<cfif stObj.typename eq "farCOAPI">
+		<cfif stObj.typename eq "farCOAPI" AND structKeyExists(url,"webskinused")>
 			<cfquery dbtype="query" name="qWebskin">
 				select		displayname
 				from		application.stCOAPI.#currenttype#.qWebskins

@@ -343,6 +343,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset stCurrentView.inHead.stCSSLibraries = structNew() />
 		<cfset stCurrentView.inHead.aCSSLibraries = arrayNew(1) />
 		
+		<cfset stCurrentView.inHead.stJSLibraries = structNew() />
+		<cfset stCurrentView.inHead.aJSLibraries = arrayNew(1) />
+		
 		<cfset arrayAppend(request.aAncestorWebskins, stCurrentView) />					
 		
 		<!--- Here we are initialising the viewStates. After the call to the webskin, we will know which view states were used  --->

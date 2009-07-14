@@ -191,6 +191,28 @@
 													</cfif>
 												</cfloop>
 											</cfcase>
+											
+
+											<!--- JS LIBRARIES --->
+											
+											<cfcase value="stJSLibraries">
+												<cfloop list="#structKeyList(stCacheWebskin.inHead.stJSLibraries)#" index="j">
+													<cfif not structKeyExists(request.inHead.stJSLibraries, j)>
+														<cfset request.inHead.stJSLibraries[j] = stCacheWebskin.inHead.stJSLibraries[j] />
+													</cfif>
+													
+													<cfset addJSHeadToWebskins(request.inHead.stJSLibraries[j]) />
+		
+												</cfloop>
+											</cfcase>
+											<cfcase value="aJSLibraries">
+												<cfloop from="1" to="#arrayLen(stCacheWebskin.inHead.aJSLibraries)#" index="k">
+													<cfif NOT listFindNoCase(arrayToList(request.inHead.aJSLibraries), stCacheWebskin.inHead.aJSLibraries[k])>
+														<cfset arrayAppend(request.inHead.aJSLibraries,stCacheWebskin.inHead.aJSLibraries[k]) />
+													</cfif>
+												</cfloop>
+											</cfcase>
+																						
 											<cfdefaultcase>
 												<cfset addhtmlHeadToWebskins(library=i) />
 												<cfset request.inHead[i] = stCacheWebskin.inHead[i] />
@@ -334,6 +356,26 @@
 					
 					<!--- Add the css information to the struct so we will be able to load it all correctly into the header at the end of the request. --->
 					<cfset request.aAncestorWebskins[iWebskin].inHead.stCSSLibraries[stCSS.id] = arguments.stCSS />
+					
+				</cfif>
+			</cfloop>
+		</cfif>	
+	</cffunction>
+	<cffunction name="addJSHeadToWebskins" access="public" output="true" returntype="void" hint="Adds the result of a skin:loadJS to all relevent webskin caches">
+		<cfargument name="stJS" type="struct" required="true" />
+		
+		<cfset var iWebskin = "">
+
+		<cfif structKeyExists(request, "aAncestorWebskins") AND arrayLen(request.aAncestorWebskins)>
+			<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="iWebskin">
+				<!--- If we are currently inside of a webskin we need to add this id to the current webskin --->					
+				<cfif NOT structKeyExists(request.aAncestorWebskins[iWebskin].inhead.stJSLibraries, arguments.id)>
+					
+					<!--- Add the id to the array to make sure we keep track of the order in which these libraries need to appear. --->
+					<cfset arrayAppend(request.aAncestorWebskins[iWebskin].inHead.aJSLibraries, arguments.stJS.id) />
+					
+					<!--- Add the JS information to the struct so we will be able to load it all correctly into the header at the end of the request. --->
+					<cfset request.aAncestorWebskins[iWebskin].inHead.stJSLibraries[stJS.id] = arguments.stJS />
 					
 				</cfif>
 			</cfloop>

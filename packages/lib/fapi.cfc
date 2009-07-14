@@ -114,19 +114,52 @@
 			<cfreturn stNewObject />
 		</cffunction>
 		
-		
-<cffunction name="registerCSS" returntype="struct" hint="Adds the CSS file to the farcry css library to be used by your application.">
-	<cfargument name="id" required="true" />
-	<cfargument name="path" default="" />
-	<cfargument name="lFiles" default="" />
+		<!--- @@examples:
+		<p>Register a CSS library into the application:</p>
+		<code>
+			<cfset application.fapi.registerCSS(	id="jquery-ui",
+													path="/webtop/thirdparty/jquery/css/base",
+													lFiles="ui.core.css,ui.resizable.css,ui.accordion.css,ui.dialog.css,ui.slider.css,ui.tabs.css,ui.datepicker.css,ui.progressbar.css,ui.theme.css") />
+		</code>
+		 --->	
+		<cffunction name="registerCSS" returntype="struct" hint="Adds CSS files to the farcry css library to be used by your application.">
+			<cfargument name="id" required="true" />
+			<cfargument name="path" default="" />
+			<cfargument name="lFiles" default="" />
+			<cfargument name="media" default="all" />
+			<cfargument name="condition" default="" hint="Used to wrap a conditional statement around the link tag." />
+			<cfargument name="prepend" default="" hint="Any CSS code you wish to have placed before the library." />
+			<cfargument name="append" default="" hint="Any CSS code you wish to have placed after the library." />
+			
+			<cfparam name="application.fc.stCSSLibraries" default="#structNew()#" />
+			
+			<cfset application.fc.stCSSLibraries[arguments.id] = duplicate(arguments) />
+			
+			<cfreturn success("CSS library added") />
+		</cffunction>		
 	
-	<cfparam name="application.fc.stCSSLibraries" default="#structNew()#" />
-	
-	<cfset application.fc.stCSSLibraries[arguments.id] = duplicate(arguments) />
-	
-	<cfreturn success("library added") />
-</cffunction>		
-		
+		<!--- @@examples:
+		<p>Register a JS library into the application:</p>
+		<code>
+			<cfset application.fapi.registerJS(	id="jquery",
+												path="/webtop/thirdparty/jquery/js",
+												lFiles="jquery-1.3.2.min.js,ui.core.js,ui.accordion.js,ui.datepicker.js,ui.dialog.js,ui.draggable.js,ui.droppable.js,ui.progressbar.js,ui.resizable.js,ui.selectable.js,ui.slider.js,ui.sortable.js,ui.tabs.js,effects.core.js,effects.blind.js,effects.bounce.js,effects.clip.js,effects.drop.js,effects.explode.js,effects.fold.js,effects.highlight.js,effects.pulsate.js,effects.scale.js,effects.shake.js,effects.slide.js,effects.transfer.js") />
+		</code>
+		 --->	
+		<cffunction name="registerJS" returntype="struct" hint="Adds JS files to the farcry js library to be used by your application.">
+			<cfargument name="id" required="true" />
+			<cfargument name="path" default="" />
+			<cfargument name="lFiles" default="" />
+			<cfargument name="condition" default="" hint="Used to wrap a conditional statement around the script tag." />
+			<cfargument name="prepend" default="" hint="Any JS code you wish to have placed before the library." />
+			<cfargument name="append" default="" hint="Any JS code you wish to have placed after the library." />
+			
+			<cfparam name="application.fc.stJSLibraries" default="#structNew()#" />
+			
+			<cfset application.fc.stJSLibraries[arguments.id] = duplicate(arguments) />
+			
+			<cfreturn success("JS library added") />
+		</cffunction>		
 	
 		<!--- @@examples:
 			<p>Instantiate a list formtool component:</p>
