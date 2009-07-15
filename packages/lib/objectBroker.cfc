@@ -135,6 +135,10 @@
 									<cfparam name="request.inhead.stCSSLibraries" default="#structNew()#" />
 									<cfparam name="request.inhead.aCSSLibraries" default="#arrayNew(1)#" />
 									
+									<!--- JS --->
+									<cfparam name="request.inhead.stJSLibraries" default="#structNew()#" />
+									<cfparam name="request.inhead.aJSLibraries" default="#arrayNew(1)#" />
+									
 									<cfloop list="#structKeyList(stCacheWebskin.inHead)#" index="i">
 										<cfswitch expression="#i#">
 											<cfcase value="stCustom">
@@ -349,7 +353,7 @@
 		<cfif structKeyExists(request, "aAncestorWebskins") AND arrayLen(request.aAncestorWebskins)>
 			<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="iWebskin">
 				<!--- If we are currently inside of a webskin we need to add this id to the current webskin --->					
-				<cfif NOT structKeyExists(request.aAncestorWebskins[iWebskin].inhead.stCSSLibraries, arguments.id)>
+				<cfif NOT structKeyExists(request.aAncestorWebskins[iWebskin].inhead.stCSSLibraries, arguments.stCSS.id)>
 					
 					<!--- Add the id to the array to make sure we keep track of the order in which these libraries need to appear. --->
 					<cfset arrayAppend(request.aAncestorWebskins[iWebskin].inHead.aCSSLibraries, arguments.stCSS.id) />
@@ -369,7 +373,7 @@
 		<cfif structKeyExists(request, "aAncestorWebskins") AND arrayLen(request.aAncestorWebskins)>
 			<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="iWebskin">
 				<!--- If we are currently inside of a webskin we need to add this id to the current webskin --->					
-				<cfif NOT structKeyExists(request.aAncestorWebskins[iWebskin].inhead.stJSLibraries, arguments.id)>
+				<cfif NOT structKeyExists(request.aAncestorWebskins[iWebskin].inhead.stJSLibraries, arguments.stJS.id)>
 					
 					<!--- Add the id to the array to make sure we keep track of the order in which these libraries need to appear. --->
 					<cfset arrayAppend(request.aAncestorWebskins[iWebskin].inHead.aJSLibraries, arguments.stJS.id) />

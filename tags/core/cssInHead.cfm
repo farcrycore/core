@@ -16,7 +16,7 @@
 			<cfset stCSS = duplicate(request.inHead.stCSSLibraries[request.inHead.aCSSLibraries[i]]) />
 		
 			
-			<cfset idHash = hash("#stCSS.path##stCSS.lFiles#") />
+			<cfset idHash = hash("#stCSS.baseHREF##stCSS.lFiles#") />
 			
 			<cfset sCacheFileName = "" />
 			
@@ -27,29 +27,29 @@
 					</cfif>
 				</cfif>
 			<cfelse>
-				<cfset application.fapi.registerCSS(id="#idHash#", path="#stCSS.path#", lFiles="#stCSS.lFiles#") />
+				<cfset application.fapi.registerCSS(id="#idHash#", baseHREF="#stCSS.baseHREF#", lFiles="#stCSS.lFiles#") />
 			</cfif>
 			
 			<cfif not len(sCacheFileName)>			
 					
-				<cfset stCSS.path = replaceNoCase(stCSS.path,"\","/","all") /><!--- Change back slashes --->
-				<cfif len(stCSS.path) AND right(stCSS.path,1) EQ "/">
-					<cfset stCSS.path = mid(stCSS.path,1,len(stCSS.path)-1) /><!--- Remove trailing slash --->
+				<cfset stCSS.baseHREF = replaceNoCase(stCSS.baseHREF,"\","/","all") /><!--- Change back slashes --->
+				<cfif len(stCSS.baseHREF) AND right(stCSS.baseHREF,1) EQ "/">
+					<cfset stCSS.baseHREF = mid(stCSS.baseHREF,1,len(stCSS.baseHREF)-1) /><!--- Remove trailing slash --->
 				</cfif>
 				
 				
 				<cfset stCSS.lFiles = replaceNoCase(stCSS.lFiles,"\","/","all") /><!--- Change back slashes --->
 		
-				<cfset stCSS.lFullFilePaths = "" />
+				<cfset stCSS.lFullFileBaseHREFs = "" />
 				
 				<cfloop list="#stCSS.lFiles#" index="i">
 					<cfif left(i,1) NEQ "/">
 						<cfset i = "/#i#" /><!--- add slash --->
 					</cfif>
-					<cfset stCSS.lFullFilePaths = listAppend(stCSS.lFullFilePaths,"#stCSS.path##i#") />
+					<cfset stCSS.lFullFileBaseHREFs = listAppend(stCSS.lFullFileBaseHREFs,"#stCSS.baseHREF##i#") />
 				</cfloop>
 			
-				<cfset sCacheFileName = application.fc.utils.combine(	files=stCSS.lFullFilePaths,
+				<cfset sCacheFileName = application.fc.utils.combine(	files=stCSS.lFullFilebaseHREFs,
 																		prepend:stCSS.prepend,
 																		append:stCSS.append) />
 				
@@ -59,7 +59,7 @@
 			<cfsavecontent variable="css">
 				<cfoutput>
 				<!-- 
-				PATH: #stCSS.path#
+				baseHREF: #stCSS.baseHREF#
 				FILES: #stCSS.lFiles#
 				 -->
 				</cfoutput>

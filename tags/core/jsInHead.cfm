@@ -16,7 +16,7 @@
 			<cfset stJS = duplicate(request.inHead.stJSLibraries[request.inHead.aJSLibraries[i]]) />
 		
 			
-			<cfset idHash = hash("#stJS.path##stJS.lFiles#") />
+			<cfset idHash = hash("#stJS.baseHREF##stJS.lFiles#") />
 			
 			<cfset sCacheFileName = "" />
 			
@@ -27,29 +27,29 @@
 					</cfif>
 				</cfif>
 			<cfelse>
-				<cfset application.fapi.registerJS(id="#idHash#", path="#stJS.path#", lFiles="#stJS.lFiles#") />
+				<cfset application.fapi.registerJS(id="#idHash#", baseHREF="#stJS.baseHREF#", lFiles="#stJS.lFiles#") />
 			</cfif>
 			
 			<cfif not len(sCacheFileName)>			
 					
-				<cfset stJS.path = replaceNoCase(stJS.path,"\","/","all") /><!--- Change back slashes --->
-				<cfif len(stJS.path) AND right(stJS.path,1) EQ "/">
-					<cfset stJS.path = mid(stJS.path,1,len(stJS.path)-1) /><!--- Remove trailing slash --->
+				<cfset stJS.baseHREF = replaceNoCase(stJS.baseHREF,"\","/","all") /><!--- Change back slashes --->
+				<cfif len(stJS.baseHREF) AND right(stJS.baseHREF,1) EQ "/">
+					<cfset stJS.baseHREF = mid(stJS.baseHREF,1,len(stJS.baseHREF)-1) /><!--- Remove trailing slash --->
 				</cfif>
 				
 				
 				<cfset stJS.lFiles = replaceNoCase(stJS.lFiles,"\","/","all") /><!--- Change back slashes --->
 		
-				<cfset stJS.lFullFilePaths = "" />
+				<cfset stJS.lFullFilebaseHREFs = "" />
 				
 				<cfloop list="#stJS.lFiles#" index="i">
 					<cfif left(i,1) NEQ "/">
 						<cfset i = "/#i#" /><!--- add slash --->
 					</cfif>
-					<cfset stJS.lFullFilePaths = listAppend(stJS.lFullFilePaths,"#stJS.path##i#") />
+					<cfset stJS.lFullFilebaseHREFs = listAppend(stJS.lFullFilebaseHREFs,"#stJS.baseHREF##i#") />
 				</cfloop>
 			
-				<cfset sCacheFileName = application.fc.utils.combine(	files=stJS.lFullFilePaths,
+				<cfset sCacheFileName = application.fc.utils.combine(	files=stJS.lFullFilebaseHREFs,
 																		prepend:stJS.prepend,
 																		append:stJS.append) />
 				
@@ -59,7 +59,7 @@
 			<cfsavecontent variable="JS">
 				<cfoutput>
 				<!-- 
-				PATH: #stJS.path#
+				baseHREF: #stJS.baseHREF#
 				FILES: #stJS.lFiles#
 				 -->
 				</cfoutput>
