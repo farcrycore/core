@@ -1,0 +1,1 @@
+Do not use these tags outside of /farcry/core! You have been warned.

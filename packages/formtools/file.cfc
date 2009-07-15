@@ -234,6 +234,7 @@
 		<cfparam name="arguments.stMetadata.ftSecure" default="false" />
 		<cfparam name="arguments.stMetadata.ftDestination" default="" />
 		<cfparam name="arguments.stMetadata.ftRenderType" default="html" />
+		<cfparam name="arguments.stMetadata.ftAllowedExtensions" default="pdf,doc,ppt,xls,docx,pptx,xlsx,jpg,jpeg,png,gif,zip,rar,flv,swf,mpg,mpe,mpeg,m1s,mpa,mp2,m2a,mp2v,m2v,m2s,mov,qt,asf,asx,wmv,wma,wmx,rm,ra,ram,rmvb,mp3,mp4,3gp,ogm,mkv,avi"><!--- The extentions allowed to be uploaded --->
 		
 		<cfif len(arguments.stMetadata.ftDestination) and right(arguments.stMetadata.ftDestination,1) EQ "/">
 			<cfset arguments.stMetadata.ftDestination = left(arguments.stMetadata.ftDestination, (len(arguments.stMetadata.ftDestination) - 1)) />
@@ -287,40 +288,51 @@
 							filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
 							destination="#filePath##arguments.stMetadata.ftDestination#"		        	
 							nameconflict="MakeUnique" />
-						<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#cffile.ServerFile#" destination="#uploadFileName#" />
-						<cfset newFileName = uploadFileName>
+					
+						<cfif listFindNoCase(arguments.stMetadata.ftAllowedExtensions,cffile.serverFileExt)>
+							<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#cffile.ServerFile#" destination="#uploadFileName#" />
+							<cfset newFileName = uploadFileName>
+						<cfelse>
+							<cffile action="delete" file="#filePath##arguments.stMetadata.ftDestination#/#cffile.ServerFile#" />
+						</cfif>
 					<cfelse>
 						<!--- There is no image currently so we simply upload the image and make it unique  --->
 						<cffile action="UPLOAD"
 							filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
 							destination="#filePath##arguments.stMetadata.ftDestination#"		        	
 							nameconflict="MakeUnique">
-						<cfset newFileName = cffile.ServerFile>
+					
+						<cfif listFindNoCase(arguments.stMetadata.ftAllowedExtensions,cffile.serverFileExt)>
+							<cfset newFileName = cffile.ServerFile>
+						<cfelse>
+							<cffile action="delete" file="#filePath##arguments.stMetadata.ftDestination#/#cffile.ServerFile#" />
+						</cfif>
+						
 					</cfif>
 		
 			
-					
-					<!--- Replace all none alphanumeric characters --->
-					<cfset cleanFileName = reReplaceNoCase(newFileName, "[^a-z0-9.\-\_]","", "all") />
-					
-					<!--- If the filename has changed, rename the file
-					Note: doing a quick check to make sure the cleanfilename doesnt exist. If it does, prepend the count+1 to the end.
-					 --->
-					<cfif cleanFileName NEQ newFileName>
-						<cfif fileExists("#filePath##arguments.stMetadata.ftDestination#/#cleanFileName#")>
-							<cfdirectory action="list" directory="#filePath##arguments.stMetadata.ftDestination#" filter="#listFirst(cleanFileName, '.')#*" name="qDuplicates" />
-							<cfif qDuplicates.RecordCount>
-								<cfset cleanFileName = "#listFirst(cleanFileName, '.')##qDuplicates.recordCount+1#.#listLast(cleanFileName,'.')#">
-							</cfif>
-							 
-						</cfif>
+					<cfif len(newFileName)>
+						<!--- Replace all none alphanumeric characters --->
+						<cfset cleanFileName = reReplaceNoCase(newFileName, "[^a-z0-9.\-\_]","", "all") />
 						
-						<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#newFileName#" destination="#cleanFileName#" />
-					</cfif>			
-											
-					<!--- </cfif> --->
-					<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#cleanFileName#">
-		
+						<!--- If the filename has changed, rename the file
+						Note: doing a quick check to make sure the cleanfilename doesnt exist. If it does, prepend the count+1 to the end.
+						 --->
+						<cfif cleanFileName NEQ newFileName>
+							<cfif fileExists("#filePath##arguments.stMetadata.ftDestination#/#cleanFileName#")>
+								<cfdirectory action="list" directory="#filePath##arguments.stMetadata.ftDestination#" filter="#listFirst(cleanFileName, '.')#*" name="qDuplicates" />
+								<cfif qDuplicates.RecordCount>
+									<cfset cleanFileName = "#listFirst(cleanFileName, '.')##qDuplicates.recordCount+1#.#listLast(cleanFileName,'.')#">
+								</cfif>
+								 
+							</cfif>
+							
+							<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#newFileName#" destination="#cleanFileName#" />
+						</cfif>			
+												
+						<!--- </cfif> --->
+						<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#cleanFileName#">
+					</cfif>
 					
 				</cfif>
 			</cfcase>

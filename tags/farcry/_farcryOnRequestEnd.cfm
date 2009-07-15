@@ -38,6 +38,7 @@ $out:$
 --->
 
 <cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
+<cfimport taglib="/farcry/core/tags/core" prefix="core" />
 
 
 <cfif structKeyExists(session, "aExtMessages") AND arrayLen(session.aExtMessages)>
@@ -53,6 +54,11 @@ $out:$
 	<cfset session.aExtMessages = arrayNew(1) />
 </cfif>
 
+
+
+
+<core:cssInHead />
+<core:jsInHead />
 
 
 <cfif structKeyExists(Request,"inHead") AND len(structKeyList(Request.InHead)) AND NOT request.mode.ajax>		
@@ -503,5 +509,6 @@ $out:$
 	<cfset farcryPageLoadTimer = request.farcryPageTimerEnd - request.farcryPageTimerStart />
 	<cftrace var="farcryPageLoadTimer" />
 </cfif>
+
 
 <cfsetting enablecfoutputonly="no">

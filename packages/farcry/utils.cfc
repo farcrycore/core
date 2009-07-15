@@ -41,9 +41,33 @@
 			<cfset variables.JVM1_5 = true />
 		</cfif>
 		
+		
+		<!--- COMBINE: Used for CSS and JS --->
+		<cfset variables.oCombine = createObject("component", "farcry.core.packages.farcry.combine.combine").init(
+												enableCache: true,
+												cachePath: expandPath('/farcry/projects/#application.applicationname#/www/cache'),
+												enableETags: false,
+												enableJSMin: true,
+												enableYuiCSS: true,
+												skipMissingFiles: false,
+												javaLoader: createObject("component", "farcry.core.packages.farcry.javaloader.JavaLoader"),
+												jarPath: expandPath('/farcry/core/packages/farcry/combine/lib')
+								) />
+								
 		<cfreturn this />
 	</cffunction>
 
+	<cffunction name="combine" access="public" returntype="string" output="false" hint="combines a list js or css files into a single file, which is output, and cached if caching is enabled. Returns the path to the cached file.">
+		<cfargument name="files" type="string" required="true" hint="a delimited list of jss or css paths to combine" />
+		<cfargument name="type" type="string" required="false" hint="js,css" />
+		<cfargument name="delimiter" type="string" required="false" default="," hint="the delimiter used in the provided paths string" />
+		<cfargument name="prepend" type="string" required="false" default="" hint="Content to be placed BEFORE all the included files" />
+		<cfargument name="append" type="string" required="false" default="" hint="Content to be placed AFTER all the included files" />
+				
+		<cfreturn oCombine.combine(argumentCollection=arguments) />
+		
+	</cffunction>
+	
 	<cffunction name="createJavaUUID" access="public" returntype="uuid" output="false" hint="">
 		<cfset var newUUID = "" />
 		<cfset var oUUID = "" />

@@ -339,6 +339,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset stCurrentView.inHead.aCustomIDs = arrayNew(1) />
 		<cfset stCurrentView.inHead.stOnReady = structNew() />
 		<cfset stCurrentView.inHead.aOnReadyIDs = arrayNew(1) />
+		<cfset stCurrentView.inHead.stJSLibraries = structNew() />
+		<cfset stCurrentView.inHead.aJSLibraries = arrayNew(1) />
+		
 		<cfset arrayAppend(request.aAncestorWebskins, stCurrentView) />					
 		
 		<!--- Here we are initialising the viewStates. After the call to the webskin, we will know which view states were used  --->
