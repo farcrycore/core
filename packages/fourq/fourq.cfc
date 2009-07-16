@@ -339,6 +339,10 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset stCurrentView.inHead.aCustomIDs = arrayNew(1) />
 		<cfset stCurrentView.inHead.stOnReady = structNew() />
 		<cfset stCurrentView.inHead.aOnReadyIDs = arrayNew(1) />
+		
+		<cfset stCurrentView.inHead.stCSSLibraries = structNew() />
+		<cfset stCurrentView.inHead.aCSSLibraries = arrayNew(1) />
+		
 		<cfset stCurrentView.inHead.stJSLibraries = structNew() />
 		<cfset stCurrentView.inHead.aJSLibraries = arrayNew(1) />
 		
