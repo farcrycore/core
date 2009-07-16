@@ -25,7 +25,7 @@
 		<cfset var col = "" />
 		
 		<cfquery datasource="#application.dsn#" name="qBarnacle">
-			select	*
+			select	objectid,roleid,permissionid,referenceid,barnaclevalue
 			from	#application.dbowner#farBarnacle
 			where	roleid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.role#" />
 					and permissionid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.permission#" />
@@ -38,7 +38,9 @@
 			</cfloop>
 		<cfelse>
 			<!--- Barnacle didn't exist - create it --->
-			<cfset stBarnacle = getData(objectid=application.fc.utils.createJavaUUID()) />
+			<cfset stBarnacle = structNew() />
+			<cfset stBarnacle.objectid = application.fc.utils.createJavaUUID() />
+			<cfset stBarnacle.typename = "farBarnacle" />
 			<cfset stBarnacle.roleid = arguments.role />
 			<cfset stBarnacle.permissionid = arguments.permission />
 			<cfset stBarnacle.referenceid = arguments.object />
