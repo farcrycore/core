@@ -39,7 +39,7 @@ $out:$
 <cfprocessingDirective pageencoding="utf-8">
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
-<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 <cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
 
 <cfparam name="attributes.lObjectIDs" default=""> <!---objects to have their status changed-required --->
@@ -151,7 +151,7 @@ $out:$
 					<cfset oType = createobject("component", application.types[relstObj.typename].typePath)>
 					<cfset oType.setData(stProperties=relstObj,bAudit=false)>
 					
-					<extjs:bubble title="#relstObj.label#" message="Status changed to #status#" />
+					<skin:bubble title="#relstObj.label#" message="Status changed to #status#" />
 					<farcry:logevent object="#stObj.objectid#" type="type" event="to#status#" note="#commentLog#" />
 				</cfif>
 			</cfloop>
@@ -165,7 +165,7 @@ $out:$
 		<cfset oType = createobject("component", application.types[stObj.typename].typePath) />
 		<cfset oType.setData(stProperties=stObj) />
 		
-		<extjs:bubble title="#stObj.label#" message="Status changed to #status#" />
+		<skin:bubble title="#stObj.label#" message="Status changed to #status#" />
 		<farcry:logevent object="#stObj.objectid#" type="types" event="to#status#" note="#commentLog#" />
 		
 	</cfloop>

@@ -14,9 +14,8 @@
 		
 			
 			<cfset stJS = duplicate(request.inHead.stJSLibraries[request.inHead.aJSLibraries[i]]) />
-		
-			
-			<cfset idHash = hash("#stJS.baseHREF##stJS.lFiles#") />
+
+			<cfset idHash = hash("#stJS.baseHREF##stJS.lFiles##stJS.prepend##stJS.append#") />
 			
 			<cfset sCacheFileName = "" />
 			
@@ -50,6 +49,7 @@
 				</cfloop>
 			
 				<cfset sCacheFileName = application.fc.utils.combine(	files=stJS.lFullFilebaseHREFs,
+																		type="js",
 																		prepend:stJS.prepend,
 																		append:stJS.append) />
 				

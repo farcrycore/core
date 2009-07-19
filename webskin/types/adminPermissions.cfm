@@ -2,7 +2,6 @@
 
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
-<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs" />
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
@@ -26,9 +25,9 @@
 	</ft:processForm>
 
 	<ft:processForm action="Save" url="refresh">
-		<extjs:bubble title="Your permissions have been saved!">
+		<skin:bubble title="Your permissions have been saved!">
 			<cfoutput>You will need to updateApp for your changes to be implemented.</cfoutput>
-		</extjs:bubble>
+		</skin:bubble>
 	</ft:processForm>
 	
 	<ft:processForm action="Change Role">
@@ -96,7 +95,7 @@
 				</h3>
 			</cfoutput>		
 	
-			<extjs:onReady>
+			<skin:onReady>
 				<cfoutput>
 				Ext.get('selectRole').on('change', this.onClick, this, {
 				    fn: function(evt) { 
@@ -104,7 +103,7 @@
 				    }
 				 });
 				</cfoutput>
-			</extjs:onReady>
+			</skin:onReady>
 			
 			
 			<cfoutput>
@@ -179,9 +178,9 @@
 			</cfoutput>
 		</cfif>
 		
-		<ft:farcryButtonPanel indentForLabel="false">
+		<ft:buttonPanel indentForLabel="false">
 			<ft:button value="Save" color="orange" size="large" width="380px" />
-		</ft:farcryButtonPanel>
+		</ft:buttonPanel>
 	</ft:form>
 </sec:CheckPermission>
 

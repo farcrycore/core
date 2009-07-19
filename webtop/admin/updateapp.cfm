@@ -66,9 +66,9 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 		</cfloop>
 	</cfif>
 	
-	<ft:farcryButtonPanel>
-		<ft:farcryButton value="Update Application" />
-	</ft:farcryButtonPanel>
+	<ft:buttonPanel>
+		<ft:button value="Update Application" />
+	</ft:buttonPanel>
 </ft:form>
 
 <admin:footer />

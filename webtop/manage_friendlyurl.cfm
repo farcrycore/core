@@ -2,6 +2,7 @@
 
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 <cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">
 
 
@@ -42,11 +43,11 @@ manage friednly urls for a particular object id
 		<cfset stResult = application.fc.factory.farFU.createCustomFU(argumentCollection="#stProperties#") />
 		
 		<cfif not stResult.bSuccess>
-			<extjs:bubble title="#stResult.message#" autoHide="false" />
+			<skin:bubble title="#stResult.message#" autoHide="false" />
 		<cfelse>
-			<extjs:bubble title="Custom Friendly URL Created" autoHide="true">
+			<skin:bubble title="Custom Friendly URL Created" autoHide="true">
 				<cfoutput>Your Friendly URL (#stProperties.friendlyURL#) has been created.</cfoutput>
-			</extjs:bubble>
+			</skin:bubble>
 		</cfif>
 		
 		<ft:break />
@@ -89,7 +90,7 @@ manage friednly urls for a particular object id
 
 
 <cfif not len(url.objectid)>
-	<extjs:bubble title="Invalid ObjectID" autoHide="false" />
+	<skin:bubble title="Invalid ObjectID" autoHide="false" />
 </cfif>
 
 
@@ -103,9 +104,9 @@ manage friednly urls for a particular object id
 			<ft:form name="frm">
 				
 				<ft:object typename="farFU" key="newFU" lexcludeFields="label,refObjectID,fuStatus,querystring,applicationname" includeFieldSet="false" />
-				<ft:farcryButtonPanel>
+				<ft:buttonPanel>
 					<ft:button value="Add" selectedObjectID="#url.objectid#" />
-				</ft:farcryButtonPanel>
+				</ft:buttonPanel>
 
 			</ft:form>
 		</extjs:tabPanel>
@@ -154,7 +155,7 @@ manage friednly urls for a particular object id
 								#stFields.redirectionType.html#
 								<div id="#prefix#-redirect-to-wrap" style="<cfif qFUList.redirectionType[currentRow] EQ 'none'>display:none;</cfif>">#stFields.redirectTo.html#</div>
 								
-								<extjs:onReady>
+								<skin:onReady>
 									var el = Ext.get('#stFields.redirectionType.FORMFIELDNAME#');	
 									el.on('change', function(n,c) {
 										var currentValue = Ext.getDom('#stFields.redirectionType.FORMFIELDNAME#').value;
@@ -173,7 +174,7 @@ manage friednly urls for a particular object id
 											});
 										}
 									});	
-								</extjs:onReady>
+								</skin:onReady>
 							</td>
 							<cfif qFUList.bDefault>
 								<td>>>>DEFAULT<<<</td>
@@ -188,10 +189,10 @@ manage friednly urls for a particular object id
 						</table>
 					</cfoutput>
 					
-					<ft:farcryButtonPanel indentForLabel="false">
+					<ft:buttonPanel indentForLabel="false">
 						<ft:button value="Archive Selected" />
 						<ft:button value="Save Changes" />
-					</ft:farcryButtonPanel>
+					</ft:buttonPanel>
 				
 				</ft:form>
 			</extjs:tabPanel>
@@ -226,9 +227,9 @@ manage friednly urls for a particular object id
 					</cfoutput>
 					
 					
-					<ft:farcryButtonPanel indentForLabel="false">
+					<ft:buttonPanel indentForLabel="false">
 						<ft:button value="Delete Selected Archives" />
-					</ft:farcryButtonPanel>
+					</ft:buttonPanel>
 				
 				</ft:form>
 			</extjs:tabPanel>

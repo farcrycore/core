@@ -22,7 +22,7 @@
 
 
 <!--- IMPORT TAG LIBRARIES --->
-<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <!----------------------------------- 
 GENERAL CONFIG VARIABLES
@@ -233,9 +233,9 @@ Apps Processing
 Alert user that application scope has been refreshed
 -------------------------------------------------------->
 <cfif isDefined("URL.updateApp") AND isBoolean(URL.updateApp) AND URL.updateApp>
-	<extjs:bubble title="Update App Complete" bAutoHide="false">
+	<skin:bubble title="Update App Complete">
 		<cfoutput>The application scope has been refreshed</cfoutput>
-	</extjs:bubble>
+	</skin:bubble>
 </cfif>
 
 </cfsilent>

@@ -21,7 +21,7 @@
 		<cfset var thisprop = "" />
 		<cfset var bSuccess = false />
 		
-		<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
+		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		
 		<cfparam name="arguments.fields.bOutput" default="true" />
 		
@@ -29,7 +29,7 @@
 			<cfif not listcontainsnocase("objectid,label,datetimecreated,createdby,ownedby,datetimelastupdated,lastupdatedby,lockedby,locked",thisprop) and structkeyexists(arguments.fields,thisprop) and arguments.fields[thisprop] and structkeyexists(this,"process#thisprop#")>
 				<cfinvoke component="#this#" method="process#thisprop#" returnvariable="bSuccess" />
 				<cfif bSuccess and arguments.fields.bOutput>
-					<extjs:bubble title="#application.stCOAPI.UpdateApp.stProps[thisprop].metadata.ftLabel#" message="Done" />
+					<skin:bubble title="#application.stCOAPI.UpdateApp.stProps[thisprop].metadata.ftLabel#" message="Done" />
 				</cfif>
 			</cfif>
 		</cfloop>

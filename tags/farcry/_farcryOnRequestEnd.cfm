@@ -39,19 +39,33 @@ $out:$
 
 <cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 <cfimport taglib="/farcry/core/tags/core" prefix="core" />
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
-
-<cfif structKeyExists(session, "aExtMessages") AND arrayLen(session.aExtMessages)>
-	<skin:htmlHead library="extCoreJS" />
-
-	<extjs:onReady>
-		<cfoutput>Ext.example.init, Ext.example;</cfoutput>
-		<cfloop from="1" to="#arrayLen(session.aExtMessages)#" index="i">
-			<cfoutput>Ext.example.msg('#session.aExtMessages[i].title#','#session.aExtMessages[i].message#', #session.aExtMessages[i].pause#, #session.aExtMessages[i].bAutoHide#);</cfoutput>
-		</cfloop>		
-	</extjs:onReady>
+<cfif structKeyExists(session, "aGritterMessages") AND arrayLen(session.aGritterMessages)>
+	<skin:loadJS id="jquery" />
+	<skin:loadJS id="gritter" />
+	<skin:loadCSS id="gritter" />
 	
-	<cfset session.aExtMessages = arrayNew(1) />
+	<skin:onReady>
+		<cfloop from="1" to="#arrayLen(session.aGritterMessages)#" index="i">
+			<cfoutput>
+			$j.gritter.add({
+				// (string | mandatory) the heading of the notification
+				title: '#jsstringformat(session.aGritterMessages[i].title)#',
+				// (string | mandatory) the text inside the notification
+				text: '#jsstringformat(session.aGritterMessages[i].message)#',
+				// (string | optional) the image to display on the left
+				image: '#session.aGritterMessages[i].image#',
+				// (bool | optional) if you want it to fade out on its own or just sit there
+				sticky: #session.aGritterMessages[i].sticky#, 
+				// (int | optional) the time you want it to be alive for before fading out (milliseconds)
+				time: #session.aGritterMessages[i].pause#
+			});
+			</cfoutput>
+		</cfloop>		
+	</skin:onReady>
+	
+	<cfset session.aGritterMessages = arrayNew(1) />
 </cfif>
 
 
@@ -476,7 +490,7 @@ $out:$
 		<cfif arrayLen(request.inhead.aOnReadyIDs)>
 			<cfoutput>
 			<script type="text/javascript">
-				Ext.onReady(function(){			
+				$j(document).ready(function() {	
 			</cfoutput>
 			
 			<cfloop from="1" to="#arrayLen(request.inHead.aOnReadyIDs)#" index="i">

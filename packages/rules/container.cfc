@@ -493,7 +493,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
-		<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 		
 		<cftrace type="warning" text="populating container" var="arguments.arules" />
 		
@@ -525,9 +524,9 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 					<cfif isdefined("url.debug") and url.debug EQ 1>
 						<cfset request.cfdumpinited = false>
 						
-						<extjs:bubble title="Error with rule '#application.stcoapi[rule].displayName#'" bAutoHide="false">
+						<skin:bubble title="Error with rule '#application.stcoapi[rule].displayName#'" bAutoHide="false">
 							<cfoutput>#cfcatch.message#<br />#cfcatch.detail#</cfoutput>
-						</extjs:bubble>							
+						</skin:bubble>							
 						
 						<cfsavecontent variable="ruleError">
 							<cfdump var="#cfcatch#" expand="false" label="#cfcatch.message#">
@@ -535,9 +534,9 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 						<cfset arrayappend(request.aInvocations, "#ruleError#") />
 						
 				  	<cfelseif request.mode.design and request.mode.showcontainers gt 0>
-						<extjs:bubble title="Error with rule '#rule#'" bAutoHide="true">
+						<skin:bubble title="Error with rule '#rule#'" bAutoHide="true">
 							<cfoutput>#cfcatch.message#<br />#cfcatch.detail#</cfoutput>
-						</extjs:bubble>
+						</skin:bubble>
 					</cfif>
 					<!--- Output a HTML Comment for debugging purposes --->
 					<cfoutput>

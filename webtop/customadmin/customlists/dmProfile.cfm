@@ -26,7 +26,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
-<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <ft:processform action="Change password">
 	<cfset stProfile = createobject("component",application.stCOAPI.dmProfile.packagepath).getData(form.selectedobjectid) />
@@ -36,13 +36,13 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 		<cfset stUser = createobject("component",application.stCOAPI.farUser.packagepath).getByUserID(userID) />
 		
 		<cfif structIsEmpty(stUser)>
-			<extjs:bubble title="Error" message="This profile does not have a valid user attached. Please edit this profile to create a username/password." />
+			<skin:bubble title="Error" message="This profile does not have a valid user attached. Please edit this profile to create a username/password." />
 		<cfelse>
 			<cflocation url="#application.url.webtop#/conjuror/invocation.cfm?objectid=#stUser.objectid#&typename=farUser&method=editPassword&ref=typeadmin&module=customlists/dmProfile.cfm" />
 		</cfif>
 		
 	<cfelse>
-		<extjs:bubble title="Error" message="'Change password' only applies to CLIENTUD users." />
+		<skin:bubble title="Error" message="'Change password' only applies to CLIENTUD users." />
 	</cfif>
 </ft:processform>
 

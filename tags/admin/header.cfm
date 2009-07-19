@@ -57,7 +57,7 @@ $in: [bCacheControl] output cache control headers; default true. $
 <cfparam name="attributes.bodyclass" default="iframed-content">
 
 <!--- check for custom css --->
-<cfset customCSS="">
+<!--- <cfset customCSS="">
 <cfif directoryExists("#application.path.project#/www/css/customadmin")>
 	<cfdirectory directory="#application.path.project#/www/css/customadmin" action="LIST" filter="*.css" name="qCSS">
 	<cfsavecontent variable="customCSS">
@@ -78,7 +78,9 @@ $in: [bCacheControl] output cache control headers; default true. $
 		<script type="text/javascript" src="#application.url.webroot#/js/customadmin/#qJS.name#"></script></cfoutput>
 	</cfloop>
 	</cfsavecontent>
-</cfif>
+</cfif> --->
+
+<skin:loadCSS id="webtop" />
 
 <cfoutput>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -89,7 +91,7 @@ $in: [bCacheControl] output cache control headers; default true. $
 		<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
 		<title>#attributes.title#</title>
 
-		<style type="text/css">@import url(#application.url.webtop#/css/combine.cfm?files=/main.css,/tabs.css&randomID=#application.randomID#);</style>
+		<!--- <style type="text/css">@import url(#application.url.webtop#/css/combine.cfm?files=/main.css,/tabs.css&randomID=#application.randomID#);</style>
 		<script type="text/javascript" src="#application.url.webtop#/js/combine.cfm?files=/tables.js,/showhide.js,/fade.js,/tabs.js&randomID=#application.randomID#"></script>
 		
 		<cfif attributes.bDataRequestorJS>
@@ -98,7 +100,7 @@ $in: [bCacheControl] output cache control headers; default true. $
 		</cfif>
 		
 		#customCSS#
-		#customJS#
+		#customJS# --->
 </cfoutput>
 
 <cfoutput>

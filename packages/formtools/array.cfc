@@ -263,12 +263,12 @@
 							<cfif arguments.stMetadata.ftAllowLibraryEdit>
 								<skin:htmlHead library="extjs" />	
 							
-								<ft:farcryButton type="button" value="Edit Selected" onclick="editLibrarySelected(Ext.query('.#arguments.fieldname#Selected'), '#arguments.stObject.objectid#', '#arguments.stObject.typename#',  '#arguments.stMetadata.ftLibraryEditWebskin#', '#arguments.stMetaData.Name#', '#arguments.fieldname#', 'array');" />
+								<ft:button type="button" value="Edit Selected" onclick="editLibrarySelected(Ext.query('.#arguments.fieldname#Selected'), '#arguments.stObject.objectid#', '#arguments.stObject.typename#',  '#arguments.stMetadata.ftLibraryEditWebskin#', '#arguments.stMetaData.Name#', '#arguments.fieldname#', 'array');" />
 							</cfif>
 																		
-							<ft:farcryButton type="button" value="Select All" onclick="toggleOnArrayField('#arguments.fieldname#');return false;" />
-							<ft:farcryButton type="button" value="De-select All" onclick="toggleOffArrayField('#arguments.fieldname#');return false;" />
-							<ft:farcryButton type="button" value="Remove Selected" onclick="deleteSelectedFromArrayField('#arguments.fieldname#','#application.url.webroot#');return false;" confirmText="Are you sure you want to remove the selected item(s)" />
+							<ft:button type="button" value="Select All" onclick="toggleOnArrayField('#arguments.fieldname#');return false;" />
+							<ft:button type="button" value="De-select All" onclick="toggleOffArrayField('#arguments.fieldname#');return false;" />
+							<ft:button type="button" value="Remove Selected" onclick="deleteSelectedFromArrayField('#arguments.fieldname#','#application.url.webroot#');return false;" confirmText="Are you sure you want to remove the selected item(s)" />
 						</div>
 						</div>
 						<br class="clearer" />

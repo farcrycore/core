@@ -23,10 +23,10 @@
 	<cfset stPropMetadata.password.ftValidation = "required" />
 	<ft:object stObject="#stObj#" typename="farUser" lfields="password" includeFieldSet="false" stPropMetadata="#stPropMetadata#" />
 	
-	<ft:farcryButtonPanel>
+	<ft:buttonPanel>
 		<ft:button value="Save" color="orange" />
 		<ft:button value="Cancel" validate="false" />
-	</ft:farcryButtonPanel>
+	</ft:buttonPanel>
 </ft:form>
 
 <admin:footer />

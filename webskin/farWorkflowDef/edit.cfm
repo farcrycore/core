@@ -73,9 +73,9 @@
 		</cfoutput>
 	</extjs:onReady>
 	
-	<ft:farcryButtonPanel>
-		<ft:farcryButton value="Save" />
-		<ft:farcryButton value="Cancel" />
-	</ft:farcryButtonPanel>
+	<ft:buttonPanel>
+		<ft:button value="Save" />
+		<ft:button value="Cancel" />
+	</ft:buttonPanel>
 </ft:form>
 <cfsetting enablecfoutputonly="false" />

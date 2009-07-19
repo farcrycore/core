@@ -1,7 +1,7 @@
 <cfsetting enablecfoutputonly="true" />
 <!--- @@displayname: UI for manageing a scheduled task --->
 
-<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs" />
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
 <cfif thistag.ExecutionMode eq "end">
 	<cfexit method="exittag" />
@@ -59,7 +59,7 @@
 	<cfset stCron.timeOut = 60 />
 	<cfset oCron.setData(stProperties=stCron) />
 	
-	<extjs:bubble message="Task '#attributes.title#' created" />
+	<skin:bubble message="Task '#attributes.title#' created" />
 	
 	<cflocation url="#cgi.script_name#?#rereplace(cgi.query_string,'(\?|&)createtask=[^&]*','')#" />
 </cfif>
@@ -75,11 +75,11 @@
 	<cfif qCron.recordcount>
 		
 		<cfset oCron.delete(objectid=qCron.objectid[1]) />
-		<extjs:bubble message="Task '#attributes.title#' deleted" />
+		<skin:bubble message="Task '#attributes.title#' deleted" />
 	
 	<cfelse>
 	
-		<extjs:bubble title="Error" message="Task '#attributes.title#' does not exist" />
+		<skin:bubble title="Error" message="Task '#attributes.title#' does not exist" />
 	
 	</cfif>
 	

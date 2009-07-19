@@ -288,10 +288,10 @@
 							<cfif arguments.stMetadata.ftAllowLibraryEdit>
 								<skin:htmlHead library="extjs" />	
 							
-								<ft:farcryButton type="button" value="Edit Item" onclick="editLibrarySelected(Ext.query('.#arguments.fieldname#Selected'), '#arguments.stObject.objectid#', '#arguments.stObject.typename#', '#arguments.stMetadata.ftLibraryEditWebskin#', '#arguments.stMetaData.Name#', '#arguments.fieldname#', 'uuid');" />
+								<ft:button type="button" value="Edit Item" onclick="editLibrarySelected(Ext.query('.#arguments.fieldname#Selected'), '#arguments.stObject.objectid#', '#arguments.stObject.typename#', '#arguments.stMetadata.ftLibraryEditWebskin#', '#arguments.stMetaData.Name#', '#arguments.fieldname#', 'uuid');" />
 							</cfif>							
 							<cfif arguments.stMetadata.ftShowRemoveSelected>
-								<ft:farcryButton type="button" value="Remove Item" onclick="deleteSelectedFromUUIDField('#arguments.fieldname#');return false;" confirmText="Are you sure you want to remove the selected item" />						
+								<ft:button type="button" value="Remove Item" onclick="deleteSelectedFromUUIDField('#arguments.fieldname#');return false;" confirmText="Are you sure you want to remove the selected item" />						
 							</cfif>
 							
 						</div>

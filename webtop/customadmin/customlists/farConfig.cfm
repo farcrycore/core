@@ -26,7 +26,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
-<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 
 <!------------------------------------------------------------
@@ -39,7 +39,7 @@ ACTION
 		<cfset application.config[configkey] = oConfig.getConfig(configkey) />
 	</cfloop>
 	
-	<extjs:bubble title="Configuration has been reloaded" />
+	<skin:bubble title="Configuration has been reloaded" />
 </ft:processform>
 
 <ft:processform action="Delete / reset">
@@ -55,14 +55,14 @@ ACTION
 				<cfif structkeyexists(application.stCOAPI[thisform],"displayname")>
 					<cfset stConfig.configkey = application.stCOAPI[thisform].displayname />
 				</cfif>
-				<extjs:bubble title="Configuration reset" message="#stconfig.configkey# has been reset" />
+				<skin:bubble title="Configuration reset" message="#stconfig.configkey# has been reset" />
 			<cfelse>
 				<cfset structdelete(application.config,stConfig.configkey) />
-				<extjs:bubble title="Configuration deleted" message="#stconfig.configkey# has been deleted" />
+				<skin:bubble title="Configuration deleted" message="#stconfig.configkey# has been deleted" />
 			</cfif>
 		</cfloop>
 	<cfelse>
-		<extjs:bubble title="Error" message="No configurations selected" />
+		<skin:bubble title="Error" message="No configurations selected" />
 	</cfif>
 </ft:processform>
 

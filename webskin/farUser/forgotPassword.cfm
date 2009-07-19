@@ -55,13 +55,13 @@
 
 			<ft:object typename="farUser" lfields="userID" includeFieldSet="false" />
 
-			<ft:farcryButtonPanel>
-				<ft:farcryButton value="Reset Password" />
-			</ft:farcryButtonPanel>
+			<ft:buttonPanel>
+				<ft:button value="Reset Password" />
+			</ft:buttonPanel>
 
 		</cfif>
 		
-		<ft:farcryButtonPanel>
+		<ft:buttonPanel>
 			<cfoutput><ul class="loginForgot"></cfoutput>
 			<sec:CheckPermission webskinpermission="forgotUserID" type="farUser">
 				<cfoutput>
@@ -75,7 +75,7 @@
 			<cfoutput> 
 				<li><skin:buildLink href="#application.url.webtop#/login.cfm">Login</skin:buildLink></li></cfoutput>
 			<cfoutput></ul></cfoutput>
-		</ft:farcryButtonPanel>
+		</ft:buttonPanel>
 
 	
 	

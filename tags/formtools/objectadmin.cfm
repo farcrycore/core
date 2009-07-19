@@ -35,6 +35,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 <cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">
 
 
@@ -213,11 +214,11 @@ user --->
 				<cfset stResult = o.delete(objectid=i) />
 				
 				<cfif isDefined("stResult.bSuccess") AND not stResult.bSuccess>
-					<extjs:bubble title="Error deleting - #stDeletingObject.label#" bAutoHide="true">
+					<skin:bubble title="Error deleting - #stDeletingObject.label#" bAutoHide="true">
 						<cfoutput>#stResult.message#</cfoutput>
-					</extjs:bubble>
+					</skin:bubble>
 				<cfelse>
-					<extjs:bubble title="Deleted - #stDeletingObject.label#" bAutoHide="true" />
+					<skin:bubble title="Deleted - #stDeletingObject.label#" bAutoHide="true" />
 				</cfif>
 			</cfloop>
 		</cfif>
@@ -316,7 +317,7 @@ user --->
 						
 						<div style="font-size:90%;margin-left:10px;border:1px solid ##000;padding:2px;float:right;background-color:##fff">
 							#HTMLfiltersAttributes#
-							<ft:farcryButton value="clear filter" />
+							<ft:button value="clear filter" />
 							<br class="clearer" />
 						</div>
 					</cfif>		
@@ -326,9 +327,9 @@ user --->
 				
 					<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" stPropMetaData="#attributes.stFilterMetaData#" />
 					
-					<ft:farcryButtonPanel>
-						<ft:farcryButton value="apply filter" />
-					</ft:farcryButtonPanel>
+					<ft:buttonPanel>
+						<ft:button value="apply filter" />
+					</ft:buttonPanel>
 					
 				<cfoutput><br class="clearer" /></div></div></cfoutput>
 				
@@ -647,7 +648,7 @@ user --->
 		<cfsavecontent variable="html_buttonbar">
 		
 			<cfif len(attributes.lButtons)>
-				<ft:farcryButtonPanel indentForLabel="false">
+				<ft:buttonPanel indentForLabel="false">
 				<cfloop from="1" to="#arraylen(attributes.aButtons)#" index="i">
 					
 					<cfif attributes.lButtons EQ "*" or listFindNoCase(attributes.lButtons,attributes.aButtons[i].value)>
@@ -673,7 +674,7 @@ user --->
 						</cfif>
 					</cfif>
 				</cfloop>
-				</ft:farcryButtonPanel>
+				</ft:buttonPanel>
 			</cfif>
 		</cfsavecontent>
 		

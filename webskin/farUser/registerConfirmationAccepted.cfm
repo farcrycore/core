@@ -18,7 +18,7 @@
 </cfoutput>
 
 
-<ft:farcryButtonPanel>
+<ft:buttonPanel>
 	<cfoutput><ul class="loginForgot"></cfoutput>
 	<sec:CheckPermission webskinpermission="forgotUserID" type="farUser">
 		<cfoutput>
@@ -32,7 +32,7 @@
 	<cfoutput>
 		<li><skin:buildLink href="#application.url.webtop#/login.cfm">Login</skin:buildLink></li></cfoutput>
 	<cfoutput></ul></cfoutput>
-</ft:farcryButtonPanel>
+</ft:buttonPanel>
 
 <cfoutput></div></cfoutput>
 

@@ -44,7 +44,7 @@ $out:$
 
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">	
 	<cfimport taglib="/farcry/core/tags/wizard/" prefix="wiz">	
-	<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">	
+	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">	
 	
 	<cffunction name="getWebskins" returntype="query" access="public" output="false" hint="Returns a query of all available webskins. Search through project first, then any library's that have been included.">
 		<cfargument name="typename" type="string" default="#gettablename()#" hint="Typename of instance." />
@@ -176,14 +176,14 @@ $out:$
 				</wiz:processwizard>
 				
 				<wiz:processwizard action="Save" Savewizard="true" Exit="true"><!--- Save wizard Data to Database and remove wizard --->
-					<extjs:bubble title="Rule Saved" bAutoHide="true">
+					<skin:bubble title="Rule Saved" bAutoHide="true">
 						<cfoutput>The changes you have made to this rule have been saved.</cfoutput>
-					</extjs:bubble>
+					</skin:bubble>
 				</wiz:processwizard>
 				<wiz:processwizard action="Cancel" Removewizard="true" Exit="true"><!--- remove wizard --->
-					<extjs:bubble title="Changes Cancelled" bAutoHide="true">
+					<skin:bubble title="Changes Cancelled" bAutoHide="true">
 						<cfoutput>The changes you made to the rule were cancelled.</cfoutput>
-					</extjs:bubble>
+					</skin:bubble>
 				</wiz:processwizard>
 				
 				
@@ -271,16 +271,16 @@ $out:$
 					
 					<ft:processFormObjects typename="#stobj.typename#" PackageType="rules" />
 
-					<extjs:bubble title="Rule Saved" bAutoHide="true">
+					<skin:bubble title="Rule Saved" bAutoHide="true">
 						<cfoutput>The changes you have made to this rule have been saved.</cfoutput>
-					</extjs:bubble>
+					</skin:bubble>
 					
 				</ft:processForm>
 				
 				<ft:processForm action="Cancel" Exit="true">				
-					<extjs:bubble title="Changes Cancelled" bAutoHide="true">
+					<skin:bubble title="Changes Cancelled" bAutoHide="true">
 						<cfoutput>The changes you made to the rule were cancelled.</cfoutput>
-					</extjs:bubble>
+					</skin:bubble>
 				</ft:processForm>
 				
 				
@@ -308,10 +308,10 @@ $out:$
 						<ft:object ObjectID="#arguments.ObjectID#" PackageType="rules" format="edit" lExcludeFields="label" lFields="" IncludeFieldSet="false" />
 					</cfif>
 					
-					<ft:farcryButtonPanel>
-						<ft:farcryButton value="Save" /> 
-						<ft:farcryButton value="Cancel" validate="false" />
-					</ft:farcryButtonPanel>
+					<ft:buttonPanel>
+						<ft:button value="Save" /> 
+						<ft:button value="Cancel" validate="false" />
+					</ft:buttonPanel>
 					
 				</ft:form>
 			</cfif>

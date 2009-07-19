@@ -39,8 +39,6 @@
 	
 	<cfset attributes.lExcludeFields = ListAppend(attributes.lExcludeFields,"objectid,locked,lockedby,lastupdatedby,ownedby,datetimelastupdated,createdby,datetimecreated,versionID,status")>
 	
-	<!--- Add Form Tools Specific CSS --->
-	<cfparam name="Request.InHead.FormsCSS" default="true" />
 	
 	<cfif NOT structIsEmpty(attributes.stObject)>
 		<cfset attributes.ObjectID = attributes.stObject.ObjectID>
@@ -471,7 +469,7 @@
 							<cfelse>
 								<input type="hidden" id="#variables.prefix##ftFieldMetadata.Name#Join" name="#variables.prefix##ftFieldMetadata.Name#Join" value="#ftFieldMetadata.ftJoin#" >
 							</cfif>
-							<ft:farcryButton Type="button" value="Open Library" onClick="openLibrary('#Replace(stObj.ObjectID,"-", "", "ALL")#', $('#variables.prefix##ftFieldMetadata.Name#Join').value,'#libraryPopupHTML#')" />
+							<ft:button Type="button" value="Open Library" onClick="openLibrary('#Replace(stObj.ObjectID,"-", "", "ALL")#', $('#variables.prefix##ftFieldMetadata.Name#Join').value,'#libraryPopupHTML#')" />
 	
 	
 						</cfoutput>

@@ -97,7 +97,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 					<p>For more details, paste the following into the "<strong>Scope Dump Utility</strong>":<br /> application.objectBroker.ieProcess.#maxSkinsObjectID#.STWEBSKINS</p>
 				</cfif>
 			<cfelse>
-				<ft:farcryButton value="show webskin detail" selectedObjectID="#key#" bInPanel="true" />
+				<ft:button value="show webskin detail" selectedObjectID="#key#" bInPanel="true" />
 			</cfif>
 				
 			

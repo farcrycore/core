@@ -790,7 +790,7 @@ $out:$
 						<td>
 							<input type="hidden" name="property" value="#key#" />
 							<input type="hidden" name="typename" value="#arguments.typename#" />
-							<ft:farcryButton value="Go" />
+							<ft:button value="Go" />
 							
 						</td>
 					<cfelseif arguments.stCFC[key].bTypeConflict>
@@ -900,7 +900,7 @@ $out:$
 							<input type="hidden" name="property" value="#key#" />
 							<input type="hidden" name="typename" value="#arguments.typename#" />
 							<!--- <input type="submit" value="Go" class="f-submit" /> --->
-							<ft:farcryButton value="Go" />
+							<ft:button value="Go" />
 						</td>
 					<cfelseif arguments.stDB[key].bTypeConflict>
 						<td>
@@ -924,7 +924,7 @@ $out:$
 							<input type="hidden" name="property" value="#key#" />
 							<input type="hidden" name="typename" value="#arguments.typename#" />
 							<!--- <input type="submit" value="Go" class="f-submit" /> --->
-							<ft:farcryButton value="Go" />
+							<ft:button value="Go" />
 						</td>
 					</cfif>
 					</tr>

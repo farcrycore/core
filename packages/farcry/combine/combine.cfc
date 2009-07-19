@@ -154,7 +154,7 @@
 			<cfset sExpandedFilePath = expandPath(sFilePath) />
 			
 			<!--- check it is a valid JS or CSS file. Don't allow mixed content (all JS or all CSS only) --->
-			<cfif fileExists( sExpandedFilePath ) and listLast(sExpandedFilePath, '.') eq sType>
+			<cfif fileExists( sExpandedFilePath ) and (listLast(sExpandedFilePath, '.') eq sType OR listLast(sExpandedFilePath, '.') eq "cfm")>
 			
 				<cfset lastModified = max(lastModified, getFileDateLastModified( sExpandedFilePath )) />
 				<cfset sCorrectedFiles = listAppend(sCorrectedFiles, sFilePath, sDelimiter) />
@@ -214,7 +214,15 @@
 			
 				<cfset sExpandedFilePath = expandPath(sFilePath) />
 			
-				<cffile action="read" variable="sFileContent" file="#sExpandedFilePath#" />
+				<cfif listLast(sFilePath,".") EQ "cfm">
+					<cfsavecontent variable="sFileContent">
+						<cfinclude template="#sFilePath#" />
+					</cfsavecontent>
+				<cfelse>
+					<cffile action="read" variable="sFileContent" file="#sExpandedFilePath#" />
+				</cfif>
+				
+				
 				
 				<!--- CHANGE URL PATHS IN CSS FILES --->
 				<cfif sType EQ "CSS">

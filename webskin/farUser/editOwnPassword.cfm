@@ -42,10 +42,10 @@ VIEW
 
 	<ft:object objectid="#stObj.objectid#" typename="farUser" lfields="password" stPropMetadata="#stMetadata#" IncludeFieldSet="false"  />
 
-	<ft:farcryButtonPanel>
+	<ft:buttonPanel>
 		<ft:button value="Save" text="Change Password" color="orange" />
 		<ft:button value="Cancel" validate="false" />
-	</ft:farcryButtonPanel>
+	</ft:buttonPanel>
 </ft:form>
 
 

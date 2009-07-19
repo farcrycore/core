@@ -93,12 +93,12 @@
 	
 	
 	
-	<ft:farcryButtonPanel>
-		<ft:farcryButton value="Create" />
+	<ft:buttonPanel>
+		<ft:button value="Create" />
 		<cfif structkeyexists(url,"iframe")>
-			<ft:farcryButton value="Close" onclick="parent.closeDialog();return false;" />
+			<ft:button value="Close" onclick="parent.closeDialog();return false;" />
 		</cfif>
-	</ft:farcryButtonPanel>
+	</ft:buttonPanel>
 
 </ft:form>
 

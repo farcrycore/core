@@ -63,14 +63,14 @@
 
 				<ft:object typename="dmProfile" lfields="emailAddress" />
 
-				<ft:farcryButtonPanel>
-					<ft:farcryButton value="Retrieve User ID" />
-				</ft:farcryButtonPanel>
+				<ft:buttonPanel>
+					<ft:button value="Retrieve User ID" />
+				</ft:buttonPanel>
 
 		</cfif>
 
 		
-		<ft:farcryButtonPanel>
+		<ft:buttonPanel>
 			<cfoutput><ul class="loginForgot"></cfoutput>
 			<sec:CheckPermission webskinpermission="forgotPassword" type="farUser">
 				<cfoutput>
@@ -84,7 +84,7 @@
 			<cfoutput>
 				<li><skin:buildLink href="#application.url.webtop#/login.cfm">Login</skin:buildLink></li></cfoutput>
 			<cfoutput></ul></cfoutput>
-		</ft:farcryButtonPanel>
+		</ft:buttonPanel>
 			
 	</ft:form>
 

@@ -4,7 +4,6 @@
 
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
-<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
 <cfset stProfile = getData(objectid=session.dmProfile.objectid) />
@@ -26,9 +25,9 @@ ACTION
 	<ft:processformobjects objectid="#stobj.objectid#">
 		<cfset structappend(session.dmProfile,stProperties,true) />
 
-		<extjs:bubble title="Profile Saved" bAutoHide="false">
+		<skin:bubble title="Profile Saved" bAutoHide="false">
 			<cfoutput>Your profile has been saved. You can always update your profile from the overview tab in the webtop.</cfoutput>
-		</extjs:bubble>
+		</skin:bubble>
 		
 		<cfset session.firstLogin = false />
 	</ft:processformobjects>
@@ -58,10 +57,10 @@ VIEW
 	<ft:object objectid="#stObj.objectid#" typename="dmProfile" lfields="position,department" legend="Job Details" />
 	<ft:object objectid="#stObj.objectid#" typename="dmProfile" lfields="locale" legend="Language Details" />
 	
-	<ft:farcryButtonPanel>
+	<ft:buttonPanel>
 		<ft:button value="Save" text="Update Profile" color="orange" />
 		<ft:button value="Cancel" validation="false" />
-	</ft:farcryButtonPanel>
+	</ft:buttonPanel>
 </ft:form>
 
 <cfsetting enablecfoutputonly="false" />

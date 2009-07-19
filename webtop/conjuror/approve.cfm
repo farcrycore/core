@@ -5,7 +5,7 @@ Merge of ..admin/navajo/approve.cfm and ../tags/navajo/objectstatus.cfm
 <cfsetting enablecfoutputonly="Yes">
 <cfprocessingDirective pageencoding="utf-8">
 <cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
-<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 <cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
 
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
@@ -286,7 +286,7 @@ $out:$
 				</cfif>
 			</cfif>
 			
-			<extjs:bubble title="#stObj.label#" message="Status changed to #status#" />
+			<skin:bubble title="#stObj.label#" message="Status changed to #status#" />
 			<farcry:logevent object="#stObj.objectid#" type="types" event="to#status#" notes="#form.commentLog#" />
 		</cfloop>
 		

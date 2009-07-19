@@ -510,13 +510,10 @@
 	<cfargument name="page" required="true" />
 	
 	<cfset var result = "" />
-
-	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
-	
 	
 	<!--- ENSURE WE ARE DOING A FORM SUBMISSION AND THAT WE ARE CURRENTLY IN THE MIDDLE OF AN FT:FORM --->
 	<cfif this.submissionType eq "form" and structKeyExists(Request, "farcryForm") and not structIsEmpty(request.farcryForm)>
-		<cfset result = "Ext.get('paginationpage#Request.farcryForm.Name#').dom.value=#arguments.page#;#Request.farcryForm.onSubmit#;return farcryps(arguments.page,'#Request.farcryForm.Name#','#this.submissionType#','#this.actionURL#');" />
+		<cfset result = "$j('##paginationpage#Request.farcryForm.Name#').attr('value','#arguments.page#');#Request.farcryForm.onSubmit#;return farcryps(arguments.page,'#Request.farcryForm.Name#','#this.submissionType#','#this.actionURL#');" />
 	</cfif>
 	
 	<cfreturn result />

@@ -1,6 +1,6 @@
 <cfoutput>
 	function getInputValue(name) {
-					var objs = Ext.select("[name="+name+"]");
+					var objs = $j("[name="+name+"]");
 					var result = "";
 					
 					// input doesn't exist
@@ -112,21 +112,7 @@
 						});
 					}
 				};
-					
-				function farcryButtonOnMouseOver(id) {
-					$(id + '-outer').addClassName('farcryButtonWrap-outer-hover');
-					$(id + '-inner').addClassName('farcryButtonWrap-inner-hover');
-				}
-				function farcryButtonOnClick(id) {
-					$(id + '-outer').addClassName('farcryButtonWrap-outer-click');
-					$(id + '-inner').addClassName('farcryButtonWrap-inner-click');
-				}
-				function farcryButtonOnMouseOut(id) {
-					$(id + '-outer').removeClassName('farcryButtonWrap-outer-hover');
-					$(id + '-inner').removeClassName('farcryButtonWrap-inner-hover');
-					$(id + '-outer').removeClassName('farcryButtonWrap-outer-click');
-					$(id + '-inner').removeClassName('farcryButtonWrap-inner-click');
-				}
+				
 				function farcryButtonURL(id,url,target) {
 					if (target == 'undefined' || target == '_self'){
 						location.href=url;			
@@ -140,10 +126,10 @@
 				}						
 							
 				function selectObjectID(objectid) {
-					f = $$('.fc-selected-object-id');
-					for(var i=0; i<f.length; i++){
+					$j('.fc-selected-object-id').attr('value',objectid);
+					<!--- for(var i=0; i<f.length; i++){
 						f[i].value=objectid;
-					}
+					} --->
 				}	
 							
 				function openLibrary(target,ftJoin,url) {
@@ -173,16 +159,39 @@
 				}
 				
 						function libraryCallbackArray(fieldname,action,ids,virtualDir,callingWindow){
-							$(fieldname).value = ids;						
-							if(virtualDir===null){virtualDir="";}				
+												
+							if(virtualDir===null){virtualDir="";}
+							$j('##' + fieldname).attr('value',ids);					
 							var objParams = eval('obj' + fieldname);
-							var sURLParams = "LibraryType=Array&Action=" + action + '&DataObjectID=' + encodeURIComponent($(fieldname).value);
+							var sURLParams = "LibraryType=Array&Action=" + action + '&DataObjectID=' + encodeURIComponent($j('##' + fieldname).attr('value'));
 							for (i in objParams){
 								sURLParams+= "&" + i + "=" + objParams[i];							
 							}
 														
-							$(fieldname + '-libraryCallback').innerHTML = 'PLEASE WAIT... CURRENTLY UPDATING';
-							new Ajax.Updater(fieldname + '-libraryCallback', '#application.url.webtop#/facade/library.cfc?method=ajaxUpdateArray&ajaxmode=1&noCache=' + Math.random(), {
+							$j('##' + fieldname + '-libraryCallback').html('PLEASE WAIT... CURRENTLY UPDATING');
+								
+							$j.ajax({
+							   type: "POST",
+							   url: "#application.url.webtop#/facade/library.cfc?method=ajaxUpdateArray&ajaxmode=1",
+							   data: sURLParams,
+							   cache: false,
+							   success: function(msg){
+									$j('##' + fieldname + '-libraryCallback').html(msg);
+									initArrayField(fieldname,virtualDir);
+									$j('##' + fieldname).attr('value',ids);		
+									
+									if($j('##' + fieldname).attr('value').length){
+										$j('##' + fieldname + '-librarySummary').show();
+									} else {
+										$j('##' + fieldname + '-librarySummary').hide();
+									}
+									if(callingWindow!=null){callingWindow.close();}								     	
+							   }
+							 });
+
+							
+		
+							<!--- new Ajax.Updater(fieldname + '-libraryCallback', '#application.url.webtop#/facade/library.cfc?method=ajaxUpdateArray&ajaxmode=1&noCache=' + Math.random(), {
 									//onLoading:function(request){Element.show('indicator')},
 									onComplete:function(request){
 										// <![CDATA[
@@ -206,15 +215,30 @@
 									},
 									
 									parameters:sURLParams, evalScripts:true, asynchronous:true
-							})
+							}) --->
 											
 						}
 								
 				
+
 				function initArrayField(fieldname,virtualDir) {
-						// <![CDATA[
-							 if(virtualDir===null){virtualDir="";}
-							  Sortable.create(fieldname + '_list',
+						
+					 if(virtualDir===null){virtualDir="";}
+					 
+					 var listID = '##' + fieldname + '_list';
+					 $j(function() {
+						$j(listID).sortable({
+							update: function(event,ui){
+								$j('##' + fieldname).attr("value",$j(listID).sortable('toArray',{'attribute':'serialize'}));
+								libraryCallbackArray(fieldname, 'sort', $j('##' + fieldname).attr("value"),virtualDir);
+							}
+						});
+						$j(listID).disableSelection();
+						
+					});
+						
+<!---
+							 Sortable.create(fieldname + '_list',
 							  	{ghosting:false,constraint:false,hoverclass:'over',handle:fieldname + '_listhandle',
 							    onChange:function(element){
 							    	$(fieldname).value = Sortable.sequence(fieldname + '_list');
@@ -223,39 +247,59 @@
 							    	libraryCallbackArray(fieldname, 'sort', $(fieldname).value,virtualDir);
 							    }
 							  });
-						// ]]>
+						 --->
 
 				}
-
 						
 							function toggleOnArrayField(fieldname) {
-								aInputs = $$("##" + fieldname + "_list input");
+								$j("##" + fieldname + "_list input").attr('checked',true);
+<!--- 								aInputs = $$("##" + fieldname + "_list input");
 								aInputs.each(function(child) {
 									child.checked = true;
-								});
+								}); --->
 							}
 							function toggleOffArrayField(fieldname) {
-								aInputs = $$("##" + fieldname + "_list input");
+								$j("##" + fieldname + "_list input").attr('checked',false);
+								<!--- aInputs = $$("##" + fieldname + "_list input");
 								aInputs.each(function(child) {
 									child.checked = false;
-								});
+								}); --->
 							}
 							
 							function deleteSelectedFromArrayField(fieldname,virtualDir){
-								if(virtualDir===null){virtualDir="";}							
-								aInputs = $$("##" + fieldname + "_list input");
-								aInputs.each(function(child) {
-									if(child.checked === true){
-										Element.remove(fieldname + '_' + child.value);
-									}
-								});
+								if(virtualDir===null){virtualDir="";}	
+								var listID = '##' + fieldname + '_list';
+								var newList = '';								
 								
-								libraryCallbackArray(fieldname,'sort',Sortable.sequence(fieldname + '_list'),virtualDir);
+								$j("##" + fieldname + "_list input").each(function() {
+									if(!this.checked){
+										newList = ListAppend(newList,this.value);
+									}									
+								});
+								$j('##' + fieldname).attr('value',newList);										
+
+								libraryCallbackArray(fieldname,'sort',$j('##' + fieldname).attr("value"),virtualDir);
 								
 							}
 						
-						
+						function ListAppend(l, v, d){
+							l += ""; // cheap way to convert to a string
+							if(!d){d = ",";}
+							var r = "";
+							if (this.ListLen(l)){
+								r = l + d + v;
+							} else {
+								r = v;
+							}
+							return r;
+						}
 
+						function ListLen(l,d){
+							l += ""; // cheap way to convert to a string
+							if(!d){d = ",";}
+							if(l.length){return l.split(d).length;}
+							return 0;
+						}
 							
 				
 				function initUUIDField(fieldname,virtualDir) {
@@ -379,117 +423,13 @@ function createFormtoolTree(fieldname,rootID,dataURL,rootNodeText,selectedIDs,ic
 				
 				
 	function selectedObjectID(objectid) {
-		f = Ext.query('.fc-selected-object-id');
+		$j('.fc-selected-object-id').attr('value',objectid);
+		<!--- f = Ext.query('.fc-selected-object-id');
 		for(var i=0; i<f.length; i++){
 			f[i].value=objectid;
-		}
+		} --->
 	}	
-			
-function newFarcryButton (id,type,size,value,text,icon,overIcon,iconPos,sprite,width,formName,onClick,disabled,btnclass,btnstyle) {
-	var dh = Ext.DomHelper;
 	
-	var btn = Ext.get(id);
-	var btnWrap = Ext.get(id + '-wrap');
-		
-	if (btnWrap) {
-		
-		var btnMarkup = btnWrap.dom.innerHTML;
-		
-		var newBtnMarkup = 	'<table style="width: auto;' + btnstyle + '" id="' + id + '-tbl-wrap" class="f-btn ' + btnclass + '" cellspacing="0">' +
-							'<tbody class="f-btn-' + size + ' f-btn-icon-' + size + '-' + iconPos +'">' +
-								'<tr>' +
-									'<td class="f-btn-tl f-btn-bg"><i>&nbsp;</i></td>' +
-									'<td class="f-btn-tc f-btn-bg"></td>' +
-									'<td class="f-btn-tr f-btn-bg"><i>&nbsp;</i></td>' +
-								'</tr>' +
-								'<tr>' +
-									'<td class="f-btn-ml f-btn-bg"><i>&nbsp;</i></td>' +
-									'<td class="f-btn-mc f-btn-bg" onclick="' + onClick + '"><em class="" unselectable="on">' +
-										btnMarkup  +
-									'</em></td>' +
-									'<td class="f-btn-mr f-btn-bg"><i>&nbsp;</i></td>' +
-								'</tr>' +
-								'<tr>' +
-									'<td class="f-btn-bl f-btn-bg"><i>&nbsp;</i></td>' +
-									'<td class="f-btn-bc f-btn-bg"></td>' +
-									'<td class="f-btn-br f-btn-bg"><i>&nbsp;</i></td>' +
-								'</tr>' +
-							'</tbody>' +
-						'</table>'
-						 
-		dh.overwrite(btnWrap,newBtnMarkup);
-	
-		var newBtn = Ext.get(id + '-tbl-wrap');
-		
-		
-		<!--- THIS STOPS SUBMIT BUTTONS SUBMITTING. ENABLING JS TO DO ALL THE WORK. --->
-		Ext.get(id).on('click', this.onClick, this, {
-			preventDefault:true,
-			fn: function() { 
-			}
-		});
-		
-		
-		if (sprite != null && sprite != '') {
-			Ext.select('##' + id + '-tbl-wrap .f-btn-bg').applyStyles('background-image:url(' + sprite +');');
-		}
-		if (icon != null && icon != '') {
-			Ext.select('##' + id + '-tbl-wrap button').applyStyles('background-image:url(' + icon +');');
-			if (text != null && text != '') {
-				newBtn.addClass('f-btn-text-icon');
-			} else {
-				newBtn.addClass('f-btn-icon');
-			}
-		} else {
-			newBtn.addClass('f-btn-noicon');
-		}
-		
-		if (width != null && width != '') {
-			Ext.select('##' + id + '-tbl-wrap .f-btn-mc').applyStyles('width:' + width +';');
-		}
-	
-		
-		if (disabled == 'yes') {
-			Ext.select('##' + id + '-tbl-wrap').addClass('f-btn-disabled');
-		} else {
-		
-			Ext.select('##' + id + '-tbl-wrap .f-btn-mc').on('mouseover', this.onClick, this, {
-			    fn: function() { 
-			    	newBtn.addClass('f-btn-over'); 
-					if (overIcon != null && overIcon != '') {
-						Ext.select('##' + id + '-tbl-wrap button').applyStyles('background-image:url(' + overIcon +');');	
-						
-					}		    	
-			    }
-			});	
-			Ext.select('##' + id + '-tbl-wrap .f-btn-mc').on('mouseout', this.onClick, this, {
-			    fn: function() { 
-			    	newBtn.removeClass('f-btn-over'); 
-			    	newBtn.removeClass('f-btn-pressed');
-					if (overIcon != null && overIcon != '') {
-						Ext.select('##' + id + '-tbl-wrap button').applyStyles('background-image:url(' + icon +');');		
-					}		 
-			    }
-			});
-			Ext.select('##' + id + '-tbl-wrap .f-btn-mc').on('mousedown', this.onClick, this, {
-			    fn: function() { 
-			    	newBtn.addClass('f-btn-pressed'); 
-			    }
-			});
-			Ext.select('##' + id + '-tbl-wrap .f-btn-mc').on('mouseup', this.onClick, this, {
-			    fn: function() { 
-			    	newBtn.removeClass('f-btn-pressed'); 
-			    }
-			});
-		
-	
-	
-		}
-	
-	}
-		
-}
-
 	
 function validateBtnClick(formName) {
 	var btnValidation = new Validation(formName, {onSubmit:false});
@@ -510,66 +450,49 @@ function btnURL(url,target) {
 
 	
 function btnClick(formName,value) {
-   	f = Ext.query('.fc-button-clicked');
+	$j('.fc-button-clicked').attr('value',value);
+<!---    	f = Ext.query('.fc-button-clicked');
    	for(var i=0; i<f.length; i++){
 		f[i].value = value;
-	}
+	} --->
 }
 
 function btnTurnOffServerSideValidation() {
-	f = Ext.query('.fc-server-side-validation');
+	$j('.fc-server-side-validation').attr('value',0);
+	<!--- f = Ext.query('.fc-server-side-validation');
    	for(var i=0; i<f.length; i++){
 		f[i].value = 0;
-	}
+	} --->
 }
 	
 		
 function btnSubmit(formName,value) {
    	btnClick(formName,value);
-	if (formName != '') {	
-		Ext.get(formName).dom.submit();
+	if (formName != '') {
+		$j('##' + formName).submit();	
+		<!--- Ext.get(formName).dom.submit(); --->
 	}
 }
-	
-	
-function farcryForm_ajaxSubmission(formname,action,maskMsg,maskCls){
-	if (maskMsg == undefined){var maskMsg = 'Saving Changes'};
-	if (maskCls == undefined){var maskCls = 'x-mask-loading'};
-	
-	var myForm = Ext.get(formname+ 'formwrap');						
-	var mgr = myForm.getUpdater();
-
-	// Not working correctly in IE
-	//mgr.showLoadIndicator = true;
-	//myForm.mask(maskMsg, maskCls);
-	//mgr.on("update", 
-	//	function(el,oResponseObject) {
-	//		myForm.unmask();
-	//	}
-	//);
-	
-	mgr.update(
-	{
-		url: action,
-		nocache: true,
-		scripts: true,				
-		timeout: 30,
-		params: Ext.Ajax.serializeForm(formname)
-	});
+		
+function farcryForm_ajaxSubmission(formname,action){
+	<!--- $j('<div class="farcry-form-ajax-loader"></div>')
+		.prependTo($j('##' + formname + 'formwrap'))
+		.css({
+			width: $j('##' + formname + 'formwrap').width(),
+			height: $j('##' + formname + 'formwrap').height()
+		}); --->
+	$j('##' + formname + 'formwrap .farcry-form-ajax-loader').show();
+	$j.ajax({
+	   type: "POST",
+	   url: action,
+	   data: $j("##" + formname).serialize(),
+	   cache: false,
+	   success: function(msg){
+			$j('##' + formname + 'formwrap').html(msg);						     	
+	   }
+	 });
 }
 
-farcryps = function(page,formname,type,actionURL){
-	if(type=='form'){					
-		Ext.get(formname).dom.submit();
-		return false;
-	} else if(type=='url'){
-		window.location = actionURL + '&page=' + page;
-		return false;
-	} else {
-		return true;
-	}				
-}	
-	
 <!--- A function to check all checkboxes on a form --->
 function checkUncheckAll(theElement) {
 	var theForm = theElement.form, z = 0;
@@ -579,5 +502,4 @@ function checkUncheckAll(theElement) {
 		}
 	}
 }
-	
 </cfoutput>					

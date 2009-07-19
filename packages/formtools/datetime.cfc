@@ -95,30 +95,51 @@
 				<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)#" />
 				<input type="hidden" name="#arguments.fieldname#rendertype" id="#arguments.fieldname#rendertype" value="#arguments.stMetadata.ftRenderType#">
 				
-				<div  id="#arguments.fieldname#DIV" style="float:left;#fieldstyle#">
-					<select name="#arguments.fieldname#Day" id="#arguments.fieldname#Day">
-					<option value="">--</option>
-					<cfloop from="1" to="31" index="i">
-						<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND Day(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#i#</option>
-						</cfloop>
-					</select>	
-				
-					<select name="#arguments.fieldname#Month" id="#arguments.fieldname#Month">
-						<option value="">--</option>
-						<cfloop from="1" to="12" index="i">
-							<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND Month(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#localeMonths[i]#</option>
-						</cfloop>
-					</select>
-				
-					<select name="#arguments.fieldname#Year" id="#arguments.fieldname#Year">
-						<option value="">--</option>
-						<cfloop from="#arguments.stMetadata.ftStartYear#" to="#arguments.stMetadata.ftEndYear#" index="i" step="#step#">
-							<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND Year(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#i#</option>
-						</cfloop>
-					</select>	
+				<div class="multiField">
+					<cfif arguments.stMetadata.ftToggleOffDateTime>
+						<cfoutput>
+						<label class="inlineLabel" for="#arguments.fieldname#include">
+							<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" style="float:left;" value="1" onclick="javascript:toggle#arguments.fieldname#();" <cfif bfieldvisible>checked="true"</cfif> >
+							<input type="hidden" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="0">
+							Include Date
+						</label>
+						</cfoutput>
+					</cfif>
+					
+					<div id="#arguments.fieldname#DIV" style="#fieldstyle#">
+						
+						
+						<label class="blockLabel" for="#arguments.fieldname#Day">
+							Day 
+							<select name="#arguments.fieldname#Day" id="#arguments.fieldname#Day" class="selectInput">
+							<option value="">--</option>
+							<cfloop from="1" to="31" index="i">
+								<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND Day(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#i#</option>
+								</cfloop>
+							</select>	
+						</label>
+						
+						<label class="blockLabel" for="#arguments.fieldname#Month">
+							Month 
+							<select name="#arguments.fieldname#Month" id="#arguments.fieldname#Month" class="selectInput">
+								<option value="">--</option>
+								<cfloop from="1" to="12" index="i">
+									<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND Month(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#localeMonths[i]#</option>
+								</cfloop>
+							</select>	
+						</label>
+						
+						<label class="blockLabel" for="#arguments.fieldname#Year">
+							Year 				
+							<select name="#arguments.fieldname#Year" id="#arguments.fieldname#Year" class="selectInput">
+								<option value="">--</option>
+								<cfloop from="#arguments.stMetadata.ftStartYear#" to="#arguments.stMetadata.ftEndYear#" index="i" step="#step#">
+									<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND Year(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#i#</option>
+								</cfloop>
+							</select>
+						</label>	
+					</div>					
 				</div>
-				<br style="clear:both;" />						
-				
 				</cfoutput>
 			</cfsavecontent>		
 			
@@ -193,11 +214,23 @@
 				<cfoutput><script type="text/javascript" src="#application.url.webtop#/js/dateJS/date-#arguments.stMetadata.ftDateLocale#.js"></script></cfoutput>
 				<cfoutput>
 				<style type="text/css">
-				.dateSuggestions {padding:0px 0px 0px 25px;background: ##efefef url('#application.url.webtop#/js/dateJS/images/information.png') top left no-repeat;}
-				.dateJSHiddenValue {padding:0px 0px 0px 25px;}
+				.dateSuggestions {
+					padding:0px 0px 0px 25px;
+					background: ##efefef url('#application.url.webtop#/js/dateJS/images/information.png') top left no-repeat;
+				}
+				.dateJSHiddenValue {
+					padding:0px 0px 0px 25px;
+					
+					float:left;
+				}
 				.dateEmpty {background: ##fff url('#application.url.webtop#/js/dateJS/images/star.png') top left no-repeat;}
 				.dateAccept {background: ##fff url('#application.url.webtop#/js/dateJS/images/accept.png') top left no-repeat;}
-				.dateError {background: ##fff url('#application.url.webtop#/js/dateJS/images/exclamation.png') top left no-repeat;}
+				.dateError {
+					background:##FFDFDF url('#application.url.webtop#/js/dateJS/images/exclamation.png') top left no-repeat;
+					border-color:##DF7D7D;
+					border-style:solid;
+					border-width:1px 0;
+				}
 				</style>
 				
 				<script type="text/javascript">
@@ -249,37 +282,41 @@
 			
 						
 			<cfsavecontent variable="html">
-				<cfif arguments.stMetadata.ftToggleOffDateTime>
-					<cfoutput>
-					<div style="float:left;margin-right:10px;">
-						<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" class="formCheckbox" value="1" onclick="javascript:toggle#arguments.fieldname#();" <cfif bfieldvisible>checked="true"</cfif> >
-						<input type="hidden" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="0">
-					</div>
-					</cfoutput>
-				</cfif>
-				
-				
+
 				<cfoutput>
-					<div  id="#arguments.fieldname#DIV" style="float:left;#fieldstyle#">
-						<span id="#arguments.fieldname#Info" class="dateJSHiddenValue <cfif len(arguments.stMetadata.value)>dateAccept<cfelse>dateEmpty</cfif>">
+				<div class="multiField">
+					<cfif arguments.stMetadata.ftToggleOffDateTime>						
+						<label class="inlineLabel" for="#arguments.fieldname#include">
+							<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="1" onclick="javascript:toggle#arguments.fieldname#();" <cfif bfieldvisible>checked="true"</cfif> >
+							<input type="hidden" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="0">
+							Include Date
+						</label>						
+					</cfif>
+					<div id="#arguments.fieldname#DIV" style="#fieldstyle#">
+						<div id="#arguments.fieldname#Info" class="dateJSHiddenValue <cfif len(arguments.stMetadata.value)>dateAccept<cfelse>dateEmpty</cfif>">
 							<cfif len(arguments.stMetadata.value)>
 								#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)# <cfif arguments.stMetadata.ftShowTime>#TimeFormat(arguments.stMetadata.value,arguments.stMetadata.ftTimeFormatMask)#</cfif>
 							<cfelse>
 								Type in your date
 							</cfif>
-						</span>
-						<input type="text" id="#arguments.fieldname#Input" name="#arguments.fieldname#Input" value="" />
+						</div>	
 						<a id="#arguments.fieldname#DatePicker"><img src="#application.url.farcry#/js/dateTimePicker/cal.gif" width="16" height="16" border="0" alt="Pick a date"></a>
+
+						<br class="clearer" />
+						<input type="text" id="#arguments.fieldname#Input" name="#arguments.fieldname#Input" class="textInput" value="" style="font-size:0.8em;" />
+						
 						<cfif arguments.stMetadata.ftShowSuggestions><div class="dateSuggestions">Examples: tomorrow; next tues at 5am; +5days;</div></cfif>
 						<cfif len(arguments.stMetadata.value)>
 							<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,'yyyy/mmm/dd')# #TimeFormat(arguments.stMetadata.value, 'hh:mm tt')#" class="#arguments.stMetadata.ftClass#">
 						<cfelse>
 							<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" class="#arguments.stMetadata.ftClass#">								
-						</cfif>						
+						</cfif> 
+											
+								
 					</div>
-
 				</cfoutput>
-				
+					
+					
 				<cfif arguments.stMetadata.ftShowCalendar>
 					<skin:htmlHead library="calendar" />
 					<cfoutput>
@@ -305,6 +342,10 @@
 						</script>
 					</cfoutput>
 				</cfif>
+				
+				<cfoutput>
+				</div>
+				</cfoutput>
 			</cfsavecontent>	
 				
 

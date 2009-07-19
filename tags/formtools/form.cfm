@@ -1,8 +1,8 @@
 <cfsetting enablecfoutputonly="true" />
 
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/core/" prefix="core" />
 
 
 <cfif not thistag.HasEndTag>
@@ -16,9 +16,8 @@
 	<cfexit method="exittag">			
 </cfif>
 
-<!--- import Javascript Libraries libraries --->
-<skin:htmlHead library="extJSCore" />
-<skin:htmlHead library="farcryForm" />
+
+
 
 <!--- MJB
 This enables the developer to wrap a <ft:form> around anything without worrying about whether it will be called within an outer <ft:form>. 
@@ -32,111 +31,189 @@ It just ignores the inner ones.
 
 		<cfset Variables.CorrectForm = 1>
 		
+		
+		<!--- import Javascript Libraries libraries --->
+		<skin:loadJS id="jquery" />
+		<skin:loadJS id="farcry-form" />
+	
+		
 		<cfparam name="attributes.Name" default="farcryForm#randrange(1,999999999)#">
 		<cfparam name="attributes.Target" default="">
-		<cfparam name="attributes.Action" default="#application.fapi.fixURL()#">
+		<cfparam name="attributes.Action" default="">
 		<cfparam name="attributes.method" default="post">
-		
-	
 		<cfparam name="attributes.onsubmit" default="">
-		<cfparam name="attributes.css" default=""><!--- To Override pass in the name of custom css file located in /projectWebRoot/css/ . Empty string will stop a css file being loaded. --->
-		<cfparam name="attributes.bAddFormCSS" default="true" />
 		<cfparam name="attributes.Class" default="">
 		<cfparam name="attributes.Style" default="">
-		<cfparam name="attributes.Heading" default="">
 		<cfparam name="attributes.Validation" default="1">
 		<cfparam name="attributes.bAjaxSubmission" default="false">
-		<cfparam name="attributes.ajaxMaskMsg" default="Saving Changes">
-		<cfparam name="attributes.ajaxMaskCls" default="x-mask-loading">
-		
-		
+		<cfparam name="attributes.bUniForm" default="true"><!--- Make the form a uniform (http://sprawsm.com/uni-form/) --->
 
-		<cfparam name="Request.farcryFormList" default="">
+
+		<!--- Keeps track of all the form name in the request to make sure they are all unique --->
+		<cfparam name="Request.farcryFormList" default="">		
 		<cfif listFindNoCase(request.farcryFormList, attributes.Name)>
 			<cfset attributes.Name = "#attributes.Name##ListLen(request.farcryFormList) + 1#">			
-		</cfif>
-				
+		</cfif>		
+		<cfset Request.farcryFormList = listAppend(Request.farcryFormList,attributes.Name) />
 		
-		<!--------------------------------------------- 
-		IF SUBMITTING BY AJAX, SET REQUIRED VARIABLES.
-		 --------------------------------------------->
-		<cfif attributes.bAjaxSubmission>
+		
+		<!--- If we have not received an action url, get the default cgi.script_name?cgi.query_string --->
+		<cfif not len(attributes.action)>
+			<cfset attributes.Action = "#application.fapi.fixURL()#" />
+		</cfif>
+		
+		<!--- If this is going to be a uniform, include relevent js and css --->
+		<cfif attributes.bUniForm>
+			<cfset attributes.class = listAppend(attributes.class,"uniForm"," ") />
+			<skin:loadJS id="uni-form" />
+			<skin:loadCSS id="uni-form" />				
+		</cfif>
+		
 
-			<cfif NOT len(attributes.Action)>
-				<cfabort showerror="You must provide the action for an ajax form submission" />
-			<cfelse>
-				<cfif NOT findNoCase("?",attributes.action)>
-					<cfset attributes.action = "#attributes.action#?" />
-				</cfif>
-				<cfif NOT findNoCase("ajaxmode=true",attributes.action)>
-					<cfset attributes.action = "#attributes.action#&ajaxmode=true" />
-				</cfif>
+		<!--- Keep the form information available in the request scope --->
+		<cfset Request.farcryForm = "#StructNew()#" />
+		<cfset Request.farcryForm.Name = "#attributes.Name#" />
+		<cfset Request.farcryForm.Target = "#attributes.Target#" />
+		<cfset Request.farcryForm.Action = "#attributes.Action#" />
+		<cfset Request.farcryForm.Method = "#attributes.Method#" />
+		<cfset Request.farcryForm.onSubmit = "#attributes.onSubmit#" />
+		<cfset Request.farcryForm.Validation = "#attributes.Validation#" />
+		<cfset Request.farcryForm.stObjects = "#StructNew()#" />
+		<cfset Request.farcryForm.bAjaxSubmission = "#attributes.bAjaxSubmission#" />
+		<cfset Request.farcryForm.lFarcryObjectsRendered = "" />	
+		
+
+		<!--- Add form protection --->
+		<cfparam name="session.stFarCryFormSpamProtection" default="#structNew()#" />
+		<cfparam name="session.stFarCryFormSpamProtection['#attributes.Name#']" default="#structNew()#" />
+			
+		
+		<cfoutput>
+			
+			<!--- Setup the ajax wrapper if this is the first render of the form. When the ajax submission is made, the returned HTML is placed in this div. --->
+			<cfif attributes.bAjaxSubmission AND NOT structKeyExists(form, "farcryformajaxsubmission")>
+				<style type="text/css">
+				.farcry-form-ajax-loader {
+					background: ##666666 url(#application.url.webtop#/thirdparty/jquery/css/ui-lightness/images/ui-bg_diagonals-thick_20_666666_40x40.png) 50% 50% repeat;
+					opacity: .50;
+					filter:	Alpha(Opacity=50);
+					position:absolute;
+					z-index:99;
+					width:100%;
+					height:100%;
+				}
+				</style>
+				<div id="#attributes.Name#formwrap" class="ajaxformwrap">				
 			</cfif>
 			
 			
-			<skin:htmlHead library="extJS" />
-
-			<cfset attributes.onSubmit = "#attributes.onSubmit#;farcryForm_ajaxSubmission('#attributes.Name#','#attributes.Action#','#attributes.ajaxMaskMsg#','#attributes.ajaxMaskCls#');return false;" />
+			<form 	action="#attributes.Action#" 
+					method="#attributes.Method#" 
+					id="#attributes.Name#" 
+					name="#attributes.Name#" 
+					<cfif len(attributes.Target)> target="#attributes.Target#"</cfif> 
+					enctype="multipart/form-data" 
+					class="#attributes.class#"  
+					style="#attributes.style#" >
 			
-		<cfelseif NOT len(attributes.Action)>
-			<cfset attributes.Action = "#cgi.SCRIPT_NAME#?#cgi.query_string#" />				
-		</cfif>
-	
-		
-		
-		<cfif not isDefined("Request.farcryForm.Name")>
-			<cfparam name="Request.farcryForm" default="#StructNew()#">
-			<cfparam name="Request.farcryForm.Name" default="#attributes.Name#">
-			<cfparam name="Request.farcryForm.Target" default="#attributes.Target#">
-			<cfparam name="Request.farcryForm.Action" default="#attributes.Action#">
-			<cfparam name="Request.farcryForm.Method" default="#attributes.Method#">
-			<cfparam name="Request.farcryForm.onSubmit" default="#attributes.onSubmit#">
-			<cfparam name="Request.farcryForm.Validation" default="#attributes.Validation#">
-			<cfparam name="Request.farcryForm.stObjects" default="#StructNew()#">		
-			<cfparam name="Request.farcryForm.bAjaxSubmission" default="#attributes.bAjaxSubmission#">	
-			<cfparam name="Request.farcryForm.lFarcryObjectsRendered" default="">		
-		</cfif>
-	
-		
-		
-		<cfif Request.farcryForm.Validation EQ 1>
-			<skin:htmlHead library="FormValidation" />		
-		</cfif>
-		
-		<!--- ADD FORM PROTECTION --->
-		<cfparam name="session.stFarCryFormSpamProtection" default="#structNew()#" />
-		<cfparam name="session.stFarCryFormSpamProtection['#Request.farcryForm.Name#']" default="#structNew()#" />
 			
-		<ft:renderHTMLformStart attributeCollection="#attributes#" />
+			<cfif attributes.bAjaxSubmission>
+				<!--- We use the hidden field to tell the submission that we do not need to include the wrap. --->
+				<input type="hidden" name="farcryformajaxsubmission" value="1" />
+				
+				<!--- We use this div to render the overlay while the ajax form submission is taking place. --->
+				<div class="farcry-form-ajax-loader" style="display:none;"></div>
+			</cfif>
+					
+		</cfoutput> 
 	
 	</cfif>
 	
 	<cfif thistag.ExecutionMode EQ "End" and isDefined("Variables.CorrectForm")>
-
-
-	<!--- TODO: locking of objects needs to be handled. This is causing problems however as it locks things that shouldnt be locked. --->
-<!---		<cfparam name="session.dmSec.authentication.userlogin" default="anonymous" />
-		<cfparam name="session.dmSec.authentication.userDirectory" default="clientud" />
+	
+		<!--- Render the hidden form fields used to post the state of the farcry form. --->
+		<cfoutput>
+			<input type="hidden" name="FarcryFormPrefixes" value="" />
+			<input type="hidden" name="FarcryFormSubmitButton" value="" /><!--- This is an empty field so that if the form is submitted, without pressing a farcryFormButton, the FORM.FarcryFormSubmitButton variable will still exist. --->
+			<input type="hidden" name="FarcryFormSubmitButtonClicked#attributes.Name#" id="FarcryFormSubmitButtonClicked#attributes.Name#" class="fc-button-clicked" value="" /><!--- This contains the name of the farcry button that was clicked --->
+			<input type="hidden" name="FarcryFormSubmitted"  value="#attributes.Name#" /><!--- Contains the name of the farcry form submitted --->
+			<input type="hidden" name="SelectedObjectID" class="fc-selected-object-id" value="" /><!--- Hidden Field to take a UUID from the attributes.SelectedObjectID on ft:button --->
 		
-		<cfif structkeyexists(Request.farcryForm, "stObjects") AND len(structKeyList(Request.farcryForm.stObjects))>
+			<input type="hidden" name="farcryFormValidation" id="farcryFormValidation#attributes.Name#" class="fc-server-side-validation" value="#attributes.Validation#" /><!--- Let the form submission know if it to perform serverside validation --->
+	
+		</form>
+		</cfoutput>	
+		
+		<!--- If we are validating this form, load and initialise the validation engine.  --->
+		<cfif attributes.validation EQ 1>
+			<skin:loadJS id="jquery-validate" />
+			
+			<skin:onReady>
+				<cfoutput>
+				$j("###attributes.Name#").validate({
+					onsubmit: false, // let the onsubmit function handle the validation
+					errorElement: "p",
+					errorClass: "errorField",					   
+					errorPlacement: function(error, element) {
+					   error.prependTo( element.parent("div.ctrlHolder") );
+					},
+					highlight: function(element, errorClass) {
+					   $j(element).parent("div.ctrlHolder").addClass('error');
+					},
+					unhighlight: function(element, errorClass) {
+					   $j(element).parent("div.ctrlHolder").removeClass('error');
+					}
 
-			<cfloop list="#structKeyList(Request.farcryForm.stObjects)#" index="i">
-				<cfif structkeyexists(Request.farcryForm.stObjects[i], "FARCRYFORMOBJECTINFO") 
-					AND structkeyexists(Request.farcryForm.stObjects[i].FarcryFormObjectInfo, "objectid")
-					AND structkeyexists(Request.farcryForm.stObjects[i].FarcryFormObjectInfo, "typename")
-					AND structkeyexists(Request.farcryForm.stObjects[i].FarcryFormObjectInfo, "Lock") 
-					AND Request.farcryForm.stObjects[i].FarcryFormObjectInfo.Lock >
+				});
+				</cfoutput>
+			</skin:onReady>
+		</cfif>
+			
+		<!--- If submitting by ajax, append the ajax submission function call to the onsubmit. --->
+		<cfif attributes.bAjaxSubmission>
+
+			<!--- Make sure the ajax submission is told to go into ajax mode. --->
+			<cfset attributes.action = application.fapi.fixURL(url=attributes.action,addvalues="ajaxmode=true") />
 					
-					<cfset oType = createObject("component", application.types[Request.farcryForm.stObjects[i].FarcryFormObjectInfo.typename].packagepath) />
-					<cfset stType = oType.getData(objectid=Request.farcryForm.stObjects[i].FarcryFormObjectInfo.objectID) />
-					<cfset oType.setLock(locked=true,lockedby="application.security.getCurrentUserID()") >
-				</cfif>
-			</cfloop>
-		</cfif> --->
+			<!--- Add the function call to onsubmit --->
+			<cfsavecontent variable="sAjaxSubmission">
+				<cfoutput>
+		        farcryForm_ajaxSubmission('#attributes.Name#','#attributes.Action#');
+		        return false;
+				</cfoutput>				
+			</cfsavecontent>
+			
+			<cfset attributes.onSubmit = "#attributes.onSubmit#;#sAjaxSubmission#" />
+			
+		</cfif>			
+			
+		<!--- If we have anything in the onsubmit, use jquery to run it --->
+		<skin:onReady>
+			<cfoutput>
+			$j('###attributes.Name#').submit(function(){
+				<cfif attributes.validation EQ 1>
+					var valid = $j('###attributes.Name#').valid();
+				<cfelse>
+					var valid = true;
+				</cfif>			
+					 
+				if(valid){
+					#attributes.onSubmit#;
+				} else {
+					return false;
+				}
+		    });
+			</cfoutput>				
+		</skin:onReady>
 		
-		<ft:renderHTMLformEnd attributeCollection="#attributes#" />
-	
-	
+			
+		<!--- Close the dive if we have the ajax wrapper --->
+		<cfif attributes.bAjaxSubmission AND NOT structKeyExists(form, "farcryformajaxsubmission")>
+			<cfoutput></div></cfoutput>
+		</cfif>
+			
+			
+		<!--- Clear the farcry form from the request scope now that it is complete. --->
 		<cfset dummy = structdelete(request,"farcryForm")>
 
 	

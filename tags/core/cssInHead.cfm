@@ -14,9 +14,8 @@
 		
 			
 			<cfset stCSS = duplicate(request.inHead.stCSSLibraries[request.inHead.aCSSLibraries[i]]) />
-		
-			
-			<cfset idHash = hash("#stCSS.baseHREF##stCSS.lFiles#") />
+				
+			<cfset idHash = hash("#stCSS.baseHREF##stCSS.lFiles##stCSS.prepend##stCSS.append#") />
 			
 			<cfset sCacheFileName = "" />
 			
@@ -50,6 +49,7 @@
 				</cfloop>
 			
 				<cfset sCacheFileName = application.fc.utils.combine(	files=stCSS.lFullFilebaseHREFs,
+																		type="css",
 																		prepend:stCSS.prepend,
 																		append:stCSS.append) />
 				

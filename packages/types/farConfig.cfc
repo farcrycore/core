@@ -359,10 +359,10 @@ object methods
 				#stFields.configData.html#
 			</cfoutput>
 			
-			<ft:farcryButtonPanel>
-				<ft:farcryButton value="Save" /> 
-				<ft:farcryButton value="Cancel" validate="false" />
-			</ft:farcryButtonPanel>
+			<ft:buttonPanel>
+				<ft:button value="Save" /> 
+				<ft:button value="Cancel" validate="false" />
+			</ft:buttonPanel>
 			
 		</ft:form>
 	

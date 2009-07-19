@@ -698,8 +698,8 @@ default handlers
 		
 			<ft:object objectID="#arguments.objectID#" lfields="#arguments.lFields#" inTable=0 />
 			
-			<ft:farcryButton value="Save" />
-			<ft:farcryButton value="Cancel" />	
+			<ft:button value="Save" />
+			<ft:button value="Cancel" />	
 		</ft:form>
 
 		
@@ -1134,10 +1134,10 @@ default handlers
 					
 				</cfif>
 				
-				<ft:farcryButtonPanel>
+				<ft:buttonPanel>
 					<ft:button value="Save" color="orange" /> 
 					<ft:button value="Cancel" validate="false" />
-				</ft:farcryButtonPanel>
+				</ft:buttonPanel>
 				
 			</ft:form>
 		</cfif>

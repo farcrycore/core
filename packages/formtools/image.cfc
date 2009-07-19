@@ -163,7 +163,7 @@
 				<div id="#arguments.fieldname#previewimage">
 					<img src="#application.fapi.getImageWebRoot()##arguments.stMetadata.value#" width="50px" title="#listLast(arguments.stMetadata.value,"/")#"><br>
 					#listLast(arguments.stMetadata.value,"/")#
-					<ft:farcryButton type="button" value="Delete Image" onclick="if(confirm('Are you sure you want to remove this image?')) {} else {return false};$('#arguments.fieldname#DELETE').value=$('#arguments.fieldname#').value;$('#arguments.fieldname#').value='';$('#arguments.fieldname#previewimage').hide();" />
+					<ft:button type="button" value="Delete Image" onclick="if(confirm('Are you sure you want to remove this image?')) {} else {return false};$('#arguments.fieldname#DELETE').value=$('#arguments.fieldname#').value;$('#arguments.fieldname#').value='';$('#arguments.fieldname#previewimage').hide();" />
 				</div>
 			</cfoutput>
 		<cfelse>

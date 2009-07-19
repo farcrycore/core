@@ -403,8 +403,8 @@ LIBRARY DATA
 			</cfif>
 			<input type="text" name="criteria" id="criteria" value="#session.stLibraryFilter[request.ftJoin].Criteria#" /></td>
 		<td>
-			<ft:farcryButton value="Search" />
-			<ft:farcryButton value="Refresh" />
+			<ft:button value="Search" />
+			<ft:button value="Refresh" />
 		</td>
 	</tr>
 	</table>
@@ -479,8 +479,8 @@ LIBRARY DATA
 					
 					<cfoutput>
 					<div>
-						<ft:farcryButton value="Save Changes" />	
-						<ft:farcryButton type="button" value="Close" onclick="self.blur();window.close();" />	
+						<ft:button value="Save Changes" />	
+						<ft:button type="button" value="Close" onclick="self.blur();window.close();" />	
 					</div>
 					</cfoutput>
 					
@@ -560,8 +560,8 @@ LIBRARY DATA
 					
 					<cfoutput>
 					<div>
-						<ft:farcryButton value="Attach" />	
-						<ft:farcryButton type="button" value="Close" onclick="self.blur();window.close();" />	
+						<ft:button value="Attach" />	
+						<ft:button type="button" value="Close" onclick="self.blur();window.close();" />	
 					</div>
 					</cfoutput>
 					
@@ -652,10 +652,10 @@ GENERATE THE LIBRARY PICKER
 			<cfif structKeyExists(session, "ajaxUpdatingArray") AND session.ajaxUpdatingArray EQ true>
 				<tr>
 					<td colspan="2">
-						<ft:farcryButtonPanel>
-							<ft:farcryButton value="Still Updating... Try Again" url="#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#" />
-							<ft:farcryButton value="Force Refresh" confirmText="Are you sure you want to force the refresh" />
-						</ft:farcryButtonPanel>
+						<ft:buttonPanel>
+							<ft:button value="Still Updating... Try Again" url="#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#" />
+							<ft:button value="Force Refresh" confirmText="Are you sure you want to force the refresh" />
+						</ft:buttonPanel>
 					</td>
 				</tr>
 			<cfelse>
@@ -825,14 +825,14 @@ GENERATE THE LIBRARY PICKER
 				<!--- do nothing --->
 			<cfelse>
 				<cfif NOT InstantLibraryUpdate >
-					<ft:farcryButtonPanel indentForLabel="false">
-						<ft:farcryButton type="button" value="Save & Close" confirmText="You are about to save your changes. Please wait until the library window closes." onclick="needToConfirm = false;$(this).disabled=true;opener.libraryCallbackArray('#url.primaryFormFieldname#','sort',Sortable.sequence('sortableListTo'),'#application.url.webroot#',window);" />
-						<ft:farcryButton type="button" value="Cancel" confirmText="Are you sure you want to cancel?" onclick="needToConfirm = false;self.blur();window.close();return false;" />
-					</ft:farcryButtonPanel>	
+					<ft:buttonPanel indentForLabel="false">
+						<ft:button type="button" value="Save & Close" confirmText="You are about to save your changes. Please wait until the library window closes." onclick="needToConfirm = false;$(this).disabled=true;opener.libraryCallbackArray('#url.primaryFormFieldname#','sort',Sortable.sequence('sortableListTo'),'#application.url.webroot#',window);" />
+						<ft:button type="button" value="Cancel" confirmText="Are you sure you want to cancel?" onclick="needToConfirm = false;self.blur();window.close();return false;" />
+					</ft:buttonPanel>	
 				<cfelse>
-					<ft:farcryButtonPanel indentForLabel="false">
-						<ft:farcryButton type="button" value="Close" onclick="self.blur();window.close();return false;" />	
-					</ft:farcryButtonPanel>	
+					<ft:buttonPanel indentForLabel="false">
+						<ft:button type="button" value="Close" onclick="self.blur();window.close();return false;" />	
+					</ft:buttonPanel>	
 				</cfif>	
 			</cfif>
 			

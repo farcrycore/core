@@ -271,7 +271,7 @@
 		
 		<cfsavecontent variable="html">
 			<cfoutput>
-				<select name="#arguments.fieldname#" id="#arguments.fieldname#" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#">
+				<select name="#arguments.fieldname#" id="#arguments.fieldname#" class="selectInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#">
 			</cfoutput>
 			
 			<cfif qCommon.recordcount>

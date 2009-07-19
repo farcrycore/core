@@ -37,7 +37,7 @@ NOTES       : Dave Shuck - created
 
 
 <!--- Import Tag Libraries --->
-<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 
 	<cffunction name="init" access="public" output="true" returntype="cffpVerify">
@@ -614,7 +614,7 @@ NOTES       : Dave Shuck - created
 		</cfif>
 		
 		<cfif getConfig().showSpamInfoBubble>
-			<extjs:bubble title="Form marked as spam!" bAutoHide="false"><cfoutput>#LogText#</cfoutput></extjs:bubble>
+			<skin:bubble title="Form marked as spam!" bAutoHide="false"><cfoutput>#LogText#</cfoutput></skin:bubble>
 		</cfif>
 		
 		<cfset LogText = LogText & "<br />--- Failure score: #totalPoints#.  <br />Your failure threshold: #getConfig().failureLimit#.  <br />IP address: #cgi.remote_addr#	<br />User agent: #cgi.http_user_agent#	<br />Previous page: #cgi.http_referer#" />

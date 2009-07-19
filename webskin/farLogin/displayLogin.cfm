@@ -27,7 +27,6 @@ FARCRY IMPORT FILES
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
-<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs" />
 
 
 
@@ -52,18 +51,18 @@ START WEBSKIN
 				<ft:object typename="farLogin" lFields="username,password" prefix="login" legend="" />
 					
 				
-				<ft:farcryButtonPanel>
+				<ft:buttonPanel>
 				
 	
 					<cfif isdefined("arguments.stParam.message") and len(arguments.stParam.message)>
-						<extjs:bubble message="#arguments.stParam.message#" />
+						<skin:bubble message="#arguments.stParam.message#" />
 					</cfif>
 					
 					<ft:button value="Log In" icon="#application.url.webtop#/images/crystal/22x22/actions/lock.png" rbkey="security.buttons.login" />
-				</ft:farcryButtonPanel>
+				</ft:buttonPanel>
 
 				
-				<ft:farcryButtonPanel>					
+				<ft:buttonPanel>					
 					<cfoutput><ul class="loginForgot"></cfoutput>
 						<sec:CheckPermission webskinpermission="forgotPassword" type="farUser">
 							<cfoutput> 
@@ -79,7 +78,7 @@ START WEBSKIN
 						</sec:CheckPermission>
 					<cfoutput></ul></cfoutput>
 
-				</ft:farcryButtonPanel>
+				</ft:buttonPanel>
 			</ft:form>
 			
 

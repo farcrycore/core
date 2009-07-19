@@ -173,7 +173,7 @@
 		</td>
 		<td>#stTask.title#</td> 
 		<cfif stTask.bComplete>	
-			<td><ft:farcryButton value="reopen" selectedObjectID="#stTask.objectID#" /></td>
+			<td><ft:button value="reopen" selectedObjectID="#stTask.objectID#" /></td>
 		<cfelse>
 			<td nowrap="true">
 
@@ -183,11 +183,11 @@
 					
 					
 					<cfif len(stTask.userID) AND stTask.userID EQ session.dmProfile.objectid>
-						<ft:farcryButton value="release to others" selectedObjectID="#stTask.objectID#" />
+						<ft:button value="release to others" selectedObjectID="#stTask.objectID#" />
 					</cfif>
 					
-					<ft:farcryButton value="action" selectedObjectID="#stTask.objectID#" />			
-					<ft:farcryButton type="button" value="complete" onclick="log('#request.farcryForm.name#');" selectedObjectID="#stTask.objectID#" />	
+					<ft:button value="action" selectedObjectID="#stTask.objectID#" />			
+					<ft:button type="button" value="complete" onclick="log('#request.farcryForm.name#');" selectedObjectID="#stTask.objectID#" />	
 					
 					<ft:object objectid="#stTask.objectid#" typename="farTask" lFields="userID" r_stFields="stTaskFields" />
 					#stTaskFields.userID.html#		
@@ -238,13 +238,13 @@
 
 <cfoutput><br /></cfoutput>
 
-<ft:farcryButtonPanel indentForLabel="false">
+<ft:buttonPanel indentForLabel="false">
 	<cfif stobj.bTasksComplete>
-		<ft:farcryButton type="button" value="Complete Workflow" onclick="log('#request.farcryForm.name#');" />														
+		<ft:button type="button" value="Complete Workflow" onclick="log('#request.farcryForm.name#');" />														
 	</cfif>
 	
-	<ft:farcryButton value="Reset Workflow" confirmText="are you sure you want to remove this workflow" />
-</ft:farcryButtonPanel>
+	<ft:button value="Reset Workflow" confirmText="are you sure you want to remove this workflow" />
+</ft:buttonPanel>
 
 <cfoutput></div></cfoutput>
 </ft:form>

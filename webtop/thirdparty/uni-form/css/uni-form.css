@@ -1,4 +1,4 @@
-@import "uni-form-generic.css";
+/*@import "uni-form-generic.css";*/
 /* Keep in mind that wherever you see 'Required property' it means that the property must exist */
 
 /* ------------------------------------------------------------------------------ */
@@ -115,5 +115,3 @@ YOU CAN VERY EASILY REVERT TO A GENERIC STYLE OF UNI-FORM. BEST OF LUCK...
 */
 
 /* ------------------------------------------------------------------------------ */
-.uniForm .help{ background: #8CA7D5; border: 1px solid #324E7C; border-width: 1px 0; }
-    .uniForm .helpField{ color: #af4c4c; margin: 0 0 6px 0; padding: 4px; background: #ffbfbf; }

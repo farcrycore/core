@@ -69,10 +69,10 @@
 		</fieldset>
 	</cfoutput>
 	
-	<ft:farcryButtonPanel indentForLabel="true">
-		<ft:farcryButton value="Save" />
-		<ft:farcryButton value="Cancel" />
-	</ft:farcryButtonPanel>
+	<ft:buttonPanel indentForLabel="true">
+		<ft:button value="Save" />
+		<ft:button value="Cancel" />
+	</ft:buttonPanel>
 </ft:form>
 
 <admin:footer />

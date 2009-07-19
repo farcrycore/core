@@ -38,7 +38,6 @@ $out:$
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/core/tags/container/" prefix="con">
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
-<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs" />
 
 <!--- quit tag if running in end mode --->
 <cfif thistag.executionmode eq "end">
@@ -176,7 +175,7 @@ $out:$
 					<cfset stConObj.aRules[url.rule_index] = stConObj.aRules[url.rule_index-1] />
 					<cfset stConObj.aRules[url.rule_index-1] = temp />
 					<cfset oCon.setData(stProperties=stConObj) />
-					<extjs:bubble title="Container management"><cfoutput>The rule has been moved up</cfoutput></extjs:bubble>
+					<skin:bubble title="Container management"><cfoutput>The rule has been moved up</cfoutput></skin:bubble>
 					<cfif not request.mode.ajax>
 						<cflocation url="#redirecturl#" />
 					</cfif>
@@ -188,7 +187,7 @@ $out:$
 					<cfset stConObj.aRules[url.rule_index] = stConObj.aRules[url.rule_index+1] />
 					<cfset stConObj.aRules[url.rule_index+1] = temp />
 					<cfset oCon.setData(stProperties=stConObj) />
-					<extjs:bubble title="Container management"><cfoutput>The rule has been moved down</cfoutput></extjs:bubble>
+					<skin:bubble title="Container management"><cfoutput>The rule has been moved down</cfoutput></skin:bubble>
 					<cfif not request.mode.ajax>
 						<cflocation url="#redirecturl#" />
 					</cfif>
@@ -202,12 +201,12 @@ $out:$
 						<cfset oRule.delete(objectid=url.rule_id) />
 						<cfset arraydeleteat(stConObj.aRules,url.rule_index) />
 						<cfset oCon.setData(stProperties=stConObj) />
-						<extjs:bubble title="Container management"><cfoutput>The rule has been deleted</cfoutput></extjs:bubble>
+						<skin:bubble title="Container management"><cfoutput>The rule has been deleted</cfoutput></skin:bubble>
 						<cfif not request.mode.ajax>
 							<cflocation url="#redirecturl#" />
 						</cfif>
 					<cfelseif structkeyexists(url,"confirm") and url.confirm eq "false">
-						<extjs:bubble title="Container management"><cfoutput><p class="success">Deletion has been canceled</p></cfoutput></extjs:bubble>
+						<skin:bubble title="Container management"><cfoutput><p class="success">Deletion has been canceled</p></cfoutput></skin:bubble>
 						<cflocation url="#redirecturl#" />
 					<cfelse>
 						<cfoutput>

@@ -79,11 +79,11 @@
 	<tr>
 		<td>#stTask.title#</td> 
 		<cfif stTask.bComplete>	
-			<td><ft:farcryButton value="reopen" selectedObjectID="#stTask.objectID#" /></td>
+			<td><ft:button value="reopen" selectedObjectID="#stTask.objectID#" /></td>
 		<cfelse>
 			<td>
-				<ft:farcryButton value="action" selectedObjectID="#stTask.objectID#" />
-				<ft:farcryButton value="complete" selectedObjectID="#stTask.objectID#" />
+				<ft:button value="action" selectedObjectID="#stTask.objectID#" />
+				<ft:button value="complete" selectedObjectID="#stTask.objectID#" />
 			</td>
 		</cfif>
 		
@@ -94,10 +94,10 @@
 <cfoutput></table></cfoutput>
 
 <cfif bWorkflowTasksComplete>
-	<ft:farcryButtonPanel>
-		<ft:farcryButton value="Complete Workflow" />
-		<ft:farcryButton value="Decline Workflow" />
-	<ft:farcryButtonPanel>
+	<ft:buttonPanel>
+		<ft:button value="Complete Workflow" />
+		<ft:button value="Decline Workflow" />
+	<ft:buttonPanel>
 </cfif>
 
 </ft:form>

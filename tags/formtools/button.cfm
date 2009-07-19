@@ -34,8 +34,8 @@
 <cfif thistag.executionMode eq "End">
 
 	<!--- Include Prototype light in the head --->
-	<skin:htmlHead library="extCorejs" />
-	<skin:htmlHead library="farcryForm" />
+	<skin:loadJS id="jquery" />
+	<!--- <skin:loadJS id="farcry-form" /> --->
 
 	<!--- I18 conversion of label --->
 	<cfset attributes.text = application.rb.getResource('#attributes.rbkey#@label',attributes.text) />
@@ -66,9 +66,10 @@
 	
 	<cfif isDefined("Request.farcryForm.Name")>
 		<cfif attributes.validate>
-			<cfset attributes.onClick = "#attributes.onClick#;if(!validateBtnClick('#Request.farcryForm.Name#')){return false};" />	
+			<!--- <cfset attributes.onClick = "#attributes.onClick#;if(!validateBtnClick('#Request.farcryForm.Name#')){return false};" />	 --->
 		<cfelse>
-			<cfset attributes.onClick = "#attributes.onClick#;btnTurnOffServerSideValidation();" />	
+			<!--- <cfset attributes.onClick = "#attributes.onClick#;btnTurnOffServerSideValidation();" />	 --->
+			<cfset attributes.class = listAppend(attributes.class, "cancel", " ") />
 		</cfif>
 		
 	</cfif>
@@ -86,9 +87,9 @@
 	</cfif>
 
 
-	<cfif attributes.type EQ "submit">
-		<cfset attributes.onClick = "#attributes.onClick#;#request.farcryForm.onSubmit#;btnSubmit('#Request.farcryForm.Name#','#jsStringFormat(attributes.value)#');" />	
-	</cfif>
+<!--- 	<cfif attributes.type EQ "submit">
+		<cfset attributes.onClick = "#attributes.onClick#;#request.farcryForm.onSubmit#;" />
+	</cfif> --->
 	
 	<!--- Make sure that confirmation is run first for a button --->
 	<cfif len(Attributes.ConfirmText)>
@@ -131,20 +132,8 @@
 		<cfcase value="link">
 			<cfoutput><a id="#attributes.id#" name="#attributes.id#" onclick="#attributes.OnClick#" class="#attributes.class#" style="#attributes.style#">#attributes.text#</a></cfoutput>
 		</cfcase>
-		<cfcase value="button">
-			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" class="#attributes.class#" style="#attributes.style#" <cfif len(attributes.onClick)>onClick="#attributes.OnClick#"</cfif> <cfif attributes.disabled>disabled</cfif>>#attributes.text#</button></cfoutput>
-		</cfcase>
 		<cfdefaultcase>
-			<cfoutput>
-			<span id="#attributes.id#-wrap">
-				<button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" class="f-btn-text" <cfif attributes.disabled>disabled</cfif>>#attributes.text#</button>
-			</span>
-			</cfoutput>
-				
-			<extjs:onReady>
-				<cfoutput>
-					newFarcryButton('#attributes.id#','#lcase(attributes.type)#','#lcase(attributes.size)#','#jsStringFormat(attributes.value)#','#jsStringFormat(attributes.text)#','#attributes.icon#','#attributes.overIcon#','#attributes.iconPos#', '#attributes.sprite#', '#attributes.width#','#farcryFormName#','#jsStringFormat(attributes.OnClick)#','#lcase(yesNoFormat(attributes.disabled))#','#jsStringFormat(attributes.class)#','#jsStringFormat(attributes.style)#');</cfoutput>
-			</extjs:onReady>
+			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" class="#attributes.class#" style="#attributes.style#" <cfif len(attributes.onClick)>onClick="#attributes.OnClick#"</cfif> <cfif attributes.disabled>disabled</cfif>>#attributes.text#</button></cfoutput>
 		</cfdefaultcase>
 		</cfswitch>
 		

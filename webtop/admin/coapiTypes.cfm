@@ -205,7 +205,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 					<cfif NOT alterType.isCFCDeployed(typename=componentName)>
 						<a href="#CGI.SCRIPT_NAME#?deploy=#componentName#">#application.rb.getResource("coapiadmin.buttons.deploy@label","Deploy")#</a>
 					<cfelse>
-						<ft:farcryButton type="button" value="Scaffold" onclick="openScaffoldDialog('#application.url.farcry#/admin/scaffold.cfm?typename=#componentName#&iframe=1','Scaffold',500,400,true);" />
+						<ft:button type="button" value="Scaffold" onclick="openScaffoldDialog('#application.url.farcry#/admin/scaffold.cfm?typename=#componentName#&iframe=1','Scaffold',500,400,true);" />
 					</cfif>
 				</td>
 				<!--- <td><em>Create Permissions</em>
@@ -213,7 +213,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 				if not assume typename* --->
 				</td>
 				<td style="border-right:none">
-				<ft:farcryButton value="Doc" url="#variables.documentURL#?component=#application.types[componentname].name#" />
+				<ft:button value="Doc" url="#variables.documentURL#?component=#application.types[componentname].name#" />
 				</td>
 			</tr>
 		</cfoutput>
@@ -275,11 +275,11 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 					<cfif NOT alterType.isCFCDeployed(typename=componentName)>
 						<a href="#CGI.SCRIPT_NAME#?deploy=#componentName#">#application.rb.getResource("coapiadmin.buttons.deploy@label","Deploy")#</a>
 					<cfelse>
-						<ft:farcryButton type="button" value="Scaffold" onclick="openScaffoldDialog('#application.url.farcry#/admin/scaffold.cfm?typename=#componentName#&iframe=1','Scaffold',500,400,true);" />
+						<ft:button type="button" value="Scaffold" onclick="openScaffoldDialog('#application.url.farcry#/admin/scaffold.cfm?typename=#componentName#&iframe=1','Scaffold',500,400,true);" />
 					</cfif>
 				</td>
 				<td style="border-right:none">
-				<ft:farcryButton value="Doc" url="#variables.documentURL#?component=#application.types[componentname].name#" />
+				<ft:button value="Doc" url="#variables.documentURL#?component=#application.types[componentname].name#" />
 				</td>
 			</tr>
 		</cfoutput>

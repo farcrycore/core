@@ -135,10 +135,10 @@
 			<cfset request.mode.showdraft = 1 />
 			<cfset session.dmSec.Authentication.showdraft = request.mode.showdraft />
 			<cfset request.mode.lValidStatus = "draft,pending,approved" />
-			<extjs:bubble title="Currently Viewing a Draft Object" message="You are currently viewing a draft object. Your profile has now been changed to 'Showing Drafts'." />
+			<skin:bubble title="Currently Viewing a Draft Object" message="You are currently viewing a draft object. Your profile has now been changed to 'Showing Drafts'." />
 		<cfelse>			
 			<!--- send to login page and return in draft mode --->
-			<extjs:bubble title="Security" message="This object is in draft" />
+			<skin:bubble title="Security" message="This object is in draft" />
 			<cflocation url="#attributes.loginpath#&showdraft=1&error=draft" addtoken="No" />
 		</cfif>
 	</cfif>
@@ -267,9 +267,9 @@
 			<![endif]>
 			<![endif]-->
 		</cfoutput></skin:htmlHead>
-		<extjs:onReady><cfoutput>
+		<skin:onReady><cfoutput>
 			Ext.DomHelper.append(Ext.getBody(),"<a href='#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray)=[^&]*','','ALL')#&bShowTray=1' id='enabletray' title='Enable tray'><img src='#application.url.webtop#/facade/icon.cfm?icon=toggletray&size=64' /></a>");
-		</cfoutput></extjs:onReady>
+		</cfoutput></skin:onReady>
 	</cfif>
 
 <cfelse>
@@ -354,12 +354,12 @@
 				<![endif]>
 				<![endif]-->
 			</cfoutput></skin:htmlHead>
-			<extjs:onReady><cfoutput>
+			<skin:onReady><cfoutput>
 				Ext.DomHelper.append(Ext.getBody(),"<a href='#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray)=[^&]*','','ALL')#&bShowTray=1' id='enabletray' title='Enable tray'><img src='#application.url.webtop#/facade/icon.cfm?icon=toggletray&size=64' /></a>");
-			</cfoutput></extjs:onReady>
+			</cfoutput></skin:onReady>
 		</cfif>
 	<cfelse>
-		<extjs:bubble title="Security" message="You do not have permission to access this view" />
+		<skin:bubble title="Security" message="You do not have permission to access this view" />
 		<cflocation url="#attributes.loginpath#&error=restricted" addtoken="No" />
 	</cfif>
 	

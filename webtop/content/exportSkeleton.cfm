@@ -5,7 +5,7 @@
 
 <!--- tag libraries --->
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft">
-<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs">
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
 
 
 
@@ -177,9 +177,9 @@
 
 		
 		<!--- COMPLETE --->
-		<extjs:bubble title="#stProperties.name#" bAutoHide="false">
+		<skin:bubble title="#stProperties.name#" bAutoHide="false">
 			<cfoutput>Skeleton Exported Successfully</cfoutput>
-		</extjs:bubble>
+		</skin:bubble>
 
 	
 	</ft:processFormObjects>
@@ -194,9 +194,9 @@
 <ft:form>
 	<ft:object typename="farSkeleton" objectid="#session.skeletonID#" legend="Skeleton Details" />
 	
-	<ft:farcryButtonPanel>
-		<ft:farcryButton value="Create Skeleton" />
-	</ft:farcryButtonPanel>
+	<ft:buttonPanel>
+		<ft:button value="Create Skeleton" />
+	</ft:buttonPanel>
 </ft:form>
 
 

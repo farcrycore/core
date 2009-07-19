@@ -39,7 +39,7 @@ $out:$
 <cfsetting enablecfoutputonly="Yes">
 <cfprocessingDirective pageencoding="utf-8">
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 <cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
  
@@ -351,7 +351,7 @@ $out:$
 							
 						</cfif>
 						
-						<extjs:bubble title="#stObj.label#" message="Status changed to #status#" />
+						<skin:bubble title="#stObj.label#" message="Status changed to #status#" />
 						<farcry:logevent object="#stObj.objectid#" type="types" event="to#status#" note="#form.commentLog#" />
 						
 					</cfif> <!--- // incomplete items check  --->

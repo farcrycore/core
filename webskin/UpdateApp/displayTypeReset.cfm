@@ -1,7 +1,7 @@
 <cfsetting enablecfoutputonly="true" />
 <!--- @@displayname: AJAX interface --->
 
-<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <cftry>
 	<cfif request.mode.bAdmin OR (structkeyexists(url,"key") and url.key eq application.updateappKey) OR (structkeyexists(form,"key") and form.key eq application.updateappKey)>
@@ -20,9 +20,9 @@
 		<cfset process(form) /><!--- Do normal processing on the passed in form --->
 		
 		<cfset results = "" />
-		<extjs:bubbleOutput>
+		<skin:bubbleOutput>
 			<cfset results = listappend(results,'{ index: #index#, title: "#jsstringformat(bubble.title)#", message: "#jsstringformat(bubble.message)#" }') />
-		</extjs:bubbleOutput>
+		</skin:bubbleOutput>
 		
 		<cfoutput>{ results: [ #results# ], success: true, errors: [] }</cfoutput>
 	<cfelse>

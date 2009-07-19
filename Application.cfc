@@ -18,8 +18,6 @@
 <!--- @@description: Application initialisation. --->
 <cfcomponent displayname="Application" output="false" hint="Core Application.cfc.">
 
-	<!--- import tag libraries ---> 
-	<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 	
 	
 	<!--- 
@@ -37,6 +35,86 @@
 	<cfinclude template="#this.projectConstructorLocation#" />	
 
 	
+	<cffunction name="registerCoreLibraries" access="private" returntype="void" output="false" hint="Registers core js and css libraries">
+	
+		<!--- import tag libraries ---> 
+		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+		
+		<cfset application.fc.stJSLibraries = structNew() />
+		<cfset application.fc.stCSSLibraries = structNew() />
+		
+		<!--- JS LIBRARIES --->
+		<skin:registerJS 	id="jquery"
+							baseHREF="#application.url.webtop#/thirdparty/jquery/js"
+							lFiles="jquery-1.3.2.min.js">
+							
+							<cfoutput>var $j = jQuery.noConflict();</cfoutput>	
+		</skin:registerJS>		
+			
+		<skin:registerJS 	id="jquery-ui"
+							baseHREF="#application.url.webtop#/thirdparty/jquery/js"
+							lFiles="ui.core.js,ui.accordion.js,ui.datepicker.js,ui.dialog.js,ui.draggable.js,ui.droppable.js,ui.progressbar.js,ui.resizable.js,ui.selectable.js,ui.slider.js,ui.sortable.js,ui.tabs.js,effects.core.js,effects.blind.js,effects.bounce.js,effects.clip.js,effects.drop.js,effects.explode.js,effects.fold.js,effects.highlight.js,effects.pulsate.js,effects.scale.js,effects.shake.js,effects.slide.js,effects.transfer.js" />
+
+
+		<skin:registerJS 	id="jquery-validate"
+							baseHREF="#application.url.webtop#/thirdparty/jquery-validate"
+							lFiles="jquery.validate.pack.js" />
+							
+							
+		<skin:registerJS 	id="gritter"
+							baseHREF="#application.url.webtop#/thirdparty/gritter/js"
+							lFiles="jquery.gritter.js" />
+
+		<skin:registerJS 	id="farcry-form"
+							baseHREF="#application.url.webtop#/js"
+							lFiles="farcryForm.cfm" />
+
+		<skin:registerJS 	id="uni-form"
+							baseHREF="#application.url.webtop#/thirdparty/uni-form/js"
+							lFiles="uni-form.jquery.js" />
+
+		
+		<!--- CSS LIBRARIES --->
+		<skin:registerCSS 	id="webtop"
+							baseHREF="#application.url.webtop#/css"
+							lFiles="reset.css,fonts.css,main.css" />
+							
+		<skin:registerCSS 	id="jquery-ui"
+							baseHREF="#application.url.webtop#/thirdparty/jquery/css/base"
+							lFiles="ui.core.css,ui.resizable.css,ui.accordion.css,ui.dialog.css,ui.slider.css,ui.tabs.css,ui.datepicker.css,ui.progressbar.css,ui.theme.css" />
+				
+		<skin:registerCSS 	id="uni-form"
+							baseHREF="#application.url.webtop#/thirdparty/uni-form/css"
+							lFiles="uni-form-generic.css,uni-form.css">
+							
+							<cfoutput>
+							.uniForm{ margin-top: 1.5em; }
+							
+							.uniForm .multiField, .uniForm .blockLabels .multiField{ width: 60%; }
+							.uniForm .formHint, .uniForm .blockLabels .formHint{ width: 40%; margin-top: .3em; }
+							.uniForm .textInput, .uniForm select, .uniForm textarea{ border: 2px solid ##dfdfdf; background:##fff; }
+							.ctrlHolder.focused .textInput{ border-color: ##DFD77D; }
+							.uniForm .buttonHolder{ padding: 10px 10px 10px 0; font-size: 120%; margin: 1em 0;border: 1px solid ##ccc; border-width: 1px 0; background: ##f9f9f9; }
+							
+							/* Phone number multifield custom styles */
+							.uniForm .inlineLabels .ctrlHolder .multiField.phoneNum .blockLabel{ width: auto; }
+							  .uniForm .inlineLabels .ctrlHolder .multiField .blockLabel ##phone_ccode.textInput,
+							  .uniForm .inlineLabels .ctrlHolder .multiField .blockLabel ##phone_area.textInput{ width: 40px; }
+							  .uniForm .inlineLabels .ctrlHolder .multiField .blockLabel ##phone_area.textInput{ width: 40px; }
+							  .uniForm .inlineLabels .ctrlHolder .multiField .blockLabel ##phone_num.textInput{ width: 110px; }
+
+								
+							.uniForm{position:static;z-index: 0;}
+							.uniForm .errorField {font-weight:bold;}
+							</cfoutput>
+		</skin:registerCSS>
+							
+		<skin:registerCSS 	id="gritter"
+							baseHREF="#application.url.webtop#/thirdparty/gritter/css"
+							lFiles="gritter.css" />
+				
+														
+	</cffunction>
 	
 	<cffunction name="OnApplicationStart" access="public" returntype="boolean" output="false" hint="Fires when the application is first created.">
 
@@ -46,6 +124,9 @@
 
 		<!--- intialise application scope --->
 		<cfset initApplicationScope() />
+
+		<!--- intialise core js and css libraries --->
+		<cfset registerCoreLibraries() />
 		
 		<!----------------------------------- 
 		CALL THE PROJECTS SERVER SPECIFIC VARIABLES

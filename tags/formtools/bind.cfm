@@ -6,7 +6,7 @@
 <cfparam name="attributes.lRequiredFields" default="*" />
 
 <cfif thisTag.ExecutionMode eq "End">
-	<cfset request.inhead.jQueryJS = 1>
+	<skin:loadJS id="jquery" />
 	
 	<cfset lFields = "" />
 	<cfset lVars = "" />
