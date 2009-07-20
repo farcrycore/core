@@ -66,9 +66,9 @@
 	
 	<cfif isDefined("Request.farcryForm.Name")>
 		<cfif attributes.validate>
-			<!--- <cfset attributes.onClick = "#attributes.onClick#;if(!validateBtnClick('#Request.farcryForm.Name#')){return false};" />	 --->
+			<cfset attributes.onClick = "#attributes.onClick#;btnTurnOnServerSideValidation();" />
 		<cfelse>
-			<!--- <cfset attributes.onClick = "#attributes.onClick#;btnTurnOffServerSideValidation();" />	 --->
+			<cfset attributes.onClick = "#attributes.onClick#;btnTurnOffServerSideValidation();" />
 			<cfset attributes.class = listAppend(attributes.class, "cancel", " ") />
 		</cfif>
 		

@@ -457,7 +457,13 @@ function btnClick(formName,value) {
 	} --->
 }
 
-function btnTurnOffServerSideValidation() {
+function btnTurnOnServerSideValidation() {
+	$j('.fc-server-side-validation').attr('value',1);
+	<!--- f = Ext.query('.fc-server-side-validation');
+   	for(var i=0; i<f.length; i++){
+		f[i].value = 0;
+	} --->
+}function btnTurnOffServerSideValidation() {
 	$j('.fc-server-side-validation').attr('value',0);
 	<!--- f = Ext.query('.fc-server-side-validation');
    	for(var i=0; i<f.length; i++){
@@ -475,19 +481,14 @@ function btnSubmit(formName,value) {
 }
 		
 function farcryForm_ajaxSubmission(formname,action){
-	<!--- $j('<div class="farcry-form-ajax-loader"></div>')
-		.prependTo($j('##' + formname + 'formwrap'))
-		.css({
-			width: $j('##' + formname + 'formwrap').width(),
-			height: $j('##' + formname + 'formwrap').height()
-		}); --->
-	$j('##' + formname + 'formwrap .farcry-form-ajax-loader').show();
+	$j("##" + formname + 'formwrap').mask("Form Submitting, please wait...");
 	$j.ajax({
 	   type: "POST",
 	   url: action,
 	   data: $j("##" + formname).serialize(),
 	   cache: false,
 	   success: function(msg){
+	   		$j("##" + formname + 'formwrap').unmask();
 			$j('##' + formname + 'formwrap').html(msg);						     	
 	   }
 	 });

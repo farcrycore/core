@@ -32,9 +32,10 @@ It just ignores the inner ones.
 		<cfset Variables.CorrectForm = 1>
 		
 		
-		<!--- import Javascript Libraries libraries --->
+		<!--- import libraries --->
 		<skin:loadJS id="jquery" />
 		<skin:loadJS id="farcry-form" />
+		<skin:loadCSS id="farcry-form" />
 	
 		
 		<cfparam name="attributes.Name" default="farcryForm#randrange(1,999999999)#">
@@ -92,17 +93,6 @@ It just ignores the inner ones.
 			
 			<!--- Setup the ajax wrapper if this is the first render of the form. When the ajax submission is made, the returned HTML is placed in this div. --->
 			<cfif attributes.bAjaxSubmission AND NOT structKeyExists(form, "farcryformajaxsubmission")>
-				<style type="text/css">
-				.farcry-form-ajax-loader {
-					background: ##666666 url(#application.url.webtop#/thirdparty/jquery/css/ui-lightness/images/ui-bg_diagonals-thick_20_666666_40x40.png) 50% 50% repeat;
-					opacity: .50;
-					filter:	Alpha(Opacity=50);
-					position:absolute;
-					z-index:99;
-					width:100%;
-					height:100%;
-				}
-				</style>
 				<div id="#attributes.Name#formwrap" class="ajaxformwrap">				
 			</cfif>
 			
@@ -120,9 +110,6 @@ It just ignores the inner ones.
 			<cfif attributes.bAjaxSubmission>
 				<!--- We use the hidden field to tell the submission that we do not need to include the wrap. --->
 				<input type="hidden" name="farcryformajaxsubmission" value="1" />
-				
-				<!--- We use this div to render the overlay while the ajax form submission is taking place. --->
-				<div class="farcry-form-ajax-loader" style="display:none;"></div>
 			</cfif>
 					
 		</cfoutput> 
@@ -148,9 +135,10 @@ It just ignores the inner ones.
 		<cfif attributes.validation EQ 1>
 			<skin:loadJS id="jquery-validate" />
 			
+			<!--- Setup farcry form validation (fv) --->
 			<skin:onReady>
 				<cfoutput>
-				$j("###attributes.Name#").validate({
+				$fc.fv#attributes.Name# = $j("###attributes.Name#").validate({
 					onsubmit: false, // let the onsubmit function handle the validation
 					errorElement: "p",
 					errorClass: "errorField",					   
@@ -164,6 +152,10 @@ It just ignores the inner ones.
 					   $j(element).parent("div.ctrlHolder").removeClass('error');
 					}
 
+				});
+				
+				$j("###attributes.Name#").find("input, button").filter(".cancel").click(function() {
+					$j("###attributes.Name#").attr('fc:cancelSubmit',true);
 				});
 				</cfoutput>
 			</skin:onReady>
@@ -190,16 +182,20 @@ It just ignores the inner ones.
 		<!--- If we have anything in the onsubmit, use jquery to run it --->
 		<skin:onReady>
 			<cfoutput>
-			$j('###attributes.Name#').submit(function(){
+			$j('###attributes.Name#').submit(function(){	
+				var valid = true;			
 				<cfif attributes.validation EQ 1>
-					var valid = $j('###attributes.Name#').valid();
-				<cfelse>
-					var valid = true;
+					if ( $j("###attributes.Name#").attr('fc:cancelSubmit') ) {
+						$j("###attributes.Name#").attr('fc:cancelSubmit',false);					
+					} else {
+						valid = $j('###attributes.Name#').valid();
+					}
 				</cfif>			
 					 
 				if(valid){
 					#attributes.onSubmit#;
 				} else {
+					$fc.fv#attributes.Name#.focusInvalid();
 					return false;
 				}
 		    });

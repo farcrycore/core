@@ -49,6 +49,7 @@
 							lFiles="jquery-1.3.2.min.js">
 							
 							<cfoutput>var $j = jQuery.noConflict();</cfoutput>	
+							<cfoutput>var $fc = {};</cfoutput>	
 		</skin:registerJS>		
 			
 		<skin:registerJS 	id="jquery-ui"
@@ -66,8 +67,8 @@
 							lFiles="jquery.gritter.js" />
 
 		<skin:registerJS 	id="farcry-form"
-							baseHREF="#application.url.webtop#/js"
-							lFiles="farcryForm.cfm" />
+							baseHREF="#application.url.webtop#"
+							lFiles="/js/farcryForm.cfm,/thirdparty/loadmask/jquery.loadmask.min.js" />
 
 		<skin:registerJS 	id="uni-form"
 							baseHREF="#application.url.webtop#/thirdparty/uni-form/js"
@@ -83,6 +84,10 @@
 							baseHREF="#application.url.webtop#/thirdparty/jquery/css/base"
 							lFiles="ui.core.css,ui.resizable.css,ui.accordion.css,ui.dialog.css,ui.slider.css,ui.tabs.css,ui.datepicker.css,ui.progressbar.css,ui.theme.css" />
 				
+		<skin:registerCSS 	id="farcry-form"
+							baseHREF="#application.url.webtop#"
+							lFiles="/thirdparty/loadmask/jquery.loadmask.css" />
+												
 		<skin:registerCSS 	id="uni-form"
 							baseHREF="#application.url.webtop#/thirdparty/uni-form/css"
 							lFiles="uni-form-generic.css,uni-form.css">
