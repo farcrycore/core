@@ -71,9 +71,15 @@
 		<!--- IF THIS IS NOT THE HOME PAGE AND WE HAVE A 404 PAGE, THEN CALL THE 404 --->
 		<cfif len(attributes.typename) 
 			or len(attributes.objectid) 
-			or (structKeyExists(url, "furl") AND url.furl NEQ "/") 
-			AND fileexists("#application.path.project#/errors/404.cfm")>
-			<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/404.cfm" />
+			or (structKeyExists(url, "furl") AND url.furl NEQ "/") >
+	
+			<cfif fileexists("#application.path.project#/www/errors/404.cfm")>
+				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/www/errors/404.cfm" />
+			<cfelseif fileexists("#application.path.project#/errors/404.cfm")>
+				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/404.cfm" />	
+			<cfelse>
+				<cflocation url="#application.url.webroot#/" addtoken="No">
+			</cfif>
 			<cfsetting enablecfoutputonly="false" />
 			<cfexit method="exittag" />
 		
@@ -88,6 +94,7 @@
 		</cfif>
 	</cfif>
 </cfif>
+
 
 
 <cfif len(attributes.objectid)>
