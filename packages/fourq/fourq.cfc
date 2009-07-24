@@ -461,25 +461,22 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	</cffunction>
 
 	<cffunction name="getNavID" access="public" output="false" returntype="string" hint="Returns the default Navigation objectID for the objectID passed in. Empty if it cant find anything applicable.">
-		<cfargument name="objectid" required="no" type="string" default="" hint="The objectid for which the navigation objectid is to be found." />
+		<cfargument name="objectid" required="true" type="uuid" hint="The objectid for which the navigation objectid is to be found." />
 		<cfargument name="typename" required="no" type="string" default="" hint="The typename of the object for which the navigation objectid is to be found." />
-		<cfargument name="stObject" required="no" type="struct" default="#structNew()#"  hint="The object for which the navigation objectid is to be found." />
 		
 		<cfset var stNav = structNew() />
 		<cfset var navID = "" />	
-		
+
+		<!--- TODO: replace this tag call with a FAPI function (or equivalent) --->
 		<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj" />
 
-		<cfif len(arguments.objectid)>
-			<cfif not len(arguments.typename)>
-				<cfset arguments.typename = application.coapi.utilities.findType(objectid="#arguments.objectid#") />
-			</cfif>
-			<cfif structIsEmpty(arguments.stObject)>
-				<cfset arguments.stObject = createObject("component", application.stcoapi["#arguments.typename#"].packagePath).getData(objectid="#arguments.objectid#") />
-			</cfif>
+		<!--- assign typename if only objectid passed in --->
+		<cfif NOT len(arguments.typename)>
+			<cfset arguments.typename = application.coapi.utilities.findType(objectid="#arguments.objectid#") />
+			<!--- <cfif NOT len(arguments.typename)><cfthrow /></cfif> --->
 		</cfif>
 	
-		
+		<!--- URL: check the URL for navigation context --->
 		<cfif structkeyexists(url, "navid")>		
 			<!--- ie. this is a dynamic object looking for context, passing nav on the URL --->
 			<cfset navID = url.navid />
@@ -490,15 +487,16 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		</cfif>
 		
-		<!--- If we still havnt found the navid and we actually have an object --->
-		<cfif NOT len(navID) AND structKeyExists(arguments.stObject, "typename")>
-			<cfif arguments.stObject.typename eq "dmNavigation">
+		<!--- OBJECT: check the content item for a natural navigation context ie. it sits in the site tree --->
+		<cfif NOT len(navID)>
+			<cfif arguments.typename eq "dmNavigation">
 				<!--- Use the navigation objectid if its a navigation object --->
-				<cfset navID = arguments.stObject.objectid />
+				<cfset navID = arguments.objectid />
 	
-			<cfelseif structKeyExists(application.stCoapi["#arguments.stObject.typename#"], "bUseInTree") AND application.stCoapi["#arguments.stObject.typename#"].bUseInTree>
-			
-				<nj:getNavigation objectId="#arguments.stObject.objectId#" r_stobject="stNav" />
+			<cfelseif structKeyExists(application.stCoapi["#arguments.typename#"], "bUseInTree") AND application.stCoapi["#arguments.typename#"].bUseInTree>
+				<!--- look up the object's parent navigaion node --->
+				<!--- TODO: replace this tag call with a FAPI function (or equivalent) --->
+				<nj:getNavigation objectId="#arguments.objectId#" r_stobject="stNav" />
 				
 				<!--- if the object is in the tree this will give us the node --->
 				<cfif isStruct(stNav) and structKeyExists(stNav, "objectid") AND len(stNav.objectid)>
@@ -507,11 +505,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			</cfif>
 		</cfif>
 
-		<cfif structKeyExists(arguments.stObject, "typename")>
-			<cfset arguments.typename = arguments.stObject.typename />
-		</cfif>
-		<!--- If we still havnt found the navID, see if we can find a nav alias matching the typename --->
-		<cfif not len(navID) and len(arguments.typename)>
+		<!--- ALIAS: check for a nav alias in the site tree matching the typename --->
+		<cfif not len(navID)>
+			<!--- TODO: replace navid lookup with a FAPI call --->
 			<cfif structKeyExists(application.navid, "#arguments.typename#")>
 				<cfset navID = listFirst(application.navid["#arguments.typename#"]) />
 			</cfif>
