@@ -110,7 +110,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.lCustomActions" default="" />
 <cfparam name="attributes.stFilterMetaData" default="#structNew()#" />
 <cfparam name="attributes.bShowActionList" default="true" />
-<cfparam name="attributes.qRecordset" default=""><!--- Used if the developer wants to pass in their own recordset --->
+<cfparam name="arguments.st" default=""><!--- Used if the developer wants to pass in their own recordset --->
 
 <cfparam name="attributes.rbkey" default="coapi.#attributes.typename#.objectadmin" />
 
@@ -636,7 +636,7 @@ user --->
 		<cfoutput>#attributes.description#</cfoutput>
 	</cfif>
 	
-	<ft:form style="width: 100%;" Name="#attributes.name#">
+	<ft:form Name="#attributes.name#">
 	
 		<!--- output user responses --->
 		<cfif len(message_error)><cfoutput><p id="error" class="fade"><span class="error">#message_error#</span></p></cfoutput></cfif>
@@ -648,7 +648,7 @@ user --->
 		<cfsavecontent variable="html_buttonbar">
 		
 			<cfif len(attributes.lButtons)>
-				<ft:buttonPanel indentForLabel="false">
+				<ft:buttonPanel>
 				<cfloop from="1" to="#arraylen(attributes.aButtons)#" index="i">
 					
 					<cfif attributes.lButtons EQ "*" or listFindNoCase(attributes.lButtons,attributes.aButtons[i].value)>
@@ -669,7 +669,7 @@ user --->
 								<cfset buttontext = attributes.aButtons[i].value />
 							</cfif>
 							
-							<ft:button text="#attributes.aButtons[i].value#" value="#attributes.aButtons[i].value#" rbkey="objectadmin.buttons.#rereplace(attributes.aButtons[i].value,'[^\w]+','','ALL')#" size="small" colour="grey" onclick="#onclickJS#" confirmText="#attributes.aButtons[i].confirmText#" />
+							<ft:button text="#attributes.aButtons[i].value#" value="#attributes.aButtons[i].value#" rbkey="objectadmin.buttons.#rereplace(attributes.aButtons[i].value,'[^\w]+','','ALL')#" onclick="#onclickJS#" confirmText="#attributes.aButtons[i].confirmText#" class="secondaryAction" />
 							<!---<input type="#attributes.aButtons[i].type#" name="#attributes.aButtons[i].name#" value="#attributes.aButtons[i].value#" class="formButton"<cfif len(attributes.aButtons[i].onclick)> onclick="#attributes.aButtons[i].onclick#"</cfif> /> --->
 						</cfif>
 					</cfif>
@@ -682,9 +682,9 @@ user --->
 
 	
 	
-		<cfif isQuery(attributes.qRecordset)>
-			<cfset stRecordSet.q = attributes.qRecordset>
-			<cfset stRecordSet.countAll = attributes.qRecordset.recordCount />
+		<cfif isQuery(arguments.st)>
+			<cfset stRecordSet.q = arguments.st>
+			<cfset stRecordSet.countAll = arguments.st.recordCount />
 			<cfset stRecordSet.currentPage = 0 />
 			<cfset stRecordSet.recordsPerPage = attributes.numitems />
 		<cfelse>
@@ -695,198 +695,213 @@ user --->
 			<cfset stRecordset = oFormtoolUtil.getRecordset(paginationID="#attributes.typename#", sqlColumns=sqlColumns, typename="#attributes.typename#", RecordsPerPage="#attributes.numitems#", sqlOrderBy="#session.objectadminFilterObjects[attributes.typename].sqlOrderBy#", sqlWhere="#attributes.sqlWhere#", lCategories="#attributes.lCategories#", bCheckVersions=true) />	
 		</cfif>
 
-	
-	<ft:pagination 
+	<skin:pagination
 		paginationID="#attributes.typename#"
 		qRecordSet="#stRecordset.q#"
 		typename="#attributes.typename#"
 		totalRecords="#stRecordset.countAll#" 
 		currentPage="#stRecordset.currentPage#"
-		Step="10"  
+		Step="1"  
 		pageLinks="#attributes.numPageDisplay#"
 		recordsPerPage="#stRecordset.recordsPerPage#" 
-		Top="#attributes.bPaginateTop#" 
-		Bottom="#attributes.bPaginateBottom#"
-		submissionType="form"> 
+		submissionType="form"
+		oddRowClass="alt"
+		evenRowClass=""
+		r_stObject="st">
+
 	
-	
-		<cfif len(attributes.SortableColumns)>
-			<cfoutput><input type="hidden" id="sqlOrderBy" name="sqlOrderBy" value="#session.objectadminFilterObjects[attributes.typename].sqlOrderBy#"></cfoutput>
-		</cfif>
-		
-		<cfoutput>
-		<table width="100%" class="objectAdmin">
-		<thead>
-			<tr>			
-		</cfoutput>
-		
-		 		<cfif attributes.bSelectCol><cfoutput><th><cfif attributes.bCheckAll><input type="checkbox" id="checkall" name="checkall" onclick="checkUncheckAll(this);" title="Check All" /><cfelse>Select</cfif></th></cfoutput></cfif>
-		 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
-			 		<cfoutput><th>#application.rb.getResource('objectadmin.columns.status@label',"Status")#</th></cfoutput>
-				</cfif>
-				
-				<cfif attributes.bShowActionList>
-					<cfoutput><th>#application.rb.getResource('objectadmin.columns.action@label','Action')#</th></cfoutput>
-				</cfif>
-				<!---<cfif attributes.bEditCol><th>Edit</th></cfif>
-				<cfif attributes.bViewCol><th>View</th></cfif>
-				<cfif attributes.bFlowCol><th>Flow</th></cfif> --->
-				
-				<cfset o = createobject("component",PrimaryPackagepath) />
-				
-				<cfif arrayLen(attributes.aCustomColumns)>
-					<cfloop from="1" to="#arrayLen(attributes.aCustomColumns)#" index="i">
-						
-						<cfif isstruct(attributes.aCustomColumns[i])>
-						
-							<cfif structKeyExists(attributes.aCustomColumns[i], "title")>
-								<cfoutput><th>#application.rb.getResource("objectadmin.columns.#rereplace(attributes.aCustomColumns[i].title,'[^\w\d]','','ALL')#@label",attributes.aCustomColumns[i].title)#</th></cfoutput>
-							<cfelse>
-								<cfoutput><th>&nbsp;</th></cfoutput>
+		<cfif st.bFirst>
+			<cfif len(attributes.SortableColumns)>
+				<cfoutput><input type="hidden" id="sqlOrderBy" name="sqlOrderBy" value="#session.objectadminFilterObjects[attributes.typename].sqlOrderBy#"></cfoutput>
+			</cfif>
+			
+			<cfoutput>
+			<table width="100%" class="objectAdmin">
+			<thead>
+				<tr>			
+			</cfoutput>
+			
+			 		<cfif attributes.bSelectCol><cfoutput><th><cfif attributes.bCheckAll><input type="checkbox" id="checkall" name="checkall" onclick="checkUncheckAll(this);" title="Check All" /><cfelse>Select</cfif></th></cfoutput></cfif>
+			 		<cfif structKeyExists(st,"bHasMultipleVersion")>
+				 		<cfoutput><th>#application.rb.getResource('objectadmin.columns.status@label',"Status")#</th></cfoutput>
+					</cfif>
+					
+					<cfif attributes.bShowActionList>
+						<cfoutput><th>#application.rb.getResource('objectadmin.columns.action@label','Action')#</th></cfoutput>
+					</cfif>
+					<!---<cfif attributes.bEditCol><th>Edit</th></cfif>
+					<cfif attributes.bViewCol><th>View</th></cfif>
+					<cfif attributes.bFlowCol><th>Flow</th></cfif> --->
+					
+					<cfset o = createobject("component",PrimaryPackagepath) />
+					
+					<cfif arrayLen(attributes.aCustomColumns)>
+						<cfloop from="1" to="#arrayLen(attributes.aCustomColumns)#" index="i">
+							
+							<cfif isstruct(attributes.aCustomColumns[i])>
+							
+								<cfif structKeyExists(attributes.aCustomColumns[i], "title")>
+									<cfoutput><th>#application.rb.getResource("objectadmin.columns.#rereplace(attributes.aCustomColumns[i].title,'[^\w\d]','','ALL')#@label",attributes.aCustomColumns[i].title)#</th></cfoutput>
+								<cfelse>
+									<cfoutput><th>&nbsp;</th></cfoutput>
+								</cfif>
+								
+							<cfelse><!--- Normal field --->
+								
+								<cfif isDefined("PrimaryPackage.stProps.#trim(attributes.aCustomColumns[i])#.metadata.ftLabel")>
+									<cfoutput><th>#o.getI18Property(attributes.aCustomColumns[i],"label")#</th></cfoutput>
+								<cfelse>
+									<cfoutput><th>#attributes.aCustomColumns[i]#</th></cfoutput>
+								</cfif>
+								
+								<!--- If this field is in the column list (and it should be) remove it so it won't get displayed elsewhere --->
+								<cfif listcontainsnocase(attributes.columnlist,attributes.aCustomColumns[i])>
+									<cfset attributes.columnlist = listdeleteat(attributes.columnlist,listfindnocase(attributes.columnlist,attributes.aCustomColumns[i])) />
+								</cfif>
+								
 							</cfif>
 							
-						<cfelse><!--- Normal field --->
+						</cfloop>
+					</cfif>
+					
+					<cfloop list="#attributes.columnlist#" index="i">				
 							
-							<cfif isDefined("PrimaryPackage.stProps.#trim(attributes.aCustomColumns[i])#.metadata.ftLabel")>
-								<cfoutput><th>#o.getI18Property(attributes.aCustomColumns[i],"label")#</th></cfoutput>
-							<cfelse>
-								<cfoutput><th>#attributes.aCustomColumns[i]#</th></cfoutput>
-							</cfif>
-							
-							<!--- If this field is in the column list (and it should be) remove it so it won't get displayed elsewhere --->
-							<cfif listcontainsnocase(attributes.columnlist,attributes.aCustomColumns[i])>
-								<cfset attributes.columnlist = listdeleteat(attributes.columnlist,listfindnocase(attributes.columnlist,attributes.aCustomColumns[i])) />
-							</cfif>
-							
+						<cfif isDefined("PrimaryPackage.stProps.#trim(i)#.metadata.ftLabel")>
+							<cfoutput><th>#o.getI18Property(i,"label")#</th></cfoutput>
+						<cfelse>
+							<cfoutput><th>#i#</th></cfoutput>
 						</cfif>
 						
 					</cfloop>
-				</cfif>
-				
-				<cfloop list="#attributes.columnlist#" index="i">				
-						
-					<cfif isDefined("PrimaryPackage.stProps.#trim(i)#.metadata.ftLabel")>
-						<cfoutput><th>#o.getI18Property(i,"label")#</th></cfoutput>
-					<cfelse>
-						<cfoutput><th>#i#</th></cfoutput>
-					</cfif>
 					
-				</cfloop>
-				
-			<cfoutput>
-			</tr>
-			</cfoutput>
-			
-			
-			<cfif len(attributes.SortableColumns)>
-				<cfoutput>
-				<tr>
-				</cfoutput>
-				
-			 		<cfif attributes.bSelectCol><cfoutput><th>&nbsp;</th></cfoutput></cfif>	 	
-			 			
-			 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
-				 		<cfoutput><th>&nbsp;</th></cfoutput>
-					</cfif>
-					<cfif attributes.bShowActionList>
-						<cfoutput><th>&nbsp;</th></cfoutput>
-					</cfif>
-					<!---<cfif attributes.bEditCol><th>&nbsp;</th></cfif>
-					<cfif attributes.bViewCol><th>&nbsp;</th></cfif>
-					<cfif attributes.bFlowCol><th>&nbsp;</th></cfif> --->					
-					<cfif arrayLen(attributes.aCustomColumns)>
-						<cfset oType = createObject("component", PrimaryPackagePath) />
-						<cfloop from="1" to="#arrayLen(attributes.aCustomColumns)#" index="i">
-							<cfif isstruct(attributes.aCustomColumns[i])>
-								<cfif structKeyExists(attributes.aCustomColumns[i],"sortable") and attributes.aCustomColumns[i].sortable>
-									<cfoutput>
-									<th>
-									<select name="#attributes.aCustomColumns[i].property#sqlOrderBy" onchange="javascript:$('sqlOrderBy').value=this.value;submit();" style="width:80px;">
-										<option value=""></option>
-										<option value="#attributes.aCustomColumns[i].property# asc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i].property# asc">selected</cfif>>asc</option>
-										<option value="#attributes.aCustomColumns[i].property# desc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i].property# desc">selected</cfif>>desc</option>
-									</select>
-									</th>
-									</cfoutput>						
-								<cfelse>
-									<cfoutput><th>&nbsp;</th></cfoutput>
-								</cfif>
-							<cfelse>
-								<cfif listContainsNoCase(attributes.SortableColumns,attributes.aCustomColumns[i])><!--- Normal property in sortablecolumn list --->
-									<cfoutput>
-									<th>
-									<select name="#attributes.aCustomColumns[i]#sqlOrderBy" onchange="javascript:$('sqlOrderBy').value=this.value;submit();" style="width:80px;">
-										<option value=""></option>
-										<option value="#attributes.aCustomColumns[i]# asc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i]# asc">selected</cfif>>asc</option>
-										<option value="#attributes.aCustomColumns[i]# desc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i]# desc">selected</cfif>>desc</option>
-									</select>
-									</th>
-									</cfoutput>
-								<cfelse>
-									<cfoutput><th>&nbsp;</th></cfoutput>
-								</cfif>
-							</cfif>
-						</cfloop>
-					</cfif>
-			
-					<cfloop list="#attributes.columnlist#" index="i">
-						<cfoutput><th></cfoutput>					
-							<cfif listContainsNoCase(attributes.SortableColumns,i)>
-								<cfoutput>
-								<select name="#i#sqlOrderBy" onchange="javascript:$('sqlOrderBy').value=this.value;submit();" style="width:80px;">
-									<option value=""></option>
-									<option value="#i# asc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# asc">selected</cfif>>asc</option>
-									<option value="#i# desc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# desc">selected</cfif>>desc</option>
-								</select>
-								</cfoutput>
-							<cfelse>
-								<cfoutput>&nbsp;</cfoutput>
-							</cfif>
-						<cfoutput></th></cfoutput>
-					</cfloop>
 				<cfoutput>
 				</tr>
 				</cfoutput>
-			</cfif>
-	
-			<cfoutput>
-			</thead>
-			</cfoutput>
-		
-			
-			<ft:paginateLoop r_stObject="st" bIncludeFields="true" bIncludeObjects="false" stpermissions="#stpermissions#" lCustomActions="#attributes.lCustomActions#" bTypeAdmin="true" typename="#attributes.typename#">
 				
+				
+				<cfif len(attributes.SortableColumns)>
 					<cfoutput>
-					<tbody>
 					<tr>
 					</cfoutput>
 					
-						<cfif attributes.bSelectCol>
-							<cfoutput><td nowrap="true">#st.select# #st.currentRow#</td></cfoutput>
+				 		<cfif attributes.bSelectCol><cfoutput><th>&nbsp;</th></cfoutput></cfif>	 	
+				 			
+				 		<cfif structKeyExists(st,"bHasMultipleVersion")>
+					 		<cfoutput><th>&nbsp;</th></cfoutput>
 						</cfif>
-				 		<cfif listContainsNoCase(stRecordset.q.columnlist,"bHasMultipleVersion")>
+						<cfif attributes.bShowActionList>
+							<cfoutput><th>&nbsp;</th></cfoutput>
+						</cfif>
+						<!---<cfif attributes.bEditCol><th>&nbsp;</th></cfif>
+						<cfif attributes.bViewCol><th>&nbsp;</th></cfif>
+						<cfif attributes.bFlowCol><th>&nbsp;</th></cfif> --->					
+						<cfif arrayLen(attributes.aCustomColumns)>
+							<cfset oType = createObject("component", PrimaryPackagePath) />
+							<cfloop from="1" to="#arrayLen(attributes.aCustomColumns)#" index="i">
+								<cfif isstruct(attributes.aCustomColumns[i])>
+									<cfif structKeyExists(attributes.aCustomColumns[i],"sortable") and attributes.aCustomColumns[i].sortable>
+										<cfoutput>
+										<th>
+										<select name="#attributes.aCustomColumns[i].property#sqlOrderBy" onchange="javascript:$('sqlOrderBy').value=this.value;submit();" style="width:80px;">
+											<option value=""></option>
+											<option value="#attributes.aCustomColumns[i].property# asc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i].property# asc">selected</cfif>>asc</option>
+											<option value="#attributes.aCustomColumns[i].property# desc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i].property# desc">selected</cfif>>desc</option>
+										</select>
+										</th>
+										</cfoutput>						
+									<cfelse>
+										<cfoutput><th>&nbsp;</th></cfoutput>
+									</cfif>
+								<cfelse>
+									<cfif listContainsNoCase(attributes.SortableColumns,attributes.aCustomColumns[i])><!--- Normal property in sortablecolumn list --->
+										<cfoutput>
+										<th>
+										<select name="#attributes.aCustomColumns[i]#sqlOrderBy" onchange="javascript:$('sqlOrderBy').value=this.value;submit();" style="width:80px;">
+											<option value=""></option>
+											<option value="#attributes.aCustomColumns[i]# asc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i]# asc">selected</cfif>>asc</option>
+											<option value="#attributes.aCustomColumns[i]# desc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i]# desc">selected</cfif>>desc</option>
+										</select>
+										</th>
+										</cfoutput>
+									<cfelse>
+										<cfoutput><th>&nbsp;</th></cfoutput>
+									</cfif>
+								</cfif>
+							</cfloop>
+						</cfif>
+				
+						<cfloop list="#attributes.columnlist#" index="i">
+							<cfoutput><th></cfoutput>					
+								<cfif listContainsNoCase(attributes.SortableColumns,i)>
+									<cfoutput>
+									<select name="#i#sqlOrderBy" onchange="javascript:$('sqlOrderBy').value=this.value;submit();" style="width:80px;">
+										<option value=""></option>
+										<option value="#i# asc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# asc">selected</cfif>>asc</option>
+										<option value="#i# desc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# desc">selected</cfif>>desc</option>
+									</select>
+									</cfoutput>
+								<cfelse>
+									<cfoutput>&nbsp;</cfoutput>
+								</cfif>
+							<cfoutput></th></cfoutput>
+						</cfloop>
+					<cfoutput>
+					</tr>
+					</cfoutput>
+				</cfif>
+		
+				<cfoutput>
+				</thead>
+				</cfoutput>
+			</cfif>
+			
+			
+			<cfset stObjectAdminData = getObjectAdminData(st="#st#", typename="#attributes.typename#", stPermissions="#stPermissions#") />
+			<cfset st = application.fapi.structMerge(st,stObjectAdminData) />
+			
+			<!--- <ft:paginateLoop r_stObject="st" bIncludeFields="true" bIncludeObjects="false" stpermissions="#stpermissions#" lCustomActions="#attributes.lCustomActions#" bTypeAdmin="true" typename="#attributes.typename#">
+		 --->		
+					<cfoutput>
+					<tbody>
+					<tr class="#st.currentRowClass#">
+					</cfoutput>
+					
+						<cfif attributes.bSelectCol>
+							<cfoutput>
+							<td nowrap="true">
+								#st.select# 
+								#st.currentRow#	
+								<cfif structKeyExists(st,"locked") AND st.locked neq 0>
+									<img src='#application.url.farcry#/images/treeImages/customIcons/padlock.gif'>
+								</cfif>
+							</td>
+							</cfoutput>
+						</cfif>
+				 		<cfif structKeyExists(st,"bHasMultipleVersion")>
 					 		<cfoutput><td nowrap="true">#application.rb.getResource("constants.status.#st.status#@label",st.status)#</td></cfoutput>
 						</cfif>
 						<cfif attributes.bShowActionList>
 							<cfoutput><td>#st.action#</td></cfoutput>
 						</cfif>
-						<!---<cfif attributes.bEditCol><td>#st.editLink#</td></cfif>
-						<cfif attributes.bViewCol><td>#st.viewLink#</td></cfif>
-						<cfif attributes.bFlowCol><td>#st.flowLink#</td></cfif> --->
+						
+						
+
 						<cfif arrayLen(attributes.aCustomColumns)>
 							<cfset oType = createObject("component", PrimaryPackagePath) />
 							<cfloop from="1" to="#arrayLen(attributes.aCustomColumns)#" index="i">
 								
 								<cfif isstruct(attributes.aCustomColumns[i])>
 									<cfif structKeyExists(attributes.aCustomColumns[i], "webskin")>
-										<cfset HTML = oType.getView(objectid="#st.stFields.objectid.value#", template="#attributes.aCustomColumns[i].webskin#")>
+										<cfset HTML = oType.getView(objectid="#st.objectid#", template="#attributes.aCustomColumns[i].webskin#")>
 										<cfoutput><td>#HTML#</td></cfoutput>
 									<cfelse>
 										<cfoutput><td>&nbsp;</td></cfoutput>
 									</cfif>
 								<cfelse><!--- Normal field --->
-									<cfif structKeyExists(st.stFields, attributes.aCustomColumns[i])>
-										<cfoutput><td>#st.stFields[attributes.aCustomColumns[i]].HTML#</td>	</cfoutput>			
+									<cfif structKeyExists(st, attributes.aCustomColumns[i])>
+										<ft:object objectID="#st.objectid#" lFields="#attributes.aCustomColumns[i]#" format="display" r_stFields="stFields" />
+						
+										<cfoutput><td>#stFields[attributes.aCustomColumns[i]].html#</td></cfoutput>			
 									<cfelse>
 										<cfoutput><td>-- not available --</td>	</cfoutput>			
 									</cfif>
@@ -894,27 +909,33 @@ user --->
 								
 							</cfloop>
 						</cfif>
-						<cfloop list="#attributes.columnlist#" index="i">
-							<cfif structKeyExists(st.stFields, i)>
-								<cfoutput><td>#st.stFields[i].HTML#</td>	</cfoutput>			
-							<cfelse>
-								<cfoutput><td>-- not available --</td>	</cfoutput>			
-							</cfif>
-							
-						</cfloop>
+						
+						<cfif len(attributes.columnList)>
+							<ft:object objectID="#st.objectid#" lFields="#attributes.columnlist#" format="display" r_stFields="stFields" />
+						
+							<cfloop list="#attributes.columnlist#" index="i">
+								<cfif structKeyExists(stFields, i)>
+									<cfoutput><td>#stFields[i].HTML#</td></cfoutput>			
+								<cfelse>
+									<cfoutput><td>-- not available --</td>	</cfoutput>			
+								</cfif>
+								
+							</cfloop>	
+						</cfif>
 					<cfoutput>
 					</tr>
 					</tbody>
 					</cfoutput>
 				
 				
-			</ft:paginateLoop>
-		
-		<cfoutput></table></cfoutput>
+			<!--- </ft:paginateLoop> --->
+		<cfif st.bLast>
+			<cfoutput></table></cfoutput>
+		</cfif>
 	
 	
-	
-	</ft:pagination> 
+	<!--- </ft:pagination>  --->
+	</skin:pagination>
 	
 	
 	
@@ -932,99 +953,108 @@ user --->
 
 </cfif> 
 
-<!---
-<cffunction name="getRecordset" access="public" output="No" returntype="struct">
-	<cfargument name="typename" required="No" type="string" default="" />
-	<cfargument name="sqlColumns" required="No" type="string" default="objectid" />
-	<cfargument name="sqlWhere" required="No" type="string" default="" />
-	<cfargument name="sqlOrderBy" required="No" type="string" default="label" />
+<cffunction name="getObjectAdminData" returntype="struct">
 	
-	<cfargument name="CurrentPage" required="No" type="numeric" default="1" />
-	<cfargument name="RecordsPerPage" required="No" type="numeric" default="5" />
-	<cfargument name="PageLinksShown" required="No" type="numeric" default="10" />
+	<cfargument name="st" required="true" type="struct" hint="A struct containing the current rows data" />
+	<cfargument name="typename" required="false" default="" hint="The typename if the listing is supposed to be limited to the one type.">
+	<cfargument name="stPermissions" required="false" default="#structNew()#" type="struct" hint="A struct containing the permissions" />
 	
-	<cfset var stReturn = structNew() />
-	<cfset var q = '' />
-	<cfset var recordcount = '' />
-	
-	<cfif NOT len(arguments.sqlWhere)>
-		<cfset arguments.sqlWhere = "0=0" />
+	<cfset var stObjectAdminData = structNew() />
+	<cfset var lWorkflowTypenames = "" />
+
+	<cfif len(arguments.typename)>
+		<cfset lWorkflowTypenames = application.fapi.getContentType("farWorkflow").getWorkflowList(arguments.typename) />
 	</cfif>
-	
-	<!--- query --->
-	<cfstoredproc procedure="sp_selectnextn" datasource="#application.dsn#">
-	    <cfprocresult name="q" resultset="1">
-	    <cfprocresult name="recordcount" resultset="2">
-	     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="TableName"  value="#arguments.typename#">
-	     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="Columns" value="#arguments.sqlColumns#">
-	     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="IdentityColumn" value="objectid">
-	     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="GroupNumber" value="#arguments.CurrentPage#">
-	     <cfprocparam type="In"  cfsqltype="CF_SQL_VARCHAR" dbvarname="GroupSize" value="#arguments.recordsPerPage#">
-	     <cfprocparam type="In" cfsqltype="CF_SQL_LONGVARCHAR" dbvarname="SqlWhere" value="#arguments.SqlWhere#">
-	     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="SqlOrderBy" value="#arguments.sqlOrderBy#">
-	</cfstoredproc>
-	
-	
-	<!------------------------------
-	DETERMINE THE TOTAL PAGES
-	 ------------------------------>
-	<cfif isNumeric(recordcount.countAll) AND recordcount.countAll GT 0>
-		<cfset stReturn.TotalPages = ceiling(recordcount.countAll / arguments.RecordsPerPage)>
-	<cfelse>
-		<cfset stReturn.TotalPages = 0>
-	</cfif>
-		
-	<!------------------------------
-	IF THE CURRENT PAGE IS GREATER THAN THE TOTAL PAGES, REDO THE RECORDSET FOR PAGE 1
-	 ------------------------------>		
-	<cfif arguments.CurrentPage GT stReturn.TotalPages and arguments.CurrentPage GT 1>
-		
-		<cfset arguments.CurrentPage = 1 />
-		
-		<!--- query --->
-		<cfstoredproc procedure="sp_selectnextn" datasource="#application.dsn#">
-		    <cfprocresult name="q" resultset="1">
-		    <cfprocresult name="recordcount" resultset="2">
-		     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="TableName"  value="#arguments.typename#">
-		     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="Columns" value="#arguments.sqlColumns#">
-		     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="IdentityColumn" value="objectid">
-		     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="GroupNumber" value="#arguments.CurrentPage#">
-		     <cfprocparam type="In"  cfsqltype="CF_SQL_VARCHAR" dbvarname="GroupSize" value="#arguments.recordsPerPage#">
-		     <cfprocparam type="In" cfsqltype="CF_SQL_LONGVARCHAR" dbvarname="SqlWhere" value="#arguments.SqlWhere#">
-		     <cfprocparam type="In" cfsqltype="CF_SQL_VARCHAR" dbvarname="SqlOrderBy" value="#arguments.sqlOrderBy#">
-		</cfstoredproc>
-	</cfif>			
-	
-	<cfif isNumeric(recordcount.countAll) AND recordcount.countAll GT 0>
-		<cfset stReturn.TotalPages = ceiling(recordcount.countAll / arguments.RecordsPerPage)>
-	<cfelse>
-		<cfset stReturn.TotalPages = 0>
-	</cfif>
-	
-	
-	<!--- NOW THAT WE HAVE OUR QUERY, POPULATE THE RETURN STRUCTURE --->
-	<cfset stReturn.q = q />
-	<cfset stReturn.countAll = recordcount.countAll />
-	<cfset stReturn.CurrentPage = arguments.CurrentPage />
-	
-	
-	<cfset stReturn.Startpage = 1>
-	<cfset stReturn.PageLinksShown = min(arguments.PageLinksShown, stReturn.TotalPages)>
-	
-	<cfif stReturn.CurrentPage + int(stReturn.PageLinksShown / 2) - 1 GTE stReturn.TotalPages>
-		<cfset stReturn.StartPage = stReturn.TotalPages - stReturn.PageLinksShown + 1>
-	<cfelseif stReturn.CurrentPage + 1 GT stReturn.PageLinksShown>
-		<cfset stReturn.StartPage = stReturn.CurrentPage - int(stReturn.PageLinksShown / 2)>
-	</cfif>
-	
-	<cfset stReturn.Endpage = stReturn.StartPage + stReturn.PageLinksShown - 1>
-		
-	<cfset stReturn.RecordsPerPage = arguments.RecordsPerPage />
-	<cfset stReturn.typename = arguments.typename />
-     
-	<cfreturn stReturn />
-</cffunction> --->
+
+	<cfset stObjectAdminData.select = "<input type='checkbox' name='objectid' value='#arguments.st.objectid#' onclick='setRowBackground(this);' class='formCheckbox' />" />
 
 
+
+	<cfif structKeyExists(arguments.st, "bHasMultipleVersion") AND arguments.st.bHasMultipleVersion>
+		<cfset stObjectAdminData.status = "<span style='color:red;'>versioned</span>" />
+	<cfelseif structKeyExists(arguments.st, "status")>
+		<cfset stObjectAdminData.status = arguments.st.status />
+	</cfif>
+	
+	
+	<cfif structIsEmpty(arguments.stPermissions)>
+		<sec:CheckPermission permission="Create" type="#attributes.typename#" objectid="#arguments.st.objectid#" result="arguments.stPermissions.iCreate" />
+		<sec:CheckPermission permission="Delete" type="#attributes.typename#" objectid="#arguments.st.objectid#" result="arguments.stPermissions.iDelete" />
+		<sec:CheckPermission permission="RequestApproval" type="#attributes.typename#" objectid="#arguments.st.objectid#" result="arguments.stPermissions.iRequestApproval" />
+		<sec:CheckPermission permission="Approve" type="#attributes.typename#" objectid="#arguments.st.objectid#" result="arguments.stPermissions.iApprove" />
+		<sec:CheckPermission permission="Edit" type="#attributes.typename#" objectid="#arguments.st.objectid#" result="arguments.stPermissions.iEdit" />
+		<sec:CheckPermission permission="ObjectDumpTab" result="arguments.stPermissions.iDumpTab" />
+		<sec:CheckPermission permission="Developer" result="arguments.stPermissions.iDeveloper" />
+	</cfif>
+	
+	<cfsavecontent variable="ActionDropdown">
+		
+		<skin:loadJS id="jquery" />
+
+		<cfoutput>
+		<select name="action#st.currentrow#" id="action#st.currentrow#" class="actionDropdown" onchange="selectObjectID('#arguments.st.objectid#');btnSubmit=this.value;">
+			<option value="">-- action --</option>
+
+			<option value="overview">Overview</option>
+			
+			
+			<!--- We do not include the Edit Link if workflow is available for this content item. The user must go to the overview page. --->
+			<cfif not listLen(lWorkflowTypenames)>	
+				<cfif structKeyExists(arguments.st,"locked") AND arguments.st.locked neq 0 AND arguments.st.lockedby neq '#application.security.getCurrentUserID()#'>
+					<cfif structKeyExists(arguments.stPermissions, "iApprove") AND arguments.stPermissions.iApprove>
+						<option value="unlock">Unlock</option>
+					</cfif>		
+				<cfelseif structKeyExists(arguments.stPermissions, "iEdit") AND arguments.stPermissions.iEdit>
+					<cfif structKeyExists(arguments.st,"bHasMultipleVersion")>
+						<cfif NOT(arguments.st.bHasMultipleVersion) AND arguments.st.status EQ "approved">
+							<option value="createDraft">Create Draft Object</option>
+						<cfelseif NOT(arguments.st.bHasMultipleVersion)>
+							<option value="edit">Edit</option>
+						</cfif>
+					<cfelse>
+						<option value="edit">Edit</option>
+					</cfif>
+				</cfif>
+			</cfif>
+			<option value="view">View</option>
+			
+			<cfif structKeyExists(application.stPlugins, "flow")>
+				<option value="flow">Flow</option>
+			</cfif>
+			
+			
+			<cfif structKeyExists(arguments.stPermissions, "iRequestApproval") 
+					AND arguments.stPermissions.iRequestApproval
+				AND structKeyExists(arguments.st,"status") 
+				AND arguments.st.status EQ "draft">
+				<option value="requestApproval">Request Approval</option>
+			</cfif>
+			
+			<cfif structKeyExists(arguments.stPermissions, "iApprove") 
+				AND arguments.stPermissions.iApprove
+				AND structKeyExists(arguments.st,"status")
+				AND (
+					arguments.st.status EQ "draft" 
+					OR arguments.st.status EQ "pending"
+				)>
+				<option value="approve">Approve</option>
+			</cfif>
+			
+			<cfif listLen(attributes.lCustomActions)>
+				<cfloop list="#attributes.lCustomActions#" index="i">
+					<option value="#listFirst(i, ":")#">#listLast(i, ":")#</option>
+				</cfloop>
+			</cfif>
+			<!--- <option value="delete">Delete</option> --->
+		</select>
+		</cfoutput>
+	</cfsavecontent>
+	
+	<cfset stObjectAdminData.action = ActionDropdown />
+
+	
+	<cfreturn stObjectAdminData />
+
+</cffunction>
 
 <cfsetting enablecfoutputonly="no">

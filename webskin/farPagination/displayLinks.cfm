@@ -50,7 +50,7 @@ START WEBSKIN
 .paginator a.p-next {margin-left:20px;padding:2px 6px;border:solid 1px ##ddd;background:##fff;}
 .paginator span.p-page{
 	background:##FFFFFF none repeat scroll 0 0;
-	color:##ff0000;
+	color:##E17000;
 	font-size:12px;
 	font-weight:bold;
 	padding:4px 8px;
@@ -62,7 +62,7 @@ START WEBSKIN
 	vertical-align:top;
 	background:##fff;
 	}
-.paginator a:hover {color:##fff;background:##0063DC;border-color:##036;text-decoration:none;}
+.paginator a:hover {color:##fff;background:##E17000;text-decoration:none;}
 </style>
 </cfoutput>
 </skin:htmlHead>

@@ -93,7 +93,7 @@
 							lFiles="uni-form-generic.css,uni-form.css">
 							
 							<cfoutput>
-							.uniForm{ margin-top: 1.5em; }
+							.uniForm{ margin-top: 1.5em; max-width:960px; _width:960px;}
 							
 							.uniForm .multiField, .uniForm .blockLabels .multiField{ width: 60%; }
 							.uniForm .formHint, .uniForm .blockLabels .formHint{ width: 40%; margin-top: .3em; }
@@ -108,9 +108,39 @@
 							  .uniForm .inlineLabels .ctrlHolder .multiField .blockLabel ##phone_area.textInput{ width: 40px; }
 							  .uniForm .inlineLabels .ctrlHolder .multiField .blockLabel ##phone_num.textInput{ width: 110px; }
 
-								
-							.uniForm{position:static;z-index: 0;}
-							.uniForm .errorField {font-weight:bold;}
+							.uniForm fieldset {
+								border-color:##A4C8E5;
+								border-style:solid none none;
+								border-width:3px 0 0;
+								margin:0;
+								padding:10px;
+							}							
+							.uniForm fieldset legend {
+								font-size:110%;
+								line-height:150%;
+								margin:10px 0;
+								padding:0 3px 0 9px;
+								color:##416394;
+								font-weight:bold;
+							}
+							.uniForm button {
+								cursor:pointer;
+								padding:5px 5px 5px 5px;
+								margin-right:5px;
+							}
+							.uniForm .secondaryAction{ 
+								float: left; 
+							}
+							.uniForm .primaryAction{ 
+						      	font-weight: bold;
+						    }					      
+							.uniForm{
+								position:static;
+								z-index: 0;
+							}
+							.uniForm .errorField {
+								font-weight:bold;
+							}
 							</cfoutput>
 		</skin:registerCSS>
 							
@@ -283,6 +313,9 @@
  
 
 	<cffunction name="OnSessionStart" access="public" returntype="void" output="false" hint="Fires when the session is first created.">
+		
+		<cfset session.fc = structNew() />
+		
 		<cfreturn />
 	</cffunction>
 

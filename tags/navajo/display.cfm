@@ -30,6 +30,7 @@
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs" />
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 
 <!--- run once only --->
 <cfif thistag.executionmode eq "end">
@@ -48,10 +49,24 @@
 <!--- optional attributes --->
 <cfparam name="attributes.objectid" default="" />
 <cfparam name="attributes.typename" default="" />
-<cfparam name="attributes.method" default="" type="string" />
+<!--- <cfparam name="attributes.method" default="" type="string" /> --->
 <cfparam name="attributes.loginpath" default="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#" type="string">
 
+<!--- passing in attributes.objectid will override the url value. This is done when a dmNavigation recusively calls the template. --->
+<cfif len(attributes.objectid)>
+	<cfset url.objectid = attributes.objectid />
+</cfif>
+<cfif len(attributes.typename)>
+	<cfset url.type = attributes.typename />
+</cfif>
 
+<!--- DEFAULT URL PARAMETERS. url.bodyView is set depending on whether the call is a type webskin call or not. --->
+<cfparam name="url.objectid" default="" />
+<cfparam name="url.type" default="" />
+<cfparam name="url.view" default="" />
+
+
+<!--- 
 <!--- Handle options for passing object/type in --->
 <cfif not len(attributes.typename) and structkeyexists(url,"type")>
 	<cfset attributes.typename = url.type />
@@ -61,43 +76,38 @@
 </cfif>
 <cfif structkeyexists(url,"view")>
 	<cfset attributes.method = url.view />
-</cfif>
+</cfif> --->
 
 <!--- method for dealing with the missing url param... redirect to home page --->
-<cfif not len(attributes.objectid)>
-	<cfif len(attributes.typename)>
-		<cfset attributes.objectid = "" />
-	<cfelse>
-		<!--- IF THIS IS NOT THE HOME PAGE AND WE HAVE A 404 PAGE, THEN CALL THE 404 --->
-		<cfif len(attributes.typename) 
-			or len(attributes.objectid) 
-			or (structKeyExists(url, "furl") AND url.furl NEQ "/") >
-	
-			<cfif fileexists("#application.path.project#/www/errors/404.cfm")>
-				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/www/errors/404.cfm" />
-			<cfelseif fileexists("#application.path.project#/errors/404.cfm")>
-				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/404.cfm" />	
-			<cfelse>
-				<cflocation url="#application.url.webroot#/" addtoken="No">
-			</cfif>
-			<cfsetting enablecfoutputonly="false" />
-			<cfexit method="exittag" />
+<cfif NOT len(url.objectid)>
+	<cfif NOT len(url.type)>
 		
-		<!--- OTHERWISE JUST CALL THE HOME PAGE --->
-		<cfelse>
-			<cfif isDefined("application.navid.home")>
-				<cfset url.objectid = application.navid.home />
-				<cfset attributes.objectid = application.navid.home />
-			<cfelse>
-				<cflocation url="#application.url.webroot#/" addtoken="No">
+		<!--- IF THIS IS NOT THE HOME PAGE AND WE HAVE A 404 PAGE, THEN CALL THE 404 --->
+		<cfif 	structKeyExists(url, "furl") 
+				AND url.furl NEQ "/">	
+				
+			<cfif fileexists("#application.path.project#/errors/404.cfm")>
+				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/404.cfm" />
+				<cfsetting enablecfoutputonly="false" />
+				<cfexit method="exittag" />	
+			<cfelseif fileexists("#application.path.project#/www/errors/404.cfm")>				
+				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/www/404.cfm" />
+				<cfsetting enablecfoutputonly="false" />
+				<cfexit method="exittag" />	
 			</cfif>
+		</cfif>
+		
+		<!--- If we make it to here, we just have to redirect to the home page. --->
+		<cfif application.fapi.checkNavID("home")>
+			<cfset url.objectid = application.fapi.getNavID("home") />
+		<cfelse>
+			<cflocation url="#application.url.webroot#/" addtoken="No">
 		</cfif>
 	</cfif>
 </cfif>
 
 
-
-<cfif len(attributes.objectid)>
+<cfif len(url.objectid)>
 
 	<!---
 	The webskin name that can be used as the body view webskin
@@ -107,28 +117,33 @@
 	
 	<!--- grab the object we are displaying --->
 	<cftry>
-		<q4:contentobjectget objectid="#attributes.objectid#" typename="#attributes.typename#" r_stobject="stObj">
+		<cfset stObj = application.fapi.getContentObject(url.objectid, url.type) />
 		
-		<cftrace var="stobj.typename" text="Object typename determined." type="information" />
-	
+		
 		<!--- check that an appropriate result was returned from COAPI --->
 		<cfif NOT IsStruct(stObj) OR StructIsEmpty(stObj)>
 			<cfthrow />
 		</cfif>
 		
 		<cfcatch type="Any">
-			<farcry:logevent object="#attributes.objectid#" type="display" event="404" />
+			<farcry:logevent object="#url.objectid#" type="display" event="404" />
 
 			<cfif fileexists("#application.path.project#/errors/404.cfm")>
-				<cfinclude template="#application.path.project#/errors/404.cfm" />
+				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/404.cfm" />
 				<cfsetting enablecfoutputonly="false" />
-				<cfexit method="exittag" />
-
-			<cfelseif isDefined("application.navid.home")>
-				<cflocation url="#application.url.conjurer#?objectid=#application.navid.home#" addtoken="No" />
-
+				<cfexit method="exittag" />	
+			<cfelseif fileexists("#application.path.project#/www/errors/404.cfm")>				
+				<cfdump var="#cfcatch#"><cfabort>
+				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/www/errors/404.cfm" />
+				<cfsetting enablecfoutputonly="false" />
+				<cfexit method="exittag" />	
+			</cfif>
+			
+			<!--- If we make it to here, we just have to redirect to the home page. --->
+			<cfif application.fpi.checkNavID("home")>
+				<cflocation url="#application.url.conjurer#?objectid=#application.fpi.getNavID('home')#" addtoken="No" />
 			<cfelse>
-				<cflocation url="#application.url.webroot#/" addtoken="No" />
+				<cflocation url="#application.url.webroot#/" addtoken="No">
 			</cfif>
 		</cfcatch>
 	</cftry>
@@ -145,7 +160,7 @@
 			<skin:bubble title="Currently Viewing a Draft Object" message="You are currently viewing a draft object. Your profile has now been changed to 'Showing Drafts'." />
 		<cfelse>			
 			<!--- send to login page and return in draft mode --->
-			<skin:bubble title="Security" message="This object is in draft" />
+			<skin:bubble title="Security" message="This object is in draft and you must be logged in to view" />
 			<cflocation url="#attributes.loginpath#&showdraft=1&error=draft" addtoken="No" />
 		</cfif>
 	</cfif>
@@ -156,10 +171,10 @@
 	- Get the navigational context of the content object 
 	--->	
 	<cfif not structKeyExists(request, "navID")>
-		<cfset request.navid = createObject("component", application.stcoapi["#stObj.typename#"].packagePath).getNavID(objectid="#stobj.objectid#", typename="#stobj.typename#", stobject="#stobj#") />
+		<cfset request.navid = application.fapi.getContentType("#stObj.typename#").getNavID(objectid="#stobj.objectid#", typename="#stobj.typename#", stobject="#stobj#") />
 		<cfif not len(request.navID)>
-			<cfif structKeyExists(application.navid, "home")>
-				<cfset request.navID = listFirst(application.navid.home) />
+			<cfif application.fapi.checkNavID("home")>
+				<cfset request.navID = application.fapi.getNavID("home") />
 			<cfelse>
 				<cfthrow type="FarCry Controller" message="No Navigation ID can be found. Please see administrator." />
 			</cfif>
@@ -167,11 +182,11 @@
 	</cfif>
 	
 	<!--- Check security --->
-	<sec:CheckPermission permission="View" objectID="#attributes.objectid#" typename="#stObj.typename#" result="iHasViewPermission" />
+	<sec:CheckPermission permission="View" objectID="#stobj.objectid#" typename="#stobj.typename#" result="iHasViewPermission" />
 
 	<!--- if the user is unable to view the object, then show the denied access webskin --->
 	<cfif iHasViewPermission NEQ 1>
-		<skin:view objectid="#attributes.objectid#" webskin="deniedaccess" loginpath="#attributes.loginpath#"/>
+		<skin:view objectid="#stobj.objectid#" webskin="deniedaccess" loginpath="#attributes.loginpath#" />
 		<cfsetting enablecfoutputonly="false" />
 		<cfexit method="exittag" />
 	</cfif>
@@ -184,7 +199,7 @@
 	</cfif>
 	
 	<!--- if in request.mode.showdraft=true mode grab underlying draft page (if it exists). Only display if user is loggedin --->
-	<cfif structkeyexists(stObj,"versionID") AND request.mode.showdraft AND application.security.isLoggedIn()>
+	<cfif structkeyexists(stObj,"versionID") AND request.mode.showdraft AND application.fapi.isLoggedIn()>
 		<cfquery datasource="#application.dsn#" name="qHasDraft">
 			select		objectID,status 
 			from 		#application.dbowner##stObj.typename# 
@@ -193,12 +208,10 @@
 		
 		<cfif qHasDraft.recordcount gt 0>
 			<!--- set the navigation point for the child obj - unless its a symnolic link in which case wed have already set navid --->
-			<cfif isDefined("URL.navid")>
-				<cftrace var="url.navid" text="URL.navid exists - setting request.navid = to url.navid" />
-				<cfset request.navid = URL.navID>
-			<cfelseif NOT isDefined("request.navid")>		
-				<cfset request.navid = stObj.objectID>
-				<cftrace var="stobj.objectid" text="URL.navid is not defined - setting to stObj.objectid" />
+			<cfif structKeyExists(url, "navid")>
+				<cfset request.navid = url.navID>
+			<cfelseif NOT structKeyExists(request, "navid")>		
+				<cfset request.navid = stobj.objectID>
 			</cfif>
 			
 			<nj:display objectid="#qHasDraft.objectid[1]#" />
@@ -210,21 +223,26 @@
 	<!--- determine display method for object --->
 	<cfset request.stObj = stObj>
 
-	<cfif len(attributes.method)>
-	
-		<!--- If a method has been passed in deliberately and is allowed use this --->
-		<cftrace var="attributes.method" text="Passed in attribute method used" />
-		<skin:view objectid="#attributes.objectid#" typename="#stObj.typename#" webskin="#attributes.method#" alternateHTML="" />
+	<cfif len(url.view)>
 		
-	<cfelseif IsDefined("stObj.displayMethod") AND len(stObj.displayMethod)>
+		<!--- Use the requested view --->
+		<skin:view objectid="#stobj.objectid#" typename="#stObj.typename#" webskin="#url.view#" alternateHTML="" />
+
+	<cfelseif structKeyExists(stObj, "displayMethod") AND len(stObj.displayMethod)>
 	
-		<!--- Invoke display method of page --->
-		<cftrace var="stObj.displayMethod" text="Object displayMethod used" />
-		<skin:view objectid="#attributes.objectid#" typename="#stObj.typename#" webskin="#stObj.displayMethod#" />
+		<!--- Update the view with the display method --->
+		<cfset url.view = stObj.displayMethod />
 		
+		<!--- Use the display method stored with the object --->
+		<skin:view objectid="#stobj.objectid#" typename="#stobj.typename#" webskin="#url.view#" alternateHTML="" />
+
 	<cfelse>
 	
-		<skin:view objectid="#attributes.objectid#" typename="#stObj.typename#" webskin="displayPageStandard" r_html="HTML" alternateHTML="" />
+		<!--- Update the view with the display method --->
+		<cfset url.view = "displayPageStandard" />
+		
+		<!--- All else fails, try the displayPageStandard webskin --->
+		<skin:view objectid="#stobj.objectid#" typename="#stobj.typename#" webskin="#url.view#" r_html="HTML" alternateHTML="" />
 		
 		<cfif len(trim(HTML))>
 			<cfoutput>#HTML#</cfoutput>
@@ -232,53 +250,6 @@
 			<cfthrow message="For the default view of an object, create a displayPageStandard webskin." />
 		</cfif>
 	</cfif>
-		
-	<cfif request.mode.bAdmin and request.fc.bShowTray and not (structkeyexists(request,"bHideContextMenu") and request.bHideContextMenu) and not attributes.method eq "displayAdminToolbar">
-		<!--- Show tray once for this request --->
-		<cfset request.fc.bShowTray = false />
-		
-		<!--- Output tray info --->
-		<cfset thisurl = "#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray|updateapp)=[^&]*','','ALL')#" />
-		<cfset thistray = "#application.url.webroot#/index.cfm?objectid=#attributes.objectid#&view=displayAdminToolbar&key=#hash(application.fc.utils.createJavaUUID())#" />
-		<extjs:iframeDialog />
-		<skin:htmlHead><cfoutput>
-			<script type="text/javascript">
-				if (top.location == location)
-					location = "#application.url.webtop#/tray.cfm###urlencodedformat(thisurl)#|summary";
-				else
-					parent.updateTray('#thistray#',document.title,'#thisurl#');
-			</script>
-		</cfoutput></skin:htmlHead>
-	<cfelseif request.mode.bAdmin and structkeyexists(session.dmProfile,"bShowTray") and not session.dmProfile.bShowTray and not (structkeyexists(request,"bHideContextMenu") and request.bHideContextMenu) and not request.mode.ajax><!--- Tray will only be disabled for admins if the admin has turned it off --->
-		<skin:htmlHead library="jQueryJS" />
-		<skin:htmlHead id="enabletray"><cfoutput>
-			<style type="text/css">
-				##enabletray {
-					position: fixed;
-					bottom: 0; left: 0;
-					z-index: 10;
-					padding:5px;
-					border:0 none;
-				}
-			</style>
-			<!--[if gte IE 5.5]>
-			<![if lt IE 7]>
-			<style type="text/css">
-			div##enabletray {
-				/* IE5.5+/Win - this is more specific than the IE 5.0 version */
-				right: auto; bottom: auto;
-				left: expression( ( 5 + ( ignoreMe2 = document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft ) ) + 'px' );
-				top: expression( ( -5 - enabletray.offsetHeight + ( document.documentElement.clientHeight ? document.documentElement.clientHeight : document.body.clientHeight ) + ( ignoreMe = document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop ) ) + 'px' );
-			}
-			</style>
-			<![endif]>
-			<![endif]-->
-		</cfoutput></skin:htmlHead>
-		<skin:onReady><cfoutput>
-			Ext.DomHelper.append(Ext.getBody(),"<a href='#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray)=[^&]*','','ALL')#&bShowTray=1' id='enabletray' title='Enable tray'><img src='#application.url.webtop#/facade/icon.cfm?icon=toggletray&size=64' /></a>");
-		</cfoutput></skin:onReady>
-	</cfif>
-
 <cfelse>
 
 	<!---
@@ -290,81 +261,40 @@
 	<!--- If we are in designmode then check the containermanagement permissions --->
 	<cfif request.mode.design>
 		<!--- set the users container management permission --->
-		<sec:CheckPermission type="#attributes.typename#" permission="ContainerManagement" result="iShowContainers" />
+		<sec:CheckPermission type="#url.type#" permission="ContainerManagement" result="iShowContainers" />
 		<cfset request.mode.showcontainers = iShowContainers />
 	</cfif>
 	
 	<!--- Default method for typewebskins is displayPageStandard --->
-	<cfif not len(attributes.method)>
-		<cfset attributes.method = "displayPageStandard" />
+	<cfif not len(url.view)>
+		<cfset url.view = "displayPageStandard" />
 	</cfif>
 	
 	<!--- Handle type webskins --->
-	<sec:CheckPermission type="#attributes.typename#" webskinpermission="#attributes.method#" result="bView" />
+	<sec:CheckPermission type="#url.type#" webskinpermission="#url.view#" result="bView" />
 	
 	<cfif bView>
 		<cfif not structKeyExists(request, "navID")>
-			<cfset request.navid = createObject("component", application.stcoapi["#attributes.typename#"].packagePath).getNavID(typename="#attributes.typename#") />
+			<cfset request.navid = application.fapi.getContentType("#url.type#").getNavID(typename="#url.type#") />
 			<cfif not len(request.navID)>
-				<cfif structKeyExists(application.navid, "home")>
-					<cfset request.navID = listFirst(application.navid.home) />
+				<cfif application.fapi.checkNavID("home")>
+					<cfset request.navID = application.fapi.getNavID("home") />
 				<cfelse>
 					<cfthrow type="FarCry Controller" message="No Navigation ID can be found. Please see administrator." />
 				</cfif>
 			</cfif>
 		</cfif>
 		
-		<skin:view typename="#attributes.typename#" webskin="#attributes.method#" />
 		
-		<cfif request.mode.bAdmin and request.fc.bShowTray and not (structkeyexists(request,"bHideContextMenu") and request.bHideContextMenu) and not attributes.method eq "displayAdminToolbar">
-			<!--- Show tray once for this request --->
-			<cfset request.fc.bShowTray = false />
-			
-			<!--- Output tray info --->
-			<cfset thisurl = "#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray|updateapp)=[^&]*','','ALL')#" />
-			<cfif structkeyexists(url,"bodyView")>
-				<cfset thistray = "#application.url.webroot#/index.cfm?type=#attributes.typename#&view=displayAdminToolbar&webskinused=#url.bodyView#" />
-			<cfelse>
-				<cfset thistray = "#application.url.webroot#/index.cfm?type=#attributes.typename#&view=displayAdminToolbar&webskinused=#attributes.method#" />
-			</cfif>
-			<extjs:iframeDialog />
-			<skin:htmlHead><cfoutput>
-				<script type="text/javascript">
-					if (top.location == location)
-						location = "#application.url.webtop#/tray.cfm###urlencodedformat(thisurl)#|summary";
-					else
-						top.updateTray('#thistray#',document.title,'#thisurl#');
-				</script>
-			</cfoutput></skin:htmlHead>
-		<cfelseif request.mode.bAdmin and structkeyexists(session.dmProfile,"bShowTray") and not session.dmProfile.bShowTray and not (structkeyexists(request,"bHideContextMenu") and request.bHideContextMenu) and not request.mode.ajax><!--- Tray will only be disabled for admins if the admin has turned it off --->
-			<skin:htmlHead library="jQueryJS" />
-			<skin:htmlHead id="enabletray"><cfoutput>
-				<style type="text/css">
-					##enabletray {
-						position: fixed;
-						bottom: 0; left: 0;
-						z-index: 10;
-						padding:5px;
-						border:0 none;
-					}
-				</style>
-				<!--[if gte IE 5.5]>
-				<![if lt IE 7]>
-				<style type="text/css">
-				div##enabletray {
-					/* IE5.5+/Win - this is more specific than the IE 5.0 version */
-					right: auto; bottom: auto;
-					left: expression( ( 5 + ( ignoreMe2 = document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft ) ) + 'px' );
-					top: expression( ( -5 - enabletray.offsetHeight + ( document.documentElement.clientHeight ? document.documentElement.clientHeight : document.body.clientHeight ) + ( ignoreMe = document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop ) ) + 'px' );
-				}
-				</style>
-				<![endif]>
-				<![endif]-->
-			</cfoutput></skin:htmlHead>
-			<skin:onReady><cfoutput>
-				Ext.DomHelper.append(Ext.getBody(),"<a href='#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray)=[^&]*','','ALL')#&bShowTray=1' id='enabletray' title='Enable tray'><img src='#application.url.webtop#/facade/icon.cfm?icon=toggletray&size=64' /></a>");
-			</cfoutput></skin:onReady>
-		</cfif>
+		<!--- Call the view on the types coapi object --->
+		<skin:view typename="#url.type#" webskin="#url.view#" r_html="HTML" alternateHTML="" />
+
+		<cfif len(trim(HTML))>
+			<cfoutput>#HTML#</cfoutput>
+		<cfelse>
+			<cfthrow message="For the default view of a type, create a displayPageStandard webskin." />
+		</cfif>		
+		
 	<cfelse>
 		<skin:bubble title="Security" message="You do not have permission to access this view" />
 		<cflocation url="#attributes.loginpath#&error=restricted" addtoken="No" />
@@ -374,5 +304,61 @@
 
 </cftimer>
 
+
+	<cfif request.mode.bAdmin AND not structKeyExists(request.fc, "bAdminTrayRendered") AND not request.mode.ajax>
+		<cfset request.fc.bAdminTrayRendered = true />
+		
+		<cfparam name="session.fc" default="#structNew()#" />
+		<cfparam name="session.fc.trayWebskin" default="displayAdminBarHidden" />
+		
+		<cfset urlTray = application.fapi.getLink(type=url.type, objectid=url.objectid, urlParameters='ajaxmode=1') />
+
+		<!--- import libraries --->
+		<skin:loadJS id="jquery" />
+		<skin:loadJS id="farcry-form" />
+		<skin:loadCSS id="farcry-form" />
+
+		<cfoutput>	
+		<style type="text/css">
+			@import url("#application.url.webtop#/css/tray.css");
+		</style>
+		<skin:onReady>
+		$j("body").prepend("<div style='bottom:0;font-size:11px;padding:0;position:fixed;right:0;width:100%;z-index:99;max-height:200px;overflow:auto;'><div id='farcrytray'></div></div>");
+
+		$fc.traySwitch = function(webskin){
+		    $j.ajax({
+				type: "POST",
+				cache: false,
+				url: '#urlTray#' + '&view=' + webskin, 
+				complete: function(data){
+					$j('##farcrytray').html(data.responseText);						
+				},
+				data:{
+					objectID:'#url.objectid#',
+					type:'#url.type#',
+					view:'#url.view#',
+					bodyView:'#url.bodyView#'
+				},
+				dataType: "html"
+			});
+		}
+		
+		$fc.trayAction = function(urlParams){
+		    document.location = '#cgi.script_name#?#cgi.query_string#&' + urlParams;
+		}
+		$fc.editContent = function(url,title,width,height,modal,onclose) {
+			alert(url + ':' + title + ':' + width + ':' + height + ':' + modal + ':' + onclose);
+		};
+		
+			
+		$fc.traySwitch('#session.fc.trayWebskin#'); // add tray
+		</skin:onReady>
+		
+			
+		
+		
+		</cfoutput>
+	</cfif>
+	
 <cfsetting enablecfoutputonly="No">
 

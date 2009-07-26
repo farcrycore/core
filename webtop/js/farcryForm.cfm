@@ -481,7 +481,7 @@ function btnSubmit(formName,value) {
 }
 		
 function farcryForm_ajaxSubmission(formname,action){
-	$j("##" + formname + 'formwrap').mask("Form Submitting, please wait...");
+	$j("##" + formname).mask("Form Submitting, please wait...");
 	$j.ajax({
 	   type: "POST",
 	   url: action,

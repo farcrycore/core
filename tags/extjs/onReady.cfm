@@ -31,6 +31,7 @@ $in: id -- an id for the content to be added to the head. If the key already exi
 			<cfoutput><script type="text/javascript"></cfoutput>
 		</cfif>
 	<cfelse>
+		<skin:loadJS id="jquery" />
 		<skin:htmlHead library="extCoreJS" />
 	</cfif>
 </cfif>

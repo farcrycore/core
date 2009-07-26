@@ -107,7 +107,12 @@
 	<cfset var q = getRecordset() />
 	<cfset var row = getCurrentRow() />
 	
-	<cfif row LTE q.recordCount>
+	<!--- If only current page of the recordset passed in we need to start from the start of the recordset regardless of the page we are on. --->
+	<cfif q.recordCount NEQ this.totalRecords AND this.currentPage GT 1>
+		<cfset row = getCurrentRow() - ((this.currentPage - 1) * this.recordsPerPage)  />
+	</cfif>
+
+	<cfif row LTE this.totalRecords>
 		<cfloop list="#q.columnList#" index="i">
 			<cfset stResult[i] = q[i][row] />
 		</cfloop>
@@ -116,8 +121,6 @@
 	<cfelse>
 		<cfthrow message="The current row [#row#] is more than the recordCount [#q.recordCount#]."/>
 	</cfif>
-	
-	
 	
 	<cfreturn stResult />
 </cffunction>
@@ -327,8 +330,9 @@
 	<cfset var stPageLink = "" />
 	<cfset var i = "" />
 	
-	<cfset this.totalRecords = this.query.recordCount />
-
+	<cfif this.totalRecords EQ 0>
+		<cfset this.totalRecords = this.query.recordCount />
+	</cfif>
 	<cfset this.totalPages = 1 />
 	<cfset this.firstPage = 1 />
 	<cfset this.lastPage = 1 />
@@ -431,6 +435,7 @@
 			<cfset setLink(linkID="last", page="#this.totalPages#", bHidden="true") />
 		</cfif>
 	</cfif>
+	
 
 </cffunction>
 

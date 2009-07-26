@@ -63,7 +63,7 @@
 							<td valign="top">
 								<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
 								<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="" />
-								<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" value="" style="#arguments.stMetadata.ftstyle#" onchange="ftCheckFileName('#arguments.fieldname#');" />
+								<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" value="" style="#arguments.stMetadata.ftstyle#" class="fileUpload" onchange="ftCheckFileName('#arguments.fieldname#');" />
 							</td>
 							
 							<cfif len(#arguments.stMetadata.value#)>
@@ -101,8 +101,9 @@
 				
 				<cfset facade = "#arguments.stMetadata.ftFacade#?#session.urltoken#&typename=#arguments.typename#&property=#arguments.stMetadata.name#&fieldname=#arguments.fieldname#&current=#urlencodedformat(arguments.stMetadata.value)#&farcryProject=#application.applicationName#">
 				
+				<skin:loadJS id="jquery" />
+				
 				<skin:htmlHead><cfoutput>
-					<script type="text/javascript" src="#application.url.webtop#/facade/jqueryupload/jquery-1.2.1.min.js"></script>
 					<script type="text/javascript" src="#application.url.webtop#/facade/jqueryupload/jquery.flash.js"></script>
 					<script type="text/javascript" src="#application.url.webtop#/facade/jqueryupload/jquery.jqUploader.js"></script>
 				</cfoutput></skin:htmlHead>
@@ -145,7 +146,7 @@
 											<a href="#application.fapi.getFileWebRoot()##arguments.stMetadata.value#" target="preview">#listlast(arguments.stMetadata.value, "/")#</a>
 										</cfif>
 										
-										<ft:button type="button" value="Delete File" onclick="if(confirm('Are you sure you want to remove this file?')) {} else {return false};Ext.get('#arguments.fieldname#DELETE').dom.value=Ext.get('#arguments.fieldname#').dom.value;Ext.get('#arguments.fieldname#').dom.value='';Ext.get('#arguments.fieldname#previewfile').hide();" />
+										<ft:button type="button" value="Delete File" confirmText="Are you sure you want to remove this file?" onclick="$j('###arguments.fieldname#DELETE').val($j('###arguments.fieldname#').val());$j('###arguments.fieldname#').val('');$j('###arguments.fieldname#previewfile').hide();" />
 										
 									</div>
 								</td>
@@ -156,12 +157,15 @@
 				</cfsavecontent>
 			</cfcase>
 			
-			<cfdefaultcase><!--- value="flash" --->
+			<cfdefaultcase>
+				
 				<cfparam name="arguments.stMetadata.ftFacade" default="#application.url.webtop#/facade/fileupload/upload.cfm" />
 				<cfparam name="arguments.stMetadata.ftFileTypes" default="*.*" />
 				<cfparam name="arguments.stMetadata.ftFileDescription" default="File Types" />
 				<cfparam name="arguments.stMetadata.ftMaxSize" default="-1" />
 				<cfparam name="arguments.stMetadata.ftOnComplete" default="" />
+				
+				<skin:loadJS id="jquery" />
 				
 				<cfset facade = "#arguments.stMetadata.ftFacade#?#session.urltoken#&typename=#arguments.typename#&property=#arguments.stMetadata.name#&fieldname=#arguments.fieldname#&current=#urlencodedformat(arguments.stMetadata.value)#&farcryProject=#application.applicationName#">
 				
@@ -178,7 +182,7 @@
 									<a href="#application.fapi.getFileWebRoot()##arguments.stMetadata.value#" target="preview">#listlast(arguments.stMetadata.value, "/")#</a>
 								</cfif>
 								
-								<ft:button type="button" value="Delete File" onclick="if(confirm('Are you sure you want to remove this file?')) {} else {return false};Ext.get('#arguments.fieldname#DELETE').dom.value=Ext.get('#arguments.fieldname#').dom.value;Ext.get('#arguments.fieldname#').dom.value='';Ext.get('#arguments.fieldname#previewfile').hide();" />
+								<ft:button type="button" value="Delete File" confirmText="Are you sure you want to remove this file?" onclick="$j('###arguments.fieldname#DELETE').val($j('###arguments.fieldname#').val());$j('###arguments.fieldname#').val('');$j('###arguments.fieldname#previewfile').hide();" />
 							</div>
 						</cfif>
 						<div style="width:420px;height:100px;">

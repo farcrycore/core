@@ -22,56 +22,45 @@
 			<cfcase value="changepassword">
 				<cfsavecontent variable="html">
 					<cfoutput>
-						<fieldset>
-							<legend>#arguments.stMetadata.ftLabel#</legend>
-							<div class="fieldsection optional">
-								<label class="fieldsectionlabel" for="#arguments.fieldname#">Current Password</label>
-								<div class="fieldwrap"><input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></div>
-								<br class="fieldsectionbreak" />
-							</div>
+								
+						<div class="multiField">
+							<label class="blockLabel" for="#arguments.fieldname#" style="width:100%;">Current password
+								<input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
+							 </label>
 							
-							<div class="fieldsection optional">
-								<label class="fieldsectionlabel" for="#arguments.fieldname#New">New Password</label>
-								<div class="fieldwrap"><input type="password" name="#arguments.fieldname#New" id="#arguments.fieldname#New" value="" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></div>
-								<br class="fieldsectionbreak" />
-							</div>
+							<label class="blockLabel" for="#arguments.fieldname#New" style="width:100%;margin-top:5px;">New password
+								<input type="password" name="#arguments.fieldname#New" id="#arguments.fieldname#New" value="" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
+							 </label>
 							
-							<div class="fieldsection optional">
-								<label class="fieldsectionlabel" for="#arguments.fieldname#Confirm">Confirm New Password</label>
-								<div class="fieldwrap"><input type="password" name="#arguments.fieldname#Confirm" id="#arguments.fieldname#Confirm" value="" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></div>
-								<br class="fieldsectionbreak" />
-							</div>
-						</fieldset>
+							<label class="blockLabel" for="#arguments.fieldname#Confirm" style="width:100%;margin-top:5px;">Re-enter new password
+								<input type="password" name="#arguments.fieldname#Confirm" id="#arguments.fieldname#Confirm" value="" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
+							 </label>
+						</div>
 					</cfoutput>
 				</cfsavecontent>
 			</cfcase>
 			<cfcase value="confirmpassword">
 				<cfsavecontent variable="html">
-					<cfoutput>						
-						<div class="fieldsection password">
-							<label class="fieldsectionlabel" for="#arguments.fieldname#New">Password</label>
-							<div class="fieldAlign"><input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></div>
-							<br class="clearer" />
-						</div>
-						
-						<div class="fieldsection password">
-							<label class="fieldsectionlabel" for="#arguments.fieldname#Confirm">Confirm Password</label>
-							<div class="fieldAlign"><input type="password" name="#arguments.fieldname#Confirm" id="#arguments.fieldname#Confirm" value="" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></div>
-							<br class="clearer" />
+					<cfoutput>				
+						<div class="multiField">
+							<label class="blockLabel" for="#arguments.fieldname#" style="width:100%;">Choose a password
+								<input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
+							 </label>
+							
+							<label class="blockLabel" for="#arguments.fieldname#Confirm" style="width:100%;margin-top:5px;">Re-enter password
+								<input type="password" name="#arguments.fieldname#Confirm" id="#arguments.fieldname#Confirm" value="" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
+							 </label>
 						</div>
 					</cfoutput>
 				</cfsavecontent>
 			</cfcase>
-			<cfcase value="enterpassword">
+			<cfdefaultcase>
 				<cfsavecontent variable="html">
-					<cfoutput><input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></cfoutput>
+					<cfoutput>
+						<input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
+					</cfoutput>
 				</cfsavecontent>
-			</cfcase>
-			<cfcase value="editpassword">
-				<cfsavecontent variable="html">
-					<cfoutput><style>form.formtool label.passwordlabel { display: block; }</style><input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></cfoutput>
-				</cfsavecontent>
-			</cfcase>
+			</cfdefaultcase>
 		</cfswitch>
 		
 		<cfreturn html>

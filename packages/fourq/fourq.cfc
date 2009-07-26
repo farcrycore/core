@@ -461,7 +461,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	</cffunction>
 
 	<cffunction name="getNavID" access="public" output="false" returntype="string" hint="Returns the default Navigation objectID for the objectID passed in. Empty if it cant find anything applicable.">
-		<cfargument name="objectid" required="true" type="uuid" hint="The objectid for which the navigation objectid is to be found." />
+		<cfargument name="objectid" required="no" type="uuid" hint="The objectid for which the navigation objectid is to be found." />
 		<cfargument name="typename" required="no" type="string" default="" hint="The typename of the object for which the navigation objectid is to be found." />
 		
 		<cfset var stNav = structNew() />

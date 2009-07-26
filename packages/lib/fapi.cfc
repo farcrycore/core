@@ -294,28 +294,49 @@
 			
 			<cfreturn success("objectids successfully removed from objectbroker") />
 		</cffunction>
-		
-		<cffunction name="getPropertyMetadata" access="public" output="false" returntype="any" hint="Returns the value of the metadata for a typename/property passed in. Omitting the md name, all metadata for the property will be returned.">
-		<cfargument name="typename" required="true" type="string" hint="The typename containing the property" />
-		<cfargument name="property" required="true" type="string" hint="The property for which we want metadata for" />
-		<cfargument name="md" required="false" type="string" default="" hint="The name of the piece of metadata we want (optional)" />
-		<cfargument name="default" required="false" default="" type="string" hint="The default value if the metadata does not exist" />
-		
-		<cfset var result = arguments.default />
-		
-		<cfif isDefined("application.stCoapi.#arguments.typename#.stProps.#arguments.property#.METADATA")>
-			<cfif len(arguments.md)>
-				<cfif structKeyExists(application.stCoapi['#arguments.typename#'].stProps['#arguments.property#'].METADATA, arguments.md)>
-					<cfset result = application.stCoapi['#arguments.typename#'].stProps['#arguments.property#'].METADATA['#arguments.md#'] />
-				</cfif>
-			<cfelse>
-				<cfset result = application.stCoapi['#arguments.typename#'].stProps['#arguments.property#'].METADATA />
-			</cfif>
-		</cfif>
-
-		<cfreturn result />
-	</cffunction>
 	
+			
+		<cffunction name="getContentTypeMetadata" access="public" output="false" returntype="any" hint="Returns the value of the metadata for a typename passed in. Omitting the md name, all metadata for the property will be returned.">
+			<cfargument name="typename" required="true" type="string" hint="The typename for which we want metadata for" />
+			<cfargument name="md" required="false" type="string" default="" hint="The name of the piece of metadata we want (optional)" />
+			<cfargument name="default" required="false" default="" type="string" hint="The default value if the metadata does not exist" />
+			
+			<cfset var result = arguments.default />
+			
+			<cfif structKeyExists(application.stCoapi, "#arguments.typename#")>
+				<cfif len(arguments.md)>
+					<cfif structKeyExists(application.stCoapi['#arguments.typename#'], arguments.md)>
+						<cfset result = application.stCoapi['#arguments.typename#']['#arguments.md#'] />
+					</cfif>
+				<cfelse>
+					<cfset result = application.stCoapi['#arguments.typename#'] />
+				</cfif>
+			</cfif>
+	
+			<cfreturn result />
+		</cffunction>
+			
+		<cffunction name="getPropertyMetadata" access="public" output="false" returntype="any" hint="Returns the value of the metadata for a typename/property passed in. Omitting the md name, all metadata for the property will be returned.">
+			<cfargument name="typename" required="true" type="string" hint="The typename containing the property" />
+			<cfargument name="property" required="true" type="string" hint="The property for which we want metadata for" />
+			<cfargument name="md" required="false" type="string" default="" hint="The name of the piece of metadata we want (optional)" />
+			<cfargument name="default" required="false" default="" type="string" hint="The default value if the metadata does not exist" />
+			
+			<cfset var result = arguments.default />
+			
+			<cfif isDefined("application.stCoapi.#arguments.typename#.stProps.#arguments.property#.METADATA")>
+				<cfif len(arguments.md)>
+					<cfif structKeyExists(application.stCoapi['#arguments.typename#'].stProps['#arguments.property#'].METADATA, arguments.md)>
+						<cfset result = application.stCoapi['#arguments.typename#'].stProps['#arguments.property#'].METADATA['#arguments.md#'] />
+					</cfif>
+				<cfelse>
+					<cfset result = application.stCoapi['#arguments.typename#'].stProps['#arguments.property#'].METADATA />
+				</cfif>
+			</cfif>
+	
+			<cfreturn result />
+		</cffunction>
+		
 	
 	
 		<!--- @@examples:

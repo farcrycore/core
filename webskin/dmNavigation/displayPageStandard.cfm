@@ -21,7 +21,9 @@
 <cfelseif structKeyExists(stObj,"aObjectIds") AND arrayLen(stObj.aObjectIds)>
 
 	<cfloop index="idIndex" from="1" to="#arrayLen(stObj.aObjectIds)#">
-		<q4:contentobjectget objectid="#stObj.aObjectIds[idIndex]#" r_stobject="stObjTemp" />
+		
+		<cfset stObjTemp = application.fapi.getContentObject(objectid="#stObj.aObjectIds[idIndex]#") />
+		
 		
 		<!--- request.mode.lValidStatus is typically approved, or draft, pending, approved in SHOWDRAFT mode --->
 		<cfif StructKeyExists(stObjTemp,"status") AND ListContains(request.mode.lValidStatus, stObjTemp.status)>
@@ -37,10 +39,8 @@
 			<!--- set the navigation point for the child obj --->
 			<cfif isDefined("URL.navid")>
 				<cfset request.navid = URL.navid>
-				<cftrace var="stobj.objectid" text="object type not CSS,URL.navid exists - setting navid = url.navid" />
 			<cfelse>
 				<cfset request.navid = stObj.objectID>		
-				<cftrace var="stobj.objectid" text="object type not CSS - setting navid = stobj.objectid" />
 			</cfif>
 			
 			<!--- reset stObj to appropriate object to be displayed --->
@@ -59,7 +59,7 @@
 	<cfset request.navid = stobj.objectid />
 </cfif>
 
-<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="displayBody" />
+<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="#url.bodyView#" />
 
 
 <cfsetting enablecfoutputonly="false" />

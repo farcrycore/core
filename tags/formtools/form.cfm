@@ -154,9 +154,7 @@ It just ignores the inner ones.
 
 				});
 				
-				$j("###attributes.Name#").find("input, button").filter(".cancel").click(function() {
-					$j("###attributes.Name#").attr('fc:cancelSubmit',true);
-				});
+				
 				</cfoutput>
 			</skin:onReady>
 		</cfif>
@@ -185,8 +183,8 @@ It just ignores the inner ones.
 			$j('###attributes.Name#').submit(function(){	
 				var valid = true;			
 				<cfif attributes.validation EQ 1>
-					if ( $j("###attributes.Name#").attr('fc:cancelSubmit') ) {
-						$j("###attributes.Name#").attr('fc:cancelSubmit',false);					
+					if ( $j("###attributes.Name#").attr('fc:validate') == 'false' ) {
+						$j("###attributes.Name#").attr('fc:validate',true);					
 					} else {
 						valid = $j('###attributes.Name#').valid();
 					}

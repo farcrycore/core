@@ -24,49 +24,45 @@
 		<cfset var i = "">
 		<cfset var step=1>
 		
-		<cfparam name="arguments.stMetadata.ftRenderType" default="dateJS">	
+		<cfparam name="arguments.stMetadata.ftRenderType" default="jquery">	
+		
+		<!--- If a required field, then the user will not have the option to toggle off the date time --->
 		<cfif structkeyexists(arguments.stMetadata,"ftValidation") and listcontains(arguments.stMetadata.ftValidation,"required")>
-			<cfparam name="arguments.stMetadata.ftToggleOffDateTime" default="0" />
+			<cfset arguments.stMetadata.ftToggleOffDateTime = "0" />
 		<cfelse>
 			<cfparam name="arguments.stMetadata.ftToggleOffDateTime" default="1" />
 		</cfif>
 		
 			
 		<cfif arguments.stMetadata.ftToggleOffDateTime>
-			<cfset Request.InHead.ScriptaculousEffects = 1>
-			
+			<!--- 			
 			<cfif len(arguments.stMetadata.value) AND (not IsDate(arguments.stMetadata.value) OR DateDiff('yyyy', now(), arguments.stMetadata.value) GT 100 OR dateformat(arguments.stMetadata.value, 'dd/mm/yyyy') eq '01/01/2050') >
 				<cfset bfieldvisible = 0>
 				<cfset fieldStyle = "display:none;">
 			<cfelse>
 				<cfset bfieldvisible = 1>
 				<cfset fieldStyle = "">
-			</cfif>	
+			</cfif>	 --->
 			
 			
-			<cfsavecontent variable="ToggleOffDateTimeJS">
-				<cfoutput>
-					<script language="javascript">
-					var bfieldvisible#arguments.fieldname# = #bfieldvisible#;
-					
-					function toggle#arguments.fieldname#(){
-							
-						if (bfieldvisible#arguments.fieldname# == 0){
-							Effect.BlindDown('#arguments.fieldname#DIV');
-							bfieldvisible#arguments.fieldname# = 1;
-						} else {
-							Effect.BlindUp('#arguments.fieldname#DIV');
-							bfieldvisible#arguments.fieldname# = 0;
-						}
-						
-						//return true;
-					}					
-
-					</script>
-				</cfoutput>
-			</cfsavecontent>
+			<skin:onReady>
+			<cfoutput>	
+			<cfif len(arguments.stMetadata.value) AND (not IsDate(arguments.stMetadata.value) OR DateDiff('yyyy', now(), arguments.stMetadata.value) GT 100 OR dateformat(arguments.stMetadata.value, 'dd/mm/yyyy') eq '01/01/2050') >
+				$j("###arguments.fieldname#-wrap").hide();
+				$j("###arguments.fieldname#").val('');
+			<cfelse>				
+				$j("###arguments.fieldname#include").attr('checked', true);
+			</cfif>
 			
-			<skin:htmlHead text="#ToggleOffDateTimeJS#" />
+			$j("###arguments.fieldname#include").click(function() {
+				if ($j("###arguments.fieldname#include").attr('checked')) {	
+					$j("###arguments.fieldname#-wrap").show("slow");				
+				} else {					
+					$j("###arguments.fieldname#-wrap").hide("slow");
+				}				
+			});
+			</cfoutput>
+			</skin:onReady>
 		</cfif>		
 		
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
@@ -99,14 +95,14 @@
 					<cfif arguments.stMetadata.ftToggleOffDateTime>
 						<cfoutput>
 						<label class="inlineLabel" for="#arguments.fieldname#include">
-							<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" style="float:left;" value="1" onclick="javascript:toggle#arguments.fieldname#();" <cfif bfieldvisible>checked="true"</cfif> >
-							<input type="hidden" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="0">
+							<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" style="float:left;" value="1" >
+							<input type="hidden" name="#arguments.fieldname#include" value="0">
 							Include Date
 						</label>
 						</cfoutput>
 					</cfif>
 					
-					<div id="#arguments.fieldname#DIV" style="#fieldstyle#">
+					<div id="#arguments.fieldname#-wrap">
 						
 						
 						<label class="blockLabel" for="#arguments.fieldname#Day">
@@ -145,7 +141,57 @@
 			
 			<cfreturn html>
 		</cfcase>
-		
+	
+		<cfcase value="jquery">
+			
+			<cfparam name="arguments.stMetadata.ftDateFormatMask" default="dd M yy"><!--- For a full list of the possible formats see http://docs.jquery.com/UI/Datepicker/formatDate --->
+			
+			<skin:onReady>
+				<cfoutput>
+				$j("###arguments.fieldname#").datepicker({dateFormat:'#arguments.stMetadata.ftDateFormatMask#'});
+				</cfoutput>
+			</skin:onReady>
+			
+			<cfparam name="arguments.stMetadata.ftDateFormatMask" default="dd mmm yyyy">
+			
+			
+			<cfif isDefined("session.dmProfile.locale") AND len(session.dmProfile.locale)>
+				<cfset locale = session.dmProfile.locale>
+			<cfelse>
+				<cfset locale = "en_AU">
+			</cfif>			
+			
+			
+			<cfsavecontent variable="html">
+				<cfoutput>
+				
+				
+				<div class="multiField">
+					<cfif arguments.stMetadata.ftToggleOffDateTime>
+						<cfoutput>
+						<label class="inlineLabel" for="#arguments.fieldname#include">
+						
+							<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="1">
+							<input type="hidden" name="#arguments.fieldname#include" value="0">
+							Include
+						</label>	
+						</cfoutput>
+					</cfif>
+					
+					<div id="#arguments.fieldname#-wrap">
+						<label class="inlineLabel" for="#arguments.fieldname#"></label>
+						<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)#" class="textInput" >
+						<input type="hidden" name="#arguments.fieldname#rendertype" id="#arguments.fieldname#rendertype" value="#arguments.stMetadata.ftRenderType#">
+						&nbsp;
+					</div>	
+						
+								
+				</div>
+				</cfoutput>
+			</cfsavecontent>		
+			
+			<cfreturn html>
+		</cfcase>	
 		
 		<cfdefaultcase>
 			
@@ -287,12 +333,12 @@
 				<div class="multiField">
 					<cfif arguments.stMetadata.ftToggleOffDateTime>						
 						<label class="inlineLabel" for="#arguments.fieldname#include">
-							<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="1" onclick="javascript:toggle#arguments.fieldname#();" <cfif bfieldvisible>checked="true"</cfif> >
-							<input type="hidden" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="0">
+							<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="1" >
+							<input type="hidden" name="#arguments.fieldname#include" value="0">
 							Include Date
 						</label>						
 					</cfif>
-					<div id="#arguments.fieldname#DIV" style="#fieldstyle#">
+					<div id="#arguments.fieldname#-wrap">
 						<div id="#arguments.fieldname#Info" class="dateJSHiddenValue <cfif len(arguments.stMetadata.value)>dateAccept<cfelse>dateEmpty</cfif>">
 							<cfif len(arguments.stMetadata.value)>
 								#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)# <cfif arguments.stMetadata.ftShowTime>#TimeFormat(arguments.stMetadata.value,arguments.stMetadata.ftTimeFormatMask)#</cfif>

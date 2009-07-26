@@ -50,6 +50,7 @@ $Developer: Pete Ottery (pot@daemon.com.au)$
 <cfprocessingDirective pageencoding="utf-8" />
 
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <!--- Get sections --->
 <cfset stSections = application.factory.oWebtop.getItem() />
@@ -64,14 +65,13 @@ $Developer: Pete Ottery (pot@daemon.com.au)$
 <cfparam name="session.writingDir" default="ltr" />
 <cfparam name="session.userLanguage" default="en" />
 
+<skin:loadCSS id="webtop" />
 <cfoutput>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" dir="#session.writingDir#" lang="#session.userLanguage#">
 <head>
 <meta content="text/html; charset=UTF-8" http-equiv="content-type">
 <title>[#application.applicationname#] #application.config.general.sitetitle# - FarCry Webtop</title>
-<style type="text/css" title="default" media="screen">@import url(#application.url.farcry#/css/main.css);</style>
-<script type="text/javascript" src="#application.url.farcry#/js/prototype/prototype.js"></script>
 </head>
 <body id="sec-#url.sec#">
 
