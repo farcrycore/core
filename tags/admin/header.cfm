@@ -80,7 +80,11 @@ $in: [bCacheControl] output cache control headers; default true. $
 	</cfsavecontent>
 </cfif> --->
 
-<skin:loadCSS id="webtop" />
+<skin:loadCSS id="webtop" lFiles="reset.css,fonts.css,main.css">
+	<cfoutput>
+	body {font-size:10px;}
+	</cfoutput>
+</skin:loadCSS>
 
 <cfoutput>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

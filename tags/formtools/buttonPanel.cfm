@@ -14,8 +14,12 @@
 </cfif>
 
 <cfif thistag.ExecutionMode EQ "Start">
+	
+	<cfparam  name="attributes.class" default="">
+	<cfparam  name="attributes.style" default="">
+
 	<cfoutput>
-		<div class="buttonHolder">
+		<div class="buttonHolder" class="#attributes.class#" style="#attributes.style#">
 	</cfoutput>
 </cfif>
 

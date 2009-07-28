@@ -48,6 +48,7 @@ It just ignores the inner ones.
 		<cfparam name="attributes.Validation" default="1">
 		<cfparam name="attributes.bAjaxSubmission" default="false">
 		<cfparam name="attributes.bUniForm" default="true"><!--- Make the form a uniform (http://sprawsm.com/uni-form/) --->
+		<cfparam name="attributes.bUniFormHighlight" default="true"><!--- Highlight fields when focused --->
 
 
 		<!--- Keeps track of all the form name in the request to make sure they are all unique --->
@@ -130,6 +131,16 @@ It just ignores the inner ones.
 	
 		</form>
 		</cfoutput>	
+		
+		
+		<cfif attributes.bUniForm AND attributes.bUniFormHighlight>
+			<skin:onReady>
+				<cfoutput>
+				$j('###attributes.Name#').uniform();
+				</cfoutput>
+			</skin:onReady>
+		</cfif>
+		
 		
 		<!--- If we are validating this form, load and initialise the validation engine.  --->
 		<cfif attributes.validation EQ 1>

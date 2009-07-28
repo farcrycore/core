@@ -4,6 +4,7 @@
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 <cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">
+<cfimport taglib="/farcry/core/tags/grid/" prefix="grid">
 
 
 <!--- 
@@ -96,9 +97,187 @@ manage friednly urls for a particular object id
 
 <admin:header title="Manage Friendly URL's">
 	
-
-	<cfoutput><h1>Manage Friendly URL's for #stRefObject.label# (#stRefObject.typename#)</h1></cfoutput>
 	
+	<cfset qFUCurrent = application.fc.factory.farFU.getFUList(objectid="#url.objectid#", fuStatus="current") />
+	<cfset qFUArchived = application.fc.factory.farFU.getFUList(objectid="#url.objectid#", fuStatus="archived") />
+	
+	
+	<skin:loadJS id="jquery" />
+	<skin:loadJS id="jquery-ui" />
+	<skin:loadCSS id="jquery-ui" />
+	
+	<skin:onReady>
+		<cfoutput>$j("##fu-tabs").tabs();</cfoutput>
+	</skin:onReady>
+	
+	<grid:div id="fu-tabs" style="width:100%;height:100%;">
+		<cfoutput>
+		<ul>
+			<li><a href="##tabs-1">Create Custom</a></li>
+			<cfif qFUCurrent.recordCount>
+				<li><a href="##tabs-2">Current</a></li>
+			</cfif>
+			<cfif qFUArchived.recordCount>
+				<li><a href="##tabs-3">Archived</a></li>
+			</cfif>
+		</ul>
+		</cfoutput>
+	
+		<grid:div id="tabs-1">
+	
+			<ft:form name="frm">
+				
+				<ft:object typename="farFU" key="newFU" lexcludeFields="label,refObjectID,fuStatus,querystring,applicationname" includeFieldSet="false" />
+				<ft:buttonPanel>
+					<ft:button value="Add" selectedObjectID="#url.objectid#" />
+				</ft:buttonPanel>
+	
+			</ft:form>	
+		</grid:div>
+		
+		<cfif qFUCurrent.recordCount>
+			<grid:div id="tabs-2">
+	
+					<ft:form bUniFormHighlight="false">
+						
+						
+						<cfoutput query="qFUCurrent" group="fuStatus">
+							<h3>
+								<cfif qFUCurrent.fuStatus EQ 1>
+									System Generated
+								<cfelseif qFUCurrent.fuStatus EQ 2>
+									Custom
+								</cfif>
+							</h3>
+							<table class="table-2" cellspacing="0" id="table_friendlyurl">
+							<tr>
+								<th style="width:20px;">&nbsp;</th>
+								<th style="width:40%;">Friendly URL</th>
+								<th style="width:30%;">Redirection</th>
+								<th>Default</th>
+							</tr>
+							
+							<cfset stPropMetdata="#structNew()#" />
+							<cfset stPropMetdata.redirectionType="#structNew()#" />
+							<cfset stPropMetdata.friendlyurl.ftStyle="width:100%" />
+							<cfset stPropMetdata.redirectionType="#structNew()#" />
+							<cfset stPropMetdata.redirectionType.ftStyle="width:100%" />
+							<cfset stPropMetdata.redirectTo="#structNew()#" />
+							<cfset stPropMetdata.redirectTo.ftStyle="width:100%" />
+							
+							<cfoutput>
+							<ft:object objectid="#qFUCurrent.objectid[currentRow]#" typename="farFU" r_stFields="stFields" stPropMetadata="#stPropMetdata#" r_stPrefix="prefix" />
+							<tr class="alt">
+								<cfif qFUCurrent.fuStatus EQ 1>
+									<td>&nbsp;</td>
+								<cfelse>
+									<td><input type="checkbox" name="lArchiveObjectID" value="#qFUCurrent.objectid#"></td>
+								</cfif>
+								
+								<cfif qFUCurrent.fuStatus EQ 1>
+									<td>#stFields.friendlyurl.value#</td>
+								<cfelse>
+									<td>#stFields.friendlyurl.html#</td>
+								</cfif>
+								
+								<td>
+									#stFields.redirectionType.html#
+									<div id="#prefix#-redirect-to-wrap" style="<cfif qFUCurrent.redirectionType[currentRow] EQ 'none'>display:none;</cfif>">#stFields.redirectTo.html#</div>
+									
+									
+									<skin:onReady>
+										var el = $j('###stFields.redirectionType.FORMFIELDNAME#');	
+										$j('###stFields.redirectionType.FORMFIELDNAME#').change(function(){
+											var currentValue = $j('###stFields.redirectionType.FORMFIELDNAME#').val();
+											if (currentValue != 'none') {												
+												$j('###prefix#-redirect-to-wrap').show('blind',{},500);
+											} else {
+												$j('###prefix#-redirect-to-wrap').hide('blind',{},500);
+											}										
+										});
+										
+										<!--- 
+										el.on('change', function(n,c) {
+											var currentValue = Ext.getDom('#stFields.redirectionType.FORMFIELDNAME#').value;
+											if (currentValue != 'none') {
+												
+												Ext.get('#prefix#-redirect-to-wrap').slideIn('t', {
+												    easing: 'easeIn',
+												    duration: .5,
+												    useDisplay: true
+												});
+											} else {
+												Ext.get('#prefix#-redirect-to-wrap').slideOut('t', {
+												    easing: 'easeOut',
+												    duration: .5,
+												    useDisplay: true
+												});
+											}
+										});	 --->
+									</skin:onReady>
+								</td>
+								<cfif qFUCurrent.bDefault>
+									<td>>>>DEFAULT<<<</td>
+								<cfelse>
+									<td><ft:button value="Make Default" selectedObjectID="#qFUCurrent.objectid#" size="small" /></td>
+								</cfif>
+								
+							</tr>
+							</cfoutput>
+							
+							
+							</table>
+						</cfoutput>
+						
+						<ft:buttonPanel indentForLabel="false">
+							<ft:button value="Archive Selected" />
+							<ft:button value="Save Changes" />
+						</ft:buttonPanel>
+					
+					</ft:form>	
+			</grid:div>
+		</cfif>
+		
+		
+		
+		
+		<cfif qFUArchived.recordCount>
+			<grid:div id="tabs-3">
+			
+					<ft:form bUniFormHighlight="false">
+						
+						<cfoutput query="qFUArchived" group="fuStatus">
+							<h3>Archived</h3>
+							<table class="table-2" cellspacing="0" id="table_friendlyurl">
+							<tr>
+								<th style="width:20px;">&nbsp;</th>
+								<th>Friendly URL</th>
+							</tr>
+							
+							<cfoutput>
+							<tr class="alt">
+								<td><input type="checkbox" name="lDeleteObjectID" value="#qFUArchived.objectid#"></td>
+								<td>#qFUArchived.friendlyurl#</td>							
+							</tr>
+							</cfoutput>
+							
+							
+							</table>
+						</cfoutput>
+						
+						
+						<ft:buttonPanel indentForLabel="false">
+							<ft:button value="Delete Selected Archives" />
+						</ft:buttonPanel>
+					
+					</ft:form>
+					
+					
+			</grid:div>
+		</cfif>
+	</grid:div>	
+	
+	<!--- 
 	<extjs:tab id="manageFriendlyURLs">
 		<extjs:tabPanel id="createCustom" title="Create Custom" autoheight="true" style="padding:10px;">
 			<ft:form name="frm">
@@ -234,7 +413,7 @@ manage friednly urls for a particular object id
 				</ft:form>
 			</extjs:tabPanel>
 		</cfif>
-	</extjs:tab>
+	</extjs:tab> --->
 
 <admin:footer>
 <cfsetting enablecfoutputonly="false">

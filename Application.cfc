@@ -125,8 +125,8 @@
 							}
 							.uniForm button {
 								cursor:pointer;
-								padding:5px 5px 5px 5px;
-								margin-right:5px;
+								padding:2px 2px 2px 2px;
+								margin-right:3px;
 							}
 							.uniForm .secondaryAction{ 
 								float: left; 
@@ -860,6 +860,17 @@
 
 		<!--- ENSURE SYSINFO IS UPDATED EACH INITIALISATION --->
 		<cfset application.sysInfo = structNew() />
+		
+		
+		<!--- I18N config for Webtop --->
+		<!--- TODO:	move all i18n vars into their own struct
+					are these used in the new i18n framework? eg. debugRB appears to be irrelevant 
+					perhaps these options should be set globally in the ./core/Application.cfc? --->
+		<cfset application.shortF=3>        <!--- 3/27/25 --->
+		<cfset application.mediumF=2>       <!--- Rabi' I 27, 1425 --->
+		<cfset application.longF=1>         <!--- Rabi' I 27, 1425 --->
+		<cfset application.fullF=0>         <!--- Monday, Rabi' I 27, 1425 --->
+		<!--- /I18N config for Webtop --->
 
 	</cffunction>
 

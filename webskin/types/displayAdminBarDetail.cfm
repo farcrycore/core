@@ -10,12 +10,18 @@
 
 <skin:onReady>
 <cfoutput>
-$j('##hide-tray').click(function(){
+$j('##show-hidden').click(function(){
 	$fc.traySwitch('displayAdminBarHidden');
 });
 $j('##show-summary').click(function(){
 	$fc.traySwitch('displayAdminBarSummary');
 });
+
+<cfif stObj.typename neq "farCOAPI">
+	$j('##edit-object').click(function(){
+		$fc.editTrayObject('#stObj.typename#', '#stObj.objectid#');
+	});
+</cfif>
 </cfoutput>
 </skin:onReady>
 
@@ -37,23 +43,28 @@ $j('##show-summary').click(function(){
 
 
 	
-	<grid:div style="float:left;">
+	<grid:div style="float:left;margin-right:15px;">
 		<cfoutput>
-			<a id="hide-tray" class="ui-icon toggletray_icon" style="float:left;"></a>
-			<a id="show-summary" class="ui-icon lessdetail_icon" style="float:left;"></a>
+		<ul id="tray-actions">	
+			<li><a id="show-hidden"><span class="ui-icon" style="background-image:url(#application.url.webtop#/facade/icon.cfm?icon=toggletray&size=16);">&nbsp;</span>Hide tray</a></li>
+			<li><a id="show-summary"><span class="ui-icon ui-icon-carat-2-n-s" style="float:left;">&nbsp;</span>Hide details of <strong>#application.fapi.getContentTypeMetadata(typename='#contentTypename#', md='displayName', default='#contentTypename#')#</strong></a></li>
+			<cfif stObj.typename neq "farCOAPI">
+				<li><a id="edit-object"><span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>Edit</a></li>
+			</cfif>
+			<li><a href="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addValues='updateapp=1')#"><span class="ui-icon ui-icon-refresh" style="float:left;">&nbsp;</span>Update App</a></li>
+			<li><a href="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addValues='logout=1')#"><span class="ui-icon ui-icon-power" style="float:left;">&nbsp;</span>Logout</a></li>
+		</ul>
 		</cfoutput>
-	</grid:div>
-
-	<grid:div style="float:left;">
-		<cfoutput><img class='traytypeicon' src='#application.url.webtop#/facade/icon.cfm?icon=#contentTypename#&size=48' alt='#stObj.typename#' /></cfoutput>
-	</grid:div>
-	
+	</grid:div>	
 	
 	<grid:div style="float:left;width:50%;">
 		<cfoutput>
 		<dl>
-			<dt>Type:</dt>
+			<dt>Type</dt>
 			<dd>#application.fapi.getContentTypeMetadata(typename="#contentTypename#", md="displayName", default="#contentTypename#")#</dd>
+			
+			<dt>Label</dt>
+			<dd>#stobj.label#</dd>
 			
 			<cfif stobj.locked>
 				<dt>Locked:</dt>
@@ -84,24 +95,6 @@ $j('##show-summary').click(function(){
 			</cfif>
 			
 			
-			<!--- Editing the object --->
-			<sec:CheckPermission objectid="#stObj.objectid#" typename="#stObj.typename#" permission="Edit">
-				<cfif not stObj.typename eq "farCOAPI">
-					<cfset editurl = "#application.url.webtop#/edittabOverview.cfm?objectid=#stObj.objectid#&typename=#stObj.typename#&method=edit&ref=typeadmin" />
-				
-					<cfoutput>
-						<dt>Edit:</dt>
-						<dd><a href="#editurl#">edit</a></dd>
-						<!--- 	editContent("#editurl#","Edit #stObj.label#",800,600,true,function(){
-							// make sure the object is unlocked
-							Ext.Ajax.request({ 
-								url: "#application.url.webtop#/navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stObj.typename#",  --->
-						
-											
-					</cfoutput>
-		
-				</cfif>
-			</sec:CheckPermission>
 		</dl>
 		</cfoutput>
 	
@@ -116,47 +109,76 @@ $j('##show-summary').click(function(){
 			
 				<cfif request.mode.flushcache>
 					<li>
-						<skin:buildLink href="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addvalues='flushcache=0')#">
-							<img class='traytypeicon' src='#application.url.webtop#/facade/icon.cfm?icon=redled&size=16' alt='OFF' />
-							Cache
-						</skin:buildLink>
+						<a href="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', removevalues="", addvalues='flushcache=0')#">
+							<span class="ui-icon ui-icon-circle-close">&nbsp;</span>Cache OFF
+						</a>
 					</li>
 				<cfelse>
 					<li>
-						<skin:buildLink href="#cgi.HTTP_REFERER#" urlParameters="flushcache=1">
-							<img class='traytypeicon' src='#application.url.webtop#/facade/icon.cfm?icon=greenled&size=16' alt='ON' />
-							Cache
-						</skin:buildLink>
+						<a href="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', removevalues="", addvalues='flushcache=1')#">
+							<span class="ui-icon ui-icon-circle-check">&nbsp;</span>Cache ON
+						</a>
 					</li>
-					<!--- <span class='ui-icon ui-icon-triangle-1-e' style='margin-top:-8px;position:absolute;top:50%;'/><span style='padding:0.5em 0.5em 0.5em 2.2em;'>Cache On</span> --->
 				</cfif>
 				
 				
 				<cfif request.mode.showdraft>		
-					<li><ft:button value="Show Drafts ON" type="button" renderType="link" url="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addvalues='flushcache=1&showdraft=0')#" /></li>
+					<li>
+						<a href="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addvalues='flushcache=1&showdraft=0')#" >
+							<span class="ui-icon ui-icon-circle-check">&nbsp;</span>Drafts ON
+						</a>
+					</li>
 				<cfelse>
-					<li><ft:button value="Show Drafts OFF" type="button" renderType="link" url="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addvalues='flushcache=0&showdraft=1')#" /></li>
+					<li>
+						<a href="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addvalues='flushcache=0&showdraft=1')#">
+							<span class="ui-icon ui-icon-circle-close">&nbsp;</span>Drafts OFF
+						</a>
+					</li>
 				</cfif>
 				
 				
-				<cfif request.mode.design and request.mode.showcontainers gt 0>
-					<li><ft:button value="Edit Rules ON" type="button" renderType="link" url="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addvalues='designmode=0')#" /></li>
+				<cfif request.mode.design and request.mode.showcontainers gt 0>	
+					<li>
+						<a href="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addvalues='designmode=0')#">
+							<span class="ui-icon ui-icon-circle-check">&nbsp;</span>Rules ON
+						</a>
+					</li>
 				<cfelse>
-					<li><ft:button value="Edit Rules OFF" type="button" renderType="link" url="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addvalues='designmode=1')#" /></li>
-				</cfif>
-										
+					<li>
+						<a href="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addvalues='designmode=1')#" >
+							<span class="ui-icon ui-icon-circle-close">&nbsp;</span>Rules OFF
+						</a>
+					</li>
+				</cfif>		
+				
 													
-				<cfif findnocase("#cgi.query_string#","bdebug=1")>
-					<li><ft:button value="Debug ON" type="button" renderType="link" url="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addvalues='bDebug=0')#" /></li>
+				<cfif findNoCase("bDebug=1", "#cgi.HTTP_REFERER#")>
+					<li>
+						<a href="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addvalues='bDebug=0')#">
+							<span class="ui-icon ui-icon-circle-check">&nbsp;</span>Debug ON
+						</a>
+					</li>
 				<cfelse>
-					<li><ft:button value="Debug OFF" type="button" renderType="link" url="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addvalues='bDebug=1')#" /></li>
-				</cfif>
+					<li>
+						<a href="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addvalues='bDebug=1')#" >
+							<span class="ui-icon ui-icon-circle-close">&nbsp;</span>Debug OFF
+						</a>
+					</li>
+				</cfif>	
 													
 				<cfif request.mode.traceWebskins EQ 1>
-					<li><ft:button value="Trace Webskins ON" type="button" renderType="link" url="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addvalues='tracewebskins=0')#" /></li>
+					<li>
+						<a href="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addvalues='tracewebskins=0')#">
+							<span class="ui-icon ui-icon-circle-check">&nbsp;</span>Webskin Tracer ON
+						</a>
+					</li>
 				<cfelse>
-					<li><ft:button value="Trace Webskins OFF" type="button" renderType="link" url="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addvalues='tracewebskins=1')#" /></li>
-				</cfif>
+					<li>
+						<a href="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addvalues='tracewebskins=1')#" >
+							<span class="ui-icon ui-icon-circle-close">&nbsp;</span>Webskin Tracer OFF
+						</a>
+					</li>
+				</cfif>	
 			
 			</ul>
 		</cfoutput>

@@ -28,7 +28,7 @@
 	
 	
 
-	<cfif structKeyExists(request,"mode") AND request.mode.traceWebskins EQ true>				
+	<cfif structKeyExists(request,"mode") AND request.mode.traceWebskins EQ true AND not request.mode.ajax>				
 		<cfset stTrace = structNew() />
 		<cfset stTrace.traceID = application.fapi.getUUID() />
 		<cfset stTrace.objectid = attributes.objectid />
@@ -45,6 +45,7 @@
 		<cfif attributes.bAllowTrace>
 			<cfoutput>
 			<div id="#stTrace.traceID#" class="webskin-tracer" style="display:none;">
+				<a name="#stTrace.traceID#">&nbsp;</a>
 				<div class="webskin-tracer-bubble">
 					<div class="webskin-tracer-bubble-inner">
 						<span style="font-weight:bold;">#stTrace.objectid#</span><br />
@@ -70,7 +71,7 @@
 </cfif>
 
 <cfif thistag.executionMode eq "End">
-	<cfif structKeyExists(request,"mode") AND request.mode.traceWebskins EQ true>
+	<cfif structKeyExists(request,"mode") AND request.mode.traceWebskins EQ true AND not request.mode.ajax>			
 		<cfif attributes.bAllowTrace>
 			<cfoutput></webskin></cfoutput>
 		</cfif>

@@ -37,10 +37,5 @@
 	  });
 	};
 	
-	// Auto set on page load...
-	$(document).ready(function() {
-	  $('form.uniForm').uniform();
-	});
-
 
 })(jQuery);

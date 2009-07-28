@@ -31,7 +31,7 @@
 	</ft:processForm>
 	
 	<ft:processForm action="Change Role">
-		<skin:location type="#stobj.typename#" objectid="#stobj.objectid#" view="adminPermissions" urlParameters="role=#form.selectRole#" />
+		<skin:location url="#application.fapi.fixURL(addValues='role=#form.selectRole#')#" />
 	</ft:processForm>
 	
 	<cfset permissions = application.security.factory.permission.getAllPermissions(stObj.typename) />
@@ -62,10 +62,10 @@
 			}
 			
 			function changePermission(id, hiddenid,aHash){
-				Ext.get(id).dom.value=nextpermissiontype[Ext.get(id).dom.value];
-				Ext.get(hiddenid).dom.value=permissiontypevalue[Ext.get(id).dom.value];
-				Ext.get(id).dom.innerHTML=aHash[Ext.get(id).dom.value];
-				Ext.select('##' + id + '-tbl-wrap .f-btn-bg').applyStyles('background-image:url(' + permissiontypecolor[Ext.get(hiddenid).dom.value] + ')');
+				$j("##" + id).val(nextpermissiontype[$j("##" + id).val()]);
+				$j("##" + hiddenid).val(permissiontypevalue[$j("##" + id).val()]);
+				$j("##" + id).html(aHash[$j("##" + id).val()]);
+				<!--- $j('##' + id + '-tbl-wrap .f-btn-bg').css({'background-image:url(' + permissiontypecolor[$j("##" + hiddenid).val()] + ')'}); --->
 			}
 		</script>
 		<style>
@@ -77,7 +77,7 @@
 		
 	</cfoutput>
 
-	<ft:form>
+	<ft:form bUniFormHighlight="false">
 		
 		<cfset lRoles = application.security.factory.role.getAllRoles() />
 
@@ -97,10 +97,8 @@
 	
 			<skin:onReady>
 				<cfoutput>
-				Ext.get('selectRole').on('change', this.onClick, this, {
-				    fn: function(evt) { 
-				    	btnSubmit('#request.farcryForm.name#','Change Role');
-				    }
+				$j('##selectRole').change(function(){
+				    btnSubmit('#request.farcryForm.name#','Change Role');
 				 });
 				</cfoutput>
 			</skin:onReady>

@@ -44,8 +44,8 @@ $DEVELOPER: Mat Bryant (mbryant@daemon.com.au)$
 <cfset stObject = o.getData(objectid)>
 
 <!--- <cflocation url="http://agora.local/scratch/checkWebtopHTML.cfm"> --->
-<!--- <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#" onload="setupPanes('container1','tab1');" /> --->
-<cfoutput>
+ <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#" />
+<!--- <cfoutput>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
             "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -61,7 +61,7 @@ $DEVELOPER: Mat Bryant (mbryant@daemon.com.au)$
 	
 </head>
 <body>
-</cfoutput>
+</cfoutput> --->
 
 
 
@@ -70,9 +70,9 @@ $DEVELOPER: Mat Bryant (mbryant@daemon.com.au)$
 </sec:CheckPermission>
 
 <!--- setup footer --->
-<!--- <admin:footer>	 --->
-<cfoutput>
+<admin:footer>
+<!--- <cfoutput>
 </body>
 </html>
-</cfoutput>
+</cfoutput> --->
 <cfsetting enablecfoutputonly="false" />

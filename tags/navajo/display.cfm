@@ -352,6 +352,29 @@
 		
 			
 		$fc.traySwitch('#session.fc.trayWebskin#'); // add tray
+				
+		$fc.editTrayObject = function(typename,objectid) {
+			var newDialogDiv = $j("<div id='" + typename + objectid + "'><iframe style='width:99%;height:99%;border-width:0px;'></iframe></div>")
+			$j("body").prepend(newDialogDiv);
+			
+			$j(newDialogDiv).dialog({
+				bgiframe: true,
+				modal: true,
+				title:'Inline Edit',
+				width: $j(window).width()-50,
+				height: $j(window).height()-50,
+				close: function(event, ui) {
+					document.location=document.location;
+					$j(newDialogDiv).dialog( 'destroy' );
+					$j(newDialogDiv).remove();
+				}
+				
+			});
+			$j(newDialogDiv).dialog('open');
+			//OPEN URL IN IFRAME ie. not in ajaxmode
+			$j('iframe',$j(newDialogDiv)).attr('src','#application.url.webtop#/edittabOverview.cfm?typename=' + typename + '&objectid=' + objectid + '&method=edit&ref=iframe');
+			
+		};		
 		</skin:onReady>
 		
 			

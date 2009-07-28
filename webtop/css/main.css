@@ -423,7 +423,7 @@ dl.dl-style1 {border-top: 1px solid #fff;font-size:86%}
 	.tab-panes dl.dl-style1 {margin-right:140px}
 dl.dl-style1 dt {float:left;clear:left;width:130px;margin:0;_height:1.5em;min-height:1.5em;border:none}
 	.tab-panes dl.dl-style1 dt {width:28%}
-dl.dl-style1 dd {width: auto;margin: 0;border-bottom: 1px solid #fff;padding: 1px 0;_height:1.5em;min-height:1.5em}
+dl.dl-style1 dd {width: auto;margin: 0px 0px 0px 130px;border-bottom: 1px solid #fff;padding: 1px 0;_height:1.5em;min-height:1.5em}
 	.tab-panes dl.dl-style1 dd {margin-left:28%;_margin-left:20%}
 	
 dl.dl-style2 {font-size:86%;margin-top:10px}
