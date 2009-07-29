@@ -368,6 +368,48 @@
 		</cffunction>
 	
 	<!--- GENERAL FARCRY --->
+	
+	
+		
+		<!--- @@description:
+			<p>Ability to save a date from the offset to the local server time. This feature would be especially useful for those people hosting their application on servers where they do not have the ability to change the server clock (e.g shared hosting etc).</p>
+			
+			@@examples:
+			<p>Convert the date relevent to the user into the date offset to the local server time:</p>
+			<code>
+				#application.fapi.castSystemDateTime(stobj.dateTimeLastUpdated)#
+			</code>
+		 --->
+		<cffunction name="convertToSystemTimezone" access="public" output="false" returntype="date" hint="Convert the date relevent to the user into the date offset to the local server time." bDocumented="true">
+			<cfargument name="date" required="true" hint="The date to convert to the standard system time" />
+			
+			<cfset var applicationTimezone = application.fapi.getConfig('general','applicationTimezone', '#application.fc.serverTimezone#') /><!--- "Australia/Sydney" --->			
+			<cfset var UTC = application.fc.LIB.TIMEZONE.castToUTC(arguments.date, applicationTimezone) /><!--- This will store the UTC Date --->
+			<cfset var result = application.fc.LIB.TIMEZONE.castFromUTC(UTC, application.fc.serverTimezone) /><!--- This will store the offset date --->
+			
+			
+			<cfreturn result />
+		</cffunction>
+
+		<!--- @@description:
+			<p>Ability to display a date with the offset against local server time. This feature would be especially useful for those people hosting their application on servers where they do not have the ability to change the server clock (e.g shared hosting etc).</p>
+			
+			@@examples:
+			<p>Convert the date stored in the DB to a date that is relevent to the user:</p>
+			<code>
+				#application.fapi.castOffSetDateTime(stobj.dateTimeLastUpdated)#
+			</code>
+		 --->
+		<cffunction name="convertToApplicationTimezone" access="public" output="false" returntype="date" hint="Convert the date stored in the DB to a date that is relevent to the user" bDocumented="true">
+			<cfargument name="date" required="true" hint="The date cast offset from system date" />
+			
+			<cfset var applicationTimezone = application.fapi.getConfig('general','applicationTimezone', '#application.fc.serverTimezone#') /><!--- "Australia/Sydney" --->			
+			<cfset var UTC = application.fc.LIB.TIMEZONE.castToUTC(arguments.date, application.fc.serverTimezone) /><!--- This will store the UTC Date --->
+			<cfset var result = application.fc.LIB.TIMEZONE.castFromUTC(UTC, applicationTimezone) /><!--- This will store the offset date --->
+			
+			<cfreturn result />
+		</cffunction>
+		
 		<!--- @@description:
 			<p>Due to restrictions across the various databases FarCry supports, null dates are NOT supported. To deal with this the formtools have been designed to use certain dates as null. Pass a date into this function to determine if it is a FarCry null date.</p>
 			

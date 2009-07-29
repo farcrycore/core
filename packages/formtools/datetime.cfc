@@ -31,6 +31,9 @@
 			<cfparam name="arguments.stMetadata.ftToggleOffDateTime" default="1" />
 		</cfif>
 		
+		<cfif isDate(arguments.stMetadata.value)>
+			<cfset arguments.stMetadata.value = application.fapi.convertToApplicationTimezone(arguments.stMetadata.value) />
+		</cfif>
 			
 		<cfif arguments.stMetadata.ftToggleOffDateTime>
 			<cfset Request.InHead.ScriptaculousEffects = 1>
@@ -327,9 +330,15 @@
 		<cfset var html = "" />
 		
 		
+		
+		<cfif isDate(arguments.stMetadata.value)>
+			<cfset arguments.stMetadata.value = application.fapi.convertToApplicationTimezone(arguments.stMetadata.value) />
+		</cfif>
+		
+		
 		<cfparam name="arguments.stMetadata.ftDateMask" default="d-mmm-yy">
 		<cfparam name="arguments.stMetadata.ftTimeMask" default="short">
-		<cfparam name="arguments.stMetadata.ftShowTime" default="false">
+		<cfparam name="arguments.stMetadata.ftShowTime" default="true">
 		
 		<cfsavecontent variable="html">
 			<cfif len(arguments.stMetadata.value)>
@@ -389,11 +398,6 @@
 				<cfset arguments.stFieldPost.value = stResult.value />
 				<cfset stResult = super.validate(objectid=arguments.objectid, typename=arguments.typename, stFieldPost=arguments.stFieldPost, stMetadata=arguments.stMetadata )>
 			</cfif>
-		
-			<!--- ----------------- --->
-			<!--- Return the Result --->
-			<!--- ----------------- --->
-			<cfreturn stResult>		
 		</cfcase>
 		
 		<cfdefaultcase>
@@ -418,16 +422,122 @@
 				<cfset arguments.stFieldPost.value = stResult.value />
 				<cfset stResult = super.validate(objectid=arguments.objectid, typename=arguments.typename, stFieldPost=arguments.stFieldPost, stMetadata=arguments.stMetadata )>
 			</cfif>
-			
-			<!--- ----------------- --->
-			<!--- Return the Result --->
-			<!--- ----------------- --->
-			<cfreturn stResult>
 		</cfdefaultcase>
 		</cfswitch>
+				
+		<!--- If we have a valid date, convert it to the system date. --->
+		<cfif isDate(stResult.value)>
+			<cfset stResult.value = application.fapi.convertToSystemTimezone(stResult.value) />
+		</cfif>
 		
+		<!--- ----------------- --->
+		<!--- Return the Result --->
+		<!--- ----------------- --->
+		<cfreturn stResult>
 
 		
 	</cffunction>
 
+
+	<cffunction name="getFilterUIOptions">
+		<cfreturn "before,after,between" />
+	</cffunction>
+	
+	<cffunction name="getFilterUI">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+		<cfargument name="stPackage" required="false" type="struct" hint="Contains the metadata for the all fields for the current typename.">
+				
+		<cfargument name="filterTypename" />
+		<cfargument name="filterProperty" />
+		<cfargument name="renderType" />
+		<cfargument name="stProps" />
+		
+		<cfset var resultHTML = "" />
+		
+		<cfsavecontent variable="resultHTML">
+			
+			<cfswitch expression="#arguments.renderType#">
+				
+				<cfcase value="before">
+					<cfparam name="arguments.stProps.before" default="" />
+					<cfoutput>
+					<input type="string" name="#arguments.fieldname#before" value="#arguments.stProps.before#" />
+					</cfoutput>
+				</cfcase>
+				
+				<cfcase value="after">
+					<cfparam name="arguments.stProps.after" default="" />
+					<cfoutput>
+					<input type="string" name="#arguments.fieldname#after" value="#arguments.stProps.after#" />
+					</cfoutput>
+				</cfcase>
+				
+				<cfcase value="between">
+					<cfparam name="arguments.stProps.from" default="" />
+					<cfparam name="arguments.stProps.to" default="" />
+					<cfoutput>
+					<input type="string" name="#arguments.fieldname#from" value="#arguments.stProps.from#" />
+					<input type="string" name="#arguments.fieldname#to" value="#arguments.stProps.to#" />
+					</cfoutput>
+				</cfcase>
+			
+			</cfswitch>
+		</cfsavecontent>
+		
+		<cfreturn resultHTML />
+	</cffunction>
+	
+	<cffunction name="getFilterSQL">
+
+		<cfargument name="filterTypename" />
+		<cfargument name="filterProperty" />
+		<cfargument name="renderType" />
+		<cfargument name="stProps" />
+		
+		<cfset var resultHTML = "" />
+		
+		<cfsavecontent variable="resultHTML">
+			
+			<cfswitch expression="#arguments.renderType#">
+				
+				<cfcase value="before">
+					<cfparam name="arguments.stProps.before" default="" />
+					<cfif isValid("date", arguments.stProps.before)>
+						<cfoutput>#arguments.filterProperty# < #createODBCDate(arguments.stProps.before)#</cfoutput>
+					</cfif>
+				</cfcase>
+				
+				<cfcase value="after">
+					<cfparam name="arguments.stProps.after" default="" />
+					<cfif isValid("date", arguments.stProps.after)>
+						<cfoutput>#arguments.filterProperty# > #createODBCDate(arguments.stProps.after)#</cfoutput>
+					</cfif>
+				</cfcase>
+				
+				<cfcase value="between">
+					<cfparam name="arguments.stProps.from" default="" />
+					<cfparam name="arguments.stProps.to" default="" />
+					
+					<cfif isValid("date", arguments.stProps.from) AND  isValid("date", arguments.stProps.to)>
+						<cfoutput>
+							(
+								#arguments.filterProperty# 
+								BETWEEN
+								#createODBCDate(arguments.stProps.from)#
+								AND 
+								#createODBCDate(arguments.stProps.to)#
+							)
+						</cfoutput>
+					</cfif>
+				</cfcase>
+			
+			</cfswitch>
+		</cfsavecontent>
+		
+		<cfreturn resultHTML />
+	</cffunction>
+	
 </cfcomponent> 
