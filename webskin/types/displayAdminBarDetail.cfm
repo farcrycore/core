@@ -1,47 +1,53 @@
+<cfsetting enablecfoutputonly="true" />
+
+
+<!--- Import Tag Libraries --->
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/grid" prefix="grid" />
-
 <cfimport taglib="/farcry/core/tags/security" prefix="sec" />
 
+<!--- Set tray state --->
 <cfset session.fc.trayWebskin = "displayAdminBarDetail" />
 
 
-
-<skin:onReady>
-<cfoutput>
-$j('##show-hidden').click(function(){
-	$fc.traySwitch('displayAdminBarHidden');
-});
-$j('##show-summary').click(function(){
-	$fc.traySwitch('displayAdminBarSummary');
-});
-
-<cfif stObj.typename neq "farCOAPI">
-	$j('##edit-object').click(function(){
-		$fc.editTrayObject('#stObj.typename#', '#stObj.objectid#');
+<!--- Only show if the user is logged in --->
+<cfif application.fapi.isLoggedIn()>
+	
+	<skin:onReady>
+	<cfoutput>
+	$j('##show-hidden').click(function(){
+		$fc.traySwitch('displayAdminBarHidden');
 	});
-</cfif>
-</cfoutput>
-</skin:onReady>
-
-<cfoutput>
-<div class="tray-detail" style="display:block;margin-left:15px;margin-right:15px;overflow:visible !important;position:relative;border:1px solid ##B5B5B5;border-width:1px 1px 0px 1px;background-color:##E5E5E5;">
-	<div style="display:block;padding:0;border-top:1px solid ##FFFFFF;">
-		<div style="">
-</cfoutput>
-
-
-
-
-<!--- If the url points to a type webskin, we need to determine the content type. --->
-<cfif stObj.typename eq "farCOAPI">
-	<cfset contentTypename = stobj.name />
-<cfelse>
-	<cfset contentTypename = stobj.typename />
-</cfif>
-
-
+	$j('##show-summary').click(function(){
+		$fc.traySwitch('displayAdminBarSummary');
+	});
+	
+	<cfif stObj.typename neq "farCOAPI">
+		$j('##edit-object').click(function(){
+			$fc.editTrayObject('#stObj.typename#', '#stObj.objectid#');
+		});
+	</cfif>
+	</cfoutput>
+	</skin:onReady>
+	
+	<cfoutput>
+	<div class="tray-detail" style="display:block;margin-left:15px;margin-right:15px;overflow:visible !important;position:relative;border:1px solid ##B5B5B5;border-width:1px 1px 0px 1px;background-color:##E5E5E5;">
+		<div style="display:block;padding:0;border-top:1px solid ##FFFFFF;">
+			<div style="">
+	</cfoutput>
+	
+	
+	
+	
+	<!--- If the url points to a type webskin, we need to determine the content type. --->
+	<cfif stObj.typename eq "farCOAPI">
+		<cfset contentTypename = stobj.name />
+	<cfelse>
+		<cfset contentTypename = stobj.typename />
+	</cfif>
+	
+	
 	
 	<grid:div style="float:left;margin-right:15px;">
 		<cfoutput>
@@ -58,46 +64,7 @@ $j('##show-summary').click(function(){
 	</grid:div>	
 	
 	<grid:div style="float:left;width:50%;">
-		<cfoutput>
-		<dl>
-			<dt>Type</dt>
-			<dd>#application.fapi.getContentTypeMetadata(typename="#contentTypename#", md="displayName", default="#contentTypename#")#</dd>
-			
-			<dt>Label</dt>
-			<dd>#stobj.label#</dd>
-			
-			<cfif stobj.locked>
-				<dt>Locked:</dt>
-				<dd>
-					<span style='color:red'>#application.rb.formatRBString("workflow.labels.lockedwhen@label",tDT,"Locked ({1})")#</span>
-					
-					<cfif application.fapi.isLoggedIn()>
-						<cfset subS=listToArray('#application.thisCalendar.i18nDateFormat(stobj.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)#,#stobj.lockedby#')>
-						#application.rb.formatRBString('workflow.labels.lockedby@label',subS,'<span style=\"color:red\">Locked ({1})</span> by {2}')#
-						
-						<cfif application.fapi.getCurrentUsersProfile().userID EQ stobj.lockedby OR iDeveloperPermission>
-							<a href='#application.url.webtop#/navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#' onclick='alert("TODO: Unlocking");return false;'>[#application.rb.getResource("workflow.buttons.unlock@label","Unlock")#]</a>
-						</cfif>
-						
-					</cfif>
-				</dd>
-			</cfif>
-			
-			<dt>#getI18Property('datetimelastupdated','label')#</dt>
-			<dd>#application.thisCalendar.i18nDateFormat(stobj.datetimelastupdated,session.dmProfile.locale,application.mediumF)#</dd>
-			
-			<dt>#getI18Property('lastupdatedby','label')#</dt>
-			<dd>#stobj.lastupdatedby#</dd>
-			
-			<cfif structkeyexists(stObj,"status")>
-				<dt>#getI18Property('Status','label')#</dt>
-				<dd>#application.rb.getResource('workflow.constants.#stobj.status#@label',stObj.status)#</dd>
-			</cfif>
-			
-			
-		</dl>
-		</cfoutput>
-	
+		<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="secureTrayDetails" bIgnoreSecurity="true" stParam="#form#" />
 	</grid:div>	
 		
 
@@ -185,10 +152,13 @@ $j('##show-summary').click(function(){
 	</grid:div>
 	
 
-
-<cfoutput>
+	
+	<cfoutput>
+			</div>
+			<br style="clear:both;" />
 		</div>
-		<br style="clear:both;" />
 	</div>
-</div>
-</cfoutput>
+	</cfoutput>
+</cfif>
+
+<cfsetting enablecfoutputonly="false" />

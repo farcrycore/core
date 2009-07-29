@@ -279,6 +279,21 @@
 			
 			<cfreturn application.coapi.coapiadmin.getWebskinCacheStatus(argumentCollection="#arguments#") />
 		</cffunction>
+			
+		
+		<!--- @@examples:
+			<p>Returns the display name defined in the webskin:</p>
+			<code>
+				<cfset application.fapi.getWebskinDisplayName('dmNews', 'displayTeaserStandard') />
+			</code>
+		 --->
+		<cffunction name="getWebskinDisplayName" returntype="string" access="public" output="false" hint="Returns the displayname of a webskin.">
+			<cfargument name="typename" type="string" required="true" />
+			<cfargument name="template" type="string" required="true" />
+			<cfargument name="path" type="string" required="false" />
+			
+			<cfreturn application.coapi.coapiadmin.getWebskinDisplayName(argumentCollection="#arguments#") />
+		</cffunction>
 		
 		<!--- @@examples:
 			<p>Clear the object and it's webskins from the cache:</p>
