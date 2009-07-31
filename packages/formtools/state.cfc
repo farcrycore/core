@@ -143,6 +143,19 @@
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","SH") /><cfset querysetcell(q,"name","Schleswig-Holstein") /><cfset querysetcell(q,"countrycode","DE") /><cfset querysetcell(q,"countryname","Deutschland") />
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","TH") /><cfset querysetcell(q,"name","Thüringen") /><cfset querysetcell(q,"countrycode","DE") /><cfset querysetcell(q,"countryname","Deutschland") />
 			
+			<!--- Belgium --->
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","WV") /><cfset querysetcell(q,"name","West-Vlaanderen") /><cfset querysetcell(q,"countrycode","BE") /><cfset querysetcell(q,"countryname","Belgium") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","OV") /><cfset querysetcell(q,"name","Oost-Vlaanderen") /><cfset querysetcell(q,"countrycode","BE") /><cfset querysetcell(q,"countryname","Belgium") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","AN") /><cfset querysetcell(q,"name","Antwerpen") /><cfset querysetcell(q,"countrycode","BE") /><cfset querysetcell(q,"countryname","Belgium") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","LI") /><cfset querysetcell(q,"name","Limburg") /><cfset querysetcell(q,"countrycode","BE") /><cfset querysetcell(q,"countryname","Belgium") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","VB") /><cfset querysetcell(q,"name","Vlaams-Brabant") /><cfset querysetcell(q,"countrycode","BE") /><cfset querysetcell(q,"countryname","Belgium") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","BR") /><cfset querysetcell(q,"name","Brussel") /><cfset querysetcell(q,"countrycode","BE") /><cfset querysetcell(q,"countryname","Belgium") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","BW") /><cfset querysetcell(q,"name","Waals-Brabant") /><cfset querysetcell(q,"countrycode","BE") /><cfset querysetcell(q,"countryname","Belgium") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","HA") /><cfset querysetcell(q,"name","Henegouwen") /><cfset querysetcell(q,"countrycode","BE") /><cfset querysetcell(q,"countryname","Belgium") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","NA") /><cfset querysetcell(q,"name","Namen") /><cfset querysetcell(q,"countrycode","BE") /><cfset querysetcell(q,"countryname","Belgium") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","LG") /><cfset querysetcell(q,"name","Luik") /><cfset querysetcell(q,"countrycode","BE") /><cfset querysetcell(q,"countryname","Belgium") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","LU") /><cfset querysetcell(q,"name","Luxemburg") /><cfset querysetcell(q,"countrycode","BE") /><cfset querysetcell(q,"countryname","Belgium") />
+			
 			<cfset this.qStates = q />
 		</cfif>
 		
