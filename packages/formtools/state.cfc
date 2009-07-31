@@ -125,6 +125,24 @@
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","07") /><cfset querysetcell(q,"name","Vestfold") /><cfset querysetcell(q,"countrycode","NO") /><cfset querysetcell(q,"countryname","Norway") />
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","01") /><cfset querysetcell(q,"name","Østfold") /><cfset querysetcell(q,"countrycode","NO") /><cfset querysetcell(q,"countryname","Norway") />
 			
+			<!--- Deutschland (Germany) - ISO 3166-2:DE - !!! WITH HIGH ASCII CHARS !!! --->
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","BW") /><cfset querysetcell(q,"name","Baden-Württemberg") /><cfset querysetcell(q,"countrycode","DE") /><cfset querysetcell(q,"countryname","Deutschland") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","BY") /><cfset querysetcell(q,"name","Bayern") /><cfset querysetcell(q,"countrycode","DE") /><cfset querysetcell(q,"countryname","Deutschland") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","BE") /><cfset querysetcell(q,"name","Berlin") /><cfset querysetcell(q,"countrycode","DE") /><cfset querysetcell(q,"countryname","Deutschland") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","BR") /><cfset querysetcell(q,"name","Brandenburg") /><cfset querysetcell(q,"countrycode","DE") /><cfset querysetcell(q,"countryname","Deutschland") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","HB") /><cfset querysetcell(q,"name","Bremen") /><cfset querysetcell(q,"countrycode","DE") /><cfset querysetcell(q,"countryname","Deutschland") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","HH") /><cfset querysetcell(q,"name","Hamburg") /><cfset querysetcell(q,"countrycode","DE") /><cfset querysetcell(q,"countryname","Deutschland") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","HE") /><cfset querysetcell(q,"name","Hessen") /><cfset querysetcell(q,"countrycode","DE") /><cfset querysetcell(q,"countryname","Deutschland") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","MV") /><cfset querysetcell(q,"name","Mecklenburg-Vorpommern") /><cfset querysetcell(q,"countrycode","DE") /><cfset querysetcell(q,"countryname","Deutschland") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","NI") /><cfset querysetcell(q,"name","Niedersachsen") /><cfset querysetcell(q,"countrycode","DE") /><cfset querysetcell(q,"countryname","Deutschland") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","NW") /><cfset querysetcell(q,"name","Nordrhein-Westfalen") /><cfset querysetcell(q,"countrycode","DE") /><cfset querysetcell(q,"countryname","Deutschland") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","RP") /><cfset querysetcell(q,"name","Rheinland-Pfalz") /><cfset querysetcell(q,"countrycode","DE") /><cfset querysetcell(q,"countryname","Deutschland") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","SL") /><cfset querysetcell(q,"name","Saarland") /><cfset querysetcell(q,"countrycode","DE") /><cfset querysetcell(q,"countryname","Deutschland") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","SN") /><cfset querysetcell(q,"name","Sachsen") /><cfset querysetcell(q,"countrycode","DE") /><cfset querysetcell(q,"countryname","Deutschland") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","ST") /><cfset querysetcell(q,"name","Sachsen-Anhalt") /><cfset querysetcell(q,"countrycode","DE") /><cfset querysetcell(q,"countryname","Deutschland") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","SH") /><cfset querysetcell(q,"name","Schleswig-Holstein") /><cfset querysetcell(q,"countrycode","DE") /><cfset querysetcell(q,"countryname","Deutschland") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","TH") /><cfset querysetcell(q,"name","Thüringen") /><cfset querysetcell(q,"countrycode","DE") /><cfset querysetcell(q,"countryname","Deutschland") />
+			
 			<cfset this.qStates = q />
 		</cfif>
 		
