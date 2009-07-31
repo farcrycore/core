@@ -197,7 +197,8 @@
 				<cfreturn 1 />
 			</cfif>
 		</cfif>
-		<!--- If permission is related to this type, grant it --->
+		<!--- If permission is not related to this type, grant it --->
+		<!--- This allows FarCry to easily handle the many combinations of type and object permission setups --->
 		<cfif not listcontains(application.security.factory.permission.getAllPermissions(typename),arguments.permission)>
 			<cfreturn 1 />
 		</cfif>
