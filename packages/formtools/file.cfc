@@ -406,6 +406,7 @@
 		
 		<cfset var stLocation = "" />
 		<cfset var filepermission = 0 />
+		<cfset var qArchive = "" />
 		
 		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
 		
@@ -423,7 +424,17 @@
 		
 		<!--- Delete file --->
 		<cfif not structisempty(stLocation)>
-			<cftry><cffile action="delete" file="#stLocation.fullpath#" /><cfcatch><cfdump var="#arguments#"><cfdump var="#stLocation#"><cfabort></cfcatch></cftry>
+			<cftry>
+				<cffile action="delete" file="#stLocation.fullpath#" />
+				
+				<!--- Delete archived files --->
+				<cfdirectory action="list" directory="#application.path.mediaArchive##arguments.stMetadata.ftDestination#/" filter="#arguments.objectid#*" name="qArchive" />
+				<cfloop query="qArchive">
+					<cffile action="delete" file="#application.path.mediaArchive##arguments.stMetadata.ftDestination#/#qArchive.name#" />
+				</cfloop>
+				
+				<cfcatch><cfdump var="#arguments#"><cfdump var="#stLocation#"><cfabort></cfcatch>
+			</cftry>
 		</cfif>
 	</cffunction>
 	
