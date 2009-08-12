@@ -393,7 +393,7 @@
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		
 
-		<cfif isDefined("application.stCoapi.#stObj.typename#.bFriendly") AND application.stCoapi[stObj.typename].bFriendly>
+		<cfif structkeyexists(stObj,"typename") and isDefined("application.stCoapi.#stObj.typename#.bFriendly") AND application.stCoapi[stObj.typename].bFriendly>
 		
 			<!--- default stFriendlyURL structure --->
 			<cfset stFriendlyURL.objectid = stobj.objectid>
