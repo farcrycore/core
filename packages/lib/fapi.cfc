@@ -676,6 +676,10 @@
 				
 			</cfif>
 			
+			<cfif not len(trim(returnURL))>
+				<cfset returnURL = "index.cfm" />
+			</cfif>
+
 			<!--- 
 				check for extra URL parameters - note this is only the stParameters passed in not
 				objectid, view, etc 
@@ -710,7 +714,7 @@
 				<cfset returnURL = "#returnURL##arguments.anchor#" />		
 			</cfif>
 			
-			<cfset returnURL = fixURL(returnURL) />
+			<cfset returnURL = fixURL(url=returnURL,ampDelim=arguments.ampDelim) />
 			
 			<!--- Are we meant to use the Javascript Popup Window? --->
 			<cfif arguments.JSWindow>
@@ -911,6 +915,7 @@
 			<cfargument name="url" type="string" required="false" default="#cgi.script_name#?#cgi.query_string#" hint="The url to use" />
 			<cfargument name="removevalues" type="string" required="false" hint="List of values to remove from the query string. Prefix with '+' to remove these values in addition to the defaults." />
 			<cfargument name="addvalues" type="any" required="false" hint="A query string or a struct of values, to add to the query string" />
+			<cfargument name="ampDelim" type="string" required="false" default="&" hint="Delimiter to use for ampersands" />
 			
 			<cfreturn application.fc.utils.fixURL(argumentCollection="#arguments#") />
 		</cffunction>
