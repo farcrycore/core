@@ -36,7 +36,49 @@
 	<cfset this.projectConstructorLocation = getProjectConstructorLocation(plugin="webtop") />
 	<cfinclude template="#this.projectConstructorLocation#" />	
 
+	<!--- Bot detection values --->
+	<cfparam name="this.botAgents" default="*" />
+	<cfparam name="this.botIPs" default="*" />
 	
+	<cfset this.defaultAgents = "bot\b,\brss,slurp,mediapartners-google,googlebot,zyborg,emonitor,jeeves,sbider,findlinks,yahooseeker,mmcrawler,jbrowser,java,pmafind,blogbeat,converacrawler,ocelli,labhoo,validator,sproose,ia_archiver,larbin,psycheclone,arachmo" />
+	<cfif left(this.botagents,1) eq "+">
+		<cfset this.botAgents = this.defaultAgents & "," & mid(this.botAgents,2,len(this.botAgents)) />
+	<cfelseif this.botAgents eq "*">
+		<cfset this.botAgents = this.defaultAgents />
+	</cfif>
+	<cfset this.botAgents = listtoarray(this.botAgents) />
+	
+	<cfset this.defaultIPs = "" />
+	<cfif left(this.botIPs,1) eq "+">
+		<cfset this.botIPs = this.defaultIPs & "," & mid(this.botIPs,2,len(this.botIPs)) />
+	<cfelseif this.botIPs eq "*">
+		<cfset this.botIPs = this.defaultIPs />
+	</cfif>
+	
+	<cfparam name="cookie.sessionScopeTested" default="false" />
+	<cfparam name="cookie.hasSessionScope" default="false" />
+	<cfif not len(cgi.http_user_agent) or (cookie.sessionScopeTested and not cookie.hasSessionScope) or reFindAny(this.botAgents,lcase(cgi.HTTP_USER_AGENT)) or listcontains(this.botIPs,cgi.remote_addr)>
+		<cfset THIS.sessiontimeout = createTimeSpan(0,0,0,2) />
+		<cfset request.fc.hasSessionScope = false />
+		
+		<cfif not cookie.sessionScopeTested>
+			<cftry>
+				<cfcookie name="sessionScopeTested" value="true" expires="never" />
+				<cfcookie name="hasSessionScope" value="false" expires="never" />
+				<cfcatch></cfcatch>
+			</cftry>
+		</cfif>
+	<cfelse>
+		<cfset request.fc.hasSessionScope = true />
+		
+		<cfif not cookie.sessionScopeTested><!--- Sessions are OK for this user, set the cookie --->
+			<cftry>
+				<cfcookie name="sessionScopeTested" value="true" expires="never" />
+				<cfcookie name="hasSessionScope" value="true" expires="never" />
+				<cfcatch></cfcatch>
+			</cftry>
+		</cfif>
+	</cfif>
 	
 	<cffunction name="OnApplicationStart" access="public" returntype="boolean" output="false" hint="Fires when the application is first created.">
 
@@ -493,6 +535,22 @@
 			<cfset createObject("component","#application.packagepath#.farcry.alterType").refreshAllCFCAppData() />
 		</cfif>
 
+	</cffunction>
+	
+	
+	<cffunction name="reFindAny" access="private" output="false" returntype="boolean" hint="Looks for any of an array of regular expressions in a string">
+		<cfargument name="needle" type="array" required="true" hint="The array of regular expressions to find" />
+		<cfargument name="haystack" type="string" required="true" hint="The string to match against" />
+		
+		<cfset var i = 0 />
+		
+		<cfloop from="1" to="#arraylen(arguments.needle)#" index="i">
+			<cfif refind(arguments.needle[i],arguments.haystack)>
+				<cfreturn true />
+			</cfif>
+		</cfloop>
+		
+		<cfreturn false />
 	</cffunction>
 	
 	
