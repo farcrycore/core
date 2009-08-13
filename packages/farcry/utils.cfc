@@ -480,6 +480,7 @@
 		<cfargument name="url" type="string" required="false" default="#cgi.script_name#?#cgi.query_string#" hint="The url to use" />
 		<cfargument name="removevalues" type="string" required="false" hint="List of values to remove from the query string. Prefix with '+' to remove these values in addition to the defaults." />
 		<cfargument name="addvalues" type="any" required="false" hint="A query string or a struct of values, to add to the query string" />
+		<cfargument name="ampDelim" type="string" required="false" default="&" hint="Delimiter to use for ampersands" />
 		
 		<cfset var key = "" />
 
@@ -491,50 +492,51 @@
 		
 		<!--- Normalise FU --->
 		<cfif findNoCase("furl=",arguments.url)>
-			<cfset arguments.url = replacenocase(arguments.url,"/index.cfm",rereplacenocase(arguments.url,"(.*(\?|&)furl\=)([^&]+)(.*)","\3")) />
+			<cfset arguments.url = replacenocase(arguments.url,"/index.cfm",rereplacenocase(arguments.url,"(.*(\?|#arguments.ampDelim#)furl\=)([^&]+)(.*)","\3")) />
 		</cfif>
 		
 		<!--- Remove values --->
-		<cfloop condition="refind('(&|\?)[^=]+=($|&)',arguments.url)">
-			<cfset arguments.url = rereplace(arguments.url,"(&|\?)[^=]+=($|&)","\1") />
+		<cfloop condition="refind('(#arguments.ampDelim#|\?)[^=]+=($|#arguments.ampDelim#)',arguments.url)">
+			<cfset arguments.url = rereplace(arguments.url,"(#arguments.ampDelim#|\?)[^=]+=($|#arguments.ampDelim#)","\1") />
 		</cfloop>
 		<cfloop list="#arguments.removevalues#" index="key">
 			<cfif find("=",key)>
-				<cfset arguments.url = rereplacenocase(arguments.url,"(&|\?)#key#(&|$)","\1") />
+				<cfset arguments.url = rereplacenocase(arguments.url,"(#arguments.ampDelim#|\?)#key#(#arguments.ampDelim#|$)","\1") />
 			<cfelse>
-				<cfset arguments.url = rereplacenocase(arguments.url,"(&|\?)#key#=[^&]+","\1") />
+				<cfset arguments.url = rereplacenocase(arguments.url,"(#arguments.ampDelim#|\?)#key#=[^&]+","\1") />
 			</cfif>
 		</cfloop>
 		
 		<!--- Add and replace values --->
 		<cfif structkeyexists(arguments,"addvalues") and isstruct(arguments.addvalues)>
 			<cfloop collection="#arguments.addvalues#" item="key">
-				<cfset arguments.url = insertQueryVariable(arguments.url,key,arguments.addvalues[key]) />
+				<cfset arguments.url = insertQueryVariable(url=arguments.url,key=key,value=arguments.addvalues[key],ampDelim=arguments.ampDelim) />
 			</cfloop>
 		<cfelseif structkeyexists(arguments,"addvalues")><!--- Query string format --->
 			<cfloop list="#arguments.addvalues#" index="key" delimiters="&">
-				<cfset arguments.url = insertQueryVariable(arguments.url,listfirst(key,'='),listlast(key,'=')) />
+				<cfset arguments.url = insertQueryVariable(url=arguments.url,key=listfirst(key,'='),value=listlast(key,'='),ampDelim=arguments.ampDelim) />
 			</cfloop>
 		<cfelse>
 			<cfloop collection="#arguments#" item="key">
-				<cfif not listcontainsnocase("url,removevalues,addvalues",key)>
-					<cfset arguments.url = insertQueryVariable(arguments.url,key,arguments[key]) />
+				<cfif not listcontainsnocase("url,removevalues,addvalues,ampDelim",key)>
+					<cfset arguments.url = insertQueryVariable(url=arguments.url,key=key,value=arguments[key],ampDelim=arguments.ampDelim) />
 				</cfif>
 			</cfloop>
 		</cfif>
 
-		<cfreturn rereplace(replacelist(arguments.url,"&&&,&&","&,&"),"[?&]+$","") />
+		<cfreturn rereplace(rereplace(arguments.url,"(#arguments.ampDelim#){2,}",arguments.ampDelim),"(#arguments.ampDelim#|\?)+$","") />
 	</cffunction>
 	
 	<cffunction name="insertQueryVariable" returntype="string" output="false" access="public" hint="Inserts the specified key and value, replacing the existing value for that key">
 		<cfargument name="url" type="string" required="true" hint="The url to modify" />
 		<cfargument name="key" type="string" required="true" hint="The key to insert" />
 		<cfargument name="value" type="string" required="true" hint="The value to insert" />
+		<cfargument name="ampDelim" type="string" required="false" default="&" hint="Delimiter to use for ampersands" />
 		
-		<cfif refindnocase("&?#arguments.key#=",arguments.url)>
-			<cfset arguments.url = rereplacenocase(arguments.url,"(?:&)?(\?)?#arguments.key#=[^&]+","\1") & "&#arguments.key#=#urlencodedformat(arguments.value)#" />
+		<cfif refindnocase("(#arguments.ampDelim#)?#arguments.key#=",arguments.url)>
+			<cfset arguments.url = rereplacenocase(arguments.url,"(?:#arguments.ampDelim#)?(\?)?#arguments.key#=[^&]+","\1") & "#arguments.ampDelim##arguments.key#=#urlencodedformat(arguments.value)#" />
 		<cfelseif find("?",arguments.url)>
-			<cfset arguments.url = "#arguments.url#&#arguments.key#=#urlencodedformat(arguments.value)#" />
+			<cfset arguments.url = "#arguments.url##arguments.ampDelim##arguments.key#=#urlencodedformat(arguments.value)#" />
 		<cfelse>
 			<cfset arguments.url = "#arguments.url#?#arguments.key#=#urlencodedformat(arguments.value)#" />
 		</cfif>
