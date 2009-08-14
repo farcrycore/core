@@ -276,11 +276,7 @@
 	<!--- SORT OUT THE ACTION URL --->
 	<cfif NOT len(trim(this.actionURL))>
 		
-		<cfset stURL = Duplicate(url) />
-		<cfset stURL = application.fapi.filterStructure(stURL,'Page#this.paginationID#,updateapp') />
-		<cfset queryString=application.fapi.structToNamePairs(stURL) />
-		
-		<cfset this.actionURL = "#cgi.script_name#?#queryString#" />
+		<cfset this.actionURL = application.fapi.fixURL(removevalues="+Page#this.paginationID#") />
 	
 	<cfelse>
 	
@@ -525,7 +521,7 @@
 <cffunction name="getPaginationLinkHREF" access="private" output="false" returntype="string" hint="Returns the HREF for the pagination Link">
 	<cfargument name="page" required="true" />
 	
-	<cfset var result = "#this.actionURL#&amp;page#this.paginationID#=#arguments.page#" />
+	<cfset var result = application.fapi.fixURL(url=this.actionURL,addvalues="page#this.paginationID#=#arguments.page#",ampDelim="&amp;") />
 	
 	<cfreturn result />
 </cffunction>	
