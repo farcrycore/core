@@ -492,7 +492,7 @@
 		
 		<!--- Normalise FU --->
 		<cfif findNoCase("furl=",arguments.url)>
-			<cfset arguments.url = replacenocase(arguments.url,"/index.cfm",rereplacenocase(arguments.url,"(.*(\?|#arguments.ampDelim#)furl\=)([^&]+)(.*)","\3")) />
+			<cfset arguments.url = replacenocase(arguments.url,"/index.cfm",urldecode(rereplacenocase(arguments.url,"(.*(\?|#arguments.ampDelim#)furl\=)([^&]+)(.*)","\3"),'utf-8')) />
 		</cfif>
 		
 		<!--- Remove values --->

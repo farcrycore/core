@@ -804,6 +804,13 @@
 				<cfset returnURL = "index.cfm" />
 			</cfif>
 			
+			<!--- Add missing URL --->
+			<cfif not len(returnURL) and isdefined("url.furl")>
+				<cfset returnURL = url.furl />
+			<cfelseif not len(returnURL)>
+				<cfset returnURL = cgi.script_name />
+			</cfif>
+			
 			<!--- check for extra URL parameters --->
 			<cfif NOT StructIsEmpty(arguments.stParameters)>
 				<cfset stLocal = StructNew()>
