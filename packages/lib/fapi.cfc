@@ -676,8 +676,10 @@
 				
 			</cfif>
 			
-			<cfif not len(trim(returnURL))>
-				<cfset returnURL = "index.cfm" />
+			<cfif not len(returnURL) and isdefined("url.furl")>
+				<cfset returnURL = url.furl />
+			<cfelseif not len(returnURL)>
+				<cfset returnURL = cgi.script_name />
 			</cfif>
 
 			<!--- 
