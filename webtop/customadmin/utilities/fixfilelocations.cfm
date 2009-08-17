@@ -27,7 +27,7 @@
 						<cfset queryaddrow(stWrong[thistype][thisprop]) />
 						<cfset querysetcell(stWrong[thistype][thisprop],"objectid",q.objectid) />
 						<cfset querysetcell(stWrong[thistype][thisprop],"label",q.label) />
-						<cfset querysetcell(stWrong[thistype][thisprop],"filename",listlast(q[thisprop],"\/")) />
+						<cfset querysetcell(stWrong[thistype][thisprop],"filename",listlast(q[thisprop][q.currentrow],"\/")) />
 						<cfset querysetcell(stWrong[thistype][thisprop],"shouldbe",stLocation.locationShouldBe) />
 					</cfif>
 				</cfloop>
