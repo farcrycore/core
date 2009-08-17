@@ -493,12 +493,19 @@
 		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
 		
 		
-		<cfset var stLocation = getFileLocation(argumentCollection=arguments) />
+		<cfset var stLocation = structnew() />
 		<cfset var newPath = application.path.secureFilePath />
 		
 		<cfif structisempty(stLocation)>
 			<cfreturn />
 		</cfif>
+		
+		<!--- Get the object if not passed in --->
+		<cfif not structkeyexists(arguments,"stObject")>
+			<cfset arguments.stObject = application.fapi.getContentObject(objectid=arguments.objectid,typename=arguments.typename) />
+		</cfif>
+		
+		<cfset stLocation = getFileLocation(argumentCollection=arguments) />
 		
 		<cfif not directoryexists("#newPath##arguments.stMetadata.ftDestination#")>
 			<cfdirectory action="create" directory="#newPath##arguments.stMetadata.ftDestination#" mode="777" />
@@ -516,8 +523,15 @@
 		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
 		
 		
-		<cfset var stLocation = getFileLocation(argumentCollection=arguments) />
+		<cfset var stLocation = structnew() />
 		<cfset var newPath = application.path.defaultFilePath />
+		
+		<!--- Get the object if not passed in --->
+		<cfif not structkeyexists(arguments,"stObject")>
+			<cfset arguments.stObject = application.fapi.getContentObject(objectid=arguments.objectid,typename=arguments.typename) />
+		</cfif>
+		
+		<cfset stLocation = getFileLocation(argumentCollection=arguments) />
 		
 		<cfif structisempty(stLocation)><cfabort showerror="shouldn't be here">
 			<cfreturn />
