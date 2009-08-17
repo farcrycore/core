@@ -1517,4 +1517,45 @@ default handlers
 		<cfreturn qSearchResults>
 	
 	</cffunction>
+
+	
+	<cffunction name="getFileLocation" access="public" output="false" returntype="struct" hint="Returns information used to access the file: type (stream | redirect), path (file system path | absolute URL), filename, mime type">
+		<cfargument name="objectid" type="string" required="false" default="" hint="Object to retrieve" />
+		<cfargument name="typename" type="string" required="false" default="" hint="Type of the object to retrieve" />
+		<!--- OR --->
+		<cfargument name="stObject" type="struct" required="false" hint="Provides the object" />
+		
+		<cfargument name="fieldname" type="string" required="false" hint="Property metadata" />
+		
+		
+		<cfset var i = "" />
+		
+		<!--- Get the object if not passed in --->
+		<cfif not structkeyexists(arguments,"stObject")>
+			<cfset arguments.stObject = getData(objectid=arguments.objectid,typename=arguments.typename) />
+		</cfif>
+		
+		<!--- Determine which property to use if not passed in --->
+		<cfif not structkeyexists(arguments,"fieldname")>
+			<!--- Name of the file field has not been sent. We need to loop though the type to determine which field contains the file path --->
+			<cfloop list="#structKeyList(application.types[arguments.stObject.typename].stprops)#" index="i">
+				<cfif application.fapi.getPropertyMetadata(arguments.stObject.typename,i,"ftType","") EQ "file">
+					<cfset arguments.stMetadata = application.types[arguments.stObject.typename].stprops[i].metadata />
+					<cfbreak />
+				</cfif>
+			</cfloop>
+			
+			<!--- Throw an error if the field couldn't be determined --->
+			<cfif not structkeyexists(arguments,"stMetadata")>
+				<cfset stResult = structnew() />
+				<cfset stResult.message = "Fieldname for the file reference could not be determined" />
+				<cfreturn stResult />
+			</cfif>
+		<cfelse>
+			<cfset arguments.stMetadata = application.stCOAPI[arguments.stObject.typename].stProps[arguments.fieldname].metadata />
+		</cfif>
+		
+		<cfreturn application.formtools.file.oFactory.getFileLocation(argumentcollection=arguments) />
+	</cffunction>
+	
 </cfcomponent>
