@@ -61,7 +61,7 @@
 	<p>FarCry 5.2 introduced a number of CDN features:</p>
 	<ul>
 		<li>approved public files are now streamed directly from the web server instead of through ColdFusion, which improves performance significantly</li>
-		<li>draft and secured files are stored in a secure directly and will only be streamed to the user if they have permission</li>
+		<li>draft and secured files are stored in a secure directory and will only be streamed to the user if they have permission</li>
 	</ul>
 	<p>In established applications there will be many files that are not in correct place. Some draft files will be in the public directory. While these files will be served correctly, they should still be migrated to the correct location.</p>
 </cfoutput></admin:resource>
