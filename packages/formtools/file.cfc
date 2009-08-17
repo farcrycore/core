@@ -589,6 +589,7 @@
 		<!--- ftSecure=true will always be secured --->
 		<!--- anonymous access=false will always be secured --->
 		<sec:CheckPermission objectid="#arguments.stObject.objectid#" type="#arguments.stObject.typename#" permission="View" roles="Anonymous" result="filepermission" />
+		<cfparam name="arguments.stMetadata.ftSecure" default="false" />
 		<cfif arguments.stMetadata.ftSecure eq "false" and (not structkeyexists(arguments.stObject,"status") or arguments.stObject.status eq "approved") and filepermission>
 			<!--- Objects that are not ALWAYS secured and have been approved should be available under the webroot --->
 			
