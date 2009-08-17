@@ -43,12 +43,18 @@
 	<cfloop collection="#stWrong#" item="thistype">
 		<cfloop collection="#stWrong[thistype]#" item="thisprop">
 			<cfloop query="stWrong.#thistype#.#thisprop#">
+				<cfset aVars = arraynew(1) />
+				<cfset aVars[1] = label />
+				<cfset aVars[2] = filename />
+				<cfset aVars[3] = thistype />
+				<cfset aVars[4] = thisprop />
+				
 				<cfif shouldbe eq "public">
 					<cfset application.formtools.file.oFactory.moveToPublic(objectid=objectid,typename=thistype,stMetadata=application.stCOAPI[thistype].stProps[thisprop].metadata) />
-					<cfset message = message & application.fapi.getResource("webtop.utilities.fixfilelocations.topublic@text","'{1}' moved to public directory<br />","",filename) />
+					<cfset message = message & application.fapi.getResource("webtop.utilities.fixfilelocations.topublic@text","'{2}' ({3}) moved to public directory<br />","",aVars) />
 				<cfelse>
 					<cfset application.formtools.file.oFactory.moveToSecure(objectid=objectid,typename=thistype,stMetadata=application.stCOAPI[thistype].stProps[thisprop].metadata) />
-					<cfset message = message & application.fapi.getResource("webtop.utilities.fixfilelocations.tosecure@text","'{1}' moved to secure directory<br />","",filename) />
+					<cfset message = message & application.fapi.getResource("webtop.utilities.fixfilelocations.tosecure@text","'{2}' ({3}) moved to secure directory<br />","",aVars) />
 				</cfif>
 			</cfloop>
 		</cfloop>
