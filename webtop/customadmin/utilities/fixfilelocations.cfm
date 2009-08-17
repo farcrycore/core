@@ -13,10 +13,10 @@
 		<cfloop collection="#application.stCOAPI[thistype].stProps#" item="thisprop">
 			<cfif isdefined("application.stCOAPI.#thistype#.stProps.#thisprop#.metadata.ftType") and application.stCOAPI[thistype].stProps[thisprop].metadata.ftType eq "file">
 				<cfparam name="stWrong[thistype]" default="#structnew()#" />
-				<cfparam name="stWrong[thistype][thisprop]" default="#querynew('objectid,label,shouldbe')#" />
+				<cfparam name="stWrong[thistype][thisprop]" default="#querynew('objectid,label,filename,shouldbe')#" />
 				<cfset o = application.fapi.getContentType(typename=thistype) />
 				<cfquery datasource="#application.dsn#" name="q">
-					select		objectid,label
+					select		objectid,label,#thisprop#
 					from		#application.dbowner##thistype#
 					where		#thisprop#<>''
 				</cfquery>
@@ -27,6 +27,7 @@
 						<cfset queryaddrow(stWrong[thistype][thisprop]) />
 						<cfset querysetcell(stWrong[thistype][thisprop],"objectid",q.objectid) />
 						<cfset querysetcell(stWrong[thistype][thisprop],"label",q.label) />
+						<cfset querysetcell(stWrong[thistype][thisprop],"filename",listlast(q[thisprop],"\/")) />
 						<cfset querysetcell(stWrong[thistype][thisprop],"shouldbe",stLocation.locationShouldBe) />
 					</cfif>
 				</cfloop>
@@ -44,10 +45,10 @@
 			<cfloop query="stWrong.#thistype#.#thisprop#">
 				<cfif shouldbe eq "public">
 					<cfset application.formtools.file.oFactory.moveToPublic(objectid=objectid,typename=thistype,stMetadata=application.stCOAPI[thistype].stProps[thisprop].metadata) />
-					<cfset message = message & application.fapi.getResource("webtop.utilities.fixfilelocations.topublic@text","'{1}' moved to public directory<br />","",label) />
+					<cfset message = message & application.fapi.getResource("webtop.utilities.fixfilelocations.topublic@text","'{1}' moved to public directory<br />","",filename) />
 				<cfelse>
 					<cfset application.formtools.file.oFactory.moveToSecure(objectid=objectid,typename=thistype,stMetadata=application.stCOAPI[thistype].stProps[thisprop].metadata) />
-					<cfset message = message & application.fapi.getResource("webtop.utilities.fixfilelocations.tosecure@text","'{1}' moved to secure directory<br />","",label) />
+					<cfset message = message & application.fapi.getResource("webtop.utilities.fixfilelocations.tosecure@text","'{1}' moved to secure directory<br />","",filename) />
 				</cfif>
 			</cfloop>
 		</cfloop>
