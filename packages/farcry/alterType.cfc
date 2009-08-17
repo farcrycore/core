@@ -366,21 +366,25 @@ $out:$
 			<cfloop collection="#arguments.stCOAPI[thistype].stProps#" item="thisproperty">
 				<cfif listcontains("array,uuid",arguments.stCOAPI[thistype].stProps[thisproperty].metadata.type) and structkeyexists(arguments.stCOAPI[thistype].stProps[thisproperty].metadata,"ftJoin")>
 					<cfloop list="#arguments.stCOAPI[thistype].stProps[thisproperty].metadata.ftJoin#" index="othertype">
-						<cfset stJoin = structnew() />
-						<cfset stJoin.coapitype = othertype />
-						<cfset stJoin.class = arguments.stCOAPI[othertype].class />
-						<cfset stJoin.property = thisproperty />
-						<cfset stJoin.direction = "to" />
-						<cfset stJoin.type = arguments.stCOAPI[thistype].stProps[thisproperty].metadata.type />
-						<cfparam name="arguments.stCOAPI.#thistype#.aJoins" default="#arraynew(1)#" />
-						<cfset arrayappend(arguments.stCOAPI[thistype].aJoins,stJoin) />
-						
-						<cfset stJoin = duplicate(stJoin) />
-						<cfset stJoin.coapitype = thistype />
-						<cfset stJoin.class = arguments.stCOAPI[thistype].class />
-						<cfset stJoin.direction = "from" />
-						<cfparam name="arguments.stCOAPI.#othertype#.aJoins" default="#arraynew(1)#" />
-						<cfset arrayappend(arguments.stCOAPI[othertype].aJoins,stJoin) />
+						<cfif structkeyexists(application.stCOAPI,othertype)>
+							<cfset stJoin = structnew() />
+							<cfset stJoin.coapitype = othertype />
+							<cfset stJoin.coapitypeother = thistype />
+							<cfset stJoin.class = arguments.stCOAPI[othertype].class />
+							<cfset stJoin.property = thisproperty />
+							<cfset stJoin.direction = "to" />
+							<cfset stJoin.type = arguments.stCOAPI[thistype].stProps[thisproperty].metadata.type />
+							<cfparam name="arguments.stCOAPI.#thistype#.aJoins" default="#arraynew(1)#" />
+							<cfset arrayappend(arguments.stCOAPI[thistype].aJoins,stJoin) />
+							
+							<cfset stJoin = duplicate(stJoin) />
+							<cfset stJoin.coapitype = thistype />
+							<cfset stJoin.coapitypeother = othertype />
+							<cfset stJoin.class = arguments.stCOAPI[thistype].class />
+							<cfset stJoin.direction = "from" />
+							<cfparam name="arguments.stCOAPI.#othertype#.aJoins" default="#arraynew(1)#" />
+							<cfset arrayappend(arguments.stCOAPI[othertype].aJoins,stJoin) />
+						</cfif>
 					</cfloop>
 				</cfif>
 			</cfloop>
