@@ -9,30 +9,32 @@
 <cfset wrong = 0 />
 
 <cfloop collection="#application.stCOAPI#" item="thistype">
-	<cfloop collection="#application.stCOAPI[thistype].stProps#" item="thisprop">
-		<cfif isdefined("application.stCOAPI.#thistype#.stProps#thisprop#.ftType") and application.stCOAPI[thistype].stProps[thisprop].ftType eq "file">
-			<cfparam name="stWrong[thistype]" default="#structnew()#" />
-			<cfparam name="stWrong[thistype][thisprop]" default="#querynew('objectid,label,shouldbe')#" />
-			<cfset o = application.fapi.getContentType(typename=thistype) />
-			<cfquery datasource="#application.dsn#" name="q">
-				select		objectid,label
-				from		#application.dbowner##thistype#
-				where		#thisprop#<>''
-			</cfquery>
-			
-			<cfloop query="q">
-				<cfset stLocation = o.getFileLocation(objectid=q.objectid,typename=thistype,fieldname=thisprop) />
-				<cfif structkeyexists(stLocation,"isCorrectLocation") and not stLocation.isCorrectLocation>
-					<cfset queryaddrow(stWrong[thistype][thisprop]) />
-					<cfset querysetcell(stWrong[thistype][thisprop],"objectid",q.objectid) />
-					<cfset querysetcell(stWrong[thistype][thisprop],"label",q.label) />
-					<cfset querysetcell(stWrong[thistype][thisprop],"shouldbe",stLocation.locationShouldBe) />
-				</cfif>
-			</cfloop>
-			
-			<cfset wrong = wrong + stWrong[thistype][thisprop].recordcount />
-		</cfif>
-	</cfloop>
+	<cfif listcontains("type,rule",application.stCOAPI[thistype].class)>
+		<cfloop collection="#application.stCOAPI[thistype].stProps#" item="thisprop">
+			<cfif isdefined("application.stCOAPI.#thistype#.stProps.#thisprop#.metadata.ftType") and application.stCOAPI[thistype].stProps[thisprop].metadata.ftType eq "file">
+				<cfparam name="stWrong[thistype]" default="#structnew()#" />
+				<cfparam name="stWrong[thistype][thisprop]" default="#querynew('objectid,label,shouldbe')#" />
+				<cfset o = application.fapi.getContentType(typename=thistype) />
+				<cfquery datasource="#application.dsn#" name="q">
+					select		objectid,label
+					from		#application.dbowner##thistype#
+					where		#thisprop#<>''
+				</cfquery>
+				
+				<cfloop query="q">
+					<cfset stLocation = o.getFileLocation(objectid=q.objectid,typename=thistype,fieldname=thisprop) />
+					<cfif structkeyexists(stLocation,"isCorrectLocation") and not stLocation.isCorrectLocation>
+						<cfset queryaddrow(stWrong[thistype][thisprop]) />
+						<cfset querysetcell(stWrong[thistype][thisprop],"objectid",q.objectid) />
+						<cfset querysetcell(stWrong[thistype][thisprop],"label",q.label) />
+						<cfset querysetcell(stWrong[thistype][thisprop],"shouldbe",stLocation.locationShouldBe) />
+					</cfif>
+				</cfloop>
+				
+				<cfset wrong = wrong + stWrong[thistype][thisprop].recordcount />
+			</cfif>
+		</cfloop>
+	</cfif>
 </cfloop>
 
 <cfset message = "" />
@@ -42,10 +44,10 @@
 			<cfloop query="stWrong.#thistype#.#thisprop#">
 				<cfif shouldbe eq "public">
 					<cfset application.formtools.file.oFactory.moveToPublic(objectid=objectid,typename=thistype,stMetadata=application.stCOAPI[thistype].stProps[thisprop].metadata) />
-					<cfset message = message & application.rb.getResource("webtop.utilities.fixfilelocations.topublic@message","{1} moved to public directory<br />","",label) />
+					<cfset message = message & application.fapi.getResource("webtop.utilities.fixfilelocations.topublic@text","'{1}' moved to public directory<br />","",label) />
 				<cfelse>
 					<cfset application.formtools.file.oFactory.moveToSecure(objectid=objectid,typename=thistype,stMetadata=application.stCOAPI[thistype].stProps[thisprop].metadata) />
-					<cfset message = message & application.rb.getResource("webtop.utilities.fixfilelocations.tosecure@message","{1} moved to secure directory<br />","",label) />
+					<cfset message = message & application.fapi.getResource("webtop.utilities.fixfilelocations.tosecure@text","'{1}' moved to secure directory<br />","",label) />
 				</cfif>
 			</cfloop>
 		</cfloop>
@@ -55,7 +57,7 @@
 <admin:header />
 
 <cfoutput><h1>#application.fapi.getResource("webtop.utilities.fixfilelocations@title","Fix file locations")#</h1></cfoutput>
-<admin:resource key="webtop.utilities.fixfilelocations@explanation"><cfoutput>
+<admin:resource key="webtop.utilities.fixfilelocations.explanation@text"><cfoutput>
 	<p>FarCry 5.2 introduced a number of CDN features:</p>
 	<ul>
 		<li>approved public files are now streamed directly from the web server instead of through ColdFusion, which improves performance significantly</li>
@@ -65,14 +67,16 @@
 </cfoutput></admin:resource>
 
 <cfif len(message)>
-	<cfoutput>#message#</cfoutput>
+	<cfoutput><p class="success">#message#</p></cfoutput>
 <cfelseif wrong>
-	<admin:resource key="webtop.utilities.fixfilelocations@wrongfiles" variables="#wrong#"><cfoutput>
-		<p class="error">This application has {1} files in incorrect locations.</p>
+	<admin:resource key="webtop.utilities.fixfilelocations.wrongfiles@text" variables="#wrong#"><cfoutput>
+		<p class="error">This application has {1} file/s in incorrect locations.</p>
 	</cfoutput></admin:resource>
+	
+	<ft:form><ft:button value="Fix files" /></ft:form>
 <cfelse>
-	<admin:resource key="webtop.utilities.fixfilelocations@nowrongfiles" variables="#wrong#"><cfoutput>
-		<p class="success">This application has {1} files in incorrect locations.</p>
+	<admin:resource key="webtop.utilities.fixfilelocations.nowrongfiles@text" variables="#wrong#"><cfoutput>
+		<p class="success">This application has no files in incorrect locations.</p>
 	</cfoutput></admin:resource>
 </cfif>
 
