@@ -580,12 +580,14 @@
 			
 			<!--- check file exists --->
 			<cfif fileExists("#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#")>
-				<cfset stResult.correctlocation = true />
+				<cfset stResult.isCorrectLocation = true />
 				<cfset stResult.type = "redirect" />
 				<cfset stResult.path = "#application.fapi.getFileWebRoot()##arguments.stObject[arguments.stMetadata.name]#" />
 				<cfset stResult.fullpath = "#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#" />
 			<cfelseif fileExists("#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#")>
-				<cfset stResult.correctlocation = false />
+				<cfset stResult.isCorrectLocation = false />
+				<cfset stResult.locationShouldBe = "public" />
+				
 				<!--- If the permission gets assigned AFTER the object is sent to approved the file may still be in the secured directory. --->
 				<cfset stResult.type = "stream" />
 				<cfset stResult.path = "#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#" />
@@ -604,11 +606,13 @@
 			
 			<!--- check file exists --->
 			<cfif fileExists("#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#")>
-				<cfset stResult.correctlocation = true />
+				<cfset stResult.isCorrectLocation = true />
 				<cfset stResult.path = "#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#" />
 				<cfset stResult.fullpath = stResult.path />
 			<cfelseif fileexists("#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#")>
-				<cfset stResult.correctlocation = false />
+				<cfset stResult.isCorrectLocation = false />
+				<cfset stResult.locationShouldBe = "secure" />
+				
 				<cfset stResult.path = "#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#" />
 				<cfset stResult.fullpath = stResult.path />
 			<cfelse>
