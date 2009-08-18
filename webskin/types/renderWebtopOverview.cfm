@@ -65,56 +65,7 @@ START WEBSKIN
 	<cfoutput>
 	$j("##tabs").tabs();
 	
-	$fc.openDialog = function(title,url,width,height){
-		var fcDialog = $j("<div></div>")
-		w = width ? width : 600;
-		h = height ? height : $j(window).height()-50;
-		$j("body").prepend(fcDialog);
-		$j(fcDialog).dialog({
-			bgiframe: true,
-			modal: true,
-			title:title,
-			width: w,
-			height: h,
-			close: function(event, ui) {
-				$j(fcDialog).dialog( 'destroy' );
-				$j(fcDialog).remove();
-			}
-			
-		});
-		$j(fcDialog).dialog('open');
-		$j.ajax({
-			type: "POST",
-			cache: false,
-			url: url, 
-			complete: function(data){
-				$j(fcDialog).html(data.responseText);			
-			},
-			dataType: "html"
-		});
-	};	
 	
-	
-	$fc.openDialogIFrame = function(title,url,width,height){
-		var fcDialog = $j("<div><iframe style='width:99%;height:99%;border-width:0px;'></iframe></div>")
-		w = width ? width : 600;
-		h = height ? height : $j(window).height()-50;
-		$j("body").prepend(fcDialog);
-		$j(fcDialog).dialog({
-			bgiframe: true,
-			modal: true,
-			title:title,
-			width: w,
-			height: h,
-			close: function(event, ui) {
-				$j(fcDialog).dialog( 'destroy' );
-				$j(fcDialog).remove();
-			}
-			
-		});
-		$j(fcDialog).dialog('open');
-		$j('iframe',$j(fcDialog)).attr('src',url);
-	};		
 	</cfoutput>
 </skin:onReady>
 

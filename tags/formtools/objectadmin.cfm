@@ -485,22 +485,17 @@ user --->
 			<!--- TODO: Check Permissions. --->
 			<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=draft" addtoken="false" />
 		</ft:processForm>
-	
-	
-	
 		
 		<ft:processForm action="properties">
 			
-			<cfif listLen(form.objectid) EQ 1>
-				<extjs:iframeDialog />
-				
-				<skin:htmlHead>
+			<cfif len(form.objectid)>				
+				<skin:onReady>
 					<cfoutput>
-					<script type="text/javascript">
-						openScaffoldDialog('#application.url.farcry#/object_dump.cfm?objectid=#form.objectid#&typename=#attributes.typename#','Properties',500,500,true);
-					</script>
+						<cfloop list="#form.objectid#" index="i">
+							$fc.openDialog('Properties','#application.url.farcry#/object_dump.cfm?objectid=#i#&typename=#attributes.typename#');
+						</cfloop>
 					</cfoutput>
-				</skin:htmlHead>
+				</skin:onReady>
 			</cfif>
 		</ft:processForm>
 	
@@ -992,7 +987,7 @@ user --->
 		<skin:loadJS id="jquery" />
 
 		<cfoutput>
-		<select name="action#st.currentrow#" id="action#st.currentrow#" class="actionDropdown" onchange="selectObjectID('#arguments.st.objectid#');btnSubmit=this.value;">
+		<select name="action#st.currentrow#" id="action#st.currentrow#" class="actionDropdown" onchange="selectObjectID('#arguments.st.objectid#');btnSubmit('#request.farcryForm.name#', this.value);">
 			<option value="">-- action --</option>
 
 			<option value="overview">Overview</option>

@@ -86,6 +86,56 @@ $in: [bCacheControl] output cache control headers; default true. $
 	</cfoutput>
 </skin:loadCSS>
 
+<skin:loadCSS 	id="uni-form"
+				baseHREF="#application.url.webtop#/thirdparty/uni-form/css"
+				lFiles="uni-form-generic.css,uni-form.css">
+				
+				<cfoutput>
+				.uniForm{ margin-top: 1.5em; max-width:960px; _width:960px;}
+				
+				.uniForm .multiField, .uniForm .blockLabels .multiField{ width: 60%; }
+				.uniForm .formHint, .uniForm .blockLabels .formHint{ width: 40%; margin-top: .3em; }
+				.uniForm .textInput, .uniForm select, .uniForm textarea{ border: 2px solid ##dfdfdf; background:##fff; }
+				.ctrlHolder.focused .textInput{ border-color: ##DFD77D; }
+				.uniForm .buttonHolder{ padding: 10px 10px 10px 0; font-size: 120%; margin: 1em 0;border: 1px solid ##ccc; border-width: 1px 0; background: ##f9f9f9; }
+			
+				.uniForm fieldset {
+					border-color:##A4C8E5;
+					border-style:solid none none;
+					border-width:1px 0 0 0;
+					margin:20px 0 20px 0;
+					padding:10px 10px 5px 10px;
+					background:##F9F9F9 none repeat scroll 0 0;
+				}							
+				.uniForm fieldset legend {
+					font-size:120%;
+					line-height:150%;
+					margin:0px;
+					padding:0 9px 0 9px;
+					color:##416394;
+					font-weight:bold;
+				}
+				.uniForm button {
+					cursor:pointer;
+					padding:2px 2px 2px 2px;
+					margin-right:3px;
+				}
+				.uniForm .secondaryAction{ 
+					float: left; 
+				}
+				.uniForm .primaryAction{ 
+			      	font-weight: bold;
+			    }					      
+				.uniForm{
+					position:static;
+					z-index: 0;
+				}
+				.uniForm .errorField {
+					font-weight:bold;
+				}
+				</cfoutput>
+</skin:loadCSS>
+
 <cfoutput>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" dir="#attributes.writingDir#" lang="#attributes.userLanguage#">

@@ -49,7 +49,6 @@
 							lFiles="jquery-1.3.2.min.js">
 							
 							<cfoutput>var $j = jQuery.noConflict();</cfoutput>	
-							<cfoutput>var $fc = {};</cfoutput>	
 		</skin:registerJS>		
 			
 		<skin:registerJS 	id="jquery-ui"
@@ -68,7 +67,63 @@
 
 		<skin:registerJS 	id="farcry-form"
 							baseHREF="#application.url.webtop#"
-							lFiles="/js/farcryForm.cfm,/thirdparty/loadmask/jquery.loadmask.min.js" />
+							lFiles="/js/farcryForm.cfm,/thirdparty/loadmask/jquery.loadmask.min.js">
+							
+							<cfoutput>
+							var $fc = {};
+							$fc.openDialog = function(title,url,width,height){
+								var fcDialog = $j("<div></div>")
+								w = width ? width : 600;
+								h = height ? height : $j(window).height()-50;
+								$j("body").prepend(fcDialog);
+								$j(fcDialog).dialog({
+									bgiframe: true,
+									modal: true,
+									title:title,
+									width: w,
+									height: h,
+									close: function(event, ui) {
+										$j(fcDialog).dialog( 'destroy' );
+										$j(fcDialog).remove();
+									}
+									
+								});
+								$j(fcDialog).dialog('open');
+								$j.ajax({
+									type: "POST",
+									cache: false,
+									url: url, 
+									complete: function(data){
+										$j(fcDialog).html(data.responseText);			
+									},
+									dataType: "html"
+								});
+							};	
+							
+							
+							$fc.openDialogIFrame = function(title,url,width,height){
+								var fcDialog = $j("<div><iframe style='width:99%;height:99%;border-width:0px;'></iframe></div>")
+								w = width ? width : 600;
+								h = height ? height : $j(window).height()-50;
+								$j("body").prepend(fcDialog);
+								$j(fcDialog).dialog({
+									bgiframe: true,
+									modal: true,
+									title:title,
+									width: w,
+									height: h,
+									close: function(event, ui) {
+										$j(fcDialog).dialog( 'destroy' );
+										$j(fcDialog).remove();
+									}
+									
+								});
+								$j(fcDialog).dialog('open');
+								$j('iframe',$j(fcDialog)).attr('src',url);
+							};									
+							</cfoutput>
+							
+		</skin:registerJS>
 
 		<skin:registerJS 	id="uni-form"
 							baseHREF="#application.url.webtop#/thirdparty/uni-form/js"
@@ -90,59 +145,7 @@
 												
 		<skin:registerCSS 	id="uni-form"
 							baseHREF="#application.url.webtop#/thirdparty/uni-form/css"
-							lFiles="uni-form-generic.css,uni-form.css">
-							
-							<cfoutput>
-							.uniForm{ margin-top: 1.5em; max-width:960px; _width:960px;}
-							
-							.uniForm .multiField, .uniForm .blockLabels .multiField{ width: 60%; }
-							.uniForm .formHint, .uniForm .blockLabels .formHint{ width: 40%; margin-top: .3em; }
-							.uniForm .textInput, .uniForm select, .uniForm textarea{ border: 2px solid ##dfdfdf; background:##fff; }
-							.ctrlHolder.focused .textInput{ border-color: ##DFD77D; }
-							.uniForm .buttonHolder{ padding: 10px 10px 10px 0; font-size: 120%; margin: 1em 0;border: 1px solid ##ccc; border-width: 1px 0; background: ##f9f9f9; }
-							
-							/* Phone number multifield custom styles */
-							.uniForm .inlineLabels .ctrlHolder .multiField.phoneNum .blockLabel{ width: auto; }
-							  .uniForm .inlineLabels .ctrlHolder .multiField .blockLabel ##phone_ccode.textInput,
-							  .uniForm .inlineLabels .ctrlHolder .multiField .blockLabel ##phone_area.textInput{ width: 40px; }
-							  .uniForm .inlineLabels .ctrlHolder .multiField .blockLabel ##phone_area.textInput{ width: 40px; }
-							  .uniForm .inlineLabels .ctrlHolder .multiField .blockLabel ##phone_num.textInput{ width: 110px; }
-
-							.uniForm fieldset {
-								border-color:##A4C8E5;
-								border-style:solid none none;
-								border-width:3px 0 0;
-								margin:0;
-								padding:10px;
-							}							
-							.uniForm fieldset legend {
-								font-size:110%;
-								line-height:150%;
-								margin:10px 0;
-								padding:0 3px 0 9px;
-								color:##416394;
-								font-weight:bold;
-							}
-							.uniForm button {
-								cursor:pointer;
-								padding:2px 2px 2px 2px;
-								margin-right:3px;
-							}
-							.uniForm .secondaryAction{ 
-								float: left; 
-							}
-							.uniForm .primaryAction{ 
-						      	font-weight: bold;
-						    }					      
-							.uniForm{
-								position:static;
-								z-index: 0;
-							}
-							.uniForm .errorField {
-								font-weight:bold;
-							}
-							</cfoutput>
-		</skin:registerCSS>
+							lFiles="uni-form-generic.css,uni-form.css" />
 							
 		<skin:registerCSS 	id="gritter"
 							baseHREF="#application.url.webtop#/thirdparty/gritter/css"

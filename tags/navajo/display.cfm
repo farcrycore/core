@@ -346,9 +346,6 @@
 		$fc.trayAction = function(urlParams){
 		    document.location = '#cgi.script_name#?#cgi.query_string#&' + urlParams;
 		}
-		$fc.editContent = function(url,title,width,height,modal,onclose) {
-			alert(url + ':' + title + ':' + width + ':' + height + ':' + modal + ':' + onclose);
-		};
 		
 			
 		$fc.traySwitch('#session.fc.trayWebskin#'); // add tray
