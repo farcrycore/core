@@ -410,6 +410,7 @@
 		
 		<cfset var stLocation = "" />
 		<cfset var filepermission = 0 />
+		<cfset var qArchive = "" />
 		
 		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
 		
@@ -427,7 +428,17 @@
 		
 		<!--- Delete file --->
 		<cfif not structisempty(stLocation)>
-			<cftry><cffile action="delete" file="#stLocation.fullpath#" /><cfcatch><cfdump var="#arguments#"><cfdump var="#stLocation#"><cfabort></cfcatch></cftry>
+			<cftry>
+				<cffile action="delete" file="#stLocation.fullpath#" />
+				
+				<!--- Delete archived files --->
+				<cfdirectory action="list" directory="#application.path.mediaArchive##arguments.stMetadata.ftDestination#/" filter="#arguments.objectid#*" name="qArchive" />
+				<cfloop query="qArchive">
+					<cffile action="delete" file="#application.path.mediaArchive##arguments.stMetadata.ftDestination#/#qArchive.name#" />
+				</cfloop>
+				
+				<cfcatch><cfdump var="#arguments#"><cfdump var="#stLocation#"><cfabort></cfcatch>
+			</cftry>
 		</cfif>
 	</cffunction>
 	
@@ -486,12 +497,19 @@
 		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
 		
 		
-		<cfset var stLocation = getFileLocation(argumentCollection=arguments) />
+		<cfset var stLocation = structnew() />
 		<cfset var newPath = application.path.secureFilePath />
 		
 		<cfif structisempty(stLocation)>
 			<cfreturn />
 		</cfif>
+		
+		<!--- Get the object if not passed in --->
+		<cfif not structkeyexists(arguments,"stObject")>
+			<cfset arguments.stObject = application.fapi.getContentObject(objectid=arguments.objectid,typename=arguments.typename) />
+		</cfif>
+		
+		<cfset stLocation = getFileLocation(argumentCollection=arguments) />
 		
 		<cfif not directoryexists("#newPath##arguments.stMetadata.ftDestination#")>
 			<cfdirectory action="create" directory="#newPath##arguments.stMetadata.ftDestination#" mode="777" />
@@ -509,8 +527,15 @@
 		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
 		
 		
-		<cfset var stLocation = getFileLocation(argumentCollection=arguments) />
+		<cfset var stLocation = structnew() />
 		<cfset var newPath = application.path.defaultFilePath />
+		
+		<!--- Get the object if not passed in --->
+		<cfif not structkeyexists(arguments,"stObject")>
+			<cfset arguments.stObject = application.fapi.getContentObject(objectid=arguments.objectid,typename=arguments.typename) />
+		</cfif>
+		
+		<cfset stLocation = getFileLocation(argumentCollection=arguments) />
 		
 		<cfif structisempty(stLocation)><cfabort showerror="shouldn't be here">
 			<cfreturn />
@@ -533,33 +558,9 @@
 		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
 		
 		<cfset var stResult = structnew() />
-		<cfset var i = "" />
 		<cfset var filepermission = 0 />
 		
 		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
-		
-		<!--- Get the object if not passed in --->
-		<cfif not structkeyexists(arguments,"stObject")>
-			<cfset arguments.stObject = application.fapi.getContentObject(objectid=arguments.objectid,typename=arguments.typename) />
-		</cfif>
-		
-		<!--- Determine which property to use if not passed in --->
-		<cfif not structkeyexists(arguments,"stMetadata")>
-			<!--- Name of the file field has not been sent. We need to loop though the type to determine which field contains the file path --->
-			<cfloop list="#structKeyList(application.types[arguments.stObject.typename].stprops)#" index="i">
-				<cfif application.fapi.getPropertyMetadata(arguments.stObject.typename,i,"ftType","") EQ "file">
-					<cfset arguments.stMetadata = application.types[arguments.stObject.typename].stprops[i].metadata />
-					<cfbreak />
-				</cfif>
-			</cfloop>
-			
-			<!--- Throw an error if the field couldn't be determined --->
-			<cfif not structkeyexists(arguments,"stMetadata")>
-				<cfset stResult = structnew() />
-				<cfset stResult.message = "Fieldname for the file reference could not be determined" />
-				<cfreturn stResult />
-			</cfif>
-		</cfif>
 		
 		<!--- Does the user have access to this object --->
 		<sec:CheckPermission objectid="#arguments.stObject.objectid#" type="#arguments.stObject.typename#" permission="View" result="filepermission" />
@@ -592,15 +593,20 @@
 		<!--- ftSecure=true will always be secured --->
 		<!--- anonymous access=false will always be secured --->
 		<sec:CheckPermission objectid="#arguments.stObject.objectid#" type="#arguments.stObject.typename#" permission="View" roles="Anonymous" result="filepermission" />
+		<cfparam name="arguments.stMetadata.ftSecure" default="false" />
 		<cfif arguments.stMetadata.ftSecure eq "false" and (not structkeyexists(arguments.stObject,"status") or arguments.stObject.status eq "approved") and filepermission>
 			<!--- Objects that are not ALWAYS secured and have been approved should be available under the webroot --->
 			
 			<!--- check file exists --->
 			<cfif fileExists("#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#")>
+				<cfset stResult.isCorrectLocation = true />
 				<cfset stResult.type = "redirect" />
 				<cfset stResult.path = "#application.fapi.getFileWebRoot()##arguments.stObject[arguments.stMetadata.name]#" />
 				<cfset stResult.fullpath = "#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#" />
 			<cfelseif fileExists("#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#")>
+				<cfset stResult.isCorrectLocation = false />
+				<cfset stResult.locationShouldBe = "public" />
+				
 				<!--- If the permission gets assigned AFTER the object is sent to approved the file may still be in the secured directory. --->
 				<cfset stResult.type = "stream" />
 				<cfset stResult.path = "#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#" />
@@ -619,17 +625,19 @@
 			
 			<!--- check file exists --->
 			<cfif fileExists("#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#")>
+				<cfset stResult.isCorrectLocation = true />
 				<cfset stResult.path = "#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#" />
 				<cfset stResult.fullpath = stResult.path />
+			<cfelseif fileexists("#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#")>
+				<cfset stResult.isCorrectLocation = false />
+				<cfset stResult.locationShouldBe = "secure" />
+				
+				<cfset stResult.path = "#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#" />
+				<cfset stResult.fullpath = stResult.path />
 			<cfelse>
-				<cfif fileexists("#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#")>
-					<cfset stResult.path = "#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#" />
-					<cfset stResult.fullpath = stResult.path />
-				<cfelse>
-					<cfset stResult = structnew() />
-					<cfset stResult.message = "File is missing" />
-					<cfreturn stResult />
-				</cfif>
+				<cfset stResult = structnew() />
+				<cfset stResult.message = "File is missing" />
+				<cfreturn stResult />
 			</cfif>
 			
 			<!--- determine mime type --->

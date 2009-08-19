@@ -743,7 +743,8 @@
 			<cfargument name="JSWindow" default="0"><!--- Default to not using a Javascript Window popup --->
 			<cfargument name="stJSParameters" default="#StructNew()#">
 			<cfargument name="anchor" default=""><!--- Anchor to place at the end of the URL string. --->
-			
+			<cfargument name="ampDelim" type="string" required="false" default="&" hint="Delimiter to use for ampersands" />
+
 			<cfset var returnURL = "" />
 			<cfset var linkID = "" />
 			<cfset var stLocal = StructNew()>
@@ -805,6 +806,12 @@
 			</cfif>
 			
 			<!--- Add missing URL --->
+			<cfif not len(returnURL) and isdefined("url.furl")>
+				<cfset returnURL = url.furl />
+			<cfelseif not len(returnURL)>
+				<cfset returnURL = cgi.script_name />
+			</cfif>
+			
 			<cfif not len(returnURL) and isdefined("url.furl")>
 				<cfset returnURL = url.furl />
 			<cfelseif not len(returnURL)>

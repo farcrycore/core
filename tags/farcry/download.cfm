@@ -77,7 +77,7 @@ accommodate legacy implementations
 
 <!--- determine the fieldname --->
 <cfif len(attributes.fieldname)>
-	<cfset stLocation = application.formtools.file.oFactory.getFileLocation(stObject=stFile,stMetadata=application.stCOAPI[stFile.typename].stProps[attributes.fieldname].metadata) />
+	<cfset stLocation = oType.getFileLocation(stObject=stFile,fieldname=attributes.fieldname) />
 <cfelse>
 	<cfset stLocation = application.formtools.file.oFactory.getFileLocation(stObject=stFile) />
 </cfif>
@@ -101,10 +101,10 @@ accommodate legacy implementations
 		<cfinvokeargument name="userid" value="Anonymous"/>
 	</cfif>
 </cfinvoke>
-	
+
 
 <!--- What to do if the returned struct is empty (i.e. user doesn't have permission) --->
-<cfif structisempty(stLocation)>
+<cfif structisempty(stLocation) or structkeyexists(stLocation,"message")>
 	
 	<!--- Do nothing --->
 	

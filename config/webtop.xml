@@ -71,10 +71,11 @@
 				<menuitem id="coapiFlexUI" sequence="40" label="Types/Rules (Flex)" link="/admin/coapiFlexUI.cfm" />
 			</menu>
 			<menu id="diagnostics" sequence="30" label="Diagnostics">
-				<menuitem id="rebuildtree" label="Rebuild Tree Metadata" link="/admin/rebuildTree.cfm" />
-				<menuitem id="fixrefObjects" label="Fix RefObjects Table" link="/admin/fixRefObjects.cfm" />
-				<menuitem id="reattachnodes" label="Reattach Orphan Folders" link="/admin/reattachnodes.cfm" />
-				<menuitem id="reattachnodescategory" label="Reattach Orphan Categories" link="/admin/reattachnodescategory.cfm" />
+				<menuitem id="rebuildtree" sequence="10" label="Rebuild Tree Metadata" link="/admin/rebuildTree.cfm" />
+				<menuitem id="fixrefObjects" sequence="20" label="Fix RefObjects Table" link="/admin/fixRefObjects.cfm" />
+				<menuitem id="reattachnodes" sequence="30" label="Reattach Orphan Folders" link="/admin/reattachnodes.cfm" />
+				<menuitem id="reattachnodescategory" sequence="40" label="Reattach Orphan Categories" link="/admin/reattachnodescategory.cfm" />
+				<menuitem id="fixfilelocations" sequence="50" label="Fix File Locations" link="/admin/customadmin.cfm?module=utilities/fixfilelocations.cfm" />
 			</menu>
 			<menu id="menufumanagement" sequence="80" label="Manage Friendly URLs">
 				<menuitem id="fumanagement" sequence="10" label="Manage Friendly URLs" link="/admin/customadmin.cfm?module=customlists/farFU.cfm" />

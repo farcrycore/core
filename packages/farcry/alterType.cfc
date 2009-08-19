@@ -354,10 +354,50 @@ $out:$
 		<cfreturn stResult />
 	</cffunction>
 	
+	<cffunction name="updateJoins" output="false" hint="Returns an array of the joins to and from the specified type">
+		<cfargument name="stCOAPI" type="struct" required="true" hint="The COAPI metadata struct" />
+		
+		<cfset var thistype = "" />
+		<cfset var thisproperty = "" />
+		<cfset var othertype = "" />
+		<cfset var stJoin = structnew() />
+		
+		<cfloop collection="#arguments.stCOAPI#" item="thistype">
+			<cfloop collection="#arguments.stCOAPI[thistype].stProps#" item="thisproperty">
+				<cfif listcontains("array,uuid",arguments.stCOAPI[thistype].stProps[thisproperty].metadata.type) and structkeyexists(arguments.stCOAPI[thistype].stProps[thisproperty].metadata,"ftJoin")>
+					<cfloop list="#arguments.stCOAPI[thistype].stProps[thisproperty].metadata.ftJoin#" index="othertype">
+						<cfif structkeyexists(application.stCOAPI,othertype)>
+							<cfset stJoin = structnew() />
+							<cfset stJoin.coapitype = othertype />
+							<cfset stJoin.coapitypeother = thistype />
+							<cfset stJoin.class = arguments.stCOAPI[othertype].class />
+							<cfset stJoin.property = thisproperty />
+							<cfset stJoin.direction = "to" />
+							<cfset stJoin.type = arguments.stCOAPI[thistype].stProps[thisproperty].metadata.type />
+							<cfparam name="arguments.stCOAPI.#thistype#.aJoins" default="#arraynew(1)#" />
+							<cfset arrayappend(arguments.stCOAPI[thistype].aJoins,stJoin) />
+							
+							<cfset stJoin = duplicate(stJoin) />
+							<cfset stJoin.coapitype = thistype />
+							<cfset stJoin.coapitypeother = othertype />
+							<cfset stJoin.class = arguments.stCOAPI[thistype].class />
+							<cfset stJoin.direction = "from" />
+							<cfparam name="arguments.stCOAPI.#othertype#.aJoins" default="#arraynew(1)#" />
+							<cfset arrayappend(arguments.stCOAPI[othertype].aJoins,stJoin) />
+						</cfif>
+					</cfloop>
+				</cfif>
+			</cfloop>
+		</cfloop>
+	</cffunction>
 	
 	<cffunction name="refreshAllCFCAppData" output="true" hint="Inserts the metadata information for each cfc into the application scope.">
 		<cfargument name="dsn" required="No" default="#application.dsn#">
 		<cfargument name="dbowner" required="No" default="#application.dbowner#">
+		
+		<cfset var thispackage = "" />
+		<cfset var thistype = "" />
+		<cfset var stMetadata = structnew() />
 		
 		<cfset application.stCOAPI = structnew() />
 		
@@ -376,6 +416,8 @@ $out:$
 				</cfif>
 			</cfloop>
 		</cfloop>
+		
+		<cfset updateJoins(application.stCOAPI) />
 	</cffunction>
 	
 	<cffunction name="getTypeDefaults" hint="Initialises a reference structure that can be looked up to get default types/lengths for respective DB columns">

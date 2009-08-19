@@ -366,7 +366,7 @@ object methods
 			<cfset setData(stProperties=stRole) />
 			
 			<!--- Notify objects of permission change --->
-			<cfset typepermissiontype = application.security.factory.permission.getTypePermissionType(objectid=stObj.aPermissions[i]) />
+			<cfset typepermissiontype = application.security.factory.permission.getTypePermissionType(objectid=arguments.permission) />
 			<cfif len(typepermissiontype)>
 				<cfquery datasource="#application.dsn#" name="qObjects">
 					select		objectid
@@ -383,7 +383,7 @@ object methods
 			<cfset setData(stProperties=stRole) />
 			
 			<!--- Notify objects of permission change --->
-			<cfset typepermissiontype = application.security.factory.permission.getTypePermissionType(objectid=stObj.aPermissions[i]) />
+			<cfset typepermissiontype = application.security.factory.permission.getTypePermissionType(objectid=stObj.aPermissions[qPermissions.seq]) />
 			<cfif len(typepermissiontype)>
 				<cfquery datasource="#application.dsn#" name="qObjects">
 					select		objectid
