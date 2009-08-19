@@ -47,7 +47,7 @@
 	<cfparam name="attributes.stJSParameters" default="#StructNew()#">
 	<cfparam name="attributes.anchor" default=""><!--- @@attrhint: Anchor to place at the end of the URL string. --->
 	<cfparam name="attributes.onclick" default=""><!--- @@attrhint: the js code to place in onclick --->
-	
+	<cfparam name="attributes.ampDelim" default="&amp;"><!--- @@attrhint: the default ampersand delimiter as used by getLink --->
 
 	<cfset href = application.fapi.getLink(argumentCollection="#attributes#") />
 
