@@ -41,21 +41,14 @@
 	<cfparam name="attributes.includeDomain" default="false">
 	<cfparam name="attributes.Domain" default="#cgi.http_host#">
 	<cfparam name="attributes.addToken" default="false" />
+	<cfparam name="attributes.ampDelim" default="&">
 	
+	
+
 	<cfif not len(attributes.url)>
-		<skin:buildLink href="#attributes.href#" 
-			alias="#attributes.alias#" 
-			objectid="#attributes.objectid#" 
-			type="#attributes.type#" 
-			view="#attributes.view#" 
-			bodyView="#attributes.bodyView#" 
-			externallink="#attributes.externallink#" 
-			stParameters="#attributes.stParameters#" 
-			urlParameters="#attributes.urlParameters#" 
-			includeDomain="#attributes.includeDomain#" 
-			Domain="#attributes.Domain#" 
-			r_url="attributes.url" />
-	</cfif>				
+		<cfset attributes.url = application.fapi.getLink(argumentCollection="#attributes#")>
+	</cfif>			
+	
 	<cflocation url="#attributes.url#" addtoken="#attributes.addToken#" />
 	
 </cfif>
