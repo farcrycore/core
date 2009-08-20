@@ -21,7 +21,7 @@
 			
 			<cfif structKeyExists(application.fc.stCSSLibraries,idHash)>
 				<cfif structKeyExists(application.fc.stCSSLibraries[idHash],"sCacheFileName")>
-					<cfif fileExists(expandPath('/farcry/projects/#application.applicationname#/www/cache/#application.fc.stCSSLibraries[idHash].sCacheFileName#'))>
+					<cfif fileExists(application.path.project & '/www/cache/#application.fc.stCSSLibraries[idHash].sCacheFileName#')>
 						<cfset sCacheFileName = application.fc.stCSSLibraries[idHash].sCacheFileName />
 					</cfif>
 				</cfif>
@@ -70,7 +70,7 @@
 					<![endif]-->
 					</cfoutput>
 				<cfelse>
-					<cfoutput><link rel="stylesheet" type="text/css" href="/cache/#sCacheFileName#" media="#stCSS.media#">
+					<cfoutput><link rel="stylesheet" type="text/css" href="#application.url.webroot#/cache/#sCacheFileName#" media="#stCSS.media#">
 					</cfoutput>
 				</cfif>			
 			</cfsavecontent>

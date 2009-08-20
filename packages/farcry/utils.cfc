@@ -45,7 +45,7 @@
 		<!--- COMBINE: Used for CSS and JS --->
 		<cfset variables.oCombine = createObject("component", "farcry.core.packages.farcry.combine.combine").init(
 												enableCache: true,
-												cachePath: expandPath('/farcry/projects/#application.applicationname#/www/cache'),
+												cachePath: application.path.project & '/www/cache'),
 												enableETags: false,
 												enableJSMin: true,
 												enableYuiCSS: true,
@@ -320,10 +320,20 @@
 		<cfargument name="package" type="string" required="true" />
 		<cfargument name="component" type="string" required="true" />
 		<cfargument name="locations" type="string" required="false" default="" />
-		<cfargument name="path" type="struct" required="false" default="#application.path#" hint="Application file paths" />
+		<cfargument name="path" type="struct" required="false" default="#structnew()#" hint="Application file paths" />
 		<cfargument name="projectDirectoryName" type="string" required="false" default="#application.projectDirectoryName#" hint="" />
 		
 		<cfset var item = "" />
+		
+		<cfif not isdefined("arguments.path.core")>
+			<cfset arguments.path.core = application.path.core />
+		</cfif>
+		<cfif not isdefined("arguments.path.plugins")>
+			<cfset arguments.path.plugins = application.path.plugins />
+		</cfif>
+		<cfif not isdefined("arguments.path.project")>
+			<cfset arguments.path.project = application.path.project />
+		</cfif>
 		
 		<cfif not len(arguments.locations) and structkeyexists(application,"plugins")>
 			<cfset arguments.locations = "project,#listreverse(application.plugins)#,core" />
