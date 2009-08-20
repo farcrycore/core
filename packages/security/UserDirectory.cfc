@@ -14,21 +14,6 @@
 				</cfif>
 			</cfloop>
 			
-			<!--- If key isn't specified, use the name of the component --->
-			<cfif not structkeyexists(this,"key")>
-				<cfset this.key = listlast(stMetadata.name,".") />
-			</cfif>
-			
-			<!--- If title isn't specified, use the displayname --->
-			<cfif not structkeyexists(this,"title")>
-				<cfset this.title = stMetadata.displayname />
-			</cfif>
-			
-			<!--- If seq isn't specified, use the 9999 --->
-			<cfif not structkeyexists(this,"seq")>
-				<cfset this.seq = 9999 />
-			</cfif>
-			
 			<!--- Do the same for ancestors --->
 			<cfif structkeyexists(stMetadata,"extends")>
 				<cfset stMetadata = stMetadata.extends />
@@ -36,6 +21,23 @@
 				<cfset stMetadata = structnew() />
 			</cfif>
 		</cfloop>
+		
+		<cfset stMetadata = getMetadata(this) />
+		
+		<!--- If key isn't specified, use the name of the component --->
+		<cfif not structkeyexists(this,"key")>
+			<cfset this.key = listlast(stMetadata.name,".") />
+		</cfif>
+		
+		<!--- If title isn't specified, use the displayname --->
+		<cfif not structkeyexists(this,"title")>
+			<cfset this.title = stMetadata.displayname />
+		</cfif>
+		
+		<!--- If seq isn't specified, use the 9999 --->
+		<cfif not structkeyexists(this,"seq")>
+			<cfset this.seq = 9999 />
+		</cfif>
 		
 		<cfreturn this />
 	</cffunction>
