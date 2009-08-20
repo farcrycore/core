@@ -45,7 +45,7 @@
 		<!--- COMBINE: Used for CSS and JS --->
 		<cfset variables.oCombine = createObject("component", "farcry.core.packages.farcry.combine.combine").init(
 												enableCache: true,
-												cachePath: application.path.project & '/www/cache'),
+												cachePath: application.path.project & '/www/cache',
 												enableETags: false,
 												enableJSMin: true,
 												enableYuiCSS: true,
