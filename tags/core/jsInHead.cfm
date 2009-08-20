@@ -22,7 +22,7 @@
 			
 			<cfif structKeyExists(application.fc.stJSLibraries,idHash) AND NOT request.mode.flushcache>
 				<cfif structKeyExists(application.fc.stJSLibraries[idHash],"sCacheFileName")>
-					<cfif fileExists(expandPath('/farcry/projects/#application.applicationname#/www/cache/#application.fc.stJSLibraries[idHash].sCacheFileName#'))>
+					<cfif fileExists(application.path.project & '/www/cache/#application.fc.stJSLibraries[idHash].sCacheFileName#')>
 						<cfset sCacheFileName = application.fc.stJSLibraries[idHash].sCacheFileName />
 					</cfif>
 				</cfif>
