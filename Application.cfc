@@ -662,6 +662,8 @@
 		<!--- Used to identify subsites that are available to this application --->
 		<cfparam name="this.subsites" default="#structNew()#" />
 		
+		<cfset application.projectDirectoryName = this.projectDirectoryName />
+		
 		<cfset application.fc = structNew() /><!--- FarCry Namespace in the application scope --->
 		<cfset application.fc.factory = structNew() /><!--- Struct to contain any factory classes that can be used by the application --->
 		<cfset application.fc.subsites = this.subsites /><!--- Struct to contain any subsites that may be included with the application --->
