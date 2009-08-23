@@ -78,9 +78,10 @@ START WEBSKIN
 	</ul>
 	<div id="tabs-1">
 		<ft:buttonPanel style="margin:0px;padding:2px;">
-			<ft:button value="edit" />
+			<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="webtopOverviewActionsPrimary" />
+			<!--- <ft:button value="edit" />
 			<ft:button value="delete" />
-			<ft:button value="approve" />
+			<ft:button value="approve" /> --->
 		</ft:buttonPanel>
 		
 		
@@ -116,7 +117,11 @@ START WEBSKIN
 			<li style="display:block;padding-left:0px;background:none;"><a onclick="$fc.openDialog('Property Dump', '#application.url.farcry#/object_dump.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#')"><span class="ui-icon ui-icon-newwin" style="float:left;">&nbsp;</span>System Properties</a></li>
 		</ul>
 		
+		
+		
 		<br style="clear:both;" />
+		
+		
 		
 		
 	</div>

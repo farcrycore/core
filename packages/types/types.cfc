@@ -993,7 +993,9 @@ default handlers
 		
 		<cfset lWizardSteps = "" />
 		<cfoutput query="qWizardSteps" group="ftWizardStep" groupcasesensitive="false">
-			<cfset lWizardSteps = listAppend(lWizardSteps,qWizardSteps.ftWizardStep) />
+			<cfif NOT listFindNoCase(lWizardSteps,qWizardSteps.ftWizardStep)>
+				<cfset lWizardSteps = listAppend(lWizardSteps,qWizardSteps.ftWizardStep) />
+			</cfif>
 		</cfoutput>
 		
 		<!------------------------ 
@@ -1037,7 +1039,9 @@ default handlers
 						</cfquery>
 						<cfset lFieldSets = "" />
 						<cfoutput query="qFieldSets" group="ftFieldset" groupcasesensitive="false">
-							<cfset lFieldSets = listAppend(lFieldSets,qFieldSets.ftFieldset) />
+							<cfif NOT listFindNoCase(lFieldSets,qFieldSets.ftFieldset)>
+								<cfset lFieldSets = listAppend(lFieldSets,qFieldSets.ftFieldset) />
+							</cfif>
 						</cfoutput>
 						
 						
@@ -1086,7 +1090,9 @@ default handlers
 			
 			<cfset lFieldSets = "" />
 			<cfoutput query="qFieldSets" group="ftFieldset" groupcasesensitive="false">
-				<cfset lFieldSets = listAppend(lFieldSets,qFieldSets.ftFieldset) />
+				<cfif NOT listFindNoCase(lFieldSets,qFieldSets.ftFieldset)>
+					<cfset lFieldSets = listAppend(lFieldSets,qFieldSets.ftFieldset) />
+				</cfif>
 			</cfoutput>
 		
 			<!--- PERFORM SERVER SIDE VALIDATION --->

@@ -33,9 +33,11 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 || ATTRIBUTES ||
 $in: SessionID -- $
 --->
-<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
+<cfimport taglib="/farcry/core/tags/core/" prefix="core" >
 <cfimport taglib="/farcry/core/tags/wizard/" prefix="wiz" >
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 
 <cfset owizard = createObject("component",application.types['dmWizard'].typepath)>
 
@@ -80,9 +82,16 @@ $in: SessionID -- $
 
 		<cfset Variables.CorrectForm = 1>
 		
-		<cfparam name="attributes.FormName" default="farcryForm">
+		
+		<!--- import libraries --->
+		<skin:loadJS id="jquery" />
+		<skin:loadJS id="farcry-form" />
+		<skin:loadCSS id="farcry-form" />
+		
+		
+		<cfparam name="attributes.FormName" default="farcryForm#randrange(1,999999999)#">
 		<cfparam name="attributes.FormTarget" default="">
-		<cfparam name="attributes.FormAction" default="#cgi.SCRIPT_NAME#?#cgi.query_string#">	
+		<cfparam name="attributes.FormAction" default="">	
 		<cfparam name="attributes.FormMethod" default="post">	
 		<cfparam name="attributes.Formonsubmit" default="">
 		<cfparam name="attributes.Formcss" default="">
@@ -90,6 +99,8 @@ $in: SessionID -- $
 		<cfparam name="attributes.FormStyle" default="">
 		<cfparam name="attributes.FormHeading" default="">
 		<cfparam name="attributes.FormValidation" default="1">
+		<cfparam name="attributes.bUniForm" default="true"><!--- Make the form a uniform (http://sprawsm.com/uni-form/) --->
+		<cfparam name="attributes.bUniFormHighlight" default="true"><!--- Highlight fields when focused --->
 		
 		<!--- I18 conversion of form heading --->
 		<cfif len(attributes.FormHeading)>
@@ -97,28 +108,47 @@ $in: SessionID -- $
 		</cfif>
 		
 		<cfparam name="Request.farcryFormList" default="">			
+		<cfif listFindNoCase(request.farcryFormList, attributes.FormName)>
+			<cfset attributes.FormName = "#attributes.FormName##ListLen(request.farcryFormList) + 1#">			
+		</cfif>		
+		<cfset Request.farcryFormList = listAppend(Request.farcryFormList,attributes.FormName) />		
 		
-		<cfif not isDefined("Request.farcryForm.Name")>
-			<cfset Request.farcryForm = StructNew()>
-			<cfset Request.farcryForm.Name = attributes.FormName>	
-			<cfset Request.farcryForm.Target = attributes.FormTarget>	
-			<cfset Request.farcryForm.Action = attributes.FormAction>
-			<cfset Request.farcryForm.Method = attributes.FormMethod>
-			<cfset Request.farcryForm.Validation = attributes.FormValidation>
-			<cfset Request.farcryForm.stObjects = StructNew()>		
-		</cfif>	
 		
-		<cfif listFindNoCase(request.farcryFormList, Request.farcryForm.Name)>
-			<cfset Request.farcryForm.Name = "#Request.farcryForm.Name##ListLen(request.farcryFormList) + 1#">			
-		</cfif>
-	
-	
-		<cfif Request.farcryForm.Validation EQ 1>
-			<cfset Request.InHead.FormValidation = 1>			
+		<!--- If we have not received an action url, get the default cgi.script_name?cgi.query_string --->
+		<cfif not len(attributes.formAction)>
+			<cfset attributes.formAction = "#application.fapi.fixURL()#" />
 		</cfif>
 		
-		<ft:renderHTMLformStart onsubmit="#attributes.Formonsubmit#" class="#attributes.FormClass#" css="#attributes.Formcss#" style="#attributes.Formstyle#" heading="#attributes.Formheading#" />
+		<!--- If this is going to be a uniform, include relevent js and css --->
+		<cfif attributes.bUniForm>
+			<cfset attributes.formClass = listAppend(attributes.formClass,"uniForm"," ") />
+			<skin:loadJS id="uni-form" />
+			<skin:loadCSS id="uni-form" />				
+		</cfif>
+		
+		
 	
+		<cfset Request.farcryForm = StructNew()>
+		<cfset Request.farcryForm.Name = attributes.FormName>	
+		<cfset Request.farcryForm.Target = attributes.FormTarget>	
+		<cfset Request.farcryForm.Action = attributes.FormAction>
+		<cfset Request.farcryForm.Method = attributes.FormMethod>
+		<cfset Request.farcryForm.onSubmit = attributes.FormOnSubmit />
+		<cfset Request.farcryForm.Validation = attributes.FormValidation>
+		<cfset Request.farcryForm.stObjects = StructNew()>		
+	
+		<cfoutput>		
+		<form 	action="#attributes.FormAction#" 
+				method="#attributes.FormMethod#" 
+				id="#attributes.FormName#" 
+				name="#attributes.FormName#" 
+				<cfif len(attributes.formTarget)> target="#attributes.formTarget#"</cfif> 
+				enctype="multipart/form-data" 
+				class="#attributes.FormClass#"  
+				style="#attributes.Formstyle#" >
+		</cfoutput>
+		<!--- <core:renderHTMLformStart onsubmit="#attributes.Formonsubmit#" class="#attributes.FormClass#" css="#attributes.Formcss#" style="#attributes.Formstyle#" heading="#attributes.Formheading#" />
+	 --->
 	</cfif>
 	
 
@@ -187,19 +217,23 @@ $in: SessionID -- $
 		<script language="javascript">
 			function wizardSubmission(state) {
 				if (state == 'Cancel') {
-					$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value=state;
-					$('#Request.farcryForm.Name#').submit();	
+					btnSubmit('#Request.farcryForm.Name#',state);
+					<!--- $j('##FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').val(state);
+					$j('###Request.farcryForm.Name#').submit();	 --->
 				} 
 				
 				<cfif Request.farcryForm.Validation>					
-					else if ( realeasyvalidation#request.farcryForm.name#.validate() ) {
-						$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value=state;
-						$('#Request.farcryForm.Name#').submit();	
+					//else if ( realeasyvalidation#request.farcryForm.name#.validate() ) {
+					else {
+						btnSubmit('#Request.farcryForm.Name#',state);
+						<!--- $('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value=state;
+						$('#Request.farcryForm.Name#').submit(); --->	
 					}
 				<cfelse>
 					else {
-						$('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value=state;
-						$('#Request.farcryForm.Name#').submit();	
+						btnSubmit('#Request.farcryForm.Name#',state);
+						<!--- $('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value=state;
+						$('#Request.farcryForm.Name#').submit();	 --->
 					}
 				</cfif>
 			}
@@ -214,12 +248,13 @@ $in: SessionID -- $
 	</cfsavecontent>
 	<cfhtmlHead text="#wizardSubmissionJS#" />
 	<cfoutput>
-	<div id="wizard-wrap">			
+	<div id="wizard-wrap">	
+			
 		<div class="wizard-pagination">
 			<ul>
-				<cfif stwizard.CurrentStep LT ListLen(stwizard.Steps)><li class="li-next"><a href="javascript:wizardSubmission('Next');">#application.rb.getResource("forms.buttons.Next@label","Next")#</a></li></cfif>
-				<cfif stwizard.CurrentStep GT 1><li class="li-prev"><a href="javascript:wizardSubmission('Previous');">#application.rb.getResource("forms.buttons.Back@label","Back")#</a></li></cfif>
-			</ul>
+				<cfif stwizard.CurrentStep LT ListLen(stwizard.Steps)><li class="li-next"><ft:button value="Next" text="#application.rb.getResource('forms.buttons.Next@label','Next')#" renderType="link" /></li></cfif><!--- <a href="javascript:wizardSubmission('Next');">#application.rb.getResource("forms.buttons.Next@label","Next")#</a> --->
+				<cfif stwizard.CurrentStep GT 1><li class="li-prev"><ft:button value="Previous" text="#application.rb.getResource('forms.buttons.Next@label','Back')#" renderType="link" /></li></cfif><!--- <a href="javascript:wizardSubmission('Previous');">#application.rb.getResource("forms.buttons.Back@label","Back")#</a> --->
+			</ul>	
 		</div>
 
 		<h1><admin:icon icon="#attributes.icon#" usecustom="true" />
@@ -253,9 +288,9 @@ $in: SessionID -- $
 		
 		<div class="wizard-pagination pg-bot">
 			<ul>
-				<cfif stwizard.CurrentStep LT ListLen(stwizard.Steps)><li class="li-next"><a href="javascript:wizardSubmission('Next');">#application.rb.getResource("forms.buttons.Next@label","Next")#</a></li></cfif>
-				<cfif stwizard.CurrentStep GT 1><li class="li-prev"><a href="javascript:wizardSubmission('Previous');">#application.rb.getResource("forms.buttons.Back@label","Back")#</a></li></cfif>
-			</ul>
+				<cfif stwizard.CurrentStep LT ListLen(stwizard.Steps)><li class="li-next"><ft:button value="Next" text="#application.rb.getResource('forms.buttons.Next@label','Next')#" renderType="link" /></li></cfif><!--- <a href="javascript:wizardSubmission('Next');">#application.rb.getResource("forms.buttons.Next@label","Next")#</a> --->
+				<cfif stwizard.CurrentStep GT 1><li class="li-prev"><ft:button value="Previous" text="#application.rb.getResource('forms.buttons.Next@label','Back')#" renderType="link" /></li></cfif><!--- <a href="javascript:wizardSubmission('Previous');">#application.rb.getResource("forms.buttons.Back@label","Back")#</a> --->
+			</ul>			
 		</div>
 				
 	</div>
@@ -270,7 +305,81 @@ $in: SessionID -- $
 			<input type="hidden" id="currentwizardStep" name="currentwizardStep" value="#ListGetAt(stwizard.Steps,stwizard.CurrentStep)#" />
 			<input type="hidden" id="wizardID" name="wizardID" value="#stwizard.ObjectID#" />
 		</cfoutput>
-		<ft:renderHTMLformEnd />	
+		
+		<!--- Render the hidden form fields used to post the state of the farcry form. --->
+		<cfoutput>
+			<input type="hidden" name="FarcryFormPrefixes" value="" />
+			<input type="hidden" name="FarcryFormSubmitButton" value="" /><!--- This is an empty field so that if the form is submitted, without pressing a farcryFormButton, the FORM.FarcryFormSubmitButton variable will still exist. --->
+			<input type="hidden" name="FarcryFormSubmitButtonClicked#attributes.formName#" id="FarcryFormSubmitButtonClicked#attributes.formName#" class="fc-button-clicked" value="" /><!--- This contains the name of the farcry button that was clicked --->
+			<input type="hidden" name="FarcryFormSubmitted"  value="#attributes.formName#" /><!--- Contains the name of the farcry form submitted --->
+			<input type="hidden" name="SelectedObjectID" class="fc-selected-object-id" value="" /><!--- Hidden Field to take a UUID from the attributes.SelectedObjectID on ft:button --->
+		
+			<input type="hidden" name="farcryFormValidation" id="farcryFormValidation#attributes.formName#" class="fc-server-side-validation" value="#attributes.formValidation#" /><!--- Let the form submission know if it to perform serverside validation --->
+	
+		</form>
+		</cfoutput>
+		
+		<cfif attributes.bUniForm AND attributes.bUniFormHighlight>
+			<skin:onReady>
+				<cfoutput>
+				$j('###attributes.formName#').uniform();
+				</cfoutput>
+			</skin:onReady>
+		</cfif>
+		
+		
+		<!--- If we are validating this form, load and initialise the validation engine.  --->
+		<cfif attributes.formValidation EQ 1>
+			<skin:loadJS id="jquery-validate" />
+			
+			<!--- Setup farcry form validation (fv) --->
+			<skin:onReady>
+				<cfoutput>
+				$fc.fv#attributes.formName# = $j("###attributes.formName#").validate({
+					onsubmit: false, // let the onsubmit function handle the validation
+					errorElement: "p",
+					errorClass: "errorField",					   
+					errorPlacement: function(error, element) {
+					   error.prependTo( element.parent("div.ctrlHolder") );
+					},
+					highlight: function(element, errorClass) {
+					   $j(element).parent("div.ctrlHolder").addClass('error');
+					},
+					unhighlight: function(element, errorClass) {
+					   $j(element).parent("div.ctrlHolder").removeClass('error');
+					}
+
+				});
+				
+				
+				</cfoutput>
+			</skin:onReady>
+		</cfif>
+		
+		<!--- If we have anything in the onsubmit, use jquery to run it --->
+		<skin:onReady>
+			<cfoutput>
+			$j('###attributes.formName#').submit(function(){
+				var valid = true;			
+				<cfif attributes.formValidation EQ 1>
+					if ( $j("###attributes.formName#").attr('fc:validate') == 'false' ) {
+						$j("###attributes.formName#").attr('fc:validate',true);					
+					} else {
+						valid = $j('###attributes.formName#').valid();
+					}
+				</cfif>			
+					 
+				if(valid){
+					#attributes.formOnSubmit#;
+				} else {
+					$fc.fv#attributes.formName#.focusInvalid();
+					return false;
+				}
+		    });
+			</cfoutput>				
+		</skin:onReady>
+		
+		<!--- <core:renderHTMLformEnd />	 --->
 		<cfset dummy = structdelete(request,"farcryForm")>	
 	</cfif>
 	

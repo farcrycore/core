@@ -130,7 +130,7 @@
 							lFiles="/js/farcryForm.cfm,/thirdparty/loadmask/jquery.loadmask.min.js">
 							
 							<cfoutput>
-							var $fc = {};
+							var $fc = {};	
 							$fc.openDialog = function(title,url,width,height){
 								var fcDialog = $j("<div></div>")
 								w = width ? width : 600;
@@ -180,7 +180,293 @@
 								});
 								$j(fcDialog).dialog('open');
 								$j('iframe',$j(fcDialog)).attr('src',url);
-							};									
+							};		
+							
+							
+							<!--- JOINS --->
+							
+							var fcForm = {};
+							
+	fcForm.openLibrarySelect = function(typename,objectid,property,id) {
+		
+		var newDialogDiv = $j("<div></div>")
+		$j("body").prepend(newDialogDiv);
+		
+		$j(newDialogDiv).dialog({
+			bgiframe: true,
+			modal: true,
+			title:'Library Selector',
+			width: $j(window).width()-50,
+			height: $j(window).height()-50,
+			buttons: {
+				Ok: function() {
+					$j(this).dialog('close');
+				}
+			},
+			close: function(event, ui) {
+				fcForm.refreshProperty(typename,objectid,property,id);
+				$j(newDialogDiv).dialog( 'destroy' );
+				$j(newDialogDiv).remove();
+			}
+			
+		});
+		$j(newDialogDiv).dialog('open');
+		$j.ajax({
+			type: "POST",
+			cache: false,
+					url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayLibrary' + '&property=' + property, 
+			complete: function(data){
+				$j(newDialogDiv).html(data.responseText);			
+			},
+			dataType: "html"
+		});
+	};
+	
+
+	fcForm.openLibraryAdd = function(typename,objectid,property,id) {
+		var newDialogDiv = $j("<div id='" + typename + objectid + property + "'><iframe style='width:100%;height:100%;border-width:0px;'></iframe></div>")
+		$j("body").prepend(newDialogDiv);
+		
+		$j(newDialogDiv).dialog({
+			bgiframe: true,
+			modal: true,
+			title:'Add New',
+			width: $j(window).width()-50,
+			height: $j(window).height()-50,
+			close: function(event, ui) {
+				fcForm.refreshProperty(typename,objectid,property,id);
+				$j(newDialogDiv).dialog( 'destroy' );
+				$j(newDialogDiv).remove();
+			}
+			
+		});
+		$j(newDialogDiv).dialog('open');
+		//OPEN URL IN IFRAME ie. not in ajaxmode
+		$j('iframe',$j(newDialogDiv)).attr('src','/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=displayLibraryAdd' + '&property=' + property);
+		
+	};	
+	
+	fcForm.openLibraryEdit = function(typename,objectid,property,id,editid) {
+		var newDialogDiv = $j("<div id='" + typename + objectid + property + "'><iframe style='width:100%;height:100%;border-width:0px;'></iframe></div>")
+		$j("body").prepend(newDialogDiv);
+		
+		$j(newDialogDiv).dialog({
+			bgiframe: true,
+			modal: true,
+			title:'Edit',
+			width: $j(window).width()-50,
+			height: $j(window).height()-50,
+			close: function(event, ui) {
+				fcForm.refreshProperty(typename,objectid,property,id);
+				$j(newDialogDiv).dialog( 'destroy' );
+				$j(newDialogDiv).remove();
+			}
+			
+		});
+		$j(newDialogDiv).dialog('open');
+		//OPEN URL IN IFRAME ie. not in ajaxmode
+		$j('iframe',$j(newDialogDiv)).attr('src','/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=displayLibraryEdit' + '&property=' + property + '&editid=' + editid);
+		
+	};	
+	
+	fcForm.deleteLibraryItem = function(typename,objectid,property,formfieldname,itemids) {
+		$j.ajax({
+			cache: false,
+			type: "POST",
+ 			url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
+			data: {deleteID: itemids },
+			dataType: "html",
+			complete: function(data){
+				$j('##join-item-' + itemids).hide('blind',{},500);				
+			}
+		});	
+	}
+	fcForm.deleteAllLibraryItems = function(typename,objectid,property,formfieldname,itemids) {
+		$j.ajax({
+			cache: false,
+			type: "POST",
+ 			url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
+			data: {deleteID: itemids },
+			dataType: "html",
+			complete: function(data){
+				$j('##join-' + objectid + '-' + property).hide('blind',{},500);				
+			}
+		});	
+	}
+	fcForm.detachLibraryItem = function(typename,objectid,property,formfieldname,itemids) {
+		$j.ajax({
+			cache: false,
+			type: "POST",
+ 			url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
+			data: {detachID: itemids },
+			dataType: "html",
+			complete: function(data){
+				$j('##join-item-' + itemids).hide('blind',{},500);					
+			}
+		});	
+	}
+	fcForm.detachAllLibraryItems = function(typename,objectid,property,formfieldname,itemids) {
+		$j.ajax({
+			cache: false,
+			type: "POST",
+ 			url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
+			data: {detachID: itemids },
+			dataType: "html",
+			complete: function(data){
+				$j('##join-' + objectid + '-' + property).hide('blind',{},500);					
+			}
+		});	
+	}
+	
+	fcForm.initLibrary = function(typename,objectid,property) {
+		fcForm.initLibrarySummary(typename,objectid,property);		
+		$j("input.checker").click(function(e) {			
+			if($j(e.target).attr('checked')){
+				$j.ajax({
+					cache: false,
+					type: "POST",
+		 			url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
+					data: {addID: $j(e.target).val() },
+					dataType: "html",
+					complete: function(data){
+						fcForm.initLibrarySummary(typename,objectid,property);
+						$j('##librarySummary-' + typename + '-' + property).effect('pulsate',{times:2});
+					}
+				});		
+			} else {
+				$j.ajax({
+					cache: false,
+					type: "POST",
+		 			url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
+					data: {detachID: $j(e.target).val() },
+					dataType: "html",
+					complete: function(data){
+						fcForm.initLibrarySummary(typename,objectid,property);	
+						$j('##logger').append(data.responseText);	
+						$j('##librarySummary-' + typename + '-' + property).effect('pulsate',{times:2});						
+					}
+				});	
+			}
+						
+		});
+		
+		$j("input.checkall").click(function(e) {			
+			if($j(e.target).attr('checked')){
+				$j("input.checker").attr('checked','checked');
+			} else {
+				$j("input.checker").attr('checked','checked');
+			}
+						
+		});
+	};
+	
+	fcForm.initLibrarySummary = function(typename,objectid,property) {
+		$j.ajax({
+			type: "POST",
+			cache: false,
+					url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayLibrarySummary' + '&property=' + property, 
+			complete: function(data){
+				$j('##librarySummary-' + typename + '-' + property).html(data.responseText);
+					
+			},
+			dataType: "html"
+		});
+	}
+	
+	fcForm.refreshProperty = function(typename,objectid,property,id) {
+		$j.ajax({
+			type: "POST",
+			cache: false,
+ 			url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxRefreshJoinProperty' + '&property=' + property,
+			complete: function(data){
+				$j("##" + id + '-library-wrapper').html(data.responseText);
+				fcForm.initSortable(typename,objectid,property,id);
+			},
+			dataType: "html"
+		});
+	}	
+	
+	fcForm.initSortable = function(typename,objectid,property,id) {
+		$j('##' + id + '-library-wrapper').sortable({
+			items: 'li.sort',
+			update: function(event,ui){
+				$j.ajax({
+					type: "POST",
+					cache: false,
+	  				url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
+					data: {'sortIDs': $j('##' + id + '-library-wrapper').sortable('toArray',{'attribute':'serialize'}) },
+					complete: function(data){},
+					dataType: "html"
+				});
+			}
+		});
+		$j('##test').disableSelection();
+		
+	}
+		
+		
+		//dimScreen()
+		//by Brandon Goldman
+		$j.extend({
+		    //dims the screen
+		    dimScreen: function(speed, opacity, callback) {
+		        if(jQuery('##__dimScreen').size() > 0) return;
+		        
+		        if(typeof speed == 'function') {
+		            callback = speed;
+		            speed = null;
+		        }
+		
+		        if(typeof opacity == 'function') {
+		            callback = opacity;
+		            opacity = null;
+		        }
+		
+		        if(speed < 1) {
+		            var placeholder = opacity;
+		            opacity = speed;
+		            speed = placeholder;
+		        }
+		        
+		        if(opacity >= 1) {
+		            var placeholder = speed;
+		            speed = opacity;
+		            opacity = placeholder;
+		        }
+		
+		        speed = (speed > 0) ? speed : 500;
+		        opacity = (opacity > 0) ? opacity : 0.5;
+		        return jQuery('<div></div>').attr({
+		                id: '__dimScreen'
+		                ,fade_opacity: opacity
+		                ,speed: speed
+		            }).css({
+		            background: '##000'
+		            ,height: jQuery(document).height() + 'px'
+		            ,left: '0px'
+		            ,opacity: 0
+		            ,position: 'absolute'
+		            ,top: '0px'
+		            ,width: jQuery(document).width() + 'px'
+		            ,zIndex: 999
+		        }).appendTo(document.body).fadeTo(speed, opacity, callback);
+		    },
+			    
+		    //stops current dimming of the screen
+		    dimScreenStop: function(callback) {
+		        var x = jQuery('##__dimScreen');
+		        var opacity = x.attr('fade_opacity');
+		        var speed = x.attr('speed');
+		        x.fadeOut(speed, function() {
+		            x.remove();
+		            if(typeof callback == 'function') callback();
+		        });
+		    }
+		});
+		
+							
+							
+														
 							</cfoutput>
 							
 		</skin:registerJS>

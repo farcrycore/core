@@ -103,6 +103,11 @@
 	
 	
 	
+	<cfif attributes.type EQ "submit">
+		<cfset attributes.onClick = "#attributes.onClick#;#request.farcryForm.onSubmit#;btnSubmit('#Request.farcryForm.Name#','#jsStringFormat(attributes.value)#');" />	
+	</cfif>
+	
+	
 	<!--- Output the button if not just returning the info --->
 	<cfif not len(attributes.r_stButton)>
 		<cfswitch expression="#attributes.renderType#">
@@ -120,14 +125,7 @@
 			$j("###attributes.id#").click(function() {
 				#attributes.OnClick#
 			});
-					
-			</cfoutput>
-			</skin:onReady>
-		</cfif>
-		
-		<cfif len(attributes.onClick)>
-			<skin:onReady>
-			<cfoutput>			
+						
 			$j("###attributes.id#").hover(
 				function() {
 					$j(this).addClass('ui-state-hover');
@@ -135,12 +133,11 @@
 				function() {
 					$j(this).removeClass('ui-state-hover');
 				}
-			)
+			)	
 			</cfoutput>
 			</skin:onReady>
 		</cfif>
-
-
+		
 
 		<cfif attributes.bSpamProtect AND isDefined("Request.farcryForm.Name")>
 		

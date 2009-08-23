@@ -157,7 +157,9 @@ $out:$
 			
 			<cfset lWizardSteps = "" />
 			<cfoutput query="qWizardSteps" group="ftWizardStep" groupcasesensitive="false">
-				<cfset lWizardSteps = listAppend(lWizardSteps,qWizardSteps.ftWizardStep) />
+				<cfif NOT listFindNoCase(lWizardSteps,qWizardSteps.ftWizardStep)>
+					<cfset lWizardSteps = listAppend(lWizardSteps,qWizardSteps.ftWizardStep) />
+				</cfif>
 			</cfoutput>
 			
 						

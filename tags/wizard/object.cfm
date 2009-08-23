@@ -1,5 +1,6 @@
  <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
- <cfimport taglib="/farcry/core/tags/webskin/" prefix="ws" >
+ <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" >
+ <cfimport taglib="/farcry/core/tags/grid/" prefix="grid" >
 
 <cfif not thistag.HasEndTag>
 	<cfabort showerror="Does not have an end tag...">
@@ -36,6 +37,8 @@
 	<cfparam name="attributes.stPropValues" default="#structNew()#">
 	<cfparam name="attributes.r_stwizard" default="stwizard"><!--- The name of the CALLER variable that contains the stwizard structure --->
 	<cfparam name="attributes.bShowLibraryLink" default="true" type="boolean"><!--- Flag to determine if the libraryLink is to be displayed. --->
+	<cfparam name="attributes.bShowFieldHints" default="true" type="boolean"><!--- Flag to determine if the field hints are display. --->
+	<cfparam name="attributes.prefix" default="" /><!--- Allows the developer to pass in the prefix they wish to use. Default is the objectid stripped of the dashes. --->
 	
 	<cfset attributes.lExcludeFields = ListAppend(attributes.lExcludeFields,"objectid,locked,lockedby,lastupdatedby,ownedby,datetimelastupdated,createdby,datetimecreated,versionID,status")>
 	
@@ -209,11 +212,12 @@
 		<cfset LegendClass = "noLegend" />
 	</cfif>
 
+	<cfoutput><div class="#attributes.class#"></cfoutput>
 	<cfif attributes.IncludeFieldSet>
-		<cfoutput><fieldset class="formSection #attributes.class# #LegendClass#"></cfoutput>
+		<cfoutput><fieldset></cfoutput>
 
 		<cfif isDefined("attributes.legend") and len(attributes.legend)>
-			<cfoutput><legend class="#attributes.class#">#attributes.legend#</legend></cfoutput>
+			<cfoutput><legend>#attributes.legend#</legend></cfoutput>
 		</cfif>	
 	</cfif>
 	
@@ -227,15 +231,6 @@
 			</div>
 		</cfoutput>
 	</cfif>
-	
-	<cfif NOT len(Attributes.r_stFields)>
-		<cfif Attributes.InTable EQ 1>
-			<cfoutput>
-				<table>
-			</cfoutput>
-		</cfif>
-	</cfif>
-	
 
 	<cfloop list="#lFieldsToRender#" index="i">
 		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i] = StructNew()>
@@ -455,9 +450,9 @@
 							<cfset stURLParams.ftShowRemoveSelected = "#ftFieldMetadata.ftShowRemoveSelected#">
 						</cfif>
 								
-						<ws:htmlHead library="farcryForm" />
+						<skin:htmlHead library="farcryForm" />
 						
-						<ws:buildLink href="#application.url.farcry#/facade/library.cfm" stParameters="#stURLParams#" r_url="libraryPopupHTML" />
+						<skin:buildLink href="#application.url.farcry#/facade/library.cfm" stParameters="#stURLParams#" r_url="libraryPopupHTML" />
 	
 						<cfoutput>
 							<cfif listLen(ftFieldMetadata.ftJoin) GT 1>
@@ -483,85 +478,47 @@
 				<cfset libraryLink = "">	
 			</cfif>
 			
-			<cfif structkeyexists(ftFieldMetadata,"ftShowLabel") and not ftFieldMetadata.ftShowLabel>
-				<cfset FieldLabelStart = "" />
-			<cfelse>
-				<cfsavecontent variable="FieldLabelStart">
-					<cfoutput>
-						<label for="#variables.prefix##ftFieldMetadata.Name#" class="fieldsectionlabel #attributes.class#">
-							#oType.getI18Property(property=ftFieldMetadata.name,value='label')# :
-						</label>
-					</cfoutput>
-				</cfsavecontent>
-			</cfif>		
-						
 			<cfif len(LibraryLink) and attributes.IncludeLibraryWrapper>
 				<cfset variables.returnHTML = "<div id='#variables.prefix##ftFieldMetadata.Name#-wrapper' class='formfield-wrapper'>#variables.returnHTML#</div>">
 			</cfif>
 						
 			<cfif NOT len(Attributes.r_stFields)>
 				
-	
-						
-				<cfif Attributes.InTable EQ 1>
-					<cfoutput><tr></cfoutput>
-				<cfelse>
-	
-					<!--- Need to determine if Help Section is going to be included and if so, place class that will determine margin. --->
-					<cfset helpsectionClass = "">
-					<cfif structKeyExists(attributes,"HelpSection") and len(attributes.HelpSection)>
-						<cfset helpSectionClass = "helpsectionmargin">
-					</cfif>	
-								
-					<cfoutput><div class="fieldSection #lcase(ftFieldMetadata.ftType)# #ftFieldMetadata.ftClass# #helpSectionClass#"></cfoutput>
-				</cfif>
+				<grid:div class="ctrlHolder #ftFieldMetadata.ftClass#">
 					
-				
-				<cfif isDefined("Attributes.IncludeLabel") AND attributes.IncludeLabel EQ 1>
-					<cfif Attributes.InTable EQ 1>
-						<cfoutput>
-							<th>
-								#FieldLabelStart#
-							</th>
-						</cfoutput>
+					
+		
+					<cfif structKeyExists(ftFieldMetadata, "ftshowlabel")>
+						<cfset bShowLabel = ftFieldMetadata.ftShowLabel />
 					<cfelse>
-						<cfoutput>#FieldLabelStart#</cfoutput>
+						<cfset bShowLabel = true />
 					</cfif>
-				</cfif>
-				
-				
-				<cfif Attributes.InTable EQ 1>
-					<cfoutput><td></cfoutput>
-				</cfif>
-	
-				
-				<cfoutput>
-				<div class="fieldAlign">						
-					<cfif len(LibraryLink)>
-						#LibraryLink#					
+		
+					<cfif bShowLabel AND isDefined("Attributes.IncludeLabel") AND attributes.IncludeLabel EQ 1>
+						<cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#"><cfif findNoCase("required",ftFieldMetadata.ftValidation)><em>*</em> </cfif>#ftFieldMetadata.ftlabel#</label></cfoutput>
 					</cfif>
 					
-					#variables.returnHTML#
-				</div>
-				</cfoutput>
-				
-				<cfif structKeyExists(ftFieldMetadata,"ftHint") and len(ftFieldMetadata.ftHint)>
-					<cfoutput><div class="fieldAlign"><small>#ftFieldMetadata.ftHint#</small></div></cfoutput>
-				</cfif>
-				
-				<cfif Attributes.InTable EQ 1>
-					<cfoutput></td></tr></cfoutput>
-				<cfelse>
-					<cfoutput>
-						<br class="clearer" />
-						</div>
+					<cfoutput>	
+						<cfif len(LibraryLink)>
+							#LibraryLink#					
+						</cfif>
+						
+						#variables.returnHTML#
 					</cfoutput>
-				</cfif>
+					
+	
+					<cfif attributes.bShowFieldHints AND structKeyExists(ftFieldMetadata,"ftHint") and len(ftFieldMetadata.ftHint)>
+						<cfoutput><p class="formHint">#ftFieldMetadata.ftHint#</p></cfoutput>
+					</cfif>
+					
+				</grid:div>	
 			<cfelse>
 				
 				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].HTML = returnHTML>
-				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].Label = "#FieldLabelStart#">
-				<cfif ftFieldMetadata.Type EQ "array">
+				<cfsavecontent variable="Request.farcryForm.stObjects.#variables.prefix#.MetaData.#ftFieldMetadata.Name#.Label">
+					<cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#"><cfif findNoCase("required",ftFieldMetadata.ftClass)><em>*</em> </cfif>#ftFieldMetadata.ftlabel#</label></cfoutput>
+				</cfsavecontent>
+				<cfif len(LibraryLink)>
 					<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].LibraryLink = "#LibraryLink#">
 				</cfif>
 				
@@ -591,18 +548,10 @@
 <cfif thistag.ExecutionMode EQ "End">
 
 
-	<cfif NOT len(Attributes.r_stFields)>
-		<cfif Attributes.InTable EQ 1>
-			<cfoutput></table></cfoutput>
-		<cfelse>
-			
-		</cfif>
-		
-	</cfif>
-	
 	<cfif attributes.IncludeFieldSet>
 		<cfoutput></fieldset></cfoutput>
 	</cfif>
+	<cfoutput></div></cfoutput>
 	
 	<cfparam name="Request.farcryForm.lFarcryObjectsRendered" default="">
 
