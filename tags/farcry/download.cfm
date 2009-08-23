@@ -79,7 +79,7 @@ accommodate legacy implementations
 <cfif len(attributes.fieldname)>
 	<cfset stLocation = oType.getFileLocation(stObject=stFile,fieldname=attributes.fieldname) />
 <cfelse>
-	<cfset stLocation = application.formtools.file.oFactory.getFileLocation(stObject=stFile) />
+	<cfset stLocation = oType.getFileLocation(stObject=stFile) />
 </cfif>
 
 

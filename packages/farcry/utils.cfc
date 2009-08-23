@@ -44,14 +44,14 @@
 		
 		<!--- COMBINE: Used for CSS and JS --->
 		<cfset variables.oCombine = createObject("component", "farcry.core.packages.farcry.combine.combine").init(
-												enableCache: true,
-												cachePath: application.path.project & '/www/cache',
-												enableETags: false,
-												enableJSMin: true,
-												enableYuiCSS: true,
-												skipMissingFiles: false,
-												javaLoader: createObject("component", "farcry.core.packages.farcry.javaloader.JavaLoader"),
-												jarPath: expandPath('/farcry/core/packages/farcry/combine/lib')
+												enableCache= true,
+												cachePath= expandpath('/farcry/projects/#application.projectdirectoryname#/www/cache'),
+												enableETags= false,
+												enableJSMin= true,
+												enableYuiCSS= true,
+												skipMissingFiles= false,
+												javaLoader= createObject("component", "farcry.core.packages.farcry.javaloader.JavaLoader"),
+												jarPath= expandPath('/farcry/core/packages/farcry/combine/lib')
 								) />
 								
 		<cfreturn this />
