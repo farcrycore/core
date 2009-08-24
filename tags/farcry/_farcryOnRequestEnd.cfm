@@ -64,7 +64,7 @@ $out:$
 <cfif structKeyExists(Request,"inHead") AND len(structKeyList(Request.InHead)) AND NOT request.mode.ajax>		
 
 		<!--- THIS VERSION NUMBER IS USED TO MAKE SURE IF WE EVER REPLACE JAVASCRIPT LIBRARIES, THAT THE USERS CACHE WILL BE FLUSHED --->
-		<cfset farcryJSVersion = "511c" />
+		<cfset farcryJSVersion = "520" />
 
 		<cfparam name="variables.stPlaceInHead" default="#StructNew()#">		
 		
