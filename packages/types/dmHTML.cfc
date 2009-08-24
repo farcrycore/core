@@ -126,7 +126,7 @@ object methods
 
 <cffunction name="getTeaserImageLibraryData" access="public" output="false" returntype="query" hint="Return a query for all images already associated to this object.">
 	<cfargument name="primaryID" type="uuid" required="true" hint="ObjectID of the object that we are attaching to" />
-	<cfargument name="qFilter" type="query" required="true" hint="If a library verity search has been run, this is the qResultset of that search" />
+	<cfargument name="qFilter" type="query" required="false" default="#queryNew('key')#" hint="If a library verity search has been run, this is the qResultset of that search" />
 	
 	<cfset var q = queryNew("blah") />
 		
