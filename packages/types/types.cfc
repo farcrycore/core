@@ -617,11 +617,6 @@ default handlers
 			<cfset stObject = getData(objectid="#arguments.objectid#") />
 		</cfif>
 		
-		<!--- if the properties struct not passed in grab the instance --->
-		<cfif StructIsEmpty(stObject) AND structKeyExists(instance, "stobj")>
-			<cfset stObject = instance.stobj />
-		</cfif>
-		
 		<cfif not StructIsEmpty(stObject)>
 			<!--- We need to get the object from memory to see if it is a default object. If so, we are only saving to the session. --->
 			<cfset stCurrentObject = getData(stObject.objectid) />
@@ -640,7 +635,7 @@ default handlers
 		</cfif>
 
 		<!--- log event --->
-		<cfif arguments.bAudit and isDefined("instance.stobj.objectid")>
+		<cfif arguments.bAudit and structKeyExists(stObject, "objectid")>
 			<farcry:logevent object="#stObject.objectid#" type="types" event="lock" notes="Locked: #yesnoformat(arguments.locked)#" />
 		</cfif>
 	</cffunction>

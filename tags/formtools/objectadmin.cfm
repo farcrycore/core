@@ -209,7 +209,7 @@ user --->
 		<cfif isDefined("form.objectid") and len(form.objectID)>
 			
 			<cfloop list="#form.objectid#" index="i">
-				<cfset o = createObject("component", PrimaryPackagePath) />
+				<cfset o = application.fapi.getContentType(attributes.typename) />
 				<cfset stDeletingObject = o.getData(objectid=i) />
 				<cfset stResult = o.delete(objectid=i) />
 				
@@ -228,9 +228,7 @@ user --->
 		<cfif isDefined("form.objectid") and len(form.objectID)>
 			
 			<cfloop list="#form.objectid#" index="i">
-				<cfset o = createObject("component", PrimaryPackagePath) />
-				<cfset st = o.getData(objectid=i) />
-				<cfset o.setlock(locked="false") />
+				<cfset application.fapi.getContentType(attributes.typename).setlock(objectid="#i#", locked="false") />
 			</cfloop>
 		
 		</cfif>
