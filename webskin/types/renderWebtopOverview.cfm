@@ -77,52 +77,50 @@ START WEBSKIN
 		<li><a href="##tabs-2">Draft</a></li>
 	</ul>
 	<div id="tabs-1">
-		<ft:buttonPanel style="margin:0px;padding:2px;">
+		<grid:div style="float:left;margin-right: 0px;width:200px;">
 			<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="webtopOverviewActionsPrimary" />
-			<!--- <ft:button value="edit" />
-			<ft:button value="delete" />
-			<ft:button value="approve" /> --->
-		</ft:buttonPanel>
+		</grid:div>
+		<grid:div style="float:left;margin-right: 0px;width:200px;">
 		
-		
-		<dl class="dl-style1" style="padding: 10px;font-size:11px;">
-			<dt>Label</dt>
-			<dd>#stobj.label#</dd>
 			
-			<cfif structKeyExists(stobj, "displayMethod")>
-				<dt>Display Method</dt>
-				<dd>#stobj.displayMethod#</dd>
-			</cfif>
-			<cfif structKeyExists(stobj, "teaser")>
-				<dt>Teaser</dt>
-				<dd>#stobj.teaser#</dd>
-			</cfif>
-			<cfif application.fapi.getContentTypeMetadata(typename="#stobj.typename#", md="bFriendly", default="false")>
-				<dt>Friendly URL <a onclick="$fc.openDialogIFrame('Manage Friendly URL\'s for #stobj.label# (#stobj.typename#)', '#application.url.farcry#/manage_friendlyurl.cfm?objectid=#stobj.objectid#')"><span class="ui-icon ui-icon-pencil" style="float:right;">&nbsp;</span></a></dt>
-				<dd>#application.fapi.fixURL(application.fc.factory.farFU.getFU(objectid="#stobj.objectid#", type="#stobj.typename#"))#</dd>
-			</cfif>
-		</dl>
+			<dl class="dl-style1" style="padding: 10px;font-size:11px;">
+				<dt>Label</dt>
+				<dd>#stobj.label#</dd>
+				
+				<cfif structKeyExists(stobj, "displayMethod")>
+					<dt>Display Method</dt>
+					<dd>#stobj.displayMethod#</dd>
+				</cfif>
+				<cfif structKeyExists(stobj, "teaser")>
+					<dt>Teaser</dt>
+					<dd>#stobj.teaser#</dd>
+				</cfif>
+				<cfif application.fapi.getContentTypeMetadata(typename="#stobj.typename#", md="bFriendly", default="false")>
+					<dt>Friendly URL <a onclick="$fc.openDialogIFrame('Manage Friendly URL\'s for #stobj.label# (#stobj.typename#)', '#application.url.farcry#/manage_friendlyurl.cfm?objectid=#stobj.objectid#')"><span class="ui-icon ui-icon-pencil" style="float:right;">&nbsp;</span></a></dt>
+					<dd>#application.fapi.fixURL(application.fc.factory.farFU.getFU(objectid="#stobj.objectid#", type="#stobj.typename#"))#</dd>
+				</cfif>
+			</dl>
+			
+			
+			
+			<ul style="float:left;">
+				<cfif application.security.checkPermission("ModifyPermissions") and listcontains(application.fapi.getPropertyMetadata(typename="farBarnacle", property="referenceid", md="ftJoin", default=""), stObj.typename)>
+					<!--- <ft:button width="240px" style="" type="button" value="Manage Permissions" rbkey="workflow.buttons.managepermissions" onclick="window.location='#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=adminPermissions&ref=#url.ref#';" /> --->
+					<li style="display:block;padding-left:0px;background:none;"><a onclick="$fc.openDialogIFrame('Permissions', '#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=adminPermissions')"><span class="ui-icon ui-icon-newwin" style="float:left;">&nbsp;</span>Permissions</a></li>
+				</cfif>	
+				<li style="display:block;padding-left:0px;background:none;"><a onclick="$fc.openDialog('Statistics', '#application.url.farcry#/edittabStats.cfm?objectid=#stobj.objectid#')"><span class="ui-icon ui-icon-newwin" style="float:left;">&nbsp;</span>Statistics</a></li>
+				<li style="display:block;padding-left:0px;background:none;"><a onclick="$fc.openDialog('Audit', '#application.url.farcry#/edittabAudit.cfm?objectid=#stobj.objectid#')"><span class="ui-icon ui-icon-newwin" style="float:left;">&nbsp;</span>Audit</a></li>
+				<li style="display:block;padding-left:0px;background:none;"><a onclick="$fc.openDialog('Archive', '#application.url.farcry#/archive.cfm?objectid=#stobj.objectid#')"><span class="ui-icon ui-icon-newwin" style="float:left;">&nbsp;</span>Archive</a></li>
+				<li style="display:block;padding-left:0px;background:none;"><a onclick="$fc.openDialog('Comments', '#application.url.farcry#/navajo/commentOnContent.cfm?objectid=#stobj.objectid#')"><span class="ui-icon ui-icon-newwin" style="float:left;">&nbsp;</span>Comments</a></li>
+				<li style="display:block;padding-left:0px;background:none;"><a onclick="$fc.openDialog('Property Dump', '#application.url.farcry#/object_dump.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#')"><span class="ui-icon ui-icon-newwin" style="float:left;">&nbsp;</span>System Properties</a></li>
+			</ul>
+			
+			
+			
+		</grid:div>
 		
-		
-		
-		<ul style="float:left;">
-			<cfif application.security.checkPermission("ModifyPermissions") and listcontains(application.fapi.getPropertyMetadata(typename="farBarnacle", property="referenceid", md="ftJoin", default=""), stObj.typename)>
-				<!--- <ft:button width="240px" style="" type="button" value="Manage Permissions" rbkey="workflow.buttons.managepermissions" onclick="window.location='#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=adminPermissions&ref=#url.ref#';" /> --->
-				<li style="display:block;padding-left:0px;background:none;"><a onclick="$fc.openDialogIFrame('Permissions', '#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=adminPermissions')"><span class="ui-icon ui-icon-newwin" style="float:left;">&nbsp;</span>Permissions</a></li>
-			</cfif>	
-			<li style="display:block;padding-left:0px;background:none;"><a onclick="$fc.openDialog('Statistics', '#application.url.farcry#/edittabStats.cfm?objectid=#stobj.objectid#')"><span class="ui-icon ui-icon-newwin" style="float:left;">&nbsp;</span>Statistics</a></li>
-			<li style="display:block;padding-left:0px;background:none;"><a onclick="$fc.openDialog('Audit', '#application.url.farcry#/edittabAudit.cfm?objectid=#stobj.objectid#')"><span class="ui-icon ui-icon-newwin" style="float:left;">&nbsp;</span>Audit</a></li>
-			<li style="display:block;padding-left:0px;background:none;"><a onclick="$fc.openDialog('Archive', '#application.url.farcry#/archive.cfm?objectid=#stobj.objectid#')"><span class="ui-icon ui-icon-newwin" style="float:left;">&nbsp;</span>Archive</a></li>
-			<li style="display:block;padding-left:0px;background:none;"><a onclick="$fc.openDialog('Comments', '#application.url.farcry#/navajo/commentOnContent.cfm?objectid=#stobj.objectid#')"><span class="ui-icon ui-icon-newwin" style="float:left;">&nbsp;</span>Comments</a></li>
-			<li style="display:block;padding-left:0px;background:none;"><a onclick="$fc.openDialog('Property Dump', '#application.url.farcry#/object_dump.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#')"><span class="ui-icon ui-icon-newwin" style="float:left;">&nbsp;</span>System Properties</a></li>
-		</ul>
-		
-		
-		
+			
 		<br style="clear:both;" />
-		
-		
-		
 		
 	</div>
 	
