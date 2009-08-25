@@ -32,57 +32,98 @@ FARCRY INCLUDE FILES
 <cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">
+<cfimport taglib="/farcry/core/tags/grid/" prefix="grid">
 
 <!------------------ 
 START WEBSKIN
  ------------------>
-<cfif structKeyExists(stobj,"versionID") AND stobj.versionID NEQ "">
-	<!--- IF THIS IS A VERSION OF ANOTHER OBJECT, RUN THIS WEBSKIN WITH THE MAIN VERSION --->
-	<cfset html = getView(objectid="#stobj.versionid#", template="renderWebtopOverview", alternateHTML="") />
-	<cfif len(html)>
-		<cfoutput>#html#</cfoutput>
-	<cfelse>
-		<cfoutput><h1>OBJECT REFERENCES A VERSION THAT DOES NOT EXIST</h1></cfoutput>
-	</cfif>
-<cfelse>
 
-	<!--- grab draft object overview --->
-	<cfset stDraftObject = StructNew()>
-	
-	<cfif structKeyExists(stobj,"versionID") AND structKeyExists(stobj,"status") AND stobj.status EQ "approved">
-		<cfset qDraft = createObject("component", "#application.packagepath#.farcry.versioning").checkIsDraft(objectid=stobj.objectid,type=stobj.typename)>
-		<cfif qDraft.recordcount>
-			<cfset stDraftObject = getData(qDraft.objectid)>
-		</cfif>
-	</cfif>
+
 
 <skin:loadJS id="jquery" />
 <skin:loadJS id="jquery-ui" />
 <skin:loadCSS id="jquery-ui" />
 
 
-<skin:onReady>
-	<cfoutput>
-	$j("##tabs").tabs();
-	
-	
-	</cfoutput>
-</skin:onReady>
-
 <ft:form>
-<cfoutput>
-<div id="tabs" style="width:100%;height:100%;">
-	<ul>
-		<li><a href="##tabs-1">Approved</a></li>
-		<li><a href="##tabs-2">Draft</a></li>
-	</ul>
-	<div id="tabs-1">
+
+
 		<grid:div style="float:left;margin-right: 0px;width:200px;">
 			<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="webtopOverviewActionsPrimary" />
 		</grid:div>
 		<grid:div style="float:left;margin-right: 0px;width:200px;">
-		
 			
+			
+			<!--- WORKFLOW --->
+			<cfset workflowHTML = application.fapi.getContentType("farWorkflow").renderWorkflow(referenceID="#stobj.objectid#", referenceTypename="#stobj.typename#") />
+			<cfoutput>#workflowHTML#</cfoutput>
+			
+			
+			<!--- CONTENT ITEM STATUS --->
+			<cfif structKeyExists(stobj,"status")>
+				<!--- grab draft object overview --->
+				<cfset stDraftObject = StructNew()>
+				
+				<cfif structKeyExists(stobj,"versionID") AND structKeyExists(stobj,"status") AND stobj.status EQ "approved">
+					<cfset qDraft = createObject("component", "#application.packagepath#.farcry.versioning").checkIsDraft(objectid=stobj.objectid,type=stobj.typename)>
+					<cfif qDraft.recordcount>
+						<cfset stDraftObject = application.fapi.getContentObject(typename="#stobj.typename#", objectid="#qDraft.objectid#")>
+					</cfif>
+				</cfif>
+				
+				
+				<cfswitch expression="#stobj.status#">
+				<cfcase value="draft">
+					
+						<grid:div style="border:1px solid black;background-color:##C0FFFF;">
+							<cfoutput>
+								DRAFT: Content Item last updated 4 hours ago.
+								
+								<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
+									(<skin:buildLink	type="#stobj.typename#" 
+														objectid="#stobj.versionID#" 
+														view="renderWebtopOverview"
+														linktext="show approveder" />)
+								</cfif>
+							</cfoutput>
+						</grid:div>
+					
+				</cfcase>
+				<cfcase value="pending">
+					
+						<grid:div style="border:1px solid black;background-color:##FFE0C0;">
+							<cfoutput>
+								PENDING: Content Item awaiting approval for 4 days.
+								
+								<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
+									(<skin:buildLink	type="#stobj.typename#" 
+														objectid="#stobj.versionID#" 
+														view="renderWebtopOverview"
+														linktext="show approved" />)
+								</cfif>
+							</cfoutput>
+						</grid:div>
+				</cfcase>
+				<cfcase value="approved">
+					
+						<grid:div style="border:1px solid black;background-color:##C0FFC0;">
+							<cfoutput>
+								PUBLISHED: Content Item approved 23-jul-2009.
+								
+								<cfif not structIsEmpty(stDraftObject)>
+									(<skin:buildLink	type="#stDraftObject.typename#" 
+														objectid="#stDraftObject.objectid#" 
+														view="renderWebtopOverview"
+														linktext="show draft" />)
+								</cfif>
+							</cfoutput>
+						</grid:div>
+				</cfcase>
+				</cfswitch>
+			
+			</cfif>
+					
+			<cfoutput>
 			<dl class="dl-style1" style="padding: 10px;font-size:11px;">
 				<dt>Label</dt>
 				<dd>#stobj.label#</dd>
@@ -115,21 +156,13 @@ START WEBSKIN
 				<li style="display:block;padding-left:0px;background:none;"><a onclick="$fc.openDialog('Property Dump', '#application.url.farcry#/object_dump.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#')"><span class="ui-icon ui-icon-newwin" style="float:left;">&nbsp;</span>System Properties</a></li>
 			</ul>
 			
-			
+			</cfoutput>
 			
 		</grid:div>
 		
 			
-		<br style="clear:both;" />
-		
-	</div>
-	
-	<div id="tabs-2">
-		
-	</div>
-</div>
+		<cfoutput><br style="clear:both;" /></cfoutput>
 
-</cfoutput>
 </ft:form>
 <!--- 
 	<extjs:layout id="webtopOverviewViewport" container="Viewport" layout="border">
@@ -193,7 +226,7 @@ START WEBSKIN
 		</extjs:item>		
 	</extjs:layout>
  --->
-</cfif>
+<!--- </cfif> --->
 
 
 <cfsetting enablecfoutputonly="false">
