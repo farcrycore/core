@@ -45,13 +45,47 @@ START WEBSKIN
 <skin:loadCSS id="jquery-ui" />
 
 
+
+<skin:loadCSS id="webtopOverview">
+<cfoutput>
+	
+	##webtopOverviewActions button h1,
+	##webtopOverviewActions button h2 {
+		margin:0px;
+	}
+	
+	##webtopOverviewActions button.primary {
+		width:180px;
+		height:100px;
+	}
+	##webtopOverviewActions button.secondary {
+		width:180px;
+		height:50px;
+		margin-top:10px;
+	}
+	.webtopOverviewStatusBox {
+		border:1px solid black;
+		padding:10px;
+		margin-top:5px;
+	}
+	.webtopSummarySection {
+		border-bottom:2px solid ##DFDFDF;
+		padding:0px 5px 5px 5px;
+		margin:10px;
+	}
+	.webtopSummarySection h2 {
+		margin:0px;
+	}
+</cfoutput>
+</skin:loadCSS>
+
 <ft:form>
 
 
-		<grid:div style="float:left;margin-right: 0px;width:200px;">
+		<grid:div id="webtopOverviewActions" style="float:left;margin-right: 0px;width:200px;">
 			<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="webtopOverviewActionsPrimary" />
 		</grid:div>
-		<grid:div style="float:left;margin-right: 0px;width:200px;">
+		<grid:div style="margin-left:220px;margin-right: 0px;">
 			
 			
 			<!--- WORKFLOW --->
@@ -59,31 +93,23 @@ START WEBSKIN
 			<cfoutput>#workflowHTML#</cfoutput>
 			
 			
+			
+			<cfoutput><h1>#uCase(application.fapi.getContentTypeMetadata(stobj.typename,'displayname',stobj.typename))#: #stobj.label#</h1></cfoutput>
+			
+			
 			<!--- CONTENT ITEM STATUS --->
 			<cfif structKeyExists(stobj,"status")>
-				<!--- grab draft object overview --->
-				<cfset stDraftObject = StructNew()>
-				
-				<cfif structKeyExists(stobj,"versionID") AND structKeyExists(stobj,"status") AND stobj.status EQ "approved">
-					<cfset qDraft = createObject("component", "#application.packagepath#.farcry.versioning").checkIsDraft(objectid=stobj.objectid,type=stobj.typename)>
-					<cfif qDraft.recordcount>
-						<cfset stDraftObject = application.fapi.getContentObject(typename="#stobj.typename#", objectid="#qDraft.objectid#")>
-					</cfif>
-				</cfif>
 				
 				
 				<cfswitch expression="#stobj.status#">
 				<cfcase value="draft">
 					
-						<grid:div style="border:1px solid black;background-color:##C0FFFF;">
+						<grid:div class="webtopOverviewStatusBox" style="background-color:##C0FFFF;">
 							<cfoutput>
 								DRAFT: Content Item last updated 4 hours ago.
 								
 								<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
-									(<skin:buildLink	type="#stobj.typename#" 
-														objectid="#stobj.versionID#" 
-														view="renderWebtopOverview"
-														linktext="show approveder" />)
+									(<skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="objectid=#stobj.versionID#" linktext="show approved" />)
 								</cfif>
 							</cfoutput>
 						</grid:div>
@@ -91,72 +117,120 @@ START WEBSKIN
 				</cfcase>
 				<cfcase value="pending">
 					
-						<grid:div style="border:1px solid black;background-color:##FFE0C0;">
+						<grid:div class="webtopOverviewStatusBox" style="background-color:##FFE0C0;">
 							<cfoutput>
 								PENDING: Content Item awaiting approval for 4 days.
 								
 								<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
-									(<skin:buildLink	type="#stobj.typename#" 
-														objectid="#stobj.versionID#" 
-														view="renderWebtopOverview"
-														linktext="show approved" />)
+									(<skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="objectid=#stobj.versionID#" linktext="show approved" />)
 								</cfif>
 							</cfoutput>
 						</grid:div>
 				</cfcase>
 				<cfcase value="approved">
 					
-						<grid:div style="border:1px solid black;background-color:##C0FFC0;">
+						<grid:div class="webtopOverviewStatusBox" style="background-color:##C0FFC0;">
 							<cfoutput>
 								PUBLISHED: Content Item approved 23-jul-2009.
 								
-								<cfif not structIsEmpty(stDraftObject)>
-									(<skin:buildLink	type="#stDraftObject.typename#" 
-														objectid="#stDraftObject.objectid#" 
-														view="renderWebtopOverview"
-														linktext="show draft" />)
-								</cfif>
+								<cfif structKeyExists(stobj,"versionID") AND structKeyExists(stobj,"status") AND stobj.status EQ "approved">
+									<cfset qDraft = createObject("component", "#application.packagepath#.farcry.versioning").checkIsDraft(objectid=stobj.objectid,type=stobj.typename)>
+									<cfif qDraft.recordcount>
+										(<skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="objectid=#qDraft.objectid#" linktext="show draft" />)
+									</cfif>
+								</cfif>	
 							</cfoutput>
 						</grid:div>
 				</cfcase>
 				</cfswitch>
 			
 			</cfif>
-					
-			<cfoutput>
-			<dl class="dl-style1" style="padding: 10px;font-size:11px;">
-				<dt>Label</dt>
-				<dd>#stobj.label#</dd>
+			
+			
+			
+			<!--- FRIENDLY URL --->
+			<cfif application.fapi.getContentTypeMetadata(typename="#stobj.typename#", md="bFriendly", default="false")>
+				<grid:div class="webtopSummarySection">
+					<cfoutput>
+					<h2>FRIENDLY URL</h2>
+					#application.fapi.fixURL(application.fc.factory.farFU.getFU(objectid="#stobj.objectid#", type="#stobj.typename#"))#
+					|
+					<a onclick="$fc.openDialogIFrame('Manage Friendly URL\'s for #stobj.label# (#stobj.typename#)', '#application.url.farcry#/manage_friendlyurl.cfm?objectid=#stobj.objectid#')">
+						Manage
+					</a>
+					</cfoutput>
+				</grid:div>
+			</cfif>
+			
+			
+			
+			<!--- COMMENTS --->
+			<grid:div class="webtopSummarySection">
+				<cfset events = structnew() />
+				<cfset events.comment = "Comment" />
+				<cfset events.toapproved = "Approved" />
+				<cfset events.topending = "Requested approval" />
+				<cfset events.todraft = "Sent to draft" />
+			
+				<cfset qComments = application.fapi.getContentType("farLog").filterLog(objectid=stobj.objectid,event='comment,topending,toapproved,todraft') />
 				
-				<cfif structKeyExists(stobj, "displayMethod")>
-					<dt>Display Method</dt>
-					<dd>#stobj.displayMethod#</dd>
+				<cfif qComments.recordcount>
+					<cfoutput>
+						<h2>COMMENTS</h2>
+						
+						<cfloop query="qComments" startrow="1" endrow="1">
+							<cfset stProfile = application.fapi.getContentType("dmProfile").getProfile(username=qComments.userid) />
+							
+							<div>
+								#dateformat(qComments.datetimecreated,"yyyy-mm-dd")# #timeformat(qComments.datetimecreated,"hh:mm tt")# - #events[qComments.event]#
+					
+								<cfif structkeyexists(stProfile,"lastname") and len(stProfile.lastname)>
+									(#stProfile.firstname# #stProfile.lastname#)
+								<cfelse>
+									(#listfirst(qComments.userid,'_')#)
+								</cfif>
+							</div>
+							
+							<cfif len(qComments.notes)>
+								<div>#qComments.notes#</div>
+							</cfif>
+						</cfloop>
+					
+						
+					</cfoutput>
 				</cfif>
-				<cfif structKeyExists(stobj, "teaser")>
-					<dt>Teaser</dt>
-					<dd>#stobj.teaser#</dd>
-				</cfif>
-				<cfif application.fapi.getContentTypeMetadata(typename="#stobj.typename#", md="bFriendly", default="false")>
-					<dt>Friendly URL <a onclick="$fc.openDialogIFrame('Manage Friendly URL\'s for #stobj.label# (#stobj.typename#)', '#application.url.farcry#/manage_friendlyurl.cfm?objectid=#stobj.objectid#')"><span class="ui-icon ui-icon-pencil" style="float:right;">&nbsp;</span></a></dt>
-					<dd>#application.fapi.fixURL(application.fc.factory.farFU.getFU(objectid="#stobj.objectid#", type="#stobj.typename#"))#</dd>
-				</cfif>
-			</dl>
+				
+				
+				<cfoutput>
+					<div>
+						<a onclick="$fc.openDialog('Comments', '#application.url.farcry#/navajo/commentOnContent.cfm?objectid=#stobj.objectid#')">Add Comment</a>
+						<cfif qComments.recordcount>
+							|
+							<a onclick="$fc.openDialog('Comments', '#application.url.farcry#/navajo/commentOnContent.cfm?objectid=#stobj.objectid#')">All Comments (#qComments.recordcount#)</a>
+						</cfif>
+					</div>
+				</cfoutput>
+			</grid:div>
 			
-			
-			
-			<ul style="float:left;">
-				<cfif application.security.checkPermission("ModifyPermissions") and listcontains(application.fapi.getPropertyMetadata(typename="farBarnacle", property="referenceid", md="ftJoin", default=""), stObj.typename)>
-					<!--- <ft:button width="240px" style="" type="button" value="Manage Permissions" rbkey="workflow.buttons.managepermissions" onclick="window.location='#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=adminPermissions&ref=#url.ref#';" /> --->
-					<li style="display:block;padding-left:0px;background:none;"><a onclick="$fc.openDialogIFrame('Permissions', '#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=adminPermissions')"><span class="ui-icon ui-icon-newwin" style="float:left;">&nbsp;</span>Permissions</a></li>
-				</cfif>	
-				<li style="display:block;padding-left:0px;background:none;"><a onclick="$fc.openDialog('Statistics', '#application.url.farcry#/edittabStats.cfm?objectid=#stobj.objectid#')"><span class="ui-icon ui-icon-newwin" style="float:left;">&nbsp;</span>Statistics</a></li>
-				<li style="display:block;padding-left:0px;background:none;"><a onclick="$fc.openDialog('Audit', '#application.url.farcry#/edittabAudit.cfm?objectid=#stobj.objectid#')"><span class="ui-icon ui-icon-newwin" style="float:left;">&nbsp;</span>Audit</a></li>
-				<li style="display:block;padding-left:0px;background:none;"><a onclick="$fc.openDialog('Archive', '#application.url.farcry#/archive.cfm?objectid=#stobj.objectid#')"><span class="ui-icon ui-icon-newwin" style="float:left;">&nbsp;</span>Archive</a></li>
-				<li style="display:block;padding-left:0px;background:none;"><a onclick="$fc.openDialog('Comments', '#application.url.farcry#/navajo/commentOnContent.cfm?objectid=#stobj.objectid#')"><span class="ui-icon ui-icon-newwin" style="float:left;">&nbsp;</span>Comments</a></li>
-				<li style="display:block;padding-left:0px;background:none;"><a onclick="$fc.openDialog('Property Dump', '#application.url.farcry#/object_dump.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#')"><span class="ui-icon ui-icon-newwin" style="float:left;">&nbsp;</span>System Properties</a></li>
-			</ul>
-			
-			</cfoutput>
+			<grid:div class="webtopSummarySection">
+				<cfoutput>
+				CREATED: #application.thisCalendar.i18nDateTimeFormat(stobj.datetimecreated,session.dmProfile.locale,application.mediumF)#<br />
+				
+				LAST UPDATED: #application.thisCalendar.i18nDateTimeFormat(stobj.datetimelastupdated,session.dmProfile.locale,application.mediumF)#
+				(
+					<a onclick="$fc.openDialog('Audit', '#application.url.farcry#/edittabAudit.cfm?objectid=#stobj.objectid#')">Audit Trail</a>
+					|
+					<a onclick="$fc.openDialog('Archive', '#application.url.farcry#/archive.cfm?objectid=#stobj.objectid#')">Rollback</a>
+				)
+				<br />
+				
+				OBJECTID: #stobj.objectid#
+				<br />
+				
+				<a onclick="$fc.openDialog('Property Dump', '#application.url.farcry#/object_dump.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#')">Show All Properties</a>
+
+				</cfoutput>
+			</grid:div>
 			
 		</grid:div>
 		
