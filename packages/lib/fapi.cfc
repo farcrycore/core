@@ -438,7 +438,7 @@
 			<cfargument name="permission" required="true"><!--- Approve,CanApproveOwnContent,ContainerManagement,Create,delete,edit RequestApproval,SendToTrash,view --->
 			<cfargument name="role" required="false" default="" hint="Defaults to the currently logged in users assigned roles" />
 			
-			<cfreturn application.security.checkPermission(objectid=arguments.objectid, permission=arguments.permission, role=arguments.role) />
+			<cfreturn application.security.checkPermission(object=arguments.objectid, permission=arguments.permission, role=arguments.role) />
 		</cffunction>
 	
 		<!--- Current user queries --->
