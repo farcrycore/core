@@ -101,18 +101,20 @@ START WEBSKIN
 			<cfif application.fapi.getContentTypeMetadata(stobj.typename, "bUseInTree", false)>		
 				<nj:getNavigation objectId="#stobj.objectid#" r_objectID="parentID" bInclusive="1">
 				
-				<cfif stobj.typename EQ "dmNavigation">
-					<cfset qAncestors = application.factory.oTree.getAncestors(objectid=parentID,bIncludeSelf=false) />
-				<cfelse>
-					<cfset qAncestors = application.factory.oTree.getAncestors(objectid=parentID,bIncludeSelf=true) />
-				</cfif>
-				
-				<cfif qAncestors.recordCount>
-					<cfloop query="qAncestors">
-						<skin:buildLink href="#application.url.webtop#/editTabOverview.cfm" urlParameters="objectID=#qAncestors.objectid#" linktext="#qAncestors.objectName#" />
-						<cfoutput>&nbsp;&raquo;&nbsp;</cfoutput>
-					</cfloop>
-					<cfoutput>#stobj.label#</cfoutput>
+				<cfif len(parentID)>
+					<cfif stobj.typename EQ "dmNavigation">
+						<cfset qAncestors = application.factory.oTree.getAncestors(objectid=parentID,bIncludeSelf=false) />
+					<cfelse>
+						<cfset qAncestors = application.factory.oTree.getAncestors(objectid=parentID,bIncludeSelf=true) />
+					</cfif>
+					
+					<cfif qAncestors.recordCount>
+						<cfloop query="qAncestors">
+							<skin:buildLink href="#application.url.webtop#/editTabOverview.cfm" urlParameters="objectID=#qAncestors.objectid#" linktext="#qAncestors.objectName#" />
+							<cfoutput>&nbsp;&raquo;&nbsp;</cfoutput>
+						</cfloop>
+						<cfoutput>#stobj.label#</cfoutput>
+					</cfif>
 				</cfif>
 			</cfif>	
 			<!--- CONTENT ITEM STATUS --->

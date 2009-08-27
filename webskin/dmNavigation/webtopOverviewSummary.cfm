@@ -16,11 +16,7 @@
 	<nj:updateTree objectId="#parentID#">
 		
 	<cfif structKeyExists(form, "selectedObjectID")>
-		<cfoutput>
-			<script type="text/javascript">
-				parent['content'].location.href = '#application.url.webtop#/edittabOverview.cfm?objectid=#form.selectedObjectID#';
-			</script>
-		</cfoutput>		
+		<skin:location url="#application.url.webtop#/edittabOverview.cfm?objectid=#form.selectedObjectID#" />
 	</cfif>
 </ft:processForm>
 
