@@ -186,6 +186,35 @@ START WEBSKIN
 			
 			
 			
+			<!--- CATEGORISATION --->
+			<cfset lCatProps = "" />
+			<cfset lCats = "" />
+			
+			<cfloop list="#structKeyList(application.stcoapi[stobj.typename].stProps)#" index="iProp">
+				<cfif application.fapi.getPropertyMetadata(stobj.typename, iProp, "ftType", "") EQ "category">
+					<cfset lCatProps = listAppend(lCatProps, iProp) />
+				</cfif>
+			</cfloop>
+			
+			<cfif listLen(lCatProps)>
+				<grid:div class="webtopSummarySection">
+					<cfoutput>
+					<h2>CATEGORISATION</h2>
+					<cfloop list="#lCatProps#" index="iProp">
+						<div>
+							<strong>#application.fapi.getPropertyMetadata(stobj.typename, iProp, "ftLabel", iProp)#:</strong>
+							<cfif listLen(stobj[iProp])>
+								<cfloop list="#stobj[iProp]#" index="catid">		
+									<cfset lCats = listAppend(lCats,application.factory.oCategory.getCategoryNameByID(catid)) />
+								</cfloop>
+							</cfif>
+							#lCats#
+						</div>
+					</cfloop>
+					</cfoutput>
+				</grid:div>
+			</cfif>
+			
 			<!--- COMMENTS --->
 			<grid:div class="webtopSummarySection">
 				<cfoutput><h2>COMMENTS</h2></cfoutput>
