@@ -33,9 +33,10 @@
 
 </cfif>
 
-<nj:getNavigation objectid="#objectID#" r_stObject="stNav" bInclusive="1">
-<cfif StructKeyExists(application.types[stObj.typename],"bUseInTree") AND application.types[stObj.typename].bUseInTree>
-	<cfif StructIsEmpty(stNav)>
+
+<cfif application.fapi.getContentTypeMetadata(stobj.typename, "bUseInTree", false)>	
+	<nj:getNavigation objectid="#objectID#" r_objectID="parentID" bInclusive="1">	
+	<cfif len(parentID)>
 		<cfset iCanCommentOnContent = application.security.checkPermission(object=objectID,permission='view')>
 	<cfelse>
 		<cfset permsissionSet = "news">
