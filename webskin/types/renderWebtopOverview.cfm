@@ -70,33 +70,51 @@ START WEBSKIN
 	}
 	.webtopSummarySection {
 		border-bottom:2px solid ##DFDFDF;
-		padding:0px 5px 5px 5px;
-		margin:10px;
+		padding:0px 5px 15px 5px;
+		margin:10px 0px 10px 0px;
 	}
 	.webtopSummarySection h2 {
-		margin:0px;
+		margin:10px 0px 0px 0px;
+		font-weight:bold;
 	}
 </cfoutput>
 </skin:loadCSS>
 
 <ft:form>
 
+			<grid:div style="float:right;padding:10px;">
+				<admin:icon icon="#application.stCOAPI[stobj.typename].icon#" usecustom="true" />
+			</grid:div>
 
-		<grid:div id="webtopOverviewActions" style="float:left;margin-right: 0px;width:200px;">
+		<grid:div id="webtopOverviewActions" style="float:left;margin-right: 0px;width:190px;">
 			<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="webtopOverviewActionsPrimary" />
 		</grid:div>
-		<grid:div style="margin-left:220px;margin-right: 0px;">
+		<grid:div style="margin-left:200px;margin-right: 70px;">
 			
 			
 			<!--- WORKFLOW --->
 			<cfset workflowHTML = application.fapi.getContentType("farWorkflow").renderWorkflow(referenceID="#stobj.objectid#", referenceTypename="#stobj.typename#") />
 			<cfoutput>#workflowHTML#</cfoutput>
 			
-			
-			
 			<cfoutput><h1>#uCase(application.fapi.getContentTypeMetadata(stobj.typename,'displayname',stobj.typename))#: #stobj.label#</h1></cfoutput>
-			
-			
+
+			<cfif application.fapi.getContentTypeMetadata(stobj.typename, "bUseInTree", false)>		
+				<nj:getNavigation objectId="#stobj.objectid#" r_objectID="parentID" bInclusive="1">
+				
+				<cfif stobj.typename EQ "dmNavigation">
+					<cfset qAncestors = application.factory.oTree.getAncestors(objectid=parentID,bIncludeSelf=false) />
+				<cfelse>
+					<cfset qAncestors = application.factory.oTree.getAncestors(objectid=parentID,bIncludeSelf=true) />
+				</cfif>
+				
+				<cfif qAncestors.recordCount>
+					<cfloop query="qAncestors">
+						<skin:buildLink href="#application.url.webtop#/editTabOverview.cfm" urlParameters="objectID=#qAncestors.objectid#" linktext="#qAncestors.objectName#" />
+						<cfoutput>&nbsp;&raquo;&nbsp;</cfoutput>
+					</cfloop>
+					<cfoutput>#stobj.label#</cfoutput>
+				</cfif>
+			</cfif>	
 			<!--- CONTENT ITEM STATUS --->
 			<cfif structKeyExists(stobj,"status")>
 				
@@ -109,7 +127,7 @@ START WEBSKIN
 								DRAFT: Content Item last updated 4 hours ago.
 								
 								<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
-									(<skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="objectid=#stobj.versionID#" linktext="show approved" />)
+									(<skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="versionID=#stobj.versionID#" linktext="show approved" />)
 								</cfif>
 							</cfoutput>
 						</grid:div>
@@ -122,7 +140,7 @@ START WEBSKIN
 								PENDING: Content Item awaiting approval for 4 days.
 								
 								<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
-									(<skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="objectid=#stobj.versionID#" linktext="show approved" />)
+									(<skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="versionID=#stobj.versionID#" linktext="show approved" />)
 								</cfif>
 							</cfoutput>
 						</grid:div>
@@ -136,7 +154,7 @@ START WEBSKIN
 								<cfif structKeyExists(stobj,"versionID") AND structKeyExists(stobj,"status") AND stobj.status EQ "approved">
 									<cfset qDraft = createObject("component", "#application.packagepath#.farcry.versioning").checkIsDraft(objectid=stobj.objectid,type=stobj.typename)>
 									<cfif qDraft.recordcount>
-										(<skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="objectid=#qDraft.objectid#" linktext="show draft" />)
+										(<skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="versionID=#qDraft.objectid#" linktext="show draft" />)
 									</cfif>
 								</cfif>	
 							</cfoutput>
@@ -146,7 +164,9 @@ START WEBSKIN
 			
 			</cfif>
 			
-			
+			<grid:div class="webtopSummarySection">
+				<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="webtopOverviewSummary" />
+			</grid:div>
 			
 			<!--- FRIENDLY URL --->
 			<cfif application.fapi.getContentTypeMetadata(typename="#stobj.typename#", md="bFriendly", default="false")>
@@ -166,6 +186,8 @@ START WEBSKIN
 			
 			<!--- COMMENTS --->
 			<grid:div class="webtopSummarySection">
+				<cfoutput><h2>COMMENTS</h2></cfoutput>
+				
 				<cfset events = structnew() />
 				<cfset events.comment = "Comment" />
 				<cfset events.toapproved = "Approved" />
@@ -176,8 +198,6 @@ START WEBSKIN
 				
 				<cfif qComments.recordcount>
 					<cfoutput>
-						<h2>COMMENTS</h2>
-						
 						<cfloop query="qComments" startrow="1" endrow="1">
 							<cfset stProfile = application.fapi.getContentType("dmProfile").getProfile(username=qComments.userid) />
 							
@@ -214,6 +234,7 @@ START WEBSKIN
 			
 			<grid:div class="webtopSummarySection">
 				<cfoutput>
+				<h2>SYSTEM INFORMATION</h2>
 				CREATED: #application.thisCalendar.i18nDateTimeFormat(stobj.datetimecreated,session.dmProfile.locale,application.mediumF)#<br />
 				
 				LAST UPDATED: #application.thisCalendar.i18nDateTimeFormat(stobj.datetimelastupdated,session.dmProfile.locale,application.mediumF)#

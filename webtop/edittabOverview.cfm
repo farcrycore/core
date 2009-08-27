@@ -32,47 +32,42 @@ $DEVELOPER: Mat Bryant (mbryant@daemon.com.au)$
 
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
-<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
-<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
-<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 
-<cfset q4 = createObject("component","farcry.core.packages.fourq.fourq")>
-<cfset typename = q4.findType(url.objectid)>
-<cfset o = createObject("component",application.types['#typename#'].typepath)>
-<cfset stObject = o.getData(objectid)>
+<!--- 
+DETERMINE THE VERSION OF THE OBJECT TO RENDER.
+If an objectid is passed then attempt to render its draft as the overview.
+If a versionid is passed then that is the one we wish to render as the overview.
+ --->
+<cfif structKeyExists(url, "versionID")>
+	<cfset variables.overviewID = url.versionID />
+<cfelseif structKeyExists(url, "objectID")>
 
-<!--- <cflocation url="http://agora.local/scratch/checkWebtopHTML.cfm"> --->
- <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#" />
-<!--- <cfoutput>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-            "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title>Edit Tab Overview</title>
-	<!-- Source File -->
-	<link rel="stylesheet" type="text/css" href="#application.url.farcry#/css/yui/reset-fonts.css">
-
-	<link rel="stylesheet" type="text/css" href="#application.url.farcry#/css/webtopOverview.css">
+	<!--- Default to the objectid --->
+	<cfset variables.overviewID = url.objectID />
 	
-	<script language="JavaScript" type="text/javascript" src="#application.url.farcry#/js/webtopOverview.cfm"></script>
-	
-</head>
-<body>
-</cfoutput> --->
+	<!--- Try and find a version of this object --->
+	<cfset variables.stObject = application.fapi.getContentObject(url.objectID) />
+	<cfif structKeyExists(variables.stObject,"versionID") AND structKeyExists(variables.stObject,"status") AND variables.stObject.status EQ "approved">
+		<cfset variables.qDraft = createObject("component", "#application.packagepath#.farcry.versioning").checkIsDraft(objectid=variables.stObject.objectid,type=variables.stObject.typename)>
+		<cfif variables.qDraft.recordcount>		
+			<cfset variables.overviewID = variables.qDraft.objectID />
+		</cfif>
+	</cfif>	
+<cfelse>
+	<cfthrow message="overview: You must pass an objectid or versionid" />
+</cfif>
 
+
+<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#" />
 
 
 <sec:CheckPermission error="true" permission="ObjectOverviewTab">
-	<skin:view objectid="#url.objectid#" webskin="renderWebtopOverview" />
+	<skin:view objectid="#variables.overviewID#" webskin="renderWebtopOverview" />
 </sec:CheckPermission>
 
 <!--- setup footer --->
 <admin:footer>
-<!--- <cfoutput>
-</body>
-</html>
-</cfoutput> --->
+
 <cfsetting enablecfoutputonly="false" />

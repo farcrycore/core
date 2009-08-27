@@ -131,37 +131,13 @@ $out:$
 		
 		<cflock scope="Application"  type="EXCLUSIVE" timeout="1" throwontimeout="Yes">
 			<cfscript>
-				if (application.fc.factory.farFU.isUsingFU())
-				{
-					//first delete all old fu's
-					fuUrl = application.fc.factory.farFU.getFU(objectid=srcObj.objectid);
-					application.fc.factory.farFU.deleteFu(fuUrl);
-					//now the descendants if they exist
-					for (i=1;i LTE qGetDescendants.recordcount;i=i+1)
-					{
-						fuUrl = application.fc.factory.farFU.getFU(objectid=qGetDescendants.objectid[i]);
-						application.fc.factory.farFU.deleteFu(fuUrl);
-					}
-				}
 				
 				application.factory.oTree.moveBranch(dsn=application.dsn,objectID=URL.srcObjectID,parentID=URL.destObjectID);
 				
-				if (application.fc.factory.farFU.isUsingFU())
-				{		
-					//now create the new fu branch	
-	
-					fuAlias = application.fc.factory.farFU.createFUAlias(srcObj.objectid);
-					application.fc.factory.farFU.setFU(objectid=srcObj.objectid,alias=fuAlias);
-	
-					for (i=1;i LTE qGetDescendants.recordcount;i=i+1)
-					{
-						fuAlias = application.fc.factory.farFU.createFUAlias(objectid=qGetDescendants.objectid[i]);
-						application.fc.factory.farFU.setFu(objectid=qGetDescendants.objectid[i],alias=fuAlias);
-					}
-	
-				}	
 				//updatetree(objectid=srcParentObjectID);
 			</cfscript>	
+			
+			<cfset application.fapi.setData(typename)>
 		</cflock>
 			 <cfcatch>
 			 	<cfdump var="#cfcatch#">

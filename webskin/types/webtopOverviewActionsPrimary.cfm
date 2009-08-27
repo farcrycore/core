@@ -203,10 +203,11 @@ START WEBSKIN
 						<cfset buttonValue = application.rb.getResource("sendBackToDraft") />
 						<cfif structKeyExists(stobj,"versionID") AND bHasDraft>
 							<ft:button 	value="Send this content item back to draft (deleting the draft version)" 
-										text="<h2>UNPUBLISH</h2>Send To Draft. This will delete the currently underlying draft version."
+										text="<h2>UNPUBLISH</h2>Send To Draft."
 										class="secondary"
 										rbkey="workflow.buttons.sendbacktodraftdeletedraft" 
-										url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=draft&typename=#stobj.typeName#&ref=#url.ref#" />
+										url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=draft&typename=#stobj.typeName#&ref=#url.ref#"
+										confirmText="This will delete the currently underlying draft version. Are you sure you wish to continue?" />
 						<cfelse>
 							<ft:button 	value="Send this content item back to draft" 
 										text="<h2>UNPUBLISH</h2>Send To Draft"
@@ -273,7 +274,7 @@ START WEBSKIN
 												text="<h2>TRASH</h2>Send to trash."
 												class="secondary"   
 												rbkey="workflow.buttons.sendtotrash" 
-												url="navajo/move.cfm?srcObjectId=#stobj.objectId#&destobjId=#application.navid.rubbish#&ref=#url.ref#" 
+												url="navajo/move.cfm?srcObjectId=#stobj.objectId#&destobjectId=#application.navid.rubbish#&ref=#url.ref#" 
 												confirmText="Are you sure you wish to trash this item?" />
 								</cfif>
 							</cfif>
@@ -316,7 +317,7 @@ START WEBSKIN
 										text="<h2>TRASH</h2>Send to trash."
 										class="secondary"   
 										rbkey="workflow.buttons.sendtotrash" 
-										url="navajo/move.cfm?srcObjectId=#stobj.objectId#&destobjId=#application.navid.rubbish#&ref=#url.ref#" 
+										url="navajo/move.cfm?srcObjectId=#stobj.objectId#&destobjectId=#application.navid.rubbish#&ref=#url.ref#" 
 										confirmText="Are you sure you wish to trash this item?" />
 						</cfif>
 					</cfif>
@@ -339,7 +340,7 @@ START WEBSKIN
 							text="<h2>TRASH</h2>Send to trash."
 							class="secondary"   
 							rbkey="workflow.buttons.sendtotrash" 
-							url="navajo/move.cfm?srcObjectId=#stobj.objectId#&destobjId=#application.navid.rubbish#&ref=#url.ref#" 
+							url="navajo/move.cfm?srcObjectId=#stobj.objectId#&destobjectId=#application.navid.rubbish#&ref=#url.ref#" 
 							confirmText="Are you sure you wish to trash this item?" />
 			</cfif>
 		</cfif>
@@ -353,49 +354,14 @@ START WEBSKIN
 		<!--- create child objects for dmNavigation --->
 		<cfif stobj.typename EQ  "dmNavigation">
 	
-	
-	
 			<cfif application.security.checkPermission("ModifyPermissions") and listcontains(application.fapi.getPropertyMetadata(typename="farBarnacle", property="referenceid", md="ftJoin", default=""), stObj.typename)>
 				<ft:button 	value="Modify Permissions" 
-							text="<h2>MODIFY PERMISSIONS</h2>Modfiy access to this area of the website"
+							text="<h2>MODIFY PERMISSIONS</h2>User access"
 							class="secondary"  
 							type="button" 
 							style="width:180px;"
 							onClick="$fc.openDialogIFrame('Permissions', '#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=adminPermissions');" />
-			</cfif>		
-		
-			<cfif StructKeyExists(stOverviewParams.stPermissions,"iCreate") and stOverviewParams.stPermissions.iCreate eq 1>
-				<cfset objType = CreateObject("component","#Application.types[stobj.typename].typepath#")>
-				<cfset lPreferredTypeSeq = "dmNavigation,dmHTML"> <!--- this list will determine preffered order of objects in create menu - maybe this should be configurable. --->
-				<!--- <cfset aTypesUseInTree = objType.buildTreeCreateTypes(lPreferredTypeSeq)> --->
-				<cfset lAllTypes = structKeyList(application.types)>
-				<!--- remove preffered types from *all* list --->
-				<cfset aPreferredTypeSeq = listToArray(lPreferredTypeSeq)>
-				<cfloop index="i" from="1" to="#arrayLen(aPreferredTypeSeq)#">
-					<cfset lAlltypes = listDeleteAt(lAllTypes,listFindNoCase(lAllTypes,aPreferredTypeSeq[i]))>
-				</cfloop>
-				<cfset lAlltypes = ListAppend(lPreferredTypeSeq,lAlltypes)>
-				<cfset aTypesUseInTree = objType.buildTreeCreateTypes(lAllTypes)>
-				<cfif ArrayLen(aTypesUseInTree)>
-					<cfoutput>
-					<select id="createContent" name="createContent" style="width:180px;margin-top:10px;">
-						<option value="">Create Content</option>
-						<cfloop index="i" from="1" to="#ArrayLen(aTypesUseInTree)#">
-							<option value="#aTypesUseInTree[i].typename#">Create #aTypesUseInTree[i].description#</option>
-							<!--- <ft:button value="Create #aTypesUseInTree[i].description#" rbkey="coapi.#aTypesUseInTree[i].typename#.buttons.createtype" url="#application.url.farcry#/conjuror/evocation.cfm?parenttype=dmNavigation&objectId=#stobj.objectid#&typename=#aTypesUseInTree[i].typename#&ref=#url.ref#" /> --->
-						</cfloop>
-					</select>
-					</cfoutput>	
-					
-					<skin:onReady>
-						<cfoutput>
-						$j('##createContent').change(function() {
-							location = '#application.url.farcry#/conjuror/evocation.cfm?parenttype=dmNavigation&objectId=#stobj.objectid#&typename=' + $j('##createContent').val() + '&ref=#url.ref#';
-						});
-						</cfoutput>
-					</skin:onReady>
-				</cfif>
-			</cfif>
+			</cfif>	
 		</cfif>	
 
 
