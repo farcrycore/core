@@ -102,30 +102,33 @@
 		<cfset var result = "" />
 		
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
-		<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 		
 		<cfparam name="arguments.stMetadata.ftWatch" default="" /><!--- Set this value to a list of property names. Formtool will attempt to update with the ajax function when those properties change. --->
 		<cfparam name="arguments.stMetadata.ftLoaderHTML" default="Loading..." /><!--- The HTML displayed in the field while the new UI is being ajaxed in --->
 		
 		<cfif len(arguments.stMetadata.ftWatch)>
 			
-			<skin:htmlHead library="extCoreJS" />
+			<skin:htmlHead library="jqueryjs" />
 			
 			<cfsavecontent variable="result">
-				<extjs:onReady><cfoutput>
-					<cfloop list="#arguments.stMetadata.ftWatch#" index="thisprop">
-						addWatch("#prefix#","#thisprop#",{ 
-							prefix:'#prefix#',
-							objectid:'#arguments.stObject.objectid#', 
-							fieldname:'#arguments.fieldname#',
-							ftLoaderHTML:'#jsstringformat(arguments.stMetadata.ftLoaderHTML)#',
-							typename:'#arguments.typename#',
-							property:'#arguments.stMetadata.name#',
-							formtool:'#arguments.stMetadata.ftType#',
-							watchedproperty:'#thisprop#'
+				<skin:htmlHead><cfoutput>
+					<script type="text/javascript">
+						jQ(function(){
+							<cfloop list="#arguments.stMetadata.ftWatch#" index="thisprop">
+							addWatch("#prefix#","#thisprop#",{ 
+								prefix:'#prefix#',
+								objectid:'#arguments.stObject.objectid#', 
+								fieldname:'#arguments.fieldname#',
+								ftLoaderHTML:'#jsstringformat(arguments.stMetadata.ftLoaderHTML)#',
+								typename:'#arguments.typename#',
+								property:'#arguments.stMetadata.name#',
+								formtool:'#arguments.stMetadata.ftType#',
+								watchedproperty:'#thisprop#'
+							});
+							</cfloop>
 						});
-					</cfloop>
-				</cfoutput></extjs:onReady>
+					</script>
+				</cfoutput></skin:htmlHead>
 			
 				<cfoutput><div id='#arguments.fieldname#ajaxdiv'>#arguments.html#</div></cfoutput>
 			</cfsavecontent>
