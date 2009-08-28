@@ -94,21 +94,21 @@
 		
 		// for each watcher
 		for (var i=0; i<watchedfields[event.data.prefix][event.data.property].length; i++) {
-			var watcher = watchedfields[event.data.prefix][event.data.property][i];
-			
-			// post the AJAX request
-			jQ("##"+watcher.prefix+watcher.property+"ajaxdiv").html(watcher.ftLoaderHTML).load('#application.url.farcry#/facade/ftajax.cfm?formtool='+watcher.formtool+'&typename='+watcher.typename+'&fieldname='+watcher.fieldname+'&property='+watcher.property+'&objectid='+watcher.objectid,
-				values,
-				function(response){
-					document.getElementById(watcher.fieldname+"ajaxdiv").update(response.responseText);
-					
-					// if the updated field is also being watched, reattach the events
-					if (watchedfields[event.data.prefix] && watchedfields[event.data.prefix][event.data.property] && watchedfields[event.data.prefix][event.data.property].length){
-						jQ("select[name="+event.data.prefix+event.data.property+"], input[name="+event.data.prefix+event.data.property+"][type=text], input[name="+event.data.prefix+event.data.property+"][type=password]").bind("change",{ prefix: event.data.prefix, property: event.data.property },ajaxUpdate);
-						jQ("input[name="+event.data.prefix+event.data.property+"][type=checkbox], input[name="+event.data.prefix+event.data.property+"][type=radio]").bind("click",{ prefix: event.data.prefix, property: event.data.property },ajaxUpdate);
+			(function(watcher){
+				// post the AJAX request
+				jQ("##"+watcher.prefix+watcher.property+"ajaxdiv").html(watcher.ftLoaderHTML).load('#application.url.farcry#/facade/ftajax.cfm?formtool='+watcher.formtool+'&typename='+watcher.typename+'&fieldname='+watcher.fieldname+'&property='+watcher.property+'&objectid='+watcher.objectid,
+					values,
+					function(response){
+						jQ("##"+watcher.fieldname+"ajaxdiv").html(response.responseText);
+						
+						// if the updated field is also being watched, reattach the events
+						if (watchedfields[watcher.prefix] && watchedfields[watcher.prefix][watcher.property] && watchedfields[watcher.prefix][watcher.property].length){
+							jQ("select[name="+watcher.prefix+watcher.property+"], input[name="+watcher.prefix+event.data.property+"][type=text], input[name="+watcher.prefix+watcher.property+"][type=password]").bind("change",{ prefix: watcher.prefix, property: watcher.property },ajaxUpdate);
+							jQ("input[name="+watcher.prefix+watcher.property+"][type=checkbox], input[name="+watcher.prefix+watcher.property+"][type=radio]").bind("click",{ prefix: watcher.prefix, property: watcher.property },ajaxUpdate);
+						}
 					}
-				}
-			);
+				);
+			})(watchedfields[event.data.prefix][event.data.property][i]);
 		}
 	};
 				
