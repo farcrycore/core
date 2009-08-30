@@ -267,16 +267,6 @@ START WEBSKIN
 												url="navajo/delete.cfm?ObjectId=#stobj.objectId#&#returnto#&ref=#url.ref#" 
 												confirmText="Are you sure you wish to delete this content item?" />
 								</cfif>
-										
-								<!--- check user can move to trash and is a navigation obj--->
-								<cfif stOverviewParams.stPermissions.iTreeSendToTrash eq 1 and stobj.typeName eq "dmNavigation">
-									<ft:button 	value="Send to trash" 
-												text="<h2>TRASH</h2>Send to trash."
-												class="secondary"   
-												rbkey="workflow.buttons.sendtotrash" 
-												url="navajo/move.cfm?srcObjectId=#stobj.objectId#&destobjectId=#application.navid.rubbish#&ref=#url.ref#" 
-												confirmText="Are you sure you wish to trash this item?" />
-								</cfif>
 							</cfif>
 					</cfif>
 				</cfcase>
@@ -310,16 +300,6 @@ START WEBSKIN
 										url="navajo/delete.cfm?ObjectId=#stobj.objectId#&typename=#stobj.typeName#&ref=#url.ref#" 
 										confirmText="Are you sure you wish to delete this content item?" />
 						</cfif>
-						
-						<!--- check user can move to trash and is dmNavigation type--->
-						<cfif stOverviewParams.stPermissions.iTreeSendToTrash eq 1 and stobj.typeName eq "dmNavigation">
-							<ft:button 	value="Send to trash" 
-										text="<h2>TRASH</h2>Send to trash."
-										class="secondary"   
-										rbkey="workflow.buttons.sendtotrash" 
-										url="navajo/move.cfm?srcObjectId=#stobj.objectId#&destobjectId=#application.navid.rubbish#&ref=#url.ref#" 
-										confirmText="Are you sure you wish to trash this item?" />
-						</cfif>
 					</cfif>
 				</cfcase>
 			</cfswitch>
@@ -333,15 +313,6 @@ START WEBSKIN
 							rbkey="workflow.buttons.delete" 
 							url="navajo/delete.cfm?ObjectId=#stobj.objectId#&typename=#stobj.typeName#&ref=#url.ref#" 
 							confirmText="Are you sure you wish to delete this content item?" />
-			</cfif>
-			<!--- check user can move to trash and is dmNavigation type--->
-			<cfif stOverviewParams.stPermissions.iTreeSendToTrash eq 1 and stobj.typeName eq "dmNavigation">
-				<ft:button 	value="Send to trash" 
-							text="<h2>TRASH</h2>Send to trash."
-							class="secondary"   
-							rbkey="workflow.buttons.sendtotrash" 
-							url="navajo/move.cfm?srcObjectId=#stobj.objectId#&destobjectId=#application.navid.rubbish#&ref=#url.ref#" 
-							confirmText="Are you sure you wish to trash this item?" />
 			</cfif>
 		</cfif>
 <!--- 

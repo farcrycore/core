@@ -19,14 +19,15 @@
 	<cfif stobj.locked>
 		<dt>Locked:</dt>
 		<dd>
+			<cfset tDT=application.thisCalendar.i18nDateTimeFormat(stobj.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)>
 			<span style='color:red'>#application.rb.formatRBString("workflow.labels.lockedwhen@label",tDT,"Locked ({1})")#</span>
 			
 			<cfset subS=listToArray('#application.thisCalendar.i18nDateFormat(stobj.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)#,#stobj.lockedby#')>
 			#application.rb.formatRBString('workflow.labels.lockedby@label',subS,'<span style=\"color:red\">Locked ({1})</span> by {2}')#
 			
-			<cfif application.fapi.getCurrentUsersProfile().userID EQ stobj.lockedby OR iDeveloperPermission>
+			<!--- <cfif application.fapi.getCurrentUsersProfile().userID EQ stobj.lockedby OR iDeveloperPermission>
 				<a href='#application.url.webtop#/navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#' onclick='alert("TODO: Unlocking");return false;'>[#application.rb.getResource("workflow.buttons.unlock@label","Unlock")#]</a>
-			</cfif>
+			</cfif> --->
 			
 		</dd>
 	</cfif>
