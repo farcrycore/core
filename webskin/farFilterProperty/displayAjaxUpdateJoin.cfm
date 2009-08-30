@@ -20,71 +20,69 @@
 
 	<!--- RETRIEVE IT AGAIN...JUST IN CASE THE AJAX CALL WAS RUN HALF WAY THROUGH A PREVIOUS COMMIT. --->
 	<cfset stToUpdate = application.fapi.getContentObject(typename="#stobj.typename#",objectid="#stobj.objectid#") />
-
 	
+
 
 	<cfparam name="url.property" type="string" />
 	
+	<cfset stFilter = application.fapi.getContentObject(objectid="#stToUpdate.filterID#", typename="farFilter") />
+	<cfset stMetadata = application.fapi.getPropertyMetadata(typename="#stFilter.filterTypename#", property="#stToUpdate.property#") />
+
+	<!--- CONVERT FROM WDDX --->
+	<cfif isWDDX(stToUpdate[url.property])>
+		<cfwddx	action="wddx2cfml" 
+					input="#stToUpdate[url.property]#" 
+					output="stProps" />	
+	<cfelse>
+		<cfset stProps = structNew() />
+	</cfif>
 	
-	<cfset stMetadata = application.fapi.getPropertyMetadata(typename="#stToUpdate.typename#", property="#url.property#") />
 	
-	<cfset newValue = stToUpdate[url.property] />
-		
 	<!--- DETERMINE THE SELECTED ITEMS --->
 	<cfif stMetadata.type EQ "array">
-	
+		<cfparam name="stProps.relatedto" default="#arrayNew(1)#" />
 		<cfif structKeyExists(form, "addID")>	
-			<cfset arrayAppend(newValue,form.addID) />
+			<cfset arrayAppend(stProps.relatedTo,form.addID) />
 		</cfif>
 		
 		<cfif structKeyExists(form, "detachID")>
-			<cfset newValue = application.fapi.arrayRemove(newValue, form.detachID) />
+			<cfset stProps.relatedTo = application.fapi.arrayRemove(stProps.relatedTo, form.detachID) />
 		</cfif>
 		
 		<cfif structKeyExists(form, "deleteID")>
-			<cfset newValue = application.fapi.arrayRemove(newValue, form.deleteID) />
+			<cfset stProps.relatedTo = application.fapi.arrayRemove(stProps.relatedTo, form.deleteID) />
 		</cfif>
 		
 		<cfif structKeyExists(form, "sortIDs")>
-			<cfset newValue = listToArray(form.sortIDs) />
+			<cfset stProps.relatedTo = listToArray(form.sortIDs) />
 		</cfif>
 	<cfelse>
-	
+		<cfparam name="stProps.relatedto" default="" />
 		<cfif structKeyExists(form, "addID")>	
-			<cfset newValue = form.addID />
+			<cfset stProps.relatedTo = form.addID />
 		</cfif>
 		
 		<cfif structKeyExists(form, "detachID")>
-			<cfset newValue = "" />
+			<cfset stProps.relatedTo = "" />
 		</cfif>
 		
 		<cfif structKeyExists(form, "deleteID")>
-			<cfset newValue = "" />
+			<cfset stProps.relatedTo = "" />
 		</cfif>
 		
 		<cfif structKeyExists(form, "sortIDs")>
-			<cfset newValue = form.sortIDs />
+			<cfset stProps.relatedTo = form.sortIDs />
 		</cfif>
 	</cfif>
 	
-	<cfif structKeyExists(form, "wizardID") AND len(form.wizardID)>
-		<cfset owizard = application.fapi.getContentType("dmWizard") />	
-		<cfset stwizard = owizard.Read(wizardID="#form.wizardID#") />
-		<cfset stwizard.Data[stToUpdate.objectid][url.property] = newValue />
-		<cfset stResult = owizard.Write(objectID="#form.wizardID#", Data="#stwizard.Data#")>
-	</cfif>
+	<!--- CONVERT BACK TO WDDX & SAVE --->
+	<cfwddx action="cfml2wddx" input="#stProps#" output="newValue" />
 	
 	<cfset stToUpdate[url.property] = newValue />
 	
 	<cfset stResult = application.fapi.setData(
 						stProperties="#stToUpdate#") />
 	
-	
-	<cfif structKeyExists(form, "deleteID")>
-		<cfloop list="#form.deleteID#" index="i">
-			<cfset deleteType = application.fapi.findType("#i#") />
-			<cfset stResult = application.fapi.getContentType(deleteType).delete(objectid="#i#") />
-		</cfloop>
-	</cfif>
+
 	
 	<cfoutput>SUCCESSFUL</cfoutput>
