@@ -4,7 +4,7 @@
 	// These three functions provide ajax update functionality for fields.
 	//==================================================================================
 	function getInputValue(name) {
-		var objs = jQ("[name="+name+"]");
+		var objs = $j("[name="+name+"]");
 		var result = "";
 		
 		// input doesn't exist
@@ -21,7 +21,7 @@
 		}
 		// radio
 		else if (objs.get(0).tagName=="INPUT" && objs.get(0).type == 'radio') {
-			objs = jQ("[name="+name+"][type=radio]");
+			objs = $j("[name="+name+"][type=radio]");
 			if (objs.length)
 				return objs.get(0).value;
 			else
@@ -44,16 +44,14 @@
 		}
 	};
 	
-	var watchedfields = {};
-	var watchingfields = {};
 	function addWatch(prefix,property,opts) {
 		watchedfields[prefix] = watchedfields[prefix] || {};
 		watchingfields[prefix] = watchingfields[prefix] || {};
 		
 		if (!watchedfields[prefix][property]) { // if the property doesn't have a watch attached already, do so
-			jQ("select[name="+prefix+property+"], input[name="+prefix+property+"][type=text], input[name="+prefix+property+"][type=password]").bind("change",{ prefix:prefix, property: property },ajaxUpdate);
-			jQ("input[name="+prefix+property+"][type=checkbox], input[name="+prefix+property+"][type=radio]").bind("click",{ prefix:prefix, property: property },ajaxUpdate);
-			jQ("input[name="+prefix+property+"][type=hidden]").each(function(el){
+			$j("select[name="+prefix+property+"], input[name="+prefix+property+"][type=text], input[name="+prefix+property+"][type=password]").bind("change",{ prefix:prefix, property: property },ajaxUpdate);
+			$j("input[name="+prefix+property+"][type=checkbox], input[name="+prefix+property+"][type=radio]").bind("click",{ prefix:prefix, property: property },ajaxUpdate);
+			$j("input[name="+prefix+property+"][type=hidden]").each(function(el){
 				var lastvalue = el.value;
 				setInterval(function(){
 					if (el.value !== lastvalue) {
@@ -96,15 +94,15 @@
 		for (var i=0; i<watchedfields[event.data.prefix][event.data.property].length; i++) {
 			(function(watcher){
 				// post the AJAX request
-				jQ("##"+watcher.prefix+watcher.property+"ajaxdiv").html(watcher.ftLoaderHTML).load('#application.url.farcry#/facade/ftajax.cfm?formtool='+watcher.formtool+'&typename='+watcher.typename+'&fieldname='+watcher.fieldname+'&property='+watcher.property+'&objectid='+watcher.objectid,
+				$j("##"+watcher.prefix+watcher.property+"ajaxdiv").html(watcher.ftLoaderHTML).load('#application.url.farcry#/facade/ftajax.cfm?ajaxmode=1&formtool='+watcher.formtool+'&typename='+watcher.typename+'&fieldname='+watcher.fieldname+'&property='+watcher.property+'&objectid='+watcher.objectid,
 					values,
 					function(response){
-						jQ("##"+watcher.fieldname+"ajaxdiv").html(response.responseText);
+						$j("##"+watcher.fieldname+"ajaxdiv").html(response.responseText);
 						
 						// if the updated field is also being watched, reattach the events
 						if (watchedfields[watcher.prefix] && watchedfields[watcher.prefix][watcher.property] && watchedfields[watcher.prefix][watcher.property].length){
-							jQ("select[name="+watcher.prefix+watcher.property+"], input[name="+watcher.prefix+event.data.property+"][type=text], input[name="+watcher.prefix+watcher.property+"][type=password]").bind("change",{ prefix: watcher.prefix, property: watcher.property },ajaxUpdate);
-							jQ("input[name="+watcher.prefix+watcher.property+"][type=checkbox], input[name="+watcher.prefix+watcher.property+"][type=radio]").bind("click",{ prefix: watcher.prefix, property: watcher.property },ajaxUpdate);
+							$j("select[name="+watcher.prefix+watcher.property+"], input[name="+watcher.prefix+event.data.property+"][type=text], input[name="+watcher.prefix+watcher.property+"][type=password]").bind("change",{ prefix: watcher.prefix, property: watcher.property },ajaxUpdate);
+							$j("input[name="+watcher.prefix+watcher.property+"][type=checkbox], input[name="+watcher.prefix+watcher.property+"][type=radio]").bind("click",{ prefix: watcher.prefix, property: watcher.property },ajaxUpdate);
 						}
 					}
 				);

@@ -108,27 +108,25 @@
 		
 		<cfif len(arguments.stMetadata.ftWatch)>
 			
-			<skin:htmlHead library="jqueryjs" />
+			<skin:loadJS id="jquery" />
 			
 			<cfsavecontent variable="result">
-				<skin:htmlHead><cfoutput>
-					<script type="text/javascript">
-						jQ(function(){
-							<cfloop list="#arguments.stMetadata.ftWatch#" index="thisprop">
-							addWatch("#prefix#","#thisprop#",{ 
-								prefix:'#prefix#',
-								objectid:'#arguments.stObject.objectid#', 
-								fieldname:'#arguments.fieldname#',
-								ftLoaderHTML:'#jsstringformat(arguments.stMetadata.ftLoaderHTML)#',
-								typename:'#arguments.typename#',
-								property:'#arguments.stMetadata.name#',
-								formtool:'#arguments.stMetadata.ftType#',
-								watchedproperty:'#thisprop#'
-							});
-							</cfloop>
+				<skin:onReady>
+				<cfoutput>
+					<cfloop list="#arguments.stMetadata.ftWatch#" index="thisprop">
+						addWatch("#prefix#","#thisprop#",{ 
+							prefix:'#prefix#',
+							objectid:'#arguments.stObject.objectid#', 
+							fieldname:'#arguments.fieldname#',
+							ftLoaderHTML:'#jsstringformat(arguments.stMetadata.ftLoaderHTML)#',
+							typename:'#arguments.typename#',
+							property:'#arguments.stMetadata.name#',
+							formtool:'#arguments.stMetadata.ftType#',
+							watchedproperty:'#thisprop#'
 						});
-					</script>
-				</cfoutput></skin:htmlHead>
+					</cfloop>
+				</cfoutput>
+				</skin:onReady>
 			
 				<cfoutput><div id='#arguments.fieldname#ajaxdiv'>#arguments.html#</div></cfoutput>
 			</cfsavecontent>
