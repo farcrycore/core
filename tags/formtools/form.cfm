@@ -97,6 +97,14 @@ It just ignores the inner ones.
 				<div id="#attributes.Name#formwrap" class="ajaxformwrap">				
 			</cfif>
 			
+			<skin:htmlHead>
+				<cfoutput>
+					<script type="text/javascript">
+					var watchedfields = {};
+					var watchingfields = {};
+					</script>
+				</cfoutput>
+			</skin:htmlHead>
 			
 			<form 	action="#attributes.Action#" 
 					method="#attributes.Method#" 
