@@ -76,6 +76,7 @@
 				<menuitem id="reattachnodes" sequence="30" label="Reattach Orphan Folders" link="/admin/reattachnodes.cfm" />
 				<menuitem id="reattachnodescategory" sequence="40" label="Reattach Orphan Categories" link="/admin/reattachnodescategory.cfm" />
 				<menuitem id="fixfilelocations" sequence="50" label="Fix File Locations" link="/admin/customadmin.cfm?module=utilities/fixfilelocations.cfm" />
+				<menuitem id="listfilelocations" sequence="50" label="List File Locations" link="/admin/customadmin.cfm?module=utilities/listfilelocations.cfm" />
 			</menu>
 			<menu id="menufumanagement" sequence="80" label="Manage Friendly URLs">
 				<menuitem id="fumanagement" sequence="10" label="Manage Friendly URLs" link="/admin/customadmin.cfm?module=customlists/farFU.cfm" />
