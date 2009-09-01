@@ -56,7 +56,7 @@
 <cfloop collection="#stFileProps#" item="thistype">
 	<cfoutput><li><strong>#thistype#</strong><ul></cfoutput>
 	<cfloop collection="#stFileProps[thistype]#" item="thisprop">
-		<cfoutput><li><input type="checkbox" name="properties" id="#thistype#_#thisprop#" value="#thistype#.#thisprop#"<cfif listcontains(form.properties,"#thistype#.#thisprop#")> checked</cfif> /> <label for="#thistype#_#thisprop#">#stFileProps[thistype][thisprop].ftType# - thisprop</label></li></cfoutput>
+		<cfoutput><li><input type="checkbox" name="properties" id="#thistype#_#thisprop#" value="#thistype#.#thisprop#"<cfif listcontains(form.properties,"#thistype#.#thisprop#")> checked</cfif> /> <label for="#thistype#_#thisprop#">#stFileProps[thistype][thisprop].ftType# - #thisprop#</label></li></cfoutput>
 	</cfloop>
 	<cfoutput></ul></li></cfoutput>
 </cfloop>
