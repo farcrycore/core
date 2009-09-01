@@ -28,9 +28,9 @@
 		<cfloop collection="#stFileProps[thistype]#" item="thisprop">
 			<cfif listcontains(form.properties,"#thistype#.#thisprop#")>
 				<cfif structkeyexists(application.stCOAPI[thistype].stProps,"status")>
-					<cfset sql = sql & "update #thistype##chr(13)##chr(10)#set #thisprop#='#form.newlocation#' & #thisprop##chr(13)##chr(10)#where status='approved';#chr(13)##chr(10)##chr(13)##chr(10)#" />
+					<cfset sql = sql & "update #thistype##chr(13)##chr(10)#set #thisprop#='#form.newlocation#' & #thisprop##chr(13)##chr(10)#where #thisprop#<>'' and status='approved';#chr(13)##chr(10)##chr(13)##chr(10)#" />
 				<cfelse>
-					<cfset sql = sql & "update #thistype##chr(13)##chr(10)#set #thisprop#='#form.newlocation#' & #thisprop#;#chr(13)##chr(10)##chr(13)##chr(10)#" />
+					<cfset sql = sql & "update #thistype##chr(13)##chr(10)#set #thisprop#='#form.newlocation#' & #thisprop##chr(13)##chr(10)#where #thisprop#<>'';#chr(13)##chr(10)##chr(13)##chr(10)#" />
 				</cfif>
 			</cfif>
 		</cfloop>
