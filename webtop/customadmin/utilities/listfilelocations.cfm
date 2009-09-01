@@ -27,11 +27,19 @@
 	<cfloop collection="#stFileProps#" item="thistype">
 		<cfloop collection="#stFileProps[thistype]#" item="thisprop">
 			<cfif listcontains(form.properties,"#thistype#.#thisprop#")>
-				<cfif structkeyexists(application.stCOAPI[thistype].stProps,"status")>
-					<cfset sql = sql & "update #thistype##chr(13)##chr(10)#set #thisprop#='#form.newlocation#' + #thisprop##chr(13)##chr(10)#where #thisprop#<>'' and not #thisprop# like '#form.newlocation#%' and status='approved';#chr(13)##chr(10)##chr(13)##chr(10)#" />
+				<cfset sql = "#sql#update #thistype##chr(13)##chr(10)#" />
+				<cfif stFileProps[thistype][thisprop].ftType eq file>
+					<cfset sql = sql & "set #thisprop#='#form.newlocation##stFileProps[thistype][thisprop].ftDestination#'" />
 				<cfelse>
-					<cfset sql = sql & "update #thistype##chr(13)##chr(10)#set #thisprop#='#form.newlocation#' + #thisprop##chr(13)##chr(10)#where #thisprop#<>'' and not #thisprop# like '#form.newlocation#%';#chr(13)##chr(10)##chr(13)##chr(10)#" />
+					<cfset sql = sql & "set #thisprop#='#form.newlocation#'" />
 				</cfif>
+				<cfset sql = "#sql# + #thisprop##chr(13)##chr(10)#where #thisprop#<>'' and not #thisprop# like '#form.newlocation#%' and status='approved';#chr(13)##chr(10)##chr(13)##chr(10)#" >
+				<cfif structkeyexists(application.stCOAPI[thistype].stProps,"status")>
+					<cfset sql = "#sql# and status='approved';#chr(13)##chr(10)##chr(13)##chr(10)#" />
+				<cfelse>
+					<cfset sql = "#sql#;" />
+				</cfif>
+				<cfset sql = "#sql##chr(13)##chr(10)##chr(13)##chr(10)#" />
 			</cfif>
 		</cfloop>
 	</cfloop>
@@ -46,7 +54,7 @@
 		<li>approved public files are now streamed directly from the web server instead of through ColdFusion, which improves performance significantly</li>
 		<li>draft and secured files are stored in a secure directory and will only be streamed to the user if they have permission</li>
 	</ul>
-	<p>For applications where files need to be moved manually, this script will generate SQL for manual DB updates.</p>
+	<p>For applications where files need to be moved manually, this script will generate SQL for manual DB updates. This SQL assumes that the file and image directories are copied directly into the CDN root.</p>
 </cfoutput></admin:resource>
 
 <cfoutput>
