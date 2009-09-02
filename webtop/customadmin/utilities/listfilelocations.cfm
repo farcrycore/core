@@ -27,19 +27,19 @@
 	<cfloop collection="#stFileProps#" item="thistype">
 		<cfloop collection="#stFileProps[thistype]#" item="thisprop">
 			<cfif listcontains(form.properties,"#thistype#.#thisprop#")>
-				<cfset sql = "#sql#update #thistype##chr(13)##chr(10)#" />
-				<cfif stFileProps[thistype][thisprop].ftType eq file>
-					<cfset sql = sql & "set #thisprop#='#form.newlocation##stFileProps[thistype][thisprop].ftDestination#'" />
+				<cfset sql = sql & "update #thistype##chr(13)##chr(10)#" />
+				<cfif stFileProps[thistype][thisprop].ftType eq "file">
+					<cfset sql = sql & "set #thisprop#='#form.newlocation##application.url.fileroot#'" />
 				<cfelse>
 					<cfset sql = sql & "set #thisprop#='#form.newlocation#'" />
 				</cfif>
-				<cfset sql = "#sql# + #thisprop##chr(13)##chr(10)#where #thisprop#<>'' and not #thisprop# like '#form.newlocation#%' and status='approved';#chr(13)##chr(10)##chr(13)##chr(10)#" >
+				<cfset sql = sql & " + #thisprop##chr(13)##chr(10)#where #thisprop#<>'' and not #thisprop# like 'http://%'" >
 				<cfif structkeyexists(application.stCOAPI[thistype].stProps,"status")>
-					<cfset sql = "#sql# and status='approved';#chr(13)##chr(10)##chr(13)##chr(10)#" />
+					<cfset sql = sql & " and status='approved';" />
 				<cfelse>
-					<cfset sql = "#sql#;" />
+					<cfset sql = sql & ";" />
 				</cfif>
-				<cfset sql = "#sql##chr(13)##chr(10)##chr(13)##chr(10)#" />
+				<cfset sql = sql & "#chr(13)##chr(10)##chr(13)##chr(10)#" />
 			</cfif>
 		</cfloop>
 	</cfloop>
