@@ -652,16 +652,6 @@
 			AND structKeyExists(application.stcoapi[typename].stWebskins[template], "cacheByVars")>
 			<cfset result = application.stcoapi['#arguments.typename#'].stWebskins['#arguments.template#'].cacheByVars />
 			
-			<!--- ALSO INCLUDE ANY DYNAMICALLY INCLUDED CACHE VARIABLES SETUP BY USING THE FAPI.setCacheByVar --->
-			<cflock name="cacheByViewStates_#arguments.typename#_#arguments.template#" timeout="1" throwontimeout="false" type="read">	
-				<cfif isDefined("application.fc.cacheByViewState.#arguments.typename#") AND structKeyExists(application.fc.cacheByViewState[arguments.typename],  "#arguments.template#")>
-					<cfloop list="#application.fc.cacheByViewStates['#arguments.typename#']['#arguments.template#']#" index="iViewState">
-						<cfif not listFindNoCase(result, iViewState)>
-							<cfset result = listAppend(result, iViewState) />
-						</cfif>
-					</cfloop>
-				</cfif>
-			</cflock>
 		</cfif>
 		
 		<cfreturn result />

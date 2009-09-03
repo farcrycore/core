@@ -39,10 +39,10 @@
 	<cfset setPageInfo() />
 	
 	<!--- ADD THE URL AND FORM VARIABLES TO THE DYNAMIC CACHE VARS --->
-	<cfset application.fapi.setCacheByVar(keys='form.paginationpage#this.paginationID#,url.page#this.paginationID#') />
+	<cfset application.fapi.setAncestorsCacheByVars(keys='form.paginationpage#this.paginationID#,url.page#this.paginationID#') />
 		
 	<cfif this.bStickyPages AND len(this.paginationID)>
-		<cfset application.fapi.setCacheByVar(keys='session.fcpagination.#this.paginationID#') />
+		<cfset application.fapi.setAncestorsCacheByVars(keys='session.fcpagination.#this.paginationID#') />
 	</cfif>
 	
 			

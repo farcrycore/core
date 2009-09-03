@@ -224,47 +224,121 @@
 			<cfreturn o.setData(stProperties=arguments.stProperties,dsn=arguments.dsn,dbtype=arguments.dbtype,dbowner=arguments.dbowner,bSessionOnly=arguments.bSessionOnly,bAfterSave=arguments.bAfterSave) />
 		</cffunction>
 	
-		<cffunction name="setCacheByVar" access="public" returntype="void" output="false" hint="This is generally used by tags to dynamically assign cacheByVar's to the webskin that called it and its ancestors.">
+		<cffunction name="setAncestorsCacheByVars" access="public" returntype="void" output="false" hint="This is generally used by tags to dynamically assign cacheByVar's to the webskin that called it and its ancestors.">
 			<cfargument name="keys" required="true" hint="This is a list of setCacheVar names to be dynamically assigned." />
 			
 			<cfset var i = "" />
 			<cfset var currentTypename = "" />
 			<cfset var currentTemplate = "" />
 			<cfset var currentCacheStatus = "" />
-			<cfset var currentViewStates = "" />
-			<cfset var iKeys = "" />
+			<cfset var currentVars = "" />
+			<cfset var iKey = "" />
 		
 			<!--- LOOP THROUGH ALL THE CURRENT ANCESTOR WEBSKINS AND ADD THE CURRENT VIEW STATE KEY TO EACH --->
 			<cfif structKeyExists(request, "aAncestorWebskins") AND arrayLen(request.aAncestorWebskins)>
 				<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="i">
 	
-					<cfloop list="#arguments.keys#" index="iKey">	
-						<cfif not listFindNoCase(request.aAncestorWebskins[i].cacheByVars,iKey)>
-							<cfset request.aAncestorWebskins[i].cacheByVars = listAppend(request.aAncestorWebskins[i].cacheByVars, iKey)	/>
-						</cfif>	
-					</cfloop>
-					
 					<cfset currentTypename = request.aAncestorWebskins[i].typename />
 					<cfset currentTemplate = request.aAncestorWebskins[i].template />
 					<cfset currentCacheStatus = getWebskinCacheStatus(typename="#currentTypename#", template="#currentTemplate#") />
-	
+					
 					<cfif currentCacheStatus EQ 1>
-						<cflock name="cacheByViewStates_#currentTypename#_#currentTemplate#" timeout="1" throwontimeout="false" type="exclusive">	
 							
-							<cfparam name="application.fc.cacheByViewStates" default="#structNew()#" />
-							<cfparam name="application.fc.cacheByViewStates['#currentTypename#']" default="#structNew()#" />
-							<cfparam name="application.fc.cacheByViewStates['#currentTypename#']['#currentTemplate#']" default="" />
-										
-							<cfset currentViewStates = application.fc.cacheByViewStates['#currentTypename#']['#currentTemplate#'] />
+						<cfparam name="application.stcoapi['#currentTypename#'].stWebskins['#currentTemplate#'].cacheByVars" default="" />
+									
+						<cfset currentVars = application.stcoapi['#currentTypename#'].stWebskins['#currentTemplate#'].cacheByVars />
+						
+						<cfloop list="#arguments.keys#" index="iKey">	
+							<cfif not listFindNoCase(request.aAncestorWebskins[i].cacheByVars,iKey)>
+								<cfset request.aAncestorWebskins[i].cacheByVars = listAppend(request.aAncestorWebskins[i].cacheByVars, iKey) />
+							</cfif>	
+							
+							<cfif not listFindNoCase(currentVars, iKey)>
+								<cfset currentVars = listAppend(currentVars, iKey) />
+							</cfif>
+						</cfloop>
+				
+						<cfset application.stcoapi['#currentTypename#'].stWebskins['#currentTemplate#'].cacheByVars = currentVars />
+						
+					</cfif>	
 	
-							<cfloop list="#arguments.keys#" index="iKey">	
-								<cfif not listFindNoCase(currentViewStates, iKey)>
-									<cfset currentViewStates = listAppend(currentViewStates, iKey) />
-								</cfif>
-							</cfloop>
-							
-							<cfset application.fc.cacheByViewStates['#currentTypename#']['#currentTemplate#'] = currentViewStates />
-						</cflock>	
+				</cfloop>
+			</cfif>
+		</cffunction>
+		
+		<cffunction name="setAncestorsCacheByForm" access="public" returntype="void" output="false" hint="This is generally used by tags to dynamically assign cacheByForm to the webskin that called it and its ancestors.">
+			
+			<cfset var i = "" />
+			<cfset var currentTypename = "" />
+			<cfset var currentTemplate = "" />
+			<cfset var currentCacheStatus = "" />
+			<cfset var currentVars = "" />
+			<cfset var iKey = "" />
+		
+			<!--- LOOP THROUGH ALL THE CURRENT ANCESTOR WEBSKINS AND ADD THE CURRENT VIEW STATE KEY TO EACH --->
+			<cfif structKeyExists(request, "aAncestorWebskins") AND arrayLen(request.aAncestorWebskins)>
+				<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="i">
+	
+					<cfset currentTypename = request.aAncestorWebskins[i].typename />
+					<cfset currentTemplate = request.aAncestorWebskins[i].template />
+					<cfset currentCacheStatus = getWebskinCacheStatus(typename="#currentTypename#", template="#currentTemplate#") />
+					
+					<cfif currentCacheStatus EQ 1>
+						<cfset request.aAncestorWebskins[i].cacheByForm = true />
+						<cfset application.stcoapi['#currentTypename#'].stWebskins['#currentTemplate#'].cacheByForm = true />
+					</cfif>	
+	
+				</cfloop>
+			</cfif>
+		</cffunction>
+		
+		<cffunction name="setAncestorsCacheByURL" access="public" returntype="void" output="false" hint="This is generally used by tags to dynamically assign cacheByURL to the webskin that called it and its ancestors.">
+			
+			<cfset var i = "" />
+			<cfset var currentTypename = "" />
+			<cfset var currentTemplate = "" />
+			<cfset var currentCacheStatus = "" />
+			<cfset var currentVars = "" />
+			<cfset var iKey = "" />
+		
+			<!--- LOOP THROUGH ALL THE CURRENT ANCESTOR WEBSKINS AND ADD THE CURRENT VIEW STATE KEY TO EACH --->
+			<cfif structKeyExists(request, "aAncestorWebskins") AND arrayLen(request.aAncestorWebskins)>
+				<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="i">
+	
+					<cfset currentTypename = request.aAncestorWebskins[i].typename />
+					<cfset currentTemplate = request.aAncestorWebskins[i].template />
+					<cfset currentCacheStatus = getWebskinCacheStatus(typename="#currentTypename#", template="#currentTemplate#") />
+					
+					<cfif currentCacheStatus EQ 1>
+						<cfset request.aAncestorWebskins[i].cacheByURL = true />
+						<cfset application.stcoapi['#currentTypename#'].stWebskins['#currentTemplate#'].cacheByURL = true />
+					</cfif>	
+	
+				</cfloop>
+			</cfif>
+		</cffunction>
+			
+		
+		<cffunction name="setAncestorsCacheByRoles" access="public" returntype="void" output="false" hint="This is generally used by tags to dynamically assign cacheByRoles to the webskin that called it and its ancestors.">
+			
+			<cfset var i = "" />
+			<cfset var currentTypename = "" />
+			<cfset var currentTemplate = "" />
+			<cfset var currentCacheStatus = "" />
+			<cfset var currentVars = "" />
+			<cfset var iKey = "" />
+		
+			<!--- LOOP THROUGH ALL THE CURRENT ANCESTOR WEBSKINS AND ADD THE CURRENT VIEW STATE KEY TO EACH --->
+			<cfif structKeyExists(request, "aAncestorWebskins") AND arrayLen(request.aAncestorWebskins)>
+				<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="i">
+	
+					<cfset currentTypename = request.aAncestorWebskins[i].typename />
+					<cfset currentTemplate = request.aAncestorWebskins[i].template />
+					<cfset currentCacheStatus = getWebskinCacheStatus(typename="#currentTypename#", template="#currentTemplate#") />
+					
+					<cfif currentCacheStatus EQ 1>
+						<cfset request.aAncestorWebskins[i].cacheByRoles = true />
+						<cfset application.stcoapi['#currentTypename#'].stWebskins['#currentTemplate#'].cacheByRoles = true />
 					</cfif>	
 	
 				</cfloop>
