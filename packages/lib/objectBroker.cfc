@@ -339,7 +339,11 @@
 								<cfset stCacheWebskin.cacheStatus = arguments.stCurrentView.cacheStatus />
 								<cfset stCacheWebskin.cacheTimeout = arguments.stCurrentView.cacheTimeout />
 	
-								<cfset stCacheWebskin.webskinCacheID = arguments.webskinCacheID />
+								<cfset stCacheWebskin.webskinCacheID = generateWebskinCacheID(
+																		typename="#arguments.typename#", 
+																		template="#arguments.template#",
+																		hashKey="#arguments.stCurrentView.hashKey#"
+															) />
 								
 																
 								<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template][hash("#stCacheWebskin.webskinCacheID#")] = stCacheWebskin />

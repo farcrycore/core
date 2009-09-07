@@ -437,26 +437,25 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					<cfset request.aAncestorWebskins[i].cacheTimeout = stCurrentView.cacheTimeout />
 				</cfif>
 				
-				<!--- If this webskin is to have its url hashed, make sure all ancestors also have their webskins hashed --->
-				<cfif stCurrentView.cacheByURL>
-					<cfset request.aAncestorWebskins[i].cacheByURL = true />
-				</cfif>
-				<cfif stCurrentView.cacheByForm>
-					<cfset request.aAncestorWebskins[i].cacheByForm = true />
-				</cfif>
-				<cfif stCurrentView.cacheByRoles>
-					<cfset request.aAncestorWebskins[i].cacheByRoles = true />
-				</cfif>
-				
-				<cfif listLen(stCurrentView.cacheByVars)>
-					<cfloop list="#stCurrentView.cacheByVars#" index="iViewState">
-						<cfif not listFindNoCase(request.aAncestorWebskins[i].cacheByVars,iViewState)>
-							<cfset request.aAncestorWebskins[i].cacheByVars = listAppend(request.aAncestorWebskins[i].cacheByVars, iViewState)	/>
-						</cfif>								
-					</cfloop>
-				</cfif>
-	
 			</cfloop>
+						
+			<!--- WE NEED TO CASCADE UP THE ANCESTRY PATH SOME OF THE CACHE SETTINGS OF DESCENDENT WEBSKINS --->
+			<cfif listLen(stCurrentView.cacheByVars)>
+				<cfset application.fapi.setAncestorsCacheByVars(stCurrentView.cacheByVars) />
+			</cfif>
+			
+			<cfif stCurrentView.cacheByForm>
+				<cfset application.fapi.setAncestorsCacheByForm() />
+			</cfif>
+			
+			<cfif stCurrentView.cacheByURL>
+				<cfset application.fapi.setAncestorsCacheByURL() />
+			</cfif>
+			
+			<cfif stCurrentView.cacheByRoles>
+				<cfset application.fapi.setAncestorsCacheByRoles() />
+			</cfif>
+			
 		</cfif>
 		
 		<!--- Remove the current view (last item in the array) from the Ancestor Webskins array --->
