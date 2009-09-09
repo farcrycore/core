@@ -6,7 +6,7 @@
 	<cfargument name="query" default="" hint="The recordset to be paginated" />
 	<cfargument name="array" default="" hint="The array of objectids to be paginated" />
 	<cfargument name="typename" default="" />	
-	<cfargument name="paginationID" default="fc-pagination" /><!--- Uniquely identifies this pagination set. Set if using sticky pages or if multiple pagination sets on a single page. --->
+	<cfargument name="paginationID" default="fcPagination" /><!--- Uniquely identifies this pagination set. Set if using sticky pages or if multiple pagination sets on a single page. --->
 	<cfargument name="bStickyPages" default="false" /><!--- Keeps track of the page the user is currently on in session against this key. --->
 	<cfargument name="currentPage" default="0" />
 	<cfargument name="actionURL" default="" />

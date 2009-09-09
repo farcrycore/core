@@ -127,7 +127,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfset arguments.template = ReplaceNoCase(arguments.template,".cfm", "", "all") />
 		</cfif>
 		
-
+		<cftimer label="view: #webskinTypename# #arguments.template#">
 		<cfif isDefined("arguments.stobject") and not structIsEmpty(arguments.stObject)>
 			<cfset stobj=arguments.stobject />
 		<cfelse>
@@ -246,9 +246,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					<cfreturn stWebskin.webskinHTML />
 				</cfif>
 			</cfif>
-				
+			
 			<cfif NOT structIsEmpty(stObj)>	
-	
 				<cfset stWebskin = application.fc.lib.objectbroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
 				
 				<cfif not len(stWebskin.webskinHTML)>			
@@ -290,8 +289,10 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				<cfset request.currentViewTypename = request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].typename />
 				<cfset request.currentViewTemplate = request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].template />
 			</cfif>
-		
+			
 		</cfif>
+		
+		</cftimer>
 		<cfreturn stWebskin.webskinHTML />
 	</cffunction>
 	
@@ -312,6 +313,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var stCurrentView = structNew() />
 		<cfset var webskinHTML = "" />
 		<cfset var stTrace = "" />
+		<cfset var bAdded = "" />
 				
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
@@ -368,14 +370,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfinclude template="#arguments.WebskinPath#">
 			
 			</farcry:traceWebskin>
-		</cfsavecontent>					
-	
-		
-		<!--- If the current view (Last Item In the array) is still OkToCache --->
-		<cfif request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].okToCache>
-			<!--- Add the webskin to the object broker if required --->
-			<cfset bAdded = application.fc.lib.objectbroker.addWebskin(objectid=arguments.stobj.objectid, typename=arguments.stobj.typename, template=arguments.webskinTemplate, webskinCacheID=arguments.webskinCacheID, html=webskinHTML, stCurrentView=stCurrentView) />
-		</cfif>
+		</cfsavecontent>	
 		
 		<cfif arrayLen(request.aAncestorWebskins)>
 			
@@ -450,6 +445,13 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				<cfset application.fapi.setAncestorsCacheByRoles() />
 			</cfif>
 		</cfif>
+		
+	<!--- If the current view (Last Item In the array) is still OkToCache --->
+		<cfif request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].okToCache>
+			<!--- Add the webskin to the object broker if required --->
+			<cfset bAdded = application.fc.lib.objectbroker.addWebskin(objectid=arguments.stobj.objectid, typename=arguments.stobj.typename, template=arguments.webskinTemplate, webskinCacheID=arguments.webskinCacheID, html=webskinHTML, stCurrentView=stCurrentView) />
+		</cfif>
+		
 		
 		<!--- Remove the current view (last item in the array) from the Ancestor Webskins array --->
 		<cfset ArrayDeleteAt(request.aAncestorWebskins, arrayLen(request.aAncestorWebskins)) />

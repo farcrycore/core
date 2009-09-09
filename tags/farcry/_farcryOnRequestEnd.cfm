@@ -504,13 +504,4 @@ $out:$
 
 
 
-<!--- USED TO DETERMINE OVERALL PAGE TICKCOUNT --->
-<cfset request.farcryPageTimerEnd = getTickCount() />
-
-<cfif structKeyExists(request, "farcryPageTimerStart")>
-	<cfset farcryPageLoadTimer = request.farcryPageTimerEnd - request.farcryPageTimerStart />
-	<cftrace var="farcryPageLoadTimer" />
-</cfif>
-
-
 <cfsetting enablecfoutputonly="no">
