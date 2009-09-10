@@ -428,12 +428,12 @@
 				<cffile action="delete" file="#stLocation.fullpath#" />
 				
 				<!--- Delete archived files --->
-				<cfdirectory action="list" directory="#application.path.mediaArchive##arguments.stMetadata.ftDestination#/" filter="#arguments.objectid#*" name="qArchive" />
+				<cfdirectory action="list" directory="#application.path.mediaArchive##arguments.stMetadata.ftDestination#/" filter="#arguments.stObject.objectid#*" name="qArchive" />
 				<cfloop query="qArchive">
 					<cffile action="delete" file="#application.path.mediaArchive##arguments.stMetadata.ftDestination#/#qArchive.name#" />
 				</cfloop>
 				
-				<cfcatch><cfdump var="#arguments#"><cfdump var="#stLocation#"><cfabort></cfcatch>
+				<cfcatch><cfdump var="#cfcatch.message#"><cfdump var="#arguments#"><cfdump var="#stLocation#"><cfabort></cfcatch>
 			</cftry>
 		</cfif>
 	</cffunction>
