@@ -7,6 +7,9 @@
 <cfif isDefined("url.node")>
 	<cfset form.node = url.node />
 </cfif>
+<cfif isDefined("url.root") AND url.root NEQ "source">
+	<cfset form.node = url.root />
+</cfif>
 
 <cfif isDefined("url.selectedObjectIDs")>
 	<cfset form.selectedObjectIDs = url.selectedObjectIDs />
@@ -43,12 +46,20 @@
 		<cfif qTree.currentRow NEQ 1><cfoutput>,</cfoutput></cfif>
 
 		<cfoutput>
-			{'id': '#qTree.objectid#', 'text': '#jsstringFormat(qTree.objectname)#', 'leaf':  </cfoutput>
+			{'id': '#qTree.objectid#', 'text': '<input type="checkbox" value="#qTree.objectid#" onclick="return false;" />#jsstringFormat(qTree.objectname)#', 'leaf':  </cfoutput>
 		<cfif qTree.nRight - qTree.nLeft EQ 1>
 			<cfoutput>true</cfoutput>
 		<cfelse>
 			<cfoutput>false </cfoutput>
 		</cfif>
+		
+		<cfoutput>,"hasChildren": </cfoutput>
+		<cfif qTree.nRight - qTree.nLeft EQ 1>
+			<cfoutput>false</cfoutput>
+		<cfelse>
+			<cfoutput>true</cfoutput>
+		</cfif>
+		
 		<cfif listContainsNoCase(form.selectedObjectIDs,qTree.objectID)>
 			<cfoutput>,checked:true</cfoutput>
 		</cfif>

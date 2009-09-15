@@ -28,7 +28,7 @@
 		
 		<cfparam name="arguments.stMetadata.ftAlias" default="" type="string" />
 		<cfparam name="arguments.stMetadata.ftLegend" default="" type="string" />
-		<cfparam name="arguments.stMetadata.ftRenderType" default="ext" type="string" />
+		<cfparam name="arguments.stMetadata.ftRenderType" default="jquery" type="string" />
 		<cfparam name="arguments.stMetadata.ftSelectMultiple" default="true" type="boolean" />
 		<cfparam name="arguments.stMetadata.ftSelectSize" default="5" type="numeric" />
 		<cfparam name="arguments.stMetadata.ftDropdownFirstItem" default="" type="string" />
@@ -99,6 +99,54 @@
 				</cfsavecontent>			
 			</cfcase>
 			
+			<cfcase value="jquery">
+				
+				<skin:loadJS id="jquery" />
+				<skin:loadJS	id="jquery-treeview" 
+								baseHREF="#application.url.webtop#/thirdparty/jquery-treeview"
+								lFiles="jquery.treeview.js,jquery.treeview.async.js"								
+				/>
+				<skin:loadCSS	id="jquery-treeview" 
+								baseHREF="#application.url.webtop#/thirdparty/jquery-treeview"
+								lFiles="jquery.treeview.css"								
+				/>
+				
+				<skin:onReady>
+				<cfoutput>
+					$j("##black").treeview({
+						url: "#application.url.webtop#/facade/getCategoryNodes.cfm?node=#rootID#&lSelectedItems=#lSelectedCategoryID#"
+					})
+				</cfoutput>
+				</skin:onReady>
+				
+				<cfsavecontent variable="html">
+				
+
+					<cfoutput>
+						CATEGORY TREE
+						<ul id="black"></ul>
+					</cfoutput>
+					
+					<!--- <fieldset style="width: 300px;">
+						<cfif len(arguments.stMetadata.ftLegend)><legend>#arguments.stMetadata.ftLegend#</legend></cfif>
+					
+						<div class="fieldsection optional full">
+												
+							<div class="fieldwrap">
+							</cfoutput>
+
+								<ft:NTMPrototypeTree id="#arguments.fieldname#" navid="#rootID#" depth="99" bIncludeHome=1 lSelectedItems="#lSelectedCategoryID#" bSelectMultiple="#arguments.stMetadata.ftSelectMultiple#">
+							
+							<cfoutput>
+							</div>
+							
+							<br class="fieldsectionbreak" />
+						</div>
+						<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" />
+					</fieldset> --->
+							
+				</cfsavecontent>			
+			</cfcase>
 			<cfdefaultcase>
 				<!--- <skin:htmlHead library="extjs" />
 				<skin:htmlHead library="farcryForm" /> --->
