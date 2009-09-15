@@ -45,41 +45,6 @@ START WEBSKIN
 <skin:loadCSS id="jquery-ui" />
 
 
-
-<skin:loadCSS id="webtopOverview">
-<cfoutput>
-	
-	##webtopOverviewActions button h1,
-	##webtopOverviewActions button h2 {
-		margin:0px;
-	}
-	
-	##webtopOverviewActions button.primary {
-		width:180px;
-		height:100px;
-	}
-	##webtopOverviewActions button.secondary {
-		width:180px;
-		height:50px;
-		margin-top:10px;
-	}
-	.webtopOverviewStatusBox {
-		border:1px solid black;
-		padding:10px;
-		margin-top:5px;
-	}
-	.webtopSummarySection {
-		border-bottom:2px solid ##DFDFDF;
-		padding:0px 5px 15px 5px;
-		margin:10px 0px 10px 0px;
-	}
-	.webtopSummarySection h2 {
-		margin:10px 0px 0px 0px;
-		font-weight:bold;
-	}
-</cfoutput>
-</skin:loadCSS>
-
 <ft:form>
 
 			<grid:div style="float:right;padding:10px;">
