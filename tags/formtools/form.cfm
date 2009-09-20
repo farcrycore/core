@@ -33,9 +33,9 @@ It just ignores the inner ones.
 		
 		
 		<!--- import libraries --->
-		<skin:loadJS id="jquery" />
+		<skin:loadJS id="jquery" />		
 		<skin:loadJS id="farcry-form" />
-		<skin:loadCSS id="farcry-form" />
+		
 	
 		
 		<cfparam name="attributes.Name" default="farcryForm#randrange(1,999999999)#">
@@ -47,8 +47,8 @@ It just ignores the inner ones.
 		<cfparam name="attributes.Style" default="">
 		<cfparam name="attributes.Validation" default="1">
 		<cfparam name="attributes.bAjaxSubmission" default="false">
-		<cfparam name="attributes.bUniForm" default="true"><!--- Make the form a uniform (http://sprawsm.com/uni-form/) --->
-		<cfparam name="attributes.bUniFormHighlight" default="true"><!--- Highlight fields when focused --->
+		<cfparam name="attributes.bAddFormCSS" default="true" /><!--- Uses uniform (http://sprawsm.com/uni-form/) --->
+		<cfparam name="attributes.bFieldHighlight" default="true"><!--- Highlight fields when focused --->
 
 
 		<!--- Keeps track of all the form name in the request to make sure they are all unique --->
@@ -65,10 +65,10 @@ It just ignores the inner ones.
 		</cfif>
 		
 		<!--- If this is going to be a uniform, include relevent js and css --->
-		<cfif attributes.bUniForm>
+		<cfif attributes.bAddFormCSS>		
+		
 			<cfset attributes.class = listAppend(attributes.class,"uniForm"," ") />
-			<skin:loadJS id="uni-form" />
-			<skin:loadCSS id="uni-form" />				
+			<skin:loadCSS id="farcry-form" />				
 		</cfif>
 		
 
@@ -141,7 +141,8 @@ It just ignores the inner ones.
 		</cfoutput>	
 		
 		
-		<cfif attributes.bUniForm AND attributes.bUniFormHighlight>
+		<cfif attributes.bAddFormCSS AND attributes.bFieldHighlight>
+						
 			<skin:onReady>
 				<cfoutput>
 				$j('###attributes.Name#').uniform();
@@ -151,7 +152,7 @@ It just ignores the inner ones.
 		
 		
 		<!--- If we are validating this form, load and initialise the validation engine.  --->
-		<cfif attributes.validation EQ 1>
+		<cfif attributes.validation>
 			<skin:loadJS id="jquery-validate" />
 			
 			<!--- Setup farcry form validation (fv) --->

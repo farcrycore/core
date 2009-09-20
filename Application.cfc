@@ -127,7 +127,7 @@
 
 		<skin:registerJS 	id="farcry-form"
 							baseHREF="#application.url.webtop#"
-							lFiles="/js/farcryForm.cfm,/thirdparty/loadmask/jquery.loadmask.min.js">
+							lFiles="/js/farcryForm.cfm,/thirdparty/loadmask/jquery.loadmask.min.js,/thirdparty/uni-form/js/uni-form.jquery.js">
 							
 							<cfoutput>
 							var $fc = {};	
@@ -471,10 +471,6 @@
 							
 		</skin:registerJS>
 
-		<skin:registerJS 	id="uni-form"
-							baseHREF="#application.url.webtop#/thirdparty/uni-form/js"
-							lFiles="uni-form.jquery.js" />
-
 		
 		<!--- CSS LIBRARIES --->
 		<skin:registerCSS 	id="webtop"
@@ -486,12 +482,9 @@
 							lFiles="ui.core.css,ui.resizable.css,ui.accordion.css,ui.dialog.css,ui.slider.css,ui.tabs.css,ui.datepicker.css,ui.progressbar.css,ui.theme.css" />
 				
 		<skin:registerCSS 	id="farcry-form"
-							baseHREF="#application.url.webtop#"
-							lFiles="/thirdparty/loadmask/jquery.loadmask.css" />
-												
-		<skin:registerCSS 	id="uni-form"
-							baseHREF="#application.url.webtop#/thirdparty/uni-form/css"
-							lFiles="uni-form-generic.css,uni-form.css" />
+							baseHREF="#application.url.webtop#/thirdparty"
+							lFiles="/loadmask/jquery.loadmask.css,/uni-form/css/uni-form-generic.css,/uni-form/css/uni-form.css" />
+
 							
 		<skin:registerCSS 	id="gritter"
 							baseHREF="#application.url.webtop#/thirdparty/gritter/css"

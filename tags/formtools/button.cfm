@@ -30,10 +30,6 @@
 
 	<skin:loadJS id="jquery" />
 	<skin:loadJS id="farcry-form" />
-	
-	
-	<skin:loadJS id="jquery-ui" />
-	<skin:loadCSS id="jquery-ui" />
 
 	<!--- I18 conversion of label --->
 	<cfset attributes.text = application.rb.getResource('#attributes.rbkey#@label',attributes.text) />
@@ -66,14 +62,14 @@
 		<cfset attributes.onClick = listAppend(attributes.onClick, "btnClick('#Request.farcryForm.Name#','#jsStringFormat(attributes.value)#')", ";")  />
 	</cfif>
 	
-	<cfif isDefined("Request.farcryForm.Name")>
+	<!--- ONLY ADD JS VALIDATION IF VALIDATION LOADED IN THE ft:form --->
+	<cfif isDefined("Request.farcryForm.Name") AND Request.farcryForm.Validation>
 		<cfif attributes.validate>
 			<cfset attributes.onClick = listAppend(attributes.onClick, "btnTurnOnServerSideValidation()", ";") />
 		<cfelse>
 			<cfset attributes.onClick = listAppend(attributes.onClick, "btnTurnOffServerSideValidation()", ";") />
 			<cfset attributes.class = listAppend(attributes.class, "cancel", " ") />
-		</cfif>
-		
+		</cfif>		
 	</cfif>
 	
 	<!--- A value that will be placed in the hidden form field form.selectedObjectID on submission. --->

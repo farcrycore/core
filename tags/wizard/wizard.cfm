@@ -86,7 +86,6 @@ $in: SessionID -- $
 		<!--- import libraries --->
 		<skin:loadJS id="jquery" />
 		<skin:loadJS id="farcry-form" />
-		<skin:loadCSS id="farcry-form" />
 		
 		
 		<cfparam name="attributes.FormName" default="farcryForm#randrange(1,999999999)#">
@@ -99,9 +98,9 @@ $in: SessionID -- $
 		<cfparam name="attributes.FormStyle" default="">
 		<cfparam name="attributes.FormHeading" default="">
 		<cfparam name="attributes.FormValidation" default="1">
-		<cfparam name="attributes.bUniForm" default="true"><!--- Make the form a uniform (http://sprawsm.com/uni-form/) --->
-		<cfparam name="attributes.bUniFormHighlight" default="true"><!--- Highlight fields when focused --->
-		
+		<cfparam name="attributes.bAddWizardCSS" default="true" /><!--- Uses uniform (http://sprawsm.com/uni-form/) --->
+		<cfparam name="attributes.bFieldHighlight" default="true"><!--- Highlight fields when focused --->
+
 		<!--- I18 conversion of form heading --->
 		<cfif len(attributes.FormHeading)>
 			<cfset attributes.FormHeading = application.rb.getResource("forms.headings.#rereplacenocase(attributes.FormHeading,'[^\w\d]','','ALL')#@text",attributes.FormHeading) />
@@ -119,11 +118,11 @@ $in: SessionID -- $
 			<cfset attributes.formAction = "#application.fapi.fixURL()#" />
 		</cfif>
 		
+		
 		<!--- If this is going to be a uniform, include relevent js and css --->
-		<cfif attributes.bUniForm>
+		<cfif attributes.bAddWizardCSS>		
 			<cfset attributes.formClass = listAppend(attributes.formClass,"uniForm"," ") />
-			<skin:loadJS id="uni-form" />
-			<skin:loadCSS id="uni-form" />				
+			<skin:loadCSS id="farcry-form" />				
 		</cfif>
 		
 		
@@ -319,7 +318,11 @@ $in: SessionID -- $
 		</form>
 		</cfoutput>
 		
-		<cfif attributes.bUniForm AND attributes.bUniFormHighlight>
+		
+		
+		
+		<cfif attributes.bAddWizardCSS AND attributes.bFieldHighlight>
+						
 			<skin:onReady>
 				<cfoutput>
 				$j('###attributes.formName#').uniform();
@@ -329,7 +332,7 @@ $in: SessionID -- $
 		
 		
 		<!--- If we are validating this form, load and initialise the validation engine.  --->
-		<cfif attributes.formValidation EQ 1>
+		<cfif attributes.formValidation>
 			<skin:loadJS id="jquery-validate" />
 			
 			<!--- Setup farcry form validation (fv) --->
