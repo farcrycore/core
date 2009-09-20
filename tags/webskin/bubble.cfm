@@ -30,8 +30,8 @@ FARCRY IMPORT FILES
 
 
 
-<cfparam name="attributes.title" default="" /><!--- The title of the message --->
-<cfparam name="attributes.message" default="" /><!--- The actual message. This can be replaced with generatedContent --->
+<cfparam name="attributes.title" default="&nbsp;" /><!--- The title of the message --->
+<cfparam name="attributes.message" default="&nbsp;" /><!--- The actual message. This can be replaced with generatedContent --->
 <cfparam name="attributes.pause" default="3000" type="numeric" /><!--- How long (in milliseconds) the message appears before being removed --->
 <cfparam name="attributes.sticky" default="false" type="boolean" /><!--- Keep the message displayed until the user actively closes. --->
 <cfparam name="attributes.image" default="" /><!--- Image to display with the message --->
