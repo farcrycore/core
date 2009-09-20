@@ -390,7 +390,9 @@ user --->
 											<cfoutput>AND lower(#i#) LIKE '%#whereValue#%'</cfoutput>
 										<cfelseif listcontains("numeric,integer", PrimaryPackage.stProps[i].metadata.type)>
 											<cfset whereValue = ReplaceNoCase(j,"'", "''", "all") />
-											<cfoutput>AND #i# = #whereValue#</cfoutput>
+											<cfif isNumeric(whereValue)>
+												<cfoutput>AND #i# = #whereValue#</cfoutput>
+											</cfif>
 										</cfif>
 									</cfloop>
 								</cfif>
