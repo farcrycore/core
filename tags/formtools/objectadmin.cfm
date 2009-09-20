@@ -383,11 +383,12 @@ user --->
 							<cfdefaultcase>	
 								
 								<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
+								
 									<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
 										<cfif listcontains("string,nstring,longchar", PrimaryPackage.stProps[i].metadata.type)>
 											<cfset whereValue = ReplaceNoCase(trim(j),"'", "''", "all") />
 											<cfoutput>AND lower(#i#) LIKE '%#whereValue#%'</cfoutput>
-										<cfelseif listcontains("numeric", PrimaryPackage.stProps[i].metadata.type)>
+										<cfelseif listcontains("numeric,integer", PrimaryPackage.stProps[i].metadata.type)>
 											<cfset whereValue = ReplaceNoCase(j,"'", "''", "all") />
 											<cfoutput>AND #i# = #whereValue#</cfoutput>
 										</cfif>
