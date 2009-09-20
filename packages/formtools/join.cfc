@@ -185,44 +185,51 @@
 		
 		<!--- We need to get the Array Field Items as a query --->
 		<cfset o = createObject("component",application.stcoapi[arguments.typename].packagepath)>
-		<cfset q = o.getArrayFieldAsQuery(objectid="#arguments.stObject.ObjectID#", Typename="#arguments.typename#", Fieldname="#stMetadata.Name#", ftJoin="#stMetadata.ftJoin#")>
-	
 		
-		<cfsavecontent variable="returnHTML">
-		<cfoutput>
-				
-			<cfset ULID = "#arguments.fieldname#_list">
+		<cfif arguments.stMetadata.type EQ "array">
+			<cfset q = o.getArrayFieldAsQuery(objectid="#arguments.stObject.ObjectID#", Typename="#arguments.typename#", Fieldname="#stMetadata.Name#", ftJoin="#stMetadata.ftJoin#")>
 			
-			<cfif q.RecordCount>
-			 
-				<div id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#" style="#arguments.stMetadata.ftLibrarySelectedListStyle#">
-					<cfloop query="q">
-						<!---<li id="#arguments.fieldname#_#q.objectid#"> --->
-							
-							<div>
-								<cfif listContainsNoCase(arguments.stMetadata.ftJoin,q.typename)>
-									<cfset oData = createObject("component",application.stcoapi[q.typename].packagepath) />
-									<cfset stobj = oData.getData(objectid=q.data) />
-									<cfif FileExists("#application.path.project#/webskin/#q.typename#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm")>
-										<cfset html = oData.getView(stObject=stobj,template="#arguments.stMetadata.ftLibrarySelectedWebskin#") />
-										#html#								
-										<!---<cfinclude template="/farcry/projects/#application.projectDirectoryName#/webskin/#q.typename#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm"> --->
-									<cfelse>
-										#stobj.label#
-									</cfif>
-								<cfelse>
-									INVALID ATTACHMENT (#q.typename#)
-								</cfif>
-							</div>
-													
-						<!---</li> --->
-					</cfloop>
-				</div>
-			</cfif>
-
+			<cfsavecontent variable="returnHTML">
+			<cfoutput>
+					
+				<cfset ULID = "#arguments.fieldname#_list">
 				
-		</cfoutput>
-		</cfsavecontent>
+				<cfif q.RecordCount>
+				 
+					<div id="#ULID#" class="#arguments.stMetadata.ftLibrarySelectedListClass#" style="#arguments.stMetadata.ftLibrarySelectedListStyle#">
+						<cfloop query="q">
+							<!---<li id="#arguments.fieldname#_#q.objectid#"> --->
+								
+								<div>
+									<cfif listContainsNoCase(arguments.stMetadata.ftJoin,q.typename)>
+										<cfset oData = createObject("component",application.stcoapi[q.typename].packagepath) />
+										<cfset stobj = oData.getData(objectid=q.data) />
+										<cfif FileExists("#application.path.project#/webskin/#q.typename#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm")>
+											<cfset html = oData.getView(stObject=stobj,template="#arguments.stMetadata.ftLibrarySelectedWebskin#") />
+											#html#								
+											<!---<cfinclude template="/farcry/projects/#application.projectDirectoryName#/webskin/#q.typename#/#arguments.stMetadata.ftLibrarySelectedWebskin#.cfm"> --->
+										<cfelse>
+											#stobj.label#
+										</cfif>
+									<cfelse>
+										INVALID ATTACHMENT (#q.typename#)
+									</cfif>
+								</div>
+														
+							<!---</li> --->
+						</cfloop>
+					</div>
+				</cfif>
+	
+					
+			</cfoutput>
+			</cfsavecontent>			
+		<cfelseif len(arguments.stObject[arguments.stMetaData.Name])>
+			<cfset stobj = application.fapi.getContentObject(objectid=arguments.stObject[arguments.stMetaData.Name])>
+			<cfset returnHTML = application.fapi.getContentType("#stobj.typename#").getView(stObject=stobj, template=arguments.stMetaData.ftLibrarySelectedWebskin, alternateHtml=stobj.label) />
+		</cfif>
+		
+		
 
 		<cfreturn returnHTML>
 	</cffunction>
