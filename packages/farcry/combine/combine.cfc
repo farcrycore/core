@@ -107,6 +107,7 @@
 	</cffunction>
 	
 	<cffunction name="combine" access="public" returntype="string" output="false" hint="combines a list js or css files into a single file, which is output, and cached if caching is enabled. Returns the path to the cached file.">
+		<cfargument name="id" type="string" required="false" default="noIDea" hint="an id that is used to prefix the combine file" />
 		<cfargument name="files" type="string" required="true" hint="a delimited list of jss or css paths to combine" />
 		<cfargument name="type" type="string" required="false" hint="js,css" />
 		<cfargument name="delimiter" type="string" required="false" default="," hint="the delimiter used in the provided paths string" />
@@ -166,7 +167,7 @@
 		</cfloop>
 		
 		<!--- create a string to be used as an Etag - in the response header --->
-		<cfset etag = lastModified & '-' & hash(sCorrectedFiles) & '-' & hash(arguments.prepend) & '-' & hash(arguments.append) />
+		<cfset etag = arguments.id & '-' & lastModified & '-' & hash(sCorrectedFiles) & '-' & hash(arguments.prepend) & '-' & hash(arguments.append) />
 		
 		<!--- 
 			output the etag, this allows the browser to make conditional requests

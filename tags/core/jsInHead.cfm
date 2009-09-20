@@ -48,7 +48,8 @@
 					<cfset stJS.lFullFilebaseHREFs = listAppend(stJS.lFullFilebaseHREFs,"#stJS.baseHREF##i#") />
 				</cfloop>
 			
-				<cfset sCacheFileName = application.fc.utils.combine(	files=stJS.lFullFilebaseHREFs,
+				<cfset sCacheFileName = application.fc.utils.combine(	id=stJS.id,
+																		files=stJS.lFullFilebaseHREFs,
 																		type="js",
 																		prepend:stJS.prepend,
 																		append:stJS.append) />
@@ -59,6 +60,7 @@
 			<cfsavecontent variable="JS">
 				<cfoutput>
 				<!-- 
+				ID: #stJS.id#
 				baseHREF: #stJS.baseHREF#
 				FILES: #stJS.lFiles#
 				 -->
