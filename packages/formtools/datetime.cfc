@@ -146,6 +146,9 @@
 			
 			<cfparam name="arguments.stMetadata.ftDateFormatMask" default="dd M yy"><!--- For a full list of the possible formats see http://docs.jquery.com/UI/Datepicker/formatDate --->
 			
+			<skin:loadJS id="jquery-ui" />
+			<skin:loadCSS id="jquery-ui" />
+			
 			<skin:onReady>
 				<cfoutput>
 				$j("###arguments.fieldname#").datepicker({dateFormat:'#arguments.stMetadata.ftDateFormatMask#'});
