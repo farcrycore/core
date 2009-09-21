@@ -489,8 +489,16 @@ object methods
 		<cfset var typepermissiontype = "" />
 		<cfset var qObjects = "" />
 		<cfset var stO = structnew() />
+		<cfset var i = 0 />
 		
 		<cfif structkeyexists(arguments.stProperties,"aPermissions")>
+			<!--- If this setData happened because of the library there may be :seq values in the array data --->
+			<cfloop from="1" to="#arraylen(arguments.stProperties.aPermissions)#" index="i">
+				<cfif refind(":\d+$",arguments.stProperties.aPermissions[i])>
+					<cfset arguments.stProperties.aPermissions[i] = listfirst(arguments.stProperties.aPermissions[i],":") />
+				</cfif>
+			</cfloop>
+			
 			<!--- Removed permissions --->
 			<cfloop list="#application.fapi.listDiff(arraytolist(arguments.stProperties.aPermissions),arraytolist(stOld.aPermissions))#" index="thisperm">
 				<!--- Notify objects of permission change --->
