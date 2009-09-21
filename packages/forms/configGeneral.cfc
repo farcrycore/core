@@ -54,7 +54,7 @@
 		<cfloop list="#application.security.getAllUD()#" index="thisud">
 			<cfset queryaddrow(qUD) />
 			<cfset querysetcell(qUD,"value",thisud) />
-			<cfset querysetcell(qUD,"name",application.security.userdirectories[thisud].displayname) />
+			<cfset querysetcell(qUD,"name",application.security.userdirectories[thisud].title) />
 		</cfloop>
 		
 		<cfreturn qUD />
