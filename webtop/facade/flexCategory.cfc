@@ -55,22 +55,17 @@
 	<cfargument name="objectid" type="uuid" required="true">
 	<cfargument name="objectname" type="string" required="true">
 	<cfargument name="alias" type="string" required="false" default="">
-
-	<cfquery name="q" datasource="#application.dsn#">
-	UPDATE nested_tree_objects
-	SET objectname = '#trim(arguments.objectname)#'
-	WHERE objectID = '#arguments.objectid#'
-	</cfquery>
-
-	<cfquery name="q" datasource="#application.dsn#">
-	UPDATE #application.dbowner#categories
-	SET categoryLabel = '#arguments.objectname#',alias = '#arguments.alias#'
-	WHERE categoryid = '#arguments.objectid#'
-	</cfquery>	
 	
-	<cfset oCat = createObject("component", "#application.packagepath#.farcry.category")>
-	<cfset application.catid = oCat.getCatAliases()>	
-	<cfreturn true>
+	<cfset var oCategory = application.fapi.getContentType(typename="dmCategory") />
+	<cfset var stObj = structnew() />
+	
+	<cfset stObj.objectid = arguments.objectid />
+	<cfset stObj.categoryLabel = arguments.objectname />
+	<cfset stObj.alias = arguments.alias />
+	
+	<cfset oCategory.setData(stProperties=stObj) />
+	
+	<cfreturn true />
 </cffunction>
 
 <cffunction name="delCategory" returntype="boolean" access="remote">
