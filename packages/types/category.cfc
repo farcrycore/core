@@ -460,7 +460,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 			WHERE cat.objectid = ref.categoryID
 			AND ref.objectID = '#arguments.objectID#'
 			<cfif isDefined("lDescendents") AND len(lDescendents)>
-				AND ref.categoryid IN (#ListQualify(lDescendents,"'")#)
+				AND ref.categoryid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lDescendents#" />)
 			</cfif>
 		</cfquery> 
 
