@@ -9,7 +9,7 @@
 		<cfloop condition="not structisempty(stMetadata)">
 			<!--- Get attributes --->
 			<cfloop collection="#stMetadata#" item="attr">
-				<cfif issimplevalue(stMetadata[attr]) and not listcontains("bindingname,displayname,extends,fullname,functions,hint,name,namespace,output,path,porttypename,serviceportname,style,type,wsdlfile",attr) and not structkeyexists(this,attr)>
+				<cfif issimplevalue(stMetadata[attr]) and not listcontains("bindingname,extends,fullname,functions,hint,name,namespace,output,path,porttypename,serviceportname,style,type,wsdlfile",attr) and not structkeyexists(this,attr)>
 					<cfset this[attr] = stMetadata[attr] />
 				</cfif>
 			</cfloop>
@@ -31,7 +31,7 @@
 		
 		<!--- If title isn't specified, use the displayname --->
 		<cfif not structkeyexists(this,"title")>
-			<cfset this.title = stMetadata.displayname />
+			<cfset this.title = this.displayname />
 		</cfif>
 		
 		<!--- If seq isn't specified, use the 9999 --->
