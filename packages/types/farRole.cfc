@@ -494,7 +494,7 @@ object methods
 		<cfif structkeyexists(arguments.stProperties,"aPermissions")>
 			<!--- If this setData happened because of the library there may be :seq values in the array data --->
 			<cfloop from="1" to="#arraylen(arguments.stProperties.aPermissions)#" index="i">
-				<cfif refind(":\d+$",arguments.stProperties.aPermissions[i])>
+				<cfif refind(":[\d\.]+$",arguments.stProperties.aPermissions[i])>
 					<cfset arguments.stProperties.aPermissions[i] = listfirst(arguments.stProperties.aPermissions[i],":") />
 				</cfif>
 			</cfloop>
