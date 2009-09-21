@@ -108,7 +108,7 @@
 							<cfquery datasource="#application.dsn#" name="qObjects">
 							select * 
 							from #templateTypename#
-							where objectid IN (#ListQualify(lRelatedObjectIDs,"'")#)
+							where objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lRelatedObjectIDs#" />)
 							</cfquery>
 						
 							<table class="properties" style="margin-top:20px;">
