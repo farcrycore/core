@@ -37,7 +37,7 @@ type properties
 ------------------------------------------------------------------------->
 <cfproperty ftSeq="1" ftFieldset="Include Details" name="title" type="string" hint="Meaningful reference title for include file" required="no" default="" ftlabel="Title" ftvalidation="required" /> 
 <cfproperty ftSeq="2" ftFieldset="Include Details" name="teaser" type="string" hint="A brief description of the nature of the include file" required="no" default="" ftType="longchar" ftlabel="Teaser" />  
-<cfproperty ftSeq="3" ftFieldset="Include Details" name="teaserImage" type="uuid" hint="UUID of image to display in teaser" required="no" default="" fttype="uuid" ftjoin="dmimage" ftlabel="Teaser Image">
+<cfproperty ftSeq="3" ftFieldset="Include Details" name="teaserImage" type="uuid" hint="UUID of image to display in teaser" required="no" default="" fttype="uuid" ftjoin="dmImage" ftlabel="Teaser Image">
 <cfproperty ftSeq="4" ftFieldset="Include Details" name="displayMethod" type="string" hint="" required="No" default="" ftType="webskin" ftPrefix="displayPage" ftlabel="Content Template" /> 
 <cfproperty ftSeq="10" ftFieldset="Content" name="include" type="string" hint="The name of the include file" required="No" default="" ftType="list" ftListData="getIncludeList" ftLabel="Included CF Template" /> 
 <cfproperty ftSeq="11" ftFieldset="Content" name="webskinTypename" type="string" hint="The content type to run the selected type view against" required="No" default="" ftLabel="Content Type" /> 
