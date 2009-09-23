@@ -8,6 +8,47 @@
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.datetime" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
+	
+	<cffunction name="reParse" access="public" output="false" returntype="any" hint="Uses regular expression back references to parse values out of a string">
+		<cfargument name="pattern" type="string" required="true" hint="The regular expression to use" />
+		<cfargument name="haystack" type="string" required="true" hint="The string to search" />
+		<cfargument name="fields" type="string" required="true" hint="The names of the fields defined in the pattern, in order" />
+		<cfargument name="returnall" type="boolean" required="false" default="false" hint="Set to true to process every instance of the pattern" />
+		
+		<cfset var aMatches = arraynew(1) />
+		<cfset var stResult = structnew() />
+		<cfset var aResult = arraynew(1) /><!--- Only used if returnall is true --->
+		<cfset var i = 0 />
+		
+		<cfset aMatches = refindnocase(arguments.regex,arguments.haystack,1,true) />
+		<cfif arraylen(aMatches)>
+			<cfset stResult = structnew() />
+			<cfloop from="2" to="#aMatches.pos#" index="i">
+				<cfset stResult[listgetat(arguments.fields,i-1)] = mid(arguments.haystack,aMatches.pos[i],aMatches.len[i]) />
+			</cfloop>
+			<cfset arrayappend(aResult,stResult) />
+		</cfif>
+		
+		<cfif arguments.returnall>
+			<cfloop condition="arraylen(aMatches)">
+				<cfset aMatches = refindnocase(arguments.regex,arguments.haystack,aMatches.pos[1]+aMatches.len[1],true) />
+				<cfif arraylen(aMatches)>
+					<cfset stResult = structnew() />
+					<cfloop from="2" to="#aMatches.pos#" index="i">
+						<cfset stResult[listgetat(arguments.fields,i-1)] = mid(arguments.haystack,aMatches[i].pos,aMatches[i].len) />
+					</cfloop>
+				</cfif>
+				<cfset arrayappend(aResult,stResult) />
+			</cfloop>
+		</cfif>
+		
+		<cfif arguments.returnall>
+			<cfreturn aResult />
+		<cfelse>
+			<cfreturn stResult />
+		</cfif>
+	</cffunction>
+	
 	<cffunction name="edit" access="public" output="true" returntype="string" hint="his will return a string of formatted HTML text to enable the user to edit the data">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
@@ -212,7 +253,7 @@
 					    		el.removeClass('dateError');
 								el.addClass('dateAccept');	
 								Ext.get(fieldName + "Info").dom.innerHTML = parsedValue.toString(mask);
-								Ext.get(fieldName).dom.value = parsedValue.toString('yyyy/MMM/dd hh:mm tt');
+								Ext.get(fieldName).dom.value = parsedValue.toString('dd-MMM-yyyy hh:mm tt');
 							} else {
 								el.removeClass('dateEmpty');
 								el.removeClass('dateAccept');
@@ -263,7 +304,8 @@
 					<div  id="#arguments.fieldname#DIV" style="float:left;#fieldstyle#">
 						<span id="#arguments.fieldname#Info" class="dateJSHiddenValue <cfif len(arguments.stMetadata.value)>dateAccept<cfelse>dateEmpty</cfif>">
 							<cfif len(arguments.stMetadata.value)>
-								#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)# <cfif arguments.stMetadata.ftShowTime>#TimeFormat(arguments.stMetadata.value,arguments.stMetadata.ftTimeFormatMask)#</cfif>
+								#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)# 
+								<cfif arguments.stMetadata.ftShowTime>#TimeFormat(arguments.stMetadata.value,arguments.stMetadata.ftTimeFormatMask)#</cfif>
 							<cfelse>
 								Type in your date
 							</cfif>
@@ -272,7 +314,7 @@
 						<a id="#arguments.fieldname#DatePicker"><img src="#application.url.farcry#/js/dateTimePicker/cal.gif" width="16" height="16" border="0" alt="Pick a date"></a>
 						<cfif arguments.stMetadata.ftShowSuggestions><div class="dateSuggestions">Examples: tomorrow; next tues at 5am; +5days;</div></cfif>
 						<cfif len(arguments.stMetadata.value)>
-							<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,'yyyy/mmm/dd')# #TimeFormat(arguments.stMetadata.value, 'hh:mm tt')#" class="#arguments.stMetadata.ftClass#">
+							<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,'dd-mmm-yyyy')# #TimeFormat(arguments.stMetadata.value, 'hh:mm tt')#" class="#arguments.stMetadata.ftClass#">
 						<cfelse>
 							<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" class="#arguments.stMetadata.ftClass#">								
 						</cfif>						
