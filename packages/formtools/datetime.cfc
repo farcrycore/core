@@ -113,7 +113,7 @@
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 		
 		<cfcase value="dropdown">
-			<cfparam name="arguments.stMetadata.ftDateFormatMask" default="dd mmm yyyy">
+			<cfparam name="arguments.stMetadata.ftDateFormatMask" default="dd mmmm yyyy">
 			<cfparam name="arguments.stMetadata.ftStartYearShift" default="0">
 			<cfparam name="arguments.stMetadata.ftEndYearShift" default="-100">
 			<cfparam name="arguments.stMetadata.ftStartYear" default="#year(now()) + arguments.stMetadata.ftStartYearShift#">
@@ -171,7 +171,7 @@
 			
 			<cfparam name="arguments.stMetadata.ftStyle" default="width:160px;">
 			<cfparam name="arguments.stMetadata.ftClass" default="">
-			<cfparam name="arguments.stMetadata.ftDateFormatMask" default="dd MMM yyyy">
+			<cfparam name="arguments.stMetadata.ftDateFormatMask" default="dd MMMM yyyy">
 			<cfparam name="arguments.stMetadata.ftTimeFormatMask" default="hh:mm tt">
 			<cfparam name="arguments.stMetadata.ftShowTime" default="true">		
 			<cfparam name="arguments.stMetadata.ftDateLocale" default="">		
