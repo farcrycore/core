@@ -55,7 +55,7 @@ var tinyMCELinkList = new Array(
 					SELECT r.objectid, t.label 
 					FROM refObjects r 
 					INNER JOIN #iTypename# t ON t.objectid = r.objectid
-					WHERE r.objectid IN (#ListQualify(arrayToList(aAllRelated), "'")#)
+					WHERE r.objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arrayToList(aAllRelated)#" />)
 					AND r.typename = '#iTypename#'
 					
 					<cfif iTypename NEQ listLast(url.relatedTypenames)>UNION</cfif>

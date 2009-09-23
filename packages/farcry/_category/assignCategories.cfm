@@ -12,7 +12,7 @@
 	DELETE FROM #application.dbowner#refCategories 
 	WHERE objectID = '#arguments.objectID#'	
 	<cfif isDefined("lDescendents") AND len(lDescendents)>
-		AND categoryid IN (#ListQualify(lDescendents,"'")#)
+		AND categoryid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lDescendents#" />)
 	</cfif>
 </cfquery>	
 

@@ -67,7 +67,7 @@
 		FROM farWorkflowDef
 		WHERE ObjectID IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lWorkflowList#">)
 		<cfif arguments.qFilter.RecordCount>
-			AND ObjectID IN (#ListQualify(ValueList(qFilter.key),"'")#)
+			AND ObjectID IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#ValueList(qFilter.key)#" />
 		</cfif>
 		ORDER BY title
 		</cfquery>

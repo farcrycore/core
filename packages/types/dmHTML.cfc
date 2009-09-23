@@ -133,7 +133,7 @@ object methods
 		 dmImage ON dmHTML_aObjectIDs.data = dmImage.objectid
 	WHERE parentid = '#arguments.primaryID#'
 	<cfif qFilter.RecordCount>
-		AND data IN (#ListQualify(ValueList(qFilter.key),"'")#)
+		AND data IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#qFilter.key#" />)
 	</cfif>
 	ORDER BY seq
 	</cfquery>

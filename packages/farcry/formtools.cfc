@@ -184,7 +184,7 @@
 							AND objectid in (
 							    select distinct objectid 
 							    from refCategories 
-							    where categoryID in (#listQualify(l_sqlCatIds,"'")#)
+							    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
 							    )				
 		</cfif>
 		<cfif bHasVersionID>
@@ -228,7 +228,7 @@
 							AND objectid in (
 							    select distinct objectid 
 							    from refCategories 
-							    where categoryID in (#listQualify(l_sqlCatIds,"'")#)
+							    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
 							    )				
 			</cfif>
 			<cfif bHasVersionID>
@@ -280,7 +280,7 @@
 							AND objectid in (
 							    select distinct objectid 
 							    from refCategories 
-							    where categoryID in (#listQualify(l_sqlCatIds,"'")#)
+							    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
 							    )				
 				</cfif>
 				<cfif bHasversionID and arguments.bCheckVersions>
@@ -310,7 +310,7 @@
 							AND objectid in (
 							    select distinct objectid 
 							    from refCategories 
-							    where categoryID in (#listQualify(l_sqlCatIds,"'")#)
+							    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
 							    )				
 				</cfif>
 				<cfif bHasVersionID>
@@ -371,7 +371,7 @@
 							AND objectid in (
 							    select distinct objectid 
 							    from refCategories 
-							    where categoryID in (#listQualify(l_sqlCatIds,"'")#)
+							    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
 							    )				
 			</cfif>
 			
@@ -438,7 +438,7 @@
 							AND objectid in (
 							    select distinct objectid 
 							    from refCategories 
-							    where categoryID in (#listQualify(l_sqlCatIds,"'")#)
+							    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
 							    )				
 				</cfif>	
 				<cfif arguments.sqlOrderBy neq ''>ORDER BY #arguments.sqlOrderBy#</cfif>
@@ -493,7 +493,7 @@
 			<cfif len(lObjectIDs)>
 				<cfquery datasource="#application.dsn#" name="qArrayData">
 					select parentID, data from #arguments.typename#_#arPropName#
-					where parentID in (#listQualify(lObjectIDs,"'")#)
+					where parentID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lObjectIDs#" />)
 					order by parentID, seq
 				</cfquery>
 			</cfif>

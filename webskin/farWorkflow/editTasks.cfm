@@ -7,7 +7,7 @@
 <cfif arrayLen(stobj.aTaskIDs)>
 	<cfquery datasource="#application.dsn#" name="qTasks">
 	SELECT * FROM farTask
-	WHERE ObjectID in (#ListQualify(arrayToList(stobj.aTaskIDs), "'")#)
+	WHERE ObjectID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arrayToList(stobj.aTaskIDs)#" />)
 	</cfquery>
 	<cfset lSelectedTaskIDs = valueList(qTasks.taskDefID) />
 <cfelse>
@@ -49,7 +49,7 @@
 							<cfif arrayLen(stobj.aTaskIDs)>
 								<cfquery datasource="#application.dsn#" name="qTask">
 								SELECT * FROM farTask
-								WHERE objectID in (#ListQualify(arrayToList(stobj.aTaskIDs), "'")#)
+								WHERE objectID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arrayToList(stobj.aTaskIDs)#" />)
 								AND taskDefID = '#stTaskDef.objectid#'
 								</cfquery>
 							</cfif>

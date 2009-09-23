@@ -183,7 +183,6 @@ ACTION: form action
 <cfelse>
 	<cfset lExcludeObjectID = arrayToList(returnstruct.plp.output[plpArrayPropertieName])>
 </cfif>
-<cfset lExcludeObjectID = ListQualify(lExcludeObjectID,"'")>
 
 
 <!--- FILTER: category filter --->
@@ -245,7 +244,7 @@ WHERE
 	label <> '(incomplete)'
 <!--- excludes those content items already selected for the underlying wizard (plp) --->
 <cfif lExcludeObjectID NEQ "">
-	AND objectid NOT IN (#preservesinglequotes(lExcludeObjectID)#)
+	AND objectid NOT IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lExcludeObjectID#" />)
 </cfif>
 ORDER BY label
 </cfquery>
