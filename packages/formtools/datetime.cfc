@@ -374,7 +374,7 @@
 		<cfparam name="arguments.stMetadata.ftShowTime" default="false">
 		
 		<cfsavecontent variable="html">
-			<cfif len(arguments.stMetadata.value)>
+			<cfif len(arguments.stMetadata.value) and application.fapi.showFarcryDate(arguments.stMetadata.value)>
 				<cfoutput>#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateMask)#</cfoutput>
 				<cfif arguments.stMetadata.ftShowTime>
 					<cfoutput> #TimeFormat(arguments.stMetadata.value,arguments.stMetadata.ftTimeMask)# </cfoutput>
