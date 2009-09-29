@@ -281,6 +281,8 @@
 					<cfoutput>
 					<script type="text/javascript" language="javascript" charset="utf-8">					
 					var obj#arguments.fieldname# = new Object();					
+					</script>
+					<script type="text/javascript" language="javascript" charset="utf-8">
 					obj#arguments.fieldname#.primaryFormFieldname="#arguments.fieldname#";
 					obj#arguments.fieldname#.primaryObjectID="#arguments.stObject.ObjectID#";
 					obj#arguments.fieldname#.primaryTypename="#arguments.typename#";
