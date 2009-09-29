@@ -258,7 +258,7 @@ object methods
 				<!--- Append defaults - ensures that new properties are picked up --->
 				<cfset stDefault = createobject("component",application.stCOAPI[thisform].packagepath).getData(application.fc.utils.createJavaUUID()) />
 				<cfloop collection="#stDefault#" item="formkey">
-					<cfif structkeyexists(stResult,formkey)>
+					<cfif not structkeyexists(stResult,formkey)>
 						<cfset stResult[formkey] = stDefault[formkey] />
 						<cfset bChanged = true />
 					</cfif>
