@@ -229,7 +229,7 @@ user --->
 			<cfloop list="#form.objectid#" index="i">
 				<cfset o = createObject("component", PrimaryPackagePath) />
 				<cfset st = o.getData(objectid=i) />
-				<cfset o.setlock(locked="false") />
+				<cfset o.setlock(locked="false",objectid=i) />
 			</cfloop>
 		
 		</cfif>
