@@ -47,6 +47,11 @@
 <cfset aActions = arraynew(1) />
 
 <!--- Caching --->
+<cfif request.mode.flushcache>
+	<cfset rurl = application.fapi.fixURL(url=url.url,addvalues='flushcache=0') />
+<cfelse>
+	<cfset rurl = application.fapi.fixURL(url=url.url,addvalues='flushcache=1') />
+</cfif>
 <cfsavecontent variable="html">
 	<cfoutput>
 		{
@@ -56,11 +61,7 @@
 			listeners:{
 				"click":{
 					fn:function(){
-						<cfif request.mode.flushcache>
-							parent.updateContent("#url.url#&flushcache=0");
-						<cfelse>
-							parent.updateContent("#url.url#&flushcache=1");
-						</cfif>
+						parent.updateContent("#rurl#");
 						Ext.getBody().mask("Working...");
 					}
 				}
@@ -71,6 +72,13 @@
 <cfset arrayappend(aActions,html) />
 
 <!--- View drafts --->
+<cfif request.mode.showdraft and structkeyexists(stObj,"versionid")>
+	<cfset rurl = application.fapi.fixURL(url=url.url,addvalues='flushcache=1&showdraft=0') />
+<cfelseif request.mode.showdraft>
+	<cfset rurl = application.fapi.fixURL(url=url.url,addvalues='flushcache=1&showdraft=0') />
+<cfelse>
+	<cfset rurl = application.fapi.fixURL(url=url.url,addvalues='flushcache=0&showdraft=1') />
+</cfif>
 <cfsavecontent variable="html">
 	<cfoutput>
 		{
@@ -80,13 +88,7 @@
 			listeners:{
 				"click":{
 					fn:function(){
-						<cfif request.mode.showdraft and structkeyexists(stObj,"versionid")>
-							parent.updateContent("#url.url#&flushcache=1&showdraft=0");
-						<cfelseif request.mode.showdraft>
-							parent.updateContent("#url.url#&flushcache=1&showdraft=0");
-						<cfelse>
-							parent.updateContent("#url.url#&flushcache=0&showdraft=1");
-						</cfif>
+						parent.updateContent("#rurl#");
 						Ext.getBody().mask("Working...");
 					}
 				}
@@ -98,6 +100,11 @@
 
 <!--- Container management --->
 <sec:CheckPermission permission="ContainerManagement" objectid="#request.navid#">
+	<cfif request.mode.design and request.mode.showcontainers gt 0>
+		<cfset rurl = application.fapi.fixURL(url=url.url,addvalues='designmode=0') />
+	<cfelse>
+		<cfset rurl = application.fapi.fixURL(url=url.url,addvalues='designmode=1') />
+	</cfif>
 	<cfsavecontent variable="html">
 		<cfoutput>
 			{
@@ -107,11 +114,7 @@
 				listeners:{
 					"click":{
 						fn:function(){
-							<cfif request.mode.design and request.mode.showcontainers gt 0>
-								parent.updateContent("#url.url#&designmode=0");
-							<cfelse>
-								parent.updateContent("#url.url#&designmode=1");
-							</cfif>
+							parent.updateContent("#rurl#");
 							Ext.getBody().mask("Working...");
 						}
 					}
