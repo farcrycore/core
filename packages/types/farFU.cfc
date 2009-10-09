@@ -598,6 +598,8 @@
 		<cfset var iQstr = "" />
 		<cfset var i = "" />
 		<cfset var stResult = structNew() />
+		<cfset var paramTypes = "@type,@objectid,@pageview,@bodyview,@paramname" /><!--- @ to differentiate from url defined parameter names --->
+		<cfset var paramType = "" />
 		
 		<!--- If the browser has added a trailing / to a friendly URL, strip it out. --->
 		<cfif structKeyExists(url, "furl") AND len(url.furl) GT 1 AND right(url.furl,1) EQ "/">
@@ -655,45 +657,81 @@
 				
 			<cfelse>
 				
-						
 				<cfloop list="#url.furl#" index="i" delimiters="/">
-					<cfif isUUID(i)>
-						<cfset stResult.objectid = i />
-						
-					<cfelseif structKeyExists(application.stCoapi, "#i#")>
-						<!--- CHECK FOR TYPENAME FIRST --->
-						<cfset stResult.type = i />
-			
-					<cfelseif structKeyExists(application.fc.fuID, "#i#")>
-						<cfset stResult.type = application.fc.fuID[i] />
-					<cfelse>
-						<!--- If we get to here, then we need to confirm we have a type defined. If not, we need to determine from objectid --->
-						<cfif structKeyExists(stResult, "objectid") AND (not structKeyExists(stResult, "type") or not len(stResult.type))>
-							<cfset stResult.type = application.coapi.coapiUtilities.findType(objectid="#stResult.objectid#") />
-						</cfif>
-						<cfif structKeyExists(stResult, "type") and len(stResult.type)>	
-							<cfif not structKeyExists(stResult, "view")>
-								<!--- Only check for other attributes once the type is determined. --->				
-								<cfif len(application.coapi.coapiAdmin.getWebskinPath(typename="#stResult.type#", template="#i#"))>
-									<!--- THIS MEANS ITS A WEBSKIN --->
+					<cfloop list="#paramTypes#" index="paramType">
+						<cfswitch expression="#paramType#">
+							<cfcase value="@type">
+								<cfif structKeyExists(application.stCoapi,i)>
+									<cfset stResult.type = i />
+									<cfset paramTypes = listdeleteat(paramTypes,listfind(paramtypes,paramType)) />
+									<cfbreak />
+								</cfif>
+								<cfif structKeyExists(application.fc.fuID, i)>
+									<cfset stResult.type = application.fc.fuID[i] />
+									<cfset paramTypes = listdeleteat(paramTypes,listfind(paramtypes,paramType)) />
+									<cfbreak />
+								</cfif>
+							</cfcase>
+							<cfcase value="@objectid">
+								<cfif isUUID(i)>
+									<cfset stResult.objectid = i />
+									
+									<!--- Type and ObjectID can be used together - but only in that order. Don't check for type anymore. --->
+									<cfset paramTypes = listdeleteat(paramTypes,listfind(paramtypes,paramType)) />
+									<cfif listcontains(paramTypes,"@type")>
+										<cfset paramTypes = listdeleteat(paramTypes,listfind(paramtypes,"@type")) />
+									</cfif>
+									<cfbreak />
+								</cfif>
+							</cfcase>
+							<cfcase value="@pageview">
+								<cfif structKeyExists(stResult, "type") and len(stResult.type) and len(application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template=i))>
 									<cfset stResult.view = i />
 								</cfif>
-	
-							<cfelse>
-								<!--- Only check for other attributes once the type is determined. --->				
-								<cfif len(application.coapi.coapiAdmin.getWebskinPath(typename="#stResult.type#", template="#i#"))>
-									<!--- THIS MEANS ITS A WEBSKIN --->
-									<cfset stResult.bodyView = i />
+								<cfif structKeyExists(stResult, "type") and len(stResult.type) and refindnocase("/displayPage[^.]+\.cfm",application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template="__" & i))>
+									<cfset stResult.view = listfirst(listlast(application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template="__" & i),"/\"),".") />
 								</cfif>
 								
-							</cfif>
-						</cfif>
-					</cfif>	
-			
-							
-							
+								<cfif structkeyexists(stResult,"view")>
+									<cfset paramTypes = listdeleteat(paramTypes,listfind(paramtypes,paramType)) />
+									<cfbreak />
+								</cfif>
+							</cfcase>
+							<cfcase value="@bodyview">
+								<cfif structKeyExists(stResult, "type") and len(stResult.type)>
+									<cfif len(application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template=i))>
+										<cfset stResult.bodyView = i />
+									</cfif>
+									<cfif refindnocase("/displayPage[^.]+\.cfm",application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template="__" & i))>
+										<cfset stResult.bodyView = listfirst(listfind(application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template="__" & i),"/\"),".") />
+									</cfif>
+									
+									<cfif structkeyexists(stResult,"bodyView")>
+										<cfset paramTypes = listdeleteat(paramTypes,listfind(paramtypes,paramType)) />
+	
+										<cfif not structkeyexists(stResult,"view")>
+											<cfset stResult.view = "displayPageStandard" />
+											<cfset paramTypes = listdeleteat(paramTypes,listfind(paramtypes,"pageview")) />
+										</cfif>
+	
+										<cfbreak />
+									</cfif>
+								</cfif>
+							</cfcase>
+							<cfcase value="@paramname"><!--- If we got to this item, none of the others match or are complete --->
+								<cfset stResult[i] = "" />
+								<cfset paramTypes = i /><!--- Next token will be the value of this variable --->
+								<cfbreak />
+							</cfcase>
+							<cfdefaultcase><!--- This can only happen if the case "@paramname" sets a variable name --->
+								<cfset stResult[paramType] = i />
+								<cfset paramTypes = "@paramname" /><!--- Next token will be a parameter name --->
+								<cfbreak />
+							</cfdefaultcase>
+						</cfswitch>
+					</cfloop>
 				</cfloop>
-			
+				
 			</cfif>
 		<cfelseif isUsingFU() and not request.mode.ajax>
 			<cfif structKeyExists(url, "objectid") AND url.objectid NEQ application.navid.home AND structKeyExists(variables.stLookup, url.objectid)>
@@ -726,31 +764,36 @@
 
 		<cfset var stReturnFU = StructNew()>
 		<cfset var stLocal = StructNew()>
-		
+		<cfset var fuList = "" />
+		<cfset var fuThis = "" />
+		<cfset var fuToken = "" />
+		<cfset var bParamName = 1 />
 
 		<!--- check if the FU exists in the applictaion scope [currently active] --->
 		<cfif StructKeyExists(variables.stMappings,arguments.friendlyURL)>
 			<cfset stReturnFU = getData(objectid="#variables.stMappings[arguments.friendlyURL].objectid#") />
 		<cfelse>
+			<cfloop list="#arguments.friendlyURL#" index="fuToken" delimiters="/">
+				<cfset fuThis = "#fuThis#/#fuToken#" />
+				<cfset fuList = listappend(fuList,fuThis) />
+			</cfloop>
+			
 			<cfquery datasource="#arguments.dsn#" name="stLocal.qGet">
-			SELECT	fu.objectid
-			FROM	#application.dbowner#farFU fu, 
-					#application.dbowner#refObjects r
-			WHERE	r.objectid = fu.refobjectid
-			AND fu.friendlyURL = <cfqueryparam value="#arguments.friendlyURL#" cfsqltype="cf_sql_varchar">
-			ORDER BY fu.bDefault DESC, fu.fuStatus DESC
+				SELECT		objectid,friendlyURL
+				FROM		#application.dbowner#farFU
+				WHERE		friendlyURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#fuList#" />
+				ORDER BY 	bDefault DESC, fuStatus DESC
 			</cfquery>
-
+			
 			<cfif stLocal.qGet.recordCount>
-				<cfset stReturnFU = getData(objectid="#stLocal.qGet.objectid#") />
+				<cfset stReturnFU = getData(objectid="#stLocal.qGet.objectid[1]#") />
+				<cfset variables.stMappings[arguments.friendlyURL] = stReturnFU />
 			</cfif>
 		</cfif>
 
 		<cfreturn stReturnFU>
 	</cffunction>
 	
-
-
 	<cffunction name="rebuildFU" access="public" returntype="struct" hint="rebuilds friendly urls for a particular type" output="true">
 
 		<cfargument name="typeName" required="true" type="string">
@@ -1072,6 +1115,38 @@
 		<cfset var returnURL = "">
 		<cfset var bFoundFU = false /><!--- State used to determine if we found a friendly URL --->
 		
+		<cfset var typeFU = "" />
+		<cfset var viewFU = "" />
+		<cfset var standardViewFU = "" />
+		<cfset var bodyFU = "" />
+		
+		<cfif len(arguments.type)>
+			<cfif isdefined("application.stCOAPI.#arguments.type#.fuAlias") and len(application.stCOAPI[arguments.type].fuAlias)>
+				<cfset typeFU = application.stCOAPI[arguments.type].fuAlias />
+			<cfelse>
+				<cfset typeFU = arguments.type />
+			</cfif>
+			<cfif isdefined("application.stCOAPI.#arguments.type#.stWebskins.displayPageStandard.fuAlias") and len(application.stCOAPI[arguments.type].stWebskins["displayPageStandard"].fuAlias)>
+				<cfset standardViewFU = application.stCOAPI[arguments.type].stWebskins["displayPageStandard"].fuAlias />
+			<cfelse>
+				<cfset standardViewFU = "displayPageStandard" />
+			</cfif>
+		</cfif>
+		<cfif len(arguments.view)>
+			<cfif isdefined("application.stCOAPI.#arguments.type#.stWebskins.#arguments.view#.fuAlias") and len(application.stCOAPI[arguments.type].stWebskins[arguments.view].fuAlias)>
+				<cfset viewFU = application.stCOAPI[arguments.type].stWebskins[arguments.view].fuAlias />
+			<cfelse>
+				<cfset viewFU = arguments.view />
+			</cfif>
+		</cfif>
+		<cfif len(arguments.bodyView)>
+			<cfif isdefined("application.stCOAPI.#arguments.type#.stWebskins.#arguments.bodyView#.fuAlias") and len(application.stCOAPI[arguments.type].stWebskins[arguments.bodyView].fuAlias)>
+				<cfset bodyFU = application.stCOAPI[arguments.type].stWebskins[arguments.bodyView].fuAlias />
+			<cfelse>
+				<cfset bodyFU = arguments.bodyView />
+			</cfif>
+		</cfif>
+		
 		<cfif application.fc.factory.farFU.isUsingFU()>
 			
 			<cfif len(arguments.objectid)>
@@ -1113,28 +1188,28 @@
 					</cfif>
 					<!--- WE DONT APPEND TYPENAME IF WE FOUND AN FU --->
 					<cfif NOT bFoundFU AND len(arguments.type)>
-						<cfset returnURL = "#returnURL#&type=#arguments.type#" />
+						<cfset returnURL = "#returnURL#&type=#typeFU#" />
 					</cfif>
 					<cfif len(arguments.view)>
-						<cfset returnURL = "#returnURL#&view=#arguments.view#" />
+						<cfset returnURL = "#returnURL#&view=#viewFU#" />
 					</cfif>
 					<cfif len(arguments.bodyView)>
-						<cfset returnURL = "#returnURL#&bodyView=#arguments.bodyView#" />
+						<cfset returnURL = "#returnURL#&view=#bodyFU#" />
 					</cfif>		
 				<cfelse>
 					<!--- OTHERWISE WE CAN USE THE URL SYNTAX OF /OBJECTID/TYPE/VIEW/BODYVIEW --->
 					<cfif len(arguments.type)>
-						<cfset returnURL = "#returnURL#/#arguments.type#" />
+						<cfset returnURL = "#returnURL#/#typeFU#" />
 					</cfif>
 					<cfif len(arguments.view)>
-						<cfset returnURL = "#returnURL#/#arguments.view#" />
+						<cfset returnURL = "#returnURL#/#viewFU#" />
 					</cfif>
 					<cfif len(arguments.bodyView)>
 						<cfif NOT len(arguments.view)>
 							<!--- If we have a bodyView, we must include the view for the syntax to work. --->
-							<cfset returnURL = "#returnURL#/displayPageStandard" />
+							<cfset returnURL = "#returnURL#/#standardViewFU#" />
 						</cfif>
-						<cfset returnURL = "#returnURL#/#arguments.bodyView#" />
+						<cfset returnURL = "#returnURL#/#bodyFU#" />
 					</cfif>		
 				</cfif>
 			</cfif>			
@@ -1149,13 +1224,13 @@
 				<cfset returnURL = "#returnURL#objectid=#arguments.objectid#" />
 			</cfif>
 			<cfif len(arguments.type)>
-				<cfset returnURL = "#returnURL#&type=#arguments.type#" />
+				<cfset returnURL = "#returnURL#&type=#typeFU#" />
 			</cfif>
 			<cfif len(arguments.view)>
-				<cfset returnURL = "#returnURL#&view=#arguments.view#" />
+				<cfset returnURL = "#returnURL#&view=#viewFU#" />
 			</cfif>
 			<cfif len(arguments.bodyView)>
-				<cfset returnURL = "#returnURL#&bodyView=#arguments.bodyView#" />
+				<cfset returnURL = "#returnURL#&bodyView=#bodyFU#" />
 			</cfif>
 		</cfif>
 		

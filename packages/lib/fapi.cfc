@@ -836,7 +836,20 @@
 				</cfif>
 		
 				<cfset returnURL = returnURL & application.fc.factory.farFU.getFU(objectid="#linkID#", type="#arguments.type#", view="#arguments.view#", bodyView="#arguments.bodyView#")>
-		
+				
+				<cfif not len(linkID) and not find("type=",returnURL)>
+					<cfif len(arguments.urlParameters)>
+						<cfset returnURL = "#returnURL#/#replace(replace(arguments.urlParameters,'=','/','ALL'),'&','/','ALL')#" />
+						<cfset arguments.urlParameters = "" />
+						<cfset arguments.stParameters = structnew() />
+					<cfelseif not structisempty(arguments.stParameters)>
+						<cfloop collection="#arguments.stParameters#" item="i">
+							<cfset returnURL = "#returnURL#/#i#/#arguments.stParameters[i]#" />
+						</cfloop>
+						<cfset arguments.stParameters = structnew() />
+					</cfif>
+				</cfif>
+				
 			</cfif>
 			
 			<cfif not len(returnURL) and isdefined("url.furl")>

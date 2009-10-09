@@ -1400,6 +1400,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfloop list="#stReturnMetadata.qWebskins.columnList#" index="ixCol">
 				<cfset stReturnMetadata.stWebskins[stReturnMetadata.qWebskins.METHODNAME[currentRow]][ixCol] = stReturnMetadata.qWebskins[ixCol][currentRow] />
 			</cfloop>
+			<cfif len(trim(stReturnMetadata.qWebskins.fuAlias[currentRow]))>
+				<cfset stReturnMetadata.stWebskins["__" & stReturnMetadata.qWebskins.fuAlias[currentRow]] = stReturnMetadata.stWebskins[stReturnMetadata.qWebskins.METHODNAME[currentRow]] />
+			</cfif>
 		</cfloop>
 		
 		<!--- 

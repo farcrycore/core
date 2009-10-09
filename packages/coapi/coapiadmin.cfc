@@ -251,7 +251,7 @@
 								'' as typename, '' as webskin, cast(0 as integer) as id, '' as path, 
 								
 								<!--- extracted from webkin later --->
-								'anonymous' as author, datelastmodified, '' as description, name as displayname, 0 as cacheStatus, 0 as cacheTimeout, 0 as cacheByURL, 0 as cacheByForm, 0 as cacheByRoles, '' as cacheByVars, name as methodname
+								'anonymous' as author, datelastmodified, '' as description, name as displayname, 0 as cacheStatus, 0 as cacheTimeout, 0 as cacheByURL, 0 as cacheByForm, 0 as cacheByRoles, '' as cacheByVars, name as methodname, '' as fuAlias
 								
 						FROM 	qThis
 					</cfquery>
@@ -308,8 +308,8 @@
 							typename=request.fc.stProjectDirectorys.qAll.typename, 
 							template=stWebskinDetails.methodname, 
 							path=stWebskinDetails.path, 
-							lProperties="displayname,author,description,cacheStatus,cacheTimeout,cacheByURL,cacheByForm,cacheByRoles,cacheByVars", 
-							lTypes="string,string,string,numeric,numeric,boolean,boolean,boolean,string", 
+							lProperties="displayname,author,description,cacheStatus,cacheTimeout,cacheByURL,cacheByForm,cacheByRoles,cacheByVars,fuAlias", 
+							lTypes="string,string,string,numeric,numeric,boolean,boolean,boolean,string,string", 
 							lDefaults=" , , ,0,1440,false,false,false, "
 						) />
 					
@@ -318,7 +318,7 @@
 		
 					
 					<!--- UPDATE THE METADATA QUERY --->
-					<cfloop list="path,methodname,displayname,author,description,cacheStatus,cacheTimeout,cacheByURL,cacheByForm,cacheByRoles,cacheByVars" index="thisvar">
+					<cfloop list="path,methodname,displayname,author,description,cacheStatus,cacheTimeout,cacheByURL,cacheByForm,cacheByRoles,cacheByVars,fuAlias" index="thisvar">
 						<cfset querysetcell(request.fc.stProjectDirectorys.qAll,thisvar,stWebskinDetails[thisvar],request.fc.stProjectDirectorys.qAll.currentRow) />	
 					</cfloop>
 				</cfloop>
@@ -384,7 +384,7 @@
 		<cfset var plugin = "" />
 	
 		<!--- If the webskin is in the application.stcoapi then just use it --->
-			<cfif structKeyExists(application.stcoapi, typename)
+		<cfif structKeyExists(application.stcoapi, typename)
 			AND structKeyExists(application.stcoapi[typename], "stWebskins") 
 			AND structKeyExists(application.stcoapi[typename].stWebskins, template) 
 			AND structKeyExists(application.stcoapi[typename].stWebskins[template], "path")>
