@@ -1190,7 +1190,7 @@
 					<cfif NOT bFoundFU AND len(arguments.type)>
 						<cfset returnURL = "#returnURL#&type=#typeFU#" />
 					</cfif>
-					<cfif len(arguments.view)>
+					<cfif len(arguments.view) and arguments.view neq "displayPageStandard">
 						<cfset returnURL = "#returnURL#&view=#viewFU#" />
 					</cfif>
 					<cfif len(arguments.bodyView)>
@@ -1201,14 +1201,10 @@
 					<cfif len(arguments.type)>
 						<cfset returnURL = "#returnURL#/#typeFU#" />
 					</cfif>
-					<cfif len(arguments.view)>
+					<cfif len(arguments.view) and arguments.view neq "displayPageStandard">
 						<cfset returnURL = "#returnURL#/#viewFU#" />
 					</cfif>
 					<cfif len(arguments.bodyView)>
-						<cfif NOT len(arguments.view)>
-							<!--- If we have a bodyView, we must include the view for the syntax to work. --->
-							<cfset returnURL = "#returnURL#/#standardViewFU#" />
-						</cfif>
 						<cfset returnURL = "#returnURL#/#bodyFU#" />
 					</cfif>		
 				</cfif>
@@ -1226,7 +1222,7 @@
 			<cfif len(arguments.type)>
 				<cfset returnURL = "#returnURL#&type=#typeFU#" />
 			</cfif>
-			<cfif len(arguments.view)>
+			<cfif len(arguments.view) and arguments.view neq "displayPageStandard">
 				<cfset returnURL = "#returnURL#&view=#viewFU#" />
 			</cfif>
 			<cfif len(arguments.bodyView)>
