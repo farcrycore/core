@@ -1119,6 +1119,7 @@
 		<cfset var viewFU = "" />
 		<cfset var standardViewFU = "" />
 		<cfset var bodyFU = "" />
+		<cfset var thistype = "" />
 		
 		<cfif len(arguments.type)>
 			<cfif isdefined("application.stCOAPI.#arguments.type#.fuAlias") and len(application.stCOAPI[arguments.type].fuAlias)>
@@ -1131,17 +1132,20 @@
 			<cfelse>
 				<cfset standardViewFU = "displayPageStandard" />
 			</cfif>
+			<cfset thistype = arguments.type />
+		<cfelseif len(arguments.objectid)>
+			<cfset thistype = application.fapi.findType(arguments.objectid) />
 		</cfif>
 		<cfif len(arguments.view)>
-			<cfif isdefined("application.stCOAPI.#arguments.type#.stWebskins.#arguments.view#.fuAlias") and len(application.stCOAPI[arguments.type].stWebskins[arguments.view].fuAlias)>
-				<cfset viewFU = application.stCOAPI[arguments.type].stWebskins[arguments.view].fuAlias />
+			<cfif isdefined("application.stCOAPI.#thistype#.stWebskins.#arguments.view#.fuAlias") and len(application.stCOAPI[thistype].stWebskins[arguments.view].fuAlias)>
+				<cfset viewFU = application.stCOAPI[thistype].stWebskins[arguments.view].fuAlias />
 			<cfelse>
 				<cfset viewFU = arguments.view />
 			</cfif>
 		</cfif>
 		<cfif len(arguments.bodyView)>
-			<cfif isdefined("application.stCOAPI.#arguments.type#.stWebskins.#arguments.bodyView#.fuAlias") and len(application.stCOAPI[arguments.type].stWebskins[arguments.bodyView].fuAlias)>
-				<cfset bodyFU = application.stCOAPI[arguments.type].stWebskins[arguments.bodyView].fuAlias />
+			<cfif isdefined("application.stCOAPI.#thistype#.stWebskins.#arguments.bodyView#.fuAlias") and len(application.stCOAPI[thistype].stWebskins[arguments.bodyView].fuAlias)>
+				<cfset bodyFU = application.stCOAPI[thistype].stWebskins[arguments.bodyView].fuAlias />
 			<cfelse>
 				<cfset bodyFU = arguments.bodyView />
 			</cfif>
