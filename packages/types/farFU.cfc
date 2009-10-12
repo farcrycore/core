@@ -685,7 +685,7 @@
 								</cfif>
 							</cfcase>
 							<cfcase value="@pageview">
-								<cfif structKeyExists(stResult, "type") and len(stResult.type) and len(application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template=i))>
+								<cfif structKeyExists(stResult, "type") and len(stResult.type) and refindnocase("/displayPage[^.]+\.cfm",application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template=i))>
 									<cfset stResult.view = i />
 								</cfif>
 								<cfif structKeyExists(stResult, "type") and len(stResult.type) and refindnocase("/displayPage[^.]+\.cfm",application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template="__" & i))>
@@ -702,16 +702,16 @@
 									<cfif len(application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template=i))>
 										<cfset stResult.bodyView = i />
 									</cfif>
-									<cfif refindnocase("/displayPage[^.]+\.cfm",application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template="__" & i))>
+									<cfif len(application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template="__" & i))>
 										<cfset stResult.bodyView = listfirst(listfind(application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template="__" & i),"/\"),".") />
 									</cfif>
 									
-									<cfif structkeyexists(stResult,"bodyView")>
+									<cfif structkeyexists(stResult,"bodyView") and listfind(paramtypes,paramType)>
 										<cfset paramTypes = listdeleteat(paramTypes,listfind(paramtypes,paramType)) />
-	
+										
 										<cfif not structkeyexists(stResult,"view")>
 											<cfset stResult.view = "displayPageStandard" />
-											<cfset paramTypes = listdeleteat(paramTypes,listfind(paramtypes,"pageview")) />
+											<cfset paramTypes = listdeleteat(paramTypes,listfind(paramtypes,"@pageview")) />
 										</cfif>
 	
 										<cfbreak />
@@ -1198,7 +1198,7 @@
 						<cfset returnURL = "#returnURL#&view=#viewFU#" />
 					</cfif>
 					<cfif len(arguments.bodyView)>
-						<cfset returnURL = "#returnURL#&view=#bodyFU#" />
+						<cfset returnURL = "#returnURL#&bodyView=#bodyFU#" />
 					</cfif>		
 				<cfelse>
 					<!--- OTHERWISE WE CAN USE THE URL SYNTAX OF /OBJECTID/TYPE/VIEW/BODYVIEW --->
