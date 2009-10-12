@@ -600,6 +600,7 @@
 		<cfset var stResult = structNew() />
 		<cfset var paramTypes = "@type,@objectid,@pageview,@bodyview,@paramname" /><!--- @ to differentiate from url defined parameter names --->
 		<cfset var paramType = "" />
+		<cfset var temp = "" />
 		
 		<!--- If the browser has added a trailing / to a friendly URL, strip it out. --->
 		<cfif structKeyExists(url, "furl") AND len(url.furl) GT 1 AND right(url.furl,1) EQ "/">
@@ -679,17 +680,21 @@
 									<!--- Type and ObjectID can be used together - but only in that order. Don't check for type anymore. --->
 									<cfset paramTypes = listdeleteat(paramTypes,listfind(paramtypes,paramType)) />
 									<cfif listcontains(paramTypes,"@type")>
+										<cfset stResult.type = application.fapi.findType(i) />
 										<cfset paramTypes = listdeleteat(paramTypes,listfind(paramtypes,"@type")) />
 									</cfif>
 									<cfbreak />
 								</cfif>
 							</cfcase>
 							<cfcase value="@pageview">
-								<cfif structKeyExists(stResult, "type") and len(stResult.type) and refindnocase("/displayPage[^.]+\.cfm",application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template=i))>
+								<cfset temp = application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template=i) />
+								<cfif structKeyExists(stResult, "type") and len(stResult.type) and (isdefined("url.ajaxmode") and len(temp) or refindnocase("/displayPage[^.]+\.cfm",temp))>
 									<cfset stResult.view = i />
-								</cfif>
-								<cfif structKeyExists(stResult, "type") and len(stResult.type) and refindnocase("/displayPage[^.]+\.cfm",application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template="__" & i))>
-									<cfset stResult.view = listfirst(listlast(application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template="__" & i),"/\"),".") />
+								<cfelse>
+									<cfset temp = application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template="__" & i) />
+									<cfif structKeyExists(stResult, "type") and len(stResult.type) and (isdefined("url.ajaxmode") and len(temp) or refindnocase("/displayPage[^.]+\.cfm",temp))>
+										<cfset stResult.view = listfirst(listlast(temp,"/\"),".") />
+									</cfif>
 								</cfif>
 								
 								<cfif structkeyexists(stResult,"view")>
