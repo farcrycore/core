@@ -1197,7 +1197,7 @@
 					<cfif len(arguments.view) and arguments.view neq "displayPageStandard">
 						<cfset returnURL = "#returnURL#&view=#viewFU#" />
 					</cfif>
-					<cfif len(arguments.bodyView)>
+					<cfif len(arguments.bodyView) and not listcontainsnocase("displayBody,displayTypeBody",arguments.bodyView)>
 						<cfset returnURL = "#returnURL#&bodyView=#bodyFU#" />
 					</cfif>		
 				<cfelse>
@@ -1208,7 +1208,7 @@
 					<cfif len(arguments.view) and arguments.view neq "displayPageStandard">
 						<cfset returnURL = "#returnURL#/#viewFU#" />
 					</cfif>
-					<cfif len(arguments.bodyView)>
+					<cfif len(arguments.bodyView) and not listcontainsnocase("displayBody,displayTypeBody",arguments.bodyView)>
 						<cfset returnURL = "#returnURL#/#bodyFU#" />
 					</cfif>		
 				</cfif>
@@ -1229,7 +1229,7 @@
 			<cfif len(arguments.view) and arguments.view neq "displayPageStandard">
 				<cfset returnURL = "#returnURL#&view=#viewFU#" />
 			</cfif>
-			<cfif len(arguments.bodyView)>
+			<cfif len(arguments.bodyView) and not listcontainsnocase("displayBody,displayTypeBody",arguments.bodyView)>
 				<cfset returnURL = "#returnURL#&bodyView=#bodyFU#" />
 			</cfif>
 		</cfif>
