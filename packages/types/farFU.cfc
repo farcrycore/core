@@ -756,6 +756,34 @@
 						<cfabort>		
 				</cfif>
 			</cfif>
+		<cfelse>
+			<cfif structkeyexists(url,"type")>
+				<cfset stResult.type = url.type />
+			</cfif>
+			<cfif structkeyexists(url,"objectid")>
+				<cfset stResult.objectid = url.objectid />
+				<cfset stResult.type = application.fapi.findType(url.objectid) />
+			</cfif>
+		</cfif>
+		
+		<cfif structkeyexists(url,"view")>
+			<cfset stResult.view = url.view />
+		</cfif>
+		<cfif structkeyexists(stResult,"type") and len(stResult.type) and structkeyexists(stResult,"view") and not structkeyexists(application.stCOAPI[stResult.type].stWebskins,stResult.view)>
+			<cfset temp = application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template="__" & stResult.view) />
+			<cfif len(temp)>
+				<cfset stResult.view = listfirst(listlast(temp,"/\"),".") />
+			</cfif>
+		</cfif>
+		
+		<cfif structkeyexists(url,"bodyView")>
+			<cfset stResult.bodyView = url.bodyView />
+		</cfif>
+		<cfif structkeyexists(stResult,"type") and len(stResult.type) and structkeyexists(stResult,"bodyView") and not structkeyexists(application.stCOAPI[stResult.type].stWebskins,stResult.bodyView)>
+			<cfset temp = application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template="__" & stResult.bodyView) />
+			<cfif len(temp)>
+				<cfset stResult.bodyView = listfirst(listlast(temp,"/\"),".") />
+			</cfif>
 		</cfif>
 		
 		<cfreturn stResult />
