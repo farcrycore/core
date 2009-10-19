@@ -651,6 +651,7 @@
 
 				<cfelse>
 					<cfset stResult.objectid = stFU.refobjectid>
+					<cfset stResult.type = application.fapi.findType(objectid=stFU.refobjectid) />
 					<cfloop index="iQstr" list="#stFU.queryString#" delimiters="&">
 						<cfset url["#listFirst(iQstr,'=')#"] = listLast(iQstr,"=")>
 					</cfloop>
@@ -814,7 +815,7 @@
 			<cfquery datasource="#arguments.dsn#" name="stLocal.qGet">
 				SELECT		objectid,friendlyURL
 				FROM		#application.dbowner#farFU
-				WHERE		friendlyURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#fuList#" />
+				WHERE		friendlyURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.friendlyURL#" />
 				ORDER BY 	bDefault DESC, fuStatus DESC
 			</cfquery>
 			
