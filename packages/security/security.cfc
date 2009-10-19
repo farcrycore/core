@@ -345,7 +345,7 @@
 			<cfset session.dmprofile = oProfile.createProfile(session.dmprofile) />
 			
 			<!--- Go and get it again now its in the db --->
-			<cfset stDefaultProfile = this.userdirectories[arguments.ud].getProfile(userid=arguments.userid) />
+			<cfset stDefaultProfile = this.userdirectories[arguments.ud].getProfile(userid=arguments.userid,currentProfile=session.dmProfile) />
 			<cfparam name="stDefaultProfile.override" default="false" />
 			<cfset structappend(session.dmProfile,stDefaultProfile,stDefaultProfile.override) />
 			<cfset oProfile.setData(stProperties=session.dmProfile) />
