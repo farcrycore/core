@@ -709,7 +709,7 @@
 										<cfset stResult.bodyView = i />
 									</cfif>
 									<cfif len(application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template="__" & i))>
-										<cfset stResult.bodyView = listfirst(listfind(application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template="__" & i),"/\"),".") />
+										<cfset stResult.bodyView = listfirst(listlast(application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template="__" & i),"/\"),".") />
 									</cfif>
 									
 									<cfif structkeyexists(stResult,"bodyView") and listfind(paramtypes,paramType)>
