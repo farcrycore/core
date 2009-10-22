@@ -2,7 +2,7 @@
 	function getInputValue(name) {
 					var objs = Ext.select("[name="+name+"]");
 					var result = "";
-					
+
 					// input doesn't exist
 					if (!objs.getCount()) {
 						return "";
@@ -39,13 +39,13 @@
 						return result.join();
 					}
 				};
-				
+
 				var watchedfields = {};
 				var watchingfields = {}
 				function addWatch(prefix,property,opts) {
 					watchedfields[prefix] = watchedfields[prefix] || {};
 					watchingfields[prefix] = watchingfields[prefix] || {};
-					
+
 					//if (!watchedfields[prefix][property]) { // if the property doesn't have a watch attached already, do so
 						Ext.select("select[name="+prefix+property+"], input[name="+prefix+property+"][type=text], input[name="+prefix+property+"][type=password]").on("change",ajaxUpdate,this,{ prefix:prefix, property: property });
 						Ext.select("input[name="+prefix+property+"][type=checkbox], input[name="+prefix+property+"][type=radio]").on("click",ajaxUpdate,this,{ prefix:prefix, property: property });
@@ -60,47 +60,47 @@
 							},100);
 						});
 					//}
-					
+
 					watchedfields[prefix][property] = watchedfields[prefix][property] || [];
 					watchedfields[prefix][property].push(opts);
-					
+
 					watchingfields[prefix][opts.property] = watchingfields[prefix][opts.property] || [];
 					watchingfields[prefix][opts.property].push(opts);
 				};
-				
+
 				function ajaxUpdate(event,el,opt) {
 					var values = {};
-					
+
 					// for each watcher
 					for (var i=0; i<watchedfields[opt.prefix][opt.property].length; i++) {
 						watcher = watchedfields[opt.prefix][opt.property][i];
-						
+
 						// include the watcher in the form post
 						values[watcher.property] = "";
-						
+
 						// find out what each one is watching
 						for (var j=0; j<watchingfields[opt.prefix][watcher.property].length; j++)
 							// add these properties to the form post
 							values[watchingfields[opt.prefix][watcher.property][j].watchedproperty] = "";
 					}
-					
+
 					// get the post values
 					for (var property in values)
 						values[property] = getInputValue(opt.prefix+property);
-					
+
 					// for each watcher
 					for (var i=0; i<watchedfields[opt.prefix][opt.property].length; i++) {
 						watcher = watchedfields[opt.prefix][opt.property][i];
-							
+
 						// set the loading html
 						document.getElementById(watcher.prefix+watcher.property+"ajaxdiv").innerHTML = watcher.ftLoaderHTML;
-						
+
 						// post the AJAX request
 						Ext.Ajax.request({
 							url: '#application.url.farcry#/facade/ftajax.cfm?formtool='+watcher.formtool+'&typename='+watcher.typename+'&fieldname='+watcher.fieldname+'&property='+watcher.property+'&objectid='+watcher.objectid,
 							success: function(response){
 								document.getElementById(this.fieldname+"ajaxdiv").update(response.responseText);
-								
+
 								// if the updated field is also being watched, reattach the events
 								if (watchedfields[this.prefix] && watchedfields[this.prefix][this.property] && watchedfields[this.prefix][this.property].length){
 									Ext.select("select[name="+this.prefix+this.property+"], input[name="+this.prefix+this.property+"][type=text], input[name="+this.prefix+this.property+"][type=password]").on("change",ajaxUpdate,this,{ prefix: this.prefix, property: this.property });
@@ -112,7 +112,7 @@
 						});
 					}
 				};
-					
+
 				function farcryButtonOnMouseOver(id) {
 					$(id + '-outer').addClassName('farcryButtonWrap-outer-hover');
 					$(id + '-inner').addClassName('farcryButtonWrap-inner-hover');
@@ -129,28 +129,28 @@
 				}
 				function farcryButtonURL(id,url,target) {
 					if (target == 'undefined' || target == '_self'){
-						location.href=url;			
+						location.href=url;
 						return false;
 					} else {
-						win = window.open('',target);	
-						win.location=url;	
-						win.focus;			
+						win = window.open('',target);
+						win.location=url;
+						win.focus;
 						return false;
 					}
-				}						
-							
+				}
+
 				function selectObjectID(objectid) {
 					f = $$('.fc-selected-object-id');
 					for(var i=0; i<f.length; i++){
 						f[i].value=objectid;
 					}
-				}	
-							
+				}
+
 				function openLibrary(target,ftJoin,url) {
 					win=window.open(url + '&ftJoin=' + ftJoin, target);
 					win.focus();
 				}
-				
+
 				function openLibraryEditWindow(primaryID,primaryTypename,dataID,ftLibraryEditWebskin,primaryFieldName,primaryFormFieldName,LibraryType) {
 
 					url = '#application.url.webtop#/facade/libraryEdit.cfm?primaryID=' + primaryID + '&primaryTypename=' + primaryTypename + '&dataID=' + dataID + '&ftLibraryEditWebskin=' + ftLibraryEditWebskin + '&primaryFieldName=' + primaryFieldName + '&primaryFormFieldName=' + primaryFormFieldName + '&LibraryType=' + LibraryType;
@@ -167,20 +167,20 @@
 							return true;
 						}
 					}
-						
+
 					alert('Please select an item to edit');
 					return false;
 				}
-				
+
 						function libraryCallbackArray(fieldname,action,ids,virtualDir,callingWindow){
-							$(fieldname).value = ids;						
-							if(virtualDir===null){virtualDir="";}				
+							$(fieldname).value = ids;
+							if(virtualDir===null){virtualDir="";}
 							var objParams = eval('obj' + fieldname);
 							var sURLParams = "LibraryType=Array&Action=" + action + '&DataObjectID=' + encodeURIComponent($(fieldname).value);
 							for (i in objParams){
-								sURLParams+= "&" + i + "=" + objParams[i];							
+								sURLParams+= "&" + i + "=" + objParams[i];
 							}
-														
+
 							$(fieldname + '-libraryCallback').innerHTML = 'PLEASE WAIT... CURRENTLY UPDATING';
 							new Ajax.Updater(fieldname + '-libraryCallback', '#application.url.webtop#/facade/library.cfc?method=ajaxUpdateArray&ajaxmode=1&noCache=' + Math.random(), {
 									//onLoading:function(request){Element.show('indicator')},
@@ -201,16 +201,16 @@
 											} else {
 												Element.hide(fieldname + '-librarySummary')
 											}
-											if(callingWindow!=null){callingWindow.close();}	
+											if(callingWindow!=null){callingWindow.close();}
 										// ]]>
 									},
-									
+
 									parameters:sURLParams, evalScripts:true, asynchronous:true
 							})
-											
+
 						}
-								
-				
+
+
 				function initArrayField(fieldname,virtualDir) {
 						// <![CDATA[
 							 if(virtualDir===null){virtualDir="";}
@@ -227,7 +227,7 @@
 
 				}
 
-						
+
 							function toggleOnArrayField(fieldname) {
 								aInputs = $$("##" + fieldname + "_list input");
 								aInputs.each(function(child) {
@@ -240,24 +240,24 @@
 									child.checked = false;
 								});
 							}
-							
+
 							function deleteSelectedFromArrayField(fieldname,virtualDir){
-								if(virtualDir===null){virtualDir="";}							
+								if(virtualDir===null){virtualDir="";}
 								aInputs = $$("##" + fieldname + "_list input");
 								aInputs.each(function(child) {
 									if(child.checked === true){
 										Element.remove(fieldname + '_' + child.value);
 									}
 								});
-								
-								libraryCallbackArray(fieldname,'sort',Sortable.sequence(fieldname + '_list'),virtualDir);
-								
-							}
-						
-						
 
-							
-				
+								libraryCallbackArray(fieldname,'sort',Sortable.sequence(fieldname + '_list'),virtualDir);
+
+							}
+
+
+
+
+
 				function initUUIDField(fieldname,virtualDir) {
 						// <![CDATA[
 							 if(virtualDir==null){virtualDir="";}
@@ -273,31 +273,31 @@
 						// ]]>
 
 				}
-									
+
 					function deleteSelectedFromUUIDField(fieldname){
-						
+
 						aInputs = $$("##" + fieldname + "_list input");
 						aInputs.each(function(child) {
 							if(child.checked == true){
 								Element.remove(fieldname + '_' + child.value);
 							}
 						});
-						
+
 						$(fieldname).value = Sortable.sequence(fieldname + '_list');
 						libraryCallbackUUID(fieldname,'remove',$(fieldname).value);
 					}
-					
+
 					function libraryCallbackUUID(fieldname,action,ids,virtualDir,callingWindow){
-						if(virtualDir==null){virtualDir="";}	
-						$(fieldname).value = ids;	
-						var objParams = eval('obj' + fieldname);										
+						if(virtualDir==null){virtualDir="";}
+						$(fieldname).value = ids;
+						var objParams = eval('obj' + fieldname);
 						var sURLParams = "LibraryType=UUID&Action=" + action + '&DataObjectID=' + encodeURIComponent($(fieldname).value);
 						for (i in objParams){
-							sURLParams+= "&" + i + "=" + objParams[i];							
+							sURLParams+= "&" + i + "=" + objParams[i];
 						}
-						
-						
-						
+
+
+
 						new Ajax.Updater(fieldname + '-libraryCallback', '#application.url.webtop#/facade/library.cfc?method=ajaxUpdateArray&ajaxmode=1&noCache=' + Math.random(), {
 							//onLoading:function(request){Element.show('indicator')},
 							parameters:sURLParams, evalScripts:true, asynchronous:true,
@@ -307,21 +307,21 @@
 								} else {
 									Element.hide(fieldname + '-librarySummary')
 								}
-								if(callingWindow!=null){callingWindow.close();}	
+								if(callingWindow!=null){callingWindow.close();}
 							}
 						})
-						
-												
+
+
 					}
-					
-					
+
+
 function createFormtoolTree(fieldname,rootID,dataURL,rootNodeText,selectedIDs,iconCls){
 	// shorthand
     var Tree = Ext.tree;
     var checkRoot = false;
-    
+
     tree = new Tree.TreePanel({
-        animate:true, 
+        animate:true,
         loader: new Tree.TreeLoader({
             dataUrl:dataURL,
             baseAttrs: {checked:false,iconCls:'categoryIconCls'},
@@ -335,7 +335,7 @@ function createFormtoolTree(fieldname,rootID,dataURL,rootNodeText,selectedIDs,ic
 	tree.on('checkchange', function(n,c) {
 		var newList = "";
 		var currentTreeList = Ext.getDom(fieldname).value;
-		if(c){ 
+		if(c){
 			if(currentTreeList.length){
 		  		currentTreeList = currentTreeList + ','
 		  	}
@@ -352,14 +352,14 @@ function createFormtoolTree(fieldname,rootID,dataURL,rootNodeText,selectedIDs,ic
 			  }
 			}
 			Ext.getDom(fieldname).value = newList;
-		}	
+		}
 
 	});
-	
+
 	if(selectedIDs.match(rootID)){
 		checkRoot = true;
 	}
-	
+
     // set the root node
     var root = new Tree.AsyncTreeNode({
         text: rootNodeText,
@@ -373,28 +373,28 @@ function createFormtoolTree(fieldname,rootID,dataURL,rootNodeText,selectedIDs,ic
     // render the tree
     tree.render(fieldname + '-tree-div');
     root.expand();
-    
+
 }
 
-				
-				
+
+
 	function selectedObjectID(objectid) {
 		f = Ext.query('.fc-selected-object-id');
 		for(var i=0; i<f.length; i++){
 			f[i].value=objectid;
 		}
-	}	
-			
+	}
+
 function newFarcryButton (id,type,size,value,text,icon,overIcon,iconPos,sprite,width,formName,onClick,disabled,btnclass,btnstyle) {
 	var dh = Ext.DomHelper;
-	
+
 	var btn = Ext.get(id);
 	var btnWrap = Ext.get(id + '-wrap');
-		
+
 	if (btnWrap) {
-		
+
 		var btnMarkup = btnWrap.dom.innerHTML;
-		
+
 		var newBtnMarkup = 	'<table style="width: auto;' + btnstyle + '" id="' + id + '-tbl-wrap" class="f-btn ' + btnclass + '" cellspacing="0">' +
 							'<tbody class="f-btn-' + size + ' f-btn-icon-' + size + '-' + iconPos +'">' +
 								'<tr>' +
@@ -416,20 +416,20 @@ function newFarcryButton (id,type,size,value,text,icon,overIcon,iconPos,sprite,w
 								'</tr>' +
 							'</tbody>' +
 						'</table>'
-						 
+
 		dh.overwrite(btnWrap,newBtnMarkup);
-	
+
 		var newBtn = Ext.get(id + '-tbl-wrap');
-		
-		
+
+
 		<!--- THIS STOPS SUBMIT BUTTONS SUBMITTING. ENABLING JS TO DO ALL THE WORK. --->
 		Ext.get(id).on('click', this.onClick, this, {
 			preventDefault:true,
-			fn: function() { 
+			fn: function() {
 			}
 		});
-		
-		
+
+
 		if (sprite != null && sprite != '') {
 			Ext.select('##' + id + '-tbl-wrap .f-btn-bg').applyStyles('background-image:url(' + sprite +');');
 		}
@@ -443,72 +443,72 @@ function newFarcryButton (id,type,size,value,text,icon,overIcon,iconPos,sprite,w
 		} else {
 			newBtn.addClass('f-btn-noicon');
 		}
-		
+
 		if (width != null && width != '') {
 			Ext.select('##' + id + '-tbl-wrap .f-btn-mc').applyStyles('width:' + width +';');
 		}
-	
-		
+
+
 		if (disabled == 'yes') {
 			Ext.select('##' + id + '-tbl-wrap').addClass('f-btn-disabled');
 		} else {
-		
+
 			Ext.select('##' + id + '-tbl-wrap .f-btn-mc').on('mouseover', this.onClick, this, {
-			    fn: function() { 
-			    	newBtn.addClass('f-btn-over'); 
+			    fn: function() {
+			    	newBtn.addClass('f-btn-over');
 					if (overIcon != null && overIcon != '') {
-						Ext.select('##' + id + '-tbl-wrap button').applyStyles('background-image:url(' + overIcon +');');	
-						
-					}		    	
+						Ext.select('##' + id + '-tbl-wrap button').applyStyles('background-image:url(' + overIcon +');');
+
+					}
 			    }
-			});	
+			});
 			Ext.select('##' + id + '-tbl-wrap .f-btn-mc').on('mouseout', this.onClick, this, {
-			    fn: function() { 
-			    	newBtn.removeClass('f-btn-over'); 
+			    fn: function() {
+			    	newBtn.removeClass('f-btn-over');
 			    	newBtn.removeClass('f-btn-pressed');
 					if (overIcon != null && overIcon != '') {
-						Ext.select('##' + id + '-tbl-wrap button').applyStyles('background-image:url(' + icon +');');		
-					}		 
+						Ext.select('##' + id + '-tbl-wrap button').applyStyles('background-image:url(' + icon +');');
+					}
 			    }
 			});
 			Ext.select('##' + id + '-tbl-wrap .f-btn-mc').on('mousedown', this.onClick, this, {
-			    fn: function() { 
-			    	newBtn.addClass('f-btn-pressed'); 
+			    fn: function() {
+			    	newBtn.addClass('f-btn-pressed');
 			    }
 			});
 			Ext.select('##' + id + '-tbl-wrap .f-btn-mc').on('mouseup', this.onClick, this, {
-			    fn: function() { 
-			    	newBtn.removeClass('f-btn-pressed'); 
+			    fn: function() {
+			    	newBtn.removeClass('f-btn-pressed');
 			    }
 			});
-		
-	
-	
+
+
+
 		}
-	
+
 	}
-		
+
 }
 
-	
+
 function validateBtnClick(formName) {
 	var btnValidation = new Validation(formName, {onSubmit:false});
 	if(btnValidation.validate()) {return true} else {return false};
 }
-	
+
 function btnURL(url,target) {
 	if (target == 'undefined' || target == '_self'){
-		location.href=url;			
+		location.href=url;
 		return false;
 	} else {
-		win = window.open('',target);	
-		win.location=url;	
-		win.focus;			
+		win = window.open('',target);
+		win.location=url;
+		win.focus;
 		return false;
 	}
-}		
+}
 
-	
+
 function btnClick(formName,value) {
    	f = Ext.query('.fc-button-clicked');
    	for(var i=0; i<f.length; i++){
@@ -522,44 +522,46 @@ function btnTurnOffServerSideValidation() {
 		f[i].value = 0;
 	}
 }
-	
-		
+
+
 function btnSubmit(formName,value) {
    	btnClick(formName,value);
-	if (formName != '') {	
+	if (formName != '') {
 		Ext.get(formName).dom.submit();
 	}
 }
-	
-	
-function farcryForm_ajaxSubmission(formname,action,maskMsg,maskCls){
+
+
+function farcryForm_ajaxSubmission(formname,action,maskMsg,maskCls,ajaxTimout){
 	if (maskMsg == undefined){var maskMsg = 'Saving Changes'};
 	if (maskCls == undefined){var maskCls = 'x-mask-loading'};
-	
-	var myForm = Ext.get(formname+ 'formwrap');						
+	if (ajaxTimout == undefined){var ajaxTimout = 30};
+
+	var myForm = Ext.get(formname+ 'formwrap');
 	var mgr = myForm.getUpdater();
 
 	// Not working correctly in IE
 	//mgr.showLoadIndicator = true;
 	//myForm.mask(maskMsg, maskCls);
-	//mgr.on("update", 
+	//mgr.on("update",
 	//	function(el,oResponseObject) {
 	//		myForm.unmask();
 	//	}
 	//);
-	
+
 	mgr.update(
 	{
 		url: action,
 		nocache: true,
-		scripts: true,				
-		timeout: 30,
+		scripts: true,
+		timeout: ajaxTimout,
 		params: Ext.Ajax.serializeForm(formname)
 	});
 }
+// AJM timeout: 30,
 
 farcryps = function(page,formname,type,actionURL){
-	if(type=='form'){					
+	if(type=='form'){
 		Ext.get(formname).dom.submit();
 		return false;
 	} else if(type=='url'){
@@ -567,9 +569,9 @@ farcryps = function(page,formname,type,actionURL){
 		return false;
 	} else {
 		return true;
-	}				
-}	
-	
+	}
+}
+
 <!--- A function to check all checkboxes on a form --->
 function checkUncheckAll(theElement) {
 	var theForm = theElement.form, z = 0;
@@ -579,5 +581,5 @@ function checkUncheckAll(theElement) {
 		}
 	}
 }
-	
-</cfoutput>					
+
+</cfoutput>
