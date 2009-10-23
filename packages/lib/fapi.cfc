@@ -656,7 +656,7 @@
 		<cffunction name="checkNavID" access="public" returntype="boolean" output="false" hint="Returns true if the navigation alias is found." bDocument="true">
 			<cfargument name="alias" required="true" hint="The navigation alias" />
 	
-			<cfset result = "" />
+			<cfset var result = "" />
 			
 			<cfif structKeyExists(application, "navID") AND len(arguments.alias)>
 				<cfset result = structKeyExists(application.navid, arguments.alias) />
