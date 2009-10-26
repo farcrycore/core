@@ -120,6 +120,23 @@
 								<cfif structKeyExists(arguments.stMetadata, "ftAutoGenerateType")>
 									<cfif arguments.stMetadata.ftAutoGenerateType EQ "Pad">
 										<cfoutput><div>Padding image with #arguments.stMetadata.ftPadColor#</div></cfoutput>
+									<cfelseif arguments.stMetadata.ftAutoGenerateType EQ "aspectCrop">
+										<cfoutput>
+										<div>
+											Croping Position: 
+											<select name="#arguments.fieldname#CropPosition">
+												<option value="topleft">TopLeft</option>
+												<option value="topcenter">TopCenter</option>
+												<option value="topright">TopRight</option>
+												<option value="left">Left</option>
+												<option value="center" selected="selected" >Center</option>
+												<option value="right">Right</option>
+												<option value="bottomleft">BottomLeft</option>
+												<option value="bottomcenter">BottomCenter</option>
+												<option value="bottomright">BottomRight</option>
+											</select>
+										</div>
+										</cfoutput>
 									<cfelse>
 										<cfoutput><div>#arguments.stMetadata.ftAutoGenerateType#</div></cfoutput>
 									</cfif>
@@ -227,6 +244,7 @@
 		<cfparam name="arguments.stMetadata.ftImageHeight" default="0" />
 		<cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside" />
 		<cfparam name="arguments.stMetadata.ftPadColor" default="##ffffff" />
+		<cfparam name="arguments.stMetadata.ftCropPosition" default="center" /><!--- Used when ftAutoGenerateType = aspectCrop --->
 		<cfparam name="arguments.stMetadata.ftThumbnailBevel" default="No" />
 		<cfparam name="arguments.stMetadata.ftAllowedExtensions" default="jpg,jpeg,png,gif"><!--- The extentions allowed to be uploaded --->
 		
@@ -327,6 +345,12 @@
 					</cfif>
 					<cfset stGeneratedImageArgs.AutoGenerateType = "#arguments.stMetadata.ftAutoGenerateType#" />
 					<cfset stGeneratedImageArgs.PadColor = "#arguments.stMetadata.ftPadColor#" />
+					
+					<cfif structKeyExists(arguments.stFieldPost.stSupporting, "CropPosition")
+						AND len(arguments.stFieldPost.stSupporting.CropPosition)>
+						<cfset stGeneratedImageArgs.cropPosition = "#arguments.stFieldPost.stSupporting.CropPosition#" />
+					</cfif>
+					
 
 					<cfset stGeneratedImage = GenerateImage(argumentCollection=stGeneratedImageArgs) />
 					
