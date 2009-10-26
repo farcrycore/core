@@ -320,7 +320,7 @@
 					<cfset stLocal.stCurrentSystemObject.fuStatus = 1 />
 					<cfset stLocal.stCurrentSystemObject.redirectionType = "none" />
 					<cfset stLocal.stCurrentSystemObject.redirectTo = "default" />
-					<cfset stLocal.stCurrentSystemObject.friendlyURL = getUniqueFU(friendlyURL="#stLocal.newFriendlyURL#") />
+					<cfset stLocal.stCurrentSystemObject.friendlyURL = getUniqueFU(friendlyURL="#left(stLocal.newFriendlyURL,245)#") />
 					
 					<!--- If no default object, set this as the default --->
 					<cfif structIsEmpty(stLocal.stCurrentDefaultObject)>
@@ -334,7 +334,7 @@
 					</cfcatch>
 					</cftry>
 				<cfelse>
-					<cfset stLocal.newFriendlyURL = getUniqueFU(friendlyURL="#stLocal.newFriendlyURL#", FUID="#stLocal.stCurrentSystemObject.objectid#") />
+					<cfset stLocal.newFriendlyURL = getUniqueFU(friendlyURL="#left(stLocal.newFriendlyURL,245)#", FUID="#stLocal.stCurrentSystemObject.objectid#") />
 					<cfif stLocal.newFriendlyURL NEQ stLocal.stCurrentSystemObject.friendlyURL>
 						<!--- NEED TO ARCHIVE OLD SYSTEM OBJECT AND UPDATE --->
 						<cfset stLocal.stResult = archiveFU(objectid="#stLocal.stCurrentSystemObject.objectid#") />
@@ -786,7 +786,7 @@
 				<cfset stResult.bodyView = listfirst(listlast(temp,"/\"),".") />
 			</cfif>
 		</cfif>
-		
+		<cfif isdefined("url.fudebug")><cfdump var="#stResult#"><cfabort></cfif>
 		<cfreturn stResult />
 	</cffunction>
 	
@@ -1171,14 +1171,14 @@
 			<cfset thistype = application.fapi.findType(arguments.objectid) />
 		</cfif>
 		<cfif len(arguments.view)>
-			<cfif isdefined("application.stCOAPI.#thistype#.stWebskins.#arguments.view#.fuAlias") and len(application.stCOAPI[thistype].stWebskins[arguments.view].fuAlias)>
+			<cfif len(thistype) and isdefined("application.stCOAPI.#thistype#.stWebskins.#arguments.view#.fuAlias") and len(application.stCOAPI[thistype].stWebskins[arguments.view].fuAlias)>
 				<cfset viewFU = application.stCOAPI[thistype].stWebskins[arguments.view].fuAlias />
 			<cfelse>
 				<cfset viewFU = arguments.view />
 			</cfif>
 		</cfif>
 		<cfif len(arguments.bodyView)>
-			<cfif isdefined("application.stCOAPI.#thistype#.stWebskins.#arguments.bodyView#.fuAlias") and len(application.stCOAPI[thistype].stWebskins[arguments.bodyView].fuAlias)>
+			<cfif len(thistype) and isdefined("application.stCOAPI.#thistype#.stWebskins.#arguments.bodyView#.fuAlias") and len(application.stCOAPI[thistype].stWebskins[arguments.bodyView].fuAlias)>
 				<cfset bodyFU = application.stCOAPI[thistype].stWebskins[arguments.bodyView].fuAlias />
 			<cfelse>
 				<cfset bodyFU = arguments.bodyView />
