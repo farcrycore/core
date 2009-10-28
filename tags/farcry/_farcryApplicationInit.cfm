@@ -108,7 +108,31 @@ test for the existance of each and act accordingly
 	on some sort ot type initialisation. ~tom
 	*/
 	oAlterType.refreshAllCFCAppData(); // This replaces loadCOAPIMetaData for now. I'm thinking types.init()?? ~tom
+	
+	/* 
+		Default for the DOCTYPE of the site.  This variable is used by some items to output 
+		tags that conform differently based on the desired end doctype.  For example, 
+		in html meta tags should not self close "/>", but in xhtml they need to.  This
+		value is set to the w3c doctype string. For example all of these are valid:
 
+		HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"
+		HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"
+		HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd"
+		html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
+		html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+		html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd"
+		html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"
+
+		By default we are going with html 4.01 strict, in the future we'll go with html5. 
+		You can override this in _serverSpecificVars etc.
+		
+		**********
+		To get access to this variable for switches and what not, please use 
+		application.fapi.getDocType()
+		see core's fapi.cfc for details.
+		**********
+	*/
+	application.fc.doctype = 'HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"';
 </cfscript>
 
 

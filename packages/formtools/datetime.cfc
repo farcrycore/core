@@ -49,6 +49,7 @@
 		</cfif>
 	</cffunction>
 	
+	
 	<cffunction name="edit" access="public" output="true" returntype="string" hint="his will return a string of formatted HTML text to enable the user to edit the data">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
@@ -72,6 +73,9 @@
 			<cfparam name="arguments.stMetadata.ftToggleOffDateTime" default="1" />
 		</cfif>
 		
+		<cfif isDate(arguments.stMetadata.value)>
+			<cfset arguments.stMetadata.value = application.fapi.convertToApplicationTimezone(arguments.stMetadata.value) />
+		</cfif>
 			
 		<cfif arguments.stMetadata.ftToggleOffDateTime>
 			<cfset Request.InHead.ScriptaculousEffects = 1>
@@ -369,9 +373,15 @@
 		<cfset var html = "" />
 		
 		
+		
+		<cfif isDate(arguments.stMetadata.value)>
+			<cfset arguments.stMetadata.value = application.fapi.convertToApplicationTimezone(arguments.stMetadata.value) />
+		</cfif>
+		
+		
 		<cfparam name="arguments.stMetadata.ftDateMask" default="d-mmm-yy">
 		<cfparam name="arguments.stMetadata.ftTimeMask" default="short">
-		<cfparam name="arguments.stMetadata.ftShowTime" default="false">
+		<cfparam name="arguments.stMetadata.ftShowTime" default="true">
 		
 		<cfsavecontent variable="html">
 			<cfif len(arguments.stMetadata.value) and application.fapi.showFarcryDate(arguments.stMetadata.value)>
@@ -431,11 +441,6 @@
 				<cfset arguments.stFieldPost.value = stResult.value />
 				<cfset stResult = super.validate(objectid=arguments.objectid, typename=arguments.typename, stFieldPost=arguments.stFieldPost, stMetadata=arguments.stMetadata )>
 			</cfif>
-		
-			<!--- ----------------- --->
-			<!--- Return the Result --->
-			<!--- ----------------- --->
-			<cfreturn stResult>		
 		</cfcase>
 		
 		<cfdefaultcase>
@@ -460,14 +465,18 @@
 				<cfset arguments.stFieldPost.value = stResult.value />
 				<cfset stResult = super.validate(objectid=arguments.objectid, typename=arguments.typename, stFieldPost=arguments.stFieldPost, stMetadata=arguments.stMetadata )>
 			</cfif>
-			
-			<!--- ----------------- --->
-			<!--- Return the Result --->
-			<!--- ----------------- --->
-			<cfreturn stResult>
 		</cfdefaultcase>
 		</cfswitch>
+				
+		<!--- If we have a valid date, convert it to the system date. --->
+		<cfif isDate(stResult.value)>
+			<cfset stResult.value = application.fapi.convertToSystemTimezone(stResult.value) />
+		</cfif>
 		
+		<!--- ----------------- --->
+		<!--- Return the Result --->
+		<!--- ----------------- --->
+		<cfreturn stResult>
 
 		
 	</cffunction>

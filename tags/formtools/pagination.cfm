@@ -388,7 +388,15 @@ user defined functions
 				</div>
 				</cfoutput>
 				
-				<cfoutput></div></div><br class="clearer" /></cfoutput>
+				<cfoutput></div></div>
+				
+				<cfif application.fapi.getDocType().type eq "xhtml" >
+					<cfoutput><br class="clearer" /></cfoutput>	
+				<cfelse>
+					<cfoutput><br class="clearer"></cfoutput>
+				</cfif>
+				
+				</cfoutput>
 			</cfdefaultcase>	
 		
 		</cfswitch>
