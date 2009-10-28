@@ -123,7 +123,7 @@
 									<cfelseif arguments.stMetadata.ftAutoGenerateType EQ "aspectCrop">
 										<cfoutput>
 										<div>
-											Croping Position: 
+											Cropping Position: 
 											<select name="#arguments.fieldname#CropPosition">
 												<option value="topleft">TopLeft</option>
 												<option value="topcenter">TopCenter</option>
