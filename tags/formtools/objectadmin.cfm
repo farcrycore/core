@@ -143,7 +143,6 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <!--- this seems to be a problem for custom types when it gets to invocation.cfm. the permission set is not carried
 across and could potentially cause major stuff ups if news permissions (which is the default) is set to no for the
 user --->
-				<ft:processformObjects objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" bSessionOnly="true" stFilterMetadata="#session.objectadminFilterObjects[attributes.typename].stObject#" />
 	<cfset structInsert(PrimaryPackage, "permissionset", "news", "yes")>
 </cfif>
 
