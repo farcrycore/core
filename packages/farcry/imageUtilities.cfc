@@ -6,29 +6,22 @@
 		<cfargument name="maxWidth" type="numeric" required="false" default="100" hint="New width (pixels). Default to 100">
 		<cfargument name="maxHeight" type="numeric" required="false" default="100" hint="New width (pixels). Default to 100">
 
-		<cfset var stLocal = StructNew() />
-		<cfset stLocal.stReturn = StructNew() />
+		<cfset var stLocal = StructNew()>
+		<cfset stLocal.stReturn = StructNew()>
+		<cfset stLocal.bufferedImage = fRead(arguments.originalFile)>
+		<cfset stLocal.height = stLocal.bufferedImage.getHeight()>
+		<cfset stLocal.width = stLocal.bufferedImage.getWidth()>
+		<cfset stLocal.scaling = fCalculateRatioWidth(stLocal.width,stLocal.height,arguments.maxWidth,arguments.maxHeight)>
 
-		<cftry>
-			<!--- For simple image resizing, try cfimage tag first (requires CF8+, otherwise use native JAI) --->
-			<cfimage action="resize" height="#stLocal.maxHeight#" width="#stLocal.maxWidth#" source="#arguments.originalFile#" destination="#arguments.destinationFile#" overwrite="true" quality="1" />
-			<cfcatch>
-				<cfset stLocal.bufferedImage = fRead(arguments.originalFile) />
-				<cfset stLocal.height = stLocal.bufferedImage.getHeight() />
-				<cfset stLocal.width = stLocal.bufferedImage.getWidth() />
-				<cfset stLocal.scaling = fCalculateRatioWidth(stLocal.width,stLocal.height,arguments.maxWidth,arguments.maxHeight) />
+		<cfset stLocal.bi = createObject("java","java.awt.image.BufferedImage").init(JavaCast("int", stLocal.width/stLocal.scaling), JavaCast("int", stLocal.height/stLocal.scaling), JavaCast("int", 1))>
+		<cfset stLocal.graphics = stLocal.bi.getGraphics()>
+		<cfset stLocal.jTransform = createObject("java","java.awt.geom.AffineTransform").init()>
+		<cfset stLocal.jTransform.Scale(1/stLocal.scaling, 1/stLocal.scaling)>
+		<cfset stLocal.graphics.drawRenderedImage(stLocal.bufferedImage, stLocal.jTransform)>
+		<cfset stLocal.outFile = createObject("java","java.io.File").init(arguments.destinationFile)>
+		<cfset createObject("java","javax.imageio.ImageIO").write(stLocal.bi,"jpg",stLocal.outFile)>
 
-				<cfset stLocal.bi = createObject("java","java.awt.image.BufferedImage").init(JavaCast("int", stLocal.width/stLocal.scaling), JavaCast("int", stLocal.height/stLocal.scaling), JavaCast("int", 1)) />
-				<cfset stLocal.graphics = stLocal.bi.getGraphics() />
-				<cfset stLocal.jTransform = createObject("java","java.awt.geom.AffineTransform").init() />
-				<cfset stLocal.jTransform.Scale(1/stLocal.scaling, 1/stLocal.scaling) />
-				<cfset stLocal.graphics.drawRenderedImage(stLocal.bufferedImage, stLocal.jTransform) />
-				<cfset stLocal.outFile = createObject("java","java.io.File").init(arguments.destinationFile) />
-				<cfset createObject("java","javax.imageio.ImageIO").write(stLocal.bi,"jpg",stLocal.outFile) />
-			</cfcatch>
-		</cftry>
-
-		<cfreturn stLocal.stReturn />
+		<cfreturn stLocal.stReturn>
 	</cffunction>
 
 	<cffunction name="fCalculateRatioWidth" access="public" returntype="numeric" hint="returns new width based on max width and maintaining width/height ratio">
@@ -114,21 +107,12 @@
 		
 		<cfdirectory name="stLocal.qList" directory="#GetDirectoryFromPath(arguments.originalFile)#" filter="#GetFileFromPath(arguments.originalFile)#">
 		<cfif stLocal.qList.recordCount EQ 1>
-			<cfset stLocal.stReturn.fileSize = stLocal.qList.size />
-			<cfset stLocal.stReturn.path = GetDirectoryFromPath(arguments.originalFile) />
-			<cfset stLocal.stReturn.filename = stLocal.qList.name />
-			<cftry>
-				<!--- Attempt to use CF8+ image tools to read image (allows us to read from many more image formats for later conversion (ie. bmp)) --->
-				<cfimage name="stLocal.bufferedImage" source="#arguments.originalFile#" action="read" />
-				<cfset stLocal.stReturn.height = stLocal.bufferedImage.height />
-				<cfset stLocal.stReturn.width = stLocal.bufferedImage.width />
-				<cfcatch>
-					<!--- otherwise default to the Java JAI --->
-					<cfset stLocal.bufferedImage = fRead(arguments.originalFile) />
-					<cfset stLocal.stReturn.height = stLocal.bufferedImage.getHeight() />
-					<cfset stLocal.stReturn.width = stLocal.bufferedImage.getWidth() />
-				</cfcatch>
-			</cftry>
+			<cfset stLocal.bufferedImage = fRead(arguments.originalFile)>
+			<cfset stLocal.stReturn.height = stLocal.bufferedImage.getHeight()>
+			<cfset stLocal.stReturn.width = stLocal.bufferedImage.getWidth()>
+			<cfset stLocal.stReturn.fileSize = stLocal.qList.size>
+			<cfset stLocal.stReturn.path = GetDirectoryFromPath(arguments.originalFile)>
+			<cfset stLocal.stReturn.filename = stLocal.qList.name>
 		</cfif>
 
 		<cfreturn stLocal.stReturn>
