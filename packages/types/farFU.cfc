@@ -1209,9 +1209,14 @@
 						<cfset returnURL = "#stFUObject.friendlyURL#">			
 						<cfset bFoundFU = true />
 					<cfelse>
-						<cfset returnURL = "/#arguments.objectid#">
+						<cfif len(arguments.type)>							
+							<cfset returnURL = "/#typeFU#" />
+						</cfif>
+						<cfset returnURL = "#returnURL#/#arguments.objectid#">
 					</cfif>					
-				</cfif>				
+				</cfif>	
+			<cfelseif len(typeFU)>
+				<cfset returnURL = "/#typeFU#" />			
 			</cfif>
 			
 			<!---------------------------------------------------------------------
@@ -1224,11 +1229,7 @@
 					<cfif NOT FindNoCase("?", returnURL)>
 						<cfset returnURL = "#returnURL#?" />
 					</cfif>
-					<!--- WE DONT APPEND TYPENAME IF WE FOUND AN FU --->
-					<cfif NOT bFoundFU AND len(arguments.type)>
-						<cfset returnURL = "#returnURL#&type=#typeFU#" />
-					</cfif>
-					<cfif len(arguments.view) and arguments.view neq "displayPageStandard">
+					<cfif len(arguments.view)>
 						<cfset returnURL = "#returnURL#&view=#viewFU#" />
 					</cfif>
 					<cfif len(arguments.bodyView) and not listcontainsnocase("displayBody,displayTypeBody",arguments.bodyView)>
@@ -1236,10 +1237,7 @@
 					</cfif>		
 				<cfelse>
 					<!--- OTHERWISE WE CAN USE THE URL SYNTAX OF /OBJECTID/TYPE/VIEW/BODYVIEW --->
-					<cfif len(arguments.type)>
-						<cfset returnURL = "#returnURL#/#typeFU#" />
-					</cfif>
-					<cfif len(arguments.view) and arguments.view neq "displayPageStandard">
+					<cfif len(arguments.view)>
 						<cfset returnURL = "#returnURL#/#viewFU#" />
 					</cfif>
 					<cfif len(arguments.bodyView) and not listcontainsnocase("displayBody,displayTypeBody",arguments.bodyView)>
@@ -1254,13 +1252,13 @@
 		<cfelse>			
 			<cfset returnURL = "/index.cfm?" />
 			
-			<cfif len(arguments.objectid)>
-				<cfset returnURL = "#returnURL#objectid=#arguments.objectid#" />
-			</cfif>
 			<cfif len(arguments.type)>
 				<cfset returnURL = "#returnURL#&type=#typeFU#" />
 			</cfif>
-			<cfif len(arguments.view) and arguments.view neq "displayPageStandard">
+			<cfif len(arguments.objectid)>
+				<cfset returnURL = "#returnURL#objectid=#arguments.objectid#" />
+			</cfif>
+			<cfif len(arguments.view)>
 				<cfset returnURL = "#returnURL#&view=#viewFU#" />
 			</cfif>
 			<cfif len(arguments.bodyView) and not listcontainsnocase("displayBody,displayTypeBody",arguments.bodyView)>
