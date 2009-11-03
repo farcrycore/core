@@ -307,7 +307,7 @@
 					<cfif refind("^displayPage",stWebskinDetails.methodname)>
 						<cfset stWebskinDetails.viewstack = "page" />
 						<cfset stWebskinDetails.viewbinding = "any" />
-					<cfelseif refind("^displayBody",stWebskinDetails.methodname)>
+					<cfelseif refind("^displayBody",stWebskinDetails.methodname) or refind("^edit",stWebskinDetails.methodname)>
 						<cfset stWebskinDetails.viewstack = "body" />
 						<cfset stWebskinDetails.viewbinding = "object" />
 					<cfelseif refind("^displayTypeBody",stWebskinDetails.methodname)>
