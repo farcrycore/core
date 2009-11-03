@@ -1374,9 +1374,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<!--- add any extended component metadata --->
 		<cfset mdExtend = md />
 		<cfloop condition="not structisempty(mdExtend)">
-			<cfloop collection="#md#" item="key">
+			<cfloop collection="#mdExtend#" item="key">
 				<cfif key neq "PROPERTIES" AND key neq "EXTENDS" AND key neq "FUNCTIONS" AND key neq "TYPE">
-					<cfparam name="stReturnMetadata.#key#" default="#md[key]#" />				
+					<cfparam name="stReturnMetadata.#key#" default="#mdExtend[key]#" />				
 				</cfif>
 			</cfloop>
 			<cfif structkeyexists(mdExtend,"extends") and not findnocase(mdExtend.extends.name,"fourq")>
@@ -1398,7 +1398,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfparam name="stReturnMetadata.lObjectBrokerWebskins" default="" />
 		<cfparam name="stReturnMetadata.objectBrokerWebskinCacheTimeout" default="1400" /> <!--- This a value in minutes (ie. 1 day) --->
  		<cfparam name="stReturnMetadata.excludeWebskins" default="" /> <!--- This enables projects to exclude webskins that may be contained in plugins. ---> 
- 		<cfparam name="stReturnMetadata.fuAlias" default="#stReturnMetadata.displayname#" /> <!--- This will store the alias of the typename that can be used by Friendly URLS ---> 
+ 		<cfparam name="stReturnMetadata.fuAlias" default="#lcase(rereplace(stReturnMetadata.displayname,'[^\w]+','-','ALL'))#" /> <!--- This will store the alias of the typename that can be used by Friendly URLS ---> 
 
 		<!--- Get webkins: webskins for this type, then webskins for extends types --->
 		<cfset stReturnMetadata.qWebskins = application.coapi.coapiAdmin.getWebskins(typename="#componentname#", bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#",packagepath=stReturnMetadata.packagepath,aExtends=stReturnMetadata.aExtends) />
@@ -1410,9 +1410,6 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfloop list="#stReturnMetadata.qWebskins.columnList#" index="ixCol">
 				<cfset stReturnMetadata.stWebskins[stReturnMetadata.qWebskins.METHODNAME[currentRow]][ixCol] = stReturnMetadata.qWebskins[ixCol][currentRow] />
 			</cfloop>
-			<cfif len(trim(stReturnMetadata.qWebskins.fuAlias[currentRow]))>
-				<cfset stReturnMetadata.stWebskins["__" & stReturnMetadata.qWebskins.fuAlias[currentRow]] = stReturnMetadata.stWebskins[stReturnMetadata.qWebskins.METHODNAME[currentRow]] />
-			</cfif>
 		</cfloop>
 		
 		<!--- 

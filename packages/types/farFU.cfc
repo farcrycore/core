@@ -1,4 +1,4 @@
-<cfcomponent displayname="FarCry Friendly URL Table" hint="Manages FarCry Friendly URL's" extends="types" output="false" bDocument="true" scopelocation="application.fc.factory.farFU" bObjectBroker="true" objectBrokerMaxObjects="1000">
+<cfcomponent displayname="FarCry Friendly URL Table" hint="Manages FarCry Friendly URL's" extends="types" output="false" bDocument="true" scopelocation="application.fc.factory.farFU" bObjectBroker="true" objectBrokerMaxObjects="1000" fuAlias="fu">
 	<cfproperty ftSeq="1" name="refobjectid" type="string" default="" hint="stores the objectid of the related object" ftLabel="Ref ObjectID" />
 	<cfproperty ftSeq="2" name="friendlyURL" type="string" default="" hint="The Actual Friendly URL" ftLabel="Friendly URL" bLabel="true" />		
 	<cfproperty ftSeq="3" name="queryString" type="string" default="" hint="The query string that will be parsed and placed in the url scope of the request" ftLabel="Query String" />		
@@ -17,7 +17,6 @@
 		<cfset initialiseMappings() />		
 		
 		<cfreturn this />
-		
 	</cffunction>
 	
 
@@ -511,15 +510,26 @@
 		
 	</cffunction>
   
-	<cffunction name="setupCoapiAlias" access="public" hint="Initializes the friendly url coapi aliases" output="false" returntype="void" bDocument="true">
+	<cffunction name="setupCoapiAlias" access="public" hint="Initializes the friendly url coapi and webskin aliases" output="false" returntype="void" bDocument="true">
 
-		<cfset var i = "" />
-			
-		<cfset application.fc.fuID = structNew() />
+		<cfset var thistype = "" />
+		<cfset var thiswebskin = "" />
+		
+		<cfset this.typeFU = structNew() />
+		<cfset this.webskinFU = structnew() />
 		
 		<cfif structKeyExists(application, "stCoapi")>
-			<cfloop list="#structKeyList(application.stcoapi)#" index="i">	
-				<cfset application.fc.fuID[application.stcoapi[i].fuAlias] = i />
+			<cfloop collection="#application.stcoapi#" item="thistype">
+				<cfif len(application.stcoapi[thistype].fuAlias)>
+					<cfset this.typeFU[application.stcoapi[thistype].fuAlias] = thistype />
+				</cfif>
+				
+				<cfset this.webskinFU[thistype] = structnew() >
+				<cfloop collection="#application.stCOAPI[thistype].stWebskins#" item="thiswebskin">
+					<cfif len(application.stCOAPI[thistype].stWebskins[thiswebskin].fuAlias)>
+						<cfset this.webskinFU[thistype][application.stCOAPI[thistype].stWebskins[thiswebskin].fuAlias] = thiswebskin />
+					</cfif>
+				</cfloop>
 			</cfloop>
 		</cfif>		
 		
@@ -530,11 +540,7 @@
 		
 		<cfset var stFU = getData(objectid="#arguments.objectid#") />
 		
-		<!--- fu mappings --->
-		<cfset variables.stMappings[stFU.friendlyURL] = StructNew() />
-		<cfset variables.stMappings[stFU.friendlyURL].objectid = stFU.objectid />
-		<cfset variables.stMappings[stFU.friendlyURL].refobjectid = stFU.refObjectID />
-		<cfset variables.stMappings[stFU.friendlyURL].queryString = stFU.queryString />
+		<cfset variables.stMappings[stFU.friendlyURL] = createURLStruct(farFUID=arguments.objectid) />
 		
 		<cfif stFU.bDefault>
 			<!--- fu lookup --->
@@ -552,13 +558,12 @@
 		<!--- initialise fu scopes --->
 		<cfset variables.stMappings = structNew() />
 		<cfset variables.stLookup = structNew() />
-		<cfset variables.fuExlusions = structNew() />
 		
 		<!--- Check to make sure the farFU table has been deployed --->
 		<cftry>
 			<cfquery datasource="#application.dsn#" name="stLocal.qPing">
-			SELECT count(objectID)
-			FROM #application.dbowner#farFU
+				SELECT 	count(objectID)
+				FROM 	#application.dbowner#farFU
 			</cfquery>
 		
 			<cfcatch type="database">
@@ -573,13 +578,13 @@
 		
 		<!--- retrieve list of all dmNavigation FU's that are not retired --->
 		<cfquery name="stLocal.q" datasource="#application.dsn#">
-		SELECT	fu.objectid, fu.friendlyurl, fu.refobjectid, fu.queryString, fu.bDefault
-		FROM	#application.dbowner#farFU fu, 
-				#application.dbowner#refObjects r
-		WHERE	r.objectid = fu.refobjectid
-		AND r.typename = 'dmNavigation'
-		AND fu.bDefault = 1
-		AND fu.fuStatus > 0
+			SELECT	fu.objectid, fu.friendlyurl, fu.refobjectid, fu.queryString, fu.bDefault
+			FROM	#application.dbowner#farFU fu, 
+					#application.dbowner#refObjects r
+			WHERE	r.objectid = fu.refobjectid
+					AND r.typename = 'dmNavigation'
+					AND fu.bDefault = 1
+					AND fu.fuStatus > 0
 		</cfquery>
 		
 		<!--- load mappings to application scope --->
@@ -590,209 +595,100 @@
 	</cffunction>
 
 	<cffunction name="parseURL" returntype="struct" access="public" output="false" hint="Parses the url.furl and returns all relevent url variables.">
+		<cfargument name="stURL" type="struct" required="true" default="#url#" hint="Reference to the URL struct" />
 		
 		<cfset var oFU = createObject("component","#application.packagepath#.farcry.fu") />
 		<cfset var stFU = structNew() />
-		<cfset var stURL = structNew() />	
 		<cfset var stLocal = structNew() />
 		<cfset var iQstr = "" />
 		<cfset var i = "" />
 		<cfset var stResult = structNew() />
-		<cfset var paramTypes = "@type,@objectid,@pageview,@bodyview,@paramname" /><!--- @ to differentiate from url defined parameter names --->
-		<cfset var paramType = "" />
-		<cfset var temp = "" />
 		
 		<!--- If the browser has added a trailing / to a friendly URL, strip it out. --->
-		<cfif structKeyExists(url, "furl") AND len(url.furl) GT 1 AND right(url.furl,1) EQ "/">
-			<cfset url.furl = left(url.furl,len(url.furl) -1) />
+		<cfif structKeyExists(arguments.stURL, "furl") AND len(arguments.stURL.furl) GT 1 AND right(arguments.stURL.furl,1) EQ "/">
+			<cfset arguments.stURL.furl = left(arguments.stURL.furl,len(arguments.stURL.furl) -1) />
 		</cfif>
 		
-		<cfif structKeyExists(url, "furl") AND len(url.furl) AND url.furl NEQ "/">
-			
-			<cfset stFU = getFUData(url.furl) />
+		<cfif structkeyexists(arguments.stURL, "furl") and len(arguments.stURL.furl) gt 1>
+			<cfset stResult = getFUData(friendlyURL=arguments.stURL.furl) />
+		</cfif>
 		
-			<cfif not structIsEmpty(stFU)>
+		<!--- Handle redirection case --->
+		<cfif structkeyexists(stResult,"__redirectionURL") and not request.mode.ajax>
+			<cfset structdelete(arguments.stURL,"fapi") />
+			<cfheader statuscode="#stResult['__redirectionType']#"><!--- statustext="Moved permanently" --->
+			<cfheader name="Location" value="#application.fapi.fixURL(url=stResult['__redirectionURL'],addvalues=arguments.stURL)#">
+			<cfabort>
+		</cfif>
+		
+		<!--- If the user went to an objectid=xyz URL, but should be using a friendly URL, redirect them --->
+		<cfif (not structKeyExists(arguments.stURL, "furl") or arguments.stURL.furl eq "" or arguments.stURL.furl EQ "/") 
+				and isUsingFU() and not request.mode.ajax 
+				and structKeyExists(arguments.stURL, "objectid") and stURL.objectid NEQ application.navid.home 
+				and structKeyExists(variables.stLookup, arguments.stURL.objectid)>
 				
-				<cfset stResult.objectid = stFU.refobjectid>
-				<cfloop index="iQstr" list="#stFU.queryString#" delimiters="&">
-					<cfset url["#listFirst(iQstr,'=')#"] = listLast(iQstr,"=")>
-				</cfloop>
-
-				<!--- check if this friendly url is a retired link.: if not then show page --->
-				<cfif stFU.redirectionType NEQ "none" and not request.mode.ajax>
-					<cfif stFU.redirectTo EQ "default">
-						<cfset stLocal.stDefaultFU = getDefaultFUObject(refObjectID="#stFU.refObjectID#") />
-						<cfif not structIsEmpty(stLocal.stDefaultFU) AND stLocal.stDefaultFU.objectid NEQ stFU.objectid>
-							<cfset stLocal.redirectURL = "#application.url.webroot##stLocal.stDefaultFU.friendlyURL#?#stLocal.stDefaultFU.queryString#" />
-							<cfloop collection="#url#" item="i">
-								<cfif i NEQ "furl">
-									<cfset stLocal.redirectURL = "#stLocal.redirectURL#&#i#=#url[i]#" />
-								</cfif>
-							</cfloop>
-							
-							<cfheader statuscode="#stFU.redirectionType#"><!--- statustext="Moved permanently" --->
-							<cfheader name="Location" value="#application.factory.outils.fixURL(stLocal.redirectURL)#">
-							<cfabort>
-							
-						</cfif>
-					<cfelse>
-						<cfset stLocal.redirectURL = "#application.url.webroot#/index.cfm?objectid=#stFU.refObjectID#" />
-						<cfloop collection="#url#" item="i">
-							<cfif i NEQ "furl">
-								<cfset stLocal.redirectURL = "#stLocal.redirectURL#&#i#=#url[i]#" />
-							</cfif>
-						</cfloop>
-					
-						<cfheader statuscode="#stFU.redirectionType#"><!--- statustext="Moved permanently" --->
-						<cfheader name="Location" value="#application.factory.outils.fixURL(stLocal.redirectURL)#">
-						<cfabort>						
-						
-					</cfif>
-
-				<cfelse>
-					<cfset stResult.objectid = stFU.refobjectid>
-					<cfset stResult.type = application.fapi.findType(objectid=stFU.refobjectid) />
-					<cfloop index="iQstr" list="#stFU.queryString#" delimiters="&">
-						<cfset url["#listFirst(iQstr,'=')#"] = listLast(iQstr,"=")>
-					</cfloop>
-				</cfif>
-				
+			<cfset stLocal.stDefaultFU = getData(objectid="#variables.stLookup[arguments.stURL.objectid].objectid#") />
+			
+			<cfif stLocal.stDefaultFU.redirectionType EQ "none">
+				<cfset structdelete(arguments.stURL,"fapi") />
+				<cfheader statuscode="301"><!--- statustext="Moved permanently" --->
+				<cfheader name="Location" value="#application.fapi.fixURL(url=application.fapi.fixURL(url=application.url.webroot & stLocal.stDefaultFU.friendlyURL, addvalues=stLocal.stDefaultFU.queryString),addvalues=cgi.QUERY_STRING)#">
+				<cfabort>		
+			</cfif>
+		</cfif>
+		
+		<!--- Normalise type fuAlias in query string --->
+		<cfif structkeyexists(arguments.stURL,"type")>
+			<cfif structkeyexists(this.typeFU,arguments.stURL.type)>
+				<cfparam name="stResult.type" default="#this.typeFU[arguments.stURL.type]#" />
 			<cfelse>
-				
-				<cfloop list="#url.furl#" index="i" delimiters="/">
-					<cfloop list="#paramTypes#" index="paramType">
-						<cfswitch expression="#paramType#">
-							<cfcase value="@type">
-								<cfif structKeyExists(application.stCoapi,i)>
-									<cfset stResult.type = i />
-									<cfset paramTypes = listdeleteat(paramTypes,listfind(paramtypes,paramType)) />
-									<cfbreak />
-								</cfif>
-								<cfif structKeyExists(application.fc.fuID, i)>
-									<cfset stResult.type = application.fc.fuID[i] />
-									<cfset paramTypes = listdeleteat(paramTypes,listfind(paramtypes,paramType)) />
-									<cfbreak />
-								</cfif>
-							</cfcase>
-							<cfcase value="@objectid">
-								<cfif isUUID(i)>
-									<cfset stResult.objectid = i />
-									
-									<!--- Type and ObjectID can be used together - but only in that order. Don't check for type anymore. --->
-									<cfset paramTypes = listdeleteat(paramTypes,listfind(paramtypes,paramType)) />
-									<cfif listcontains(paramTypes,"@type")>
-										<cfset stResult.type = application.fapi.findType(i) />
-										<cfset paramTypes = listdeleteat(paramTypes,listfind(paramtypes,"@type")) />
-									</cfif>
-									<cfbreak />
-								</cfif>
-							</cfcase>
-							<cfcase value="@pageview">
-								<cfset temp = application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template=i) />
-								<cfif structKeyExists(stResult, "type") and len(stResult.type) and (isdefined("url.ajaxmode") and len(temp) or refindnocase("/displayPage[^.]+\.cfm",temp))>
-									<cfset stResult.view = i />
-								<cfelse>
-									<cfset temp = application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template="__" & i) />
-									<cfif structKeyExists(stResult, "type") and len(stResult.type) and (isdefined("url.ajaxmode") and len(temp) or refindnocase("/displayPage[^.]+\.cfm",temp))>
-										<cfset stResult.view = listfirst(listlast(temp,"/\"),".") />
-									</cfif>
-								</cfif>
-								
-								<cfif structkeyexists(stResult,"view")>
-									<cfset paramTypes = listdeleteat(paramTypes,listfind(paramtypes,paramType)) />
-									<cfbreak />
-								</cfif>
-							</cfcase>
-							<cfcase value="@bodyview">
-								<cfif structKeyExists(stResult, "type") and len(stResult.type)>
-									<cfif len(application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template=i))>
-										<cfset stResult.bodyView = i />
-									</cfif>
-									<cfif len(application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template="__" & i))>
-										<cfset stResult.bodyView = listfirst(listlast(application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template="__" & i),"/\"),".") />
-									</cfif>
-									
-									<cfif structkeyexists(stResult,"bodyView") and listfind(paramtypes,paramType)>
-										<cfset paramTypes = listdeleteat(paramTypes,listfind(paramtypes,paramType)) />
-										
-										<cfif not structkeyexists(stResult,"view")>
-											<cfset stResult.view = "displayPageStandard" />
-											<cfset paramTypes = listdeleteat(paramTypes,listfind(paramtypes,"@pageview")) />
-										</cfif>
-	
-										<cfbreak />
-									</cfif>
-								</cfif>
-							</cfcase>
-							<cfcase value="@paramname"><!--- If we got to this item, none of the others match or are complete --->
-								<cfset stResult[i] = "" />
-								<cfset paramTypes = i /><!--- Next token will be the value of this variable --->
-								<cfbreak />
-							</cfcase>
-							<cfdefaultcase><!--- This can only happen if the case "@paramname" sets a variable name --->
-								<cfset stResult[paramType] = i />
-								<cfset paramTypes = "@paramname" /><!--- Next token will be a parameter name --->
-								<cfbreak />
-							</cfdefaultcase>
-						</cfswitch>
-					</cfloop>
-				</cfloop>
-				
+				<cfparam name="stResult.type" default="#arguments.stURL.type#" />
 			</cfif>
-		<cfelseif isUsingFU() and not request.mode.ajax>
-			<cfif structKeyExists(url, "objectid") AND url.objectid NEQ application.navid.home AND structKeyExists(variables.stLookup, url.objectid)>
-				<cfset stLocal.stDefaultFU = getData(objectid="#variables.stLookup[url.objectid].objectid#") />
+		</cfif>
+		
+		<cfif structkeyexists(arguments.stURL,"objectid")>
+			<cfparam name="stResult.objectid" default="#arguments.stURL.objectid#" />
+			<cfparam name="stResult.type" default="#application.fapi.findType(objectid=arguments.stURL.objectid)#" />
+		</cfif>
+		
+		<!--- Normalise view fuAlias in query string --->
+		<cfif structkeyexists(arguments.stURL,"view")>
+			<cfif structkeyexists(this.webskinFU[stResult.type],arguments.stURL.view)>
+				<cfparam name="stResult.view" default="#this.webskinFU[stResult.type][arguments.stURL.view]#" />
+			<cfelse>
+				<cfparam name="stResult.view" default="#arguments.stURL.view#" />
+			</cfif>
 			
-				<cfif stLocal.stDefaultFU.redirectionType EQ "none">
-				
-						<cfset stLocal.redirectURL = "#application.url.webroot##stLocal.stDefaultFU.friendlyURL#?#stLocal.stDefaultFU.queryString#" />
-						<cfloop collection="#url#" item="i">
-							<cfif i NEQ "objectid" and i NEQ "fURL">				
-								<cfset stLocal.redirectURL = "#stLocal.redirectURL#&#i#=#url[i]#" />
-							</cfif>
-						</cfloop>
-
-						<cfheader statuscode="301"><!--- statustext="Moved permanently" --->
-						<cfheader name="Location" value="#application.factory.outils.fixURL(stLocal.redirectURL)#">
-						<cfabort>		
-				</cfif>
+			<!--- Check the page viewbinding --->
+			<cfif structkeyexists(stResult,"objectid") and not listcontainsnocase("any,object",application.stCOAPI[stResult.type].stWebskins[stResult.view].viewbinding)>
+				<cfthrow message="You are trying to bind an object [#stResult.objectid#] to a type webskin [#stResult.view#]" />
 			</cfif>
-		<cfelse>
-			<cfif structkeyexists(url,"type")>
-				<cfset stResult.type = url.type />
-			</cfif>
-			<cfif structkeyexists(url,"objectid")>
-				<cfset stResult.objectid = url.objectid />
-				<cfset stResult.type = application.fapi.findType(url.objectid) />
+			<cfif not structkeyexists(stResult,"objectid") and not listcontainsnocase("any,type",application.stCOAPI[stResult.type].stWebskins[stResult.view].viewbinding)>
+				<cfthrow message="You are trying to bind a type [#stResult.type#] to an object webskin [#stResult.view#]" />
 			</cfif>
 		</cfif>
 		
-		<cfif structkeyexists(url,"view")>
-			<cfset stResult.view = url.view />
-		</cfif>
-		<cfif structkeyexists(stResult,"type") and len(stResult.type) and structkeyexists(stResult,"view") and not structkeyexists(application.stCOAPI[stResult.type].stWebskins,stResult.view)>
-			<cfset temp = application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template="__" & stResult.view) />
-			<cfif len(temp)>
-				<cfset stResult.view = listfirst(listlast(temp,"/\"),".") />
+		<!--- Normalise bodyView fuAlias in query string --->
+		<cfif structkeyexists(arguments.stURL,"bodyView")>
+			<cfif structkeyexists(this.webskinFU[stResult.type],arguments.stURL.bodyView)>
+				<cfparam name="stResult.bodyView" default="#this.webskinFU[stResult.type][arguments.stURL.bodyView]#" />
+			<cfelse>
+				<cfparam name="stResult.bodyView" default="#arguments.stURL.bodyView#" />
+			</cfif>
+		
+			<!--- Check the body viewbinding --->
+			<cfif structkeyexists(stResult,"objectid") and not listcontainsnocase("any,object",application.stCOAPI[stResult.type].stWebskins[stResult.bodyView].viewbinding)>
+				<cfthrow message="You are trying to bind an object [#stResult.objectid#] to a type webskin [#stResult.bodyView#]" />
+			</cfif>
+			<cfif not structkeyexists(stResult,"objectid") and not listcontainsnocase("any,type",application.stCOAPI[stResult.type].stWebskins[stResult.bodyView].viewbinding)>
+				<cfthrow message="You are trying to bind a type [#stResult.type#] to an object webskin [#stResult.bodyView#]" />
 			</cfif>
 		</cfif>
 		
-		<cfif structkeyexists(url,"bodyView")>
-			<cfset stResult.bodyView = url.bodyView />
-		</cfif>
-		<cfif structkeyexists(stResult,"type") and len(stResult.type) and structkeyexists(stResult,"bodyView") and not structkeyexists(application.stCOAPI[stResult.type].stWebskins,stResult.bodyView)>
-			<cfset temp = application.coapi.coapiAdmin.getWebskinPath(typename=stResult.type, template="__" & stResult.bodyView) />
-			<cfif len(temp)>
-				<cfset stResult.bodyView = listfirst(listlast(temp,"/\"),".") />
-			</cfif>
-		</cfif>
-		<cfif isdefined("url.fudebug")><cfdump var="#stResult#"><cfabort></cfif>
 		<cfreturn stResult />
 	</cffunction>
 	
-	
-	
-	<cffunction name="getFUData" access="public" returntype="struct" hint="Returns the farFU object based on the FU passed in." output="false">
+	<cffunction name="getFUData" access="public" returntype="struct" hint="Returns the either a struct of URL variables (objectid,type,urlparameters,etc) OR a redirect struct (url,status) for the specified fURL" output="false">
 		<cfargument name="friendlyURL" type="string" required="Yes">
 		<cfargument name="dsn" required="no" default="#application.dsn#"> 
 
@@ -802,30 +698,238 @@
 		<cfset var fuThis = "" />
 		<cfset var fuToken = "" />
 		<cfset var bParamName = 1 />
-
-		<!--- check if the FU exists in the applictaion scope [currently active] --->
+		
 		<cfif StructKeyExists(variables.stMappings,arguments.friendlyURL)>
-			<cfset stReturnFU = getData(objectid="#variables.stMappings[arguments.friendlyURL].objectid#") />
-		<cfelse>
-			<cfloop list="#arguments.friendlyURL#" index="fuToken" delimiters="/">
-				<cfset fuThis = "#fuThis#/#fuToken#" />
-				<cfset fuList = listappend(fuList,fuThis) />
+			<!--- If cached, return that --->
+			<cfreturn variables.stMappings[arguments.friendlyURL] />
+		</cfif>
+		
+		<!--- Strongest match: the exact FU is in database --->
+		<cfquery datasource="#arguments.dsn#" name="stLocal.qGet">
+			SELECT		objectid,friendlyURL
+			FROM		#application.dbowner#farFU
+			WHERE		friendlyURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.friendlyURL#" />
+			ORDER BY 	bDefault DESC, fuStatus DESC
+		</cfquery>
+		<cfif stLocal.qGet.recordcount>
+			<cfset variables.stMappings[arguments.friendlyURL] = createURLStruct(farFUID=stLocal.qGet.objectid[1]) />
+			<cfreturn variables.stMappings[arguments.friendlyURL] />
+		</cfif>
+		
+		<!--- Second strongest match: the first fURL token is a UUID or a typename/type alias --->
+		<cfif isvalid("uuid",listfirst(arguments.friendlyURL,"/")) 
+				or structkeyexists(this.typeFU,listfirst(arguments.friendlyURL,"/")) 
+				or structkeyexists(application.stCOAPI,listfirst(arguments.friendlyURL,"/"))>
+			<cfset variables.stMappings[arguments.friendlyURL] = createURLStruct(fuParameters=arguments.friendlyURL) />
+			<cfreturn variables.stMappings[arguments.friendlyURL] />
+		</cfif>
+		
+		<!--- Weakest match: a part of the FU is in the database (matches against the start of the FU) --->
+		<cfloop list="#arguments.friendlyURL#" index="fuToken" delimiters="/">
+			<cfset fuThis = "#fuThis#/#fuToken#" />
+			<cfset fuList = listappend(fuList,fuThis) />
+		</cfloop>
+		<cfquery datasource="#arguments.dsn#" name="stLocal.qGet">
+			SELECT		objectid,friendlyURL
+			FROM		#application.dbowner#farFU
+			WHERE		friendlyURL in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#fuList#" />)
+			ORDER BY 	friendlyURL desc, bDefault DESC, fuStatus DESC
+		</cfquery>
+		<cfif stLocal.qGet.recordcount>
+			<cfset variables.stMappings[arguments.friendlyURL] = createURLStruct(farFUID=stLocal.qGet.objectid[1],fuParameters=replacenocase(arguments.friendlyURL,stLocal.qGet.friendlyURL,"")) />
+			<cfreturn variables.stMappings[arguments.friendlyURL] />
+		</cfif>
+		
+		<!--- No match - this is probably a 404 --->
+		<cfreturn structnew() />
+	</cffunction>
+	
+	<cffunction name="createURLStruct" access="public" returntype="struct" hint="Creates a set of URL variables from a farFU object and/or a fuParametersString">
+		<cfargument name="farFUID" type="uuid" required="false" hint="The objectid of a farFU object" />
+		<cfargument name="fuParameters" type="string" required="false" hint="The portion of the furl value that needs to be parsed" />
+		
+		<cfset var stFU = structnew() />
+		<cfset var stResult = structnew() />
+		<cfset var qsToken = "" />
+		<cfset var fuVars = "@type,@objectid,@pageview,@bodyview,@paramname" />
+		<cfset var paramType = "" />
+		<cfset var stWS = structnew() />
+		<cfset var fuParam = "" />
+		<cfset var stLocal = structnew() />
+		
+		<cfif structkeyexists(arguments,"farFUID")><!--- Grab URL variables from the farFU object --->
+			<cfset stFU = getData(objectid=arguments.farFUID) />
+			
+			<!--- Associated object --->
+			<cfset stResult.objectid = stFU.refObjectID />
+			<cfset stResult.type = application.fapi.findType(objectid=stFU.refObjectID) />
+			
+			<!--- Query string variables --->
+			<cfloop index="qsToken" list="#stFU.queryString#" delimiters="&">
+				<cfset stResult["#listFirst(qsToken,'=')#"] = listLast(qsToken,"=")>
 			</cfloop>
 			
-			<cfquery datasource="#arguments.dsn#" name="stLocal.qGet">
-				SELECT		objectid,friendlyURL
-				FROM		#application.dbowner#farFU
-				WHERE		friendlyURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.friendlyURL#" />
-				ORDER BY 	bDefault DESC, fuStatus DESC
-			</cfquery>
+			<!--- If extra fURL parameters are provided, do not attempt to extract objectid or type --->
+			<cfset fuVars = listdeleteat(fuVars,listfind(fuVars,"@objectid")) />
+			<cfset fuVars = listdeleteat(fuVars,listfind(fuVars,"@type")) />
 			
-			<cfif stLocal.qGet.recordCount>
-				<cfset stReturnFU = getData(objectid="#stLocal.qGet.objectid[1]#") />
-				<cfset variables.stMappings[arguments.friendlyURL] = stReturnFU />
+			<!--- Redirect information --->
+			<cfif stFU.redirectionType NEQ "none">
+				<!--- NOTE: URL information is still included in a redirect struct as the redirect will not be honoured for ajax requests --->
+				
+				<cfif stFU.redirectTo EQ "default">
+					<cfset stLocal.stDefaultFU = getDefaultFUObject(refObjectID=stFU.refObjectID) />
+					
+					<cfif not structIsEmpty(stLocal.stDefaultFU) AND stLocal.stDefaultFU.objectid NEQ stFU.objectid>
+						<cfset stResult["__redirectionURL"] = "#application.url.webroot##stLocal.stDefaultFU.friendlyURL#" />
+					</cfif>
+				<cfelse>
+					<cfset stResult["__redirectionURL"] = "#application.url.webroot#/index.cfm?objectid=#stFU.refObjectID#" />
+				</cfif>
+				
+				<cfif structkeyexists(stResult,"__redirectionURL")>
+					<cfif structkeyexists(arguments,"fuParameters")>
+						<cfset stResult["__redirectionURL"] = stResult["__redirectURL"] & arguments.fuParameters />
+					</cfif>
+					<cfif len(stLocal.stDefaultFU.queryString) or len(stFU.queryString) or len(rereplacenocase(cgi.query_string,"furl=[^&]+&?",""))>
+						<cfset stResult["__redirectionURL"] = stResult["__redirectURL"] & "?" & listappend(listappend(stLocal.stDefaultFU.queryString,stFU.queryString,"&"),rereplacenocase(cgi.query_string,"furl=[^&]+&?","")) />
+					</cfif>
+					
+					<cfset stResult["__redirectionType"] = stFU.redirectionType />
+				</cfif>
 			</cfif>
 		</cfif>
-
-		<cfreturn stReturnFU>
+		
+		<cfif structkeyexists(arguments,"fuParameters")><!--- Parse URL variables from the string --->
+			<cfloop list="#arguments.fuParameters#" index="fuParam" delimiters="/">
+				<cfloop list="#fuVars#" index="paramType">
+					<cfswitch expression="#paramType#">
+						<cfcase value="@type">
+							<!--- Parameter matches a type fuAlias --->
+							<cfif structKeyExists(this.typeFU, fuParam)>
+								<cfset stResult.type = this.typeFU[fuParam] />
+								<cfset fuVars = listdeleteat(fuVars,listfind(fuVars,"@type")) />
+								<cfbreak />
+							</cfif>
+							
+							<!--- Parameter matches a type name --->
+							<cfif structKeyExists(application.stCOAPI, fuParam)>
+								<cfset stResult.type = fuParam />
+								<cfset fuVars = listdeleteat(fuVars,listfind(fuVars,"@type")) />
+								<cfbreak />
+							</cfif>
+						</cfcase>
+						
+						<cfcase value="@objectid">
+							<cfif isUUID(fuParam)>
+								<cfset stResult.objectid = fuParam />
+								<cfset fuVars = listdeleteat(fuVars,listfind(fuVars,"@objectid")) />
+								
+								<!--- Type and ObjectID can be used together - but only in that order. Don't check for type anymore. --->
+								<cfif listcontains(fuVars,"@type")>
+									<cfset stResult.type = application.fapi.findType(fuParam) />
+									<cfset fuVars = listdeleteat(fuVars,listfind(fuVars,"@type")) />
+								</cfif>
+								
+								<cfbreak />
+							</cfif>
+						</cfcase>
+						
+						<cfcase value="@pageview">
+							<!--- Views can only be specified if the type is known... --->
+							<cfif structKeyExists(stResult, "type") and len(stResult.type)>
+								<cfif structkeyexists(this.webskinFU[stResult.type],fuParam)>
+									<cfset stWS = application.stCOAPI[stResult.type].stWebskins[this.webskinFU[stResult.type][fuParam]] />
+								<cfelseif structkeyexists(application.stCOAPI[stResult.type].stWebskins,fuParam)>
+									<cfset stWS = application.stCOAPI[stResult.type].stWebskins[fuParam] />
+								</cfif>
+								
+								<cfif not structisempty(stWS) and listcontainsnocase("page,any",stWS.viewstack)>
+									<cfset stResult.view = stWS.methodname />
+									<cfset fuVars = listdeleteat(fuVars,listfind(fuVars,"@pageview")) />
+									<cfbreak />
+								</cfif>
+							</cfif>
+						</cfcase>
+						
+						<cfcase value="@bodyview">
+							<!--- Views can only be specified if the type is known... --->
+							<cfif structKeyExists(stResult, "type") and len(stResult.type)>
+								<cfif structkeyexists(this.webskinFU[stResult.type],fuParam)>
+									<cfset stWS = application.stCOAPI[stResult.type].stWebskins[this.webskinFU[stResult.type][fuParam]] />
+								<cfelseif structkeyexists(application.stCOAPI[stResult.type].stWebskins,fuParam)>
+									<cfset stWS = application.stCOAPI[stResult.type].stWebskins[fuParam] />
+								</cfif>
+								
+								<cfif not structisempty(stWS) and listcontainsnocase("body,any",stWS.viewstack)>
+									<cfset stResult.bodyView = stWS.methodname />
+									<cfset fuVars = listdeleteat(fuVars,listfind(fuVars,"@bodyview")) />
+									
+									<!--- Page view is always provided before body view --->
+									<cfif listcontains(fuVars,"@pageview")>
+										<cfset fuVars = listdeleteat(fuVars,listfind(fuVars,"@pageview")) />
+									</cfif>
+									
+									<cfbreak />
+								</cfif>
+							</cfif>
+						</cfcase>
+						
+						<cfcase value="@paramname"><!--- If we got to this item all other possible matches are complete --->
+							<cfset stResult[fuParam] = "" />
+							<cfset fuVars = fuParam /><!--- Next token will be the value of this variable --->
+							<cfbreak />
+						</cfcase>
+						
+						<cfdefaultcase><!--- This can only happen if the case "@paramname" sets a variable name --->
+							<cfset stResult[paramType] = fuParam />
+							<cfset fuVars = "@paramname" /><!--- Next token will be a parameter name --->
+							<cfbreak />
+						</cfdefaultcase>
+					</cfswitch>
+				</cfloop>
+			</cfloop>
+		</cfif>
+		
+		<!--- Normalise view fuAlias in query string --->
+		<cfif structkeyexists(url,"view")>
+			<cfif structkeyexists(this.webskinFU[stResult.type],url.view)>
+				<cfparam name="stResult.view" default="#this.webskinFU[stResult.type][url.view]#" />
+			<cfelse>
+				<cfparam name="stResult.view" default="#url.view#" />
+			</cfif>
+		</cfif>
+		
+		<!--- Check the page viewbinding --->
+		<cfif structkeyexists(stResult,"type") and structkeyexists(stResult,"view")>
+			<cfif structkeyexists(stResult,"objectid") and not listcontainsnocase("any,object",application.stCOAPI[stResult.type].stWebskins[stResult.view].viewbinding)>
+				<cfthrow message="You are trying to bind an object [#stResult.objectid#] to a type webskin [#stResult.view#]" />
+			</cfif>
+			<cfif not structkeyexists(stResult,"objectid") and not listcontainsnocase("any,type",application.stCOAPI[stResult.type].stWebskins[stResult.view].viewbinding)>
+				<cfthrow message="You are trying to bind a type [#stResult.type#] to an object webskin [#stResult.view#]" />
+			</cfif>
+		</cfif>
+		
+		<!--- Normalise bodyView fuAlias in query string --->
+		<cfif structkeyexists(url,"bodyView")>
+			<cfif structkeyexists(this.webskinFU[stResult.type],url.bodyView)>
+				<cfparam name="stResult.bodyView" default="#this.webskinFU[stResult.type][url.bodyView]#" />
+			<cfelse>
+				<cfparam name="stResult.bodyView" default="#url.bodyView#" />
+			</cfif>
+		</cfif>
+		
+		<!--- Check the body viewbinding --->
+		<cfif structkeyexists(stResult,"type") and structkeyexists(stResult,"bodyView")>
+			<cfif structkeyexists(stResult,"objectid") and not listcontainsnocase("any,object",application.stCOAPI[stResult.type].stWebskins[stResult.bodyView].viewbinding)>
+				<cfthrow message="You are trying to bind an object [#stResult.objectid#] to a type webskin [#stResult.bodyView#]" />
+			</cfif>
+			<cfif not structkeyexists(stResult,"objectid") and not listcontainsnocase("any,type",application.stCOAPI[stResult.type].stWebskins[stResult.bodyView].viewbinding)>
+				<cfthrow message="You are trying to bind a type [#stResult.type#] to an object webskin [#stResult.bodyView#]" />
+			</cfif>
+		</cfif>
+		
+		<cfreturn stResult />
 	</cffunction>
 	
 	<cffunction name="rebuildFU" access="public" returntype="struct" hint="rebuilds friendly urls for a particular type" output="true">
@@ -1147,7 +1251,6 @@
 		<cfargument name="bodyView" required="false" type="string" default="" hint="view used to render the body content">
 
 		<cfset var returnURL = "">
-		<cfset var bFoundFU = false /><!--- State used to determine if we found a friendly URL --->
 		
 		<cfset var typeFU = "" />
 		<cfset var viewFU = "" />
@@ -1160,11 +1263,6 @@
 				<cfset typeFU = application.stCOAPI[arguments.type].fuAlias />
 			<cfelse>
 				<cfset typeFU = arguments.type />
-			</cfif>
-			<cfif isdefined("application.stCOAPI.#arguments.type#.stWebskins.displayPageStandard.fuAlias") and len(application.stCOAPI[arguments.type].stWebskins["displayPageStandard"].fuAlias)>
-				<cfset standardViewFU = application.stCOAPI[arguments.type].stWebskins["displayPageStandard"].fuAlias />
-			<cfelse>
-				<cfset standardViewFU = "displayPageStandard" />
 			</cfif>
 			<cfset thistype = arguments.type />
 		<cfelseif len(arguments.objectid)>
@@ -1191,7 +1289,6 @@
 				<!--- LOOK UP IN MEMORY CACHE ---> 
 				<cfif structKeyExists(variables.stLookup, arguments.objectid)>
 					<cfset returnURL = variables.stLookup[arguments.objectid].friendlyURL />
-					<cfset bFoundFU = true />
 				
 				<!--- IF NOT IN CACHE CHECK THE DATABASE --->
 				<cfelse>
@@ -1206,8 +1303,7 @@
 					
 					<!--- IF WE FOUND AN FU, THE USE IT, OTHERWISE START THE URL SYNTAX --->
 					<cfif NOT structIsEmpty(stFUObject)>
-						<cfset returnURL = "#stFUObject.friendlyURL#">			
-						<cfset bFoundFU = true />
+						<cfset returnURL = "#stFUObject.friendlyURL#">
 					<cfelse>
 						<cfif len(arguments.type)>							
 							<cfset returnURL = "/#typeFU#" />
@@ -1224,15 +1320,12 @@
 			 --------------------------------------------------------------------->			
 			<cfif len(arguments.type) OR  len(arguments.view) OR len(arguments.bodyView)>
 			
-				<!--- IF WE ARE USING A FRIENDLY URL OR OUR URL ALREADY CONTAINS A QUESTION MARK, THEN WE CAN USE REGULAR URL VARIABLES  --->
-				<cfif bFoundFU OR FindNoCase("?", returnURL)>
-					<cfif NOT FindNoCase("?", returnURL)>
-						<cfset returnURL = "#returnURL#?" />
-					</cfif>
+				<!--- IF OUR URL ALREADY CONTAINS A QUESTION MARK, THEN WE MUST USE REGULAR URL VARIABLES  --->
+				<cfif FindNoCase("?", returnURL)>
 					<cfif len(arguments.view)>
 						<cfset returnURL = "#returnURL#&view=#viewFU#" />
 					</cfif>
-					<cfif len(arguments.bodyView) and not listcontainsnocase("displayBody,displayTypeBody",arguments.bodyView)>
+					<cfif len(arguments.bodyView)>
 						<cfset returnURL = "#returnURL#&bodyView=#bodyFU#" />
 					</cfif>		
 				<cfelse>
@@ -1240,7 +1333,7 @@
 					<cfif len(arguments.view)>
 						<cfset returnURL = "#returnURL#/#viewFU#" />
 					</cfif>
-					<cfif len(arguments.bodyView) and not listcontainsnocase("displayBody,displayTypeBody",arguments.bodyView)>
+					<cfif len(arguments.bodyView)>
 						<cfset returnURL = "#returnURL#/#bodyFU#" />
 					</cfif>		
 				</cfif>

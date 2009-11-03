@@ -886,7 +886,7 @@
 				</cfif>
 			<cfelse>
 				<cfif arguments.includeDomain>
-					<cfset returnURL = "http://#arguments.Domain#">
+					<cfset returnURL = "http://#arguments.Domain##application.url.webroot#">
 				<cfelse>
 					<cfset returnURL = application.url.webroot />
 				</cfif>
@@ -903,7 +903,7 @@
 		
 				<cfset returnURL = returnURL & application.fc.factory.farFU.getFU(objectid="#linkID#", type="#arguments.type#", view="#arguments.view#", bodyView="#arguments.bodyView#")>
 				
-				<cfif not len(linkID) and not find("type=",returnURL)>
+				<cfif not find("?",returnURL)>
 					<cfif len(arguments.urlParameters)>
 						<cfset returnURL = "#returnURL#/#replace(replace(arguments.urlParameters,'=','/','ALL'),'&','/','ALL')#" />
 						<cfset arguments.urlParameters = "" />

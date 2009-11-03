@@ -2,7 +2,7 @@
 <!--- @@displayname:  --->
 <!--- @@description: typesTest --->
 
-<cfcomponent extends="mxunit.framework.TestCase">
+<cfcomponent extends="mxunit.framework.TestCase" displayname="FAPI Tests">
 	<!--- setup and teardown --->
 	<cffunction name="setUp" returntype="void" access="public">
 		<!--- Any code needed to return your environment to normal goes here --->
