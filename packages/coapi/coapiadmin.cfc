@@ -171,6 +171,8 @@
 		<cfargument name="excludeWebskins" type="string" required="false" default="" hint="Allows developers to exclude webskins that might be contained in plugins." />
 		<cfargument name="packagePath" type="string" required="false" hint="The path to the type." />
 		<cfargument name="aExtends" type="array" required="false" hint="The components this type extends" />
+		<cfargument name="viewBinding" type="string" required="false" default="" /><!--- type,object --->
+		<cfargument name="viewStack" type="string" required="false" default="" /><!--- page,body,fragment --->
 		
 		<cfset var qResult="" />
 		<cfset var webskinid = 0 />
@@ -197,6 +199,12 @@
 				SELECT *
 				FROM qResult
 				WHERE lower(qResult.name) LIKE '#lCase(arguments.prefix)#%'
+				<cfif len(arguments.viewBinding)>
+					AND viewBinding = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.viewBinding#" />
+				</cfif>
+				<cfif len(arguments.viewStack)>
+					AND viewStack = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.viewStack#" />
+				</cfif>
 				</cfquery>
 			</cfif>
 		
@@ -207,7 +215,8 @@
 		<!--- 
 		CACHING IN THE REQUEST SCOPE
 		WE ONLY WANT THIS TO BE RUN ONCE PER TYPE PER REQUEST AT THE MOST.		
-		THIS IS OFTEN THE CASE FOR ABSTRACT TYPES THAT ARE EXTENDED BY MULTIPLE TYPES
+		THIS IS OFTEN THE CASE FOR ABSTRACT TYPES THAT ARE EXTENDED BY MULTIPLE TYPES.
+		IN THIS CASE, ANY FILTERING OPTIONS PASSED IN (prefix,viewBinding,viewStack) AS ARGUMENTS WILL BE IGNORED.
 		 --->		
 		<cfparam name="request.fc.stcoapiWebskins" default="#structNew()#" />
 		<cfparam name="request.fc.stcoapiWebskins[arguments.typename]" default="#structNew()#" />
@@ -387,6 +396,8 @@
 		PLACE IT IN THE REQUEST SCOPE JUST INCASE WE NEED THIS AGAIN THIS REQUEST.
 		 --->
 		<cfset request.fc.stcoapiWebskins[arguments.typename].qWebskins = qresult />
+		
+		
 
 		<cfreturn qresult />
 	</cffunction>
