@@ -1596,9 +1596,12 @@
 			<!--- The second item will be blank because it's the space between the ident and URI. 
 				Sometimes no URI is defined.--->
 			<cfif arraylen(spaceParts) gt 1>
-				<cfset arrayDeleteAt(spaceParts, 2) />
-				<cfset URI = spaceParts[2] />
-				<cfset doctype.uri = URI />
+				<cfif trim(spaceParts[2]) EQ "">
+					<cfset arrayDeleteAt(spaceParts, 2) />
+				</cfif>
+				<cfset doctype.uri = spaceParts[arraylen(spaceParts)] />
+			<cfelse>
+				<cfset doctype.uri = "" />
 			</cfif>
 			
 			<cfset FPI = spaceParts[1] />

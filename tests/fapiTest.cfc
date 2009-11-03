@@ -300,7 +300,7 @@
 	
 	<cffunction name="getLinkTest" returntype="void" access="public">
 		<!--- fake parameters used in some of the tests --->
-		<cfset var st = {blarg="123", other="ŠÈÐ¾÷ø¾??Œ?¤Œö©Š¼?Š¼¼"} />
+		<cfset var st = {blarg="123", other="ï¿½ï¿½Ð¾ï¿½ï¿½??ï¿½?ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½?ï¿½ï¿½ï¿½"} />
 	
 		<cfset var lnk = this.myComp.getLink(href="http://daemon.com.au") />
 		<cfset assertEquals(lnk, "http://daemon.com.au") />
@@ -394,26 +394,31 @@
 		<cfset assertEquals(stDT.type, "xhtml") />
 		<cfset assertEquals(stDT.version, "1.0") />
 		<cfset assertEquals(stDT.subtype, "Frameset") />
+		<cfset assertEquals(stDT.URI, "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd") />
 		
 		<cfset stDT = this.myComp.getDocType('HTML PUBLIC "-//IETF//DTD HTML 2.0 Level 2//EN"') />
 		
 		<cfset assertEquals(stDT.type, "html") />
 		<cfset assertEquals(stDT.version, "2.0") />
+		<cfset assertEquals(stDT.URI, "") />
 		
 		<cfset stDT = this.myComp.getDocType('HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN"') />
 		
 		<cfset assertEquals(stDT.type, "html") />
 		<cfset assertEquals(stDT.version, "3.2") />
+		<cfset assertEquals(stDT.URI, "") />
 		
 		<cfset stDT = this.myComp.getDocType('html PUBLIC "-//W3C//DTD XHTML 2.0//EN" "http://www.w3.org/MarkUp/DTD/xhtml2.dtd"') />
 		
 		<cfset assertEquals(stDT.type, "xhtml") />
 		<cfset assertEquals(stDT.version, "2.0") />
+		<cfset assertEquals(stDT.URI, "http://www.w3.org/MarkUp/DTD/xhtml2.dtd") />
 		
 		<cfset stDT = this.myComp.getDocType('html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"') />
 		
 		<cfset assertEquals(stDT.type, "xhtml") />
 		<cfset assertEquals(stDT.version, "1.1") />
+		<cfset assertEquals(stDT.URI, "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd") />
 		
 		<cfset stDT = this.myComp.getDocType('html') />
 		
@@ -445,11 +450,11 @@
 		<cfset var rval = this.myComp.removeMSWordChars("This String should be unchanged.") />
 		<cfset assertEquals(rval, "This String should be unchanged.") />
 		
-		<cfset rval = this.myComp.removeMSWordChars("ÀªŠü»ŽÏÛ??ÏÜŠ??ÀªŠü»ŽÏÛ??ÏÜŠ??‰Û?‰Û?") />
+		<cfset rval = this.myComp.removeMSWordChars("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Û??ï¿½ï¿½ÜŠ??ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Û??ï¿½ï¿½ÜŠ??ï¿½ï¿½?ï¿½ï¿½?") />
 		<!--- the elips is replaced with periods --->
-		<cfset assertEquals(rval, "ÀªŠü»ŽÏÛ??ÏÜŠ??ÀªŠü»ŽÏÛ??ÏÜŠ??......") />
+		<cfset assertEquals(rval, "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Û??ï¿½ï¿½ÜŠ??ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Û??ï¿½ï¿½ÜŠ??......") />
 		
-		<cfset rval = this.myComp.removeMSWordChars("Schultz, Helen O‰ÛªNeil, Frank") />
+		<cfset rval = this.myComp.removeMSWordChars("Schultz, Helen Oï¿½ÛªNeil, Frank") />
 		<cfset assertEquals(rval, "Schultz, Helen O'Neil, Frank") />
 		
 	</cffunction>
