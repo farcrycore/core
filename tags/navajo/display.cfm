@@ -143,8 +143,7 @@
 			<extjs:bubble title="Currently Viewing a Draft Object" message="You are currently viewing a draft object. Your profile has now been changed to 'Showing Drafts'." />
 		<cfelse>			
 			<!--- send to login page and return in draft mode --->
-			<extjs:bubble title="Security" message="This object is in draft" />
-			<cflocation url="#attributes.loginpath#&showdraft=1&error=draft" addtoken="No" />
+			<skin:location url="#attributes.loginpath#" urlParameters="showdraft=1&error=draft" />
 		</cfif>
 	</cfif>
 	
@@ -360,8 +359,7 @@
 			</cfoutput></extjs:onReady>
 		</cfif>
 	<cfelse>
-		<extjs:bubble title="Security" message="You do not have permission to access this view" />
-		<cflocation url="#attributes.loginpath#&error=restricted" addtoken="No" />
+		<skin:location url="#attributes.loginpath#" urlParameters="error=restricted" />
 	</cfif>
 	
 </cfif>

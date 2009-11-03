@@ -44,11 +44,68 @@ START WEBSKIN
 		
 			<ft:form>	
 				
-				<sec:selectProject />
+				<!--- -------------- --->
+				<!--- SELECT PROJECT --->
+				<!--- -------------- --->
+				<cfif structKeyExists(server, "stFarcryProjects") AND structcount(server.stFarcryProjects) GT 1>
+					<cfset aDomainProjects = arraynew(1) />
+					<cfloop collection="#server.stFarcryProjects#" item="thisproject">
+						<cfif isstruct(server.stFarcryProjects[thisproject]) and listcontains(server.stFarcryProjects[thisproject].domains,cgi.http_host)>
+							<cfset arrayappend(aDomainProjects,thisproject) />
+						</cfif>
+					</cfloop>
+					
+					<cfif arraylen(aDomainProjects) gt 1>
+						<cfoutput>
+							<fieldset class="formSection">
+								<legend>Project Selection</legend>
+								<div class="fieldSection string">
+									<label class="fieldsectionlabel" for="selectFarcryProject"> Project  : </label>
+									<div class="fieldAlign">
+										<select name="selectFarcryProject" id="selectFarcryProject" onchange="window.location='#application.url.webtop#/login.cfm?farcryProject='+this.value;">						
+											<cfloop from="1" to="#arraylen(aDomainProjects)#" index="i">
+												<cfif len(aDomainProjects[i])>
+													<option value="#aDomainProjects[i]#"<cfif cookie.currentFarcryProject eq aDomainProjects[i]> selected</cfif>>#server.stFarcryProjects[aDomainProjects[i]].displayname#</option>
+												</cfif>
+											</cfloop>						
+										</select>
+									</div>
+									<br class="clearer"/>
+								</div>	
+							</fieldset>
+						</cfoutput>
+					</cfif>
+				</cfif>			
 				
-				<sec:SelectUDLogin />
-				
-	
+				<!--- --------------------- --->
+				<!--- SELECT USER DIRECTORY --->
+				<!--- --------------------- --->
+				<cfif listlen(application.security.getAllUD()) GT 1>
+		
+					<cfoutput>
+					<div class="fieldSection string">
+						<label class="fieldsectionlabel" for="selectuserdirectories"> Select User Directory : </label>
+						<div class="fieldAlign">
+					</cfoutput>
+					
+							<cfoutput><select name="selectuserdirectories" id="selectuserdirectories" onchange="window.location='#application.url.farcry#/login.cfm?ud='+this.value;"></cfoutput>
+							
+							<cfloop list="#application.security.getAllUD()#" index="thisud">
+								<cfoutput>
+									<option value="#thisud#"<cfif structKeyExists(arguments.stParam, "ud") AND arguments.stParam.ud eq thisud> selected</cfif>>#application.security.userdirectories[thisud].title#</option>
+								</cfoutput>
+							</cfloop>
+							
+							<cfoutput></select></cfoutput>
+					
+					<cfoutput>	
+						</div>
+						<br class="clearer"/>
+					</div>		
+					</cfoutput>		
+				</cfif>
+
+
 				<ft:object typename="farLogin" lFields="username,password" prefix="login" legend="" />
 					
 				

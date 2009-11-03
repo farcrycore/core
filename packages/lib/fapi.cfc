@@ -52,6 +52,30 @@
 			
 			<cfreturn application.coapi.coapiutilities.getContentObject(argumentCollection="#arguments#") />
 		</cffunction>
+				
+		<!--- @@examples:
+			<p>Retrieve the properties of the selected object after an objectadmin action:</p>
+			<code>
+				<cfif application.fapi.hasWebskin("dmHTML", "displayPage1Col")>
+					<skin:view typename="dmHTML" objectid="#q.objectid#" webskin="displayPage1Col" />
+				</cfif>
+			</code>
+		 --->
+		<cffunction name="hasWebskin" access="public" output="false" returnType="boolean" hint="Returns true if the content type has the webskin name passed in available." bDocument="true">
+			<cfargument name="typename" type="string" required="true" hint="The typename of the webskin to be found." />
+			<cfargument name="webskin" required="true" />
+			
+			<cfset var bHasWebskin = false />
+			
+			<cfif len(arguments.typename) 
+					AND len(arguments.webskin) 
+					AND isDefined("application.stcoapi.#arguments.typename#.stWebskins") 
+					AND structKeyExists(application.stcoapi[arguments.typename].stWebskins, arguments.webskin)>
+				<cfset bHasWebskin = true />
+			</cfif>			
+			
+			<cfreturn bHasWebskin />
+		</cffunction>
 		
 	
 		<!--- @@examples:
@@ -900,28 +924,7 @@
 				<cfset returnURL = cgi.script_name />
 			</cfif>
 			
-			<!--- check for extra URL parameters --->
-			<cfif NOT StructIsEmpty(arguments.stParameters)>
-				<cfset stLocal = StructNew()>
-				<cfset stLocal.parameters = "">
-				<cfset stLocal.iCount = 0>
-				<cfloop collection="#arguments.stParameters#" item="stLocal.key">
-					<cfif stLocal.iCount GT 0>
-						<cfset stLocal.parameters = stLocal.parameters & "&">
-					</cfif>
-					<cfset stLocal.parameters = stLocal.parameters & stLocal.key & "=" & URLEncodedFormat(arguments.stParameters[stLocal.key])>
-					<cfset stLocal.iCount = stLocal.iCount + 1>
-				</cfloop>
-		
-			
-				<cfif ListFind("&,?",Right(returnURL,1))><!--- check to see if the last character is a ? or & and don't append one between the params and the returnURL --->
-					<cfset returnURL=returnURL&stLocal.parameters>
-				<cfelseif Find("?",returnURL)> <!--- If there is already a ? in the returnURL, just concat the params with & --->
-					<cfset returnURL=returnURL&"&"&stLocal.parameters>
-				<cfelse> <!--- No query string on the returnURL, so add a new one using ? and the params --->
-					<cfset returnURL=returnURL&"?"&stLocal.parameters>		
-				</cfif>
-			</cfif>
+			<cfset returnURL = fixURL(url=returnURL,ampDelim=arguments.ampDelim,addValues="#arguments.stParameters#") />
 			
 			<!--- Append the anchor to the end of the URL. --->
 			<cfif len(arguments.anchor)>
@@ -930,8 +933,6 @@
 				</cfif>
 				<cfset returnURL = "#returnURL##arguments.anchor#" />		
 			</cfif>
-			
-			<cfset returnURL = fixURL(url=returnURL,ampDelim=arguments.ampDelim) />
 			
 			<!--- Are we meant to use the Javascript Popup Window? --->
 			<cfif arguments.JSWindow>
@@ -1524,6 +1525,7 @@
 		doctype.type     - html, xhtml
 		doctype.version  - 1.0, 1.1, 3.2, blank
 		doctype.subtype  - Frameset, Transitional, blank
+		doctype.uri  - dtd, blank
 		
 		Example output:
 		

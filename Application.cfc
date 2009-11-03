@@ -248,6 +248,7 @@
 
 		<!--- Setup FarCry Namespace in the request scope --->
 		<cfparam name="request.fc" default="#structNew()#" />
+		<cfparam name="session.fc" default="#structNew()#" />
 		
 		<!--- Update the farcry application if instructed --->
 		<cfset farcryUpdateApp() />		
@@ -273,11 +274,24 @@
 		</cfif>
 		<cfset cookie.currentFarcryProject = application.projectDirectoryName />	
 	
-		<cfparam name="session.loginReturnURL" default="#application.url.webroot#/index.cfm" />
-		<cfif structKeyExists(url, "returnURL")>
-			<cfset session.loginReturnURL = url.returnURL />
+		<!--- Checks to see if the user has attempted to flick over to administrate a different project on this server. --->		
+		<cfif 	structKeyExists(url, "farcryProject") 
+				AND len(url.farcryProject) 
+				AND structKeyExists(server, "stFarcryProjects") 
+				AND structKeyExists(cookie, "currentFarcryProject") 
+				AND structKeyExists(server.stFarcryProjects, url.farcryProject) 
+				AND cookie.currentFarcryProject NEQ url.farcryProject>
+					
+					<cfset cookie.currentFarcryProject = url.farcryProject />
+					<cflocation url="#cgi.SCRIPT_NAME#?#cgi.query_string#" addtoken="false" />
 		</cfif>
-
+		
+		<cfparam name="session.loginReturnURL" default="#application.fapi.getLink(alias='home')#" />
+		
+		<cfif structKeyExists(url, "returnURL")>
+			<cfset session.loginReturnURL = application.fapi.fixURL(url.returnURL) />
+		</cfif>
+		
 		<cfreturn true />
 	</cffunction>
  

@@ -17,7 +17,7 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!--- @@hint: A replacement for cflocation that allows you o pass in similar attributes to skin:buildlink but this tag will cflocate to that link. --->
+<!--- @@description: Forces the user to login --->
 
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
@@ -28,6 +28,16 @@
 
 <cfif thistag.executionMode eq "Start">
 
+	<!--- --------------------------------------------------------------------------------------- --->
+	<!--- THE FOLLOWING ATTRIBUTES SETUP THE SECURITY REQUIRED TO BE ASSIGNED TO A LOGGED IN USER --->
+	<!--- --------------------------------------------------------------------------------------- --->
+	<cfparam name="attributes.lRoles" default=""><!--- A list of roles the current user must have assigned. --->
+	<cfparam name="attributes.lPermissions" default=""><!--- A list of permissions the current user must have assigned. --->
+	<cfparam name="attributes.message" default=""><!--- A message that will be passed to the login if the security is not met. --->
+	
+	<!--- -------------------------------------------------------------------------------------- --->
+	<!--- THE FOLLOWING ATTRIBUTES ALLOWS THE USER TO SET THE RETURNURL AFTER A SUCCESSFUL LOGIN --->
+	<!--- -------------------------------------------------------------------------------------- --->
 	<cfparam name="attributes.url" default=""><!--- the actual href to link to. This is to provide similar syntax to <cflocation /> however attributes.href should be used. --->
 	<cfparam name="attributes.href" default="#attributes.url#"><!--- the actual href to link to. Defaults to attributes.url --->
 	<cfparam name="attributes.alias" default=""><!--- Navigation alias to use to find the objectid --->
@@ -43,10 +53,33 @@
 	<cfparam name="attributes.addToken" default="false" />
 	<cfparam name="attributes.ampDelim" default="&">	
 	
-	<cfset attributes.url = application.fapi.getLink(argumentCollection="#attributes#") />		
+	<cfset bValidUser = application.fapi.isLoggedIn() />
 	
-	<cflocation url="#attributes.url#" addtoken="#attributes.addToken#" />
+	<cfif bValidUser>
+		<cfif len(attributes.lRoles)>
+			<cfset bValidUser = application.fapi.hasRole(attributes.lRoles) />
+		</cfif>	
+	</cfif>
 	
+	<cfif bValidUser>
+		<cfif len(attributes.lPermissions)>
+			<cfset bValidUser = application.fapi.hasPermission(attributes.lPermissions) />
+		</cfif>	
+	</cfif>
+	
+	<cfif not bValidUser>
+	
+		<cfset loginURL = "#application.url.webtop#/login.cfm" />
+		
+		<cfif len(attributes.message)>
+			<cfset session.fc.loginMessage = attributes.message />
+		</cfif>
+		
+		<cfset returnURL = application.fapi.getLink(argumentCollection="#attributes#") />		
+		
+		<skin:location href="#loginURL#" urlParameters="returnUrl=#returnURL#" />
+		
+	</cfif>
 </cfif>
 	
 </cfsilent>

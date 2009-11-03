@@ -227,12 +227,20 @@
 	</cffunction>
 	
 	<cffunction name="getDefaultUD" access="public" output="false" returntype="string" hint="Returns the default user directory for this application">
+		<cfset var result = "" />
 		
-		<cfif isdefined("application.config.general.defaultUserDirectory") and len(application.config.general.defaultUserDirectory)>
-			<cfreturn application.config.general.defaultUserDirectory />
-		<cfelse>
-			<cfreturn listfirst(this.userdirectoryorder) />
+		<cfif structKeyExists(url, "ud")>
+			<cfset result = url.ud />
+		<cfelse>			
+			<cfif isdefined("application.config.general.defaultUserDirectory") and len(application.config.general.defaultUserDirectory)>
+				<cfset result = application.config.general.defaultUserDirectory />
+			<cfelse>
+				<cfset result = listfirst(this.userdirectoryorder) />
+			</cfif>
 		</cfif>
+
+		<cfreturn result />
+		
 	</cffunction>
 	
 	<cffunction name="getGroupUsers" access="public" returntype="array" description="Returns an array of the members of the specified groups" output="false" bDocument="true">
@@ -273,7 +281,71 @@
 		
 		<cfreturn this.userdirectories[arguments.ud].getLoginForm() />
 	</cffunction>
+
+	<cffunction name="processLogin" access="public" output="false" returntype="struct" hint="Attempts to authenticate a login and if unsuccessful, sets up any subsequent login forms for the page. Returns a struct containing all the nessesary information for a user directories login form.">
+
+		<!--- Attempt to Authenticate the current form post if one has been submitted. --->
+		<cfset var stResult = authenticate() />
+		
+		<!--- Setup Default return structure --->
+		<cfparam name="stResult.authenticated" default="false" /><!--- Did the user successfully login --->
+		<cfparam name="stResult.message" default="" /><!--- Any message that the user directory may have returned --->
+		<cfparam name="stResult.loginReturnURL" default="#session.loginReturnURL#" /><!--- The return url after a successful login --->
+		
+		<!--- WHICH USERDIRECTORY SHOULD WE BE RENDERING THE FORM FOR --->
+		<cfset stResult.ud = getDefaultUD() />
+		
+		<!--- Allow for custom message --->
+		<cfif structKeyExists(session.fc, "loginMessage") AND len(session.fc.loginMessage) AND NOT len(stResult.message)>
+			<cfset stResult.message = session.fc.loginMessage />
+			<cfset structDelete(session.fc, "loginMessage") />
+		</cfif>
+		
+		<!--- DETERMINE THE FORM TYPENAME FOR THE CURRENT USER DIRECTORY SELECTED ABOVE --->
+		<cfset stResult.loginTypename = application.security.getLoginForm(stResult.ud) />
+		<cfset stResult.loginWebskin = "displayLogin" /><!--- Default login webskin to displayLogin --->
+		
+		<cfif findNoCase(application.url.webtop, stResult.loginReturnURL)>
+			<!--- LOGGING INTO THE WEBTOP --->
+			<cfif application.fapi.hasWebskin(stResult.loginTypename,"displayPageLoginWebtop")>
+				<cfset stResult.loginWebskin = "displayPageLoginWebtop" />
+			</cfif>
+		<cfelse>
+			<!--- LOGGING INTO THE PROJECTS SITE --->
+			<cfif application.fapi.hasWebskin(stResult.loginTypename,"displayPageLoginProject")>
+				<cfset stResult.loginWebskin = "displayPageLoginProject" />
+			</cfif>
+		</cfif>	
+		
+		<!--- IF WE ARE NOT AUTHENTICATED --->
+		<cfif not stResult.authenticated>
+
+			<!--- LOOK FOR ANY FRAMEWORK SPECIFIC ERROR LOGIC --->
+			<cfif structKeyExists(url, "error") and not len(stResult.message)>
+				<cfif url.error eq "draft">
+					<!--- TODO: i18n --->
+					<cfset stResult.authenticated = false />
+				    <cfset stResult.message = "This page is in draft. You are required to login." />
+				</cfif>
+				<cfif url.error eq "restricted">
+					<!--- TODO: i18n --->
+					<cfset stResult.authenticated = false />
+				    <cfset stResult.message = "You have attempted to access a restricted area of the site that you do not have permission to view. You are required to login." />
+				</cfif>
+			</cfif>
+			
+			<!--- ARE WE LOGGING IN BECAUSE WE JUST LOGGED OUT? --->
+			<cfif session.loginReturnURL contains "logout=1">
+				<cfset application.security.logout() />
+				<cfset stResult.authenticated = false />
+			    <cfset stResult.message = "You have successfully logged out." />
+			</cfif>		
+		</cfif>
+		
+		<cfreturn stResult />
+	</cffunction>
 	
+
 	<cffunction name="authenticate" access="public" output="true" returntype="struct" hint="Attempts to authenticate a user using each directory, and returns true if successful">
 		<cfset var ud = "" />
 		<cfset var stResult = structnew() />
