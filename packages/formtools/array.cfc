@@ -287,6 +287,8 @@
 					obj#arguments.fieldname#.primaryFieldname="#arguments.stMetaData.Name#";
 					obj#arguments.fieldname#.wizardID="";
 					obj#arguments.fieldname#.DataTypename="#ListFirst(arguments.stMetadata.ftJoin)#";
+					</script>
+					<script type="text/javascript" language="javascript" charset="utf-8">	
 					initArrayField('#arguments.fieldname#','#application.url.webroot#');
 					</script>
 					</cfoutput>		
