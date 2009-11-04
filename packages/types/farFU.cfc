@@ -1249,6 +1249,7 @@
 		<cfargument name="type" required="false" type="string" default="" hint="typename of object to link to">
 		<cfargument name="view" required="false" type="string" default="" hint="view used to render the page layout">
 		<cfargument name="bodyView" required="false" type="string" default="" hint="view used to render the body content">
+		<cfargument name="ampDelim" required="false" type="string" default="&amp;" hint="The string to use for query string delimiters" />
 
 		<cfset var returnURL = "">
 		
@@ -1319,15 +1320,20 @@
 			 IF WE HAVE OUR OTHER URL SYNTAX ATTRIBUTES, APPEND THEM TO THE URL
 			 --------------------------------------------------------------------->			
 			<cfif len(arguments.type) OR  len(arguments.view) OR len(arguments.bodyView)>
-			
+				
+				<!--- The home page can't have implied parameters --->
+				<cfif returnURL eq "/">
+					<cfset returnURL = "/?" />
+				</cfif>
+				
 				<!--- IF OUR URL ALREADY CONTAINS A QUESTION MARK, THEN WE MUST USE REGULAR URL VARIABLES  --->
 				<cfif FindNoCase("?", returnURL)>
 					<cfif len(arguments.view)>
-						<cfset returnURL = "#returnURL#&view=#viewFU#" />
+						<cfset returnURL = "#returnURL##arguments.ampDelim#view=#viewFU#" />
 					</cfif>
 					<cfif len(arguments.bodyView)>
-						<cfset returnURL = "#returnURL#&bodyView=#bodyFU#" />
-					</cfif>		
+						<cfset returnURL = "#returnURL##arguments.ampDelim#bodyView=#bodyFU#" />
+					</cfif>
 				<cfelse>
 					<!--- OTHERWISE WE CAN USE THE URL SYNTAX OF /OBJECTID/TYPE/VIEW/BODYVIEW --->
 					<cfif len(arguments.view)>
@@ -1346,16 +1352,16 @@
 			<cfset returnURL = "/index.cfm?" />
 			
 			<cfif len(arguments.type)>
-				<cfset returnURL = "#returnURL#&type=#typeFU#" />
+				<cfset returnURL = "#returnURL##arguments.ampDelim#type=#typeFU#" />
 			</cfif>
 			<cfif len(arguments.objectid)>
-				<cfset returnURL = "#returnURL#&objectid=#arguments.objectid#" />
+				<cfset returnURL = "#returnURL##arguments.ampDelim#objectid=#arguments.objectid#" />
 			</cfif>
 			<cfif len(arguments.view)>
-				<cfset returnURL = "#returnURL#&view=#viewFU#" />
+				<cfset returnURL = "#returnURL##arguments.ampDelim#view=#viewFU#" />
 			</cfif>
 			<cfif len(arguments.bodyView) and not listcontainsnocase("displayBody,displayTypeBody",arguments.bodyView)>
-				<cfset returnURL = "#returnURL#&bodyView=#bodyFU#" />
+				<cfset returnURL = "#returnURL##arguments.ampDelim#bodyView=#bodyFU#" />
 			</cfif>
 		</cfif>
 		

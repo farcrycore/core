@@ -901,9 +901,9 @@
 					<cfset linkID = getNavID(alias="#arguments.alias#") />
 				</cfif>
 		
-				<cfset returnURL = returnURL & application.fc.factory.farFU.getFU(objectid="#linkID#", type="#arguments.type#", view="#arguments.view#", bodyView="#arguments.bodyView#")>
+				<cfset returnURL = returnURL & application.fc.factory.farFU.getFU(objectid="#linkID#", type="#arguments.type#", view="#arguments.view#", bodyView="#arguments.bodyView#", ampDelim=arguments.ampDelim)>
 				
-				<cfif not find("?",returnURL)>
+				<cfif not find("?",returnURL) and returnURL neq "/">
 					<cfif len(arguments.urlParameters)>
 						<cfset returnURL = "#returnURL#/#replace(replace(arguments.urlParameters,'=','/','ALL'),'&','/','ALL')#" />
 						<cfset arguments.urlParameters = "" />

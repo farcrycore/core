@@ -1216,6 +1216,7 @@
 		<cfset assertEquals(furl,"/test/fu/test-page-default/test-body-default/param1/value1/param2/value2") />
 	</cffunction>
 
+
 	<!--- Manual links: href --->
 	<cffunction displayname="Generate: /href?param1=value1&param2=value2 from urlParameters" hint="Checks that this friendly URL is generated" name="generateFU_href_urlParameters" access="public">
 		<cfset var urlParameters = "param1=value1&param2=value2" />
@@ -1223,18 +1224,18 @@
 		
 		<!--- urlParameters --->
 		<cfset furl = this.fapi.getLink(href="/abc/def",urlParameters=urlParameters) />
-		<cfset assertEquals(furl,"/abc/def?&amp;param1=value1&amp;param2=value2") />
+		<cfset assertEquals(furl,"/abc/def?param1=value1&amp;param2=value2") />
 	</cffunction>
-	
-	<cffunction displayname="Generate: /href?param1=value1&param2=value2 from stParameters" hint="Checks that this friendly URL is generated" name="generateFU_href_stParameters" access="public">
-		<cfset var stParameters = structnew() />
+
+
+	<!--- Home page links --->
+	<cffunction displayname="Generate: /?logout=1 from urlParameters" hint="Checks that this friendly URL is generated" name="generateFU_home_logout" access="public">
+		<cfset var urlParameters = "logout=1" />
 		<cfset var furl = "" />
 		
 		<!--- stParameters --->
-		<cfset stParameters["param1"] = "value1" />
-		<cfset stParameters["param2"] = "value2" />
-		<cfset furl = this.fapi.getLink(href="/abc/def",stParameters=stParameters) />
-		<cfset assertEquals(furl,"/abc/def?&amp;param1=value1&amp;param2=value2") />
+		<cfset furl = this.fapi.getLink(objectid=application.navid.home,urlParameters=urlParameters) />
+		<cfset assertEquals(furl,"/?logout=1") />
 	</cffunction>
 
 

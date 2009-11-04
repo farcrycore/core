@@ -534,7 +534,7 @@
 			</cfloop>
 		</cfif>
 
-		<cfreturn rereplace(rereplace(arguments.url,"(#arguments.ampDelim#){2,}",arguments.ampDelim),"(#arguments.ampDelim#|\?)+$","") />
+		<cfreturn replace(rereplace(rereplace(arguments.url,"(#arguments.ampDelim#){2,}",arguments.ampDelim),"(#arguments.ampDelim#|\?)+$",""),"?#arguments.ampDelim#","?") />
 	</cffunction>
 	
 	<cffunction name="insertQueryVariable" returntype="string" output="false" access="public" hint="Inserts the specified key and value, replacing the existing value for that key">
