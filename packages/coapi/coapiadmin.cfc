@@ -194,20 +194,22 @@
 		</cfif>
 		
 		<cfif isquery(qResult)>
+			
+			<cfquery dbtype="query" name="qResult">
+			SELECT *
+			FROM qResult
+			WHERE 1 = 1
 			<cfif len(arguments.prefix)>
-				<cfquery dbtype="query" name="qResult">
-				SELECT *
-				FROM qResult
-				WHERE lower(qResult.name) LIKE '#lCase(arguments.prefix)#%'
-				<cfif len(arguments.viewBinding)>
-					AND viewBinding = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.viewBinding#" />
-				</cfif>
-				<cfif len(arguments.viewStack)>
-					AND viewStack = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.viewStack#" />
-				</cfif>
-				</cfquery>
+				AND lower(qResult.name) LIKE '#lCase(arguments.prefix)#%'
 			</cfif>
-		
+			<cfif len(arguments.viewBinding)>
+				AND viewBinding = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.viewBinding#" />
+			</cfif>
+			<cfif len(arguments.viewStack)>
+				AND viewStack = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.viewStack#" />
+			</cfif>
+			</cfquery>
+	
 			<cfreturn qResult />
 		</cfif>
 		
