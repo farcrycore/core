@@ -1349,7 +1349,7 @@
 				<cfset returnURL = "#returnURL#&type=#typeFU#" />
 			</cfif>
 			<cfif len(arguments.objectid)>
-				<cfset returnURL = "#returnURL#objectid=#arguments.objectid#" />
+				<cfset returnURL = "#returnURL#&objectid=#arguments.objectid#" />
 			</cfif>
 			<cfif len(arguments.view)>
 				<cfset returnURL = "#returnURL#&view=#viewFU#" />
