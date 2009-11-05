@@ -751,6 +751,7 @@
 	<cffunction name="createURLStruct" access="public" returntype="struct" hint="Creates a set of URL variables from a farFU object and/or a fuParametersString">
 		<cfargument name="farFUID" type="uuid" required="false" hint="The objectid of a farFU object" />
 		<cfargument name="fuParameters" type="string" required="false" hint="The portion of the furl value that needs to be parsed" />
+		<cfargument name="stURL" type="struct" required="false" default="#structnew()#" hint="URL variables to consider" />
 		
 		<cfset var stFU = structnew() />
 		<cfset var stResult = structnew() />
@@ -893,44 +894,6 @@
 					</cfswitch>
 				</cfloop>
 			</cfloop>
-		</cfif>
-		
-		<!--- Normalise view fuAlias in query string --->
-		<cfif structkeyexists(url,"view")>
-			<cfif structkeyexists(this.webskinFU[stResult.type],url.view)>
-				<cfparam name="stResult.view" default="#this.webskinFU[stResult.type][url.view]#" />
-			<cfelse>
-				<cfparam name="stResult.view" default="#url.view#" />
-			</cfif>
-		</cfif>
-		
-		<!--- Check the page viewbinding --->
-		<cfif structkeyexists(stResult,"type") and structkeyexists(stResult,"view")>
-			<cfif structkeyexists(stResult,"objectid") and not listcontainsnocase("any,object",application.stCOAPI[stResult.type].stWebskins[stResult.view].viewbinding)>
-				<cfthrow message="You are trying to bind an object [#stResult.objectid#] to a type webskin [#stResult.view#]" />
-			</cfif>
-			<cfif not structkeyexists(stResult,"objectid") and not listcontainsnocase("any,type",application.stCOAPI[stResult.type].stWebskins[stResult.view].viewbinding)>
-				<cfthrow message="You are trying to bind a type [#stResult.type#] to an object webskin [#stResult.view#]" />
-			</cfif>
-		</cfif>
-		
-		<!--- Normalise bodyView fuAlias in query string --->
-		<cfif structkeyexists(url,"bodyView")>
-			<cfif structkeyexists(this.webskinFU[stResult.type],url.bodyView)>
-				<cfparam name="stResult.bodyView" default="#this.webskinFU[stResult.type][url.bodyView]#" />
-			<cfelse>
-				<cfparam name="stResult.bodyView" default="#url.bodyView#" />
-			</cfif>
-		</cfif>
-		
-		<!--- Check the body viewbinding --->
-		<cfif structkeyexists(stResult,"type") and structkeyexists(stResult,"bodyView")>
-			<cfif structkeyexists(stResult,"objectid") and not listcontainsnocase("any,object",application.stCOAPI[stResult.type].stWebskins[stResult.bodyView].viewbinding)>
-				<cfthrow message="You are trying to bind an object [#stResult.objectid#] to a type webskin [#stResult.bodyView#]" />
-			</cfif>
-			<cfif not structkeyexists(stResult,"objectid") and not listcontainsnocase("any,type",application.stCOAPI[stResult.type].stWebskins[stResult.bodyView].viewbinding)>
-				<cfthrow message="You are trying to bind a type [#stResult.type#] to an object webskin [#stResult.bodyView#]" />
-			</cfif>
 		</cfif>
 		
 		<cfreturn stResult />
