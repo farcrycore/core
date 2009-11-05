@@ -720,15 +720,7 @@
 			<cfreturn duplicate(this.stMappings[arguments.friendlyURL]) />
 		</cfif>
 		
-		<!--- Second strongest match: the first fURL token is a UUID or a typename/type alias --->
-		<cfif isvalid("uuid",listfirst(arguments.friendlyURL,"/")) 
-				or structkeyexists(this.typeFU,listfirst(arguments.friendlyURL,"/")) 
-				or structkeyexists(application.stCOAPI,listfirst(arguments.friendlyURL,"/"))>
-			<cfset this.stMappings[arguments.friendlyURL] = createURLStruct(fuParameters=arguments.friendlyURL) />
-			<cfreturn duplicate(this.stMappings[arguments.friendlyURL]) />
-		</cfif>
-		
-		<!--- Weakest match: a part of the FU is in the database (matches against the start of the FU) --->
+		<!--- Second strongest match: a part of the FU is in the database (matches against the start of the FU) --->
 		<cfloop list="#arguments.friendlyURL#" index="fuToken" delimiters="/">
 			<cfset fuThis = "#fuThis#/#fuToken#" />
 			<cfset fuList = listappend(fuList,fuThis) />
@@ -741,6 +733,14 @@
 		</cfquery>
 		<cfif stLocal.qGet.recordcount>
 			<cfset this.stMappings[arguments.friendlyURL] = createURLStruct(farFUID=stLocal.qGet.objectid[1],fuParameters=replacenocase(arguments.friendlyURL,stLocal.qGet.friendlyURL,"")) />
+			<cfreturn duplicate(this.stMappings[arguments.friendlyURL]) />
+		</cfif>
+		
+		<!--- Weakest match: the first fURL token is a UUID or a typename/type alias --->
+		<cfif isvalid("uuid",listfirst(arguments.friendlyURL,"/")) 
+				or structkeyexists(this.typeFU,listfirst(arguments.friendlyURL,"/")) 
+				or structkeyexists(application.stCOAPI,listfirst(arguments.friendlyURL,"/"))>
+			<cfset this.stMappings[arguments.friendlyURL] = createURLStruct(fuParameters=arguments.friendlyURL) />
 			<cfreturn duplicate(this.stMappings[arguments.friendlyURL]) />
 		</cfif>
 		
