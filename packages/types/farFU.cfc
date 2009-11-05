@@ -50,7 +50,11 @@
 		<cfset var bAvailable = false />
 		
 		<cftry>
-			<cfhttp url="http://#cgi.server_name##application.url.webroot#/pingFU" throwonerror="true" timeout="1" port="#cgi.server_port#" result="pingResponse" />
+			<cfif CGI.SERVER_PORT_SECURE>
+				<cfhttp url="https://#cgi.server_name##application.url.webroot#/pingFU" throwonerror="true" timeout="1" port="#cgi.server_port#" result="pingResponse" />
+			<cfelse>
+				<cfhttp url="http://#cgi.server_name##application.url.webroot#/pingFU" throwonerror="true" timeout="1" port="#cgi.server_port#" result="pingResponse" />
+			</cfif>
 		
 			<cfif findNoCase("PING FU SUCCESS", pingResponse.Filecontent)>
 				<cfset bAvailable = true />
