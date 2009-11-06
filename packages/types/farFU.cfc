@@ -751,7 +751,6 @@
 	<cffunction name="createURLStruct" access="public" returntype="struct" hint="Creates a set of URL variables from a farFU object and/or a fuParametersString">
 		<cfargument name="farFUID" type="uuid" required="false" hint="The objectid of a farFU object" />
 		<cfargument name="fuParameters" type="string" required="false" hint="The portion of the furl value that needs to be parsed" />
-		<cfargument name="stURL" type="struct" required="false" default="#structnew()#" hint="URL variables to consider" />
 		
 		<cfset var stFU = structnew() />
 		<cfset var stResult = structnew() />
