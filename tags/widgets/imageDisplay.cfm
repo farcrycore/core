@@ -1,7 +1,13 @@
-<cfsetting enablecfoutputonly="true">
+<!--- 
+ // DEPRECATED
+	widgets:imageDisplay is no longer in use and will be removed from the code base. 
+	You should be using formtools sub-system instead.
+--------------------------------------------------------------------------------------------------->
+<!--- @@bDeprecated: true --->
+<cfset application.fapi.deprecated("widgets:imageDisplay is no longer in use and will be removed from the code base. You should be using formtools sub-system instead.") />
 
-<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
-<farcry:deprecated message="widgets tag library is deprecated; please use formtools." />
+
+<cfsetting enablecfoutputonly="true">
 
 <!--- Author: Gavin Stewart
         Date: Jul 27, 2005
