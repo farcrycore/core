@@ -480,7 +480,12 @@
 		
 		<!--- DEPRECIATED VARIABLE --->
 		<cfset structdelete(session,"dmSec") />
+		
+		<!--- Security has changed so we need to re-initialise our request.mode struct --->
+		<cfset application.fc.factory.farFU.initRequestMode() />
 	</cffunction>
+	
+	
 
 
 	<!--- CACHE FUNCTIONS - SHOULD ONLY BE ACCESSED BY CORE CODE --->

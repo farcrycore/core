@@ -607,7 +607,7 @@
 		<cfset var iQstr = "" />
 		<cfset var i = "" />
 		<cfset var stResult = structNew() />
-		
+	
 		<!--- If the browser has added a trailing / to a friendly URL, strip it out. --->
 		<cfif structKeyExists(arguments.stURL, "furl") AND len(arguments.stURL.furl) GT 1 AND right(arguments.stURL.furl,1) EQ "/">
 			<cfset arguments.stURL.furl = left(arguments.stURL.furl,len(arguments.stURL.furl) -1) />
@@ -617,27 +617,34 @@
 			<cfset stResult = getFUData(friendlyURL=arguments.stURL.furl) />
 		</cfif>
 		
-		<!--- Handle redirection case --->
-		<cfif structkeyexists(stResult,"__redirectionURL") and not request.mode.ajax>
-			<cfset structdelete(arguments.stURL,"fapi") />
-			<cfheader statuscode="#stResult['__redirectionType']#"><!--- statustext="Moved permanently" --->
-			<cfheader name="Location" value="#application.fapi.fixURL(url=stResult['__redirectionURL'],addvalues=arguments.stURL)#">
-			<cfabort>
-		</cfif>
+		<!--- Once the URL has been parsed, we need to initialise our request.mode struct --->
+		<cfset initRequestMode(stResult) />
 		
-		<!--- If the user went to an objectid=xyz URL, but should be using a friendly URL, redirect them --->
-		<cfif (not structKeyExists(arguments.stURL, "furl") or arguments.stURL.furl eq "" or arguments.stURL.furl EQ "/") 
-				and isUsingFU() and not request.mode.ajax 
-				and structKeyExists(arguments.stURL, "objectid") and stURL.objectid NEQ application.navid.home 
-				and structKeyExists(this.stLookup, arguments.stURL.objectid)>
-				
-			<cfset stLocal.stDefaultFU = getData(objectid="#this.stLookup[arguments.stURL.objectid].objectid#") />
-			
-			<cfif stLocal.stDefaultFU.redirectionType EQ "none">
+		<cfif structKeyExists(request.fc, "disableFURedirction") AND request.fc.disableFURedirction>
+			<!--- DON'T REDIRECT. This is sometimes nessesary like under the webtop. --->
+		<cfelse>
+			<!--- Handle redirection case --->
+			<cfif structkeyexists(stResult,"__redirectionURL") and not request.mode.ajax>
 				<cfset structdelete(arguments.stURL,"fapi") />
-				<cfheader statuscode="301"><!--- statustext="Moved permanently" --->
-				<cfheader name="Location" value="#application.fapi.fixURL(url=application.fapi.fixURL(url=application.url.webroot & stLocal.stDefaultFU.friendlyURL, addvalues=stLocal.stDefaultFU.queryString),addvalues=cgi.QUERY_STRING)#">
-				<cfabort>		
+				<cfheader statuscode="#stResult['__redirectionType']#"><!--- statustext="Moved permanently" --->
+				<cfheader name="Location" value="#application.fapi.fixURL(url=stResult['__redirectionURL'],addvalues=arguments.stURL)#">
+				<cfabort>
+			</cfif>
+			
+			<!--- If the user went to an objectid=xyz URL, but should be using a friendly URL, redirect them --->
+			<cfif (not structKeyExists(arguments.stURL, "furl") or arguments.stURL.furl eq "" or arguments.stURL.furl EQ "/") 
+					and isUsingFU() and not request.mode.ajax 
+					and structKeyExists(arguments.stURL, "objectid") and stURL.objectid NEQ application.navid.home 
+					and structKeyExists(this.stLookup, arguments.stURL.objectid)>
+					
+				<cfset stLocal.stDefaultFU = getData(objectid="#this.stLookup[arguments.stURL.objectid].objectid#") />
+				
+				<cfif stLocal.stDefaultFU.redirectionType EQ "none">
+					<cfset structdelete(arguments.stURL,"fapi") />
+					<cfheader statuscode="301"><!--- statustext="Moved permanently" --->
+					<cfheader name="Location" value="#application.fapi.fixURL(url=application.fapi.fixURL(url=application.url.webroot & stLocal.stDefaultFU.friendlyURL, addvalues=stLocal.stDefaultFU.queryString),addvalues=cgi.QUERY_STRING)#">
+					<cfabort>		
+				</cfif>
 			</cfif>
 		</cfif>
 		
@@ -689,9 +696,133 @@
 			</cfif>
 		</cfif>
 		
-		<cfreturn stResult />
+		<cfset StructAppend(url, stResult, "true") />
+		
+		<cfreturn url />
 	</cffunction>
 	
+	<cffunction name="initRequestMode" access="public" output="false" returntype="struct" hint="Sets up the request.mode struct and other request settings based on the current users security permissions">
+		<cfargument name="stURL" type="struct" required="true" default="#url#" hint="Reference to the URL struct" />
+		
+		<!--- If we havn't passed in our URL struct then default to the standard URL scope --->
+		<cfif structIsEmpty(arguments.stURL) AND isDefined("URL")>
+			<cfset arguments.stURL = url />
+		</cfif>
+		
+		<cfscript>
+		request.fc.bShowTray = true;
+			
+		// init request.mode with defaults
+		request.mode = structNew();
+		request.mode.design = 0;
+		request.mode.flushcache = 0;
+		request.mode.showdraft = 0;
+		request.mode.ajax = 0;
+		request.mode.tracewebskins = 0;
+		
+		// Developer Mode
+		request.mode.bDeveloper = 0;
+		
+		// container management
+		// default to off, conjurer determines permissions based on nav-node
+		request.mode.showcontainers = 0; 
+		
+		// miscellaneous options to be added
+		request.mode.showtables = 0;
+		request.mode.showerror = 0;
+		request.mode.showdebugoutput = 0;
+		
+		// admin options visible in page
+		if (IsDefined("session.dmSec.Authentication.bAdmin")) {
+			request.mode.bAdmin = session.dmSec.Authentication.bAdmin; 
+		} else {
+			request.mode.bAdmin = 0; // default to off
+		}
+			
+		// if user has admin priveleges, determine mode values
+		if (request.mode.bAdmin) {
+		// designmode
+			if (isDefined("arguments.stURL.designmode")) {
+				request.mode.design = val(arguments.stURL.designmode);
+				session.dmSec.Authentication.designmode = request.mode.design;
+			} else if (isDefined("session.dmSec.Authentication.designmode")) {
+				request.mode.design = session.dmSec.Authentication.designmode;
+			} else {
+				request.mode.design = 0;
+			}
+		// webskintrace
+			if (isDefined("arguments.stURL.tracewebskins")) {
+				request.mode.tracewebskins = val(arguments.stURL.tracewebskins);
+				session.dmSec.Authentication.tracewebskins = request.mode.tracewebskins;
+			} else if (isDefined("session.dmSec.Authentication.tracewebskins")) {
+				request.mode.tracewebskins = session.dmSec.Authentication.tracewebskins;
+			} else {
+				request.mode.tracewebskins = 0;
+			}
+		
+		// bypass caching
+			if (isDefined("arguments.stURL.flushcache")) {
+				request.mode.flushcache = val(arguments.stURL.flushcache);
+				session.dmSec.Authentication.flushcache = request.mode.flushcache;
+			} else if (isDefined("session.dmSec.Authentication.flushcache")) {
+				request.mode.flushcache = session.dmSec.Authentication.flushcache;
+			} else {
+				request.mode.flushcache = 0;
+			}
+		
+		// view content as stage
+			if (isDefined("arguments.stURL.showdraft")) {
+				request.mode.showdraft = val(arguments.stURL.showdraft);
+				session.dmSec.Authentication.showdraft = request.mode.showdraft;
+			} else if (isDefined("session.dmSec.Authentication.showdraft")) {
+				request.mode.showdraft = session.dmSec.Authentication.showdraft;
+			} else {
+				request.mode.showdraft = 0;
+			}
+		
+		// disable tray
+			if (isDefined("arguments.stURL.bShowTray")) {
+				request.fc.bShowTray = val(arguments.stURL.bShowTray);
+				session.dmProfile.bShowTray = request.fc.bShowTray;
+			} else if (isDefined("session.dmProfile.bShowTray")) {
+				request.fc.bShowTray = session.dmProfile.bShowTray;
+			} else {
+				request.fc.bShowTray = 0;
+				session.dmProfile.bShowTray = request.fc.bShowTray;
+			}
+		
+		}
+		
+		// set valid status for content
+		if (request.mode.showdraft) {
+			request.mode.lValidStatus = "draft,pending,approved";
+		} else {
+			request.mode.lValidStatus = "approved";
+		}
+	
+		// ajaxmode
+		// Ensure that if ajaxmode is defined multiple times, then we only get the last one.
+		if (structKeyExists(arguments.stURL, "ajaxmode")) {
+			arguments.stURL.ajaxmode = listLast(arguments.stURL.ajaxmode);
+		}
+		if (isDefined("form") and structKeyExists(form, "ajaxmode")) {
+			form.ajaxmode = listLast(form.ajaxmode);
+		}
+		
+		if ((isDefined("arguments.stURL.ajaxmode") and arguments.stURL.ajaxmode) or (isDefined("form.ajaxmode") and form.ajaxmode)) {
+			request.mode.ajax = true;
+		} else {
+			request.mode.ajax = false;
+		}
+			
+		// Deprecated variables
+		// TODO remove these when possible
+		request.lValidStatus = request.mode.lValidStatus; //deprecated
+		</cfscript>
+		
+		<cfreturn application.fapi.success() />
+	</cffunction>
+		
 	<cffunction name="getFUData" access="public" returntype="struct" hint="Returns the either a struct of URL variables (objectid,type,urlparameters,etc) OR a redirect struct (url,status) for the specified fURL" output="false">
 		<cfargument name="friendlyURL" type="string" required="Yes">
 		<cfargument name="dsn" required="no" default="#application.dsn#"> 
@@ -894,7 +1025,7 @@
 				</cfloop>
 			</cfloop>
 		</cfif>
-		
+				
 		<cfreturn stResult />
 	</cffunction>
 	
