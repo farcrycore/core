@@ -44,7 +44,7 @@ $out:$
     <cfoutput>#html#</cfoutput>
 <cfelse>
 	<!--- THIS IS THE LEGACY WAY OF DOING THINGS AND STAYS FOR BACKWARDS COMPATIBILITY --->
-    <!--- <cfset evaluate("oType.#method#(objectid='#objectid#',OnExit=#stOnExit#)")> --->
+    <!--- <cfset evaluate("oType.#method#(objectid='#objectid#',onExitProcess=#onExitProcess#)")> --->
     <cfinvoke component="#application.stcoapi['dmCategory'].packagePath#" method="edit">
         <cfinvokeargument name="objectId" value="#objectId#" />
     </cfinvoke>

@@ -15,7 +15,7 @@
 	<cfparam name="attributes.key" default=""><!--- use to generate a new object --->
 	<cfparam name="attributes.template" default=""><!--- can be used as an alternative to webskin. Best practice is to use webskin. --->
 	<cfparam name="attributes.webskin" default=""><!--- the webskin to be called with the object --->
-	<cfparam name="attributes.OnExit" default="" />
+	<cfparam name="attributes.onExitProcess" default="" />
 	<cfparam name="attributes.stProps" default="#structNew()#">
 	<cfparam name="attributes.stParam" default="#structNew()#">
 	<cfparam name="attributes.r_html" default=""><!--- Empty will render the html inline --->
@@ -29,7 +29,7 @@
 	<cfparam name="attributes.bAllowTrace" default="true" /><!--- Sometimes having webskin trace information can break the integrity of a page. This allows you to turn it off. --->
 	
 	
-	<cfset lAttributes = "stobject,typename,objectid,key,template,webskin,stprops,stparam,r_html,r_objectid,hashKey,alternateHTML,OnExit,dsn,bAjax,ajaxID,ajaxShowloadIndicator,ajaxindicatorText,bIgnoreSecurity" />
+	<cfset lAttributes = "stobject,typename,objectid,key,template,webskin,stprops,stparam,r_html,r_objectid,hashKey,alternateHTML,onExitProcess,dsn,bAjax,ajaxID,ajaxShowloadIndicator,ajaxindicatorText,bIgnoreSecurity" />
 	<cfset attrib = "" />
 	
 	<!--- Setup custom attributes passed into view in stParam structure --->
@@ -120,7 +120,7 @@
 			<cfinvokeargument name="objectid" value="#attributes.objectid#" />
 			<cfinvokeargument name="stobject" value="#st#" />
 			<cfinvokeargument name="template" value="#attributes.webskin#" />
-			<cfinvokeargument name="onExit" value="#attributes.onExit#" />
+			<cfinvokeargument name="onExitProcess" value="#attributes.onExitProcess#" />
 			<cfinvokeargument name="stParam" value="#attributes.stParam#" />
 			<cfinvokeargument name="hashKey" value="#attributes.hashKey#" />
 			<cfinvokeargument name="bAjax" value="#attributes.bAjax#" />

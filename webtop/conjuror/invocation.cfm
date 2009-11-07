@@ -102,29 +102,30 @@ Pseudo:
 			<!--- determine where the edit handler has been called from to provide the right return url --->
 			<cfparam name="url.ref" default="sitetree" type="string">
 			
-			<cfset stOnExit = StructNew() />
+			<cfset onExitProcess = StructNew() />
 			<cfif url.ref eq "typeadmin" AND (isDefined("url.module") AND Len(url.module))>
 				<!--- typeadmin redirect --->
-				<cfset stOnExit.Type = "URL" />
-				<cfset stOnExit.Content = "#application.url.farcry#/admin/customadmin.cfm?module=#url.module#&ref=#url.ref#" />
+				<cfset onExitProcess.Type = "URL" />
+				<cfset onExitProcess.Content = "#application.url.farcry#/admin/customadmin.cfm?module=#url.module#&ref=#url.ref#" />
 				<cfif isDefined("URL.plugin")>
-					<cfset stOnExit.Content = stOnExit.Content & "&plugin=" & url.plugin />
+					<cfset onExitProcess.Content = onExitProcess.Content & "&plugin=" & url.plugin />
 				</cfif>
 			<cfelseif url.ref eq "closewin"> 
 				<!--- close win has no official redirector as it closes open window --->
-				<cfset stOnExit.Type = "HTML" />
-				<cfsavecontent variable="stOnExit.Content">
+				<cfset onExitProcess.Type = "HTML" />
+				<cfsavecontent variable="onExitProcess.Content">
 					<cfoutput>
 					<script type="text/javascript">
 						opener.location.href = opener.location.href;
 						window.close();
 					</script>
 					</cfoutput>
+					
 				</cfsavecontent>
 			<cfelseif url.ref eq "iframe"> 
 				<!--- site tree redirect --->
-				<cfset stOnExit.Type = "HTML" />
-				<cfsavecontent variable="stOnExit.Content">
+				<cfset onExitProcess.Type = "HTML" />
+				<cfsavecontent variable="onExitProcess.Content">
 					<cfoutput>
 					<script type="text/javascript">
 						location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#returnStruct.ObjectID#&ref=#url.ref#';
@@ -133,8 +134,8 @@ Pseudo:
 				</cfsavecontent>
 			<cfelse>
 				<!--- site tree redirect --->
-				<cfset stOnExit.Type = "HTML" />
-				<cfsavecontent variable="stOnExit.Content">
+				<cfset onExitProcess.Type = "HTML" />
+				<cfsavecontent variable="onExitProcess.Content">
 					<!--- get parent to update tree --->
 					<nj:treeGetRelations typename="#returnStruct.typename#" objectId="#returnStruct.ObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1">
 					<!--- update tree --->
@@ -147,16 +148,16 @@ Pseudo:
 				</cfsavecontent>
 			</cfif>
 							
-   			<cfset html = oType.getView(stObject=returnStruct, template="#method#", OnExit="#stOnExit#", alternateHTML="") />
+   			<cfset html = oType.getView(stObject=returnStruct, template="#method#", onExitProcess="#onExitProcess#", alternateHTML="") />
 			
 			<cfif len(html)>
 			    <cfoutput>#html#</cfoutput>
 			<cfelse>
 				<!--- THIS IS THE LEGACY WAY OF DOING THINGS AND STAYS FOR BACKWARDS COMPATIBILITY --->
-			    <!--- <cfset evaluate("oType.#method#(objectid='#objectid#',OnExit=#stOnExit#)")> --->
+			    <!--- <cfset evaluate("oType.#method#(objectid='#objectid#',onExitProcess=#onExitProcess#)")> --->
 			    <cfinvoke component="#PackagePath#" method="#method#">
 			        <cfinvokeargument name="objectId" value="#objectId#" />
-			        <cfinvokeargument name="onExit" value="#stOnExit#" />
+			        <cfinvokeargument name="onExitProcess" value="#onExitProcess#" />
 			    </cfinvoke>
 			</cfif>
 	

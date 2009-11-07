@@ -332,7 +332,7 @@ object methods
 	
 	<cffunction name="Edit" access="public" output="true" returntype="void" hint="Default edit handler.">
 		<cfargument name="ObjectID" required="yes" type="string" default="" />
-		<cfargument name="onExit" required="no" type="any" default="Refresh" />
+		<cfargument name="onExitProcess" required="no" type="any" default="Refresh" />
 		
 		<cfset var stObj = getData(objectid=arguments.objectid) />
 		<cfset var qMetadata = application.types[stobj.typename].qMetadata />

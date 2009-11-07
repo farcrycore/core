@@ -14,6 +14,7 @@
 	<cfparam name="attributes.action" default="*" >
 	<cfparam name="attributes.rbkey" default="" >
 	<cfparam name="attributes.excludeAction" default="" >
+	<cfparam name="attributes.bHideForms" default="false" /><!--- Setting this to true will allow the processing of the webskin to continue but ignore any subsequent <ft:form /> tags. --->
 	
 		
 	<cfset variables.EnterFormProcess = false>
@@ -100,9 +101,15 @@
 
 <cfif thistag.ExecutionMode EQ "End">
 	<!--- Was a simple URL redirect requested? --->
-	<cfif isDefined("attributes.URL")>
+	<cfif structKeyExists(attributes, "URL")>
 		<cfset attributes.exit = true />
-		<cfset caller.onExit = "#attributes.URL#" />
+		<cfset caller.onExitProcess = "#attributes.URL#" />
+	</cfif>
+	
+	<!--- If you set bHideForms, you are effectively exiting the webskin but not redirecting anywhere --->
+	<cfif structKeyExists(attributes, "bHideForms") AND isBoolean(attributes.bHideForms) AND attributes.bHideForms>
+		<cfset attributes.exit = true />
+		<cfset caller.onExitProcess = "" />
 	</cfif>
 	
 
@@ -116,25 +123,24 @@
 			the edit view could be called through a function in which case the onExit struct will be in the arguments scope
 			We should check for this first
 		 --->
-		<cfif NOT structKeyExists(caller, "onExit")>
-			<cfif structKeyExists(caller, "arguments") AND structKeyExists(caller.arguments, "onExit")>
-				<cfset caller.onExit = caller.arguments.onExit />
+		<cfif not structKeyExists(caller, "onExitProcess")>
+			<cfif structKeyExists(caller, "arguments") AND structKeyExists(caller.arguments, "onExitProcess")>
+				<cfset caller.onExitProcess = caller.arguments.onExitProcess />		
 			</cfif>
 		</cfif>
 		
-		<!--- If the onExit doesnt exist, default to Refreshing the page. --->
-		
-		<cfparam name="Caller.onExit" default="#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#" />
+		<!--- If the onExit doesnt exist, default to Refreshing the page. --->		
+		<cfparam name="caller.onExitProcess" default="refresh" />
 		
 		<!--- If the onExit is not a struct we assume it is a URL to redirect to and we convert it too a struct. --->
-		<cfif NOT isStruct(Caller.onExit)>
+		<cfif NOT isStruct(caller.onExitProcess)>
 			<cfset variables.stOnExit = structNew() />
 			<cfset variables.stOnExit.Type = "URL" />
-			<cfset variables.stOnExit.Content = Caller.onExit />
+			<cfset variables.stOnExit.Content = caller.onExitProcess />
 		<cfelse>
-			<cfset variables.stOnExit = Caller.onExit />
+			<cfset variables.stOnExit = caller.onExitProcess />
 		</cfif>
-		
+
 		<!--- Events can be of type HTML, Function, URL(default) --->
 		<cfswitch expression="#stOnExit.Type#">
 			
@@ -142,19 +148,6 @@
 				<cfif structKeyExists(stOnExit, "Content")>
 					<cfoutput>#stOnExit.Content#</cfoutput>
 				</cfif>
-			</cfcase>
-
-			<cfcase value="Function">
-				<!--- 
-				TODO: This should call the function on the current Object Type.
-				It may Return HTML.
-				 --->
-			</cfcase>
-
-			<cfcase value="Log">
-				<!--- 
-				TODO: This should log the content.
-				 --->
 			</cfcase>
 						
 			<cfcase value="URL">

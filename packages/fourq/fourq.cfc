@@ -79,7 +79,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="stparam" required="false" type="struct" default="#structNew()#" hint="Structure of parameters to be passed into the display handler." />
 		<cfargument name="stobject" required="no" type="struct" hint="Property structure to render in view.  Overrides any property structure mapped to arguments.objectid. Useful if you want to render a view with a modified content item.">
 		<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
-		<cfargument name="OnExit" required="no" type="any" default="">
+		<cfargument name="onExitProcess" required="no" type="any" default="" hint="A url string to redirect to if a processForm exit='true' is called within the webskin">
 		<cfargument name="alternateHTML" required="no" type="string" hint="If the webskin template does not exist, if this argument is sent in, its value will be passed back as the result.">
 		<cfargument name="hashKey" required="no" default="" type="string" hint="Pass in a key to be used to hash the objectBroker webskin cache">
 		<cfargument name="bAjax" required="no" default="0" type="boolean" hint="Flag to determine whether to render an ajax call to load the webskin instead of inline." />
@@ -99,7 +99,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var stLocal = structNew() /><!--- A local scope that can be used in webskins to ensure against race conditions. --->
 		<cfset var webskinTypename = "" /><!--- This will store the typename of the webskin to be called. Required in the case of Type Webskins. --->
 		<cfset var iViewState = "" /><!--- iterator used when adding to ancestor cacheBySessionVar lists --->
-		<cfset var lAttributes = "stobject,typename,objectid,key,template,webskin,stprops,stparam,r_html,r_objectid,hashKey,alternateHTML,OnExit,dsn,bAjax,ajaxID,ajaxShowloadIndicator,ajaxindicatorText,bIgnoreSecurity" />
+		<cfset var lAttributes = "stobject,typename,objectid,key,template,webskin,stprops,stparam,r_html,r_objectid,hashKey,alternateHTML,onExitProcess,dsn,bAjax,ajaxID,ajaxShowloadIndicator,ajaxindicatorText,bIgnoreSecurity" />
 		<cfset var attrib = "" />
 		<cfset var lHashKeys = "" />
 		<cfset var iHashKey = "" />
@@ -188,13 +188,22 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				should work but currently causes an error.  It will take some
 				digging into why that is; however, for now this will validate 
 				and work. --->
-			<cfset urlAjaxLoader = application.fapi.getLink(
-				type="#stobj.typename#", 
-				objectid="#stobj.objectid#", 
-				urlParameters="view=#arguments.template#&ajaxmode=1",
-				ampDelim="&"
-			) />,
-				
+			<cfif len(arguments.objectid)>
+				<cfset urlAjaxLoader = application.fapi.getLink(
+					type="#stobj.typename#", 
+					objectid="#stobj.objectid#", 
+					view="#arguments.template#",
+					urlParameters="ajaxmode=1",
+					ampDelim="&"
+				) />
+			<cfelse>
+				<cfset urlAjaxLoader = application.fapi.getLink(
+					type="#webskinTypename#",
+					view="#arguments.template#",
+					urlParameters="ajaxmode=1",
+					ampDelim="&"
+				) />
+			</cfif>	
 			<cfsavecontent variable="stWebskin.webskinHTML">
 				<cfoutput>
 				<farcry:traceWebskin 
@@ -279,7 +288,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 															webskinCacheID="#stWebskin.webskinCacheID#", 
 															hashKey="#arguments.hashKey#", 
 															stParam="#arguments.stParam#", 
-															OnExit="#arguments.onExit#",
+															onExitProcess="#arguments.onExitProcess#",
 															dsn="#arguments.dsn#",
 															bAllowTrace="#arguments.bAllowTrace#") />
 						
@@ -316,7 +325,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="webskinCacheID" required="true" />
 		<cfargument name="hashKey" required="true" />
 		<cfargument name="stparam" required="false" type="struct" default="#structNew()#" hint="Structure of parameters to be passed into the display handler." />	
-		<cfargument name="OnExit" required="false" type="any" default="" />
+		<cfargument name="onExitProcess" required="false" type="any" default="" hint="A url string to redirect to if a processForm exit='true' is called within the webskin" />
 		<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
 		<cfargument name="bAllowTrace" required="false" type="boolean" default="true" hint="Sometimes having webskin trace information can break the integrity of a page. This allows you to turn it off." />
 		
