@@ -1,11 +1,13 @@
 <cfcomponent displayname="FarCry API" hint="The API for all things FarCry" output="false" bDocument="true" scopelocation="application.fapi">
 
 	<cffunction name="init" access="public" returntype="fapi" output="false" hint="FAPI Constructor">
-		
 		<cfreturn this />
 	</cffunction>
 	
-	<!--- COAPI --->
+<!--- 
+ // COAPI: Content Object API Functions 
+--------------------------------------------------------------------------------------------------->
+
 		<!--- @@examples:
 			<p>The following snippet shows how to get the type of a related content item in a webskin:</p>
 			<code>
@@ -1207,19 +1209,33 @@
 			
 			<cfreturn stResult />
 		</cffunction>	
-		
-		<cffunction name="deprecated" returntype="string" output="false" hint="As a core developer you can flag deprecated code by using this function to pass in a depricated message">
+
+
+
+<!--- 
+ // Miscellaneous API Functions 
+--------------------------------------------------------------------------------------------------->
+
+	<!--- @@examples:
+		<p>Declare a function or tag deprecated:</p>
+		<code>
+			<cfset application.fapi.deprecated("skin:paginate is no longer in use and will be removed from the code base at some point. You should be using the skin:pagination tag instead.") />
+		</code>
+	 --->		
+	<cffunction name="deprecated" returntype="string" output="false" hint="As a core developer you can flag deprecated code by using this function to pass in a deprecated message">
 		<cfargument name="message" default="" required="false">
 	
 		<cfif isdefined("application.log.bDeprecated") AND application.log.bDeprecated>		
 			<cftrace type="warning" inline="false" text="#GetBaseTemplatePath()# - #arguments.message#" abort="false" />
 			<cflog file="deprecated" application="true" type="warning" text="#GetBaseTemplatePath()# - #arguments.message#" />
-			<cf_logevent location="#getPageContext().getPage().getCurrentTemplatePath()#" type="application" event="deprecated" notes="#arguments.message#" />
 		</cfif>	
 		
 	</cffunction>	
 
-	<!--- I18N --->
+<!--- 
+ // i18n: Internationalisation API Functions 
+--------------------------------------------------------------------------------------------------->
+
 		<!--- @@examples:
 			<p>Get a translated string:</p>
 			<code>
@@ -1512,7 +1528,7 @@
 		<cfreturn application.fc.utils.listExtends(argumentCollection="#arguments#") />
 	</cffunction>
 	
-	<!---
+	<!--- @@description:
 		This function is used to get information about the doctype the system should be
 		generating. This value, by default, uses the application.fc.doctype variable
 		The default variable is set in core and is by default the latest version of html
@@ -1547,7 +1563,7 @@
 	<cffunction name="getDocType" access="public" returntype="struct" output="false">
 		<cfargument name="docTypeString" type="string" required="no" default="#application.fc.doctype#" />
 		
-		<!---
+		<!--- @@examples:
 			Example of what we are parsing here: 
 			
 			html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd"
@@ -1636,7 +1652,7 @@
 		<cfreturn doctype />
 	</cffunction>
 	
-	<!---
+	<!--- @@description:
 		Things like RSS feeds will have the date displayed in this format:
 		Tue, 07 Jul 2009 10:35:38 +0800
 		This function is used to parse that information into a coldfusion datetime
@@ -1655,7 +1671,7 @@
 		<cfreturn rdate />
 	</cffunction>
 	
-	<!---
+	<!--- @@description:
 		Things like RSS feeds need to have the date displayed in this format:
 		Tue, 07 Jul 2009 10:35:38 +0800
 		This funciton takes a coldfusion date and formats it properly. Note you
@@ -1671,7 +1687,7 @@
 		<cfreturn rdate />
 	</cffunction>
 	
-	<!---
+	<!--- @@description:
 		Attempts to clean out all MS Word chars that tend to mess up html display and cause
 		xhtml validation to fail.
 	--->
