@@ -617,8 +617,11 @@
 			<cfset stResult = getFUData(friendlyURL=arguments.stURL.furl) />
 		</cfif>
 		
+		<!--- Merge the stResult into the URL --->
+		<cfset StructAppend(url, stResult, "true") />
+		
 		<!--- Once the URL has been parsed, we need to initialise our request.mode struct --->
-		<cfset initRequestMode(stResult) />
+		<cfset initRequestMode() />
 		
 		<cfif structKeyExists(request.fc, "disableFURedirction") AND request.fc.disableFURedirction>
 			<!--- DON'T REDIRECT. This is sometimes nessesary like under the webtop. --->
@@ -697,7 +700,7 @@
 		</cfif>
 		
 		<cfset StructAppend(url, stResult, "true") />
-		
+
 		<cfreturn url />
 	</cffunction>
 	
