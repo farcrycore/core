@@ -1,5 +1,10 @@
-<cfsetting enablecfoutputonly="yes">
+<!--- 
+ // DEPRECATED
+	formtools:paginateLoop is no longer in use and will be removed from the code base. 
+	You should be using the skin:pagination tag instead.
+--------------------------------------------------------------------------------------------------->
 
+<cfsetting enablecfoutputonly="yes">
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -17,25 +22,6 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header:  $
-$Author: $
-$Date:  $
-$Name:  $
-$Revision: $
-
-|| DESCRIPTION || 
-$Description:  -- $
-
-
-|| DEVELOPER ||
-$Developer: Matthew Bryant (mat@daemon.com.au)$
-
-|| ATTRIBUTES ||
-$in: objectid -- $
---->
-
 
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
@@ -43,7 +29,8 @@ $in: objectid -- $
 
 <cfif thistag.executionMode eq "Start">
 
-	
+	<!--- deprecated --->
+	<cfset application.fapi.deprecated("formtools:paginateLoop is no longer in use and will be removed from the code base. Use the skin:pagination tag instead.") />
 	
 		<!--- Get the BaseTagData  --->
 		<cfset PaginateData = getBaseTagData("cf_pagination")>
