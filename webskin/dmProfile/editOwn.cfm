@@ -20,9 +20,7 @@
 <!----------------------------- 
 ACTION	
 ------------------------------>
-<cfset onExit = "#application.url.webtop#/overview/home.cfm?UPDATEAPP=false&sec=home&SUB=overview" />
-
-<ft:processform action="Save" exit="true">
+<ft:processform action="Save">
 	<ft:processformobjects objectid="#stobj.objectid#">
 		<cfset structappend(session.dmProfile,stProperties,true) />
 
@@ -34,7 +32,7 @@ ACTION
 	</ft:processformobjects>
 </ft:processform>
 
-<ft:processform action="Cancel" exit="true" />
+<ft:processform action="Save,Cancel" url="#application.url.webtop#/overview/home.cfm?UPDATEAPP=false&sec=home&SUB=overview" />
 
 
 <!----------------------------- 
