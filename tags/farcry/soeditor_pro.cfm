@@ -1,3 +1,13 @@
+<!--- 
+ // DEPRECATED
+	farcry:soeditor_pro is no longer in use and will be removed from the code base. 
+	You should be using formtools sub-system instead.
+--------------------------------------------------------------------------------------------------->
+<!--- @@bDeprecated: true --->
+<cfset application.fapi.deprecated("farcry:soeditor_pro is no longer in use and will be removed from the code base. You should be using formtools sub-system instead.") />
+
+
+
 <!--- Copyright (c) 2002 SiteObjects, Inc. --->
 
 <!---

@@ -1,5 +1,11 @@
-<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
-<farcry:deprecated message="plps are deprecated; please use formtools." />
+<!--- 
+ // DEPRECATED
+	farcry:plpNavigationButtons is no longer in use and will be removed from the code base. 
+	You should be using formtools sub-system instead.
+--------------------------------------------------------------------------------------------------->
+<!--- @@bDeprecated: true --->
+<cfset application.fapi.deprecated("farcry:plpNavigationButtons is no longer in use and will be removed from the code base. You should be using formtools sub-system instead.") />
+
 
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:

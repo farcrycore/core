@@ -1,3 +1,11 @@
+<!--- 
+ // DEPRECATED
+	farcry:contertext is no longer in use and will be removed from the code base. 
+	You should be using formtools sub-system instead.
+--------------------------------------------------------------------------------------------------->
+<!--- @@bDeprecated: true --->
+<cfset application.fapi.deprecated("farcry:contertext is no longer in use and will be removed from the code base. You should be using formtools sub-system instead.") />
+
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -15,23 +23,11 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/tags/farcry/countertext.cfm,v 1.4 2005/06/22 05:39:26 guy Exp $
-$Author: guy $
-$Date: 2005/06/22 05:39:26 $
-$Name: milestone_3-0-1 $
-$Revision: 1.4 $
-
-|| DESCRIPTION || 
+<!--- @@description: DEPRECATED!!
 Custom tag that creates a TextArea Form Field with
 adjoining Disabled Input Box that contains the number of
-characters remaining that can be entered into the TextArea Form Field.
-
-|| DEVELOPER ||
-M (m@daemon.com.au)
-
-|| ATTRIBUTES ||
+characters remaining that can be entered into the TextArea Form Field. --->
+<!--- || ATTRIBUTES ||
 in: FormName : REQUIRED: Name of the form containing the Text box (Case Sensitive) 
 in:	FieldName : REQUIRED: Name of the field (Case Sensitive)
 in:	FieldValue : Default value of the field.
@@ -39,7 +35,6 @@ in:	Counter: Total number of characters allowed in the Field.
 in:	Default Style: CSS Style to be used
 out:
 --->
-
 <cfsetting enablecfoutputonly="Yes">
 
 <cfparam name="Attributes.FormName">

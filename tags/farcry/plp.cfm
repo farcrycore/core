@@ -1,5 +1,11 @@
-<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
-<farcry:deprecated message="plps are deprecated; please use formtools." />
+<!--- 
+ // DEPRECATED
+	farcry:plp is no longer in use and will be removed from the code base. 
+	You should be using formtools sub-system instead.
+--------------------------------------------------------------------------------------------------->
+<!--- @@bDeprecated: true --->
+<cfset application.fapi.deprecated("farcry:plp is no longer in use and will be removed from the code base. You should be using formtools sub-system instead.") />
+
 
 <!--- 
 ///////////////////////////////////////////////////////////////

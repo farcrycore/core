@@ -1,3 +1,13 @@
+<!--- 
+ // DEPRECATED
+	farcry:dump is no longer in use and will be removed from the code base. 
+	There is no replacement.
+--------------------------------------------------------------------------------------------------->
+<!--- @@bDeprecated: true --->
+<cfset application.fapi.deprecated("farcry:dump is no longer in use and will be removed from the code base. There is no replacement.") />
+
+
+
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
