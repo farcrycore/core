@@ -2,6 +2,8 @@
 <!--- @@displayname: Page admin toolbar --->
 <!--- @@timeout: 0 --->
 
+<!--- @@viewBinding: any --->
+
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/security" prefix="sec" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
