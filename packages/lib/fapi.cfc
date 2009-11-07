@@ -1240,7 +1240,7 @@
 		</code>
 	 --->		
 	<cffunction name="deprecated" returntype="string" output="false" hint="As a core developer you can flag deprecated code by using this function to pass in a deprecated message">
-		<cfargument name="message" default="" required="false">
+		<cfargument name="message" default="" required="false" hint="The message to be logged.  Should include instructions for the appropriate best practice to replace the deprecated code.">
 	
 		<cfif isdefined("application.log.bDeprecated") AND application.log.bDeprecated>		
 			<cftrace type="warning" inline="false" text="#GetBaseTemplatePath()# - #arguments.message#" abort="false" />
