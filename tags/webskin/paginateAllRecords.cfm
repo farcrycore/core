@@ -1,3 +1,9 @@
+<!--- 
+ // DEPRECATED
+	skin:paginateAllRecords is no longer in use and will be removed from the code base. 
+	You should be using the skin:pagination tag instead.
+--------------------------------------------------------------------------------------------------->
+
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -15,44 +21,23 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
+<!--- @@Description:  DEPRECATED!! -- This is a subtag that will loop through all the records from the containing cf_paginate and put each row in a structure and return it too the caller --->
 <!---
-|| VERSION CONTROL ||
-$Header:  $
-$Author: $
-$Date:  $
-$Name:  $
-$Revision: $
-
-|| DESCRIPTION || 
-$Description:  -- This is a subtag that will loop through all the records from the containing cf_paginate and put each row in a structure and return it too the caller$
-
-
-|| DEVELOPER ||
-$Developer: Matthew Bryant (mat@bcreative.com.au)$
-
 || ATTRIBUTES ||
 $in: r_stRecord -- the name of the structure to return to the caller $
 --->
 
 
-
-
 <cfif thistag.executionMode eq "Start">
 	<cfparam name="attributes.r_stRecord" default="stRecord">
-	
-	<!--- ---------- --->
-	<!--- DEPRECATED --->
-	<!--- ---------- --->
-	<cfset application.fapi.deprecated("skin:paginateAllRecords") />
-	
+	<!--- deprecated --->
+	<cfset application.fapi.deprecated("skin:paginateAllRecords is no longer in use and will be removed from the code base. Use the skin:pagination tag instead.") />
 	
 	<!--- Get the BaseTagData  --->
 	<cfset PaginateData = getBaseTagData("cf_paginate")>
 	
 	<!--- Append the Attributes from the base tag to this sub tag --->
 	<cfset StructAppend(attributes,PaginateData.attributes)>
-	
-
 	
 	<!--- Put the Current Row of the recordset into a structure and return to caller. --->
 	<cfset CurrentRow = PaginateData.StartRecord>

@@ -1,3 +1,9 @@
+<!--- 
+ // DEPRECATED
+	skin:paginate is no longer in use and will be removed from the code base at some point. 
+	You should be using the skin:pagination tag instead.
+--------------------------------------------------------------------------------------------------->
+
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -15,21 +21,8 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
+<!--- @@description:  DEPRECATED!! -- Helps to construct a table that allows pagination to loop through pages of the recordset --->
 <!---
-|| VERSION CONTROL ||
-$Header:  $
-$Author: $
-$Date:  $
-$Name:  $
-$Revision: $
-
-|| DESCRIPTION || 
-$Description:  -- Helps to construct a table that allows pagination to loop through pages of the recordset$
-
-
-|| DEVELOPER ||
-$Developer: Matthew Bryant (mat@bcreative.com.au)$
-
 || ATTRIBUTES ||
 $in: PageLinksShown -- The number of page links in the pagination. ie, if there are going to be 100 pages, only show links to 10 at a time. The current page is centred so that links to 5 pages either side of the current will be displayed$
 $in: RecordsPerPage -- The number of records to be displayed on each page $
@@ -39,13 +32,10 @@ $in: Recordset -- The recordset that is going to be paginated (if that's a real 
 
 <cfif thistag.executionMode eq "Start">
 	<cfparam name="attributes.paramname" default="">
-	
-	<!--- ---------- --->
-	<!--- DEPRECATED --->
-	<!--- ---------- --->
-	<cfset application.fapi.deprecated("skin:paginate") />
-
+	<!--- deprecated --->
+	<cfset application.fapi.deprecated("skin:paginate is no longer in use and will be removed from the code base. Use the skin:pagination tag instead.") />
 </cfif>
+
 
 <cfif thistag.executionMode eq "End">
 
@@ -98,12 +88,6 @@ $in: Recordset -- The recordset that is going to be paginated (if that's a real 
 	
 	<cfset CALLER.StartRow = StartRecord>
 	<cfset CALLER.EndRow = StartRecord + Attributes.RecordsPerPage -1>
-
-
-	
-
-	
-
 	
 </cfif>
 

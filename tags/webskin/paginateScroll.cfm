@@ -1,3 +1,9 @@
+<!--- 
+ // DEPRECATED
+	skin:paginateScroll is no longer in use and will be removed from the code base. 
+	You should be using the skin:pagination tag instead.
+--------------------------------------------------------------------------------------------------->
+
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -15,38 +21,14 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header:  $
-$Author: $
-$Date:  $
-$Name:  $
-$Revision: $
-
-|| DESCRIPTION || 
-$Description:  -- This is a subtag that will add the links to enable the user to scroll through the entire recordset $
-
-
-|| DEVELOPER ||
-$Developer: Matthew Bryant (mat@bcreative.com.au)$
-
-|| ATTRIBUTES ||
-$in:  $
---->
-
-
-
-
+<!--- @@Description:  DEPRECATED!! -- This is a subtag that will add the links to enable the user to scroll through the entire recordset  --->
 
 
 <cfif thistag.executionMode eq "Start">
 	<cfparam name="attributes.r_stRecord" default="stRecord">
 	
-	<!--- ---------- --->
-	<!--- DEPRECATED --->
-	<!--- ---------- --->
-	<cfset application.fapi.deprecated("skin:paginateScroll") />
-	
+	<!--- deprecated --->
+	<cfset application.fapi.deprecated("skin:paginateScroll is no longer in use and will be removed from the code base. Use the skin:pagination tag instead.") />
 	
 	<cfinclude template="/farcry/core/webtop/includes/utilityFunctions.cfm" >
 
