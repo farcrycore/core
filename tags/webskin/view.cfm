@@ -25,11 +25,12 @@
 	<cfparam name="attributes.ajaxID" default="" /><!--- The id to give the div that will call the ajaxed webskin --->
 	<cfparam name="attributes.ajaxShowloadIndicator" default="false" /><!--- Should the ajax loading indicator be shown --->
 	<cfparam name="attributes.ajaxindicatorText" default="loading..." /><!--- What should be text of the loading indicator --->
+	<cfparam name="attributes.ajaxURLParameters" default="" /><!--- parameters to pass for ajax call --->
 	<cfparam name="attributes.bIgnoreSecurity" default="false" /><!--- Should the getView() ignore webskin security --->
 	<cfparam name="attributes.bAllowTrace" default="true" /><!--- Sometimes having webskin trace information can break the integrity of a page. This allows you to turn it off. --->
 	
 	
-	<cfset lAttributes = "stobject,typename,objectid,key,template,webskin,stprops,stparam,r_html,r_objectid,hashKey,alternateHTML,onExitProcess,dsn,bAjax,ajaxID,ajaxShowloadIndicator,ajaxindicatorText,bIgnoreSecurity" />
+	<cfset lAttributes = "stobject,typename,objectid,key,template,webskin,stprops,stparam,r_html,r_objectid,hashKey,alternateHTML,onExitProcess,dsn,bAjax,ajaxID,ajaxShowloadIndicator,ajaxindicatorText,ajaxURLParameters,bIgnoreSecurity" />
 	<cfset attrib = "" />
 	
 	<!--- Setup custom attributes passed into view in stParam structure --->
@@ -127,6 +128,7 @@
 			<cfinvokeargument name="ajaxID" value="#attributes.ajaxID#" />
 			<cfinvokeargument name="ajaxShowloadIndicator" value="#attributes.ajaxShowloadIndicator#" />
 			<cfinvokeargument name="ajaxIndicatorText" value="#attributes.ajaxIndicatorText#" />
+			<cfinvokeargument name="ajaxURLParameters" value="#attributes.ajaxURLParameters#" />
 			<cfinvokeargument name="bIgnoreSecurity" value="#attributes.bIgnoreSecurity#" />
 			<cfinvokeargument name="bAllowTrace" value="#attributes.bAllowTrace#" />
 			<!--- Developer can pass in alternate HTML to render if the webskin does not exist --->

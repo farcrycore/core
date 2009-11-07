@@ -86,6 +86,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="ajaxID" required="no" default="" type="string" hint="The id to give the div that will call the ajaxed webskin" />
 		<cfargument name="ajaxShowloadIndicator" required="no" default="false" type="boolean" hint="Should the ajax loading indicator be shown" />
 		<cfargument name="ajaxindicatorText" required="no" default="loading..." type="string" hint="What should be text of the loading indicator" />		
+		<cfargument name="ajaxURLParameters" required="no" default="" type="string" hint="parameters to pass for ajax call" />
 		<cfargument name="bIgnoreSecurity" required="false" type="boolean" default="false" hint="Should the getView() ignore webskin security" />	
 		<cfargument name="bAllowTrace" required="false" type="boolean" default="true" hint="Sometimes having webskin trace information can break the integrity of a page. This allows you to turn it off." />
 			
@@ -99,7 +100,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var stLocal = structNew() /><!--- A local scope that can be used in webskins to ensure against race conditions. --->
 		<cfset var webskinTypename = "" /><!--- This will store the typename of the webskin to be called. Required in the case of Type Webskins. --->
 		<cfset var iViewState = "" /><!--- iterator used when adding to ancestor cacheBySessionVar lists --->
-		<cfset var lAttributes = "stobject,typename,objectid,key,template,webskin,stprops,stparam,r_html,r_objectid,hashKey,alternateHTML,onExitProcess,dsn,bAjax,ajaxID,ajaxShowloadIndicator,ajaxindicatorText,bIgnoreSecurity" />
+		<cfset var lAttributes = "stobject,typename,objectid,key,template,webskin,stprops,stparam,r_html,r_objectid,hashKey,alternateHTML,onExitProcess,dsn,bAjax,ajaxID,ajaxShowloadIndicator,ajaxindicatorText,ajaxURLParameters,bIgnoreSecurity" />
 		<cfset var attrib = "" />
 		<cfset var lHashKeys = "" />
 		<cfset var iHashKey = "" />
@@ -193,14 +194,14 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					type="#stobj.typename#", 
 					objectid="#stobj.objectid#", 
 					view="#arguments.template#",
-					urlParameters="ajaxmode=1",
+					urlParameters="#arguments.ajaxURLParameters#&ajaxmode=1",
 					ampDelim="&"
 				) />
 			<cfelse>
 				<cfset urlAjaxLoader = application.fapi.getLink(
 					type="#webskinTypename#",
 					view="#arguments.template#",
-					urlParameters="ajaxmode=1",
+					urlParameters="#arguments.ajaxURLParameters#&ajaxmode=1",
 					ampDelim="&"
 				) />
 			</cfif>	
