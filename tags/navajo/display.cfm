@@ -326,7 +326,12 @@
 		    $j.ajax({
 				type: "POST",
 				cache: false,
-				url: '#urlTray#' + '&view=' + webskin, 
+				<cfif findNoCase("?",urlTray)>
+					url: '#urlTray#' + '&view=' + webskin, 
+				<cfelse>
+					url: '#urlTray#' + '?view=' + webskin, 
+				</cfif>
+				
 				complete: function(data){
 					$j('##farcrytray').html(data.responseText);						
 				},
