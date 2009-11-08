@@ -51,9 +51,9 @@ $Developer: $
 
 
 <!--- SETUP THE ONEXIT DETAILS OF THE EDIT HANDLER --->
-<cfset stOnExit = structNew() />
-<cfset stOnExit.Type = "HTML" />
-<cfsavecontent variable="stOnExit.Content">
+<cfset onExitProcess = structNew() />
+<cfset onExitProcess.Type = "HTML" />
+<cfsavecontent variable="onExitProcess.Content">
 	<!--- REFRESH THE CALLING UUID OR ARRAY FIELD --->
 	<cfoutput>
 	<script type="text/javascript">
@@ -73,16 +73,16 @@ $Developer: $
 <admin:Header Title="Library" bodyclass="popup imagebrowse library" bCacheControl="false">
 
 
-	<cfset HTML = oData.getView(objectid="#stData.objectid#", template="#url.ftLibraryEditWebskin#", alternateHTML="", onExit="#stOnExit#") />	
+	<cfset HTML = oData.getView(objectid="#stData.objectid#", template="#url.ftLibraryEditWebskin#", alternateHTML="", onExitProcess="#onExitProcess#") />	
 		
 	<cfif len(HTML)>
 		<cfoutput>#HTML#</cfoutput>
 	<cfelse>
 		<!--- THIS IS THE LEGACY WAY OF DOING THINGS AND STAYS FOR BACKWARDS COMPATIBILITY --->
-	    <!--- <cfset evaluate("oType.#method#(objectid='#objectid#',OnExit=#stOnExit#)")> --->
+	    <!--- <cfset evaluate("oType.#method#(objectid='#objectid#',onExitProcess=#onExitProcess#)")> --->
 	    <cfinvoke component="#oData#" method="edit">
 	        <cfinvokeargument name="objectId" value="#stData.objectid#" />
-	        <cfinvokeargument name="onExit" value="#stOnExit#" />
+	        <cfinvokeargument name="onExitProcess" value="#onExitProcess#" />
 	    </cfinvoke>
 	</cfif>
 

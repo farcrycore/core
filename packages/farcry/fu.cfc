@@ -397,7 +397,6 @@
 			</cfquery>
 			
 			<cfset stLocal.lNavID = ValueList(stLocal.qListNav.objectid)>
-			<cfset stLocal.lNavID = ListQualify(stLocal.lNavID,"'")>
 
 			<cfif stLocal.lNavID NEQ "" AND arguments.objectid NEQ application.navid.home>
 				<!--- optimisation: get all dmnavgiation data to avoid a getData() call --->
@@ -407,7 +406,7 @@
 			    	SELECT	dm.objectid, dm.label, dm.fu 
 			    	FROM	#application.dbowner#dmNavigation dm, #application.dbowner#nested_tree_objects nto
 			    	WHERE	dm.objectid = nto.objectid
-			    			AND dm.objectid IN (#preserveSingleQuotes(stLocal.lNavID)#)
+			    			AND dm.objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#stLocal.lNavID#" />)
 			    	ORDER by nto.nlevel ASC
 					</cfquery>
 				</cfcase>
@@ -416,7 +415,7 @@
 			    SELECT	dm.objectid, dm.label, dm.fu 
 			    FROM	#application.dbowner#dmNavigation dm
 			    JOIN #application.dbowner#nested_tree_objects nto on dm.objectid = nto.objectid
-			    WHERE	dm.objectid IN (#preserveSingleQuotes(stLocal.lNavID)#)
+			    WHERE	dm.objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#stLocal.lNavID#" />)
 			    ORDER by nto.nlevel ASC
 				</cfquery>
 				</cfdefaultcase>
@@ -503,7 +502,7 @@
 		<!--- replace the html entity (&amp;) with and --->
 		<cfset newAlias = reReplaceNoCase(newAlias,'&amp;','and',"all")>
 		<!--- remove illegal characters in titles --->
-		<cfset newAlias = reReplaceNoCase(newAlias,'[,:\?##ï¿½ï¿½®™]','',"all")>
+		<cfset newAlias = reReplaceNoCase(newAlias,'[,:\?##ï¿½ï¿½ï¿½ï¿½]','',"all")>
 		<!--- change & to "and" in title --->
 		<cfset newAlias = reReplaceNoCase(newAlias,'[&]','and',"all")>
 		<!--- prepend fu url pattern and add suffix --->
@@ -710,17 +709,16 @@
 		<cfset stLocal.returnstruct.message = "">
 
 		<cftry>
-			<cfset arguments.stForm.lDeleteObjectid = ListQualify(arguments.stForm.lDeleteObjectid,"'")>
 			<cfquery datasource="#application.dsn#" name="stLocal.qList">
 			SELECT	friendlyurl
 			FROM	#application.dbowner#reffriendlyURL
-			WHERE	objectid IN (#preservesinglequotes(arguments.stForm.lDeleteObjectid)#)
+			WHERE	objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.stForm.lDeleteObjectid#" />)
 			</cfquery>
 
 			<cfquery datasource="#application.dsn#" name="stLocal.qDelete">
 			DELETE
 			FROM	#application.dbowner#reffriendlyURL
-			WHERE	objectid IN (#preservesinglequotes(arguments.stForm.lDeleteObjectid)#)
+			WHERE	objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.stForm.lDeleteObjectId#" />)
 			</cfquery>
 			
 			<cfloop query="stLocal.qList">

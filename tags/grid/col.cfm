@@ -133,7 +133,11 @@
 
 	
 	<cfif attributes.bLast>
-		<cfoutput><br class="clearer" /></cfoutput>	
+		<cfif application.fapi.getDocType().type eq "xhtml" >
+			<cfoutput><br class="clearer" /></cfoutput>	
+		<cfelse>
+			<cfoutput><br class="clearer"></cfoutput>
+		</cfif>
 
 		<cfset request.stFarCryGrid.aCols[arrayLen(request.stFarCryGrid.aCols)].totalUsed = 0 />
 

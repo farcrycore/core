@@ -16,20 +16,13 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!--- @@displayname: Depricated Tag --->
-<!--- @@description:  As a core developer you can flag deprecated code by using this tag to pass in a depricated message --->
+<!--- @@displayname: Deprecated Tag --->
+<!--- @@description:  As a core developer you can flag deprecated code by using this tag to pass in a deprecated message. --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
 <cfif thistag.executionMode eq "Start">
-
-	<cfparam name="attributes.message" type="string" />
-
-	<cfif isdefined("application.log.bDeprecated") AND application.log.bDeprecated>		
-		<cftrace type="warning" inline="false" text="#GetBaseTemplatePath()# - #attributes.message#" abort="false" />
-		<cflog file="deprecated" application="true" type="warning" text="#GetBaseTemplatePath()# - #attributes.message#" />
-		<cf_logevent location="#getPageContext().getPage().getCurrentTemplatePath()#" type="application" event="deprecated" notes="#attributes.message#" />
-	</cfif>
-	
+	<cfparam name="attributes.message" type="string" /><!--- The message to be logged.  Should include instructions for the appropriate best practice to replace the deprecated code. --->
+	<cfset application.fapi.deprecated(attributes.message) />
 </cfif>
 
 <cfsetting enablecfoutputonly="false">

@@ -17,7 +17,7 @@
 --->
 <!--- @@Description: HTML Page Content Type --->
 <!--- @@Developer: Geoff Bowers (modius@daemon.com.au) --->
-<cfcomponent extends="versions" displayname="HTML Page" hint="Forms the basis of the content framework of the site.  HTML objects include containers and static information." bObjectBroker="1"bUseInTree="1" bFriendly="1" fuAlias="html">
+<cfcomponent extends="versions" displayname="HTML Page" hint="Forms the basis of the content framework of the site.  HTML objects include containers and static information." bObjectBroker="1" bUseInTree="1" bFriendly="1" fuAlias="html">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->	
@@ -140,7 +140,7 @@ object methods
 		 dmImage ON dmHTML_aObjectIDs.data = dmImage.objectid
 	WHERE parentid = '#arguments.primaryID#'
 	<cfif qFilter.RecordCount>
-		AND data IN (#ListQualify(ValueList(qFilter.key),"'")#)
+		AND data IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#qFilter.key#" />)
 	</cfif>
 	ORDER BY seq
 	</cfquery>

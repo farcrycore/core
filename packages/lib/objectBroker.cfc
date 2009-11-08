@@ -107,6 +107,7 @@
 										template="#arguments.template#",
 										hashKey="#arguments.hashKey#"
 								) />
+								
 
 								<cfif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], hash("#stResult.webskinCacheID#"))>
 									<cfset stCacheWebskin = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template]["#hash('#stResult.webskinCacheID#')#"] />
@@ -298,7 +299,7 @@
 							<cfset WebskinCacheID = listAppend(WebskinCacheID, "#iViewState#:#evaluate(trim(iViewState))#") />
 							
 							<cfcatch type="any">
-								<cfset WebskinCacheID = listAppend(WebskinCacheID, "#iViewState#:null") />
+								<cfset WebskinCacheID = listAppend(WebskinCacheID, "#iViewState#:invalidVarName") />
 							</cfcatch>
 						</cftry>						
 					</cfcatch>
@@ -429,7 +430,11 @@
 								<cfset stCacheWebskin.cacheStatus = arguments.stCurrentView.cacheStatus />
 								<cfset stCacheWebskin.cacheTimeout = arguments.stCurrentView.cacheTimeout />
 	
-								<cfset stCacheWebskin.webskinCacheID = arguments.webskinCacheID />
+								<cfset stCacheWebskin.webskinCacheID = generateWebskinCacheID(
+																		typename="#webskinTypename#", 
+																		template="#arguments.template#",
+																		hashKey="#arguments.stCurrentView.hashKey#"
+															) />
 								
 																
 								<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template][hash("#stCacheWebskin.webskinCacheID#")] = stCacheWebskin />

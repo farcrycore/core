@@ -39,6 +39,12 @@ $in: SessionID -- $
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 
+<!--- We only render the wizard if FarcryForm OnExit has not been Fired. --->
+<cfif structKeyExists(request, "FarcryFormOnExitRun") AND Request.FarcryFormOnExitRun>
+	<cfsetting enablecfoutputonly="false" />
+	<cfexit method="exittag">
+</cfif>
+
 <cfset owizard = createObject("component",application.types['dmWizard'].typepath)>
 
 

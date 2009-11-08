@@ -477,14 +477,23 @@ function btnSubmit(formName,value) {
 	}
 }
 		
-function farcryForm_ajaxSubmission(formname,action){
+function farcryForm_ajaxSubmission(formname,action,maskMsg,maskCls,ajaxTimeout){
 	var a = action ? action : $j('##' + formname).attr('action');
-	$j("##" + formname).mask("Form Submitting, please wait...");
+	if (maskMsg == undefined){var maskMsg = 'Form Submitting, please wait...'};
+	if (maskCls == undefined){var maskCls = 'mask-ajax-submission'};
+	if (ajaxTimeout == undefined){var ajaxTimeout = 30}; // the number of seconds to wait
+	
+	if (ajaxTimeout > 0) {
+		ajaxTimeout = ajaxTimeout * 1000; // convert to milliseconds
+	}
+	
+	$j("##" + formname).mask(maskMsg);
 	$j.ajax({
 	   type: "POST",
 	   url: a,
 	   data: $j("##" + formname).serialize(),
 	   cache: false,
+	   timeout: ajaxTimeout,
 	   success: function(msg){
 	   		$j("##" + formname + 'formwrap').unmask();
 			$j('##' + formname + 'formwrap').html(msg);						     	

@@ -2,11 +2,11 @@
 <!--- @@displayname:  --->
 <!--- @@description: typesTest --->
 
-<cfcomponent extends="mxunit.framework.TestCase">
+<cfcomponent extends="mxunit.framework.TestCase" displayname="FAPI Tests">
 	<!--- setup and teardown --->
 	<cffunction name="setUp" returntype="void" access="public">
 		<!--- Any code needed to return your environment to normal goes here --->
-		<cfset this.myComp = createObject("component", "farcry.core.packages.farcry.fapi") />
+		<cfset this.myComp = createObject("component", "farcry.core.packages.lib.fapi") />
 	</cffunction>
 
 	<cffunction name="tearDown" returntype="void" access="public">
@@ -119,18 +119,17 @@
 	<cffunction name="getContentObjectTest" access="public" hint="Allows you to fetch a content object with only the objectID">
 		<cfquery datasource="#application.dsn#" name="refobjects">
 			SELECT max(objectID) as objectid
-			FROM refobjects 
+			FROM refObjects 
 		</cfquery>
 		
 		<cfset myobj = this.myComp.getContentObject(refobjects.objectid) />
 		
 		<cfset assertIsStruct(myobj) />
 		
-		<cfloop list="CREATEDBY,DATETIMECREATED,DATETIMELASTUPDATED,EVENT,IPADDRESS,LABEL,LASTUPDATEDBY,LOCATION,LOCKED,LOCKEDBY,NOTES,OBJECT,OBJECTID,OWNEDBY,TYPE,TYPENAME,USERID" index="x">
+		<cfloop list="OBJECTID,DATETIMECREATED,CREATEDBY,OWNEDBY,DATETIMELASTUPDATED,LASTUPDATEDBY,LOCKEDBY,LOCKED" index="x">
 			<cfset assertTrue( structKeyExists(myobj, x), true) />
 		</cfloop>
 		
-		<cfset assertTrue( len(myobj.type) gt 0 ) />
 		<cfset assertTrue( len(myobj.typename) gt 0 ) />
 	</cffunction>
 
@@ -296,6 +295,168 @@
 			this.myComp.showFarcryDate( createDate(2051,1,1) ), 
 			true
 		) />
+	</cffunction>
+	
+	
+	<cffunction name="getLinkTest" returntype="void" access="public">
+		<!--- fake parameters used in some of the tests --->
+		<cfset var st = {blarg="123", other="ŠÈÐ¾÷ø¾??Œ?¤Œö©Š¼?Š¼¼"} />
+	
+		<cfset var lnk = this.myComp.getLink(href="http://daemon.com.au") />
+		<cfset assertEquals(lnk, "http://daemon.com.au") />
+		
+		<!--- Note we are not passing in href --->
+		<cfset lnk = this.myComp.getLink(objectid="3f27474f-6a87-4291-a35f9722971fd7c5") />
+		<cfset assertEquals(lnk, "/index.cfm?objectid=3f27474f-6a87-4291-a35f9722971fd7c5") />
+		
+		<!--- this should work regardless of alias existing.  should return a link to some object --->
+		<cfset lnk = this.myComp.getLink(alias="home") />
+		<cfset assertEquals((lnk contains "/index.cfm?objectid="), true) />
+		
+		
+		<cfset lnk = this.myComp.getLink(
+			objectid="3f27474f-6a87-4291-a35f9722971fd7c5",
+			type="dmProfile",
+			ampDelim="&"
+		) />
+		<cfset assertEquals(lnk, "/index.cfm?objectid=3f27474f-6a87-4291-a35f9722971fd7c5&type=dmProfile") />
+		
+		
+		<cfset lnk = this.myComp.getLink(
+			objectid="3f27474f-6a87-4291-a35f9722971fd7c5",
+			type="dmProfile",
+			view="displayPage3Col",
+			ampDelim="&"
+		) />
+		<cfset assertEquals(lnk, "/index.cfm?objectid=3f27474f-6a87-4291-a35f9722971fd7c5&type=dmProfile&view=displayPage3Col") />
+		
+		
+		<cfset lnk = this.myComp.getLink(
+			objectid="3f27474f-6a87-4291-a35f9722971fd7c5",
+			type="dmProfile",
+			view="displayPage3Col",
+			bodyView="displayBody1",
+			ampDelim="&"
+		) />
+		<cfset assertEquals(lnk, "/index.cfm?objectid=3f27474f-6a87-4291-a35f9722971fd7c5&type=dmProfile&view=displayPage3Col&bodyView=displayBody1") />
+		
+		<!--- Using get link to build a "normal" url with st params --->
+		<cfset lnk = this.myComp.getLink(
+			href="http://daemon.com.au",
+			stParameters=st,
+			ampDelim="&"
+		) />
+		<!--- <cfset assertEquals(lnk, "http://daemon.com.au?OTHER=%E4%BB%96%E6%98%AF%E6%BE%B3%E5%A4%A7%E5%88%A9%E4%BA%9A%E4%BA%BA&BLARG=123") /> --->
+			
+			
+		<cfset lnk = this.myComp.getLink(
+			type="dmProfile",
+			view="displayPage3Col",
+			bodyView="displayBody1"
+		) />
+		<cfset assertEquals(lnk, "/index.cfm?type=dmProfile&amp;view=displayPage3Col&amp;bodyView=displayBody1") />
+		
+	</cffunction>
+	
+	
+	<cffunction name="getDocTypeTest" returntype="void" access="public">
+		<!--- 
+			HTML 2.0
+			HTML PUBLIC "-//IETF//DTD HTML 2.0 Level 2//EN"
+			HTML PUBLIC "-//IETF//DTD HTML//EN"
+			HTML PUBLIC "-//IETF//DTD HTML 2.0//EN"
+			HTML PUBLIC "-//IETF//DTD HTML Level 2//EN"
+			
+			HTML 3.0
+			HTML PUBLIC "-//IETF//DTD HTML 3.0//EN"
+			
+			HTML 3.2
+			HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN"
+			
+			HTML 4.01
+			HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"
+			HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd"
+			HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd"
+			
+			XHTML 1.0
+			html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
+			html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"
+			html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd"
+			
+			XHTML 1.1
+			html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"
+			
+			XHTML 2.0
+			html PUBLIC "-//W3C//DTD XHTML 2.0//EN" "http://www.w3.org/MarkUp/DTD/xhtml2.dtd"
+		--->
+		<cfset var stDT = this.myComp.getDocType('html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd"') />
+		
+		<cfset assertEquals(stDT.type, "xhtml") />
+		<cfset assertEquals(stDT.version, "1.0") />
+		<cfset assertEquals(stDT.subtype, "Frameset") />
+		<cfset assertEquals(stDT.URI, "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd") />
+		
+		<cfset stDT = this.myComp.getDocType('HTML PUBLIC "-//IETF//DTD HTML 2.0 Level 2//EN"') />
+		
+		<cfset assertEquals(stDT.type, "html") />
+		<cfset assertEquals(stDT.version, "2.0") />
+		<cfset assertEquals(stDT.URI, "") />
+		
+		<cfset stDT = this.myComp.getDocType('HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN"') />
+		
+		<cfset assertEquals(stDT.type, "html") />
+		<cfset assertEquals(stDT.version, "3.2") />
+		<cfset assertEquals(stDT.URI, "") />
+		
+		<cfset stDT = this.myComp.getDocType('html PUBLIC "-//W3C//DTD XHTML 2.0//EN" "http://www.w3.org/MarkUp/DTD/xhtml2.dtd"') />
+		
+		<cfset assertEquals(stDT.type, "xhtml") />
+		<cfset assertEquals(stDT.version, "2.0") />
+		<cfset assertEquals(stDT.URI, "http://www.w3.org/MarkUp/DTD/xhtml2.dtd") />
+		
+		<cfset stDT = this.myComp.getDocType('html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"') />
+		
+		<cfset assertEquals(stDT.type, "xhtml") />
+		<cfset assertEquals(stDT.version, "1.1") />
+		<cfset assertEquals(stDT.URI, "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd") />
+		
+		<cfset stDT = this.myComp.getDocType('html') />
+		
+		<cfset assertEquals(stDT.type, "html") />
+	</cffunction>
+	
+	
+	<cffunction name="RFC822ToDateTest" access="public" returntype="void" output="false">
+		<cfset var tdate = this.myComp.RFC822toDate() />
+		
+		<cfset assertEquals(year(tdate), year(now())) />	
+		<cfset assertEquals(month(tdate), month(now())) />
+		<cfset assertEquals(day(tdate), day(now())) />
+	</cffunction>
+	
+	
+	<cffunction name="dateToRFC822Test" access="public" returntype="void" output="false">
+		<cfset var tdate = this.myComp.dateToRFC822(now()) />
+		
+		<!--- 
+			This is a really lazy test, but I am in a bit of a rush 
+			TODO: make this a real test
+		--->
+		<cfset assertEquals(arrayLen(listToArray(tdate," ")), 6) />	
+	</cffunction>
+	
+	
+	<cffunction name="removeMSWordCharsTest" access="public" returntype="void" output="false">
+		<cfset var rval = this.myComp.removeMSWordChars("This String should be unchanged.") />
+		<cfset assertEquals(rval, "This String should be unchanged.") />
+		
+		<cfset rval = this.myComp.removeMSWordChars("�ÀªŠü»ŽÏÛ�??�ÏÜŠ??�ÀªŠü»ŽÏÛ�??�ÏÜŠ??‰Û?‰Û?") />
+		<!--- the elips is replaced with periods --->
+		<cfset assertEquals(rval, "�ÀªŠü»ŽÏÛ�??�ÏÜŠ??�ÀªŠü»ŽÏÛ�??�ÏÜŠ??......") />
+		
+		<cfset rval = this.myComp.removeMSWordChars("Schultz, Helen O‰ÛªNeil, Frank") />
+		<cfset assertEquals(rval, "Schultz, Helen O'Neil, Frank") />
+		
 	</cffunction>
 	
 </cfcomponent>

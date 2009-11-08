@@ -460,7 +460,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 			WHERE cat.objectid = ref.categoryID
 			AND ref.objectID = '#arguments.objectID#'
 			<cfif isDefined("lDescendents") AND len(lDescendents)>
-				AND ref.categoryid IN (#ListQualify(lDescendents,"'")#)
+				AND ref.categoryid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lDescendents#" />)
 			</cfif>
 		</cfquery> 
 
@@ -654,13 +654,12 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<!--- 
 		TODO: this list appears to need de-duping before qualifying 20050602GB
 		 --->
-		<cfset stLocal.lcategories = ListQualify(stLocal.lcategories,"'")>
 
 		<cfquery datasource="#application.dsn#" name="stLocal.qList">
 		SELECT l.*
 		FROM	#application.dbowner##arguments.typename# l <cfif stLocal.lcategories NEQ "" AND stLocal.bRootNode EQ 0>, #application.dbowner#refCategories c
 		WHERE	c.objectid = l.objectid
-				AND c.categoryid IN (#preservesinglequotes(stLocal.lcategories)#)</cfif>		
+				AND c.categoryid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#stLocal.lcategories#" />)</cfif>
 		</cfquery>
 		
 		<cfreturn stLocal.qList>
@@ -697,13 +696,11 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		SELECT_WITH_PAGING '#stLocal.strFields#', '#stLocal.strPK#', '#stLocal.strTables#',#arguments.pageCurrent#,#arguments.pageMaxsize#,0,'#stLocal.strFilter#',null,'#stLocal.strGroup#'
 		</cfquery>
 
-		<cfset stLocal.lObjectIDs = ListQualify(ValueList(qGetDataPage.objectid),"'")>
-		
 		<!--- get all the content object  --->
 		<cfquery name="qGetData" datasource="#application.dsn#">
 		SELECT type.*
 		FROM #application.dbowner##arguments.typename# type
-		WHERE 	type.objectid IN (#PreserveSingleQuotes(stLocal.lObjectIDs)#)
+		WHERE 	type.objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#valuelist(qGetDataPage.objectid)#" />)
 		</cfquery>
 		
 		<!--- get the total recorcount --->

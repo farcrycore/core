@@ -78,7 +78,7 @@ $out:$
 <cfif structKeyExists(Request,"inHead") AND len(structKeyList(Request.InHead)) AND NOT request.mode.ajax>		
 
 		<!--- THIS VERSION NUMBER IS USED TO MAKE SURE IF WE EVER REPLACE JAVASCRIPT LIBRARIES, THAT THE USERS CACHE WILL BE FLUSHED --->
-		<cfset farcryJSVersion = "511c" />
+		<cfset farcryJSVersion = "530" />
 
 		<cfparam name="variables.stPlaceInHead" default="#StructNew()#">		
 		
@@ -362,19 +362,19 @@ $out:$
 			
 	
 			
-			
-						
-	
-
-			
-			
 			<cfif variables.stPlaceInHead.extCoreJS OR  variables.stPlaceInHead.extJS>
 				<cfoutput>
+					<cfif application.fapi.getDocType().type eq "xhtml">
 					<link rel="stylesheet" type="text/css" href="#application.url.farcry#/js/ext/resources/css/ext-all.css" />
+					<cfelse>
+						<link rel="stylesheet" type="text/css" href="#application.url.farcry#/js/ext/resources/css/ext-all.css">
+					</cfif>
+					
 					<style type="text/css">
 					.msg .x-box-mc {font-size:14px;}
 					##msg-div {position:absolute;top:10px;width:250px;z-index:20000;}
 					</style>
+					
 					<script type="text/javascript">Ext.BLANK_IMAGE_URL = '#application.url.webtop#/js/ext/resources/images/default/s.gif';</script>
 				</cfoutput>
 			</cfif>		
@@ -404,48 +404,95 @@ $out:$
 			</cfif>
 			
 			
-			
-			
-
-			
 			<!--- INCLUDE CSS --->
 		
 			<cfif isDefined("variables.stPlaceInHead.prototypeTreeCSS") AND variables.stPlaceInHead.prototypeTreeCSS>
+				<cfif application.fapi.getDocType().type eq "xhtml">
 				<cfoutput>
-					<link rel="stylesheet" href="#application.url.farcry#/js/prototypeTree/prototypeTree.css?fjsv=#farcryJSVersion#" type="text/css" media="screen" /></cfoutput>
+						<link rel="stylesheet" href="#application.url.farcry#/js/prototypeTree/prototypeTree.css?fjsv=#farcryJSVersion#" type="text/css" media="screen" />
+					</cfoutput>
+				<cfelse>
+					<cfoutput>
+						<link rel="stylesheet" href="#application.url.farcry#/js/prototypeTree/prototypeTree.css?fjsv=#farcryJSVersion#" type="text/css" media="screen">
+					</cfoutput>
+				</cfif>
 			</cfif>			
 			
 			<cfif isDefined("variables.stPlaceInHead.WizardCSS") AND variables.stPlaceInHead.WizardCSS>
+				<cfif application.fapi.getDocType().type eq "xhtml">
 				<cfoutput>
-					<link rel="stylesheet" href="#application.url.farcry#/css/wizard.css?fjsv=#farcryJSVersion#" type="text/css" media="screen" /></cfoutput>
+						<link rel="stylesheet" href="#application.url.farcry#/css/wizard.css?fjsv=#farcryJSVersion#" type="text/css" media="screen" />
+					</cfoutput>
+				<cfelse>
+					<cfoutput>
+						<link rel="stylesheet" href="#application.url.farcry#/css/wizard.css?fjsv=#farcryJSVersion#" type="text/css" media="screen">
+					</cfoutput>
+				</cfif>
 			</cfif>
 			
 			<cfif isDefined("variables.stPlaceInHead.FormsCSS") AND variables.stPlaceInHead.FormsCSS>
+				<cfif application.fapi.getDocType().type eq "xhtml">
 				<cfoutput>
 					<link rel="stylesheet" type="text/css" href="#application.url.farcry#/css/forms.cfm?fjsv=#farcryJSVersion#" media="all" />
 				</cfoutput>
+				<cfelse>
+					<cfoutput>
+						<link rel="stylesheet" type="text/css" href="#application.url.farcry#/css/forms.cfm?fjsv=#farcryJSVersion#" media="all">
+					</cfoutput>
+			</cfif>
 			</cfif>
 			
 			<cfif isDefined("variables.stPlaceInHead.lightboxCSS") AND variables.stPlaceInHead.lightboxCSS>
+				<cfif application.fapi.getDocType().type eq "xhtml">
+					<cfoutput>
+						<link rel="stylesheet" href="#application.url.farcry#/css/lightbox/lightbox.css?fjsv=#farcryJSVersion#" type="text/css" media="screen" />
+					</cfoutput>
+				<cfelse>
 				<cfoutput>
-					<link rel="stylesheet" href="#application.url.farcry#/css/lightbox/lightbox.css?fjsv=#farcryJSVersion#" type="text/css" media="screen" /></cfoutput>
+						<link rel="stylesheet" href="#application.url.farcry#/css/lightbox/lightbox.css?fjsv=#farcryJSVersion#" type="text/css" media="screen">
+					</cfoutput>
+				</cfif>
 			</cfif>
 			<cfif isDefined("variables.stPlaceInHead.TabStyle1CSS") AND variables.stPlaceInHead.TabStyle1CSS>
+				<cfif application.fapi.getDocType().type eq "xhtml">
 				<cfoutput>
-					<link rel="stylesheet" href="#application.url.farcry#/css/tabs/TabStyle1.css?fjsv=#farcryJSVersion#" type="text/css" media="screen" /></cfoutput>
+						<link rel="stylesheet" href="#application.url.farcry#/css/tabs/TabStyle1.css?fjsv=#farcryJSVersion#" type="text/css" media="screen" />
+					</cfoutput>
+				<cfelse>
+					<cfoutput>
+						<link rel="stylesheet" href="#application.url.farcry#/css/tabs/TabStyle1.css?fjsv=#farcryJSVersion#" type="text/css" media="screen">
+					</cfoutput>
+				</cfif>
 			</cfif>
+			
+			
 			<cfif isDefined("variables.stPlaceInHead.CalendarStyle1CSS") AND variables.stPlaceInHead.CalendarStyle1CSS>
+				<cfif application.fapi.getDocType().type eq "xhtml">
+					<cfoutput>
+						<link rel="stylesheet" href="#application.url.farcry#/css/calendar/calendar-win2k-1.css?fjsv=#farcryJSVersion#" type="text/css" media="screen" />
+					</cfoutput>
+				<cfelse>
 				<cfoutput>
-					<link rel="stylesheet" href="#application.url.farcry#/css/calendar/calendar-win2k-1.css?fjsv=#farcryJSVersion#" type="text/css" media="screen" /></cfoutput>
+						<link rel="stylesheet" href="#application.url.farcry#/css/calendar/calendar-win2k-1.css?fjsv=#farcryJSVersion#" type="text/css" media="screen" />
+					</cfoutput>
+				</cfif>
 			</cfif>
 						
 	
 			<cfif isDefined("variables.stPlaceInHead.iehtcCSS") AND variables.stPlaceInHead.iehtcCSS>
+				<cfif application.fapi.getDocType().type eq "xhtml">
 				<cfoutput>
 					<!--[if lt IE 7]>
 					<link rel="stylesheet" href="#application.url.farcry#/css/htc/iehtc.cfm?fjsv=#farcryJSVersion#" type="text/css" media="screen" />
 					<![endif]-->				
 				</cfoutput>
+				<cfelse>
+					<cfoutput>
+						<!--[if lt IE 7]>
+						<link rel="stylesheet" href="#application.url.farcry#/css/htc/iehtc.cfm?fjsv=#farcryJSVersion#" type="text/css" media="screen">
+						<![endif]-->				
+					</cfoutput>
+				</cfif>
 			</cfif>
 					
 					
@@ -516,15 +563,6 @@ $out:$
 	</cfif>
 </cfif>
 
-
-
-<!--- USED TO DETERMINE OVERALL PAGE TICKCOUNT --->
-<cfset request.farcryPageTimerEnd = getTickCount() />
-
-<cfif structKeyExists(request, "farcryPageTimerStart")>
-	<cfset farcryPageLoadTimer = request.farcryPageTimerEnd - request.farcryPageTimerStart />
-	<cftrace var="farcryPageLoadTimer" />
-</cfif>
 
 
 <cfsetting enablecfoutputonly="no">

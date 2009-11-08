@@ -40,8 +40,7 @@
 
 <cftimer label="NAVAJO DISPLAY">
 
-<cfset stURLVars = application.fc.factory.farFU.parseURL() />
-<cfset StructAppend(url, stURLVars, "true") />
+
 <!--- environment variables --->
 <cfparam name="request.bHideContextMenu" default="false" type="boolean" />
 
@@ -160,8 +159,7 @@
 			<skin:bubble title="Currently Viewing a Draft Object" message="You are currently viewing a draft object. Your profile has now been changed to 'Showing Drafts'." />
 		<cfelse>			
 			<!--- send to login page and return in draft mode --->
-			<skin:bubble title="Security" message="This object is in draft and you must be logged in to view" />
-			<cflocation url="#attributes.loginpath#&showdraft=1&error=draft" addtoken="No" />
+			<skin:location url="#attributes.loginpath#" urlParameters="showdraft=1&error=draft" />
 		</cfif>
 	</cfif>
 	
@@ -296,8 +294,7 @@
 		</cfif>		
 		
 	<cfelse>
-		<skin:bubble title="Security" message="You do not have permission to access this view" />
-		<cflocation url="#attributes.loginpath#&error=restricted" addtoken="No" />
+		<skin:location url="#attributes.loginpath#" urlParameters="error=restricted" />
 	</cfif>
 	
 </cfif>

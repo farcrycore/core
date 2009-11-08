@@ -43,9 +43,6 @@
 		<cfparam name="application.stCoapi['dmInclude'].stProps.webskinTypename.metadata.ftJoin" default="#structkeylist(application.stcoapi)#" /><!--- These types are allowed to be used for type webskins --->
 		<cfparam name="application.stCoapi['dmInclude'].stProps.webskinTypename.metadata.ftExcludeTypes" default="" /><!--- Remove this types --->
 
-		<!--- view metadata --->
-		<cfparam name="application.stCoapi['dmInclude'].stProps.webskin.metadata.ftPrefix" default="displayTypeBody,editTypeBody" /><!--- Webskin prefix --->
-	
 		<cfset qTypes = querynew("typename,description","varchar,varchar") />
 		<cfset thistype = "" />
 		
@@ -53,21 +50,19 @@
 		
 		<cfloop list="#application.stCoapi['dmInclude'].stProps.webskinTypename.metadata.ftJoin#" index="thistype">
 			<cfif not listcontains(application.stCoapi['dmInclude'].stProps.webskinTypename.metadata.ftExcludeTypes,thistype)>
-				<cfloop list="#application.stCoapi['dmInclude'].stProps.webskin.metadata.ftPrefix#" index="prefix">
-					<cfset qTypeWebskins = application.coapi.coapiAdmin.getWebskins(typename=thistype, prefix=prefix,packagepath=application.stCOAPI[thistype].packagepath) />
+				<cfset qTypeWebskins = application.coapi.coapiAdmin.getWebskins(typename=thistype, packagepath=application.stCOAPI[thistype].packagepath, viewBinding="type", viewStack="body") />
+				
+				<cfif qTypeWebskins.recordCount and not listFindNoCase(lTypes, thistype)>
+					<cfset lTypes = listAppend(lTypes, thistype) />
 					
-					<cfif qTypeWebskins.recordCount and not listFindNoCase(lTypes, thistype)>
-						<cfset lTypes = listAppend(lTypes, thistype) />
-						
-						<cfset queryaddrow(qTypes) />
-						<cfset querysetcell(qTypes,"typename",thistype) />
-						<cfif structkeyexists(application.stCOAPI[thistype],"displayname") and len(application.stCOAPI[thistype].displayname)>
-							<cfset querysetcell(qTypes,"description",application.stCOAPI[thistype].displayname) />
-						<cfelse>
-							<cfset querysetcell(qTypes,"description",thistype) />
-						</cfif>
+					<cfset queryaddrow(qTypes) />
+					<cfset querysetcell(qTypes,"typename",thistype) />
+					<cfif structkeyexists(application.stCOAPI[thistype],"displayname") and len(application.stCOAPI[thistype].displayname)>
+						<cfset querysetcell(qTypes,"description",application.stCOAPI[thistype].displayname) />
+					<cfelse>
+						<cfset querysetcell(qTypes,"description",thistype) />
 					</cfif>
-				</cfloop>
+				</cfif>
 			</cfif>
 		</cfloop>
 		<cfquery dbtype="query" name="qTypes">
@@ -75,6 +70,7 @@
 			from		qTypes
 			order by	description
 		</cfquery>
+		
 		
 		<cfif qTypes.recordcount>
 			<skin:htmlHead library="extjs" />

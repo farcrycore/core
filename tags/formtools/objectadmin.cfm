@@ -274,7 +274,7 @@ user --->
 			</cfif>
 			
 			<ft:processform action="apply filter" url="refresh">
-				<ft:processformObjects objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" bSessionOnly="true" />	
+				<ft:processformObjects objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" bSessionOnly="true" stPropMetadata="#attributes.stFilterMetadata#" />
 			</ft:processForm>
 			
 			<ft:processform action="clear filter" url="refresh">

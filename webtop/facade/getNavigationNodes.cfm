@@ -24,7 +24,7 @@
 	<cfquery datasource="#application.dsn#" name="qTreeCategories">
 		SELECT * FROM nested_tree_objects
 		WHERE typename = 'dmNavigation'
-		AND ObjectID IN (#listQualify(form.selectedObjectIDs,"'")#)
+		AND ObjectID IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#form.selectedObjectIDs#" />)
 	</cfquery>
 </cfif>
 

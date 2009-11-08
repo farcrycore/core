@@ -3,8 +3,11 @@
 	<cffunction name="OnRequestStart" access="public" returntype="boolean" output="false">
 		<cfargument name="TargetPage" type="string" required="true" />
 		
+		<!--- Before we call the core application.cfc, turn off FU redirection for the webtop --->
+		<cfset request.fc.disableFURedirction = true />
+		
 		<!--- Call the main farcry Application.cfc --->
-		<cfset var b = super.OnRequestStart(argumentCollection=arguments) />
+		<cfset super.OnRequestStart(argumentCollection=arguments) />
 
 		<!--- I18N config for Webtop --->
 		<!--- TODO:	move all i18n vars into their own struct
@@ -18,16 +21,15 @@
 		<!--- /I18N config for Webtop --->
 		
 
-		<!--- webtop: check to see if the person has general admin permissions --->
-		<cfif not application.security.checkPermission("Admin")>
-			<!--- logout illegal users --->
-			<cfset application.factory.oAuthentication.logout() />
-		    <cfif not ListContains( cgi.script_name, "#application.url.farcry#/login.cfm" )>
-		        <cflocation url="#application.url.farcry#/login.cfm?returnUrl=#replace(URLEncodedFormat(cgi.script_name&'?'&cgi.query_string),'##','%23','ALL')#" addtoken="No">
-		        <cfabort>
-		    </cfif>
-		</cfif>
-		
+		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />		
+
+		<cfif not findNoCase( "login.cfm", cgi.script_name )>  
+			<!--- If the user is not logged in, then they are redirected to the login page with no message --->
+			<sec:checkLoggedIn />  
+	
+			<!--- If the user is logged in but does not have the admin permission, then they are redirected with a message --->
+			<sec:checkLoggedIn lPermissions="admin" message="You do not have permission to access the webtop" />  
+		</cfif>  		
 		
 		<!--- Restrict access if webtop access is disabled --->
 		<cfif not application.sysinfo.bwebtopaccess>

@@ -37,11 +37,11 @@ type properties
 ------------------------------------------------------------------------->
 <cfproperty ftSeq="1" ftFieldset="Include Details" name="title" type="string" hint="Meaningful reference title for include file" required="no" default="" ftlabel="Title" ftvalidation="required" /> 
 <cfproperty ftSeq="2" ftFieldset="Include Details" name="teaser" type="string" hint="A brief description of the nature of the include file" required="no" default="" ftType="longchar" ftlabel="Teaser" />  
-<cfproperty ftSeq="3" ftFieldset="Include Details" name="teaserImage" type="uuid" hint="UUID of image to display in teaser" required="no" default="" fttype="uuid" ftjoin="dmimage" ftlabel="Teaser Image">
+<cfproperty ftSeq="3" ftFieldset="Include Details" name="teaserImage" type="uuid" hint="UUID of image to display in teaser" required="no" default="" fttype="uuid" ftjoin="dmImage" ftlabel="Teaser Image">
 <cfproperty ftSeq="4" ftFieldset="Include Details" name="displayMethod" type="string" hint="" required="No" default="" ftType="webskin" ftPrefix="displayPage" ftlabel="Content Template" /> 
 <cfproperty ftSeq="10" ftFieldset="Content" name="include" type="string" hint="The name of the include file" required="No" default="" ftType="list" ftListData="getIncludeList" ftLabel="Included CF Template" /> 
 <cfproperty ftSeq="11" ftFieldset="Content" name="webskinTypename" type="string" hint="The content type to run the selected type view against" required="No" default="" ftLabel="Content Type" /> 
-<cfproperty ftSeq="12" ftFieldset="Content" name="webskin" type="string" hint="The content view to be run on the selected typename" required="no" default=""  ftlabel="Content View" ftPrefix="displayType,editType" />
+<cfproperty ftSeq="12" ftFieldset="Content" name="webskin" type="string" hint="The content view to be run on the selected typename" required="no" default=""  ftlabel="Content View" />
 <cfproperty ftSeq="20" ftFieldset="Categorisation" name="catInclude" type="string" hint="category of the include" required="no" default="" ftType="category" ftlabel="Categorisation" />
 
 <!--- system only properties --->
@@ -82,24 +82,11 @@ type properties
 		
 		<cfparam name="form.typename" default="" />
 		<cfparam name="form.value" default="" />
-		<cfparam name="arguments.stMetadata.ftPrefix" default="displayType,editType" /><!--- Webskin prefix --->
 
 		<cfif len(form.typename)>
-			<cfloop list="#arguments.stMetadata.ftPrefix#" index="thisprefix">
-				<nj:listTemplates typename="#form.typename#" prefix="#thisprefix#" r_qMethods="qDisplayTypes">
-				<cfquery dbtype="query" name="qWebskins">
-					select	methodName,displayName
-					from	qDisplayTypes
-					
-					UNION
-					
-					select	methodName,displayName
-					from	qWebskins
-					
-					order by methodName
-				</cfquery>
-			</cfloop>
 		
+			<cfset qWebskins = application.coapi.coapiAdmin.getWebskins(typename="#form.typename#", viewBinding="type", viewStack="body") />
+			
 			<cfif qWebskins.recordCount>
 				<cfsavecontent variable="html">
 					<cfoutput>

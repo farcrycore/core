@@ -79,13 +79,14 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="stparam" required="false" type="struct" default="#structNew()#" hint="Structure of parameters to be passed into the display handler." />
 		<cfargument name="stobject" required="no" type="struct" hint="Property structure to render in view.  Overrides any property structure mapped to arguments.objectid. Useful if you want to render a view with a modified content item.">
 		<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
-		<cfargument name="OnExit" required="no" type="any" default="">
+		<cfargument name="onExitProcess" required="no" type="any" default="" hint="A url string to redirect to if a processForm exit='true' is called within the webskin">
 		<cfargument name="alternateHTML" required="no" type="string" hint="If the webskin template does not exist, if this argument is sent in, its value will be passed back as the result.">
 		<cfargument name="hashKey" required="no" default="" type="string" hint="Pass in a key to be used to hash the objectBroker webskin cache">
 		<cfargument name="bAjax" required="no" default="0" type="boolean" hint="Flag to determine whether to render an ajax call to load the webskin instead of inline." />
 		<cfargument name="ajaxID" required="no" default="" type="string" hint="The id to give the div that will call the ajaxed webskin" />
 		<cfargument name="ajaxShowloadIndicator" required="no" default="false" type="boolean" hint="Should the ajax loading indicator be shown" />
 		<cfargument name="ajaxindicatorText" required="no" default="loading..." type="string" hint="What should be text of the loading indicator" />		
+		<cfargument name="ajaxURLParameters" required="no" default="" type="string" hint="parameters to pass for ajax call" />
 		<cfargument name="bIgnoreSecurity" required="false" type="boolean" default="false" hint="Should the getView() ignore webskin security" />	
 		<cfargument name="bAllowTrace" required="false" type="boolean" default="true" hint="Sometimes having webskin trace information can break the integrity of a page. This allows you to turn it off." />
 			
@@ -99,7 +100,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var stLocal = structNew() /><!--- A local scope that can be used in webskins to ensure against race conditions. --->
 		<cfset var webskinTypename = "" /><!--- This will store the typename of the webskin to be called. Required in the case of Type Webskins. --->
 		<cfset var iViewState = "" /><!--- iterator used when adding to ancestor cacheBySessionVar lists --->
-		<cfset var lAttributes = "stobject,typename,objectid,key,template,webskin,stprops,stparam,r_html,r_objectid,hashKey,alternateHTML,OnExit,dsn,bAjax,ajaxID,ajaxShowloadIndicator,ajaxindicatorText,bIgnoreSecurity" />
+		<cfset var lAttributes = "stobject,typename,objectid,key,template,webskin,stprops,stparam,r_html,r_objectid,hashKey,alternateHTML,onExitProcess,dsn,bAjax,ajaxID,ajaxShowloadIndicator,ajaxindicatorText,ajaxURLParameters,bIgnoreSecurity,bAllowTrace" />
 		<cfset var attrib = "" />
 		<cfset var lHashKeys = "" />
 		<cfset var iHashKey = "" />
@@ -127,7 +128,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfset arguments.template = ReplaceNoCase(arguments.template,".cfm", "", "all") />
 		</cfif>
 		
-
+		<cftimer label="view: #webskinTypename# #arguments.template#">
 		<cfif isDefined("arguments.stobject") and not structIsEmpty(arguments.stObject)>
 			<cfset stobj=arguments.stobject />
 		<cfelse>
@@ -183,8 +184,27 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			</skin:htmlHead>
 			
 			<!--- Get the url for the ajax webskin loader --->
-			<cfset urlAjaxLoader = application.fapi.getLink(type="#stobj.typename#", objectid="#stobj.objectid#", urlParameters="view=#arguments.template#&ajaxmode=1") />,
-				
+			<!--- TODO: The ampDelim variable causes the link to be in the & 
+				instead of &amp; form.  This is a bit of a hack as &amp;
+				should work but currently causes an error.  It will take some
+				digging into why that is; however, for now this will validate 
+				and work. --->
+			<cfif len(arguments.objectid)>
+				<cfset urlAjaxLoader = application.fapi.getLink(
+					type="#stobj.typename#", 
+					objectid="#stobj.objectid#", 
+					view="#arguments.template#",
+					urlParameters="#arguments.ajaxURLParameters#&ajaxmode=1",
+					ampDelim="&"
+				) />
+			<cfelse>
+				<cfset urlAjaxLoader = application.fapi.getLink(
+					type="#webskinTypename#",
+					view="#arguments.template#",
+					urlParameters="#arguments.ajaxURLParameters#&ajaxmode=1",
+					ampDelim="&"
+				) />
+			</cfif>	
 			<cfsavecontent variable="stWebskin.webskinHTML">
 				<cfoutput>
 				<farcry:traceWebskin 
@@ -246,9 +266,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					<cfreturn stWebskin.webskinHTML />
 				</cfif>
 			</cfif>
-				
+			
 			<cfif NOT structIsEmpty(stObj)>	
-	
 				<cfset stWebskin = application.fc.lib.objectbroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
 				
 				<cfif not len(stWebskin.webskinHTML)>			
@@ -270,7 +289,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 															webskinCacheID="#stWebskin.webskinCacheID#", 
 															hashKey="#arguments.hashKey#", 
 															stParam="#arguments.stParam#", 
-															OnExit="#arguments.onExit#",
+															onExitProcess="#arguments.onExitProcess#",
 															dsn="#arguments.dsn#",
 															bAllowTrace="#arguments.bAllowTrace#") />
 						
@@ -290,8 +309,10 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				<cfset request.currentViewTypename = request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].typename />
 				<cfset request.currentViewTemplate = request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].template />
 			</cfif>
-		
+			
 		</cfif>
+		
+		</cftimer>
 		<cfreturn stWebskin.webskinHTML />
 	</cffunction>
 	
@@ -305,13 +326,14 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="webskinCacheID" required="true" />
 		<cfargument name="hashKey" required="true" />
 		<cfargument name="stparam" required="false" type="struct" default="#structNew()#" hint="Structure of parameters to be passed into the display handler." />	
-		<cfargument name="OnExit" required="false" type="any" default="" />
+		<cfargument name="onExitProcess" required="false" type="any" default="" hint="A url string to redirect to if a processForm exit='true' is called within the webskin" />
 		<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
 		<cfargument name="bAllowTrace" required="false" type="boolean" default="true" hint="Sometimes having webskin trace information can break the integrity of a page. This allows you to turn it off." />
 		
 		<cfset var stCurrentView = structNew() />
 		<cfset var webskinHTML = "" />
 		<cfset var stTrace = "" />
+		<cfset var bAdded = "" />
 				
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
@@ -368,14 +390,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfinclude template="#arguments.WebskinPath#">
 			
 			</farcry:traceWebskin>
-		</cfsavecontent>					
-	
-		
-		<!--- If the current view (Last Item In the array) is still OkToCache --->
-		<cfif request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].okToCache>
-			<!--- Add the webskin to the object broker if required --->
-			<cfset bAdded = application.fc.lib.objectbroker.addWebskin(objectid=arguments.stobj.objectid, typename=arguments.stobj.typename, template=arguments.webskinTemplate, webskinCacheID=arguments.webskinCacheID, html=webskinHTML, stCurrentView=stCurrentView) />
-		</cfif>
+		</cfsavecontent>	
 		
 		<cfif arrayLen(request.aAncestorWebskins)>
 			
@@ -430,28 +445,33 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				<cfif stCurrentView.cacheTimeout LT request.aAncestorWebskins[i].cacheTimeout>
 					<cfset request.aAncestorWebskins[i].cacheTimeout = stCurrentView.cacheTimeout />
 				</cfif>
-				
-				<!--- If this webskin is to have its url hashed, make sure all ancestors also have their webskins hashed --->
-				<cfif stCurrentView.cacheByURL>
-					<cfset request.aAncestorWebskins[i].cacheByURL = true />
-				</cfif>
-				<cfif stCurrentView.cacheByForm>
-					<cfset request.aAncestorWebskins[i].cacheByForm = true />
-				</cfif>
-				<cfif stCurrentView.cacheByRoles>
-					<cfset request.aAncestorWebskins[i].cacheByRoles = true />
-				</cfif>
-				
-				<cfif listLen(stCurrentView.cacheByVars)>
-					<cfloop list="#stCurrentView.cacheByVars#" index="iViewState">
-						<cfif not listFindNoCase(request.aAncestorWebskins[i].cacheByVars,iViewState)>
-							<cfset request.aAncestorWebskins[i].cacheByVars = listAppend(request.aAncestorWebskins[i].cacheByVars, iViewState)	/>
-						</cfif>								
-					</cfloop>
-				</cfif>
-	
+					
 			</cfloop>
+						
+			<!--- WE NEED TO CASCADE UP THE ANCESTRY PATH SOME OF THE CACHE SETTINGS OF DESCENDENT WEBSKINS --->
+			<cfif listLen(stCurrentView.cacheByVars)>
+				<cfset application.fapi.setAncestorsCacheByVars(stCurrentView.cacheByVars) />
+			</cfif>
+			
+			<cfif stCurrentView.cacheByForm>
+				<cfset application.fapi.setAncestorsCacheByForm() />
+			</cfif>
+			
+			<cfif stCurrentView.cacheByURL>
+				<cfset application.fapi.setAncestorsCacheByURL() />
+			</cfif>
+			
+			<cfif stCurrentView.cacheByRoles>
+				<cfset application.fapi.setAncestorsCacheByRoles() />
+			</cfif>
 		</cfif>
+		
+	<!--- If the current view (Last Item In the array) is still OkToCache --->
+		<cfif request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].okToCache>
+			<!--- Add the webskin to the object broker if required --->
+			<cfset bAdded = application.fc.lib.objectbroker.addWebskin(objectid=arguments.stobj.objectid, typename=arguments.stobj.typename, template=arguments.webskinTemplate, webskinCacheID=arguments.webskinCacheID, html=webskinHTML, stCurrentView=stCurrentView) />
+		</cfif>
+		
 		
 		<!--- Remove the current view (last item in the array) from the Ancestor Webskins array --->
 		<cfset ArrayDeleteAt(request.aAncestorWebskins, arrayLen(request.aAncestorWebskins)) />
@@ -1360,9 +1380,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<!--- add any extended component metadata --->
 		<cfset mdExtend = md />
 		<cfloop condition="not structisempty(mdExtend)">
-			<cfloop collection="#md#" item="key">
+			<cfloop collection="#mdExtend#" item="key">
 				<cfif key neq "PROPERTIES" AND key neq "EXTENDS" AND key neq "FUNCTIONS" AND key neq "TYPE">
-					<cfparam name="stReturnMetadata.#key#" default="#md[key]#" />				
+					<cfparam name="stReturnMetadata.#key#" default="#mdExtend[key]#" />				
 				</cfif>
 			</cfloop>
 			<cfif structkeyexists(mdExtend,"extends") and not findnocase(mdExtend.extends.name,"fourq")>
@@ -1384,7 +1404,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfparam name="stReturnMetadata.lObjectBrokerWebskins" default="" />
 		<cfparam name="stReturnMetadata.objectBrokerWebskinCacheTimeout" default="1400" /> <!--- This a value in minutes (ie. 1 day) --->
  		<cfparam name="stReturnMetadata.excludeWebskins" default="" /> <!--- This enables projects to exclude webskins that may be contained in plugins. ---> 
- 		<cfparam name="stReturnMetadata.fuAlias" default="#stReturnMetadata.displayname#" /> <!--- This will store the alias of the typename that can be used by Friendly URLS ---> 
+ 		<cfparam name="stReturnMetadata.fuAlias" default="#lcase(rereplace(stReturnMetadata.displayname,'[^\w]+','-','ALL'))#" /> <!--- This will store the alias of the typename that can be used by Friendly URLS ---> 
 
 		<!--- Get webkins: webskins for this type, then webskins for extends types --->
 		<cfset stReturnMetadata.qWebskins = application.coapi.coapiAdmin.getWebskins(typename="#componentname#", bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#",packagepath=stReturnMetadata.packagepath,aExtends=stReturnMetadata.aExtends) />

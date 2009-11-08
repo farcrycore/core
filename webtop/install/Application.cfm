@@ -47,7 +47,7 @@ ADD YOUR IP TO THE LIST
 				<p>Your IP address (#cgi.remote_addr#) is not permitted to access the install directory.</p>
 				<p>By default, installation is only permitted to the localhost </p>
 				<p>To give access to other hosts, then append the desired IP address to the variable lAllowHosts in: <br />
-				<strong>[farcry]/core/install/Application.cfm.</strong>
+				<strong>[farcry]/core/webtop/install/Application.cfm.</strong>
 				</p>
 				<p><a href="index.cfm">CLICK HERE</a> when you have added the your IP (#cgi.remote_addr#) to the list</p>
 			</cfoutput>
@@ -62,9 +62,31 @@ ADD YOUR IP TO THE LIST
 	
 	<cfabort>
 	
-	
-	
 </cfif>
 
+<!--- Farcry Application assumes existance of application.bObjectBroker so we default its value for the installer here. --->
+<cfif NOT structKeyExists(application, "bObjectBroker")>
+	<cflock scope="Application" type="exclusive" timeout="2">
+		<cfset application.bObjectBroker = false />
+	</cflock>
+</cfif>
+
+<cffunction name="getCoreVersion" access="private" returntype="struct" hint="returns a structure containing the major, minor and patch version of farcry.">
+	<cfset var coreVersion = structNew() />
+
+	<cftry> 
+		<cffile action="read" file="#expandPath('/farcry/core/major.version')#" variable="coreVersion.major">
+		<cffile action="read" file="#expandPath('/farcry/core/minor.version')#" variable="coreVersion.minor">
+		<cffile action="read" file="#expandPath('/farcry/core/patch.version')#" variable="coreVersion.patch">
+
+		<cfcatch>               
+			<cfset coreVersion.major = 0 />
+			<cfset coreVersion.minor = 0 />
+			<cfset coreVersion.patch = 0 />
+		</cfcatch>
+		</cftry>
+
+	<cfreturn coreVersion>
+</cffunction>
 
 <cfsetting enablecfoutputonly="false">

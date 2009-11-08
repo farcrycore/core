@@ -9,9 +9,24 @@
 
 <cfset setLock(stObj=stObj,locked=true) />
 
-<cfset onExit = structNew() />
-<cfset onExit.Type = "HTML" />
-<cfsavecontent variable="onExit.Content">
+
+<ft:processForm action="Save,Manage">
+	<cfset setLock(stObj=stObj,locked=false) />
+	
+	<cfif arraylen(stObj.aObjectIDs)>
+		<ft:processFormObjects typename="#stobj.typename#" />
+	<cfelse>
+		<ft:processFormObjects typename="#stobj.typename#">
+			<cfif arraylen(stProperties.aObjectIDs)>
+				<cfset newtypename = application.coapi.coapiadmin.findType(stProperties.aObjectIDs[1]) />
+				<cfset oType = createobject("component",application.stCOAPI[newtypename].packagepath) />
+				<cfset oType.setData(stProperties=oType.getData(objectid=stProperties.aObjectIDs[1],bUseInstanceCache=true)) />
+			</cfif>
+		</ft:processFormObjects>
+	</cfif>
+</ft:processForm>
+
+<ft:processForm action="Save" bHideForms="true">
 	<!--- get parent to update tree --->
 	<nj:treeGetRelations typename="#stObj.typename#" objectId="#stObj.ObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1">
 	
@@ -23,41 +38,9 @@
 			parent['content'].location.href = '#application.url.webtop#/edittabOverview.cfm?objectid=#stObj.ObjectID#';
 		</script>
 	</cfoutput>
-</cfsavecontent>
-
-<ft:processForm action="Save,Manage">
-	<cfset setLock(stObj=stObj,locked=false) />
-	<cfif arraylen(stObj.aObjectIDs)>
-		<ft:processFormObjects typename="#stobj.typename#" />
-	<cfelse>
-		<ft:processFormObjects typename="#stobj.typename#">
-			<cfif arraylen(stProperties.aObjectIDs)>
-				<cfset newtypename = application.coapi.coapiadmin.findType(stProperties.aObjectIDs[1]) />
-				<cfset oType = createobject("component",application.stCOAPI[newtypename].packagepath) />
-				<cfset oType.setData(stProperties=oType.getData(objectid=stProperties.aObjectIDs[1],bUseInstanceCache=true)) />
-				
-				<cfset onExit.type = "html" />
-				<cfsavecontent variable="onExit.content">
-					<!--- get parent to update tree --->
-					<nj:treeGetRelations typename="#stObj.typename#" objectId="#stObj.ObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1">
-					
-					<!--- update tree --->
-					<nj:updateTree objectId="#parentID#">
-					
-					<cfoutput>
-						<script type="text/javascript">
-							parent['content'].location.href = "#application.url.webtop#/edittabEdit.cfm?objectid=#stProperties.aObjectIDs[1]#&ref=overview&typename=#newtypename#";
-						</script>
-					</cfoutput>
-				</cfsavecontent>
-			</cfif>
-		</ft:processFormObjects>
-	</cfif>
 </ft:processForm>
 
-<ft:processForm action="Save" Exit="true" />
-
-<ft:processForm action="Manage">
+<ft:processForm action="Manage" bHideForms="true">
 	
 	<!--- get parent to update tree --->
 	<nj:treeGetRelations typename="#stObj.typename#" objectId="#stObj.ObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1">
@@ -74,8 +57,20 @@
 	</cfif>
 </ft:processForm>
 
-<ft:processForm action="Cancel" Exit="true">
+<ft:processForm action="Cancel" bHideForms="true">
 	<cfset setLock(stObj=stObj,locked=false) />
+	
+	<!--- get parent to update tree --->
+	<nj:treeGetRelations typename="#stObj.typename#" objectId="#stObj.ObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1">
+	
+	<!--- update tree --->
+	<nj:updateTree objectId="#parentID#">
+	
+	<cfoutput>
+		<script type="text/javascript">
+			parent['content'].location.href = '#application.url.webtop#/edittabOverview.cfm?objectid=#stObj.ObjectID#';
+		</script>
+	</cfoutput>	
 </ft:processForm>
 
 <ft:form>

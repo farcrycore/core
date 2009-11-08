@@ -37,7 +37,7 @@ START WEBSKIN
 	<cfparam name="attributes.query" default="" /><!--- A query name that contains the objectids to loop over. --->
 	<cfparam name="attributes.array" default="" /><!--- An array of objectids to loop over. Can be used instead of query. --->
 	<cfparam name="attributes.typename" default="" />	
-	<cfparam name="attributes.paginationID" default="fc-pagination" /><!--- Uniquely identifies this pagination set. Set if using sticky pages or if multiple pagination sets on a single page. --->
+	<cfparam name="attributes.paginationID" default="fcPagination" /><!--- Uniquely identifies this pagination set. Set if using sticky pages or if multiple pagination sets on a single page. --->
 	<cfparam name="attributes.bStickyPages" default="false" /><!--- Keeps track of the page the user is currently on in session against this key. --->
 	<cfparam name="attributes.currentPage" default="0" />
 	<cfparam name="attributes.actionURL" default="" />

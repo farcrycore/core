@@ -55,7 +55,7 @@ VIEW
 		<cfset userID = application.factory.oUtils.listSlice(stObj.username,1,-2,"_") />
 		<cfset stUser = oUser.getByUserID(userID) />
 		
-		<cfif structIsEmpty(stUser)>
+		<cfif structIsEmpty(stUser) or stUser.userid eq "">
 			<skin:view key="newprofileuser" typename="farUser" webskin="editProfileUser" />
 		<cfelse>
 			<ft:object stObject="#stUser#" typename="farUser" lfields="userstatus,aGroups" legend="Security" />

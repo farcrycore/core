@@ -1,3 +1,20 @@
+<!--- @@Copyright: Daemon Pty Limited 2002-2009, http://www.daemon.com.au --->
+<!--- @@License:
+    This file is part of FarCry.
+
+    FarCry is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    FarCry is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
+--->
 <cfcomponent displayname="FarCry API" hint="The API for all things FarCry" output="false" bDocument="true" scopelocation="application.fapi">
 
 	<cffunction name="init" access="public" returntype="fapi" output="false" hint="FAPI Constructor">
@@ -51,6 +68,30 @@
 			<cfargument name="typename" type="string" required="false" default="" hint="The typename of the objectid. Pass in to avoid having to lookup the type." />
 			
 			<cfreturn application.coapi.coapiutilities.getContentObject(argumentCollection="#arguments#") />
+		</cffunction>
+				
+		<!--- @@examples:
+			<p>Retrieve the properties of the selected object after an objectadmin action:</p>
+			<code>
+				<cfif application.fapi.hasWebskin("dmHTML", "displayPage1Col")>
+					<skin:view typename="dmHTML" objectid="#q.objectid#" webskin="displayPage1Col" />
+				</cfif>
+			</code>
+		 --->
+		<cffunction name="hasWebskin" access="public" output="false" returnType="boolean" hint="Returns true if the content type has the webskin name passed in available." bDocument="true">
+			<cfargument name="typename" type="string" required="true" hint="The typename of the webskin to be found." />
+			<cfargument name="webskin" required="true" />
+			
+			<cfset var bHasWebskin = false />
+			
+			<cfif len(arguments.typename) 
+					AND len(arguments.webskin) 
+					AND isDefined("application.stcoapi.#arguments.typename#.stWebskins") 
+					AND structKeyExists(application.stcoapi[arguments.typename].stWebskins, arguments.webskin)>
+				<cfset bHasWebskin = true />
+			</cfif>			
+			
+			<cfreturn bHasWebskin />
 		</cffunction>
 		
 	
@@ -224,47 +265,121 @@
 			<cfreturn o.setData(stProperties=arguments.stProperties,dsn=arguments.dsn,dbtype=arguments.dbtype,dbowner=arguments.dbowner,bSessionOnly=arguments.bSessionOnly,bAfterSave=arguments.bAfterSave) />
 		</cffunction>
 	
-		<cffunction name="setCacheByVar" access="public" returntype="void" output="false" hint="This is generally used by tags to dynamically assign cacheByVar's to the webskin that called it and its ancestors.">
+		<cffunction name="setAncestorsCacheByVars" access="public" returntype="void" output="false" hint="This is generally used by tags to dynamically assign cacheByVar's to the webskin that called it and its ancestors.">
 			<cfargument name="keys" required="true" hint="This is a list of setCacheVar names to be dynamically assigned." />
 			
 			<cfset var i = "" />
 			<cfset var currentTypename = "" />
 			<cfset var currentTemplate = "" />
 			<cfset var currentCacheStatus = "" />
-			<cfset var currentViewStates = "" />
-			<cfset var iKeys = "" />
+			<cfset var currentVars = "" />
+			<cfset var iKey = "" />
 		
 			<!--- LOOP THROUGH ALL THE CURRENT ANCESTOR WEBSKINS AND ADD THE CURRENT VIEW STATE KEY TO EACH --->
 			<cfif structKeyExists(request, "aAncestorWebskins") AND arrayLen(request.aAncestorWebskins)>
 				<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="i">
 	
-					<cfloop list="#arguments.keys#" index="iKey">	
-						<cfif not listFindNoCase(request.aAncestorWebskins[i].cacheByVars,iKey)>
-							<cfset request.aAncestorWebskins[i].cacheByVars = listAppend(request.aAncestorWebskins[i].cacheByVars, iKey)	/>
-						</cfif>	
-					</cfloop>
-					
 					<cfset currentTypename = request.aAncestorWebskins[i].typename />
 					<cfset currentTemplate = request.aAncestorWebskins[i].template />
 					<cfset currentCacheStatus = getWebskinCacheStatus(typename="#currentTypename#", template="#currentTemplate#") />
-	
+					
 					<cfif currentCacheStatus EQ 1>
-						<cflock name="cacheByViewStates_#currentTypename#_#currentTemplate#" timeout="1" throwontimeout="false" type="exclusive">	
 							
-							<cfparam name="application.fc.cacheByViewStates" default="#structNew()#" />
-							<cfparam name="application.fc.cacheByViewStates['#currentTypename#']" default="#structNew()#" />
-							<cfparam name="application.fc.cacheByViewStates['#currentTypename#']['#currentTemplate#']" default="" />
-										
-							<cfset currentViewStates = application.fc.cacheByViewStates['#currentTypename#']['#currentTemplate#'] />
+						<cfparam name="application.stcoapi['#currentTypename#'].stWebskins['#currentTemplate#'].cacheByVars" default="" />
+									
+						<cfset currentVars = application.stcoapi['#currentTypename#'].stWebskins['#currentTemplate#'].cacheByVars />
+						
+						<cfloop list="#arguments.keys#" index="iKey">	
+							<cfif not listFindNoCase(request.aAncestorWebskins[i].cacheByVars,iKey)>
+								<cfset request.aAncestorWebskins[i].cacheByVars = listAppend(request.aAncestorWebskins[i].cacheByVars, iKey) />
+							</cfif>	
+							
+							<cfif not listFindNoCase(currentVars, iKey)>
+								<cfset currentVars = listAppend(currentVars, iKey) />
+							</cfif>
+						</cfloop>
+				
+						<cfset application.stcoapi['#currentTypename#'].stWebskins['#currentTemplate#'].cacheByVars = currentVars />
+						
+					</cfif>	
 	
-							<cfloop list="#arguments.keys#" index="iKey">	
-								<cfif not listFindNoCase(currentViewStates, iKey)>
-									<cfset currentViewStates = listAppend(currentViewStates, iKey) />
-								</cfif>
-							</cfloop>
-							
-							<cfset application.fc.cacheByViewStates['#currentTypename#']['#currentTemplate#'] = currentViewStates />
-						</cflock>	
+				</cfloop>
+			</cfif>
+		</cffunction>
+		
+		<cffunction name="setAncestorsCacheByForm" access="public" returntype="void" output="false" hint="This is generally used by tags to dynamically assign cacheByForm to the webskin that called it and its ancestors.">
+			
+			<cfset var i = "" />
+			<cfset var currentTypename = "" />
+			<cfset var currentTemplate = "" />
+			<cfset var currentCacheStatus = "" />
+			<cfset var currentVars = "" />
+			<cfset var iKey = "" />
+		
+			<!--- LOOP THROUGH ALL THE CURRENT ANCESTOR WEBSKINS AND ADD THE CURRENT VIEW STATE KEY TO EACH --->
+			<cfif structKeyExists(request, "aAncestorWebskins") AND arrayLen(request.aAncestorWebskins)>
+				<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="i">
+	
+					<cfset currentTypename = request.aAncestorWebskins[i].typename />
+					<cfset currentTemplate = request.aAncestorWebskins[i].template />
+					<cfset currentCacheStatus = getWebskinCacheStatus(typename="#currentTypename#", template="#currentTemplate#") />
+					
+					<cfif currentCacheStatus EQ 1>
+						<cfset request.aAncestorWebskins[i].cacheByForm = true />
+						<cfset application.stcoapi['#currentTypename#'].stWebskins['#currentTemplate#'].cacheByForm = true />
+					</cfif>	
+	
+				</cfloop>
+			</cfif>
+		</cffunction>
+		
+		<cffunction name="setAncestorsCacheByURL" access="public" returntype="void" output="false" hint="This is generally used by tags to dynamically assign cacheByURL to the webskin that called it and its ancestors.">
+			
+			<cfset var i = "" />
+			<cfset var currentTypename = "" />
+			<cfset var currentTemplate = "" />
+			<cfset var currentCacheStatus = "" />
+			<cfset var currentVars = "" />
+			<cfset var iKey = "" />
+		
+			<!--- LOOP THROUGH ALL THE CURRENT ANCESTOR WEBSKINS AND ADD THE CURRENT VIEW STATE KEY TO EACH --->
+			<cfif structKeyExists(request, "aAncestorWebskins") AND arrayLen(request.aAncestorWebskins)>
+				<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="i">
+	
+					<cfset currentTypename = request.aAncestorWebskins[i].typename />
+					<cfset currentTemplate = request.aAncestorWebskins[i].template />
+					<cfset currentCacheStatus = getWebskinCacheStatus(typename="#currentTypename#", template="#currentTemplate#") />
+					
+					<cfif currentCacheStatus EQ 1>
+						<cfset request.aAncestorWebskins[i].cacheByURL = true />
+						<cfset application.stcoapi['#currentTypename#'].stWebskins['#currentTemplate#'].cacheByURL = true />
+					</cfif>	
+	
+				</cfloop>
+			</cfif>
+		</cffunction>
+			
+		
+		<cffunction name="setAncestorsCacheByRoles" access="public" returntype="void" output="false" hint="This is generally used by tags to dynamically assign cacheByRoles to the webskin that called it and its ancestors.">
+			
+			<cfset var i = "" />
+			<cfset var currentTypename = "" />
+			<cfset var currentTemplate = "" />
+			<cfset var currentCacheStatus = "" />
+			<cfset var currentVars = "" />
+			<cfset var iKey = "" />
+		
+			<!--- LOOP THROUGH ALL THE CURRENT ANCESTOR WEBSKINS AND ADD THE CURRENT VIEW STATE KEY TO EACH --->
+			<cfif structKeyExists(request, "aAncestorWebskins") AND arrayLen(request.aAncestorWebskins)>
+				<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="i">
+	
+					<cfset currentTypename = request.aAncestorWebskins[i].typename />
+					<cfset currentTemplate = request.aAncestorWebskins[i].template />
+					<cfset currentCacheStatus = getWebskinCacheStatus(typename="#currentTypename#", template="#currentTemplate#") />
+					
+					<cfif currentCacheStatus EQ 1>
+						<cfset request.aAncestorWebskins[i].cacheByRoles = true />
+						<cfset application.stcoapi['#currentTypename#'].stWebskins['#currentTemplate#'].cacheByRoles = true />
 					</cfif>	
 	
 				</cfloop>
@@ -539,6 +654,48 @@
 		</cffunction>
 	
 	<!--- GENERAL FARCRY --->
+	
+	
+		
+		<!--- @@description:
+			<p>Ability to save a date from the offset to the local server time. This feature would be especially useful for those people hosting their application on servers where they do not have the ability to change the server clock (e.g shared hosting etc).</p>
+			
+			@@examples:
+			<p>Convert the date relevent to the user into the date offset to the local server time:</p>
+			<code>
+				#application.fapi.castSystemDateTime(stobj.dateTimeLastUpdated)#
+			</code>
+		 --->
+		<cffunction name="convertToSystemTimezone" access="public" output="false" returntype="date" hint="Convert the date relevent to the user into the date offset to the local server time." bDocumented="true">
+			<cfargument name="date" required="true" hint="The date to convert to the standard system time" />
+			
+			<cfset var applicationTimezone = application.fapi.getConfig('general','applicationTimezone', '#application.fc.serverTimezone#') /><!--- "Australia/Sydney" --->			
+			<cfset var UTC = application.fc.LIB.TIMEZONE.castToUTC(arguments.date, applicationTimezone) /><!--- This will store the UTC Date --->
+			<cfset var result = application.fc.LIB.TIMEZONE.castFromUTC(UTC, application.fc.serverTimezone) /><!--- This will store the offset date --->
+			
+			
+			<cfreturn result />
+		</cffunction>
+
+		<!--- @@description:
+			<p>Ability to display a date with the offset against local server time. This feature would be especially useful for those people hosting their application on servers where they do not have the ability to change the server clock (e.g shared hosting etc).</p>
+			
+			@@examples:
+			<p>Convert the date stored in the DB to a date that is relevent to the user:</p>
+			<code>
+				#application.fapi.castOffSetDateTime(stobj.dateTimeLastUpdated)#
+			</code>
+		 --->
+		<cffunction name="convertToApplicationTimezone" access="public" output="false" returntype="date" hint="Convert the date stored in the DB to a date that is relevent to the user" bDocumented="true">
+			<cfargument name="date" required="true" hint="The date cast offset from system date" />
+			
+			<cfset var applicationTimezone = application.fapi.getConfig('general','applicationTimezone', '#application.fc.serverTimezone#') /><!--- "Australia/Sydney" --->			
+			<cfset var UTC = application.fc.LIB.TIMEZONE.castToUTC(arguments.date, application.fc.serverTimezone) /><!--- This will store the UTC Date --->
+			<cfset var result = application.fc.LIB.TIMEZONE.castFromUTC(UTC, applicationTimezone) /><!--- This will store the offset date --->
+			
+			<cfreturn result />
+		</cffunction>
+		
 		<!--- @@description:
 			<p>Due to restrictions across the various databases FarCry supports, null dates are NOT supported. To deal with this the formtools have been designed to use certain dates as null. Pass a date into this function to determine if it is a FarCry null date.</p>
 			
@@ -618,7 +775,7 @@
 		<cffunction name="checkNavID" access="public" returntype="boolean" output="false" hint="Returns true if the navigation alias is found." bDocument="true">
 			<cfargument name="alias" required="true" hint="The navigation alias" />
 	
-			<cfset result = "" />
+			<cfset var result = "" />
 			
 			<cfif structKeyExists(application, "navID") AND len(arguments.alias)>
 				<cfset result = structKeyExists(application.navid, arguments.alias) />
@@ -743,8 +900,9 @@
 			<cfargument name="JSWindow" default="0"><!--- Default to not using a Javascript Window popup --->
 			<cfargument name="stJSParameters" default="#StructNew()#">
 			<cfargument name="anchor" default=""><!--- Anchor to place at the end of the URL string. --->
-			<cfargument name="ampDelim" type="string" required="false" default="&" hint="Delimiter to use for ampersands" />
-
+			<cfargument name="ampDelim" type="string" required="false" default="&amp;" hint="Delimiter to use for ampersands" />
+			
+			
 			<cfset var returnURL = "" />
 			<cfset var linkID = "" />
 			<cfset var stLocal = StructNew()>
@@ -774,6 +932,7 @@
 			</cfif>
 			
 		
+			<!--- If they passed in an href, just use that as the base return url --->
 			<cfif len(arguments.href)>
 				<cfset returnURL = arguments.href>
 		
@@ -782,7 +941,7 @@
 				</cfif>
 			<cfelse>
 				<cfif arguments.includeDomain>
-					<cfset returnURL = "http://#arguments.Domain#">
+					<cfset returnURL = "http://#arguments.Domain##application.url.webroot#">
 				<cfelse>
 					<cfset returnURL = application.url.webroot />
 				</cfif>
@@ -797,8 +956,21 @@
 					<cfset linkID = getNavID(alias="#arguments.alias#") />
 				</cfif>
 		
-				<cfset returnURL = returnURL & application.fc.factory.farFU.getFU(objectid="#linkID#", type="#arguments.type#", view="#arguments.view#", bodyView="#arguments.bodyView#")>
+				<cfset returnURL = returnURL & application.fc.factory.farFU.getFU(objectid="#linkID#", type="#arguments.type#", view="#arguments.view#", bodyView="#arguments.bodyView#", ampDelim=arguments.ampDelim)>
 		
+				<cfif not find("?",returnURL) and returnURL neq "/">
+					<cfif len(arguments.urlParameters)>
+						<cfset returnURL = "#returnURL#/#replace(replace(arguments.urlParameters,'=','/','ALL'),'&','/','ALL')#" />
+						<cfset arguments.urlParameters = "" />
+						<cfset arguments.stParameters = structnew() />
+					<cfelseif not structisempty(arguments.stParameters)>
+						<cfloop collection="#arguments.stParameters#" item="i">
+							<cfset returnURL = "#returnURL#/#i#/#arguments.stParameters[i]#" />
+						</cfloop>
+						<cfset arguments.stParameters = structnew() />
+					</cfif>
+				</cfif>
+				
 			</cfif>
 			
 			<cfif not len(trim(returnURL))>
@@ -818,28 +990,7 @@
 				<cfset returnURL = cgi.script_name />
 			</cfif>
 			
-			<!--- check for extra URL parameters --->
-			<cfif NOT StructIsEmpty(arguments.stParameters)>
-				<cfset stLocal = StructNew()>
-				<cfset stLocal.parameters = "">
-				<cfset stLocal.iCount = 0>
-				<cfloop collection="#arguments.stParameters#" item="stLocal.key">
-					<cfif stLocal.iCount GT 0>
-						<cfset stLocal.parameters = stLocal.parameters & "&">
-					</cfif>
-					<cfset stLocal.parameters = stLocal.parameters & stLocal.key & "=" & URLEncodedFormat(arguments.stParameters[stLocal.key])>
-					<cfset stLocal.iCount = stLocal.iCount + 1>
-				</cfloop>
-		
-			
-				<cfif ListFind("&,?",Right(returnURL,1))><!--- check to see if the last character is a ? or & and don't append one between the params and the returnURL --->
-					<cfset returnURL=returnURL&stLocal.parameters>
-				<cfelseif Find("?",returnURL)> <!--- If there is already a ? in the returnURL, just concat the params with & --->
-					<cfset returnURL=returnURL&"&"&stLocal.parameters>
-				<cfelse> <!--- No query string on the returnURL, so add a new one using ? and the params --->
-					<cfset returnURL=returnURL&"?"&stLocal.parameters>		
-				</cfif>
-			</cfif>
+			<cfset returnURL = fixURL(url=returnURL,ampDelim=arguments.ampDelim,addValues="#arguments.stParameters#") />
 			
 			<!--- Append the anchor to the end of the URL. --->
 			<cfif len(arguments.anchor)>
@@ -848,8 +999,6 @@
 				</cfif>
 				<cfset returnURL = "#returnURL##arguments.anchor#" />		
 			</cfif>
-			
-			<cfset returnURL = fixURL(url=returnURL,ampDelim=arguments.ampDelim) />
 			
 			<!--- Are we meant to use the Javascript Popup Window? --->
 			<cfif arguments.JSWindow>
@@ -1125,8 +1274,8 @@
 			<cfreturn stResult />
 		</cffunction>	
 		
-		<cffunction name="deprecated" returntype="string" output="false" hint="As a core developer you can flag deprecated code by using this function to pass in a depricated message">
-		<cfargument name="message" default="" required="false">
+	<cffunction name="deprecated" returntype="string" output="false" hint="As a core developer you can flag deprecated code by using this function to pass in a depricated message">
+		<cfargument name="message" default="" required="false" hint="The message to be logged.  Should include instructions for the appropriate best practice to replace the deprecated code.">
 	
 		<cfif isdefined("application.log.bDeprecated") AND application.log.bDeprecated>		
 			<cftrace type="warning" inline="false" text="#GetBaseTemplatePath()# - #arguments.message#" abort="false" />
@@ -1428,5 +1577,193 @@
 		
 			<cfreturn application.fc.utils.listExtends(argumentCollection="#arguments#") />
 		</cffunction>
+	
+	<!---
+		This function is used to get information about the doctype the system should be
+		generating. This value, by default, uses the application.fc.doctype variable
+		The default variable is set in core and is by default the latest version of html
+		(html 4.01 at the time of this writing.).  You can change this by setting the
+		value in your _serverSpecificVars file.
+		
+		This turns the doctype tag contents into a struct.  The parts you'll likely use,
+		and will be there for sure are:
+		
+		doctype.type     - html, xhtml
+		doctype.version  - 1.0, 1.1, 3.2, blank
+		doctype.subtype  - Frameset, Transitional, blank
+		doctype.uri  - dtd, blank
+		doctype.tagending  - /, blank
+		
+		Example output:
+		
+		AVAILABILITY     | PUBLIC
+		PUBLICIDENTIFIER |
+		       | LABEL        | XHTML 1.0 Frameset
+		       | LANGUAGE     | EN
+		       | ORGANIZATION | W3C
+		       | RAW          | -//W3C//DTD XHTML 1.0 Frameset//EN
+		       | REGISTRATION | -
+		       | TYPE         | DTD
+		RAW              | html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd"
+		SUBTYPE          | Frameset
+		TOPLEVEL         | html
+		TYPE             | XHTML
+		URI              | http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd
+		VERSION          | 1.0
+		TAGENDING		 |	/
+	--->
+	<cffunction name="getDocType" access="public" returntype="struct" output="false">
+		<cfargument name="docTypeString" type="string" required="no" default="#application.fc.doctype#" />
+		
+		<!---
+			Example of what we are parsing here: 
+			
+			html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd"
+			
+			Pretty good easy to follow explaination of what these parts mean: 
+			http://webdesign.about.com/od/dtds/qt/tipdoctype.htm
+		--->
+		<cfset var doctype = structNew() />
+		
+		<cfset var spaceParts = listToArray(arguments.docTypeString, ' ') />
+		<cfset var topLevelElement = spaceParts[1] />
+		<cfset var availability = "" />
+		<!--- formal Public Identifier --->
+		<cfset var FPI = "" />
+		<cfset var URI = "" />
+		<!---  --->
+		<cfset var endpart = "" />
+		<cfset var registration = "" />
+		<cfset var organization = "" />
+		<cfset var type = "" />
+		<cfset var label = "" />
+		<cfset var language = "" />
+		
+		<cfset doctype.type = topLevelElement />
+		<cfset doctype.topLevel = topLevelElement />
+		<cfset doctype.subtype = "" />
+		<cfset doctype.version = "" />
+		<cfset doctype.raw = "#arguments.docTypeString#" />
+		
+		<!--- HTML5 is going to change the doctype to just be "html" so we wont
+			need the rest of this logic for html5 docs --->
+		<cfif arrayLen(spaceParts) gt 1>
+			<!--- remove the "html" / "xhtml" or whatever string --->
+			<cfset arrayDeleteAt(spaceParts, 1) />
+			<!--- remove The Availability part (we don't really care about this) PUBLIC or SYSTEM part --->
+			<cfset availability = spaceParts[1] />
+			<cfset arrayDeleteAt(spaceParts, 1) />
+			
+			<cfset doctype.availability = availability />
+			
+			<!--- make sure single quotes are double quotes --->
+			<cfset endpart = arrayToList(spaceParts, " ") />
+			<cfset endpart = replace(endpart, "'", """", "ALL") />
+			
+			<!--- Now, split the identifier and dtd into thier own bits, and remove the blank item --->
+			<cfset spaceParts = listToArray(endpart, """") />
+			
+			<!--- The second item will be blank because it's the space between the ident and URI. 
+				Sometimes no URI is defined.--->
+			<cfif arraylen(spaceParts) gt 1>
+				<cfif trim(spaceParts[2]) EQ "">
+					<cfset arrayDeleteAt(spaceParts, 2) />
+				</cfif>
+				<cfset doctype.uri = spaceParts[arraylen(spaceParts)] />
+			<cfelse>
+				<cfset doctype.uri = "" />
+			</cfif>
+			
+			<cfset FPI = spaceParts[1] />
+			<cfset doctype.publicidentifier.raw = FPI />
+			
+			<!--- Almost done, now we need to check if we are doing strict, loose, etc --->
+			<cfset spaceParts = listToArray(FPI, "//") />
+			
+			<cfset registration = spaceParts[1] />
+			<cfset organization = spaceParts[2] />
+			<cfset type = listFirst(spaceParts[3], " ") />
+			<cfset label = replace(spaceParts[3], type, "") />
+			<cfset language = spaceParts[4] />
+			
+			<cfset doctype.publicidentifier.registration = registration />
+			<cfset doctype.publicidentifier.organization = organization />
+			<cfset doctype.publicidentifier.type = type />
+			<cfset doctype.publicidentifier.label = label />
+			<cfset doctype.publicidentifier.language = language />
+			
+			<cfset spaceParts = listToArray(label, " ") />
+			
+			<cfset doctype.type = spaceParts[1] />
+			<cfset doctype.version = spaceParts[2] />
+			<cfif arrayLen(spaceParts) gte 3>
+				<cfset doctype.subtype = spaceParts[3] />
+			</cfif>
+		</cfif>
+		
+		<cfif doctype.type eq "xhtml">
+			<cfset doctype.tagEnding = "/" />
+		<cfelse>
+			<cfset doctype.tagEnding = "" />
+		</cfif>
+		
+		<cfreturn doctype />
+	</cffunction>
+	
+	<!---
+		Things like RSS feeds will have the date displayed in this format:
+		Tue, 07 Jul 2009 10:35:38 +0800
+		This function is used to parse that information into a coldfusion datetime
+	--->
+	<cffunction name="RFC822ToDate" access="public" returntype="string" output="false">
+		<cfargument name="dt" type="string" required="yes" default="#GetHttpTimeString()#" />
+		
+		<cfset var sdf = "" />
+		<cfset var pos = "" />
+		<cfset var rdate = "" />
+		
+		<cfset sdf = CreateObject("java", "java.text.SimpleDateFormat").init("EEE, dd MMM yyyy HH:mm:ss Z") />
+		<cfset pos = CreateObject("java", "java.text.ParsePosition").init(0) />
+		<cfset rdate = sdf.parse(dt, pos) />
+		
+		<cfreturn rdate />
+	</cffunction>
+	
+	<!---
+		Things like RSS feeds need to have the date displayed in this format:
+		Tue, 07 Jul 2009 10:35:38 +0800
+		This funciton takes a coldfusion date and formats it properly. Note you
+		need to pass in the Timezone either as an offset like "+0800", "-0700", etc
+		or as a string like "EST", "PDT", etc
+	--->
+	<cffunction name="dateToRFC822" access="public" returntype="string" output="false">
+		<cfargument name="dt" type="date" required="yes" default="#now()#" />
+		<cfargument name="timezone" type="string" required="yes" default="+0800" />
+		
+		<cfset var rdate = DateFormat(dt, "ddd, dd mmm yyyy") & " " & TimeFormat(dt, "HH:mm:ss") & " " & timezone />
+		
+		<cfreturn rdate />
+	</cffunction>
+	
+	<!---
+		Attempts to clean out all MS Word chars that tend to mess up html display and cause
+		xhtml validation to fail.
+	--->
+	<cffunction name="removeMSWordChars" access="public" returntype="string" output="false">
+		<cfargument name="dirtyText" required="true" type="string" default="" />
+		
+		<cfset var cleanText = arguments.dirtyText />
+		
+		<cfset cleanText = replace(cleanText, chr(8220), chr(34), "all") />
+		<cfset cleanText = replace(cleanText, chr(8221), chr(34), "all") />
+		<cfset cleanText = replace(cleanText, chr(8216), chr(39), "all") />
+		<cfset cleanText = replace(cleanText, chr(96),   chr(39), "all") />
+		<cfset cleanText = replace(cleanText, chr(8217), chr(39), "all") />
+		<cfset cleanText = replace(cleanText, chr(8230), '...',   "all") />
+		<cfset cleanText = replace(cleanText, chr(8211), '-',     "all") />
+		
+		<cfreturn cleanText />
+	</cffunction>
+	
 	
 </cfcomponent>

@@ -15,7 +15,7 @@ var tinyMCELinkList = new Array(
 	
 	<cfset currentrow = 1>
 	<cfloop query="qSiteMap">		
-		["#RepeatString('-', qSiteMap.nLevel)# #qSiteMap.objectname#", "#application.url.webroot#/index.cfm?objectid=#qSiteMap.objectid#"]<cfif currentRow LT qSiteMap.RecordCount>,<cfset currentrow = currentrow + 1></cfif>
+		["#RepeatString('-', qSiteMap.nLevel)# #jsstringformat(qSiteMap.objectname)#", "#application.url.webroot#/index.cfm?objectid=#qSiteMap.objectid#"]<cfif currentRow LT qSiteMap.RecordCount>,<cfset currentrow = currentrow + 1></cfif>
 	</cfloop>
 	
 );
@@ -55,7 +55,7 @@ var tinyMCELinkList = new Array(
 					SELECT r.objectid, t.label 
 					FROM refObjects r 
 					INNER JOIN #iTypename# t ON t.objectid = r.objectid
-					WHERE r.objectid IN (#ListQualify(arrayToList(aAllRelated), "'")#)
+					WHERE r.objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arrayToList(aAllRelated)#" />)
 					AND r.typename = '#iTypename#'
 					
 					<cfif iTypename NEQ listLast(url.relatedTypenames)>UNION</cfif>
@@ -87,7 +87,7 @@ var tinyMCELinkList = new Array(
 		
 		<cfloop query="qRelated">
 			<cfset inc = inc + 1>
-			<cfoutput>["#qRelated.label#", "#application.url.webroot#/index.cfm?objectid=#qRelated.objectid#"]<cfif inc LT qSiteMap.RecordCount + qRelated.RecordCount>,</cfif>
+			<cfoutput>["#jsstringformat(qRelated.label)#", "#application.url.webroot#/index.cfm?objectid=#qRelated.objectid#"]<cfif inc LT qSiteMap.RecordCount + qRelated.RecordCount>,</cfif>
 			</cfoutput>
 		</cfloop>
 		
@@ -99,7 +99,7 @@ var tinyMCELinkList = new Array(
 		
 		<cfloop query="qSiteMap">		
 			<cfset inc = inc + 1>
-			<cfoutput>["#RepeatString('-', qSiteMap.nLevel)# #qSiteMap.objectname#", "#application.url.webroot#/index.cfm?objectid=#qSiteMap.objectid#"]<cfif inc LT qSiteMap.RecordCount + qRelated.RecordCount>,</cfif>
+			<cfoutput>["#RepeatString('-', qSiteMap.nLevel)# #jsstringformat(qSiteMap.objectname)#", "#application.url.webroot#/index.cfm?objectid=#qSiteMap.objectid#"]<cfif inc LT qSiteMap.RecordCount + qRelated.RecordCount>,</cfif>
 			</cfoutput>
 		</cfloop>
 		

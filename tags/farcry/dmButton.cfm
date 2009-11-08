@@ -1,3 +1,12 @@
+<!--- 
+ // DEPRECATED
+	farcry:dmButton is no longer in use and will be removed from the code base. 
+	You should be using formtools sub-system instead.
+--------------------------------------------------------------------------------------------------->
+<!--- @@bDeprecated: true --->
+<cfset application.fapi.deprecated("farcry:dmButton is no longer in use and will be removed from the code base. You should be using formtools sub-system instead.") />
+
+
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.

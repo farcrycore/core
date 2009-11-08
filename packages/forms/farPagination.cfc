@@ -6,7 +6,7 @@
 	<cfargument name="query" default="" hint="The recordset to be paginated" />
 	<cfargument name="array" default="" hint="The array of objectids to be paginated" />
 	<cfargument name="typename" default="" />	
-	<cfargument name="paginationID" default="fc-pagination" /><!--- Uniquely identifies this pagination set. Set if using sticky pages or if multiple pagination sets on a single page. --->
+	<cfargument name="paginationID" default="fcPagination" /><!--- Uniquely identifies this pagination set. Set if using sticky pages or if multiple pagination sets on a single page. --->
 	<cfargument name="bStickyPages" default="false" /><!--- Keeps track of the page the user is currently on in session against this key. --->
 	<cfargument name="currentPage" default="0" />
 	<cfargument name="actionURL" default="" />
@@ -39,10 +39,10 @@
 	<cfset setPageInfo() />
 	
 	<!--- ADD THE URL AND FORM VARIABLES TO THE DYNAMIC CACHE VARS --->
-	<cfset application.fapi.setCacheByVar(keys='form.paginationpage#this.paginationID#,url.page#this.paginationID#') />
+	<cfset application.fapi.setAncestorsCacheByVars(keys='form.paginationpage#this.paginationID#,url.page#this.paginationID#') />
 		
 	<cfif this.bStickyPages AND len(this.paginationID)>
-		<cfset application.fapi.setCacheByVar(keys='session.fcpagination.#this.paginationID#') />
+		<cfset application.fapi.setAncestorsCacheByVars(keys='session.fcpagination.#this.paginationID#') />
 	</cfif>
 	
 			

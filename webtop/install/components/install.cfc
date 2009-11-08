@@ -94,19 +94,22 @@
 		<cfargument name="source" type="string" required="true" hint="Source directory" />
 		<cfargument name="destination" type="string" required="true" hint="The destination directory" />
 		<cfargument name="intermediate" type="string" required="true" hint="Intermediate directory" />
+		<cfargument name="handleexisting" type="string" required="false" default="archive" hint="remove | replace | archive" />
 		<cfargument name="archive" type="string" required="false" hint="The directory to archive the destination to if it already exists. Defaults to no archive.">
 		
 		<cfset var oZip = createObject("component", "farcry.core.packages.farcry.zip") />
 		
 		<!--- Archive or delete destination directory --->
-		<cfif structkeyexists(arguments,"archive") and len(arguments.archive) and DirectoryExists(arguments.destination)>
+		<cfif arguments.handleexisting eq "archive" and len(arguments.archive) and DirectoryExists(arguments.destination)>
 			<cfdirectory action="rename" directory="#arguments.destination#" newdirectory="#arguments.archive#" />
-		<cfelseif DirectoryExists(arguments.destination)>
+		<cfelseif arguments.handleexisting eq "remove" and DirectoryExists(arguments.destination)>
 			<cfdirectory action="delete" directory="#arguments.destination#" recurse="true" />
 		</cfif>
 		
 		<!--- Create destination directory --->
-		<cfdirectory action="create" directory="#arguments.destination#" mode="777" />
+		<cfif not directoryexists(arguments.destination)>
+			<cfdirectory action="create" directory="#arguments.destination#" mode="777" />
+		</cfif>
 		
 		<!--- Copy source by creating a zip with them, unzipping into the destination directory, then deleting the zip --->
 		<cfset oZip.AddFiles(zipFilePath="#arguments.intermediate#/temp.zip", directory=arguments.source, recurse="true", compression=0, savePaths="false") />
@@ -309,12 +312,15 @@
 		
 		<cfset this.uiComponent.setProgress(progressmessage="#arguments.displayName# (SETUP): Creating your project",progress=0.1) />
 		
+		
 		<!--- Extract skeleton to the project --->
 		<cfset copyFullDirectory(
 			source=expandpath("/" & replaceNoCase(arguments.skeleton, ".", "/", "all")),
 			destination=path.project,
 			intermediate=path.projects,
+			handleexisting="archive",
 			archive="#path.projects#/bkp-#arguments.applicationName#-#DateFormat(now(),'yyyy-mm-dd')#-#timeFormat(now(),'hh-mm-ss')#" ) />
+		
 		
 		<!--- Determing project webroot path and URL, and copy webroot files as necessary --->
 		<cfswitch expression="#arguments.projectInstallType#">
@@ -352,13 +358,14 @@
 						source="#path.project#/www",
 						destination=path.projectwebroot,
 						intermediate=path.projects,
+						handleexisting="replace",
 						archive="") />
 					
 					<!--- Remove existing project WWW archive, and archive the current --->
 					<cfif directoryExists("#path.project#/wwwCopiedToWebroot")>
 						<cfdirectory action="delete" directory="#path.project#/wwwCopiedToWebroot" recurse="true" />
 					</cfif>
-					<cfdirectory action="rename" directory="#path.project#/www" newdirectory="#papplicationath.project#/wwwCopiedToWebroot" />
+					<cfdirectory action="rename" directory="#path.project#/www" newdirectory="#path.project#/wwwCopiedToWebroot" />
 				</cfif>
 			</cfcase>
 			
@@ -400,6 +407,7 @@
 						source="#path.plugins#/#pluginName#/www",
 						destination="#path.projectwebroot#/#pluginName#",
 						intermediate=path.projects,
+						handleexisting="remove",
 						archive="") />
 				</cfif>
 			</cfloop>

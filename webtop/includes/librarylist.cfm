@@ -26,7 +26,6 @@ window.close();
 
 <cfset returnstruct = objplp.fGetArrayObjects(primaryObjectID)>
 <cfset lExcludeObjectID = ArrayToList(returnstruct.output)>
-<cfset lExcludeObjectID = ListQualify(lExcludeObjectID,"'")>
 
 <!--- filter --->
 <!--- default category id [defaults to unassinged] --->
@@ -81,7 +80,7 @@ FROM	qReturn
 WHERE	status is not null 
 		AND UPPER(status) = 'APPROVED'
  		AND bLibrary = 1<cfif lExcludeObjectID NEQ "">
-		AND objectid NOT IN (#preservesinglequotes(lExcludeObjectID)#)</cfif>
+		AND objectid NOT IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lExcludeObjectID#" />)</cfif>
 </cfquery>
 
 <cfset stPageination = StructNew()>

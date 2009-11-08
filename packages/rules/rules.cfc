@@ -110,15 +110,15 @@ $out:$
 		<cfset var stObj = getData(objectid=arguments.objectid) />		
 		<cfset var qMetadata = application.rules[stobj.typename].qMetadata >		
 		<cfset var updateHTML = "" />		
-		<cfset var onExit = StructNew() />	
+		<cfset var onExitProcess = StructNew() />	
 		<cfset var lWizardSteps = "" />
 		<cfset var iWizardStep = "" />
 		<cfset var lFieldSets = "" />
 		<cfset var iFieldSet = "" />
 			
 		
-		<cfset onExit.Type = "HTML" />
-		<cfsavecontent variable="onExit.content">
+		<cfset onExitProcess.Type = "HTML" />
+		<cfsavecontent variable="onExitProcess.content">
 			<cfoutput>
 				<script type="text/javascript">
 					<cfif structkeyexists(url,"iframe")>
@@ -138,7 +138,7 @@ $out:$
 			</cfoutput>
 		</cfsavecontent>
 		
-		<cfset updateHTML = getView(stobject="#stobj#", template="update", alternateHTML="", OnExit="#onExit#") />
+		<cfset updateHTML = getView(stobject="#stobj#", template="update", alternateHTML="", onExitProcess="#onExitProcess#") />
 		
 		<cfif len(updateHTML)>
 			<cfoutput>#updateHTML#</cfoutput>

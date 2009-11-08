@@ -113,20 +113,31 @@
 	
 	<!--- have we requested to exit this webskin? --->
 	<cfif isDefined("attributes.Exit") AND attributes.Exit>
-		<cfset Request.FarcrywizardOnExitRun = true />
+	
+		<cfset Request.FarcryFormOnExitRun = true />
 
-		<!--- If the onExit doesnt exist, default to Refreshing the page. --->
-		<cfparam name="Caller.onExit" default="Refresh" />
-		
-		<!--- If the onExit is not a struct we assume it is a URL to redirect to and we convert it too a struct. --->
-		<cfif NOT isStruct(Caller.onExit)>
-			<cfset variables.stOnExit = structNew() />
-			<cfset variables.stOnExit.Type = "URL" />
-			<cfset variables.stOnExit.Content = Caller.onExit />
-		<cfelse>
-			<cfset variables.stOnExit = Caller.onExit />
+		<!--- 
+			the edit view could be called through a function in which case the onExit struct will be in the arguments scope
+			We should check for this first
+		 --->
+		<cfif not structKeyExists(caller, "onExitProcess")>
+			<cfif structKeyExists(caller, "arguments") AND structKeyExists(caller.arguments, "onExitProcess")>
+				<cfset caller.onExitProcess = caller.arguments.onExitProcess />		
+			</cfif>
 		</cfif>
 		
+		<!--- If the onExit doesnt exist, default to Refreshing the page. --->		
+		<cfparam name="caller.onExitProcess" default="refresh" />
+		
+		<!--- If the onExit is not a struct we assume it is a URL to redirect to and we convert it too a struct. --->
+		<cfif NOT isStruct(caller.onExitProcess)>
+			<cfset variables.stOnExit = structNew() />
+			<cfset variables.stOnExit.Type = "URL" />
+			<cfset variables.stOnExit.Content = caller.onExitProcess />
+		<cfelse>
+			<cfset variables.stOnExit = caller.onExitProcess />
+		</cfif>
+
 		<!--- Events can be of type HTML, Function, URL(default) --->
 		<cfswitch expression="#stOnExit.Type#">
 			
@@ -135,27 +146,17 @@
 					<cfoutput>#stOnExit.Content#</cfoutput>
 				</cfif>
 			</cfcase>
-
-			<cfcase value="Function">
-				<!--- 
-				TODO: This should call the function on the current Object Type.
-				It may Return HTML.
-				 --->
-			</cfcase>
-
-			<cfcase value="Log">
-				<!--- 
-				TODO: This should log the content.
-				 --->
-			</cfcase>
-						
+									
 			<cfcase value="URL">
-				
 				<cfif structKeyExists(stOnExit, "Content")>
-					<cfif not len(stOnExit.Content) OR stOnExit.Content EQ "refresh">
-						<cflocation url="#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#" addtoken="false">
+					<cfif len(stOnExit.Content)>
+						<cfif stOnExit.Content EQ "refresh">
+							<cflocation url="#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#" addtoken="false">
+						<cfelse>
+							<cflocation url="#stOnExit.Content#" addtoken="false">
+						</cfif>
 					<cfelse>
-						<cflocation url="#stOnExit.Content#" addtoken="false">
+						<!--- DO NOTHING --->
 					</cfif>
 				</cfif>
 			</cfcase>				

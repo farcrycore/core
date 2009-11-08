@@ -27,7 +27,7 @@
 		<cfparam name="arguments.stMetadata.ftClass" default="">
 		<cfparam name="arguments.stMetadata.ftstyle" default="">		
 		<cfparam name="arguments.stMetadata.ftListData" default="" />
-		
+		<cfparam name="arguments.stMetadata.ftMultipleLines" default="TRUE"><!--- for radio and checkbox only --->
 		
 		<cfif len(arguments.stMetadata.ftListData) >
 			<cfparam name="arguments.stMetadata.ftListDataTypename" default="#arguments.typename#" />
@@ -87,6 +87,7 @@
 									<!--- <label class="fieldsectionlabel" class="fieldsectionlabel" for="#arguments.fieldname#">#ListLast(i , ":")#</label> --->
 									<!--- MPS: styles aren't working so we are removing label for now until we have time to look at the css --->
 									#ListLast(i , ":")#
+									<cfif arguments.stMetadata.ftMultipleLines><br class="fieldsectionbreak" /></cfif> 
 								</label />
 							</cfloop>
 							<input type="hidden" name="#arguments.fieldname#" value="">	
@@ -114,6 +115,7 @@
 										<!--- <label class="fieldsectionlabel" class="fieldsectionlabel" for="#arguments.fieldname#">#ListLast(i , ":")#</label> --->
 										<!--- MPS: styles aren't working so we are removing label for now until we have time to look at the css --->
 										#ListLast(i , ":")#
+										<cfif arguments.stMetadata.ftMultipleLines><br class="fieldsectionbreak" /></cfif> 
 									</label>
 								</cfloop>
 								<input type="hidden" name="#arguments.fieldname#" value="">

@@ -47,6 +47,9 @@ It just ignores the inner ones.
 		<cfparam name="attributes.Style" default="">
 		<cfparam name="attributes.Validation" default="1">
 		<cfparam name="attributes.bAjaxSubmission" default="false">
+		<cfparam name="attributes.ajaxMaskMsg" default="Saving Changes">
+		<cfparam name="attributes.ajaxMaskCls" default="x-mask-loading">
+		<cfparam name="attributes.ajaxTimout" default="30">
 		<cfparam name="attributes.bAddFormCSS" default="true" /><!--- Uses uniform (http://sprawsm.com/uni-form/) --->
 		<cfparam name="attributes.bFieldHighlight" default="true"><!--- Highlight fields when focused --->
 
@@ -188,7 +191,7 @@ It just ignores the inner ones.
 			<!--- Add the function call to onsubmit --->
 			<cfsavecontent variable="sAjaxSubmission">
 				<cfoutput>
-		        farcryForm_ajaxSubmission('#attributes.Name#','#attributes.Action#');
+		        farcryForm_ajaxSubmission('#attributes.Name#','#attributes.Action#','#attributes.ajaxMaskMsg#','#attributes.ajaxMaskCls#', #attributes.ajaxTimout#);
 		        return false;
 				</cfoutput>				
 			</cfsavecontent>

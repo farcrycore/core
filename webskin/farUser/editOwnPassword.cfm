@@ -18,9 +18,7 @@
 <!----------------------------- 
 ACTION	
 ------------------------------>
-<cfset onExit = "#application.url.webtop#/overview/home.cfm?UPDATEAPP=false&sec=home&SUB=overview" />
-
-<ft:processform action="Save" exit="true">
+<ft:processform action="Save">
 	<ft:validateFormObjects objectid="#stobj.objectid#" />
 	
 	<ft:processformobjects objectid="#stobj.objectid#" />
@@ -29,7 +27,7 @@ ACTION
 	</cfoutput>
 </ft:processform>
 
-<ft:processform action="Cancel" exit="true" />
+<ft:processform action="Save,Cancel" url="#application.url.webtop#/overview/home.cfm?UPDATEAPP=false&sec=home&SUB=overview" />
 
 <!----------------------------- 
 VIEW	

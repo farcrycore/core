@@ -230,6 +230,9 @@ object methods
 		<cfset var thisform = "" />
 		<cfset var wConfig = "" />
 		<cfset var configkey = "" />
+		<cfset var bChanged = false />
+		<cfset var stDefault = structnew() />
+		<cfset var formkey = "" />
 		
 		<!--- Find a config item that stores this config data --->
 		<cfquery datasource="#application.dsn#" name="qConfig">
@@ -246,31 +249,40 @@ object methods
 		<!--- Make sure the result is a struct --->
 		<cfif not isstruct(stResult)>
 			<cfset stResult = structnew() />
+			<cfset bChanged = true />
 		</cfif>
 		
 		<!--- Find the config form component with that key and get the default values --->
 		<cfloop list="#application.factory.oUtils.getComponents('forms')#" index="thisform">
 			<cfif left(thisform,6) eq "config" and application.stCOAPI[thisform].key eq arguments.key>
 				<!--- Append defaults - ensures that new properties are picked up --->
-				<cfset structappend(stResult,createobject("component",application.stCOAPI[thisform].packagepath).getData(application.fc.utils.createJavaUUID()),false) />
+				<cfset stDefault = createobject("component",application.stCOAPI[thisform].packagepath).getData(application.fc.utils.createJavaUUID()) />
+				<cfloop collection="#stDefault#" item="formkey">
+					<cfif not structkeyexists(stResult,formkey)>
+						<cfset stResult[formkey] = stDefault[formkey] />
+						<cfset bChanged = true />
+					</cfif>
+				</cfloop>
 				<cfset stResult.typename = thisform />
 			</cfif>
 		</cfloop>
 		
-		<!--- Copy the result back to an stObj --->
-		<cfwddx action="cfml2wddx" input="#stResult#" output="stObj.configdata" />
-		
-		<!--- Set up the config item values --->
-		<cfif qConfig.recordcount>
-			<cfset stObj.objectid = qConfig.objectid[1] />
-		<cfelse>
-			<cfset stObj.objectid = application.fc.utils.createJavaUUID() />
-		</cfif>
-		<cfset stObj.typename = "farConfig" />
-		<cfset stObj.configkey = arguments.key />
+		<cfif bChanged>
+			<!--- Copy the result back to an stObj --->
+			<cfwddx action="cfml2wddx" input="#stResult#" output="stObj.configdata" />
 			
-		<!--- Save the config data (ensures that new configs and new properties are saved) --->
-		<cfset setData(stProperties=stObj,bAudit=arguments.bAudit) />
+			<!--- Set up the config item values --->
+			<cfif qConfig.recordcount>
+				<cfset stObj.objectid = qConfig.objectid[1] />
+			<cfelse>
+				<cfset stObj.objectid = application.fc.utils.createJavaUUID() />
+			</cfif>
+			<cfset stObj.typename = "farConfig" />
+			<cfset stObj.configkey = arguments.key />
+				
+			<!--- Save the config data (ensures that new configs and new properties are saved) --->
+			<cfset setData(stProperties=stObj,bAudit=arguments.bAudit) />
+		</cfif>
 		
 		<cfif structkeyexists(stResult,"typename")>
 			<cfset structdelete(stResult,"typename") />
@@ -320,7 +332,7 @@ object methods
 	
 	<cffunction name="Edit" access="public" output="true" returntype="void" hint="Default edit handler.">
 		<cfargument name="ObjectID" required="yes" type="string" default="" />
-		<cfargument name="onExit" required="no" type="any" default="Refresh" />
+		<cfargument name="onExitProcess" required="no" type="any" default="Refresh" />
 		
 		<cfset var stObj = getData(objectid=arguments.objectid) />
 		<cfset var qMetadata = application.types[stobj.typename].qMetadata />

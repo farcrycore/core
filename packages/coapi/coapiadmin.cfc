@@ -171,6 +171,8 @@
 		<cfargument name="excludeWebskins" type="string" required="false" default="" hint="Allows developers to exclude webskins that might be contained in plugins." />
 		<cfargument name="packagePath" type="string" required="false" hint="The path to the type." />
 		<cfargument name="aExtends" type="array" required="false" hint="The components this type extends" />
+		<cfargument name="viewBinding" type="string" required="false" default="" /><!--- type,object --->
+		<cfargument name="viewStack" type="string" required="false" default="" /><!--- page,body,fragment --->
 		
 		<cfset var qResult="" />
 		<cfset var webskinid = 0 />
@@ -192,14 +194,22 @@
 		</cfif>
 		
 		<cfif isquery(qResult)>
+			
+			<cfquery dbtype="query" name="qResult">
+			SELECT *
+			FROM qResult
+			WHERE 1 = 1
 			<cfif len(arguments.prefix)>
-				<cfquery dbtype="query" name="qResult">
-				SELECT *
-				FROM qResult
-				WHERE lower(qResult.name) LIKE '#lCase(arguments.prefix)#%'
-				</cfquery>
+				AND lower(qResult.name) LIKE '#lCase(arguments.prefix)#%'
 			</cfif>
-		
+			<cfif len(arguments.viewBinding)>
+				AND viewBinding = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.viewBinding#" />
+			</cfif>
+			<cfif len(arguments.viewStack)>
+				AND viewStack = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.viewStack#" />
+			</cfif>
+			</cfquery>
+	
 			<cfreturn qResult />
 		</cfif>
 		
@@ -207,7 +217,8 @@
 		<!--- 
 		CACHING IN THE REQUEST SCOPE
 		WE ONLY WANT THIS TO BE RUN ONCE PER TYPE PER REQUEST AT THE MOST.		
-		THIS IS OFTEN THE CASE FOR ABSTRACT TYPES THAT ARE EXTENDED BY MULTIPLE TYPES
+		THIS IS OFTEN THE CASE FOR ABSTRACT TYPES THAT ARE EXTENDED BY MULTIPLE TYPES.
+		IN THIS CASE, ANY FILTERING OPTIONS PASSED IN (prefix,viewBinding,viewStack) AS ARGUMENTS WILL BE IGNORED.
 		 --->		
 		<cfparam name="request.fc.stcoapiWebskins" default="#structNew()#" />
 		<cfparam name="request.fc.stcoapiWebskins[arguments.typename]" default="#structNew()#" />
@@ -251,7 +262,7 @@
 								'' as typename, '' as webskin, cast(0 as integer) as id, '' as path, 
 								
 								<!--- extracted from webkin later --->
-								'anonymous' as author, datelastmodified, '' as description, name as displayname, 0 as cacheStatus, 0 as cacheTimeout, 0 as cacheByURL, 0 as cacheByForm, 0 as cacheByRoles, '' as cacheByVars, name as methodname
+								'anonymous' as author, datelastmodified, '' as description, name as displayname, 0 as cacheStatus, 0 as cacheTimeout, 0 as cacheByURL, 0 as cacheByForm, 0 as cacheByRoles, '' as cacheByVars, name as methodname, '' as fuAlias, '' as viewstack, '' as viewbinding
 								
 						FROM 	qThis
 					</cfquery>
@@ -303,14 +314,32 @@
 					<cfset stWebskinDetails.path = "#request.fc.stProjectDirectorys.qAll.path#/#request.fc.stProjectDirectorys.qAll.name#" />
 					<cfset stWebskinDetails.methodname = ReplaceNoCase(request.fc.stProjectDirectorys.qAll.name, '.cfm', '','ALL') />
 					
+					<!--- DYNAMIC DEFAULTS --->
+					<cfif refind("^displayPage",stWebskinDetails.methodname)>
+						<cfset stWebskinDetails.viewstack = "page" />
+						<cfset stWebskinDetails.viewbinding = "any" />
+					<cfelseif refind("^displayBody",stWebskinDetails.methodname) or refind("^edit",stWebskinDetails.methodname)>
+						<cfset stWebskinDetails.viewstack = "body" />
+						<cfset stWebskinDetails.viewbinding = "object" />
+					<cfelseif refind("^displayTypeBody",stWebskinDetails.methodname)>
+						<cfset stWebskinDetails.viewstack = "body" />
+						<cfset stWebskinDetails.viewbinding = "type" />
+					<cfelseif refind("^displayType",stWebskinDetails.methodname)>
+						<cfset stWebskinDetails.viewstack = "fragment" />
+						<cfset stWebskinDetails.viewbinding = "type" />
+					<cfelse>
+						<cfset stWebskinDetails.viewstack = "fragment" />
+						<cfset stWebskinDetails.viewbinding = "object" />
+					</cfif>
+					
 					<!--- Parse the webskin for the metadata --->
 					<cfset stWebskinMetadata = parseWebskinMetadata(
 							typename=request.fc.stProjectDirectorys.qAll.typename, 
 							template=stWebskinDetails.methodname, 
 							path=stWebskinDetails.path, 
-							lProperties="displayname,author,description,cacheStatus,cacheTimeout,cacheByURL,cacheByForm,cacheByRoles,cacheByVars", 
-							lTypes="string,string,string,numeric,numeric,boolean,boolean,boolean,string", 
-							lDefaults=" , , ,0,1440,false,false,false, "
+							lProperties="displayname,author,description,cacheStatus,cacheTimeout,cacheByURL,cacheByForm,cacheByRoles,cacheByVars,fuAlias,viewstack,viewbinding", 
+							lTypes="string,string,string,numeric,numeric,boolean,boolean,boolean,string,string,string,string", 
+							lDefaults=" , , ,0,1440,false,false,false, , ,#stWebskinDetails.viewstack#,#stWebskinDetails.viewbinding#"
 						) />
 					
 					<!--- Assign the metadata --->
@@ -318,7 +347,7 @@
 		
 					
 					<!--- UPDATE THE METADATA QUERY --->
-					<cfloop list="path,methodname,displayname,author,description,cacheStatus,cacheTimeout,cacheByURL,cacheByForm,cacheByRoles,cacheByVars" index="thisvar">
+					<cfloop list="path,methodname,displayname,author,description,cacheStatus,cacheTimeout,cacheByURL,cacheByForm,cacheByRoles,cacheByVars,fuAlias,viewstack,viewbinding" index="thisvar">
 						<cfset querysetcell(request.fc.stProjectDirectorys.qAll,thisvar,stWebskinDetails[thisvar],request.fc.stProjectDirectorys.qAll.currentRow) />	
 					</cfloop>
 				</cfloop>
@@ -369,11 +398,23 @@
 		PLACE IT IN THE REQUEST SCOPE JUST INCASE WE NEED THIS AGAIN THIS REQUEST.
 		 --->
 		<cfset request.fc.stcoapiWebskins[arguments.typename].qWebskins = qresult />
+		
+		
 
 		<cfreturn qresult />
 	</cffunction>
 
+	<cffunction name="getWebskin" returntype="struct" access="public" output="false" hint="Returns the webskins struct for a webskin specified by methodname">
+		<cfargument name="webskinname" type="string" required="true" hint="methodname" />
+		<cfargument name="typename" type="string" required="true" />
 		
+		<cfif isdefined("application.stCOAPI.#arguments.typename#.stWebskins.#arguments.webskinname#")>
+			<cfreturn application.stCOAPI[arguments.typename].stWebskins[arguments.webskinname] />
+		<cfelse><!--- Not found --->
+			<cfreturn structnew() />
+		</cfif>
+	</cffunction>
+
 	<cffunction name="getWebskinPath" returntype="string" access="public" output="false" hint="Returns the path to a webskin. Search through project first, then any library's that have been included.">
 		<cfargument name="typename" type="string" required="true" />
 		<cfargument name="template" type="string" required="true" />
@@ -384,7 +425,7 @@
 		<cfset var plugin = "" />
 	
 		<!--- If the webskin is in the application.stcoapi then just use it --->
-			<cfif structKeyExists(application.stcoapi, typename)
+		<cfif structKeyExists(application.stcoapi, typename)
 			AND structKeyExists(application.stcoapi[typename], "stWebskins") 
 			AND structKeyExists(application.stcoapi[typename].stWebskins, template) 
 			AND structKeyExists(application.stcoapi[typename].stWebskins[template], "path")>
@@ -652,16 +693,6 @@
 			AND structKeyExists(application.stcoapi[typename].stWebskins[template], "cacheByVars")>
 			<cfset result = application.stcoapi['#arguments.typename#'].stWebskins['#arguments.template#'].cacheByVars />
 			
-			<!--- ALSO INCLUDE ANY DYNAMICALLY INCLUDED CACHE VARIABLES SETUP BY USING THE FAPI.setCacheByVar --->
-			<cflock name="cacheByViewStates_#arguments.typename#_#arguments.template#" timeout="1" throwontimeout="false" type="read">	
-				<cfif isDefined("application.fc.cacheByViewState.#arguments.typename#") AND structKeyExists(application.fc.cacheByViewState[arguments.typename],  "#arguments.template#")>
-					<cfloop list="#application.fc.cacheByViewStates['#arguments.typename#']['#arguments.template#']#" index="iViewState">
-						<cfif not listFindNoCase(result, iViewState)>
-							<cfset result = listAppend(result, iViewState) />
-						</cfif>
-					</cfloop>
-				</cfif>
-			</cflock>
 		</cfif>
 		
 		<cfreturn result />

@@ -8,6 +8,47 @@
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.datetime" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
+	
+	<cffunction name="reParse" access="public" output="false" returntype="any" hint="Uses regular expression back references to parse values out of a string">
+		<cfargument name="pattern" type="string" required="true" hint="The regular expression to use" />
+		<cfargument name="haystack" type="string" required="true" hint="The string to search" />
+		<cfargument name="fields" type="string" required="true" hint="The names of the fields defined in the pattern, in order" />
+		<cfargument name="returnall" type="boolean" required="false" default="false" hint="Set to true to process every instance of the pattern" />
+		
+		<cfset var aMatches = arraynew(1) />
+		<cfset var stResult = structnew() />
+		<cfset var aResult = arraynew(1) /><!--- Only used if returnall is true --->
+		<cfset var i = 0 />
+		
+		<cfset aMatches = refindnocase(arguments.regex,arguments.haystack,1,true) />
+		<cfif arraylen(aMatches)>
+			<cfset stResult = structnew() />
+			<cfloop from="2" to="#aMatches.pos#" index="i">
+				<cfset stResult[listgetat(arguments.fields,i-1)] = mid(arguments.haystack,aMatches.pos[i],aMatches.len[i]) />
+			</cfloop>
+			<cfset arrayappend(aResult,stResult) />
+		</cfif>
+		
+		<cfif arguments.returnall>
+			<cfloop condition="arraylen(aMatches)">
+				<cfset aMatches = refindnocase(arguments.regex,arguments.haystack,aMatches.pos[1]+aMatches.len[1],true) />
+				<cfif arraylen(aMatches)>
+					<cfset stResult = structnew() />
+					<cfloop from="2" to="#aMatches.pos#" index="i">
+						<cfset stResult[listgetat(arguments.fields,i-1)] = mid(arguments.haystack,aMatches[i].pos,aMatches[i].len) />
+					</cfloop>
+				</cfif>
+				<cfset arrayappend(aResult,stResult) />
+			</cfloop>
+		</cfif>
+		
+		<cfif arguments.returnall>
+			<cfreturn aResult />
+		<cfelse>
+			<cfreturn stResult />
+		</cfif>
+	</cffunction>
+	
 	<cffunction name="edit" access="public" output="true" returntype="string" hint="his will return a string of formatted HTML text to enable the user to edit the data">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
@@ -31,6 +72,10 @@
 			<cfset arguments.stMetadata.ftToggleOffDateTime = "0" />
 		<cfelse>
 			<cfparam name="arguments.stMetadata.ftToggleOffDateTime" default="1" />
+		</cfif>
+		
+		<cfif isDate(arguments.stMetadata.value)>
+			<cfset arguments.stMetadata.value = application.fapi.convertToApplicationTimezone(arguments.stMetadata.value) />
 		</cfif>
 		
 			
@@ -68,7 +113,7 @@
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 		
 		<cfcase value="dropdown">
-			<cfparam name="arguments.stMetadata.ftDateFormatMask" default="dd mmm yyyy">
+			<cfparam name="arguments.stMetadata.ftDateFormatMask" default="dd mmmm yyyy">
 			<cfparam name="arguments.stMetadata.ftStartYearShift" default="0">
 			<cfparam name="arguments.stMetadata.ftEndYearShift" default="-100">
 			<cfparam name="arguments.stMetadata.ftStartYear" default="#year(now()) + arguments.stMetadata.ftStartYearShift#">
@@ -200,7 +245,7 @@
 			
 			<cfparam name="arguments.stMetadata.ftStyle" default="width:160px;">
 			<cfparam name="arguments.stMetadata.ftClass" default="">
-			<cfparam name="arguments.stMetadata.ftDateFormatMask" default="dd MMM yyyy">
+			<cfparam name="arguments.stMetadata.ftDateFormatMask" default="dd MMMM yyyy">
 			<cfparam name="arguments.stMetadata.ftTimeFormatMask" default="hh:mm tt">
 			<cfparam name="arguments.stMetadata.ftShowTime" default="true">		
 			<cfparam name="arguments.stMetadata.ftDateLocale" default="">		
@@ -294,7 +339,7 @@
 					    		el.removeClass('dateError');
 								el.addClass('dateAccept');	
 								Ext.get(fieldName + "Info").dom.innerHTML = parsedValue.toString(mask);
-								Ext.get(fieldName).dom.value = parsedValue.toString('yyyy/MMM/dd hh:mm tt');
+								Ext.get(fieldName).dom.value = parsedValue.toString('dd-MMM-yyyy hh:mm tt');
 							} else {
 								el.removeClass('dateEmpty');
 								el.removeClass('dateAccept');
@@ -344,7 +389,8 @@
 					<div id="#arguments.fieldname#-wrap">
 						<div id="#arguments.fieldname#Info" class="dateJSHiddenValue <cfif len(arguments.stMetadata.value)>dateAccept<cfelse>dateEmpty</cfif>">
 							<cfif len(arguments.stMetadata.value)>
-								#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)# <cfif arguments.stMetadata.ftShowTime>#TimeFormat(arguments.stMetadata.value,arguments.stMetadata.ftTimeFormatMask)#</cfif>
+								#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)# 
+								<cfif arguments.stMetadata.ftShowTime>#TimeFormat(arguments.stMetadata.value,arguments.stMetadata.ftTimeFormatMask)#</cfif>
 							<cfelse>
 								Type in your date
 							</cfif>
@@ -356,7 +402,7 @@
 						
 						<cfif arguments.stMetadata.ftShowSuggestions><div class="dateSuggestions">Examples: tomorrow; next tues at 5am; +5days;</div></cfif>
 						<cfif len(arguments.stMetadata.value)>
-							<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,'yyyy/mmm/dd')# #TimeFormat(arguments.stMetadata.value, 'hh:mm tt')#" class="#arguments.stMetadata.ftClass#">
+							<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,'dd-mmm-yyyy')# #TimeFormat(arguments.stMetadata.value, 'hh:mm tt')#" class="#arguments.stMetadata.ftClass#">
 						<cfelse>
 							<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" class="#arguments.stMetadata.ftClass#">								
 						</cfif> 
@@ -417,12 +463,18 @@
 		<cfset var html = "" />
 		
 		
+		
+		<cfif isDate(arguments.stMetadata.value)>
+			<cfset arguments.stMetadata.value = application.fapi.convertToApplicationTimezone(arguments.stMetadata.value) />
+		</cfif>
+		
+		
 		<cfparam name="arguments.stMetadata.ftDateMask" default="d-mmm-yy">
 		<cfparam name="arguments.stMetadata.ftTimeMask" default="short">
-		<cfparam name="arguments.stMetadata.ftShowTime" default="false">
+		<cfparam name="arguments.stMetadata.ftShowTime" default="true">
 		
 		<cfsavecontent variable="html">
-			<cfif len(arguments.stMetadata.value)>
+			<cfif len(arguments.stMetadata.value) and application.fapi.showFarcryDate(arguments.stMetadata.value)>
 				<cfoutput>#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateMask)#</cfoutput>
 				<cfif arguments.stMetadata.ftShowTime>
 					<cfoutput> #TimeFormat(arguments.stMetadata.value,arguments.stMetadata.ftTimeMask)# </cfoutput>
@@ -478,12 +530,7 @@
 			<cfif stResult.bSuccess>
 				<cfset arguments.stFieldPost.value = stResult.value />
 				<cfset stResult = super.validate(objectid=arguments.objectid, typename=arguments.typename, stFieldPost=arguments.stFieldPost, stMetadata=arguments.stMetadata )>
-			</cfif>
-		
-			<!--- ----------------- --->
-			<!--- Return the Result --->
-			<!--- ----------------- --->
-			<cfreturn stResult>		
+			</cfif>	
 		</cfcase>
 		
 		<cfdefaultcase>
@@ -508,14 +555,18 @@
 				<cfset arguments.stFieldPost.value = stResult.value />
 				<cfset stResult = super.validate(objectid=arguments.objectid, typename=arguments.typename, stFieldPost=arguments.stFieldPost, stMetadata=arguments.stMetadata )>
 			</cfif>
-			
-			<!--- ----------------- --->
-			<!--- Return the Result --->
-			<!--- ----------------- --->
-			<cfreturn stResult>
 		</cfdefaultcase>
 		</cfswitch>
+				
+		<!--- If we have a valid date, convert it to the system date. --->
+		<cfif isDate(stResult.value)>
+			<cfset stResult.value = application.fapi.convertToSystemTimezone(stResult.value) />
+		</cfif>
 		
+		<!--- ----------------- --->
+		<!--- Return the Result --->
+		<!--- ----------------- --->
+		<cfreturn stResult>
 
 		
 	</cffunction>

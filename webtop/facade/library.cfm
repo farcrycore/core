@@ -185,7 +185,7 @@ IT IS SET IN  AJAXUPDATEARRAY FUNCTION OF THE LIBRARY.CFC
 <ft:processForm action="Attach & Add Another" url="#cgi.script_name#?#querystring#&ftJoin=#request.ftJoin#&librarySection=Add&refreshOpener=#url.refreshOpener#" />
 
 	
-<ft:processForm action="Close,Cancel">
+<ft:processForm action="Complete,Cancel">
 	<cfoutput>
 	<script type="text/javascript">
 		self.blur();
@@ -480,7 +480,7 @@ LIBRARY DATA
 					<cfoutput>
 					<div>
 						<ft:button value="Save Changes" />	
-						<ft:button type="button" value="Close" onclick="self.blur();window.close();" />	
+						<ft:button type="button" value="Complete" onclick="self.blur();window.close();" />	
 					</div>
 					</cfoutput>
 					
@@ -561,7 +561,7 @@ LIBRARY DATA
 					<cfoutput>
 					<div>
 						<ft:button value="Attach" />	
-						<ft:button type="button" value="Close" onclick="self.blur();window.close();" />	
+						<ft:button type="button" value="Complete" onclick="self.blur();window.close();" />	
 					</div>
 					</cfoutput>
 					
@@ -826,12 +826,12 @@ GENERATE THE LIBRARY PICKER
 			<cfelse>
 				<cfif NOT InstantLibraryUpdate >
 					<ft:buttonPanel indentForLabel="false">
-						<ft:button type="button" value="Save & Close" confirmText="You are about to save your changes. Please wait until the library window closes." onclick="needToConfirm = false;$(this).disabled=true;opener.libraryCallbackArray('#url.primaryFormFieldname#','sort',Sortable.sequence('sortableListTo'),'#application.url.webroot#',window);" />
+						<ft:button type="button" value="Save & Complete" confirmText="You are about to save your changes. Please wait until the library window closes." onclick="needToConfirm = false;$(this).disabled=true;opener.libraryCallbackArray('#url.primaryFormFieldname#','sort',Sortable.sequence('sortableListTo'),'#application.url.webroot#',window);" />
 						<ft:button type="button" value="Cancel" confirmText="Are you sure you want to cancel?" onclick="needToConfirm = false;self.blur();window.close();return false;" />
 					</ft:buttonPanel>	
 				<cfelse>
 					<ft:buttonPanel indentForLabel="false">
-						<ft:button type="button" value="Close" onclick="self.blur();window.close();return false;" />	
+						<ft:button type="button" value="Complete" onclick="self.blur();window.close();return false;" />	
 					</ft:buttonPanel>	
 				</cfif>	
 			</cfif>

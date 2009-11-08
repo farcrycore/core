@@ -66,7 +66,7 @@ default handlers
 		<cfargument name="stparam" required="false" type="struct" hint="Structure of parameters to be passed into the display handler." />
 		<cfargument name="stobject" required="no" type="struct" hint="Property structure to render in view.  Overrides any property structure mapped to arguments.objectid. Useful if you want to render a view with a modified content item.">
 		<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
-		<cfargument name="OnExit" required="no" type="any" default="">
+		<cfargument name="onExitProcess" required="no" type="any" default="">
 		
 		<cfset var stObj = StructNew() />
 		
@@ -527,7 +527,7 @@ default handlers
 						<cfquery datasource="#application.dsn#" name="qRelated">
 							SELECT objectid, status
 							FROM #iTypename# 
-							WHERE objectid IN (#ListQualify(arrayToList(aAllRelated), "'")#)
+							WHERE objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arrayToList(aAllRelated)#" />)
 							AND status <> '#changeStatus#'
 						</cfquery>
 	
@@ -947,7 +947,7 @@ default handlers
 	
 	<cffunction name="Edit" access="public" output="true" returntype="void" hint="Default edit handler.">
 		<cfargument name="ObjectID" required="yes" type="string" default="" />
-		<cfargument name="onExit" required="no" type="any" default="Refresh" />
+		<cfargument name="onExitProcess" required="no" type="any" default="Refresh" />
 		
 		<cfset var stObj = getData(objectid=arguments.objectid) />
 		<cfset var qMetadata = application.types[stobj.typename].qMetadata />
@@ -963,8 +963,9 @@ default handlers
 		<cfset setLock(stObj=stObj,locked=true) />
 			
 		<cfif structkeyexists(url,"iframe")>
-			<cfset onExit.Type = "HTML" />
-			<cfsavecontent variable="onExit.content">
+			<cfset onExitProcess = structNew() />
+			<cfset onExitProcess.Type = "HTML" />
+			<cfsavecontent variable="onExitProcess.content">
 				<cfoutput>
 					<script type="text/javascript">
 						<!--- parent.location.reload(); --->
@@ -1355,13 +1356,12 @@ default handlers
 		<cfset stresult.message = "Content status changed to approved.">
 		<!--- also approve all associated images/files (aobjectids) --->
 		<cfif StructKeyExists(application.types[instance.stobj.typename].stprops,"aObjectIDs") AND ArrayLen(instance.stobj.aObjectIDs)>
-			<cfset stlocal.lObjectids = ListQualify(ArrayToList(instance.stobj.aObjectIDs),"'")>
 			<cfset stlocal.lTypeNames = "dmImage,dmFile">
 			<cfloop index="stlocal.iTypeName" list="#stlocal.lTypeNames#">
 				<cfquery name="stLocal.qUpdateStatus" datasource="#application.dsn#">
 				UPDATE	#application.dbowner##stlocal.iTypeName#
 				SET		status = '#stproperties.status#'
-				WHERE	objectid IN (#preservesinglequotes(stlocal.lObjectids)#)
+				WHERE	objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#ArrayToList(instance.stobj.aObjectIDs)#" />)
 				</cfquery>				
 			</cfloop>
 		</cfif>

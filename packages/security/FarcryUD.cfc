@@ -40,7 +40,8 @@
 				<ft:processformObjects typename="#getLoginForm()#">
 					<!--- If password encryption is enabled, hash the password --->
 					<cfif this.bEncrypted>
-						<cfset stProperties.password = hash(stLogin.password) />
+						<cfset stProperties.unhashed = stProperties.password />
+						<cfset stProperties.password = hash(stProperties.password) />
 					</cfif>
 					
 					<!--- Find the user --->
@@ -50,6 +51,26 @@
 						where	userid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#trim(stProperties.username)#" />
 								and password=<cfqueryparam cfsqltype="cf_sql_varchar" value="#stProperties.password#" />
 					</cfquery>
+					
+					<!--- If this failed, it might be because encryption was turned on after the password was set --->
+					<cfif this.bEncrypted and qUser.recordcount eq 0>
+						<cfquery datasource="#application.dsn#" name="qUser">
+							select	*
+							from	#application.dbowner#farUser
+							where	userid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#trim(stProperties.username)#" />
+									and password=<cfqueryparam cfsqltype="cf_sql_varchar" value="#stProperties.unhashed#" />
+						</cfquery>
+						
+						<!--- It worked! Fix the password in the database. --->
+						<cfif qUser.recordcount>
+							<cfquery datasource="#application.dsn#">
+								update	#application.dbowner#farUser
+								set		password=<cfqueryparam cfsqltype="cf_sql_varchar" value="#stProperties.password#" />
+								where	userid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#trim(stProperties.username)#" />
+										and password=<cfqueryparam cfsqltype="cf_sql_varchar" value="#stProperties.unhashed#" />
+							</cfquery>
+						</cfif>
+					</cfif>
 					
 					<cfset stResult.userid = trim(stProperties.username) />
 				</ft:processformObjects>
