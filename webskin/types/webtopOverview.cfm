@@ -45,6 +45,21 @@ START WEBSKIN
 <skin:loadCSS id="jquery-ui" />
 
 
+<!--- 
+Its been notoriously difficult to continually pass ref around on the url string. 
+This will save it to the session.overviewRef to avoid having to do so.
+TO: A refactor is required of all this now that we have webskin goodness.
+--->
+<cfif not structKeyExists(url, "ref")>
+	<cfif structKeyExists(session, "overviewRef")>
+		<cfset url.ref = session.overviewRef />
+	<cfelse>
+		<url.ref = "overview" />
+	</cfif>
+</cfif>
+<cfset session.overviewRef = url.ref />
+
+
 <ft:form>
 
 			<grid:div style="float:right;padding:10px;">

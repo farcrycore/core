@@ -988,4 +988,28 @@
 	</cffunction>
 
 
+	<cffunction name="getFormtoolDefaults" access="public" output="false" returntype="any" hint="Returns the default value of metadata applicable to a formtool passed in. Omitting the md name, defaults for all metadata for the formtool will be returned.">
+		<cfargument name="formtool" required="true" type="string" hint="The formtool containing the property" />
+		
+		<cfset var stResult = structNew() />
+		<cfset var stPropMetadata = structNew() />
+		<cfset var i = "" />
+		
+		<cfif not structKeyExists(application.formtools, arguments.formtool)>
+			<cfset arguments.formtool = "string" />
+		</cfif>	
+		
+		
+		<cfif structKeyExists(application.formtools[arguments.formtool], "stProps")>
+
+			<cfloop collection="#application.formtools['#arguments.formtool#'].stProps#" item="i">
+				<cfset stPropMetadata = application.formtools['#arguments.formtool#'].stProps['#i#'].METADATA />
+
+				<cfset stResult[i] = stPropMetadata.default />
+			</cfloop>
+		</cfif>
+		
+		<cfreturn stResult />
+	</cffunction>
+	
 </cfcomponent>

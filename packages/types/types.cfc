@@ -826,7 +826,7 @@ default handlers
 			<cfset FieldMethod = ftFieldMetadata.method>
 		<cfelse>
 			<cfif arguments.Format EQ "Edit">
-				<cfif structKeyExists(ftFieldMetadata,"ftEditMethod")>
+				<cfif len(ftFieldMetadata.ftEditMethod)>
 					<cfset FieldMethod = ftFieldMetadata.ftEditMethod>
 					
 					<!--- Check to see if this method exists in the current oType CFC. if so. Change oFieldType the Current oType --->
@@ -844,7 +844,7 @@ default handlers
 				</cfif>
 			<cfelse>
 					
-				<cfif structKeyExists(ftFieldMetadata,"ftDisplayMethod")>
+				<cfif len(ftFieldMetadata.ftDisplayMethod)>
 					<cfset FieldMethod = ftFieldMetadata.ftDisplayMethod>
 					<!--- Check to see if this method exists in the current oType CFC. if so. Change oFieldType the Current oType --->
 					

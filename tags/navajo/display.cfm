@@ -312,7 +312,9 @@
 
 		<!--- import libraries --->
 		<skin:loadJS id="jquery" />
+		<skin:loadJS id="jquery-ui" />
 		<skin:loadJS id="farcry-form" />
+		<skin:loadCSS id="jquery-ui" />
 		<skin:loadCSS id="farcry-form" />
 
 		<cfoutput>	
@@ -380,6 +382,8 @@
 		
 		
 		</cfoutput>
+		
+		<farcry:webskinTracer />
 	</cfif>
 	
 <cfsetting enablecfoutputonly="No">

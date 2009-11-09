@@ -113,7 +113,7 @@ START WEBSKIN
 							text="<h1>UNLOCK</h1>#uCase(application.rb.formatRBString('workflow.labels.lockedwhen@label',tDT,'Locked ({1})'))#"
 							class="primary"
 							rbkey="workflow.labels.lockedwhen@label" 
-							url="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#" />
+							url="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#&ref=#url.ref#" />
 			<cfelse>
 				<!--- locked by another user --->
 				<cfset subS=listToArray('#application.thisCalendar.i18nDateFormat(stobj.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)#,#stobj.lockedby#')>
@@ -127,7 +127,7 @@ START WEBSKIN
 								class="primary"
 								type="button"
 								rbkey="workflow.labels.lockedwhen@label" 
-								url="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#" />
+								url="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#&ref=#url.ref#" />
 				<cfelse>
 
 					<ft:button	value="Unlock" 

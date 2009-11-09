@@ -267,20 +267,7 @@
 		</cfif>
 		
 		
-		<!--- Prepare Form Validation (from Andrew Tetlaw http://tetlaw.id.au/view/home/) --->
-		<!--- 
-		Here's the list of classes available to add to your field elements:
-	
-	    * required (not blank)
-	    * validate-number (a valid number)
-	    * validate-digits (digits only)
-	    * validate-alpha (letters only)
-	    * validate-alphanum (only letters and numbers)
-	    * validate-date (a valid date value)
-	    * validate-email (a valid email address)
-	    * validate-date-au (a date formatted as; dd/mm/yyyy)
-	    * validate-currency-dollar (a valid dollar value)
-		 --->		 
+ 		<!--- Add validation classes --->
 		<cfif attributes.bValidation>
 			<cfif len(ftFieldMetadata.ftValidation)>
 				<cfloop list="#ftFieldMetadata.ftValidation#" index="iValidation">
@@ -303,8 +290,9 @@
 				
 				
 				
-		
-		<cfset tFieldType = application.formtools[ftFieldMetadata.ftType].oFactory.init() />
+		<cftry>
+		<!--- <cfset tFieldType = application.formtools[ftFieldMetadata.ftType].oFactory.init() /> --->
+		<cfset tFieldType = application.fapi.getFormtool(ftFieldMetadata.ftType) />
 
 		<!--- Need to determine which method to run on the field --->		
 		<cfif structKeyExists(ftFieldMetadata, "ftDisplayOnly") AND ftFieldMetadata.ftDisplayOnly OR ftFieldMetadata.ftType EQ "arrayList">
@@ -313,7 +301,7 @@
 			<cfset FieldMethod = ftFieldMetadata.method>
 		<cfelse>
 			<cfif attributes.Format EQ "Edit">
-				<cfif structKeyExists(ftFieldMetadata,"ftEditMethod")>
+				<cfif len(ftFieldMetadata.ftEditMethod)>
 					<cfset FieldMethod = ftFieldMetadata.ftEditMethod>
 					
 					<!--- Check to see if this method exists in the current oType CFC. if so. Change tFieldType the Current oType --->
@@ -331,7 +319,7 @@
 				</cfif>
 			<cfelse>
 					
-				<cfif structKeyExists(ftFieldMetadata,"ftDisplayMethod")>
+				<cfif len(ftFieldMetadata.ftDisplayMethod)>
 					<cfset FieldMethod = ftFieldMetadata.ftDisplayMethod>
 					<!--- Check to see if this method exists in the current oType CFC. if so. Change tFieldType the Current oType --->
 					
@@ -349,7 +337,10 @@
 				</cfif>
 			</cfif>
 		</cfif>	
-
+		<cfcatch type="any">
+			<cfdump var="#ftFieldMetadata#" /><cfabort>
+		</cfcatch>
+		</cftry>
 	
 		
 		

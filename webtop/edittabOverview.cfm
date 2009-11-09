@@ -64,7 +64,7 @@ If a versionid is passed then that is the one we wish to render as the overview.
 
 
 <sec:CheckPermission error="true" permission="ObjectOverviewTab">
-	<skin:view objectid="#variables.overviewID#" webskin="renderWebtopOverview" />
+	<skin:view objectid="#variables.overviewID#" webskin="webtopOverview" />
 </sec:CheckPermission>
 
 <!--- setup footer --->

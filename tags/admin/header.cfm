@@ -83,6 +83,36 @@ $in: [bCacheControl] output cache control headers; default true. $
 <skin:loadCSS id="webtop" lFiles="reset.css,fonts.css,main.css">
 	<cfoutput>
 	body {font-size:10px;}
+	
+	
+	##webtopOverviewActions button h1,
+	##webtopOverviewActions button h2 {
+		margin:0px;
+	}
+	
+	##webtopOverviewActions button.primary {
+		width:180px;
+		height:100px;
+	}
+	##webtopOverviewActions button.secondary {
+		width:180px;
+		height:50px;
+		margin-top:10px;
+	}
+	.webtopOverviewStatusBox {
+		border:1px solid black;
+		padding:10px;
+		margin-top:5px;
+	}
+	.webtopSummarySection {
+		border-bottom:2px solid ##DFDFDF;
+		padding:0px 5px 15px 5px;
+		margin:10px 0px 10px 0px;
+	}
+	.webtopSummarySection h2 {
+		margin:10px 0px 0px 0px;
+		font-weight:bold;
+	}	
 	</cfoutput>
 </skin:loadCSS>
 

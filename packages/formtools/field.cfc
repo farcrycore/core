@@ -2,6 +2,21 @@
 
 <cfcomponent name="field" displayname="string" hint="Field component to liase with all string types"> 
 		
+	<cfproperty name="ftSeq" required="false" hint="Used if you are relying on the framework to render your form. Used to sort the fields on the form." />
+	<cfproperty name="ftFieldset" required="false" hint="Used if you are relying on the framework to render your form. Used to group the fields into HTML fieldsets." />
+	<cfproperty name="ftWizardStep" required="false" hint="Used if you are relying on the framework to render your form. Used to setup a wizard which is a multi step form process." />
+	<cfproperty name="ftType" required="false" hint="Tells the framework which of the formtool ui components to use when rendering your form. This will default to the [type]." />
+	<cfproperty name="ftLabel" required="false" hint="Used by the FarCry form layout as the label of the form field. This will default to the [name]." />
+	<cfproperty name="ftLabelAlignment" required="false" default="inline" options="inline,block" hint="Used by FarCry Form Layouts for positioning of labels. inline or block." />
+	<cfproperty name="ftClass" required="false" default="" hint="CSS Class that can be used on the formtool input" />
+	<cfproperty name="ftStyle" required="false" default="" hint="CSS Style that can be used on the formtool input" />
+	<cfproperty name="ftValidation" required="false" hint="List of CSS classes that can be used for js validation" />
+	<cfproperty name="ftEditMethod" required="false" hint="The function that will be used to render the html output for editing a property" />
+	<cfproperty name="ftDisplayMethod" required="false" hint="The function that will be used to render the html output for displaying a property" />
+	<cfproperty name="ftValidateMethod" required="false" hint="The function that will be used to render the html output for validating (processing) a property form submission" />
+	<cfproperty name="ftAjaxMethod" required="false" hint="The function that will be used to render the html output for ajax requests of a property" />
+	
+	
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.field" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
@@ -150,7 +165,7 @@
 		
 		<cfset stMD.ajaxrequest = "true" />
 		
-		<cfif structKeyExists(stMetadata,"ftEditMethod")>
+		<cfif len(stMetadata.ftAjaxMethod)>
 			<cfset FieldMethod = stMetadata.ftAjaxMethod />
 			
 			<!--- Check to see if this method exists in the current oType CFC. If not, use the formtool --->
@@ -240,4 +255,98 @@
 		<cfreturn resultHTML />
 	</cffunction>
 		
+		
+		
+	<!--- CORE INITIALISATION METHODS --->
+	<cffunction name="initMetaData" access="public" hint="Extract all component metadata in a flat format for loading into a shared scope." output="false" returntype="struct">
+		<cfargument name="stMetaData" type="struct" required="false" default="#structNew()#" hint="Structure to which this cfc's parameters are appended" />
+	
+		<cfset var stReturnMetadata = arguments.stMetaData />
+		<cfset var stNewProps = getPropsAsStruct() />
+		<cfset var md = getMetaData(this) />		
+		<cfset var mdExtend = md />
+		<cfset var key = "" />
+		
+		<!--- If we are updating a type that already exists then we need to update only the metadata that has changed. --->
+		<cfparam name="stReturnMetadata.stProps" default="#structnew()#" />
+		<cfset stReturnMetadata.stProps = application.factory.oUtils.structMerge(stReturnMetadata.stProps,stNewProps) />
+		
+		<cfloop condition="not structisempty(mdExtend)">
+			<cfloop collection="#md#" item="key">
+				<cfif key neq "PROPERTIES" AND key neq "EXTENDS" AND key neq "FUNCTIONS" AND key neq "TYPE">
+					<cfparam name="stReturnMetadata.#key#" default="#md[key]#" />				
+				</cfif>
+			</cfloop>
+			<cfif structkeyexists(mdExtend,"extends") and not findnocase(mdExtend.extends.name,"fourq")>
+				<cfset mdExtend = mdExtend.extends />
+			<cfelse>
+				<cfset mdExtend = structnew() />
+			</cfif>
+		</cfloop>
+		
+		<!--- Param component metadata --->
+		<cfparam name="stReturnMetadata.displayname" default="#listlast(stReturnMetadata.name,'.')#" />
+		
+		<!--- This sets up the array which will contain the name of all types this type extends --->
+		<cfset stReturnMetadata.aExtends = application.coapi.coapiadmin.getExtendedTypeArray(packagePath=md.name)>
+			
+		
+		<cfreturn stReturnMetadata />
+		
+	</cffunction> 
+	
+	
+	<cffunction name="getPropsAsStruct" returntype="struct" hint="Get all extended properties and return as a flattened structure." access="private" output="false">
+		<cfset var aAncestors = getAncestors(getMetaData(this))>
+		<cfset var stProperties = StructNew()>
+		<cfset var curAncestor = "">
+		<cfset var curProperty = "">
+		<cfset var i = "">
+		<cfset var j = "">
+		<cfset var prop = "">
+		<cfset var success = "">
+		
+		<cfloop index="i" from="1" to="#ArrayLen(aAncestors)#">
+			<cfset curAncestor = duplicate(aAncestors[i])>
+			
+			<cfif StructKeyExists(curAncestor,"properties")>
+				<cfloop index="j" from="1" to="#ArrayLen(curAncestor.properties)#">
+					<cfif not structKeyExists(stProperties, curAncestor.properties[j].name)>
+						<cfset stProperties[curAncestor.properties[j].name] = structNew() />
+						<cfset stProperties[curAncestor.properties[j].name].metadata = structNew() />
+						<cfset stProperties[curAncestor.properties[j].name].origin = "" />
+					</cfif>
+					<cfset stProperties[curAncestor.properties[j].name].origin = curAncestor.name />
+					<cfset success = structAppend(stProperties[curAncestor.properties[j].name].metadata, curAncestor.properties[j]) />
+				</cfloop>
+			</cfif>
+		</cfloop>
+
+		<cfloop collection="#stProperties#" item="prop">
+			<!--- make sure all metadata has a default and required --->
+			<cfif NOT StructKeyExists(stProperties[prop].metadata,"required")>
+				<cfset stProperties[prop].metadata.required = "no">
+			</cfif>
+			
+			<cfif NOT StructKeyExists(stProperties[prop].metadata,"default")>
+				<cfset stProperties[prop].metadata.default = "">
+			</cfif>
+		</cfloop>
+
+		<cfreturn stProperties>
+	</cffunction>
+			
+	<cffunction name="getAncestors" hint="Get all the extended components as an array of isolated component metadata." returntype="array" access="private" output="false">
+		<cfargument name="md" required="Yes" type="struct">
+			<cfset var aAncestors = arrayNew(1)>
+			<cfscript>	
+				if (structKeyExists(md, 'extends'))
+					aAncestors = getAncestors(md.extends);
+				arrayAppend(aAncestors, md);
+			</cfscript>
+		<cfreturn aAncestors>
+	</cffunction>
+	
+	
+	
 </cfcomponent> 

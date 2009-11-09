@@ -200,6 +200,7 @@ $out:$
 		<cfset var Type = "" />
 		<cfset var helpTitle="" />
 		<cfset var helpSection="" />
+		<cfset var i = "" />
 		
 		<!--------------------------------- 
 		WE NEED TO SETUP FTSEQ, FTFIELDSET & FTwizardSTEP
@@ -235,7 +236,7 @@ $out:$
 			</cfif>
 			
 			<!--- SETUP ftType --->
-			<cfif structKeyExists(arguments.stProps[i].METADATA, "ftType")>
+			<cfif structKeyExists(arguments.stProps[i].METADATA, "ftType") AND len(arguments.stProps[i].METADATA.ftType)>
 				<cfset Type = arguments.stProps[i].METADATA.ftType />
 			<cfelse>
 				<cfset Type = arguments.stProps[i].METADATA.type />
@@ -302,14 +303,20 @@ $out:$
 				<cfset stResult.bCustom = (refindnocase("farcry\.core",stResult.packagepath)) />
 				<cfset stResult.bLibrary = (refindnocase("farcry\.plugins",stResult.packagepath)) />
 				
+				<cfset stResult = o.initmetadata(stResult) />
+				
+				<cfparam name="stResult.icon" default="#arguments.name#" />
+				
+				
 				<cfif listcontains("types,rules,forms",arguments.package)>
-					<cfset stResult = o.initmetadata(stResult) />
 					
-					<cfparam name="stResult.icon" default="#arguments.name#" />
-					
+					<!--- Query of metadata used for auto generation of HTML forms --->
 					<cfset stResult.qMetadata = setupMetadataQuery(typename=arguments.name,stProps=stResult.stProps) />
 					
+					<!--- Parses the given structure and generates metadata that can be used by the DBGateway components. --->
 					<cfset tableMetadata.parseMetadata(stMetaData) />
+					
+					<!--- Set the tabledefiniton now that it has been parsed --->
 					<cfset stResult.tableDefinition = tableMetadata.getTableDefinition() />
 				</cfif>
 					

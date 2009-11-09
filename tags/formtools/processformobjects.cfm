@@ -459,7 +459,7 @@
 			<cfset tFieldType = createobject("component",application.stCOAPI[FORM['#ProcessingFormObjectPrefix#typename']].packagepath) />
 				
 			<!--- Need to determine which method to run on the field --->
-			<cfif structKeyExists(ftFieldMetadata,"ftValidateMethod")>
+			<cfif len(ftFieldMetadata.ftValidateMethod)>
 				<cfset FieldMethod = ftFieldMetadata.ftValidateMethod>
 				
 				<!--- Check to see if this method exists in the current oType CFC. If not hange o to the formtool --->

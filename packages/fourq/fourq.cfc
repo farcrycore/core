@@ -152,38 +152,45 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfif not len(arguments.ajaxID)>
 				<cfset arguments.ajaxID = "#stobj.typename#_#stobj.objectid#_#arguments.template#" />
 			</cfif>
-			<skin:htmlHead library="extjsCore" />
+			
+			<skin:loadJS id="jquery" />
+			
 			<skin:htmlHead id="webskinAjaxLoader">
 			<cfoutput>		
 			<script type="text/javascript">
-			function webskinAjaxLoader(divID,action,timeout,showLoadIndicator,indicatorText){
+			function webskinAjaxLoader(divID,action,ajaxTimeout,showLoadIndicator,indicatorText){
+				
 				if (timeout == undefined){var timeout = 30};
 				if (showLoadIndicator == undefined){var showLoadIndicator = false};
 				if (indicatorText == undefined){var indicatorText = 'loading...'};
+				if (ajaxTimeout == undefined){var ajaxTimeout = 30}; // the number of seconds to wait
 				
-				var el = Ext.get(divID);
-				
-				if(el) {
-					var mgr = el.getUpdater();
-					
-					mgr.showLoadIndicator = showLoadIndicator;
-					if (showLoadIndicator==true){
-						mgr.indicatorText = indicatorText;
-					}					
-					mgr.update(
-					{
-						url: action,
-						nocache: true,
-						scripts: true,
-						timeout: timeout						
-					});
+				if (ajaxTimeout > 0) {
+					ajaxTimeout = ajaxTimeout * 1000; // convert to milliseconds
 				}
+				
+				if (showLoadIndicator == true) {
+					$j("##" + divID).mask(indicatorText);
+				}
+
+				$j.ajax({
+				   type: "POST",
+				   url: action,
+				   cache: false,
+				   timeout: ajaxTimeout,
+				   success: function(msg){
+				   		if (showLoadIndicator == true) {
+							$j("##" + divID).unmask();
+						}
+						$j('##' + divID).html(msg);						     	
+				   }
+				 });
 			}
 			</script>
 			</cfoutput>
 			</skin:htmlHead>
 			
-			<!--- Get the url for the ajax webskin loader --->
+			<!--- Get the url for the ajax webskin loader --->			
 			<!--- TODO: The ampDelim variable causes the link to be in the & 
 				instead of &amp; form.  This is a bit of a hack as &amp;
 				should work but currently causes an error.  It will take some
@@ -204,7 +211,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					urlParameters="#arguments.ajaxURLParameters#&ajaxmode=1",
 					ampDelim="&"
 				) />
-			</cfif>	
+			</cfif> 
 			<cfsavecontent variable="stWebskin.webskinHTML">
 				<cfoutput>
 				<farcry:traceWebskin 
@@ -216,11 +223,11 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				
 				</farcry:traceWebskin>
 				
-				<extjs:onReady>
+				<skin:onReady>
 					<cfoutput>
 						webskinAjaxLoader('#arguments.ajaxID#', '#urlAjaxLoader#', 30, #arguments.ajaxShowLoadIndicator#, '#arguments.ajaxIndicatorText#');
 					</cfoutput>
-				</extjs:onReady>
+				</skin:onReady>
 				</cfoutput>
 			</cfsavecontent>
 		<cfelse>
@@ -266,8 +273,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					<cfreturn stWebskin.webskinHTML />
 				</cfif>
 			</cfif>
-			
+				
 			<cfif NOT structIsEmpty(stObj)>	
+	
 				<cfset stWebskin = application.fc.lib.objectbroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
 				
 				<cfif not len(stWebskin.webskinHTML)>			
@@ -309,7 +317,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				<cfset request.currentViewTypename = request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].typename />
 				<cfset request.currentViewTemplate = request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].template />
 			</cfif>
-			
+		
 		</cfif>
 		
 		</cftimer>
@@ -1320,15 +1328,22 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="default" type="string" />
 		
 		<cfset var stResult = duplicate(arguments.stProps)>
+		<cfset var prop = "" />
+		<cfset var att = "" />
 		
 		<cfloop collection="#stResult#" item="prop">
 			<cfloop list="#arguments.lAttributes#" index="att">
+				<!--- If the attribute does not exist, then set its default --->
 				<cfif not structkeyexists(stResult[prop].metadata,att)>
 					<cfif structkeyexists(arguments,"default")>
 						<cfset stResult[prop].metadata[att] = arguments.default />
-					<cfelseif prop eq "ftType">
-						<cfset stResult[prop].metadata[att] = stResult[prop].metadata.type />
-					<cfelseif prop eq "ftLabel">
+					<cfelseif att eq "ftType">
+						<cfif structKeyExists(application.formtools, stResult[prop].metadata.type)>
+							<cfset stResult[prop].metadata[att] = stResult[prop].metadata.type />
+						<cfelse>
+							<cfset stResult[prop].metadata[att] = "string" />
+						</cfif>
+					<cfelseif att eq "ftLabel">
 						<cfset stResult[prop].metadata[att] = stResult[prop].metadata.name />
 					<cfelse>
 						<cfset stResult[prop].metadata[att] = "" />
@@ -1366,6 +1381,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var webskinCacheStatus = 0 />
 		<cfset var stFilteredWebskins = structNew() />
 		<cfset var mdExtend = structnew() />
+		<cfset var stFormtoolDefaults = structNew() />
 		
 		<!--- If we are updating a type that already exists then we need to update only the metadata that has changed. --->
 		<cfparam name="stReturnMetadata.stProps" default="#structnew()#" />
@@ -1374,6 +1390,13 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<!--- Make sure ALL properties have an ftType, ftLabel,ftStyle and ftClass set. If not explicitly set then use defaults. --->
 		<cfset stReturnMetadata.stProps = paramMetaData(stReturnMetadata.stProps,"ftType,ftLabel,ftStyle,ftClass,ftValidation") />
 
+		<!--- Make sure all required  the defaults are in place --->
+		<cfloop collection="#stReturnMetadata.stProps#" item="prop">
+			<cfset stFormtoolDefaults = application.coapi.coapiAdmin.getFormtoolDefaults(formtool=stReturnMetadata.stProps[prop].metadata.ftType) />
+
+			<cfset structAppend(stReturnMetadata.stProps[prop].metadata,stFormtoolDefaults,false) />
+		</cfloop>
+		
 		<!--- This will get the components methods and any methods that are from super cfc's --->
 		<cfset stReturnMetadata.stMethods = getMethods()>	
 		

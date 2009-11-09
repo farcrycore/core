@@ -2,6 +2,11 @@
 
 <cfcomponent name="datetime" extends="field" displayname="datetime" hint="Field component to liase with all datetime types"> 
 		
+		
+	<cfproperty name="ftRenderType" default="jquery" hint="This formtool offers a number of ways to render the input. (dropdown, jquery, dateJS)" />
+	
+	
+	
 	<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" >	
 	<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" >		
 		
@@ -65,6 +70,8 @@
 		<cfset var i = "">
 		<cfset var step=1>
 		
+		<cfreturn "HTML" />
+			
 		<cfparam name="arguments.stMetadata.ftRenderType" default="jquery">	
 		
 		<!--- If a required field, then the user will not have the option to toggle off the date time --->
