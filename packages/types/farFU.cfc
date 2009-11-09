@@ -601,6 +601,7 @@
 	<cffunction name="parseURL" returntype="struct" access="public" output="false" hint="Parses the url.furl and returns all relevent url variables.">
 		<cfargument name="stURL" type="struct" required="true" default="#url#" hint="Reference to the URL struct" />
 		
+		<cfset var stLocalURL = duplicate(arguments.stURL) /><!--- Duplicate so we are not changing the referenced struct --->
 		<cfset var oFU = createObject("component","#application.packagepath#.farcry.fu") />
 		<cfset var stFU = structNew() />
 		<cfset var stLocal = structNew() />
@@ -609,68 +610,70 @@
 		<cfset var stResult = structNew() />
 	
 		<!--- If the browser has added a trailing / to a friendly URL, strip it out. --->
-		<cfif structKeyExists(arguments.stURL, "furl") AND len(arguments.stURL.furl) GT 1 AND right(arguments.stURL.furl,1) EQ "/">
-			<cfset arguments.stURL.furl = left(arguments.stURL.furl,len(arguments.stURL.furl) -1) />
+		<cfif structKeyExists(stLocalURL, "furl") AND len(stLocalURL.furl) GT 1 AND right(stLocalURL.furl,1) EQ "/">
+			<cfset stLocalURL.furl = left(stLocalURL.furl,len(stLocalURL.furl) -1) />
 		</cfif>
 		
-		<cfif structkeyexists(arguments.stURL, "furl") and len(arguments.stURL.furl) gt 1>
-			<cfset stResult = getFUData(friendlyURL=arguments.stURL.furl) />
+		<cfif structkeyexists(stLocalURL, "furl") and len(stLocalURL.furl) gt 1>
+			<cfset stResult = getFUData(friendlyURL=stLocalURL.furl) />
 		</cfif>
 		
-		<!--- Merge the stResult into the URL --->
-		<cfset StructAppend(url, stResult, "true") />
+		<!--- Merge the FU data with the URL data --->
+		<cfset StructAppend(stResult, stLocalURL, "true") />
 		
-		<!--- Once the URL has been parsed, we need to initialise our request.mode struct --->
-		<cfset initRequestMode() />
+
 		
 		<cfif structKeyExists(request.fc, "disableFURedirction") AND request.fc.disableFURedirction>
 			<!--- DON'T REDIRECT. This is sometimes nessesary like under the webtop. --->
 		<cfelse>
 			<!--- Handle redirection case --->
-			<cfif structkeyexists(stResult,"__redirectionURL") and not request.mode.ajax>
-				<cfset structdelete(arguments.stURL,"fapi") />
+			<cfif structkeyexists(stResult,"__redirectionURL") and not structKeyExists(stResult, "ajaxmode")>
+				<!--- Don't want to resend the furl --->
+				<cfset structdelete(stLocalURL,"furl") />
 				<cfheader statuscode="#stResult['__redirectionType']#"><!--- statustext="Moved permanently" --->
-				<cfheader name="Location" value="#application.fapi.fixURL(url=stResult['__redirectionURL'],addvalues=arguments.stURL)#">
+				<cfheader name="Location" value="#application.fapi.fixURL(url=stResult['__redirectionURL'],addvalues=stLocalURL)#">
 				<cfabort>
 			</cfif>
 			
 			<!--- If the user went to an objectid=xyz URL, but should be using a friendly URL, redirect them --->
-			<cfif (not structKeyExists(arguments.stURL, "furl") or arguments.stURL.furl eq "" or arguments.stURL.furl EQ "/") 
-					and isUsingFU() and not request.mode.ajax 
-					and structKeyExists(arguments.stURL, "objectid") and stURL.objectid NEQ application.navid.home 
-					and structKeyExists(this.stLookup, arguments.stURL.objectid)>
+			<cfif (not structKeyExists(stLocalURL, "furl") or stLocalURL.furl eq "" or stLocalURL.furl EQ "/") 
+					and isUsingFU() 
+					and not structKeyExists(stResult, "ajaxmode")
+					and structKeyExists(stResult, "objectid") and stResult.objectid NEQ application.fapi.getNavID('home')
+					and structKeyExists(this.stLookup, stResult.objectid)>
 					
-				<cfset stLocal.stDefaultFU = getData(objectid="#this.stLookup[arguments.stURL.objectid].objectid#") />
+				
+				<cfset stLocal.stDefaultFU = getData(objectid="#this.stLookup[stResult.objectid].objectid#") />
 				
 				<cfif stLocal.stDefaultFU.redirectionType EQ "none">
-					<cfset structdelete(arguments.stURL,"fapi") />
+					<!--- Don't want to resend the furl or the objectid --->
+					<cfset structdelete(stLocalURL,"furl") />
+					<cfset structdelete(stLocalURL,"objectid") />
+					<cfset structdelete(stLocalURL,"updateapp") />
+					
 					<cfheader statuscode="301"><!--- statustext="Moved permanently" --->
-					<cfheader name="Location" value="#application.fapi.fixURL(url=application.fapi.fixURL(url=application.url.webroot & stLocal.stDefaultFU.friendlyURL, addvalues=stLocal.stDefaultFU.queryString),addvalues=cgi.QUERY_STRING)#">
+					<cfheader name="Location" value="#application.fapi.getLink(objectid=stResult.objectid, stParameters=stLocalURL)#">
 					<cfabort>		
 				</cfif>
 			</cfif>
 		</cfif>
 		
 		<!--- Normalise type fuAlias in query string --->
-		<cfif structkeyexists(arguments.stURL,"type")>
-			<cfif structkeyexists(this.typeFU,arguments.stURL.type)>
-				<cfparam name="stResult.type" default="#this.typeFU[arguments.stURL.type]#" />
-			<cfelse>
-				<cfparam name="stResult.type" default="#arguments.stURL.type#" />
+		<cfif structkeyexists(stResult,"type")>
+			<cfif structkeyexists(this.typeFU,stResult.type)>
+				<cfset stResult.type = this.typeFU[stResult.type] />
 			</cfif>
 		</cfif>
 		
-		<cfif structkeyexists(arguments.stURL,"objectid")>
-			<cfparam name="stResult.objectid" default="#arguments.stURL.objectid#" />
-			<cfparam name="stResult.type" default="#application.fapi.findType(objectid=arguments.stURL.objectid)#" />
+		<cfif structkeyexists(stResult,"objectid")
+			AND not structKeyExists(stResult, "type")>
+				<cfset stResult.type = application.fapi.findType(objectid=stResult.objectid) />
 		</cfif>
 		
 		<!--- Normalise view fuAlias in query string --->
-		<cfif structkeyexists(arguments.stURL,"view")>
-			<cfif structkeyexists(this.webskinFU[stResult.type],arguments.stURL.view)>
-				<cfparam name="stResult.view" default="#this.webskinFU[stResult.type][arguments.stURL.view]#" />
-			<cfelse>
-				<cfparam name="stResult.view" default="#arguments.stURL.view#" />
+		<cfif structkeyexists(stResult,"view")>
+			<cfif structkeyexists(this.webskinFU[stResult.type],stResult.view)>			
+				<cfset stResult.view = "#this.webskinFU[stResult.type][stResult.view]#" />
 			</cfif>
 			
 			<!--- Check the page viewbinding --->
@@ -683,11 +686,9 @@
 		</cfif>
 		
 		<!--- Normalise bodyView fuAlias in query string --->
-		<cfif structkeyexists(arguments.stURL,"bodyView")>
-			<cfif structkeyexists(this.webskinFU[stResult.type],arguments.stURL.bodyView)>
-				<cfparam name="stResult.bodyView" default="#this.webskinFU[stResult.type][arguments.stURL.bodyView]#" />
-			<cfelse>
-				<cfparam name="stResult.bodyView" default="#arguments.stURL.bodyView#" />
+		<cfif structkeyexists(stResult,"bodyView")>
+			<cfif structkeyexists(this.webskinFU[stResult.type],stResult.bodyView)>
+				<cfset stResult.bodyView = "#this.webskinFU[stResult.type][stResult.bodyView]#" />
 			</cfif>
 		
 			<!--- Check the body viewbinding --->
@@ -699,133 +700,10 @@
 			</cfif>
 		</cfif>
 		
-		<cfset StructAppend(url, stResult, "true") />
 
-		<cfreturn url />
+		<cfreturn stResult />
 	</cffunction>
 	
-	<cffunction name="initRequestMode" access="public" output="false" returntype="struct" hint="Sets up the request.mode struct and other request settings based on the current users security permissions">
-		<cfargument name="stURL" type="struct" required="true" default="#url#" hint="Reference to the URL struct" />
-		
-		<!--- If we havn't passed in our URL struct then default to the standard URL scope --->
-		<cfif structIsEmpty(arguments.stURL) AND isDefined("URL")>
-			<cfset arguments.stURL = url />
-		</cfif>
-		
-		<cfscript>
-		request.fc.bShowTray = true;
-			
-		// init request.mode with defaults
-		request.mode = structNew();
-		request.mode.design = 0;
-		request.mode.flushcache = 0;
-		request.mode.showdraft = 0;
-		request.mode.ajax = 0;
-		request.mode.tracewebskins = 0;
-		
-		// Developer Mode
-		request.mode.bDeveloper = 0;
-		
-		// container management
-		// default to off, conjurer determines permissions based on nav-node
-		request.mode.showcontainers = 0; 
-		
-		// miscellaneous options to be added
-		request.mode.showtables = 0;
-		request.mode.showerror = 0;
-		request.mode.showdebugoutput = 0;
-		
-		// admin options visible in page
-		if (IsDefined("session.dmSec.Authentication.bAdmin")) {
-			request.mode.bAdmin = session.dmSec.Authentication.bAdmin; 
-		} else {
-			request.mode.bAdmin = 0; // default to off
-		}
-			
-		// if user has admin priveleges, determine mode values
-		if (request.mode.bAdmin) {
-		// designmode
-			if (isDefined("arguments.stURL.designmode")) {
-				request.mode.design = val(arguments.stURL.designmode);
-				session.dmSec.Authentication.designmode = request.mode.design;
-			} else if (isDefined("session.dmSec.Authentication.designmode")) {
-				request.mode.design = session.dmSec.Authentication.designmode;
-			} else {
-				request.mode.design = 0;
-			}
-		// webskintrace
-			if (isDefined("arguments.stURL.tracewebskins")) {
-				request.mode.tracewebskins = val(arguments.stURL.tracewebskins);
-				session.dmSec.Authentication.tracewebskins = request.mode.tracewebskins;
-			} else if (isDefined("session.dmSec.Authentication.tracewebskins")) {
-				request.mode.tracewebskins = session.dmSec.Authentication.tracewebskins;
-			} else {
-				request.mode.tracewebskins = 0;
-			}
-		
-		// bypass caching
-			if (isDefined("arguments.stURL.flushcache")) {
-				request.mode.flushcache = val(arguments.stURL.flushcache);
-				session.dmSec.Authentication.flushcache = request.mode.flushcache;
-			} else if (isDefined("session.dmSec.Authentication.flushcache")) {
-				request.mode.flushcache = session.dmSec.Authentication.flushcache;
-			} else {
-				request.mode.flushcache = 0;
-			}
-		
-		// view content as stage
-			if (isDefined("arguments.stURL.showdraft")) {
-				request.mode.showdraft = val(arguments.stURL.showdraft);
-				session.dmSec.Authentication.showdraft = request.mode.showdraft;
-			} else if (isDefined("session.dmSec.Authentication.showdraft")) {
-				request.mode.showdraft = session.dmSec.Authentication.showdraft;
-			} else {
-				request.mode.showdraft = 0;
-			}
-		
-		// disable tray
-			if (isDefined("arguments.stURL.bShowTray")) {
-				request.fc.bShowTray = val(arguments.stURL.bShowTray);
-				session.dmProfile.bShowTray = request.fc.bShowTray;
-			} else if (isDefined("session.dmProfile.bShowTray")) {
-				request.fc.bShowTray = session.dmProfile.bShowTray;
-			} else {
-				request.fc.bShowTray = 0;
-				session.dmProfile.bShowTray = request.fc.bShowTray;
-			}
-		
-		}
-		
-		// set valid status for content
-		if (request.mode.showdraft) {
-			request.mode.lValidStatus = "draft,pending,approved";
-		} else {
-			request.mode.lValidStatus = "approved";
-		}
-	
-		// ajaxmode
-		// Ensure that if ajaxmode is defined multiple times, then we only get the last one.
-		if (structKeyExists(arguments.stURL, "ajaxmode")) {
-			arguments.stURL.ajaxmode = listLast(arguments.stURL.ajaxmode);
-		}
-		if (isDefined("form") and structKeyExists(form, "ajaxmode")) {
-			form.ajaxmode = listLast(form.ajaxmode);
-		}
-		
-		if ((isDefined("arguments.stURL.ajaxmode") and arguments.stURL.ajaxmode) or (isDefined("form.ajaxmode") and form.ajaxmode)) {
-			request.mode.ajax = true;
-		} else {
-			request.mode.ajax = false;
-		}
-			
-		// Deprecated variables
-		// TODO remove these when possible
-		request.lValidStatus = request.mode.lValidStatus; //deprecated
-		</cfscript>
-		
-		<cfreturn application.fapi.success() />
-	</cffunction>
-		
 	<cffunction name="getFUData" access="public" returntype="struct" hint="Returns the either a struct of URL variables (objectid,type,urlparameters,etc) OR a redirect struct (url,status) for the specified fURL" output="false">
 		<cfargument name="friendlyURL" type="string" required="Yes">
 		<cfargument name="dsn" required="no" default="#application.dsn#"> 

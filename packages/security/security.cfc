@@ -482,7 +482,7 @@
 		<cfset structdelete(session,"dmSec") />
 		
 		<!--- Security has changed so we need to re-initialise our request.mode struct --->
-		<cfset application.fc.factory.farFU.initRequestMode() />
+		<cfset initRequestMode() />
 	</cffunction>
 	
 	
@@ -711,4 +711,120 @@
 		<cfreturn result />
 	</cffunction>
 	
+	<cffunction name="initRequestMode" access="public" output="false" returntype="struct" hint="Sets up the request.mode struct and other request settings based on the current users security permissions">
+		<cfargument name="stURL" type="struct" required="true" default="#url#" hint="Reference to the URL struct" />
+
+		<cfscript>
+		request.fc.bShowTray = true;
+			
+		// init request.mode with defaults
+		request.mode = structNew();
+		request.mode.design = 0;
+		request.mode.flushcache = 0;
+		request.mode.showdraft = 0;
+		request.mode.ajax = 0;
+		request.mode.tracewebskins = 0;
+		
+		// Developer Mode
+		request.mode.bDeveloper = 0;
+		
+		// container management
+		// default to off, conjurer determines permissions based on nav-node
+		request.mode.showcontainers = 0; 
+		
+		// miscellaneous options to be added
+		request.mode.showtables = 0;
+		request.mode.showerror = 0;
+		request.mode.showdebugoutput = 0;
+		
+		// admin options visible in page
+		if (IsDefined("session.dmSec.Authentication.bAdmin")) {
+			request.mode.bAdmin = session.dmSec.Authentication.bAdmin; 
+		} else {
+			request.mode.bAdmin = 0; // default to off
+		}
+			
+		// if user has admin priveleges, determine mode values
+		if (request.mode.bAdmin) {
+		// designmode
+			if (isDefined("arguments.stURL.designmode")) {
+				request.mode.design = val(arguments.stURL.designmode);
+				session.dmSec.Authentication.designmode = request.mode.design;
+			} else if (isDefined("session.dmSec.Authentication.designmode")) {
+				request.mode.design = session.dmSec.Authentication.designmode;
+			} else {
+				request.mode.design = 0;
+			}
+		// webskintrace
+			if (isDefined("arguments.stURL.tracewebskins")) {
+				request.mode.tracewebskins = val(arguments.stURL.tracewebskins);
+				session.dmSec.Authentication.tracewebskins = request.mode.tracewebskins;
+			} else if (isDefined("session.dmSec.Authentication.tracewebskins")) {
+				request.mode.tracewebskins = session.dmSec.Authentication.tracewebskins;
+			} else {
+				request.mode.tracewebskins = 0;
+			}
+		
+		// bypass caching
+			if (isDefined("arguments.stURL.flushcache")) {
+				request.mode.flushcache = val(arguments.stURL.flushcache);
+				session.dmSec.Authentication.flushcache = request.mode.flushcache;
+			} else if (isDefined("session.dmSec.Authentication.flushcache")) {
+				request.mode.flushcache = session.dmSec.Authentication.flushcache;
+			} else {
+				request.mode.flushcache = 0;
+			}
+		
+		// view content as stage
+			if (isDefined("arguments.stURL.showdraft")) {
+				request.mode.showdraft = val(arguments.stURL.showdraft);
+				session.dmSec.Authentication.showdraft = request.mode.showdraft;
+			} else if (isDefined("session.dmSec.Authentication.showdraft")) {
+				request.mode.showdraft = session.dmSec.Authentication.showdraft;
+			} else {
+				request.mode.showdraft = 0;
+			}
+		
+		// disable tray
+			if (isDefined("arguments.stURL.bShowTray")) {
+				request.fc.bShowTray = val(arguments.stURL.bShowTray);
+				session.dmProfile.bShowTray = request.fc.bShowTray;
+			} else if (isDefined("session.dmProfile.bShowTray")) {
+				request.fc.bShowTray = session.dmProfile.bShowTray;
+			} else {
+				request.fc.bShowTray = 0;
+				session.dmProfile.bShowTray = request.fc.bShowTray;
+			}
+		
+		}
+		
+		// set valid status for content
+		if (request.mode.showdraft) {
+			request.mode.lValidStatus = "draft,pending,approved";
+		} else {
+			request.mode.lValidStatus = "approved";
+		}
+	
+		// ajaxmode
+		// Ensure that if ajaxmode is defined multiple times, then we only get the last one.
+		if (structKeyExists(arguments.stURL, "ajaxmode")) {
+			arguments.stURL.ajaxmode = listLast(arguments.stURL.ajaxmode);
+		}
+		if (isDefined("form") and structKeyExists(form, "ajaxmode")) {
+			form.ajaxmode = listLast(form.ajaxmode);
+		}
+		
+		if ((isDefined("arguments.stURL.ajaxmode") and arguments.stURL.ajaxmode) or (isDefined("form.ajaxmode") and form.ajaxmode)) {
+			request.mode.ajax = true;
+		} else {
+			request.mode.ajax = false;
+		}
+			
+		// Deprecated variables
+		// TODO remove these when possible
+		request.lValidStatus = request.mode.lValidStatus; //deprecated
+		</cfscript>
+		
+		<cfreturn application.fapi.success() />
+	</cffunction>
 </cfcomponent>

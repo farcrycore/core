@@ -1,4 +1,4 @@
-<cfcomponent displayname="Farcry Task Instance" hint="Task instance used to keep track of work to be done in a workflow." extends="types" output="false">
+<cfcomponent displayname="Farcry Task Instance" hint="Task instance used to keep track of work to be done in a workflow." extends="types" output="false" fuAlias="fc-task">
 	<cfproperty ftSeq="1" ftFieldset="General Details" name="title" type="string" default="" hint="Title of task definition" ftLabel="Title" ftType="string" />
 	<cfproperty ftSeq="2" ftFieldset="General Details" name="description" type="longchar" default="" hint="Description of task definition" ftLabel="Notes" />
 	<cfproperty ftSeq="3" ftFieldset="General Details" name="userID" type="UUID" default="" hint="specific user to edit this task" ftLabel="User Responsible" ftJoin="dmProfile" ftRenderType="list" ftLibraryData="getProfileList" ftShowLibraryLink="false" />		

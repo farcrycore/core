@@ -415,10 +415,13 @@
 			</cfloop>
 		</cfif>
 		
-		
+			
 		<!--- PARSE THE URL CHECKING FOR FRIENDLY URLS (url.furl) --->
-		<cfset application.fc.factory.farFU.parseURL() />
+		<cfset structAppend(url, application.fc.factory.farFU.parseURL(),true) />
+			
 
+		<!--- INITIALIZE THE REQUEST.MODE struct --->
+		<cfset application.security.initRequestMode() />
 		
 		<!----------------------------------------
 		EVENT: URL logout

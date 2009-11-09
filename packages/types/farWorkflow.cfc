@@ -1,4 +1,4 @@
-<cfcomponent displayname="Farcry Workflow Instance" hint="Workflow instance contains details of the work to be performed" extends="types" output="false">
+<cfcomponent displayname="Farcry Workflow Instance" hint="Workflow instance contains details of the work to be performed" extends="types" output="false" fuAlias="fc-workflow">
 	<cfproperty ftSeq="1" ftFieldset="" name="title" type="string" default="" hint="Title of workflow instance" ftLabel="Title" ftType="string" ftValidation="required" />
 	<cfproperty ftSeq="2" ftFieldset="" name="description" type="longchar" default="" hint="Description of work to be performed" ftLabel="Description" />
 	<cfproperty ftSeq="3" ftFieldset="" name="aTaskIDs" type="array" default="" hint="An array of task instances that make up the workflow process" ftLabel="Tasks" ftType="array" ftJoin="farTask" />
