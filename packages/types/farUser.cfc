@@ -16,7 +16,7 @@
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
 <!--- @@Developer: Blair Mackenzie (blair@daemon.com.au) --->
-<cfcomponent displayname="FarCry User" hint="User model for the Farcry User Directory." extends="types" output="false" description="">
+<cfcomponent displayname="FarCry User" hint="User model for the Farcry User Directory." extends="types" output="false" description="" fuAlias="user">
 	<cfproperty ftSeq="1" ftFieldset="User" name="userid" type="string" default="" hint="The unique id for this user. Used for logging in" ftLabel="User ID" ftType="string" bLabel="true" ftValidation="required" />
 	<cfproperty ftSeq="2" ftFieldset="User" name="password" type="string" default="" hint="" ftLabel="Password" ftType="password" ftRenderType="confirmpassword" ftShowLabel="false" ftValidation="required" />
 	<cfproperty ftSeq="3" ftFieldset="User" name="userstatus" type="string" default="active" hint="The status of this user; active, inactive, pending." ftLabel="User status" ftType="list" ftList="active:Active,inactive:Inactive,pending:Pending" />

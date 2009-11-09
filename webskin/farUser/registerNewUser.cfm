@@ -4,6 +4,9 @@
 <!--- @@description: Checks the client's security question and answer, then resets their password --->
 <!--- @@author:  Blair McKenzie (blair@daemon.com.au) --->
 
+<!--- @@viewBinding: type --->
+<!--- @@viewStack: page --->
+
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/security" prefix="sec" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
