@@ -834,10 +834,13 @@
 			</cfloop>
 		</cfif>
 		
-		
+			
 		<!--- PARSE THE URL CHECKING FOR FRIENDLY URLS (url.furl) --->
-		<cfset application.fc.factory.farFU.parseURL() />
+		<cfset structAppend(url, application.fc.factory.farFU.parseURL(),true) />
+			
 
+		<!--- INITIALIZE THE REQUEST.MODE struct --->
+		<cfset application.security.initRequestMode() />
 		
 		<!----------------------------------------
 		EVENT: URL logout
@@ -857,7 +860,8 @@
 		</cfif>
 
 	</cffunction>
-	
+
+			
 	
 	<cffunction name="getProjectConstructorLocation" access="public" output="false" hint="Returns the location of the active project constructor." returntype="string">
 		<cfargument name="plugin" type="string" hint="The name of the plugin.">

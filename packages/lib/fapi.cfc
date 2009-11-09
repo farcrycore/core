@@ -913,6 +913,8 @@
 				<cfloop list="#arguments.urlParameters#" delimiters="&" index="i">
 					<cfset arguments.stParameters[listFirst(i, "=")] = listLast(i, "=") />
 				</cfloop>
+				
+				<cfset arguments.urlParameters = "" />
 			</cfif>
 			
 			<cfif arguments.target NEQ "_self" AND NOT arguments.urlOnly> <!--- If target is defined and the user doesn't just want the URL then it is a popup window and must therefore have the following parameters --->		
@@ -958,18 +960,6 @@
 		
 				<cfset returnURL = returnURL & application.fc.factory.farFU.getFU(objectid="#linkID#", type="#arguments.type#", view="#arguments.view#", bodyView="#arguments.bodyView#", ampDelim=arguments.ampDelim)>
 		
-				<cfif not find("?",returnURL) and returnURL neq "/">
-					<cfif len(arguments.urlParameters)>
-						<cfset returnURL = "#returnURL#/#replace(replace(arguments.urlParameters,'=','/','ALL'),'&','/','ALL')#" />
-						<cfset arguments.urlParameters = "" />
-						<cfset arguments.stParameters = structnew() />
-					<cfelseif not structisempty(arguments.stParameters)>
-						<cfloop collection="#arguments.stParameters#" item="i">
-							<cfset returnURL = "#returnURL#/#i#/#arguments.stParameters[i]#" />
-						</cfloop>
-						<cfset arguments.stParameters = structnew() />
-					</cfif>
-				</cfif>
 				
 			</cfif>
 			
@@ -991,6 +981,7 @@
 			</cfif>
 			
 			<cfset returnURL = fixURL(url=returnURL,ampDelim=arguments.ampDelim,addValues="#arguments.stParameters#") />
+
 			
 			<!--- Append the anchor to the end of the URL. --->
 			<cfif len(arguments.anchor)>
