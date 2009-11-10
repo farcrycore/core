@@ -408,7 +408,7 @@ $out:$
 		
 		<cfset application.stCOAPI = structnew() />
 		
-		<cfloop list="types,rules,forms,formtools" index="thispackage">
+		<cfloop list="formtools,types,rules,forms" index="thispackage">
 			<cfset application[thispackage] = structnew() />
 			
 			<cfloop list="#application.factory.oUtils.getComponents(thispackage)#" index="thistype">
