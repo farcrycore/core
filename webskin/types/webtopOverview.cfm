@@ -54,7 +54,7 @@ TO: A refactor is required of all this now that we have webskin goodness.
 	<cfif structKeyExists(session, "overviewRef")>
 		<cfset url.ref = session.overviewRef />
 	<cfelse>
-		<url.ref = "overview" />
+		<cfset url.ref = "overview" />
 	</cfif>
 </cfif>
 <cfset session.overviewRef = url.ref />
