@@ -1,3 +1,6 @@
+<!--- @@viewBinding: any --->
+<!--- @@viewStack: fragment --->
+
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/grid" prefix="grid" />

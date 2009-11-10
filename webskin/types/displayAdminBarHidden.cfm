@@ -1,4 +1,9 @@
+<!--- @@viewBinding: any --->
+<!--- @@viewStack: fragment --->
+
+
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+
 
 <cfset session.fc.trayWebskin = "displayAdminBarHidden" />
 <skin:onReady>
