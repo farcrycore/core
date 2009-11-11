@@ -808,10 +808,10 @@
 				
 				<cfif structkeyexists(stResult,"__redirectionURL")>
 					<cfif structkeyexists(arguments,"fuParameters")>
-						<cfset stResult["__redirectionURL"] = stResult["__redirectURL"] & arguments.fuParameters />
+						<cfset stResult["__redirectionURL"] = stResult["__redirectionURL"] & arguments.fuParameters />
 					</cfif>
 					<cfif len(stLocal.stDefaultFU.queryString) or len(stFU.queryString) or len(rereplacenocase(cgi.query_string,"furl=[^&]+&?",""))>
-						<cfset stResult["__redirectionURL"] = stResult["__redirectURL"] & "?" & listappend(listappend(stLocal.stDefaultFU.queryString,stFU.queryString,"&"),rereplacenocase(cgi.query_string,"furl=[^&]+&?","")) />
+						<cfset stResult["__redirectionURL"] = stResult["__redirectionURL"] & "?" & listappend(listappend(stLocal.stDefaultFU.queryString,stFU.queryString,"&"),rereplacenocase(cgi.query_string,"furl=[^&]+&?","")) />
 					</cfif>
 					
 					<cfset stResult["__redirectionType"] = stFU.redirectionType />
