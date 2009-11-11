@@ -621,9 +621,54 @@
 		<!--- Merge the FU data with the URL data --->
 		<cfset StructAppend(stResult, stLocalURL, "true") />
 		
-
+		<!--- Normalise type fuAlias in query string --->
+		<cfif structkeyexists(stResult,"type")>
+			<cfif structkeyexists(this.typeFU,stResult.type)>
+				<cfset stResult.type = this.typeFU[stResult.type] />
+			</cfif>
+		</cfif>
 		
-		<cfif structKeyExists(request.fc, "disableFURedirction") AND request.fc.disableFURedirction>
+		<cfif structkeyexists(stResult,"objectid")
+			AND not structKeyExists(stResult, "type")>
+				<cfset stResult.type = application.fapi.findType(objectid=stResult.objectid) />
+		</cfif>
+		
+		<!--- Normalise view fuAlias in query string --->
+		<cfset stResult["__allowredirect"] = true />
+		<cfif structkeyexists(stResult,"view")>
+			<cfif structkeyexists(this.webskinFU[stResult.type],stResult.view)>			
+				<cfset stResult.view = "#this.webskinFU[stResult.type][stResult.view]#" />
+			</cfif>
+			
+			<cfset stResult["__allowredirect"] = stResult["__allowredirect"] and application.stCOAPI[stResult.type].stWebskins[stResult.view].allowredirect />
+			
+			<!--- Check the page viewbinding --->
+			<cfif structkeyexists(stResult,"objectid") and not listcontainsnocase("any,object",application.stCOAPI[stResult.type].stWebskins[stResult.view].viewbinding)>
+				<cfthrow message="You are trying to bind an object [#stResult.objectid#] to a type webskin [#stResult.view#]" />
+			</cfif>
+			<cfif not structkeyexists(stResult,"objectid") and not listcontainsnocase("any,type",application.stCOAPI[stResult.type].stWebskins[stResult.view].viewbinding)>
+				<cfthrow message="You are trying to bind a type [#stResult.type#] to an object webskin [#stResult.view#]" />
+			</cfif>
+		</cfif>
+		
+		<!--- Normalise bodyView fuAlias in query string --->
+		<cfif structkeyexists(stResult,"bodyView")>
+			<cfif structkeyexists(this.webskinFU[stResult.type],stResult.bodyView)>
+				<cfset stResult.bodyView = "#this.webskinFU[stResult.type][stResult.bodyView]#" />
+			</cfif>
+			
+			<cfset stResult["__allowredirect"] = stResult["__allowredirect"] and application.stCOAPI[stResult.type].stWebskins[stResult.bodyview].allowredirect />
+			
+			<!--- Check the body viewbinding --->
+			<cfif structkeyexists(stResult,"objectid") and not listcontainsnocase("any,object",application.stCOAPI[stResult.type].stWebskins[stResult.bodyView].viewbinding)>
+				<cfthrow message="You are trying to bind an object [#stResult.objectid#] to a type webskin [#stResult.bodyView#]" />
+			</cfif>
+			<cfif not structkeyexists(stResult,"objectid") and not listcontainsnocase("any,type",application.stCOAPI[stResult.type].stWebskins[stResult.bodyView].viewbinding)>
+				<cfthrow message="You are trying to bind a type [#stResult.type#] to an object webskin [#stResult.bodyView#]" />
+			</cfif>
+		</cfif>
+		
+		<cfif (structKeyExists(request.fc, "disableFURedirction") AND request.fc.disableFURedirction) or not stResult["__allowredirect"]>
 			<!--- DON'T REDIRECT. This is sometimes nessesary like under the webtop. --->
 		<cfelse>
 			<!--- Handle redirection case --->
@@ -655,48 +700,6 @@
 					<cfheader name="Location" value="#application.fapi.getLink(objectid=stResult.objectid, stParameters=stLocalURL)#">
 					<cfabort>		
 				</cfif>
-			</cfif>
-		</cfif>
-		
-		<!--- Normalise type fuAlias in query string --->
-		<cfif structkeyexists(stResult,"type")>
-			<cfif structkeyexists(this.typeFU,stResult.type)>
-				<cfset stResult.type = this.typeFU[stResult.type] />
-			</cfif>
-		</cfif>
-		
-		<cfif structkeyexists(stResult,"objectid")
-			AND not structKeyExists(stResult, "type")>
-				<cfset stResult.type = application.fapi.findType(objectid=stResult.objectid) />
-		</cfif>
-		
-		<!--- Normalise view fuAlias in query string --->
-		<cfif structkeyexists(stResult,"view")>
-			<cfif structkeyexists(this.webskinFU[stResult.type],stResult.view)>			
-				<cfset stResult.view = "#this.webskinFU[stResult.type][stResult.view]#" />
-			</cfif>
-			
-			<!--- Check the page viewbinding --->
-			<cfif structkeyexists(stResult,"objectid") and not listcontainsnocase("any,object",application.stCOAPI[stResult.type].stWebskins[stResult.view].viewbinding)>
-				<cfthrow message="You are trying to bind an object [#stResult.objectid#] to a type webskin [#stResult.view#]" />
-			</cfif>
-			<cfif not structkeyexists(stResult,"objectid") and not listcontainsnocase("any,type",application.stCOAPI[stResult.type].stWebskins[stResult.view].viewbinding)>
-				<cfthrow message="You are trying to bind a type [#stResult.type#] to an object webskin [#stResult.view#]" />
-			</cfif>
-		</cfif>
-		
-		<!--- Normalise bodyView fuAlias in query string --->
-		<cfif structkeyexists(stResult,"bodyView")>
-			<cfif structkeyexists(this.webskinFU[stResult.type],stResult.bodyView)>
-				<cfset stResult.bodyView = "#this.webskinFU[stResult.type][stResult.bodyView]#" />
-			</cfif>
-		
-			<!--- Check the body viewbinding --->
-			<cfif structkeyexists(stResult,"objectid") and not listcontainsnocase("any,object",application.stCOAPI[stResult.type].stWebskins[stResult.bodyView].viewbinding)>
-				<cfthrow message="You are trying to bind an object [#stResult.objectid#] to a type webskin [#stResult.bodyView#]" />
-			</cfif>
-			<cfif not structkeyexists(stResult,"objectid") and not listcontainsnocase("any,type",application.stCOAPI[stResult.type].stWebskins[stResult.bodyView].viewbinding)>
-				<cfthrow message="You are trying to bind a type [#stResult.type#] to an object webskin [#stResult.bodyView#]" />
 			</cfif>
 		</cfif>
 		
@@ -863,6 +866,7 @@
 								<cfif not structisempty(stWS) and listcontainsnocase("page,any",stWS.viewstack)>
 									<cfset stResult.view = stWS.methodname />
 									<cfset fuVars = listdeleteat(fuVars,listfind(fuVars,"@pageview")) />
+									
 									<cfbreak />
 								</cfif>
 							</cfif>

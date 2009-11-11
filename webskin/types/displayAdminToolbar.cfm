@@ -3,6 +3,7 @@
 <!--- @@timeout: 0 --->
 
 <!--- @@viewBinding: any --->
+<!--- @@allowRedirect: 0 --->
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/security" prefix="sec" />

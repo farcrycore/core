@@ -262,7 +262,7 @@
 								'' as typename, '' as webskin, cast(0 as integer) as id, '' as path, 
 								
 								<!--- extracted from webkin later --->
-								'anonymous' as author, datelastmodified, '' as description, name as displayname, 0 as cacheStatus, 0 as cacheTimeout, 0 as cacheByURL, 0 as cacheByForm, 0 as cacheByRoles, '' as cacheByVars, name as methodname, '' as fuAlias, '' as viewstack, '' as viewbinding
+								'anonymous' as author, datelastmodified, '' as description, name as displayname, 0 as cacheStatus, 0 as cacheTimeout, 0 as cacheByURL, 0 as cacheByForm, 0 as cacheByRoles, '' as cacheByVars, name as methodname, '' as fuAlias, '' as viewstack, '' as viewbinding, '' as allowredirect
 								
 						FROM 	qThis
 					</cfquery>
@@ -337,9 +337,9 @@
 							typename=request.fc.stProjectDirectorys.qAll.typename, 
 							template=stWebskinDetails.methodname, 
 							path=stWebskinDetails.path, 
-							lProperties="displayname,author,description,cacheStatus,cacheTimeout,cacheByURL,cacheByForm,cacheByRoles,cacheByVars,fuAlias,viewstack,viewbinding", 
+							lProperties="displayname,author,description,cacheStatus,cacheTimeout,cacheByURL,cacheByForm,cacheByRoles,cacheByVars,fuAlias,viewstack,viewbinding,allowredirect", 
 							lTypes="string,string,string,numeric,numeric,boolean,boolean,boolean,string,string,string,string", 
-							lDefaults=" , , ,0,1440,false,false,false, , ,#stWebskinDetails.viewstack#,#stWebskinDetails.viewbinding#"
+							lDefaults=" , , ,0,1440,false,false,false, , ,#stWebskinDetails.viewstack#,#stWebskinDetails.viewbinding#,1"
 						) />
 					
 					<!--- Assign the metadata --->
@@ -347,7 +347,7 @@
 		
 					
 					<!--- UPDATE THE METADATA QUERY --->
-					<cfloop list="path,methodname,displayname,author,description,cacheStatus,cacheTimeout,cacheByURL,cacheByForm,cacheByRoles,cacheByVars,fuAlias,viewstack,viewbinding" index="thisvar">
+					<cfloop list="path,methodname,displayname,author,description,cacheStatus,cacheTimeout,cacheByURL,cacheByForm,cacheByRoles,cacheByVars,fuAlias,viewstack,viewbinding,allowredirect" index="thisvar">
 						<cfset querysetcell(request.fc.stProjectDirectorys.qAll,thisvar,stWebskinDetails[thisvar],request.fc.stProjectDirectorys.qAll.currentRow) />	
 					</cfloop>
 				</cfloop>
