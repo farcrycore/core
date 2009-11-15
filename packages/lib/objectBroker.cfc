@@ -22,8 +22,7 @@
 		<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">			
 			<cfset application.objectbroker[arguments.typename]=structnew() />
 			<cfset application.objectbroker[arguments.typename].aobjects=arraynew(1) />
-			<cfset application.objectbroker[arguments.typename].maxobjects=arguments.MaxObjects />
-			<cfset application.objectbroker[arguments.typename].stTypeWebskins = structnew() />			
+			<cfset application.objectbroker[arguments.typename].maxobjects=arguments.MaxObjects />		
 		</cflock>
 		
 		<cfreturn bResult />
@@ -462,17 +461,11 @@
 		
 		<cfif application.bObjectBroker>
 		
-			<cfif structKeyExists(application.objectbroker, arguments.typename)>
+			<cfif len(arguments.typename) AND structKeyExists(application.objectbroker, arguments.typename)>
 				<cfif structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)>
 					<cfif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")>
 						<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
 							<cfset structDelete(application.objectbroker[arguments.typename][arguments.objectid].stWebskins, arguments.template) />
-						</cflock>
-					</cfif>
-				<cfelse>
-					<cfif structKeyExists(application.objectbroker[arguments.typename], "stTypeWebskins")>
-						<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
-							<cfset structDelete(application.objectbroker[arguments.typename].stTypeWebskins, arguments.template) />
 						</cflock>
 					</cfif>
 				</cfif>
@@ -572,8 +565,7 @@
 						
 						<cfif qWebskinAncestors.recordCount>
 							<cfloop query="qWebskinAncestors">
-								<cfset bSuccess = removeWebskin(objectid=qWebskinAncestors.ancestorID,typename=qWebskinAncestors.ancestorTypename,template=qWebskinAncestors.ancestorTemplate) />
-								<!--- <cfset stResult = oWebskinAncestor.delete(objectid=qWebskinAncestors.objectid) /> --->
+								<cfset bSuccess = removeWebskin(objectid=qWebskinAncestors.ancestorID,typename=qWebskinAncestors.ancestorBindingTypename,template=qWebskinAncestors.ancestorTemplate) />
 							</cfloop>
 						</cfif>
 						<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
@@ -581,7 +573,7 @@
 						</cflock>
 					</cfif>
 				</cfloop>
-				
+
 				<cfset aObjectIds = ListToArray(arguments.lObjectIDs)>
 				
 				<cflock name="objectBroker" type="exclusive" timeout="2" throwontimeout="true">
@@ -595,15 +587,6 @@
 						</cfdefaultcase>
 					</cfswitch>					
 				</cflock>
-				
-				<!--- 
-				<cfset pos = application.objectBroker[arguments.typename].aObjects.contains(arguments.objectid) />
-				<cfset arraylist = arraytoList(application.objectBroker[arguments.typename].aObjects)>
-				<cfset pos = listContainsNoCase(arraylist,arguments.objectid)>
-		
-				<cfif pos GT 0>
-					<cfset deleted = arrayDeleteAt(application.objectBroker[arguments.typename].aObjects,pos)>
-				</cfif> --->
 				
 			</cfif>
 		</cfif>

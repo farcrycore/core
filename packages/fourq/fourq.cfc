@@ -334,6 +334,11 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var webskinHTML = "" />
 		<cfset var stTrace = "" />
 		<cfset var bAdded = "" />
+		<cfset var oWebskinAncestor = "" />
+		<cfset var i = "" />
+		<cfset var stArgs = "" />
+		<cfset var stProperties = "" />
+		<cfset var stResult = "" />
 				
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />

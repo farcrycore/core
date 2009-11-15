@@ -57,8 +57,10 @@ $Developer: Matthew Bryant (mbryant@daemon.com.au) $
 				<cfset variables.webskinObjectID = arguments.webskinObjectID />
 				
 				<cfquery datasource="#application.dsn#" name="variables.qCurrentAncestors">
-					SELECT 	objectid,ancestorID,ancestorTemplate,ancestorTypename
-					FROM 	dmWebskinAncestor
+					SELECT 	a.objectid,a.ancestorID,a.ancestorTemplate,a.ancestorTypename, ref.typename as ancestorBindingTypename
+					FROM 	dmWebskinAncestor as a
+					LEFT JOIN refObjects as ref
+					ON a.ancestorID = ref.objectid
 					WHERE 	webskinObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#variables.webskinObjectID#">
 				</cfquery>			
 			</cfif>
@@ -69,8 +71,10 @@ $Developer: Matthew Bryant (mbryant@daemon.com.au) $
 				<cfset variables.webskinTemplate = arguments.webskinTemplate />
 				
 				<cfquery datasource="#application.dsn#" name="variables.qCurrentAncestors">
-					SELECT 	objectid,ancestorID,ancestorTemplate,ancestorTypename
-					FROM 	dmWebskinAncestor
+					SELECT 	a.objectid,a.ancestorID,a.ancestorTemplate,a.ancestorTypename, ref.typename as ancestorBindingTypename
+					FROM 	dmWebskinAncestor as a
+					LEFT JOIN refObjects as ref
+					ON a.ancestorID = ref.objectid
 					WHERE 	webskinObjectID = ''
 							and webskinTypename = <cfqueryparam cfsqltype="cf_sql_varchar" value="#variables.webskinTypename#">
 							and webskinTemplate = <cfqueryparam cfsqltype="cf_sql_varchar" value="#variables.webskinTemplate#">
