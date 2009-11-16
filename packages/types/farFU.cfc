@@ -857,17 +857,25 @@
 						<cfcase value="@pageview">
 							<!--- Views can only be specified if the type is known... --->
 							<cfif structKeyExists(stResult, "type") and len(stResult.type)>
+							
+								<cfset stWS = structNew() />
+								
 								<cfif structkeyexists(this.webskinFU[stResult.type],fuParam)>
 									<cfset stWS = application.stCOAPI[stResult.type].stWebskins[this.webskinFU[stResult.type][fuParam]] />
 								<cfelseif structkeyexists(application.stCOAPI[stResult.type].stWebskins,fuParam)>
 									<cfset stWS = application.stCOAPI[stResult.type].stWebskins[fuParam] />
 								</cfif>
 								
-								<cfif not structisempty(stWS) and listcontainsnocase("page,any",stWS.viewstack)>
-									<cfset stResult.view = stWS.methodname />
-									<cfset fuVars = listdeleteat(fuVars,listfind(fuVars,"@pageview")) />
-									
-									<cfbreak />
+								<cfif not structisempty(stWS)>
+								
+									<cfif listcontainsnocase("page,any,ajax",stWS.viewstack)>
+										<cfset stResult.view = stWS.methodname />
+										<cfset fuVars = listdeleteat(fuVars,listfind(fuVars,"@pageview")) />
+	
+										<cfbreak />
+									<cfelse>
+										<cfthrow message="This webskin (type:#stResult.type# & webskin:#stWS.methodname#) is not positioned in the view stack as page, any or ajax." />
+									</cfif>
 								</cfif>
 							</cfif>
 						</cfcase>
@@ -875,22 +883,29 @@
 						<cfcase value="@bodyview">
 							<!--- Views can only be specified if the type is known... --->
 							<cfif structKeyExists(stResult, "type") and len(stResult.type)>
+							
+								<cfset stWS = structNew() />
+								
 								<cfif structkeyexists(this.webskinFU[stResult.type],fuParam)>
 									<cfset stWS = application.stCOAPI[stResult.type].stWebskins[this.webskinFU[stResult.type][fuParam]] />
 								<cfelseif structkeyexists(application.stCOAPI[stResult.type].stWebskins,fuParam)>
 									<cfset stWS = application.stCOAPI[stResult.type].stWebskins[fuParam] />
 								</cfif>
 								
-								<cfif not structisempty(stWS) and listcontainsnocase("body,any",stWS.viewstack)>
-									<cfset stResult.bodyView = stWS.methodname />
-									<cfset fuVars = listdeleteat(fuVars,listfind(fuVars,"@bodyview")) />
-									
-									<!--- Page view is always provided before body view --->
-									<cfif listcontains(fuVars,"@pageview")>
-										<cfset fuVars = listdeleteat(fuVars,listfind(fuVars,"@pageview")) />
+								<cfif not structisempty(stWS)>
+									<cfif listcontainsnocase("body,any",stWS.viewstack)>
+										<cfset stResult.bodyView = stWS.methodname />
+										<cfset fuVars = listdeleteat(fuVars,listfind(fuVars,"@bodyview")) />
+										
+										<!--- Page view is always provided before body view --->
+										<cfif listcontains(fuVars,"@pageview")>
+											<cfset fuVars = listdeleteat(fuVars,listfind(fuVars,"@pageview")) />
+										</cfif>
+										
+										<cfbreak />
+									<cfelse>
+										<cfthrow message="This webskin (type:#stResult.type# & webskin:#stWS.methodname#) is not positioned in the view stack as body or any." />
 									</cfif>
-									
-									<cfbreak />
 								</cfif>
 							</cfif>
 						</cfcase>
