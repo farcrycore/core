@@ -874,7 +874,14 @@
 	
 										<cfbreak />
 									<cfelse>
-										<cfthrow message="This webskin (type:#stResult.type# & webskin:#stWS.methodname#) is not positioned in the view stack as page, any or ajax." />
+										<!--- 
+										The webskin is valid name but not a full page view so quick check to see if it is a valid bodyView, 
+										if not...then it does not have the correct view stack descriptor.
+										 --->
+										<cfif not listcontainsnocase("body,any",stWS.viewstack)>
+											<cfthrow message="This webskin (type:#stResult.type# & webskin:#stWS.methodname#) is not positioned in the view stack as page, body, any or ajax." />
+										</cfif>						
+										
 									</cfif>
 								</cfif>
 							</cfif>
