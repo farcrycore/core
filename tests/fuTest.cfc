@@ -61,7 +61,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"furl") />
 	</cffunction>
 	
 	<!--- Constructed FU: only typename --->
@@ -97,7 +97,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(structkeylist(stResult),"type") />
+		<cfset assertEquals(structkeylist(stResult),"furl,type") />
 		<cfset assertEquals(stResult.type, "farFU") />
 	</cffunction>
 	
@@ -110,7 +110,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(structkeylist(stResult),"type") />
+		<cfset assertEquals(structkeylist(stResult),"furl,type") />
 		<cfset assertEquals(stResult.type, "farFU") />
 	</cffunction>
 	
@@ -148,11 +148,14 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /typealias/objectviewalias" hint="Checks that this friendly URL is as invalid due to the attempt to use an object-bound webskin" name="parseFU_typealias_objectviewalias" access="public">
+		<cfset var stURL = structnew() />
 		<cfset var stResult = structnew() />
 		<cfset var error = false />
 		
+		<cfset stURL.furl = "/fu/test-page-object" />
+		
 		<cftry>
-			<cfset stResult = this.farFU.getFUData(friendlyURL="/fu/test-page-object") />
+			<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 			
 			<cfcatch>
 				<cfset assertEquals(cfcatch.message,"You are trying to bind a type [farFU] to an object webskin [displayPageObjectTest]") />
@@ -185,7 +188,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"type,view") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"furl,type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.view, "displayPageTest") />
 	</cffunction>
@@ -200,7 +203,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"type,view") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"furl,type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.view, "displayPageTest") />
 	</cffunction>
@@ -215,7 +218,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"type,view") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"furl,type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.view, "displayPageTest") />
 	</cffunction>
@@ -230,7 +233,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"type,view") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"furl,type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.view, "displayPageTest") />
 	</cffunction>
@@ -269,11 +272,14 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /typealias/objectbodyalias" hint="Checks that this friendly URL is as invalid due to the attempt to use an object-bound body webskin" name="parseFU_typealias_objectbodyalias" access="public">
+		<cfset var stURL = structnew() />
 		<cfset var stResult = structnew() />
 		<cfset var error = false />
 		
+		<cfset stURL.furl = "/fu/test-body-default" />
+		
 		<cftry>
-			<cfset stResult = this.farFU.getFUData(friendlyURL="/fu/test-body-default") />
+			<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 			
 			<cfcatch>
 				<cfset assertEquals(cfcatch.message,"You are trying to bind a type [farFU] to an object webskin [displayBodyTest]") />
@@ -306,7 +312,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,type") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,furl,type") />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.bodyview, "displayTypeBodyTest") />
 	</cffunction>
@@ -321,7 +327,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,type") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,furl,type") />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.bodyview, "displayTypeBodyTest") />
 	</cffunction>
@@ -336,7 +342,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,type") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,furl,type") />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.bodyview, "displayTypeBodyTest") />
 	</cffunction>
@@ -351,7 +357,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,type") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,furl,type") />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.bodyview, "displayTypeBodyTest") />
 	</cffunction>
@@ -440,7 +446,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,type,view") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,furl,type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.view, "displayPageTest") />
 		<cfset assertEquals(stResult.bodyview, "displayTypeBodyTest") />
@@ -457,18 +463,21 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,type,view") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,furl,type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.view, "displayPageTest") />
 		<cfset assertEquals(stResult.bodyview, "displayTypeBodyTest") />
 	</cffunction>
 		
 	<cffunction displayname="Parse: /typealias/viewalias/objectbodyalias" hint="Checks that this friendly URL is as invalid due to the attempt to use an object-bound webskin" name="parseFU_typealias_viewalias_objectbodyalias" access="public">
+		<cfset var stURL = structnew() />
 		<cfset var stResult = structnew() />
 		<cfset var error = false />
 		
+		<cfset stURL.furl = "/fu/test-page-default/test-body-default" />
+		
 		<cftry>
-			<cfset stResult = this.farFU.getFUData(friendlyURL="/fu/test-page-default/test-body-default") />
+			<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 			
 			<cfcatch>
 				<cfset assertEquals(cfcatch.message,"You are trying to bind a type [farFU] to an object webskin [displayBodyTest]") />
@@ -540,7 +549,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"objectid,type,view") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"furl,objectid,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.view, "displayPageTest") />
@@ -556,7 +565,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"objectid,type,view") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"furl,objectid,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.view, "displayPageTest") />
@@ -574,11 +583,14 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /objectid/typeviewalias" hint="Checks that this friendly URL is as invalid due to the attempt to use an type-bound webskin" name="parseFU_objectid_typeviewalias" access="public">
+		<cfset var stURL = structnew() />
 		<cfset var stResult = structnew() />
 		<cfset var error = false />
 		
+		<cfset stURL.furl = "/#this.testFU.objectid#/test-page-type" />
+		
 		<cftry>
-			<cfset stResult = this.farFU.getFUData(friendlyURL="/#this.testFU.objectid#/test-page-type") />
+			<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 			
 			<cfcatch>
 				<cfset assertEquals(cfcatch.message,"You are trying to bind an object [#this.testFU.objectid#] to a type webskin [displayTypeTest]") />
@@ -620,7 +632,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,objectid,type") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,furl,objectid,type") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.bodyview, "displayBodyTest") />
@@ -636,7 +648,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,objectid,type") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,furl,objectid,type") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.bodyview, "displayBodyTest") />
@@ -654,11 +666,14 @@
 	</cffunction>
 	
 	<cffunction displayname="Parse: /objectid/typebodyalias" hint="Checks that this friendly URL is as invalid due to the attempt to use an type-bound webskin" name="parseFU_objectid_typebodyalias" access="public">
+		<cfset var stURL = structnew() />
 		<cfset var stResult = structnew() />
 		<cfset var error = false />
 		
+		<cfset stURL.furl = "/#this.testFU.objectid#/test-body-type" />
+		
 		<cftry>
-			<cfset stResult = this.farFU.getFUData(friendlyURL="/#this.testFU.objectid#/test-body-type") />
+			<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 			
 			<cfcatch>
 				<cfset assertEquals(cfcatch.message,"You are trying to bind an object [#this.testFU.objectid#] to a type webskin [displayTypeBodyTest]") />
@@ -667,7 +682,7 @@
 		</cftry>
 		
 		<cfif not error>
-			<cfset fail("Error should have been thrown: 'You are trying to bind a type [#this.testFU.objectid#] to an object webskin [displayTypeBodyTest]'") />
+			<cfset fail("Error should have been thrown: 'You are trying to bind an object [#this.testFU.objectid#] to a type webskin [displayTypeBodyTest]':#stResult.toString()#") />
 		</cfif>
 	</cffunction>
 	
@@ -723,7 +738,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,objectid,type,view") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,furl,objectid,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.view, "displayPageTest") />
@@ -800,7 +815,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"objectid,type,view") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"furl,objectid,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.view, "displayPageTest") />
@@ -856,7 +871,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,objectid,type") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,furl,objectid,type") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.bodyview, "displayBodyTest") />
@@ -884,7 +899,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,objectid,type,view") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,furl,objectid,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.view, "displayPageTest") />

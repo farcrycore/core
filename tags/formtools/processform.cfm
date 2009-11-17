@@ -100,16 +100,21 @@
 
 
 <cfif thistag.ExecutionMode EQ "End">
+
+	<cfif structKeyExists(caller, "onExitProcess")>
+		<cfset stLocal.onExitProcess = duplicate(caller.onExitProcess) />
+	</cfif>
+	
 	<!--- Was a simple URL redirect requested? --->
 	<cfif structKeyExists(attributes, "URL")>
 		<cfset attributes.exit = true />
-		<cfset caller.onExitProcess = "#attributes.URL#" />
+		<cfset stLocal.onExitProcess = "#attributes.URL#" />
 	</cfif>
 	
 	<!--- If you set bHideForms, you are effectively exiting the webskin but not redirecting anywhere --->
 	<cfif structKeyExists(attributes, "bHideForms") AND isBoolean(attributes.bHideForms) AND attributes.bHideForms>
 		<cfset attributes.exit = true />
-		<cfset caller.onExitProcess = "" />
+		<cfset stLocal.onExitProcess = "" />
 	</cfif>
 	
 
@@ -123,40 +128,40 @@
 			the edit view could be called through a function in which case the onExit struct will be in the arguments scope
 			We should check for this first
 		 --->
-		<cfif not structKeyExists(caller, "onExitProcess")>
+		<cfif not structKeyExists(stLocal, "onExitProcess")>
 			<cfif structKeyExists(caller, "arguments") AND structKeyExists(caller.arguments, "onExitProcess")>
-				<cfset caller.onExitProcess = caller.arguments.onExitProcess />		
+				<cfset stLocal.onExitProcess = caller.arguments.onExitProcess />		
 			</cfif>
 		</cfif>
 		
 		<!--- If the onExit doesnt exist, default to Refreshing the page. --->		
-		<cfparam name="caller.onExitProcess" default="refresh" />
+		<cfparam name="stLocal.onExitProcess" default="refresh" />
 		
 		<!--- If the onExit is not a struct we assume it is a URL to redirect to and we convert it too a struct. --->
-		<cfif NOT isStruct(caller.onExitProcess)>
-			<cfset variables.stOnExit = structNew() />
-			<cfset variables.stOnExit.Type = "URL" />
-			<cfset variables.stOnExit.Content = caller.onExitProcess />
+		<cfif NOT isStruct(stLocal.onExitProcess)>
+			<cfset stLocal.stOnExit = structNew() />
+			<cfset stLocal.stOnExit.Type = "URL" />
+			<cfset stLocal.stOnExit.Content = stLocal.onExitProcess />
 		<cfelse>
-			<cfset variables.stOnExit = caller.onExitProcess />
+			<cfset stLocal.stOnExit = stLocal.onExitProcess />
 		</cfif>
 
 		<!--- Events can be of type HTML, Function, URL(default) --->
-		<cfswitch expression="#stOnExit.Type#">
+		<cfswitch expression="#stLocal.stOnExit.Type#">
 			
 			<cfcase value="HTML">
-				<cfif structKeyExists(stOnExit, "Content")>
-					<cfoutput>#stOnExit.Content#</cfoutput>
+				<cfif structKeyExists(stLocal.stOnExit, "Content")>
+					<cfoutput>#stLocal.stOnExit.Content#</cfoutput>
 				</cfif>
 			</cfcase>
 						
 			<cfcase value="URL">
-				<cfif structKeyExists(stOnExit, "Content")>
-					<cfif len(stOnExit.Content)>
-						<cfif stOnExit.Content EQ "refresh">
+				<cfif structKeyExists(stLocal.stOnExit, "Content")>
+					<cfif len(stLocal.stOnExit.Content)>
+						<cfif stLocal.stOnExit.Content EQ "refresh">
 							<cflocation url="#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#" addtoken="false">
 						<cfelse>
-							<cflocation url="#stOnExit.Content#" addtoken="false">
+							<cflocation url="#stLocal.stOnExit.Content#" addtoken="false">
 						</cfif>
 					<cfelse>
 						<!--- DO NOTHING --->
