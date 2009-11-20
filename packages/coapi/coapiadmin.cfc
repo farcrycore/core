@@ -325,11 +325,11 @@
 						<cfset stWebskinDetails.viewstack = "body" />
 						<cfset stWebskinDetails.viewbinding = "type" />
 					<cfelseif refind("^displayType",stWebskinDetails.methodname)>
-						<cfset stWebskinDetails.viewstack = "fragment" />
+						<cfset stWebskinDetails.viewstack = "any" />
 						<cfset stWebskinDetails.viewbinding = "type" />
 					<cfelse>
-						<cfset stWebskinDetails.viewstack = "fragment" />
-						<cfset stWebskinDetails.viewbinding = "object" />
+						<cfset stWebskinDetails.viewstack = "any" />
+						<cfset stWebskinDetails.viewbinding = "any" />
 					</cfif>
 					
 					<!--- Parse the webskin for the metadata --->
@@ -405,11 +405,11 @@
 	</cffunction>
 
 	<cffunction name="getWebskin" returntype="struct" access="public" output="false" hint="Returns the webskins struct for a webskin specified by methodname">
-		<cfargument name="webskinname" type="string" required="true" hint="methodname" />
 		<cfargument name="typename" type="string" required="true" />
+		<cfargument name="webskin" type="string" required="true" hint="methodname" />
 		
-		<cfif isdefined("application.stCOAPI.#arguments.typename#.stWebskins.#arguments.webskinname#")>
-			<cfreturn application.stCOAPI[arguments.typename].stWebskins[arguments.webskinname] />
+		<cfif isdefined("application.stCOAPI.#arguments.typename#.stWebskins.#arguments.webskin#")>
+			<cfreturn application.stCOAPI[arguments.typename].stWebskins[arguments.webskin] />
 		<cfelse><!--- Not found --->
 			<cfreturn structnew() />
 		</cfif>

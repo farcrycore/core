@@ -868,7 +868,8 @@
 								
 								<cfif not structisempty(stWS)>
 								
-									<cfif listcontainsnocase("page,any,ajax",stWS.viewstack)>
+									<!--- We can call any webskin in the viewstack if in ajax mode --->
+									<cfif listcontainsnocase("page,any,ajax",stWS.viewstack) or findNoCase('ajaxmode',arguments.fuParameters)>
 										<cfset stResult.view = stWS.methodname />
 										<cfset fuVars = listdeleteat(fuVars,listfind(fuVars,"@pageview")) />
 	
@@ -1259,9 +1260,11 @@
 		
 		<cfset var typeFU = "" />
 		<cfset var viewFU = "" />
-		<cfset var standardViewFU = "" />
 		<cfset var bodyFU = "" />
 		<cfset var thistype = "" />
+		<cfset var stBodyView = "" />
+		<cfset var stView = "" />
+		<cfset var bMustUseRegularURLParams = false />
 		
 		<cfif len(arguments.type)>
 			<cfif isdefined("application.stCOAPI.#arguments.type#.fuAlias") and len(application.stCOAPI[arguments.type].fuAlias)>
@@ -1274,17 +1277,26 @@
 			<cfset thistype = application.fapi.findType(arguments.objectid) />
 		</cfif>
 		<cfif len(arguments.view)>
-			<cfif len(thistype) and isdefined("application.stCOAPI.#thistype#.stWebskins.#arguments.view#.fuAlias") and len(application.stCOAPI[thistype].stWebskins[arguments.view].fuAlias)>
-				<cfset viewFU = application.stCOAPI[thistype].stWebskins[arguments.view].fuAlias />
+			<cfset stView = application.coapi.coapiadmin.getWebskin(thistype, arguments.view) />
+			<cfif len(thistype) and structKeyExists(stView, "fuAlias") and len(stView.fuAlias)>
+				<cfset viewFU = stView.fuAlias />
 			<cfelse>
 				<cfset viewFU = arguments.view />
 			</cfif>
 		</cfif>
 		<cfif len(arguments.bodyView)>
-			<cfif len(thistype) and isdefined("application.stCOAPI.#thistype#.stWebskins.#arguments.bodyView#.fuAlias") and len(application.stCOAPI[thistype].stWebskins[arguments.bodyView].fuAlias)>
-				<cfset bodyFU = application.stCOAPI[thistype].stWebskins[arguments.bodyView].fuAlias />
+			<cfset stBodyView = application.coapi.coapiadmin.getWebskin(thistype, arguments.bodyView) />
+			<cfif len(thistype) and structKeyExists(stBodyView, "fuAlias") and len(stBodyView.fuAlias)>
+				<cfset bodyFU = stBodyView.fuAlias />
 			<cfelse>
 				<cfset bodyFU = arguments.bodyView />
+			</cfif>
+			
+			<!--- If we have defined the bodyView and NOT the view, then in order for the URL Parsing to work, we MUST explicitly tell the url that the bodyView webskin is for the bodyView --->
+			<cfif stBodyView.viewStack NEQ "body">
+				<cfif not len(arguments.view)>
+					<cfset bMustUseRegularURLParams = true />
+				</cfif>
 			</cfif>
 		</cfif>
 		
@@ -1328,6 +1340,13 @@
 				<!--- The home page can't have implied parameters --->
 				<cfif returnURL eq "/">
 					<cfset returnURL = "/?" />
+				</cfif>
+				
+				<!--- If we must use regular URL parameters, then make sure we have the ? --->
+				<cfif bMustUseRegularURLParams>
+					<cfif NOT FindNoCase("?", returnURL)>
+						<cfset returnURL = "#returnURL#?" />
+					</cfif>
 				</cfif>
 				
 				<!--- IF OUR URL ALREADY CONTAINS A QUESTION MARK, THEN WE MUST USE REGULAR URL VARIABLES  --->
