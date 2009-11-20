@@ -796,7 +796,7 @@
 			<cfif stFU.redirectionType NEQ "none">
 				<!--- NOTE: URL information is still included in a redirect struct as the redirect will not be honoured for ajax requests --->
 				
-				<cfif stFU.redirectTo EQ "default">
+				<cfif stFU.redirectTo EQ "default" and not stFU.bDefault eq 1>
 					<cfset stLocal.stDefaultFU = getDefaultFUObject(refObjectID=stFU.refObjectID) />
 					
 					<cfif not structIsEmpty(stLocal.stDefaultFU) AND stLocal.stDefaultFU.objectid NEQ stFU.objectid>
