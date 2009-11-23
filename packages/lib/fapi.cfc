@@ -929,7 +929,7 @@
 			<cfif not len(returnURL) and isdefined("url.furl")>
 				<cfset returnURL = url.furl />
 			<cfelseif not len(returnURL)>
-				<cfset returnURL = cgi.script_name />
+				<cfset returnURL = "#cgi.script_name#?#cgi.query_string#" />
 			</cfif>
 			
 			<cfset returnURL = fixURL(url=returnURL,ampDelim=arguments.ampDelim,addValues="#arguments.stParameters#") />
