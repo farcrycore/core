@@ -689,8 +689,13 @@ user --->
 		<cfelse>
 	
 			<cfset oFormtoolUtil = createObject("component", "farcry.core.packages.farcry.formtools") />
-			<cfset sqlColumns="objectid,locked,lockedby,#attributes.columnlist#" />		
+			
+			<cfset sqlColumns="objectid,locked,lockedby" />		
 		
+			<cfif len(attributes.columnlist)>
+				<cfset sqlColumns = listAppend(sqlColumns, attributes.columnlist) />
+			</cfif>
+			
 			<cfset stRecordset = oFormtoolUtil.getRecordset(paginationID="#attributes.typename#", sqlColumns=sqlColumns, typename="#attributes.typename#", RecordsPerPage="#attributes.numitems#", sqlOrderBy="#session.objectadminFilterObjects[attributes.typename].sqlOrderBy#", sqlWhere="#attributes.sqlWhere#", lCategories="#attributes.lCategories#", bCheckVersions=true) />	
 		</cfif>
 
