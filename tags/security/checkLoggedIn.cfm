@@ -75,10 +75,13 @@
 			<cfset session.fc.loginMessage = attributes.message />
 		</cfif>
 		
+		<!--- SETUP THE RETURN URL. --->
 		<cfset returnURL = application.fapi.getLink(argumentCollection="#attributes#") />		
 		
-		<skin:location href="#loginURL#" urlParameters="returnUrl=#returnURL#" />
+		<cfset stParams = structNew() />
+		<cfset stParams.returnURL = returnURL />
 		
+		<skin:location href="#loginURL#" stparameters="#stParams#" />
 	</cfif>
 </cfif>
 	

@@ -29,6 +29,7 @@
 		<cfset stCSS.id = hash("#stCSS.baseHREF##stCSS.lFiles#") />
 	</cfif>
 	
+	<cfparam name="application.fc.stCSSLibraries" default="#structNew()#" />
 	
 	<cfparam name="request.inHead.aCSSLibraries" default="#arrayNew(1)#" />
 	<cfparam name="request.inHead.stCSSLibraries" default="#structNew()#" />

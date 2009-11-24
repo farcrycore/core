@@ -510,7 +510,9 @@ object methods
 					</cfquery>
 					
 					<cfparam name="stO.#typepermissiontype#" default="#application.fapi.getContentType(typename=typepermissiontype)#" />
-					<cfset stO[typepermissiontype].onSecurityChange(changetype="type",objectid=qObjects.objectid,typename=typepermissiontype,farRoleID=arguments.stProperties.objectid,farPermissionID=thisperm,oldright=1,newright=0) />
+					<cfloop query="qObjects">
+						<cfset stO[typepermissiontype].onSecurityChange(changetype="type",objectid=qObjects.objectid,typename=typepermissiontype,farRoleID=arguments.stProperties.objectid,farPermissionID=thisperm,oldright=1,newright=0) />
+					</cfloop>
 				</cfif>
 			</cfloop>
 			
@@ -525,7 +527,9 @@ object methods
 					</cfquery>
 					
 					<cfparam name="stO.#typepermissiontype#" default="#application.fapi.getContentType(typename=typepermissiontype)#" />
-					<cfset stO[typepermissiontype].onSecurityChange(changetype="type",objectid=qObjects.objectid,typename=typepermissiontype,farRoleID=arguments.stProperties.objectid,farPermissionID=thisperm,oldright=0,newright=1) />
+					<cfloop query="qObjects">
+						<cfset stO[typepermissiontype].onSecurityChange(changetype="type",objectid=qObjects.objectid,typename=typepermissiontype,farRoleID=arguments.stProperties.objectid,farPermissionID=thisperm,oldright=0,newright=1) />
+					</cfloop>
 				</cfif>
 			</cfloop>
 		</cfif>

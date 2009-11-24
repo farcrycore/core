@@ -50,7 +50,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"__allowredirect") />
 	</cffunction>
 	
 	<cffunction displayname="Parse: /" hint="Checks that this friendly URL returns nothin" name="parseFU_home" access="public">
@@ -61,7 +61,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"furl") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"__allowredirect,furl") />
 	</cffunction>
 	
 	<!--- Constructed FU: only typename --->
@@ -97,7 +97,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(structkeylist(stResult),"furl,type") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"__allowredirect,furl,type") />
 		<cfset assertEquals(stResult.type, "farFU") />
 	</cffunction>
 	
@@ -110,7 +110,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(structkeylist(stResult),"furl,type") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"__allowredirect,furl,type") />
 		<cfset assertEquals(stResult.type, "farFU") />
 	</cffunction>
 	
@@ -188,7 +188,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"furl,type,view") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"__allowredirect,furl,type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.view, "displayPageTest") />
 	</cffunction>
@@ -203,7 +203,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"furl,type,view") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"__allowredirect,furl,type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.view, "displayPageTest") />
 	</cffunction>
@@ -218,7 +218,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"furl,type,view") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"__allowredirect,furl,type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.view, "displayPageTest") />
 	</cffunction>
@@ -233,7 +233,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"furl,type,view") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"__allowredirect,furl,type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.view, "displayPageTest") />
 	</cffunction>
@@ -312,7 +312,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,furl,type") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"__allowredirect,bodyview,furl,type") />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.bodyview, "displayTypeBodyTest") />
 	</cffunction>
@@ -327,7 +327,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,furl,type") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"__allowredirect,bodyview,furl,type") />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.bodyview, "displayTypeBodyTest") />
 	</cffunction>
@@ -342,7 +342,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,furl,type") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"__allowredirect,bodyview,furl,type") />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.bodyview, "displayTypeBodyTest") />
 	</cffunction>
@@ -357,7 +357,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,furl,type") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"__allowredirect,bodyview,furl,type") />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.bodyview, "displayTypeBodyTest") />
 	</cffunction>
@@ -446,7 +446,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,furl,type,view") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"__allowredirect,bodyview,furl,type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.view, "displayPageTest") />
 		<cfset assertEquals(stResult.bodyview, "displayTypeBodyTest") />
@@ -463,7 +463,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,furl,type,view") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"__allowredirect,bodyview,furl,type,view") />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.view, "displayPageTest") />
 		<cfset assertEquals(stResult.bodyview, "displayTypeBodyTest") />
@@ -549,7 +549,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"furl,objectid,type,view") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"__allowredirect,furl,objectid,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.view, "displayPageTest") />
@@ -565,7 +565,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"furl,objectid,type,view") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"__allowredirect,furl,objectid,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.view, "displayPageTest") />
@@ -632,7 +632,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,furl,objectid,type") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"__allowredirect,bodyview,furl,objectid,type") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.bodyview, "displayBodyTest") />
@@ -648,7 +648,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,furl,objectid,type") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"__allowredirect,bodyview,furl,objectid,type") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.bodyview, "displayBodyTest") />
@@ -738,7 +738,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,furl,objectid,type,view") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"__allowredirect,bodyview,furl,objectid,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.view, "displayPageTest") />
@@ -815,7 +815,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"furl,objectid,type,view") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"__allowredirect,furl,objectid,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.view, "displayPageTest") />
@@ -871,7 +871,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,furl,objectid,type") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"__allowredirect,bodyview,furl,objectid,type") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.bodyview, "displayBodyTest") />
@@ -899,7 +899,7 @@
 		
 		<cfset stResult = this.farFU.parseURL(stURL=stURL) />
 		
-		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"bodyview,furl,objectid,type,view") />
+		<cfset assertEquals(listsort(structkeylist(stResult),"textNoCase"),"__allowredirect,bodyview,furl,objectid,type,view") />
 		<cfset assertEquals(stResult.objectid, this.testFU.objectid) />
 		<cfset assertEquals(stResult.type, "farFU") />
 		<cfset assertEquals(stResult.view, "displayPageTest") />

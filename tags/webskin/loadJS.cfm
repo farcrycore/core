@@ -30,6 +30,8 @@
 	</cfif>
 	
 	
+	<cfparam name="application.fc.stJSLibraries" default="#structNew()#" />
+	
 	<cfparam name="request.inHead.aJSLibraries" default="#arrayNew(1)#" />
 	<cfparam name="request.inHead.stJSLibraries" default="#structNew()#" />
 	
