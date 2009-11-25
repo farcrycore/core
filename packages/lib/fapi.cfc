@@ -636,9 +636,13 @@
 			<cfargument name="date" required="true" hint="The date to convert to the standard system time" />
 			
 			<cfset var applicationTimezone = application.fapi.getConfig('general','applicationTimezone', '#application.fc.serverTimezone#') /><!--- "Australia/Sydney" --->			
-			<cfset var UTC = application.fc.LIB.TIMEZONE.castToUTC(arguments.date, applicationTimezone) /><!--- This will store the UTC Date --->
-			<cfset var result = application.fc.LIB.TIMEZONE.castFromUTC(UTC, application.fc.serverTimezone) /><!--- This will store the offset date --->
+			<cfset var UTC = "" /><!--- This will store the UTC Date --->
+			<cfset var result = arguments.date /><!--- This will store the offset date --->
 			
+			<cfif applicationTimezone neq application.fc.serverTimezone>
+				<cfset UTC = application.fc.LIB.TIMEZONE.castToUTC(arguments.date, applicationTimezone) /><!--- This will store the UTC Date --->
+				<cfset result = application.fc.LIB.TIMEZONE.castFromUTC(UTC, application.fc.serverTimezone) /><!--- This will store the offset date --->
+			</cfif>
 			
 			<cfreturn result />
 		</cffunction>
@@ -656,8 +660,13 @@
 			<cfargument name="date" required="true" hint="The date cast offset from system date" />
 			
 			<cfset var applicationTimezone = application.fapi.getConfig('general','applicationTimezone', '#application.fc.serverTimezone#') /><!--- "Australia/Sydney" --->			
-			<cfset var UTC = application.fc.LIB.TIMEZONE.castToUTC(arguments.date, application.fc.serverTimezone) /><!--- This will store the UTC Date --->
-			<cfset var result = application.fc.LIB.TIMEZONE.castFromUTC(UTC, applicationTimezone) /><!--- This will store the offset date --->
+			<cfset var UTC = "" /><!--- This will store the UTC Date --->
+			<cfset var result = arguments.date /><!--- This will store the offset date --->
+			
+			<cfif applicationTimezone neq application.fc.serverTimezone>
+				<cfset UTC = application.fc.LIB.TIMEZONE.castToUTC(arguments.date, application.fc.serverTimezone) /><!--- This will store the UTC Date --->
+				<cfset result = application.fc.LIB.TIMEZONE.castFromUTC(UTC, applicationTimezone) /><!--- This will store the offset date --->
+			</cfif>
 			
 			<cfreturn result />
 		</cffunction>
