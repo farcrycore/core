@@ -17,6 +17,22 @@
 <!--- Only show if the user is logged in --->
 <cfif application.fapi.isLoggedIn()>
 	
+	<!--- Need to strip out the domain name from the referer reference --->
+	<cfset refererURL = cgi.http_referer />
+	<cfset domainLoc = findNoCase(cgi.http_host, refererURL) />
+	<cfif domainLoc GT 0>
+		<cfset refererURL = mid(refererURL, find("/",refererURL,domainLoc), len(refererURL) ) />
+	</cfif>
+	
+
+	<!--- If the url points to a type webskin, we need to determine the content type. --->
+	<cfif stObj.typename eq "farCOAPI">
+		<cfset contentTypename = stobj.name />
+	<cfelse>
+		<cfset contentTypename = stobj.typename />
+	</cfif>
+	
+	
 	<skin:onReady>
 	<cfoutput>
 	$j('##show-hidden').click(function(){
@@ -34,21 +50,13 @@
 	</cfoutput>
 	</skin:onReady>
 	
+	
+	
 	<cfoutput>
 	<div class="tray-detail" style="display:block;margin-left:15px;margin-right:15px;overflow:visible !important;position:relative;border:1px solid ##B5B5B5;border-width:1px 1px 0px 1px;background-color:##E5E5E5;">
 		<div style="display:block;padding:0;border-top:1px solid ##FFFFFF;">
 			<div style="">
 	</cfoutput>
-	
-	
-	
-	
-	<!--- If the url points to a type webskin, we need to determine the content type. --->
-	<cfif stObj.typename eq "farCOAPI">
-		<cfset contentTypename = stobj.name />
-	<cfelse>
-		<cfset contentTypename = stobj.typename />
-	</cfif>
 	
 	
 	
@@ -60,8 +68,15 @@
 			<cfif stObj.typename neq "farCOAPI">
 				<li><a id="edit-object"><span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>Edit</a></li>
 			</cfif>
-			<li><a href="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addValues='updateapp=1')#"><span class="ui-icon ui-icon-refresh" style="float:left;">&nbsp;</span>Update App</a></li>
-			<li><a href="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addValues='logout=1')#"><span class="ui-icon ui-icon-power" style="float:left;">&nbsp;</span>Logout</a></li>
+			<li>
+				<a href="#application.fapi.fixURL(url='#refererURL#', removevalues="", addvalues='updateapp=1')#">
+					<span class="ui-icon ui-icon-refresh" style="float:left;">&nbsp;</span>Update App
+				</a>
+			<li>
+				<a href="#application.fapi.fixURL(url='#refererURL#', removevalues="", addvalues='logout=1')#">
+					<span class="ui-icon ui-icon-power" style="float:left;">&nbsp;</span>Logout
+				</a>
+			</li>
 		</ul>
 		</cfoutput>
 	</grid:div>	
@@ -73,19 +88,18 @@
 
 	
 	<grid:div style="float:right;">
-		
 		<cfoutput>
 			<ul>
 			
 				<cfif request.mode.flushcache>
 					<li>
-						<a href="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', removevalues="", addvalues='flushcache=0')#">
+						<a href="#application.fapi.fixURL(url='#refererURL#', removevalues="", addvalues='flushcache=0')#">
 							<span class="ui-icon ui-icon-circle-close">&nbsp;</span>Cache OFF
 						</a>
 					</li>
 				<cfelse>
 					<li>
-						<a href="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', removevalues="", addvalues='flushcache=1')#">
+						<a href="#application.fapi.fixURL(url='#refererURL#', removevalues="", addvalues='flushcache=1')#">
 							<span class="ui-icon ui-icon-circle-check">&nbsp;</span>Cache ON
 						</a>
 					</li>
@@ -94,13 +108,13 @@
 				
 				<cfif request.mode.showdraft>		
 					<li>
-						<a href="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addvalues='flushcache=1&showdraft=0')#" >
+						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='flushcache=1&showdraft=0')#" >
 							<span class="ui-icon ui-icon-circle-check">&nbsp;</span>Drafts ON
 						</a>
 					</li>
 				<cfelse>
 					<li>
-						<a href="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addvalues='flushcache=0&showdraft=1')#">
+						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='flushcache=0&showdraft=1')#">
 							<span class="ui-icon ui-icon-circle-close">&nbsp;</span>Drafts OFF
 						</a>
 					</li>
@@ -109,28 +123,28 @@
 				
 				<cfif request.mode.design and request.mode.showcontainers gt 0>	
 					<li>
-						<a href="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addvalues='designmode=0')#">
+						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='designmode=0')#">
 							<span class="ui-icon ui-icon-circle-check">&nbsp;</span>Rules ON
 						</a>
 					</li>
 				<cfelse>
 					<li>
-						<a href="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addvalues='designmode=1')#" >
+						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='designmode=1')#" >
 							<span class="ui-icon ui-icon-circle-close">&nbsp;</span>Rules OFF
 						</a>
 					</li>
 				</cfif>		
 				
 													
-				<cfif findNoCase("bDebug=1", "#cgi.HTTP_REFERER#")>
+				<cfif findNoCase("bDebug=1", "#refererURL#")>
 					<li>
-						<a href="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addvalues='bDebug=0')#">
+						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='bDebug=0')#">
 							<span class="ui-icon ui-icon-circle-check">&nbsp;</span>Debug ON
 						</a>
 					</li>
 				<cfelse>
 					<li>
-						<a href="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addvalues='bDebug=1')#" >
+						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='bDebug=1')#" >
 							<span class="ui-icon ui-icon-circle-close">&nbsp;</span>Debug OFF
 						</a>
 					</li>
@@ -138,15 +152,15 @@
 													
 				<cfif request.mode.traceWebskins EQ 1>
 					<li>
-						<a href="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addvalues='tracewebskins=0')#">
+						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='tracewebskins=0')#" >
 							<span class="ui-icon ui-icon-circle-check">&nbsp;</span>Webskin Tracer ON
-						</a>
+						></a
 					</li>
 				<cfelse>
 					<li>
-						<a href="#application.fapi.fixURL(url='#cgi.HTTP_REFERER#', addvalues='tracewebskins=1')#" >
+						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='tracewebskins=1')#" >
 							<span class="ui-icon ui-icon-circle-close">&nbsp;</span>Webskin Tracer OFF
-						</a>
+						</a
 					</li>
 				</cfif>	
 			
