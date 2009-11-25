@@ -115,7 +115,7 @@
 							<tr> 
 								<td class="column1"><label id="#templateTypename#objectidlabel" for="#templateTypename#objectid">Item</label></td> 
 								<td>
-									<select id="#templateTypename#objectid" name="#templateTypename#objectid" onchange="Element.setStyle('insert#templateTypename#', {display:'none'});">
+									<select id="#templateTypename#objectid" name="#templateTypename#objectid" onchange="$j('##insert#templateTypename#').css('display','');">
 										<option value="">-- Select #templateDisplayname# --</option>
 										<cfloop query="qObjects">
 											<option value="#qObjects.objectid#">#qObjects.label#</option>
@@ -126,7 +126,7 @@
 							<tr> 
 								<td class="column1"><label id="#templateTypename#webskinlabel" for="#templateTypename#webskin">Template</label></td> 
 								<td>
-									<select id="#templateTypename#webskin" name="#templateTypename#webskin" onchange="Element.setStyle('insert#templateTypename#', {display:'none'});">
+									<select id="#templateTypename#webskin" name="#templateTypename#webskin" onchange="$j('##insert#templateTypename#').css('display','');">
 										<option value="">-- Select a display type --</option>
 										<cfloop query="qWebskins">
 											<option value="#ReplaceNoCase(qWebskins.name, ".cfm", "", "all")#">#qWebskins.displayname#</option>
@@ -137,7 +137,7 @@
 							<tr> 
 								<td class="column1">&nbsp; </td>
 								<td>
-									<input type="button" name="preview" value="preview" onclick="setPreview($('#templateTypename#objectid').value, '#templateTypename#', $('#templateTypename#webskin').value, '#templateTypename#');" />
+									<input type="button" name="preview" value="preview" onclick="setPreview($j('###templateTypename#objectid').attr('value'), '#templateTypename#', $j('###templateTypename#webskin').attr('value'), '#templateTypename#');" />
 								</td> 
 							</tr> 
 							</table>
@@ -203,7 +203,7 @@
 							<tr> 
 								<td class="column1"><label id="genericwebskinlabel" for="genericwebskin">Template</label></td> 
 								<td>
-									<select id="genericwebskin" name="genericwebskin" onchange="Element.setStyle('insertgeneric', {display:'none'});">
+									<select id="genericwebskin" name="genericwebskin" onchange="$j('##insertgeneric').css('display','');">
 										<option value="">--select a display type--</option>
 										<cfloop query="qObjectWebskins">
 											<option value="#ReplaceNoCase(qObjectWebskins.name, ".cfm", "", "all")#">#ReplaceNoCase(qObjectWebskins.displayname, ".cfm", "", "all")#</option>
@@ -215,7 +215,7 @@
 								<td class="column1">&nbsp; </td>
 								<td>
 									<input type="hidden" id="genericobjectid" name="genericobjectid" value="#arguments.objectid#">
-									<input type="button" name="preview" value="preview" onclick="setPreview($('genericobjectid').value, '#arguments.typename#', $('genericwebskin').value, 'generic');" />
+									<input type="button" name="preview" value="preview" onclick="setPreview($j('##genericobjectid').attr('value'), '#arguments.typename#', $j('##genericwebskin').attr('value'), 'generic');" />
 								</td> 
 							</tr> 
 							</table>

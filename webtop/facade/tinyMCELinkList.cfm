@@ -1,70 +1,44 @@
 <cfsetting enablecfoutputonly="true" />
 <cfsetting showdebugoutput="false" />
 
-<!--- <cfset oTree = createObject("component","#application.packagepath#.farcry.tree")>
-<cfset qSiteMap = oTree.getDescendants(objectid='#application.navid.home#',bIncludeSelf=1)>
 
-
-<cfoutput>
-// This list may be created by a server logic page PHP/ASP/ASPX/JSP in some backend system.
-// There links will be displayed as a dropdown in all link dialogs if the "external_link_list_url"
-// option is defined in TinyMCE init.
-
-var tinyMCELinkList = new Array(
-	// Name, URL
-	
-	<cfset currentrow = 1>
-	<cfloop query="qSiteMap">		
-		["#RepeatString('-', qSiteMap.nLevel)# #jsstringformat(qSiteMap.objectname)#", "#application.url.webroot#/index.cfm?objectid=#qSiteMap.objectid#"]<cfif currentRow LT qSiteMap.RecordCount>,<cfset currentrow = currentrow + 1></cfif>
-	</cfloop>
-	
-);
-</cfoutput> --->
-
-
-
+<!--- Get the site map --->
 <cfset oTree = createObject("component","#application.packagepath#.farcry.tree")>
-<cfset qSiteMap = oTree.getDescendants(objectid='#application.navid.home#',bIncludeSelf=1)>
+<cfset qSiteMap = oTree.getDescendants(objectid="#application.fapi.getNavID('home')#", bIncludeSelf=1)>
 
-<cfset qRelated = queryNew("blah") /><!--- This will contain the list of  --->
-<cfset aAllRelated = arrayNew(1) />
 
-<cfif structKeyExists(application.stcoapi, url.typename)>
-	<cfif listLen(url.relatedTypenames)>
-		
-		<cfset stObject = createObject("component", application.stcoapi["#url.typename#"].packagePath).getData(objectid=url.objectid) />
-		
-		<cfloop list="#structKeyList(application.stcoapi[url.typename].stprops)#" index="iField">
-			<cfif application.stcoapi[url.typename].stprops[iField].metadata.type EQ "array">
-				<cfif arrayLen(stObject[iField])>
-					<cfloop from="1" to="#arrayLen(stObject[iField])#" index="iArrayItem">
-						<cfset arrayAppend(aAllRelated, stObject[iField][iArrayItem]) />
-					</cfloop>
-				</cfif>
-				
-			</cfif>
-		</cfloop>
-		
-		<cfif arrayLen(aAllRelated)>
+<!--- Get the related images --->
+<cfset qRelatedContent = application.fapi.getRelatedContent(	objectid="#url.relatedObjectid#", 
+																typename="#url.relatedTypename#", 
+																filter="#url.ftLinkListFilterTypenames#"
+																) />
+
+<!--- We wont know what list of related typenames we have so we need to do that manually. --->
+<cfquery dbtype="query" name="qRelatedTypes">
+SELECT distinct typename
+FROM qRelatedContent
+</cfquery>
+<cfset relatedTypenameList = valueList(qRelatedTypes.typename) />
+
+
+<!--- Need to retrieve the labels for each of the related content --->
+<cfif qRelatedContent.recordCount>
+	
+	<cfquery datasource="#application.dsn#" name="qRelatedWithLabels">
+
+		<cfloop list="#relatedTypenameList#" index="iTypename">					
 			
-				
-			<cfquery datasource="#application.dsn#" name="qRelated">
+			SELECT r.objectid, t.label 
+			FROM refObjects r 
+			INNER JOIN #iTypename# t ON t.objectid = r.objectid
+			WHERE r.objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#valueList(qRelatedContent.objectid)#" />)
+			AND r.typename = '#iTypename#'
+			
+			<cfif iTypename NEQ listLast(relatedTypenameList)>UNION</cfif>
+			
+		</cfloop>
 
-				<cfloop list="#url.relatedTypenames#" index="iTypename">					
-					
-					SELECT r.objectid, t.label 
-					FROM refObjects r 
-					INNER JOIN #iTypename# t ON t.objectid = r.objectid
-					WHERE r.objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arrayToList(aAllRelated)#" />)
-					AND r.typename = '#iTypename#'
-					
-					<cfif iTypename NEQ listLast(url.relatedTypenames)>UNION</cfif>
-					
-				</cfloop>
-
-			</cfquery>
-		</cfif>
-	</cfif>
+	</cfquery>	
 </cfif>
 
 
@@ -72,22 +46,18 @@ var tinyMCELinkList = new Array(
 	
 	
 <cfoutput>
-// This list may be created by a server logic page PHP/ASP/ASPX/JSP in some backend system.
-// There links will be displayed as a dropdown in all link dialogs if the "external_link_list_url"
-// option is defined in TinyMCE init.
-
 var tinyMCELinkList = new Array(
 	// Name, URL
 </cfoutput>
 
 	
-	<cfif qRelated.recordCount>
+	<cfif qRelatedWithLabels.recordCount>
 		<cfoutput>["--- RELATED OBJECTS ---", ""],
 		</cfoutput>
 		
-		<cfloop query="qRelated">
+		<cfloop query="qRelatedWithLabels">
 			<cfset inc = inc + 1>
-			<cfoutput>["#jsstringformat(qRelated.label)#", "#application.url.webroot#/index.cfm?objectid=#qRelated.objectid#"]<cfif inc LT qSiteMap.RecordCount + qRelated.RecordCount>,</cfif>
+			<cfoutput>["#jsstringformat(qRelatedWithLabels.label)#", "#application.url.webroot#/index.cfm?objectid=#qRelatedWithLabels.objectid#"]<cfif inc LT qSiteMap.RecordCount + qRelatedWithLabels.RecordCount>,</cfif>
 			</cfoutput>
 		</cfloop>
 		
@@ -99,7 +69,7 @@ var tinyMCELinkList = new Array(
 		
 		<cfloop query="qSiteMap">		
 			<cfset inc = inc + 1>
-			<cfoutput>["#RepeatString('-', qSiteMap.nLevel)# #jsstringformat(qSiteMap.objectname)#", "#application.url.webroot#/index.cfm?objectid=#qSiteMap.objectid#"]<cfif inc LT qSiteMap.RecordCount + qRelated.RecordCount>,</cfif>
+			<cfoutput>["#RepeatString('-', qSiteMap.nLevel)# #jsstringformat(qSiteMap.objectname)#", "#application.url.webroot#/index.cfm?objectid=#qSiteMap.objectid#"]<cfif inc LT qSiteMap.RecordCount + qRelatedWithLabels.RecordCount>,</cfif>
 			</cfoutput>
 		</cfloop>
 		
@@ -108,5 +78,6 @@ var tinyMCELinkList = new Array(
 <cfoutput>
 );
 </cfoutput>
+
 
 <cfsetting enablecfoutputonly="false" />
