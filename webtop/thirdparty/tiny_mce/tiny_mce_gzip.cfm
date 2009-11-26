@@ -42,7 +42,7 @@
 <cfset compress = url.compress>
 <cfset core = url.core>
 <cfset suffix = url.suffix>
-<cfset cachePath = expandPath("/farcry/projects/#application.projectdirectoryname#/www/cache/tiny_mce_gzip_cache")>
+<cfset cachePath = expandPath("/farcry/projects/#application.projectdirectoryname#/www/cache/tiny_mce_gzip_cache/")>
 <cfset expiresOffset = createTimeSpan(10,0,0,0)> <!--- Cache for 10 days in browser cache --->
 <cfset content = "">
 <cfset encodings = arrayNew(2)>
@@ -82,7 +82,8 @@
 	</cfloop>
 	<cfset cacheKey = hash(cacheKey, "md5")>
 	<cfset fileBase = cachePath & cacheKey>
-	<cfset fileJS = fileBase & ".js">	
+	<cfset fileJS = fileBase & ".js">
+	
 	<cfif compress eq 1>
 		<cfset fileGZ = fileJS & ".gz">
 		<cfif not fileExists(fileGZ)>
@@ -164,7 +165,7 @@
 
 </cfoutput></cfsavecontent>
 	<cfset content = heading & content>
-	
+
 	<!--- WRITE THE JS FILE --->
 	<cffile action="write" output="#content#" charset="iso-8859-1" file="#arguments.file#">
 </cffunction>
