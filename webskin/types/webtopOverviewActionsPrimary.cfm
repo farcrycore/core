@@ -32,9 +32,8 @@ FARCRY INCLUDE FILES
 <cfimport taglib="/farcry/core/tags/grid/" prefix="grid" />
 
 
-<!--- Add the extjs iframe dialog to the head --->
-<extjs:iframeDialog />
-			
+	
+				
 <!------------------ 
 START WEBSKIN
  ------------------>
@@ -94,51 +93,26 @@ START WEBSKIN
 <cfparam name="url.ref" default="overview" />
 
 
-<!--- <ft:form>
-
-
-	<extjs:item title="#application.rb.getResource('workflow.headings.mainactions@text','Main Actions')#"> --->
-		
 		
 
 	<cfif isBoolean(stobj.locked) AND stobj.locked>
-		
+		<cfset stLockedBy = application.fapi.getContentType("dmProfile").getProfile(stobj.lockedby) />
 			<cfoutput>
-			<cfif stobj.lockedby eq session.security.userid>
+			<cfif stobj.lockedby eq session.security.userid OR  iDeveloperPermission eq 1>
 				<!--- locked by current user --->
-				<cfset tDT=application.thisCalendar.i18nDateTimeFormat(stobj.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)>
-				<!--- #uCase(application.rb.formatRBString("workflow.labels.lockedwhen@label",tDT,"Locked ({1})"))# (<a href="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#">#application.rb.getResource("workflow.buttons.unlock@label","Unlock")#</a>) --->
-				
 				<ft:button 	value="Unlock" 
-							text="<h1>UNLOCK</h1>#uCase(application.rb.formatRBString('workflow.labels.lockedwhen@label',tDT,'Locked ({1})'))#"
+							text="<h1>UNLOCK</h1>#application.rb.formatRBString('workflow.labels.lockedwhen@label', stLockedBy.label,'Locked by YOU')#"
 							class="primary"
 							rbkey="workflow.labels.lockedwhen@label" 
 							url="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#&ref=#url.ref#" />
 			<cfelse>
 				<!--- locked by another user --->
-				<cfset subS=listToArray('#application.thisCalendar.i18nDateFormat(stobj.dateTimeLastUpdated,session.dmProfile.locale,application.mediumF)#,#stobj.lockedby#')>
-				<!--- #uCase(application.rb.formatRBString('workflow.labels.lockedby@label',subS,'<span style="color:red">Locked ({1})</span> by {2}'))# --->
-				<!--- check if current user is a sysadmin so they can unlock --->
-				<cfif iDeveloperPermission eq 1><!--- show link to unlock --->
-					<!--- (<a href="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#">#application.rb.getResource("workflow.buttons.unlock@label","Unlock")#</a>) --->
-				
-					<ft:button	value="Unlock" 
-								text="<h1>UNLOCK</h1>#uCase(application.rb.formatRBString('workflow.labels.lockedby@label',subS,'<span style="color:red">Locked ({1})</span> by {2}'))#"
-								class="primary"
-								type="button"
-								rbkey="workflow.labels.lockedwhen@label" 
-								url="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#&ref=#url.ref#" />
-				<cfelse>
-
-					<ft:button	value="Unlock" 
-								text="<h1>LOCKED</h1>#uCase(application.rb.formatRBString('workflow.labels.lockedby@label',subS,'<span style="color:red">Locked ({1})</span> by {2}'))#"
-								class="primary"
-								type="button"
-								rbkey="workflow.labels.lockedwhen@label" 
-								onclick="alert('You do not have permission to unlock this content item.')" />				
-				</cfif>
-				
-				
+				<ft:button	value="Unlock" 
+							text="<h1>LOCKED</h1>#uCase(application.rb.formatRBString('workflow.labels.lockedby@label', stLockedBy.label,'<span style="color:red">Locked by {1}</span>'))#"
+							class="primary"
+							type="button"
+							rbkey="workflow.labels.lockedwhen@label" 
+							onclick="alert('You do not have permission to unlock this content item.')" />		
 				
 			</cfif>
 			</cfoutput>
@@ -228,13 +202,7 @@ START WEBSKIN
 							url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=#url.ref#&typename=#stobj.typeName#" />
 			</cfif>
 		</cfif>
-		
-<!--- 		
-	</extjs:item>
-	
-	
-	<extjs:item title="#application.rb.getResource('workflow.headings.approvalandworkflow@text','Approval & Work Flow')#">
-	 --->
+
 		<!--- work out different options depending on object status --->
 		<cfif StructKeyExists(stobj,"status") AND stobj.status NEQ "">
 			<cfswitch expression="#stobj.status#">
@@ -315,11 +283,7 @@ START WEBSKIN
 							confirmText="Are you sure you wish to delete this content item?" />
 			</cfif>
 		</cfif>
-<!--- 
-	</extjs:item>
-	 --->
-	
-	
+
 	
 		
 		<!--- create child objects for dmNavigation --->
@@ -358,9 +322,6 @@ START WEBSKIN
 	</cfif>
 
 
-		
-				
-<!--- 
-</ft:form> --->
+
 <cfsetting enablecfoutputonly="false">
 
