@@ -1,4 +1,8 @@
 <cfcomponent extends="field" name="longchar" displayname="longchar" hint="Used to liase with longchar type fields"> 
+
+	<cfproperty name="ftLabelAlignment" required="false" default="block" options="inline,block" hint="Used by FarCry Form Layouts for positioning of labels. inline or block." />
+		
+	
 	
 	<cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
 	
@@ -123,7 +127,7 @@
 			<cfif arguments.stMetadata.ftToggle>
 				<cfoutput>
 				<div>
-					<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" class="formCheckbox" value="1" onclick="javascript:toggle#arguments.fieldname#();" <cfif bfieldvisible>checked="true"</cfif> >
+					<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" class="checkboxInput" value="1" onclick="javascript:toggle#arguments.fieldname#();" <cfif bfieldvisible>checked="true"</cfif> >
 					<input type="hidden" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="0">
 					<span id="#arguments.fieldname#includelabel">#fieldvisibletoggletext#</span>
 				</div>
@@ -136,11 +140,12 @@
 			
 			<cfoutput>
 				<div id="#arguments.fieldname#DIV" style="#fieldStyle#">
-					<div>
+					<div class="multiField">
 						<cfif arguments.stMetadata.ftLimit>							
 							<cfset onKeyUp = "javascript:UpdateCounter_#arguments.fieldname#('#request.farcryForm.name#', '#arguments.FieldName#')" />
 							<cfset onKeyDown = "javascript:UpdateCounter_#arguments.fieldname#('#request.farcryForm.name#', '#arguments.FieldName#')" />
-							<textarea name="#arguments.fieldname#" id="#arguments.fieldname#" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" onkeyup="#onKeyUp#" onkeydown="#onKeyDown#">#arguments.stMetadata.value#</textarea>
+							<textarea name="#arguments.fieldname#" id="#arguments.fieldname#" class="textareaInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" onkeyup="#onKeyUp#" onkeydown="#onKeyDown#">#arguments.stMetadata.value#</textarea>
+							<br style="clear:both;" />
 							<cfif bIsGoodBrowser>
 								<p id="dm_ct_Text_#arguments.fieldname#"><span id="dm_ct_countDown_#arguments.fieldname#">0</span>/#arguments.stMetadata.ftLimit#</p>
 							<cfelse>
@@ -152,7 +157,7 @@
 							// end hiding contents from old browsers  -->
 							</script>
 						<cfelse>
-							<textarea name="#arguments.fieldname#" id="#arguments.fieldname#" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" onkeyup="#onKeyUp#" onkeydown="#onKeyDown#">#arguments.stMetadata.value#</textarea>
+							<textarea name="#arguments.fieldname#" id="#arguments.fieldname#" class="textareaInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" onkeyup="#onKeyUp#" onkeydown="#onKeyDown#">#arguments.stMetadata.value#</textarea>
 						</cfif>
 					</div>
 				</div>

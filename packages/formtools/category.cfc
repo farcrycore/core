@@ -53,7 +53,7 @@
 							
 				<cfsavecontent variable="html">
 					<cfoutput><fieldset></cfoutput>
-					<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#"  <cfif arguments.stMetadata.ftSelectMultiple>size="#arguments.stMetadata.ftSelectSize#" multiple="true"</cfif>></cfoutput>
+					<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#"  <cfif arguments.stMetadata.ftSelectMultiple>size="#arguments.stMetadata.ftSelectSize#" multiple="true"</cfif> class="selectInput #arguments.stMetadata.ftSelectSize#"></cfoutput>
 					<cfloop list="#lCategoryBranch#" index="i">
 						<!--- If the item is the actual alias requested then it is not selectable. --->
 						<cfif i EQ rootID>
@@ -102,6 +102,54 @@
 			<cfcase value="jquery">
 				
 				<skin:loadJS id="jquery" />
+				<skin:loadJS id="jquery-checkboxtree" basehref="#application.url.webtop#/thirdparty/checkboxtree/js" lFiles="jquery.checkboxtree.js" />
+				<skin:loadCSS id="jquery-checkboxtree" basehref="#application.url.webtop#/thirdparty/checkboxtree/css" lFiles="checkboxtree.css" />
+					
+							
+				<skin:onReady>
+				<cfoutput>
+					$j.ajax({
+					   type: "POST",
+					   url: '#application.fapi.getLink(objectid="#rootID#", view="displayCheckboxTree", urlParameters="ajaxmode=1")#',
+					   data: {
+					   	fieldname: '#arguments.fieldname#',
+					   	rootNodeID:'#rootID#', 
+					   	selectedObjectIDs: '#lSelectedCategoryID#'
+						},
+					   cache: false,
+					   success: function(msg){
+					   		$j("###arguments.fieldname#-checkboxDiv").html(msg);
+							$j("###arguments.fieldname#-checkboxTree").checkboxTree({
+									collapsedarrow: "#application.url.webtop#/thirdparty/checkboxtree/images/checkboxtree/img-arrow-collapsed.gif",
+									expandedarrow: "#application.url.webtop#/thirdparty/checkboxtree/images/checkboxtree/img-arrow-expanded.gif",
+									blankarrow: "#application.url.webtop#/thirdparty/checkboxtree/images/checkboxtree/img-arrow-blank.gif",
+									checkchildren: false,
+									checkparents: false
+							});	
+							$j("###arguments.fieldname#-checkboxDiv input:checked").addClass('mjb');	 
+							$j("###arguments.fieldname#-checkboxDiv input:checked").parent().addClass('mjb');	     	
+					   }
+					 });
+				
+					
+				</cfoutput>
+				</skin:onReady>
+				
+				<cfsavecontent variable="html">
+				
+
+					<cfoutput>
+					<div class="multiField">
+						<div id="#arguments.fieldname#-checkboxDiv">loading...</div>
+						<input type="hidden" name="#arguments.fieldname#" value="" />			
+					</div>
+					</cfoutput>
+					
+				</cfsavecontent>			
+			</cfcase>
+			<!---<cfcase value="jquery">
+				
+				<skin:loadJS id="jquery" />
 				<skin:loadJS	id="jquery-treeview" 
 								baseHREF="#application.url.webtop#/thirdparty/jquery-treeview"
 								lFiles="jquery.treeview.js,jquery.treeview.async.js"								
@@ -123,30 +171,14 @@
 				
 
 					<cfoutput>
-						CATEGORY TREE
+					<div class="multiField">
 						<ul id="black"></ul>
+					</div>
 					</cfoutput>
 					
-					<!--- <fieldset style="width: 300px;">
-						<cfif len(arguments.stMetadata.ftLegend)><legend>#arguments.stMetadata.ftLegend#</legend></cfif>
-					
-						<div class="fieldsection optional full">
-												
-							<div class="fieldwrap">
-							</cfoutput>
-
-								<ft:NTMPrototypeTree id="#arguments.fieldname#" navid="#rootID#" depth="99" bIncludeHome=1 lSelectedItems="#lSelectedCategoryID#" bSelectMultiple="#arguments.stMetadata.ftSelectMultiple#">
-							
-							<cfoutput>
-							</div>
-							
-							<br class="fieldsectionbreak" />
-						</div>
-						<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" />
-					</fieldset> --->
-							
 				</cfsavecontent>			
 			</cfcase>
+			--->
 			<cfdefaultcase>
 				<!--- <skin:htmlHead library="extjs" />
 				<skin:htmlHead library="farcryForm" /> --->
@@ -236,7 +268,6 @@
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
-
 		<cfinvoke  component="#application.packagepath#.farcry.category" method="assignCategories" returnvariable="stStatus">
 			<cfinvokeargument name="objectID" value="#arguments.ObjectID#"/>
 			<cfinvokeargument name="lCategoryIDs" value="#arguments.stFieldPost.Value#"/>

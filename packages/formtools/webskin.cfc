@@ -59,7 +59,7 @@
 
 			<cfoutput>
 			<cfif isDefined("qWebskins") AND qWebskins.RecordCount>
-				<select name="#arguments.fieldname#" id="#arguments.fieldname#">
+				<select name="#arguments.fieldname#" id="#arguments.fieldname#" class="selectInput #arguments.stMetadata.ftClass#">
 					<cfloop query="qWebskins">						
 						<option value="#ReplaceNoCase(qWebskins.name, '.cfm', '','ALL')#" <cfif ReplaceNoCase(qWebskins.name, '.cfm', '','ALL')  eq arguments.stMetadata.value>selected</cfif>>#qWebskins.displayname#</option>
 					</cfloop>

@@ -36,29 +36,29 @@
 		<cfparam name="arguments.stMetadata.ftAllowedExtensions" default="jpg,jpeg,png,gif"><!--- The extentions allowed to be uploaded --->
 		
 
-		<cfset Request.inHead.Scriptaculous = 1>
+		<skin:loadJS id="jquery" />
 		
 		<skin:htmlHead id="ftCheckFileName">
-		<cfoutput>
-		<script type="text/javascript">
-			function ftCheckFileName(id){
-				var currentText = $(id).value;	
-				var aCurrentExt = currentText.split(".");	
+			<cfoutput>
+			<script type="text/javascript">
+				function ftCheckFileName(id){
+					var currentText = $j('##' + id).attr('value');	
+					var aCurrentExt = currentText.split(".");	
+						
+					var newText = $j('##' + id + 'NEW').attr('value');	
+					var aNewExt = newText.split(".");	
 					
-				var newText = $(id + 'NEW').value;	
-				var aNewExt = newText.split(".");	
-				
-				if (currentText.length > 0 && newText.length > 0) {
-					if (aCurrentExt.length > 1 && aNewExt.length > 1){						
-						if (aCurrentExt[aCurrentExt.length - 1] != aNewExt[aNewExt.length - 1]){
-							$(id + 'NEW').value = '';
-							alert('You must either delete the old file or upload a new one with the same extension (' + aCurrentExt[aCurrentExt.length - 1] + ')');
+					if (currentText.length > 0 && newText.length > 0) {
+						if (aCurrentExt.length > 1 && aNewExt.length > 1){						
+							if (aCurrentExt[aCurrentExt.length - 1] != aNewExt[aNewExt.length - 1]){
+								$j('##' + id + 'NEW').attr('value', '');
+								alert('You must either delete the old file or upload a new one with the same extension (' + aCurrentExt[aCurrentExt.length - 1] + ')');
+							}
 						}
 					}
 				}
-			}
-		</script>
-		</cfoutput>
+			</script>
+			</cfoutput>
 		</skin:htmlHead>
 		
 				
@@ -95,7 +95,7 @@
 
 							<cfoutput>
 							<div>
-							<input type="checkbox" name="#arguments.fieldname#CreateFromSource" id="#arguments.fieldname#CreateFromSource" value="true" onclick="javascript:toggle#arguments.fieldname#();" class="formCheckbox" <cfif arguments.stMetadata.ftCreateFromSourceDefault AND NOT len(arguments.stMetadata.value)>checked</cfif>> 
+							<input type="checkbox" name="#arguments.fieldname#CreateFromSource" id="#arguments.fieldname#CreateFromSource" value="true" onclick="javascript:toggle#arguments.fieldname#();" class="checkboxInput" <cfif arguments.stMetadata.ftCreateFromSourceDefault AND NOT len(arguments.stMetadata.value)>checked</cfif>> 
 							generate based on "#arguments.stPackage.stProps[arguments.stMetadata.ftSourceField].metadata.ftLabel#"
 							<input type="hidden" name="#arguments.fieldname#CreateFromSource" id="#arguments.fieldname#CreateFromSource" value="false" />
 							</div>
@@ -107,7 +107,7 @@
 							<cfoutput>
 							<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
 							<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="" />
-							<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" value="" class="formFile" style="#arguments.stMetadata.ftstyle#" onchange="ftCheckFileName('#arguments.fieldname#');" />
+							<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" value="" class="fileUpload" style="#arguments.stMetadata.ftstyle#" onchange="ftCheckFileName('#arguments.fieldname#');" />
 							</cfoutput>
 							
 							<cfif arguments.stMetadata.ftShowConversionInfo>
@@ -124,7 +124,7 @@
 										<cfoutput>
 										<div>
 											Cropping Position: 
-											<select name="#arguments.fieldname#CropPosition">
+											<select name="#arguments.fieldname#CropPosition" class="selectInput">
 												<option value="topleft">TopLeft</option>
 												<option value="topcenter">TopCenter</option>
 												<option value="topright">TopRight</option>

@@ -121,7 +121,7 @@
 			<cfsavecontent variable="returnHTML">
 			<cfif qLibraryList.recordcount>
 				<cfoutput>
-				<select  id="#arguments.fieldname#" name="#arguments.fieldname#" class="#arguments.stMetadata.ftclass#" >
+				<select  id="#arguments.fieldname#" name="#arguments.fieldname#" class="selectInput #arguments.stMetadata.ftclass#" >
 				<cfif len(arguments.stMetadata.ftFirstListLabel)>
 					<option value="">#arguments.stMetadata.ftFirstListLabel#</option>
 				</cfif>
@@ -271,7 +271,7 @@
 								<div class="buttonGripper"><p>&nbsp;</p></div>
 								
 								<cfif arguments.stMetadata.ftShowRemoveSelected OR arguments.stMetadata.ftAllowLibraryEdit>
-									<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="formCheckbox #arguments.fieldname#Selected" value="#arguments.stObject[arguments.stMetaData.Name]#" />
+									<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="checkboxInput #arguments.fieldname#Selected" value="#arguments.stObject[arguments.stMetaData.Name]#" />
 								</cfif>
 								<div class="#arguments.stMetadata.ftLibrarySelectedListClass#">
 									<p>#HTML#</p>
@@ -550,7 +550,7 @@
 							<div class="buttonGripper"><p>&nbsp;</p></div>
 							
 							<cfif arguments.stMetadata.ftShowRemoveSelected OR arguments.stMetadata.ftAllowLibraryEdit>
-								<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="formCheckbox #arguments.fieldname#Selected" value="#arguments.stObject[arguments.stMetaData.Name]#" />
+								<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="checkboxInput #arguments.fieldname#Selected" value="#arguments.stObject[arguments.stMetaData.Name]#" />
 							</cfif>
 							
 							<div class="#arguments.stMetadata.ftLibrarySelectedListClass#">

@@ -26,7 +26,7 @@
 		
 		<cfparam name="arguments.stMetadata.ftAlias" default="" type="string" />
 		<cfparam name="arguments.stMetadata.ftLegend" default="" type="string" />
-		<cfparam name="arguments.stMetadata.ftRenderType" default="ext" type="string" />
+		<cfparam name="arguments.stMetadata.ftRenderType" default="jquery" type="string" />
 		
 		<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 		<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs" />
@@ -145,7 +145,7 @@
 		
 		<cfsavecontent variable="html">
 			<cfoutput>
-				<select id="#arguments.fieldname#" name="#arguments.fieldname#" class="formList #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#"<cfif arguments.stMetadata.ftSelectMultiple> multiple="multiple"</cfif>>
+				<select id="#arguments.fieldname#" name="#arguments.fieldname#" class="selectInput #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#"<cfif arguments.stMetadata.ftSelectMultiple> multiple="multiple"</cfif>>
 					<option value="">#arguments.stMetadata.ftDropdownFirstItem#</option>
 			</cfoutput>
 			
@@ -214,7 +214,7 @@
 			</cfdefaultcase>
 		</cfswitch>
 		
-		<skin:htmlHead library="jQueryJS" />
+		<skin:loadJS id="jquery" />
 		<skin:htmlHead id="navigation_jquery"><cfoutput>
 			<script type="text/javascript" src="#application.url.webtop#/js/jquery/jstree/_lib/css.js"></script>
 			<script type="text/javascript" src="#application.url.webtop#/js/jquery/jstree/tree_component.js"></script>

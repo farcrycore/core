@@ -2,6 +2,7 @@
 
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" >
+	<cfimport taglib="/farcry/core/tags/grid" prefix="grid" />
 
 	<cffunction name="init" access="public" returntype="any" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
@@ -21,16 +22,15 @@
 		<cfset var returnHTML = "" />		
 		<cfset var qArrayField = "" />
 		
-		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
-		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
-		<cfimport taglib="/farcry/core/tags/grid" prefix="grid" />
-		
 		
 		<cfparam name="arguments.stMetadata.includeLibraryWrapper" default="true" />
 		<cfparam name="arguments.stMetadata.ftAllowAttach" default="true" />
 		<cfparam name="arguments.stMetadata.ftAllowAdd" default="false" />
 		<cfparam name="arguments.stMetadata.ftAllowEdit" default="false" />
 		<cfparam name="arguments.stMetadata.ftRemoveType" default="detach" />
+		
+		<skin:loadJS id="jquery-ui" />
+		<skin:loadCSS id="jquery-ui" />
 		
 		<cfsavecontent variable="returnHTML">	
 			<cfif arguments.stMetadata.type EQ "array">
@@ -106,7 +106,7 @@
 						<ft:button	Type="button" 
 									renderType="button"
 									class="ui-state-default ui-corner-all"
-									value="attach" 
+									value="attacher" 
 									onClick="fcForm.openLibrarySelect('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');" />
 						&nbsp;
 					</cfif>
@@ -421,7 +421,7 @@
 			<cfsavecontent variable="returnHTML">
 			<cfif qLibraryList.recordcount>
 				<cfoutput>
-				<select  id="#arguments.fieldname#" name="#arguments.fieldname#" size="#arguments.stMetadata.ftSelectSize#" multiple="#arguments.stMetadata.ftSelectMultiple#">
+				<select  id="#arguments.fieldname#" name="#arguments.fieldname#" size="#arguments.stMetadata.ftSelectSize#" multiple="#arguments.stMetadata.ftSelectMultiple#" class="selectInput #arguments.stMetadata.class#">
 				<cfloop query="qLibraryList"><option value="#qLibraryList.objectid#" <cfif valuelist(qArrayField.data) contains qLibraryList.objectid>selected</cfif>><cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif></option></cfloop>
 				</select>
 				</cfoutput>
@@ -493,7 +493,7 @@
 						<li id="#arguments.fieldname#_#dataID#:#dataSEQ#" class="#ULID#handle" style="<cfif len(arguments.stMetadata.ftLibraryListItemWidth)>width:#arguments.stMetadata.ftLibraryListItemWidth#;</cfif><cfif len(arguments.stMetadata.ftLibraryListItemheight)>height:#arguments.stMetadata.ftLibraryListItemHeight#;</cfif>">
 							<div class="buttonGripper"><p>&nbsp;</p></div>
 														
-							<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="formCheckbox #arguments.fieldname#Selected" value="#dataID#:#dataSEQ#" />
+							<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="checkboxInput #arguments.fieldname#Selected" value="#dataID#:#dataSEQ#" />
 
 							<div class="#arguments.stMetadata.ftLibrarySelectedListClass#">
 								<p>#HTML#</p>

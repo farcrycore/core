@@ -34,7 +34,7 @@
 		<cfif qAll.recordcount>
 			<cfsavecontent variable="html">
 				<cfoutput>
-					<select name="#arguments.fieldname#" id="#arguments.fieldname#" class="#arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#">
+					<select name="#arguments.fieldname#" id="#arguments.fieldname#" class="selectInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#">
 				</cfoutput>
 				
 				<cfoutput query="qAll" group="countryname">

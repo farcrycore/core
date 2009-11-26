@@ -65,7 +65,7 @@
 			<cfcase value="dropdown,list">								
 				<cfsavecontent variable="html">
 					<cfif qLibraryList.recordCount>
-						<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#" class="formList #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#"<cfif arguments.stMetadata.ftSelectMultiple> multiple="multiple"</cfif>></cfoutput>
+						<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#" class="selectInput #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#"<cfif arguments.stMetadata.ftSelectMultiple> multiple="multiple"</cfif>></cfoutput>
 						<cfif len(arguments.stMetadata.ftFirstListLabel)>
 							<cfoutput><option value="">#arguments.stMetadata.ftFirstListLabel#</option></cfoutput>
 						</cfif>					
@@ -88,7 +88,7 @@
 							<div class="fieldwrap">
 								<cfset tmpCount=0>
 								<cfloop query="qLibraryList">
-									<input type="checkbox" name="#arguments.fieldname#" class="formCheckbox #IIF(qLibraryList.recordcount eq currentrow ,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" id="#arguments.fieldname#" value="#qLibraryList.objectid#" <cfif listFindNoCase(valueList(qCurrentlyAssigned.objectid),qLibraryList.objectID)> checked="checked"</cfif> />										
+									<input type="checkbox" name="#arguments.fieldname#" class="checkboxInput #IIF(qLibraryList.recordcount eq currentrow ,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" id="#arguments.fieldname#" value="#qLibraryList.objectid#" <cfif listFindNoCase(valueList(qCurrentlyAssigned.objectid),qLibraryList.objectID)> checked="checked"</cfif> />										
 									#label#
 									<br class="fieldsectionbreak" />
 								</cfloop>

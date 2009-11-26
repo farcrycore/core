@@ -106,7 +106,7 @@
 				<div class="fieldsection optional">
 					<div class="fieldwrap">
 						<cfloop query="qLibraryList">
-							<input type="checkbox"  id="#arguments.fieldname#"  name="#arguments.fieldname#" value="#qLibraryList.objectid#"  class="formCheckbox #arguments.stMetadata.ftClass#" <cfif valuelist(qArrayField.data) contains qLibraryList.objectid>checked</cfif>>
+							<input type="checkbox"  id="#arguments.fieldname#"  name="#arguments.fieldname#" value="#qLibraryList.objectid#"  class="checkboxInput #arguments.stMetadata.ftClass#" <cfif valuelist(qArrayField.data) contains qLibraryList.objectid>checked</cfif>>
 							<cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif>
 							<br class="fieldsectionbreak" />
 						</cfloop>
@@ -158,7 +158,7 @@
 			<cfif qLibraryList.recordcount>
 				<cfoutput>
 				<div>
-				<select  id="#arguments.fieldname#" name="#arguments.fieldname#" <cfif len(arguments.stMetadata.ftSelectSize)> size="#arguments.stMetadata.ftSelectSize#"</cfif> <cfif arguments.stMetadata.ftSelectMultiple>multiple="multiple"</cfif> style="width:auto;" class="#arguments.stMetadata.class#">
+				<select  id="#arguments.fieldname#" name="#arguments.fieldname#" <cfif len(arguments.stMetadata.ftSelectSize)> size="#arguments.stMetadata.ftSelectSize#"</cfif> <cfif arguments.stMetadata.ftSelectMultiple>multiple="multiple"</cfif> style="width:auto;" class="selectInput #arguments.stMetadata.class#">
 				<cfif len(arguments.stMetadata.ftFirstListLabel)>
 					<option value="">#arguments.stMetadata.ftFirstListLabel#</option>
 				</cfif>
@@ -243,7 +243,7 @@
 										<li id="#arguments.fieldname#_#qArrayField.data#:#qArrayField.seq#" class="#ULID#handle" style="<cfif len(arguments.stMetadata.ftLibraryListItemWidth)>width:#arguments.stMetadata.ftLibraryListItemWidth#;</cfif><cfif len(arguments.stMetadata.ftLibraryListItemheight)>height:#arguments.stMetadata.ftLibraryListItemHeight#;</cfif>">
 											<div class="buttonGripper"><p>&nbsp;</p></div>
 															
-											<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="formCheckbox #arguments.fieldname#Selected" value="#qArrayField.data#:#qArrayField.seq#" />
+											<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="checkboxInput #arguments.fieldname#Selected" value="#qArrayField.data#:#qArrayField.seq#" />
 		
 											<div class="#arguments.stMetadata.ftLibrarySelectedListClass#">
 												<p>#HTML#</p>
@@ -627,7 +627,7 @@
 						<li id="#arguments.fieldname#_#dataID#:#dataSEQ#" class="#ULID#handle" style="<cfif len(arguments.stMetadata.ftLibraryListItemWidth)>width:#arguments.stMetadata.ftLibraryListItemWidth#;</cfif><cfif len(arguments.stMetadata.ftLibraryListItemheight)>height:#arguments.stMetadata.ftLibraryListItemHeight#;</cfif>">
 							<div class="buttonGripper"><p>&nbsp;</p></div>
 														
-							<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="formCheckbox #arguments.fieldname#Selected" value="#dataID#:#dataSEQ#" />
+							<input type="checkbox" name="#arguments.fieldname#Selected" id="#arguments.fieldname#Selected" class="checkboxInput #arguments.fieldname#Selected" value="#dataID#:#dataSEQ#" />
 
 							<div class="#arguments.stMetadata.ftLibrarySelectedListClass#">
 								<p>#HTML#</p>

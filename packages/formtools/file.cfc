@@ -29,7 +29,7 @@
 		<cfparam name="arguments.stMetadata.ftstyle" default="" />
 		<cfparam name="arguments.stMetadata.ftRenderType" default="html" /><!--- html, flash, jquery --->
 		
-		<skin:htmlHead library="extCoreJS" />
+		<skin:loadJS id="jquery" />
 		
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 			<cfcase value="html">
@@ -37,16 +37,16 @@
 					<cfoutput>
 						<script type="text/javascript">
 							function ftCheckFileName(id){
-								var currentText = Ext.get(id).dom.value;	
+								var currentText = $j('##' + id).attr('value');	
 								var aCurrentExt = currentText.split(".");	
 									
-								var newText = Ext.get(id + 'NEW').dom.value;	
+								var newText = $j('##' + id + 'NEW').attr('value');	
 								var aNewExt = newText.split(".");	
 								
 								if (currentText.length > 0 && newText.length > 0) {
 									if (aCurrentExt.length > 1 && aNewExt.length > 1){						
 										if (aCurrentExt[aCurrentExt.length - 1] != aNewExt[aNewExt.length - 1]){
-											Ext.get(id + 'NEW').dom.value = '';
+											$j('##' + id + 'NEW').attr('value','');
 											alert('You must either delete the old file or upload a new one with the same extension (' + aCurrentExt[aCurrentExt.length - 1] + ')');
 										}
 									}

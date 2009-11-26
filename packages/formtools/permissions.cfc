@@ -41,7 +41,7 @@
 					</cfif>
 					
 					<cfoutput>
-						<select name="#arguments.fieldname##replace(thispermission,'-','','ALL')#" multiple="true">
+						<select name="#arguments.fieldname##replace(thispermission,'-','','ALL')#" multiple="true" class="selectInput">
 					</cfoutput>
 					
 					<cfloop list="#arguments.stMetadata.ftRoles#" index="thisrole">

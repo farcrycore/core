@@ -83,7 +83,7 @@
 									<cfset optionValue = ListFirst(i,":") />
 								</cfif>
 								<label class="inlineLabel">
-									<input type="checkbox" name="#arguments.fieldname#" class="#IIF(listLen(arguments.stMetadata.ftList) eq tmpCount ,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" id="#arguments.fieldname#" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />										
+									<input type="checkbox" name="#arguments.fieldname#" class="checkboxInput #IIF(listLen(arguments.stMetadata.ftList) eq tmpCount ,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" id="#arguments.fieldname#" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />										
 									<!--- <label class="fieldsectionlabel" class="fieldsectionlabel" for="#arguments.fieldname#">#ListLast(i , ":")#</label> --->
 									<!--- MPS: styles aren't working so we are removing label for now until we have time to look at the css --->
 									#ListLast(i , ":")#

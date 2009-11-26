@@ -1,5 +1,15 @@
 <cfcomponent extends="field" name="richtext" displayname="Rich Text Editor" hint="Used to liase with longchar type fields"> 
 	
+	<cfproperty name="ftLabelAlignment" required="false" default="inline" options="inline,block" hint="Used by FarCry Form Layouts for positioning of labels. inline or block." />
+	<cfproperty name="ftWidth" required="false" default="100%" hint="Width required for the rich text editor." />
+	<cfproperty name="ftHeight" required="false" default="280px" hint="Height required for the rich text editor." />
+	<cfproperty name="ftContentCSS" required="false" default="" hint="This option enables you to specify a custom CSS file that extends the theme content CSS. This CSS file is the one used within the editor (the editable area). This option can also be a comma separated list of URLs." />
+
+	<cfproperty name="ftImageListFilterTypename" required="false" default="dmImage" hint="The related image typename to show in the image list from the advimage plugin." />
+	<cfproperty name="ftImageListFilterProperty" required="false" default="standardImage" hint="The related image typename property that contains the image we want to insert from the advimage plugin" />
+	<cfproperty name="ftLinkListFilterTypenames" required="false" default="" hint="The list of related typenames to filter the link list on in the advlink plugin." />
+
+	
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.richtext" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
@@ -12,47 +22,61 @@
 				
 		<cfset var html = "" />	
 		<cfset var configJS = "" />
+		<cfset var external_image_list_url = "#application.url.webtop#/facade/TinyMCEImageList.cfm?relatedObjectid=#arguments.stObject.ObjectID#&relatedTypename=#arguments.typename#&ftImageListFilterTypename=#arguments.stMetadata.ftImageListFilterTypename#&ftImageListFilterProperty=#arguments.stMetadata.ftImageListFilterProperty#&ajaxMode=1" />
+		<cfset var external_link_list_url = "#application.url.webtop#/facade/TinyMCELinkList.cfm?relatedObjectid=#arguments.stObject.ObjectID#&relatedTypename=#arguments.typename#&ftLinkListFilterTypenames=#arguments.stMetadata.ftLinkListFilterTypenames#&ajaxMode=1" />
 		
-		<cfparam name="arguments.stMetadata.ftImageArrayField" default="" />
-		<cfparam name="arguments.stMetadata.ftImageTypename" default="" />
-		<cfparam name="arguments.stMetadata.ftImageField" default="" />
-		<cfparam name="arguments.stMetadata.ftLinkListRelatedTypenames" default="" />
 		
+		<!--- IMPORT TAG LIBRARIES --->
+		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+				
 
 		<cfif isdefined("application.config.tinyMCE.tinyMCE_config") AND isdefined("application.config.tinyMCE.bUseConfig") and application.config.tinyMCE.bUseConfig and len(trim(application.config.tinyMCE.tinyMCE_config))>
 			<cfset configJS =  application.config.tinyMCE.tinyMCE_config />
 		<cfelse>
 			<cfset configJS = getConfig(stMetadata="#arguments.stMetadata#") />
 		</cfif>	
-	
-		<cfset Request.InHead.TinyMCE = 1 />
+		
+		
+		
+		<skin:loadJS id="tinymce" />
 		
 		<cfsavecontent variable="html">
-			<cfoutput>
-			<script language="javascript" type="text/javascript">	</cfoutput>
-
-				<cfoutput>
-					tinyMCE.init({
-						mode : "exact",
-						farcryobjectid: "#arguments.stObject.ObjectID#",
-						farcrytypename: "#arguments.stobject.Typename#",
-						farcryrichtextfield: "#arguments.stMetadata.name#",
-						elements : "#arguments.fieldname#",
-						#configJS#,
-						<cfif len(arguments.stMetadata.ftImageArrayField) and len(arguments.stMetadata.ftImageTypename) and len(arguments.stMetadata.ftImageField)>
-							external_image_list_url : "#application.url.farcry#/facade/tinyMCEImageList.cfm?objectID=#arguments.stObject.ObjectID#&typename=#arguments.typename#&ImageArrayField=#arguments.stMetadata.ftImageArrayField#&ImageTypename=#arguments.stMetadata.ftImageTypename#&ImageField=#arguments.stMetadata.ftImageField#",
-						</cfif>									
-						external_link_list_url : "#application.url.farcry#/facade/tinyMCELinkList.cfm?objectID=#arguments.stObject.ObjectID#&typename=#arguments.typename#&relatedTypenames=#arguments.stMetadata.ftLinkListRelatedTypenames#"						
-					});
-				</cfoutput>
-				
-			<cfoutput></script></cfoutput>
 			
-
-
-
 			<cfoutput>
-				<textarea  name="#arguments.fieldname#" id="#arguments.fieldname#" style="width: 600px;" class="richtext tinymce">#arguments.stMetadata.value#</textarea>
+				<script language="javascript" type="text/javascript">
+				// This is where the compressor will load all components, include all components used on the page here
+				tinyMCE_GZ.init({
+					disk_cache : true,
+					debug : false
+				});
+				
+				tinyMCE.init({
+					mode : "exact",
+					elements : "#arguments.fieldname#",
+					farcryobjectid: "#arguments.stObject.ObjectID#",
+					farcrytypename: "#arguments.stobject.Typename#",
+					farcryrichtextfield: "#arguments.stMetadata.name#",
+					#configJS#,
+					external_image_list_url : "#external_image_list_url#",
+					external_link_list_url : "#external_link_list_url#"
+					<cfif len(arguments.stMetadata.ftWidth)>
+						,width : "#arguments.stMetadata.ftWidth#"
+					</cfif>
+					<cfif len(arguments.stMetadata.ftHeight)>
+						,height : "#arguments.stMetadata.ftHeight#"
+					</cfif>	
+					<cfif len(arguments.stMetadata.ftContentCSS)>
+						,content_css : "#arguments.stMetadata.ftContentCSS#"
+					</cfif>			
+				});
+				</script>
+				
+				<style type="text/css">
+				.richtext .formHint {float:left;}
+				</style>
+				<br style="clear:both;" #application.fapi.getDocType().tagEnding#>
+				<textarea  name="#arguments.fieldname#" id="#arguments.fieldname#" class="textareaInput #arguments.stMetadata.ftClass#" style="width: 100%; #arguments.stMetadata.ftStyle#">#arguments.stMetadata.value#</textarea>
+				<br style="clear:both;" #application.fapi.getDocType().tagEnding#>
 			</cfoutput>
 		</cfsavecontent>
 		
@@ -105,8 +129,8 @@
 		<cfsavecontent variable="configJS">
 			<cfoutput>			
 				theme : "advanced",
-				plugins : "table,advhr,farcrycontenttemplates,advimage,advlink,preview,zoom,searchreplace,print,contextmenu,paste,directionality,fullscreen",		<!--- farcryimage --->
-				theme_advanced_buttons2_add : "separator,farcrycontenttemplates",
+				plugins : "fct,safari,spellchecker,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template",
+				theme_advanced_buttons2_add : "separator,spellchecker,fct",
 				theme_advanced_buttons3_add_before : "tablecontrols,separator",			
 				theme_advanced_buttons3_add : "separator,fullscreen,pasteword,pastetext",				
 				theme_advanced_toolbar_location : "top",
@@ -114,6 +138,7 @@
 				theme_advanced_path_location : "bottom",
 				theme_advanced_resize_horizontal : true,
 				theme_advanced_resizing : true,
+				theme_advanced_resizing_use_cookie : false,
 				extended_valid_elements: "code,colgroup,col,thead,tfoot,tbody,abbr,blockquote,cite,button,textarea[name|class|cols|rows],script[type],img[style|class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name]",
 				remove_linebreaks : false,
 				forced_root_block : 'p',

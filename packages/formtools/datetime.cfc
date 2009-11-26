@@ -4,7 +4,9 @@
 		
 		
 	<cfproperty name="ftRenderType" default="jquery" hint="This formtool offers a number of ways to render the input. (dropdown, jquery, dateJS)" />
-	
+	<cfproperty name="ftJQDateFormatMask" default="d M yy" hint="The format mask used by the jQuery UI when returning a date from the calendar. For a full list of the possible formats see http://docs.jquery.com/UI/Datepicker/formatDate" />
+	<cfproperty name="ftCFDateFormatMask" default="d mmm yyyy" hint="The format mask used when first rendering the date. This should be a coldfusion dateformat mask." />
+				
 	
 	
 	<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" >	
@@ -70,9 +72,6 @@
 		<cfset var i = "">
 		<cfset var step=1>
 		
-		<cfreturn "HTML" />
-			
-		<cfparam name="arguments.stMetadata.ftRenderType" default="jquery">	
 		
 		<!--- If a required field, then the user will not have the option to toggle off the date time --->
 		<cfif structkeyexists(arguments.stMetadata,"ftValidation") and listcontains(arguments.stMetadata.ftValidation,"required")>
@@ -147,7 +146,7 @@
 					<cfif arguments.stMetadata.ftToggleOffDateTime>
 						<cfoutput>
 						<label class="inlineLabel" for="#arguments.fieldname#include">
-							<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" style="float:left;" value="1" >
+							<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" class="checkboxInput" style="float:left;" value="1" >
 							<input type="hidden" name="#arguments.fieldname#include" value="0">
 							Include Date
 						</label>
@@ -196,19 +195,17 @@
 	
 		<cfcase value="jquery">
 			
-			<cfparam name="arguments.stMetadata.ftDateFormatMask" default="dd M yy"><!--- For a full list of the possible formats see http://docs.jquery.com/UI/Datepicker/formatDate --->
-			
+
 			<skin:loadJS id="jquery-ui" />
 			<skin:loadCSS id="jquery-ui" />
 			
 			<skin:onReady>
 				<cfoutput>
-				$j("###arguments.fieldname#").datepicker({dateFormat:'#arguments.stMetadata.ftDateFormatMask#'});
+				$j("###arguments.fieldname#").datepicker({dateFormat:'#arguments.stMetadata.ftJQDateFormatMask#'});
 				</cfoutput>
 			</skin:onReady>
 			
-			<cfparam name="arguments.stMetadata.ftDateFormatMask" default="dd mmm yyyy">
-			
+			<!--- Just in case the developer has included lowercase mmmm or mmm which is not valid, we are changing to uppercase MMMM and MMM respectively. --->
 			
 			<cfif isDefined("session.dmProfile.locale") AND len(session.dmProfile.locale)>
 				<cfset locale = session.dmProfile.locale>
@@ -226,7 +223,7 @@
 						<cfoutput>
 						<label class="inlineLabel" for="#arguments.fieldname#include">
 						
-							<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="1">
+							<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="1" class="checkboxInput">
 							<input type="hidden" name="#arguments.fieldname#include" value="0">
 							Include
 						</label>	
@@ -235,7 +232,7 @@
 					
 					<div id="#arguments.fieldname#-wrap">
 						<label class="inlineLabel" for="#arguments.fieldname#"></label>
-						<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)#" class="textInput" >
+						<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftCFDateFormatMask)#" class="textInput" >
 						<input type="hidden" name="#arguments.fieldname#rendertype" id="#arguments.fieldname#rendertype" value="#arguments.stMetadata.ftRenderType#">
 						&nbsp;
 					</div>	
@@ -388,7 +385,7 @@
 				<div class="multiField">
 					<cfif arguments.stMetadata.ftToggleOffDateTime>						
 						<label class="inlineLabel" for="#arguments.fieldname#include">
-							<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="1" >
+							<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="1" class="checkboxInput" >
 							<input type="hidden" name="#arguments.fieldname#include" value="0">
 							Include Date
 						</label>						
