@@ -214,21 +214,16 @@
 
 	<cfoutput><div class="#attributes.class#"></cfoutput>
 	<cfif attributes.IncludeFieldSet>
-		<cfoutput><fieldset></cfoutput>
+		<cfoutput><fieldset class="fieldset"></cfoutput>
 
 		<cfif isDefined("attributes.legend") and len(attributes.legend)>
-			<cfoutput><legend>#attributes.legend#</legend></cfoutput>
+			<cfoutput><h2 class="legend">#attributes.legend#</h2></cfoutput>
 		</cfif>	
 	</cfif>
 	
 	<cfif structKeyExists(attributes,"HelpSection") and len(attributes.HelpSection)>
 		<cfoutput>
-			<div class="helpsection">
-				<cfif structKeyExists(attributes,"HelpTitle") and len(attributes.HelpTitle)>
-					<h4>#attributes.HelpTitle#</h4>
-				</cfif>
-				<p>#attributes.HelpSection#</p>
-			</div>
+			<p class="helpsection">#attributes.HelpSection#</p>
 		</cfoutput>
 	</cfif>
 
@@ -475,7 +470,7 @@
 						
 			<cfif NOT len(Attributes.r_stFields)>
 				
-				<grid:div class="ctrlHolder #ftFieldMetadata.ftClass#">
+				<grid:div class="ctrlHolder #ftFieldMetadata.ftLabelAlignment#Labels #ftFieldMetadata.ftClass#">
 					
 					
 		
@@ -486,7 +481,7 @@
 					</cfif>
 		
 					<cfif bShowLabel AND isDefined("Attributes.IncludeLabel") AND attributes.IncludeLabel EQ 1>
-						<cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#"><cfif findNoCase("required",ftFieldMetadata.ftValidation)><em>*</em> </cfif>#ftFieldMetadata.ftlabel#</label></cfoutput>
+						<cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#" class="label"><cfif findNoCase("required",ftFieldMetadata.ftValidation)><em>*</em> </cfif>#ftFieldMetadata.ftlabel#</label></cfoutput>
 					</cfif>
 					
 					<cfoutput>	
@@ -507,7 +502,7 @@
 				
 				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].HTML = returnHTML>
 				<cfsavecontent variable="Request.farcryForm.stObjects.#variables.prefix#.MetaData.#ftFieldMetadata.Name#.Label">
-					<cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#"><cfif findNoCase("required",ftFieldMetadata.ftClass)><em>*</em> </cfif>#ftFieldMetadata.ftlabel#</label></cfoutput>
+					<cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#" class="label"><cfif findNoCase("required",ftFieldMetadata.ftClass)><em>*</em> </cfif>#ftFieldMetadata.ftlabel#</label></cfoutput>
 				</cfsavecontent>
 				<cfif len(LibraryLink)>
 					<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].LibraryLink = "#LibraryLink#">

@@ -22,7 +22,7 @@
 	<cfparam name="attributes.ObjectLabel" default=""><!--- Used to group and label rendered object if required --->
 	<cfparam name="attributes.lFields" default=""><!--- List of fields to render --->
 	<cfparam name="attributes.lExcludeFields" default="label"><!--- List of fields to exclude from render --->
-	<cfparam name="attributes.class" default="inlineLabels"><!--- class with which to set all farcry form tags --->
+	<cfparam name="attributes.class" default=""><!--- class with which to set all farcry form tags --->
 	<cfparam name="attributes.style" default=""><!--- style with which to set all farcry form tags --->
 	<cfparam name="attributes.format" default="edit"><!--- edit or display --->
 	<cfparam name="attributes.IncludeLabel" default="1">
@@ -259,10 +259,10 @@
 	
 	<cfoutput><div class="#attributes.class#"></cfoutput>
 	<cfif attributes.IncludeFieldSet>
-		<cfoutput><fieldset></cfoutput>
+		<cfoutput><fieldset class="fieldset"></cfoutput>
 	
 		<cfif isDefined("attributes.legend") and len(attributes.legend)>
-			<cfoutput><legend>#attributes.legend#</legend></cfoutput>
+			<cfoutput><h2 class="legend">#attributes.legend#</h2></cfoutput>
 		</cfif>	
 	</cfif>
 	
@@ -320,20 +320,7 @@
 		</cfif>
 		
 		
-		<!--- Prepare Form Validation (from Andrew Tetlaw http://tetlaw.id.au/view/home/) --->
-		<!--- 
-		Here's the list of classes available to add to your field elements:
-	
-	    * required (not blank)
-	    * validate-number (a valid number)
-	    * validate-digits (digits only)
-	    * validate-alpha (letters only)
-	    * validate-alphanum (only letters and numbers)
-	    * validate-date (a valid date value)
-	    * validate-email (a valid email address)
-	    * validate-date-au (a date formatted as; dd/mm/yyyy)
-	    * validate-currency-dollar (a valid dollar value)
-		 --->		 
+		<!--- Add validation classes --->
 		<cfif attributes.bValidation>
 			<cfif len(ftFieldMetadata.ftValidation)>
 				<cfloop list="#ftFieldMetadata.ftValidation#" index="iValidation">
@@ -570,7 +557,7 @@
 						
 			<cfif NOT len(Attributes.r_stFields)>
 				
-				<grid:div class="ctrlHolder #ftFieldMetadata.ftClass#">
+				<grid:div class="ctrlHolder #ftFieldMetadata.ftLabelAlignment#Labels #ftFieldMetadata.ftType#">
 					
 					
 		
@@ -581,7 +568,7 @@
 					</cfif>
 		
 					<cfif bShowLabel AND isDefined("Attributes.IncludeLabel") AND attributes.IncludeLabel EQ 1>
-						<cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#"><cfif findNoCase("required",ftFieldMetadata.ftClass)><em>*</em> </cfif>#ftFieldMetadata.ftlabel#</label></cfoutput>
+						<cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#" class="label"><cfif findNoCase("required",ftFieldMetadata.ftClass)><em>*</em> </cfif>#ftFieldMetadata.ftlabel#</label></cfoutput>
 					</cfif>
 					
 					<cfoutput>	
@@ -602,7 +589,7 @@
 				
 				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].HTML = returnHTML>
 				<cfsavecontent variable="Request.farcryForm.stObjects.#variables.prefix#.MetaData.#ftFieldMetadata.Name#.Label">
-					<cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#"><cfif findNoCase("required",ftFieldMetadata.ftClass)><em>*</em> </cfif>#ftFieldMetadata.ftlabel#</label></cfoutput>
+					<cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#" class="label"><cfif findNoCase("required",ftFieldMetadata.ftClass)><em>*</em> </cfif>#ftFieldMetadata.ftlabel#</label></cfoutput>
 				</cfsavecontent>
 				<cfif len(LibraryLink)>
 					<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].LibraryLink = "#LibraryLink#">

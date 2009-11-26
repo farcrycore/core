@@ -31,6 +31,8 @@ It just ignores the inner ones.
 
 		<cfset Variables.CorrectForm = 1>
 		
+		<!--- If XMTHML, then we need the trailing slash --->
+		<cfset tagEnding = application.fapi.getDocType().tagEnding />		
 		
 		<!--- import libraries --->
 		<skin:loadJS id="jquery" />		
@@ -71,7 +73,8 @@ It just ignores the inner ones.
 		<cfif attributes.bAddFormCSS>		
 		
 			<cfset attributes.class = listAppend(attributes.class,"uniForm"," ") />
-			<skin:loadCSS id="farcry-form" />				
+			<skin:loadCSS id="farcry-form" />
+			<skin:loadCSS id="jquery-ui" />				
 		</cfif>
 		
 
@@ -121,7 +124,7 @@ It just ignores the inner ones.
 			
 			<cfif attributes.bAjaxSubmission>
 				<!--- We use the hidden field to tell the submission that we do not need to include the wrap. --->
-				<input type="hidden" name="farcryformajaxsubmission" value="1" />
+				<input type="hidden" name="farcryformajaxsubmission" value="1" #tagEnding#>
 			</cfif>
 					
 		</cfoutput> 
@@ -132,13 +135,13 @@ It just ignores the inner ones.
 	
 		<!--- Render the hidden form fields used to post the state of the farcry form. --->
 		<cfoutput>
-			<input type="hidden" name="FarcryFormPrefixes" value="" />
-			<input type="hidden" name="FarcryFormSubmitButton" value="" /><!--- This is an empty field so that if the form is submitted, without pressing a farcryFormButton, the FORM.FarcryFormSubmitButton variable will still exist. --->
-			<input type="hidden" name="FarcryFormSubmitButtonClicked#attributes.Name#" id="FarcryFormSubmitButtonClicked#attributes.Name#" class="fc-button-clicked" value="" /><!--- This contains the name of the farcry button that was clicked --->
-			<input type="hidden" name="FarcryFormSubmitted"  value="#attributes.Name#" /><!--- Contains the name of the farcry form submitted --->
-			<input type="hidden" name="SelectedObjectID" class="fc-selected-object-id" value="" /><!--- Hidden Field to take a UUID from the attributes.SelectedObjectID on ft:button --->
+			<input type="hidden" name="FarcryFormPrefixes" value="" #tagEnding#>
+			<input type="hidden" name="FarcryFormSubmitButton" value="" #tagEnding#><!--- This is an empty field so that if the form is submitted, without pressing a farcryFormButton, the FORM.FarcryFormSubmitButton variable will still exist. --->
+			<input type="hidden" name="FarcryFormSubmitButtonClicked#attributes.Name#" id="FarcryFormSubmitButtonClicked#attributes.Name#" class="fc-button-clicked" value="" #tagEnding#><!--- This contains the name of the farcry button that was clicked --->
+			<input type="hidden" name="FarcryFormSubmitted"  value="#attributes.Name#" #tagEnding#><!--- Contains the name of the farcry form submitted --->
+			<input type="hidden" name="SelectedObjectID" class="fc-selected-object-id" value="" #tagEnding#><!--- Hidden Field to take a UUID from the attributes.SelectedObjectID on ft:button --->
 		
-			<input type="hidden" name="farcryFormValidation" id="farcryFormValidation#attributes.Name#" class="fc-server-side-validation" value="#attributes.Validation#" /><!--- Let the form submission know if it to perform serverside validation --->
+			<input type="hidden" name="farcryFormValidation" id="farcryFormValidation#attributes.Name#" class="fc-server-side-validation" value="#attributes.Validation#" #tagEnding#><!--- Let the form submission know if it to perform serverside validation --->
 	
 		</form>
 		</cfoutput>	
