@@ -573,25 +573,25 @@ user --->
 	</cfif>
 	
 	
-
-	
-	<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectID = session.objectadminFilterObjects[attributes.typename].stObject.objectid) />
 	<cfset HTMLfiltersAttributes = "">
-	<cfloop list="#attributes.lFilterFields#" index="criteria">
-		<cfif session.objectadminFilterObjects[attributes.typename].stObject[criteria] neq "">
-			<cfset thisCriteria = lcase(criteria)>
-			<cfif isDefined("application.types.#attributes.typename#.stProps.#criteria#.metadata.ftLabel")>
-				<cfset thisCriteria = lcase(application.types[attributes.typename].stProps[criteria].metadata.ftLabel)>
+	<cfif len(attributes.lFilterFields)>
+		<cfset session.objectadminFilterObjects[attributes.typename].stObject = oFilterType.getData(objectID = session.objectadminFilterObjects[attributes.typename].stObject.objectid) />
+		
+		<cfloop list="#attributes.lFilterFields#" index="criteria">
+			<cfif session.objectadminFilterObjects[attributes.typename].stObject[criteria] neq "">
+				<cfset thisCriteria = lcase(criteria)>
+				<cfif isDefined("application.types.#attributes.typename#.stProps.#criteria#.metadata.ftLabel")>
+					<cfset thisCriteria = lcase(application.types[attributes.typename].stProps[criteria].metadata.ftLabel)>
+				</cfif>
+				<cfset HTMLfiltersAttributes = listAppend(HTMLfiltersAttributes," "&lcase(thisCriteria)&" ",'&')>
 			</cfif>
-			<cfset HTMLfiltersAttributes = listAppend(HTMLfiltersAttributes," "&lcase(thisCriteria)&" ",'&')>
-		</cfif>
-	</cfloop>
-
+		</cfloop>
 	
-	<cfif trim(HTMLfiltersAttributes) neq "">
-		<cfset HTMLfiltersAttributes = "<div style='display:inline;color:##000'>#application.rb.getResource('objectadmin.messages.currentlybeingfilteredby@text','Currently being filtered by')#:</div> " & HTMLfiltersAttributes >
+		
+		<cfif trim(HTMLfiltersAttributes) neq "">
+			<cfset HTMLfiltersAttributes = "<div style='display:inline;color:##000'>#application.rb.getResource('objectadmin.messages.currentlybeingfilteredby@text','Currently being filtered by')#:</div> " & HTMLfiltersAttributes >
+		</cfif>
 	</cfif>
-
 
 	<!--- ONLY SHOW THE FILTERING IF WE HAVE RECORDS OR IF WE ARE ALREADY FILTERING --->
 	<cfif stRecordSet.q.recordCount OR listLen(HTMLfiltersAttributes)>
@@ -928,7 +928,7 @@ user --->
 		
 	
 	<cfelse>
-		<cfif listLen(attributes.lFilterFields) AND listLen(HTMLfiltersAttributes)>
+		<cfif listLen(HTMLfiltersAttributes)>
 			<cfoutput><div id="errorMsg">NO RESULTS MATCHED YOUR FILTER</div></cfoutput>
 		<cfelse>
 			<cfoutput><div id="OKMsg">YOU DO NOT CURRENTLY HAVE ANY CONTENT. USE THE [ADD] BUTTON ABOVE TO BEGIN.</div></cfoutput>
