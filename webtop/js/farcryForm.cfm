@@ -507,7 +507,27 @@ function checkUncheckAll(theElement) {
 	for(z=0; z<theForm.length;z++) {
 		if(theForm[z].type == 'checkbox' && theForm[z].name != 'checkall') {
 			theForm[z].checked = theElement.checked;
+			setRowBackground(theForm[z]);
 		}
 	}
 }
+
+
+
+
+function setRowBackground (childCheckbox) {
+	var row = childCheckbox.parentNode;
+	while (row && row.tagName.toLowerCase() != 'tr') {
+		row = row.parentNode;
+	}
+	if (row && row.style) {
+		if (childCheckbox.checked) {
+			row.style.backgroundColor = '##F9E6D4';
+		}
+		else {
+			row.style.backgroundColor = '';
+		}
+	}
+}		
+
 </cfoutput>					
