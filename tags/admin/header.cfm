@@ -87,6 +87,8 @@ $in: [bCacheControl] output cache control headers; default true. $
 	}
 	
 	.uniForm .buttonHolder{ text-align: right; margin:5px 0 10px 0;padding:5px;border:1px solid ##CCCCCC;border-width:1px 0px;background-color:##F4F4F4;}
+	
+	.uniForm .fc-button {padding:5px;}
 	</cfoutput>
 </skin:loadCSS>
 

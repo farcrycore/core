@@ -200,7 +200,7 @@ function Mod(a, b) {
 <cfif isDefined("qLockedObjects") AND isQuery(qLockedObjects) AND qLockedObjects.recordCount gt 0>
 <h3>#application.rb.getResource("workflow.headings.lockedObjects@text","Items you have locked")#</h3>
 <br class="clear" />
-<table class="table-2" cellspacing="0" id="table_#tableStatus_name#">
+<table class="objectAdmin" cellspacing="0" id="table_#tableStatus_name#">
 <tr>
     <th scope="col">#application.rb.getResource("workflow.labels.contentitem@label","CONTENT ITEM")#</th>
     <th scope="col">#application.rb.getResource("workflow.labels.type@label","TYPE")#</th>

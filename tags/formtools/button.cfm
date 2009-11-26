@@ -111,7 +111,7 @@
 			<cfoutput><a id="#attributes.id#" name="#attributes.id#" class="#attributes.class#" style="#attributes.style#">#attributes.text#</a></cfoutput>
 		</cfcase>
 		<cfdefaultcase>
-			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" class="ui-state-default ui-corner-all #attributes.class#" style="#attributes.style#;position:relative;" <cfif attributes.disabled>disabled</cfif>>#attributes.text#</button></cfoutput>
+			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" class="ui-state-default ui-corner-all fc-button #attributes.class#" style="#attributes.style#;position:relative;" <cfif attributes.disabled>disabled</cfif>>#attributes.text#</button></cfoutput>
 		</cfdefaultcase>
 		</cfswitch>
 		
