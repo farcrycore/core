@@ -40,6 +40,11 @@
 	border-top: 1px solid #999;
 }
 
+#farcrytray li {
+	background:none;
+	margin-left:5px;
+	padding-left:0px;
+}
 
 #farcrytray .tray-summary ul {
 	margin:0px;
@@ -48,22 +53,17 @@
 #farcrytray .tray-summary ul li {
 	float: left;
 	list-style: none;
-	margin-left:5px;
 }
 
 #farcrytray .tray-detail ul {
 	margin:0px;
 	padding:0px;
 }
-#farcrytray .tray-detail ul li {
-	
+#farcrytray .tray-detail ul li {	
 	list-style: none;
-	margin-left:5px;
 }
 #farcrytray li a {
-	padding:2px;
-	
-	
+	padding:2px;	
 	line-height:16px;
 	display:block;
 	text-decoration:none;

@@ -316,11 +316,9 @@
 		<skin:loadJS id="farcry-form" />
 		<skin:loadCSS id="jquery-ui" />
 		<skin:loadCSS id="farcry-form" />
+		<skin:loadCSS id="farcry-tray" />
 
 		<cfoutput>	
-		<style type="text/css">
-			@import url("#application.url.webtop#/css/tray.css");
-		</style>
 		<skin:onReady>
 		$j("body").prepend("<div style='bottom:0;font-size:11px;padding:0;position:fixed;right:0;width:100%;z-index:99;max-height:200px;overflow:auto;'><div id='farcrytray'></div></div>");
 

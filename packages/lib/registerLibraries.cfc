@@ -444,6 +444,10 @@
 		<skin:registerCSS 	id="gritter"
 							baseHREF="#application.url.webtop#/thirdparty/gritter/css"
 							lFiles="gritter.css" />
+							
+		<skin:registerCSS 	id="farcry-tray"
+							baseHREF="#application.url.webtop#/css"
+							lFiles="tray.css" />
 				
 														
 	</cffunction>	
