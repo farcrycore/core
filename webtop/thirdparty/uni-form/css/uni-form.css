@@ -4,8 +4,8 @@
 /* ------------------------------------------------------------------------------ */
 
   /* Generals */
-  .uniForm fieldset{}
-    .uniForm fieldset legend{ color: #333; font-weight: bold; font-size: 100%; margin: 0; padding: 1.5em 0; }
+  .uniForm .fieldset{}
+    .uniForm .fieldset .legend{ color: #333; font-weight: bold; font-size: 100%; margin: 0; padding: 1em 0; }
     
     /* This is the main unit that contains our form elements */
     .uniForm .ctrlHolder{ padding: 7px; border-bottom: 1px solid #dfdfdf; }
@@ -18,18 +18,28 @@
     .uniForm .focused{ background: #fffcdf; }
       
       /* .inlineLabel is used for inputs within labels - checkboxes and radio buttons */
-      .uniForm .inlineLabel input,
-      .uniForm .inlineLabels .inlineLabel input,
-      .uniForm .blockLabels .inlineLabel input{ float: left; margin: 0 .4em 0 0; }
-        .uniForm .inlineLabel span{ float: left; width: 90%; }
+      .uniForm .inlineLabel .selectInput,
+      .uniForm .inlineLabel .checkboxInput,
+      .uniForm .inlineLabel .fileUpload,
+      .uniForm .inlineLabel .passwordInput,
+      .uniForm .inlineLabel .radioInput,
+      .uniForm .inlineLabel .textInput,
+      .uniForm .inlineLabel .textareaInput,
+      .uniForm .inlineLabels .inlineLabel .selectInput,
+      .uniForm .inlineLabels .inlineLabel .checkboxInput,
+      .uniForm .inlineLabels .inlineLabel .fileUpload,
+      .uniForm .inlineLabels .inlineLabel .passwordInput,
+      .uniForm .inlineLabels .inlineLabel .radioInput,
+      .uniForm .inlineLabels .inlineLabel .textInput,
+      .uniForm .inlineLabels .inlineLabel .textareaInput{ float: left; margin: 0 .4em 0 0; }
+        .uniForm .inlineLabel .span{ float: left; width: 90%; }
         
 /* ------------------------------------------------------------------------------ */
 
     /* .blockLabels (default style, will be applied even if you don't class the parent element) */
     .uniForm .blockLabels .ctrlHolder{}
       
-      .uniForm label,
-      .uniForm .blockLabels label,
+      .uniForm .label,
       .uniForm .blockLabels .label{ margin: 0 0 .5em 0; }
       
       .uniForm .textInput,
@@ -37,11 +47,9 @@
       .uniForm .blockLabels .fileUpload{ width: 53%; /* <- Required property */ }
     
       .uniForm .selectInput,
-      .uniForm select,
-      .uniForm .blockLabels .selectInput,
-      .uniForm .blockLabels select{ width: 53.5%; /* <- Required property */ }
-      .uniForm textarea,
-      .uniForm .blockLabels textarea{ width: 53%; /* <- Required property */ height: 12em; }
+      .uniForm .blockLabels .selectInput{ width: 53.5%; /* <- Required property */ }
+      .uniForm .textareaInput,
+      .uniForm .blockLabels .textareaInput{ width: 53%; /* <- Required property */ height: 12em; }
 
       .uniForm .formHint,
       .uniForm .blockLabels .formHint{ width: 45%; /* <- Required property */ font-size: .9em; color: #777; position: relative; top: -.5em; }
@@ -53,27 +61,23 @@
         .uniForm .multiField .blockLabel,
         .uniForm .blockLabels .multiField .blockLabel{ width: 30%; margin: 0 10px 0 0; }
         .uniForm .multiField .blockLabel .textInput,
-        .uniForm .multiField .blockLabel .selectInput,
-        .uniForm .multiField .blockLabel select,
+        .uniForm .multiField .blockLabel .selectInput
         .uniForm .blockLabels .multiField .blockLabel .textInput,
-        .uniForm .blockLabels .multiField .blockLabel .selectInput,
-        .uniForm .blockLabels .multiField .blockLabel select{ width: 100%; margin: .3em 0 0 0; }
+        .uniForm .blockLabels .multiField .blockLabel .selectInput{ width: 100%; margin: .3em 0 0 0; }
 
 /* ------------------------------------------------------------------------------ */
 
     /* .inlineLabels */
     .uniForm .inlineLabels .ctrlHolder{}
     
-    .uniForm .inlineLabels label,
     .uniForm .inlineLabels .label{ width: 45%; /* <- Required property */ margin: .3em 2% 0 0; /* <- Required property */ }
     
     .uniForm .inlineLabels .textInput,
     .uniForm .inlineLabels .fileUpload{ width: 45%; /* <- Required property */ }
     
-    .uniForm .inlineLabels .selectInput,
-    .uniForm .inlineLabels select{ width: 45%; /* <- Required property */ }
+    .uniForm .inlineLabels .selectInput{ width: 45%; /* <- Required property */ }
     
-    .uniForm .inlineLabels textarea{  width: 45%; /* <- Required property */ height: 12em; }
+    .uniForm .inlineLabels .textareaInput{  width: 45%; /* <- Required property */ height: 12em; }
 
     .uniForm .inlineLabels .formHint{ margin-top: 0; margin-left: 47%; font-size: .9em; color: #777; position: static; }
     
@@ -81,12 +85,11 @@
       .uniForm .inlineLabels .multiField .inlineLabel{ display: block; margin: 0 0 .5em 0; }
       .uniForm .inlineLabels .multiField .blockLabel{ float: left; width: 26%; margin: 0 3% 0 0; }
       .uniForm .inlineLabels .multiField .blockLabel .textInput,
-      .uniForm .inlineLabels .multiField .blockLabel .selectInput,
-      .uniForm .inlineLabels .multiField .blockLabel select{ width: 100%; margin: .3em 0 0 0; }
+      .uniForm .inlineLabels .multiField .blockLabel .selectInput{ width: 100%; margin: .3em 0 0 0; }
 
 /* Focus pseudoclasses */
 .uniForm .ctrlHolder .textInput:focus{ outline: none; /* Get rid of the 'glow' effect in WebKit, optional */ }
-.uniForm .ctrlHolder textarea:focus{ outline: none; /* Get rid of the 'glow' effect in WebKit, optional */ }
+.uniForm .ctrlHolder .textareaInput:focus{ outline: none; /* Get rid of the 'glow' effect in WebKit, optional */ }
 .uniForm div.focused .formHint{ color: #333; }
 
 /* Columns (they are floated left by default) */
