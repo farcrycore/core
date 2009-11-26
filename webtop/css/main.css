@@ -9,14 +9,6 @@ overriding a required farcry core style.
 
 */
 
-/* GENERAL CSS RESET CODE */
-html,body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,form,fieldset,input,p,blockquote,th,td{margin:0;padding:0;}
-img,body,html{border:0;}
-address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}
-ol,ul{list-style:none;}
-caption,th{text-align:left;}
-h1,h2,h3,h4,h5,h6{font-size:100%;}
-q:before,q:after{content:'';}
 
 
 /* =THE BIG GUYS */
@@ -36,8 +28,6 @@ ul li {padding-left: 20px; background: transparent url("images/sprites.gif") no-
 ul.nomarker li {background:none;padding-left:0}
 
 
-/* =GENERAL */
-img {border:none} 
 
 hr {margin: .3em 0 1em;background:#F1F1F1;height:1px;color:#F1F1F1;border:none}
 small, .small {font-size:11px}
@@ -51,34 +41,6 @@ br.clearer {clear: both;height:1px;line-height:1px;}
 .disabled {color:#708090}
 .switch {float:right}
 
-/* =FORMS */
-form {margin: 0 0 1em}
-form.formtool {min-width: 600px; max-width: 800px; width:100%; _width: 700px; }
-input, textarea, select {font-family:arial}
-input.formButton {width: 75px;}
-
-fieldset {border: none;padding:0;margin:0}
-label {display:block;margin: 0;padding: 5px 0}
-li label {display:inline}
-li label input.f-checkbox {margin-bottom:-1px;_margin-bottom:-2px}
-	.category-tree li {font-weight:bold}
-	.category-tree li li {font-weight:normal;font-size:100%}
-	.category-tree li img {margin: 3px 0 -5px}
-label br {clear:left}
-div.f-submit-wrap {clear:both;display:block;padding:5px 0}
-form.f-bg-short {}
-form.f-bg-medium {}
-form.f-bg-long {}
-
-select {background-color: #FDFEFF;border-color: #ccc #ccc #ccc #ccc}
-select:hover, select:focus {border-color: #E17000}
-input.f-submit, input.normalbttnstyle {padding: 2px 10px;font-weight:bold;color:#fff;background:#333 url("images/sprites.gif") repeat-x 0 -500px;border: 3px double;border-color: #eee #eee #999 #999;_background:#999;_border: 1px solid #666}
-input.f-submit:hover, input.f-submit:focus, input.normalbttnstyle:hover, input.normalbttnstyle:focus {background:#333 url("images/sprites.gif") repeat-x 0 -600px;border-color: #E1ECF8 #E1ECF8 #26568D #26568D;_background:#999;_border: 1px solid #666}
-input, textarea {border: 1px solid;border-color: #ccc #ccc #999 #999}
-textarea {font-size:12px}
-input:focus, textarea:focus {border-color: #E17000}
-
-input.f-checkbox {_border:none}
 
 
 
@@ -91,8 +53,7 @@ h4 {font-size: 102%}
 h5 {font-size: 92%}
 h6 {font-size: 83%}
 
-/* =TYPOGRAPHY */
-p {margin: 0 0 1.5em}
+
 
 #view-site {position:absolute;top:5px;right:20px;font-weight:bold}
 #view-site a:link {color:#fff} 
@@ -203,148 +164,6 @@ body.popup h2 {margin: 0 0 .4em}
 
 body.popup #content {margin:0;background:transparent;padding:0}
 
-.results-bar h5 {margin:0}
-.results-bar {padding: 5px 0}
-
-.utilBar {margin: 0 0 15px;font-weight:bold;float:left}
-#genadmin-wrap .pagination {float:right;margin-right:-3px;margin-bottom: 10px}
-#genadmin-wrap .pagination span {white-space:nowrap}
-#genadmin-wrap .pagination h5 {margin:0}
-.utilBar h5 {float:right;margin:0}
-.utilBar span, .utilBar a, .utilBar a:link, .utilBar a:visited, .utilBar a:hover, .utilBar a:active {margin: 0 3px 0 0;padding: 1px 6px;text-decoration:none;border: 1px solid #ccc}
-#genadmin-wrap .pagination span, 
-#genadmin-wrap .pagination a, 
-#genadmin-wrap .pagination a:link, 
-#genadmin-wrap .pagination a:visited, 
-#genadmin-wrap .pagination a:hover, 
-#genadmin-wrap .pagination a:active {cursor:pointer;color:#E17000;padding:0 6px;margin:0 2px;float:left;display:block;background:#F9E6D4;text-decoration:none;border: 1px solid #F8DDC2;border-left: 1px solid #EB9948;border-bottom: 1px solid #EB9948}
-#genadmin-wrap .pagination span {color:#000}
-
-#genadmin-wrap .pagination a:hover, #genadmin-wrap .pagination a:active {background:#E17000;color:#fff;border: 1px solid #EB9948}
-
-	/* rule: list - pagination layout styles */
-	div.ruleListPagination {margin: 0px; padding: 8px 8px 8px 8px;}
-		div.ruleListPagination {border-top: 1px solid #324e7c;}
-		div.ruleListPagination div.pageDetails {float: left; display: block;}
-		div.ruleListPagination div.pageDetails h2 {margin: 4px 0px 4px 0px; padding: 0px;}
-		div.ruleListPagination div.pageDetails h2 {font-size: 100%; font-weight: normal; color: #324e7c; background-color: inherit;}
-		div.ruleListPagination div.pageDetails h2 strong {color: #1a2840; background-color: inherit;}
-		div.ruleListPagination div.pageDetails label {margin: 0px; padding: 0px; float: left; display: block;}
-		div.ruleListPagination div.pageDetails select {width: 35px; float: left; display: block;}
-		div.ruleListPagination div.pageDetails select {font-size: 80%;}
-		div.ruleListPagination div.pageList {float: left;}
-		div.ruleListPagination div.pageList ul {margin: 0px; padding: 0px;}
-		div.ruleListPagination div.pageList ul li {margin: 0px 0px 0px 2px; padding: 0px; float: left; display: block; text-align: center;background-color: #FFFFFF;}
-		div.ruleListPagination div.pageList ul li a {margin: 0px; padding: 0px; width: 16px; height: 16px; display: block;}
-		div.ruleListPagination div.pageList ul li a {background-color: #FFFFFF; border: 1px solid #97accd; color: inherit;}
-		div.ruleListPagination div.pageList ul li a {color: #324e7c; font-weight: bold; font-size: 100%; text-decoration: none; background-color: inherit;}
-		div.ruleListPagination div.pageList ul li a:hover {border: 1px solid #324e7c;}
-		div.ruleListPagination div.pageList ul li.active a {background-color: #d0def5; border: 1px solid #324e7c; color: #324e7c;}
-		
-		
-
-	.pagination {background: #f2f2f2;color:#666;padding: 4px 2px 4px 7px;border: 1px solid #ddd;margin: 0 0 1.5em}
-	.pagination p {position:relative;text-align:right}
-	.pagination p a:link, .pagination p a:visited, .pagination p a:hover, .pagination p a:active {text-decoration:none;background:#fff;padding:2px 5px;border: 1px solid #ccc}
-	.pagination p a:hover {background:#c00;color:#fff}
-	.pagination p span {text-decoration:none;background:#fff;padding:2px 5px;border: 1px solid #ccc;color:#ccc}
-	.pagination * {margin:0}
-	.pagination h4 {margin-top:-1.45em;padding:0;border:none}
-	
-			
-.utilBar a:hover, .utilBar a:active {background:#E17000;border: 1px solid #ccc}
-
-.utilBar input {padding: 2px 4px;_padding: 2px 0;background:#f5f5f5;color:#369;border: 1px solid #ddd;border-left: 1px solid #999;border-bottom: 1px solid #999;cursor:pointer}
-.utilBar input:hover {background:#E4ECF6;border: 1px solid #369}
-
-.thumbNailsWrap ul {margin: 1em 0;_margin-top:0;_height:1%;overflow:auto;_overflow:visible}
-
-.thumbNailsWrap li, .thumbNailsWrap .thumbNailItem {padding:3px;position:relative;float:left;width:85px;_height:105px;min-height:105px;background:#fff;border: 1px solid #ccc;margin: 0 5px 5px 0;display:block;font-size:86%}
-.thumbNailsWrap li img, .thumbNailsWrap .thumbNailItem img {display:block;}
-.thumbNailsWrap li input {position:absolute;top:0;right:-1px}
-.thumbNailsWrap li label {}
-.thumbNailsWrap li label input {border:none}
-.thumbNailsWrap li span {display:block;width:100%;border-bottom: 1px solid #eee}
-.thumbNailsWrap li p {margin:2px;line-height:1.3}
-
-
-.filesWrap ul {position:static;margin: 1em 0}
-.filesWrap ul li input {border:none}
-.filesWrap li {padding-left:0;margin: 0 0 -2px;border-bottom: 1px solid #f1f1f1;background:none}
-.filesWrap li label {margin:0;padding:0}
-
-body.filebrowse form.f-wrap-1, body.imagebrowse form.f-wrap-1 {width:35em}
-
-body.imagebrowse .tab-panes, body.filebrowse .tab-panes {padding: 15px 10px 0;background:#f1f1f1 url("images/wizard_bg.gif") repeat-y 125px 0}
-body.imagebrowse #utility, body.filebrowse #utility {float:left;width:160px;font-size:92%;position:relative}
-body.imagebrowse #utility p, body.filebrowse #utility p {font-size:92%}
-body.imagebrowse #utility li, body.filebrowse #utility li {background-color:#f1f1f1;font-size:100%}
-body.imagebrowse #utility form, body.filebrowse #utility form {margin-bottom: 15px}
-body.imagebrowse #content, body.filebrowse #content {margin-left:190px;height:auto}
-body.imagebrowse .f-submit-wrap, body.filebrowse .f-submit-wrap {padding: 5px;clear:both;margin: 1em 0 1em 185px;text-align:left;_margin-top:0}
-body.imagebrowse form.f-wrap-1 .f-submit-wrap, body.filebrowse form.f-wrap-1 .f-submit-wrap {padding: 5px;clear:both;margin: 0;text-align:center}
-
-body.imagebrowse .utilBar {float:none;margin: 0 0 1em}
-
-body.imagebrowse .f-checkbox-wrap ul, body.filebrowse .f-checkbox-wrap ul {margin:0}
-body.imagebrowse .f-checkbox-wrap ul li, body.filebrowse .f-checkbox-wrap ul li {border-bottom: 1px solid #F1F1F1}
-body.imagebrowse form.f-wrap-1 fieldset.f-checkbox-wrap label, body.filebrowse form.f-wrap-1 fieldset.f-checkbox-wrap label {margin: 0 0 -2px}
-body.imagebrowse form.f-wrap-1 fieldset.f-checkbox-wrap label, body.filebrowse form.f-wrap-1 fieldset.f-checkbox-wrap label {float:none;width:auto}
-body.imagebrowse form.f-wrap-1 label, body.filebrowse form.f-wrap-1 label {border-bottom: none}
-body.imagebrowse form.f-wrap-1 h3, body.filebrowse form.f-wrap-1 h3 {font-size:115%}
-
-body.library .tab-panes {background:#f1f1f1 none;}
-
-/* =PLP WRAP */
-
-
-
-#plp-wrap {background: transparent url("images/plp_wrap_bg.gif") no-repeat 100% 100%;padding-bottom: 2.5em}
-#plp-wrap .pagination {float:right}
-#plp-wrap .pg-bot {clear:both}
-#plp-wrap .pagination ul {padding:0;margin: 0;list-style-type:none;width:120px;position:relative;height:2.2em}
-#plp-wrap .pagination li {padding:0;margin:0;display:inline}
-
-#plp-wrap .pagination li.li-prev {position:absolute;top:0;left:0}
-#plp-wrap .pagination li.li-next {position:absolute;top:0;right:0}
-
-#plp-wrap .pagination li.li-prev a:link, #plp-wrap .pagination li.li-prev a:visited {color:#666;background:#fff url("images/sprites_icons.gif") no-repeat -7px -450px;height: 2.2em;font: bold 100%/2.2 arial;padding-left:20px}
-#plp-wrap .pagination li.li-next a:link, #plp-wrap .pagination li.li-next a:visited {color:#666;background:#fff url("images/sprites_icons.gif") no-repeat 100% -550px;height: 2.2em;font: bold 100%/2.2 arial;padding-right:22px}
-
-#plp-wrap .pagination li.li-prev a:hover, #plp-wrap .pagination li.li-prev a:active {background-position: -7px -400px;color:#006BD0}
-#plp-wrap .pagination li.li-next a:hover, #plp-wrap .pagination li.li-next a:active {background-position: 100% -500px;color:#006BD0}
-
-#genadmin-wrap th {font-size:105%;line-height:1.3}
-
-#plp-content {clear:left;margin: 0 155px 0 0}
-#plp-content iframe, #plp-content textarea#body {float:left;width:97%}
-#plp-content table {width:97%;float:left}
-#plp-content td {padding:0;border:none}
-
-
-
-#plp-wrap h1 {border-bottom: 1px solid #DEDEDE;margin:0;padding: 3px 0 6px}
-#plp-wrap h1 img {display:block;float:left;width:60px;height:48px;margin-bottom: 10px}
-
-#plp-nav {clear:both;float:right;width:120px}
-#plp-nav ul {margin: 0 0 15px;padding:0;list-style-type:none} 
-#plp-nav li {margin:0;padding:0;background:none;font: normal 90%/2 arial;border-bottom: 1px solid #e8e8e8;text-transform:capitalize}
-#plp-nav a:link, #plp-nav a:visited {color:#666}
-#plp-nav a:link strong , #plp-nav a:visited strong {color:#E17000}
-#plp-nav a:hover, #plp-nav a:active {color:#E17000;background:#fff}
-
-
-#plp-nav li.li-complete, #plp-nav li.li-cancel {border-bottom: none;padding: 0;margin: 30px 0 0;font-size:100%;}
-#plp-nav li.li-cancel {margin-top:5px}
-
-#plp-nav li.li-complete a:link, #plp-nav li.li-complete a:visited, #plp-nav li.li-complete a:hover, #plp-nav li.li-complete a:active {color:#666;background:#fff url("images/sprites_icons.gif") no-repeat 0 -297px;display:block;height: 2.2em;font: bold 110%/2.2 arial;padding-left:40px}
-#plp-nav li.li-complete a:hover, #plp-nav li.li-complete a:active {background-position: 0 -347px;color:#00A700}
-
-
-#plp-nav li.li-cancel a:link, #plp-nav li.li-cancel a:visited, #plp-nav li.li-cancel a:hover, #plp-nav li.li-cancel a:active {color:#666;background:#fff url("images/sprites_icons.gif") no-repeat 0 -197px;display:block;height: 2.2em;font: bold 110%/2.2 arial;padding-left:40px}
-#plp-nav li.li-cancel a:hover, #plp-nav li.li-cancel a:active {background-position: 0 -247px;color:#c00}
-
-#plp-nav a:link, #plp-wrap .pagination a:link, #plp-nav a:visited, #plp-wrap .pagination a:visited, #plp-nav a:hover, #plp-wrap .pagination a:hover, #plp-nav a:active, #plp-wrap .pagination a:active {text-decoration:none}
 
 #wizard-wrap textarea {width:350px;}
 
@@ -439,126 +258,11 @@ dl.dl-style2 dd {margin:0;padding: 1px 0}
 
 .icon {margin: 0 0 10px}
 
-/* =LAYOUT-FORMS  ===TAKEN FROM DAEMON STANDARD FORMS=== */
-
-/* f-wrap-1 - simple form, headings on left, form elements on right */
-form.f-wrap-1 {width:auto;position:relative;font-size:92%}
-	form.f-wrap-1 fieldset {width:auto}
-	form.f-wrap-1 h3 {margin:0 0 .6em;font-size:155%}
-	form.f-wrap-1 label {display:block;width:32em;border-top: 1px solid #fff}
-	
-		form.f-wrap-1 .f-multiselect-wrap {display:block;width:32em;border-bottom: 1px solid #fff;margin: 0;padding: 5px 0}
-		form.f-wrap-1 .f-multiselect-wrap br {clear:left}
-	
-	
-	/* hide from IE5 mac \*/
-	form.f-wrap-1 label, form.f-wrap-1 .f-multiselect-wrap {float:none}
-	/* end hiding from IE5 mac */
-
-	form.f-wrap-1 label input, form.f-wrap-1 label textarea, form.f-wrap-1 label select {width:auto;float:left;margin-left:10px}  
-		form.f-wrap-1 .f-multiselect-wrap input, form.f-wrap-1 .f-multiselect-wrap textarea, form.f-wrap-1 .f-multiselect-wrap select  {width:auto;margin-left:10px}
-	
-	form.f-wrap-1 label b, form.f-wrap-1 .f-multiselect-wrap b {float:left;width:8em;line-height: 1.7;display:block}
-	form.f-wrap-1 label b .req, form.f-wrap-1 .f-multiselect-wrap b .req {color:#c00;font-size:150%;font-weight:normal}
-	form.f-wrap-1 div.req {color:#666;font-size:96%;font-weight:normal;position:absolute;top:.4em;right:1em;_right:160px;left:auto;width:13em;text-align:right}
-	form.f-wrap-1 div.req b {color:#c00;font-size:140%}
-	form.f-wrap-1 label textarea.f-comments {width: 260px}
-	textarea.f-comments2 {width: 230px;height:80px;font-size:12px;padding:3px;display:block}
-	form.f-wrap-1 label textarea.f-comments2 {width: 230px;height:80px;font-size:12px;padding:3px}
-	form.f-wrap-1 a.f-extratext {margin-left: 11em;font-size:90%}
-	form.f-wrap-1 div.f-submit-wrap a.f-extratext {margin-left: 1em;font-size:90%}
-	form.f-wrap-1 div.f-submit-wrap {padding: 5px 0 5px 8em}
-	form.f-wrap-1 input.f-submit {margin: 0 0 10px 10px}
-	.f-subdued {white-space:nowrap}
-	.f-subdued .f-submit {padding:0;font: normal 86% arial}
-	
-	form.f-wrap-1 fieldset.f-checkbox-wrap, form.f-wrap-1 fieldset.f-radio-wrap {display:block;width:32em;border:none;margin:0;padding-bottom:.7em;clear:left}
-	form.f-wrap-1 fieldset.f-checkbox-wrap fieldset ul li {background-color:transparent;clear:left}
-	form.f-wrap-1 fieldset.f-checkbox-wrap fieldset ul li label {float:none}
-	form.f-wrap-1 fieldset.f-checkbox-wrap b, form.f-wrap-1 fieldset.f-radio-wrap b {float:left;width:8em;line-height: 1.7;display:block;padding-top:.3em}
-	form.f-wrap-1 fieldset.f-checkbox-wrap fieldset, form.f-wrap-1 fieldset.f-radio-wrap fieldset {float:left;width:13em;margin: 3px 0 0 10px}
-	form.f-wrap-1 fieldset.f-checkbox-wrap label, form.f-wrap-1 fieldset.f-radio-wrap label {float:left;width:13em;border:none;margin:0;padding:2px 0;margin-right:-3px}
-	form.f-wrap-1 label input.f-checkbox, form.f-wrap-1 label input.f-radio {width:auto;float:none;margin:0;padding:0}
-	
-	form.f-wrap-1 label span.errormsg {position:absolute;top:0;right:-10em;left:auto;display:block;width:16em;background: transparent url(images/errormsg_bg.gif) no-repeat 0 0}
-	form.f-wrap-1 label span.errormsg b {padding: 10px 0;margin: 0 10px 0 30px;color:#B30800;font-weight:bold;display:block;width:auto;float:none;line-height:1.3}
-
-	form.wider {}
-	form.wider fieldset {}
-	form.wider label, form.wider .f-multiselect-wrap {width:37em}
-	form.wider label b, form.wider .f-multiselect-wrap b {width:13em}
-	form.wider fieldset.f-checkbox-wrap, form.wider fieldset.f-radio-wrap {width:37em}
-	form.wider fieldset.f-checkbox-wrap b, form.wider fieldset.f-radio-wrap b {width:13em}
-	form.wider div.f-submit-wrap {padding-left: 13em}
-	form.wider a.f-extratext {margin-left: 16em}
-	
-	form.f-wrap-1 label select.f-hours, form.f-wrap-1 .f-multiselect-wrap select.f-hours {margin: 10px 10px 10px 169px;display:inline;}
-	form.f-wrap-1 label select.f-mins, form.f-wrap-1 .f-multiselect-wrap select.f-mins {margin: 10px 10px 10px 0;display:inline}
-	
-	#plp-content form.f-wrap-1 label b, #plp-content form.f-wrap-1 .f-multiselect-wrap b {width:10em}
-	
-	#plp-content form.f-wrap-1 label select.f-hours, #plp-content form.f-wrap-1 .f-multiselect-wrap select.f-hours {margin: 10px 10px 10px 132px;_margin-left:135px}
-	
-form.f-wrap-2 {width:auto;position:relative;padding: .5em 0;font-size:92%}
-	
-	form.f-wrap-2 fieldset {width:100%;margin: 0}
-	form.f-wrap-2 fieldset ul {margin-left: 25%}
-	form.f-wrap-2 fieldset ul ul {margin-left: 0}
-	form.f-wrap-2 h3 {margin:0 0 .6em;font-size:155%}
-	form.f-wrap-2 label, form.f-wrap-2 .f-multiselect-wrap {width:100%;border-bottom: 1px solid #fff}
-
-	
-	
-	
-	form.f-wrap-2 input.movetoactive {background:none;border:none;text-decoration:underline;position:absolute;top:4em;right:1em;font-weight:bold;color:#E17000;cursor:pointer}
-	
-	form.f-wrap-2 label input, form.f-wrap-2 label textarea, form.f-wrap-2 label select, 
-		form.f-wrap-2 .f-multiselect-wrap input, form.f-wrap-2 .f-multiselect-wrap textarea, form.f-wrap-2 .f-multiselect-wrap select {width:auto;float:left;margin-left:10px}
-	
-	form.f-wrap-2 label b, form.f-wrap-2 .f-multiselect-wrap b {float:left;width:25%;line-height: 1.7;display:block}
-	form.f-wrap-2 label b .req, form.f-wrap-2 .f-multiselect-wrap b .req {color:#c00;font-size:150%;font-weight:normal;line-height:1;width:.3em;height:.3em}
-	form.f-wrap-2 div.req {color:#666;font-size:96%;font-weight:normal;position:absolute;top:.4em;right:1em;left:auto;width:13em;text-align:right}
-	form.f-wrap-2 div.req b {color:#c00;font-size:140%}
-	form.f-wrap-2 label textarea.f-comments {width: 20em}
-	form.f-wrap-2 div.f-submit-wrap {padding: 5px 0 5px 25%}
-	form.f-wrap-2 input.f-submit {margin: 0 0 10px 10px}
-
-	form.f-wrap-2 fieldset.f-checkbox-wrap, form.f-wrap-2 fieldset.f-radio-wrap {width:100%;border-bottom: 1px solid #fff}
-	form.f-wrap-2 fieldset.f-checkbox-wrap fieldset ul li {background-color:transparent;clear:left}
-	
-	form.f-wrap-2 fieldset.f-checkbox-wrap fieldset ul li label {float:none}
-	form.f-wrap-2 fieldset.f-checkbox-wrap b, form.f-wrap-2 fieldset.f-radio-wrap b {float:left;width:25%;line-height: 1.7;display:block;padding-top:.3em}
-	form.f-wrap-2 fieldset.f-checkbox-wrap fieldset, form.f-wrap-2 fieldset.f-radio-wrap fieldset {float:left;width:70%;margin: 3px 0 0 10px;_margin-left: 6px}
-	form.f-wrap-2 fieldset.f-checkbox-wrap label, form.f-wrap-2 fieldset.f-radio-wrap label {float:left;width:70%;border:none;margin:0;padding:2px 0;margin-right:-3px}
-	form.f-wrap-2 label input.f-checkbox, form.f-wrap-2 label input.f-radio {width:auto;float:none;margin:0;padding:0}
-	
-
-	form.f-wrap-2 fieldset.catpicker {padding-bottom: 1em}
-	form.f-wrap-2 fieldset.catpicker label {border: none}
-	form.f-wrap-2 fieldset.catpicker ul ul {border: none}
-	form.f-wrap-2 fieldset.catpicker ul li {font-size:11px;border: none}
-	form.f-wrap-2 fieldset.catpicker ul li img {margin-left:-3px;_margin:0}
-	form.f-wrap-2 fieldset.catpicker ul li label {padding:0;border: none}
-	
-	.f-toolwrap {width:175px;display:block;margin:0;padding:0;float:right;margin-top:-102px}
-	
-	form.f-wrap-2 label input.f-delete, form.f-wrap-2 label input.f-deletehover, form.f-wrap-2 label input.f-uparrow, form.f-wrap-2 label input.f-uparrowhover, form.f-wrap-2 label input.f-downarrow, form.f-wrap-2 label input.f-downhover {text-decoration:underline;font-weight:bold;color:#E17000;cursor:pointer;background:none;border:none;display:block;height:25px;width:170px;text-align:left;padding: 0 0 0 30px;margin:0}
-	
-	form.f-wrap-2 label input.f-uparrow {background:#F1F1F1 url("images/sprites_icons.gif") no-repeat 0 -758px}
-	form.f-wrap-2 label input.f-downarrow {background:#F1F1F1 url("images/sprites_icons.gif") no-repeat 0 -708px}
-	form.f-wrap-2 label input.f-delete {background:#F1F1F1 url("images/sprites_icons.gif") no-repeat 0 -808px}
-	
-	form.f-wrap-2 label input.f-uparrowhover {background-position: 0 -908px}
-	form.f-wrap-2 label input.f-downarrowhover {background-position: 0 -858px}
-	form.f-wrap-2 label input.f-deletehover {background-position: 0 -958px}
-	
-form.f-bg-3 {background:#F3F3F3 url(images/form_bg_3.gif) repeat-x 0 100%;padding-bottom: 25px;margin-left:-20px;margin-right:-20px;padding-left: 20px;padding-right:20px}
-
 body.container-management h1 {font: bold 135% arial,helvetica,sans-serif;height:auto;clear:both;_height:1em;min-height:1em}
 body.container-management h1 {padding: 10px 0 14px 40px;background: transparent url("images/container_edit_2.gif") no-repeat -10px -100px}
 
 
- /* =DATA-TABLES */
+ /* =DATA-TABLES
 
 	table {border-collapse:collapse;border:none;background:#fff;margin: .3em 0 1.5em;font-size:86%;border-bottom: 1px solid #ccc;border-left: 1px solid #ccc}
 	form table {font-size:92%}
@@ -576,7 +280,7 @@ body.container-management h1 {padding: 10px 0 14px 40px;background: transparent 
 		th.nobg {border:none;background:#fff}
 		tr.alt {background: #f1f1f1} 
 		tr.ruled {background: #c00} 
-		tr {background:#fff}
+		tr {background:#fff} */
 	
 	table.layout, table.layout th, table.layout td {border:none;margin:0pt;padding:0pt;}
 		
@@ -608,7 +312,8 @@ table.objectAdmin th, table.objectAdmin td {padding:3px;}
 
  /* GENERAL ADMIN CLASSES */
 ul.inlinedocs {list-style:none;}
-ul.inlinedocs li {background-image:none;}
+ul.inlinedocs li {background-image:none; margin-bottom:20px;}
+
 
 img.overviewicon {
 	margin-right: 10px;
