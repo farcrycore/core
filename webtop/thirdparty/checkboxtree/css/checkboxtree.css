@@ -1,0 +1,61 @@
+/* nested checkbox tree control */
+
+ul.unorderedlisttree,
+ul.unorderedlisttree2 {
+	list-style-type: none;
+	padding: 0;
+	margin: 0 0 5px 0;
+}
+ul.unorderedlisttree ul, ul.unorderedlisttree ul ul, ul.unorderedlisttree ul ul ul,
+ul.unorderedlisttree2 ul, ul.unorderedlisttree2 ul ul, ul.unorderedlisttree2 ul ul ul {
+	list-style-type: none;
+}
+ul.unorderedlisttree li,
+ul.unorderedlisttree2 li {
+	background: none;
+	color: #444;
+	font-size: 11px;
+	margin: 0 0 5px 0;
+	padding: 0;
+}
+ul.unorderedlisttree li ul,
+ul.unorderedlisttree2 li ul {
+	margin: 7px 0 5px 15px;
+	padding: 0;
+}
+ul.unorderedlisttree2 li ul ul,
+ul.unorderedlisttree li ul ul {
+	margin: 7px 0 5px 15px;
+	padding: 0;
+}
+ul.unorderedlisttree label,
+ul.unorderedlisttree2 label {
+	background: url(../images/checkboxtree/bg-checkbox.gif) no-repeat 0 1px;
+	cursor: pointer;
+	font-weight: bold;
+	padding: 4px 0 4px 17px;
+}
+ul.unorderedlisttree label.checked,
+ul.unorderedlisttree2 label.checked {
+	background: url(../images/checkboxtree/bg-checkbox-checked.gif) no-repeat 0 1px;
+}
+ul.unorderedlisttree label.checkedchildren,
+ul.unorderedlisttree2 label.checkedchildren {
+	background: url(../images/checkboxtree/bg-checkbox-checkedchildren.gif) no-repeat 0 1px;
+}
+li > label:hover,
+li > label.over {
+	background: url(../images/checkboxtree/bg-checkbox-over.gif) no-repeat 0 1px;
+	color: #2f66a3;
+}
+li > label.checked:hover,
+li > label.checked.over, {
+ background: url(../images/checkboxtree/bg-checkbox-checked.gif) no-repeat 0 1px;
+}
+li > label.checkedchildren:hover,
+li > label.checkedchildren.over {
+	background: url(../images/checkboxtree/bg-checkbox-checkedchildren.gif) no-repeat 0 1px;
+}
+.checkboxtreeactive input{
+	display: none;
+}
