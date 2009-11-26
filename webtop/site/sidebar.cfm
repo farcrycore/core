@@ -1,5 +1,14 @@
 <cfsetting enablecfoutputonly="true">
 
+
+
+
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
+
+
+<skin:loadCSS id="webtop" />
+
+
 <!--- Make sure that if the user has somehow selected 2 root nodes... only use the first. --->
 <cfset session.dmProfile.overviewhome = listFirst(session.dmProfile.overviewhome) />
 
@@ -122,7 +131,6 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 <title>FarCry Sidebar</title>
-<style type="text/css" title="default" media="screen">@import url(../css/main.css);</style>
 <script type="text/javascript">
 function refreshiFrame(iFrameName){
 	objiFrame = document.getElementById(iFrameName);

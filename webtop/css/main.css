@@ -12,8 +12,8 @@ overriding a required farcry core style.
 
 
 /* =THE BIG GUYS */
-html {margin:0;padding:0;height:100%}
-body {height:100%;background: #fff url("images/body_bg.gif") repeat-y -404px 0;margin:0;padding:0;color:#000;font:83%/1.5 arial,tahoma,verdana,sans-serif}
+html {margin:0;padding:0;height:100%;background: none;}
+body {height:100%;background: #fff url("images/body_bg.gif") repeat-y -404px 0;margin:0;padding:0;color:#000;font:83%/1.5 arial,tahoma,verdana,sans-serif;}
 body.type-popup {background:#fff none;}
 
 /* =LINKS */
@@ -27,7 +27,7 @@ ol li {margin-left: 2em;padding-left: 0;background: none; list-style-type: decim
 ul li {padding-left: 20px; background: transparent url("images/sprites.gif") no-repeat 0 -100px}
 ul.nomarker li {background:none;padding-left:0}
 
-
+select {background-color:#fff;}
 
 hr {margin: .3em 0 1em;background:#F1F1F1;height:1px;color:#F1F1F1;border:none}
 small, .small {font-size:11px}
@@ -135,7 +135,7 @@ body.iframed-tree {height:80%}
 body.iframed-content {background: #fff url("images/content_bg_2.gif") no-repeat fixed 0 -20px;width:96%;height:90%}
 body.iframed-content h3 {margin-top:0;font-size:135%}
 .iframe-nav-form {margin: 0 0 10px}
-.iframe-nav-form-zoom {border-bottom: 1px solid #f1f1f1;padding: 3px 0 10px}
+.iframe-nav-form-zoom {border-bottom: 1px solid #f1f1f1;padding: 3px 0 10px;margin:0 0 1em;}
 .iframe-nav-form-zoom select {margin-bottom:-2px}
 
 

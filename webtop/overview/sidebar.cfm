@@ -2,6 +2,10 @@
 <cfprocessingDirective pageencoding="utf-8">
 
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
+
+
+<skin:loadCSS id="webtop" />
 
 <cfoutput>
 	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -9,7 +13,6 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
 		<title>FarCry: Overview Sidebar</title>
-		<style type="text/css" title="default" media="screen">@import url(../css/main.css);</style>
 </cfoutput>
 
 <cfif session.firstLogin>
