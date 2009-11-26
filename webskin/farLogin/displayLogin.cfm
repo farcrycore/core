@@ -119,23 +119,23 @@ START WEBSKIN
 				</ft:buttonPanel>
 
 				
-				<ft:buttonPanel>					
-					<cfoutput><ul class="loginForgot"></cfoutput>
-						<sec:CheckPermission webskinpermission="forgotPassword" type="farUser">
-							<cfoutput> 
-								<li><skin:buildLink type="farUser" view="forgotPassword">Forgot Password</skin:buildLink></li></cfoutput>
-						</sec:CheckPermission>
-						<sec:CheckPermission webskinpermission="forgotUserID" type="farUser">
-							<cfoutput> 
-								<li><skin:buildLink type="farUser" view="forgotUserID">Forgot UserID</skin:buildLink></li></cfoutput>
-						</sec:CheckPermission>			
-						<sec:CheckPermission webskinpermission="registerNewUser" type="farUser">
-							<cfoutput> 
-								<li><skin:buildLink type="farUser" view="registerNewUser">Register New User</skin:buildLink></li></cfoutput>
-						</sec:CheckPermission>
-					<cfoutput></ul></cfoutput>
+				
+				<cfoutput><ul class="loginForgot"></cfoutput>
+					<sec:CheckPermission webskinpermission="forgotPassword" type="farUser">
+						<cfoutput> 
+							<li><skin:buildLink type="farUser" view="forgotPassword">Forgot Password</skin:buildLink></li></cfoutput>
+					</sec:CheckPermission>
+					<sec:CheckPermission webskinpermission="forgotUserID" type="farUser">
+						<cfoutput> 
+							<li><skin:buildLink type="farUser" view="forgotUserID">Forgot UserID</skin:buildLink></li></cfoutput>
+					</sec:CheckPermission>			
+					<sec:CheckPermission webskinpermission="registerNewUser" type="farUser">
+						<cfoutput> 
+							<li><skin:buildLink type="farUser" view="registerNewUser">Register New User</skin:buildLink></li></cfoutput>
+					</sec:CheckPermission>
+				<cfoutput></ul></cfoutput>
 
-				</ft:buttonPanel>
+				
 			</ft:form>
 			
 

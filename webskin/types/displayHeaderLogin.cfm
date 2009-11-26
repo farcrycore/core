@@ -27,6 +27,42 @@ FARCRY IMPORT FILES
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
+
+<skin:loadCSS id="webtop" />
+
+<skin:loadCSS id="farcry-form">
+	<cfoutput>
+	.uniForm .fieldset {
+		background:##F4F4F4;
+		margin:30px 0 0 0;
+		padding:5px;
+	}
+	
+	.uniForm .fieldset .legend {
+		color:##324E7C;
+		margin:0;
+		padding:0px;
+		font-size:107%;
+	}
+	
+	.ctrlHolder {
+		background:##E4E4E4;
+	}
+	
+	.uniForm .ctrlHolder .label {
+		font-weight: bold;
+	}
+	
+	.uniForm .helpsection {
+		margin:10px 0px;
+	}
+	
+	.uniForm .buttonHolder{ text-align: right; margin:5px 0 10px 0;padding:5px;border:1px solid ##CCCCCC;border-width:1px 0px;background-color:##F4F4F4;}
+	
+	.uniForm .fc-button {padding:5px;}
+	</cfoutput>
+</skin:loadCSS>
+
 <!------------------ 
 START WEBSKIN
  ------------------>
@@ -36,12 +72,6 @@ START WEBSKIN
 <head> 
 	<title>#application.config.general.siteTitle# :: #application.applicationname#</title>
 
-	<!--- check for custom Admin CSS in project codebase --->
-	<cfif fileExists("#application.path.project#/www/css/customadmin/admin.css")>
-	    <link href="#application.url.webroot#/css/customadmin/admin.css" rel="stylesheet" type="text/css">
-	<cfelse>
-	    <link href="#application.url.farcry#/css/main.css" rel="stylesheet" type="text/css">
-	</cfif>
 </head>
 
 <body id="sec-login">

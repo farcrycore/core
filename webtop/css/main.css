@@ -107,7 +107,7 @@ body#sec-login {background: #5A7EB9 url("images/full_page_bg.gif") repeat-x 0 0;
 	#login fieldset h5 {margin: 50px 0 0;padding:2px 5px}
 	#login .loginInfo form {width:425px;min-width:425px;}
 	#login .loginInfo form.formtool fieldset {border-style:none;}
-	#login .loginForgot {margin-top:10px;}
+	#login .loginForgot {margin-top:10px;float:right;text-align:left;}
 	#login .error {clear:both;}
 
 /* =LAYOUT-CONTENT-AREA */

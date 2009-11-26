@@ -43,20 +43,20 @@
 		
 		<cfif structKeyExists(request, "notFound")>
 			<cfoutput>
-				<p class="error">We do not have that email address on record. Please try again</p>
+				<p id="errorMsg">We do not have that User ID on record. Please try again</p>
 			</cfoutput>
 		</cfif>	
 
 		<cfif structKeyExists(request, "passwordChanged")>
 			<cfoutput>
-				<p>A confirmation email with your NEW password has been sent to your email address and should arrive shortly.</p>
+				<p id="OKMsg">A confirmation email with your NEW password has been sent to your email address and should arrive shortly.</p>
 			</cfoutput>
 		<cfelse>
 			<cfoutput>
 				<p>So you forgot your password. Please enter your userid below to reset. An email with your new password will be sent to your email address.</p>
 			</cfoutput>
 
-			<ft:object typename="farUser" lfields="userID" includeFieldSet="false" />
+			<ft:object typename="farUser" lfields="userID" />
 
 			<ft:buttonPanel>
 				<ft:button value="Reset Password" />
@@ -64,21 +64,21 @@
 
 		</cfif>
 		
-		<ft:buttonPanel>
-			<cfoutput><ul class="loginForgot"></cfoutput>
-			<sec:CheckPermission webskinpermission="forgotUserID" type="farUser">
-				<cfoutput>
-					<li><skin:buildLink type="farUser" view="forgotUserID">Forgot UserID</skin:buildLink></li></cfoutput>
-			</sec:CheckPermission>			
-			<sec:CheckPermission webskinpermission="registerNewUser" type="farUser">
-				<cfoutput> 
-					<li><skin:buildLink type="farUser" view="registerNewUser">Register New User</skin:buildLink></li></cfoutput>
-			</sec:CheckPermission>			
-				
+		
+		<cfoutput><ul class="loginForgot"></cfoutput>
+		<sec:CheckPermission webskinpermission="forgotUserID" type="farUser">
+			<cfoutput>
+				<li><skin:buildLink type="farUser" view="forgotUserID">Forgot UserID</skin:buildLink></li></cfoutput>
+		</sec:CheckPermission>			
+		<sec:CheckPermission webskinpermission="registerNewUser" type="farUser">
 			<cfoutput> 
-				<li><skin:buildLink href="#application.url.webtop#/login.cfm">Login</skin:buildLink></li></cfoutput>
-			<cfoutput></ul></cfoutput>
-		</ft:buttonPanel>
+				<li><skin:buildLink type="farUser" view="registerNewUser">Register New User</skin:buildLink></li></cfoutput>
+		</sec:CheckPermission>			
+			
+		<cfoutput> 
+			<li><skin:buildLink href="#application.url.webtop#/login.cfm">Login</skin:buildLink></li></cfoutput>
+		<cfoutput></ul></cfoutput>
+	
 
 	
 	
