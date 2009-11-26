@@ -56,115 +56,39 @@ $in: [bCacheControl] output cache control headers; default true. $
 <!--- Allow dynamic body class --->
 <cfparam name="attributes.bodyclass" default="iframed-content">
 
-<!--- check for custom css --->
-<!--- <cfset customCSS="">
-<cfif directoryExists("#application.path.project#/www/css/customadmin")>
-	<cfdirectory directory="#application.path.project#/www/css/customadmin" action="LIST" filter="*.css" name="qCSS">
-	<cfsavecontent variable="customCSS">
-	<cfloop query="qCSS">
-		<cfoutput>
-		<link href="#application.url.webroot#/css/customadmin/#qCSS.name#" rel="stylesheet" type="text/css" /></cfoutput>
-	</cfloop>
-	</cfsavecontent>
-</cfif>
 
-<!--- check for custom javascript --->
-<cfset customJS="">
-<cfif directoryExists("#application.path.project#/www/js/customadmin")>
-	<cfdirectory directory="#application.path.project#/www/js/customadmin" action="LIST" filter="*.js" name="qJS">
-	<cfsavecontent variable="customJS">
-	<cfloop query="qJS">
-		<cfoutput>
-		<script type="text/javascript" src="#application.url.webroot#/js/customadmin/#qJS.name#"></script></cfoutput>
-	</cfloop>
-	</cfsavecontent>
-</cfif> --->
+<skin:loadCSS id="webtop" />
 
-<skin:loadCSS id="webtop" lFiles="reset.css,fonts.css,main.css">
+<skin:loadCSS id="farcry-form">
 	<cfoutput>
-	body {font-size:10px;}
-	
-	
-	##webtopOverviewActions button h1,
-	##webtopOverviewActions button h2 {
-		margin:0px;
+	.uniForm .fieldset {
+		background:##F4F4F4;
+		margin:30px 0 0 0;
+		padding:5px;
 	}
 	
-	##webtopOverviewActions button.primary {
-		width:180px;
-		height:100px;
+	.uniForm .fieldset .legend {
+		color:##324E7C;
+		margin:0;
+		padding:0px;
+		<!---float:left;--->
+		font-size:107%;
 	}
-	##webtopOverviewActions button.secondary {
-		width:180px;
-		height:50px;
-		margin-top:10px;
+	
+	.ctrlHolder {
+		background:##E4E4E4;
 	}
-	.webtopOverviewStatusBox {
-		border:1px solid black;
-		padding:10px;
-		margin-top:5px;
+	
+	.uniForm .ctrlHolder .label {
+		font-weight: bold;
 	}
-	.webtopSummarySection {
-		border-bottom:2px solid ##DFDFDF;
-		padding:0px 5px 15px 5px;
-		margin:10px 0px 10px 0px;
+	
+	.uniForm .helpsection {
+		margin:10px 0px;
 	}
-	.webtopSummarySection h2 {
-		margin:10px 0px 0px 0px;
-		font-weight:bold;
-	}	
 	</cfoutput>
 </skin:loadCSS>
 
-<skin:loadCSS 	id="uni-form"
-				baseHREF="#application.url.webtop#/thirdparty/uni-form/css"
-				lFiles="uni-form-generic.css,uni-form.css">
-				
-				<cfoutput>
-				.uniForm{ margin-top: 1.5em; max-width:960px; _width:960px;}
-				
-				.uniForm .multiField, .uniForm .blockLabels .multiField{ width: 60%; }
-				.uniForm .formHint, .uniForm .blockLabels .formHint{ width: 40%; margin-top: .3em; }
-				.uniForm .textInput, .uniForm select, .uniForm textarea{ border: 2px solid ##dfdfdf; background:##fff; }
-				.ctrlHolder.focused .textInput{ border-color: ##DFD77D; }
-				.uniForm .buttonHolder{ padding: 10px 10px 10px 0; font-size: 120%; margin: 1em 0;border: 1px solid ##ccc; border-width: 1px 0; background: ##f9f9f9; }
-			
-				.uniForm fieldset {
-					border-color:##A4C8E5;
-					border-style:solid none none;
-					border-width:1px 0 0 0;
-					margin:20px 0 20px 0;
-					padding:10px 10px 5px 10px;
-					background:##F9F9F9 none repeat scroll 0 0;
-				}							
-				.uniForm fieldset legend {
-					font-size:120%;
-					line-height:150%;
-					margin:0px;
-					padding:0 9px 0 9px;
-					color:##416394;
-					font-weight:bold;
-				}
-				.uniForm button {
-					cursor:pointer;
-					padding:2px 2px 2px 2px;
-					margin-right:3px;
-				}
-				.uniForm .secondaryAction{ 
-					float: left; 
-				}
-				.uniForm .primaryAction{ 
-			      	font-weight: bold;
-			    }					      
-				.uniForm{
-					position:static;
-					z-index: 0;
-				}
-				.uniForm .errorField {
-					font-weight:bold;
-				}
-				</cfoutput>
-</skin:loadCSS>
 
 <cfoutput>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -174,17 +98,6 @@ $in: [bCacheControl] output cache control headers; default true. $
 		</cfoutput><cfif attributes.bCacheControl><misc:cacheControl /></cfif><cfoutput>
 		<meta content="text/html; charset=UTF-8" http-equiv="content-type" />
 		<title>#attributes.title#</title>
-
-		<!--- <style type="text/css">@import url(#application.url.webtop#/css/combine.cfm?files=/main.css,/tabs.css&randomID=#application.randomID#);</style>
-		<script type="text/javascript" src="#application.url.webtop#/js/combine.cfm?files=/tables.js,/showhide.js,/fade.js,/tabs.js&randomID=#application.randomID#"></script>
-		
-		<cfif attributes.bDataRequestorJS>
-			<skin:htmlHead library="DataRequestor" />
-			<skin:htmlHead library="json" />
-		</cfif>
-		
-		#customCSS#
-		#customJS# --->
 </cfoutput>
 
 <cfoutput>
