@@ -71,7 +71,6 @@ $in: [bCacheControl] output cache control headers; default true. $
 		color:##324E7C;
 		margin:0;
 		padding:0px;
-		<!---float:left;--->
 		font-size:107%;
 	}
 	
@@ -86,6 +85,8 @@ $in: [bCacheControl] output cache control headers; default true. $
 	.uniForm .helpsection {
 		margin:10px 0px;
 	}
+	
+	.uniForm .buttonHolder{ text-align: right; margin:5px 0 10px 0;padding:5px;border:1px solid ##CCCCCC;border-width:1px 0px;background-color:##F4F4F4;}
 	</cfoutput>
 </skin:loadCSS>
 
