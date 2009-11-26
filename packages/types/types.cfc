@@ -1461,9 +1461,9 @@ default handlers
 	
 			<cfloop query="q">
 				<cfif Trim(q.lastName) EQ "" AND Trim(q.firstName) EQ "">
-					<cfset name = q.username />
+					<cfset name = application.fapi.listSlice(q.username,1,-2,"_") />
 				<cfelse>
-					<cfset name = "#q.lastName# #q.firstName#" />
+					<cfset name = "#q.firstName# #q.lastName#" />
 				</cfif>
 				<cfset lResult = listAppend(lResult, HTMLEditFormat("#q.objectid#:#name#")) />
 			</cfloop>
