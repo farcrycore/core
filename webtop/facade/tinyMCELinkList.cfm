@@ -21,6 +21,11 @@ FROM qRelatedContent
 <cfset relatedTypenameList = valueList(qRelatedTypes.typename) />
 
 
+<!--- Initialize the related query --->
+<cfset qRelatedWithLabels = queryNew("objectid,label") />
+
+
+
 <!--- Need to retrieve the labels for each of the related content --->
 <cfif qRelatedContent.recordCount>
 	
@@ -57,7 +62,8 @@ var tinyMCELinkList = new Array(
 		
 		<cfloop query="qRelatedWithLabels">
 			<cfset inc = inc + 1>
-			<cfoutput>["#jsstringformat(qRelatedWithLabels.label)#", "#application.url.webroot#/index.cfm?objectid=#qRelatedWithLabels.objectid#"]<cfif inc LT qSiteMap.RecordCount + qRelatedWithLabels.RecordCount>,</cfif>
+			<cfset urlLink = application.fapi.getLink(objectid="#qRelatedWithLabels.objectid#") />
+			<cfoutput>["#jsstringformat(qRelatedWithLabels.label)#", "#urlLink#"]<cfif inc LT qSiteMap.RecordCount + qRelatedWithLabels.RecordCount>,</cfif>
 			</cfoutput>
 		</cfloop>
 		
@@ -69,7 +75,8 @@ var tinyMCELinkList = new Array(
 		
 		<cfloop query="qSiteMap">		
 			<cfset inc = inc + 1>
-			<cfoutput>["#RepeatString('-', qSiteMap.nLevel)# #jsstringformat(qSiteMap.objectname)#", "#application.url.webroot#/index.cfm?objectid=#qSiteMap.objectid#"]<cfif inc LT qSiteMap.RecordCount + qRelatedWithLabels.RecordCount>,</cfif>
+			<cfset urlLink = application.fapi.getLink(objectid="#qSiteMap.objectid#") />
+			<cfoutput>["#RepeatString('-', qSiteMap.nLevel)# #jsstringformat(qSiteMap.objectname)#", "#urlLink#"]<cfif inc LT qSiteMap.RecordCount + qRelatedWithLabels.RecordCount>,</cfif>
 			</cfoutput>
 		</cfloop>
 		
