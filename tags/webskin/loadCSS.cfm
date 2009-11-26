@@ -16,6 +16,7 @@
 	<cfparam name="attributes.condition" default=""><!--- the condition to wrap around the style tag --->
 	<cfparam name="attributes.prepend" default=""><!--- any CSS to prepend to the begining of the script block --->
 	<cfparam name="attributes.append" default=""><!--- any CSS to append to the end of the script block --->
+	<cfparam name="attributes.bCombine" default=""><!--- Should the files be combined into a single cached css file. Passing true/false will override how it was registered. --->
 	
 	<cfif len(trim(thisTag.generatedContent))>
 		<cfset attributes.append = "#attributes.append##thisTag.generatedContent#" />
@@ -29,7 +30,6 @@
 		<cfset stCSS.id = hash("#stCSS.baseHREF##stCSS.lFiles#") />
 	</cfif>
 	
-	<cfparam name="application.fc.stCSSLibraries" default="#structNew()#" />
 	
 	<cfparam name="request.inHead.aCSSLibraries" default="#arrayNew(1)#" />
 	<cfparam name="request.inHead.stCSSLibraries" default="#structNew()#" />
@@ -55,6 +55,13 @@
 			</cfif>
 			<cfif not len(stCSS.append)>
 				<cfset stCSS.append = application.fc.stCSSLibraries[stCSS.id].append />
+			</cfif>
+			<cfif not isBoolean(stCSS.bCombine)>
+				<cfset stCSS.bCombine = application.fc.stCSSLibraries[stCSS.id].bCombine />
+			</cfif>
+		<cfelse>
+			<cfif not isBoolean(stCSS.bCombine)>
+				<cfset stCSS.bCombine = true />
 			</cfif>
 		</cfif>
 		

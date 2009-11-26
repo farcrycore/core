@@ -171,6 +171,7 @@
 			<cfargument name="condition" default="" hint="Used to wrap a conditional statement around the link tag." />
 			<cfargument name="prepend" default="" hint="Any CSS code you wish to have placed before the library." />
 			<cfargument name="append" default="" hint="Any CSS code you wish to have placed after the library." />
+			<cfargument name="bCombine" default="true" hint="Should the files be combined into a single cached js file.">
 			
 			<cfparam name="application.fc.stCSSLibraries" default="#structNew()#" />
 			
@@ -194,6 +195,7 @@
 			<cfargument name="condition" default="" hint="Used to wrap a conditional statement around the script tag." />
 			<cfargument name="prepend" default="" hint="Any JS code you wish to have placed before the library." />
 			<cfargument name="append" default="" hint="Any JS code you wish to have placed after the library." />
+			<cfargument name="bCombine" default="true" hint="Should the files be combined into a single cached js file.">
 			
 			<cfparam name="application.fc.stJSLibraries" default="#structNew()#" />
 			
@@ -963,17 +965,7 @@
 				
 			</cfif>
 			
-			<cfif not len(trim(returnURL))>
-				<cfset returnURL = "index.cfm" />
-			</cfif>
-			
-			<!--- Add missing URL --->
-			<cfif not len(returnURL) and isdefined("url.furl")>
-				<cfset returnURL = url.furl />
-			<cfelseif not len(returnURL)>
-				<cfset returnURL = cgi.script_name />
-			</cfif>
-			
+			<!--- Add missing URL --->			
 			<cfif not len(returnURL) and isdefined("url.furl")>
 				<cfset returnURL = url.furl />
 			<cfelseif not len(returnURL)>
@@ -1756,5 +1748,19 @@
 		<cfreturn cleanText />
 	</cffunction>
 	
+
+	
+	<!--- @@examples:
+		<p>Provides date formatting in the style of Twitter’s timeline: "just now", "5 minutes ago", "yesterday", "2 weeks ago".</p>
+		<code>
+			#application.fapi.prettyDate(myUglyDate)# 
+		</code>
+	 --->
+	<cffunction name="prettyDate" access="public" returntype="string" output="false">
+		<cfargument name="uglyDate" required="true" type="string" default="" />
+		
+
+		<cfreturn application.fc.utils.prettyDate(arguments.uglyDate) />
+	</cffunction>	
 	
 </cfcomponent>

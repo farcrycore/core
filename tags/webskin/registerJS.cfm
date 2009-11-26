@@ -18,6 +18,7 @@
 	<cfparam name="attributes.condition" default=""><!--- the condition to wrap around the style tag --->
 	<cfparam name="attributes.prepend" default=""><!--- any JS to prepend to the begining of the script block --->
 	<cfparam name="attributes.append" default=""><!--- any JS to append to the end of the script block --->
+	<cfparam name="attributes.bCombine" default="true"><!--- Should the files be combined into a single cached js file. --->
 	
 	<cfif len(trim(thisTag.generatedContent))>
 		<cfset attributes.append = "#attributes.append##thisTag.generatedContent#" />

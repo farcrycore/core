@@ -16,6 +16,7 @@
 	<cfparam name="attributes.condition" default=""><!--- the condition to wrap around the style tag --->
 	<cfparam name="attributes.prepend" default=""><!--- any JS to prepend to the begining of the script block --->
 	<cfparam name="attributes.append" default=""><!--- any JS to append to the end of the script block --->
+	<cfparam name="attributes.bCombine" default=""><!--- Should the files be combined into a single cached js file. Passing true/false will override how it was registered. --->
 	
 	<cfif len(trim(thisTag.generatedContent))>
 		<cfset attributes.append = "#attributes.append##thisTag.generatedContent#" />
@@ -29,8 +30,6 @@
 		<cfset stJS.id = hash("#stJS.baseHREF##stJS.lFiles#") />
 	</cfif>
 	
-	
-	<cfparam name="application.fc.stJSLibraries" default="#structNew()#" />
 	
 	<cfparam name="request.inHead.aJSLibraries" default="#arrayNew(1)#" />
 	<cfparam name="request.inHead.stJSLibraries" default="#structNew()#" />
@@ -53,6 +52,13 @@
 			</cfif>
 			<cfif not len(stJS.append)>
 				<cfset stJS.append = application.fc.stJSLibraries[stJS.id].append />
+			</cfif>
+			<cfif not isBoolean(stJS.bCombine)>
+				<cfset stJS.bCombine = application.fc.stJSLibraries[stJS.id].bCombine />
+			</cfif>
+		<cfelse>
+			<cfif not isBoolean(stJS.bCombine)>
+				<cfset stJS.bCombine = true />
 			</cfif>
 		</cfif>
 		
