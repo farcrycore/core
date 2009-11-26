@@ -21,13 +21,19 @@
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->	
-<cfproperty ftSeq="1" ftwizardStep="Start" ftFieldset="General Details" name="Title" type="nstring" hint="Title of object.  *perhaps this should be deprecated for object label*" required="no" default="" ftValidation="required">
-<cfproperty ftSeq="2" ftwizardStep="Start" ftFieldset="General Details" name="reviewDate" type="date" hint="The date for which the object will be reviewed" required="no" default="" ftType="datetime" ftToggleOffDateTime="true" ftLabel="Review Date">
-<cfproperty ftSeq="3" ftwizardStep="Start" ftFieldset="General Details" name="ownedby" displayname="Owned by" type="string" hint="Username for owner." required="No" default="" ftLabel="Owned By" ftType="list" ftRenderType="dropdown" ftListData="getOwners">
-<cfproperty ftSeq="4" ftwizardStep="Start" ftFieldset="General Details" name="displayMethod" type="string" hint="Display method to render this HTML object with." required="yes" default="displayPageStandard" ftLabel="Display Method" ftType="webskin" ftPrefix="displayPage">
+<cfproperty ftSeq="1" ftwizardStep="Start" ftFieldset="General Details" name="Title" type="nstring" hint="Title of object.  *perhaps this should be deprecated for object label*" required="no" default="" ftValidation="required" ftHint="This title will appear as the major title on the page. It should not be confused with the title that appears in the navigation.">
+<cfproperty ftSeq="2" ftwizardStep="Start" ftFieldset="General Details" name="reviewDate" type="date" hint="The date for which the object will be reviewed" required="no" default="" ftType="datetime" ftToggleOffDateTime="true" ftLabel="Review Date" ftHint="Enter the date that this pages content should be reviewed.">
+<cfproperty ftSeq="3" ftwizardStep="Start" ftFieldset="General Details" name="ownedby" displayname="Owned by" type="string" hint="Username for owner." required="No" default="" ftLabel="Owned By" ftType="list" ftRenderType="dropdown" ftListData="getOwners" ftHint="This should be set to the person responsible for this page. Any questions... ask this person.">
+<cfproperty ftSeq="4" ftwizardStep="Start" ftFieldset="General Details" name="displayMethod" type="string" hint="Display method to render this HTML object with." required="yes" default="displayPageStandard" ftLabel="Page Layout" ftType="webskin" ftPrefix="displayPage" ftHint="This selection will determine the overall layout of the page.">
 
-<cfproperty ftSeq="5" ftwizardStep="Start" ftFieldset="Metadata" name="metaKeywords" type="nstring" hint="HTML head section metakeywords." required="no" default="" ftLabel="Meta Keywords">
-<cfproperty ftSeq="6" ftwizardStep="Start" ftFieldset="Metadata" name="extendedmetadata" type="longchar" hint="HTML head section for extended keywords." required="no" default="" ftlabel="Extended Metadata" ftToggle="true">
+<cfproperty ftSeq="5" ftwizardStep="Start" ftFieldset="SEO" name="metaKeywords" type="nstring" hint="HTML head section metakeywords." required="no" default="" ftLabel="Keyword Tag(s)"
+	ftType="longchar"
+		ftLimit="900"
+	fthelptitle="Search Engine Optimization" ftHelpSection="The keywords and description that you enter here will provide search engines with extra information that describes your page. Remember that a good SEO strategy is much more than just a good description and keywords."
+	ftHint="An upper limit of 900 characters with spaces - keep it simple and relevant. 10 - 20 Keywords per page">
+<cfproperty ftSeq="6" ftwizardStep="Start" ftFieldset="SEO" name="extendedmetadata" type="longchar" hint="HTML head section for extended keywords." required="no" default="" ftlabel="Description Tag"
+	ftHint="Concise summary of the page, an upper limit of perhaps, 170 characters with spaces"
+		ftLimit="170" />
 
 
 <cfproperty ftSeq="10" ftwizardStep="Body" ftFieldset="Teaser" name="Teaser" type="longchar" hint="Teaser text." required="no" default="">
@@ -36,7 +42,7 @@ type properties
 <cfproperty ftSeq="12" ftwizardStep="Body" ftFieldset="Body" name="Body" type="longchar" hint="Main body of content." required="no" default="" ftType="richtext" ftLabel="Body" 
 	ftImageArrayField="aObjectIDs" ftImageTypename="dmImage" ftImageField="StandardImage"
 	ftTemplateTypeList="dmImage,dmFile,dmFlash,dmNavigation,dmHTML" ftTemplateWebskinPrefixList="insertHTML"
-	ftLinkListRelatedTypenames="dmFile,dmNavigation,dmHTML"
+	ftLinkListFilterRelatedTypenames="dmFile,dmNavigation,dmHTML"
 	ftTemplateSnippetWebskinPrefix="insertSnippet">
 
 <cfproperty ftSeq="13" ftwizardStep="Body" ftFieldset="Relationships" name="aObjectIDs" type="array" 
