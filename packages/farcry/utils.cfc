@@ -584,5 +584,101 @@
 		
 		<cfreturn arguments.url />
 	</cffunction>
-	
+	<!--- @@examples:
+		<p>Provides date formatting in the style of Twitter’s timeline: "just now", "5 minutes ago", "yesterday", "2 weeks ago".</p>
+		<code>
+			#application.fapi.prettyDate(myUglyDate)# 
+		</code>
+	 --->
+	<cffunction name="prettyDate" access="public" returntype="string" output="false">
+		<cfargument name="uglyDate" required="true" type="string" default="" />
+		
+		<cfset var prettyDate = arguments.uglyDate />
+		<cfset var sDiff = "" />
+		<cfset var nDiff = "" />
+		<cfset var hDiff = "" />
+		<cfset var dDiff = "" />
+		<cfset var wDiff = "" />
+		<cfset var mDiff = "" />
+		<cfset var yDiff = "" />
+		
+		<cfif isDate(arguments.uglyDate)>
+			<cfif arguments.uglyDate LT now()>	
+				<cfset sDiff = Int(dateDiff('s',arguments.uglyDate,now())) />
+				<cfset nDiff = Int(dateDiff('n',arguments.uglyDate,now())) />
+				<cfset hDiff = Int(dateDiff('h',arguments.uglyDate,now())) />
+				<cfset dDiff = Int(dateDiff('d',arguments.uglyDate,now())) />
+				<cfset wDiff = Int(dateDiff('ww',arguments.uglyDate,now())) />
+				<cfset mDiff = Int(dateDiff('m',arguments.uglyDate,now())) />
+				<cfset yDiff = Int(dateDiff('yyyy',arguments.uglyDate,now())) />	
+				
+				<cfif sDiff LT 60>
+					<cfset prettyDate = "just now" />
+				<cfelseif nDiff LT 2>
+					<cfset prettyDate = "#nDiff# minute ago" />
+				<cfelseif hDiff LT 1>
+					<cfset prettyDate = "#nDiff# minutes ago" />
+				<cfelseif hDiff LT 2>
+					<cfset prettyDate = "#hDiff# hour ago" />
+				<cfelseif dDiff LT 1>
+					<cfset prettyDate = "#hDiff# hours ago" />
+				<cfelseif dDiff LT 2>
+					<cfset prettyDate = "yesterday" />
+				<cfelseif wDiff LT 1>
+					<cfset prettyDate = "#dDiff# days ago" />
+				<cfelseif wDiff LT 2>
+					<cfset prettyDate = "last week" />
+				<cfelseif mDiff LT 1>
+					<cfset prettyDate = "#wDiff# weeks ago" />
+				<cfelseif mDiff LT 2>
+					<cfset prettyDate = "last month" />
+				<cfelseif yDiff LT 1>
+					<cfset prettyDate = "#mDiff# months ago" />
+				<cfelseif yDiff LT 2>
+					<cfset prettyDate = "last year" />
+				<cfelse>
+					<cfset prettyDate = "#yDiff# years ago" />
+				</cfif>
+			<cfelse>
+			
+				<cfset sDiff = Int(dateDiff('s',now(),arguments.uglyDate)) />
+				<cfset nDiff = Int(dateDiff('n',now(),arguments.uglyDate)) />
+				<cfset hDiff = Int(dateDiff('h',now(),arguments.uglyDate)) />
+				<cfset dDiff = Int(dateDiff('d',now(),arguments.uglyDate)) />
+				<cfset wDiff = Int(dateDiff('ww',now(),arguments.uglyDate)) />
+				<cfset mDiff = Int(dateDiff('m',now(),arguments.uglyDate)) />
+				<cfset yDiff = Int(dateDiff('yyyy',now(),arguments.uglyDate)) />
+				
+				<cfif sDiff LT 60>
+					<cfset prettyDate = "just now" />
+				<cfelseif nDiff LT 2>
+					<cfset prettyDate = "in #nDiff# minute" />
+				<cfelseif hDiff LT 1>
+					<cfset prettyDate = "in #nDiff# minutes ago" />
+				<cfelseif hDiff LT 2>
+					<cfset prettyDate = "in #hDiff# hour" />
+				<cfelseif dDiff LT 1>
+					<cfset prettyDate = "in #hDiff# hours" />
+				<cfelseif dDiff LT 2>
+					<cfset prettyDate = "tomorrow" />
+				<cfelseif wDiff LT 1>
+					<cfset prettyDate = "in #dDiff# days" />
+				<cfelseif wDiff LT 2>
+					<cfset prettyDate = "next week" />
+				<cfelseif mDiff LT 1>
+					<cfset prettyDate = "in #wDiff# weeks" />
+				<cfelseif mDiff LT 2>
+					<cfset prettyDate = "next month" />
+				<cfelseif yDiff LT 1>
+					<cfset prettyDate = "in #mDiff# months" />
+				<cfelseif yDiff LT 2>
+					<cfset prettyDate = "next year" />
+				<cfelse>
+					<cfset prettyDate = "in #yDiff# years" />
+				</cfif>	
+			</cfif>
+		</cfif>
+		
+		<cfreturn prettyDate />
+	</cffunction>
 </cfcomponent>
