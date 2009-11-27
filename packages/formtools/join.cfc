@@ -106,7 +106,7 @@
 						<ft:button	Type="button" 
 									renderType="button"
 									class="ui-state-default ui-corner-all"
-									value="attacher" 
+									value="attach" 
 									onClick="fcForm.openLibrarySelect('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');" />
 						&nbsp;
 					</cfif>
