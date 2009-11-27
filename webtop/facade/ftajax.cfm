@@ -26,9 +26,9 @@
 	</cfloop>
 </cfif>
 
-<cfif structKeyExists(stMetadata,"ftAjaxMethod")>
+<cfif structKeyExists(stMetadata,"ftAjaxMethod") AND len(stMetadata.ftAjaxMethod)>
 	<cfset FieldMethod = stMetadata.ftAjaxMethod />
-	
+
 	<!--- Check to see if this method exists in the current oType CFC. If not, use the formtool --->
 	<cfif not structKeyExists(oType,stMetadata.ftAjaxMethod)>
 		<cfset oType = application.formtools[url.formtool].oFactory />

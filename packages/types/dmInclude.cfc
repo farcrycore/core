@@ -90,12 +90,12 @@ type properties
 			<cfif qWebskins.recordCount>
 				<cfsavecontent variable="html">
 					<cfoutput>
-						<select name="#arguments.fieldname#" id="#arguments.fieldname#">
+						<select name="#arguments.fieldname#" id="#arguments.fieldname#" class="selectInput">
 					</cfoutput>
 					
 					<cfloop query="qWebskins">
 						<cfoutput>
-							<option value="#qWebskins.methodName#"<cfif qWebskins.methodName eq form.value> selected="selected"</cfif>>#qWebskins.displayName#</option>
+							<option value="#qWebskins.methodName#"<cfif qWebskins.methodName eq form.value> selected="selected"</cfif>>#application.fapi.getWebskinDisplayName(form.typename,qWebskins.methodName)#</option>
 						</cfoutput>
 					</cfloop>
 							

@@ -51,7 +51,7 @@
 		<cfloop list="#application.stCoapi['dmInclude'].stProps.webskinTypename.metadata.ftJoin#" index="thistype">
 			<cfif not listcontains(application.stCoapi['dmInclude'].stProps.webskinTypename.metadata.ftExcludeTypes,thistype)>
 				<cfset qTypeWebskins = application.coapi.coapiAdmin.getWebskins(typename=thistype, packagepath=application.stCOAPI[thistype].packagepath, viewBinding="type", viewStack="body") />
-				
+
 				<cfif qTypeWebskins.recordCount and not listFindNoCase(lTypes, thistype)>
 					<cfset lTypes = listAppend(lTypes, thistype) />
 					
@@ -99,30 +99,30 @@
 		
 	
 			<cfoutput>	
-			<fieldset class="formSection">
-				<legend class="">OPTION 1: Content View</legend>
-				<div class="fieldSection list">
+			<fieldset class="fieldset">
+				<legend class="legend">OPTION 1: Content View</legend>
+				<div class="ctrlHolder inlineLabels list">
 					#stFields.webskinTypename.label#
-					<div class="fieldAlign">	
-						<select name="#stFields.webskinTypename.FORMFIELDNAME#" id="#stFields.webskinTypename.FORMFIELDNAME#" onchange="getDisplayMethod('dmInclude','#stFields.webskin.FORMFIELDNAME#','webskin')">
-							<option value="">None selected</option>
-							<cfloop query="qTypes">
-								<option value="#qTypes.typename#"<cfif qTypes.typename eq listfirst(#stFields.webskinTypename.value#,'.')> selected="selected"</cfif>>#qTypes.description#</option>
-							</cfloop>	
-						</select>
-					</div>
+					
+					<select name="#stFields.webskinTypename.FORMFIELDNAME#" id="#stFields.webskinTypename.FORMFIELDNAME#" class="selectInput" onchange="getDisplayMethod('dmInclude','#stFields.webskin.FORMFIELDNAME#','webskin')">
+						<option value="">None selected</option>
+						<cfloop query="qTypes">
+							<option value="#qTypes.typename#"<cfif qTypes.typename eq listfirst(#stFields.webskinTypename.value#,'.')> selected="selected"</cfif>>#qTypes.description#</option>
+						</cfloop>	
+					</select>
+					
 				</div>
 				
 				<br class="clearer"/>
 				
-				<div class="fieldSection webskin">
+				<div class="ctrlHolder inlineLabels webskin">
 					#stFields.webskin.label#
-					<div class="fieldAlign">	
+					
 						<div id="#stFields.webskin.FORMFIELDNAME#-wrap">
 							<small>Select a content type above</small>
 							<input type="hidden" name="#stFields.webskin.FORMFIELDNAME#" id="#stFields.webskin.FORMFIELDNAME#" value="#stFields.webskin.value#" />
 						</div>
-					</div>
+					
 				</div>
 			
 			</fieldset>

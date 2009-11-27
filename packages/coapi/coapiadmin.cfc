@@ -711,8 +711,12 @@
 		<cfif structKeyExists(application.stcoapi, typename)
 			AND structKeyExists(application.stcoapi[typename], "stWebskins") 
 			AND structKeyExists(application.stcoapi[typename].stWebskins, template) 
-			AND structKeyExists(application.stcoapi[typename].stWebskins[template], "displayname")>
+			AND structKeyExists(application.stcoapi[typename].stWebskins[template], "displayname")
+			AND len(application.stcoapi['#typename#'].stWebskins['#template#'].displayname)>
+			
 			<cfset result = application.stcoapi['#typename#'].stWebskins['#template#'].displayname />
+		<cfelse>
+			<cfset result = template />
 		</cfif>
 			
 		<cfreturn result />
