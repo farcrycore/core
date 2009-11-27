@@ -291,7 +291,7 @@ START WEBSKIN
 	
 			<cfif application.security.checkPermission("ModifyPermissions") and listcontains(application.fapi.getPropertyMetadata(typename="farBarnacle", property="referenceid", md="ftJoin", default=""), stObj.typename)>
 				<ft:button 	value="Modify Permissions" 
-							text="<h2>MODIFY PERMISSIONS</h2>User access"
+							text="<h2>PERMISSIONS</h2>User access"
 							class="secondary"  
 							type="button" 
 							style="width:180px;"
