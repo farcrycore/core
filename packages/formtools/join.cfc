@@ -1,7 +1,7 @@
 <cfcomponent extends="farcry.core.packages.formtools.field" name="join" displayname="join" hint="Used to liase with join type fields (array and uuid)"> 
 
 
-	<cfproperty name="ftLabelAlignment" required="false" default="block" options="inline,block" hint="Used by FarCry Form Layouts for positioning of labels. inline or block." />
+	<cfproperty name="ftLabelAlignment" required="false" default="inline" options="inline,block" hint="Used by FarCry Form Layouts for positioning of labels. inline or block." />
 	
 	
 
@@ -37,7 +37,7 @@
 		<skin:loadCSS id="jquery-ui" />
 		
 		<cfsavecontent variable="returnHTML">	
-			
+			<grid:div class="multiField">
 			<cfif arguments.stMetadata.type EQ "array">
 			
 				<cfquery datasource="#application.dsn#" name="qArrayField">
@@ -61,10 +61,10 @@
 						<cfoutput>
 						<li id="join-item-#i#" class="sort #iif(counter mod 2,de('oddrow'),de('evenrow'))#" serialize="#i#" style="clear:both;">
 							<div class="buttonGripper"><p></p></div>
-							<div class="arrayDetail" style="margin-right:100px;float:left;">#htmlLabel#</div>
-							<div class="join-remove" style="float:right;width:95px;">
+							<div class="arrayDetail" style="float:left;">#htmlLabel#</div>
+							<div class="join-remove" style="float:right;white-space: nowrap;">
 								
-								<cfif arguments.stMetadata.ftAllowEdit>
+								<cfif arguments.stMetadata.ftAllowEdit or 1 eq 1>
 									<ft:button
 										Type="button" 
 										renderType="button"
@@ -112,20 +112,9 @@
 						<ft:button	Type="button" 
 									renderType="button"
 									class="ui-state-default ui-corner-all"
-									style="padding:1px;"
 									value="attach" 
 									onClick="fcForm.openLibrarySelect('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');" />
-						&nbsp;
-					</cfif>
-					<cfif arguments.stMetadata.ftAllowAdd>
-						<ft:button	Type="button" 
-									renderType="button"
-									class="ui-state-default ui-corner-all"
-									style="padding:1px;"
-									value="Add" 
-									text="add" 
-									onClick="fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');" />
-						&nbsp;
+						
 					</cfif>
 					
 					<cfif listLen(joinItems)>
@@ -134,7 +123,6 @@
 							<ft:button	Type="button" 
 										renderType="button"
 										class="ui-state-default ui-corner-all"
-										style="padding:1px;"
 										value="Delete All" 
 										text="delete all" 
 										confirmText="Are you sure you want to delete all the attached items?"
@@ -143,13 +131,21 @@
 							<ft:button	Type="button" 
 										renderType="button"
 										class="ui-state-default ui-corner-all"
-										style="padding:1px;"
 										value="Detach All" 
 										text="detach all" 
 										confirmText="Are you sure you want to detach all the attached items?"
 										onClick="fcForm.detachAllLibraryItems('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems#');" />								
 							
 						</cfif>
+					</cfif>
+					<cfif arguments.stMetadata.ftAllowAdd or 1 eq 1>
+						<ft:button	Type="button" 
+									renderType="button"
+									class="ui-state-default ui-corner-all"
+									value="Add" 
+									text="add" 
+									onClick="fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');" />
+						
 					</cfif>
 				
 			</cfoutput>
@@ -163,7 +159,7 @@
 					</script>
 				</cfoutput>
 			</cfif>
-			
+			</grid:div>
 		</cfsavecontent>
 		
 		<cfif arguments.stMetadata.includeLibraryWrapper>

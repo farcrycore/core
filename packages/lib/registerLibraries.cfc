@@ -140,7 +140,7 @@
 		$j.ajax({
 			type: "POST",
 			cache: false,
-					url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayLibrary' + '&property=' + property, 
+					url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayLibraryTabs' + '&property=' + property, 
 			complete: function(data){
 				$j(newDialogDiv).html(data.responseText);			
 			},
@@ -157,6 +157,7 @@
 			bgiframe: true,
 			modal: true,
 			title:'Add New',
+			closeOnEscape: false,
 			width: $j(window).width()-50,
 			height: $j(window).height()-50,
 			close: function(event, ui) {
@@ -180,6 +181,7 @@
 			bgiframe: true,
 			modal: true,
 			title:'Edit',
+			closeOnEscape: false,
 			width: $j(window).width()-50,
 			height: $j(window).height()-50,
 			close: function(event, ui) {
@@ -304,10 +306,10 @@
 			type: "POST",
 			cache: false,
  			url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxRefreshJoinProperty' + '&property=' + property,
-			complete: function(data){
-				$j("##" + id + '-library-wrapper').html(data.responseText);
-				fcForm.initSortable(typename,objectid,property,id);
-			},
+		 	success: function(msg){
+				$j("##" + id + '-library-wrapper').html(msg);
+				fcForm.initSortable(typename,objectid,property,id);	
+		   	},
 			dataType: "html"
 		});
 	}	
@@ -434,7 +436,12 @@
 							
 		<skin:registerCSS 	id="jquery-ui"
 							baseHREF="#application.url.webtop#/thirdparty/jquery/css/base"
-							lFiles="ui.core.css,ui.resizable.css,ui.accordion.css,ui.dialog.css,ui.slider.css,ui.tabs.css,ui.datepicker.css,ui.progressbar.css,ui.theme.css" />
+							lFiles="ui.core.css,ui.resizable.css,ui.accordion.css,ui.dialog.css,ui.slider.css,ui.tabs.css,ui.datepicker.css,ui.progressbar.css,ui.theme.css">
+							
+							<cfoutput>
+							.ui-widget {font-size:1em;}
+							</cfoutput>
+		</skin:registerCSS>
 				
 		<skin:registerCSS 	id="farcry-form"
 							baseHREF="#application.url.webtop#/thirdparty"

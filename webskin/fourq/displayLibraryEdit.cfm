@@ -11,15 +11,10 @@ FARCRY IMPORT FILES
  ------------------>
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
-
-<skin:htmlHead id="jqueryJS">
-	<cfoutput>
-		<script src="#application.url.webtop#/thirdparty/jquery/js/jquery-1.3.2.min.js" type="text/javascript"></script>
-		<script type="text/javascript">
-		     var $j = jQuery.noConflict();
-		</script></cfoutput>
-</skin:htmlHead>
+<cfset request.fc.bShowTray = false />
+<skin:loadJS id="jquery" />
 
 
 <!------------------ 
@@ -33,7 +28,7 @@ START WEBSKIN
 	<cfset stMetadata = application.fapi.getPropertyMetadata(typename="#stobj.typename#", property="#url.property#") />
 	
 			
-	<ft:form name="#stobj.typename#_#url.property#">
+	
 		
 		
 		<cfset stOnExit = structNew() />
@@ -50,19 +45,21 @@ START WEBSKIN
 				
 		<cfset type = application.fapi.findType("#url.editID#") />
 		<cfset oType = application.fapi.getContentType(type) />		
-  		<cfset html = oType.getView(objectID="#url.editID#", webskin="libraryEdit", OnExit="#stOnExit#", alternateHTML="", bIgnoreSecurity="true") />
+  		<cfset html = oType.getView(objectID="#url.editID#", webskin="libraryEdit", onExitProcess="#stOnExit#", alternateHTML="", bIgnoreSecurity="true") />
 		
 		<cfif len(html)>
 		    <cfoutput>#html#</cfoutput>
 		<cfelse>
-			<!--- THIS IS THE LEGACY WAY OF DOING THINGS AND STAYS FOR BACKWARDS COMPATIBILITY --->
-		    <cfinvoke component="#oType#" method="edit">
-		        <cfinvokeargument name="objectId" value="#url.editID#" />
-		        <cfinvokeargument name="onExit" value="#stOnExit#" />
-		    </cfinvoke>
+			<admin:Header Title="Library">
+				<!--- THIS IS THE LEGACY WAY OF DOING THINGS AND STAYS FOR BACKWARDS COMPATIBILITY --->
+			    <cfinvoke component="#oType#" method="edit">
+			        <cfinvokeargument name="objectId" value="#url.editID#" />
+			        <cfinvokeargument name="onExitProcess" value="#stOnExit#" />
+			    </cfinvoke>
+			<admin:footer>
 		</cfif>
 		
-	</ft:form>
+	
 
 </cfif>
 

@@ -11,15 +11,12 @@ FARCRY IMPORT FILES
  ------------------>
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
 
-<skin:htmlHead id="jqueryJS">
-	<cfoutput>
-		<script src="#application.url.webtop#/thirdparty/jquery/js/jquery-1.3.2.min.js" type="text/javascript"></script>
-		<script type="text/javascript">
-		     var $j = jQuery.noConflict();
-		</script></cfoutput>
-</skin:htmlHead>
+
+<cfset request.fc.bShowTray = false />
+<skin:loadJS id="jquery" />
 
 
 <!------------------ 
@@ -41,47 +38,47 @@ START WEBSKIN
 	</cfif>
 	
 			
-	<ft:form name="#stobj.typename#_#url.property#">
-		
-		
-		<cfset stNewObject = application.fapi.getNewContentObject(typename="#url.filterTypename#", key="newLibraryObject") />
+	
+	
+	<cfset stNewObject = application.fapi.getNewContentObject(typename="#url.filterTypename#", key="newLibraryObject") />
 
-		
-		<cfset stOnExit = structNew() />
-		<cfset stOnExit.type = "HTML" />
-		<cfsavecontent variable="stOnExit.content">
-		<cfoutput>
-		<script type="text/javascript">
-		$j(function() {
-			$j.ajax({
-				cache: false,
-				type: "POST",
-	 			url: '/index.cfm?ajaxmode=1&type=#stobj.typename#&objectid=#stobj.objectid#&view=displayAjaxUpdateJoin&property=#url.property#',
-				data: {addID: '#stNewObject.objectid#'},
-				dataType: "html",
-				complete: function(data){
-					parent.$j('###stobj.typename##stobj.objectid##url.property#').dialog('close');
-				}
-			});		
-		});
-		</script>
-		</cfoutput>
-		</cfsavecontent>
-				
-		<cfset oType = application.fapi.getContentType("#url.filterTypename#") />		
-  		<cfset html = oType.getView(objectID="#stNewObject.objectid#", webskin="libraryAdd", OnExit="#stOnExit#", alternateHTML="", bIgnoreSecurity="true") />
-		
-		<cfif len(html)>
-		    <cfoutput>#html#</cfoutput>
-		<cfelse>
+	
+	<cfset stOnExit = structNew() />
+	<cfset stOnExit.type = "HTML" />
+	<cfsavecontent variable="stOnExit.content">
+	<cfoutput>
+	<script type="text/javascript">
+	$j(function() {
+		$j.ajax({
+			cache: false,
+			type: "POST",
+ 			url: '/index.cfm?ajaxmode=1&type=#stobj.typename#&objectid=#stobj.objectid#&view=displayAjaxUpdateJoin&property=#url.property#',
+			data: {addID: '#stNewObject.objectid#'},
+			dataType: "html",
+			complete: function(data){
+				parent.$j('###stobj.typename##stobj.objectid##url.property#').dialog('close');
+			}
+		});		
+	});
+	</script>
+	</cfoutput>
+	</cfsavecontent>
+			
+	<cfset oType = application.fapi.getContentType("#url.filterTypename#") />		
+		<cfset html = oType.getView(objectID="#stNewObject.objectid#", webskin="libraryAdd", onExitProcess="#stOnExit#", alternateHTML="", bIgnoreSecurity="true") />
+	
+	<cfif len(html)>
+	    <cfoutput>#html#</cfoutput>
+	<cfelse>
+		<admin:Header Title="Library">
 			<!--- THIS IS THE LEGACY WAY OF DOING THINGS AND STAYS FOR BACKWARDS COMPATIBILITY --->
 		    <cfinvoke component="#oType#" method="edit">
 		        <cfinvokeargument name="objectId" value="#stNewObject.objectID#" />
-		        <cfinvokeargument name="onExit" value="#stOnExit#" />
+		        <cfinvokeargument name="onExitProcess" value="#stOnExit#" />
 		    </cfinvoke>
-		</cfif>
-		
-	</ft:form>
+		<admin:footer>
+	</cfif>
+	
 
 </cfif>
 

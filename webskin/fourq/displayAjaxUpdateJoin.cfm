@@ -33,8 +33,10 @@
 	<!--- DETERMINE THE SELECTED ITEMS --->
 	<cfif stMetadata.type EQ "array">
 	
-		<cfif structKeyExists(form, "addID")>	
-			<cfset arrayAppend(newValue,form.addID) />
+		<cfif structKeyExists(form, "addID")>
+			<cfif NOT application.fapi.isDefaultObject(form.addID)>
+				<cfset arrayAppend(newValue,form.addID) />
+			</cfif>
 		</cfif>
 		
 		<cfif structKeyExists(form, "detachID")>
@@ -51,7 +53,9 @@
 	<cfelse>
 	
 		<cfif structKeyExists(form, "addID")>	
-			<cfset newValue = form.addID />
+			<cfif NOT application.fapi.isDefaultObject(form.addID)>
+				<cfset newValue = form.addID />
+			</cfif>
 		</cfif>
 		
 		<cfif structKeyExists(form, "detachID")>

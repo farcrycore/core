@@ -52,7 +52,7 @@ ALIAS: <cfif len(stobj.lNavIDAlias)>#stobj.lNavIDAlias#<cfelse>N/A</cfif><br />
 <cfelse>
 	<cfoutput>
 	<h2>ATTACHED CONTENT</h2>
-	<table>
+	<table class="objectAdmin">
 	
 	<cfloop from="1" to="#arrayLen(stobj.aObjectIDs)#" index="i">
 		<cfset contentTypename = application.fapi.findType(objectid="#stobj.aObjectIDs[i]#") />

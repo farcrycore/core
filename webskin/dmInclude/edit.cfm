@@ -7,7 +7,6 @@
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/navajo" prefix="nj" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
-<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 
 
 <!--- LOCK THE OBJECT --->
@@ -73,25 +72,26 @@
 		
 		
 		<cfif qTypes.recordcount>
-			<skin:htmlHead library="extjs" />
+			<skin:loadJS id="jquery" />
 			<skin:htmlHead id="typewebskinformtool">
 				<cfoutput>
 				<script type="text/javascript">
 					function getDisplayMethod(typename,fieldname,property) {
-						var webskinTypename = Ext.get('#stFields.webskinTypename.FORMFIELDNAME#');
-						var webskin = Ext.get('#stFields.webskin.FORMFIELDNAME#');
+						var webskinTypename = $j('###stFields.webskinTypename.FORMFIELDNAME#').attr('value');
+						var webskin = $j('###stFields.webskin.FORMFIELDNAME#').attr('value');
 					
-						Ext.Ajax.request({
-							url: '#application.url.farcry#/facade/ftajax.cfm?formtool=string&typename='+typename+'&fieldname='+fieldname+'&property='+property,
-							success: function(response){
-								var el = Ext.get('#stFields.webskin.FORMFIELDNAME#-wrap');
-								el.update(response.responseText);
+						$j.ajax({
+						   type: "POST",
+						   url: '#application.url.farcry#/facade/ftajax.cfm?formtool=string&typename='+typename+'&fieldname='+fieldname+'&property='+property,
+						   data: { 
+								typename: webskinTypename,
+								value: webskin
 							},
-							params: { 
-								typename: webskinTypename.getValue(),
-								value: webskin.getValue()
-							}
-						});
+						   cache: false,
+						   success: function(msg){
+								$j('###stFields.webskin.FORMFIELDNAME#-wrap').html(msg);			     	
+						   }
+						 });
 					};
 				</script>
 				</cfoutput>
@@ -128,9 +128,9 @@
 			</fieldset>
 			</cfoutput>
 					
-			<extjs:onReady>
+			<skin:onReady>
 				<cfoutput>getDisplayMethod('dmInclude','#stFields.webskin.FORMFIELDNAME#','webskin');</cfoutput>
-			</extjs:onReady>
+			</skin:onReady>
 			
 	
 		<cfelse>

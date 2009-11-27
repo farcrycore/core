@@ -302,7 +302,7 @@
 </cftimer>
 
 
-	<cfif request.mode.bAdmin AND not structKeyExists(request.fc, "bAdminTrayRendered") AND not request.mode.ajax>
+	<cfif request.mode.bAdmin AND request.fc.bShowTray AND not structKeyExists(request.fc, "bAdminTrayRendered") AND not request.mode.ajax>
 		<cfset request.fc.bAdminTrayRendered = true />
 		
 		<cfparam name="session.fc" default="#structNew()#" />

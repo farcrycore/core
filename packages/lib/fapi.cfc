@@ -68,6 +68,27 @@
 			<cfargument name="typename" type="string" required="false" default="" hint="The typename of the objectid. Pass in to avoid having to lookup the type." />
 			
 			<cfreturn application.coapi.coapiutilities.getContentObject(argumentCollection="#arguments#") />
+		</cffunction>	
+			
+		<!--- @@examples:
+			<p>Returns true if the object has not yet been stored in the database:</p>
+			<code>
+				<cfset bDefaultObject = application.fapi.isDefaultObject(form.selectedobjectid,"thistype") />
+			</code>
+			<p>Remember: if you know what the type is, pass it in to avoid an unnecessary database calls.</p>
+		 --->
+		<cffunction name="isDefaultObject" access="public" output="false" returnType="boolean" hint="Returns true if the object has not yet been stored in the database" bDocument="true">
+			<cfargument name="objectid" type="UUID" required="true" hint="The objectid for which object is to be found" />
+			<cfargument name="typename" type="string" required="false" default="" hint="The typename of the objectid. Pass in to avoid having to lookup the type." />
+			
+			<cfset var stTemp = getContentObject(argumentCollection="#arguments#") />
+			<cfset var bDefaultObject = false />
+			
+			<cfif structKeyExists(stTemp, "bDefaultObject") AND isBoolean(stTemp.bDefaultObject)>
+				<cfset bDefaultObject = stTemp.bDefaultObject />
+			</cfif>
+			
+			<cfreturn bDefaultObject />
 		</cffunction>
 				
 		<!--- @@examples:

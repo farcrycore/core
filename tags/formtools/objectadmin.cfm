@@ -610,7 +610,7 @@ user --->
 			<br class="clearer" />
 			</cfoutput>
 			
-			<cfoutput><div id="filterForm" style="<cfif not listLen(HTMLfiltersAttributes)>display:none;"</cfif>><div style="padding:5px;"></cfoutput>
+			<cfoutput><div id="filterForm" style="<cfif not listLen(HTMLfiltersAttributes)>display:none;</cfif>"><div style="padding:5px;"></cfoutput>
 			
 				<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" stPropMetaData="#attributes.stFilterMetaData#" />
 				

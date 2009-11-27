@@ -70,8 +70,8 @@ $Developer: $
 </cfsavecontent>
 
 <!--- RENDER LIBRARY EDIT FORM --->
-<admin:Header Title="Library" bodyclass="popup imagebrowse library" bCacheControl="false">
-
+<admin:Header Title="Library">
+	
 
 	<cfset HTML = oData.getView(objectid="#stData.objectid#", template="#url.ftLibraryEditWebskin#", alternateHTML="", onExitProcess="#onExitProcess#") />	
 		
