@@ -461,8 +461,8 @@
 			<cfif 
 				attributes.bShowLibraryLink
 				AND attributes.Format EQ "Edit" 
-				AND (ftFieldMetadata.Type EQ "array" 
-				OR ftFieldMetadata.Type EQ "UUID") 
+				AND (ftFieldMetadata.ftType EQ "array" 
+				OR ftFieldMetadata.ftType EQ "UUID") 
 				AND isDefined("ftFieldMetadata.ftJoin")
 				AND (not structkeyexists(ftFieldMetadata,"ftShowLibraryLink") or ftFieldMetadata.ftShowLibraryLink)>
 				
