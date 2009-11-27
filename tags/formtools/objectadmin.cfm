@@ -618,7 +618,7 @@ user --->
 					<cfif len(HTMLfiltersAttributes)>	
 						<ft:button value="Clear Filter" />
 					</cfif>
-					<ft:button value="Apply Filter" style="margin-left:10px;" />
+					<ft:button value="Apply Filter" />
 				</ft:buttonPanel>
 				
 			<cfoutput><br class="clearer" /></div></div></cfoutput>
@@ -668,7 +668,7 @@ user --->
 									<cfset buttontext = attributes.aButtons[i].value />
 								</cfif>
 								
-								<ft:button text="#attributes.aButtons[i].value#" value="#attributes.aButtons[i].value#" rbkey="objectadmin.buttons.#rereplace(attributes.aButtons[i].value,'[^\w]+','','ALL')#" onclick="#onclickJS#" confirmText="#attributes.aButtons[i].confirmText#" class="secondaryAction" style="margin-left:5px;" />
+								<ft:button text="#attributes.aButtons[i].value#" value="#attributes.aButtons[i].value#" rbkey="objectadmin.buttons.#rereplace(attributes.aButtons[i].value,'[^\w]+','','ALL')#" onclick="#onclickJS#" confirmText="#attributes.aButtons[i].confirmText#" class="secondaryAction" />
 								<!---<input type="#attributes.aButtons[i].type#" name="#attributes.aButtons[i].name#" value="#attributes.aButtons[i].value#" class="formButton"<cfif len(attributes.aButtons[i].onclick)> onclick="#attributes.aButtons[i].onclick#"</cfif> /> --->
 							</cfif>
 						</cfif>
