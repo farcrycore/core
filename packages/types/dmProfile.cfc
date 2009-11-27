@@ -229,10 +229,12 @@ OBJECT METHODS
 		 --->
 		<cfset var newLabel = "" />
 		
-		<cfif structKeyExists(arguments.stProperties, "firstname") AND structKeyExists(arguments.stProperties, "lastname")>
+		<cfif len(arguments.stProperties.firstname) OR len(arguments.stProperties.lastname)>
 			<cfset newLabel = "#arguments.stProperties.firstname# #arguments.stProperties.lastname#" />
-		<cfelseif structKeyExists(arguments.stProperties, "label")>
-			<cfset newLabel = arguments.stProperties.label />
+		<cfelseif len(arguments.stProperties.emailAddress)>
+			<cfset newLabel = arguments.stProperties.emailAddress />
+		<cfelse>
+			<cfset label = arguments.stProperties.userName />
 		</cfif>
 		
 		<cfreturn trim(newLabel) />
