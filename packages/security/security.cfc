@@ -788,12 +788,12 @@
 		// disable tray
 			if (isDefined("arguments.stURL.bShowTray")) {
 				request.fc.bShowTray = val(arguments.stURL.bShowTray);
-				session.dmProfile.bShowTray = request.fc.bShowTray;
+				//session.dmProfile.bShowTray = request.fc.bShowTray;
 			} else if (isDefined("session.dmProfile.bShowTray")) {
-				request.fc.bShowTray = session.dmProfile.bShowTray;
+				//request.fc.bShowTray = session.dmProfile.bShowTray;
 			} else {
-				request.fc.bShowTray = 0;
-				session.dmProfile.bShowTray = request.fc.bShowTray;
+				//request.fc.bShowTray = 0;
+				//session.dmProfile.bShowTray = request.fc.bShowTray;
 			}
 		
 		}
