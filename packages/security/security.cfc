@@ -757,10 +757,7 @@
 			}
 		// webskintrace
 			if (isDefined("arguments.stURL.tracewebskins")) {
-				request.mode.tracewebskins = val(arguments.stURL.tracewebskins);
-				session.dmSec.Authentication.tracewebskins = request.mode.tracewebskins;
-			} else if (isDefined("session.dmSec.Authentication.tracewebskins")) {
-				request.mode.tracewebskins = session.dmSec.Authentication.tracewebskins;
+				request.mode.tracewebskins = arguments.stURL.tracewebskins;
 			} else {
 				request.mode.tracewebskins = 0;
 			}

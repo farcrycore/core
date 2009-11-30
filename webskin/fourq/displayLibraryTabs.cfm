@@ -21,7 +21,6 @@
 			<ul>
 				<cfloop list="#stMetadata.ftJoin#" index="i">
 					<li><a href="/index.cfm?ajaxmode=1&type=#url.type#&objectid=#url.objectid#&view=displayLibrary&property=#url.property#&filterTypename=#i#">#application.fapi.getContentTypeMetadata(i,'displayName',i)#</a></li>
-					<li><a href="/index.cfm?ajaxmode=1&type=#url.type#&objectid=#url.objectid#&view=displayLibrary&property=#url.property#&filterTypename=dmNews">#application.fapi.getContentTypeMetadata("dmNews",'displayName',"news")#</a></li>
 				</cfloop>
 			</ul>
 		</div>	

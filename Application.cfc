@@ -377,6 +377,11 @@
 			<cfset url.updateapp = false>
 		</cfif>
 		
+		<cfif findNoCase('updateapp/#application.updateappKey#', cgi.query_string)>
+			<!--- CAN FORCE AND UPDATE IF THE USER KNOWS THE updateappKey --->
+			<cfset url.updateapp = true>
+		</cfif>
+		
 		<!--- force application start sequence to be single threaded --->
 		<cfif (NOT structkeyexists(application, "bInit") OR NOT application.binit) OR url.updateapp>
 			<cflock name="#application.applicationName#_init" type="exclusive" timeout="3" throwontimeout="true">

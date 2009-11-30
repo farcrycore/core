@@ -66,6 +66,8 @@ $Developer: Pete Ottery (pot@daemon.com.au)$
 <cfparam name="session.userLanguage" default="en" />
 
 <skin:loadCSS id="webtop" />
+<skin:loadJS id="jquery" />
+
 <cfoutput>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" dir="#session.writingDir#" lang="#session.userLanguage#">
@@ -132,15 +134,74 @@ $Developer: Pete Ottery (pot@daemon.com.au)$
 <cfelseif altexpansion gt 200>
 	<!--- Alternate size is greater than the default size --->
 	<cfoutput>
-		<a href="##" onclick="$('sidebar').style.width = '#altexpansion#px'; $('iframe-sidebar').style.width = '#altexpansion#px'; $('tree-button-max').style.display = 'none'; $('tree-button-min').style.display = 'block'; $('content-wrap').style.backgroundPosition = '#altexpansion-201#px 0'; $('content').style.marginLeft = '#altexpansion+32#px'; $('sec-#url.sec#').style.backgroundPosition='#altexpansion-605#px 0'; return false;" id="tree-button-max"><span>Expand Sidebar</span></a>
-		<a href="##" onclick="$('sidebar').style.width = '200px'; $('iframe-sidebar').style.width = '200px'; $('tree-button-max').style.display = 'block'; $('tree-button-min').style.display = 'none'; $('content-wrap').style.backgroundPosition = '0 0'; $('content').style.marginLeft = '232px'; $('sec-#url.sec#').style.backgroundPosition = '-404px 0'; return false;" id="tree-button-min"><span>Default Sidebar</span></a>
-	</cfoutput>
+		<a href="##" id="tree-button-max"><span>Expand Sidebar</span></a>
+		<a href="##" id="tree-button-min"><span>Default Sidebar</span></a>
+	</cfoutput>	
+
+	<skin:onReady>
+		<cfoutput>
+        	$j('##tree-button-max').click(function() {
+				$j('##sidebar').css('width','#altexpansion#px');
+				$j('##iframe-sidebar').css('width','#altexpansion#px');
+				$j('##tree-button-max').css('display','none');
+				$j('##tree-button-min').css('display','block');
+				$j('##content-wrap').css('backgroundPosition','#altexpansion-201#px 0');
+				$j('##content').css('marginLeft','#altexpansion+32#px');
+				$j('##sec-#url.sec#').css('backgroundPosition','#altexpansion-605#px 0');
+			});
+        </cfoutput>
+	</skin:onReady>
+	
+
+	<skin:onReady>
+		<cfoutput>
+		$j('##tree-button-min').click(function() {		
+        	$j('##sidebar').css('width','200px'); 
+			$j('##iframe-sidebar').css('width','200px'); 
+			$j('##tree-button-max').css('display','block'); 
+			$j('##tree-button-min').css('display','none'); 
+			$j('##content-wrap').css('backgroundPosition','0 0'); 
+			$j('##content').css('marginLeft','232px'); 
+			$j('##sec-#url.sec#').css('backgroundPosition','-404px 0');             
+		});
+		</cfoutput>
+	</skin:onReady>
+	
 <cfelseif altexpansion lt 200>
 	<!--- Alternate size is smaller than the default size --->
 	<cfoutput>
-		<a href="##" onclick="$('sidebar').style.width = '#altexpansion#px'; $('iframe-sidebar').style.width = '#altexpansion#px'; $('content-button-max').style.display = 'none'; $('content-button-min').style.display = 'block'; $('content-wrap').style.backgroundPosition = '#altexpansion-201#px 0'; $('content').style.marginLeft = '#altexpansion+32#px'; $('sec-#url.sec#').style.backgroundPosition='#altexpansion-605#px 0'; return false;" id="content-button-max"><span>Expand Sidebar</span></a>
-		<a href="##" onclick="$('sidebar').style.width = '200px'; $('iframe-sidebar').style.width = '200px'; $('content-button-max').style.display = 'block'; $('content-button-min').style.display = 'none'; $('content-wrap').style.backgroundPosition = '0 0'; $('content').style.marginLeft = '232px'; $('sec-#url.sec#').style.backgroundPosition = '-404px 0'; return false;" id="content-button-min"><span>Default Sidebar</span></a>
-	</cfoutput>
+		<a href="##" id="content-button-max" title="Expand Sidebar"><span>Expand Sidebar</span></a>
+		<a href="##" id="content-button-min" title="Default Sidebar"><span>Default Sidebar</span></a>
+	</cfoutput>	
+
+	<skin:onReady>
+		<cfoutput>
+        	$j('##content-button-max').click(function() {
+				$j('##sidebar').css('width','#altexpansion#px'); 
+				$j('##iframe-sidebar').css('width','#altexpansion#px'); 
+				$j('##content-button-max').css('display','none'); 
+				$j('##content-button-min').css('display','block'); 
+				$j('##content-wrap').css('backgroundPosition','#altexpansion-201#px 0'); 
+				$j('##content').css('marginLeft','#altexpansion+32#px'); 
+				$j('##sec-#url.sec#').css('backgroundPosition','#altexpansion-605#px 0');
+			});
+        </cfoutput>
+	</skin:onReady>
+	
+
+	<skin:onReady>
+		<cfoutput>
+		$j('##content-button-min').click(function() {			
+        	$j('##sidebar').css('width','200px'); 
+			$j('##iframe-sidebar').css('width','200px'); 
+			$j('##content-button-max').css('display','block'); 
+			$j('##content-button-min').css('display','none'); 
+			$j('##content-wrap').css('backgroundPosition','0 0'); 
+			$j('##content').css('marginLeft','232px'); 
+			$j('##sec-#url.sec#').css('backgroundPosition','-404px 0');            
+		});
+		</cfoutput>
+	</skin:onReady>
 </cfif>
 
 <cfoutput>

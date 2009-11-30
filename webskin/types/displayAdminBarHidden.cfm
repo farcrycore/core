@@ -9,7 +9,7 @@
 <skin:onReady>
 <cfoutput>
 $j('##open-tray').click(function(){
-	$fc.traySwitch('displayAdminBarSummary');
+	$fc.traySwitch('displayAdminBarDetail');
 });
 </cfoutput>
 </skin:onReady>

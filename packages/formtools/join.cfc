@@ -51,7 +51,7 @@
 			<cfelse>
 				<cfset joinItems = arguments.stObject[arguments.stMetadata.name] />
 			</cfif>
-			
+
 			<cfif listLen(joinItems)>
 				<cfoutput><ul id="join-#stObject.objectid#-#arguments.stMetadata.name#" class="arrayDetailView" style="list-style-type:none;border:1px solid ##ebebeb;border-width:1px 1px 0px 1px;margin:0px;"></cfoutput>
 					<cfset counter = 0 />
@@ -59,7 +59,7 @@
 						<cfset counter = counter + 1 />
 						<skin:view objectid="#i#" webskin="librarySelected" r_html="htmlLabel" />
 						<cfoutput>
-						<li id="join-item-#i#" class="sort #iif(counter mod 2,de('oddrow'),de('evenrow'))#" serialize="#i#" style="clear:both;">
+						<li id="join-item-#i#" class="sort #iif(counter mod 2,de('oddrow'),de('evenrow'))#" serialize="#i#" style="clear:both;margin-bottom:5px;">
 							<div class="buttonGripper"><p></p></div>
 							<div class="arrayDetail" style="float:left;">#htmlLabel#</div>
 							<div class="join-remove" style="float:right;white-space: nowrap;">

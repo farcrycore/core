@@ -9,6 +9,7 @@
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/grid" prefix="grid" />
 <cfimport taglib="/farcry/core/tags/security" prefix="sec" />
+<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
 <!--- Set tray state --->
 <cfset session.fc.trayWebskin = "displayAdminBarDetail" />
@@ -59,15 +60,17 @@
 	</cfoutput>
 	
 	
+	<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="secureTrayStatus" bIgnoreSecurity="true" stParam="#form#" />
+	
 	
 	<grid:div style="float:left;margin-right:15px;">
 		<cfoutput>
 		<ul id="tray-actions">	
-			<li><a id="show-hidden"><span class="ui-icon" style="background-image:url(#application.url.webtop#/facade/icon.cfm?icon=toggletray&size=16);">&nbsp;</span>Hide tray</a></li>
-			<li><a id="show-summary"><span class="ui-icon ui-icon-carat-2-n-s" style="float:left;">&nbsp;</span>Hide details of <strong>#application.fapi.getContentTypeMetadata(typename='#contentTypename#', md='displayName', default='#contentTypename#')#</strong></a></li>
-			<cfif stObj.typename neq "farCOAPI">
-				<li><a id="edit-object"><span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>Edit</a></li>
-			</cfif>
+			<li><a id="show-hidden" href="##"><span class="ui-icon" style="background-image:url(#application.url.webtop#/facade/icon.cfm?icon=toggletray&size=16);">&nbsp;</span>Hide tray</a></li>
+			<!---<li><a id="show-summary"><span class="ui-icon ui-icon-carat-2-n-s" style="float:left;">&nbsp;</span>Hide details</a></li>--->
+			<!---<cfif stObj.typename neq "farCOAPI">
+				<li><a id="edit-object" href="##"><span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>Edit</a></li>
+			</cfif>--->
 			<li>
 				<a href="#application.fapi.fixURL(url='#refererURL#', removevalues="", addvalues='updateapp=1')#">
 					<span class="ui-icon ui-icon-refresh" style="float:left;">&nbsp;</span>Update App
@@ -82,6 +85,17 @@
 	</grid:div>	
 	
 	<grid:div style="float:left;width:50%;">
+		<cfoutput>
+		<h2>
+			<admin:icon icon="#application.stCOAPI[contentTypename].icon#" size="16" usecustom="true" />
+			#application.fapi.getContentTypeMetadata(typename='#contentTypename#', md='displayName', default='#stobj.typename#')#
+			<cfif stObj.typename neq "farCOAPI">
+				&nbsp;&nbsp;&nbsp;
+				<a id="edit-object" href="##" style="">edit</a>
+			</cfif>
+		</h2>
+		</cfoutput>
+		
 		<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="secureTrayDetails" bIgnoreSecurity="true" stParam="#form#" />
 	</grid:div>	
 		
@@ -89,86 +103,150 @@
 	
 	<grid:div style="float:right;">
 		<cfoutput>
-			<ul>
-			
-				<cfif request.mode.flushcache>
+			<ul id="page-actions-request">
+				<cfif findNoCase("bDebug=1", "#refererURL#") OR findNoCase("bDebug/1", "#refererURL#")>
 					<li>
-						<a href="#application.fapi.fixURL(url='#refererURL#', removevalues="", addvalues='flushcache=0')#">
-							<span class="ui-icon ui-icon-circle-close">&nbsp;</span>Cache OFF
+						<a id="tray-bDebug" name="tray-bDebug" title="Turn OFF Debugging" href="##">
+							<input type="checkbox" checked=checked /> Debug
 						</a>
 					</li>
+					<skin:onReady>
+						$j('##tray-bDebug').click(function() {
+							location.href='#application.fapi.fixURL(url='#refererURL#', addvalues='bDebug=0')#';
+						});
+					</skin:onReady>
 				<cfelse>
 					<li>
-						<a href="#application.fapi.fixURL(url='#refererURL#', removevalues="", addvalues='flushcache=1')#">
-							<span class="ui-icon ui-icon-circle-check">&nbsp;</span>Cache ON
+						<a id="tray-bDebug" name="tray-bDebug" title="Turn ON Debugging" href="##">
+							<input type="checkbox" /> Debug
 						</a>
 					</li>
-				</cfif>
-				
-				
-				<cfif request.mode.showdraft>		
-					<li>
-						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='flushcache=1&showdraft=0')#" >
-							<span class="ui-icon ui-icon-circle-check">&nbsp;</span>Drafts ON
-						</a>
-					</li>
-				<cfelse>
-					<li>
-						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='flushcache=0&showdraft=1')#">
-							<span class="ui-icon ui-icon-circle-close">&nbsp;</span>Drafts OFF
-						</a>
-					</li>
-				</cfif>
-				
-				
-				<cfif request.mode.design and request.mode.showcontainers gt 0>	
-					<li>
-						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='designmode=0')#">
-							<span class="ui-icon ui-icon-circle-check">&nbsp;</span>Rules ON
-						</a>
-					</li>
-				<cfelse>
-					<li>
-						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='designmode=1')#" >
-							<span class="ui-icon ui-icon-circle-close">&nbsp;</span>Rules OFF
-						</a>
-					</li>
-				</cfif>		
-				
-													
-				<cfif findNoCase("bDebug=1", "#refererURL#")>
-					<li>
-						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='bDebug=0')#">
-							<span class="ui-icon ui-icon-circle-check">&nbsp;</span>Debug ON
-						</a>
-					</li>
-				<cfelse>
-					<li>
-						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='bDebug=1')#" >
-							<span class="ui-icon ui-icon-circle-close">&nbsp;</span>Debug OFF
-						</a>
-					</li>
+					<skin:onReady>
+						$j('##tray-bDebug').click(function() {
+							location.href='#application.fapi.fixURL(url='#refererURL#', addvalues='bDebug=1')#';
+						});
+					</skin:onReady>
 				</cfif>	
 													
-				<cfif request.mode.traceWebskins EQ 1>
+				<cfif findNoCase("tracewebskins=1", "#refererURL#") OR findNoCase("tracewebskins/1", "#refererURL#")>
 					<li>
-						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='tracewebskins=0')#" >
-							<span class="ui-icon ui-icon-circle-check">&nbsp;</span>Webskin Tracer ON
-						></a
+						<a id="tray-tracewebskins" name="tray-tracewebskins" title="Turn OFF Webskin Tracing" href="##">
+							<input type="checkbox" checked=checked /> Tracer
+						</a>
 					</li>
+					<skin:onReady>
+						$j('##tray-tracewebskins').click(function() {
+							location.href='#application.fapi.fixURL(url='#refererURL#', addvalues='tracewebskins=0')#';
+						});
+					</skin:onReady>
 				<cfelse>
 					<li>
-						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='tracewebskins=1')#" >
-							<span class="ui-icon ui-icon-circle-close">&nbsp;</span>Webskin Tracer OFF
-						</a
+						<a id="tray-tracewebskins" name="tray-tracewebskins" title="Turn ON Webskin Tracing" href="##">
+							<input type="checkbox" /> Tracer
+						</a>
 					</li>
+					<skin:onReady>
+						$j('##tray-tracewebskins').click(function() {
+							location.href='#application.fapi.fixURL(url='#refererURL#', addvalues='tracewebskins=1')#';
+						});
+					</skin:onReady>
 				</cfif>	
 			
 			</ul>
 		</cfoutput>
 	</grid:div>
-	
 
+	<grid:div style="float:right;">
+		<cfoutput>
+			<ul id="page-actions-toggle">
+				
+				<!--- NO CACHING AVAILABLE WHEN  --->
+				<cfif request.mode.showdraft OR request.mode.design OR findNoCase("bDebug=1", "#refererURL#") OR findNoCase("bDebug/1", "#refererURL#") OR request.mode.traceWebskins>
+					<li>
+						<a title="Caching is not Available when viewing drafts, in design mode, tracing webskins or in debug mode.">
+							<input type="checkbox" name="tray-flushcache" disabled=true /> <span style="text-decoration: line-through;">Caching</span>
+						</a>
+					</li>				
+				<cfelse>
+					<cfif request.mode.flushcache>
+						<li>
+							<a id="tray-flushcache" name="tray-flushcache" title="Turn OFF caching" href="##">
+								<input type="checkbox" checked=checked /> Caching
+							</a>
+						</li>
+						<skin:onReady>
+							$j('##tray-flushcache').click(function() {
+								location.href='#application.fapi.fixURL(url='#refererURL#', removevalues='', addvalues='flushcache=0')#';
+							});
+						</skin:onReady>
+					<cfelse>
+						<li>
+							<a id="tray-flushcache" name="tray-flushcache" title="Turn ON caching" href="##">
+								<input type="checkbox" /> Caching 
+							</a>
+						</li>
+						<skin:onReady>
+							$j('##tray-flushcache').click(function() {
+								location.href='#application.fapi.fixURL(url='#refererURL#', removevalues='', addvalues='flushcache=1')#';
+							});
+						</skin:onReady>
+					</cfif>
+				</cfif>
+				
+				
+				<cfif request.mode.showdraft>		
+					<li>
+						<a id="tray-showdraft" name="tray-showdraft" title="Turn OFF drafts" href="##" >
+							<input type="checkbox" checked=checked /> Drafts
+						</a>
+					</li>
+					<skin:onReady>
+						$j('##tray-showdraft').click(function() {
+							location.href='#application.fapi.fixURL(url='#refererURL#', addvalues='showdraft=0')#';
+						});
+					</skin:onReady>
+				<cfelse>
+					<li>
+						<a id="tray-showdraft" name="tray-showdraft" title="Turn ON drafts" href="##">
+							<input type="checkbox" /> Drafts
+						</a>
+					</li>
+					<skin:onReady>
+						$j('##tray-showdraft').click(function() {
+							location.href='#application.fapi.fixURL(url='#refererURL#', addvalues='showdraft=1')#';
+						});
+					</skin:onReady>
+				</cfif>
+				
+				
+				<cfif request.mode.design and request.mode.showcontainers gt 0>	
+					<li>
+						<a id="tray-designmode" name="tray-designmode" title="Hide Rules" href="##">
+							<input type="checkbox" name="tray-designmode" checked=checked /> Rules
+						</a>
+					</li>
+					<skin:onReady>
+						$j('##tray-designmode').click(function() {
+							location.href='#application.fapi.fixURL(url='#refererURL#', addvalues='designmode=0')#';
+						});
+					</skin:onReady>
+				<cfelse>
+					<li>
+						<a id="tray-designmode" name="tray-designmode" title="Show Rules" href="##">
+							<input type="checkbox" name="tray-designmode" /> Rules
+						</a>
+					</li>
+					<skin:onReady>
+						$j('##tray-designmode').click(function() {
+							location.href='#application.fapi.fixURL(url='#refererURL#', addvalues='designmode=1')#';
+						});
+					</skin:onReady>
+				</cfif>		
+				
+			</ul>
+		</cfoutput>
+	</grid:div>
+	
 	
 	<cfoutput>
 			</div>

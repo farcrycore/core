@@ -79,7 +79,7 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 		<admin:loopwebtop parent="#stSubSection#" item="menu">
 			<cfoutput>
 				<h2>#menu.label#</h2>
-				<ul>
+				<ul class="webtop">
 			</cfoutput>
 			
 			<admin:loopwebtop parent="#menu#" item="menuitem">

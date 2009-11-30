@@ -50,12 +50,13 @@
 			<div style="">
 	</cfoutput>
 	
+		<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="secureTrayStatus" bIgnoreSecurity="true" stParam="#form#" />
 	
 		<grid:div style="float:left;margin-right:5px;">
 			<cfoutput>
 			<ul id="tray-actions">	
 				<li><a id="show-hidden"><span class="ui-icon" style="background-image:url(#application.url.webtop#/facade/icon.cfm?icon=toggletray&size=16);">&nbsp;</span>Hide Tray</a></li>
-				<li><a id="show-detail"><span class="ui-icon ui-icon-carat-2-n-s" style="float:left;">&nbsp;</span>Show details of <strong>#application.fapi.getContentTypeMetadata(typename='#contentTypename#', md='displayName', default='#contentTypename#')#</strong></a></li>
+				<li><a id="show-detail"><span class="ui-icon ui-icon-carat-2-n-s" style="float:left;">&nbsp;</span>Show details</a></li>
 				<cfif stObj.typename neq "farCOAPI">
 					<li><a id="edit-object"><span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>Edit</a></li>
 				</cfif>
@@ -71,13 +72,13 @@
 				<cfif request.mode.flushcache>
 					<li>
 						<a href="#application.fapi.fixURL(url='#refererURL#', removevalues="", addvalues='flushcache=0')#">
-							<span class="ui-icon ui-icon-circle-close">&nbsp;</span>Cache OFF
+							<input type="checkbox" name="tray-flushcache" /> Caching
 						</a>
 					</li>
 				<cfelse>
 					<li>
 						<a href="#application.fapi.fixURL(url='#refererURL#', removevalues="", addvalues='flushcache=1')#">
-							<span class="ui-icon ui-icon-circle-check">&nbsp;</span>Cache ON
+							<input type="checkbox" name="tray-flushcache" checked=checked /> Caching
 						</a>
 					</li>
 				</cfif>
@@ -85,14 +86,14 @@
 				
 				<cfif request.mode.showdraft>		
 					<li>
-						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='flushcache=1&showdraft=0')#" >
-							<span class="ui-icon ui-icon-circle-check">&nbsp;</span>Drafts ON
+						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='showdraft=0')#" >
+							<input type="checkbox" name="tray-showdraft" checked=checked /> Drafts
 						</a>
 					</li>
 				<cfelse>
 					<li>
-						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='flushcache=0&showdraft=1')#">
-							<span class="ui-icon ui-icon-circle-close">&nbsp;</span>Drafts OFF
+						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='showdraft=1')#">
+							<input type="checkbox" name="tray-showdraft" /> Drafts
 						</a>
 					</li>
 				</cfif>
@@ -101,13 +102,13 @@
 				<cfif request.mode.design and request.mode.showcontainers gt 0>	
 					<li>
 						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='designmode=0')#">
-							<span class="ui-icon ui-icon-circle-check">&nbsp;</span>Rules ON
+							<input type="checkbox" name="tray-designmode" checked=checked /> Rules
 						</a>
 					</li>
 				<cfelse>
 					<li>
 						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='designmode=1')#" >
-							<span class="ui-icon ui-icon-circle-close">&nbsp;</span>Rules OFF
+							<input type="checkbox" name="tray-designmode" /> Rules
 						</a>
 					</li>
 				</cfif>

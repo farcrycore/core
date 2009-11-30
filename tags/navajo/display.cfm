@@ -153,10 +153,11 @@
 	--->
 	<cfif structkeyexists(stObj,"status") and stObj.status EQ "draft" and NOT ListContainsnocase(request.mode.lValidStatus, stObj.status)>
 		<cfif request.mode.bAdmin>
+			<!--- SET DRAFT MODE ONLY FOR THIS REQUEST. --->
 			<cfset request.mode.showdraft = 1 />
-			<cfset session.dmSec.Authentication.showdraft = request.mode.showdraft />
+			<!---<cfset session.dmSec.Authentication.showdraft = request.mode.showdraft />--->
 			<cfset request.mode.lValidStatus = "draft,pending,approved" />
-			<skin:bubble title="Currently Viewing a Draft Object" message="You are currently viewing a draft object. Your profile has now been changed to 'Showing Drafts'." />
+			<!---<skin:bubble title="Currently Viewing a Draft Object" message="You are currently viewing a draft object. Your profile has now been changed to 'Showing Drafts'." />--->
 		<cfelse>			
 			<!--- send to login page and return in draft mode --->
 			<skin:location url="#attributes.loginpath#" urlParameters="showdraft=1&error=draft" />

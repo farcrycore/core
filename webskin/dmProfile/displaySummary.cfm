@@ -25,7 +25,7 @@
 	
 	<!--- link to edit profile and change password --->
 	<h3>Your settings</h3>
-	<ul>
+	<ul class="webtop">
 		<li>
 			<small>
 				<a href="#application.url.farcry#/conjuror/invocation.cfm?objectID=#session.dmProfile.objectID#&method=editOwn" target="content" title="#application.rb.getResource('coapi.dmProfile.general.editprofile@label','Edit your profile')#">#application.rb.getResource('coapi.dmProfile.general.editprofile@label','Edit your profile')#</a>

@@ -106,7 +106,7 @@ TO: A refactor is required of all this now that we have webskin goodness.
 					
 						<grid:div class="webtopOverviewStatusBox" style="background-color:##C0FFFF;">
 							<cfoutput>
-								DRAFT: Content Item last updated <a title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</a>.
+								DRAFT: last updated <a title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</a>.
 								
 								<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
 									(<skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="versionID=#stobj.versionID#" linktext="show approved" />)
@@ -119,7 +119,7 @@ TO: A refactor is required of all this now that we have webskin goodness.
 					
 						<grid:div class="webtopOverviewStatusBox" style="background-color:##FFE0C0;">
 							<cfoutput>
-								PENDING: Content Item set to awaiting approval <a title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</a>.
+								PENDING: awaiting approval since <a title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</a>.
 								
 								<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
 									(<skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="versionID=#stobj.versionID#" linktext="show approved" />)
@@ -131,7 +131,7 @@ TO: A refactor is required of all this now that we have webskin goodness.
 					
 						<grid:div class="webtopOverviewStatusBox" style="background-color:##C0FFC0;">
 							<cfoutput>
-								PUBLISHED: Content Item approved <a title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</a>.
+								APPROVED: <a title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</a>.
 								
 								<cfif structKeyExists(stobj,"versionID") AND structKeyExists(stobj,"status") AND stobj.status EQ "approved">
 									<cfset qDraft = createObject("component", "#application.packagepath#.farcry.versioning").checkIsDraft(objectid=stobj.objectid,type=stobj.typename)>

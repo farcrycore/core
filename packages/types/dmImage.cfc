@@ -21,12 +21,40 @@ type properties
 ------------------------------------------------------------------------->
 <cfproperty ftSeq="2" ftFieldset="General Details" name="title" type="nstring" hint="Image title." required="no" default="" blabel="true" ftlabel="Image Title" /> 
 <cfproperty ftSeq="4" ftFieldset="General Details" name="alt" type="nstring" hint="Alternate text" required="no" default="" fttype="longchar" ftlabel="Alternative Text" /> 
-<cfproperty ftSeq="6" ftFieldset="General Details" name="bLibrary" type="numeric" hint="Flag to indictae if in file library or not" required="no" default="1" ftType="boolean" ftlabel="Add to Library" />
 
 <!--- image file locations --->
-<cfproperty ftSeq="22" ftFieldset="Image Files" name="SourceImage" type="string" hint="The URL location of the uploaded image" required="No" default="" ftType="Image" ftCreateFromSourceOption="false" ftDestination="/images/dmImage/SourceImage" ftlabel="Source Image" ftImageWidth="" ftImageHeight=""  />
-<cfproperty ftSeq="24" ftFieldset="Image Files" name="StandardImage" type="string" hint="The URL location of the optimised uploaded image that should be used for general display" required="no" default="" ftType="Image" ftDestination="/images/dmImage/StandardImage" ftImageWidth="400" ftImageHeight="1000" ftAutoGenerateType="FitInside" ftSourceField="SourceImage" ftCreateFromSourceDefault="true" ftAllowUpload="true" ftlabel="Mid Size Image" />  
-<cfproperty ftSeq="26" ftFieldset="Image Files" name="ThumbnailImage" type="string" hint="The URL location of the thumnail of the uploaded image that should be used in " required="no" default="" ftType="Image"  ftDestination="/images/dmImage/ThumbnailImage" ftImageWidth="80" ftImageHeight="80" ftAutoGenerateType="Pad" ftPadColor="##ffffff" ftSourceField="SourceImage" ftCreateFromSourceDefault="true" ftAllowUpload="true" ftlabel="Thumbnail Image" />  
+<cfproperty ftSeq="22" ftFieldset="Image Files" name="SourceImage" type="string" hint="The URL location of the uploaded image" required="No" default="" 
+	ftType="Image" 
+	ftCreateFromSourceOption="false" 
+	ftDestination="/images/dmImage/SourceImage" 
+	ftlabel="Source Image" 
+	ftImageWidth="" 
+	ftImageHeight=""
+	ftHint="Upload your high quality source image here."  />
+
+<cfproperty ftSeq="24" ftFieldset="Image Files" name="StandardImage" type="string" hint="The URL location of the optimised uploaded image that should be used for general display" required="no" default="" 
+	ftType="Image" 
+	ftDestination="/images/dmImage/StandardImage" 
+	ftImageWidth="400" 
+	ftImageHeight="1000" 
+	ftAutoGenerateType="FitInside" 
+	ftSourceField="SourceImage" 
+	ftCreateFromSourceDefault="true" 
+	ftAllowUpload="true" 
+	ftlabel="Mid Size Image"
+	ftHint="This image is generally used throughout your project as the main image. Most often you would have this created automatically from the high quality source image you upload." />  
+
+<cfproperty ftSeq="26" ftFieldset="Image Files" name="ThumbnailImage" type="string" hint="The URL location of the thumnail of the uploaded image that should be used in " required="no" default="" 
+	ftType="Image"  
+	ftDestination="/images/dmImage/ThumbnailImage" 
+	ftImageWidth="80" 
+	ftImageHeight="80" 
+	ftAutoGenerateType="aspectCrop"
+	ftSourceField="SourceImage" 
+	ftCreateFromSourceDefault="true" 
+	ftAllowUpload="true" 
+	ftlabel="Thumbnail Image"
+	ftHint="This image is generally used throughout your project as the thumbnail teaser image. Most often you would have this created automatically from the high quality source image you upload." />
 
 <!--- image categorisation --->
 <cfproperty ftSeq="42" ftFieldset="Categorisation" name="catImage" type="string" hint="Image categorisation." required="no" default="" ftlabel="Category" fttype="category" ftalias="dmimage" ftselectmultiple="true" />
@@ -45,6 +73,7 @@ type properties
 <cfproperty name="originalImagePath" type="string" hint="The location in the filesystem where the original image is stored." required="No" default=""> 
 <cfproperty name="thumbnailImagePath" editHandler="void" type="string" hint="The location in the filesystem where the thumbnail image is stored." required="no" default=""> 
 <cfproperty name="optimisedImagePath" editHandler="void" type="string" hint="The location in the filesystem where the optimized image is stored." required="no" default=""> 
+<cfproperty name="bLibrary" type="numeric" hint="Legacy field... no longer used" required="no" default="1" ftType="boolean" ftlabel="Add to Library" />
 
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
