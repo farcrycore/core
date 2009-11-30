@@ -5,6 +5,7 @@
 
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" >
+	<cfimport taglib="/farcry/core/tags/grid/" prefix="grid" >
 	
 	<cffunction name="init" access="public" returntype="any" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
@@ -37,164 +38,188 @@
 		
 
 		<skin:loadJS id="jquery" />
-		
-		<skin:htmlHead id="ftCheckFileName">
-			<cfoutput>
-			<script type="text/javascript">
-				function ftCheckFileName(id){
-					var currentText = $j('##' + id).attr('value');	
-					var aCurrentExt = currentText.split(".");	
 						
-					var newText = $j('##' + id + 'NEW').attr('value');	
-					var aNewExt = newText.split(".");	
-					
-					if (currentText.length > 0 && newText.length > 0) {
-						if (aCurrentExt.length > 1 && aNewExt.length > 1){						
-							if (aCurrentExt[aCurrentExt.length - 1] != aNewExt[aNewExt.length - 1]){
-								$j('##' + id + 'NEW').attr('value', '');
-								alert('You must either delete the old file or upload a new one with the same extension (' + aCurrentExt[aCurrentExt.length - 1] + ')');
-							}
-						}
-					}
-				}
-			</script>
-			</cfoutput>
-		</skin:htmlHead>
-		
-				
 		<cfsavecontent variable="html">
-			<cfoutput>
-				<table style="width: 100%;">
-				<tr valign="top">
-					<td>
-			</cfoutput>
-						<cfif len(arguments.stMetadata.ftSourceField)>
+			<grid:div class="multiField">
 
-							<cfset Request.InHead.ScriptaculousEffects = 1>
-				
+					<!--- Can the user upload their own image. --->
+					<cfif arguments.stMetadata.ftAllowUpload>
+						<cfoutput>
+						<div id="#arguments.fieldname#-wrap">						
 							
-							<cfsavecontent variable="ToggleOffGenerateImageJS">
-								<cfoutput>
-									<script language="javascript">
-									function toggle#arguments.fieldname#(){
-										Effect.toggle('#arguments.fieldname#previewimage','appear');
-										Effect.toggle('#arguments.fieldname#NEW','appear');
-									}
-									
-				
-									</script>
-								</cfoutput>
-							</cfsavecontent>
+							<label class="inlineLabel" for="#arguments.fieldname#">
+								&nbsp;
+								<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
+								<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="" />
+								<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" fc:fieldname="#arguments.fieldname#" class="fileUpload" value="" style="#arguments.stMetadata.ftstyle#" />
+								
+							</label>						
 							
-							<cfhtmlHead text="#ToggleOffGenerateImageJS#">
+						</div>
+						
 							
-							
-							<cfif arguments.stMetadata.ftCreateFromSourceDefault AND NOT len(arguments.stMetadata.value)>
-								<cfset arguments.stMetadata.ftStyle = "#arguments.stMetadata.ftStyle#;display:none;">
-							</cfif>		
-
-							<cfoutput>
-							<div>
-							<input type="checkbox" name="#arguments.fieldname#CreateFromSource" id="#arguments.fieldname#CreateFromSource" value="true" onclick="javascript:toggle#arguments.fieldname#();" class="checkboxInput" <cfif arguments.stMetadata.ftCreateFromSourceDefault AND NOT len(arguments.stMetadata.value)>checked</cfif>> 
-							generate based on "#arguments.stPackage.stProps[arguments.stMetadata.ftSourceField].metadata.ftLabel#"
-							<input type="hidden" name="#arguments.fieldname#CreateFromSource" id="#arguments.fieldname#CreateFromSource" value="false" />
+						<cfif structKeyExists(arguments.stMetadata, "ftAutoGenerateType") AND arguments.stMetadata.ftAutoGenerateType EQ "aspectCrop">
+							<div id="#arguments.fieldname#-aspect-crop">	
+								<label class="inlineLabel" for="#arguments.fieldname#CropPosition"> Cropping Position
+									<select name="#arguments.fieldname#CropPosition" class="selectInput">
+										<option value="topleft">TopLeft</option>
+										<option value="topcenter">TopCenter</option>
+										<option value="topright">TopRight</option>
+										<option value="left">Left</option>
+										<option value="center" selected="selected" >Center</option>
+										<option value="right">Right</option>
+										<option value="bottomleft">BottomLeft</option>
+										<option value="bottomcenter">BottomCenter</option>
+										<option value="bottomright">BottomRight</option>
+									</select>
+								</label>
 							</div>
-							</cfoutput>
-						</cfif>
-
-						<!--- Can the user upload their own image. --->
-						<cfif arguments.stMetadata.ftAllowUpload>
-							<cfoutput>
-							<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
-							<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="" />
-							<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" value="" class="fileUpload" style="#arguments.stMetadata.ftstyle#" onchange="ftCheckFileName('#arguments.fieldname#');" />
-							</cfoutput>
-							
-							<cfif arguments.stMetadata.ftShowConversionInfo>
-								<cfif structKeyExists(arguments.stMetadata, "ftImagewidth") AND arguments.stMetadata.ftImageWidth GT 0>
-									<cfoutput><div>width:#arguments.stMetadata.ftImageWidth#px</div></cfoutput>
-								</cfif>
-								<cfif structKeyExists(arguments.stMetadata, "ftImageHeight") AND arguments.stMetadata.ftImageHeight GT 0>
-									<cfoutput><div>height:#arguments.stMetadata.ftImageHeight#px</div></cfoutput>
-								</cfif>
-								<cfif structKeyExists(arguments.stMetadata, "ftAutoGenerateType")>
-									<cfif arguments.stMetadata.ftAutoGenerateType EQ "Pad">
-										<cfoutput><div>Padding image with #arguments.stMetadata.ftPadColor#</div></cfoutput>
-									<cfelseif arguments.stMetadata.ftAutoGenerateType EQ "aspectCrop">
-										<cfoutput>
-										<div>
-											Cropping Position: 
-											<select name="#arguments.fieldname#CropPosition" class="selectInput">
-												<option value="topleft">TopLeft</option>
-												<option value="topcenter">TopCenter</option>
-												<option value="topright">TopRight</option>
-												<option value="left">Left</option>
-												<option value="center" selected="selected" >Center</option>
-												<option value="right">Right</option>
-												<option value="bottomleft">BottomLeft</option>
-												<option value="bottomcenter">BottomCenter</option>
-												<option value="bottomright">BottomRight</option>
-											</select>
-										</div>
-										</cfoutput>
-									<cfelse>
-										<cfoutput><div>#arguments.stMetadata.ftAutoGenerateType#</div></cfoutput>
-									</cfif>
-									
-								</cfif>
-							</cfif>
-						<cfelse>
-							<cfoutput>
-							<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
-							<input type="hidden" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" value="" />
-							</cfoutput>
-							
 						</cfif>
 						
-					<cfoutput>
-					</td>
-					</cfoutput>
+						</cfoutput>
+					<cfelse>
+						<cfoutput>
+						<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
+						<input type="hidden" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" value="" />
+						</cfoutput>
+						
+					</cfif>
+					
+					<cfif len(arguments.stMetadata.ftSourceField)>
+													
+						<cfoutput>
+						<div id="#arguments.fieldname#-generate">
+						<label class="inlineLabel" for="display_email">
+							<input type="checkbox" name="#arguments.fieldname#CreateFromSource" id="#arguments.fieldname#CreateFromSource" value="true" class="checkboxInput"> 
+							<input type="hidden" name="#arguments.fieldname#CreateFromSource" value="false" />
+							Automatically create from "#arguments.stPackage.stProps[arguments.stMetadata.ftSourceField].metadata.ftLabel#"
+						</label>
+						</div>
+						</cfoutput>
+						
+						<skin:onReady>
+							<cfoutput>
+                            	$j('###arguments.fieldname#CreateFromSource').click(function() {
+									if($j('###arguments.fieldname#CreateFromSource').attr('checked')){
+										$j('###arguments.fieldname#-wrap').hide('fast');
+									} else {
+										$j('###arguments.fieldname#-wrap').show('fast');
+									}
+								});								
+                            </cfoutput>
+						</skin:onReady>
+						
+										
+						<cfif arguments.stMetadata.ftCreateFromSourceDefault AND NOT len(arguments.stMetadata.value)>
+							<skin:onReady>
+							<cfoutput>
+                            	$j('###arguments.fieldname#CreateFromSource').attr('checked',true);
+                            	$j('###arguments.fieldname#-wrap').css('display','none');								
+							</cfoutput>
+							</skin:onReady>
+						</cfif>		
+						
+					</cfif>
+
 					
 					<!--- image preview --->
-					<cfset previewHTML=editPreview(typename=arguments.typename, stobject=arguments.stobject, stmetadata=arguments.stmetadata, fieldname=arguments.fieldname ) />
-					<cfoutput><td>#previewHTML#</td></cfoutput>
-					
-			<cfoutput>
-				</tr>
-				</table>
-			</cfoutput>					
+					<cfif len(arguments.stMetadata.value)>
+						<cfoutput>
+							<div id="#arguments.fieldname#previewimage">
+							
+									<img src="#application.fapi.getImageWebRoot()##arguments.stMetadata.value#" width="50px" title="#listLast(arguments.stMetadata.value,"/")#">
+									<!---#listLast(arguments.stMetadata.value,"/")#--->
+									<ft:button type="button" value="Delete" rendertype="link" id="#arguments.fieldname#-delete-btn" onclick="" />
+									<ft:button type="button" value="Cancel" rendertype="link" id="#arguments.fieldname#-cancel-delete-btn" onclick="" />
+									<ft:button type="button" value="Replace" rendertype="link" id="#arguments.fieldname#-replace-btn" onclick="" />
+									<ft:button type="button" value="Cancel" rendertype="link" id="#arguments.fieldname#-cancel-replace-btn" onclick="" />
+
+							</div>
+						</cfoutput>
+						
+						<cfif len(arguments.stMetadata.value)>
+							<skin:onReady>
+							<cfoutput>
+                            	$j('###arguments.fieldname#-wrap').css('display','none');	
+                            	$j('###arguments.fieldname#-aspect-crop').css('display','none');	
+                            	$j('###arguments.fieldname#-generate').css('display','none');	
+                            	$j('###arguments.fieldname#-cancel-delete-btn').css('display','none');	
+                            	$j('###arguments.fieldname#-cancel-replace-btn').css('display','none');	
+								
+                            	$j('###arguments.fieldname#NEW').change(function() {
+									var id = '#arguments.fieldname#';
+									var currentText = $j('##' + id).attr('value');	
+									var aCurrentExt = currentText.split(".");	
+										
+									var newText = $j('##' + id + 'NEW').attr('value');	
+									var aNewExt = newText.split(".");	
+									
+									if (currentText.length > 0 && newText.length > 0) {
+										if (aCurrentExt.length > 1 && aNewExt.length > 1){						
+											if (aCurrentExt[aCurrentExt.length - 1] != aNewExt[aNewExt.length - 1]){
+												$j('##' + id + 'NEW').attr('value', '');
+												alert('You must either delete the old file or upload a new one with the same extension (' + aCurrentExt[aCurrentExt.length - 1] + ')');
+											}
+										}
+									}
+								});
+								
+                            	$j('###arguments.fieldname#-delete-btn').click(function() {
+									$j('###arguments.fieldname#DELETE').attr('value',$j('###arguments.fieldname#').attr('value'));
+									$j('###arguments.fieldname#').attr('value','');
+									if($j('###arguments.fieldname#CreateFromSource').attr('checked')){
+										// do nothing
+									} else {
+										$j('###arguments.fieldname#-wrap').show('fast');
+									}
+									$j('###arguments.fieldname#-aspect-crop').show('fast');
+									$j('###arguments.fieldname#-generate').show('fast');
+									$j('###arguments.fieldname#-delete-btn').css('display','none');
+									$j('###arguments.fieldname#-replace-btn').css('display','none');
+	                            	$j('###arguments.fieldname#-cancel-delete-btn').css('display','inline');
+								});		
+                            	$j('###arguments.fieldname#-cancel-delete-btn').click(function() {
+									$j('###arguments.fieldname#').attr('value',$j('###arguments.fieldname#DELETE').attr('value'));
+									$j('###arguments.fieldname#DELETE').attr('value','');
+									$j('###arguments.fieldname#-wrap').hide('fast');
+									$j('###arguments.fieldname#-aspect-crop').hide('fast');
+									$j('###arguments.fieldname#-generate').hide('fast');
+									$j('###arguments.fieldname#-delete-btn').css('display','inline');
+									$j('###arguments.fieldname#-replace-btn').css('display','inline');
+	                            	$j('###arguments.fieldname#-cancel-delete-btn').css('display','none');
+								});		
+                            	$j('###arguments.fieldname#-replace-btn').click(function() {
+									if($j('###arguments.fieldname#CreateFromSource').attr('checked')){
+										// do nothing
+									} else {
+										$j('###arguments.fieldname#-wrap').show('fast');
+									}
+									$j('###arguments.fieldname#-aspect-crop').show('fast');
+									$j('###arguments.fieldname#-generate').show('fast');
+									$j('###arguments.fieldname#-delete-btn').css('display','none');
+									$j('###arguments.fieldname#-replace-btn').css('display','none');
+	                            	$j('###arguments.fieldname#-cancel-replace-btn').css('display','inline');
+								});		
+                            	$j('###arguments.fieldname#-cancel-replace-btn').click(function() {
+									$j('###arguments.fieldname#-wrap').hide('fast');
+									$j('###arguments.fieldname#-aspect-crop').hide('fast');
+									$j('###arguments.fieldname#-generate').hide('fast');
+									$j('###arguments.fieldname#-delete-btn').css('display','inline');
+									$j('###arguments.fieldname#-replace-btn').css('display','inline');
+	                            	$j('###arguments.fieldname#-cancel-replace-btn').css('display','none');
+								});							
+							</cfoutput>
+							</skin:onReady>
+						</cfif>						
+					</cfif>
+				
+
+			</grid:div>					
 		</cfsavecontent>
 		
 		<cfreturn html>
 	</cffunction>
 
-	<cffunction name="editPreview" access="private" output="false" returntype="string" hint="Build a preview table cell for edit view.">
-		<cfargument name="stMetadata" required="true" type="struct" />
-		<cfargument name="fieldname" required="true" type="string" />
-		
-		<cfset var htmlOut = "" />
-		
-		<cfsavecontent variable="htmlOut">
-		<cfif len(#arguments.stMetadata.value#)>
-			<cfoutput>
-				<div id="#arguments.fieldname#previewimage">
-					<img src="#application.fapi.getImageWebRoot()##arguments.stMetadata.value#" width="50px" title="#listLast(arguments.stMetadata.value,"/")#"><br>
-					#listLast(arguments.stMetadata.value,"/")#
-					<ft:button type="button" value="Delete Image" onclick="if(confirm('Are you sure you want to remove this image?')) {} else {return false};$('#arguments.fieldname#DELETE').value=$('#arguments.fieldname#').value;$('#arguments.fieldname#').value='';$('#arguments.fieldname#previewimage').hide();" />
-				</div>
-			</cfoutput>
-		<cfelse>
-			<cfoutput>
-				<div id="#arguments.fieldname#previewimage">
-					&nbsp;
-				</div>
-			</cfoutput>
-		</cfif>
-		</cfsavecontent>
-		
-		<cfreturn htmlOut />
-					
-	</cffunction>
 
 	<cffunction name="display" access="public" output="true" returntype="string" hint="This will return a string of formatted HTML text to display.">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
@@ -572,7 +597,7 @@
 				
 			</cfcase>
 			
-			<cfcase value="Pad">
+			<cfdefaultcase>
 				
 				<cfset myImage.resize(arguments.Width,arguments.Height) />
 				<cfset myImage.writeImage("#ImageDestination#") />
@@ -586,7 +611,7 @@
 					Thumbnail=yes
 					bevel="#lCase(yesnoformat(arguments.Bevel))#"
 					backcolor="#arguments.PadColor#"> --->
-			</cfcase>
+			</cfdefaultcase>
 		
 		</cfswitch>
 		 		
