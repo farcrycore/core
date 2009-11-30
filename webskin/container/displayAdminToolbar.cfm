@@ -101,6 +101,7 @@ $fc.reloadContainer = function(containerID,containerURL){
 
 <cfset containerURL = application.fapi.getLink(objectid="#originalcontainer#", view="displayContainer", urlParameters="ajaxmode=1&designmode=1") />
 <cfset containerID = replace(originalcontainer,'-','','ALL') />
+
 <cfoutput>
 	<div class="containeradmin" <cfif not structisempty(arguments.stParam.original)>style="background-color:##5B7FB9;"</cfif>>
 		
