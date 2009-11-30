@@ -36,6 +36,7 @@ VIEW:
 	title="Reflected Containers"
 	qRecordSet="#qList#"
 	bshowactionlist="false"
+	lbuttons=""
 	lcustomcolumns="Containers:cellActions"
 	columnList=""
 	sortableColumns="label"
