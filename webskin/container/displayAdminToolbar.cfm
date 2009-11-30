@@ -19,7 +19,15 @@
 	<cfset stParam.desc = "#rereplace(stObj.label,'\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_','')#" />
 </cfif>
 
-<extjs:iframeDialog />
+<!---<extjs:iframeDialog />--->
+
+<skin:loadJS id="jquery" />
+<skin:loadJS id="jquery-ui" />
+<skin:loadJS id="farcry-form" />
+
+
+<skin:loadCSS id="jquery-ui" />
+
 
 <skin:htmlHead id="containers"><cfoutput>
 	<!-- Container styles / javascript -->
@@ -44,45 +52,116 @@
 		div.ruleadmin div.title a { display:inline; float:none; }
 		div.ruleadmin div.title a:hover { text-decoration:underline; }
 	</style>
-	<script type="text/javascript">
-		function reloadContainer(objectid,params) {
-			var el = Ext.get(objectid.replace(/-/g,''));
-			var url = window.location.href.replace(/[&?]updateapp=[^&]*/,'');
-						
-			params = params || {};
-			params.container = objectid;
-			params.ajaxmode = "true";
-			
-			el.update("<div id='ajaxindicator'><img src='#application.url.farcry#/images/loading.gif' /></div>");
-			Ext.Ajax.request({
-				url: url,
-				success: function(response){
-					el.update(response.responseText,true);
-				},
-				params:params
-			});
-		}
-	</script>
 </cfoutput></skin:htmlHead>
 
+<skin:onReady id="container-js">
 <cfoutput>
-	<div class="containeradmin">
-		<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editAddRule&container=#originalcontainer#" target="_blank" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #rereplace(stObj.label,"\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_","")#',800,600,true,function(){ reloadContainer('#originalcontainer#'); });return false;" title="Add a rule">
+$fc.containerAdmin = function(title,url,containerID,containerURL){
+	var fcDialog = $j("<div id='" + containerID + "-dialog'><iframe style='width:99%;height:99%;border-width:0px;'></iframe></div>")
+	//w = $j(window).width()-50;
+	//h = $j(window).height()-50;
+	w = $j(window).width() < 800 ? $j(window).width()-50 : 800;
+	h = $j(window).height() < 600 ? $j(window).height()-50 : 600;
+	
+	$j("body").prepend(fcDialog);
+	$j(fcDialog).dialog({
+		bgiframe: true,
+		modal: true,
+		closeOnEscape: false,
+		title:title,
+		width: w,
+		height: h,
+		close: function(event, ui) {
+			$j(fcDialog).remove();
+			$fc.reloadContainer(containerID,containerURL);
+		}
+		
+	});
+	$j(fcDialog).dialog('open');
+	$j('iframe',$j(fcDialog)).attr('src',url);
+};		
+
+$fc.reloadContainer = function(containerID,containerURL){
+
+	$j('##' + containerID).html("<div id='ajaxindicator'><img src='#application.url.farcry#/images/loading.gif' /></div>");
+	$j.ajax({
+	   type: "POST",
+	   url: containerURL,
+	   cache: false,
+	   timeout: 5000,
+	   success: function(msg){
+	   		$j('##' + containerID).html(msg);
+									     	
+	   }
+	 });
+};
+
+</cfoutput>
+</skin:onReady>
+
+<cfset containerURL = application.fapi.getLink(objectid="#originalcontainer#", view="displayContainer", urlParameters="ajaxmode=1&designmode=1") />
+<cfset containerID = replace(originalcontainer,'-','','ALL') />
+<cfoutput>
+	<div class="containeradmin" <cfif not structisempty(arguments.stParam.original)>style="background-color:##5B7FB9;"</cfif>>
+		
+		<!--- ADD A RULE --->
+		<a id="con-add-rule-#stobj.objectid#" href="##" title="Add a ruler">
 			<img src="#application.url.webtop#/facade/icon.cfm?icon=addrule&size=16" border="0" alt="Add a rule" />
 		</a>
-		<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#originalcontainer#&method=editManageReflection" target="_blank" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #rereplace(stObj.label,"\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_","")#',800,300,true,function(){ reloadContainer('#originalcontainer#'); });return false;" title="Manage reflection">
+		<skin:onReady>
+			<cfoutput>
+            	$j('##con-add-rule-#stobj.objectid#').click(function() {
+					$fc.containerAdmin('Add new rule to container: #jsStringFormat(stParam.desc)#', '#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editAddRule&container=#originalcontainer#&iframe', '#containerID#', '#containerURL#');
+					return false;
+				});								
+            </cfoutput>
+		</skin:onReady>		
+		
+		
+		<!--- MANAGE REFLECTION --->
+		<a id="con-manage-reflection-#stobj.objectid#" href="##" title="Manage reflection">
 			<img src="#application.url.webtop#/facade/icon.cfm?icon=managereflection&size=16" border="0" alt="Manage reflection" />
 		</a>
-		<a href="#cgi.SCRIPT_NAME#?#cgi.query_string#" onclick="reloadContainer('#originalcontainer#');return false;" title="Refresh container">
+		
+		<skin:onReady>
+			<cfoutput>
+            	$j('##con-manage-reflection-#stobj.objectid#').click(function() {
+					$fc.containerAdmin('Manage Reflection: #jsStringFormat(stParam.desc)#', '#application.url.farcry#/conjuror/invocation.cfm?objectid=#originalcontainer#&method=editManageReflection&iframe', '#containerID#', '#containerURL#');
+					return false;
+				});								
+            </cfoutput>
+		</skin:onReady>		
+		
+		
+		<!--- REFRESH CONTAINER --->
+		<a id="con-refresh-container-#stobj.objectid#" href="##" title="Refresh container">
 			<img src="#application.url.webtop#/facade/icon.cfm?icon=refresh&size=16" border="0" alt="Refresh container" />
-		</a>
+		</a>		
+		<skin:onReady>
+			<cfoutput>
+            	$j('##con-refresh-container-#stobj.objectid#').click(function() {
+					$fc.reloadContainer('#containerID#','#containerURL#');
+					return false;
+				});								
+            </cfoutput>
+		</skin:onReady>	
+		
+		<!--- ADD A RULE --->
 		<div class="title">
 			<div class="type">CONTAINER</div>
-			<a id="#replace(stObj.objectid,'-','','ALL')#_title" title="{<cfif arraylen(aProps)>#htmleditformat(arraytolist(aProps,", "))#</cfif>}" href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editAddRule&container=#originalcontainer#" target="_blank" onclick="openScaffoldDialog(this.href+'&iframe','EDIT: #rereplace(stObj.label,"\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_","")#',800,600,true,function(){ reloadContainer('#originalcontainer#'); });return false;">#stparam.desc#</a><!---  --->
+			<a id="con-add-container-rule-#stobj.objectid#" id="#replace(stObj.objectid,'-','','ALL')#_title" title="{<cfif arraylen(aProps)>#htmleditformat(arraytolist(aProps,", "))#</cfif>}" href="##">#stparam.desc#</a>
 			<cfif not structisempty(arguments.stParam.original)>
-				<span>(Shared container)</span>
+				<span>(reflected container)</span>
 			</cfif>
 		</div>
+		<skin:onReady>
+			<cfoutput>
+            	$j('##con-add-container-rule-#stobj.objectid#').click(function() {
+					$fc.containerAdmin('Add new rule to container: #jsStringFormat(stParam.desc)#', '#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editAddRule&container=#originalcontainer#&iframe', '#containerID#', '#containerURL#');
+					return false;
+				});								
+            </cfoutput>
+		</skin:onReady>	
 	</div>
 </cfoutput>
 

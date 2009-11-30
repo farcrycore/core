@@ -104,6 +104,7 @@ VIEW
 				aCustomColumns="#aCustomColumns#" 
 				bSelectCol="true" 
 				bShowActionList="false"
+				lfilterfields="configkey"
 				aButtons="#aButtons#"
 				lButtons="Delete / Reset,Reload configuration" />
 

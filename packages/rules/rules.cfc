@@ -102,6 +102,25 @@ $out:$
 		<farcry:logevent objectid="#arguments.objectid#" type="rule" event="delete" notes="#arguments.auditNote#" />
 	</cffunction>	
 	
+	<cffunction access="public" name="getRuleContainerID" output="false">
+		<cfargument name="objectID" required="Yes" type="uuid" default="">
+		<cfargument name="label" required="no" type="string" default="">
+
+		<cfset var q = "" />
+		<cfset var containerID = "" />
+		
+		<cfquery datasource="#application.dsn#" name="q">
+		select parentID from container_aRules
+		WHERE data = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectID#" />
+		</cfquery>
+		
+		<cfif q.recordcount>
+			<cfset containerID = q.parentID />
+		</cfif>
+		
+		<cfreturn containerID />
+	</cffunction>	
+	
 	<cffunction access="public" name="update" output="true">
 		<cfargument name="objectID" required="Yes" type="uuid" default="">
 		<cfargument name="label" required="no" type="string" default="">
@@ -115,25 +134,13 @@ $out:$
 		<cfset var iWizardStep = "" />
 		<cfset var lFieldSets = "" />
 		<cfset var iFieldSet = "" />
-			
+		<cfset var containerID = replace(getRuleContainerID(arguments.objectID),'-','','ALL') />
 		
 		<cfset onExitProcess.Type = "HTML" />
 		<cfsavecontent variable="onExitProcess.content">
 			<cfoutput>
 				<script type="text/javascript">
-					<cfif structkeyexists(url,"iframe")>
-						<!--- parent.location.reload(); --->
-						parent.reloadContainer('#url.container#')
-					<cfelse>
-						<!--- window.opener.location.reload(); --->
-						window.opener.reloadContainer('#url.containerID#')
-					</cfif>
-					
-					<cfif structkeyexists(url,"iframe")>
-						parent.closeDialog();
-					<cfelse>
-						window.close();
-					</cfif>						
+					parent.$j('###containerID#-dialog').dialog('close');				
 				</script>
 			</cfoutput>
 		</cfsavecontent>

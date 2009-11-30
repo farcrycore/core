@@ -7,88 +7,61 @@
 
 <cfset qRules = createObject("component","#application.packagepath#.rules.rules").getRules() />
 
-<ft:processform action="Cancel">
-	<cfoutput>
-		<script type="text/javascript">
-			window.close();
-		</script>
-	</cfoutput>
+<cfset containerID = replace(url.container,'-','','ALL') />
+
+<ft:processform action="Cancel" bHideForms="true">
+	<skin:onReady>
+		<cfoutput>parent.$j('###containerID#-dialog').dialog('close');</cfoutput>	
+	</skin:onReady>
 </ft:processform>
 
-<ft:processform action="Save">
-	<cfparam name="stObj.aRules" default="#arraynew(1)#" />
+<ft:processform action="Add Rule" bHideForms="true">
+	<cfparam name="stObj.aRules" default="#arraynew(1)#" />	
+
+	<!--- Setup New Rule --->
+	<cfset stDefaultObject = application.fapi.getNewContentObject(form.selectedObjectID) />
+	<cfset application.fapi.getContentType("#form.selectedObjectID#").setData(stProperties=stDefaultObject) />
 	
-	<cfset oRule = createObject("component", application.stCOAPI[form.newrule].packagepath) />
-	
-	<cfset stProps = oRule.getDefaultObject(typename=form.newrule) />
-	<cfset oRule.createData(stProperties=stProps)>
-	
-	<cfset arrayappend(stObj.aRules,stProps.objectID)>
-			
+	<!--- Append new rule to the array of rules in the current container --->
+	<cfset arrayappend(stObj.aRules,stDefaultObject.objectID) />
 	<cfset setData(stProperties=stObj)>
 
-	<cflocation url="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stProps.objectid#&method=editInPlace&container=#url.container#&iframe=1" addtoken="false">
+	<!--- Locate off to the edit the rule. --->
+	<cflocation url="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stDefaultObject.objectid#&method=editInPlace&container=#url.container#&iframe=1" addtoken="false">
 </ft:processform>
 
-<ft:processform action="Cancel">
-	<cfoutput>
-		<script type="text/javascript">
-			<cfif structkeyexists(url,"iframe")>
-				parent.closeDialog();
-			<cfelse>
-				window.close();
-			</cfif>
-		</script>
-	</cfoutput>
-</ft:processform>
 
-<skin:htmlHead id="newrule"><cfoutput>
-	<script type="text/javascript">
-		// build rules structure
-		oRules = new Object;
-		<cfloop query="qRules">
-			oRules['#qRules.rulename#'] = new Object;
-			<cfif structKeyExists(application.rules['#qRules.rulename#'],'hint')>
-				oRules['#qRules.rulename#'].hint = '#JSStringFormat(application.rules[qRules.rulename].hint)#';
-			<cfelse>
-				oRules['#qRules.rulename#'].hint = 	'';
-			</cfif>
-		</cfloop>
-		 
-		function renderHint(rulename)
-		{	
-			document.getElementById('rulehint').innerHTML = oRules[rulename].hint;
-		}	
-	</script>
-</cfoutput></skin:htmlHead>
 
-<admin:header title="EDIT: #rereplace(stObj.label,'\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_','')#" />
+
+<admin:header />
 
 <ft:form>
+
+
 	<cfoutput>
-		<h1>EDIT: #rereplace(stObj.label,"\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_","")#</h1>
-		<fieldset class="formSection">
-			<legend class="">Add new rule</legend>
-			<div class="fieldSection list">
-				<label class="fieldsectionlabel" for="newrule"> Rule : </label>
-				<div class="fieldAlign">
-					<select name="newrule" id="newrule" onchange="renderHint(this.value);">
-						<cfloop query="qRules"><cfif not qRules.rulename eq "container">
-							<option value="#qRules.rulename#"><cfif structKeyExists(application.rules[qRules.rulename],'displayname')>#application.rules[qRules.rulename].displayname#<cfelse>#qRules.rulename#</cfif></option>
-						</cfif></cfloop>
-					</select><br/>
-					<p id="rulehint" class="highlight"></p>
-				</div>
-				<br class="clearer"/>
-			</div>
+		<fieldset class="fieldset">
+			
+			<cfloop query="qRules">
+				<cfif not qRules.rulename eq "container">
+					<div class="ctrlHolder blockLabels">
+						<label class="label" for="newrule">
+							<ft:button value="Add Rule" text="#qRules.displayName#"  rendertype="link"  selectedObjectID="#qRules.rulename#" />						
+						</label>
+						
+						<div class="multiField">
+							<cfif structKeyExists(application.rules['#qRules.rulename#'],'hint')>
+								
+								
+							</cfif>			
+							
+						</div>
+						<p class="formHint">#application.rules[qRules.rulename].hint#</p>
+					</div>
+				</cfif>
+			</cfloop>
 		</fieldset>
-		<script type="text/javascript">renderHint('#qRules.rulename[1]#');</script>
 	</cfoutput>
-	
-	<ft:buttonPanel indentForLabel="true">
-		<ft:button value="Save" />
-		<ft:button value="Cancel" />
-	</ft:buttonPanel>
+
 </ft:form>
 
 <admin:footer />

@@ -68,7 +68,7 @@ Pseudo:
 <cfif structKeyExists(application.stCOAPI, typename)>
 	<cfset stPackage = application.stCOAPI[typename] />
 	<cfset packagePath = application.stCOAPI[typename].packagepath />
-	<cfif structkeyexists(application.rules,typename) and method EQ "edit">
+	<cfif structkeyexists(application.rules,typename) AND typename NEQ "container" AND method EQ "edit">
 		<cfset method = "update" />
 	</cfif>
 </cfif>
@@ -147,7 +147,7 @@ Pseudo:
 					</cfoutput>
 				</cfsavecontent>
 			</cfif>
-							
+	
    			<cfset html = oType.getView(stObject=returnStruct, template="#method#", onExitProcess="#onExitProcess#", alternateHTML="") />
 			
 			<cfif len(html)>

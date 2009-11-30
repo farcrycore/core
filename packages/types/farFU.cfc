@@ -1292,6 +1292,7 @@
 				<cfset viewFU = arguments.view />
 			</cfif>
 			<!--- If we have defined the view, and not the bodyView and the view is not set to page, then in order for the URL Parsing to work, we MUST explicitly tell the url that the webskin is for the view --->
+			
 			<cfif not listFind("page,any", stView.viewStack)>
 				<cfif not len(arguments.bodyView)>
 					<cfset bMustUseRegularURLParams = true />

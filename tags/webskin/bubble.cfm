@@ -31,7 +31,7 @@ FARCRY IMPORT FILES
 
 
 <cfparam name="attributes.title" default="&nbsp;" /><!--- The title of the message --->
-<cfparam name="attributes.message" default="&nbsp;" /><!--- The actual message. This can be replaced with generatedContent --->
+<cfparam name="attributes.message" default="" /><!--- The actual message. This can be replaced with generatedContent --->
 <cfparam name="attributes.pause" default="3000" type="numeric" /><!--- How long (in milliseconds) the message appears before being removed --->
 <cfparam name="attributes.sticky" default="false" type="boolean" /><!--- Keep the message displayed until the user actively closes. --->
 <cfparam name="attributes.image" default="" /><!--- Image to display with the message --->
@@ -53,10 +53,15 @@ FARCRY IMPORT FILES
 		<cfset attributes.message = thisTag.generatedContent />
 	</cfif>
 	
+	<cfif not len(trim(attributes.message))>
+		<cfset attributes.message = "&nbsp;" />
+	</cfif>
+	
 	<cfset thisTag.generatedContent = "" />
 	
 	<cfif request.mode.ajax>
 		<cfoutput>
+		<script type="application/javascript">
 		$j.gritter.add({
 			// (string | mandatory) the heading of the notification
 			title: '#jsstringformat(attributes.title)#',
@@ -69,6 +74,7 @@ FARCRY IMPORT FILES
 			// (int | optional) the time you want it to be alive for before fading out (milliseconds)
 			time: #attributes.pause#
 		});
+		</script>
 		</cfoutput>
 	
 			

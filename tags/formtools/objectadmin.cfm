@@ -109,7 +109,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.lCustomActions" default="" />
 <cfparam name="attributes.stFilterMetaData" default="#structNew()#" />
 <cfparam name="attributes.bShowActionList" default="true" />
-<cfparam name="arguments.st" default=""><!--- Used if the developer wants to pass in their own recordset --->
+<cfparam name="attributes.qRecordSet" default=""><!--- Used if the developer wants to pass in their own recordset --->
 
 <cfparam name="attributes.rbkey" default="coapi.#attributes.typename#.objectadmin" />
 
@@ -349,9 +349,9 @@ user --->
 	<!------------------------
 	GENERATE THE RECORDSET
 	 ------------------------>
-	<cfif isQuery(arguments.st)>
-		<cfset stRecordSet.q = arguments.st>
-		<cfset stRecordSet.countAll = arguments.st.recordCount />
+	<cfif isQuery(attributes.qRecordSet)>
+		<cfset stRecordSet.q = attributes.qRecordSet>
+		<cfset stRecordSet.countAll = attributes.qRecordSet.recordCount />
 		<cfset stRecordSet.currentPage = 0 />
 		<cfset stRecordSet.recordsPerPage = attributes.numitems />
 	<cfelse>
@@ -594,7 +594,7 @@ user --->
 	</cfif>
 
 	<!--- ONLY SHOW THE FILTERING IF WE HAVE RECORDS OR IF WE ARE ALREADY FILTERING --->
-	<cfif stRecordSet.q.recordCount OR listLen(HTMLfiltersAttributes)>
+	<cfif listLen(attributes.lFilterFields)>
 	
 		<skin:loadJS id="jquery" />
 		
@@ -602,7 +602,7 @@ user --->
 			<cfoutput>
 			<div style="display:inline;color:##E17000">
 				<div style="font-size:90%;margin-right:10px;padding:2px;float:left;">
-					<a onclick="$j('##filterForm').toggle('slow');">#application.rb.getResource('objectadmin.messages.Filtering@text','FILTERING')#</a>
+					<a onclick="$j('##filterForm').toggle('fast');">#application.rb.getResource('objectadmin.messages.Filtering@text','FILTERING')#</a>
 
 				</div>
 					

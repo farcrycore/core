@@ -493,16 +493,12 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
-		
-		<cftrace type="warning" text="populating container" var="arguments.arules" />
+	
 		
 		<cfset request.aInvocations = arrayNew(1)>
-		<cfset oFourq = createObject("component", "farcry.core.packages.fourq.fourq")>
+
 		<cfloop from="1" to="#arrayLen(arguments.aRules)#" index="i">
 			 <cftry> 
-				<cfset rule = oFourq.findType(objectid=arguments.aRules[i])>
-				
-				<cfset oRule = createObject("component", application.stcoapi[rule].packagepath) />
 
 				<cfif request.mode.design and request.mode.showcontainers gt 0>
 					<!--- request.thiscontainer is set up in the container tag and corresponds to the page container, not the shared container --->
@@ -511,12 +507,16 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 					<cfset arrayappend(request.aInvocations, ruleHTML) />
 				</cfif>
 				
-				<cfset ruleHTML = oRule.getView(objectid=arguments.aRules[i], template="execute", alternateHTML="") />
-				<cfif len(trim(ruleHTML))>
-					<cfset arrayappend(request.aInvocations, ruleHTML) />
+				<!--- Detaermin the type of rule --->
+				<cfset rule = application.fapi.findType(arguments.aRules[i]) />
+				
+				<cfif application.fapi.hasWebskin(rule,"execute")>
+					<skin:view objectid="#arguments.aRules[i]#" webskin="execute" r_html="ruleHTML" />
 				<cfelse>
-					<cfset oRule.execute(objectid=arguments.aRules[i]) />
+					<cfset ruleHTML = application.fapi.getContentType(rule).execute(objectid=arguments.aRules[i]) />
 				</cfif>
+				
+				<cfset arrayappend(request.aInvocations, ruleHTML) />
 							
 			  	<cfcatch type="any">
 
@@ -554,8 +554,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 					<cfoutput>#request.aInvocations[i].preHTML#</cfoutput>
 				</cfif>
 
-				<cfset html = createObject("component", "#request.aInvocations[i].typename#").getView(objectid=request.aInvocations[i].objectID, template=request.aInvocations[i].method, alternateHTML="[#request.aInvocations[i].method#] does not exist") />	
-				<cfoutput>#html#</cfoutput>
+				<skin:view objectid="#request.aInvocations[i].objectID#" typename="#request.aInvocations[i].typename#" webskin="#request.aInvocations[i].method#" alternateHTML="[#request.aInvocations[i].method#] does not exist" />
 
 				<cfif structKeyExists(request.aInvocations[i],"postHTML")>
 					<cfoutput>#request.aInvocations[i].postHTML#</cfoutput>

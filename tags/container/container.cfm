@@ -115,141 +115,41 @@ $out:$
 <!--- if a mirrored container has been set then reset the container data --->
 <cfif (StructKeyExists(stConObj, "mirrorid") AND Len(stConObj.mirrorid))>
 	<cfset stOriginal = stConObj />
-	<cfset stConObj = oCon.getData(dsn=application.dsn,objectid=stConObj.mirrorid)>
+	<cfset stConObj = oCon.getData(objectid=stConObj.mirrorid)>
+	<cfset request.thiscontainer = stOriginal.objectid /><!--- Used by rules to reference the container they're a part of --->
 <cfelse>
 	<cfset stOriginal = structnew() />
+	<cfset request.thiscontainer = stConObj.objectid /><!--- Used by rules to reference the container they're a part of --->
 </cfif>
 
-<!--- quit tag if running in end mode --->
-<cfif thistag.executionmode eq "end">
-	<cfexit />
-</cfif>
 
-<cfif request.mode.design and request.mode.showcontainers gt 0>
-	<cfif not structisempty(stOriginal)>
-		<cfoutput><div id="#replace(stOriginal.objectid,'-','','ALL')#"></cfoutput>
-	<cfelse>
-		<cfoutput><div id="#replace(stConObj.objectid,'-','','ALL')#"></cfoutput>
-	</cfif>
-</cfif>
 
-<!--- Used by rules to reference the container they're a part of --->
-<cfif structisempty(stOriginal)>
-	<cfset request.thiscontainer = stConObj.objectid />
-<cfelse>
-	<cfset request.thiscontainer = stOriginal.objectid />
-</cfif>
-
-<cfif structkeyexists(form,"container")>
-	<cfset url.container = form.container />
-</cfif>
-<cfparam name="url.container" default="" />
-
-<cfif structkeyexists(form,"rule_action")>
-	<cfset url.rule_action = form.rule_action />
-	<cfset url.rule_id = form.rule_id />
-	<cfset url.rule_index = form.rule_index />
-	<cfif isdefined("form.confirm")>
-		<cfset url.confirm = form.confirm />
-	</cfif>
-</cfif>
-
-<con:isolate active="#request.mode.ajax and url.container eq request.thiscontainer#">
-	
 <!--- display edit widget --->
 <cfif request.mode.design and request.mode.showcontainers gt 0>
+	
+
 	<skin:view stObject="#stConObj#" webskin="displayAdminToolbar" alternatehtml="" original="#stOriginal#" desc="#attributes.desc#" />
 	
-	<cfif structkeyexists(url,"rule_action") and structkeyexists(url,"rule_id") and structkeyexists(url,"rule_index") and url.rule_index lte arraylen(stConObj.aRules)>
-		<cfset redirecturl = "#cgi.script_name#" />
-		<cfif isdefined("url.objectid")>
-			<cfset redirecturl = "#redirecturl#?objectid=#url.objectid#" />
-		<cfelseif isdefined("url.type") and isdefined("url.view")>
-			<cfset redirecturl = "#redirecturl#?type=#url.type#&view=#url.view#" />
-		</cfif>
-		
-		<cfswitch expression="#url.rule_action#">
-			<cfcase value="moveup">
-				<cfif stConObj.aRules[url.rule_index] eq url.rule_id and url.rule_index gt 1>
-					<cfset temp = stConObj.aRules[url.rule_index] />
-					<cfset stConObj.aRules[url.rule_index] = stConObj.aRules[url.rule_index-1] />
-					<cfset stConObj.aRules[url.rule_index-1] = temp />
-					<cfset oCon.setData(stProperties=stConObj) />
-					<skin:bubble title="Container management"><cfoutput>The rule has been moved up</cfoutput></skin:bubble>
-					<cfif not request.mode.ajax>
-						<cflocation url="#redirecturl#" />
-					</cfif>
-				</cfif>
-			</cfcase>
-			<cfcase value="movedown">
-				<cfif stConObj.aRules[url.rule_index] eq url.rule_id and url.rule_index lt arraylen(stConObj.aRules)>
-					<cfset temp = stConObj.aRules[url.rule_index] />
-					<cfset stConObj.aRules[url.rule_index] = stConObj.aRules[url.rule_index+1] />
-					<cfset stConObj.aRules[url.rule_index+1] = temp />
-					<cfset oCon.setData(stProperties=stConObj) />
-					<skin:bubble title="Container management"><cfoutput>The rule has been moved down</cfoutput></skin:bubble>
-					<cfif not request.mode.ajax>
-						<cflocation url="#redirecturl#" />
-					</cfif>
-				</cfif>
-			</cfcase>
-			<cfcase value="delete">
-				<cfif stConObj.aRules[url.rule_index] eq url.rule_id>
-					<cfif structkeyexists(url,"confirm") and url.confirm eq "true">
-						<cfset oFourq = createObject("component", "farcry.core.packages.fourq.fourq") />
-						<cfset oRule = createObject("component", application.stcoapi[oFourq.findType(objectid=url.rule_id)].packagepath) />
-						<cfset oRule.delete(objectid=url.rule_id) />
-						<cfset arraydeleteat(stConObj.aRules,url.rule_index) />
-						<cfset oCon.setData(stProperties=stConObj) />
-						<skin:bubble title="Container management"><cfoutput>The rule has been deleted</cfoutput></skin:bubble>
-						<cfif not request.mode.ajax>
-							<cflocation url="#redirecturl#" />
-						</cfif>
-					<cfelseif structkeyexists(url,"confirm") and url.confirm eq "false">
-						<skin:bubble title="Container management"><cfoutput><p class="success">Deletion has been canceled</p></cfoutput></skin:bubble>
-						<cflocation url="#redirecturl#" />
-					<cfelse>
-						<cfoutput>
-							<script type="text/javascript">
-								if (window.confirm(Are you sure you want to delete this rule?))
-									window.location = "#redirecturl#&rule_id=#url.rule_id#&rule_index=#url.rule_index#&rule_action=delete&confirm=true";
-								else
-									window.location = "#redirecturl#&rule_id=#url.rule_id#&rule_index=#url.rule_index#&rule_action=delete&confirm=false";"
-							</script>
-						</cfoutput>
-					</cfif>
-				</cfif>
-			</cfcase>
-		</cfswitch>
-	</cfif>
+	
 </cfif>
 
-<cfif arrayLen(stConObj.aRules)>
-
-	<!--- delay the populate so we can see the content --->
-	<cfsavecontent variable="conOutput">
-		<cfset oCon.populate(aRules=stConObj.aRules)>
-	</cfsavecontent>
-
-	<!--- output if conOutput is not empty or the bShowIfEmpty attribute is set to true --->
-	<cfparam name="stConObj.displayMethod" default="">
-	<cfif len(stConObj.displayMethod)>
-		<cfset oCon.getDisplay(containerBody=conOutput,template=stConObj.displayMethod)>		
-	<cfelseif Len(Trim(conOutput)) OR attributes.bShowIfEmpty>
-		<cfif attributes.preHTML NEQ "">
-			<cfoutput>#attributes.preHTML#</cfoutput>
-		</cfif>
-		<cfoutput>#conOutput#</cfoutput>
-		
-		<cfif attributes.postHTML NEQ "">
-			<cfoutput>#attributes.postHTML#</cfoutput>
-		</cfif>
-	</cfif>
+<cfif request.mode.design and request.mode.showcontainers gt 0>
+	<cfoutput><div id="#replace(request.thiscontainer,'-','','ALL')#"></cfoutput>
 </cfif>
 
-</con:isolate>
 
-<cfset structdelete(request,"thiscontainer") />
+
+<skin:view stObject="#stConObj#" webskin="displayContainer" alternatehtml="" original="#stOriginal#" desc="#attributes.desc#" r_html="conOutput" />
+
+<cfif attributes.bShowIfEmpty OR len(trim(conOutput))>
+	<cfoutput>
+		#attributes.preHTML#
+		#conOutput#
+		#attributes.postHTML#
+	</cfoutput>
+</cfif>
+
+
 
 <cfif request.mode.design and request.mode.showcontainers gt 0>
 	<cfoutput></div></cfoutput>

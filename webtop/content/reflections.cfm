@@ -28,6 +28,23 @@
 VIEW:
 	- build shared container administration
 ----------------------------------------------------------->
+
+<admin:header title="Reflected Containers" />
+
+<ft:objectadmin 
+	typename="container"
+	title="Reflected Containers"
+	qRecordSet="#qList#"
+	columnList=""
+	lcustomcolumns="cellActions"
+	sortableColumns=""
+	lFilterFields="label"
+	sqlorderby="label" />
+	
+	<!--- 	module="/dmEvent.cfm" --->
+
+<admin:footer />
+<!---
 <admin:header title="Reflection Admin" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#" onload="setupPanes('container1');">
 
 
@@ -66,7 +83,7 @@ VIEW:
 	<cfoutput query="qList">
 	<tr<cfif qList.currentRow MOD 2> class="alt"</cfif>>
 		<td style="text-align:center"><input type="checkbox" class="f-checkbox" name="objectid" value="#qList.objectid#" onclick="setRowBackground(this);" /></td>
-		<td style="text-align:center"><a href="#application.url.farcry#/navajo/container_edit.cfm?containerid=#qList.objectid#"><img src="#application.url.farcry#/images/treeImages/edit.gif" alt="Edit" title="Edit" /></a></td>
+		<td style="text-align:center"><skin:buildLink objectid="#qList.objectid#"><img src="#application.url.farcry#/images/treeImages/edit.gif" alt="Edit" title="Edit" /></a></td>
 		<td style="text-align:left"><a href="#application.url.farcry#/navajo/container_edit.cfm?containerid=#qList.objectid#">#qList.label#</a></td>
 	</tr>
 	</cfoutput>
@@ -78,6 +95,6 @@ VIEW:
 </ft:form>
 
 <!--- build webtop footer --->
-<admin:footer>
+<admin:footer>--->
 
 <cfsetting enablecfoutputonly="false" />

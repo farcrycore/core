@@ -6,6 +6,8 @@
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 
+<cfset containerID = replace(stobj.objectid,'-','','ALL') />
+
 <ft:processform action="Save">
 	<cfif Trim(form.reflectionid) EQ ""> <!--- delete the reflection id --->
 		<cfset deleteReflection(objectid=stObj.objectid) />
@@ -14,57 +16,37 @@
 	</cfif>
 	<cfset stObj.mirrorID = Trim(form.reflectionid)>
 	<cfset setData(stproperties=stObj)>
-	<cfoutput>
-		<script type="text/javascript">
-			<cfif structkeyexists(url,"iframe")>
-				<!--- parent.location.reload(); --->
-				parent.reloadContainer('#stObj.objectid#')
-			<cfelse>
-				<!--- window.opener.location.reload(); --->
-				window.opener.reloadContainer('#stObj.objectid#')
-			</cfif>
-			
-			<cfif structkeyexists(url,"iframe")>
-				parent.closeDialog();
-			<cfelse>
-				window.close();
-			</cfif>
-		</script>
-	</cfoutput>
 </ft:processform>
 
-<ft:processform action="Cancel">
-	<cfoutput>
-		<script type="text/javascript">
-			<cfif structkeyexists(url,"iframe")>
-				parent.closeDialog();
-			<cfelse>
-				window.close();
-			</cfif>
-		</script>
-	</cfoutput>
+<ft:processform action="Save,Cancel" bHideForms="true">
+	<skin:onReady>
+		<cfoutput>parent.location=parent.location;</cfoutput>	
+	</skin:onReady>
 </ft:processform>
 
-<cfset qListReflections = getSharedContainers() />
 
-<admin:header title="EDIT: #rereplace(stObj.label,'\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_','')#" />
+
+<admin:header/>
 
 <ft:form>
+
+	<cfset qListReflections = getSharedContainers() />
+	
 	<cfoutput>
-		<h1>EDIT: #rereplace(stObj.label,"\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_","")#</h1>
-		<fieldset class="formSection">
-			<legend class="">Manage reflections</legend>
-			<div class="fieldSection list">
-				<label class="fieldsectionlabel" for="reflectionid"> Reflection : </label>
-				<div class="fieldAlign">
-					<select name="reflectionid" id="reflectionid">
-						<option value=""<cfif stObj.mirrorid EQ ""> selected="selected"</cfif>>Not reflected</option>
-						<cfloop query="qListReflections">
-							<option value="#qListReflections.objectid#"<cfif stObj.mirrorid EQ qListReflections.objectid> selected="selected"</cfif>>#qListReflections.label#</option>
-						</cfloop>
-					</select><br/>
-				</div>
-				<br class="clearer"/>
+		
+		<fieldset class="fieldset">
+			
+			<div class="ctrlHolder inlineLabels">
+				<label class="label" for="reflectionid"> Select Reflection : </label>
+				
+				<select name="reflectionid" id="reflectionid" class="selectInput">
+					<option value=""<cfif stObj.mirrorid EQ ""> selected="selected"</cfif>>Not reflected</option>
+					<cfloop query="qListReflections">
+						<option value="#qListReflections.objectid#"<cfif stObj.mirrorid EQ qListReflections.objectid> selected="selected"</cfif>>#qListReflections.label#</option>
+					</cfloop>
+				</select>
+				
+				<p class="formHint">Select the container you wish to reflect. This means that you will be using the container selected here instead of the container that would ordinarily be shown. </p>
 			</div>
 		</fieldset>
 	</cfoutput>

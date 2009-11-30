@@ -5,20 +5,9 @@
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
-<cfif not structkeyexists(application.stCOAPI[stObj.typename],"displayname")>
-	<admin:header title="EDIT: #application.stCOAPI[stObj.typename].displayname#" />
-<cfelse>
-	<admin:header title="EDIT: #stObj.typename#" />
-</cfif>
-
+<admin:header />
 <cfoutput>
-	<div id="scrollcontrol">
-		<h1>EDIT: <cfif not structkeyexists(application.stCOAPI[stObj.typename],"displayname")>#application.stCOAPI[stObj.typename].displayname#<cfelse>#stObj.typename#</cfif></h1>
-		#this.update(objectid=stObj.objectid)#
-</cfoutput>
-
-<cfoutput>
-	</div>
+	#update(objectid=stObj.objectid)#
 </cfoutput>
 
 <admin:footer />
