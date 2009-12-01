@@ -133,10 +133,12 @@ $fc.reloadContainer = function(containerID,containerURL){
 		
 		<!--- Container Label --->
 		<div style="float:left;padding:2px;">
-			<span style="font-size:10px;">CONTAINER:</span> #stparam.desc#
 			<cfif stParam.originalID NEQ stobj.objectid>
-				(reflected container)
+				<span style="font-size:10px;">REFLECTED CONTAINER:</span>
+			<cfelse>
+				<span style="font-size:10px;">CONTAINER:</span>
 			</cfif>
+			#stparam.desc#
 		</div>
 		
 		<div style="float:right;">
