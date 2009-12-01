@@ -19,7 +19,7 @@
 					DRAFT: last updated <a title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</a>.
 					
 					<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
-						(<skin:buildLink objectid="#stobj.versionID#" view="#stParam.view#" bodyView="#stParam.bodyView#" linktext="show approved" />)
+						(<skin:buildLink objectid="#stobj.versionID#" view="#stParam.view#" bodyView="#stParam.bodyView#" linktext="show approved" urlParameters="showdraft=0" />)
 					</cfif>
 				</cfoutput>
 			</grid:div>
@@ -32,7 +32,7 @@
 					PENDING: awaiting approval since <a title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</a>.
 					
 					<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
-						(<skin:buildLink objectid="#stobj.versionID#" view="#stParam.view#" bodyView="#stParam.bodyView#" linktext="show approved" />)
+						(<skin:buildLink objectid="#stobj.versionID#" view="#stParam.view#" bodyView="#stParam.bodyView#" linktext="show approved" urlParameters="showdraft=0" />)
 					</cfif>
 				</cfoutput>
 			</grid:div>
@@ -46,7 +46,7 @@
 					<cfif structKeyExists(stobj,"versionID") AND structKeyExists(stobj,"status") AND stobj.status EQ "approved">
 						<cfset qDraft = createObject("component", "#application.packagepath#.farcry.versioning").checkIsDraft(objectid=stobj.objectid,type=stobj.typename)>
 						<cfif qDraft.recordcount>
-							(<skin:buildLink objectid="#qDraft.objectid#" view="#stParam.view#" bodyView="#stParam.bodyView#" linktext="show draft" />)
+							(<skin:buildLink objectid="#qDraft.objectid#" view="#stParam.view#" bodyView="#stParam.bodyView#" linktext="show draft" urlParameters="showdraft=1" />)
 						</cfif>
 					</cfif>	
 				</cfoutput>
