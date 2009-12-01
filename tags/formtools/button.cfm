@@ -24,6 +24,9 @@
 <cfparam name="attributes.primaryAction" default="" /><!--- Is this button a primary action on the form --->
 
 
+<cfif not thistag.HasEndTag>
+	<cfabort showerror="FarCry Buttons must have an end tag...">
+</cfif>
 	
 	
 <cfif thistag.executionMode eq "End">
@@ -90,12 +93,12 @@
 	</cfif>
 	
 	<!--- Make sure that confirmation is run first for a button --->
-	<cfif len(Attributes.ConfirmText)>
+<cfif len(Attributes.ConfirmText)>
 		<!--- I18 conversion of label --->
 		<cfset attributes.confirmText = application.rb.getResource('#attributes.rbkey#@confirmtext',attributes.confirmText) />
 		<cfset attributes.confirmText = jsStringFormat(attributes.confirmText) />
 		<cfset attributes.onClick = listPrepend(attributes.onClick, "if(!confirm('#Attributes.ConfirmText#')){return false}", ";") />
-	</cfif>	
+	</cfif>
 	
 	
 	
@@ -114,6 +117,7 @@
 			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" class="ui-state-default ui-corner-all fc-button #attributes.class#" style="#attributes.style#;position:relative;" <cfif attributes.disabled>disabled</cfif>>#attributes.text#</button></cfoutput>
 		</cfdefaultcase>
 		</cfswitch>
+
 		
 		<cfif len(attributes.onClick)>
 			<skin:onReady>

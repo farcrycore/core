@@ -56,7 +56,8 @@
 							lFiles="/js/farcryForm.cfm,/thirdparty/loadmask/jquery.loadmask.min.js,/thirdparty/uni-form/js/uni-form.jquery.js">
 							
 							<cfoutput>
-							var $fc = {};	
+							var $fc = {};
+									
 							$fc.openDialog = function(title,url,width,height){
 								var fcDialog = $j("<div></div>")
 								w = width ? width : 600;

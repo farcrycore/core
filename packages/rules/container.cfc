@@ -502,7 +502,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 
 				<cfif request.mode.design and request.mode.showcontainers gt 0>
 					<!--- request.thiscontainer is set up in the container tag and corresponds to the page container, not the shared container --->
-					<skin:view objectid="#arguments.aRules[i]#" webskin="displayAdminToolbar" index="#i#" r_html="ruleHTML" arraylen="#arraylen(arguments.aRules)#" container="#request.thiscontainer#" />
+					<skin:view objectid="#arguments.aRules[i]#" webskin="displayAdminToolbar" index="#i#" r_html="ruleHTML" arraylen="#arraylen(arguments.aRules)#" />
 					
 					<cfset arrayappend(request.aInvocations, ruleHTML) />
 				</cfif>

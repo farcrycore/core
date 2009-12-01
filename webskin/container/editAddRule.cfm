@@ -7,7 +7,7 @@
 
 <cfset qRules = createObject("component","#application.packagepath#.rules.rules").getRules() />
 
-<cfset containerID = replace(url.container,'-','','ALL') />
+<cfset containerID = replace(stobj.objectid,'-','','ALL') />
 
 <ft:processform action="Cancel" bHideForms="true">
 	<skin:onReady>
@@ -27,7 +27,7 @@
 	<cfset setData(stProperties=stObj)>
 
 	<!--- Locate off to the edit the rule. --->
-	<cflocation url="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stDefaultObject.objectid#&method=editInPlace&container=#url.container#&iframe=1" addtoken="false">
+	<cflocation url="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stDefaultObject.objectid#&method=editInPlace&iframe=1" addtoken="false">
 </ft:processform>
 
 

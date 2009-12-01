@@ -89,7 +89,7 @@ $Developer: Pete Ottery (pot@daemon.com.au)$
 		<div id="admin-tools">
 			<div id="powered-by"><img src="images/powered_by_farcry.gif" alt="farcry" /></div>
 			<p>Logged in: <cfif StructKeyExists(session.dmProfile,"firstname")><strong>#session.dmProfile.firstname#</strong></cfif><br />
-			(<a href="#application.url.farcry#/index.cfm?logout=1" target="_top">Logout</a><!---  | Help ---> | <a href="#application.url.conjurer#" target="_blank">View</a>)
+			(<a href="#application.url.farcry#/index.cfm?logout=1" target="_top">Logout</a><!---  | Help ---> |  <skin:buildLink alias="home" target="_top">View</skin:buildLink>)
 			</p>
 		</div>
 		

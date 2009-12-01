@@ -38,14 +38,17 @@
 	<cfoutput>
 	$j('##show-hidden').click(function(){
 		$fc.traySwitch('displayAdminBarHidden');
+		return false;
 	});
 	$j('##show-summary').click(function(){
 		$fc.traySwitch('displayAdminBarSummary');
+		return false;
 	});
 	
 	<cfif stObj.typename neq "farCOAPI">
 		$j('##edit-object').click(function(){
 			$fc.editTrayObject('#stObj.typename#', '#stObj.objectid#');
+			return false;
 		});
 	</cfif>
 	</cfoutput>
@@ -67,7 +70,7 @@
 		<cfoutput>
 		<ul id="tray-actions">	
 			<li><a id="show-hidden" href="##"><span class="ui-icon" style="background-image:url(#application.url.webtop#/facade/icon.cfm?icon=toggletray&size=16);">&nbsp;</span>Hide tray</a></li>
-			<!---<li><a id="show-summary"><span class="ui-icon ui-icon-carat-2-n-s" style="float:left;">&nbsp;</span>Hide details</a></li>--->
+			<li><a href="#application.fapi.fixURL(url='#application.url.webtop#', removevalues="")#"><span class="ui-icon ui-icon-carat-2-n-s" style="float:left;">&nbsp;</span>Webtop</a></li>
 			<!---<cfif stObj.typename neq "farCOAPI">
 				<li><a id="edit-object" href="##"><span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>Edit</a></li>
 			</cfif>--->
@@ -113,6 +116,7 @@
 					<skin:onReady>
 						$j('##tray-bDebug').click(function() {
 							location.href='#application.fapi.fixURL(url='#refererURL#', addvalues='bDebug=0')#';
+							return false;
 						});
 					</skin:onReady>
 				<cfelse>
@@ -124,6 +128,7 @@
 					<skin:onReady>
 						$j('##tray-bDebug').click(function() {
 							location.href='#application.fapi.fixURL(url='#refererURL#', addvalues='bDebug=1')#';
+							return false;
 						});
 					</skin:onReady>
 				</cfif>	
@@ -137,6 +142,7 @@
 					<skin:onReady>
 						$j('##tray-tracewebskins').click(function() {
 							location.href='#application.fapi.fixURL(url='#refererURL#', addvalues='tracewebskins=0')#';
+							return false;
 						});
 					</skin:onReady>
 				<cfelse>
@@ -148,6 +154,7 @@
 					<skin:onReady>
 						$j('##tray-tracewebskins').click(function() {
 							location.href='#application.fapi.fixURL(url='#refererURL#', addvalues='tracewebskins=1')#';
+							return false;
 						});
 					</skin:onReady>
 				</cfif>	
@@ -177,6 +184,7 @@
 						<skin:onReady>
 							$j('##tray-flushcache').click(function() {
 								location.href='#application.fapi.fixURL(url='#refererURL#', removevalues='', addvalues='flushcache=0')#';
+								return false;
 							});
 						</skin:onReady>
 					<cfelse>
@@ -188,6 +196,7 @@
 						<skin:onReady>
 							$j('##tray-flushcache').click(function() {
 								location.href='#application.fapi.fixURL(url='#refererURL#', removevalues='', addvalues='flushcache=1')#';
+								return false;
 							});
 						</skin:onReady>
 					</cfif>
@@ -203,6 +212,7 @@
 					<skin:onReady>
 						$j('##tray-showdraft').click(function() {
 							location.href='#application.fapi.fixURL(url='#refererURL#', addvalues='showdraft=0')#';
+							return false;
 						});
 					</skin:onReady>
 				<cfelse>
@@ -214,6 +224,7 @@
 					<skin:onReady>
 						$j('##tray-showdraft').click(function() {
 							location.href='#application.fapi.fixURL(url='#refererURL#', addvalues='showdraft=1')#';
+							return false;
 						});
 					</skin:onReady>
 				</cfif>
@@ -228,6 +239,7 @@
 					<skin:onReady>
 						$j('##tray-designmode').click(function() {
 							location.href='#application.fapi.fixURL(url='#refererURL#', addvalues='designmode=0')#';
+							return false;
 						});
 					</skin:onReady>
 				<cfelse>
@@ -239,6 +251,7 @@
 					<skin:onReady>
 						$j('##tray-designmode').click(function() {
 							location.href='#application.fapi.fixURL(url='#refererURL#', addvalues='designmode=1')#';
+							return false;
 						});
 					</skin:onReady>
 				</cfif>		

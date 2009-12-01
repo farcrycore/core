@@ -64,6 +64,8 @@ $out:$
 	<cfthrow type="container" message="Missing parameters: label or objectID is required to invoke a container.">
 </cfif>
 
+
+
 <!--- TODO: this should be using the factory container object, no? GB --->
 <cfset oCon = createObject("component","#application.packagepath#.rules.container")>
 <cfset qGetContainer = oCon.getContainer(dsn=application.dsn,label=attributes.label)>
@@ -111,16 +113,17 @@ $out:$
 </cfif>
 
 <!--- get the container data --->
-<cfset stConObj = oCon.getData(dsn=application.dsn,objectid=containerid)>
+<cfset stConObj = oCon.getData(objectid=containerid)>
+
+<!--- PARAM THE original container ID --->
+<cfset originalID = stConObj.objectid />
+
 <!--- if a mirrored container has been set then reset the container data --->
 <cfif (StructKeyExists(stConObj, "mirrorid") AND Len(stConObj.mirrorid))>
-	<cfset stOriginal = stConObj />
-	<cfset stConObj = oCon.getData(objectid=stConObj.mirrorid)>
-	<cfset request.thiscontainer = stOriginal.objectid /><!--- Used by rules to reference the container they're a part of --->
-<cfelse>
-	<cfset stOriginal = structnew() />
-	<cfset request.thiscontainer = stConObj.objectid /><!--- Used by rules to reference the container they're a part of --->
+	<cfset stConObj = oCon.getData(objectid=stConObj.mirrorid) />
 </cfif>
+
+
 
 
 
@@ -128,18 +131,18 @@ $out:$
 <cfif request.mode.design and request.mode.showcontainers gt 0>
 	
 
-	<skin:view stObject="#stConObj#" webskin="displayAdminToolbar" alternatehtml="" original="#stOriginal#" desc="#attributes.desc#" />
+	<skin:view stObject="#stConObj#" webskin="displayAdminToolbar" alternatehtml="" originalID="#originalID#" />
 	
 	
 </cfif>
 
 <cfif request.mode.design and request.mode.showcontainers gt 0>
-	<cfoutput><div id="#replace(request.thiscontainer,'-','','ALL')#"></cfoutput>
+	<cfoutput><div id="#replace(stConObj.objectid,'-','','ALL')#"></cfoutput>
 </cfif>
 
 
 
-<skin:view stObject="#stConObj#" webskin="displayContainer" alternatehtml="" original="#stOriginal#" desc="#attributes.desc#" r_html="conOutput" />
+<skin:view stObject="#stConObj#" webskin="displayContainer" alternatehtml="" r_html="conOutput" />
 
 <cfif attributes.bShowIfEmpty OR len(trim(conOutput))>
 	<cfoutput>

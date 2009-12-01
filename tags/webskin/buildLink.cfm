@@ -28,8 +28,7 @@
 	<cfparam name="attributes.view" default=""><!--- Added to url parameters: Webskin name used to render the page layout --->
 	<cfparam name="attributes.bodyView" default=""><!--- Added to url parameters: Webskin name used to render the body content --->
 	<cfparam name="attributes.linktext" default=""><!--- Text used for the link --->
-	<cfparam name="attributes.target" default="_self"><!--- target window for link --->
-	<cfparam name="attributes.bShowTarget" default="false"><!--- @@attrhint: Show the target link in the anchor tag  @@options: false,true --->
+	<cfparam name="attributes.target" default=""><!--- target window for link --->
 	<cfparam name="attributes.externallink" default="">
 	<cfparam name="attributes.id" default=""><!--- Anchor tag ID --->
 	<cfparam name="attributes.class" default=""><!--- Anchor tag classes --->
@@ -75,7 +74,7 @@
 		<cfif len(attributes.xCode)>
 			<cfset tagoutput=tagoutput & ' #attributes.xCode#'>
 		</cfif>
-		<cfif attributes.bShowTarget eq true>
+		<cfif len(attributes.target)>
 			<cfset tagoutput=tagoutput & ' target="#attributes.target#"'>
 		</cfif>
 		<cfif len(attributes.onclick)>

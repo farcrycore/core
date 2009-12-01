@@ -940,7 +940,7 @@
 				<cfset arguments.urlParameters = "" />
 			</cfif>
 			
-			<cfif arguments.target NEQ "_self" AND NOT arguments.urlOnly> <!--- If target is defined and the user doesn't just want the URL then it is a popup window and must therefore have the following parameters --->		
+			<cfif len(arguments.target) AND arguments.target NEQ "_self" AND arguments.urlOnly> <!--- If target is defined and the user wants the URL then it is a popup window and must therefore have the following parameters --->		
 				<cfset arguments.JSWindow = 1>
 				
 				<cfparam name="arguments.stJSParameters.Toolbar" default="0">
@@ -1006,8 +1006,6 @@
 			
 			<!--- Are we meant to use the Javascript Popup Window? --->
 			<cfif arguments.JSWindow>
-			
-				<cfset arguments.bShowTarget = 0><!--- No need to add the target to the <a returnURL> as it is handled in the javascript --->
 				
 				<cfset jsParameters = "">
 				<cfloop list="#structKeyList(arguments.stJSParameters)#" index="i">

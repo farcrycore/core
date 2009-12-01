@@ -22,13 +22,11 @@
 <cfimport taglib="/farcry/core/tags/container/" prefix="con">
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
+<skin:loadJS id="gritter" />
+<skin:loadCSS id="gritter" />
 
 <!--- Environment Variables --->
 <cfparam name="stParam.desc" default="" />
-<cfparam name="stParam.stOriginal" default="#structnew()#" />
-
-<skin:loadJS id="gritter" />
-<skin:loadCSS id="gritter" />
 
 
 <!--- Allows the container description to be different to the actual label. Defaults to the label --->
@@ -37,19 +35,12 @@
 </cfif>
 
 
-<!--- if a mirrored container has been set then reset the container data --->
-<cfif (StructKeyExists(stobj, "mirrorid") AND Len(stobj.mirrorid))>
-	<cfset stOriginal = duplicate(stobj) />
-	<cfset stConObj = getData(objectid=stobj.mirrorid)>
-	<cfset request.thiscontainer = stOriginal.objectid />
-<cfelse>
-	<cfset stOriginal = structnew() />
-	<cfset stConObj = duplicate(stobj) />
-	<cfset request.thiscontainer = stConObj.objectid />
-</cfif>
+<!--- Need to make a duplicate so we can make changes. --->
+<cfset stConObj = duplicate(stobj) />
+
 
 <!--- Determine the container AJAX URL --->
-<cfset containerURL = application.fapi.getLink(objectid="#request.thiscontainer#", view="displayContainer", urlParameters="ajaxmode=1") />
+<cfset containerURL = application.fapi.getLink(objectid="#stConObj.objectid#", view="displayContainer", urlParameters="ajaxmode=1") />
 
 
 <cfif structkeyexists(form,"rule_action")>
