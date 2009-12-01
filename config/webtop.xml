@@ -31,7 +31,7 @@
 				<menuitem id="exportgeneral" sequence="20" label="General Export" link="/content/export.cfm" />
 			</menu>
 			<menu id="containermanagement" sequence="60" label="Container Management">
-				<menuitem id="containerreflections" sequence="10" label="Reflected Containers" link="/admin/customadmin.cfm?module=customlists/container.cfm" />		
+				<menuitem id="reflectedContainers" sequence="10" label="Reflected Containers" link="/admin/customadmin.cfm?module=customlists/container.cfm" />		
 			</menu>
 		</subsection>
 	</section>
