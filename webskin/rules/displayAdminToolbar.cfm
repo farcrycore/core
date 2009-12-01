@@ -31,6 +31,8 @@
 					});								
 	            </cfoutput>
 			</skin:onReady>	
+			<skin:toolTip id="con-edit-rule-#stobj.objectid#">Edit the settings applicable to this rule.</skin:toolTip>
+			
 			
 			<!--- MOVE UP --->
 			<cfif arguments.stParam.index gt 1>
@@ -47,6 +49,7 @@
 						});								
 		            </cfoutput>
 				</skin:onReady>	
+				<skin:toolTip id="con-move-up-rule-#stobj.objectid#">Move this rule UP in the container.</skin:toolTip>
 			</cfif>
 			
 			<!--- MOVE DOWN --->
@@ -63,6 +66,7 @@
 						});								
 		            </cfoutput>
 				</skin:onReady>
+				<skin:toolTip id="con-move-down-rule-#stobj.objectid#">Move this rule DOWN in the container.</skin:toolTip>
 			
 			</cfif>
 			
@@ -80,6 +84,7 @@
 					});							
 	            </cfoutput>
 			</skin:onReady>
+			<skin:toolTip id="con-delete-rule-#stobj.objectid#">Delete this rule from the container.</skin:toolTip>
 		</div>
 
 		<br style="clear:both;" />

@@ -127,7 +127,7 @@
 						<cfoutput>
 							<div id="#arguments.fieldname#previewimage">
 							
-									<img src="#application.fapi.getImageWebRoot()##arguments.stMetadata.value#" width="50px" title="#listLast(arguments.stMetadata.value,"/")#">
+									<img id="#arguments.fieldname#-preview-img" src="#application.fapi.getImageWebRoot()##arguments.stMetadata.value#" width="50px" title="#listLast(arguments.stMetadata.value,"/")#">
 									<!---#listLast(arguments.stMetadata.value,"/")#--->
 									<ft:button type="button" value="Delete" rendertype="link" id="#arguments.fieldname#-delete-btn" onclick="" />
 									<ft:button type="button" value="Cancel" rendertype="link" id="#arguments.fieldname#-cancel-delete-btn" onclick="" />
@@ -173,7 +173,8 @@
 										$j('###arguments.fieldname#-wrap').show('fast');
 									}
 									$j('###arguments.fieldname#-aspect-crop').show('fast');
-									$j('###arguments.fieldname#-generate').show('fast');
+									$j('###arguments.fieldname#-generate').show('fast');									
+									$j('###arguments.fieldname#-preview-img').css('display','none');
 									$j('###arguments.fieldname#-delete-btn').css('display','none');
 									$j('###arguments.fieldname#-replace-btn').css('display','none');
 	                            	$j('###arguments.fieldname#-cancel-delete-btn').css('display','inline');
@@ -183,7 +184,8 @@
 									$j('###arguments.fieldname#DELETE').attr('value','');
 									$j('###arguments.fieldname#-wrap').hide('fast');
 									$j('###arguments.fieldname#-aspect-crop').hide('fast');
-									$j('###arguments.fieldname#-generate').hide('fast');
+									$j('###arguments.fieldname#-generate').hide('fast');							
+									$j('###arguments.fieldname#-preview-img').css('display','inline');
 									$j('###arguments.fieldname#-delete-btn').css('display','inline');
 									$j('###arguments.fieldname#-replace-btn').css('display','inline');
 	                            	$j('###arguments.fieldname#-cancel-delete-btn').css('display','none');

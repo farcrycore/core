@@ -16,7 +16,8 @@
 		
 			<grid:div class="webtopOverviewStatusBox" style="background-color:##C0FFFF;text-align:center;border-bottom:1px solid ##B5B5B5;margin-bottom:3px;">
 				<cfoutput>
-					DRAFT: last updated <a title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</a>.
+					DRAFT: last updated <a id="webtop-overview-lastupdated" title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</a>.
+					<skin:toolTip id="webtop-overview-lastupdated">Last updated on #dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# at #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#</skin:toolTip>
 					
 					<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
 						(<skin:buildLink objectid="#stobj.versionID#" view="#stParam.view#" bodyView="#stParam.bodyView#" linktext="show approved" urlParameters="showdraft=0" />)
@@ -29,7 +30,8 @@
 		
 			<grid:div class="webtopOverviewStatusBox" style="background-color:##FFE0C0;text-align:center;border-bottom:1px solid ##B5B5B5;margin-bottom:3px;">
 				<cfoutput>
-					PENDING: awaiting approval since <a title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</a>.
+					PENDING: awaiting approval since <a id="webtop-overview-lastupdated" title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</a>.
+					<skin:toolTip id="webtop-overview-lastupdated">Last updated on #dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# at #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#</skin:toolTip>
 					
 					<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
 						(<skin:buildLink objectid="#stobj.versionID#" view="#stParam.view#" bodyView="#stParam.bodyView#" linktext="show approved" urlParameters="showdraft=0" />)
@@ -41,7 +43,9 @@
 		
 			<grid:div class="webtopOverviewStatusBox" style="background-color:##C0FFC0;text-align:center;border-bottom:1px solid ##B5B5B5;margin-bottom:3px;">
 				<cfoutput>
-					APPROVED: <a title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</a>.
+					APPROVED: <a id="webtop-overview-lastupdated" title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</a>.
+					<skin:toolTip id="webtop-overview-lastupdated"
+						configuration="position:'bottom center',relative:true" style="width:300px;">Last updated on #dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# at #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#</skin:toolTip>
 					
 					<cfif structKeyExists(stobj,"versionID") AND structKeyExists(stobj,"status") AND stobj.status EQ "approved">
 						<cfset qDraft = createObject("component", "#application.packagepath#.farcry.versioning").checkIsDraft(objectid=stobj.objectid,type=stobj.typename)>

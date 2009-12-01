@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!--- @@displayname: ExtJS Tool Tip --->
+<!--- @@displayname: jQuery tools: Tool Tip --->
 <!--- @@description: Displays a tool tip on hover.  --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
@@ -24,64 +24,52 @@
 <!------------------ 
 FARCRY IMPORT FILES
  ------------------>
-<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 
-<cfparam name="attributes.title" default="" /><!--- The title of the message --->
-<cfparam name="attributes.toolTip" default="" /><!--- The actual message. This can be replaced with generatedContent --->
+<cfparam name="attributes.id" type="string" /><!--- The id of the dom element that you wish to have the tooltip display on hover. --->
+<cfparam name="attributes.message" default="" /><!--- The actual message. This can be replaced with generatedContent --->
+<cfparam name="attributes.class" default="tooltip" /><!--- The css class to be assigned to the tooltip div --->
+<cfparam name="attributes.style" default="" /><!--- The css style to be assigned to the tooltip div --->
+<cfparam name="attributes.configuration" default="predelay:100" /><!--- Specifies the configuration of the tooltip. --->
 
 
 <cfif thistag.executionMode eq "Start">
-	<!--- IGNORE START MODE --->
+	<!--- Do Nothing --->
 </cfif>
 
 <cfif thistag.executionMode eq "End">
+
+	<skin:loadJS id="jquery-tools" />
+	<skin:loadCSS id="jquery-tools" />
+
+	<cfif not len(attributes.message)>
+		<cfset attributes.message = thisTag.generatedContent />
+	</cfif>
+	<cfset thisTag.generatedContent = "" />
 	
-	<cfset toolTipID = application.fc.utils.createJavaUUID() />	
+	<cfset toolTipSpanID = application.fapi.getUUID() />	
 	
-	<cfsavecontent variable="toolTipHTML">
-		
-		<cfoutput><span id="#toolTipID#">#thisTag.generatedContent#</span></cfoutput>
-		
-		<skin:loadCSS library="jquery-tools">
-		<cfoutput>
-		/* tooltip styling. uses a background image (a black box with an arrow) */ 
-		div.tooltip { 
-		    background:transparent url(#application.url.webtop#/thirdparty/jquery-tools/img/black_arrow_big.png) no-repeat scroll 0 0; 
-		    font-size:14px; 
-		    height:153px; 
-		    padding:30px; 
-		    width:310px; 
-		    font-size:14px; 
-		    display:none; 
-		    color:##fff; 
-		} 
-		 
-		/* tooltip title element (h3) */ 
-		div.tooltip h3 { 
-		    margin:0; 
-		    font-size:18px; 
-		    color:##fff; 
-		}
-		</cfoutput>
-		</skin:loadCSS>
-		
-		<extjs:onReady>
-		<cfoutput>
-			 new Ext.ToolTip({   
-			   target: Ext.get('#toolTipID#'),
-			   title: '#jsStringFormat(attributes.title)#',
-			   html: '#jsStringFormat(attributes.toolTip)#',
-			   autoHide:true
-			   });
-		</cfoutput>
-		</extjs:onReady>
+	<cfoutput></cfoutput>
 	
-	</cfsavecontent>
-	
-	<cfset thisTag.generatedContent = toolTipHTML />
+	<skin:onReady>
+	<cfoutput>
+		$j("<div class='#attributes.class#' id='#toolTipSpanID#' style='display:none;#attributes.style#'>#jsStringFormat(attributes.message)#</div>").insertAfter("###attributes.id#");
+		$j("###attributes.id#").tooltip({
+			<cfif len(attributes.configuration)>
+				#attributes.configuration#
+			</cfif>
+		}).dynamic( { 
+	        bottom: { 
+	            direction: 'down', 
+	            bounce: true 
+	        } 
+    	});; 
+	</cfoutput>
+	</skin:onReady>
 	
 </cfif>
+
+
 
 <cfsetting enablecfoutputonly="false">

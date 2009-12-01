@@ -154,7 +154,7 @@ $fc.reloadContainer = function(containerID,containerURL){
 					});								
 	            </cfoutput>
 			</skin:onReady>		
-			
+			<skin:toolTip id="con-add-rule-#stobj.objectid#">Add a new rule into this container.</skin:toolTip>
 			
 			<!--- MANAGE REFLECTION --->
 			<a id="con-manage-reflection-#stobj.objectid#" href="##" title="Manage reflection">
@@ -168,7 +168,7 @@ $fc.reloadContainer = function(containerID,containerURL){
 					});								
 	            </cfoutput>
 			</skin:onReady>		
-			
+			<skin:toolTip id="con-manage-reflection-#stobj.objectid#">Set this container to use a reflection. Reflections are containers that are centrally managed from the webtop.</skin:toolTip>
 			
 			<!--- REFRESH CONTAINER --->
 	
@@ -183,6 +183,7 @@ $fc.reloadContainer = function(containerID,containerURL){
 					});								
 	            </cfoutput>
 			</skin:onReady>	
+			<skin:toolTip id="con-refresh-container-#stobj.objectid#">Refresh the contents of this container.</skin:toolTip>
 		</div>
 		<br style="clear:both;" />
 	</div>

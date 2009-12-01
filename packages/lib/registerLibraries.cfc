@@ -42,9 +42,9 @@
 							baseHREF="#application.url.webtop#/thirdparty/jquery-validate"
 							lFiles="jquery.validate.pack.js" />
 
-		<skin:registerJS 	id="jquery-tooltip"
+		<skin:registerJS 	id="jquery-tools"
 							baseHREF="#application.url.webtop#/thirdparty/jquery-tools"
-							lFiles="tools.tooltip-1.0.2.min.js" />
+							lFiles="jquery.tools.min.js" />
 							
 							
 		<skin:registerJS 	id="gritter"
@@ -457,6 +457,19 @@
 							baseHREF="#application.url.webtop#/css"
 							lFiles="tray.css" />
 				
+		<skin:registerCSS id="jquery-tools">
+			<cfoutput>
+			div.tooltip { 
+			    background-color:##000; 
+			    border:2px solid ##fff;
+			    padding:10px; 		
+				width:200px;	    
+			    font-size:12px;			     
+			    color:##fff; 
+				text-align:center;
+			} 
+			</cfoutput>
+		</skin:registerCSS>				
 														
 	</cffunction>	
 	
