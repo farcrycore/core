@@ -93,7 +93,7 @@
 	</cfif>
 	
 	<!--- Make sure that confirmation is run first for a button --->
-<cfif len(Attributes.ConfirmText)>
+	<cfif len(Attributes.ConfirmText)>
 		<!--- I18 conversion of label --->
 		<cfset attributes.confirmText = application.rb.getResource('#attributes.rbkey#@confirmtext',attributes.confirmText) />
 		<cfset attributes.confirmText = jsStringFormat(attributes.confirmText) />

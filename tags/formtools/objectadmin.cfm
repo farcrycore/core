@@ -38,6 +38,38 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 
 
+
+<skin:loadJS id="jquery" />
+<skin:loadJS id="jquery-ui" />
+<skin:loadCSS id="jquery-ui" />
+
+
+<skin:onReady id="objectAdminAction">
+	<cfoutput>
+    	$fc.objectAdminAction = function(title,url) {
+			var newDialogDiv = $j("<div><iframe style='width:99%;height:99%;border-width:0px;'></iframe></div>");
+			$j("body").prepend(newDialogDiv);
+			
+			$j(newDialogDiv).dialog({
+				bgiframe: true,
+				modal: true,
+				title:title,
+				width: $j(window).width()-50,
+				height: $j(window).height()-50,
+				close: function(event, ui) {
+					location=location;					
+				}
+				
+			});
+			$j(newDialogDiv).dialog('open');
+			//OPEN URL IN IFRAME ie. not in ajaxmode
+			$j('iframe',$j(newDialogDiv)).attr('src',url);
+			
+		};	
+    </cfoutput>
+</skin:onReady>
+
+
 <cfif thistag.executionMode eq "Start">
 	<cfparam name="attributes.typename" default="" />
 	<cfparam name="attributes.columnlist" default="label,datetimelastupdated" />
@@ -174,6 +206,10 @@ user --->
 	<cfset stpermissions=oTypeAdmin.getBasePermissions()>
 	
 	
+	<!--- IF javascript has set the selected objectid, set the form.objectid to it. --->
+	<cfif isDefined("FORM.selectedObjectID") and len(form.selectedObjectID)>
+		<cfset form.objectid = form.selectedObjectID />
+	</cfif>
 	
 	
 	
@@ -209,10 +245,6 @@ user --->
 	
 	
 	
-	<!--- IF javascript has set the selected objectid, set the form.objectid to it. --->
-	<cfif isDefined("FORM.selectedObjectID") and len(form.selectedObjectID)>
-		<cfset form.objectid = form.selectedObjectID />
-	</cfif>
 	
 	<cfparam name="session.objectadminFilterObjects" default="#structNew()#" />
 	<cfif not structKeyExists(session.objectadminFilterObjects, attributes.typename)>
@@ -372,64 +404,97 @@ user --->
 	PROCESS THE FORM
 	 ------------------------>
 	
-	<cfset addURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=#application.fc.utils.createJavaUUID()#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=#attributes.module#" />	
+	<cfset addURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=#application.fc.utils.createJavaUUID()#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module#" />	
 	<cfif Len(attributes.plugin)>
 		<cfset addURL = addURL&"&plugin=#attributes.plugin#" />
 		<cfset pluginURL = "&plugin=#attributes.plugin#" /><!--- we need this when using a plugin like farcrycms, to be able to redirect back to the plugin object admin instead of the project or core object admin --->
 	</cfif>
-	<ft:processForm action="add" url="#addURL#" />
+	<ft:processForm action="add">
+		<skin:onReady>
+			<cfoutput>
+				$fc.objectAdminAction('Administration', '#addURL#');
+			</cfoutput>
+		</skin:onReady>
+	</ft:processForm>
 	
 	
 	
 	<ft:processForm action="overview">
 		<!--- TODO: Check Permissions. --->
-		<cfset EditURL = "#application.url.farcry#/edittabOverview.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=#attributes.module#">
+		<cfset EditURL = "#application.url.farcry#/edittabOverview.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module#">
 		<cfif Len(attributes.plugin)><cfset EditURL = EditURL&"&plugin=#attributes.plugin#"></cfif>
-		<cflocation URL="#EditURL#" addtoken="false">
+		<skin:onReady>
+			<cfoutput>
+				$fc.objectAdminAction('Administration', '#EditURL#');
+			</cfoutput>
+		</skin:onReady>
 	</ft:processForm>
 	
 	<ft:processForm action="edit">
 		<!--- TODO: Check Permissions. --->
-		<cfset EditURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=typeadmin&module=#attributes.module#">
+		<cfset EditURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module#">
 		<cfif Len(attributes.plugin)><cfset EditURL = EditURL&"&plugin=#attributes.plugin#"></cfif>
-		<cflocation URL="#EditURL#" addtoken="false">
+		<skin:onReady>
+			<cfoutput>
+				$fc.objectAdminAction('Administration', '#EditURL#');
+			</cfoutput>
+		</skin:onReady>
 	</ft:processForm>
 	
 	<ft:processForm action="view">
 		<!--- TODO: Check Permissions. --->
-		<cfoutput>
-			<script language="javascript">
-				var newWin = window.open("#application.url.webroot#/index.cfm?objectID=#form.objectid#&flushcache=1","viewWindow","resizable=yes,menubar=yes,scrollbars=yes,width=800,height=600,location=yes");
-			</script>
-		</cfoutput>
-		<!--- <cflocation URL="#application.url.webroot#/index.cfm?objectID=#form.objectid#&flushcache=1" addtoken="false" /> --->
+		<skin:onReady>
+			<cfoutput>
+				$fc.objectAdminAction('Preview', '#application.url.webroot#/index.cfm?objectID=#form.objectid#&flushcache=1');
+			</cfoutput>
+		</skin:onReady>
 	</ft:processForm>
 	
 	<cfif structKeyExists(application.stPlugins, "flow")>
 		<ft:processForm action="flow">
 			<!--- TODO: Check Permissions. --->
-			<cflocation URL="#application.stPlugins.flow.url#/?startid=#form.objectid#&flushcache=1" addtoken="false" />
+			<skin:onReady>
+				<cfoutput>
+					$fc.objectAdminAction('Flow', '#application.stPlugins.flow.url#/?startid=#form.objectid#&flushcache=1');
+				</cfoutput>
+			</skin:onReady>
 		</ft:processForm>
 	</cfif>
 	
 	<ft:processForm action="requestapproval,request approval">
 		<!--- TODO: Check Permissions. --->
-		<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=requestapproval" addtoken="false" />
+		<skin:onReady>
+			<cfoutput>
+				$fc.objectAdminAction('Administration', '#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=requestapproval');
+			</cfoutput>
+		</skin:onReady>
 	</ft:processForm>
 	
 	<ft:processForm action="approve">
 		<!--- TODO: Check Permissions. --->
-		<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=approved" addtoken="false" />
+		<skin:onReady>
+			<cfoutput>
+				$fc.objectAdminAction('Administration', '#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=approved');
+			</cfoutput>
+		</skin:onReady>
 	</ft:processForm>
 	
 	<ft:processForm action="createdraft,create draft">
 		<!--- TODO: Check Permissions. --->
-		<cflocation URL="#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#form.objectID#" addtoken="false" />
+		<skin:onReady>
+			<cfoutput>
+				$fc.objectAdminAction('Administration', '#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#form.objectID#&ref=iframe');
+			</cfoutput>
+		</skin:onReady>
 	</ft:processForm>
 	
 	<ft:processForm action="Send to Draft">
 		<!--- TODO: Check Permissions. --->
-		<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=draft" addtoken="false" />
+		<skin:onReady>
+			<cfoutput>
+				$fc.objectAdminAction('Administration', '#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=draft');
+			</cfoutput>
+		</skin:onReady>
 	</ft:processForm>
 	
 	<ft:processForm action="properties">
@@ -438,7 +503,7 @@ user --->
 			<skin:onReady>
 				<cfoutput>
 					<cfloop list="#form.objectid#" index="i">
-						$fc.openDialog('Properties','#application.url.farcry#/object_dump.cfm?objectid=#i#&typename=#attributes.typename#');
+						$fc.objectAdminAction('Properties', '#application.url.farcry#/object_dump.cfm?objectid=#i#&typename=#attributes.typename#');
 					</cfloop>
 				</cfoutput>
 			</skin:onReady>
@@ -711,12 +776,14 @@ user --->
 				</cfoutput>
 				
 				 		<cfif attributes.bSelectCol><cfoutput><th><cfif attributes.bCheckAll><input type="checkbox" id="checkall" name="checkall" onclick="checkUncheckAll(this);" title="Check All" /><cfelse>Select</cfif></th></cfoutput></cfif>
-				 		<cfif structKeyExists(st,"bHasMultipleVersion")>
-					 		<cfoutput><th>#application.rb.getResource('objectadmin.columns.status@label',"Status")#</th></cfoutput>
-						</cfif>
+				 		
 						
 						<cfif attributes.bShowActionList>
 							<cfoutput><th>#application.rb.getResource('objectadmin.columns.action@label','Action')#</th></cfoutput>
+						</cfif>
+						
+						<cfif structKeyExists(st,"bHasMultipleVersion")>
+					 		<cfoutput><th>#application.rb.getResource('objectadmin.columns.status@label',"Status")#</th></cfoutput>
 						</cfif>
 						<!---<cfif attributes.bEditCol><th>Edit</th></cfif>
 						<cfif attributes.bViewCol><th>View</th></cfif>
@@ -775,11 +842,11 @@ user --->
 						
 					 		<cfif attributes.bSelectCol><cfoutput><th>&nbsp;</th></cfoutput></cfif>	 	
 					 			
-					 		<cfif structKeyExists(st,"bHasMultipleVersion")>
-						 		<cfoutput><th>&nbsp;</th></cfoutput>
-							</cfif>
 							<cfif attributes.bShowActionList>
 								<cfoutput><th>&nbsp;</th></cfoutput>
+							</cfif>
+					 		<cfif structKeyExists(st,"bHasMultipleVersion")>
+						 		<cfoutput><th>&nbsp;</th></cfoutput>
 							</cfif>
 							<!---<cfif attributes.bEditCol><th>&nbsp;</th></cfif>
 							<cfif attributes.bViewCol><th>&nbsp;</th></cfif>
@@ -791,7 +858,7 @@ user --->
 										<cfif structKeyExists(attributes.aCustomColumns[i],"sortable") and attributes.aCustomColumns[i].sortable>
 											<cfoutput>
 											<th>
-											<select name="#attributes.aCustomColumns[i].property#sqlOrderBy" onchange="javascript:$('sqlOrderBy').value=this.value;submit();" style="width:80px;">
+											<select name="#attributes.aCustomColumns[i].property#sqlOrderBy" onchange="javascript:$j('##sqlOrderBy').attr('value',this.value);btnSubmit('#request.farcryForm.name#', 'sort');" style="width:80px;">
 												<option value=""></option>
 												<option value="#attributes.aCustomColumns[i].property# asc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i].property# asc">selected</cfif>>asc</option>
 												<option value="#attributes.aCustomColumns[i].property# desc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i].property# desc">selected</cfif>>desc</option>
@@ -805,7 +872,7 @@ user --->
 										<cfif listContainsNoCase(attributes.SortableColumns,attributes.aCustomColumns[i])><!--- Normal property in sortablecolumn list --->
 											<cfoutput>
 											<th>
-											<select name="#attributes.aCustomColumns[i]#sqlOrderBy" onchange="javascript:$('sqlOrderBy').value=this.value;submit();" style="width:80px;">
+											<select name="#attributes.aCustomColumns[i]#sqlOrderBy" onchange="javascript:$j('##sqlOrderBy').attr('value',this.value);btnSubmit('#request.farcryForm.name#', 'sort');" style="width:80px;">
 												<option value=""></option>
 												<option value="#attributes.aCustomColumns[i]# asc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i]# asc">selected</cfif>>asc</option>
 												<option value="#attributes.aCustomColumns[i]# desc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i]# desc">selected</cfif>>desc</option>
@@ -823,7 +890,7 @@ user --->
 								<cfoutput><th></cfoutput>					
 									<cfif listContainsNoCase(attributes.SortableColumns,i)>
 										<cfoutput>
-										<select name="#i#sqlOrderBy" onchange="javascript:$('sqlOrderBy').value=this.value;submit();" style="width:80px;">
+										<select name="#i#sqlOrderBy" onchange="javascript:$j('##sqlOrderBy').attr('value',this.value);btnSubmit('#request.farcryForm.name#', 'sort');" style="width:80px;">
 											<option value=""></option>
 											<option value="#i# asc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# asc">selected</cfif>>asc</option>
 											<option value="#i# desc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# desc">selected</cfif>>desc</option>
@@ -866,11 +933,11 @@ user --->
 								</td>
 								</cfoutput>
 							</cfif>
+							<cfif attributes.bShowActionList>
+								<cfoutput><td class="objectadmin-actions">#st.action#</td></cfoutput>
+							</cfif>
 					 		<cfif structKeyExists(st,"bHasMultipleVersion")>
 						 		<cfoutput><td nowrap="true">#application.rb.getResource("constants.status.#st.status#@label",st.status)#</td></cfoutput>
-							</cfif>
-							<cfif attributes.bShowActionList>
-								<cfoutput><td>#st.action#</td></cfoutput>
 							</cfif>
 							
 							
@@ -967,7 +1034,7 @@ user --->
 
 
 	<cfif structKeyExists(arguments.st, "bHasMultipleVersion") AND arguments.st.bHasMultipleVersion>
-		<cfset stObjectAdminData.status = "<span style='color:red;'>versioned</span>" />
+		<cfset stObjectAdminData.status = "<span style='color:red;'>multiple versions</span>" />
 	<cfelseif structKeyExists(arguments.st, "status")>
 		<cfset stObjectAdminData.status = arguments.st.status />
 	</cfif>
@@ -985,65 +1052,118 @@ user --->
 	
 	<cfsavecontent variable="ActionDropdown">
 		
-		<skin:loadJS id="jquery" />
 
 		<cfoutput>
-		<select name="action#st.currentrow#" id="action#st.currentrow#" class="actionDropdown" onchange="selectObjectID('#arguments.st.objectid#');btnSubmit('#request.farcryForm.name#', this.value);">
-			<option value="">-- action --</option>
-
-			<option value="overview">Overview</option>
-			
+		
+		<ul class="object-admin-actions">				
+			<li>
+			<a id="oa-overview-#arguments.st.objectid#" name="oa-overview-#arguments.st.objectid#" title="Overview" href="##">
+				<span class="ui-icon ui-icon-wrench" style="float:left;">&nbsp;</span>
+			</a>
+			</li>
+			<skin:onReady>
+				$j('##oa-overview-#arguments.st.objectid#').click(function() {
+					selectObjectID('#arguments.st.objectid#');
+					btnSubmit('#request.farcryForm.name#', 'overview');
+				});		
+			</skin:onReady>
+			<skin:toolTip id="oa-overview-#arguments.st.objectid#">Open up the overview screen for this object.</skin:toolTip>
 			
 			<!--- We do not include the Edit Link if workflow is available for this content item. The user must go to the overview page. --->
 			<cfif not listLen(lWorkflowTypenames)>	
 				<cfif structKeyExists(arguments.st,"locked") AND arguments.st.locked neq 0 AND arguments.st.lockedby neq '#application.security.getCurrentUserID()#'>
-					<cfif structKeyExists(arguments.stPermissions, "iApprove") AND arguments.stPermissions.iApprove>
-						<option value="unlock">Unlock</option>
-					</cfif>		
+					<li>
+					<a id="oa-locked-#arguments.st.objectid#" name="oa-locked-#arguments.st.objectid#" title="Unlock" href="##">
+						<span class="ui-icon ui-icon-locked" style="float:left;">&nbsp;</span>
+					</a>
+					</li>
+					<skin:onReady>
+						$j('##oa-locked-#arguments.st.objectid#').click(function() {
+							selectObjectID('#arguments.st.objectid#');
+							btnSubmit('#request.farcryForm.name#', 'unlock');
+						});		
+					</skin:onReady>	
+					<skin:toolTip id="oa-locked-#arguments.st.objectid#">Unlock this object.</skin:toolTip>	
 				<cfelseif structKeyExists(arguments.stPermissions, "iEdit") AND arguments.stPermissions.iEdit>
 					<cfif structKeyExists(arguments.st,"bHasMultipleVersion")>
 						<cfif NOT(arguments.st.bHasMultipleVersion) AND arguments.st.status EQ "approved">
-							<option value="createDraft">Create Draft Object</option>
+					
+							<li>
+							<a id="oa-create-draft-#arguments.st.objectid#" name="oa-create-draft-#arguments.st.objectid#" title="Create Draft Object" href="##">
+								<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>
+							</a>
+							</li>
+							<skin:onReady>
+								$j('##oa-create-draft-#arguments.st.objectid#').click(function() {
+									selectObjectID('#arguments.st.objectid#');
+									btnSubmit('#request.farcryForm.name#', 'createDraft');
+								});		
+							</skin:onReady>
+							<skin:toolTip id="oa-create-draft-#arguments.st.objectid#">Create a draft version of this object and begin editing.</skin:toolTip>
 						<cfelseif NOT(arguments.st.bHasMultipleVersion)>
-							<option value="edit">Edit</option>
+	
+							<li>
+							<a id="oa-edit-#arguments.st.objectid#" name="oa-edit-#arguments.st.objectid#" title="Edit" href="##">
+								<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>
+							</a>
+							</li>
+							<skin:onReady>
+								$j('##oa-edit-#arguments.st.objectid#').click(function() {
+									selectObjectID('#arguments.st.objectid#');
+									btnSubmit('#request.farcryForm.name#', 'edit');
+								});		
+							</skin:onReady>		
+							<skin:toolTip id="oa-edit-#arguments.st.objectid#">Edit this object.</skin:toolTip>			
 						</cfif>
 					<cfelse>
-						<option value="edit">Edit</option>
+	
+						<li>
+						<a id="oa-edit-#arguments.st.objectid#" name="oa-edit-#arguments.st.objectid#" title="Edit" href="##">
+							<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>
+						</a>
+						</li>
+						<skin:onReady>
+							$j('##oa-edit-#arguments.st.objectid#').click(function() {
+								selectObjectID('#arguments.st.objectid#');
+								btnSubmit('#request.farcryForm.name#', 'edit');
+							});		
+						</skin:onReady>	
+						<skin:toolTip id="oa-edit-#arguments.st.objectid#">Edit this object.</skin:toolTip>	
 					</cfif>
 				</cfif>
-			</cfif>
-			<option value="view">View</option>
-			
-			<cfif structKeyExists(application.stPlugins, "flow")>
-				<option value="flow">Flow</option>
-			</cfif>
+			</cfif>	
 			
 			
-			<cfif structKeyExists(arguments.stPermissions, "iRequestApproval") 
-					AND arguments.stPermissions.iRequestApproval
-				AND structKeyExists(arguments.st,"status") 
-				AND arguments.st.status EQ "draft">
-				<option value="requestApproval">Request Approval</option>
-			</cfif>
-			
-			<cfif structKeyExists(arguments.stPermissions, "iApprove") 
-				AND arguments.stPermissions.iApprove
-				AND structKeyExists(arguments.st,"status")
-				AND (
-					arguments.st.status EQ "draft" 
-					OR arguments.st.status EQ "pending"
-				)>
-				<option value="approve">Approve</option>
-			</cfif>
-			
-			<cfif listLen(attributes.lCustomActions)>
-				<cfloop list="#attributes.lCustomActions#" index="i">
-					<option value="#listFirst(i, ":")#">#listLast(i, ":")#</option>
-				</cfloop>
-			</cfif>
-			<!--- <option value="delete">Delete</option> --->
-		</select>
+			<li>
+			<a id="oa-preview-#arguments.st.objectid#" name="oa-preview-#arguments.st.objectid#" title="Overview" href="##">
+				<span class="ui-icon ui-icon-arrow-4-diag" style="float:left;">&nbsp;</span>
+			</a>
+			</li>
+			<skin:onReady>
+				$j('##oa-preview-#arguments.st.objectid#').click(function() {
+					selectObjectID('#arguments.st.objectid#');
+					btnSubmit('#request.farcryForm.name#', 'view');
+				});		
+			</skin:onReady>	
+			<skin:toolTip id="oa-preview-#arguments.st.objectid#">Preview this object.</skin:toolTip>				
+		</ul>	
+					
+		<cfif listLen(attributes.lCustomActions)>			
+			<select name="action#st.currentrow#" id="action#st.currentrow#" class="actionDropdown" onchange="selectObjectID('#arguments.st.objectid#');btnSubmit('#request.farcryForm.name#', this.value);">
+				<option value="">-- Custom --</option>
+				
+				
+				<cfif listLen(attributes.lCustomActions)>
+					<cfloop list="#attributes.lCustomActions#" index="i">
+						<option value="#listFirst(i, ":")#">#listLast(i, ":")#</option>
+					</cfloop>
+				</cfif>
+				<!--- <option value="delete">Delete</option> --->
+			</select>
+		</cfif>
+		
 		</cfoutput>
+		
 	</cfsavecontent>
 	
 	<cfset stObjectAdminData.action = ActionDropdown />

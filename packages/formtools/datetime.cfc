@@ -465,6 +465,7 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
 		<cfset var html = "" />
+		<cfset var renderDate = "" />
 		
 		
 		
@@ -476,15 +477,28 @@
 		<cfparam name="arguments.stMetadata.ftDateMask" default="d-mmm-yy">
 		<cfparam name="arguments.stMetadata.ftTimeMask" default="short">
 		<cfparam name="arguments.stMetadata.ftShowTime" default="true">
+		<cfparam name="arguments.stMetadata.ftDisplayPrettyDate" default="false">
 		
-		<cfsavecontent variable="html">
-			<cfif len(arguments.stMetadata.value) and application.fapi.showFarcryDate(arguments.stMetadata.value)>
+		
+		<cfif len(arguments.stMetadata.value) and application.fapi.showFarcryDate(arguments.stMetadata.value)>
+			
+			<cfsavecontent variable="renderDate">
 				<cfoutput>#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateMask)#</cfoutput>
 				<cfif arguments.stMetadata.ftShowTime>
 					<cfoutput> #TimeFormat(arguments.stMetadata.value,arguments.stMetadata.ftTimeMask)# </cfoutput>
-				</cfif>				
-			</cfif>
-		</cfsavecontent>
+				</cfif>
+			</cfsavecontent>
+			
+			<cfsavecontent variable="html">
+				<cfif not arguments.stMetadata.ftDisplayPrettyDate>
+					<cfoutput><span title="#renderDate#">#application.fapi.prettyDate(arguments.stMetadata.value)#</span></cfoutput>
+				<cfelse>
+					<cfoutput>#renderDate#</cfoutput>
+				</cfif>
+				
+			</cfsavecontent>				
+		</cfif>
+		
 		
 		<cfreturn html>
 	</cffunction>

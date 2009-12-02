@@ -420,6 +420,19 @@ environment references (might be nice to clean these up)
 			stBut.buttontype="delete";
 			arrayAppend(aDefaultButtons,stBut);
 
+		// check if there are locked objects
+		if (isdefined("bUnlock")) {
+			stBut=structNew();
+			stBut.type="Submit";
+			stBut.name="unlock";
+			stBut.value="Unlock";
+			stBut.class="f-submit";
+			stBut.onClick="";
+			stBut.permission="";
+			stBut.buttontype="unlock";
+			arrayAppend(aDefaultButtons,stBut);
+		}
+		
 		// check if object uses status
 		if (structKeyExists(PrimaryPackage.stProps,"status")) {
 			// Set status to pending
@@ -455,29 +468,7 @@ environment references (might be nice to clean these up)
 				arrayAppend(aDefaultButtons,stBut);
 
 		}
-		// dump objects
-			stBut=structNew();
-			stBut.type="submit";
-			stBut.name="dump";
-			stBut.value="Properties";
-			stBut.class="f-submit";
-			stBut.onClick="";
-			stBut.permission="ObjectDumpTab";
-			stBut.buttontype="dump";
-			arrayAppend(aDefaultButtons,stBut);
 
-		// check if there are locked objects
-		if (isdefined("bUnlock")) {
-			stBut=structNew();
-			stBut.type="Submit";
-			stBut.name="unlock";
-			stBut.value="Unlock";
-			stBut.class="f-submit";
-			stBut.onClick="";
-			stBut.permission="";
-			stBut.buttontype="unlock";
-			arrayAppend(aDefaultButtons,stBut);
-		}
 	</cfscript>
 	<cfreturn aDefaultButtons />
 </cffunction>

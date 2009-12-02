@@ -152,23 +152,9 @@ $in: SessionID -- $
 				class="#attributes.FormClass#"  
 				style="#attributes.Formstyle#" >
 		</cfoutput>
-		<!--- <core:renderHTMLformStart onsubmit="#attributes.Formonsubmit#" class="#attributes.FormClass#" css="#attributes.Formcss#" style="#attributes.Formstyle#" heading="#attributes.Formheading#" />
-	 --->
+
 	</cfif>
 	
-
-	
-	
-<!---	<wiz:processwizard action="Cancel" url="#attributes.ReturnLocation#" >
-		<cfset stResult = owizard.deleteData(objectID=stwizard.ObjectID)>
-		
-		<!--- If a return location is not set, we want to delete the wizard object and exit the wizard tag. --->
-		<cfif not len(attributes.ReturnLocation)>
-			<cfset stResult = owizard.deleteData(objectID=stwizard.ObjectID)>
-			<cfexit method="exittag">	
-		</cfif>
-	</wiz:processwizard> --->
-
 	
 	<!--- If the wizard has been submitted then work out the next step. --->
 	<wiz:processwizard>		
@@ -188,21 +174,7 @@ $in: SessionID -- $
 			
 	</wiz:processwizard>
 	
-	
-<!---	<wiz:processwizard action="Save" url="#attributes.ReturnLocation#" >
-		<cfloop list="#structKeyList(stwizard.Data)#" index="i">
-			<cfset stProperties = stwizard.Data[i]>
-			<cfset typename = owizard.FindType(ObjectID=i) />				
-			<cfset otype = createObject("component",application.types["#stwizard.Data[i]['typename']#"].typepath) />
-			<cfset stResult = otype.setData(stProperties=stProperties) />
-		</cfloop>
-		
-		<!--- If a return location is not set, we want to delete the wizard object and exit the wizard tag. --->
-		<cfif not len(attributes.ReturnLocation)>
-			<cfset stResult = owizard.deleteData(objectID=stwizard.ObjectID)>
-			<cfexit method="exittag">	
-		</cfif>
-	</wiz:processwizard> --->
+
 	
 		
 	<!--- Reset the steps just before running them just incase they have changes since last call. --->
@@ -215,36 +187,31 @@ $in: SessionID -- $
 
 	<cfset stResult = owizard.Write(ObjectID=stwizard.ObjectID,Steps=stwizard.Steps,CurrentStep=stwizard.CurrentStep,Data=stwizard.Data)>
 
-	<!--- Include Prototype light in the head --->
-	<cfset Request.InHead.PrototypeLite = 1>
+
 	<cfsavecontent variable="wizardSubmissionJS">
 		<cfoutput>
 		<script language="javascript">
 			function wizardSubmission(state) {
 				if (state == 'Cancel') {
 					btnSubmit('#Request.farcryForm.Name#',state);
-					<!--- $j('##FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').val(state);
-					$j('###Request.farcryForm.Name#').submit();	 --->
 				} 
 				
 				<cfif Request.farcryForm.Validation>					
 					//else if ( realeasyvalidation#request.farcryForm.name#.validate() ) {
 					else {
 						btnSubmit('#Request.farcryForm.Name#',state);
-						<!--- $('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value=state;
-						$('#Request.farcryForm.Name#').submit(); --->	
 					}
 				<cfelse>
 					else {
 						btnSubmit('#Request.farcryForm.Name#',state);
-						<!--- $('FarcryFormSubmitButtonClicked#Request.farcryForm.Name#').value=state;
-						$('#Request.farcryForm.Name#').submit();	 --->
 					}
 				</cfif>
 			}
 			<cfset confirmation = application.rb.getResource('forms.buttons.Cancel@confirmtext','Changes made will not be saved.\nDo you still wish to Cancel?') />
 			function wizardCancelConfirm(){
 				if( window.confirm("#confirmation#")){
+					btnTurnOffServerSideValidation();
+					$j('###Request.farcryForm.Name#').attr('fc:validate',false);
 					wizardSubmission('Cancel');
 				}
 			}

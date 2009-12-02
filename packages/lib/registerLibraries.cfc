@@ -432,6 +432,44 @@
 				margin:10px 0px 0px 0px;
 				font-weight:bold;
 			}	
+			
+			
+			ul.object-admin-actions {
+				margin:0px;
+				padding:0px;
+			}
+			ul.object-admin-actions li {
+				float: left;
+				list-style: none;
+			}
+
+
+			ul.object-admin-actions li a,
+			ul.object-admin-actions li a:link,
+			ul.object-admin-actions li a:visited,
+			ul.object-admin-actions li a:hover,
+			ul.object-admin-actions li a:active {
+				text-decoration:none; 				
+				float:left;	
+				color:##000;
+				padding:2px;	
+				line-height:16px;
+				display:block;
+				text-decoration:none;
+				border:1px solid transparent;
+			} 
+			
+			ul.object-admin-actions li a:hover {
+				background-color:##ffffff;
+				border:1px solid ##B5B5B5;
+			} 
+			
+			
+			ul.object-admin-actions li a .ui-icon {
+				float:left;
+				margin-right:2px;
+			}
+			
 			</cfoutput>
 		</skin:registerCSS>
 							
