@@ -23,7 +23,7 @@
 <skin:htmlHead id="containers"><cfoutput>
 	<!-- Container styles / javascript -->
 	<style>
-		div.containeradmin { background-color: ##ccc; font-weight:bold; padding:2px 2px 0; color:##000; padding-bottom:2px; margin-top:3px;font-size:11px;line-height:16px;}
+		div.containeradmin { background-color: ##ccc; font-weight:bold; padding:2px 2px 0; color:##000; padding-bottom:2px; margin:3px 0px;font-size:11px;line-height:16px;}
 		div.containeradmin a { text-decoration:none; border: 0 none; display: block; padding-right:5px; float:left; color:##000; }
 		div.containeradmin a img { border:0 none !important; margin: 0 !important; padding: 0 !important; background: transparent none repeat scroll 0 0 !important; }
 		div.containeradmin div.type { width: 6.5em; float:left; }
@@ -34,7 +34,7 @@
 		##ajaxindicator { text-align: center; padding: 10px; }
 		##ajaxindicator img { border: 0 none; }
 		
-		div.ruleadmin { background-color: ##ddd; font-weight:bold; padding:2px 2px 0; color:##000; clear:both; padding-bottom:2px; margin-top:3px;font-size:11px;line-height:16px;}
+		div.ruleadmin { background-color: ##ddd; font-weight:bold; padding:2px 2px 0; color:##000; clear:both; padding-bottom:2px; margin:3px 0px;font-size:11px;line-height:16px;}
 		div.ruleadmin * { vertical-align: middle; }
 		div.ruleadmin a { text-decoration:none; border: 0 none; display: block; padding-right:5px; float:left; color:##000; }
 		div.ruleadmin a img { clear:right; border:0 none !important; margin:0 !important; padding: 0 !important; background: transparent none repeat scroll 0 0 !important; }

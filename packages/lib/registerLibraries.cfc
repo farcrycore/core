@@ -505,6 +505,7 @@
 			    font-size:12px;			     
 			    color:##fff; 
 				text-align:center;
+				z-index:999;
 			} 
 			</cfoutput>
 		</skin:registerCSS>				

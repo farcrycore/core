@@ -1055,6 +1055,21 @@ user --->
 
 		<cfoutput>
 		
+					
+		<cfif listLen(attributes.lCustomActions)>			
+			<select name="action#st.currentrow#" id="action#st.currentrow#" class="actionDropdown" style="float:left;" onchange="selectObjectID('#arguments.st.objectid#');btnSubmit('#request.farcryForm.name#', this.value);">
+				<option value="">-- Custom --</option>
+				
+				
+				<cfif listLen(attributes.lCustomActions)>
+					<cfloop list="#attributes.lCustomActions#" index="i">
+						<option value="#listFirst(i, ":")#">#listLast(i, ":")#</option>
+					</cfloop>
+				</cfif>
+				<!--- <option value="delete">Delete</option> --->
+			</select>
+		</cfif>
+		
 		<ul class="object-admin-actions">				
 			<li>
 			<a id="oa-overview-#arguments.st.objectid#" name="oa-overview-#arguments.st.objectid#" title="Overview" href="##">
@@ -1147,20 +1162,6 @@ user --->
 			</skin:onReady>	
 			<skin:toolTip id="oa-preview-#arguments.st.objectid#">Preview this object.</skin:toolTip>				
 		</ul>	
-					
-		<cfif listLen(attributes.lCustomActions)>			
-			<select name="action#st.currentrow#" id="action#st.currentrow#" class="actionDropdown" onchange="selectObjectID('#arguments.st.objectid#');btnSubmit('#request.farcryForm.name#', this.value);">
-				<option value="">-- Custom --</option>
-				
-				
-				<cfif listLen(attributes.lCustomActions)>
-					<cfloop list="#attributes.lCustomActions#" index="i">
-						<option value="#listFirst(i, ":")#">#listLast(i, ":")#</option>
-					</cfloop>
-				</cfif>
-				<!--- <option value="delete">Delete</option> --->
-			</select>
-		</cfif>
 		
 		</cfoutput>
 		

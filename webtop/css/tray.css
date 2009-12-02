@@ -5,11 +5,14 @@
 	color:#000;
 }
 
+#farcrytray a{
+	color:#000;	
+}
 #farcrytray li a,
 #farcrytray li a:link,
 #farcrytray li a:visited,
 #farcrytray li a:hover,
-#farcrytray li a:active {	
+#farcrytray li a:active {
 	color:#000;
 	padding:2px;	
 	line-height:16px;
@@ -33,10 +36,11 @@
 #farcrytray h1,
 #farcrytray h2,
 #farcrytray h3 {
-	margin: 0px;
+	margin: 5px 0 5px 0;
 	padding: 0px;
 	font-size:13px;
 	border:none;
+	color:#000;
 }
 
 #farcrytray .moredetail_icon { background:transparent url(../js/ext/resources/images/default/panel/tool-sprites.gif) no-repeat scroll 0 -210px; height:15px; width:15px; }

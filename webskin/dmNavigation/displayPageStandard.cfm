@@ -24,10 +24,10 @@
 		
 		<cfset stObjTemp = application.fapi.getContentObject(objectid="#stObj.aObjectIds[idIndex]#") />
 		
-		
+			
 		<!--- request.mode.lValidStatus is typically approved, or draft, pending, approved in SHOWDRAFT mode --->
 		<cfif StructKeyExists(stObjTemp,"status") AND ListContains(request.mode.lValidStatus, stObjTemp.status)>
-		
+				
 			<!--- Otherwise just show this one --->
 			<nj:display objectid="#stObjTemp.objectid#" typename="#stObjTemp.typename#" />
 			<cfsetting enablecfoutputonly="false" />

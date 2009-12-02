@@ -36,21 +36,17 @@
 	
 	<skin:onReady>
 	<cfoutput>
-	$j('##show-hidden').click(function(){
-		$fc.traySwitch('displayAdminBarHidden');
-		return false;
-	});
-	$j('##show-summary').click(function(){
-		$fc.traySwitch('displayAdminBarSummary');
-		return false;
-	});
-	
-	<cfif stObj.typename neq "farCOAPI">
-		$j('##edit-object').click(function(){
-			$fc.editTrayObject('#stObj.typename#', '#stObj.objectid#');
+		$j('##show-hidden').click(function(){
+			$fc.traySwitch('displayAdminBarHidden');
 			return false;
 		});
-	</cfif>
+		
+		<cfif stObj.typename neq "farCOAPI">
+			$j('##edit-object').click(function(){
+				$fc.editTrayObject('#stObj.typename#', '#stObj.objectid#');
+				return false;
+			});
+		</cfif>
 	</cfoutput>
 	</skin:onReady>
 	
@@ -69,15 +65,17 @@
 	<grid:div style="float:left;margin-right:15px;">
 		<cfoutput>
 		<ul id="tray-actions">	
+				
 			<li><a id="show-hidden" href="##"><span class="ui-icon" style="background-image:url(#application.url.webtop#/facade/icon.cfm?icon=toggletray&size=16);">&nbsp;</span>Hide tray</a></li>
 			<li><a href="#application.fapi.fixURL(url='#application.url.webtop#', removevalues="")#"><span class="ui-icon ui-icon-carat-2-n-s" style="float:left;">&nbsp;</span>Webtop</a></li>
 			<!---<cfif stObj.typename neq "farCOAPI">
 				<li><a id="edit-object" href="##"><span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>Edit</a></li>
 			</cfif>--->
 			<li>
-				<a href="#application.fapi.fixURL(url='#refererURL#', removevalues="", addvalues='updateapp=1')#">
+				<a href="#application.fapi.fixURL(url='#refererURL#', removevalues="", addvalues='updateapp=#application.updateappkey#')#">
 					<span class="ui-icon ui-icon-refresh" style="float:left;">&nbsp;</span>Update App
 				</a>
+			</li>
 			<li>
 				<a href="#application.fapi.fixURL(url='#refererURL#', removevalues="", addvalues='logout=1')#">
 					<span class="ui-icon ui-icon-power" style="float:left;">&nbsp;</span>Logout
@@ -86,16 +84,31 @@
 		</ul>
 		</cfoutput>
 	</grid:div>	
+		
+	<cfif stObj.typename neq "farCOAPI">
+		<grid:div style="float:left;margin-right:15px;">
+			<cfoutput>
+			<ul id="tray-actions">				
+				<li>
+					<a id="edit-object" href="##">
+						<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>Edit
+					</a>
+				</li>	
+			</ul>
+			</cfoutput>
+		</grid:div>	
+	</cfif>
 	
 	<grid:div style="float:left;width:50%;">
 		<cfoutput>
+		
 		<h2>
-			<admin:icon icon="#application.stCOAPI[contentTypename].icon#" size="16" usecustom="true" />
+			<!---<admin:icon icon="#application.stCOAPI[contentTypename].icon#" size="16" usecustom="true" />--->
 			#application.fapi.getContentTypeMetadata(typename='#contentTypename#', md='displayName', default='#stobj.typename#')#
-			<cfif stObj.typename neq "farCOAPI">
+			<!---<cfif stObj.typename neq "farCOAPI">
 				&nbsp;&nbsp;&nbsp;
 				<a id="edit-object" href="##" style="">edit</a>
-			</cfif>
+			</cfif>--->
 		</h2>
 		</cfoutput>
 		

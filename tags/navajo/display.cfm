@@ -105,7 +105,6 @@
 	</cfif>
 </cfif>
 
-
 <cfif len(url.objectid)>
 
 	<!---
@@ -117,8 +116,8 @@
 	<!--- grab the object we are displaying --->
 	<cftry>
 		<cfset stObj = application.fapi.getContentObject(url.objectid, url.type) />
-		
-		
+
+				
 		<!--- check that an appropriate result was returned from COAPI --->
 		<cfif NOT IsStruct(stObj) OR StructIsEmpty(stObj)>
 			<cfthrow />
@@ -164,7 +163,6 @@
 		</cfif>
 	</cfif>
 	
-
 	<!--- 
 	DETERMINE request.navid
 	- Get the navigational context of the content object 
@@ -180,6 +178,7 @@
 		</cfif>
 	</cfif>
 	
+
 	<!--- Check security --->
 	<sec:CheckPermission permission="View" objectID="#stobj.objectid#" typename="#stobj.typename#" result="iHasViewPermission" />
 
@@ -219,14 +218,23 @@
 		</cfif>
 	</cfif>
 	
+	
 	<!--- determine display method for object --->
 	<cfset request.stObj = stObj>
 
+
+	
+
 	<cfif len(url.view)>
-		
+		<cftry>
 		<!--- Use the requested view --->
 		<skin:view objectid="#stobj.objectid#" typename="#stObj.typename#" webskin="#url.view#" alternateHTML="" />
 
+		<cfcatch type="any">
+			<cfdump var="#cfcatch#">
+			<cfabort>
+		</cfcatch>
+		</cftry>
 	<cfelseif structKeyExists(stObj, "displayMethod") AND len(stObj.displayMethod)>
 	
 		<!--- Update the view with the display method --->
@@ -314,14 +322,16 @@
 		<!--- import libraries --->
 		<skin:loadJS id="jquery" />
 		<skin:loadJS id="jquery-ui" />
+		<skin:loadJS id="jquery-tools" />
 		<skin:loadJS id="farcry-form" />
 		<skin:loadCSS id="jquery-ui" />
 		<skin:loadCSS id="farcry-form" />
-		<skin:loadCSS id="farcry-tray" />
+		<skin:loadCSS id="farcry-tray" />	
+		<skin:loadCSS id="jquery-tools" />
 
 		<cfoutput>	
 		<skin:onReady>
-		$j("body").prepend("<div style='bottom:0;font-size:11px;padding:0;position:fixed;right:0;width:100%;z-index:99;max-height:200px;overflow:auto;'><div id='farcrytray'></div></div>");
+		
 
 		$fc.traySwitch = function(webskin){
 		    $j.ajax({
@@ -334,7 +344,7 @@
 				</cfif>
 				
 				complete: function(data){
-					$j('##farcrytray').html(data.responseText);						
+					$j('##farcrytray').html(data.responseText);					
 				},
 				data:{
 					objectID:'#url.objectid#',
@@ -349,10 +359,7 @@
 		$fc.trayAction = function(urlParams){
 		    document.location = '#cgi.script_name#?#cgi.query_string#&' + urlParams;
 		}
-		
 			
-		$fc.traySwitch('#session.fc.trayWebskin#'); // add tray
-				
 		$fc.editTrayObject = function(typename,objectid) {
 			var newDialogDiv = $j("<div id='" + typename + objectid + "'><iframe style='width:99%;height:99%;border-width:0px;'></iframe></div>")
 			$j("body").prepend(newDialogDiv);
@@ -374,7 +381,17 @@
 			//OPEN URL IN IFRAME ie. not in ajaxmode
 			$j('iframe',$j(newDialogDiv)).attr('src','#application.url.webtop#/edittabOverview.cfm?typename=' + typename + '&objectid=' + objectid + '&method=edit&ref=iframe');
 			
-		};		
+		};	
+		
+		
+		// only show the frame if we are not in a frame
+		if (top === self) { 		
+			$j("body").prepend("<div style='bottom:0;font-size:11px;padding:0;position:fixed;right:0;width:100%;z-index:99;max-height:200px;overflow:auto;'><div id='farcrytray'></div></div>");	
+			$fc.traySwitch('#session.fc.trayWebskin#'); // add tray
+			
+		}	
+		
+				
 		</skin:onReady>
 		
 			

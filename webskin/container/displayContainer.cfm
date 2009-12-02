@@ -22,6 +22,7 @@
 <cfimport taglib="/farcry/core/tags/container/" prefix="con">
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
+<skin:loadJS id="jquery" />
 <skin:loadJS id="gritter" />
 <skin:loadCSS id="gritter" />
 

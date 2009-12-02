@@ -99,10 +99,17 @@ START WEBSKIN
 		<cfset stLockedBy = application.fapi.getContentType("dmProfile").getProfile(stobj.lockedby) />
 		
 		<cfoutput>
-		<cfif stobj.lockedby eq session.security.userid OR  iDeveloperPermission eq 1>
+		<cfif stobj.lockedby eq session.security.userid>
 			<!--- locked by current user --->
 			<ft:button 	value="Unlock" 
 						text="<h1>UNLOCK</h1>#application.rb.formatRBString('workflow.labels.lockedwhen@label', stLockedBy.label,'Locked by YOU')#"
+						class="primary"
+						rbkey="workflow.labels.lockedwhen@label" 
+						url="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#&ref=#url.ref#" />
+		<cfelseif stOverviewParams.stPermissions.iDeveloperPermission eq 1>
+			<!--- locked by another user --->
+			<ft:button 	value="Unlock" 
+						text="<h1>UNLOCK</h1>#application.rb.formatRBString('workflow.labels.lockedwhen@label', stLockedBy.label,'Locked by {1}')#"
 						class="primary"
 						rbkey="workflow.labels.lockedwhen@label" 
 						url="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#&ref=#url.ref#" />
