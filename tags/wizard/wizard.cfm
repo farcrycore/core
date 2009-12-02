@@ -187,45 +187,30 @@ $in: SessionID -- $
 
 	<cfset stResult = owizard.Write(ObjectID=stwizard.ObjectID,Steps=stwizard.Steps,CurrentStep=stwizard.CurrentStep,Data=stwizard.Data)>
 
-
-	<cfsavecontent variable="wizardSubmissionJS">
-		<cfoutput>
-		<script language="javascript">
-			function wizardSubmission(state) {
-				if (state == 'Cancel') {
-					btnSubmit('#Request.farcryForm.Name#',state);
-				} 
-				
-				<cfif Request.farcryForm.Validation>					
-					//else if ( realeasyvalidation#request.farcryForm.name#.validate() ) {
-					else {
-						btnSubmit('#Request.farcryForm.Name#',state);
-					}
-				<cfelse>
-					else {
-						btnSubmit('#Request.farcryForm.Name#',state);
-					}
-				</cfif>
-			}
-			<cfset confirmation = application.rb.getResource('forms.buttons.Cancel@confirmtext','Changes made will not be saved.\nDo you still wish to Cancel?') />
-			function wizardCancelConfirm(){
-				if( window.confirm("#confirmation#")){
-					btnTurnOffServerSideValidation();
-					$j('###Request.farcryForm.Name#').attr('fc:validate',false);
-					wizardSubmission('Cancel');
-				}
-			}
-		</script>
+	<cfset confirmation = application.rb.getResource('forms.buttons.Cancel@confirmtext','Changes made will not be saved.\nDo you still wish to Cancel?') />
+	<skin:onReady>
+		<cfoutput>		
+		$fc.wizardSubmission = function(formname,state) {
+			btnSubmit(formname,state);	
+		}
+		
+		$fc.wizardCancelConfirm = function(formname,confirmtext) {
+			if( window.confirm(confirmtext)){
+				btnTurnOffServerSideValidation();
+				$j('##' + formname).attr('fc:validate',false);
+				$fc.wizardSubmission(formname, 'Cancel');	
+			}	
+		}		
 		</cfoutput>
-	</cfsavecontent>
-	<cfhtmlHead text="#wizardSubmissionJS#" />
+	</skin:onReady>
+
 	<cfoutput>
 	<div id="wizard-wrap">	
 			
 		<div class="wizard-pagination">
 			<ul>
-				<cfif stwizard.CurrentStep LT ListLen(stwizard.Steps)><li class="li-next"><ft:button value="Next" text="#application.rb.getResource('forms.buttons.Next@label','Next')#" renderType="link" /></li></cfif><!--- <a href="javascript:wizardSubmission('Next');">#application.rb.getResource("forms.buttons.Next@label","Next")#</a> --->
-				<cfif stwizard.CurrentStep GT 1><li class="li-prev"><ft:button value="Previous" text="#application.rb.getResource('forms.buttons.Next@label','Back')#" renderType="link" /></li></cfif><!--- <a href="javascript:wizardSubmission('Previous');">#application.rb.getResource("forms.buttons.Back@label","Back")#</a> --->
+				<cfif stwizard.CurrentStep LT ListLen(stwizard.Steps)><li class="li-next"><ft:button value="Next" text="#application.rb.getResource('forms.buttons.Next@label','Next')#" renderType="link" /></li></cfif>
+				<cfif stwizard.CurrentStep GT 1><li class="li-prev"><ft:button value="Previous" text="#application.rb.getResource('forms.buttons.Next@label','Back')#" renderType="link" /></li></cfif>
 			</ul>	
 		</div>
 
@@ -244,10 +229,10 @@ $in: SessionID -- $
 		<div id="wizard-nav">
 			<ul>
 				<cfloop list="#stwizard.Steps#" index="i">
-					<li><a href="javascript:wizardSubmission('#i#')"><cfif ListGetAt(stwizard.Steps,stwizard.CurrentStep) EQ i><strong>#i#</strong><cfelse>#i#</cfif></a></li>
+					<li><a href="javascript:$fc.wizardSubmission('#Request.farcryForm.Name#','#i#')"><cfif ListGetAt(stwizard.Steps,stwizard.CurrentStep) EQ i><strong>#i#</strong><cfelse>#i#</cfif></a></li>
 				</cfloop>
-				<li class="li-complete"><a href="javascript:wizardSubmission('Save');">#application.rb.getResource("forms.buttons.Complete@label","Complete")#</a></li>
-				<li class="li-cancel"><a href="javascript:wizardCancelConfirm();">#application.rb.getResource("forms.buttons.Cancel@label","Cancel")#</a></li>
+				<li class="li-complete"><a href="javascript:$fc.wizardSubmission('#Request.farcryForm.Name#','Save');">#application.rb.getResource("forms.buttons.Complete@label","Complete")#</a></li>
+				<li class="li-cancel"><a href="javascript:$fc.wizardCancelConfirm('#Request.farcryForm.Name#', '#confirmation#');">#application.rb.getResource("forms.buttons.Cancel@label","Cancel")#</a></li>
 			</ul>
 		</div>
 
@@ -260,8 +245,8 @@ $in: SessionID -- $
 		
 		<div class="wizard-pagination pg-bot">
 			<ul>
-				<cfif stwizard.CurrentStep LT ListLen(stwizard.Steps)><li class="li-next"><ft:button value="Next" text="#application.rb.getResource('forms.buttons.Next@label','Next')#" renderType="link" /></li></cfif><!--- <a href="javascript:wizardSubmission('Next');">#application.rb.getResource("forms.buttons.Next@label","Next")#</a> --->
-				<cfif stwizard.CurrentStep GT 1><li class="li-prev"><ft:button value="Previous" text="#application.rb.getResource('forms.buttons.Next@label','Back')#" renderType="link" /></li></cfif><!--- <a href="javascript:wizardSubmission('Previous');">#application.rb.getResource("forms.buttons.Back@label","Back")#</a> --->
+				<cfif stwizard.CurrentStep LT ListLen(stwizard.Steps)><li class="li-next"><ft:button value="Next" text="#application.rb.getResource('forms.buttons.Next@label','Next')#" renderType="link" /></li></cfif>
+				<cfif stwizard.CurrentStep GT 1><li class="li-prev"><ft:button value="Previous" text="#application.rb.getResource('forms.buttons.Next@label','Back')#" renderType="link" /></li></cfif>
 			</ul>			
 		</div>
 				
@@ -355,7 +340,7 @@ $in: SessionID -- $
 			</cfoutput>				
 		</skin:onReady>
 		
-		<!--- <core:renderHTMLformEnd />	 --->
+		
 		<cfset dummy = structdelete(request,"farcryForm")>	
 	</cfif>
 	
