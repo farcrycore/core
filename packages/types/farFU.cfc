@@ -12,6 +12,7 @@
 
 		<cfset this.stMappings = structNew() />
 		<cfset this.stLookup = structNew() /><!--- SHOULD ONLY CONTAIN THE DEFAULT FU TO BE USED FOR THIS OBJECT --->
+		<cfset this.stDBLookup = structNew() />
 		
 		<cfset setupCoapiAlias() />
 		<cfset initialiseMappings() />		
@@ -174,7 +175,7 @@
 		
 			<cfif stLocal.qDefault.recordCount>
 				<cfset stLocal.stDefaultFU = getData(objectid="#stLocal.qDefault.objectID#") />
-				<cfset setMapping(objectid="#stLocal.qDefault.objectID#") />
+				<cfset setMapping(objectid="#stLocal.qDefault.objectID#", bForce="true") /><!--- Setting bForce ensures that this FU is used as the default because it MAY not have a default set. --->
 			</cfif>
 		</cfif>
 		
@@ -541,10 +542,11 @@
 	
 	<cffunction name="setMapping" access="public" output="false" returntype="void" hint="Add a FU record to the application scope mapping table.">
 		<cfargument name="objectid" required="true" hint="The objectid of the farFU record we wish to add to the mapping tables.">
+		<cfargument name="bForce" required="false" default="false" hint="Force the URL Struct to use this as the FU and not look for a default. This captures the problem where there IS no default.">
 		
 		<cfset var stFU = getData(objectid="#arguments.objectid#") />
 		
-		<cfset this.stMappings[stFU.friendlyURL] = createURLStruct(farFUID=arguments.objectid) />
+		<cfset this.stMappings[stFU.friendlyURL] = createURLStruct(farFUID=arguments.objectid,bForce=arguments.bForce) />
 		
 		<cfif stFU.bDefault>
 			<!--- fu lookup --->
@@ -558,10 +560,12 @@
 		<cfset var stLocal = StructNew()>
 		<cfset var stResult = StructNew()>
 		<cfset var stDeployResult = StructNew()>
+		<cfset var qLookup = "" />
 		
 		<!--- initialise fu scopes --->
 		<cfset this.stMappings = structNew() />
 		<cfset this.stLookup = structNew() />
+		<cfset this.stDBLookup = structNew() /> <!--- Contains keys for EVERY friendly URL in the DB for quick reference --->
 		
 		<!--- Check to make sure the farFU table has been deployed --->
 		<cftry>
@@ -596,6 +600,16 @@
 			<cfset setMapping(objectid="#stLocal.q.objectid#") />
 		</cfloop>
 		
+		
+		<cfquery datasource="#application.dsn#" name="qLookup">
+		SELECT objectid,friendlyURL
+		FROM farFU
+		</cfquery>
+		
+		<cfloop query="qLookup">
+			<cfset this.stDBLookup[qLookup.friendlyURL] = qLookup.objectid />
+		</cfloop>
+					
 	</cffunction>
 
 	<cffunction name="parseURL" returntype="struct" access="public" output="false" hint="Parses the url.furl and returns all relevent url variables.">
@@ -774,6 +788,7 @@
 	<cffunction name="createURLStruct" access="public" returntype="struct" hint="Creates a set of URL variables from a farFU object and/or a fuParametersString">
 		<cfargument name="farFUID" type="uuid" required="false" hint="The objectid of a farFU object" />
 		<cfargument name="fuParameters" type="string" required="false" hint="The portion of the furl value that needs to be parsed" />
+		<cfargument name="bForce" required="false" default="false" hint="Force the URL Struct to use this as the FU and not look for a default. This captures the problem where there IS no default.">
 		
 		<cfset var stFU = structnew() />
 		<cfset var stResult = structnew() />
@@ -804,7 +819,8 @@
 			<cfif stFU.redirectionType NEQ "none">
 				<!--- NOTE: URL information is still included in a redirect struct as the redirect will not be honoured for ajax requests --->
 				
-				<cfif stFU.redirectTo EQ "default" and not stFU.bDefault eq 1>
+				<cfif stFU.redirectTo EQ "default" AND NOT stFU.bDefault eq 1 AND NOT arguments.bForce>
+					
 					<cfset stLocal.stDefaultFU = getDefaultFUObject(refObjectID=stFU.refObjectID) />
 					
 					<cfif not structIsEmpty(stLocal.stDefaultFU) AND stLocal.stDefaultFU.objectid NEQ stFU.objectid>
@@ -1273,10 +1289,17 @@
 		<cfset var stBodyView = "" />
 		<cfset var stView = "" />
 		<cfset var bMustUseRegularURLParams = false />
+		<cfset var qLookup = "" />
 		
 		<cfif len(arguments.type)>
 			<cfif isdefined("application.stCOAPI.#arguments.type#.fuAlias") and len(application.stCOAPI[arguments.type].fuAlias)>
-				<cfset typeFU = application.stCOAPI[arguments.type].fuAlias />
+			
+				<cfif structKeyExists(this.stDBLookup, "/#application.stCOAPI[arguments.type].fuAlias#")>					
+					<cfset typeFU = arguments.type />
+				<cfelse>	
+					<cfset typeFU = application.stCOAPI[arguments.type].fuAlias />
+				</cfif> 
+				
 			<cfelse>
 				<cfset typeFU = arguments.type />
 			</cfif>
@@ -1324,7 +1347,7 @@
 				
 				<!--- IF NOT IN CACHE CHECK THE DATABASE --->
 				<cfelse>
-
+					
 					<!--- GET FRIENDLY URL BASED ON THE OBJECTID --->					
 					<cfset stFUObject = getDefaultFUObject(refObjectID="#arguments.objectid#") />
 					
@@ -1554,4 +1577,21 @@
 		<cfreturn stLocal.returnstruct>
 	</cffunction>
 		
+	<cffunction name="setData" access="public" output="false" returntype="struct" hint="Update the record for an objectID including array properties.  Pass in a structure of property values; arrays should be passed as an array.">
+		<cfargument name="stProperties" required="true">
+		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+		<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#">
+		<cfargument name="dbowner" type="string" required="false" default="#application.dbowner#">
+		<cfargument name="bSessionOnly" type="string" required="false" default="false">
+		
+		<!--- We need to make sure we update our stDBLookup anytime we save an FU --->
+		<cfif structKeyExists(arguments.stProperties, "friendlyURL") AND len(arguments.stProperties.friendlyURL)>
+			<cfset this.stDBLookup[arguments.stProperties.friendlyURL] = arguments.stProperties.objectID />
+		</cfif>
+		
+		<cfreturn super.setData(argumentCollection="#arguments#") />
+		
+	</cffunction>		
+	
+	
 </cfcomponent>
