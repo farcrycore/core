@@ -2,6 +2,26 @@
 
 
 	<cfproperty name="ftLabelAlignment" required="false" default="inline" options="inline,block" hint="Used by FarCry Form Layouts for positioning of labels. inline or block." />
+
+	<cfproperty name="ftAllowAttach" required="false" default="true" />
+	<cfproperty name="ftAllowAdd" required="false" default="false" />
+	<cfproperty name="ftAllowEdit" required="false" default="false" />
+	<cfproperty name="ftRemoveType" required="false" default="detach" />
+	
+	<cfproperty name="ftLibrarySelectedWebskin" default="librarySelected" type="string" />
+	<cfproperty name="ftLibrarySelectedListClass" default="arrayDetail" type="string" />
+	<cfproperty name="ftLibrarySelectedListStyle" default="" type="string" />
+	<cfproperty name="ftLibraryListItemWidth" default="" type="string" />
+	<cfproperty name="ftLibraryListItemHeight" default="" type="string" />
+	<cfproperty name="ftRenderType" default="Library" type="string" />
+	<cfproperty name="ftSelectSize" default="" type="string" />
+	<cfproperty name="ftSelectMultiple" default="true" type="boolean" />
+	<cfproperty name="ftAllowLibraryEdit" default="false">
+	<cfproperty name="ftLibraryEditWebskin" default="edit">
+	<cfproperty name="ftFirstListLabel" default="-- SELECT --">
+	<cfproperty name="ftLibraryData" default="" /><!--- Name of a function to return the library data --->
+	<cfproperty name="ftLibraryDataTypename" default="" /><!--- Typename containing the function defined in ftLibraryData --->	
+	
 	
 	
 
@@ -27,145 +47,214 @@
 		<cfset var returnHTML = "" />		
 		<cfset var qArrayField = "" />
 				
-		<cfparam name="arguments.stMetadata.includeLibraryWrapper" default="true" />
-		<cfparam name="arguments.stMetadata.ftAllowAttach" default="true" />
-		<cfparam name="arguments.stMetadata.ftAllowAdd" default="false" />
-		<cfparam name="arguments.stMetadata.ftAllowEdit" default="false" />
-		<cfparam name="arguments.stMetadata.ftRemoveType" default="detach" />
 		
 		<skin:loadJS id="jquery-ui" />
 		<skin:loadCSS id="jquery-ui" />
 		
-		<cfsavecontent variable="returnHTML">	
-			<grid:div class="multiField">
-			<cfif arguments.stMetadata.type EQ "array">
-			
-				<cfquery datasource="#application.dsn#" name="qArrayField">
-				SELECT data
-				FROM #arguments.typename#_#arguments.stMetaData.Name#
-				WHERE parentID = '#arguments.stObject.objectID#'
-				ORDER BY seq
-				</cfquery>
-				<cfset joinItems = valueList(qArrayField.data) />
-				<!--- <cfset joinItems = arrayToList(arguments.stObject[arguments.stMetadata.name]) /> --->
-			<cfelse>
-				<cfset joinItems = arguments.stObject[arguments.stMetadata.name] />
-			</cfif>
 
-			<cfif listLen(joinItems)>
-				<cfoutput><ul id="join-#stObject.objectid#-#arguments.stMetadata.name#" class="arrayDetailView" style="list-style-type:none;border:1px solid ##ebebeb;border-width:1px 1px 0px 1px;margin:0px;"></cfoutput>
-					<cfset counter = 0 />
-					<cfloop list="#joinItems#" index="i">
-						<cfset counter = counter + 1 />
-						<skin:view objectid="#i#" webskin="librarySelected" r_html="htmlLabel" />
-						<cfoutput>
-						<li id="join-item-#i#" class="sort #iif(counter mod 2,de('oddrow'),de('evenrow'))#" serialize="#i#" style="clear:both;margin-bottom:5px;">
-							<div class="buttonGripper"><p></p></div>
-							<div class="arrayDetail" style="float:left;">#htmlLabel#</div>
-							<div class="join-remove" style="float:right;white-space: nowrap;">
-								
-								<cfif arguments.stMetadata.ftAllowEdit or 1 eq 1>
-									<ft:button
-										Type="button" 
-										renderType="button"
-										class="ui-state-default ui-corner-all"
-										value="Edit"
-										text="edit" 
-										onClick="fcForm.openLibraryEdit('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#i#');" />
+		
+		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
+		
+			<cfcase value="list">
+				<cfif arguments.stMetadata.type EQ "array">		
+					<cfset joinItems = arrayToList(arguments.stObject[arguments.stMetadata.name]) />
+				<cfelse>
+					<cfset joinItems = arguments.stObject[arguments.stMetadata.name] />
+				</cfif>		
+				
+				<!-------------------------------------------------------------------------- 
+				generate library data query to populate library interface 
+				--------------------------------------------------------------------------->
+				<cfif structkeyexists(stMetadata, "ftLibraryData") AND len(stMetadata.ftLibraryData)>	
+				
+					<cfif not structKeyExists(stMetadata, "ftLibraryDataTypename") OR not len(stMetadata.ftLibraryDataTypename)>
+						<cfset stMetadata.ftLibraryDataTypename = arguments.typename />
+					</cfif>
+					<cfset oPrimary = application.fapi.getContentType(stMetadata.ftLibraryDataTypename) />
+					
+					<!--- use ftlibrarydata method from primary content type --->
+					<cfif structkeyexists(oprimary, stMetadata.ftLibraryData)>
+						<cfinvoke component="#oPrimary#" method="#stMetadata.ftLibraryData#" returnvariable="libraryData">
+							<cfinvokeargument name="primaryID" value="#arguments.stobject.objectid#" />
+							<cfinvokeargument name="qFilter" value="#queryNew('objectid')#" />
+						</cfinvoke>					
 						
-								</cfif>
-								
-								<cfif arguments.stMetadata.ftRemoveType EQ "delete">
-									<ft:button
-										Type="button" 
-										renderType="button"
-										class="ui-state-default ui-corner-all"
-										value="Delete" 
-										text="delete" 
-										confirmText="Are you sure you want to delete this item" 
-										onClick="fcForm.deleteLibraryItem('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#i#');" />
-								<cfelseif arguments.stMetadata.ftRemoveType EQ "detach">
-									<ft:button
-										Type="button" 
-										renderType="button"
-										class="ui-state-default ui-corner-all"
-										value="Detach" 
-										text="detach" 
-										confirmText="Are you sure you want to detach this item" 
-										onClick="fcForm.detachLibraryItem('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#i#');" />
-						
-								</cfif>
-								
-							</div>
-							<br style="clear:both;" />
-						</li>
-						</cfoutput>	
-					</cfloop>
-				<cfoutput></ul></cfoutput>
-			</cfif>
+						<cfif isStruct(libraryData)>
+							<cfset qLibraryList = libraryData.q>
+						<cfelse>
+							<cfset qLibraryList = libraryData />
+						</cfif>					
+					</cfif>
+				<cfelse>
+					<!--- if nothing exists to generate library data then cobble something together --->
+					<cfset qLibraryList = createObject("component", application.types[listFirst(arguments.stMetadata.ftJoin)].typepath).getLibraryData() />
+				</cfif>
+		
+				<cfsavecontent variable="returnHTML">
+				<cfif qLibraryList.recordcount>
+					<cfoutput>
+					<select  id="#arguments.fieldname#" name="#arguments.fieldname#" <cfif len(arguments.stMetadata.ftSelectSize)> size="#arguments.stMetadata.ftSelectSize#"</cfif> <cfif arguments.stMetadata.ftSelectMultiple>multiple="multiple"</cfif> style="width:auto;" class="selectInput #arguments.stMetadata.ftClass#">
+					<cfif len(arguments.stMetadata.ftFirstListLabel) AND NOT arguments.stMetadata.ftSelectMultiple>
+						<option value="">#arguments.stMetadata.ftFirstListLabel#</option>
+					</cfif>
+					<cfloop query="qLibraryList"><option value="#qLibraryList.objectid#" <cfif listFindNoCase(joinItems,qLibraryList.objectid)>selected</cfif>><cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif></option></cfloop>
+					</select>
+					<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" />
+					
+					</cfoutput>
+					
+					
+				<cfelse>
+					<!--- todo: i18n --->
+					<cfoutput>
+					<em>No options available.</em>
+					<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" />
+					</cfoutput>
+				</cfif>
+				
+				</cfsavecontent>
 			
-			<ft:buttonPanel>
-			<cfoutput>
-				
-				
-					<cfif arguments.stMetadata.ftAllowAttach>
-						<ft:button	Type="button" 
-									renderType="button"
-									class="ui-state-default ui-corner-all"
-									value="attach" 
-									onClick="fcForm.openLibrarySelect('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');" />
+			</cfcase>		
+		
+			<cfdefaultcase>
+				<cfif arguments.stMetadata.type EQ "array">		
+					<cfquery datasource="#application.dsn#" name="qArrayField">
+					SELECT *
+					FROM #arguments.typename#_#arguments.stMetaData.Name#
+					WHERE parentID = '#arguments.stObject.objectID#'
+					ORDER BY seq
+					</cfquery>	
+					<cfset joinItems = valueList(qArrayField.data) />
+				<cfelse>
+					<cfset joinItems = arguments.stObject[arguments.stMetadata.name] />
+				</cfif>		
+							
+			
+			
+				<cfsavecontent variable="returnHTML">	
+					<grid:div class="multiField">
+
+		
+					<cfif listLen(joinItems)>
+						<cfoutput><ul id="join-#stObject.objectid#-#arguments.stMetadata.name#" class="arrayDetailView" style="list-style-type:none;border:1px solid ##ebebeb;border-width:1px 1px 0px 1px;margin:0px;"></cfoutput>
+							<cfset counter = 0 />
+							<cfloop list="#joinItems#" index="i">
+								<cfset counter = counter + 1 />
+								<skin:view objectid="#i#" webskin="librarySelected" r_html="htmlLabel" />
+								<cfoutput>
+								<li id="join-item-#i#" class="sort #iif(counter mod 2,de('oddrow'),de('evenrow'))#" serialize="#i#" style="clear:both;margin-bottom:5px;">
+									<div class="buttonGripper"><p></p></div>
+									<div class="arrayDetail" style="float:left;">#htmlLabel#</div>
+									<div class="join-remove" style="float:right;white-space: nowrap;">
+										
+										<cfif arguments.stMetadata.ftAllowEdit or 1 eq 1>
+											<ft:button
+												Type="button" 
+												renderType="button"
+												class="ui-state-default ui-corner-all"
+												value="Edit"
+												text="edit" 
+												onClick="fcForm.openLibraryEdit('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#i#');" />
+								
+										</cfif>
+										
+										<cfif arguments.stMetadata.ftRemoveType EQ "delete">
+											<ft:button
+												Type="button" 
+												renderType="button"
+												class="ui-state-default ui-corner-all"
+												value="Delete" 
+												text="delete" 
+												confirmText="Are you sure you want to delete this item" 
+												onClick="fcForm.deleteLibraryItem('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#i#');" />
+										<cfelseif arguments.stMetadata.ftRemoveType EQ "detach">
+											<ft:button
+												Type="button" 
+												renderType="button"
+												class="ui-state-default ui-corner-all"
+												value="Detach" 
+												text="detach" 
+												confirmText="Are you sure you want to detach this item" 
+												onClick="fcForm.detachLibraryItem('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#i#');" />
+								
+										</cfif>
+										
+									</div>
+									<br style="clear:both;" />
+								</li>
+								</cfoutput>	
+							</cfloop>
+						<cfoutput></ul></cfoutput>
 						
+						<cfoutput><input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#joinItems#" /></cfoutput>
 					</cfif>
 					
-					<cfif listLen(joinItems)>
+					<ft:buttonPanel>
+					<cfoutput>
 						
-						<cfif arguments.stMetadata.ftRemoveType EQ "delete">
-							<ft:button	Type="button" 
-										renderType="button"
-										class="ui-state-default ui-corner-all"
-										value="Delete All" 
-										text="delete all" 
-										confirmText="Are you sure you want to delete all the attached items?"
-										onClick="fcForm.deleteAllLibraryItems('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems#');" />								
-						<cfelseif arguments.stMetadata.ftRemoveType EQ "detach">
-							<ft:button	Type="button" 
-										renderType="button"
-										class="ui-state-default ui-corner-all"
-										value="Detach All" 
-										text="detach all" 
-										confirmText="Are you sure you want to detach all the attached items?"
-										onClick="fcForm.detachAllLibraryItems('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems#');" />								
+						
+							<cfif arguments.stMetadata.ftAllowAttach>
+								<ft:button	Type="button" 
+											renderType="button"
+											class="ui-state-default ui-corner-all"
+											value="attach" 
+											onClick="fcForm.openLibrarySelect('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');" />
+								
+							</cfif>
 							
-						</cfif>
-					</cfif>
-					<cfif arguments.stMetadata.ftAllowAdd or 1 eq 1>
-						<ft:button	Type="button" 
-									renderType="button"
-									class="ui-state-default ui-corner-all"
-									value="Add" 
-									text="add" 
-									onClick="fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');" />
+							<cfif listLen(joinItems)>
+								
+								<cfif arguments.stMetadata.ftRemoveType EQ "delete">
+									<ft:button	Type="button" 
+												renderType="button"
+												class="ui-state-default ui-corner-all"
+												value="Delete All" 
+												text="delete all" 
+												confirmText="Are you sure you want to delete all the attached items?"
+												onClick="fcForm.deleteAllLibraryItems('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems#');" />								
+								<cfelseif arguments.stMetadata.ftRemoveType EQ "detach">
+									<ft:button	Type="button" 
+												renderType="button"
+												class="ui-state-default ui-corner-all"
+												value="Detach All" 
+												text="detach all" 
+												confirmText="Are you sure you want to detach all the attached items?"
+												onClick="fcForm.detachAllLibraryItems('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems#');" />								
+									
+								</cfif>
+							</cfif>
+							<cfif arguments.stMetadata.ftAllowAdd or 1 eq 1>
+								<ft:button	Type="button" 
+											renderType="button"
+											class="ui-state-default ui-corner-all"
+											value="Add" 
+											text="add" 
+											onClick="fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');" />
+								
+							</cfif>
 						
+					</cfoutput>
+					</ft:buttonPanel>
+					<cfif listLen(joinItems) GT 1>
+						<cfoutput>
+							<script type="text/javascript">
+							$j(function() {
+								fcForm.initSortable('#arguments.stobject.typename#','#arguments.stobject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');
+							});
+							</script>
+						</cfoutput>
 					</cfif>
-				
-			</cfoutput>
-			</ft:buttonPanel>
-			<cfif listLen(joinItems) GT 1>
-				<cfoutput>
-					<script type="text/javascript">
-					$j(function() {
-						fcForm.initSortable('#arguments.stobject.typename#','#arguments.stobject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');
-					});
-					</script>
-				</cfoutput>
-			</cfif>
-			</grid:div>
-		</cfsavecontent>
+					</grid:div>
+				</cfsavecontent>
+			</cfdefaultcase>
+			
+			
+		</cfswitch>
 		
-		<cfif arguments.stMetadata.includeLibraryWrapper>
-			<cfreturn "<div id='#arguments.fieldname#-library-wrapper'>#returnHTML#</div>" />
-		<cfelse>
+		<cfif structKeyExists(request, "hideLibraryWrapper") AND request.hideLibraryWrapper>
 			<cfreturn "#returnHTML#" />
+		<cfelse>
+			<cfreturn "<div id='#arguments.fieldname#-library-wrapper'>#returnHTML#</div>" />	
 		</cfif>
 		
 	</cffunction>
@@ -323,6 +412,7 @@
 		</cfif>
 		
 		<cfset stResult.value = aField>
+		
 		<!--- ----------------- --->
 		<!--- Return the Result --->
 		<!--- ----------------- --->
@@ -582,13 +672,6 @@
 		<cfimport taglib="/farcry/core/tags/grid" prefix="grid" />
 		
 		
-		
-		<cfparam name="arguments.stMetadata.includeLibraryWrapper" default="true" />
-		
-		
-		
-		
-		<cfparam name="stArrayPropMetadata.includeLibraryWrapper" default="true" />
 		<cfparam name="stArrayPropMetadata.ftAllowAttach" default="true" />
 		<cfparam name="stArrayPropMetadata.ftAllowAdd" default="false" />
 		<cfparam name="stArrayPropMetadata.ftAllowEdit" default="false" />
@@ -672,10 +755,10 @@
 			</cfif>
 		</cfsavecontent>
 		
-		<cfif arguments.stMetadata.includeLibraryWrapper>
-			<cfreturn "<div id='#arguments.fieldname#-library-wrapper'>#returnHTML#</div>" />
-		<cfelse>
+		<cfif structKeyExists(request, "hideLibraryWrapper") AND request.hideLibraryWrapper>
 			<cfreturn "#returnHTML#" />
+		<cfelse>
+			<cfreturn "<div id='#arguments.fieldname#-library-wrapper'>#returnHTML#</div>" />
 		</cfif>
 				
 		

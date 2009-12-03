@@ -150,7 +150,6 @@
 				<!--- DISPLAY THE SELECTION OPTIONS --->	
 				
 				<skin:pagination query="#qResult#" submissionType="form">
-		
 					<cfoutput>
 						<div class="ctrlHolder #stObject.currentRowClass#" style="padding:3px;margin:3px;clear:both;">
 							<div style="float:left;width:20px;">

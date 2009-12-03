@@ -1073,7 +1073,7 @@ user --->
 		<ul class="object-admin-actions">				
 			<li>
 			<a id="oa-overview-#arguments.st.objectid#" name="oa-overview-#arguments.st.objectid#" title="Overview" href="##">
-				<span class="ui-icon ui-icon-wrench" style="float:left;">&nbsp;</span>
+				<span class="ui-icon ui-icon-arrow-4-diag" style="float:left;">&nbsp;</span>
 			</a>
 			</li>
 			<skin:onReady>
@@ -1151,7 +1151,7 @@ user --->
 			
 			<li>
 			<a id="oa-preview-#arguments.st.objectid#" name="oa-preview-#arguments.st.objectid#" title="Overview" href="##">
-				<span class="ui-icon ui-icon-arrow-4-diag" style="float:left;">&nbsp;</span>
+				<span class="ui-icon ui-icon-search" style="float:left;">&nbsp;</span>
 			</a>
 			</li>
 			<skin:onReady>

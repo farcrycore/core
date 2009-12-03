@@ -206,6 +206,7 @@
 			data: {deleteID: itemids },
 			dataType: "html",
 			complete: function(data){
+				$j('##' + formfieldname).attr('value', $j('##' + formfieldname + '-library-wrapper').sortable('toArray',{'attribute':'serialize'}));		
 				$j('##join-item-' + itemids).hide('blind',{},500);				
 			}
 		});	
@@ -218,7 +219,8 @@
 			data: {deleteID: itemids },
 			dataType: "html",
 			complete: function(data){
-				$j('##join-' + objectid + '-' + property).hide('blind',{},500);				
+				$j('##' + formfieldname).attr('value', '');	
+				$j('##join-' + objectid + '-' + property).hide('blind',{},500);								
 			}
 		});	
 	}
@@ -229,8 +231,11 @@
  			url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
 			data: {detachID: itemids },
 			dataType: "html",
-			complete: function(data){
-				$j('##join-item-' + itemids).hide('blind',{},500);					
+			complete: function(data){		
+				$j('##join-item-' + itemids).hide('blind',{},500);			
+				$j('##join-item-' + itemids).remove();	
+				$j('##' + formfieldname).attr('value','');	
+				$j('##' + formfieldname).attr('value', $j('##' + formfieldname + '-library-wrapper').sortable('toArray',{'attribute':'serialize'}));				
 			}
 		});	
 	}
@@ -241,8 +246,12 @@
  			url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
 			data: {detachID: itemids },
 			dataType: "html",
-			complete: function(data){
-				$j('##join-' + objectid + '-' + property).hide('blind',{},500);					
+			complete: function(data){	
+				$j('##' + formfieldname).attr('value', '');		
+				$j('##join-' + objectid + '-' + property).hide('blind',{},500);		
+				$j('##join-' + objectid + '-' + property).remove();	
+				$j('##' + formfieldname).attr('value','');			
+				$j('##' + formfieldname).attr('value', $j('##' + formfieldname + '-library-wrapper').sortable('toArray',{'attribute':'serialize'}));			
 			}
 		});	
 	}

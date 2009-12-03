@@ -476,7 +476,7 @@
 			</cfif>
 			
 			<!--- Need to determine which method to run on the field --->	
-			<cfif structKeyExists(ftFieldMetadata,"ftValidateMethod")>
+			<cfif structKeyExists(ftFieldMetadata,"ftValidateMethod") AND len(ftFieldMetadata.ftValidateMethod)>
 				<cfset FieldMethod = ftFieldMetadata.ftValidateMethod>
 			<cfelseif structKeyExists(stType,"ftValidate#ftFieldMetadata.Name#")>
 				<cfset FieldMethod = "ftValidate#ftFieldMetadata.Name#">						

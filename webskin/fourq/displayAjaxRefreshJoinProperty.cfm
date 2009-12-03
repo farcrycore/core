@@ -20,9 +20,8 @@
 
 <cfparam name="url.property" type="string" /><!--- The name of the property we are updating. --->
 
-<cfset stPropMetadata = structNew() />
-<cfset stPropMetadata[url.property] = structNew() />
-<cfset stPropMetadata[url.property].includeLibraryWrapper = false />
+
+<cfset request.hideLibraryWrapper = true />
 
 <!--- WRAP IN CFSILENT TO AVOID EXTRANEOUS HIDDEN FIELDS DISPLAYED WHEN SIMPLY REFRESHING THE PROPERTY --->
 <cfsilent>
@@ -31,13 +30,11 @@
 					objectID="#stobj.objectid#" 
 					wizardID="#url.wizardID#" 
 					lFields="#url.property#"
-					stPropMetadata="#stPropMetadata#" 
 					r_stFields="stFields" />
 	<cfelse>
 		<ft:object	typename="#stobj.typename#" 
 					objectID="#stobj.objectid#" 
 					lFields="#url.property#" 
-					stPropMetadata="#stPropMetadata#" 
 					r_stFields="stFields" />
 	</cfif>	
 </cfsilent>
