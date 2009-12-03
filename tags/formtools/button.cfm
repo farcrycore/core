@@ -111,10 +111,24 @@
 	<cfif not len(attributes.r_stButton)>
 		<cfswitch expression="#attributes.renderType#">
 		<cfcase value="link">
-			<cfoutput><a id="#attributes.id#" name="#attributes.id#" class="#attributes.class#" style="#attributes.style#">#attributes.text#</a></cfoutput>
+			<cfoutput><a id="#attributes.id#" name="#attributes.id#" class="#attributes.class#" style="#attributes.style#" href="##">#attributes.text#</a></cfoutput>
 		</cfcase>
 		<cfdefaultcase>
 			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" class="ui-state-default ui-corner-all fc-button #attributes.class#" style="#attributes.style#;position:relative;" <cfif attributes.disabled>disabled</cfif>>#attributes.text#</button></cfoutput>
+			
+			<skin:onReady>
+			<cfoutput>		
+			$j("###attributes.id#").hover(
+				function() {
+					$j(this).addClass('ui-state-hover');
+				},
+				function() {
+					$j(this).removeClass('ui-state-hover');
+				}
+			)	
+			</cfoutput>
+			</skin:onReady>
+				
 		</cfdefaultcase>
 		</cfswitch>
 
@@ -124,16 +138,8 @@
 			<cfoutput>
 			$j("###attributes.id#").click(function() {
 				#attributes.OnClick#
+				return false;
 			});
-						
-			$j("###attributes.id#").hover(
-				function() {
-					$j(this).addClass('ui-state-hover');
-				},
-				function() {
-					$j(this).removeClass('ui-state-hover');
-				}
-			)	
 			</cfoutput>
 			</skin:onReady>
 		</cfif>
