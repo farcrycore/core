@@ -71,15 +71,9 @@
 		<!--- IF THIS IS NOT THE HOME PAGE AND WE HAVE A 404 PAGE, THEN CALL THE 404 --->
 		<cfif len(attributes.typename) 
 			or len(attributes.objectid) 
-			or (structKeyExists(url, "furl") AND url.furl NEQ "/") >
-	
-			<cfif fileexists("#application.path.project#/www/errors/404.cfm")>
-				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/www/errors/404.cfm" />
-			<cfelseif fileexists("#application.path.project#/errors/404.cfm")>
-				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/404.cfm" />	
-			<cfelse>
-				<cflocation url="#application.url.webroot#/" addtoken="No">
-			</cfif>
+			or (structKeyExists(url, "furl") AND url.furl NEQ "/") 
+			AND fileexists("#application.path.project#/errors/404.cfm")>
+			<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/404.cfm" />
 			<cfsetting enablecfoutputonly="false" />
 			<cfexit method="exittag" />
 		
@@ -96,7 +90,6 @@
 </cfif>
 
 
-
 <cfif len(attributes.objectid)>
 
 	<!---
@@ -109,6 +102,8 @@
 	<cftry>
 		<q4:contentobjectget objectid="#attributes.objectid#" typename="#attributes.typename#" r_stobject="stObj">
 		
+		<cftrace var="stobj.typename" text="Object typename determined." type="information" />
+	
 		<!--- check that an appropriate result was returned from COAPI --->
 		<cfif NOT IsStruct(stObj) OR StructIsEmpty(stObj)>
 			<cfthrow />
@@ -192,9 +187,11 @@
 		<cfif qHasDraft.recordcount gt 0>
 			<!--- set the navigation point for the child obj - unless its a symnolic link in which case wed have already set navid --->
 			<cfif isDefined("URL.navid")>
+				<cftrace var="url.navid" text="URL.navid exists - setting request.navid = to url.navid" />
 				<cfset request.navid = URL.navID>
 			<cfelseif NOT isDefined("request.navid")>		
 				<cfset request.navid = stObj.objectID>
+				<cftrace var="stobj.objectid" text="URL.navid is not defined - setting to stObj.objectid" />
 			</cfif>
 			
 			<nj:display objectid="#qHasDraft.objectid[1]#" />
@@ -209,11 +206,13 @@
 	<cfif len(attributes.method)>
 	
 		<!--- If a method has been passed in deliberately and is allowed use this --->
+		<cftrace var="attributes.method" text="Passed in attribute method used" />
 		<skin:view objectid="#attributes.objectid#" typename="#stObj.typename#" webskin="#attributes.method#" alternateHTML="" />
 		
 	<cfelseif IsDefined("stObj.displayMethod") AND len(stObj.displayMethod)>
 	
 		<!--- Invoke display method of page --->
+		<cftrace var="stObj.displayMethod" text="Object displayMethod used" />
 		<skin:view objectid="#attributes.objectid#" typename="#stObj.typename#" webskin="#stObj.displayMethod#" />
 		
 	<cfelse>
@@ -243,7 +242,10 @@
 					parent.updateTray('#thistray#',document.title,'#thisurl#');
 			</script>
 		</cfoutput></skin:htmlHead>
-	<cfelseif request.mode.bAdmin and structkeyexists(session.dmProfile,"bShowTray") and not session.dmProfile.bShowTray and not (structkeyexists(request,"bHideContextMenu") and request.bHideContextMenu) and not request.mode.ajax><!--- Tray will only be disabled for admins if the admin has turned it off --->
+	<cfelseif request.mode.bAdmin and not request.bHideContextMenu and structkeyexists(session.dmProfile,"bShowTray") and not session.dmProfile.bShowTray and not (structkeyexists(request,"bHideContextMenu") and request.bHideContextMenu) and not request.mode.ajax><!--- Tray will only be disabled for admins if the admin has turned it off --->
+		<!--- Show tray once for this request --->
+		<cfset request.bHideContextMenu = true />
+		
 		<skin:htmlHead library="jQueryJS" />
 		<skin:htmlHead id="enabletray"><cfoutput>
 			<style type="text/css">
@@ -267,9 +269,14 @@
 			</style>
 			<![endif]>
 			<![endif]-->
+			<script type="text/javascript">
+				jQ(function(){
+					jQ("body").append("<a href='#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray)=[^&]*','','ALL')#&bShowTray=1' id='enabletray' title='Enable tray'><img src='#application.url.webtop#/facade/icon.cfm?icon=toggletray&size=64' /></a>");
+				});
+			</script>
 		</cfoutput></skin:htmlHead>
 		<extjs:onReady><cfoutput>
-			Ext.DomHelper.append(Ext.getBody(),"<a href='#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray)=[^&]*','','ALL')#&bShowTray=1' id='enabletray' title='Enable tray'><img src='#application.url.webtop#/facade/icon.cfm?icon=toggletray&size=64' /></a>");
+			//Ext.DomHelper.append(Ext.getBody(),"<a href='#cgi.script_name#?#rereplacenocase(cgi.QUERY_STRING,'[\?&](flushcache|showdraft|designmode|bShowTray)=[^&]*','','ALL')#&bShowTray=1' id='enabletray' title='Enable tray'><img src='#application.url.webtop#/facade/icon.cfm?icon=toggletray&size=64' /></a>");
 		</cfoutput></extjs:onReady>
 	</cfif>
 
