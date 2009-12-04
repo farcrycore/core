@@ -26,12 +26,7 @@
 	</cfif>
 	
 
-	<!--- If the url points to a type webskin, we need to determine the content type. --->
-	<cfif stObj.typename eq "farCOAPI">
-		<cfset contentTypename = stobj.name />
-	<cfelse>
-		<cfset contentTypename = stobj.typename />
-	</cfif>
+
 	
 	
 	<skin:onReady>
@@ -99,19 +94,7 @@
 		</grid:div>	
 	</cfif>
 	
-	<grid:div style="float:left;width:50%;">
-		<cfoutput>
-		
-		<h2>
-			<!---<admin:icon icon="#application.stCOAPI[contentTypename].icon#" size="16" usecustom="true" />--->
-			#application.fapi.getContentTypeMetadata(typename='#contentTypename#', md='displayName', default='#stobj.typename#')#
-			<!---<cfif stObj.typename neq "farCOAPI">
-				&nbsp;&nbsp;&nbsp;
-				<a id="edit-object" href="##" style="">edit</a>
-			</cfif>--->
-		</h2>
-		</cfoutput>
-		
+	<grid:div style="float:left;width:50%;" class="tray-details">
 		<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="secureTrayDetails" bIgnoreSecurity="true" stParam="#form#" />
 	</grid:div>	
 		

@@ -5,22 +5,42 @@
 @@description: The summary details of an object that are shown in the system tray.
  --->
 
+
+<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
+
+
+<!--- If the url points to a type webskin, we need to determine the content type. --->
+<cfif stObj.typename eq "farCOAPI">
+	<cfset contentTypename = stobj.name />
+<cfelse>
+	<cfset contentTypename = stobj.typename />
+</cfif>
+
 <cfoutput>
-<dl>	
-	<dt>Label</dt>
-	<dd>#stobj.label#</dd>
-	
-	<dt>View</dt>
-	<dd>#application.fapi.getWebskinDisplayName(stobj.typename, arguments.stParam.view)#</dd>
-	
-	<dt>Body View</dt>
-	<dd>#application.fapi.getWebskinDisplayName(stobj.typename, arguments.stParam.bodyView)#</dd>
-	
-	<cfset stLastUpdatedBy = application.fapi.getContentType("dmProfile").getProfile(stobj.lastupdatedby) />
-	<dt>#getI18Property('lastupdatedby','label')#</dt>
-	<dd>#stLastUpdatedBy.Label# (#application.fapi.prettyDate(stobj.datetimelastupdated)#)</dd>
-	
-</dl>
+<table>
+<tr>
+	<th>Type of Content</th>
+	<td>#application.fapi.getContentTypeMetadata(typename='#contentTypename#', md='displayName', default='#stobj.typename#')#</td>
+</tr>
+<tr>
+	<th>Label</th>
+	<td>#stobj.label#</td>
+</tr>
+<tr>
+	<th>View</th>
+	<td>#application.fapi.getWebskinDisplayName(stobj.typename, arguments.stParam.view)#</td>
+</tr>
+<tr>
+	<th>Body View</th>
+	<td>#application.fapi.getWebskinDisplayName(stobj.typename, arguments.stParam.bodyView)#</td>
+</tr>
+
+<cfset stLastUpdatedBy = application.fapi.getContentType("dmProfile").getProfile(stobj.lastupdatedby) />
+<tr>
+	<th>#getI18Property('lastupdatedby','label')#</th>
+	<td>#stLastUpdatedBy.Label# (#application.fapi.prettyDate(stobj.datetimelastupdated)#)</td>
+</tr>
+</table>
 </cfoutput>
 		
 		
