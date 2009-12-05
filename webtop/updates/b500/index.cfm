@@ -61,6 +61,7 @@ a {color: ##116EAF;}
 		 ---------------------------------------->
 		<cfset application.url.webroot = "" />
 		<cfset application.url.farcry = "#application.url.webroot#/webtop" />
+		<cfset application.url.webtop = "#application.url.webroot#/webtop" />
 		<cfset application.url.imageRoot = "#application.url.webroot#">
 		<cfset application.url.fileRoot = "#application.url.webroot#/files">
 		

@@ -492,9 +492,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfreturn webskinHTML />
 	
 	</cffunction>
-
-	<cffunction name="getNavID" access="public" output="false" returntype="string" hint="Returns the default Navigation objectID for the objectID passed in. Empty if it cant find anything applicable.">
-		<cfargument name="objectid" required="no" type="uuid" hint="The objectid for which the navigation objectid is to be found." />
+<cffunction name="getNavID" access="public" output="false" returntype="string" hint="Returns the default Navigation objectID for the objectID passed in. Empty if it cant find anything applicable.">
+		<cfargument name="objectid" required="no" type="string" default="" hint="The objectid for which the navigation objectid is to be found." />
 		<cfargument name="typename" required="no" type="string" default="" hint="The typename of the object for which the navigation objectid is to be found." />
 		
 		<cfset var stNav = structNew() />
@@ -522,11 +521,11 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		<!--- OBJECT: check the content item for a natural navigation context ie. it sits in the site tree --->
 		<cfif NOT len(navID)>
-			<cfif arguments.typename eq "dmNavigation">
+			<cfif arguments.typename eq "dmNavigation" AND len(arguments.objectid)>
 				<!--- Use the navigation objectid if its a navigation object --->
 				<cfset navID = arguments.objectid />
 	
-			<cfelseif structKeyExists(application.stCoapi["#arguments.typename#"], "bUseInTree") AND application.stCoapi["#arguments.typename#"].bUseInTree>
+			<cfelseif len(arguments.objectid) AND structKeyExists(application.stCoapi["#arguments.typename#"], "bUseInTree") AND application.stCoapi["#arguments.typename#"].bUseInTree>
 				<!--- look up the object's parent navigaion node --->
 				<!--- TODO: replace this tag call with a FAPI function (or equivalent) --->
 				<nj:getNavigation objectId="#arguments.objectId#" r_stobject="stNav" />

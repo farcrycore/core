@@ -138,8 +138,8 @@
 			</cfif>
 			
 			<!--- If we make it to here, we just have to redirect to the home page. --->
-			<cfif application.fpi.checkNavID("home")>
-				<cflocation url="#application.url.conjurer#?objectid=#application.fpi.getNavID('home')#" addtoken="No" />
+			<cfif application.fapi.checkNavID("home")>
+				<cflocation url="#application.url.conjurer#?objectid=#application.fapi.getNavID('home')#" addtoken="No" />
 			<cfelse>
 				<cflocation url="#application.url.webroot#/" addtoken="No">
 			</cfif>
