@@ -923,7 +923,7 @@
 			<cfargument name="JSWindow" default="0"><!--- Default to not using a Javascript Window popup --->
 			<cfargument name="stJSParameters" default="#StructNew()#">
 			<cfargument name="anchor" default=""><!--- Anchor to place at the end of the URL string. --->
-			<cfargument name="ampDelim" type="string" required="false" default="&amp;" hint="Delimiter to use for ampersands" />
+			<cfargument name="ampDelim" type="string" required="false" default="" hint="Delimiter to use for ampersands. Defaults to &amp; except where parameters include ajaxmode" />
 			
 			
 			<cfset var returnURL = "" />
@@ -938,6 +938,15 @@
 				</cfloop>
 				
 				<cfset arguments.urlParameters = "" />
+			</cfif>
+			
+			<!--- ENSURE WE SELECT THE RIGHT DELIMETER --->
+			<cfif not len(arguments.ampDelim)>
+				<cfif structKeyExists(arguments.stParameters, "ajaxmode")>
+					<cfset arguments.ampDelim = "&" />
+				<cfelse>
+					<cfset arguments.ampDelim = "&amp;" />
+				</cfif>
 			</cfif>
 			
 			<cfif len(arguments.target) AND arguments.target NEQ "_self" AND arguments.urlOnly> <!--- If target is defined and the user wants the URL then it is a popup window and must therefore have the following parameters --->		
