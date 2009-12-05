@@ -1,8 +1,12 @@
 
 /* Tray style */
-#farcrytray {
+#farcrytray, 
+#farcrytray td, 
+#farcrytray th{
 	font-size:11px;
 	color:#000;
+	font-family:arial,tahoma,verdana,sans-serif;
+	font-weight:normal;
 }
 
 #farcrytray a{
