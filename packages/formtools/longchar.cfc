@@ -1,6 +1,6 @@
 <cfcomponent extends="field" name="longchar" displayname="longchar" hint="Used to liase with longchar type fields"> 
 
-	<cfproperty name="ftLabelAlignment" required="false" default="block" options="inline,block" hint="Used by FarCry Form Layouts for positioning of labels. inline or block." />
+	<cfproperty name="ftLabelAlignment" required="false" default="inline" options="inline,block" hint="Used by FarCry Form Layouts for positioning of labels. inline or block." />
 		
 	
 	
