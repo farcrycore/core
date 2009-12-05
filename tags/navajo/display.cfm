@@ -383,6 +383,29 @@
 			
 		};	
 		
+		$fc.openTrayDialogIFrame = function(title,url) {
+			var newDialogDiv = $j("<div id='tray-dialog-iframe'><iframe style='width:99%;height:99%;border-width:0px;'></iframe></div>")
+			$j("body").prepend(newDialogDiv);
+			
+			$j(newDialogDiv).dialog({
+				bgiframe: true,
+				modal: true,
+				title:title,
+				width: $j(window).width()-50,
+				height: $j(window).height()-50,
+				close: function(event, ui) {
+					document.location=document.location;
+					$j(newDialogDiv).dialog( 'destroy' );
+					$j(newDialogDiv).remove();
+				}
+				
+			});
+			$j(newDialogDiv).dialog('open');
+			//OPEN URL IN IFRAME ie. not in ajaxmode
+			$j('iframe',$j(newDialogDiv)).attr('src',url);
+			
+		};	
+		
 		
 		// only show the frame if we are not in a frame
 		if (top === self) { 		
