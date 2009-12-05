@@ -83,7 +83,7 @@
     
     .uniForm .inlineLabels .multiField{ width: 45%; /* <- Required property */ margin: 0 0 .3em 0; }
       .uniForm .inlineLabels .multiField .inlineLabel{ display: block; margin: 0 0 .5em 0; }
-      .uniForm .inlineLabels .multiField .blockLabel{ float: left; width: 26%; margin: 0 3% 0 0; }
+      .uniForm .inlineLabels .multiField .blockLabel{ float: left; width: 100%; margin: 0 3% 0 0; }
       .uniForm .inlineLabels .multiField .blockLabel .textInput,
       .uniForm .inlineLabels .multiField .blockLabel .selectInput{ width: 100%; margin: .3em 0 0 0; }
 

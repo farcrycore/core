@@ -35,7 +35,7 @@
 	
 	<cfoutput>
 		<script type="text/javascript">
-			parent['content'].location.href = '#application.url.webtop#/edittabOverview.cfm?objectid=#stObj.ObjectID#';
+			location.href = '#application.url.webtop#/edittabOverview.cfm?objectid=#stObj.ObjectID#';
 		</script>
 	</cfoutput>
 </ft:processForm>
@@ -51,7 +51,7 @@
 	<cfif structKeyExists(form, "selectedObjectID")>
 		<cfoutput>
 			<script type="text/javascript">
-				parent['content'].location.href = '#application.url.webtop#/edittabOverview.cfm?objectid=#form.selectedObjectID#';
+				location.href = '#application.url.webtop#/edittabOverview.cfm?objectid=#form.selectedObjectID#';
 			</script>
 		</cfoutput>		
 	</cfif>
@@ -68,7 +68,7 @@
 	
 	<cfoutput>
 		<script type="text/javascript">
-			parent['content'].location.href = '#application.url.webtop#/edittabOverview.cfm?objectid=#stObj.ObjectID#';
+			location.href = '#application.url.webtop#/edittabOverview.cfm?objectid=#stObj.ObjectID#';
 		</script>
 	</cfoutput>	
 </ft:processForm>

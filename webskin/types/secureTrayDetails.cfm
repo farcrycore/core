@@ -5,7 +5,7 @@
 @@description: The summary details of an object that are shown in the system tray.
  --->
 
-
+	
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
 
@@ -15,7 +15,7 @@
 <cfelse>
 	<cfset contentTypename = stobj.typename />
 </cfif>
-
+	
 <cfoutput>
 <table>
 <tr>
@@ -42,6 +42,4 @@
 </tr>
 </table>
 </cfoutput>
-		
-		
 <cfsetting enablecfoutputonly="false" />

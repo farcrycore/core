@@ -149,34 +149,20 @@ $out:$
 	
 	<cfset onExitProcess = structNew() />
 	<cfset onExitProcess.Type = "HTML" />
-	<cfswitch expression="#url.ref#">
-		<cfcase value="iframe">
-			<cfsavecontent variable="onExitProcess.Content">
-				<cfoutput>
-				<script type="text/javascript">
-					location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#&ref=#url.ref#';
-				</script>
-				</cfoutput>
-			</cfsavecontent>
-		</cfcase>
+	<cfsavecontent variable="onExitProcess.Content">
+		<!--- get parent to update tree --->
+		<nj:treeGetRelations typename="#stObj.typename#" objectId="#stObj.ObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1">
 		
-		<cfdefaultcase>
-			<cfsavecontent variable="onExitProcess.Content">
-				<!--- get parent to update tree --->
-				<nj:treeGetRelations typename="#stObj.typename#" objectId="#stObj.ObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1">
-				
-				<!--- update tree --->
-				<nj:updateTree objectId="#parentID#">
-				
-				<cfoutput>
-				<script type="text/javascript">
-					parent['content'].location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#&ref=#url.ref#';
-				</script>
-				</cfoutput>
-			</cfsavecontent>
-		</cfdefaultcase>
-	</cfswitch>
-	
+		<!--- update tree --->
+		<nj:updateTree objectId="#parentID#">
+		
+		<cfoutput>
+		<script type="text/javascript">
+			location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#&ref=#url.ref#';
+		</script>
+		</cfoutput>
+	</cfsavecontent>
+
 	<cfset html = oType.getView(stObject=stobj, template="edit", onExitProcess="#onExitProcess#", alternateHTML="") />
 	
 	<cfif len(html)>

@@ -228,15 +228,15 @@ OBJECT METHODS
 			Otherwise it will look for title, then name and then anything with the substring Name.
 		 --->
 		<cfset var newLabel = "" />
-		
+	
 		<cfif len(arguments.stProperties.firstname) OR len(arguments.stProperties.lastname)>
 			<cfset newLabel = "#arguments.stProperties.firstname# #arguments.stProperties.lastname#" />
 		<cfelseif len(arguments.stProperties.emailAddress)>
 			<cfset newLabel = arguments.stProperties.emailAddress />
 		<cfelse>
-			<cfset label = arguments.stProperties.userName />
+			<cfset newLabel = arguments.stProperties.userName />
 		</cfif>
-		
+
 		<cfreturn trim(newLabel) />
 	</cffunction>		
 </cfcomponent>

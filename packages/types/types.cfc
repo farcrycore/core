@@ -898,8 +898,8 @@ default handlers
 		<cfset var newLabel = autoSetLabel(stProperties=arguments.stProperties) />
 		
 		
-		<cfif len(newLabel)>
-			<cfset arguments.stProperties.label = autoSetLabel(stProperties=arguments.stProperties) />
+		<cfif len(trim(newLabel))>
+			<cfset arguments.stProperties.label = newLabel />
 		</cfif>
 		
 		
