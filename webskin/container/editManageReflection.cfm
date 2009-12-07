@@ -26,8 +26,6 @@
 
 
 
-<admin:header/>
-
 <ft:form>
 
 	<cfset qListReflections = getSharedContainers() />
@@ -57,6 +55,5 @@
 	</ft:buttonPanel>
 </ft:form>
 
-<admin:footer />
 
 <cfsetting enablecfoutputonly="false" />

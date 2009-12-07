@@ -32,9 +32,6 @@
 
 
 
-
-<admin:header />
-
 <ft:form>
 
 
@@ -64,6 +61,5 @@
 
 </ft:form>
 
-<admin:footer />
 
 <cfsetting enablecfoutputonly="false" />

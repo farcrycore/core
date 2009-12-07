@@ -84,9 +84,9 @@ Pseudo:
 	<!--- get object instance --->
 	<cfset oType = createObject("component", PackagePath)>
 	<cfif ListLen(url.objectid) GT 1>
-		<admin:header>
+		
 			<cfset evaluate("oType.#method#(objectid='#objectid#')")>
-		<admin:footer> 
+		
 	<cfelse>
 		<cfset returnStruct = oType.getData(objectid=URL.objectid)>
 		

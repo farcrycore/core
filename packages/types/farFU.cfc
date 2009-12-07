@@ -1331,7 +1331,7 @@
 			</cfif>
 			
 			<!--- If we have defined the bodyView and NOT the view, then in order for the URL Parsing to work, we MUST explicitly tell the url that the bodyView webskin is for the bodyView --->
-			<cfif stBodyView.viewStack NEQ "body">
+			<cfif structKeyExists(stBodyView, "viewStack") AND stBodyView.viewStack NEQ "body">
 				<cfif not len(arguments.view)>
 					<cfset bMustUseRegularURLParams = true />
 				</cfif>

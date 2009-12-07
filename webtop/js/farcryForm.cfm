@@ -3,6 +3,9 @@
 	// ftWatch JavaScript
 	// These three functions provide ajax update functionality for fields.
 	//==================================================================================
+	var watchedfields = {};
+	var watchingfields = {};
+					
 	function getInputValue(name) {
 		var objs = $j("[name="+name+"]");
 		var result = "";

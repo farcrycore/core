@@ -165,8 +165,6 @@ body.popup h2 {margin: 0 0 .4em}
 body.popup #content {margin:0;background:transparent;padding:0}
 
 
-#wizard-wrap textarea {width:350px;}
-
 .container-management #plp-wrap {background:none;padding:0}
 .container-management #plp-wrap .pagination, .container-management #plp-wrap #plp-nav {float:none;width:auto}
 .container-management #plp-content {margin:0}

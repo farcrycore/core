@@ -26,8 +26,8 @@ FARCRY IMPORT FILES
  ------------------>
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
-
-<cfparam name="attributes.id" type="string" /><!--- The id of the dom element that you wish to have the tooltip display on hover. --->
+<cfparam name="attributes.id" default="" /><!--- id used to ensure the tooltip is only loaded once per id. --->
+<cfparam name="attributes.selector" type="string" /><!--- The id of the dom element that you wish to have the tooltip display on hover. --->
 <cfparam name="attributes.message" default="" /><!--- The actual message. This can be replaced with generatedContent --->
 <cfparam name="attributes.class" default="tooltip" /><!--- The css class to be assigned to the tooltip div --->
 <cfparam name="attributes.style" default="" /><!--- The css style to be assigned to the tooltip div --->
@@ -47,24 +47,39 @@ FARCRY IMPORT FILES
 		<cfset attributes.message = thisTag.generatedContent />
 	</cfif>
 	<cfset thisTag.generatedContent = "" />
+		
+	<cfif not len(attributes.id)>
+		<cfset attributes.id = rereplaceNoCase(attributes.selector,'[^\w]','', 'all') /><!--- Replace non alphanumeric --->
+	</cfif>
 	
-	<cfset toolTipSpanID = application.fapi.getUUID() />	
 	
-	<cfoutput></cfoutput>
-	
-	<skin:onReady>
+	<!--- 
+		This crazy code checking is because of a bug in the tooltip when rendering tips with multiple nodes matching the selector when rendered via ajax.
+		We are basically checking to see if a tooltip has already been rendered and if so, do not initialize it again.
+	--->
+	<skin:onReady id="tooltip-#attributes.id#">
 	<cfoutput>
-		$j("<div class='#attributes.class#' id='#toolTipSpanID#' style='display:none;#attributes.style#'>#jsStringFormat(attributes.message)#</div>").insertAfter("###attributes.id#");
-		$j("###attributes.id#").tooltip({
-			<cfif len(attributes.configuration)>
-				#attributes.configuration#
-			</cfif>
-		}).dynamic( { 
-	        bottom: { 
-	            direction: 'down', 
-	            bounce: true 
-	        } 
-    	});; 
+	
+		$j("#attributes.selector#").each(function(){
+			
+			if($j(this).next('.fc-tooltip').length == 0) {
+				
+				$j("<div class='fc-tooltip #attributes.class#' style='display:none;#attributes.style#'>#jsStringFormat(attributes.message)#</div>").insertAfter($j(this));
+				
+				$j(this).tooltip({
+					<cfif len(attributes.configuration)>
+						#attributes.configuration#
+					</cfif>
+				}).dynamic( { 
+			        bottom: { 
+			            direction: 'down', 
+			            bounce: true 
+			        } 
+		    	});
+			};
+		});
+		
+	
 	</cfoutput>
 	</skin:onReady>
 	

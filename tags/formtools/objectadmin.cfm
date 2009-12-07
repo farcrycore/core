@@ -47,23 +47,24 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <skin:onReady id="objectAdminAction">
 	<cfoutput>
     	$fc.objectAdminAction = function(title,url) {
-			var newDialogDiv = $j("<div><iframe style='width:99%;height:99%;border-width:0px;'></iframe></div>");
-			$j("body").prepend(newDialogDiv);
+			if ($fc.objectAdminActionDiv === undefined) {
+				$fc.objectAdminActionDiv = $j("<div><iframe style='width:99%;height:99%;border-width:0px;'></iframe></div>");
+				$j("body").prepend($fc.objectAdminActionDiv);
+
+				$j($fc.objectAdminActionDiv).dialog({
+					bgiframe: true,
+					modal: true,
+					title:title,
+					width: $j(window).width()-50,
+					height: $j(window).height()-50,
+					close: function(event, ui) {
+						location=location				
+					}
+				});
+			}
 			
-			$j(newDialogDiv).dialog({
-				bgiframe: true,
-				modal: true,
-				title:title,
-				width: $j(window).width()-50,
-				height: $j(window).height()-50,
-				close: function(event, ui) {
-					location=location;					
-				}
-				
-			});
-			$j(newDialogDiv).dialog('open');
-			//OPEN URL IN IFRAME ie. not in ajaxmode
-			$j('iframe',$j(newDialogDiv)).attr('src',url);
+			$j($fc.objectAdminActionDiv).dialog('open');
+			$j('iframe',$j($fc.objectAdminActionDiv)).attr('src',url);
 			
 		};	
     </cfoutput>
@@ -232,7 +233,7 @@ user --->
 		</cfif>
 	</ft:processForm>
 	
-	<ft:processform action="unlock">
+	<ft:processform action="unlock" url="refresh"> 
 		<cfif isDefined("form.objectid") and len(form.objectID)>
 			
 			<cfloop list="#form.objectid#" index="i">
@@ -417,38 +418,7 @@ user --->
 		</skin:onReady>
 	</ft:processForm>
 	
-	
-	
-	<ft:processForm action="overview">
-		<!--- TODO: Check Permissions. --->
-		<cfset EditURL = "#application.url.farcry#/edittabOverview.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module#">
-		<cfif Len(attributes.plugin)><cfset EditURL = EditURL&"&plugin=#attributes.plugin#"></cfif>
-		<skin:onReady>
-			<cfoutput>
-				$fc.objectAdminAction('Administration', '#EditURL#');
-			</cfoutput>
-		</skin:onReady>
-	</ft:processForm>
-	
-	<ft:processForm action="edit">
-		<!--- TODO: Check Permissions. --->
-		<cfset EditURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module#">
-		<cfif Len(attributes.plugin)><cfset EditURL = EditURL&"&plugin=#attributes.plugin#"></cfif>
-		<skin:onReady>
-			<cfoutput>
-				$fc.objectAdminAction('Administration', '#EditURL#');
-			</cfoutput>
-		</skin:onReady>
-	</ft:processForm>
-	
-	<ft:processForm action="view">
-		<!--- TODO: Check Permissions. --->
-		<skin:onReady>
-			<cfoutput>
-				$fc.objectAdminAction('Preview', '#application.url.webroot#/index.cfm?objectID=#form.objectid#&flushcache=1');
-			</cfoutput>
-		</skin:onReady>
-	</ft:processForm>
+
 	
 	<cfif structKeyExists(application.stPlugins, "flow")>
 		<ft:processForm action="flow">
@@ -479,23 +449,6 @@ user --->
 		</skin:onReady>
 	</ft:processForm>
 	
-	<ft:processForm action="createdraft,create draft">
-		<!--- TODO: Check Permissions. --->
-		<skin:onReady>
-			<cfoutput>
-				$fc.objectAdminAction('Administration', '#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#form.objectID#&ref=iframe');
-			</cfoutput>
-		</skin:onReady>
-	</ft:processForm>
-	
-	<ft:processForm action="Send to Draft">
-		<!--- TODO: Check Permissions. --->
-		<skin:onReady>
-			<cfoutput>
-				$fc.objectAdminAction('Administration', '#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=draft');
-			</cfoutput>
-		</skin:onReady>
-	</ft:processForm>
 	
 	<ft:processForm action="properties">
 		
@@ -579,41 +532,6 @@ user --->
 	<!--- redirect user on status change --->
 	<cfif len(statusurl)><cflocation url="#statusurl#" addtoken="false"></cfif>
 	
-	<cfscript>
-	// unlock: unlock content items
-	if (isDefined("form.unlock") AND isDefined("form.objectid")) {
-		aObjectids = listToArray(form.objectid);
-		//loop over all selected objects
-		for(i = 1;i LTE arrayLen(aObjectids);i=i+1) {
-			// set unlock permmission to false by default
-			bAllowUnlock=false;
-			// get content item data
-			o=createobject("component", "#PrimaryPackagePath#");
-			stObj = o.getData(objectid=aObjectids[i]);
-			if(stObj.locked)
-			{
-				// allow owner of the object or the person who has locked the content item to unlock
-				if (stObj.lockedby IS "#application.security.getCurrentUserID()#"
-					OR stObj.ownedby IS "#application.security.getCurrentUserID()#") {
-					bAllowUnlock=true;
-				// allow users with approve permission to unlock
-				} else if (stPermissions.iApprove eq 1) {
-					bAllowUnlock=true;
-				// if the user doesn't have permission, push error response
-				} else {
-					response=application.rb.getResource('objectadmin.messages.nopermissionunlockall@text','You do not have permission to unlock all content items');
-				}
-			}
-			if (bAllowUnlock) {
-				// TODO: replace with types.setlock()
-				oLocking=createObject("component",'#application.packagepath#.farcry.locking');
-				oLocking.unLock(objectid=aObjectids[i],typename=stObj.typename);
-				// TODO: i18n
-				response="#application.rb.getResource('objectadmin.messages.contentitemsunlocked@text','Content items unlocked.')#";
-			}
-		}
-	}
-	</cfscript>
 	<!--- 
 	// custom: custom button action
 	--->
@@ -1034,7 +952,7 @@ user --->
 
 
 	<cfif structKeyExists(arguments.st, "bHasMultipleVersion") AND arguments.st.bHasMultipleVersion>
-		<cfset stObjectAdminData.status = "<span style='color:red;'>multiple versions</span>" />
+		<cfset stObjectAdminData.status = "draft/approved" />
 	<cfelseif structKeyExists(arguments.st, "status")>
 		<cfset stObjectAdminData.status = arguments.st.status />
 	</cfif>
@@ -1070,19 +988,53 @@ user --->
 			</select>
 		</cfif>
 		
+		
+	<cfset overviewURL = "#application.url.farcry#/edittabOverview.cfm?typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module#">
+	<cfif Len(attributes.plugin)>
+		<cfset overviewURL = listAppend(overviewURL,'plugin=#attributes.plugin#', '&') />
+	</cfif>	
+	
+	<cfset editURL = "#application.url.farcry#/conjuror/invocation.cfm?typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module#">
+	<cfif Len(attributes.plugin)>
+		<cfset editURL = listAppend(editURL,'plugin=#attributes.plugin#', '&') />
+	</cfif>	
+	<cfset createDraftURL = "#application.url.farcry#/navajo/createDraftObject.cfm?ref=iframe">
+
+
+	
+	<skin:onReady id="object-admin-actions">
+		<cfoutput>
+			$j('a.oa-overview').click(function() {
+				$fc.objectAdminAction('Administration', '#overviewURL#&objectid=' + $j(this).attr('ft:objectid'));
+				return false;
+			});
+			
+			$j('a.oa-edit').click(function() {
+				$fc.objectAdminAction('Administration', '#editURL#&objectid=' + $j(this).attr('ft:objectid'));
+				return false;
+			});
+			
+			$j('a.oa-preview').click(function() {
+				$fc.objectAdminAction('Preview', '#application.url.webroot#/index.cfm?flushcache=1&objectid=' + $j(this).attr('ft:objectid'));
+				return false;
+			});
+			
+			$j('a.oa-create-draft').click(function() {
+				$fc.objectAdminAction('Preview', '#createDraftURL#&objectid=' + $j(this).attr('ft:objectid'));
+				return false;
+			});
+		</cfoutput>
+	</skin:onReady>
+
+		
 		<ul class="object-admin-actions">				
 			<li>
-			<a id="oa-overview-#arguments.st.objectid#" name="oa-overview-#arguments.st.objectid#" title="Overview" href="##">
+			<a ft:objectid="#arguments.st.objectid#"  class="oa-overview" title="Overview" href="##">
 				<span class="ui-icon ui-icon-arrow-4-diag" style="float:left;">&nbsp;</span>
 			</a>
 			</li>
-			<skin:onReady>
-				$j('##oa-overview-#arguments.st.objectid#').click(function() {
-					selectObjectID('#arguments.st.objectid#');
-					btnSubmit('#request.farcryForm.name#', 'overview');
-				});		
-			</skin:onReady>
-			<skin:toolTip id="oa-overview-#arguments.st.objectid#">Open up the overview screen for this object.</skin:toolTip>
+			
+			<skin:toolTip id="oa-overview-tooltip" selector=".oa-overview">Open up the overview screen for this object.</skin:toolTip>
 			
 			<!--- We do not include the Edit Link if workflow is available for this content item. The user must go to the overview page. --->
 			<cfif not listLen(lWorkflowTypenames)>	
@@ -1098,69 +1050,45 @@ user --->
 							btnSubmit('#request.farcryForm.name#', 'unlock');
 						});		
 					</skin:onReady>	
-					<skin:toolTip id="oa-locked-#arguments.st.objectid#">Unlock this object.</skin:toolTip>	
+					<skin:toolTip id="oa-unlock-tooltip" selector="##oa-locked-#arguments.st.objectid#">Unlock this object.</skin:toolTip>	
 				<cfelseif structKeyExists(arguments.stPermissions, "iEdit") AND arguments.stPermissions.iEdit>
 					<cfif structKeyExists(arguments.st,"bHasMultipleVersion")>
 						<cfif NOT(arguments.st.bHasMultipleVersion) AND arguments.st.status EQ "approved">
 					
 							<li>
-							<a id="oa-create-draft-#arguments.st.objectid#" name="oa-create-draft-#arguments.st.objectid#" title="Create Draft Object" href="##">
+							<a ft:objectid="#arguments.st.objectid#"  class="oa-create-draft" title="Create Draft Object" href="##">
 								<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>
 							</a>
 							</li>
-							<skin:onReady>
-								$j('##oa-create-draft-#arguments.st.objectid#').click(function() {
-									selectObjectID('#arguments.st.objectid#');
-									btnSubmit('#request.farcryForm.name#', 'createDraft');
-								});		
-							</skin:onReady>
-							<skin:toolTip id="oa-create-draft-#arguments.st.objectid#">Create a draft version of this object and begin editing.</skin:toolTip>
+							<skin:toolTip id="oa-create-draft-tooltip" selector=".oa-create-draft">Create a draft version of this object and begin editing.</skin:toolTip>
 						<cfelseif NOT(arguments.st.bHasMultipleVersion)>
 	
 							<li>
-							<a id="oa-edit-#arguments.st.objectid#" name="oa-edit-#arguments.st.objectid#" title="Edit" href="##">
+							<a ft:objectid="#arguments.st.objectid#"  class="oa-edit" title="Edit" href="##">
 								<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>
 							</a>
-							</li>
-							<skin:onReady>
-								$j('##oa-edit-#arguments.st.objectid#').click(function() {
-									selectObjectID('#arguments.st.objectid#');
-									btnSubmit('#request.farcryForm.name#', 'edit');
-								});		
-							</skin:onReady>		
-							<skin:toolTip id="oa-edit-#arguments.st.objectid#">Edit this object.</skin:toolTip>			
+							</li>	
+							<skin:toolTip id="oa-edit-tooltip" selector=".oa-edit">Edit this object.</skin:toolTip>			
 						</cfif>
 					<cfelse>
 	
 						<li>
-						<a id="oa-edit-#arguments.st.objectid#" name="oa-edit-#arguments.st.objectid#" title="Edit" href="##">
+						<a ft:objectid="#arguments.st.objectid#"  class="oa-edit" title="Edit" href="##">
 							<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>
 						</a>
 						</li>
-						<skin:onReady>
-							$j('##oa-edit-#arguments.st.objectid#').click(function() {
-								selectObjectID('#arguments.st.objectid#');
-								btnSubmit('#request.farcryForm.name#', 'edit');
-							});		
-						</skin:onReady>	
-						<skin:toolTip id="oa-edit-#arguments.st.objectid#">Edit this object.</skin:toolTip>	
+						<skin:toolTip id="oa-edit-tooltip" selector=".oa-edit">Edit this object.</skin:toolTip>	
 					</cfif>
 				</cfif>
 			</cfif>	
 			
 			
 			<li>
-			<a id="oa-preview-#arguments.st.objectid#" name="oa-preview-#arguments.st.objectid#" title="Overview" href="##">
+			<a ft:objectid="#arguments.st.objectid#"  class="oa-preview" title="Overview" href="##">
 				<span class="ui-icon ui-icon-search" style="float:left;">&nbsp;</span>
 			</a>
 			</li>
-			<skin:onReady>
-				$j('##oa-preview-#arguments.st.objectid#').click(function() {
-					selectObjectID('#arguments.st.objectid#');
-					btnSubmit('#request.farcryForm.name#', 'view');
-				});		
-			</skin:onReady>	
-			<skin:toolTip id="oa-preview-#arguments.st.objectid#">Preview this object.</skin:toolTip>				
+			<skin:toolTip id="oa-preview-tooltip" selector=".oa-preview">Preview this object.</skin:toolTip>				
 		</ul>	
 		
 		</cfoutput>

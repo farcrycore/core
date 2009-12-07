@@ -106,6 +106,7 @@ $in: SessionID -- $
 		<cfparam name="attributes.FormValidation" default="1">
 		<cfparam name="attributes.bAddWizardCSS" default="true" /><!--- Uses uniform (http://sprawsm.com/uni-form/) --->
 		<cfparam name="attributes.bFieldHighlight" default="true"><!--- Highlight fields when focused --->
+		<cfparam name="attributes.bFocusFirstField" default="true" /><!--- Focus on first wizard element. --->
 
 		<!--- I18 conversion of form heading --->
 		<cfif len(attributes.FormHeading)>
@@ -129,6 +130,12 @@ $in: SessionID -- $
 		<cfif attributes.bAddWizardCSS>		
 			<cfset attributes.formClass = listAppend(attributes.formClass,"uniForm"," ") />
 			<skin:loadCSS id="farcry-form" />				
+		</cfif>
+		
+		<cfif attributes.bFocusFirstField>
+			<skin:onReady>
+				<cfoutput>$j('###attributes.FormName# :input:visible:enabled:first').focus()</cfoutput>
+			</skin:onReady>
 		</cfif>
 		
 		

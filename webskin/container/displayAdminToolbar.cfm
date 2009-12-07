@@ -97,8 +97,8 @@ $fc.containerAdmin = function(title,url,containerID,containerURL){
 		width: w,
 		height: h,
 		close: function(event, ui) {
-			$j(fcDialog).remove();
 			$fc.reloadContainer(containerID,containerURL);
+			$j(fcDialog).dialog( 'destroy' ).remove();
 		}
 		
 	});
@@ -120,7 +120,28 @@ $fc.reloadContainer = function(containerID,containerURL){
 	   }
 	 });
 };
-
+$j('a.con-refresh').live(
+	"click",
+	function( event ){
+		$fc.reloadContainer(
+			$j(this).attr('con:id'), 
+			$j(this).attr('href')
+		);
+		return false;
+	}
+);	
+$j('a.con-admin').live(
+	"click",
+	function( event ){
+		$fc.containerAdmin(
+			$j(this).attr('rule:title'), 
+			$j(this).attr('href'),
+			$j(this).attr('con:id'),
+			$j(this).attr('con:url')								
+		);
+		return false;
+	}
+);			
 </cfoutput>
 </skin:onReady>
 
@@ -143,47 +164,35 @@ $fc.reloadContainer = function(containerID,containerURL){
 		
 		<div style="float:right;">
 			<!--- ADD A RULE --->
-			<a id="con-add-rule-#stobj.objectid#" href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editAddRule&iframe" title="Add a rule">
+			<a title="Add new rule to container"
+				class="con-admin con-add-rule" 
+				href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editAddRule&iframe" 
+				con:id="#containerID#"
+				con:url="#containerURL#"
+				rule:title="Add new rule to container: #stParam.desc#">
+				
 				<span class="ui-icon ui-icon-plusthick" style="float:left;">&nbsp;</span>
-			</a>
-			<skin:onReady>
-				<cfoutput>
-	            	$j('##con-add-rule-#stobj.objectid#').click(function() {
-						$fc.containerAdmin('Add new rule to container: #jsStringFormat(stParam.desc)#', this.href, '#containerID#', '#containerURL#');
-						return false;
-					});								
-	            </cfoutput>
-			</skin:onReady>		
-			<skin:toolTip id="con-add-rule-#stobj.objectid#">Add a new rule into this container.</skin:toolTip>
+			</a>	
+			<skin:toolTip selector=".con-add-rule">Add a new rule into this container.</skin:toolTip>
 			
 			<!--- MANAGE REFLECTION --->
-			<a id="con-manage-reflection-#stobj.objectid#" href="##" title="Manage reflection">
+			<a title="Manage Reflection"
+				class="con-admin con-manage-reflection" 
+				href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stParam.originalID#&method=editManageReflection&iframe" 
+				con:id="#containerID#"
+				con:url="#containerURL#"
+				rule:title="Manage Reflection: #stParam.desc#">
+				
 				<span class="ui-icon ui-icon-copy" style="float:left;">&nbsp;</span>
-			</a>		
-			<skin:onReady>
-				<cfoutput>
-	            	$j('##con-manage-reflection-#stobj.objectid#').click(function() {
-						$fc.containerAdmin('Manage Reflection: #jsStringFormat(stParam.desc)#', '#application.url.farcry#/conjuror/invocation.cfm?objectid=#stParam.originalID#&method=editManageReflection&iframe', '#containerID#', '#containerURL#');
-						return false;
-					});								
-	            </cfoutput>
-			</skin:onReady>		
-			<skin:toolTip id="con-manage-reflection-#stobj.objectid#">Set this container to use a reflection. Reflections are containers that are centrally managed from the webtop.</skin:toolTip>
+			</a>
+			<skin:toolTip selector=".con-manage-reflection">Set this container to use a reflection. Reflections are containers that are centrally managed from the webtop.</skin:toolTip>
 			
 			<!--- REFRESH CONTAINER --->
 	
-			<a id="con-refresh-container-#stobj.objectid#" href="##" title="Refresh container">
+			<a class="con-refresh con-refresh-container" href="#containerURL#" con:id="#containerID#" title="Refresh container">
 				<span class="ui-icon ui-icon-refresh" style="float:left;">&nbsp;</span>
 			</a>
-			<skin:onReady>
-				<cfoutput>
-	            	$j('##con-refresh-container-#stobj.objectid#').click(function() {
-						$fc.reloadContainer('#containerID#','#containerURL#');
-						return false;
-					});								
-	            </cfoutput>
-			</skin:onReady>	
-			<skin:toolTip id="con-refresh-container-#stobj.objectid#">Refresh the contents of this container.</skin:toolTip>
+			<skin:toolTip selector=".con-refresh-container">Refresh the contents of this container.</skin:toolTip>
 		</div>
 		<br style="clear:both;" />
 	</div>

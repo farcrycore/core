@@ -54,7 +54,7 @@ It just ignores the inner ones.
 		<cfparam name="attributes.ajaxTimout" default="30">
 		<cfparam name="attributes.bAddFormCSS" default="true" /><!--- Uses uniform (http://sprawsm.com/uni-form/) --->
 		<cfparam name="attributes.bFieldHighlight" default="true"><!--- Highlight fields when focused --->
-
+		<cfparam name="attributes.bFocusFirstField" default="true" /><!--- Focus on first form element. --->
 
 		<!--- Keeps track of all the form name in the request to make sure they are all unique --->
 		<cfparam name="Request.farcryFormList" default="">		
@@ -73,8 +73,13 @@ It just ignores the inner ones.
 		<cfif attributes.bAddFormCSS>		
 		
 			<cfset attributes.class = listAppend(attributes.class,"uniForm"," ") />
-			<skin:loadCSS id="farcry-form" />
-			<skin:loadCSS id="jquery-ui" />				
+			<skin:loadCSS id="farcry-form" />				
+		</cfif>
+		
+		<cfif attributes.bFocusFirstField>
+			<skin:onReady>
+				<cfoutput>$j('###attributes.Name# :input:visible:enabled:first').focus()</cfoutput>
+			</skin:onReady>
 		</cfif>
 		
 
@@ -102,15 +107,6 @@ It just ignores the inner ones.
 			<cfif attributes.bAjaxSubmission AND NOT structKeyExists(form, "farcryformajaxsubmission")>
 				<div id="#attributes.Name#formwrap" class="ajaxformwrap">				
 			</cfif>
-			
-			<skin:htmlHead>
-				<cfoutput>
-					<script type="text/javascript">
-					var watchedfields = {};
-					var watchingfields = {};
-					</script>
-				</cfoutput>
-			</skin:htmlHead>
 			
 			<form 	action="#attributes.Action#" 
 					method="#attributes.Method#" 

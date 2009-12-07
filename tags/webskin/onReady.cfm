@@ -44,7 +44,12 @@ $in: id -- an id for the content to be added to the head. If the key already exi
 			<cfoutput></script></cfoutput>
 		
 			<cfset request.inHead.stOnReady[attributes.id] = thisTag.generatedContent />
+		<cfelse>
+			<cfset thisTag.generatedContent = "" />
 		</cfif>
+		
+		
+		
 	<cfelse>
 		<cfif NOT structKeyExists(request.inhead.stOnReady, attributes.id)>
 			<cfset request.inHead.stOnReady[attributes.id] = thisTag.generatedContent />
