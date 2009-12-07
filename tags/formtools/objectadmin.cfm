@@ -577,7 +577,7 @@ user --->
 	</cfif>
 
 	<!--- ONLY SHOW THE FILTERING IF WE HAVE RECORDS OR IF WE ARE ALREADY FILTERING --->
-	<cfif listLen(attributes.lFilterFields)>
+	<cfif listLen(attributes.lFilterFields) AND (listLen(HTMLfiltersAttributes) OR stRecordset.q.recordCount)>
 	
 		<skin:loadJS id="jquery" />
 		
