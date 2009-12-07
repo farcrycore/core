@@ -134,7 +134,6 @@
 				<cfsavecontent variable="returnHTML">	
 					<grid:div class="multiField">
 
-		
 					<cfif listLen(joinItems)>
 						<cfoutput><ul id="join-#stObject.objectid#-#arguments.stMetadata.name#" class="arrayDetailView" style="list-style-type:none;border:1px solid ##ebebeb;border-width:1px 1px 0px 1px;margin:0px;"></cfoutput>
 							<cfset counter = 0 />
@@ -147,7 +146,7 @@
 									<div class="arrayDetail" style="float:left;">#htmlLabel#</div>
 									<div class="join-remove" style="float:right;white-space: nowrap;">
 										
-										<cfif arguments.stMetadata.ftAllowEdit or 1 eq 1>
+										<cfif arguments.stMetadata.ftAllowEdit>
 											<ft:button
 												Type="button" 
 												renderType="button"
@@ -223,7 +222,7 @@
 									
 								</cfif>
 							</cfif>
-							<cfif arguments.stMetadata.ftAllowAdd or 1 eq 1>
+							<cfif arguments.stMetadata.ftAllowAdd>
 								<ft:button	Type="button" 
 											renderType="button"
 											class="ui-state-default ui-corner-all"
