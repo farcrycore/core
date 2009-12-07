@@ -418,7 +418,39 @@ user --->
 		</skin:onReady>
 	</ft:processForm>
 	
-
+	
+	
+	<ft:processForm action="overview">
+		<!--- TODO: Check Permissions. --->
+		<cfset EditURL = "#application.url.farcry#/edittabOverview.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module#">
+		<cfif Len(attributes.plugin)><cfset EditURL = EditURL&"&plugin=#attributes.plugin#"></cfif>
+		<skin:onReady>
+			<cfoutput>
+				$fc.objectAdminAction('Administration', '#EditURL#');
+			</cfoutput>
+		</skin:onReady>
+	</ft:processForm>
+	
+	<ft:processForm action="edit">
+		<!--- TODO: Check Permissions. --->
+		<cfset EditURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module#">
+		<cfif Len(attributes.plugin)><cfset EditURL = EditURL&"&plugin=#attributes.plugin#"></cfif>
+		<skin:onReady>
+			<cfoutput>
+				$fc.objectAdminAction('Administration', '#EditURL#');
+			</cfoutput>
+		</skin:onReady>
+	</ft:processForm>
+	
+	<ft:processForm action="view">
+		<!--- TODO: Check Permissions. --->
+		<cfoutput>
+			<script language="javascript">
+				var newWin = window.open("#application.url.webroot#/index.cfm?objectID=#form.objectid#&flushcache=1","viewWindow","resizable=yes,menubar=yes,scrollbars=yes,width=800,height=600,location=yes");
+			</script>
+		</cfoutput>
+		<!--- <cflocation URL="#application.url.webroot#/index.cfm?objectID=#form.objectid#&flushcache=1" addtoken="false" /> --->
+	</ft:processForm>
 	
 	<cfif structKeyExists(application.stPlugins, "flow")>
 		<ft:processForm action="flow">
@@ -449,6 +481,15 @@ user --->
 		</skin:onReady>
 	</ft:processForm>
 	
+	<ft:processForm action="createdraft,create draft">
+		<!--- TODO: Check Permissions. --->
+		<cflocation URL="#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#form.objectID#" addtoken="false" />
+	</ft:processForm>
+	
+	<ft:processForm action="Send to Draft">
+		<!--- TODO: Check Permissions. --->
+		<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=draft" addtoken="false" />
+	</ft:processForm>
 	
 	<ft:processForm action="properties">
 		
