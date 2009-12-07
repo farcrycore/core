@@ -25,7 +25,7 @@ TYPE PROPERTIES
 	
     <cfproperty name="firstName" type="string" default="" required="no" hint="Profile object first name" ftSeq="21" ftFieldset="Contact details" ftLabel="First Name" />
     <cfproperty name="lastName" type="string" default="" required="no" hint="Profile object last name" ftSeq="22" ftFieldset="Contact details" ftLabel="Last Name" />
-    <cfproperty name="emailAddress" type="string" default="" required="no" hint="Profile object email address" ftSeq="23" ftFieldset="Contact details" ftLabel="Email Address" />
+    <cfproperty name="emailAddress" type="string" default="" required="no" hint="Profile object email address" ftSeq="23" ftFieldset="Contact details" ftLabel="Email Address" ftType="email" />
     <cfproperty ftSeq="24" ftFieldset="Contact details" name="bReceiveEmail" type="boolean" default="1" required="yes" ftType="boolean" hint="Does user receive workflow and system email notices." fthint="Select this option if you want to receive email notifications from FarCry." ftLabel="Receive Emails" />
     <cfproperty name="phone" type="string" default="" required="no" hint="Profile object phone number" ftSeq="25" ftFieldset="Contact details" ftLabel="Phone" />
     <cfproperty name="fax" type="string" default="" required="no" hint="Profile object fax number" ftSeq="26" ftFieldset="Contact details" ftLabel="Fax" />
