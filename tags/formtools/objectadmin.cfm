@@ -626,7 +626,7 @@ user --->
 		<cfsavecontent variable="html_buttonbar">
 		
 			<cfif len(attributes.lButtons)>
-				<ft:buttonPanel>
+				<ft:buttonPanel style="text-align:left;">
 				<cfloop from="1" to="#arraylen(attributes.aButtons)#" index="i">
 					
 					
