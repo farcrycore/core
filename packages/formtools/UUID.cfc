@@ -1,5 +1,7 @@
 <cfcomponent extends="join" name="UUID" displayname="UUID" hint="Used to liase with UUID type fields"> 
 
+	<cfproperty name="ftSelectMultiple" default="false" type="boolean" />
+	
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 	
 	<cffunction name="init" access="public" returntype="any" output="false" hint="Returns a copy of this initialised object">
