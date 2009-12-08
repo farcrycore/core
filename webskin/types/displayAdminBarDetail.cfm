@@ -173,8 +173,8 @@
 				<cfelse>
 					<cfif request.mode.flushcache>
 						<li>
-							<a id="tray-flushcache" name="tray-flushcache" title="Turn OFF caching" href="##">
-								<input type="checkbox" checked=checked /> Caching
+							<a id="tray-flushcache" name="tray-flushcache" title="Turn ON caching" href="##">
+								<input type="checkbox" /> Caching 
 							</a>
 						</li>
 						<skin:onReady>
@@ -185,8 +185,8 @@
 						</skin:onReady>
 					<cfelse>
 						<li>
-							<a id="tray-flushcache" name="tray-flushcache" title="Turn ON caching" href="##">
-								<input type="checkbox" /> Caching 
+							<a id="tray-flushcache" name="tray-flushcache" title="Turn OFF caching" href="##">
+								<input type="checkbox" checked=checked /> Caching
 							</a>
 						</li>
 						<skin:onReady>
