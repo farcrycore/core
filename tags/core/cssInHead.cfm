@@ -58,15 +58,15 @@
 						<cfset stCSS.lFullFileBaseHREFs = listAppend(stCSS.lFullFileBaseHREFs,"#stCSS.baseHREF##i#") />
 					</cfloop>
 				
-					
-					<cfset sCacheFileName = application.fc.utils.combine(	id=stCSS.id,
+					<cfif stJS.bCombine>
+						<cfset sCacheFileName = application.fc.utils.combine(	id=stCSS.id,
 																			files=stCSS.lFullFilebaseHREFs,
 																			type="css",
 																			prepend:stCSS.prepend,
 																			append:stCSS.append) />
 					
-					<cfset application.fc.stCSSLibraries[idHash].sCacheFileName = sCacheFileName />
-					
+						<cfset application.fc.stCSSLibraries[idHash].sCacheFileName = sCacheFileName />
+					</cfif>
 				</cfif>
 			</cfif>
 			

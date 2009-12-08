@@ -167,7 +167,7 @@
 		</cfloop>
 		
 		<!--- create a string to be used as an Etag - in the response header --->
-		<cfset etag = arguments.id & '-' & lastModified & '-' & hash(sCorrectedFiles) & '-' & hash(arguments.prepend) & '-' & hash(arguments.append) />
+		<cfset etag = arguments.id & '--' & lastModified & '-' & hash(sCorrectedFiles) & '-' & hash(arguments.prepend) & '-' & hash(arguments.append) />
 		
 		<!--- 
 			output the etag, this allows the browser to make conditional requests
@@ -201,10 +201,12 @@
 				<cfset sCacheFileName = etag & '.' & sType />
 				<cfset sCacheFile = variables.sCachePath & '/' & sCacheFileName />
 				<cfif fileExists(sCacheFile)>
-					<!--- <cffile action="read" file="#sCacheFile#" variable="sOutput" />
-					<!--- output contents --->
-					<cfset outputContent(sOutput, sType, variables.sCacheControl) /> --->
 					<cfreturn sCacheFileName />
+					<!--- 
+						<cffile action="read" file="#sCacheFile#" variable="sOutput" />
+						<!--- output contents --->
+						<cfset outputContent(sOutput, sType, variables.sCacheControl) />
+					 --->					
 				</cfif>
 				
 			</cfif>
@@ -284,8 +286,15 @@
 			//outputContent(sOutput, sType, variables.sCacheControl);
 			</cfscript>
 			
-			<!--- write the cache file --->
+			<!--- write the cache file and cleanup (delete) any older cache files --->
 			<cfif variables.bCache>
+				<cfdirectory action="list" directory="#variables.sCachePath#" filter="#arguments.id#--*.#sType#" name="qToDelete" />
+				
+				<cfif qToDelete.recordCount>
+					<cfloop query="qToDelete">
+						<cffile action="delete" file="#qToDelete.directory#/#qToDelete.name#" />
+					</cfloop>
+				</cfif>
 				<cffile action="write" file="#sCacheFile#" output="#sOutput#" />
 			</cfif>
 			

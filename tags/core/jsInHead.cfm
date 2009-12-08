@@ -54,15 +54,16 @@
 						</cfif>
 						<cfset stJS.lFullFilebaseHREFs = listAppend(stJS.lFullFilebaseHREFs,"#stJS.baseHREF##i#") />
 					</cfloop>
-				
-					<cfset sCacheFileName = application.fc.utils.combine(	id=stJS.id,
+					
+					<cfif stJS.bCombine>
+						<cfset sCacheFileName = application.fc.utils.combine(	id=stJS.id,
 																			files=stJS.lFullFilebaseHREFs,
 																			type="js",
 																			prepend:stJS.prepend,
 																			append:stJS.append) />
 					
-					<cfset application.fc.stJSLibraries[idHash].sCacheFileName = sCacheFileName />
-					
+						<cfset application.fc.stJSLibraries[idHash].sCacheFileName = sCacheFileName />
+					</cfif>
 				</cfif>
 			</cfif>
 			
