@@ -12,7 +12,7 @@ $in: text -- the content to be added to the head. $
 $in: id -- an id for the content to be added to the head. If the key already exists, it is not added again. This ensures it is not added multiple times $
 --->
 
-<!--- IPORT LIBRARIES --->
+<!--- IMPORT LIBRARIES --->
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 
 
@@ -32,7 +32,6 @@ $in: id -- an id for the content to be added to the head. If the key already exi
 		</cfif>
 	<cfelse>
 		<skin:loadJS id="jquery" />
-		<skin:htmlHead library="extCoreJS" />
 	</cfif>
 </cfif>
 
@@ -45,7 +44,12 @@ $in: id -- an id for the content to be added to the head. If the key already exi
 			<cfoutput></script></cfoutput>
 		
 			<cfset request.inHead.stOnReady[attributes.id] = thisTag.generatedContent />
+		<cfelse>
+			<cfset thisTag.generatedContent = "" />
 		</cfif>
+		
+		
+		
 	<cfelse>
 		<cfif NOT structKeyExists(request.inhead.stOnReady, attributes.id)>
 			<cfset request.inHead.stOnReady[attributes.id] = thisTag.generatedContent />

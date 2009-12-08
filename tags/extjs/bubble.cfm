@@ -30,10 +30,16 @@ FARCRY IMPORT FILES
 
 
 
-<cfparam name="attributes.title" default="" /><!--- The title of the message --->
+<cfparam name="attributes.title" default="&nbsp;" /><!--- The title of the message --->
 <cfparam name="attributes.message" default="" /><!--- The actual message. This can be replaced with generatedContent --->
-<cfparam name="attributes.pause" default="3" type="numeric" /><!--- How long the message appears before being removed --->
-<cfparam name="attributes.bAutoHide" default="true" type="boolean" /><!--- Automatically hide the message after the pause --->
+<cfparam name="attributes.pause" default="3000" type="numeric" /><!--- How long (in milliseconds) the message appears before being removed --->
+<cfparam name="attributes.sticky" default="false" type="boolean" /><!--- Keep the message displayed until the user actively closes. --->
+<cfparam name="attributes.image" default="" /><!--- Image to display with the message --->
+
+<!--- legacy attribute --->
+<cfif structKeyExists(attributes,"bAutoHide")>
+	<cfset attributes.sticky = false />
+</cfif>
 
 <cfparam name="request.mode.ajax" default="false" />
 
@@ -47,23 +53,40 @@ FARCRY IMPORT FILES
 		<cfset attributes.message = thisTag.generatedContent />
 	</cfif>
 	
+	<cfif not len(trim(attributes.message))>
+		<cfset attributes.message = "&nbsp;" />
+	</cfif>
+	
 	<cfset thisTag.generatedContent = "" />
 	
 	<cfif request.mode.ajax>
 		<cfoutput>
-			<script type="text/javascript">
-			Ext.example.init, Ext.example;
-			Ext.example.msg('#jsstringformat(attributes.title)#','#jsstringformat(attributes.message)#', #attributes.pause#, #attributes.bAutoHide#);
-			</script>
-		</cfoutput>	
+		<script type="application/javascript">
+		$j.gritter.add({
+			// (string | mandatory) the heading of the notification
+			title: '#jsstringformat(attributes.title)#',
+			// (string | mandatory) the text inside the notification
+			text: '#jsstringformat(attributes.message)#',
+			// (string | optional) the image to display on the left
+			image: '#attributes.image#',
+			// (bool | optional) if you want it to fade out on its own or just sit there
+			sticky: #attributes.sticky#, 
+			// (int | optional) the time you want it to be alive for before fading out (milliseconds)
+			time: #attributes.pause#
+		});
+		</script>
+		</cfoutput>
+	
+			
 	<cfelse>
-		<cfparam name="session.aExtMessages" default="#arrayNew(1)#" />
+		<cfparam name="session.aGritterMessages" default="#arrayNew(1)#" />
 		<cfset stMessage = structNew() />
 		<cfset stMessage.title = JSStringFormat(attributes.title) />
 		<cfset stMessage.message = JSStringFormat(attributes.message) />
+		<cfset stMessage.image = attributes.image />
 		<cfset stMessage.pause = attributes.pause />
-		<cfset stMessage.bAutoHide = attributes.bAutoHide />
-		<cfset arrayAppend(session.aExtMessages, stMessage) />
+		<cfset stMessage.sticky = attributes.sticky />
+		<cfset arrayAppend(session.aGritterMessages, stMessage) />
 		
 		
 	</cfif>
