@@ -45,7 +45,7 @@
 		<!--- COMBINE: Used for CSS and JS --->
 		<cfset variables.oCombine = createObject("component", "farcry.core.packages.farcry.combine.combine").init(
 												enableCache= true,
-												cachePath= expandpath('/farcry/projects/#application.projectdirectoryname#/www/cache'),
+												cachePath= "#application.path.webroot#/cache",
 												enableETags= false,
 												enableJSMin= true,
 												enableYuiCSS= true,
@@ -311,7 +311,7 @@
 		
 		<cfreturn duplicate(arguments) />
 	</cffunction>
-	
+
 	<!--- deprecated since ? not used any where I could find Replace with {...} syntax --->
 	<cffunction name="struct" returntype="struct" output="false" access="public" hint="Shortcut for creating structs" bDocument="false" bDeprecated="true">
 		
@@ -597,7 +597,7 @@
 		<code>
 			#application.fapi.prettyDate(myUglyDate)# 
 		</code>
-	--->
+	 --->
 	<cffunction name="prettyDate" access="public" returntype="string" output="false">
 		<cfargument name="uglyDate" required="true" type="string" default="" />
 		
