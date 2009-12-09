@@ -306,12 +306,14 @@
 		<cfreturn arguments.struct1 />
 	</cffunction>
 
-	<cffunction name="structCreate" returntype="struct" output="false" access="public" hint="Creates and populates a struct with the provided arguments" bDocument="true">
+	<!--- deprecated since ? not used any where I could find. Replace with {...} syntax --->
+	<cffunction name="structCreate" returntype="struct" output="false" access="public" hint="Creates and populates a struct with the provided arguments" bDocument="false" bDeprecated="true">
 		
 		<cfreturn duplicate(arguments) />
 	</cffunction>
-
-	<cffunction name="struct" returntype="struct" output="false" access="public" hint="Shortcut for creating structs">
+	
+	<!--- deprecated since ? not used any where I could find Replace with {...} syntax --->
+	<cffunction name="struct" returntype="struct" output="false" access="public" hint="Shortcut for creating structs" bDocument="false" bDeprecated="true">
 		
 		<cfreturn duplicate(arguments) />
 	</cffunction>
@@ -584,12 +586,18 @@
 		
 		<cfreturn arguments.url />
 	</cffunction>
-	<!--- @@examples:
+	
+	<!--- @@hint: 
+		<p>This is a private version of the function. Do not call this function directly.
+			Please use the fapi.cfc version</p>
+		
 		<p>Provides date formatting in the style of Twitter’s timeline: "just now", "5 minutes ago", "yesterday", "2 weeks ago".</p>
+		
+		@@examples:
 		<code>
 			#application.fapi.prettyDate(myUglyDate)# 
 		</code>
-	 --->
+	--->
 	<cffunction name="prettyDate" access="public" returntype="string" output="false">
 		<cfargument name="uglyDate" required="true" type="string" default="" />
 		

@@ -1452,7 +1452,7 @@
 				#application.fapi.listSlice(list=colours,start=2,end=4)#<br />
 			</cfoutput>
 		</code>
-	 --->
+	--->
 	<cffunction name="listSlice" access="public" output="false" returntype="string" hint="Returns the specified elements of the list" bDocument="true">
 		<cfargument name="list" type="string" required="true" hint="The list being sliced" />
 		<cfargument name="start" type="numeric" required="false" default="1" hint="The start index of the slice. Negative numbers are reverse indexes: -1 is last item." />
@@ -1470,6 +1470,12 @@
 		<cfreturn application.fc.utils.listFilter(argumentCollection="#arguments#") />
 	</cffunction>
 
+	<!--- @@description: 
+		<p>
+		Returns true if the first list contains any of the items in the second list. This method
+		is case sensitive. See listContainsAnyNoCase if you need case insensitve search.
+		</p>
+	--->
 	<cffunction name="listContainsAny" access="public" returntype="boolean" description="Returns true if the first list contains any of the items in the second list" output="false" bDocument="true">
 		<cfargument name="list1" type="string" required="true" hint="The list being searched" />
 		<cfargument name="list2" type="string" required="true" hint="The list of search terms" />
@@ -1478,6 +1484,17 @@
 		<cfreturn application.fc.utils.listContainsAny(argumentCollection="#arguments#") />
 	</cffunction>
 
+	<!--- @@description: 
+		<p>
+		   Returns true if the first list contains any of the items in the second list in any case.
+			The third, optional parameter, is the list delimiter - comma by default.
+		</p>
+		
+		@@examples: 
+		<code>
+			var doesIt = application.fapi.listContainsAnyNoCase("This,will,BE,TRUE","TRUE,Fred,larry,joe",",")
+		</code>
+	--->
 	<cffunction name="listContainsAnyNoCase" access="public" returntype="boolean" description="Returns true if the first list contains any of the items in the second list" output="false" bDocument="true">
 		<cfargument name="list1" type="string" required="true" hint="The list being searched" />
 		<cfargument name="list2" type="string" required="true" hint="The list of search terms" />
@@ -1487,27 +1504,49 @@
 	</cffunction>
 
 	<!--- STRUCT UTILITIES ///////////////////////////////// --->
-		
+	
+	<!--- @@description: 
+		<p>Performs a deep merge on two structs.</p>
+				
+		@@examples: 
+		<code>
+			var stNewOne = application.fapi.structMerge(stOne, stTwo, true)
+		</code>
+	--->
 	<cffunction name="structMerge" access="public" output="false" returntype="struct" hint="Performs a deep merge on two structs" bDocument="true">
-		<cfargument name="struct1" type="struct" required="true" />
-		<cfargument name="struct2" type="struct" required="true" />
-		<cfargument name="replace" type="boolean" required="false" default="true" />
+		<cfargument name="struct1" type="struct" required="true" /><!--- @@attrhint: First struct in the merge --->
+		<cfargument name="struct2" type="struct" required="true" /><!--- @@attrhint: Second struct in the merge --->
+		<cfargument name="replace" type="boolean" required="false" default="true" /><!--- @@attrhint: replace matching keys.  If true, any key that matches in both struct one and struct two will have the end value of struct two. --->
 		
 		<cfreturn application.fc.utils.structMerge(argumentCollection="#arguments#") />
 	</cffunction>
 	
-	<cffunction name="structCreate" returntype="struct" output="false" access="public" hint="Creates and populates a struct with the provided arguments">
+	<!--- @@description: 
+		<p>Create and populate a struct.  With newer versions of Coldfusion this method is
+			a bit less useful since you can often create structs using the {} notation. For
+			example {a=5,b="How now brown cow",c=url}.</p>
+		
+		@@examples:
+		<code>
+			<cfdump var="#application.fapi.struct(a=5,b="How now brown cow",c=url)#" />
+		</code>
+	---> 
+	<cffunction name="structCreate" returntype="struct" output="false" access="public" hint="Creates and populates a struct with the provided arguments" bDeprecated="true">
 		
 		<cfreturn application.fc.utils.structCreate(argumentCollection="#arguments#") />
 	</cffunction>
 
-	<!--- @@examples:
-		<p>Create and populate a struct:</p>
+	<!--- @@description: 
+		<p>Create and populate a struct.  With newer versions of Coldfusion this method is
+			a bit less useful since you can often create structs using the {} notation. For
+			example {a=5,b="How now brown cow",c=url}.</p>
+		
+		@@examples:
 		<code>
 			<cfdump var="#application.fapi.struct(a=5,b="How now brown cow",c=url)#" />
 		</code>
-	 --->
-	<cffunction name="struct" returntype="struct" output="false" access="public" hint="Shortcut for creating structs" bDocument="true">
+	--->
+	<cffunction name="struct" returntype="struct" output="false" access="public" hint="Shortcut for creating structs" bDocument="true" bDeprecated="true">
 		
 		<cfreturn application.fc.utils.struct(argumentCollection="#arguments#") />
 	</cffunction>
@@ -1557,12 +1596,14 @@
 	
 	<!--- PACKAGE UTILITIES //////////////////////////////// --->
 	
-	<!--- @@examples:
+	<!--- @@description: 
 		<p>Find the version of a custom component with the most precedence:</p>
+		
+		@@examples:
 		<code>
-			<cfoutput>#application.fapi.getPackagePath("custom","myfactory")#</cfoutput>
+			<cfoutput>#application.fapi.getPackagePath("custom", "myfactory")#</cfoutput>
 		</code>
-	 --->
+	--->
 	<cffunction name="getPackagePath" access="public" output="false" returntype="string" hint="Finds the component in core/plugins/project, and returns its path" bDocument="true">
 		<cfargument name="package" type="string" required="true" />
 		<cfargument name="component" type="string" required="true" />
@@ -1571,12 +1612,14 @@
 		<cfreturn application.fc.utils.getPath(argumentCollection="#arguments#") />
 	</cffunction>
 
-	<!--- @@examples:
+	<!--- @@description:  
 		<p>Get a list of all the components in types:</p>
+		
+		@@examples:
 		<code>
 			<cfoutput>#application.fapi.getComponents("types")#</cfoutput>
 		</code>
-	 --->
+	--->
 	<cffunction name="getComponents" access="public" output="false" returntype="string" hint="Returns a list of components for a package" bDocument="true">
 		<cfargument name="package" type="string" required="true" />
 		<cfargument name="locations" type="string" required="false" default="" />
@@ -1584,12 +1627,14 @@
 		<cfreturn application.fc.utils.getComponents(argumentCollection="#arguments#") />
 	</cffunction>
 	
-	<!--- @@examples:
+	<!--- @@description: 
 		<p>Find out if a component is a FarCry content type:</p>
+		
+		@@examples: 
 		<code>
 			<cfdump var="#application.fapi.extends(mycomponent path,'farcry.core.packages.types.types')#" />
 		</code>
-	 --->
+	--->
 	<cffunction name="extends" access="public" output="false" returntype="boolean" hint="Returns true if the specified component extends another" bDocument="true">
 		<cfargument name="desc" type="string" required="true" hint="The component to test" />
 		<cfargument name="anc" type="string" required="true" hint="The ancestor to check for" />
@@ -1597,6 +1642,9 @@
 		<cfreturn application.fc.utils.extends(argumentCollection="#arguments#") />
 	</cffunction>
 	
+	<!--- @@description: 
+		<p>Returns a list of the components the specified one extends (inclusive)</p>
+	--->
 	<cffunction name="listExtends" access="public" returntype="string" description="Returns a list of the components the specified one extends (inclusive)" output="false">
 		<cfargument name="path" type="string" required="true" hint="The package path of the component" />
 	
@@ -1605,24 +1653,44 @@
 	
 	<!--- DOCTYPE / VALIDATION ///////////////////////////// --->
 	
-	<!--- @@description: 
-		This function is used to get information about the doctype the system should be
-		generating. This value, by default, uses the application.fc.doctype variable
+	<!--- @@description:
+		<p> 
+		This function is used to get information about the doctype your application should be
+		generating. This value, by default, uses the application.fc.doctype variable.
+		</p>
+		<p>
 		The default variable is set in core and is by default the latest version of html
 		(html 4.01 at the time of this writing.).  You can change this by setting the
-		value in your _serverSpecificVars file.
+		application.fc.doctype variable value in your _serverSpecificVars.cfm file.
+		</p>
 		
+		<p>
 		This turns the doctype tag contents into a struct.  The parts you'll likely use,
 		and will be there for sure are:
+		</p>
 		
-		doctype.type     - html, xhtml
-		doctype.version  - 1.0, 1.1, 3.2, blank
-		doctype.subtype  - Frameset, Transitional, blank
-		doctype.uri  - dtd, blank
-		doctype.tagending  - /, blank
-		
-		Example output:
-		
+		<table>
+			<tr>
+				<td>doctype.type</td><td>html, xhtml</td>
+			</tr>
+			<tr>
+				<td>doctype.version</td><td>1.0, 1.1, 3.2, blank</td>
+			</tr>
+			<tr>
+				<td>doctype.subtype</td><td>Frameset, Transitional, blank</td>
+			</tr>
+			<tr>
+				<td>doctype.uri</td><td>dtd, blank</td>
+			</tr>
+			<tr>
+				<td>doctype.tagending</td><td>/, blank</td>
+			</tr>
+		</table>
+	
+		<p>
+		Example struct output:
+		</p>
+		<pre>
 		AVAILABILITY     | PUBLIC
 		PUBLICIDENTIFIER |
 		       | LABEL        | XHTML 1.0 Frameset
@@ -1638,6 +1706,7 @@
 		URI              | http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd
 		VERSION          | 1.0
 		TAGENDING		 |	/
+		</pre>
 	--->
 	<cffunction name="getDocType" access="public" returntype="struct" output="false">
 		<cfargument name="docTypeString" type="string" required="no" default="#application.fc.doctype#" />
@@ -1786,11 +1855,19 @@
 	</cffunction>
 	
 	<!--- @@description: 
-		Attempts to clean out all MS Word chars that tend to mess up html display and cause
-		xhtml validation to fail.
+		<p>
+		Attempts to strip out all MS Word chars that tend to mess up html display and cause
+		xhtml validation to fail.  This also attempts to maintain compatibility with languages
+		other than English. If you modify this method, please run the unit tests.
+		</p>
+		
+		@@examples: 
+		<code>
+			var clean = application.fapi.removeMSWordChars("my possible bad thing")
+		</code>
 	--->
 	<cffunction name="removeMSWordChars" access="public" returntype="string" output="false">
-		<cfargument name="dirtyText" required="true" type="string" default="" />
+		<cfargument name="dirtyText" required="true" type="string" default="" /><!--- @@attrhint: the text that might have MS word chars --->
 		
 		<cfset var cleanText = arguments.dirtyText />
 		
@@ -1805,12 +1882,15 @@
 		<cfreturn cleanText />
 	</cffunction>
 	
-	<!--- @@examples:
-		<p>Provides date formatting in the style of Twitter’s timeline: "just now", "5 minutes ago", "yesterday", "2 weeks ago".</p>
+	<!--- @@description: 
+		<p>Provides date formatting in the style of Twitter's timeline: "just now", 
+			"5 minutes ago", "yesterday", "2 weeks ago".</p>
+		
+		@@examples:
 		<code>
 			#application.fapi.prettyDate(myUglyDate)# 
 		</code>
-	 --->
+	--->
 	<cffunction name="prettyDate" access="public" returntype="string" output="false">
 		<cfargument name="uglyDate" required="true" type="string" default="" />
 		
