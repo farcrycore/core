@@ -190,7 +190,8 @@
 	</cffunction>
 
 	<cffunction name="listFilterTest" access="public" hint="Filters the items in a list though a regular expression">
-		<cfset assertEquals(true, false) />
+		<cfset listSubset = this.myComp.listFilter("one,two,three,four", "^[ot]", ",") />
+		<cfset assertEquals(listSubset, "one,two,three") />
 	</cffunction>
 
 	<cffunction name="listContainsAnyTest" access="public" description="Returns true if the first list contains any of the items in the second list">

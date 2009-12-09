@@ -24,24 +24,29 @@
 	
 	<!--- COAPI //////////////////////////////////////////// --->
 	
-	<!--- @@examples:
+	<!--- @@description: 
 		<p>The following snippet shows how to get the type of a related content item in a webskin:</p>
+		
+		@@examples:
 		<code>
 			<cfset othertype = application.fapi.findType(stObj.aObjectIDs[1]) />
 		</code>
-	 --->
+	--->
 	<cffunction name="findType" access="public" output="false" returntype="string" hint="Returns the typename for an objectID. Returns empty string if objectid is not found." bDocument="true">
 		<cfargument name="objectid" required="true" />
 		
 		<cfreturn application.coapi.coapiUtilities.findType(argumentCollection=arguments) />
 	</cffunction>
 	
-	<!--- @@examples:
+	<!--- @@description: 
+		<p>Returns an instantiated content type that is not populated with any data.</p>
+		
+		@@examples:
 		<p>Instantiate a dmFile component:</p>
 		<code>
 			<cfset oFile = application.fapi.getContentType("dmFile") />
 		</code>
-	 --->
+	--->
 	<cffunction name="getContentType" access="public" output="false" returntype="any" hint="Returns the an instantiated content type" bDocument="true">
 		<cfargument name="typename" type="string" required="true" />
 		
@@ -57,13 +62,24 @@
 		<cfreturn oResult />
 	</cffunction>
 		
-	<!--- @@examples:
+	<!--- @@description: 
+		<p>Allows you to fetch a ContentObject.  This is functionally the same as
+			doing: getContentType("mytype").getData(objectid); however, using this
+			method allows you to get the ContentObject structure without having to
+			know the type.
+		</p>
+		<p>
+			There is some performace overhead when you get a ContentObject without
+			knowing the type (requires more database lookups). So, if possible, it 
+			is better to use getContentType("type").getData(objectid).
+		</p>
+		
+		@@examples:
 		<p>Retrieve the properties of the selected object after an objectadmin action:</p>
 		<code>
 			<cfset stObj = application.fapi.getContentObject(form.selectedobjectid,"thistype") />
 		</code>
-		<p>Remember: if you know what the type is, pass it in to avoid an unnecessary database calls.</p>
-	 --->
+	--->
 	<cffunction name="getContentObject" access="public" output="false" returnType="struct" hint="Allows you to fetch a content object with only the objectID" bDocument="true">
 		<cfargument name="objectid" type="UUID" required="true" hint="The objectid for which object is to be found" />
 		<cfargument name="typename" type="string" required="false" default="" hint="The typename of the objectid. Pass in to avoid having to lookup the type." />
@@ -71,13 +87,17 @@
 		<cfreturn application.coapi.coapiutilities.getContentObject(argumentCollection="#arguments#") />
 	</cffunction>	
 			
-	<!--- @@examples:
+	<!--- @@description: 
+		<p>Returns true if the object has not yet been stored in the database</p>
+		<p>If you know what the type is, pass it in to avoid an unnecessary database calls.</p>
+		
+		@@examples:
 		<p>Returns true if the object has not yet been stored in the database:</p>
 		<code>
 			<cfset bDefaultObject = application.fapi.isDefaultObject(form.selectedobjectid,"thistype") />
 		</code>
-		<p>Remember: if you know what the type is, pass it in to avoid an unnecessary database calls.</p>
-	 --->
+		
+	--->
 	<cffunction name="isDefaultObject" access="public" output="false" returnType="boolean" hint="Returns true if the object has not yet been stored in the database" bDocument="true">
 		<cfargument name="objectid" type="UUID" required="true" hint="The objectid for which object is to be found" />
 		<cfargument name="typename" type="string" required="false" default="" hint="The typename of the objectid. Pass in to avoid having to lookup the type." />
@@ -92,14 +112,18 @@
 		<cfreturn bDefaultObject />
 	</cffunction>
 				
-	<!--- @@examples:
-		<p>Retrieve the properties of the selected object after an objectadmin action:</p>
+	<!--- @@description: 
+		<p>
+			Retrieve the properties of the selected object after an objectadmin action.
+		</p>
+		
+		@@examples:
 		<code>
 			<cfif application.fapi.hasWebskin("dmHTML", "displayPage1Col")>
 				<skin:view typename="dmHTML" objectid="#q.objectid#" webskin="displayPage1Col" />
 			</cfif>
 		</code>
-	 --->
+	--->
 	<cffunction name="hasWebskin" access="public" output="false" returnType="boolean" hint="Returns true if the content type has the webskin name passed in available." bDocument="true">
 		<cfargument name="typename" type="string" required="true" hint="The typename of the webskin to be found." />
 		<cfargument name="webskin" required="true" />
@@ -1188,7 +1212,14 @@
 		<cfreturn application.fc.utils.createJavaUUID() />
 	</cffunction>
 		
-	<!--- @@examples:
+	<!--- @@description: 
+		<p>
+			Corrects a URL with the specified query string values removed, replaced, or added.  
+			New values can be specified with a query string, struct, or named arguments. 
+			Also fixes friendly url query variables.
+		</p>
+		
+		@@examples:
 		<p>Refresh the current FarCry page:</p>
 		<code>
 			<cflocation url="#application.fapi.fixURL()#" />
@@ -1462,6 +1493,18 @@
 		<cfreturn application.fc.utils.listSlice(argumentCollection="#arguments#") />
 	</cffunction>
 
+	<!--- @@description: 
+		<p>
+			Filters the items in a list though a regular expression, and returns a new list
+			of items that match the regular expression.
+		</p>
+		
+		@@examples: 
+		<code>
+			var newList = application.fapi.listFilter("one,two,three,four", "^[ot]", ",")
+			//newList = "one,two,three"
+		</code>
+	--->
 	<cffunction name="listFilter" access="public" output="false" returntype="string" hint="Filters the items in a list though a regular expression" bDocument="true">
 		<cfargument name="list" type="string" required="true" hint="The list being filtered" />
 		<cfargument name="filter" type="string" required="true" hint="The regular expression to filter by" />
