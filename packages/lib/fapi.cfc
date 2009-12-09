@@ -1596,7 +1596,7 @@
 	
 	<!--- DOCTYPE / VALIDATION ///////////////////////////// --->
 	
-	<!--- @@hint: 
+	<!--- @@description: 
 		This function is used to get information about the doctype the system should be
 		generating. This value, by default, uses the application.fc.doctype variable
 		The default variable is set in core and is by default the latest version of html
@@ -1728,7 +1728,7 @@
 		<cfreturn doctype />
 	</cffunction>
 	
-	<!--- @@hint: 
+	<!--- @@description: 
 		Valid RSS feeds will have the date displayed in RFC 822 format which looks like:
 		Tue, 07 Jul 2009 10:35:38 +0800 This function is used to parse that information 
 		into a coldfusion datetime.
@@ -1755,7 +1755,7 @@
 		<cfreturn rdate />
 	</cffunction>
 	
-	<!--- @@hint:
+	<!--- @@description:
 		Things like RSS feeds need to have the date displayed in RFC 822 format:
 		Tue, 07 Jul 2009 10:35:38 +0800	This funciton takes a coldfusion date and 
 		formats it properly. Note you need to pass in the Timezone either as an offset 
@@ -1776,7 +1776,7 @@
 		<cfreturn rdate />
 	</cffunction>
 	
-	<!--- @@hint: 
+	<!--- @@description: 
 		Attempts to clean out all MS Word chars that tend to mess up html display and cause
 		xhtml validation to fail.
 	--->
