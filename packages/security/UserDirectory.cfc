@@ -100,4 +100,9 @@
 		<cfreturn structnew() />
 	</cffunction>
 	
+	<cffunction name="isEnabled" access="public" output="false" returntype="boolean" hint="Returns true if this user directory is active. This function can be overridden to check for the existence of config settings.">
+		
+		<cfreturn true />
+	</cffunction>
+	
 </cfcomponent>

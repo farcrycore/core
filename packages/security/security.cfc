@@ -222,8 +222,16 @@
 
 	<!--- User Directory functions --->
 	<cffunction name="getAllUD" access="public" output="false" returntype="string" hint="Returns a list of the user directories this application supports">
+		<cfset var lUD = "" />
+		<cfset var thisUD = "" />
 		
-		<cfreturn this.userdirectoryorder />
+		<cfloop list="#this.userdirectoryorder#" index="thisud">
+			<cfif this.userdirectories[thisud].isEnabled()>
+				<cfset lUD = listappend(lUD,thisud) />
+			</cfif>
+		</cfloop>
+		
+		<cfreturn lUD />
 	</cffunction>
 	
 	<cffunction name="getDefaultUD" access="public" output="false" returntype="string" hint="Returns the default user directory for this application">
@@ -235,7 +243,7 @@
 			<cfif isdefined("application.config.general.defaultUserDirectory") and len(application.config.general.defaultUserDirectory)>
 				<cfset result = application.config.general.defaultUserDirectory />
 			<cfelse>
-				<cfset result = listfirst(this.userdirectoryorder) />
+				<cfset result = listfirst(getAllUD()) />
 			</cfif>
 		</cfif>
 
