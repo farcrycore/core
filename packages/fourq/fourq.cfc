@@ -781,6 +781,46 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	 *                                                          *
 	 ************************************************************
 	 --->
+	 <cffunction name="flushTypeWatchWebskins" access="private" output="false" returntype="boolean" hint="Finds all webskins watching this type for any CRUD functions and flushes them from the cache">
+	 	<cfargument name="typename" required="true" hint="The typename that the CRUD function was performed on." />
+		
+		<cfset var stTypeWatchWebskins = application.stCoapi[arguments.typename].stTypeWatchWebskins />
+		<cfset var iType = "" />
+		<cfset var iWebskin = "" />
+		<cfset var oCoapi = application.fapi.getContentType("farCoapi") />
+		<cfset var coapiObjectID = "" />
+		<cfset var qCachedAncestors = "" />
+		<cfset var bSuccess = "" />
+		
+		<cfif not structIsEmpty(stTypeWatchWebskins)>
+			<cfloop collection="#stTypeWatchWebskins#" item="iType">
+				
+				<cfset coapiObjectID = oCoapi.getCoapiObjectID(iType) />
+					
+				<cfloop from="1" to="#arrayLen(stTypeWatchWebskins[iType])#" index="iWebskin">
+					<cfquery datasource="#application.dsn#" name="qCachedAncestors">
+						SELECT * 
+						FROM dmWebskinAncestor
+						WHERE (
+								webskinTypename = <cfqueryparam cfsqltype="cf_sql_varchar" value="#iType#" />
+								OR webskinObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#coapiObjectID#" />
+						)
+						AND webskinTemplate = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stTypeWatchWebskins[iType][iWebskin]#" />
+					</cfquery>
+					<cfdump var="#qCachedAncestors#">
+					<cfloop query="qCachedAncestors">
+						<cfset bSuccess = application.fc.lib.objectbroker.removeWebskin(	objectID=qCachedAncestors.ancestorID,
+																							typename=qCachedAncestors.ancestorTypename,
+																							template=qCachedAncestors.ancestorTemplate ) />
+					</cfloop>
+				</cfloop>
+				
+			</cfloop>
+		</cfif>
+		
+		<cfreturn true />
+	 </cffunction>
+	 
  
 	<cffunction name="createData" access="public" output="true" returntype="struct" hint="Create an object including array properties.  Pass in a structure of property values; arrays should be passed as an array. The objectID can be ommitted and one will be created, passed in as an argument or passed in as a key of stProperties argument.">
 		<cfargument name="stProperties" type="struct" required="true">
@@ -797,7 +837,10 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfif NOT stReturn.bSuccess>
 			<cflog text="#stReturn.message# #stReturn.detail# [SQL: #stReturn.sql#]" file="coapi" type="error" application="yes">
 		</cfif>
-    	<cfreturn  stReturn />
+
+		<cfset flushTypeWatchWebskins(typename=variables.typename) />
+		
+    	<cfreturn stReturn />
 	</cffunction>
 
 
@@ -1004,6 +1047,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			   		   	 
 		   	</cfif>		   	
 	   	</cflock>
+
+		<cfset flushTypeWatchWebskins(typename=variables.typename) />
 	   	
 		<cfreturn stResult />
 		
@@ -1037,6 +1082,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	    
 		<cfinclude template="_fourq/deleteData.cfm">
 		
+		<cfset flushTypeWatchWebskins(typename=variables.typename) />
 		
 		<cfreturn stResult>
 	</cffunction>
@@ -1436,7 +1482,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<!--- Get webkins: webskins for this type, then webskins for extends types --->
 		<cfset stReturnMetadata.qWebskins = application.coapi.coapiAdmin.getWebskins(typename="#componentname#", bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#",packagepath=stReturnMetadata.packagepath,aExtends=stReturnMetadata.aExtends) />
 
-		<!--- Setup a struct to store all the webskins --->
+
 		<cfset stReturnMetadata.stWebskins = structNew() />
 		<cfloop query="stReturnMetadata.qWebskins">
 			<cfset stReturnMetadata.stWebskins[stReturnMetadata.qWebskins.METHODNAME[currentRow]] = structNew() />
@@ -1444,6 +1490,10 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				<cfset stReturnMetadata.stWebskins[stReturnMetadata.qWebskins.METHODNAME[currentRow]][ixCol] = stReturnMetadata.qWebskins[ixCol][currentRow] />
 			</cfloop>
 		</cfloop>
+	
+	
+		<!--- Setup a location to store all the webskins that need to be watched for CRUD changes --->
+		<cfset stReturnMetadata.stTypeWatchWebskins = structNew() />
 		
 		<!--- 
 		NEED TO LOOP THROUGH ALL THE WEBSKINS AND CHECK EACH ONE FOR WILDCARDS.
@@ -1493,7 +1543,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfparam name="stReturnMetadata.ObjectBrokerMaxObjects" default="#application.ObjectBrokerMaxObjectsDefault#" />
 		<cfelse>
 			<cfset stReturnMetadata.ObjectBrokerMaxObjects = 0 />
-		</cfif>		
+		</cfif>	
 		
 		<cfreturn stReturnMetadata />
 		

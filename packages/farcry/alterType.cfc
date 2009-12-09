@@ -405,9 +405,11 @@ $out:$
 		<cfset var thispackage = "" />
 		<cfset var thistype = "" />
 		<cfset var stMetadata = structnew() />
+		<cfset var i = structnew() />
+		<cfset var qTypeWatcherWebskins = "" />
 		
 		<cfset application.stCOAPI = structnew() />
-		
+				
 		<cfloop list="formtools,types,rules,forms" index="thispackage">
 			<cfset application[thispackage] = structnew() />
 			
@@ -421,6 +423,23 @@ $out:$
 					</cfif>
 					<cfset application[thispackage][thistype] = stMetadata />
 				</cfif>
+			</cfloop>
+		</cfloop>
+		
+		<cfloop list="#structKeyList(application.stCOAPI)#" index="thistype">
+			<cfset qTypeWatcherWebskins = application.stCOAPI[thistype].qWebskins />
+			<cfquery dbtype="query" name="qTypeWatcherWebskins">
+			SELECT *
+			FROM qTypeWatcherWebskins
+			WHERE cacheTypeWatch <> ''
+			</cfquery>
+			<cfloop query="qTypeWatcherWebskins">
+				<cfloop list="#qTypeWatcherWebskins.cacheTypeWatch#" index="i">
+					<cfif not structKeyExists(application.stCOAPI[i].stTypeWatchWebskins, thistype)>
+						<cfset application.stCOAPI[i].stTypeWatchWebskins[thisType] = arrayNew(1) />
+					</cfif>
+					<cfset arrayAppend(application.stCOAPI[i].stTypeWatchWebskins[thisType], qTypeWatcherWebskins.methodname) />
+				</cfloop>
 			</cfloop>
 		</cfloop>
 		

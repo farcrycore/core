@@ -164,6 +164,156 @@
 </cffunction>
 
 
+	<cffunction name="setupProjectDirectorys" returntype="void" access="public" output="false" hint="sets up a query containing ALL webskins available to the project">
+		
+		<cfset var fapi = createobject("component","farcry.core.packages.lib.fapi") />
+		<cfset var qResult="" />
+		<cfset var webskinid = 0 />
+		<cfset var WebskinFilePath = "" />
+		<cfset var stWebskinDetails = structNew() />
+		<cfset var webskins = "" />
+		<cfset var qThis = "" />
+		<cfset var thisvar = "" />
+		<cfset var webskinpath = "" />
+		<cfset var webskinrel = "" />
+		<cfset var pluginName = "" />
+		<cfset var stWebskinMetadata = "" />
+		<cfset var qSummary = "" />
+		
+				
+		<cfif not structKeyExists(request.fc, "stProjectDirectorys")>
+			<!--- Generate the webskin report for this type if it isn't already in request --->
+			
+		
+	
+			<cfset request.fc.stProjectDirectorys = structNew() />
+			
+			<cfset request.stPluginDirectorys = structNew() />
+			<cfparam name="application.plugins" default="" />
+			<cfloop list="project,#fapi.listReverse(list='#application.plugins#')#,core" index="pluginName">
+				
+				<!--- Find the webskin path for the source --->
+				<cfswitch expression="#pluginName#">
+					<cfcase value="project">
+						<cfset webskinrel = "/farcry/projects/#application.projectDirectoryName#/webskin" />
+					</cfcase>
+					
+					<cfcase value="core">
+						<cfset webskinrel = "/farcry/core/webskin" />
+					</cfcase>
+					
+					<cfdefaultcase><!--- A plugin --->
+						<cfset webskinrel = "/farcry/plugins/#pluginName#/webskin" />
+					</cfdefaultcase>
+				</cfswitch>
+				
+				<!--- Get all webskins --->
+				<cfset webskinpath = expandPath(webskinrel) />
+				<cfdirectory action="list" directory="#webskinpath#" filter="*.cfm" name="qThis" recurse="true" />
+				
+				<!--- Add extra columns to query --->
+				<cfquery dbtype="query" name="qThis">
+					SELECT 	<!--- from cfdirectory --->
+							*, 
+							
+							<!--- derived from cfdirectory right now --->
+							'' as typename, '' as webskin, cast(0 as integer) as id, '' as path, 
+							
+							<!--- extracted from webkin later --->
+							'anonymous' as author, datelastmodified, '' as description, name as displayname, 0 as cacheStatus, 0 as cacheTimeout, 0 as cacheByURL, 0 as cacheByForm, 0 as cacheByRoles, '' as cacheByVars, '' as cacheTypeWatch, name as methodname, '' as fuAlias, '' as viewstack, '' as viewbinding, '' as allowredirect
+							
+					FROM 	qThis
+				</cfquery>
+				<cfloop query="qThis">
+					<cfset webskinID = webskinID + 1 />
+					<cfset querysetcell(qThis, 'id', webskinID, qThis.currentRow) />		
+					<cfset querysetcell(qThis, 'directory', replaceNoCase(qThis.directory,"\","/","all"), qThis.currentRow) />		
+					<cfset querysetcell(qThis, 'typename', "#listLast(qThis.directory,"/")#", qThis.currentRow) />		
+					<cfset querysetcell(qThis, 'webskin', "/#qThis.typename#/#qThis.name#", qThis.currentRow) />	
+					<!--- 
+					TODO: This code does not work on windows. Must be a relative path.
+					<cfset querysetcell(qThis, 'path', replace(qThis.directory,expandpath('/farcry'),'/farcry'), qThis.currentRow) />
+					--->	
+					<cfset querysetcell(qThis, 'path', "#webskinrel#/#listLast(qThis.directory,"/")#", qThis.currentRow) />			
+				</cfloop>
+				
+				<!--- Add new webskins to summary --->
+				<cfif isdefined("request.fc.stProjectDirectorys.qAll") and request.fc.stProjectDirectorys.qAll.recordcount>
+					<cfquery dbtype="query" name="request.fc.stProjectDirectorys.qAll">
+						SELECT 	* 
+						FROM 	request.fc.stProjectDirectorys.qAll
+						
+						UNION
+						
+						SELECT 	* 
+						FROM 	qThis
+						WHERE	webskin not in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#valuelist(request.fc.stProjectDirectorys.qAll.webskin)#" />)
+					</cfquery>
+				<cfelse>
+					<cfset request.fc.stProjectDirectorys.qAll = qThis />
+				</cfif>
+				
+				<!--- I don't think this get's used, but I'm leaving it until I can test properly --->
+				<cfset request.fc.stProjectDirectorys["q#pluginname#"] = qThis />
+			</cfloop>
+			
+			
+			<!--- Set up paths --->
+			<cfset request.pluginPath=replaceNoCase(ExpandPath('/farcry/plugins'),"\","/","all") />	
+			<cfset request.corePath=replaceNoCase(ExpandPath('/farcry/core'),"\","/","all") />	
+			<cfset request.projectPath=replaceNoCase(ExpandPath('/farcry/projects'),"\","/","all") />	
+			<cfset request.sortedPlugins = fapi.listReverse(list='#application.plugins#') />
+			
+			
+			<cfloop query="request.fc.stProjectDirectorys.qAll">				
+				
+				<!--- SETUP THE METADATA INFO --->
+				<cfset stWebskinDetails = structNew() />
+				<cfset stWebskinDetails.path = "#request.fc.stProjectDirectorys.qAll.path#/#request.fc.stProjectDirectorys.qAll.name#" />
+				<cfset stWebskinDetails.methodname = ReplaceNoCase(request.fc.stProjectDirectorys.qAll.name, '.cfm', '','ALL') />
+				
+				<!--- DYNAMIC DEFAULTS --->
+				<cfif refind("^displayPage",stWebskinDetails.methodname)>
+					<cfset stWebskinDetails.viewstack = "page" />
+					<cfset stWebskinDetails.viewbinding = "any" />
+				<cfelseif refind("^displayBody",stWebskinDetails.methodname) or refind("^edit",stWebskinDetails.methodname)>
+					<cfset stWebskinDetails.viewstack = "body" />
+					<cfset stWebskinDetails.viewbinding = "object" />
+				<cfelseif refind("^displayTypeBody",stWebskinDetails.methodname)>
+					<cfset stWebskinDetails.viewstack = "body" />
+					<cfset stWebskinDetails.viewbinding = "type" />
+				<cfelseif refind("^displayType",stWebskinDetails.methodname)>
+					<cfset stWebskinDetails.viewstack = "any" />
+					<cfset stWebskinDetails.viewbinding = "type" />
+				<cfelse>
+					<cfset stWebskinDetails.viewstack = "any" />
+					<cfset stWebskinDetails.viewbinding = "any" />
+				</cfif>
+				
+				<!--- Parse the webskin for the metadata --->
+				<cfset stWebskinMetadata = parseWebskinMetadata(
+						typename=request.fc.stProjectDirectorys.qAll.typename, 
+						template=stWebskinDetails.methodname, 
+						path=stWebskinDetails.path, 
+						lProperties="displayname,author,description,cacheStatus,cacheTimeout,cacheByURL,cacheByForm,cacheByRoles,cacheByVars,cacheTypeWatch,fuAlias,viewstack,viewbinding,allowredirect", 
+						lTypes="string,string,string,numeric,numeric,boolean,boolean,boolean,string,string,string,string,string,boolean", 
+						lDefaults=" , , ,0,1440,false,false,false, , , ,#stWebskinDetails.viewstack#,#stWebskinDetails.viewbinding#,1"
+					) />
+				
+				<!--- Assign the metadata --->
+				<cfset structappend(stWebskinDetails,stWebskinMetadata,true) />
+	
+				
+				<!--- UPDATE THE METADATA QUERY --->
+				<cfloop list="path,methodname,displayname,author,description,cacheStatus,cacheTimeout,cacheByURL,cacheByForm,cacheByRoles,cacheByVars,cacheTypeWatch,fuAlias,viewstack,viewbinding,allowredirect" index="thisvar">
+					<cfset querysetcell(request.fc.stProjectDirectorys.qAll,thisvar,stWebskinDetails[thisvar],request.fc.stProjectDirectorys.qAll.currentRow) />	
+				</cfloop>
+			</cfloop>
+				
+		</cfif>
+		
+	</cffunction>
+
 	<cffunction name="getWebskins" returntype="query" access="public" output="false" hint="Returns a query of all available webskins. Search through project first, then any library's that have been included.">
 		<cfargument name="typename" type="string" default="#gettablename()#" hint="Typename of instance." />
 		<cfargument name="prefix" type="string" required="false" default="" hint="Prefix to filter template results." />
@@ -183,8 +333,8 @@
 		<cfset var thisvar = "" />
 		<cfset var webskinpath = "" />
 		<cfset var webskinrel = "" />
-		<cfset var fapi = createobject("component","farcry.core.packages.lib.fapi") />
-		
+		<cfset var i = "" />
+				
 		
 		<!--- If the webskins are available from the application or request scope, just use those --->
 		<cfif not bForceRefresh AND isdefined("application.stcoapi.#arguments.typename#.qWebskins")>
@@ -224,136 +374,8 @@
 		<cfparam name="request.fc.stcoapiWebskins[arguments.typename]" default="#structNew()#" />
 		
 		
-		<cfif not structKeyExists(request.fc, "stProjectDirectorys")>
-			<!--- Generate the webskin report for this type if it isn't already in request --->
-			
-			<cftimer label="setup: stProjectDirectorys">
-				<cfset request.fc.stProjectDirectorys = structNew() />
-				
-				<cfset request.stPluginDirectorys = structNew() />
-				<cfparam name="application.plugins" default="" />
-				<cfloop list="project,#fapi.listReverse(list='#application.plugins#')#,core" index="pluginName">
-					
-					<!--- Find the webskin path for the source --->
-					<cfswitch expression="#pluginName#">
-						<cfcase value="project">
-							<cfset webskinrel = "/farcry/projects/#application.projectDirectoryName#/webskin" />
-						</cfcase>
-						
-						<cfcase value="core">
-							<cfset webskinrel = "/farcry/core/webskin" />
-						</cfcase>
-						
-						<cfdefaultcase><!--- A plugin --->
-							<cfset webskinrel = "/farcry/plugins/#pluginName#/webskin" />
-						</cfdefaultcase>
-					</cfswitch>
-					
-					<!--- Get all webskins --->
-					<cfset webskinpath = expandPath(webskinrel) />
-					<cfdirectory action="list" directory="#webskinpath#" filter="*.cfm" name="qThis" recurse="true" />
-					
-					<!--- Add extra columns to query --->
-					<cfquery dbtype="query" name="qThis">
-						SELECT 	<!--- from cfdirectory --->
-								*, 
-								
-								<!--- derived from cfdirectory right now --->
-								'' as typename, '' as webskin, cast(0 as integer) as id, '' as path, 
-								
-								<!--- extracted from webkin later --->
-								'anonymous' as author, datelastmodified, '' as description, name as displayname, 0 as cacheStatus, 0 as cacheTimeout, 0 as cacheByURL, 0 as cacheByForm, 0 as cacheByRoles, '' as cacheByVars, name as methodname, '' as fuAlias, '' as viewstack, '' as viewbinding, '' as allowredirect
-								
-						FROM 	qThis
-					</cfquery>
-					<cfloop query="qThis">
-						<cfset webskinID = webskinID + 1 />
-						<cfset querysetcell(qThis, 'id', webskinID, qThis.currentRow) />		
-						<cfset querysetcell(qThis, 'directory', replaceNoCase(qThis.directory,"\","/","all"), qThis.currentRow) />		
-						<cfset querysetcell(qThis, 'typename', "#listLast(qThis.directory,"/")#", qThis.currentRow) />		
-						<cfset querysetcell(qThis, 'webskin', "/#qThis.typename#/#qThis.name#", qThis.currentRow) />	
-						<!--- 
-						TODO: This code does not work on windows. Must be a relative path.
-						<cfset querysetcell(qThis, 'path', replace(qThis.directory,expandpath('/farcry'),'/farcry'), qThis.currentRow) />
-						--->	
-						<cfset querysetcell(qThis, 'path', "#webskinrel#/#listLast(qThis.directory,"/")#", qThis.currentRow) />			
-					</cfloop>
-					
-					<!--- Add new webskins to summary --->
-					<cfif isdefined("request.fc.stProjectDirectorys.qAll") and request.fc.stProjectDirectorys.qAll.recordcount>
-						<cfquery dbtype="query" name="request.fc.stProjectDirectorys.qAll">
-							SELECT 	* 
-							FROM 	request.fc.stProjectDirectorys.qAll
-							
-							UNION
-							
-							SELECT 	* 
-							FROM 	qThis
-							WHERE	webskin not in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#valuelist(request.fc.stProjectDirectorys.qAll.webskin)#" />)
-						</cfquery>
-					<cfelse>
-						<cfset request.fc.stProjectDirectorys.qAll = qThis />
-					</cfif>
-					
-					<!--- I don't think this get's used, but I'm leaving it until I can test properly --->
-					<cfset request.fc.stProjectDirectorys["q#pluginname#"] = qThis />
-				</cfloop>
-				
-				
-				<!--- Set up paths --->
-				<cfset request.pluginPath=replaceNoCase(ExpandPath('/farcry/plugins'),"\","/","all") />	
-				<cfset request.corePath=replaceNoCase(ExpandPath('/farcry/core'),"\","/","all") />	
-				<cfset request.projectPath=replaceNoCase(ExpandPath('/farcry/projects'),"\","/","all") />	
-				<cfset request.sortedPlugins = fapi.listReverse(list='#application.plugins#') />
-				
-				
-				<cfloop query="request.fc.stProjectDirectorys.qAll">				
-					
-					<!--- SETUP THE METADATA INFO --->
-					<cfset stWebskinDetails = structNew() />
-					<cfset stWebskinDetails.path = "#request.fc.stProjectDirectorys.qAll.path#/#request.fc.stProjectDirectorys.qAll.name#" />
-					<cfset stWebskinDetails.methodname = ReplaceNoCase(request.fc.stProjectDirectorys.qAll.name, '.cfm', '','ALL') />
-					
-					<!--- DYNAMIC DEFAULTS --->
-					<cfif refind("^displayPage",stWebskinDetails.methodname)>
-						<cfset stWebskinDetails.viewstack = "page" />
-						<cfset stWebskinDetails.viewbinding = "any" />
-					<cfelseif refind("^displayBody",stWebskinDetails.methodname) or refind("^edit",stWebskinDetails.methodname)>
-						<cfset stWebskinDetails.viewstack = "body" />
-						<cfset stWebskinDetails.viewbinding = "object" />
-					<cfelseif refind("^displayTypeBody",stWebskinDetails.methodname)>
-						<cfset stWebskinDetails.viewstack = "body" />
-						<cfset stWebskinDetails.viewbinding = "type" />
-					<cfelseif refind("^displayType",stWebskinDetails.methodname)>
-						<cfset stWebskinDetails.viewstack = "any" />
-						<cfset stWebskinDetails.viewbinding = "type" />
-					<cfelse>
-						<cfset stWebskinDetails.viewstack = "any" />
-						<cfset stWebskinDetails.viewbinding = "any" />
-					</cfif>
-					
-					<!--- Parse the webskin for the metadata --->
-					<cfset stWebskinMetadata = parseWebskinMetadata(
-							typename=request.fc.stProjectDirectorys.qAll.typename, 
-							template=stWebskinDetails.methodname, 
-							path=stWebskinDetails.path, 
-							lProperties="displayname,author,description,cacheStatus,cacheTimeout,cacheByURL,cacheByForm,cacheByRoles,cacheByVars,fuAlias,viewstack,viewbinding,allowredirect", 
-							lTypes="string,string,string,numeric,numeric,boolean,boolean,boolean,string,string,string,string", 
-							lDefaults=" , , ,0,1440,false,false,false, , ,#stWebskinDetails.viewstack#,#stWebskinDetails.viewbinding#,1"
-						) />
-					
-					<!--- Assign the metadata --->
-					<cfset structappend(stWebskinDetails,stWebskinMetadata,true) />
-		
-					
-					<!--- UPDATE THE METADATA QUERY --->
-					<cfloop list="path,methodname,displayname,author,description,cacheStatus,cacheTimeout,cacheByURL,cacheByForm,cacheByRoles,cacheByVars,fuAlias,viewstack,viewbinding,allowredirect" index="thisvar">
-						<cfset querysetcell(request.fc.stProjectDirectorys.qAll,thisvar,stWebskinDetails[thisvar],request.fc.stProjectDirectorys.qAll.currentRow) />	
-					</cfloop>
-				</cfloop>
-				
-			</cftimer>
-		</cfif>
+		<!--- INITIALIZE PROJECT DIRECTORIES IF REQUIRED --->
+		<cfset setupProjectDirectorys() />
 		
 		
 		<!--- The ancestor components are used later. Make sure they're available. --->
@@ -697,6 +719,28 @@
 		
 		<cfreturn result />
 	</cffunction>
+	
+	<cffunction name="getWebskinCacheTypeWatch" returntype="string" access="public" output="false" hint="Returns the objectbroker cacheTypeWatch list of a webskin. The list of typenames will be watched for crud methods on any of its objects and if so, will flush all instances of the webskin for that types listed here.">
+		<cfargument name="typename" type="string" required="false" default="" />
+		<cfargument name="template" type="string" required="false" default="" />
+		<cfargument name="path" type="string" required="false" />
+	
+		<cfset var result = "" />
+		<cfset var templateCode = "" />
+		<cfset var pos = "" />	
+		<cfset var count = "" />
+		<cfset var iViewState = "" />
+		
+		<cfif structKeyExists(application.stcoapi, typename)
+			AND structKeyExists(application.stcoapi[typename], "stWebskins") 
+			AND structKeyExists(application.stcoapi[typename].stWebskins, template) 
+			AND structKeyExists(application.stcoapi[typename].stWebskins[template], "cacheTypeWatch")>
+			<cfset result = application.stcoapi['#arguments.typename#'].stWebskins['#arguments.template#'].cacheTypeWatch />
+			
+		</cfif>
+		
+		<cfreturn result />
+	</cffunction>
 
 	<cffunction name="getWebskinDisplayname" returntype="string" access="public" output="false" hint="">
 		<cfargument name="typename" type="string" required="false" />
@@ -787,6 +831,8 @@
 		<cfset var includeDescription = "" />
 		<cfset var includeHashURL = "" />
 		<cfset var includeFilePath = "" />
+		<cfset var recordNum = "" />
+		<cfset var qFindDupe = "" />
 
 
 			<!--- check project includes --->
