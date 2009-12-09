@@ -565,7 +565,7 @@
 		<!--- initialise fu scopes --->
 		<cfset this.stMappings = structNew() />
 		<cfset this.stLookup = structNew() />
-		<cfset this.stDBLookup = structNew() /> <!--- Contains keys for EVERY friendly URL in the DB for quick reference --->
+		<cfset this.stDBLookup = structNew() /> <!--- Contains keys for EVERY friendly URL in the DB for quick reference. This is so that when building a constructed url, we are not going to use a FU that is in the DB --->
 		
 		<!--- Check to make sure the farFU table has been deployed --->
 		<cftry>
@@ -649,7 +649,7 @@
 		
 		<!--- Normalise view fuAlias in query string --->
 		<cfset stResult["__allowredirect"] = true />
-		<cfif structkeyexists(stResult,"view")>
+		<cfif structkeyexists(stResult,"view") AND structKeyExists(stResult, "type")>
 			<cfif structkeyexists(this.webskinFU[stResult.type],stResult.view)>			
 				<cfset stResult.view = "#this.webskinFU[stResult.type][stResult.view]#" />
 			</cfif>
@@ -731,6 +731,7 @@
 		<cfset var fuThis = "" />
 		<cfset var fuToken = "" />
 		<cfset var bParamName = 1 />
+		<cfset var tmpFriendlyURL = "" />
 		
 		<cfif StructKeyExists(this.stMappings,arguments.friendlyURL)>
 			<!--- If cached, return that --->
@@ -744,16 +745,24 @@
 			WHERE		friendlyURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.friendlyURL#" />
 			ORDER BY 	bDefault DESC, fuStatus DESC
 		</cfquery>
+		
 		<cfif stLocal.qGet.recordcount>
 			<cfset this.stMappings[arguments.friendlyURL] = createURLStruct(farFUID=stLocal.qGet.objectid[1]) />
 			<cfreturn duplicate(this.stMappings[arguments.friendlyURL]) />
 		</cfif>
 		
-		<!--- Second strongest match: a part of the FU is in the database (matches against the start of the FU) --->
-		<cfloop list="#arguments.friendlyURL#" index="fuToken" delimiters="/">
-			<cfset fuThis = "#fuThis#/#fuToken#" />
+		<!--- 
+		Second strongest match: a part of the FU is in the database (matches against the start of the FU) 
+			- Some old FU's have double slashes. This is to address some legacy situations where a double slash was included as part of the FU. We need to make sure the double slashes remain.
+		--->
+		
+		<cfset tmpFriendlyURL = replaceNoCase(arguments.friendlyURL, "//", "+++", "all") />
+		
+		<cfloop list="#tmpFriendlyURL#" index="fuToken" delimiters="/">
+			<cfset fuThis = "#fuThis#/#replaceNoCase(fuToken, '+++', '//')#" />
 			<cfset fuList = listappend(fuList,fuThis) />
 		</cfloop>
+		
 		<cfquery datasource="#arguments.dsn#" name="stLocal.qGet">
 			SELECT		objectid,friendlyURL
 			FROM		#application.dbowner#farFU
@@ -762,14 +771,6 @@
 		</cfquery>
 		<cfif stLocal.qGet.recordcount>
 			<cfset this.stMappings[arguments.friendlyURL] = createURLStruct(farFUID=stLocal.qGet.objectid[1],fuParameters=replacenocase(arguments.friendlyURL,stLocal.qGet.friendlyURL,"")) />
-			<cfreturn duplicate(this.stMappings[arguments.friendlyURL]) />
-		</cfif>
-		
-		<!--- Weakest match: the first fURL token is a UUID or a typename/type alias --->
-		<cfif isvalid("uuid",listfirst(arguments.friendlyURL,"/")) 
-				or structkeyexists(this.typeFU,listfirst(arguments.friendlyURL,"/")) 
-				or structkeyexists(application.stCOAPI,listfirst(arguments.friendlyURL,"/"))>
-			<cfset this.stMappings[arguments.friendlyURL] = createURLStruct(fuParameters=arguments.friendlyURL) />
 			<cfreturn duplicate(this.stMappings[arguments.friendlyURL]) />
 		</cfif>
 		
@@ -1315,7 +1316,6 @@
 				<cfset viewFU = arguments.view />
 			</cfif>
 			<!--- If we have defined the view, and not the bodyView and the view is not set to page, then in order for the URL Parsing to work, we MUST explicitly tell the url that the webskin is for the view --->
-			
 			<cfif not listFind("page,any", stView.viewStack)>
 				<cfif not len(arguments.bodyView)>
 					<cfset bMustUseRegularURLParams = true />
