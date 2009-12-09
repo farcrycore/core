@@ -1,6 +1,8 @@
+<cfsetting enablecfoutputonly="true" />
+<cfsetting showdebugoutput="false" />
+
 <!--- @@viewBinding: any --->
 
-<cfsetting enablecfoutputonly="true" />
 
 
 
