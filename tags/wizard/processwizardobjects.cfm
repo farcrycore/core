@@ -135,9 +135,9 @@
 
 		<cfset oType = createobject("component",application.stcoapi[typename].packagepath)>
 		<cfif application.security.isLoggedIn()>
-			<cfset "CALLER.stProperties.lastupdatedby" = application.security.getCurrentUserID()>
+			<cfset Caller[attributes.r_stProperties].lastupdatedby = application.security.getCurrentUserID()>
 		<cfelse>
-			<cfset CALLER.stProperties.lastupdatedby = "anonymous">
+			<cfset Caller[attributes.r_stProperties].lastupdatedby = "anonymous">
 		</cfif>
 		
 		

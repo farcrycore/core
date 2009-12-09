@@ -163,9 +163,9 @@
 
 		<cfset stType = createobject("component",packagePath)>
 		<cfif application.security.isLoggedIn()>
-			<cfset "CALLER.stProperties.lastupdatedby" = application.security.getCurrentUserID()>
+			<cfset Caller[attributes.r_stProperties].lastupdatedby = application.security.getCurrentUserID()>
 		<cfelse>
-			<cfset CALLER.stProperties.lastupdatedby = "anonymous">
+			<cfset Caller[attributes.r_stProperties].lastupdatedby = "anonymous">
 		</cfif>
 		
 		
@@ -204,19 +204,19 @@
 
 	
 				
-			<cfif not isDefined("CALLER.inputObjects") OR not structKeyExists(CALLER.inputObjects,"#Caller.stProperties.ObjectID#")>	
+			<cfif not isDefined("CALLER.inputObjects") OR not structKeyExists(CALLER.inputObjects,Caller[attributes.r_stProperties].ObjectID)>	
 				
-				<cfif not isDefined("Caller.stProperties.typename") or not len(Caller.stProperties.typename)>
+				<cfif not structKeyExists(Caller[attributes.r_stProperties], "typename") or not len(Caller[attributes.r_stProperties].typename)>
 		
 					<cfset q4 = createObject("component", "farcry.core.packages.fourq.fourq")>
-					<cfset Caller.stProperties.typename = q4.findType(objectid=Caller.stProperties.ObjectID)>
+					<cfset Caller[attributes.r_stProperties].typename = q4.findType(objectid=Caller[attributes.r_stProperties].ObjectID)>
 		
 				</cfif>
-													
-				<cfset stType = createobject("component",application.stcoapi[Caller.stProperties.typename].packagepath)>	
-				<cfset stObj = stType.getData(Caller.stProperties.ObjectID)>	
-				<cfset CALLER.inputObjects[Caller.stProperties.ObjectID] = Duplicate(stObj)>	
-				<cfset CALLER.outputObjects[Caller.stProperties.ObjectID] = Duplicate(stObj)>	
+				
+				<cfset stType = application.fapi.getContentType(Caller[attributes.r_stProperties].typename) />	
+				<cfset stObj = stType.getData(Caller[attributes.r_stProperties].ObjectID)>	
+				<cfset CALLER.inputObjects[stObj.ObjectID] = Duplicate(stObj)>	
+				<cfset CALLER.outputObjects[stObj.ObjectID] = Duplicate(stObj)>	
 			</cfif>
 			
 			
@@ -226,11 +226,12 @@
 			<cfloop list="#lFields#" index="i" >
 
 				<cfif isDefined("Caller.#attributes.r_stProperties#.#i#")>	
+					<cfset callerID = Caller[attributes.r_stProperties].objectid />
 					<!--- PLP outputObjects is used to store multiple objects in the plp. --->					
-					<cfset CALLER.outputObjects[#Caller.stProperties.ObjectID#][#i#] = Caller[attributes.r_stProperties][i]>	
+					<cfset CALLER.outputObjects[#callerID#][#i#] = Caller[attributes.r_stProperties][i]>	
 					
 					<!--- PLP object is used to store the base object of the PLP --->
-					<cfif isDefined("CALLER.output.objectid") AND CALLER.output.objectID EQ Caller.stProperties.ObjectID>						
+					<cfif isDefined("CALLER.output.objectid") AND CALLER.output.objectID EQ callerID>						
 						<cfset CALLER.output[#i#] = Caller[attributes.r_stProperties][i]>	
 					</cfif>
 				</cfif>
