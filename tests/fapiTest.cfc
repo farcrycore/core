@@ -1,6 +1,19 @@
 <!--- @@Copyright: Copyright (c) 2009 Rob Rohan. All rights reserved. --->
-<!--- @@displayname:  --->
-<!--- @@description: typesTest --->
+<!--- @@displayname: fapiTest.cfc --->
+<!--- @@description: 
+	This file holds all the tests for the FAPI (FarCry 
+	Public API).  WARNING: this file requires it be opened and saved in
+	UTF-8.  There are characters in this file that require UTF-8 
+	encoding.  Please ensure you are opening and saving this file in UTF-8 
+	or tests will start to fail and will need to be re-written using the 
+	correct encoding.  
+	
+	On Windows UTF-8 is not the default. If you are using Eclipse please
+	right click on the file and make sure the encoding is UTF-8.  If this
+	doesn't look like Chinese:
+		这个我的猴子！那个我的帽子！我写得津津有味！
+	Then you are not using UTF-8.
+--->
 
 <cfcomponent extends="mxunit.framework.TestCase" displayname="FAPI Tests">
 	<!--- setup and teardown --->
@@ -450,13 +463,12 @@
 		<cfset var rval = this.myComp.removeMSWordChars("This String should be unchanged.") />
 		<cfset assertEquals(rval, "This String should be unchanged.") />
 		
-		<cfset rval = this.myComp.removeMSWordChars("�ÀªŠü»ŽÏÛ�??�ÏÜŠ??�ÀªŠü»ŽÏÛ�??�ÏÜŠ??‰Û?‰Û?") />
+		<cfset rval = this.myComp.removeMSWordChars("这个需要看书这个需要看书……") />
 		<!--- the elips is replaced with periods --->
-		<cfset assertEquals(rval, "�ÀªŠü»ŽÏÛ�??�ÏÜŠ??�ÀªŠü»ŽÏÛ�??�ÏÜŠ??......") />
-		
-		<cfset rval = this.myComp.removeMSWordChars("Schultz, Helen O‰ÛªNeil, Frank") />
-		<cfset assertEquals(rval, "Schultz, Helen O'Neil, Frank") />
-		
+		<cfset assertEquals(rval, "这个需要看书这个需要看书......") />
+
+		<cfset rval = this.myComp.removeMSWordChars("Schultz, Helen O’Neil, Frank") />
+		<cfset assertEquals(rval, "Schultz, Helen O'Neil, Frank") />		
 	</cffunction>
 	
 </cfcomponent>
