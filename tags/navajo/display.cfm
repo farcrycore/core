@@ -245,11 +245,10 @@
 
 	<cfelse>
 	
-		<!--- Update the view with the display method --->
-		<cfset url.view = "displayPageStandard" />
 		
 		<!--- All else fails, try the displayPageStandard webskin --->
-		<skin:view objectid="#stobj.objectid#" typename="#stobj.typename#" webskin="#url.view#" r_html="HTML" alternateHTML="" />
+		
+		<skin:view objectid="#stobj.objectid#" typename="#stobj.typename#" webskin="displayPageStandard" r_html="HTML" alternateHTML="" />
 		
 		<cfif len(trim(HTML))>
 			<cfoutput>#HTML#</cfoutput>
