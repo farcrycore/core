@@ -6,7 +6,8 @@
 	<cfproperty name="ftRenderType" default="jquery" hint="This formtool offers a number of ways to render the input. (dropdown, jquery, dateJS)" />
 	<cfproperty name="ftJQDateFormatMask" default="d M yy" hint="The format mask used by the jQuery UI when returning a date from the calendar. For a full list of the possible formats see http://docs.jquery.com/UI/Datepicker/formatDate" />
 	<cfproperty name="ftCFDateFormatMask" default="d mmm yyyy" hint="The format mask used when first rendering the date. This should be a coldfusion dateformat mask." />
-				
+	<cfproperty name="ftToggleOffDateTime" default="false" hint="Provides an optional toggle to hide the date if its not required" />
+					
 	
 	
 	<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" >	
@@ -76,8 +77,6 @@
 		<!--- If a required field, then the user will not have the option to toggle off the date time --->
 		<cfif structkeyexists(arguments.stMetadata,"ftValidation") and listcontains(arguments.stMetadata.ftValidation,"required")>
 			<cfset arguments.stMetadata.ftToggleOffDateTime = "0" />
-		<cfelse>
-			<cfparam name="arguments.stMetadata.ftToggleOffDateTime" default="1" />
 		</cfif>
 		
 		<cfif isDate(arguments.stMetadata.value)>
