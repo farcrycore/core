@@ -28,28 +28,8 @@ ALIAS: <cfif len(stobj.lNavIDAlias)>#stobj.lNavIDAlias#<cfelse>N/A</cfif><br />
 
 
 
-<cfif not arraylen(stObj.aObjectIDs)>
-		
-	<cfoutput>
-	<div style="margin-left:50px;padding:5px;border:1px solid ##A4C8E5;">
-		<p class="highlight">You do not currently have any content under this navigation item. You have two options:</p>
-	</cfoutput>				
-		
-		<cfset stPropMetadata = structnew() />
-		<cfset stPropMetadata.aObjectIDs.ftLabel = "Content Type" />
-		<cfset stPropMetadata.aObjectIDs.ftHint = "Select a content type to create as a child of this navigation item. If you select this option, you will be automatically redirected to edit the new content item." />
-		<ft:object stObject="#stObj#" lFields="aObjectIDs" legend="OPTION 1: Create Content" stPropMetadata="#stPropMetadata#" bShowLibraryLink="false" />
-		
-		<cfset stPropMetadata = structnew() />
-		<cfset stPropMetadata.ExternalLink.ftHint = "Select a navigation alias to redirect to when this navigation item is browsed too." />
-
-		<ft:object stObject="#stObj#" lFields="ExternalLink" legend="OPTION 2: Redirect"  stPropMetadata="#stPropMetadata#"  />
+<cfif arraylen(stObj.aObjectIDs)>
 	
-	<cfoutput>
-	</div>
-	</cfoutput>
-	
-<cfelse>
 	<cfoutput>
 	<h2>ATTACHED CONTENT</h2>
 	<table class="objectAdmin">

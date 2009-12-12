@@ -416,35 +416,30 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="i">
 				
 				<!--- Add the ancestor records so we know where this webskin is located throughout the site. --->
-				<cfif not structkeyexists(request.aAncestorWebskins[i],"objectid") or arguments.stobj.objectid NEQ request.aAncestorWebskins[i].objectID>
-					
-					<cfif structKeyExists(application.stcoapi[request.aAncestorWebskins[i].typename].stWebskins, request.aAncestorWebskins[i].template)>
-						<cfif application.stcoapi[request.aAncestorWebskins[i].typename].stWebskins[request.aAncestorWebskins[i].template].cacheStatus GT 0>
+				<cfif structKeyExists(application.stcoapi[request.aAncestorWebskins[i].typename].stWebskins, request.aAncestorWebskins[i].template)>
+					<cfif application.stcoapi[request.aAncestorWebskins[i].typename].stWebskins[request.aAncestorWebskins[i].template].cacheStatus GT 0>
 							
-							<cfset stArgs = structnew() />
+						<cfset stArgs = structnew() />
 	
-							<cfset stArgs.webskinObjectID = arguments.stobj.objectid />
+						<cfset stArgs.webskinObjectID = arguments.stobj.objectid />
+						<cfif structkeyexists(request.aAncestorWebskins[i],"objectid")>
+							<cfset stArgs.ancestorID = request.aAncestorWebskins[i].objectID />
+						<cfelse>
+							<cfset stArgs.ancestorTypename = request.aAncestorWebskins[i].typename />
+						</cfif>
+						<cfset stArgs.ancestorTemplate = request.aAncestorWebskins[i].template />
+						<cfset bAncestorExists = oWebskinAncestor.checkAncestorExists(argumentCollection=stArgs) />	
+						<cfif not bAncestorExists>
+							<cfset stProperties = structNew() />
+							<cfset stProperties.webskinObjectID = arguments.stobj.objectid />
+							<cfset stProperties.webskinTypename = arguments.stobj.typename />
+							<cfset stProperties.webskinTemplate = arguments.webskinTemplate />
 							<cfif structkeyexists(request.aAncestorWebskins[i],"objectid")>
-								<cfset stArgs.ancestorID = request.aAncestorWebskins[i].objectID />
-							<cfelse>
-								<cfset stArgs.ancestorTypename = request.aAncestorWebskins[i].typename />
+								<cfset stProperties.ancestorID = request.aAncestorWebskins[i].objectID />
 							</cfif>
-							<cfset stArgs.ancestorTemplate = request.aAncestorWebskins[i].template />
-							<cfset bAncestorExists = oWebskinAncestor.checkAncestorExists(argumentCollection=stArgs) />
-								
-							<cfif not bAncestorExists>
-								<cfset stProperties = structNew() />
-								<cfset stProperties.webskinObjectID = arguments.stobj.objectid />
-								<cfset stProperties.webskinTypename = arguments.stobj.typename />
-								<cfset stProperties.webskinTemplate = arguments.webskinTemplate />
-								<cfif structkeyexists(request.aAncestorWebskins[i],"objectid")>
-									<cfset stProperties.ancestorID = request.aAncestorWebskins[i].objectID />
-								</cfif>
-								<cfset stProperties.ancestorTypename = request.aAncestorWebskins[i].typename />
-								<cfset stProperties.ancestorTemplate = request.aAncestorWebskins[i].template />
-								
-								<cfset stResult = oWebskinAncestor.createData(stProperties=stProperties) />
-							</cfif>
+							<cfset stProperties.ancestorTypename = request.aAncestorWebskins[i].typename />
+							<cfset stProperties.ancestorTemplate = request.aAncestorWebskins[i].template />
+							<cfset stResult = oWebskinAncestor.createData(stProperties=stProperties) />
 						</cfif>
 					</cfif>
 				</cfif>
@@ -477,6 +472,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfif stCurrentView.cacheByRoles>
 				<cfset application.fapi.setAncestorsCacheByRoles() />
 			</cfif>
+			
+			
 		</cfif>
 		
 	<!--- If the current view (Last Item In the array) is still OkToCache --->
@@ -807,7 +804,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 						)
 						AND webskinTemplate = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stTypeWatchWebskins[iType][iWebskin]#" />
 					</cfquery>
-					<cfdump var="#qCachedAncestors#">
+					
 					<cfloop query="qCachedAncestors">
 						<cfset bSuccess = application.fc.lib.objectbroker.removeWebskin(	objectID=qCachedAncestors.ancestorID,
 																							typename=qCachedAncestors.ancestorTypename,
