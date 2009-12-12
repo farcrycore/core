@@ -23,6 +23,13 @@
 		<cfset var qBarnacle = "" />
 		<cfset var stBarnacle = structnew() />
 		<cfset var col = "" />
+		<cfset var barnacleHashID = hash("#arguments.role#-#arguments.permission#-#arguments.object#") />
+
+		<cfparam name="request.stBarnacleCache" default="#structNew()#" />
+		
+		<cfif structKeyExists(request.stBarnacleCache, barnacleHashID)>
+			<cfreturn request.stBarnacleCache[barnacleHashID] />
+		</cfif>
 		
 		<cfquery datasource="#application.dsn#" name="qBarnacle">
 			select	objectid,roleid,permissionid,referenceid,barnaclevalue
@@ -46,7 +53,9 @@
 			<cfset stBarnacle.referenceid = arguments.object />
 			<cfset stBarnacle.barnaclevalue = 0 />
 		</cfif>
-			
+		
+		<cfset request.stBarnacleCache[barnacleHashID] = stBarnacle />
+		
 		<cfreturn stBarnacle />
 	</cffunction>
 
@@ -176,6 +185,14 @@
 		<cfset var typename = "" />
 		<cfset var qAncestors = "" />
 		
+		<cfset var inheritedRightHashID = hash("#arguments.barnacle#-#arguments.role#-#arguments.permission#-#arguments.object#-#arguments.requestcache#") />
+		
+		<cfparam name="request.stinheritedRightCache" default="#structNew()#" />
+		
+		<cfif structKeyExists(request.stinheritedRightCache, inheritedRightHashID)>
+			<cfreturn request.stinheritedRightCache[inheritedRightHashID] />
+		</cfif>
+		
 		<!--- If request cache is turned on (mainly for Manage Permissions) use that --->
 		<cfif arguments.requestcache>
 			<cfif not structkeyexists(request,"barnaclecache")>
@@ -192,8 +209,10 @@
 			</cfquery>
 			
 			<cfif qSecured.recordcount>
+				<cfset request.stInheritedRightCache[inheritedRightHashID] = qSecured.barnaclevalue[1] />
 				<cfreturn qSecured.barnaclevalue[1] />
 			<cfelse>
+				<cfset request.stInheritedRightCache[inheritedRightHashID] = 0 />
 				<cfreturn 0 />
 			</cfif>
 		</cfif>
@@ -237,12 +256,14 @@
 		
 			<cfif thisresult neq 0>
 				<!--- If the permission is specified rather than inherited, return it --->
+				<cfset request.stInheritedRightCache[inheritedRightHashID] = thisresult />
 				<cfreturn thisresult />
 			</cfif>
 			
 		</cfloop>
 		
 		<!--- If every role says inherit right up the ancestory chain then deny --->
+		<cfset request.stInheritedRightCache[inheritedRightHashID] = -1 />
 		<cfreturn -1 />
 	</cffunction>
 	
@@ -252,7 +273,17 @@
 		<cfargument name="role" type="string" required="false" hint="List of roles to check" />
 		
 		<cfset var actual = -1 />
-		<cfset var typename = application.coapi.coapiAdmin.findType(arguments.object) />
+		<cfset var typename = "" />
+		
+		<cfset var hashID = hash("#arguments.object#-#arguments.permission#-#arguments.role#") />		
+
+		<cfparam name="request.stCheckPermissionCache" default="#structNew()#" />
+		
+		<cfif structKeyExists(request.stCheckPermissionCache, hashID)>
+			<cfreturn request.stCheckPermissionCache[hashID] />
+		</cfif>
+		
+		<cfset typename = application.coapi.coapiAdmin.findType(arguments.object) />
 		
 		<!--- Check existence of permission --->
 		<cfif not isvalid("uuid",arguments.permission)>
@@ -273,13 +304,17 @@
 		
 		<cfif actual eq 0>
 			<cfif getInheritedRight(role=arguments.role,permission=arguments.permission,object=arguments.object) eq 1>
+				<cfset request.stCheckPermissionCache[hashID] = 1 />
 				<cfreturn 1 />
 			<cfelse>
+				<cfset request.stCheckPermissionCache[hashID] = 0 />
 				<cfreturn 0 />
 			</cfif>
 		<cfelseif actual eq 1>
+			<cfset request.stCheckPermissionCache[hashID] = 1 />
 			<cfreturn 1 />
 		<cfelse>
+			<cfset request.stCheckPermissionCache[hashID] = 0 />
 			<cfreturn 0 />
 		</cfif>
 	</cffunction>

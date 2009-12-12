@@ -78,18 +78,38 @@ $out:$
 	<cfargument name="dsn" required="no" type="string" default="#application.dsn#">
 	<cfargument name="nLevel" required="no" type="numeric">
 	<cfargument name="dbowner" required="no" type="string" default="#application.dbowner#">
-	<cfset var parentID = ''>
-	<cfset var qnode = queryNew("blah")>
-	<cfset var rowindex = 1>
-	<cfset var qParentIDs = queryNew("blah")>
-	<cfset var sql = ''>
-	<cfset var ancestors = ''>
-	<cfset var q = ''>
-	<cfset var objID = ''>
-	<cfset var nLev = -1>
-	<cfset var qSelf = queryNew("blah")>
-	<cfset var qReturn = queryNew("blah")>
-	<cfinclude template="_tree/getAncestors.cfm">
+
+	<cfset var qReturn = "" />
+	
+	<!---<cfinclude template="_tree/getAncestors.cfm">--->
+	
+	<cfquery datasource="#application.dsn#" name="qReturn">
+	select *
+	from #arguments.dbowner#nested_tree_objects
+	where nleft <= (
+		select nLeft
+		FROM nested_tree_objects
+		WHERE objectid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
+	)
+	AND nRight >= (
+		select nRight
+		FROM nested_tree_objects
+		WHERE objectid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
+	)
+	AND typename = (
+		select typename
+		FROM nested_tree_objects
+		WHERE objectid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
+	)
+	<cfif NOT arguments.bIncludeSelf>
+		AND objectid <> <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
+	</cfif>
+	<cfif structKeyExists(arguments, "nLevel") and isNumeric(arguments.nLevel)>
+		AND nLevel >= <cfqueryparam cfsqltype="cf_sql_numeric" value="#arguments.nLevel#" />
+	</cfif>
+	order by nLeft
+	</cfquery>
+
 	<cfreturn qReturn>
 </cffunction>
 
