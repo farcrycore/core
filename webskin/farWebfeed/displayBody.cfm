@@ -63,12 +63,14 @@
 		<ul class="feedlist">
 			<li>
 				<a href="#rsspath#">
-					<img src="#application.url.webtop#/facade/icon.cfm?icon=rss.gif&size=16" /> RSS Feed
+					<skin:icon icon="rss.gif" size="16" />
+					RSS Feed
 				</a>
 			</li>
 			<li>
 				<a href="#atompath#">
-					<img src="#application.url.webtop#/facade/icon.cfm?icon=atom.gif&size=16" /> Atom Feed
+					<skin:icon icon="atom.gif" size="16" />
+					Atom Feed
 				</a>
 			</li>
 </cfoutput>
@@ -77,7 +79,8 @@
 	<cfoutput>
 		<li>
 			<a href="#itunespath#">
-				<img src="#application.url.webtop#/facade/icon.cfm?icon=podcast.gif&size=16" /> Subscribe in iTunes
+				<skin:icon icon="podcast.gif" size="16" />
+				Subscribe in iTunes
 			</a>
 		</li>
 	</cfoutput>

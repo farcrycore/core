@@ -31,7 +31,7 @@
 		<code>
 			<cfset othertype = application.fapi.findType(stObj.aObjectIDs[1]) />
 		</code>
-	--->
+	 --->
 	<cffunction name="findType" access="public" output="false" returntype="string" hint="Returns the typename for an objectID. Returns empty string if objectid is not found." bDocument="true">
 		<cfargument name="objectid" required="true" />
 		
@@ -46,7 +46,7 @@
 		<code>
 			<cfset oFile = application.fapi.getContentType("dmFile") />
 		</code>
-	--->
+	 --->
 	<cffunction name="getContentType" access="public" output="false" returntype="any" hint="Returns the an instantiated content type" bDocument="true">
 		<cfargument name="typename" type="string" required="true" />
 		
@@ -79,7 +79,7 @@
 		<code>
 			<cfset stObj = application.fapi.getContentObject(form.selectedobjectid,"thistype") />
 		</code>
-	--->
+	 --->
 	<cffunction name="getContentObject" access="public" output="false" returnType="struct" hint="Allows you to fetch a content object with only the objectID" bDocument="true">
 		<cfargument name="objectid" type="UUID" required="true" hint="The objectid for which object is to be found" />
 		<cfargument name="typename" type="string" required="false" default="" hint="The typename of the objectid. Pass in to avoid having to lookup the type." />
@@ -97,7 +97,7 @@
 			<cfset bDefaultObject = application.fapi.isDefaultObject(form.selectedobjectid,"thistype") />
 		</code>
 		
-	--->
+	 --->
 	<cffunction name="isDefaultObject" access="public" output="false" returnType="boolean" hint="Returns true if the object has not yet been stored in the database" bDocument="true">
 		<cfargument name="objectid" type="UUID" required="true" hint="The objectid for which object is to be found" />
 		<cfargument name="typename" type="string" required="false" default="" hint="The typename of the objectid. Pass in to avoid having to lookup the type." />
@@ -123,7 +123,7 @@
 				<skin:view typename="dmHTML" objectid="#q.objectid#" webskin="displayPage1Col" />
 			</cfif>
 		</code>
-	--->
+	 --->
 	<cffunction name="hasWebskin" access="public" output="false" returnType="boolean" hint="Returns true if the content type has the webskin name passed in available." bDocument="true">
 		<cfargument name="typename" type="string" required="true" hint="The typename of the webskin to be found." />
 		<cfargument name="webskin" required="true" />
@@ -1335,6 +1335,12 @@
 			<cflog file="deprecated" application="true" type="warning" text="#GetBaseTemplatePath()# - #arguments.message#" />
 			<cf_logevent location="#getPageContext().getPage().getCurrentTemplatePath()#" type="application" event="deprecated" notes="#arguments.message#" />
 		</cfif>
+			
+		<cfif isdefined("application.log.bDeprecatedBubble") AND application.log.bDeprecatedBubble>	
+			<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+			<skin:bubble title="Deprecated" message="#message#" />
+		</cfif>
+		
 	</cffunction>	
 
 	<!--- I18N ///////////////////////////////////////////// --->
@@ -1483,7 +1489,7 @@
 				#application.fapi.listSlice(list=colours,start=2,end=4)#<br />
 			</cfoutput>
 		</code>
-	--->
+	 --->
 	<cffunction name="listSlice" access="public" output="false" returntype="string" hint="Returns the specified elements of the list" bDocument="true">
 		<cfargument name="list" type="string" required="true" hint="The list being sliced" />
 		<cfargument name="start" type="numeric" required="false" default="1" hint="The start index of the slice. Negative numbers are reverse indexes: -1 is last item." />
@@ -1547,7 +1553,7 @@
 	</cffunction>
 
 	<!--- STRUCT UTILITIES ///////////////////////////////// --->
-	
+		
 	<!--- @@description: 
 		<p>Performs a deep merge on two structs.</p>
 				
@@ -1588,7 +1594,7 @@
 		<code>
 			<cfdump var="#application.fapi.struct(a=5,b="How now brown cow",c=url)#" />
 		</code>
-	--->
+	 --->
 	<cffunction name="struct" returntype="struct" output="false" access="public" hint="Shortcut for creating structs" bDocument="true" bDeprecated="true">
 		
 		<cfreturn application.fc.utils.struct(argumentCollection="#arguments#") />
@@ -1644,9 +1650,9 @@
 		
 		@@examples:
 		<code>
-			<cfoutput>#application.fapi.getPackagePath("custom", "myfactory")#</cfoutput>
+			<cfoutput>#application.fapi.getPackagePath("custom","myfactory")#</cfoutput>
 		</code>
-	--->
+	 --->
 	<cffunction name="getPackagePath" access="public" output="false" returntype="string" hint="Finds the component in core/plugins/project, and returns its path" bDocument="true">
 		<cfargument name="package" type="string" required="true" />
 		<cfargument name="component" type="string" required="true" />
@@ -1662,7 +1668,7 @@
 		<code>
 			<cfoutput>#application.fapi.getComponents("types")#</cfoutput>
 		</code>
-	--->
+	 --->
 	<cffunction name="getComponents" access="public" output="false" returntype="string" hint="Returns a list of components for a package" bDocument="true">
 		<cfargument name="package" type="string" required="true" />
 		<cfargument name="locations" type="string" required="false" default="" />
@@ -1677,7 +1683,7 @@
 		<code>
 			<cfdump var="#application.fapi.extends(mycomponent path,'farcry.core.packages.types.types')#" />
 		</code>
-	--->
+	 --->
 	<cffunction name="extends" access="public" output="false" returntype="boolean" hint="Returns true if the specified component extends another" bDocument="true">
 		<cfargument name="desc" type="string" required="true" hint="The component to test" />
 		<cfargument name="anc" type="string" required="true" hint="The ancestor to check for" />
@@ -1696,7 +1702,7 @@
 	
 	<!--- DOCTYPE / VALIDATION ///////////////////////////// --->
 	
-	<!--- @@description:
+	<!--- @@description: 
 		<p> 
 		This function is used to get information about the doctype your application should be
 		generating. This value, by default, uses the application.fc.doctype variable.
@@ -1729,7 +1735,7 @@
 				<td>doctype.tagending</td><td>/, blank</td>
 			</tr>
 		</table>
-	
+		
 		<p>
 		Example struct output:
 		</p>
@@ -1933,11 +1939,90 @@
 		<code>
 			#application.fapi.prettyDate(myUglyDate)# 
 		</code>
-	--->
+	 --->
 	<cffunction name="prettyDate" access="public" returntype="string" output="false">
 		<cfargument name="uglyDate" required="true" type="string" default="" />
 		
 		<cfreturn application.fc.utils.prettyDate(arguments.uglyDate) />
+	</cffunction>
+	
+	<!--- @@examples:
+		<p>Searches project, plugins and core and returns the url for the best matching icon.</p>
+		<code>
+			#application.fapi.getIconURL(icon='dmHTML', size=16)# 
+		</code>
+	 --->	
+	<cffunction name="getIconURL" access="public" output="false" returntype="string" hint="Returns the path for the specified icon.">
+		<cfargument name="icon" type="string" required="true" hint="The name of the icon to retrieve" />
+		<cfargument name="size" type="string" required="true" default="48" hint="The size of the icon required" />
+		<cfargument name="default" type="string" required="false" default="blank.png" hint="The fallback icon to use" />
+		<cfargument name="bPhysicalPath" type="boolean" required="false" default="false" hint="Use of this argument is usually only for the system to stream the file if outside of the webroot." />
+	
+		<cfset var thisplugin = "" />
+		<cfset var iconURL = "" />		
+		<cfset var iconHashID = hash("#arguments.icon#-#arguments.size#-#arguments.default#-#arguments.bPhysicalPath#") />
+		
+		<cfparam name="variables.stIconCache" default="#structNew()#" />
+		
+		<cfif structKeyExists(variables.stIconCache, iconHashID)>
+			<cfreturn variables.stIconCache[iconHashID] />
+		</cfif>
+				
+		<cfset arguments.icon = lcase(arguments.icon) />
+		
+		<cfif not find(".",arguments.icon)>
+			<cfset arguments.icon = "#arguments.icon#.png" />
+		</cfif>
+	
+		<cfif fileexists(expandPath("#application.url.webroot#/wsimages/icons/#arguments.size#/#arguments.icon#"))>
+			<cfset iconURL = "#application.url.webroot#/wsimages/icons/#arguments.size#/#arguments.icon#" />
+		<cfelseif fileexists(expandPath("#application.url.webroot#/images/icons/#arguments.size#/#arguments.icon#"))>
+			<cfset iconURL = "#application.url.webroot#/images/icons/#arguments.size#/#arguments.icon#" />
+		<cfelse>
+		
+			<cfloop list="#application.factory.oUtils.listReverse(application.plugins)#" index="thisplugin">
+				<cfif fileexists(expandPath("#application.url.webroot#/#thisplugin#/wsimages/icons/#arguments.size#/#arguments.icon#"))>
+					<cfset iconURL = "#application.url.webroot#/#thisplugin#/wsimages/icons/#arguments.size#/#arguments.icon#" />
+					<cfbreak />
+				<cfelseif fileexists("#application.path.plugins#/#thisplugin#/www/wsimages/icons/#arguments.size#/#arguments.icon#")>
+					<cfif arguments.bPhysicalPath>
+						<cfset iconURL = "#application.path.plugins#/#thisplugin#/www/wsimages/icons/#arguments.size#/#arguments.icon#" />
+						<cfset arguments.bPhysicalPath = false /><!--- Turn off physical path because we already have it here. --->
+					<cfelse>
+						<cfset iconURL = "#application.url.webtop#/facade/icon.cfm?icon=#arguments.icon#&default=#arguments.default#&size=#arguments.size#" />
+					</cfif>
+					
+					<cfbreak />
+				</cfif>
+			</cfloop>
+		</cfif>
+		
+		<cfif not len(iconURL)>
+			<cfif fileexists(expandPath("#application.url.webtop#/icons/#arguments.size#/#arguments.icon#"))>
+				<cfset iconURL = "#application.url.webtop#/icons/#arguments.size#/#arguments.icon#" />
+			<cfelse>
+				<!--- If all else fails, check to see if the icon is located under the image root --->
+				<cfif fileexists(expandPath("#application.url.imageRoot#/#arguments.icon#"))>
+					<cfset iconURL = "#application.url.imageRoot#/#arguments.icon#" />
+				</cfif>
+			</cfif>
+		</cfif>
+		
+		<cfif not len(iconURL)>
+			<cfif not find(".",arguments.default)>
+				<cfset arguments.default = "#arguments.default#.png" />
+			</cfif>
+			<cfset iconURL = "#application.url.webtop#/icons/#arguments.size#/#arguments.default#" />
+		</cfif>		
+		
+		<cfif arguments.bPhysicalPath>
+			<cfset iconURL = expandPath(iconURL) />
+		</cfif>
+				
+		<cfset variables.stIconCache[iconHashID] = iconURL />
+		
+		
+		<cfreturn iconURL />
 	</cffunction>	
 	
 </cfcomponent>

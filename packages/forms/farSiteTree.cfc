@@ -68,7 +68,7 @@
 								visible : function (NODE, TREE_OBJ) {
 									return NODE.hasClass("addnodes");
 								},
-								icon	: '#application.url.webtop#/facade/icon.cfm?icon=#thistype#&size=16',
+								icon	: '#application.fapi.getIconURL(icon='#thistype#', size='16')#',
 								action  : function (NODE, TREE_OBJ) {
 									if (NODE.length) window.open('#application.url.webtop#/conjuror/evocation.cfm?parenttype='+NODE[0].getAttribute("rel")+'&objectId='+NODE[0].id+'&typename=#thistype#',"content");
 								}

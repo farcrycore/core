@@ -221,7 +221,7 @@ $in: SessionID -- $
 			</ul>	
 		</div>
 
-		<h1><admin:icon icon="#attributes.icon#" usecustom="true" />
+		<h1><skin:icon icon="#attributes.icon#" default="farcrycore" />
 			<cfif len(attributes.title)>
 				#attributes.title#
 			<cfelse>

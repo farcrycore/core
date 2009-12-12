@@ -63,7 +63,7 @@
 		<cfoutput>
 		<ul id="tray-actions">	
 				
-			<li><a id="show-hidden" href="##"><span class="ui-icon" style="background-image:url(#application.url.webtop#/facade/icon.cfm?icon=toggletray&size=16);">&nbsp;</span>Hide tray</a></li>
+			<li><a id="show-hidden" href="##"><span class="ui-icon" style="background-image:url('#application.fapi.getIconURL(icon='toggletray', size=16)#')">&nbsp;</span>Hide tray</a></li>
 			<li><a href="#application.fapi.fixURL(url='#application.url.webtop#', removevalues="")#"><span class="ui-icon ui-icon-carat-2-n-s" style="float:left;">&nbsp;</span>Webtop</a></li>
 			<!---<cfif stObj.typename neq "farCOAPI">
 				<li><a id="edit-object" href="##"><span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>Edit</a></li>

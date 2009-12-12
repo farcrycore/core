@@ -1,4 +1,7 @@
 <cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
+<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
+
 <farcry:deprecated message="widgets tag library is deprecated; please use formtools." />
 
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
@@ -101,7 +104,7 @@ $out:$
 			<div class="pagination">
 				<ul>#variables.paginationButtons#</ul>
 			</div>
-			<h1><img src="#application.url.webtop#/facade/icon.cfm?icon=#iconTypename#" alt="#iconTypename#" />#caller.output.label#</h1>			
+			<h1><skin:icon icon="#iconTypename#" alt="#iconTypename#" />#caller.output.label#</h1>			
 			<div id="plp-nav">
 				<ul>
 		</cfoutput>

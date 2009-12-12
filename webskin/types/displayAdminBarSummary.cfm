@@ -55,7 +55,7 @@
 		<grid:div style="float:left;margin-right:5px;">
 			<cfoutput>
 			<ul id="tray-actions">	
-				<li><a id="show-hidden"><span class="ui-icon" style="background-image:url(#application.url.webtop#/facade/icon.cfm?icon=toggletray&size=16);">&nbsp;</span>Hide Tray</a></li>
+				<li><a id="show-hidden"><span class="ui-icon" style="background-image:url(#application.fapi.getIconURL(icon='toggletray', size=16)#);">&nbsp;</span>Hide Tray</a></li>
 				<li><a id="show-detail"><span class="ui-icon ui-icon-carat-2-n-s" style="float:left;">&nbsp;</span>Show details</a></li>
 				<cfif stObj.typename neq "farCOAPI">
 					<li><a id="edit-object"><span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>Edit</a></li>

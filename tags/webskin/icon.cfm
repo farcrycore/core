@@ -1,9 +1,6 @@
 <cfsetting enablecfoutputonly="true" />
 <!--- @@displayname: Output FarCry icon --->
 
-
-<cfset application.fapi.deprecated(message="admin:icon is deprecated; please use skin:icon.") />
-
 <cfparam name="attributes.icon" default="" /><!--- The icon file you wish to render. --->
 <cfparam name="attributes.size" default="48" /><!--- The size of the icon you wish to render (16, 32,48,64,128) --->
 <cfparam name="attributes.default" default="farcrycore" /><!--- If the icon does not exist, the fallback icon --->

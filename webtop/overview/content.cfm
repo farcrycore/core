@@ -2,6 +2,7 @@
 <!--- @@displayname: Webtop overview --->
 
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
 <admin:header title="" />
 
@@ -9,7 +10,7 @@
 	<h1>Welcome to FarCry</h1>
 	<ul class="inlinedocs">
 			<li><a href="#application.url.webtop#/overview/home.cfm">
-				<img class="overviewicon" border="0" style="float: left;" src="#application.url.webtop#/facade/icon.cfm?icon=overview" alt="" />
+				<skin:icon icon="overview" class="overviewicon" style="border:none;float:left;" alt="" />
 			</a>
 			<a href="#application.url.webtop#/overview/home.cfm">Overview</a><br/>
 			<p>Review content you have in draft or pending approval.</p>
@@ -38,7 +39,7 @@
 		<cfif len(section.icon)>
 			<cfoutput>
 				<a href="#application.url.webtop#/index.cfm?sec=#section.id#" target="_top">
-					<img src="#application.url.webtop#/facade/icon.cfm?icon=#section.icon#" class="overviewicon" border="0" style="float:left;" alt="" />
+					<skin:icon icon="#section.icon#" class="overviewicon" style="border:none;float:left;" alt="" />
 				</a>
 			</cfoutput>
 		</cfif>

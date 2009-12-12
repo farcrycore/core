@@ -1,20 +1,10 @@
-<cfparam name="url.type" default="" />
 <cfparam name="url.icon" default="" />
-<cfparam name="url.usecustom" default="true" />
 <cfparam name="url.size" default="48" />
+<cfparam name="url.default" default="farcrycore" />
 
-<cfif not len(url.type) and not len(url.icon)>
-	<cfthrow message="The icon facade requires either type or icon to be passed in">
-</cfif>
+<!--- @@displayname: Icon streamer --->
+<!--- @@description: This will go and get the physical path to the icon and stream it to the browser --->
 
-<cfif not len(url.icon)>
-	<cfset url.icon = url.type />
-</cfif>
+<cfset iconPath = application.fapi.getIconURL(icon=url.icon, size=url.size, default=url.default, bPhysicalPath="true") />
 
-<cfif url.usecustom>
-	<cfset defaulticon = "farcrycore.png" />
-<cfelse>
-	<cfset defaulticon = "blank.png" />
-</cfif>
-
-<cfcontent file="#application.factory.oAlterType.getIconPath(iconname=url.icon,size=url.size,default=defaulticon)#" />
+<cfcontent file="#iconPath#" />

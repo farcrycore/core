@@ -42,6 +42,7 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 		<cfparam name="attributes.webTop" default="" type="any" />
 		
 		<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
+		<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 		
 		<!--- Root url for webtop links --->
 		<cfset rooturl = "#application.url.farcry#/index.cfm?sec=#attributes.sectionid#" />
@@ -94,7 +95,7 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 					<cfif len(menuitem.icon)>
 						<cfoutput>
 							<a href="#menuitem.link#" target="content">
-								<img src="#application.url.webtop#/facade/icon.cfm?icon=#menuitem.icon#" class="overviewicon" border="0" style="float:left;" alt="" />
+								<skin:icon icon="#menuitem.icon#" style="border:none;float:left;" class="overviewicon" />
 							</a>
 						</cfoutput>
 					</cfif>

@@ -17,8 +17,6 @@ $j('##open-tray').click(function(){
 });
 </cfoutput>
 </skin:onReady>
-<cfoutput>
-<img id="open-tray" src="#application.url.webtop#/facade/icon.cfm?icon=toggletray&size=64" style="width:32px;height:32px;" />
-</cfoutput>
+<skin:icon id="open-tray" icon='toggletray' size='64' style="width:32px;height:32px;" /> 
 
 <cfsetting enablecfoutputonly="false" />

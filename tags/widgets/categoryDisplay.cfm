@@ -1,6 +1,7 @@
 <cfsetting enablecfoutputonly="true">
 
 <cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
+<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 <farcry:deprecated message="widgets tag library is deprecated; please use formtools." />
 
 <cfparam name="attributes.lSelectedCategoryID" default="">
@@ -65,7 +66,7 @@
 <li>
 <cfif bCollapsable GT 0>
 <a href="javascript:void(0);" onclick="showHide('collapse_#attributes.moduleCounter#_#iCurrentObjectID#','#iCurrentObjectID#_#iCounter#-a');return false;" style="background:transparent">
-<img id="#iCurrentObjectID#_#iCounter#-a" src="#application.url.webtop#/facade/icon.cfm?icon=expand&size=16" alt="" /></a>
+<admin id="#iCurrentObjectID#_#iCounter#-a" icon="expand" size="16" /></a>
 <a href="javascript:void(0);" onclick="showHide('collapse_#attributes.moduleCounter#_#iCurrentObjectID#','#iCurrentObjectID#_#iCounter#-a');return false;"></a>
 </cfif>
 <cfif naviagtionURL EQ "">

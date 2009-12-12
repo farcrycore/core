@@ -52,6 +52,7 @@ system attributes
 <cfimport taglib="/farcry/core/tags/wizard/" prefix="wiz" />
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj" />
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
 <!--------------------------------------------------------------------
 default handlers
@@ -1112,7 +1113,7 @@ default handlers
 			<ft:form>
 				
 					
-				<cfoutput><h1><admin:icon icon="#application.stCOAPI[stobj.typename].icon#" usecustom="true" />#stobj.label#</h1></cfoutput>
+				<cfoutput><h1><skin:icon icon="#application.stCOAPI[stobj.typename].icon#" default="farcrycore" />#stobj.label#</h1></cfoutput>
 				
 				<cfif listLen(lFieldSets)>
 					

@@ -119,7 +119,7 @@
 							<div style="margin-bottom:10px;padding:5px;border:1px solid ##A4C8E5;">				
 								<table class="layout">								
 								<tr>
-									<td><img src="#application.url.webtop#/facade/icon.cfm?type=#contentTypename#" alt="" class="icon" style="float: right; padding: 10px;" /></td>
+									<td><skin:icon icon="#contentTypename#" class="icon" style="float: right; padding: 10px;" /></td>
 									<td style="vertical-align:middle;">
 										#htmlContentLabel#
 										<ft:button value="Manage" size="small" selectedObjectID="#stobj.aObjectIDs[i]#" />

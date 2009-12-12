@@ -58,7 +58,7 @@ ALIAS: <cfif len(stobj.lNavIDAlias)>#stobj.lNavIDAlias#<cfelse>N/A</cfif><br />
 		<cfset contentTypename = application.fapi.findType(objectid="#stobj.aObjectIDs[i]#") />
 		
 		<tr>
-			<td><admin:icon icon="#application.stCOAPI[contentTypename].icon#" size="16" usecustom="true" /></td>	
+			<td><skin:icon icon="#application.stCOAPI[contentTypename].icon#" size="16" default="farcrycore" /></td>	
 			<td><skin:view typename="#contentTypename#" objectid="#stobj.aObjectIDs[i]#" webskin="displayLabel" /></td>	
 			<td><ft:button value="Manage" renderType="link" selectedObjectID="#stobj.aObjectIDs[i]#" /></td>	
 		</tr>

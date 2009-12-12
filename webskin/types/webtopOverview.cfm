@@ -63,7 +63,7 @@ TO: A refactor is required of all this now that we have webskin goodness.
 <ft:form>
 
 			<grid:div style="float:right;padding:10px;">
-				<admin:icon icon="#application.stCOAPI[stobj.typename].icon#" usecustom="true" />
+				<skin:icon icon="#application.stCOAPI[stobj.typename].icon#" default="farcrycore" />
 			</grid:div>
 
 		<grid:div id="webtopOverviewActions" style="float:left;margin-right: 0px;width:190px;">
