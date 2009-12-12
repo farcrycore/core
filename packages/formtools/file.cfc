@@ -6,6 +6,7 @@
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" >
 	<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs" >
+	<cfimport taglib="/farcry/core/tags/grid/" prefix="grid" >
 	
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.file" output="false" hint="Returns a copy of this initialised object">
 		
@@ -28,64 +29,147 @@
 		
 		<cfparam name="arguments.stMetadata.ftstyle" default="" />
 		<cfparam name="arguments.stMetadata.ftRenderType" default="html" /><!--- html, flash, jquery --->
+		<cfparam name="arguments.stMetadata.ftAllowedFileExtensions" default="" /><!--- pdf,zip --->
+		<cfset arguments.stMetadata.ftAllowedFileExtensions = "pdf,zip" />
 		
 		<skin:loadJS id="jquery" />
 		
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 			<cfcase value="html">
-				<skin:htmlHead id="ftCheckFileName">
-					<cfoutput>
-						<script type="text/javascript">
-							function ftCheckFileName(id){
-								var currentText = $j('##' + id).attr('value');	
-								var aCurrentExt = currentText.split(".");	
-									
-								var newText = $j('##' + id + 'NEW').attr('value');	
-								var aNewExt = newText.split(".");	
-								
-								if (currentText.length > 0 && newText.length > 0) {
-									if (aCurrentExt.length > 1 && aNewExt.length > 1){						
-										if (aCurrentExt[aCurrentExt.length - 1] != aNewExt[aNewExt.length - 1]){
-											$j('##' + id + 'NEW').attr('value','');
-											alert('You must either delete the old file or upload a new one with the same extension (' + aCurrentExt[aCurrentExt.length - 1] + ')');
-										}
-									}
-								}
-							}
-						</script>
-					</cfoutput>
-				</skin:htmlHead>
 				
 				<cfsavecontent variable="html">
-					<cfoutput>
-						<table border="1">
-						<tr>
-							<td valign="top">
-								<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
-								<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="" />
-								<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" value="" style="#arguments.stMetadata.ftstyle#" class="fileUpload" onchange="ftCheckFileName('#arguments.fieldname#');" />
-							</td>
-							
-							<cfif len(#arguments.stMetadata.value#)>
+					<grid:div class="multiField">
+						<cfoutput>
+							<div id="#arguments.fieldname#-wrap">						
+								
+								<label class="inlineLabel" for="#arguments.fieldname#">
+									&nbsp;
+									<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
+									<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="" />
+									<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" fc:fieldname="#arguments.fieldname#" class="fileUpload" value="" style="#arguments.stMetadata.ftstyle#" />
+									
+								</label>						
+								
+							</div>					
+							<!---<table border="1">
+							<tr>
 								<td valign="top">
-									<div id="#arguments.fieldname#previewfile">
-										<cfif structKeyExists(arguments.stMetadata, "ftSecure") and arguments.stMetadata.ftSecure>
-											<img src="#application.url.farcry#/images/crystal/22x22/actions/lock.png" />
-											#listLast(arguments.stMetadata.value, "/")#
-										<cfelse>
-											<a href="#application.fapi.getFileWebRoot()##arguments.stMetadata.value#" target="preview">#listlast(arguments.stMetadata.value, "/")#</a>
-										</cfif>
-										
-										<ft:button type="button" value="Delete File" onclick="if(confirm('Are you sure you want to remove this file?')) {} else {return false};Ext.get('#arguments.fieldname#DELETE').dom.value=Ext.get('#arguments.fieldname#').dom.value;Ext.get('#arguments.fieldname#').dom.value='';Ext.get('#arguments.fieldname#previewfile').hide();" />
-										
-									</div>
+									<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
+									<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="" />
+									<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" value="" style="#arguments.stMetadata.ftstyle#" class="fileUpload" onchange="ftCheckFileName('#arguments.fieldname#');" />
 								</td>
-							</cfif>				
+								
+								<cfif len(#arguments.stMetadata.value#)>
+									<td valign="top">
+										<div id="#arguments.fieldname#previewfile">
+											<cfif structKeyExists(arguments.stMetadata, "ftSecure") and arguments.stMetadata.ftSecure>
+												<img src="#application.url.farcry#/images/crystal/22x22/actions/lock.png" />
+												#listLast(arguments.stMetadata.value, "/")#
+											<cfelse>
+												<a href="#application.fapi.getFileWebRoot()##arguments.stMetadata.value#" target="preview">#listlast(arguments.stMetadata.value, "/")#</a>
+											</cfif>
+											
+											<ft:button type="button" value="Delete File" onclick="if(confirm('Are you sure you want to remove this file?')) {} else {return false};Ext.get('#arguments.fieldname#DELETE').dom.value=Ext.get('#arguments.fieldname#').dom.value;Ext.get('#arguments.fieldname#').dom.value='';Ext.get('#arguments.fieldname#previewfile').hide();" />
+											
+										</div>
+									</td>
+								</cfif>				
+								
+							</tr>
+							</table>--->
+						</cfoutput>	
+						
+						<cfif listLen(arguments.stMetadata.ftAllowedFileExtensions)>
+							<skin:onReady>
+							<cfoutput>
+								$j('###arguments.fieldname#NEW').change(function() {
+									var ext = $j(this).val().split('.').pop().toLowerCase();
+									var allow = new Array(#ListQualify(arguments.stMetadata.ftAllowedFileExtensions,"'")#);
+									if($j.inArray(ext, allow) == -1) {
+										$j(this).attr('value', '');
+									    alert('Only files with the following extensions are allowed: #arguments.stMetadata.ftAllowedFileExtensions#');
+									}
+								});
+							</cfoutput>
+							</skin:onReady>
+						</cfif>
+						
+						<cfif len(arguments.stMetadata.value)>
+							<cfoutput>
+								<div id="#arguments.fieldname#previewfile">
+								
+									<a id="#arguments.fieldname#-preview-file" href="#application.url.webroot#/download.cfm?downloadfile=#arguments.stobject.objectid#&typename=#arguments.stobject.typename#&fieldname=#arguments.stmetadata.name#" target="_blank">Preview (#arguments.stMetadata.value#)</a> <br />
+									<!---#listLast(arguments.stMetadata.value,"/")#--->
+									<ft:button type="button" value="Delete" rendertype="link" id="#arguments.fieldname#-delete-btn" onclick="" />
+									<ft:button type="button" value="Cancel" rendertype="link" id="#arguments.fieldname#-cancel-delete-btn" onclick="" />
+									<ft:button type="button" value="Replace" rendertype="link" id="#arguments.fieldname#-replace-btn" onclick="" />
+									<ft:button type="button" value="Cancel" rendertype="link" id="#arguments.fieldname#-cancel-replace-btn" onclick="" />
+	
+								</div>
+							</cfoutput>	
 							
-						</tr>
-						</table>
-					</cfoutput>					
+
+							<skin:onReady>
+								<cfoutput>
+                            	
+	                            	$j('###arguments.fieldname#-wrap').css('display','none');		
+	                            	$j('###arguments.fieldname#-cancel-delete-btn').css('display','none');	
+	                            	$j('###arguments.fieldname#-cancel-replace-btn').css('display','none');	
+	                            	
+									$j('###arguments.fieldname#NEW').change(function() {
+										var id = '#arguments.fieldname#';
+										var currentText = $j('##' + id).attr('value');	
+										var aCurrentExt = currentText.split(".");	
+											
+										var newText = $j('##' + id + 'NEW').attr('value');	
+										var aNewExt = newText.split(".");	
+										
+										if (currentText.length > 0 && newText.length > 0) {
+											if (aCurrentExt.length > 1 && aNewExt.length > 1){						
+												if (aCurrentExt[aCurrentExt.length - 1] != aNewExt[aNewExt.length - 1]){
+													$j('##' + id + 'NEW').attr('value', '');
+													alert('You must either delete the old file or upload a new one with the same extension (' + aCurrentExt[aCurrentExt.length - 1] + ')');
+												}
+											}
+										}					
+									});
+									
+	                            	$j('###arguments.fieldname#-delete-btn').click(function() {
+										$j('###arguments.fieldname#DELETE').attr('value',$j('###arguments.fieldname#').attr('value'));
+										$j('###arguments.fieldname#').attr('value','');
+										$j('###arguments.fieldname#-wrap').show('fast');								
+										$j('###arguments.fieldname#-preview-file').css('display','none');
+										$j('###arguments.fieldname#-delete-btn').css('display','none');
+										$j('###arguments.fieldname#-replace-btn').css('display','none');
+		                            	$j('###arguments.fieldname#-cancel-delete-btn').css('display','inline');
+									});		
+	                            	$j('###arguments.fieldname#-cancel-delete-btn').click(function() {
+										$j('###arguments.fieldname#').attr('value',$j('###arguments.fieldname#DELETE').attr('value'));
+										$j('###arguments.fieldname#DELETE').attr('value','');
+										$j('###arguments.fieldname#-wrap').hide('fast');							
+										$j('###arguments.fieldname#-preview-file').css('display','inline');
+										$j('###arguments.fieldname#-delete-btn').css('display','inline');
+										$j('###arguments.fieldname#-replace-btn').css('display','inline');
+		                            	$j('###arguments.fieldname#-cancel-delete-btn').css('display','none');
+									});		
+	                            	$j('###arguments.fieldname#-replace-btn').click(function() {
+										$j('###arguments.fieldname#-wrap').show('fast');
+										$j('###arguments.fieldname#-delete-btn').css('display','none');
+										$j('###arguments.fieldname#-replace-btn').css('display','none');
+		                            	$j('###arguments.fieldname#-cancel-replace-btn').css('display','inline');
+									});		
+	                            	$j('###arguments.fieldname#-cancel-replace-btn').click(function() {
+										$j('###arguments.fieldname#-wrap').hide('fast');
+										$j('###arguments.fieldname#-delete-btn').css('display','inline');
+										$j('###arguments.fieldname#-replace-btn').css('display','inline');
+		                            	$j('###arguments.fieldname#-cancel-replace-btn').css('display','none');
+									});	
+                            	</cfoutput>
+							</skin:onReady>							
+						</cfif>				
+					</grid:div>				
 				</cfsavecontent>
+				
 			</cfcase>
 			
 			<cfcase value="jquery">

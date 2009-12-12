@@ -25,7 +25,6 @@ type properties
 <cfproperty ftSeq="3" ftFieldset="File Details" name="filename" type="string" hint="The name of the file to be uploaded" required="no" default="" ftType="file" ftLabel="File" ftDestination="/dmfile" ftSecure="false" />
 
 <cfproperty ftSeq="20" ftFieldset="Publishing Details" name="documentDate" type="date" hint="The date of the attached file." required="no" default="" ftLabel="Publish Date" ftDefaultType="Evaluate" ftDefault="now()" ftType="datetime" ftDateFormatMask="dd mmm yyyy" ftTimeFormatMask="hh:mm tt" ftToggleOffDateTime="false" />
-<cfproperty ftSeq="21" ftFieldset="Publishing Details" name="bLibrary" type="boolean" hint="Flag to make file shared." required="no" default="1" ftLabel="Add file to library?" ftType="boolean" />
 <cfproperty ftSeq="30" ftFieldset="Categorisation" name="catFile" type="string" hint="Flag to make file shared." required="no" ftLabel="Category" ftType="category" ftalias="dmfile" />
 
 <!--- system property --->
@@ -37,6 +36,7 @@ type properties
 <cfproperty name="fileType" type="string" hint="MIME content type of the saved file" required="no" default="">
 <cfproperty name="fileSubType" type="string" hint="MIME content subtype of the saved file" required="no" default="">
 <cfproperty name="fileExt" type="string" hint="The extension of the file on the webserver (without the period)" required="no" default="">
+<cfproperty name="bLibrary" type="boolean" hint="Flag to make file shared." required="no" default="1" ftLabel="Add file to library?" ftType="boolean" />
 
 
 <!------------------------------------------------------------------------
