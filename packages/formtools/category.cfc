@@ -98,8 +98,75 @@
 							
 				</cfsavecontent>			
 			</cfcase>
+			<cfcase value="extjs">
+				<!--- <skin:htmlHead library="extjs" />
+				<skin:htmlHead library="farcryForm" /> --->
+				
+				<cfsavecontent variable="html">
+					
+					<cfoutput><fieldset style="width: 300px;">
+						<cfif len(arguments.stMetadata.ftLegend)><legend>#arguments.stMetadata.ftLegend#</legend></cfif>
+					
+						<!--- <div id="tree-div" style="border:1px solid #c3daf9;"></div> --->
+						<div class="fieldsection optional full">
+											
+							<div class="fieldwrap">
+								
+								<div id="#arguments.fieldname#-tree-div"></div>	
+								
+							</div>
+							
+							<br class="fieldsectionbreak" />
+						</div>
+						<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#lSelectedCategoryID#" />
+						<input type="hidden" name="#arguments.fieldname#" value="" />
+					</fieldset>
+					</cfoutput>
+				
+								
+				</cfsavecontent>
+
 			
-			<cfcase value="jquery">
+				<extjs:onReady>
+				<cfoutput>
+				    createFormtoolTree('#arguments.fieldname#','#rootID#', '#application.url.webtop#/facade/getCategoryNodes.cfm', '#rootNodeText#','#lSelectedCategoryID#', 'categoryIconCls');											
+				</cfoutput>
+				</extjs:onReady>
+			</cfcase>
+			<!---<cfcase value="jquery">
+				
+				<skin:loadJS id="jquery" />
+				<skin:loadJS	id="jquery-treeview" 
+								baseHREF="#application.url.webtop#/thirdparty/jquery-treeview"
+								lFiles="jquery.treeview.js,jquery.treeview.async.js"								
+				/>
+				<skin:loadCSS	id="jquery-treeview" 
+								baseHREF="#application.url.webtop#/thirdparty/jquery-treeview"
+								lFiles="jquery.treeview.css"								
+				/>
+				
+				<skin:onReady>
+				<cfoutput>
+					$j("##black").treeview({
+						url: "#application.url.webtop#/facade/getCategoryNodes.cfm?node=#rootID#&lSelectedItems=#lSelectedCategoryID#"
+					})
+				</cfoutput>
+				</skin:onReady>
+				
+				<cfsavecontent variable="html">
+				
+
+					<cfoutput>
+					<div class="multiField">
+						<ul id="black"></ul>
+					</div>
+					</cfoutput>
+					
+				</cfsavecontent>			
+			</cfcase>
+			--->
+			
+			<cfdefaultcase>
 				
 				<skin:loadJS id="jquery" />
 				<skin:loadJS id="jquery-checkboxtree" basehref="#application.url.webtop#/thirdparty/checkboxtree/js" lFiles="jquery.checkboxtree.js" />
@@ -146,74 +213,8 @@
 					</cfoutput>
 					
 				</cfsavecontent>			
-			</cfcase>
-			<!---<cfcase value="jquery">
-				
-				<skin:loadJS id="jquery" />
-				<skin:loadJS	id="jquery-treeview" 
-								baseHREF="#application.url.webtop#/thirdparty/jquery-treeview"
-								lFiles="jquery.treeview.js,jquery.treeview.async.js"								
-				/>
-				<skin:loadCSS	id="jquery-treeview" 
-								baseHREF="#application.url.webtop#/thirdparty/jquery-treeview"
-								lFiles="jquery.treeview.css"								
-				/>
-				
-				<skin:onReady>
-				<cfoutput>
-					$j("##black").treeview({
-						url: "#application.url.webtop#/facade/getCategoryNodes.cfm?node=#rootID#&lSelectedItems=#lSelectedCategoryID#"
-					})
-				</cfoutput>
-				</skin:onReady>
-				
-				<cfsavecontent variable="html">
-				
-
-					<cfoutput>
-					<div class="multiField">
-						<ul id="black"></ul>
-					</div>
-					</cfoutput>
-					
-				</cfsavecontent>			
-			</cfcase>
-			--->
-			<cfdefaultcase>
-				<!--- <skin:htmlHead library="extjs" />
-				<skin:htmlHead library="farcryForm" /> --->
-				
-				<cfsavecontent variable="html">
-					
-					<cfoutput><fieldset style="width: 300px;">
-						<cfif len(arguments.stMetadata.ftLegend)><legend>#arguments.stMetadata.ftLegend#</legend></cfif>
-					
-						<!--- <div id="tree-div" style="border:1px solid #c3daf9;"></div> --->
-						<div class="fieldsection optional full">
-											
-							<div class="fieldwrap">
-								
-								<div id="#arguments.fieldname#-tree-div"></div>	
-								
-							</div>
-							
-							<br class="fieldsectionbreak" />
-						</div>
-						<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#lSelectedCategoryID#" />
-						<input type="hidden" name="#arguments.fieldname#" value="" />
-					</fieldset>
-					</cfoutput>
-				
-								
-				</cfsavecontent>
-
-			
-				<extjs:onReady>
-				<cfoutput>
-				    createFormtoolTree('#arguments.fieldname#','#rootID#', '#application.url.webtop#/facade/getCategoryNodes.cfm', '#rootNodeText#','#lSelectedCategoryID#', 'categoryIconCls');											
-				</cfoutput>
-				</extjs:onReady>
 			</cfdefaultcase>
+			
 			
 		</cfswitch>
 		
