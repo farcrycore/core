@@ -71,7 +71,14 @@ accommodate legacy implementations
 <!--- check status of file --->
 <cfif structKeyExists(stFile, "status")>
 	<cfif NOT listFind(request.mode.lvalidstatus, stFile.status)>
-		<cfthrow type="core.tags.farcry.download" message="File not available." detail="You are not authorised to view this file." />
+		<cfif request.mode.bAdmin>
+			<!--- SET DRAFT MODE ONLY FOR THIS REQUEST. --->
+			<cfset request.mode.showdraft = 1 />
+			<!---<cfset session.dmSec.Authentication.showdraft = request.mode.showdraft />--->
+			<cfset request.mode.lValidStatus = "draft,pending,approved" />
+		<cfelse>
+			<cfthrow type="core.tags.farcry.download" message="File not available." detail="You are not authorised to view this file." />
+		</cfif>		
 	</cfif>
 </cfif>
 
