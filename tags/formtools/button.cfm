@@ -32,7 +32,10 @@
 <cfif thistag.executionMode eq "End">
 
 	<skin:loadJS id="jquery" />
+	<skin:loadJS id="jquery-ui" />
 	<skin:loadJS id="farcry-form" />
+	
+	<skin:loadCSS id="jquery-ui" />
 
 	<!--- I18 conversion of label --->
 	<cfset attributes.text = application.rb.getResource('#attributes.rbkey#@label',attributes.text) />

@@ -141,12 +141,12 @@
 								<cfset counter = counter + 1 />
 								<skin:view objectid="#i#" webskin="librarySelected" r_html="htmlLabel" />
 								<cfoutput>
-								<li id="join-item-#i#" class="sort #iif(counter mod 2,de('oddrow'),de('evenrow'))#" serialize="#i#" style="clear:both;margin-bottom:5px;">
-									<div class="buttonGripper"><p></p></div>
-									<div class="arrayDetail" style="float:left;">#htmlLabel#</div>
+								<li id="join-item-#i#" class="sort #iif(counter mod 2,de('oddrow'),de('evenrow'))#" serialize="#i#" style="clear:both;border:1px solid ##ebebeb;padding:5px;">
+									<div class="buttonGripper" style="float:left;cursor:move;width:20px;"><span class="ui-icon ui-icon-arrow-2-n-s" /></div>
+									<div class="arrayDetail" style="margin-left:25px;">#htmlLabel#<p>This is the best thing in the whole world.This is the best thing in the whole world.This is the best thing in the whole world.This is the best thing in the whole world.</p></div>
 									<div class="join-remove" style="float:right;white-space: nowrap;">
 										
-										<cfif arguments.stMetadata.ftAllowEdit>
+										<cfif arguments.stMetadata.ftAllowEdit or 1 eq 1>
 											<ft:button
 												Type="button" 
 												renderType="button"

@@ -255,9 +255,27 @@
 			}
 		});	
 	}
-	
+		
 	fcForm.initLibrary = function(typename,objectid,property) {
-		fcForm.initLibrarySummary(typename,objectid,property);		
+		fcForm.initLibrarySummary(typename,objectid,property);	
+		
+		$j('div.selector-wrap')
+			.filter(':has(input:checked)')
+			.addClass('rowselected')
+		    .end()
+		  .click(function(event) {		    
+		    if (event.target.type !== 'checkbox' && event.target.type !== 'radio') {
+			  $j('input', this).attr('checked', function() {
+		        $j(this).attr('checked',!this.checked);
+				$j(this).trigger('click');
+				if(this.type == 'checkbox'){
+					return !this.checked;
+				}
+		      });
+			};
+		 });
+  
+  			
 		$j("input.checker").click(function(e) {			
 			if($j(e.target).attr('checked')){
 				$j.ajax({
@@ -284,7 +302,14 @@
 						$j('##librarySummary-' + typename + '-' + property).effect('pulsate',{times:2});						
 					}
 				});	
-			}
+			};
+			
+			if(e.target.type == 'radio'){
+				$j('div.selector-wrap').removeClass('rowselected');
+				$j(this).parents('div.selector-wrap').addClass('rowselected');
+			} else {
+				$j(this).parents('div.selector-wrap').toggleClass('rowselected');
+			};
 						
 		});
 		
@@ -293,7 +318,7 @@
 				$j("input.checker").attr('checked','checked');
 			} else {
 				$j("input.checker").attr('checked','checked');
-			}
+			};
 						
 		});
 	};
@@ -327,6 +352,7 @@
 	fcForm.initSortable = function(typename,objectid,property,id) {
 		$j('##' + id + '-library-wrapper').sortable({
 			items: 'li.sort',
+			handle: 'div.buttonGripper',
 			update: function(event,ui){
 				$j.ajax({
 					type: "POST",
@@ -479,6 +505,9 @@
 				margin-right:2px;
 			}
 			
+			.rowselected {
+				background-color: ##C8FFBF !important;
+			}
 			</cfoutput>
 		</skin:registerCSS>
 							

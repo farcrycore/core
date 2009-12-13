@@ -122,21 +122,6 @@
 				
 			</grid:div>
 			
-				
-				<cfoutput>
-				<!-- summary pod with green arrow -->
-				<div class="summary-pod">
-					<span id="librarySummary-#stobj.typename#-#url.property#" style="text-align:center;"><p>&nbsp;</p></span>
-					
-					<cfset formAction = application.fapi.getLink(type='#stobj.typename#', objectid='#stobj.objectid#', view='displayLibrarySelected', urlParameters="property=#url.property#&ajaxmode=1") />
-					<ft:button value="show selected" renderType="link" type="button" onclick="farcryForm_ajaxSubmission('#request.farcryform.name#','#formAction#')" class="green" />
-		
-				</div>
-				<!-- summary pod end -->
-				</cfoutput>
-				
-				
-
 				<cfif isArray(stobj[url.property])>
 					<cfset lSelected = arrayToList(stobj[url.property]) />
 				<cfelse>
@@ -151,7 +136,7 @@
 				
 				<skin:pagination query="#qResult#" submissionType="form">
 					<cfoutput>
-						<div class="ctrlHolder #stObject.currentRowClass#" style="padding:3px;margin:3px;clear:both;">
+						<div class="ctrlHolder selector-wrap #stObject.currentRowClass#" style="padding:3px;margin:3px;clear:both;cursor:pointer;">
 							<div style="float:left;width:20px;">
 								<cfif stMetadata.type EQ "array">
 									<input type="checkbox" id="selected_#stobject.currentRow#" name="selected" class="checker" value="#stobject.objectID#" <cfif listFindNoCase(lSelected,stobject.objectid)>checked="checked"</cfif> />

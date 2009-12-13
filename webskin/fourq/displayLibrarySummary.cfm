@@ -49,8 +49,12 @@ START WEBSKIN
 	</cfif>			
 </cfif>
 
+<cfif listLen(lSelected)>
+	<cfoutput><div id="OKMsg">#listLen(lSelected)# items selected.</div></cfoutput>
+<cfelse>
+	<cfoutput><div id="errorMsg">No items have been selected.</div></cfoutput>
+</cfif>
 
-<cfoutput><p>#listLen(lSelected)# items selected.</p></cfoutput>
 
 
 <cfsetting enablecfoutputonly="false">

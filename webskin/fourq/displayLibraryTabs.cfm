@@ -14,7 +14,22 @@
 	
 	<cfset stMetadata = application.fapi.getPropertyMetadata(typename="#stobj.typename#", property="#url.property#") />
 		
-	<cfif listLen(stMetadata.ftJoin) GTE 1>
+		
+	<ft:form>				
+	<cfoutput>
+	<!-- summary pod with green arrow -->
+	<div class="summary-pod">
+		<span id="librarySummary-#stobj.typename#-#url.property#" style="text-align:center;"><p>&nbsp;</p></span>
+		
+		<cfset formAction = application.fapi.getLink(type='#stobj.typename#', objectid='#stobj.objectid#', view='displayLibrarySelected', urlParameters="property=#url.property#&ajaxmode=1") />
+		<!---<ft:button value="show selected" renderType="link" type="button" onclick="farcryForm_ajaxSubmission('#request.farcryform.name#','#formAction#')" class="green" />--->
+
+	</div>
+	<!-- summary pod end -->
+	</cfoutput>
+	</ft:form>
+	
+	<cfif listLen(stMetadata.ftJoin) GT 1>
 		<!--- IF WE HAVE SELECTED ITEMS, SHOW THE BUTTON TO VIEW THEM --->
 		<cfoutput>
 		<div id="tabs">
