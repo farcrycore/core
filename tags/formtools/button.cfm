@@ -3,7 +3,7 @@
 <cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
-<cfparam name="attributes.value" /><!--- The event submitted and captured by an ft:processForm tag. --->
+<cfparam name="attributes.value" /><!--- @@hint: The event submitted and captured by an ft:processForm tag. @@required: true --->
 <cfparam name="attributes.type" default="" /><!--- button or submit. Default is 'submit' if inside an ft:form and 'button' if not. --->
 <cfparam name="attributes.text" default="#attributes.value#" /><!--- The text that will appear on the button. Default is the value. --->
 <cfparam name="attributes.id" default="f-btn-#application.fapi.getUUID()#"><!--- The unique id of the button --->

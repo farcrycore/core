@@ -1,3 +1,26 @@
+<!---
+	@@description: 
+	<p>
+		This tag is used to process form submissions.  It is, in general,
+		used at the top of a display page that is displaying a form.
+	</p>
+	<p>
+		This tag is used with the ft:form, ft:object and ft:button tags, and is
+		the "action page" portion of form processing.  The <i>action</i>
+		attribute is a string that needs to match the ft:button's <i>value</i>
+		attribute.  So, for example, if you ft:button value="Submit" you'll want
+		to have a ft:processform action="Submit" to handle the form.
+	</p>
+	
+	@@examples: 
+	<code>
+		&lt;ft:processform action="Submit"&gt;
+			&lt;skin:bubble title="Blarg!" message="Das Blarg Ya!" /&gt;
+			&lt;cfdump var="#stobj#" /&gt;
+		&lt;/ft:processform&gt;
+	</code>
+--->
+
 
 <!--- Import Tag Libraries --->
 <cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
@@ -10,8 +33,8 @@
 
 
 <cfif thistag.ExecutionMode EQ "Start">
-	
-	<cfparam name="attributes.action" default="*" >
+
+	<cfparam name="attributes.action" default="*" ><!--- @@hint: the ft:button value action this processform handles --->
 	<cfparam name="attributes.rbkey" default="" >
 	<cfparam name="attributes.excludeAction" default="" >
 	<cfparam name="attributes.bHideForms" default="false" /><!--- Setting this to true will allow the processing of the webskin to continue but ignore any subsequent <ft:form /> tags. --->

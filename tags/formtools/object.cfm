@@ -1,3 +1,20 @@
+<!---
+	@@description: 
+	<p>
+		This tag is used to render a contentType on a display page
+	</p>
+	
+	@@examples: 
+	<p>Basic usage. Rendering a packages/forms object:</p>
+	<code>
+		&tl;ft:object typename="mmInquiry" /&gt;
+	</code>
+	
+	<p>Rendering specific fields</p>
+	<code>
+		&lt;ft:object typename="farLogin" lFields="username,password" prefix="login" legend="" /&gt;
+	</code>
+--->
  <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
  <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" >
  <cfimport taglib="/farcry/core/tags/grid/" prefix="grid" >
