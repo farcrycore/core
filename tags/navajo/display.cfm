@@ -226,7 +226,7 @@
 	
 
 	<cfif len(url.view)>
-		<cftry>
+		<cftry>	
 		<!--- Use the requested view --->
 		<skin:view objectid="#stobj.objectid#" typename="#stObj.typename#" webskin="#url.view#" alternateHTML="" />
 
@@ -253,7 +253,8 @@
 		<cfif len(trim(HTML))>
 			<cfoutput>#HTML#</cfoutput>
 		<cfelse>
-			<cfthrow message="For the default view of an object, create a displayPageStandard webskin." />
+			<cfthrow 
+				message="I was looking at the type: #stobj.typename# and couldn't find a displayPageStandard. You'll want to create the default view for this object. To do that, create a displayPageStandard.cfm webskin in the webskin folder in a directory named #stobj.typename#." />
 		</cfif>
 	</cfif>
 <cfelse>
