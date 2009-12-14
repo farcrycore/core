@@ -70,18 +70,18 @@
     /* .inlineLabels */
     .uniForm .inlineLabels .ctrlHolder{}
     
-    .uniForm .inlineLabels .label{ width: 45%; /* <- Required property */ margin: .3em 2% 0 0; /* <- Required property */ }
+    .uniForm .inlineLabels .label{ width: 35%; /* <- Required property */ margin: .3em 2% 0 0; /* <- Required property */ }
     
     .uniForm .inlineLabels .textInput,
-    .uniForm .inlineLabels .fileUpload{ width: 45%; /* <- Required property */ }
+    .uniForm .inlineLabels .fileUpload{ width: 55%; /* <- Required property */ }
     
-    .uniForm .inlineLabels .selectInput{ width: 45%; /* <- Required property */ }
+    .uniForm .inlineLabels .selectInput{ width: 55%; /* <- Required property */ }
     
-    .uniForm .inlineLabels .textareaInput{  width: 45%; /* <- Required property */ height: 12em; }
+    .uniForm .inlineLabels .textareaInput{  width: 55%; /* <- Required property */ height: 12em; }
 
-    .uniForm .inlineLabels .formHint{ margin-top: 0; margin-left: 47%; font-size: .9em; color: #777; position: static; }
+    .uniForm .inlineLabels .formHint{ margin-top: 0; margin-left: 37%; font-size: .9em; color: #777; position: static; }
     
-    .uniForm .inlineLabels .multiField{ width: 45%; /* <- Required property */ margin: 0 0 .3em 0; }
+    .uniForm .inlineLabels .multiField{ width: 55%; /* <- Required property */ margin: 0 0 .3em 0; }
       .uniForm .inlineLabels .multiField .inlineLabel{ display: block; margin: 0 0 .5em 0; }
       .uniForm .inlineLabels .multiField .blockLabel{ float: left; width: 100%; margin: 0 3% 0 0; }
       .uniForm .inlineLabels .multiField .blockLabel .textInput,

@@ -35,6 +35,7 @@
 		<cfparam name="arguments.stMetadata.ftPadColor" default="##ffffff">
 		<cfparam name="arguments.stMetadata.ftShowConversionInfo" default="true"><!--- Set to false to hide the conversion information that will be applied to the uploaded image --->
 		<cfparam name="arguments.stMetadata.ftAllowedExtensions" default="jpg,jpeg,png,gif"><!--- The extentions allowed to be uploaded --->
+		<cfparam name="arguments.stMetadata.ftCropPosition" default="center"><!--- The extentions allowed to be uploaded --->
 		
 
 		<skin:loadJS id="jquery" />
@@ -62,15 +63,15 @@
 							<div id="#arguments.fieldname#-aspect-crop">	
 								<label class="inlineLabel" for="#arguments.fieldname#CropPosition"> Cropping Position
 									<select name="#arguments.fieldname#CropPosition" class="selectInput">
-										<option value="topleft">TopLeft</option>
-										<option value="topcenter">TopCenter</option>
-										<option value="topright">TopRight</option>
-										<option value="left">Left</option>
-										<option value="center" selected="selected" >Center</option>
-										<option value="right">Right</option>
-										<option value="bottomleft">BottomLeft</option>
-										<option value="bottomcenter">BottomCenter</option>
-										<option value="bottomright">BottomRight</option>
+										<option value="topleft" <cfif arguments.stMetadata.ftCropPosition EQ "topleft"> selected="selected"</cfif>>Top Left</option>
+										<option value="topcenter" <cfif arguments.stMetadata.ftCropPosition EQ "topcenter"> selected="selected"</cfif>>Top Center</option>
+										<option value="topright" <cfif arguments.stMetadata.ftCropPosition EQ "topright"> selected="selected"</cfif>>Top Right</option>
+										<option value="left" <cfif arguments.stMetadata.ftCropPosition EQ "left"> selected="selected"</cfif>>Left</option>
+										<option value="center" <cfif arguments.stMetadata.ftCropPosition EQ "center"> selected="selected"</cfif>>Center</option>
+										<option value="right" <cfif arguments.stMetadata.ftCropPosition EQ "right"> selected="selected"</cfif>>Right</option>
+										<option value="bottomleft" <cfif arguments.stMetadata.ftCropPosition EQ "bottomleft"> selected="selected"</cfif>>Bottom Left</option>
+										<option value="bottomcenter" <cfif arguments.stMetadata.ftCropPosition EQ "bottomcenter"> selected="selected"</cfif>>Bottom Center</option>
+										<option value="bottomright" <cfif arguments.stMetadata.ftCropPosition EQ "bottomright"> selected="selected"</cfif>>Bottom Right</option>
 									</select>
 								</label>
 							</div>
@@ -86,16 +87,20 @@
 					</cfif>
 					
 					<cfif len(arguments.stMetadata.ftSourceField)>
-													
-						<cfoutput>
-						<div id="#arguments.fieldname#-generate">
-						<label class="inlineLabel" for="display_email">
-							<input type="checkbox" name="#arguments.fieldname#CreateFromSource" id="#arguments.fieldname#CreateFromSource" value="true" class="checkboxInput"> 
-							<input type="hidden" name="#arguments.fieldname#CreateFromSource" value="false" />
-							Automatically create from "#arguments.stPackage.stProps[arguments.stMetadata.ftSourceField].metadata.ftLabel#"
-						</label>
-						</div>
-						</cfoutput>
+							
+						<cfif arguments.stMetadata.ftAllowUpload>						
+							<cfoutput>
+							<div id="#arguments.fieldname#-generate">
+							<label class="inlineLabel" for="#arguments.fieldname#CreateFromSource">
+								<input type="checkbox" name="#arguments.fieldname#CreateFromSource" id="#arguments.fieldname#CreateFromSource" value="true" class="checkboxInput"> 
+								<input type="hidden" name="#arguments.fieldname#CreateFromSource" value="false" />
+								Automatically create from "#arguments.stPackage.stProps[arguments.stMetadata.ftSourceField].metadata.ftLabel#"
+							</label>
+							</div>
+							</cfoutput>
+						<cfelse>
+							<cfoutput><input type="hidden" name="#arguments.fieldname#CreateFromSource" value="true" /></cfoutput>
+						</cfif>
 						
 						<skin:onReady>
 							<cfoutput>
@@ -128,12 +133,13 @@
 							<div id="#arguments.fieldname#previewimage">
 							
 									<img id="#arguments.fieldname#-preview-img" src="#application.fapi.getImageWebRoot()##arguments.stMetadata.value#" width="50px" title="#listLast(arguments.stMetadata.value,"/")#">
-									<!---#listLast(arguments.stMetadata.value,"/")#--->
-									<ft:button type="button" value="Delete" rendertype="link" id="#arguments.fieldname#-delete-btn" onclick="" />
-									<ft:button type="button" value="Cancel" rendertype="link" id="#arguments.fieldname#-cancel-delete-btn" onclick="" />
-									<ft:button type="button" value="Replace" rendertype="link" id="#arguments.fieldname#-replace-btn" onclick="" />
-									<ft:button type="button" value="Cancel" rendertype="link" id="#arguments.fieldname#-cancel-replace-btn" onclick="" />
-
+									
+									<cfif arguments.stMetadata.ftAllowUpload>
+										<ft:button type="button" value="Delete" rendertype="link" id="#arguments.fieldname#-delete-btn" onclick="" />
+										<ft:button type="button" value="Cancel" rendertype="link" id="#arguments.fieldname#-cancel-delete-btn" onclick="" />
+										<ft:button type="button" value="Replace" rendertype="link" id="#arguments.fieldname#-replace-btn" onclick="" />
+										<ft:button type="button" value="Cancel" rendertype="link" id="#arguments.fieldname#-cancel-replace-btn" onclick="" />
+									</cfif>
 							</div>
 						</cfoutput>
 						
