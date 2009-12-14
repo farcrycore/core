@@ -14,6 +14,15 @@
 	<code>
 		&lt;ft:object typename="farLogin" lFields="username,password" prefix="login" legend="" /&gt;
 	</code>
+	
+	<p>Separate items from the same contentType, but grouped so ft:processFormObjects only sees one object:</p>
+	<code>
+		&lt;h1&gt;Your Stuff&lt;/h1&gt;
+		&tl;ft:object typename="mmInquiry" lFields="firstname,lastname" key="thereCanBeOnlyOne" /&gt;
+
+		&lt;h1&gt;Other Stuff&lt;/h1&gt;
+		&tl;ft:object typename="mmInquiry" lFields="kidsname,dogsname" key="thereCanBeOnlyOne" /&gt;
+	</code>
 --->
  <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
  <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" >
@@ -35,7 +44,7 @@
 	<cfparam name="attributes.ObjectID" default=""><!--- ObjectID of object to render --->
 	<cfparam name="attributes.stObject" default=""><!--- Object to render --->
 	<cfparam name="attributes.typename" default=""><!--- Type of Object to render --->
-	<cfparam name="attributes.key" default=""><!--- Used to generate a new object --->
+	<cfparam name="attributes.key" default=""><!--- Used to group several ft:objects into one object. (Used to generate a new object) For example, if you have several ft:object's in an ft:form you can use this to group them into one object for ft:processFormObjects --->
 	<cfparam name="attributes.ObjectLabel" default=""><!--- Used to group and label rendered object if required --->
 	<cfparam name="attributes.lFields" default=""><!--- List of fields to render --->
 	<cfparam name="attributes.lExcludeFields" default="label"><!--- List of fields to exclude from render --->
