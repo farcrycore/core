@@ -146,7 +146,7 @@
 									<div class="arrayDetail" style="margin-left:25px;">#htmlLabel#</div>
 									<div class="join-remove" style="float:right;white-space: nowrap;">
 										
-										<cfif arguments.stMetadata.ftAllowEdit or 1 eq 1>
+										<cfif arguments.stMetadata.ftAllowEdit>
 											<ft:button
 												Type="button" 
 												renderType="button"
