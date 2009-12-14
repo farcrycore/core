@@ -21,7 +21,6 @@
 	</code>
 --->
 
-
 <!--- Import Tag Libraries --->
 <cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 
@@ -38,6 +37,7 @@
 	<cfparam name="attributes.rbkey" default="" >
 	<cfparam name="attributes.excludeAction" default="" >
 	<cfparam name="attributes.bHideForms" default="false" /><!--- Setting this to true will allow the processing of the webskin to continue but ignore any subsequent <ft:form /> tags. --->
+	<cfparam name="attributes.Exit" default="false"><!--- @@hint: If set to true the ft:form on the page will not show it's contents after this process runs. Note this doesn't stop page execution, just does not render ft:form contents. @@default: false --->
 	
 		
 	<cfset variables.EnterFormProcess = false>
