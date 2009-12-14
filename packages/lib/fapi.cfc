@@ -1942,8 +1942,9 @@
 	 --->
 	<cffunction name="prettyDate" access="public" returntype="string" output="false">
 		<cfargument name="uglyDate" required="true" type="string" default="" />
+		<cfargument name="bUseTime" required="false" type="boolean" default="true" hint="Should the comparison include the time part in its equation." />
 		
-		<cfreturn application.fc.utils.prettyDate(arguments.uglyDate) />
+		<cfreturn application.fc.utils.prettyDate(arguments.uglyDate, bUseTime) />
 	</cffunction>
 	
 	<!--- @@examples:

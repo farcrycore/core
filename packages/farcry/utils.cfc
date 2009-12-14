@@ -600,8 +600,11 @@
 	 --->
 	<cffunction name="prettyDate" access="public" returntype="string" output="false">
 		<cfargument name="uglyDate" required="true" type="string" default="" />
+		<cfargument name="bUseTime" required="false" type="boolean" default="true" hint="Should the comparison include the time part in its equation." />
+		
 		
 		<cfset var prettyDate = arguments.uglyDate />
+		<cfset var present = now() />
 		<cfset var sDiff = "" />
 		<cfset var nDiff = "" />
 		<cfset var hDiff = "" />
@@ -610,15 +613,20 @@
 		<cfset var mDiff = "" />
 		<cfset var yDiff = "" />
 		
+		<cfif not arguments.bUseTime>
+			<cfset prettyDate = dateFormat(prettyDate) />
+			<cfset present = dateFormat(present) />
+		</cfif>
+		
 		<cfif isDate(arguments.uglyDate)>
-			<cfif arguments.uglyDate LT now()>	
-				<cfset sDiff = Int(dateDiff('s',arguments.uglyDate,now())) />
-				<cfset nDiff = Int(dateDiff('n',arguments.uglyDate,now())) />
-				<cfset hDiff = Int(dateDiff('h',arguments.uglyDate,now())) />
-				<cfset dDiff = Int(dateDiff('d',arguments.uglyDate,now())) />
-				<cfset wDiff = Int(dateDiff('ww',arguments.uglyDate,now())) />
-				<cfset mDiff = Int(dateDiff('m',arguments.uglyDate,now())) />
-				<cfset yDiff = Int(dateDiff('yyyy',arguments.uglyDate,now())) />	
+			<cfif arguments.uglyDate LT present>	
+				<cfset sDiff = Int(dateDiff('s',arguments.uglyDate,present)) />
+				<cfset nDiff = Int(dateDiff('n',arguments.uglyDate,present)) />
+				<cfset hDiff = Int(dateDiff('h',arguments.uglyDate,present)) />
+				<cfset dDiff = Int(dateDiff('d',arguments.uglyDate,present)) />
+				<cfset wDiff = Int(dateDiff('ww',arguments.uglyDate,present)) />
+				<cfset mDiff = Int(dateDiff('m',arguments.uglyDate,present)) />
+				<cfset yDiff = Int(dateDiff('yyyy',arguments.uglyDate,present)) />	
 				
 				<cfif sDiff LT 60>
 					<cfset prettyDate = "just now" />
@@ -649,13 +657,13 @@
 				</cfif>
 			<cfelse>
 			
-				<cfset sDiff = Int(dateDiff('s',now(),arguments.uglyDate)) />
-				<cfset nDiff = Int(dateDiff('n',now(),arguments.uglyDate)) />
-				<cfset hDiff = Int(dateDiff('h',now(),arguments.uglyDate)) />
-				<cfset dDiff = Int(dateDiff('d',now(),arguments.uglyDate)) />
-				<cfset wDiff = Int(dateDiff('ww',now(),arguments.uglyDate)) />
-				<cfset mDiff = Int(dateDiff('m',now(),arguments.uglyDate)) />
-				<cfset yDiff = Int(dateDiff('yyyy',now(),arguments.uglyDate)) />
+				<cfset sDiff = Int(dateDiff('s',present,arguments.uglyDate)) />
+				<cfset nDiff = Int(dateDiff('n',present,arguments.uglyDate)) />
+				<cfset hDiff = Int(dateDiff('h',present,arguments.uglyDate)) />
+				<cfset dDiff = Int(dateDiff('d',present,arguments.uglyDate)) />
+				<cfset wDiff = Int(dateDiff('ww',present,arguments.uglyDate)) />
+				<cfset mDiff = Int(dateDiff('m',present,arguments.uglyDate)) />
+				<cfset yDiff = Int(dateDiff('yyyy',present,arguments.uglyDate)) />
 				
 				<cfif sDiff LT 60>
 					<cfset prettyDate = "just now" />
