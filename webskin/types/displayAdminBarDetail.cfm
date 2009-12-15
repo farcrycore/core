@@ -50,7 +50,7 @@
 	
 	
 	<cfoutput>
-	<div class="tray-detail" style="display:block;margin-left:15px;margin-right:15px;overflow:visible !important;position:relative;border:1px solid ##B5B5B5;border-width:1px 1px 0px 1px;background-color:##E5E5E5;">
+	<div class="tray-detail" style="display:block;margin-left:15px;margin-right:15px;overflow:visible !important;position:relative;border:1px solid ##B5B5B5;border-width:1px 1px 0px 1px;background-color:##e9f5fe;">
 		<div style="display:block;padding:0;border-top:1px solid ##FFFFFF;">
 			<div style="">
 	</cfoutput>

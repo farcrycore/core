@@ -17,6 +17,7 @@ $j('##open-tray').click(function(){
 });
 </cfoutput>
 </skin:onReady>
-<skin:icon id="open-tray" icon='toggletray' size='64' style="width:32px;height:32px;" /> 
+
+<skin:icon id="open-tray" icon='toggletray' size='32' style="margin-left:20px;cursor:pointer;" />
 
 <cfsetting enablecfoutputonly="false" />
