@@ -816,13 +816,19 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 							<cfset bSuccess = application.fc.lib.objectbroker.removeWebskin(	objectID=qCachedAncestors.ancestorID,
 																								typename=qCachedAncestors.ancestorTypename,
 																								template=qCachedAncestors.ancestorTemplate ) />
+							
+							<cfset bSuccess = application.fc.lib.objectbroker.removeWebskin(	objectID=qCachedAncestors.webskinObjectID,
+																								typename=qCachedAncestors.webskinTypename,
+																								template=qCachedAncestors.webskinTemplate ) />
+							
 						</cfloop>
+						
+						
 					</cfloop>
 					
 				</cfloop>
 			</cfif>
 		</cfif>
-		
 		<cfreturn true />
 	 </cffunction>
 	 
