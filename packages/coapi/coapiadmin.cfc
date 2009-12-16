@@ -220,7 +220,7 @@
 							'' as typename, '' as webskin, cast(0 as integer) as id, '' as path, 
 							
 							<!--- extracted from webkin later --->
-							'anonymous' as author, datelastmodified, '' as description, name as displayname, 0 as cacheStatus, 0 as cacheTimeout, 0 as cacheByURL, 0 as cacheByForm, 0 as cacheByRoles, '' as cacheByVars, '' as cacheTypeWatch, name as methodname, '' as fuAlias, '' as viewstack, '' as viewbinding, '' as allowredirect
+							'anonymous' as author, datelastmodified, '' as description, name as displayname, 0 as cacheStatus, 0 as cacheTimeout, 0 as cacheByURL, 0 as cacheFlushOnFormPost, 0 as cacheByForm, 0 as cacheByRoles, '' as cacheByVars, '' as cacheTypeWatch, name as methodname, '' as fuAlias, '' as viewstack, '' as viewbinding, '' as allowredirect
 							
 					FROM 	qThis
 				</cfquery>
@@ -295,9 +295,9 @@
 						typename=request.fc.stProjectDirectorys.qAll.typename, 
 						template=stWebskinDetails.methodname, 
 						path=stWebskinDetails.path, 
-						lProperties="displayname,author,description,cacheStatus,cacheTimeout,cacheByURL,cacheByForm,cacheByRoles,cacheByVars,cacheTypeWatch,fuAlias,viewstack,viewbinding,allowredirect", 
-						lTypes="string,string,string,numeric,numeric,boolean,boolean,boolean,string,string,string,string,string,boolean", 
-						lDefaults=" , , ,0,1440,false,false,false, , , ,#stWebskinDetails.viewstack#,#stWebskinDetails.viewbinding#,1"
+						lProperties="displayname,author,description,cacheStatus,cacheTimeout,cacheByURL,cacheFlushOnFormPost,cacheByForm,cacheByRoles,cacheByVars,cacheTypeWatch,fuAlias,viewstack,viewbinding,allowredirect", 
+						lTypes="string,string,string,numeric,numeric,boolean,boolean,boolean,boolean,string,string,string,string,string,boolean", 
+						lDefaults=" , , ,0,1440,false,false,false,false, , , ,#stWebskinDetails.viewstack#,#stWebskinDetails.viewbinding#,1"
 					) />
 				
 				<!--- Assign the metadata --->
@@ -305,7 +305,7 @@
 	
 				
 				<!--- UPDATE THE METADATA QUERY --->
-				<cfloop list="path,methodname,displayname,author,description,cacheStatus,cacheTimeout,cacheByURL,cacheByForm,cacheByRoles,cacheByVars,cacheTypeWatch,fuAlias,viewstack,viewbinding,allowredirect" index="thisvar">
+				<cfloop list="path,methodname,displayname,author,description,cacheStatus,cacheTimeout,cacheByURL,cacheFlushOnFormPost,cacheByForm,cacheByRoles,cacheByVars,cacheTypeWatch,fuAlias,viewstack,viewbinding,allowredirect" index="thisvar">
 					<cfset querysetcell(request.fc.stProjectDirectorys.qAll,thisvar,stWebskinDetails[thisvar],request.fc.stProjectDirectorys.qAll.currentRow) />	
 				</cfloop>
 			</cfloop>
@@ -640,6 +640,33 @@
 		<cfif not isBoolean(result)>
 			<cfset result = false>
 		</cfif>
+	
+	
+		<cfreturn result />
+	</cffunction>
+	
+	<cffunction name="getWebskinCacheFlushOnFormPost" returntype="boolean" access="public" output="false" hint="Returns the objectbroker cacheFlushOnFormPost boolean value of a webskin. A result of true will HASH all simple form scope variables on all ancestor webskins in the cache.">
+		<cfargument name="typename" type="string" required="false" default="" />
+		<cfargument name="template" type="string" required="false" default="" />
+		<cfargument name="path" type="string" required="false" />
+	
+		<cfset var result = "false" />
+		<cfset var templateCode = "" />
+		<cfset var pos = "" />	
+		<cfset var count = "" />
+		
+		
+		<cfif structKeyExists(application.stcoapi, typename)
+			AND structKeyExists(application.stcoapi[typename], "stWebskins") 
+			AND structKeyExists(application.stcoapi[typename].stWebskins, template) 
+			AND structKeyExists(application.stcoapi[typename].stWebskins[template], "cacheFlushOnFormPost")>
+			<cfset result = application.stcoapi['#typename#'].stWebskins['#template#'].cacheFlushOnFormPost />
+		</cfif>
+		
+		<cfif not isBoolean(result)>
+			<cfset result = false>
+		</cfif>
+		
 	
 	
 		<cfreturn result />

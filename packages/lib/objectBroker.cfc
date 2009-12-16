@@ -60,6 +60,7 @@
 		<cfset var j = "" />
 		<cfset var k = "" />
 		<cfset var bFlushCache = 0 />
+		<cfset var bForceFlush = false />
 		<cfset var stCacheWebskin = structNew() />
 		<cfset var webskinTypename = arguments.typename /><!--- Default to the typename passed in --->
 		<cfset var stCoapi = structNew() />
@@ -84,8 +85,17 @@
 		
 		
 		<cfif application.bObjectBroker>
-		
-			<cfif structKeyExists(request,"mode") AND request.mode.flushcache EQ 1 AND structKeyExists(arguments, "objectid")>
+			
+			<!--------------------------------------------------------------------------------------------------- 
+			IF WE HAVE A FORM POST AND THE WEBSKIN IS SUPPOSED TO FLUSH ON FORM POST THEN FORCE A FLUSH CACHE
+			 --------------------------------------------------------------------------------------------------->
+			<cfif not structIsEmpty(form)>
+				<cfif application.coapi.coapiadmin.getWebskinCacheFlushOnFormPost(typename=webskinTypename, template=arguments.template)>
+					<cfset bForceFlush = true />
+				</cfif>
+			</cfif>
+			
+			<cfif bForceFlush OR (structKeyExists(request,"mode") AND request.mode.flushcache EQ 1 AND structKeyExists(arguments, "objectid"))>
 				<cfset bFlushCache = removeWebskin(objectid=arguments.objectid, typename=arguments.typename, template=template) />
 			</cfif>
 		
@@ -401,6 +411,7 @@
 		<cfset var webskinTypename = arguments.typename /><!--- Default to the typename passed in --->
 		<cfset var stCoapi = structNew() />
 		<cfset var iViewState = "" />
+		<cfset var bForceFlush = false />
 		
 		<cfif arguments.typename EQ "farCoapi">
 			<!--- This means its a type webskin and we need to look for the timeout value on the related type. --->		
@@ -409,7 +420,15 @@
 		</cfif>
 		
 		<cfif application.bObjectBroker>
-			<cfif structKeyExists(request,"mode") AND (request.mode.showdraft EQ 1 OR request.mode.tracewebskins eq 1 OR request.mode.design eq 1 OR request.mode.lvalidstatus NEQ "approved" OR (structKeyExists(url, "updateapp") AND url.updateapp EQ 1))>
+			
+			<cfif not structIsEmpty(form)>
+				<cfif application.coapi.coapiadmin.getWebskinCacheFlushOnFormPost(typename=webskinTypename, template=arguments.template)>
+					<cfset bForceFlush = true />
+				</cfif>
+			</cfif>
+			
+		
+			<cfif bForceFlush OR (structKeyExists(request,"mode") AND (request.mode.showdraft EQ 1 OR request.mode.tracewebskins eq 1 OR request.mode.design eq 1 OR request.mode.lvalidstatus NEQ "approved" OR (structKeyExists(url, "updateapp") AND url.updateapp EQ 1)))>
 				<!--- DO NOT ADD TO CACHE IF IN DESIGN MODE or SHOWING MORE THAN APPROVED OBJECTS or UPDATING APP --->
 			<cfelseif len(arguments.HTML)>
 				<cfif structKeyExists(application.stcoapi[webskinTypename].stWebskins, arguments.template) >

@@ -364,6 +364,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset stCurrentView.cacheStatus = application.coapi.coapiadmin.getWebskinCacheStatus(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
 		<cfset stCurrentView.cacheTimeout = application.coapi.coapiadmin.getWebskinCacheTimeOut(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
 		<cfset stCurrentView.cacheByURL = application.coapi.coapiadmin.getWebskincacheByURL(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
+		<cfset stCurrentView.cacheFlushOnFormPost = application.coapi.coapiadmin.getWebskincacheFlushOnFormPost(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
 		<cfset stCurrentView.cacheByForm = application.coapi.coapiadmin.getWebskincacheByForm(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
 		<cfset stCurrentView.cacheByRoles = application.coapi.coapiadmin.getWebskincacheByRoles(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
 		<cfset stCurrentView.cacheByVars = application.coapi.coapiadmin.getWebskincacheByVars(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
@@ -459,6 +460,10 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<!--- WE NEED TO CASCADE UP THE ANCESTRY PATH SOME OF THE CACHE SETTINGS OF DESCENDENT WEBSKINS --->
 			<cfif listLen(stCurrentView.cacheByVars)>
 				<cfset application.fapi.setAncestorsCacheByVars(stCurrentView.cacheByVars) />
+			</cfif>
+			
+			<cfif stCurrentView.cacheFlushOnFormPost>
+				<cfset application.fapi.setAncestorsCacheFlushOnFormPost() />
 			</cfif>
 			
 			<cfif stCurrentView.cacheByForm>

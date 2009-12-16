@@ -354,6 +354,32 @@
 		</cfif>
 	</cffunction>
 		
+	<cffunction name="setAncestorsCacheFlushOnFormPost" access="public" returntype="void" output="false" hint="This is generally used by tags to dynamically assign cacheFlushOnFormPost to the webskin that called it and its ancestors.">
+		
+		<cfset var i = "" />
+		<cfset var currentTypename = "" />
+		<cfset var currentTemplate = "" />
+		<cfset var currentCacheStatus = "" />
+		<cfset var currentVars = "" />
+		<cfset var iKey = "" />
+	
+		<!--- LOOP THROUGH ALL THE CURRENT ANCESTOR WEBSKINS AND ADD THE CURRENT VIEW STATE KEY TO EACH --->
+		<cfif structKeyExists(request, "aAncestorWebskins") AND arrayLen(request.aAncestorWebskins)>
+			<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="i">
+
+				<cfset currentTypename = request.aAncestorWebskins[i].typename />
+				<cfset currentTemplate = request.aAncestorWebskins[i].template />
+				<cfset currentCacheStatus = getWebskinCacheStatus(typename="#currentTypename#", template="#currentTemplate#") />
+				
+				<cfif currentCacheStatus EQ 1>
+					<cfset request.aAncestorWebskins[i].cacheFlushOnFormPost = true />
+					<cfset application.stcoapi['#currentTypename#'].stWebskins['#currentTemplate#'].cacheFlushOnFormPost = true />
+				</cfif>	
+
+			</cfloop>
+		</cfif>
+	</cffunction>
+		
 	<cffunction name="setAncestorsCacheByForm" access="public" returntype="void" output="false" hint="This is generally used by tags to dynamically assign cacheByForm to the webskin that called it and its ancestors.">
 		
 		<cfset var i = "" />

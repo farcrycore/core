@@ -261,7 +261,9 @@ function farcryForm_ajaxSubmission(formname,action,maskMsg,maskCls,ajaxTimeout){
 		ajaxTimeout = ajaxTimeout * 1000; // convert to milliseconds
 	}
 	
-	$j("##" + formname).mask(maskMsg);
+	if(maskMsg.length){
+		$j("##" + formname).mask(maskMsg);
+	}
 	$j.ajax({
 	   type: "POST",
 	   url: a,
@@ -269,7 +271,9 @@ function farcryForm_ajaxSubmission(formname,action,maskMsg,maskCls,ajaxTimeout){
 	   cache: false,
 	   timeout: ajaxTimeout,
 	   success: function(msg){
-	   		$j("##" + formname + 'formwrap').unmask();
+	   		if(maskMsg.length){
+	   			$j("##" + formname + 'formwrap').unmask();
+			}
 			$j('##' + formname + 'formwrap').html(msg);						     	
 	   }
 	 });
