@@ -39,11 +39,23 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	
 	<cfinclude template="/farcry/core/webtop/includes/cfFunctionWrappers.cfm">
 	
+	<cffunction name="init" output="false" access="public" returntype="Any">
+		<cfset variables.stContainer = structNew() />
+		
+		<cfreturn this>
+	</cffunction>
+	
 	<cffunction name="createData" access="public" returntype="any" output="false" hint="Creates an instance of a container object.">
 		<cfargument name="stProperties" type="struct" required="true" hint="Structure of properties for the new container instance.">
 		<cfargument name="parentobjectid" type="string" required="No" default="" hint="The objectid of the object that instantiated the container.  Should only be set if the container is unique to that instance.  Will enable clean-up of unused containers when the parent-object is deleted.">
 		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
 		<cfset var stNewObject = structNew()>
+		<cfset var hashedLabel = "" />
+		
+		<cfif structKeyExists(arguments.stProperties, "label")>
+			<cfset hashedLabel = hash(arguments.stProperties.label) />
+			<cfset structDelete(variables.stContainer, hashedLabel) />
+		</cfif>
 		
 		<cfscript>
 			stNewObject = super.createData(arguments.stProperties);
@@ -133,7 +145,11 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfset var temp = "" />
 		<cfset var oCategories = "" />
 		<cfset var propertyName = "" />
-		
+		<cfset var st	= '' />
+		<cfset var ruletype	= '' />
+		<cfset var o	= '' />
+		<cfset var containerID = "" />
+
 		<cfscript>
 			//Get the containers in the source object
 			qSrcCon = getContainersByObject(arguments.srcObjectId);
@@ -202,9 +218,9 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 					<cfset st.label = replace(st.label,arguments.srcObjectId,arguments.destObjectId,"ALL") />
 					<cfset st.objectid = application.fc.utils.createJavaUUID() />
 					<!--- //now we want to create this new container --->
-					<cfset qGetContainer = getContainer(dsn=arguments.dsn,label=st.label) />
+					<cfset containerID = getContainerID(dsn=arguments.dsn,label=st.label) />
 					
-					<cfif (NOT qGetContainer.recordCount)>
+					<cfif not len(containerID)>
 						<cfset createData(stProperties=st,dsn=arguments.dsn) />
 						<!--- //and log a reference to it in refContainers --->
 						<cfset createDataRefContainer(objectid=arguments.destObjectid,containerid=st.objectid) />
@@ -254,6 +270,9 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfset var qObjs = ''>
 		<cfset var index = 1>
 		<cfset var stReturn = StructNew()>
+		<cfset var qUpdate	= '' />
+		<cfset var qDelete	= '' />
+		
 		<cfset stReturn.bSuccess = true>
 		<cfset stReturn.message = "">
 
@@ -366,6 +385,8 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfargument name="dbowner" required="Yes"> 
 		<cfargument name="bDropTables" required="false" default="true">	
 		
+		<cfset var qCreateTables	= '' />
+		
 		<cfswitch expression="#arguments.dbtype#">
 			<cfcase value="ora">
 				<cftry>
@@ -438,49 +459,56 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		
 	</cffunction>	
 
-	<cffunction name="getContainer" access="public" returntype="query" hint="Retrieve container instance by label lookup.">
+	<cffunction name="getContainerID" access="public" returntype="string" hint="Retrieve container instance by label lookup.">
 		<cfargument name="label" type="string" required="true">
 		<cfargument name="dsn" type="string" required="true">
 		<cfargument name="objectID" type="uuid" required="false">
+		<cfargument name="bShared" type="boolean" required="false" default="false">
+		
 		<cfset var qGetContainer = ''>
+		<cfset var containerID = "" />
+		<cfset var hashedLabel = hash(label) />
 				
-			
-		<cfquery name="qGetContainer" datasource="#arguments.dsn#">
-			SELECT *
-			FROM #application.dbowner#container 
-			WHERE 
-			<cfif isDefined("arguments.objectID")>
-				objectID = '#objectID#'
-			<cfelse>
-				label = '#arguments.label#'
+		<cfif not structKeyExists(variables.stContainer, hashedLabel)>
+			<cfquery name="qGetContainer" datasource="#arguments.dsn#">
+				SELECT objectid
+				FROM #application.dbowner#container 
+				WHERE 
+				<cfif isDefined("arguments.objectID")>
+					objectID = '#objectID#'
+				<cfelse>
+					label = '#arguments.label#'
+				</cfif>
+				
+				<cfif arguments.bShared>
+					AND bShared = 1
+				<cfelse>
+					AND bShared = 0
+				</cfif>
+			</cfquery>
+			<cfif qGetContainer.recordCount>
+				<cfset containerID = qGetContainer.objectid />
+				<cfset variables.stContainer[hashedLabel] = containerID />
 			</cfif>
-		</cfquery>
-		<cfreturn qGetContainer>
+		<cfelse>
+			<cfset containerID = variables.stContainer[hashedLabel] />
+		</cfif>
+		<cfreturn containerID>
 	</cffunction> 
 
-	<cffunction name="getContainerbylabel" access="public" returntype="struct" hint="Retrieve container instance by label lookup and return structure.">
+	<cffunction name="getMirrorID" access="public" returntype="string" hint="Retrieve the mirrorid by label.">
 		<cfargument name="label" type="string" required="true">
 		<cfargument name="dsn" type="string" required="true">
-		<cfset var qGetContainer="">
-		<cfset var stReturn=structNew()>
-		<cfquery name="qGetContainer" datasource="#arguments.dsn#">
-			SELECT *
-			FROM #application.dbowner#container 
-			WHERE 
-			label = '#arguments.label#'
-		</cfquery>
-		<cfif qGetContainer.recordcount gt 0>
-		<!--- convert query to structure --->
-		<cfloop list="#qGetContainer.columnlist#" index="key">
-			<cfset stReturn[key]=Evaluate("qGetContainer.#key#")>
-		</cfloop>
-		</cfif>
-		<!--- returns empty structure if no result; like getData() --->
-		<cfreturn stReturn>
+		<cfset var mirrorID="">
+		
+		<cfset mirrorID = getContainerID(label=arguments.label, dsn=arguments.dsn, bShared="true") />
+		
+		<cfreturn mirrorID>
 	</cffunction> 
 	
 	<cffunction name="populate" access="public" hint="Gets Rule instances and execute them">
 		<cfargument name="aRules" type="array" required="true">
+		<cfargument name="originalID" type="string" required="false" default="">
 		
 		<cfset var i=1>
 		<cfset var o="">
@@ -502,7 +530,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 
 				<cfif request.mode.design and request.mode.showcontainers gt 0>
 					<!--- request.thiscontainer is set up in the container tag and corresponds to the page container, not the shared container --->
-					<skin:view objectid="#arguments.aRules[i]#" webskin="displayAdminToolbar" index="#i#" r_html="ruleHTML" arraylen="#arraylen(arguments.aRules)#" />
+					<skin:view objectid="#arguments.aRules[i]#" webskin="displayAdminToolbar" index="#i#" r_html="ruleHTML" arraylen="#arraylen(arguments.aRules)#" originalID="#arguments.originalID#" />
 					
 					<cfset arrayappend(request.aInvocations, ruleHTML) />
 				</cfif>
@@ -513,7 +541,9 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 				<cfif application.fapi.hasWebskin(rule,"execute")>
 					<skin:view objectid="#arguments.aRules[i]#" webskin="execute" r_html="ruleHTML" />
 				<cfelse>
-					<cfset ruleHTML = application.fapi.getContentType(rule).execute(objectid=arguments.aRules[i]) />
+					<cfsavecontent variable="ruleHTML">
+						<cfoutput>#application.fapi.getContentType(rule).execute(objectid=arguments.aRules[i])#</cfoutput>
+					</cfsavecontent>
 				</cfif>
 				
 				<cfset arrayappend(request.aInvocations, ruleHTML) />
@@ -579,6 +609,9 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfargument name="mirrorid" required="true" type="uuid" hint="ObjectID for the container instance providing the reflection; that is, the shared container.">
 		<cfset var stMirror=getData(objectid=arguments.mirrorid)>
 		<cfset var stContainer=getData(objectid=arguments.objectid)>
+		<cfset var stReturn	= '' />
+		<cfset var stprops	= structNew() />
+
 		<cfset stReturn=structNew()>
 		
 		<!--- // check that mirrorid container is shared --->
@@ -600,6 +633,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cffunction name="deleteReflection" access="public" hint="Deletes mirrorid for a specified container." returntype="struct" output="false">
 		<cfargument name="objectid" required="true" type="uuid" hint="ObjectID for the container instance being updated.">
 		<cfset var stReturn=structNew()>
+		<cfset var stprops	= structNew() />
 		<cfscript>
 			stprops.objectid=arguments.objectid;
 			stprops.mirrorid="";

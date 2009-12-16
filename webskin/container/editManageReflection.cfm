@@ -9,6 +9,7 @@
 <cfset containerID = replace(stobj.objectid,'-','','ALL') />
 
 <ft:processform action="Save">
+	
 	<cfif Trim(form.reflectionid) EQ ""> <!--- delete the reflection id --->
 		<cfset deleteReflection(objectid=stObj.objectid) />
 	<cfelse> <!--- set the reflection id --->
@@ -16,9 +17,11 @@
 	</cfif>
 	<cfset stObj.mirrorID = Trim(form.reflectionid)>
 	<cfset setData(stproperties=stObj)>
+	
 </ft:processform>
 
 <ft:processform action="Save,Cancel" bHideForms="true">
+	<cfoutput>&nbsp;</cfoutput>
 	<skin:onReady>
 		<cfoutput>parent.location=parent.location;</cfoutput>	
 	</skin:onReady>

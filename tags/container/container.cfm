@@ -54,6 +54,7 @@ $out:$
 <cfparam name="attributes.defaultMirrorLabel" default="" type="string">
 <cfparam name="attributes.desc" default="" type="string"><!--- Allows the container description to be different to the actual label. --->
 
+
 <!--- try and set objectid by looking for request.stobj.objectid --->
 <cfif NOT len(attributes.objectid) AND isDefined("request.stobj.objectid")>
 	<cfset attributes.objectid=request.stobj.objectid>
@@ -64,98 +65,104 @@ $out:$
 	<cfthrow type="container" message="Missing parameters: label or objectID is required to invoke a container.">
 </cfif>
 
-
+<!--- SETUP ENVIRONMENT VARIABLES --->
+<cfset containerID = "" />
+<cfset mirrorID = "" />
+<cfif request.mode.design and request.mode.showcontainers gt 0>
+	<cfset bCreateContainers = true />
+<cfelse>
+	<cfset bCreateContainers = false />
+</cfif>
 
 <!--- TODO: this should be using the factory container object, no? GB --->
-<cfset oCon = createObject("component","#application.packagepath#.rules.container")>
-<cfset qGetContainer = oCon.getContainer(dsn=application.dsn,label=attributes.label)>
-<cfif qGetContainer.recordCount EQ 0>
+<cfset containerID = application.fc.container.getContainerID(dsn=application.dsn,label=attributes.label)>
+<cfif not len(containerID)>
+
 	<!--- create a new container if one doesn't exist --->
 	<!--- if defaultMirror set then look-up and apply --->
 	<cfif Len(attributes.defaultMirrorID) AND REFindNoCase("^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[0-9A-F]{16}$", attributes.defaultmirrorid)>
 		<!--- if UUID then lookup container by objectid --->
-		<cfset stMirror = oCon.getData(dsn=application.dsn,objectid=attributes.defaultMirrorid)>
+		<cfset mirrorID = attributes.defaultMirrorID />
 		<!--- TODO: if this returns emptystruct then we need to make sure mirror container is created with this UUID GB --->
-	<cfelseif Len(attributes.defaultMirrorlabel)>
+	<cfelseif Len(attributes.defaultMirrorlabel) AND attributes.label NEQ attributes.defaultMirrorlabel>
 		<!--- else lookup container by label --->
-		<cfset stMirror = oCon.getContainerbylabel(dsn=application.dsn,label=attributes.defaultMirrorlabel)>
-	<cfelse>
-		<!--- no default mirror specified --->
-		<cfset stMirror = StructNew()>
-		<cfset stMirror.objectID = "">
+		<cfset mirrorID = application.fc.container.getMirrorID(dsn=application.dsn,label=attributes.defaultMirrorlabel)>
 	</cfif>
 
-	<!--- create the mirror container if it is specified but missing --->
-	<cfif NOT StructKeyExists(stMirror, "objectid")>
+	
+	<cfif bCreateContainers>
+	
+		<!--- create the mirror container if it is specified but missing --->
+		<cfif len(attributes.defaultmirrorlabel) AND NOT len(mirrorID)>
 		<!--- create the default mirror container --->
-		<cfset stMirror = StructNew()>
-		<cfset stMirror.objectid = application.fc.utils.createJavaUUID()>
-		<cfset stMirror.label = attributes.defaultmirrorlabel>
-		<cfif Len(stMirror.label) EQ 0>
-			<cfset stMirror.label="Mirror Container: #stMirror.objectid#">
+			<cfset stMirror = StructNew()>
+			<cfset stMirror.objectid = application.fc.utils.createJavaUUID()>
+			<cfset stMirror.label = attributes.defaultmirrorlabel>
+			<cfif Len(stMirror.label) EQ 0>
+				<cfset stMirror.label="Mirror Container: #stMirror.objectid#">
+			</cfif>
+	
+			<cfset stMirror.mirrorid = "">
+			<cfset stMirror.bShared = 1>
+			<cfset application.fc.container.createData(dsn=application.dsn,stProperties=stMirror)>
 		</cfif>
-
-		<cfset stMirror.mirrorid = "">
-		<cfset stMirror.bShared = 1>
-		<cfset oCon.createData(dsn=application.dsn,stProperties=stMirror)>
+	
+		<!--- set default container properties --->
+		<cfset stProps = structNew()>
+		<cfset stProps.objectid = application.fc.utils.createJavaUUID()>
+		<cfset stProps.label = attributes.label>
+		<cfset stProps.mirrorid = mirrorID>
+		<cfset stProps.bShared = 0>
+		<cfset containerID = stProps.objectID>
+		<cfset application.fc.container.createData(dsn=application.dsn, stProperties=stProps, parentobjectid=attributes.objectid)>
 	</cfif>
-
-	<!--- set default container properties --->
-	<cfset stProps = structNew()>
-	<cfset stProps.objectid = application.fc.utils.createJavaUUID()>
-	<cfset stProps.label = attributes.label>
-	<cfset stProps.mirrorid = stmirror.objectid>
-	<cfset stProps.bShared = 0>
-	<cfset containerID = stProps.objectID>
-	<cfset oCon.createData(dsn=application.dsn, stProperties=stProps, parentobjectid=attributes.objectid)>
-<cfelse>
-	<cfset containerID = qGetContainer.objectID>
 </cfif>
 
-<!--- get the container data --->
-<cfset stConObj = oCon.getData(objectid=containerid)>
-
-<!--- PARAM THE original container ID --->
-<cfset originalID = stConObj.objectid />
-
-<!--- if a mirrored container has been set then reset the container data --->
-<cfif (StructKeyExists(stConObj, "mirrorid") AND Len(stConObj.mirrorid))>
-	<cfset stConObj = oCon.getData(objectid=stConObj.mirrorid) />
+<cfif not len(containerID) AND len(mirrorID)>
+	<cfset containerID = mirrorID />
 </cfif>
 
-
-
-
-
-<!--- display edit widget --->
-<cfif request.mode.design and request.mode.showcontainers gt 0>
+<cfif len(containerID)>
+	<!--- get the container data --->
+	<cfset stConObj = application.fc.container.getData(objectid=containerid)>
 	
-
-	<skin:view stObject="#stConObj#" webskin="displayAdminToolbar" alternatehtml="" originalID="#originalID#" />
+	<!--- PARAM THE original container ID --->
+	<cfset originalID = stConObj.objectid />
+	
+	<!--- if a mirrored container has been set then reset the container data --->
+	<cfif (StructKeyExists(stConObj, "mirrorid") AND Len(stConObj.mirrorid))>
+		<cfset stConObj = application.fc.container.getData(objectid=stConObj.mirrorid) />
+	</cfif>
 	
 	
-</cfif>
-
-<cfif request.mode.design and request.mode.showcontainers gt 0>
-	<cfoutput><div id="#replace(stConObj.objectid,'-','','ALL')#"></cfoutput>
-</cfif>
-
-
-
-<skin:view stObject="#stConObj#" webskin="displayContainer" alternatehtml="" r_html="conOutput" />
-
-<cfif attributes.bShowIfEmpty OR len(trim(conOutput))>
-	<cfoutput>
-		#attributes.preHTML#
-		#conOutput#
-		#attributes.postHTML#
-	</cfoutput>
-</cfif>
-
-
-
-<cfif request.mode.design and request.mode.showcontainers gt 0>
-	<cfoutput></div></cfoutput>
+	<!--- display edit widget --->
+	<cfif request.mode.design and request.mode.showcontainers gt 0>		
+	
+		<skin:view stObject="#stConObj#" webskin="displayAdminToolbar" alternatehtml="" originalID="#originalID#" />		
+		
+	</cfif>
+	
+	<cfif request.mode.design and request.mode.showcontainers gt 0>
+		<cfoutput><div id="#replace(originalID,'-','','ALL')#"></cfoutput>
+	</cfif>
+	
+	
+	
+	<skin:view stObject="#stConObj#" webskin="displayContainer" alternatehtml="" r_html="conOutput" originalID="#originalID#" />
+	
+	<cfif attributes.bShowIfEmpty OR len(trim(conOutput))>
+		<cfoutput>
+			#attributes.preHTML#
+			#conOutput#
+			#attributes.postHTML#
+		</cfoutput>
+	</cfif>
+	
+	
+	
+	<cfif request.mode.design and request.mode.showcontainers gt 0>
+		<cfoutput></div></cfoutput>
+	</cfif>
 </cfif>
 
 <cfsetting enablecfoutputonly="false" />

@@ -146,15 +146,15 @@ $j('a.con-admin').live(
 </skin:onReady>
 
 <cfset containerURL = application.fapi.getLink(objectid="#stobj.objectid#", view="displayContainer", urlParameters="ajaxmode=1&designmode=1") />
-<cfset containerID = replace(stobj.objectid,'-','','ALL') />
+<cfset containerID = replace(stParam.originalID,'-','','ALL') />
 
 <cfoutput>
-	<div class="containeradmin" <cfif stParam.originalID NEQ stobj.objectid>style="background-color:##5B7FB9;"</cfif>>
+	<div class="containeradmin" <cfif stobj.bShared>style="background-color:##5B7FB9;"</cfif>>
 		
 		
 		<!--- Container Label --->
 		<div style="float:left;padding:2px;">
-			<cfif stParam.originalID NEQ stobj.objectid>
+			<cfif stobj.bShared>
 				<span style="font-size:10px;">REFLECTED CONTAINER:</span>
 			<cfelse>
 				<span style="font-size:10px;">CONTAINER:</span>

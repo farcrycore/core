@@ -226,7 +226,7 @@
 	
 
 	<cfif len(url.view)>
-		<cftry>	
+		<cftry>
 		<!--- Use the requested view --->
 		<skin:view objectid="#stobj.objectid#" typename="#stObj.typename#" webskin="#url.view#" alternateHTML="" />
 
@@ -311,7 +311,7 @@
 </cftimer>
 
 
-	<cfif request.mode.bAdmin AND request.fc.bShowTray AND not structKeyExists(request.fc, "bAdminTrayRendered") AND not request.mode.ajax>
+	<cfif len(url.type) AND structKeyExists(application.types, url.type) AND request.mode.bAdmin AND request.fc.bShowTray AND not structKeyExists(request.fc, "bAdminTrayRendered") AND not request.mode.ajax>
 		<cfset request.fc.bAdminTrayRendered = true />
 		
 		<cfparam name="session.fc" default="#structNew()#" />

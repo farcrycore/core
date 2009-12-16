@@ -134,7 +134,15 @@ $out:$
 		<cfset var iWizardStep = "" />
 		<cfset var lFieldSets = "" />
 		<cfset var iFieldSet = "" />
-		<cfset var containerID = replace(getRuleContainerID(arguments.objectID),'-','','ALL') />
+		<cfset var containerID = "" />
+		
+		<cfif structKeyExists(url, "originalID")>
+			<cfset containerID = url.originalID />
+		<cfelse>
+			<cfset containerID = getRuleContainerID(arguments.objectID) />		
+		</cfif>
+		
+		<cfset containerID = replace(containerID,'-','','ALL') />
 		
 		<cfset onExitProcess.Type = "HTML" />
 		<cfsavecontent variable="onExitProcess.content">

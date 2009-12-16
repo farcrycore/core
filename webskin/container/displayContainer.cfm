@@ -28,6 +28,11 @@
 
 <!--- Environment Variables --->
 <cfparam name="stParam.desc" default="" />
+<cfparam name="stParam.originalID" default="#stobj.objectid#" />
+
+<cfif structKeyExists(url, "originalID")>
+	<cfset stParam.originalID = url.originalID />
+</cfif>
 
 
 <!--- Allows the container description to be different to the actual label. Defaults to the label --->
@@ -97,7 +102,7 @@
 
 	<!--- delay the populate so we can see the content --->
 	<cfsavecontent variable="conOutput">
-		<cfset populate(aRules=stConObj.aRules)>
+		<cfset populate(aRules=stConObj.aRules, originalID="#stParam.originalID#")>
 	</cfsavecontent>
 
 	<!--- output conOutput --->
