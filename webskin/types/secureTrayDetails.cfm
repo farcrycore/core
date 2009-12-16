@@ -35,11 +35,13 @@
 	<td>#application.fapi.getWebskinDisplayName(stobj.typename, arguments.stParam.bodyView)#</td>
 </tr>
 
-<cfset stLastUpdatedBy = application.fapi.getContentType("dmProfile").getProfile(stobj.lastupdatedby) />
-<tr>
-	<th>#getI18Property('lastupdatedby','label')#</th>
-	<td>#stLastUpdatedBy.Label# (#application.fapi.prettyDate(stobj.datetimelastupdated)#)</td>
-</tr>
+<cfif structKeyExists(stobj, "lastupdatedby")>
+	<cfset stLastUpdatedBy = application.fapi.getContentType("dmProfile").getProfile(stobj.lastupdatedby) />
+	<tr>
+		<th>#getI18Property('lastupdatedby','label')#</th>
+		<td>#stLastUpdatedBy.Label# (#application.fapi.prettyDate(stobj.datetimelastupdated)#)</td>
+	</tr>
+</cfif>
 </table>
 </cfoutput>
 <cfsetting enablecfoutputonly="false" />

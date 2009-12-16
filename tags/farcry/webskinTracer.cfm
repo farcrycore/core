@@ -20,9 +20,12 @@
 			<skin:htmlHead id="webskin-tracer">
 				<cfoutput>
 					<style type="text/css">
-					.webskin-tracer-bubble {background:transparent url(#application.url.webtop#/images/tracebubble.png);opacity:0.9;height: 175px;width:250px;display:block;}
-					.webskin-tracer-bubble-inner {padding:50px 10px 10px 10px;font-size:10px;display:block;}
-					.webskin-border {background:green;border:2px solid black;display:block;z-index:998;position:absolute;opacity:0.1;}
+					.webskin-tracer-bubble {background:transparent url(#application.url.webtop#/thirdparty/jquery-tools/img/white_big.png);height: 194px;width:370px;display:block;}
+					.webskin-tracer-bubble-inner {padding:25px;font-size:10px;display:block;}
+					.webskin-tracer-bubble-inner table.webskin-tracer-table {border:none;}
+					.webskin-tracer-bubble-inner table.webskin-tracer-table th {font-size:10px;color:black;font-weight:bold;padding:1px;vertical-align:top;}
+					.webskin-tracer-bubble-inner table.webskin-tracer-table td {font-size:10px;color:black;font-weight:normal;padding:1px;vertical-align:top;}
+					.webskin-border {background:red;border:2px solid black;display:block;z-index:998;position:absolute;opacity:0.1;}
 					.webskin-tracer-close {cursor:pointer;text-decoration:underline;color:red;}
 					.webskin-tracer-link {cursor:pointer;font-size:10px;}
 					</style>
@@ -31,7 +34,7 @@
 			
 			
 			<cfoutput>
-			<div id="tracer">	
+			<div id="tracer" style="display:none;">	
 				<cfloop from="1" to="#arrayLen(request.aAncestorWebskinsTrace)#" index="i">
 					<div class="webskin-tracer-link" traceid="#request.aAncestorWebskinsTrace[i].traceID#">
 						<cfloop from="1" to="#request.aAncestorWebskinsTrace[i].level#" index="j">--</cfloop>

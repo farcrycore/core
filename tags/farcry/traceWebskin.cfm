@@ -38,6 +38,8 @@
 		<cfset stTrace.cacheStatus = application.coapi.coapiadmin.getWebskinCacheStatus(typename=attributes.typename, template=attributes.template) />
 		<cfset stTrace.cacheByVars = application.coapi.coapiadmin.getWebskinCacheByVars(typename=attributes.typename, template=attributes.template) />
 		<cfset stTrace.cacheByRoles = application.coapi.coapiadmin.getWebskinCacheByRoles(typename=attributes.typename, template=attributes.template) />
+		<cfset stTrace.cacheFlushOnFormPost = application.coapi.coapiadmin.getWebskinCacheFlushOnFormPost(typename=attributes.typename, template=attributes.template) />
+		<cfset stTrace.cacheTypeWatch = application.coapi.coapiadmin.getWebskinCacheTypeWatch(typename=attributes.typename, template=attributes.template) />
 		<cfset stTrace.level = arrayLen(request.aAncestorWebskins) />
 		<cfset stTrace.bAllowTrace = attributes.bAllowTrace />
 		<cfset arrayAppend(request.aAncestorWebskinsTrace, stTrace) />	
@@ -45,21 +47,66 @@
 		<cfif attributes.bAllowTrace>
 			<cfoutput>
 			<div id="#stTrace.traceID#" class="webskin-tracer" style="display:none;">
-				<a name="#stTrace.traceID#">&nbsp;</a>
 				<div class="webskin-tracer-bubble">
 					<div class="webskin-tracer-bubble-inner">
-						<span style="font-weight:bold;">#stTrace.objectid#</span><br />
-						<span style="font-weight:bold;">Type</span>: #stTrace.typename#<br />
-						<span style="font-weight:bold;">Webskin</span>: #stTrace.template#<br />
-						<span style="font-weight:bold;">Path</span>: #stTrace.path#<br />
-						<span style="font-weight:bold;">Caching</span>: #stTrace.cacheStatus#<br />
-						<cfif len(stTrace.cacheByVars)>
-							<span style="font-weight:bold;">Cache by vars</span>: #stTrace.cacheByVars#<br />
+						<div class="webskin-tracer-close" style="float:right;" onclick="$j('###stTrace.traceID#').css('display', 'none');$j('###stTrace.traceID#-webskin-border').css('display', 'none');"><a name="#stTrace.traceID#">CLOSE</a></div>
+						<table class="webskin-tracer-table">
+						<tr>
+							<th>ID</th>
+							<td>#stTrace.objectid#</td>
+						</tr>
+						<tr>
+							<th>Type</th>
+							<td>#stTrace.typename#</td>
+						</tr>
+						<tr>
+							<th>Webskin</th>
+							<td>#stTrace.template#</td>
+						</tr>
+						<tr>
+							<th>Path</th>
+							<td>#stTrace.path#</td>
+						</tr>
+					
+						<cfif stTrace.cacheStatus EQ 1>
+							<cfif structKeyExists(application.stcoapi, stTrace.typename) AND application.stcoapi[stTrace.typename].bObjectBroker>										
+								<tr>
+									<th style="color:green;border-top:1px solid green;">Caching</th>
+									<td style="border-top:1px solid green;">
+										
+										<cfif stTrace.cacheByRoles>
+											<div>* Caching by Roles</div>
+										</cfif>
+										<cfif stTrace.cacheFlushOnFormPost>
+											<div>* Cache will flush on Form Post</div>
+										</cfif>
+										
+										<cfif len(stTrace.cacheTypeWatch)>
+											<div>* Caching will flush on any changes to:</div>
+											<div style="padding:0px 20px;"><cfloop list="#stTrace.cacheTypeWatch#" index="i"><div>- #i#</div></cfloop></div>
+										</cfif>
+										
+										<cfif len(stTrace.cacheByVars)>
+											<div>* Caching by the following Variables:</div>
+											<div style="padding:0px 20px;"><cfloop list="#stTrace.cacheByVars#" index="i"><div>- #i#</div></cfloop></div>
+										</cfif>
+									</td>
+								</tr>
+								
+							<cfelse>
+								<tr>
+									<td colspan="2" style="color:red;border-top:1px solid red;">CACHING ON BUT TYPE NOT CURRENTLY SET TO USE OBJECT BROKER.</td>
+								</tr>
+							</cfif>
+						<cfelseif stTrace.cacheStatus LT 0>
+							<tr>
+								<td colspan="2" style="color:red;border-top:1px solid red;">THIS WEBSKIN WILL NEVER CACHE OR LET ANCESTORS INCLUDE IT AS PART OF THEIR CACHE.</td>
+							</tr>
 						</cfif>
-						<cfif stTrace.cacheByRoles>
-							<span style="font-weight:bold;">Cache by roles</span>: #yesNoFormat(stTrace.cacheByRoles)#<br />
-						</cfif>
-						<div class="webskin-tracer-close" onclick="$j('###stTrace.traceID#').css('display', 'none');$j('###stTrace.traceID#-webskin-border').css('display', 'none');">CLOSE</div>
+						
+						
+						</table>
+						
 					</div>
 				</div>
 			</div>
