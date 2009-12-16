@@ -17,54 +17,99 @@
 		<cfset var html = "" />
 		<cfset var thispermission = "" />
 		<cfset var thisrole = "" />
-		<cfset var supportedpermissions = application.security.factory.permission.getAllPermissions(arguments.typename) />
+		<cfset var supportedpermissions = trim(application.security.factory.permission.getAllPermissions(arguments.typename)) />
+		<cfset var stPermission = structnew() />
+		<cfset var oPermission = application.fapi.getContentType(typename="farPermission") />
 		
 		<cfparam name="arguments.stMetadata.ftPermissions" />
 		<cfparam name="arguments.stMetadata.ftRoles" default="#application.security.factory.role.getAllRoles()#" />
 		<cfparam name="arguments.stMetadata.ftIncludePermissionLabel" default="#listlen(arguments.stMetadata.ftPermissions) neq 1#" />
 		
+		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+		
+		<cfif isdefined("url.deploypermission") and (listcontains(arguments.stMetadata.ftPermissions,url.deploypermission) or arguments.stMetadata.ftPermissions eq url.deploypermission)>
+			<cfloop list="#url.deploypermission#" index="thispermission">
+				<cfif not oPermission.permissionExists(thispermission)>
+					<cfset stPermission = structnew() />
+					<cfset stPermission.objectid = createuuid() />
+					<cfset stPermission.label = thispermission />
+					<cfset stPermission.title = thispermission />
+					<cfset stPermission.shortcut = thispermission />
+					<cfset stPermission.aRelatedTypes = arraynew(1) />
+					<cfset arrayappend(stPermission.aRelatedTypes,arguments.typename) />
+					<cfset oPermission.setData(stProperties=stPermission) />
+					<skin:bubble title="Deployed" message="Permission created" />
+				</cfif>
+			</cfloop>
+			<cfset supportedpermissions = application.security.factory.permission.getAllPermissions(arguments.typename) />
+		</cfif>
+		
 		<cfsavecontent variable="html">
+			<cfoutput><div class="multiField"></cfoutput>
 			
-			<cfoutput>
-				<table style="border:0 none;">
-					<tr style="border:0 none;">
-			</cfoutput>
-			
-			<cfloop list="#supportedpermissions#" index="thispermission">
+			<cfif listlen(supportedpermissions)>
+				<cfoutput>
+					<table style="border:0 none;">
+						<tr style="border:0 none;">
+				</cfoutput>
 				
-				<cfif listcontainsnocase(arguments.stMetadata.ftPermissions,application.security.factory.permission.getLabel(thispermission))>
+				<cfloop list="#supportedpermissions#" index="thispermission">
 					
-					<cfoutput><td style="border:0 none;"></cfoutput>
-					
-					<cfif arguments.stMetadata.ftIncludePermissionLabel>
-						<cfoutput><strong>#application.security.factory.permission.getLabel(thispermission)#</strong><br /></cfoutput>
+					<cfif listcontainsnocase(arguments.stMetadata.ftPermissions,application.security.factory.permission.getLabel(thispermission))>
+						
+						<cfoutput><td style="border:0 none; width:200px;"></cfoutput>
+						
+						<cfif arguments.stMetadata.ftIncludePermissionLabel>
+							<cfoutput><strong>#application.security.factory.permission.getLabel(thispermission)#</strong><br /></cfoutput>
+						</cfif>
+						
+						<cfoutput>
+							<select name="#arguments.fieldname##replace(thispermission,'-','','ALL')#" multiple="true" class="selectInput">
+						</cfoutput>
+						
+						<cfloop list="#arguments.stMetadata.ftRoles#" index="thisrole">
+						
+							<cfoutput><option value="#thisrole#"<cfif application.security.factory.barnacle.getRight(role=thisrole,permission=thispermission,object=arguments.stObject.objectid) eq 1> selected</cfif>>#application.security.factory.role.getLabel(thisrole)#</option></cfoutput>
+						
+						</cfloop>
+						
+						<cfoutput>
+								</select>
+								<input type="hidden" name="#arguments.fieldname#" value=" " />
+							</td>
+						</cfoutput>
+						
 					</cfif>
 					
-					<cfoutput>
-						<select name="#arguments.fieldname##replace(thispermission,'-','','ALL')#" multiple="true" class="selectInput">
-					</cfoutput>
-					
-					<cfloop list="#arguments.stMetadata.ftRoles#" index="thisrole">
-					
-						<cfoutput><option value="#thisrole#"<cfif application.security.factory.barnacle.getRight(role=thisrole,permission=thispermission,object=arguments.stObject.objectid) eq 1> selected</cfif>>#application.security.factory.role.getLabel(thisrole)#</option></cfoutput>
-					
-					</cfloop>
-					
-					<cfoutput>
-							</select>
-							<input type="hidden" name="#arguments.fieldname#" value=" " />
-						</td>
-					</cfoutput>
-					
-				</cfif>
+				</cfloop>
 				
-			</cfloop>
+				<cfloop list="#arguments.stMetadata.ftPermissions#" index="thispermission">
+					
+					<cfif not oPermission.permissionExists(thispermission)>
+						<cfoutput>
+							<td style="border:0 none;">
+								<cfif arguments.stMetadata.ftIncludePermissionLabel><strong>#thispermission#</strong><br /></cfif>
+								<p>This permission has not been deployed. Would you like to <a href="#application.fapi.fixURL(addvalues='deploypermission=#thispermission#')#">do it now</a>?</p>
+							</td>
+						</cfoutput>
+					</cfif>
+				
+				</cfloop>
+				
+				<cfoutput>
+						</tr>
+					</table>
+				</cfoutput>
 			
-			<cfoutput>
-					</tr>
-				</table>
-			</cfoutput>
+			<cfelse>
+						
+				<cfoutput>
+					<p><cfif listlen(arguments.stMetadata.ftPermissions) gt 1>These permissions have<cfelse>This permission has</cfif> not been deployed. Would you like to <a href="#application.fapi.fixURL(addvalues='deploypermission=#arguments.stMetadata.ftPermissions#')#">do that now</a>?</p>
+				</cfoutput>
+				
+			</cfif>
 			
+			<cfoutput></div></cfoutput>
 		</cfsavecontent>
 
 		<cfreturn html />
