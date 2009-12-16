@@ -37,19 +37,25 @@
 			<div id="tracer" style="display:none;">	
 				<cfloop from="1" to="#arrayLen(request.aAncestorWebskinsTrace)#" index="i">
 					<div class="webskin-tracer-link" traceid="#request.aAncestorWebskinsTrace[i].traceID#">
-						<cfloop from="1" to="#request.aAncestorWebskinsTrace[i].level#" index="j">--</cfloop>
 						<cfswitch expression="#request.aAncestorWebskinsTrace[i].cacheStatus#">
 						<cfcase value="-1">
 							<cfset color = "red" />
 						</cfcase>
 						<cfcase value="1">
-							<cfset color = "green" />
+							<!--- If the webskin is set to cache but not using objectbroker, then notify with purple flavour. --->
+							<cfif structKeyExists(application.stcoapi, request.aAncestorWebskinsTrace[i].typename) AND application.stcoapi[request.aAncestorWebskinsTrace[i].typename].bObjectBroker>
+								<cfset color = "green" />
+							<cfelse>
+								<cfset color = "purple" />
+							</cfif>
 						</cfcase>
 						<cfdefaultcase>
 							<cfset color = "black" />
 						</cfdefaultcase>
 						</cfswitch>
-						<span style="color:#color#;">&nbsp;#request.aAncestorWebskinsTrace[i].typename#:#request.aAncestorWebskinsTrace[i].template#</span>
+																	
+						
+						<div style="color:#color#;margin-left:#request.aAncestorWebskinsTrace[i].level * 6#px;">-#request.aAncestorWebskinsTrace[i].typename#: #request.aAncestorWebskinsTrace[i].template# <cfif structKeyExists(request.aAncestorWebskinsTrace[i], "totalTickCount")>(#request.aAncestorWebskinsTrace[i].totalTickCount#s)</cfif></div>
 					</div>
 				</cfloop>	
 			</div>	

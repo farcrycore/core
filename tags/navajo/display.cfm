@@ -38,7 +38,9 @@
 	<cfexit method="exittag" />
 </cfif>
 
-<cftimer label="NAVAJO DISPLAY">
+<cfif not structKeyExists(request.fc, "startTickCount")>
+	<cfset request.fc.startTickCount = GetTickCount() />
+</cfif>
 
 
 <!--- environment variables --->
@@ -308,7 +310,12 @@
 	
 </cfif>
 
-</cftimer>
+
+<cfif not structKeyExists(request.fc, "endTickCount")>
+	<cfset request.fc.endTickCount = GetTickCount() />
+</cfif>
+
+<cfset request.fc.totalTickCount = (request.fc.endTickCount - request.fc.startTickCount) / 1000 />
 
 	<cfif len(url.type) AND not structKeyExists(application.rules, url.type) AND request.mode.bAdmin AND request.fc.bShowTray AND not structKeyExists(request.fc, "bAdminTrayRendered") AND not request.mode.ajax>
 		<cfset request.fc.bAdminTrayRendered = true />
@@ -337,9 +344,9 @@
 				type: "POST",
 				cache: false,
 				<cfif findNoCase("?",urlTray)>
-					url: '#urlTray#' + '&view=' + webskin, 
+					url: '#urlTray#' + '&view=' + webskin + '&totalTickCount=#request.fc.totalTickCount#', 
 				<cfelse>
-					url: '#urlTray#' + '?view=' + webskin, 
+					url: '#urlTray#' + '?view=' + webskin + '&totalTickCount=#request.fc.totalTickCount#', 
 				</cfif>
 				
 				complete: function(data){

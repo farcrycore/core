@@ -166,7 +166,7 @@
 			<ul id="page-actions-toggle">
 				
 				<!--- NO CACHING AVAILABLE WHEN  --->
-				<cfif request.mode.showdraft OR request.mode.design OR findNoCase("bDebug=1", "#refererURL#") OR findNoCase("bDebug/1", "#refererURL#") OR request.mode.traceWebskins>
+				<cfif request.mode.showdraft OR request.mode.design OR findNoCase("bDebug=1", "#refererURL#") OR findNoCase("bDebug/1", "#refererURL#") OR (findNoCase("tracewebskins=1", "#refererURL#") OR findNoCase("tracewebskins/1", "#refererURL#"))>
 					<li>
 						<a title="Caching is not Available when viewing drafts, in design mode, tracing webskins or in debug mode.">
 							<input type="checkbox" name="tray-flushcache" disabled=true /> <span style="text-decoration: line-through;">Caching</span>
@@ -255,6 +255,8 @@
 				</cfif>		
 				
 			</ul>
+			
+			<div style="float:right;">Speed: #url.totalTickCount#s</div>
 		</cfoutput>
 	</grid:div>
 	

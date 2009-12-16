@@ -42,8 +42,9 @@
 		<cfset stTrace.cacheTypeWatch = application.coapi.coapiadmin.getWebskinCacheTypeWatch(typename=attributes.typename, template=attributes.template) />
 		<cfset stTrace.level = arrayLen(request.aAncestorWebskins) />
 		<cfset stTrace.bAllowTrace = attributes.bAllowTrace />
+		<cfset stTrace.startTickCount = GetTickCount() />
 		<cfset arrayAppend(request.aAncestorWebskinsTrace, stTrace) />	
-		
+		<cfset arrayPos = arrayLen(request.aAncestorWebskinsTrace) />
 		<cfif attributes.bAllowTrace>
 			<cfoutput>
 			<div id="#stTrace.traceID#" class="webskin-tracer" style="display:none;">
@@ -95,7 +96,7 @@
 								
 							<cfelse>
 								<tr>
-									<td colspan="2" style="color:red;border-top:1px solid red;">CACHING ON BUT TYPE NOT CURRENTLY SET TO USE OBJECT BROKER.</td>
+									<td colspan="2" style="color:purple;border-top:1px solid purple;">CACHING ON BUT TYPE NOT CURRENTLY SET TO USE OBJECT BROKER.</td>
 								</tr>
 							</cfif>
 						<cfelseif stTrace.cacheStatus LT 0>
@@ -122,6 +123,10 @@
 		<cfif attributes.bAllowTrace>
 			<cfoutput></webskin></cfoutput>
 		</cfif>
+		
+		<cfset request.aAncestorWebskinsTrace[arrayPos].endTickCount = GetTickCount() />
+		<cfset request.aAncestorWebskinsTrace[arrayPos].totalTickCount = (request.aAncestorWebskinsTrace[arrayPos].endTickCount - request.aAncestorWebskinsTrace[arrayPos].startTickCount) / 1000 />
+		
 	</cfif>
 </cfif>
 

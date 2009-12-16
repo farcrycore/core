@@ -15,6 +15,14 @@ $j('##open-tray').click(function(){
 	$fc.traySwitch('displayAdminBarDetail');
 	return false;
 });
+$j("##open-tray").hover(
+	function() {
+		$j(this).addClass('icon-over');
+	},
+	function() {
+		$j(this).removeClass('icon-over');
+	}
+);	
 </cfoutput>
 </skin:onReady>
 

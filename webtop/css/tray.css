@@ -108,3 +108,10 @@
 #farcrytray .tray-detail ul li {	
 	list-style: none;
 }
+
+#open-tray {
+	opacity:0.5;
+}
+#open-tray.icon-over {
+	opacity:1;
+}
