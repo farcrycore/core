@@ -415,7 +415,7 @@
 		
 		// only show the frame if we are not in a frame
 		if (top === self) { 		
-			$j("body").prepend("<div style='bottom:0;font-size:11px;padding:0;position:fixed;right:0;width:100%;z-index:99;max-height:200px;overflow:auto;'><div id='farcrytray'></div></div>");	
+			$j("body").prepend("<div style='bottom:0;font-size:11px;padding:0;position:fixed;right:0;width:100%;z-index:999;max-height:200px;overflow:auto;'><div id='farcrytray'></div></div>");	
 			$fc.traySwitch('#session.fc.trayWebskin#'); // add tray
 			
 		}	

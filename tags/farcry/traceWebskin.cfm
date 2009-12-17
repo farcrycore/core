@@ -34,7 +34,7 @@
 		<cfset stTrace.objectid = attributes.objectid />
 		<cfset stTrace.typename = attributes.typename />
 		<cfset stTrace.template = attributes.template />
-		<cfset stTrace.path = application.coapi.coapiadmin.getWebskinPath(typename=attributes.typename, template=attributes.template) />
+		<cfset stTrace.path = replaceNoCase(application.coapi.coapiadmin.getWebskinPath(typename=attributes.typename, template=attributes.template), "\", "/") />
 		<cfset stTrace.cacheStatus = application.coapi.coapiadmin.getWebskinCacheStatus(typename=attributes.typename, template=attributes.template) />
 		<cfset stTrace.cacheByVars = application.coapi.coapiadmin.getWebskinCacheByVars(typename=attributes.typename, template=attributes.template) />
 		<cfset stTrace.cacheByRoles = application.coapi.coapiadmin.getWebskinCacheByRoles(typename=attributes.typename, template=attributes.template) />
@@ -48,9 +48,10 @@
 		<cfif attributes.bAllowTrace>
 			<cfoutput>
 			<div id="#stTrace.traceID#" class="webskin-tracer" style="display:none;">
+				<div class="webskin-tracer-close" style="text-align:right;" onclick="$j('###stTrace.traceID#').css('display', 'none');$j('###stTrace.traceID#-webskin-border').css('display', 'none');"><a name="#stTrace.traceID#"><img src="#application.url.webtop#/thirdparty/gritter/images/gritter-close.png" /></a></div>			
 				<div class="webskin-tracer-bubble">
 					<div class="webskin-tracer-bubble-inner">
-						<div class="webskin-tracer-close" style="float:right;" onclick="$j('###stTrace.traceID#').css('display', 'none');$j('###stTrace.traceID#-webskin-border').css('display', 'none');"><a name="#stTrace.traceID#">CLOSE</a></div>
+						
 						<table class="webskin-tracer-table">
 						<tr>
 							<th>ID</th>
@@ -66,7 +67,15 @@
 						</tr>
 						<tr>
 							<th>Path</th>
-							<td>#stTrace.path#</td>
+							<td>
+								<cfset lvl = 0 />
+								<cfloop list="#stTrace.path#" index="i" delimiters="/">
+									<cfif i NEQ "farcry">
+										<cfset lvl = lvl + 1 />
+										<div style="margin-left:#lvl * 5#px;">/#i#</div>
+									</cfif>
+								</cfloop>
+							</td>
 						</tr>
 					
 						<cfif stTrace.cacheStatus EQ 1>

@@ -40,8 +40,8 @@ FARCRY IMPORT FILES
 
 <cfif thistag.executionMode eq "End">
 
-	<skin:loadJS id="jquery-tools" />
-	<skin:loadCSS id="jquery-tools" />
+	<skin:loadJS id="jquery-tooltip" />
+	<skin:loadCSS id="jquery-tooltip" />
 
 	<cfif not len(attributes.message)>
 		<cfset attributes.message = thisTag.generatedContent />
@@ -49,7 +49,7 @@ FARCRY IMPORT FILES
 	<cfset thisTag.generatedContent = "" />
 		
 	<cfif not len(attributes.id)>
-		<cfset attributes.id = rereplaceNoCase(attributes.selector,'[^\w]','', 'all') /><!--- Replace non alphanumeric --->
+		<cfset attributes.id = hash(attributes.selector) /><!--- Replace non alphanumeric --->
 	</cfif>
 	
 	
@@ -59,27 +59,13 @@ FARCRY IMPORT FILES
 	--->
 	<skin:onReady id="tooltip-#attributes.id#">
 	<cfoutput>
-	
-		$j("#attributes.selector#").each(function(){
-			
-			if($j(this).next('.fc-tooltip').length == 0) {
-				
-				$j("<div class='fc-tooltip #attributes.class#' style='display:none;#attributes.style#'>#jsStringFormat(attributes.message)#</div>").insertAfter($j(this));
-				
-				$j(this).tooltip({
-					<cfif len(attributes.configuration)>
-						#attributes.configuration#
-					</cfif>
-				}).dynamic( { 
-			        bottom: { 
-			            direction: 'down', 
-			            bounce: true 
-			        } 
-		    	});
-			};
+		$j('#attributes.selector#').tooltip({ 
+		    delay: 0, 
+		    showURL: false, 
+		    bodyHandler: function() { 
+		        return '#jsStringFormat(attributes.message)#'; 
+		    } 
 		});
-		
-	
 	</cfoutput>
 	</skin:onReady>
 	
