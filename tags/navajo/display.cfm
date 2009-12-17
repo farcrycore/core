@@ -328,12 +328,12 @@
 		<!--- import libraries --->
 		<skin:loadJS id="jquery" />
 		<skin:loadJS id="jquery-ui" />
-		<skin:loadJS id="jquery-tools" />
+		<skin:loadJS id="jquery-tooltip" />
 		<skin:loadJS id="farcry-form" />
 		<skin:loadCSS id="jquery-ui" />
 		<skin:loadCSS id="farcry-form" />
 		<skin:loadCSS id="farcry-tray" />	
-		<skin:loadCSS id="jquery-tools" />
+		<skin:loadCSS id="jquery-tooltip" />
 
 		<cfoutput>	
 		<skin:onReady>
