@@ -185,7 +185,7 @@ $j('a.con-admin').live(
 				
 				<span class="ui-icon ui-icon-copy" style="float:left;">&nbsp;</span>
 			</a>
-			<skin:toolTip selector=".con-manage-reflection">Set this container to use a reflection. Reflections are containers that are centrally managed from the webtop.</skin:toolTip>
+			<skin:toolTip selector=".con-manage-reflection">Set this container to use a reflection.<br>Reflections are containers that are centrally managed from the webtop.</skin:toolTip>
 			
 			<!--- REFRESH CONTAINER --->
 	
