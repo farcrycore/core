@@ -142,9 +142,9 @@
 								<skin:view objectid="#i#" webskin="librarySelected" r_html="htmlLabel" />
 								<cfoutput>
 								<tr id="join-item-#i#" class="sort #iif(counter mod 2,de('oddrow'),de('evenrow'))#" serialize="#i#" style="clear:both;border:1px solid ##ebebeb;padding:5px;">
-									<td class="buttonGripper" style="white-space:nowrap;"><span class="ui-icon ui-icon-arrow-2-n-s" /></td>
-									<td class="arrayDetail" style="width:90%">#htmlLabel#</td>
-									<td class="join-remove" style="white-space:nowrap;">
+									<td class="buttonGripper" style="white-space:nowrap;padding:3px;"><span class="ui-icon ui-icon-arrow-2-n-s" /></td>
+									<td class="arrayDetail" style="width:90%;padding:3px;">#htmlLabel#</td>
+									<td class="join-remove" style="white-space:nowrap;padding:3px;">
 										
 										<cfif arguments.stMetadata.ftAllowEdit>
 											<ft:button
