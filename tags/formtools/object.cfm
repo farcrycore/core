@@ -503,7 +503,7 @@
 					<cfif attributes.bShowFieldHints AND structKeyExists(ftFieldMetadata,"ftHint") and len(ftFieldMetadata.ftHint)>
 						<cfoutput><p class="formHint">#ftFieldMetadata.ftHint#</p></cfoutput>
 					</cfif>
-					
+					<cfoutput><br style="clear:both;"></cfoutput>
 				</grid:div>
 			<cfelse>
 				
