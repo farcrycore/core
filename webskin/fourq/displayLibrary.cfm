@@ -79,11 +79,7 @@
 	
 		
 	
-	
-	<skin:loadJS id="jquery" />
-	
 
-	<admin:header title="Library Selector">
 
 	
 		<cfset formAction = application.fapi.getLink(type='#stobj.typename#', objectid='#stobj.objectid#', view='displayLibrary', urlParameters="property=#url.property#&ajaxmode=1") />
@@ -95,8 +91,9 @@
 				<cfoutput>
 				<div style="display:inline;color:##E17000">
 					<div style="font-size:90%;margin-right:10px;padding:2px;float:left;">
-						<a onclick="$j('##filterForm').toggle('slow');">FILTERING</a>		
-					</div>						
+						<a onclick="$j('##filterForm').toggle('slow');">FILTERING</a>							
+					</div>	
+					<br class="clearer" />						
 				</div>
 				<br class="clearer" />
 				<div id="filterForm" style="<cfif not len(form.searchTypename)>display:none;</cfif>">
@@ -117,6 +114,7 @@
 						
 						<br class="clearer" />
 					</div>
+					<br class="clearer" />
 				</div>
 				</cfoutput>
 				
@@ -134,22 +132,37 @@
 				
 				<!--- DISPLAY THE SELECTION OPTIONS --->	
 				
-				<skin:pagination query="#qResult#" submissionType="form">
+				<skin:pagination query="#qResult#" 
+					submissionType="form"
+					oddRowClass="alt"
+					evenRowClass="">
+					
+					<cfif stObject.bFirst>
+						<cfoutput>
+						<table class="objectAdmin" style="width:100%">
+						</cfoutput>
+					</cfif>
+					
 					<cfoutput>
-						<div class="ctrlHolder selector-wrap #stObject.currentRowClass#" style="padding:3px;margin:3px;clear:both;cursor:pointer;">
-							<div style="float:left;width:20px;">
+						<tr class="ctrlHolder selector-wrap #stObject.currentRowClass#" style="cursor:pointer;">
+							<td class="" style="width:20px;padding:3px;">
 								<cfif stMetadata.type EQ "array">
 									<input type="checkbox" id="selected_#stobject.currentRow#" name="selected" class="checker" value="#stobject.objectID#" <cfif listFindNoCase(lSelected,stobject.objectid)>checked="checked"</cfif> />
 								<cfelse>
 									<input type="radio" id="selected_#stobject.currentRow#" name="selected" class="checker" value="#stobject.objectID#" <cfif listFindNoCase(lSelected,stobject.objectid)>checked="checked"</cfif> />
 								</cfif>
-							</div>
-							<div style="margin-left: 30px;">
+							</td>
+							<td class="#stObject.currentRowClass#" style="padding:3px;">
 								<skin:view objectid="#stobject.objectid#" webskin="librarySelected" bIgnoreSecurity="true" />
-							</div>	
-							<br style="clear:both;" />				
-						</div>
+							</td>					
+						</tr>
 					</cfoutput>
+					
+					<cfif stObject.bLast>
+						<cfoutput>
+						</table>
+						</cfoutput>
+					</cfif>
 				</skin:pagination>
 				
 				<cfoutput>
@@ -163,5 +176,4 @@
 		
 		</ft:form>
 	
-	<admin:footer>
 </cfif>

@@ -135,16 +135,18 @@
 					<grid:div class="multiField">
 
 					<cfif listLen(joinItems)>
-						<cfoutput><table id="join-#stObject.objectid#-#arguments.stMetadata.name#" class="arrayDetailView" style="width:100%;list-style-type:none;border:1px solid ##ebebeb;border-width:1px 1px 0px 1px;margin:0px;"></cfoutput>
+						<cfoutput><ul id="join-#stObject.objectid#-#arguments.stMetadata.name#" class="arrayDetailView" style="list-style-type:none;border:1px solid ##ebebeb;border-width:1px 1px 0px 1px;margin:0px;"></cfoutput>
 							<cfset counter = 0 />
 							<cfloop list="#joinItems#" index="i">
 								<cfset counter = counter + 1 />
 								<skin:view objectid="#i#" webskin="librarySelected" r_html="htmlLabel" />
 								<cfoutput>
-								<tr id="join-item-#i#" class="sort #iif(counter mod 2,de('oddrow'),de('evenrow'))#" serialize="#i#" style="clear:both;border:1px solid ##ebebeb;padding:5px;">
-									<td class="buttonGripper" style="white-space:nowrap;padding:3px;"><span class="ui-icon ui-icon-arrow-2-n-s" /></td>
-									<td class="arrayDetail" style="width:90%;padding:3px;">#htmlLabel#</td>
-									<td class="join-remove" style="white-space:nowrap;padding:3px;">
+								<li id="join-item-#i#" class="sort #iif(counter mod 2,de('oddrow'),de('evenrow'))#" serialize="#i#" style="clear:both;border:1px solid ##ebebeb;padding:5px;">
+									<table style="width:100%">
+									<tr>
+									<td class="" style="cursor:move;padding:3px;"><span class="ui-icon ui-icon-arrow-2-n-s" /></td>
+									<td class="" style="cursor:move;width:100%;padding:3px;">#htmlLabel#</td>
+									<td class="" style="padding:3px;white-space:nowrap;">
 										
 										<cfif arguments.stMetadata.ftAllowEdit>
 											<ft:button
@@ -175,19 +177,21 @@
 												text="detach" 
 												confirmText="Are you sure you want to detach this item" 
 												onClick="fcForm.detachLibraryItem('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#i#');" />
-								
-										</cfif>
+								 						 	
+</cfif>
 										
 									</td>
-								</tr>
+									</tr>
+									</table>
+								</li>
 								</cfoutput>	
 							</cfloop>
-						<cfoutput></table></cfoutput>
+						<cfoutput></ul></cfoutput>
 						
 						<cfoutput><input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#joinItems#" /></cfoutput>
 					</cfif>
 					
-					<ft:buttonPanel>
+					<ft:buttonPanel style="">
 					<cfoutput>
 						
 						

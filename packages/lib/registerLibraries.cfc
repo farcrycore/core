@@ -89,7 +89,7 @@
 							
 							
 							$fc.openDialogIFrame = function(title,url,width,height){
-								var fcDialog = $j("<div><iframe style='width:99%;height:99%;border-width:0px;'></iframe></div>")
+								var fcDialog = $j("<div><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0'></iframe></div>")
 								w = width ? width : 600;
 								h = height ? height : $j(window).height()-50;
 								$j("body").prepend(fcDialog);
@@ -116,15 +116,18 @@
 							
 	fcForm.openLibrarySelect = function(typename,objectid,property,id) {
 		
-		var newDialogDiv = $j("<div></div>");
+		var newDialogDiv = $j("<div><iframe style='width:100%;height:100%;border-width:0px;' frameborder='0'></iframe></div>");
 		$j("body").prepend(newDialogDiv);
 		
 		$j(newDialogDiv).dialog({
 			bgiframe: true,
 			modal: true,
 			title:'Library Selector',
-			width: $j(window).width()-50,
-			height: $j(window).height()-50,
+			draggable:false,
+			resizable:false,
+			position:['left','top'],
+			width: "99%",
+			height: $j(window).height()-15,
 			buttons: {
 				Ok: function() {
 					$j(this).dialog('close');
@@ -138,7 +141,8 @@
 			
 		});
 		$j(newDialogDiv).dialog('open');
-		$j.ajax({
+		$j('iframe',$j(newDialogDiv)).attr('src','/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=displayLibraryTabs' + '&property=' + property);
+		<!--- $j.ajax({
 			type: "POST",
 			cache: false,
 					url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayLibraryTabs' + '&property=' + property, 
@@ -146,12 +150,12 @@
 				$j(newDialogDiv).html(data.responseText);			
 			},
 			dataType: "html"
-		});
+		}); --->
 	};
 	
 
 	fcForm.openLibraryAdd = function(typename,objectid,property,id) {
-		var newDialogDiv = $j("<div id='" + typename + objectid + property + "'><iframe style='width:100%;height:100%;border-width:0px;'></iframe></div>")
+		var newDialogDiv = $j("<div id='" + typename + objectid + property + "'><iframe style='width:100%;height:100%;border-width:0px;' frameborder='0'></iframe></div>")
 		$j("body").prepend(newDialogDiv);
 		
 		$j(newDialogDiv).dialog({
@@ -159,8 +163,11 @@
 			modal: true,
 			title:'Add New',
 			closeOnEscape: false,
-			width: $j(window).width()-50,
-			height: $j(window).height()-50,
+			draggable:false,
+			resizable:false,
+			position:['left','top'],
+			width: "99%",
+			height: $j(window).height()-15,
 			close: function(event, ui) {
 				fcForm.refreshProperty(typename,objectid,property,id);
 				$j(newDialogDiv).dialog( 'destroy' );
@@ -175,7 +182,7 @@
 	};	
 	
 	fcForm.openLibraryEdit = function(typename,objectid,property,id,editid) {
-		var newDialogDiv = $j("<div id='" + typename + objectid + property + "'><iframe style='width:100%;height:100%;border-width:0px;'></iframe></div>")
+		var newDialogDiv = $j("<div id='" + typename + objectid + property + "'><iframe style='width:100%;height:100%;border-width:0px;' frameborder='0'></iframe></div>")
 		$j("body").prepend(newDialogDiv);
 		
 		$j(newDialogDiv).dialog({
@@ -183,8 +190,11 @@
 			modal: true,
 			title:'Edit',
 			closeOnEscape: false,
-			width: $j(window).width()-50,
-			height: $j(window).height()-50,
+			draggable:false,
+			resizable:false,
+			position:['left','top'],
+			width: "99%",
+			height: $j(window).height()-15,
 			close: function(event, ui) {
 				fcForm.refreshProperty(typename,objectid,property,id);
 				$j(newDialogDiv).dialog( 'destroy' );
@@ -259,11 +269,11 @@
 	fcForm.initLibrary = function(typename,objectid,property) {
 		fcForm.initLibrarySummary(typename,objectid,property);	
 		
-		$j('div.selector-wrap')
+		$j('tr.selector-wrap')
 			.filter(':has(input:checked)')
 			.addClass('rowselected')
 		    .end()
-		  .click(function(event) {		    
+		  .click(function(event) {	
 		    if (event.target.type !== 'checkbox' && event.target.type !== 'radio') {
 			  $j('input', this).attr('checked', function() {
 		        $j(this).attr('checked',!this.checked);
@@ -286,7 +296,7 @@
 					dataType: "html",
 					complete: function(data){
 						fcForm.initLibrarySummary(typename,objectid,property);
-						$j('##librarySummary-' + typename + '-' + property).effect('pulsate',{times:2});
+						$j('.summary-pod').effect('pulsate',{times:2});
 					}
 				});		
 			} else {
@@ -297,18 +307,17 @@
 					data: {detachID: $j(e.target).val() },
 					dataType: "html",
 					complete: function(data){
-						fcForm.initLibrarySummary(typename,objectid,property);	
-						$j('##logger').append(data.responseText);	
-						$j('##librarySummary-' + typename + '-' + property).effect('pulsate',{times:2});						
+						fcForm.initLibrarySummary(typename,objectid,property);
+						$j('.summary-pod').effect('pulsate',{times:2});						
 					}
 				});	
 			};
 			
 			if(e.target.type == 'radio'){
-				$j('div.selector-wrap').removeClass('rowselected');
-				$j(this).parents('div.selector-wrap').addClass('rowselected');
+				$j('tr.selector-wrap').removeClass('rowselected');
+				$j(this).parents('tr.selector-wrap').addClass('rowselected');
 			} else {
-				$j(this).parents('div.selector-wrap').toggleClass('rowselected');
+				$j(this).parents('tr.selector-wrap').toggleClass('rowselected');
 			};
 						
 		});
@@ -351,8 +360,9 @@
 	
 	fcForm.initSortable = function(typename,objectid,property,id) {
 		$j('##' + id + '-library-wrapper').sortable({
-			items: 'tr.sort',
-			handle: 'td.buttonGripper',
+			items: 'li.sort',
+			//handle: 'td.buttonGripper',
+			axis: 'y',
 			update: function(event,ui){
 				$j.ajax({
 					type: "POST",
@@ -517,6 +527,8 @@
 							
 							<cfoutput>
 							.ui-widget {font-size:1em;}
+							.ui-dialog .ui-dialog-titlebar {padding:1px 5px 1px 5px;}
+							.ui-dialog .ui-dialog-content { padding:0.5em 0; }
 							</cfoutput>
 		</skin:registerCSS>
 				

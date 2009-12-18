@@ -14,12 +14,16 @@
 	
 	<cfset stMetadata = application.fapi.getPropertyMetadata(typename="#stobj.typename#", property="#url.property#") />
 		
-		
+	
+	
+
+	<admin:header title="Library Selector">		
+	
 	<ft:form>				
 	<cfoutput>
 	<!-- summary pod with green arrow -->
-	<div class="summary-pod">
-		<span id="librarySummary-#stobj.typename#-#url.property#" style="text-align:center;"><p>&nbsp;</p></span>
+	<div class="summary-pod" style="width:100%;">
+		<span id="librarySummary-#stobj.typename#-#url.property#" style="text-align:center;width:100%;"><p>&nbsp;</p></span>
 		
 		<cfset formAction = application.fapi.getLink(type='#stobj.typename#', objectid='#stobj.objectid#', view='displayLibrarySelected', urlParameters="property=#url.property#&ajaxmode=1") />
 		<!---<ft:button value="show selected" renderType="link" type="button" onclick="farcryForm_ajaxSubmission('#request.farcryform.name#','#formAction#')" class="green" />--->
@@ -50,5 +54,6 @@
 	
 
 	
+	<admin:footer>
 	
 </cfif>

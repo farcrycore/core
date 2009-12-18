@@ -75,7 +75,9 @@ $in: [bCacheControl] output cache control headers; default true. $
 	}
 	
 	.ctrlHolder {
-		background:##E4E4E4;
+		border:1px solid ##DFDFDF;
+		border-width:1px 0 0 0;
+		background:none;
 	}
 	
 	.uniForm .ctrlHolder .label {
@@ -84,6 +86,7 @@ $in: [bCacheControl] output cache control headers; default true. $
 	
 	.uniForm .helpsection {
 		margin:10px 0px;
+		color:##324E7C;
 	}
 	
 	.uniForm .buttonHolder{ text-align: right; margin:5px 0 10px 0;padding:5px;border:1px solid ##CCCCCC;border-width:1px 0px;background-color:##F4F4F4;}
@@ -94,9 +97,9 @@ $in: [bCacheControl] output cache control headers; default true. $
 
 
 <cfoutput>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" dir="#attributes.writingDir#" lang="#attributes.userLanguage#">
-	<head>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
 		<!---  apply cach control metadata as required --->
 		</cfoutput><cfif attributes.bCacheControl><misc:cacheControl /></cfif><cfoutput>
 		<meta content="text/html; charset=UTF-8" http-equiv="content-type" />

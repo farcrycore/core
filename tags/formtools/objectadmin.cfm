@@ -48,15 +48,18 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 	<cfoutput>
     	$fc.objectAdminAction = function(title,url) {
 			if ($fc.objectAdminActionDiv === undefined) {
-				$fc.objectAdminActionDiv = $j("<div><iframe style='width:99%;height:99%;border-width:0px;'></iframe></div>");
+				$fc.objectAdminActionDiv = $j("<div><iframe style='width:100%;height:99%;' frameborder='0'></iframe></div>");
 				$j("body").prepend($fc.objectAdminActionDiv);
 
 				$j($fc.objectAdminActionDiv).dialog({
 					bgiframe: true,
 					modal: true,
 					title:title,
-					width: $j(window).width()-50,
-					height: $j(window).height()-50,
+					draggable:false,
+					resizable:false,
+					position:['left','top'],
+					width: "99%",
+					height: $j(window).height()-15,
 					close: function(event, ui) {
 						location=location				
 					}

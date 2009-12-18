@@ -8,7 +8,7 @@
     .uniForm .fieldset .legend{ color: #333; font-weight: bold; font-size: 100%; margin: 0; padding: 1em 0; }
     
     /* This is the main unit that contains our form elements */
-    .uniForm .ctrlHolder{ padding: 7px; border-bottom: 1px solid #dfdfdf; }
+    .uniForm .ctrlHolder{ padding: 7px; }
     
     .uniForm .buttonHolder{ text-align: right; }
       .uniForm .resetButton{ float: left; }
