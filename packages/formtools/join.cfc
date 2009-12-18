@@ -135,16 +135,16 @@
 					<grid:div class="multiField">
 
 					<cfif listLen(joinItems)>
-						<cfoutput><ul id="join-#stObject.objectid#-#arguments.stMetadata.name#" class="arrayDetailView" style="list-style-type:none;border:1px solid ##ebebeb;border-width:1px 1px 0px 1px;margin:0px;"></cfoutput>
+						<cfoutput><table id="join-#stObject.objectid#-#arguments.stMetadata.name#" class="arrayDetailView" style="width:100%;list-style-type:none;border:1px solid ##ebebeb;border-width:1px 1px 0px 1px;margin:0px;"></cfoutput>
 							<cfset counter = 0 />
 							<cfloop list="#joinItems#" index="i">
 								<cfset counter = counter + 1 />
 								<skin:view objectid="#i#" webskin="librarySelected" r_html="htmlLabel" />
 								<cfoutput>
-								<li id="join-item-#i#" class="sort #iif(counter mod 2,de('oddrow'),de('evenrow'))#" serialize="#i#" style="clear:both;border:1px solid ##ebebeb;padding:5px;">
-									<div class="buttonGripper" style="float:left;cursor:move;width:20px;"><span class="ui-icon ui-icon-arrow-2-n-s" /></div>
-									<div class="arrayDetail" style="margin-left:25px;">#htmlLabel#</div>
-									<div class="join-remove" style="float:right;white-space: nowrap;">
+								<tr id="join-item-#i#" class="sort #iif(counter mod 2,de('oddrow'),de('evenrow'))#" serialize="#i#" style="clear:both;border:1px solid ##ebebeb;padding:5px;">
+									<td class="buttonGripper" style="white-space:nowrap;"><span class="ui-icon ui-icon-arrow-2-n-s" /></td>
+									<td class="arrayDetail" style="width:90%">#htmlLabel#</td>
+									<td class="join-remove" style="white-space:nowrap;">
 										
 										<cfif arguments.stMetadata.ftAllowEdit>
 											<ft:button
@@ -178,12 +178,11 @@
 								
 										</cfif>
 										
-									</div>
-									<br style="clear:both;" />
-								</li>
+									</td>
+								</tr>
 								</cfoutput>	
 							</cfloop>
-						<cfoutput></ul></cfoutput>
+						<cfoutput></table></cfoutput>
 						
 						<cfoutput><input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#joinItems#" /></cfoutput>
 					</cfif>
