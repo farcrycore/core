@@ -351,8 +351,8 @@
 	
 	fcForm.initSortable = function(typename,objectid,property,id) {
 		$j('##' + id + '-library-wrapper').sortable({
-			items: 'li.sort',
-			handle: 'div.buttonGripper',
+			items: 'tr.sort',
+			handle: 'td.buttonGripper',
 			update: function(event,ui){
 				$j.ajax({
 					type: "POST",
@@ -530,6 +530,7 @@
 							lFiles="gritter.css" />
 							
 		<skin:registerCSS 	id="farcry-tray"
+							lDependsOn="jquery-ui,jquery-tooltip"
 							baseHREF="#application.url.webtop#/css"
 							lFiles="tray.css" />
 				
