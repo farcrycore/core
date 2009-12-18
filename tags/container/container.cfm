@@ -122,7 +122,14 @@ $out:$
 	<cfset containerID = mirrorID />
 </cfif>
 
+
+
+
 <cfif len(containerID)>
+	
+	<!--- Used by rules to reference the container they're a part of --->
+	<cfset request.thiscontainer = containerID />
+	
 	<!--- get the container data --->
 	<cfset stConObj = application.fc.container.getData(objectid=containerid)>
 	
