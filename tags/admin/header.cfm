@@ -52,6 +52,7 @@ $in: [bCacheControl] output cache control headers; default true. $
 <!--- i18n --->
 <cfparam name="attributes.writingDir" type="string" default="ltr">
 <cfparam name="attributes.userLanguage" type="string" default="en">
+<cfparam name="attributes.style" type="string" default="">
 
 <!--- Allow dynamic body class --->
 <cfparam name="attributes.bodyclass" default="iframed-content">
@@ -127,6 +128,6 @@ $in: [bCacheControl] output cache control headers; default true. $
 
 <cfoutput>
 	</head>
-<body class="#attributes.bodyclass#"<cfif len(attributes.onload)> onload="#attributes.onload#"</cfif>>
+<body class="#attributes.bodyclass#" style="#attributes.style#" <cfif len(attributes.onload)> onload="#attributes.onload#"</cfif>>
 </cfoutput>
 <cfsetting enablecfoutputonly="No">

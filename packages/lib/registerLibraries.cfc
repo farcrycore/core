@@ -118,7 +118,7 @@
 		
 		var newDialogDiv = $j("<div><iframe style='width:100%;height:100%;border-width:0px;' frameborder='0'></iframe></div>");
 		$j("body").prepend(newDialogDiv);
-		
+		$j("html").css('overflow', 'hidden');
 		$j(newDialogDiv).dialog({
 			bgiframe: true,
 			modal: true,
@@ -134,6 +134,7 @@
 				}
 			},
 			close: function(event, ui) {
+				$j("html").css('overflow', 'auto');
 				fcForm.refreshProperty(typename,objectid,property,id);
 				$j(newDialogDiv).dialog( 'destroy' );
 				$j(newDialogDiv).remove();
@@ -157,7 +158,7 @@
 	fcForm.openLibraryAdd = function(typename,objectid,property,id) {
 		var newDialogDiv = $j("<div id='" + typename + objectid + property + "'><iframe style='width:100%;height:100%;border-width:0px;' frameborder='0'></iframe></div>")
 		$j("body").prepend(newDialogDiv);
-		
+		$j("html").css('overflow', 'hidden');
 		$j(newDialogDiv).dialog({
 			bgiframe: true,
 			modal: true,
@@ -169,6 +170,7 @@
 			width: "99%",
 			height: $j(window).height()-15,
 			close: function(event, ui) {
+				$j("html").css('overflow', 'auto');
 				fcForm.refreshProperty(typename,objectid,property,id);
 				$j(newDialogDiv).dialog( 'destroy' );
 				$j(newDialogDiv).remove();
@@ -184,7 +186,7 @@
 	fcForm.openLibraryEdit = function(typename,objectid,property,id,editid) {
 		var newDialogDiv = $j("<div id='" + typename + objectid + property + "'><iframe style='width:100%;height:100%;border-width:0px;' frameborder='0'></iframe></div>")
 		$j("body").prepend(newDialogDiv);
-		
+		$j("html").css('overflow', 'hidden');		
 		$j(newDialogDiv).dialog({
 			bgiframe: true,
 			modal: true,
@@ -196,6 +198,7 @@
 			width: "99%",
 			height: $j(window).height()-15,
 			close: function(event, ui) {
+				$j("html").css('overflow', 'auto');
 				fcForm.refreshProperty(typename,objectid,property,id);
 				$j(newDialogDiv).dialog( 'destroy' );
 				$j(newDialogDiv).remove();

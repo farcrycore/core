@@ -17,7 +17,7 @@
 	
 	
 
-	<admin:header title="Library Selector">		
+	<admin:header title="Library Selector" style="width:100%;height:100%">		
 	
 	<ft:form>				
 	<cfoutput>

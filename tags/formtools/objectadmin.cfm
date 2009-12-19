@@ -50,7 +50,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 			if ($fc.objectAdminActionDiv === undefined) {
 				$fc.objectAdminActionDiv = $j("<div><iframe style='width:100%;height:99%;' frameborder='0'></iframe></div>");
 				$j("body").prepend($fc.objectAdminActionDiv);
-
+				$j("html").css('overflow', 'hidden');
 				$j($fc.objectAdminActionDiv).dialog({
 					bgiframe: true,
 					modal: true,
@@ -61,6 +61,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 					width: "99%",
 					height: $j(window).height()-15,
 					close: function(event, ui) {
+						$j("html").css('overflow', 'auto');
 						location=location				
 					}
 				});
