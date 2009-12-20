@@ -246,9 +246,14 @@ TO: A refactor is required of all this now that we have webskin goodness.
 			<grid:div class="webtopSummarySection">
 				<cfoutput>
 				<h2>SYSTEM INFORMATION</h2>
-				CREATED: #application.thisCalendar.i18nDateTimeFormat(stobj.datetimecreated,session.dmProfile.locale,application.mediumF)#<br />
+				Created by #application.fapi.getContentType("dmProfile").getProfile(stobj.createdby).Label#
+				#application.fapi.prettyDate(stobj.datetimecreated)# 
+				<!--- #application.thisCalendar.i18nDateTimeFormat(stobj.datetimecreated,session.dmProfile.locale,application.mediumF)#--->
+				<br />
 				
-				LAST UPDATED: #application.thisCalendar.i18nDateTimeFormat(stobj.datetimelastupdated,session.dmProfile.locale,application.mediumF)#
+				Last updated by #application.fapi.getContentType("dmProfile").getProfile(stobj.lastupdatedby).Label#
+				#application.fapi.prettyDate(stobj.datetimelastupdated)#
+				<!---#application.thisCalendar.i18nDateTimeFormat(stobj.datetimelastupdated,session.dmProfile.locale,application.mediumF)#--->
 				(
 					<a onclick="$fc.openDialog('Audit', '#application.url.farcry#/edittabAudit.cfm?objectid=#stobj.objectid#')">Audit Trail</a>
 					|
@@ -256,7 +261,7 @@ TO: A refactor is required of all this now that we have webskin goodness.
 				)
 				<br />
 				
-				OBJECTID: #stobj.objectid#
+				ObjectID: #stobj.objectid#
 				<br />
 				
 				<a onclick="$fc.openDialog('Property Dump', '#application.url.farcry#/object_dump.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#')">Show All Properties</a>
