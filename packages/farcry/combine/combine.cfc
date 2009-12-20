@@ -157,7 +157,8 @@
 			<!--- check it is a valid JS or CSS file. Don't allow mixed content (all JS or all CSS only) --->
 			<cfif fileExists( sExpandedFilePath ) and (listLast(sExpandedFilePath, '.') eq sType OR listLast(sExpandedFilePath, '.') eq "cfm")>
 			
-				<cfset lastModified = max(lastModified, getFileDateLastModified( sExpandedFilePath )) />
+				<cfset lastModified = numberformat(max(lastModified, getFileDateLastModified( sExpandedFilePath )),"999999999999999") />
+				
 				<cfset sCorrectedFiles = listAppend(sCorrectedFiles, sFilePath, sDelimiter) />
 				
 			<cfelseif not variables.bSkipMissingFiles>
@@ -295,7 +296,7 @@
 						<cffile action="delete" file="#qToDelete.directory#/#qToDelete.name#" />
 					</cfloop>
 				</cfif>
-				<cffile action="write" file="#sCacheFile#" output="#sOutput#" />
+				<cffile action="write" file="#sCacheFile#" output="#sOutput#" mode="664" />
 			</cfif>
 			
 		</cfif>
