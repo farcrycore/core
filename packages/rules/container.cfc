@@ -52,6 +52,10 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfset var stNewObject = structNew()>
 		<cfset var hashedLabel = "" />
 		
+		<cfif not structKeyExists(variables, "stContainer")>
+			<cfset init() />
+		</cfif>
+		
 		<cfif structKeyExists(arguments.stProperties, "label")>
 			<cfset hashedLabel = hash(arguments.stProperties.label) />
 			<cfset structDelete(variables.stContainer, hashedLabel) />
@@ -467,8 +471,12 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		
 		<cfset var qGetContainer = ''>
 		<cfset var containerID = "" />
-		<cfset var hashedLabel = hash(label) />
-				
+		<cfset var hashedLabel = hash(label) />				
+		
+		<cfif not structKeyExists(variables, "stContainer")>
+			<cfset init() />
+		</cfif>
+		
 		<cfif not structKeyExists(variables.stContainer, hashedLabel)>
 			<cfquery name="qGetContainer" datasource="#arguments.dsn#">
 				SELECT objectid
