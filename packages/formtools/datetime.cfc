@@ -194,13 +194,14 @@
 	
 		<cfcase value="jquery">
 			
-
+			<cfparam name="arguments.stMetadata.ftShowTime" default="true">
+			
 			<skin:loadJS id="jquery-ui" />
 			<skin:loadCSS id="jquery-ui" />
 			
 			<skin:onReady>
 				<cfoutput>
-				$j("###arguments.fieldname#").datepicker({dateFormat:'#arguments.stMetadata.ftJQDateFormatMask#'});
+				$j("###arguments.fieldname#").datepicker({dateFormat:'#arguments.stMetadata.ftJQDateFormatMask#',showOn: 'both', buttonImage: '#application.url.farcry#/js/dateTimePicker/cal.gif', buttonImageOnly: true});
 				</cfoutput>
 			</skin:onReady>
 			
@@ -231,8 +232,25 @@
 					
 					<div id="#arguments.fieldname#-wrap">
 						<label class="inlineLabel" for="#arguments.fieldname#"></label>
-						<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftCFDateFormatMask)#" class="textInput" >
+						<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftCFDateFormatMask)#" class="textInput" style="width:100px;" >
 						<input type="hidden" name="#arguments.fieldname#rendertype" id="#arguments.fieldname#rendertype" value="#arguments.stMetadata.ftRenderType#">
+						<cfif arguments.stMetadata.ftShowTime>
+							<select name="#arguments.fieldname#Hour">
+							<cfloop from="1" to="12" index="i">
+								<option value="#i#" <cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'h') EQ i>selected=selected</cfif>>#i#</option>
+							</cfloop>
+							</select>
+							<select name="#arguments.fieldname#Minute">
+								<option value="00">00</option>
+								<cfloop from="1" to="60" index="i">
+									<option value="#numberFormat(i, '00')#" <cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'m') EQ i>selected=selected</cfif>>#numberFormat(i, '00')#</option>
+								</cfloop>
+							</select>
+							<select name="#arguments.fieldname#Period">
+								<option value="AM" <cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'tt') EQ "AM">selected=selected</cfif>>AM</option>
+								<option value="PM" <cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'tt') EQ "PM">selected=selected</cfif>>PM</option>
+							</select>
+						</cfif>
 						&nbsp;
 					</div>	
 						
@@ -509,6 +527,7 @@
 
 		<cfset var stResult = passed(value="") />
 		<cfset var newDate = "" />
+		<cfset var newTime = "" />
 		
 		<cfparam name="arguments.stFieldPost.stSupporting.renderType" default="calendar">
 		
@@ -525,13 +544,31 @@
 			<!--- --------------------------- --->
 			<!--- Perform any validation here --->
 			<!--- --------------------------- --->
+			
+		
 			<cfif structKeyExists(arguments.stFieldPost.stSupporting,"day")
 				AND structKeyExists(arguments.stFieldPost.stSupporting,"month")
 				AND structKeyExists(arguments.stFieldPost.stSupporting,"year")>
 				
 				<cfif len(arguments.stFieldPost.stSupporting.day) OR len(arguments.stFieldPost.stSupporting.month) OR len(arguments.stFieldPost.stSupporting.year)>
 					<cftry>
-						<cfset newDate = createDate(arguments.stFieldPost.stSupporting.year, arguments.stFieldPost.stSupporting.month, arguments.stFieldPost.stSupporting.day) />
+					
+						<cfif structKeyExists(arguments.stFieldPost.stSupporting,"hour")
+							AND structKeyExists(arguments.stFieldPost.stSupporting,"minute")
+							AND structKeyExists(arguments.stFieldPost.stSupporting,"period")>
+									
+							<cfif arguments.stFieldPost.stSupporting.period EQ "PM">
+								<cfset arguments.stFieldPost.stSupporting.hour = arguments.stFieldPost.stSupporting.hour + 12 />
+							</cfif>
+							<cfif arguments.stFieldPost.stSupporting.hour GT 24>
+								<cfset arguments.stFieldPost.stSupporting.hour = 0 />
+							</cfif>
+							<cfset newDate = createDateTime(arguments.stFieldPost.stSupporting.year, arguments.stFieldPost.stSupporting.month, arguments.stFieldPost.stSupporting.day, arguments.stFieldPost.stSupporting.hour, arguments.stFieldPost.stSupporting.minute, 0) />
+
+						<cfelse>					
+							<cfset newDate = createDate(arguments.stFieldPost.stSupporting.year, arguments.stFieldPost.stSupporting.month, arguments.stFieldPost.stSupporting.day) />
+						</cfif>
+						
 						<cfset stResult = passed(value="#newDate#") />
 						<cfcatch type="any">
 							<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="You need to select a valid date.") />
@@ -556,7 +593,25 @@
 			<cfif ListGetAt(arguments.stFieldPost.stSupporting.Include,1)>
 			
 				<cftry>
-					<cfset newDate = CreateODBCDateTime("#arguments.stFieldPost.Value#") />
+				
+					<cfif structKeyExists(arguments.stFieldPost.stSupporting,"hour")
+						AND structKeyExists(arguments.stFieldPost.stSupporting,"minute")
+						AND structKeyExists(arguments.stFieldPost.stSupporting,"period")>
+								
+						<cfif arguments.stFieldPost.stSupporting.period EQ "PM">
+							<cfif arguments.stFieldPost.stSupporting.hour LT 12>
+								<cfset arguments.stFieldPost.stSupporting.hour = arguments.stFieldPost.stSupporting.hour + 12 />
+							</cfif>
+						<cfelseif arguments.stFieldPost.stSupporting.hour EQ 12>
+							<cfset arguments.stFieldPost.stSupporting.hour = 0 />
+						</cfif>
+						<cfif arguments.stFieldPost.stSupporting.hour GTE 24>
+							<cfset arguments.stFieldPost.stSupporting.hour = 0 />
+						</cfif>
+						<cfset newTime = timeFormat(createTime(arguments.stFieldPost.stSupporting.hour, arguments.stFieldPost.stSupporting.minute, 0), 'hh:mm:ss tt') />
+					</cfif>
+							
+					<cfset newDate = CreateODBCDateTime("#arguments.stFieldPost.Value# #newTime#") />
 					<cfset stResult = passed(value="#newDate#") />
 					<cfcatch type="any">
 						<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="You need to select a valid date.") />
