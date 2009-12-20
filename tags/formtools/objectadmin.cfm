@@ -1065,7 +1065,7 @@ user --->
 			});
 			
 			$j('a.oa-create-draft').click(function() {
-				$fc.objectAdminAction('Preview', '#createDraftURL#&objectid=' + $j(this).attr('ft:objectid'));
+				$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=' + $j(this).attr('ft:objectid'));
 				return false;
 			});
 		</cfoutput>
