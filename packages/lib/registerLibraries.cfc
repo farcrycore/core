@@ -299,7 +299,6 @@
 					dataType: "html",
 					complete: function(data){
 						fcForm.initLibrarySummary(typename,objectid,property);
-						$j('.summary-pod').effect('pulsate',{times:2});
 					}
 				});		
 			} else {
@@ -310,8 +309,7 @@
 					data: {detachID: $j(e.target).val() },
 					dataType: "html",
 					complete: function(data){
-						fcForm.initLibrarySummary(typename,objectid,property);
-						$j('.summary-pod').effect('pulsate',{times:2});						
+						fcForm.initLibrarySummary(typename,objectid,property);			
 					}
 				});	
 			};

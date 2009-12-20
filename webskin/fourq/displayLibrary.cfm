@@ -43,6 +43,8 @@
 			
 	 
 	<!--- SETUP THE QUERY DATA --->
+	<cfset bFoundLibraryData = false />
+		
 	<cfif structKeyExists(stMetadata, "ftLibraryData") AND len(stMetadata.ftLibraryData)>
 		<cfparam name="stMetadata.ftLibraryDataTypename" default="#url.filterTypename#" />
 		
@@ -50,22 +52,47 @@
 		
 		<!--- use ftlibrarydata method from primary content type --->
 		<cfif structkeyexists(oLibraryData, stMetadata.ftLibraryData)>
-			<cfinvoke component="#oLibraryData#" method="#stMetadata.ftLibraryData#" returnvariable="libraryData">
+			
+			<cfset bFoundLibraryData = true />
+			
+			<cfinvoke component="#oLibraryData#" method="#stMetadata.ftLibraryData#" returnvariable="libraryDataResult">
 				<cfinvokeargument name="primaryID" value="#stobj.objectid#" />
 			</cfinvoke>					
 			
-			<cfif isStruct(libraryData)>
-				<cfset qAll = libraryData.q>
+			<cfif isStruct(libraryDataResult)>
+				<cfset qAll = libraryDataResult.q />			
 			<cfelse>
-				<cfset qAll = libraryData />
+				<cfset qAll = libraryDataResult />
 			</cfif>	
-		<cfelse>
-			<cfset qAll = application.fapi.getContentType("#url.filterTypename#").getLibraryData() />	
-		</cfif>		
-	<cfelse>
-		<!--- if nothing exists to generate library data then cobble something together --->
-		<cfset qAll = application.fapi.getContentType("#url.filterTypename#").getLibraryData() />
+									
+		</cfif>	
+		
 	</cfif>
+		
+		
+	<cfif not bFoundLibraryData>
+		<!--- if nothing exists to generate library data then cobble something together --->
+		
+		<cfset SQLWhere = "1=1" />
+	
+		<cfif structKeyExists(stMetadata, "ftLibraryDataSQLWhere")>
+			<cfset SQLWhere = " #SQLWhere# AND (#stMetadata.ftLibraryDataSQLWhere#)" />
+		</cfif>
+		
+		<cfset SQLOrderBy = "datetimelastupdated desc" />
+		<cfif structKeyExists(stMetadata, "ftLibraryDataSQLOrderBy")>
+			<cfset SQLOrderBy = stMetadata.ftLibraryDataSQLOrderBy />
+		</cfif>
+		
+		
+		<cfset oFormTools = createObject("component","farcry.core.packages.farcry.formtools")>
+		<cfset stLibraryData = oFormTools.getRecordset(typename="#url.filterTypename#", sqlColumns="objectid", sqlOrderBy="#SQLOrderBy#", SQLWhere="#SQLWhere#", RecordsPerPage="0") />
+
+		<cfset qAll = stLibraryData.q />
+		
+		<cfset bFoundLibraryData = true />
+	</cfif>
+	
 
 	<cfif isDefined("qFiltered")>
 		<cfquery dbtype="query" name="qResult">
@@ -82,33 +109,33 @@
 
 
 	
-		<cfset formAction = application.fapi.getLink(type='#stobj.typename#', objectid='#stobj.objectid#', view='displayLibrary', urlParameters="property=#url.property#&ajaxmode=1") />
+		<cfset formAction = application.fapi.getLink(type='#stobj.typename#', objectid='#stobj.objectid#', view='displayLibrary', urlParameters="filterTypename=#url.filterTypename#&property=#url.property#&ajaxmode=1") />
 	
-		<ft:form name="#stobj.typename#_#url.property#" bAjaxSubmission="true" action="#formAction#">	
+		<ft:form name="#stobj.typename#_#url.property#_#url.filterTypename#" bAjaxSubmission="true" action="#formAction#">	
 		
 			
-			<grid:div style="padding:10px; border: 1px solid ##CCCCCC;background-color:##f1f1f1;margin-bottom:10px; ">
+			<grid:div style="padding:5px; border: 1px solid ##CCCCCC;background-color:##f1f1f1;margin-bottom:5px; ">
 				<cfoutput>
 				<div style="display:inline;color:##E17000">
 					<div style="font-size:90%;margin-right:10px;padding:2px;float:left;">
-						<a onclick="$j('##filterForm').toggle('slow');">FILTERING</a>							
+						<a onclick="$j('##filterForm-#url.filterTypename#').toggle('slow');">FILTERING</a>							
 					</div>	
 					<br class="clearer" />						
 				</div>
 				<br class="clearer" />
-				<div id="filterForm" style="<cfif not len(form.searchTypename)>display:none;</cfif>">
+				<div id="filterForm-#url.filterTypename#" style="<cfif not len(form.searchTypename)>display:none;</cfif>">
 					<div style="padding:5px;">
 				
-						<fieldset class="fieldset">
+						<fieldset class="fieldset" style="margin:0px;">
 							<grid:div class="ctrlHolder inlineLabels">
-								<label for="searchTypename-#stobj.typename#-#url.property#-#stobj.typename#-#url.property#" class="label">Label</label>	
-								<input type="text" id="searchTypename-#stobj.typename#-#url.property#" name="searchTypename" class="textInput" value="#form.searchTypename#" />
+								<label for="searchTypename-#stobj.typename#-#url.property#-#url.filterTypename#" class="label">Label</label>	
+								<input type="text" id="searchTypename-#stobj.typename#-#url.property#-#url.filterTypename#" name="searchTypename" class="textInput" value="#form.searchTypename#" />
 							</grid:div>
 						</fieldset>
 						<ft:buttonPanel>
 							<ft:button value="Search" renderType="button" class="btn-small" />
 							<cfif len(form.searchTypename)>
-								<ft:button value="Clear Search" renderType="button" class="btn-generic" onClick="$j('##searchTypename-#stobj.typename#-#url.property#').attr('value','');" />
+								<ft:button value="Clear Search" renderType="button" class="btn-generic" onClick="$j('##searchTypename-#stobj.typename#-#url.property#-#url.filterTypename#').attr('value','');" />
 							</cfif>
 						</ft:buttonPanel>
 						
@@ -132,10 +159,18 @@
 				
 				<!--- DISPLAY THE SELECTION OPTIONS --->	
 				
+				<!--- 
+				<ft:pagination qRecordSet="#stLibraryData.q#" typename="#request.ftJoin#" submissionType="URL" recordsPerPage="#stLibraryData.recordsPerPage#" totalRecords="#stLibraryData.CountAll#" pageLinks="5" top="true" bottom="true">
+				
+				 --->
+				
 				<skin:pagination query="#qResult#" 
 					submissionType="form"
 					oddRowClass="alt"
 					evenRowClass="">
+				
+				
+				
 					
 					<cfif stObject.bFirst>
 						<cfoutput>
