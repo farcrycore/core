@@ -647,12 +647,28 @@
 				<cfset stResult.type = application.fapi.findType(objectid=stResult.objectid) />
 		</cfif>
 		
+		<!--- If there is an objectid but no type ... return immediately --->
+		<cfif structkeyexists(stResult,"objectid") and not len(stResult.type)>
+			<cfif structkeyexists(stResult,"bDebug") and stResult.bDebug>
+				<cfthrow message="Objectid [#stResult.objectid#] does not refer to a valid record" />
+			<cfelse>
+				<cfreturn stResult />
+			</cfif>
+		</cfif>
+		
 		<!--- Normalise view fuAlias in query string --->
 		<cfset stResult["__allowredirect"] = true />
 		<cfif structkeyexists(stResult,"view") AND structKeyExists(stResult, "type")>
-			<cfif structkeyexists(this.webskinFU[stResult.type],stResult.view)>			
+			<cfif structkeyexists(this.webskinFU[stResult.type],stResult.view)>
 				<cfset stResult.view = "#this.webskinFU[stResult.type][stResult.view]#" />
+			<cfelseif structkeyexists(stResult,"bDebug") and stResult.bDebug>
+				<!--- View does not exist: throw an error --->
+				<cfthrow message="Webskin [#stResult.view#] does not exist for type [#stResult.type#]" />
+			<cfelse>
+				<!--- If the view is not a valid webskin for this type ... return immediately --->
+				<cfreturn stResult />
 			</cfif>
+			
 			
 			<cfset stResult["__allowredirect"] = stResult["__allowredirect"] and application.stCOAPI[stResult.type].stWebskins[stResult.view].allowredirect />
 			
@@ -669,6 +685,12 @@
 		<cfif structkeyexists(stResult,"bodyView")>
 			<cfif structkeyexists(this.webskinFU[stResult.type],stResult.bodyView)>
 				<cfset stResult.bodyView = "#this.webskinFU[stResult.type][stResult.bodyView]#" />
+			<cfelseif structkeyexists(stResult,"bDebug") and stResult.bDebug>
+				<!--- View does not exist: throw an error --->
+				<cfthrow message="Webskin [#stResult.bodyView#] does not exist for type [#stResult.type#]" />
+			<cfelse>
+				<!--- If the view is not a valid webskin for this type ... return immediately --->
+				<cfreturn stResult />
 			</cfif>
 			
 			<cfset stResult["__allowredirect"] = stResult["__allowredirect"] and application.stCOAPI[stResult.type].stWebskins[stResult.bodyview].allowredirect />
