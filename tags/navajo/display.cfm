@@ -132,8 +132,7 @@
 				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/404.cfm" />
 				<cfsetting enablecfoutputonly="false" />
 				<cfexit method="exittag" />	
-			<cfelseif fileexists("#application.path.project#/www/errors/404.cfm")>				
-				<cfdump var="#cfcatch#"><cfabort>
+			<cfelseif fileexists("#application.path.project#/www/errors/404.cfm")>
 				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/www/errors/404.cfm" />
 				<cfsetting enablecfoutputonly="false" />
 				<cfexit method="exittag" />	
