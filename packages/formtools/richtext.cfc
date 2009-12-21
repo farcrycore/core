@@ -129,8 +129,8 @@
 		<cfsavecontent variable="configJS">
 			<cfoutput>			
 				theme : "advanced",
-				plugins : "fct,safari,spellchecker,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template",
-				theme_advanced_buttons2_add : "separator,spellchecker,fct",
+				plugins : "fct,safari,farcrycontenttemplates,spellchecker,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template",
+				theme_advanced_buttons2_add : "separator,spellchecker,fct,farcrycontenttemplates",
 				theme_advanced_buttons3_add_before : "tablecontrols,separator",			
 				theme_advanced_buttons3_add : "separator,fullscreen,pasteword,pastetext",				
 				theme_advanced_toolbar_location : "top",
