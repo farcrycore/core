@@ -25,7 +25,7 @@
 			<cfset application.coapiID = structNew() />
 		</cfif>
 		
-		<cfreturn this />
+		<cfreturn fourqInit() />
 		
 	</cffunction>
 

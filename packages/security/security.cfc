@@ -52,9 +52,9 @@
 		<cfset this.cache.rolelookup = structnew() />
 		
 		<!--- Factory --->
-		<cfset this.factory.role = createObject("component", application.factory.oUtils.getPath("types","farRole")) />
-		<cfset this.factory.permission = createObject("component", application.factory.oUtils.getPath("types","farPermission")) />
-		<cfset this.factory.barnacle = createObject("component", application.factory.oUtils.getPath("types","farBarnacle")) />
+		<cfset this.factory.role = createObject("component", application.factory.oUtils.getPath("types","farRole")).fourqInit() />
+		<cfset this.factory.permission = createObject("component", application.factory.oUtils.getPath("types","farPermission")).fourqInit() />
+		<cfset this.factory.barnacle = createObject("component", application.factory.oUtils.getPath("types","farBarnacle")).fourqInit() />
 		
 		<!--- User directories --->
 		<cfset this.userdirectories = structnew() />

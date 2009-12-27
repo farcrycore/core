@@ -341,16 +341,44 @@
 
 		<!--- rudimentary error handler --->
 		<!--- TODO: need a pretty error handler for the webtop --->
-		<cfdump var="#arguments.exception#" expand="true" label="arguments" />
+		<cfoutput>	
+			<h1>There was a problem with that last request!</h1>	
+			<p>Please push "back" on your browser or go back <a style="text-decoration:underline" href="/">home</a></p>
+			<h3>Error Details</h3>
+			<table border="1" cellpadding="5" style="border-collapse:collapse;">
+			<tr><th align="right" style="vertical-align:top;">Message</th><td>#arguments.exception.message#</td></tr>
+			<tr><th align="right" style="vertical-align:top;">Exception Type</th><td>#arguments.exception.type#</td></tr>
+			
+			<cfswitch expression="#arguments.exception.type#">
+			<cfcase value="database">
+				<tr><th align="right" style="vertical-align:top;">Error</th><td>#arguments.exception.queryError#</td></tr>
+				<tr><th align="right" style="vertical-align:top;">SQL</th><td>#arguments.exception.sql#</td></tr>
+				<tr><th align="right" style="vertical-align:top;">Where</th><td>#arguments.exception.where#</td></tr>
+			</cfcase>
+			<cfdefaultcase>
+				<tr><th align="right" style="vertical-align:top;">Detail</th><td>#arguments.exception.detail#</td></tr>
+			</cfdefaultcase>
+			</cfswitch>
 
+			<tr>
+				<th align="right" style="vertical-align:top;">Tag Context</th>
+				<td>
+					<ul>
+					<cfloop from="1" to="#arrayLen(arguments.exception.TagContext)#" index="i">
+						<li>#arguments.exception.TagContext[i].template# (line: #arguments.exception.TagContext[i].line#)</li>
+					</cfloop>
+					</ul>	
+				</td>
+			</tr>
+			
+			</table>		
+			
+		</cfoutput>
 		<cfreturn />
 	</cffunction>
 
  
 	<cffunction name="farcryUpdateApp" access="private" output="false" hint="Initialise farcry Application." returntype="void">
-		<!--- USED TO DETERMINE OVERALL PAGE TICKCOUNT --->
-		<cfset request.farcryPageTimerStart = getTickCount() />
-			
 		<!---------------------------------------- 
 		BEGIN: Application Initialise 
 		----------------------------------------->
@@ -385,7 +413,6 @@
 		<!--- force application start sequence to be single threaded --->
 		<cfif (NOT structkeyexists(application, "bInit") OR NOT application.binit) OR url.updateapp>
 			<cflock name="#application.applicationName#_init" type="exclusive" timeout="3" throwontimeout="true">
-				<cftimer label="updateApp">
 				<cfif (NOT structkeyexists(application, "bInit") OR NOT application.binit) OR url.updateapp>
 
 					<!--- set binit to false to block users accessing on restart --->
@@ -397,7 +424,6 @@
 					<cfset application.bInit = true />
 
 				</cfif>
-				</cftimer>
 			</cflock>
 		</cfif>
 		
@@ -664,7 +690,7 @@
 		<cfset application.fc.serverTimezone = createObject("java","java.util.TimeZone").getDefault().ID />
 		<cfset application.fc.container = createObject("component", "farcry.core.packages.rules.container").init() />
 		
-		<cfset application.fc.factory['farCoapi'] = createObject("component", "farcry.core.packages.types.farCoapi") />
+		<cfset application.fc.factory['farCoapi'] = createObject("component", "farcry.core.packages.types.farCoapi").fourqInit() />
 		
 		
 

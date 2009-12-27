@@ -40,9 +40,10 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfinclude template="/farcry/core/webtop/includes/cfFunctionWrappers.cfm">
 	
 	<cffunction name="init" output="false" access="public" returntype="Any">
+	
 		<cfset variables.stContainer = structNew() />
 		
-		<cfreturn this>
+		<cfreturn fourqInit() />
 	</cffunction>
 	
 	<cffunction name="createData" access="public" returntype="any" output="false" hint="Creates an instance of a container object.">
@@ -535,7 +536,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 
 		<cfloop from="1" to="#arrayLen(arguments.aRules)#" index="i">
 			 <cftry> 
-
+			
 				<cfif request.mode.design and request.mode.showcontainers gt 0>
 					<!--- request.thiscontainer is set up in the container tag and corresponds to the page container, not the shared container --->
 					<skin:view objectid="#arguments.aRules[i]#" webskin="displayAdminToolbar" index="#i#" r_html="ruleHTML" arraylen="#arraylen(arguments.aRules)#" originalID="#arguments.originalID#" />
@@ -547,7 +548,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 				<cfset rule = application.fapi.findType(arguments.aRules[i]) />
 				
 				<cfif application.fapi.hasWebskin(rule,"execute")>
-					<skin:view objectid="#arguments.aRules[i]#" webskin="execute" r_html="ruleHTML" />
+					<skin:view objectid="#arguments.aRules[i]#" typename="#rule#" webskin="execute" r_html="ruleHTML" />
 				<cfelse>
 					<cfsavecontent variable="ruleHTML">
 						<cfoutput>#application.fapi.getContentType(rule).execute(objectid=arguments.aRules[i])#</cfoutput>
@@ -585,7 +586,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 					 </cfoutput>
 				</cfcatch>
 			</cftry>
-		</cfloop>		 
+		</cfloop>	 
 		<cfloop from="1" to="#arrayLen(request.aInvocations)#" index="i">
 			<cfif isStruct(request.aInvocations[i])>
 				<cfif structKeyExists(request.aInvocations[i],"preHTML")>
@@ -600,7 +601,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 			<cfelse>
 				<cfoutput>#request.aInvocations[i]#</cfoutput>	
 			</cfif>	 
-		</cfloop>				
+		</cfloop>	
 	</cffunction>
 	
 	<cffunction name="getSharedContainers" access="public" hint="Returns a query of containers with bShared true." returntype="query" output="false">

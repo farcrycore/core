@@ -38,9 +38,7 @@
 	<cfexit method="exittag" />
 </cfif>
 
-<cfif not structKeyExists(request.fc, "startTickCount")>
-	<cfset request.fc.startTickCount = GetTickCount() />
-</cfif>
+<cfparam name="request.fc.startTickCount" default="#GetTickCount()#" />
 
 
 <!--- environment variables --->
@@ -132,7 +130,7 @@
 				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/404.cfm" />
 				<cfsetting enablecfoutputonly="false" />
 				<cfexit method="exittag" />	
-			<cfelseif fileexists("#application.path.project#/www/errors/404.cfm")>
+			<cfelseif fileexists("#application.path.project#/www/errors/404.cfm")>	
 				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/www/errors/404.cfm" />
 				<cfsetting enablecfoutputonly="false" />
 				<cfexit method="exittag" />	
@@ -310,17 +308,14 @@
 </cfif>
 
 
-<cfif not structKeyExists(request.fc, "endTickCount")>
-	<cfset request.fc.endTickCount = GetTickCount() />
-</cfif>
-
-<cfset request.fc.totalTickCount = (request.fc.endTickCount - request.fc.startTickCount) / 1000 />
 
 	<cfif len(url.type) AND not structKeyExists(application.rules, url.type) AND request.mode.bAdmin AND request.fc.bShowTray AND not structKeyExists(request.fc, "bAdminTrayRendered") AND not request.mode.ajax>
 		<cfset request.fc.bAdminTrayRendered = true />
 		
 		<cfparam name="session.fc" default="#structNew()#" />
 		<cfparam name="session.fc.trayWebskin" default="displayAdminBarHidden" />
+		
+		<cfset request.fc.totalTickCount = (GetTickCount() - request.fc.startTickCount) / 1000 />
 		
 		<cfset urlTray = application.fapi.getLink(type=url.type, objectid=url.objectid, urlParameters='ajaxmode=1') />
 
@@ -414,21 +409,19 @@
 		
 		// only show the frame if we are not in a frame
 		if (top === self) { 		
-			$j("body").prepend("<div style='bottom:0;font-size:11px;padding:0;position:fixed;right:0;width:100%;z-index:999;max-height:200px;overflow:auto;'><div id='farcrytray'></div></div>");	
+			$j("body").append("<div style='bottom:0;left:0;font-size:11px;padding:0;position:fixed;width:100%;z-index:9999;text-align:left;'><div id='farcrytray'></div></div>");	
 			$fc.traySwitch('#session.fc.trayWebskin#'); // add tray
 			
 		}	
 		
 				
 		</skin:onReady>
-		
-			
-		
+	
 		
 		</cfoutput>
 		
 		<farcry:webskinTracer />
 	</cfif>
-	
+
 <cfsetting enablecfoutputonly="No">
 

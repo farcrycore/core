@@ -273,6 +273,7 @@
 			</div>
 			<br style="clear:both;" />
 		</div>
+		<br style="clear:both;" />
 	</div>
 	</cfoutput>
 </cfif>

@@ -1110,7 +1110,7 @@ default handlers
 			
 			
 			
-			<ft:form>
+			<ft:form bFocusFirstField="true">
 				
 					
 				<cfoutput><h1><skin:icon icon="#application.stCOAPI[stobj.typename].icon#" default="farcrycore" />#stobj.label#</h1></cfoutput>

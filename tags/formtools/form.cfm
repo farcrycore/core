@@ -54,7 +54,7 @@ It just ignores the inner ones.
 		<cfparam name="attributes.ajaxTimout" default="30">
 		<cfparam name="attributes.bAddFormCSS" default="true" /><!--- Uses uniform (http://sprawsm.com/uni-form/) --->
 		<cfparam name="attributes.bFieldHighlight" default="true"><!--- Highlight fields when focused --->
-		<cfparam name="attributes.bFocusFirstField" default="true" /><!--- Focus on first form element. --->
+		<cfparam name="attributes.bFocusFirstField" default="false" /><!--- Focus on first form element. --->
 
 		<!--- Keeps track of all the form name in the request to make sure they are all unique --->
 		<cfparam name="Request.farcryFormList" default="">		

@@ -207,9 +207,12 @@ $in: SessionID -- $
 				$j('##' + formname).attr('fc:validate',false);
 				$fc.wizardSubmission(formname, 'Cancel');	
 			}	
-		}		
+		}	
+		
+		$j('###Request.farcryForm.Name# :input:visible:enabled:first').focus();			
 		</cfoutput>
 	</skin:onReady>
+	
 
 	<cfoutput>
 	<div id="wizard-wrap">	

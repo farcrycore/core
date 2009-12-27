@@ -4,7 +4,7 @@
 	<cfproperty name="ftLabelAlignment" required="false" default="inline" options="inline,block" hint="Used by FarCry Form Layouts for positioning of labels. inline or block." />
 
 	<cfproperty name="ftAllowAttach" required="false" default="true" />
-	<cfproperty name="ftAllowAdd" required="false" default="false" />
+	<cfproperty name="ftAllowAdd" required="false" default="true" />
 	<cfproperty name="ftAllowEdit" required="false" default="false" />
 	<cfproperty name="ftRemoveType" required="false" default="detach" />
 	
