@@ -1,5 +1,5 @@
 <cfsetting enablecfoutputonly="true">
-<!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
+<!--- @@Copyright: Daemon Pty Limited 2002-2009, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
 
@@ -17,18 +17,11 @@
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
 <!--- @@displayname: Webtop Overview --->
-<!--- @@description: The default webskin to use to render the object's summary in the webtop overview screen  --->
-<!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
-
-
-<!------------------ 
-FARCRY INCLUDE FILES
- ------------------>
+<!--- @@description: The dmInclude specific webskin to use to render the object's summary in the webtop overview screen  --->
 
 <!------------------ 
 START WEBSKIN
  ------------------>
-
 <cfoutput>
 <h2>CONTENT ITEM INFORMATION</h2>
 
