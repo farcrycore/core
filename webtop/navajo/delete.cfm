@@ -16,6 +16,12 @@
 <cfset stResult = oType.delete(objectid="#url.objectID#") />
 
 
+
+<!--- import tag libraries --->
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
+
+<admin:header>
+
 <cfif isDefined("stResult.bSuccess") AND not stResult.bSuccess>
 
 	<cfoutput><div class="error">#stResult.message#</div></cfoutput>
@@ -24,9 +30,14 @@
 	
 	<cfswitch expression="#url.ref#">
 		<cfcase value="iframe">
+			
 			<cfoutput>
 				<script type="text/javascript">
-				location = "#url.returnto#";
+				if (parent.$fc.objectAdminActionDiv === undefined) {
+					location = "#url.returnto#";
+				} else {
+					parent.$fc.objectAdminActionDiv.dialog('close');
+				}
 				</script>		
 			</cfoutput>
 		</cfcase>
@@ -38,7 +49,11 @@
 				if(parent['sidebar'].frames['sideTree'])
 					parent['sidebar'].frames['sideTree'].location= parent['sidebar'].frames['sideTree'].location;
 				
-				window.location = "#url.returnto#";
+				if (parent.$fc.objectAdminActionDiv === undefined) {
+					location = "#url.returnto#";
+				} else {
+					parent.$fc.objectAdminActionDiv.dialog('close');
+				}
 				</script>		
 			</cfoutput>
 		</cfdefaultcase>
@@ -46,5 +61,6 @@
 
 </cfif>
 
-	
+<admin:footer>
+
 <cfsetting enablecfoutputonly="No">
