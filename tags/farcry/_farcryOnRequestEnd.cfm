@@ -288,7 +288,7 @@ $out:$
 			------------------------------------------------>
 			<cfif len(lCoreLibraries)>
 				<cfoutput>
-					<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?ajaxmode=1&amp;files=#lCoreLibraries#&amp;fjsv=#farcryJSVersion#"></script></cfoutput>
+					<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?ajaxmode=1&files=#lCoreLibraries#&jsv=#farcryJSVersion#"></script></cfoutput>
 			</cfif>
 			
 						
@@ -328,7 +328,7 @@ $out:$
 			</cfif>			
 			<cfif len(lLibraries)>
 				<cfoutput>
-					<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?files=#lLibraries#&amp;fjsv=#farcryJSVersion#"></script></cfoutput>
+					<script type="text/javascript" src="#application.url.farcry#/js/combine.cfm?files=#lLibraries#&fjsv=#farcryJSVersion#"></script></cfoutput>
 			</cfif>
 			
 			

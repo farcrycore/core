@@ -1077,10 +1077,18 @@ function $(element) {
 if (Prototype.BrowserFeatures.XPath) {
   document._getElementsByXPath = function(expression, parentElement) {
     var results = [];
+	try {
     var query = document.evaluate(expression, $(parentElement) || document,
       null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null);
     for (var i = 0, length = query.snapshotLength; i < length; i++)
       results.push(query.snapshotItem(i));
+	} catch(e) {
+		//RR: added try and catch
+		//Depending on what is passed to this, Safari and Chrome can
+		//explode with a DOM Error 9. I think this is fixed in 1.6
+		//but since we are moving away from prototype this quick
+		//fix might be enough.
+	}
     return results;
   };
 }
