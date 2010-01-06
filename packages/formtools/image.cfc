@@ -649,7 +649,7 @@
 
       </cfcase>
 	
-	<cfcase value="center, topleft, topcenter, topright, left, right, bottomleft, bottomcenter, bottomright">
+	<cfcase value="center,topleft,topcenter,topright,left,right,bottomleft,bottomcenter,bottomright">
 		<!--- Resize image without going over crop dimensions--->
 		<cfset widthPercent = arguments.Width / newImage.width>
 		<cfset heightPercent = arguments.Height / newImage.height>
