@@ -46,7 +46,7 @@ manage friednly urls for a particular object id
 		<cfif not stResult.bSuccess>
 			<skin:bubble title="#stResult.message#" autoHide="false" />
 		<cfelse>
-			<skin:bubble title="Custom Friendly URL Created" autoHide="true">
+			<skin:bubble title="Alternative Friendly URL Created" autoHide="true">
 				<cfoutput>Your Friendly URL (#stProperties.friendlyURL#) has been created.</cfoutput>
 			</skin:bubble>
 		</cfif>
@@ -113,7 +113,7 @@ manage friednly urls for a particular object id
 	<grid:div id="fu-tabs" style="width:100%;height:100%;">
 		<cfoutput>
 		<ul>
-			<li><a href="##tabs-1">Create Custom</a></li>
+			<li><a href="##tabs-1">Create Alternative</a></li>
 			<cfif qFUCurrent.recordCount>
 				<li><a href="##tabs-2">Current</a></li>
 			</cfif>
@@ -146,7 +146,7 @@ manage friednly urls for a particular object id
 								<cfif qFUCurrent.fuStatus EQ 1>
 									System Generated
 								<cfelseif qFUCurrent.fuStatus EQ 2>
-									Custom
+									Alternative
 								</cfif>
 							</h3>
 							<table class="table-2" cellspacing="0" id="table_friendlyurl">
@@ -277,143 +277,6 @@ manage friednly urls for a particular object id
 		</cfif>
 	</grid:div>	
 	
-	<!--- 
-	<extjs:tab id="manageFriendlyURLs">
-		<extjs:tabPanel id="createCustom" title="Create Custom" autoheight="true" style="padding:10px;">
-			<ft:form name="frm">
-				
-				<ft:object typename="farFU" key="newFU" lexcludeFields="label,refObjectID,fuStatus,querystring,applicationname" includeFieldSet="false" />
-				<ft:buttonPanel>
-					<ft:button value="Add" selectedObjectID="#url.objectid#" />
-				</ft:buttonPanel>
-
-			</ft:form>
-		</extjs:tabPanel>
-
-		
-		<cfset qFUList = application.fc.factory.farFU.getFUList(objectid="#url.objectid#", fuStatus="current") />
-		
-		<cfif qFUList.recordCount>
-			<extjs:tabPanel id="current" title="Current" autoheight="true" style="padding:10px;">
-
-				<ft:form>
-					
-					
-					<cfoutput query="qFUList" group="fuStatus">
-						<h3>
-							<cfif qFUList.fuStatus EQ 1>
-								System Generated
-							<cfelseif qFUList.fuStatus EQ 2>
-								Custom
-							</cfif>
-						</h3>
-						<table class="table-2" cellspacing="0" id="table_friendlyurl">
-						<tr>
-							<th style="width:20px;">&nbsp;</th>
-							<th style="width:40%;">Friendly URL</th>
-							<th style="width:30%;">Redirection</th>
-							<th>Default</th>
-						</tr>
-						
-						<cfoutput>
-						<ft:object objectid="#qFUList.objectid[currentRow]#" typename="farFU" r_stFields="stFields" r_stPrefix="prefix" />
-						<tr class="alt">
-							<cfif qFUList.fuStatus EQ 1>
-								<td>&nbsp;</td>
-							<cfelse>
-								<td><input type="checkbox" name="lArchiveObjectID" value="#qFUList.objectid#"></td>
-							</cfif>
-							
-							<cfif qFUList.fuStatus EQ 1>
-								<td>#stFields.friendlyurl.value#</td>
-							<cfelse>
-								<td>#stFields.friendlyurl.html#</td>
-							</cfif>
-							
-							<td>
-								#stFields.redirectionType.html#
-								<div id="#prefix#-redirect-to-wrap" style="<cfif qFUList.redirectionType[currentRow] EQ 'none'>display:none;</cfif>">#stFields.redirectTo.html#</div>
-								
-								<skin:onReady>
-									var el = Ext.get('#stFields.redirectionType.FORMFIELDNAME#');	
-									el.on('change', function(n,c) {
-										var currentValue = Ext.getDom('#stFields.redirectionType.FORMFIELDNAME#').value;
-										if (currentValue != 'none') {
-											
-											Ext.get('#prefix#-redirect-to-wrap').slideIn('t', {
-											    easing: 'easeIn',
-											    duration: .5,
-											    useDisplay: true
-											});
-										} else {
-											Ext.get('#prefix#-redirect-to-wrap').slideOut('t', {
-											    easing: 'easeOut',
-											    duration: .5,
-											    useDisplay: true
-											});
-										}
-									});	
-								</skin:onReady>
-							</td>
-							<cfif qFUList.bDefault>
-								<td>>>>DEFAULT<<<</td>
-							<cfelse>
-								<td><ft:button value="Make Default" selectedObjectID="#qFUList.objectid#" size="small" /></td>
-							</cfif>
-							
-						</tr>
-						</cfoutput>
-						
-						
-						</table>
-					</cfoutput>
-					
-					<ft:buttonPanel indentForLabel="false">
-						<ft:button value="Archive Selected" />
-						<ft:button value="Save Changes" />
-					</ft:buttonPanel>
-				
-				</ft:form>
-			</extjs:tabPanel>
-		</cfif>
-		
-		
-		<cfset qFUList = application.fc.factory.farFU.getFUList(objectid="#url.objectid#", fuStatus="archived") />
-		
-		<cfif qFUList.recordCount>
-			<extjs:tabPanel id="archive" title="Archive" autoheight="true" style="padding:10px;">
-		
-				
-				<ft:form>
-					
-					<cfoutput query="qFUList" group="fuStatus">
-						<h3>Archived</h3>
-						<table class="table-2" cellspacing="0" id="table_friendlyurl">
-						<tr>
-							<th style="width:20px;">&nbsp;</th>
-							<th>Friendly URL</th>
-						</tr>
-						
-						<cfoutput>
-						<tr class="alt">
-							<td><input type="checkbox" name="lDeleteObjectID" value="#qFUList.objectid#"></td>
-							<td>#qFUList.friendlyurl#</td>							
-						</tr>
-						</cfoutput>
-						
-						
-						</table>
-					</cfoutput>
-					
-					
-					<ft:buttonPanel indentForLabel="false">
-						<ft:button value="Delete Selected Archives" />
-					</ft:buttonPanel>
-				
-				</ft:form>
-			</extjs:tabPanel>
-		</cfif>
-	</extjs:tab> --->
 
 <admin:footer>
 <cfsetting enablecfoutputonly="false">

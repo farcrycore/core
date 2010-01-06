@@ -19,7 +19,7 @@
 			</select> 		
 		</cfoutput>
 	<cfelse>
-		<div>No Webskins Available</div>
+		<cfoutput><div>No Webskins Available</div></cfoutput>
 	</cfif>
 
 

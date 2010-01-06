@@ -60,10 +60,10 @@
 				
 					<cfif stCSS.bCombine>
 						<cfset sCacheFileName = application.fc.utils.combine(	id=stCSS.id,
-																			files=stCSS.lFullFilebaseHREFs,
-																			type="css",
-																			prepend:stCSS.prepend,
-																			append:stCSS.append) />
+																				files=stCSS.lFullFilebaseHREFs,
+																				type="css",
+																				prepend=stCSS.prepend,
+																				append=stCSS.append) />
 					
 						<cfset application.fc.stCSSLibraries[idHash].sCacheFileName = sCacheFileName />
 					</cfif>

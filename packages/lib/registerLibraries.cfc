@@ -467,7 +467,7 @@
 			.webtopOverviewStatusBox {
 				border:1px solid black;
 				padding:10px;
-				margin-top:5px;
+				margin:0px 0px 10px 0px;
 			}
 			.webtopSummarySection {
 				border-bottom:2px solid ##DFDFDF;
@@ -479,6 +479,24 @@
 				font-weight:bold;
 			}	
 			
+
+        	table.navtree td {
+				font-size:11px;
+				font-weight:normal;
+				vertical-align:middle;
+				padding:0px;
+				color:##ffffff;
+				line-height:normal;
+			}
+			table.navtree td.objectname {
+				padding-left:5px;
+			}
+			table.navtree td.objectname a {
+				cursor:pointer;
+				color:##ffffff;
+				text-decoration:underline;
+			}
+						
 			
 			ul.object-admin-actions {
 				margin:0px;

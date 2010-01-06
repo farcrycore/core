@@ -16,37 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/webtop/index.cfm,v 1.102.2.1 2006/04/09 02:43:35 geoff Exp $
-$Author: geoff $
-$Date: 2006/04/09 02:43:35 $
-$Name: milestone_3-0-1 $
-$Revision: 1.102.2.1 $
 
-|| DESCRIPTION || 
-$Description: FarCry Admin Central Index. 
-Notes:
-section url param loads default iFrames
-
-Nav tabs load from XML
-
-Vars:
-<title></title>
-<body id="var">
-
-pseudo logic:
-check active section from url
-is sec valid and permitted
-is sub valid and permitted
-load default iframes
-$
-
-|| DEVELOPER ||
-$Developer: Geoff Bowers (modius@daemon.com.au)$
-$Developer: Guy Phanvongsa (guy@daemon.com.au)$
-$Developer: Pete Ottery (pot@daemon.com.au)$
---->
 <cfprocessingDirective pageencoding="utf-8" />
 
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
@@ -76,55 +46,71 @@ $Developer: Pete Ottery (pot@daemon.com.au)$
 <title>[#application.applicationname#] #application.config.general.sitetitle# - FarCry Webtop</title>
 </head>
 <body id="sec-#url.sec#">
-
-	<div id="header">
+	<table style="width:100%;height:100%;">
+	<tr>
+		<td style="height:77px;">
+			<div id="header">
+			
+				<div id="site-name">
+		
+					<h1>#application.config.general.sitetitle#</h1>
+					<h2>#application.config.general.sitetagline#</h2>
+				
+				</div>
+				
+				<div id="admin-tools">
+					<div id="powered-by"><img src="images/powered_by_farcry.gif" alt="farcry" /></div>
+					<p>Logged in: <cfif StructKeyExists(session.dmProfile,"firstname")><strong>#session.dmProfile.firstname#</strong></cfif><br />
+					(<a href="#application.url.farcry#/index.cfm?logout=1" target="_top">Logout</a><!---  | Help ---> |  <skin:buildLink alias="home" target="_top">View</skin:buildLink>)
+					</p>
+				</div>
+				
+				<div id="nav">
+					<ul>
+		</cfoutput>
+		
+		<admin:loopwebtop parent="#stSections#" item="section" class="class">
+			<!--- Output the menu link --->
+			<cfoutput><li id="nav-#section.id#" class="#class#<cfif url.sec eq section.id> active</cfif>"><a href="index.cfm?sec=#section.id#">#trim(section.label)#</a></li></cfoutput>
+		</admin:loopwebtop>
+		
+		<cfoutput> </ul>
+				</div>
+			
+				<div class="clear"></div>
+				
+			</div>		
+		</td>
+	</tr>
+	<tr>
+		<td style="height:99%;">
+		
+			<div id="content-wrap" style="height:100%;">
+		
+				<div id="sidebar">
+					<iframe src="#application.factory.oWebtop.getAttributeURL('#url.sec#.#url.sub#','sidebar',url)#" name="sidebar" scrolling="auto" frameborder="0" id="iframe-sidebar"></iframe>
+				</div>
+				
+				<div id="content">
+					<iframe src="#application.factory.oWebtop.getAttributeURL('#url.sec#.#url.sub#','content',url)#" name="content" scrolling="auto" frameborder="0" id="iframe-content"></iframe>
+				</div>
+				
+				<div class="clear"></div>
+		
+			</div>		
+		</td>
+	</tr>
+	<tr>
+		<td style="height:25px;">
+			<div id="footer">
+				<p>Copyright &copy; <a href="http://www.daemon.com.au" target="_blank">Daemon</a> 1997-#year(now())#, #createObject("component", "#application.packagepath#.farcry.sysinfo").getVersionTagline()#</p>
+			</div>		
+		</td>
+	</tr>
+	</table>
 	
-		<div id="site-name">
-
-			<h1>#application.config.general.sitetitle#</h1>
-			<h2>#application.config.general.sitetagline#</h2>
-		
-		</div>
-		
-		<div id="admin-tools">
-			<div id="powered-by"><img src="images/powered_by_farcry.gif" alt="farcry" /></div>
-			<p>Logged in: <cfif StructKeyExists(session.dmProfile,"firstname")><strong>#session.dmProfile.firstname#</strong></cfif><br />
-			(<a href="#application.url.farcry#/index.cfm?logout=1" target="_top">Logout</a><!---  | Help ---> |  <skin:buildLink alias="home" target="_top">View</skin:buildLink>)
-			</p>
-		</div>
-		
-		<div id="nav">
-			<ul>
-</cfoutput>
-
-<admin:loopwebtop parent="#stSections#" item="section" class="class">
-	<!--- Output the menu link --->
-	<cfoutput><li id="nav-#section.id#" class="#class#<cfif url.sec eq section.id> active</cfif>"><a href="index.cfm?sec=#section.id#">#trim(section.label)#</a></li></cfoutput>
-</admin:loopwebtop>
-
-<cfoutput> </ul>
-		</div>
 	
-		<div class="clear"></div>
-		
-	</div>
-	<div id="content-wrap">
 
-		<div id="sidebar">
-			<iframe src="#application.factory.oWebtop.getAttributeURL('#url.sec#.#url.sub#','sidebar',url)#" name="sidebar" scrolling="auto" frameborder="0" id="iframe-sidebar"></iframe>
-		</div>
-		
-		<div id="content">
-			<iframe src="#application.factory.oWebtop.getAttributeURL('#url.sec#.#url.sub#','content',url)#" name="content" scrolling="auto" frameborder="0" id="iframe-content"></iframe>
-		</div>
-		
-		<div class="clear"></div>
-
-	</div>
-	
-	<div id="footer">
-		<p>Copyright &copy; <a href="http://www.daemon.com.au" target="_blank">Daemon</a> 1997-#year(now())#, #createObject("component", "#application.packagepath#.farcry.sysinfo").getVersionTagline()#</p>
-	</div>
 </cfoutput>
 
 <!--- expander widget for sidebar/content iframes --->

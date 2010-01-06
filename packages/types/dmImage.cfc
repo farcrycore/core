@@ -26,6 +26,7 @@ type properties
 <cfproperty ftSeq="22" ftFieldset="Image Files" name="SourceImage" type="string" hint="The URL location of the uploaded image" required="No" default="" 
 	ftType="Image" 
 	ftCreateFromSourceOption="false" 
+	ftAllowResize="false"
 	ftDestination="/images/dmImage/SourceImage" 
 	ftlabel="Source Image" 
 	ftImageWidth="" 

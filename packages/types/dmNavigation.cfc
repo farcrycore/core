@@ -15,37 +15,31 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/packages/types/dmNavigation.cfc,v 1.20.2.11 2006/03/08 00:32:13 paul Exp $
-$Author: paul $
-$Date: 2006/03/08 00:32:13 $
-$Name: milestone_3-0-1 $
-$Revision: 1.20.2.11 $
 
-|| DESCRIPTION || 
-$Description: dmNavigation type $
-
-
-|| DEVELOPER ||
-$Developer: Brendan Sisson (brendan@daemon.com.au) $
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
---->
 
 <cfcomponent name="dmNavigation" extends="types" displayname="Navigation" hint="Navigation nodes are combined with the ntm_navigation table to build the site layout model for the FarCry CMS system." bUseInTree="1" bFriendly="1" bObjectBroker="true">
 	<!------------------------------------------------------------------------
 	type properties
 	------------------------------------------------------------------------->	
-	<cfproperty ftSeq="1" ftFieldSet="General Details" name="title" type="nstring" hint="Object title.  Same as Label, but required for overview tree render." required="no" default="" ftLabel="Title" />
+	<cfproperty name="title" type="nstring" required="no" default=""  hint="Object title.  Same as Label, but required for overview tree render."
+		ftSeq="1" ftFieldSet="General Details" ftLabel="Navigation Menu Title" 	 
+		ftHint="The navigation title is used when building the navigation menu for your website. Consider using a short menu title." />
 	
-	<cfproperty ftSeq="5" ftFieldSet="Advanced" name="lNavIDAlias" type="string" hint="A Nav alias provides a human interpretable link to this navigation node.  Each Nav alias is set up as key in the structure application.navalias.<i>aliasname</i> with a value equal to the navigation node's UUID." required="no" default="" ftLabel="Alias" />
-	<cfproperty ftSeq="10" ftFieldSet="Advanced" name="ExternalLink" type="string" hint="URL to an external (ie. off site) link." required="no" default="" ftType="list" ftLabel="Redirect to" ftListData="getExternalLinks" />
+	<cfproperty name="lNavIDAlias" type="string" hint="A Nav alias provides a human interpretable link to this navigation node.  Each Nav alias is set up as key in the structure application.navalias.<i>aliasname</i> with a value equal to the navigation node's UUID." required="no" default="" 
+		ftSeq="5" ftFieldSet="Advanced" 
+		ftLabel="Alias"
+		ftHint="The alias is an advanced option that can be used to programatically reference this navigation item." />
+		
+	<cfproperty name="ExternalLink" type="string" hint="URL to an external (ie. off site) link." required="no" default=""
+		ftSeq="10" ftFieldSet="Advanced" 
+		ftLabel="Redirect to" 
+		ftType="list" ftListData="getExternalLinks"
+		ftHint="If you select to redirect, the visitor will be relocated to the nominated navigation alias. Please note, this will bypass any content that may be attached to this menu item." />
 	
 	<cfproperty name="fu" type="string" hint="Friendly URL for this node." required="no" default="" ftLabel="Friendly URL" />
-	<cfproperty name="aObjectIDs" type="array" hint="Holds objects to be displayed at this particular node.  Can be of mixed types." required="no" default="" ftJoin="dmImage" />
+	<cfproperty name="aObjectIDs" type="array" hint="Holds objects to be displayed at this particular node.  Can be of mixed types." required="no" default="" 
+		ftLabel="Content"
+		ftJoin="dmHTML" />
 	<cfproperty name="options" type="string" hint="No idea what this is for." required="no" default="" ftLabel="Options" />
 	<cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft" ftLabel="Status" />
 	
@@ -296,7 +290,7 @@ $out:$
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 		
 		<cfset var html = "" />
-		<cfset var qTypes = querynew("typename,description","varchar,varchar") />
+		<cfset var qTypes = querynew("typename,displayname,hint","varchar,varchar,varchar") />
 		<cfset var thistype = "" />
 		
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
@@ -306,31 +300,57 @@ $out:$
 				<cfif thistype NEQ "dmNavigation">
 					<cfset queryaddrow(qTypes) />
 					<cfset querysetcell(qTypes,"typename",thistype) />
-					<cfif structkeyexists(application.stCOAPI[thistype],"displayname") and len(application.stCOAPI[thistype].displayname)>
-						<cfset querysetcell(qTypes,"description",application.stCOAPI[thistype].displayname) />
-					<cfelse>
-						<cfset querysetcell(qTypes,"description",thistype) />
-					</cfif>
+					<cfset querysetcell(qTypes,"displayname",application.fapi.getContentTypeMetadata(thistype,"displayname", thistype)) />
+					<cfset querysetcell(qTypes,"hint",application.fapi.getContentTypeMetadata(thistype,"hint", "")) />
 				</cfif>
 			</cfif>
 		</cfloop>
 		<cfquery dbtype="query" name="qTypes">
 			select		*
 			from		qTypes
-			order by	description
+			order by	displayname
 		</cfquery>
 		
 		<cfif qTypes.recordcount>
+		
+					
 			<cfsavecontent variable="html">
 				<cfoutput>
-					<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value=" " />
+					<div class="multiField">
+					<table class="layout" style="border-collapse:collapse;">
+				</cfoutput>
+				
+				<cfloop query="qTypes">
+					<cfoutput>
+					<tr>
+						<td style="padding:5px;vertical-align:top;border:1px solid ##DFDFDF;border-width:1px 0px 1px 1px;">
+							<input type="radio" name="#arguments.fieldname#typename" id="#arguments.fieldname#typename" value="#qTypes.typename#" />
+						</td>
+						<td style="padding:5px;vertical-align:top;border:1px solid ##DFDFDF;border-width:1px 0px 1px 0px;">
+							<img src="#application.fapi.getIconURL(application.stCOAPI[qTypes.typename].icon,48,'farcrycore')#" />
+						</td>
+						<td style="vertical-align:top;border:1px solid ##DFDFDF;border-width:1px 1px 1px 0px;">
+							<b>#qTypes.displayname#</b><br>
+							#qTypes.hint#
+						</td>
+					</tr>
+					</cfoutput>				
+				</cfloop>
+				<cfoutput>
+					</table>
+					<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" />
+					</div>
+				</cfoutput>
+				<!---
+				<cfoutput>
+					<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" />
 					<select name="#arguments.fieldname#typename" id="#arguments.fieldname#typename">
 						<option value="">#application.rb.getResource("coapi.dmNavigation.properties.aObjectIDs@noneForSelect","-- None --")#</option>
 						<cfloop query="qTypes">
-							<option value="#qTypes.typename#">#qTypes.description#</option>
+							<option value="#qTypes.typename#" title="#application.fapi.getIconURL(application.stCOAPI[qTypes.typename].icon,16,'farcrycore')#">#qTypes.description#</option>
 						</cfloop>	
 					</select><br/>
-				</cfoutput>
+				</cfoutput>--->
 			</cfsavecontent>
 		<cfelse>
 			<cfsavecontent variable="html">

@@ -44,7 +44,9 @@ $out:$
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
-
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">
+<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+	    
 <!--- character to indicate levels --->
 <cfset levelToken = "-" />
 
@@ -52,7 +54,7 @@ $out:$
 
 <sec:CheckPermission error="true" permission="developer">
 
-	<cfif isDefined("form.submit")>
+	<ft:processForm action="Build Site Structure">
 	
 		<cfparam name="form.makeHTML" default="" />
 		<cfparam name="form.displayMethod" default="" />
@@ -62,9 +64,6 @@ $out:$
 	        startPoint = form.startPoint;
 	        if (len(form.makeHTML))
 	            displayMethod = form.displayMethod;
-	        makenavaliases = isDefined("form.makenavaliases") and form.makenavaliases;
-	        if (makenavaliases)
-	            navaliaseslevel = form.navaliaseslevel;
 	
 	        createdBy = application.security.getCurrentUserID();
 	        status = form.status;
@@ -196,7 +195,6 @@ $out:$
 	    </cfscript>
 
 		
-	    <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 	
 	    <cfloop index="i" from="1" to="#arrayLen(htmlItems)#">
 	        <q4:contentobjectcreate typename="#application.types[htmlItems[i].typeName].typePath#" stProperties="#htmlItems[i]#" bAudit="false">
@@ -222,212 +220,169 @@ $out:$
 	          	<li>#application.rb.formatRBString("sitetree.message.objectnumber@text",subS,"{1}\ <strong>{2}</strong>\ content\ items")#</li>
 	        </ul>
 	    </cfoutput>
-	<cfelse>
 	
-	    <cfscript>
-	        o = createObject("component", "#application.packagepath#.farcry.tree");
-	        qNodes = o.getDescendants(dsn=application.dsn, objectid=application.navid.root);
-	    </cfscript>
+	</ft:processForm>
 	
-	   
 	
-	<cfoutput>
-	<script language="JavaScript">
-	    function updateDisplayBox()
-	    {
-	        document.theForm.displayMethod.disabled = !document.theForm.makehtml.checked;
-	    }
 	
-	    function updateNavTreeDepthBox()
-	    {
-	        document.theForm.navaliaseslevel.disabled = !document.theForm.makenavaliases.checked;
-	    }
-	</script>
+	<!------------------- 
+	THE FORM
+	 --------------------->
 	
-	<form method="post" class="f-wrap-1 f-bg-long wider" action="" name="theForm">
-	<fieldset>
-	
-		<h3>#application.rb.getResource("sitetree.headings.navTreeQuickBuilder@text","Navigation Tree Quick Builder")#</h3>
-
-		<label for="startPoint"><b>#application.rb.getResource("quickbuilder.labels.createStructureWithin@label","Create structure within")#:</b>
-		<select name="startPoint" id="startPoint">
-		<option value="#application.navid.root#">#application.rb.getResource("quickbuilder.labels.root@label","Root")#</option>
-		<cfloop query="qNodes">
-		<option value="#qNodes.objectId#" <cfif qNodes.objectId eq application.navid.home>selected</cfif>>#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #qNodes.objectName#</option>
-		</cfloop>
-		</select><br />
-		</label>
-		
-		<label for="status"><b>#application.rb.getResource("workflow.labels.status@label","Status")#</b>
-		<select name="status" id="status">
-		<option value="draft">#application.rb.getResource("workflow.constants.draft@label","Draft")#</option>
-		<option value="approved">#application.rb.getResource("workflow.constants.approved@label","Approved")#</option>	            
-		</select><br />
-		</label>
+	    <cfset o = createObject("component", "#application.packagepath#.farcry.tree") />
+	    <cfset qNodes = o.getDescendants(dsn=application.dsn, objectid=application.navid.root) />
 		
 		
+		<ft:form>
 		
-		<fieldset class="f-checkbox-wrap">
+			<cfoutput><h1>#application.rb.getResource("sitetree.headings.navTreeQuickBuilder@text","Navigation Tree Quick Builder")#</h1></cfoutput>
 		
-			<b>#application.rb.getResource("quickbuilder.labels.navAliases@label","Nav Aliases")#:</b>
 			
-			<fieldset>
+			<ft:fieldset>
 			
-			<label for="makenavaliases">
-			<input type="checkbox" name="makenavaliases" id="makenavaliases" checked="checked" value="1" onclick="updateNavTreeDepthBox()" class="f-checkbox" />
-			#application.rb.getResource("quickbuilder.labels.createNavAliases@label","Create nav aliases for navigation nodes down")#
-			</label>
-			
-			<select name="navaliaseslevel">
-	            <option value="0">#application.rb.getResource("quickbuilder.labels.all@label","All")#</option>
-	            <option value="1" selected >1</option>
-	            <option value="2">2</option>
-	            <option value="3">3</option>
-	            <option value="4">4</option>
-	            <option value="5">5</option>
-	            <option value="6">6</option>
-	          </select><br />
-	          #application.rb.getResource("quickbuilder.labels.levels@label","levels")#
-			  <script>updateNavTreeDepthBox()</script>
-			
-			</fieldset>
-		
-		</fieldset>
-		
-		<label for="levelToken"><b>#application.rb.getResource("quickbuilder.labels.levelToken@label","Level Token")#:</b>
-		<select name="levelToken" id="levelToken">
-		<option>#levelToken#</option>
-		</select><br />
-		</label>
-		
-		<label for="structure"><b>#application.rb.getResource("quickbuilder.labels.structure@label","Structure")#</b>
-		<textarea name="structure" id="structure" rows="10" cols="40" class="f-comments"></textarea><br />
-		</label>
-
-
-		<skin:htmlHead library="extjs" />
-		
-		<script type="text/javascript">
-		function getDisplayMethod(makehtml) {
-			
-			var el = Ext.get(makehtml);
-		
-			Ext.Ajax.request({
-			   url: '#application.url.farcry#/facade/quickBuilder.cfc?method=listTemplates',
-			   success: getTagsSuccess,
-			   params: { typename: el.getValue() }
-			});			
-			
-		}
-		function getTagsSuccess(response){
-			var el = Ext.get("displayMethods");
-			el.update(response.responseText);
+				<ft:fieldsetHelp>
+					<cfoutput>
+					<admin:resource key="quickbuilder.messages.quicklyBuildFarCrySiteBlurb@text">
+						<p>To quickly build a FarCry site structure, enter each node title on a new line. The hierarchy is determined by the characters in front of an item.</p>
+					</admin:resource>
+					</cfoutput>
+				</ft:fieldsetHelp>
 				
-		}	
-		</script>	
-		
-		<b>Auto Create Children</b>
-		
-		<sec:CheckPermission permission="Create" objectid="#application.navid.home#">
-			<cfset objType = CreateObject("component","#Application.stcoapi.dmNavigation.packagePath#")>
-			<cfset lPreferredTypeSeq = "dmHTML"> <!--- this list will determine preffered order of objects in create menu - maybe this should be configurable. --->
-			<!--- <cfset aTypesUseInTree = objType.buildTreeCreateTypes(lPreferredTypeSeq)> --->
-			<cfset lAllTypes = structKeyList(application.types)>
-			<!--- remove preffered types from *all* list --->
-			<cfset aPreferredTypeSeq = listToArray(lPreferredTypeSeq)>
-			<cfloop index="i" from="1" to="#arrayLen(aPreferredTypeSeq)#">
-				<cfset lAlltypes = listDeleteAt(lAllTypes,listFindNoCase(lAllTypes,aPreferredTypeSeq[i]))>
-			</cfloop>
-			<cfset lAlltypes = ListAppend(lPreferredTypeSeq,lAlltypes)>
-			<cfset aTypesUseInTree = objType.buildTreeCreateTypes(lAllTypes)>
-			<cfif ArrayLen(aTypesUseInTree)>
-				
-					<table>
-					<tr>
-						<td style="width:100px;">Type: </td>
-						<td>
-							<select name="makehtml" id="makehtml" onchange="getDisplayMethod(this)">
-								<option value="">NONE</option>
-								<cfloop index="i" from="1" to="#ArrayLen(aTypesUseInTree)#">								
-									<cfif aTypesUseInTree[i].typename NEQ "dmNavigation">
-										<option value="#aTypesUseInTree[i].typename#">#aTypesUseInTree[i].description#</option>
-									</cfif>						
-								</cfloop>	
-							</select>
-						</td>
-					</tr>
-					<tr>
-						<td>Webskin: </td>
-						<td id="displayMethods"></td>
-					</tr>
-					</table>
-				
-			</cfif>
-		</sec:CheckPermission>
-		<!--- 	<fieldset>
-			 <nj:listTemplates typename="dmHTML" prefix="displayPage" r_qMethods="qDisplayTypes">
-			<label for="makehtml">
-			<input type="checkbox" name="makehtml" id="makehtml" checked="checked" value="1" class="f-checkbox" onclick="updateDisplayBox()" />
-			#application.rb.getResource("createdmHtmlItems")#
-			</label>
-			<select name="displayMethod" id="displayMethod">
-			<cfloop query="qDisplayTypes">
-			<option value="#qDisplayTypes.methodName#" <cfif qDisplayTypes.methodName eq "displayPageStandard">selected="selected"</cfif>>#qDisplayTypes.displayName#</option>
-			</cfloop>
-			</select> 
-			<script>updateDisplayBox()</script><br />
-			#application.rb.getResource("displayMethod")#
+				<ft:field label="#application.rb.getResource("quickbuilder.labels.structure@label","Structure")#">
+					<cfoutput>
+						<textarea name="structure" id="structure" class="textareaInput"></textarea>
+					</cfoutput>
+					
+					<ft:fieldHint>
+						<cfoutput>
+							Enter each item in the format: Title||Alias. The alias is optional. For Example:<br>
+							&nbsp;&nbsp;Item 1<br>
+							&nbsp;&nbsp;- Item 1.2<br>
+							&nbsp;&nbsp;-- Item 1.2.1<br>
+							&nbsp;&nbsp;- Item 1.3<br>
+							&nbsp;&nbsp;Item 2<br>
+							&nbsp;&nbsp;- Item 2.1<br>
+							&nbsp;&nbsp;-- Item 2.2				
+						</cfoutput>
+					</ft:fieldHint>
+				</ft:field>
 			
-			</fieldset> --->
 		
+				<skin:loadJS id="jquery" />
+				
+				<skin:htmlHead>
+				<cfoutput>
+					<script type="application/javascript">
+                	function getDisplayMethod() {
+						$j.ajax({
+						   type: "POST",
+						   url: '#application.url.farcry#/facade/quickBuilder.cfc?method=listTemplates',
+						   data: { typename: $j('##makehtml').attr('value') },
+						   cache: false,
+						   timeout: 10000,
+						   success: function(msg){
+						   		$j('##displayMethods').html(msg);			     	
+						   }
+						});
+					}
+					</script>
+                </cfoutput>
+				</skin:htmlHead>
+				
+				
+				
+				
+				<ft:field label="#application.rb.getResource('quickbuilder.labels.createStructureWithin@label','Create structure within')#">
+					<cfoutput>
+						<select name="startPoint" id="startPoint">
+							<option value="#application.navid.root#">#application.rb.getResource("quickbuilder.labels.root@label","Root")#</option>
+							<cfloop query="qNodes">
+							<option value="#qNodes.objectId#" <cfif qNodes.objectId eq application.navid.home>selected</cfif>>#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #qNodes.objectName#</option>
+							</cfloop>
+						</select>				
+					</cfoutput>
+					
+					<ft:fieldHint>
+						<cfoutput>
+						Select the navigation node under which you wish to have your new structure created.
+						</cfoutput>
+					</ft:fieldHint>
+				</ft:field>
+				
+				<ft:field label="#application.rb.getResource('workflow.labels.status@label','Status')#">
+					<cfoutput>
+	                	<select name="status" id="status">
+							<option value="draft">#application.rb.getResource("workflow.constants.draft@label","Draft")#</option>
+							<option value="approved">#application.rb.getResource("workflow.constants.approved@label","Approved")#</option>	            
+						</select>
+	                </cfoutput>
+					
+					<ft:fieldHint>
+						<cfoutput>
+						Would you like the items you create to be set as draft or approved?
+						</cfoutput>
+					</ft:fieldHint>
+				</ft:field>
+			
+				
+				
+				<sec:CheckPermission permission="Create" objectid="#application.navid.home#">
+					<ft:field label="Auto Create Children">
+						<cfset objType = CreateObject("component","#Application.stcoapi.dmNavigation.packagePath#")>
+						<cfset lPreferredTypeSeq = "dmHTML"> <!--- this list will determine preffered order of objects in create menu - maybe this should be configurable. --->
+						<!--- <cfset aTypesUseInTree = objType.buildTreeCreateTypes(lPreferredTypeSeq)> --->
+						<cfset lAllTypes = structKeyList(application.types)>
+						<!--- remove preffered types from *all* list --->
+						<cfset aPreferredTypeSeq = listToArray(lPreferredTypeSeq)>
+						<cfloop index="i" from="1" to="#arrayLen(aPreferredTypeSeq)#">
+							<cfset lAlltypes = listDeleteAt(lAllTypes,listFindNoCase(lAllTypes,aPreferredTypeSeq[i]))>
+						</cfloop>
+						<cfset lAlltypes = ListAppend(lPreferredTypeSeq,lAlltypes)>
+						<cfset aTypesUseInTree = objType.buildTreeCreateTypes(lAllTypes)>
+						<cfif ArrayLen(aTypesUseInTree)>
+							<cfoutput>
+                            	
+									<table>
+									<tr>
+										<td style="width:100px;">Type: </td>
+										<td>
+											<select name="makehtml" id="makehtml" onchange="getDisplayMethod()">
+												<option value="">NONE</option>
+												<cfloop index="i" from="1" to="#ArrayLen(aTypesUseInTree)#">								
+													<cfif aTypesUseInTree[i].typename NEQ "dmNavigation">
+														<option value="#aTypesUseInTree[i].typename#">#aTypesUseInTree[i].description#</option>
+													</cfif>						
+												</cfloop>	
+											</select>
+										</td>
+									</tr>
+									<tr>
+										<td>Webskin: </td>
+										<td id="displayMethods">--- select a content type above ---</td>
+									</tr>
+									</table>
+								
+                            </cfoutput>
+						</cfif>
+						
+						<ft:fieldHint>
+							<cfoutput>
+							If you wish to have content created under each of the new items in your structure, select the type of content and the template defining how it should be displayed.
+							</cfoutput>
+						</ft:fieldHint>
+					</ft:field>
+				</sec:CheckPermission>
+				
+				
+			</ft:fieldset>
 		
-		
-		<div class="f-submit-wrap">
-		<input type="submit" value="#application.rb.getResource('quickbuilder.buttons.buildSiteStructure@label','Build Site Structure')#" name="submit" class="f-submit" /><br />
-		</div>
-		
-
-	</fieldset>
-	</form>
+			<ft:buttonPanel>
+				<ft:button value="Build Site Structure" text="#application.rb.getResource('quickbuilder.buttons.buildSiteStructure@label','Build Site Structure')#" />
+			</ft:buttonPanel>
+			
+			
+		</ft:form>
 	
-	<hr />
-	
-	<h4>#application.rb.getResource("quickbuilder.headings.instructions@text","Instructions")#</h4>
-	<admin:resource key="quickbuilder.messages.quicklyBuildFarCrySiteBlurb@text">
-		<p>To quickly build a FarCry site structure, enter each node title on a new line. The hierarchy is determined by the characters in front of an item.</p>
-		<p>Hierarchy can either descend (1 or more levels), ascend (1 level at most), or stay the same. To ascend one level, increase the number of levelToken occurrences on the item by 1 compared to the previous item. To descend, keep the number of level token occurrences in front to be the same as a previous item on the same level you wish to go back to. To stay in the same level, keep the levelToken occurrences the same.</p>
-	</admin:resource>
-	<hr />
-	
-	<h4>#application.rb.getResource("quickbuilder.headings.example@text","Example")#</h4>
-	
-	<p>
-	<pre>
-	Item 1
-	-Item 1.2
-	--Item 1.2.1
-	-Item 1.3
-	Item 2
-	-Item 2.1
-	--Item 2.2
-	Item 3
-	</pre>
-	</p>
-	
-	<admin:resource key="quickbuilder.messages.@text">
-		<p>For visual purposes spaces can be included between the item and the levelToken. Example:</p>
-	</admin:resource>
-	
-	<p>
-	<pre>
-	Item 1
-	- Item 1.2
-	-- Item 1.2.1
-	</pre>
-	</p>
-	
-	</cfoutput>
-	</cfif>
 </sec:CheckPermission>
 
 <admin:footer>

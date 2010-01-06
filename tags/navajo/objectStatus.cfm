@@ -42,6 +42,7 @@ $out:$
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 <cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">
  
 <cfparam name="url.objectId">
 <cfparam name="url.status" default="0">
@@ -95,54 +96,55 @@ $out:$
 			return true;
 		}
 		</script>
-		<form action="#cgi.script_name#?#cgi.query_string#" class="f-wrap-1 wider f-bg-medium" name="form" method="post">
-		<h3>
+		<ft:form>
+		<h1>
 			<cfif isDefined("URL.draftObjectID")>
 				#application.rb.getResource("workflow.messages.objStatusRequest@text","Set content item status for underlying draft content item to 'request'")#
 			<cfelse>
 				#application.rb.formatRBString("workflow.messages.setObjStatus@text",url.status,"Set content item status to {1}")#
 			</cfif>
-		</h3>
-			<fieldset>
-				<label for="commentLog"><b>#application.rb.getResource("workflow.fields.addComments@label","Add your comments:")#</b>
-					<textarea name="commentLog" id="commentLog" cols="80" rows="10"></textarea><br />
-				</label>
-				<!--- if requesting approval, list approvers --->
+		</h1>
+			
+			<ft:fieldset>
+				<ft:field label="#application.rb.getResource("workflow.fields.addComments@label","Add your comments:")#">
+					<textarea cols="80" rows="10"  name="commentLog" class="textareaInput"></textarea>
+				</ft:field>
+				
 				<cfif url.status eq "requestApproval" and structcount(stApprovers)>
-					<label for="Log"><b>#application.rb.getResource("workflow.fields.requestApprovalFrom@label","Request Approval From")#</b>
-						<input type="checkbox" onclick="if(this.checked)deSelectAll();" name="lApprovers" value="all" checked="checked">#application.rb.getResource("workflow.fields.requestApprovalFrom@allApprovers","All approvers")#<br />
-							<!--- loop over approvers and display ones that have email profiles --->
-							<cfloop collection="#stApprovers#" item="item">
-							    <cfif stApprovers[item].emailAddress neq "" AND stApprovers[item].bReceiveEmail and stApprovers[item].userName neq application.security.isLoggedIn()>
-									<input type="checkbox" name="lApprovers" onclick="if(this.checked)document.form.lApprovers[0].checked = false;" value="#stApprovers[item].userName#"><cfif len(stApprovers[item].firstName) gt 0>#stApprovers[item].firstName# #stApprovers[item].lastName#<cfelse>#stApprovers[item].userName#</cfif><br />
-								</cfif>
-							</cfloop>
-					</label>
+					<ft:field label="Notify Approvers" bMultiField="true">
+						<input type="checkbox" onclick="if(this.checked)deSelectAll();" name="lApprovers" value="all" checked="checked"> #application.rb.getResource("workflow.fields.requestApprovalFrom@allApprovers","All approvers")#<br />
+						<!--- loop over approvers and display ones that have email profiles --->
+						<cfloop collection="#stApprovers#" item="item">
+						    <cfif stApprovers[item].emailAddress neq "" AND stApprovers[item].bReceiveEmail and stApprovers[item].userName neq application.security.isLoggedIn()>
+								<input type="checkbox" name="lApprovers" onclick="if(this.checked)document.form.lApprovers[0].checked = false;" value="#stApprovers[item].userName#"><cfif len(stApprovers[item].firstName) gt 0> #stApprovers[item].firstName# #stApprovers[item].lastName#<cfelse>#stApprovers[item].userName#</cfif><br />
+							</cfif>
+						</cfloop>
+						
+						<ft:fieldHint>
+							Select the approvers that you would like to be notified by email about your approval request.
+						</ft:fieldHint>
+					</ft:field>
 				<cfelseif url.status eq "requestApproval">
 					<p class="error">There are no users that have permission to approve all items. Request approval for items one at a time or manually notify potential approvers.</p>
 				</cfif>
-			</fieldset>
-		
-			<div class="f-submit-wrap">
-				<input type="submit" name="submit" value="#application.rb.getResource('forms.buttons.submit@label','Submit')#" class="f-submit" />
-				<cfif listlen(attributes.lObjectIDs) gt 1 and len(cgi.HTTP_REFERER)>
-					<input type="submit" name="cancel" value="#application.rb.getResource('forms.buttons.cancel@label','Cancel')#" class="f-submit" onClick="location.href='#cgi.http_referer#';" />
-				<cfelse>
-					<input type="submit" name="cancel" value="#application.rb.getResource('forms.buttons.cancel@label','Cancel')#" class="f-submit" onClick="location.href='../edittabOverview.cfm?objectid=#attributes.lobjectIDs#';" />
-				</cfif>
-			</div>			
+			</ft:fieldset>
+			
+			<ft:buttonPanel>
+				<ft:button value="Submit" text="Change Status" />
+				<ft:button value="Cancel" text="Cancel" />
+			</ft:buttonPanel>
 		
 			<!--- display existing comments --->
 			<nj:showcomments objectid="#astObj[1].objectid#" typename="#astObj[1].typename#" />
-		</form>
+		</ft:form>
 		</cfoutput>
 		<cfset changestatus = false>
 	</cfif>
 </cfif>
 
 <cfif changestatus eq true>
-
-	<cfif isDefined("form.submit")> <!--- check that they hit submit --->
+	<ft:processForm action="Submit">	
+	
 		<cfloop index="attributes.objectID" list="#attributes.lObjectIDs#">
 			<q4:contentobjectget objectId="#attributes.objectId#" r_stObject="stObj">
 			
@@ -363,7 +365,7 @@ $out:$
 		<cfif isstruct(stNav)>
 			<nj:updateTree ObjectId="#stNav.objectId#">
 		</cfif>
-	</cfif><!--- // check that they hit submit --->
+	</ft:processForm>
 
 	<cfif listlen(url.objectid) gt 1 and not find(cgi.SCRIPT_NAME,cgi.http_referer)>
 		<cfparam name="returnObjectId" default="#attributes.lObjectIDs#"><cfoutput>
@@ -386,6 +388,7 @@ $out:$
 		}
 		</script></cfoutput>
 	</cfif>
+	
 </cfif>                                                                                
 <cfoutput>
 </body>

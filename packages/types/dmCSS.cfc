@@ -35,7 +35,7 @@ $in: $
 $out:$
 --->
 
-<cfcomponent extends="types" displayname="CSS" hint="CSS objects influence the look and feel of the website" bUseInTree="1" >
+<cfcomponent extends="types" displayname="CSS" hint="CSS objects influence the look and feel of the website" >
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->

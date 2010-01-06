@@ -64,7 +64,7 @@ $in: [bCacheControl] output cache control headers; default true. $
 	<cfoutput>
 	.uniForm .fieldset {
 		background:##F4F4F4;
-		margin:30px 0 0 0;
+		margin:0 0 10px 0;
 		padding:5px;
 	}
 	

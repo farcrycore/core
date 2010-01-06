@@ -168,7 +168,7 @@
 		</cfloop>
 		
 		<!--- create a string to be used as an Etag - in the response header --->
-		<cfset etag = arguments.id & '--' & lastModified & '-' & hash(sCorrectedFiles) & '-' & hash(arguments.prepend) & '-' & hash(arguments.append) />
+		<cfset etag = arguments.id & '--' & trim(lastModified) & '-' & hash(sCorrectedFiles) & '-' & hash(arguments.prepend) & '-' & hash(arguments.append) />
 		
 		<!--- 
 			output the etag, this allows the browser to make conditional requests

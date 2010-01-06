@@ -13,14 +13,18 @@
 <ft:processForm action="Save,Manage">
 	<cfset setLock(stObj=stObj,locked=false) />
 	
+	<!--- Initialise the new content ID --->
+	<cfset newContentID = "" />
+	
+	<!--- If we already have children, then simply save. --->
 	<cfif arraylen(stObj.aObjectIDs)>
 		<ft:processFormObjects typename="#stobj.typename#" />
 	<cfelse>
+		<!--- Here we may have a new child. If we do then we want to redirect to the editing page of that child after saving. --->
 		<ft:processFormObjects typename="#stobj.typename#">
+			
 			<cfif arraylen(stProperties.aObjectIDs)>
-				<cfset newtypename = application.coapi.coapiadmin.findType(stProperties.aObjectIDs[1]) />
-				<cfset oType = createobject("component",application.stCOAPI[newtypename].packagepath) />
-				<cfset oType.setData(stProperties=oType.getData(objectid=stProperties.aObjectIDs[1],bUseInstanceCache=true)) />
+				<cfset newContentID = stProperties.aObjectIDs[1] />
 			</cfif>
 		</ft:processFormObjects>
 	</cfif>
@@ -35,7 +39,11 @@
 	
 	<cfoutput>
 		<script type="text/javascript">
-			location.href = '#application.url.webtop#/edittabOverview.cfm?objectid=#stObj.ObjectID#';
+			<cfif len(newContentID)>
+				location.href = '#application.url.webtop#/edittabEdit.cfm?objectid=#newContentID#&ref=overview&typename=#application.fapi.findType(newContentID)#';
+			<cfelse>
+				location.href = '#application.url.webtop#/edittabOverview.cfm?objectid=#stObj.ObjectID#';
+			</cfif>
 		</script>
 	</cfoutput>
 </ft:processForm>
@@ -74,71 +82,31 @@
 </ft:processForm>
 
 <ft:form>
-	<cfoutput><h1>#stobj.label#</h1></cfoutput>
+
+
+<cfoutput>
+<table class="layout" style="width:100%;padding:5px;">
+<tr>
+	<td style="width:50px;"><skin:icon icon="#application.stCOAPI[stobj.typename].icon#" size="48" default="farcrycore" alt="#uCase(application.fapi.getContentTypeMetadata(stobj.typename,'displayname',stobj.typename))#" /></td>
+	<td><h1>#stobj.label#</h1></td>
 	
-	<ft:object stObject="#stObj#" lFields="title,lNavIDAlias" legend="General Details" />
+</tr>
+</table>
+</cfoutput>
+
+	
+	<ft:object stObject="#stObj#" lFields="title" legend="General Details" />
 	
 	<cfif not arraylen(stObj.aObjectIDs)>
-		
-		<cfoutput>
-		<div style="margin-left:50px;padding:5px;border:1px solid ##A4C8E5;">
-			<p class="highlight">You do not currently have any content under this navigation item. You have two options:</p>
-		</cfoutput>				
 			
-			<cfset stPropMetadata = structnew() />
-			<cfset stPropMetadata.aObjectIDs.ftLabel = "Content Type" />
-			<cfset stPropMetadata.aObjectIDs.ftHint = "Select a content type to create as a child of this navigation item. If you select this option, you will be automatically redirected to edit the new content item." />
-			<ft:object stObject="#stObj#" lFields="aObjectIDs" legend="OPTION 1: Create Content" stPropMetadata="#stPropMetadata#" bShowLibraryLink="false" />
-			
-			<cfset stPropMetadata = structnew() />
-			<cfset stPropMetadata.ExternalLink.ftHint = "Select a navigation alias to redirect to when this navigation item is browsed too." />
+		<ft:object stObject="#stObj#" lFields="aObjectIDs" legend="Content Options" bShowLibraryLink="false" 
+			helpSection="Select the type of content to appear when the visitor browses to this navigation item. If you select this option, you will be automatically redirected to edit the new content item." />
 	
-			<ft:object stObject="#stObj#" lFields="ExternalLink" legend="OPTION 2: Redirect"  stPropMetadata="#stPropMetadata#"  />
-		
-		<cfoutput>
-		</div>
-		</cfoutput>
-		
-	<cfelse>
-		<cfoutput>
-		<fieldset class="formSection ">
-			<legend class="">Attached Content</legend>
-
-			<div class="fieldSection field ">
-				<label class="fieldsectionlabel ">
-					&nbsp;
-				</label>
-
-				<div class="fieldAlign">
-		</cfoutput>
-		
-						<cfloop from="1" to="#arrayLen(stobj.aObjectIDs)#" index="i">
-							<cfset contentTypename = application.coapi.coapiAdmin.findType(objectid="#stobj.aObjectIDs[i]#") />
-							<skin:view typename="#contentTypename#" objectid="#stobj.aObjectIDs[i]#" webskin="displayLabel" r_html="htmlContentLabel" />
-							<cfoutput>
-							<div style="margin-bottom:10px;padding:5px;border:1px solid ##A4C8E5;">				
-								<table class="layout">								
-								<tr>
-									<td><skin:icon icon="#contentTypename#" class="icon" style="float: right; padding: 10px;" /></td>
-									<td style="vertical-align:middle;">
-										#htmlContentLabel#
-										<ft:button value="Manage" size="small" selectedObjectID="#stobj.aObjectIDs[i]#" />
-									</td>
-								</tr>
-								</table>
-							</div>								
-							</cfoutput>
-						</cfloop>	
-		<cfoutput>		
-
-					
-				</div>
-				<br class="clearer" />
-			</div>
-		</fieldset>
-
-		</cfoutput>
 	</cfif>
+	
+	
+	<ft:object stObject="#stObj#" lFields="lNavIDAlias,ExternalLink" legend="Advanced Settings" />
+	
 	
 	<ft:buttonPanel>
 		<ft:button value="Save" color="orange" /> 
