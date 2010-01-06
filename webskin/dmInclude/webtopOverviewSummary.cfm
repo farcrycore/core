@@ -58,7 +58,7 @@ START WEBSKIN
 		<ft:fieldHint>
 			<cfoutput>
 			This shows you the selected content item in the context of your site. 
-			You can <ft:button value="create a child" renderType="link" url="#application.url.farcry#/conjuror/evocation.cfm?parenttype=dmNavigation&objectId=#stobj.objectid#&typename=dmNavigation&ref=#url.ref#" /> navigation item under this.
+			You can <ft:button value="create a child" renderType="link" url="#application.url.farcry#/conjuror/evocation.cfm?parenttype=dmNavigation&objectId=#parentID#&typename=dmNavigation&ref=#url.ref#" /> navigation item under this.
 			</cfoutput>
 		</ft:fieldHint>
 	</ft:field>
