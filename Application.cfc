@@ -317,7 +317,7 @@
 		<cfinclude template="/farcry/core/tags/farcry/_farcryOnRequestEnd.cfm">
 		
 		<!--- project and plugin request processing --->
-		<cfif arraylen(application.sysinfo.aOnRequestEnd)>
+		<cfif isdefined("application.sysinfo.aOnRequestEnd") and arraylen(application.sysinfo.aOnRequestEnd)>
 			<cfloop from="1" to="#arraylen(application.sysinfo.aOnRequestEnd)#" index="i">
 				<cfinclude template="#application.sysinfo.aOnRequestEnd[i]#" />
 			</cfloop>
