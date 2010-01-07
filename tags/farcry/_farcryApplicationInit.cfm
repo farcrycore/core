@@ -213,8 +213,8 @@ This removes the need to continually check on each request.
 Library Request Processing
 	_serverSpecificRequestScope.cfm
 -------------------------------------------------------->
+<cfset application.sysInfo.aServerSpecificRequestScope = arrayNew(1) />
 <cfif structkeyexists(application, "plugins")>
-	<cfset application.sysInfo.aServerSpecificRequestScope = arrayNew(1) />
 	<cfloop list="#application.plugins#" index="lib">
 		<cfif fileExists("#application.path.plugins#/#lib#/config/_serverSpecificRequestScope.cfm")>
 			<cfset arrayAppend(application.sysInfo.aServerSpecificRequestScope, "/farcry/plugins/#lib#/config/_serverSpecificRequestScope.cfm") />
@@ -238,6 +238,23 @@ Library Request Processing
 	<cfset application.sysInfo.bServerSpecificRequestScope = "true" />
 <cfelse>
 	<cfset application.sysInfo.bServerSpecificRequestScope = "false" />
+</cfif>
+
+<!-------------------------------------------------------
+Library Request End
+	_onRequestEnd.cfm
+-------------------------------------------------------->
+<cfset application.sysInfo.aOnRequestEnd = arrayNew(1) />
+<cfif structkeyexists(application, "plugins")>
+	<cfloop list="#application.plugins#" index="lib">
+		<cfif fileExists("#application.path.plugins#/#lib#/config/_onRequestEnd.cfm")>
+			<cfset arrayAppend(application.sysInfo.aOnRequestEnd, "/farcry/plugins/#lib#/config/_onRequestEnd.cfm") />
+		</cfif>
+	</cfloop>
+</cfif>
+<!--- add project request scope processing --->
+<cfif fileExists("#application.path.project#/config/_onRequestEnd.cfm")>
+	<cfset arrayAppend(application.sysInfo.aOnRequestEnd, "/farcry/projects/#application.projectDirectoryName#/config/_onRequestEnd.cfm") />
 </cfif>
 
 

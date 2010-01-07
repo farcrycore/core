@@ -297,7 +297,14 @@
 	<cffunction name="OnRequestEnd" access="public" returntype="void" output="false" hint="Fires after the page processing is complete.">
 		
 		<cfinclude template="/farcry/core/tags/farcry/_farcryOnRequestEnd.cfm">
-
+		
+		<!--- project and plugin request processing --->
+		<cfif arraylen(application.sysinfo.aOnRequestEnd)>
+			<cfloop from="1" to="#arraylen(application.sysinfo.aOnRequestEnd)#" index="i">
+				<cfinclude template="#application.sysinfo.aOnRequestEnd[i]#" />
+			</cfloop>
+		</cfif>
+		
 		<cfreturn />
 	</cffunction>
 
