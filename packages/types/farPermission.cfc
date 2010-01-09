@@ -15,19 +15,40 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<cfcomponent displayname="Permission" extends="types" output="false" hint="Each permission corresponds to a right to perform an action, access a section of the webtop, or view a webskin. A collection of permssions is called a Role." bsystem="true">
+<cfcomponent displayname="Permission" extends="types" output="false" 
+	hint="Each permission corresponds to a right to perform an action, access a section of the webtop, or view a webskin. A collection of permssions is called a Role." 
+	bsystem="true">
 <!---------------------------------------------- 
 type properties
 ----------------------------------------------->
-	<cfproperty name="title" type="string" default="" hint="The name of this permission" bLabel="true" ftSeq="1" ftFieldset="" ftLabel="Title" ftType="string" fthint="Title is a descriptive label only." />
-	<cfproperty name="shortcut" type="string" default="" hint="Shortcut for permission to use in code" ftSeq="2" ftFieldset="" ftLabel="Code Shortcut" ftType="string" fthint="The shortcut is the variable name for the permission used in programming. It must adhere to the standard CF variable naming convention." />
-	<cfproperty name="aRelatedtypes" type="array" default="" hint="If this permission is item-specific set this field to the types that it can be applied to" ftSeq="3" ftFieldset="" ftLabel="Join on" ftType="array" ftJoin="farPermission" ftRenderType="list" ftLibraryData="getRelatedTypeList" ftShowLibraryLink="false" />
-	<cfproperty name="aRoles" type="string" default="" hint="Meta-property for managing this properties relationships with roles" ftSeq="4" ftFieldset="" ftLabel="Roles" ftType="reversearray" ftSelectMultiple="true" ftJoin="farRole" ftJoinProperty="aPermissions" bSave="false" />
+	<cfproperty 
+		name="title" type="string" default="" hint="The name of this permission" bLabel="true" 
+		ftSeq="1" ftFieldset="General Details" ftLabel="Title" ftvalidation="required"
+		fthint="Title is a descriptive label only."
+		ftType="string" />
+		
+	<cfproperty 
+		name="shortcut" type="string" default="" hint="Shortcut for permission to use in code" 
+		ftSeq="2" ftFieldset="General Details" ftLabel="Code Shortcut" ftvalidation="required"
+		fthint="The code shortcut is the variable name for the permission used in programming. It must adhere to the standard CF variable naming convention. Note if you change this value you may need to make corresponding changes in your code base." 
+		ftType="string" />
+		
+	<cfproperty 
+		name="aRelatedtypes" type="array" default="" hint="If this permission is item-specific set this field to the types that it can be applied to" 
+		ftSeq="3" ftFieldset="General Details" ftLabel="Bind Permission"
+		fthint="Permissions can be bound to a specific content type. Set this field to nominate the types it can be applied to. Only those types capable of being bound are shown." 
+		ftType="array" ftJoin="farPermission" ftRenderType="list" ftLibraryData="getRelatedTypeList" ftShowLibraryLink="false" />
+		
+	<cfproperty 
+		name="aRoles" type="string" default="" hint="Meta-property for managing this properties relationships with roles." 
+		ftSeq="4" ftFieldset="Access Privileges" ftLabel="Roles" 
+		fthint="Assign the security roles that will have access to this permission."
+		ftType="reversearray" ftJoin="farRole" ftSelectMultiple="true" ftJoinProperty="aPermissions" bSave="false" />
 
 <!---------------------------------------------- 
-object methods
+library data methods; used by formtools
 ----------------------------------------------->
-	<cffunction name="getRelatedTypeList" access="public" output="false" returntype="query" hint="Returns the types that can be associated with a permission. References the ftJoin attribute of the farBarnacle aObjects property.">
+	<cffunction name="getRelatedTypeList" access="public" output="false" returntype="query" hint="A library data method that returns the types that can be associated with a permission. References the ftJoin attribute of the farBarnacle aObjects property.">
 		<cfset var qResult = querynew("objectid,label","varchar,varchar") />
 		<cfset var ud = "" />
 		<cfset var group = "" />
@@ -44,7 +65,11 @@ object methods
 		
 		<cfreturn qResult />
 	</cffunction>
-	
+
+
+<!---------------------------------------------- 
+object methods
+----------------------------------------------->	
 	<cffunction name="permissionExists" access="public" output="false" returntype="boolean" hint="Returns true if the permission exists">
 		<cfargument name="permission" type="string" required="true" hint="The permission shortcut" />
 	
