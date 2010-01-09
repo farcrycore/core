@@ -8,14 +8,14 @@
 
 
 <!--- 
-manage friednly urls for a particular object id
+manage friendly urls for a particular object id
  --->
 
 <cfparam name="url.objectid" default="">
 <cfparam name="fatalerrormessage" default="">
 <cfparam name="errormessage" default="">
 <cfparam name="bFormSubmitted" default="no">
-<cfparam name="friendly_url" default=""><!--- #application.config.fusettings.urlpattern# --->
+<cfparam name="friendly_url" default="">
 <cfparam name="additional_params" default="">
 <cfparam name="lArchiveObjectID" default="">
 <cfparam name="fuStatus" default="2">

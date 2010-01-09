@@ -188,11 +188,6 @@ Build NavIDs from Navigation Nodes
     // i18n utils, BIDI, locale names, etc.
     application.i18nUtils=createObject("component","#application.packagepath#.farcry.i18nUtil");
 
-   // refresh the friendly url sub-system
-    objFU = createObject("component","#application.packagepath#.farcry.fu");
-    objFU.refreshApplicationScope();
-    
-    
     // System Information. This provides information about the environment on which the application is being run
     oSysInfo=createObject("component","#application.packagepath#.farcry.sysinfo");
 </cfscript>

@@ -15,26 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/packages/types/_dmnavigation/delete.cfm,v 1.12 2005/04/21 06:23:53 paul Exp $
-$Author: paul $
-$Date: 2005/04/21 06:23:53 $
-$Name: milestone_3-0-1 $
-$Revision: 1.12 $
-
-|| DESCRIPTION || 
-$Description: Specific delete method for dmNavigation. Deletes all descendants aswell as cleaning up verity collections$
-$TODO: Verity check/delete$
-
-|| DEVELOPER ||
-$Developer: Brendan Sisson (brendan@daemon.com.au)$
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
---->
-
+<!--- @@Description: Specific delete method for dmNavigation. Deletes all descendants as well as cleaning up verity collections --->
 <cfscript>
 
 	// get descendants
@@ -47,7 +28,7 @@ $out:$
 	// delete fu
 	if (application.fc.factory.farFU.isUsingFU()) {
 		fuUrl = application.fc.factory.farFU.getFU(objectid=stObj.objectid);
-		application.fc.factory.farFU.deleteFu(fuUrl);
+		application.fc.factory.farFU.deleteMapping(fuUrl);
 	}
 	
 	// delete branch

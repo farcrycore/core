@@ -481,38 +481,6 @@
 			<cfset stResult = createData(stProperties="#stProps#") />
 		</cfloop>
 		
-		<cfif isDefined("application.config.fuSettings.lExcludeObjectIDs") AND listLen(application.config.fuSettings.lExcludeObjectIDs)>
-			<cfloop list="#application.config.fuSettings.lExcludeObjectIDs#" index="excludeObjectID">
-
-				<cfquery datasource="#application.dsn#" name="qExcludeFUs">
-				select * from farFU
-				where refObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#trim(excludeObjectID)#" />
-				AND bDefault = 1
-				</cfquery>
-				
-				<cfif qExcludeFUs.recordCount>
-					<!--- Need to change to redirect to objectid --->
-					<cfset stProperties = structNew() />
-					<cfset stProperties.objectid = qExcludeFUs.objectid />
-					<cfset stProperties.redirectionType = "301" />
-					<cfset stProperties.redirectTo = "objectid" />
-					<cfset stResult = setData(stProperties="#stProperties#") />
-				<cfelse>
-					<!--- Need to create and redirect to objectID --->
-					<cfset stProperties = structNew() />
-					<cfset stProperties.objectid = application.fc.utils.createJavaUUID() />
-					<cfset stProperties.refObjectID = trim(excludeObjectID) />
-					<cfset stProperties.bDefault = 1 />
-					<cfset stProperties.redirectionType = "301" />
-					<cfset stProperties.redirectTo = "objectid" />
-					<cfset stProperties.friendlyURL = getSystemFU(objectid="#excludeObjectID#",bCheckUnique="true") />
-					
-					<cfset stResult = setData(stProperties="#stProperties#") />
-				</cfif>
-				
-			</cfloop>
-		</cfif>
-		
 	</cffunction>
   
 	<cffunction name="setupCoapiAlias" access="public" hint="Initializes the friendly url coapi and webskin aliases" output="false" returntype="void" bDocument="true">
@@ -616,7 +584,6 @@
 		<cfargument name="stURL" type="struct" required="true" default="#url#" hint="Reference to the URL struct" />
 		
 		<cfset var stLocalURL = duplicate(arguments.stURL) /><!--- Duplicate so we are not changing the referenced struct --->
-		<cfset var oFU = createObject("component","#application.packagepath#.farcry.fu") />
 		<cfset var stFU = structNew() />
 		<cfset var stLocal = structNew() />
 		<cfset var iQstr = "" />
@@ -1147,27 +1114,6 @@
 		
 		<cfreturn true>
 	</cffunction>
-	
-	<cffunction name="deleteFU" access="public" returntype="boolean" hint="Deletes a mappings and writes the map file to disk" output="No" bDocument="true">
-		<cfargument name="alias" required="yes" type="string" hint="old alias of object to delete">
-		
-		<cfset var dom = "">
-		<cfset var sFUKey = "">		
-		<cfset var mappings = structCopy(this.stMappings)>
-		
-		<!--- loop over all domains --->
-		<cfloop list="#application.config.fusettings.domains#" index="dom">
-			<cfset sFUKey = "#dom##arguments.alias#">
-			<cfset aFuKey = structFindKey(mappings,sFUKey,"one")>
-			<cfif arrayLen(aFuKey)>
-				<cfset deleteMapping(sFUKey)>
-			</cfif>
-		</cfloop>
-		<!--- <cfset updateAppScope()> --->
-		<cfreturn true>
-	</cffunction>
-		
-		
 
    <cffunction name="createFUAlias" access="public" returntype="string" hint="Creates the FU Alias for a given objectid" output="no">
 		<cfargument name="objectid" required="Yes">
