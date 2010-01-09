@@ -1355,11 +1355,14 @@
 		
 	<cffunction name="deprecated" returntype="string" output="false" hint="As a core developer you can flag deprecated code by using this function to pass in a depricated message">
 		<cfargument name="message" default="" required="false" hint="The message to be logged.  Should include instructions for the appropriate best practice to replace the deprecated code.">
+			
+		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+		<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
 	
 		<cfif isdefined("application.log.bDeprecated") AND application.log.bDeprecated>		
 			<cftrace type="warning" inline="false" text="#GetBaseTemplatePath()# - #arguments.message#" abort="false" />
 			<cflog file="deprecated" application="true" type="warning" text="#GetBaseTemplatePath()# - #arguments.message#" />
-			<cf_logevent location="#getPageContext().getPage().getCurrentTemplatePath()#" type="application" event="deprecated" notes="#arguments.message#" />
+			<farcry:logevent location="#getPageContext().getPage().getCurrentTemplatePath()#" type="application" event="deprecated" notes="#arguments.message#" />
 		</cfif>
 			
 		<cfif isdefined("application.log.bDeprecatedBubble") AND application.log.bDeprecatedBubble>	
