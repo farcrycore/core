@@ -15,9 +15,10 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-
-
-<cfcomponent name="dmNavigation" extends="types" displayname="Navigation" hint="Navigation nodes are combined with the ntm_navigation table to build the site layout model for the FarCry CMS system." bUseInTree="1" bFriendly="1" bObjectBroker="true">
+<cfcomponent name="dmNavigation" extends="types" displayname="Navigation" 
+	hint="Navigation nodes are combined with the ntm_navigation table to build the site layout model for the FarCry CMS system." 
+	bUseInTree="1" bFriendly="1" 
+	bObjectBroker="true">
 	<!------------------------------------------------------------------------
 	type properties
 	------------------------------------------------------------------------->	
@@ -30,19 +31,24 @@
 		ftLabel="Alias"
 		ftHint="The alias is an advanced option that can be used to programatically reference this navigation item." />
 		
-	<cfproperty name="ExternalLink" type="string" hint="URL to an external (ie. off site) link." required="no" default=""
+	<cfproperty name="ExternalLink" type="string" hint="Used to store nav alias redirection reference." required="no" default=""
 		ftSeq="10" ftFieldSet="Advanced" 
 		ftLabel="Redirect to" 
 		ftType="list" ftListData="getExternalLinks"
 		ftHint="If you select to redirect, the visitor will be relocated to the nominated navigation alias. Please note, this will bypass any content that may be attached to this menu item." />
-	
-	<cfproperty name="fu" type="string" hint="Friendly URL for this node." required="no" default="" ftLabel="Friendly URL" />
+
 	<cfproperty name="aObjectIDs" type="array" hint="Holds objects to be displayed at this particular node.  Can be of mixed types." required="no" default="" 
 		ftLabel="Content"
 		ftJoin="dmHTML" />
-	<cfproperty name="options" type="string" hint="No idea what this is for." required="no" default="" ftLabel="Options" />
+
 	<cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft" ftLabel="Status" />
-	
+
+	<!---
+	deprecated type properties
+	------------------------------------------------------------------------->
+	<cfproperty name="options" type="string" hint="DEPRECATED: No idea what this is for." required="no" default="" />
+	<cfproperty name="fu" type="string" hint="DEPRECATED: Friendly URL for this node. Use FU sub-system instead." required="no" default="" />
+		
 	<!------------------------------------------------------------------------
 	object methods 
 	------------------------------------------------------------------------->
@@ -147,7 +153,80 @@
 		<cfset var stReturn = StructNew()>
 		
 		<cfif NOT structIsEmpty(stObj)>
-			<cfinclude template="_dmNavigation/delete.cfm">
+			<cfscript>
+				// get descendants
+				qGetDescendants = application.factory.oTree.getDescendants(objectid=stObj.objectID);
+				oNavigation = createObject("component", application.types.dmNavigation.typePath);
+
+				// delete actual object
+				super.delete(stObj.objectId);
+
+				// delete fu
+				if (application.fc.factory.farFU.isUsingFU()) {
+					fuUrl = application.fc.factory.farFU.getFU(objectid=stObj.objectid);
+					application.fc.factory.farFU.deleteMapping(fuUrl);
+				}
+
+				// delete branch
+				application.factory.oTree.deleteBranch(objectid=stObj.objectID);
+
+				// remove permissions
+				application.factory.oAuthorisation.deletePermissionBarnacle(objectid=stObj.objectID);
+
+				// check for associated objects 
+				if(structKeyExists(stObj,"aObjectIds") and arrayLen(stObj.aObjectIds)) {
+
+					// loop over associated objects
+					for(i=1; i LTE arrayLen(stObj.aObjectIds); i=i+1) {
+
+						// work out typename
+						objType = findType(stObj.aObjectIds[i]);
+						if (len(objType)) {
+							// delete associated object
+							oType = createObject("component", application.types[objType].typePath);
+							oType.delete(stObj.aObjectIds[i]);
+						}
+					}
+				}
+
+				// loop over descendants
+				if (qGetDescendants.recordcount) {
+					for(loop0=1; loop0 LTE qGetDescendants.recordcount; loop0=loop0+1) {
+
+						//get descendant data
+						objDesc = getData(qGetDescendants.objectId[loop0]);
+
+						// delete associated descendants
+						if (arrayLen(objDesc.aObjectIds)) {
+
+							// loop over associated objects
+							for(i=1; i LTE arrayLen(objDesc.aObjectIds); i=i+1) {
+
+								// work out typename
+								objType = findType(objDesc.aObjectIds[i]);
+								if (len(objType)) {
+									// delete associated object
+									oType = createObject("component", application.types[objType].typePath);
+									oType.delete(objDesc.aObjectIds[i]);
+								}
+							}
+						}
+
+						// delete fu
+						if (application.fc.factory.farFU.isUsingFU()) {
+							fuUrl = application.fc.factory.farFU.getFU(objectid=qGetDescendants.objectId[loop0]);
+							application.fc.factory.farFU.deleteFu(fuUrl);
+						}
+
+						// remove permissions
+						application.factory.oAuthorisation.deletePermissionBarnacle(objectid=qGetDescendants.objectId[loop0]);
+
+						// delete descendant
+						super.delete(qGetDescendants.objectId[loop0]);	
+
+					}
+				}
+			</cfscript>
 			
 			<!--- Find any dmHTML pages that reference this navigation node. --->
 			<cfquery datasource="#application.dsn#" name="qRelated">
