@@ -15,22 +15,6 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/packages/types/types.cfc,v 1.68.2.17 2006/04/19 13:53:09 geoff Exp $
-$Author: geoff $
-$Date: 2006/04/19 13:53:09 $
-$Name:  $
-$Revision: 1.68.2.17 $
-
-|| DESCRIPTION || 
-$Description: Component Types Abstract class for contenttypes package.  
-This class defines default handlers and system attributes.$
-
-|| DEVELOPER ||
-$Developer: Geoff Bowers (geoff@daemon.com.au) $
---->
-
 <cfcomponent extends="farcry.core.packages.fourq.fourq" bAbstract="true" displayname="Base Content Type" hint="Abstract class. Provides default handlers and system attributes for content object types.  This component should never be instantiated directly -- it should only be inherited.">
 
 <!--------------------------------------------------------------------
@@ -1181,19 +1165,6 @@ default handlers
 			<cfreturn stReturn>
 		</cfif>
 		
-		<!--- write audit trail --->
-		<cfif not len(arguments.auditNote)>
-			<cfset arguments.auditNote = "#stObj.label# (#stObj.typename#) deleted.">
-		</cfif>
-		<cfset application.factory.oAudit.logActivity(auditType="Delete", username=arguments.user, location=cgi.remote_host, note=arguments.auditNote,objectid=arguments.objectid)>	
-
-		<!--- write audit trail --->
-		<cfif not len(arguments.auditNote)>
-			<cfset arguments.auditNote = "#stObj.label# (#stObj.typename#) deleted.">
-		</cfif>
-		
-		<farcry:logevent object="#arguments.objectid#" type="types" event="delete" notes="#arguments.auditNote#" />
-		
 		<!--- done first cause need to remove associtaion to library object --->
 		<cfinclude template="_types/delete.cfm">
 
@@ -1204,6 +1175,12 @@ default handlers
 		</cfif>
 		
 		<cfset onDelete(typename=stObj.typename,stObject=stObj) />
+
+		<!--- write audit trail --->
+		<cfif not len(arguments.auditNote)>
+			<cfset arguments.auditNote = "#stObj.label# (#stObj.typename#) deleted.">
+		</cfif>
+		<farcry:logevent object="#arguments.objectid#" type="types" event="delete" notes="#arguments.auditNote#" />
 		
 		<cfset stReturn.bSuccess = true>
 		<cfset stReturn.message = "#stObj.label# (#stObj.typename#) deleted.">
