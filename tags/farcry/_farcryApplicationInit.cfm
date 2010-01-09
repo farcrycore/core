@@ -166,11 +166,6 @@ Build NavIDs from Navigation Nodes
 	oCat = createObject("component", "#application.packagepath#.farcry.category");
 	application.catid = oCat.getCatAliases();
 </cfscript>
-
-<!--- application.stTypes -- legacy code required in site overview tree --->
-<!--- $TODO: ferret through and remove this code GB $--->
-<cfset application.stTypes = structNew()>
-
 <!--- /_config.cfm --->
 
 

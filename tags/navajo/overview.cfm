@@ -110,8 +110,6 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 		aTypesUseInTree =buildTreeCreateTypes(aTypesUseInTree,attributes.lCreateObjects); 
 	//dump(aTypesUseInTree);
 		
-	
-	stTypes = duplicate(application.stTypes);
 	PermNavCreate    = application.permission.dmnavigation.Create.permissionId;
 	PermNavEdit   = application.permission.dmnavigation.Edit.permissionId;
 	PermNavView  = application.permission.dmnavigation.View.permissionId;
