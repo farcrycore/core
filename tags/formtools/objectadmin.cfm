@@ -353,6 +353,9 @@ user --->
 					
 					<cfloop list="#attributes.lFilterFields#" index="i">
 						<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
+							<cfif not len(PrimaryPackage.stProps[i].metadata.ftType)>
+								<cfset PrimaryPackage.stProps[i].metadata.ftType = PrimaryPackage.stProps[i].metadata.type />
+							</cfif>
 							<cfswitch expression="#PrimaryPackage.stProps[i].metadata.ftType#">
 							
 							<cfcase value="string,nstring,list,uuid">	
