@@ -214,7 +214,7 @@
 	</cffunction>
 	
 	
-	<cffunction name="cleanFU" access="public" returntype="string" hint="Cleans up the Friendly URL and ensures it is Unique." output="yes" bDocument="true">
+	<cffunction name="cleanFU" access="public" returntype="string" hint="Cleans up the Friendly URL and ensures it is Unique." output="false" bDocument="true">
 		<cfargument name="friendlyURL" required="yes" type="string" hint="The actual Friendly URL to use">
 		<cfargument name="bCheckUnique" required="false" type="boolean" default="true" hint="Check to see if the Friendly URL has already been taken">
 		<cfargument name="fuID" required="false" type="string" default="" hint="The objectid of the farFU object the friendly URL is attached to. This is used to exclude from the check unique function.">
@@ -1059,7 +1059,7 @@
 	</cffunction>
 	
 	
-	<cffunction name="deleteMapping" access="public" returntype="boolean" hint="Deletes a mapping and writes the map file to disk" output="No">
+	<cffunction name="deleteMapping" access="public" returntype="boolean" hint="Deletes an FU mapping from cache, and removes related record from the farFU table." output="false">
 		<cfargument name="alias" required="yes" type="string">
 		
 		<cfquery datasource="#application.dsn#" name="qDelete">
@@ -1242,7 +1242,7 @@
 		<!--- <cfset updateAppScope()> --->
 	</cffunction>
 	
-	<cffunction name="getFU" access="public" returntype="string" hint="Retrieves fu for a real url, returns original ufu if non existent." output="yes" bDocument="true">
+	<cffunction name="getFU" access="public" returntype="string" hint="Retrieves fu for a real url, returns original ufu if non existent." output="false" bDocument="true">
 		<cfargument name="objectid" required="false" type="string" default="" hint="objectid of object to link to">
 		<cfargument name="type" required="false" type="string" default="" hint="typename of object to link to">
 		<cfargument name="view" required="false" type="string" default="" hint="view used to render the page layout">
