@@ -16,47 +16,84 @@
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
 <!--- @@Description: HTML Page Content Type --->
-<!--- @@Developer: Geoff Bowers (modius@daemon.com.au) --->
-<cfcomponent extends="versions" displayname="HTML Page" hint="Forms the basis of the content framework of the site.  HTML objects include containers and static information." bObjectBroker="1" bUseInTree="1" bFriendly="1" fuAlias="html">
+<cfcomponent extends="versions" displayname="HTML Page" 
+	hint="Forms the basis of the content framework of the site. HTML content items often include containers and publishing rules." 
+	bUseInTree="1" bFriendly="1" fuAlias="html"
+	bObjectBroker="1" >
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->	
-<cfproperty ftSeq="1" ftwizardStep="Start" ftFieldset="General Details" name="Title" type="nstring" hint="Title of object.  *perhaps this should be deprecated for object label*" required="no" default="" ftValidation="required" ftHint="This title will appear as the major title on the page. It should not be confused with the title that appears in the navigation.">
-<cfproperty ftSeq="2" ftwizardStep="Start" ftFieldset="General Details" name="reviewDate" type="date" hint="The date for which the object will be reviewed" required="no" default="" ftType="datetime" ftToggleOffDateTime="true" ftLabel="Review Date" ftHint="Enter the date that this pages content should be reviewed.">
-<cfproperty ftSeq="3" ftwizardStep="Start" ftFieldset="General Details" name="ownedby" displayname="Owned by" type="string" hint="Username for owner." required="No" default="" ftLabel="Owned By" ftType="list" ftRenderType="dropdown" ftListData="getOwners" ftHint="This should be set to the person responsible for this page. Any questions... ask this person.">
-<cfproperty ftSeq="4" ftwizardStep="Start" ftFieldset="General Details" name="displayMethod" type="string" hint="Display method to render this HTML object with." required="yes" default="displayPageStandard" ftLabel="Page Layout" ftType="webskin" ftPrefix="displayPage" ftHint="This selection will determine the overall layout of the page.">
+<cfproperty 
+	name="Title" type="string" hint="Title of content item." required="no" default="" 
+	ftSeq="1" ftwizardStep="Start" ftFieldset="General Details" ftValidation="required" 
+	ftHint="This title will appear as the major title on the page. It should not be confused with the title that appears in the navigation.">
 
-<cfproperty ftSeq="5" ftwizardStep="Start" ftFieldset="SEO" name="metaKeywords" type="nstring" hint="HTML head section metakeywords." required="no" default="" ftLabel="Keyword Tag(s)"
-	ftType="longchar"
-		ftLimit="900"
-	fthelptitle="Search Engine Optimization" ftHelpSection="The keywords and description that you enter here will provide search engines with extra information that describes your page. Remember that a good SEO strategy is much more than just a good description and keywords."
-	ftHint="An upper limit of 900 characters with spaces - keep it simple and relevant. 10 - 20 Keywords per page">
-<cfproperty ftSeq="6" ftwizardStep="Start" ftFieldset="SEO" name="extendedmetadata" type="longchar" hint="HTML head section for extended keywords." required="no" default="" ftlabel="Description Tag"
-	ftHint="Concise summary of the page, an upper limit of perhaps, 170 characters with spaces"
-		ftLimit="170" />
+<cfproperty 
+	name="reviewDate" type="date" hint="The date for which the object will be reviewed." required="no" default=""
+	ftSeq="2" ftwizardStep="Start" ftFieldset="General Details" ftLabel="Review Date" 
+	ftHint="Optionally enter a date to remind you when this content should be reviewed."
+	ftType="datetime" ftToggleOffDateTime="true">
+	
+<cfproperty 
+	name="ownedby" displayname="Owned by" type="string" hint="Username for owner." required="No" default=""
+	ftSeq="3" ftwizardStep="Start" ftFieldset="General Details" ftLabel="Owned By"
+	ftHint="This should be set to the person responsible for this page. Any questions... ask this person."
+	ftType="list" ftRenderType="dropdown" ftListData="getOwners" >
+	
+<cfproperty 
+	name="displayMethod" type="string" hint="Display method to render this HTML object with." required="yes" default="displayPageStandard" 
+	ftSeq="4" ftwizardStep="Start" ftFieldset="General Details" ftLabel="Page Layout" 
+	ftHint="This selection will determine the overall layout of the page."
+	ftType="webskin" ftPrefix="displayPage" >
 
+<cfproperty 
+	name="metaKeywords" type="string" hint="HTML head section metakeywords." required="no" default="" 
+	ftSeq="5" ftwizardStep="Start" ftFieldset="SEO" ftLabel="Keyword Tag(s)"
+	ftHint="Keep it simple and relevant: 10-20 keywords per page. Limited to 900 characters including spaces."
+	ftType="longchar" ftLimit="900"
+	fthelptitle="Search Engine Optimization" 
+	ftHelpSection="The keywords and description that you enter here will provide search engines with extra information that describes your page. Remember that a good SEO strategy is much more than just a good description and keywords.">
+	
+<cfproperty 
+	name="extendedmetadata" type="longchar" hint="HTML head section for extended keywords." required="no" default=""
+	ftSeq="6" ftwizardStep="Start" ftFieldset="SEO" ftlabel="Description Tag"
+	ftHint="Concise summary of the page, with an upper limit 170 characters, including spaces."
+	ftLimit="170" />
 
-<cfproperty ftSeq="10" ftwizardStep="Body" ftFieldset="Teaser" name="Teaser" type="longchar" hint="Teaser text." required="no" default="">
-<cfproperty ftSeq="11" ftwizardStep="Body" ftFieldset="Teaser" name="teaserImage" type="uuid" ftType="uuid" hint="UUID of image to display in teaser" required="no" default="" ftJoin="dmImage" ftLibraryData="getTeaserImageLibraryData" ftLibraryDataTypename="dmHTML">
+<cfproperty 
+	name="Teaser" type="longchar" hint="Teaser text." required="no" default=""
+	ftSeq="10" ftwizardStep="Body" ftFieldset="Teaser">
+	
+<cfproperty 
+	name="teaserImage" type="uuid" ftType="uuid" hint="UUID of image to display in teaser" required="no" default=""
+	ftSeq="11" ftwizardStep="Body" ftFieldset="Teaser" 
+	ftJoin="dmImage" ftLibraryData="getTeaserImageLibraryData" ftLibraryDataTypename="dmHTML">
 
-<cfproperty ftSeq="12" ftwizardStep="Body" ftFieldset="Body" name="Body" type="longchar" hint="Main body of content." required="no" default="" ftType="richtext" ftLabel="Body" 
+<cfproperty 
+	name="Body" type="longchar" hint="Main body of content." required="no" default="" 
+	ftSeq="12" ftwizardStep="Body" ftFieldset="Body" ftLabel="Body" 
+	ftType="richtext" 
 	ftImageArrayField="aObjectIDs" ftImageTypename="dmImage" ftImageField="StandardImage"
 	ftTemplateTypeList="dmImage,dmFile,dmFlash,dmNavigation,dmHTML" ftTemplateWebskinPrefixList="insertHTML"
 	ftLinkListFilterRelatedTypenames="dmFile,dmNavigation,dmHTML"
 	ftTemplateSnippetWebskinPrefix="insertSnippet">
 
-<cfproperty ftSeq="13" ftwizardStep="Body" ftFieldset="Relationships" name="aObjectIDs" type="array" 
-	ftType="array" 
-	ftShowLibraryLink="false"
-	ftAllowAttach="true"
-	ftAllowAdd="true"
-	ftAllowEdit="true"
-	ftRemoveType="detach"
-	hint="Holds objects to be displayed at this particular node.  Can be of mixed types." required="no" default="" ftLabel="Associated Media" ftJoin="dmImage,dmFile,dmFlash" bSyncStatus="true">
-<cfproperty ftSeq="14" ftwizardStep="Body" ftFieldset="Relationships" name="aRelatedIDs" type="array" ftType="array" hint="Holds object pointers to related objects.  Can be of mixed types." required="no" default="" ftJoin="dmNavigation,dmHTML" ftLabel="Associated Content">
+<cfproperty 
+	name="aObjectIDs" type="array" hint="Related media items for this content item." required="no" default=""
+	ftSeq="13" ftwizardStep="Body" ftFieldset="Relationships" ftLabel="Associated Media" 
+	ftType="array" ftJoin="dmImage,dmFile,dmFlash" 
+	ftShowLibraryLink="false" ftAllowAttach="true" ftAllowAdd="true" ftAllowEdit="true" ftRemoveType="detach"
+	bSyncStatus="true">
 
-<cfproperty ftSeq="20" ftwizardStep="Categorisation" name="catHTML" type="nstring" hint="Topic." required="no" default="" ftType="Category" ftAlias="root" ftLabel="Categories" />
+<cfproperty 
+	name="aRelatedIDs" type="array" ftType="array" hint="Holds object pointers to related objects. Can be of mixed types." required="no" default="" 
+	ftSeq="14" ftwizardStep="Body" ftFieldset="Relationships" ftLabel="Associated Content"
+	ftJoin="dmNavigation,dmHTML" >
 
+<cfproperty 
+	name="catHTML" type="nstring" hint="Topic." required="no" default="" 
+	ftSeq="20" ftwizardStep="Categorisation" ftLabel="Categories"
+	ftType="Category" ftAlias="root" />
 
 
 <!------------------------------------------------------------------------
