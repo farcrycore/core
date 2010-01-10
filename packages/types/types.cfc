@@ -270,7 +270,6 @@ default handlers
 		</cfif>
 		
 		<cfscript>
-			// TODO should prepopulate with values set in cfproperty
 			//fill in the gaps in case user has forgotten any core properties
 			if(NOT structKeyExists(arguments.stProperties,"datetimelastupdated"))
 				arguments.stProperties.datetimelastupdated = createODBCDateTime(now());		
