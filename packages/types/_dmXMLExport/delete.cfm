@@ -15,26 +15,6 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/packages/types/_dmXMLExport/delete.cfm,v 1.1 2003/09/17 07:35:34 brendan Exp $
-$Author: brendan $
-$Date: 2003/09/17 07:35:34 $
-$Name: milestone_3-0-1 $
-$Revision: 1.1 $
-
-|| DESCRIPTION || 
-$Description: dmXMLExport delete method. Deletes physical file from server$
-$TODO: Verity check/delete$
-
-|| DEVELOPER ||
-$Developer: Brendan Sisson (brendan@daemon.com.au)$
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
---->
-
 <!--- delete physical file --->
 <cftry>
 	<cffile action="delete" file="#application.path.project#/#application.config.general.exportPath#/#stObj.xmlFile#">

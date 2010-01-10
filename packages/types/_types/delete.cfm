@@ -15,24 +15,8 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/packages/types/_types/delete.cfm,v 1.15 2005/08/10 02:43:21 geoff Exp $
-$Author: geoff $
-$Date: 2005/08/10 02:43:21 $
-$Name: milestone_3-0-1 $
-$Revision: 1.15 $
+<!--- @@description: Generic delete method. Checks for associated objects and deletes them, deletes actual object --->
 
-|| DESCRIPTION || 
-$Description: Generic delete method. Checks for associated objects and 
-deletes them, deletes actual object and deletes object from any verity 
-collection if needed$
-
-|| DEVELOPER ||
-$Developer: Guy Phanvongsa (guy@daemon.com.au)$
---->
-
-<cfparam name="application.config.verity.bUpdateCollectionOnDelete" default="1" type="boolean">
 <!--- delete actual object --->
 <cfset deleteData(stObj.objectId)>
 
@@ -46,20 +30,6 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 <!--- delete categories --->
 <cfset oCategories = createObject("component","#application.packagepath#.farcry.category")>
 <cfset oCategories.deleteAssignedCategories(objectid=stObj.objectid)>
-
-<!--- delete from verity collection as required --->
-<cfif NOT isDefined("application.config.verity")>
-	<cfset oConfig = createObject("component", "#application.packagepath#.farcry.config")>
-	<cfset application.config.verity = oConfig.getConfig("verity")>
-</cfif>
-<!--- TODO: THIS NEEDS TO CHANGE TO USE THE NEW verity plugin --->
-<cfif structKeyExists(application.config.verity, "contenttype")>
-	<cfset stCollections = application.config.verity.contenttype>
-	<cfif structKeyExists(stCollections,stObj.typename) and application.config.verity.bUpdateCollectionOnDelete>
-		<cfset collectionName = lcase(application.applicationname & "_" & stObj.typename)>
-		<cfset application.factory.oVerity.deleteFromCollection(collection=collectionName,objectid=stObj.objectid)>
-	</cfif>
-</cfif>
 
 <!--- if this objecttype is used in tree, then it may have been used as a related link in dmHTML_aRelatedIDs  --->
 <cfif structKeyExists(application.types[stObj.typename],"bUseInTree")>

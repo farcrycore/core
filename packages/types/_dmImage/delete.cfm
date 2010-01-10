@@ -15,26 +15,6 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/packages/types/_dmImage/delete.cfm,v 1.4 2005/05/30 02:37:43 guy Exp $
-$Author: guy $
-$Date: 2005/05/30 02:37:43 $
-$Name: milestone_3-0-1 $
-$Revision: 1.4 $
-
-|| DESCRIPTION || 
-$Description: dmImage delete method. Deletes physical files from server$
-$TODO: Verity check/delete$
-
-|| DEVELOPER ||
-$Developer: Brendan Sisson (brendan@daemon.com.au)$
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
---->
-
 <cfif NOT StructIsEmpty(stObj)>
 
 	<!--- delete --->
