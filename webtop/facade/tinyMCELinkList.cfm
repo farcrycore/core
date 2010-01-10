@@ -57,7 +57,7 @@ var tinyMCELinkList = new Array(
 
 	
 	<cfif qRelatedWithLabels.recordCount>
-		<cfoutput>["--- RELATED OBJECTS ---", ""],
+		<cfoutput>["--- RELATED CONTENT ---", ""],
 		</cfoutput>
 		
 		<cfloop query="qRelatedWithLabels">
