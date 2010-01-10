@@ -1,1 +1,0 @@
-<cfinclude template="/farcry/core/ui/updates/b121.1.cfm">
