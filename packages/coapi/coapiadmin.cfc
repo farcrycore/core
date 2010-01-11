@@ -430,7 +430,7 @@
 		<cfargument name="typename" type="string" required="true" />
 		<cfargument name="webskin" type="string" required="true" hint="methodname" />
 		
-		<cfif isdefined("application.stCOAPI.#arguments.typename#.stWebskins.#arguments.webskin#")>
+		<cfif len(arguments.typename) gt 0 AND isdefined("application.stCOAPI.#arguments.typename#.stWebskins.#arguments.webskin#")>
 			<cfreturn application.stCOAPI[arguments.typename].stWebskins[arguments.webskin] />
 		<cfelse><!--- Not found --->
 			<cfreturn structnew() />
