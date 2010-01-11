@@ -590,10 +590,9 @@
 		<cfdefaultcase>
 			<cfparam name="arguments.stFieldPost.stSupporting.Include" default="true">
 			
-			<cfif ListGetAt(arguments.stFieldPost.stSupporting.Include,1)>
+			<cfif ListGetAt(arguments.stFieldPost.stSupporting.Include,1) AND isDate(arguments.stFieldPost.Value)>
 			
 				<cftry>
-				
 					<cfif structKeyExists(arguments.stFieldPost.stSupporting,"hour")
 						AND structKeyExists(arguments.stFieldPost.stSupporting,"minute")
 						AND structKeyExists(arguments.stFieldPost.stSupporting,"period")>
