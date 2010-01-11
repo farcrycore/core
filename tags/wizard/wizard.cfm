@@ -194,7 +194,7 @@ $in: SessionID -- $
 
 	<cfset stResult = owizard.Write(ObjectID=stwizard.ObjectID,Steps=stwizard.Steps,CurrentStep=stwizard.CurrentStep,Data=stwizard.Data)>
 
-	<cfset confirmation = application.rb.getResource('forms.buttons.Cancel@confirmtext','Changes made will not be saved.\nDo you still wish to Cancel?') />
+	<cfset confirmation = application.rb.getResource('forms.buttons.Cancel@confirmtext','Are you sure you wish to ignore your changes?') />
 	<skin:onReady>
 		<cfoutput>		
 		$fc.wizardSubmission = function(formname,state) {
