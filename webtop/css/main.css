@@ -226,7 +226,7 @@ body.iframed .refreshtree a:link, body.iframed .refreshtree a:visited, body.ifra
 .upone {position:absolute;top:48px;right:21px}
 
 /* =LAYOUT-FOOTER */
-#footer {right:5px;text-align:right;font-size: 86%;color:#999;background:#fff;width:600px}
+#footer {right:5px;text-align:right;font-size: 86%;color:#999;background:none;width:100%;}
 #footer p {margin:0}
 
 /* =DEFINITION LISTS */
