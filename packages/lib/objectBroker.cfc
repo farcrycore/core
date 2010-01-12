@@ -192,17 +192,15 @@
 													<cfloop list="#structKeyList(stCacheWebskin.inHead.stCSSLibraries)#" index="j">
 														<cfif not structKeyExists(request.inHead.stCSSLibraries, j)>
 															<cfset request.inHead.stCSSLibraries[j] = stCacheWebskin.inHead.stCSSLibraries[j] />
-														</cfif>
-														
-														<cfset addCSSHeadToWebskins(request.inHead.stCSSLibraries[j]) />
-			
+														</cfif>			
 													</cfloop>
 												</cfcase>
 												<cfcase value="aCSSLibraries">
 													<cfloop from="1" to="#arrayLen(stCacheWebskin.inHead.aCSSLibraries)#" index="k">
 														<cfif NOT listFindNoCase(arrayToList(request.inHead.aCSSLibraries), stCacheWebskin.inHead.aCSSLibraries[k])>
 															<cfset arrayAppend(request.inHead.aCSSLibraries,stCacheWebskin.inHead.aCSSLibraries[k]) />
-														</cfif>
+														</cfif>														
+														<cfset addCSSHeadToWebskins(stCacheWebskin.inHead.stCSSLibraries[stCacheWebskin.inHead.aCSSLibraries[k]]) />
 													</cfloop>
 												</cfcase>
 												
@@ -213,17 +211,15 @@
 													<cfloop list="#structKeyList(stCacheWebskin.inHead.stJSLibraries)#" index="j">
 														<cfif not structKeyExists(request.inHead.stJSLibraries, j)>
 															<cfset request.inHead.stJSLibraries[j] = stCacheWebskin.inHead.stJSLibraries[j] />
-														</cfif>
-														
-														<cfset addJSHeadToWebskins(request.inHead.stJSLibraries[j]) />
-			
+														</cfif>																	
 													</cfloop>
 												</cfcase>
 												<cfcase value="aJSLibraries">
 													<cfloop from="1" to="#arrayLen(stCacheWebskin.inHead.aJSLibraries)#" index="k">
 														<cfif NOT listFindNoCase(arrayToList(request.inHead.aJSLibraries), stCacheWebskin.inHead.aJSLibraries[k])>
 															<cfset arrayAppend(request.inHead.aJSLibraries,stCacheWebskin.inHead.aJSLibraries[k]) />
-														</cfif>
+														</cfif>														
+														<cfset addJSHeadToWebskins(stCacheWebskin.inHead.stJSLibraries[stCacheWebskin.inHead.aJSLibraries[k]]) />
 													</cfloop>
 												</cfcase>
 																							
