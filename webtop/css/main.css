@@ -322,3 +322,91 @@ img.overviewicon {
 ul.x-tab-strip{margin:0px;}
 ul.x-tab-strip li{padding:0px;}
 ul.x-tab-strip li a {padding:0px;}
+
+#webtopOverviewActions button h1,
+#webtopOverviewActions button h2 {
+	margin:0px;
+}
+
+#webtopOverviewActions button.primary {
+	width:180px;
+	height:100px;
+}
+#webtopOverviewActions button.secondary {
+	width:180px;
+	height:50px;
+	margin-top:10px;
+}
+.webtopOverviewStatusBox {
+	border:1px solid black;
+	padding:10px;
+	margin:0px 0px 10px 0px;
+}
+.webtopSummarySection {
+	border-bottom:2px solid #DFDFDF;
+	padding:0px 5px 15px 5px;
+	margin:10px 0px 10px 0px;
+}
+.webtopSummarySection h2 {
+	margin:10px 0px 0px 0px;
+	font-weight:bold;
+}	
+
+
+table.navtree td {
+	font-size:11px;
+	font-weight:normal;
+	vertical-align:middle;
+	padding:0px;
+	color:#ffffff;
+	line-height:normal;
+}
+table.navtree td.objectname {
+	padding-left:5px;
+}
+table.navtree td.objectname a {
+	cursor:pointer;
+	color:#ffffff;
+	text-decoration:underline;
+}
+			
+
+ul.object-admin-actions {
+	margin:0px;
+	padding:0px;
+}
+ul.object-admin-actions li {
+	float: left;
+	list-style: none;
+}
+
+
+ul.object-admin-actions li a,
+ul.object-admin-actions li a:link,
+ul.object-admin-actions li a:visited,
+ul.object-admin-actions li a:hover,
+ul.object-admin-actions li a:active {
+	text-decoration:none; 				
+	float:left;	
+	color:#000;
+	padding:2px;	
+	line-height:16px;
+	display:block;
+	text-decoration:none;
+	border:1px solid transparent;
+} 
+
+ul.object-admin-actions li a:hover {
+	background-color:#ffffff;
+	border:1px solid #B5B5B5;
+} 
+
+
+ul.object-admin-actions li a .ui-icon {
+	float:left;
+	margin-right:2px;
+}
+
+.rowselected {
+	background-color: #C8FFBF !important;
+}

@@ -1030,7 +1030,7 @@ user --->
 					</cfloop>
 				</cfif>
 				<!--- <option value="delete">Delete</option> --->
-			</select>
+			</select> <br style="clear:both;">
 		</cfif>
 		
 		
@@ -1065,6 +1065,11 @@ user --->
 			});
 			
 			$j('a.oa-create-draft').click(function() {
+				$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=' + $j(this).attr('ft:objectid'));
+				return false;
+			});
+			
+			$j('a.oa-edit-draft').click(function() {
 				$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=' + $j(this).attr('ft:objectid'));
 				return false;
 			});
@@ -1106,8 +1111,15 @@ user --->
 							</a>
 							</li>
 							<skin:toolTip id="oa-create-draft-tooltip" selector=".oa-create-draft">Create a draft version of this object and begin editing.</skin:toolTip>
-						<cfelseif NOT(arguments.st.bHasMultipleVersion)>
-	
+						<cfelseif arguments.st.bHasMultipleVersion>
+							<!--- Still go to the create draft page but that page will find the already existing draft and not create a new one. --->
+							<li>
+							<a ft:objectid="#arguments.st.objectid#"  class="oa-edit-draft" title="Edit Draft Object" href="##">
+								<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>
+							</a>
+							</li>
+							<skin:toolTip id="oa-edit-draft-tooltip" selector=".oa-edit-draft">Edit the draft version of this object.</skin:toolTip>						
+						<cfelse>
 							<li>
 							<a ft:objectid="#arguments.st.objectid#"  class="oa-edit" title="Edit" href="##">
 								<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>
@@ -1116,7 +1128,6 @@ user --->
 							<skin:toolTip id="oa-edit-tooltip" selector=".oa-edit">Edit this object.</skin:toolTip>			
 						</cfif>
 					<cfelse>
-	
 						<li>
 						<a ft:objectid="#arguments.st.objectid#"  class="oa-edit" title="Edit" href="##">
 							<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>

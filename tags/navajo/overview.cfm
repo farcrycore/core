@@ -931,7 +931,7 @@ function highlightObjectClick( id,e )
 		if(contentFrame && contentFrame.document.location.href.indexOf(id) < 0 && contentFrame.document.location.href.indexOf("edittabEdit") < 0 && contentFrame.document.location.href.indexOf("edit.cfm") < 0)
 		{
 			// load overview page
-			contentFrame.document.location = "#application.url.farcry#/edittabOverview.cfm?objectid=" + id;
+			contentFrame.document.location = "#application.url.farcry#/edittabOverview.cfm?objectid=" + id + '&ref=overview';
 			// make tabs visible in edit frame
 			showEditTabs('site',id,'edittabOverview');
 			// change title in edit frame

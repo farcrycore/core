@@ -338,7 +338,15 @@ START WEBSKIN
 	
 	</cfif>
 
-
+	<cfif session.overviewRef EQ "iframe">
+		<ft:button 	value="Close" 
+					text="<h2>DONE</h2>Finished with this item"
+					class="secondary" 
+					type="button" 
+					rbkey="workflow.buttons.close" 
+					onClick="parent.$fc.objectAdminActionDiv.dialog('close');" />
+	</cfif>
+	
 
 <cfsetting enablecfoutputonly="false">
 
