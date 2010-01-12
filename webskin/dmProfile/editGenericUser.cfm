@@ -31,10 +31,10 @@ VIEW
 <ft:form>
 	<ft:object objectid="#stObj.objectid#" typename="dmProfile" lfields="firstname,lastname,breceiveemail,emailaddress,phone,fax,position,department,locale,overviewHome" lhiddenFields="username,userdirectory" legend="User details" />
 	
-	<ft:farcryButtonPanel>
+	<ft:buttonPanel>
 		<ft:button value="Save" color="orange" />
 		<ft:button value="Cancel" validate="false" />
-	</ft:farcryButtonPanel>
+	</ft:buttonPanel>
 </ft:form>
 
 <cfsetting enablecfoutputonly="false" />

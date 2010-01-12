@@ -62,10 +62,10 @@ VIEW
 		
 	</cfif>
 	
-	<ft:farcryButtonPanel>
+	<ft:buttonPanel>
 		<ft:button value="Save" color="orange" />
 		<ft:button value="Cancel" validate="false" />
-	</ft:farcryButtonPanel>
+	</ft:buttonPanel>
 </ft:form>
 
 <cfsetting enablecfoutputonly="false" />

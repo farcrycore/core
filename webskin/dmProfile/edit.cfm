@@ -9,9 +9,9 @@
 </cfif>
 
 <cfif application.fapi.hasWebskin(typename="dmProfile",webskin="edit#stObj.userdirectory#User")>
-	<skin:view stObject="#stObj#" webskin="edit#stObj.userdirectory#User" />
+	<skin:view stObject="#stObj#" webskin="edit#stObj.userdirectory#User" onExitProcess="#onExitProcess#" />
 <cfelse>
-	<skin:view stObject="#stObj#" webskin="editGenericUser" />
+	<skin:view stObject="#stObj#" webskin="editGenericUser" onExitProcess="#onExitProcess#" />
 </cfif>
 
 <cfsetting enablecfoutputonly="false" />
