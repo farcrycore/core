@@ -92,8 +92,15 @@ $out: <separate entry for each variable>$
 		<!--- update overview page --->
 		<cfoutput><script type="text/javascript">
 		// check if edited from Content or Site (via sidetree)
-		if(parent['sidebar'].frames['sideTree'])
+		if(parent['sidebar'].frames['sideTree']) 
 			parent['sidebar'].frames['sideTree'].location= parent['sidebar'].frames['sideTree'].location;
+		}
+			
+		if (opener.$fc.objectAdminActionDiv === undefined) {
+		//do nothing
+		} else {
+			opener.$j($fc.objectAdminActionDiv).dialog('close');
+		}
 		</script></cfoutput>
 		
 	</sec:CheckPermission>
