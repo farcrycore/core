@@ -32,6 +32,15 @@ FARCRY INCLUDE FILES
 <cfimport taglib="/farcry/core/tags/grid/" prefix="grid" />
 
 
+
+<ft:processForm action="Delete" bHideForms="true">
+	<skin:onReady>
+	<cfoutput>
+		$j($fc.objectAdminActionDiv).dialog('close');
+	</cfoutput>
+	</skin:onReady>
+</ft:processForm>
+
 	
 				
 <!------------------ 
