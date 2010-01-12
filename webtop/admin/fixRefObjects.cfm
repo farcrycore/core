@@ -21,7 +21,8 @@
 			<cfoutput><h4>Started TYPES update</h4></cfoutput>
 			<cfloop collection="#application.types#" item="key">
 				<cfif NOT listFindNoCase(Form.lExcludeItems,key)>
-					<cfoutput>Started #key#<br /></cfoutput><cfflush>
+					<cfoutput>Started #key#<br /></cfoutput>
+					
 					<cftry>
 						
 						<cfset oType = createObject("component", application.types[key].typepath) >
@@ -53,14 +54,16 @@
 										FROM #application.dbowner##safeName#
 								</cfquery>
 							</cfif>
-							<cfoutput>Finished #key# - #qTypes.counter# records<br /><hr /></cfoutput><cfflush>
+							<cfoutput>Finished #key# - #qTypes.counter# records<br /><hr /></cfoutput>
+							
 						<cfelse>
 							<!--- remove references from refObjects --->
 							<cfquery name="qDelRefs" datasource="#application.dsn#">
 								DELETE FROM #application.dbowner#refObjects
 								WHERE typename = '#safeName#'
 							</cfquery>
-							<cfoutput>IGNORED #key# - bRefObjects has been set to false. RefObjects cleared.<br /><hr /></cfoutput><cfflush>	
+							<cfoutput>IGNORED #key# - bRefObjects has been set to false. RefObjects cleared.<br /><hr /></cfoutput>
+							
 						</cfif>
 						<cfcatch><cfoutput>Error fixing #key# - perhaps type has not been deployed #cfcatch.toString()#<br /><hr /></cfoutput></cfcatch>
 					</cftry>
@@ -72,7 +75,8 @@
 			<cfoutput><h4>Started RULES update</h4></cfoutput>
 			<cfloop collection="#application.rules#" item="key">
 				<cfif NOT listFindNoCase(Form.lExcludeItems,key)>
-					<cfoutput>Started #key#<br /></cfoutput><cfflush>
+					<cfoutput>Started #key#<br /></cfoutput>
+					
 					<cftry>
 						<cfset oRule = createObject("component", application.rules[key].rulepath) >
 						<cfset safeName = oRule.getTableName() >
@@ -105,7 +109,8 @@
 								</cfquery>
 							</cfif>
 						
-							<cfoutput>Finished #key# - #qRules.counter# records<br /><hr /></cfoutput><cfflush>
+							<cfoutput>Finished #key# - #qRules.counter# records<br /><hr /></cfoutput>
+							
 						
 						<cfelse>
 							<!--- remove references from refObjects --->
@@ -113,7 +118,8 @@
 								DELETE FROM #application.dbowner#refObjects
 								WHERE typename = '#safeName#'
 							</cfquery>
-							<cfoutput>IGNORED #key# - bRefObjects has been set to false. RefObjects cleared.<br /><hr /></cfoutput><cfflush>	
+							<cfoutput>IGNORED #key# - bRefObjects has been set to false. RefObjects cleared.<br /><hr /></cfoutput>
+								
 						</cfif>
 						
 						<cfcatch><cfoutput>Error fixing #key# - perhaps rule has not been deployed<br /><hr /></cfoutput></cfcatch>
