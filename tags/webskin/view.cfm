@@ -141,7 +141,7 @@
 		<cfif structKeyExists(attributes, "alternateHTML")>
 			<cfset html = "#attributes.alternateHTML#" />
 		<cfelse>
-			<cfabort showerror="Typename is not available: #attributes.typename#" />
+			<cfset application.fapi.throw(message="Typename is not available: #attributes.typename#") />
 		</cfif>	
 	</cfif>	
 	</cfsilent>
