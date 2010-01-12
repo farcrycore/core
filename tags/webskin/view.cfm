@@ -56,7 +56,7 @@
 	</cfif>
 	
 	<cfif not len(attributes.typename)>
-		<cfabort showerror="invalid typename passed" />
+		<cfset application.fapi.throw(message="invalid typename passed or could not be determined.") />
 	</cfif>	
 	
 	<cfif attributes.typename EQ "farCoapi">
