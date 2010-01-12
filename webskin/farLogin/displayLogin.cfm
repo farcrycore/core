@@ -55,24 +55,19 @@ START WEBSKIN
 					</cfloop>
 					
 					<cfif arraylen(aDomainProjects) gt 1>
-						<cfoutput>
-							<fieldset class="formSection">
-								<legend>Project Selection</legend>
-								<div class="fieldSection string">
-									<label class="fieldsectionlabel" for="selectFarcryProject"> Project  : </label>
-									<div class="fieldAlign">
-										<select name="selectFarcryProject" id="selectFarcryProject" onchange="window.location='#application.url.webtop#/login.cfm?farcryProject='+this.value;">						
-											<cfloop from="1" to="#arraylen(aDomainProjects)#" index="i">
-												<cfif len(aDomainProjects[i])>
-													<option value="#aDomainProjects[i]#"<cfif cookie.currentFarcryProject eq aDomainProjects[i]> selected</cfif>>#server.stFarcryProjects[aDomainProjects[i]].displayname#</option>
-												</cfif>
-											</cfloop>						
-										</select>
-									</div>
-									<br class="clearer"/>
-								</div>	
-							</fieldset>
-						</cfoutput>
+						<ft:fieldset>
+							<ft:field label="Project Selection" name="selectFarcryProject">
+								<cfoutput>
+								<select name="selectFarcryProject" id="selectFarcryProject" onchange="window.location='#application.url.webtop#/login.cfm?farcryProject='+this.value;">						
+									<cfloop from="1" to="#arraylen(aDomainProjects)#" index="i">
+										<cfif len(aDomainProjects[i])>
+											<option value="#aDomainProjects[i]#"<cfif cookie.currentFarcryProject eq aDomainProjects[i]> selected</cfif>>#server.stFarcryProjects[aDomainProjects[i]].displayname#</option>
+										</cfif>
+									</cfloop>						
+								</select>
+								</cfoutput>
+							</ft:field>
+						</ft:fieldset>	
 					</cfif>
 				</cfif>			
 				
@@ -81,12 +76,9 @@ START WEBSKIN
 				<!--- --------------------- --->
 				<cfif listlen(application.security.getAllUD()) GT 1>
 		
-					<cfoutput>
-					<div class="fieldSection string">
-						<label class="fieldsectionlabel" for="selectuserdirectories"> Select User Directory : </label>
-						<div class="fieldAlign">
-					</cfoutput>
-					
+					<ft:fieldset>
+						<ft:field label="Select User Directory" name="selectuserdirectories">
+						
 							<cfoutput><select name="selectuserdirectories" id="selectuserdirectories" onchange="window.location='#application.url.farcry#/login.cfm?ud='+this.value;"></cfoutput>
 							
 							<cfloop list="#application.security.getAllUD()#" index="thisud">
@@ -95,13 +87,9 @@ START WEBSKIN
 								</cfoutput>
 							</cfloop>
 							
-							<cfoutput></select></cfoutput>
-					
-					<cfoutput>	
-						</div>
-						<br class="clearer"/>
-					</div>		
-					</cfoutput>		
+							<cfoutput></select></cfoutput>	
+						</ft:field>
+					</ft:fieldset>	
 				</cfif>
 
 
