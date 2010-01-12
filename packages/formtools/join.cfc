@@ -139,7 +139,12 @@
 							<cfset counter = 0 />
 							<cfloop list="#joinItems#" index="i">
 								<cfset counter = counter + 1 />
-								<skin:view objectid="#i#" webskin="librarySelected" r_html="htmlLabel" />
+								<cftry>
+									<skin:view objectid="#i#" webskin="librarySelected" r_html="htmlLabel" />
+									<cfcatch type="any">
+										<cfset htmlLabel = "OBJECT NO LONGER EXISTS" />
+									</cfcatch>
+								</cftry>
 								<cfoutput>
 								<li id="join-item-#i#" class="sort #iif(counter mod 2,de('oddrow'),de('evenrow'))#" serialize="#i#" style="clear:both;border:1px solid ##ebebeb;padding:5px;">
 									<table style="width:100%">
