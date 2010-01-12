@@ -42,7 +42,8 @@
 
 
 <!--- environment variables --->
-<cfparam name="request.bHideContextMenu" default="false" type="boolean" />
+<cfparam name="request.bHideContextMenu" default="false" type="boolean" /><!--- Hide the tray.  For backwards compatibility --->
+
 
 
 <!--- optional attributes --->
@@ -308,8 +309,14 @@
 </cfif>
 
 
-
-	<cfif len(url.type) AND not structKeyExists(application.rules, url.type) AND request.mode.bAdmin AND request.fc.bShowTray AND not structKeyExists(request.fc, "bAdminTrayRendered") AND not request.mode.ajax>
+	<cfif len(url.type) 
+		AND NOT structKeyExists(application.rules, url.type) 
+		AND request.mode.bAdmin 
+		AND request.fc.bShowTray 
+		AND NOT request.bHideContextMenu
+		AND NOT structKeyExists(request.fc, "bAdminTrayRendered") 
+		AND NOT request.mode.ajax>
+		
 		<cfset request.fc.bAdminTrayRendered = true />
 		
 		<cfparam name="session.fc" default="#structNew()#" />
