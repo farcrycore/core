@@ -190,12 +190,12 @@
 		<cfif structKeyExists(stProps[arguments.richtextfield].metadata, "ftTemplateSnippetWebskinPrefix")>
 			<cfset oObject = createobject("component", application.stcoapi[arguments.typename].packagepath) />
 			<cfset qObjectWebskins = oObject.getWebskins(typename="#arguments.typename#", prefix="#stProps[arguments.richtextfield].metadata.ftTemplateSnippetWebskinPrefix#") />
-					
+				
+			
 			
 			<cfoutput>		
 				
 				<div id="generic_panel" class="panel">
-					
 	
 							
 						
@@ -203,34 +203,40 @@
 							<tr> 
 								<td class="column1"><label id="genericwebskinlabel" for="genericwebskin">Template</label></td> 
 								<td>
-									<select id="genericwebskin" name="genericwebskin" onchange="$j('##insertgeneric').css('display','');">
-										<option value="">--select a display type--</option>
-										<cfloop query="qObjectWebskins">
-											<option value="#ReplaceNoCase(qObjectWebskins.name, ".cfm", "", "all")#">#ReplaceNoCase(qObjectWebskins.displayname, ".cfm", "", "all")#</option>
-										</cfloop>									
-									</select>
+									<cfif qObjectWebskins.recordCount>
+										<select id="genericwebskin" name="genericwebskin" onchange="$j('##insertgeneric').css('display','');">
+											<option value="">--select a display type--</option>
+											<cfloop query="qObjectWebskins">
+												<option value="#ReplaceNoCase(qObjectWebskins.name, ".cfm", "", "all")#">#ReplaceNoCase(qObjectWebskins.displayname, ".cfm", "", "all")#</option>
+											</cfloop>									
+										</select>
+									<cfelse>
+										-- No Generic Templates Available --
+									</cfif>
 								</td> 
 							</tr> 
-							<tr> 
-								<td class="column1">&nbsp; </td>
-								<td>
-									<input type="hidden" id="genericobjectid" name="genericobjectid" value="#arguments.objectid#">
-									<input type="button" name="preview" value="preview" onclick="setPreview($j('##genericobjectid').attr('value'), '#arguments.typename#', $j('##genericwebskin').attr('value'), 'generic');" />
-								</td> 
-							</tr> 
+							<cfif qObjectWebskins.recordCount>
+								<tr> 
+									<td class="column1">&nbsp; </td>
+									<td>
+										<input type="hidden" id="genericobjectid" name="genericobjectid" value="#arguments.objectid#">
+										<input type="button" name="preview" value="preview" onclick="setPreview($j('##genericobjectid').attr('value'), '#arguments.typename#', $j('##genericwebskin').attr('value'), 'generic');" />
+									</td> 
+								</tr> 
+								
+							</cfif>
 							</table>
 							
-							
-							
-							<fieldset>
-								<legend>Preview</legend>
-								<div id="prevgenericDIV">
-									<iframe id="prevgeneric" src="" width="100%" height="150" style="border:0px solid ##a0a0a0;">
-									
-									</iframe>
-								</div>
-							</fieldset>
-							
+							<cfif qObjectWebskins.recordCount>
+								<fieldset>
+									<legend>Preview</legend>
+									<div id="prevgenericDIV">
+										<iframe id="prevgeneric" src="" width="100%" height="150" style="border:0px solid ##a0a0a0;">
+										
+										</iframe>
+									</div>
+								</fieldset>
+							</cfif>
 							
 							<div class="mceActionPanel">
 								<div style="float: left">
