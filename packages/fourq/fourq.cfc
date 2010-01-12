@@ -520,7 +520,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 
 		<!--- assign typename if only objectid passed in --->
 		<cfif NOT len(arguments.typename)>
-			<cfset arguments.typename = application.coapi.utilities.findType(objectid="#arguments.objectid#") />
+			<cfset arguments.typename = application.coapi.coapiUtilities.findType(objectid="#arguments.objectid#") />
 			<!--- <cfif NOT len(arguments.typename)><cfthrow /></cfif> --->
 		</cfif>
 	
