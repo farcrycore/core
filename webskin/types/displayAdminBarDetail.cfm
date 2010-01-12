@@ -21,10 +21,10 @@
 <cfif application.fapi.isLoggedIn()>
 	
 	<!--- Need to strip out the domain name from the referer reference --->
-	<cfset refererURL = cgi.http_referer />
-	<cfset domainLoc = findNoCase(cgi.http_host, refererURL) />
+	<cfparam name="form.refererURL" default="#cgi.http_referer#" />
+	<cfset domainLoc = findNoCase(cgi.http_host, form.refererURL) />
 	<cfif domainLoc GT 0>
-		<cfset refererURL = mid(refererURL, find("/",refererURL,domainLoc), len(refererURL) ) />
+		<cfset form.refererURL = mid(form.refererURL, find("/",form.refererURL,domainLoc), len(form.refererURL) ) />
 	</cfif>
 	
 
@@ -69,12 +69,12 @@
 				<li><a id="edit-object" href="##"><span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>Edit</a></li>
 			</cfif>--->
 			<li>
-				<a href="#application.fapi.fixURL(url='#refererURL#', removevalues="", addvalues='updateapp=#application.updateappkey#')#">
+				<a href="#application.fapi.fixURL(url='#form.refererURL#', removevalues="", addvalues='updateapp=#application.updateappkey#')#">
 					<span class="ui-icon ui-icon-refresh" style="float:left;">&nbsp;</span>Update App
 				</a>
 			</li>
 			<li>
-				<a href="#application.fapi.fixURL(url='#refererURL#', removevalues="", addvalues='logout=1')#">
+				<a href="#application.fapi.fixURL(url='#form.refererURL#', removevalues="", addvalues='logout=1')#">
 					<span class="ui-icon ui-icon-power" style="float:left;">&nbsp;</span>Logout
 				</a>
 			</li>
@@ -106,7 +106,7 @@
 		<grid:div style="float:right;">
 			<cfoutput>
 				<ul id="page-actions-request">
-					<cfif findNoCase("bDebug=1", "#refererURL#") OR findNoCase("bDebug/1", "#refererURL#")>
+					<cfif findNoCase("bDebug=1", "#form.refererURL#") OR findNoCase("bDebug/1", "#form.refererURL#")>
 						<li>
 							<a id="tray-bDebug" name="tray-bDebug" title="Turn OFF Debugging" href="##">
 								<input type="checkbox" checked=checked /> Debug
@@ -114,7 +114,7 @@
 						</li>
 						<skin:onReady>
 							$j('##tray-bDebug').click(function() {
-								location.href='#application.fapi.fixURL(url='#refererURL#', addvalues='bDebug=0')#';
+								location.href='#application.fapi.fixURL(url='#form.refererURL#', addvalues='bDebug=0')#';
 								return false;
 							});
 						</skin:onReady>
@@ -126,13 +126,13 @@
 						</li>
 						<skin:onReady>
 							$j('##tray-bDebug').click(function() {
-								location.href='#application.fapi.fixURL(url='#refererURL#', addvalues='bDebug=1')#';
+								location.href='#application.fapi.fixURL(url='#form.refererURL#', addvalues='bDebug=1')#';
 								return false;
 							});
 						</skin:onReady>
 					</cfif>	
 														
-					<cfif findNoCase("tracewebskins=1", "#refererURL#") OR findNoCase("tracewebskins/1", "#refererURL#")>
+					<cfif findNoCase("tracewebskins=1", "#form.refererURL#") OR findNoCase("tracewebskins/1", "#form.refererURL#")>
 						<li>
 							<a id="tray-tracewebskins" name="tray-tracewebskins" title="Turn OFF Webskin Tracing" href="##">
 								<input type="checkbox" checked=checked /> Tracer
@@ -140,7 +140,7 @@
 						</li>
 						<skin:onReady>
 							$j('##tray-tracewebskins').click(function() {
-								location.href='#application.fapi.fixURL(url='#refererURL#', addvalues='tracewebskins=0')#';
+								location.href='#application.fapi.fixURL(url='#form.refererURL#', addvalues='tracewebskins=0')#';
 								return false;
 							});
 						</skin:onReady>
@@ -152,7 +152,7 @@
 						</li>
 						<skin:onReady>
 							$j('##tray-tracewebskins').click(function() {
-								location.href='#application.fapi.fixURL(url='#refererURL#', addvalues='tracewebskins=1')#';
+								location.href='#application.fapi.fixURL(url='#form.refererURL#', addvalues='tracewebskins=1')#';
 								return false;
 							});
 						</skin:onReady>
@@ -167,7 +167,7 @@
 				<ul id="page-actions-toggle">
 					
 					<!--- NO CACHING AVAILABLE WHEN  --->
-					<cfif request.mode.showdraft OR request.mode.design OR findNoCase("bDebug=1", "#refererURL#") OR findNoCase("bDebug/1", "#refererURL#") OR (findNoCase("tracewebskins=1", "#refererURL#") OR findNoCase("tracewebskins/1", "#refererURL#"))>
+					<cfif request.mode.showdraft OR request.mode.design OR findNoCase("bDebug=1", "#form.refererURL#") OR findNoCase("bDebug/1", "#form.refererURL#") OR (findNoCase("tracewebskins=1", "#form.refererURL#") OR findNoCase("tracewebskins/1", "#form.refererURL#"))>
 						<li>
 							<a title="Caching is not Available when viewing drafts, in design mode, tracing webskins or in debug mode.">
 								<input type="checkbox" name="tray-flushcache" disabled=true /> <span style="text-decoration: line-through;">Caching</span>
@@ -182,7 +182,7 @@
 							</li>
 							<skin:onReady>
 								$j('##tray-flushcache').click(function() {
-									location.href='#application.fapi.fixURL(url='#refererURL#', removevalues='', addvalues='flushcache=0')#';
+									location.href='#application.fapi.fixURL(url='#form.refererURL#', removevalues='', addvalues='flushcache=0')#';
 									return false;
 								});
 							</skin:onReady>
@@ -194,7 +194,7 @@
 							</li>
 							<skin:onReady>
 								$j('##tray-flushcache').click(function() {
-									location.href='#application.fapi.fixURL(url='#refererURL#', removevalues='', addvalues='flushcache=1')#';
+									location.href='#application.fapi.fixURL(url='#form.refererURL#', removevalues='', addvalues='flushcache=1')#';
 									return false;
 								});
 							</skin:onReady>
@@ -210,7 +210,7 @@
 						</li>
 						<skin:onReady>
 							$j('##tray-showdraft').click(function() {
-								location.href='#application.fapi.fixURL(url='#refererURL#', addvalues='showdraft=0')#';
+								location.href='#application.fapi.fixURL(url='#form.refererURL#', addvalues='showdraft=0')#';
 								return false;
 							});
 						</skin:onReady>
@@ -222,7 +222,7 @@
 						</li>
 						<skin:onReady>
 							$j('##tray-showdraft').click(function() {
-								location.href='#application.fapi.fixURL(url='#refererURL#', addvalues='showdraft=1')#';
+								location.href='#application.fapi.fixURL(url='#form.refererURL#', addvalues='showdraft=1')#';
 								return false;
 							});
 						</skin:onReady>
@@ -237,7 +237,7 @@
 						</li>
 						<skin:onReady>
 							$j('##tray-designmode').click(function() {
-								location.href='#application.fapi.fixURL(url='#refererURL#', addvalues='designmode=0')#';
+								location.href='#application.fapi.fixURL(url='#form.refererURL#', addvalues='designmode=0')#';
 								return false;
 							});
 						</skin:onReady>
@@ -249,7 +249,7 @@
 						</li>
 						<skin:onReady>
 							$j('##tray-designmode').click(function() {
-								location.href='#application.fapi.fixURL(url='#refererURL#', addvalues='designmode=1')#';
+								location.href='#application.fapi.fixURL(url='#form.refererURL#', addvalues='designmode=1')#';
 								return false;
 							});
 						</skin:onReady>

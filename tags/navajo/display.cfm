@@ -357,7 +357,8 @@
 					objectID:'#url.objectid#',
 					type:'#url.type#',
 					view:'#url.view#',
-					bodyView:'#url.bodyView#'
+					bodyView:'#url.bodyView#',
+					refererURL:'#cgi.script_name#?#cgi.query_string#'
 				},
 				dataType: "html"
 			});
