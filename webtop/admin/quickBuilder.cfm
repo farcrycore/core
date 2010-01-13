@@ -77,10 +77,10 @@ $out:$
 	        lastlevel = 1;
 	
 	        for (i = 1; i lte arraylen(lines); i = i + 1) {
-	            prefix = spanIncluding(lines[i], levelToken);
+	            prefix = spanIncluding(trim(lines[i]), levelToken);
 	            prefixLen = len(prefix);
 	
-	            line = lines[i];
+	            line = trim(lines[i]);
 	            lineLen = len(line);
 	
 	            level = prefixLen + 1;
@@ -131,15 +131,7 @@ $out:$
 	            navtitle = lcase(rereplacenocase(items[i].title, "\W+", "_", "all"));
 	            arrayAppend(navstack, rereplace(navtitle, "_+", "_", "all"));
 	
-	            if (makenavaliases and items[i].navAlias eq "") {
-	                if (navaliaseslevel eq 0 or items[i].level lte navaliaseslevel)
-	                    items[i].lNavIDAlias = arrayToList(navstack, '_');
-	                else
-	                    items[i].lNavIDAlias = '';
-	
-	            }
-	            
-	            else if(items[i].navAlias neq ""){
+	            if(items[i].navAlias neq ""){
 	            	items[i].lNavIDAlias = items[i].navAlias;
 	            }
 	            else
@@ -210,17 +202,18 @@ $out:$
 	        }
 	    </cfscript>
 	
-	    <cfoutput>
-	        <div class="formTitle">#application.rb.getResource("quickbuilder.headings.navTreeQuickBuilder@text","Navigation Tree Quick Builder")#</div>
-	        <p>#application.rb.getResource("quickbuilder.labels.followingItemsCreated@text","The following items have been created")#:</p>
-	        <ul>
-				<cfset subS=listToArray('#arrayLen(items)#,"dmNavigation"')>
-				<li>#application.rb.formatRBString("sitetree.message.objectnumber@text",subS,"{1}\ <strong>{2}</strong>\ content\ items")#</li>
-				<cfset subS=listToArray('#arrayLen(htmlItems)#,"dmHTML"')>
-	          	<li>#application.rb.formatRBString("sitetree.message.objectnumber@text",subS,"{1}\ <strong>{2}</strong>\ content\ items")#</li>
-	        </ul>
-	    </cfoutput>
-	
+		<skin:bubble title="Navigation Tree Quick Builder" sticky="true">
+		    <cfoutput>
+			    #arrayLen(items)# 
+				#lcase(application.fapi.getContentTypeMetadata('dmNavigation', 'displayName', 'navigation'))# 
+				#application.fapi.getResource('quickbuilder.labels.contentItemsCreated@text', 'content item(s) have been created')#
+				<!---	<cfset subS=listToArray('#arrayLen(items)#,"dmNavigation"')>
+					#application.rb.formatRBString("sitetree.message.objectnumber@text",subS,"{1} <strong>{2}</strong> content items")#
+					<cfset subS=listToArray('#arrayLen(htmlItems)#,"dmHTML"')>
+		          	#application.rb.formatRBString("sitetree.message.objectnumber@text",subS,"{1} <strong>{2}</strong> content items")#
+		        --->
+		    </cfoutput>
+		</skin:bubble>
 	</ft:processForm>
 	
 	

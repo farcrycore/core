@@ -70,7 +70,7 @@
 .gritter-close {
 	position:absolute;
 	top:5px;
-	left:3px;
+	right:3px;
 	background:url(../images/gritter-close.png);
 	cursor:pointer;
 	width:30px;
@@ -79,7 +79,7 @@
 .gritter-title {
 	font-size:14px;
 	font-weight:bold;
-	padding:0 0 7px 0;
+	padding:0px 20px 7px 0px;
 	display:block;
 	text-shadow:1px 1px #000; /* Not supported by IE :( */
 }
