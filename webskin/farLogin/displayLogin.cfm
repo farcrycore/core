@@ -93,7 +93,7 @@ START WEBSKIN
 				</cfif>
 
 
-				<ft:object typename="farLogin" lFields="username,password" prefix="login" legend="" />
+				<ft:object typename="farLogin" lFields="username,password" prefix="login" legend="" focusField="username" />
 					
 				
 				<ft:buttonPanel>
