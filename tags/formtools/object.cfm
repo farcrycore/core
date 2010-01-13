@@ -67,7 +67,9 @@
 	<cfparam name="attributes.lock" default="true"><!--- Lock if editing. --->
 	<cfparam name="attributes.bShowFieldHints" default="true" type="boolean"><!--- Flag to determine if the field hints are display. --->
 	<cfparam name="attributes.prefix" default="" /><!--- Allows the developer to pass in the prefix they wish to use. Default is the objectid stripped of the dashes. --->
+	<cfparam name="attributes.focusField" default="" /><!--- Enter the name of the field to focus on when rendering the form. --->
 	
+
 	<!--- If the attributes [IncludeFieldSet] has not been explicitly defined, work out the value. --->
 	<cfif attributes.includeFieldSet EQ "">
 		<cfif len(attributes.r_stFields)>
@@ -353,6 +355,11 @@
 			</cfif>
 		</cfif>
 		<cfset ftFieldMetadata.ftClass = Trim(ftFieldMetadata.ftClass)>
+		
+
+		<cfif len(attributes.focusField) AND ftFieldMetadata.Name EQ attributes.focusField>
+			<cfset ftFieldMetadata.ftClass = "#ftFieldMetadata.ftClass# focus" />
+		</cfif>
 	
 		<!--- CHECK TO ENSURE THE FORMTOOL TYPE EXISTS. OTHERWISE USE THE DEFAULT [FIELD] --->
 		<cfif NOT StructKeyExists(application.formtools,ftFieldMetadata.ftType)>
@@ -445,9 +452,7 @@
 			<cfif structKeyExists(tFieldType,FieldMethod)>
 				
 
-				<cftry>
-				
-					
+				<cftry>				
 					
 					<cfinvoke component="#tFieldType#" method="#FieldMethod#" returnvariable="variables.returnHTML">
 						<cfinvokeargument name="typename" value="#typename#">
@@ -458,8 +463,8 @@
 						<cfinvokeargument name="prefix" value="#variables.prefix#">
 					</cfinvoke>
 					<cfset variables.returnHTML = application.formtools[ftFieldMetadata.ftType].oFactory.addWatch(typename=typename,stObject=stObj,stMetadata=ftFieldMetadata,fieldname="#variables.prefix##ftFieldMetadata.Name#",html=variables.returnHTML) />
+										
 					<cfcatch><cfdump var="#cfcatch#" expand="false"></cfcatch>
-					
 				</cftry>
 				
 				
