@@ -40,39 +40,9 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 
 
 <skin:loadJS id="jquery" />
+<skin:loadJS id="farcry-form" />
 <skin:loadJS id="jquery-ui" />
 <skin:loadCSS id="jquery-ui" />
-
-
-<skin:onReady id="objectAdminAction">
-	<cfoutput>
-    	$fc.objectAdminAction = function(title,url) {
-			if ($fc.objectAdminActionDiv === undefined) {
-				$fc.objectAdminActionDiv = $j("<div><iframe style='width:100%;height:99%;' frameborder='0'></iframe></div>");
-				$j("body").prepend($fc.objectAdminActionDiv);
-				$j("html").css('overflow', 'hidden');
-				$j($fc.objectAdminActionDiv).dialog({
-					bgiframe: true,
-					modal: true,
-					title:title,
-					draggable:false,
-					resizable:false,
-					position:['left','top'],
-					width: "99%",
-					height: $j(window).height()-15,
-					close: function(event, ui) {
-						$j("html").css('overflow', 'auto');
-						location=location				
-					}
-				});
-			}
-			
-			$j($fc.objectAdminActionDiv).dialog('open');
-			$j('iframe',$j($fc.objectAdminActionDiv)).attr('src',url);
-			
-		};	
-    </cfoutput>
-</skin:onReady>
 
 
 <cfif thistag.executionMode eq "Start">
