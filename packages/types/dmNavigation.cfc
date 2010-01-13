@@ -215,7 +215,7 @@
 						// delete fu
 						if (application.fc.factory.farFU.isUsingFU()) {
 							fuUrl = application.fc.factory.farFU.getFU(objectid=qGetDescendants.objectId[loop0]);
-							application.fc.factory.farFU.deleteFu(fuUrl);
+							application.fc.factory.farFU.deleteMapping(fuUrl);
 						}
 
 						// remove permissions
