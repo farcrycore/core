@@ -26,6 +26,7 @@
 
 <cfparam name="attributes.label" default="&nbsp;"><!--- The fields label --->
 <cfparam name="attributes.labelAlignment" default="inline"><!---  options:inline,block; Used by FarCry Form Layouts for positioning of labels. inline or block. --->
+<cfparam name="attributes.for" default=""><!--- The fieldname the label is for --->
 <cfparam name="attributes.class" default="string"><!---  The class to apply to the field wrapping div. --->
 <cfparam name="attributes.bMultiField" default="false"><!--- Setting this to true, will wrap a div with a class 'multiField', that floats the field correctly, to allow more than just a simple input to be displayed. --->
 <cfparam name="attributes.hint" default=""><!--- This will place a hint below the field --->
@@ -34,7 +35,7 @@
 <cfif thistag.ExecutionMode eq "start">
 	<cfoutput>
 	<div class="ctrlHolder <cfif attributes.labelAlignment EQ "inline">inlineLabels<cfelse>blockLabels</cfif> #attributes.class#">
-		<label class="label">#attributes.label#</label>
+		<label class="label" <cfif len(attributes.for)>for="#attributes.for#"</cfif>>#attributes.label#</label>
 		<cfif attributes.bMultiField>
 			<div class="multiField">
 		</cfif>
