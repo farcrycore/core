@@ -220,11 +220,15 @@
 		<cfargument name="fuID" required="false" type="string" default="" hint="The objectid of the farFU object the friendly URL is attached to. This is used to exclude from the check unique function.">
 		
 		<cfset var stLocal = structNew() />
-		<cfset var cleanFU = "">
+		<cfset var cleanFU = "" />
 		<cfset var bDuplicate = true />
 		<cfset var duplicateCounter = "" />
 		
 		<cfset cleanFU = LCase(arguments.friendlyURL)>
+		
+		<!--- custom replacement of country specific chars BEFORE other standard replacements --->
+		<cfset cleanFU = replaceCountrySpecificChars(FUstring="#cleanFU#") />
+
 		<!--- replace the html entity (&amp;) with and --->
 		<cfset cleanFU = reReplaceNoCase(cleanFU,'&amp;','and',"all")>
 		<!--- change & to "and" in title --->
@@ -250,6 +254,43 @@
 		<cfreturn cleanFU />
 	</cffunction>
 	
+	
+	<cffunction name="replaceCountrySpecificChars" access="private" returntype="string" hint="Replaces country specific chars in the Friendly URL." output="false">
+		<cfargument name="FUstring" required="yes" type="string" hint="The actual Friendly URL to use">
+		
+		<cfset var userLanguage = "en" />
+		<cfset var stCurrentProfile = application.fapi.getCurrentUsersProfile() />
+		<cfset var result = arguments.FUstring />
+		
+		<cfif structKeyExists(stCurrentProfile, "locale")>
+			<cfset userLanguage = left(stCurrentProfile.locale,2) />
+		</cfif>
+		
+		<!--- !!! Replace country specific chars ONLY with URL compatible chars 'a-z' and '0-9' !!! --->
+		<cfswitch expression="#userLanguage#">
+			<cfcase value="de">
+				<!--- DE :: GERMAN :: Replacement rules for replacing chars in FU --->
+				<cfset result = ReReplaceNoCase(result,"[ä]+","ae","all")>
+				<cfset result = ReReplaceNoCase(result,"[ö]+","oe","all")>
+				<cfset result = ReReplaceNoCase(result,"[ü]+","ue","all")>
+				<cfset result = ReReplaceNoCase(result,"[ß]+","ss","all")>
+				<!--- replace the html entity (&amp;) with german "und" --->
+				<cfset result = reReplaceNoCase(result,'&amp;','und',"all")>
+				<!--- change & to german "und" in title --->
+				<cfset result = reReplaceNoCase(result,'[&]','und',"all")>
+				<!--- Custom replacement of illegal characters in titles                  
+				      Special regex characters have to be escape with a backslash '\'     
+				      Special characters are: + * ? . [ ^ $ ( ) { | \                 --->
+				<cfset result = reReplaceNoCase(result,"['§%~`´\+\*\?\.\^\$]",'',"all")>
+			</cfcase>
+
+			<!--- further '<cfcase> </cfcase>' replacements for other languages can follow HERE --->
+
+		</cfswitch>
+		
+		<!--- return the replaced FU-String --->
+		<cfreturn result />
+	</cffunction>	
 	<cffunction name="getUniqueFU" access="private" returntype="string" hint="Returns a unique friendly url. The objectid of the current friendly url can be passed in to make sure we are not picking it up in the unique query">
 		<cfargument name="friendlyURL" required="true" hint="The friendly URL we are trying to make unique" />
 		<cfargument name="fuID" required="false" default="" hint="The objectid of the farFU record to exclude from the db query" />
@@ -1221,6 +1262,9 @@
 		<cfset var newAlias = replace(arguments.alias,' ','-',"all")>
 		<!--- replace duplicate dashes with a single dash --->
 		<cfset newAlias = REReplace(newAlias,"-+","-","all")>
+		<!--- custom replacement of country specific chars BEFORE other standard replacements --->
+		<cfset newAlias = replaceCountrySpecificChars(FUstring="#newAlias#") />
+		
 		<!--- replace the html entity (&amp;) with and --->
 		<cfset newAlias = reReplaceNoCase(newAlias,'&amp;','and',"all")>
 		<!--- remove illegal characters in titles --->
