@@ -1096,7 +1096,7 @@ default handlers
 			<ft:form bFocusFirstField="true">
 				
 					
-				<cfoutput><h1><skin:icon icon="#application.stCOAPI[stobj.typename].icon#" default="farcrycore" />#stobj.label#</h1></cfoutput>
+				<cfoutput><h1><skin:icon icon="#application.stCOAPI[stobj.typename].icon#" default="farcrycore" size="32" />#stobj.label#</h1></cfoutput>
 				
 				<cfif listLen(lFieldSets)>
 					

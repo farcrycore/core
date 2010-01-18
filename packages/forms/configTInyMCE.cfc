@@ -14,11 +14,9 @@
 		ftSeq="2" ftFieldset="Configuration Settings" ftLabel="TinyMCE Config" 
 		fthint="The configuration should be written in the Javascript notation for TinyMCE outlined at http://wiki.moxiecode.com/index.php/TinyMCE:Configuration  
 		For example:
-		tinyMCE.init({
-			theme : ""advanced"",
-			mode : ""textareas""
-		});
+		theme : ""advanced""
 		There is no need to nominate the tinyMCE.init function, just its contents.
+		Please note that the config item MODE is always set to exact and cannot be changed. All other configuration items are available.
 		 "
 		ftStyle="width:500px;height:300px;" />
 

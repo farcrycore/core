@@ -32,6 +32,9 @@
 		<skin:registerJS 	id="jquery-ui"
 							baseHREF="#application.url.webtop#/thirdparty/jquery/js"
 							lFiles="ui.core.js,ui.accordion.js,ui.datepicker.js,ui.dialog.js,ui.draggable.js,ui.droppable.js,ui.progressbar.js,ui.resizable.js,ui.selectable.js,ui.slider.js,ui.sortable.js,ui.tabs.js,effects.core.js,effects.blind.js,effects.bounce.js,effects.clip.js,effects.drop.js,effects.explode.js,effects.fold.js,effects.highlight.js,effects.pulsate.js,effects.scale.js,effects.shake.js,effects.slide.js,effects.transfer.js" />
+		
+			
+				
 
 		<skin:registerJS 	id="tinymce"
 							baseHREF="#application.url.webtop#/thirdparty/tiny_mce"
@@ -55,7 +58,19 @@
 							baseHREF="#application.url.webtop#"
 							lFiles="/js/farcryForm.cfm,/thirdparty/loadmask/jquery.loadmask.min.js,/thirdparty/uni-form/js/uni-form.jquery.js" />
 
-		
+		<skin:registerJS 	id="ext"
+							baseHREF="#application.url.webtop#/js/ext"
+							lFiles="/adapter/ext/ext-base.js,/ext-all.js">
+							<cfoutput>
+							Ext.BLANK_IMAGE_URL = '#application.url.webtop#/js/ext/resources/images/default/s.gif';
+							</cfoutput>
+		</skin:registerJS>
+							
+	
+		<skin:registerJS 	id="swfobject"
+							baseHREF="#application.url.webtop#/js"
+							lFiles="swfobject.js" />
+
 		<!--- CSS LIBRARIES --->
 		<skin:registerCSS 	id="webtop"
 							baseHREF="#application.url.webtop#/css"
@@ -73,8 +88,8 @@
 		</skin:registerCSS>
 				
 		<skin:registerCSS 	id="farcry-form"
-							baseHREF="#application.url.webtop#/thirdparty"
-							lFiles="/loadmask/jquery.loadmask.css,/uni-form/css/uni-form-generic.css,/uni-form/css/uni-form.css" />
+							baseHREF="#application.url.webtop#"
+							lFiles="/css/wizard.css,/thirdparty/loadmask/jquery.loadmask.css,/thirdparty/uni-form/css/uni-form-generic.css,/thirdparty/uni-form/css/uni-form.css" />
 
 							
 		<skin:registerCSS 	id="gritter"
@@ -89,6 +104,12 @@
 		<skin:registerCSS 	id="jquery-tooltip"
 							baseHREF="#application.url.webtop#/thirdparty/jquery-tooltip"
 							lFiles="jquery.tooltip.css" />		
+				
+		<skin:registerCSS 	id="ext"
+							baseHREF="#application.url.webtop#/js/ext"
+							lFiles="/resources/css/ext-all.css" />		
+							
+							
 														
 	</cffunction>	
 	

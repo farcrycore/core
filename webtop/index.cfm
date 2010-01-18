@@ -83,26 +83,27 @@
 		</td>
 	</tr>
 	<tr>
-		<td style="height:99%;">
-		
-			<div id="content-wrap" style="height:100%;">
-		
-				<div id="sidebar">
+		<td id="content-border" style="height:7px;background-color:##324E7C;"></td>
+	</tr>
+	<tr style="">
+		<td style="vertical-align:top;">
+			<table style="width:100%;height:100%;">
+			<tr>
+				<td id="sidebar" style="width:200px;padding: 0;background: transparent url('#application.url.webtop#/css/images/g2_sidebar_bg.gif') no-repeat 0 0;">
 					<iframe src="#application.factory.oWebtop.getAttributeURL('#url.sec#.#url.sub#','sidebar',url)#" name="sidebar" scrolling="auto" frameborder="0" id="iframe-sidebar"></iframe>
-				</div>
-				
-				<div id="content">
-					<iframe src="#application.factory.oWebtop.getAttributeURL('#url.sec#.#url.sub#','content',url)#" name="content" scrolling="auto" frameborder="0" id="iframe-content"></iframe>
-				</div>
-				
-				<div class="clear"></div>
-		
-			</div>		
+				</td>
+				<td id="content" style="height:100%;padding-top:10px;background: transparent url('#application.url.webtop#/css/images/g2_content_bg.gif') no-repeat -200px 0;">
+					<div style="height:100%;margin-left:45px;">
+						<iframe src="#application.factory.oWebtop.getAttributeURL('#url.sec#.#url.sub#','content',url)#" name="content" scrolling="auto" frameborder="0" id="iframe-content"></iframe>
+					</div>
+				</td>
+			</tr>
+			</table>
 		</td>
 	</tr>
 	<tr>
-		<td style="height:25px;">
-			<div id="footer">
+		<td id="footer" style="height:25px;">
+			<div>
 				<p>Copyright &copy; <a href="http://www.daemon.com.au" target="_blank">Daemon</a> 1997-#year(now())#, #createObject("component", "#application.packagepath#.farcry.sysinfo").getVersionTagline()#</p>
 			</div>		
 		</td>

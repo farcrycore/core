@@ -63,7 +63,6 @@ $in: [bCacheControl] output cache control headers; default true. $
 <skin:loadCSS id="farcry-form">
 	<cfoutput>
 	.uniForm .fieldset {
-		background:##F4F4F4;
 		margin:0 0 10px 0;
 		padding:5px;
 	}

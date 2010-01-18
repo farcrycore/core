@@ -33,7 +33,6 @@ FARCRY IMPORT FILES
 <skin:loadCSS id="farcry-form">
 	<cfoutput>
 	.uniForm .fieldset {
-		background:##F4F4F4;
 		margin:30px 0 0 0;
 		padding:5px;
 	}

@@ -111,12 +111,12 @@ body#sec-login {background: #5A7EB9 url("images/full_page_bg.gif") repeat-x 0 0;
 	#login .error {clear:both;}
 
 /* =LAYOUT-CONTENT-AREA */
-#content-wrap {border-top: 7px solid #324E7C;position:relative;background: transparent url("images/g2_content_bg.gif") no-repeat 0 0}
+#content-wrap {}
 	
-	#sidebar {height:100%;float:left;width:200px;padding: 0;background: transparent url("images/g2_sidebar_bg.gif") no-repeat 0 0}
+	#sidebar {}
 		#sidebar #iframe-sidebar {height:100%;width:200px}
 		body.iframed select {font-size:86%}
-	#content {height:96%;margin: 0 0 0 232px;padding-top:20px;background: #fff url("images/g2_content_bg.gif") no-repeat -236px 0}
+	#content {}
 		#content #iframe-content {height:100%;width:100%}
 
 /* =IFRAMES */
@@ -152,7 +152,7 @@ body.iframed-content h3 {margin-top:0;font-size:135%}
 	/* =OTHER SECTIONs */
 	#content-button-max {display:block;position:absolute;top:299px;left:203px;width:29px;height:38px;background: transparent url("images/sprites.gif") no-repeat 0 -350px}
 	#content-button-max span {display:none}
-	#content-button-min {display:block;display:none;position:absolute;top:299px;left:2px;width:29px;height:38px;background: transparent url("images/sprites.gif") no-repeat 0 -300px}
+	#content-button-min {display:block;display:none;position:absolute;top:299px;left:3px;width:29px;height:38px;background: transparent url("images/sprites.gif") no-repeat 0 -300px}
 	#content-button-min span {display:none}
 	#content-button-max:hover {background-position: -50px -350px}
 	#content-button-min:hover {background-position: -50px -300px}
@@ -226,8 +226,10 @@ body.iframed .refreshtree a:link, body.iframed .refreshtree a:visited, body.ifra
 .upone {position:absolute;top:48px;right:21px}
 
 /* =LAYOUT-FOOTER */
-#footer {right:5px;text-align:right;font-size: 86%;color:#999;background:none;width:100%;}
-#footer p {margin:0}
+#footer {background:#ffffff url(images/footer_bg.gif) repeat-x;vertical-align:bottom;border-top:2px solid #4371AE;}
+#footer p {margin:0;text-align:right;font-size: 86%;color:#2E4F7A;padding:2px 20px 2px 2px;}
+#footer a:link, #footer a:visited, #footer a:hover, #footer a:active {color:#2E4F7A;}
+#footer a:hover, #footer a:active {background:#97ACCD none repeat scroll 0 0;}
 
 /* =DEFINITION LISTS */
 dl {margin: 0 0 1.5em}

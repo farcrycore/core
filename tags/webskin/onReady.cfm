@@ -21,7 +21,7 @@ $in: id -- an id for the content to be added to the head. If the key already exi
 
 	<cfparam name="attributes.id" default="#application.fc.utils.createJavaUUID()#" />
 	
-	<!--- Make sure the request.inhead.stCustom exists --->
+	<!--- Make sure the request.inhead.stOnReady exists --->
 	<cfparam name="request.inhead" default="#structNew()#" />
 	<cfparam name="request.inhead.stOnReady" default="#structNew()#" />
 	<cfparam name="request.inhead.aOnReadyIDs" default="#arrayNew(1)#" /><!--- This array allows us to keep track of the order in which the ids were generated --->
