@@ -281,7 +281,7 @@
 				<!--- Custom replacement of illegal characters in titles                  
 				      Special regex characters have to be escape with a backslash '\'     
 				      Special characters are: + * ? . [ ^ $ ( ) { | \                 --->
-				<cfset result = reReplaceNoCase(result,"['§%~`´\+\*\?\.\^\$]",'',"all")>
+				<cfset result = reReplaceNoCase(result,"['§%~`´\+\*\?\.\^\$]+",'',"all")>
 			</cfcase>
 
 			<!--- further '<cfcase> </cfcase>' replacements for other languages can follow HERE --->
