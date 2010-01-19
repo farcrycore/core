@@ -877,7 +877,7 @@
 			<!--- check library includes --->
 			<cfif structKeyExists(application, "plugins") and Len(application.plugins)>
 	
-				<cfloop list="#application.plugins#" index="library">
+				<cfloop list="#application.fapi.listReverse('#application.plugins#')#" index="library">
 					<cfset includepath=ExpandPath("/farcry/plugins/#library#/includedObj") />
 					
 					<cfif directoryExists(includepath)>
@@ -903,14 +903,14 @@
 								</cfloop>
 							<cfelse>
 								<!--- overwrite record since its being extended --->
-								<cfquery dbtype="query" name="qFindDupe">
+								<!--- <cfquery dbtype="query" name="qFindDupe">
 								SELECT name
 								FROM qResult
 								</cfquery>
 								<cfset recordNum = listFindNoCase(valueList(qFindDupe.name),qDupe.name) />
 								<cfloop list="#qLibResult.columnList#" index="col">
 									<cfset querySetCell(qResult, col, qLibResult[col][qLibResult.currentRow],recordNum) />
-								</cfloop>
+								</cfloop> --->
 							</cfif>
 							
 						</cfloop>
