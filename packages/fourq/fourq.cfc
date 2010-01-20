@@ -607,12 +607,6 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfset arguments.objectid = stProps.objectid />
 		</cfif>
 		
-		<!--- Create a Reference in the RefObjects Table --->
-		<cfset bRefCreated = application.coapi.coapiutilities.createRefObjectID(argumentCollection="#arguments#") />
-		<cfif not bRefCreated>
-			<cfabort showerror="Error Executing Database Query. Duplicate ObjectID #arguments.objectid#" />
-		</cfif>
-		
 		<cfset stProps.typename = arguments.typename>
 		
 		<cfset stProps.label = "(incomplete)">
@@ -932,45 +926,10 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					<!--- Didn't find the object in the objectBroker --->
 					<!--- build a local instance cache --->
 					<cfinclude template="_fourq/getData.cfm">	
-
-				
-				<!--- MJB TODO: This piece of code needs to be added somewhere to allow the access to any field that has been run through the relevent display function of its formtool cfc  --->
-				<!--- 
-				<cfset stobjDisplay = structNew() />
-				<cfif structKeyExists(application.stcoapi, stobj.typename)>
-					
-					<cfif structKeyExists(application.stcoapi[stobj.typename], "stMethods") AND structKeyExists(application.stcoapi[stobj.typename].stMethods, "getField")>						
-						<cfloop list="#structKeyList(stobj)#" index="fieldname">
-							<cfif NOT listFindNoCase("ftDisplayFields,typename",fieldname)>
-								
-								<cfset oType = createObject("component", application.stcoapi[stobj.typename].packagePath) />
-								<cfset stobjDisplay[fieldname] = oType.getField(stobject=stobj, fieldname=fieldname) />
-							</cfif>
-						</cfloop>
-					<cfelse>
-						<cfloop list="#structKeyList(stobj)#" index="fieldname">
-							<cfif NOT listFindNoCase("ftDisplayFields,typename",fieldname)>
-								<cfset stobjDisplay[fieldname] = stobj[fieldname] />
-							</cfif>
-						</cfloop>		
-					</cfif>	
-					
-								
-				</cfif> --->
-			
-				
-				<!--- <cftrace type="information" category="coapi" var="stobj.typename" text="getData() used database."> --->
 			
 				<!--- Attempt to add the object to the broker --->
 				<cfif NOT arguments.bArraysAsStructs AND NOT arguments.bShallow>
 					<cfset addedtoBroker = application.fc.lib.objectbroker.AddToObjectBroker(stobj=stobj,typename=variables.typename)>
-	
-					
-					<!--- <cfif addedToBroker> --->
-						<!--- Successfully added object to the broker --->
-						<!--- <cftrace type="information" category="coapi" var="arguments.objectid" text="getData() added object to Broker.">
-					</cfif>
-					 --->
 				</cfif>
 			</cfif>	
 
@@ -981,7 +940,10 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		We therefore need to return a default object of this typename.
 		 --->
 		<cfif NOT structKeyExists(stObj,'objectID')>
+			
 			<cfset stObj = getDefaultObject(argumentCollection=arguments)>	
+			
+			
 			<cfset stObj.bDefaultObject = true />
 		</cfif>
 		
@@ -1031,7 +993,6 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			If the object is to be stored in the session scope only.
 			----------------------------------------->		
 			<cfif arguments.bSessionOnly>
-			
 				<!--- Make sure an object id exists. --->
 				<cfparam name="arguments.stProperties.ObjectID" default="#application.fc.utils.createJavaUUID()#" />				
 				

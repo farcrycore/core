@@ -244,6 +244,7 @@ default handlers
 		<cfargument name="dsn" required="No" default="#application.dsn#">
 		<cfargument name="bSessionOnly" type="boolean" required="false" default="false"><!--- This property allows you to save the changes to the Temporary Object Store for the life of the current session. ---> 
 		<cfargument name="bAfterSave" type="boolean" required="false" default="true" hint="This allows the developer to skip running the types afterSave function.">	
+		<cfargument name="bSetDefaultCoreProperties" type="boolean" required="false" default="true" hint="This allows the developer to skip defaulting the core properties if they dont exist.">	
 		
 		<cfset var stResult = StructNew()>
 		<cfset var stresult_friendly = StructNew()>
@@ -269,20 +270,22 @@ default handlers
 			</cfif>
 		</cfif>
 		
-		<cfscript>
-			//fill in the gaps in case user has forgotten any core properties
-			if(NOT structKeyExists(arguments.stProperties,"datetimelastupdated"))
-				arguments.stProperties.datetimelastupdated = createODBCDateTime(now());		
-			if(NOT structKeyExists(arguments.stProperties,"locked"))
-				arguments.stProperties.locked = 0;			
-			if(NOT structKeyExists(arguments.stProperties,"lockedby"))
-				arguments.stProperties.lockedby = '';
-			if(NOT structKeyExists(arguments.stProperties,"lastupdatedby"))
-				arguments.stProperties.lastupdatedby = arguments.user;		
-			if(NOT structKeyExists(arguments.stProperties,"typename"))			
-				arguments.stProperties.typename = findType(objectid=arguments.stProperties.objectid);
-				
-		</cfscript>	
+		<cfif arguments.bSetDefaultCoreProperties>
+			<cfscript>
+				//fill in the gaps in case user has forgotten any core properties
+				if(NOT structKeyExists(arguments.stProperties,"datetimelastupdated"))
+					arguments.stProperties.datetimelastupdated = createODBCDateTime(now());		
+				if(NOT structKeyExists(arguments.stProperties,"locked"))
+					arguments.stProperties.locked = 0;			
+				if(NOT structKeyExists(arguments.stProperties,"lockedby"))
+					arguments.stProperties.lockedby = '';
+				if(NOT structKeyExists(arguments.stProperties,"lastupdatedby"))
+					arguments.stProperties.lastupdatedby = arguments.user;		
+				if(NOT structKeyExists(arguments.stProperties,"typename"))			
+					arguments.stProperties.typename = findType(objectid=arguments.stProperties.objectid);
+					
+			</cfscript>	
+		</cfif>
 		
 		<cfif not structKeyExists(arguments.stProperties, "typename") OR not len(arguments.stProperties.typename)>
 			<cfset arguments.stProperties.typename = getTablename() />
@@ -310,7 +313,7 @@ default handlers
 				</cfif>
 			</cfif>
 		</cfif>
-				
+			
 		<cfset stresult = super.setData(stProperties=arguments.stProperties, dsn=arguments.dsn, bSessionOnly=arguments.bSessionOnly) />
 		
 		<!--- ONLY RUN THROUGH IF SAVING TO DB --->
@@ -329,7 +332,7 @@ default handlers
 
 		
 		<!--- log update --->
-		<cfif arguments.bAudit>
+		<cfif not arguments.bSessionOnly AND arguments.bAudit>
 			<farcry:logevent object="#arguments.stProperties.objectid#" type="types" event="update" notes="#arguments.auditNote#" />
 		</cfif>
 		
@@ -579,7 +582,7 @@ default handlers
 	<cffunction name="setLock" access="public" output="true" hint="Lock a content item to prevent simultaneous editing." returntype="void">
 		<cfargument name="locked" type="boolean" required="true" hint="Turn the lock on or off.">
 		<cfargument name="lockedby" type="string" required="false" hint="Name of the user locking the object." default="">
-		<cfargument name="bAudit" type="boolean" required="No" default="1" hint="Pass in 0 if you wish no audit to take place">
+		<cfargument name="bAudit" type="boolean" required="No" default="0" hint="Pass in 1 if you wish no audit to take place">
 		<cfargument name="dsn" required="No" default="#application.dsn#"> 
 		<cfargument name="stobj" required="No" default="#StructNew()#"> 
 		<cfargument name="objectid" required="No" default=""><!--- objectid of the object to be locked/unlocked ---> 
@@ -604,6 +607,7 @@ default handlers
 		<cfif not StructIsEmpty(stObject)>
 			<!--- We need to get the object from memory to see if it is a default object. If so, we are only saving to the session. --->
 			<cfset stCurrentObject = getData(stObject.objectid) />
+
 			<cfif structKeyExists(stCurrentObject, "bDefaultObject") AND stCurrentObject.bDefaultObject>
 				<cfset bSessionOnly = true />
 			</cfif>
@@ -613,14 +617,11 @@ default handlers
 			<cfelse>
 				<cfset stObject.lockedby="">
 			</cfif>
+			
+			
 			<!--- call fourq.setdata() (ie super) to bypass prepop of sys attributes by types.setdata() --->
-			<cfset setdata(stProperties="#stObject#", user="#arguments.lockedby#", bAudit="#arguments.bAudit#", dsn="#arguments.dsn#", bAfterSave="false", bSessionOnly="#bSessionOnly#")>
+			<cfset setdata(stProperties="#stObject#", user="#arguments.lockedby#", bAudit="#arguments.bAudit#", dsn="#arguments.dsn#", bAfterSave="false", bSetDefaultCoreProperties="false", bSessionOnly="#bSessionOnly#")>
 
-		</cfif>
-
-		<!--- log event --->
-		<cfif arguments.bAudit and structKeyExists(stObject, "objectid")>
-			<farcry:logevent object="#stObject.objectid#" type="types" event="lock" notes="Locked: #yesnoformat(arguments.locked)#" />
 		</cfif>
 	</cffunction>
 	

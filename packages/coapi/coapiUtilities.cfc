@@ -30,14 +30,13 @@
 		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
 	   	<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#">
 		<cfargument name="dbowner" type="string" required="false" default="#ucase(application.dbowner)#">
-		<cfargument name="bTypeInRefObjects" type="boolean" required="false" default="#typeInRefObjects(arguments.typename)#" />
 		
 		<cfset var qRefDataDupe = "" />
 		<cfset var qRefData = "" />
 		<cfset var qObjectDupe = "" />
 		<cfset var bSuccess = true />
 		
-		<cfif arguments.bTypeInRefObjects>
+		<cfif application.fapi.getContentTypeMetadata(arguments.typename,'bRefObjects',true)>
 
 			<cftry>
 				
@@ -73,28 +72,19 @@
 					</cfquery>
 					
 					<cfif qObjectDupe.RecordCount>
-						<cfset bSuccess = false />
+						<cfset application.fapi.throw(detail="Attempting to add a duplicate refObjectID (#arguments.objectid#) for #arguments.typename#") />
 					</cfif>
 				
 				</cfif>
 				
 				<cfcatch type="database">
 					<!--- This simply means the refObjects table has not been deployed so .  --->
+					<cfset application.fapi.throw(detail="#cfcatch.detail#") />
 				</cfcatch>
 				
 			</cftry>
 		<cfelse>
-			<!--- 
-				Check if the objectid exists in the type table.
-			--->
-			<cfquery datasource="#arguments.dsn#" name="qObjectDupe">
-			SELECT ObjectID FROM #arguments.dbowner##arguments.typename#
-			WHERE ObjectID = <cfqueryparam value="#arguments.objectid#" cfsqltype="CF_SQL_VARCHAR">
-			</cfquery>
-			
-			<cfif qObjectDupe.RecordCount>
-				<cfset bSuccess = false />
-			</cfif>
+			<cfset bSuccess = false />
 		</cfif>
 		
 		<cfreturn bSuccess />

@@ -95,59 +95,54 @@
 			
 			<!--- build query --->
 	
-				<cfquery datasource="#arguments.dsn#" name="qCreateData">
-					INSERT INTO #variables.dbowner##tablename# ( 
-						objectID
-						<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
-							<!--- Check to make sure property is to be saved in the db. --->
-							<cfif not structKeyExists(application, "stcoapi") OR  not structKeyExists(application.stCoapi, tablename) OR not structKeyExists(application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA,"BSAVE") OR application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA.bSave>
-								<!--- TODO: hsqldb hack - this will likely break other db engines --->
-								<cfif variables.dbtype eq "HSQLDB" AND sqlArray[i].column eq "position">
-								  , "#sqlArray[i].column#"
-								<cfelse>
-								  , #sqlArray[i].column#	
-							  	</cfif>
-							</cfif>
-						</cfloop>
-					)
-					VALUES ( 
-					
-						<cfqueryparam value="#currentObjectID#" cfsqltype="CF_SQL_VARCHAR">
-						<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
-							<!--- Check to make sure property is to be saved in the db. --->
-							<cfif not structKeyExists(application, "stcoapi") OR  not structKeyExists(application.stCoapi, tablename) OR not structKeyExists(application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA,"BSAVE") OR application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA.bSave>
-							  <!--- temp fix for mySQL, looks as though the datatype decimal and bind type 
-							  	float don't live peacefully together :( --->
-							  <cfif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype NEQ "CF_SQL_FLOAT">
-							    , <cfqueryparam cfsqltype="#sqlArray[i].cfsqltype#" value="#sqlArray[i].value#" />
-							  <cfelseif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype EQ "CF_SQL_FLOAT">
-								<!--- make sure we are only passing 2 places after the decimal point --->
-								, #numberFormat(sqlArray[i].value, "99999999999999.00")#
-							   <cfelse>
-							    , #sqlArray[i].value#
-							  </cfif>
-							</cfif>
-						</cfloop>
-					)			
-				</cfquery>
+			<cfquery datasource="#arguments.dsn#" name="qCreateData">
+				INSERT INTO #variables.dbowner##tablename# ( 
+					objectID
+					<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
+						<!--- Check to make sure property is to be saved in the db. --->
+						<cfif not structKeyExists(application, "stcoapi") OR  not structKeyExists(application.stCoapi, tablename) OR not structKeyExists(application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA,"BSAVE") OR application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA.bSave>
+							<!--- TODO: hsqldb hack - this will likely break other db engines --->
+							<cfif variables.dbtype eq "HSQLDB" AND sqlArray[i].column eq "position">
+							  , "#sqlArray[i].column#"
+							<cfelse>
+							  , #sqlArray[i].column#	
+						  	</cfif>
+						</cfif>
+					</cfloop>
+				)
+				VALUES ( 
+				
+					<cfqueryparam value="#currentObjectID#" cfsqltype="CF_SQL_VARCHAR">
+					<cfloop from="1" to="#arrayLen(SQLArray)#" index="i">
+						<!--- Check to make sure property is to be saved in the db. --->
+						<cfif not structKeyExists(application, "stcoapi") OR  not structKeyExists(application.stCoapi, tablename) OR not structKeyExists(application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA,"BSAVE") OR application.stCoapi[tableName].STPROPS[sqlArray[i].column].METADATA.bSave>
+						  <!--- temp fix for mySQL, looks as though the datatype decimal and bind type 
+						  	float don't live peacefully together :( --->
+						  <cfif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype NEQ "CF_SQL_FLOAT">
+						    , <cfqueryparam cfsqltype="#sqlArray[i].cfsqltype#" value="#sqlArray[i].value#" />
+						  <cfelseif structKeyExists(sqlArray[i],'cfsqltype') AND sqlArray[i].cfsqltype EQ "CF_SQL_FLOAT">
+							<!--- make sure we are only passing 2 places after the decimal point --->
+							, #numberFormat(sqlArray[i].value, "99999999999999.00")#
+						   <cfelse>
+						    , #sqlArray[i].value#
+						  </cfif>
+						</cfif>
+					</cfloop>
+				)			
+			</cfquery>
 
-				
-				<!--- Insert any array property data. --->
-				<cfloop collection="#stFields#" item="i">
-				  <cfif stFields[i].type eq 'array' AND structKeyExists(stProperties,i)>
-				  	<cfif IsArray(stProperties[i])>
-						<cfset createArrayTableData(tableName&"_"&i,currentObjectID,stFields[i].fields,stProperties[i],arguments.dsn) />
-					</cfif>
-				  </cfif>
-				</cfloop>
-				
-				<cfparam name="arguments.metadata.bRefObjects" default="true" />
-				<cfset bRefCreated = arguments.coapiutilities.createRefObjectID(objectID="#currentObjectID#", typename="#tablename#", dsn=variables.dsn, dbowner=variables.dbowner, dbtype=variables.dbtype, btypeInRefObjects=arguments.metadata.bRefObjects) />
-				<cfif NOT bRefCreated>
-					<!--- This error can occur because of a duplicate already in the refObjects table caused by the initial create data saving to session.
-						TODO: need a more elegent solution to handle this.
-					 --->
+			
+			<!--- Insert any array property data. --->
+			<cfloop collection="#stFields#" item="i">
+			  <cfif stFields[i].type eq 'array' AND structKeyExists(stProperties,i)>
+			  	<cfif IsArray(stProperties[i])>
+					<cfset createArrayTableData(tableName&"_"&i,currentObjectID,stFields[i].fields,stProperties[i],arguments.dsn) />
 				</cfif>
+			  </cfif>
+			</cfloop>
+
+			<cfset bRefCreated = arguments.coapiutilities.createRefObjectID(objectID="#currentObjectID#", typename="#tablename#", dsn=variables.dsn, dbowner=variables.dbowner, dbtype=variables.dbtype, btypeInRefObjects=application.fapi.getContentTypeMetadata(tablename,'bRefObjects',true)) />
+
 
 			<cfset createDataResult.objectid = currentObjectID>
 			
