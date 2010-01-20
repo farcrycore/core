@@ -263,7 +263,7 @@
 								onchange 	: function(NODE,TREE_OBJ) {
 									var selectedids = [];
 									TREE_OBJ.selected.each(function(){ selectedids.push(this.id); });
-									jQ("###arguments.fieldname#").val(selectedids.join());
+									$j("###arguments.fieldname#").val(selectedids.join());
 									#arguments.stMetadata.ftOnChange#
 								},
 								onmove 		: function(NODE,REF_NODE,TYPE,TREE_OBJ) { 
@@ -271,7 +271,7 @@
 								}
 							}
 						};
-						jQ("##sitetree").tree(treeconfig);
+						$j("##sitetree").tree(treeconfig);
 					})();
 				</script>
 			</cfoutput>
