@@ -290,13 +290,15 @@
 			<!--- write the cache file and cleanup (delete) any older cache files --->
 			<cfif variables.bCache>
 				<cflock name="#application.applicationname#-#arguments.id#-write-combine" throwontimeout="false" timeout="2">
+					<!--- TODO: Find a better way to cleanup. Now ignoring cleanup as there may be more than 1 version of a library in the case of a developer overriding default libraries for the front end. --->
+					<!---
 					<cfdirectory action="list" directory="#variables.sCachePath#" filter="#arguments.id#--*.#sType#" name="qToDelete" />
-					
 					<cfif qToDelete.recordCount>
 						<cfloop query="qToDelete">
 							<cffile action="delete" file="#qToDelete.directory#/#qToDelete.name#" />
 						</cfloop>
 					</cfif>
+					--->
 					<cffile action="write" file="#sCacheFile#" output="#sOutput#" mode="664" />
 				</cflock>
 			</cfif>
