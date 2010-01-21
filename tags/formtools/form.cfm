@@ -55,6 +55,7 @@ It just ignores the inner ones.
 		<cfparam name="attributes.bAddFormCSS" default="true" /><!--- Uses uniform (http://sprawsm.com/uni-form/) --->
 		<cfparam name="attributes.bFieldHighlight" default="true"><!--- Highlight fields when focused --->
 		<cfparam name="attributes.bFocusFirstField" default="false" /><!--- Focus on first form element. --->
+		<cfparam name="attributes.defaultAction" default="" /><!--- The default action to be used if user presses enter key on browser that doesn't fire onClick event of first button. --->
 
 		<!--- Keeps track of all the form name in the request to make sure they are all unique --->
 		<cfparam name="Request.farcryFormList" default="">		
@@ -94,6 +95,7 @@ It just ignores the inner ones.
 		<cfset Request.farcryForm.stObjects = "#StructNew()#" />
 		<cfset Request.farcryForm.bAjaxSubmission = "#attributes.bAjaxSubmission#" />
 		<cfset Request.farcryForm.lFarcryObjectsRendered = "" />	
+		<cfset Request.farcryForm.defaultAction = "#attributes.defaultAction#" />	
 		
 
 		<!--- Add form protection --->
@@ -133,7 +135,7 @@ It just ignores the inner ones.
 		<cfoutput>
 			<input type="hidden" name="FarcryFormPrefixes" value="" #tagEnding#>
 			<input type="hidden" name="FarcryFormSubmitButton" value="" #tagEnding#><!--- This is an empty field so that if the form is submitted, without pressing a farcryFormButton, the FORM.FarcryFormSubmitButton variable will still exist. --->
-			<input type="hidden" name="FarcryFormSubmitButtonClicked#attributes.Name#" id="FarcryFormSubmitButtonClicked#attributes.Name#" class="fc-button-clicked" value="" #tagEnding#><!--- This contains the name of the farcry button that was clicked --->
+			<input type="hidden" name="FarcryFormSubmitButtonClicked#attributes.Name#" id="FarcryFormSubmitButtonClicked#attributes.Name#" class="fc-button-clicked" value="#Request.farcryForm.defaultAction#" #tagEnding#><!--- This contains the name of the farcry button that was clicked --->
 			<input type="hidden" name="FarcryFormSubmitted"  value="#attributes.Name#" #tagEnding#><!--- Contains the name of the farcry form submitted --->
 			<input type="hidden" name="SelectedObjectID" class="fc-selected-object-id" value="" #tagEnding#><!--- Hidden Field to take a UUID from the attributes.SelectedObjectID on ft:button --->
 		

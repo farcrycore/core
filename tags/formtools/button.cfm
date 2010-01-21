@@ -22,6 +22,7 @@
 <cfparam name="attributes.r_stButton" default=""><!--- the name of the calling scope variable name to return the details of the farcry button --->
 <cfparam name="attributes.renderType" default="farcryButton"><!--- How should the button be rendered (button, link) --->
 <cfparam name="attributes.primaryAction" default="" /><!--- Is this button a primary action on the form --->
+<cfparam name="attributes.bDefaultAction" default="false" /><!--- Default action when someone presses enter on a form. --->
 
 
 <cfif not thistag.HasEndTag>
@@ -109,6 +110,11 @@
 		<cfset attributes.onClick = "#attributes.onClick#;#request.farcryForm.onSubmit#;btnSubmit('#Request.farcryForm.Name#','#jsStringFormat(attributes.value)#');" />	
 	</cfif>
 	
+	
+	<!--- Set the default action if requested --->
+	<cfif attributes.bDefaultAction OR (attributes.Type EQ "submit" AND not len(Request.farcryForm.defaultAction))>
+		<cfset Request.farcryForm.defaultAction = attributes.value />
+	</cfif>
 	
 	<!--- Output the button if not just returning the info --->
 	<cfif not len(attributes.r_stButton)>
