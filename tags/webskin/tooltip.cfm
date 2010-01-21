@@ -20,6 +20,35 @@
 <!--- @@description: Displays a tool tip on hover.  --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
+<!--- 
+	@@examples:
+	<p>Linking a tool tip to a DOM element using the id attribute</p>
+	<code>
+		<skin:tooltip message="Stuff!" selector="#a-123" />
+		<a href="javascript:void(0);" id="a-123">Things</a>
+	</code>
+	
+	<p>Linking a tooltip to a DOM element using the id attribute and 
+		doing an HTML style tooltip</p>
+	<code>
+		<skin:tooltip selector="#a-123">
+		  <b>THINGS!</b>
+		<skin:tooltip>
+		<a href="javascript:void(0);" id="a-123">Things</a>
+	</code>
+	
+	<p>Linking a tool tip to several DOM elements using the class
+		selector</p>
+	<code>
+		<skin:tooltip selector=".yadda">
+		   <b>THINGS!</b>
+		</skin:tooltip>
+		<a class="yadda" href="javascript:void(0);">Thing 1</a>
+		<a class="yadda" href="javascript:void(0);">Thing 2</a>
+		<a class="yadda" href="javascript:void(0);">Thing Red</a>
+		<a class="yadda" href="javascript:void(0);">Thing Blue</a>
+	</code>
+--->
 
 <!------------------ 
 FARCRY IMPORT FILES
@@ -28,7 +57,7 @@ FARCRY IMPORT FILES
 
 <cfparam name="attributes.id" default="" /><!--- id used to ensure the tooltip is only loaded once per id. --->
 <cfparam name="attributes.selector" type="string" /><!--- The id of the dom element that you wish to have the tooltip display on hover. --->
-<cfparam name="attributes.message" default="" /><!--- The actual message. This can be replaced with generatedContent --->
+<cfparam name="attributes.message" default="" /><!--- The actual message. If this is blank, the text between the opening and the closing tag will be used (generatedContent) --->
 <cfparam name="attributes.class" default="tooltip" /><!--- The css class to be assigned to the tooltip div --->
 <cfparam name="attributes.style" default="" /><!--- The css style to be assigned to the tooltip div --->
 <cfparam name="attributes.configuration" default="predelay:100" /><!--- Specifies the configuration of the tooltip. --->
@@ -40,6 +69,7 @@ FARCRY IMPORT FILES
 
 <cfif thistag.executionMode eq "End">
 
+	<skin:loadJS id="jquery" />
 	<skin:loadJS id="jquery-tooltip" />
 	<skin:loadCSS id="jquery-tooltip" />
 
@@ -68,9 +98,7 @@ FARCRY IMPORT FILES
 		});
 	</cfoutput>
 	</skin:onReady>
-	
 </cfif>
-
 
 
 <cfsetting enablecfoutputonly="false">
