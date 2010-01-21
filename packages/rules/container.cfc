@@ -40,9 +40,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfinclude template="/farcry/core/webtop/includes/cfFunctionWrappers.cfm">
 	
 	<cffunction name="init" output="false" access="public" returntype="Any">
-	
-		<cfset variables.stContainer = structNew() />
-		
 		<cfreturn fourqInit() />
 	</cffunction>
 	
@@ -51,17 +48,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		<cfargument name="parentobjectid" type="string" required="No" default="" hint="The objectid of the object that instantiated the container.  Should only be set if the container is unique to that instance.  Will enable clean-up of unused containers when the parent-object is deleted.">
 		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
 		<cfset var stNewObject = structNew()>
-		<cfset var hashedLabel = "" />
-		
-		<cfif not structKeyExists(variables, "stContainer")>
-			<cfset init() />
-		</cfif>
-		
-		<cfif structKeyExists(arguments.stProperties, "label")>
-			<cfset hashedLabel = hash(arguments.stProperties.label) />
-			<cfset structDelete(variables.stContainer, hashedLabel) />
-		</cfif>
-		
+				
 		<cfscript>
 			stNewObject = super.createData(arguments.stProperties);
 			if (len(arguments.parentObjectid))
@@ -472,36 +459,28 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		
 		<cfset var qGetContainer = ''>
 		<cfset var containerID = "" />
-		<cfset var hashedLabel = hash(label) />				
-		
-		<cfif not structKeyExists(variables, "stContainer")>
-			<cfset init() />
-		</cfif>
-		
-		<cfif not structKeyExists(variables.stContainer, hashedLabel)>
-			<cfquery name="qGetContainer" datasource="#arguments.dsn#">
-				SELECT objectid
-				FROM #application.dbowner#container 
-				WHERE 
-				<cfif isDefined("arguments.objectID")>
-					objectID = '#objectID#'
-				<cfelse>
-					label = '#arguments.label#'
-				</cfif>
-				
-				<cfif arguments.bShared>
-					AND bShared = 1
-				<cfelse>
-					AND bShared = 0
-				</cfif>
-			</cfquery>
-			<cfif qGetContainer.recordCount>
-				<cfset containerID = qGetContainer.objectid />
-				<cfset variables.stContainer[hashedLabel] = containerID />
+
+		<cfquery name="qGetContainer" datasource="#arguments.dsn#">
+			SELECT objectid
+			FROM #application.dbowner#container 
+			WHERE 
+			<cfif isDefined("arguments.objectID")>
+				objectID = '#objectID#'
+			<cfelse>
+				label = '#arguments.label#'
 			</cfif>
-		<cfelse>
-			<cfset containerID = variables.stContainer[hashedLabel] />
+			
+			<cfif arguments.bShared>
+				AND bShared = 1
+			<cfelse>
+				AND bShared = 0
+			</cfif>
+		</cfquery>
+		
+		<cfif qGetContainer.recordCount>
+			<cfset containerID = qGetContainer.objectid />
 		</cfif>
+		
 		<cfreturn containerID>
 	</cffunction> 
 
