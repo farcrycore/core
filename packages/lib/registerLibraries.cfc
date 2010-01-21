@@ -24,9 +24,12 @@
 		<!--- JS LIBRARIES --->
 		<skin:registerJS 	id="jquery"
 							baseHREF="#application.url.webtop#/thirdparty/jquery/js"
-							lFiles="jquery-1.3.2.min.js">
+							lFiles="jquery-1.4.min.js">
 							
-							<cfoutput>var $j = jQuery.noConflict();</cfoutput>	
+							<cfoutput>
+								var $j = jQuery.noConflict();
+								var $ = jQuery.noConflict();							
+							</cfoutput>	
 		</skin:registerJS>		
 			
 		<skin:registerJS 	id="jquery-ui"
@@ -90,6 +93,10 @@
 		<skin:registerCSS 	id="farcry-form"
 							baseHREF="#application.url.webtop#"
 							lFiles="/css/wizard.css,/thirdparty/loadmask/jquery.loadmask.css,/thirdparty/uni-form/css/uni-form-generic.css,/thirdparty/uni-form/css/uni-form.css" />
+
+		<skin:registerCSS 	id="farcry-pagination"
+							baseHREF="#application.url.webtop#"
+							lFiles="/css/pagination.css" />
 
 							
 		<skin:registerCSS 	id="gritter"
