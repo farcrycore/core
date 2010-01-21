@@ -112,8 +112,10 @@
 	
 	
 	<!--- Set the default action if requested --->
-	<cfif attributes.bDefaultAction OR (attributes.Type EQ "submit" AND not len(Request.farcryForm.defaultAction))>
-		<cfset Request.farcryForm.defaultAction = attributes.value />
+	<cfif isDefined("Request.farcryForm.Name")>
+		<cfif attributes.bDefaultAction OR (attributes.Type EQ "submit" AND not len(Request.farcryForm.defaultAction))>
+			<cfset Request.farcryForm.defaultAction = attributes.value />
+		</cfif>
 	</cfif>
 	
 	<!--- Output the button if not just returning the info --->
