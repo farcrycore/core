@@ -73,14 +73,15 @@ START WEBSKIN
 	<!--- THIS HIDDEN FIELD WILL STORE THE PAGE REQUESTED IF PAGINATING USING A FORM POST --->
 	<cfif attributes.submissionType eq "form">
 	
-		<skin:loadJS id="jquery" />
+		<skin:loadJS id="jquery" />	
+		<skin:loadJS id="farcry-form" />
 		
 		<skin:htmlHead id="pageSubmitJS">
 		<cfoutput>
 		<script type="text/javascript">
 		farcryps = function(page,formname,type,actionURL){
-			if(type=='form'){					
-				$j('##' + formname).submit();
+			if(type=='form'){	
+				btnSubmit('##' + formname, ''); //submit farcryform but ensure no actions are taken.	
 				return false;
 			} else if(type=='url'){
 				window.location = actionURL + '&page=' + page;
