@@ -1,100 +1,75 @@
 <cfoutput>
+
+	var $fc = {};
+	
 	//==================================================================================
 	// ftWatch JavaScript
 	// These three functions provide ajax update functionality for fields.
 	//==================================================================================
-	var watchedfields = {};
-	var watchingfields = {};
-					
-	function getInputValue(name) {
-		var objs = $j("[name="+name+"]");
-		var result = "";
-		
-		// input doesn't exist
-		if (!objs.length) {
-			return "";
-		}
-		// checkbox
-		else if (objs.get(0).tagName=="INPUT" && objs.get(0).type == 'checkbox') {
-			result = [];
-			objs.each(function(el){
-				if (el.checked) result.push(el.value);
-			});
-			return result.join();
-		}
-		// radio
-		else if (objs.get(0).tagName=="INPUT" && objs.get(0).type == 'radio') {
-			objs = $j("[name="+name+"][type=radio]");
-			if (objs.length)
-				return objs.get(0).value;
-			else
-				return "";
-		}
-		// select
-		else if (objs.get(0).tagName=="SELECT") {
-			result = [];
-			for (var i=0;i<objs.get(0).options.length;i++)
-				if (objs.get(0).options[i].selected) result.push(objs.get(0).options[i].value);
-			return result;
-		}
-		// everything else: text, password, hidden, etc
-		else {
-			result = [];
-			objs.each(function(el){
-				result.push(el.value);
-			});
-			return result.join();
-		}
-	};
 	
+	$fc.watchedfields = {};
+	$fc.watchingfields = {};
+	$fc.watchingtracker = {};
+		
 	function addWatch(prefix,property,opts) {
-		watchedfields[prefix] = watchedfields[prefix] || {};
-		watchingfields[prefix] = watchingfields[prefix] || {};
+		//setup watch tracking objects
+		$fc.watchedfields[prefix] = $fc.watchedfields[prefix] || {};
+		$fc.watchingfields[prefix] = $fc.watchingfields[prefix] || {};
+		$fc.watchingtracker[prefix] = $fc.watchingtracker[prefix] || {};
+		$fc.watchingtracker[prefix][property] = $fc.watchingtracker[prefix][property] || {};
 		
-		if (!watchedfields[prefix][property]) { // if the property doesn't have a watch attached already, do so
-			$j("select[name="+prefix+property+"], input[name="+prefix+property+"][type=text], input[name="+prefix+property+"][type=password]").bind("change",{ prefix:prefix, property: property },ajaxUpdate);
-			$j("input[name="+prefix+property+"][type=checkbox], input[name="+prefix+property+"][type=radio]").bind("click",{ prefix:prefix, property: property },ajaxUpdate);
-			$j("input[name="+prefix+property+"][type=hidden]").each(function(el){
-				var lastvalue = el.value;
-				setInterval(function(){
-					if (el.value !== lastvalue) {
-						lastvalue = el.value;
-						var ev = { data:{ prefix:prefix, property: property } };
-						el.call(ajaxUpdate,ev);
-					}
-				},100);
-			});
+		//add the watches
+		$j("select[name="+prefix+property+"], input[name="+prefix+property+"][type=text], input[name="+prefix+property+"][type=password]").bind("change",{ prefix:prefix, property: property },ajaxUpdate);
+		$j("input[name="+prefix+property+"][type=checkbox], input[name="+prefix+property+"][type=radio]").bind("click",{ prefix:prefix, property: property },ajaxUpdate);
+		$j("input[name="+prefix+property+"][type=hidden]").each(function(el){
+			var lastvalue = el.value;
+			setInterval(function(){
+				if (el.value !== lastvalue) {
+					lastvalue = el.value;
+					var ev = { data:{ prefix:prefix, property: property } };
+					el.call(ajaxUpdate,ev);
+				}
+			},100);
+		});
+		
+		
+		// if the property hasn't had its watch setup already, do so
+		if ($fc.watchingtracker[prefix][property][opts.property] === undefined ) { 
+				
+			//setup property watch tracking arrays
+			$fc.watchedfields[prefix][property] = $fc.watchedfields[prefix][property] || [];
+			$fc.watchedfields[prefix][property].push(opts);
+			
+			$fc.watchingfields[prefix][opts.property] = $fc.watchingfields[prefix][opts.property] || [];
+			$fc.watchingfields[prefix][opts.property].push(opts);
+			
+			//setup the tracker so we know which watches have been setup even after an ajax call.
+			$fc.watchingtracker[prefix][property][opts.property] = '';
 		}
-		
-		watchedfields[prefix][property] = watchedfields[prefix][property] || [];
-		watchedfields[prefix][property].push(opts);
-		
-		watchingfields[prefix][opts.property] = watchingfields[prefix][opts.property] || [];
-		watchingfields[prefix][opts.property].push(opts);
 	};
 	
 	function ajaxUpdate(event) {
 		var values = {};
 		
 		// for each watcher
-		for (var i=0; i<watchedfields[event.data.prefix][event.data.property].length; i++) {
-			watcher = watchedfields[event.data.prefix][event.data.property][i];
+		for (var i=0; i<$fc.watchedfields[event.data.prefix][event.data.property].length; i++) {
+			watcher = $fc.watchedfields[event.data.prefix][event.data.property][i];
 			
 			// include the watcher in the form post
 			values[watcher.property] = "";
 			
 			// find out what each one is watching
-			for (var j=0; j<watchingfields[event.data.prefix][watcher.property].length; j++)
+			for (var j=0; j<$fc.watchingfields[event.data.prefix][watcher.property].length; j++)
 				// add these properties to the form post
-				values[watchingfields[event.data.prefix][watcher.property][j].watchedproperty] = "";
+				values[$fc.watchingfields[event.data.prefix][watcher.property][j].watchedproperty] = "";
 		}
 		
 		// get the post values
 		for (var property in values)
-			values[property] = getInputValue(event.data.prefix+property);
+			values[property] = $j('##' + event.data.prefix+property).attr('value');
 		
 		// for each watcher
-		for (var i=0; i<watchedfields[event.data.prefix][event.data.property].length; i++) {
+		for (var i=0; i<$fc.watchedfields[event.data.prefix][event.data.property].length; i++) {
 			(function(watcher){
 				// post the AJAX request
 				$j("##"+watcher.prefix+watcher.property+"ajaxdiv").html(watcher.ftLoaderHTML).load('#application.url.farcry#/facade/ftajax.cfm?ajaxmode=1&formtool='+watcher.formtool+'&typename='+watcher.typename+'&fieldname='+watcher.fieldname+'&property='+watcher.property+'&objectid='+watcher.objectid,
@@ -103,13 +78,13 @@
 						$j("##"+watcher.fieldname+"ajaxdiv").html(response.responseText);
 						
 						// if the updated field is also being watched, reattach the events
-						if (watchedfields[watcher.prefix] && watchedfields[watcher.prefix][watcher.property] && watchedfields[watcher.prefix][watcher.property].length){
+						if ($fc.watchedfields[watcher.prefix] && $fc.watchedfields[watcher.prefix][watcher.property] && $fc.watchedfields[watcher.prefix][watcher.property].length){
 							$j("select[name="+watcher.prefix+watcher.property+"], input[name="+watcher.prefix+event.data.property+"][type=text], input[name="+watcher.prefix+watcher.property+"][type=password]").bind("change",{ prefix: watcher.prefix, property: watcher.property },ajaxUpdate);
 							$j("input[name="+watcher.prefix+watcher.property+"][type=checkbox], input[name="+watcher.prefix+watcher.property+"][type=radio]").bind("click",{ prefix: watcher.prefix, property: watcher.property },ajaxUpdate);
 						}
 					}
 				);
-			})(watchedfields[event.data.prefix][event.data.property][i]);
+			})($fc.watchedfields[event.data.prefix][event.data.property][i]);
 		}
 	};
 				
@@ -308,7 +283,6 @@ function setRowBackground (childCheckbox) {
 	}
 }		
 
-var $fc = {};
 									
 							$fc.openDialog = function(title,url,width,height){
 								var fcDialog = $j("<div></div>")
