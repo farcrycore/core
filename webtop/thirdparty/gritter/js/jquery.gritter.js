@@ -18,7 +18,7 @@ jQuery(document).ready(function($){
 	Gritter = {
 	    
 	    // PUBLIC - touch all you want
-		fade_speed: 2000, // how fast the notices fade out
+		fade_speed: 500, // how fast the notices fade out
 	    timer_stay: 6000, // how long you want the message to hang on screen for
 	    
 	    // PRIVATE - no touchy the private parts
