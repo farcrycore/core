@@ -36,7 +36,8 @@
 		<cfset var qObjectDupe = "" />
 		<cfset var bSuccess = true />
 		
-		<cfif application.fapi.getContentTypeMetadata(arguments.typename,'bRefObjects',true)>
+		<!--- Need to check for existance of fapi as it will not be available during installation. --->
+		<cfif not structKeyExists(application, "fapi") OR application.fapi.getContentTypeMetadata(arguments.typename,'bRefObjects',true)>
 
 			<cftry>
 				

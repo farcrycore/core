@@ -141,7 +141,7 @@
 			  </cfif>
 			</cfloop>
 
-			<cfset bRefCreated = arguments.coapiutilities.createRefObjectID(objectID="#currentObjectID#", typename="#tablename#", dsn=variables.dsn, dbowner=variables.dbowner, dbtype=variables.dbtype, btypeInRefObjects=application.fapi.getContentTypeMetadata(tablename,'bRefObjects',true)) />
+			<cfset bRefCreated = arguments.coapiutilities.createRefObjectID(objectID="#currentObjectID#", typename="#tablename#", dsn=variables.dsn, dbowner=variables.dbowner, dbtype=variables.dbtype) />
 
 
 			<cfset createDataResult.objectid = currentObjectID>
