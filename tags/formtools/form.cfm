@@ -149,7 +149,9 @@ It just ignores the inner ones.
 						
 			<skin:onReady>
 				<cfoutput>
-				$j('###attributes.Name#').uniform();
+				if(typeof $j('###attributes.Name#').uniform != "undefined") {
+					$j('###attributes.Name#').uniform();
+				}
 				</cfoutput>
 			</skin:onReady>
 		</cfif>
@@ -162,22 +164,22 @@ It just ignores the inner ones.
 			<!--- Setup farcry form validation (fv) --->
 			<skin:onReady>
 				<cfoutput>
-				$fc.fv#attributes.Name# = $j("###attributes.Name#").validate({
-					onsubmit: false, // let the onsubmit function handle the validation
-					errorElement: "p",
-					errorClass: "errorField",					   
-					errorPlacement: function(error, element) {
-					   error.prependTo( element.parent("div.ctrlHolder") );
-					},
-					highlight: function(element, errorClass) {
-					   $j(element).parent("div.ctrlHolder").addClass('error');
-					},
-					unhighlight: function(element, errorClass) {
-					   $j(element).parent("div.ctrlHolder").removeClass('error');
-					}
-
-				});
-				
+				if(typeof $j('###attributes.Name#').validate != "undefined") {
+					$fc.fv#attributes.Name# = $j("###attributes.Name#").validate({
+						onsubmit: false, // let the onsubmit function handle the validation
+						errorElement: "p",
+						errorClass: "errorField",					   
+						errorPlacement: function(error, element) {
+						   error.prependTo( element.parent("div.ctrlHolder") );
+						},
+						highlight: function(element, errorClass) {
+						   $j(element).parent("div.ctrlHolder").addClass('error');
+						},
+						unhighlight: function(element, errorClass) {
+						   $j(element).parent("div.ctrlHolder").removeClass('error');
+						}
+					});
+				}
 				
 				</cfoutput>
 			</skin:onReady>
