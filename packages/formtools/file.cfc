@@ -29,8 +29,7 @@
 		
 		<cfparam name="arguments.stMetadata.ftstyle" default="" />
 		<cfparam name="arguments.stMetadata.ftRenderType" default="html" /><!--- html, flash, jquery --->
-		<cfparam name="arguments.stMetadata.ftAllowedFileExtensions" default="" /><!--- pdf,zip --->
-		<cfset arguments.stMetadata.ftAllowedFileExtensions = "pdf,zip" />
+		<cfparam name="arguments.stMetadata.ftAllowedFileExtensions" default="pdf,zip" /><!--- pdf,zip --->
 		
 		<skin:loadJS id="jquery" />
 		
