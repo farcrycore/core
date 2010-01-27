@@ -353,30 +353,44 @@
 			<p>Please push "back" on your browser or go back <a style="text-decoration:underline" href="/">home</a></p>
 			<h3>Error Details</h3>
 			<table border="1" cellpadding="5" style="border-collapse:collapse;">
-			<tr><th align="right" style="vertical-align:top;">Message</th><td>#arguments.exception.message#</td></tr>
-			<tr><th align="right" style="vertical-align:top;">Exception Type</th><td>#arguments.exception.type#</td></tr>
+			<cfif structKeyExists(arguments.exception, "message")>
+				<tr><th align="right" style="vertical-align:top;">Message</th><td>#arguments.exception.message#</td></tr>
+			</cfif>
+			<cfif structKeyExists(arguments.exception, "type")>
+				<tr><th align="right" style="vertical-align:top;">Exception Type</th><td>#arguments.exception.type#</td></tr>
+			</cfif>
 			
 			<cfswitch expression="#arguments.exception.type#">
 			<cfcase value="database">
-				<tr><th align="right" style="vertical-align:top;">Error</th><td>#arguments.exception.queryError#</td></tr>
-				<tr><th align="right" style="vertical-align:top;">SQL</th><td>#arguments.exception.sql#</td></tr>
-				<tr><th align="right" style="vertical-align:top;">Where</th><td>#arguments.exception.where#</td></tr>
+				<cfif structKeyExists(arguments.exception, "queryError")>
+					<tr><th align="right" style="vertical-align:top;">Error</th><td>#arguments.exception.queryError#</td></tr>
+				</cfif>
+				<cfif structKeyExists(arguments.exception, "sql")>
+					<tr><th align="right" style="vertical-align:top;">SQL</th><td>#arguments.exception.sql#</td></tr>
+				</cfif>
+				<cfif structKeyExists(arguments.exception, "where")>
+					<tr><th align="right" style="vertical-align:top;">Where</th><td>#arguments.exception.where#</td></tr>
+				</cfif>
 			</cfcase>
 			<cfdefaultcase>
-				<tr><th align="right" style="vertical-align:top;">Detail</th><td>#arguments.exception.detail#</td></tr>
+				<cfif structKeyExists(arguments.exception, "detail")>
+					<tr><th align="right" style="vertical-align:top;">Detail</th><td>#arguments.exception.detail#</td></tr>
+				</cfif>
 			</cfdefaultcase>
 			</cfswitch>
 
-			<tr>
-				<th align="right" style="vertical-align:top;">Tag Context</th>
-				<td>
-					<ul>
-					<cfloop from="1" to="#arrayLen(arguments.exception.TagContext)#" index="i">
-						<li>#arguments.exception.TagContext[i].template# (line: #arguments.exception.TagContext[i].line#)</li>
-					</cfloop>
-					</ul>	
-				</td>
-			</tr>
+			<cfif structKeyExists(arguments.exception, "TagContext")>
+				<tr>
+					<th align="right" style="vertical-align:top;">Tag Context</th>
+					<td>
+						<ul>
+						<cfloop from="1" to="#arrayLen(arguments.exception.TagContext)#" index="i">
+							<li>#arguments.exception.TagContext[i].template# (line: #arguments.exception.TagContext[i].line#)</li>
+						</cfloop>
+						</ul>	
+					</td>
+				</tr>
+			</cfif>
 			
 			</table>		
 			
