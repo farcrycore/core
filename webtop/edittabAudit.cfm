@@ -17,25 +17,16 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header: $
-$Author: $
-$Date: $
-$Name: $
-$Revision: $
+<!--- @@DESCRIPTION: Displays an audit log for a content item in the webtop overview --->
 
-|| DESCRIPTION || 
-$DESCRIPTION: Displays an audit log for object$
-
-|| DEVELOPER ||
-$DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
---->
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
-<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
+<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
 
-<!--- set up page header --->
+
+<!--- 
+ // VIEW
+--------------------------------------------------------------------------------------------------->
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <sec:CheckPermission error="true" permission="ObjectAuditTab">
@@ -46,11 +37,11 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 	
 	<cfif qLog.recordcount gt 0>
 		<cfoutput>
-		<table cellspacing="0">
+		<table width="100%" class="objectAdmin">
 		<tr>
 			<th>#application.rb.getResource("workflow.labels.date@label","Date")#</th>
 			<th>#application.rb.getResource("workflow.labels.changeType@label","Change Type")#</th>
-			<th>#application.rb.getResource("workflow.labels.location@label","Location")#</th>
+			<!--- <th>#application.rb.getResource("workflow.labels.location@label","Location")#</th> --->
 			<th>#application.rb.getResource("workflow.labels.notes@label","Notes")#</th>
 			<th>#application.rb.getResource("workflow.labels.user@label","User")#</th>
 		</tr>
@@ -60,13 +51,13 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 			<cfif structKeyExists(url, "user")>
 				<cfif url.user eq username>
 					<cfoutput>
-					<tr>
+					<tr class="#IIF(qLog.currentrow MOD 2, de("alt"), de(""))#">
 						<td>
 						#application.thisCalendar.i18nDateFormat(datetimestamp,session.dmProfile.locale,application.longF)# 
 						#application.thisCalendar.i18nTimeFormat(datetimestamp,session.dmProfile.locale,application.shortF)#
 						</td>
 						<td>#audittype#</td>
-						<td>#location#</td>
+						<!--- <td>#location#</td> --->
 						<td>
 							<cfif notes neq "">
 								#notes#
@@ -79,13 +70,13 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 				</cfif>	
 			<cfelse>
 				<cfoutput>
-				<tr>
+				<tr class="#IIF(qLog.currentrow MOD 2, de("alt"), de(""))#">
 					<td>
 					#application.thisCalendar.i18nDateFormat(datetimestamp,session.dmProfile.locale,application.longF)# 
 					#application.thisCalendar.i18nTimeFormat(datetimestamp,session.dmProfile.locale,application.shortF)#
 					</td>
 					<td>#audittype#</td>
-					<td>#location#</td>
+					<!--- <td>#location#</td> --->
 					<td>
 						<cfif notes neq "">
 							#notes#
