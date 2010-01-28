@@ -26,7 +26,7 @@
 
 
 <cfif structKeyExists(stobj, "webskinTypename") AND structKeyExists(stobj, "webskin") AND len(stobj.webskinTypename) AND len(stobj.webskin)>	
-	<skin:view typename="#stobj.webskinTypename#" webskin="#stobj.webskin#" />
+	<skin:view typename="#stobj.webskinTypename#" webskin="#stobj.webskin#" stInclude="#stobj#" />
 <cfelseif len(stobj.include)>
 	<!--- USE skin:include tag to include the file. --->
 	<skin:include template="#stObj.include#" />
