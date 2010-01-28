@@ -17,20 +17,9 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header: $
-$Author: $
-$Date: $
-$Name: $
-$Revision: $
+<!--- @@description: shows archived versions of a specific content item, with options for rollback --->
 
-|| DESCRIPTION || 
-$Description: shows archived objects $
 
-|| DEVELOPER ||
-$Developer: Brendan Sisson (brendan@daemon.com.au)$
---->
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
@@ -39,7 +28,9 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 <cfparam name="url.archiveid" type="uuid" />
 <cfparam name="url.objectid" type="uuid" />
 
-<!--- set up page header --->
+<!--- 
+ // VIEW
+--------------------------------------------------------------------------------------------------->
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <sec:CheckPermission error="true" permission="ObjectArchiveTab">
@@ -67,10 +58,13 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 		<cfinvokeargument name="objectID" value="#url.objectid#"/>
 	</cfinvoke>
 	
-	<cfoutput><table cellspacing="0"></cfoutput>
+	<cfoutput>
+		<table width="100%" class="objectAdmin">
+	</cfoutput>
 	<cfif getArchivesRet.recordcount gt 0>
 		<!--- setup table --->
 		<cfoutput>
+		<thead>
 		<tr>
 			<th>#application.rb.getResource("workflow.labels.date@label","Date")#</th>
 			<th>#application.rb.getResource("workflow.labels.label@label","Label")#</th>
@@ -79,10 +73,12 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 			<th>&nbsp;</th>
 			<th>&nbsp;</th>
 		</tr>
+		</thead>
+		<tbody>
 		</cfoutput>
 		<!--- loop over archives --->
 		<cfoutput query="getArchivesRet">
-		<tr>
+		<tr class="#IIF(getArchivesRet.currentrow MOD 2, de("alt"), de(""))#">
 			<td>
 			#application.thisCalendar.i18nDateFormat(DATETIMELASTUPDATED,session.dmProfile.locale,application.longF)# 
 			#application.thisCalendar.i18nTimeFormat(DATETIMELASTUPDATED,session.dmProfile.locale,application.shortF)#
@@ -107,7 +103,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 		</tr>
 	</cfoutput>
 	</cfif>
-	<cfoutput></table></cfoutput>
+	<cfoutput></tbody></table></cfoutput>
 </sec:CheckPermission>
 
 <!--- setup footer --->
