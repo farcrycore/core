@@ -507,7 +507,7 @@
 			</cfsavecontent>
 			
 			<cfsavecontent variable="html">
-				<cfif not arguments.stMetadata.ftDisplayPrettyDate>
+				<cfif arguments.stMetadata.ftDisplayPrettyDate>
 					<cfoutput><span title="#renderDate#">#application.fapi.prettyDate(arguments.stMetadata.value)#</span></cfoutput>
 				<cfelse>
 					<cfoutput>#renderDate#</cfoutput>

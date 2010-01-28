@@ -65,17 +65,17 @@ START WEBSKIN
 	
 	
 	<cfif structKeyExists(stobj, "displayMethod")>
-		<ft:field label="Page Layout">
-			<cfoutput>#application.fapi.getWebskinDisplayName(stobj.typename, stobj.displayMethod)# (#stobj.displayMethod#)</cfoutput>
+		<ft:field label="Page Layout" bMultiField="true">
+			<cfoutput>#application.fapi.getWebskinDisplayName(stobj.typename, stobj.displayMethod)# (#stobj.displayMethod#.cfm)</cfoutput>
 		</ft:field>
 	</cfif>
 	
 	<cfif len(stobj.webskinTypename) AND len(stobj.webskin)>
-		<ft:field label="Included Type Webskin">
-			<cfoutput>#application.fapi.getWebskinDisplayName(stobj.webskinTypename,stobj.webskin)# (#stobj.webskin#)</cfoutput>
+		<ft:field label="Included Type Webskin" bMultiField="true">
+			<cfoutput>#application.fapi.getWebskinDisplayName(stobj.webskinTypename,stobj.webskin)# (#stobj.webskin#.cfm)</cfoutput>
 		</ft:field>
 	<cfelse>
-		<ft:field label="Include">
+		<ft:field label="Include" bMultiField="true">
 			<cfif len(stobj.include)>
 				<cfoutput>#stobj.include#</cfoutput>
 			<cfelse>

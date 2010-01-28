@@ -288,7 +288,7 @@
 		<cfargument name="bAfterSave" type="boolean" required="false" default="true" hint="This allows the developer to skip running the types afterSave function.">	
 	
 		<cfset var o = "" />
-		<cfset var lReserved = "objectid,typename,stProperties,dsn,dbtype,dbowner,bSessionOnly" />
+		<cfset var lReserved = "objectid,typename,stProperties,dsn,dbtype,dbowner,bSessionOnly,bAfterSave" />
 	
 		<cfif not structKeyExists(arguments.stProperties, "objectid")>
 			<cfset arguments.stProperties.objectid = arguments.objectid />

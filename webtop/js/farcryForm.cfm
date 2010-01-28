@@ -383,6 +383,7 @@ function setRowBackground (childCheckbox) {
 
 	fcForm.openLibraryAdd = function(typename,objectid,property,id) {
 		var newDialogDiv = $j("<div id='" + typename + objectid + property + "'><iframe style='width:100%;height:100%;border-width:0px;' frameborder='0'></iframe></div>")
+		var filterTypename = $j('##' + id + '-add-type').val();
 		$j("body").prepend(newDialogDiv);
 		$j("html").css('overflow', 'hidden');
 		$j(newDialogDiv).dialog({
@@ -405,7 +406,7 @@ function setRowBackground (childCheckbox) {
 		});
 		$j(newDialogDiv).dialog('open');
 		//OPEN URL IN IFRAME ie. not in ajaxmode
-		$j('iframe',$j(newDialogDiv)).attr('src','/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=displayLibraryAdd' + '&property=' + property);
+		$j('iframe',$j(newDialogDiv)).attr('src','/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=displayLibraryAdd' + '&property=' + property + '&filterTypename=' + filterTypename);
 		
 	};	
 	

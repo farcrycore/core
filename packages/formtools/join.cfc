@@ -238,6 +238,15 @@
 											text="add" 
 											onClick="fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');" />
 								
+								<cfif listLen(arguments.stMetadata.ftJoin) GT 1>
+									<select id="#arguments.fieldname#-add-type">
+										<cfloop list="#arguments.stMetadata.ftJoin#" index="i">
+											<option value="#trim(i)#">#application.fapi.getContentTypeMetadata(i, 'displayname', i)#</option>
+										</cfloop>
+									</select>
+								<cfelse>
+									<input type="hidden" id="#arguments.fieldname#-add-type" value="#arguments.stMetadata.ftJoin#" />
+								</cfif>
 							</cfif>
 						
 					</cfoutput>

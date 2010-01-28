@@ -81,7 +81,7 @@ START WEBSKIN
 		<script type="text/javascript">
 		farcryps = function(page,formname,type,actionURL){
 			if(type=='form'){	
-				btnSubmit('##' + formname, ''); //submit farcryform but ensure no actions are taken.	
+				btnSubmit(formname, ''); //submit farcryform but ensure no actions are taken.	
 				return false;
 			} else if(type=='url'){
 				window.location = actionURL + '&page=' + page;
