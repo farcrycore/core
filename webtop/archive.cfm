@@ -16,34 +16,19 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/webtop/archive.cfm,v 1.2 2005/10/06 06:18:35 daniela Exp $
-$Author: daniela $
-$Date: 2005/10/06 06:18:35 $
-$Name: milestone_3-0-1 $
-$Revision: 1.2 $
-
-|| DESCRIPTION || 
-$Description: shows archived objects $
-
-
-|| DEVELOPER ||
-$Developer: Brendan Sisson (brendan@daemon.com.au)$
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
---->
-
+<!--- @@description: shows archived versions for a specific content item --->
 <cfprocessingDirective pageencoding="utf-8">
 
 <cfparam name="finish_url" default="#cgi.http_referer#" />
 
-<!--- set up page header --->
-<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
-<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+<!--- import tag libraries --->
+<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
+<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
 
+
+<!--- 
+ // VIEW
+--------------------------------------------------------------------------------------------------->
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
 
 <sec:CheckPermission error="true" permission="ObjectArchiveTab">
@@ -75,11 +60,12 @@ $out:$
 	</cfinvoke>
 
 	<cfoutput>
-	<table cellspacing="0"></cfoutput>
+		<table width="100%" class="objectAdmin">
+	</cfoutput>
 	<cfif getArchivesRet.recordcount gt 0>
 		<!--- setup table --->
 		<cfoutput>
-		<tr>
+		<tr class="#IIF(getArchivesRet.currentrow MOD 2, de("alt"), de(""))#">
 			<th>#application.rb.getResource("workflow.labels.date@label","Date")#</th>
 			<th>#application.rb.getResource("workflow.labels.label@label","")#</th>
 			<th>#application.rb.getResource("workflow.labels.user@label","User")#</th>
