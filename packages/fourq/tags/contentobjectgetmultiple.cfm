@@ -78,6 +78,7 @@ fixed methodology to work... need to refine
 
 
 <cfloop list="#attributes.lObjectIDs#" index="i">
+<cftry>
 	<cfscript>
 		contenttype = stObjectMeta[i];
 		if (len(contenttype)) 
@@ -102,6 +103,10 @@ fixed methodology to work... need to refine
 			}	
 		}
 	</cfscript>
+	<cfcatch>
+		<!--- hmm.. sometimes stObjectMeta[i] is not correctly populated --->
+	</cfcatch>
+</cftry>
 </cfloop>
 
 <cfscript>
