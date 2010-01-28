@@ -91,7 +91,7 @@
 				<cfsetting enablecfoutputonly="false" />
 				<cfexit method="exittag" />	
 			<cfelseif fileexists("#application.path.project#/www/errors/404.cfm")>				
-				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/www/404.cfm" />
+				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/www/errors/404.cfm" />
 				<cfsetting enablecfoutputonly="false" />
 				<cfexit method="exittag" />	
 			</cfif>
