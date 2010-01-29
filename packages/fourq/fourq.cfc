@@ -292,8 +292,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					<cfset webskinPath = application.coapi.coapiadmin.getWebskinPath(typename=webskinTypename, template=arguments.template) />
 							
 					<cfif len(webskinPath)>
-	
+						
 						<cfset stWebskin.webskinHTML = runView(
+															argumentCollection="#arguments#",
 															stobj="#stobj#", 
 															webskinTypename="#webskinTypename#", 
 															webskinTemplate="#arguments.template#", 
@@ -353,7 +354,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var stProperties = "" />
 		<cfset var stResult = "" />
 		<cfset var bAncestorExists = "" />
-				
+
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
 		
