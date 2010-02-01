@@ -103,7 +103,7 @@ START WEBSKIN
 						<skin:bubble message="#arguments.stParam.message#" />
 					</cfif>
 					
-					<ft:button value="Log In" icon="#application.url.webtop#/images/crystal/22x22/actions/lock.png" rbkey="security.buttons.login" />
+					<ft:button value="Log In" rbkey="security.buttons.login" />
 				</ft:buttonPanel>
 
 				
