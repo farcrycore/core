@@ -359,25 +359,18 @@
 			<cfif structKeyExists(arguments.exception, "type")>
 				<tr><th align="right" style="vertical-align:top;">Exception Type</th><td>#arguments.exception.type#</td></tr>
 			</cfif>
-			
-			<cfswitch expression="#arguments.exception.type#">
-			<cfcase value="database">
-				<cfif structKeyExists(arguments.exception, "queryError")>
-					<tr><th align="right" style="vertical-align:top;">Error</th><td>#arguments.exception.queryError#</td></tr>
-				</cfif>
-				<cfif structKeyExists(arguments.exception, "sql")>
-					<tr><th align="right" style="vertical-align:top;">SQL</th><td>#arguments.exception.sql#</td></tr>
-				</cfif>
-				<cfif structKeyExists(arguments.exception, "where")>
-					<tr><th align="right" style="vertical-align:top;">Where</th><td>#arguments.exception.where#</td></tr>
-				</cfif>
-			</cfcase>
-			<cfdefaultcase>
-				<cfif structKeyExists(arguments.exception, "detail")>
-					<tr><th align="right" style="vertical-align:top;">Detail</th><td>#arguments.exception.detail#</td></tr>
-				</cfif>
-			</cfdefaultcase>
-			</cfswitch>
+			<cfif structKeyExists(arguments.exception, "detail")>
+				<tr><th align="right" style="vertical-align:top;">Detail</th><td>#arguments.exception.detail#</td></tr>
+			</cfif>			
+			<cfif structKeyExists(arguments.exception, "queryError")>
+				<tr><th align="right" style="vertical-align:top;">Error</th><td>#arguments.exception.queryError#</td></tr>
+			</cfif>
+			<cfif structKeyExists(arguments.exception, "sql")>
+				<tr><th align="right" style="vertical-align:top;">SQL</th><td>#arguments.exception.sql#</td></tr>
+			</cfif>
+			<cfif structKeyExists(arguments.exception, "where")>
+				<tr><th align="right" style="vertical-align:top;">Where</th><td>#arguments.exception.where#</td></tr>
+			</cfif>
 
 			<cfif structKeyExists(arguments.exception, "TagContext")>
 				<tr>
