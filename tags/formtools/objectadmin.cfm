@@ -712,7 +712,7 @@ user --->
 				 		
 						
 						<cfif attributes.bShowActionList>
-							<cfoutput><th>#application.rb.getResource('objectadmin.columns.action@label','Action')#</th></cfoutput>
+							<cfoutput><th style="min-width:75px;">#application.rb.getResource('objectadmin.columns.action@label','Action')#</th></cfoutput>
 						</cfif>
 						
 						<cfif structKeyExists(st,"bHasMultipleVersion")>
@@ -1046,7 +1046,6 @@ user --->
 		</cfoutput>
 	</skin:onReady>
 
-		
 		<ul class="object-admin-actions">				
 			<li>
 			<a ft:objectid="#arguments.st.objectid#"  class="oa-overview" title="Overview" href="##">
