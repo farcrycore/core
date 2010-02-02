@@ -50,7 +50,7 @@ type properties
 	ftDestination="/images/dmImage/ThumbnailImage" 
 	ftImageWidth="80" 
 	ftImageHeight="80" 
-	ftAutoGenerateType="aspectCrop"
+	ftAutoGenerateType="center"
 	ftSourceField="SourceImage" 
 	ftCreateFromSourceDefault="true" 
 	ftAllowUpload="true" 
