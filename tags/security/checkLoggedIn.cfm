@@ -52,6 +52,7 @@
 	<cfparam name="attributes.Domain" default="#cgi.http_host#">
 	<cfparam name="attributes.addToken" default="false" />
 	<cfparam name="attributes.ampDelim" default="&">	
+	<cfparam name="attributes.loginurl" default="">	
 	
 	<cfset bValidUser = application.fapi.isLoggedIn() />
 	
@@ -68,8 +69,13 @@
 	</cfif>
 	
 	<cfif not bValidUser>
-	
-		<cfset loginURL = "#application.url.webtop#/login.cfm" />
+		
+		<cfif len(attributes.loginurl)>
+			<cfset loginURL = "#attributes.loginurl#" />
+		<cfelse>
+			<cfset loginURL = "#application.url.webtop#/login.cfm" />
+		</cfif>
+		
 		
 		<cfif len(attributes.message)>
 			<cfset session.fc.loginMessage = attributes.message />
