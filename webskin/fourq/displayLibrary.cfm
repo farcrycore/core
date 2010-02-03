@@ -164,41 +164,42 @@
 				
 				 --->
 				
-				<skin:pagination query="#qResult#" 
-					submissionType="form"
-					oddRowClass="alt"
-					evenRowClass="">
-				
-				
-				
-					
-					<cfif stObject.bFirst>
-						<cfoutput>
-						<table class="objectAdmin" style="width:100%">
-						</cfoutput>
-					</cfif>
-					
-					<cfoutput>
-						<tr class="ctrlHolder selector-wrap #stObject.currentRowClass#" style="cursor:pointer;">
-							<td class="" style="width:20px;padding:3px;">
-								<cfif stMetadata.type EQ "array">
-									<input type="checkbox" id="selected_#stobject.currentRow#" name="selected" class="checker" value="#stobject.objectID#" <cfif listFindNoCase(lSelected,stobject.objectid)>checked="checked"</cfif> />
-								<cfelse>
-									<input type="radio" id="selected_#stobject.currentRow#" name="selected" class="checker" value="#stobject.objectID#" <cfif listFindNoCase(lSelected,stobject.objectid)>checked="checked"</cfif> />
-								</cfif>
-							</td>
-							<td class="#stObject.currentRowClass#" style="padding:3px;">
-								<skin:view objectid="#stobject.objectid#" webskin="librarySelected" bIgnoreSecurity="true" />
-							</td>					
-						</tr>
-					</cfoutput>
-					
-					<cfif stObject.bLast>
-						<cfoutput>
-						</table>
-						</cfoutput>
-					</cfif>
-				</skin:pagination>
+				  <skin:pagination query="#qResult#" 
+                    submissionType="form"
+                    oddRowClass="alt"
+                    evenRowClass=""
+                    r_stObject="stCurrentRow">
+                
+                
+                
+                    
+                    <cfif stCurrentRow.bFirst>
+                        <cfoutput>
+                        <table class="objectAdmin" style="width:100%">
+                        </cfoutput>
+                    </cfif>
+                    
+                    <cfoutput>
+                        <tr class="ctrlHolder selector-wrap #stCurrentRow.currentRowClass#" style="cursor:pointer;">
+                            <td class="" style="width:20px;padding:3px;">
+                                <cfif stMetadata.type EQ "array">
+                                    <input type="checkbox" id="selected_#stCurrentRow.currentRow#" name="selected" class="checker" value="#stCurrentRow.objectID#" <cfif listFindNoCase(lSelected,stCurrentRow.objectid)>checked="checked"</cfif> />
+                                <cfelse>
+                                    <input type="radio" id="selected_#stCurrentRow.currentRow#" name="selected" class="checker" value="#stCurrentRow.objectID#" <cfif listFindNoCase(lSelected,stCurrentRow.objectid)>checked="checked"</cfif> />
+                                </cfif>
+                            </td>
+                            <td class="#stCurrentRow.currentRowClass#" style="padding:3px;">
+                                <skin:view objectid="#stCurrentRow.objectid#" webskin="librarySelected" bIgnoreSecurity="true" />
+                            </td>                    
+                        </tr>
+                    </cfoutput>
+                    
+                    <cfif stCurrentRow.bLast>
+                        <cfoutput>
+                        </table>
+                        </cfoutput>
+                    </cfif>
+                </skin:pagination>
 				
 				<cfoutput>
 				<script type="text/javascript">
