@@ -170,13 +170,13 @@ It just ignores the inner ones.
 						errorElement: "p",
 						errorClass: "errorField",					   
 						errorPlacement: function(error, element) {
-						   error.prependTo( element.parent("div.ctrlHolder") );
+						   error.prependTo( element.parents("div.ctrlHolder") );
 						},
 						highlight: function(element, errorClass) {
-						   $j(element).parent("div.ctrlHolder").addClass('error');
+						   $j(element).parents("div.ctrlHolder").addClass('error');
 						},
 						unhighlight: function(element, errorClass) {
-						   $j(element).parent("div.ctrlHolder").removeClass('error');
+						   $j(element).parents("div.ctrlHolder").removeClass('error');
 						}
 					});
 				}
