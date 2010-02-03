@@ -1579,9 +1579,14 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfswitch expression="#arguments.value#">
 			<cfcase value="label">
 				<cfif len(application.stCOAPI[variables.typename].stProps[arguments.property].metadata["ftLabel"])>
-					<cfreturn application.rb.getResource("coapi.#variables.typename#.properties.#arguments.property#@#application.stCOAPI[variables.typename].stProps[arguments.property].metadata["ftLabel"]#",application.stCOAPI[variables.typename].stProps[arguments.property].metadata["ftLabel"]) />
+					<cfset meta = application.fapi.getResource(key="coapi.#variables.typename#.properties.#arguments.property#@#application.stCOAPI[variables.typename].stProps[arguments.property].metadata["ftLabel"]#",default="") />
+					<cfif len(meta)>
+						<cfreturn meta />
+					<cfelse>
+						<cfreturn application.fapi.getResource(key="coapi.#variables.typename#.properties.#arguments.property#@label",default=application.stCOAPI[variables.typename].stProps[arguments.property].metadata["ftLabel"]) />
+					</cfif>
 				<cfelse>
-					<cfreturn application.rb.getResource("coapi.#variables.typename#.properties.#arguments.property#@#arguments.value#",application.stCOAPI[variables.typename].stProps[arguments.property].metadata["name"]) />
+					<cfreturn application.fapi.getResource(key="coapi.#variables.typename#.properties.#arguments.property#@label",default=application.stCOAPI[variables.typename].stProps[arguments.property].metadata["name"]) />
 				</cfif>
 			</cfcase>
 		</cfswitch>
