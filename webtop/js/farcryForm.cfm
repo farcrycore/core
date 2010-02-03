@@ -333,7 +333,9 @@ function setRowBackground (childCheckbox) {
 								});
 								$j(fcDialog).dialog('open');
 								$j('iframe',$j(fcDialog)).attr('src',url);
-							};		
+								
+								return fcDialog;
+							};
 							
 							
 							<!--- JOINS --->
