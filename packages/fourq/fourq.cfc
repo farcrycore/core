@@ -1579,12 +1579,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfswitch expression="#arguments.value#">
 			<cfcase value="label">
 				<cfif len(application.stCOAPI[variables.typename].stProps[arguments.property].metadata["ftLabel"])>
-					<cfset meta = application.fapi.getResource(key="coapi.#variables.typename#.properties.#arguments.property#@#application.stCOAPI[variables.typename].stProps[arguments.property].metadata["ftLabel"]#",default="") />
-					<cfif len(meta)>
-						<cfreturn meta />
-					<cfelse>
-						<cfreturn application.fapi.getResource(key="coapi.#variables.typename#.properties.#arguments.property#@label",default=application.stCOAPI[variables.typename].stProps[arguments.property].metadata["ftLabel"]) />
-					</cfif>
+					<cfreturn application.fapi.getResource(key="coapi.#variables.typename#.properties.#arguments.property#@label",default=application.stCOAPI[variables.typename].stProps[arguments.property].metadata["ftLabel"]) />
 				<cfelse>
 					<cfreturn application.fapi.getResource(key="coapi.#variables.typename#.properties.#arguments.property#@label",default=application.stCOAPI[variables.typename].stProps[arguments.property].metadata["name"]) />
 				</cfif>
