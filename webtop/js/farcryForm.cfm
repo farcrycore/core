@@ -79,7 +79,7 @@
 						
 						// if the updated field is also being watched, reattach the events
 						if ($fc.watchedfields[watcher.prefix] && $fc.watchedfields[watcher.prefix][watcher.property] && $fc.watchedfields[watcher.prefix][watcher.property].length){
-							$j("select[name="+watcher.prefix+watcher.property+"], input[name="+watcher.prefix+event.data.property+"][type=text], input[name="+watcher.prefix+watcher.property+"][type=password]").bind("change",{ prefix: watcher.prefix, property: watcher.property },ajaxUpdate);
+							$j("select[name="+watcher.prefix+watcher.property+"], input[name="+watcher.prefix+watcher.property+"][type=text], input[name="+watcher.prefix+watcher.property+"][type=password]").bind("change",{ prefix: watcher.prefix, property: watcher.property },ajaxUpdate);
 							$j("input[name="+watcher.prefix+watcher.property+"][type=checkbox], input[name="+watcher.prefix+watcher.property+"][type=radio]").bind("click",{ prefix: watcher.prefix, property: watcher.property },ajaxUpdate);
 						}
 					}
