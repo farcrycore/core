@@ -209,7 +209,7 @@ $in: SessionID -- $
 			}	
 		}	
 		
-		$j('###Request.farcryForm.Name# :input:visible:enabled:first').focus();			
+		$j('###Request.farcryForm.Name# :input:visible:enabled:first').addClass('focus');			
 		</cfoutput>
 	</skin:onReady>
 	
