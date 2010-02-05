@@ -10,6 +10,7 @@
 FARCRY IMPORT FILES
  ------------------>
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
+<cfimport taglib="/farcry/core/tags/wizard" prefix="wiz" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
@@ -49,13 +50,18 @@ START WEBSKIN
 		<ft:processFormObjects typename="#url.filterTypename#">
 			<cfset newLibraryObjectID = stproperties.objectid />
 		</ft:processFormObjects>
-	</ft:processForm>
+	</ft:processForm>	
+	<wiz:processWizard>
+		<wiz:processWizardObjects typename="#url.filterTypename#">
+			<cfset newLibraryObjectID = stproperties.objectid />
+		</wiz:processWizardObjects>
+	</wiz:processWizard>
 	 
 	<cfif not len(newLibraryObjectID)>
 		<cfset stNewObject = application.fapi.getNewContentObject(typename="#url.filterTypename#", key="newLibraryObject") />
 		<cfset newLibraryObjectID = stNewObject.objectid />
 	</cfif>
-	
+
 	<!------------------------ 
 	SETUP THE EXIT PROCESS 
 	--------------------------->

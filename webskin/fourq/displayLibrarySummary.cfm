@@ -18,36 +18,15 @@ START WEBSKIN
 <cfparam name="url.property" type="string" />
 
 <!--- DETERMINE METADATA --->
-<cfif stobj.typename EQ "farFilterProperty">
-	<cfset stFilter = application.fapi.getContentObject(objectid="#stobj.filterID#", typename="farFilter") />
-	<cfset stMetadata = application.fapi.getPropertyMetadata(typename="#stFilter.filterTypename#", property="#stobj.property#") />
-<cfelse>
-	<cfset stMetadata = application.fapi.getPropertyMetadata(typename="#stobj.typename#", property="#url.property#") />
-</cfif>
+<cfset stMetadata = application.fapi.getPropertyMetadata(typename="#stobj.typename#", property="#url.property#") />
 
 <!--- DETERMINE THE SELECTED ITEMS --->
-<cfif stobj.typename EQ "farFilterProperty">
-	<cfif isWDDX(stobj.wddxDefinition)>
-		<cfwddx	action="wddx2cfml" 
-			input="#stobj.wddxDefinition#" 
-			output="stProps" />
-	<cfelse>
-		<cfset stProps = structNew() />
-	</cfif>
-	<cfparam name="stProps.relatedTo" default="">
-	
-	<cfif isArray(stProps.relatedTo)>
-		<cfset lSelected = arrayToList(stProps.relatedTo) />
-	<cfelse>
-		<cfset lSelected = stProps.relatedTo />
-	</cfif>
+
+<cfif isArray(stobj[url.property])>
+	<cfset lSelected = arrayToList(stobj[url.property]) />
 <cfelse>
-	<cfif isArray(stobj[url.property])>
-		<cfset lSelected = arrayToList(stobj[url.property]) />
-	<cfelse>
-		<cfset lSelected = stobj[url.property] />
-	</cfif>			
-</cfif>
+	<cfset lSelected = stobj[url.property] />
+</cfif>			
 
 <cfif listLen(lSelected)>
 	<cfoutput><div id="OKMsg">#listLen(lSelected)# items selected.</div></cfoutput>

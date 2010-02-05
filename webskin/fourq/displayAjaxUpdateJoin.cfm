@@ -17,6 +17,8 @@
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
+<cftry>
+	<cflock name="ajaxupdateJoin-#stobj.objectid#" timeout="10" >
 
 	<!--- RETRIEVE IT AGAIN...JUST IN CASE THE AJAX CALL WAS RUN HALF WAY THROUGH A PREVIOUS COMMIT. --->
 	<cfset stToUpdate = application.fapi.getContentObject(typename="#stobj.typename#",objectid="#stobj.objectid#") />
@@ -75,20 +77,38 @@
 		<cfset owizard = application.fapi.getContentType("dmWizard") />	
 		<cfset stwizard = owizard.Read(wizardID="#form.wizardID#") />
 		<cfset stwizard.Data[stToUpdate.objectid][url.property] = newValue />
-		<cfset stResult = owizard.Write(objectID="#form.wizardID#", Data="#stwizard.Data#")>
+		<cfset owizard.Write(objectID="#form.wizardID#", Data="#stwizard.Data#")>
 	</cfif>
 	
 	<cfset stToUpdate[url.property] = newValue />
 	
-	<cfset stResult = application.fapi.setData(
-						stProperties="#stToUpdate#") />
+	<cfset application.fapi.setData(stProperties="#stToUpdate#") />
 	
 	
 	<cfif structKeyExists(form, "deleteID")>
 		<cfloop list="#form.deleteID#" index="i">
 			<cfset deleteType = application.fapi.findType("#i#") />
-			<cfset stResult = application.fapi.getContentType(deleteType).delete(objectid="#i#") />
+			<cfset application.fapi.getContentType(deleteType).delete(objectid="#i#") />
 		</cfloop>
 	</cfif>
 	
 	<cfoutput>SUCCESSFUL</cfoutput>
+	
+	</cflock>
+
+	<cfcatch type="lock">
+		<cfoutput>UNSUCCESSFUL. Unable to obtain lock.</cfoutput>
+	</cfcatch>
+	<cfcatch type="any" >
+		<cfoutput>#cfcatch.detail##chr(13)##chr(10)#</cfoutput>
+		
+		<cfloop collection="#stToUpdate#" item="prop">
+			<cfif isSimpleValue(stToUpdate[prop])>
+				<cfoutput>#prop#: #stToUpdate[prop]##chr(13)##chr(10)#</cfoutput>
+			</cfif>
+		</cfloop>
+		<cfloop from="1" to="#arrayLen(cfcatch.TagContext)#" index="i">
+			<cfoutput>#cfcatch.TagContext[i].template# (line: #cfcatch.TagContext[i].line#)#chr(13)##chr(10)#</cfoutput>
+		</cfloop>		
+	</cfcatch>
+</cftry>

@@ -6,7 +6,6 @@
 <cfimport taglib="/farcry/core/tags/grid" prefix="grid" />
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
-
 <cfif application.fapi.isLoggedIn()>
 	
 	<cfparam name="url.property" type="string" />
@@ -14,8 +13,15 @@
 	
 	
 	<cfset stMetadata = application.fapi.getPropertyMetadata(typename="#stobj.typename#", property="#url.property#") />
-	
-	
+
+	<!------------------------------------------------------------------------------------------------ 
+	Loop over the url and if any url parameters match any formtool metadata (prefix 'ft'), then override the metadata.
+	 ------------------------------------------------------------------------------------------------>
+	<cfloop collection="#url#" item="md">
+		<cfif left(md,2) EQ "ft" AND structKeyExists(stMetadata, md)>
+			<cfset stMetadata[md] = url[md] />
+		</cfif>
+	</cfloop>		
 	
 	
 	
@@ -31,8 +37,6 @@
 	
 	<cfparam name="form.searchTypename" default="" />
 	
-	
-
 	<cfif len(form.searchTypename)>
 		<cfquery datasource="#application.dsn#" name="qFiltered">
 		SELECT objectid
@@ -46,6 +50,7 @@
 	<cfset bFoundLibraryData = false />
 		
 	<cfif structKeyExists(stMetadata, "ftLibraryData") AND len(stMetadata.ftLibraryData)>
+		
 		<cfparam name="stMetadata.ftLibraryDataTypename" default="#url.filterTypename#" />
 		
 		<cfset oLibraryData = application.fapi.getContentType("#stMetadata.ftLibraryDataTypename#") />
@@ -100,10 +105,10 @@
 		FROM qAll,qFiltered
 		WHERE qAll.objectid = qFiltered.objectid
 		</cfquery>
+		
 	<cfelse>
 		<cfset qResult = qAll />
 	</cfif>
-	
 		
 	
 
@@ -164,42 +169,42 @@
 				
 				 --->
 				
-				  <skin:pagination query="#qResult#" 
-                    submissionType="form"
-                    oddRowClass="alt"
-                    evenRowClass=""
-                    r_stObject="stCurrentRow">
-                
-                
-                
-                    
-                    <cfif stCurrentRow.bFirst>
-                        <cfoutput>
-                        <table class="objectAdmin" style="width:100%">
-                        </cfoutput>
-                    </cfif>
-                    
-                    <cfoutput>
-                        <tr class="ctrlHolder selector-wrap #stCurrentRow.currentRowClass#" style="cursor:pointer;">
-                            <td class="" style="width:20px;padding:3px;">
-                                <cfif stMetadata.type EQ "array">
-                                    <input type="checkbox" id="selected_#stCurrentRow.currentRow#" name="selected" class="checker" value="#stCurrentRow.objectID#" <cfif listFindNoCase(lSelected,stCurrentRow.objectid)>checked="checked"</cfif> />
-                                <cfelse>
-                                    <input type="radio" id="selected_#stCurrentRow.currentRow#" name="selected" class="checker" value="#stCurrentRow.objectID#" <cfif listFindNoCase(lSelected,stCurrentRow.objectid)>checked="checked"</cfif> />
-                                </cfif>
-                            </td>
-                            <td class="#stCurrentRow.currentRowClass#" style="padding:3px;">
-                                <skin:view objectid="#stCurrentRow.objectid#" webskin="librarySelected" bIgnoreSecurity="true" />
-                            </td>                    
-                        </tr>
-                    </cfoutput>
-                    
-                    <cfif stCurrentRow.bLast>
-                        <cfoutput>
-                        </table>
-                        </cfoutput>
-                    </cfif>
-                </skin:pagination>
+				<skin:pagination query="#qResult#" 
+					submissionType="form"
+					oddRowClass="alt"
+					evenRowClass=""
+					r_stObject="stCurrentRow">
+				
+				
+				
+					
+					<cfif stCurrentRow.bFirst>
+						<cfoutput>
+						<table class="objectAdmin" style="width:100%">
+						</cfoutput>
+					</cfif>
+					
+					<cfoutput>
+						<tr class="ctrlHolder selector-wrap #stCurrentRow.currentRowClass#" style="cursor:pointer;">
+							<td class="" style="width:20px;padding:3px;">
+								<cfif stMetadata.type EQ "array">
+									<input type="checkbox" id="selected_#stCurrentRow.currentRow#" name="selected" class="checker" value="#stCurrentRow.objectID#" <cfif listFindNoCase(lSelected,stCurrentRow.objectid)>checked="checked"</cfif> />
+								<cfelse>
+									<input type="radio" id="selected_#stCurrentRow.currentRow#" name="selected" class="checker" value="#stCurrentRow.objectID#" <cfif listFindNoCase(lSelected,stCurrentRow.objectid)>checked="checked"</cfif> />
+								</cfif>
+							</td>
+							<td class="#stCurrentRow.currentRowClass#" style="padding:3px;">
+								<skin:view objectid="#stCurrentRow.objectid#" webskin="librarySelected" bIgnoreSecurity="true" />
+							</td>					
+						</tr>
+					</cfoutput>
+					
+					<cfif stCurrentRow.bLast>
+						<cfoutput>
+						</table>
+						</cfoutput>
+					</cfif>
+				</skin:pagination>
 				
 				<cfoutput>
 				<script type="text/javascript">

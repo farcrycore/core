@@ -13,10 +13,18 @@
 	<skin:loadCSS id="jquery-ui" />	
 	
 	<cfset stMetadata = application.fapi.getPropertyMetadata(typename="#stobj.typename#", property="#url.property#") />
-		
-	
-	
 
+	
+	<!------------------------------------------------------------------------------------------------ 
+	Loop over the url and if any url parameters match any formtool metadata (prefix 'ft'), then override the metadata.
+	 ------------------------------------------------------------------------------------------------>
+	<cfloop collection="#url#" item="md">
+		<cfif left(md,2) EQ "ft" AND structKeyExists(stMetadata, md)>
+			<cfset stMetadata[md] = url[md] />
+		</cfif>
+	</cfloop>
+	
+	
 	<admin:header title="Library Selector" style="width:100%;height:100%">		
 	
 	<ft:form>				
@@ -39,14 +47,27 @@
 		<div id="tabs">
 			<ul>
 				<cfloop list="#stMetadata.ftJoin#" index="i">
+					<!---<li><a href="###i#" >#application.fapi.getContentTypeMetadata(i,'displayName',i)#</a></li>--->
 					<li><a href="/index.cfm?ajaxmode=1&type=#url.type#&objectid=#url.objectid#&view=displayLibrary&property=#url.property#&filterTypename=#i#">#application.fapi.getContentTypeMetadata(i,'displayName',i)#</a></li>
 				</cfloop>
 			</ul>
+		<!---	<cfloop list="#stMetadata.ftJoin#" index="i">
+				<div id="#i#">
+					<h3>#i#</h3>
+					<skin:view stobject="#stobj#" webskin="displayLibrary" />
+				</div>
+			</cfloop>--->
+
 		</div>	
 		</cfoutput>
 		
 		<skin:onReady>
-			<cfoutput>$j("##tabs").tabs();</cfoutput>
+			<cfoutput>
+				
+				$j("##tabs").tabs({
+					
+				});
+			</cfoutput>
 		</skin:onReady>	
 	<cfelse>
 		<skin:view stobject="#stobj#" webskin="displayLibrary" />
