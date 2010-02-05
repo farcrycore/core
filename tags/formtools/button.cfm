@@ -20,10 +20,10 @@
 <cfparam name="attributes.rbkey" default="forms.buttons.#rereplacenocase(attributes.value,'[^\w\d]','','ALL')#"><!--- The resource path for this button. Default is forms.buttons.value. --->
 <cfparam name="attributes.disabled" default="false"><!--- Should the button be disabled --->
 <cfparam name="attributes.r_stButton" default=""><!--- the name of the calling scope variable name to return the details of the farcry button --->
-<cfparam name="attributes.renderType" default="farcryButton"><!--- How should the button be rendered (button, link) --->
+<cfparam name="attributes.renderType" default="farcryButton"><!--- How should the button be rendered (button, link, farcryButton(default)) --->
 <cfparam name="attributes.primaryAction" default="" /><!--- Is this button a primary action on the form --->
 <cfparam name="attributes.bDefaultAction" default="false" /><!--- Default action when someone presses enter on a form. --->
-
+<cfparam name="attributes.icon" default="" /><!--- The jquery-ui icon to use --->
 
 <cfif not thistag.HasEndTag>
 	<cfabort showerror="FarCry Buttons must have an end tag...">
@@ -124,19 +124,29 @@
 		<cfcase value="link">
 			<cfoutput><a id="#attributes.id#" name="#attributes.id#" class="#attributes.class#" style="#attributes.style#" href="##">#attributes.text#</a></cfoutput>
 		</cfcase>
+		<cfcase value="button">
+			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" class="#attributes.class#" style="#attributes.style#;" <cfif attributes.disabled>disabled</cfif>>#attributes.text#</button></cfoutput>
+		</cfcase>
+		
+		<!--- Default FarcryButton --->
 		<cfdefaultcase>
-			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" class="ui-state-default ui-corner-all fc-button #attributes.class#" style="#attributes.style#;" <cfif attributes.disabled>disabled</cfif>>#attributes.text#</button></cfoutput>
+			<cfset buttonSettings = "" />
+			 
+			<cfif len(attributes.icon)>
+				<cfset buttonSettings = listAppend(buttonSettings, "icons: {primary: '#attributes.icon#'}") />
+			</cfif>
 			
+			<cfif not len(attributes.text)>
+				<cfset buttonSettings = listAppend(buttonSettings, "text: false") />
+				<cfset attributes.text = "&nbsp;" />
+			</cfif>		
+			
+			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" class="#attributes.class#" style="#attributes.style#;" <cfif attributes.disabled>disabled</cfif>>#attributes.text#</button></cfoutput>
+				
+
 			<skin:onReady>
-			<cfoutput>		
-			$j("###attributes.id#").hover(
-				function() {
-					$j(this).addClass('ui-state-hover');
-				},
-				function() {
-					$j(this).removeClass('ui-state-hover');
-				}
-			)	
+			<cfoutput>	
+			$("###attributes.id#").button({#buttonSettings#});
 			</cfoutput>
 			</skin:onReady>
 				

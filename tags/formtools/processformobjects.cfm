@@ -506,6 +506,7 @@
 				<cfinvoke component="#tFieldType#" method="#FieldMethod#" returnvariable="stResult">
 					<cfinvokeargument name="ObjectID" value="#FORM['#ProcessingFormObjectPrefix#objectid']#">
 					<cfinvokeargument name="Typename" value="#FORM['#ProcessingFormObjectPrefix#typename']#">			
+					<cfinvokeargument name="stFormPost" value="#Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost']#">
 					<cfinvokeargument name="stFieldPost" value="#Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i]#">
 					<cfinvokeargument name="stMetadata" value="#ftFieldMetadata#">
 				</cfinvoke>
