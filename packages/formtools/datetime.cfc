@@ -644,10 +644,10 @@
 
 
 	<cffunction name="getFilterUIOptions">
-		<cfreturn "before,after,between" />
+		<cfreturn "before,after,between,more than,less than,is within" />
 	</cffunction>
 	
-	<cffunction name="getFilterUI">
+	<cffunction name="editFilterUI">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
@@ -656,38 +656,173 @@
 				
 		<cfargument name="filterTypename" />
 		<cfargument name="filterProperty" />
-		<cfargument name="renderType" />
-		<cfargument name="stProps" />
+		<cfargument name="filterType" />
+		<cfargument name="stFilterProps" />
 		
 		<cfset var resultHTML = "" />
 		
 		<cfsavecontent variable="resultHTML">
 			
-			<cfswitch expression="#arguments.renderType#">
+			<cfswitch expression="#arguments.filterType#">
 				
 				<cfcase value="before">
-					<cfparam name="arguments.stProps.before" default="" />
+					<cfparam name="arguments.stFilterProps.before" default="" />
 					<cfoutput>
-					<input type="string" name="#arguments.fieldname#before" value="#arguments.stProps.before#" />
+					<input type="string" name="#arguments.fieldname#before" value="#dateFormat(arguments.stFilterProps.before)#" />
 					</cfoutput>
 				</cfcase>
 				
 				<cfcase value="after">
-					<cfparam name="arguments.stProps.after" default="" />
+					<cfparam name="arguments.stFilterProps.after" default="" />
 					<cfoutput>
-					<input type="string" name="#arguments.fieldname#after" value="#arguments.stProps.after#" />
+					<input type="string" name="#arguments.fieldname#after" value="#dateFormat(arguments.stFilterProps.after)#" />
 					</cfoutput>
 				</cfcase>
 				
 				<cfcase value="between">
-					<cfparam name="arguments.stProps.from" default="" />
-					<cfparam name="arguments.stProps.to" default="" />
+					<cfparam name="arguments.stFilterProps.from" default="" />
+					<cfparam name="arguments.stFilterProps.to" default="" />
 					<cfoutput>
-					<input type="string" name="#arguments.fieldname#from" value="#arguments.stProps.from#" />
-					<input type="string" name="#arguments.fieldname#to" value="#arguments.stProps.to#" />
+					<input type="string" name="#arguments.fieldname#from" value="#dateFormat(arguments.stFilterProps.from)#" />
+					<input type="string" name="#arguments.fieldname#to" value="#dateFormat(arguments.stFilterProps.to)#" />
+					</cfoutput>
+				</cfcase>
+				
+
+				
+				<cfcase value="more than,less than">
+					<cfparam name="arguments.stFilterProps.datepart" default="1:d" />
+					<cfoutput>
+					<select name="#arguments.fieldname#datepart">
+						<option value="1:d" <cfif arguments.stFilterProps.datepart EQ "1:d">selected="selected"</cfif>>1 day</option>
+						<option value="2:d" <cfif arguments.stFilterProps.datepart EQ "2:d">selected="selected"</cfif>>2 days</option>
+						<option value="3:d" <cfif arguments.stFilterProps.datepart EQ "3:d">selected="selected"</cfif>>3 days</option>
+						<option value="4:d" <cfif arguments.stFilterProps.datepart EQ "4:d">selected="selected"</cfif>>4 days</option>
+						<option value="5:d" <cfif arguments.stFilterProps.datepart EQ "5:d">selected="selected"</cfif>>5 days</option>
+						<option value="6:d" <cfif arguments.stFilterProps.datepart EQ "6:d">selected="selected"</cfif>>6 days</option>
+						<option value="1:ww" <cfif arguments.stFilterProps.datepart EQ "1:ww">selected="selected"</cfif>>1 week</option>
+						<option value="2:ww" <cfif arguments.stFilterProps.datepart EQ "2:ww">selected="selected"</cfif>>2 weeks</option>
+						<option value="3:ww" <cfif arguments.stFilterProps.datepart EQ "3:ww">selected="selected"</cfif>>3 weeks</option>
+						<option value="1:m" <cfif arguments.stFilterProps.datepart EQ "1:m">selected="selected"</cfif>>1 month</option>
+						<option value="2:m" <cfif arguments.stFilterProps.datepart EQ "2:m">selected="selected"</cfif>>2 months</option>
+						<option value="3:m" <cfif arguments.stFilterProps.datepart EQ "3:m">selected="selected"</cfif>>3 months</option>
+						<option value="4:m" <cfif arguments.stFilterProps.datepart EQ "4:m">selected="selected"</cfif>>4 months</option>
+						<option value="5:m" <cfif arguments.stFilterProps.datepart EQ "5:m">selected="selected"</cfif>>5 months</option>
+						<option value="6:m" <cfif arguments.stFilterProps.datepart EQ "6:m">selected="selected"</cfif>>6 months</option>
+						<option value="7:m" <cfif arguments.stFilterProps.datepart EQ "7:m">selected="selected"</cfif>>7 months</option>
+						<option value="8:m" <cfif arguments.stFilterProps.datepart EQ "8:m">selected="selected"</cfif>>8 months</option>
+						<option value="9:m" <cfif arguments.stFilterProps.datepart EQ "9:m">selected="selected"</cfif>>9 months</option>
+						<option value="10:m" <cfif arguments.stFilterProps.datepart EQ "10:m">selected="selected"</cfif>>10 months</option>
+						<option value="11:m" <cfif arguments.stFilterProps.datepart EQ "11:m">selected="selected"</cfif>>11 months</option>
+						<option value="1:yyyy" <cfif arguments.stFilterProps.datepart EQ "1:yyyy">selected="selected"</cfif>>1 year</option>
+					</select>
+					ago
+					</cfoutput>
+				</cfcase>	
+				
+				<cfcase value="is within">
+					<cfparam name="arguments.stFilterProps.datepart" default="1:d" />
+					<cfoutput>
+					<select name="#arguments.fieldname#datepart">
+						<option value="1:d" <cfif arguments.stFilterProps.datepart EQ "1:d">selected="selected"</cfif>>1 days</option>
+						<option value="2:d" <cfif arguments.stFilterProps.datepart EQ "2:d">selected="selected"</cfif>>2 days</option>
+						<option value="3:d" <cfif arguments.stFilterProps.datepart EQ "3:d">selected="selected"</cfif>>3 days</option>
+						<option value="4:d" <cfif arguments.stFilterProps.datepart EQ "4:d">selected="selected"</cfif>>4 days</option>
+						<option value="5:d" <cfif arguments.stFilterProps.datepart EQ "5:d">selected="selected"</cfif>>5 days</option>
+						<option value="6:d" <cfif arguments.stFilterProps.datepart EQ "6:d">selected="selected"</cfif>>6 days</option>
+						<option value="1:ww" <cfif arguments.stFilterProps.datepart EQ "1:ww">selected="selected"</cfif>>1 weeks</option>
+						<option value="2:ww" <cfif arguments.stFilterProps.datepart EQ "2:ww">selected="selected"</cfif>>2 weeks</option>
+						<option value="3:ww" <cfif arguments.stFilterProps.datepart EQ "3:ww">selected="selected"</cfif>>3 weeks</option>
+						<option value="1:m" <cfif arguments.stFilterProps.datepart EQ "1:m">selected="selected"</cfif>>1 months</option>
+						<option value="2:m" <cfif arguments.stFilterProps.datepart EQ "2:m">selected="selected"</cfif>>2 months</option>
+						<option value="3:m" <cfif arguments.stFilterProps.datepart EQ "3:m">selected="selected"</cfif>>3 months</option>
+						<option value="4:m" <cfif arguments.stFilterProps.datepart EQ "4:m">selected="selected"</cfif>>4 months</option>
+						<option value="5:m" <cfif arguments.stFilterProps.datepart EQ "5:m">selected="selected"</cfif>>5 months</option>
+						<option value="6:m" <cfif arguments.stFilterProps.datepart EQ "6:m">selected="selected"</cfif>>6 months</option>
+						<option value="7:m" <cfif arguments.stFilterProps.datepart EQ "7:m">selected="selected"</cfif>>7 months</option>
+						<option value="8:m" <cfif arguments.stFilterProps.datepart EQ "8:m">selected="selected"</cfif>>8 months</option>
+						<option value="9:m" <cfif arguments.stFilterProps.datepart EQ "9:m">selected="selected"</cfif>>9 months</option>
+						<option value="10:m" <cfif arguments.stFilterProps.datepart EQ "10:m">selected="selected"</cfif>>10 months</option>
+						<option value="11:m" <cfif arguments.stFilterProps.datepart EQ "11:m">selected="selected"</cfif>>11 months</option>
+						<option value="1:yyyy" <cfif arguments.stFilterProps.datepart EQ "1:yyyy">selected="selected"</cfif>>1 years</option>
+					</select>
+					time
+					</cfoutput>
+				</cfcase>		
+					
+			
+			</cfswitch>
+		</cfsavecontent>
+		
+		<cfreturn resultHTML />
+	</cffunction>
+	
+	<cffunction name="displayFilterUI">
+		<cfargument name="filterType" />
+		<cfargument name="stFilterProps" />
+		
+		<cfset var resultHTML = "" />
+		<cfset var suffix = "" />
+		
+		<cfsavecontent variable="resultHTML">
+			
+			<cfswitch expression="#arguments.filterType#">
+				
+				<cfcase value="before">
+					<cfparam name="arguments.stFilterProps.before" default="" />
+					<cfoutput>#arguments.stFilterProps.before#</cfoutput>
+				</cfcase>
+				
+				<cfcase value="after">
+					<cfparam name="arguments.stFilterProps.after" default="" />
+					<cfoutput>#arguments.stFilterProps.after#</cfoutput>
+				</cfcase>
+				
+				<cfcase value="between">
+					<cfparam name="arguments.stFilterProps.from" default="" />
+					<cfparam name="arguments.stFilterProps.to" default="" />
+					
+					<cfif isValid("date", arguments.stFilterProps.from) AND  isValid("date", arguments.stFilterProps.to)>
+						<cfoutput>
+							#dateFormat(arguments.stFilterProps.from)# and #dateFormat(arguments.stFilterProps.to)#
+						</cfoutput>
+					</cfif>
+				</cfcase>
+			
+				
+				<cfcase value="more than,less than">
+					<cfparam name="arguments.stFilterProps.datepart" default="" />
+					<cfif listFirst(arguments.stFilterProps.datepart, ":") GT 1>
+						<cfset suffix = "s" />
+					</cfif>
+					
+					<cfoutput>
+					#listFirst(arguments.stFilterProps.datepart, ":")#
+					<cfswitch expression="#listLast(arguments.stFilterProps.datepart, ":")#">
+						<cfcase value="d">day#suffix#</cfcase>
+						<cfcase value="ww">week#suffix#</cfcase>
+						<cfcase value="m">month#suffix#</cfcase>
+						<cfcase value="yyyy">year#suffix#</cfcase>
+					</cfswitch>
+					ago
 					</cfoutput>
 				</cfcase>
 			
+				
+				<cfcase value="is within">
+					<cfparam name="arguments.stFilterProps.datepart" default="" />
+					
+					<cfoutput>
+					#listFirst(arguments.stFilterProps.datepart, ":")#
+					<cfswitch expression="#listLast(arguments.stFilterProps.datepart, ":")#">
+						<cfcase value="d">days</cfcase>
+						<cfcase value="ww">weeks</cfcase>
+						<cfcase value="m">months</cfcase>
+						<cfcase value="yyyy">years</cfcase>
+					</cfswitch>
+					time
+					</cfoutput>
+				</cfcase>
 			</cfswitch>
 		</cfsavecontent>
 		
@@ -698,49 +833,77 @@
 
 		<cfargument name="filterTypename" />
 		<cfargument name="filterProperty" />
-		<cfargument name="renderType" />
-		<cfargument name="stProps" />
+		<cfargument name="filterType" />
+		<cfargument name="stFilterProps" />
 		
 		<cfset var resultHTML = "" />
 		
 		<cfsavecontent variable="resultHTML">
 			
-			<cfswitch expression="#arguments.renderType#">
+			<cfswitch expression="#arguments.filterType#">
 				
 				<cfcase value="before">
-					<cfparam name="arguments.stProps.before" default="" />
-					<cfif isValid("date", arguments.stProps.before)>
-						<cfoutput>#arguments.filterProperty# < #createODBCDate(arguments.stProps.before)#</cfoutput>
+					<cfparam name="arguments.stFilterProps.before" default="" />
+					<cfif isValid("date", arguments.stFilterProps.before)>
+						<cfoutput>#arguments.filterProperty# < #createODBCDate(arguments.stFilterProps.before)#</cfoutput>
 					</cfif>
 				</cfcase>
 				
 				<cfcase value="after">
-					<cfparam name="arguments.stProps.after" default="" />
-					<cfif isValid("date", arguments.stProps.after)>
-						<cfoutput>#arguments.filterProperty# > #createODBCDate(arguments.stProps.after)#</cfoutput>
+					<cfparam name="arguments.stFilterProps.after" default="" />
+					<cfif isValid("date", arguments.stFilterProps.after)>
+						<cfoutput>#arguments.filterProperty# > #createODBCDate(arguments.stFilterProps.after)#</cfoutput>
 					</cfif>
 				</cfcase>
 				
 				<cfcase value="between">
-					<cfparam name="arguments.stProps.from" default="" />
-					<cfparam name="arguments.stProps.to" default="" />
+					<cfparam name="arguments.stFilterProps.from" default="" />
+					<cfparam name="arguments.stFilterProps.to" default="" />
 					
-					<cfif isValid("date", arguments.stProps.from) AND  isValid("date", arguments.stProps.to)>
+					<cfif isValid("date", arguments.stFilterProps.from) AND  isValid("date", arguments.stFilterProps.to)>
 						<cfoutput>
 							(
 								#arguments.filterProperty# 
 								BETWEEN
-								#createODBCDate(arguments.stProps.from)#
+								#createODBCDate(arguments.stFilterProps.from)#
 								AND 
-								#createODBCDate(arguments.stProps.to)#
+								#createODBCDate(arguments.stFilterProps.to)#
 							)
 						</cfoutput>
 					</cfif>
 				</cfcase>
 			
+				
+				<cfcase value="less than">
+					<cfparam name="arguments.stFilterProps.datepart" default="" />
+					<cfif len(arguments.stFilterProps.datepart)>
+						<cfoutput>#arguments.filterProperty# > #createODBCDate(dateAdd(listLast(arguments.stFilterProps.datepart, ":"), listFirst(arguments.stFilterProps.datepart, ":") * -1, now()) )#</cfoutput>
+					</cfif>
+				</cfcase>
+			
+				
+				<cfcase value="more than">
+					<cfparam name="arguments.stFilterProps.datepart" default="" />
+					<cfif len(arguments.stFilterProps.datepart)>
+						<cfoutput>#arguments.filterProperty# < #createODBCDate(dateAdd(listLast(arguments.stFilterProps.datepart, ":"), listFirst(arguments.stFilterProps.datepart, ":") * -1, now()) )#</cfoutput>
+					</cfif>
+				</cfcase>
+				
+				<cfcase value="is within">
+					<cfparam name="arguments.stFilterProps.datepart" default="" />
+					<cfif len(arguments.stFilterProps.datepart)>
+						<cfoutput>
+						(
+						#arguments.filterProperty# > #createODBCDate(now())#
+						AND #arguments.filterProperty# < #createODBCDate(dateAdd(listLast(arguments.stFilterProps.datepart, ":"), listFirst(arguments.stFilterProps.datepart, ":"), now()) )#
+						)
+						</cfoutput>
+					</cfif>
+					
+				</cfcase>
 			</cfswitch>
 		</cfsavecontent>
-		
+
 		<cfreturn resultHTML />
 	</cffunction>
 	

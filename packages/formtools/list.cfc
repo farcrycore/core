@@ -1,4 +1,16 @@
 <cfcomponent extends="field" name="list" displayname="list" hint="Field component to liase with all list field types"> 
+ 
+	<cfproperty name="ftList" required="false" default="" hint="The hard coded list for this property." />
+	<cfproperty name="ftListData" required="false" default="" hint="The name of a function to use to retrieve the list data." />
+	<cfproperty name="ftListDataTypename" required="false" default="" hint="The typename to call the function on." />
+	<cfproperty name="ftRenderType" required="false" default="dropdown" hint="" />
+	<cfproperty name="ftSelectMultiple" required="false" default="false" hint="" />
+	<cfproperty name="ftClass" required="false" default="" hint="" />
+	<cfproperty name="ftstyle" required="false" default="" hint="" />
+	<cfproperty name="ftMultipleLines" required="false" default="true" hint="for radio and checkbox only" />
+	
+	
+		
 
 	<!--- import tag libraries --->
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
@@ -8,6 +20,46 @@
 		<cfreturn this>
 	</cffunction>
 
+	<cffunction name="getListData" access="private" output="false" returntype="string" hint="This will return a list that is used by the edit function">
+		<cfargument name="objectid" required="false" type="string" default="" hint="The objectid of the record we are getting the list for if available.">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this property is part of.">
+		<cfargument name="property" required="true" type="string" hint="The name of the property">
+		<cfargument name="stPropMetadata" required="false" type="struct" default="#structnew()#" hint="The properties metadata if available">
+		
+		<cfset var rListData = "" />
+		<cfset var oList = "" />
+		<cfset var result = "" />
+		
+		<cfif structIsEmpty(arguments.stPropMetadata)>
+			<cfset arguments.stPropMetadata = application.fapi.getPropertyMetadata(typename="#arguments.typename#", property="#arguments.property#") />
+		</cfif>
+
+		<cfif len(arguments.stPropMetadata.ftListData) >
+			<cfif len(arguments.stPropMetadata.ftListDataTypename)>
+				<cfset oList = application.fapi.getContentType(arguments.stPropMetadata.ftListDataTypename) />
+			<cfelse>
+				<cfset oList = application.fapi.getContentType(arguments.typename) />
+			</cfif>
+			
+			<cfinvoke component="#oList#" method="#arguments.stPropMetadata.ftListData#" returnvariable="rListData">
+				<cfinvokeargument name="objectid" value="#arguments.objectID#" />
+			</cfinvoke>
+			
+			<cfif isQuery(rListData)>
+				<cfif rListData.recordCount AND listFindNoCase(rListData.columnList, "value") AND listFindNoCase(rListData.columnList, "name")>
+					<cfloop query="rListData">
+						<cfset result = listAppend(result, "#rListData.value#:#rListData.name#") />
+					</cfloop>
+				</cfif>
+			<cfelse>
+				<cfset result = rListData />
+			</cfif>
+		<cfelse>
+			<cfset result = arguments.stPropMetadata.ftList />	
+		</cfif>
+			
+		<cfreturn result />
+	</cffunction>
 	
 	<cffunction name="edit" access="public" output="false" returntype="string" hint="his will return a string of formatted HTML text to enable the user to edit the data">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
@@ -20,43 +72,22 @@
 		<cfset var rListData = "" />
 		<cfset var i = "" />
 		<cfset var oList = "" />
+		<cfset var lData = "" />
 
-		<cfparam name="arguments.stMetadata.ftList" default="">
-		<cfparam name="arguments.stMetadata.ftRenderType" default="dropdown">
-		<cfparam name="arguments.stMetadata.ftSelectMultiple" default="false">
-		<cfparam name="arguments.stMetadata.ftClass" default="">
-		<cfparam name="arguments.stMetadata.ftstyle" default="">		
-		<cfparam name="arguments.stMetadata.ftListData" default="" />
-		<cfparam name="arguments.stMetadata.ftMultipleLines" default="TRUE"><!--- for radio and checkbox only --->
+	
+		<cfset lData = getListData(	objectid="#arguments.stobject.objectid#", 
+									typename="#arguments.typename#",
+									property="#arguments.stMetadata.name#",
+									stPropMetadata="#arguments.stMetadata#") /> 
 		
-		<cfif len(arguments.stMetadata.ftListData) >
-			<cfparam name="arguments.stMetadata.ftListDataTypename" default="#arguments.typename#" />
-			
-			<cfset oList = createObject("component", application.stcoapi[arguments.stMetadata.ftListDataTypename].packagePath) />
-			
-			<cfinvoke component="#oList#" method="#arguments.stMetadata.ftListData#" returnvariable="rListData">
-				<cfinvokeargument name="objectid" value="#arguments.stObject.objectID#" />
-			</cfinvoke>
-			
-			<cfif isQuery(rListData)>
-				<cfif rListData.recordCount AND listFindNoCase(rListData.columnList, "value") AND listFindNoCase(rListData.columnList, "name")>
-					<cfloop query="rListData">
-						<cfset arguments.stMetadata.ftList = listAppend(arguments.stMetadata.ftList, "#rListData.value#:#rListData.name#") />
-					</cfloop>
-				</cfif>
-			<cfelse>
-				<cfset arguments.stMetadata.ftList = rListData />
-			</cfif>
-			
-		</cfif>
-		
-		<cfif len(arguments.stMetadata.ftList)>
+		<cfif listLen(lData)>
 			<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 				
 				<cfcase value="dropdown">								
 					<cfsavecontent variable="html">
+					
 						<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#" class="selectInput #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#"<cfif arguments.stMetadata.ftSelectMultiple> multiple="multiple"</cfif>></cfoutput>
-						<cfloop list="#arguments.stMetadata.ftList#" index="i">
+						<cfloop list="#lData#" index="i">
 							<cfif Left(i, 1) EQ ":">
 								<cfset optionValue = "" /><!--- This means that the developer wants the value to be an empty string --->
 							<cfelse>
@@ -75,7 +106,7 @@
 						<cfoutput>
 						<div class="multiField">	
 							<cfset tmpCount=0>
-							<cfloop list="#arguments.stMetadata.ftList#" index="i">
+							<cfloop list="#lData#" index="i">
 								<cfset tmpCount=tmpCount + 1>
 								<cfif Left(i, 1) EQ ":">
 									<cfset optionValue = "" /><!--- This means that the developer wants the value to be an empty string --->
@@ -83,7 +114,7 @@
 									<cfset optionValue = ListFirst(i,":") />
 								</cfif>
 								<label class="inlineLabel">
-									<input type="checkbox" name="#arguments.fieldname#" class="checkboxInput #IIF(listLen(arguments.stMetadata.ftList) eq tmpCount ,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" id="#arguments.fieldname#" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />										
+									<input type="checkbox" name="#arguments.fieldname#" class="checkboxInput #IIF(listLen(lData) eq tmpCount ,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" id="#arguments.fieldname#" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />										
 									<!--- <label class="fieldsectionlabel" class="fieldsectionlabel" for="#arguments.fieldname#">#ListLast(i , ":")#</label> --->
 									<!--- MPS: styles aren't working so we are removing label for now until we have time to look at the css --->
 									#ListLast(i , ":")#
@@ -103,7 +134,7 @@
 						<cfoutput>
 							<div class="multiField">	
 								<cfset tmpCount=0>
-								<cfloop list="#arguments.stMetadata.ftList#" index="i">
+								<cfloop list="#lData#" index="i">
 									<cfset tmpCount=tmpCount + 1>
 									<cfif Left(i, 1) EQ ":">
 										<cfset optionValue = "" /><!--- This means that the developer wants the value to be an empty string --->
@@ -111,7 +142,7 @@
 										<cfset optionValue = ListFirst(i,":") />
 									</cfif>
 									<label class="inlineLabel">
-										<input type="radio" name="#arguments.fieldname#" id="#arguments.fieldname#"  class="#IIF(listLen(arguments.stMetadata.ftList) eq tmpCount,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />
+										<input type="radio" name="#arguments.fieldname#" id="#arguments.fieldname#"  class="#IIF(listLen(lData) eq tmpCount,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />
 										<!--- <label class="fieldsectionlabel" class="fieldsectionlabel" for="#arguments.fieldname#">#ListLast(i , ":")#</label> --->
 										<!--- MPS: styles aren't working so we are removing label for now until we have time to look at the css --->
 										#ListLast(i , ":")#
@@ -147,32 +178,12 @@
 		<cfset var html = "" />
 		<cfset var oList = "" />
 		<cfset var rListData = "" />
-		
-		
-		<cfparam name="arguments.stMetadata.ftList" default="" />
-		
-		<cfif isDefined("arguments.stMetadata.ftListData") AND len(arguments.stMetadata.ftListData) >
-			<cfparam name="arguments.stMetadata.ftListDataTypename" default="#arguments.typename#" />
+		<cfset var lData = getListData(	objectid="#arguments.stobject.objectid#", 
+									typename="#arguments.typename#",
+									property="#arguments.stMetadata.name#",
+									stPropMetadata="#arguments.stMetadata#") /> 
 			
-			<cfset oList = createObject("component", application.stcoapi[arguments.stMetadata.ftListDataTypename].packagePath) />
-			
-			<cfinvoke component="#oList#" method="#arguments.stMetadata.ftListData#" returnvariable="rListData">
-				<cfinvokeargument name="objectid" value="#arguments.stObject.objectID#" />
-			</cfinvoke>
-
-			<cfif isQuery(rListData)>
-				<cfif rListData.recordCount AND listFindNoCase(rListData.columnList, "value") AND listFindNoCase(rListData.columnList, "name")>
-					<cfloop query="rListData">
-						<cfset arguments.stMetadata.ftList = listAppend(arguments.stMetadata.ftList, "#rListData.value#:#rListData.name#") />
-					</cfloop>
-				</cfif>
-			<cfelse>
-				<cfset arguments.stMetadata.ftList = rListData />
-			</cfif>			
-			
-		</cfif>
-		
-		<cfloop list="#arguments.stMetadata.ftList#" index="i">			
+		<cfloop list="#lData#" index="i">			
 			<cfif listFindNoCase(arguments.stMetadata.value,ListFirst(i,":"))>
 				<cfset html = listappend(html,ListLast(i,":")) />
 			</cfif>
@@ -219,5 +230,136 @@
 		
 	</cffunction>
 	
+	<!------------------ 
+	FILTERING FUNCTIONS
+	 ------------------>	
+	<cffunction name="getFilterUIOptions">
+		<cfreturn "has selected" />
+	</cffunction>
 	
+	<cffunction name="editFilterUI">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+		<cfargument name="stPackage" required="false" type="struct" hint="Contains the metadata for the all fields for the current typename.">
+				
+		<cfargument name="filterTypename" />
+		<cfargument name="filterProperty" />
+		<cfargument name="filterType" />
+		<cfargument name="stFilterProps" />
+		
+		<cfset var resultHTML = "" />
+		<cfset var stPropMetadata = application.fapi.getPropertyMetadata(	typename="#arguments.filterTypename#",
+																			property="#arguments.filterProperty#" ) />
+		<cfset var optionValue = "" />
+		<cfset var lData = getListData(	typename="#filterTypename#",
+										property="#filterProperty#") /> 
+		
+		<cfsavecontent variable="resultHTML">
+			
+			<cfswitch expression="#arguments.filterType#">
+				
+				<cfcase value="has selected">
+					
+					<cfparam name="arguments.stFilterProps.value" default="" />
+					
+					<cfoutput><select id="#arguments.fieldname#value" name="#arguments.fieldname#value" class="selectInput" multiple="multiple"></cfoutput>
+					<cfloop list="#lData#" index="i">
+						<cfif Left(i, 1) EQ ":">
+							<cfset optionValue = "" /><!--- This means that the developer wants the value to be an empty string --->
+						<cfelse>
+							<cfset optionValue = ListFirst(i,":") />
+						</cfif>
+						<cfoutput><option value="#optionValue#" <cfif listFindNoCase(arguments.stFilterProps.value, optionValue) or arguments.stFilterProps.value eq optionValue> selected</cfif>>#ListLast(i , ":")#</option></cfoutput>
+					</cfloop>
+					<cfoutput></select><input type="hidden" name="#arguments.fieldname#value" value=""></cfoutput>
+									
+				</cfcase>
+							
+			</cfswitch>
+		</cfsavecontent>
+		
+		<cfreturn resultHTML />
+	</cffunction>
+	
+	<cffunction name="displayFilterUI">
+
+		<cfargument name="filterTypename" />
+		<cfargument name="filterProperty" />
+		<cfargument name="filterType" />
+		<cfargument name="stFilterProps" />
+		
+		
+		<cfset var resultHTML = "" />
+		<cfset var html = "" />														
+		<cfset var lData = getListData(	typename="#arguments.filterTypename#",
+										property="#arguments.filterProperty#") /> 
+										
+		<cfsavecontent variable="resultHTML">
+			
+			<cfswitch expression="#arguments.filterType#">
+				
+				<cfcase value="has selected">
+					<cfparam name="arguments.stFilterProps.value" default="" />
+					<cfloop list="#lData#" index="i">			
+						<cfif listFindNoCase(arguments.stFilterProps.value,ListFirst(i,":"))>
+							<cfset html = listappend(html,ListLast(i,":")) />
+						</cfif>
+					</cfloop>
+					<cfoutput>#html#</cfoutput>
+				</cfcase>
+							
+			</cfswitch>
+		</cfsavecontent>
+		
+		<cfreturn resultHTML />
+	</cffunction>
+	
+
+	<cffunction name="getFilterSQL">
+		
+		<cfargument name="filterTypename" />
+		<cfargument name="filterProperty" />
+		<cfargument name="filterType" />
+		<cfargument name="stFilterProps" />
+		
+		<cfset var resultHTML = "" />
+		<cfset var i = "" />
+		<cfset var bFirst = true />
+		
+		<cfsavecontent variable="resultHTML">
+			
+			<cfswitch expression="#arguments.filterType#">
+				
+				<cfcase value="has selected">
+					<cfparam name="arguments.stFilterProps.value" default="" />
+					<cfif listLen(arguments.stFilterProps.value)>
+					
+						
+						<cfoutput>
+						(
+						<cfloop list="#arguments.stFilterProps.value#" index="i">
+							<cfif bFirst>
+								<cfset bFirst = false />
+							<cfelse>
+							OR
+							</cfif>
+							#arguments.filterProperty# = '#i#'
+						</cfloop>
+						)
+						</cfoutput>
+					</cfif>
+				</cfcase>
+				
+			
+			</cfswitch>
+			
+		</cfsavecontent>
+		
+		<cfreturn resultHTML />
+	</cffunction>
+		
+		
+			
 </cfcomponent>

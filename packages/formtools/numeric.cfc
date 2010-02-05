@@ -122,10 +122,10 @@
 
 
 	<cffunction name="getFilterUIOptions">
-		<cfreturn "lt,lte,eq,gt,gte,between" />
+		<cfreturn "less than,less than or equal to,equal to,greater than,greater than or equal to,between" />
 	</cffunction>
 	
-	<cffunction name="getFilterUI">
+	<cffunction name="editFilterUI">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
@@ -134,28 +134,59 @@
 				
 		<cfargument name="filterTypename" />
 		<cfargument name="filterProperty" />
-		<cfargument name="renderType" />
-		<cfargument name="stProps" />
+		<cfargument name="filterType" />
+		<cfargument name="stFilterProps" />
 		
 		<cfset var resultHTML = "" />
 		
 		<cfsavecontent variable="resultHTML">
 			
-			<cfswitch expression="#arguments.renderType#">
+			<cfswitch expression="#arguments.filterType#">
 				
-				<cfcase value="lt,lte,eq,gt,gte">
-					<cfparam name="arguments.stProps.value" default="" />
+				<cfcase value="less than,less than or equal to,equal to,greater than,greater than or equal to">
+					<cfparam name="arguments.stFilterProps.value" default="" />
 					<cfoutput>
-					<input type="string" name="#arguments.fieldname#value" value="#arguments.stProps.value#" />
+					<input type="string" name="#arguments.fieldname#value" value="#arguments.stFilterProps.value#" />
 					</cfoutput>
 				</cfcase>
 				
 				<cfcase value="between">
-					<cfparam name="arguments.stProps.from" default="" />
-					<cfparam name="arguments.stProps.to" default="" />
+					<cfparam name="arguments.stFilterProps.from" default="" />
+					<cfparam name="arguments.stFilterProps.to" default="" />
 					<cfoutput>
-					<input type="string" name="#arguments.fieldname#from" value="#arguments.stProps.from#" />
-					<input type="string" name="#arguments.fieldname#to" value="#arguments.stProps.to#" />
+					<input type="string" name="#arguments.fieldname#from" value="#arguments.stFilterProps.from#" />
+					<input type="string" name="#arguments.fieldname#to" value="#arguments.stFilterProps.to#" />
+					</cfoutput>
+				</cfcase>
+			
+			</cfswitch>
+		</cfsavecontent>
+		
+		<cfreturn resultHTML />
+	</cffunction>
+	
+	<cffunction name="displayFilterUI">
+		<cfargument name="filterType" />
+		<cfargument name="stFilterProps" />
+		
+		<cfset var resultHTML = "" />
+		
+		<cfsavecontent variable="resultHTML">
+			
+			<cfswitch expression="#arguments.filterType#">
+				
+				<cfcase value="less than,less than or equal to,equal to,greater than,greater than or equal to">
+					<cfparam name="arguments.stFilterProps.value" default="" />
+					<cfoutput>
+					#arguments.stFilterProps.value#
+					</cfoutput>
+				</cfcase>
+				
+				<cfcase value="between">
+					<cfparam name="arguments.stFilterProps.from" default="" />
+					<cfparam name="arguments.stFilterProps.to" default="" />
+					<cfoutput>
+					#arguments.stFilterProps.from# - #arguments.stFilterProps.to#
 					</cfoutput>
 				</cfcase>
 			
@@ -169,58 +200,58 @@
 
 		<cfargument name="filterTypename" />
 		<cfargument name="filterProperty" />
-		<cfargument name="renderType" />
-		<cfargument name="stProps" />
+		<cfargument name="filterType" />
+		<cfargument name="stFilterProps" />
 		
 		<cfset var resultHTML = "" />
 		
 		<cfsavecontent variable="resultHTML">
 			
-			<cfswitch expression="#arguments.renderType#">
+			<cfswitch expression="#arguments.filterType#">
 				
-				<cfcase value="lt">
-					<cfparam name="arguments.stProps.value" default="" />
-					<cfif isNumeric(arguments.stProps.value)>
-						<cfoutput>#arguments.filterProperty# < #arguments.stProps.value#</cfoutput>
+				<cfcase value="less than">
+					<cfparam name="arguments.stFilterProps.value" default="" />
+					<cfif isNumeric(arguments.stFilterProps.value)>
+						<cfoutput>#arguments.filterProperty# < #arguments.stFilterProps.value#</cfoutput>
 					</cfif>
 				</cfcase>
-				<cfcase value="lte">
-					<cfparam name="arguments.stProps.value" default="" />
-					<cfif isNumeric(arguments.stProps.value)>
-						<cfoutput>#arguments.filterProperty# <= #arguments.stProps.value#</cfoutput>
+				<cfcase value="less than or equal to">
+					<cfparam name="arguments.stFilterProps.value" default="" />
+					<cfif isNumeric(arguments.stFilterProps.value)>
+						<cfoutput>#arguments.filterProperty# <= #arguments.stFilterProps.value#</cfoutput>
 					</cfif>
 				</cfcase>
-				<cfcase value="eq">
-					<cfparam name="arguments.stProps.value" default="" />
-					<cfif isNumeric(arguments.stProps.value)>
-						<cfoutput>#arguments.filterProperty# = #arguments.stProps.value#</cfoutput>
+				<cfcase value="equal to">
+					<cfparam name="arguments.stFilterProps.value" default="" />
+					<cfif isNumeric(arguments.stFilterProps.value)>
+						<cfoutput>#arguments.filterProperty# = #arguments.stFilterProps.value#</cfoutput>
 					</cfif>
 				</cfcase>
-				<cfcase value="gt">
-					<cfparam name="arguments.stProps.value" default="" />
-					<cfif isNumeric(arguments.stProps.value)>
-						<cfoutput>#arguments.filterProperty# > #arguments.stProps.value#</cfoutput>
+				<cfcase value="greater than">
+					<cfparam name="arguments.stFilterProps.value" default="" />
+					<cfif isNumeric(arguments.stFilterProps.value)>
+						<cfoutput>#arguments.filterProperty# > #arguments.stFilterProps.value#</cfoutput>
 					</cfif>
 				</cfcase>
-				<cfcase value="gte">
-					<cfparam name="arguments.stProps.value" default="" />
-					<cfif isNumeric(arguments.stProps.value)>
-						<cfoutput>#arguments.filterProperty# >= #arguments.stProps.value#</cfoutput>
+				<cfcase value="greater than or equal to">
+					<cfparam name="arguments.stFilterProps.value" default="" />
+					<cfif isNumeric(arguments.stFilterProps.value)>
+						<cfoutput>#arguments.filterProperty# >= #arguments.stFilterProps.value#</cfoutput>
 					</cfif>
 				</cfcase>
 				
 				<cfcase value="between">
-					<cfparam name="arguments.stProps.from" default="" />
-					<cfparam name="arguments.stProps.to" default="" />
+					<cfparam name="arguments.stFilterProps.from" default="" />
+					<cfparam name="arguments.stFilterProps.to" default="" />
 					
-					<cfif isNumeric(arguments.stProps.from) AND isNumeric(arguments.stProps.to)>
+					<cfif isNumeric(arguments.stFilterProps.from) AND isNumeric(arguments.stFilterProps.to)>
 						<cfoutput>
 							(
 								#arguments.filterProperty# 
 								BETWEEN
-								#arguments.stProps.from#
+								#arguments.stFilterProps.from#
 								AND 
-								#arguments.stProps.to#
+								#arguments.stFilterProps.to#
 							)
 						</cfoutput>
 					</cfif>

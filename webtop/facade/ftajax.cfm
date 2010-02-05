@@ -20,11 +20,20 @@
 	<cfset stObj = structnew() />
 </cfif>
 
+<!--- Update the object with any other fields that have come through --->
 <cfif structkeyexists(form,"fieldnames")>
 	<cfloop list="#form.fieldnames#" index="key">
 		<cfset stObj[key] = form[key] />
 	</cfloop>
 </cfif>
+
+<!--------------------------------------------------------------------------------------- 
+THE SAVE NEEDS TO BE FIXED SO THAT THE OBJECT IS PASSED THROUGH <FT:PROCESSFORMOBJECTS />
+A simple setdata causes problems with things like arrays being saved as empty strings.
+ --------------------------------------------------------------------------------------->
+ 
+<!--- Save the updated object to the session --->
+<!---<cfset stResult = application.fapi.setData(stProperties="#stObj#") />--->
 
 <cfif structKeyExists(stMetadata,"ftAjaxMethod") AND len(stMetadata.ftAjaxMethod)>
 	<cfset FieldMethod = stMetadata.ftAjaxMethod />

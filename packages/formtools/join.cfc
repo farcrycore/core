@@ -6,7 +6,7 @@
 	<cfproperty name="ftAllowAttach" required="false" default="true" />
 	<cfproperty name="ftAllowAdd" required="false" default="true" />
 	<cfproperty name="ftAllowEdit" required="false" default="false" />
-	<cfproperty name="ftRemoveType" required="false" default="detach" />
+	<cfproperty name="ftRemoveType" required="false" default="detach" /><!--- detach or delete --->
 	
 	<cfproperty name="ftLibrarySelectedWebskin" default="librarySelected" type="string" />
 	<cfproperty name="ftLibrarySelectedListClass" default="arrayDetail" type="string" />
@@ -435,7 +435,83 @@
 		<cfreturn stResult>
 		
 	</cffunction>
+
+
+	<!------------------ 
+	FILTERING FUNCTIONS
+	 ------------------>	
+	<cffunction name="getFilterUIOptions">
+		<cfreturn "related to" />
+	</cffunction>
 		
+	<cffunction name="displayFilterUI">
+		<cfargument name="filterType" />
+		<cfargument name="stFilterProps" />
+		
+		<cfset var resultHTML = "" />
+		<cfset var i = "" />
+		<cfset var labelHTML = "" />
+		
+
+		<cfswitch expression="#arguments.filterType#">
+			<cfcase value="related to">
+				<cfparam name="arguments.stFilterProps.aRelated" default="#arrayNew(1)#" />
+				<cfif arrayLen(arguments.stFilterProps.aRelated)>
+					<cfloop from="1" to="#arrayLen(arguments.stFilterProps.aRelated)#" index="i">
+						<skin:view objectid="#arguments.stFilterProps.aRelated[i]#" webskin="displayLabel" r_html="labelHTML" />
+						<cfset resultHTML = listAppend(resultHTML, "#labelHTML#") />
+					</cfloop>		
+				</cfif>		
+			</cfcase>		
+		</cfswitch>
+		<cfreturn resultHTML />
+	</cffunction>
+	
+
+	<cffunction name="getFilterSQL">
+		
+		<cfargument name="filterTypename" />
+		<cfargument name="filterProperty" />
+		<cfargument name="filterType" default="relatedto" />
+		<cfargument name="stFilterProps" />
+		
+		<cfset var resultHTML = "" />
+		<cfset var stArrayPropMetadata = application.fapi.getPropertyMetadata(arguments.filterTypename, arguments.filterProperty) />
+		
+		<cfsavecontent variable="resultHTML">
+			
+			<cfswitch expression="#arguments.filterType#">
+				
+				<cfcase value="related to">
+					<cfparam name="arguments.stFilterProps.aRelated" default="#arrayNew(1)#" />
+					<cfif arrayLen(arguments.stFilterProps.aRelated)>
+
+						<cfif stArrayPropMetadata.type EQ "array">
+						
+							<cfoutput>
+								objectid IN (
+									
+									SELECT parentID
+									FROM #arguments.filterTypename#_#arguments.filterProperty#
+									WHERE data IN (#ListQualify(arrayToList(arguments.stFilterProps.aRelated),"'",",","ALL")#)
+																						
+								)
+							</cfoutput>
+						<cfelse>
+							<cfoutput>#arguments.filterProperty# IN (#ListQualify(arrayToList(arguments.stFilterProps.aRelated),"'",",","ALL")#)</cfoutput>
+						</cfif>
+					</cfif>
+				</cfcase>
+				
+			
+			</cfswitch>
+			
+		</cfsavecontent>
+		
+		<cfreturn resultHTML />
+	</cffunction>		
+	
+			
 		
 	<cffunction name="libraryCallback" access="public" output="true" returntype="string" hint="This is going to called from ft:object and will always be passed 'typename,stobj,stMetadata,fieldname'.">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
@@ -632,199 +708,6 @@
 	</cffunction>
 		
 	
-	<cffunction name="getFilterUIOptions">
-		<cfreturn "relatedTo" />
-	</cffunction>
-	
-	<cffunction name="getFilterUI">
-		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
-		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
-		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
-		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
-		<cfargument name="stPackage" required="false" type="struct" hint="Contains the metadata for the all fields for the current typename.">
-				
-		<cfargument name="filterTypename" />
-		<cfargument name="filterProperty" />
-		<cfargument name="renderType" />
-		<cfargument name="stProps" />
-		
-		<!--- <cfset var resultHTML = "" />
-		
-		<cfsavecontent variable="resultHTML">
-			
-			<cfswitch expression="#arguments.renderType#">
-				
-				<cfcase value="relatedto">
-					
-					<cfdump var="#arguments#" expand="false" label="arguments" />
-					<cfparam name="arguments.stProps.relatedto" default="" />
-					
-					<ft:object objectID="stObject.objectid" typename="#arguments.filterTypename#" lFields="#arguments.filterProperty#">
-					<cfoutput>
-					<input type="string" name="#arguments.fieldname#relatedto" value="#arguments.stProps.relatedto#" />
-					</cfoutput>
-				</cfcase>
-							
-			</cfswitch>
-		</cfsavecontent>
-		
-		<cfreturn resultHTML />
-		
-		 --->
-		
-		
-		
-		<cfset var htmlLabel = "" />
-		<cfset var joinItems = "" />
-		<cfset var i = "" />
-		<cfset var counter = "" />
-		<cfset var returnHTML = "" />		
-		<cfset var qArrayField = "" />
-		<cfset var stArrayPropMetadata = application.fapi.getPropertyMetadata(arguments.filterTypename, arguments.filterProperty) />
-		
-		<!--- IMPORT TAG LIBRARIES --->
-		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
-		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
-		<cfimport taglib="/farcry/core/tags/grid" prefix="grid" />
-		
-		
-		<cfparam name="stArrayPropMetadata.ftAllowAttach" default="true" />
-		<cfparam name="stArrayPropMetadata.ftAllowAdd" default="false" />
-		<cfparam name="stArrayPropMetadata.ftAllowEdit" default="false" />
-		<cfparam name="stArrayPropMetadata.ftRemoveType" default="detach" />
-		
-		<cfsavecontent variable="returnHTML">	
-			<cfif stArrayPropMetadata.type EQ "array">
-				<cfparam name="arguments.stProps.relatedto" default="#arrayNew(1)#" />
-				<cfset joinItems = arrayToList(arguments.stProps.relatedto) />
-			<cfelse>
-				<cfparam name="arguments.stProps.relatedto" default="" />
-				<cfset joinItems = arguments.stProps.relatedto />
-			</cfif>
-						
-			
-			
-			
-			<cfif listLen(joinItems)>
-				<cfoutput><ul id="join-#stObject.objectid#-#arguments.stMetadata.name#" class="arrayDetailView" style="list-style-type:none;border:1px solid ##ebebeb;border-width:1px 1px 0px 1px;margin:0px;"></cfoutput>
-					<cfset counter = 0 />
-					<cfloop list="#joinItems#" index="i">
-						<cfset counter = counter + 1 />
-						<skin:view objectid="#i#" webskin="librarySelected" r_html="htmlLabel" />
-						<cfoutput>
-						<li id="join-item-#i#" class="sort #iif(counter mod 2,de('oddrow'),de('evenrow'))#" serialize="#i#" style="clear:both;">
-							<div class="buttonGripper"><p></p></div>
-							<div class="arrayDetail" style="margin-right:100px;float:left;">#htmlLabel#</div>
-							<div class="join-remove" style="float:right;width:95px;">
-								
-								
-								<ft:button
-									Type="button" 
-									renderType="button"
-									class="ui-state-default ui-corner-all"
-									value="Detach" 
-									text="detach" 
-									confirmText="Are you sure you want to detach this item" 
-									onClick="fcForm.detachLibraryItem('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#i#');" />
-						
-								
-							</div>
-							<br style="clear:both;" />
-						</li>
-						</cfoutput>	
-					</cfloop>
-				<cfoutput></ul></cfoutput>
-			</cfif>
-			
-			<cfoutput>
-				<div style="background-color:##E1E1E1; border:1px solid ##ebebeb; border-width:0px 1px 1px 1px;padding:5px;">
 
-					<ft:button	Type="button" 
-								renderType="button"
-								class="ui-state-default ui-corner-all"
-								value="attach" 
-								onClick="fcForm.openLibrarySelect('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');" />
-
-					
-					<cfif listLen(joinItems)>
-						
-							<ft:button	Type="button" 
-										renderType="button"
-										class="ui-state-default ui-corner-all"
-										value="Detach All" 
-										text="detach all" 
-										confirmText="Are you sure you want to detach all the attached items?"
-										onClick="fcForm.detachAllLibraryItems('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems#');" />								
-						
-					</cfif>
-				</div>
-			</cfoutput>
-			
-			<cfif listLen(joinItems) GT 1>
-				<cfoutput>
-					<script type="text/javascript">
-					$j(function() {
-						fcForm.initSortable('#arguments.stobject.typename#','#arguments.stobject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');
-					});
-					</script>
-				</cfoutput>
-			</cfif>
-		</cfsavecontent>
-		
-		<cfif structKeyExists(request, "hideLibraryWrapper") AND request.hideLibraryWrapper>
-			<cfreturn "#returnHTML#" />
-		<cfelse>
-			<cfreturn "<div id='#arguments.fieldname#-library-wrapper'>#returnHTML#</div>" />
-		</cfif>
-				
-		
-		
-	</cffunction>
-	
-
-	<cffunction name="getFilterSQL">
-		
-		<cfargument name="filterTypename" />
-		<cfargument name="filterProperty" />
-		<cfargument name="renderType" />
-		<cfargument name="stProps" />
-		
-		<cfset var resultHTML = "" />
-		<cfset var stArrayPropMetadata = application.fapi.getPropertyMetadata(arguments.filterTypename, arguments.filterProperty) />
-		
-		<cfsavecontent variable="resultHTML">
-			
-			<cfswitch expression="#arguments.renderType#">
-				
-				<cfcase value="relatedto">
-					<cfparam name="arguments.stProps.relatedto" default="" />
-					<cfif stArrayPropMetadata.type EQ "array">
-						<cfif isArray(arguments.stProps.relatedto) AND arrayLen(arguments.stProps.relatedto)>
-
-							<cfoutput>
-								objectid IN (
-									
-									SELECT parentID
-									FROM #arguments.filterTypename#_#arguments.filterProperty#
-									WHERE data IN (#ListQualify(arrayToList(arguments.stProps.relatedto),"'",",","ALL")#)
-																						
-								)
-							</cfoutput>
-							
-						</cfif>
-					<cfelse>
-						<cfif len(arguments.stProps.relatedto)>
-							<cfoutput>#arguments.filterProperty# = '#arguments.stProps.relatedto#'</cfoutput>
-						</cfif>
-					</cfif>
-				</cfcase>
-				
-			
-			</cfswitch>
-			
-		</cfsavecontent>
-		
-		<cfreturn resultHTML />
-	</cffunction>
 			
 </cfcomponent>

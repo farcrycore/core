@@ -190,12 +190,16 @@
 		
 		<cfreturn html />
 	</cffunction>
-	
+
+
+	<!------------------ 
+	FILTERING FUNCTIONS
+	 ------------------>	
 	<cffunction name="getFilterUIOptions">
-		<cfreturn "contains" />
+		<cfreturn "contains,exactly,is empty,is not empty" />
 	</cffunction>
 	
-	<cffunction name="getFilterUI">
+	<cffunction name="editFilterUI">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
@@ -204,22 +208,48 @@
 				
 		<cfargument name="filterTypename" />
 		<cfargument name="filterProperty" />
-		<cfargument name="renderType" />
-		<cfargument name="stProps" />
+		<cfargument name="filterType" />
+		<cfargument name="stFilterProps" />
 		
 		<cfset var resultHTML = "" />
 		
 		<cfsavecontent variable="resultHTML">
 			
-			<cfswitch expression="#arguments.renderType#">
+			<cfswitch expression="#arguments.filterType#">
 				
-				<cfcase value="contains">
-					<cfparam name="arguments.stProps.contains" default="" />
+				<cfcase value="contains,exactly">
+					<cfparam name="arguments.stFilterProps.value" default="" />
 					<cfoutput>
-					<input type="string" name="#arguments.fieldname#contains" value="#arguments.stProps.contains#" />
+					<input type="string" name="#arguments.fieldname#value" value="#arguments.stFilterProps.value#" />
 					</cfoutput>
 				</cfcase>
 							
+			</cfswitch>
+		</cfsavecontent>
+		
+		<cfreturn resultHTML />
+	</cffunction>
+	
+	<cffunction name="displayFilterUI">
+		<cfargument name="filterType" />
+		<cfargument name="stFilterProps" />
+		
+		<cfset var resultHTML = "" />
+		
+		<cfsavecontent variable="resultHTML">
+			
+			<cfswitch expression="#arguments.filterType#">
+				
+				<cfcase value="contains,exactly">
+					<cfif structKeyExists(arguments.stFilterProps, "value")>
+						<cfoutput>
+						#arguments.stFilterProps.value#
+						</cfoutput>
+					</cfif>
+				</cfcase>
+				<cfcase value="is empty,is not empty">
+					<cfoutput>&nbsp;</cfoutput>
+				</cfcase>			
 			</cfswitch>
 		</cfsavecontent>
 		
@@ -231,22 +261,48 @@
 		
 		<cfargument name="filterTypename" />
 		<cfargument name="filterProperty" />
-		<cfargument name="renderType" />
-		<cfargument name="stProps" />
+		<cfargument name="filterType" />
+		<cfargument name="stFilterProps" />
 		
 		<cfset var resultHTML = "" />
 		
 		<cfsavecontent variable="resultHTML">
 			
-			<cfswitch expression="#arguments.renderType#">
+			<cfswitch expression="#arguments.filterType#">
 				
 				<cfcase value="contains">
-					<cfparam name="arguments.stProps.contains" default="" />
-					<cfif len(arguments.stProps.contains)>
-						<cfoutput>#arguments.filterProperty# LIKE '%#arguments.stProps.contains#%'</cfoutput>
+					<cfparam name="arguments.stFilterProps.value" default="" />
+					<cfif len(arguments.stFilterProps.value)>
+						<cfoutput>#arguments.filterProperty# LIKE '%#arguments.stFilterProps.value#%'</cfoutput>
 					</cfif>
 				</cfcase>
 				
+				<cfcase value="exactly">
+					<cfparam name="arguments.stFilterProps.value" default="" />
+					<cfif len(arguments.stFilterProps.value)>
+						<cfoutput>#arguments.filterProperty# = '%#arguments.stFilterProps.value#%'</cfoutput>
+					</cfif>
+				</cfcase>
+
+				
+				<cfcase value="is empty">
+					<cfoutput>
+					(
+					#arguments.filterProperty# is null
+					or #arguments.filterProperty# = ''
+					)
+					</cfoutput>
+				</cfcase>
+
+				
+				<cfcase value="is not empty">
+					<cfoutput>
+					(
+					#arguments.filterProperty# is not null
+					AND #arguments.filterProperty# != ''
+					)
+					</cfoutput>
+				</cfcase>				
 			
 			</cfswitch>
 			
