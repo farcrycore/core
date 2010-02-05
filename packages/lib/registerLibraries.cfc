@@ -23,8 +23,8 @@
 		
 		<!--- JS LIBRARIES --->
 		<skin:registerJS 	id="jquery"
-							baseHREF="#application.url.webtop#/thirdparty/jquery/js"
-							lFiles="jquery-1.3.2.min.js">
+							baseHREF="#application.url.webtop#/thirdparty/jquery-1-4-1/js"
+							lFiles="jquery-1.4.1.min.js">
 							
 							<cfoutput>
 								var $j = jQuery.noConflict();
@@ -33,8 +33,8 @@
 		</skin:registerJS>		
 			
 		<skin:registerJS 	id="jquery-ui"
-							baseHREF="#application.url.webtop#/thirdparty/jquery/js"
-							lFiles="ui.core.js,ui.accordion.js,ui.datepicker.js,ui.dialog.js,ui.draggable.js,ui.droppable.js,ui.progressbar.js,ui.resizable.js,ui.selectable.js,ui.slider.js,ui.sortable.js,ui.tabs.js,effects.core.js,effects.blind.js,effects.bounce.js,effects.clip.js,effects.drop.js,effects.explode.js,effects.fold.js,effects.highlight.js,effects.pulsate.js,effects.scale.js,effects.shake.js,effects.slide.js,effects.transfer.js" />
+							baseHREF="#application.url.webtop#/thirdparty/jquery-1-4-1/js"
+							lFiles="jquery-ui-1.8rc1.custom.min.js" />
 		
 			
 				
@@ -80,8 +80,8 @@
 							lFiles="reset.css,fonts.css,main.css" />
 							
 		<skin:registerCSS 	id="jquery-ui"
-							baseHREF="#application.url.webtop#/thirdparty/jquery/css/base"
-							lFiles="ui.core.css,ui.resizable.css,ui.accordion.css,ui.dialog.css,ui.slider.css,ui.tabs.css,ui.datepicker.css,ui.progressbar.css,ui.theme.css">
+							baseHREF="#application.url.webtop#/thirdparty/jquery-1-4-1/css/base"
+							lFiles="jquery-ui-1.8rc1.custom.css">
 							
 							<cfoutput>
 							.ui-widget {font-size:1em;}

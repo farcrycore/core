@@ -65,8 +65,11 @@
 		}
 		
 		// get the post values
-		for (var property in values)
-			values[property] = $j('##' + event.data.prefix+property).attr('value');
+		for (var property in values) {
+			if ($j('##' + event.data.prefix+property).attr('value')) {
+				values[property] = $j('##' + event.data.prefix+property).attr('value');
+			}
+		}
 		
 		// for each watcher
 		for (var i=0; i<$fc.watchedfields[event.data.prefix][event.data.property].length; i++) {
@@ -315,9 +318,10 @@ function setRowBackground (childCheckbox) {
 							
 							
 							$fc.openDialogIFrame = function(title,url,width,height){
-								var fcDialog = $j("<div><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0'></iframe></div>")
-								w = width ? width : 600;
-								h = height ? height : $j(window).height()-50;
+								var w = width ? width : 600;
+								var h = height ? height : $j(window).height()-50;
+								var fcDialog = $j("<div id='fc-dialog-iframe'><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0'></iframe></div>")
+								
 								$j("body").prepend(fcDialog);
 								$j(fcDialog).dialog({
 									bgiframe: true,
@@ -335,15 +339,15 @@ function setRowBackground (childCheckbox) {
 								$j('iframe',$j(fcDialog)).attr('src',url);
 								
 								return fcDialog;
-							};
+							};		
 							
 							
 							<!--- JOINS --->
 							
 							var fcForm = {};
 							
-	fcForm.openLibrarySelect = function(typename,objectid,property,id) {
-		
+	fcForm.openLibrarySelect = function(typename,objectid,property,id,urlparameters) {
+		urlparameters = urlparameters ? urlparameters : '';
 		var newDialogDiv = $j("<div><iframe style='width:100%;height:100%;border-width:0px;' frameborder='0'></iframe></div>");
 		$j("body").prepend(newDialogDiv);
 		$j("html").css('overflow', 'hidden');
@@ -370,16 +374,7 @@ function setRowBackground (childCheckbox) {
 			
 		});
 		$j(newDialogDiv).dialog('open');
-		$j('iframe',$j(newDialogDiv)).attr('src','/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=displayLibraryTabs' + '&property=' + property);
-		<!--- $j.ajax({
-			type: "POST",
-			cache: false,
-					url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayLibraryTabs' + '&property=' + property, 
-			complete: function(data){
-				$j(newDialogDiv).html(data.responseText);			
-			},
-			dataType: "html"
-		}); --->
+		$j('iframe',$j(newDialogDiv)).attr('src','/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=displayLibraryTabs' + '&property=' + property + '&' + urlparameters);
 	};
 	
 
@@ -448,8 +443,12 @@ function setRowBackground (childCheckbox) {
 			data: {deleteID: itemids },
 			dataType: "html",
 			complete: function(data){
-				$j('##' + formfieldname).attr('value', $j('##' + formfieldname + '-library-wrapper').sortable('toArray',{'attribute':'serialize'}));		
-				$j('##join-item-' + itemids).hide('blind',{},500);				
+				$j('##join-item-' + itemids).hide('blind',{},500);			
+				$j('##join-item-' + itemids).remove();	
+				$j('##' + formfieldname).attr('value','');	
+				var aItems = $j('##' + formfieldname + '-library-wrapper').sortable('toArray',{'attribute':'serialize'});
+				$j('##' + formfieldname).attr('value',aItems.join(","));
+				
 			}
 		});	
 	}
@@ -461,8 +460,9 @@ function setRowBackground (childCheckbox) {
 			data: {deleteID: itemids },
 			dataType: "html",
 			complete: function(data){
-				$j('##' + formfieldname).attr('value', '');	
-				$j('##join-' + objectid + '-' + property).hide('blind',{},500);								
+				$j('##' + formfieldname).attr('value', '');		
+				$j('##join-' + objectid + '-' + property).hide('blind',{},500);		
+				$j('##join-' + objectid + '-' + property).remove();								
 			}
 		});	
 	}
@@ -477,7 +477,8 @@ function setRowBackground (childCheckbox) {
 				$j('##join-item-' + itemids).hide('blind',{},500);			
 				$j('##join-item-' + itemids).remove();	
 				$j('##' + formfieldname).attr('value','');	
-				$j('##' + formfieldname).attr('value', $j('##' + formfieldname + '-library-wrapper').sortable('toArray',{'attribute':'serialize'}));				
+				var aItems = $j('##' + formfieldname + '-library-wrapper').sortable('toArray',{'attribute':'serialize'});
+				$j('##' + formfieldname).attr('value',aItems.join(","));				
 			}
 		});	
 	}
@@ -491,9 +492,7 @@ function setRowBackground (childCheckbox) {
 			complete: function(data){	
 				$j('##' + formfieldname).attr('value', '');		
 				$j('##join-' + objectid + '-' + property).hide('blind',{},500);		
-				$j('##join-' + objectid + '-' + property).remove();	
-				$j('##' + formfieldname).attr('value','');			
-				$j('##' + formfieldname).attr('value', $j('##' + formfieldname + '-library-wrapper').sortable('toArray',{'attribute':'serialize'}));			
+				$j('##join-' + objectid + '-' + property).remove();			
 			}
 		});	
 	}
@@ -598,16 +597,17 @@ function setRowBackground (childCheckbox) {
 					type: "POST",
 					cache: false,
 	  				url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
-					data: {'sortIDs': $j('##' + id + '-library-wrapper').sortable('toArray',{'attribute':'serialize'}) },
+					data: {'sortIDs': $j('##' + id + '-library-wrapper').sortable('toArray',{'attribute':'serialize'}).join(",") },
 					complete: function(data){
-						$j('##' + id).attr('value','');	
-						$j('##' + id).attr('value', $j('##' + id + '-library-wrapper').sortable('toArray',{'attribute':'serialize'}));		
+						$j('##' + id).attr('value','');		
+						var aItems = $j('##' + id + '-library-wrapper').sortable('toArray',{'attribute':'serialize'});
+						$j('##' + id).attr('value',aItems.join(","));
+						
 					},
 					dataType: "html"
 				});
 			}
 		});
-		$j('##test').disableSelection();
 		
 	}
 		
