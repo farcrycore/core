@@ -516,7 +516,7 @@
 			</cfif>
 		</cfif>
 
-		<cfreturn result />
+		<cfreturn duplicate(result) />
 	</cffunction>
 			
 	<cffunction name="getPropertyMetadata" access="public" output="false" returntype="any" hint="Returns the value of the metadata for a typename/property passed in. Omitting the md name, all metadata for the property will be returned.">
@@ -537,7 +537,7 @@
 			</cfif>
 		</cfif>
 
-		<cfreturn result />
+		<cfreturn duplicate(result) />
 	</cffunction>
 		
 	
