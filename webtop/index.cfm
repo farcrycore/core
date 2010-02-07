@@ -86,10 +86,10 @@
 		<td id="content-border" style="height:7px;background-color:##324E7C;"></td>
 	</tr>
 	<tr style="">
-		<td style="vertical-align:top;">
+		<td style="vertical-align:top; height:100%;">
 			<table style="width:100%;height:100%;">
 			<tr>
-				<td id="sidebar" style="width:200px;padding: 0;background: transparent url('#application.url.webtop#/css/images/g2_sidebar_bg.gif') no-repeat 0 0;">
+				<td id="sidebar" style="height:100%; width:200px;padding: 0;background: transparent url('#application.url.webtop#/css/images/g2_sidebar_bg.gif') no-repeat 0 0;">
 					<iframe src="#application.factory.oWebtop.getAttributeURL('#url.sec#.#url.sub#','sidebar',url)#" name="sidebar" scrolling="auto" frameborder="0" id="iframe-sidebar"></iframe>
 				</td>
 				<td id="content" style="height:100%;padding-top:10px;background: transparent url('#application.url.webtop#/css/images/g2_content_bg.gif') no-repeat -200px 0;">
