@@ -2059,4 +2059,30 @@
 		<cfreturn iconURL />
 	</cffunction>	
 	
+	<!--- @@examples:
+		<p>Searches project, plugins and core and returns the url for the best matching icon.</p>
+		<code>
+			#application.fapi.getIconURL(icon='dmHTML', size=16)# 
+		</code>
+	 --->	
+	<cffunction name="flushCache" access="public" output="false" returnType="void" hint="Flushes cache of passed in typename">
+		<cfargument name="lTypes" type="string" default="#structKeyList(application.stCoapi)#" required="true" hint="typenames to flush" />
+	
+		<cfset var typeName = "" />
+	
+		<cfloop list="#arguments.lTypes#" index="typeName">
+			
+			<cfif structKeyExists(application.stCoapi[typeName],"bObjectBroker") AND application.stCoapi[typeName].bObjectBroker>
+			
+				<cfset application.objectbroker[typeName] = structNew() />
+				<cfset application.objectbroker[typeName].aObjects = arrayNew(1) />
+				<cfset application.objectbroker[typeName].maxObjects = application.stCoapi[typeName].objectBrokerMaxObjects />
+
+			</cfif>
+			
+		</cfloop>
+
+		<cfreturn />
+	</cffunction>	
+	
 </cfcomponent>
