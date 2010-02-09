@@ -48,6 +48,8 @@ START WEBSKIN
 	<cfparam name="attributes.recordsPerPage" default="10" type="numeric">
 	<cfparam name="attributes.submissionType" default="url" type="string">
 	<cfparam name="attributes.Step" default="1" type="numeric">
+	<cfparam name="attributes.top" default="true" type="boolean">
+	<cfparam name="attributes.bottom" default="true" type="boolean">	
 	<cfparam name="attributes.oddRowClass" default="oddrow" type="string"><!--- The class name returned in stobjects for each "even" current row --->
 	<cfparam name="attributes.evenRowClass" default="evenrow" type="string"><!--- The class name returned in stobjects for each "odd" current row --->
 	
@@ -100,8 +102,10 @@ START WEBSKIN
 	</cfif>
 	
 	<!--- Render the pagination at the top --->
-	<cfset topPagination = oPagination.getView(template="displayLinks", position="top" ) />
-	<cfoutput>#topPagination#</cfoutput>
+	<cfif attributes.top>
+		<cfset topPagination = oPagination.getView(template="displayLinks", position="top" ) />
+		<cfoutput>#topPagination#</cfoutput>
+	</cfif>
 	
 	<!--- CHECK TO ENSURE THERE ARE ACTUALLY RECORDS TO LOOP THROUGH --->
 	<cfif oPagination.getCurrentRow() LTE oPagination.getRecordTo()>
@@ -130,10 +134,11 @@ START WEBSKIN
 			<cfset caller[attributes.r_stObject].bLast = false />
 		</cfif>
 	<cfelse>
-	
 		<!--- MEANS THERE WERE NO RECORDS SO SIMPLY CALL THE BOTTOM --->
-		<cfset bottomPagination = oPagination.getView(template="displayLinks", position="bottom" ) />
-		<cfoutput>#bottomPagination#</cfoutput>	
+		<cfif attributes.bottom>
+			<cfset bottomPagination = oPagination.getView(template="displayLinks", position="bottom" ) />
+			<cfoutput>#bottomPagination#</cfoutput>
+		</cfif>	
 		<cfexit method="exittag" />
 	</cfif>
 	
@@ -172,8 +177,10 @@ START WEBSKIN
 		<cfexit method="loop" />
 	<cfelse>
 		<!--- After the last record, we render the pagination. --->
-		<cfset bottomPagination = oPagination.getView(template="displayLinks", position="bottom" ) />
-		<cfoutput>#bottomPagination#</cfoutput>
+		<cfif attributes.bottom>
+			<cfset bottomPagination = oPagination.getView(template="displayLinks", position="bottom" ) />
+			<cfoutput>#bottomPagination#</cfoutput>
+		</cfif>
 	</cfif>
 	
 
