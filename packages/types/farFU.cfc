@@ -1,12 +1,44 @@
-<cfcomponent displayname="FarCry Friendly URL Table" hint="Manages FarCry Friendly URL's" extends="types" output="false" bDocument="true" scopelocation="application.fc.factory.farFU" bObjectBroker="true" objectBrokerMaxObjects="1000" fuAlias="fu">
-	<cfproperty ftSeq="1" name="refobjectid" type="string" default="" hint="stores the objectid of the related object" ftLabel="Ref ObjectID" />
-	<cfproperty ftSeq="2" name="friendlyURL" type="string" default="" hint="The Actual Friendly URL" ftLabel="Friendly URL" bLabel="true" />		
-	<cfproperty ftSeq="3" name="queryString" type="string" default="" hint="The query string that will be parsed and placed in the url scope of the request" ftLabel="Query String" />		
-	<cfproperty ftSeq="4" name="fuStatus" type="integer" default="" hint="Status of the Friendly URL." ftType="list" ftDefault="2" ftList="1:System Generated,2:Custom,0:archived" ftLabel="Status" />
-	<cfproperty ftSeq="5" name="redirectionType" type="string" default="" hint="Type of Redirection" ftType="list" ftDefault="301" ftList="none:None,301:Moved Permanently (301),307:Temporary Redirect (307)" ftLabel="Type of Redirection" />
-	<cfproperty ftSeq="6" name="redirectTo" type="string" default="" hint="Where to redirect to" ftType="list" ftList="default:To the default FU,objectid:Direct to the object ID" ftLabel="Redirect To" />
-	<cfproperty ftSeq="7" name="bDefault" type="boolean" default="0" hint="Only 1 Friendly URL can be the default that will be used by the system" ftDefault="0" ftLabel="Default" />
-	<cfproperty ftSeq="8" name="applicationName" type="string" default="" hint="The application name that the friendly URL is a part of. Useful for subsites.">
+<cfcomponent 
+	displayname="FarCry Friendly URL Table" hint="Manages FarCry Friendly URL's" extends="types" output="false" 
+	bDocument="true" scopelocation="application.fc.factory.farFU" 
+	bObjectBroker="true" objectBrokerMaxObjects="1000" 
+	fuAlias="fu">
+	
+	<cfproperty 
+		name="refobjectid" type="string" default="" hint="stores the objectid of the related object" 
+		ftSeq="1" ftLabel="Ref ObjectID" />
+		
+	<cfproperty 
+		name="friendlyURL" type="string" default="" hint="The Actual Friendly URL" bLabel="true"
+		ftSeq="2" ftLabel="Friendly URL"  />
+		
+	<cfproperty 
+		name="queryString" type="string" default="" hint="The query string that will be parsed and placed in the url scope of the request" 
+		ftSeq="3" ftLabel="Query String" />	
+		
+	<cfproperty 
+		name="fuStatus" type="integer" default="" hint="Status of the Friendly URL." 
+		ftSeq="4"  ftLabel="Status"
+		ftType="list" ftList="1:System Generated,2:Custom,0:archived" ftDefault="2" />
+		
+	<cfproperty 
+		name="redirectionType" type="string" default="" hint="Type of Redirection" 
+		ftSeq="5" ftLabel="Type of Redirection"
+		ftType="list" ftList="none:None,301:Moved Permanently (301),307:Temporary Redirect (307)" ftDefault="301" />
+		
+	<cfproperty 
+		name="redirectTo" type="string" default="" hint="Where to redirect to" 
+		ftSeq="6" ftLabel="Redirect To" 
+		ftType="list" ftList="default:To the default FU,objectid:Direct to the object ID" />
+		
+	<cfproperty 
+		name="bDefault" type="boolean" default="0" hint="Only 1 Friendly URL can be the default that will be used by the system" 
+		ftSeq="7" ftLabel="Default" 
+		ftDefault="0" />
+		
+	<cfproperty 
+		name="applicationName" type="string" default="" hint="The application name that the friendly URL is a part of. Useful for subsites."
+		ftSeq="8" >
 
 	<cffunction name="onAppInit" returntype="any" access="public" output="false" hint="Initializes the friendly url scopes and returns a copy of this initialised object">
 
