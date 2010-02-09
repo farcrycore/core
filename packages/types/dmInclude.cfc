@@ -15,36 +15,49 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/packages/types/dmInclude.cfc,v 1.13 2005/08/09 03:54:40 geoff Exp $
-$Author: geoff $
-$Date: 2005/08/09 03:54:40 $
-$Name: milestone_3-0-1 $
-$Revision: 1.13 $
-
-|| DESCRIPTION || 
-$Description: dmInclude type $
-
-
-|| DEVELOPER ||
-$Developer: Brendan Sisson (brendan@daemon.com.au) $
---->
-
-<cfcomponent extends="types" displayname="Include" hint="Include files" bUseInTree="true" bObjectBroker="true" bFriendly="true">
+<cfcomponent extends="types" displayname="Include" hint="Include miscellaneous CFML templates or content type webskins." 
+	bUseInTree="true" bFriendly="true"
+	bObjectBroker="true">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->
-<cfproperty ftSeq="1" ftFieldset="Include Details" name="title" type="string" hint="Meaningful reference title for include file" required="no" default="" ftlabel="Title" ftvalidation="required" /> 
-<cfproperty ftSeq="2" ftFieldset="Include Details" name="teaser" type="string" hint="A brief description of the nature of the include file" required="no" default="" ftType="longchar" ftlabel="Teaser" />  
-<cfproperty ftSeq="3" ftFieldset="Include Details" name="teaserImage" type="uuid" hint="UUID of image to display in teaser" required="no" default="" 
-	fttype="uuid" ftjoin="dmImage" ftlabel="Teaser Image"
-	ftLabelAlignment="inline">
-<cfproperty ftSeq="4" ftFieldset="Include Details" name="displayMethod" type="string" hint="" required="No" default="" ftType="webskin" ftPrefix="displayPage" ftlabel="Content Template" /> 
-<cfproperty ftSeq="10" ftFieldset="Content" name="include" type="string" hint="The name of the include file" required="No" default="" ftType="list" ftListData="getIncludeList" ftLabel="Included CF Template" /> 
-<cfproperty ftSeq="11" ftFieldset="Content" name="webskinTypename" type="string" hint="The content type to run the selected type view against" required="No" default="" ftLabel="Content Type" /> 
-<cfproperty ftSeq="12" ftFieldset="Content" name="webskin" type="string" hint="The content view to be run on the selected typename" required="no" default=""  ftlabel="Content View" />
-<cfproperty ftSeq="20" ftFieldset="Categorisation" name="catInclude" type="string" hint="category of the include" required="no" default="" ftType="category" ftlabel="Categorisation" />
+<cfproperty 
+	name="title" type="string" hint="Meaningful reference title for include file" required="no" default="" 
+	ftSeq="1" ftFieldset="Include Details" ftlabel="Title" ftvalidation="required" />
+	
+<cfproperty 
+	name="teaser" type="string" hint="A brief description of the nature of the include file" required="no" default="" 
+	ftSeq="2" ftFieldset="Include Details" ftlabel="Teaser"
+	ftType="longchar" />
+
+<cfproperty 
+	name="teaserImage" type="uuid" hint="UUID of image to display in teaser" required="no" default="" 
+	ftSeq="3" ftFieldset="Include Details" ftlabel="Teaser Image" ftLabelAlignment="inline"
+	fttype="uuid" ftjoin="dmImage" />
+	
+<cfproperty 
+	name="displayMethod" type="string" hint="" required="No" default="" 
+	ftSeq="4" ftFieldset="Include Details" ftlabel="Content Template"
+	ftType="webskin" ftPrefix="displayPage" />
+
+<cfproperty 
+	name="include" type="string" hint="The name of the include file" required="No" default="" 
+	ftSeq="10" ftFieldset="Content" ftLabel="Included CF Template"
+	ftType="list" ftListData="getIncludeList" />
+
+<cfproperty 
+	name="webskinTypename" type="string" hint="The content type to run the selected type view against" required="No" default="" 
+	ftSeq="11" ftFieldset="Content" ftLabel="Content Type"
+	ftExcludeTypes="farFU" /> 
+
+<cfproperty 
+	name="webskin" type="string" hint="The content view to be run on the selected typename" required="no" default=""
+	ftSeq="12" ftFieldset="Content" ftlabel="Content View" />
+
+<cfproperty 
+	name="catInclude" type="string" hint="category of the include" required="no" default="" 
+	ftSeq="20" ftFieldset="Categorisation" 
+	ftType="category" ftlabel="Categorisation" />
 
 <!--- system only properties --->
 <cfproperty name="status" type="string" hint="Status of file - draft or approved" required="true" default="draft" />
