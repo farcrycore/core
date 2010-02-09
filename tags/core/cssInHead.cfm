@@ -17,7 +17,7 @@
 			
 			<cfset stCSS = duplicate(request.inHead.stCSSLibraries[request.inHead.aCSSLibraries[i]]) />
 			
-			<cfif stCSS.bCombine>	
+			<cfif structKeyExists(stCSS, "bCombine") AND stCSS.bCombine>
 				<cfset idHash = hash("#stCSS.baseHREF##stCSS.lFiles##stCSS.prepend##stCSS.append#") />
 				
 				<cfset sCacheFileName = "" />
