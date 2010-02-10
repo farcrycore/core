@@ -774,6 +774,11 @@
 
     <cfloop list="#StructKeyList(arguments.stFields)#" index="i">
       <cfif structKeyExists(arguments.stFields[i].metadata, "ftType") AND arguments.stFields[i].metadata.ftType EQ "Image" >
+		<cfif structkeyexists(arguments.stFields[i].metadata,"ftAllowResize") and len(arguments.stFields[i].metadata.ftAllowResize) and (not structkeyexists(arguments.stFields[i].metadata,"ftSourceField") or not len(arguments.stFields[i].metadata.ftSourceField)) and len(arguments.stProperties[i])>
+			<cfset arguments.stFormPost[i].stSupporting.CreateFromSource = 1 />
+			<cfset arguments.stFields[i].metadata.ftSourceField = i />
+		</cfif>
+		
         <cfif structKeyExists(arguments.stFormPost, i) AND structKeyExists(arguments.stFormPost[i].stSupporting, "CreateFromSource") AND ListFirst(arguments.stFormPost[i].stSupporting.CreateFromSource)>	
           <!--- Make sure a ftSourceField --->
           <cfparam name="arguments.stFields.#i#.metadata.ftSourceField" default="sourceImage" />
