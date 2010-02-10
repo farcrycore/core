@@ -28,8 +28,12 @@
 <!--- Default selected section is the first in the list --->
 <cfparam name="url.sec" default="#listfirst(stSections.childorder)#" />
 
-<!--- Default selected subsection is the first in the list --->
-<cfparam name="url.sub" default="#listfirst(stSections.children[url.sec].childorder)#" />
+<cfif structKeyExists(stSections, "children") and structKeyExists(stSections.children, url.sec)>
+	<!--- Default selected subsection is the first in the list --->
+	<cfparam name="url.sub" default="#listfirst(stSections.children[url.sec].childorder)#" />
+<cfelse>
+	<cfparam name="url.sub" default="" />
+</cfif>
 
 <!--- For some reason we are getting here without logging in sometimes, so some variables need to be param'd --->
 <cfparam name="session.writingDir" default="ltr" />
