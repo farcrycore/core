@@ -119,6 +119,8 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.qRecordSet" default=""><!--- Used if the developer wants to pass in their own recordset --->
 
 <cfparam name="attributes.rbkey" default="coapi.#attributes.typename#.objectadmin" />
+<cfparam name="attributes.addUrlParams" default="#structnew()#" /><!--- if any extra params need to be passed into the add screen need to a struct e.g paramStruct.parentid='whatever'--->
+<cfparam name="attributes.editUrlParams" default="#structnew()#" /><!--- if any extra params need to be passed into the edit screen need to a struct e.g paramStruct.parentid='whatever'--->
 
 <!--- Convert attributes.lCustomColumns to array of structs --->
 <cfif listLen(attributes.lCustomColumns)>
@@ -379,11 +381,20 @@ user --->
 	PROCESS THE FORM
 	 ------------------------>
 	
-	<cfset addURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=#application.fc.utils.createJavaUUID()#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module#" />	
+	<cfset addURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=#application.fc.utils.createJavaUUID()#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module#" />
+	
+	<!--- if any extra params need to be passed into the add screen --->
+	<cfif not structIsEmpty(attributes.addUrlParams)>
+		<cfloop collection="#attributes.addUrlParams#" item="key">
+			<cfset addURL="#addURL#&#key#=#attributes.addUrlParams[key]#">
+		</cfloop>
+	</cfif>	
+	
 	<cfif Len(attributes.plugin)>
 		<cfset addURL = addURL&"&plugin=#attributes.plugin#" />
 		<cfset pluginURL = "&plugin=#attributes.plugin#" /><!--- we need this when using a plugin like farcrycms, to be able to redirect back to the plugin object admin instead of the project or core object admin --->
 	</cfif>
+	
 	<ft:processForm action="add">
 		<skin:onReady>
 			<cfoutput>
@@ -405,9 +416,18 @@ user --->
 		</skin:onReady>
 	</ft:processForm>
 	
+	
 	<ft:processForm action="edit">
+	
 		<!--- TODO: Check Permissions. --->
 		<cfset EditURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module#">
+		<!--- if any extra params need to be passed into the add screen --->
+		<cfif not structIsEmpty(attributes.editUrlParams)>
+			<cfloop collection="#attributes.editUrlParams#" item="key">
+				<cfset EditURL="#EditURL#&#key#=#attributes.editUrlParams[key]#">
+			</cfloop>
+		</cfif>	
+		
 		<cfif Len(attributes.plugin)><cfset EditURL = EditURL&"&plugin=#attributes.plugin#"></cfif>
 		<skin:onReady>
 			<cfoutput>
@@ -1010,9 +1030,16 @@ user --->
 	</cfif>	
 	
 	<cfset editURL = "#application.url.farcry#/conjuror/invocation.cfm?typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module#">
+	
+	<cfif not structIsEmpty(attributes.editUrlParams)>
+		<cfloop collection="#attributes.editUrlParams#" item="key">
+			<cfset EditURL="#EditURL#&#key#=#attributes.editUrlParams[key]#">
+		</cfloop>
+	</cfif>	
 	<cfif Len(attributes.plugin)>
 		<cfset editURL = listAppend(editURL,'plugin=#attributes.plugin#', '&') />
 	</cfif>	
+	
 	<cfset createDraftURL = "#application.url.farcry#/navajo/createDraftObject.cfm?ref=iframe">
 
 
