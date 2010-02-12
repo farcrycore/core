@@ -105,6 +105,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.bEditCol" default="true" type="boolean">
 <cfparam name="attributes.bViewCol" default="true" type="boolean">
 <cfparam name="attributes.bFlowCol" default="true" type="boolean">
+<cfparam name="attributes.bPreviewCol" default="true" type="boolean">
 
 
 <cfparam name="attributes.editMethod" default="edit" type="string">
@@ -1073,15 +1074,16 @@ user --->
 		</cfoutput>
 	</skin:onReady>
 
-		<ul class="object-admin-actions">				
-			<li>
-			<a ft:objectid="#arguments.st.objectid#"  class="oa-overview" title="Overview" href="##">
-				<span class="ui-icon ui-icon-arrow-4-diag" style="float:left;">&nbsp;</span>
-			</a>
-			</li>
-			
-			<skin:toolTip id="oa-overview-tooltip" selector=".oa-overview">Open up the overview screen for this object.</skin:toolTip>
-			
+		<ul class="object-admin-actions">		
+			<cfif attributes.bViewCol>		
+				<li>
+				
+				<a ft:objectid="#arguments.st.objectid#"  class="oa-overview" title="Overview" href="##">
+					<span class="ui-icon ui-icon-arrow-4-diag" style="float:left;">&nbsp;</span>
+				</a>
+				</li>
+				<skin:toolTip id="oa-overview-tooltip" selector=".oa-overview">Open up the overview screen for this object.</skin:toolTip>
+			</cfif>
 			<!--- We do not include the Edit Link if workflow is available for this content item. The user must go to the overview page. --->
 			<cfif not listLen(lWorkflowTypenames)>	
 				<cfif structKeyExists(arguments.st,"locked") AND arguments.st.locked neq 0 AND arguments.st.lockedby neq '#application.security.getCurrentUserID()#'>
@@ -1134,13 +1136,14 @@ user --->
 				</cfif>
 			</cfif>	
 			
-			
-			<li>
-			<a ft:objectid="#arguments.st.objectid#"  class="oa-preview" title="Overview" href="##">
-				<span class="ui-icon ui-icon-search" style="float:left;">&nbsp;</span>
-			</a>
-			</li>
-			<skin:toolTip id="oa-preview-tooltip" selector=".oa-preview">Preview this object.</skin:toolTip>				
+			<cfif attributes.bPreviewCol>
+				<li>
+				<a ft:objectid="#arguments.st.objectid#"  class="oa-preview" title="Overview" href="##">
+					<span class="ui-icon ui-icon-search" style="float:left;">&nbsp;</span>
+				</a>
+				</li>
+				<skin:toolTip id="oa-preview-tooltip" selector=".oa-preview">Preview this object.</skin:toolTip>
+			</cfif>				
 		</ul>	
 		
 		</cfoutput>
