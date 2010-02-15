@@ -7,7 +7,7 @@
 <cfoutput>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title>{##fct.title}</title>
+	<title>Related FarCry Content</title>
 	<script language="javascript" type="text/javascript" src="../../tiny_mce_popup.js"></script>
 	<script language="javascript" type="text/javascript" src="../../utils/mctabs.js"></script>
 	<script language="javascript" type="text/javascript">
