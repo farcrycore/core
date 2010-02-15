@@ -12,6 +12,8 @@
 				
 		<cfset var html = "" />	
 		<cfset var configJS = "" />
+		<cfset var external_image_list_url = "#application.url.webtop#/facade/TinyMCEImageList.cfm?relatedObjectid=#arguments.stObject.ObjectID#&relatedTypename=#arguments.typename#&ftImageListFilterTypename=#arguments.stMetadata.ftImageListFilterTypename#&ftImageListFilterProperty=#arguments.stMetadata.ftImageListFilterProperty#&ajaxMode=1" />
+		<cfset var external_link_list_url = "#application.url.webtop#/facade/TinyMCELinkList.cfm?relatedObjectid=#arguments.stObject.ObjectID#&relatedTypename=#arguments.typename#&ftLinkListFilterTypenames=#arguments.stMetadata.ftLinkListFilterTypenames#&ajaxMode=1" />
 		
 		<cfparam name="arguments.stMetadata.ftImageArrayField" default="">
 		<cfparam name="arguments.stMetadata.ftImageTypename" default="">
@@ -41,10 +43,8 @@
 						farcryrichtextfield: "#arguments.stMetadata.name#",
 						elements : "#arguments.fieldname#",
 						#configJS#,
-						<cfif len(arguments.stMetadata.ftImageArrayField) and len(arguments.stMetadata.ftImageTypename) and len(arguments.stMetadata.ftImageField)>
-							external_image_list_url : "#application.url.farcry#/facade/tinyMCEImageList.cfm?objectID=#arguments.stObject.ObjectID#&typename=#arguments.typename#&ImageArrayField=#arguments.stMetadata.ftImageArrayField#&ImageTypename=#arguments.stMetadata.ftImageTypename#&ImageField=#arguments.stMetadata.ftImageField#",
-						</cfif>									
-						external_link_list_url : "#application.url.farcry#/facade/tinyMCELinkList.cfm?objectID=#arguments.stObject.ObjectID#&typename=#arguments.typename#&relatedTypenames=#arguments.stMetadata.ftLinkListRelatedTypenames#"						
+						external_image_list_url : "#external_image_list_url#",
+						external_link_list_url : "#external_link_list_url#"														
 					});
 				</cfoutput>
 				
@@ -107,8 +107,8 @@
 		<cfsavecontent variable="configJS">
 			<cfoutput>			
 				theme : "advanced",
-				plugins : "table,advhr,farcrycontenttemplates,advimage,advlink,preview,zoom,searchreplace,print,contextmenu,paste,directionality,fullscreen",		<!--- farcryimage --->
-				theme_advanced_buttons2_add : "separator,farcrycontenttemplates",
+				plugins : "safari,farcrycontenttemplates,spellchecker,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template",
+				theme_advanced_buttons2_add : "separator,spellchecker,farcrycontenttemplates",
 				theme_advanced_buttons3_add_before : "tablecontrols,separator",			
 				theme_advanced_buttons3_add : "separator,fullscreen,pasteword,pastetext",				
 				theme_advanced_toolbar_location : "top",
@@ -116,6 +116,7 @@
 				theme_advanced_path_location : "bottom",
 				theme_advanced_resize_horizontal : true,
 				theme_advanced_resizing : true,
+				theme_advanced_resizing_use_cookie : false,
 				extended_valid_elements: "code,colgroup,col,thead,tfoot,tbody,abbr,blockquote,cite,button,textarea[name|class|cols|rows],script[type],img[style|class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name]",
 				remove_linebreaks : false,
 				forced_root_block : 'p',
