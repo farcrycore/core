@@ -1,238 +1,81 @@
 /**
- * $RCSfile: editor_plugin_src.js,v $
- * $Revision: 1.12 $
- * $Date: 2006/02/22 20:06:23 $
+ * $Id: editor_plugin_src.js 201 2007-02-12 15:56:56Z spocke $
  *
  * @author Moxiecode
- * @copyright Copyright © 2004-2006, Moxiecode Systems AB, All rights reserved.
+ * @copyright Copyright ï¿½ 2004-2008, Moxiecode Systems AB, All rights reserved.
  */
 
-/* Import plugin specific language pack */
-tinyMCE.importPluginLanguagePack('farcrycontenttemplates', 'en,tr,he,nb,ru,ru_KOI8-R,ru_UTF-8,nn,fi,cy,es,is,pl'); // <- Add a comma separated list of all supported languages
+(function() {
+	// Load plugin specific language pack
+	tinymce.PluginManager.requireLangPack('farcrycontenttemplates');
 
-/****
- * Steps for creating a plugin from this farcrycontenttemplates:
- *
- * 1. Change all "farcrycontenttemplates" to the name of your plugin.
- * 2. Remove all the callbacks in this file that you don't need.
- * 3. Remove the popup.htm file if you don't need any popups.
- * 4. Add your custom logic to the callbacks you needed.
- * 5. Write documentation in a readme.txt file on how to use the plugin.
- * 6. Upload it under the "Plugins" section at sourceforge.
- *
- ****/
+	tinymce.create('tinymce.plugins.farcrycontenttemplatesPlugin', {
+		/**
+		 * Initializes the plugin, this will be executed after the plugin has been created.
+		 * This call is done before the editor instance has finished it's initialization so use the onInit event
+		 * of the editor instance to intercept that event.
+		 *
+		 * @param {tinymce.Editor} ed Editor instance that the plugin is initialized in.
+		 * @param {string} url Absolute URL to where the plugin is located.
+		 */
+		init : function(ed, url) {
+			// Register the command so that it can be invoked by using tinyMCE.activeEditor.execCommand('mcefarcrycontenttemplates');
+			ed.addCommand('mcefarcrycontenttemplates', function() {
+				ed.windowManager.open({
+					file : url + '/popup.cfm?objectid',
+					width : 500 + parseInt(ed.getLang('farcrycontenttemplates.delta_width', 0)),
+					height : 400 + parseInt(ed.getLang('farcrycontenttemplates.delta_height', 0)),
+					inline : 1
+				}, {
+					plugin_url : url, // Plugin absolute URL
+					some_custom_arg : 'custom arg' // Custom argument
+				});
+			});
 
-// Singleton class
-var TinyMCE_farcrycontenttemplatesPlugin = {
-	/**
-	 * Returns information about the plugin as a name/value array.
-	 * The current keys are longname, author, authorurl, infourl and version.
-	 *
-	 * @returns Name/value array containing information about the plugin.
-	 * @type Array 
-	 */
-	getInfo : function() {
-		return {
-			longname : 'farcrycontenttemplates plugin',
-			author : 'Your name',
-			authorurl : 'http://www.yoursite.com',
-			infourl : 'http://www.yoursite.com/docs/farcrycontenttemplates.html',
-			version : "1.0"
-		};
-	},
+			// Register farcrycontenttemplates button
+			ed.addButton('farcrycontenttemplates', {
+				title : 'farcrycontenttemplates.desc',
+				cmd : 'mcefarcrycontenttemplates',
+				image : url + '/img/farcrycontenttemplates.gif'
+			});
 
-	/**
-	 * Gets executed when a TinyMCE editor instance is initialized.
-	 *
-	 * @param {TinyMCE_Control} Initialized TinyMCE editor control instance. 
-	 */
-	initInstance : function(inst) {
-		// You can take out plugin specific parameters
-		alert("Initialization parameter:" + tinyMCE.getParam("farcrycontenttemplates_someparam", false));
+			// Add a node change handler, selects the button in the UI when a image is selected
+			ed.onNodeChange.add(function(ed, cm, n) {
+				cm.setActive('farcrycontenttemplates', n.nodeName == 'IMG');
+			});
+		},
 
-		// Register custom keyboard shortcut
-		inst.addShortcut('ctrl', 't', 'lang_farcrycontenttemplates_desc', 'mcefarcrycontenttemplates');
-	},
+		/**
+		 * Creates control instances based in the incomming name. This method is normally not
+		 * needed since the addButton method of the tinymce.Editor class is a more easy way of adding buttons
+		 * but you sometimes need to create more complex controls like listboxes, split buttons etc then this
+		 * method can be used to create those.
+		 *
+		 * @param {String} n Name of the control to create.
+		 * @param {tinymce.ControlManager} cm Control manager to use inorder to create new control.
+		 * @return {tinymce.ui.Control} New control instance or null if no control was created.
+		 */
+		createControl : function(n, cm) {
+			return null;
+		},
 
-	/**
-	 * Returns the HTML code for a specific control or empty string if this plugin doesn't have that control.
-	 * A control can be a button, select list or any other HTML item to present in the TinyMCE user interface.
-	 * The variable {$editor_id} will be replaced with the current editor instance id and {$pluginurl} will be replaced
-	 * with the URL of the plugin. Language variables such as {$lang_somekey} will also be replaced with contents from
-	 * the language packs.
-	 *
-	 * @param {string} cn Editor control/button name to get HTML for.
-	 * @return HTML code for a specific control or empty string.
-	 * @type string
-	 */
-	getControlHTML : function(cn) {
-		switch (cn) {
-			case "farcrycontenttemplates":
-				return tinyMCE.getButtonHTML(cn, 'lang_farcrycontenttemplates_desc', '{$pluginurl}/images/farcrycontenttemplates.gif', 'mcefarcrycontenttemplates', true);
+		/**
+		 * Returns information about the plugin as a name/value array.
+		 * The current keys are longname, author, authorurl, infourl and version.
+		 *
+		 * @return {Object} Name/value array containing information about the plugin.
+		 */
+		getInfo : function() {
+			return {
+				longname : 'farcrycontenttemplates plugin',
+				author : 'Some author',
+				authorurl : 'http://tinymce.moxiecode.com',
+				infourl : 'http://wiki.moxiecode.com/index.php/TinyMCE:Plugins/farcrycontenttemplates',
+				version : "1.0"
+			};
 		}
+	});
 
-		return "";
-	},
-
-	/**
-	 * Executes a specific command, this function handles plugin commands.
-	 *
-	 * @param {string} editor_id TinyMCE editor instance id that issued the command.
-	 * @param {HTMLElement} element Body or root element for the editor instance.
-	 * @param {string} command Command name to be executed.
-	 * @param {string} user_interface True/false if a user interface should be presented.
-	 * @param {mixed} value Custom value argument, can be anything.
-	 * @return true/false if the command was executed by this plugin or not.
-	 * @type
-	 */
-	execCommand : function(editor_id, element, command, user_interface, value) {
-		// Handle commands
-		switch (command) {
-			// Remember to have the "mce" prefix for commands so they don't intersect with built in ones in the browser.
-			case "mcefarcrycontenttemplates":
-				// Show UI/Popup
-				if (user_interface) {
-					// Open a popup window and send in some custom data in a window argument
-					var farcrycontenttemplates = new Array();
-
-					farcrycontenttemplates['file'] = '../../plugins/farcrycontenttemplates/popup.htm'; // Relative to theme
-					farcrycontenttemplates['width'] = 300;
-					farcrycontenttemplates['height'] = 200;
-
-					tinyMCE.openWindow(farcrycontenttemplates, {editor_id : editor_id, some_custom_arg : "somecustomdata"});
-
-					// Let TinyMCE know that something was modified
-					tinyMCE.triggerNodeChange(false);
-				} else {
-					// Do a command this gets called from the farcrycontenttemplates popup
-					alert("execCommand: mcefarcrycontenttemplates gets called from popup.");
-				}
-
-				return true;
-		}
-
-		// Pass to next handler in chain
-		return false;
-	},
-
-	/**
-	 * Gets called ones the cursor/selection in a TinyMCE instance changes. This is useful to enable/disable
-	 * button controls depending on where the user are and what they have selected. This method gets executed
-	 * alot and should be as performance tuned as possible.
-	 *
-	 * @param {string} editor_id TinyMCE editor instance id that was changed.
-	 * @param {HTMLNode} node Current node location, where the cursor is in the DOM tree.
-	 * @param {int} undo_index The current undo index, if this is -1 custom undo/redo is disabled.
-	 * @param {int} undo_levels The current undo levels, if this is -1 custom undo/redo is disabled.
-	 * @param {boolean} visual_aid Is visual aids enabled/disabled ex: dotted lines on tables.
-	 * @param {boolean} any_selection Is there any selection at all or is there only a cursor.
-	 */
-	handleNodeChange : function(editor_id, node, undo_index, undo_levels, visual_aid, any_selection) {
-		// Select farcrycontenttemplates button if parent node is a strong or b
-		if (node.parentNode.nodeName == "STRONG" || node.parentNode.nodeName == "B") {
-			tinyMCE.switchClass(editor_id + '_farcrycontenttemplates', 'mceButtonSelected');
-			return true;
-		}
-
-		// Deselect farcrycontenttemplates button
-		tinyMCE.switchClass(editor_id + '_farcrycontenttemplates', 'mceButtonNormal');
-	},
-
-	/**
-	 * Gets called when a TinyMCE editor instance gets filled with content on startup.
-	 *
-	 * @param {string} editor_id TinyMCE editor instance id that was filled with content.
-	 * @param {HTMLElement} body HTML body element of editor instance.
-	 * @param {HTMLDocument} doc HTML document instance.
-	 */
-	setupContent : function(editor_id, body, doc) {
-	},
-
-	/**
-	 * Gets called when the contents of a TinyMCE area is modified, in other words when a undo level is
-	 * added.
-	 *
-	 * @param {TinyMCE_Control} inst TinyMCE editor area control instance that got modified.
-	 */
-	onChange : function(inst) {
-	},
-
-	/**
-	 * Gets called when TinyMCE handles events such as keydown, mousedown etc. TinyMCE
-	 * doesn't listen on all types of events so custom event handling may be required for
-	 * some purposes.
-	 *
-	 * @param {Event} e HTML editor event reference.
-	 * @return true - pass to next handler in chain, false - stop chain execution
-	 * @type boolean
-	 */
-	handleEvent : function(e) {
-		// Display event type in statusbar
-		top.status = "farcrycontenttemplates plugin event: " + e.type;
-
-		return true; // Pass to next handler
-	},
-
-	/**
-	 * Gets called when HTML contents is inserted or retrived from a TinyMCE editor instance.
-	 * The type parameter contains what type of event that was performed and what format the content is in.
-	 * Possible valuses for type is get_from_editor, insert_to_editor, get_from_editor_dom, insert_to_editor_dom.
-	 *
-	 * @param {string} type Cleanup event type.
-	 * @param {mixed} content Editor contents that gets inserted/extracted can be a string or DOM element.
-	 * @param {TinyMCE_Control} inst TinyMCE editor instance control that performes the cleanup.
-	 * @return New content or the input content depending on action.
-	 * @type string
-	 */
-	cleanup : function(type, content, inst) {
-		switch (type) {
-			case "get_from_editor":
-				alert("[FROM] Value HTML string: " + content);
-
-				// Do custom cleanup code here
-
-				break;
-
-			case "insert_to_editor":
-				alert("[TO] Value HTML string: " + content);
-
-				// Do custom cleanup code here
-
-				break;
-
-			case "get_from_editor_dom":
-				alert("[FROM] Value DOM Element " + content.innerHTML);
-
-				// Do custom cleanup code here
-
-				break;
-
-			case "insert_to_editor_dom":
-				alert("[TO] Value DOM Element: " + content.innerHTML);
-
-				// Do custom cleanup code here
-
-				break;
-		}
-
-		return content;
-	},
-
-	// Private plugin internal methods
-
-	/**
-	 * This is just a internal plugin method, prefix all internal methods with a _ character.
-	 * The prefix is needed so they doesn't collide with future TinyMCE callback functions.
-	 *
-	 * @param {string} a Some arg1.
-	 * @param {string} b Some arg2.
-	 * @return Some return.
-	 * @type string
-	 */
-	_someInternalFunction : function(a, b) {
-		return 1;
-	}
-};
-
-// Adds the plugin class to the list of available TinyMCE plugins
-tinyMCE.addPlugin("farcrycontenttemplates", TinyMCE_farcrycontenttemplatesPlugin);
+	// Register plugin
+	tinymce.PluginManager.add('farcrycontenttemplates', tinymce.plugins.farcrycontenttemplatesPlugin);
+})();

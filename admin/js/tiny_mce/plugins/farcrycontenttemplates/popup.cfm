@@ -7,7 +7,7 @@
 <cfoutput>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title>{$lang_template_title}</title>
+	<title>{##fct.title}</title>
 	<script language="javascript" type="text/javascript" src="../../tiny_mce_popup.js"></script>
 	<script language="javascript" type="text/javascript" src="../../utils/mctabs.js"></script>
 	<script language="javascript" type="text/javascript">
@@ -36,18 +36,15 @@
 			new Ajax.Updater('prev' + prevDIV + 'div', url, {
 				//onLoading:function(request){Element.show('indicator')},
 				onComplete:function(request){
-					//$('prevDIV').innerHTML = request.responseText;
-					//tinyMCE.execCommand('mceInsertContent',false, request.responseText);
 					tinyMCE.execCommand('mceInsertContent',false, request.responseText.replace(/^\s*|\s*$/g,""));	//make sure to trim the return value
-								
-					// Close the dialog
-					tinyMCEPopup.close();					
+					tinyMCEPopup.close();					     	
+				
 				},
 					
 				parameters:'objectID=' + r_objectid + '&Typename=' + r_typename + '&webskin=' + r_webskin , 
 				evalScripts:false, 
 				asynchronous:true
-			})
+			})		
 						
 			
 			
@@ -104,11 +101,12 @@
 		}
 		
 		// determine farcryobjectid
-		var farcryobjectid = tinyMCE.getParam("farcryobjectid");
-		var farcrytypename = tinyMCE.getParam("farcrytypename");
-		var farcryrichtextfield = tinyMCE.getParam("farcryrichtextfield");
+		var farcryobjectid = tinyMCEPopup.getParam("farcryobjectid");
+		var farcrytypename = tinyMCEPopup.getParam("farcrytypename");
+		var farcryrichtextfield = tinyMCEPopup.getParam("farcryrichtextfield");
 		if (farcryobjectid != null && farcrytypename != null && farcryrichtextfield != null) {
 			// Fix relative
+
 			url = '#application.url.farcry#/facade/tinyMCE.cfc?method=ajaxGetTemplateDropdowns';
 			//alert('<sc'+'ript language="javascript" type="text/javascript" src="#application.url.farcry#/facade/tinyMCE.cfm?objectID=' + farcryobjectid + '&Typename=' + farcrytypename + '&richtextfield=' + farcryrichtextfield + '"></sc'+'ript>');
 			new Ajax.Updater('templatedropdowns', url, {
@@ -122,7 +120,7 @@
 				parameters:'objectID=' + farcryobjectid + '&Typename=' + farcrytypename + '&richtextfield=' + farcryrichtextfield , 
 				evalScripts:false, 
 				asynchronous:true
-			})
+			})	
 			
 		}
 	</script>
