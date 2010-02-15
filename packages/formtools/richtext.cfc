@@ -12,13 +12,19 @@
 				
 		<cfset var html = "" />	
 		<cfset var configJS = "" />
-		<cfset var external_image_list_url = "#application.url.farcry#/facade/TinyMCEImageList.cfm?relatedObjectid=#arguments.stObject.ObjectID#&relatedTypename=#arguments.typename#&ftImageListFilterTypename=#arguments.stMetadata.ftImageListFilterTypename#&ftImageListFilterProperty=#arguments.stMetadata.ftImageListFilterProperty#&ajaxMode=1" />
-		<cfset var external_link_list_url = "#application.url.farcry#/facade/TinyMCELinkList.cfm?relatedObjectid=#arguments.stObject.ObjectID#&relatedTypename=#arguments.typename#&ftLinkListFilterTypenames=#arguments.stMetadata.ftLinkListFilterTypenames#&ajaxMode=1" />
+		<cfset var external_image_list_url = "" />
+		<cfset var external_link_list_url = "" />
 		
 		<cfparam name="arguments.stMetadata.ftImageArrayField" default="">
 		<cfparam name="arguments.stMetadata.ftImageTypename" default="">
 		<cfparam name="arguments.stMetadata.ftImageField" default="">
 		<cfparam name="arguments.stMetadata.ftLinkListRelatedTypenames" default="">
+		<cfparam name="arguments.stMetadata.ftImageListFilterTypename" default="dmImage">
+		<cfparam name="arguments.stMetadata.ftImageListFilterProperty" default="standardImage">
+		<cfparam name="arguments.stMetadata.ftLinkListFilterTypenames" default="">
+		
+		<cfset var external_image_list_url = "#application.url.farcry#/facade/TinyMCEImageList.cfm?relatedObjectid=#arguments.stObject.ObjectID#&relatedTypename=#arguments.typename#&ftImageListFilterTypename=#arguments.stMetadata.ftImageListFilterTypename#&ftImageListFilterProperty=#arguments.stMetadata.ftImageListFilterProperty#&ajaxMode=1" />
+		<cfset var external_link_list_url = "#application.url.farcry#/facade/TinyMCELinkList.cfm?relatedObjectid=#arguments.stObject.ObjectID#&relatedTypename=#arguments.typename#&ftLinkListFilterTypenames=#arguments.stMetadata.ftLinkListFilterTypenames#&ajaxMode=1" />
 		
 		
 		<cfparam name="arguments.stMetadata.ftConfig" default=""><!--- tinyMCE.tinyMCE_config --->
