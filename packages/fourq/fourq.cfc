@@ -608,6 +608,12 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfset arguments.objectid = stProps.objectid />
 		</cfif>
 		
+		<!--- Create a Reference in the RefObjects Table --->
+		<cfset bRefCreated = application.coapi.coapiutilities.createRefObjectID(argumentCollection="#arguments#") />
+		<cfif not bRefCreated>
+			<cfabort showerror="Error Executing Database Query. Duplicate ObjectID #arguments.objectid#" />
+		</cfif>
+		
 		<cfset stProps.typename = arguments.typename>
 		
 		<cfset stProps.label = "(incomplete)">
