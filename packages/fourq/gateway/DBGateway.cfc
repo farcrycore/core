@@ -93,6 +93,10 @@
 				<cfset currentObjectID = application.fc.utils.createJavaUUID()>
 			</cfif>
 			
+			
+			<cfset bRefCreated = arguments.coapiutilities.createRefObjectID(objectID="#currentObjectID#", typename="#tablename#", dsn=variables.dsn, dbowner=variables.dbowner, dbtype=variables.dbtype) />
+
+			
 			<!--- build query --->
 	
 			<cfquery datasource="#arguments.dsn#" name="qCreateData">
@@ -140,8 +144,6 @@
 				</cfif>
 			  </cfif>
 			</cfloop>
-
-			<cfset bRefCreated = arguments.coapiutilities.createRefObjectID(objectID="#currentObjectID#", typename="#tablename#", dsn=variables.dsn, dbowner=variables.dbowner, dbtype=variables.dbtype) />
 
 
 			<cfset createDataResult.objectid = currentObjectID>
