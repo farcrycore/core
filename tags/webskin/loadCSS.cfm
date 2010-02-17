@@ -71,6 +71,10 @@
 		
 		<!--- Add the css information to the struct so we will be able to load it all correctly into the header at the end of the request. --->
 		<cfset request.inHead.stCSSLibraries[stCSS.id] = stCSS />
+	
+	<cfelse>
+	
+		<cfset stCSS = request.inHead.stCSSLibraries[stCSS.id] />
 	</cfif>
 	
 	

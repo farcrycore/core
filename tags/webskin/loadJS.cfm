@@ -68,6 +68,11 @@
 		
 		<!--- Add the JS information to the struct so we will be able to load it all correctly into the header at the end of the request. --->
 		<cfset request.inHead.stJSLibraries[stJS.id] = stJS />
+	
+	<cfelse>
+	
+		<cfset stJS = request.inHead.stJSLibraries[stJS.id] />
+	
 	</cfif>
 	
 	
