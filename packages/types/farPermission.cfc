@@ -196,7 +196,7 @@ object methods
 			
 			<!--- Find barnacles with types not in the new list --->
 			<cfquery datasource="#application.dsn#" name="qBarnacles">
-				select	objectid,referenceid,roleid
+				select	objectid,referenceid,roleid,barnaclevalue
 				from	#application.dbowner#farBarnacle
 				where	permissionid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.stProperties.objectid#" />
 						and objecttype not in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arraytolist(arguments.stProperties.aRelatedtypes)#" />)
