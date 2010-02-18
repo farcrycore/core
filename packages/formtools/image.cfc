@@ -831,6 +831,8 @@
 			
 			<cfif structKeyExists(arguments.stFormPost, i) AND structKeyExists(arguments.stFormPost[i].stSupporting, "ResizeMethod")>	
 				<cfset stArgs.ResizeMethod = "#arguments.stFormPost[i].stSupporting.ResizeMethod#" />
+			<cfelse>
+				<cfset stArgs.ResizeMethod = arguments.stFields[i].metadata.ftAutoGenerateType />
 			</cfif>
 
             <cfset stGenerateImageResult = oImage.GenerateImage(argumentCollection=stArgs) />

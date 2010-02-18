@@ -46,6 +46,7 @@
 	<cfset stProperties.label = "#cffile.serverFile#" />
 	<cfset stProperties.title = "#cffile.serverFile#" />
 	<cfset stProperties.alt = "#cffile.serverFile#" />
+	<cfset stProperties.status = "approved" />
 	
 	<cfif isdefined("form.categoryID")>
 		<cfset stProperties.catImage = form.categoryID />
