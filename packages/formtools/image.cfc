@@ -77,7 +77,7 @@
 									
 									<select name="#arguments.fieldname#ResizeMethod" class="selectInput">
 										<option value="">None</option>
-										<option value="center" <cfif arguments.stMetadata.ftAutoGenerateType EQ "CropToFit"> selected="selected"</cfif>>Crop Center</option>
+										<option value="center" <cfif arguments.stMetadata.ftAutoGenerateType EQ "center"> selected="selected"</cfif>>Crop Center</option>
 										<option value="fitinside" <cfif arguments.stMetadata.ftAutoGenerateType EQ "fitinside"> selected="selected"</cfif>>Fit Inside</option>
 										<option value="ForceSize" <cfif arguments.stMetadata.ftAutoGenerateType EQ "ForceSize"> selected="selected"</cfif>>Force Size</option>
 										<option value="Pad" <cfif arguments.stMetadata.ftAutoGenerateType EQ "Pad"> selected="selected"</cfif>>Pad</option>									
