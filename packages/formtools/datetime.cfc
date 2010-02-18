@@ -494,7 +494,7 @@
 		<cfparam name="arguments.stMetadata.ftDateMask" default="d-mmm-yy">
 		<cfparam name="arguments.stMetadata.ftTimeMask" default="short">
 		<cfparam name="arguments.stMetadata.ftShowTime" default="true">
-		<cfparam name="arguments.stMetadata.ftDisplayPrettyDate" default="false">
+		<cfparam name="arguments.stMetadata.ftDisplayPrettyDate" default="true">
 		
 		
 		<cfif len(arguments.stMetadata.value) and application.fapi.showFarcryDate(arguments.stMetadata.value)>
