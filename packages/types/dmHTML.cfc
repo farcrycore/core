@@ -66,7 +66,7 @@ type properties
 	
 <cfproperty 
 	name="teaserImage" type="uuid" ftType="uuid" hint="UUID of image to display in teaser" required="no" default=""
-	ftSeq="11" ftwizardStep="Body" ftFieldset="Teaser" 
+	ftSeq="11" ftwizardStep="Body" ftFieldset="Teaser" ftLabel="Teaser Image"
 	ftJoin="dmImage" ftLibraryData="getTeaserImageLibraryData" ftLibraryDataTypename="dmHTML">
 
 <cfproperty 
