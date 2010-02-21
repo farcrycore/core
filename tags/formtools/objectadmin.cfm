@@ -619,12 +619,10 @@ user --->
 		
 		<ft:form style="padding:10px; border: 1px solid ##CCCCCC;background-color:##f1f1f1;margin-bottom:10px; ">
 			<cfoutput>
-			<div style="display:inline;color:##E17000">
-				<div style="font-size:90%;margin-right:10px;padding:2px;float:left;">
+			<div style="color:##E17000;">
+				<div style="font-size:90%;margin-right:10px;padding:2px;">
 					<a onclick="$j('##filterForm').toggle('fast');">#application.rb.getResource('objectadmin.messages.Filtering@text','FILTERING')#</a>
-
 				</div>
-					
 			</div>
 			<br class="clearer" />
 			</cfoutput>
