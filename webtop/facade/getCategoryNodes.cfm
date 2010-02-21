@@ -46,7 +46,7 @@
 		<cfif qTree.currentRow NEQ 1><cfoutput>,</cfoutput></cfif>
 
 		<cfoutput>
-			{'id': '#qTree.objectid#', 'text': '<input type="checkbox" value="#qTree.objectid#" onclick="return false;" />#jsstringFormat(qTree.objectname)#', 'leaf':  </cfoutput>
+			{"id": "#qTree.objectid#", "text": "<input type='checkbox' value='#qTree.objectid#' onclick='return false;' />#jsstringFormat(qTree.objectname)#", "leaf":  </cfoutput>
 		<cfif qTree.nRight - qTree.nLeft EQ 1>
 			<cfoutput>true</cfoutput>
 		<cfelse>

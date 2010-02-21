@@ -133,7 +133,8 @@
 				</cfoutput>
 				</extjs:onReady>
 			</cfcase>
-			<!---<cfcase value="jquery">
+			<cfcase value="jquery">
+				
 				
 				<skin:loadJS id="jquery" />
 				<skin:loadJS	id="jquery-treeview" 
@@ -144,7 +145,7 @@
 								baseHREF="#application.url.webtop#/thirdparty/jquery-treeview"
 								lFiles="jquery.treeview.css"								
 				/>
-				
+
 				<skin:onReady>
 				<cfoutput>
 					$j("##black").treeview({
@@ -164,7 +165,7 @@
 					
 				</cfsavecontent>			
 			</cfcase>
-			--->
+			
 			
 			<cfdefaultcase>
 				
