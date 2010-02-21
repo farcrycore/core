@@ -320,7 +320,7 @@ img.overviewicon {
 	margin-right: 10px;
 }
 
-/* EXT JS SPECIFIC MODIFICATIONS */
+/* JQUERY-UI SPECIFIC MODIFICATIONS */
 ul.x-tab-strip{margin:0px;}
 ul.x-tab-strip li{padding:0px;}
 ul.x-tab-strip li a {padding:0px;}
@@ -336,7 +336,7 @@ ul.x-tab-strip li a {padding:0px;}
 }
 #webtopOverviewActions button.secondary {
 	width:180px;
-	height:50px;
+	min-height:50px;
 	margin-top:10px;
 }
 .webtopOverviewStatusBox {
