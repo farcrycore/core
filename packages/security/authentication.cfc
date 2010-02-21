@@ -765,9 +765,9 @@ $Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
 											SELECT 0 as bCount
 									</cfquery>
 								<cfelse>
-									<cfquery name="qLoginExists" datasource="#application.dsn#">
+									<cfquery name="qLoginCount" datasource="#application.dsn#">
 										SELECT count(username) as bCount
-										FROM DBO.fqAudit
+										FROM fqAudit
    										WHERE auditType = 'dmSec.login'
 										AND username = '#arguments.userLogin#'
 									</cfquery>
