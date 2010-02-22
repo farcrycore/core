@@ -149,7 +149,7 @@
 				<skin:onReady>
 				<cfoutput>
 					$j("##black").treeview({
-						url: "#application.url.webtop#/facade/getCategoryNodes.cfm?node=#rootID#&lSelectedItems=#lSelectedCategoryID#"
+						url: "#application.url.webtop#/facade/getCategoryNodes.cfm?node=#rootID#&fieldname=#arguments.fieldname#&multiple=#arguments.stMetadata.ftSelectMultiple#&lSelectedItems=#lSelectedCategoryID#"
 					})
 				</cfoutput>
 				</skin:onReady>
