@@ -154,6 +154,16 @@
 				</cfoutput>
 				</skin:onReady>
 				
+				<skin:loadCSS>
+				<cfoutput>
+					##black span { font-size:10px; }
+					##black span:hover { color: red; }
+					##black span input { margin-right: 5px; }
+					##black .hover { color: ##000; }
+
+				</cfoutput>
+				</skin:loadCSS>
+				
 				<cfsavecontent variable="html">
 				
 
