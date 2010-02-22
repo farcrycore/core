@@ -156,7 +156,7 @@
 				
 				<skin:loadCSS>
 				<cfoutput>
-					##black span { font-size:10px; }
+					##black span { font-size:10px; vertical-align: top}
 					##black span:hover { color: red; }
 					##black span input { margin-right: 5px; }
 					##black .hover { color: ##000; }
