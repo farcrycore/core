@@ -1,5 +1,6 @@
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
+<cfset stProperties = structnew() />
 <cfset stProperties.objectid = stobj.objectid />
 <cfset stProperties.userstatus = "active" />
 
