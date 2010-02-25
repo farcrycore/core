@@ -29,8 +29,11 @@
 <cfparam name="attributes.startLevel" default="2">
 <cfparam name="attributes.id" default="">
 <cfparam name="attributes.bFirst" default="0">
+<cfparam name="attributes.firstClass" default="first">
 <cfparam name="attributes.bLast" default="0">
+<cfparam name="attributes.lastClass" default="last">
 <cfparam name="attributes.bActive" default="0">
+<cfparam name="attributes.activeClass" default="active">
 <cfparam name="attributes.bIncludeHome" default="0">
 <cfparam name="attributes.sectionObjectID" default="#request.navID#">
 <cfparam name="attributes.functionMethod" default="getDescendants">
@@ -132,10 +135,10 @@
 
 				//this means it is the last column in nav
 				if(attributes.bLast and qNav.nRight[i] eq qMaxRight.maxRight){
-					itemclass=itemclass & 'last ';
+					itemclass=itemclass & '#attributes.lastClass# ';
 				}
 				if(attributes.bActive and (trim(qNav.ObjectID[i]) eq request.sectionObjectID or listfind(lAncestors, trim(qNav.ObjectID[i])))){
-					itemclass=itemclass & 'active ';
+					itemclass=itemclass & '#attributes.activeClass# ';
 				}
 				// update counters
 				previouslevel=currentlevel;
@@ -160,7 +163,7 @@
 						homeclass = 'home ';
 						
 						if(attributes.bFirst){
-							homeclass=homeclass & ' first ';
+							homeclass=homeclass & ' #attributes.firstClass# ';
 							bHomeFirst = true;
 						}				
 						
