@@ -29,11 +29,11 @@
 <cfparam name="attributes.startLevel" default="2">
 <cfparam name="attributes.id" default="">
 <cfparam name="attributes.bFirst" default="0">
-<cfparam name="attributes.firstClass" default="first">
+<cfparam name="attributes.firstClass" default="first" /><!--- @@attrhint: If enabled, this css class name is applied to the first list element in the nav --->
 <cfparam name="attributes.bLast" default="0">
-<cfparam name="attributes.lastClass" default="last">
+<cfparam name="attributes.lastClass" default="last" /><!--- @@attrhint: If enabled, this css class name is applied to the last list element in the nav --->
 <cfparam name="attributes.bActive" default="0">
-<cfparam name="attributes.activeClass" default="active">
+<cfparam name="attributes.activeClass" default="active" /><!--- @@attrhint: If enabled, this css class name is applied to the active list element and its direct ancestors (<li>'s only) --->
 <cfparam name="attributes.bIncludeHome" default="0">
 <cfparam name="attributes.sectionObjectID" default="#request.navID#">
 <cfparam name="attributes.functionMethod" default="getDescendants">
