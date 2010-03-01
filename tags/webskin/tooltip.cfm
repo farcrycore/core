@@ -91,7 +91,7 @@ FARCRY IMPORT FILES
 		    delay: 0, 
 		    showURL: false,
 			<cfif len(attributes.message)>
-				extraClass: '#attributes.message#',
+				extraClass: '#attributes.class#',
 			</cfif> 
 		    bodyHandler: function() { 
 		        return '#jsStringFormat(attributes.message)#'; 
