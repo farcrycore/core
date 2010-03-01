@@ -90,7 +90,7 @@ FARCRY IMPORT FILES
 		$j('#attributes.selector#').tooltip({ 
 		    delay: 0, 
 		    showURL: false,
-			<cfif len(attributes.message)>
+			<cfif len(attributes.class)>
 				extraClass: '#attributes.class#',
 			</cfif> 
 		    bodyHandler: function() { 
