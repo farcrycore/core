@@ -182,6 +182,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				   url: action,
 				   cache: false,
 				   timeout: ajaxTimeout,
+				   data:{},
 				   success: function(msg){
 				   		if (showLoadIndicator == true) {
 							$j("##" + divID).unmask();
