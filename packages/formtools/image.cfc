@@ -314,8 +314,8 @@
       <cfset arguments.stImageArgs.convertImageToFormat = arguments.stMetadata.ftConvertImageToFormat />
       <cfset arguments.stImageArgs.bSetAntialiasing = arguments.stMetadata.ftBSetAntialiasing />
       <cfset arguments.stImageArgs.interpolation = arguments.stMetadata.ftInterpolation />
-      <cfset arguments.stImageArgs.quality = arguments.stMetadata.quality />
-      <cfset arguments.stImageArgs.bUploadOnly = arguments.stMetadata.bUploadOnly />
+      <cfset arguments.stImageArgs.quality = arguments.stMetadata.ftQuality />
+      <cfset arguments.stImageArgs.bUploadOnly = arguments.stMetadata.ftbUploadOnly />
     
     
 
