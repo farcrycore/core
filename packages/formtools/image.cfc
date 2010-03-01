@@ -109,7 +109,7 @@
 							<label class="inlineLabel" for="#arguments.fieldname#CreateFromSource">
 								<input type="checkbox" name="#arguments.fieldname#CreateFromSource" id="#arguments.fieldname#CreateFromSource" value="true" class="checkboxInput"> 
 								<input type="hidden" name="#arguments.fieldname#CreateFromSource" value="false" />
-								Automatically create from "#arguments.stPackage.stProps[arguments.stMetadata.ftSourceField].metadata.ftLabel#"
+								Automatically create from "#arguments.stPackage.stProps[listFirst(arguments.stMetadata.ftSourceField,":")].metadata.ftLabel#"
 							</label>
 							</div>
 							</cfoutput>
@@ -771,7 +771,9 @@
     <cfset var imagerootPath = "#application.path.imageRoot#" />	
     <cfset var oImage = createobject("component", application.formtools.image.packagePath) />
     <cfset var stArgs = structNew() />
-
+	<cfset var sourceFieldName = "" />
+	<cfset var libraryFieldName = "" />
+	
     <cfloop list="#StructKeyList(arguments.stFields)#" index="i">
       <cfif structKeyExists(arguments.stFields[i].metadata, "ftType") AND arguments.stFields[i].metadata.ftType EQ "Image" >
 		<cfparam name="arguments.stFields.#i#.metadata.ftAllowResize" default="true" />
@@ -791,11 +793,17 @@
 		  <cfif (not structkeyexists(arguments.stFields[i].metadata,"ftAllowResize") or arguments.stFields[i].metadata.ftAllowResize) and (not structkeyexists(arguments.stFields[i].metadata,"ftSourceField") or not len(arguments.stFields[i].metadata.ftSourceField)) and len(arguments.stProperties[i])>
 			<cfset sourceFieldName = i />
 		  <cfelse>
-			<cfset sourceFieldName = arguments.stFields[i].metadata.ftSourceField />
-			<cfparam name="arguments.stFields.#i#.metadata.ftSourceField" default="sourceImage" />
+			<cfset sourceFieldName = listFirst(arguments.stFields[i].metadata.ftSourceField, ":") />
 		  </cfif>
           <!--- IS THE SOURCE IMAGE PROVIDED? --->
+		  
+		  
+		  
+		  
           <cfif structKeyExists(arguments.stProperties, sourceFieldName) AND len(arguments.stProperties[sourceFieldName])>
+		  
+
+		  
             <cfparam name="arguments.stFields['#i#'].metadata.ftDestination" default="">		
             <cfparam name="arguments.stFields['#i#'].metadata.ftImageWidth" default="#application.config.image.StandardImageWidth#">
             <cfparam name="arguments.stFields['#i#'].metadata.ftImageHeight" default="#application.config.image.StandardImageHeight#">
@@ -808,41 +816,70 @@
             <cfparam name="arguments.stFields['#i#'].metadata.ftBSetAntialiasing" default="true" />
             <cfparam name="arguments.stFields['#i#'].metadata.ftInterpolation" default="highestQuality" />
 			<cfparam name="arguments.stFields['#i#'].metadata.ftCropPosition" default="center" />
-
-            <cfset stArgs = StructNew() />
-            <cfset stArgs.Source = "#imagerootPath##arguments.stProperties[sourceFieldName]#" />
-            <cfset stArgs.Destination = "#imagerootPath##arguments.stFields['#i#'].metadata.ftDestination#" />
-            <cfset stArgs.Width = "#arguments.stFields['#i#'].metadata.ftImageWidth#" />
-            <cfif NOT isNumeric(stArgs.Width)>
-              <cfset stArgs.Width = 0 />				
-            </cfif>
-            <cfset stArgs.Height = "#arguments.stFields['#i#'].metadata.ftImageHeight#" />
-            <cfif NOT isNumeric(stArgs.Height)>
-              <cfset stArgs.Height = 0 />				
-            </cfif>
-            <cfset stArgs.AutoGenerateType = "#arguments.stFields['#i#'].metadata.ftAutoGenerateType#" />
-            <cfset stArgs.padColor = "#arguments.stFields['#i#'].metadata.ftpadColor#" />
-            <cfset stArgs.customEffectsObjName = "#arguments.stFields['#i#'].metadata.ftCustomEffectsObjName#" />
-            <!--- New features to support CFIMAGE --->
-            <cfset stArgs.lCustomEffects = "#arguments.stFields['#i#'].metadata.ftLCustomEffects#" />
-            <cfset stArgs.convertImageToFormat = "#arguments.stFields['#i#'].metadata.ftConvertImageToFormat#" />
-            <cfset stArgs.bSetAntialiasing = "#arguments.stFields['#i#'].metadata.ftBSetAntialiasing#" />
-            <cfset stArgs.interpolation = "#arguments.stFields['#i#'].metadata.ftInterpolation#" />
 			
-			<cfif structKeyExists(arguments.stFormPost, i) AND structKeyExists(arguments.stFormPost[i].stSupporting, "ResizeMethod")>	
-				<cfset stArgs.ResizeMethod = "#arguments.stFormPost[i].stSupporting.ResizeMethod#" />
+			<cfset stArgs = StructNew() />		  
+		  
+		  	
+		  	<cfif arguments.stFields[sourceFieldName].metadata.ftType EQ "uuid">
+				
+				<!--- 
+				This means that the source image is from an image library. 
+				We now expect that the source image is located in the source field of the image library
+				--->
+				
+				<cfset stImage = application.fapi.getContentObject(objectid="#arguments.stProperties[sourceFieldName]#") />
+				
+				<!--- The source could be from an image library in which case, the source field will be in the form 'uuidField:imageLibraryField' --->
+				<cfset libraryFieldName = listLast(arguments.stFields[i].metadata.ftSourceField, ":") />
+				
+				<cfif structKeyExists(stImage, libraryFieldName) AND len(stImage[libraryFieldName])>
+					<cfset stArgs.Source = "#imagerootPath##stImage[libraryFieldName]#" />
+				</cfif>	
 			<cfelse>
-				<cfset stArgs.ResizeMethod = arguments.stFields[i].metadata.ftAutoGenerateType />
+				<cfset stArgs.Source = "#imagerootPath##arguments.stProperties[sourceFieldName]#" />
 			</cfif>
-
-            <cfset stGenerateImageResult = oImage.GenerateImage(argumentCollection=stArgs) />
-					
-            <cfif stGenerateImageResult.bSuccess>
-              <cfset stProperties['#i#'] = "#arguments.stFields['#i#'].metadata.ftDestination#/#stGenerateImageResult.filename#" />
-            </cfif>
+			
+            <!--- If we have a valid source then start generating --->
+            <cfif structKeyExists(stArgs, "source") AND len(stArgs.Source)>
+			
+	            <cfset stArgs.Destination = "#imagerootPath##arguments.stFields['#i#'].metadata.ftDestination#" />
+	            <cfset stArgs.Width = "#arguments.stFields['#i#'].metadata.ftImageWidth#" />
+	            <cfif NOT isNumeric(stArgs.Width)>
+	              <cfset stArgs.Width = 0 />				
+	            </cfif>
+	            <cfset stArgs.Height = "#arguments.stFields['#i#'].metadata.ftImageHeight#" />
+	            <cfif NOT isNumeric(stArgs.Height)>
+	              <cfset stArgs.Height = 0 />				
+	            </cfif>
+	            <cfset stArgs.AutoGenerateType = "#arguments.stFields['#i#'].metadata.ftAutoGenerateType#" />
+	            <cfset stArgs.padColor = "#arguments.stFields['#i#'].metadata.ftpadColor#" />
+	            <cfset stArgs.customEffectsObjName = "#arguments.stFields['#i#'].metadata.ftCustomEffectsObjName#" />
+	            <!--- New features to support CFIMAGE --->
+	            <cfset stArgs.lCustomEffects = "#arguments.stFields['#i#'].metadata.ftLCustomEffects#" />
+	            <cfset stArgs.convertImageToFormat = "#arguments.stFields['#i#'].metadata.ftConvertImageToFormat#" />
+	            <cfset stArgs.bSetAntialiasing = "#arguments.stFields['#i#'].metadata.ftBSetAntialiasing#" />
+	            <cfset stArgs.interpolation = "#arguments.stFields['#i#'].metadata.ftInterpolation#" />
+				
+				<cfif structKeyExists(arguments.stFormPost, i) AND structKeyExists(arguments.stFormPost[i].stSupporting, "ResizeMethod")>	
+					<cfset stArgs.ResizeMethod = "#arguments.stFormPost[i].stSupporting.ResizeMethod#" />
+				<cfelse>
+					<cfset stArgs.ResizeMethod = arguments.stFields[i].metadata.ftAutoGenerateType />
+				</cfif>
+	
+	            <cfset stGenerateImageResult = oImage.GenerateImage(argumentCollection=stArgs) />
+						
+	            <cfif stGenerateImageResult.bSuccess>
+	              <cfset stProperties['#i#'] = "#arguments.stFields['#i#'].metadata.ftDestination#/#stGenerateImageResult.filename#" />
+	            </cfif>
+				
+			</cfif>
+			
           </cfif>
+		  
         </cfif>
+		
       </cfif>
+	  
     </cfloop>
 
     <cfreturn stProperties />
