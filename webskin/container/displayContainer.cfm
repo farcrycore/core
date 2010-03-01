@@ -107,7 +107,9 @@
 
 	<!--- output conOutput --->
 	<cfparam name="stConObj.displayMethod" default="">
-	<cfif len(stConObj.displayMethod)>
+	
+	<cfif len(stConObj.displayMethod) AND application.fapi.hasWebskin(typename="container", webskin="#stConObj.displayMethod#")>
+	
 		<cfset getDisplay(containerBody=conOutput,template=stConObj.displayMethod)>		
 	<cfelse>		
 		<cfoutput>#conOutput#</cfoutput>

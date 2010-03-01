@@ -246,6 +246,7 @@ function farcryForm_ajaxSubmission(formname,action,maskMsg,maskCls,ajaxTimeout){
 	   type: "POST",
 	   url: a,
 	   data: $j("##" + formname).serialize(),
+	   dataType: "html",
 	   cache: false,
 	   timeout: ajaxTimeout,
 	   success: function(msg){
@@ -312,6 +313,7 @@ function setRowBackground (childCheckbox) {
 									complete: function(data){
 										$j(fcDialog).html(data.responseText);			
 									},
+									data:{},
 									dataType: "html"
 								});
 							};	
@@ -354,7 +356,7 @@ function setRowBackground (childCheckbox) {
 		$j(newDialogDiv).dialog({
 			bgiframe: true,
 			modal: true,
-			title:'Library Selector',
+			title:'Library',
 			draggable:false,
 			resizable:false,
 			position:['left','top'],
@@ -570,6 +572,7 @@ function setRowBackground (childCheckbox) {
 				$j('##librarySummary-' + typename + '-' + property).html(data.responseText);
 					
 			},
+			data:{},
 			dataType: "html"
 		});
 	}
@@ -583,6 +586,7 @@ function setRowBackground (childCheckbox) {
 				$j("##" + id + '-library-wrapper').html(msg);
 				fcForm.initSortable(typename,objectid,property,id);	
 		   	},
+			data:{},
 			dataType: "html"
 		});
 	}	

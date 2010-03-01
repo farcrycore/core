@@ -40,8 +40,10 @@
 </cfif>
 
 
+<!--- TRAY VARIABLES --->
+<cfparam name="request.fc.startTickCount" default="#GetTickCount()#" />
+<cfparam name="request.bHideContextMenu" default="false" type="boolean" /><!--- Hide the tray.  For backwards compatibility --->
 
-<core:displayTray>
 
 <!--- optional attributes --->
 <cfparam name="attributes.objectid" default="" />
@@ -304,7 +306,7 @@
 	
 </cfif>
 
-</core:displayTray>
+<core:displayTray />
 
 <cfsetting enablecfoutputonly="No">
 

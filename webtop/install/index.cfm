@@ -1,6 +1,11 @@
 <cfsetting enablecfoutputonly="true" requesttimeout="600" />
 <!--- @@displayname: Installation UI --->
 
+<cfif structKeyExists(url, "restartInstaller")>
+	<cfset structDelete(session, "oUI") />
+	<cflocation url="index.cfm" addtoken="false" />
+</cfif>
+
 <cfif not structkeyexists(session,"oUI") or structkeyexists(url,"resetinstall")>
 	<cfset session.oUI = createobject('component','components.farcryui').init(structnew()) />
 	<cfset session.oInstall = createobject('component','components.install').init(session.oUI) />
