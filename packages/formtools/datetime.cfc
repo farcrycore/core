@@ -85,23 +85,14 @@
 		
 			
 		<cfif arguments.stMetadata.ftToggleOffDateTime>
-			<!--- 			
-			<cfif len(arguments.stMetadata.value) AND (not IsDate(arguments.stMetadata.value) OR DateDiff('yyyy', now(), arguments.stMetadata.value) GT 100 OR dateformat(arguments.stMetadata.value, 'dd/mm/yyyy') eq '01/01/2050') >
-				<cfset bfieldvisible = 0>
-				<cfset fieldStyle = "display:none;">
-			<cfelse>
-				<cfset bfieldvisible = 1>
-				<cfset fieldStyle = "">
-			</cfif>	 --->
-			
-			
+		
 			<skin:onReady>
 			<cfoutput>	
-			<cfif len(arguments.stMetadata.value) AND (not IsDate(arguments.stMetadata.value) OR DateDiff('yyyy', now(), arguments.stMetadata.value) GT 100 OR dateformat(arguments.stMetadata.value, 'dd/mm/yyyy') eq '01/01/2050') >
+			<cfif application.fapi.showFarcryDate(arguments.stMetadata.value) >
+				$j("###arguments.fieldname#include").attr('checked', true);
+			<cfelse>
 				$j("###arguments.fieldname#-wrap").hide();
 				$j("###arguments.fieldname#").val('');
-			<cfelse>				
-				$j("###arguments.fieldname#include").attr('checked', true);
 			</cfif>
 			
 			$j("###arguments.fieldname#include").click(function() {
@@ -192,7 +183,7 @@
 			<cfreturn html>
 		</cfcase>
 	
-		<cfcase value="jquery">
+		<cfdefaultcase>
 			
 			<cfparam name="arguments.stMetadata.ftShowTime" default="true">
 			
@@ -215,6 +206,7 @@
 			
 			
 			<cfsavecontent variable="html">
+
 				<cfoutput>
 				
 				
@@ -260,215 +252,8 @@
 			</cfsavecontent>		
 			
 			<cfreturn html>
-		</cfcase>	
+		</cfdefaultcase>	
 		
-		<cfdefaultcase>
-			
-			<cfparam name="arguments.stMetadata.ftStyle" default="width:160px;">
-			<cfparam name="arguments.stMetadata.ftClass" default="">
-			<cfparam name="arguments.stMetadata.ftDateFormatMask" default="dd MMMM yyyy">
-			<cfparam name="arguments.stMetadata.ftTimeFormatMask" default="hh:mm tt">
-			<cfparam name="arguments.stMetadata.ftShowTime" default="true">		
-			<cfparam name="arguments.stMetadata.ftDateLocale" default="">		
-			<cfparam name="arguments.stMetadata.ftShowCalendar" default="true">		
-			<cfparam name="arguments.stMetadata.ftShowSuggestions" default="false">
-			
-			<!--- If no locale explicitly specified, set it to the dmProfile locale if available. Otherwise just use Australia. --->
-			<cfif not len(arguments.stMetadata.ftDateLocale)>
-				<cfif isDefined("session.dmProfile.locale") and len(session.dmProfile.locale)>
-					<cfset arguments.stMetadata.ftDateLocale = replaceNoCase(session.dmProfile.locale,"_", "-", "all") />
-				<cfelse>
-					<cfset arguments.stMetadata.ftDateLocale = "en-AU" />
-				</cfif>
-			</cfif>
-
-			<!--- Just in case the developer has included lowercase mmmm or mmm which is not valid, we are changing to uppercase MMMM and MMM respectively. --->
-			<cfset arguments.stMetadata.ftDateFormatMask = replaceNoCase(arguments.stMetadata.ftDateFormatMask, "mmmm", "MMMM", "all") />
-			<cfset arguments.stMetadata.ftDateFormatMask = replaceNoCase(arguments.stMetadata.ftDateFormatMask, "mmm", "MMM", "all") />			
-			<cfset arguments.stMetadata.ftDateFormatMask = replaceNoCase(arguments.stMetadata.ftDateFormatMask, "mm", "MM", "all") />			
-
-			<!--- 
-			FormatSpecifiers   
-			Format Specifiers are used to specify date formats for display and input.
-			
-			Format  Description                                                                  Example
-			------  ---------------------------------------------------------------------------  -----------------------
-			 s      The seconds of the minute between 0-59.                                      "0" to "59"
-			 ss     The seconds of the minute with leading zero if required.                     "00" to "59"
-			 
-			 m      The minute of the hour between 0-59.                                         "0"  or "59"
-			 mm     The minute of the hour with leading zero if required.                        "00" or "59"
-			 
-			 h      The hour of the day between 1-12.                                            "1"  to "12"
-			 hh     The hour of the day with leading zero if required.                           "01" to "12"
-			 
-			 H      The hour of the day between 0-23.                                            "0"  to "23"
-			 HH     The hour of the day with leading zero if required.                           "00" to "23"
-			 
-			 d      The day of the month between 1 and 31.                                       "1"  to "31"
-			 dd     The day of the month with leading zero if required.                          "01" to "31"
-			 ddd    Abbreviated day name. Date.CultureInfo.abbreviatedDayNames.                  "Mon" to "Sun" 
-			 dddd   The full day name. Date.CultureInfo.dayNames.                                "Monday" to "Sunday"
-			 
-			 M      The month of the year between 1-12.                                          "1" to "12"
-			 MM     The month of the year with leading zero if required.                         "01" to "12"
-			 MMM    Abbreviated month name. Date.CultureInfo.abbreviatedMonthNames.              "Jan" to "Dec"
-			 MMMM   The full month name. Date.CultureInfo.monthNames.                            "January" to "December"
-			
-			 yy     Displays the year as a two-digit number.                                     "99" or "07"
-			 yyyy   Displays the full four digit year.                                           "1999" or "2007"
-			 
-			 t      Displays the first character of the A.M./P.M. designator.                    "A" or "P"
-			        Date.CultureInfo.amDesignator or Date.CultureInfo.pmDesignator
-			 tt     Displays the A.M./P.M. designator.                                           "AM" or "PM"
-			        Date.CultureInfo.amDesignator or Date.CultureInfo.pmDesignator
-			 --->						
-					
-			<skin:htmlHead library="extjs" />
-			<skin:htmlHead id="dateJS">
-				<cfoutput><script type="text/javascript" src="#application.url.webtop#/js/dateJS/date-#arguments.stMetadata.ftDateLocale#.js"></script></cfoutput>
-				<cfoutput>
-				<style type="text/css">
-				.dateSuggestions {
-					padding:0px 0px 0px 25px;
-					background: ##efefef url('#application.url.webtop#/js/dateJS/images/information.png') top left no-repeat;
-				}
-				.dateJSHiddenValue {
-					padding:0px 0px 0px 25px;
-					
-					float:left;
-				}
-				.dateEmpty {background: ##fff url('#application.url.webtop#/js/dateJS/images/star.png') top left no-repeat;}
-				.dateAccept {background: ##fff url('#application.url.webtop#/js/dateJS/images/accept.png') top left no-repeat;}
-				.dateError {
-					background:##FFDFDF url('#application.url.webtop#/js/dateJS/images/exclamation.png') top left no-repeat;
-					border-color:##DF7D7D;
-					border-style:solid;
-					border-width:1px 0;
-				}
-				</style>
-				
-				<script type="text/javascript">
-					function updateDateJSField(fieldName, mask){
-				    	var el = Ext.get(fieldName + "Info");
-				    	var dateString = Ext.get(fieldName + "Input").dom.value;
-	
-					    	if (dateString.length > 0) {
-					    	var parsedValue = Date.parse(dateString)
-					    	if (parsedValue !== null) {
-					    		el.removeClass('dateEmpty');
-					    		el.removeClass('dateError');
-								el.addClass('dateAccept');	
-								Ext.get(fieldName + "Info").dom.innerHTML = parsedValue.toString(mask);
-								Ext.get(fieldName).dom.value = parsedValue.toString('dd-MMM-yyyy hh:mm tt');
-							} else {
-								el.removeClass('dateEmpty');
-								el.removeClass('dateAccept');
-								el.addClass('dateError');	
-								Ext.get(fieldName + "Info").dom.innerHTML = 'NOT A VALID DATE';
-								Ext.get(fieldName).dom.value = '';
-							}
-						} else {
-
-						}
-					}
-				</script>
-				</cfoutput>				
-			</skin:htmlHead>
-			
-			<extjs:onReady>
-				<cfoutput>	
-					Ext.get("#arguments.fieldname#Input").on('keyup', this.onClick, this, {
-					    buffer: 200,
-					    fn: function() { 
-					    	updateDateJSField('#arguments.fieldname#', '#arguments.stMetadata.ftDateFormatMask# #arguments.stMetadata.ftTimeFormatMask#');
-						 }
-					});
-					Ext.get("#arguments.fieldname#Input").on('focus', this.onClick, this, {
-					    buffer: 200,
-					    fn: function() { 
-					    	if (Ext.get("#arguments.fieldname#Input").dom.value == 'Type in your date') {
-					    		Ext.get("#arguments.fieldname#Input").dom.value = '';
-					    	}
-						 }
-					});
-				</cfoutput>			
-			</extjs:onReady>	
-			
-						
-			<cfsavecontent variable="html">
-
-				<cfoutput>
-				<div class="multiField">
-					<cfif arguments.stMetadata.ftToggleOffDateTime>						
-						<label class="inlineLabel" for="#arguments.fieldname#include">
-							<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" value="1" class="checkboxInput" >
-							<input type="hidden" name="#arguments.fieldname#include" value="0">
-							Include Date
-						</label>						
-					</cfif>
-					<div id="#arguments.fieldname#-wrap">
-						<div id="#arguments.fieldname#Info" class="dateJSHiddenValue <cfif len(arguments.stMetadata.value)>dateAccept<cfelse>dateEmpty</cfif>">
-							<cfif len(arguments.stMetadata.value)>
-								#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)# 
-								<cfif arguments.stMetadata.ftShowTime>#TimeFormat(arguments.stMetadata.value,arguments.stMetadata.ftTimeFormatMask)#</cfif>
-							<cfelse>
-								Type in your date
-							</cfif>
-						</div>	
-						<a id="#arguments.fieldname#DatePicker"><img src="#application.url.farcry#/js/dateTimePicker/cal.gif" width="16" height="16" border="0" alt="Pick a date"></a>
-
-						<br class="clearer" />
-						<input type="text" id="#arguments.fieldname#Input" name="#arguments.fieldname#Input" class="textInput" value="" style="font-size:0.8em;" />
-						
-						<cfif arguments.stMetadata.ftShowSuggestions><div class="dateSuggestions">Examples: tomorrow; next tues at 5am; +5days;</div></cfif>
-						<cfif len(arguments.stMetadata.value)>
-							<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,'dd-mmm-yyyy')# #TimeFormat(arguments.stMetadata.value, 'hh:mm tt')#" class="#arguments.stMetadata.ftClass#">
-						<cfelse>
-							<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" class="#arguments.stMetadata.ftClass#">								
-						</cfif> 
-											
-								
-					</div>
-				</cfoutput>
-					
-					
-				<cfif arguments.stMetadata.ftShowCalendar>
-					<skin:htmlHead library="calendar" />
-					<cfoutput>
-						<script type="text/javascript">
-						  Calendar.setup(
-						    {
-							  inputField	: "#arguments.fieldname#",         // ID of the input field 
-						      button		: "#arguments.fieldname#DatePicker",       // ID of the button
-						      showsTime		: #arguments.stMetadata.ftShowTime#,
-						      electric		: false,
-						      ifFormat		: "%Y/%b/%d %I:%M %p",
-						      onClose		: function(calendar) {	
-						      	if (calendar.dateClicked) { 
-							      	
-						      		Ext.get("#arguments.fieldname#Input").dom.value = Date.parse(calendar.date).toString("#arguments.stMetadata.ftDateFormatMask# <cfif arguments.stMetadata.ftShowTime>#arguments.stMetadata.ftTimeFormatMask#</cfif>");
-							      	updateDateJSField('#arguments.fieldname#', '#arguments.stMetadata.ftDateFormatMask# <cfif arguments.stMetadata.ftShowTime>#arguments.stMetadata.ftTimeFormatMask#</cfif>');	
-							      	Ext.get("#arguments.fieldname#Input").dom.value = '';
-						      	}
-							    calendar.hide();					      						
-						      }
-						    }
-						  );
-						</script>
-					</cfoutput>
-				</cfif>
-				
-				<cfoutput>
-				</div>
-				</cfoutput>
-			</cfsavecontent>	
-				
-
-				
-			
-			<cfreturn html>	
-		</cfdefaultcase>
 
 		</cfswitch>
 		
@@ -616,15 +401,15 @@
 						<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="You need to select a valid date.") />
 					</cfcatch>
 				</cftry>
+		
+				<cfif stResult.bSuccess>
+					<cfset arguments.stFieldPost.value = stResult.value />
+					<cfset stResult = super.validate(objectid=arguments.objectid, typename=arguments.typename, stFieldPost=arguments.stFieldPost, stMetadata=arguments.stMetadata )>
+				</cfif>
 				
 			<cfelse>
-				<cfset newDate = CreateODBCDateTime("#DateAdd('yyyy',200,now())#") />
+				<cfset newDate = "" />
 				<cfset stResult = passed(value="#newDate#") />
-			</cfif>
-		
-			<cfif stResult.bSuccess>
-				<cfset arguments.stFieldPost.value = stResult.value />
-				<cfset stResult = super.validate(objectid=arguments.objectid, typename=arguments.typename, stFieldPost=arguments.stFieldPost, stMetadata=arguments.stMetadata )>
 			</cfif>
 		</cfdefaultcase>
 		</cfswitch>
