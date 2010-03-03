@@ -703,6 +703,7 @@
 		<cfset application.fc.utils = createObject("component", "farcry.core.packages.farcry.utils").init() /><!--- FarCry Utility Functions --->
 		<cfset application.fc.serverTimezone = createObject("java","java.util.TimeZone").getDefault().ID />
 		<cfset application.fc.container = createObject("component", "farcry.core.packages.rules.container").init() />
+		<cfset application.fc.webskinAncestors = structNew() />
 		
 		<cfset application.fc.factory['farCoapi'] = createObject("component", "farcry.core.packages.types.farCoapi").fourqInit() />
 		
