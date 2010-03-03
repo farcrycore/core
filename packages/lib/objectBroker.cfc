@@ -579,11 +579,11 @@
 					<cfif structkeyexists(application.objectbroker[arguments.typename], i)>
 					
 						<!--- Find any ancestor webskins and delete them as well --->
-						<cfset qWebskinAncestors = oWebskinAncestor.getAncestorWebskins(webskinObjectID=i) />
+						<cfset qWebskinAncestors = oWebskinAncestor.getAncestorWebskins(webskinObjectID=i, webskinTypename=arguments.typename) />
 							
 						<cfif qWebskinAncestors.recordCount>
 							<cfloop query="qWebskinAncestors">
-								<cfset bSuccess = removeWebskin(objectid=qWebskinAncestors.ancestorID,typename=qWebskinAncestors.ancestorBindingTypename,template=qWebskinAncestors.ancestorTemplate) />
+								<cfset bSuccess = removeWebskin(objectid=qWebskinAncestors.ancestorID,typename=qWebskinAncestors.ancestorRefTypename,template=qWebskinAncestors.ancestorTemplate) />
 							</cfloop>
 						</cfif>
 					</cfif>

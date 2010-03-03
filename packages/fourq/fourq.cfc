@@ -367,6 +367,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		<!--- Add the current view to the array --->
 		<cfset stCurrentView.objectid = arguments.stobj.objectid />
+		<cfset stCurrentView.refTypename = arguments.stobj.typename />
 		<cfset stCurrentView.typename = arguments.webskinTypename />
 		<cfset stCurrentView.template = arguments.webskinTemplate />
 		<cfset stCurrentView.hashKey = arguments.hashKey />
@@ -437,27 +438,15 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 							<cfset stArgs = structnew() />
 						
 							<cfset stArgs.webskinObjectID = arguments.stobj.objectid />
-							<cfif structkeyexists(request.aAncestorWebskins[i],"objectid")>
-								<cfset stArgs.ancestorID = request.aAncestorWebskins[i].objectID />
-							<cfelse>
-								<cfset stArgs.ancestorTypename = request.aAncestorWebskins[i].typename />
-							</cfif>
+							<cfset stArgs.webskinTypename = arguments.stobj.typename />
+							<cfset stArgs.webskinTemplate = arguments.webskinTemplate />
+							<cfset stArgs.ancestorID = request.aAncestorWebskins[i].objectID />
+							<cfset stArgs.ancestorTypename = request.aAncestorWebskins[i].typename />
+							<cfset stArgs.ancestorRefTypename = request.aAncestorWebskins[i].refTypename />
 							<cfset stArgs.ancestorTemplate = request.aAncestorWebskins[i].template />
 						
-							<cfset bAncestorExists = oWebskinAncestor.checkAncestorExists(argumentCollection=stArgs) />
+							<cfset oWebskinAncestor.checkAncestorExists(argumentCollection=stArgs) />
 							
-							<cfif not bAncestorExists>
-								<cfset stProperties = structNew() />
-								<cfset stProperties.webskinObjectID = arguments.stobj.objectid />
-								<cfset stProperties.webskinTypename = arguments.stobj.typename />
-								<cfset stProperties.webskinTemplate = arguments.webskinTemplate />
-								<cfif structkeyexists(request.aAncestorWebskins[i],"objectid")>
-									<cfset stProperties.ancestorID = request.aAncestorWebskins[i].objectID />
-								</cfif>
-								<cfset stProperties.ancestorTypename = request.aAncestorWebskins[i].typename />
-								<cfset stProperties.ancestorTemplate = request.aAncestorWebskins[i].template />
-								<cfset stResult = oWebskinAncestor.createData(stProperties=stProperties) />
-							</cfif>
 						</cfif>
 					</cfif>
 					
@@ -810,6 +799,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var coapiObjectID = "" />
 		<cfset var qCachedAncestors = "" />
 		<cfset var bSuccess = "" />
+		<cfset var qWebskinAncestors = "" />
 		
 		<cfif not structKeyExists(stObject, "status") OR stObject.status EQ "approved">
 			<cfif not structIsEmpty(stTypeWatchWebskins)>
@@ -817,10 +807,16 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					
 					<cfset coapiObjectID = oCoapi.getCoapiObjectID(iType) />
 						
+					<cfparam name="application.fc.webskinAncestors" default="#structNew()#" />
+					<cfif not structKeyExists(application.fc.webskinAncestors, iType)>
+						<cfset application.fc.webskinAncestors[iType] = queryNew('webskinObjectID,webskinTypename,webskinTemplate,ancestorID,ancestorTypename,ancestorTemplate,ancestorRefTypename') />
+					</cfif>
+					<cfset qWebskinAncestors = application.fc.webskinAncestors[iType] />
+										
 					<cfloop from="1" to="#arrayLen(stTypeWatchWebskins[iType])#" index="iWebskin">
-						<cfquery datasource="#application.dsn#" name="qCachedAncestors">
+						<cfquery dbtype="query" name="qCachedAncestors">
 							SELECT * 
-							FROM dmWebskinAncestor
+							FROM qWebskinAncestors
 							WHERE (
 									webskinTypename = <cfqueryparam cfsqltype="cf_sql_varchar" value="#iType#" />
 									OR webskinObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#coapiObjectID#" />
