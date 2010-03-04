@@ -809,7 +809,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 						
 
 					<cfif not structKeyExists(application.fc.webskinAncestors, iType)>
-						<cfset application.fc.webskinAncestors[iType] = queryNew('webskinObjectID,webskinTypename,webskinTemplate,ancestorID,ancestorTypename,ancestorTemplate,ancestorRefTypename') />
+						<cfset application.fc.webskinAncestors[iType] = queryNew( 'webskinObjectID,webskinTypename,webskinTemplate,ancestorID,ancestorTypename,ancestorTemplate,ancestorRefTypename', 'VarChar,VarChar,VarChar,VarChar,VarChar,VarChar,VarChar' ) />
 					</cfif>
 					<cfset qWebskinAncestors = application.fc.webskinAncestors[iType] />
 										

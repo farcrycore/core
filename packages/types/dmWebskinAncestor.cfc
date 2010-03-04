@@ -49,7 +49,7 @@ $Developer: Matthew Bryant (mbryant@daemon.com.au) $
 		<cfset var qResult = "" />
 		
 		<cfif not structKeyExists(application.fc.webskinAncestors, arguments.webskinTypename)>
-			<cfset application.fc.webskinAncestors[arguments.webskinTypename] = queryNew('webskinObjectID,webskinTypename,webskinTemplate,ancestorID,ancestorTypename,ancestorTemplate,ancestorRefTypename') />
+			<cfset application.fc.webskinAncestors[arguments.webskinTypename] = queryNew( 'webskinObjectID,webskinTypename,webskinTemplate,ancestorID,ancestorTypename,ancestorTemplate,ancestorRefTypename', 'VarChar,VarChar,VarChar,VarChar,VarChar,VarChar,VarChar' ) />
 		</cfif>
 		
 		<cflock name="webskinAncestor_#arguments.webskinTypename#" type="readonly" timeout="5">
