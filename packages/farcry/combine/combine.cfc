@@ -152,7 +152,7 @@
 		<cfset sCorrectedFiles = '' />
 		<cfloop list="#arguments.files#" delimiters="#sDelimiter#" index="sFilePath">
 			
-			<cfset sExpandedFilePath = expandPath(sFilePath) />
+			<cfset sExpandedFilePath = expandPath("#sFilePath#") />
 			
 			<!--- check it is a valid JS or CSS file. Don't allow mixed content (all JS or all CSS only) --->
 			<cfif fileExists( sExpandedFilePath ) and (listLast(sExpandedFilePath, '.') eq sType OR listLast(sExpandedFilePath, '.') eq "cfm")>
@@ -162,6 +162,8 @@
 				<cfset sCorrectedFiles = listAppend(sCorrectedFiles, sFilePath, sDelimiter) />
 				
 			<cfelseif not variables.bSkipMissingFiles>
+				<cfset sExpandedFilePath = expandPath("#sFilePath#") />
+				<cfoutput>#sFilePath#: #sExpandedFilePath#</cfoutput><cfabort>
 				<cfthrow type="combine.missingFileException" message="A file specified in the combine (#sType#) path doesn't exist." detail="file: #sFilePath#" extendedinfo="full combine path list: #filePaths#" />
 			</cfif>
 			

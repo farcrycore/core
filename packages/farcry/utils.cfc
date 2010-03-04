@@ -49,7 +49,7 @@
 												enableETags= false,
 												enableJSMin= true,
 												enableYuiCSS= true,
-												skipMissingFiles= false,
+												skipMissingFiles= true,
 												javaLoader= createObject("component", "farcry.core.packages.farcry.javaloader.JavaLoader"),
 												jarPath= expandPath('/farcry/core/packages/farcry/combine/lib')
 								) />
