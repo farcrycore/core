@@ -48,19 +48,19 @@ $Developer: Matthew Bryant (mbryant@daemon.com.au) $
 		<cfset var qWebskinAncestors = "" />
 		<cfset var qResult = "" />
 		
-		<cfparam name="application.fc.webskinAncestors" default="#structNew()#" />
 		<cfif not structKeyExists(application.fc.webskinAncestors, arguments.webskinTypename)>
 			<cfset application.fc.webskinAncestors[arguments.webskinTypename] = queryNew('webskinObjectID,webskinTypename,webskinTemplate,ancestorID,ancestorTypename,ancestorTemplate,ancestorRefTypename') />
 		</cfif>
 		
-		<cfset qWebskinAncestors = application.fc.webskinAncestors['#arguments.webskinTypename#'] />
-		
-		<cfquery dbtype="query" name="qResult">
-			SELECT 	*
-			FROM 	qWebskinAncestors
-			WHERE 	webskinObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.webskinObjectID#">
-		</cfquery>	
-
+		<cflock name="webskinAncestor_#arguments.webskinTypename#" type="readonly">
+			<cfset qWebskinAncestors = application.fc.webskinAncestors['#arguments.webskinTypename#'] />
+			
+			<cfquery dbtype="query" name="qResult">
+				SELECT 	*
+				FROM 	qWebskinAncestors
+				WHERE 	webskinObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.webskinObjectID#">
+			</cfquery>	
+		</cflock>
 		
 		<cfreturn qResult />
 	</cffunction>
@@ -88,14 +88,16 @@ $Developer: Matthew Bryant (mbryant@daemon.com.au) $
 			
 		<!--- IF the details of this cached webskin are not in the db, then we need to create it now. --->
 		<cfif NOT qWebskinAncestorExists.recordCount>
-			<cfset queryaddrow( application.fc.webskinAncestors[arguments.webskinTypename] ) >
-			<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'webskinObjectID', arguments.webskinObjectID ) >
-			<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'webskinTypename', arguments.webskinTypename ) >
-			<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'webskinTemplate', arguments.webskinTemplate ) >
-			<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'ancestorID', arguments.ancestorID ) >
-			<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'ancestorTypename', arguments.ancestorTypename ) >
-			<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'ancestorRefTypename', arguments.ancestorRefTypename ) >
-			<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'ancestorTemplate', arguments.ancestorTemplate ) >
+			<cflock name="webskinAncestor_#arguments.webskinTypename#" type="exclusive" >
+				<cfset queryaddrow( application.fc.webskinAncestors[arguments.webskinTypename] ) >
+				<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'webskinObjectID', arguments.webskinObjectID ) >
+				<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'webskinTypename', arguments.webskinTypename ) >
+				<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'webskinTemplate', arguments.webskinTemplate ) >
+				<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'ancestorID', arguments.ancestorID ) >
+				<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'ancestorTypename', arguments.ancestorTypename ) >
+				<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'ancestorRefTypename', arguments.ancestorRefTypename ) >
+				<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'ancestorTemplate', arguments.ancestorTemplate ) >
+			</cflock>
 		</cfif>
 		
 	</cffunction>

@@ -807,22 +807,25 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					
 					<cfset coapiObjectID = oCoapi.getCoapiObjectID(iType) />
 						
-					<cfparam name="application.fc.webskinAncestors" default="#structNew()#" />
+
 					<cfif not structKeyExists(application.fc.webskinAncestors, iType)>
 						<cfset application.fc.webskinAncestors[iType] = queryNew('webskinObjectID,webskinTypename,webskinTemplate,ancestorID,ancestorTypename,ancestorTemplate,ancestorRefTypename') />
 					</cfif>
 					<cfset qWebskinAncestors = application.fc.webskinAncestors[iType] />
 										
 					<cfloop from="1" to="#arrayLen(stTypeWatchWebskins[iType])#" index="iWebskin">
-						<cfquery dbtype="query" name="qCachedAncestors">
-							SELECT * 
-							FROM qWebskinAncestors
-							WHERE (
-									webskinTypename = <cfqueryparam cfsqltype="cf_sql_varchar" value="#iType#" />
-									OR webskinObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#coapiObjectID#" />
-							)
-							AND webskinTemplate = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stTypeWatchWebskins[iType][iWebskin]#" />
-						</cfquery>
+					
+						<cflock name="webskinAncestor_#iType#" type="readonly">
+							<cfquery dbtype="query" name="qCachedAncestors">
+								SELECT * 
+								FROM qWebskinAncestors
+								WHERE (
+										webskinTypename = <cfqueryparam cfsqltype="cf_sql_varchar" value="#iType#" />
+										OR webskinObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#coapiObjectID#" />
+								)
+								AND webskinTemplate = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stTypeWatchWebskins[iType][iWebskin]#" />
+							</cfquery>
+						</cflock>
 						
 						<cfloop query="qCachedAncestors">
 							<cfset bSuccess = application.fc.lib.objectbroker.removeWebskin(	objectID=qCachedAncestors.ancestorID,
