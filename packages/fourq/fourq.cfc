@@ -815,7 +815,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 										
 					<cfloop from="1" to="#arrayLen(stTypeWatchWebskins[iType])#" index="iWebskin">
 					
-						<cflock name="webskinAncestor_#iType#" type="readonly">
+						<cflock name="webskinAncestor_#iType#" type="readonly" timeout="5">
 							<cfquery dbtype="query" name="qCachedAncestors">
 								SELECT * 
 								FROM qWebskinAncestors

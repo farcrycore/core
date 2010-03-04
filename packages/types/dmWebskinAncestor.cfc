@@ -52,7 +52,7 @@ $Developer: Matthew Bryant (mbryant@daemon.com.au) $
 			<cfset application.fc.webskinAncestors[arguments.webskinTypename] = queryNew('webskinObjectID,webskinTypename,webskinTemplate,ancestorID,ancestorTypename,ancestorTemplate,ancestorRefTypename') />
 		</cfif>
 		
-		<cflock name="webskinAncestor_#arguments.webskinTypename#" type="readonly">
+		<cflock name="webskinAncestor_#arguments.webskinTypename#" type="readonly" timeout="5">
 			<cfset qWebskinAncestors = application.fc.webskinAncestors['#arguments.webskinTypename#'] />
 			
 			<cfquery dbtype="query" name="qResult">
@@ -88,7 +88,7 @@ $Developer: Matthew Bryant (mbryant@daemon.com.au) $
 			
 		<!--- IF the details of this cached webskin are not in the db, then we need to create it now. --->
 		<cfif NOT qWebskinAncestorExists.recordCount>
-			<cflock name="webskinAncestor_#arguments.webskinTypename#" type="exclusive" >
+			<cflock name="webskinAncestor_#arguments.webskinTypename#" type="exclusive" timeout="5" >
 				<cfset queryaddrow( application.fc.webskinAncestors[arguments.webskinTypename] ) >
 				<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'webskinObjectID', arguments.webskinObjectID ) >
 				<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'webskinTypename', arguments.webskinTypename ) >
