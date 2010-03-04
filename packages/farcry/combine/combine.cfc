@@ -162,8 +162,6 @@
 				<cfset sCorrectedFiles = listAppend(sCorrectedFiles, sFilePath, sDelimiter) />
 				
 			<cfelseif not variables.bSkipMissingFiles>
-				<cfset sExpandedFilePath = expandPath("#sFilePath#") />
-				<cfoutput>#sFilePath#: #sExpandedFilePath#</cfoutput><cfabort>
 				<cfthrow type="combine.missingFileException" message="A file specified in the combine (#sType#) path doesn't exist." detail="file: #sFilePath#" extendedinfo="full combine path list: #filePaths#" />
 			</cfif>
 			
