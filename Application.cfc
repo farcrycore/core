@@ -345,7 +345,12 @@
 	<cffunction name="OnError" access="public" returntype="void" output="true" hint="Fires when an exception occures that is not caught by a try/catch.">
 		<cfargument name="Exception" type="any" required="true" />
 		<cfargument name="EventName" type="string" required="false" default="" />
-
+		
+		<cfset var stException = arguments.exception />
+		<cfif structKeyExists(arguments.exception, "rootcause")>
+			<cfset stException = arguments.exception.rootcause />
+		</cfif>
+		
 		<!--- rudimentary error handler --->
 		<!--- TODO: need a pretty error handler for the webtop --->
 		<cfoutput>	
@@ -353,32 +358,35 @@
 			<p>Please push "back" on your browser or go back <a style="text-decoration:underline" href="/">home</a></p>
 			<h3>Error Details</h3>
 			<table border="1" cellpadding="5" style="border-collapse:collapse;">
-			<cfif structKeyExists(arguments.exception, "message")>
-				<tr><th align="right" style="vertical-align:top;">Message</th><td>#arguments.exception.message#</td></tr>
+			<cfif structKeyExists(stException, "message")>
+				<tr><th align="right" style="vertical-align:top;">Message</th><td>#stException.message#</td></tr>
 			</cfif>
-			<cfif structKeyExists(arguments.exception, "type")>
-				<tr><th align="right" style="vertical-align:top;">Exception Type</th><td>#arguments.exception.type#</td></tr>
+			<cfif structKeyExists(stException, "type")>
+				<tr><th align="right" style="vertical-align:top;">Exception Type</th><td>#stException.type#</td></tr>
 			</cfif>
-			<cfif structKeyExists(arguments.exception, "detail")>
-				<tr><th align="right" style="vertical-align:top;">Detail</th><td>#arguments.exception.detail#</td></tr>
-			</cfif>			
-			<cfif structKeyExists(arguments.exception, "queryError")>
-				<tr><th align="right" style="vertical-align:top;">Error</th><td>#arguments.exception.queryError#</td></tr>
+			<cfif structKeyExists(stException, "detail")>
+				<tr><th align="right" style="vertical-align:top;">Detail</th><td>#stException.detail#</td></tr>
 			</cfif>
-			<cfif structKeyExists(arguments.exception, "sql")>
-				<tr><th align="right" style="vertical-align:top;">SQL</th><td>#arguments.exception.sql#</td></tr>
+			<cfif structKeyExists(stException, "extended_info")>
+				<tr><th align="right" style="vertical-align:top;">Extended Info</th><td>#stException.extended_info#</td></tr>
 			</cfif>
-			<cfif structKeyExists(arguments.exception, "where")>
-				<tr><th align="right" style="vertical-align:top;">Where</th><td>#arguments.exception.where#</td></tr>
+			<cfif structKeyExists(stException, "queryError")>
+				<tr><th align="right" style="vertical-align:top;">Error</th><td>#stException.queryError#</td></tr>
+			</cfif>
+			<cfif structKeyExists(stException, "sql")>
+				<tr><th align="right" style="vertical-align:top;">SQL</th><td>#stException.sql#</td></tr>
+			</cfif>
+			<cfif structKeyExists(stException, "where")>
+				<tr><th align="right" style="vertical-align:top;">Where</th><td>#stException.where#</td></tr>
 			</cfif>
 
-			<cfif structKeyExists(arguments.exception, "TagContext")>
+			<cfif structKeyExists(stException, "TagContext")>
 				<tr>
 					<th align="right" style="vertical-align:top;">Tag Context</th>
 					<td>
 						<ul>
-						<cfloop from="1" to="#arrayLen(arguments.exception.TagContext)#" index="i">
-							<li>#arguments.exception.TagContext[i].template# (line: #arguments.exception.TagContext[i].line#)</li>
+						<cfloop from="1" to="#arrayLen(stException.TagContext)#" index="i">
+							<li>#stException.TagContext[i].template# (line: #stException.TagContext[i].line#)</li>
 						</cfloop>
 						</ul>	
 					</td>
