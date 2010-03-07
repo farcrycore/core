@@ -602,7 +602,7 @@
 		<cfparam name="this.webtopURL" default="" />
 		
 		<cfparam name="this.bObjectBroker" default="true" />
-		<cfparam name="this.ObjectBrokerMaxObjectsDefault" default="100" />
+		<cfparam name="this.ObjectBrokerMaxObjectsDefault" default="1000" />
 		
 		<!--- Option to archive --->
 		<cfparam name="this.bUseMediaArchive" default="false" />

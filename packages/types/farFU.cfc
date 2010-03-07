@@ -1,7 +1,7 @@
 <cfcomponent 
 	displayname="FarCry Friendly URL Table" hint="Manages FarCry Friendly URL's" extends="types" output="false" 
 	bDocument="true" scopelocation="application.fc.factory.farFU" 
-	bObjectBroker="true" objectBrokerMaxObjects="1000" 
+	bObjectBroker="true" objectBrokerMaxObjects="10000" 
 	fuAlias="fu">
 	
 	<cfproperty 
