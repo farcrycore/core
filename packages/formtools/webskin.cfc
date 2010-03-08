@@ -34,6 +34,7 @@
 						from	qWebskins
 						where	name in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#valuelist(qWebskinsTemp.name)#">)
 						<cfif structKeyExists(arguments.stMetadata, "bExcludeCoreViews") and arguments.stMetadata.bExcludeCoreViews>and path not like '/farcry/core/%'</cfif>
+						order by displayname
 					</cfquery>
 				<cfelse>
 					<cfquery dbtype="query" name="qWebskins">
@@ -50,6 +51,7 @@
 						from	qWebskins
 						where	name in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#valuelist(qWebskins.name)#">)
 						<cfif structKeyExists(arguments.stMetadata, "bExcludeCoreViews") and arguments.stMetadata.bExcludeCoreViews>and path not like '/farcry/core/%'</cfif>
+						order by displayname
 				</cfquery>
 			</cfif>
 		</cfloop>
