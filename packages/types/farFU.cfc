@@ -607,23 +607,7 @@
 		<cfset this.stMappings = structNew() />
 		<cfset this.stLookup = structNew() />
 		<cfset this.stDBLookup = structNew() /> <!--- Contains keys for EVERY friendly URL in the DB for quick reference. This is so that when building a constructed url, we are not going to use a FU that is in the DB --->
-		
-		<!--- Check to make sure the farFU table has been deployed --->
-		<cftry>
-			<cfquery datasource="#application.dsn#" name="stLocal.qPing">
-				SELECT 	count(objectID)
-				FROM 	#application.dbowner#farFU
-			</cfquery>
-		
-			<cfcatch type="database">
-				<cflock name="deployFarFUTable" timeout="30">
-					<!--- The table has not been deployed. We need to deploy it now --->
-					<cfset stDeployResult = deployType(dsn=application.dsn,bDropTable=true,bTestRun=false,dbtype=application.dbtype) />		
-					<cfset migrate() />
-				</cflock>		
-			</cfcatch>
-		</cftry>
-		
+
 		
 		<!--- retrieve list of all dmNavigation FU's that are not retired --->
 		<cfquery name="stLocal.q" datasource="#application.dsn#">
