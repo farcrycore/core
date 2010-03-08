@@ -48,7 +48,7 @@
 			<ul>
 				<cfloop list="#stMetadata.ftJoin#" index="i">
 					<!---<li><a href="###i#" >#application.fapi.getContentTypeMetadata(i,'displayName',i)#</a></li>--->
-					<li><a href="/index.cfm?ajaxmode=1&type=#url.type#&objectid=#url.objectid#&view=displayLibrary&property=#url.property#&filterTypename=#i#">#application.fapi.getContentTypeMetadata(i,'displayName',i)#</a></li>
+					<li><a href="#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=#url.type#&objectid=#url.objectid#&view=displayLibrary&property=#url.property#&filterTypename=#i#">#application.fapi.getContentTypeMetadata(i,'displayName',i)#</a></li>
 				</cfloop>
 			</ul>
 		<!---	<cfloop list="#stMetadata.ftJoin#" index="i">
