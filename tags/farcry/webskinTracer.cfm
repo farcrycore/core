@@ -1,6 +1,6 @@
-<cfsetting enablecfoutputonly="true">
-<!--- @@Copyright: Daemon Pty Limited 1995-2007, http://www.daemon.com.au --->
-<!--- @@License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php --->
+<cfsetting enablecfoutputonly="true" />
+<!--- @@Copyright: Daemon Pty Limited 2003-2010, http://www.daemon.com.au --->
+<!--- @@License:  --->
 <!--- @@displayname: webskin tracer  --->
 <!--- @@description:  --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
@@ -26,7 +26,7 @@
 					.webskin-tracer-bubble-inner table.webskin-tracer-table {border:none;}
 					.webskin-tracer-bubble-inner table.webskin-tracer-table th {font-size:10px;color:black;font-weight:bold;padding:1px;vertical-align:top;}
 					.webskin-tracer-bubble-inner table.webskin-tracer-table td {font-size:10px;color:black;font-weight:normal;padding:1px;vertical-align:top;}
-					.webskin-border {background:red;border:2px solid black;display:block;z-index:998;position:absolute;opacity:0.1;}
+					.webskin-border {background:red;border:2px solid black;display:block;z-index:9998;position:absolute;opacity:0.1;}
 					.webskin-tracer-close {cursor:pointer;text-decoration:underline;color:red;}
 					.webskin-tracer-link {cursor:pointer;font-size:10px;}
 					</style>
@@ -83,7 +83,7 @@
 						$j('div.webskin-border').each(function (i) {
 							$j(this).removeClass("webskin-border").css('display', 'none');
 						});						
-						$j('div##' + $id).css('position', 'absolute').css('z-index', '999').css('display', 'block');						
+						$j('div##' + $id).css('position', 'absolute').css('z-index', '9999').css('display', 'block');						
 						$j('div##' + $id + '-webskin-border').addClass("webskin-border").css('width', $width).css('height', $height).css('display', 'block');
 				});	
 			</cfoutput>
@@ -92,4 +92,4 @@
 	</cfif>
 </cfif>
 
-<cfsetting enablecfoutputonly="false">
+<cfsetting enablecfoutputonly="false" />
