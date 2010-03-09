@@ -878,7 +878,7 @@ user --->
 								<cfoutput>
 								<td nowrap="true">
 									#st.select# 
-									#st.currentRow#	
+									#st.recordSetRow#								
 									<cfif structKeyExists(st,"locked") AND st.locked neq 0>
 										<img src='#application.url.farcry#/images/treeImages/customIcons/padlock.gif'>
 									</cfif>
