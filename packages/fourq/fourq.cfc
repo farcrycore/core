@@ -789,64 +789,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	 *                                                          *
 	 ************************************************************
 	 --->
-	 <cffunction name="flushTypeWatchWebskins" access="private" output="false" returntype="boolean" hint="Finds all webskins watching this type for any CRUD functions and flushes them from the cache">
-	 	<cfargument name="objectID" required="true" hint="The typename that the CRUD function was performed on." />
-		
-		<cfset var stObject = getData(arguments.objectid) />
-		<cfset var stTypeWatchWebskins = application.stCoapi[stObject.typename].stTypeWatchWebskins />
-		<cfset var iType = "" />
-		<cfset var iWebskin = "" />
-		<cfset var oCoapi = application.fapi.getContentType("farCoapi") />
-		<cfset var coapiObjectID = "" />
-		<cfset var qCachedAncestors = "" />
-		<cfset var bSuccess = "" />
-		<cfset var qWebskinAncestors = "" />
-		
-		<cfif not structKeyExists(stObject, "status") OR stObject.status EQ "approved">
-			<cfif not structIsEmpty(stTypeWatchWebskins)>
-				<cfloop collection="#stTypeWatchWebskins#" item="iType">
-					
-					<cfset coapiObjectID = oCoapi.getCoapiObjectID(iType) />
-						
-
-					<cfif not structKeyExists(application.fc.webskinAncestors, iType)>
-						<cfset application.fc.webskinAncestors[iType] = queryNew( 'webskinObjectID,webskinTypename,webskinRefTypename,webskinTemplate,ancestorID,ancestorTypename,ancestorTemplate,ancestorRefTypename', 'VarChar,VarChar,VarChar,VarChar,VarChar,VarChar,VarChar,VarChar' ) />
-					</cfif>
-					<cfset qWebskinAncestors = application.fc.webskinAncestors[iType] />
-										
-					<cfloop from="1" to="#arrayLen(stTypeWatchWebskins[iType])#" index="iWebskin">
-					
-						
-						<cfquery dbtype="query" name="qCachedAncestors">
-							SELECT * 
-							FROM qWebskinAncestors
-							WHERE (
-									webskinTypename = <cfqueryparam cfsqltype="cf_sql_varchar" value="#iType#" />
-									OR webskinObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#coapiObjectID#" />
-							)
-							AND webskinTemplate = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stTypeWatchWebskins[iType][iWebskin]#" />
-						</cfquery>
-						
-						<cfloop query="qCachedAncestors">
-							<cfset bSuccess = application.fc.lib.objectbroker.removeWebskin(	objectID=qCachedAncestors.ancestorID,
-																								typename=qCachedAncestors.ancestorTypename,
-																								template=qCachedAncestors.ancestorTemplate ) />
-							
-							<cfset bSuccess = application.fc.lib.objectbroker.removeWebskin(	objectID=qCachedAncestors.webskinObjectID,
-																								typename=qCachedAncestors.webskinRefTypename,
-																								template=qCachedAncestors.webskinTemplate ) />
-							
-						</cfloop>
-						
-					</cfloop>
-					
-				</cfloop>
-			</cfif>
-		</cfif>
-		<cfreturn true />
-	 </cffunction>
 	 
- 
 	<cffunction name="createData" access="public" output="true" returntype="struct" hint="Create an object including array properties.  Pass in a structure of property values; arrays should be passed as an array. The objectID can be ommitted and one will be created, passed in as an argument or passed in as a key of stProperties argument.">
 		<cfargument name="stProperties" type="struct" required="true">
 		<cfargument name="objectid" type="UUID" required="false" default="#application.fc.utils.createJavaUUID()#">
@@ -863,7 +806,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cflog text="#stReturn.message# #stReturn.detail# [SQL: #stReturn.sql#]" file="coapi" type="error" application="yes">
 		</cfif>
 
-		<cfset flushTypeWatchWebskins(objectid=stReturn.objectid) />
+		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=stReturn.objectid) />
 		
     	<cfreturn stReturn />
 	</cffunction>
@@ -1067,7 +1010,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var stVersionRules = structNew() />	
 
 
-		<cfset flushTypeWatchWebskins(objectid=arguments.stProperties.objectid) />
+		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=arguments.stProperties.objectid) />
 		
 		<!------------------------------------------------------------------ 
 		IF THIS OBJECT HAS A STATUS PROPERTY SUBMITTED THEN CHANGE STATUS 
@@ -1279,7 +1222,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	    
 		<cfinclude template="_fourq/deleteData.cfm">
 		
-		<cfset flushTypeWatchWebskins(objectid=arguments.objectid) />
+		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=arguments.objectid) />
 		
 		<cfreturn stResult>
 	</cffunction>
