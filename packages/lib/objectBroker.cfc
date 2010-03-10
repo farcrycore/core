@@ -613,7 +613,7 @@
 		</cfif>
 	</cffunction>
 	
-	<cffunction name="flushTypeWatchWebskins" access="private" output="false" returntype="boolean" hint="Finds all webskins watching this type for any CRUD functions and flushes them from the cache">
+	<cffunction name="flushTypeWatchWebskins" access="public" output="false" returntype="boolean" hint="Finds all webskins watching this type for any CRUD functions and flushes them from the cache">
 	 	<cfargument name="objectID" required="true" hint="The typename that the CRUD function was performed on." />
 		
 		<cfset var stObject = application.fapi.getContentObject(objectid=arguments.objectid) />
