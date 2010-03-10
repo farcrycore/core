@@ -806,7 +806,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cflog text="#stReturn.message# #stReturn.detail# [SQL: #stReturn.sql#]" file="coapi" type="error" application="yes">
 		</cfif>
 
-		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=stReturn.objectid) />
+		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=stReturn.objectid,typename=variables.tableMetadata.getTableName()) />
 		
     	<cfreturn stReturn />
 	</cffunction>
@@ -1010,7 +1010,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var stVersionRules = structNew() />	
 
 
-		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=arguments.stProperties.objectid) />
+		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=arguments.stProperties.objectid,typename=arguments.stProperties.typename) />
 		
 		<!------------------------------------------------------------------ 
 		IF THIS OBJECT HAS A STATUS PROPERTY SUBMITTED THEN CHANGE STATUS 
@@ -1222,7 +1222,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	    
 		<cfinclude template="_fourq/deleteData.cfm">
 		
-		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=arguments.objectid) />
+		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=arguments.objectid,typename=variables.typename) />
 		
 		<cfreturn stResult>
 	</cffunction>

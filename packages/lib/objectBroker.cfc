@@ -615,9 +615,10 @@
 	
 	<cffunction name="flushTypeWatchWebskins" access="public" output="false" returntype="boolean" hint="Finds all webskins watching this type for any CRUD functions and flushes them from the cache">
 	 	<cfargument name="objectID" required="true" hint="The typename that the CRUD function was performed on." />
+	 	<cfargument name="typename" required="true" hint="" />
 		
-		<cfset var stObject = application.fapi.getContentObject(objectid=arguments.objectid) />
-		<cfset var stTypeWatchWebskins = application.stCoapi[stObject.typename].stTypeWatchWebskins />
+		<cfset var stObject = application.fapi.getContentObject(objectid=arguments.objectid,typename=arguments.typename) />
+		<cfset var stTypeWatchWebskins = application.stCoapi[arguments.typename].stTypeWatchWebskins />
 		<cfset var iType = "" />
 		<cfset var iWebskin = "" />
 		<cfset var oCoapi = application.fapi.getContentType("farCoapi") />
