@@ -49,18 +49,18 @@ $Developer: Matthew Bryant (mbryant@daemon.com.au) $
 		<cfset var qResult = "" />
 		
 		<cfif not structKeyExists(application.fc.webskinAncestors, arguments.webskinTypename)>
-			<cfset application.fc.webskinAncestors[arguments.webskinTypename] = queryNew( 'webskinObjectID,webskinTypename,webskinTemplate,ancestorID,ancestorTypename,ancestorTemplate,ancestorRefTypename', 'VarChar,VarChar,VarChar,VarChar,VarChar,VarChar,VarChar' ) />
+			<cfset application.fc.webskinAncestors[arguments.webskinTypename] = queryNew( 'webskinObjectID,webskinTypename,webskinRefTypename,webskinTemplate,ancestorID,ancestorTypename,ancestorTemplate,ancestorRefTypename', 'VarChar,VarChar,VarChar,VarChar,VarChar,VarChar,VarChar,VarChar' ) />
 		</cfif>
 		
-		<cflock name="webskinAncestor_#arguments.webskinTypename#" type="readonly" timeout="5">
-			<cfset qWebskinAncestors = application.fc.webskinAncestors['#arguments.webskinTypename#'] />
-			
-			<cfquery dbtype="query" name="qResult">
-				SELECT 	*
-				FROM 	qWebskinAncestors
-				WHERE 	webskinObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.webskinObjectID#">
-			</cfquery>	
-		</cflock>
+		
+		<cfset qWebskinAncestors = application.fc.webskinAncestors['#arguments.webskinTypename#'] />
+		
+		<cfquery dbtype="query" name="qResult">
+			SELECT 	*
+			FROM 	qWebskinAncestors
+			WHERE 	webskinObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.webskinObjectID#">
+		</cfquery>	
+		
 		
 		<cfreturn qResult />
 	</cffunction>
@@ -68,7 +68,8 @@ $Developer: Matthew Bryant (mbryant@daemon.com.au) $
 	
 	<cffunction name="checkAncestorExists" access="public" output="false" returntype="void" hint="checks webskinAncestor cache and adds if not already in.">
 		<cfargument name="webskinObjectID" type="string" default="" required="false" hint="the objectid of the webskin" />
-		<cfargument name="webskinTypename" type="string" default="" required="false" hint="the type of the template you wish to retrieve the ancestors of" />
+		<cfargument name="webskinTypename" type="string" default="" required="false" hint="the type of the object you wish to retrieve the ancestors of" />
+		<cfargument name="webskinRefTypename" type="string" default="" required="false" hint="the type of the object you wish to retrieve the ancestors of" />
 		<cfargument name="webskinTemplate" type="string" default="" required="false" hint="The template you wish to retreive the ancestors of" />
 		<cfargument name="ancestorID" type="UUID" default="" required="false" hint="the objectid of the ancestor." />
 		<cfargument name="ancestorTypename" type="string" default="" required="false" hint="The type of the ancestor" />
@@ -85,13 +86,14 @@ $Developer: Matthew Bryant (mbryant@daemon.com.au) $
 		WHERE	ancestorID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.ancestorID#">
 		AND 	ancestorTemplate = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.ancestorTemplate#">
 		</cfquery>
-			
+
 		<!--- IF the details of this cached webskin are not in the db, then we need to create it now. --->
 		<cfif NOT qWebskinAncestorExists.recordCount>
 			<cflock name="webskinAncestor_#arguments.webskinTypename#" type="exclusive" timeout="5" >
 				<cfset queryaddrow( application.fc.webskinAncestors[arguments.webskinTypename] ) >
 				<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'webskinObjectID', arguments.webskinObjectID ) >
 				<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'webskinTypename', arguments.webskinTypename ) >
+				<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'webskinRefTypename', arguments.webskinRefTypename ) >
 				<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'webskinTemplate', arguments.webskinTemplate ) >
 				<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'ancestorID', arguments.ancestorID ) >
 				<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'ancestorTypename', arguments.ancestorTypename ) >

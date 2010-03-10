@@ -433,6 +433,7 @@ $out:$
 		<cfargument name="bAudit" type="boolean" required="No" default="1" hint="Pass in 0 if you wish no audit to take place">
 		<cfargument name="dsn" required="No" default="#application.dsn#"> 
 		<cfargument name="bSessionOnly" type="boolean" required="false" default="false"><!--- This property allows you to save the changes to the Temporary Object Store for the life of the current session. ---> 
+		<cfargument name="bAfterSave" type="boolean" required="false" default="true" hint="This allows the developer to skip running the types afterSave function.">	
 		
 		
 		<cfset var stReturn=structNew()>
@@ -443,8 +444,17 @@ $out:$
 				
 									    
 		<cfset stReturn=super.setData(stProperties=arguments.stProperties, dsn=arguments.dsn, bSessionOnly=arguments.bSessionOnly) />
+
+		<!--- ONLY RUN THROUGH IF SAVING TO DB --->
+		<cfif not arguments.bSessionOnly AND arguments.bAfterSave>
+			
+	   	 	<cfset stAfterSave = afterSave(argumentCollection=arguments) />
+	   	 				
+		</cfif>
+
+		
 		<!--- log update --->
-		<cfif arguments.bAudit>
+		<cfif not arguments.bSessionOnly AND arguments.bAudit>
 			<farcry:logevent object="#arguments.stProperties.objectid#" type="rules" event="update" notes="#arguments.auditNote#" />
 		</cfif>
 		
