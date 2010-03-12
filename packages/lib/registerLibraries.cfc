@@ -46,7 +46,7 @@
 
 		<skin:registerJS 	id="jquery-validate"
 							baseHREF="#application.url.webtop#/thirdparty/jquery-validate"
-							lFiles="jquery.validate.pack.js" />
+							lFiles="jquery.validate.js" />
 
 		<skin:registerJS 	id="jquery-tooltip"
 							baseHREF="#application.url.webtop#/thirdparty/jquery-tooltip"
