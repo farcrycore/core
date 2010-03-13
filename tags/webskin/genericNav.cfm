@@ -72,15 +72,10 @@
 
 <cfif attributes.displayStyle EQ "aLink">
 	<cfloop query="qNav">
-		<cfif application.fc.factory.farFU.isUsingFU()>
-			<cfset strhref = application.fc.factory.farFU.getFU(qNav.objectid)>
-		<cfelse>
-			<cfset strhref = application.url.conjurer & "?objectid=" & qNav.objectid>
-		</cfif>
 		<cfif qNav.currentRow GT 1>
 			<cfoutput> | </cfoutput>		
 		</cfif>
-		<cfoutput><a href="#strhref#" title="#qNav.objectName#">#qNav.objectName#</a></cfoutput>
+		<cfoutput><a href="#application.fapi.getlink(objectid=qNav.objectid)#" title="#qNav.objectName#">#qNav.objectName#</a></cfoutput>
 	</cfloop>
 <cfelse>
 
