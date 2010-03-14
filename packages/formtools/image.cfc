@@ -1,16 +1,60 @@
+<!--- @@Copyright: Copyright (c) 2010 Daemon Pty Limited. All rights reserved. ---> 
+<!--- @@License:
+    This file is part of FarCry.
 
+    FarCry is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
+    FarCry is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
+--->
 <cfcomponent name="Image" displayname="Image" Extends="field" hint="Field component to liase with all Image types"> 
+<!--- 
+ // documentation 
+--------------------------------------------------------------------------------------------------->
+<cfproperty name="ftstyle" type="string" hint="???" required="false" default="" />
+<cfproperty name="ftDestination" type="string" hint="???" required="false" default="/images" />
+<cfproperty name="ftSourceField" type="string" hint="???" required="false" default="" />
+<cfproperty name="ftCreateFromSourceOption" type="boolean" hint="???" required="false" default="true" />
+<cfproperty name="ftCreateFromSourceDefault" type="boolean" hint="???" required="false" default="true" />
+<cfproperty name="ftAllowUpload" type="boolean" hint="???" required="false" default="true" />
+<cfproperty name="ftAllowResize" type="boolean" hint="???" required="false" default="true" />
+<cfproperty name="ftImageWidth" type="string" hint="???" required="false" default="" />
+<cfproperty name="ftImageHeight" type="string" hint="???" required="false" default="" />
+<cfproperty name="ftAutoGenerateType" type="string" hint="Auto generate options include: none, center, fitinside, forcesize, pad, topcenter, topleft, topright, left, right, bottomleft, bottomcenter, bottomright." required="false" default="FitInside" />
+<cfproperty name="ftPadColor" type="string" hint="???" required="false" default="##ffffff" />
+<cfproperty name="ftShowConversionInfo" type="boolean" hint="Set to false to hide the conversion information that will be applied to the uploaded image." required="false" default="true" />
+<cfproperty name="ftAllowedExtensions" type="string" hint="The extensions allowed to be uploaded." required="false" default="jpg,jpeg,png,gif" />
+<cfproperty name="ftcustomEffectsObjName" type="string" hint="???" required="false" default="imageeffects" />
+<cfproperty name="ftlCustomEffects" type="string" hint="???" required="false" default="" />
+<cfproperty name="ftConvertImageToFormat" type="string" hint="???" required="false" default="" />
+<cfproperty name="ftbSetAntialiasing" type="boolean" hint="???" required="false" default="true" />
+<cfproperty name="ftInterpolation" type="string" hint="???" required="false" default="highestQuality" />
+<cfproperty name="ftQuality" type="numeric" hint="???" required="false" default="0.75" />
+<cfproperty name="ftbUploadOnly" type="boolean" hint="???" required="false" default="false" />
+<cfproperty name="ftCropPosition" type="string" hint="Used when ftAutoGenerateType = aspectCrop" required="false" default="center" />
+<cfproperty name="ftThumbnailBevel" type="boolean" hint="???" required="false" default="false" />
 
 
-  <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
-  <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" >
-  <cfimport taglib="/farcry/core/tags/grid/" prefix="grid" >
-  
-  <cffunction name="init" access="public" returntype="any" output="false" hint="Returns a copy of this initialised object">
-    <cfreturn this>
-  </cffunction>
-  
+
+<!--- import tag libraries --->
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" >
+<cfimport taglib="/farcry/core/tags/grid/" prefix="grid" >
+
+<!--- 
+ // formtool methods 
+--------------------------------------------------------------------------------------------------->
+<cffunction name="init" access="public" returntype="any" output="false" hint="Returns a copy of this initialised object">
+	<cfreturn this>
+</cffunction>
 
 <cffunction name="edit" access="public" output="true" returntype="string" hint="his will return a string of formatted HTML text to enable the user to edit the data">
     <cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
@@ -538,7 +582,7 @@
     FTAUTOGENERATETYPE OPTIONS
     ForceSize - Ignores source image aspect ratio and forces the new image to be the size set in the metadata width/height
     FitInside - Reduces the width and height so that it fits in the box defined by the metadata width/height
-    CropToFit - A bit of both "ForceSize" and "FitInside" where it forces the image to conform to a fixed width and hight, but crops the image to maintain spect ratio. It first attempts to crop the width because most photos are taken from a horizontal perspective with a better chance to remove a few pixels than from the header and footer.
+    CropToFit - A bit of both "ForceSize" and "FitInside" where it forces the image to conform to a fixed width and hight, but crops the image to maintain aspect ratio. It first attempts to crop the width because most photos are taken from a horizontal perspective with a better chance to remove a few pixels than from the header and footer.
     Pad - Reduces the width and height so that it fits in the box defined by the metadata width/height and then pads the image so it ends up being the metadata width/height
     --->
 
@@ -806,12 +850,18 @@
           and len(arguments.stProperties[i])
         )
       )>  
-          <!--- Make sure a ftSourceField --->
-      <cfif (not structkeyexists(arguments.stFields[i].metadata,"ftAllowResize") or arguments.stFields[i].metadata.ftAllowResize) and (not structkeyexists(arguments.stFields[i].metadata,"ftSourceField") or not len(arguments.stFields[i].metadata.ftSourceField)) and len(arguments.stProperties[i])>
-        <cfset sourceFieldName = i />
-      <cfelse>
-        <cfset sourceFieldName = listFirst(arguments.stFields[i].metadata.ftSourceField, ":") />
-      </cfif>
+
+		<!--- Make sure a ftSourceField --->
+		<cfif 
+			(NOT structkeyexists(arguments.stFields[i].metadata,"ftAllowResize") OR arguments.stFields[i].metadata.ftAllowResize) 
+			AND (NOT structkeyexists(arguments.stFields[i].metadata,"ftSourceField")
+			OR NOT len(arguments.stFields[i].metadata.ftSourceField)) 
+			AND len(arguments.stProperties[i])>
+			<cfset sourceFieldName = i />
+		<cfelse>
+			<cfset sourceFieldName = listFirst(arguments.stFields[i].metadata.ftSourceField, ":") />
+		</cfif>
+		
           <!--- IS THE SOURCE IMAGE PROVIDED? --->
           <cfif structKeyExists(arguments.stProperties, sourceFieldName) AND len(arguments.stProperties[sourceFieldName])>
             <cfparam name="arguments.stFields['#i#'].metadata.ftDestination" default="" />    
@@ -830,6 +880,7 @@
             <cfparam name="arguments.stFields['#i#'].metadata.ftbUploadOnly" default="false" />
 
             <cfset stArgs = StructNew() />
+
             <cfif arguments.stFields[sourceFieldName].metadata.ftType EQ "uuid">
               <!--- 
                 This means that the source image is from an image library. 
@@ -843,7 +894,12 @@
 
               <cfif structKeyExists(stImage, libraryFieldName) AND len(stImage[libraryFieldName])>
                 <cfset stArgs.Source = "#imagerootPath##stImage[libraryFieldName]#" />
-              </cfif> 
+
+				<cfelse>
+					<!--- can't find source image --->
+					<skin:bubble title="Image Source Not Found" message="#arguments.stFields[i].metadata.ftSourceField#" sticky="true" />
+              </cfif>
+
             <cfelse>
               <cfset stArgs.Source = "#imagerootPath##arguments.stProperties[sourceFieldName]#" />
             </cfif>
