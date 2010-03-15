@@ -1,0 +1,235 @@
+<cfcomponent name="SiteDataGenerator" displayname="SiteDataGenerator" hint="I generate site map xml strings">
+	<cfset variables.SiteConfig="">
+	<cfset variables.newsTypes="dmNews:publishDate">
+	<!--- switch these on and off to generate individual types with set method --->
+	<cfset variables.bGenerateNews=0> 
+	<cfset variables.bGenerateNav=0>
+	<cfset variables.bGenerateVideos=0>
+	<cfset variables.types="">
+	
+	<!--- public /////////--->
+	<cffunction name="init" returntype="farcry.core.packages.googleSiteMap.sitemap.SiteDataGenerator" access="public">
+		
+		<cfreturn this>
+	</cffunction>
+	
+	<cffunction name="setSiteConfig" access="public" description="sets the site config">
+		<cfargument name="SiteConfig" type="struct" required="true">
+	
+		<cfset variables.SiteConfig=arguments.SiteConfig>
+	</cffunction>
+	
+	<cffunction name="getSiteConfig" access="public" description="gets the site config" returntype="farcry.plugins.googleSiteMap.packages.custom.SiteConfig">
+		<cfreturn variables.siteConfig>
+	</cffunction>
+	
+	<cffunction name="setNewsTypes" access="public" description="sets the news types">
+		<cfargument name="newsTypes" type="string" required="true">
+		
+		<cfset variables.newsTypes=arguments.newsTypes>
+		
+	</cffunction>
+	
+	<cffunction name="setTypes" access="public" description="sets the types">
+		<cfargument name="types" type="string" required="true">
+		
+		<cfset variables.types=arguments.types>
+		
+	</cffunction>
+	
+	<cffunction name="setbGenerateNews" access="public" description="sets the switch to generate news">
+		<cfargument name="bGenerateNews" type="boolean" required="true">
+		
+		<cfset variables.bGenerateNews=arguments.bGenerateNews>
+	</cffunction>
+	
+	<cffunction name="getbGenerateNews" access="public" description="gets the swith to generate news" returntype="boolen">
+		<cfreturn variables.bGenerateNews>
+	</cffunction>
+	
+	<cffunction name="setbGenerateNav" access="public" description="sets the switch to generate navs">
+		<cfargument name="bGenerateNav" type="boolean" required="true">
+		
+		<cfset variables.bGenerateNav=arguments.bGenerateNav>
+	</cffunction>
+	
+	
+	<cffunction name="getbGenerateNav" access="public" description="gets the switch to generate navs" returntype="boolen">
+		<cfreturn variables.bGenerateNav>
+	</cffunction>
+	
+	<cffunction name="getNewsTypes" access="public" description="gets new types" returntype="string">
+		<cfreturn variables.newsTypes>
+	</cffunction>
+	
+	<cffunction name="generateSiteData" access="public" description="creates xml text for a site map">
+		
+		<cfset var qNavigationData="">
+		<cfset var qNewsData="">
+		<cfset var qTypeData="">
+		<cfset var videoXMLData="">
+		<cfset var navXMLData="">
+		<cfset var newsXMLData="">
+		<cfset var typeXMLData="">
+		
+		<cfif variables.bGenerateNews>
+			<cfloop list ="#variables.newsTypes#"  index="newsType" >
+				<cfset qNewsData=getNewsData(listFirst(newsType,":"), listLast(newsType,":"))>
+				<cfset newsXMLData="#newsXMLData##generateNewsXMLData(qNewsData)#">
+			</cfloop>
+		</cfif>
+		<cfif variables.bGenerateVideos>
+			<cfset qVideoData=getVideoData()>
+			<cfset videoXMLData=generateVideoXMLData(qVideoData)>
+		</cfif>
+		
+		<cfloop list="#variables.types#" index="type">
+			<cfif type eq "dmNavigation" or variables.bGenerateNav>
+				<cfset qNavigationData=getNavigationData()>
+				<cfset navXMLData=generateNavXMLData(qNavigationData)>
+			</cfif>
+			<cfif type neq "dmNavigation">
+				<cfset qTypeData=getTypeData(type)>
+				<cfset typeXMLData="#typeXMLData##generateTypeXMLData(qTypeData)#">
+			</cfif>
+		</cfloop>
+		
+		<cfreturn "#navXMLData##newsXMLData##videoXMLData##typeXMLData#">
+	</cffunction>
+	
+	<cffunction name="getNavigationData" returntype="query" access="public" hint="a query to get all naviagtion nodes">
+		<cfargument name="startPoint" required="false" default="#application.navid.root#">
+		<cfargument name="depth" required="false" default="0">
+		
+		<cfset var navFilter=arrayNew(1)>
+		<cfset var qNavUnsorted="">
+
+		<!--- g.s this code is copied from an existing site map generator please see http://groups.google.com/group/farcry-dev/browse_thread/thread/2d8e81c4f3b65620--->
+		<cfset navfilter[1]="status IN ('approved')">
+		<cfset qNavUnsorted = application.factory.oTree.getDescendants(objectid=arguments.startPoint, depth=arguments.depth, bIncludeSelf="0", afilter=navFilter, lcolumns="externallink,datetimelastupdated")>
+        <!--- VE: sort query through a requery; externallink may not be 
+			filled because we would get double URL's in the sitemap this is 
+			prohibited by google.---> 
+			
+        <cfquery name="qNavSorted" dbtype="query"> 
+			SELECT DISTINCT objectid,nlevel,nleft,datetimelastupdated,externallink 
+            FROM qNavUnsorted 
+            WHERE externallink = '' 
+            ORDER BY nLeft,objectName ASC 
+        </cfquery>
+		
+		<cfreturn qNavSorted>
+	</cffunction>
+	
+	<cffunction name="generateNavXMLData" returntype="string" hint="generates xml string" access="public">
+		<cfargument name="qNavData" required="true" type="query">
+		
+		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+		<!--- g.s this code was copied directly from an existing site map generator http://groups.google.com/group/farcry-dev/browse_thread/thread/2d8e81c4f3b65620--->
+		<cfsavecontent variable="xmlString">
+			<cfloop query="arguments.qNavData">
+				<cfsavecontent variable="strUrl">
+					<skin:buildlink includedomain="true" domain="#SiteConfig.domainName#" urlOnly="true" objectid="#qNavSorted.objectid#" externallink="#qNavSorted.externallink#" />
+				</cfsavecontent> 
+				<!--- avoiding white space here hence the 1 line of code --->
+				<cfoutput> 
+		        	<url><loc>#XmlFormat(strUrl)#</loc><priority><cfif qNavSorted.nlevel LTE 2>1.0<cfelseif qNavSorted.nlevel LTE 3>0.9<cfelse>#numberformat(log10 (qNavSorted.nlevel),'0._')#</cfif></priority> <lastmod>#DateFormat(qNavSorted.datetimelastupdated,'yyyy-mm-dd')#</lastmod> <changefreq><cfif qNavSorted.nlevel LTE 2>daily<cfelse>weekly</cfif></changefreq></url>
+				</cfoutput>
+			</cfloop>    
+		</cfsavecontent>
+		
+		<cfreturn xmlString>
+	</cffunction>
+	
+	<cffunction name="generateTypeXMLData" returntype="string" hint="generates xml string" access="public">
+		<cfargument name="qTypeData" required="true" type="query">
+		
+		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+
+		<cfsavecontent variable="xmlString">
+			<cfloop query="arguments.qTypeData">
+				<cfsavecontent variable="strUrl">
+					<skin:buildlink includedomain="true" domain="#SiteConfig.domainName#" urlOnly="true" objectid="#qTypeData.objectid#" />
+				</cfsavecontent> 
+				<!--- avoiding white space here hence the 1 line of code --->
+				<cfoutput> 
+		        	<url><loc>#XmlFormat(strUrl)#</loc><priority>0.9</priority> <lastmod>#DateFormat(qTypeData.datetimelastupdated,'yyyy-mm-dd')#</lastmod> <changefreq>daily</changefreq></url>
+				</cfoutput>
+			</cfloop>    
+		</cfsavecontent>
+		
+		<cfreturn xmlString>
+	</cffunction>
+	
+	<cffunction name="getNewsData" access="public" description="generates news xml string" returntype="query">
+		<cfargument name="newsType" required="true">
+		<cfargument name="publishFieldName" required="false" default="#application.dsn#">
+		<cfargument name="dsn" required="false" default="#application.dsn#">
+		
+		<cfquery name="qNews" datasource="#arguments.dsn#">
+			SELECT * FROM #arguments.newsType#
+			WHERE status='approved'
+			AND #arguments.publishFieldName# > <cfqueryparam cfsqltype="cf_sql_timestamp" value="#dateAdd('d',-2,now())#" />
+			AND #arguments.publishFieldName# < <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#" />
+		</cfquery>
+		
+		<cfreturn qNews>
+	</cffunction>
+	
+	<cffunction name="getTypeData" access="public" description="creates a site map for diffent types" returntype="query">
+		<cfargument name="type" required="true">
+		<cfargument name="bCheckForPublishDate" required="false" default="true">
+		<cfargument name="dsn" required="false" default="#application.dsn#">
+		
+		<cfset var qTypeData="">
+		<cftry>
+			<cfquery name="qTypeData" datasource="#arguments.dsn#">
+				SELECT * FROM #arguments.type#
+				WHERE status='approved'
+				<cfif arguments.bCheckForPublishDate>
+					AND publishDate < <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#" />
+					AND expiryDate > <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#" />
+				</cfif>
+			</cfquery>
+			<cfcatch>
+				<cfthrow message="#cfcatch.Message#">
+			</cfcatch>
+		</cftry>
+		<cfreturn qTypeData>
+	</cffunction>
+
+	<cffunction name="generateNewsXMLData" access="public" description="generates news xml data">
+		<cfargument name="qNewsData" required="true" type="query">
+		<cfargument name="language" required="false" type="string" default="en">
+		
+		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+		<cfset var xmlString="">	
+		<cfsavecontent variable="xmlString">
+			<cfloop query="arguments.qNewsData">
+				<cfsavecontent variable="strUrl">
+					<skin:buildlink includedomain="true" domain="#SiteConfig.domainName#" urlOnly="true" objectid="#qNewsData.objectid#" />
+				</cfsavecontent> 
+				<!--- avoiding white space here hence the 1 line of code --->
+				<cfoutput> 
+		        	<url><loc>#XmlFormat(strUrl)#</loc><n:news><n:publication><n:name>#variables.SiteConfig.newsPublication#</n:name><n:language>#arguments.language#</n:language></n:publication><cfif isdefined("qNewsData.access")><n:access>#qNewsData.access#</n:access></cfif><cfif isdefined("qNewsData.genres")><n:genres>#qNewsData.genres#</n:genres></cfif><n:publication_date>#dateFormat(arguments.qNewsData.publishDate,"yyyy-mm-dd")#</n:publication_date><n:title>#qNewsData.title#</n:title><cfif isDefined("qNewsData.metaKeyWords")><n:keywords>#qNewsData.title#</n:keywords></cfif><cfif isDefined("qNewsData.stock_tickers")><n:stock_tickers>#qNewsData.stock_tickers#</n:stock_tickers></cfif></n:news></url>
+				</cfoutput>
+			</cfloop>    
+		</cfsavecontent>
+		
+		<cfreturn xmlString>
+	</cffunction>
+	
+	<cffunction name="getVideoData" access="public" description="gets video from the database" returntype="query">
+		<!--- THIS STILL NEEDS TO bE DEVELOPED --->
+		<cfreturn queryNew('blah')>
+	</cffunction>
+	
+	<cffunction name="generateVideoXMLData" access="public" description="generates video xml data" returntype="string">
+		<cfargument name="qVideoData" type="query">
+		<!--- THIS STILL NEEDS TO bE DEVELOPED --->
+		<cfreturn "">
+	</cffunction>
+	
+	<!--- private /////////--->
+	
+</cfcomponent>
