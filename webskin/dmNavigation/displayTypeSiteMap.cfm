@@ -1,3 +1,4 @@
+<!--- @@fuAlias: sitemap --->
 <cfset oSiteMap=createObject('component', 'farcry.core.packages.googleSiteMap.sitemap').init()>
 <cfset stSiteConfig=structNew()>
 <cfset stSiteConfig.domainName="#cgi.server_name#">
