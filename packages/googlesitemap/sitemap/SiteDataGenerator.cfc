@@ -71,6 +71,7 @@
 		<cfset var navXMLData="">
 		<cfset var newsXMLData="">
 		<cfset var typeXMLData="">
+		<cfset var stMeta="">
 		
 		<cfif variables.bGenerateNews>
 			<cfloop list ="#variables.newsTypes#"  index="newsType" >
@@ -85,12 +86,40 @@
 		
 		<cfloop list="#variables.types#" index="type">
 			<cfif type eq "dmNavigation" or variables.bGenerateNav>
-				<cfset qNavigationData=getNavigationData()>
-				<cfset navXMLData=generateNavXMLData(qNavigationData)>
+				<!--- check to see if there is a getSiteMapData method in the component --->
+				<cfset oObj=application.fapi.getContentType(type)>
+				<cfset stMeta=getMetaData(oObj)>
+				
+				<cfif methodExists(stMeta,'getSiteMapData')>
+					<cfset qNavigationData=oObj.getSiteMapData()>
+				<cfelse>
+					<cfset qNavigationData=getNavigationData()>
+				</cfif>
+				<!--- check to see if there is a generateSiteMapXML method in the component --->
+				<cfif methodExists(stMeta,'generateSiteMapXML')>
+					<cfset navXMLData=oObj.generateSiteMapXML(qNavigationData)>
+				<cfelse>
+					<cfset navXMLData=generateNavXMLData(qNavigationData)>
+				</cfif>
 			</cfif>
+			
 			<cfif type neq "dmNavigation">
-				<cfset qTypeData=getTypeData(type)>
-				<cfset typeXMLData="#typeXMLData##generateTypeXMLData(qTypeData)#">
+				<!--- check to see if there is a getSiteData method in the component --->
+				<cfset oObj=application.fapi.getContentType(type)>
+				<cfset stMeta=getMetaData(oObj)>
+				
+				<cfif methodExists(stMeta,'getSiteMapData')>
+					<cfset qTypeData=oObj.getSiteMapData()>
+				<cfelse>
+					<cfset qTypeData=getTypeData()>
+				</cfif>
+				<!--- check to see if there is a generateSiteMapXML method in the component --->
+				
+				<cfif methodExists(stMeta,'generateSiteMapXML')>
+					<cfset typeXMLData="#typeXMLData##oObj.generateSiteMapXML(qTypeData)#">
+				<cfelse>
+					<cfset typeXMLData="#typeXMLData##generateTypeXMLData(qTypeData)#">
+				</cfif>
 			</cfif>
 		</cfloop>
 		
@@ -231,5 +260,19 @@
 	</cffunction>
 	
 	<!--- private /////////--->
+	
+	<cffunction name="methodExists" access="private" description="checks to see if a method exists in a component" returntype="boolean">
+		<cfargument name="oObj" required="true" >
+		<cfargument name="methodName">
+		
+		<cfif structKeyExists(arguments.oObj,'functions')>
+			<cfloop from="1" to="#arraylen(arguments.oObj.functions)#" index="i">	
+				<cfif arguments.oObj.functions[i].name eq arguments.methodName>
+					<cfreturn true>
+				</cfif>
+			</cfloop>
+		</cfif>
+		<cfreturn false>
+	</cffunction>
 	
 </cfcomponent>
