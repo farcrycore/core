@@ -211,7 +211,7 @@
 				</cfsavecontent> 
 				<!--- avoiding white space here hence the 1 line of code --->
 				<cfoutput> 
-		        	<url><loc>#XmlFormat(strUrl)#</loc><n:news><n:publication><n:name>#variables.SiteConfig.newsPublication#</n:name><n:language>#arguments.language#</n:language></n:publication><cfif isdefined("qNewsData.access")><n:access>#qNewsData.access#</n:access></cfif><cfif isdefined("qNewsData.genres")><n:genres>#qNewsData.genres#</n:genres></cfif><n:publication_date>#dateFormat(arguments.qNewsData.publishDate,"yyyy-mm-dd")#</n:publication_date><n:title>#qNewsData.title#</n:title><cfif isDefined("qNewsData.metaKeyWords")><n:keywords>#qNewsData.title#</n:keywords></cfif><cfif isDefined("qNewsData.stock_tickers")><n:stock_tickers>#qNewsData.stock_tickers#</n:stock_tickers></cfif></n:news></url>
+		        	<url><loc>#XmlFormat(strUrl)#</loc><n:news><n:publication><n:name>#variables.SiteConfig.newsPublication#</n:name><n:language>#arguments.language#</n:language></n:publication><cfif isdefined("qNewsData.access")><n:access>#qNewsData.access#</n:access></cfif><cfif isdefined("qNewsData.genres")><n:genres>#qNewsData.genres#</n:genres></cfif><n:publication_date>#dateFormat(arguments.qNewsData.publishDate,"yyyy-mm-dd")#</n:publication_date><n:title>#qNewsData.title#</n:title><cfif isDefined("qNewsData.metaKeyWords")><n:keywords>#qNewsData.metaKeyWords#</n:keywords></cfif><cfif isDefined("qNewsData.stock_tickers")><n:stock_tickers>#qNewsData.stock_tickers#</n:stock_tickers></cfif></n:news></url>
 				</cfoutput>
 			</cfloop>    
 		</cfsavecontent>
