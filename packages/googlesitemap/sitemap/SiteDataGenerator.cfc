@@ -7,6 +7,7 @@
 	<cfset variables.bGenerateVideos=0>
 	<cfset variables.types="">
 	
+	
 	<!--- public /////////--->
 	<cffunction name="init" returntype="farcry.core.packages.googleSiteMap.sitemap.SiteDataGenerator" access="public">
 		
@@ -17,6 +18,13 @@
 		<cfargument name="SiteConfig" type="struct" required="true">
 	
 		<cfset variables.SiteConfig=arguments.SiteConfig>
+		<!--- set default values --->
+		<cfif not structKeyExists(variables.SiteConfig, "startPoint")>
+			<cfset variables.SiteConfig.startPoint=application.navid.root>
+		</cfif>
+		<cfif not structKeyExists(variables.SiteConfig, "depth")>
+			<cfset variables.SiteConfig.depth=5>
+		</cfif>
 	</cffunction>
 	
 	<cffunction name="getSiteConfig" access="public" description="gets the site config" returntype="farcry.plugins.googleSiteMap.packages.custom.SiteConfig">
@@ -134,15 +142,13 @@
 	</cffunction>
 	
 	<cffunction name="getNavigationData" returntype="query" access="public" hint="a query to get all naviagtion nodes">
-		<cfargument name="startPoint" required="false" default="#application.navid.root#">
-		<cfargument name="depth" required="false" default="0">
 		
 		<cfset var navFilter=arrayNew(1)>
 		<cfset var qNavUnsorted="">
 
 		<!--- g.s this code is copied from an existing site map generator please see http://groups.google.com/group/farcry-dev/browse_thread/thread/2d8e81c4f3b65620--->
 		<cfset navfilter[1]="status IN ('approved')">
-		<cfset qNavUnsorted = application.factory.oTree.getDescendants(objectid=arguments.startPoint, depth=arguments.depth, bIncludeSelf="0", afilter=navFilter, lcolumns="externallink,datetimelastupdated")>
+		<cfset qNavUnsorted = application.factory.oTree.getDescendants(objectid=variables.SiteConfig.startPoint, depth=variables.SiteConfig.depth, bIncludeSelf="0", afilter=navFilter, lcolumns="externallink,datetimelastupdated")>
         <!--- VE: sort query through a requery; externallink may not be 
 			filled because we would get double URL's in the sitemap this is 
 			prohibited by google.---> 
