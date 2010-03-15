@@ -75,7 +75,14 @@
 		
 		<cfif variables.bGenerateNews>
 			<cfloop list ="#variables.newsTypes#"  index="newsType" >
-				<cfset qNewsData=getNewsData(listFirst(newsType,":"), listLast(newsType,":"))>
+				<!--- check to see if there is getNewsSiteMapData method in the component --->
+				<cfset oObj=application.fapi.getContentType(listFirst(newsType,":"))>
+				<cfset stMeta=getMetaData(oObj)>
+				<cfif methodExists(stMeta,'getNewsSiteMapData')>
+					<cfset qNewsData=oObj.getNewsSiteMapData()>
+				<cfelse>
+					<cfset qNewsData=getNewsData(listFirst(newsType,":"), listLast(newsType,":"))>
+				</cfif>
 				<cfset newsXMLData="#newsXMLData##generateNewsXMLData(qNewsData)#">
 			</cfloop>
 		</cfif>
