@@ -467,17 +467,20 @@
 					<cfcatch><cfdump var="#cfcatch#" expand="false"></cfcatch>
 				</cftry>
 				
-				
+				<cfset variables.errorClass = "" />
+				<cfset variables.formValidationMessage = "" />
 				<cfif structKeyExists(request, "stFarcryFormValidation")
 					AND structKeyExists(request.stFarcryFormValidation, stObj.ObjectID)
 					AND structKeyExists(request.stFarcryFormValidation[stObj.ObjectID], i)
 					AND structKeyExists(request.stFarcryFormValidation[stObj.ObjectID][i], "bSuccess")
 					AND NOT request.stFarcryFormValidation[stObj.ObjectID][i].bSuccess >
+					
 					<cfsavecontent variable="variables.formValidationMessage">
-						<cfoutput><div class="#request.stFarcryFormValidation[stObj.ObjectID][i].stError.class#">#request.stFarcryFormValidation[stObj.ObjectID][i].stError.message#</div></cfoutput>
+						<cfoutput><p class="errorField" htmlfor="#variables.prefix##i#">#request.stFarcryFormValidation[stObj.ObjectID][i].stError.message#</p></cfoutput>
+						<!--- <div class="#request.stFarcryFormValidation[stObj.ObjectID][i].stError.class#">#request.stFarcryFormValidation[stObj.ObjectID][i].stError.message#</div> --->
 					</cfsavecontent>
 					
-					<cfset variables.returnHTML = "#variables.returnHTML# #variables.formValidationMessage#">
+					<cfset variables.errorClass = "error" />
 				</cfif>
 				
 				
@@ -486,9 +489,9 @@
 						
 			<cfif NOT len(Attributes.r_stFields)>
 				
-				<grid:div class="ctrlHolder #ftFieldMetadata.ftLabelAlignment#Labels #ftFieldMetadata.ftType#">
+				<grid:div class="ctrlHolder #ftFieldMetadata.ftLabelAlignment#Labels #ftFieldMetadata.ftType# #variables.errorClass#">
 					
-					
+					<cfoutput>#variables.formValidationMessage#</cfoutput>
 		
 					<cfif structKeyExists(ftFieldMetadata, "ftshowlabel")>
 						<cfset bShowLabel = ftFieldMetadata.ftShowLabel />
