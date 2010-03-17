@@ -572,23 +572,22 @@
 		<cfset var oCaster = "" />
 
 		<cfif application.bObjectBroker and len(arguments.typename)>
-			<cfif structkeyexists(application.objectbroker, arguments.typename)>
 			
-				<!--- Remove any ancestor webskins that include a fragment of this object --->
-				<cfloop list="#arguments.lObjectIDs#" index="i">				
-					<cfif structkeyexists(application.objectbroker[arguments.typename], i)>
-					
-						<!--- Find any ancestor webskins and delete them as well --->
-						<cfset qWebskinAncestors = oWebskinAncestor.getAncestorWebskins(webskinObjectID=i, webskinTypename=arguments.typename) />
-							
-						<cfif qWebskinAncestors.recordCount>
-							<cfloop query="qWebskinAncestors">
-								<cfset bSuccess = removeWebskin(objectid=qWebskinAncestors.ancestorID,typename=qWebskinAncestors.ancestorRefTypename,template=qWebskinAncestors.ancestorTemplate) />
-							</cfloop>
-						</cfif>
-					</cfif>
-				</cfloop>
+			<!--- Remove any ancestor webskins that include a fragment of this object --->
+			<cfloop list="#arguments.lObjectIDs#" index="i">				
+			
+				<!--- Find any ancestor webskins and delete them as well --->
+				<cfset qWebskinAncestors = oWebskinAncestor.getAncestorWebskins(webskinObjectID=i, webskinTypename=arguments.typename) />
 				
+				<cfif qWebskinAncestors.recordCount>
+					<cfloop query="qWebskinAncestors">
+						<cfset bSuccess = removeWebskin(objectid=qWebskinAncestors.ancestorID,typename=qWebskinAncestors.ancestorRefTypename,template=qWebskinAncestors.ancestorTemplate) />
+					</cfloop>
+				</cfif>
+				
+			</cfloop>
+			
+			<cfif structkeyexists(application.objectbroker, arguments.typename)>	
 				<!--- Remove all references to these objects --->
 				<cflock name="objectBroker-#application.applicationname#-#arguments.typename#" type="exclusive" timeout="2" throwontimeout="true">
 					
