@@ -86,7 +86,115 @@
 		
 		<cfreturn application.coapi.coapiutilities.getContentObject(argumentCollection="#arguments#") />
 	</cffunction>	
-			
+	
+	<!--- @@description: 
+		<p>Allows you to fetch a set of content types by specifying filters, status and order.</p>
+		
+		@@examples:
+		<p>Retrive the objectids of all visible news, ordered by published date:</p>
+		<code>
+			<cfset qNews = application.fapi.getContentObjects(typename="dmNews",publishdate_lt=now(),expirydate_gt=now(),orderby="publishdate desc") />
+		</code>
+	 --->
+	<cffunction name="getContentObjects" access="public" output="false" returntype="query" hint="Returns a query of objects matching the specified parameters">
+		<cfargument name="typename" type="string" required="true" hint="The name of the content type" />
+		<cfargument name="lProperties" type="string" required="false" default="objectid" hint="The properties to return" />
+		<cfargument name="status" type="string" required="false" default="#request.mode.lValidStatus#" hint="Filter by object status. Only used for content types that support it." />
+		<!--- Optional filter arguments --->
+		<cfargument name="orderBy" type="string" required="false" default="" hint="Order by clause" />
+				
+		<cfset var q = "" />
+		<cfset var thisargument = "" />
+		<cfset var propertytypemap = structnew() />
+		<cfset var comparisonmap = structnew() />
+		<cfset var thisproperty = "" />
+		<cfset var thisfilter = "" />
+		
+		<cfset propertytypemap["string"] = "cf_sql_varchar" />
+		<cfset propertytypemap["varchar"] = "cf_sql_varchar" />
+		<cfset propertytypemap["longchar"] = "cf_sql_varchar" />
+		<cfset propertytypemap["nstring"] = "cf_sql_varchar" />
+		<cfset propertytypemap["uuid"] = "cf_sql_varchar" />
+		<cfset propertytypemap["date"] = "cf_sql_date" />
+		<cfset propertytypemap["datetime"] = "cf_sql_date" />
+		<cfset propertytypemap["numeric"] = "cf_sql_numeric" />
+		<cfset propertytypemap["integer"] = "cf_sql_numeric" />
+		<cfset propertytypemap["boolean"] = "cf_sql_numeric" />
+		
+		<cfset comparisonmap["lt"] = "<" />
+		<cfset comparisonmap["lte"] = "<=" />
+		<cfset comparisonmap["gt"] = ">" />
+		<cfset comparisonmap["gte"] = ">=" />
+		
+		<cfquery datasource="#application.dsn#" name="q">
+			select		#arguments.lProperties#
+			from		#application.dbowner##arguments.typename#
+			where		1=1
+						<cfif structkeyexists(application.stCOAPI[arguments.typename].stProps,"status")>
+							AND status in (<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.status#" />)
+						</cfif>
+						<cfloop collection="#arguments#" item="thisargument">
+							<cfif refindnocase("_(eq|neq|gt|gte|lt|lte|in|notin|like|isnull)$",thisargument)>
+								<cfset thisproperty = listdeleteat(thisargument,listlen(thisargument,'_'),'_') />
+								<cfset thisfilter = listlast(thisargument,'_') />
+								
+								<cfswitch expression="#thisfilter#"><!--- Comparison (lt,lte,gt,gte are a special case handled later) --->
+									<cfcase value="eq">AND #thisproperty# =</cfcase>
+									<cfcase value="neq">AND NOT #thisproperty# =</cfcase>
+									<cfcase value="in">AND #thisproperty# IN</cfcase>
+									<cfcase value="notin">AND NOT #thisproperty# IN</cfcase>
+									<cfcase value="like">AND #thisproperty# LIKE</cfcase>
+									<cfcase value="isnull">
+										AND (
+											<cfif arguments[thisargument]>
+												#thisproperty# IS NULL
+												<cfif propertytypemap[application.stCOAPI[arguments.typename].stProps[thisproperty].metadata.type] eq "cf_sql_date">
+													OR #thisproperty# = <cfqueryparam cfsqltype="#propertytypemap[application.stCOAPI[arguments.typename].stProps[thisproperty].metadata.type]#" value="1 January 2050" />
+													OR #thisproperty# > <cfqueryparam cfsqltype="#propertytypemap[application.stCOAPI[arguments.typename].stProps[thisproperty].metadata.type]#" value="#dateadd('yyyy',100,now())#" />
+												</cfif>
+											<cfelse>
+												#thisproperty# IS NOT NULL
+												<cfif propertytypemap[application.stCOAPI[arguments.typename].stProps[thisproperty].metadata.type] eq "cf_sql_date">
+													AND NOT #thisproperty# = <cfqueryparam cfsqltype="#propertytypemap[application.stCOAPI[arguments.typename].stProps[thisproperty].metadata.type]#" value="1 January 2050" />
+													AND #thisproperty# < <cfqueryparam cfsqltype="#propertytypemap[application.stCOAPI[arguments.typename].stProps[thisproperty].metadata.type]#" value="#dateadd('yyyy',100,now())#" />
+												</cfif>
+											</cfif>
+										)
+									</cfcase>
+								</cfswitch>
+								<cfswitch expression="#listlast(thisargument,'_')#"><!--- Value --->
+									<cfcase value="in,notin" delimiters=",">
+										(<cfqueryparam cfsqltype="#propertytypemap[application.stCOAPI[arguments.typename].stProps[thisproperty].metadata.type]#" list="true" value="#arguments[thisargument]#" />)
+									</cfcase>
+									<cfcase value="isnull">
+										<!--- No value --->
+									</cfcase>
+									<cfcase value="lt,lte,gt,gte" delimiters=",">
+										<cfif propertytypemap[application.stCOAPI[arguments.typename].stProps[thisproperty].metadata.type] eq "cf_sql_date">
+											AND (
+												#thisproperty# is null
+												OR #thisproperty# = <cfqueryparam cfsqltype="#propertytypemap[application.stCOAPI[arguments.typename].stProps[thisproperty].metadata.type]#" value="1 January 2050" />
+												OR #thisproperty# > <cfqueryparam cfsqltype="#propertytypemap[application.stCOAPI[arguments.typename].stProps[thisproperty].metadata.type]#" value="#dateadd('yyyy',100,now())#" />
+												OR #thisproperty# #comparisonmap[thisfilter]# <cfqueryparam cfsqltype="#propertytypemap[application.stCOAPI[arguments.typename].stProps[thisproperty].metadata.type]#" value="#arguments[thisargument]#" />
+											)
+										<cfelse>
+											AND #thisproperty# #comparisonmap[thisfilter]# <cfqueryparam cfsqltype="#propertytypemap[application.stCOAPI[arguments.typename].stProps[thisproperty].metadata.type]#" value="#arguments[thisargument]#" />
+										</cfif>
+									</cfcase>
+									<cfdefaultcase>
+										<cfqueryparam cfsqltype="#propertytypemap[application.stCOAPI[arguments.typename].stProps[thisproperty].metadata.type]#" value="#arguments[thisargument]#" />
+									</cfdefaultcase>
+								</cfswitch>
+							</cfif>
+						</cfloop>
+			<cfif len(arguments.orderBy)>
+				ORDER BY #arguments.orderBy#
+			</cfif>
+		</cfquery>
+		
+		<cfreturn q />
+	</cffunction>
+	
 	<!--- @@description: 
 		<p>Returns true if the object has not yet been stored in the database</p>
 		<p>If you know what the type is, pass it in to avoid an unnecessary database calls.</p>

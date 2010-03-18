@@ -110,19 +110,43 @@
 	</cffunction>
 
 	<cffunction name="checkNavIDTest" access="public" hint="Returns true if the navigation alias is found.">
-		<cfset assertEquals(true, false) />
+		
+		<cfset assertTrue(this.myComp.checkNavID("root")) />
+		<cfset assertFalse(this.myComp.checkNavID("this should not exist")) />
 	</cffunction>
 
 	<cffunction name="getNavIDTest" access="public" hint="Returns the objectID of the dmNavigation record for the passed alias. If the alias does not exist, the alternate alias will be used. ">
-		<cfset assertEquals(true, false) />
+		
+		<cfset assertTrue(len(this.myComp.getNavID("root"))) />
+		<cfset assertEquals(this.myComp.getNavID("this should not exist","root"),this.myComp.getNavID("root")) />
+		
+		<cftry>
+			<cfset this.myComp.getNavID("this should not exist") />
+			
+			<cfset fail("Error should have been thrown") />
+			
+			<cfcatch></cfcatch>
+		</cftry>
 	</cffunction>
 
 	<cffunction name="checkCatIDTest" access="public" hint="Returns true if the category alias is found.">
-		<cfset assertEquals(true, false) />
+		
+		<cfset assertTrue(this.myComp.checkCatID("root")) />
+		<cfset assertFalse(this.myComp.checkCatID("this should not exist")) />
 	</cffunction>
 
 	<cffunction name="getCatIDTest" access="public" hint="Returns the objectID of the dmCategory record for the passed alias. If the alias does not exist, the alternate alias will be used. ">
-		<cfset assertEquals(true, false) />
+		
+		<cfset assertTrue(len(this.myComp.getCatID("root"))) />
+		<cfset assertEquals(this.myComp.getCatID("this should not exist","root"),this.myComp.getCatID("root")) />
+		
+		<cftry>
+			<cfset this.myComp.getCatID("this should not exist") />
+			
+			<cfset fail("Error should have been thrown") />
+			
+			<cfcatch></cfcatch>
+		</cftry>
 	</cffunction>
 
 	<cffunction name="getContentTypeTest" access="public" hint="Returns the an instantiated content type">
@@ -248,7 +272,9 @@
 	</cffunction>
 
 	<cffunction name="extendsTest" access="public" hint="Returns true if the specified component extends another">
-		<cfset assertEquals(true, false) />
+		
+		<cfset assertTrue(this.myComp.extends("farcry.core.packages.types.dmHTML","farcry.core.packages.types.versions")) />
+		<cfset assertFalse(this.myComp.extends("farcry.core.packages.types.dmNavigation","farcry.core.packages.types.versions")) />
 	</cffunction>
 
 	<cffunction name="listExtendsTest" access="public" description="Returns a list of the components the specified one extends (inclusive)">
@@ -310,68 +336,6 @@
 			true
 		) />
 	</cffunction>
-	
-	
-	<cffunction name="getLinkTest" returntype="void" access="public">
-		<!--- fake parameters used in some of the tests --->
-		<cfset var st = {blarg="123", other="ŠÈÐ¾÷ø¾??Œ?¤Œö©Š¼?Š¼¼"} />
-	
-		<cfset var lnk = this.myComp.getLink(href="http://daemon.com.au") />
-		<cfset assertEquals(lnk, "http://daemon.com.au") />
-		
-		<!--- Note we are not passing in href --->
-		<cfset lnk = this.myComp.getLink(objectid="3f27474f-6a87-4291-a35f9722971fd7c5") />
-		<cfset assertEquals(lnk, "/index.cfm?objectid=3f27474f-6a87-4291-a35f9722971fd7c5") />
-		
-		<!--- this should work regardless of alias existing.  should return a link to some object --->
-		<cfset lnk = this.myComp.getLink(alias="home") />
-		<cfset assertEquals((lnk contains "/index.cfm?objectid="), true) />
-		
-		
-		<cfset lnk = this.myComp.getLink(
-			objectid="3f27474f-6a87-4291-a35f9722971fd7c5",
-			type="dmProfile",
-			ampDelim="&"
-		) />
-		<cfset assertEquals(lnk, "/index.cfm?objectid=3f27474f-6a87-4291-a35f9722971fd7c5&type=dmProfile") />
-		
-		
-		<cfset lnk = this.myComp.getLink(
-			objectid="3f27474f-6a87-4291-a35f9722971fd7c5",
-			type="dmProfile",
-			view="displayPage3Col",
-			ampDelim="&"
-		) />
-		<cfset assertEquals(lnk, "/index.cfm?objectid=3f27474f-6a87-4291-a35f9722971fd7c5&type=dmProfile&view=displayPage3Col") />
-		
-		
-		<cfset lnk = this.myComp.getLink(
-			objectid="3f27474f-6a87-4291-a35f9722971fd7c5",
-			type="dmProfile",
-			view="displayPage3Col",
-			bodyView="displayBody1",
-			ampDelim="&"
-		) />
-		<cfset assertEquals(lnk, "/index.cfm?objectid=3f27474f-6a87-4291-a35f9722971fd7c5&type=dmProfile&view=displayPage3Col&bodyView=displayBody1") />
-		
-		<!--- Using get link to build a "normal" url with st params --->
-		<cfset lnk = this.myComp.getLink(
-			href="http://daemon.com.au",
-			stParameters=st,
-			ampDelim="&"
-		) />
-		<!--- <cfset assertEquals(lnk, "http://daemon.com.au?OTHER=%E4%BB%96%E6%98%AF%E6%BE%B3%E5%A4%A7%E5%88%A9%E4%BA%9A%E4%BA%BA&BLARG=123") /> --->
-			
-			
-		<cfset lnk = this.myComp.getLink(
-			type="dmProfile",
-			view="displayPage3Col",
-			bodyView="displayBody1"
-		) />
-		<cfset assertEquals(lnk, "/index.cfm?type=dmProfile&amp;view=displayPage3Col&amp;bodyView=displayBody1") />
-		
-	</cffunction>
-	
 	
 	<cffunction name="getDocTypeTest" returntype="void" access="public">
 		<!--- 
@@ -470,6 +434,177 @@
 
 		<cfset rval = this.myComp.removeMSWordChars("Schultz, Helen O’Neil, Frank") />
 		<cfset assertEquals(rval, "Schultz, Helen O'Neil, Frank") />		
+	</cffunction>
+	
+	<cffunction name="getContentObjects_basic" displayname="getContentObjects - basic" access="public" returntype="void" output="false">
+		<cfset var q = this.myComp.getContentObjects(typename="dmHTML") />
+		
+		<cfset assertEquals(listsort(lcase(q.columnlist),"text"),"objectid","Incorrect properties returned") />
+	</cffunction>
+	
+	<cffunction name="getContentObjects_lproperties" displayname="getContentObjects - different lproperties" access="public" returntype="void" output="false">
+		<cfset var q = this.myComp.getContentObjects(typename="dmHTML",lProperties="title,datetimecreated") />
+		
+		<cfset assertEquals(listsort(lcase(q.columnlist),"text"),"datetimecreated,title","Incorrect properties returned") />
+	</cffunction>
+	
+	<cffunction name="getContentObjects_orderby" displayname="getContentObjects - order by" access="public" returntype="void" output="false">
+		<!--- Only tests that the DB doesn't throw an error --->
+		
+		<cfset var q = this.myComp.getContentObjects(typename="dmHTML",orderby="title") />
+	</cffunction>
+	
+	<cffunction name="getContentObjects_filter_eq" displayname="getContentObjects - eq" access="public" returntype="void" output="false">
+		<cfset var q = this.myComp.getContentObjects(typename="dmHTML",title_eq="Hello") />
+		<cfset var d = "" />
+		
+		<cfsavecontent variable="d"><cfdump var="#q#"></cfsavecontent>
+		
+		<cfset assertTrue(refindnocase("title\s+=\s+\?",d)) />
+	</cffunction>
+	
+	<cffunction name="getContentObjects_filter_neq" displayname="getContentObjects - neq" access="public" returntype="void" output="false">
+		<cfset var q = this.myComp.getContentObjects(typename="dmHTML",title_neq="Hello") />
+		<cfset var d = "" />
+		
+		<cfsavecontent variable="d"><cfdump var="#q#"></cfsavecontent>
+		
+		<cfset assertTrue(refindnocase("not\s+title\s+=\s+\?",d)) />
+	</cffunction>
+	
+	<cffunction name="getContentObjects_filter_gt" displayname="getContentObjects - gt" access="public" returntype="void" output="false">
+		<cfset var q = this.myComp.getContentObjects(typename="dmHTML",title_gt="Hello") />
+		<cfset var d = "" />
+		
+		<cfsavecontent variable="d"><cfdump var="#q#"></cfsavecontent>
+		
+		<cfset assertTrue(refindnocase("title\s+&gt;\s+\?",d)) />
+	</cffunction>
+	
+	<cffunction name="getContentObjects_filter_gtdate" displayname="getContentObjects - gt date" access="public" returntype="void" output="false">
+		<cfset var q = this.myComp.getContentObjects(typename="dmHTML",datetimecreated_gt=now()) />
+		<cfset var d = "" />
+		
+		<cfsavecontent variable="d"><cfdump var="#q#"></cfsavecontent>
+		
+		<cfset assertTrue(refindnocase("\(\s+datetimecreated\s+is\s+null\s+or\s+datetimecreated\s+=\s+\?\s+or\s+datetimecreated\s+&gt;\s+\?\s+or\s+datetimecreated\s+&gt;\s+\?\s+\)",d)) />
+	</cffunction>
+	
+	<cffunction name="getContentObjects_filter_gte" displayname="getContentObjects - gte" access="public" returntype="void" output="false">
+		<cfset var q = this.myComp.getContentObjects(typename="dmHTML",title_gte="Hello") />
+		<cfset var d = "" />
+		
+		<cfsavecontent variable="d"><cfdump var="#q#"></cfsavecontent>
+		
+		<cfset assertTrue(refindnocase("title\s+&gt;=\s+\?",d)) />
+	</cffunction>
+	
+	<cffunction name="getContentObjects_filter_gtedate" displayname="getContentObjects - gte date" access="public" returntype="void" output="false">
+		<cfset var q = this.myComp.getContentObjects(typename="dmHTML",datetimecreated_gte=now()) />
+		<cfset var d = "" />
+		
+		<cfsavecontent variable="d"><cfdump var="#q#"></cfsavecontent>
+		
+		<cfset assertTrue(refindnocase("\(\s+datetimecreated\s+is\s+null\s+or\s+datetimecreated\s+=\s+\?\s+or\s+datetimecreated\s+&gt;\s+\?\s+or\s+datetimecreated\s+&gt;=\s+\?\s+\)",d)) />
+	</cffunction>
+	
+	<cffunction name="getContentObjects_filter_lt" displayname="getContentObjects - lt" access="public" returntype="void" output="false">
+		<cfset var q = this.myComp.getContentObjects(typename="dmHTML",datetimecreated_lt=now()) />
+		<cfset var d = "" />
+		
+		<cfsavecontent variable="d"><cfdump var="#q#"></cfsavecontent>
+		
+		<cfset assertTrue(refindnocase("datetimecreated\s+&lt;\s+\?",d)) />
+	</cffunction>
+	
+	<cffunction name="getContentObjects_filter_ltdate" displayname="getContentObjects - lt date" access="public" returntype="void" output="false">
+		<cfset var q = this.myComp.getContentObjects(typename="dmHTML",datetimecreated_lt=now()) />
+		<cfset var d = "" />
+		
+		<cfsavecontent variable="d"><cfdump var="#q#"></cfsavecontent>
+		
+		<cfset assertTrue(refindnocase("\(\s+datetimecreated\s+is\s+null\s+or\s+datetimecreated\s+=\s+\?\s+or\s+datetimecreated\s+&gt;\s+\?\s+or\s+datetimecreated\s+&lt;\s+\?\s+\)",d)) />
+	</cffunction>
+	
+	<cffunction name="getContentObjects_filter_lte" displayname="getContentObjects - lte" access="public" returntype="void" output="false">
+		<cfset var q = this.myComp.getContentObjects(typename="dmHTML",datetimecreated_lte=now()) />
+		<cfset var d = "" />
+		
+		<cfsavecontent variable="d"><cfdump var="#q#"></cfsavecontent>
+		
+		<cfset assertTrue(refindnocase("datetimecreated\s+&lt;=\s+\?",d)) />
+	</cffunction>
+	
+	<cffunction name="getContentObjects_filter_ltedate" displayname="getContentObjects - lte date" access="public" returntype="void" output="false">
+		<cfset var q = this.myComp.getContentObjects(typename="dmHTML",datetimecreated_lte=now()) />
+		<cfset var d = "" />
+		
+		<cfsavecontent variable="d"><cfdump var="#q#"></cfsavecontent>
+		
+		<cfset assertTrue(refindnocase("\(\s+datetimecreated\s+is\s+null\s+or\s+datetimecreated\s+=\s+\?\s+or\s+datetimecreated\s+&gt;\s+\?\s+or\s+datetimecreated\s+&lt;=\s+\?\s+\)",d)) />
+	</cffunction>
+	
+	<cffunction name="getContentObjects_filter_in" displayname="getContentObjects - in" access="public" returntype="void" output="false">
+		<cfset var q = this.myComp.getContentObjects(typename="dmHTML",title_in="hello,world") />
+		<cfset var d = "" />
+		
+		<cfsavecontent variable="d"><cfdump var="#q#"></cfsavecontent>
+		
+		<cfset assertTrue(refindnocase("title\s+in\s+\(\s*\?",d)) />
+	</cffunction>
+	
+	<cffunction name="getContentObjects_filter_notin" displayname="getContentObjects - notin" access="public" returntype="void" output="false">
+		<cfset var q = this.myComp.getContentObjects(typename="dmHTML",title_notin="hello,world") />
+		<cfset var d = "" />
+		
+		<cfsavecontent variable="d"><cfdump var="#q#"></cfsavecontent>
+		
+		<cfset assertTrue(refindnocase("not\s+title\s+in\s+\(\s*\?",d)) />
+	</cffunction>
+	
+	<cffunction name="getContentObjects_filter_like" displayname="getContentObjects - like" access="public" returntype="void" output="false">
+		<cfset var q = this.myComp.getContentObjects(typename="dmHTML",title_like="%hello%") />
+		<cfset var d = "" />
+		
+		<cfsavecontent variable="d"><cfdump var="#q#"></cfsavecontent>
+		
+		<cfset assertTrue(refindnocase("title\s+like\s+\?",d)) />
+	</cffunction>
+	
+	<cffunction name="getContentObjects_filter_isnulltrue" displayname="getContentObjects - isnull = true" access="public" returntype="void" output="false">
+		<cfset var q = this.myComp.getContentObjects(typename="dmHTML",title_isnull=true) />
+		<cfset var d = "" />
+		
+		<cfsavecontent variable="d"><cfdump var="#q#"></cfsavecontent>
+		
+		<cfset assertTrue(refindnocase("\(\s+title\s+is\s+null\s+\)",d)) />
+	</cffunction>
+	
+	<cffunction name="getContentObjects_filter_isnullfalse" displayname="getContentObjects - isnull = false" access="public" returntype="void" output="false">
+		<cfset var q = this.myComp.getContentObjects(typename="dmHTML",title_isnull=false) />
+		<cfset var d = "" />
+		
+		<cfsavecontent variable="d"><cfdump var="#q#"></cfsavecontent>
+		
+		<cfset assertTrue(refindnocase("\(\s+title\s+is\s+not\s+null\s+\)",d)) />
+	</cffunction>
+	
+	<cffunction name="getContentObjects_filter_isnulldatetrue" displayname="getContentObjects - isnull date = true" access="public" returntype="void" output="false">
+		<cfset var q = this.myComp.getContentObjects(typename="dmHTML",datetimecreated_isnull=true) />
+		<cfset var d = "" />
+		
+		<cfsavecontent variable="d"><cfdump var="#q#"></cfsavecontent>
+		
+		<cfset assertTrue(refindnocase("\(\s+datetimecreated\s+is\s+null\s+or\s+datetimecreated\s+=\s+\?\s+or\s+datetimecreated\s+&gt;\s+\?\s+\)",d)) />
+	</cffunction>
+	
+	<cffunction name="getContentObjects_filter_isnulldatefalse" displayname="getContentObjects - isnull date = false" access="public" returntype="void" output="false">
+		<cfset var q = this.myComp.getContentObjects(typename="dmHTML",datetimecreated_isnull=false) />
+		<cfset var d = "" />
+		
+		<cfsavecontent variable="d"><cfdump var="#q#"></cfsavecontent>
+		
+		<cfset assertTrue(refindnocase("\(\s+datetimecreated\s+is\s+not\s+null\s+and\s+not\s+datetimecreated\s+=\s+\?\s+and\s+datetimecreated\s+&lt;\s*\?\s+\)",d)) />
 	</cffunction>
 	
 </cfcomponent>
