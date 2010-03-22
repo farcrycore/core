@@ -78,6 +78,7 @@ $in: [bCacheControl] output cache control headers; default true. $
 		border:1px solid ##DFDFDF;
 		border-width:1px 0 0 0;
 		background:none;
+		zoom:1;
 	}
 	
 	.uniForm .ctrlHolder .label {
