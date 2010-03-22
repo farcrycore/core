@@ -213,6 +213,7 @@
 			WHERE status='approved'
 			AND #arguments.publishFieldName# > <cfqueryparam cfsqltype="cf_sql_timestamp" value="#dateAdd('d',-2,now())#" />
 			AND #arguments.publishFieldName# < <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#" />
+			ORDER BY #arguments.publishFieldName# DESC
 		</cfquery>
 		
 		<cfreturn qNews>
