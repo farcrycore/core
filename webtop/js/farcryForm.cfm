@@ -66,8 +66,9 @@
 		
 		// get the post values
 		for (var property in values) {
-			if ($j('##' + event.data.prefix+property).attr('value')) {
-				values[property] = $j('##' + event.data.prefix+property).attr('value');
+			if ($j('##' + event.data.prefix+property).val()) {
+				values[property] = $j('##' + event.data.prefix+property).val();
+				if (values[property].join) values[property] = values[property].join();
 			}
 		}
 		
