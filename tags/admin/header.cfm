@@ -31,7 +31,7 @@ $in: [bCacheControl] output cache control headers; default true. $
 </cfif>
 
 <cfparam name="attributes.title" default="#application.config.general.siteTitle# :: Administration" type="string">
-<cfparam name="attributes.bCacheControl" default="true" type="boolean">
+<cfparam name="attributes.bCacheControl" default="false" type="boolean">
 <cfparam name="attributes.jsshowhide" default="" type="string">
 <cfparam name="attributes.onLoad" type="string" default="">
 <!--- i18n --->
