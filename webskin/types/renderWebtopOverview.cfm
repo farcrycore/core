@@ -142,7 +142,7 @@ START WEBSKIN
 					<h2>FRIENDLY URL</h2>
 					#application.fapi.fixURL(application.fc.factory.farFU.getFU(objectid="#stobj.objectid#", type="#stobj.typename#"))#
 					|
-					<a onclick="$fc.openDialogIFrame('Manage Friendly URL\'s for #stobj.label# (#stobj.typename#)', '#application.url.farcry#/manage_friendlyurl.cfm?objectid=#stobj.objectid#')">
+					<a onclick="$fc.openDialogIFrame('Manage Friendly URL\'s for #JSStringFormat(stobj.label)# (#stobj.typename#)', '#application.url.farcry#/manage_friendlyurl.cfm?objectid=#stobj.objectid#')">
 						Manage
 					</a>
 					</cfoutput>
