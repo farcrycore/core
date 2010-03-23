@@ -211,8 +211,8 @@
 					<cfif ArrayLen(aTypesUseInTree)>
 				
 						<skin:loadJS id="jquery" />
-						<skin:loadJS id="msdropdown" baseHREF="/webtop/thirdparty" lFiles="/msdropdown/js/uncompressed.jquery.dd.js" />
-						<skin:loadCSS id="msdropdown" baseHREF="/webtop/thirdparty" lFiles="/msdropdown/dd.css" />
+						<skin:loadJS id="msdropdown" baseHREF="#application.url.webtop#/thirdparty" lFiles="/msdropdown/js/uncompressed.jquery.dd.js" />
+						<skin:loadCSS id="msdropdown" baseHREF="#application.url.webtop#/thirdparty" lFiles="/msdropdown/dd.css" />
 						
 						<skin:onReady>
 							<cfoutput>
