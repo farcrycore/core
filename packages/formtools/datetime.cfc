@@ -1,11 +1,10 @@
 
-
 <cfcomponent name="datetime" extends="field" displayname="datetime" hint="Field component to liase with all datetime types"> 
 		
 		
 	<cfproperty name="ftRenderType" default="jquery" hint="This formtool offers a number of ways to render the input. (dropdown, jquery, dateJS)" />
-	<cfproperty name="ftJQDateFormatMask" default="d-M-yy" hint="The format mask used by the jQuery UI when returning a date from the calendar. For a full list of the possible formats see http://docs.jquery.com/UI/Datepicker/formatDate" />
-	<cfproperty name="ftCFDateFormatMask" default="d-mmm-yyyy" hint="The format mask used when first rendering the date. This should be a coldfusion dateformat mask." />
+	<cfproperty name="ftJQDateFormatMask" default="d M yy" hint="The format mask used by the jQuery UI when returning a date from the calendar. For a full list of the possible formats see http://docs.jquery.com/UI/Datepicker/formatDate" />
+	<cfproperty name="ftCFDateFormatMask" default="d mmm yyyy" hint="The format mask used when first rendering the date. This should be a coldfusion dateformat mask." />
 	<cfproperty name="ftToggleOffDateTime" default="false" hint="Provides an optional toggle to hide the date if its not required" />
 					
 	
@@ -79,8 +78,8 @@
 			<cfset arguments.stMetadata.ftToggleOffDateTime = "0" />
 		</cfif>
 		
-		<cfif LSisDate(arguments.stMetadata.value)>
-			<cfset arguments.stMetadata.value = application.fapi.convertToApplicationTimezone(LSParseDateTime(arguments.stMetadata.value)) />
+		<cfif isDate(arguments.stMetadata.value)>
+			<cfset arguments.stMetadata.value = application.fapi.convertToApplicationTimezone(arguments.stMetadata.value) />
 		</cfif>
 		
 			
@@ -151,7 +150,7 @@
 							<select name="#arguments.fieldname#Day" id="#arguments.fieldname#Day" class="selectInput">
 							<option value="">--</option>
 							<cfloop from="1" to="31" index="i">
-								<option value="#i#"<cfif LSisDate(arguments.stMetadata.value) AND Day(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#i#</option>
+								<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND Day(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#i#</option>
 								</cfloop>
 							</select>	
 						</label>
@@ -161,7 +160,7 @@
 							<select name="#arguments.fieldname#Month" id="#arguments.fieldname#Month" class="selectInput">
 								<option value="">--</option>
 								<cfloop from="1" to="12" index="i">
-									<option value="#i#"<cfif LSisDate(arguments.stMetadata.value) AND Month(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#localeMonths[i]#</option>
+									<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND Month(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#localeMonths[i]#</option>
 								</cfloop>
 							</select>	
 						</label>
@@ -171,7 +170,7 @@
 							<select name="#arguments.fieldname#Year" id="#arguments.fieldname#Year" class="selectInput">
 								<option value="">--</option>
 								<cfloop from="#arguments.stMetadata.ftStartYear#" to="#arguments.stMetadata.ftEndYear#" index="i" step="#step#">
-									<option value="#i#"<cfif LSisDate(arguments.stMetadata.value) AND Year(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#i#</option>
+									<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND Year(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#i#</option>
 								</cfloop>
 							</select>
 						</label>	
@@ -229,18 +228,18 @@
 						<cfif arguments.stMetadata.ftShowTime>
 							<select name="#arguments.fieldname#Hour">
 							<cfloop from="1" to="12" index="i">
-								<option value="#i#" <cfif LSisDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'h') EQ i>selected=selected</cfif>>#i#</option>
+								<option value="#i#" <cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'h') EQ i>selected=selected</cfif>>#i#</option>
 							</cfloop>
 							</select>
 							<select name="#arguments.fieldname#Minute">
 								<option value="00">00</option>
 								<cfloop from="1" to="60" index="i">
-									<option value="#numberFormat(i, '00')#" <cfif LSisDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'m') EQ i>selected=selected</cfif>>#numberFormat(i, '00')#</option>
+									<option value="#numberFormat(i, '00')#" <cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'m') EQ i>selected=selected</cfif>>#numberFormat(i, '00')#</option>
 								</cfloop>
 							</select>
 							<select name="#arguments.fieldname#Period">
-								<option value="AM" <cfif LSisDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'tt') EQ "AM">selected=selected</cfif>>AM</option>
-								<option value="PM" <cfif LSisDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'tt') EQ "PM">selected=selected</cfif>>PM</option>
+								<option value="AM" <cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'tt') EQ "AM">selected=selected</cfif>>AM</option>
+								<option value="PM" <cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'tt') EQ "PM">selected=selected</cfif>>PM</option>
 							</select>
 						</cfif>
 						&nbsp;
@@ -271,8 +270,8 @@
 		
 		
 		
-		<cfif LSisDate(arguments.stMetadata.value)>
-			<cfset arguments.stMetadata.value = application.fapi.convertToApplicationTimezone(LSParseDateTime(arguments.stMetadata.value)) />
+		<cfif isDate(arguments.stMetadata.value)>
+			<cfset arguments.stMetadata.value = application.fapi.convertToApplicationTimezone(arguments.stMetadata.value) />
 		</cfif>
 		
 		
@@ -375,7 +374,7 @@
 		<cfdefaultcase>
 			<cfparam name="arguments.stFieldPost.stSupporting.Include" default="true">
 			
-			<cfif ListGetAt(arguments.stFieldPost.stSupporting.Include,1) AND LSisDate(arguments.stFieldPost.Value)>
+			<cfif ListGetAt(arguments.stFieldPost.stSupporting.Include,1) AND isDate(arguments.stFieldPost.Value)>
 			
 				<cftry>
 					<cfif structKeyExists(arguments.stFieldPost.stSupporting,"hour")
@@ -415,8 +414,8 @@
 		</cfswitch>
 				
 		<!--- If we have a valid date, convert it to the system date. --->
-		<cfif LSisDate(stResult.value)>
-			<cfset stResult.value = application.fapi.convertToSystemTimezone(LSParseDateTime(stResult.value)) />
+		<cfif isDate(stResult.value)>
+			<cfset stResult.value = application.fapi.convertToSystemTimezone(stResult.value) />
 		</cfif>
 		
 		<!--- ----------------- --->
