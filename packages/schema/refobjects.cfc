@@ -98,7 +98,7 @@
 	
 	<cfif arguments.bDropTable>
 		<cfquery datasource="#variables.dsn#">
-			DROP TABLE IF EXISTS #variables.dbowner#refObjects
+			DROP TABLE IF EXISTS refObjects
 		</cfquery>
 	</cfif>
 	

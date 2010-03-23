@@ -140,7 +140,7 @@ audit stuff directly under core. GB 20061022
 			
 			<!--- create the audit tables --->
 			<cfquery datasource="#variables.dsn#" name="qCreate">
-				CREATE TABLE #variables.dbowner#fqAudit (
+				CREATE TABLE fqAudit (
 					AuditID char (50) NOT NULL ,
 					objectid char (50) NULL ,
 					datetimeStamp datetime NOT NULL ,

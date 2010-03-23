@@ -129,7 +129,7 @@
 	</cfif>
 	
 	<cfquery datasource="#variables.dsn#" name="qCreateTable">
-		CREATE TABLE #variables.dbowner#nested_tree_objects (
+		CREATE TABLE nested_tree_objects (
 			OBJECTID CHAR(35) not null,
 			PARENTID CHAR(35) null,
 			OBJECTNAME VARCHAR(255) not null,
@@ -141,7 +141,7 @@
 	</cfquery>
 	
 	<cfquery datasource="#variables.dsn#">
-	 	CREATE INDEX IDX_NTO ON #variables.dbowner#nested_tree_objects (nLeft, nRight)
+	 	CREATE INDEX IDX_NTO ON nested_tree_objects (nLeft, nRight)
 	</cfquery>
 
 	<cfreturn stReturn />
