@@ -171,6 +171,7 @@
 					<div class="multiField">
 						<ul id="black"></ul>
 					</div>
+					<input type="hidden" name="#arguments.fieldname#" value="" />	
 					</cfoutput>
 					
 				</cfsavecontent>			
