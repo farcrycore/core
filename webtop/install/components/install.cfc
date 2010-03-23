@@ -14,7 +14,7 @@
 		<cfargument name="dbtype" type="string" required="true" hint="Database type" />
 		
 		<cfswitch expression="#arguments.dbtype#">
-			<cfcase value="mysql,ora" delimiters=",">
+			<cfcase value="mssql,ora" delimiters=",">
 				<cfreturn arguments.dbowner />
 			</cfcase>
 			<cfdefaultcase><!--- Other databases do not have an owner --->
