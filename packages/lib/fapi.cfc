@@ -131,7 +131,7 @@
 			from		#application.dbowner##arguments.typename#
 			where		1=1
 						<cfif structkeyexists(application.stCOAPI[arguments.typename].stProps,"status")>
-							AND status in (<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.status#" />)
+							AND status in (<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.status#" list="true" />)
 						</cfif>
 						<cfloop collection="#arguments#" item="thisargument">
 							<cfif refindnocase("_(eq|neq|gt|gte|lt|lte|in|notin|like|isnull)$",thisargument)>
