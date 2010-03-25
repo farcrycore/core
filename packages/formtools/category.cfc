@@ -1,10 +1,19 @@
 <cfcomponent extends="field" name="category" displayname="category" hint="Field component to liase with all category field types"> 
 
+
+	<cfproperty name="ftAlias" default="" hint="" />
+	<cfproperty name="ftLegend" default="" hint="" />
+	<cfproperty name="ftRenderType" default="jquery" hint="" />
+	<cfproperty name="ftSelectMultiple" default="true" hint="" />
+	<cfproperty name="ftSelectSize" default="5" hint="" />
+	<cfproperty name="ftDropdownFirstItem" default="" hint="" />	
+		
+		
 	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 	<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 
-		
+
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.category" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
@@ -25,13 +34,6 @@
 		<cfset var rootNodeText = "" />
 		<cfset var rootID = "" />
 		
-		
-		<cfparam name="arguments.stMetadata.ftAlias" default="" type="string" />
-		<cfparam name="arguments.stMetadata.ftLegend" default="" type="string" />
-		<cfparam name="arguments.stMetadata.ftRenderType" default="jquery" type="string" />
-		<cfparam name="arguments.stMetadata.ftSelectMultiple" default="true" type="boolean" />
-		<cfparam name="arguments.stMetadata.ftSelectSize" default="5" type="numeric" />
-		<cfparam name="arguments.stMetadata.ftDropdownFirstItem" default="" type="string" />
 		
 		<cfif structKeyExists(application.catid, arguments.stMetadata.ftAlias)>
 			<cfset rootID = application.catid[arguments.stMetadata.ftAlias] >
@@ -135,41 +137,21 @@
 			</cfcase>
 			<cfcase value="jquery">
 				
-				
-				<skin:loadJS id="jquery" />
-				<skin:loadJS	id="jquery-treeview" 
-								baseHREF="#application.url.webtop#/thirdparty/jquery-treeview"
-								lFiles="jquery.treeview.js,jquery.treeview.async.js"								
-				/>
-				<skin:loadCSS	id="jquery-treeview" 
-								baseHREF="#application.url.webtop#/thirdparty/jquery-treeview"
-								lFiles="jquery.treeview.css"								
-				/>
 
 				<skin:onReady>
 				<cfoutput>
-					$j("##black").treeview({
+					$j("###arguments.fieldname#_list").treeview({
 						url: "#application.url.webtop#/facade/getCategoryNodes.cfm?node=#rootID#&fieldname=#arguments.fieldname#&multiple=#arguments.stMetadata.ftSelectMultiple#&lSelectedItems=#lSelectedCategoryID#"
 					})
 				</cfoutput>
 				</skin:onReady>
-				
-				<skin:loadCSS>
-				<cfoutput>
-					##black span { font-size:10px; vertical-align: top}
-					##black span:hover { color: red; }
-					##black span input { margin-right: 5px; }
-					##black .hover { color: ##000; }
-
-				</cfoutput>
-				</skin:loadCSS>
 				
 				<cfsavecontent variable="html">
 				
 
 					<cfoutput>
 					<div class="multiField">
-						<ul id="black"></ul>
+						<ul id="#arguments.fieldname#_list" class="treeview"></ul>
 					</div>
 					<input type="hidden" name="#arguments.fieldname#" value="" />	
 					</cfoutput>
@@ -242,7 +224,6 @@
 		<cfset var html = "" />
 		<cfset var catid = "" />
 		
-		<cfparam name="arguments.stMetadata.ftAlias" default="">
 	
 		<cfif listLen(stObject[stMetadata.name])>
 			<cfloop list="#stObject[stMetadata.name]#" index="catid">		
@@ -295,6 +276,153 @@
 		
 	</cffunction>
 
+
+	<!------------------ 
+	FILTERING FUNCTIONS
+	 ------------------>	
+	<cffunction name="getFilterUIOptions">
+		<cfreturn "related to all,related to any" />
+	</cffunction>
+	
+	<cffunction name="editFilterUI">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+		<cfargument name="stPackage" required="false" type="struct" hint="Contains the metadata for the all fields for the current typename.">
+				
+		<cfargument name="filterTypename" />
+		<cfargument name="filterProperty" />
+		<cfargument name="filterType" />
+		<cfargument name="stFilterProps" />
+		
+		<cfset var resultHTML = "" />
+		<cfset var oCategory = createObject("component",'farcry.core.packages.farcry.category')>
+		<cfset var alias = application.fapi.getPropertyMetadata(	typename = "#arguments.filterTypename#" ,
+																	property = "#arguments.filterProperty#" ,
+																	md = "ftAlias" ,
+																	default = "root" )>
+		<cfset var rootID = application.fapi.getCatID( alias ) />
+		
+		<cfset var rootNodeText = oCategory.getCategoryNamebyID(categoryid=rootID) />
+		
+		<cfsavecontent variable="resultHTML">
+			
+			<cfswitch expression="#arguments.filterType#">
+				
+				<cfdefaultcase>
+					<cfparam name="arguments.stFilterProps.value" default="" />
+				
+	
+					<skin:onReady>
+					<cfoutput>
+						$j("###arguments.fieldname#_list").treeview({
+							url: "#application.url.webtop#/facade/getCategoryNodes.cfm?node=#rootID#&fieldname=#arguments.fieldname#value&multiple=true&lSelectedItems=#arguments.stFilterProps.value#"
+						})
+					</cfoutput>
+					</skin:onReady>
+				
+					<cfoutput>
+					<div class="multiField">
+						<ul id="#arguments.fieldname#_list" class="treeview"></ul>
+					</div>
+					<input type="hidden" name="#arguments.fieldname#value" value="" />	
+					</cfoutput>
+						
+				</cfdefaultcase>
+							
+			</cfswitch>
+		</cfsavecontent>
+		
+		<cfreturn resultHTML />
+	</cffunction>
+	
+	<cffunction name="displayFilterUI">
+		<cfargument name="filterType" />
+		<cfargument name="stFilterProps" />
+		
+		<cfset var resultHTML = "" />
+		<cfset var catID = "" />
+		<cfset var catHTML = "" />
+		
+		<cfsavecontent variable="resultHTML">
+			
+			<cfswitch expression="#arguments.filterType#">
+				
+				<cfdefaultcase>
+					<cfif structKeyExists(arguments.stFilterProps, "value") AND listLen(arguments.stFilterProps.value)>
+						<cfloop list="#arguments.stFilterProps.value#" index="catid">		
+							<cfset catHTML = listAppend(catHTML,application.factory.oCategory.getCategoryNameByID(catid)) />
+						</cfloop>
+						<cfoutput>#catHTML#</cfoutput>
+					</cfif>				
+				</cfdefaultcase>		
+			</cfswitch>
+		</cfsavecontent>
+		
+		<cfreturn resultHTML />
+	</cffunction>
+	
+
+	<cffunction name="getFilterSQL">
+		
+		<cfargument name="filterTypename" />
+		<cfargument name="filterProperty" />
+		<cfargument name="filterType" />
+		<cfargument name="stFilterProps" />
+		
+		<cfset var resultHTML = "" />
+		<cfset var iCat = "" />
+		<cfset var iCounter = 0 />
+		
+		<cfsavecontent variable="resultHTML">
+			
+			<cfswitch expression="#arguments.filterType#">
+				
+				<cfcase value="related to all">
+					<cfparam name="arguments.stFilterProps.value" default="" />
+					<cfif len(arguments.stFilterProps.value)>
+						<cfoutput>
+						(
+							<cfloop list="#arguments.stFilterProps.value#" index="iCat">
+								<cfset iCounter = iCounter + 1 />
+								<cfif iCounter GT 1>
+									AND
+								</cfif>
+								objectID IN (
+									SELECT objectID
+									FROM refCategories
+									WHERE categoryID = '#iCat#'
+								)
+							</cfloop> 
+						)
+						</cfoutput>
+					</cfif>
+				</cfcase>
+				
+				<cfcase value="related to any">
+					<cfparam name="arguments.stFilterProps.value" default="" />
+					<cfif len(arguments.stFilterProps.value)>
+						<cfoutput>(
+							objectID IN (
+								SELECT objectID
+								FROM refCategories
+								WHERE categoryID IN (#ListQualify(arguments.stFilterProps.value,"'",",","ALL")#)
+							)
+						)
+						</cfoutput>
+									
+					</cfif>
+				</cfcase>
+			</cfswitch>
+			
+		</cfsavecontent>
+
+		<cfreturn resultHTML />
+	</cffunction>
+		
+	
+	
 </cfcomponent> 
 
 
