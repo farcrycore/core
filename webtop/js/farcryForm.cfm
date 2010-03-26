@@ -356,7 +356,7 @@ function setRowBackground (childCheckbox) {
 		$j("html").css('overflow', 'hidden');
 		$j(newDialogDiv).dialog({
 			bgiframe: true,
-			//modal: true,
+			modal: true,
 			title:'Library',
 			draggable:false,
 			resizable:false,
@@ -388,7 +388,7 @@ function setRowBackground (childCheckbox) {
 		$j("html").css('overflow', 'hidden');
 		$j(newDialogDiv).dialog({
 			bgiframe: true,
-			modal: true,
+			//modal: true,
 			title:'Add New',
 			closeOnEscape: false,
 			draggable:false,
