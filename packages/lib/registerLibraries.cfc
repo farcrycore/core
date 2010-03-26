@@ -34,7 +34,7 @@
 			
 		<skin:registerJS 	id="jquery-ui"
 							baseHREF="#application.url.webtop#/thirdparty/jquery-1-4-1/js"
-							lFiles="jquery-ui-1.8rc1.custom.min.js" />
+							lFiles="jquery-ui-1.8.custom.min.js" />
 		
 			
 				
@@ -81,7 +81,7 @@
 							
 		<skin:registerCSS 	id="jquery-ui"
 							baseHREF="#application.url.webtop#/thirdparty/jquery-1-4-1/css/base"
-							lFiles="jquery-ui-1.8rc1.custom.css">
+							lFiles="jquery-ui-1.8.custom.css">
 							
 							<cfoutput>
 							.ui-widget {font-size:1em;}
