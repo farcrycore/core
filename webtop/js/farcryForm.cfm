@@ -351,7 +351,7 @@ function setRowBackground (childCheckbox) {
 							
 	fcForm.openLibrarySelect = function(typename,objectid,property,id,urlparameters) {
 		urlparameters = urlparameters ? urlparameters : '';
-		var newDialogDiv = $j("<div><iframe style='width:100%;height:100%;border-width:0px;' frameborder='0'></iframe></div>");
+		var newDialogDiv = $j("<div><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0'></iframe></div>");
 		$j("body").prepend(newDialogDiv);
 		$j("html").css('overflow', 'hidden');
 		$j(newDialogDiv).dialog({
