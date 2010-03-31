@@ -58,13 +58,10 @@ A simple setdata causes problems with things like arrays being saved as empty st
 	</cfloop>
 </cfif>
 
-<!--------------------------------------------------------------------------------------- 
-THE SAVE NEEDS TO BE FIXED SO THAT THE OBJECT IS PASSED THROUGH <FT:PROCESSFORMOBJECTS />
-A simple setdata causes problems with things like arrays being saved as empty strings.
- --------------------------------------------------------------------------------------->
- 
 <!--- Save the updated object to the session --->
-<cfset stResult = application.fapi.setData(stProperties="#stObj#", bSessionOnly="true") />
+<cfif structKeyExists(stobj, "objectid") AND len(stobj.objectid)>
+	<cfset stResult = application.fapi.setData(stProperties="#stObj#", bSessionOnly="true") />
+</cfif>
 
 <cfif structKeyExists(stMetadata,"ftAjaxMethod") AND len(stMetadata.ftAjaxMethod)>
 	<cfset FieldMethod = stMetadata.ftAjaxMethod />
