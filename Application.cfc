@@ -220,7 +220,7 @@
 		CALL THE PROJECTS AFTER INIT VARIABLES
 		------------------------------------>
 		<cfif fileExists("#application.path.project#/config/_serverSpecificVarsAfterInit.cfm") >
-			<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/_serverSpecificVarsAfterInit.cfm" />
+			<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/_serverSpecificVarsAfterInit.cfm" >
 		</cfif>
 
 
