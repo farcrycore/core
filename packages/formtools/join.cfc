@@ -44,9 +44,9 @@
 		<cfset var joinItems = "" />
 		<cfset var i = "" />
 		<cfset var counter = "" />
-		<cfset var returnHTML = "" />		
+		<cfset var returnHTML = "" />
 		<cfset var qArrayField = "" />
-				
+		
 		
 		<skin:loadJS id="jquery-ui" />
 		<skin:loadCSS id="jquery-ui" />
@@ -60,7 +60,7 @@
 					<cfset joinItems = arrayToList(arguments.stObject[arguments.stMetadata.name]) />
 				<cfelse>
 					<cfset joinItems = arguments.stObject[arguments.stMetadata.name] />
-				</cfif>		
+				</cfif>
 				
 				<!-------------------------------------------------------------------------- 
 				generate library data query to populate library interface 
@@ -77,13 +77,13 @@
 						<cfinvoke component="#oPrimary#" method="#stMetadata.ftLibraryData#" returnvariable="libraryData">
 							<cfinvokeargument name="primaryID" value="#arguments.stobject.objectid#" />
 							<cfinvokeargument name="qFilter" value="#queryNew('objectid')#" />
-						</cfinvoke>					
+						</cfinvoke>
 						
 						<cfif isStruct(libraryData)>
 							<cfset qLibraryList = libraryData.q>
 						<cfelse>
 							<cfset qLibraryList = libraryData />
-						</cfif>					
+						</cfif>
 					</cfif>
 				<cfelse>
 					<!--- if nothing exists to generate library data then cobble something together --->
@@ -92,8 +92,15 @@
 		
 				<cfsavecontent variable="returnHTML">
 				<cfif qLibraryList.recordcount>
+					<!--- If they didn't pass in ftStyle, use the old hard coded
+						value for backwards compatibility  --->
+					<cfif structKeyExists(arguments, "stMetadata") 
+						and not structKeyExists(arguments.stMetadata, "ftStyle")>
+						<cfset arguments.stMetadata.ftStyle = "width:auto" />
+					</cfif>
+					
 					<cfoutput>
-					<select  id="#arguments.fieldname#" name="#arguments.fieldname#" <cfif len(arguments.stMetadata.ftSelectSize)> size="#arguments.stMetadata.ftSelectSize#"</cfif> <cfif arguments.stMetadata.ftSelectMultiple>multiple="multiple"</cfif> style="width:auto;" class="selectInput #arguments.stMetadata.ftClass#">
+					<select  id="#arguments.fieldname#" name="#arguments.fieldname#" <cfif len(arguments.stMetadata.ftSelectSize)> size="#arguments.stMetadata.ftSelectSize#"</cfif> <cfif arguments.stMetadata.ftSelectMultiple>multiple="multiple"</cfif> style="#arguments.stMetadata.ftStyle#" class="selectInput #arguments.stMetadata.ftClass#">
 					<cfif len(arguments.stMetadata.ftFirstListLabel) AND NOT arguments.stMetadata.ftSelectMultiple>
 						<option value="">#arguments.stMetadata.ftFirstListLabel#</option>
 					</cfif>
@@ -114,7 +121,7 @@
 				
 				</cfsavecontent>
 			
-			</cfcase>		
+			</cfcase>
 		
 			<cfdefaultcase>
 				<cfif arguments.stMetadata.type EQ "array">		
@@ -127,8 +134,8 @@
 					<cfset joinItems = valueList(qArrayField.data) />
 				<cfelse>
 					<cfset joinItems = arguments.stObject[arguments.stMetadata.name] />
-				</cfif>		
-							
+				</cfif>
+				
 			
 			
 				<cfsavecontent variable="returnHTML">	
@@ -182,7 +189,7 @@
 												text="detach" 
 												confirmText="Are you sure you want to detach this item" 
 												onClick="fcForm.detachLibraryItem('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#i#');" />
-								 						 	
+								 
 </cfif>
 										
 									</td>
@@ -218,7 +225,7 @@
 												value="Delete All" 
 												text="delete all" 
 												confirmText="Are you sure you want to delete all the attached items?"
-												onClick="fcForm.deleteAllLibraryItems('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems#');" />								
+												onClick="fcForm.deleteAllLibraryItems('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems#');" />
 								<cfelseif arguments.stMetadata.ftRemoveType EQ "detach">
 									<ft:button	Type="button" 
 												renderType="button"
@@ -226,7 +233,7 @@
 												value="Detach All" 
 												text="detach all" 
 												confirmText="Are you sure you want to detach all the attached items?"
-												onClick="fcForm.detachAllLibraryItems('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems#');" />								
+												onClick="fcForm.detachAllLibraryItems('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems#');" />
 									
 								</cfif>
 							</cfif>
