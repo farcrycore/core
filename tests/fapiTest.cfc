@@ -27,6 +27,7 @@
 	</cffunction>
 	
 	<!--- ////////////////////////////////////////////////////////////////// --->
+	
 	<cffunction name="findTypeTest" access="public">
 		<!--- <cfset assertEquals(true, false) /> --->
 		<cfset assertEquals(this.myComp.findType(createUUID()), "") />
@@ -607,4 +608,38 @@
 		<cfset assertTrue(refindnocase("\(\s+datetimecreated\s+is\s+not\s+null\s+and\s+not\s+datetimecreated\s+=\s+\?\s+and\s+datetimecreated\s+&lt;\s*\?\s+\)",d)) />
 	</cffunction>
 	
+	<cffunction name="getLinkBasic" access="public" output="false" displayname="getLink - base test" returntype="void">
+		<cfset var x = this.myComp.getLink(objectid='AB3C3520-B72D-46D6-B2066B5E844A1114') />
+		
+		<cfset assertEquals(x, "/AB3C3520-B72D-46D6-B2066B5E844A1114") />
+	</cffunction>
+	
+	<cffunction name="getLinkBasicWithDomain" access="public" output="false" displayname="getLink - base test FQDN" returntype="void">
+		
+		<!--- ,urlparameters='key=' & hash(encrypt(recipient,arguments.key,'AES'))   --->
+		<cfset var x = this.myComp.getLink(
+											objectid='AB3C3520-B72D-46D6-B2066B5E844A1114', 
+											includeDomain=true) />
+		
+		<cfset assertEquals(x, "http://#cgi.http_host#/AB3C3520-B72D-46D6-B2066B5E844A1114") />
+	</cffunction>
+	
+	<cffunction name="getLinkBasicWithDomainURLParams" access="public" output="false" displayname="getLink - base test FQDN with params" returntype="void">
+		
+		<!--- ,urlparameters='key=' & hash(encrypt(recipient,arguments.key,'AES'))   --->
+		<cfset var x = this.myComp.getLink(
+											objectid='AB3C3520-B72D-46D6-B2066B5E844A1114', 
+											includeDomain=true,
+											urlparameters='key=4147631D-CE95') />
+		
+		<cfset assertEquals(
+							x,
+							"http://unsw.local/AB3C3520-B72D-46D6-B2066B5E844A1114/key/4147631D%2DCE95") />
+	</cffunction>
+	
+	<cffunction name="getLinkAlias" access="public" output="false" displayname="getLink - very basic alias test" returntype="void">
+		<cfset var x = this.myComp.getLink(alias='home') />
+		
+		<cfset assertEquals(x, "/") />
+	</cffunction>
 </cfcomponent>
