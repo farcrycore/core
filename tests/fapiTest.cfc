@@ -615,26 +615,31 @@
 	</cffunction>
 	
 	<cffunction name="getLinkBasicWithDomain" access="public" output="false" displayname="getLink - base test FQDN" returntype="void">
-		
-		<!--- ,urlparameters='key=' & hash(encrypt(recipient,arguments.key,'AES'))   --->
 		<cfset var x = this.myComp.getLink(
 											objectid='AB3C3520-B72D-46D6-B2066B5E844A1114', 
 											includeDomain=true) />
-		
 		<cfset assertEquals(x, "http://#cgi.http_host#/AB3C3520-B72D-46D6-B2066B5E844A1114") />
 	</cffunction>
 	
 	<cffunction name="getLinkBasicWithDomainURLParams" access="public" output="false" displayname="getLink - base test FQDN with params" returntype="void">
-		
-		<!--- ,urlparameters='key=' & hash(encrypt(recipient,arguments.key,'AES'))   --->
 		<cfset var x = this.myComp.getLink(
 											objectid='AB3C3520-B72D-46D6-B2066B5E844A1114', 
 											includeDomain=true,
 											urlparameters='key=4147631D-CE95') />
-		
 		<cfset assertEquals(
 							x,
 							"http://unsw.local/AB3C3520-B72D-46D6-B2066B5E844A1114/key/4147631D%2DCE95") />
+	</cffunction>
+	
+	<cffunction name="getLinkBasicWithDomainOverrideURLParams" access="public" output="false" displayname="getLink - base test FQDN with params" returntype="void">
+		<cfset var x = this.myComp.getLink(
+											objectid='AB3C3520-B72D-46D6-B2066B5E844A1114', 
+											includeDomain=true,
+											urlparameters='key=4147631D-CE95',
+											domain="daemon.com.au") />
+		<cfset assertEquals(
+							x,
+							"http://daemon.com.au/AB3C3520-B72D-46D6-B2066B5E844A1114/key/4147631D%2DCE95") />
 	</cffunction>
 	
 	<cffunction name="getLinkAlias" access="public" output="false" displayname="getLink - very basic alias test" returntype="void">
