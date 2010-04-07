@@ -631,7 +631,7 @@
 							"http://unsw.local/AB3C3520-B72D-46D6-B2066B5E844A1114/key/4147631D%2DCE95") />
 	</cffunction>
 	
-	<cffunction name="getLinkBasicWithDomainOverrideURLParams" access="public" output="false" displayname="getLink - base test FQDN with params" returntype="void">
+	<cffunction name="getLinkBasicWithDomainOverrideURLParams" access="public" output="false" displayname="getLink - base test FQDN with params and domain override" returntype="void">
 		<cfset var x = this.myComp.getLink(
 											objectid='AB3C3520-B72D-46D6-B2066B5E844A1114', 
 											includeDomain=true,
