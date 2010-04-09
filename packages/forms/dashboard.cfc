@@ -21,6 +21,7 @@
 	<cfset var lTypes = "dmNews,dmHTML,dmEvent" />
 	
 	<cfloop list="#ltypes#" index="i">
+    <cftry>
 	<cfquery name="qDraft" datasource="#application.dsn#">
 	SELECT 
 		objectid, label, '#i#' AS typename, datetimelastupdated
@@ -39,6 +40,8 @@
 		ORDER BY datetimelastupdated DESC
 		</cfif>
 	</cfquery>
+  <cfcatch></cfcatch>
+  </cftry>
 	</cfloop>
 	
 	<cfreturn qResult />
@@ -87,6 +90,7 @@
 	<cfset var lTypes = "dmNews,dmHTML,dmEvent" />
 	
 	<cfloop list="#ltypes#" index="i">
+    <cftry>
 	<cfquery name="qPending" datasource="#application.dsn#">
 	SELECT 
 		objectid, label, '#i#' AS typename, datetimelastupdated
@@ -103,6 +107,8 @@
 		SELECT objectid, label, typename, datetimelastupdated FROM qResult
 		</cfif>
 	</cfquery>
+    <cfcatch></cfcatch>
+    </cftry>
 	</cfloop>
 	
 	<cfreturn qResult />
