@@ -1,3 +1,11 @@
+<!--- @@Copyright: Daemon Pty Limited 1995-2007, http://www.daemon.com.au --->
+<!--- @@License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php --->
+<!--- @@displayname: Update Join Property --->
+<!--- @@description:   --->
+<!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
+
+<!--- @@cacheStatus:-1 --->
+
 <!--- 
 <cfparam name="url.libraryType" type="string" /><!--- Can be Array or UUID. If UUID, only 1 value can be stored. --->
 <cfparam name="url.PrimaryObjectID" type="UUID" />

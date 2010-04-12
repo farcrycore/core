@@ -1,4 +1,10 @@
+<!--- @@Copyright: Daemon Pty Limited 1995-2007, http://www.daemon.com.au --->
+<!--- @@License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php --->
+<!--- @@displayname: Display Library Tabs --->
+<!--- @@description:   --->
+<!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
+<!--- @@cacheStatus:-1 --->
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
