@@ -538,11 +538,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		<!--- OBJECT: check the content item for a natural navigation context ie. it sits in the site tree --->
 		<cfif NOT len(navID)>
-			<cfif arguments.typename eq "dmNavigation" AND len(arguments.objectid)>
-				<!--- Use the navigation objectid if its a navigation object --->
-				<cfset navID = arguments.objectid />
-	
-			<cfelseif len(arguments.objectid) AND structKeyExists(application.stCoapi["#arguments.typename#"], "bUseInTree") AND application.stCoapi["#arguments.typename#"].bUseInTree>
+			<!--- NEED TO CHECK VERSION ID FIRST INCASE DEVELOPER HAS ADDED VERSION ID TO dmNavigation --->
+			<cfif len(arguments.objectid) AND structKeyExists(application.stCoapi["#arguments.typename#"], "bUseInTree") AND application.stCoapi["#arguments.typename#"].bUseInTree>
 				<!--- look up the object's parent navigaion node --->
 				<!--- TODO: replace this tag call with a FAPI function (or equivalent) --->
 				<nj:getNavigation objectId="#arguments.objectId#" r_stobject="stNav" />
@@ -551,6 +548,10 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				<cfif isStruct(stNav) and structKeyExists(stNav, "objectid") AND len(stNav.objectid)>
 					<cfset navID = stNav.objectID>
 				</cfif>
+			
+			<cfelseif arguments.typename eq "dmNavigation" AND len(arguments.objectid)>
+				<!--- Use the navigation objectid if its a navigation object --->
+				<cfset navID = arguments.objectid />
 			</cfif>
 		</cfif>
 
