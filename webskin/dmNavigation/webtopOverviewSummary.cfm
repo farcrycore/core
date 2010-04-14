@@ -47,7 +47,8 @@
 	
 	<ft:fieldset legend="Navigation Details">
 		
-		<cfset qDescendents = createObject("component", "#application.packagepath#.farcry.tree").getDescendants(objectid=stobj.objectid, depth=1, bIncludeSelf=0) />
+		<!--- Using getNavID() just in case developer has added versions to dmNavigation --->
+		<cfset qDescendents = createObject("component", "#application.packagepath#.farcry.tree").getDescendants(objectid=getNavID(stobj.objectid), depth=1, bIncludeSelf=0) />
 		<ft:field label="Breadcrumb" bMultiField="true">
 		
 			<nj:getNavigation objectId="#stobj.objectid#" r_objectID="parentID" bInclusive="1">

@@ -48,31 +48,43 @@ customIcons.Type.imageRoot = StructNew();
 customIcons.Type.imageRoot.draft = "#cimages#/images.gif";
 customIcons.Type.imageRoot.pending = "#cimages#/images.gif";
 customIcons.Type.imageRoot.approved = "#cimages#/images.gif";
+customIcons.Type.imageRoot.livedraft = "#cimages#/images.gif";
+customIcons.Type.imageRoot.livependingdraft = "#cimages#/images.gif";
 
 customIcons.Type.home = StructNew();
 customIcons.Type.home.draft = "#cimages#/home.gif";
 customIcons.Type.home.pending = "#cimages#/home.gif";
 customIcons.Type.home.approved = "#cimages#/home.gif";
+customIcons.Type.home.livedraft = "#cimages#/home.gif";
+customIcons.Type.home.livependingdraft = "#cimages#/home.gif";
 
 customIcons.Type.Rubbish = StructNew();
 customIcons.Type.Rubbish.draft = "#cimages#/rubbish.gif";
 customIcons.Type.Rubbish.pending = "#cimages#/rubbish.gif";
 customIcons.Type.Rubbish.approved = "#cimages#/rubbish.gif";
+customIcons.Type.Rubbish.livedraft = "#cimages#/rubbish.gif";
+customIcons.Type.Rubbish.livependingdraft = "#cimages#/rubbish.gif";
 
 customIcons.Type.root = StructNew();
 customIcons.Type.root.draft = "#cimages#/webserver.gif";
 customIcons.Type.root.pending = "#cimages#/webserver.gif";
 customIcons.Type.root.approved = "#cimages#/webserver.gif";
+customIcons.Type.root.livedraft = "#cimages#/webserver.gif";
+customIcons.Type.root.livependingdraft = "#cimages#/webserver.gif";
 
 customIcons.Type.FileRoot = StructNew();
 customIcons.Type.FileRoot.draft = "#cimages#/floppyDisk.gif";
 customIcons.Type.FileRoot.pending = "#cimages#/floppyDisk.gif";
 customIcons.Type.FileRoot.approved = "#cimages#/floppyDisk.gif";
+customIcons.Type.FileRoot.livedraft = "#cimages#/floppyDisk.gif";
+customIcons.Type.FileRoot.livependingdraft = "#cimages#/floppyDisk.gif";
 
 customIcons.Type.externallink = StructNew();
 customIcons.Type.externallink.draft ="#cimages#/NavDraftExtLink.gif";
 customIcons.Type.externallink.pending ="#cimages#/NavPendingExtLink.gif";
 customIcons.Type.externallink.approved ="#cimages#/NavApprovedExtLink.gif";
+customIcons.Type.externallink.livedraft ="#cimages#/NavDraftExtLink.gif";
+customIcons.Type.externallink.livependingdraft ="#cimages#/NavPendingExtLink.gif";
 
 if( StructKeyExists( application.types, "dmNavigation" ) )
 {
@@ -80,6 +92,8 @@ if( StructKeyExists( application.types, "dmNavigation" ) )
 	customIcons.Type.dmnavigation.draft ="#cimages#/NavDraft.gif";
 	customIcons.Type.dmnavigation.pending ="#cimages#/NavPending.gif";
 	customIcons.Type.dmnavigation.approved ="#cimages#/NavApproved.gif";
+	customIcons.Type.dmnavigation.livedraft ="#cimages#/NavDraft.gif";
+	customIcons.Type.dmnavigation.livependingdraft ="#cimages#/NavPending.gif";
 }
 
 if( StructKeyExists( application.types, "dmImage" ) )
@@ -88,6 +102,8 @@ if( StructKeyExists( application.types, "dmImage" ) )
 	customIcons.Type.dmImage.draft ="#cimages#/pictureDraft.gif";
 	customIcons.Type.dmImage.pending ="#cimages#/picturePending.gif";
 	customIcons.Type.dmImage.approved ="#cimages#/pictureApproved.gif";
+	customIcons.Type.dmImage.livedraft ="#cimages#/pictureDraft.gif";
+	customIcons.Type.dmImage.pending ="#cimages#/picturePending.gif";
 }
 
 if( StructKeyExists( application.types, "dmInclude" ) )
@@ -96,6 +112,8 @@ if( StructKeyExists( application.types, "dmInclude" ) )
 	customIcons.Type.dmInclude.draft ="#cimages#/includeDraft.gif";
 	customIcons.Type.dmInclude.pending ="#cimages#/includePending.gif";
 	customIcons.Type.dmInclude.approved ="#cimages#/includeApproved.gif";
+	customIcons.Type.dmInclude.livedraft ="#cimages#/includeDraft.gif";
+	customIcons.Type.dmInclude.livependingdraft ="#cimages#/includePending.gif";
 }
 
 if( StructKeyExists( application.types, "dmFile" ) )
@@ -104,6 +122,8 @@ if( StructKeyExists( application.types, "dmFile" ) )
 	customIcons.Type.dmFile.draft ="#cimages#/fileDraft.gif";
 	customIcons.Type.dmFile.pending ="#cimages#/filePending.gif";
 	customIcons.Type.dmFile.approved ="#cimages#/fileApproved.gif";
+	customIcons.Type.dmFile.livedraft ="#cimages#/fileDraft.gif";
+	customIcons.Type.dmFile.livependingdraft ="#cimages#/filePending.gif";
 }
 
 if( StructKeyExists( application.types, "dmCSS" ) )
@@ -112,6 +132,8 @@ if( StructKeyExists( application.types, "dmCSS" ) )
 	customIcons.Type.dmCSS.draft ="#cimages#/cssDraft.gif";
 	customIcons.Type.dmCSS.pending ="#cimages#/cssDraft.gif";
 	customIcons.Type.dmCSS.approved ="#cimages#/cssDraft.gif";
+	customIcons.Type.dmCSS.livedraft ="#cimages#/cssDraft.gif";
+	customIcons.Type.dmCSS.livependingdraft ="#cimages#/cssDraft.gif";
 }
 
 if( StructKeyExists( application.types, "dmFlash" ) )
@@ -120,6 +142,8 @@ if( StructKeyExists( application.types, "dmFlash" ) )
 	customIcons.Type.dmFlash.draft ="#cimages#/flashApproved.gif";
 	customIcons.Type.dmFlash.pending ="#cimages#/flashApproved.gif";
 	customIcons.Type.dmFlash.approved ="#cimages#/flashApproved.gif";
+	customIcons.Type.dmFlash.livedraft ="#cimages#/flashApproved.gif";
+	customIcons.Type.dmFlash.livependingdraft ="#cimages#/flashApproved.gif";
 }
 
 if( StructKeyExists( application.types, "dmLink" ) )
@@ -128,6 +152,8 @@ if( StructKeyExists( application.types, "dmLink" ) )
 	customIcons.Type.dmLink.draft ="#cimages#/linkDraft.gif";
 	customIcons.Type.dmLink.pending ="#cimages#/linkPending.gif";
 	customIcons.Type.dmLink.approved ="#cimages#/linkApproved.gif";
+	customIcons.Type.dmLink.livedraft ="#cimages#/linkDraft.gif";
+	customIcons.Type.dmLink.livependingdraft ="#cimages#/linkDraft.gif";
 }
 
 customIcons.locked = "#cimages#/padlock.gif";

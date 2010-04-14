@@ -337,7 +337,8 @@ $out:$
 						<cfif stRules.bLiveVersionExists and url.status eq "approved">
 							 <!--- Then we want to swap live/draft and archive current live --->
 							<cfinvoke component="#application.packagepath#.farcry.versioning" method="sendObjectLive" objectID="#stObj.objectid#"  stDraftObject="#stObj#" returnvariable="stRules">
-							<cfset returnObjectID=stObj.objectid>
+							<cfparam name="returnObjectID" default="#stObj.objectid#">
+														
 						<cfelse>
 							
 							<cfif stRules.bDraftVersionExists and url.status eq "draft">
@@ -351,7 +352,7 @@ $out:$
 							</cfscript>
 							
 							<cfif stObj.typename neq "dmImage" and stObj.typename neq "dmFile">
-								<cfset returnObjectId = attributes.lObjectIDs>
+								<cfparam name="returnObjectID" default="#attributes.lObjectIDs#">
 							</cfif>
 							
 						</cfif>
@@ -382,7 +383,7 @@ $out:$
 	<cfelseif listlen(url.objectid) gt 1>
 		<cfoutput><p class="success">Objects updated: #listlen(url.objectid)#</p></cfoutput>
 	<cfelse>
-		<cfparam name="returnObjectId" default="#attributes.lObjectIDs#"><cfoutput>
+		<cfparam name="returnObjectId" default="#listFirst(attributes.lObjectIDs)#"><cfoutput>
 		<script type="text/javascript">
 		if(top == self) {
 			window.close();
