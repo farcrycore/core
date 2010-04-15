@@ -245,11 +245,8 @@
 	
 		
 		<!--- All else fails, try the displayPageStandard webskin --->
-		
-		<skin:view objectid="#stobj.objectid#" typename="#stobj.typename#" webskin="displayPageStandard" r_html="HTML" alternateHTML="" />
-		
-		<cfif len(trim(HTML))>
-			<cfoutput>#HTML#</cfoutput>
+		<cfif application.fapi.hasWebskin(typename="#stobj.typename#" , webskin="displayPageStandard")>
+			<skin:view objectid="#stobj.objectid#" typename="#stobj.typename#" webskin="displayPageStandard" />
 		<cfelse>
 			<cfthrow 
 				message="I was looking at the type: #stobj.typename# and couldn't find a displayPageStandard. You'll want to create the default view for this object. To do that, create a displayPageStandard.cfm webskin in the webskin folder in a directory named #stobj.typename#." />
@@ -291,14 +288,14 @@
 		</cfif>
 		
 		
-		<!--- Call the view on the types coapi object --->
-		<skin:view typename="#url.type#" webskin="#url.view#" r_html="HTML" alternateHTML="" />
+		<cfif application.fapi.hasWebskin(typename="#url.type#" , webskin="#url.view#")>
 
-		<cfif len(trim(HTML))>
-			<cfoutput>#HTML#</cfoutput>
+			<!--- Call the view on the types coapi object --->
+			<skin:view typename="#url.type#" webskin="#url.view#" />
+			
 		<cfelse>
 			<cfthrow message="For the default view of a type, create a displayPageStandard webskin." />
-		</cfif>		
+		</cfif>	
 		
 	<cfelse>
 		<skin:location url="#attributes.loginpath#" urlParameters="error=restricted" />
