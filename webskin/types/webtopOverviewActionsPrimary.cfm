@@ -172,8 +172,13 @@ START WEBSKIN
 				</cfcase>
 		
 				<cfcase value="approved">	
-					<!--- check user can edit --->
-					<cfif stOverviewParams.stPermissions.iEdit EQ 1 AND (not structkeyexists(stObj,"versionid") or stobj.bAlwaysShowEdit EQ 1)>
+					<!--- 
+					Check user can edit.
+					Additionally, they can only edit an approved item if they have approval permission
+					 --->
+					<cfif stOverviewParams.stPermissions.iApprove eq 1 
+						AND stOverviewParams.stPermissions.iEdit EQ 1 
+						AND (not structkeyexists(stObj,"versionid") or stobj.bAlwaysShowEdit EQ 1)>
 						<ft:button 	value="Edit this content item" 
 									text="<h1>EDIT</h1>Edit content item"
 									class="primary"
