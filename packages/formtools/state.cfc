@@ -21,6 +21,7 @@
 		
 		<cfparam name="arguments.stMetadata.ftCountries" default="" /><!--- Defaults to all --->
 		<cfparam name="arguments.stMetadata.ftValue" default="name" /><!--- "code" | "fullcode" | "name" --->
+		<cfparam name="arguments.stMetadata.ftDropdownFirstItem" default="" />
 		
 		<cfif structkeyexists(arguments.stMetadata,"ftWatch") and len(arguments.stMetadata.ftWatch)>
 			<cfset arguments.stMetadata.ftCountries = arguments.stObject[listfirst(arguments.stMetadata.ftWatch)] />
@@ -34,10 +35,13 @@
 		<cfif qAll.recordcount>
 			<cfsavecontent variable="html">
 				<cfoutput>
-					<select name="#arguments.fieldname#" id="#arguments.fieldname#" class="selectInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#">
+					<select name="#arguments.fieldname#" id="#arguments.fieldname#" class="selectInput #arguments.stMetadata.ftclass# #arguments.stMetadata.ftValidation#"  style="#arguments.stMetadata.ftstyle#">
 				</cfoutput>
-				
+				<cfif len(arguments.stMetadata.ftDropdownFirstItem)>
+					<cfoutput><option value="">#arguments.stMetadata.ftDropdownFirstItem#</option></cfoutput>
+				</cfif>
 				<cfoutput query="qAll" group="countryname">
+					
 					<cfif qCountries.recordcount gt 1><optgroup label="#qAll.countryname[qAll.currentrow]#"></cfif>
 					
 					<cfoutput><option value="#qAll[arguments.stMetadata.ftValue][qAll.currentrow]#" <cfif qAll[arguments.stMetadata.ftValue][qAll.currentrow] EQ arguments.stMetadata.value>selected='selected'</cfif>>#qAll.name[qAll.currentrow]#</option></cfoutput>
