@@ -1136,7 +1136,7 @@ o = new Object();
 objectMenu['Edit'] = o;
 o.text = "#application.rb.getResource('sitetree.contextmenu.edit@label','Edit')#";
 o.js = "menuOption_Edit();";
-o.jsvalidate = "hasPermission( lastSelectedId, '#PermNavEdit#' );";
+o.jsvalidate = "0";<!--- hasPermission( lastSelectedId, '#PermNavEdit#' ); --->
 o.bShowDisabled = "1";
 
 function menuOption_Edit()
