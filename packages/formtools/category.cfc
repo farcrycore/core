@@ -55,7 +55,7 @@
 							
 				<cfsavecontent variable="html">
 					<cfoutput><fieldset></cfoutput>
-					<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#"  <cfif arguments.stMetadata.ftSelectMultiple>size="#arguments.stMetadata.ftSelectSize#" multiple="true"</cfif> class="selectInput #arguments.stMetadata.ftSelectSize#"></cfoutput>
+					<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#"  <cfif arguments.stMetadata.ftSelectMultiple>size="#arguments.stMetadata.ftSelectSize#" multiple="true"</cfif> class="selectInput #arguments.stMetadata.ftSelectSize# #arguments.stMetadata.ftValidation#"></cfoutput>
 					<cfloop list="#lCategoryBranch#" index="i">
 						<!--- If the item is the actual alias requested then it is not selectable. --->
 						<cfif i EQ rootID>
