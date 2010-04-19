@@ -73,22 +73,22 @@
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","WA") /><cfset querysetcell(q,"name","Western Australia") /><cfset querysetcell(q,"countrycode","AU") /><cfset querysetcell(q,"countryname","Australia") />
 			
 			<!--- New Zealand --->
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","AUK") /><cfset querysetcell(q,"name","Auckland") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","BOP") /><cfset querysetcell(q,"name","Bay of Plenty") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","CAN") /><cfset querysetcell(q,"name","Canterbury") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","GIS") /><cfset querysetcell(q,"name","Gisborne") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","HKB") /><cfset querysetcell(q,"name","Hawke's Bay") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","MWT") /><cfset querysetcell(q,"name","Manawatu-Wanganui") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","MBH") /><cfset querysetcell(q,"name","Marlborough") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","NSN") /><cfset querysetcell(q,"name","Nelson") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","NTL") /><cfset querysetcell(q,"name","Northland") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","OTA") /><cfset querysetcell(q,"name","Otago") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","STL") /><cfset querysetcell(q,"name","Southland") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","TKI") /><cfset querysetcell(q,"name","Taranaki") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","TAS") /><cfset querysetcell(q,"name","Tasman") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","WKO") /><cfset querysetcell(q,"name","Waikato") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","WGN") /><cfset querysetcell(q,"name","Wellington") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","WTC") /><cfset querysetcell(q,"name","West Coast") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Auckland") /><cfset querysetcell(q,"name","Auckland") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Bay of Plenty") /><cfset querysetcell(q,"name","Bay of Plenty") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Canterbury") /><cfset querysetcell(q,"name","Canterbury") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Gisborne") /><cfset querysetcell(q,"name","Gisborne") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Hawke's Bay") /><cfset querysetcell(q,"name","Hawke's Bay") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Manawatu-Wanganui") /><cfset querysetcell(q,"name","Manawatu-Wanganui") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Marlborough") /><cfset querysetcell(q,"name","Marlborough") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Nelson") /><cfset querysetcell(q,"name","Nelson") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Northland") /><cfset querysetcell(q,"name","Northland") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Otago") /><cfset querysetcell(q,"name","Otago") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Southland") /><cfset querysetcell(q,"name","Southland") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Taranaki") /><cfset querysetcell(q,"name","Taranaki") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Tasman") /><cfset querysetcell(q,"name","Tasman") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Waikato") /><cfset querysetcell(q,"name","Waikato") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Wellington") /><cfset querysetcell(q,"name","Wellington") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","West Coast") /><cfset querysetcell(q,"name","West Coast") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
 			
 			<!--- Netherlands --->
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","DR") /><cfset querysetcell(q,"name","Drenthe") /><cfset querysetcell(q,"countrycode","NL") /><cfset querysetcell(q,"countryname","Netherlands") />
