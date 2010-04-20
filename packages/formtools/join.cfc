@@ -3,10 +3,13 @@
 
 	<cfproperty name="ftLabelAlignment" required="false" default="inline" options="inline,block" hint="Used by FarCry Form Layouts for positioning of labels. inline or block." />
 
-	<cfproperty name="ftAllowAttach" required="false" default="true" />
-	<cfproperty name="ftAllowAdd" required="false" default="true" />
+	<cfproperty name="ftAllowSelect" required="false" default="true" />
+	<cfproperty name="ftAllowCreate" required="false" default="true" />
 	<cfproperty name="ftAllowEdit" required="false" default="false" />
-	<cfproperty name="ftRemoveType" required="false" default="detach" /><!--- detach or delete --->
+	<cfproperty name="ftRemoveType" required="false" default="remove" /><!--- detach or delete --->
+
+	
+	
 	
 	<cfproperty name="ftLibrarySelectedWebskin" default="librarySelected" type="string" />
 	<cfproperty name="ftLibrarySelectedListClass" default="arrayDetail" type="string" />
@@ -46,12 +49,30 @@
 		<cfset var counter = "" />
 		<cfset var returnHTML = "" />
 		<cfset var qArrayField = "" />
-		
+		<cfset var stActions = structNew() /><!--- Need to allow for earlier versions of farcry which had different naming conventions --->
 		
 		<skin:loadJS id="jquery-ui" />
 		<skin:loadCSS id="jquery-ui" />
 		
 
+		
+		<!--- SETUP stActions --->
+		<cfset stActions.ftAllowSelect = arguments.stMetadata.ftAllowSelect />
+		<cfset stActions.ftAllowCreate = arguments.stMetadata.ftAllowCreate />
+		<cfset stActions.ftAllowEdit = arguments.stMetadata.ftAllowEdit />
+		<cfset stActions.ftRemoveType = arguments.stMetadata.ftRemoveType />
+		
+		<cfif structKeyExists(arguments.stMetadata, "ftAllowAttach")>
+			<cfset stActions.ftAllowSelect = arguments.stMetadata.ftAllowAttach />
+		</cfif>
+		<cfif structKeyExists(arguments.stMetadata, "ftAllowAdd")>
+			<cfset stActions.ftAllowCreate = arguments.stMetadata.ftAllowAdd />
+		</cfif>
+		<cfif arguments.stMetadata.ftRemoveType EQ "detach">
+			<cfset stActions.ftRemoveType = "remove" />
+		</cfif>
+		
+		
 		
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 		
@@ -160,7 +181,7 @@
 									<td class="" style="cursor:move;width:100%;padding:3px;">#htmlLabel#</td>
 									<td class="" style="padding:3px;white-space:nowrap;">
 										
-										<cfif arguments.stMetadata.ftAllowEdit>
+										<cfif stActions.ftAllowEdit>
 											<ft:button
 												Type="button" 
 												renderType="button"
@@ -171,7 +192,7 @@
 								
 										</cfif>
 										
-										<cfif arguments.stMetadata.ftRemoveType EQ "delete">
+										<cfif stActions.ftRemoveType EQ "delete">
 											<ft:button
 												Type="button" 
 												renderType="button"
@@ -180,17 +201,17 @@
 												text="delete" 
 												confirmText="Are you sure you want to delete this item" 
 												onClick="fcForm.deleteLibraryItem('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#i#');" />
-										<cfelseif arguments.stMetadata.ftRemoveType EQ "detach">
+										<cfelseif stActions.ftRemoveType EQ "remove">
 											<ft:button
 												Type="button" 
 												renderType="button"
 												class="ui-state-default ui-corner-all"
-												value="Detach" 
-												text="detach" 
-												confirmText="Are you sure you want to detach this item" 
+												value="Remove" 
+												text="remove" 
+												confirmText="Are you sure you want to remove this item" 
 												onClick="fcForm.detachLibraryItem('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#i#');" />
 								 
-</cfif>
+										</cfif>
 										
 									</td>
 									</tr>
@@ -207,18 +228,18 @@
 					<cfoutput>
 						
 						
-							<cfif arguments.stMetadata.ftAllowAttach>
+							<cfif stActions.ftAllowSelect>
 								<ft:button	Type="button" 
 											renderType="button"
 											class="ui-state-default ui-corner-all"
-											value="attach" 
+											value="select" 
 											onClick="fcForm.openLibrarySelect('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');" />
 								
 							</cfif>
 							
 							<cfif listLen(joinItems)>
 								
-								<cfif arguments.stMetadata.ftRemoveType EQ "delete">
+								<cfif stActions.ftRemoveType EQ "delete">
 									<ft:button	Type="button" 
 												renderType="button"
 												class="ui-state-default ui-corner-all"
@@ -226,34 +247,45 @@
 												text="delete all" 
 												confirmText="Are you sure you want to delete all the attached items?"
 												onClick="fcForm.deleteAllLibraryItems('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems#');" />
-								<cfelseif arguments.stMetadata.ftRemoveType EQ "detach">
+								<cfelseif stActions.ftRemoveType EQ "remove">
 									<ft:button	Type="button" 
 												renderType="button"
 												class="ui-state-default ui-corner-all"
-												value="Detach All" 
-												text="detach all" 
-												confirmText="Are you sure you want to detach all the attached items?"
+												value="Remove All" 
+												text="remove all" 
+												confirmText="Are you sure you want to remove all the attached items?"
 												onClick="fcForm.detachAllLibraryItems('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems#');" />
 									
 								</cfif>
 							</cfif>
-							<cfif arguments.stMetadata.ftAllowAdd>
-								<ft:button	Type="button" 
-											renderType="button"
-											class="ui-state-default ui-corner-all"
-											value="Add" 
-											text="add" 
-											onClick="fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');" />
-								
+							<cfif arguments.stMetadata.ftAllowCreate>
+							
+
 								<cfif listLen(arguments.stMetadata.ftJoin) GT 1>
 									<select id="#arguments.fieldname#-add-type">
+										<option value="">- Create New -</option>
 										<cfloop list="#arguments.stMetadata.ftJoin#" index="i">
 											<option value="#trim(i)#">#application.fapi.getContentTypeMetadata(i, 'displayname', i)#</option>
 										</cfloop>
 									</select>
+									<skin:onReady>
+										$('###arguments.fieldname#-add-type').change(function() {
+											fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');
+										});
+									</skin:onReady>
 								<cfelse>
+									<ft:button	Type="button" 
+												renderType="button"
+												class="ui-state-default ui-corner-all"
+												value="Create" 
+												text="create" 
+												onClick="fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');" />
+									
+																	
 									<input type="hidden" id="#arguments.fieldname#-add-type" value="#arguments.stMetadata.ftJoin#" />
 								</cfif>
+								
+								
 							</cfif>
 						
 					</cfoutput>
