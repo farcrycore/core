@@ -795,8 +795,14 @@
       <cfif structKeyExists(arguments.stFields[i].metadata, "ftType") AND arguments.stFields[i].metadata.ftType EQ "Image" >
 		<cfparam name="arguments.stFields.#i#.metadata.ftAllowResize" default="true" />
 	  
-        <cfif structKeyExists(arguments.stFormPost, i) AND (
+        <cfif structKeyExists(arguments.stFormPost, i) AND (		
 				(
+				not structKeyExists(arguments.stFormPost[i].stSupporting, "CreateFromSource") 
+				and structKeyExists(arguments.stFields[i].metadata, "ftSourceField") 
+				and len(arguments.stFields[i].metadata.ftSourceField) 
+				)
+				
+				or	(
 					structKeyExists(arguments.stFormPost[i].stSupporting, "CreateFromSource") 
 					AND ListFirst(arguments.stFormPost[i].stSupporting.CreateFromSource)
 				) 
@@ -806,6 +812,7 @@
 					and len(arguments.stProperties[i])
 				)
 			)>	
+			
           <!--- Make sure a ftSourceField --->
 		  <cfif (not structkeyexists(arguments.stFields[i].metadata,"ftAllowResize") or arguments.stFields[i].metadata.ftAllowResize) and (not structkeyexists(arguments.stFields[i].metadata,"ftSourceField") or not len(arguments.stFields[i].metadata.ftSourceField)) and len(arguments.stProperties[i])>
 			<cfset sourceFieldName = i />
