@@ -152,7 +152,7 @@ START WEBSKIN
 					<!--- check user can approve object --->
 					<cfif stOverviewParams.stPermissions.iApprove eq 1 OR stOverviewParams.stPermissions.iApproveOwn EQ 1>
 						<ft:button 	value="Send content item live"
-									text="<h2>PUBLISH</h2>Approve content item"
+									text="PUBLISH<br>Approve content item"
 									class="secondary"
 									rbkey="workflow.buttons.sendlive" 
 									url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=approved" />	
@@ -199,14 +199,14 @@ START WEBSKIN
 						<cfset buttonValue = application.rb.getResource("sendBackToDraft") />
 						<cfif structKeyExists(stobj,"versionID") AND bHasDraft>
 							<ft:button 	value="Send this content item back to draft (deleting the draft version)" 
-										text="<h2>UNPUBLISH</h2>Send To Draft."
+										text="UNPUBLISH<br>Send To Draft."
 										class="secondary"
 										rbkey="workflow.buttons.sendbacktodraftdeletedraft" 
 										url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=draft&typename=#stobj.typeName#&ref=#url.ref#"
 										confirmText="This will delete the currently underlying draft version. Are you sure you wish to continue?" />
 						<cfelse>
 							<ft:button 	value="Send this content item back to draft" 
-										text="<h2>UNPUBLISH</h2>Send To Draft"
+										text="UNPUBLISH<br>Send To Draft"
 										class="secondary" 
 										rbkey="workflow.buttons.sendbacktodraft" 
 										url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=draft&typename=#stobj.typeName#&ref=#url.ref#" />
@@ -218,7 +218,7 @@ START WEBSKIN
 			<!--- check user can edit --->
 			<cfif stOverviewParams.stPermissions.iEdit EQ 1>
 				<ft:button	value="Edit this content item" 
-							text="<h2>EDIT</h2>Edit Content Item"
+							text="<h1>EDIT</h1>Edit Content Item"
 							class="primary" 
 							rbkey="workflow.buttons.edit" 
 							url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=#url.ref#&typename=#stobj.typeName#" />
@@ -233,7 +233,7 @@ START WEBSKIN
 					<!--- Check user can request approval --->
 					<cfif stOverviewParams.stPermissions.iRequest eq 1>
 							<ft:button 	value="Request approval" 
-										text="<h2>PUBLISH</h2>Request approval."
+										text="REQUEST APPROVAL<br>Send to an approver"
 										class="secondary"  
 										rbkey="workflow.buttons.requestapproval" 
 										url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=requestapproval&ref=#url.ref#" />
@@ -251,7 +251,7 @@ START WEBSKIN
 										<cfset returnto = "" />
 									</cfif>
 									<ft:button 	value="Delete"
-												text="<h2>DELETE</h2>Delete Content Item."
+												text="DELETE<br>Delete Content Item."
 												class="secondary"   
 												rbkey="workflow.buttons.delete" 
 												url="navajo/delete.cfm?ObjectId=#stobj.objectId#&#returnto#&ref=#url.ref#" 
@@ -265,13 +265,13 @@ START WEBSKIN
 					
 					<cfif stOverviewParams.stPermissions.iApprove eq 1> <!--- check user can approve object --->
 						<ft:button 	value="Send content item live" 
-									text="<h2>PUBLISH</h2>Send content item live."
+									text="PUBLISH<br>Send content item live."
 									class="secondary"  
 									rbkey="workflow.buttons.sendlive" 
 									url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=approved&ref=#url.ref#" />
 						<!--- send back to draft --->
 						<ft:button 	value="Send this content item back to draft"
-									text="<h2>REJECT</h2>Send back to draft."
+									text="REJECT<br>Send back to draft."
 									class="secondary"   
 									rbkey="workflow.buttons.sendbacktodraft" 
 									url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=draft&ref=#url.ref#" />
@@ -284,7 +284,7 @@ START WEBSKIN
 						<!--- check user can delete --->
 						<cfif stOverviewParams.stPermissions.iDelete eq 1>
 							<ft:button 	value="Delete"  
-										text="<h2>DELETE</h2>Delete this content item."
+										text="DELETE<br>Delete this content item."
 										class="secondary"   
 										rbkey="workflow.buttons.delete" 
 										url="navajo/delete.cfm?ObjectId=#stobj.objectId#&typename=#stobj.typeName#&ref=#url.ref#" 
@@ -298,7 +298,7 @@ START WEBSKIN
 			<!--- check user can delete --->
 			<cfif stOverviewParams.stPermissions.iDelete eq 1>
 				<ft:button 	value="Delete" 
-							text="<h2>DELETE</h2>delete this content item."
+							text="DELETE<br>delete this content item."
 							class="secondary"   
 							rbkey="workflow.buttons.delete" 
 							url="navajo/delete.cfm?ObjectId=#stobj.objectId#&typename=#stobj.typeName#&ref=#url.ref#" 
@@ -313,7 +313,7 @@ START WEBSKIN
 	
 			<cfif application.security.checkPermission("ModifyPermissions") and listcontains(application.fapi.getPropertyMetadata(typename="farBarnacle", property="referenceid", md="ftJoin", default=""), stObj.typename)>
 				<ft:button 	value="Modify Permissions" 
-							text="<h2>PERMISSIONS</h2>User access"
+							text="PERMISSIONS<br>User access"
 							class="secondary"  
 							type="button" 
 							style="width:180px;"
@@ -334,7 +334,7 @@ START WEBSKIN
 			</cfdefaultcase>
 		</cfswitch>
 		<ft:button 	value="Preview" 
-					text="<h2>PREVIEW</h2>View Content Item"
+					text="PREVIEW<br>View Content Item"
 					class="secondary" 
 					rbkey="workflow.buttons.preview" 
 					url="#application.url.webroot#/index.cfm?objectid=#stobj.objectid#&flushcache=1&showdraft=1" 
@@ -345,7 +345,7 @@ START WEBSKIN
 
 	<cfif session.overviewRef EQ "iframe">
 		<ft:button 	value="Close" 
-					text="<h2>DONE</h2>Finished with this item"
+					text="DONE<br>Finished with this item"
 					class="secondary" 
 					type="button" 
 					rbkey="workflow.buttons.close" 
