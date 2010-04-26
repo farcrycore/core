@@ -22,10 +22,6 @@
 <cfimport taglib="/farcry/core/tags/container/" prefix="con">
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
-<skin:loadJS id="jquery" />
-<skin:loadJS id="gritter" />
-<skin:loadCSS id="gritter" />
-
 <!--- Environment Variables --->
 <cfparam name="stParam.desc" default="" />
 <cfparam name="stParam.originalID" default="#stobj.objectid#" />
@@ -59,6 +55,11 @@
 </cfif>
 
 <cfif request.mode.design and request.mode.showcontainers gt 0>
+	<!--- Load CSS & JS --->
+	<skin:loadJS id="jquery" />
+	<skin:loadJS id="gritter" />
+	<skin:loadCSS id="gritter" />
+	
 	<cfif structkeyexists(url,"rule_action") and structkeyexists(url,"rule_id") and structkeyexists(url,"rule_index") and url.rule_index lte arraylen(stConObj.aRules)>
 		
 		<cfswitch expression="#url.rule_action#">
