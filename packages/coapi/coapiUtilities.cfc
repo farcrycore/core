@@ -85,7 +85,7 @@
 				
 			</cftry>
 		<cfelse>
-			<cfset bSuccess = false />
+			<cfset bSuccess = true />
 		</cfif>
 		
 		<cfreturn bSuccess />
