@@ -245,8 +245,9 @@
 		<cfargument name="qNewsData" required="true" type="query">
 		<cfargument name="language" required="false" type="string" default="en">
 		
+		<cfset var xmlString="">
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
-		<cfset var xmlString="">	
+			
 		<cfsavecontent variable="xmlString">
 			<cfloop query="arguments.qNewsData">
 				<cfsavecontent variable="strUrl">
