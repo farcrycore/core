@@ -21,13 +21,11 @@
 				<cfset application.security.factory.barnacle.updateRight(role=role,permission=permission,object=stObj.objectid,right=form[field]) />
 			</cfif>
 		</cfloop>
-		
 	</ft:processForm>
 
 	<ft:processForm action="Save" url="refresh">
-		<skin:bubble title="Your permissions have been saved!">
-			<cfoutput>You will need to updateApp for your changes to be implemented.</cfoutput>
-		</skin:bubble>
+		<cfset appliation.security.initCache() />
+		<skin:bubble title="Your permissions have been saved!" />
 	</ft:processForm>
 	
 	<ft:processForm action="Change Role">
@@ -36,7 +34,9 @@
 	
 	<cfset permissions = application.security.factory.permission.getAllPermissions(stObj.typename) />
 
-	<cfoutput>
+	<admin:header>
+	
+	<skin:htmlHead><cfoutput>
 		<script type="text/javascript">
 			var permissiontypevalue = { 
 				'#application.rb.getResource("security.constants.deny@label","Deny")#':-1,  
@@ -73,9 +73,7 @@
 			table.permissions, tr.permissions, td.permissions { background: transparent none;border:0px solid ##e3e3e3; border-bottom: 1px dotted ##e3e3e3; vertical-align:middle;}
 			td.permissions { padding: 3px;  }
 		</style>
-		
-		
-	</cfoutput>
+	</cfoutput></skin:htmlHead>
 
 	<ft:form bUniFormHighlight="false">
 		
@@ -177,6 +175,7 @@
 		</cfif>
 		
 		<ft:buttonPanel indentForLabel="false">
+			<cfoutput><skin:buildLink objectid="#stObj.objectid#" view="adminTestPermissions">Test Permissions</skin:buildLink>&nbsp;&nbsp;</cfoutput>
 			<ft:button value="Save" color="orange" size="large" width="380px" />
 		</ft:buttonPanel>
 	</ft:form>
