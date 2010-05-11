@@ -157,7 +157,10 @@
               </div>
               </cfoutput>
             <cfelse>
-              <cfoutput><input type="hidden" name="#arguments.fieldname#CreateFromSource" value="true" /></cfoutput>
+              <cfoutput>
+				<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
+				<input type="hidden" name="#arguments.fieldname#CreateFromSource" value="true" />
+				</cfoutput>
             </cfif>
             
             <skin:onReady>
@@ -841,9 +844,9 @@
     
         <cfif structKeyExists(arguments.stFormPost, i) AND (
         (
-        not structKeyExists(arguments.stFormPost[i].stSupporting, "CreateFromSource")
-        and structKeyExists(arguments.stFields[i].metadata, "ftSourceField")
-        and len(arguments.stFields[i].metadata.ftSourceField)
+	        not structKeyExists(arguments.stFormPost[i].stSupporting, "CreateFromSource")
+	        and structKeyExists(arguments.stFields[i].metadata, "ftSourceField")
+	        and len(arguments.stFields[i].metadata.ftSourceField)
         )
         or (
           structKeyExists(arguments.stFormPost[i].stSupporting, "CreateFromSource")
