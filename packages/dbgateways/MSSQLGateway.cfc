@@ -477,6 +477,8 @@
 					<cfset stColumn.default = "NULL" />
 				<cfelseif qColumns.column_default eq "('')" or qColumns.column_default eq "">
 					<cfset stColumn.default = "" />
+				<cfelseif refind("\([\d\.]+\)",qColumns.column_default)>
+					<cfset stColumn.default = mid(qColumns.column_default,2,len(qColumns.column_default)-2) />
 				<cfelse><!--- There is an actual default --->
 					<cfset stColumn.default = mid(qColumns.column_default,3,len(qColumns.column_default)-4) />
 				</cfif>
@@ -497,7 +499,7 @@
 						<cfset stColumn.type = "string" />
 						<cfset stColumn.precision = qColumns.character_maximum_length />
 					</cfcase>
-					<cfcase value="decimal,numeric" delimiters=",">
+					<cfcase value="decimal,numeric,int" delimiters=",">
 						<cfset stColumn.type = "numeric" />
 						<cfset stColumn.precision = "#qColumns.numeric_precision#,#qColumns.numeric_scale#" />
 					</cfcase>
@@ -509,6 +511,7 @@
 							<cfset stColumn.default = "" />
 						</cfif>
 					</cfcase>
+					<cfdefaultcase><cfthrow message="Could not find type for #stColumn.name# from #qColumns.data_type#"></cfdefaultcase>
 				</cfswitch>
 				
 				<cfset stResult.fields[stColumn.name] = stColumn />
