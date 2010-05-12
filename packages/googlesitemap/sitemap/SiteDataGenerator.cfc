@@ -231,7 +231,7 @@
 				WHERE status='approved'
 				<cfif arguments.bCheckForPublishDate>
 					AND publishDate < <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#" />
-					AND expiryDate > <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#" />
+					AND (expiryDate > <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#" /> or expiryDate is NULL)
 				</cfif>
 			</cfquery>
 			<cfcatch>
