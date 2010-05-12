@@ -68,17 +68,22 @@
 		<cfset var qWDDX = queryNew("blah") />
 		<cfset var wddxTree = "" />
 		<cfset var coapiutilities = createobject("component","farcry.core.packages.coapi.coapiUtilities") />
+		<cfset var stRef = structnew() />
 		
 		<cfif fileExists("#GetDirectoryFromPath(GetCurrentTemplatePath())#nested_tree_objects.wddx")>
 
 			<cffile action="read" file="#GetDirectoryFromPath(GetCurrentTemplatePath())#nested_tree_objects.wddx" variable="wddxTree" />
 			<cfwddx action="wddx2cfml" input="#wddxTree#" output="qTree" />
 			<cfloop query="qTree">
-				<cfquery datasource="#arguments.dsn#" name="qInsertTree">
-				INSERT INTO #arguments.dbowner#nested_tree_objects
-			  	(ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
-			  	VALUES  ('#qTree.objectid#','#qTree.parentID#', '#qTree.objectName#','#qTree.typeName#',#qTree.nLeft#, #qTree.nRight#, #qTree.nLevel#)
-				</cfquery>
+				<cfset stProperties = structnew() />
+				<cfset stProperties.ObjectID = qTree.ObjectID />
+				<cfset stProperties.ParentID = qTree.ParentID />
+				<cfset stProperties.ObjectName = qTree.ObjectName />
+				<cfset stProperties.TypeName = qTree.TypeName />
+				<cfset stProperties.Nleft = qTree.nLeft />
+				<cfset stProperties.Nright = qTree.Nright />
+				<cfset stProperties.Nlevel = qTree.Nlevel />
+				<cfset arguments.factory.createData(typename="nested_tree_objects",stProperties=stProperties,dsn=arguments.dsn) />
 			</cfloop>
 
 		</cfif>
@@ -87,11 +92,10 @@
 			<cffile action="read" file="#GetDirectoryFromPath(GetCurrentTemplatePath())#refCategories.wddx" variable="wddxRefCat" />
 			<cfwddx action="wddx2cfml" input="#wddxRefCat#" output="qRefCat" />
 			<cfloop query="qRefCat">
-				<cfquery datasource="#arguments.dsn#" name="qInsertTree">
-				INSERT INTO #arguments.dbowner#refCategories
-			  	(categoryID, objectID)
-			  	VALUES  ('#qRefCat.categoryID#','#qRefCat.objectid#')
-				</cfquery>
+				<cfset stProperties = structnew() />
+				<cfset stProperties.ObjectID = qTree.ObjectID />
+				<cfset stProperties.categoryID = qTree.categoryID />
+				<cfset arguments.factory.createData(typename="refCategories",stProperties=stProperties,dsn=arguments.dsn) />
 			</cfloop>
 
 		</cfif>
@@ -109,7 +113,11 @@
 						<cfset stProperties = aContent[i] />
 						
 						<cfif structkeyexists(arguments,"factory")>
-							<cfset arguments.factory.createData(stProperties=stProperties,objectid=stProperties.objectid,metadata=arguments.stTableMetadata[stProperties.typename],dsn=arguments.dsn,coapiutilities=coapiutilities) />
+							<cfset arguments.factory.createData(typename=stProperties.typename,stProperties=stProperties,dsn=arguments.dsn) />
+							<cfset stRef = structnew() />
+							<cfset stRef.objectid = stProperties.objectid />
+							<cfset stRef.typename = stProperties.typename />
+							<cfset arguments.factory.createData(typename="refObjects",stProperties=stRef,dsn=arguments.dsn) />
 						<cfelse>
 							<cfset oContent = createObject("component", application.stcoapi["#stProperties.typeName#"].packagePath) />
 							

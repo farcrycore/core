@@ -40,7 +40,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfinclude template="/farcry/core/webtop/includes/cfFunctionWrappers.cfm">
 	
 	<cffunction name="init" output="false" access="public" returntype="Any">
-		<cfreturn fourqInit() />
+		<cfreturn this />
 	</cffunction>
 	
 	<cffunction name="createData" access="public" returntype="any" output="false" hint="Creates an instance of a container object.">

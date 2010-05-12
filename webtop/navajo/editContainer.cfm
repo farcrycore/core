@@ -344,17 +344,8 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 				{
 					// Get the properties for this type - and create a rule instance --->
 					obj = createObject("Component", application.rules[key].rulePath);
-				 	// TODO: getProperties() is deprecated. Should be using tableMetadata.getTableDefinition() --->
-				 	typeProps = obj.getProperties();
-			 		stProps = structNew();
-			 		stProps.objectid = application.fc.utils.createJavaUUID();
-					for(j=1;j LTE arrayLen(typeProps);j=j+1)
-					{
-						if (structKeyExists(typeProps[j],"default"))
-							"stProps.#typeProps[j].name#" = "#typeProps[j].default#";
-					}
-					o = createObject("component","#application.rules[key].rulePath#");
-					o.createData(stProperties=stProps);
+					stProps = obj.getDefaultObject();
+					obj.createData(stProperties=stProps);
 					arrayAppend(stObj.aRules,stProps.objectID);
 				}
 				else

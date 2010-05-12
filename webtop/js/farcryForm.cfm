@@ -288,7 +288,7 @@ function setRowBackground (childCheckbox) {
 }		
 
 									
-							$fc.openDialog = function(title,url,width,height){
+							$fc.openDialog = function(title,url,width,height,fnClose){
 								var fcDialog = $j("<div></div>")
 								w = width ? width : 600;
 								h = height ? height : $j(window).height()-50;
@@ -299,9 +299,10 @@ function setRowBackground (childCheckbox) {
 									title:title,
 									width: w,
 									height: h,
-									close: function(event, ui) {
+									close: function(event, ui) {for (k in $j) console.log(k);
 										$j(fcDialog).dialog( 'destroy' );
 										$j(fcDialog).remove();
+										if (fnClose) fnClose();
 									}
 									
 								});
@@ -319,7 +320,7 @@ function setRowBackground (childCheckbox) {
 							};	
 							
 							
-							$fc.openDialogIFrame = function(title,url,width,height){
+							$fc.openDialogIFrame = function(title,url,width,height,fnClose){
 								var w = width ? width : 600;
 								var h = height ? height : $j(window).height()-50;
 								var fcDialog = $j("<div id='fc-dialog-iframe'><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0'></iframe></div>")
@@ -334,6 +335,7 @@ function setRowBackground (childCheckbox) {
 									close: function(event, ui) {
 										$j(fcDialog).dialog( 'destroy' );
 										$j(fcDialog).remove();
+										if (fnClose) fnClose();
 									}
 									
 								});

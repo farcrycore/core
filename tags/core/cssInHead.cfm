@@ -25,7 +25,7 @@
 				
 					<cfif structKeyExists(application.fc.stCSSLibraries,idHash)>
 						<cfif structKeyExists(application.fc.stCSSLibraries[idHash],"sCacheFileName")>
-							<cfif fileExists(application.path.project & '/www/cache/#application.fc.stCSSLibraries[idHash].sCacheFileName#')>
+							<cfif fileExists('#application.path.cache#/#application.fc.stCSSLibraries[idHash].sCacheFileName#')>
 								<cfset sCacheFileName = application.fc.stCSSLibraries[idHash].sCacheFileName />
 							</cfif>
 						</cfif>
@@ -87,7 +87,7 @@
 				
 					<cfif stCSS.bCombine>
 						<cfoutput>
-						<link rel="stylesheet" type="text/css" href="#application.url.webroot#/cache/#sCacheFileName#" media="#stCSS.media#" #tagEnding#>
+						<link rel="stylesheet" type="text/css" href="#application.url.cache#/#sCacheFileName#" media="#stCSS.media#" #tagEnding#>
 						</cfoutput>
 					<cfelse>
 						<cfloop list="#stCSS.lFiles#" index="i">						

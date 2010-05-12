@@ -161,12 +161,12 @@ user --->
 
 <!--- Deploy type if it has been requested --->
 <cfif structkeyexists(url,"deploy") and url.deploy>
-	<cfset createobject("component",application.stCOAPI[attributes.typename].packagepath).deployType(btestRun="false") />
+	<cfset application.fc.lib.db.deployType(typename=attributes.typename,bDropTable=true,dsn=application.dsn) />
 	<cflocation url="#cgi.script_name#?#replacenocase(cgi.query_string,'deploy=true','')#" />
 </cfif>
 
 <!--- If type isn't deployed, display error --->
-<cfif not alterType.isCFCDeployed(typename=attributes.typename)>
+<cfif not application.fc.lib.db.isDeployed(typename=attributes.typename,dsn=application.dsn)>
 
 	<cfoutput>The '<cfif structkeyexists(application.stCOAPI[attributes.typename],"displayname")>#application.stCOAPI[attributes.typename].displayname#<cfelse>#listlast(application.stCOAPI[attributes.typename].name,'.')#</cfif>' content type has not been deployed yet. Click <a href="#cgi.SCRIPT_NAME#?#cgi.query_string#&deploy=true">here</a> to deploy it now.</cfoutput>
 
@@ -909,7 +909,7 @@ user --->
 										</cfif>
 									<cfelse><!--- Normal field --->
 										<cfif structKeyExists(st, attributes.aCustomColumns[i])>
-											<ft:object objectID="#st.objectid#" lFields="#attributes.aCustomColumns[i]#" format="display" r_stFields="stFields" />
+											<ft:object objectID="#st.objectid#" typename="#attributes.typename#" lFields="#attributes.aCustomColumns[i]#" format="display" r_stFields="stFields" />
 							
 											<cfoutput><td>#stFields[attributes.aCustomColumns[i]].html#</td></cfoutput>			
 										<cfelse>
@@ -921,7 +921,7 @@ user --->
 							</cfif>
 							
 							<cfif len(attributes.columnList)>
-								<ft:object objectID="#st.objectid#" lFields="#attributes.columnlist#" format="display" r_stFields="stFields" />
+								<ft:object objectID="#st.objectid#" typename="#attributes.typename#" lFields="#attributes.columnlist#" format="display" r_stFields="stFields" />
 							
 								<cfloop list="#attributes.columnlist#" index="i">
 									<cfif structKeyExists(stFields, i)>

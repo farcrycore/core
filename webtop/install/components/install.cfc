@@ -13,14 +13,14 @@
 		<cfargument name="dbowner" type="string" required="true" hint="Database owner as provided by user" />
 		<cfargument name="dbtype" type="string" required="true" hint="Database type" />
 		
-		<cfswitch expression="#arguments.dbtype#">
-			<cfcase value="mysql,ora" delimiters=",">
-				<cfreturn arguments.dbowner />
-			</cfcase>
-			<cfdefaultcase><!--- Other databases do not have an owner --->
-				<cfreturn "" />
-			</cfdefaultcase>
-		</cfswitch>
+		<cfset var qDBTypes = this.uicomponent.getDBTypes() />
+		
+		<cfquery dbtype="query" name="qDBTypes">select usesDBOwner from qDBTypes where [key]='#arguments.dbtype#'</cfquery>
+		<cfif qDBTypes.usesDBOwner>
+			<cfreturn arguments.dbowner />
+		<cfelse>
+			<cfreturn "" />
+		</cfif>
 	</cffunction>
 	
 	<cffunction name="getPaths" returntype="struct" output="false" access="private" hint="Returns the file system paths required for installation">
@@ -287,9 +287,6 @@
 		<!--- Project directory name can be changed from the default which is the applicationname --->
 		<cfset var projectDirectoryName =  arguments.applicationName />
 		
-		<!--- Database sql --->
-		<cfset var oDBFactory = "" />
-		
 		<!--- Path information --->
 		<cfset var path = getPaths(webroot=arguments.webroot,projectdirectory=projectDirectoryName,projectInstallType=arguments.projectInstallType) />
 		<cfset var urls = getURLS(installtype=arguments.projectInstallType,projectdirectory=projectDirectoryName) />
@@ -302,13 +299,18 @@
 		<cfset var locations = 'project,#utils.listReverse(plugins)#,core' />
 		<cfset var thispackage = "" />	
 		<cfset var thiscomponent = "" />
+		<cfset var thispath = "" />
 		<cfset var stTableMetadata = structnew() />
 		<cfset var qCreateFUTable = "" />
 		
+		<!--- Used for adding farCOAPI records --->
+		<cfset var aCOAPI = arraynew(1) />
+		<cfset var stCOAPI = structnew() />
 		
-		<!--- Update dbowner for various databases --->
+		<!--- Database sql --->
+		<cfset var oDB = createobject("component","farcry.core.packages.lib.db") />
 		<cfset arguments.dbowner = getDBOwner(dbowner=arguments.dbOwner,dbtype=arguments.dbtype) />
-		<cfset oDBFactory = createobject("component","farcry.core.packages.fourq.DBGatewayFactory").init().getGateway(dsn=arguments.dsn,dbtype=arguments.dbtype,dbowner=arguments.dbowner) />
+		<cfset oDB.init(dsn=arguments.dsn,dbtype=arguments.dbtype,dbowner=arguments.dbowner) />
 		
 		<cfset this.uiComponent.setProgress(progressmessage="#arguments.displayName# (SETUP): Creating your project",progress=0.1) />
 		
@@ -413,56 +415,35 @@
 			</cfloop>
 		</cfif>
 		
-		
-		<!--- Deploy FarCry system tables --->
-		<!--- TODO: These are either being deprecated and should be removed, or should be converted to use oDBFactory --->
-			<!--- Create fqaudit table --->
-			<cfset this.uiComponent.setProgress(progressmessage="#arguments.displayName# (DATABASE): Creating audit table",progress=0.4) />
-			<cfset o = createObject("component", "farcry.core.packages.schema.fqaudit").init(dsn=arguments.dsn,dbtype=arguments.dbtype,dbowner=arguments.dbowner) />
-			<cfset o.createTable() />
-			
-			<!--- Create nested_tree_objects table --->
-			<cfset this.uiComponent.setProgress(progressmessage="#arguments.displayName# (DATABASE): Creating nested tree objects table",progress=0.4) />
-			<cfset o = createObject("component", "farcry.core.packages.schema.nested_tree_objects").init(dsn=arguments.dsn,dbtype=arguments.dbtype,dbowner=arguments.dbowner) />
-			<cfset o.createTable() />
-			
-			<!--- Setup refObjects table --->
-			<cfset this.uiComponent.setProgress(progressmessage="#arguments.displayName# (DATABASE): Creating refObjects table",progress=0.4) />
-			<cfset o = createObject("component", "farcry.core.packages.schema.refobjects").init(dsn=arguments.dsn,dbtype=arguments.dbtype,dbowner=arguments.dbowner) />
-			<cfset o.createTable() />
-			
-			<!--- Set up refContainers table --->
-			<cfset this.uiComponent.setProgress(progressmessage="#arguments.displayName# (DATABASE): Creating refContainers table",progress=0.4) />
-			<cfset o = createObject("component","#pp.packagepath#.rules.container") />
-			<cfset o.deployRefContainers(dsn=arguments.dsn,dbtype=arguments.dbtype,dbowner=arguments.dbowner) />
-			
-			<!--- Setup metadata categories --->
-			<cfset this.uiComponent.setProgress(progressmessage="#arguments.displayName# (DATABASE): Creating categorisation table",progress=0.4) />
-			<cfset o = createObject("component", "#pp.packagepath#.farcry.category") />
-			<cfset o.deployCategories(dsn=arguments.dsn,dbtype=arguments.dbtype,dbowner=arguments.dbowner,bDropTables=true) />
-			
-			<!--- Setup stats table --->
-			<cfset this.uiComponent.setProgress(progressmessage="#arguments.displayName# (DATABASE): Creating statistics tables",progress=0.4) />
-			<cfset o = createObject("component", "#pp.packagepath#.farcry.stats") />
-			<cfset o.deploy(dsn=arguments.dsn,dbtype=arguments.dbtype,dbowner=arguments.dbowner,bDropTable=true) />
-		
 		<!--- Deploy COAPI tables --->
-		<cfloop list="rules,types" index="thispackage">
+		<cfloop list="rules,types,schema" index="thispackage">
 			<cfif thispackage eq "rules">
-				<cfset this.uiComponent.setProgress(progressmessage="#arguments.displayName# (RULES): Creating rule and container",progress=0.5) />
+				<cfset this.uiComponent.setProgress(progressmessage="#arguments.displayName# (RULES): Creating rule and container tables",progress=0.4) />
+			<cfelseif thispackage eq "types">
+				<cfset this.uiComponent.setProgress(progressmessage="#arguments.displayName# (TYPES): Creating content tables",progress=0.5) />
 			<cfelse>
-				<cfset this.uiComponent.setProgress(progressmessage="#arguments.displayName# (TYPES): Creating content tables",progress=0.6) />
+				<cfset this.uiComponent.setProgress(progressmessage="#arguments.displayName# (SCHEMA): Creating schema tables",progress=0.6) />
 			</cfif>
 			<cfloop list="#utils.getComponents(package=thispackage,locations=locations,path=path)#" index="thiscomponent">
-				<cfset o = createObject("component",utils.getPath(package=thispackage,component=thiscomponent,locations=locations,path=path,projectDirectoryName=projectDirectoryName)) />
-				<cfset stMD = getMetadata(o) />
-				
+				<cfset thispath = utils.getPath(package=thispackage,locations=locations,path=path,component=thiscomponent,projectDirectoryName=projectDirectoryName) />
+				<cfset stMD = getMetadata(createobject("component",thispath)) />
 				<cfif not structkeyexists(stMD,"bAbstract") or not stMD.bAbstract>
-					<cfset stTableMetadata[thiscomponent] = createobject("component","farcry.core.packages.fourq.TableMetadata").init() />
-					<cfset stTableMetadata[thiscomponent].parseMetadata(md=stMD) />
-					<cfset oDBFactory.deployType(metadata=stTableMetadata[thiscomponent],bDropTable=true,bTestRun=false,dsn=arguments.dsn,dbtype=arguments.dbtype,dbowner=arguments.dbowner) />
+					<cfset oDB.initialiseTableMetadata(typename=thispath) />
+					<cfset oDB.deployType(typename=thispath,bDropTable=true,dsn=arguments.dsn) />
+					
+					<!--- Create farCOAPI record --->
+					<cfif thispackage eq "rules" or thispackage eq "types">
+						<cfset stCOAPI = structnew() />
+						<cfset stCOAPI.typename = "farCOAPI" />
+						<cfset stCOAPI.name = listlast(thispath,".") />
+						<cfset arrayappend(aCOAPI,stCOAPI) />
+					</cfif>
 				</cfif>
 			</cfloop>
+		</cfloop>
+		<!--- Save the recorded coapi records --->
+		<cfloop from="1" to="#arraylen(aCOAPI)#" index="thiscomponent">
+			<cfset oDB.createData(dsn=arguments.dsn,typename="farCOAPI",stProperties=aCOAPI[thiscomponent]) />
 		</cfloop>
 		
 		<!--- Find and run plugin install includes --->
@@ -472,7 +453,7 @@
 		<!--- Import skeleton data into the database --->
 		<cfset this.uiComponent.setProgress(progressmessage="#arguments.displayName# (SKELETON): Installing Skeleton Data...",progress=0.8) />
 		<cfset o = createObject("component", "#arguments.skeleton#.install.manifest") />
-		<cfset result = o.install(dsn=arguments.dsn,dbowner=arguments.dbowner,dbtype=arguments.dbtype,path=path,factory=oDBFactory,stTableMetadata=stTableMetadata) />
+		<cfset result = o.install(dsn=arguments.dsn,dbowner=arguments.dbowner,dbtype=arguments.dbtype,path=path,factory=oDB,stTableMetadata=stTableMetadata) />
 		
 		<!--- Update the farcry password --->
 		<cfquery datasource="#arguments.dsn#">
@@ -491,79 +472,6 @@
 		
 		<!--- Flag the app as uninitialised --->
 		<cfset application.bInit = false />
-		
-		<!--- If the reffriendlyURL table exists, drop it --->
-		<cfset this.uiComponent.setProgress(progressmessage="#arguments.displayName# (SETUP): (Friendly URLs): Installing Friendly URLs",progress=0.9) />
-		<cftry>
-			<cfparam name="bTableExists" default="1" type="boolean" />
-			
-			<!--- not a great way, but this (at this stage) is quicker and easier that doing a case for all DB vendors. Error will be thown if table doesn't exist --->
-			<cfquery name="qCheck" datasource="#arguments.dsn#" maxrows="1">
-				SELECT 		objectid 
-				FROM 		#arguments.dbowner#reffriendlyURL
-			</cfquery>
-			
-			<cfif qCheck.recordCount>
-				<cfquery name="qDrop" datasource="#arguments.dsn#">
-					DROP TABLE #arguments.dbowner#reffriendlyURL
-				</cfquery>
-				<cfset bTableExists = 0 />
-			</cfif>
-			
-			<cfcatch type="database">
-				<cfset bTableExists = 0 />
-			</cfcatch>
-		</cftry>
-		          
-		<!--- Create reffriendlyURL --->
-		<cftry>
-			<cfif NOT bTableExists>
-				<!--- only create table if one doesnt exist --->
-				<!--- bowden --->
-				
-				<cfswitch expression="#arguments.dbtype#">
-					<cfcase value="ora">
-						<cfquery name="qCreateFUTable" datasource="#arguments.dsn#">
-							CREATE TABLE #arguments.dbowner#reffriendlyURL ( 
-								objectid    			varchar2(50) NOT NULL,
-								refobjectid 			varchar2(50) NOT NULL,
-								friendlyurl	            varchar2(4000) NULL,
-								query_string            varchar2(4000) NULL,
-								datetimelastupdated     date NULL,
-								status      			numeric NULL 
-							)
-						</cfquery>
-					</cfcase>
-					
-					<cfdefaultcase>
-						<cfquery name="qCreateFUTable" datasource="#arguments.dsn#">
-							CREATE TABLE #arguments.dbowner#reffriendlyURL ( 
-								objectid    		varchar(50) NOT NULL,
-								refobjectid 		varchar(50) NOT NULL,
-								<cfswitch expression="#arguments.dbtype#">
-									<cfcase value="ODBC,MSSQL">
-										friendlyurl			varchar(8000) NULL,
-										query_string 		varchar(8000) NULL,
-										datetimelastupdated datetime NULL,
-									</cfcase>
-									<cfdefaultcase>
-										friendlyurl 		text NULL,
-										query_string		text NULL,
-										datetimelastupdated timestamp NULL,
-									</cfdefaultcase>
-								</cfswitch>
-								status      		numeric NULL 
-							)
-						</cfquery>
-					</cfdefaultcase>
-				</cfswitch>
-			</cfif>
-			
-			<cfcatch>
-				<!--- TODO: exception handling --->
-				<cfrethrow />
-			</cfcatch>
-		</cftry>
 		
 		<!--- IF WE ONLY WANTED A DB INSTALL, WE NEED TO DELETE THE TEMPORARY APPLICATION --->
 		<cfif bInstallDBOnly>

@@ -342,55 +342,6 @@
 	</cffunction>
 
 
-	<cffunction name="OnError" access="public" returntype="void" output="true" hint="Fires when an exception occures that is not caught by a try/catch.">
-		<cfargument name="Exception" type="any" required="true" />
-		<cfargument name="EventName" type="string" required="false" default="" />
-
-		<!--- rudimentary error handler --->
-		<!--- TODO: need a pretty error handler for the webtop --->
-		<cfoutput>	
-			<h1>There was a problem with that last request!</h1>	
-			<p>Please push "back" on your browser or go back <a style="text-decoration:underline" href="/">home</a></p>
-			<h3>Error Details</h3>
-			<table border="1" cellpadding="5" style="border-collapse:collapse;">
-			<cfif structKeyExists(arguments.exception, "message")>
-				<tr><th align="right" style="vertical-align:top;">Message</th><td>#arguments.exception.message#</td></tr>
-			</cfif>
-			<cfif structKeyExists(arguments.exception, "type")>
-				<tr><th align="right" style="vertical-align:top;">Exception Type</th><td>#arguments.exception.type#</td></tr>
-			</cfif>
-			<cfif structKeyExists(arguments.exception, "detail")>
-				<tr><th align="right" style="vertical-align:top;">Detail</th><td>#arguments.exception.detail#</td></tr>
-			</cfif>			
-			<cfif structKeyExists(arguments.exception, "queryError")>
-				<tr><th align="right" style="vertical-align:top;">Error</th><td>#arguments.exception.queryError#</td></tr>
-			</cfif>
-			<cfif structKeyExists(arguments.exception, "sql")>
-				<tr><th align="right" style="vertical-align:top;">SQL</th><td>#arguments.exception.sql#</td></tr>
-			</cfif>
-			<cfif structKeyExists(arguments.exception, "where")>
-				<tr><th align="right" style="vertical-align:top;">Where</th><td>#arguments.exception.where#</td></tr>
-			</cfif>
-
-			<cfif structKeyExists(arguments.exception, "TagContext")>
-				<tr>
-					<th align="right" style="vertical-align:top;">Tag Context</th>
-					<td>
-						<ul>
-						<cfloop from="1" to="#arrayLen(arguments.exception.TagContext)#" index="i">
-							<li>#arguments.exception.TagContext[i].template# (line: #arguments.exception.TagContext[i].line#)</li>
-						</cfloop>
-						</ul>	
-					</td>
-				</tr>
-			</cfif>
-			
-			</table>		
-			
-		</cfoutput>
-		<cfreturn />
-	</cffunction>
-
  
 	<cffunction name="farcryUpdateApp" access="private" output="false" hint="Initialise farcry Application." returntype="void">
 		<!---------------------------------------- 
@@ -646,6 +597,7 @@
 		<cfset application.url.farcry = "#application.url.webtop#" /><!--- Legacy variable. Developers should use application.url.webtop --->
 		<cfset application.url.imageRoot = "#application.url.webroot#">
 		<cfset application.url.fileRoot = "#application.url.webroot#/files">
+		<cfset application.url.cache = "#application.url.webroot#/cache">
 		
 		
 		<!----------------------------------------
@@ -664,6 +616,8 @@
 		<cfelse>
 			<cfset application.path.webroot = expandPath("/")><!--- Doesnt work if empty string. Have to set to  "/" otherwise it returns cf root --->
 		</cfif>
+		
+		<cfset application.path.cache = "#application.path.webroot#/cache" />
 		
 		<!--- If installing in a subdirectory, the index.cfm seems to be included in the expandPath() above. Need to strip it out. --->		
 		<cfif right(application.path.webroot,9) EQ "index.cfm">
@@ -704,7 +658,7 @@
 		<cfset application.fc.serverTimezone = createObject("java","java.util.TimeZone").getDefault().ID />
 		<cfset application.fc.container = createObject("component", "farcry.core.packages.rules.container").init() />
 		
-		<cfset application.fc.factory['farCoapi'] = createObject("component", "farcry.core.packages.types.farCoapi").fourqInit() />
+		<cfset application.fc.factory['farCoapi'] = createObject("component", "farcry.core.packages.types.farCoapi") />
 		
 		
 

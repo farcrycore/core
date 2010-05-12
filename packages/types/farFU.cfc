@@ -618,7 +618,7 @@
 			<cfcatch type="database">
 				<cflock name="deployFarFUTable" timeout="30">
 					<!--- The table has not been deployed. We need to deploy it now --->
-					<cfset stDeployResult = deployType(dsn=application.dsn,bDropTable=true,bTestRun=false,dbtype=application.dbtype) />		
+					<cfset application.fc.lib.db.deployType(typename="farFU",bDropTable=true,dsn=application.dsn) />
 					<cfset migrate() />
 				</cflock>		
 			</cfcatch>

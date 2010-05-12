@@ -607,4 +607,19 @@
 		<cfset assertTrue(refindnocase("\(\s+datetimecreated\s+is\s+not\s+null\s+and\s+not\s+datetimecreated\s+=\s+\?\s+and\s+datetimecreated\s+&lt;\s*\?\s+\)",d)) />
 	</cffunction>
 	
+	<cffunction name="getContentObjects_filter_inarray" displayname="getContentObjects - eq array" access="public" returntype="void" output="false">
+		<cfset var q = "" />
+		<cfset var q2 = "" />
+		
+		<cfquery datasource="#application.dsn#" name="q">
+			select		data,count(data) as total
+			from		dmHTML_aObjectIDs
+			group by	data
+		</cfquery>
+		
+		<cfset q2 = this.myComp.getContentObjects(typename="dmHTML",aObjectIds_in=valuelist(q.data)) />
+		<cfdirectory action="list" directory="" filter="" name="" />
+		<cfset assertEquals(q.total[1],q2.recordcount,"Incorrect number of records returned") />
+	</cffunction>
+	
 </cfcomponent>

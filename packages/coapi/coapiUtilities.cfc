@@ -413,4 +413,5 @@
 		
 		<cfreturn stResult />
 	</cffunction>
+
 </cfcomponent>

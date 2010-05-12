@@ -193,12 +193,6 @@ default handlers
 		
 		<cfset var stNewObject = "" />
 		
-		<!--- 
-		MJB: This may or may not be cancer. Need to investigate
-		It is required though just incase the variables.typename has not yet been set.
-		 --->
-		<cfset fourqInit() />
-		
 		
 		<cfif not len(arguments.user)>
 			<cfif isDefined("session.security.userID")>
@@ -229,7 +223,7 @@ default handlers
 		</cfscript>
 		
 		<!--- needs to be isDefined because application.stcoapi may not exist yet --->
-		<cfif arguments.bAudit and (not isDefined("application.stcoapi.#variables.typename#.bAudit") or application.stcoapi[variables.typename].bAudit)>
+		<cfif arguments.bAudit and (not isDefined("application.stcoapi.#getTypeName()#.bAudit") or application.stcoapi[getTypeName()].bAudit)>
 			<farcry:logevent object="#stNewObject.objectid#" type="types" event="create" notes="#arguments.auditNote#" />
 		</cfif>
 				
@@ -371,7 +365,7 @@ default handlers
 				<cfset changeStatus = "approved" />
 			<cfelseif arguments.stProperties.status EQ "draft">
 				<!--- IF CHANGING TO DRAFT AND NO LIVE VERSION EXISTS THEN SEND RELATED CONTENT TO DRAFT --->
-				<cfset stVersionRules = createObject("component", "#application.packagepath#.farcry.versioning").getVersioningRules(objectID=arguments.stProperties.objectid) />
+				<cfset stVersionRules = createObject("component", "#application.packagepath#.farcry.versioning").getVersioningRules(objectID=arguments.stProperties.objectid,typename=getTypeName()) />
 				<cfif NOT stVersionRules.bLiveVersionExists>
 					<cfset changeStatus = "draft" />
 				</cfif>
@@ -1477,17 +1471,15 @@ default handlers
 		
 		<cfset var qSearchResults = "" />
 		
-		<cfset fourqInit() />
-		
 		<cfif lcase(application.dbtype) EQ "mssql"> <!--- Dodgy MS SQL only code --->
 			<cfquery datasource="#application.dsn#" name="qSearchResults">
-				SELECT objectID as [key] , label FROM #application.dbowner#[#variables.typename#]	
+				SELECT objectID as [key] , label FROM #application.dbowner#[#getTypeName()#]	
 				WHERE label like <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.criteria#%">
 				Order by label
 			</cfquery>
 		<cfelse> <!--- Dirty hack to get this query working for MySQL and possibly Postgres --->
 			<cfquery datasource="#application.dsn#" name="qSearchResults">
-				SELECT objectID as "key" , label FROM #application.dbowner##variables.typename#	
+				SELECT objectID as "key" , label FROM #application.dbowner##getTypeName()#	
 				WHERE label like <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.criteria#%">
 				Order by label
 			</cfquery>
