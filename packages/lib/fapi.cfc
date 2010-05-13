@@ -641,7 +641,7 @@
 					<cfset result = application.stCoapi['#arguments.typename#'].stProps['#arguments.property#'].METADATA['#arguments.md#'] />
 				</cfif>
 			<cfelse>
-				<cfset result = application.stCoapi['#arguments.typename#'].stProps['#arguments.property#'].METADATA />
+				<cfset result = duplicate(application.stCoapi['#arguments.typename#'].stProps['#arguments.property#'].METADATA) />
 			</cfif>
 		</cfif>
 
