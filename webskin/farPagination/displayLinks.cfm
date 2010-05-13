@@ -49,6 +49,9 @@ START WEBSKIN
 			</cfloop>
 			
 			#renderLink(linkid="next", linkText="next >")#
+			<cfif arguments.stParam.bDisplayTotalRecords>
+				#getTotalRecords()# total records 		
+			</cfif> 
 		</div>
 	</div>
 	</cfoutput>	
