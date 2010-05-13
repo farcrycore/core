@@ -882,7 +882,11 @@
 						<cfset stResult["__redirectionURL"] = stResult["__redirectionURL"] & arguments.fuParameters />
 					</cfif>
 					<cfif len(stFU.queryString) or len(rereplacenocase(cgi.query_string,"furl=[^&]+&?",""))>
-						<cfset stResult["__redirectionURL"] = stResult["__redirectionURL"] & "?" & listappend(stFU.queryString,rereplacenocase(cgi.query_string,"furl=[^&]+&?",""),"&") />
+						<cfif find("?",stResult["__redirectionURL"])>
+							<cfset stResult["__redirectionURL"] = stResult["__redirectionURL"] & "&" & listappend(stFU.queryString,rereplacenocase(cgi.query_string,"furl=[^&]+&?",""),"&") />
+						<cfelse>
+							<cfset stResult["__redirectionURL"] = stResult["__redirectionURL"] & "?" & listappend(stFU.queryString,rereplacenocase(cgi.query_string,"furl=[^&]+&?",""),"&") />
+						</cfif>
 					</cfif>
 					
 					<cfset stResult["__redirectionType"] = stFU.redirectionType />

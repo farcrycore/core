@@ -133,7 +133,9 @@ START WEBSKIN
 	</ft:field>
 	<ft:field label="Created by" bMultiField="true" hint="This is the person who first created this content item.">
 		<cfif len(stobj.createdby)>
-			<cfoutput>#application.fapi.getContentType('dmProfile').getProfile(stobj.createdby).Label#</cfoutput>
+			<cfset stLocal.profile = application.fapi.getContentType('dmProfile').getProfile(stobj.createdby) />
+			<cfparam name="stLocal.profile.label" default="#stObj.createdby#" />
+			<cfoutput>#stLocal.profile.Label#</cfoutput>
 		<cfelse>
 			<cfoutput>unknown.</cfoutput>
 		</cfif>
