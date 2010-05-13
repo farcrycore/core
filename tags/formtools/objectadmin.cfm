@@ -100,6 +100,8 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.lButtons" default="*" type="string">
 <cfparam name="attributes.bPaginateTop" default="true" type="boolean">
 <cfparam name="attributes.bPaginateBottom" default="true" type="boolean">
+<cfparam name="attributes.bDisplayTotalRecords" default="0" />
+
 <cfparam name="attributes.bCheckAll" default="true" type="boolean" />
 <cfparam name="attributes.bSelectCol" default="true" type="boolean">
 <cfparam name="attributes.bEditCol" default="true" type="boolean">
@@ -713,7 +715,8 @@ user --->
 				submissionType="form"
 				oddRowClass="alt"
 				evenRowClass=""
-				r_stObject="st">
+				r_stObject="st"
+				bDisplayTotalRecords="#attributes.bDisplayTotalRecords#">
 	
 		
 			<cfif st.bFirst>
