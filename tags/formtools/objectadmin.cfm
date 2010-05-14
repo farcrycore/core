@@ -100,7 +100,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.lButtons" default="*" type="string">
 <cfparam name="attributes.bPaginateTop" default="true" type="boolean">
 <cfparam name="attributes.bPaginateBottom" default="true" type="boolean">
-<cfparam name="attributes.bDisplayTotalRecords" default="0" />
+<cfparam name="attributes.bDisplayTotalRecords" default="true" type="boolean" />
 
 <cfparam name="attributes.bCheckAll" default="true" type="boolean" />
 <cfparam name="attributes.bSelectCol" default="true" type="boolean">
