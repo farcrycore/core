@@ -179,7 +179,8 @@
 					submissionType="form"
 					oddRowClass="alt"
 					evenRowClass=""
-					r_stObject="stCurrentRow">
+					r_stObject="stCurrentRow"
+          bDisplayTotalRecords="true">
 				
 				
 				
