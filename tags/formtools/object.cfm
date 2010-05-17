@@ -70,6 +70,7 @@
 	<cfparam name="attributes.focusField" default="" /><!--- Enter the name of the field to focus on when rendering the form. --->
 	
 
+
 	<!--- If the attributes [IncludeFieldSet] has not been explicitly defined, work out the value. --->
 	<cfif attributes.includeFieldSet EQ "">
 		<cfif len(attributes.r_stFields)>
@@ -421,16 +422,16 @@
 		</cfif>	
 
 	
-
-		
 			<!--- If the field is supposed to be hidden --->
-		<cfif ListContainsNoCase(attributes.lHiddenFields,i)>
+		<cfif ListFind(attributes.lHiddenFields,i)>
+			
 			<cfsavecontent variable="variables.returnHTML">
 				
 				<cfif isArray(variables.stObj[i])>
 					<cfset hiddenValue = arrayToList(Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].value) />
 				<cfelse>
 					<cfset hiddenValue = Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].value />
+					
 				</cfif>
 				<!--- <cfif isArray(variables.stObj[i])>
 					<cfset hiddenValue = arrayToList(variables.stObj[i]) />
