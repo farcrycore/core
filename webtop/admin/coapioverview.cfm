@@ -80,6 +80,7 @@
 	</cfloop>
 </ft:processform>
 
+<cfset aResults = arraynew(1) />
 <cfset aResults = application.fc.lib.db.deployChanges(aChanges,application.dsn) />
 <cfloop from="1" to="#arraylen(aResults)#" index="i">
 	<cfif structkeyexists(aResults[i],"message")>

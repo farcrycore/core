@@ -159,7 +159,7 @@
 		
 		<cfswitch expression="#arguments.schema.type#">
 			<cfcase value="datetime">
-				<cfif arguments.value eq "" or not isdate(arguments.value) or arguments.value gt dateadd('yyyy',150,now())>
+				<cfif arguments.value eq "" or not isdate(arguments.value) or arguments.value gt dateadd('yyyy',150,now()) or (year(arguments.value) eq 1970 and month(arguments.value) eq 1 and day(arguments.value) eq 1)>
 					<cfreturn "" />
 				<cfelse>
 					<cfreturn arguments.value />
@@ -642,8 +642,16 @@
 		<cfset stResult.bSuccess = true />
 		<cfset stResult.results = arraynew(1) />
 		
-		<cfset stResult = dropIndex(arguments.schema,arguments.indexname) />
-		<cfset combineResults(stResult,addIndex(arguments.schema,arguments.indexname)) />
+		<cftry>
+			<cfset stResult = dropIndex(arguments.schema,arguments.indexname) />
+			<cfset combineResults(stResult,addIndex(arguments.schema,arguments.indexname)) />
+			
+			<cfcatch>
+				<cfset stResult.bSuccess = false />
+				<cfset arrayappend(stResult.results,cfcatch) />
+			</cfcatch>
+		</cftry>
+		
 		
 		<cfif stResult.bSuccess>
 			<cfset stResult.message = "Repaired '#arguments.schema.tablename#.#arguments.indexname#' index" />
@@ -661,10 +669,16 @@
 		<cfset var stResult = structnew() />
 		<cfset var queryresult = "" />
 		<cfset var stDB = introspectType(arguments.schema.tablename) />
-		<cfset var stIndex = stDB.indexes[arguments.indexname] />
+		<cfset var stIndex = structnew() />
 		
 		<cfset stResult.bSuccess = true />
 		<cfset stResult.results = arraynew(1) />
+		
+		<cfif not structkeyexists(stDB.indexes,arguments.indexname)>
+			<cfreturn stResult />
+		</cfif>
+		
+		<cfset stIndex=stDB.indexes[arguments.indexname]>
 		
 		<cftry>
 			<cfswitch expression="#stIndex.type#">
@@ -676,7 +690,7 @@
 				</cfcase>
 				<cfcase value="unclustered">
 					<cfquery datasource="#variables.dsn#" result="queryresult">
-					 	DROP INDEX 		#arguments.indexname# 
+					 	DROP INDEX 		#arguments.schema.indexes[arguments.indexname].name# 
 					 	ON 				#variables.dbowner##arguments.schema.tablename#
 					</cfquery>
 				</cfcase>
@@ -753,7 +767,7 @@
 				<cfset stThisResult = structnew() />
 				
 				<cfif not structkeyexists(arguments.schema.fields,thisfield)>
-					<cfif stDB.fields[thisfield].type eq "array">
+					<cftry><cfif stDB.fields[thisfield].type eq "array">
 						<cfset stResult.tables[stDB.fields[thisfield].tablename] = structnew() />
 						<cfset stResult.tables[stDB.fields[thisfield].tablename].conflict = "Surplus table" />
 						<cfset stResult.tables[stDB.fields[thisfield].tablename].oldMetadata = stDB.fields[thisfield] />
@@ -764,12 +778,14 @@
 						<cfset stThisResult.oldMetadata = stDB.fields[thisfield] />
 						
 						<cfset stResult.tables[arguments.schema.tablename].fields[thisfield] = stThisResult />
-					</cfif>
+					</cfif><cfcatch><cfdump var="#stDB.fields#"><cfabort></cfcatch></cftry>
 				</cfif>
 			</cfloop>
 			
 			<!--- Indexes --->
 			<cfloop collection="#arguments.schema.indexes#" item="thisindex">
+				<cfset stThisResult = structnew() />
+				
 				<cfif not structkeyexists(stDB.indexes,thisindex)>
 					<cfset stThisResult.conflict = "Undeployed index" />
 					<cfset stThisResult.resolution = "+" />
@@ -787,6 +803,8 @@
 			</cfloop>
 			
 			<cfloop collection="#stDB.indexes#" item="thisindex">
+				<cfset stThisResult = structnew() />
+				
 				<cfif not structkeyexists(arguments.schema.indexes,thisindex)>
 					<cfset stThisResult.conflict = "Surplus index" />
 					<cfset stThisResult.resolution = "-" />
@@ -799,7 +817,7 @@
 			<cfif structcount(stResult.tables[arguments.schema.tablename].fields) or structcount(stResult.tables[arguments.schema.tablename].indexes)>
 				<cfset stResult.tables[arguments.schema.tablename].conflict = "Altered table" />
 				<cfset stResult.tables[arguments.schema.tablename].resolution = "x" />
-				<cfset stREsult.tables[arguments.schema.tablename].newmetadata = arguments.schema />
+				<cfset stResult.tables[arguments.schema.tablename].newmetadata = arguments.schema />
 			<cfelse>
 				<cfset structdelete(stResult.tables,arguments.schema.tablename) />
 			</cfif>

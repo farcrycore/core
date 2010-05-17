@@ -35,8 +35,8 @@ $Developer: Matthew Bryant (mbryant@daemon.com.au) $
 
     <!--- required properties --->	
     <cfproperty name="webskinObjectID" type="uuid" hint="The objectid of the webskin id we are defining the ancestor of" required="yes">
-	<cfproperty name="webskinTypename" type="string" hint="The type of the webskin we are defining the ancestor of" required="yes">
-	<cfproperty name="webskinTemplate" type="string" hint="The webskin template we are defining the ancestor of" required="yes">
+	<cfproperty name="webskinTypename" type="string" hint="The type of the webskin we are defining the ancestor of" required="no">
+	<cfproperty name="webskinTemplate" type="string" hint="The webskin template we are defining the ancestor of" required="no">
     <cfproperty name="ancestorTypename" type="string" hint="The typename of the ancestor webskin object" required="yes">
     <cfproperty name="ancestorID" type="uuid" hint="The objectid of the ancestor webskin object" required="yes">
     <cfproperty name="ancestorTemplate" type="string" hint="The webskin template name of the ancestor webskin" required="yes">

@@ -164,15 +164,13 @@
 				<cfswitch expression="#stProp.type#">
 					<cfcase value="numeric">
 						<cfif stProp.precision eq "1,0">
-							tinyint(1)
-						<cfelseif listlast(stProp.precision) eq "0">
-							int
+							bit
 						<cfelse>
 							decimal(#stProp.precision#)
 						</cfif>
 					</cfcase>
-					<cfcase value="string">varchar(#stProp.precision#)</cfcase>
-					<cfcase value="longchar">longtext</cfcase>
+					<cfcase value="string">nvarchar(#stProp.precision#)</cfcase>
+					<cfcase value="longchar">ntext</cfcase>
 					<cfcase value="datetime">datetime</cfcase>
 				</cfswitch>
 				<cfif stProp.nullable>NULL<cfelse>NOT NULL</cfif>
@@ -244,9 +242,21 @@
 					DROP CONSTRAINT #qDefault.name#
 				</cfquery>
 				<cfset arrayappend(stResult.results,queryresult) />
+				
+				<cfquery datasource="#variables.dsn#" name="qDefault">
+					select		d.name
+					from		sys.objects d
+					where		d.name=<cfqueryparam cfsqltype="cf_sql_varchar" value="#qDefault.name#" />
+				</cfquery>
+				<cfif qDefault.recordcount>
+					<cfquery datasource="#variables.dsn#" result="queryresult">
+						DROP DEFAULT #qDefault.name#
+					</cfquery>
+					<cfset arrayappend(stResult.results,queryresult) />
+				</cfif>
 			</cfif>
 			
-			<!--- Remove any indexes on column (indexes can effect the alterability of a column) --->
+			<!--- Remove any indexes on this column (indexes can effect the alterability of a column) --->
 			<cfloop collection="#stCurrentSchema.indexes#" item="thisindex">
 				<cfif refindnocase("(^|,)#arguments.oldpropertyname#($|,)",arraytolist(stCurrentSchema.indexes[thisindex].fields))>
 					<cfset lIndexesToRestore = listappend(lIndexesToRestore,thisindex) />
@@ -261,15 +271,13 @@
 				<cfswitch expression="#stProp.type#">
 					<cfcase value="numeric">
 						<cfif stProp.precision eq "1,0">
-							tinyint(1)
-						<cfelseif listlast(stProp.precision) eq "0">
-							int
+							bit
 						<cfelse>
 							decimal(#stProp.precision#)
 						</cfif>
 					</cfcase>
-					<cfcase value="string">varchar(#stProp.precision#)</cfcase>
-					<cfcase value="longchar">longtext</cfcase>
+					<cfcase value="string">nvarchar(#stProp.precision#)</cfcase>
+					<cfcase value="longchar">ntext</cfcase>
 					<cfcase value="datetime">datetime</cfcase>
 				</cfswitch>
 				<cfif stProp.nullable>NULL<cfelse>NOT NULL</cfif>
@@ -290,7 +298,7 @@
 				<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
 				<cfquery datasource="#variables.dsn#" result="queryresult">
 					ALTER TABLE #variables.dbowner##arguments.schema.tablename#
-						ADD CONSTRAINT def_#arguments.propertyname#
+						ADD CONSTRAINT def_#arguments.schema.tablename#_#arguments.propertyname#
 						<cfif stVal.null>
 							DEFAULT NULL
 						<cfelseif stVal.cfsqltype eq "cf_sql_varchar">
@@ -379,14 +387,112 @@
 		<cfreturn stResult />
 	</cffunction>
 	
+	<cffunction name="addIndex" access="public" output="false" returntype="struct" hint="Deploys the index into a MySQL database.">
+		<cfargument name="schema" type="struct" required="true" />
+		<cfargument name="indexname" type="string" required="true" />
+		
+		<cfset var stIndex = arguments.schema.indexes[arguments.indexname] />
+		<cfset var stResult = structnew() />
+		<cfset var queryresult = "" />
+		
+		<cfset stResult.bSuccess = true />
+		<cfset stResult.results = arraynew(1) />
+		
+		<cftry>
+			<cfswitch expression="#stIndex.type#">
+				<cfcase value="primary">
+					<cfquery datasource="#variables.dsn#" result="queryresult">
+					 	ALTER TABLE 	#variables.dbowner##arguments.schema.tablename#
+						ADD 			PRIMARY KEY
+										(#arraytolist(stIndex.fields)#)
+					</cfquery>
+				</cfcase>
+				<cfcase value="unclustered">
+					<cfquery datasource="#variables.dsn#" result="queryresult">
+					 	CREATE INDEX 	#arguments.schema.tablename#_#stIndex.name# 
+					 	ON 				#variables.dbowner##arguments.schema.tablename# 
+					 					(#arraytolist(stIndex.fields)#)
+					</cfquery>
+				</cfcase>
+			</cfswitch>
+			
+			<cfset arrayappend(stResult.results,queryresult) />
+			
+			<cfcatch type="database">
+				<cfset stResult.bSuccess = false />
+				<cfset arrayappend(stResult.results,cfcatch) />
+			</cfcatch>
+		</cftry>
+		
+		<cfif stResult.bSuccess>
+			<cfset stResult.message = "Deployed '#arguments.schema.tablename#.#arguments.indexname#' index" />
+		<cfelse>
+			<cfset stResult.message = "Failed to deploy '#arguments.schema.tablename#.#arguments.indexname#' index" />
+		</cfif>
+		
+		<cfreturn stResult />
+	</cffunction>
+	
+	<cffunction name="dropIndex" access="public" output="false" returntype="struct" hint="Drops the index from a MySQL database.">
+		<cfargument name="schema" type="struct" required="true" />
+		<cfargument name="indexname" type="string" required="true" />
+		
+		<cfset var stResult = structnew() />
+		<cfset var queryresult = "" />
+		<cfset var stDB = introspectType(arguments.schema.tablename) />
+		<cfset var q = "" />
+		<cfset var stIndex = structnew() />
+		
+		<cfset stResult.bSuccess = true />
+		<cfset stResult.results = arraynew(1) />
+		
+		<cfif not structkeyexists(stDB.indexes,arguments.indexname)>
+			<cfreturn stResult />
+		</cfif>
+		
+		<cfset stIndex=stDB.indexes[arguments.indexname]>
+		
+		<cftry>
+			<cfswitch expression="#stIndex.type#">
+				<cfcase value="primary">
+					<cfquery datasource="#variables.dsn#" result="queryresult">
+						ALTER TABLE #variables.dbowner##arguments.schema.tablename#
+					    DROP CONSTRAINT #stDB.indexes[arguments.indexname].name#
+					</cfquery>
+				</cfcase>
+				<cfcase value="unclustered">
+					<cfquery datasource="#variables.dsn#" result="queryresult">
+					 	DROP INDEX 		#stDB.indexes[arguments.indexname].name# 
+					 	ON 				#variables.dbowner##arguments.schema.tablename#
+					</cfquery>
+				</cfcase>
+			</cfswitch>
+			
+			<cfset arrayappend(stResult.results,queryresult) />
+			
+			<cfcatch type="database">
+				<cfset stResult.bSuccess = false />
+				<cfset arrayappend(stResult.results,cfcatch) />
+			</cfcatch>
+		</cftry>
+		
+		<cfif stResult.bSuccess>
+			<cfset stResult.message = "Dropped '#arguments.schema.tablename#.#arguments.indexname#' index" />
+		<cfelse>
+			<cfset stResult.message = "Failed to drop '#arguments.schema.tablename#.#arguments.indexname#' index" />
+		</cfif>
+		
+		<cfreturn stResult />
+	</cffunction>
+	
 	<!--- DATABASE INTROSPECTION --->
 	<cffunction name="introspectIndexes" returntype="struct" access="private" output="false" hint="Constructs metadata struct for table indexes">
 		<cfargument name="tablename" type="string" required="True" hint="The table to introspect" />
 		
 		<cfset var stResult = structnew() />
 		<cfset var qIndexes = "" />
-		<cfset var qPrimaryKey = "" />
 		<cfset var thiskey = "" />
+		<cfset var thisindex = "" />
 		
 		<!--- Get all indexes for table --->
 		<cfstoredproc datasource="#variables.dsn#" procedure="sp_helpindex">
@@ -396,27 +502,24 @@
 		
 		<cfif isquery(qIndexes)>
 			<cfloop query="qIndexes">
-				<cfquery name="qPrimaryKey" datasource="#variables.dsn#">
-					select		constraint_type
-					from		information_schema.table_constraints
-					where		constraint_name=<cfqueryparam cfsqltype="cf_sql_varchar" value="#qIndexes.index_name#" />
-				</cfquery>
-				
-				<cfif qPrimaryKey.recordcount>
+				<cfif refind("primary key",qIndexes.index_description) and qIndexes.index_name neq "primary">
 					<cfset stResult["PRIMARY"] = structnew() />
-					<cfset stResult["PRIMARY"].name = "PRIMARY" />
+					<cfset stResult["PRIMARY"].name = qIndexes.index_name />
 					<cfset stResult["PRIMARY"].type = "primary" />
 					<cfset stResult["PRIMARY"].fields = arraynew(1) />
+					
 					<cfloop list="#qIndexes.index_keys#" index="thiskey">
 						<cfset arrayappend(stResult["PRIMARY"].fields,trim(thiskey)) />
 					</cfloop>
 				<cfelse>
-					<cfset stResult[qIndexes.index_name] = structnew() />
-					<cfset stResult[qIndexes.index_name].name = qIndexes.index_name />
-					<cfset stResult[qIndexes.index_name].type = "unclustered" />
-					<cfset stResult[qIndexes.index_name].fields = arraynew(1) />
+					<cfset thisindex = replacenocase(qIndexes.index_name,"#arguments.tablename#_","") />
+					<cfset stResult[thisindex] = structnew() />
+					<cfset stResult[thisindex].name = qIndexes.index_name />
+					<cfset stResult[thisindex].type = "unclustered" />
+					<cfset stResult[thisindex].fields = arraynew(1) />
+					
 					<cfloop list="#qIndexes.index_keys#" index="thiskey">
-						<cfset arrayappend(stResult[qIndexes.index_name].fields,trim(thiskey)) />
+						<cfset arrayappend(stResult[thisindex].fields,trim(thiskey)) />
 					</cfloop>
 				</cfif>
 			</cfloop>
@@ -477,7 +580,7 @@
 					<cfset stColumn.default = "NULL" />
 				<cfelseif qColumns.column_default eq "('')" or qColumns.column_default eq "">
 					<cfset stColumn.default = "" />
-				<cfelseif refind("\([\d\.]+\)",qColumns.column_default)>
+				<cfelseif refind("^\([\d\.]+\)$",qColumns.column_default)>
 					<cfset stColumn.default = mid(qColumns.column_default,2,len(qColumns.column_default)-2) />
 				<cfelse><!--- There is an actual default --->
 					<cfset stColumn.default = mid(qColumns.column_default,3,len(qColumns.column_default)-4) />
@@ -555,7 +658,7 @@
 			from 	Information_schema.Tables
 			where 	Table_type = 'BASE TABLE' 
 					and Objectproperty (Object_id(Table_name), 'IsMsShipped') = 0
-					and table_name like <cfqueryparam cfsqltype="cf_sql_varchar" value="#ucase(arguments.typename)#_%" />
+					and table_name like <cfqueryparam cfsqltype="cf_sql_varchar" value="#ucase(arguments.typename)#[_]%" />
 		</cfquery>
 		
 		<cfloop query="qTables">
