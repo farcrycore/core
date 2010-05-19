@@ -683,7 +683,9 @@
 		<!--- Normalise view fuAlias in query string --->
 		<cfset stResult["__allowredirect"] = true />
 		<cfif structkeyexists(stResult,"view") AND structKeyExists(stResult, "type")>
-			<cfif structkeyexists(this.webskinFU[stResult.type],stResult.view)>
+			<cfif not structkeyexists(this.webskinFU,stResult.type)>
+				<cfreturn stResult />
+			<cfelseif structkeyexists(this.webskinFU[stResult.type],stResult.view)>
 				<cfset stResult.view = "#this.webskinFU[stResult.type][stResult.view]#" />
 			<cfelseif structkeyexists(stResult,"bDebug") and stResult.bDebug>
 				<!--- View does not exist: throw an error --->
