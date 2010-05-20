@@ -1,14 +1,17 @@
-
-
 <cfcomponent name="datetime" extends="field" displayname="datetime" hint="Field component to liase with all datetime types"> 
 		
-		
-	<cfproperty name="ftRenderType" default="jquery" hint="This formtool offers a number of ways to render the input. (dropdown, jquery, dateJS)" />
-	<cfproperty name="ftJQDateFormatMask" default="d M yy" hint="The format mask used by the jQuery UI when returning a date from the calendar. For a full list of the possible formats see http://docs.jquery.com/UI/Datepicker/formatDate" />
-	<cfproperty name="ftCFDateFormatMask" default="d mmm yyyy" hint="The format mask used when first rendering the date. This should be a coldfusion dateformat mask." />
-	<cfproperty name="ftToggleOffDateTime" default="false" hint="Provides an optional toggle to hide the date if its not required" />
-					
-	
+<!--- edit options --->
+<cfproperty name="ftRenderType" default="jquery" hint="This formtool offers a number of ways to render the input. (dropdown, jquery, dateJS)" />
+<cfproperty name="ftJQDateFormatMask" default="d M yy" hint="The format mask used by the jQuery UI when returning a date from the calendar. For a full list of the possible formats see http://docs.jquery.com/UI/Datepicker/formatDate" />
+<cfproperty name="ftCFDateFormatMask" default="d mmm yyyy" hint="The format mask used when first rendering the date. This should be a coldfusion dateformat mask." />
+<cfproperty name="ftToggleOffDateTime" default="false" hint="Provides an optional toggle to hide the date if its not required" />
+
+<!--- display options --->
+<cfproperty name="ftDateMask" type="string" hint="Date mask for display; CF style mask." required="true" default="d-mmm-yy" />
+<cfproperty name="ftTimeMask" type="string" hint="Time mask for display; CF style mask." required="true" default="short" />
+<cfproperty name="ftShowTime" type="boolean" hint="Show time." required="true" default="true" />
+<cfproperty name="ftDisplayPrettyDate" type="boolean" hint="Option to show pretty date format." required="true" default="true" />
+
 	
 	<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" >	
 	<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" >		
