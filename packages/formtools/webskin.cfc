@@ -1,7 +1,7 @@
 <cfcomponent extends="field" name="webskin" displayname="webskin" hint="Used to liase with webskin type fields"> 
 	<cfproperty name="ftPrefix" type="string" hint="Only webskins that start with this value are displayed" required="false" default="" />
 	<cfproperty name="ftTypename" type="string" hint="The type from which webskins are to be selected" required="false" default="" />
-	<cfproperty name="bExcludeCoreViews" type="string" hint="Excludes webskins defined in core from selection" required="false" default="" />
+	<cfproperty name="bExcludeCoreViews" type="string" hint="Excludes webskins defined in core from selection" required="false" default="false" />
 	
 	
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.webskin" output="false" hint="Returns a copy of this initialised object">
