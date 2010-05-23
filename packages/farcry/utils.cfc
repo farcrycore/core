@@ -567,11 +567,11 @@
 		<cfargument name="value" type="string" required="true" hint="The value to insert" />
 		<cfargument name="ampDelim" type="string" required="false" default="&" hint="Delimiter to use for ampersands" />
 		
-		<cfif application.fc.factory.farFU.isUsingFU() AND not find("?",arguments.url) and arguments.url neq "/">
+		<cfif application.fc.factory.farFU.isUsingFU() AND not find("?",arguments.url) and arguments.url neq "/" and arguments.value eq urlencodedformat(arguments.value)>
 			<cfif refindnocase("/#arguments.key#(/|$)",arguments.url)>
-				<cfset arguments.url = rereplacenocase(arguments.url,"/#arguments.key#/[^/]+","/#arguments.key#/#urlencodedformat(arguments.value)#") />
+				<cfset arguments.url = rereplacenocase(arguments.url,"/#arguments.key#/[^/]+","/#arguments.key#/#arguments.value#") />
 			<cfelse>
-				<cfset arguments.url = "#arguments.url#/#arguments.key#/#urlencodedformat(arguments.value)#" />
+				<cfset arguments.url = "#arguments.url#/#arguments.key#/#arguments.value#" />
 			</cfif>		
 		<cfelse>
 			<cfif refindnocase("(#arguments.ampDelim#)?#arguments.key#=",arguments.url)>
