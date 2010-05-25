@@ -146,7 +146,7 @@
 		<!--- Get some extra info for the filters in the array --->
 		<cfloop from="1" to="#arraylen(arguments.aFilters)#" index="i">
 			<!--- The category formtool is treated differently to normal strings. All other ftTypes are ignored. --->
-			<cfif application.stCOAPI[arguments.typename].stProps[arguments.aFilters[i].property].metadata.type eq "category">
+			<cfif application.stCOAPI[arguments.typename].stProps[arguments.aFilters[i].property].metadata.fttype eq "category">
 				<cfset arguments.aFilters[i].type = "category" />
 			<cfelse>
 				<cfset arguments.aFilters[i].type = application.stCOAPI[arguments.typename].stProps[arguments.aFilters[i].property].metadata.type />
