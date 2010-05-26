@@ -35,11 +35,13 @@
 		<cfset stTrace.typename = attributes.typename />
 		<cfset stTrace.template = attributes.template />
 		<cfset stTrace.path = replaceNoCase(application.coapi.coapiadmin.getWebskinPath(typename=attributes.typename, template=attributes.template), "\", "/") />
+		<cfset stTrace.cacheTimeout = application.coapi.coapiadmin.getWebskinCacheTimeOut(typename=attributes.typename, template=attributes.template) />
 		<cfset stTrace.cacheStatus = application.coapi.coapiadmin.getWebskinCacheStatus(typename=attributes.typename, template=attributes.template) />
 		<cfset stTrace.cacheByVars = application.coapi.coapiadmin.getWebskinCacheByVars(typename=attributes.typename, template=attributes.template) />
 		<cfset stTrace.cacheByRoles = application.coapi.coapiadmin.getWebskinCacheByRoles(typename=attributes.typename, template=attributes.template) />
 		<cfset stTrace.cacheFlushOnFormPost = application.coapi.coapiadmin.getWebskinCacheFlushOnFormPost(typename=attributes.typename, template=attributes.template) />
 		<cfset stTrace.cacheTypeWatch = application.coapi.coapiadmin.getWebskinCacheTypeWatch(typename=attributes.typename, template=attributes.template) />
+		<cfset stTrace.cacheFlushOnObjectChange = application.coapi.coapiadmin.getWebskinCacheFlushOnObjectChange(typename=attributes.typename, template=attributes.template) />
 		<cfset stTrace.level = arrayLen(request.aAncestorWebskins) />
 		<cfset stTrace.bAllowTrace = attributes.bAllowTrace />
 		<cfset stTrace.startTickCount = GetTickCount() />
@@ -83,7 +85,13 @@
 								<tr>
 									<th style="color:green;border-top:1px solid green;">Caching</th>
 									<td style="border-top:1px solid green;">
-										
+										<cfif isNumeric(stTrace.cacheTimeout)>
+											<cfset time = stTrace.cacheTimeout>
+											<cfset days = time \ 1440 />
+											<cfset hours = (time \ 60) - (days * 24) />
+											<cfset minutes = (time) - (days * 1440) - (hours * 60) />
+											<div>* Caching for <strong>#days# day(s), #hours# hour(s), #minutes# minute(s)</strong>.</div>
+										</cfif>
 										<cfif stTrace.cacheByRoles>
 											<div>* Caching by Roles</div>
 										</cfif>
@@ -92,8 +100,12 @@
 										</cfif>
 										
 										<cfif len(stTrace.cacheTypeWatch)>
-											<div>* Caching will flush on any changes to:</div>
+											<div>* Cache will flush on any changes to:</div>
 											<div style="padding:0px 20px;"><cfloop list="#stTrace.cacheTypeWatch#" index="i"><div>- #i#</div></cfloop></div>
+										</cfif>
+										
+										<cfif isBoolean(stTrace.cacheFlushOnObjectChange) AND stTrace.cacheFlushOnObjectChange>
+											<div>* Cache will flush IMMEDIATELY on any changes to this object</div>
 										</cfif>
 										
 										<cfif len(stTrace.cacheByVars)>

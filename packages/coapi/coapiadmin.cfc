@@ -220,7 +220,7 @@
 							'' as typename, '' as webskin, cast(0 as integer) as id, '' as path, 
 							
 							<!--- extracted from webkin later --->
-							'anonymous' as author, datelastmodified, '' as description, name as displayname, 0 as cacheStatus, 0 as cacheTimeout, 0 as cacheByURL, 0 as cacheFlushOnFormPost, 0 as cacheByForm, 0 as cacheByRoles, '' as cacheByVars, '' as cacheTypeWatch, name as methodname, '' as fuAlias, '' as viewstack, '' as viewbinding, '' as allowredirect
+							'anonymous' as author, datelastmodified, '' as description, name as displayname, 0 as cacheStatus, 0 as cacheTimeout, 0 as cacheByURL, 0 as cacheFlushOnFormPost, 0 as cacheByForm, 0 as cacheByRoles, '' as cacheByVars, '' as cacheTypeWatch, 0 as cacheFlushOnObjectChange, name as methodname, '' as fuAlias, '' as viewstack, '' as viewbinding, '' as allowredirect
 							
 					FROM 	qThis
 				</cfquery>
@@ -295,9 +295,9 @@
 						typename=request.fc.stProjectDirectorys.qAll.typename, 
 						template=stWebskinDetails.methodname, 
 						path=stWebskinDetails.path, 
-						lProperties="displayname,author,description,cacheStatus,cacheTimeout,cacheByURL,cacheFlushOnFormPost,cacheByForm,cacheByRoles,cacheByVars,cacheTypeWatch,fuAlias,viewstack,viewbinding,allowredirect", 
-						lTypes="string,string,string,numeric,numeric,boolean,boolean,boolean,boolean,string,string,string,string,string,boolean", 
-						lDefaults=" , , ,0,1440,false,false,false,false, , , ,#stWebskinDetails.viewstack#,#stWebskinDetails.viewbinding#,1"
+						lProperties="displayname,author,description,cacheStatus,cacheTimeout,cacheByURL,cacheFlushOnFormPost,cacheByForm,cacheByRoles,cacheByVars,cacheTypeWatch,cacheFlushOnObjectChange,fuAlias,viewstack,viewbinding,allowredirect", 
+						lTypes="string,string,string,numeric,numeric,boolean,boolean,boolean,boolean,string,string,boolean,string,string,string,boolean", 
+						lDefaults=" , , ,0,#application.defaultWebskinCacheTimeout#,false,false,false,false, , ,false, ,#stWebskinDetails.viewstack#,#stWebskinDetails.viewbinding#,1"
 					) />
 				
 				<!--- Assign the metadata --->
@@ -305,7 +305,7 @@
 	
 				
 				<!--- UPDATE THE METADATA QUERY --->
-				<cfloop list="path,methodname,displayname,author,description,cacheStatus,cacheTimeout,cacheByURL,cacheFlushOnFormPost,cacheByForm,cacheByRoles,cacheByVars,cacheTypeWatch,fuAlias,viewstack,viewbinding,allowredirect" index="thisvar">
+				<cfloop list="path,methodname,displayname,author,description,cacheStatus,cacheTimeout,cacheByURL,cacheFlushOnFormPost,cacheByForm,cacheByRoles,cacheByVars,cacheTypeWatch,cacheFlushOnObjectChange,fuAlias,viewstack,viewbinding,allowredirect" index="thisvar">
 					<cfset querysetcell(request.fc.stProjectDirectorys.qAll,thisvar,stWebskinDetails[thisvar],request.fc.stProjectDirectorys.qAll.currentRow) />	
 				</cfloop>
 			</cfloop>
@@ -594,7 +594,7 @@
 		<cfargument name="typename" type="string" required="true" />
 		<cfargument name="template" type="string" required="true" />
 		<cfargument name="path" type="string" required="false" />
-		<cfargument name="defaultTimeOut" type="numeric" default="1440" required="false" />
+		<cfargument name="defaultTimeOut" type="numeric" default="#application.defaultWebskinCacheTimeout#" required="false" />
 		
 		<cfset var result = "" />
 		<cfset var templateCode = "" />
@@ -763,6 +763,28 @@
 			AND structKeyExists(application.stcoapi[typename].stWebskins, template) 
 			AND structKeyExists(application.stcoapi[typename].stWebskins[template], "cacheTypeWatch")>
 			<cfset result = application.stcoapi['#arguments.typename#'].stWebskins['#arguments.template#'].cacheTypeWatch />
+			
+		</cfif>
+		
+		<cfreturn result />
+	</cffunction>
+	
+	<cffunction name="getWebskinCacheFlushOnObjectChange" returntype="string" access="public" output="false" hint="Returns the objectbroker cacheFlushOnObjectChange value of a webskin. If true, the ancestry of this webskin will be captured and will be flushed if any crud methods on its object is fired.">
+		<cfargument name="typename" type="string" required="false" default="" />
+		<cfargument name="template" type="string" required="false" default="" />
+		<cfargument name="path" type="string" required="false" />
+	
+		<cfset var result = "" />
+		<cfset var templateCode = "" />
+		<cfset var pos = "" />	
+		<cfset var count = "" />
+		<cfset var iViewState = "" />
+		
+		<cfif structKeyExists(application.stcoapi, typename)
+			AND structKeyExists(application.stcoapi[typename], "stWebskins") 
+			AND structKeyExists(application.stcoapi[typename].stWebskins, template) 
+			AND structKeyExists(application.stcoapi[typename].stWebskins[template], "cacheFlushOnObjectChange")>
+			<cfset result = application.stcoapi['#arguments.typename#'].stWebskins['#arguments.template#'].cacheFlushOnObjectChange />
 			
 		</cfif>
 		
