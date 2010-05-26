@@ -6,6 +6,8 @@
 <!--- Environment Variables --->
 <cfparam name="stParam.desc" default="" />
 <cfparam name="stParam.originalID" default="#stobj.objectid#" />
+<cfparam name="stParam.lRules" default="" />
+<cfparam name="stParam.lExcludedRules" default="" />
 
 
 <!--- Allows the container description to be different to the actual label. Defaults to the label --->
@@ -166,7 +168,7 @@ $j('a.con-admin').live(
 			<!--- ADD A RULE --->
 			<a title="Add new rule to container"
 				class="con-admin con-add-rule" 
-				href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editAddRule&iframe" 
+				href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&lRules=#stParam.lRules#&lExcludedRules=#stParam.lExcludedRules#&method=editAddRule&iframe" 
 				con:id="#containerID#"
 				con:url="#containerURL#"
 				rule:title="Add new rule to container: #stParam.desc#">

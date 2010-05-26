@@ -399,22 +399,26 @@ $out:$
 	</cffunction>  
 	
 	<cffunction access="public" name="getRules" returntype="query" hint="Returns a two column query (rulename, bCustom) of available rules. Assumes that rule names are rule*.cfc">
+		<cfargument name="lRules" type="string" required="false" default="" hint="List of rules to restrict to" />
+		<cfargument name="lExcludedRules" type="string" required="false" default="" hint="List of rules to exclude" />
 		
 		<cfset var qRules = queryNew("rulename,bCustom,displayname") />
 		<cfset var rule = "" />
 		<cfset var displayname = "" />
 
 		<cfloop collection="#application.rules#" item="rule">
-			<cfset queryAddRow(qRules, 1) />
-			<cfset querySetCell(qRules,"rulename", rule) />
-			<cfset querySetCell(qRules,"bCustom", application.rules[rule].bcustomrule) />
-			
-			<cfif structKeyExists(application.rules[rule],'displayname')>
-				<cfset displayname = application.rules[rule].displayname />
-			<cfelse>
-				<cfset displayname = rule />
+			<cfif (not len(arguments.lRules) or refindnocase("(^|,)#rule#($|,)",arguments.lRules)) and not refindnocase("(^|,)#rule#($|,)",arguments.lExcludedRules)>
+				<cfset queryAddRow(qRules, 1) />
+				<cfset querySetCell(qRules,"rulename", rule) />
+				<cfset querySetCell(qRules,"bCustom", application.rules[rule].bcustomrule) />
+				
+				<cfif structKeyExists(application.rules[rule],'displayname')>
+					<cfset displayname = application.rules[rule].displayname />
+				<cfelse>
+					<cfset displayname = rule />
+				</cfif>
+				<cfset querySetCell(qRules,"displayname", displayname) />
 			</cfif>
-			<cfset querySetCell(qRules,"displayname", displayname) />
 		</cfloop>	
 		
 		<cfquery dbtype="query" name="qRules">

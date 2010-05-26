@@ -5,7 +5,10 @@
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
-<cfset qRules = createObject("component","#application.packagepath#.rules.rules").getRules() />
+<cfparam name="url.lRules" default="" />
+<cfparam name="url.lExcludedRules" default="" />
+
+<cfset qRules = createObject("component","#application.packagepath#.rules.rules").getRules(url.lRules,url.lExcludedRules) />
 
 <cfset containerID = replace(stobj.objectid,'-','','ALL') />
 
