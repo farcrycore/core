@@ -647,13 +647,6 @@
 		<cfset var i = "" />
 		<cfset var stResult = structNew() />
 		
-		<!--- Remove system query variables from working URL struct (they will still be in the actual URL scope) --->
-		<cfloop list="updateapp" index="i">
-			<cfif structkeyexists(stLocalURL,i)>
-				<cfset structdelete(stLocalURL,i) />
-			</cfif>
-		</cfloop>
-		
 		<!--- If the browser has added a trailing / to a friendly URL, strip it out. --->
 		<cfif structKeyExists(stLocalURL, "furl") AND len(stLocalURL.furl) GT 1 AND right(stLocalURL.furl,1) EQ "/">
 			<cfset stLocalURL.furl = left(stLocalURL.furl,len(stLocalURL.furl) -1) />
@@ -745,7 +738,7 @@
 				<!--- Don't want to resend the furl --->
 				<cfset structdelete(stLocalURL,"furl") />
 				<cfheader statuscode="#stResult['__redirectionType']#"><!--- statustext="Moved permanently" --->
-				<cfheader name="Location" value="#application.fapi.fixURL(url=stResult['__redirectionURL'],addvalues=stLocalURL)#">
+				<cfheader name="Location" value="#application.fapi.fixURL(url=stResult['__redirectionURL'],addvalues=cgi.query_string)#">
 				<cfabort>
 			</cfif>
 			
@@ -766,7 +759,7 @@
 					<cfset structdelete(stLocalURL,"updateapp") />
 					
 					<cfheader statuscode="301"><!--- statustext="Moved permanently" --->
-					<cfheader name="Location" value="#application.fapi.getLink(objectid=stResult.objectid, stParameters=stLocalURL)#">
+					<cfheader name="Location" value="#application.fapi.getLink(objectid=stResult.objectid, stParameters=cgi.query_string)#">
 					<cfabort>		
 				</cfif>
 			</cfif>
