@@ -419,7 +419,7 @@
 		
 		<cfif application.bObjectBroker>
 			
-			<cfif not structIsEmpty(form)>
+			<cfif isDefined("form") AND not structIsEmpty(form)>
 				<cfif application.coapi.coapiadmin.getWebskinCacheFlushOnFormPost(typename=webskinTypename, template=arguments.template)>
 					<cfset bForceFlush = true />
 				</cfif>
