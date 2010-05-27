@@ -646,7 +646,14 @@
 		<cfset var iQstr = "" />
 		<cfset var i = "" />
 		<cfset var stResult = structNew() />
-	
+		
+		<!--- Remove system query variables from working URL struct (they will still be in the actual URL scope) --->
+		<cfloop list="updateapp" index="i">
+			<cfif structkeyexists(stLocalURL,i)>
+				<cfset structdelete(stLocalURL,i) />
+			</cfif>
+		</cfloop>
+		
 		<!--- If the browser has added a trailing / to a friendly URL, strip it out. --->
 		<cfif structKeyExists(stLocalURL, "furl") AND len(stLocalURL.furl) GT 1 AND right(stLocalURL.furl,1) EQ "/">
 			<cfset stLocalURL.furl = left(stLocalURL.furl,len(stLocalURL.furl) -1) />
