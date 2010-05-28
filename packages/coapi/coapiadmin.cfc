@@ -769,12 +769,12 @@
 		<cfreturn result />
 	</cffunction>
 	
-	<cffunction name="getWebskinCacheFlushOnObjectChange" returntype="string" access="public" output="false" hint="Returns the objectbroker cacheFlushOnObjectChange value of a webskin. If true, the ancestry of this webskin will be captured and will be flushed if any crud methods on its object is fired.">
+	<cffunction name="getWebskinCacheFlushOnObjectChange" returntype="boolean" access="public" output="false" hint="Returns the objectbroker cacheFlushOnObjectChange value of a webskin. If true, the ancestry of this webskin will be captured and will be flushed if any crud methods on its object is fired.">
 		<cfargument name="typename" type="string" required="false" default="" />
 		<cfargument name="template" type="string" required="false" default="" />
 		<cfargument name="path" type="string" required="false" />
 	
-		<cfset var result = "" />
+		<cfset var result = false />
 		<cfset var templateCode = "" />
 		<cfset var pos = "" />	
 		<cfset var count = "" />
