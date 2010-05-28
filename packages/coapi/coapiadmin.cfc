@@ -787,6 +787,9 @@
 			<cfset result = application.stcoapi['#arguments.typename#'].stWebskins['#arguments.template#'].cacheFlushOnObjectChange />
 			
 		</cfif>
+		<cfif not isBoolean(result)>
+			<cfset result = false>
+		</cfif>
 		
 		<cfreturn result />
 	</cffunction>
