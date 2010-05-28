@@ -578,7 +578,7 @@
 		<!--- If any of the following special characters are found, don't use friendly urls here or it will fail in modern browsers that remove urlencoding for most characters (like Firefox and Chrome) --->
 		<cfloop index="i" list="#lCharsNotAllowedInFUs#">
 			<cfif arguments.value contains i>
-				<cfset var bAllowFriendlyUrls = false />
+				<cfset bAllowFriendlyUrls = false />
 				<cfbreak />
 			</cfif>
 		</cfloop>
