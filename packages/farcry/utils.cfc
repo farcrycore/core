@@ -494,6 +494,7 @@
 		<cfargument name="removevalues" type="string" required="false" hint="List of values to remove from the query string. Prefix with '+' to remove these values in addition to the defaults." />
 		<cfargument name="addvalues" type="any" required="false" hint="A query string or a struct of values, to add to the query string" />
 		<cfargument name="ampDelim" type="string" required="false" default="&" hint="Delimiter to use for ampersands" />
+		<cfargument name="charset" type="string" required="false" default="utf-8" hint="The character encoding in which the url values are encoded." />
 		
 		<cfset var key = "" />
 
@@ -506,7 +507,7 @@
 		
 		<!--- Normalise FU --->
 		<cfif findNoCase("furl=",arguments.url)>
-			<cfset arguments.url = replacenocase(arguments.url,"/index.cfm",urldecode(rereplacenocase(arguments.url,"(.*(\?|#arguments.ampDelim#)furl\=)([^&]+)(.*)","\3"),'utf-8')) />
+			<cfset arguments.url = replacenocase(arguments.url,"/index.cfm",urldecode(rereplacenocase(arguments.url,"(.*(\?|#arguments.ampDelim#)furl\=)([^&]+)(.*)","\3"),'#charset#')) />
 		</cfif>
 		
 		<cfif application.fc.factory.farFU.isUsingFU() AND not find("?",arguments.url) and arguments.url neq "/">
@@ -544,16 +545,16 @@
 		<!--- Add and replace values --->
 		<cfif structkeyexists(arguments,"addvalues") and isstruct(arguments.addvalues)>
 			<cfloop collection="#arguments.addvalues#" item="key">
-				<cfset arguments.url = insertQueryVariable(url=arguments.url,key=key,value=arguments.addvalues[key],ampDelim=arguments.ampDelim) />
+				<cfset arguments.url = insertQueryVariable(url=arguments.url,key=key,value=arguments.addvalues[key],ampDelim=arguments.ampDelim,charset=charset) />
 			</cfloop>
 		<cfelseif structkeyexists(arguments,"addvalues")><!--- Query string format --->
 			<cfloop list="#arguments.addvalues#" index="key" delimiters="&">
-				<cfset arguments.url = insertQueryVariable(url=arguments.url,key=listfirst(key,'='),value=listlast(key,'='),ampDelim=arguments.ampDelim) />
+				<cfset arguments.url = insertQueryVariable(url=arguments.url,key=listfirst(key,'='),value=listlast(key,'='),ampDelim=arguments.ampDelim,charset=charset) />
 			</cfloop>
 		<cfelse>
 			<cfloop collection="#arguments#" item="key">
-				<cfif not listcontainsnocase("url,removevalues,addvalues,ampDelim",key)>
-					<cfset arguments.url = insertQueryVariable(url=arguments.url,key=key,value=arguments[key],ampDelim=arguments.ampDelim) />
+				<cfif not listcontainsnocase("url,removevalues,addvalues,ampDelim,charset",key)>
+					<cfset arguments.url = insertQueryVariable(url=arguments.url,key=key,value=arguments[key],ampDelim=arguments.ampDelim,charset=charset) />
 				</cfif>
 			</cfloop>
 		</cfif>
@@ -566,21 +567,39 @@
 		<cfargument name="key" type="string" required="true" hint="The key to insert" />
 		<cfargument name="value" type="string" required="true" hint="The value to insert" />
 		<cfargument name="ampDelim" type="string" required="false" default="&" hint="Delimiter to use for ampersands" />
+		<cfargument name="charset" type="string" required="false" default="utf-8" hint="The character encoding in which the url values are encoded." />
+
+		<cfset var lCharsNotAllowedInFUs = ".,"",',&,@,%,=,/,\" />
+		<cfset var bAllowFriendlyUrls = true />
+
+		<!--- In case the url value was urlencoded, urldecode it --->
+		<cfset arguments.value = urlDecode(arguments.value, "#charset#") />
+
+		<!--- If any of the following special characters are found, don't use friendly urls here or it will fail in modern browsers that remove urlencoding for most characters (like Firefox and Chrome) --->
+		<cfloop index="i" list="#lCharsNotAllowedInFUs#">
+			<cfif arguments.value contains i>
+				<cfset var bAllowFriendlyUrls = false />
+				<cfbreak />
+			</cfif>
+		</cfloop>
 		
-		<cfif application.fc.factory.farFU.isUsingFU() AND not find("?",arguments.url) and arguments.url neq "/" and arguments.value eq urlencodedformat(arguments.value)>
+		<!--- now urlencode the url value --->
+		<cfset arguments.value = urlEncodedFormat(arguments.value, "#charset#") />
+
+		<cfif application.fc.factory.farFU.isUsingFU() AND not find("?",arguments.url) and arguments.url neq "/" and bAllowFriendlyUrls is true>
 			<cfif refindnocase("/#arguments.key#(/|$)",arguments.url)>
 				<cfset arguments.url = rereplacenocase(arguments.url,"/#arguments.key#/[^/]+","/#arguments.key#/#arguments.value#") />
 			<cfelse>
 				<cfset arguments.url = "#arguments.url#/#arguments.key#/#arguments.value#" />
-			</cfif>		
+			</cfif>
 		<cfelse>
 			<cfif refindnocase("(#arguments.ampDelim#)?#arguments.key#=",arguments.url)>
-				<cfset arguments.url = rereplacenocase(arguments.url,"(?:#arguments.ampDelim#)?(\?)?#arguments.key#=[^&]+","\1") & "#arguments.ampDelim##arguments.key#=#urlencodedformat(arguments.value)#" />
+				<cfset arguments.url = rereplacenocase(arguments.url,"(?:#arguments.ampDelim#)?(\?)?#arguments.key#=[^&]+","\1") & "#arguments.ampDelim##arguments.key#=#arguments.value#" />
 			<cfelseif find("?",arguments.url)>
-				<cfset arguments.url = "#arguments.url##arguments.ampDelim##arguments.key#=#urlencodedformat(arguments.value)#" />
+				<cfset arguments.url = "#arguments.url##arguments.ampDelim##arguments.key#=#arguments.value#" />
 			<cfelse>
-				<cfset arguments.url = "#arguments.url#?#arguments.key#=#urlencodedformat(arguments.value)#" />
-			</cfif>	
+				<cfset arguments.url = "#arguments.url#?#arguments.key#=#arguments.value#" />
+			</cfif>
 		</cfif>
 
 		

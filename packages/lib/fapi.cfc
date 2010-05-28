@@ -1461,6 +1461,7 @@
 		<cfargument name="removevalues" type="string" required="false" hint="List of values to remove from the query string. Prefix with '+' to remove these values in addition to the defaults." />
 		<cfargument name="addvalues" type="any" required="false" hint="A query string or a struct of values, to add to the query string" />
 		<cfargument name="ampDelim" type="string" required="false" default="&" hint="Delimiter to use for ampersands" />
+		<cfargument name="charset" type="string" required="false" default="utf-8" hint="The character encoding in which the url values are encoded." />
 		
 		<cfreturn application.fc.utils.fixURL(argumentCollection="#arguments#") />
 	</cffunction>
@@ -1469,6 +1470,8 @@
 		<cfargument name="url" type="string" required="true" hint="The url to modify" />
 		<cfargument name="key" type="string" required="true" hint="The key to insert" />
 		<cfargument name="value" type="string" required="true" hint="The value to insert" />
+		<cfargument name="ampDelim" type="string" required="false" default="&" hint="Delimiter to use for ampersands" />
+		<cfargument name="charset" type="string" required="false" default="utf-8" hint="The character encoding in which the url values are encoded." />
 		
 		<cfreturn application.fc.utils.insertQueryVariable(argumentCollection="#arguments#") />
 	</cffunction>
