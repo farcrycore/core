@@ -713,6 +713,9 @@
 		<cfset application.fc.serverTimezone = createObject("java","java.util.TimeZone").getDefault().ID />
 		<cfset application.fc.container = createObject("component", "farcry.core.packages.rules.container").init() />
 		<cfset application.fc.webskinAncestors = structNew() />
+		<cfset application.fc.settings = structnew() /><!--- Struct to contain machine specific settings. These should only be altered after init. --->
+		
+		<cfset application.fc.settings.webtopheadingcolour = "##ffffff" />
 		
 		<cfset application.fc.factory['farCoapi'] = createObject("component", "farcry.core.packages.types.farCoapi").fourqInit() />
 		

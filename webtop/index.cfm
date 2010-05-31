@@ -53,7 +53,7 @@
 	<table style="width:100%;height:100%;">
 	<tr>
 		<td style="height:77px;">
-			<div id="header">
+			<div id="header" style="background-color:#application.fc.settings.webtopheadingcolour#">
 			
 				<div id="site-name">
 		
