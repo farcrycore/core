@@ -579,6 +579,9 @@
 		<cfset application.fc.subsites = this.subsites /><!--- Struct to contain any subsites that may be included with the application --->
 		<cfset application.fc.utils = createObject("component", "farcry.core.packages.farcry.utils").init() /><!--- FarCry Utility Functions --->
 		<cfset application.fc.serverTimezone = createObject("java","java.util.TimeZone").getDefault().ID />
+		<cfset application.fc.settings = structnew() /><!--- Struct to contain machine specific settings. These should only be altered after init. --->
+		
+		<cfset application.fc.settings.webtopheadingcolour = "##ffffff" />
 		
 		<cfset application.fc.factory['farCoapi'] = createObject("component", "farcry.core.packages.types.farCoapi") />
 		

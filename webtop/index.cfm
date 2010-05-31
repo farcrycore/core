@@ -75,7 +75,7 @@ $Developer: Pete Ottery (pot@daemon.com.au)$
 </head>
 <body id="sec-#url.sec#">
 
-	<div id="header">
+	<div id="header" style="background-color:#application.fc.settings.webtopheadingcolour#">
 	
 		<div id="site-name">
 
