@@ -82,7 +82,7 @@ $Developer: Pete Ottery (pot@daemon.com.au)$
 </head>
 <body id="sec-#secid#">
 
-	<div id="header" style="color:#application.config.general.webtopheadingcolour#">
+	<div id="header" style="background-color:#application.config.general.webtopheadingcolour#">
 	
 		<div id="site-name">
 
