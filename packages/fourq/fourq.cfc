@@ -161,37 +161,36 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			
 			<skin:htmlHead id="webskinAjaxLoader">
 			<cfoutput>		
-			<script type="text/javascript">
-			function webskinAjaxLoader(divID,action,ajaxTimeout,showLoadIndicator,indicatorText){
-				
-				if (timeout == undefined){var timeout = 30};
-				if (showLoadIndicator == undefined){var showLoadIndicator = false};
-				if (indicatorText == undefined){var indicatorText = 'loading...'};
-				if (ajaxTimeout == undefined){var ajaxTimeout = 30}; // the number of seconds to wait
-				
-				if (ajaxTimeout > 0) {
-					ajaxTimeout = ajaxTimeout * 1000; // convert to milliseconds
-				}
-				
-				if (showLoadIndicator == true) {
-					$j("##" + divID).mask(indicatorText);
-				}
-
-				$j.ajax({
-				   type: "POST",
-				   url: action,
-				   cache: false,
-				   timeout: ajaxTimeout,
-				   data:{},
-				   success: function(msg){
-				   		if (showLoadIndicator == true) {
-							$j("##" + divID).unmask();
+				<script type="text/javascript">
+				function webskinAjaxLoader(divID,action,ajaxTimeout,showLoadIndicator,indicatorText){
+					
+					if (timeout == undefined){var timeout = 30};
+					if (showLoadIndicator == undefined){var showLoadIndicator = false};
+					if (indicatorText == undefined){var indicatorText = 'loading...'};
+					if (ajaxTimeout == undefined){var ajaxTimeout = 30}; // the number of seconds to wait
+					
+					if (ajaxTimeout > 0) {
+						ajaxTimeout = ajaxTimeout * 1000; // convert to milliseconds
+					}
+					
+					if (showLoadIndicator == true) {
+						$j("##" + divID).html('<div class="loading-indicator">' + indicatorText + '</div>');
+					}
+					
+					$j.ajax({
+						type: "POST",
+						url: action,
+						cache: false,
+						timeout: ajaxTimeout,
+						success: function(msg){
+							if (showLoadIndicator == true) {
+								$j("##" + divID).html('');
+							}
+							$j('##' + divID).html(msg);
 						}
-						$j('##' + divID).html(msg);						     	
-				   }
-				 });
-			}
-			</script>
+					});
+				}
+				</script>
 			</cfoutput>
 			</skin:htmlHead>
 			
