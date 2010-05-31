@@ -69,7 +69,6 @@ $Developer: Pete Ottery (pot@daemon.com.au)$
 <cfset variables.sidebar=oWebTop.getSidebarUrl(aSubectionToDisplay[1].XmlAttributes)>
 <cfset variables.content=oWebTop.getContentUrl(aSubectionToDisplay[1].XmlAttributes)> 
 
-<cfparam name="application.config.general.webtopheadingcolour" default="##ffffff" />
 
 <cfoutput>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -82,7 +81,7 @@ $Developer: Pete Ottery (pot@daemon.com.au)$
 </head>
 <body id="sec-#secid#">
 
-	<div id="header" style="background-color:#application.config.general.webtopheadingcolour#">
+	<div id="header" style="background-color:#application.fc.settings.webtopheadingcolour#">
 	
 		<div id="site-name">
 

@@ -204,6 +204,10 @@
 				<cfset application.coapi.objectBroker = createObject("component", "farcry.core.packages.fourq.objectBroker").init() />
 
 			
+				<cfparam name="application.fc" default="#structnew()#" />
+				<cfparam name="application.fc.settings" default="#structnew()#" />
+				<cfset application.fc.settings.webtopheadingcolour ="##ffffff" />
+			
 				<!--------------------------------- 
 				FARCRY CORE INITIALISATION
 				 --------------------------------->
