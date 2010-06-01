@@ -268,6 +268,8 @@
 		<!--- prepend fu url pattern and add suffix --->
 		<cfset cleanFU = ReReplaceNocase(cleanFU,"/{2,}","/","All")>
 		<cfset cleanFU = ReReplaceNoCase(cleanFU,"[^a-z0-9/]+","-","all")>
+		<cfset cleanFU = ReReplaceNoCase(cleanFU,"-($|/)","\1","all")>
+		<cfset cleanFU = ReReplaceNoCase(cleanFU,"(^|/)-","\1","all")>
 		<cfset cleanFU = Trim(cleanFU)>
 		
 		<cfif left(cleanFU,1) NEQ "/">
