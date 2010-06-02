@@ -741,7 +741,7 @@
 				<cfset structdelete(stLocalURL,"furl") />
 				
 				<cfheader statuscode="#stResult['__redirectionType']#"><!--- statustext="Moved permanently" --->
-				<cfheader name="Location" value="#application.fapi.fixURL(url=stResult['__redirectionURL'],addvalues=queryStringDeleteVar("furl",cgi.query_string))#">
+				<cfheader name="Location" value="#application.fapi.fixURL(url=stResult['__redirectionURL'],addvalues=queryStringDeleteVar("furl,objectid",cgi.query_string))#">
 				<cfabort>
 			</cfif>
 			
@@ -762,7 +762,7 @@
 					<cfset structdelete(stLocalURL,"updateapp") />
 					
 					<cfheader statuscode="301"><!--- statustext="Moved permanently" --->
-					<cfheader name="Location" value="#application.fapi.getLink(objectid=stResult.objectid, urlParameters=queryStringDeleteVar("furl",cgi.query_string))#">
+					<cfheader name="Location" value="#application.fapi.getLink(objectid=stResult.objectid, urlParameters=queryStringDeleteVar("furl,objectid",cgi.query_string))#">
 					<cfabort>		
 				</cfif>
 			</cfif>
