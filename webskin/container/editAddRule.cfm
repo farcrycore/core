@@ -30,7 +30,7 @@
 	<cfset setData(stProperties=stObj)>
 
 	<!--- Locate off to the edit the rule. --->
-	<skin:location href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stDefaultObject.objectid#&method=editInPlace&iframe=1" addtoken="false">
+	<skin:location href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stDefaultObject.objectid#&method=editInPlace&iframe=1" addtoken="false" />
 </ft:processform>
 
 
