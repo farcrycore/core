@@ -161,7 +161,7 @@ object methods
 			<ft:validateFormObjects typename="#arguments.stFieldPost.stSupporting.formname#">
 				<cfloop collection="#stProperties#" item="prop">
 					<cfif isValid("string", stProperties[prop])>
-						<cfset stProperties[prop] = XMLFormat(stProperties[prop])>
+						<cfset stProperties[prop] = HTMLEditformat(stProperties[prop])>
 					</cfif>
 					<cfif not listcontainsnocase("typename,objectid",prop)>
 						<cfset stResult.bSuccess = stResult.bSuccess and request.stFarcryFormValidation[stProperties.ObjectID][prop].bSuccess />
