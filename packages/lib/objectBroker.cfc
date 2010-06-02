@@ -269,7 +269,7 @@
 			<cfset WebskinCacheID = listAppend(WebskinCacheID,"script_name:#cgi.script_name#,query_string:#cgi.query_string#") />
 		</cfif>
 		
-		<cfif arguments.bCacheByForm>
+		<cfif arguments.bCacheByForm AND isDefined("form")>
 			<cfif structIsEmpty(form)>
 				<cfset WebskinCacheID = listAppend(WebskinCacheID, "form:empty") />
 			<cfelse>
@@ -419,7 +419,7 @@
 		
 		<cfif application.bObjectBroker>
 			
-			<cfif not structIsEmpty(form)>
+			<cfif isDefined("form")AND not structIsEmpty(form)>
 				<cfif application.coapi.coapiadmin.getWebskinCacheFlushOnFormPost(typename=webskinTypename, template=arguments.template)>
 					<cfset bForceFlush = true />
 				</cfif>
