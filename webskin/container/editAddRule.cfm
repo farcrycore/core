@@ -27,7 +27,7 @@
 			
 	<cfset setData(stProperties=stObj)>
 
-	<skin:location href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stProps.objectid#&method=editInPlace&container=#url.container#&iframe=1" addtoken="false">
+	<skin:location href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stProps.objectid#&method=editInPlace&container=#url.container#&iframe=1" addtoken="false" />
 </ft:processform>
 
 <ft:processform action="Cancel">
