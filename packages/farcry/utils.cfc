@@ -606,6 +606,41 @@
 		<cfreturn arguments.url />
 	</cffunction>
 	
+	<!--- 
+	* Deletes a var from a query string.
+	* Idea for multiple args from Michael Stephenson (michael.stephenson@adtran.com)
+	* 
+	* @param variable      A variable, or a list of variables, to delete from the query string. 
+	* @param qs      Query string to modify. Defaults to CGI.QUERY_STRING. 
+	* @return Returns a string. 
+	* @author Nathan Dintenfass (michael.stephenson@adtran.comnathan@changemedia.com) 
+	* @version 1.1, February 24, 2002 
+	* @version X	Refactored for FarCry
+	 --->
+	<cffunction name="deleteQueryVariable" returntype="string" output="false" access="public" hint="Deletes a var from a query string.">
+		<cfargument name="variable" type="string" required="true" hint="The variable to remove" />
+		<cfargument name="qs" type="string" required="false" default="#cgi.query_string#" />
+		
+	    <cfset var updatedqs = "" /><!--- var to hold the final string --->
+	    <cfset var ii = 1 /><!--- vars for use in the loop, so we don't have to evaluate lists and arrays more than once --->
+	    <cfset var thisVar = "" />
+	    <cfset var thisIndex = "" />
+	    <cfset var valuearray = listToArray(arguments.qs,"&") /><!--- put the query string into an array for easier looping --->
+	    
+	    <!--- now, loop over the array and rebuild the string --->
+	    <cfloop from="1" to="#arrayLen(valuearray)#" index="ii">
+	        <cfset thisIndex = valuearray[ii] />
+	        <cfset thisVar = listFirst(thisIndex,"=") />
+	        
+	        <!--- if this is the var, edit it to the value, otherwise, just append --->
+	        <cfif not listFind(variable,thisVar)>
+	            <cfset updatedqs = listAppend(updatedqs,thisIndex,"&") />
+	        </cfif>
+	    </cfloop>
+	    
+	    <cfreturn updatedqs />
+	</cffunction>
+	
 	<!--- @@hint: 
 		<p>This is a private version of the function. Do not call this function directly.
 			Please use the fapi.cfc version</p>
