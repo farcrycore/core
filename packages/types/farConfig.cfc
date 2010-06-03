@@ -53,11 +53,15 @@ object methods
 		<cfset var qFieldSets = querynew("empty") /><!--- The fieldsets supported by the config --->
 		<cfset var legend = "" />
 		<cfset var IncludeFieldSet = true />
+		<cfset var thisprop = "" />
 		
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 		
 		<!--- If the field already has a value then use that --->
 		<cfwddx action="wddx2cfml" input="#arguments.stMetadata.value#" output="stObj" />
+		<cfloop collection="#stObj#" item="thisprop">
+			<cfset stObj[thisprop] = replacelist(stObj[thisprop],"&gt;,&lt;,&apos;,&quot;,&amp;",">,<,',"",&") />
+		</cfloop>
 		
 		<!--- If the config is unknown, attempt to match it by form key --->
 		<cfif not structkeyexists(stObj,"typename")>
@@ -237,6 +241,7 @@ object methods
 		<cfset var bChanged = false />
 		<cfset var stDefault = structnew() />
 		<cfset var formkey = "" />
+		<cfset var st = structnew() />
 		
 		<!--- Find a config item that stores this config data --->
 		<cfquery datasource="#application.dsn#" name="qConfig">
@@ -248,6 +253,9 @@ object methods
 		<cfif qConfig.recordcount>
 			<!--- If the config item exists convert the data to a struct --->
 			<cfwddx action="wddx2cfml" input="#qConfig.configdata[1]#" output="stResult" />
+			<cfloop collection="#stResult#" item="formkey">
+				<cfif issimplevalue(stResult[formkey])><cfset stResult[formkey] = replacelist(stResult[formkey],"&gt;,&lt;,&apos;,&quot;,&amp;",">,<,',"",&") /></cfif>
+			</cfloop>
 		</cfif>
 		
 		<!--- Make sure the result is a struct --->
@@ -326,8 +334,12 @@ object methods
 		<cfargument name="stProperties" type="struct" required="true" hint="The properties that have been saved" />
 		
 		<cfset var config = "" />
+		<cfset var thisprop = "" />
 		
 		<cfwddx action="wddx2cfml" input="#arguments.stProperties.configdata#" output="config" />
+		<cfloop collection="#config#" item="thisprop">
+			<cfset config[thisprop] = replacelist(config[thisprop],"&gt;,&lt;,&apos;,&quot;,&amp;",">,<,',"",&") />
+		</cfloop>
 		
 		<cfset application.config[arguments.stProperties.configkey] = duplicate(config) />
 		

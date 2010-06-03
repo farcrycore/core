@@ -31,9 +31,7 @@
 				
 
 		<cfif isdefined("application.config.tinyMCE.tinyMCE_config") AND isdefined("application.config.tinyMCE.bUseConfig") and application.config.tinyMCE.bUseConfig and len(trim(application.config.tinyMCE.tinyMCE_config))>
-      <!--- Remove escaped double quotes and single quotes saved in WDDX tables --->
-      <cfset configJS = replace(application.config.tinyMCE.tinyMCE_config, '&quot;', '"', 'ALL') />
-      <cfset configJS = replace(configJS, "&apos;", "'", "ALL") />
+			<cfset configJS = application.config.tinyMCE.tinyMCE_config />
 		<cfelse>
 			<cfset configJS = getConfig(stMetadata="#arguments.stMetadata#") />
 		</cfif>	
