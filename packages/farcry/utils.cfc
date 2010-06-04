@@ -751,4 +751,46 @@
 		
 		<cfreturn prettyDate />
 	</cffunction>
+
+	<!--- @@hint: 
+		<p>This function is used to build an array of items from a set of defaults, and 
+			also a string of commands to add or subtract items form the default.  For
+			example, core defines a list of internet spider user agents ("google,slurp,meany,java"),
+			and you may want to use all of them except "java" and also add two called
+			"blarg" and "yuck".  You can do that with this function like so:	
+		 </p>
+		
+		<p>
+			arrayFromStringCommands("google,slurp,meany,java", "*:-java,+blarg,yuck")
+		</p>
+		
+		<p>
+			Currently, this function is only used for the above mentioned example, however
+			it might be useful in the future to allow plugins to be added and removed
+			at runtime.
+		</p>
+		
+		<p>
+			This function is defined in Application.cfc because it is used on FarCry
+			init.  It is here (utils.cfc) for Unit testing, and the possibility of 
+			future use.
+		</p>
+		
+		@@examples:
+		<code>
+			#application.fapi.plusMinusStateMachine(myUglyDate)# 
+		</code>
+	 --->
+	<cffunction name="arrayFromStringCommands" access="public" returntype="array" output="false">
+		<cfargument name="asteriskDefaults" type="string" required="true" />
+		<cfargument name="stateCommandString" type="string" required="true" />
+		
+		<!--- This function is needed on application startup, and as such is defined in 
+			the cores version of Application.cfc. --->
+		<cfreturn request.__plusMinusStateMachine(
+												  arguments.asteriskDefaults, 
+												  arguments.stateCommandString) />
+		
+	</cffunction>
+
 </cfcomponent>

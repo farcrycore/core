@@ -38,20 +38,12 @@
 	<cfparam name="this.botAgents" default="*" />
 	<cfparam name="this.botIPs" default="*" />
 	
+	
 	<cfset this.defaultAgents = "bot\b,\brss,slurp,mediapartners-google,googlebot,zyborg,emonitor,jeeves,sbider,findlinks,yahooseeker,mmcrawler,jbrowser,java,pmafind,blogbeat,converacrawler,ocelli,labhoo,validator,sproose,ia_archiver,larbin,psycheclone,arachmo" />
-	<cfif left(this.botagents,1) eq "+">
-		<cfset this.botAgents = this.defaultAgents & "," & mid(this.botAgents,2,len(this.botAgents)) />
-	<cfelseif this.botAgents eq "*">
-		<cfset this.botAgents = this.defaultAgents />
-	</cfif>
-	<cfset this.botAgents = listtoarray(this.botAgents) />
+	<cfset this.botAgents = __plusMinusStateMachine(this.defaultAgents, this.botagents) />
 	
 	<cfset this.defaultIPs = "" />
-	<cfif left(this.botIPs,1) eq "+">
-		<cfset this.botIPs = this.defaultIPs & "," & mid(this.botIPs,2,len(this.botIPs)) />
-	<cfelseif this.botIPs eq "*">
-		<cfset this.botIPs = this.defaultIPs />
-	</cfif>
+	<cfset this.botAgents = __plusMinusStateMachine(this.defaultIPs, this.botIPs) />
 	
 	<cfparam name="cookie.sessionScopeTested" default="false" />
 	<cfparam name="cookie.hasSessionScope" default="false" />
@@ -77,6 +69,89 @@
 			</cftry>
 		</cfif>
 	</cfif>
+	
+	
+	<!--- ////////////////////////////////////////////// --->
+	
+	<!---
+		This function can be used to create an array from a string (list) and
+		also change the contents of that string (list).  The first parameter
+		is a list of default items "one,two,three", and the second parameter
+		is a command list of operations to perform on that list. The command
+		list can look like the following:  "*:-one,three:+six,four"
+		
+		This will return the array "[two,six,four]". The command string is made
+		of the following operators:
+			
+			*  = add everything from the first paramter
+			+  = do an addition
+			-  = do a subtraction
+			-* = remove all of the default items
+	--->
+	<cffunction name="__plusMinusStateMachine" returntype="array" output="false">
+		<cfargument name="asteriskDefaults" type="string" required="true" />
+		<cfargument name="stateCommandString" type="string" required="true" />
+		
+		<cfset var z = 0 />
+		<cfset var q = 0 />
+		<cfset var commandString = "" />
+		<cfset aStates = arrayNew(1) />
+		<cfset sStates = "" />
+		<cfset returnArray = arrayNew(1) />
+		
+		
+		<cfset aStates = listToArray(arguments.stateCommandString, ":") />
+		
+		<!--- 
+			The reason this gets a bit complicated is to be backwards compatable. 
+			If they just passed a string like "+one,two,three" we'll assume they want
+			the core default agents, and want to add to them. --->
+		<cfif not len(stateCommandString) or left(stateCommandString, 1) eq "+">
+			<cfset sStates = arguments.asteriskDefaults />
+		<cfelse>
+			<cfset sStates = "" />
+		</cfif>
+		
+		<!--- Loop over the agent addition, subtraction or all commands
+			and build the string of default agents --->
+		<cfloop from="1" to="#arrayLen(aStates)#" index="z">
+			<cfset commandString = aStates[z] />
+			
+			<!--- Add agents to the list --->
+			<cfif left(commandString,1) eq "+">
+				<cfset sStates = sStates & "," & mid(commandString,2,len(commandString)) />
+			
+			<!--- do and "Add all" - basically add in all the defaults
+				from core (defined above as this.defaultAgents) --->
+			<cfelseif commandString eq "*">
+				<cfset sStates = sStates & "," & arguments.asteriskDefaults />
+			
+			<!--- remove either single agents or remove all the core defaults--->
+			<cfelseif left(commandString,1) eq "-">
+				<!--- if they do "-*" we'll remove all the default bots --->
+				<cfif left(commandString,2) eq "-*">
+					<cfset sStates = "" />
+				<cfelse>
+					<!--- otherwise they are doing a "-java,jeeves" kind of string --->
+					<cfset returnArray = listToArray(sStates) />
+					
+					<cfset removeArray = listToArray(mid(commandString,2,len(commandString))) /> 
+					<cfloop from="1" to="#arrayLen(removeArray)#" index="q">
+						<cfset returnArray.remove(removeArray[q]) />
+					</cfloop>
+					
+					<!--- put this back into a list incase they do more commands to the list --->
+					<cfset sStates = arrayToList(returnArray) />
+				</cfif>
+			</cfif>
+		</cfloop>
+		
+		<!--- Ok, we should have a built up string, turn it into 
+			an array for later usage--->
+		<cfset returnArray = listToArray(sStates) />
+		
+		<cfreturn returnArray />
+	</cffunction>
 	
 	
 	<cffunction name="reFindAny" access="private" output="false" returntype="boolean" hint="Looks for any of an array of regular expressions in a string">
@@ -307,6 +382,10 @@
 		<cfif structKeyExists(url, "returnURL")>
 			<cfset session.loginReturnURL = application.fapi.fixURL(url.returnURL) />
 		</cfif>
+		
+		<!--- Hookup any functions here we want available to Farcry. --->
+		<cfset request.__plusMinusStateMachine = this.__plusMinusStateMachine />
+		
 		
 		<cfreturn true />
 	</cffunction>
