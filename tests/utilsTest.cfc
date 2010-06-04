@@ -30,37 +30,37 @@
 	<cffunction name="arrayFromStringCommands_Blank_Test" access="public">
 		<cfset assertEquals(
 							application.fc.utils.arrayFromStringCommands("", ""),
-							[]) />
+							arraynew(1)) />
 	</cffunction>
 	
 	<cffunction name="arrayFromStringCommands_MinusAsterisk_Test" access="public">
 		<cfset assertEquals(
 							application.fc.utils.arrayFromStringCommands("one,two,three,four", "-*"),
-							[]) />
+							arraynew(1)) />
 	</cffunction>
 	
 	<cffunction name="arrayFromStringCommands_AsteriskMinus_Test" access="public">
 		<cfset assertEquals(
 							application.fc.utils.arrayFromStringCommands("one,two,three,four", "*:-four"),
-							["one","two","three"]) />
+							listtoarray("one,two,three")) />
 	</cffunction>
 	
 	<cffunction name="arrayFromStringCommands_AsteriskPlus_Test" access="public">
 		<cfset assertEquals(
 							application.fc.utils.arrayFromStringCommands("one,two,three,four", "*:+five"),
-							["one","two","three","four","five"]) />
+							listtoarray("one,two,three,four,five")) />
 	</cffunction>
 	
 	<cffunction name="arrayFromStringCommands_Plus_Test" access="public">
 		<cfset assertEquals(
 							application.fc.utils.arrayFromStringCommands("one,two,three,four", "+five"),
-							["one","two","three","four","five"]) />
+							listtoarray("one,two,three,four,five")) />
 	</cffunction>
 	
 	<cffunction name="arrayFromStringCommands_AsteriskPlusMinus_Test" access="public">
 		<cfset assertEquals(
 							application.fc.utils.arrayFromStringCommands("one,two,three,four", "*:+five:-one"),
-							["two","three","four","five"]) />
+							listtoarray("two,three,four,five")) />
 	</cffunction>
 	
 	<cffunction name="arrayFromStringCommands_AsteriskPlusListMinusList_Test" access="public">
@@ -68,7 +68,7 @@
 							application.fc.utils.arrayFromStringCommands(
 																		 "one,two,three,four", 
 																		 "*:+five,six,seven:-one,four,three"),
-							["two","five","six","seven"]) />
+							listtoarray("two,five,six,seven")) />
 	</cffunction>
 	
 	<!--- ////////////////////////////////////////////////////////////////// --->
