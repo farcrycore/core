@@ -52,7 +52,7 @@
 <cfset o = createObject("component", "#application.packagepath#.farcry.tree")>
 <cfset navFilter=duplicate(attributes.afilter)>
 <cfset arrayAppend(navFilter, "status IN (#listQualify(request.mode.lvalidstatus, '''')#)") />
-<cfset qNav = evaluate("o."&attributes.functionMethod&"(objectid=attributes.navID, lColumns='externallink,lNavIDAlias', "&attributes.functionArgs&", afilter=navFilter)")>
+<cfset qNav = evaluate("o."&attributes.functionMethod&"(objectid=attributes.navID, lColumns='navType,externallink,lNavIDAlias,internalRedirectID,externalRedirectURL,target', "&attributes.functionArgs&", afilter=navFilter)")>
 
 <!--- // get ansestors of attributes.navID --->
 <cfset qAncestors = o.getAncestors(attributes.sectionObjectID)>
@@ -72,15 +72,10 @@
 
 <cfif attributes.displayStyle EQ "aLink">
 	<cfloop query="qNav">
-		<cfif application.fc.factory.farFU.isUsingFU()>
-			<cfset strhref = application.fc.factory.farFU.getFU(qNav.objectid)>
-		<cfelse>
-			<cfset strhref = application.url.conjurer & "?objectid=" & qNav.objectid>
-		</cfif>
 		<cfif qNav.currentRow GT 1>
 			<cfoutput> | </cfoutput>		
 		</cfif>
-		<cfoutput><a href="#strhref#" title="#qNav.objectName#">#qNav.objectName#</a></cfoutput>
+		<cfoutput><a href="#application.fapi.getlink(objectid=qNav.objectid)#" title="#qNav.objectName#" target="#qNav.target#">#qNav.objectName#</a></cfoutput>
 	</cfloop>
 <cfelse>
 
@@ -106,20 +101,17 @@
 		
 					
 			if(qNav.nLevel[i] gte attributes.startLevel){
-				//dump("test");
-				//check external links
-				if(structkeyexists(qNav,'externallink') and len(qNav.externallink[i])){
-					object = trim(qNav.externallink[i]);
+				if(qNav.navType[i] eq "externallink" or (qNav.navType[i] eq "" and structkeyexists(qNav,'externallink') and len(qNav.externallink[i]))){
+					href = application.fapi.getLink(objectid=trim(qNav.ObjectID[i]));
+				}
+				else if (qNav.navType[i] eq "internalRedirectID"){
+					href = application.fapi.getLink(objectid=qNav.internalRedirectID[i]);
+				}
+				else if (qNav.navType[i] eq "externalRedirectURL"){
+					href = qNav.externalRedirectURL[i];
 				}
 				else{
-					object = trim(qNav.ObjectID[i]);
-				}
-				//check for friendly urls
-				if(application.fc.factory.farFU.isUsingFU()){
-					href = application.url.webroot & application.fc.factory.farFU.getFU(object);
-				}
-				else{
-					href = application.url.conjurer & "?objectid=" & object;
+					href = application.fapi.getLink(objectid=trim(qNav.ObjectID[i]));
 				}
 				itemclass='';
 				
@@ -211,7 +203,7 @@
 					writeOutput(" class="""&trim(itemclass)&"""");
 				}
 				// write the link
-				writeOutput("><a href="""&href&""">"&trim(qNav.ObjectName[i]) & "</a>");
+				writeOutput("><a href='#href#' target='#qNav.target[i]#'>#trim(qNav.ObjectName[i])#</a>");
 			}
 		}
 	}
