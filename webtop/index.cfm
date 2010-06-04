@@ -63,6 +63,7 @@ $Developer: Pete Ottery (pot@daemon.com.au)$
 <!--- For some reason we are getting here without logging in sometimes, so some variables need to be param'd --->
 <cfparam name="session.writingDir" default="ltr" />
 <cfparam name="session.userLanguage" default="en" />
+<cfparam name="application.fc.settings.webtopheadingcolour" default="##ffffff" />
 
 <cfoutput>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
