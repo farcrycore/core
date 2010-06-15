@@ -1,10 +1,11 @@
 <cfsetting enablecfoutputonly="true" />
 <!--- @@displayname: Edit --->
-<!--- @@timeout: 0 --->
+<!--- @@cacheStatus: -1 --->
 
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/navajo" prefix="nj" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
 
 
 <cfset setLock(stObj=stObj,locked=true) />
@@ -107,37 +108,37 @@
 </cfoutput>
 
 	
-	<ft:object stObject="#stObj#" lFields="title" legend="General Details" />
+	<cfif stObj.navType eq "">
+		<cfif len(stObj.externalLink)>
+			<cfset stObj.navType = "externalLink" />
+		<cfelse>
+			<cfset stObj.navType = "aObjectIDs" />
+		</cfif>
+	</cfif>
 	
-	<cfif not arraylen(stObj.aObjectIDs) and not len(stObj.internalRedirectID) and not len(stObj.externalRedirectURL) and not len(stObj.ExternalLink)>
-		
-		<ft:object stObject="#stObj#" lFields="navType" legend="Navigation Behaviour" />
-		
-		<cfoutput><div id="navType_aObjectIDs" class="navType navType_aObjectIDs"<cfif stObj.navType neq "aObjectIDs"> style="display:none;"</cfif>></cfoutput>
-		<ft:object stObject="#stObj#" lFields="aObjectIDs" bShowLibraryLink="false" />
-		<cfoutput></div></cfoutput>
-		
-		<cfoutput><div id="navType_internalRedirectID" class="navType navType_internalRedirectID"<cfif stObj.navType neq "internalRedirectID"> style="display:none;"</cfif>></cfoutput>
-		<ft:object stObject="#stObj#" lFields="internalRedirectID" />
-		<cfoutput></div></cfoutput>
-		
-		<cfoutput><div id="navType_externalRedirectURL" class="navType navType_externalRedirectURL"<cfif stObj.navType neq "externalRedirectURL"> style="display:none;"</cfif>></cfoutput>
-		<ft:object stObject="#stObj#" lFields="externalRedirectURL" />
-		<cfoutput></div></cfoutput>
-		
-		<cfoutput><div id="navType_ExternalLink" class="navType navType_ExternalLink"<cfif stObj.navType neq "ExternalLink"> style="display:none;"</cfif>></cfoutput>
-		<ft:object stObject="#stObj#" lFields="ExternalLink" />
-		<cfoutput></div></cfoutput>
-		
+	<ft:object stObject="#stObj#" lFields="title,navType" legend="General Details" />
+	
+	<cfoutput><div id="navType_aObjectIDs" class="navType navType_aObjectIDs"<cfif stObj.navType neq "aObjectIDs"> style="display:none;"</cfif>></cfoutput>
+	<ft:object stObject="#stObj#" lFields="aObjectIDs" bShowLibraryLink="false" />
+	<cfoutput></div></cfoutput>
+	
+	<cfoutput><div id="navType_internalRedirectID" class="navType navType_internalRedirectID"<cfif stObj.navType neq "internalRedirectID"> style="display:none;"</cfif>></cfoutput>
+	<ft:object stObject="#stObj#" lFields="internalRedirectID" />
+	<cfoutput></div></cfoutput>
+	
+	<cfoutput><div id="navType_externalRedirectURL" class="navType navType_externalRedirectURL"<cfif stObj.navType neq "externalRedirectURL"> style="display:none;"</cfif>></cfoutput>
+	<ft:object stObject="#stObj#" lFields="externalRedirectURL" />
+	<cfoutput></div></cfoutput>
+	
+	<cfoutput><div id="navType_ExternalLink" class="navType navType_ExternalLink"<cfif stObj.navType neq "ExternalLink"> style="display:none;"</cfif>></cfoutput>
+	<ft:object stObject="#stObj#" lFields="ExternalLink" />
+	<cfoutput></div></cfoutput>
+	
+	<sec:checkPermission permission="developer">
 		<cfoutput><div class="navType navType_externalRedirectURL"<cfif not listcontainsnocase("externalRedirectURL",stObj.navType)> style="display:none;"</cfif>></cfoutput>
 		<ft:object stObject="#stObj#" lFields="target" />
 		<cfoutput></div></cfoutput>
-		
-	<cfelseif len(stObj.navType)>
-		
-		<ft:object stObject="#stObj#" lFields="#stObj.navType#" format="display" legend="Navigation Behaviour" />
-		
-	</cfif>
+	</sec:checkPermission>
 	
 	<!--- Now show any other fieldsets --->
 	<cfset stLocal.qMetadata = application.types[stobj.typename].qMetadata />
