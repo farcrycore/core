@@ -42,7 +42,7 @@
 		ftSeq="8" ftFieldSet="Navigation Behaviour" ftLabel="Internal Redirect" ftHint="Redirect the user to the selected content."
 		ftType="uuid" ftJoin="dmNavigation" ftAllowEdit="true" />
 	
-	<cfproperty name="externalRedirectURL" type="string" hint="The internal object to redirect to." required="no" default=""
+	<cfproperty name="externalRedirectURL" type="string" hint="The absolute URL to redirect to." required="no" default=""
 		ftSeq="9" ftFieldSet="Navigation Behaviour" ftLabel="External Redirect" ftHint="Redirect the user to the selected URL."
 		ftType="url" />
 	
