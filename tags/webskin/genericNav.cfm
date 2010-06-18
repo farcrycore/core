@@ -79,9 +79,7 @@
 		<cfif qNav.currentRow GT 1>
 			<cfoutput> | </cfoutput>		
 		</cfif>
-		<cfoutput><a href="#application.fapi.getlink(objectid=qNav.objectid)#" title="#qNav.objectName#"</cfoutput>
-		<cfif structkeyexists(qNav,"target") and len(qNav.target)><cfoutput> target="#qNav.target#"</cfoutput></cfif>
-		<cfoutput>>#qNav.objectName#</a></cfoutput>
+		<cfoutput><a href="#application.fapi.getlink(objectid=qNav.objectid)#" title="#qNav.objectName#" target="#qNav.target#">#qNav.objectName#</a></cfoutput>
 	</cfloop>
 <cfelse>
 
@@ -210,7 +208,7 @@
 				}
 				// write the link
 				writeOutput("><a href="""&href&"""");
-				if (structkeyexists(qNav,"target")) writeOutput("target='#qNav.target[i]#'");
+				if (structkeyexists(qNav,"target") and len(qNav.target)) writeOutput("target='#qNav.target[i]#'");
 				writeOutput(">"&trim(qNav.ObjectName[i]) & "</a>");
 			}
 		}

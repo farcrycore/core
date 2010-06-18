@@ -24,6 +24,7 @@
 		<nj:display objectid="#stObj.externalLink#" />
 		<cfsetting enablecfoutputonly="false" />
 		<cfexit method="exittemplate" />
+
 	</cfcase>
 	
 	<cfcase value="internalRedirectID"><!--- This is a fallback - usually these will be handled in the link --->
@@ -62,7 +63,7 @@
 				<nj:display objectid="#stObjTemp.objectid#" typename="#stObjTemp.typename#" />
 				<cfsetting enablecfoutputonly="false" />
 				<cfexit method="exittemplate" />
-				
+			
 			</cfif>
 			
 		</cfloop>

@@ -125,7 +125,7 @@
 	<cfoutput><div id="navType_internalRedirectID" class="navType navType_internalRedirectID"<cfif stObj.navType neq "internalRedirectID"> style="display:none;"</cfif>></cfoutput>
 	<ft:object stObject="#stObj#" lFields="internalRedirectID" />
 	<cfoutput></div></cfoutput>
-	
+
 	<cfoutput><div id="navType_externalRedirectURL" class="navType navType_externalRedirectURL"<cfif stObj.navType neq "externalRedirectURL"> style="display:none;"</cfif>></cfoutput>
 	<ft:object stObject="#stObj#" lFields="externalRedirectURL" />
 	<cfoutput></div></cfoutput>
