@@ -62,6 +62,9 @@
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
 		<cfset stResult.value = stFieldPost.Value>
+		<cfif structKeyExists(arguments.stMetadata, "ftValidation") AND listFindNoCase(arguments.stMetadata.ftValidation, "required") AND NOT len(stFieldPost.Value)>
+			<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="This is a required field.") />
+		</cfif>
 		
 		
 		<!--- ----------------- --->
