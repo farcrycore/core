@@ -222,6 +222,8 @@
 						<cfoutput></ul></cfoutput>
 						
 						<cfoutput><input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#joinItems#" /></cfoutput>
+					<cfelse>
+						<cfoutput><input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value=" " /></cfoutput>
 					</cfif>
 					
 					<ft:buttonPanel style="">
