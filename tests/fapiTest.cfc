@@ -15,7 +15,7 @@
 	Then you are not using UTF-8.
 --->
 
-<cfcomponent extends="mxunit.framework.TestCase" displayname="FAPI Tests">
+<cfcomponent extends="mxunit.framework.TestCase" displayname="FAPI Tests" mode="self">
 	<!--- setup and teardown --->
 	<cffunction name="setUp" returntype="void" access="public">
 		<!--- Any code needed to return your environment to normal goes here --->

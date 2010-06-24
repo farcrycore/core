@@ -1,4 +1,4 @@
-<cfcomponent extends="farcry.plugins.testMXUnit.tests.FarcryTestCase" displayname="Friendly URL Tests">
+<cfcomponent extends="farcry.plugins.testMXUnit.tests.FarcryTestCase" displayname="Friendly URL Tests" mode="self">
 	
 	<!--- setup and teardown --->
 	<cffunction name="setUp" returntype="void" access="public">

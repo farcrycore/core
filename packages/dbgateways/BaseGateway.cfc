@@ -403,7 +403,7 @@
 			
 		 	<cfcatch type="database">
 				<!--- Looks like a property has not yet been deployed. If so, simply try a select * --->
-				<farcry:logevent object="#arguments.objectID#" type="#variables.dbowner##tablename#" event="getData" notes="Error running getdata(). #cfcatch.detail#"  />
+				<farcry:logevent object="#arguments.objectID#" type="#variables.dbowner##arguments.schema.tablename#" event="getData" notes="Error running getdata(). #cfcatch.detail#"  />
 				<cfquery datasource="#variables.dsn#" name="qGetData">
 					SELECT 	*
 					FROM 	#variables.dbowner##arguments.schema.tablename#
@@ -690,7 +690,7 @@
 				</cfcase>
 				<cfcase value="unclustered">
 					<cfquery datasource="#variables.dsn#" result="queryresult">
-					 	DROP INDEX 		#arguments.schema.indexes[arguments.indexname].name# 
+					 	DROP INDEX 		#stDB.indexes[arguments.indexname].name# 
 					 	ON 				#variables.dbowner##arguments.schema.tablename#
 					</cfquery>
 				</cfcase>

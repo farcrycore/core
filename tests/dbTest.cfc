@@ -1,4 +1,4 @@
-<cfcomponent displayname="Database" extends="mxunit.framework.TestCase" output="false">
+<cfcomponent displayname="Database" extends="mxunit.framework.TestCase" output="false" mode="self">
 	
 	<cffunction name="setUp" returntype="void" access="public">
 		

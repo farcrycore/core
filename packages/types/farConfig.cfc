@@ -364,7 +364,7 @@ object methods
 		
 		<ft:form>
 			<!--- All Fields: default edit handler --->
-			<ft:object objectID="#arguments.ObjectID#" format="edit" lFields="#valuelist(qFields.propertyname)#" r_stFields="stFields" />
+			<ft:object objectID="#arguments.ObjectID#" typename="#stObj.typename#" format="edit" lFields="#valuelist(qFields.propertyname)#" r_stFields="stFields" />
 			
 			<cfoutput>
 				<h1>#displayName#</h1>
