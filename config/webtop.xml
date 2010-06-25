@@ -64,6 +64,7 @@
 			<menu id="application" sequence="10" label="Application">
 				<menuitem id="updateapp" sequence="10" label="Reload application" link="/admin/updateapp.cfm" />
 				<menuitem id="scopedump" label="Scope Dump" link="/admin/yxplorer.cfm" />
+				<menuitem id="systeminfo" label="System Information" link="/customadmin/utilities/systeminfo.cfm" />
 			</menu>
 			<menu id="coapitools" sequence="20" label="COAPI Tools">
 				<menuitem id="typeclasses" sequence="10" label="Types" link="/admin/coapiTypes.cfm" />
