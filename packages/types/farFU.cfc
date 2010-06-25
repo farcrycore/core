@@ -859,7 +859,7 @@
 		<cfargument name="farFUID" type="uuid" required="false" hint="The objectid of a farFU object" />
 		<cfargument name="fuParameters" type="string" required="false" hint="The portion of the furl value that needs to be parsed" />
 		<cfargument name="bForce" required="false" default="false" hint="Force the URL Struct to use this as the FU and not look for a default. This captures the problem where there IS no default.">
-		<cfargument name="stFU" type="struct" required="true" hint="The full farFU object" />
+		<cfargument name="stFU" type="struct" required="false" hint="The full farFU object" />
 		
 		<cfset var stResult = structnew() />
 		<cfset var qsToken = "" />
