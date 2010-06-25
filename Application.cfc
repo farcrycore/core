@@ -175,7 +175,8 @@
 		<cfset var qServerSpecific = queryNew("blah") />
 		<cfset var qServerSpecificAfterInit = queryNew("blah") />
 		<cfset var machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
-
+		<cfset var tickBegin = getTickCount() />
+		
 		<!--- intialise application scope --->
 		<cfset initApplicationScope() />
 		
@@ -319,6 +320,18 @@
 				</cfif>
 			</cfloop>
 		</cfif>
+		
+		
+		<!----------------------------------- 
+		CALL THE PLUGINS AFTER INIT VARIABLES
+		 ----------------------------------->
+		<cfif not isdefined("application.fcstats.updateapp") or not isquery(application.fcstats.updateapp)>
+			<cfparam name="application.fcstats" default="#structnew()#" />
+			<cfset application.fcstats.updateapp = querynew("when,howlong","time,bigint") />
+		</cfif>
+		<cfset queryaddrow(application.fcstats.updateapp) />
+		<cfset querysetcell(application.fcstats.updateapp,"when",now()) />
+		<cfset querysetcell(application.fcstats.updateapp,"howlong",getTickCount()-tickBegin) />
 		
 		<cfset application.bInit = true />
 		<cfreturn true />
