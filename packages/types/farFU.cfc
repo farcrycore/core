@@ -871,7 +871,7 @@
 		
 		<cfif structkeyexists(arguments,"farFUID") and not structkeyexists(arguments,"stFU")>
 			<cfset arguments.stFU = getData(objectid=arguments.farFUID) />
-			<cfset arguments.refTypename = application.fapi.findType(arguments.stFU.refObjectID) />
+			<cfset arguments.stFU.refTypename = application.fapi.findType(arguments.stFU.refObjectID) />
 		</cfif>
 		
 		<cfif structkeyexists(arguments,"stFU")><!--- Grab URL variables from the farFU object --->
