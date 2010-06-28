@@ -87,6 +87,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="ajaxShowloadIndicator" required="no" default="false" type="boolean" hint="Should the ajax loading indicator be shown" />
 		<cfargument name="ajaxindicatorText" required="no" default="loading..." type="string" hint="What should be text of the loading indicator" />		
 		<cfargument name="ajaxURLParameters" required="no" default="" type="string" hint="parameters to pass for ajax call" />
+		<cfargument name="ajaxTimeout" required="no" default="30" type="numeric" hint="ajax timeout" />
 		<cfargument name="bIgnoreSecurity" required="false" type="boolean" default="false" hint="Should the getView() ignore webskin security" />	
 		<cfargument name="bAllowTrace" required="false" type="boolean" default="true" hint="Sometimes having webskin trace information can break the integrity of a page. This allows you to turn it off." />
 			
@@ -162,33 +163,35 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<skin:htmlHead id="webskinAjaxLoader">
 			<cfoutput>		
 				<script type="text/javascript">
-				function webskinAjaxLoader(divID,action,ajaxTimeout,showLoadIndicator,indicatorText){
+				$j.fn.loadAjaxWebskin = function (config){
+					var self = this;
+					config = config || self.data("loadWebskinAjax") || {};
 					
-					if (timeout == undefined){var timeout = 30};
-					if (showLoadIndicator == undefined){var showLoadIndicator = false};
-					if (indicatorText == undefined){var indicatorText = 'loading...'};
-					if (ajaxTimeout == undefined){var ajaxTimeout = 30}; // the number of seconds to wait
+					// action is required
+					config.showIndicator = config.showIndicator || false;
+					config.indicatorText = config.indicatorText || 'loading...';
+					config.timeout = config.timeout || 30;
+						
+					self.data("loadWebskinAjax",config);
 					
-					if (ajaxTimeout > 0) {
-						ajaxTimeout = ajaxTimeout * 1000; // convert to milliseconds
-					}
-					
-					if (showLoadIndicator == true) {
-						$j("##" + divID).html('<div class="loading-indicator">' + indicatorText + '</div>');
+					if (config.showIndicator == true) {
+						self.html('<div class="loading-indicator">' + config.indicatorText + '</div>');
 					}
 					
 					$j.ajax({
-						type: "POST",
-						url: action,
-						cache: false,
-						timeout: ajaxTimeout,
-						success: function(msg){
-							if (showLoadIndicator == true) {
-								$j("##" + divID).html('');
+						type		: "POST",
+						url			: config.action,
+						cache		: false,
+						timeout		: config.timeout*1000,
+						success		: function(msg){
+							if (config.showIndicator == true) {
+								self.html('');
 							}
-							$j('##' + divID).html(msg);
+							self.html(msg);
 						}
 					});
+					
+					return self;
 				}
 				</script>
 			</cfoutput>
@@ -217,22 +220,25 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				) />
 			</cfif> 
 			<cfsavecontent variable="stWebskin.webskinHTML">
-				<cfoutput>
+				
 				<farcry:traceWebskin 
 							objectid="#stobj.objectid#" 
 							typename="#stobj.typename#" 
 							template="#arguments.template#">
 				
-					<div id="#arguments.ajaxID#"></div>
+					<cfoutput><div id="#arguments.ajaxID#"></div></cfoutput>
 				
 				</farcry:traceWebskin>
 				
-				<skin:onReady>
-					<cfoutput>
-						webskinAjaxLoader('#arguments.ajaxID#', '#urlAjaxLoader#', 30, #arguments.ajaxShowLoadIndicator#, '#arguments.ajaxIndicatorText#');
-					</cfoutput>
-				</skin:onReady>
-				</cfoutput>
+				<skin:onReady><script type="text/javascript"><cfoutput>
+					$j('###arguments.ajaxID#').loadAjaxWebskin({
+						action			: '#urlAjaxLoader#', 
+						timeout			: #ARGUMENTS.ajaxTimeout#, 
+						showIndicator	: #arguments.ajaxShowLoadIndicator#,
+						indicatorText	: '#arguments.ajaxIndicatorText#'
+					});
+				</cfoutput></script></skin:onReady>
+				
 			</cfsavecontent>
 		<cfelse>
 			
