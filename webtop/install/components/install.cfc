@@ -441,11 +441,6 @@
 			<cfset o = createObject("component", "#pp.packagepath#.farcry.category") />
 			<cfset o.deployCategories(dsn=arguments.dsn,dbtype=arguments.dbtype,dbowner=arguments.dbowner,bDropTables=true) />
 			
-			<!--- Setup stats table --->
-			<cfset this.uiComponent.setProgress(progressmessage="#arguments.displayName# (DATABASE): Creating statistics tables",progress=0.4) />
-			<cfset o = createObject("component", "#pp.packagepath#.farcry.stats") />
-			<cfset o.deploy(dsn=arguments.dsn,dbtype=arguments.dbtype,dbowner=arguments.dbowner,bDropTable=true) />
-		
 		<!--- Deploy COAPI tables --->
 		<cfloop list="rules,types" index="thispackage">
 			<cfif thispackage eq "rules">
