@@ -182,7 +182,7 @@
 
 	<!--- if the user is unable to view the object, then show the denied access webskin --->
 	<cfif iHasViewPermission NEQ 1>
-		<skin:view objectid="#stobj.objectid#" webskin="deniedaccess" loginpath="#attributes.loginpath#" />
+		<skin:view objectid="#stobj.objectid#" typename="#stObj.typename#" webskin="deniedaccess" loginpath="#attributes.loginpath#" />
 		<cfsetting enablecfoutputonly="false" />
 		<cfexit method="exittag" />
 	</cfif>

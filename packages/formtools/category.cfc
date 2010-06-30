@@ -171,7 +171,7 @@
 				<cfoutput>
 					$j.ajax({
 					   type: "POST",
-					   url: '#application.fapi.getLink(objectid="#rootID#", view="displayCheckboxTree", urlParameters="ajaxmode=1")#',
+					   url: '#application.fapi.getLink(type="dmCategory", objectid="#rootID#", view="displayCheckboxTree", urlParameters="ajaxmode=1")#',
 					   data: {
 					   	fieldname: '#arguments.fieldname#',
 					   	rootNodeID:'#rootID#', 

@@ -147,7 +147,7 @@ $j('a.con-admin').live(
 </cfoutput>
 </skin:onReady>
 
-<cfset containerURL = application.fapi.getLink(objectid="#stobj.objectid#", view="displayContainer", urlParameters="ajaxmode=1&designmode=1") />
+<cfset containerURL = application.fapi.getLink(type="container",objectid="#stobj.objectid#", view="displayContainer", urlParameters="ajaxmode=1&designmode=1") />
 <cfset containerID = replace(stParam.originalID,'-','','ALL') />
 
 <cfoutput>
@@ -168,7 +168,7 @@ $j('a.con-admin').live(
 			<!--- ADD A RULE --->
 			<a title="Add new rule to container"
 				class="con-admin con-add-rule" 
-				href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&lRules=#stParam.lRules#&lExcludedRules=#stParam.lExcludedRules#&method=editAddRule&iframe" 
+				href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&typename=#stObj.typename#&lRules=#stParam.lRules#&lExcludedRules=#stParam.lExcludedRules#&method=editAddRule&iframe" 
 				con:id="#containerID#"
 				con:url="#containerURL#"
 				rule:title="Add new rule to container: #stParam.desc#">
@@ -180,7 +180,7 @@ $j('a.con-admin').live(
 			<!--- MANAGE REFLECTION --->
 			<a title="Manage Reflection"
 				class="con-admin con-manage-reflection" 
-				href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stParam.originalID#&method=editManageReflection&iframe" 
+				href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stParam.originalID#&typename=container&method=editManageReflection&iframe" 
 				con:id="#containerID#"
 				con:url="#containerURL#"
 				rule:title="Manage Reflection: #stParam.desc#">

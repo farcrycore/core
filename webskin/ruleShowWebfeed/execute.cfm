@@ -10,7 +10,7 @@
 <!--- <cfdump var="#stObj#" /> --->
 
 <cfloop from="1" to="#arrayLen(stObj.awebdisplayfeeds)#" index="q">
-	<skin:view objectid="#stObj.awebdisplayfeeds[q]#" 
+	<skin:view objectid="#stObj.awebdisplayfeeds[q]#" typename="farWebfeed"
 		webskin="displayTeaserStandard" />
 </cfloop>
 

@@ -30,7 +30,7 @@ $Description: dmXMLExport Type $
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
 
 --->
-<cfcomponent extends="types" displayname="XML Export" hint="RSS 2.0 Feeds">
+<cfcomponent extends="types" displayname="XML Export" hint="RSS 2.0 Feeds" bRefObjects="false">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->	

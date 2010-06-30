@@ -19,7 +19,7 @@
 		<cfset stUser = createObject("component", application.stcoapi["farUser"].packagePath).getByUserID(userid="#stProperties.userID#") />
 		
 		<cfif not structIsEmpty(stUser)>
-			<skin:view objectid="#stUser.objectid#" webskin="forgotChangePasswordEmail" />
+			<skin:view objectid="#stUser.objectid#" typename="farUser" webskin="forgotChangePasswordEmail" />
 			
 			<cfset request.passwordChanged = true />
 		<cfelse>

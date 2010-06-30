@@ -42,7 +42,7 @@
 
 
 <!--- Determine the container AJAX URL --->
-<cfset containerURL = application.fapi.getLink(objectid="#stConObj.objectid#", view="displayContainer", urlParameters="ajaxmode=1") />
+<cfset containerURL = application.fapi.getLink(type="container", objectid="#stConObj.objectid#", view="displayContainer", urlParameters="ajaxmode=1") />
 
 
 <cfif structkeyexists(form,"rule_action")>
