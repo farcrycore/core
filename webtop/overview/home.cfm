@@ -158,7 +158,7 @@
 			<cfif len(eventTypename) AND eventTypename neq "container">
 				<tr class="#IIF(qactivity.currentrow MOD 2, de("alt"), de(""))#">
 					<td nowrap="true">#application.fapi.getContentTypeMetadata(typename="#eventTypename#", md="displayname", default="Unknown")#</td>
-					<td><a href="#application.url.webtop#/edittabOverview.cfm?objectid=#qactivity.object#&typename=#eventTypename#"><skin:view objectid="#qactivity.object#" typename="dashboard" webskin="displayLabel" typename="#eventTypename#" /></a></td>
+					<td><a href="#application.url.webtop#/edittabOverview.cfm?objectid=#qactivity.object#&typename=#eventTypename#"><skin:view objectid="#qactivity.object#" webskin="displayLabel" typename="#eventTypename#" /></a></td>
 					<td><cfif len(qactivity.notes)>#qactivity.notes#<cfelse>-</cfif></td>
 					<!--- <td>#qactivity.event#</td> --->
 					<td nowrap="true">#application.fapi.prettyDate(qactivity.datetimelastupdated)#</td>
