@@ -2,9 +2,18 @@
 
 	<cffunction name="init" access="public" output="false" returntype="struct">
 		<cfargument name="bFlush" default="false" type="boolean" hint="Allows the application to force a total flush of the objectbroker." />
-
+		
+		<cfset var typename = "" />
+		<cfset var bSuccess = true />
+		
 		<cfif arguments.bFlush OR NOT structKeyExists(application, "objectBroker")>
 			<cfset application.objectbroker =  structNew() />
+			
+			<cfloop list="#structKeyList(application.stcoapi)#" index="typename">
+				<cfif application.stcoapi[typename].bObjectBroker>
+					<cfset bSuccess = configureType(typename=typename, MaxObjects=application.stcoapi[typename].ObjectBrokerMaxObjects) />
+				</cfif>
+			</cfloop>
 		</cfif>	
 
 		<cfreturn this />

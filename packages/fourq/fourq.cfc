@@ -907,6 +907,10 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfset stObj = tempObjectStore[arguments.objectid] />
 
 		<cfelse>
+			<cfif isdefined("request.mode.rebuild") and request.mode.rebuild eq "page">
+				<cfset application.fc.lib.objectbroker.RemoveFromObjectBroker(arguments.objectid,variables.typename) />
+			</cfif>
+			
 			<cfif arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs>
 				<!--- Attempt to get the object from the ObjectBroker --->
 				<!--- getFromObjectBroker returns an empty struct if the object is not in the broker --->
