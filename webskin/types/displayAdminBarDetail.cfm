@@ -96,7 +96,7 @@
 						</a>
 					</li>
 					<li>
-						<a id="flush-all" href="#application.fapi.fixURL(url='#form.refererURL#', removevalues='', addvalues='rebuild=all')#">
+						<a id="flush-all" href="#application.fapi.fixURL(url='#form.refererURL#', removevalues='', addvalues='rebuild=all')#" onclick="return confirm('This will clear the cache for the entire website. Are you sure you want to continue?')">
 							<span class="ui-icon ui-icon-refresh" style="float:left;">&nbsp;</span>Rebuild All
 						</a>
 					</li>
