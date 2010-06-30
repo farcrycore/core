@@ -407,7 +407,7 @@
 					<cfset stLocal.stResult = setData(stProperties="#stLocal.stCurrentSystemObject#") />
 					<cfcatch type="any">
 						<cfoutput><p>#getUniqueFU(friendlyURL="#stLocal.newFriendlyURL#")#</p></cfoutput>
-						<cfdump var="#stLocal#" expand="false" label="stLocal" /><cfabort showerror="debugging" />
+						<cfdump var="#stLocal#" expand="false" label="stLocal" /><cfdump var="#cfcatch#"><cfabort showerror="debugging" />
 					</cfcatch>
 					</cftry>
 				<cfelse>

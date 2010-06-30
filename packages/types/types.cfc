@@ -282,7 +282,7 @@ default handlers
 		</cfif>
 		
 		<cfif not structKeyExists(arguments.stProperties, "typename") OR not len(arguments.stProperties.typename)>
-			<cfset arguments.stProperties.typename = getTablename() />
+			<cfset arguments.stProperties.typename = getTypeName() />
 		</cfif>			
 		
 		<cfif structkeyexists(arguments.stProperties,"status") and len(arguments.stProperties.status)>
