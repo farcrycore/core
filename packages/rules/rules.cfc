@@ -102,7 +102,7 @@ $out:$
 		<farcry:logevent objectid="#arguments.objectid#" type="rule" event="delete" notes="#arguments.auditNote#" />
 	</cffunction>	
 	
-	<cffunction access="public" name="getRuleContainerID" output="false">
+	<cffunction name="getRuleContainerID" access="public" output="false">
 		<cfargument name="objectID" required="Yes" type="uuid" default="">
 		<cfargument name="label" required="no" type="string" default="">
 
@@ -121,7 +121,7 @@ $out:$
 		<cfreturn containerID />
 	</cffunction>	
 	
-	<cffunction access="public" name="update" output="true">
+	<cffunction name="update" access="public" output="true">
 		<cfargument name="objectID" required="Yes" type="uuid" default="">
 		<cfargument name="label" required="no" type="string" default="">
 
@@ -393,12 +393,12 @@ $out:$
 	</cffunction>
 		
 	
-	<cffunction access="public" name="execute" output="true">
+	<cffunction name="execute" access="public" output="true">
 		<cfargument name="label" required="no" type="string" default="">
 		<cfoutput><!-- #arguments[1]# : RULE IS EMPTY --></cfoutput>
 	</cffunction>  
 	
-	<cffunction access="public" name="getRules" returntype="query" hint="Returns a two column query (rulename, bCustom) of available rules. Assumes that rule names are rule*.cfc">
+	<cffunction name="getRules" access="public" returntype="query" hint="Returns a two column query (rulename, bCustom) of available rules. Assumes that rule names are rule*.cfc">
 		<cfargument name="lRules" type="string" required="false" default="" hint="List of rules to restrict to" />
 		<cfargument name="lExcludedRules" type="string" required="false" default="" hint="List of rules to exclude" />
 		
@@ -441,6 +441,7 @@ $out:$
 		
 		
 		<cfset var stReturn=structNew()>
+		<cfset var qHostContent = "" />
 					    
 		<cfif NOT structKeyExists(arguments.stProperties, "datetimelastupdated")>
 			<cfset arguments.stProperties.datetimelastupdated = createODBCDateTime(now()) />
@@ -451,6 +452,21 @@ $out:$
 
 		<!--- ONLY RUN THROUGH IF SAVING TO DB --->
 		<cfif not arguments.bSessionOnly AND arguments.bAfterSave>
+			
+			<!--- Flush current page (only possible if originalID is available) --->
+			<cfif isdefined("url.originalID")>
+				<cfquery datasource="#application.dsn#" name="qHostContent">
+					SELECT 	o.objectid,o.typename
+					FROM 	refContainers c
+							inner join
+							refObjects o
+							on c.objectid=o.objectid
+					WHERE 	c.containerid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#url.originalID#" />
+				</cfquery>
+				<cfloop query="qHostContent">
+					<cfset application.fc.lib.objectbroker.RemoveFromObjectBroker(lObjectIDs=qHostContent.objectid,typename=qHostContent.typename) />
+				</cfloop>
+			</cfif>
 			
 	   	 	<cfset stAfterSave = afterSave(argumentCollection=arguments) />
 	   	 				
