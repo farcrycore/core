@@ -9,11 +9,13 @@
 		<cfif arguments.bFlush OR NOT structKeyExists(application, "objectBroker")>
 			<cfset application.objectbroker =  structNew() />
 			
-			<cfloop list="#structKeyList(application.stcoapi)#" index="typename">
-				<cfif application.stcoapi[typename].bObjectBroker>
-					<cfset bSuccess = configureType(typename=typename, MaxObjects=application.stcoapi[typename].ObjectBrokerMaxObjects) />
-				</cfif>
-			</cfloop>
+			<cfif structkeyexists(application,"stCOAPI")>
+				<cfloop list="#structKeyList(application.stcoapi)#" index="typename">
+					<cfif application.stcoapi[typename].bObjectBroker>
+						<cfset bSuccess = configureType(typename=typename, MaxObjects=application.stcoapi[typename].ObjectBrokerMaxObjects) />
+					</cfif>
+				</cfloop>
+			</cfif>
 		</cfif>	
 
 		<cfreturn this />
