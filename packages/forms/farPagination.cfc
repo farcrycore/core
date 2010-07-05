@@ -281,13 +281,6 @@
 		
 		<cfset this.actionURL = application.fapi.fixURL(removevalues="+Page#this.paginationID#") />
 	
-	<cfelse>
-	
-		<!--- IF THERE IS AN ACTIONURL PASSED, WE'LL APPEND A ? SO 'PAGE' CAN BE APPENDED BY PAGINATION.CFM --->
-		<cfif NOT find("?", this.actionURL)>
-			<cfset this.actionURL = this.actionURL & "?" />
-		</cfif>
-	
 	</cfif>
 </cffunction>
 
