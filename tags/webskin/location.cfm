@@ -45,6 +45,8 @@
 	
 	<cfset attributes.url = application.fapi.getLink(argumentCollection="#attributes#") />		
 	
+	<cfset request.fc.bLocating = true />
+	
 	<cfset createobject("component","farcry.core.Application").onRequestEnd() />
 	<cflocation url="#attributes.url#" addtoken="#attributes.addToken#" />
 	
