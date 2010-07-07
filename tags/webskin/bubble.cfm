@@ -81,8 +81,8 @@ FARCRY IMPORT FILES
 	<cfelse>
 		<cfparam name="session.aGritterMessages" default="#arrayNew(1)#" />
 		<cfset stMessage = structNew() />
-		<cfset stMessage.title = JSStringFormat(attributes.title) />
-		<cfset stMessage.message = JSStringFormat(attributes.message) />
+		<cfset stMessage.title = attributes.title />
+		<cfset stMessage.message = attributes.message />
 		<cfset stMessage.image = attributes.image />
 		<cfset stMessage.pause = attributes.pause />
 		<cfset stMessage.sticky = attributes.sticky />
