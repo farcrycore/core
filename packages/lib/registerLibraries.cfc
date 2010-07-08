@@ -54,7 +54,7 @@
 		<skin:registerJS	id="jquery-tooltip-auto">
 							<cfoutput>
 								jQuery(function(){
-									jQuery('a.tooltipify,a[title],div[title],span[title]').tooltip({ 
+									jQuery('a[title],div[title],span[title]').tooltip({ 
 									    delay: 0, 
 									    showURL: false
 									});
