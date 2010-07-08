@@ -51,6 +51,16 @@
 		<skin:registerJS 	id="jquery-tooltip"
 							baseHREF="#application.url.webtop#/thirdparty/jquery-tooltip"
 							lFiles="jquery.tooltip.min.js" />
+		<skin:registerJS	id="jquery-tooltip-auto">
+							<cfoutput>
+								jQuery(function(){
+									jQuery('a.tooltipify,a[title],div[title],span[title]').tooltip({ 
+									    delay: 0, 
+									    showURL: false
+									});
+								});
+							</cfoutput>
+		</skin:registerJS>
 							
 							
 		<skin:registerJS 	id="gritter"
@@ -119,7 +129,7 @@
 		<skin:registerCSS 	id="jquery-tooltip"
 							baseHREF="#application.url.webtop#/thirdparty/jquery-tooltip"
 							lFiles="jquery.tooltip.css" />		
-				
+		
 		<skin:registerCSS 	id="ext"
 							baseHREF="#application.url.webtop#/js/ext"
 							lFiles="/resources/css/ext-all.css" />		
