@@ -160,7 +160,7 @@
 			from		#application.dbowner##arguments.typename#
 			where		1=1
 						<cfif structkeyexists(application.stCOAPI[arguments.typename].stProps,"status")>
-							AND status in (<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.status#" />)
+							AND status in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.status#" />)
 						</cfif>
 						<cfloop from="1" to="#arraylen(arguments.aFilters)#" index="i">
 							<cfset f = arguments.aFilters[i] /><!--- Shortcut variable --->
