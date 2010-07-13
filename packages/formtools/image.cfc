@@ -467,7 +467,7 @@
             AND len(arguments.stFieldPost.stSupporting.CropPosition)>
             <cfset stGeneratedImageArgs.cropPosition = "#arguments.stFieldPost.stSupporting.CropPosition#" />
           </cfif>
-          
+          <cfset stGeneratedImageARgs.ResizeMethod = arguments.stFieldPost.stSupporting.ResizeMethod />
 
           <cfset stGeneratedImage = GenerateImage(argumentCollection=stGeneratedImageArgs) />
           
