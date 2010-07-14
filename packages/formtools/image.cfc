@@ -467,6 +467,12 @@
             AND len(arguments.stFieldPost.stSupporting.CropPosition)>
             <cfset stGeneratedImageArgs.cropPosition = "#arguments.stFieldPost.stSupporting.CropPosition#" />
           </cfif>
+          <cfif structKeyExists(arguments.stFieldPost.stSupporting, "ResizeMethod")> 
+            <cfset stGeneratedImageArgs.ResizeMethod = "#arguments.stFormPost[i].stSupporting.ResizeMethod#" />
+          <cfelse>
+            <cfset stGeneratedImageArgs.ResizeMethod = arguments.stFields[i].metadata.ftAutoGenerateType />
+          </cfif>
+
 
           <cfset stGeneratedImage = GenerateImage(argumentCollection=stGeneratedImageArgs) />
           
