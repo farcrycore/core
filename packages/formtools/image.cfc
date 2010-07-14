@@ -467,7 +467,6 @@
             AND len(arguments.stFieldPost.stSupporting.CropPosition)>
             <cfset stGeneratedImageArgs.cropPosition = "#arguments.stFieldPost.stSupporting.CropPosition#" />
           </cfif>
-          <cfset stGeneratedImageARgs.ResizeMethod = arguments.stFieldPost.stSupporting.ResizeMethod />
 
           <cfset stGeneratedImage = GenerateImage(argumentCollection=stGeneratedImageArgs) />
           
@@ -555,6 +554,7 @@
     <cfargument name="interpolation" type="string" required="true" default="highestQuality" hint="set the interpolation level on the image compression" />
     <cfargument name="quality" type="string" required="false" default="0.75" hint="Quality of the JPEG destination file. Applies only to files with an extension of JPG or JPEG. Valid values are fractions that range from 0 through 1 (the lower the number, the lower the quality). Examples: 1, 0.9, 0.1. Default = 0.75" />
     <cfargument name="bUploadOnly" type="boolean" required="false" default="false" hint="The image file will be uploaded with no image optimization or changes." />
+    <cfargument name="bSelfSourced" type="boolean" required="false" default="false" hint="The image file will be uploaded with no image optimization or changes." />
     <cfargument name="ResizeMethod" type="string" required="true" default="" hint="The y origin of the crop area. Options are center, topleft, topcenter, topright, left, right, bottomleft, bottomcenter, bottomright" />
 
     <cfset var stResult = structNew() />
@@ -608,7 +608,7 @@
       </cfcatch>
     </cftry>
 
-    <cfif len(arguments.destination)>
+   <cfif len(arguments.destination)>
       <cfset imageFileName = replace(arguments.source, "\", "/", "all") />
       <cfset imageFileName = listLast(imageFileName, "/") />
 
@@ -620,21 +620,25 @@
       </cfif>
 
       <!--- We need to check to see if the image we are copying already exists. If so, we need to create a unique filename --->
-      <cfif fileExists("#ImageDestination#/#imageFileName#")>
+      <cfif fileExists("#ImageDestination#/#imageFileName#") AND NOT arguments.bSelfSourced>
         <cfset imageFileName = "#dateFormat(now(),'yyyymmdd')#_#timeFormat(now(),'hhmmssl')#_#imageFileName#" />
+
       </cfif>
 
       <!--- Include the image filename into the image destination. --->
       <cfset ImageDestination = "#ImageDestination#/#imageFileName#" />                 
 
       <!--- Copy the image to the new destination folder --->
-      <cffile action="copy" 
-          source="#arguments.Source#"
-          destination="#ImageDestination#">
+		<cfif NOT  arguments.bSelfSourced>
+	      <cffile action="copy" 
+	          source="#arguments.Source#"
+	          destination="#ImageDestination#">
+		</cfif>
 
       <!--- update the return filename --->       
       <cfset stResult.filename = imageFileName /> 
     </cfif>
+
 
     <cfif arguments.bUploadOnly is true>
       <!--- We do not want to modify the file, so exit now --->
@@ -836,7 +840,7 @@
     <cfset var stArgs = structNew() />
     <cfset var sourceFieldName = "" />
     <cfset var libraryFieldName = "" />
-  
+	<cfset var bSelfSourced = false />
 
     <cfloop list="#StructKeyList(arguments.stFields)#" index="i">
       <cfif structKeyExists(arguments.stFields[i].metadata, "ftType") AND arguments.stFields[i].metadata.ftType EQ "Image" >
@@ -844,9 +848,9 @@
     
         <cfif structKeyExists(arguments.stFormPost, i) AND (
         (
-	        not structKeyExists(arguments.stFormPost[i].stSupporting, "CreateFromSource")
-	        and structKeyExists(arguments.stFields[i].metadata, "ftSourceField")
-	        and len(arguments.stFields[i].metadata.ftSourceField)
+    	  not structKeyExists(arguments.stFormPost[i].stSupporting, "CreateFromSource") 
+       and structKeyExists(arguments.stFields[i].metadata, "ftSourceField")
+       and len(arguments.stFields[i].metadata.ftSourceField)
         )
         or (
           structKeyExists(arguments.stFormPost[i].stSupporting, "CreateFromSource")
@@ -858,10 +862,11 @@
           and len(arguments.stProperties[i])
         )
       )>
-
+	
 		<!--- Make sure a ftSourceField --->
 		<cfif (not structkeyexists(arguments.stFields[i].metadata,"ftAllowResize") or arguments.stFields[i].metadata.ftAllowResize) and (not structkeyexists(arguments.stFields[i].metadata,"ftSourceField") or not len(arguments.stFields[i].metadata.ftSourceField)) and len(arguments.stProperties[i])>
 			<cfset sourceFieldName = i />
+			<cfset bSelfSourced = true />
 		<cfelse>
 			<cfset sourceFieldName = listFirst(arguments.stFields[i].metadata.ftSourceField, ":") />
 		</cfif>
@@ -938,6 +943,9 @@
               <cfelse>
                 <cfset stArgs.ResizeMethod = arguments.stFields[i].metadata.ftAutoGenerateType />
               </cfif>
+			
+			  
+			  <cfset stArgs.bSelfSourced = bSelfSourced />
 
               <cfset stGenerateImageResult = oImage.GenerateImage(argumentCollection=stArgs) />
           
