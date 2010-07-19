@@ -72,7 +72,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	</cffunction>
 
 
-	<cffunction name="getView" access="public" output="true" returntype="string" hint="Returns the HTML of a view from the webskin content type folder.">
+	<cffunction name="getView" access="public" output="false" returntype="string" hint="Returns the HTML of a view from the webskin content type folder.">
 		<cfargument name="objectid" required="no" type="string" default="" hint="ObjectID of the object that is to be rendered by the webskin view." />
 		<cfargument name="template" required="no" type="string" default="" hint="Name of the template in the corresponding content type webskin folder, without the .cfm extension." />
 		<cfargument name="webskin" required="no" type="string" default="" hint="Name of the template in the corresponding content type webskin folder, without the .cfm extension." />
@@ -230,14 +230,14 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				
 				</farcry:traceWebskin>
 				
-				<skin:onReady><script type="text/javascript"><cfoutput>
+				<skin:onReady><cfoutput>
 					$j('###arguments.ajaxID#').loadAjaxWebskin({
 						action			: '#urlAjaxLoader#', 
 						timeout			: #ARGUMENTS.ajaxTimeout#, 
 						showIndicator	: #arguments.ajaxShowLoadIndicator#,
 						indicatorText	: '#arguments.ajaxIndicatorText#'
 					});
-				</cfoutput></script></skin:onReady>
+				</cfoutput></skin:onReady>
 				
 			</cfsavecontent>
 		<cfelse>
