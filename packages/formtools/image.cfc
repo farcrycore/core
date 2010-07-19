@@ -468,9 +468,9 @@
             <cfset stGeneratedImageArgs.cropPosition = "#arguments.stFieldPost.stSupporting.CropPosition#" />
           </cfif>
           <cfif structKeyExists(arguments.stFieldPost.stSupporting, "ResizeMethod")> 
-            <cfset stGeneratedImageArgs.ResizeMethod = "#arguments.stFormPost[i].stSupporting.ResizeMethod#" />
+            <cfset stGeneratedImageArgs.ResizeMethod = "#arguments.stFieldPost.stSupporting.ResizeMethod#" />
           <cfelse>
-            <cfset stGeneratedImageArgs.ResizeMethod = arguments.stFields[i].metadata.ftAutoGenerateType />
+            <cfset stGeneratedImageArgs.ResizeMethod = arguments.stFieldPost.metadata.ftAutoGenerateType />
           </cfif>
 
 
