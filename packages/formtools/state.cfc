@@ -62,6 +62,7 @@
 
 	<cffunction name="getStates" returntype="query" output="false" access="public" hint="Returns states and acronyms">
 		<cfargument name="countries" type="string" required="false" hint="Including this argument restricts the states to certain countries or country codes" />
+		<cfargument name="states" type="string" required="false" hint="Including this argument restricts the states to a specific list" />
 		
 		<cfset var q = querynew("countrycode,countryname,code,fullcode,name") />
 		
@@ -170,6 +171,10 @@
 				where	countrycode in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.countries#">)
 						OR countryname in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.countries#">)
 			</cfif>
+			<cfif structkeyexists(arguments,"states") and len(arguments.states)>
+				where	code in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.states#">)
+						OR name in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.states#">)
+			</cfif>
 			order by	countryname,name
 		</cfquery>
 		
@@ -186,7 +191,7 @@
 		<cfset var q = "" />
 		
 		<cfif structkeyexists(arguments.stMetadata,"ftValue") and arguments.stMetadata.ftValue eq "code">
-			<cfset q = getCountries(arguments.stMetadata.value) />
+			<cfset q = getStates(states=arguments.stMetadata.value) />
 			<cfset html = q.name[1] />
 		</cfif>
 		
