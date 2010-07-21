@@ -146,7 +146,7 @@
 
 			<skin:onReady>
 			<cfoutput>	
-			$("###attributes.id#").button({#buttonSettings#});
+			$j("###attributes.id#").button({#buttonSettings#});
 			</cfoutput>
 			</skin:onReady>
 				
