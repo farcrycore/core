@@ -1,7 +1,7 @@
 <!--- 	
 	@@examples:
 
-	<p>Basic (Change Password)</p>
+	<p>Change Password</p>
 	<code>
 		<cfproperty
 			name="password" type="string" 
@@ -9,12 +9,13 @@
 			ftType="password" ftLabel="Password" ftValidation="required" />
 	</code>
 
-	<p>Basic (Confirm Password)</p>
+	<p>Confirm Password</p>
 	<code>
 		<cfproperty
 			name="password" type="string" 
 			ftSeq="12" ftfieldset="Your Login Details" required="yes" default="" 
-			ftType="password" ftRenderType="confirmPassword" ftLabel="Password" ftValidation="required" />
+			ftType="password" ftRenderType="confirmPassword" ftLabel="Password" 
+			ftValidation="required" />
 	</code>
 
  --->
