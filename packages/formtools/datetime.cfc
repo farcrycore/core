@@ -1,14 +1,25 @@
 
 <cfcomponent name="datetime" extends="field" displayname="datetime" hint="Field component to liase with all datetime types"> 
 		
-		
+	<!--- edit handler options --->
 	<cfproperty name="ftRenderType" default="jquery" hint="This formtool offers a number of ways to render the input. (dropdown, jquery, dateJS)" />
 	<cfproperty name="ftJQDateFormatMask" default="d M yy" hint="The format mask used by the jQuery UI when returning a date from the calendar. For a full list of the possible formats see http://docs.jquery.com/UI/Datepicker/formatDate" />
 	<cfproperty name="ftCFDateFormatMask" default="d mmm yyyy" hint="The format mask used when first rendering the date. This should be a coldfusion dateformat mask." />
 	<cfproperty name="ftToggleOffDateTime" default="false" hint="Provides an optional toggle to hide the date if its not required" />
-					
-	
-	
+
+	<cfproperty name="ftDateFormatMask" default="dd mmmm yyyy" hint="Coldfusion mask for date for edit handler" />
+	<cfproperty name="ftStartYearShift" default="0" hint="" />
+	<cfproperty name="ftEndYearShift" default="-100" hint="" />
+	<cfproperty name="ftStartYear" default="" hint="" />
+	<cfproperty name="ftEndYear" default="" hint="" />
+	<cfproperty name="stMetadata.ftShowTime" default="true" hint="" />
+
+	<!--- display handler options --->
+	<cfproperty name="ftDateMask" default="d-mmm-yy" hint="Coldfusion date mask for display handler" />
+	<cfproperty name="ftTimeMask" default="short" hint="Coldfusion time mask for display handler" />
+	<cfproperty name="ftShowTime" default="true" hint="Display time portion of dateTime field for display handler" />
+	<cfproperty name="ftDisplayPrettyDate" default="true" hint="Converts SQL dateTime value to human readable string" />
+				
 	<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" >	
 	<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" >		
 		

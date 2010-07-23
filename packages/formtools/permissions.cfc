@@ -1,4 +1,4 @@
-<cfcomponent extends="field" name="reversearray" displayname="reversearray" hint="Field component to liase with all list field types"> 
+<cfcomponent extends="field" name="permission" displayname="permission" hint="Field component to liase with all list field types"> 
 
 	<!--- import tag libraries --->
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />

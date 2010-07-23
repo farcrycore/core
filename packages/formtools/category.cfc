@@ -1,13 +1,36 @@
-<cfcomponent extends="field" name="category" displayname="category" hint="Field component to liase with all category field types"> 
+<!--- 	
+	@@examples:
 
+	<p>Basic</p>
+	<code>
+		<cfproperty name="catBasic" type="longchar" required="no" default="" fttype="category" />
+	</code>
 
-	<cfproperty name="ftAlias" default="" hint="" />
-	<cfproperty name="ftLegend" default="" hint="" />
-	<cfproperty name="ftRenderType" default="jquery" hint="" />
-	<cfproperty name="ftSelectMultiple" default="true" hint="" />
-	<cfproperty name="ftSelectSize" default="5" hint="" />
-	<cfproperty name="ftDropdownFirstItem" default="" hint="" />	
-		
+	<p>Start tree from branch where alias is "news"</p>
+	<code>
+		<cfproperty name="catNews" type="longchar" required="no" default="" fttype="category" ftAlias="news" />
+	</code>
+
+	<p>Render tree as select field</p>
+	<code>
+		<cfproperty name="catSelect" type="longchar" required="no" default="" fttype="category" ftRenderType="dropDown" />
+	</code>
+	
+	<p>Render tree as select field with 10 rows displayed and first option as "Please Select..."</p>
+	<code>
+		<cfproperty name="catSelect" type="longchar" required="no" default="" fttype="category" ftRenderType="dropDown" ftSelectSize="10" ftDropdownFirstItem="Please Select..." />
+	</code>
+
+ --->
+
+<cfcomponent extends="field" name="category" displayname="category" bDocument="true" hint="Field component to liase with all category field types"> 
+
+	<cfproperty name="ftAlias" default="" hint="Used to render only a particular branch of the category tree." />
+	<cfproperty name="ftLegend" default="" hint="Used when ftRenderType is set to prototype or extjs. Inserts a legend above category tree." />
+	<cfproperty name="ftRenderType" default="jquery" hint="This formtool offers a number of ways to render the input. (dropdown, prototype, extjs, jquery)" />
+	<cfproperty name="ftSelectMultiple" default="true" hint="Allow selection of multiple items in category tree. (true, false)" />
+	<cfproperty name="ftSelectSize" default="5" hint="Used when ftRenderType is set to dropDown, specifies the size of the select field." />
+	<cfproperty name="ftDropdownFirstItem" default="" hint="Used when ftRenderType is set to dropDown, prepends an option to select list with null value." />	
 		
 	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 	<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">
