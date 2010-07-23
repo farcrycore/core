@@ -15,6 +15,61 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
+
+<!--- @@description:
+	<p>This example is taken from dmImage.cfc in farcry core. It has a source Image example, standard image example and thumbnail image example</p> --->
+
+<!--- @@examples:
+	<cfproperty ftSeq="22" ftFieldset="Image Files" name="SourceImage" type="string" hint="The URL location of the uploaded image" required="No" default="" 
+	ftType="Image" 
+	ftCreateFromSourceOption="false" 
+	ftAllowResize="false"
+	ftDestination="/images/dmImage/SourceImage" 
+	ftlabel="Source Image" 
+	ftImageWidth="" 
+	ftImageHeight=""
+	ftbUploadOnly="true"
+	ftHint="Upload your high quality source image here."  />
+
+<cfproperty ftSeq="24" ftFieldset="Image Files" name="StandardImage" type="string" hint="The URL location of the optimised uploaded image that should be used for general display" required="no" default="" 
+	ftType="Image" 
+	ftDestination="/images/dmImage/StandardImage" 
+	ftImageWidth="400" 
+	ftImageHeight="1000" 
+	ftAutoGenerateType="FitInside" 
+	ftSourceField="SourceImage" 
+	ftCreateFromSourceDefault="true" 
+	ftAllowUpload="true" 
+	ftQuality=".75"
+	ftlabel="Mid Size Image"
+	ftHint="This image is generally used throughout your project as the main image. Most often you would have this created automatically from the high quality source image you upload." />  
+
+<cfproperty ftSeq="26" ftFieldset="Image Files" name="ThumbnailImage" type="string" hint="The URL location of the thumnail of the uploaded image that should be used in " required="no" default="" 
+	ftType="Image"  
+	ftDestination="/images/dmImage/ThumbnailImage" 
+	ftImageWidth="80" 
+	ftImageHeight="80" 
+	ftAutoGenerateType="center"
+	ftSourceField="SourceImage" 
+	ftCreateFromSourceDefault="true" 
+	ftAllowUpload="true" 
+	ftQuality=".75"
+	ftlabel="Thumbnail Image"
+	ftHint="This image is generally used throughout your project as the thumbnail teaser image. Most often you would have this created automatically from the high quality source image you upload." />
+
+<p>Image with no resize otions</p>
+
+<cfproperty name="featureImage" type="string" hint="Feature image for Lysaght site (landscape)." required="no" default="" 
+	ftwizardStep="Body" 
+	ftseq="34" ftfieldset="Feature Image" 
+	ftAllowResize="false"
+	ftType="image" 
+	ftDestination="/images/lysaght/bslCaseStudy/featureImage" 
+	ftlabel="Feature Image" />
+
+--->
+
+
 <cfcomponent name="Image" displayname="image" Extends="field" hint="Field component to liase with all Image types">
 <!--- 
  // documentation 
@@ -24,20 +79,20 @@
 <!--- <cfproperty name="ftSourceField" type="string" hint="???" required="false" default="" /> --->
 <cfproperty name="ftCreateFromSourceOption" type="boolean" hint="???" required="false" default="true" />
 <cfproperty name="ftCreateFromSourceDefault" type="boolean" hint="???" required="false" default="true" />
-<cfproperty name="ftAllowUpload" type="boolean" hint="???" required="false" default="true" />
-<cfproperty name="ftAllowResize" type="boolean" hint="???" required="false" default="true" />
-<cfproperty name="ftImageWidth" type="string" hint="???" required="false" default="" />
-<cfproperty name="ftImageHeight" type="string" hint="???" required="false" default="" />
+<cfproperty name="ftAllowUpload" type="boolean" hint="If there is more than one image, e.g thumbnail, use this to allow uploading a different thumbnail or turn this off to only autogenerate thumbnail from source image" required="false" default="true" />
+<cfproperty name="ftAllowResize" type="boolean" hint="Will not allow any resize options if switched off" required="false" default="true" />
+<cfproperty name="ftImageWidth" type="string" hint="Use to resize an image from a source image" required="false" default="" />
+<cfproperty name="ftImageHeight" type="string" hint="Use to resize an image from a source image" required="false" default="" />
 <cfproperty name="ftAutoGenerateType" type="string" hint="Auto generate options include: none, center, fitinside, forcesize, pad, topcenter, topleft, topright, left, right, bottomleft, bottomcenter, bottomright." required="false" default="FitInside" />
-<cfproperty name="ftPadColor" type="string" hint="???" required="false" default="##ffffff" />
+<cfproperty name="ftPadColor" type="string" hint="If ftAutoGenerateType = pad, this will be the colour of the pad" required="false" default="##ffffff" />
 <cfproperty name="ftShowConversionInfo" type="boolean" hint="Set to false to hide the conversion information that will be applied to the uploaded image." required="false" default="true" />
 <cfproperty name="ftAllowedExtensions" type="string" hint="The extensions allowed to be uploaded." required="false" default="jpg,jpeg,png,gif" />
-<cfproperty name="ftcustomEffectsObjName" type="string" hint="???" required="false" default="imageeffects" />
-<cfproperty name="ftlCustomEffects" type="string" hint="???" required="false" default="" />
-<cfproperty name="ftConvertImageToFormat" type="string" hint="???" required="false" default="" />
-<cfproperty name="ftbSetAntialiasing" type="boolean" hint="???" required="false" default="true" />
-<cfproperty name="ftInterpolation" type="string" hint="???" required="false" default="highestQuality" />
-<cfproperty name="ftQuality" type="numeric" hint="???" required="false" default="0.75" />
+<cfproperty name="ftcustomEffectsObjName" type="string" hint="<cfimage> support property" required="false" default="imageeffects" />
+<cfproperty name="ftlCustomEffects" type="string" hint="<cfimage> support property" required="false" default="" />
+<cfproperty name="ftConvertImageToFormat" type="string" hint="<cfimage> support property" required="false" default="" />
+<cfproperty name="ftbSetAntialiasing" type="boolean" hint="<cfimage> support property" required="false" default="true" />
+<cfproperty name="ftInterpolation" type="string" hint="<cfimage> support property" required="false" default="highestQuality" />
+<cfproperty name="ftQuality" type="numeric" hint="<cfimage> support property" required="false" default="0.75" />
 <cfproperty name="ftbUploadOnly" type="boolean" hint="???" required="false" default="false" />
 <cfproperty name="ftCropPosition" type="string" hint="Used when ftAutoGenerateType = aspectCrop" required="false" default="center" />
 <cfproperty name="ftThumbnailBevel" type="boolean" hint="???" required="false" default="false" />
