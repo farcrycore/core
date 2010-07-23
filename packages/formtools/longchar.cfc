@@ -1,10 +1,38 @@
+<!--- @@description:
+	<p>Renders a text area</p> --->
+
+<!--- @@examples:
+	<p>Basic</p>
+	<code>
+	<cfproperty
+ 			ftSeq="15"
+ 			ftFieldset="Contact"
+ 			name="address"
+	 		type="longchar"
+	 		hint="address of occupant"
+	 		required="false"
+	 		default=""
+	 		ftLabel="Address"
+ 			ftType="longchar"/>
+	</code> 
+	<pTextarea with limited characters with character counter</p>
+	<cfproperty
+ 			ftSeq="15"
+ 			ftFieldset="Contact"
+ 			name="address"
+	 		type="longchar"
+	 		hint="address of occupant"
+	 		required="false"
+	 		default=""
+	 		ftLabel="Home address"
+ 			ftType="longchar"
+			ftLimit="150"/>
+--->
+
 <cfcomponent extends="field" name="longchar" displayname="longchar" hint="Used to liase with longchar type fields"> 
 
-	<cfproperty name="ftLabelAlignment" required="false" default="inline" options="inline,block" hint="Used by FarCry Form Layouts for positioning of labels. inline or block." />
 	<cfproperty name="ftStyle" required="false" default="" hint="The style for the text area" />
-	<cfproperty name="ftLimit" required="false" default="" hint="Limits the amount of data the user can input. Provides a counter above text are" />
-		
-	
+	<cfproperty name="ftLimit" required="false" default="" hint="Limits the amount of data the user can input. Provides a counter above text area" />
 	
 	<cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
 	

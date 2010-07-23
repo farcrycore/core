@@ -1,11 +1,11 @@
 
 <cfcomponent extends="farcry.core.packages.formtools.field" name="join" displayname="join" hint="Used to liase with join type fields (array and uuid)" bDocument="false"> 
-	<cfproperty name="ftLabelAlignment" required="false" default="inline" options="inline,block" hint="Used by FarCry Form Layouts for positioning of labels. inline or block." />
-	<cfproperty name="ftJoin" required="true" default="" hint="A list of the user can select from. e.g 'dmImage,dmfile,dmflash'"/>
-	<cfproperty name="ftAllowSelect" required="false" default="true" hint="Allows user to select existing records within the library picker"/>
-	<cfproperty name="ftAllowCreate" required="false" default="true" hint="Allows user create new record within the library picker"/>
-	<cfproperty name="ftAllowEdit" required="false" default="false" hint="Allows user edit new record within the library picker"/>
-	<cfproperty name="ftRemoveType" required="false" default="remove" hint="detach or delete, detach will only remove from the join, delete will remove from the database"/><!--- detach or delete --->
+
+	<cfproperty name="ftJoin" required="true" default="" options="comma seperated list of types" hint="A list of the user can select from. e.g 'dmImage,dmfile,dmflash'"/>
+	<cfproperty name="ftAllowSelect" required="false" default="true" options="true,false" hint="Allows user to select existing records within the library picker"/>
+	<cfproperty name="ftAllowCreate" required="false" default="true" options="true,false" hint="Allows user create new record within the library picker"/>
+	<cfproperty name="ftAllowEdit" required="false" default="false" options="true,false" hint="Allows user edit new record within the library picker"/>
+	<cfproperty name="ftRemoveType" required="false" default="remove" options="delete,detach" hint="detach will only remove from the join, delete will remove from the database"/><!--- detach or delete --->
 	
 	<cfproperty name="ftlibrarydatasqlwhere" required="false" default="" hint="A simple where clause filter for the library data result set. Must be in the form PROPERTY OPERATOR VALUE. For example, status = 'approved'"/><!--- detach or delete --->
 	<cfproperty name="ftlibrarydatasqlorderby" required="false" default="label" hint="Nominate a specific property to order library results by."/><!--- detach or delete --->
@@ -15,9 +15,9 @@
 	<cfproperty name="ftLibrarySelectedListStyle" default="" type="string" hint="write your own inline style for the class" />
 	<cfproperty name="ftLibraryListItemWidth" default="" type="string" hint="???" />
 	<cfproperty name="ftLibraryListItemHeight" default="" type="string" hint="???"/>
-	<cfproperty name="ftRenderType" default="Library" type="string" hint="Specify how to render the form element for the array, library pop-up, select dropdown, or list of checkbox buttons. Values - Library, list, or checkbox"/>
+	<cfproperty name="ftRenderType" default="Library" options="Library, list or checkbox" type="string" hint="Specify how to render the form element for the array, library pop-up, select dropdown, or list of checkbox buttons."/>
 	<cfproperty name="ftSelectSize" default="10" type="string" hint="Specify the number of items displayed of a select list."/>
-	<cfproperty name="ftSelectMultiple" default="true" type="boolean" hint="Allow selection of multiple items from a select list. Values - true or false, if this property is omitted then allowing multiple select is default"/>
+	<cfproperty name="ftSelectMultiple" default="true" options="true,false" type="boolean" hint="Allow selection of multiple items from a select list. Values - true or false, if this property is omitted then allowing multiple select is default"/>
 	<cfproperty name="ftAllowLibraryEdit" default="false" hint="???"/>
 	<cfproperty name="ftLibraryEditWebskin" default="edit" hint="???"/>
 	<cfproperty name="ftFirstListLabel" default="-- SELECT --" hint="Used with ftRenderType, this is the value of the first element in the list"/>
