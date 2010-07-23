@@ -17,6 +17,7 @@
  			ftList="apple,orange,kiwi"/>
 	</code> 
 	<p>List with different values from text</p>
+	<code>
 	<cfproperty
  			ftSeq="15"
  			ftFieldset="Colors"
@@ -28,7 +29,9 @@
 	 		ftLabel="Pod Header Color"
  			ftType="list"
  			ftList="APP:apple,ORA:orange,KIW:kiwi"/>
+	</code>
 	<p>List rendered as check boxes</p>
+	<code>
 	<cfproperty
  			ftSeq="15"
  			ftFieldset="Colors"
@@ -41,7 +44,9 @@
  			ftType="list"
  			ftList="apple,orange,kiwi"
 			ftRenderType="checkbox"/>
+	</code>
 	<p>List rendered as radio buttons</p>
+	<code>
 	<cfproperty
  			ftSeq="15"
  			ftFieldset="Colors"
@@ -54,7 +59,10 @@
  			ftType="list"
  			ftList="apple,orange,kiwi"
 			ftRenderType="radio"/>
+	</code>
+	
 	<p>List with a method call to populate</p>
+	<code>
 	<cfproperty
  			ftSeq="15"
  			ftFieldset="Colors"
@@ -67,7 +75,9 @@
  			ftType="list"
  			ftListData="myMethod"
 			/>
+	</code>
 	<p>List with a method call to populate from another type component</p>
+	<code>
 	<cfproperty
  			ftSeq="15"
  			ftFieldset="Colors"
@@ -80,7 +90,7 @@
  			ftType="list"
  			ftListData="myMethod"
 			ftListDataTypename="dmNews"/>
-	
+	</code>
 --->
 <cfcomponent extends="field" name="list" displayname="list" hint="Field component to liase with all list field types"> 
  
