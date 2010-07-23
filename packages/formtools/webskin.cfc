@@ -1,3 +1,22 @@
+<!--- @@description:
+	<p>Displays a select box with a list of templates</p> --->
+
+<!--- @@examples:
+	<p>Basic</p>
+	<code>
+	<cfproperty 
+		name="displayMethod" type="string" hint="Display method to render." required="yes" default="displayPageStandard"
+		ftseq="3" ftfieldset="General Details" ftwizardStep="General Details" ftlabel="Content Template" 
+		fttype="webskin" />
+	</code> 
+	<p>Get only templates with filename starting with 'gavinisgreat'</p>
+	<code>
+	<cfproperty 
+		name="displayMethod" type="string" hint="Display method to render." required="yes" default="displayPageStandard"
+		ftseq="3" ftfieldset="General Details" ftwizardStep="General Details" ftlabel="Content Template" 
+		fttype="webskin" ftPrefix="gavinisgreat"/>
+	</code>
+--->
 <cfcomponent extends="field" name="webskin" displayname="webskin" hint="Used to liase with webskin type fields"> 
 	<cfproperty name="ftPrefix" type="string" hint="Only webskins that start with this value are displayed" required="false" default="" />
 	<cfproperty name="ftTypename" type="string" hint="The type from which webskins are to be selected" required="false" default="" />
