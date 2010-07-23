@@ -15,7 +15,7 @@
 	 		ftLabel="Address"
  			ftType="longchar"/>
 	</code> 
-	<pTextarea with limited characters with character counter</p>
+	<p>Textarea with limited characters with character counter</p>
 	<cfproperty
  			ftSeq="15"
  			ftFieldset="Contact"
