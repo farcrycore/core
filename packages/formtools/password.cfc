@@ -1,6 +1,26 @@
+<!--- 	
+	@@examples:
 
+	<p>Basic (Change Password)</p>
+	<code>
+		<cfproperty
+			name="password" type="string" 
+			ftSeq="12" ftfieldset="Your Login Details" required="yes" default="" 
+			ftType="password" ftLabel="Password" ftValidation="required" />
+	</code>
+
+	<p>Basic (Confirm Password)</p>
+	<code>
+		<cfproperty
+			name="password" type="string" 
+			ftSeq="12" ftfieldset="Your Login Details" required="yes" default="" 
+			ftType="password" ftRenderType="confirmPassword" ftLabel="Password" ftValidation="required" />
+	</code>
+
+ --->
 
 <cfcomponent extends="field" name="password" displayname="password" hint="Used to liase with password type fields"> 
+	<cfproperty name="ftRenderType" default="changepassword" hint="This formtool offers a number of ways to render the input. (changepassword, confirmPassword)" />
 	
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.password" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
