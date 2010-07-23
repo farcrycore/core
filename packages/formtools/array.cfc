@@ -1,3 +1,17 @@
+<!--- @@examples:
+	<p>Basic</p>
+	<code>
+		<cfproperty name="playjoin" ftType="array" type="array" ftJoin="dmNews">
+	</code> 
+	<p>Dont allow user to create new record</p>
+	<code>
+		<cfproperty name="playjoin" ftType="array" type="array" ftJoin="dmNews" ftAllowCreate="false">
+	</code>
+	<p>Dont allow user to select from existing records, only create</p>
+	<code>
+		<cfproperty name="playjoin" ftType="array" type="array" ftJoin="dmNews" ftAllowSelect="false">
+	</code>
+--->
 <cfcomponent extends="join" name="array" displayname="array" hint="Used to liase with Array type fields"> 
 
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >

@@ -1,32 +1,25 @@
+
 <cfcomponent extends="farcry.core.packages.formtools.field" name="join" displayname="join" hint="Used to liase with join type fields (array and uuid)"> 
-
-
 	<cfproperty name="ftLabelAlignment" required="false" default="inline" options="inline,block" hint="Used by FarCry Form Layouts for positioning of labels. inline or block." />
-
-	<cfproperty name="ftAllowSelect" required="false" default="true" />
-	<cfproperty name="ftAllowCreate" required="false" default="true" />
-	<cfproperty name="ftAllowEdit" required="false" default="false" />
-	<cfproperty name="ftRemoveType" required="false" default="remove" /><!--- detach or delete --->
-
+	<cfproperty name="ftJoin" required="true" default="" hint="A list of the user can select from. e.g 'dmImage,dmfile,dmflash'"/>
+	<cfproperty name="ftAllowSelect" required="false" default="true" hint="Allows user to select existing records within the library picker"/>
+	<cfproperty name="ftAllowCreate" required="false" default="true" hint="Allows user create new record within the library picker"/>
+	<cfproperty name="ftAllowEdit" required="false" default="false" hint="Allows user edit new record within the library picker"/>
+	<cfproperty name="ftRemoveType" required="false" default="remove" hint="detach or delete, detach will only remove from the join, delete will remove from the database"/><!--- detach or delete --->
 	
-	
-	
-	<cfproperty name="ftLibrarySelectedWebskin" default="librarySelected" type="string" />
-	<cfproperty name="ftLibrarySelectedListClass" default="arrayDetail" type="string" />
-	<cfproperty name="ftLibrarySelectedListStyle" default="" type="string" />
+	<cfproperty name="ftLibrarySelectedWebskin" default="librarySelected" type="string" hint="webskin to overwrite each record in list"/>
+	<cfproperty name="ftLibrarySelectedListClass" default="arrayDetail" type="string" hint="overwrite the style class of the list"/>
+	<cfproperty name="ftLibrarySelectedListStyle" default="" type="string" hint="write your own inline style for the class" />
 	<cfproperty name="ftLibraryListItemWidth" default="" type="string" />
 	<cfproperty name="ftLibraryListItemHeight" default="" type="string" />
-	<cfproperty name="ftRenderType" default="Library" type="string" />
-	<cfproperty name="ftSelectSize" default="" type="string" />
-	<cfproperty name="ftSelectMultiple" default="true" type="boolean" />
-	<cfproperty name="ftAllowLibraryEdit" default="false">
-	<cfproperty name="ftLibraryEditWebskin" default="edit">
-	<cfproperty name="ftFirstListLabel" default="-- SELECT --">
-	<cfproperty name="ftLibraryData" default="" /><!--- Name of a function to return the library data --->
-	<cfproperty name="ftLibraryDataTypename" default="" /><!--- Typename containing the function defined in ftLibraryData --->	
-	
-	
-	
+	<cfproperty name="ftRenderType" default="Library" type="string" hint="Specify how to render the form element for the array, library pop-up, select dropdown, or list of checkbox buttons. Values - Library, list, or checkbox"/>
+	<cfproperty name="ftSelectSize" default="10" type="string" hint="Specify the number of items displayed of a select list."/>
+	<cfproperty name="ftSelectMultiple" default="true" type="boolean" hint="Allow selection of multiple items from a select list. Values - true or false"/>
+	<cfproperty name="ftAllowLibraryEdit" default="false"/>
+	<cfproperty name="ftLibraryEditWebskin" default="edit"/>
+	<cfproperty name="ftFirstListLabel" default="-- SELECT --" hint=""/>
+	<cfproperty name="ftLibraryData" default="" hint="Name of a function to return the library data. By default will look for ./webskin/typename/librarySelected.cfm"/><!--- Name of a function to return the library data --->
+	<cfproperty name="ftLibraryDataTypename" default="" hint="Typename containing the function defined in ftLibraryData"/><!--- Typename containing the function defined in ftLibraryData --->	
 
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" >
