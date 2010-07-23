@@ -4,9 +4,9 @@
 	<p>Basic</p>
 	<code>
 		<cfproperty 
-			ftSeq="1" ftFieldset="General" 
 			name="emailfrom" type="string" default="" hint="The email of the person leaving feedback" 
-			ftType="email" ftLabel="From" ftValidation="required" />
+			ftSeq="1" ftFieldset="General" 
+			ftType="email" ftLabel="Email From" />
 	</code>
 
  --->

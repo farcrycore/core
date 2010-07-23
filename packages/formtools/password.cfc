@@ -6,7 +6,8 @@
 		<cfproperty
 			name="password" type="string" 
 			ftSeq="12" ftfieldset="Your Login Details" required="yes" default="" 
-			ftType="password" ftLabel="Password" ftValidation="required" />
+			ftType="password" ftLabel="Password"
+			ftValidation="required" />
 	</code>
 
 	<p>Confirm Password</p>
