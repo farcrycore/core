@@ -1,3 +1,6 @@
+<!--- @@description:
+	<p>Renders a dropdown select box, check boxes or radio buttons with data provided via a commer seperated list or from a method call</p> --->
+
 <!--- @@examples:
 	<p>Basic</p>
 	<code>

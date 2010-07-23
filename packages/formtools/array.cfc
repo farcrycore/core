@@ -1,3 +1,6 @@
+<!--- @@description:
+	<p>Provides an interface for linking types together</p> --->
+	
 <!--- @@examples:
 	<p>Basic</p>
 	<code>
@@ -23,7 +26,7 @@
 	<code>
 		<cfproperty name="playjoin" ftType="array" type="array" ftJoin="dmNews" ftRenderType="list" ftSelectMultiple="false">
 	</code>
-	<p>Custom query to populate the library picker, myCustomQuery is a method in the type</p>
+	<p>Custom query to populate the library picker, myCustomQuery is a method in the type this property belongs</p>
 	<code>
 		<cfproperty name="playjoin" ftType="array" type="array" ftJoin="dmNews" ftLibraryData="myCustomQuery">
 	</code>
