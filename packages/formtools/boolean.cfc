@@ -5,12 +5,16 @@
 	@@examples:
 	<p>Basic boolean field, default not checked</p>
 	<code>
-		<cfproperty name="bActive" ftType="boolean" default="0" />
+		<cfproperty 
+			name="bActive" default="0" 
+			ftType="boolean" />
 	</code>
 
 	<p>Basic boolean field, default checked</p>
 	<code>
-		<cfproperty name="bActive" ftType="boolean" default="1" />
+		<cfproperty 
+			name="bActive" default="1" 
+			ftType="boolean" />
 	</code>
  --->
 

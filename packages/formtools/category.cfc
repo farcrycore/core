@@ -3,22 +3,31 @@
 
 	<p>Basic</p>
 	<code>
-		<cfproperty name="catBasic" type="longchar" required="no" default="" fttype="category" />
+		<cfproperty 
+			name="catBasic" type="longchar" required="no" default="" 
+			fttype="category" />
 	</code>
 
 	<p>Start tree from branch where alias is "news"</p>
 	<code>
-		<cfproperty name="catNews" type="longchar" required="no" default="" fttype="category" ftAlias="news" />
+		<cfproperty 
+			name="catNews" type="longchar" required="no" default="" 
+			fttype="category" ftAlias="news" />
 	</code>
 
 	<p>Render tree as select field</p>
 	<code>
-		<cfproperty name="catSelect" type="longchar" required="no" default="" fttype="category" ftRenderType="dropDown" />
+		<cfproperty 
+			name="catSelect" type="longchar" required="no" default="" 
+			fttype="category" ftRenderType="dropDown" />
 	</code>
 	
 	<p>Render tree as select field with 10 rows displayed and first option as "Please Select..."</p>
 	<code>
-		<cfproperty name="catSelect" type="longchar" required="no" default="" fttype="category" ftRenderType="dropDown" ftSelectSize="10" ftDropdownFirstItem="Please Select..." />
+		<cfproperty 
+			name="catSelect" type="longchar" required="no" default="" 
+			fttype="category" ftRenderType="dropDown" ftSelectSize="10" 
+			ftDropdownFirstItem="Please Select..." />
 	</code>
 
  --->

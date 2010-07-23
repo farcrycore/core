@@ -1,5 +1,49 @@
+<!--- 	
+	@@examples:
 
-<cfcomponent name="datetime" extends="field" displayname="datetime" hint="Field component to liase with all datetime types"> 
+	<p>Basic</p>
+	<code>
+		<cfproperty
+			name="basicDate" type="date" hint="something meaningful" required="no" default=""
+			ftseq="1" ftfieldset="General" ftwizardStep="General Details"
+			ftType="datetime" ftlabel="Basic Date" />
+	</code>
+
+	<p>Default to todays date</p>
+	<code>
+		<cfproperty
+			name="someDate" type="date" hint="The start date of the event" required="no" default=""
+			ftseq="2" ftfieldset="General" ftwizardStep="General Details"
+			ftDefaultType="Evaluate" ftDefault="now()" ftType="datetime" ftlabel="Some Date" />
+	</code>
+
+	<p>Custom date and time format mask</p>
+	<code>
+		<cfproperty
+			name="someDate" type="date" hint="The start date of the event" required="no" default=""
+			ftseq="3" ftfieldset="General" ftwizardStep="General Details"
+			ftType="datetime" ftDateFormatMask="dd mmm yyyy" ftTimeFormatMask="hh:mm tt" 
+			ftlabel="Some Date" />
+	</code>
+
+	<p>Show date only</p>
+	<code>
+		<cfproperty
+			name="dateOnly" type="date" hint="The start date of the event" required="no" default=""
+			ftseq="4" ftfieldset="General" ftwizardStep="General Details"
+			ftType="datetime" ftShowTime="false" ftlabel="Date Only" />
+	</code>
+
+	<p>Disable dateTime field by default</p>
+	<code>
+		<cfproperty
+			name="someDate" type="date" hint="The start date of the event" required="no" default=""
+			ftseq="5" ftfieldset="General" ftwizardStep="General Details"
+			ftType="datetime" ftToggleOffDateTime="true" ftlabel="Some Date" />
+	</code>
+ --->
+
+<cfcomponent name="datetime" extends="field" displayname="datetime" bDocument="true" hint="Field component to liase with all datetime types"> 
 		
 	<!--- edit handler options --->
 	<cfproperty name="ftRenderType" default="jquery" hint="This formtool offers a number of ways to render the input. (dropdown, jquery, dateJS)" />
@@ -8,16 +52,16 @@
 	<cfproperty name="ftToggleOffDateTime" default="false" hint="Provides an optional toggle to hide the date if its not required" />
 
 	<cfproperty name="ftDateFormatMask" default="dd mmmm yyyy" hint="Coldfusion mask for date for edit handler" />
-	<cfproperty name="ftStartYearShift" default="0" hint="" />
-	<cfproperty name="ftEndYearShift" default="-100" hint="" />
-	<cfproperty name="ftStartYear" default="" hint="" />
-	<cfproperty name="ftEndYear" default="" hint="" />
-	<cfproperty name="stMetadata.ftShowTime" default="true" hint="" />
+	<cfproperty name="ftStartYearShift" default="0" hint="Used when ftRenderType is set to dropDown, sets start of year range in select list." />
+	<cfproperty name="ftEndYearShift" default="-100" hint="Used when ftRenderType is set to dropDown, sets end of year range in select list." />
+	<cfproperty name="ftStartYear" default="" hint="Used when ftRenderType is set to dropDown, sets the value of the first year in year range." />
+	<cfproperty name="ftEndYear" default="" hint="Used when ftRenderType is set to dropDown,, sets the value of the last year in year range. " />
+	<cfproperty name="ftShowTime" default="true" hint="Display time portion of dateTime field." />
 
 	<!--- display handler options --->
-	<cfproperty name="ftDateMask" default="d-mmm-yy" hint="Coldfusion date mask for display handler" />
-	<cfproperty name="ftTimeMask" default="short" hint="Coldfusion time mask for display handler" />
-	<cfproperty name="ftShowTime" default="true" hint="Display time portion of dateTime field for display handler" />
+	<cfproperty name="ftDateMask" default="d-mmm-yy" hint="Coldfusion date mask for display handler." />
+	<cfproperty name="ftTimeMask" default="short" hint="Coldfusion time mask for display handler." />
+
 	<cfproperty name="ftDisplayPrettyDate" default="true" hint="Converts SQL dateTime value to human readable string" />
 				
 	<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" >	
