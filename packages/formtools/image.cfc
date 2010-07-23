@@ -16,10 +16,8 @@
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
 
-<!--- @@description:
-	<p>This example is taken from dmImage.cfc in farcry core. It has a source Image example, standard image example and thumbnail image example</p> --->
-
 <!--- @@examples:
+	<p>This example is taken from dmImage.cfc in farcry core. It has a source Image example, standard image example and thumbnail image example</p>
 	<cfproperty ftSeq="22" ftFieldset="Image Files" name="SourceImage" type="string" hint="The URL location of the uploaded image" required="No" default="" 
 	ftType="Image" 
 	ftCreateFromSourceOption="false" 
