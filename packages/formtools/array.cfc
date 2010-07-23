@@ -4,35 +4,60 @@
 <!--- @@examples:
 	<p>Basic</p>
 	<code>
-		<cfproperty name="playjoin" ftType="array" type="array" ftJoin="dmNews">
+		<cfproperty name="playjoin" type="array" 
+				ftType="array"  
+				ftJoin="dmNews">
 	</code> 
 	<p>Dont allow user to create new record</p>
 	<code>
-		<cfproperty name="playjoin" ftType="array" type="array" ftJoin="dmNews" ftAllowCreate="false">
+		<cfproperty name="playjoin" type="array"
+				ftType="array"  
+				ftJoin="dmNews" 
+				ftAllowCreate="false">
 	</code>
 	<p>Dont allow user to select from existing records, only create</p>
 	<code>
-		<cfproperty name="playjoin" ftType="array" type="array" ftJoin="dmNews" ftAllowSelect="false">
+		<cfproperty name="playjoin" type="array"
+				ftType="array"  
+				ftJoin="dmNews" 
+				ftAllowSelect="false">
 	</code>
 	<p>Allow the user to edit the record directly from the library</p>
 	<code>
-		<cfproperty name="playjoin" ftType="array" type="array" ftJoin="dmNews" ftAllowEdit="true">
+		<cfproperty name="playjoin"  type="array" 
+				ftType="array" 
+				ftJoin="dmNews" 
+				ftAllowEdit="true">
 	</code>
 	<p>Render the record library as a list with mutliple select</p>
 	<code>
-		<cfproperty name="playjoin" ftType="array" type="array" ftJoin="dmNews" ftRenderType="list">
+		<cfproperty name="playjoin" type="array" 
+				ftType="array"  
+				ftJoin="dmNews" 
+				ftRenderType="list">
 	</code>
 	<p>Render the record library as a list without multiple select</p>
 	<code>
-		<cfproperty name="playjoin" ftType="array" type="array" ftJoin="dmNews" ftRenderType="list" ftSelectMultiple="false">
+		<cfproperty name="playjoin" type="array" 
+				ftType="array"  
+				ftJoin="dmNews" 
+				ftRenderType="list" 
+				ftSelectMultiple="false">
 	</code>
 	<p>Custom query to populate the library picker, myCustomQuery is a method in the type this property belongs</p>
 	<code>
-		<cfproperty name="playjoin" ftType="array" type="array" ftJoin="dmNews" ftLibraryData="myCustomQuery">
+		<cfproperty name="playjoin" type="array"
+				ftType="array"  
+				ftJoin="dmNews" 
+				ftLibraryData="myCustomQuery">
 	</code>
 	<p>Custom query with method in a different type</p>
 	<code>
-		<cfproperty name="playjoin" ftType="array" type="array" ftJoin="dmNews" ftLibraryData="myCustomQuery" ftLibraryDataTypename="dmNews">
+		<cfproperty name="playjoin" type="array"
+				ftType="array" 
+				ftJoin="dmNews" 
+				ftLibraryData="myCustomQuery" 
+				ftLibraryDataTypename="dmNews">
 	</code>
 --->
 <cfcomponent extends="join" name="array" displayname="array" hint="Used to liase with Array type fields" bDocument="true"> 
