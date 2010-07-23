@@ -1,4 +1,4 @@
-<cfcomponent name="country" displayname="Country" hint="Field containing a country" extends="field"> 
+<cfcomponent name="country" displayname="country" hint="Field containing a country" extends="field"> 
 	
 	<cffunction name="init" access="public" returntype="any" output="false" hint="Returns a copy of this initialised object">
 		<cfset var q = querynew("code,name") />

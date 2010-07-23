@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<cfcomponent name="Image" displayname="Image" Extends="field" hint="Field component to liase with all Image types">
+<cfcomponent name="Image" displayname="image" Extends="field" hint="Field component to liase with all Image types">
 <!--- 
  // documentation 
 --------------------------------------------------------------------------------------------------->
