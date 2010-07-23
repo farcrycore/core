@@ -1,5 +1,39 @@
-<cfcomponent extends="field" name="navigation" displayname="navigation" hint="Field component to liase with all navigation field types"> 
+<!--- @@description:
+	<p>Different rendering options to output a representation of the site navigation tree</p> --->
 
+<!--- @@examples:
+	<p>Basic</p>
+	<code>
+	<cfproperty
+ 			ftSeq="15"
+ 			ftFieldset="Navigatiom"
+ 			name="navigationPoint"
+	 		type="text"
+	 		hint="navigation point"
+	 		required="false"
+	 		default=""
+	 		ftLabel="Navigation"
+ 			ftType="navigation"/>
+	</code> 
+	<p>Jquery Navigation tree</p>
+	<cfproperty
+ 			ftSeq="15"
+ 			ftFieldset="Navigatiom"
+ 			name="navigationPoint"
+	 		type="text"
+	 		hint="navigation point"
+	 		required="false"
+	 		default=""
+	 		ftLabel="Navigation"
+ 			ftType="navigation"
+			ftRenderType="jquery"/>
+--->
+
+<cfcomponent extends="field" name="navigation" displayname="navigation" hint="Field component to liase with all navigation field types"> 
+	
+	<cfproperty name="ftAlias" required="false" default="" hint="A valid nav alias to begin the tree from" />
+	<cfproperty name="ftLegend" required="false" default="" options="dropdown,prototype,jquery" hint="A legend for the fieldset" />
+	
 	<!--- import tag libraries --->
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 
