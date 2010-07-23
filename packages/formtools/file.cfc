@@ -1,7 +1,78 @@
+<!--- 	
+	@@examples:
 
+	<p>Basic</p>
+	<code>
+		<cfproperty 
+			name="someFile" type="string" default="" hint="The file to process" 
+			ftSeq="1" ftFieldset="General" ftLabel="File" 
+			ftType="file" ftDestination="/someDirectory" />
+	</code>
 
-<cfcomponent name="File" displayname="file" Extends="field" hint="Field component to liase with all File types"> 
+	<p>Maximum file upload of 1mb</p>
+	<code>
+		<cfproperty 
+			name="someFile" type="string" default="" hint="The file to process" 
+			ftSeq="1" ftFieldset="General" ftLabel="File" 
+			ftType="file" ftDestination="/someDirectory" ftMaxSize="1048576" />
+	</code>
 
+	<p>Flash upload</p>
+	<code>
+		<cfproperty 
+			name="someFile" type="string" default="" hint="The file to process" 
+			ftSeq="2" ftFieldset="General" ftLabel="File" 
+			ftType="file" ftDestination="/someDirectory" ftRenderType="flash" />
+	</code>
+
+	<p>Secure file upload</p>
+	<code>
+		<cfproperty 
+			name="someFile" type="string" default="" hint="The file to process" 
+			ftSeq="4" ftFieldset="General" ftLabel="File" 
+			ftType="file" ftDestination="/someDirectory" ftSecure="true" />
+	</code>
+
+	<p>PDF only (HTML)</p>
+	<code>
+		<cfproperty 
+			name="someFile" type="string" default="" hint="The file to process" 
+			ftSeq="5" ftFieldset="General" ftLabel="File" 
+			ftType="file" ftDestination="/someDirectory" ftAllowedFileExtensions="*.pdf" />
+	</code>
+
+	<p>PDF only (jQuery)</p>
+	<code>
+		<cfproperty 
+			name="someFile" type="string" default="" hint="The file to process" 
+			ftSeq="6" ftFieldset="General" ftLabel="File" 
+			ftType="file" ftDestination="/someDirectory" ftRenderType="jquery" 
+			ftFileTypes="*.pdf" />
+	</code>
+
+ --->
+
+<cfcomponent name="File" displayname="file" Extends="field" hint="Field component to liase with all File types" bDocument="true"> 
+
+	<!--- edit handler options --->
+	<cfproperty name="ftStyle" default="" hint="Custom inline styles" />
+	<cfproperty name="ftRenderType" default="html" hint="This formtool offers a number of ways to render the input. (html, flash, jquery)" />
+	<cfproperty name="ftAllowedFileExtensions" default="pdf,doc,ppt,xls,docx,pptx,xlsx,jpg,jpeg,png,gif,zip,rar,flv,swf,mpg,mpe,mpeg,m1s,mpa,mp2,m2a,mp2v,m2v,m2s,mov,qt,asf,asx,wmv,wma,wmx,rm,ra,ram,rmvb,mp3,mp4,3gp,ogm,mkv,avi" hint="Used when ftRenderType is set to HTML, extentions allowed to be uploaded." />
+	<cfproperty name="ftFacade" default="#chr(35)#application.url.webtop#chr(35)#/facade/fileupload/upload.cfm" hint="location of uploader facade." />
+	<cfproperty name="ftFileTypes" default="*.*" hint="Used when ftRenderType is set to flash (default *.*) or jquery (default *.jpg;*.JPG;*.jpeg;*.JPEG;), extentions allowed to be uploaded. " />
+	<cfproperty name="ftFileDescription" default="File Types" hint="Used when ftRenderType is set to HTML, text display above upload control." />
+	<cfproperty name="ftMaxSize" default="-1" hint="Maximum filesize upload in bytes." />
+	<cfproperty name="ftOnComplete" default="" hint="Used when ftRenderType is set to HTML, javascript to execute after file upload." />
+					
+	<!--- jquery edit handler options --->
+	<cfproperty name="ftStartMessage" default="Upload file here." hint="Used when ftRenderType is set to jQuery. Message to display at start of upload." />
+	<cfproperty name="ftErrorSizeMessage" default="Maximum filesize is #chr(35)#arguments.stMetadata.ftMaxSize#chr(35)# kb" hint="Used when ftRenderType is set to jQuery. Error to display when max filesize error flagged." />
+	<cfproperty name="ftCompleteMessage" default="File upload complete" hint="Used when ftRenderType is set to jQuery. Message to display at end of upload." />
+	<cfproperty name="ftAfterUploadJSScript" default="" hint="Used when ftRenderType is set to jQuery. Javascript to execute after upload compeltes. " />
+
+	<!--- validate options --->
+	<cfproperty name="ftSecure" default="false" hint="Store files securely outside of public webspace." />
+	<cfproperty name="ftDestination" default="" hint="Destination of file store relative of secure/public locations." />
 
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" >
