@@ -1630,12 +1630,11 @@
 			<cfdump var="#application.fapi.arrayRemove(a,'2,3')#" />
 		</code>
 	 --->
-	<cffunction name="arrayRemove" access="public" output="false" returntype="array" hint="Returns the array with the elements passed in removed." bDocument="true">
+	<cffunction name="arrayRemove" access="public" output="false" returntype="array" hint="Returns the array with the elements passed in removed." bDocument="true" >
 		<cfargument name="array" type="array" required="true" hint="The array to remove elements from" />
 		<cfargument name="elements" type="Any" required="true" hint="The elements in the array to remove. Can be an array or a list." />
 		
 		<cfset var oCaster = "" /><!--- Used in case of Railo --->
-		
 		
 		<cfif isSimpleValue(arguments.elements)>
 			<cfset arguments.elements = listToArray(arguments.elements) />
@@ -1647,7 +1646,18 @@
 				<cfset arguments.array.removeAll(oCaster.toList(arguments.elements)) />
 			</cfcase>
 			<cfdefaultcase>
-				<cfset arguments.array.removeAll(arguments.elements) >
+				<!--- if extended array then manually delete --->
+				<cfif arraylen(arguments.array) and isStruct(arguments.array[1])>
+					<cfloop from="1" to="#arraylen(arguments.array)#" index="i">
+						<cfloop from="1" to="#arraylen(arguments.elements)#" index="x">
+							<cfif arguments.array[i].data eq arguments.elements[x]>
+								<cfset arrayDeleteAt(arguments.array,i)>
+							</cfif>
+						</cfloop>
+					</cfloop>
+				<cfelse>
+					<cfset arguments.array.removeAll(arguments.elements) >
+				</cfif>
 			</cfdefaultcase>
 		</cfswitch>		
 		
@@ -2265,5 +2275,7 @@
 
 		<cfreturn />
 	</cffunction>	
+	
+
 	
 </cfcomponent>
