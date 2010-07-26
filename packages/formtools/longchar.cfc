@@ -64,7 +64,7 @@
 			<cfset bIsGoodBrowser = "0">
 		</cfif>
 		
-		<cfif arguments.stMetadata.ftLimit>
+		<cfif isBoolean(arguments.stMetadata.ftLimit) and arguments.stMetadata.ftLimit>
 			<skin:htmlHead>
 				<cfoutput>
 					<script language="javascript">
@@ -119,7 +119,7 @@
 				<div class="multiField">
 					<div id="#arguments.fieldname#DIV" style="#fieldStyle#;">
 						<div class="blockLabel">
-						<cfif arguments.stMetadata.ftLimit>							
+						<cfif isBoolean(arguments.stMetadata.ftLimit) and arguments.stMetadata.ftLimit>							
 							<cfset onKeyUp = "javascript:UpdateCounter_#arguments.fieldname#('#request.farcryForm.name#', '#arguments.FieldName#')" />
 							<cfset onKeyDown = "javascript:UpdateCounter_#arguments.fieldname#('#request.farcryForm.name#', '#arguments.FieldName#')" />
 							<textarea name="#arguments.fieldname#" id="#arguments.fieldname#" class="textareaInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" onkeyup="#onKeyUp#" onkeydown="#onKeyDown#">#arguments.stMetadata.value#</textarea>
