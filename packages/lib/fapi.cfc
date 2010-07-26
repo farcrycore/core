@@ -1648,13 +1648,15 @@
 			<cfdefaultcase>
 				<!--- if extended array then manually delete --->
 				<cfif arraylen(arguments.array) and isStruct(arguments.array[1])>
-					<cfloop from="1" to="#arraylen(arguments.array)#" index="i">
-						<cfloop from="1" to="#arraylen(arguments.elements)#" index="x">
+					<cfloop from="1" to="#arraylen(arguments.elements)#" index="x">
+						<cfloop from="1" to="#arraylen(arguments.array)#" index="i">
 							<cfif arguments.array[i].data eq arguments.elements[x]>
 								<cfset arrayDeleteAt(arguments.array,i)>
+								<cfbreak>
 							</cfif>
-						</cfloop>
+						</cfloop>									
 					</cfloop>
+
 				<cfelse>
 					<cfset arguments.array.removeAll(arguments.elements) >
 				</cfif>
