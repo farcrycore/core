@@ -76,11 +76,12 @@
 	<cfif not bFoundLibraryData>
 		<!--- if nothing exists to generate library data then cobble something together --->	
 		<cfset SQLWhere = "1=1" />
-	
-		<cfif structKeyExists(stMetadata, "ftLibraryDataSQLWhere")>
+
+
+		<cfif structKeyExists(stMetadata, "ftLibraryDataSQLWhere") and len(stMetadata["ftLibraryDataSQLWhere"])>
 			<cfset SQLWhere = " #SQLWhere# AND (#stMetadata.ftLibraryDataSQLWhere#)" />
 		</cfif>
-		
+
 		<cfset SQLOrderBy = "datetimelastupdated desc" />
 		<cfif structKeyExists(stMetadata, "ftLibraryDataSQLOrderBy")>
 			<cfset SQLOrderBy = stMetadata.ftLibraryDataSQLOrderBy />
