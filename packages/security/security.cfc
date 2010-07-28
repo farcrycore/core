@@ -745,6 +745,7 @@
 		request.mode.showdraft = 0;
 		request.mode.ajax = 0;
 		request.mode.tracewebskins = 0;
+		request.mode.profile = 0;
 		
 		// Developer Mode
 		request.mode.bDeveloper = 0;
@@ -775,6 +776,12 @@
 				request.mode.design = session.dmSec.Authentication.designmode;
 			} else {
 				request.mode.design = 0;
+			}
+		// profile mode
+			if (isDefined("arguments.stURL.profile")) {
+				request.mode.profile = val(arguments.stURL.profile);
+			} else {
+				request.mode.profile = 0;
 			}
 		// webskintrace
 			if (isDefined("arguments.stURL.tracewebskins")) {

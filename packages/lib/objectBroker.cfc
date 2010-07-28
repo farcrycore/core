@@ -306,18 +306,20 @@
 			<cfloop list="#listSort(arguments.lcacheByVars, 'text')#" index="iViewState">
 				
 				<cftry>
-					<cfif isDefined(trim(iViewState))>
-						<cfset WebskinCacheID = listAppend(WebskinCacheID, "#iViewState#:#evaluate(trim(iViewState))#") />
+					<cfif isDefined(trim(listfirst(iViewState,":")))>
+						<cfset WebskinCacheID = listAppend(WebskinCacheID, "#listfirst(iViewState,':')#:#evaluate(trim(listfirst(iViewState,':')))#") />
 					<cfelse>
-						<cfset WebskinCacheID = listAppend(WebskinCacheID, "#iViewState#:null") />
+						<!--- If the var is defined with a default (e.g. @@cacheByVars: url.page:1), the default is incorporated into the hash --->
+						<!--- If the var does not define a default (e.g. @@cacheByVars: url.error), that valueless string indicates the null --->
+						<cfset WebskinCacheID = listAppend(WebskinCacheID, "#iViewState#") />
 					</cfif>		
 				
 					<cfcatch type="any">
 						<cftry>
-							<cfset WebskinCacheID = listAppend(WebskinCacheID, "#iViewState#:#evaluate(trim(iViewState))#") />
+							<cfset WebskinCacheID = listAppend(WebskinCacheID, "#listfirst(iViewState,':')#:#evaluate(trim(listfirst(iViewState,':')))#") />
 							
 							<cfcatch type="any">
-								<cfset WebskinCacheID = listAppend(WebskinCacheID, "#iViewState#:invalidVarName") />
+								<cfset WebskinCacheID = listAppend(WebskinCacheID, "#listfirst(iViewState,':')#:invalidVarName") />
 							</cfcatch>
 						</cftry>						
 					</cfcatch>

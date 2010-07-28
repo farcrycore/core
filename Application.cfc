@@ -570,6 +570,7 @@
 		----------------------------------------->
 		
 		<!--- project and plugin request processing --->
+		<cfset application.fapi.addProfilePoint("Request initialisation","Server specific request scope") />
 		<cfif application.sysInfo.bServerSpecificRequestScope>
 			<cfloop from="1" to="#arraylen(application.sysinfo.aServerSpecificRequestScope)#" index="i">
 				<cfinclude template="#application.sysinfo.aServerSpecificRequestScope[i]#" />
@@ -578,10 +579,12 @@
 		
 			
 		<!--- PARSE THE URL CHECKING FOR FRIENDLY URLS (url.furl) --->
+		<cfset application.fapi.addProfilePoint("Request initialisation","Parse URL") />
 		<cfset structAppend(url, application.fc.factory.farFU.parseURL(),true) />
-			
+		
 
 		<!--- INITIALIZE THE REQUEST.MODE struct --->
+		<cfset application.fapi.addProfilePoint("Request initialisation","Request modes") />
 		<cfset application.security.initRequestMode() />
 		
 		<!----------------------------------------
@@ -598,6 +601,7 @@
 		
 		<!--- IF the project has been set to developer mode, we need to refresh the metadata on each page request. --->
 		<cfif request.mode.bDeveloper>
+			<cfset application.fapi.addProfilePoint("Request initialisation","Developer: Refresh COAPI") />
 			<cfset createObject("component","#application.packagepath#.farcry.alterType").refreshAllCFCAppData() />
 		</cfif>
 

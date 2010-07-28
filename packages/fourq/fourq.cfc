@@ -289,7 +289,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				<cfset stWebskin = application.fc.lib.objectbroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
 				
 				<cfif len(stWebskin.webskinHTML)>			
-
+					<cfset application.fapi.addRequestLog("Retrieved webskin from cache [#stobj.objectid#, #stobj.typename#, #arguments.template#, #stWebskin.webskinCacheID#]") />
 					
 					<!--- ONLY KEEP TRACK OF THE ANCESTRY IF SET TO FLUSHONOBJECTCHANGE OR TYPEWATCH --->
 					<cfif application.coapi.coapiadmin.getWebskinCacheFlushOnObjectChange(typename=stobj.typename, template=arguments.template) 
@@ -323,6 +323,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					
 					</cfif>
 				<cfelse>
+					<cfset application.fapi.addRequestLog("Webskin not in cache [#stobj.objectid#, #stobj.typename#, #arguments.template#, #stWebskin.webskinCacheID#]") />
+					
 					<cfif stobj.typename EQ "farCoapi">
 						<!--- This means its a type webskin and we need to look for the timeout value on the related type. --->			
 						<cfset stCoapi = application.fc.factory['farCoapi'].getData(objectid="#stobj.objectid#") />
@@ -439,7 +441,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset request.currentViewTypename = "#stCurrentView.typename#" />
 		<cfset request.currentViewTemplate = "#stCurrentView.template#" />
 		
-		
+		<cfset application.fapi.addProfilePoint("View","#stCurrentView.template# [#stCurrentView.typename#:#stObj.objectid#]") />
 	
 		<!--- Include the View --->
 		<cfsavecontent variable="webskinHTML">
@@ -533,6 +535,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<!--- If the current view (Last Item In the array) is still OkToCache --->
 			<cfif request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].okToCache>
 				<!--- Add the webskin to the object broker if required --->
+				<cfset application.fapi.addRequestLog("Caching webskin [#arguments.stobj.objectid#, #arguments.stobj.typename#, #arguments.webskinTemplate#, #arguments.webskinCacheID#]") />
 				<cfset bAdded = application.fc.lib.objectbroker.addWebskin(objectid=arguments.stobj.objectid, typename=arguments.stobj.typename, template=arguments.webskinTemplate, webskinCacheID=arguments.webskinCacheID, html=webskinHTML, stCurrentView=stCurrentView) />
 			</cfif>
 		</cfif>
