@@ -2335,16 +2335,21 @@
 		<cfsavecontent variable="html"><cfoutput>
 			<img src="http://chart.apis.google.com/chart?chbh=23,0,0&chs=400x23&cht=bhs&chco=#seriescolours#&chds=#seriesscale#&chd=t:#seriesdata#&chdlp=b" width="400" height="23" alt="" usemap="##request-profile" />
 			<map name="request-profile">
+			<cfset visibleindex = 0 />
 			<cfloop from="1" to="#arraylen(stJSON.chartshape)#" index="i">
+				<cfset visibleindex = visibleindex + 1 />
+				<cfloop condition="arguments.profile.tick[visibleindex+1]-arguments.profile.tick[visibleindex] eq 0">
+					<cfset visibleindex = visibleindex + 1 />
+				</cfloop>
 				<area name='#stJSON.chartshape[i].name#' 
 					  shape='#stJSON.chartshape[i].type#' 
 					  coords='#arraytolist(stJSON.chartshape[i].coords)#' 
-					  href='##request-profile-details-#i#' 
-					  rel='##request-profile-details-#i#' 
+					  href='##request-profile-details-#visibleindex#' 
+					  rel='##request-profile-details-#visibleindex#' 
 					  onclick='$j("div.request-profile-details-selected").css("font-weight","normal").removeClass("request-profile-details-selected");$j("##"+this.href.split("##")[1]).css("font-weight","bold").addClass("request-profile-details-selected");'>
 			</cfloop>
 			</map>
-			<div id='request-profile-details' style='height:75px;overflow:scroll;'>
+			<div id='request-profile-details' style='height:65px;overflow:scroll;'>
 			<cfloop query="arguments.profile">
 				<cfif arguments.profile.section neq "End">
 					<div id="request-profile-details-#arguments.profile.currentrow#" style="color:###listgetat(availablecolours,arguments.profile.currentrow mod listlen(availablecolours) + 1)#;"><span class="ticks" style="width:35px;display:inline-block;">#arguments.profile.tick[arguments.profile.currentrow+1]-arguments.profile.tick#</span> #jsstringformat(arguments.profile.section)# - #jsstringformat(arguments.profile.label)#</div>
