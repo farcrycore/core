@@ -155,7 +155,7 @@
 			<cfset arguments.aFilters[i].sqltype = propertytypemap[arguments.aFilters[i].type] />
 		</cfloop>
 		
-		<cfquery datasource="#application.dsn#" name="q" maxrows="#arguments.maxRows#">
+		<cfquery datasource="#application.dsn#" name="q" maxrows="#arguments.maxRows#" result="stR">
 			select		#arguments.lProperties#, '#arguments.typename#' as typename
 			from		#application.dbowner##arguments.typename#
 			where		1=1
@@ -178,7 +178,7 @@
 											having		count(parentid)=<cfqueryparam cfsqltype="cf_sql_integer" value="#listlen(f.value)#" />
 										)
 									<cfelseif f.type eq "category"><!--- Special case for category searches --->
-										<cfif len(f.value)><!--- Category filtering is permissive - empty = any --->
+										<cfif len(trim(f.value))><!--- Category filtering is permissive - empty = any --->
 											objectid in (
 												select		objectid
 												from		#application.dbowner#refCategories
@@ -204,7 +204,7 @@
 											where		data in (<cfqueryparam cfsqltype="#f.sqltype#" list="true" value="#f.value#" />)
 										)
 									<cfelseif f.type eq "category"><!--- Special case for category searches --->
-										<cfif len(f.value)><!--- Category filtering is permissive - empty = any --->
+										<cfif len(trim(f.value))><!--- Category filtering is permissive - empty = any --->
 											objectid in (
 												select		objectid
 												from		#application.dbowner#refCategories
@@ -258,6 +258,8 @@
 				ORDER BY #arguments.orderBy#
 			</cfif>
 		</cfquery>
+		
+		<cfset application.fapi.addRequestLog(stR.sql & " ... " & stR.sqlparameters.toString()) />
 		
 		<cfreturn q />
 	</cffunction>
@@ -2394,8 +2396,7 @@
 		<cfset var html = "" />
 		
 		<cfsavecontent variable="html"><cfoutput>
-			<textarea cols="80" rows="5" wrap="off"><cfloop query="arguments.log">#arguments.log.text#
-</cfloop></textarea>
+			<textarea cols="80" rows="5" wrap="off"><cfloop query="arguments.log">#arguments.log.text##chr(13)##chr(10)#</cfloop></textarea>
 		</cfoutput></cfsavecontent>
 		
 		<cfreturn html />
