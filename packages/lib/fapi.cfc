@@ -178,13 +178,17 @@
 											having		count(parentid)=<cfqueryparam cfsqltype="cf_sql_integer" value="#listlen(f.value)#" />
 										)
 									<cfelseif f.type eq "category"><!--- Special case for category searches --->
-										objectid in (
-											select		objectid
-											from		#application.dbowner#refCategories
-											where		categoryid in (<cfqueryparam cfsqltype="#f.sqltype#" list="true" value="#f.value#" />)
-											group by	objectid
-											having		count(objectid)=<cfqueryparam cfsqltype="cf_sql_integer" value="#listlen(f.value)#" />
-										)
+										<cfif len(f.value)><!--- Category filtering is permissive - empty = any --->
+											objectid in (
+												select		objectid
+												from		#application.dbowner#refCategories
+												where		categoryid in (<cfqueryparam cfsqltype="#f.sqltype#" list="true" value="#f.value#" />)
+												group by	objectid
+												having		count(objectid)=<cfqueryparam cfsqltype="cf_sql_integer" value="#listlen(f.value)#" />
+											)
+										<cfelse>
+											1=1
+										</cfif>
 									<cfelse>
 										#f.property# = <cfqueryparam cfsqltype="#f.sqltype#" value="#f.value#" />
 									</cfif>
@@ -200,11 +204,15 @@
 											where		data in (<cfqueryparam cfsqltype="#f.sqltype#" list="true" value="#f.value#" />)
 										)
 									<cfelseif f.type eq "category"><!--- Special case for category searches --->
-										objectid in (
-											select		objectid
-											from		#application.dbowner#refCategories
-											where		categoryid in (<cfqueryparam cfsqltype="#f.sqltype#" list="true" value="#f.value#" />)
-										)
+										<cfif len(f.value)><!--- Category filtering is permissive - empty = any --->
+											objectid in (
+												select		objectid
+												from		#application.dbowner#refCategories
+												where		categoryid in (<cfqueryparam cfsqltype="#f.sqltype#" list="true" value="#f.value#" />)
+											)
+										<cfelse>
+											1=1
+										</cfif>
 									<cfelse>
 										#f.property# IN (<cfqueryparam cfsqltype="#f.sqltype#" list="true" value="#f.value#" />)
 									</cfif>									
