@@ -8,7 +8,7 @@
 	<cfproperty name="ftRemoveType" required="false" default="remove" options="delete,detach" hint="detach will only remove from the join, delete will remove from the database"/><!--- detach or delete --->
 	
 	<cfproperty name="ftlibrarydatasqlwhere" required="false" default="" hint="A simple where clause filter for the library data result set. Must be in the form PROPERTY OPERATOR VALUE. For example, status = 'approved'"/><!--- detach or delete --->
-	<cfproperty name="ftlibrarydatasqlorderby" required="false" default="label" hint="Nominate a specific property to order library results by."/><!--- detach or delete --->
+	<cfproperty name="ftlibrarydatasqlorderby" required="false" default="datetimelastupdated desc" hint="Nominate a specific property to order library results by."/><!--- detach or delete --->
 	
 	<cfproperty name="ftLibrarySelectedWebskin" default="librarySelected" type="string" hint="webskin to overwrite each record in list"/>
 	<cfproperty name="ftLibrarySelectedListClass" default="arrayDetail" type="string" hint="overwrite the style class of the list"/>
