@@ -155,7 +155,7 @@
 			<cfset arguments.aFilters[i].sqltype = propertytypemap[arguments.aFilters[i].type] />
 		</cfloop>
 		
-		<cfquery datasource="#application.dsn#" name="q" maxrows="#arguments.maxRows#" result="stR">
+		<cfquery datasource="#application.dsn#" name="q" maxrows="#arguments.maxRows#">
 			select		#arguments.lProperties#, '#arguments.typename#' as typename
 			from		#application.dbowner##arguments.typename#
 			where		1=1
@@ -258,8 +258,6 @@
 				ORDER BY #arguments.orderBy#
 			</cfif>
 		</cfquery>
-		
-		<cfset application.fapi.addRequestLog(stR.sql & " ... " & stR.sqlparameters.toString()) />
 		
 		<cfreturn q />
 	</cffunction>
