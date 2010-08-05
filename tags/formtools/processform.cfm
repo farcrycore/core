@@ -98,19 +98,15 @@
 		
 		<cfif attributes.bSpamProtect>
 			<cfif structKeyExists(session.stFarCryFormSpamProtection, "#form.farcryFormSubmitted#")>
+				<!--- Supposed to enter form process but form protection is on so we need to protect --->
+				<cfset cffp = CreateObject("component","farcry.core.webtop.cffp.cfformprotect.cffpVerify").init(ConfigPath="#application.path.core#/webtop/cffp/cfformprotect", stConfig=session.stFarCryFormSpamProtection["#form.farcryFormSubmitted#"]["#FORM.FarcryFormSubmitButton#"]) />
 
-				<!--- The form was submitted by this session --->
-				<cfif structKeyExists(session.stFarCryFormSpamProtection["#form.farcryFormSubmitted#"], FORM.FarcryFormSubmitButton) AND session.stFarCryFormSpamProtection["#form.farcryFormSubmitted#"]["#FORM.FarcryFormSubmitButton#"].bSpamProtect EQ true>
-					<!--- Supposed to enter form process but form protection is on so we need to protect --->
-					<cfset cffp = CreateObject("component","farcry.core.webtop.cffp.cfformprotect.cffpVerify").init(ConfigPath="#application.path.core#/webtop/cffp/cfformprotect", stConfig=session.stFarCryFormSpamProtection["#form.farcryFormSubmitted#"]["#FORM.FarcryFormSubmitButton#"]) />
-
-					<!--- now we can test the form submission --->
-					<cfif NOT Cffp.testSubmission(form)>
-						<!--- The submission has failed the form test. --->
-						<cfset variables.EnterFormProcess = false>
-						<cfexit>
-					</cfif>
-				</cfif>		
+				<!--- now we can test the form submission --->
+				<cfif NOT Cffp.testSubmission(form)>
+					<!--- The submission has failed the form test. --->
+					<cfset variables.EnterFormProcess = false>
+					<cfexit>
+				</cfif>
 			<cfelse>
 
 				<!--- The submission of the form was not made by the correct session. --->
