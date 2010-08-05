@@ -38,8 +38,9 @@
 	<cfparam name="attributes.excludeAction" default="" >
 	<cfparam name="attributes.bHideForms" default="false" /><!--- Setting this to true will allow the processing of the webskin to continue but ignore any subsequent <ft:form /> tags. --->
 	<cfparam name="attributes.Exit" default="false"><!--- @@hint: If set to true the ft:form on the page will not show it's contents after this process runs. Note this doesn't stop page execution, just does not render ft:form contents. @@default: false --->
+	<cfparam name="attributes.bSpamProtect" default="false"><!--- Instantiates cfformprotection to ensure the button is not clicked by spam. --->
 	
-		
+	
 	<cfset variables.EnterFormProcess = false>
 
 	<cfif structKeyExists(form, "FarcryFormSubmitted")>
@@ -95,7 +96,7 @@
 		<cfexit>
 	<cfelse>
 		
-		<cfif structKeyExists(session, "stFarCryFormSpamProtection") AND isDefined("FORM.FarcryFormSubmitted")>
+		<cfif attributes.bSpamProtect>
 			<cfif structKeyExists(session.stFarCryFormSpamProtection, "#form.farcryFormSubmitted#")>
 
 				<!--- The form was submitted by this session --->
