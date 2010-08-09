@@ -32,7 +32,7 @@
 <cfcomponent extends="field" name="longchar" displayname="longchar" hint="Used to liase with longchar type fields"> 
 
 	<cfproperty name="ftStyle" required="false" default="" hint="The style for the text area" />
-	<cfproperty name="ftLimit" required="false" default="" hint="Limits the amount of data the user can input. Provides a counter above text area" />
+	<cfproperty name="ftLimit" required="false" default="0" hint="Limits the amount of data the user can input. Provides a counter above text area" />
 	
 	<cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
 	
@@ -64,7 +64,7 @@
 			<cfset bIsGoodBrowser = "0">
 		</cfif>
 		
-		<cfif isBoolean(arguments.stMetadata.ftLimit) and arguments.stMetadata.ftLimit>
+		<cfif arguments.stMetadata.ftLimit>
 			<skin:htmlHead>
 				<cfoutput>
 					<script language="javascript">
