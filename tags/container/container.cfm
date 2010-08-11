@@ -147,7 +147,7 @@ $out:$
 	<!--- display edit widget --->
 	<cfif request.mode.design and request.mode.showcontainers gt 0>		
 	
-		<skin:view stObject="#stConObj#" webskin="displayAdminToolbar" alternatehtml="" originalID="#originalID#" lRules="#attributes.lRules#" lExcludedRules="#attributes.lExcludedRules#" />		
+		<skin:view stObject="#stConObj#" webskin="displayAdminToolbar" alternatehtml="" originalID="#originalID#" lRules="#attributes.lRules#" lExcludedRules="#attributes.lExcludedRules#" desc="#attributes.desc#" />		
 		
 	</cfif>
 	
