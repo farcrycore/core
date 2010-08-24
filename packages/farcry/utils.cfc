@@ -639,7 +639,7 @@
 	        <cfset thisVar = listFirst(thisIndex,"=") />
 	        
 	        <!--- if this is the var, edit it to the value, otherwise, just append --->
-	        <cfif not listFind(variable,thisVar)>
+	        <cfif not listFindnocase(variable,thisVar)>
 	            <cfset updatedqs = listAppend(updatedqs,thisIndex,"&") />
 	        </cfif>
 	    </cfloop>
