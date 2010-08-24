@@ -30,7 +30,7 @@ This class defines default handlers and system attributes.$
 || DEVELOPER ||
 $Developer: Geoff Bowers (geoff@daemon.com.au) $
 --->
-<cfcomponent extends="types" bAbstract="true" displayname="Bridging Table Abstract Class" hint="This component allows the user to extend tables that have automatically been created by an array type cfc property -- it should only be inherited." bRefObjects="false">
+<cfcomponent extends="types" bAbstract="true" displayname="Bridging Table Abstract Class" hint="This component allows the user to extend tables that have automatically been created by an array type cfc property -- it should only be inherited.">
 <!--------------------------------------------------------------------
 system attributes
   properties that all content types require in FarCry
