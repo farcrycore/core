@@ -166,8 +166,12 @@
 			<cfparam name="arguments.stMetadata.ftDateFormatMask" default="dd mmmm yyyy">
 			<cfparam name="arguments.stMetadata.ftStartYearShift" default="0">
 			<cfparam name="arguments.stMetadata.ftEndYearShift" default="-100">
-			<cfparam name="arguments.stMetadata.ftStartYear" default="#year(now()) + arguments.stMetadata.ftStartYearShift#">
-			<cfparam name="arguments.stMetadata.ftEndYear" default="#year(now()) + arguments.stMetadata.ftEndYearShift#">
+			<cfif not isdefined("arguments.stMetadata.ftStartYear") or not len(arguments.stMetadata.ftStartYear)>
+				<cfset arguments.stMetadata.ftStartYear = year(now()) + arguments.stMetadata.ftStartYearShift />
+			</cfif>
+			<cfif not isdefined("arguments.stMetadata.ftEndYear") or not len(arguments.stMetadata.ftEndYear)>
+				<cfset arguments.stMetadata.ftEndYear = year(now()) + arguments.stMetadata.ftEndYearShift />
+			</cfif>
 			
 			<cfif arguments.stMetadata.ftStartYear gt arguments.stMetadata.ftEndYear>
 				<cfset step=-1 />
@@ -198,37 +202,29 @@
 					</cfif>
 					
 					<div id="#arguments.fieldname#-wrap">
-						
-						
-						<label class="blockLabel" for="#arguments.fieldname#Day">
-							Day 
-							<select name="#arguments.fieldname#Day" id="#arguments.fieldname#Day" class="selectInput">
+						Day 
+						<select name="#arguments.fieldname#Day" id="#arguments.fieldname#Day" class="selectInput" style="float:none;">
+						<option value="">--</option>
+						<cfloop from="1" to="31" index="i">
+							<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND Day(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#i#</option>
+							</cfloop>
+						</select>
+					
+						Month 
+						<select name="#arguments.fieldname#Month" id="#arguments.fieldname#Month" class="selectInput" style="float:none;">
 							<option value="">--</option>
-							<cfloop from="1" to="31" index="i">
-								<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND Day(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#i#</option>
-								</cfloop>
-							</select>	
-						</label>
-						
-						<label class="blockLabel" for="#arguments.fieldname#Month">
-							Month 
-							<select name="#arguments.fieldname#Month" id="#arguments.fieldname#Month" class="selectInput">
-								<option value="">--</option>
-								<cfloop from="1" to="12" index="i">
-									<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND Month(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#localeMonths[i]#</option>
-								</cfloop>
-							</select>	
-						</label>
-						
-						<label class="blockLabel" for="#arguments.fieldname#Year">
-							Year 				
-							<select name="#arguments.fieldname#Year" id="#arguments.fieldname#Year" class="selectInput">
-								<option value="">--</option>
-								<cfloop from="#arguments.stMetadata.ftStartYear#" to="#arguments.stMetadata.ftEndYear#" index="i" step="#step#">
-									<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND Year(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#i#</option>
-								</cfloop>
-							</select>
-						</label>	
+							<cfloop from="1" to="12" index="i">
+								<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND Month(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#localeMonths[i]#</option>
+							</cfloop>
+						</select>	
+					
+						Year 				
+						<select name="#arguments.fieldname#Year" id="#arguments.fieldname#Year" class="selectInput" style="float:none;">
+							<option value="">--</option>
+							<cfloop from="#arguments.stMetadata.ftStartYear#" to="#arguments.stMetadata.ftEndYear#" index="i" step="#step#">
+								<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND Year(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#i#</option>
+							</cfloop>
+						</select>
 					</div>					
 				</div>
 				</cfoutput>
