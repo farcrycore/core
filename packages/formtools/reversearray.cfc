@@ -70,7 +70,7 @@
 							<cfoutput><option value="">#arguments.stMetadata.ftFirstListLabel#</option></cfoutput>
 						</cfif>					
 						<cfloop query="qLibraryList">
-							<cfoutput><option value="#qLibraryList.objectid#" <cfif listFindNoCase(valueList(qCurrentlyAssigned.objectid),qLibraryList.objectID)> selected</cfif>>#qLibraryList.label#</option></cfoutput>
+							<cfoutput><option value="#qLibraryList.objectid#"<cfif listFindNoCase(valueList(qCurrentlyAssigned.objectid),qLibraryList.objectID)> selected="selected"</cfif>>#qLibraryList.label#</option></cfoutput>
 						</cfloop>
 						<cfoutput></select></cfoutput>
 					<cfelse>

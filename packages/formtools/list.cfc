@@ -187,7 +187,7 @@
 							<cfelse>
 								<cfset optionValue = ListFirst(i,":") />
 							</cfif>
-							<cfoutput><option value="#optionValue#" <cfif listFindNoCase(arguments.stMetadata.value, optionValue) or arguments.stMetadata.value eq optionValue> selected</cfif>>#ListLast(i , ":")#</option></cfoutput>
+							<cfoutput><option value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue) or arguments.stMetadata.value eq optionValue> selected="selected"</cfif>>#ListLast(i , ":")#</option></cfoutput>
 						</cfloop>
 						<cfoutput></select><input type="hidden" name="#arguments.fieldname#" value=""></cfoutput>
 						
@@ -365,7 +365,7 @@
 						<cfelse>
 							<cfset optionValue = ListFirst(i,":") />
 						</cfif>
-						<cfoutput><option value="#optionValue#" <cfif listFindNoCase(arguments.stFilterProps.value, optionValue) or arguments.stFilterProps.value eq optionValue> selected</cfif>>#ListLast(i , ":")#</option></cfoutput>
+						<cfoutput><option value="#optionValue#"<cfif listFindNoCase(arguments.stFilterProps.value, optionValue) or arguments.stFilterProps.value eq optionValue> selected="selected"</cfif>>#ListLast(i , ":")#</option></cfoutput>
 					</cfloop>
 					<cfoutput></select><input type="hidden" name="#arguments.fieldname#value" value=""></cfoutput>
 									

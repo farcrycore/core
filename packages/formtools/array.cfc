@@ -321,7 +321,7 @@
 			<cfif qLibraryList.recordcount>
 				<cfoutput>
 				<select  id="#arguments.fieldname#" name="#arguments.fieldname#" size="#arguments.stMetadata.ftSelectSize#" multiple="#arguments.stMetadata.ftSelectMultiple#">
-				<cfloop query="qLibraryList"><option value="#qLibraryList.objectid#" <cfif valuelist(qArrayField.data) contains qLibraryList.objectid>selected</cfif>><cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif></option></cfloop>
+				<cfloop query="qLibraryList"><option value="#qLibraryList.objectid#"<cfif valuelist(qArrayField.data) contains qLibraryList.objectid> selected="selected"</cfif>><cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif></option></cfloop>
 				</select>
 				</cfoutput>
 				

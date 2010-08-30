@@ -121,7 +121,7 @@
 					<cfif len(arguments.stMetadata.ftFirstListLabel) AND NOT arguments.stMetadata.ftSelectMultiple>
 						<option value="">#arguments.stMetadata.ftFirstListLabel#</option>
 					</cfif>
-					<cfloop query="qLibraryList"><option value="#qLibraryList.objectid#" <cfif listFindNoCase(joinItems,qLibraryList.objectid)>selected</cfif>><cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif></option></cfloop>
+					<cfloop query="qLibraryList"><option value="#qLibraryList.objectid#"<cfif listFindNoCase(joinItems,qLibraryList.objectid)> selected="selected"</cfif>><cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif></option></cfloop>
 					</select>
 					<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" />
 					
@@ -719,7 +719,7 @@
 				<cfif qLibraryList.recordcount>
 					<cfoutput>
 					<select  id="#arguments.fieldname#" name="#arguments.fieldname#" size="#arguments.stMetadata.ftSelectSize#" multiple="#arguments.stMetadata.ftSelectMultiple#" class="selectInput #arguments.stMetadata.class#">
-					<cfloop query="qLibraryList"><option value="#qLibraryList.objectid#" <cfif valuelist(qArrayField.data) contains qLibraryList.objectid>selected</cfif>><cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif></option></cfloop>
+					<cfloop query="qLibraryList"><option value="#qLibraryList.objectid#"<cfif valuelist(qArrayField.data) contains qLibraryList.objectid> selected="selected"</cfif>><cfif isDefined("qLibraryList.label")>#qLibraryList.label#<cfelse>#qLibraryList.objectid#</cfif></option></cfloop>
 					</select>
 					</cfoutput>
 					

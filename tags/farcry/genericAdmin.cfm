@@ -376,7 +376,7 @@ if (recordSet.recordCount GT 0)
 					#application.rb.getResource("pageLC")#
 					<select name="thisPage" onChange="this.form.submit();">
 						<cfloop from="1" to="#numPages#" index="i">
-							<option value="#i#" <cfif i eq thisPage>selected</cfif>>#i#
+							<option value="#i#"<cfif i eq thisPage> selected="selected"</cfif>>#i#</option>
 						</cfloop>
 					</select> #application.rb.formatRBString("pageOfPages","#numPages#")#
 					<cfif thisPage LT numpages>

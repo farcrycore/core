@@ -394,7 +394,7 @@ LIBRARY DATA
 			<cfif listLen(PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin) GT 1>
 				<select name="ftJoin" id="ftJoin" onchange="javascript:window.location='#cgi.script_name#?#querystring#&ftJoin=' + this[selectedIndex].value;">
 					<cfloop list="#PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin#" index="i">
-						<option value="#i#" <cfif url.ftJoin EQ i>selected</cfif>>#application.stcoapi[i].displayname# Library</option>
+						<option value="#i#"<cfif url.ftJoin EQ i> selected="selected"</cfif>>#application.stcoapi[i].displayname# Library</option>
 					</cfloop>
 				</select>
 			<cfelse>

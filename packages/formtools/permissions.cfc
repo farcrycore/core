@@ -69,7 +69,7 @@
 						
 						<cfloop list="#arguments.stMetadata.ftRoles#" index="thisrole">
 						
-							<cfoutput><option value="#thisrole#"<cfif application.security.factory.barnacle.getRight(role=thisrole,permission=thispermission,object=arguments.stObject.objectid) eq 1> selected</cfif>>#application.security.factory.role.getLabel(thisrole)#</option></cfoutput>
+							<cfoutput><option value="#thisrole#"<cfif application.security.factory.barnacle.getRight(role=thisrole,permission=thispermission,object=arguments.stObject.objectid) eq 1> selected="selected"</cfif>>#application.security.factory.role.getLabel(thisrole)#</option></cfoutput>
 						
 						</cfloop>
 						

@@ -185,7 +185,7 @@
 			
 			<cfloop query="qNodes">
 				<cfif rootlevel eq -1><cfset rootlevel = qNodes.nlevel /></cfif>
-				<cfoutput><option value="#objectid#" <cfif listFindNoCase(arguments.stMetadata.value, objectid) or arguments.stMetadata.value eq objectid> selected</cfif>>#RepeatString("-&nbsp;", qNodes.nlevel-rootlevel)##qNodes.objectName#</option></cfoutput>
+				<cfoutput><option value="#objectid#"<cfif listFindNoCase(arguments.stMetadata.value, objectid) or arguments.stMetadata.value eq objectid> selected="selected"</cfif>>#RepeatString("-&nbsp;", qNodes.nlevel-rootlevel)##qNodes.objectName#</option></cfoutput>
 			</cfloop>
 			
 			<cfoutput></select><input type="hidden" name="#arguments.fieldname#" value=""><br style="clear: both;"/></cfoutput>

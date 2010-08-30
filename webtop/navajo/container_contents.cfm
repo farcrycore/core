@@ -93,7 +93,7 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au) $
 		<label for="selectedRuleid"><b>#application.rb.getResource("containers.labels.activeRules@label","Active Rules For This Container")#:</b>
 		<select id="ruleID" name="ruleID" onchange="document.frm.submit();"><cfset iCounter = 0><cfif arrayLen(stObj.aRules) EQ 0>
 		<option value="">#application.rb.getResource("containers.labels.noContainerRules@label","No rules selected for this container")#</option><cfelse><cfloop query="qActiveRules" ><cfset iCounter = iCounter + 1>
-		<option value="#qActiveRules.objectID#"<cfif ruleID EQ qActiveRules.objectID>selected="selected"</cfif>>[#iCounter#] <cfif structKeyExists(application.rules[qActiveRules.typename],'displayname')>#application.rules[qActiveRules.typename].displayname#<cfelse>#qActiveRules.typename#</cfif></option></cfloop></cfif>
+		<option value="#qActiveRules.objectID#"<cfif ruleID EQ qActiveRules.objectID> selected="selected"</cfif>>[#iCounter#] <cfif structKeyExists(application.rules[qActiveRules.typename],'displayname')>#application.rules[qActiveRules.typename].displayname#<cfelse>#qActiveRules.typename#</cfif></option></cfloop></cfif>
 		</select><br />
 		</label>
 	</cfif>

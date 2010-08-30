@@ -100,7 +100,7 @@
 							
 						<cfelse>
 							<cfset CategoryName = oCategory.getCategoryNamebyID(categoryid=i,typename='dmCategory') />
-							<cfoutput><option value="#i#" <cfif listContainsNoCase(lSelectedCategoryID, i)>selected</cfif>>#CategoryName#</option></cfoutput>
+							<cfoutput><option value="#i#"<cfif listContainsNoCase(lSelectedCategoryID, i)> selected="selected"</cfif>>#CategoryName#</option></cfoutput>
 						</cfif>
 						
 					</cfloop>

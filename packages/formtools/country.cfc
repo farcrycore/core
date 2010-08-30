@@ -279,7 +279,7 @@
 				<cfoutput><optgroup label="Common choices"></cfoutput>
 				
 				<cfoutput query="qCommon">
-					<option value="#qCommon[arguments.stMetadata.ftValue][qCommon.currentrow]#"<cfif arguments.stMetadata.value eq qCommon[arguments.stMetadata.ftValue][qCommon.currentrow]> selected<cfset selectedItem = true /></cfif>>#qCommon.name[qCommon.currentrow]#</option>
+					<option value="#qCommon[arguments.stMetadata.ftValue][qCommon.currentrow]#"<cfif arguments.stMetadata.value eq qCommon[arguments.stMetadata.ftValue][qCommon.currentrow]> selected="selected"<cfset selectedItem = true /></cfif>>#qCommon.name[qCommon.currentrow]#</option>
 				</cfoutput>
 			
 				<cfoutput>
@@ -289,7 +289,7 @@
 			</cfif>
 			
 			<cfoutput query="qAll">
-				<option value="#qAll[arguments.stMetadata.ftValue][qAll.currentrow]#"<cfif arguments.stMetadata.value eq qCommon[arguments.stMetadata.ftValue][qCommon.currentrow] and not selectedItem> selected</cfif>>#qAll.name[qAll.currentrow]#</option>
+				<option value="#qAll[arguments.stMetadata.ftValue][qAll.currentrow]#"<cfif arguments.stMetadata.value eq qCommon[arguments.stMetadata.ftValue][qCommon.currentrow] and not selectedItem> selected="selected"</cfif>>#qAll.name[qAll.currentrow]#</option>
 				
 			</cfoutput>
 			
