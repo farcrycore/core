@@ -500,8 +500,8 @@ function setRowBackground (childCheckbox) {
 		});	
 	}
 		
-	fcForm.initLibrary = function(typename,objectid,property) {
-		fcForm.initLibrarySummary(typename,objectid,property);	
+	fcForm.initLibrary = function(typename,objectid,property,urlParams) {
+		fcForm.initLibrarySummary(typename,objectid,property,urlParams);	
 		
 		$j('tr.selector-wrap')
 			.filter(':has(input:checked)')
@@ -525,22 +525,22 @@ function setRowBackground (childCheckbox) {
 				$j.ajax({
 					cache: false,
 					type: "POST",
-		 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
+		 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property + "&" + urlParams,
 					data: {addID: $j(e.target).val() },
 					dataType: "html",
 					complete: function(data){
-						fcForm.initLibrarySummary(typename,objectid,property);
+						fcForm.initLibrarySummary(typename,objectid,property,urlParams);
 					}
 				});		
 			} else {
 				$j.ajax({
 					cache: false,
 					type: "POST",
-		 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
+		 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property + "&" + urlParams,
 					data: {detachID: $j(e.target).val() },
 					dataType: "html",
 					complete: function(data){
-						fcForm.initLibrarySummary(typename,objectid,property);			
+						fcForm.initLibrarySummary(typename,objectid,property,urlParams);			
 					}
 				});	
 			};
@@ -564,11 +564,11 @@ function setRowBackground (childCheckbox) {
 		});
 	};
 	
-	fcForm.initLibrarySummary = function(typename,objectid,property) {
+	fcForm.initLibrarySummary = function(typename,objectid,property,urlParams) {
 		$j.ajax({
 			type: "POST",
 			cache: false,
-					url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayLibrarySummary' + '&property=' + property, 
+					url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayLibrarySummary' + '&property=' + property + "&" + urlParams, 
 			complete: function(data){
 				$j('##librarySummary-' + typename + '-' + property).html(data.responseText);
 					
