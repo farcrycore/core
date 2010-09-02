@@ -445,7 +445,7 @@
 						<cfset newTime = timeFormat(createTime(arguments.stFieldPost.stSupporting.hour, arguments.stFieldPost.stSupporting.minute, 0), 'hh:mm:ss tt') />
 					</cfif>
 							
-					<cfset newDate = CreateODBCDateTime(""#DateFormat(arguments.stFieldPost.Value,arguments.stMetadata.ftCFDateFormatMask)# #newTime#") />
+					<cfset newDate = CreateODBCDateTime("#DateFormat(arguments.stFieldPost.Value,arguments.stMetadata.ftCFDateFormatMask)# #newTime#") />
 					<cfset stResult = passed(value="#newDate#") />
 					<cfcatch type="any">
 						<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="You need to select a valid date.") />
