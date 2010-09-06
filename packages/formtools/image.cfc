@@ -151,6 +151,7 @@
                 &nbsp;
                 <input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
                 <input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="" />
+                <input type="hidden" name="#arguments.fieldname#REPLACE" id="#arguments.fieldname#REPLACE" value="" />				
                 <input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" fc:fieldname="#arguments.fieldname#" class="fileUpload" value="" style="#arguments.stMetadata.ftstyle#" />
                 
               </label>            
@@ -311,6 +312,9 @@
                                 $j('###arguments.fieldname#-cancel-delete-btn').css('display','none');
                 });   
                               $j('###arguments.fieldname#-replace-btn').click(function() {
+                  $j('###arguments.fieldname#REPLACE').attr('value',$j('###arguments.fieldname#').attr('value'));
+                  $j('###arguments.fieldname#').attr('value','');
+
                   if($j('###arguments.fieldname#CreateFromSource').attr('checked')){
                     // do nothing
                   } else {
@@ -323,6 +327,9 @@
                                 $j('###arguments.fieldname#-cancel-replace-btn').css('display','inline');
                 });   
                               $j('###arguments.fieldname#-cancel-replace-btn').click(function() {
+                  $j('###arguments.fieldname#').attr('value',$j('###arguments.fieldname#REPLACE').attr('value'));
+                  $j('###arguments.fieldname#REPLACE').attr('value','');
+
                   $j('###arguments.fieldname#-wrap').hide('fast');
                   $j('###arguments.fieldname#-aspect-crop').hide('fast');
                   $j('###arguments.fieldname#-generate').hide('fast');
@@ -430,6 +437,24 @@
 
     <cfif NOT DirectoryExists("#application.path.imageRoot##arguments.stMetadata.ftDestination#")>
       <cfset b = createFolderPath("#application.path.imageRoot##arguments.stMetadata.ftDestination#")>
+    </cfif>
+
+	 <cfif
+      structKeyExists(form, "#stMetadata.FormFieldPrefix##stMetadata.Name#Replace")
+      AND len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#Replace"]) AND fileExists("#application.path.imageRoot##FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Replace']#")>
+        
+      <cfif fileExists("#application.path.imageRoot##FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Replace']#")>
+            
+        <cfif NOT DirectoryExists("#application.path.mediaArchive##arguments.stMetadata.ftDestination#")>
+          <cfdirectory action="create" directory="#application.path.mediaArchive##arguments.stMetadata.ftDestination#">
+        </cfif> 
+        
+        <cffile 
+           action = "move"
+           source = "#application.path.imageRoot##FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Replace']#"
+           destination = "#application.path.mediaArchive##arguments.stMetadata.ftDestination#/#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#listLast(FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Replace'], '/')#">
+      </cfif>
+	
     </cfif>
 
     <cfif
@@ -678,9 +703,13 @@
         <cfdirectory action="create" directory="#ImageDestination#" />
       </cfif>
 
-      <!--- We need to check to see if the image we are copying already exists. If so, we need to create a unique filename --->
+      <!--- duplicates shouldnt exist, checks now in validate function for all image options --->
       <cfif fileExists("#ImageDestination#/#imageFileName#") AND NOT arguments.bSelfSourced>
-        <cfset imageFileName = "#dateFormat(now(),'yyyymmdd')#_#timeFormat(now(),'hhmmssl')#_#imageFileName#" />
+		
+		 <cffile 
+           action = "move"
+           source = "#ImageDestination#/#imageFileName#"
+           destination = "#ImageDestination#/#dateFormat(now(),'yyyymmdd')#_#timeFormat(now(),'hhmmssl')#_#imageFileName#">
 
       </cfif>
 
@@ -688,7 +717,7 @@
       <cfset ImageDestination = "#ImageDestination#/#imageFileName#" />                 
 
       <!--- Copy the image to the new destination folder --->
-		<cfif NOT  arguments.bSelfSourced>
+		<cfif NOT arguments.bSelfSourced>
 	      <cffile action="copy" 
 	          source="#arguments.Source#"
 	          destination="#ImageDestination#">
