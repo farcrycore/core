@@ -45,6 +45,7 @@
 <cfparam name="attributes.displayStyle" default="unorderedList">
 <cfparam name="attributes.bHideSecuredNodes" default="0"><!--- MJB: check if option to Hide Nav Node Items that user does't have permission to access: default to 0 for backward compatibility --->
 <cfparam name="attributes.afilter" default="#arrayNew(1)#">
+<cfparam name="attributes.bSpan" default="false">
 
 
 		
@@ -168,7 +169,11 @@
 							homeclass=homeclass & ' active ';
 						}
 						writeOutput(" class="""&trim(homeclass)&"""");
-						writeOutput("><a href=""#application.url.webroot#/"">#homeNode.objectName#</a></li>");
+						writeOutput("><a href=""#application.url.webroot#/"">");
+						if(attributes.bSpan) writeOutput("<span>");
+						writeOutput("#homeNode.objectName#");
+						if(attributes.bSpan) writeOutput("</span>");
+						writeOutput("</a></li>");
 					}
 					ul=ul+1;
 				}
@@ -209,7 +214,11 @@
 				// write the link
 				writeOutput("><a href="""&href&"""");
 				if (structkeyexists(qNav,"target") and len(qNav.target)) writeOutput("target='#qNav.target[i]#'");
-				writeOutput(">"&trim(qNav.ObjectName[i]) & "</a>");
+				writeOutput(">");
+				if(attributes.bSpan) writeOutput("<span>");
+				writeOutput(trim(qNav.ObjectName[i]));
+				if(attributes.bSpan) writeOutput("</span>");
+				writeOutput("</a>");
 			}
 		}
 	}
