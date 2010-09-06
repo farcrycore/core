@@ -26,37 +26,21 @@
 		ftSeq="1" ftFieldSet="General Details" ftLabel="Navigation Menu Title" 	 
 		ftHint="The navigation title is used when building the navigation menu for your website. Consider using a short menu title." />
 	
-	<cfproperty name="target" type="string" hint="The target of the navigation." required="no" default="" ftDefault="_self"
-		ftSeq="5" ftFieldSet="Navigation Behaviour" ftLabel="Link target" 
-		ftType="list" ftList="_self:Current window,_blank:New window" />
-	
-	<cfproperty name="navType" type="string" hint="The behaviour of this navigation node." required="true" default="aObjectIDs" ftDefault="aObjectIDs"
-		ftSeq="6" ftFieldSet="Navigation Behaviour" ftLabel="Choose Navigation Behaviour"
-		ftType="list" ftList="aObjectIDs:Normal Content (Recommended),internalRedirectID:Internal Redirect,externalRedirectURL:External Redirect,ExternalLink:Mirror Content" />
-	
-	<cfproperty name="aObjectIDs" type="array" hint="Holds objects to be displayed at this particular node.  Can be of mixed types." required="no" default="" 
-		ftSeq="7" ftFieldSet="Navigation Behaviour" ftLabel="Content" ftHint="Select the type of content to appear when the visitor browses to this navigation item. If you select this option, you will be automatically redirected to edit the new content item."
-		ftJoin="dmHTML" />
-	
-	<cfproperty name="internalRedirectID" type="uuid" hint="The internal object to redirect to." required="no" default=""
-		ftSeq="8" ftFieldSet="Navigation Behaviour" ftLabel="Internal Redirect" ftHint="Redirect the user to the selected content."
-		ftType="uuid" ftJoin="dmNavigation" />
-	
-	<cfproperty name="externalRedirectURL" type="string" hint="The internal object to redirect to." required="no" default=""
-		ftSeq="9" ftFieldSet="Navigation Behaviour" ftLabel="External Redirect" ftHint="Redirect the user to the selected URL."
-		ftType="url" />
-	
-	<cfproperty name="ExternalLink" type="uuid" hint="Used to store nav alias redirection reference." required="no" default=""
-		ftSeq="10" ftFieldSet="Navigation Behaviour" ftLabel="Mirror Selected Item" ftHint="Show selected content instead of the children of this navigation item."
-		ftType="uuid" ftJoin="dmNavigation" />
-	
 	<cfproperty name="lNavIDAlias" type="string" hint="A Nav alias provides a human interpretable link to this navigation node.  Each Nav alias is set up as key in the structure application.navalias.<i>aliasname</i> with a value equal to the navigation node's UUID." required="no" default="" 
-		ftSeq="15" ftFieldSet="Advanced" 
+		ftSeq="5" ftFieldSet="Advanced" 
 		ftLabel="Alias"
 		ftHint="The alias is an advanced option that can be used to programatically reference this navigation item." />
-	
-	
-	
+		
+	<cfproperty name="ExternalLink" type="string" hint="Used to store nav alias redirection reference." required="no" default=""
+		ftSeq="10" ftFieldSet="Advanced" 
+		ftLabel="Redirect to" 
+		ftType="list" ftListData="getExternalLinks"
+		ftHint="If you select to redirect, the visitor will be relocated to the nominated navigation alias. Please note, this will bypass any content that may be attached to this menu item." />
+
+	<cfproperty name="aObjectIDs" type="array" hint="Holds objects to be displayed at this particular node.  Can be of mixed types." required="no" default="" 
+		ftLabel="Content"
+		ftJoin="dmHTML" />
+
 	<cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft" ftLabel="Status" />
 
 	<!---

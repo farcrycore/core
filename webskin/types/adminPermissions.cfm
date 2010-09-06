@@ -24,7 +24,7 @@
 	</ft:processForm>
 
 	<ft:processForm action="Save" url="refresh">
-		<cfset appliation.security.initCache() />
+		<cfset application.security.initCache() />
 		<skin:bubble title="Your permissions have been saved!" />
 	</ft:processForm>
 	

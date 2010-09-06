@@ -84,13 +84,23 @@
 		
 		<cfif stObj.typename neq "farCOAPI">
 			<td style="vertical-align:top;width:100px;">
-				<ul id="tray-actions">				
+				<ul id="tray-actions">
 					<li>
 						<a id="edit-object" href="##">
 							<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>Edit
 						</a>
-					</li>	
-				</ul>		
+					</li>
+					<li>
+						<a id="flush-object" href="#application.fapi.fixURL(url='#form.refererURL#', removevalues='', addvalues='rebuild=page')#">
+							<span class="ui-icon ui-icon-arrowrefresh-1-s" style="float:left;">&nbsp;</span>Rebuild Page
+						</a>
+					</li>
+					<li>
+						<a id="flush-all" href="#application.fapi.fixURL(url='#form.refererURL#', removevalues='', addvalues='rebuild=all')#" onclick="return confirm('This will clear the cache for the entire website. Are you sure you want to continue?')">
+							<span class="ui-icon ui-icon-refresh" style="float:left;">&nbsp;</span>Rebuild All
+						</a>
+					</li>
+				</ul>
 			</td>
 		</cfif>
 		

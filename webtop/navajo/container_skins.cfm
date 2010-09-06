@@ -62,7 +62,7 @@ if (isDefined("form.formSubmitted"))
 			<select name="displayMethod">
 			<option value="">None</option>
 			<cfloop query="qContainerSkins">
-			<option value="#qContainerSkins.methodname#" <cfif stObj.displayMethod IS qContainerSkins.methodName>selected</cfif>>#qContainerSkins.displayname#</option>
+			<option value="#qContainerSkins.methodname#"<cfif stObj.displayMethod IS qContainerSkins.methodName> selected="selected"</cfif>>#qContainerSkins.displayname#</option>
 			</cfloop>
 			</select><br />
 		</label>

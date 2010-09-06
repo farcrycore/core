@@ -147,8 +147,14 @@ IT IS SET IN  AJAXUPDATEARRAY FUNCTION OF THE LIBRARY.CFC
 		
 			<cfelse><!--- Array --->
 				<cfset arrayAppend(stwizard.Data[url.PrimaryObjectID][url.PrimaryFieldname],DataObjectID)>
-				<cfset application.fc.lib.db.setArrayData(typename=url.PrimaryTypename,propertyname=url.PrimaryFieldName,objectid=url.PrimaryObjectID,aProperties=stwizard.Data[PrimaryObjectID][url.PrimaryFieldname],dsn=application.dsn) />
+						
+				<cfset variables.tableMetadata = createobject('component','farcry.core.packages.fourq.TableMetadata').init() />
+				<cfset tableMetadata.parseMetadata(md=getMetadata(oPrimary)) />		
+				<cfset stFields = variables.tableMetadata.getTableDefinition() />
 				
+				<cfset o = createObject("component","farcry.core.packages.fourq.gateway.dbGateway").init(dsn=application.dsn,dbowner="")>
+				<cfset aProps = o.createArrayTableData(tableName=url.PrimaryTypename & "_" & url.PrimaryFieldName,objectid=url.PrimaryObjectID,tabledef=stFields[PrimaryFieldName].Fields,aprops=stwizard.Data[PrimaryObjectID][url.PrimaryFieldname])>
+		
 				<cfset stwizard.Data[url.PrimaryObjectID][url.PrimaryFieldname] = aProps>
 			</cfif>
 			
@@ -388,7 +394,7 @@ LIBRARY DATA
 			<cfif listLen(PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin) GT 1>
 				<select name="ftJoin" id="ftJoin" onchange="javascript:window.location='#cgi.script_name#?#querystring#&ftJoin=' + this[selectedIndex].value;">
 					<cfloop list="#PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin#" index="i">
-						<option value="#i#" <cfif url.ftJoin EQ i>selected</cfif>>#application.stcoapi[i].displayname# Library</option>
+						<option value="#i#"<cfif url.ftJoin EQ i> selected="selected"</cfif>>#application.stcoapi[i].displayname# Library</option>
 					</cfloop>
 				</select>
 			<cfelse>

@@ -14,7 +14,7 @@
 	<cfparam name="attributes.lFiles" default=""><!--- The files to include in that baseHREF --->
 	<cfparam name="attributes.media" default="all"><!--- the media type to use in the style tag --->
 	<cfparam name="attributes.condition" default=""><!--- the condition to wrap around the style tag --->
-	<cfparam name="attributes.prepend" default=""><!--- any CSS to prepend to the beginning of the script block --->
+	<cfparam name="attributes.prepend" default=""><!--- any CSS to prepend to the begining of the script block --->
 	<cfparam name="attributes.append" default=""><!--- any CSS to append to the end of the script block --->
 	<cfparam name="attributes.bCombine" default=""><!--- Should the files be combined into a single cached css file. Passing true/false will override how it was registered. --->
 	

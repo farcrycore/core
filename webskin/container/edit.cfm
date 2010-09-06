@@ -49,7 +49,7 @@
 		</ft:buttonPanel>
 	</ft:form>
 	
-	<skin:view objectid="#stobj.objectid#" webskin="displayAdminToolbar" alternatehtml="" original="#stOriginal#" />
+	<skin:view objectid="#stobj.objectid#" typename="#stObj.typename#" webskin="displayAdminToolbar" alternatehtml="" original="#stOriginal#" />
 	
 	
 	<cfoutput><div id="#replace(containerID,'-','','ALL')#"></cfoutput>

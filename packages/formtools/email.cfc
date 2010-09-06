@@ -1,4 +1,17 @@
-<cfcomponent extends="field" name="email" displayname="Email" hint="Field component for Email types"> 
+<!--- 	
+	@@example:
+
+	<p>Basic</p>
+	<code>
+		<cfproperty 
+			name="emailfrom" type="string" default="" hint="The email of the person leaving feedback" 
+			ftSeq="1" ftFieldset="General" 
+			ftType="email" ftLabel="Email From" />
+	</code>
+
+ --->
+
+<cfcomponent extends="field" name="email" displayname="email" hint="Field component for Email types" bDocument="true"> 
 	
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.email" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>

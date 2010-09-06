@@ -545,7 +545,7 @@ environment references (might be nice to clean these up)
 		<cfsavecontent variable="panel"><cfoutput>
 		<b>Properties:</b>
 			<select name="keywords_field" id="keywords_field"><cfloop list="#variables.attributes.query.columnlist#" index="x">
-				<option value="#x#"<cfif x eq "label"> SELECTED</cfif>>#lcase(x)#</option></cfloop>
+				<option value="#x#"<cfif x eq "label"> selected="selected"</cfif>>#lcase(x)#</option></cfloop>
 			</select>
 		<!--- todo: i18n --->
 		<b>Keywords:</b>
@@ -559,7 +559,7 @@ environment references (might be nice to clean these up)
 		<!--- todo: i18n --->
 		<b>Properties:</b>
 			<select name="keywords_field" id="keywords_field"><cfloop index="i" from="1" to="#Arraylen(aKeywordField)#">
-				<option value="#aKeywordField[i]#"<cfif aKeywordField[i] eq "label"> SELECTED</cfif>>#LCase(aKeywordField[i])#</option></cfloop>
+				<option value="#aKeywordField[i]#"<cfif aKeywordField[i] eq "label"> selected="selected"</cfif>>#LCase(aKeywordField[i])#</option></cfloop>
 			</select>
 		<!--- todo: i18n --->
 		<b>Keywords:</b>

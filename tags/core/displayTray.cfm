@@ -8,6 +8,12 @@
 	<!--- environment variables --->
 	<cfparam name="request.fc.startTickCount" default="#GetTickCount()#" />
 	<cfparam name="request.bHideContextMenu" default="false" type="boolean" /><!--- Hide the tray.  For backwards compatibility --->
+	<cfparam name="request.fc.trayData" default="#structnew()#" />
+	
+	<cfset request.fc.trayData.objectid = url.objectid />
+	<cfset request.fc.trayData.type = url.type />
+	<cfset request.fc.trayData.view = url.view />
+	<cfset request.fc.trayData.bodyView = url.bodyView />
 
 </cfif>
 
@@ -59,11 +65,16 @@
 					$j('##farcrytray').html(data.responseText);					
 				},
 				data:{
-					objectID:'#url.objectid#',
-					type:'#url.type#',
-					view:'#url.view#',
-					bodyView:'#url.bodyView#',
 					refererURL:'#cgi.script_name#?#cgi.query_string#'
+					<cfloop collection="#request.fc.trayData#" item="thistag.traydatakey">
+						<cfif issimplevalue(request.fc.trayData[thistag.traydatakey])>
+							, '#thistag.traydatakey#':'#jsstringformat(request.fc.trayData[thistag.traydatakey])#'
+						<cfelse>
+							<cfif thistag.traydatakey eq "profile"><cfset application.fapi.addProfilePoint("End","End") /></cfif>
+							<cfwddx action="cfml2wddx" input="#request.fc.trayData[thistag.traydatakey]#" output="thistag.traydatawddx" />
+							, '#thistag.traydatakey#':'#jsstringformat(thistag.traydatawddx)#'
+						</cfif>
+					</cfloop>
 				},
 				dataType: "html"
 			});

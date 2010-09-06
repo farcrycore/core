@@ -64,9 +64,12 @@
 			<menu id="application" sequence="10" label="Application">
 				<menuitem id="updateapp" sequence="10" label="Reload application" link="/admin/updateapp.cfm" />
 				<menuitem id="scopedump" label="Scope Dump" link="/admin/yxplorer.cfm" />
+				<menuitem id="systeminfo" label="System Information" link="/customadmin/utilities/systeminfo.cfm" />
 			</menu>
 			<menu id="coapitools" sequence="20" label="COAPI Tools">
-				<menuitem id="coapioverview" sequence="10" label="COAPI Content Types" link="/admin/coapioverview.cfm" />
+				<menuitem id="typeclasses" sequence="10" label="Types" link="/admin/coapiTypes.cfm" />
+				<menuitem id="ruleclasses" sequence="20" label="Rules" link="/admin/coapiRules.cfm" />
+				<menuitem id="coapiFlexUI" sequence="40" label="Types/Rules (Flex)" link="/admin/coapiFlexUI.cfm" />
 			</menu>
 			<menu id="diagnostics" sequence="30" label="Diagnostics">
 				<menuitem id="rebuildtree" sequence="10" label="Rebuild Tree Metadata" link="/admin/rebuildTree.cfm" />

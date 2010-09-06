@@ -100,6 +100,8 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.lButtons" default="*" type="string">
 <cfparam name="attributes.bPaginateTop" default="true" type="boolean">
 <cfparam name="attributes.bPaginateBottom" default="true" type="boolean">
+<cfparam name="attributes.bDisplayTotalRecords" default="true" type="boolean" />
+
 <cfparam name="attributes.bCheckAll" default="true" type="boolean" />
 <cfparam name="attributes.bSelectCol" default="true" type="boolean">
 <cfparam name="attributes.bEditCol" default="true" type="boolean">
@@ -161,12 +163,12 @@ user --->
 
 <!--- Deploy type if it has been requested --->
 <cfif structkeyexists(url,"deploy") and url.deploy>
-	<cfset application.fc.lib.db.deployType(typename=attributes.typename,bDropTable=true,dsn=application.dsn) />
+	<cfset createobject("component",application.stCOAPI[attributes.typename].packagepath).deployType(btestRun="false") />
 	<cflocation url="#cgi.script_name#?#replacenocase(cgi.query_string,'deploy=true','')#" />
 </cfif>
 
 <!--- If type isn't deployed, display error --->
-<cfif not application.fc.lib.db.isDeployed(typename=attributes.typename,dsn=application.dsn)>
+<cfif not alterType.isCFCDeployed(typename=attributes.typename)>
 
 	<cfoutput>The '<cfif structkeyexists(application.stCOAPI[attributes.typename],"displayname")>#application.stCOAPI[attributes.typename].displayname#<cfelse>#listlast(application.stCOAPI[attributes.typename].name,'.')#</cfif>' content type has not been deployed yet. Click <a href="#cgi.SCRIPT_NAME#?#cgi.query_string#&deploy=true">here</a> to deploy it now.</cfoutput>
 
@@ -619,12 +621,10 @@ user --->
 		
 		<ft:form style="padding:10px; border: 1px solid ##CCCCCC;background-color:##f1f1f1;margin-bottom:10px; ">
 			<cfoutput>
-			<div style="display:inline;color:##E17000">
-				<div style="font-size:90%;margin-right:10px;padding:2px;float:left;">
+			<div style="color:##E17000;">
+				<div style="font-size:90%;margin-right:10px;padding:2px;">
 					<a onclick="$j('##filterForm').toggle('fast');">#application.rb.getResource('objectadmin.messages.Filtering@text','FILTERING')#</a>
-
 				</div>
-					
 			</div>
 			<br class="clearer" />
 			</cfoutput>
@@ -715,7 +715,8 @@ user --->
 				submissionType="form"
 				oddRowClass="alt"
 				evenRowClass=""
-				r_stObject="st">
+				r_stObject="st"
+				bDisplayTotalRecords="#attributes.bDisplayTotalRecords#">
 	
 		
 			<cfif st.bFirst>
@@ -814,8 +815,8 @@ user --->
 											<th>
 											<select name="#attributes.aCustomColumns[i].property#sqlOrderBy" onchange="javascript:$j('##sqlOrderBy').attr('value',this.value);btnSubmit('#request.farcryForm.name#', 'sort');" style="width:80px;">
 												<option value=""></option>
-												<option value="#attributes.aCustomColumns[i].property# asc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i].property# asc">selected</cfif>>asc</option>
-												<option value="#attributes.aCustomColumns[i].property# desc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i].property# desc">selected</cfif>>desc</option>
+												<option value="#attributes.aCustomColumns[i].property# asc"<cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i].property# asc"> selected="selected"</cfif>>asc</option>
+												<option value="#attributes.aCustomColumns[i].property# desc"<cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i].property# desc"> selected="selected"</cfif>>desc</option>
 											</select>
 											</th>
 											</cfoutput>						
@@ -828,8 +829,8 @@ user --->
 											<th>
 											<select name="#attributes.aCustomColumns[i]#sqlOrderBy" onchange="javascript:$j('##sqlOrderBy').attr('value',this.value);btnSubmit('#request.farcryForm.name#', 'sort');" style="width:80px;">
 												<option value=""></option>
-												<option value="#attributes.aCustomColumns[i]# asc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i]# asc">selected</cfif>>asc</option>
-												<option value="#attributes.aCustomColumns[i]# desc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i]# desc">selected</cfif>>desc</option>
+												<option value="#attributes.aCustomColumns[i]# asc"<cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i]# asc"> selected="selected"</cfif>>asc</option>
+												<option value="#attributes.aCustomColumns[i]# desc"<cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i]# desc"> selected="selected"</cfif>>desc</option>
 											</select>
 											</th>
 											</cfoutput>
@@ -846,8 +847,8 @@ user --->
 										<cfoutput>
 										<select name="#i#sqlOrderBy" onchange="javascript:$j('##sqlOrderBy').attr('value',this.value);btnSubmit('#request.farcryForm.name#', 'sort');" style="width:80px;">
 											<option value=""></option>
-											<option value="#i# asc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# asc">selected</cfif>>asc</option>
-											<option value="#i# desc" <cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# desc">selected</cfif>>desc</option>
+											<option value="#i# asc"<cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# asc"> selected="selected"</cfif>>asc</option>
+											<option value="#i# desc"<cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# desc"> selected="selected"</cfif>>desc</option>
 										</select>
 										</cfoutput>
 									<cfelse>
@@ -880,7 +881,7 @@ user --->
 								<cfoutput>
 								<td nowrap="true">
 									#st.select# 
-									#st.currentRow#	
+									#st.recordSetRow#								
 									<cfif structKeyExists(st,"locked") AND st.locked neq 0>
 										<img src='#application.url.farcry#/images/treeImages/customIcons/padlock.gif'>
 									</cfif>
@@ -909,7 +910,7 @@ user --->
 										</cfif>
 									<cfelse><!--- Normal field --->
 										<cfif structKeyExists(st, attributes.aCustomColumns[i])>
-											<ft:object objectID="#st.objectid#" typename="#attributes.typename#" lFields="#attributes.aCustomColumns[i]#" format="display" r_stFields="stFields" />
+											<ft:object objectID="#st.objectid#" lFields="#attributes.aCustomColumns[i]#" format="display" r_stFields="stFields" />
 							
 											<cfoutput><td>#stFields[attributes.aCustomColumns[i]].html#</td></cfoutput>			
 										<cfelse>
@@ -921,7 +922,7 @@ user --->
 							</cfif>
 							
 							<cfif len(attributes.columnList)>
-								<ft:object objectID="#st.objectid#" typename="#attributes.typename#" lFields="#attributes.columnlist#" format="display" r_stFields="stFields" />
+								<ft:object objectID="#st.objectid#" lFields="#attributes.columnlist#" format="display" r_stFields="stFields" />
 							
 								<cfloop list="#attributes.columnlist#" index="i">
 									<cfif structKeyExists(stFields, i)>

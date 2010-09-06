@@ -7,7 +7,7 @@
 <cfoutput>
 	<li>
 		<small>
-			<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stUser.objectid#&method=editOwnPassword" target="content" title="#application.rb.getResource('coapi.farUser.general.changepassword@label','Change password')#">#application.rb.getResource('coapi.farUser.general.changepassword@label','Change password')#</a>
+			<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stUser.objectid#&typename=farUser&method=editOwnPassword" target="content" title="#application.rb.getResource('coapi.farUser.general.changepassword@label','Change password')#">#application.rb.getResource('coapi.farUser.general.changepassword@label','Change password')#</a>
 		</small>
 	</li>
 </cfoutput>

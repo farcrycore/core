@@ -26,6 +26,7 @@
 	<cfparam name="attributes.ajaxShowloadIndicator" default="false" /><!--- Should the ajax loading indicator be shown --->
 	<cfparam name="attributes.ajaxindicatorText" default="loading..." /><!--- What should be text of the loading indicator --->
 	<cfparam name="attributes.ajaxURLParameters" default="" /><!--- parameters to pass for ajax call --->
+	<cfparam name="attributes.ajaxTimeout" default="30" /><!--- parameters to pass for ajax call --->
 	<cfparam name="attributes.bIgnoreSecurity" default="false" /><!--- Should the getView() ignore webskin security --->
 	<cfparam name="attributes.bAllowTrace" default="true" /><!--- Sometimes having webskin trace information can break the integrity of a page. This allows you to turn it off. --->
 	
@@ -129,6 +130,7 @@
 			<cfinvokeargument name="ajaxShowloadIndicator" value="#attributes.ajaxShowloadIndicator#" />
 			<cfinvokeargument name="ajaxIndicatorText" value="#attributes.ajaxIndicatorText#" />
 			<cfinvokeargument name="ajaxURLParameters" value="#attributes.ajaxURLParameters#" />
+			<cfinvokeargument name="ajaxTimeout" value="#attributes.ajaxTimeout#" />
 			<cfinvokeargument name="bIgnoreSecurity" value="#attributes.bIgnoreSecurity#" />
 			<cfinvokeargument name="bAllowTrace" value="#attributes.bAllowTrace#" />
 			<!--- Developer can pass in alternate HTML to render if the webskin does not exist --->

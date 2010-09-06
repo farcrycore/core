@@ -16,7 +16,7 @@
 				
 				<cfloop list="#application.security.getAllUD()#" index="thisud">
 					<cfoutput>
-						<option value="#thisud#"<cfif application.security.getDefaultUD() eq thisud> selected</cfif>>#application.security.userdirectories[thisud].title#</option>
+						<option value="#thisud#"<cfif application.security.getDefaultUD() eq thisud> selected="selected"</cfif>>#application.security.userdirectories[thisud].title#</option>
 					</cfoutput>
 				</cfloop>
 				

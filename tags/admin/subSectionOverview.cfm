@@ -60,53 +60,56 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 		<!--- Loop through sections --->
 		<cfset count = 0 />
 		<admin:loopwebtop parent="#subsection#" item="menu">
-			<!--- Menu content --->
-			<!--- <cfoutput><h3>#menu.label#</h3></cfoutput>
-			<cfif len(menu.description)>
-				<cfoutput><p>#menu.description#</p></cfoutput>
-			</cfif>
-			<cfoutput><ul class="overviewlist"></cfoutput> --->
-			
-			<admin:loopwebtop parent="#menu#" item="menuitem">
-				<!--- If a related type is specified, use that to fill description and icon attributes --->
-				<cfif len(menuitem.relatedType)>
-					<cfif structkeyexists(application.stCOAPI,menuitem.relatedtype)>
-						<cfset o = createobject("component",application.stCOAPI[menuitem.relatedType].packagepath) />
-						<cfif structkeyexists(application.stCOAPI[menuitem.relatedType],"description")>
-							<cfset menuitem.description = application.rb.getResource("coapi.#menuitem.relatedtype#@description",application.stCOAPI[menuitem.relatedType].description) />
-						<cfelseif structkeyexists(application.stCOAPI[menuitem.relatedType],"hint")>
-							<cfset menuitem.description = application.rb.getResource("coapi.#menuitem.relatedtype#@description",application.stCOAPI[menuitem.relatedType].hint) />
-						</cfif>
-						<cfset menuitem.icon = menuitem.relatedType />
-					<cfelse>
-						<cfthrow message="Related type attribute for '#menuitem.id#' menu item does not specify a valid type" />
-					</cfif>
+			<cfif (StructKeyExists(subsection, "permission") AND application.fapi.hasPermission(subsection.permission) IS true)
+				  OR NOT StructKeyExists(subsection, "permission")>
+				<!--- Menu content --->
+				<!--- <cfoutput><h3>#menu.label#</h3></cfoutput>
+				<cfif len(menu.description)>
+					<cfoutput><p>#menu.description#</p></cfoutput>
 				</cfif>
+				<cfoutput><ul class="overviewlist"></cfoutput> --->
 			
-				<cfif len(menuitem.description)>
-					<cfset count = count + 1 />
-					
-					<cfif not menuitem.linkType eq "External">
-						<cfset menuitem.link = "#application.url.farcry##ReplaceNoCase(menuitem.link,'#application.url.farcry#','')#" />
+				<admin:loopwebtop parent="#menu#" item="menuitem">
+					<!--- If a related type is specified, use that to fill description and icon attributes --->
+					<cfif len(menuitem.relatedType)>
+						<cfif structkeyexists(application.stCOAPI,menuitem.relatedtype)>
+							<cfset o = createobject("component",application.stCOAPI[menuitem.relatedType].packagepath) />
+							<cfif structkeyexists(application.stCOAPI[menuitem.relatedType],"description")>
+								<cfset menuitem.description = application.rb.getResource("coapi.#menuitem.relatedtype#@description",application.stCOAPI[menuitem.relatedType].description) />
+							<cfelseif structkeyexists(application.stCOAPI[menuitem.relatedType],"hint")>
+								<cfset menuitem.description = application.rb.getResource("coapi.#menuitem.relatedtype#@description",application.stCOAPI[menuitem.relatedType].hint) />
+							</cfif>
+							<cfset menuitem.icon = menuitem.relatedType />
+						<cfelse>
+							<cfthrow message="Related type attribute for '#menuitem.id#' menu item does not specify a valid type" />
+						</cfif>
 					</cfif>
-	
-					<cfoutput><li></cfoutput>
+			
+					<cfif len(menuitem.description)>
+						<cfset count = count + 1 />
 					
-					<cfif len(menuitem.icon)>
+						<cfif not menuitem.linkType eq "External">
+							<cfset menuitem.link = "#application.url.farcry##ReplaceNoCase(menuitem.link,'#application.url.farcry#','')#" />
+						</cfif>
+	
+						<cfoutput><li></cfoutput>
+					
+						<cfif len(menuitem.icon)>
+							<cfoutput>
+								<a href="#menuitem.link#" target="content">
+									<skin:icon icon="#menuitem.icon#" style="border:none;float:left;" class="overviewicon" />
+								</a>
+							</cfoutput>
+						</cfif>
+					
 						<cfoutput>
-							<a href="#menuitem.link#" target="content">
-								<skin:icon icon="#menuitem.icon#" style="border:none;float:left;" class="overviewicon" />
-							</a>
+								<a href="#menuitem.link#" target="content">#menuitem.label#</a><br/>
+								<p>#menuitem.description#</p>
+							</li>
 						</cfoutput>
 					</cfif>
-					
-					<cfoutput>
-							<a href="#menuitem.link#" target="content">#menuitem.label#</a><br/>
-							<p>#menuitem.description#</p>
-						</li>
-					</cfoutput>
-				</cfif>
-			</admin:loopwebtop>
+				</admin:loopwebtop>
+			</cfif>
 		</admin:loopwebtop>
 			
 		<cfoutput></ul></cfoutput>

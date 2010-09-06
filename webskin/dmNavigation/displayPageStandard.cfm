@@ -5,70 +5,54 @@
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
-<cfif not structkeyexists(stObj,"navType") or not len(stObj.navType)>
-	<cfif len(stObj.externalLink) gt 0>
-		<cfset stObj.navType = "externalLink" />
-	<cfelseif structKeyExists(stObj,"aObjectIds") AND arrayLen(stObj.aObjectIds)>
-		<cfset stObj.navType = "aObjectIds" />
-	</cfif>
-</cfif>
+<!--- check for sim link --->
+<cfif len(stObj.externalLink) gt 0>
+	
+	<cftrace var="attributes.objectid" text="Setting navid to attributes.objectid as external link is specified" />
+	<cfset request.navid = stObj.objectid>
+	
+	<!--- It is often useful to know the navid of the externalLink for use on the page that is being rendered --->
+	<cfset request.externalLinkNavid = stObj.objectid>
+	
+	<nj:display objectid="#stObj.externalLink#" />
+	<cfsetting enablecfoutputonly="false" />
+	<cfexit method="exittemplate" />
 
-<cfswitch expression="#stObj.navType#">
-	<cfcase value="externalLink"><!--- check for sim link --->
-		<cftrace var="attributes.objectid" text="Setting navid to attributes.objectid as external link is specified" />
-		<cfset request.navid = stObj.objectid>
-		
-		<!--- It is often useful to know the navid of the externalLink for use on the page that is being rendered --->
-		<cfset request.externalLinkNavid = stObj.objectid>
-		
-		<nj:display objectid="#stObj.externalLink#" />
-		<cfsetting enablecfoutputonly="false" />
-		<cfexit method="exittemplate" />
+<cfelseif structKeyExists(stObj,"aObjectIds") AND arrayLen(stObj.aObjectIds)>
 
-	</cfcase>
-	
-	<cfcase value="internalRedirectID"><!--- This is a fallback - usually these will be handled in the link --->
-		<skin:location objectid="#stObj.internalRedirectID#" />
-	</cfcase>
-	
-	<cfcase value="externalRedirectURL"><!--- This is a fallback - usually these will be handled in the link --->
-		<cflocation url="#stObj.externalRedirectURL#" addtoken="false" />
-	</cfcase>
-	
-	<cfcase value="aObjectIds">
-		<cfloop index="idIndex" from="1" to="#arrayLen(stObj.aObjectIds)#">
+	<cfloop index="idIndex" from="1" to="#arrayLen(stObj.aObjectIds)#">
+		
+		<cfset stObjTemp = application.fapi.getContentObject(objectid="#stObj.aObjectIds[idIndex]#") />
+		
 			
-			<cfset stObjTemp = application.fapi.getContentObject(objectid="#stObj.aObjectIds[idIndex]#") />
-			
+		<!--- request.mode.lValidStatus is typically approved, or draft, pending, approved in SHOWDRAFT mode --->
+		<cfif StructKeyExists(stObjTemp,"status") AND ListContains(request.mode.lValidStatus, stObjTemp.status)>
 				
-			<!--- request.mode.lValidStatus is typically approved, or draft, pending, approved in SHOWDRAFT mode --->
-			<cfif StructKeyExists(stObjTemp,"status") AND ListContains(request.mode.lValidStatus, stObjTemp.status)>
-					
-				<!--- Otherwise just show this one --->
-				<nj:display objectid="#stObjTemp.objectid#" typename="#stObjTemp.typename#" />
-				<cfsetting enablecfoutputonly="false" />
-				<cfexit method="exittemplate">
-				
-			<cfelseif stObjTemp.typename neq "dmCSS">
+			<!--- Otherwise just show this one --->
+			<nj:display objectid="#stObjTemp.objectid#" typename="#stObjTemp.typename#" />
+			<cfsetting enablecfoutputonly="false" />
+			<cfexit method="exittemplate">
 			
-				<!--- no status so just show object --->
-				<!--- set the navigation point for the child obj --->
-				<cfif isDefined("URL.navid")>
-					<cfset request.navid = URL.navid>
-				<cfelse>
-					<cfset request.navid = stObj.objectID>		
-				</cfif>
-				
-				<!--- reset stObj to appropriate object to be displayed --->
-				<nj:display objectid="#stObjTemp.objectid#" typename="#stObjTemp.typename#" />
-				<cfsetting enablecfoutputonly="false" />
-				<cfexit method="exittemplate" />
-			
+		<cfelseif stObjTemp.typename neq "dmCSS">
+		
+			<!--- no status so just show object --->
+			<!--- set the navigation point for the child obj --->
+			<cfif isDefined("URL.navid")>
+				<cfset request.navid = URL.navid>
+			<cfelse>
+				<cfset request.navid = stObj.objectID>		
 			</cfif>
 			
-		</cfloop>
-	</cfcase>
-</cfswitch>
+			<!--- reset stObj to appropriate object to be displayed --->
+			<nj:display objectid="#stObjTemp.objectid#" typename="#stObjTemp.typename#" />
+			<cfsetting enablecfoutputonly="false" />
+			<cfexit method="exittemplate" />
+			
+		</cfif>
+		
+	</cfloop>
+	
+</cfif>
 
 <!--- If we get to this point, this object doesn't have any children --->
 <cfif NOT isDefined("request.navid")>

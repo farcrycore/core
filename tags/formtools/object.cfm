@@ -70,6 +70,7 @@
 	<cfparam name="attributes.focusField" default="" /><!--- Enter the name of the field to focus on when rendering the form. --->
 	
 
+
 	<!--- If the attributes [IncludeFieldSet] has not been explicitly defined, work out the value. --->
 	<cfif attributes.includeFieldSet EQ "">
 		<cfif len(attributes.r_stFields)>
@@ -421,16 +422,16 @@
 		</cfif>	
 
 	
-
-		
 			<!--- If the field is supposed to be hidden --->
-		<cfif ListContainsNoCase(attributes.lHiddenFields,i)>
+		<cfif ListFind(attributes.lHiddenFields,i)>
+			
 			<cfsavecontent variable="variables.returnHTML">
 				
 				<cfif isArray(variables.stObj[i])>
 					<cfset hiddenValue = arrayToList(Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].value) />
 				<cfelse>
 					<cfset hiddenValue = Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].value />
+					
 				</cfif>
 				<!--- <cfif isArray(variables.stObj[i])>
 					<cfset hiddenValue = arrayToList(variables.stObj[i]) />
@@ -467,17 +468,20 @@
 					<cfcatch><cfdump var="#cfcatch#" expand="false"></cfcatch>
 				</cftry>
 				
-				
+				<cfset variables.errorClass = "" />
+				<cfset variables.formValidationMessage = "" />
 				<cfif structKeyExists(request, "stFarcryFormValidation")
 					AND structKeyExists(request.stFarcryFormValidation, stObj.ObjectID)
 					AND structKeyExists(request.stFarcryFormValidation[stObj.ObjectID], i)
 					AND structKeyExists(request.stFarcryFormValidation[stObj.ObjectID][i], "bSuccess")
 					AND NOT request.stFarcryFormValidation[stObj.ObjectID][i].bSuccess >
+					
 					<cfsavecontent variable="variables.formValidationMessage">
-						<cfoutput><div class="#request.stFarcryFormValidation[stObj.ObjectID][i].stError.class#">#request.stFarcryFormValidation[stObj.ObjectID][i].stError.message#</div></cfoutput>
+						<cfoutput><p class="errorField" htmlfor="#variables.prefix##i#">#request.stFarcryFormValidation[stObj.ObjectID][i].stError.message#</p></cfoutput>
+						<!--- <div class="#request.stFarcryFormValidation[stObj.ObjectID][i].stError.class#">#request.stFarcryFormValidation[stObj.ObjectID][i].stError.message#</div> --->
 					</cfsavecontent>
 					
-					<cfset variables.returnHTML = "#variables.returnHTML# #variables.formValidationMessage#">
+					<cfset variables.errorClass = "error" />
 				</cfif>
 				
 				
@@ -486,9 +490,9 @@
 						
 			<cfif NOT len(Attributes.r_stFields)>
 				
-				<grid:div class="ctrlHolder #ftFieldMetadata.ftLabelAlignment#Labels #ftFieldMetadata.ftType#">
+				<grid:div class="ctrlHolder #ftFieldMetadata.ftLabelAlignment#Labels #ftFieldMetadata.ftType# #variables.errorClass#">
 					
-					
+					<cfoutput>#variables.formValidationMessage#</cfoutput>
 		
 					<cfif structKeyExists(ftFieldMetadata, "ftshowlabel")>
 						<cfset bShowLabel = ftFieldMetadata.ftShowLabel />

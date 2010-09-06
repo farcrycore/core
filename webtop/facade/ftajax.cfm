@@ -1,14 +1,38 @@
 <cfsetting enablecfoutputonly="true" />
 <!--- @@displayname: Provides an interface for formtools to provide AJAX functionality --->
 
+
+<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
+
+
 <cfparam name="url.formtool" />
 <cfparam name="url.typename" />
 <cfparam name="url.property" />
 <cfparam name="url.fieldname" />
 
+
+<!--------------------------------------------------------------------------------------- 
+THE SAVE NEEDS TO BE FIXED SO THAT THE OBJECT IS PASSED THROUGH <FT:PROCESSFORMOBJECTS />
+A simple setdata causes problems with things like arrays being saved as empty strings.
+ --------------------------------------------------------------------------------------->
+ 
+<!--- Save the updated object to the session --->
+
+
+<!---<ft:processFormObjects objectID="#url.objectid#" bSessionOnly="true">
+	<cfloop list="#structKeylist(stProperties)#" index="key">
+		<cfoutput>#stProperties[key]##chr(13)##chr(10)#</cfoutput>
+	</cfloop>
+</ft:processFormObjects>--->
+
+
 <cfset stMetadata = duplicate(application.stCOAPI[url.typename].stProps[url.property].metadata) />
 <cfset oType = createobject("component",application.stCOAPI[url.typename].packagepath) />
 
+<!---
+<cfset stObj = oType.getData(objectid=url.objectid) />
+<cfset stMetadata.value = stObj[url.property] />
+--->
 <!--- SET THE VALUE PASSED INTO THE FORMTOOL --->
 <cfif len(url.property) AND structKeyExists(form, url.property)>
 	<cfset stMetadata.value = form[url.property] />
@@ -20,20 +44,24 @@
 	<cfset stObj = structnew() />
 </cfif>
 
+
 <!--- Update the object with any other fields that have come through --->
 <cfif structkeyexists(form,"fieldnames")>
 	<cfloop list="#form.fieldnames#" index="key">
-		<cfset stObj[key] = form[key] />
+		<!---<cfoutput>#form[key]##chr(13)##chr(10)#</cfoutput>--->
+		<cfif application.fapi.getPropertyMetadata( typename=url.typename, property=key, md='type', default='string' ) EQ "array">
+			<cfset stObj[key] = listToArray(form[key]) />
+		<cfelse>
+			<cfset stObj[key] = form[key] />
+		</cfif>
+		
 	</cfloop>
 </cfif>
 
-<!--------------------------------------------------------------------------------------- 
-THE SAVE NEEDS TO BE FIXED SO THAT THE OBJECT IS PASSED THROUGH <FT:PROCESSFORMOBJECTS />
-A simple setdata causes problems with things like arrays being saved as empty strings.
- --------------------------------------------------------------------------------------->
- 
 <!--- Save the updated object to the session --->
-<!---<cfset stResult = application.fapi.setData(stProperties="#stObj#") />--->
+<cfif structKeyExists(stobj, "objectid") AND len(stobj.objectid)>
+	<cfset stResult = application.fapi.setData(stProperties="#stObj#", bSessionOnly="true") />
+</cfif>
 
 <cfif structKeyExists(stMetadata,"ftAjaxMethod") AND len(stMetadata.ftAjaxMethod)>
 	<cfset FieldMethod = stMetadata.ftAjaxMethod />
@@ -58,6 +86,7 @@ A simple setdata causes problems with things like arrays being saved as empty st
 	<cfinvokeargument name="fieldname" value="#url.fieldname#" />
 </cfinvoke>
 
-<cfcontent reset="true"><cfoutput>#out#</cfoutput><cfabort>
+<cfcontent reset="true">
+<cfoutput>#out#</cfoutput><cfabort>
 
 <cfsetting enablecfoutputonly="false" />

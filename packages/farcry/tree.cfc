@@ -217,7 +217,7 @@ $out:$
     <cfargument name="dsn" required="false" type="string" default="#application.dsn#" />
     <cfargument name="bIncludeSelf" required="false" type="boolean" default="0" hint="set this to 1 if you want to include the objectid you are passing" />
     <cfargument name="bHideEmptyNodes" required="false" type="boolean" hint="Hides empty nodes from results." default="0" />
-    <cfargument name="l404Check" required="false" type="string" default="externalLink,internalRedirectID,externalRedirectURL,dmHTML,dmLink,dmInclude,dmFlash,dmImage,dmFile" />
+    <cfargument name="l404Check" required="false" type="string" default="externalLink,dmHTML,dmLink,dmInclude,dmFlash,dmImage,dmFile" />
     <cfargument name="dbowner" required="false" type="string" default="#application.dbowner#" />
 	<cfset var qreturn = queryNew("blah") />
     <cfset var sql = structNew() />
@@ -280,12 +280,6 @@ $out:$
 		<cfif arguments.bHideEmptyNodes and len(arguments.l404Check)>
 		AND (<cfif listFindNoCase(arguments.l404Check,'externalLink')>
 		     (t.externalLink <> '')
-		     OR</cfif>
-		     <cfif listFindNoCase(arguments.l404Check,'internalRedirectID')>
-		     (t.internalRedirectID <> '')
-		     OR</cfif>
-		     <cfif listFindNoCase(arguments.l404Check,'externalRedirectURL')>
-		     (t.externalRedirectURL <> '')
 		     OR</cfif>
 		     t.objectId in (SELECT da.parentid
 		                    FROM #q.typename#_aObjectIds da

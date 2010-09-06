@@ -20,7 +20,7 @@
 							<select name="selectFarcryProject" id="selectFarcryProject" onchange="window.location='#application.url.webtop#/login.cfm?farcryProject='+this.value;">						
 								<cfloop from="1" to="#arraylen(aDomainProjects)#" index="i">
 									<cfif len(aDomainProjects[i])>
-										<option value="#aDomainProjects[i]#"<cfif cookie.currentFarcryProject eq aDomainProjects[i]> selected</cfif>>#server.stFarcryProjects[aDomainProjects[i]].displayname#</option>
+										<option value="#aDomainProjects[i]#"<cfif cookie.currentFarcryProject eq aDomainProjects[i]> selected="selected"</cfif>>#server.stFarcryProjects[aDomainProjects[i]].displayname#</option>
 									</cfif>
 								</cfloop>						
 							</select>

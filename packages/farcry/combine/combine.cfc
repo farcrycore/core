@@ -152,7 +152,7 @@
 		<cfset sCorrectedFiles = '' />
 		<cfloop list="#arguments.files#" delimiters="#sDelimiter#" index="sFilePath">
 			
-			<cfset sExpandedFilePath = expandPath(sFilePath) />
+			<cfset sExpandedFilePath = expandPath("#sFilePath#") />
 			
 			<!--- check it is a valid JS or CSS file. Don't allow mixed content (all JS or all CSS only) --->
 			<cfif fileExists( sExpandedFilePath ) and (listLast(sExpandedFilePath, '.') eq sType OR listLast(sExpandedFilePath, '.') eq "cfm")>

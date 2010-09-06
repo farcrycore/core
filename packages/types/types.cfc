@@ -193,6 +193,12 @@ default handlers
 		
 		<cfset var stNewObject = "" />
 		
+		<!--- 
+		MJB: This may or may not be cancer. Need to investigate
+		It is required though just incase the variables.typename has not yet been set.
+		 --->
+		<cfset fourqInit() />
+		
 		
 		<cfif not len(arguments.user)>
 			<cfif isDefined("session.security.userID")>
@@ -223,7 +229,7 @@ default handlers
 		</cfscript>
 		
 		<!--- needs to be isDefined because application.stcoapi may not exist yet --->
-		<cfif arguments.bAudit and (not isDefined("application.stcoapi.#getTypeName()#.bAudit") or application.stcoapi[getTypeName()].bAudit)>
+		<cfif arguments.bAudit and (not isDefined("application.stcoapi.#variables.typename#.bAudit") or application.stcoapi[variables.typename].bAudit)>
 			<farcry:logevent object="#stNewObject.objectid#" type="types" event="create" notes="#arguments.auditNote#" />
 		</cfif>
 				
@@ -282,7 +288,7 @@ default handlers
 		</cfif>
 		
 		<cfif not structKeyExists(arguments.stProperties, "typename") OR not len(arguments.stProperties.typename)>
-			<cfset arguments.stProperties.typename = getTypeName() />
+			<cfset arguments.stProperties.typename = getTablename() />
 		</cfif>			
 		
 		<cfif structkeyexists(arguments.stProperties,"status") and len(arguments.stProperties.status)>
@@ -334,207 +340,6 @@ default handlers
 	</cffunction>
 	
 	
-
-	<cffunction name="AfterSave" access="public" output="false" returntype="struct" hint="Called from setData and createData and run after the object has been saved.">
-		<cfargument name="stProperties" required="yes" type="struct" hint="A structure containing the contents of the properties that were saved to the object.">
-
-		<cfset var stObject = structNew() />
-		<cfset var lRelatedTypenames = "" />
-		<cfset var lArrayTables = "" />
-		<cfset var iArrayTables = 0 />
-		<cfset var lUUIDTables = "" />
-		<cfset var iUUIDTables = 0 />
-		<cfset var oType = "" />
-		<cfset var iField = "" />
-		<cfset var iJoinTypename = "" />
-		<cfset var iArrayItem = "" />
-		<cfset var iTypename = "" />
-		<cfset var qRelated = queryNew("blah") />
-		<cfset var stProps = structNew() />
-		<cfset var aAllRelated = arrayNew(1) />
-		<cfset var changeStatus = "" >
-		<cfset var stVersionRules = structNew() />	
-
-		<!------------------------------------------------------------------ 
-		IF THIS OBJECT HAS A STATUS PROPERTY SUBMITTED THEN CHANGE STATUS 
-		--------------------------------------------------------------->
-		<cfif structKeyExists(arguments.stProperties, "status") AND structKeyExists(application.stcoapi[stProperties.typename].stprops, "status")>
-						
-			<cfif arguments.stProperties.status EQ "approved">
-				<!--- IF CHANGING TO APPROVED, THEN WE WANT TO APPROVE ALL RELATED CONTENT --->
-				<cfset changeStatus = "approved" />
-			<cfelseif arguments.stProperties.status EQ "draft">
-				<!--- IF CHANGING TO DRAFT AND NO LIVE VERSION EXISTS THEN SEND RELATED CONTENT TO DRAFT --->
-				<cfset stVersionRules = createObject("component", "#application.packagepath#.farcry.versioning").getVersioningRules(objectID=arguments.stProperties.objectid,typename=getTypeName()) />
-				<cfif NOT stVersionRules.bLiveVersionExists>
-					<cfset changeStatus = "draft" />
-				</cfif>
-			</cfif>
-			<cfif len(changeStatus)>
-				<cfset stObject = getData(objectid=arguments.stProperties.objectid) />
-				
-				<!--- LOOP TRHOUGH ALL THE FIELDS IN THIS OBJECT SEARCHING FOR ARRAY OR UUID PROPERTIES --->
-				<cfloop list="#structKeyList(application.stcoapi[stProperties.typename].stprops)#" index="iField">
-				
-					<!--- ADD ARRAY PROPERTIES AND THEIR VALUES TO THE LIST --->
-					<cfif application.stcoapi[stProperties.typename].stprops[iField].metadata.type EQ "array"
-						AND structKeyExists(application.stcoapi[stProperties.typename].stprops[iField].metadata, "bSyncStatus")
-						AND application.stcoapi[stProperties.typename].stprops[iField].metadata.bSyncStatus>
-																		
-						<cfif arrayLen(stObject[iField]) AND structKeyExists(application.stcoapi[stProperties.typename].stprops[iField].metadata, "ftJoin")>
-						
-						
-
-							<cfloop list="#application.stcoapi[stProperties.typename].stprops[iField].metadata.ftJoin#" index="iJoinTypename">
-								
-								<!--- LOOP THROUGH ENTIRE APPLICATION STCOAPI FOR EACH KEY (TYPENAME) --->
-								<cfloop collection="#application.stcoapi#" item="dTypeName">									
-									
-									<!--- LOOP THROUGH TYPENAME PROPERTIES --->
-									<cfloop collection="#application.stCOAPI[dtypeName].stProps#" item="dPropertyName">
-										
-										<!--- FOR EACH CHECK IF TYPE EQ ARRAY AND HAS FTJOIN AND FTJOIN MATCHES iJoinTypename --->
-										<cfif application.stCOAPI[dtypeName].stProps[dPropertyName].metadata.type EQ "array" AND structKeyExists(application.stcoapi[dtypeName].stprops[dPropertyName].metadata, "ftJoin") AND listFindNoCase(application.stcoapi[dtypeName].stProps[dPropertyName].metadata.ftJoin, iJoinTypename)>
-											
-											<!--- CREATE LIST OF TYPES AND THEIR PROPERTIES THAT NEED TO BE CHECKED --->
-											<cfif not listFindNoCase(lArrayTables, "#dtypeName#_#dPropertyName#") AND structKeyExists(application.stcoapi[iJoinTypename].stprops, "status")>
-												<cfset lArrayTables = listAppend(lArrayTables, "#dtypeName#_#dPropertyName#")>
-											</cfif>
-											
-											<cfif not listFindNoCase(lRelatedTypenames, iJoinTypename) AND structKeyExists(application.stcoapi[iJoinTypename].stprops, "status")>
-												<cfset lRelatedTypenames = listAppend(lRelatedTypenames, iJoinTypename)>
-											</cfif>
-									
-										</cfif>
-										
-									</cfloop>
-								
-								</cfloop>
-								
-							</cfloop>
-																					
-							<cfloop from="1" to="#arrayLen(stObject[iField])#" index="iArrayItem">
-								
-								<cfset iArrayTables = 0 />
-								
-								<cfloop list="#lArrayTables#" index="iArrayTable">
-									<!--- WE ARE ONLY GOING TO CHANGE THE STATUS IF THIS IS THE ONLY CONTENT ITEM THE RELATED OBJECT IS RELATED TO --->
-									<cfquery datasource="#application.dsn#" name="qDuplicate">
-										SELECT count(parentID) as counter
-										FROM #iArrayTable#
-										WHERE data = '#stObject[iField][iArrayItem]#'
-									</cfquery>
-								
-									<cfif qDuplicate.counter>
-										<cfset iArrayTables = iArrayTables + qDuplicate.counter>
-									</cfif>
-									
-								</cfloop>
-								
-								<cfif iArrayTables LTE 1>
-									<cfset arrayAppend(aAllRelated, stObject[iField][iArrayItem]) />								
-								</cfif>
-								
-							</cfloop>
-								
-						</cfif>
-						
-					</cfif>
-					
-					<!--- ADD UUID PROPERTIES AND THEIR VALUES TO THE LIST --->
-					<cfif application.stcoapi[stProperties.typename].stprops[iField].metadata.type EQ "UUID"
-						AND structKeyExists(application.stcoapi[stProperties.typename].stprops[iField].metadata, "bSyncStatus")
-						AND application.stcoapi[stProperties.typename].stprops[iField].metadata.bSyncStatus>
-						<cfif len(stObject[iField]) AND structKeyExists(application.stcoapi[stProperties.typename].stprops[iField].metadata, "ftJoin")>
-							
-							<cfloop list="#application.stcoapi[stProperties.typename].stprops[iField].metadata.ftJoin#" index="iJoinTypename">
-								
-								<!--- loop through entire application.stcoapi for each key (typename) --->
-								<cfloop collection="#application.stcoapi#" item="dTypeName">									
-									
-									<!--- loop through typenames properties --->
-									<cfloop collection="#application.stCOAPI[dtypeName].stProps#" item="dPropertyName">
-										
-										<!--- for each, check if type eq array and exists(application.stcoapi[typename].qmetadata.ftJoin) and listFindNoCase(application.stcoapi[typename].qmetadata.ftJoin, iJoinTypename --->
-										<cfif application.stCOAPI[dtypeName].stProps[dPropertyName].metadata.type EQ "UUID" AND structKeyExists(application.stcoapi[dtypeName].stprops[dPropertyName].metadata, "ftJoin") AND listFindNoCase(application.stcoapi[dtypeName].stProps[dPropertyName].metadata.ftJoin, iJoinTypename)>
-											
-											<cfif not listFindNoCase(lUUIDTables, "#dtypeName#:#dPropertyName#") AND structKeyExists(application.stcoapi[iJoinTypename].stprops, "status")>
-												<cfset lUUIDTables = listAppend(lUUIDTables,"#dtypeName#:#dPropertyName#") />
-											</cfif>
-											
-											<!--- If the array properties have a status add to the list --->
-											<cfif not listFindNoCase(lRelatedTypenames, iJoinTypename) AND structKeyExists(application.stcoapi[iJoinTypename].stprops, "status")>
-												<cfset lRelatedTypenames = listAppend(lRelatedTypenames, iJoinTypename)>
-											</cfif>
-										
-										</cfif>
-										
-									</cfloop>
-									
-								</cfloop>
-								
-							</cfloop>
-							
-							<cfloop list="#lUUIDTables#" index="UUID">
-
-								<!--- WE ARE ONLY GOING TO CHANGE THE STATUS IF THIS IS THE ONLY CONTENT ITEM THE RELATED OBJECT IS RELATED TO --->
-								<cfquery datasource="#application.dsn#" name="qDuplicate">
-									SELECT count(objectid) as counter
-									FROM #listFirst(UUID,":")#
-									WHERE #listLast(UUID,":")# = '#stObject[iField]#'
-								</cfquery>
-
-								<cfif qDuplicate.counter>
-									<cfset iUUIDTables = iUUIDTables + qDuplicate.counter>
-								</cfif>
-								
-							</cfloop>
-							
-							<cfif iArrayTables LTE 1 AND iUUIDTables LTE 1>
-								<cfset arrayAppend(aAllRelated, stObject[iField]) />
-							</cfif>
-							
-						</cfif>
-						
-					</cfif>
-					
-				</cfloop>
-				
-				<!--- LOOP THROUGH THE ARRAY OF RELATED OBJECTS TO FIND ALL OBJECTS NOT APPROVED AND APPROVE THEM --->
-				<cfif arrayLen(aAllRelated)>			
-					
-					<cfloop list="#lRelatedTypenames#" index="iTypename">					
-					
-						<cfquery datasource="#application.dsn#" name="qRelated">
-							SELECT objectid, status
-							FROM #iTypename# 
-							WHERE objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arrayToList(aAllRelated)#" />)
-							AND status <> '#changeStatus#'
-						</cfquery>
-	
-						<cfset oType = createobject("component", application.types[iTypename].typePath) />
-						
-						<cfif qRelated.recordCount>
-							<cfloop query="qRelated">
-								<cfset stProps = structNew() />
-								<cfset stProps.objectid = qRelated.objectid />
-								<cfset stProps.status = changeStatus />
-								
-								<cfset stResult = oType.setData(stProperties=stProps,auditNote="Status changed to #changeStatus#") />
-							</cfloop>
-						</cfif>
-		
-					</cfloop>
-		
-				</cfif>
-				
-			</cfif>
-			
-		</cfif>
-		
-
-		<cfreturn stProperties />
-	</cffunction>
 
 	
 	<cffunction name="onStatusChange" access="public" output="false" returntype="void" hint="Called from setData when an object's status is changed">
@@ -1449,18 +1254,8 @@ default handlers
 
 	<cffunction name="showFarcryDate" access="public" output="false" returntype="boolean" hint="Returns boolean as to whether to show the date based on how farcry stores dates. ie, 2050 or +200 years.">
 		<cfargument name="date" required="true" hint="The date to check" />
-		<cfset var bShowDate = true />
 		
-		<cfif isSimpleValue(date) and len(date) eq 0>
-			<cfreturn false />
-		</cfif>
-		
-		<!--- Check for old method using 2050 or 4.0 method of adding 200 years allowing you to check for GT 100 years --->
-		<cfif year(arguments.date) EQ 2050 OR dateDiff("yyyy", now(), arguments.date) GT 100>
-			<cfset bShowDate = false />
-		</cfif>
-		
-		<cfreturn bShowDate>
+		<cfreturn application.fapi.showFarcryDate(arguments.date)>
 	
 	</cffunction>
 
@@ -1471,15 +1266,17 @@ default handlers
 		
 		<cfset var qSearchResults = "" />
 		
+		<cfset fourqInit() />
+		
 		<cfif lcase(application.dbtype) EQ "mssql"> <!--- Dodgy MS SQL only code --->
 			<cfquery datasource="#application.dsn#" name="qSearchResults">
-				SELECT objectID as [key] , label FROM #application.dbowner#[#getTypeName()#]	
+				SELECT objectID as [key] , label FROM #application.dbowner#[#variables.typename#]	
 				WHERE label like <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.criteria#%">
 				Order by label
 			</cfquery>
 		<cfelse> <!--- Dirty hack to get this query working for MySQL and possibly Postgres --->
 			<cfquery datasource="#application.dsn#" name="qSearchResults">
-				SELECT objectID as "key" , label FROM #application.dbowner##getTypeName()#	
+				SELECT objectID as "key" , label FROM #application.dbowner##variables.typename#	
 				WHERE label like <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.criteria#%">
 				Order by label
 			</cfquery>

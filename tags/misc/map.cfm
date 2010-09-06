@@ -35,11 +35,7 @@
 	<cfthrow message="The map tag must have an end element">
 </cfif>
 
-<cfif structkeyexists(attributes,"values")>
-	<cfparam name="attributes.values1" default="#attributes.values#" /><!--- valuesN can be used to input any number of input sets for processing --->
-<cfelse>
-	<cfparam name="attributes.values1" /><!--- The set of source values. Can be a struct, array, list, or query. --->
-</cfif>
+<cfparam name="attributes.values" /><!--- The set of source values. Can be a struct, array, list, or query. --->
 <cfparam name="attributes.index" default="index" /><!--- @@hint: The variable that will contain the index of the source item. For structs this is the key. --->
 <cfparam name="attributes.value" default="value" /><!--- @@hint: The variable that will contain the value of the source item. For queries this is a struct of the column values. If this value is a non-simple value (e.g. struct) editing it will alter the source set. Defaults to "value" --->
 <cfparam name="attributes.sendback" default="sendback" /><!--- @@hint: The variable that enclosed code will add output items to. The type of this variable depends on the output set type: For structs this is a struct which gets merged into the output set. For arrays this is an array that gets appended to the output set. For lists this is a string that gets appended to the output list. For queries this is an array of row structs (containing one empty struct by default), each of which is appended to the output query. If this variable is "empty" (e.g. empty struct) no items are added to the output set. Defaults to "sendback" --->
@@ -49,61 +45,41 @@
 <cfparam name="attributes.delimitersin" default="#attributes.delimiters#" /><!--- Only applies when values is a list. Specifies an alternate delimiter for the input list only. --->
 <cfparam name="attributes.delimitersout" default="#attributes.delimiters#" /><!--- Only applies for resulttype="list". Specifies an alternate delimiter for the output list only. --->
 
-<cffunction name="initValues" access="public" resulttype="void" description="Type specific initialisation for a values input.">
-	<cfargument name="valueinput" type="numeric" required="true" hint="The value to inspect" />	
-	
-	<cfswitch expression="#thistag.valuestype#">
-		<cfcase value="struct">
-			<cfset thistag.count = structcount(attributes["values#arguments.valueinput#"]) />
-			<cfset thistag.keys = structkeyarray(attributes["values#arguments.valueinput#"]) />
-		</cfcase>
-		<cfcase value="array">
-			<cfset thistag.count = arraylen(attributes["values#arguments.valueinput#"]) />
-		</cfcase>
-		<cfcase value="query">
-			<cfset thistag.count = attributes["values#arguments.valueinput#"].recordcount />
-		</cfcase>
-		<cfcase value="list">
-			<cfset thistag.count = listlen(attributes["values#arguments.valueinput#"]) />
-		</cfcase>
-	</cfswitch>
-</cffunction>
-
 <cffunction name="initMap" access="public" resulttype="boolean" description="Type specific initialisation for map. Returns true if there are items to process." output="false">
-	<cfset thistag.valuescount = 1 />
-	
-	<cfif isstruct(attributes.values1)>
+	<cfif isstruct(attributes.values)>
 		<cfset thistag.valuestype = "struct" />
+		
+		<cfset thistag.count = structcount(attributes.values) />
+		<cfset thistag.keys = structkeyarray(attributes.values) />
 		
 		<cfif not len(attributes.resulttype)>
 			<cfset attributes.resulttype = "struct" />
 		</cfif>
-	<cfelseif isarray(attributes.values1)>
+	<cfelseif isarray(attributes.values)>
 		<cfset thistag.valuestype = "array" />
+		
+		<cfset thistag.count = arraylen(attributes.values) />
 		
 		<cfif not len(attributes.resulttype)>
 			<cfset attributes.resulttype = "array" />
 		</cfif>
-	<cfelseif isquery(attributes.values1)>
+	<cfelseif isquery(attributes.values)>
 		<cfset thistag.valuestype = "query" />
 		
+		<cfset thistag.count = attributes.values.recordcount />
+		
 		<cfif not len(attributes.resulttype)>
-			<cfset attributes.resulttype = "querynew('#attributes.values1.columnlist#')" />
+			<cfset attributes.resulttype = "querynew('#attributes.values.columnlist#')" />
 		</cfif>
 	<cfelse>
 		<cfset thistag.valuestype = "list" />
+		
+		<cfset thistag.count = listlen(attributes.values) />
 		
 		<cfif not len(attributes.resulttype)>
 			<cfset attributes.resulttype = "list" />
 		</cfif>
 	</cfif>
-	
-	<cfset initValues(1) />
-	
-	<cfloop condition="isdefined('attributes.values#thistag.valuescount#')">
-		<cfset thistag.valuescount = thistag.valuescount + 1 />
-	</cfloop>
-	<cfset thistag.valuescount = thistag.valuescount - 1 />
 	
 	<cfswitch expression="#attributes.resulttype#">
 		<cfcase value="struct">
@@ -129,7 +105,6 @@
 </cffunction>
 
 <cffunction name="getValue" access="public" resulttype="any" description="Returns the specified element from the values" output="false">
-	<cfargument name="valuesinput" type="numeric" required="true" hint="The value to inspect" />	
 	<cfargument name="index" type="numeric" required="true" hint="The index to return" />	
 	
 	<cfset var stResult = structnew() />
@@ -137,17 +112,17 @@
 	
 	<cfswitch expression="#thistag.valuestype#">
 		<cfcase value="struct">
-			<cfreturn attributes["values#arguments.valuesinput#"][thistag.keys[arguments.index]] />
+			<cfreturn attributes.values[thistag.keys[arguments.index]] />
 		</cfcase>
 		<cfcase value="array">
-			<cfreturn attributes["values#arguments.valuesinput#"][arguments.index] />
+			<cfreturn attributes.values[arguments.index] />
 		</cfcase>
 		<cfcase value="list">
-			<cfreturn listgetat(attributes["values#arguments.valuesinput#"],arguments.index,attributes.delimitersin) />
+			<cfreturn listgetat(attributes.values,arguments.index,attributes.delimitersin) />
 		</cfcase>
 		<cfcase value="query">
-			<cfloop list="#attributes["values#arguments.valuesinput#"].columnlist#" index="thiscol">
-				<cfset stResult[thiscol] = attributes["values#arguments.valuesinput#"][thiscol][arguments.index] />
+			<cfloop list="#attributes.values.columnlist#" index="thiscol">
+				<cfset stResult[thiscol] = attributes.values[thiscol][arguments.index] />
 			</cfloop>
 			<cfreturn stResult />
 		</cfcase>
@@ -225,11 +200,10 @@
 		<cfexit method="exittag" />
 	</cfif>
 	
-	<cfset thistag.valuesindex = 1 />
 	<cfset thistag.index = 1 />
 	<cfset caller[attributes.index] = getIndex(thistag.index) />
 	<cfset caller[attributes.sendback] = getMap() />
-	<cfset caller[attributes.value] = getValue(thistag.valuesindex,thistag.index) />
+	<cfset caller[attributes.value] = getValue(thistag.index) />
 </cfif>
 
 <cfif thistag.ExecutionMode eq "end">
@@ -237,20 +211,9 @@
 	
 	<cfif thistag.index lt thistag.count>
 		<cfset thistag.index = thistag.index + 1 />
-		
 		<cfset caller[attributes.index] = getIndex(thistag.index) />
 		<cfset caller[attributes.sendback] = getMap() />
-		<cfset caller[attributes.value] = getValue(thistag.valuesindex,thistag.index) />
-		
-		<cfexit method="loop" />
-	<cfelseif thistag.valuesindex lt thistag.valuescount>
-		<cfset thistag.valuesindex = thistag.valuesindex + 1 />
-		<cfset initValues(thistag.valuesindex) />
-		<cfset thistag.index = 1 />
-		
-		<cfset caller[attributes.index] = getIndex(thistag.index) />
-		<cfset caller[attributes.sendback] = getMap() />
-		<cfset caller[attributes.value] = getValue(thistag.valuesindex,thistag.index) />
+		<cfset caller[attributes.value] = getValue(thistag.index) />
 		
 		<cfexit method="loop" />
 	</cfif>

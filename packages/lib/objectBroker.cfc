@@ -2,9 +2,20 @@
 
 	<cffunction name="init" access="public" output="false" returntype="struct">
 		<cfargument name="bFlush" default="false" type="boolean" hint="Allows the application to force a total flush of the objectbroker." />
-
+		
+		<cfset var typename = "" />
+		<cfset var bSuccess = true />
+		
 		<cfif arguments.bFlush OR NOT structKeyExists(application, "objectBroker")>
 			<cfset application.objectbroker =  structNew() />
+			
+			<cfif structkeyexists(application,"stCOAPI")>
+				<cfloop list="#structKeyList(application.stcoapi)#" index="typename">
+					<cfif application.stcoapi[typename].bObjectBroker>
+						<cfset bSuccess = configureType(typename=typename, MaxObjects=application.stcoapi[typename].ObjectBrokerMaxObjects) />
+					</cfif>
+				</cfloop>
+			</cfif>
 		</cfif>	
 
 		<cfreturn this />
@@ -269,7 +280,7 @@
 			<cfset WebskinCacheID = listAppend(WebskinCacheID,"script_name:#cgi.script_name#,query_string:#cgi.query_string#") />
 		</cfif>
 		
-		<cfif arguments.bCacheByForm>
+		<cfif arguments.bCacheByForm AND isDefined("form")>
 			<cfif structIsEmpty(form)>
 				<cfset WebskinCacheID = listAppend(WebskinCacheID, "form:empty") />
 			<cfelse>
@@ -295,18 +306,20 @@
 			<cfloop list="#listSort(arguments.lcacheByVars, 'text')#" index="iViewState">
 				
 				<cftry>
-					<cfif isDefined(trim(iViewState))>
-						<cfset WebskinCacheID = listAppend(WebskinCacheID, "#iViewState#:#evaluate(trim(iViewState))#") />
+					<cfif isDefined(trim(listfirst(iViewState,":")))>
+						<cfset WebskinCacheID = listAppend(WebskinCacheID, "#listfirst(iViewState,':')#:#evaluate(trim(listfirst(iViewState,':')))#") />
 					<cfelse>
-						<cfset WebskinCacheID = listAppend(WebskinCacheID, "#iViewState#:null") />
+						<!--- If the var is defined with a default (e.g. @@cacheByVars: url.page:1), the default is incorporated into the hash --->
+						<!--- If the var does not define a default (e.g. @@cacheByVars: url.error), that valueless string indicates the null --->
+						<cfset WebskinCacheID = listAppend(WebskinCacheID, "#iViewState#") />
 					</cfif>		
 				
 					<cfcatch type="any">
 						<cftry>
-							<cfset WebskinCacheID = listAppend(WebskinCacheID, "#iViewState#:#evaluate(trim(iViewState))#") />
+							<cfset WebskinCacheID = listAppend(WebskinCacheID, "#listfirst(iViewState,':')#:#evaluate(trim(listfirst(iViewState,':')))#") />
 							
 							<cfcatch type="any">
-								<cfset WebskinCacheID = listAppend(WebskinCacheID, "#iViewState#:invalidVarName") />
+								<cfset WebskinCacheID = listAppend(WebskinCacheID, "#listfirst(iViewState,':')#:invalidVarName") />
 							</cfcatch>
 						</cftry>						
 					</cfcatch>
@@ -419,7 +432,7 @@
 		
 		<cfif application.bObjectBroker>
 			
-			<cfif not structIsEmpty(form)>
+			<cfif isDefined("form") AND not structIsEmpty(form)>
 				<cfif application.coapi.coapiadmin.getWebskinCacheFlushOnFormPost(typename=webskinTypename, template=arguments.template)>
 					<cfset bForceFlush = true />
 				</cfif>
@@ -572,23 +585,22 @@
 		<cfset var oCaster = "" />
 
 		<cfif application.bObjectBroker and len(arguments.typename)>
-			<cfif structkeyexists(application.objectbroker, arguments.typename)>
 			
-				<!--- Remove any ancestor webskins that include a fragment of this object --->
-				<cfloop list="#arguments.lObjectIDs#" index="i">				
-					<cfif structkeyexists(application.objectbroker[arguments.typename], i)>
-					
-						<!--- Find any ancestor webskins and delete them as well --->
-						<cfset qWebskinAncestors = oWebskinAncestor.getAncestorWebskins(webskinObjectID=i) />
-							
-						<cfif qWebskinAncestors.recordCount>
-							<cfloop query="qWebskinAncestors">
-								<cfset bSuccess = removeWebskin(objectid=qWebskinAncestors.ancestorID,typename=qWebskinAncestors.ancestorBindingTypename,template=qWebskinAncestors.ancestorTemplate) />
-							</cfloop>
-						</cfif>
-					</cfif>
-				</cfloop>
+			<!--- Remove any ancestor webskins that include a fragment of this object --->
+			<cfloop list="#arguments.lObjectIDs#" index="i">				
+			
+				<!--- Find any ancestor webskins and delete them as well --->
+				<cfset qWebskinAncestors = oWebskinAncestor.getAncestorWebskins(webskinObjectID=i, webskinTypename=arguments.typename) />
 				
+				<cfif qWebskinAncestors.recordCount>
+					<cfloop query="qWebskinAncestors">
+						<cfset bSuccess = removeWebskin(objectid=qWebskinAncestors.ancestorID,typename=qWebskinAncestors.ancestorRefTypename,template=qWebskinAncestors.ancestorTemplate) />
+					</cfloop>
+				</cfif>
+				
+			</cfloop>
+			
+			<cfif structkeyexists(application.objectbroker, arguments.typename)>	
 				<!--- Remove all references to these objects --->
 				<cflock name="objectBroker-#application.applicationname#-#arguments.typename#" type="exclusive" timeout="2" throwontimeout="true">
 					
@@ -612,5 +624,63 @@
 			</cfif>
 		</cfif>
 	</cffunction>
+	
+	<cffunction name="flushTypeWatchWebskins" access="public" output="false" returntype="boolean" hint="Finds all webskins watching this type for any CRUD functions and flushes them from the cache">
+	 	<cfargument name="objectID" required="true" hint="The typename that the CRUD function was performed on." />
+	 	<cfargument name="typename" required="true" hint="" />
+		
+		<cfset var stObject = application.fapi.getContentObject(objectid=arguments.objectid,typename=arguments.typename) />
+		<cfset var stTypeWatchWebskins = application.stCoapi[arguments.typename].stTypeWatchWebskins />
+		<cfset var iType = "" />
+		<cfset var iWebskin = "" />
+		<cfset var oCoapi = application.fapi.getContentType("farCoapi") />
+		<cfset var coapiObjectID = "" />
+		<cfset var qCachedAncestors = "" />
+		<cfset var bSuccess = "" />
+		<cfset var qWebskinAncestors = "" />
+		
+		<cfif not structKeyExists(stObject, "status") OR stObject.status EQ "approved">
+			<cfif not structIsEmpty(stTypeWatchWebskins)>
+				<cfloop collection="#stTypeWatchWebskins#" item="iType">
+					
+					<cfset coapiObjectID = oCoapi.getCoapiObjectID(iType) />
+						
 
+					<cfif not structKeyExists(application.fc.webskinAncestors, iType)>
+						<cfset application.fc.webskinAncestors[iType] = queryNew( 'webskinObjectID,webskinTypename,webskinRefTypename,webskinTemplate,ancestorID,ancestorTypename,ancestorTemplate,ancestorRefTypename', 'VarChar,VarChar,VarChar,VarChar,VarChar,VarChar,VarChar,VarChar' ) />
+					</cfif>
+					<cfset qWebskinAncestors = application.fc.webskinAncestors[iType] />
+										
+					<cfloop from="1" to="#arrayLen(stTypeWatchWebskins[iType])#" index="iWebskin">
+					
+						
+						<cfquery dbtype="query" name="qCachedAncestors">
+							SELECT * 
+							FROM qWebskinAncestors
+							WHERE (
+									webskinTypename = <cfqueryparam cfsqltype="cf_sql_varchar" value="#iType#" />
+									OR webskinObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#coapiObjectID#" />
+							)
+							AND webskinTemplate = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stTypeWatchWebskins[iType][iWebskin]#" />
+						</cfquery>
+						
+						<cfloop query="qCachedAncestors">
+							<cfset bSuccess = removeWebskin(	objectID=qCachedAncestors.ancestorID,
+																typename=qCachedAncestors.ancestorTypename,
+																template=qCachedAncestors.ancestorTemplate ) />
+							
+							<cfset bSuccess = removeWebskin(	objectID=qCachedAncestors.webskinObjectID,
+																typename=qCachedAncestors.webskinRefTypename,
+																template=qCachedAncestors.webskinTemplate ) />
+							
+						</cfloop>
+						
+					</cfloop>
+					
+				</cfloop>
+			</cfif>
+		</cfif>
+		<cfreturn true />
+	 </cffunction>
+	 
 </cfcomponent>

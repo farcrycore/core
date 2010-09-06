@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<cfcomponent displayname="FarCry COAPI" hint="Contains a record per coapi package" extends="farcry.core.packages.types.types" output="false" bObjectBroker="true" ObjectBrokerMaxObjects="10000" fuAlias="coapi">
+<cfcomponent displayname="FarCry COAPI" hint="Contains a record per coapi package" extends="farcry.core.packages.types.types" output="false" bObjectBroker="true" ObjectBrokerMaxObjects="10000" fuAlias="coapi" bRefObjects="false">
 	<cfproperty ftSeq="1" ftFieldset="General Details" name="name" type="string" default="" hint="The name of the coapi class. excludes the extension (.cfc)" ftLabel="Class name" />
 
 
@@ -25,7 +25,7 @@
 			<cfset application.coapiID = structNew() />
 		</cfif>
 		
-		<cfreturn this />
+		<cfreturn fourqInit() />
 		
 	</cffunction>
 
@@ -90,7 +90,7 @@
 			<cfcatch type="database">
 				<cflock name="deployCoapiTable" timeout="30">
 					<!--- The table has not been deployed. We need to deploy it now --->
-					<cfset application.fc.lib.db.deployType(typename="farCoapi",bDropTable=true,dsn=application.dsn) />
+					<cfset stDeployResult = deployType(dsn=application.dsn,bDropTable=true,bTestRun=false,dbtype=application.dbtype,bDeployCoapiRecord=false) />		
 				</cflock>		
 			</cfcatch>
 		</cftry>

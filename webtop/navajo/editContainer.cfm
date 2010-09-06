@@ -235,7 +235,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 		<select name="reflectionid">
 		<option value="">NO REFLECTION</option>
 		<cfloop query="qReflections">
-		<option value="#qReflections.objectid#" <cfif qreflections.objectid eq stobj.mirrorid>SELECTED</cfif>>#qReflections.label#</option></cfloop>
+		<option value="#qReflections.objectid#"<cfif qreflections.objectid eq stobj.mirrorid> selected="selected"</cfif>>#qReflections.label#</option></cfloop>
 		</select>
 	<input type="submit" name="mirrorAction" value="Update Reflection Details">
 	</fieldset>
@@ -257,7 +257,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 	<option value="">None</option>
 	</cfoutput>
 	<cfoutput query="qContainerSkins">
-		<option value="#qContainerSkins.methodname#" <cfif stObj.displayMethod IS qContainerSkins.methodName>selected</cfif>>#qContainerSkins.displayname#</option>
+		<option value="#qContainerSkins.methodname#"<cfif stObj.displayMethod IS qContainerSkins.methodName> selected="selected"</cfif>>#qContainerSkins.displayname#</option>
 	</cfoutput>
 	<cfoutput>
 	</select>
@@ -288,7 +288,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 			<select name="ruleID" onChange="form.submit();" class="field">
 			<cfif arrayLen(stObj.aRules) GT 0>
 				<cfloop query="qActiveRules" >
-					<option value="#objectID#" <cfif updateType IS objectID>selected</cfif>><cfif structKeyExists(application.rules[typename],'displayname')>#evaluate("application.rules." & typename & ".displayname")#<cfelse>#typename#</cfif></option>	
+					<option value="#objectID#"<cfif updateType IS objectID> selected="selected"</cfif>><cfif structKeyExists(application.rules[typename],'displayname')>#evaluate("application.rules." & typename & ".displayname")#<cfelse>#typename#</cfif></option>	
 				</cfloop>
 			<cfelse>
 				<option>#application.rb.getResource("containers.labels.noContainerRules@label","No rules selected for this container")#</option>
@@ -344,8 +344,17 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 				{
 					// Get the properties for this type - and create a rule instance --->
 					obj = createObject("Component", application.rules[key].rulePath);
-					stProps = obj.getDefaultObject();
-					obj.createData(stProperties=stProps);
+				 	// TODO: getProperties() is deprecated. Should be using tableMetadata.getTableDefinition() --->
+				 	typeProps = obj.getProperties();
+			 		stProps = structNew();
+			 		stProps.objectid = application.fc.utils.createJavaUUID();
+					for(j=1;j LTE arrayLen(typeProps);j=j+1)
+					{
+						if (structKeyExists(typeProps[j],"default"))
+							"stProps.#typeProps[j].name#" = "#typeProps[j].default#";
+					}
+					o = createObject("component","#application.rules[key].rulePath#");
+					o.createData(stProperties=stProps);
 					arrayAppend(stObj.aRules,stProps.objectID);
 				}
 				else

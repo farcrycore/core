@@ -40,7 +40,7 @@
 
 		<!--- viewTypename metadata --->	
 		<cfparam name="application.stCoapi['dmInclude'].stProps.webskinTypename.metadata.ftJoin" default="#structkeylist(application.stcoapi)#" /><!--- These types are allowed to be used for type webskins --->
-		<cfparam name="application.stCoapi['dmInclude'].stProps.webskinTypename.metadata.ftExcludeTypes" default="farFU" /><!--- Remove this types --->
+		<cfparam name="application.stCoapi['dmInclude'].stProps.webskinTypename.metadata.ftExcludeTypes" default="" /><!--- Remove this types --->
 
 		<cfset qTypes = querynew("typename,description","varchar,varchar") />
 		<cfset thistype = "" />
