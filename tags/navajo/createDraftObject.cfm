@@ -65,7 +65,7 @@ Creates a draft object
 	<cfif listLen(lWorkflowDefIDs) and listlen(url.objectid) eq 1><!--- If there is a workflow and only one object, go to the overview for that object --->
 		<cfoutput>
 		<script type="text/javascript">
-			window.location="#application.url.farcry#/edittabOverview.cfm?objectid=#stObject.objectid#";
+			window.location="#application.url.farcry#/editTabOverview.cfm?objectid=#stObject.objectid#";
 		</script>
 		</cfoutput>
 	<cfelseif listlen(url.objectid) gt 1 and not find(cgi.SCRIPT_NAME,cgi.http_referer)><!--- If there is more than one object and we know the previous page, go there --->
@@ -82,7 +82,7 @@ Creates a draft object
 		<cfoutput>
 		<script type="text/javascript">
 			<cfif stProps.status EQ "pending">
-				window.location="#application.url.farcry#/edittabOverview.cfm?objectid=#stProps.objectid#";
+				window.location="#application.url.farcry#/editTabOverview.cfm?objectid=#stProps.objectid#";
 			<cfelse>
 				window.location="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stProps.objectid#&method=#url.method#&ref=#url.ref#&finishurl=#url.finishurl#";
 			</cfif>

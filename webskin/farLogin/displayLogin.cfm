@@ -61,7 +61,7 @@ START WEBSKIN
 								<select name="selectFarcryProject" id="selectFarcryProject" class="selectInput" onchange="window.location='#application.url.webtop#/login.cfm?farcryProject='+this.value;">						
 									<cfloop from="1" to="#arraylen(aDomainProjects)#" index="i">
 										<cfif len(aDomainProjects[i])>
-											<option value="#aDomainProjects[i]#"<cfif cookie.currentFarcryProject eq aDomainProjects[i]> selected="selected"</cfif>>#server.stFarcryProjects[aDomainProjects[i]].displayname#</option>
+											<option value="#aDomainProjects[i]#"<cfif cookie.currentFarcryProject eq aDomainProjects[i]> selected</cfif>>#server.stFarcryProjects[aDomainProjects[i]].displayname#</option>
 										</cfif>
 									</cfloop>						
 								</select>
@@ -83,7 +83,7 @@ START WEBSKIN
 							
 							<cfloop list="#application.security.getAllUD()#" index="thisud">
 								<cfoutput>
-									<option value="#thisud#"<cfif structKeyExists(arguments.stParam, "ud") AND arguments.stParam.ud eq thisud> selected="selected"</cfif>>#application.security.userdirectories[thisud].title#</option>
+									<option value="#thisud#"<cfif structKeyExists(arguments.stParam, "ud") AND arguments.stParam.ud eq thisud> selected</cfif>>#application.security.userdirectories[thisud].title#</option>
 								</cfoutput>
 							</cfloop>
 							

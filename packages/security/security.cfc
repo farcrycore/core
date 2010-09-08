@@ -52,9 +52,9 @@
 		<cfset this.cache.rolelookup = structnew() />
 		
 		<!--- Factory --->
-		<cfset this.factory.role = createObject("component", application.factory.oUtils.getPath("types","farRole")).fourqInit() />
-		<cfset this.factory.permission = createObject("component", application.factory.oUtils.getPath("types","farPermission")).fourqInit() />
-		<cfset this.factory.barnacle = createObject("component", application.factory.oUtils.getPath("types","farBarnacle")).fourqInit() />
+		<cfset this.factory.role = createObject("component", application.factory.oUtils.getPath("types","farRole")) />
+		<cfset this.factory.permission = createObject("component", application.factory.oUtils.getPath("types","farPermission")) />
+		<cfset this.factory.barnacle = createObject("component", application.factory.oUtils.getPath("types","farBarnacle")) />
 		
 		<!--- User directories --->
 		<cfset this.userdirectories = structnew() />
@@ -741,11 +741,9 @@
 		request.mode = structNew();
 		request.mode.design = 0;
 		request.mode.flushcache = 0;
-		request.mode.rebuild = "auto";
 		request.mode.showdraft = 0;
 		request.mode.ajax = 0;
 		request.mode.tracewebskins = 0;
-		request.mode.profile = 0;
 		
 		// Developer Mode
 		request.mode.bDeveloper = 0;
@@ -776,12 +774,6 @@
 				request.mode.design = session.dmSec.Authentication.designmode;
 			} else {
 				request.mode.design = 0;
-			}
-		// profile mode
-			if (isDefined("arguments.stURL.profile")) {
-				request.mode.profile = val(arguments.stURL.profile);
-			} else {
-				request.mode.profile = 0;
 			}
 		// webskintrace
 			if (isDefined("arguments.stURL.tracewebskins")) {
@@ -819,20 +811,6 @@
 			} else {
 				//request.fc.bShowTray = 0;
 				//session.dmProfile.bShowTray = request.fc.bShowTray;
-			}
-		
-		// rebuild page / everything
-			if (isDefined("arguments.stURL.rebuild")) {
-				request.mode.rebuild = arguments.stURL.rebuild;
-				if (url.rebuild eq "page"){
-					request.mode.flushcache = 1;
-				}
-				else if (arguments.stURL.rebuild eq "all"){
-					application.fc.lib.objectbroker.init(bFlush=true);
-				}
-			}
-			else {
-				request.mode.rebuild = "auto";
 			}
 		
 		}

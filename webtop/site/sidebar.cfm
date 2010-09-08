@@ -158,7 +158,7 @@ function refreshiFrame(iFrameName){
 	<small><strong>Quick Zoom:</strong></small>
 	 <select name="rootObjectID" onChange="document.forms['frmZoom'].parentSectionId.value=document.getElementById('subjump').rootObjectID.value;this.form.submit();">
 		<cfloop from="1" to="#ArrayLen(aZoom)#" index="i">
-		<option value="#aZoom[i].value#"<cfif URL.rootObjectid EQ aZoom[i].value> selected="true"</cfif>>#aZoom[i].text#</option></cfloop>
+		<option value="#aZoom[i].value#"<cfif URL.rootObjectid EQ aZoom[i].value>selected="true"</cfif>>#aZoom[i].text#</option></cfloop>
 		
 		<cfset parentSectionId>
 	</select>

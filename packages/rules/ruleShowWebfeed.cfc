@@ -1,6 +1,7 @@
-<!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
+<!--- @@Copyright: Copyright (c) 2008 Rob Rohan. All rights reserved. --->
 <!--- @@displayname: Utility: Show Defined Webfeed  --->
-<cfcomponent displayname="Show Web Feed" output="false" 
+<!--- @@description: Utility: Show Defined Webfeed --->
+<cfcomponent displayname="ruleShowWebfeed" output="false" 
 	extends="farcry.core.packages.rules.rules" hint="">
 
 	<!--- properties --->

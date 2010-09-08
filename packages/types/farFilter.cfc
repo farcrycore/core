@@ -1,4 +1,4 @@
-<cfcomponent displayname="Content Type Filter" output="false" extends="farcry.core.packages.types.types" hint="Allows storage of a property filters that can then be used to generate a query of objectids that can be used to filter a recordset" bRefObjects="false">
+<cfcomponent displayname="Content Type Filter" output="false" extends="farcry.core.packages.types.types" hint="Allows storage of a property filters that can then be used to generate a query of objectids that can be used to filter a recordset">
 
 	<cfproperty name="title" type="string" hint="The Title"
 		ftSeq="" ftWizardStep="" ftFieldset=""

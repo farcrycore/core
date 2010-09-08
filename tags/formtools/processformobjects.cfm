@@ -9,18 +9,18 @@
 	@@examples: 
 	<p>Automatically saving a contentType to the database:</p>
 	<code>
-		&lt;ft:processForm action="Save"&gt;
-			&lt;ft:processFormObjects objectid="#stobj.objectid#" /&gt;
-		&lt;/ft:processForm&gt;
+		<ft:processForm action="Save">
+			<ft:processFormObjects objectid="#stobj.objectid#" />
+		</ft:processForm>
 	</code>
 	
 	<p>Getting access to the form fields by hand:</p>
 	<code>
-		&lt;ft:processform action="Submit Form"&gt;
-			&lt;ft:processFormObjects typename="mmInquiry"&gt;
-				&lt;cfdump var="#stProperties#" label="Stuff in the form" /&gt;
-			&lt;/ft:processFormObjects&gt;
-		&lt;/ft:processform>
+		<ft:processform action="Submit Form">
+			<ft:processFormObjects typename="mmInquiry">
+				&lt;cfdump var="#stProperties#" label="Stuff in the form" />
+			</ft:processFormObjects>
+		</ft:processform>
 	</code>
 --->
 

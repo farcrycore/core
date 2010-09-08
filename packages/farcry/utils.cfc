@@ -45,11 +45,11 @@
 		<!--- COMBINE: Used for CSS and JS --->
 		<cfset variables.oCombine = createObject("component", "farcry.core.packages.farcry.combine.combine").init(
 												enableCache= true,
-												cachePath= "#application.path.webroot#/cache",
+												cachePath= "#application.path.cache#",
 												enableETags= false,
 												enableJSMin= true,
 												enableYuiCSS= true,
-												skipMissingFiles= true,
+												skipMissingFiles= false,
 												javaLoader= createObject("component", "farcry.core.packages.farcry.javaloader.JavaLoader"),
 												jarPath= expandPath('/farcry/core/packages/farcry/combine/lib')
 								) />
@@ -327,10 +327,12 @@
 		<cfargument name="projectDirectoryName" type="string" required="false" default="#application.projectDirectoryName#" hint="" />
 		
 		<cfset var item = "" />
-		<cfset var sDir = "" />
 		
 		<cfif not isdefined("arguments.path.core")>
 			<cfset arguments.path.core = application.path.core />
+		</cfif>
+		<cfif not isdefined("arguments.path.plugins")>
+			<cfset arguments.path.plugins = application.path.plugins />
 		</cfif>
 		<cfif not isdefined("arguments.path.project")>
 			<cfset arguments.path.project = application.path.project />
@@ -361,17 +363,12 @@
 					</cfif>
 				</cfcase>
 				<cfdefaultcase><!--- Plugin --->
-					<cfif isdefined("arguments.path.plugins")>
-						<cfset sDir = "#arguments.path.plugins#/#item#" />
-					<cfelse>
-						<cfset sDir = expandpath("/farcry/plugins/#item#") />
-					</cfif>
-					<cfif fileexists("#sDir#/packages/#arguments.package#/#arguments.component#.cfc")>
+					<cfif fileexists("#arguments.path.plugins#/#item#/packages/#arguments.package#/#arguments.component#.cfc")>
 						<cfreturn "farcry.plugins.#item#.packages.#arguments.package#.#arguments.component#" />
-					<cfelseif arguments.package eq "types" and fileexists("#sDir#/packages/system/#arguments.component#.cfc")>
+					<cfelseif arguments.package eq "types" and fileexists("#arguments.path.plugins#/#item#/packages/system/#arguments.component#.cfc")>
 						<!--- Best practice is to put extensions of core types into the system package --->
 						<cfreturn "farcry.plugins.#item#.packages.system.#arguments.component#" />
-					<cfelseif arguments.package eq "system" and fileexists("#sDir#/packages/types/#arguments.component#.cfc")>
+					<cfelseif arguments.package eq "system" and fileexists("#arguments.path.plugins#/#item#/packages/types/#arguments.component#.cfc")>
 						<!--- Best practice is to put extensions of core types into the system package --->
 						<cfreturn "farcry.plugins.#item#.packages.types.#arguments.component#" />
 					</cfif>
@@ -391,10 +388,12 @@
 		<cfset var list = "" />
 		<cfset var qItems = querynew("name","varchar") />
 		<cfset var qItemsSystem = querynew("name","varchar") />
-		<cfset var sDir = "" />
 		
 		<cfif not isdefined("arguments.path.core")>
 			<cfset arguments.path.core = application.path.core />
+		</cfif>
+		<cfif not isdefined("arguments.path.plugins")>
+			<cfset arguments.path.plugins = application.path.plugins />
 		</cfif>
 		<cfif not isdefined("arguments.path.project")>
 			<cfset arguments.path.project = application.path.project />
@@ -431,16 +430,11 @@
 					</cfif>
 				</cfcase>
 				<cfdefaultcase><!--- Plugin --->
-					<cfif isdefined("arguments.path.plugins")>
-						<cfset sDir = "#arguments.path.plugins#/#item#" />
-					<cfelse>
-						<cfset sDir = expandpath("/farcry/plugins/#item#") />
+					<cfif directoryexists("#arguments.path.plugins#/#item#/packages/#arguments.package#/")>
+						<cfdirectory action="list" directory="#arguments.path.plugins#/#item#/packages/#arguments.package#/" filter="*.cfc" name="qItems" />
 					</cfif>
-					<cfif directoryexists("#sDir#/packages/#arguments.package#/")>
-						<cfdirectory action="list" directory="#sDir#/packages/#arguments.package#/" filter="*.cfc" name="qItems" />
-					</cfif>
-					<cfif arguments.package eq "types" and directoryexists("#sDir#/packages/system/")>
-						<cfdirectory action="list" directory="#sDir#/packages/system/" filter="*.cfc" name="qItemsSystem" />
+					<cfif arguments.package eq "types" and directoryexists("#arguments.path.plugins#/#item#/packages/system/")>
+						<cfdirectory action="list" directory="#arguments.path.plugins#/#item#/packages/system/" filter="*.cfc" name="qItemsSystem" />
 						<cfquery dbtype="query" name="qItems">
 							select	*
 							from	qItems
@@ -500,7 +494,6 @@
 		<cfargument name="removevalues" type="string" required="false" hint="List of values to remove from the query string. Prefix with '+' to remove these values in addition to the defaults." />
 		<cfargument name="addvalues" type="any" required="false" hint="A query string or a struct of values, to add to the query string" />
 		<cfargument name="ampDelim" type="string" required="false" default="&" hint="Delimiter to use for ampersands" />
-		<cfargument name="charset" type="string" required="false" default="utf-8" hint="The character encoding in which the url values are encoded." />
 		
 		<cfset var key = "" />
 
@@ -513,7 +506,7 @@
 		
 		<!--- Normalise FU --->
 		<cfif findNoCase("furl=",arguments.url)>
-			<cfset arguments.url = replacenocase(arguments.url,"/index.cfm",urldecode(rereplacenocase(arguments.url,"(.*(\?|#arguments.ampDelim#)furl\=)([^&]+)(.*)","\3"),'#charset#')) />
+			<cfset arguments.url = replacenocase(arguments.url,"/index.cfm",urldecode(rereplacenocase(arguments.url,"(.*(\?|#arguments.ampDelim#)furl\=)([^&]+)(.*)","\3"),'utf-8')) />
 		</cfif>
 		
 		<cfif application.fc.factory.farFU.isUsingFU() AND not find("?",arguments.url) and arguments.url neq "/">
@@ -551,16 +544,16 @@
 		<!--- Add and replace values --->
 		<cfif structkeyexists(arguments,"addvalues") and isstruct(arguments.addvalues)>
 			<cfloop collection="#arguments.addvalues#" item="key">
-				<cfset arguments.url = insertQueryVariable(url=arguments.url,key=key,value=arguments.addvalues[key],ampDelim=arguments.ampDelim,charset=charset) />
+				<cfset arguments.url = insertQueryVariable(url=arguments.url,key=key,value=arguments.addvalues[key],ampDelim=arguments.ampDelim) />
 			</cfloop>
 		<cfelseif structkeyexists(arguments,"addvalues")><!--- Query string format --->
 			<cfloop list="#arguments.addvalues#" index="key" delimiters="&">
-				<cfset arguments.url = insertQueryVariable(url=arguments.url,key=listfirst(key,'='),value=listlast(key,'='),ampDelim=arguments.ampDelim,charset=charset) />
+				<cfset arguments.url = insertQueryVariable(url=arguments.url,key=listfirst(key,'='),value=listlast(key,'='),ampDelim=arguments.ampDelim) />
 			</cfloop>
 		<cfelse>
 			<cfloop collection="#arguments#" item="key">
-				<cfif not listcontainsnocase("url,removevalues,addvalues,ampDelim,charset",key)>
-					<cfset arguments.url = insertQueryVariable(url=arguments.url,key=key,value=arguments[key],ampDelim=arguments.ampDelim,charset=charset) />
+				<cfif not listcontainsnocase("url,removevalues,addvalues,ampDelim",key)>
+					<cfset arguments.url = insertQueryVariable(url=arguments.url,key=key,value=arguments[key],ampDelim=arguments.ampDelim) />
 				</cfif>
 			</cfloop>
 		</cfif>
@@ -573,78 +566,25 @@
 		<cfargument name="key" type="string" required="true" hint="The key to insert" />
 		<cfargument name="value" type="string" required="true" hint="The value to insert" />
 		<cfargument name="ampDelim" type="string" required="false" default="&" hint="Delimiter to use for ampersands" />
-		<cfargument name="charset" type="string" required="false" default="utf-8" hint="The character encoding in which the url values are encoded." />
-
-		<cfset var lCharsNotAllowedInFUs = ".,"",',&,@,%,=,/,\" />
-		<cfset var bAllowFriendlyUrls = true />
-
-		<!--- In case the url value was urlencoded, urldecode it --->
-		<cfset arguments.value = urlDecode(arguments.value, "#charset#") />
-
-		<!--- If any of the following special characters are found, don't use friendly urls here or it will fail in modern browsers that remove urlencoding for most characters (like Firefox and Chrome) --->
-		<cfloop index="i" list="#lCharsNotAllowedInFUs#">
-			<cfif arguments.value contains i>
-				<cfset bAllowFriendlyUrls = false />
-				<cfbreak />
-			</cfif>
-		</cfloop>
 		
-		<!--- now urlencode the url value --->
-		<cfset arguments.value = urlEncodedFormat(arguments.value, "#charset#") />
-
-		<cfif application.fc.factory.farFU.isUsingFU() AND not find("?",arguments.url) and arguments.url neq "/" and bAllowFriendlyUrls is true>
+		<cfif application.fc.factory.farFU.isUsingFU() AND not find("?",arguments.url) and arguments.url neq "/">
 			<cfif refindnocase("/#arguments.key#(/|$)",arguments.url)>
-				<cfset arguments.url = rereplacenocase(arguments.url,"/#arguments.key#/[^/]+","/#arguments.key#/#arguments.value#") />
+				<cfset arguments.url = rereplacenocase(arguments.url,"/#arguments.key#/[^/]+","/#arguments.key#/#urlencodedformat(arguments.value)#") />
 			<cfelse>
-				<cfset arguments.url = "#arguments.url#/#arguments.key#/#arguments.value#" />
-			</cfif>
+				<cfset arguments.url = "#arguments.url#/#arguments.key#/#urlencodedformat(arguments.value)#" />
+			</cfif>		
 		<cfelse>
 			<cfif refindnocase("(#arguments.ampDelim#)?#arguments.key#=",arguments.url)>
-				<cfset arguments.url = rereplacenocase(arguments.url,"(?:#arguments.ampDelim#)?(\?)?#arguments.key#=[^&]+","\1") & "#arguments.ampDelim##arguments.key#=#arguments.value#" />
+				<cfset arguments.url = rereplacenocase(arguments.url,"(?:#arguments.ampDelim#)?(\?)?#arguments.key#=[^&]+","\1") & "#arguments.ampDelim##arguments.key#=#urlencodedformat(arguments.value)#" />
 			<cfelseif find("?",arguments.url)>
-				<cfset arguments.url = "#arguments.url##arguments.ampDelim##arguments.key#=#arguments.value#" />
+				<cfset arguments.url = "#arguments.url##arguments.ampDelim##arguments.key#=#urlencodedformat(arguments.value)#" />
 			<cfelse>
-				<cfset arguments.url = "#arguments.url#?#arguments.key#=#arguments.value#" />
-			</cfif>
+				<cfset arguments.url = "#arguments.url#?#arguments.key#=#urlencodedformat(arguments.value)#" />
+			</cfif>	
 		</cfif>
 
 		
 		<cfreturn arguments.url />
-	</cffunction>
-	
-	<!--- 
-	* Deletes a var from a query string.
-	* Idea for multiple args from Michael Stephenson (michael.stephenson@adtran.com)
-	* 
-	* @param variable      A variable, or a list of variables, to delete from the query string. 
-	* @param qs      Query string to modify. Defaults to CGI.QUERY_STRING. 
-	* @return Returns a string. 
-	* @author Nathan Dintenfass (michael.stephenson@adtran.comnathan@changemedia.com) 
-	* @version 1.1, February 24, 2002 
-	* @version X	Refactored for FarCry
-	 --->
-	<cffunction name="deleteQueryVariable" returntype="string" output="false" access="public" hint="Deletes a var from a query string.">
-		<cfargument name="variable" type="string" required="true" hint="The variable to remove" />
-		<cfargument name="qs" type="string" required="false" default="#cgi.query_string#" />
-		
-	    <cfset var updatedqs = "" /><!--- var to hold the final string --->
-	    <cfset var ii = 1 /><!--- vars for use in the loop, so we don't have to evaluate lists and arrays more than once --->
-	    <cfset var thisVar = "" />
-	    <cfset var thisIndex = "" />
-	    <cfset var valuearray = listToArray(arguments.qs,"&") /><!--- put the query string into an array for easier looping --->
-	    
-	    <!--- now, loop over the array and rebuild the string --->
-	    <cfloop from="1" to="#arrayLen(valuearray)#" index="ii">
-	        <cfset thisIndex = valuearray[ii] />
-	        <cfset thisVar = listFirst(thisIndex,"=") />
-	        
-	        <!--- if this is the var, edit it to the value, otherwise, just append --->
-	        <cfif not listFindnocase(variable,thisVar)>
-	            <cfset updatedqs = listAppend(updatedqs,thisIndex,"&") />
-	        </cfif>
-	    </cfloop>
-	    
-	    <cfreturn updatedqs />
 	</cffunction>
 	
 	<!--- @@hint: 
@@ -757,46 +697,4 @@
 		
 		<cfreturn prettyDate />
 	</cffunction>
-
-	<!--- @@hint: 
-		<p>This function is used to build an array of items from a set of defaults, and 
-			also a string of commands to add or subtract items form the default.  For
-			example, core defines a list of internet spider user agents ("google,slurp,meany,java"),
-			and you may want to use all of them except "java" and also add two called
-			"blarg" and "yuck".  You can do that with this function like so:	
-		 </p>
-		
-		<p>
-			arrayFromStringCommands("google,slurp,meany,java", "*:-java,+blarg,yuck")
-		</p>
-		
-		<p>
-			Currently, this function is only used for the above mentioned example, however
-			it might be useful in the future to allow plugins to be added and removed
-			at runtime.
-		</p>
-		
-		<p>
-			This function is defined in Application.cfc because it is used on FarCry
-			init.  It is here (utils.cfc) for Unit testing, and the possibility of 
-			future use.
-		</p>
-		
-		@@examples:
-		<code>
-			#application.fapi.plusMinusStateMachine(myUglyDate)# 
-		</code>
-	 --->
-	<cffunction name="arrayFromStringCommands" access="public" returntype="array" output="false">
-		<cfargument name="asteriskDefaults" type="string" required="true" />
-		<cfargument name="stateCommandString" type="string" required="true" />
-		
-		<!--- This function is needed on application startup, and as such is defined in 
-			the cores version of Application.cfc. --->
-		<cfreturn request.__plusMinusStateMachine(
-												  arguments.asteriskDefaults, 
-												  arguments.stateCommandString) />
-		
-	</cffunction>
-
 </cfcomponent>

@@ -85,7 +85,7 @@
 				
 			</cftry>
 		<cfelse>
-			<cfset bSuccess = true />
+			<cfset bSuccess = false />
 		</cfif>
 		
 		<cfreturn bSuccess />
@@ -195,7 +195,7 @@
 		<cfargument name="arrayProperty" type="string" required="false" default="" hint="The property that defines the relationship we are looking for" />
 				
 		<cfset var iType = "" />
-		<cfset var iProp = "" />
+		<cfset var iProperty = "" />
 		<cfset var q = queryNew("objectid,typename") />
 		<cfset var qRelatedContent = queryNew("objectid,typename") />
 		
@@ -413,4 +413,5 @@
 		
 		<cfreturn stResult />
 	</cffunction>
+
 </cfcomponent>

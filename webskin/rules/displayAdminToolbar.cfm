@@ -9,7 +9,7 @@
 
 <cfset ruleContainerID = getRuleContainerID(stobj.objectid) />
 
-<cfset containerURL = application.fapi.getLink(type="container", objectid="#stParam.originalID#", view="displayContainer", urlParameters="ajaxmode=1&designmode=1") />
+<cfset containerURL = application.fapi.getLink(objectid="#stParam.originalID#", view="displayContainer", urlParameters="ajaxmode=1&designmode=1") />
 <cfset containerID = replace(stParam.originalID,'-','','ALL') />
 
 <cfset ruleDisplayName = application.fapi.getContentTypeMetadata(stobj.typename, "displayName", stobj.typename) />
@@ -26,7 +26,7 @@
 			<!--- EDIT RULE --->
 			<a title="Configure rule" 
 				class="con-admin con-edit-rule" 
-				href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&typename=#stObj.typename#&method=editInPlace&originalID=#stParam.originalID#&iframe" 
+				href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=editInPlace&originalID=#stParam.originalID#&iframe" 
 				rule:title="#ruleDisplayName#"
 				con:id="#containerID#"
 				con:url="#containerURL#">
@@ -38,7 +38,7 @@
 			
 			<!--- MOVE UP --->
 			<cfif arguments.stParam.index gt 1>
-				<cfset actionURL = application.fapi.getLink(type="container", objectid="#ruleContainerID#", view="displayContainer", urlParameters="ajaxmode=1&rule_id=#stobj.objectid#&rule_index=#arguments.stParam.index#&rule_action=moveup&originalID=#stParam.originalID#") />
+				<cfset actionURL = application.fapi.getLink(objectid="#ruleContainerID#", view="displayContainer", urlParameters="ajaxmode=1&rule_id=#stobj.objectid#&rule_index=#arguments.stParam.index#&rule_action=moveup&originalID=#stParam.originalID#") />
 				
 				<a title="Move up"
 					class="con-refresh con-move-up-rule" 
@@ -51,7 +51,7 @@
 			
 			<!--- MOVE DOWN --->
 			<cfif arguments.stParam.index lt arguments.stParam.arraylen>
-				<cfset actionURL = application.fapi.getLink(type="container", objectid="#ruleContainerID#", view="displayContainer", urlParameters="ajaxmode=1&rule_id=#stobj.objectid#&rule_index=#arguments.stParam.index#&rule_action=movedown&originalID=#stParam.originalID#") />
+				<cfset actionURL = application.fapi.getLink(objectid="#ruleContainerID#", view="displayContainer", urlParameters="ajaxmode=1&rule_id=#stobj.objectid#&rule_index=#arguments.stParam.index#&rule_action=movedown&originalID=#stParam.originalID#") />
 				
 				<a title="Move down"
 					class="con-refresh con-move-down-rule" 
@@ -64,7 +64,7 @@
 			</cfif>
 			
 			<!--- DELETE --->
-			<cfset actionURL = application.fapi.getLink(type="container", objectid="#ruleContainerID#", view="displayContainer", urlParameters="ajaxmode=1&rule_id=#stobj.objectid#&rule_index=#arguments.stParam.index#&rule_action=delete&originalID=#stParam.originalID#") />
+			<cfset actionURL = application.fapi.getLink(objectid="#ruleContainerID#", view="displayContainer", urlParameters="ajaxmode=1&rule_id=#stobj.objectid#&rule_index=#arguments.stParam.index#&rule_action=delete&originalID=#stParam.originalID#") />
 			
 			<a title="Delete"
 				class="con-refresh con-delete-rule" 

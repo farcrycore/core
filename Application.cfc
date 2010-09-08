@@ -38,12 +38,20 @@
 	<cfparam name="this.botAgents" default="*" />
 	<cfparam name="this.botIPs" default="*" />
 	
-	
 	<cfset this.defaultAgents = "bot\b,\brss,slurp,mediapartners-google,googlebot,zyborg,emonitor,jeeves,sbider,findlinks,yahooseeker,mmcrawler,jbrowser,java,pmafind,blogbeat,converacrawler,ocelli,labhoo,validator,sproose,ia_archiver,larbin,psycheclone,arachmo" />
-	<cfset this.botAgents = __plusMinusStateMachine(this.defaultAgents, this.botagents) />
+	<cfif left(this.botagents,1) eq "+">
+		<cfset this.botAgents = this.defaultAgents & "," & mid(this.botAgents,2,len(this.botAgents)) />
+	<cfelseif this.botAgents eq "*">
+		<cfset this.botAgents = this.defaultAgents />
+	</cfif>
+	<cfset this.botAgents = listtoarray(this.botAgents) />
 	
 	<cfset this.defaultIPs = "" />
-	<cfset this.botAgents = __plusMinusStateMachine(this.defaultIPs, this.botIPs) />
+	<cfif left(this.botIPs,1) eq "+">
+		<cfset this.botIPs = this.defaultIPs & "," & mid(this.botIPs,2,len(this.botIPs)) />
+	<cfelseif this.botIPs eq "*">
+		<cfset this.botIPs = this.defaultIPs />
+	</cfif>
 	
 	<cfparam name="cookie.sessionScopeTested" default="false" />
 	<cfparam name="cookie.hasSessionScope" default="false" />
@@ -71,89 +79,6 @@
 	</cfif>
 	
 	
-	<!--- ////////////////////////////////////////////// --->
-	
-	<!---
-		This function can be used to create an array from a string (list) and
-		also change the contents of that string (list).  The first parameter
-		is a list of default items "one,two,three", and the second parameter
-		is a command list of operations to perform on that list. The command
-		list can look like the following:  "*:-one,three:+six,four"
-		
-		This will return the array "[two,six,four]". The command string is made
-		of the following operators:
-			
-			*  = add everything from the first paramter
-			+  = do an addition
-			-  = do a subtraction
-			-* = remove all of the default items
-	--->
-	<cffunction name="__plusMinusStateMachine" returntype="array" output="false">
-		<cfargument name="asteriskDefaults" type="string" required="true" />
-		<cfargument name="stateCommandString" type="string" required="true" />
-		
-		<cfset var z = 0 />
-		<cfset var q = 0 />
-		<cfset var commandString = "" />
-		<cfset aStates = arrayNew(1) />
-		<cfset sStates = "" />
-		<cfset returnArray = arrayNew(1) />
-		
-		
-		<cfset aStates = listToArray(arguments.stateCommandString, ":") />
-		
-		<!--- 
-			The reason this gets a bit complicated is to be backwards compatable. 
-			If they just passed a string like "+one,two,three" we'll assume they want
-			the core default agents, and want to add to them. --->
-		<cfif not len(stateCommandString) or left(stateCommandString, 1) eq "+">
-			<cfset sStates = arguments.asteriskDefaults />
-		<cfelse>
-			<cfset sStates = "" />
-		</cfif>
-		
-		<!--- Loop over the agent addition, subtraction or all commands
-			and build the string of default agents --->
-		<cfloop from="1" to="#arrayLen(aStates)#" index="z">
-			<cfset commandString = aStates[z] />
-			
-			<!--- Add agents to the list --->
-			<cfif left(commandString,1) eq "+">
-				<cfset sStates = sStates & "," & mid(commandString,2,len(commandString)) />
-			
-			<!--- do and "Add all" - basically add in all the defaults
-				from core (defined above as this.defaultAgents) --->
-			<cfelseif commandString eq "*">
-				<cfset sStates = sStates & "," & arguments.asteriskDefaults />
-			
-			<!--- remove either single agents or remove all the core defaults--->
-			<cfelseif left(commandString,1) eq "-">
-				<!--- if they do "-*" we'll remove all the default bots --->
-				<cfif left(commandString,2) eq "-*">
-					<cfset sStates = "" />
-				<cfelse>
-					<!--- otherwise they are doing a "-java,jeeves" kind of string --->
-					<cfset returnArray = listToArray(sStates) />
-					
-					<cfset removeArray = listToArray(mid(commandString,2,len(commandString))) /> 
-					<cfloop from="1" to="#arrayLen(removeArray)#" index="q">
-						<cfset returnArray.remove(removeArray[q]) />
-					</cfloop>
-					
-					<!--- put this back into a list incase they do more commands to the list --->
-					<cfset sStates = arrayToList(returnArray) />
-				</cfif>
-			</cfif>
-		</cfloop>
-		
-		<!--- Ok, we should have a built up string, turn it into 
-			an array for later usage--->
-		<cfset returnArray = listToArray(sStates) />
-		
-		<cfreturn returnArray />
-	</cffunction>
-	
-	
 	<cffunction name="reFindAny" access="private" output="false" returntype="boolean" hint="Looks for any of an array of regular expressions in a string">
 		<cfargument name="needle" type="array" required="true" hint="The array of regular expressions to find" />
 		<cfargument name="haystack" type="string" required="true" hint="The string to match against" />
@@ -175,8 +100,7 @@
 		<cfset var qServerSpecific = queryNew("blah") />
 		<cfset var qServerSpecificAfterInit = queryNew("blah") />
 		<cfset var machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
-		<cfset var tickBegin = getTickCount() />
-		
+
 		<!--- intialise application scope --->
 		<cfset initApplicationScope() />
 		
@@ -296,7 +220,7 @@
 		CALL THE PROJECTS AFTER INIT VARIABLES
 		------------------------------------>
 		<cfif fileExists("#application.path.project#/config/_serverSpecificVarsAfterInit.cfm") >
-			<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/_serverSpecificVarsAfterInit.cfm" >
+			<cfinclude template="/farcry/projects/#application.projectDirectoryName#/config/_serverSpecificVarsAfterInit.cfm" />
 		</cfif>
 
 
@@ -320,18 +244,6 @@
 				</cfif>
 			</cfloop>
 		</cfif>
-		
-		
-		<!----------------------------------- 
-		CALL THE PLUGINS AFTER INIT VARIABLES
-		 ----------------------------------->
-		<cfif not isdefined("application.fcstats.updateapp") or not isquery(application.fcstats.updateapp)>
-			<cfparam name="application.fcstats" default="#structnew()#" />
-			<cfset application.fcstats.updateapp = querynew("when,howlong","time,bigint") />
-		</cfif>
-		<cfset queryaddrow(application.fcstats.updateapp) />
-		<cfset querysetcell(application.fcstats.updateapp,"when",now()) />
-		<cfset querysetcell(application.fcstats.updateapp,"howlong",getTickCount()-tickBegin) />
 		
 		<cfset application.bInit = true />
 		<cfreturn true />
@@ -396,10 +308,6 @@
 			<cfset session.loginReturnURL = application.fapi.fixURL(url.returnURL) />
 		</cfif>
 		
-		<!--- Hookup any functions here we want available to Farcry. --->
-		<cfset request.__plusMinusStateMachine = this.__plusMinusStateMachine />
-		
-		
 		<cfreturn true />
 	</cffunction>
  
@@ -433,63 +341,6 @@
 		<cfreturn />
 	</cffunction>
 
-
-	<cffunction name="OnError" access="public" returntype="void" output="true" hint="Fires when an exception occures that is not caught by a try/catch.">
-		<cfargument name="Exception" type="any" required="true" />
-		<cfargument name="EventName" type="string" required="false" default="" />
-		
-		<cfset var stException = arguments.exception />
-		<cfif structKeyExists(arguments.exception, "rootcause")>
-			<cfset stException = arguments.exception.rootcause />
-		</cfif>
-		
-		<!--- rudimentary error handler --->
-		<!--- TODO: need a pretty error handler for the webtop --->
-		<cfoutput>	
-			<h1>There was a problem with that last request!</h1>	
-			<p>Please push "back" on your browser or go back <a style="text-decoration:underline" href="/">home</a></p>
-			<h3>Error Details</h3>
-			<table border="1" cellpadding="5" style="border-collapse:collapse;">
-			<cfif structKeyExists(stException, "message")>
-				<tr><th align="right" style="vertical-align:top;">Message</th><td>#stException.message#</td></tr>
-			</cfif>
-			<cfif structKeyExists(stException, "type")>
-				<tr><th align="right" style="vertical-align:top;">Exception Type</th><td>#stException.type#</td></tr>
-			</cfif>
-			<cfif structKeyExists(stException, "detail")>
-				<tr><th align="right" style="vertical-align:top;">Detail</th><td>#stException.detail#</td></tr>
-			</cfif>
-			<cfif structKeyExists(stException, "extended_info")>
-				<tr><th align="right" style="vertical-align:top;">Extended Info</th><td>#stException.extended_info#</td></tr>
-			</cfif>
-			<cfif structKeyExists(stException, "queryError")>
-				<tr><th align="right" style="vertical-align:top;">Error</th><td>#stException.queryError#</td></tr>
-			</cfif>
-			<cfif structKeyExists(stException, "sql")>
-				<tr><th align="right" style="vertical-align:top;">SQL</th><td>#stException.sql#</td></tr>
-			</cfif>
-			<cfif structKeyExists(stException, "where")>
-				<tr><th align="right" style="vertical-align:top;">Where</th><td>#stException.where#</td></tr>
-			</cfif>
-
-			<cfif structKeyExists(stException, "TagContext")>
-				<tr>
-					<th align="right" style="vertical-align:top;">Tag Context</th>
-					<td>
-						<ul>
-						<cfloop from="1" to="#arrayLen(stException.TagContext)#" index="i">
-							<li>#stException.TagContext[i].template# (line: #stException.TagContext[i].line#)</li>
-						</cfloop>
-						</ul>	
-					</td>
-				</tr>
-			</cfif>
-			
-			</table>		
-			
-		</cfoutput>
-		<cfreturn />
-	</cffunction>
 
  
 	<cffunction name="farcryUpdateApp" access="private" output="false" hint="Initialise farcry Application." returntype="void">
@@ -570,7 +421,6 @@
 		----------------------------------------->
 		
 		<!--- project and plugin request processing --->
-		<cfset application.fapi.addProfilePoint("Request initialisation","Server specific request scope") />
 		<cfif application.sysInfo.bServerSpecificRequestScope>
 			<cfloop from="1" to="#arraylen(application.sysinfo.aServerSpecificRequestScope)#" index="i">
 				<cfinclude template="#application.sysinfo.aServerSpecificRequestScope[i]#" />
@@ -579,12 +429,10 @@
 		
 			
 		<!--- PARSE THE URL CHECKING FOR FRIENDLY URLS (url.furl) --->
-		<cfset application.fapi.addProfilePoint("Request initialisation","Parse URL") />
 		<cfset structAppend(url, application.fc.factory.farFU.parseURL(),true) />
-		
+			
 
 		<!--- INITIALIZE THE REQUEST.MODE struct --->
-		<cfset application.fapi.addProfilePoint("Request initialisation","Request modes") />
 		<cfset application.security.initRequestMode() />
 		
 		<!----------------------------------------
@@ -601,7 +449,6 @@
 		
 		<!--- IF the project has been set to developer mode, we need to refresh the metadata on each page request. --->
 		<cfif request.mode.bDeveloper>
-			<cfset application.fapi.addProfilePoint("Request initialisation","Developer: Refresh COAPI") />
 			<cfset createObject("component","#application.packagepath#.farcry.alterType").refreshAllCFCAppData() />
 		</cfif>
 
@@ -706,8 +553,7 @@
 		<cfparam name="this.webtopURL" default="" />
 		
 		<cfparam name="this.bObjectBroker" default="true" />
-		<cfparam name="this.ObjectBrokerMaxObjectsDefault" default="1000" />
-		<cfparam name="this.defaultWebskinCacheTimeout" default="1400" /><!--- Default timeout in seconds --->
+		<cfparam name="this.ObjectBrokerMaxObjectsDefault" default="100" />
 		
 		<!--- Option to archive --->
 		<cfparam name="this.bUseMediaArchive" default="false" />
@@ -751,6 +597,7 @@
 		<cfset application.url.farcry = "#application.url.webtop#" /><!--- Legacy variable. Developers should use application.url.webtop --->
 		<cfset application.url.imageRoot = "#application.url.webroot#">
 		<cfset application.url.fileRoot = "#application.url.webroot#/files">
+		<cfset application.url.cache = "#application.url.webroot#/cache">
 		
 		
 		<!----------------------------------------
@@ -769,6 +616,8 @@
 		<cfelse>
 			<cfset application.path.webroot = expandPath("/")><!--- Doesnt work if empty string. Have to set to  "/" otherwise it returns cf root --->
 		</cfif>
+		
+		<cfset application.path.cache = "#application.path.webroot#/cache" />
 		
 		<!--- If installing in a subdirectory, the index.cfm seems to be included in the expandPath() above. Need to strip it out. --->		
 		<cfif right(application.path.webroot,9) EQ "index.cfm">
@@ -808,12 +657,8 @@
 		<cfset application.fc.utils = createObject("component", "farcry.core.packages.farcry.utils").init() /><!--- FarCry Utility Functions --->
 		<cfset application.fc.serverTimezone = createObject("java","java.util.TimeZone").getDefault().ID />
 		<cfset application.fc.container = createObject("component", "farcry.core.packages.rules.container").init() />
-		<cfset application.fc.webskinAncestors = structNew() />
-		<cfset application.fc.settings = structnew() /><!--- Struct to contain machine specific settings. These should only be altered after init. --->
 		
-		<cfset application.fc.settings.webtopheadingcolour = "##ffffff" />
-		
-		<cfset application.fc.factory['farCoapi'] = createObject("component", "farcry.core.packages.types.farCoapi").fourqInit() />
+		<cfset application.fc.factory['farCoapi'] = createObject("component", "farcry.core.packages.types.farCoapi") />
 		
 		
 
@@ -838,7 +683,6 @@
 		 ------------------------------------------>
 		<cfset application.bObjectBroker = this.bObjectBroker />
 		<cfset application.ObjectBrokerMaxObjectsDefault = this.ObjectBrokerMaxObjectsDefault />
-		<cfset application.defaultWebskinCacheTimeout = this.defaultWebskinCacheTimeout />
 
 
 		<!------------------------------------------ 

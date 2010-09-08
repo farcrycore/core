@@ -1,28 +1,6 @@
-<!--- 	
-	@@examples:
 
-	<p>Change Password</p>
-	<code>
-		<cfproperty
-			name="password" type="string" 
-			ftSeq="12" ftfieldset="Your Login Details" required="yes" default="" 
-			ftType="password" ftLabel="Password"
-			ftValidation="required" />
-	</code>
-
-	<p>Confirm Password</p>
-	<code>
-		<cfproperty
-			name="password" type="string" 
-			ftSeq="12" ftfieldset="Your Login Details" required="yes" default="" 
-			ftType="password" ftRenderType="confirmPassword" ftLabel="Password" 
-			ftValidation="required" />
-	</code>
-
- --->
 
 <cfcomponent extends="field" name="password" displayname="password" hint="Used to liase with password type fields"> 
-	<cfproperty name="ftRenderType" default="changepassword" hint="This formtool offers a number of ways to render the input. (changepassword, confirmPassword)" />
 	
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.password" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
@@ -36,7 +14,6 @@
 	
 		<cfset var html = "" />
 		
-		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 		
 		<cfparam name="arguments.stMetadata.ftLabel" default="#arguments.stMetadata.name#" />
 		<cfparam name="arguments.stMetadata.ftRenderType" default="changepassword" />
@@ -47,15 +24,17 @@
 					<cfoutput>
 								
 						<div class="multiField">
-							<ft:field label="Current password" labelAlignment="block" for="#arguments.fieldname#">
+							<label class="blockLabel" for="#arguments.fieldname#" style="width:100%;">Current password
 								<input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
-							</ft:field>
-							<ft:field label="New password" labelAlignment="block" for="#arguments.fieldname#New">
+							 </label>
+							
+							<label class="blockLabel" for="#arguments.fieldname#New" style="width:100%;margin-top:5px;">New password
 								<input type="password" name="#arguments.fieldname#New" id="#arguments.fieldname#New" value="" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
-							</ft:field>
-							<ft:field label="Re-enter new password" labelAlignment="block" for="#arguments.fieldname#Confirm">
+							 </label>
+							
+							<label class="blockLabel" for="#arguments.fieldname#Confirm" style="width:100%;margin-top:5px;">Re-enter new password
 								<input type="password" name="#arguments.fieldname#Confirm" id="#arguments.fieldname#Confirm" value="" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
-							</ft:field>
+							 </label>
 						</div>
 					</cfoutput>
 				</cfsavecontent>
@@ -64,12 +43,13 @@
 				<cfsavecontent variable="html">
 					<cfoutput>				
 						<div class="multiField">
-							<ft:field label="Choose a password" labelAlignment="block" for="#arguments.fieldname#">
+							<label class="blockLabel" for="#arguments.fieldname#" style="width:100%;">Choose a password
 								<input type="password" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
-							</ft:field>
-							<ft:field label="Re-enter password" labelAlignment="block" for="#arguments.fieldname#Confirm">
+							 </label>
+							
+							<label class="blockLabel" for="#arguments.fieldname#Confirm" style="width:100%;margin-top:5px;">Re-enter password
 								<input type="password" name="#arguments.fieldname#Confirm" id="#arguments.fieldname#Confirm" value="" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" />
-							</ft:field>
+							 </label>
 						</div>
 					</cfoutput>
 				</cfsavecontent>

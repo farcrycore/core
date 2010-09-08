@@ -356,7 +356,7 @@ $out:$
 	            <label for="startPoint"><b>#application.rb.getResource("fixtree.labels.enterTreeTypeName@label","Enter a typename to fix the tree of")#:</b>
 				<select name="typename">
 					<cfloop query="qTypeNames">
-						<option value="#qTypeNames.typename#"<cfif qTypeNames.typename eq defaultType> selected="selected"</cfif>>#qTypeNames.typename#</option>
+						<option value="#qTypeNames.typename#" <cfif qTypeNames.typename eq defaultType>selected</cfif>>#qTypeNames.typename#</option>
 					</cfloop>
 				</select><br />
 			  	</label>

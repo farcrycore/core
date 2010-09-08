@@ -37,9 +37,7 @@ It just ignores the inner ones.
 		<!--- import libraries --->
 		<skin:loadJS id="jquery" />		
 		<skin:loadJS id="farcry-form" />
-		<skin:loadJS id="jquery-tooltip" />
-		<skin:loadJS id="jquery-tooltip-auto" />
-		<skin:loadCSS id="jquery-tooltip" />
+		
 	
 		
 		<cfparam name="attributes.Name" default="farcryForm#randrange(1,999999999)#">

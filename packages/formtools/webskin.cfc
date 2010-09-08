@@ -1,27 +1,4 @@
-<!--- @@description:
-	<p>Displays a select box with a list of templates</p> --->
-
-<!--- @@examples:
-	<p>Basic</p>
-	<code>
-	<cfproperty 
-		name="displayMethod" type="string" hint="Display method to render." required="yes" default="displayPageStandard"
-		ftseq="3" ftfieldset="General Details" ftwizardStep="General Details" ftlabel="Content Template" 
-		fttype="webskin" />
-	</code> 
-	<p>Get only templates with filename starting with 'gavinisgreat'</p>
-	<code>
-	<cfproperty 
-		name="displayMethod" type="string" hint="Display method to render." required="yes" default="displayPageStandard"
-		ftseq="3" ftfieldset="General Details" ftwizardStep="General Details" ftlabel="Content Template" 
-		fttype="webskin" ftPrefix="gavinisgreat"/>
-	</code>
---->
 <cfcomponent extends="field" name="webskin" displayname="webskin" hint="Used to liase with webskin type fields"> 
-	<cfproperty name="ftPrefix" type="string" hint="Only webskins that start with this value are displayed" required="false" default="" />
-	<cfproperty name="ftTypename" type="string" hint="The type from which webskins are to be selected" required="false" default="" />
-	<cfproperty name="bExcludeCoreViews" type="string" hint="Excludes webskins defined in core from selection" required="false" default="false" />
-	
 	
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.webskin" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
@@ -86,7 +63,7 @@
 			<cfif isDefined("qWebskins") AND qWebskins.RecordCount>
 				<select name="#arguments.fieldname#" id="#arguments.fieldname#" class="selectInput #arguments.stMetadata.ftClass#">
 					<cfloop query="qWebskins">						
-						<option value="#ReplaceNoCase(qWebskins.name, '.cfm', '','ALL')#"<cfif ReplaceNoCase(qWebskins.name, '.cfm', '','ALL')  eq arguments.stMetadata.value> selected="selected"</cfif>>#qWebskins.displayname#</option>
+						<option value="#ReplaceNoCase(qWebskins.name, '.cfm', '','ALL')#" <cfif ReplaceNoCase(qWebskins.name, '.cfm', '','ALL')  eq arguments.stMetadata.value>selected</cfif>>#qWebskins.displayname#</option>
 					</cfloop>
 				</select>
 			<cfelse>

@@ -31,7 +31,6 @@ type properties
 	ftlabel="Source Image" 
 	ftImageWidth="" 
 	ftImageHeight=""
-	ftbUploadOnly="true"
 	ftHint="Upload your high quality source image here."  />
 
 <cfproperty ftSeq="24" ftFieldset="Image Files" name="StandardImage" type="string" hint="The URL location of the optimised uploaded image that should be used for general display" required="no" default="" 
@@ -43,7 +42,6 @@ type properties
 	ftSourceField="SourceImage" 
 	ftCreateFromSourceDefault="true" 
 	ftAllowUpload="true" 
-	ftQuality=".75"
 	ftlabel="Mid Size Image"
 	ftHint="This image is generally used throughout your project as the main image. Most often you would have this created automatically from the high quality source image you upload." />  
 
@@ -56,7 +54,6 @@ type properties
 	ftSourceField="SourceImage" 
 	ftCreateFromSourceDefault="true" 
 	ftAllowUpload="true" 
-	ftQuality=".75"
 	ftlabel="Thumbnail Image"
 	ftHint="This image is generally used throughout your project as the thumbnail teaser image. Most often you would have this created automatically from the high quality source image you upload." />
 

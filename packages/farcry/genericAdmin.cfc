@@ -91,10 +91,10 @@ $out:$
 		<div class="FormTableClear" style="margin-left:0;">
 			#application.rb.getResource("objStatus")# &nbsp; 
 			<select class="text-cellheader" name="currentStatus" onChange="this.form.submit();">
-				<option value="draft"<cfif arguments.criteria.currentStatus IS "draft"> selected="selected"</cfif>>#application.rb.getResource("draftLC")#</option>
-				<option value="pending"<cfif arguments.criteria.currentStatus IS "pending"> selected="selected"</cfif>>#application.rb.getResource("pendingLC")#</option>
-				<option value="approved"<cfif arguments.criteria.currentStatus IS "approved"> selected="selected"</cfif>>#application.rb.getResource("approvedLC")#</option>
-				<option value="All"<cfif arguments.criteria.currentStatus IS "all"> selected="selected"</cfif>>#application.rb.getResource("all")#</option>
+				<option value="draft" <cfif arguments.criteria.currentStatus IS "draft">selected</cfif>>#application.rb.getResource("draftLC")#</option>
+				<option value="pending" <cfif arguments.criteria.currentStatus IS "pending">selected</cfif>>#application.rb.getResource("pendingLC")#</option>
+				<option value="approved" <cfif arguments.criteria.currentStatus IS "approved">selected</cfif>>#application.rb.getResource("approvedLC")#</option>
+				<option value="All" <cfif arguments.criteria.currentStatus IS "all">selected</cfif>>#application.rb.getResource("all")#</option>
 			</select>
 			</div>
 		</cfif>
@@ -109,14 +109,14 @@ $out:$
 			<cfloop list="#listOfKeys#" index="property">
 				<!--- check if property is string --->
 				<cfif listFind(fieldType,application.types[arguments.typename].stProps[property].metadata.type)>
-					<option value="#property#"<cfif arguments.criteria.filter IS property> selected="selected"</cfif>>#property#</option>
+					<option value="#property#" <cfif arguments.criteria.filter IS property>selected</cfif>>#property#</option>
 				</cfif>
 			</cfloop>
 		</select>
 		<!--- filter type exact match search or like --->
 		<select name="filterType">
-			<option value="exactly"<cfif arguments.criteria.filterType IS "exactly"> selected="selected"</cfif>>#application.rb.getResource("matchesExactly")#</option>
-			<option value="contains"<cfif arguments.criteria.filterType IS "contains"> selected="selected"</cfif>>#application.rb.getResource("containsLabel")#</option>
+			<option value="exactly" <cfif arguments.criteria.filterType IS "exactly">selected</cfif>>#application.rb.getResource("matchesExactly")#</option>
+			<option value="contains" <cfif arguments.criteria.filterType IS "contains">selected</cfif>>#application.rb.getResource("containsLabel")#</option>
 		</select>
 		<!--- free text field --->
 		<input type="text" name="searchText" value="#arguments.criteria.searchText#">
@@ -127,13 +127,13 @@ $out:$
 		<cfloop list="#listOfKeys#" index="property">
 			<!--- check if property is string --->
 			<cfif listFind(fieldType,application.types[arguments.typename].stProps[property].metadata.type)>
-				<option value="#property#" <cfif arguments.criteria.filter eq property> selected="selected"</cfif>>#property#</option>
+				<option <cfif arguments.criteria.order IS "#property#">selected</cfif>  value="#property#" <cfif arguments.criteria.filter eq property>selected</cfif>>#property#
 			</cfif>
 		</cfloop>
 		</select>
 		<select name="orderDirection">
-			<option<cfif arguments.criteria.orderDirection IS "asc"> selected="selected"</cfif> value="asc">#application.rb.getResource("ascending")#</option>
-			<option<cfif arguments.criteria.orderDirection IS "desc"> selected="selected"</cfif> value="desc">#application.rb.getResource("descending")#</option>
+			<option <cfif arguments.criteria.orderDirection IS "asc">selected</cfif> value="asc">#application.rb.getResource("ascending")#</option>
+			<option <cfif arguments.criteria.orderDirection IS "desc">selected</cfif> value="desc">#application.rb.getResource("descending")#</option>
 		</select>
 		<input type="hidden" name="customfilter" value="#arguments.criteria.customfilter#" >
 		<!--- submit buttons --->

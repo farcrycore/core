@@ -52,8 +52,8 @@ START WEBSKIN
 	<cfparam name="attributes.bottom" default="true" type="boolean">	
 	<cfparam name="attributes.oddRowClass" default="oddrow" type="string"><!--- The class name returned in stobjects for each "even" current row --->
 	<cfparam name="attributes.evenRowClass" default="evenrow" type="string"><!--- The class name returned in stobjects for each "odd" current row --->
-	<cfparam name="attributes.bDisplayTotalRecords" default="0" /><!--- display the total records or not --->
 	
+
 	<!------------------------------------------------------------------------------------ 
 		Check if they have passed in the attribute as the NAME of a query/array in the caller.
 		IF SO, change it to the reference to the calling query/array.
@@ -103,7 +103,7 @@ START WEBSKIN
 	
 	<!--- Render the pagination at the top --->
 	<cfif attributes.top>
-		<cfset topPagination = oPagination.getView(template="displayLinks", position="top", stparam=attributes ) />
+		<cfset topPagination = oPagination.getView(template="displayLinks", position="top" ) />
 		<cfoutput>#topPagination#</cfoutput>
 	</cfif>
 	
@@ -136,7 +136,7 @@ START WEBSKIN
 	<cfelse>
 		<!--- MEANS THERE WERE NO RECORDS SO SIMPLY CALL THE BOTTOM --->
 		<cfif attributes.bottom>
-			<cfset bottomPagination = oPagination.getView(template="displayLinks", position="bottom",stparam=attributes ) />
+			<cfset bottomPagination = oPagination.getView(template="displayLinks", position="bottom" ) />
 			<cfoutput>#bottomPagination#</cfoutput>
 		</cfif>	
 		<cfexit method="exittag" />
@@ -178,13 +178,18 @@ START WEBSKIN
 	<cfelse>
 		<!--- After the last record, we render the pagination. --->
 		<cfif attributes.bottom>
-			<cfset bottomPagination = oPagination.getView(template="displayLinks", position="bottom", stparam=attributes) />
+			<cfset bottomPagination = oPagination.getView(template="displayLinks", position="bottom" ) />
 			<cfoutput>#bottomPagination#</cfoutput>
 		</cfif>
 	</cfif>
 	
 
 </cfif>
+
+
+
+
+
 
 
 <cfsetting enablecfoutputonly="false">

@@ -5,7 +5,6 @@
 <!--- @@description:   --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
-<!--- @@cacheStatus:-1 --->
 
 <!------------------ 
 FARCRY IMPORT FILES
@@ -17,19 +16,14 @@ FARCRY IMPORT FILES
 START WEBSKIN
  ------------------>
 <cfparam name="url.property" type="string" />
-<cfparam name="lSelected" type="string" default=""/>
+
 <!--- DETERMINE METADATA --->
 <cfset stMetadata = application.fapi.getPropertyMetadata(typename="#stobj.typename#", property="#url.property#") />
 
 <!--- DETERMINE THE SELECTED ITEMS --->
+
 <cfif isArray(stobj[url.property])>
-	<cfloop array="#stobj[url.property]#"  index="i">
-		<cfif isStruct(i) and StructKeyExists(i,"data")>
-			<cfset lSelected = listappend(lSelected,i.data)>
-		<cfelse>
-			<cfset lSelected = listappend(lSelected,i)>
-		</cfif>
-	</cfloop>
+	<cfset lSelected = arrayToList(stobj[url.property]) />
 <cfelse>
 	<cfset lSelected = stobj[url.property] />
 </cfif>			

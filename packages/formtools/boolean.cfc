@@ -1,24 +1,4 @@
-<!--- 	
-	@@description:
-	<p>Boolean properties always render as a checkbox, valid values are 0 - false and 1 - true</p>
-
-	@@examples:
-	<p>Basic boolean field, default not checked</p>
-	<code>
-		<cfproperty 
-			name="bActive" default="0" 
-			ftType="boolean" />
-	</code>
-
-	<p>Basic boolean field, default checked</p>
-	<code>
-		<cfproperty 
-			name="bActive" default="1" 
-			ftType="boolean" />
-	</code>
- --->
-
-<cfcomponent extends="field" name="boolean" displayname="boolean" bDocument="true" hint="Used to liase with boolean type fields"> 
+<cfcomponent extends="field" name="boolean" displayname="boolean" hint="Used to liase with boolean type fields"> 
 		
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.boolean" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>

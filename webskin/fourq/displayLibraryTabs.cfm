@@ -1,10 +1,4 @@
-<!--- @@Copyright: Daemon Pty Limited 1995-2007, http://www.daemon.com.au --->
-<!--- @@License: Released Under the "Common Public License 1.0", http://www.opensource.org/licenses/cpl.php --->
-<!--- @@displayname: Display Library Tabs --->
-<!--- @@description:   --->
-<!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
-<!--- @@cacheStatus:-1 --->
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
@@ -54,7 +48,7 @@
 			<ul>
 				<cfloop list="#stMetadata.ftJoin#" index="i">
 					<!---<li><a href="###i#" >#application.fapi.getContentTypeMetadata(i,'displayName',i)#</a></li>--->
-					<li><a href="#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=#url.type#&objectid=#url.objectid#&view=displayLibrary&property=#url.property#&filterTypename=#i#">#application.fapi.getContentTypeMetadata(i,'displayName',i)#</a></li>
+					<li><a href="/index.cfm?ajaxmode=1&type=#url.type#&objectid=#url.objectid#&view=displayLibrary&property=#url.property#&filterTypename=#i#">#application.fapi.getContentTypeMetadata(i,'displayName',i)#</a></li>
 				</cfloop>
 			</ul>
 		<!---	<cfloop list="#stMetadata.ftJoin#" index="i">

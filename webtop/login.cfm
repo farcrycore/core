@@ -42,7 +42,7 @@ GENERIC LOGIN
 	<cfset stResult = application.security.processLogin() />
 
 	<cfif stResult.authenticated>
-		<cflocation url="#URLDecode(stResult.loginReturnURL)#" addtoken="false" />
+		<cflocation url="#stResult.loginReturnURL#" addtoken="false" />
 	<cfelse>
 		<skin:view typename="#stResult.loginTypename#" template="#stResult.loginWebskin#" stParam="#stResult#" />
 	</cfif>

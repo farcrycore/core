@@ -132,22 +132,10 @@ START WEBSKIN
 		<cfoutput>#stobj.objectid#</cfoutput>
 	</ft:field>
 	<ft:field label="Created by" bMultiField="true" hint="This is the person who first created this content item.">
-		<cfif len(stobj.createdby)>
-			<cfset stLocal.profile = application.fapi.getContentType('dmProfile').getProfile(stobj.createdby) />
-			<cfparam name="stLocal.profile.label" default="#stObj.createdby#" />
-			<cfoutput>#stLocal.profile.Label#</cfoutput>
-		<cfelse>
-			<cfoutput>unknown.</cfoutput>
-		</cfif>
-		<cfoutput> #application.fapi.prettyDate(stobj.datetimecreated)#</cfoutput>
+		<cfoutput>#application.fapi.getContentType('dmProfile').getProfile(stobj.createdby).Label# #application.fapi.prettyDate(stobj.datetimecreated)#</cfoutput>
 	</ft:field>
 	<ft:field label="Last updated by" bMultiField="true">
-		<cfif len(stobj.lastupdatedby)>
-			<cfoutput>#application.fapi.getContentType('dmProfile').getProfile(stobj.lastupdatedby).Label#</cfoutput>
-		<cfelse>
-			<cfoutput>unknown.</cfoutput>
-		</cfif>
-		<cfoutput> #application.fapi.prettyDate(stobj.datetimelastupdated)#</cfoutput>
+		<cfoutput>#application.fapi.getContentType('dmProfile').getProfile(stobj.lastupdatedby).Label# #application.fapi.prettyDate(stobj.datetimelastupdated)#</cfoutput>
 		<ft:fieldHint>
 			<cfoutput>
 			This is the person who last updated this content item.

@@ -26,7 +26,7 @@ type properties
 	ftSeq="1" ftFieldset="Include Details" ftlabel="Title" ftvalidation="required" />
 	
 <cfproperty 
-	name="teaser" type="longchar" hint="A brief description of the nature of the include file" required="no" default="" 
+	name="teaser" type="string" hint="A brief description of the nature of the include file" required="no" default="" 
 	ftSeq="2" ftFieldset="Include Details" ftlabel="Teaser"
 	ftType="longchar" />
 

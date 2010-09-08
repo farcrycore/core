@@ -46,7 +46,7 @@ START WEBSKIN
 			
 			<cfif qAncestors.recordCount>
 				<cfloop query="qAncestors">
-					<skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="objectID=#qAncestors.objectid#" linktext="#qAncestors.objectName#" />
+					<skin:buildLink href="#application.url.webtop#/editTabOverview.cfm" urlParameters="objectID=#qAncestors.objectid#" linktext="#qAncestors.objectName#" />
 					<cfoutput>&nbsp;&raquo;&nbsp;</cfoutput>
 				</cfloop>
 				<cfoutput>#stobj.label#</cfoutput>

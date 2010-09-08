@@ -1,4 +1,4 @@
-<cfcomponent displayname="FarCry Log" hint="Manages FarCry event logs" extends="types" output="false" bRefObjects="false" fuAlias="fc-log" bObjectBroker="0">
+<cfcomponent displayname="FarCry Log" hint="Manages FarCry event logs" extends="types" output="false" bRefObjects="false" fuAlias="fc-log">
 	<cfproperty name="object" type="uuid" default="" hint="The associated object" ftSeq="1" ftFieldset="" ftLabel="Object" ftType="string" />
 	<cfproperty name="type" type="string" default="" hint="The type of the object or event group (e.g. security, coapi)" ftSeq="2" ftFieldset="" ftLabel="Object type" ftType="string" />
 	<cfproperty name="event" type="string" default="" hint="The event this log is associated with" ftSeq="3" ftFieldset="" ftLabel="Event" ftType="string" />

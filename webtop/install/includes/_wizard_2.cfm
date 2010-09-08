@@ -2,6 +2,9 @@
 <!--- @@displayname: Step 2 --->
 <!--- @@description: Database details --->
 
+<cfset qDBTypes = session.oUI.getDBTypes() />
+<cfset lUsesDBOwner = "" />
+
 <cfoutput>
 	<h1>Database Configuration</h1>
 	<div class="item">
@@ -19,11 +22,12 @@
 			<!--- TODO: should the database name/key be in a conifg file or something? --->
 	      	<select name="DBType" id="DBType" class="selectOne">
 		        <option value="">-- Select --</option>
-		        <option value="mssql" <cfif session.oUI.stConfig.dbType EQ "mssql"> selected="selected"</cfif>>Microsoft SQL Server</option>
-		        <option value="ora" <cfif session.oUI.stConfig.dbType EQ "ora"> selected="selected"</cfif>>Oracle</option>
-		        <option value="mysql" <cfif session.oUI.stConfig.dbType EQ "mysql"> selected="selected"</cfif>>MySQL</option>
-		        <option value="postgresql" <cfif session.oUI.stConfig.dbType EQ "postgresql"> selected="selected"</cfif>>PostgreSQL</option>
-				<!--- <option value="HSQLDB" <cfif session.oUI.stConfig.dbType EQ "HSQLDB"> selected="selected"</cfif>>HSQLDB</option> --->
+		        <cfloop query="qDBTypes">
+					<option value="#qDBTypes.key#" <cfif session.oUI.stConfig.dbType EQ qDBTypes.key> selected="selected"</cfif>>#qDBTypes.label#</option>
+					<cfif qDBTypes.usesDBOwner>
+						<cfset lUsesDBOwner = listappend(lUsesDBOwner,qDBTypes.key," ") />
+					</cfif>
+				</cfloop>
 			</select>
 			<div class="fieldHint">Funnily enough, your choice of database type must reflect the database your datasource is pointing to.</div>
 		</div>
@@ -31,12 +35,12 @@
 		<input type="hidden" name="DBType" value="" />
 	</div>
 	
-	<cfif session.oUI.stConfig.dbType EQ "mssql" OR session.oUI.stConfig.dbType EQ "ora">
+	<cfif refindnocase("(^|,)#session.oUI.stConfig.dbType#($|,)",lUsesDBOwner)>
 		<cfset ownerDisplay = 'block' />
 	<cfelse>
 		<cfset ownerDisplay = 'none' />
 	</cfif>
-    <div class="item" id="divDBOwner" style="display:#ownerDisplay#;">
+    <div class="item #lUsesDBOwner#" id="divDBOwner" style="display:#ownerDisplay#;">
       	<label for="DBOwner">Database Owner</label>
 		<div class="field">
 			<input type="text" id="DBOwner" name="DBOwner" value="#session.oUI.stConfig.DBOwner#" />
@@ -48,78 +52,16 @@
 	
 	<cfoutput>
 	<script type="text/javascript">
-		Ext.onReady(function(){	
-			var field = Ext.get('DBType');
-			field.on('change', checkDBType);
-			
-		});
-		<cfif session.oUI.stConfig.dbType EQ "mssql" OR session.oUI.stConfig.dbType EQ "ora">
-			var showingOwner = true;
-		<cfelse>
-			var showingOwner = false;
-		</cfif>
-				
-		
-		
-		function checkDBType() {
-			
-			
-			//if(this.dom.value == "postgresql" || this.dom.value == "mysql" || this.dom.value == "")
-			if(this.dom.value != "ora" && this.dom.value != "mssql")
-			{
-				var DBOwner = Ext.get('DBOwner');
-				DBOwner.dom.value = '';		
-				
-				if (showingOwner) {	
-					var el = Ext.get('divDBOwner');	
-				
-					el.ghost('b', {
-					    easing: 'easeOut',
-					    duration: .5,
-					    remove: false,
-					    useDisplay: true
-					});
-					
-					showingOwner = false;
+		$j(function(){
+			$j("##DBType").bind("change",function() {
+				if (this.value=="") 
+					$j("##divDBOwner").filter(":not(:hidden)").slideUp();
+				else {
+					$j("##divDBOwner").filter("."+this.value+":hidden").slideDown();
+					$j("##divDBOwner").filter(":not(."+this.value+"):not(:hidden)").slideUp();
 				}
-					
-			}
-			else if (this.dom.value == "ora")
-			{
-				var DBOwner = Ext.get('DBOwner');
-				DBOwner.dom.value = 'username.';		
-				
-				
-				var el = Ext.get('divDBOwner');	
-			
-				el.slideIn('t', {
-				    easing: 'easeIn',
-				    duration: .5,
-				    useDisplay: true
-				});	
-				
-				showingOwner = true;
-				
-			}
-			else 
-			{		
-				
-				var DBOwner = Ext.get('DBOwner');
-				DBOwner.dom.value = 'dbo.';		
-				
-			
-				var el = Ext.get('divDBOwner');	
-			
-				el.slideIn('t', {
-				    easing: 'easeIn',
-				    duration: .5,
-				    useDisplay: true
-				});	
-				
-				showingOwner = true;
-				
-			}
-		}
+			});
+		});
 	</script>	
 </cfoutput>
 

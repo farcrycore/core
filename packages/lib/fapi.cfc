@@ -102,7 +102,6 @@
 		<cfargument name="status" type="string" required="false" default="#request.mode.lValidStatus#" hint="Filter by object status. Only used for content types that support it." />
 		<!--- Optional filter arguments --->
 		<cfargument name="orderBy" type="string" required="false" default="" hint="Order by clause" />
-		<cfargument name="maxRows" type="numeric" required="false" default="-1" hint="Number of records to return" />
 				
 		<cfset var q = "" />
 		<cfset var thisargument = "" />
@@ -146,7 +145,7 @@
 		<!--- Get some extra info for the filters in the array --->
 		<cfloop from="1" to="#arraylen(arguments.aFilters)#" index="i">
 			<!--- The category formtool is treated differently to normal strings. All other ftTypes are ignored. --->
-			<cfif application.stCOAPI[arguments.typename].stProps[arguments.aFilters[i].property].metadata.fttype eq "category">
+			<cfif application.stCOAPI[arguments.typename].stProps[arguments.aFilters[i].property].metadata.type eq "category">
 				<cfset arguments.aFilters[i].type = "category" />
 			<cfelse>
 				<cfset arguments.aFilters[i].type = application.stCOAPI[arguments.typename].stProps[arguments.aFilters[i].property].metadata.type />
@@ -155,12 +154,12 @@
 			<cfset arguments.aFilters[i].sqltype = propertytypemap[arguments.aFilters[i].type] />
 		</cfloop>
 		
-		<cfquery datasource="#application.dsn#" name="q" maxrows="#arguments.maxRows#">
-			select		#arguments.lProperties#, '#arguments.typename#' as typename
+		<cfquery datasource="#application.dsn#" name="q">
+			select		#arguments.lProperties#
 			from		#application.dbowner##arguments.typename#
 			where		1=1
 						<cfif structkeyexists(application.stCOAPI[arguments.typename].stProps,"status")>
-							AND status in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.status#" />)
+							AND status in (<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.status#" />)
 						</cfif>
 						<cfloop from="1" to="#arraylen(arguments.aFilters)#" index="i">
 							<cfset f = arguments.aFilters[i] /><!--- Shortcut variable --->
@@ -178,17 +177,13 @@
 											having		count(parentid)=<cfqueryparam cfsqltype="cf_sql_integer" value="#listlen(f.value)#" />
 										)
 									<cfelseif f.type eq "category"><!--- Special case for category searches --->
-										<cfif len(trim(f.value))><!--- Category filtering is permissive - empty = any --->
-											objectid in (
-												select		objectid
-												from		#application.dbowner#refCategories
-												where		categoryid in (<cfqueryparam cfsqltype="#f.sqltype#" list="true" value="#f.value#" />)
-												group by	objectid
-												having		count(objectid)=<cfqueryparam cfsqltype="cf_sql_integer" value="#listlen(f.value)#" />
-											)
-										<cfelse>
-											1=1
-										</cfif>
+										objectid in (
+											select		objectid
+											from		#application.dbowner#refCategories
+											where		categoryid in (<cfqueryparam cfsqltype="#f.sqltype#" list="true" value="#f.value#" />)
+											group by	objectid
+											having		count(objectid)=<cfqueryparam cfsqltype="cf_sql_integer" value="#listlen(f.value)#" />
+										)
 									<cfelse>
 										#f.property# = <cfqueryparam cfsqltype="#f.sqltype#" value="#f.value#" />
 									</cfif>
@@ -204,15 +199,11 @@
 											where		data in (<cfqueryparam cfsqltype="#f.sqltype#" list="true" value="#f.value#" />)
 										)
 									<cfelseif f.type eq "category"><!--- Special case for category searches --->
-										<cfif len(trim(f.value))><!--- Category filtering is permissive - empty = any --->
-											objectid in (
-												select		objectid
-												from		#application.dbowner#refCategories
-												where		categoryid in (<cfqueryparam cfsqltype="#f.sqltype#" list="true" value="#f.value#" />)
-											)
-										<cfelse>
-											1=1
-										</cfif>
+										objectid in (
+											select		objectid
+											from		#application.dbowner#refCategories
+											where		categoryid in (<cfqueryparam cfsqltype="#f.sqltype#" list="true" value="#f.value#" />)
+										)
 									<cfelse>
 										#f.property# IN (<cfqueryparam cfsqltype="#f.sqltype#" list="true" value="#f.value#" />)
 									</cfif>									
@@ -708,7 +699,7 @@
 					<cfset result = application.stCoapi['#arguments.typename#'].stProps['#arguments.property#'].METADATA['#arguments.md#'] />
 				</cfif>
 			<cfelse>
-				<cfset result = duplicate(application.stCoapi['#arguments.typename#'].stProps['#arguments.property#'].METADATA) />
+				<cfset result = application.stCoapi['#arguments.typename#'].stProps['#arguments.property#'].METADATA />
 			</cfif>
 		</cfif>
 
@@ -971,18 +962,7 @@
 		<cffunction name="showFarcryDate" access="public" output="false" returntype="boolean" hint="Returns boolean as to whether to show the date based on how farcry stores dates. ie, 2050 or +200 years." bDocumented="true">
 			<cfargument name="date" required="true" hint="The date to check" />
 			
-			<cfset var bShowDate = true />
-			
-			<cfif isSimpleValue(date) and not len(date)>
-				<cfreturn false />
-			</cfif>
-			
-			<!--- Check for old method using 2050 or 4.0 method of adding 200 years allowing you to check for GT 100 years --->
-			<cfif year(arguments.date) EQ 2050 OR dateDiff("yyyy", now(), arguments.date) GT 100>
-				<cfset bShowDate = false />
-			</cfif>
-			
-			<cfreturn bShowDate>
+			<cfreturn createObject("component", "farcry.core.packages.types.types").showFarcryDate(argumentCollection="#arguments#") />
 		</cffunction>
 		
 		<!--- @@examples:
@@ -1469,7 +1449,6 @@
 		<cfargument name="removevalues" type="string" required="false" hint="List of values to remove from the query string. Prefix with '+' to remove these values in addition to the defaults." />
 		<cfargument name="addvalues" type="any" required="false" hint="A query string or a struct of values, to add to the query string" />
 		<cfargument name="ampDelim" type="string" required="false" default="&" hint="Delimiter to use for ampersands" />
-		<cfargument name="charset" type="string" required="false" default="utf-8" hint="The character encoding in which the url values are encoded." />
 		
 		<cfreturn application.fc.utils.fixURL(argumentCollection="#arguments#") />
 	</cffunction>
@@ -1478,8 +1457,6 @@
 		<cfargument name="url" type="string" required="true" hint="The url to modify" />
 		<cfargument name="key" type="string" required="true" hint="The key to insert" />
 		<cfargument name="value" type="string" required="true" hint="The value to insert" />
-		<cfargument name="ampDelim" type="string" required="false" default="&" hint="Delimiter to use for ampersands" />
-		<cfargument name="charset" type="string" required="false" default="utf-8" hint="The character encoding in which the url values are encoded." />
 		
 		<cfreturn application.fc.utils.insertQueryVariable(argumentCollection="#arguments#") />
 	</cffunction>
@@ -1638,11 +1615,12 @@
 			<cfdump var="#application.fapi.arrayRemove(a,'2,3')#" />
 		</code>
 	 --->
-	<cffunction name="arrayRemove" access="public" output="false" returntype="array" hint="Returns the array with the elements passed in removed." bDocument="true" >
+	<cffunction name="arrayRemove" access="public" output="false" returntype="array" hint="Returns the array with the elements passed in removed." bDocument="true">
 		<cfargument name="array" type="array" required="true" hint="The array to remove elements from" />
 		<cfargument name="elements" type="Any" required="true" hint="The elements in the array to remove. Can be an array or a list." />
 		
 		<cfset var oCaster = "" /><!--- Used in case of Railo --->
+		
 		
 		<cfif isSimpleValue(arguments.elements)>
 			<cfset arguments.elements = listToArray(arguments.elements) />
@@ -1654,20 +1632,7 @@
 				<cfset arguments.array.removeAll(oCaster.toList(arguments.elements)) />
 			</cfcase>
 			<cfdefaultcase>
-				<!--- if extended array then manually delete --->
-				<cfif arraylen(arguments.array) and isStruct(arguments.array[1])>
-					<cfloop from="1" to="#arraylen(arguments.elements)#" index="x">
-						<cfloop from="1" to="#arraylen(arguments.array)#" index="i">
-							<cfif arguments.array[i].data eq arguments.elements[x]>
-								<cfset arrayDeleteAt(arguments.array,i)>
-								<cfbreak>
-							</cfif>
-						</cfloop>									
-					</cfloop>
-
-				<cfelse>
-					<cfset arguments.array.removeAll(arguments.elements) >
-				</cfif>
+				<cfset arguments.array.removeAll(arguments.elements) >
 			</cfdefaultcase>
 		</cfswitch>		
 		
@@ -2285,119 +2250,5 @@
 
 		<cfreturn />
 	</cffunction>	
-	
-	
-	
-	<cffunction name="addProfilePoint" access="public" output="false" returnType="numeric" hint="If profiling is enabled, adds a point to the request profile">
-		<cfargument name="section" type="string" required="true" hint="The name of point grouping" />
-		<cfargument name="label" type="string" required="true" hint="The name of the profile point" />
-		
-		<cfif isdefined("url.profile") and url.profile>
-			<cfparam name="request.fc.trayData" default="#structnew()#" />
-			<cfif not isdefined("request.fc.trayData.profile")>
-				<cfset request.fc.trayData.profile = querynew("section,label,tick","varchar,varchar,bigint") />
-			</cfif>
-			
-			<cfset queryaddrow(request.fc.trayData.profile) />
-			<cfset querysetcell(request.fc.trayData.profile,"label",arguments.label) />
-			<cfset querysetcell(request.fc.trayData.profile,"section",arguments.section) />
-			<cfset querysetcell(request.fc.trayData.profile,"tick",getTickCount()) />
-			
-			<cfreturn request.fc.trayData.profile.recordcount />
-		</cfif>
-		
-		<cfreturn 0 />
-	</cffunction>
-	
-	<cffunction name="getProfileHTML" access="public" output="false" returnType="string" hint="Returns HTML for displaying the profile">
-		<cfargument name="profile" type="query" required="true" hint="The chart that we want to chart" />
-		
-		<cfset var html = "" />
-		<cfset var seriesdata = "" />
-		<cfset var seriestotal = 0 />
-		<cfset var seriesscale = "" />
-		<cfset var seriescolours = "" />
-		<cfset var thisdata = 0 />
-		<cfset var availablecolours = "E41A1C,377EB8,4DAF4A,984EA3,FF7F00,A65628,F781BF,999999" />
-		<cfset var stJSON = "" />
-		<cfset var i = 0 />
-		
-		<cfloop query="arguments.profile">
-			<cfif arguments.profile.section neq "End">
-				<cfset thisdata = arguments.profile.tick[arguments.profile.currentrow+1]-arguments.profile.tick />
-				<cfset seriesdata = listappend(seriesdata,thisdata,"|") />
-				<cfset seriescolours = listappend(seriescolours,listgetat(availablecolours,arguments.profile.currentrow mod listlen(availablecolours) + 1)) />
-				<cfset seriestotal = seriestotal + thisdata />
-			</cfif>
-		</cfloop>
-		
-		<cfloop list="#seriesdata#" index="thisdata">
-			<cfset seriesscale = listappend(seriesscale,"0,#seriestotal#") />
-		</cfloop>
-		
-		<!--- Get image map info --->
-		<cfhttp url="http://chart.apis.google.com/chart?chbh=23,0,0&chs=400x23&cht=bhs&chco=#seriescolours#&chds=#seriesscale#&chd=t:#seriesdata#&chdlp=b&chof=json" result="stJSON" />
-		<cfset stJSON = DeserializeJSON(stJSON.filecontent) />
-		
-		<!--- Generate HTML --->
-		<cfsavecontent variable="html"><cfoutput>
-			<img src="http://chart.apis.google.com/chart?chbh=23,0,0&chs=400x23&cht=bhs&chco=#seriescolours#&chds=#seriesscale#&chd=t:#seriesdata#&chdlp=b" width="400" height="23" alt="" usemap="##request-profile" />
-			<map name="request-profile">
-			<cfset visibleindex = 0 />
-			<cfloop from="1" to="#arraylen(stJSON.chartshape)#" index="i">
-				<cfset visibleindex = visibleindex + 1 />
-				<cfloop condition="arguments.profile.tick[visibleindex+1]-arguments.profile.tick[visibleindex] eq 0">
-					<cfset visibleindex = visibleindex + 1 />
-				</cfloop>
-				<area name='#stJSON.chartshape[i].name#' 
-					  shape='#stJSON.chartshape[i].type#' 
-					  coords='#arraytolist(stJSON.chartshape[i].coords)#' 
-					  href='##request-profile-details-#visibleindex#' 
-					  rel='##request-profile-details-#visibleindex#' 
-					  onclick='$j("div.request-profile-details-selected").css("font-weight","normal").removeClass("request-profile-details-selected");$j("##"+this.href.split("##")[1]).css("font-weight","bold").addClass("request-profile-details-selected");'>
-			</cfloop>
-			</map>
-			<div id='request-profile-details' style='height:65px;overflow:scroll;'>
-			<cfloop query="arguments.profile">
-				<cfif arguments.profile.section neq "End">
-					<div id="request-profile-details-#arguments.profile.currentrow#" style="color:###listgetat(availablecolours,arguments.profile.currentrow mod listlen(availablecolours) + 1)#;"><span class="ticks" style="width:35px;display:inline-block;">#arguments.profile.tick[arguments.profile.currentrow+1]-arguments.profile.tick#</span> #jsstringformat(arguments.profile.section)# - #jsstringformat(arguments.profile.label)#</div>
-				</cfif>
-			</cfloop>
-			</div>
-		</cfoutput></cfsavecontent>
-		
-		<cfreturn html />
-	</cffunction>
-	
-	<cffunction name="addRequestLog" access="public" output="false" returnType="numeric" hint="Adds an item to the request log">
-		<cfargument name="text" type="string" required="true" hint="The text of the log line" />
-		
-		<cfif isdefined("url.profile") and url.profile>
-			<cfparam name="request.fc.trayData" default="#structnew()#" />
-			<cfif not isdefined("request.fc.trayData.log")>
-				<cfset request.fc.trayData.log = querynew("when,text","time,varchar") />
-			</cfif>
-			
-			<cfset queryaddrow(request.fc.trayData.log) />
-			<cfset querysetcell(request.fc.trayData.log,"when",now()) />
-			<cfset querysetcell(request.fc.trayData.log,"text",arguments.text) />
-			
-			<cfreturn request.fc.trayData.log.recordcount />
-		</cfif>
-		
-		<cfreturn 0 />
-	</cffunction>
-	
-	<cffunction name="getRequestLogHTML" access="public" output="false" returnType="string" hint="Returns display for the log">
-		<cfargument name="log" type="query" required="true" hint="The log query to output" />
-		
-		<cfset var html = "" />
-		
-		<cfsavecontent variable="html"><cfoutput>
-			<textarea cols="80" rows="5" wrap="off"><cfloop query="arguments.log">#arguments.log.text##chr(13)##chr(10)#</cfloop></textarea>
-		</cfoutput></cfsavecontent>
-		
-		<cfreturn html />
-	</cffunction>
 	
 </cfcomponent>

@@ -1,107 +1,13 @@
-<!--- @@description:
-	<p>Renders a dropdown select box, check boxes or radio buttons with data provided via a commer seperated list or from a method call</p> --->
-
-<!--- @@examples:
-	<p>Basic</p>
-	<code>
-	<cfproperty
- 			ftSeq="15"
- 			ftFieldset="Colors"
- 			name="podHeaderColor"
-	 		type="string"
-	 		hint="Pod Header Color"
-	 		required="false"
-	 		default=""
-	 		ftLabel="Pod Header Color"
- 			ftType="list"
- 			ftList="apple,orange,kiwi"/>
-	</code> 
-	<p>List with different values from text</p>
-	<code>
-	<cfproperty
- 			ftSeq="15"
- 			ftFieldset="Colors"
- 			name="podHeaderColor"
-	 		type="string"
-	 		hint="Pod Header Color"
-	 		required="false"
-	 		default=""
-	 		ftLabel="Pod Header Color"
- 			ftType="list"
- 			ftList="APP:apple,ORA:orange,KIW:kiwi"/>
-	</code>
-	<p>List rendered as check boxes</p>
-	<code>
-	<cfproperty
- 			ftSeq="15"
- 			ftFieldset="Colors"
- 			name="podHeaderColor"
-	 		type="string"
-	 		hint="Pod Header Color"
-	 		required="false"
-	 		default=""
-	 		ftLabel="Pod Header Color"
- 			ftType="list"
- 			ftList="apple,orange,kiwi"
-			ftRenderType="checkbox"/>
-	</code>
-	<p>List rendered as radio buttons</p>
-	<code>
-	<cfproperty
- 			ftSeq="15"
- 			ftFieldset="Colors"
- 			name="podHeaderColor"
-	 		type="string"
-	 		hint="Pod Header Color"
-	 		required="false"
-	 		default=""
-	 		ftLabel="Pod Header Color"
- 			ftType="list"
- 			ftList="apple,orange,kiwi"
-			ftRenderType="radio"/>
-	</code>
-	
-	<p>List with a method call to populate</p>
-	<code>
-	<cfproperty
- 			ftSeq="15"
- 			ftFieldset="Colors"
- 			name="podHeaderColor"
-	 		type="string"
-	 		hint="Pod Header Color"
-	 		required="false"
-	 		default=""
-	 		ftLabel="Pod Header Color"
- 			ftType="list"
- 			ftListData="myMethod"
-			/>
-	</code>
-	<p>List with a method call to populate from another type component</p>
-	<code>
-	<cfproperty
- 			ftSeq="15"
- 			ftFieldset="Colors"
- 			name="podHeaderColor"
-	 		type="string"
-	 		hint="Pod Header Color"
-	 		required="false"
-	 		default=""
-	 		ftLabel="Pod Header Color"
- 			ftType="list"
- 			ftListData="myMethod"
-			ftListDataTypename="dmNews"/>
-	</code>
---->
 <cfcomponent extends="field" name="list" displayname="list" hint="Field component to liase with all list field types"> 
  
-	<cfproperty name="ftList" required="false" default="" hint="comma separated list of values or variable:value pairs to appear in the drop down. e.g apple,orange,kiwi or APP:apple,ORA:orange,KIW:kiwi" />
-	<cfproperty name="ftListData" required="false" default="" hint="Method call that must return a string in the same variable value pair format as the ftlist attribute OR a query containing the columns value & name. Method gets passed the objectid of the currently edited object as an argument. e.g apple,orange,kiwi or APP:apple,ORA:orange,KIW:kiwi or queryNew('value,name')" />
-	<cfproperty name="ftListDataTypename" required="false" default="" hint="Specific typename to call ftlistdata method on." />
-	<cfproperty name="ftRenderType" required="false" default="dropdown" options="dropdown,checkbox,radio" hint="The way the list will get rendered." />
-	<cfproperty name="ftSelectMultiple" required="false" default="false" options="true,false" hint="used when ftRenderType=dropdown. It allows the user to select multiple items" />
-	<cfproperty name="ftClass" required="false" default="" hint="sets a class for the form element" />
-	<cfproperty name="ftstyle" required="false" default="" hint="allows in line styles to be added to form element" />
-	<cfproperty name="ftMultipleLines" required="false" default="true" options="true,false" hint="for radio and checkbox only, adds a break between each checkox or radio button" />
+	<cfproperty name="ftList" required="false" default="" hint="The hard coded list for this property." />
+	<cfproperty name="ftListData" required="false" default="" hint="The name of a function to use to retrieve the list data." />
+	<cfproperty name="ftListDataTypename" required="false" default="" hint="The typename to call the function on." />
+	<cfproperty name="ftRenderType" required="false" default="dropdown" hint="" />
+	<cfproperty name="ftSelectMultiple" required="false" default="false" hint="" />
+	<cfproperty name="ftClass" required="false" default="" hint="" />
+	<cfproperty name="ftstyle" required="false" default="" hint="" />
+	<cfproperty name="ftMultipleLines" required="false" default="true" hint="for radio and checkbox only" />
 	
 	
 		
@@ -187,7 +93,7 @@
 							<cfelse>
 								<cfset optionValue = ListFirst(i,":") />
 							</cfif>
-							<cfoutput><option value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue) or arguments.stMetadata.value eq optionValue> selected="selected"</cfif>>#ListLast(i , ":")#</option></cfoutput>
+							<cfoutput><option value="#optionValue#" <cfif listFindNoCase(arguments.stMetadata.value, optionValue) or arguments.stMetadata.value eq optionValue> selected</cfif>>#ListLast(i , ":")#</option></cfoutput>
 						</cfloop>
 						<cfoutput></select><input type="hidden" name="#arguments.fieldname#" value=""></cfoutput>
 						
@@ -365,7 +271,7 @@
 						<cfelse>
 							<cfset optionValue = ListFirst(i,":") />
 						</cfif>
-						<cfoutput><option value="#optionValue#"<cfif listFindNoCase(arguments.stFilterProps.value, optionValue) or arguments.stFilterProps.value eq optionValue> selected="selected"</cfif>>#ListLast(i , ":")#</option></cfoutput>
+						<cfoutput><option value="#optionValue#" <cfif listFindNoCase(arguments.stFilterProps.value, optionValue) or arguments.stFilterProps.value eq optionValue> selected</cfif>>#ListLast(i , ":")#</option></cfoutput>
 					</cfloop>
 					<cfoutput></select><input type="hidden" name="#arguments.fieldname#value" value=""></cfoutput>
 									

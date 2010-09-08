@@ -1,38 +1,8 @@
-<!--- @@description:
-	<p>Renders a text area</p> --->
-
-<!--- @@examples:
-	<p>Basic</p>
-	<code>
-	<cfproperty
- 			ftSeq="15"
- 			ftFieldset="Contact"
- 			name="address"
-	 		type="longchar"
-	 		hint="address of occupant"
-	 		required="false"
-	 		default=""
-	 		ftLabel="Address"
- 			ftType="longchar"/>
-	</code> 
-	<p>Textarea with limited characters with character counter</p>
-	<cfproperty
- 			ftSeq="15"
- 			ftFieldset="Contact"
- 			name="address"
-	 		type="longchar"
-	 		hint="address of occupant"
-	 		required="false"
-	 		default=""
-	 		ftLabel="Home address"
- 			ftType="longchar"
-			ftLimit="150"/>
---->
-
 <cfcomponent extends="field" name="longchar" displayname="longchar" hint="Used to liase with longchar type fields"> 
 
-	<cfproperty name="ftStyle" required="false" default="" hint="The style for the text area" />
-	<cfproperty name="ftLimit" required="false" default="0" hint="Limits the amount of data the user can input. Provides a counter above text area" />
+	<cfproperty name="ftLabelAlignment" required="false" default="inline" options="inline,block" hint="Used by FarCry Form Layouts for positioning of labels. inline or block." />
+		
+	
 	
 	<cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
 	
@@ -119,7 +89,7 @@
 				<div class="multiField">
 					<div id="#arguments.fieldname#DIV" style="#fieldStyle#;">
 						<div class="blockLabel">
-						<cfif isBoolean(arguments.stMetadata.ftLimit) and arguments.stMetadata.ftLimit>							
+						<cfif arguments.stMetadata.ftLimit>							
 							<cfset onKeyUp = "javascript:UpdateCounter_#arguments.fieldname#('#request.farcryForm.name#', '#arguments.FieldName#')" />
 							<cfset onKeyDown = "javascript:UpdateCounter_#arguments.fieldname#('#request.farcryForm.name#', '#arguments.FieldName#')" />
 							<textarea name="#arguments.fieldname#" id="#arguments.fieldname#" class="textareaInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" onkeyup="#onKeyUp#" onkeydown="#onKeyDown#">#arguments.stMetadata.value#</textarea>

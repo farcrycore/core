@@ -114,7 +114,6 @@
 	
 	<!--- grab the object we are displaying --->
 	<cftry>
-		<cfset application.fapi.addProfilePoint("Display","Object") />
 		<cfset stObj = application.fapi.getContentObject(url.objectid, url.type) />
 
 				
@@ -179,12 +178,11 @@
 	
 
 	<!--- Check security --->
-	<cfset application.fapi.addProfilePoint("Display","Check permission") />
 	<sec:CheckPermission permission="View" objectID="#stobj.objectid#" typename="#stobj.typename#" result="iHasViewPermission" />
 
 	<!--- if the user is unable to view the object, then show the denied access webskin --->
 	<cfif iHasViewPermission NEQ 1>
-		<skin:view objectid="#stobj.objectid#" typename="#stObj.typename#" webskin="deniedaccess" loginpath="#attributes.loginpath#" />
+		<skin:view objectid="#stobj.objectid#" webskin="deniedaccess" loginpath="#attributes.loginpath#" />
 		<cfsetting enablecfoutputonly="false" />
 		<cfexit method="exittag" />
 	</cfif>
@@ -255,7 +253,7 @@
 		</cfif>
 	</cfif>
 <cfelse>
-	<cfset application.fapi.addProfilePoint("Display","Type") />
+
 	<!---
 	The webskin name that can be used as the body view webskin
 	Default for call on type webskin is "DISPLAYTYPEBODY"

@@ -21,7 +21,6 @@
 		
 		<cfparam name="arguments.stMetadata.ftCountries" default="" /><!--- Defaults to all --->
 		<cfparam name="arguments.stMetadata.ftValue" default="name" /><!--- "code" | "fullcode" | "name" --->
-		<cfparam name="arguments.stMetadata.ftDropdownFirstItem" default="" />
 		
 		<cfif structkeyexists(arguments.stMetadata,"ftWatch") and len(arguments.stMetadata.ftWatch)>
 			<cfset arguments.stMetadata.ftCountries = arguments.stObject[listfirst(arguments.stMetadata.ftWatch)] />
@@ -35,13 +34,10 @@
 		<cfif qAll.recordcount>
 			<cfsavecontent variable="html">
 				<cfoutput>
-					<select name="#arguments.fieldname#" id="#arguments.fieldname#" class="selectInput #arguments.stMetadata.ftclass# #arguments.stMetadata.ftValidation#"  style="#arguments.stMetadata.ftstyle#">
+					<select name="#arguments.fieldname#" id="#arguments.fieldname#" class="selectInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#">
 				</cfoutput>
-				<cfif len(arguments.stMetadata.ftDropdownFirstItem)>
-					<cfoutput><option value="">#arguments.stMetadata.ftDropdownFirstItem#</option></cfoutput>
-				</cfif>
+				
 				<cfoutput query="qAll" group="countryname">
-					
 					<cfif qCountries.recordcount gt 1><optgroup label="#qAll.countryname[qAll.currentrow]#"></cfif>
 					
 					<cfoutput><option value="#qAll[arguments.stMetadata.ftValue][qAll.currentrow]#" <cfif qAll[arguments.stMetadata.ftValue][qAll.currentrow] EQ arguments.stMetadata.value>selected='selected'</cfif>>#qAll.name[qAll.currentrow]#</option></cfoutput>
@@ -62,7 +58,6 @@
 
 	<cffunction name="getStates" returntype="query" output="false" access="public" hint="Returns states and acronyms">
 		<cfargument name="countries" type="string" required="false" hint="Including this argument restricts the states to certain countries or country codes" />
-		<cfargument name="states" type="string" required="false" hint="Including this argument restricts the states to a specific list" />
 		
 		<cfset var q = querynew("countrycode,countryname,code,fullcode,name") />
 		
@@ -78,22 +73,22 @@
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","WA") /><cfset querysetcell(q,"name","Western Australia") /><cfset querysetcell(q,"countrycode","AU") /><cfset querysetcell(q,"countryname","Australia") />
 			
 			<!--- New Zealand --->
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Auckland") /><cfset querysetcell(q,"name","Auckland") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Bay of Plenty") /><cfset querysetcell(q,"name","Bay of Plenty") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Canterbury") /><cfset querysetcell(q,"name","Canterbury") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Gisborne") /><cfset querysetcell(q,"name","Gisborne") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Hawke's Bay") /><cfset querysetcell(q,"name","Hawke's Bay") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Manawatu-Wanganui") /><cfset querysetcell(q,"name","Manawatu-Wanganui") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Marlborough") /><cfset querysetcell(q,"name","Marlborough") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Nelson") /><cfset querysetcell(q,"name","Nelson") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Northland") /><cfset querysetcell(q,"name","Northland") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Otago") /><cfset querysetcell(q,"name","Otago") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Southland") /><cfset querysetcell(q,"name","Southland") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Taranaki") /><cfset querysetcell(q,"name","Taranaki") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Tasman") /><cfset querysetcell(q,"name","Tasman") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Waikato") /><cfset querysetcell(q,"name","Waikato") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","Wellington") /><cfset querysetcell(q,"name","Wellington") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
-			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","West Coast") /><cfset querysetcell(q,"name","West Coast") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","AUK") /><cfset querysetcell(q,"name","Auckland") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","BOP") /><cfset querysetcell(q,"name","Bay of Plenty") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","CAN") /><cfset querysetcell(q,"name","Canterbury") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","GIS") /><cfset querysetcell(q,"name","Gisborne") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","HKB") /><cfset querysetcell(q,"name","Hawke's Bay") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","MWT") /><cfset querysetcell(q,"name","Manawatu-Wanganui") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","MBH") /><cfset querysetcell(q,"name","Marlborough") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","NSN") /><cfset querysetcell(q,"name","Nelson") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","NTL") /><cfset querysetcell(q,"name","Northland") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","OTA") /><cfset querysetcell(q,"name","Otago") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","STL") /><cfset querysetcell(q,"name","Southland") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","TKI") /><cfset querysetcell(q,"name","Taranaki") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","TAS") /><cfset querysetcell(q,"name","Tasman") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","WKO") /><cfset querysetcell(q,"name","Waikato") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","WGN") /><cfset querysetcell(q,"name","Wellington") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
+			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","WTC") /><cfset querysetcell(q,"name","West Coast") /><cfset querysetcell(q,"countrycode","NZ") /><cfset querysetcell(q,"countryname","New Zealand") />
 			
 			<!--- Netherlands --->
 			<cfset queryaddrow(q) /><cfset querysetcell(q,"code","DR") /><cfset querysetcell(q,"name","Drenthe") /><cfset querysetcell(q,"countrycode","NL") /><cfset querysetcell(q,"countryname","Netherlands") />
@@ -171,10 +166,6 @@
 				where	countrycode in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.countries#">)
 						OR countryname in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.countries#">)
 			</cfif>
-			<cfif structkeyexists(arguments,"states") and len(arguments.states)>
-				where	code in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.states#">)
-						OR name in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.states#">)
-			</cfif>
 			order by	countryname,name
 		</cfquery>
 		
@@ -191,7 +182,7 @@
 		<cfset var q = "" />
 		
 		<cfif structkeyexists(arguments.stMetadata,"ftValue") and arguments.stMetadata.ftValue eq "code">
-			<cfset q = getStates(states=arguments.stMetadata.value) />
+			<cfset q = getCountries(arguments.stMetadata.value) />
 			<cfset html = q.name[1] />
 		</cfif>
 		

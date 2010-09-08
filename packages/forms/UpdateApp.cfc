@@ -53,7 +53,7 @@
 	</cffunction>
 
 	<cffunction name="processFriendlyURLs" access="public" returntype="boolean" description="Resets friendly urls" output="false">
-		<cfset application.fc.factory.farFU.onAppInit() />
+		<cfset createObject("component","#application.packagepath#.farcry.fu").refreshApplicationScope() />
 		
 		<cfreturn true />
 	</cffunction>

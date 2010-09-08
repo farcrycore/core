@@ -290,7 +290,7 @@ $out:$
 						<select name="startPoint" id="startPoint">
 							<option value="#application.navid.root#">#application.rb.getResource("quickbuilder.labels.root@label","Root")#</option>
 							<cfloop query="qNodes">
-							<option value="#qNodes.objectId#"<cfif qNodes.objectId eq application.navid.home> selected="selected"</cfif>>#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #qNodes.objectName#</option>
+							<option value="#qNodes.objectId#" <cfif qNodes.objectId eq application.navid.home>selected</cfif>>#RepeatString("&nbsp;&nbsp;|", qNodes.nlevel)#- #qNodes.objectName#</option>
 							</cfloop>
 						</select>				
 					</cfoutput>

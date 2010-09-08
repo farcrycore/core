@@ -58,9 +58,7 @@ accommodate legacy implementations
 	<cfset attributes.typename = application.coapi.coapiUtilities.findType(objectid=attributes.objectid) />
 </cfif>
 <cfif not len(attributes.typename)>
-	<!--- call onMissingTemplate if downloadObject not found --->
-	<cfset oApp=createObject("component","farcry.projects.#application.applicationname#.www.application")>
-	<cfset oApp.onMissingTemplate(thepage=cgi.QUERY_STRING)>
+	<cfthrow type="core.tags.farcry.download" message="File not found." detail="Typename for the file reference could not be determined." />
 </cfif>
 
 <!--- get content item --->

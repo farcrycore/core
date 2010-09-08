@@ -574,10 +574,10 @@
 		
 			<cfsavecontent variable="html">
 				<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#"></cfoutput>
-				<cfoutput><option value=""<cfif arguments.stMetadata.value eq ""> selected="selected"</cfif>>&lt; No media &gt;</option></cfoutput>
+				<cfoutput><option value="" <cfif arguments.stMetadata.value eq ""> selected</cfif>>&lt; No media &gt;</option></cfoutput>
 				
 				<cfloop query="qProperties">
-					<cfoutput><option value="#qProperties.value#"<cfif arguments.stMetadata.value eq qProperties.value> selected="selected"</cfif>>#qProperties.name#</option></cfoutput>
+					<cfoutput><option value="#qProperties.value#" <cfif arguments.stMetadata.value eq qProperties.value> selected</cfif>>#qProperties.name#</option></cfoutput>
 				</cfloop>
 				
 				<cfoutput></select><input type="hidden" name="#arguments.fieldname#" value=" "><br style="clear: both;"/></cfoutput>

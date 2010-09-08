@@ -1,6 +1,6 @@
 
 
-<cfcomponent name="field" displayname="field" hint="Field component to liase with all string types"> 
+<cfcomponent name="field" displayname="string" hint="Field component to liase with all string types"> 
 		
 	<cfproperty name="ftSeq" required="false" hint="Used if you are relying on the framework to render your form. Used to sort the fields on the form." />
 	<cfproperty name="ftFieldset" required="false" hint="Used if you are relying on the framework to render your form. Used to group the fields into HTML fieldsets." />

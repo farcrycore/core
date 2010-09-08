@@ -216,19 +216,19 @@ $out:$
 						
 							<select id="#arguments.elementNamePrefix#day" name="#arguments.elementNamePrefix#day">
 								<cfloop from="1" to="31" index="i">
-									<option value="#i#"<cfif i IS arguments.selectedDay> selected="selected"</cfif>>#i#</option>
+									<option value="#i#" <cfif i IS arguments.selectedDay>selected</cfif>>#i#</option>
 								</cfloop>
 							</select>
 
 							<select id="#arguments.elementNamePrefix#month" name="#arguments.elementNamePrefix#month">
 								<cfloop from="1" to="12" index="i">
-									<option value="#i#"<cfif i IS arguments.selectedMonth> selected="selected"</cfif>><cfif NOT arguments.bDisplayMonthAsString>#i#<cfelse>#monthAsString(i)#</cfif></option>
+									<option value="#i#" <cfif i IS arguments.selectedMonth>selected</cfif>><cfif NOT arguments.bDisplayMonthAsString>#i#<cfelse>#monthAsString(i)#</cfif></option>
 								</cfloop>
 							</select>
 
 							<select id="#arguments.elementNamePrefix#year" name="#arguments.elementNamePrefix#year">
 								<cfloop from="#arguments.startYear#" to="#arguments.endYear#" index="i">
-									<option value="#i#"<cfif i IS arguments.selectedYear> selected="selected"</cfif>>#i#</option>
+									<option value="#i#" <cfif i IS arguments.selectedYear>selected</cfif>>#i#</option>
 								</cfloop>
 							</select>
 						
@@ -236,13 +236,13 @@ $out:$
 						
 							<select id="#arguments.elementNamePrefix#hour" name="#arguments.elementNamePrefix#hour">
 								<cfloop from="0" to="23" index="i">
-									<option value="#i#"<cfif i IS arguments.selectedHour> selected="selected"</cfif>>#i#</option>
+									<option value="#i#" <cfif i IS arguments.selectedHour>selected</cfif>>#i#</option>
 								</cfloop>
 							</select>
 
 							<select id="#arguments.elementNamePrefix#minute" name="#arguments.elementNamePrefix#minute">
 								<cfloop from="0" to="59" index="i">
-									<option value="#i#"<cfif i IS arguments.selectedMinute> selected="selected"</cfif>>#i#</option>
+									<option value="#i#" <cfif i IS arguments.selectedMinute>selected</cfif>>#i#</option>
 								</cfloop>
 							</select>
 						
@@ -269,7 +269,7 @@ $out:$
 					<cfloop query="arguments.qData">
 						<cfset value = evaluate("arguments.qdata." & arguments.valueColumn)>
 						<cfset display = evaluate("arguments.qdata." & arguments.displayColumn)>
-						<option<cfif listContainsNoCase(arguments.lSelectedValues,value)> selected="selected"</cfif> value="#value#">#display#</option>
+						<option <cfif listContainsNoCase(arguments.lSelectedValues,value)>selected</cfif> value="#value#">#display#</option>
 					</cfloop>
 				</select>
 			</cfoutput>

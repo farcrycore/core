@@ -1,4 +1,4 @@
-<cfcomponent displayname="Barnacle" hint="Used to grant an item specific permissions." extends="types" output="false" bRefObjects="false">
+<cfcomponent displayname="Barnacle" hint="Used to grant an item specific permissions." extends="types" output="false">
 	<cfproperty name="roleid" type="uuid" default="" hint="The role this barnacle is attached to" ftSeq="1" ftFieldset="" ftLabel="Role" ftType="uuid" ftJoin="farRole" />
 	<cfproperty name="permissionid" type="uuid" default="" hint="The permission this barnacle is controlling" ftSeq="2" ftFieldset="" ftLabel="Permission" ftType="uuid" ftJoin="farPermission" />
 	<cfproperty name="referenceid" type="uuid" default="" hint="The object this barnacle is attached to" ftSeq="3" ftFieldset="" ftLabel="Object" ftType="uuid" ftJoin="dmNavigation" />

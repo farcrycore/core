@@ -5,7 +5,6 @@
 <!--- @@description:   --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
-<!--- @@cacheStatus:-1 --->
 
 <!------------------ 
 FARCRY IMPORT FILES

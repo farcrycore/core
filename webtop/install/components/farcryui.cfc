@@ -46,4 +46,27 @@
 		<cfflush />
 	</cffunction>
 	
+	<cffunction name="getDBTypes" returntype="query" output="false" access="public" hint="Returns the key, label, and dbowner usage of all available database types">
+		<cfset var stTypes = structnew() />
+		<cfset var thistype = "" />
+		<cfset var thisitem = "" />
+		<cfset var qDBTypes = querynew("key,label,usesDBOwner","varchar,varchar,bit") />
+		<cfset var stMD = "" />
+		
+		<cfset stTypes = createobject("component","farcry.core.packages.lib.db").getDBTypes() />
+		<cfloop collection="#stTypes#" item="thistype">
+			<cfset stMD = getMetadata(createobject("component",stTypes[thistype])) />
+			<cfset queryaddrow(qDBTypes) />
+			<cfset querysetcell(qDBTypes,"key",thistype) />
+			<cfloop list="#stMD.dbType#" index="thisitem">
+				<cfif listfirst(thisitem,":") eq thistype>
+					<cfset querysetcell(qDBTypes,"label",listlast(thisitem,":")) />
+				</cfif>
+			</cfloop>
+			<cfset querysetcell(qDBTypes,"usesDBOwner",stMD.usesDBOwner) />
+		</cfloop>
+		
+		<cfreturn qDBTypes />
+	</cffunction>
+	
 </cfcomponent>

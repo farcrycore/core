@@ -16,7 +16,7 @@ $Description: Email object. Allows administrators to send an email to members of
 $Developer: Brendan Sisson (brendan@daemon.com.au) $
 ---> 
 
-<cfcomponent extends="farcry.core.packages.types.types" displayname="Emails" hint="Email management object that allows emails to be sent to farcry groups" bCustomType="true" bRefObjects="false">
+<cfcomponent extends="farcry.core.packages.types.types" displayname="Emails" hint="Email management object that allows emails to be sent to farcry groups" bCustomType="true">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->	

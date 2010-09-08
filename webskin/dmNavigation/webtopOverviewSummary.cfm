@@ -164,84 +164,125 @@
 		
 		
 		
-		
-		<cfif arrayLen(stobj.aObjectIDs)>
-			<cfsavecontent variable="contentHint">
-				<cfoutput>When a visitor to your site browses to this navigation item, they will be displayed the content above. Unless instructed otherwise, you should only require a single content item here.</cfoutput>
-			</cfsavecontent>
-		<cfelse>
-			<cfsavecontent variable="contentHint">
-				<cfoutput>Select the type of content that a visitor to your site will see when they browse to this navigation item.</cfoutput>
-			</cfsavecontent>
-		</cfif>
-		<ft:field label="Content" bMultiField="true" hint="#contentHint#">
-			<cfoutput>
-            	
-				<cfif arrayLen(stobj.aObjectIDs)>
+		<cfif stObj.navType eq "externalLink" or (len(stObj.navType) eq "" and len(stObj.externalLink))>
+			<ft:field label="Content Mirror" bMultiField="true" hint="When a visitor to your site browses to this navigation item, they will be shown the content above instead of the children of this item.">
+				<cfoutput>
 					<table class="objectAdmin" style="width:100%;">	
-					<cfloop from="1" to="#arrayLen(stobj.aObjectIDs)#" index="i">
-						<cfset contentTypename = application.fapi.findType(objectid="#stobj.aObjectIDs[i]#") />
+						<cfset contentTypename = application.fapi.findType(objectid="#stobj.externalLink#") />
 						
 						<tr>
 							<td>
 								<skin:icon icon="#application.stCOAPI[contentTypename].icon#" size="16" default="farcrycore" />
-								<skin:view typename="#contentTypename#" objectid="#stobj.aObjectIDs[i]#" webskin="displayLabel" />
+								<skin:view typename="#contentTypename#" objectid="#stobj.externalLink#" webskin="displayLabel" />
 							</td>	
-							<td style="width:50px;"><ft:button value="Manage" renderType="link" selectedObjectID="#stobj.aObjectIDs[i]#" /></td>	
-						</tr>
-							
-					</cfloop>	
+							<td style="width:50px;"><ft:button value="Manage" renderType="link" selectedObjectID="#stobj.externalLink#" /></td>	
+						</tr>	
 					</table>
+				</cfoutput>
+			</ft:field>
+		<cfelseif stObj.navType eq "aObjectIDs" or (len(stObj.navType) eq "" and len(stObj.aObjectIDs))>
+			<cfif arrayLen(stobj.aObjectIDs)>
+				<cfsavecontent variable="contentHint">
+					<cfoutput>When a visitor to your site browses to this navigation item, they will be displayed the content above. Unless instructed otherwise, you should only require a single content item here.</cfoutput>
+				</cfsavecontent>
+			<cfelse>
+				<cfsavecontent variable="contentHint">
+					<cfoutput>Select the type of content that a visitor to your site will see when they browse to this navigation item.</cfoutput>
+				</cfsavecontent>
+			</cfif>
+			<ft:field label="Content" bMultiField="true" hint="#contentHint#">
+				<cfoutput>
 					
-				</cfif>
-	
-				<nj:getNavigation objectId="#stobj.objectid#" r_objectID="parentID" bInclusive="1">
-				
-				<cfif application.fapi.checkObjectPermission(objectID=parentID, permission="Create")>
-					<cfset objType = application.fapi.getContentType(stobj.typename) />
-					<cfset lPreferredTypeSeq = "dmNavigation,dmHTML"> <!--- this list will determine preffered order of objects in create menu - maybe this should be configurable. --->
-					<!--- <cfset aTypesUseInTree = objType.buildTreeCreateTypes(lPreferredTypeSeq)> --->
-					<cfset lAllTypes = structKeyList(application.types)>
-					<!--- remove preffered types from *all* list --->
-					<cfset aPreferredTypeSeq = listToArray(lPreferredTypeSeq)>
-					<cfloop index="i" from="1" to="#arrayLen(aPreferredTypeSeq)#">
-						<cfset lAlltypes = listDeleteAt(lAllTypes,listFindNoCase(lAllTypes,aPreferredTypeSeq[i]))>
-					</cfloop>
-					<cfset lAlltypes = ListAppend(lPreferredTypeSeq,lAlltypes)>
-					<cfset aTypesUseInTree = objType.buildTreeCreateTypes(lAllTypes)>
-					<cfif ArrayLen(aTypesUseInTree)>
-				
-						<skin:loadJS id="jquery" />
-						<skin:loadJS id="msdropdown" baseHREF="#application.url.webtop#/thirdparty" lFiles="/msdropdown/js/uncompressed.jquery.dd.js" />
-						<skin:loadCSS id="msdropdown" baseHREF="#application.url.webtop#/thirdparty" lFiles="/msdropdown/dd.css" />
-						
-						<skin:onReady>
-							<cfoutput>
-								$j("##createContent").msDropDown();
-							</cfoutput>
-						</skin:onReady>
-						
-								<select id="createContent" name="createContent" style="width:100%;" onChange="location = '#application.url.farcry#/conjuror/evocation.cfm?parenttype=dmNavigation&objectId=#stobj.objectid#&typename=' + $j('##createContent').val() + '&ref=#url.ref#';">
-									<cfif arrayLen(stobj.aObjectIDs)>
-										<option value="">-- Attach More Content --</option>
-									<cfelse>
-										<option value="">-- Attach Content --</option>
-									</cfif>
-									
-									<cfloop index="i" from="1" to="#ArrayLen(aTypesUseInTree)#">
-										<cfif aTypesUseInTree[i].typename NEQ "dmNavigation">
-											<option value="#aTypesUseInTree[i].typename#" title="#application.fapi.getIconURL(application.stCOAPI[aTypesUseInTree[i].typename].icon,16,'farcrycore')#">#aTypesUseInTree[i].description#</option>
-										</cfif>
-									</cfloop>
-									
-								</select>
-						
+					<cfif arrayLen(stobj.aObjectIDs)>
+						<table class="objectAdmin" style="width:100%;">	
+						<cfloop from="1" to="#arrayLen(stobj.aObjectIDs)#" index="i">
+							<cfset contentTypename = application.fapi.findType(objectid="#stobj.aObjectIDs[i]#") />
+							
+							<tr>
+								<td>
+									<skin:icon icon="#application.stCOAPI[contentTypename].icon#" size="16" default="farcrycore" />
+									<skin:view typename="#contentTypename#" objectid="#stobj.aObjectIDs[i]#" webskin="displayLabel" />
+								</td>	
+								<td style="width:50px;"><ft:button value="Manage" renderType="link" selectedObjectID="#stobj.aObjectIDs[i]#" /></td>	
+							</tr>
+								
+						</cfloop>	
+						</table>
 						
 					</cfif>
-				</cfif>
-				
-            </cfoutput>	
-		</ft:field>
+		
+					<nj:getNavigation objectId="#stobj.objectid#" r_objectID="parentID" bInclusive="1">
+					
+					<cfif application.fapi.checkObjectPermission(objectID=parentID, permission="Create")>
+						<cfset objType = application.fapi.getContentType(stobj.typename) />
+						<cfset lPreferredTypeSeq = "dmNavigation,dmHTML"> <!--- this list will determine preffered order of objects in create menu - maybe this should be configurable. --->
+						<!--- <cfset aTypesUseInTree = objType.buildTreeCreateTypes(lPreferredTypeSeq)> --->
+						<cfset lAllTypes = structKeyList(application.types)>
+						<!--- remove preffered types from *all* list --->
+						<cfset aPreferredTypeSeq = listToArray(lPreferredTypeSeq)>
+						<cfloop index="i" from="1" to="#arrayLen(aPreferredTypeSeq)#">
+							<cfset lAlltypes = listDeleteAt(lAllTypes,listFindNoCase(lAllTypes,aPreferredTypeSeq[i]))>
+						</cfloop>
+						<cfset lAlltypes = ListAppend(lPreferredTypeSeq,lAlltypes)>
+						<cfset aTypesUseInTree = objType.buildTreeCreateTypes(lAllTypes)>
+						<cfif ArrayLen(aTypesUseInTree)>
+					
+							<skin:loadJS id="jquery" />
+							<skin:loadJS id="msdropdown" baseHREF="#application.url.webtop#/thirdparty" lFiles="/msdropdown/js/uncompressed.jquery.dd.js" />
+							<skin:loadCSS id="msdropdown" baseHREF="#application.url.webtop#/thirdparty" lFiles="/msdropdown/dd.css" />
+							
+							<skin:onReady>
+								<cfoutput>
+									$j("##createContent").msDropDown();
+								</cfoutput>
+							</skin:onReady>
+							
+									<select id="createContent" name="createContent" style="width:100%;" onChange="location = '#application.url.farcry#/conjuror/evocation.cfm?parenttype=dmNavigation&objectId=#stobj.objectid#&typename=' + $j('##createContent').val() + '&ref=#url.ref#';">
+										<cfif arrayLen(stobj.aObjectIDs)>
+											<option value="">-- Attach More Content --</option>
+										<cfelse>
+											<option value="">-- Attach Content --</option>
+										</cfif>
+										
+										<cfloop index="i" from="1" to="#ArrayLen(aTypesUseInTree)#">
+											<cfif aTypesUseInTree[i].typename NEQ "dmNavigation">
+												<option value="#aTypesUseInTree[i].typename#" title="#application.fapi.getIconURL(application.stCOAPI[aTypesUseInTree[i].typename].icon,16,'farcrycore')#">#aTypesUseInTree[i].description#</option>
+											</cfif>
+										</cfloop>
+										
+									</select>
+							
+							
+						</cfif>
+					</cfif>
+					
+				</cfoutput>	
+			</ft:field>
+		<cfelseif stObj.navType eq "internalRedirectID">
+			
+			<ft:field label="Internal Redirect" bMultiField="true" hint="This navigation item redirects to another page in the website.">
+				<cfoutput>
+					<table class="objectAdmin" style="width:100%;">	
+						<cfset contentTypename = application.fapi.findType(objectid="#stobj.internalRedirectID#") />
+						
+						<tr>
+							<td>
+								<skin:icon icon="#application.stCOAPI[contentTypename].icon#" size="16" default="farcrycore" />
+								<skin:view typename="#contentTypename#" objectid="#stobj.internalRedirectID#" webskin="displayLabel" />
+							</td>	
+							<td style="width:50px;"><ft:button value="Manage" renderType="link" selectedObjectID="#stobj.internalRedirectID#" /></td>	
+						</tr>	
+					</table>
+				</cfoutput>
+			</ft:field>
+
+		<cfelseif stObj.navType eq "externalRedirectURL">
+			
+			<ft:field label="External Redirect" bMultiField="true" hint="This navigation item redirects to a page on another website.">
+				<cfoutput><a href="#stObj.externalRedirectURL#" target="_blank">#stObj.externalRedirectURL#</a></cfoutput>
+			</ft:field>
+
+		</cfif>
 		
 		
 		<ft:field label="Alias" hint="The alias is used by the programmers to refer to this navigation item in their code.">

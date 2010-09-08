@@ -19,7 +19,7 @@
 	<!--- edit profile --->	
 	<cfoutput>
 	<script type="text/javascript">
-		profileWin = window.open('#application.url.farcry#/conjuror/invocation.cfm?objectID=#session.dmProfile.objectID#&typename=dmProfile&method=editOwn','content');
+		profileWin = window.open('#application.url.farcry#/conjuror/invocation.cfm?objectID=#session.dmProfile.objectID#&method=editOwn','content');
 	</script>
 	</cfoutput>
 </cfif>

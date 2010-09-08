@@ -15,7 +15,7 @@
 	Then you are not using UTF-8.
 --->
 
-<cfcomponent extends="mxunit.framework.TestCase" displayname="FAPI Tests">
+<cfcomponent extends="mxunit.framework.TestCase" displayname="FAPI Tests" mode="self">
 	<!--- setup and teardown --->
 	<cffunction name="setUp" returntype="void" access="public">
 		<!--- Any code needed to return your environment to normal goes here --->
@@ -27,7 +27,6 @@
 	</cffunction>
 	
 	<!--- ////////////////////////////////////////////////////////////////// --->
-	
 	<cffunction name="findTypeTest" access="public">
 		<!--- <cfset assertEquals(true, false) /> --->
 		<cfset assertEquals(this.myComp.findType(createUUID()), "") />
@@ -608,43 +607,19 @@
 		<cfset assertTrue(refindnocase("\(\s+datetimecreated\s+is\s+not\s+null\s+and\s+not\s+datetimecreated\s+=\s+\?\s+and\s+datetimecreated\s+&lt;\s*\?\s+\)",d)) />
 	</cffunction>
 	
-	<cffunction name="getLinkBasic" access="public" output="false" displayname="getLink - base test" returntype="void">
-		<cfset var x = this.myComp.getLink(objectid='AB3C3520-B72D-46D6-B2066B5E844A1114') />
+	<cffunction name="getContentObjects_filter_inarray" displayname="getContentObjects - eq array" access="public" returntype="void" output="false">
+		<cfset var q = "" />
+		<cfset var q2 = "" />
 		
-		<cfset assertEquals(x, "/AB3C3520-B72D-46D6-B2066B5E844A1114") />
-	</cffunction>
-	
-	<cffunction name="getLinkBasicWithDomain" access="public" output="false" displayname="getLink - base test FQDN" returntype="void">
-		<cfset var x = this.myComp.getLink(
-											objectid='AB3C3520-B72D-46D6-B2066B5E844A1114', 
-											includeDomain=true) />
-		<cfset assertEquals(x, "http://#cgi.http_host#/AB3C3520-B72D-46D6-B2066B5E844A1114") />
-	</cffunction>
-	
-	<cffunction name="getLinkBasicWithDomainURLParams" access="public" output="false" displayname="getLink - base test FQDN with params" returntype="void">
-		<cfset var x = this.myComp.getLink(
-											objectid='AB3C3520-B72D-46D6-B2066B5E844A1114', 
-											includeDomain=true,
-											urlparameters='key=4147631D-CE95') />
-		<cfset assertEquals(
-							x,
-							"http://unsw.local/AB3C3520-B72D-46D6-B2066B5E844A1114/key/4147631D%2DCE95") />
-	</cffunction>
-	
-	<cffunction name="getLinkBasicWithDomainOverrideURLParams" access="public" output="false" displayname="getLink - base test FQDN with params and domain override" returntype="void">
-		<cfset var x = this.myComp.getLink(
-											objectid='AB3C3520-B72D-46D6-B2066B5E844A1114', 
-											includeDomain=true,
-											urlparameters='key=4147631D-CE95',
-											domain="daemon.com.au") />
-		<cfset assertEquals(
-							x,
-							"http://daemon.com.au/AB3C3520-B72D-46D6-B2066B5E844A1114/key/4147631D%2DCE95") />
-	</cffunction>
-	
-	<cffunction name="getLinkAlias" access="public" output="false" displayname="getLink - very basic alias test" returntype="void">
-		<cfset var x = this.myComp.getLink(alias='home') />
+		<cfquery datasource="#application.dsn#" name="q">
+			select		data,count(data) as total
+			from		dmHTML_aObjectIDs
+			group by	data
+		</cfquery>
 		
-		<cfset assertEquals(x, "/") />
+		<cfset q2 = this.myComp.getContentObjects(typename="dmHTML",aObjectIds_in=valuelist(q.data)) />
+		<cfdirectory action="list" directory="" filter="" name="" />
+		<cfset assertEquals(q.total[1],q2.recordcount,"Incorrect number of records returned") />
 	</cffunction>
+	
 </cfcomponent>

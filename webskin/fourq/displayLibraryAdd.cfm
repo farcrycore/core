@@ -5,7 +5,6 @@
 <!--- @@description:   --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
-<!--- @@cacheStatus:-1 --->
 
 <!------------------ 
 FARCRY IMPORT FILES
@@ -47,78 +46,15 @@ START WEBSKIN
 	THIS SITUATION OCCURS WHEN WE CREATE A NEW OBJECT, BUT THAT OBJECT HAS SUBSEQUENTLY BEEN SAVED TO THE DB BY WAY OF ADDING AN ARRAY OBJECT TO IT.
 	 ----------------------------------------------------------------------------------------------------------------------------------------------->	
 	<cfset newLibraryObjectID = "" />	
-	<cfset stOnExit = structNew() />
-	<cfset stOnExit.type = "HTML" />
-	<ft:processForm action="Save">
+	<ft:processForm>
 		<ft:processFormObjects typename="#url.filterTypename#">
 			<cfset newLibraryObjectID = stproperties.objectid />
 		</ft:processFormObjects>
-		
-		<!------------------------ 
-		SETUP THE EXIT PROCESS 
-		--------------------------->
-		<cfsavecontent variable="stOnExit.content"><cfoutput>
-			<script type="text/javascript">
-				$j(function() {
-					$j.ajax({
-						cache: false,
-						type: "POST",
-			 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=#stobj.typename#&objectid=#stobj.objectid#&view=displayAjaxUpdateJoin&property=#url.property#',
-						data: {addID: '#newLibraryObjectID#'},
-						dataType: "html",
-						complete: function(data){
-							parent.$j('###stobj.typename##stobj.objectid##url.property#').dialog('close');
-						}
-					});		
-				});
-			</script>
-		</cfoutput></cfsavecontent>
 	</ft:processForm>	
-	<wiz:processWizard action="Save">
+	<wiz:processWizard>
 		<wiz:processWizardObjects typename="#url.filterTypename#">
 			<cfset newLibraryObjectID = stproperties.objectid />
 		</wiz:processWizardObjects>
-		
-		<!------------------------ 
-		SETUP THE EXIT PROCESS 
-		--------------------------->
-		<cfsavecontent variable="stOnExit.content"><cfoutput>
-			<script type="text/javascript">
-				$j(function() {
-					$j.ajax({
-						cache: false,
-						type: "POST",
-			 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=#stobj.typename#&objectid=#stobj.objectid#&view=displayAjaxUpdateJoin&property=#url.property#',
-						data: {addID: '#newLibraryObjectID#'},
-						dataType: "html",
-						complete: function(data){
-							parent.$j('###stobj.typename##stobj.objectid##url.property#').dialog('close');
-						}
-					});		
-				});
-			</script>
-		</cfoutput></cfsavecontent>
-	</wiz:processWizard>
-	 
-	<ft:processForm action="Cancel">
-		<!------------------------ 
-		SETUP THE EXIT PROCESS 
-		--------------------------->
-		<cfsavecontent variable="stOnExit.content"><cfoutput>
-			<script type="text/javascript">
-				parent.$j('###stobj.typename##stobj.objectid##url.property#').dialog('close');
-			</script>
-		</cfoutput></cfsavecontent>
-	</ft:processForm>
-	<wiz:processWizard action="Cancel">
-		<!------------------------ 
-		SETUP THE EXIT PROCESS 
-		--------------------------->
-		<cfsavecontent variable="stOnExit.content"><cfoutput>
-			<script type="text/javascript">
-				parent.$j('###stobj.typename##stobj.objectid##url.property#').dialog('close');
-			</script>
-		</cfoutput></cfsavecontent>
 	</wiz:processWizard>
 	 
 	<cfif not len(newLibraryObjectID)>
@@ -126,6 +62,29 @@ START WEBSKIN
 		<cfset newLibraryObjectID = stNewObject.objectid />
 	</cfif>
 
+	<!------------------------ 
+	SETUP THE EXIT PROCESS 
+	--------------------------->
+	<cfset stOnExit = structNew() />
+	<cfset stOnExit.type = "HTML" />
+	<cfsavecontent variable="stOnExit.content">
+	<cfoutput>
+	<script type="text/javascript">
+	$j(function() {
+		$j.ajax({
+			cache: false,
+			type: "POST",
+ 			url: '/index.cfm?ajaxmode=1&type=#stobj.typename#&objectid=#stobj.objectid#&view=displayAjaxUpdateJoin&property=#url.property#',
+			data: {addID: '#newLibraryObjectID#'},
+			dataType: "html",
+			complete: function(data){
+				parent.$j('###stobj.typename##stobj.objectid##url.property#').dialog('close');
+			}
+		});		
+	});
+	</script>
+	</cfoutput>
+	</cfsavecontent>
 			
 			
 	<!------------------------------ 

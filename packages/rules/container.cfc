@@ -29,7 +29,7 @@ $Description: Core container management component. $
 || DEVELOPER ||
 $Developer: Geoff Bowers (modius@daemon.com.au) $
 --->
-<cfcomponent extends="farcry.core.packages.fourq.fourq" displayname="Container Management" hint="Manages all core functions for container instance management." bObjectBroker="true" fuAlias="container" bRefObjects="false">
+<cfcomponent extends="farcry.core.packages.fourq.fourq" displayname="Container Management" hint="Manages all core functions for container instance management." bObjectBroker="true">
 	<cfproperty name="objectID" hint="Container instance primary key." type="uuid" required="true" />
 	<cfproperty name="label" hint="Label for the container instance."  type="nstring" default="(unspecified)">
 	<cfproperty name="aRules" hint="Array of rule objects to be managed by this container." type="array"> 
@@ -40,7 +40,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	<cfinclude template="/farcry/core/webtop/includes/cfFunctionWrappers.cfm">
 	
 	<cffunction name="init" output="false" access="public" returntype="Any">
-		<cfreturn fourqInit() />
+		<cfreturn this />
 	</cffunction>
 	
 	<cffunction name="createData" access="public" returntype="any" output="false" hint="Creates an instance of a container object.">

@@ -317,7 +317,7 @@ START WEBSKIN
 							class="secondary"  
 							type="button" 
 							style="width:180px;"
-							onClick="$fc.openDialogIFrame('Permissions', '#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&typename=#stObj.typename#&method=adminPermissions');" />
+							onClick="$fc.openDialogIFrame('Permissions', '#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=adminPermissions');" />
 			</cfif>	
 		</cfif>	
 

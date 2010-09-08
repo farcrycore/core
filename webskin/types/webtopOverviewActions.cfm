@@ -351,7 +351,7 @@ START WEBSKIN
 		</cfif>
 		
 		<cfif application.security.checkPermission("ModifyPermissions") and listcontains(application.stCOAPI.farBarnacle.stProps.referenceid.metadata.ftJoin,stObj.typename)>
-			<ft:button width="240px" style="" type="button" value="Manage Permissions" rbkey="workflow.buttons.managepermissions" onclick="window.location='#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&typename=#stObj.typename#&method=adminPermissions&ref=#url.ref#';" />
+			<ft:button width="240px" style="" type="button" value="Manage Permissions" rbkey="workflow.buttons.managepermissions" onclick="window.location='#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=adminPermissions&ref=#url.ref#';" />
 		</cfif>
 
 

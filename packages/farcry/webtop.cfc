@@ -41,7 +41,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<!--- Put together a list of customadmin directories --->
 		<cfset dirlist = listappend(dirlist,"#application.path.core#/config") />
 		<cfloop list="#application.plugins#" index="plugin">
-			<cfset dirlist = listappend(dirlist,expandpath("/farcry/plugins/#plugin#/customadmin")) />
+			<cfset dirlist = listappend(dirlist,"#application.path.plugins#/#plugin#/customadmin") />
 		</cfloop>
 		<cfset dirlist = listappend(dirlist,"#application.path.project#/customadmin") />
 		

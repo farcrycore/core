@@ -53,8 +53,6 @@ $out:$
 <cfparam name="attributes.defaultMirrorID" default="" type="string"><!--- optional UUID --->
 <cfparam name="attributes.defaultMirrorLabel" default="" type="string">
 <cfparam name="attributes.desc" default="" type="string"><!--- Allows the container description to be different to the actual label. --->
-<cfparam name="attributes.lRules" default="" type="string"><!--- Restrict the container to the specified rules. An empty value allows selection of any rule. --->
-<cfparam name="attributes.lExcludedRules" default="" type="string"><!--- Exclude specified rules. Overrides lRules attribute. --->
 
 
 <!--- try and set objectid by looking for request.stobj.objectid --->
@@ -147,7 +145,7 @@ $out:$
 	<!--- display edit widget --->
 	<cfif request.mode.design and request.mode.showcontainers gt 0>		
 	
-		<skin:view stObject="#stConObj#" webskin="displayAdminToolbar" alternatehtml="" originalID="#originalID#" lRules="#attributes.lRules#" lExcludedRules="#attributes.lExcludedRules#" desc="#attributes.desc#" />		
+		<skin:view stObject="#stConObj#" webskin="displayAdminToolbar" alternatehtml="" originalID="#originalID#" />		
 		
 	</cfif>
 	
