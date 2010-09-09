@@ -733,7 +733,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cflog text="#stReturn.message# #stReturn.results[arraylen(stReturn.results)].detail# [SQL: #stReturn.results[arraylen(stReturn.results)].sql#]" file="coapi" type="error" application="yes">
 		</cfif>
 
-		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=stReturn.objectid,typename=variables.tableMetadata.getTableName()) />
+		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=stReturn.objectid,typename=getTypeName()) />
 		
     	<cfreturn stReturn />
 	</cffunction>
@@ -785,7 +785,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 
 		<cfelse>
 			<cfif isdefined("request.mode.rebuild") and request.mode.rebuild eq "page">
-				<cfset application.fc.lib.objectbroker.RemoveFromObjectBroker(arguments.objectid,variables.typename) />
+				<cfset application.fc.lib.objectbroker.RemoveFromObjectBroker(arguments.objectid,getTypeName()) />
 			</cfif>
 			
 			<cfif arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs>
@@ -1157,7 +1157,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		WHERE refObjectID = '#arguments.objectID#'
 		</cfquery>
 		
-		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=arguments.objectid,typename=variables.typename) />
+		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=arguments.objectid,typename=getTypeName()) />
 		
 		<cfreturn stResult>
 	</cffunction>
