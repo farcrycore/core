@@ -50,7 +50,7 @@ START WEBSKIN
 			<cfoutput>
 			A friendly URL is automatically generated to improve your search engine ranking and make it easy for humans to read. 
 			You can  
-			<a onclick="$fc.openDialogIFrame('Manage Friendly URL\'s for #stobj.label# (#stobj.typename#)', '#application.url.farcry#/manage_friendlyurl.cfm?objectid=#stobj.objectid#')">change the default or add custom friendly URLs</a>
+			<a onclick="$fc.openDialogIFrame('Manage Friendly URL\'s for #JSStringFormat(stobj.label)# (#stobj.typename#)', '#application.url.farcry#/manage_friendlyurl.cfm?objectid=#stobj.objectid#')">change the default or add custom friendly URLs</a>
 			to meet your requirements.
 			</cfoutput>
 		</ft:fieldsetHelp>
@@ -102,7 +102,7 @@ START WEBSKIN
 			
 			<ft:fieldHint>
 				<cfoutput>
-				You can <a onclick="$fc.openDialogIFrame('Manage Friendly URL\'s for #stobj.label# (#stobj.typename#)', '#application.url.farcry#/manage_friendlyurl.cfm?objectid=#stobj.objectid#')">add additional friendly URLs</a> 
+				You can <a onclick="$fc.openDialogIFrame('Manage Friendly URL\'s for #JSStringFormat(stobj.label)# (#stobj.typename#)', '#application.url.farcry#/manage_friendlyurl.cfm?objectid=#stobj.objectid#')">add additional friendly URLs</a> 
 				to promote this content item.
 				</cfoutput>
 			</ft:fieldHint>

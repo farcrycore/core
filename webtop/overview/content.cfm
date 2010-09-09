@@ -18,6 +18,8 @@
 </cfoutput>
 
 <admin:loopwebtop item="section">
+	<cfif (StructKeyExists(section, "permission") AND application.fapi.hasPermission(section.permission) IS true)
+		  OR NOT StructKeyExists(section, "permission")>
 	<!--- If a related type is specified, use that to fill description and icon attributes --->
 	<cfif len(section.relatedType)>
 		<cfif structkeyexists(application.stCOAPI,section.relatedtype)>
@@ -78,6 +80,7 @@
 		<cfoutput>
 			</li>
 		</cfoutput>
+	</cfif>
 	</cfif>
 </admin:loopwebtop>
 

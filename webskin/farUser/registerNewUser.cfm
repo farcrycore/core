@@ -32,7 +32,7 @@
 	</ft:processFormObjects>
 
 	<!--- This will send the confirmation email and then redirect to the confirmation page --->
-	<skin:view objectid="#newUserID#" webskin="registerConfirmationEmail" />
+	<skin:view objectid="#newUserID#" typename="farUser" webskin="registerConfirmationEmail" />
 </ft:processForm>
 
 

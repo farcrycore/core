@@ -374,14 +374,8 @@ BEGIN: Application Initialise
 			OBJECT BROKER
 			 ------------------------------------>		
 			<cfif structkeyexists(application, "bObjectBroker") AND application.bObjectBroker>
-				<cfset objectBroker = createObject("component","farcry.core.packages.fourq.objectBroker")>
-				
-				<cfloop list="#structKeyList(application.stcoapi)#" index="typename">
-					<cfif application.stcoapi[typename].bObjectBroker>
-						<cfset bSuccess = objectBroker.configureType(typename=typename, MaxObjects=application.stcoapi[typename].ObjectBrokerMaxObjects) />
+				<cfset objectBroker = createObject("component","farcry.core.packages.fourq.objectBroker").init() />
 					</cfif>
-				</cfloop>
-			</cfif>
 			
 	
 			<!--- SETUP CATEGORY APPLICATION STRUCTURE --->

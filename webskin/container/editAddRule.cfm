@@ -5,7 +5,10 @@
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
-<cfset qRules = createObject("component","#application.packagepath#.rules.rules").getRules() />
+<cfparam name="url.lRules" default="" />
+<cfparam name="url.lExcludedRules" default="" />
+
+<cfset qRules = createObject("component","#application.packagepath#.rules.rules").getRules(url.lRules,url.lExcludedRules) />
 
 <cfset containerID = replace(stobj.objectid,'-','','ALL') />
 
@@ -27,7 +30,7 @@
 	<cfset setData(stProperties=stObj)>
 
 	<!--- Locate off to the edit the rule. --->
-	<cflocation url="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stDefaultObject.objectid#&method=editInPlace&iframe=1" addtoken="false">
+	<skin:location href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stDefaultObject.objectid#&typename=#stDefaultObject.typename#&method=editInPlace&iframe=1" addtoken="false" />
 </ft:processform>
 
 

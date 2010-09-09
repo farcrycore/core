@@ -34,7 +34,7 @@
 			
 		<skin:registerJS 	id="jquery-ui"
 							baseHREF="#application.url.webtop#/thirdparty/jquery-1-4-1/js"
-							lFiles="jquery-ui-1.8rc1.custom.min.js" />
+							lFiles="jquery-ui-1.8.custom.min.js" />
 		
 			
 				
@@ -46,11 +46,21 @@
 
 		<skin:registerJS 	id="jquery-validate"
 							baseHREF="#application.url.webtop#/thirdparty/jquery-validate"
-							lFiles="jquery.validate.pack.js" />
+							lFiles="jquery.validate.js" />
 
 		<skin:registerJS 	id="jquery-tooltip"
 							baseHREF="#application.url.webtop#/thirdparty/jquery-tooltip"
 							lFiles="jquery.tooltip.min.js" />
+		<skin:registerJS	id="jquery-tooltip-auto">
+							<cfoutput>
+								jQuery(function(){
+									jQuery('a[title],div[title],span[title],area[title]').tooltip({ 
+									    delay: 0, 
+									    showURL: false
+									});
+								});
+							</cfoutput>
+		</skin:registerJS>
 							
 							
 		<skin:registerJS 	id="gritter"
@@ -59,7 +69,7 @@
 
 		<skin:registerJS 	id="farcry-form"
 							baseHREF="#application.url.webtop#"
-							lFiles="/js/farcryForm.cfm,/thirdparty/loadmask/jquery.loadmask.min.js,/thirdparty/uni-form/js/uni-form.jquery.js" />
+							lFiles="/js/farcryForm.cfm,/thirdparty/loadmask/jquery.loadmask.min.js,/thirdparty/uni-form/js/uni-form.jquery.js,/thirdparty/jquery-treeview/jquery.treeview.js,/thirdparty/jquery-treeview/jquery.treeview.async.js" />
 
 		<skin:registerJS 	id="ext"
 							baseHREF="#application.url.webtop#/js/ext"
@@ -81,7 +91,7 @@
 							
 		<skin:registerCSS 	id="jquery-ui"
 							baseHREF="#application.url.webtop#/thirdparty/jquery-1-4-1/css/base"
-							lFiles="jquery-ui-1.8rc1.custom.css">
+							lFiles="jquery-ui-1.8.custom.css">
 							
 							<cfoutput>
 							.ui-widget {font-size:1em;}
@@ -92,7 +102,15 @@
 				
 		<skin:registerCSS 	id="farcry-form"
 							baseHREF="#application.url.webtop#"
-							lFiles="/css/wizard.css,/thirdparty/loadmask/jquery.loadmask.css,/thirdparty/uni-form/css/uni-form-generic.css,/thirdparty/uni-form/css/uni-form.css" />
+							lFiles="/css/wizard.css,/thirdparty/loadmask/jquery.loadmask.css,/thirdparty/uni-form/css/uni-form-generic.css,/thirdparty/uni-form/css/uni-form.css,/thirdparty/jquery-treeview/jquery.treeview.css">
+							
+							<cfoutput>
+							ul.treeview span { font-size:10px; vertical-align: top}
+							ul.treeview span:hover { color: red; }
+							ul.treeview span input { margin-right: 5px; }
+							ul.treeview .hover { color: ##000; }
+							</cfoutput>
+		</skin:registerCSS>
 
 		<skin:registerCSS 	id="farcry-pagination"
 							baseHREF="#application.url.webtop#"

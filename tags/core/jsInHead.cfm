@@ -59,8 +59,8 @@
 						<cfset sCacheFileName = application.fc.utils.combine(	id=stJS.id,
 																			files=stJS.lFullFilebaseHREFs,
 																			type="js",
-																			prepend:stJS.prepend,
-																			append:stJS.append) />
+																			prepend=stJS.prepend,
+																			append=stJS.append) />
 					
 						<cfset application.fc.stJSLibraries[idHash].sCacheFileName = sCacheFileName />
 					</cfif>

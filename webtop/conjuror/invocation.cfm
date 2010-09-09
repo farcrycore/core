@@ -90,6 +90,9 @@ Pseudo:
 	<cfelse>
 		<cfset returnStruct = oType.getData(objectid=URL.objectid)>
 		
+		<!--- determine where the edit handler has been called from to provide the right return url --->
+		<cfparam name="url.ref" default="sitetree" type="string">
+		
 		<!--- If the type uses workflow, then when we create the object, it needs to go directly to the overview page. --->
 		<cfset lWorkflowTypenames = createObject("component", application.stcoapi.farWorkflow.packagepath).getWorkflowList(typename="#typename#") />	
 		<cfif listLen(lWorkflowTypenames) OR (StructKeyExists(returnStruct, "versionid") AND StructKeyExists(returnStruct, "status") AND ListContains("approved,pending",returnStruct.status))>
@@ -99,8 +102,6 @@ Pseudo:
 		<cfelse>
 			<!--- go to edit --->
 	
-			<!--- determine where the edit handler has been called from to provide the right return url --->
-			<cfparam name="url.ref" default="sitetree" type="string">
 			
 			<cfset onExitProcess = StructNew() />
 			<cfif url.ref eq "typeadmin" AND (isDefined("url.module") AND Len(url.module))>

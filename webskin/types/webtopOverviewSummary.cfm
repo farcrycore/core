@@ -43,12 +43,10 @@ START WEBSKIN
 		
 		<nj:getNavigation objectId="#stobj.objectid#" r_objectID="parentID" bInclusive="1">
 		
-		<cfset qDescendents = createObject("component", "#application.packagepath#.farcry.tree").getDescendants(objectid=parentID, depth=1, bIncludeSelf=0) />
+		<cfif len(parentID)>
 		
 		<ft:field label="Breadcrumb" bMultiField="true">
 		
-			<nj:getNavigation objectId="#stobj.objectid#" r_objectID="parentID" bInclusive="1">
-			
 			<cfif len(parentID)>
 				<cfif stobj.typename EQ "dmNavigation">
 					<cfset qAncestors = application.factory.oTree.getAncestors(objectid=parentID,bIncludeSelf=false) />
@@ -58,7 +56,7 @@ START WEBSKIN
 				
 				<cfif qAncestors.recordCount>
 					<cfloop query="qAncestors">
-						<skin:buildLink href="#application.url.webtop#/editTabOverview.cfm" urlParameters="objectID=#qAncestors.objectid#" linktext="#qAncestors.objectName#" />
+							<skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="objectID=#qAncestors.objectid#" linktext="#qAncestors.objectName#" />
 						<cfoutput>&nbsp;&raquo;&nbsp;</cfoutput>
 					</cfloop>
 					<cfoutput>#stobj.label#</cfoutput>
@@ -75,6 +73,19 @@ START WEBSKIN
 				</cfoutput>
 			</ft:fieldHint>
 		</ft:field>
+		<cfelse>
+
+			<ft:field label="Breadcrumb" bMultiField="true">
+			
+				<cfoutput>--- not in tree ---</cfoutput>
+			
+				<ft:fieldHint>
+					<cfoutput>
+					This shows you the selected content item in the context of your site. 
+					</cfoutput>
+				</ft:fieldHint>
+			</ft:field>		
+		</cfif>
 	</cfif>		
 	
 	

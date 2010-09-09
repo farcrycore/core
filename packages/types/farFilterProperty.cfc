@@ -1,4 +1,4 @@
-<cfcomponent displayname="Filter Property Definition" output="false" extends="farcry.core.packages.types.types" hint="Stores the definition of a specific filter on a property">
+<cfcomponent displayname="Filter Property Definition" output="false" extends="farcry.core.packages.types.types" hint="Stores the definition of a specific filter on a property" bRefObjects="false">
 
 	<cfproperty name="filterID" type="UUID" hint="The filterID"
 		ftSeq="" ftWizardStep="" ftFieldset=""

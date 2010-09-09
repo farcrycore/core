@@ -54,7 +54,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 
 <cfcomponent displayname="FourQ COAPI" extends="farcry.core.packages.schema.schema" bAbstract="true">
 
-	<cffunction name="getView" access="public" output="true" returntype="string" hint="Returns the HTML of a view from the webskin content type folder.">
+	<cffunction name="getView" access="public" output="false" returntype="string" hint="Returns the HTML of a view from the webskin content type folder.">
 		<cfargument name="objectid" required="no" type="string" default="" hint="ObjectID of the object that is to be rendered by the webskin view." />
 		<cfargument name="template" required="no" type="string" default="" hint="Name of the template in the corresponding content type webskin folder, without the .cfm extension." />
 		<cfargument name="webskin" required="no" type="string" default="" hint="Name of the template in the corresponding content type webskin folder, without the .cfm extension." />
@@ -69,6 +69,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="ajaxShowloadIndicator" required="no" default="false" type="boolean" hint="Should the ajax loading indicator be shown" />
 		<cfargument name="ajaxindicatorText" required="no" default="loading..." type="string" hint="What should be text of the loading indicator" />		
 		<cfargument name="ajaxURLParameters" required="no" default="" type="string" hint="parameters to pass for ajax call" />
+		<cfargument name="ajaxTimeout" required="no" default="30" type="numeric" hint="ajax timeout" />
 		<cfargument name="bIgnoreSecurity" required="false" type="boolean" default="false" hint="Should the getView() ignore webskin security" />	
 		<cfargument name="bAllowTrace" required="false" type="boolean" default="true" hint="Sometimes having webskin trace information can break the integrity of a page. This allows you to turn it off." />
 			
@@ -143,33 +144,35 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<skin:htmlHead id="webskinAjaxLoader">
 			<cfoutput>		
 			<script type="text/javascript">
-			function webskinAjaxLoader(divID,action,ajaxTimeout,showLoadIndicator,indicatorText){
+				$j.fn.loadAjaxWebskin = function (config){
+					var self = this;
+					config = config || self.data("loadWebskinAjax") || {};
 				
-				if (timeout == undefined){var timeout = 30};
-				if (showLoadIndicator == undefined){var showLoadIndicator = false};
-				if (indicatorText == undefined){var indicatorText = 'loading...'};
-				if (ajaxTimeout == undefined){var ajaxTimeout = 30}; // the number of seconds to wait
+					// action is required
+					config.showIndicator = config.showIndicator || false;
+					config.indicatorText = config.indicatorText || 'loading...';
+					config.timeout = config.timeout || 30;
 				
-				if (ajaxTimeout > 0) {
-					ajaxTimeout = ajaxTimeout * 1000; // convert to milliseconds
+					self.data("loadWebskinAjax",config);
+					
+					if (config.showIndicator == true) {
+						self.html('<div class="loading-indicator">' + config.indicatorText + '</div>');
 				}
 				
-				if (showLoadIndicator == true) {
-					$j("##" + divID).mask(indicatorText);
-				}
-
 				$j.ajax({
-				   type: "POST",
-				   url: action,
-				   cache: false,
-				   timeout: ajaxTimeout,
-				   success: function(msg){
-				   		if (showLoadIndicator == true) {
-							$j("##" + divID).unmask();
+						type		: "POST",
+						url			: config.action,
+						cache		: false,
+						timeout		: config.timeout*1000,
+						success		: function(msg){
+							if (config.showIndicator == true) {
+								self.html('');
 						}
-						$j('##' + divID).html(msg);						     	
+							self.html(msg);
 				   }
 				 });
+					
+					return self;
 			}
 			</script>
 			</cfoutput>
@@ -198,22 +201,25 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				) />
 			</cfif> 
 			<cfsavecontent variable="stWebskin.webskinHTML">
-				<cfoutput>
+				
 				<farcry:traceWebskin 
 							objectid="#stobj.objectid#" 
 							typename="#stobj.typename#" 
 							template="#arguments.template#">
 				
-					<div id="#arguments.ajaxID#"></div>
+					<cfoutput><div id="#arguments.ajaxID#"></div></cfoutput>
 				
 				</farcry:traceWebskin>
 				
-				<skin:onReady>
-					<cfoutput>
-						webskinAjaxLoader('#arguments.ajaxID#', '#urlAjaxLoader#', 30, #arguments.ajaxShowLoadIndicator#, '#arguments.ajaxIndicatorText#');
-					</cfoutput>
-				</skin:onReady>
-				</cfoutput>
+				<skin:onReady><cfoutput>
+					$j('###arguments.ajaxID#').loadAjaxWebskin({
+						action			: '#urlAjaxLoader#', 
+						timeout			: #ARGUMENTS.ajaxTimeout#, 
+						showIndicator	: #arguments.ajaxShowLoadIndicator#,
+						indicatorText	: '#arguments.ajaxIndicatorText#'
+					});
+				</cfoutput></skin:onReady>
+				
 			</cfsavecontent>
 		<cfelse>
 			
@@ -263,8 +269,43 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	
 				<cfset stWebskin = application.fc.lib.objectbroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
 				
-				<cfif not len(stWebskin.webskinHTML)>			
+				<cfif len(stWebskin.webskinHTML)>			
+					<cfset application.fapi.addRequestLog("Retrieved webskin from cache [#stobj.objectid#, #stobj.typename#, #arguments.template#, #stWebskin.webskinCacheID#]") />
 	
+					<!--- ONLY KEEP TRACK OF THE ANCESTRY IF SET TO FLUSHONOBJECTCHANGE OR TYPEWATCH --->
+					<cfif application.coapi.coapiadmin.getWebskinCacheFlushOnObjectChange(typename=stobj.typename, template=arguments.template) 
+						OR len(application.coapi.coapiadmin.getWebskinCacheTypeWatch(typename=stobj.typename, template=arguments.template))>
+						
+						<!--- 
+						Loop through ancestors to determine whether to add to dmWebskinAncestor Table
+						Only webskins that are cached are added to the table.
+						 --->
+						<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="i">
+							<!--- Add the ancestor records so we know where this webskin is located throughout the site. --->
+							<cfif structKeyExists(application.stcoapi[request.aAncestorWebskins[i].typename].stWebskins, request.aAncestorWebskins[i].template)>
+								<cfif application.stcoapi[request.aAncestorWebskins[i].typename].stWebskins[request.aAncestorWebskins[i].template].cacheStatus GT 0>
+										
+									<cfset stArgs = structnew() />
+								
+									<cfset stArgs.webskinObjectID = stobj.objectid />
+									<cfset stArgs.webskinTypename = stobj.typename />
+									<cfset stArgs.webskinRefTypename = stobj.typename />
+									<cfset stArgs.webskinTemplate = arguments.template />
+									<cfset stArgs.ancestorID = request.aAncestorWebskins[i].objectID />
+									<cfset stArgs.ancestorTypename = request.aAncestorWebskins[i].typename />
+									<cfset stArgs.ancestorRefTypename = request.aAncestorWebskins[i].refTypename />
+									<cfset stArgs.ancestorTemplate = request.aAncestorWebskins[i].template />
+							
+									<cfset application.fapi.getContentType("dmWebskinAncestor").checkAncestorExists(argumentCollection=stArgs) />
+								
+								</cfif>
+							</cfif>
+						</cfloop>
+					
+					</cfif>
+				<cfelse>
+					<cfset application.fapi.addRequestLog("Webskin not in cache [#stobj.objectid#, #stobj.typename#, #arguments.template#, #stWebskin.webskinCacheID#]") />
+					
 					<cfif stobj.typename EQ "farCoapi">
 						<!--- This means its a type webskin and we need to look for the timeout value on the related type. --->			
 						<cfset stCoapi = application.fc.factory['farCoapi'].getData(objectid="#stobj.objectid#") />
@@ -328,7 +369,6 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var webskinHTML = "" />
 		<cfset var stTrace = "" />
 		<cfset var bAdded = "" />
-		<cfset var oWebskinAncestor = "" />
 		<cfset var i = "" />
 		<cfset var stArgs = "" />
 		<cfset var stProperties = "" />
@@ -346,6 +386,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		<!--- Add the current view to the array --->
 		<cfset stCurrentView.objectid = arguments.stobj.objectid />
+		<cfset stCurrentView.refTypename = arguments.stobj.typename />
 		<cfset stCurrentView.typename = arguments.webskinTypename />
 		<cfset stCurrentView.template = arguments.webskinTemplate />
 		<cfset stCurrentView.hashKey = arguments.hashKey />
@@ -357,6 +398,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset stCurrentView.cacheByForm = application.coapi.coapiadmin.getWebskincacheByForm(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
 		<cfset stCurrentView.cacheByRoles = application.coapi.coapiadmin.getWebskincacheByRoles(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
 		<cfset stCurrentView.cacheByVars = application.coapi.coapiadmin.getWebskincacheByVars(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
+		<cfset stCurrentView.cacheTypeWatch = application.coapi.coapiadmin.getWebskinCacheTypeWatch(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
+		<cfset stCurrentView.cacheFlushOnObjectChange = application.coapi.coapiadmin.getWebskinCacheFlushOnObjectChange(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
 		<cfset stCurrentView.lFarcryViewStates = "" />
 		<cfset stCurrentView.okToCache = 1 />
 		<cfset stCurrentView.inHead = structNew() />
@@ -378,8 +421,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset request.currentViewTypename = "#stCurrentView.typename#" />
 		<cfset request.currentViewTemplate = "#stCurrentView.template#" />
 		
+		<cfset application.fapi.addProfilePoint("View","#stCurrentView.template# [#stCurrentView.typename#:#stObj.objectid#]") />
 		
-	
 		<!--- Include the View --->
 		<cfsavecontent variable="webskinHTML">
 			
@@ -401,7 +444,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfelse>
 			<cfif arrayLen(request.aAncestorWebskins)>
 				
-				<cfset oWebskinAncestor = application.fapi.getContentType("dmWebskinAncestor") />						
+				<!--- ONLY KEEP TRACK OF THE ANCESTRY IF SET TO FLUSHONOBJECTCHANGE OR TYPEWATCH --->
+				<cfif stCurrentView.cacheFlushOnObjectChange or len(stCurrentView.cacheTypeWatch)>
 				
 				<!--- 
 				Loop through ancestors to determine whether to add to dmWebskinAncestor Table
@@ -416,30 +460,22 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 							<cfset stArgs = structnew() />
 						
 							<cfset stArgs.webskinObjectID = arguments.stobj.objectid />
-							<cfif structkeyexists(request.aAncestorWebskins[i],"objectid")>
+								<cfset stArgs.webskinTypename = arguments.webskinTypename />
+								<cfset stArgs.webskinRefTypename = arguments.stobj.typename />
+								<cfset stArgs.webskinTemplate = arguments.webskinTemplate />
 								<cfset stArgs.ancestorID = request.aAncestorWebskins[i].objectID />
-							<cfelse>
 								<cfset stArgs.ancestorTypename = request.aAncestorWebskins[i].typename />
-							</cfif>
+								<cfset stArgs.ancestorRefTypename = request.aAncestorWebskins[i].refTypename />
 							<cfset stArgs.ancestorTemplate = request.aAncestorWebskins[i].template />
 						
-							<cfset bAncestorExists = oWebskinAncestor.checkAncestorExists(argumentCollection=stArgs) />
+								<cfset application.fapi.getContentType("dmWebskinAncestor").checkAncestorExists(argumentCollection=stArgs) />
 							
-							<cfif not bAncestorExists>
-								<cfset stProperties = structNew() />
-								<cfset stProperties.webskinObjectID = arguments.stobj.objectid />
-								<cfset stProperties.webskinTypename = arguments.stobj.typename />
-								<cfset stProperties.webskinTemplate = arguments.webskinTemplate />
-								<cfif structkeyexists(request.aAncestorWebskins[i],"objectid")>
-									<cfset stProperties.ancestorID = request.aAncestorWebskins[i].objectID />
 								</cfif>
-								<cfset stProperties.ancestorTypename = request.aAncestorWebskins[i].typename />
-								<cfset stProperties.ancestorTemplate = request.aAncestorWebskins[i].template />
-								<cfset stResult = oWebskinAncestor.createData(stProperties=stProperties) />
 							</cfif>
+					</cfloop>
 						</cfif>
-					</cfif>
 					
+				<cfloop from="1" to="#arrayLen(request.aAncestorWebskins)#" index="i">	
 					<!--- If this webskin is to never cache, make sure all ancestors also never cache --->
 					<cfif stCurrentView.cacheStatus EQ -1>
 						<cfset request.aAncestorWebskins[i].okToCache = 0 />
@@ -479,6 +515,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<!--- If the current view (Last Item In the array) is still OkToCache --->
 			<cfif request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].okToCache>
 				<!--- Add the webskin to the object broker if required --->
+				<cfset application.fapi.addRequestLog("Caching webskin [#arguments.stobj.objectid#, #arguments.stobj.typename#, #arguments.webskinTemplate#, #arguments.webskinCacheID#]") />
 				<cfset bAdded = application.fc.lib.objectbroker.addWebskin(objectid=arguments.stobj.objectid, typename=arguments.stobj.typename, template=arguments.webskinTemplate, webskinCacheID=arguments.webskinCacheID, html=webskinHTML, stCurrentView=stCurrentView) />
 			</cfif>
 		</cfif>
@@ -680,55 +717,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 	</cffunction>
 	
 	<!---****************  CRUD METHODS  ****************--->
-	<cffunction name="flushTypeWatchWebskins" access="private" output="false" returntype="boolean" hint="Finds all webskins watching this type for any CRUD functions and flushes them from the cache">
-	 	<cfargument name="objectID" required="true" hint="The typename that the CRUD function was performed on." />
-		
-		<cfset var stObject = getData(arguments.objectid) />
-		<cfset var stTypeWatchWebskins = application.stCoapi[stObject.typename].stTypeWatchWebskins />
-		<cfset var iType = "" />
-		<cfset var iWebskin = "" />
-		<cfset var oCoapi = application.fapi.getContentType("farCoapi") />
-		<cfset var coapiObjectID = "" />
-		<cfset var qCachedAncestors = "" />
-		<cfset var bSuccess = "" />
-		
-		<cfif not structKeyExists(stObject, "status") OR stObject.status EQ "approved">
-			<cfif not structIsEmpty(stTypeWatchWebskins)>
-				<cfloop collection="#stTypeWatchWebskins#" item="iType">
-					
-					<cfset coapiObjectID = oCoapi.getCoapiObjectID(iType) />
-						
-					<cfloop from="1" to="#arrayLen(stTypeWatchWebskins[iType])#" index="iWebskin">
-						<cfquery datasource="#application.dsn#" name="qCachedAncestors">
-							SELECT * 
-							FROM dmWebskinAncestor
-							WHERE (
-									webskinTypename = <cfqueryparam cfsqltype="cf_sql_varchar" value="#iType#" />
-									OR webskinObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#coapiObjectID#" />
-							)
-							AND webskinTemplate = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stTypeWatchWebskins[iType][iWebskin]#" />
-						</cfquery>
-						
-						<cfloop query="qCachedAncestors">
-							<cfset bSuccess = application.fc.lib.objectbroker.removeWebskin(	objectID=qCachedAncestors.ancestorID,
-																								typename=qCachedAncestors.ancestorTypename,
-																								template=qCachedAncestors.ancestorTemplate ) />
-							
-							<cfset bSuccess = application.fc.lib.objectbroker.removeWebskin(	objectID=qCachedAncestors.webskinObjectID,
-																								typename=qCachedAncestors.webskinTypename,
-																								template=qCachedAncestors.webskinTemplate ) />
-							
-						</cfloop>
-						
-						
-					</cfloop>
-					
-				</cfloop>
-			</cfif>
-		</cfif>
-		<cfreturn true />
-	 </cffunction>
 	
+
 	<cffunction name="createData" access="public" output="true" returntype="struct" hint="Create an object including array properties.  Pass in a structure of property values; arrays should be passed as an array. The objectID can be ommitted and one will be created, passed in as an argument or passed in as a key of stProperties argument.">
 		<cfargument name="stProperties" type="struct" required="true">
 		<cfargument name="objectid" type="UUID" required="false" default="#application.fc.utils.createJavaUUID()#">
@@ -743,7 +733,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cflog text="#stReturn.message# #stReturn.results[arraylen(stReturn.results)].detail# [SQL: #stReturn.results[arraylen(stReturn.results)].sql#]" file="coapi" type="error" application="yes">
 		</cfif>
 
-		<cfset flushTypeWatchWebskins(objectid=stReturn.objectid) />
+		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=stReturn.objectid,typename=variables.tableMetadata.getTableName()) />
 		
     	<cfreturn stReturn />
 	</cffunction>
@@ -794,6 +784,10 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfset stObj = tempObjectStore[arguments.objectid] />
 
 		<cfelse>
+			<cfif isdefined("request.mode.rebuild") and request.mode.rebuild eq "page">
+				<cfset application.fc.lib.objectbroker.RemoveFromObjectBroker(arguments.objectid,variables.typename) />
+			</cfif>
+			
 			<cfif arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs>
 				<!--- Attempt to get the object from the ObjectBroker --->
 				<!--- getFromObjectBroker returns an empty struct if the object is not in the broker --->
@@ -911,17 +905,217 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			   		   	 
 		   	</cfif>		   	
 	   	</cflock>
-
-		<!------------------------------------------------------------------------------------ 
-		ONLY FLUSH TYPEWATCH IF THE OBJECT BEING SAVED DOES NOT HAVE A STATUS OR ITS APPROVED
-		 ------------------------------------------------------------------------------------>
-		<cfif NOT arguments.bSessionOnly>
-			<cfset flushTypeWatchWebskins(objectid=arguments.stProperties.objectid) />
-	   	</cfif>
 		
 		<cfreturn stResult />
 		
 	</cffunction>
+
+
+
+	<cffunction name="AfterSave" access="public" output="false" returntype="struct" hint="Called from setData and createData and run after the object has been saved.">
+		<cfargument name="stProperties" required="yes" type="struct" hint="A structure containing the contents of the properties that were saved to the object.">
+
+		<cfset var stObject = structNew() />
+		<cfset var lRelatedTypenames = "" />
+		<cfset var lArrayTables = "" />
+		<cfset var iArrayTables = 0 />
+		<cfset var lUUIDTables = "" />
+		<cfset var iUUIDTables = 0 />
+		<cfset var oType = "" />
+		<cfset var iField = "" />
+		<cfset var iJoinTypename = "" />
+		<cfset var iArrayItem = "" />
+		<cfset var iTypename = "" />
+		<cfset var qRelated = queryNew("blah") />
+		<cfset var stProps = structNew() />
+		<cfset var aAllRelated = arrayNew(1) />
+		<cfset var changeStatus = "" >
+		<cfset var stVersionRules = structNew() />	
+
+
+		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=arguments.stProperties.objectid,typename=arguments.stProperties.typename) />
+		
+		<!------------------------------------------------------------------ 
+		IF THIS OBJECT HAS A STATUS PROPERTY SUBMITTED THEN CHANGE STATUS 
+		--------------------------------------------------------------->
+		<cfif structKeyExists(arguments.stProperties, "status") AND structKeyExists(application.stcoapi[stProperties.typename].stprops, "status")>
+						
+			<cfif arguments.stProperties.status EQ "approved">
+				<!--- IF CHANGING TO APPROVED, THEN WE WANT TO APPROVE ALL RELATED CONTENT --->
+				<cfset changeStatus = "approved" />
+			<cfelseif arguments.stProperties.status EQ "draft">
+				<!--- IF CHANGING TO DRAFT AND NO LIVE VERSION EXISTS THEN SEND RELATED CONTENT TO DRAFT --->
+				<cfset stVersionRules = createObject("component", "#application.packagepath#.farcry.versioning").getVersioningRules(objectID=arguments.stProperties.objectid) />
+				<cfif NOT stVersionRules.bLiveVersionExists>
+					<cfset changeStatus = "draft" />
+	   	</cfif>
+			</cfif>
+			<cfif len(changeStatus)>
+				<cfset stObject = getData(objectid=arguments.stProperties.objectid) />
+		
+				<!--- LOOP TRHOUGH ALL THE FIELDS IN THIS OBJECT SEARCHING FOR ARRAY OR UUID PROPERTIES --->
+				<cfloop list="#structKeyList(application.stcoapi[stProperties.typename].stprops)#" index="iField">
+		
+					<!--- ADD ARRAY PROPERTIES AND THEIR VALUES TO THE LIST --->
+					<cfif application.stcoapi[stProperties.typename].stprops[iField].metadata.type EQ "array"
+						AND structKeyExists(application.stcoapi[stProperties.typename].stprops[iField].metadata, "bSyncStatus")
+						AND application.stcoapi[stProperties.typename].stprops[iField].metadata.bSyncStatus>
+																		
+						<cfif arrayLen(stObject[iField]) AND structKeyExists(application.stcoapi[stProperties.typename].stprops[iField].metadata, "ftJoin")>
+						
+						
+
+							<cfloop list="#application.stcoapi[stProperties.typename].stprops[iField].metadata.ftJoin#" index="iJoinTypename">
+								
+								<!--- LOOP THROUGH ENTIRE APPLICATION STCOAPI FOR EACH KEY (TYPENAME) --->
+								<cfloop collection="#application.stcoapi#" item="dTypeName">									
+									
+									<!--- LOOP THROUGH TYPENAME PROPERTIES --->
+									<cfloop collection="#application.stCOAPI[dtypeName].stProps#" item="dPropertyName">
+										
+										<!--- FOR EACH CHECK IF TYPE EQ ARRAY AND HAS FTJOIN AND FTJOIN MATCHES iJoinTypename --->
+										<cfif application.stCOAPI[dtypeName].stProps[dPropertyName].metadata.type EQ "array" AND structKeyExists(application.stcoapi[dtypeName].stprops[dPropertyName].metadata, "ftJoin") AND listFindNoCase(application.stcoapi[dtypeName].stProps[dPropertyName].metadata.ftJoin, iJoinTypename)>
+											
+											<!--- CREATE LIST OF TYPES AND THEIR PROPERTIES THAT NEED TO BE CHECKED --->
+											<cfif not listFindNoCase(lArrayTables, "#dtypeName#_#dPropertyName#") AND structKeyExists(application.stcoapi[iJoinTypename].stprops, "status")>
+												<cfset lArrayTables = listAppend(lArrayTables, "#dtypeName#_#dPropertyName#")>
+											</cfif>
+											
+											<cfif not listFindNoCase(lRelatedTypenames, iJoinTypename) AND structKeyExists(application.stcoapi[iJoinTypename].stprops, "status")>
+												<cfset lRelatedTypenames = listAppend(lRelatedTypenames, iJoinTypename)>
+											</cfif>
+									
+										</cfif>
+										
+									</cfloop>
+								
+								</cfloop>
+								
+							</cfloop>
+																					
+							<cfloop from="1" to="#arrayLen(stObject[iField])#" index="iArrayItem">
+								
+								<cfset iArrayTables = 0 />
+								
+								<cfloop list="#lArrayTables#" index="iArrayTable">
+									<!--- WE ARE ONLY GOING TO CHANGE THE STATUS IF THIS IS THE ONLY CONTENT ITEM THE RELATED OBJECT IS RELATED TO --->
+									<cfquery datasource="#application.dsn#" name="qDuplicate">
+										SELECT count(parentID) as counter
+										FROM #iArrayTable#
+										WHERE data = '#stObject[iField][iArrayItem]#'
+									</cfquery>
+								
+									<cfif qDuplicate.counter>
+										<cfset iArrayTables = iArrayTables + qDuplicate.counter>
+									</cfif>
+									
+								</cfloop>
+								
+								<cfif iArrayTables LTE 1>
+									<cfset arrayAppend(aAllRelated, stObject[iField][iArrayItem]) />								
+								</cfif>
+								
+							</cfloop>
+								
+						</cfif>
+						
+					</cfif>
+					
+					<!--- ADD UUID PROPERTIES AND THEIR VALUES TO THE LIST --->
+					<cfif application.stcoapi[stProperties.typename].stprops[iField].metadata.type EQ "UUID"
+						AND structKeyExists(application.stcoapi[stProperties.typename].stprops[iField].metadata, "bSyncStatus")
+						AND application.stcoapi[stProperties.typename].stprops[iField].metadata.bSyncStatus>
+						<cfif len(stObject[iField]) AND structKeyExists(application.stcoapi[stProperties.typename].stprops[iField].metadata, "ftJoin")>
+							
+							<cfloop list="#application.stcoapi[stProperties.typename].stprops[iField].metadata.ftJoin#" index="iJoinTypename">
+								
+								<!--- loop through entire application.stcoapi for each key (typename) --->
+								<cfloop collection="#application.stcoapi#" item="dTypeName">									
+									
+									<!--- loop through typenames properties --->
+									<cfloop collection="#application.stCOAPI[dtypeName].stProps#" item="dPropertyName">
+										
+										<!--- for each, check if type eq array and exists(application.stcoapi[typename].qmetadata.ftJoin) and listFindNoCase(application.stcoapi[typename].qmetadata.ftJoin, iJoinTypename --->
+										<cfif application.stCOAPI[dtypeName].stProps[dPropertyName].metadata.type EQ "UUID" AND structKeyExists(application.stcoapi[dtypeName].stprops[dPropertyName].metadata, "ftJoin") AND listFindNoCase(application.stcoapi[dtypeName].stProps[dPropertyName].metadata.ftJoin, iJoinTypename)>
+											
+											<cfif not listFindNoCase(lUUIDTables, "#dtypeName#:#dPropertyName#") AND structKeyExists(application.stcoapi[iJoinTypename].stprops, "status")>
+												<cfset lUUIDTables = listAppend(lUUIDTables,"#dtypeName#:#dPropertyName#") />
+											</cfif>
+											
+											<!--- If the array properties have a status add to the list --->
+											<cfif not listFindNoCase(lRelatedTypenames, iJoinTypename) AND structKeyExists(application.stcoapi[iJoinTypename].stprops, "status")>
+												<cfset lRelatedTypenames = listAppend(lRelatedTypenames, iJoinTypename)>
+											</cfif>
+										
+										</cfif>
+										
+									</cfloop>
+									
+								</cfloop>
+								
+							</cfloop>
+							
+							<cfloop list="#lUUIDTables#" index="UUID">
+
+								<!--- WE ARE ONLY GOING TO CHANGE THE STATUS IF THIS IS THE ONLY CONTENT ITEM THE RELATED OBJECT IS RELATED TO --->
+								<cfquery datasource="#application.dsn#" name="qDuplicate">
+									SELECT count(objectid) as counter
+									FROM #listFirst(UUID,":")#
+									WHERE #listLast(UUID,":")# = '#stObject[iField]#'
+								</cfquery>
+
+								<cfif qDuplicate.counter>
+									<cfset iUUIDTables = iUUIDTables + qDuplicate.counter>
+								</cfif>
+								
+							</cfloop>
+							
+							<cfif iArrayTables LTE 1 AND iUUIDTables LTE 1>
+								<cfset arrayAppend(aAllRelated, stObject[iField]) />
+							</cfif>
+							
+						</cfif>
+						
+					</cfif>
+					
+				</cfloop>
+				
+				<!--- LOOP THROUGH THE ARRAY OF RELATED OBJECTS TO FIND ALL OBJECTS NOT APPROVED AND APPROVE THEM --->
+				<cfif arrayLen(aAllRelated)>			
+					
+					<cfloop list="#lRelatedTypenames#" index="iTypename">					
+					
+						<cfquery datasource="#application.dsn#" name="qRelated">
+							SELECT objectid, status
+							FROM #iTypename# 
+							WHERE objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arrayToList(aAllRelated)#" />)
+							AND status <> '#changeStatus#'
+						</cfquery>
+	
+						<cfset oType = createobject("component", application.types[iTypename].typePath) />
+						
+						<cfif qRelated.recordCount>
+							<cfloop query="qRelated">
+								<cfset stProps = structNew() />
+								<cfset stProps.objectid = qRelated.objectid />
+								<cfset stProps.status = changeStatus />
+								
+								<cfset stResult = oType.setData(stProperties=stProps,auditNote="Status changed to #changeStatus#") />
+							</cfloop>
+						</cfif>
+		
+					</cfloop>
+		
+				</cfif>
+				
+			</cfif>
+			
+		</cfif>
+		
+
+		<cfreturn stProperties />
+	</cffunction>
+
 	
 	<cffunction name="deleteData" access="public" output="false" returntype="struct" hint="Delete the specified objectid and corresponding data, including array properties and refObjects.">
 		<cfargument name="objectid" type="uuid" required="true">
@@ -963,7 +1157,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		WHERE refObjectID = '#arguments.objectID#'
 		</cfquery>
 		
-		<cfset flushTypeWatchWebskins(objectid=arguments.objectid) />
+		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=arguments.objectid,typename=variables.typename) />
 		
 		<cfreturn stResult>
 	</cffunction>

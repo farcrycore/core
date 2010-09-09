@@ -1,3 +1,19 @@
+<!--- @@description:
+	<p>Displays wyswyg editor with farcry plugins to add images, files, videos etc</p> --->
+
+<!--- @@examples:
+	<p>Example from dmHTML in farcry core</p>
+	<code>
+	<cfproperty 
+		name="Body" type="longchar" hint="Main body of content." required="no" default="" 
+		ftSeq="12" ftwizardStep="Body" ftFieldset="Body" ftLabel="Body" 
+		ftType="richtext" 
+		ftImageArrayField="aObjectIDs" ftImageTypename="dmImage" ftImageField="StandardImage"
+		ftTemplateTypeList="dmImage,dmFile,dmFlash,dmNavigation,dmHTML" ftTemplateWebskinPrefixList="insertHTML"
+		ftLinkListFilterRelatedTypenames="dmFile,dmNavigation,dmHTML"
+		ftTemplateSnippetWebskinPrefix="insertSnippet">
+	</code>
+--->
 <cfcomponent extends="field" name="richtext" displayname="Rich Text Editor" hint="Used to liase with longchar type fields"> 
 	
 	<cfproperty name="ftLabelAlignment" required="false" default="inline" options="inline,block" hint="Used by FarCry Form Layouts for positioning of labels. inline or block." />

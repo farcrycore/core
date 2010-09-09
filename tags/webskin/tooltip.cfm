@@ -58,9 +58,7 @@ FARCRY IMPORT FILES
 <cfparam name="attributes.id" default="" /><!--- id used to ensure the tooltip is only loaded once per id. --->
 <cfparam name="attributes.selector" type="string" /><!--- The id of the dom element that you wish to have the tooltip display on hover. --->
 <cfparam name="attributes.message" default="" /><!--- The actual message. If this is blank, the text between the opening and the closing tag will be used (generatedContent) --->
-<cfparam name="attributes.class" default="tooltip" /><!--- The css class to be assigned to the tooltip div --->
-<cfparam name="attributes.style" default="" /><!--- The css style to be assigned to the tooltip div --->
-<cfparam name="attributes.configuration" default="predelay:100" /><!--- Specifies the configuration of the tooltip. --->
+<cfparam name="attributes.class" default="" /><!--- The css class to be assigned to the tooltip div --->
 
 
 <cfif thistag.executionMode eq "Start">
@@ -91,7 +89,10 @@ FARCRY IMPORT FILES
 	<cfoutput>
 		$j('#attributes.selector#').tooltip({ 
 		    delay: 0, 
-		    showURL: false, 
+		    showURL: false,
+			<cfif len(attributes.class)>
+				extraClass: '#attributes.class#',
+			</cfif> 
 		    bodyHandler: function() { 
 		        return '#jsStringFormat(attributes.message)#'; 
 		    } 

@@ -55,6 +55,7 @@ SAMPLE USAGE:
 <cfparam name="attributes.alternateHTML" default="#attributes.webskin# template unavailable." type="string" /><!--- alternative HTML if webskin is missing --->
 <cfparam name="attributes.r_html" type="string"  default=""/><!--- Empty will render the html inline --->
 
+<cfparam name="attributes.lValidStatus" default="#request.mode.lValidStatus#" /><!--- Filter displayed items by their status --->
 
 <!--- GET THE RELATED CONTENT --->
 <cfset qRelatedContent = application.fapi.getRelatedContent(objectid="#attributes.objectid#", typename="#attributes.typename#", filter="#attributes.filter#", arrayType="#attributes.arrayType#", arrayProperty="#attributes.arrayProperty#")>
@@ -63,14 +64,23 @@ SAMPLE USAGE:
 <!--- generate output by rendertype --->
 <cfset html="" />
 
+
 <cfif qRelatedContent.recordCount>
 	<cfswitch expression="#attributes.rendertype#">
 	
 		<cfcase value="unordered">
 			<cfset html = html & "<ul>" />
 			<cfloop query="qRelatedContent">
+				<cfif not structkeyexists(application.stCOAPI[qRelatedContent.typename].stProps,"status")>
+					<cfset bShowThis = true />
+				<cfelse>
+					<cfset stThis = application.fapi.getContentObject(typename=qRelatedContent.typename,objectid=qRelatedContent.objectid) />
+					<cfset bShowThis = listcontainsnocase(attributes.lValidStatus,stThis.status) />
+				</cfif>
+				<cfif bShowThis>
 				<skin:view objectid="#qRelatedContent.objectid#" typename="#qRelatedContent.typename#" webskin="#attributes.webskin#" alternateHTML="#attributes.alternateHTML#" r_html="htmlRelatedContent" />
 				<cfset html = html & "<li>#htmlRelatedContent#</li>" />
+				</cfif>
 			</cfloop>
 			<cfset html = html & "</ul>" />
 		</cfcase>
@@ -78,16 +88,32 @@ SAMPLE USAGE:
 		<cfcase value="ordered">
 			<cfset html = html & "<ol>" />
 			<cfloop query="qRelatedContent">
+				<cfif not structkeyexists(application.stCOAPI[qRelatedContent.typename].stProps,"status")>
+					<cfset bShowThis = true />
+				<cfelse>
+					<cfset stThis = application.fapi.getContentObject(typename=qRelatedContent.typename,objectid=qRelatedContent.objectid) />
+					<cfset bShowThis = listcontainsnocase(attributes.lValidStatus,stThis.status) />
+				</cfif>
+				<cfif bShowThis>
 				<skin:view objectid="#qRelatedContent.objectid#" typename="#qRelatedContent.typename#" webskin="#attributes.webskin#" alternateHTML="#attributes.alternateHTML#" r_html="htmlRelatedContent" />
 				<cfset html = html & "<li>#htmlRelatedContent#</li>" />
+				</cfif>
 			</cfloop>
 			<cfset html = html & "</ol>" />
 		</cfcase>
 		
 		<cfdefaultcase>
 			<cfloop query="qRelatedContent">
+				<cfif not structkeyexists(application.stCOAPI[qRelatedContent.typename].stProps,"status")>
+					<cfset bShowThis = true />
+				<cfelse>
+					<cfset stThis = application.fapi.getContentObject(typename=qRelatedContent.typename,objectid=qRelatedContent.objectid) />
+					<cfset bShowThis = listcontainsnocase(attributes.lValidStatus,stThis.status) />
+				</cfif>
+				<cfif bShowThis>
 				<skin:view objectid="#qRelatedContent.objectid#" typename="#qRelatedContent.typename#" webskin="#attributes.webskin#" alternateHTML="#attributes.alternateHTML#" r_html="htmlRelatedContent" />
 				<cfset html = html & " #htmlRelatedContent# " />
+				</cfif>
 			</cfloop>
 		</cfdefaultcase>
 	

@@ -60,6 +60,8 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 		<!--- Loop through sections --->
 		<cfset count = 0 />
 		<admin:loopwebtop parent="#subsection#" item="menu">
+			<cfif (StructKeyExists(subsection, "permission") AND application.fapi.hasPermission(subsection.permission) IS true)
+				  OR NOT StructKeyExists(subsection, "permission")>
 			<!--- Menu content --->
 			<!--- <cfoutput><h3>#menu.label#</h3></cfoutput>
 			<cfif len(menu.description)>
@@ -107,6 +109,7 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 					</cfoutput>
 				</cfif>
 			</admin:loopwebtop>
+			</cfif>
 		</admin:loopwebtop>
 			
 		<cfoutput></ul></cfoutput>

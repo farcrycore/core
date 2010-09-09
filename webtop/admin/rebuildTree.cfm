@@ -33,7 +33,7 @@
 	                Select the typename of the tree to be rebuilt:
 	                <select name="typename">
 	                    <cfloop query="qTypeNames">
-	                        <option value="#qTypeNames.typename#" <cfif qTypeNames.typename eq defaultType>selected</cfif>>#qTypeNames.typename#</option>
+	                        <option value="#qTypeNames.typename#"<cfif qTypeNames.typename eq defaultType> selected="selected"</cfif>>#qTypeNames.typename#</option>
 	                    </cfloop>
 	                </select>
 	                <br />

@@ -24,3 +24,5 @@
 	background:#fff;
 	}
 .paginator a:hover {color:#fff;background:#E17000;text-decoration:none;}
+.paginator span.resultCount {margin-left: 15px;}
+.paginator span.numberCount {font-weight: bold;}

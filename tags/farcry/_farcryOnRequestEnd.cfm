@@ -41,7 +41,10 @@ $out:$
 <cfimport taglib="/farcry/core/tags/core" prefix="core" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
-<cfif structKeyExists(session, "aGritterMessages") AND arrayLen(session.aGritterMessages)>
+<!--- If we are in the middle of a <skin:location> then we dont want to output a bunch of javascript --->
+<cfif not structKeyExists(request.fc, "bLocating")>
+
+	<cfif structKeyExists(session, "aGritterMessages") AND arrayLen(session.aGritterMessages)>
 	<skin:loadJS id="jquery" />
 	<skin:loadJS id="gritter" />
 	<skin:loadCSS id="gritter" />
@@ -66,17 +69,18 @@ $out:$
 	</skin:onReady>
 	
 	<cfset session.aGritterMessages = arrayNew(1) />
-</cfif>
+	</cfif>
 
 
 
-<!--- Add the loaded libraries into the header --->
-<core:cssInHead />
-<core:jsInHead />
-
-
-
-<cfif structKeyExists(Request,"inHead") AND NOT structIsEmpty(Request.InHead) AND NOT request.mode.ajax>		
+	
+	<!--- Add the loaded libraries into the header --->
+	<core:cssInHead />
+	<core:jsInHead />
+	
+	
+	
+	<cfif structKeyExists(Request,"inHead") AND NOT structIsEmpty(Request.InHead) AND NOT request.mode.ajax>		
 	<!--- Check for each stPlaceInHead variable and output relevent html/css/js --->
 			
 	<cfsavecontent variable="variables.placeInHead">		
@@ -120,7 +124,7 @@ $out:$
 			</cfoutput>
 			
 		</cfif>
-
+	
 	</cfsavecontent>
 	
 	<cfif len(variables.placeInHead)>
@@ -131,8 +135,9 @@ $out:$
 			</cfcatch>
 		</cftry>	
 	</cfif>
+	</cfif>
+	
 </cfif>
-
 
 
 <cfsetting enablecfoutputonly="no">

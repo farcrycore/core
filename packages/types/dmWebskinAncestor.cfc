@@ -44,78 +44,64 @@ $Developer: Matthew Bryant (mbryant@daemon.com.au) $
 	<cffunction name="getAncestorWebskins" access="public" output="true" returntype="query" hint="Returns query containing all ancestor templates currently exists in the webskinAncestor table for the current webskinID">
 		<cfargument name="webskinObjectID" type="string" default="" required="false" hint="the objectid of the webskin" />
 		<cfargument name="webskinTypename" type="string" default="" required="false" hint="the type of the template you wish to retrieve the ancestors of" />
-		<cfargument name="webskinTemplate" type="string" default="" required="false" hint="The template you wish to retreive the ancestors of" />
+
+		<cfset var qWebskinAncestors = "" />
+		<cfset var qResult = "" />
 	
-		<cfset var q = "" />
-		
-		<cfif not len(arguments.webskinObjectID) and not (len(arguments.webskinTypename) and len(arguments.webskinTemplate))>
-			<cfthrow message="getAncestorWebskins requires webskinObjectID or webskinTypename and webskinTemplate" />
+		<cfif not structKeyExists(application.fc.webskinAncestors, arguments.webskinTypename)>
+			<cfset application.fc.webskinAncestors[arguments.webskinTypename] = queryNew( 'webskinObjectID,webskinTypename,webskinRefTypename,webskinTemplate,ancestorID,ancestorTypename,ancestorTemplate,ancestorRefTypename', 'VarChar,VarChar,VarChar,VarChar,VarChar,VarChar,VarChar,VarChar' ) />
 		</cfif>
 		
 		
-		<cfif len(arguments.webskinObjectID)>			
-			<cfquery datasource="#application.dsn#" name="q">
-				SELECT 	a.objectid,a.ancestorID,a.ancestorTemplate,a.ancestorTypename, ref.typename as ancestorBindingTypename
-				FROM 	dmWebskinAncestor as a
-				LEFT JOIN refObjects as ref
-				ON a.ancestorID = ref.objectid
+		<cfset qWebskinAncestors = application.fc.webskinAncestors['#arguments.webskinTypename#'] />
+		
+		<cfquery dbtype="query" name="qResult">
+			SELECT 	*
+			FROM 	qWebskinAncestors
 				WHERE 	webskinObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.webskinObjectID#">
 			</cfquery>				
-		<cfelse>
-			<cfquery datasource="#application.dsn#" name="q">
-				SELECT 	a.objectid,a.ancestorID,a.ancestorTemplate,a.ancestorTypename, ref.typename as ancestorBindingTypename
-				FROM 	dmWebskinAncestor as a
-				LEFT JOIN refObjects as ref
-				ON a.ancestorID = ref.objectid
-				WHERE 	webskinObjectID = ''
-						and webskinTypename = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.webskinTypename#">
-						and webskinTemplate = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.webskinTemplate#">
-			</cfquery>				
-		</cfif>
 		
-		<cfreturn q />
+		
+		<cfreturn qResult />
 	</cffunction>
 		
 	
-	<cffunction name="checkAncestorExists" access="public" output="false" returntype="boolean" hint="Returns false if it is not already in the webskinAncestor table.">
+	<cffunction name="checkAncestorExists" access="public" output="false" returntype="void" hint="checks webskinAncestor cache and adds if not already in.">
 		<cfargument name="webskinObjectID" type="string" default="" required="false" hint="the objectid of the webskin" />
-		<cfargument name="webskinTypename" type="string" default="" required="false" hint="the type of the template you wish to retrieve the ancestors of" />
+		<cfargument name="webskinTypename" type="string" default="" required="false" hint="the type of the object you wish to retrieve the ancestors of" />
+		<cfargument name="webskinRefTypename" type="string" default="" required="false" hint="the type of the object you wish to retrieve the ancestors of" />
 		<cfargument name="webskinTemplate" type="string" default="" required="false" hint="The template you wish to retreive the ancestors of" />
 		<cfargument name="ancestorID" type="UUID" default="" required="false" hint="the objectid of the ancestor." />
 		<cfargument name="ancestorTypename" type="string" default="" required="false" hint="The type of the ancestor" />
+		<cfargument name="ancestorRefTypename" type="string" default="" required="false" hint="The type of the ancestor" />
 		<cfargument name="ancestorTemplate" type="string" default="" required="true" hint="The ancestor webskin template name." />
 		
-		<cfset var q = "" />
-		<cfset var qExists = "" />
-		<cfset var bExists = false />		
+		<cfset var qWebskinAncestors = getAncestorWebskins(webskinObjectID=arguments.webskinObjectID, webskinTypename=arguments.webskinTypename ) />
+		<cfset var qWebskinAncestorExists = "" />		
+		<cfset var qResult = "" />		
 		
-		<cfif not len(arguments.ancestorID) and not len(arguments.ancestorTypename)>
-			<cfthrow message="Either ancestorID or ancestorTypename and ancestorTemplate are required for checkAncestorExists" />
-		</cfif>
-		
-		<!--- Not checked so go check the database. --->
-		<cfset q = getAncestorWebskins(webskinObjectID=arguments.webskinObjectID, webskinTypename=arguments.webskinTypename, webskinTemplate=arguments.webskinTemplate ) />
-	
-		<cfquery dbtype="query" name="qExists">
-		SELECT 	objectid 
-		FROM 	q
-		WHERE 	
-		<cfif len(arguments.ancestorID)>
-			ancestorID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.ancestorID#">
+		<cfquery dbtype="query" name="qWebskinAncestorExists">
+		SELECT 	webskinObjectID 
+		FROM 	qWebskinAncestors
+		WHERE	ancestorID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.ancestorID#">
 			AND ancestorTemplate = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.ancestorTemplate#">
-		<cfelse>
-			ancestorID = ''
-			AND ancestorTypename = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.ancestorTypename#">
-			AND ancestorTemplate = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.ancestorTemplate#">
-		</cfif>
 		</cfquery>
-			
+
 		<!--- IF the details of this cached webskin are not in the db, then we need to create it now. --->
-		<cfif qExists.recordCount>
-			<cfset bExists = true />
+		<cfif NOT qWebskinAncestorExists.recordCount>
+			<cflock name="webskinAncestor_#arguments.webskinTypename#" type="exclusive" timeout="5" >
+				<cfset queryaddrow( application.fc.webskinAncestors[arguments.webskinTypename] ) >
+				<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'webskinObjectID', arguments.webskinObjectID ) >
+				<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'webskinTypename', arguments.webskinTypename ) >
+				<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'webskinRefTypename', arguments.webskinRefTypename ) >
+				<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'webskinTemplate', arguments.webskinTemplate ) >
+				<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'ancestorID', arguments.ancestorID ) >
+				<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'ancestorTypename', arguments.ancestorTypename ) >
+				<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'ancestorRefTypename', arguments.ancestorRefTypename ) >
+				<cfset querysetcell( application.fc.webskinAncestors[arguments.webskinTypename], 'ancestorTemplate', arguments.ancestorTemplate ) >
+			</cflock>
 		</cfif>
 		
-		<cfreturn bExists />
 	</cffunction>
 	
 		

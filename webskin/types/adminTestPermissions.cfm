@@ -34,7 +34,7 @@
 <skin:onReady><script type="text/javascript"><cfoutput>
 	$j("input[name=role]").bind("click",function(){
 		$j.ajax({
-			url			: "#application.fapi.getLink(objectid=stObj.objectid,view='adminTestPermissions',urlParameters='ajaxmode=1')#",
+			url			: "#application.fapi.getLink(type=stObj.typename,objectid=stObj.objectid,view='adminTestPermissions',urlParameters='ajaxmode=1')#",
 			data		: {
 							roles : $('input[name=role]:checked').map(function() { return $(this).val(); }).get().join()
 						  },

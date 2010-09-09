@@ -82,11 +82,11 @@ Brendan Sisson (brendan@daemon.com.au)
 
 	<label for="updatePeriod"><b>#application.rb.getResource("updatePeriodLabel")#</b>
 		<select name="updatePeriod">
-			<option value="hourly" <cfif output.updatePeriod eq "hourly">selected</cfif>>#application.rb.getResource("Hourly")#
-			<option value="daily" <cfif output.updatePeriod eq "daily">selected</cfif>>#application.rb.getResource("Daily")#
-			<option value="weekly" <cfif output.updatePeriod eq "weekly">selected</cfif>>#application.rb.getResource("Weekly")#
-			<option value="monthly" <cfif output.updatePeriod eq "monthly">selected</cfif>>#application.rb.getResource("Monthly")#
-			<option value="yearly" <cfif output.updatePeriod eq "yearly">selected</cfif>>#application.rb.getResource("Yearly")#
+			<option value="hourly"<cfif output.updatePeriod eq "hourly"> selected="selected"</cfif>>#application.rb.getResource("Hourly")#</option>
+			<option value="daily"<cfif output.updatePeriod eq "daily"> selected="selected"</cfif>>#application.rb.getResource("Daily")#</option>
+			<option value="weekly"<cfif output.updatePeriod eq "weekly"> selected="selected"</cfif>>#application.rb.getResource("Weekly")#</option>
+			<option value="monthly"<cfif output.updatePeriod eq "monthly"> selected="selected"</cfif>>#application.rb.getResource("Monthly")#</option>
+			<option value="yearly"<cfif output.updatePeriod eq "yearly"> selected="selected"</cfif>>#application.rb.getResource("Yearly")#</option>
 		</select><br />
 	</label>
 
@@ -100,7 +100,7 @@ Brendan Sisson (brendan@daemon.com.au)
 
 	<label for="contentType"><b>#application.rb.getResource("contentType")#</b>
 		<select name="contentType"><cfloop collection="#application.types#" item="i"><!--- loop over types structure in memory -- populated on application init --->					
-			<option value="#i#"<cfif output.contentType eq i>selected="selected"</cfif>>#i#</option></cfloop>			
+			<option value="#i#"<cfif output.contentType eq i> selected="selected"</cfif>>#i#</option></cfloop>			
 		</select><br />
 	</label>
 

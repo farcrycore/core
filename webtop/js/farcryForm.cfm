@@ -66,8 +66,9 @@
 		
 		// get the post values
 		for (var property in values) {
-			if ($j('##' + event.data.prefix+property).attr('value')) {
-				values[property] = $j('##' + event.data.prefix+property).attr('value');
+			if ($j('##' + event.data.prefix+property).val()) {
+				values[property] = $j('##' + event.data.prefix+property).val();
+				if (values[property].join) values[property] = values[property].join();
 			}
 		}
 		
@@ -352,13 +353,13 @@ function setRowBackground (childCheckbox) {
 							
 	fcForm.openLibrarySelect = function(typename,objectid,property,id,urlparameters) {
 		urlparameters = urlparameters ? urlparameters : '';
-		var newDialogDiv = $j("<div><iframe style='width:100%;height:100%;border-width:0px;' frameborder='0'></iframe></div>");
+		var newDialogDiv = $j("<div><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0'></iframe></div>");
 		$j("body").prepend(newDialogDiv);
 		$j("html").css('overflow', 'hidden');
 		$j(newDialogDiv).dialog({
 			bgiframe: true,
 			modal: true,
-			title:'Library Selector',
+			title:'Library',
 			draggable:false,
 			resizable:false,
 			position:['left','top'],
@@ -378,7 +379,7 @@ function setRowBackground (childCheckbox) {
 			
 		});
 		$j(newDialogDiv).dialog('open');
-		$j('iframe',$j(newDialogDiv)).attr('src','/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=displayLibraryTabs' + '&property=' + property + '&' + urlparameters);
+		$j('iframe',$j(newDialogDiv)).attr('src','#application.fapi.getWebroot()#/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=displayLibraryTabs' + '&property=' + property + '&' + urlparameters);
 	};
 	
 
@@ -389,7 +390,7 @@ function setRowBackground (childCheckbox) {
 		$j("html").css('overflow', 'hidden');
 		$j(newDialogDiv).dialog({
 			bgiframe: true,
-			modal: true,
+			//modal: true,
 			title:'Add New',
 			closeOnEscape: false,
 			draggable:false,
@@ -407,7 +408,7 @@ function setRowBackground (childCheckbox) {
 		});
 		$j(newDialogDiv).dialog('open');
 		//OPEN URL IN IFRAME ie. not in ajaxmode
-		$j('iframe',$j(newDialogDiv)).attr('src','/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=displayLibraryAdd' + '&property=' + property + '&filterTypename=' + filterTypename);
+		$j('iframe',$j(newDialogDiv)).attr('src','#application.fapi.getWebroot()#/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=displayLibraryAdd' + '&property=' + property + '&filterTypename=' + filterTypename);
 		
 	};	
 	
@@ -435,7 +436,7 @@ function setRowBackground (childCheckbox) {
 		});
 		$j(newDialogDiv).dialog('open');
 		//OPEN URL IN IFRAME ie. not in ajaxmode
-		$j('iframe',$j(newDialogDiv)).attr('src','/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=displayLibraryEdit' + '&property=' + property + '&editid=' + editid);
+		$j('iframe',$j(newDialogDiv)).attr('src','#application.fapi.getWebroot()#/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=displayLibraryEdit' + '&property=' + property + '&editid=' + editid);
 		
 	};	
 	
@@ -443,7 +444,7 @@ function setRowBackground (childCheckbox) {
 		$j.ajax({
 			cache: false,
 			type: "POST",
- 			url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
+ 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
 			data: {deleteID: itemids },
 			dataType: "html",
 			complete: function(data){
@@ -460,7 +461,7 @@ function setRowBackground (childCheckbox) {
 		$j.ajax({
 			cache: false,
 			type: "POST",
- 			url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
+ 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
 			data: {deleteID: itemids },
 			dataType: "html",
 			complete: function(data){
@@ -474,7 +475,7 @@ function setRowBackground (childCheckbox) {
 		$j.ajax({
 			cache: false,
 			type: "POST",
- 			url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
+ 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
 			data: {detachID: itemids },
 			dataType: "html",
 			complete: function(data){		
@@ -490,7 +491,7 @@ function setRowBackground (childCheckbox) {
 		$j.ajax({
 			cache: false,
 			type: "POST",
- 			url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
+ 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
 			data: {detachID: itemids },
 			dataType: "html",
 			complete: function(data){	
@@ -501,8 +502,8 @@ function setRowBackground (childCheckbox) {
 		});	
 	}
 		
-	fcForm.initLibrary = function(typename,objectid,property) {
-		fcForm.initLibrarySummary(typename,objectid,property);	
+	fcForm.initLibrary = function(typename,objectid,property,urlParams) {
+		fcForm.initLibrarySummary(typename,objectid,property,urlParams);	
 		
 		$j('tr.selector-wrap')
 			.filter(':has(input:checked)')
@@ -526,22 +527,22 @@ function setRowBackground (childCheckbox) {
 				$j.ajax({
 					cache: false,
 					type: "POST",
-		 			url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
+		 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property + "&" + urlParams,
 					data: {addID: $j(e.target).val() },
 					dataType: "html",
 					complete: function(data){
-						fcForm.initLibrarySummary(typename,objectid,property);
+						fcForm.initLibrarySummary(typename,objectid,property,urlParams);
 					}
 				});		
 			} else {
 				$j.ajax({
 					cache: false,
 					type: "POST",
-		 			url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
+		 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property + "&" + urlParams,
 					data: {detachID: $j(e.target).val() },
 					dataType: "html",
 					complete: function(data){
-						fcForm.initLibrarySummary(typename,objectid,property);			
+						fcForm.initLibrarySummary(typename,objectid,property,urlParams);			
 					}
 				});	
 			};
@@ -565,11 +566,11 @@ function setRowBackground (childCheckbox) {
 		});
 	};
 	
-	fcForm.initLibrarySummary = function(typename,objectid,property) {
+	fcForm.initLibrarySummary = function(typename,objectid,property,urlParams) {
 		$j.ajax({
 			type: "POST",
 			cache: false,
-					url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayLibrarySummary' + '&property=' + property, 
+					url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayLibrarySummary' + '&property=' + property + "&" + urlParams, 
 			complete: function(data){
 				$j('##librarySummary-' + typename + '-' + property).html(data.responseText);
 					
@@ -583,7 +584,7 @@ function setRowBackground (childCheckbox) {
 		$j.ajax({
 			type: "POST",
 			cache: false,
- 			url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxRefreshJoinProperty' + '&property=' + property,
+ 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxRefreshJoinProperty' + '&property=' + property,
 		 	success: function(msg){
 				$j("##" + id + '-library-wrapper').html(msg);
 				fcForm.initSortable(typename,objectid,property,id);	
@@ -602,7 +603,7 @@ function setRowBackground (childCheckbox) {
 				$j.ajax({
 					type: "POST",
 					cache: false,
-	  				url: '/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
+	  				url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
 					data: {'sortIDs': $j('##' + id + '-library-wrapper').sortable('toArray',{'attribute':'serialize'}).join(",") },
 					complete: function(data){
 						$j('##' + id).attr('value','');		

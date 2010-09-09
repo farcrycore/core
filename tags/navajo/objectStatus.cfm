@@ -143,6 +143,7 @@ $out:$
 </cfif>
 
 <cfif changestatus eq true>
+
 	<ft:processForm action="Submit">	
 	
 		<cfloop index="attributes.objectID" list="#attributes.lObjectIDs#">
@@ -302,6 +303,7 @@ $out:$
 			<!--- update the structure data for object update --->
 			<cfloop list="#keyList#" index="key">
 				<q4:contentobjectget objectId="#key#" r_stObject="stObj">
+				
 				<cfif NOT structIsEmpty(stObj)>
 					<cfif stObj.label NEQ "(incomplete)"> <!--- incompletet items check .: dont send incomplete items live --->
 						
@@ -319,9 +321,10 @@ $out:$
 							<cfif StructKeyExists(application.types[stObj.typeName].stProps, field) AND application.types[stObj.typeName].stProps[field].metaData.type EQ "date">
 								<cfif IsDate(stObj[field])>
 									<cfset stObj[field] = CreateODBCDateTime(stObj[field])>
-								<cfelse>
+									<!--- G.S commented out this, i dont why it is here but defaults expiry date to a date that will never let the content render --->
+								<!--- <cfelse>
 									<cfset tempdate = CreateDate(year(Now()),month(Now()),day(Now()))>
-									<cfset stObj[field] = CreateODBCDateTime(tempdate)>
+									<cfset stObj[field] = CreateODBCDateTime(tempdate)> --->
 								</cfif>
 							</cfif>
 						</cfloop>

@@ -17,7 +17,7 @@
 <cfparam name="attributes.target" default="_self"><!--- The target for the url page to be redirected too. --->
 <cfparam name="attributes.bSpamProtect" default="false"><!--- Instantiates cfformprotection to ensure the button is not clicked by spam. --->
 <cfparam name="attributes.stSpamProtectConfig" default="#structNew()#" /><!--- config data that will override the config set in the webtop. --->
-<cfparam name="attributes.rbkey" default="forms.buttons.#rereplacenocase(attributes.value,'[^\w\d]','','ALL')#"><!--- The resource path for this button. Default is forms.buttons.value. --->
+<cfparam name="attributes.rbkey" default="forms.buttons.#rereplacenocase(attributes.text,'[^\w\d]','','ALL')#"><!--- The resource path for this button. Default is forms.buttons.value. --->
 <cfparam name="attributes.disabled" default="false"><!--- Should the button be disabled --->
 <cfparam name="attributes.r_stButton" default=""><!--- the name of the calling scope variable name to return the details of the farcry button --->
 <cfparam name="attributes.renderType" default="farcryButton"><!--- How should the button be rendered (button, link, farcryButton(default)) --->
@@ -146,7 +146,7 @@
 
 			<skin:onReady>
 			<cfoutput>	
-			$("###attributes.id#").button({#buttonSettings#});
+			$j("###attributes.id#").button({#buttonSettings#});
 			</cfoutput>
 			</skin:onReady>
 				

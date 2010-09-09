@@ -116,7 +116,7 @@ function confirmDelete(objectID){
 					Page 
 					<select name="thisPage" onChange="this.form.submit();">
 						<cfloop from="1" to="#numPages#" index="i">
-							<option value="#i#" <cfif i eq thisPage>selected</cfif>>#i#
+							<option value="#i#"<cfif i eq thisPage> selected="selected"</cfif>>#i#</option>
 						</cfloop>
 					</select> of #numPages#
 					<cfif thisPage LT numpages>

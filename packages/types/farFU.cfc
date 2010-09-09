@@ -1,7 +1,7 @@
 <cfcomponent 
 	displayname="FarCry Friendly URL Table" hint="Manages FarCry Friendly URL's" extends="types" output="false" 
 	bDocument="true" scopelocation="application.fc.factory.farFU" 
-	bObjectBroker="true" objectBrokerMaxObjects="1000" 
+	bObjectBroker="true" objectBrokerMaxObjects="10000" 
 	fuAlias="fu">
 	
 	<cfproperty 
@@ -268,6 +268,8 @@
 		<!--- prepend fu url pattern and add suffix --->
 		<cfset cleanFU = ReReplaceNocase(cleanFU,"/{2,}","/","All")>
 		<cfset cleanFU = ReReplaceNoCase(cleanFU,"[^a-z0-9/]+","-","all")>
+		<cfset cleanFU = ReReplaceNoCase(cleanFU,"-($|/)","\1","all")>
+		<cfset cleanFU = ReReplaceNoCase(cleanFU,"(^|/)-","\1","all")>
 		<cfset cleanFU = Trim(cleanFU)>
 		
 		<cfif left(cleanFU,1) NEQ "/">
@@ -602,11 +604,13 @@
 		<cfset var stResult = StructNew()>
 		<cfset var stDeployResult = StructNew()>
 		<cfset var qLookup = "" />
+		<cfset var stFU = structnew() />
 		
 		<!--- initialise fu scopes --->
 		<cfset this.stMappings = structNew() />
 		<cfset this.stLookup = structNew() />
 		<cfset this.stDBLookup = structNew() /> <!--- Contains keys for EVERY friendly URL in the DB for quick reference. This is so that when building a constructed url, we are not going to use a FU that is in the DB --->
+
 		
 		<!--- Check to make sure the farFU table has been deployed --->
 		<cftry>
@@ -627,7 +631,7 @@
 		
 		<!--- retrieve list of all dmNavigation FU's that are not retired --->
 		<cfquery name="stLocal.q" datasource="#application.dsn#">
-			SELECT	fu.objectid, fu.friendlyurl, fu.refobjectid, fu.queryString, fu.bDefault
+			SELECT	fu.objectid, fu.friendlyurl, fu.refobjectid, fu.queryString, fu.bDefault, fu.fuStatus, fu.redirectionType, fu.redirectTo, fu.bDefault, fu.applicationname, r.typename
 			FROM	#application.dbowner#farFU fu, 
 					#application.dbowner#refObjects r
 			WHERE	r.objectid = fu.refobjectid
@@ -638,7 +642,24 @@
 		
 		<!--- load mappings to application scope --->
 		<cfloop query="stLocal.q">
-			<cfset setMapping(objectid="#stLocal.q.objectid#") />
+			<cfset stFU = structnew() />
+			<cfset stFU.objectid = stLocal.q.objectid />
+			<cfset stFU.refObjectID = stLocal.q.refObjectID />
+			<cfset stFU.friendlyURL = stLocal.q.friendlyURL />
+			<cfset stFU.querystring = stLocal.q.querystring />
+			<cfset stFU.fuStatus = stLocal.q.fuStatus />
+			<cfset stFU.redirectionType = stLocal.q.redirectionType />
+			<cfset stFU.redirectTo = stLocal.q.redirectTo />
+			<cfset stFU.bDefault = stLocal.q.bDefault />
+			<cfset stFU.applicationname = stLocal.q.applicationname />
+			<cfset stFU.refTypename = stLocal.q.typename />
+			
+			<cfset this.stMappings[stFU.friendlyURL] = createURLStruct(stFU=stFU) />
+			
+			<cfif stFU.bDefault>
+				<!--- fu lookup --->
+				<cfset this.stLookup[stFU.refobjectid] = stFU />
+			</cfif>
 		</cfloop>
 		
 		
@@ -662,7 +683,7 @@
 		<cfset var iQstr = "" />
 		<cfset var i = "" />
 		<cfset var stResult = structNew() />
-	
+		
 		<!--- If the browser has added a trailing / to a friendly URL, strip it out. --->
 		<cfif structKeyExists(stLocalURL, "furl") AND len(stLocalURL.furl) GT 1 AND right(stLocalURL.furl,1) EQ "/">
 			<cfset stLocalURL.furl = left(stLocalURL.furl,len(stLocalURL.furl) -1) />
@@ -699,7 +720,9 @@
 		<!--- Normalise view fuAlias in query string --->
 		<cfset stResult["__allowredirect"] = true />
 		<cfif structkeyexists(stResult,"view") AND structKeyExists(stResult, "type")>
-			<cfif structkeyexists(this.webskinFU[stResult.type],stResult.view)>
+			<cfif not structkeyexists(this.webskinFU,stResult.type)>
+				<cfreturn stResult />
+			<cfelseif structkeyexists(this.webskinFU[stResult.type],stResult.view)>
 				<cfset stResult.view = "#this.webskinFU[stResult.type][stResult.view]#" />
 			<cfelseif structkeyexists(stResult,"bDebug") and stResult.bDebug>
 				<!--- View does not exist: throw an error --->
@@ -751,8 +774,9 @@
 			<cfif structkeyexists(stResult,"__redirectionURL") and not structKeyExists(stResult, "ajaxmode")>
 				<!--- Don't want to resend the furl --->
 				<cfset structdelete(stLocalURL,"furl") />
+				
 				<cfheader statuscode="#stResult['__redirectionType']#"><!--- statustext="Moved permanently" --->
-				<cfheader name="Location" value="#application.fapi.fixURL(url=stResult['__redirectionURL'],addvalues=stLocalURL)#">
+				<cfheader name="Location" value="#application.fapi.fixURL(url=stResult['__redirectionURL'],addvalues=application.factory.oUtils.deleteQueryVariable('furl,objectid',cgi.query_string))#">
 				<cfabort>
 			</cfif>
 			
@@ -773,7 +797,7 @@
 					<cfset structdelete(stLocalURL,"updateapp") />
 					
 					<cfheader statuscode="301"><!--- statustext="Moved permanently" --->
-					<cfheader name="Location" value="#application.fapi.getLink(objectid=stResult.objectid, stParameters=stLocalURL)#">
+					<cfheader name="Location" value="#application.fapi.getLink(objectid=stResult.objectid, urlParameters=application.factory.oUtils.deleteQueryVariable('furl,objectid',cgi.query_string))#">
 					<cfabort>		
 				</cfif>
 			</cfif>
@@ -852,8 +876,8 @@
 		<cfargument name="farFUID" type="uuid" required="false" hint="The objectid of a farFU object" />
 		<cfargument name="fuParameters" type="string" required="false" hint="The portion of the furl value that needs to be parsed" />
 		<cfargument name="bForce" required="false" default="false" hint="Force the URL Struct to use this as the FU and not look for a default. This captures the problem where there IS no default.">
+		<cfargument name="stFU" type="struct" required="false" hint="The full farFU object" />
 		
-		<cfset var stFU = structnew() />
 		<cfset var stResult = structnew() />
 		<cfset var qsToken = "" />
 		<cfset var fuVars = "@type,@objectid,@pageview,@bodyview,@paramname" />
@@ -862,15 +886,18 @@
 		<cfset var fuParam = "" />
 		<cfset var stLocal = structnew() />
 		
-		<cfif structkeyexists(arguments,"farFUID")><!--- Grab URL variables from the farFU object --->
-			<cfset stFU = getData(objectid=arguments.farFUID) />
-			
+		<cfif structkeyexists(arguments,"farFUID") and not structkeyexists(arguments,"stFU")>
+			<cfset arguments.stFU = getData(objectid=arguments.farFUID) />
+			<cfset arguments.stFU.refTypename = application.fapi.findType(arguments.stFU.refObjectID) />
+		</cfif>
+		
+		<cfif structkeyexists(arguments,"stFU")><!--- Grab URL variables from the farFU object --->
 			<!--- Associated object --->
-			<cfset stResult.objectid = stFU.refObjectID />
-			<cfset stResult.type = application.fapi.findType(objectid=stFU.refObjectID) />
+			<cfset stResult.objectid = arguments.stFU.refObjectID />
+			<cfset stResult.type = arguments.stFU.refTypename />
 			
 			<!--- Query string variables --->
-			<cfloop index="qsToken" list="#stFU.queryString#" delimiters="&">
+			<cfloop index="qsToken" list="#arguments.stFU.queryString#" delimiters="&">
 				<cfset stResult["#listFirst(qsToken,'=')#"] = listLast(qsToken,"=")>
 			</cfloop>
 			
@@ -879,29 +906,33 @@
 			<cfset fuVars = listdeleteat(fuVars,listfind(fuVars,"@type")) />
 			
 			<!--- Redirect information --->
-			<cfif stFU.redirectionType NEQ "none">
+			<cfif arguments.stFU.redirectionType NEQ "none">
 				<!--- NOTE: URL information is still included in a redirect struct as the redirect will not be honoured for ajax requests --->
 				
-				<cfif stFU.redirectTo EQ "default" AND NOT stFU.bDefault eq 1 AND NOT arguments.bForce>
+				<cfif arguments.stFU.redirectTo EQ "default" AND NOT arguments.stFU.bDefault eq 1 AND NOT arguments.bForce>
 					
-					<cfset stLocal.stDefaultFU = getDefaultFUObject(refObjectID=stFU.refObjectID) />
+					<cfset stLocal.stDefaultFU = getDefaultFUObject(refObjectID=arguments.stFU.refObjectID) />
 					
 					<cfif not structIsEmpty(stLocal.stDefaultFU) AND stLocal.stDefaultFU.objectid NEQ stFU.objectid>
 						<cfset stResult["__redirectionURL"] = "#application.url.webroot##stLocal.stDefaultFU.friendlyURL#" />
 					</cfif>
 				<cfelse>
-					<cfset stResult["__redirectionURL"] = "#application.url.webroot#/index.cfm?objectid=#stFU.refObjectID#" />
+					<cfset stResult["__redirectionURL"] = "#application.url.webroot#/index.cfm?objectid=#arguments.stFU.refObjectID#" />
 				</cfif>
 				
 				<cfif structkeyexists(stResult,"__redirectionURL")>
 					<cfif structkeyexists(arguments,"fuParameters")>
 						<cfset stResult["__redirectionURL"] = stResult["__redirectionURL"] & arguments.fuParameters />
 					</cfif>
-					<cfif len(stFU.queryString) or len(rereplacenocase(cgi.query_string,"furl=[^&]+&?",""))>
-						<cfset stResult["__redirectionURL"] = stResult["__redirectionURL"] & "?" & listappend(stFU.queryString,rereplacenocase(cgi.query_string,"furl=[^&]+&?",""),"&") />
+					<cfif len(arguments.stFU.queryString) or len(rereplacenocase(cgi.query_string,"furl=[^&]+&?",""))>
+						<cfif find("?",stResult["__redirectionURL"])>
+							<cfset stResult["__redirectionURL"] = stResult["__redirectionURL"] & "&" & listappend(arguments.stFU.queryString,rereplacenocase(cgi.query_string,"furl=[^&]+&?",""),"&") />
+						<cfelse>
+							<cfset stResult["__redirectionURL"] = stResult["__redirectionURL"] & "?" & listappend(arguments.stFU.queryString,rereplacenocase(cgi.query_string,"furl=[^&]+&?",""),"&") />
+						</cfif>
 					</cfif>
 					
-					<cfset stResult["__redirectionType"] = stFU.redirectionType />
+					<cfset stResult["__redirectionType"] = arguments.stFU.redirectionType />
 				</cfif>
 			</cfif>
 		</cfif>

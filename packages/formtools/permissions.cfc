@@ -1,4 +1,4 @@
-<cfcomponent extends="field" name="reversearray" displayname="reversearray" hint="Field component to liase with all list field types"> 
+<cfcomponent extends="field" name="permission" displayname="permission" hint="Field component to liase with all list field types"> 
 
 	<!--- import tag libraries --->
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
@@ -69,7 +69,7 @@
 						
 						<cfloop list="#arguments.stMetadata.ftRoles#" index="thisrole">
 						
-							<cfoutput><option value="#thisrole#"<cfif application.security.factory.barnacle.getRight(role=thisrole,permission=thispermission,object=arguments.stObject.objectid) eq 1> selected</cfif>>#application.security.factory.role.getLabel(thisrole)#</option></cfoutput>
+							<cfoutput><option value="#thisrole#"<cfif application.security.factory.barnacle.getRight(role=thisrole,permission=thispermission,object=arguments.stObject.objectid) eq 1> selected="selected"</cfif>>#application.security.factory.role.getLabel(thisrole)#</option></cfoutput>
 						
 						</cfloop>
 						

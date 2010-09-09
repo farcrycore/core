@@ -56,10 +56,10 @@ $out:$
 		
 		<label for="permname"><b>Choose scope:</b>
 		<select name="scope">
-			<option value="application" <cfif isdefined("form.scope") and form.scope eq "application">selected</cfif>>#application.rb.getResource("general.constants.application@label","Application")#</option>
-			<option value="request" <cfif isdefined("form.scope") and form.scope eq "request">selected</cfif>>#application.rb.getResource("general.constants.request@label","Request")#</option>
-			<option value="session" <cfif isdefined("form.scope") and form.scope eq "session">selected</cfif>>#application.rb.getResource("general.constants.session@label","Session")#</option>
-			<option value="server" <cfif isdefined("form.scope") and form.scope eq "server">selected</cfif>>#application.rb.getResource("general.constants.server@label","Server")#</option>
+			<option value="application"<cfif isdefined("form.scope") and form.scope eq "application"> selected="selected"</cfif>>#application.rb.getResource("general.constants.application@label","Application")#</option>
+			<option value="request"<cfif isdefined("form.scope") and form.scope eq "request"> selected="selected"</cfif>>#application.rb.getResource("general.constants.request@label","Request")#</option>
+			<option value="session"<cfif isdefined("form.scope") and form.scope eq "session"> selected="selected"</cfif>>#application.rb.getResource("general.constants.session@label","Session")#</option>
+			<option value="server"<cfif isdefined("form.scope") and form.scope eq "server"> selected="selected"</cfif>>#application.rb.getResource("general.constants.server@label","Server")#</option>
 		</select><br />
 		</label>
 		
