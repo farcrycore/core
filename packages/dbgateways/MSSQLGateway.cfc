@@ -9,7 +9,7 @@
 		
 		<cfswitch expression="#arguments.schema.type#">
 			<cfcase value="datetime">
-				<cfset stResult.cfsqltype = "cf_sql_date" />
+				<cfset stResult.cfsqltype = "cf_sql_timestamp" />
 				<cfset stResult.null = false />
 				<cfif (arguments.value eq "" or arguments.value gt dateadd("yyyy",100,now()) or arguments.value eq "1 January 2050" or arguments.value eq "NULL") and arguments.schema.nullable>
 					<cfset stResult.null = true />
