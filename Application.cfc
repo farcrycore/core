@@ -580,7 +580,9 @@
 			
 		<!--- PARSE THE URL CHECKING FOR FRIENDLY URLS (url.furl) --->
 		<cfset application.fapi.addProfilePoint("Request initialisation","Parse URL") />
-		<cfset structAppend(url, application.fc.factory.farFU.parseURL(),true) />
+		<cfif refindnocase("/index.cfm$",cgi.script_name)>
+			<cfset structAppend(url, application.fc.factory.farFU.parseURL(),true) />
+		</cfif>
 		
 
 		<!--- INITIALIZE THE REQUEST.MODE struct --->
