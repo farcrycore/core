@@ -385,7 +385,8 @@
 	 --->	
 	<cffunction name="registerCSS" returntype="struct" hint="Adds CSS files to the farcry css library to be used by your application.">
 		<cfargument name="id" required="true" />
-		<cfargument name="path" default="" />
+		<cfargument name="lCombineIDs" default="" />
+		<cfargument name="baseHREF" default="" />
 		<cfargument name="lFiles" default="" />
 		<cfargument name="media" default="all" />
 		<cfargument name="condition" default="" hint="Used to wrap a conditional statement around the link tag." />
@@ -393,7 +394,15 @@
 		<cfargument name="append" default="" hint="Any CSS code you wish to have placed after the library." />
 		<cfargument name="bCombine" default="true" hint="Should the files be combined into a single cached js file.">
 		
+		<cfset var thisid = "" />
+		
 		<cfparam name="application.fc.stCSSLibraries" default="#structNew()#" />
+		
+		<!--- Normalise files --->
+		<cfset arguments.lFullFilebaseHREFs = "" />
+		<cfif len(arguments.lFiles)>
+			<cfset arguments.lFullFilebaseHREFs = application.fc.utils.normaliseFileList(arguments.baseHREF,arguments.lFiles) />
+		</cfif>
 		
 		<cfset application.fc.stCSSLibraries[arguments.id] = duplicate(arguments) />
 		
@@ -410,7 +419,8 @@
 	 --->	
 	<cffunction name="registerJS" returntype="struct" hint="Adds JS files to the farcry js library to be used by your application.">
 		<cfargument name="id" required="true" />
-		<cfargument name="path" default="" />
+		<cfargument name="lCombineIDs" default="" />
+		<cfargument name="baseHREF" default="" />
 		<cfargument name="lFiles" default="" />
 		<cfargument name="condition" default="" hint="Used to wrap a conditional statement around the script tag." />
 		<cfargument name="prepend" default="" hint="Any JS code you wish to have placed before the library." />
@@ -418,6 +428,12 @@
 		<cfargument name="bCombine" default="true" hint="Should the files be combined into a single cached js file.">
 		
 		<cfparam name="application.fc.stJSLibraries" default="#structNew()#" />
+		
+		<!--- Normalise files --->
+		<cfset arguments.lFullFilebaseHREFs = "" />
+		<cfif len(arguments.lFiles)>
+			<cfset arguments.lFullFilebaseHREFs = application.fc.utils.normaliseFileList(arguments.baseHREF,arguments.lFiles) />
+		</cfif>
 		
 		<cfset application.fc.stJSLibraries[arguments.id] = duplicate(arguments) />
 		

@@ -13,6 +13,7 @@
 
 <cfif thistag.executionMode eq "End">
 	<cfparam name="attributes.id" default=""><!--- The id of the library that has been registered with the application --->
+	<cfparam name="attributes.lCombineIDs" default=""><!--- A list of registered CSS ids, to be included in this library --->
 	<cfparam name="attributes.baseHREF" default=""><!--- The url baseHREF to the css files--->
 	<cfparam name="attributes.lFiles" default=""><!--- The files to include in that baseHREF --->
 	<cfparam name="attributes.media" default="all"><!--- the media type to use in the style tag --->

@@ -13,6 +13,7 @@
 
 <cfif thistag.executionMode eq "End">
 	<cfparam name="attributes.id" default=""><!--- The id of the library that has been registered with the application --->
+	<cfparam name="attributes.lCombineIDs" default=""><!--- A list of registered JS ids, to be included in this library --->
 	<cfparam name="attributes.baseHREF" default=""><!--- The url baseHREF to the JS files--->
 	<cfparam name="attributes.lFiles" default=""><!--- The files to include in that baseHREF --->
 	<cfparam name="attributes.condition" default=""><!--- the condition to wrap around the style tag --->

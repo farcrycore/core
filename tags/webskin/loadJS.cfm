@@ -11,6 +11,7 @@
 
 <cfif thistag.executionMode eq "End">
 	<cfparam name="attributes.id" default=""><!--- The id of the library that has been registered with the application --->
+	<cfparam name="attributes.lCombineIDs" default=""><!--- A list of registered JS ids, to be included in this library --->
 	<cfparam name="attributes.baseHREF" default=""><!--- The url baseHREF to the JS files--->
 	<cfparam name="attributes.lFiles" default=""><!--- The files to include in that baseHREF --->
 	<cfparam name="attributes.condition" default=""><!--- the condition to wrap around the style tag --->
@@ -34,10 +35,13 @@
 	<cfparam name="request.inHead.aJSLibraries" default="#arrayNew(1)#" />
 	<cfparam name="request.inHead.stJSLibraries" default="#structNew()#" />
 	
-	
 	<cfif NOT structKeyExists(request.inhead.stJSLibraries, stJS.id)>
 		
+		<!--- If this id is registered, use those values for defaults --->
 		<cfif structKeyExists(application.fc.stJSLibraries, stJS.id)>
+			<cfif not len(stJS.lCombineIDs)>
+				<cfset stJS.lCombineIDs = application.fc.stJSLibraries[stJS.id].lCombineIDs />
+			</cfif>
 			<cfif not len(stJS.baseHREF)>
 				<cfset stJS.baseHREF = application.fc.stJSLibraries[stJS.id].baseHREF />
 			</cfif>
@@ -62,6 +66,12 @@
 			</cfif>
 		</cfif>
 		
+		<!--- Normalise files --->
+		<cfif len(stJS.lFiles)>
+			<cfset stJS.lFullFilebaseHREFs = application.fc.utils.normaliseFileList(stJS.baseHREF,stJS.lFiles) />
+		<cfelse>
+			<cfset stJS.lFullFilebaseHREFs = "" />
+		</cfif>
 		
 		<!--- Add the id to the array to make sure we keep track of the order in which these libraries need to appear. --->
 		<cfset arrayAppend(request.inHead.aJSLibraries, stJS.id) />

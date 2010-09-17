@@ -10,6 +10,7 @@
 
 <cfif thistag.executionMode eq "End">
 	<cfparam name="attributes.id" default=""><!--- The id of the library that has been registered with the application --->
+	<cfparam name="attributes.lCombineIDs" default=""><!--- A list of registered CSS ids, to be included in this library --->
 	<cfparam name="attributes.baseHREF" default=""><!--- The url baseHREF to the css files--->
 	<cfparam name="attributes.lFiles" default=""><!--- The files to include in that baseHREF --->
 	<cfparam name="attributes.media" default="all"><!--- the media type to use in the style tag --->
@@ -38,6 +39,9 @@
 	<cfif NOT structKeyExists(request.inhead.stCSSLibraries, stCSS.id)>
 		
 		<cfif structKeyExists(application.fc.stCSSLibraries, stCSS.id)>
+			<cfif not len(stCSS.lCombineIDs)>
+				<cfset stCSS.lCombineIDs = application.fc.stCSSLibraries[stCSS.id].lCombineIDs />
+			</cfif>
 			<cfif not len(stCSS.baseHREF)>
 				<cfset stCSS.baseHREF = application.fc.stCSSLibraries[stCSS.id].baseHREF />
 			</cfif>
@@ -65,6 +69,12 @@
 			</cfif>
 		</cfif>
 		
+		<!--- Normalise files --->
+		<cfif len(stCSS.lFiles)>
+			<cfset stCSS.lFullFilebaseHREFs = application.fc.utils.normaliseFileList(stCSS.baseHREF,stCSS.lFiles) />
+		<cfelse>
+			<cfset stCSS.lFullFilebaseHREFs = "" />
+		</cfif>
 		
 		<!--- Add the id to the array to make sure we keep track of the order in which these libraries need to appear. --->
 		<cfset arrayAppend(request.inHead.aCSSLibraries, stCSS.id) />
