@@ -91,7 +91,7 @@
 			
 				<cfif stCSS.bCombine>
 					<cfoutput>
-					<link rel="stylesheet" type="text/css" href="#application.url.webroot#/cache/#sCacheFileName#" media="#stCSS.media#" #tagEnding#>
+					<link rel="stylesheet" type="text/css" href="#stCSS.hostname##application.url.webroot#/cache/#sCacheFileName#" media="#stCSS.media#" #tagEnding#>
 					</cfoutput>
 				<cfelse>
 					<cfloop list="#stCSS.lFiles#" index="i">						
@@ -99,7 +99,7 @@
 							<cfset i = "/#i#" /><!--- add slash --->
 						</cfif>
 						<cfoutput>
-						<link rel="stylesheet" type="text/css" href="#stCSS.baseHREF##i#" media="#stCSS.media#" #tagEnding#>
+						<link rel="stylesheet" type="text/css" href="#stCSS.hostname##stCSS.baseHREF##i#" media="#stCSS.media#" #tagEnding#>
 						</cfoutput>
 					</cfloop>
 				</cfif>

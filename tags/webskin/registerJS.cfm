@@ -15,6 +15,7 @@
 	<cfparam name="attributes.id" default=""><!--- The id of the library that has been registered with the application --->
 	<cfparam name="attributes.lCombineIDs" default=""><!--- A list of registered JS ids, to be included in this library --->
 	<cfparam name="attributes.baseHREF" default=""><!--- The url baseHREF to the JS files--->
+	<cfparam name="attributes.hostname" default=""><!--- The hostname from which to load the JS files--->
 	<cfparam name="attributes.lFiles" default=""><!--- The files to include in that baseHREF --->
 	<cfparam name="attributes.condition" default=""><!--- the condition to wrap around the style tag --->
 	<cfparam name="attributes.prepend" default=""><!--- any JS to prepend to the begining of the script block --->
