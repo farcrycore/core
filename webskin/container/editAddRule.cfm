@@ -10,6 +10,18 @@
 
 <cfset qRules = createObject("component","#application.packagepath#.rules.rules").getRules(url.lRules,url.lExcludedRules) />
 
+<!--- if there is only one rule then go straight to it --->
+<cfif qRules.recordcount eq 1>
+	<!--- Setup New Rule --->
+	<cfset stDefaultObject = application.fapi.getNewContentObject(qRules.rulename) />
+	<cfset application.fapi.getContentType("#qRules.rulename#").setData(stProperties=stDefaultObject) />
+	
+	<!--- Append new rule to the array of rules in the current container --->
+	<cfset arrayappend(stObj.aRules,stDefaultObject.objectID) />
+	<cfset setData(stProperties=stObj)>
+	<skin:location href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stDefaultObject.objectid#&typename=#stDefaultObject.typename#&method=editInPlace&iframe=1" addtoken="false" />
+</cfif>
+
 <cfset containerID = replace(stobj.objectid,'-','','ALL') />
 
 <ft:processform action="Cancel" bHideForms="true">
@@ -19,6 +31,7 @@
 </ft:processform>
 
 <ft:processform action="Add Rule" bHideForms="true">
+
 	<cfparam name="stObj.aRules" default="#arraynew(1)#" />	
 
 	<!--- Setup New Rule --->
@@ -36,7 +49,6 @@
 
 
 <ft:form>
-
 
 	<cfoutput>
 		<fieldset class="fieldset">
