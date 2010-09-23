@@ -8,12 +8,37 @@
 	<cfif NOT request.mode.ajax>
 		<cfparam name="request.inHead.aJSLibraries" default="#arrayNew(1)#" />
 		<cfparam name="request.inHead.stJSLibraries" default="#structNew()#" />
+		<cfset aJS = arraynew(1) />
 		
-	
-		<cfloop from="1" to="#arrayLen(request.inHead.aJSLibraries)#" index="i">
+		<!--- Processes library packages --->
+		<cfset toremove = "" />
+		<cfloop from="#arraylen(request.inHead.aJSLibraries)#" to="1" index="i" step="-1">
+			<cfset stJS = duplicate(request.inHead.stJSLibraries[request.inHead.aJSLibraries[i]]) />
+			<cfif len(stJS.lCombineIDs)>
+				<!--- Remove these libraries from the stack (has to be done outside this loop) --->
+				<cfset toremove = listappend(toremove,stJS.lCombineIDs) />
+				
+				<!--- Add the files of these libraries to the package --->
+				<cfloop list="#application.fc.utils.listReverse(stJS.lCombineIDs)#" index="thisid">
+					<cfif structkeyexists(request.inHead.stJSLibraries,thisid)>
+						<cfset stJS.lFullFilebaseHREFs = listprepend(stJS.lFullFilebaseHREFs,request.inHead.stJSLibraries[thisid].lFullFilebaseHREFs)>
+					<cfelseif structkeyexists(application.fc.stJSLibraries,thisid)>
+						<cfset stJS.lFullFilebaseHREFs = listprepend(stJS.lFullFilebaseHREFs,application.fc.stJSLibraries[thisid].lFullFilebaseHREFs)>
+					</cfif>
+				</cfloop>
+			</cfif>
+			<cfset arrayprepend(aJS,stJS) />
+		</cfloop>
+		<cfloop from="#arraylen(aJS)#" to="1" index="i" step="-1">
+			<cfif listcontainsnocase(toremove,aJS[i].id)>
+				<cfset arraydeleteat(aJS,i) />
+			</cfif>
+		</cfloop>
+		
+		<cfloop from="1" to="#arrayLen(aJS)#" index="i">
 		
 			
-			<cfset stJS = duplicate(request.inHead.stJSLibraries[request.inHead.aJSLibraries[i]]) />
+			<cfset stJS = aJS[i] />
 
 			<cfif stJS.bCombine>
 				<cfset idHash = hash("#stJS.baseHREF##stJS.lFiles##stJS.prepend##stJS.append#") />
@@ -36,43 +61,23 @@
 														) />
 				</cfif>
 				
-				<cfif not len(sCacheFileName)>			
-						
-					<cfset stJS.baseHREF = replaceNoCase(stJS.baseHREF,"\","/","all") /><!--- Change back slashes --->
-					<cfif len(stJS.baseHREF) AND right(stJS.baseHREF,1) EQ "/">
-						<cfset stJS.baseHREF = mid(stJS.baseHREF,1,len(stJS.baseHREF)-1) /><!--- Remove trailing slash --->
-					</cfif>
-					
-					
-					<cfset stJS.lFiles = replaceNoCase(stJS.lFiles,"\","/","all") /><!--- Change back slashes --->
-			
-					<cfset stJS.lFullFilebaseHREFs = "" />
-					
-					<cfloop list="#stJS.lFiles#" index="i">
-						<cfif left(i,1) NEQ "/">
-							<cfset i = "/#i#" /><!--- add slash --->
-						</cfif>
-						<cfset stJS.lFullFilebaseHREFs = listAppend(stJS.lFullFilebaseHREFs,"#stJS.baseHREF##i#") />
-					</cfloop>
-					
-					<cfif stJS.bCombine>
-						<cfset sCacheFileName = application.fc.utils.combine(	id=stJS.id,
-																			files=stJS.lFullFilebaseHREFs,
-																			type="js",
-																			prepend=stJS.prepend,
-																			append=stJS.append) />
-					
-						<cfset application.fc.stJSLibraries[idHash].sCacheFileName = sCacheFileName />
-					</cfif>
+				<cfif not len(sCacheFileName) and stJS.bCombine>
+					<cfset sCacheFileName = application.fc.utils.combine(	id=stJS.id,
+																		files=stJS.lFullFilebaseHREFs,
+																		type="js",
+																		prepend=stJS.prepend,
+																		append=stJS.append) />
+				
+					<cfset application.fc.stJSLibraries[idHash].sCacheFileName = sCacheFileName />
 				</cfif>
 			</cfif>
 			
 			<cfsavecontent variable="JS">
 				<cfoutput>
 				<!-- 
-				ID: #stJS.id#
-				baseHREF: #stJS.baseHREF#
-				FILES: #stJS.lFiles#
+				ID: #stJS.id#<cfif len(stJS.lCombineIDs)>
+				PACKAGED: #stJS.lCombineIDs#</cfif>
+				FILES: #stJS.lFullFilebaseHREFs#
 				 -->
 				</cfoutput>
 				
@@ -83,7 +88,7 @@
 				
 				<cfif stJS.bCombine>
 					<cfoutput>
-					<script src="#application.url.cache#/#sCacheFileName#" type="text/javascript"></script>
+					<script src="#stJS.hostname##application.url.webroot##application.url.cache#/#sCacheFileName#" type="text/javascript"></script>
 					</cfoutput>
 				<cfelse>
 					<cfloop list="#stJS.lFiles#" index="i">						
@@ -91,7 +96,7 @@
 							<cfset i = "/#i#" /><!--- add slash --->
 						</cfif>
 						<cfoutput>
-						<script src="#stJS.baseHREF##i#" type="text/javascript"></script>
+						<script src="#stJS.hostname##stJS.baseHREF##i#" type="text/javascript"></script>
 						</cfoutput>
 					</cfloop>
 				</cfif>

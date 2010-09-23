@@ -493,7 +493,33 @@
 		
 		<cfreturn result />
 	</cffunction>
+	
+	<!--- FILE utitities --->
+	<cffunction name="normaliseFileList" access="public" returntype="string" description="Turns a list of relative file paths, and a single base path, and normalises them into a single list">
+		<cfargument name="baseHREF" type="string" reuired="true" hint="The base path" />
+		<cfargument name="lFiles" type="string" required="true" hint="The list of relative file paths" />
+		
+		<cfset var result = "" />
+		<cfset var thisfile = "" />
+		
+		<cfset arguments.baseHREF = replaceNoCase(arguments.baseHREF,"\","/","all") /><!--- Change back slashes --->
+		<cfif len(arguments.baseHREF) AND right(arguments.baseHREF,1) EQ "/">
+			<cfset arguments.baseHREF = mid(arguments.baseHREF,1,len(arguments.baseHREF)-1) /><!--- Remove trailing slash --->
+		</cfif>
+		
+		<cfset arguments.lFiles = replaceNoCase(arguments.lFiles,"\","/","all") /><!--- Change back slashes --->
 
+		<cfloop list="#arguments.lFiles#" index="thisfile">
+			<cfif left(thisfile,1) NEQ "/">
+				<cfset thisfile = "/#thisfile#" /><!--- add slash --->
+			</cfif>
+			<cfset result = listAppend(result,"#arguments.baseHREF##thisfile#") />
+		</cfloop>
+		
+		<cfreturn result />
+	</cffunction>
+	
+	
 	<!--- MISCELLANEOUS utilities --->
 	<cffunction name="fixURL" returntype="string" output="false" access="public" hint="Refreshes the page with the specified query string values removed, replaced, or added. New values can be specified with a query string, struct, or named arguments." bDocument="true">
 		<cfargument name="url" type="string" required="false" default="#cgi.script_name#?#cgi.query_string#" hint="The url to use" />

@@ -3,8 +3,10 @@
 	<!--- Webtop insertion --->
 	<cffile action="read" file="#application.path.core#/webtop/admin/scaffolds/typeadmin/webtop.txt" variable="content" />
 	<cfset values = structnew() />
-	<cfset values.sectionid = "content" />
-	<cfset values.subsectionid = "farcrycmsSubSection" />
+	<cfset values.sectionid = "customcontent" />
+	<cfset values.sectionlabel = "Custom Content" />
+	<cfset values.subsectionid = "customsubsection" />
+	<cfset values.subsectionlabel = "Custom Content" />
 	<cfset values.menuid = "#application.applicationname#SubSection" />
 	<cfset values.menulabel = "Custom Content" />
 	<cfset values.itemid = "#url.typename#list" />
