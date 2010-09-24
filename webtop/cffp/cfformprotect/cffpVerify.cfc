@@ -614,7 +614,7 @@ NOTES       : Dave Shuck - created
 		</cfif>
 		
 		<cfif getConfig().showSpamInfoBubble>
-			<skin:bubble title="Form marked as spam!" bAutoHide="false"><cfoutput>#LogText#</cfoutput></skin:bubble>
+			<skin:bubble title="Form marked as spam!" bAutoHide="false" tags="spam,warning"><cfoutput>#LogText#</cfoutput></skin:bubble>
 		</cfif>
 		
 		<cfset LogText = LogText & "<br />--- Failure score: #totalPoints#.  <br />Your failure threshold: #getConfig().failureLimit#.  <br />IP address: #cgi.remote_addr#	<br />User agent: #cgi.http_user_agent#	<br />Previous page: #cgi.http_referer#" />

@@ -202,11 +202,11 @@ user --->
 				<cfset stResult = o.delete(objectid=i) />
 				
 				<cfif isDefined("stResult.bSuccess") AND not stResult.bSuccess>
-					<skin:bubble title="Error deleting - #stDeletingObject.label#" bAutoHide="true">
+					<skin:bubble title="Error deleting - #stDeletingObject.label#" bAutoHide="true" tags="type,#attributes.typename#,error">
 						<cfoutput>#stResult.message#</cfoutput>
 					</skin:bubble>
 				<cfelse>
-					<skin:bubble title="Deleted - #stDeletingObject.label#" bAutoHide="true" />
+					<skin:bubble title="Deleted - #stDeletingObject.label#" bAutoHide="true" tags="type,#attributes.typename#,deleted,information" />
 				</cfif>
 			</cfloop>
 		</cfif>
@@ -700,7 +700,25 @@ user --->
 
 
 		<cfoutput>#html_buttonbar#</cfoutput>
-	
+		
+		<skin:pop tags="error" start="<ul id='errorMsg'>" end="</ul>">
+			<cfoutput>
+				<li>
+					<cfif len(trim(message.title))><strong>#message.title#</strong></cfif><cfif len(trim(message.title)) and len(trim(message.message))>: </cfif>
+					<cfif len(trim(message.message))>#message.message#</cfif>
+				</li>
+			</cfoutput>
+		</skin:pop>
+		
+		<skin:pop tags="#attributes.typename#" start="<ul id='OKMsg'>" end="</ul>">
+			<cfoutput>
+				<li>
+					<cfif len(trim(message.title))><strong>#message.title#</strong></cfif><cfif len(trim(message.title)) and len(trim(message.message))>: </cfif>
+					<cfif len(trim(message.message))>#message.message#</cfif>
+				</li>
+			</cfoutput>
+		</skin:pop>
+		
 	
 		<cfif stRecordset.q.recordCount>
 			<skin:pagination

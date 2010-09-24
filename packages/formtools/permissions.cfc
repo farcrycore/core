@@ -38,7 +38,7 @@
 					<cfset stPermission.aRelatedTypes = arraynew(1) />
 					<cfset arrayappend(stPermission.aRelatedTypes,arguments.typename) />
 					<cfset oPermission.setData(stProperties=stPermission) />
-					<skin:bubble title="Deployed" message="Permission created" />
+					<skin:bubble title="Deployed" message="Permission created" tags="security,information" />
 				</cfif>
 			</cfloop>
 			<cfset supportedpermissions = application.security.factory.permission.getAllPermissions(arguments.typename) />

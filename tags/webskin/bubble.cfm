@@ -35,6 +35,7 @@ FARCRY IMPORT FILES
 <cfparam name="attributes.pause" default="3000" type="numeric" /><!--- How long (in milliseconds) the message appears before being removed --->
 <cfparam name="attributes.sticky" default="false" type="boolean" /><!--- Keep the message displayed until the user actively closes. --->
 <cfparam name="attributes.image" default="" /><!--- Image to display with the message --->
+<cfparam name="attributes.tags" default="" /><!--- Tags to identify message categories later --->
 
 <!--- legacy attribute --->
 <cfif structKeyExists(attributes,"bAutoHide")>
@@ -86,9 +87,8 @@ FARCRY IMPORT FILES
 		<cfset stMessage.image = attributes.image />
 		<cfset stMessage.pause = attributes.pause />
 		<cfset stMessage.sticky = attributes.sticky />
+		<cfset stMessage.tags = attributes.tags />
 		<cfset arrayAppend(session.aGritterMessages, stMessage) />
-		
-		
 	</cfif>
 
 	

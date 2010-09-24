@@ -151,7 +151,7 @@ $out:$
 					<cfset oType = createobject("component", application.types[relstObj.typename].typePath)>
 					<cfset oType.setData(stProperties=relstObj,bAudit=false)>
 					
-					<skin:bubble title="#relstObj.label#" message="Status changed to #status#" />
+					<skin:bubble title="#relstObj.label#" message="Status changed to #status#" tags="type,#relstObj.typename#,workflow,information" />
 					<farcry:logevent object="#stObj.objectid#" type="type" event="to#status#" note="#commentLog#" />
 				</cfif>
 			</cfloop>
@@ -165,7 +165,7 @@ $out:$
 		<cfset oType = createobject("component", application.types[stObj.typename].typePath) />
 		<cfset oType.setData(stProperties=stObj) />
 		
-		<skin:bubble title="#stObj.label#" message="Status changed to #status#" />
+		<skin:bubble title="#stObj.label#" message="Status changed to #status#" tags="type,#stObj.typename#,workflow,information" />
 		<farcry:logevent object="#stObj.objectid#" type="types" event="to#status#" note="#commentLog#" />
 		
 	</cfloop>

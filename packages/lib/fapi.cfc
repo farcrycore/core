@@ -1576,7 +1576,7 @@
 			
 		<cfif isdefined("application.log.bDeprecatedBubble") AND application.log.bDeprecatedBubble>	
 			<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
-			<skin:bubble title="Deprecated" message="#message#" />
+			<skin:bubble title="Deprecated" message="#message#" tags="deprecated,warning" />
 		</cfif>
 		
 	</cffunction>	

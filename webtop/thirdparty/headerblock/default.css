@@ -1,0 +1,4 @@
+#header-message-block .message { padding:5px 10px; background: #C8FFBF; border-top: 2px solid #A2EF95; border-bottom: 2px solid #A2EF95; }
+	#header-message-block .message strong { font-weight:bold; }
+	#header-message-block .message.tag-error { background: #ffbfbf; color: #af4c4c; border-color: #df7d7d; }
+	#header-message-block .message .close-message { float:right; cursor:pointer; }

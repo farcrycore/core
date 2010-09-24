@@ -69,7 +69,7 @@
 					<cfset stConObj.aRules[url.rule_index] = stConObj.aRules[url.rule_index-1] />
 					<cfset stConObj.aRules[url.rule_index-1] = temp />
 					<cfset setData(stProperties=stConObj) />
-					<skin:bubble title="Container management"><cfoutput>The rule has been moved up</cfoutput></skin:bubble>
+					<skin:bubble title="Container management" tags="container,update,information"><cfoutput>The rule has been moved up</cfoutput></skin:bubble>
 	
 				</cfif>
 			</cfcase>
@@ -79,7 +79,7 @@
 					<cfset stConObj.aRules[url.rule_index] = stConObj.aRules[url.rule_index+1] />
 					<cfset stConObj.aRules[url.rule_index+1] = temp />
 					<cfset setData(stProperties=stConObj) />
-					<skin:bubble title="Container management"><cfoutput>The rule has been moved down</cfoutput></skin:bubble>
+					<skin:bubble title="Container management" tags="container,update,information"><cfoutput>The rule has been moved down</cfoutput></skin:bubble>
 	
 				</cfif>
 			</cfcase>
@@ -90,7 +90,7 @@
 					<cfset oRule.delete(objectid=url.rule_id) />
 					<cfset arraydeleteat(stConObj.aRules,url.rule_index) />
 					<cfset setData(stProperties=stConObj) />
-					<skin:bubble title="Container management"><cfoutput>The rule has been deleted</cfoutput></skin:bubble>
+					<skin:bubble title="Container management" tags="container,update,rule,deleted,information"><cfoutput>The rule has been deleted</cfoutput></skin:bubble>
 	
 				</cfif>
 			</cfcase>

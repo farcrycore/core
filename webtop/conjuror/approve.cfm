@@ -286,7 +286,7 @@ $out:$
 				</cfif>
 			</cfif>
 			
-			<skin:bubble title="#stObj.label#" message="Status changed to #status#" />
+			<skin:bubble title="#stObj.label#" message="Status changed to #status#" tags="type,#stObj.typename#,workflow,information" />
 			<farcry:logevent object="#stObj.objectid#" type="types" event="to#status#" notes="#form.commentLog#" />
 		</cfloop>
 		

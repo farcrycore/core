@@ -202,7 +202,7 @@ $out:$
 	        }
 	    </cfscript>
 	
-		<skin:bubble title="Navigation Tree Quick Builder" sticky="true">
+		<skin:bubble title="Navigation Tree Quick Builder" sticky="true" tags="quickbuilder,information">
 		    <cfoutput>
 			    #arrayLen(items)# 
 				#lcase(application.fapi.getContentTypeMetadata('dmNavigation', 'displayName', 'navigation'))# 

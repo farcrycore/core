@@ -44,7 +44,9 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 
 
 <!--- Add the extjs iframe dialog to the head --->
-<extjs:iframeDialog />
+<skin:loadJS id="jquery" />
+<skin:loadJS id="jquery-ui" />
+<skin:loadCSS id="jquery-ui" />
 
 
 <sec:CheckPermission error="true" permission="AdminCOAPITab">
@@ -167,6 +169,10 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	<cfset componentList = ListSort(StructKeyList(application.types),"textnocase") />	
 	<cfloop list="#componentList#" index="componentname">
 	<cfif application.types[componentname].bcustomtype>
+		<cfset displayname = componentName />
+		<cfif structkeyexists(application.types[componentname],"displayName")>
+			<cfset displayname = application.types[componentname].displayname />
+		</cfif>
 		<cfscript>
 			if (structKeyExists(stTypes,componentname))
 				stConflicts = alterType.compareDBToCFCMetadata(typename=componentname,stDB=stTypes['#componentname#']);
@@ -183,29 +189,16 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 					</cfif>
 				</td>
 				<cfif structkeyexists(application.types[componentname], "hint")>
-				<td><span title="#application.types[componentname].hint#">
-					<cfif structkeyexists(application.types[componentname],"displayName")>
-						#application.types[componentname].displayname#
-					<cfelse>
-						#componentName#
-					</cfif>	
-					</span>
-				</td>
+					<td><span title="#application.types[componentname].hint#">#displayname#</span></td>
 				<cfelse>
-				<td>
-					<cfif structkeyexists(application.types[componentname],"displayName")>
-						#application.types[componentname].displayname#
-					<cfelse>
-						#componentName#
-					</cfif>	
-				</td>
+					<td>#displayname#</td>
 				</cfif>
 				<td>#componentName#</td>
 				<td>
 					<cfif NOT alterType.isCFCDeployed(typename=componentName)>
 						<a href="#CGI.SCRIPT_NAME#?deploy=#componentName#">#application.rb.getResource("coapiadmin.buttons.deploy@label","Deploy")#</a>
 					<cfelse>
-						<ft:button type="button" value="Scaffold" onclick="openScaffoldDialog('#application.url.farcry#/admin/scaffold.cfm?typename=#componentName#&iframe=1','Scaffold',500,400,true);" />
+						<ft:button type="button" value="Scaffold" onclick="$j('##dialog').find('iframe').attr('src','#application.url.farcry#/admin/scaffold.cfm?typename=#componentName#&iframe=1').end().dialog({ autoOpen:true,width:500,height:400,title:'Scaffold #displayname#',modal:true });" />
 					</cfif>
 				</td>
 				<!--- <td><em>Create Permissions</em>
@@ -221,13 +214,13 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 		// output dreadful interface for COAPI evolution
 			if (structKeyExists(stConflicts,'cfc') AND structKeyExists(stConflicts['cfc'],componentName))
 				{
-				writeoutput("<tr><td colspan='4' style='background-color:##F9E6D4;border-right:none'><div id='#componentname#_report'>");
+				writeoutput("<tr><td colspan='5' style='background-color:##F9E6D4;border-right:none'><div id='#componentname#_report'>");
 				alterType.renderCFCReport(typename=componentname,stCFC=stConflicts['cfc'][componentname]);
 				writeoutput("</div></td></tr>");		
 				}
 			if (structKeyExists(stConflicts,'database') AND structKeyExists(stConflicts['database'],componentName))
 				{
-				writeoutput("<tr><td colspan='4' style='background-color:##F9E6D4;border-right:none'><div id='#componentname#_report'>");
+				writeoutput("<tr><td colspan='5' style='background-color:##F9E6D4;border-right:none'><div id='#componentname#_report'>");
 				alterType.renderDBReport(typename=componentname,stDB=stConflicts['database'][componentname]);
 				writeoutput("</div></td></tr>");		
 				}
@@ -254,6 +247,10 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	<!--- output core types --->
 	<cfloop list="#componentList#" index="componentname">
 	<cfif NOT application.types[componentname].bcustomtype>
+		<cfset displayname = componentName />
+		<cfif structkeyexists(application.types[componentname],"displayName")>
+			<cfset displayname = application.types[componentname].displayname />
+		</cfif>
 		<cfscript>
 			if (structKeyExists(stTypes,componentname))
 				stConflicts = alterType.compareDBToCFCMetadata(typename=componentname,stDB=stTypes['#componentname#']);
@@ -269,13 +266,13 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 						<img src="#application.url.farcry#/images/yes.gif" />
 					</cfif>
 				</td>
-				<td><span title="<cfif structKeyExists(application.types[componentname], 'hint')>#application.types[componentname].hint#<cfelse>#application.types[componentname].displayname#</cfif>">#application.types[componentname].displayname#</span></td>
+				<td><span title="<cfif structKeyExists(application.types[componentname], 'hint')>#application.types[componentname].hint#<cfelse>#displayname#</cfif>">#displayname#</span></td>
 				<td>#componentName#</td>
 				<td>
 					<cfif NOT alterType.isCFCDeployed(typename=componentName)>
 						<a href="#CGI.SCRIPT_NAME#?deploy=#componentName#">#application.rb.getResource("coapiadmin.buttons.deploy@label","Deploy")#</a>
 					<cfelse>
-						<ft:button type="button" value="Scaffold" onclick="openScaffoldDialog('#application.url.farcry#/admin/scaffold.cfm?typename=#componentName#&iframe=1','Scaffold',500,400,true);" />
+						<ft:button type="button" value="Scaffold" onclick="$j('##dialog').find('iframe').attr('src','#application.url.farcry#/admin/scaffold.cfm?typename=#componentName#&iframe=1').end().dialog({ autoOpen:true,width:500,height:400,title:'Scaffold #displayname#',modal:true });" />
 					</cfif>
 				</td>
 				<td style="border-right:none">
@@ -300,7 +297,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 		</cfscript>
 	</cfif>
 	</cfloop>
-	<cfoutput></table></cfoutput>
+	<cfoutput></table><div id="dialog" style="display:none;"><iframe style="width:100%;height:100%;border:0 none;"></iframe></div></cfoutput>
 </sec:CheckPermission>
 
 <admin:footer>

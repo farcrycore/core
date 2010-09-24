@@ -44,9 +44,9 @@ manage friendly urls for a particular object id
 		<cfset stResult = application.fc.factory.farFU.createCustomFU(argumentCollection="#stProperties#") />
 		
 		<cfif not stResult.bSuccess>
-			<skin:bubble title="#stResult.message#" autoHide="false" />
+			<skin:bubble title="#stResult.message#" autoHide="false" tags="type,farFU,error" />
 		<cfelse>
-			<skin:bubble title="Alternative Friendly URL Created" autoHide="true">
+			<skin:bubble title="Alternative Friendly URL Created" autoHide="true" tags="type,farFU,created,information">
 				<cfoutput>Your Friendly URL (#stProperties.friendlyURL#) has been created.</cfoutput>
 			</skin:bubble>
 		</cfif>
@@ -91,7 +91,7 @@ manage friendly urls for a particular object id
 
 
 <cfif not len(url.objectid)>
-	<skin:bubble title="Invalid ObjectID" autoHide="false" />
+	<skin:bubble title="Invalid ObjectID" autoHide="false" tags="type,farFU,error" />
 </cfif>
 
 

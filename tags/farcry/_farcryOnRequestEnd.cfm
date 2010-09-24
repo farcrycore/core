@@ -44,32 +44,7 @@ $out:$
 <!--- If we are in the middle of a <skin:location> then we dont want to output a bunch of javascript --->
 <cfif not structKeyExists(request.fc, "bLocating")>
 
-	<cfif structKeyExists(session, "aGritterMessages") AND arrayLen(session.aGritterMessages)>
-		<skin:loadJS id="jquery" />
-		<skin:loadJS id="gritter" />
-		<skin:loadCSS id="gritter" />
-		
-		<skin:onReady>
-			<cfloop from="1" to="#arrayLen(session.aGritterMessages)#" index="i">
-				<cfoutput>
-				$j.gritter.add({
-					// (string | mandatory) the heading of the notification
-					title: '#jsstringformat(session.aGritterMessages[i].title)#',
-					// (string | mandatory) the text inside the notification
-					text: '#jsstringformat(session.aGritterMessages[i].message)#',
-					// (string | optional) the image to display on the left
-					image: '#session.aGritterMessages[i].image#',
-					// (bool | optional) if you want it to fade out on its own or just sit there
-					sticky: #session.aGritterMessages[i].sticky#, 
-					// (int | optional) the time you want it to be alive for before fading out (milliseconds)
-					time: #session.aGritterMessages[i].pause#
-				});
-				</cfoutput>
-			</cfloop>		
-		</skin:onReady>
-		
-		<cfset session.aGritterMessages = arrayNew(1) />
-	</cfif>
+	<skin:pop format="gritter" />
 
 
 

@@ -23,7 +23,7 @@ ACTION
 	<ft:processformobjects objectid="#stobj.objectid#">
 		<cfset structappend(session.dmProfile,stProperties,true) />
 
-		<skin:bubble title="Profile Saved" bAutoHide="false">
+		<skin:bubble title="Profile Saved" bAutoHide="false" tags="type,dmProfile,update,information">
 			<cfoutput>Your profile has been saved. You can always update your profile from the overview tab in the webtop.</cfoutput>
 		</skin:bubble>
 		
