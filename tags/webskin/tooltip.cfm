@@ -33,7 +33,7 @@
 	<code>
 		<skin:tooltip selector="#a-123">
 		  <b>THINGS!</b>
-		<skin:tooltip>
+		</skin:tooltip>
 		<a href="javascript:void(0);" id="a-123">Things</a>
 	</code>
 	
