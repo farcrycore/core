@@ -20,16 +20,15 @@
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
-<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 
 <!--- 
  // DATA
 --------------------------------------------------------------------------------------------------->
 <cfset stProfile = application.fapi.getCurrentUser() />
 <cfset dashboard = application.fapi.getcontenttype("dashboard") />
-<cfset qDraft = dashboard.getDraftContent(stProfile.objectid) />
+<cfset qDraft = dashboard.getDraftContent(lastupdatedby=stProfile.userName) />
 <cfset qPending = dashboard.getPendingContent(stProfile.objectid) />
-<cfset qActivity = dashboard.getRecentActivity() />
+<cfset qActivity = dashboard.getRecentActivity(maxrows=20) />
 <cfset qReview = dashboard.getContentForReview(stProfile.objectid)>
 
 <!--- 
@@ -46,9 +45,19 @@
 </cfoutput>
 <!--- left hand column --->
 
+<!--- Items in draft --->
 <cfif qdraft.recordcount>
+<skin:tooltip selector="##tip_contentInDraft">
+  <cfoutput>
+    <p>These are content items where:</p>
+    <ul>
+      <li>- They are in draft</li>
+      <li>- You were the last one to save them while in draft</li>
+    </ul>
+  </cfoutput>
+</skin:tooltip>
 <cfoutput>
-	<h3>Content You Have In Draft</h3>
+	<h3>Content You Have In Draft <img id="tip_contentInDraft" src="#application.url.webtop#/images/tooltip.png" /></h3>
 	<table width="100%" class="objectAdmin">
 		<thead>
 			<tr>			
@@ -73,9 +82,19 @@
 </cfoutput>
 </cfif>
 
+<!--- Items to review --->
 <cfif qReview.recordcount>
+<skin:tooltip selector="##tip_contentReview">
+  <cfoutput>
+    <p>These are content items where:</p>
+    <ul>
+      <li>- You are currently set as the owner</li>
+      <li>- The content's review date is past due</li>
+    </ul>
+  </cfoutput>
+</skin:tooltip>
 <cfoutput>
-	<h3>Content You Need to Review</h3>
+	<h3>Content You Need to Review <img id="tip_contentReview" src="#application.url.webtop#/images/tooltip.png" /></h3>
 	<table width="100%" class="objectAdmin">
 		<thead>
 			<tr>			
@@ -110,9 +129,15 @@
 </cfoutput>
 <!--- right hand column --->
 
+<!--- Items pending approval --->
 <cfif qPending.recordcount>
+<skin:tooltip selector="##tip_contentPending">
+  <cfoutput>
+    <p>Content items pending approval</p>
+  </cfoutput>
+</skin:tooltip>
 <cfoutput>
-	<h3>Content Pending Approval</h3>
+	<h3>Content Pending Approval <img id="tip_contentPending" src="#application.url.webtop#/images/tooltip.png" /></h3>
 	<table width="100%" class="objectAdmin">
 		<thead>
 			<tr>			
@@ -138,8 +163,13 @@
 </cfif>
 
 <cfif qActivity.recordcount>
+<skin:tooltip selector="##tip_contentActivity">
+  <cfoutput>
+    <p>Content items with recent activity</p>
+  </cfoutput>
+</skin:tooltip>
 <cfoutput>
-	<h3>Recent Activity</h3>
+	<h3>Recent Activity <img id="tip_contentActivity" src="#application.url.webtop#/images/tooltip.png" /></h3>
 	<table width="100%" class="objectAdmin">
 		<thead>
 			<tr>			
@@ -147,6 +177,7 @@
 				<th>Label</th>
 				<th>Note</th>
 				<!--- <th>Event</th> --->
+				<th>User</th>
 				<th>Date</th>
 			</tr>
 		</thead>
@@ -154,13 +185,14 @@
 		<tbody>
 		</cfoutput>
 		<cfoutput query="qactivity">
-			<cfset eventTypename=application.fapi.findType(qactivity.object) />
+			<cfset eventTypename=application.fapi.findType(qActivity.object) />
 			<cfif len(eventTypename) AND eventTypename neq "container">
 				<tr class="#IIF(qactivity.currentrow MOD 2, de("alt"), de(""))#">
 					<td nowrap="true">#application.fapi.getContentTypeMetadata(typename="#eventTypename#", md="displayname", default="Unknown")#</td>
 					<td><a href="#application.url.webtop#/edittabOverview.cfm?objectid=#qactivity.object#&typename=#eventTypename#"><skin:view objectid="#qactivity.object#" webskin="displayLabel" typename="#eventTypename#" /></a></td>
-					<td><cfif len(qactivity.notes)>#qactivity.notes#<cfelse>-</cfif></td>
-					<!--- <td>#qactivity.event#</td> --->
+					<td><cfif len(qactivity.notes)>#qActivity.notes#<cfelse>-</cfif></td>
+					<!--- <td>#qActivity.event#</td> --->
+					<td><cfif listlen(qActivity.userid, "_") gt 0>#listGetAt(qActivity.userid, 1, "_")#</cfif></td>
 					<td nowrap="true">#application.fapi.prettyDate(qactivity.datetimelastupdated)#</td>
 				</tr>
 			</cfif>
