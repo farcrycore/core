@@ -1,4 +1,4 @@
-<!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
+<!--- @@Copyright: Daemon Pty Limited 2002-2010, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
 
@@ -15,44 +15,31 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/packages/types/dmCSS.cfc,v 1.10 2005/08/09 03:54:40 geoff Exp $
-$Author: geoff $
-$Date: 2005/08/09 03:54:40 $
-$Name: milestone_3-0-1 $
-$Revision: 1.10 $
-
-|| DESCRIPTION || 
-$Description: dmCSS type $
-
-
-|| DEVELOPER ||
-$Developer: Brendan Sisson (brendan@daemon.com.au) $
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
---->
-
 <cfcomponent extends="types" displayname="CSS" hint="CSS objects influence the look and feel of the website" >
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->
-<cfproperty name="title" type="nstring" hint="Meaningful reference title for file" required="no" default="" /> 
-<cfproperty name="filename" type="string" hint="The name of the CSS file to be used" required="no" default="" />  
-<cfproperty name="description" type="longchar" hint="A description of the file to be uploaded" required="No" default="" /> 
-<cfproperty name="mediaType" type="string" hint="Specifies how a document is to be presented on different media" required="no" default="" />  
-<cfproperty name="bThisNodeOnly" type="boolean" hint="Use css on this node only. No child inheritance" required="yes" default="0" />
+<cfproperty 
+	name="title" type="string" hint="Meaningful reference title for file" required="no" default=""
+	ftseq="1" ftfieldset="CSS Stylesheet" ftlabel="Title" ftvalidation="required" />
+ 
+<cfproperty 
+	name="description" type="longchar" hint="A description of the file to be uploaded" required="No" default="" 
+	ftseq="2" ftfieldset="CSS Stylesheet" ftlabel="Description" />
 
-<!--- Object Methods --->
+<cfproperty 
+	name="filename" type="string" hint="The name of the CSS file to be used" required="no" default=""
+	ftseq="3" ftfieldset="CSS Stylesheet" ftlabel="CSS File" 
+	ftType="file" ftDestination="/dmcss" ftSecure="false" />
 
-<cffunction name="edit" access="public">
-	<cfargument name="objectid" required="yes" type="UUID">
-	
-	<!--- getData for object edit --->
-	<cfset stObj = this.getData(arguments.objectid)>
-	<cfinclude template="_dmCSS/edit.cfm">
-</cffunction>
+<cfproperty 
+	name="mediaType" type="string" hint="Specifies how a document is to be presented on different media" required="no" default=""
+	ftseq="4" ftfieldset="CSS Stylesheet" ftlabel="Media Type" 
+	fttype="list" ftlist="aural,braille,embossed,handheld,print,projection,screen,tty,tv" ftdefault="screen" ftSelectMultiple="true" />
+
+<cfproperty 
+	name="bThisNodeOnly" type="boolean" hint="Use css on this node only. No child inheritance" required="yes" default="0"
+	ftseq="5" ftfieldset="CSS Stylesheet" ftlabel="No inheritance"
+	fthint="Use css on this node only. No child inheritance." />
 
 </cfcomponent>
