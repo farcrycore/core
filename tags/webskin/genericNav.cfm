@@ -45,14 +45,14 @@
 <cfparam name="attributes.displayStyle" default="unorderedList">
 <cfparam name="attributes.bHideSecuredNodes" default="0"><!--- MJB: check if option to Hide Nav Node Items that user does't have permission to access: default to 0 for backward compatibility --->
 <cfparam name="attributes.afilter" default="#arrayNew(1)#">
+<cfparam name="attributes.lColumns" default="externallink,lNavIDAlias" />
 
 
-		
 <!--- // get navigation items --->
 <cfset o = createObject("component", "#application.packagepath#.farcry.tree")>
 <cfset navFilter=duplicate(attributes.afilter)>
 <cfset arrayAppend(navFilter, "status IN (#listQualify(request.mode.lvalidstatus, '''')#)") />
-<cfset qNav = evaluate("o."&attributes.functionMethod&"(objectid=attributes.navID, lColumns='externallink,lNavIDAlias', "&attributes.functionArgs&", afilter=navFilter)")>
+<cfset qNav = evaluate("o."&attributes.functionMethod&"(objectid=attributes.navID, lColumns=attributes.lColumns, "&attributes.functionArgs&", afilter=navFilter)")>
 
 <!--- // get ansestors of attributes.navID --->
 <cfset qAncestors = o.getAncestors(attributes.sectionObjectID)>
@@ -118,7 +118,7 @@
 				}
 				itemclass='';
 				
-				if(listLen(qNav.lNavIDAlias[i])){
+				if(structKeyExists(qNav,'lNavIDAlias') and listLen(qNav.lNavIDAlias[i])){
 					for (j = 1; j LTE listLen(qNav.lNavIDAlias[i]); j = j + 1){
 						itemclass=itemclass & listGetAt(qNav.lNavIDAlias[i],j) & " ";
 					}	
