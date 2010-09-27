@@ -27,9 +27,9 @@
 <cfset stProfile = application.fapi.getCurrentUser() />
 <cfset dashboard = application.fapi.getcontenttype("dashboard") />
 <cfset qDraft = dashboard.getDraftContent(lastupdatedby=stProfile.userName) />
-<cfset qPending = dashboard.getPendingContent(stProfile.objectid) />
+<cfset qPending = dashboard.getPendingContent() />
 <cfset qActivity = dashboard.getRecentActivity(maxrows=20) />
-<cfset qReview = dashboard.getContentForReview(stProfile.objectid)>
+<cfset qReview = dashboard.getContentForReview(ownedby=stProfile.objectid) />
 
 <!--- 
  // VIEW
@@ -184,7 +184,7 @@
 
 		<tbody>
 		</cfoutput>
-		<cfoutput query="qactivity">
+		<cfoutput query="qActivity">
 			<cfset eventTypename=application.fapi.findType(qActivity.object) />
 			<cfif len(eventTypename) AND eventTypename neq "container">
 				<tr class="#IIF(qactivity.currentrow MOD 2, de("alt"), de(""))#">

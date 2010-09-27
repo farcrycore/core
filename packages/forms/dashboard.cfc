@@ -120,6 +120,8 @@
           FROM #arguments.dbowner##i#
           WHERE 
             status = <cfqueryparam cfsqltype="cf_sql_varchar" value="pending" />
+            <cfif structKeyExists(arguments, "ownedby") AND arguments.ownedby neq "" AND structKeyExists(stTypeMetadata.stProps, "ownedby")>
+              AND ownedby = <cfqueryparam cfsqltype="cf_sql_varchar" maxLength="35" value="#arguments.ownedby#" /></cfif>
         </cfquery>
 
         <cfquery name="qResult" dbtype="query">
