@@ -88,7 +88,7 @@
 				
 				<cfif stJS.bCombine>
 					<cfoutput>
-					<script src="#stJS.hostname##application.url.webroot##application.url.cache#/#sCacheFileName#" type="text/javascript"></script>
+					<script src="#stJS.hostname##application.url.cache#/#sCacheFileName#" type="text/javascript"></script>
 					</cfoutput>
 				<cfelse>
 					<cfloop list="#stJS.lFiles#" index="i">						
