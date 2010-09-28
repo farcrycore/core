@@ -387,6 +387,7 @@
 		<cfargument name="id" required="true" />
 		<cfargument name="lCombineIDs" default="" />
 		<cfargument name="baseHREF" default="" />
+		<cfargument name="hostname" default="" />
 		<cfargument name="lFiles" default="" />
 		<cfargument name="media" default="all" />
 		<cfargument name="condition" default="" hint="Used to wrap a conditional statement around the link tag." />
@@ -421,6 +422,7 @@
 		<cfargument name="id" required="true" />
 		<cfargument name="lCombineIDs" default="" />
 		<cfargument name="baseHREF" default="" />
+		<cfargument name="hostname" default="" />
 		<cfargument name="lFiles" default="" />
 		<cfargument name="condition" default="" hint="Used to wrap a conditional statement around the script tag." />
 		<cfargument name="prepend" default="" hint="Any JS code you wish to have placed before the library." />
