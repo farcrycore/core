@@ -766,19 +766,15 @@
 		
 		<cfif len(cgi.context_path)>
 		    <!--- remove the context path before expanding the path --->
-		    <cfset application.path.webroot = expandPath("#right(application.url.webroot, len(application.url.webroot)-len(cgi.context_path))#")>
+		    <cfset application.path.webroot = expandPath("#right(application.url.webroot, len(application.url.webroot)-len(cgi.context_path))#") />
 		<cfelseif len(application.url.webroot)>
-			<cfset application.path.webroot = expandPath("#application.url.webroot#")>
+			<cfset application.path.webroot = expandPath("#application.url.webroot#") />
 		<cfelse>
-			<cfset application.path.webroot = expandPath("/")><!--- Doesnt work if empty string. Have to set to  "/" otherwise it returns cf root --->
+			<cfset application.path.webroot = expandPath("/") /><!--- Doesnt work if empty string. Have to set to  "/" otherwise it returns cf root --->
 		</cfif>
 		
-		<cfset application.path.cache = "#application.path.webroot#/cache" />
-		
-		<!--- If installing in a subdirectory, the index.cfm seems to be included in the expandPath() above. Need to strip it out. --->		
-		<cfif right(application.path.webroot,9) EQ "index.cfm">
-			<cfset application.path.webroot = left(application.path.webroot,len(application.path.webroot)-10) />
-		</cfif>
+		<!--- If installing in a subdirectory, the index.cfm seems to be included in the expandPath() above. Need to strip it out. --->
+		<cfset application.path.webroot = getDirectoryFromPath(application.path.webroot) />
 		
 		<!--- Strip out trailing slashes --->
 		<cfif right(application.path.webroot,1) EQ "/">
@@ -787,7 +783,10 @@
 		<cfif right(application.path.webroot,1) EQ "\">
 			<cfset application.path.webroot = left(application.path.webroot,len(application.path.webroot)-1) />
 		</cfif>	
-			
+
+		<!--- This line must appear after application.path.webroot is cleaned up --->
+		<cfset application.path.cache = "#application.path.webroot#/cache" />
+
 		<cfset application.path.defaultFilePath = "#application.path.webroot#/files">
 		<cfset application.path.secureFilePath = "#application.path.project#/securefiles">		
 		
