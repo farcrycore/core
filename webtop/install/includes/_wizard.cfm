@@ -53,7 +53,7 @@
 		
 		<cfloop collection="#stErrors#" item="thisfield">
 			<cfif not thisfield eq "plugins">
-				<cfoutput>`
+				<cfoutput>
 					<script type="text/javascript">
 						Ext.onReady(function(){	
 							var errorField = Ext.get('#thisfield#')
