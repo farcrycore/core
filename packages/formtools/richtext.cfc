@@ -20,7 +20,8 @@
 	<cfproperty name="ftWidth" required="false" default="100%" hint="Width required for the rich text editor." />
 	<cfproperty name="ftHeight" required="false" default="280px" hint="Height required for the rich text editor." />
 	<cfproperty name="ftContentCSS" required="false" default="" hint="This option enables you to specify a custom CSS file that extends the theme content CSS. This CSS file is the one used within the editor (the editable area). This option can also be a comma separated list of URLs." />
-
+	<cfproperty name="ftRichtextConfig" required="false" default="" hint="A custom method to use to load the richtext config." />
+	
 	<cfproperty name="ftImageListFilterTypename" required="false" default="dmImage" hint="The related image typename to show in the image list from the advimage plugin." />
 	<cfproperty name="ftImageListFilterProperty" required="false" default="standardImage" hint="The related image typename property that contains the image we want to insert from the advimage plugin" />
 	<cfproperty name="ftLinkListFilterTypenames" required="false" default="" hint="The list of related typenames to filter the link list on in the advlink plugin." />
@@ -40,13 +41,15 @@
 		<cfset var configJS = "" />
 		<cfset var external_image_list_url = "#application.url.webtop#/facade/TinyMCEImageList.cfm?relatedObjectid=#arguments.stObject.ObjectID#&relatedTypename=#arguments.typename#&ftImageListFilterTypename=#arguments.stMetadata.ftImageListFilterTypename#&ftImageListFilterProperty=#arguments.stMetadata.ftImageListFilterProperty#&ajaxMode=1" />
 		<cfset var external_link_list_url = "#application.url.webtop#/facade/TinyMCELinkList.cfm?relatedObjectid=#arguments.stObject.ObjectID#&relatedTypename=#arguments.typename#&ftLinkListFilterTypenames=#arguments.stMetadata.ftLinkListFilterTypenames#&ajaxMode=1" />
-		
+		<cfset var oType = application.fapi.getContentType(arguments.typename) />
 		
 		<!--- IMPORT TAG LIBRARIES --->
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 				
 
-		<cfif isdefined("application.config.tinyMCE.tinyMCE_config") AND isdefined("application.config.tinyMCE.bUseConfig") and application.config.tinyMCE.bUseConfig and len(trim(application.config.tinyMCE.tinyMCE_config))>
+		<cfif structKeyExists(arguments.stMetadata,'ftRichtextConfig') and len(trim(arguments.stMetadata.ftRichtextConfig)) and structKeyExists(oType,arguments.stMetadata.ftRichtextConfig)>
+			<cfinvoke component="#oType#" method="#arguments.stMetadata.ftRichtextConfig#" returnvariable="configJS" />
+		<cfelseif isdefined("application.config.tinyMCE.tinyMCE_config") AND isdefined("application.config.tinyMCE.bUseConfig") and application.config.tinyMCE.bUseConfig and len(trim(application.config.tinyMCE.tinyMCE_config))>
 			<cfset configJS = application.config.tinyMCE.tinyMCE_config />
 		<cfelse>
 			<cfset configJS = getConfig(stMetadata="#arguments.stMetadata#") />
