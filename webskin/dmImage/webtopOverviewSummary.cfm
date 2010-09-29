@@ -44,7 +44,7 @@ START WEBSKIN
 	</ft:field>	
 	<ft:field label="Thumbnail" bMultiField="true">
 		<cfif len(stobj.ThumbnailImage)>
-			<cfoutput><img src="#stobj.thumbnailImage#" /></cfoutput>
+			<cfoutput><img src="#application.fapi.getimagewebroot()##stobj.thumbnailImage#" /></cfoutput>
 		<cfelse>
 			<cfoutput>-- no thumbnail --</cfoutput>
 		</cfif>
