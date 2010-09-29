@@ -266,8 +266,8 @@ OUTPUT THE FILTER FORM
 				<a class="show-predicate-editor">Show/Hide Filter</a>
 				</cfoutput>
 				
-				<grid:div id="predicate-editor" style="font-size:90%;display:none; z-index:200;position:absolute;width:100%;border-top:1px solid ##CCCCCC;background:transparent url(/webtop/css/images/bg-filter-right.png) no-repeat bottom right;">
-					<grid:div style="background:transparent url(/webtop/css/images/bg-filter.png) no-repeat bottom left;margin-right:25px;">
+				<grid:div id="predicate-editor" style="font-size:90%;display:none; z-index:200;position:absolute;width:100%;border-top:1px solid ##CCCCCC;background:transparent url(#application.url.webtop#/css/images/bg-filter-right.png) no-repeat bottom right;">
+					<grid:div style="background:transparent url(#application.url.webtop#/css/images/bg-filter.png) no-repeat bottom left;margin-right:25px;">
 						<grid:div style="padding:5px 0px 25px 25px;">
 							<grid:div>
 								<skin:view typename="farFilter" objectid="#stReturn.filterID#" webskin="edit" />
