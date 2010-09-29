@@ -105,12 +105,12 @@
 					<cfset stData.parentid = arguments.parentid />
 					<cfset stData.seq = listlast(arguments.aProperties[i],":") />
 					<cfset stData.data = listfirst(arguments.aProperties[i],":") />
-					<cfset stData.typename = "" />
+					<cfset stData.typename = application.fapi.findType(objectid = stData.data) />
 				<cfelse>
 					<cfset stData.parentid = arguments.parentid />
 					<cfset stData.seq = i />
 					<cfset stData.data = arguments.aProperties[i] />
-					<cfset stData.typename = "" />
+					<cfset stData.typename = application.fapi.findType(objectid = stData.data) />
 				</cfif>
 				
 				<cfset arguments.aProperties[i] = stData />
