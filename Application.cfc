@@ -774,7 +774,9 @@
 		</cfif>
 		
 		<!--- If installing in a subdirectory, the index.cfm seems to be included in the expandPath() above. Need to strip it out. --->
-		<cfset application.path.webroot = getDirectoryFromPath(application.path.webroot) />
+		<cfif right(application.path.webroot,9) EQ "index.cfm">
+			<cfset application.path.webroot = left(application.path.webroot,len(application.path.webroot)-10) />
+		</cfif>
 		
 		<!--- Strip out trailing slashes --->
 		<cfif right(application.path.webroot,1) EQ "/">
