@@ -25,7 +25,7 @@
 	<cfparam name="attributes.class" default="" />
 	<cfparam name="attributes.style" default="" />
 
-	<cfoutput><div <cfif len(attributes.id)>id="#attributes.id#"</cfif> <cfif len(attributes.class)>class="#attributes.class#"</cfif> <cfif len(attributes.style)>style="#attributes.style#"</cfif>></cfoutput>
+	<cfoutput><div <cfloop list="#structKeyList(attributes)#" index="i"><cfif len(attributes[i])> #i#="#attributes[i]#"</cfif></cfloop>></cfoutput>
 </cfif>
 
 <cfif thistag.executionMode eq "End">
