@@ -118,9 +118,15 @@
 	
 	<ft:object stObject="#stObj#" lFields="title,navType" legend="General Details" />
 	
+	
+	
 	<cfoutput><div id="navType_aObjectIDs" class="navType navType_aObjectIDs"<cfif stObj.navType neq "aObjectIDs"> style="display:none;"</cfif>></cfoutput>
-	<ft:object stObject="#stObj#" lFields="aObjectIDs" bShowLibraryLink="false" />
+	<cfif not arrayLen(stobj.aObjectIds)>
+		<ft:object stObject="#stObj#" lFields="aObjectIDs" bShowLibraryLink="false" />
+	</cfif>
 	<cfoutput></div></cfoutput>
+	
+	
 	
 	<cfoutput><div id="navType_internalRedirectID" class="navType navType_internalRedirectID"<cfif stObj.navType neq "internalRedirectID"> style="display:none;"</cfif>></cfoutput>
 	<ft:object stObject="#stObj#" lFields="internalRedirectID" />
