@@ -172,8 +172,10 @@
 						
 						<tr>
 							<td>
+								<cfif structKeyExists(application.stCOAPI,contentTypename)>
 								<skin:icon icon="#application.stCOAPI[contentTypename].icon#" size="16" default="farcrycore" />
 								<skin:view typename="#contentTypename#" objectid="#stobj.externalLink#" webskin="displayLabel" />
+								</cfif>
 							</td>	
 							<td style="width:50px;"><ft:button value="Manage" renderType="link" selectedObjectID="#stobj.externalLink#" /></td>	
 						</tr>	
@@ -267,8 +269,10 @@
 						
 						<tr>
 							<td>
-								<skin:icon icon="#application.stCOAPI[contentTypename].icon#" size="16" default="farcrycore" />
-								<skin:view typename="#contentTypename#" objectid="#stobj.internalRedirectID#" webskin="displayLabel" />
+								<cfif structKeyExists(application.stCOAPI,contentTypename)>
+									<skin:icon icon="#application.stCOAPI[contentTypename].icon#" size="16" default="farcrycore" />
+									<skin:view typename="#contentTypename#" objectid="#stobj.internalRedirectID#" webskin="displayLabel" />
+								</cfif>
 							</td>	
 							<td style="width:50px;"><ft:button value="Manage" renderType="link" selectedObjectID="#stobj.internalRedirectID#" /></td>	
 						</tr>	
