@@ -263,7 +263,7 @@ Apps Processing
 Alert user that application scope has been refreshed
 -------------------------------------------------------->
 <cfif isDefined("URL.updateApp") AND isBoolean(URL.updateApp) AND URL.updateApp>
-	<skin:bubble title="Update App Complete">
+	<skin:bubble title="Update App Complete" tags="system,updateapp,information" sticky="true">
 		<cfoutput>The application scope has been refreshed</cfoutput>
 	</skin:bubble>
 </cfif>

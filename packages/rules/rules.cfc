@@ -193,12 +193,12 @@ $out:$
 				</wiz:processwizard>
 				
 				<wiz:processwizard action="Save" Savewizard="true" Exit="true"><!--- Save wizard Data to Database and remove wizard --->
-					<skin:bubble title="Rule Saved" bAutoHide="true">
+					<skin:bubble title="Rule Saved" bAutoHide="true" tags="rule,updated,information">
 						<cfoutput>The changes you have made to this rule have been saved.</cfoutput>
 					</skin:bubble>
 				</wiz:processwizard>
 				<wiz:processwizard action="Cancel" Removewizard="true" Exit="true"><!--- remove wizard --->
-					<skin:bubble title="Changes Cancelled" bAutoHide="true">
+					<skin:bubble title="Changes Cancelled" bAutoHide="true" tags="rule,canceled,information">
 						<cfoutput>The changes you made to the rule were cancelled.</cfoutput>
 					</skin:bubble>
 				</wiz:processwizard>
@@ -288,14 +288,14 @@ $out:$
 					
 					<ft:processFormObjects typename="#stobj.typename#" PackageType="rules" />
 
-					<skin:bubble title="Rule Saved" bAutoHide="true">
+					<skin:bubble title="Rule Saved" bAutoHide="true" tags="rule,updated,information">
 						<cfoutput>The changes you have made to this rule have been saved.</cfoutput>
 					</skin:bubble>
 					
 				</ft:processForm>
 				
 				<ft:processForm action="Cancel" Exit="true">				
-					<skin:bubble title="Changes Cancelled" bAutoHide="true">
+					<skin:bubble title="Changes Cancelled" bAutoHide="true" tags="rule,canceled,information">
 						<cfoutput>The changes you made to the rule were cancelled.</cfoutput>
 					</skin:bubble>
 				</ft:processForm>

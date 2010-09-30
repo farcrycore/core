@@ -357,7 +357,7 @@ $out:$
 							
 						</cfif>
 						
-						<skin:bubble title="#stObj.label#" message="Status changed to #status#" />
+						<skin:bubble title="#stObj.label#" message="Status changed to #status#" tags="type,#stObj.typename#,workflow,information" />
 						<farcry:logevent object="#stObj.objectid#" type="types" event="to#status#" note="#form.commentLog#" />
 						
 					</cfif> <!--- // incomplete items check  --->

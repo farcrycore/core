@@ -121,6 +121,10 @@
 							baseHREF="#application.url.webtop#/thirdparty/gritter/css"
 							lFiles="gritter.css" />
 							
+		<skin:registerCSS 	id="headerblock"
+							baseHREF="#application.url.webtop#/thirdparty/headerblock"
+							lFiles="default.css" />
+							
 		<skin:registerCSS 	id="farcry-tray"
 							lDependsOn="jquery-ui,jquery-tooltip"
 							baseHREF="#application.url.webtop#/css"

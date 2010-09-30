@@ -542,7 +542,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 					<cfif isdefined("url.debug") and url.debug EQ 1>
 						<cfset request.cfdumpinited = false>
 						
-						<skin:bubble title="Error with rule '#application.stcoapi[rule].displayName#'" bAutoHide="false">
+						<skin:bubble title="Error with rule '#application.stcoapi[rule].displayName#'" bAutoHide="false" tags="rule,error">
 							<cfoutput>#cfcatch.message#<br />#cfcatch.detail#</cfoutput>
 						</skin:bubble>							
 						
@@ -552,7 +552,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 						<cfset arrayappend(request.aInvocations, "#ruleError#") />
 						
 				  	<cfelseif request.mode.design and request.mode.showcontainers gt 0>
-						<skin:bubble title="Error with rule '#rule#'" bAutoHide="true">
+						<skin:bubble title="Error with rule '#rule#'" bAutoHide="true" tags="rule,error">
 							<cfoutput>#cfcatch.message#<br />#cfcatch.detail#</cfoutput>
 						</skin:bubble>
 					</cfif>

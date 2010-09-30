@@ -177,7 +177,7 @@
 
 		
 		<!--- COMPLETE --->
-		<skin:bubble title="#stProperties.name#" bAutoHide="false">
+		<skin:bubble title="#stProperties.name#" bAutoHide="false" tags="skeleton,success,information">
 			<cfoutput>Skeleton Exported Successfully</cfoutput>
 		</skin:bubble>
 

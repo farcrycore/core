@@ -20,9 +20,9 @@
 		<cfset process(form) /><!--- Do normal processing on the passed in form --->
 		
 		<cfset results = "" />
-		<skin:bubbleOutput>
-			<cfset results = listappend(results,'{ index: #index#, title: "#jsstringformat(bubble.title)#", message: "#jsstringformat(bubble.message)#" }') />
-		</skin:bubbleOutput>
+		<skin:pop>
+			<cfset results = listappend(results,'{ index: #index#, title: "#jsstringformat(message.title)#", message: "#jsstringformat(message.message)#" }') />
+		</skin:pop>
 		
 		<cfoutput>{ results: [ #results# ], success: true, errors: [] }</cfoutput>
 	<cfelse>
