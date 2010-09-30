@@ -241,7 +241,7 @@ OUTPUT THE FILTER FORM
 		<cfoutput>
 		
 
-		$('##filterID').bind('change',{formname:'#Request.farcryForm.Name#'}, function(event) {
+		$j('##filterID').bind('change',{formname:'#Request.farcryForm.Name#'}, function(event) {
 		  btnSubmit(event.data.formname, 'Select Filter');
 		});
 		</cfoutput>
@@ -286,11 +286,11 @@ OUTPUT THE FILTER FORM
 					
 				<skin:onReady>
 				<cfoutput>
-					$("a.show-predicate-editor").click(function(){
-							$("##predicate-editor").toggle("slow");
+					$j("a.show-predicate-editor").click(function(){
+							$j("##predicate-editor").toggle("slow");
 					});
 					<cfif bShowFilter>
-						$("##predicate-editor").show();
+						$j("##predicate-editor").show();
 					</cfif>
 				</cfoutput>
 				</skin:onReady>
