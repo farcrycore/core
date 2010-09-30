@@ -24,6 +24,7 @@
 <cfparam name="attributes.primaryAction" default="" /><!--- Is this button a primary action on the form --->
 <cfparam name="attributes.bDefaultAction" default="false" /><!--- Default action when someone presses enter on a form. --->
 <cfparam name="attributes.icon" default="" /><!--- The jquery-ui icon to use --->
+<cfparam name="attributes.title" default="" /><!--- The title of the button --->
 
 <cfif not thistag.HasEndTag>
 	<cfabort showerror="FarCry Buttons must have an end tag...">
@@ -122,10 +123,10 @@
 	<cfif not len(attributes.r_stButton)>
 		<cfswitch expression="#attributes.renderType#">
 		<cfcase value="link">
-			<cfoutput><a id="#attributes.id#" name="#attributes.id#" class="#attributes.class#" style="#attributes.style#" href="##">#attributes.text#</a></cfoutput>
+			<cfoutput><a id="#attributes.id#" name="#attributes.id#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="#attributes.class#" style="#attributes.style#" href="##">#attributes.text#</a></cfoutput>
 		</cfcase>
 		<cfcase value="button">
-			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" class="#attributes.class#" style="#attributes.style#;" <cfif attributes.disabled>disabled</cfif>>#attributes.text#</button></cfoutput>
+			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="#attributes.class#" style="#attributes.style#;" <cfif attributes.disabled>disabled</cfif>>#attributes.text#</button></cfoutput>
 		</cfcase>
 		
 		<!--- Default FarcryButton --->
@@ -141,7 +142,7 @@
 				<cfset attributes.text = "&nbsp;" />
 			</cfif>		
 			
-			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" class="#attributes.class#" style="#attributes.style#;" <cfif attributes.disabled>disabled</cfif>>#attributes.text#</button></cfoutput>
+			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="#attributes.class#" style="#attributes.style#;" <cfif attributes.disabled>disabled</cfif>>#attributes.text#</button></cfoutput>
 				
 
 			<skin:onReady>
