@@ -1151,7 +1151,7 @@
 		
 		<cfquery datasource="#application.dsn#" name="qDelete">
 		DELETE	
-		FROM	#application.dbowner#farFu 				
+		FROM	#application.dbowner#farFU 				
 		WHERE	friendlyURL = <cfqueryparam value="#arguments.alias#" cfsqltype="cf_sql_varchar">
 		</cfquery>
 		
@@ -1193,7 +1193,7 @@
 		
 		<cfquery datasource="#application.dsn#" name="stLocal.qDelete">
 		DELETE	
-		FROM	#application.dbowner#farFu
+		FROM	#application.dbowner#farFU
 		WHERE	fuStatus != 2
 		</cfquery>
 		
@@ -1569,7 +1569,7 @@
 			
 			<cfquery datasource="#application.dsn#" name="stLocal.qCheck">
 			SELECT	objectid
-			FROM	#application.dbowner#farFu
+			FROM	#application.dbowner#farFU
 			WHERE	lower(friendlyURL) = <cfqueryparam value="#LCase(arguments.stForm.friendlyurl)#" cfsqltype="cf_sql_varchar">
 				AND fuStatus > 0
 			</cfquery>
@@ -1611,13 +1611,13 @@
 		<cftry>
 			<cfquery datasource="#application.dsn#" name="stLocal.qList">
 			SELECT	friendlyurl
-			FROM	#application.dbowner#farFu
+			FROM	#application.dbowner#farFU
 			WHERE	objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.stForm.lDeleteObjectId#" />)
 			</cfquery>
 
 			<cfquery datasource="#application.dsn#" name="stLocal.qDelete">
 			DELETE
-			FROM	#application.dbowner#farFu
+			FROM	#application.dbowner#farFU
 			WHERE	objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arguments.stForm.lDeleteObjectId#" />)
 			</cfquery>
 			
