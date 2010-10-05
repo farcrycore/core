@@ -42,7 +42,7 @@
 <cfset compress = url.compress>
 <cfset core = url.core>
 <cfset suffix = url.suffix>
-<cfset cachePath = expandPath("/farcry/projects/#application.projectdirectoryname#/www/cache/tiny_mce_gzip_cache/")>
+<cfset cachePath = application.path.cache & "/tiny_mce_gzip_cache/">
 <cfset expiresOffset = createTimeSpan(10,0,0,0)> <!--- Cache for 10 days in browser cache --->
 <cfset content = "">
 <cfset encodings = arrayNew(2)>
