@@ -845,7 +845,11 @@
 		<cfset tmpFriendlyURL = replaceNoCase(arguments.friendlyURL, "//", "+++", "all") />
 		
 		<cfloop list="#tmpFriendlyURL#" index="fuToken" delimiters="/">
-			<cfset fuThis = "#fuThis#/#replaceNoCase(fuToken, '+++', '//')#" />
+			<cfif left(fuToken,3) eq "+++">
+				<cfset fuThis = "#fuThis##replaceNoCase(fuToken, '+++', '//')#" />
+			<cfelse>
+				<cfset fuThis = "#fuThis#/#replaceNoCase(fuToken, '+++', '//')#" />
+			</cfif>
 			<cfset fuList = listappend(fuList,fuThis) />
 		</cfloop>
 		
