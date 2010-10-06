@@ -58,7 +58,7 @@ START WEBSKIN
 						<ft:fieldset>
 							<ft:field label="Project Selection" for="selectFarcryProject">
 								<cfoutput>
-								<select name="selectFarcryProject" id="selectFarcryProject" class="selectInput" onchange="window.location='#application.url.webtop#/login.cfm?farcryProject='+this.value;">						
+								<select name="selectFarcryProject" id="selectFarcryProject" class="selectInput" onchange="window.location='#application.url.webtop#/login.cfm?<cfif structKeyExists(url,'returnurl') and len(trim(url.returnurl))>returnurl=#urlEncodedFormat(url.returnurl)#&</cfif>farcryProject='+this.value;">						
 									<cfloop from="1" to="#arraylen(aDomainProjects)#" index="i">
 										<cfif len(aDomainProjects[i])>
 											<option value="#aDomainProjects[i]#"<cfif cookie.currentFarcryProject eq aDomainProjects[i]> selected="selected"</cfif>>#server.stFarcryProjects[aDomainProjects[i]].displayname#</option>
@@ -79,7 +79,7 @@ START WEBSKIN
 					<ft:fieldset>
 						<ft:field label="Select User Directory" for="selectuserdirectories">
 						
-							<cfoutput><select name="selectuserdirectories" id="selectuserdirectories" class="selectInput" onchange="window.location='#application.url.farcry#/login.cfm?ud='+this.value;"></cfoutput>
+							<cfoutput><select name="selectuserdirectories" id="selectuserdirectories" class="selectInput" onchange="window.location='#application.url.farcry#/login.cfm?<cfif structKeyExists(url,'returnurl') and len(trim(url.returnurl))>returnurl=#urlEncodedFormat(url.returnurl)#&</cfif>ud='+this.value;"></cfoutput>
 							
 							<cfloop list="#application.security.getAllUD()#" index="thisud">
 								<cfoutput>
