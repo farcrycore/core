@@ -26,7 +26,7 @@
 					<cftry>
 						
 						<cfset oType = createObject("component", application.types[key].typepath) >
-						<cfset safeName = oType.getTableName() >
+						<cfset safeName = oType.getTypename() >
 						
 						<cfset bRefObjects = true /><!--- Assume true unless specifically instructed not too. --->
 						
@@ -79,7 +79,7 @@
 					
 					<cftry>
 						<cfset oRule = createObject("component", application.rules[key].rulepath) >
-						<cfset safeName = oRule.getTableName() >
+						<cfset safeName = oRule.getTypename() >
 						
 						
 						<cfset bRefObjects = true /><!--- Assume true unless specifically instructed not too. --->
