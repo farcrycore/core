@@ -81,7 +81,7 @@ default handlers
 	</cffunction>
 	
 	<cffunction name="getWebskins" returntype="query" access="public" output="false" hint="Returns a query of all available webskins. Search through project first, then any library's that have been included.">
-		<cfargument name="typename" type="string" default="#gettablename()#" hint="Typename of instance." />
+		<cfargument name="typename" type="string" default="#getTypename()#" hint="Typename of instance." />
 		<cfargument name="prefix" type="string" required="false" default="" hint="Prefix to filter template results." />
 		
 		<cfset var qWebskins = application.stcoapi[arguments.typename].qWebskins />
@@ -1212,7 +1212,7 @@ default handlers
 		<cfset var qLibraryList=queryNew("ObjectID,Label") />
 		<cfquery datasource="#application.dsn#" name="qLibraryList">
 		SELECT *
-		FROM #getTablename()#
+		FROM #getTypename()#
 		ORDER BY label
 		</cfquery>
 		<cfreturn qLibraryList />
