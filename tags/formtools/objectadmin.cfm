@@ -291,7 +291,7 @@ user --->
 								<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
 									<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
 										<cfset whereValue = ReplaceNoCase(trim(LCase(j)),"'", "''", "all") />
-										<cfoutput>AND lower(#i#) LIKE '%#whereValue#%'</cfoutput>
+										<cfoutput>AND #i# LIKE '%#whereValue#%'</cfoutput>
 									</cfloop>
 								</cfif>
 							</cfcase>
@@ -320,7 +320,7 @@ user --->
 									<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
 										<cfif listcontains("string,nstring,longchar", PrimaryPackage.stProps[i].metadata.type)>
 											<cfset whereValue = ReplaceNoCase(trim(j),"'", "''", "all") />
-											<cfoutput>AND lower(#i#) LIKE '%#whereValue#%'</cfoutput>
+											<cfoutput>AND #i# LIKE '%#whereValue#%'</cfoutput>
 										<cfelseif listcontains("numeric,integer", PrimaryPackage.stProps[i].metadata.type)>
 											<cfset whereValue = ReplaceNoCase(j,"'", "''", "all") />
 											<cfif isNumeric(whereValue)>
