@@ -31,8 +31,8 @@ FARCRY INCLUDE FILES
 
 
 <!--- ENVIRONMENT VARIABLES --->
-
-
+<cfset stLocal.qTabs = getWebskins(typename=stObj.typename,prefix="webtopOverviewTab") />
+<cfset stLocal.stTabs = structnew() />
 
 
 <!--- WORKFLOW --->
@@ -113,6 +113,11 @@ FARCRY INCLUDE FILES
 					<li style="background-image:none;padding:0px;"><a href="##tabs-seo">SEO</a></li>
 				</cfif>
 				<li style="background-image:none;padding:0px;"><a href="##tabs-misc">Miscellaneous</a></li>
+				<cfloop query="stLocal.qTabs">
+					<cfif stLocal.qTabs.methodname neq "webtopOverviewTab" and isdefined("application.stCOAPI.#stObj.typename#.stWebskins.#stLocal.qTabs.methodname#.displayname")>
+						<li style="background-image:none;padding:0px;"><a href="#application.fapi.getLink(objectid=stObj.objectid,view=stLocal.qTabs.methodname,urlparameters='ajaxmode=1')#">#application.stCOAPI[stObj.typename].stWebskins[stLocal.qTabs.methodname].displayname#</a></li>
+					</cfif>
+				</cfloop>
 			</ul>
             </cfoutput>
 			
