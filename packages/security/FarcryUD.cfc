@@ -397,7 +397,7 @@
 					WHERE	userName NOT LIKE <cfqueryparam value="%\_%" cfsqltype="cf_sql_varchar" />
 				</cfquery>
 			</cfcase>
-			<cfcase value="mssql">
+			<cfcase value="mssql,mssql2005">
 				<!--- Update profiles --->
 				<cfquery datasource="#application.dsn#">
 					update	#application.dbowner#dmProfile

@@ -211,7 +211,7 @@
 			<cfset stReturn.TotalPages = 0>
 		</cfif>
 			
-		<cfif application.dbtype EQ "MSSQL">
+		<cfif findnocase("MSSQL",application.dbtype)>
 	
 			
 			<cfquery name="#qName#" datasource="#application.dsn#" cachedwithin="#arguments.cacheTimeSpan#">

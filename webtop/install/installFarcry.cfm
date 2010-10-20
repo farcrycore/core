@@ -98,7 +98,7 @@ DETERMINE THE CURRENT VERSION OF FARCRY
 	<cfset application.dbowner = form.dbowner />
 	<!--- <cfset application.locales = this.locales /> --->
 	
-	<cfif application.dbtype EQ "mssql" AND NOT len(application.dbowner)>
+	<cfif findnocase("mssql",application.dbtype) AND NOT len(application.dbowner)>
 		<cfset application.dbowner = "dbo." />
 	</cfif>
 	

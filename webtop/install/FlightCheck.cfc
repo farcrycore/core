@@ -179,8 +179,8 @@
 				SELECT 'aj' AS theMAN from dual
 				</cfquery>
 			</cfcase>
-			<cfcase value="MSSQL">
-				<cfset databaseTypeName = "MSSQL" />
+			<cfcase value="MSSQL,MSSQL2005" delimiters=",">
+				<cfset databaseTypeName = arguments.DBType />
 				<!--- run an MSSQL specific query --->
 				<cfquery name="qCheckDSN" datasource="#arguments.DSN#">
 				SELECT	count(*) AS theCount

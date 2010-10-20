@@ -1260,7 +1260,7 @@ default handlers
 		
 		<cfset var qSearchResults = "" />
 		
-		<cfif lcase(application.dbtype) EQ "mssql"> <!--- Dodgy MS SQL only code --->
+		<cfif findnocase("mssql",lcase(application.dbtype))> <!--- Dodgy MS SQL only code --->
 			<cfquery datasource="#application.dsn#" name="qSearchResults">
 				SELECT objectID as [key] , label FROM #application.dbowner#[#getTypeName()#]	
 				WHERE label like <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.criteria#%">

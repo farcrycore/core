@@ -83,10 +83,48 @@
 <cfset aResults = arraynew(1) />
 <cfset aResults = application.fc.lib.db.deployChanges(aChanges,application.dsn) />
 <cfloop from="1" to="#arraylen(aResults)#" index="i">
-	<cfif structkeyexists(aResults[i],"message")>
-		<skin:bubble message="#aResults[i].message#" />
+	<cfif structkeyexists(aResults[i],"message") and aResults[i].bSuccess>
+		<skin:bubble message="#aResults[i].message#" tags="coapichange,success" />
+	<cfelseif sturctkeyexists(aResults[i],"message")>
+		<skin:bubble message="#aResults[i].message#" tags="coapichange,error" />
 	</cfif>
 </cfloop>
+
+<skin:loadCSS id="farcry-form" />
+<cfoutput><div class="uniForm"></cfoutput>
+<skin:pop tags="error" start="<ul id='errorMsg'>" end="</ul>">
+	<cfoutput>
+		<li>
+			<cfif len(trim(message.title))><strong>#message.title#</strong></cfif><cfif len(trim(message.title)) and len(trim(message.message))>: </cfif>
+			<cfif len(trim(message.message))>#message.message#</cfif>
+		</li>
+	</cfoutput>
+</skin:pop>
+<skin:pop tags="coapichange" start="<ul id='OKMsg'>" end="</ul>">
+	<cfoutput>
+		<li>
+			<cfif len(trim(message.title))><strong>#message.title#</strong></cfif><cfif len(trim(message.title)) and len(trim(message.message))>: </cfif>
+			<cfif len(trim(message.message))>#message.message#</cfif>
+		</li>
+	</cfoutput>
+</skin:pop>
+<cfoutput></div></cfoutput>
+
+<cfif structkeyexists(form,"sql") and form.sql>
+	<cfset sqlOut = "" />
+	<cfloop from="1" to="#arraylen(aResults)#" index="i">
+		<cfif aResults[i].bSuccess>
+			<cfset sqlOut = sqlOut & "## SUCCESS :: #aResults[i].message##chr(13)##chr(10)#" />
+		<cfelse>
+			<cfset sqlOut = sqlOut & "## FAILURE :: #aResults[i].message##chr(13)##chr(10)#" />
+		</cfif>
+		<cfloop from="1" to="#arraylen(aResults[i].results)#" index="j">
+			<cfset sqlOut = sqlOut & "#trim(rereplace(aResults[i].results[j].sql,'\n\s+','','all'))#;#chr(13)##chr(10)##chr(13)##chr(10)#" />
+		</cfloop>
+		<cfset sqlOut = sqlOut & "#chr(13)##chr(10)#" />
+	</cfloop>
+	<cfoutput><textarea cols="80" rows="10">#sqlOut#</textarea></cfoutput>
+</cfif>
 <cfif structkeyexists(form,"debug") and form.debug>
 	<cfdump var="#aResults#">
 </cfif>
@@ -305,7 +343,10 @@
 	</cfoutput>
 	<cfif count>
 		<ft:buttonPanel>
-			<cfoutput><label>Show debug output <input type="checkbox" name="debug" value="1"<cfif (structkeyexists(form,"debug") and form.debug) or (structkeyexists(url,"debug") and url.debug)> checked</cfif>></label>&nbsp;</cfoutput>
+			<cfoutput>
+				<label>Show debug output <input type="checkbox" name="debug" value="1"<cfif (structkeyexists(form,"debug") and form.debug) or (structkeyexists(url,"debug") and url.debug)> checked</cfif>></label>&nbsp;
+				<label>Show SQL <input type="checkbox" name="sql" value="1"<cfif (structkeyexists(form,"sql") and form.sql) or (structkeyexists(url,"sql") and url.sql)> checked</cfif>></label>&nbsp;
+			</cfoutput>
 			<ft:button value="Apply Default Resolutions" />
 		</ft:buttonPanel>
 	</cfif>

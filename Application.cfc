@@ -735,7 +735,7 @@
 		<cfset application.dbowner = this.dbowner />
 		<cfset application.locales = replaceNoCase(this.locales, " ","",  "all") />
 		
-		<cfif application.dbtype EQ "mssql" AND NOT len(this.dbowner)>
+		<cfif findnocase("mssql",application.dbtype) AND NOT len(this.dbowner)>
 			<cfset application.dbowner = "dbo." />
 		</cfif>
 

@@ -262,7 +262,7 @@
 			</cfcase>
 			<cfcase value="string,nstring,varchar" delimiters=",">
 				<cfset stResult.type = "string" />
-				<cfset stResult.precision = "255" />
+				<cfset stResult.precision = "MAX" />
 			</cfcase>
 			<cfcase value="uuid">
 				<cfset stResult.type = "string" />
@@ -407,7 +407,7 @@
 		
 		<cfset fields.parentid = createFieldStruct(name="parentid",default="",nullable=false,type="uuid",precision="",bPrimaryKey=true) />
 		<cfset fields.seq = createFieldStruct(name="seq",default=0,nullable=false,type="numeric",precision="",bPrimaryKey=true) />
-		<cfset fields.data = createFieldStruct(name="data",default="NULL",nullable=true,type="string",precision="",index="data_index:1") />
+		<cfset fields.data = createFieldStruct(name="data",default="NULL",nullable=true,type="string",precision="250",index="data_index:1") />
 		<cfset fields.typename = createFieldStruct(name="typename",default="NULL",nullable=true,type="string",precision="") />
 		
 		<cfif structKeyExists(arguments.data,'arrayProps')>

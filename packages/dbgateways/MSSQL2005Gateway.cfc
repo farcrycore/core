@@ -1,54 +1,6 @@
-<cfcomponent extends="BaseGateway" dbType="mssql:Microsoft SQL 2000 and before" usesDBOwner="true">
+<cfcomponent extends="MSSQLGateway" dbType="mssql2005:Microsoft SQL 2005" usesDBOwner="true">
 	
 	
-	<cffunction name="getValueForDB" access="public" output="false" returntype="struct" hint="Returns cfsqltype, null, and value for specified metadata and value">
-		<cfargument name="schema" type="struct" required="true" />
-		<cfargument name="value" type="any" required="true" />
-		
-		<cfset var stResult = structnew() />
-		
-		<cfswitch expression="#arguments.schema.type#">
-			<cfcase value="datetime">
-				<cfset stResult.cfsqltype = "cf_sql_timestamp" />
-				<cfset stResult.null = false />
-				<cfif (arguments.value eq "" or arguments.value gt dateadd("yyyy",100,now()) or arguments.value eq "1 January 2050" or arguments.value eq "NULL") and arguments.schema.nullable>
-					<cfset stResult.null = true />
-					<cfset stResult.value = "" />
-				<cfelseif arguments.value eq "" or arguments.value gt dateadd("yyyy",100,now()) or arguments.value eq "1 January 2050" or arguments.value eq "NULL">
-					<cfset stResult.value = dateadd('yyyy',200,now()) />
-				<cfelse>
-					<cfset stResult.value = arguments.value />
-				</cfif>
-			</cfcase>
-			<cfcase value="numeric">
-				<cfif listlast(arguments.schema.precision) eq 0>
-					<cfset stResult.cfsqltype = "cf_sql_integer" />
-				<cfelse>
-					<cfset stResult.cfsqltype = "cf_sql_float" />
-				</cfif>
-				<cfif arguments.schema.nullable and (arguments.value eq "" or arguments.value eq "NULL")>
-					<cfset stResult.value = 0 />
-					<cfset stResult.null = true />
-				<cfelse>
-					<cfset stResult.value = arguments.value />
-					<cfset stResult.null = false />
-				</cfif>
-			</cfcase>
-			<cfcase value="string,longchar" delimiters=",">
-				<cfset stResult.cfsqltype = "cf_sql_varchar" />
-				<cfif arguments.schema.nullable and (arguments.value eq "" or arguments.value eq "NULL")>
-					<cfset stResult.value = "" />
-					<cfset stResult.null = true />
-				<cfelse>
-					<cfset stResult.value = arguments.value />
-					<cfset stResult.null = false />
-				</cfif>
-			</cfcase>
-		</cfswitch>
-		
-		<cfreturn stResult />
-	</cffunction>
-
 	<!--- DEPLOYMENT --->
 	<cffunction name="deploySchema" access="public" output="false" returntype="struct" hint="Deploys the table structure for a FarCry type into a MySQL database.">
 		<cfargument name="schema" type="struct" required="true" />
@@ -91,13 +43,7 @@
 										decimal(#stProp.precision#)
 									</cfif>
 								</cfcase>
-								<cfcase value="string">
-									<cfif stProp.precision eq "MAX">
-										nvarchar(4000)
-									<cfelse>
-										nvarchar(#stProp.precision#)
-									</cfif>
-								</cfcase>
+								<cfcase value="string">nvarchar(#stProp.precision#)</cfcase>
 								<cfcase value="longchar">ntext</cfcase>
 								<cfcase value="datetime">datetime</cfcase>
 							</cfswitch>
@@ -175,13 +121,7 @@
 							decimal(#stProp.precision#)
 						</cfif>
 					</cfcase>
-					<cfcase value="string">
-						<cfif stProp.precision eq "MAX">
-							nvarchar(4000)
-						<cfelse>
-							nvarchar(#stProp.precision#)
-						</cfif>
-					</cfcase>
+					<cfcase value="string">nvarchar(#stProp.precision#)</cfcase>
 					<cfcase value="longchar">ntext</cfcase>
 					<cfcase value="datetime">datetime</cfcase>
 				</cfswitch>
@@ -288,13 +228,7 @@
 							decimal(#stProp.precision#)
 						</cfif>
 					</cfcase>
-					<cfcase value="string">
-						<cfif stProp.precision eq "MAX">
-							nvarchar(4000)
-						<cfelse>
-							nvarchar(#stProp.precision#)
-						</cfif>
-					</cfcase>
+					<cfcase value="string">nvarchar(#stProp.precision#)</cfcase>
 					<cfcase value="longchar">ntext</cfcase>
 					<cfcase value="datetime">datetime</cfcase>
 				</cfswitch>
@@ -351,201 +285,8 @@
 		<cfreturn stResult />
 	</cffunction>
 	
-	<cffunction name="dropColumn" access="public" output="false" returntype="struct" hint="Runs an ALTER sql command for the property. Not for use with array properties.">
-		<cfargument name="schema" type="struct" required="true" hint="The type schema" />
-		<cfargument name="propertyname" type="string" required="true" hint="The property to remove" />
-		
-		<cfset var stResult = structnew() />
-		<cfset var queryresult = "" />
-		<cfset var qCheck = "" />
-		
-		<cfset stResult.bSuccess = true />
-		<cfset stResult.results = arraynew(1) />
-		
-		<cftry>
-			<!--- check for constraint --->
-			<cfquery datasource="#variables.dsn#" name="qCheck">
-				SELECT c_obj.name as CONSTRAINT_NAME, col.name	as COLUMN_NAME, com.text as DEFAULT_CLAUSE
-				FROM	sysobjects	c_obj
-				JOIN 	syscomments	com on 	c_obj.id = com.id
-				JOIN 	sysobjects	t_obj on c_obj.parent_obj = t_obj.id
-				JOIN    sysconstraints con on c_obj.id	= con.constid
-				JOIN 	syscolumns	col on t_obj.id = col.id
-							AND con.colid = col.colid
-				WHERE c_obj.xtype	= 'D'
-					AND t_obj.name = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.schema.tablename#">
-					AND (col.name = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.propertyname#">)
-			</cfquery>
-
-			<cfif qCheck.recordcount GT 0>
-				<cfquery datasource="#variables.dsn#">
-					ALTER TABLE #variables.dbowner##arguments.schema.tablename# DROP CONSTRAINT #qCheck.Constraint_Name#
-				</cfquery>
-			</cfif>
-			
-			<cfquery datasource="#variables.dsn#" result="queryresult">
-				ALTER TABLE #variables.dbowner##arguments.schema.tablename#
-				DROP COLUMN	#arguments.propertyname#
-			</cfquery>
-			
-			<cfset arrayappend(stResult.results,queryresult) />
-			
-			<cfcatch type="database">
-				<cfset stResult.bSuccess = false />
-				<cfset arrayappend(stResult.results,cfcatch) />
-			</cfcatch>
-		</cftry>
-		
-		<cfif stResult.bSuccess>
-			<cfset stResult.message = "Dropped '#arguments.schema.tablename#.#arguments.propertyname#' column" />
-		<cfelse>
-			<cfset stResult.message = "Failed to drop '#arguments.schema.tablename#.#arguments.propertyname#' column" />
-		</cfif>
-		
-		<cfreturn stResult />
-	</cffunction>
-	
-	<cffunction name="addIndex" access="public" output="false" returntype="struct" hint="Deploys the index into a MySQL database.">
-		<cfargument name="schema" type="struct" required="true" />
-		<cfargument name="indexname" type="string" required="true" />
-		
-		<cfset var stIndex = arguments.schema.indexes[arguments.indexname] />
-		<cfset var stResult = structnew() />
-		<cfset var queryresult = "" />
-		
-		<cfset stResult.bSuccess = true />
-		<cfset stResult.results = arraynew(1) />
-		
-		<cftry>
-			<cfswitch expression="#stIndex.type#">
-				<cfcase value="primary">
-					<cfquery datasource="#variables.dsn#" result="queryresult">
-					 	ALTER TABLE 	#variables.dbowner##arguments.schema.tablename#
-						ADD 			PRIMARY KEY
-										(#arraytolist(stIndex.fields)#)
-					</cfquery>
-				</cfcase>
-				<cfcase value="unclustered">
-					<cfquery datasource="#variables.dsn#" result="queryresult">
-					 	CREATE INDEX 	#arguments.schema.tablename#_#stIndex.name# 
-					 	ON 				#variables.dbowner##arguments.schema.tablename# 
-					 					(#arraytolist(stIndex.fields)#)
-					</cfquery>
-				</cfcase>
-			</cfswitch>
-			
-			<cfset arrayappend(stResult.results,queryresult) />
-			
-			<cfcatch type="database">
-				<cfset stResult.bSuccess = false />
-				<cfset arrayappend(stResult.results,cfcatch) />
-			</cfcatch>
-		</cftry>
-		
-		<cfif stResult.bSuccess>
-			<cfset stResult.message = "Deployed '#arguments.schema.tablename#.#arguments.indexname#' index" />
-		<cfelse>
-			<cfset stResult.message = "Failed to deploy '#arguments.schema.tablename#.#arguments.indexname#' index" />
-		</cfif>
-		
-		<cfreturn stResult />
-	</cffunction>
-	
-	<cffunction name="dropIndex" access="public" output="false" returntype="struct" hint="Drops the index from a MySQL database.">
-		<cfargument name="schema" type="struct" required="true" />
-		<cfargument name="indexname" type="string" required="true" />
-		
-		<cfset var stResult = structnew() />
-		<cfset var queryresult = "" />
-		<cfset var stDB = introspectType(arguments.schema.tablename) />
-		<cfset var q = "" />
-		<cfset var stIndex = structnew() />
-		
-		<cfset stResult.bSuccess = true />
-		<cfset stResult.results = arraynew(1) />
-		
-		<cfif not structkeyexists(stDB.indexes,arguments.indexname)>
-			<cfreturn stResult />
-		</cfif>
-		
-		<cfset stIndex=stDB.indexes[arguments.indexname]>
-		
-		<cftry>
-			<cfswitch expression="#stIndex.type#">
-				<cfcase value="primary">
-					<cfquery datasource="#variables.dsn#" result="queryresult">
-						ALTER TABLE #variables.dbowner##arguments.schema.tablename#
-					    DROP CONSTRAINT #stDB.indexes[arguments.indexname].name#
-					</cfquery>
-				</cfcase>
-				<cfcase value="unclustered">
-					<cfquery datasource="#variables.dsn#" result="queryresult">
-					 	DROP INDEX 		#stDB.indexes[arguments.indexname].name# 
-					 	ON 				#variables.dbowner##arguments.schema.tablename#
-					</cfquery>
-				</cfcase>
-			</cfswitch>
-			
-			<cfset arrayappend(stResult.results,queryresult) />
-			
-			<cfcatch type="database">
-				<cfset stResult.bSuccess = false />
-				<cfset arrayappend(stResult.results,cfcatch) />
-			</cfcatch>
-		</cftry>
-		
-		<cfif stResult.bSuccess>
-			<cfset stResult.message = "Dropped '#arguments.schema.tablename#.#arguments.indexname#' index" />
-		<cfelse>
-			<cfset stResult.message = "Failed to drop '#arguments.schema.tablename#.#arguments.indexname#' index" />
-		</cfif>
-		
-		<cfreturn stResult />
-	</cffunction>
 	
 	<!--- DATABASE INTROSPECTION --->
-	<cffunction name="introspectIndexes" returntype="struct" access="private" output="false" hint="Constructs metadata struct for table indexes">
-		<cfargument name="tablename" type="string" required="True" hint="The table to introspect" />
-		
-		<cfset var stResult = structnew() />
-		<cfset var qIndexes = "" />
-		<cfset var thiskey = "" />
-		<cfset var thisindex = "" />
-		
-		<!--- Get all indexes for table --->
-		<cfstoredproc datasource="#variables.dsn#" procedure="sp_helpindex">
-			<cfprocparam cfsqltype="CF_SQL_VARCHAR" value="#arguments.tablename#" />
-			<cfprocresult name="qIndexes" />
-		</cfstoredproc>
-		
-		<cfif isquery(qIndexes)>
-			<cfloop query="qIndexes">
-				<cfif refind("primary key",qIndexes.index_description) and qIndexes.index_name neq "primary">
-					<cfset stResult["PRIMARY"] = structnew() />
-					<cfset stResult["PRIMARY"].name = qIndexes.index_name />
-					<cfset stResult["PRIMARY"].type = "primary" />
-					<cfset stResult["PRIMARY"].fields = arraynew(1) />
-					
-					<cfloop list="#qIndexes.index_keys#" index="thiskey">
-						<cfset arrayappend(stResult["PRIMARY"].fields,trim(thiskey)) />
-					</cfloop>
-				<cfelse>
-					<cfset thisindex = replacenocase(qIndexes.index_name,"#arguments.tablename#_","") />
-					<cfset stResult[thisindex] = structnew() />
-					<cfset stResult[thisindex].name = qIndexes.index_name />
-					<cfset stResult[thisindex].type = "unclustered" />
-					<cfset stResult[thisindex].fields = arraynew(1) />
-					
-					<cfloop list="#qIndexes.index_keys#" index="thiskey">
-						<cfset arrayappend(stResult[thisindex].fields,trim(thiskey)) />
-					</cfloop>
-				</cfif>
-			</cfloop>
-		</cfif>
-		
-		<cfreturn stResult />
-	</cffunction>
-	
 	<cffunction name="introspectTable" returntype="struct" access="private" output="false" hint="Constructs a metadata struct for the table">
 		<cfargument name="tablename" type="string" required="True" hint="The table to introspect" />
 		
@@ -619,7 +360,7 @@
 					<cfcase value="char,varchar,nchar,nvarchar" delimiters=",">
 						<cfset stColumn.type = "string" />
 						<cfset stColumn.precision = qColumns.character_maximum_length />
-						<cfif stColumn.precision eq "4000">
+						<cfif stColumn.precision eq "-1">
 							<cfset stColumn.precision = "MAX" />
 						</cfif>
 					</cfcase>
@@ -653,78 +394,6 @@
 		</cfloop>
 		
 		<cfreturn stResult />
-	</cffunction>
-	
-	<cffunction name="introspectType" returntype="struct" access="public" output="false" hint="Constructs a metadata struct for a type and it's array properties">
-		<cfargument name="typename" type="string" required="true" hint="The type to introspect" />
-		
-		<cfset var stResult = structnew() />
-		<cfset var stTemp = structnew() />
-		
-		<!--- Get basic table columns--->
-		<cfquery datasource="#variables.dsn#" name="qTables">
-				select 	Table_name as name
-				from 	Information_schema.Tables
-				where 	Table_type = 'BASE TABLE' 
-						and Objectproperty (Object_id(Table_name), 'IsMsShipped') = 0
-						and table_name like <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.typename#" />
-		</cfquery>
-		<cfloop query="qTables">
-			<cfset structappend(stResult,introspectTable(qTables[columnlist][currentrow]),true) />
-		</cfloop>
-		
-		<!--- Get extended array tables --->
-		<cfquery datasource="#variables.dsn#" name="qTables">
-			select 	Table_name as name
-			from 	Information_schema.Tables
-			where 	Table_type = 'BASE TABLE' 
-					and Objectproperty (Object_id(Table_name), 'IsMsShipped') = 0
-					and table_name like <cfqueryparam cfsqltype="cf_sql_varchar" value="#ucase(arguments.typename)#[_]%" />
-		</cfquery>
-		
-		<cfloop query="qTables">
-			<cfset stTemp = structnew() />
-			<cfset stTemp.name = listlast(qTables[columnlist][currentrow],"_") />
-			<cfset stTemp.type = "array" />
-			<cfset stTemp.default = "NULL" />
-			<cfset stTemp.nullable = true />
-			<cfset structappend(stTemp,introspectTable(qTables[columnlist][currentrow]),true) />
-			<cfset stResult.fields[listlast(qTables[columnlist][currentrow],"_")] = stTemp />
-		</cfloop>
-	
-		<cfreturn stResult />
-	</cffunction>
-	
-	<cffunction name="isFieldAltered" access="public" returntype="boolean" output="false" hint="Returns true if there is a difference">
-		<cfargument name="expected" type="struct" required="true" hint="The expected schema" />
-		<cfargument name="actual" type="struct" required="true" hint="The actual schema" />
-		
-		<cfset var b = false />
-		<cfset var e = "" />
-		<cfset var a = "" />
-		
-		<!--- Nullable --->
-		<cfset b = b or arguments.expected.nullable neq arguments.actual.nullable />
-		
-		<!--- Default --->
-		<cfif arguments.expected.type eq "longchar">
-			<!--- Ignore. Longchar can't have a default. --->
-		<cfelseif arguments.expected.type eq "datetime">
-			<!--- Handle weird null values --->
-			<cfset e = getValueFromDB(schema=arguments.expected,value=arguments.expected.default) />
-			<cfset a = getValueFromDB(schema=arguments.actual,value=arguments.actual.default) />
-			<cfset b = b or e neq a />
-		<cfelse>
-			<cfset b = b or arguments.expected.default neq arguments.actual.default />
-		</cfif>
-		
-		<!--- Type --->
-		<cfset b = b or arguments.expected.type neq arguments.actual.type />
-		
-		<!--- Precision --->
-		<cfset b = b or arguments.expected.precision neq arguments.actual.precision />
-		
-		<cfreturn b />
 	</cffunction>
 	
 </cfcomponent>

@@ -63,7 +63,7 @@
 <!--- Option to archive --->
 <cfparam name="attributes.bUseMediaArchive" default="false" />
 	
-<cfif attributes.dbtype EQ "mssql" AND NOT len(attributes.dbowner)>
+<cfif findnocase("mssql",attributes.dbtype) AND NOT len(attributes.dbowner)>
 	<cfset attributes.dbowner = "dbo." />
 </cfif>
 
@@ -245,7 +245,7 @@ BEGIN: Application Initialise
 			<cfset application.dbtype = attributes.dbtype />
 			<cfset application.dbowner = attributes.dbowner />
 			
-			<cfif application.dbtype EQ "mssql" AND NOT len(application.dbowner)>
+			<cfif findnocase("mssql",application.dbtype) AND NOT len(application.dbowner)>
 				<cfset application.dbowner = "dbo." />
 			</cfif>
 			

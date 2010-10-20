@@ -124,7 +124,7 @@
 		</cfif>
 
 		<cfswitch expression="#application.dbtype#">
-			<cfcase value="odbc,mssql">
+			<cfcase value="odbc,mssql,mssql2005">
 				<cfquery datasource="#arguments.datasource#">
 				SET Identity_Insert dmPermission ON
 				</cfquery>
@@ -151,7 +151,7 @@
 		</cfloop>
 		
 		<cfswitch expression="#application.dbtype#">
-			<cfcase value="odbc,mssql">	
+			<cfcase value="odbc,mssql,mssql2005">	
 				<cfquery datasource="#arguments.datasource#">
 					SET Identity_Insert dmPermission OFF
 				</cfquery>

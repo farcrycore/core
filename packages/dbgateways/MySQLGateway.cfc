@@ -91,7 +91,13 @@
 										decimal(#stProp.precision#)
 									</cfif>
 								</cfcase>
-								<cfcase value="string">varchar(#stProp.precision#)</cfcase>
+								<cfcase value="string">
+									<cfif stProp.precision eq "MAX">
+										varchar(4000)
+									<cfelse>
+										varchar(#stProp.precision#)
+									</cfif>
+								</cfcase>
 								<cfcase value="longchar">longtext</cfcase>
 								<cfcase value="datetime">datetime</cfcase>
 							</cfswitch>
@@ -161,7 +167,13 @@
 							decimal(#stProp.precision#)
 						</cfif>
 					</cfcase>
-					<cfcase value="string">varchar(#stProp.precision#)</cfcase>
+					<cfcase value="string">
+						<cfif stProp.precision eq "MAX">
+							varchar(4000)
+						<cfelse>
+							varchar(#stProp.precision#)
+						</cfif>
+					</cfcase>
 					<cfcase value="longchar">longtext</cfcase>
 					<cfcase value="datetime">datetime</cfcase>
 				</cfswitch>
@@ -213,7 +225,13 @@
 							decimal(#stProp.precision#)
 						</cfif>
 					</cfcase>
-					<cfcase value="string">varchar(#stProp.precision#)</cfcase>
+					<cfcase value="string">
+						<cfif stProp.precision eq "MAX">
+							varchar(4000)
+						<cfelse>
+							varchar(#stProp.precision#)
+						</cfif>
+					</cfcase>
 					<cfcase value="longchar">longtext</cfcase>
 					<cfcase value="datetime">datetime</cfcase>
 				</cfswitch>
@@ -375,6 +393,9 @@
 					</cfcase>
 					<cfcase value="varchar">
 						<cfset stColumn.type = "string" />
+						<cfif stColumn.precision eq "4000">
+							<cfset stColumn.precision = "MAX" />
+						</cfif>
 					</cfcase>
 					<cfcase value="decimal">
 						<cfset stColumn.type = "numeric" />
