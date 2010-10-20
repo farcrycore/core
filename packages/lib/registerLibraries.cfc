@@ -54,7 +54,7 @@
 		<skin:registerJS	id="jquery-tooltip-auto">
 							<cfoutput>
 								jQuery(function(){
-									jQuery('a[title],div[title],span[title],area[title]').tooltip({ 
+									jQuery('a[title],div[title],span[title],area[title]').not('.fancybox,.nojqtooltip').tooltip({ 
 									    delay: 0, 
 									    showURL: false
 									});
