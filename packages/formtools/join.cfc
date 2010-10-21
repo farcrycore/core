@@ -75,10 +75,9 @@
 			<cfcase value="list">
 				<cfif arguments.stMetadata.type EQ "array">		
 					<cfset joinItems = arrayToList(arguments.stObject[arguments.stMetadata.name]) />
-					<cfparam name="arguments.stMetadata.ftSelectSize" default="10" />
 				<cfelse>
 					<cfset joinItems = arguments.stObject[arguments.stMetadata.name] />
-					<cfparam name="arguments.stMetadata.ftSelectSize" default="1" />
+					<cfset arguments.stMetadata.ftSelectSize = 1 />
 				</cfif>
 				
 				<!-------------------------------------------------------------------------- 
