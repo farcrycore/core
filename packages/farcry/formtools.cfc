@@ -175,22 +175,54 @@
 			<cfset bQueryCached = 0>
 		</cfif>
 		
-			
-		<cfquery name="#qCountName#" datasource="#application.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
-		SELECT count(distinct tbl.objectid) as CountAll 
-		FROM #arguments.typename# tbl 			
-		WHERE #preserveSingleQuotes(arguments.SqlWhere)#
-		<cfif l_sqlCatIds neq "">
-							AND objectid in (
-							    select distinct objectid 
-							    from refCategories 
-							    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
-							    )				
-		</cfif>
+		<!--- Find out how many results there will be --->
 		<cfif bHasVersionID>
-			AND (tbl.versionid = '' OR tbl.versionid IS NULL)
+			<cfquery name="#qCountName#" datasource="#application.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
+				SELECT count(distinct objectid) as CountAll
+				from (
+					<!--- Return the objectid's of matching approved/draft-only content --->
+					SELECT tbl.objectid
+					FROM #arguments.typename# tbl 			
+					WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+					<cfif l_sqlCatIds neq "">
+						AND objectid in (
+						    select distinct objectid 
+						    from refCategories 
+						    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
+						    )				
+					</cfif>
+					AND (tbl.versionid = '' OR tbl.versionid IS NULL)
+					
+					UNION
+					
+					<!--- Return the approved objectid of matching editable-draft content --->
+					SELECT tbl.versionid as objectid
+					FROM #arguments.typename# tbl
+					WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+					<cfif l_sqlCatIds neq "">
+						AND objectid in (
+						    select distinct objectid 
+						    from refCategories 
+						    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
+						    )				
+					</cfif>
+					and versionid<>''
+				) joined
+			</cfquery>
+		<cfelse>
+			<cfquery name="#qCountName#" datasource="#application.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
+				SELECT count(distinct tbl.objectid) as CountAll 
+				FROM #arguments.typename# tbl 			
+				WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+				<cfif l_sqlCatIds neq "">
+					AND objectid in (
+					    select distinct objectid 
+					    from refCategories 
+					    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
+					    )				
+				</cfif>
+			</cfquery>
 		</cfif>
-		</cfquery>
 		
 		<cfif bQueryCached>
 			<cfset qrecordcount = evaluate("q" & replace(arguments.paginationID,"-","","ALL") &"_count")>
@@ -211,7 +243,7 @@
 			<cfset stReturn.TotalPages = 0>
 		</cfif>
 			
-		<cfif application.dbtype EQ "MSSQL">
+		<cfif findnocase("MSSQL",application.dbtype)>
 	
 			
 			<cfquery name="#qName#" datasource="#application.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
@@ -221,41 +253,67 @@
 			
 			INSERT ##thetops (objectID)
 			SELECT TOP #theSQLTop# tbl.objectid
-			FROM #arguments.typename# tbl 
-			WHERE #preserveSingleQuotes(arguments.SqlWhere)#
-			
-			<cfif l_sqlCatIds neq "">
-							AND objectid in (
-							    select distinct objectid 
-							    from refCategories 
-							    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
-							    )				
-			</cfif>
+			FROM #arguments.typename# tbl
 			<cfif bHasVersionID>
-				AND (tbl.versionid = '' OR tbl.versionid IS NULL)
+				WHERE objectid in (
+					SELECT tbl.objectid
+					FROM #arguments.typename# tbl 			
+					WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+					<cfif l_sqlCatIds neq "">
+						AND objectid in (
+						    select distinct objectid 
+						    from refCategories 
+						    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
+						    )				
+					</cfif>
+					AND (tbl.versionid = '' OR tbl.versionid IS NULL)
+					
+					UNION
+					
+					SELECT tbl.versionid as objectid
+					FROM #arguments.typename# tbl
+					WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+					<cfif l_sqlCatIds neq "">
+						AND objectid in (
+						    select distinct objectid 
+						    from refCategories 
+						    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
+						    )				
+					</cfif>
+					and versionid<>''
+				)
+			<cfelse>			
+				WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+				<cfif l_sqlCatIds neq "">
+					AND objectid in (
+					    select distinct objectid 
+					    from refCategories 
+					    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
+					    )				
+				</cfif>
 			</cfif>
 			<cfif len(trim(arguments.sqlOrderBy))>
 				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
 			</cfif>
 			
-				<cfif arguments.sqlColumns neq "tbl.objectID">
-					SELECT #arguments.sqlColumns#
-					<cfif bHasversionID and arguments.bCheckVersions>
-						,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = tbl.objectid) as bHasMultipleVersion
-					</cfif>
-					FROM #arguments.typename# tbl
-					inner join  ##thetops t on tbl.objectid = t.objectid collate Latin1_general_CI_AS where t.myint >  ((select count(*) from ##thetops) - #arguments.RecordsPerPage-thisDiff#)
-					
-					<cfif len(trim(arguments.sqlOrderBy))>
-						ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
-					</cfif>
-				<cfelse>
-					SELECT objectID
-					<cfif bHasversionID and arguments.bCheckVersions>
-						,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = t.objectid) as bHasMultipleVersion
-					</cfif>		
-					FROM ##thetops t where t.myint >  ((select count(*) from ##thetops) - #arguments.RecordsPerPage-thisDiff#)
+			<cfif arguments.sqlColumns neq "tbl.objectID">
+				SELECT #arguments.sqlColumns#
+				<cfif bHasversionID and arguments.bCheckVersions>
+					,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = tbl.objectid) as bHasMultipleVersion
 				</cfif>
+				FROM #arguments.typename# tbl
+				inner join  ##thetops t on tbl.objectid = t.objectid collate Latin1_general_CI_AS where t.myint >  ((select count(*) from ##thetops) - #arguments.RecordsPerPage-thisDiff#)
+				
+				<cfif len(trim(arguments.sqlOrderBy))>
+					ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
+				</cfif>
+			<cfelse>
+				SELECT objectID
+				<cfif bHasversionID and arguments.bCheckVersions>
+					,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = t.objectid) as bHasMultipleVersion
+				</cfif>		
+				FROM ##thetops t where t.myint >  ((select count(*) from ##thetops) - #arguments.RecordsPerPage-thisDiff#)
+			</cfif>
 			
 			drop table ##thetops
 							
@@ -271,23 +329,53 @@
 				
 				<cfset arguments.currentPage = getCurrentPaginationPage(paginationID=arguments.paginationID,CurrentPage=1) />
 			
-				<cfquery name="qrecordcount" datasource="#application.dsn#">
-				SELECT count(distinct tbl.objectid) as CountAll 
-				FROM #arguments.typename# tbl 			
-				WHERE #preserveSingleQuotes(arguments.SqlWhere)#
-				
-				<cfif l_sqlCatIds neq "">
+				<cfif bHasVersionID>
+					<cfquery name="qrecordcount" datasource="#application.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
+						SELECT count(distinct objectid) as CountAll
+						from (
+							<!--- Return the objectid's of matching approved/draft-only content --->
+							SELECT tbl.objectid
+							FROM #arguments.typename# tbl 			
+							WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+							<cfif l_sqlCatIds neq "">
+								AND objectid in (
+								    select distinct objectid 
+								    from refCategories 
+								    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
+								    )				
+							</cfif>
+							AND (tbl.versionid = '' OR tbl.versionid IS NULL)
+							
+							UNION
+							
+							<!--- Return the approved objectid of matching editable-draft content --->
+							SELECT tbl.versionid as objectid
+							FROM #arguments.typename# tbl
+							WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+							<cfif l_sqlCatIds neq "">
+								AND objectid in (
+								    select distinct objectid 
+								    from refCategories 
+								    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
+								    )				
+							</cfif>
+							and versionid<>''
+						) joined
+					</cfquery>
+				<cfelse>
+					<cfquery name="qrecordcount" datasource="#application.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
+						SELECT count(distinct tbl.objectid) as CountAll 
+						FROM #arguments.typename# tbl 			
+						WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+						<cfif l_sqlCatIds neq "">
 							AND objectid in (
 							    select distinct objectid 
 							    from refCategories 
 							    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
 							    )				
+						</cfif>
+					</cfquery>
 				</cfif>
-				<cfif bHasversionID and arguments.bCheckVersions>
-					AND (tbl.versionid = '' OR tbl.versionid IS NULL)
-				</cfif>
-				
-				</cfquery>
 				
 			
 				<cfif qrecordcount.CountAll mod  RecordsPerPage neq 0 and theSQLTop GT qrecordcount.CountAll>
@@ -303,18 +391,44 @@
 				
 				INSERT ##thetops (objectID)
 				SELECT TOP #theSQLTop# tbl.objectid
-				FROM #arguments.typename# tbl 
-				WHERE #preserveSingleQuotes(arguments.SqlWhere)#
-				
-				<cfif l_sqlCatIds neq "">
+				FROM #arguments.typename# tbl
+				<cfif bHasVersionID>
+					WHERE objectid in (
+						SELECT tbl.objectid
+						FROM #arguments.typename# tbl 			
+						WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+						<cfif l_sqlCatIds neq "">
 							AND objectid in (
 							    select distinct objectid 
 							    from refCategories 
 							    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
 							    )				
-				</cfif>
-				<cfif bHasVersionID>
-					AND (tbl.versionid = '' OR tbl.versionid IS NULL)
+						</cfif>
+						AND (tbl.versionid = '' OR tbl.versionid IS NULL)
+						
+						UNION
+						
+						SELECT tbl.versionid as objectid
+						FROM #arguments.typename# tbl
+						WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+						<cfif l_sqlCatIds neq "">
+							AND objectid in (
+							    select distinct objectid 
+							    from refCategories 
+							    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
+							    )				
+						</cfif>
+						and versionid<>''
+					)
+				<cfelse>			
+					WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+					<cfif l_sqlCatIds neq "">
+						AND objectid in (
+						    select distinct objectid 
+						    from refCategories 
+						    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
+						    )				
+					</cfif>
 				</cfif>
 				<cfif len(trim(arguments.sqlOrderBy))>
 					ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
@@ -364,19 +478,53 @@
 				<cfif bHasversionID>
 					,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = tbl.objectid) as bHasMultipleVersion
 				</cfif> 
-			FROM #arguments.typename# tbl 			
-			WHERE #preserveSingleQuotes(arguments.SqlWhere)#
-			
-			<cfif l_sqlCatIds neq "">
+			FROM #arguments.typename# tbl
+			<cfif bHasVersionID>
+				<cfquery name="qrecordcount" datasource="#application.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
+					SELECT count(distinct objectid) as CountAll
+					from (
+						<!--- Return the objectid's of matching approved/draft-only content --->
+						SELECT tbl.objectid
+						FROM #arguments.typename# tbl 			
+						WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+						<cfif l_sqlCatIds neq "">
 							AND objectid in (
 							    select distinct objectid 
 							    from refCategories 
 							    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
 							    )				
-			</cfif>
-			
-			<cfif bHasVersionID>
-				AND (tbl.versionid = '' OR tbl.versionid IS NULL)
+						</cfif>
+						AND (tbl.versionid = '' OR tbl.versionid IS NULL)
+						
+						UNION
+						
+						<!--- Return the approved objectid of matching editable-draft content --->
+						SELECT tbl.versionid as objectid
+						FROM #arguments.typename# tbl
+						WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+						<cfif l_sqlCatIds neq "">
+							AND objectid in (
+							    select distinct objectid 
+							    from refCategories 
+							    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
+							    )				
+						</cfif>
+						and versionid<>''
+					) joined
+				</cfquery>
+			<cfelse>
+				<cfquery name="qrecordcount" datasource="#application.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
+					SELECT count(distinct tbl.objectid) as CountAll 
+					FROM #arguments.typename# tbl 			
+					WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+					<cfif l_sqlCatIds neq "">
+						AND objectid in (
+						    select distinct objectid 
+						    from refCategories 
+						    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
+						    )				
+					</cfif>
+				</cfquery>
 			</cfif>
 
 			<!--- Record limiting for oracle --->
