@@ -85,7 +85,7 @@
 <cfloop from="1" to="#arraylen(aResults)#" index="i">
 	<cfif structkeyexists(aResults[i],"message") and aResults[i].bSuccess>
 		<skin:bubble message="#aResults[i].message#" tags="coapichange,success" />
-	<cfelseif sturctkeyexists(aResults[i],"message")>
+	<cfelseif structkeyexists(aResults[i],"message")>
 		<skin:bubble message="#aResults[i].message#" tags="coapichange,error" />
 	</cfif>
 </cfloop>
