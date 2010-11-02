@@ -47,7 +47,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
-<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">
 
 <!--- required parameters as FORM or URL variables --->
 <cfif isDefined("url.objectid") AND len(url.objectid)>

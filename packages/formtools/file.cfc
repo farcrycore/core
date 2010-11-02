@@ -76,7 +76,6 @@
 
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" >
-	<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs" >
 	<cfimport taglib="/farcry/core/tags/grid/" prefix="grid" >
 	
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.file" output="false" hint="Returns a copy of this initialised object">
@@ -120,33 +119,7 @@
 									
 								</label>						
 								
-							</div>					
-							<!---<table border="1">
-							<tr>
-								<td valign="top">
-									<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
-									<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="" />
-									<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" value="" style="#arguments.stMetadata.ftstyle#" class="fileUpload" onchange="ftCheckFileName('#arguments.fieldname#');" />
-								</td>
-								
-								<cfif len(#arguments.stMetadata.value#)>
-									<td valign="top">
-										<div id="#arguments.fieldname#previewfile">
-											<cfif structKeyExists(arguments.stMetadata, "ftSecure") and arguments.stMetadata.ftSecure>
-												<img src="#application.url.farcry#/images/crystal/22x22/actions/lock.png" />
-												#listLast(arguments.stMetadata.value, "/")#
-											<cfelse>
-												<a href="#application.fapi.getFileWebRoot()##arguments.stMetadata.value#" target="preview">#listlast(arguments.stMetadata.value, "/")#</a>
-											</cfif>
-											
-											<ft:button type="button" value="Delete File" onclick="if(confirm('Are you sure you want to remove this file?')) {} else {return false};Ext.get('#arguments.fieldname#DELETE').dom.value=Ext.get('#arguments.fieldname#').dom.value;Ext.get('#arguments.fieldname#').dom.value='';Ext.get('#arguments.fieldname#previewfile').hide();" />
-											
-										</div>
-									</td>
-								</cfif>				
-								
-							</tr>
-							</table>--->
+							</div>
 						</cfoutput>	
 						
 						<cfif listLen(arguments.stMetadata.ftAllowedFileExtensions)>

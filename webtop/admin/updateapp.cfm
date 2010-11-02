@@ -26,7 +26,6 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
-<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 
 <!--- set up page header --->
 <admin:header title="Update application" />

@@ -110,7 +110,6 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 
 		
 		
-		<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
 		

@@ -65,7 +65,6 @@
 	<cfproperty name="ftDisplayPrettyDate" default="true" hint="Converts SQL dateTime value to human readable string" />
 				
 	<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" >	
-	<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" >		
 		
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.datetime" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>

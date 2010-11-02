@@ -29,7 +29,6 @@
 <cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
-<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs" />
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/core/" prefix="core" />
 

@@ -128,27 +128,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	
 	<skin:htmlHead library="extJS" />
 	
-	<cfoutput>
-		
-	<!--- 	<script language="javascript">
-			var dialog = {};
-			
-			function openScaffoldDialog(typename,displayname) {
-				dialog = new Ext.BasicDialog(Ext.DomHelper.insertFirst(Ext.DomQuery.selectNode("body"),"<div></div>",true), {
-					height:		500,
-					width:		500,
-					modal:		true,
-					resizable:	false,
-					title:		displayname+' Scaffolding'
-				});
-				dialog.body.dom.innerHTML="<iframe src='#application.url.farcry#/admin/scaffold.cfm?iframe&typename="+typename+"' frameborder='0' scrolling='no' id='scaffoldiframe' width='450px' height='450px'></iframe>";
-				dialog.addKeyListener(27, dialog.hide, dialog); // ESC can also close the dialog
-				dialog.show();
-				
-				return false;
-			}
-		</script> --->
-		
 		<!--- TODO: i18n --->
 		<h3>Custom Content Types</h3>
 		<table class="table-5" cellspacing="0">

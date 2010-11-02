@@ -1,6 +1,5 @@
 <cfsetting enablecfoutputonly="yes">
 
-<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <cfparam name="attributes.value" /><!--- @@hint: The event submitted and captured by an ft:processForm tag. @@required: true --->
