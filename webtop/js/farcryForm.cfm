@@ -51,7 +51,7 @@
 	
 	function ajaxUpdate(event) {
 		var values = {};
-		var reenable = $j([]);
+		var reenable = [];
 		
 		if ($fc.watchloading==0) {
 			// for each watcher
@@ -70,8 +70,12 @@
 			// get the post values
 			for (var property in values) {
 				if ($j('##' + event.data.prefix+property).val()) {
-					values[property] = $j('##' + event.data.prefix+property).val();
-					if (values[property].join) values[property] = values[property].join();
+					values[property] = [];
+					$j('input[name='+event.data.prefix+property+'],select[name='+event.data.prefix+property+'],textarea[name='+event.data.prefix+property+']').each(function(){ 
+						var self = $j(this);
+						if (self.val()!=="") values[property].push(self.val());
+					});
+					values[property] = values[property].join();
 				}
 			}
 			
@@ -87,12 +91,14 @@
 							
 							// if the updated field is also being watched, reattach the events
 							if ($fc.watchedfields[watcher.prefix] && $fc.watchedfields[watcher.prefix][watcher.property] && $fc.watchedfields[watcher.prefix][watcher.property].length){
-								reenable = reenable.add($j("select[name="+watcher.prefix+watcher.property+"], input[name="+watcher.prefix+watcher.property+"][type=text], input[name="+watcher.prefix+watcher.property+"]:not([type]), input[name="+watcher.prefix+watcher.property+"][type=password]").disable().bind("change",{ prefix: watcher.prefix, property: watcher.property },ajaxUpdate));
-								reenable = reenable.add($j("input[name="+watcher.prefix+watcher.property+"][type=checkbox], input[name="+watcher.prefix+watcher.property+"][type=radio]").disable().bind("click",{ prefix: watcher.prefix, property: watcher.property },ajaxUpdate));
+								$j("select[name="+watcher.prefix+watcher.property+"], input[name="+watcher.prefix+watcher.property+"][type=text], input[name="+watcher.prefix+watcher.property+"][type=password]").bind("change",{ prefix:watcher.prefix, property: watcher.property },ajaxUpdate);
+								$j("input[name="+watcher.prefix+watcher.property+"][type=checkbox], input[name="+watcher.prefix+watcher.property+"][type=radio]").bind("click",{ prefix:watcher.prefix, property: watcher.property },ajaxUpdate);
+								reenable.push("select[name="+watcher.prefix+watcher.property+"], input[name="+watcher.prefix+watcher.property+"][type=text], input[name="+watcher.prefix+watcher.property+"][type=password]");
+								reenable.push("input[name="+watcher.prefix+watcher.property+"][type=checkbox], input[name="+watcher.prefix+watcher.property+"][type=radio]");
 							}
 							
 							$fc.watchloading--;
-							if ($fc.watchloading) reenable.enable();
+							if ($fc.watchloading) $j(reenable.join()).attr("disabled",false);
 						}
 					);
 				})($fc.watchedfields[event.data.prefix][event.data.property][i]);

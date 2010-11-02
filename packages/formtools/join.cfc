@@ -77,6 +77,7 @@
 					<cfset joinItems = arrayToList(arguments.stObject[arguments.stMetadata.name]) />
 				<cfelse>
 					<cfset joinItems = arguments.stObject[arguments.stMetadata.name] />
+					<cfset arguments.stMetadata.ftSelectSize = 1 />
 				</cfif>
 				
 				<!-------------------------------------------------------------------------- 

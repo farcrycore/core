@@ -291,7 +291,7 @@ user --->
 								<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
 									<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
 										<cfset whereValue = ReplaceNoCase(trim(LCase(j)),"'", "''", "all") />
-										<cfoutput>AND lower(#i#) LIKE '%#whereValue#%'</cfoutput>
+										<cfoutput>AND #i# LIKE '%#whereValue#%'</cfoutput>
 									</cfloop>
 								</cfif>
 							</cfcase>
@@ -320,7 +320,7 @@ user --->
 									<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
 										<cfif listcontains("string,nstring,longchar", PrimaryPackage.stProps[i].metadata.type)>
 											<cfset whereValue = ReplaceNoCase(trim(j),"'", "''", "all") />
-											<cfoutput>AND lower(#i#) LIKE '%#whereValue#%'</cfoutput>
+											<cfoutput>AND #i# LIKE '%#whereValue#%'</cfoutput>
 										<cfelseif listcontains("numeric,integer", PrimaryPackage.stProps[i].metadata.type)>
 											<cfset whereValue = ReplaceNoCase(j,"'", "''", "all") />
 											<cfif isNumeric(whereValue)>
@@ -897,9 +897,9 @@ user --->
 						
 							<cfif attributes.bSelectCol>
 								<cfoutput>
-								<td nowrap="true">
+								<td style="width:20px;white-space:nowrap;">
 									#st.select# 
-									#st.recordSetRow#								
+									<!--- #st.recordSetRow#			 --->					
 									<cfif structKeyExists(st,"locked") AND st.locked neq 0>
 										<img src='#application.url.farcry#/images/treeImages/customIcons/padlock.gif'>
 									</cfif>
@@ -907,10 +907,10 @@ user --->
 								</cfoutput>
 							</cfif>
 							<cfif attributes.bShowActionList>
-								<cfoutput><td class="objectadmin-actions">#st.action#</td></cfoutput>
+								<cfoutput><td class="objectadmin-actions" nowrap="nowrap" style="width:20px;white-space:nowrap;">#st.action#</td></cfoutput>
 							</cfif>
 					 		<cfif structKeyExists(st,"bHasMultipleVersion")>
-						 		<cfoutput><td nowrap="true">#application.rb.getResource("constants.status.#st.status#@label",st.status)#</td></cfoutput>
+						 		<cfoutput><td style="width:20px;white-space:nowrap;">#application.rb.getResource("constants.status.#st.status#@label",st.status)#</td></cfoutput>
 							</cfif>
 							
 							
@@ -1028,21 +1028,6 @@ user --->
 
 		<cfoutput>
 		
-					
-		<cfif listLen(attributes.lCustomActions)>			
-			<select name="action#st.currentrow#" id="action#st.currentrow#" class="actionDropdown" style="float:left;" onchange="selectObjectID('#arguments.st.objectid#');btnSubmit('#request.farcryForm.name#', this.value);">
-				<option value="">-- Custom --</option>
-				
-				
-				<cfif listLen(attributes.lCustomActions)>
-					<cfloop list="#attributes.lCustomActions#" index="i">
-						<option value="#listFirst(i, ":")#">#listLast(i, ":")#</option>
-					</cfloop>
-				</cfif>
-				<!--- <option value="delete">Delete</option> --->
-			</select> <br style="clear:both;">
-		</cfif>
-		
 		
 	<cfset overviewURL = "#application.url.farcry#/edittabOverview.cfm?typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module#">
 	<cfif Len(attributes.plugin)>
@@ -1093,24 +1078,25 @@ user --->
 		</cfoutput>
 	</skin:onReady>
 
-		<ul class="object-admin-actions">		
+		<table class="object-admin-actions layout">
+		<tr>		
 			<cfif attributes.bViewCol>		
-				<li>
+				<td>
 				
 				<a ft:objectid="#arguments.st.objectid#"  class="oa-overview" title="Overview" href="##">
 					<span class="ui-icon ui-icon-arrow-4-diag" style="float:left;">&nbsp;</span>
 				</a>
-				</li>
+				</td>
 				<skin:toolTip id="oa-overview-tooltip" selector=".oa-overview">Open up the overview screen for this object.</skin:toolTip>
 			</cfif>
 			<!--- We do not include the Edit Link if workflow is available for this content item. The user must go to the overview page. --->
 			<cfif not listLen(lWorkflowTypenames)>	
 				<cfif structKeyExists(arguments.st,"locked") AND arguments.st.locked neq 0 AND arguments.st.lockedby neq '#application.security.getCurrentUserID()#'>
-					<li>
+					<td>
 					<a id="oa-locked-#arguments.st.objectid#" name="oa-locked-#arguments.st.objectid#" title="Unlock" href="##">
 						<span class="ui-icon ui-icon-locked" style="float:left;">&nbsp;</span>
 					</a>
-					</li>
+					</td>
 					<skin:onReady>
 						$j('##oa-locked-#arguments.st.objectid#').click(function() {
 							selectObjectID('#arguments.st.objectid#');
@@ -1122,48 +1108,67 @@ user --->
 					<cfif structKeyExists(arguments.st,"bHasMultipleVersion")>
 						<cfif NOT(arguments.st.bHasMultipleVersion) AND arguments.st.status EQ "approved">
 					
-							<li>
+							<td>
 							<a ft:objectid="#arguments.st.objectid#"  class="oa-create-draft" title="Create Draft Object" href="##">
 								<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>
 							</a>
-							</li>
+							</td>
 							<skin:toolTip id="oa-create-draft-tooltip" selector=".oa-create-draft">Create a draft version of this object and begin editing.</skin:toolTip>
 						<cfelseif arguments.st.bHasMultipleVersion>
 							<!--- Still go to the create draft page but that page will find the already existing draft and not create a new one. --->
-							<li>
+							<td>
 							<a ft:objectid="#arguments.st.objectid#"  class="oa-edit-draft" title="Edit Draft Object" href="##">
 								<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>
 							</a>
-							</li>
+							</td>
 							<skin:toolTip id="oa-edit-draft-tooltip" selector=".oa-edit-draft">Edit the draft version of this object.</skin:toolTip>						
 						<cfelse>
-							<li>
+							<td>
 							<a ft:objectid="#arguments.st.objectid#"  class="oa-edit" title="Edit" href="##">
 								<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>
 							</a>
-							</li>	
+							</td>	
 							<skin:toolTip id="oa-edit-tooltip" selector=".oa-edit">Edit this object.</skin:toolTip>			
 						</cfif>
 					<cfelse>
-						<li>
+						<td>
 						<a ft:objectid="#arguments.st.objectid#"  class="oa-edit" title="Edit" href="##">
 							<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>
 						</a>
-						</li>
+						</td>
 						<skin:toolTip id="oa-edit-tooltip" selector=".oa-edit">Edit this object.</skin:toolTip>	
 					</cfif>
 				</cfif>
 			</cfif>	
 			
 			<cfif attributes.bPreviewCol>
-				<li>
+				<td>
 				<a ft:objectid="#arguments.st.objectid#"  class="oa-preview" title="Overview" href="##">
 					<span class="ui-icon ui-icon-search" style="float:left;">&nbsp;</span>
 				</a>
-				</li>
+				</td>
 				<skin:toolTip id="oa-preview-tooltip" selector=".oa-preview">Preview this object.</skin:toolTip>
-			</cfif>				
-		</ul>	
+			</cfif>	
+			
+		
+					
+			<cfif listLen(attributes.lCustomActions)>			
+				<td>
+				<select name="action#st.currentrow#" id="action#st.currentrow#" onchange="selectObjectID('#arguments.st.objectid#');btnSubmit('#request.farcryForm.name#', this.value);">
+					<option value="">-- Custom --</option>
+					
+					
+					<cfif listLen(attributes.lCustomActions)>
+						<cfloop list="#attributes.lCustomActions#" index="i">
+							<option value="#listFirst(i, ":")#">#listLast(i, ":")#</option>
+						</cfloop>
+					</cfif>
+					<!--- <option value="delete">Delete</option> --->
+				</select>
+				</td>
+			</cfif>
+		</tr>				
+		</table>	
 		
 		</cfoutput>
 		

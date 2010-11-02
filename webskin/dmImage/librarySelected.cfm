@@ -6,7 +6,7 @@
 	<cfoutput>
 		<table>
 		<tr>
-			<td><img src="#application.fapi.getImageWebRoot()##stobj.thumbnailImage#" title="#stObj.title#" /></td>
+			<td><img src="#application.fapi.getImageWebRoot()##stobj.thumbnailImage#" title="#HTMLEditFormat(stObj.title)#" /></td>
 			<td>&nbsp;</td>
 			<td>
 				#stObj.title#

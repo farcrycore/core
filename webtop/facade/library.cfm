@@ -820,7 +820,7 @@ GENERATE THE LIBRARY PICKER
 			<cfelse>
 				<cfif NOT InstantLibraryUpdate >
 					<ft:buttonPanel indentForLabel="false">
-						<ft:button type="button" value="Save & Complete" confirmText="You are about to save your changes. Please wait until the library window closes." onclick="needToConfirm = false;$(this).disabled=true;opener.libraryCallbackArray('#url.primaryFormFieldname#','sort',Sortable.sequence('sortableListTo'),'#application.url.webroot#',window);" />
+						<ft:button type="button" value="Save & Complete" confirmText="You are about to save your changes. Please wait until the library window closes." onclick="needToConfirm = false;$j(this).disabled=true;opener.libraryCallbackArray('#url.primaryFormFieldname#','sort',Sortable.sequence('sortableListTo'),'#application.url.webroot#',window);" />
 						<ft:button type="button" value="Cancel" confirmText="Are you sure you want to cancel?" onclick="needToConfirm = false;self.blur();window.close();return false;" />
 					</ft:buttonPanel>	
 				<cfelse>
@@ -879,8 +879,8 @@ GENERATE THE LIBRARY PICKER
 				
 					Droppables.add('sortableListTo', {
 					   onDrop: function(element) {
-					   		$('sortableListTo').innerHTML = $(element).innerHTML;
-					   		opener.libraryCallbackUUID('#url.primaryFormFieldname#','add',$(element).id,'#application.url.webroot#');
+					   		$j('sortableListTo').innerHTML = $j(element).innerHTML;
+					   		opener.libraryCallbackUUID('#url.primaryFormFieldname#','add',$j(element).id,'#application.url.webroot#');
 							new Effect.Highlight('sortableListTo',{startcolor:'##FFECD9',duration: 2});
 		
 					   }

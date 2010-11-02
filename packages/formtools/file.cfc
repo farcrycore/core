@@ -168,7 +168,7 @@
 							<cfoutput>
 								<div id="#arguments.fieldname#previewfile">
 								
-									<a id="#arguments.fieldname#-preview-file" href="#application.url.webroot#/download.cfm?downloadfile=#arguments.stobject.objectid#&typename=#arguments.stobject.typename#&fieldname=#arguments.stmetadata.name#" target="_blank">Preview (#arguments.stMetadata.value#)</a> <br />
+									<a id="#arguments.fieldname#-preview-file" href="#application.url.webroot#/download.cfm?downloadfile=#arguments.stobject.objectid#&typename=#arguments.stobject.typename#&fieldname=#arguments.stmetadata.name#" target="_blank">Preview (#listLast(arguments.stMetadata.value,"/")#)</a> <br />
 									<!---#listLast(arguments.stMetadata.value,"/")#--->
 									<ft:button type="button" value="Delete" rendertype="link" id="#arguments.fieldname#-delete-btn" onclick="" />
 									<ft:button type="button" value="Cancel" rendertype="link" id="#arguments.fieldname#-cancel-delete-btn" onclick="" />
@@ -363,7 +363,7 @@
 		<cfset var html = "" />
 	
 		<cfsavecontent variable="html">
-			<cfoutput><a target="_blank" href="#application.url.webroot#/download.cfm?downloadfile=#arguments.stobject.objectid#&typename=#arguments.typename#&fieldname=#arguments.stmetadata.name#">#arguments.stMetadata.value#</a></cfoutput>
+			<cfoutput><a target="_blank" href="#application.url.webroot#/download.cfm?downloadfile=#arguments.stobject.objectid#&typename=#arguments.typename#&fieldname=#arguments.stmetadata.name#">#listLast(arguments.stMetadata.value,"/")#</a></cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html>
@@ -581,7 +581,7 @@
 		</cftry>
 		
 		<!--- Delete file --->
-		<cfif not structisempty(stLocation)>
+		<cfif structKeyExists(stLocation,"fullpath") AND len(stLocation.fullpath)>
 			<cftry>
 				<cffile action="delete" file="#stLocation.fullpath#" />
 				

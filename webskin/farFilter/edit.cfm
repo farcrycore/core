@@ -71,6 +71,6 @@ ORDER BY datetimecreated
 </ft:fieldset>
 <!---<skin:onReady>
 	<cfoutput>
-		$('##predicatedFilter :input').attr('disabled', 'disabled');
+		$j('##predicatedFilter :input').attr('disabled', 'disabled');
 	</cfoutput>
 </skin:onReady>--->

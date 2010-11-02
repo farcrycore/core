@@ -36,7 +36,7 @@
 		$j.ajax({
 			url			: "#application.fapi.getLink(type=stObj.typename,objectid=stObj.objectid,view='adminTestPermissions',urlParameters='ajaxmode=1')#",
 			data		: {
-							roles : $('input[name=role]:checked').map(function() { return $(this).val(); }).get().join()
+							roles : $j('input[name=role]:checked').map(function() { return $j(this).val(); }).get().join()
 						  },
 			type		: "POST",
 			success		: function(data){

@@ -271,7 +271,7 @@
 		
 		<skin:onReady>
 		<cfoutput>
-		$('##filterID').bind('change',{formname:'#Request.farcryForm.Name#'}, function(event) {
+		$j('##filterID').bind('change',{formname:'#Request.farcryForm.Name#'}, function(event) {
 		  btnSubmit(event.data.formname, 'Select Filter');
 		});
 		</cfoutput>
@@ -317,8 +317,8 @@
 					
 				<skin:onReady>
 				<cfoutput>
-					$("##show-predicate-editor").click(function(){
-							$("##predicate-editor").toggle("slow");
+					$j("##show-predicate-editor").click(function(){
+							$j("##predicate-editor").toggle("slow");
 					});
 				</cfoutput>
 				</skin:onReady>
