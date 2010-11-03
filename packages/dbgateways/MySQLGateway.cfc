@@ -93,7 +93,7 @@
 								</cfcase>
 								<cfcase value="string">
 									<cfif stProp.precision eq "MAX">
-										varchar(4000)
+										varchar(2000)
 									<cfelse>
 										varchar(#stProp.precision#)
 									</cfif>
@@ -169,7 +169,7 @@
 					</cfcase>
 					<cfcase value="string">
 						<cfif stProp.precision eq "MAX">
-							varchar(4000)
+							varchar(2000)
 						<cfelse>
 							varchar(#stProp.precision#)
 						</cfif>
@@ -227,7 +227,7 @@
 					</cfcase>
 					<cfcase value="string">
 						<cfif stProp.precision eq "MAX">
-							varchar(4000)
+							varchar(2000)
 						<cfelse>
 							varchar(#stProp.precision#)
 						</cfif>
@@ -393,7 +393,7 @@
 					</cfcase>
 					<cfcase value="varchar">
 						<cfset stColumn.type = "string" />
-						<cfif stColumn.precision eq "4000">
+						<cfif stColumn.precision eq "2000">
 							<cfset stColumn.precision = "MAX" />
 						</cfif>
 					</cfcase>
