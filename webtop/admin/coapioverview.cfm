@@ -230,15 +230,15 @@
 				<cfset plugin = rereplacenocase(stMD.fullname,".*\.plugins\.(\w+)\.packages.*","\1") />
 				<cfset sendback[1].locations = listappend(sendback[1].locations,"#stLocations[plugin]#:#stMD.fullname#") />
 				<cfset sendback[1].locationids = listappend(sendback[1].locationids,plugin) />
-			<cfelseif refindnocase("\.project\.packages\.",stMD.fullname)>
+			<cfelseif refindnocase("\.projects\.\w+\.packages\.",stMD.fullname)>
 				<cfset sendback[1].locations = listappend(sendback[1].locations,"Project:#stMD.fullname#") />
 				<cfset sendback[1].locationids = listappend(sendback[1].locationids,"project") />
 			</cfif>
-		
+			
 			<!--- Get next ancestor --->
 			<cfif structkeyexists(stMD,"extends")>
 				<cfset stMD = stMD.extends />
-				<cfif refindnocase("\.schema",stMD.fullname) or refindnocase("\.fourq",stMD.fullname) or refindnocase("\.types",stMD.fullname) or refindnocase("\.versions",stMD.fullname) or refindnocase("\.rules",stMD.fullname) or refindnocase("\.category",stMD.fullname)>
+				<cfif refindnocase("\.schema$",stMD.fullname) or refindnocase("\.fourq$",stMD.fullname) or refindnocase("\.types$",stMD.fullname) or refindnocase("\.versions$",stMD.fullname) or refindnocase("\.rules$",stMD.fullname) or refindnocase("\.category$",stMD.fullname)>
 					<cfset stMD = structnew() />
 				</cfif>
 			<cfelse>
