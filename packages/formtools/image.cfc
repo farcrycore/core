@@ -94,6 +94,8 @@
 <cfproperty name="ftbUploadOnly" type="boolean" hint="???" required="false" default="false" />
 <cfproperty name="ftCropPosition" type="string" hint="Used when ftAutoGenerateType = aspectCrop" required="false" default="center" />
 <cfproperty name="ftThumbnailBevel" type="boolean" hint="???" required="false" default="false" />
+<cfproperty name="ftWatermark" type="string" hint="The path relative to the webroot of an image to use as a watermark." required="false" default="" />
+<cfproperty name="ftWatermarkTransparency" type="numeric" hint="The transparency to apply to the watermark." required="false" default="90" />
 
 
 
@@ -423,6 +425,13 @@
       <cfset arguments.stImageArgs.interpolation = arguments.stMetadata.ftInterpolation />
       <cfset arguments.stImageArgs.quality = arguments.stMetadata.ftQuality />
       <cfset arguments.stImageArgs.bUploadOnly = arguments.stMetadata.ftbUploadOnly />
+	
+	
+	
+	
+	  <!--- Add watermark arguments --->
+      <cfset stGeneratedImageArgs.watermark = arguments.stMetadata.ftWatermark />
+      <cfset stGeneratedImageArgs.watermarkTransparency = arguments.stMetadata.ftWatermarkTransparency />
     
     
 
@@ -640,8 +649,10 @@
     <cfargument name="bUploadOnly" type="boolean" required="false" default="false" hint="The image file will be uploaded with no image optimization or changes." />
     <cfargument name="bSelfSourced" type="boolean" required="false" default="false" hint="The image file will be uploaded with no image optimization or changes." />
     <cfargument name="ResizeMethod" type="string" required="true" default="" hint="The y origin of the crop area. Options are center, topleft, topcenter, topright, left, right, bottomleft, bottomcenter, bottomright" />
-
-    <cfset var stResult = structNew() />
+	<cfargument name="watermark" type="string" required="false" default="" hint="The path relative to the webroot of an image to use as a watermark." />
+    <cfargument name="watermarkTransparency" type="string" required="false" default="90" hint="The transparency to apply to the watermark." />
+    
+	<cfset var stResult = structNew() />
     <cfset var imageDestination = arguments.Source />
     <cfset var imageFileName = "" />
     <cfset var sourceImage = imageNew() />
@@ -892,6 +903,47 @@
       </cfloop>
     </cfif>
 
+	<cfif len(arguments.watermark) and fileExists("#application.path.webroot##arguments.watermark#")>
+		
+
+		<!--- THANKS KINKY SOLUTIONS FOR THE FOLLOWING CODE (http://www.bennadel.com) --->
+		<!--- Read in the watermark. --->
+		<cfset objWatermark = ImageNew("#application.path.webroot##arguments.watermark#") />
+		 
+		 
+		<!---
+		Turn on antialiasing on the existing image
+		for the pasting to render nicely.
+		--->
+		<cfset ImageSetAntialiasing(
+				newImage,
+				"on"
+				) />
+		 
+		<!---
+		When we paste the watermark onto the photo, we don't
+		want it to be fully visible. Therefore, let's set the
+		drawing transparency before we paste.
+		--->
+		<cfset ImageSetDrawingTransparency(
+				newImage,
+				arguments.watermarkTransparency
+				) />
+		 
+		<!---
+		Paste the watermark on to the image. We are going
+		to paste this into the center.
+		--->
+		<cfset ImagePaste(
+				newImage,
+				objWatermark,
+				(newImage.GetWidth() - objWatermark.GetWidth()) / 2,
+				(newImage.GetHeight() - objWatermark.GetHeight()) / 2
+				) />
+		 
+	
+	</cfif>	
+
     <!--- Modify extension to convert image format --->
     <cfif len(arguments.convertImageToFormat)>
       <!--- Delete the working file --->
@@ -1040,6 +1092,11 @@
 			
 			  
 			  <cfset stArgs.bSelfSourced = bSelfSourced />
+
+
+			  <!--- WATERMARK METADATA --->
+              <cfset stArgs.watermark = "#arguments.stFields['#i#'].metadata.ftWatermark#" />
+              <cfset stArgs.watermarkTransparency = "#arguments.stFields['#i#'].metadata.ftWatermarkTransparency#" />
 
               <cfset stGenerateImageResult = oImage.GenerateImage(argumentCollection=stArgs) />
           
