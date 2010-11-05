@@ -1004,10 +1004,16 @@
 		or (
 		  len(arguments.stFormPost[i].stSupporting["NEW"])
 		)) AND (
-		not len(arguments.stProperties[i])
-		or len(arguments.stFormPost[i].stSupporting["DELETE"])
-		or len(arguments.stFormPost[i].stSupporting["REPLACE"])
-	  )>
+			not len(arguments.stProperties[i])
+			or (
+				not structkeyexists(arguments.stFormPost[i].stSupporting,"DELETE") OR
+				len(arguments.stFormPost[i].stSupporting["DELETE"])
+			)
+			or (
+				not structkeyexists(arguments.stFormPost[i].stSupporting,"REPLACE") OR
+				len(arguments.stFormPost[i].stSupporting["REPLACE"])
+			)
+		  )>
 	
 		<!--- Make sure a ftSourceField --->
 		<cfif (not structkeyexists(arguments.stFields[i].metadata,"ftAllowResize") or arguments.stFields[i].metadata.ftAllowResize) and (not structkeyexists(arguments.stFields[i].metadata,"ftSourceField") or not len(arguments.stFields[i].metadata.ftSourceField)) and len(arguments.stProperties[i])>
