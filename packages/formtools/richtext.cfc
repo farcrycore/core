@@ -55,27 +55,25 @@
 			<cfset configJS = getConfig(stMetadata="#arguments.stMetadata#") />
 		</cfif>	
 		
-		
-		
+			
+		<skin:loadJS id="jquery" />
 		<skin:loadJS id="tinymce" />
 		
 		<cfsavecontent variable="html">
 			
 			<cfoutput>
 				<script language="javascript" type="text/javascript">
-				// This is where the compressor will load all components, include all components used on the page here
-				tinyMCE_GZ.init({
-					disk_cache : true,
-					debug : false
-				});
-				
-				tinyMCE.init({
-					mode : "exact",
-					elements : "#arguments.fieldname#",
+				$j(function() {
+					$j('###arguments.fieldname#').tinymce({
+
+					script_url : '/webtop/thirdparty/tiny_mce/tiny_mce.js',
+
 					farcryobjectid: "#arguments.stObject.ObjectID#",
 					farcrytypename: "#arguments.stobject.Typename#",
 					farcryrichtextfield: "#arguments.stMetadata.name#",
-					#configJS#,
+					<cfif len(configJS)>
+						#configJS#,
+					</cfif>
 					external_image_list_url : "#external_image_list_url#",
 					external_link_list_url : "#external_link_list_url#"
 					<cfif len(arguments.stMetadata.ftWidth)>
@@ -87,12 +85,15 @@
 					<cfif len(arguments.stMetadata.ftContentCSS)>
 						,content_css : "#arguments.stMetadata.ftContentCSS#"
 					</cfif>			
+					
+					});
 				});
 				</script>
 				
 				<style type="text/css">
 				.richtext .formHint {float:left;}
 				</style>
+
 				<br style="clear:both;" #application.fapi.getDocType().tagEnding#>
 				<textarea  name="#arguments.fieldname#" id="#arguments.fieldname#" class="textareaInput #arguments.stMetadata.ftClass#" style="width: 100%; #arguments.stMetadata.ftStyle#">#arguments.stMetadata.value#</textarea>
 				<br style="clear:both;" #application.fapi.getDocType().tagEnding#>
