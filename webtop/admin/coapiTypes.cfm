@@ -127,7 +127,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	<admin:header title="COAPI Types" writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">	
 	
 	<skin:htmlHead library="extJS" />
-	
+	<cfoutput>
 		<!--- TODO: i18n --->
 		<h3>Custom Content Types</h3>
 		<table class="table-5" cellspacing="0">
