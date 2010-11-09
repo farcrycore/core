@@ -23,8 +23,8 @@
 		
 		<!--- JS LIBRARIES --->
 		<skin:registerJS 	id="jquery"
-							baseHREF="#application.url.webtop#/thirdparty/jquery-1-4-1/js"
-							lFiles="jquery-1.4.1.min.js">
+							baseHREF="#application.url.webtop#/thirdparty/jquery/js"
+							lFiles="jquery-1.4.3.min.js">
 							
 							<cfoutput>
 								var $j = jQuery.noConflict();
