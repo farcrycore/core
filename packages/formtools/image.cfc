@@ -176,7 +176,7 @@
                   </cfif>
                   
                   <select name="#arguments.fieldname#ResizeMethod" class="selectInput">
-                    <option value="">None</option>
+                    <option value="none">None</option>
                     <option value="center" <cfif arguments.stMetadata.ftAutoGenerateType EQ "center"> selected="selected"</cfif>>Crop Center</option>
                     <option value="fitinside" <cfif arguments.stMetadata.ftAutoGenerateType EQ "fitinside"> selected="selected"</cfif>>Fit Inside</option>
                     <option value="ForceSize" <cfif arguments.stMetadata.ftAutoGenerateType EQ "ForceSize"> selected="selected"</cfif>>Force Size</option>
@@ -194,7 +194,7 @@
                 </label>
               </div>
             <cfelse>
-              <input type="hidden" name="#arguments.fieldname#ResizeMethod" class=""> 
+              <input type="hidden" name="#arguments.fieldname#ResizeMethod" class="none"> 
             </cfif>
             
             </cfoutput>
@@ -560,9 +560,10 @@
             <cfset stGeneratedImageArgs.ResizeMethod = arguments.stFieldPost.metadata.ftAutoGenerateType />
           </cfif>
 
-
-          <cfset stGeneratedImage = GenerateImage(argumentCollection=stGeneratedImageArgs) />
-          
+		  <cfif not stGeneratedImageArgs.ResizeMethod neq "none">
+			<cfset stGeneratedImage = GenerateImage(argumentCollection=stGeneratedImageArgs) />
+          </cfif>
+		  
           <cfif stGeneratedImage.bSuccess>
             <cfset stResult.value = "#arguments.stMetadata.ftDestination#/#newFileName#" />
           </cfif>
@@ -666,6 +667,7 @@
     <cfset var heigthPercent = 0 />
     <cfset var usePercent = 0 />
     <cfset var pixels = 0 />
+	<cfset var bModified = false />
     <cfset stResult.bSuccess = true />
     <cfset stResult.message = "" />
     <cfset stResult.filename = "" />
@@ -901,6 +903,8 @@
         <cfset oImageEffects.methodName = oImageEffects[methodName] />
         <cfset newImage = oImageEffects.methodName(argumentCollection=stArgCollection) />
       </cfloop>
+	  
+	  <cfset bModified = true />
     </cfif>
 
 	<cfif len(arguments.watermark) and fileExists("#application.path.webroot##arguments.watermark#")>
@@ -941,7 +945,7 @@
 				(newImage.GetHeight() - objWatermark.GetHeight()) / 2
 				) />
 		 
-	
+		<cfset bModified = true />
 	</cfif>	
 
     <!--- Modify extension to convert image format --->
@@ -954,19 +958,28 @@
       <cfset ImageDestination = listSetAt(ImageDestination, listLen(ImageDestination, "."), replace(convertImageToFormat, ".", "", "all"), ".") />
       <!--- update the return filename --->
       <cfset stResult.filename = listLast(ImageDestination,"/") />
+	  <cfset bModified = true />
     </cfif>
+	
+	<cfif arguments.ResizeMethod eq "none">
+		<cfif bModified>
+			<cfimage action="write" source="#newImage#" destination="#imageDestination#" overwrite="true" />
+		<cfelse>
+			<!--- No changes, the file is already in place ... we're done --->
+		</cfif>
+	<cfelse>
+		<cfscript>
+		  stImageAttributeCollection.action = "write";
+		  stImageAttributeCollection.source = newImage;
+		  stImageAttributeCollection.destination = imageDestination;
+		  stImageAttributeCollection.overwrite = "true";
+		  if(right(imageDestination, 4) eq ".jpg" or right(imageDestination, 5) eq ".jpeg"){
+			stImageAttributeCollection.quality = arguments.quality; // This setting (from Adobe) is for jpg images only and would cause errors if used on other image types
+		  }
+		</cfscript>
 
-    <cfscript>
-      stImageAttributeCollection.action = "write";
-      stImageAttributeCollection.source = newImage;
-      stImageAttributeCollection.destination = imageDestination;
-      stImageAttributeCollection.overwrite = "true";
-      if(right(imageDestination, 4) eq ".jpg" or right(imageDestination, 5) eq ".jpeg"){
-        stImageAttributeCollection.quality = arguments.quality; // This setting (from Adobe) is for jpg images only and would cause errors if used on other image types
-      }
-    </cfscript>
-
-    <cfimage attributeCollection="#stImageAttributeCollection#" />
+		<cfimage attributeCollection="#stImageAttributeCollection#" />
+	</cfif>
 
     <cfreturn stResult />
   </cffunction>
