@@ -66,7 +66,7 @@
 				$j(function() {
 					$j('###arguments.fieldname#').tinymce({
 
-					script_url : '/webtop/thirdparty/tiny_mce/tiny_mce.js',
+					script_url : '#application.url.webtop#/thirdparty/tiny_mce/tiny_mce.js',
 
 					farcryobjectid: "#arguments.stObject.ObjectID#",
 					farcrytypename: "#arguments.stobject.Typename#",
