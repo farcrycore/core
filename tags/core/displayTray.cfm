@@ -40,7 +40,6 @@
 		<skin:loadJS id="jquery-ui" />
 		<skin:loadJS id="jquery-tooltip" />
 		<skin:loadJS id="farcry-form" />
-		<skin:loadJS id="farcry-tray" />
 		<skin:loadCSS id="jquery-ui" />
 		<skin:loadCSS id="farcry-form" />
 		<skin:loadCSS id="farcry-tray" />	
@@ -121,11 +120,9 @@
 		};	
 		
 		
-		<!--- <cfset trayClasses = "farcryTrayBottom farcryTrayMinimised"> --->
-		
 		// only show the tray if we are not in a frame
 		if (top === self) { 		
-			$j("body").append("<div id='farcryTray' class='test'></div>");	
+			$j("body").append("<div id='farcryTray'></div>");	
 			$fc.loadTray();
 		}	
 		

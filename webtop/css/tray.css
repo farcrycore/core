@@ -1,11 +1,16 @@
 #farcryTray {
 	position: fixed;
 	width: 100%;
+	min-width: 832px;
 	z-index: 100;
+	font-family: Arial, Helvetica, sans-serif;
 	font-size: 13px;
+	color: #000000;
 	line-height: 16px;
+	text-align: left;
+	left: 0; /* IE */
 }
-* html #farcryTray {
+* html #farcryTray {  /* IE */
 	_position: absolute;
 	_bottom: 0;
 }
@@ -27,12 +32,12 @@
 .farcryTrayContainer {
 	position: relative;
 	background: white;
-	-webkit-box-shadow: 0 0 8px rgba(170,170,170,0.9);
-	   -moz-box-shadow: 0 0 8px rgba(170,170,170,0.9);
-		    box-shadow: 0 0 8px rgba(170,170,170,0.9);
+	-webkit-box-shadow: 0 0 8px rgba(64,64,64,0.25);
+	   -moz-box-shadow: 0 0 8px rgba(64,64,64,0.25);
+		    box-shadow: 0 0 8px rgba(64,64,64,0.25);
 	margin: 0 20px;
 	zoom: 1;
-	*border: 1px solid #c8c8c8;
+	border: 1px solid #c8c8c8\9; /* IE */
 }
 .farcryTrayBottom .farcryTrayContainer {
 	border-bottom: none;
@@ -42,9 +47,9 @@
 }
 
 .farcryTrayContainer:hover {
-	-webkit-box-shadow: 0 0 9px rgba(120,120,120,0.9);
-	   -moz-box-shadow: 0 0 9px rgba(120,120,120,0.9);
-		    box-shadow: 0 0 9px rgba(120,120,120,0.9);
+	-webkit-box-shadow: 0 0 9px rgba(64,64,64,0.5);
+	   -moz-box-shadow: 0 0 9px rgba(64,64,64,0.5);
+		    box-shadow: 0 0 9px rgba(64,64,64,0.5);
 }
 
 .farcryTrayTitlebar {
@@ -119,7 +124,6 @@
 	margin-top: 1px;
 	background-position: 6px 6px;
 	line-height: 29px;
-
 }
 
 .farcryTrayContextMenu {
@@ -248,7 +252,7 @@
 	position: relative;
 	z-index: 100;
 	zoom: 1;
-	*border-top: 1px solid #f0f0f0;
+	border-top: 1px solid #f0f0f0\9; /* IE */
 }
 .farcryTrayMinimised .farcryTrayBody {
 	display: none;
@@ -294,7 +298,6 @@
 	margin-left: 115px;
 }
 
-
 .farcryTrayBodyContentDetails {
 	padding: 6px 0;
 }
@@ -308,6 +311,10 @@
 }
 .farcryTrayBodyContentDetails table {
 	clear: none;
+}
+
+.farcryTrayBodyContentDetails img {
+	border: none;
 }
 
 .farcryTrayClear {
