@@ -31,8 +31,8 @@
 	<script><!--- dummy --->
 	<cfoutput>	
 	
-	<cfparam name="cookie.farcryTrayState" default="minimised">
-	<cfparam name="cookie.farcryTrayPosition" default="bottom">
+	<cfparam name="cookie.FARCRYTRAYSTATE" default="minimised">
+	<cfparam name="cookie.FARCRYTRAYPOSITION" default="bottom">
 	
 	<cfset farcryTrayClass = "">
 	<cfif cookie.farcryTrayState eq "expanded">
@@ -57,13 +57,13 @@
 			$j(".farcryTrayBody").slideDown(function(){
 				$f.removeClass("farcryTrayMinimised").addClass("farcryTrayExpanded");
 			});
-			document.cookie = "farcryTrayState=expanded;expires=" + new Date(2050,1,1).toGMTString() + ";path=/";
+			document.cookie = "FARCRYTRAYSTATE=expanded;expires=" + new Date(2050,1,1).toGMTString() + ";path=/";
 		}
 		else {
 			$j(".farcryTrayBody").slideUp(function(){
 				$f.removeClass("farcryTrayExpanded").addClass("farcryTrayMinimised");
 			});
-			document.cookie = "farcryTrayState=minimised;expires=" + new Date(2050,1,1).toGMTString() + ";path=/";
+			document.cookie = "FARCRYTRAYSTATE=minimised;expires=" + new Date(2050,1,1).toGMTString() + ";path=/";
 		}
 	});
 
@@ -79,14 +79,14 @@
 				$f.removeClass("farcryTrayBottom").addClass("farcryTrayTop");
 				$c.slideDown();
 			});
-			document.cookie = "farcryTrayPosition=top;expires=" + new Date(2050,1,1).toGMTString() + ";path=/";
+			document.cookie = "FARCRYTRAYPOSITION=top;expires=" + new Date(2050,1,1).toGMTString() + ";path=/";
 		}
 		else {
 			$c.slideUp(function(){
 				$f.removeClass("farcryTrayTop").addClass("farcryTrayBottom");
 				$c.slideDown();
 			});
-			document.cookie = "farcryTrayPosition=bottom;expires=" + new Date(2050,1,1).toGMTString() + ";path=/";
+			document.cookie = "FARCRYTRAYPOSITION=bottom;expires=" + new Date(2050,1,1).toGMTString() + ";path=/";
 		}
 		return false;
 	});
@@ -230,7 +230,7 @@
 						<li><a href="#application.fapi.fixURL(url='#form.refererURL#', removevalues='', addvalues='rebuild=page')#"><span class="ui-icon ui-icon-arrowrefresh-1-s"></span>Rebuild Page</a></li>
 						<li><a href="#application.fapi.fixURL(url='#form.refererURL#', removevalues='', addvalues='rebuild=all')#" onclick="return confirm('This will clear the cache for the entire website.\nAre you sure you want to continue?');"><span class="ui-icon ui-icon-refresh"></span>Rebuild Site</a></li>
 						<li class="farcryTrayContextMenuSeparator"></li>
-						<li><a href="#application.fapi.fixURL(url='#form.refererURL#', removevalues="", addvalues='updateapp=#application.updateappkey#')#" onclick="return confirm('This will restart entire website and may take up to a few minutes.\nAre you sure you want to continue?');"><span class="ui-icon ui-icon-trash"></span>Update Application</a></li>
+						<li><a href="#application.fapi.fixURL(url='#form.refererURL#', removevalues="", addvalues='updateapp=#application.updateappkey#')#" onclick="return confirm('This will restart the entire website and may take up to a few minutes.\nAre you sure you want to continue?');"><span class="ui-icon ui-icon-trash"></span>Update Application</a></li>
 						<li class="farcryTrayContextMenuSeparator"></li>
 						<cfif findNoCase("bDebug=1", "#form.refererURL#") OR findNoCase("bDebug/1", "#form.refererURL#")>
 							<li><a class="farcryTrayMenuSelected" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='bDebug=0')#"><span class="ui-icon ui-icon-wrench"></span>Debug Mode</a></li>
@@ -286,84 +286,12 @@
 			</div>
 
 			<div class="farcryTrayBodyContent">
-	</cfoutput>
 
-		<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="#session.fc.trayWebskin#" bIgnoreSecurity="true" stParam="#form#" />
+				</cfoutput>
+				<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="#session.fc.trayWebskin#" bIgnoreSecurity="true" stParam="#form#" />
+				<cfoutput>
 
-<!--- 
-	
-		<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="trayStandard" bIgnoreSecurity="true" stParam="#form#" />
-	
-		<grid:div style="float:left;margin-right:5px;">
-			<cfoutput>
-			<ul id="tray-actions">	
-				<li><a id="show-hidden"><span class="ui-icon" style="background-image:url(#application.fapi.getIconURL(icon='toggletray', size=16)#);">&nbsp;</span>Hide Tray</a></li>
-				<li><a id="show-detail"><span class="ui-icon ui-icon-carat-2-n-s" style="float:left;">&nbsp;</span>Show details</a></li>
-				<cfif stObj.typename neq "farCOAPI">
-					<li><a id="edit-object"><span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>Edit</a></li>
-				</cfif>
-			</ul>
-			</cfoutput>
-		</grid:div>
-	
-		<grid:div style="float:right;">
-			
-			<cfoutput>
-			<ul id="tray-actions">
-				
-				<cfif request.mode.flushcache>
-					<li>
-						<a href="#application.fapi.fixURL(url='#refererURL#', removevalues="", addvalues='flushcache=0')#">
-							<input type="checkbox" name="tray-flushcache" /> Caching
-						</a>
-					</li>
-				<cfelse>
-					<li>
-						<a href="#application.fapi.fixURL(url='#refererURL#', removevalues="", addvalues='flushcache=1')#">
-							<input type="checkbox" name="tray-flushcache" checked=checked /> Caching
-						</a>
-					</li>
-				</cfif>
-				
-				
-				<cfif request.mode.showdraft>		
-					<li>
-						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='showdraft=0')#" >
-							<input type="checkbox" name="tray-showdraft" checked=checked /> Drafts
-						</a>
-					</li>
-				<cfelse>
-					<li>
-						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='showdraft=1')#">
-							<input type="checkbox" name="tray-showdraft" /> Drafts
-						</a>
-					</li>
-				</cfif>
-				
-				
-				<cfif request.mode.design and request.mode.showcontainers gt 0>	
-					<li>
-						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='designmode=0')#">
-							<input type="checkbox" name="tray-designmode" checked=checked /> Rules
-						</a>
-					</li>
-				<cfelse>
-					<li>
-						<a href="#application.fapi.fixURL(url='#refererURL#', addvalues='designmode=1')#" >
-							<input type="checkbox" name="tray-designmode" /> Rules
-						</a>
-					</li>
-				</cfif>
-				
-			
-			</ul>
-			</cfoutput>
-		</grid:div>
- --->
-	
-	
-	<cfoutput>
-			<div class="farcryTrayClear"></div>
+				<div class="farcryTrayClear"></div>
 			</div>
 		</div>
 	</div>
