@@ -1,117 +1,318 @@
-
-/* Tray style */
-#farcrytray, 
-#farcrytray td, 
-#farcrytray th{
-	font-size:11px;
-	color:#000;
-	font-family:arial,tahoma,verdana,sans-serif;
-	font-weight:normal;
+#farcryTray {
+	position: fixed;
+	width: 100%;
+	z-index: 100;
+	font-size: 13px;
+	line-height: 16px;
+}
+* html #farcryTray {
+	_position: absolute;
+	_bottom: 0;
 }
 
-#farcrytray a{
-	color:#000;	
+#farcryTray ul, #farcryTray li {
+	margin: 0;
+	padding: 0;
+	list-style: none;
 }
-#farcrytray li a,
-#farcrytray li a:link,
-#farcrytray li a:visited,
-#farcrytray li a:hover,
-#farcrytray li a:active {
-	color:#000;
-	padding:2px;	
-	line-height:16px;
-	display:block;
-	text-decoration:none;
-	border:1px solid transparent;
-} 
 
-#farcrytray li a:hover {
-	background-color:#ffffff;
-	border:1px solid #B5B5B5;
-} 
-
-
-#farcrytray li a .ui-icon {
-	float:left;
-	margin-right:2px;
+.farcryTrayBottom {
+	bottom: 0;
+}
+.farcryTrayTop {
+	top: 0;
 }
 
 
-#farcrytray h1,
-#farcrytray h2,
-#farcrytray h3 {
-	margin: 5px 0 5px 0;
-	padding: 0px;
-	font-size:13px;
-	border:none;
-	color:#000;
+.farcryTrayContainer {
+	position: relative;
+	background: white;
+	-webkit-box-shadow: 0 0 8px rgba(170,170,170,0.9);
+	   -moz-box-shadow: 0 0 8px rgba(170,170,170,0.9);
+		    box-shadow: 0 0 8px rgba(170,170,170,0.9);
+	margin: 0 20px;
+	zoom: 1;
+	*border: 1px solid #c8c8c8;
+}
+.farcryTrayBottom .farcryTrayContainer {
+	border-bottom: none;
+}
+.farcryTrayTop .farcryTrayContainer {
+	border-top: none;
 }
 
-#farcrytray .moredetail_icon { background:transparent url(../js/ext/resources/images/default/panel/tool-sprites.gif) no-repeat scroll 0 -210px; height:15px; width:15px; }
-#farcrytray .lessdetail_icon { background:transparent url(../js/ext/resources/images/default/panel/tool-sprites.gif) no-repeat scroll 0 -195px; height:15px; width:15px; }
-#farcrytray .edit_icon { background-image:url(../facade/icon.cfm?icon=edit&size=16) !important; }
-#farcrytray .genericenabled_icon { background-image:url(../facade/icon.cfm?icon=greenled&size=16) !important; }
-#farcrytray .genericdisabled_icon { background-image:url(../facade/icon.cfm?icon=redled&size=16) !important; }
-#farcrytray .designmode_icon { background-image:url(../facade/icon.cfm?icon=greenled&size=16) !important; }
-#farcrytray .designmodedisabled_icon { background-image:url(../facade/icon.cfm?icon=redled&size=16) !important; }
-#farcrytray .previewmode_icon { background-image:url(../facade/icon.cfm?icon=greenled&size=16) !important; }
-#farcrytray .previewmodedisabled_icon { background-image:url(../facade/icon.cfm?icon=redled&size=16) !important; }
-#farcrytray .cacheon_icon { background-image:url(../facade/icon.cfm?icon=greenled&size=16) !important; }
-#farcrytray .cacheoff_icon { background-image:url(../facade/icon.cfm?icon=redled&size=16) !important; }
-#farcrytray .updateapp_icon { background-image:url(../facade/icon.cfm?icon=updateapp&size=16) !important; }
-#farcrytray .logout_icon { background-image:url(../facade/icon.cfm?icon=logout&size=16) !important; }
-#farcrytray .toggletray_icon { background-image:url(../facade/icon.cfm?icon=toggletray&size=16) !important; }
-
-#farcrytray .tray-details table {
-	margin: 5px 0 0 0;
-	padding: 0px;
+.farcryTrayContainer:hover {
+	-webkit-box-shadow: 0 0 9px rgba(120,120,120,0.9);
+	   -moz-box-shadow: 0 0 9px rgba(120,120,120,0.9);
+		    box-shadow: 0 0 9px rgba(120,120,120,0.9);
 }
 
-#farcrytray .tray-details h1,
-#farcrytray .tray-details h2,
-#farcrytray .tray-details h3 {
-	border-bottom: 1px solid #B5B5B5;
+.farcryTrayTitlebar {
+	position: relative;
+	height: 30px;
+	z-index: 101;
+	-webkit-box-shadow: 0 0 12px rgba(192,192,192,0.25);
+	   -moz-box-shadow: 0 0 12px rgba(192,192,192,0.25);
+	        box-shadow: 0 0 12px rgba(192,192,192,0.25);
+	cursor: pointer;
 }
-#farcrytray .tray-details table th,
-#farcrytray .tray-details table td {
-	padding:2px 5px 2px 2px;
-	font-size:11px;
-	font-weight: normal;
-	border:1px solid #B5B5B5;
-	border-collapse: collapse;
-	border-width: 0px;
+
+.farcryTrayLogo {
+	float: left;
+	margin-right: 42px;
+	height: 30px;
+}
+.farcryTrayLogo img {
+	margin: 6px 0 0 11px;
+}
+
+.farcryTrayTop.farcryTrayMinimised .farcryTrayLogo {
+	background: url(tray/tray-arrows.png) no-repeat 2px -6px;
+}
+.farcryTrayTop.farcryTrayExpanded .farcryTrayLogo {
+	background: url(tray/tray-arrows.png) no-repeat 2px 22px;
+}
+.farcryTrayBottom.farcryTrayMinimised .farcryTrayLogo {
+	background: url(tray/tray-arrows.png) no-repeat 2px 22px;
+}
+.farcryTrayBottom.farcryTrayExpanded .farcryTrayLogo {
+	background: url(tray/tray-arrows.png) no-repeat 2px -6px;
+}
+
+.farcryTrayTitle {
+	float: left;
+	line-height: 30px;
+	
+}
+.farcryTraySeparator {
+	color: #ccc;
+	padding: 0 5px;
+}
+
+.farcryTrayOptions {
+	position: relative;
+	z-index: 100;
+	float: right;
+	height: 30px;
+	line-height: 30px;
+	background: white url(tray/cog.png) no-repeat 6px 7px;
+	width: 30px;
+	margin-left: 5px;
+	border-left: 1px solid white;
+}
+.farcryTrayOptions:hover {
+	text-decoration: underline;
+}
+.farcryTrayContextMenuVisible .farcryTrayOptions {
+	border-left: 1px solid #c8c8c8;
+	border-right: 1px solid #c8c8c8;
+	right: -1px;
+	margin-left: 4px;
+}
+.farcryTrayBottom.farcryTrayContextMenuVisible .farcryTrayOptions {
+	top: -1px;
+	padding-top: 1px;
+	background-position: 6px 8px;
+	height: 29px;
+}
+.farcryTrayTop.farcryTrayContextMenuVisible .farcryTrayOptions {
+	margin-top: 1px;
+	background-position: 6px 6px;
+	line-height: 29px;
+
+}
+
+.farcryTrayContextMenu {
+	position: absolute;
+	display: none;
+	right: -1px;
+	cursor: default;
+}
+.farcryTrayContextMenuVisible .farcryTrayContextMenu {
+	display: block;
+}
+.farcryTrayBottom .farcryTrayContextMenu {
+	bottom: 30px;
+}
+.farcryTrayTop .farcryTrayContextMenu {
+	top: 30px;
+}
+
+.farcryTrayContextMenuBody {
+	padding: 5px 3px;
+	line-height: 16px;
+	border: 1px solid #c8c8c8;
+	background: white;
+}
+.farcryTrayBottom .farcryTrayContextMenuBody {
+	-webkit-border-top-left-radius: 3px;
+	-webkit-border-top-right-radius: 3px;
+	-moz-border-radius-topleft: 3px;
+	-moz-border-radius-topright: 3px;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
+}
+.farcryTrayTop .farcryTrayContextMenuBody {
+	-webkit-border-bottom-left-radius: 3px;
+	-webkit-border-bottom-right-radius: 3px;
+	-moz-border-radius-bottomleft: 3px;
+	-moz-border-radius-bottomright: 3px;
+	border-bottom-left-radius: 3px;
+	border-bottom-right-radius: 3px;
+}
+
+#farcryTray .farcryTrayContextMenuBody li  {
+	padding: 1px 2px;
+}
+#farcryTray .farcryTrayContextMenuBody li.farcryTrayContextMenuSeparator {
+	padding: 0;
+	margin: 4px 2px;
+	border-bottom: 1px solid #f0f0f0;
+	font-size: 0px;
+}
+
+.farcryTrayContextMenuBody a {
+	display: block;
+	padding-right: 16px;
+	padding: 3px 16px 4px 3px;	
+	color: #000000;
+	text-decoration: none;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	font-size: 13px;
+	line-height: 16px;
+}
+.farcryTrayContextMenuBody a:hover {
+	text-decoration: underline;
+	background: #f0f0f0;	
+	cursor: pointer;
+}
+
+
+.farcryTrayContextMenuBody li a span {
+	float: left;
+	margin-right: 3px;
+}
+
+.farcryTrayContextMenuBody a.farcryTrayMenuSelected {
+	padding: 2px 15px 3px 2px;	
+	border: 1px solid #b7d1e3;
+	background: #eff5f9;
+}
+
+
+.farcryTrayButtons {
+	float: right;
+	height: 30px;
+	line-height: 30px;
+}
+
+.farcryTrayButtons a {
+	display: block;
+	float: left;
+	padding: 3px 7px 4px 3px;
+	margin: 4px 0 0 3px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	line-height: 16px;
+	text-decoration: none;
+	color: black;
+}
+.farcryTrayButtons a:hover {
+	text-decoration: underline;
+	background: #f0f0f0;
+}
+.farcryTrayButtons a span {
+	float: left;
+	margin-right: 3px;
+}
+.farcryTrayButtons a.farcryTrayButtonSelected {
+	padding: 2px 6px 3px 2px;
+	border: 1px solid #b7d1e3;
+	background: #eff5f9;
+}
+.farcryTrayButtons a.farcryTrayButtonDisabled {
+	padding: 2px 6px 3px 2px;
+	border: 1px solid #aaaaaa;
+	background: #ffffff;
+	-webkit-opacity: 0.25;
+	-moz-opacity: 0.25;
+	opacity: 0.25;
+}
+.farcryTrayButtons a.farcryTrayButtonDisabled:hover{
+	text-decoration: none;
+}
+.farcryTrayBody {
+	position: relative;
+	z-index: 100;
+	zoom: 1;
+	*border-top: 1px solid #f0f0f0;
+}
+.farcryTrayMinimised .farcryTrayBody {
+	display: none;
+}
+
+.farcryTrayBodyMenu {
+	float: left;
+}
+#farcryTray .farcryTrayBodyMenu ul {
+	float: left;
+	padding: 2px;
+	height: 100%;
+	margin-bottom: 4px;
+}
+#farcryTray .farcryTrayBodyMenu li {
+	
+}
+
+.farcryTrayBodyMenu a {
+	display: block;
+	padding: 3px 7px 4px 3px;
+	margin: 4px 0 0 3px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	line-height: 16px;
+	text-decoration: none;
+	color: black;	
+	font-size: 13px;
+	line-height: 16px;	
+}
+.farcryTrayBodyMenu a:hover {
+	text-decoration: underline;
+	background: #f0f0f0;
+}
+.farcryTrayBodyMenu a span {
+	float: left;
+	margin-right: 3px;
+}
+
+
+.farcryTrayBodyContent {
+	margin-left: 115px;
+}
+
+
+.farcryTrayBodyContentDetails {
+	padding: 6px 0;
+}
+.farcryTrayBodyContentDetails th {
+	padding: 4px 10px 4px 0;
 	text-align: left;
-}
-#farcrytray .tray-details table th {
 	font-weight: bold;
 }
-
-#farcrytray li {
-	background:none;
-	margin:1px 3px;
-	padding-left:0px;
+.farcryTrayBodyContentDetails td {
+	padding: 4px;
+}
+.farcryTrayBodyContentDetails table {
+	clear: none;
 }
 
-#farcrytray .tray-summary ul {
-	margin:0px;
-	padding:0px;
-}
-#farcrytray .tray-summary ul li {
-	float: left;
-	list-style: none;
-}
-
-#farcrytray .tray-detail ul {
-	margin:0px;
-	padding:0px;
-}
-#farcrytray .tray-detail ul li {	
-	list-style: none;
-}
-
-#open-tray {
-	opacity:0.5;
-}
-#open-tray.icon-over {
-	opacity:1;
+.farcryTrayClear {
+	clear: both;
+	font-size: 0px;
+	line-height: 0px;
+	height: 0;
 }
