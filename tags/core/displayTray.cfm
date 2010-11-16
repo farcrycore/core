@@ -22,15 +22,14 @@
 	<cfif len(url.type) 
 		AND NOT structKeyExists(application.rules, url.type) 
 		AND request.mode.bAdmin 
-		AND request.fc.bShowTray 
-		AND NOT request.bHideContextMenu
 		AND NOT structKeyExists(request.fc, "bAdminTrayRendered") 
 		AND NOT request.mode.ajax>
 		
 		<cfset request.fc.bAdminTrayRendered = true />
 		
 		<cfparam name="session.fc" default="#structNew()#" />
-		<cfparam name="session.fc.trayWebskin" default="displayAdminBarHidden" />
+		<cfparam name="session.fc.trayWebskin" default="trayStandard" />
+		<cfset session.fc.trayWebskin = "trayStandard" />
 		
 		<cfset request.fc.totalTickCount = (GetTickCount() - request.fc.startTickCount) / 1000 />
 		
@@ -41,6 +40,7 @@
 		<skin:loadJS id="jquery-ui" />
 		<skin:loadJS id="jquery-tooltip" />
 		<skin:loadJS id="farcry-form" />
+		<skin:loadJS id="farcry-tray" />
 		<skin:loadCSS id="jquery-ui" />
 		<skin:loadCSS id="farcry-form" />
 		<skin:loadCSS id="farcry-tray" />	
@@ -48,8 +48,39 @@
 
 		<cfoutput>	
 		<skin:onReady>
-		
 
+		$fc.loadTray = function(){
+		    $j('##farcryTray').html('');
+		    
+		    <cfif findNoCase("?",urlTray)>
+		    	var urlSeparator = "&";
+		    <cfelse>
+		    	var urlSeparator = "?";
+			</cfif>
+					    
+			$j.ajax({
+				type: "POST",
+				cache: false,
+				url: '#urlTray#' + urlSeparator + 'view=trayContainer&totalTickCount=#request.fc.totalTickCount#', 
+				complete: function(data){
+					$j('##farcryTray').html(data.responseText);					
+				},
+				data:{
+					refererURL:'#cgi.script_name#?#cgi.query_string#'
+					<cfloop collection="#request.fc.trayData#" item="thistag.traydatakey">
+						<cfif issimplevalue(request.fc.trayData[thistag.traydatakey])>
+							, '#thistag.traydatakey#':'#jsstringformat(request.fc.trayData[thistag.traydatakey])#'
+						<cfelse>
+							<cfif thistag.traydatakey eq "profile"><cfset application.fapi.addProfilePoint("End","End") /></cfif>
+							<cfwddx action="cfml2wddx" input="#request.fc.trayData[thistag.traydatakey]#" output="thistag.traydatawddx" />
+							, '#thistag.traydatakey#':'#jsstringformat(thistag.traydatawddx)#'
+						</cfif>
+					</cfloop>
+				},
+				dataType: "html"
+			});
+		}
+		
 		$fc.traySwitch = function(webskin){
 		    $j('##farcrytray').html('');
 			$j.ajax({
@@ -90,17 +121,14 @@
 		};	
 		
 		
-	
-			
+		<!--- <cfset trayClasses = "farcryTrayBottom farcryTrayMinimised"> --->
 		
-		// only show the frame if we are not in a frame
+		// only show the tray if we are not in a frame
 		if (top === self) { 		
-			$j("body").append("<div style='bottom:0;left:0;font-size:11px;padding:0;position:fixed;width:100%;z-index:9999;text-align:left;'><div id='farcrytray'></div></div>");	
-			$fc.traySwitch('#session.fc.trayWebskin#'); // add tray
-			
+			$j("body").append("<div id='farcryTray' class='test'></div>");	
+			$fc.loadTray();
 		}	
 		
-				
 		</skin:onReady>
 	
 		
