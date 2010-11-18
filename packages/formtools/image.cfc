@@ -560,9 +560,7 @@
             <cfset stGeneratedImageArgs.ResizeMethod = arguments.stFieldPost.metadata.ftAutoGenerateType />
           </cfif>
 
-		  <cfif not stGeneratedImageArgs.ResizeMethod neq "none">
-			<cfset stGeneratedImage = GenerateImage(argumentCollection=stGeneratedImageArgs) />
-          </cfif>
+          <cfset stGeneratedImage = GenerateImage(argumentCollection=stGeneratedImageArgs) />
 		  
           <cfif stGeneratedImage.bSuccess>
             <cfset stResult.value = "#arguments.stMetadata.ftDestination#/#newFileName#" />
