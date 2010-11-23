@@ -64,7 +64,7 @@
 
 .farcryTrayLogo {
 	float: left;
-	margin-right: 42px;
+	margin-right: 24px;
 	height: 30px;
 }
 .farcryTrayLogo img {
@@ -89,6 +89,27 @@
 	line-height: 30px;
 	
 }
+
+.farcryTrayTitle .farcryTrayStatusLink {
+	padding: 3px 3px 4px 3px;
+	margin: 3px 0 0 1px;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	line-height: 16px;
+	text-decoration: none;
+	color: #555;
+	font-size: 11px;
+	background: #f0f0f0;
+}
+
+.farcryTrayTitle .farcryTrayStatusLink:hover {
+	text-decoration: underline;
+	color: black;
+	background: #f0f0f0;
+}
+
+
 .farcryTraySeparator {
 	color: #ccc;
 	padding: 0 5px;
@@ -293,6 +314,15 @@
 	margin-right: 3px;
 }
 
+.farcryTrayPageSpeed {
+	opacity: 0.25;
+	filter: alpha(opacity=25);
+	zoom: 1;
+}
+.farcryTrayPageSpeed a:hover {
+	text-decoration: none;
+	background: none;	
+}
 
 .farcryTrayBodyContent {
 	margin-left: 115px;
@@ -322,4 +352,8 @@
 	font-size: 0px;
 	line-height: 0px;
 	height: 0;
+}
+
+.farcryTrayContainer .ui-icon-none {
+	background-position: -1000px -1000px;
 }

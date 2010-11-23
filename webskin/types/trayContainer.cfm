@@ -107,8 +107,8 @@
 			$j("##farcryTray").removeClass("farcryTrayContextMenuVisible");	
 		}, 500);
 	});
-	// cancel menu event bubbling on context menu and tray buttons
-	$j(".farcryTrayContextMenu, .farcryTrayButtons").click(function(event){
+	// cancel menu event bubbling on context menu, tray buttons and titlebar status link
+	$j(".farcryTrayContextMenu, .farcryTrayButtons, .farcryTrayStatusLink").click(function(event){
 		event.stopImmediatePropagation();
 	});
 
@@ -135,7 +135,7 @@
 			<!--- content item status --->
 			<cfif structKeyExists(stobj,"status")>
 
-					<!--- If the url points to a type webskin, we need to determine the content type. --->
+					<!--- if the url points to a type webskin, we need to determine the content type. --->
 					<cfif stObj.typename eq "farCOAPI">
 						<cfset contentTypename = stobj.name />
 					<cfelse>
@@ -143,77 +143,45 @@
 					</cfif>
 	
 					<cfset trayStatus = stobj.status>
+					<cfset trayIcon = "none">
+					<cfset trayStatusLink = "">
 					<cfset trayContentType = application.fapi.getContentTypeMetadata(typename='#contentTypename#', md='displayName', default='#stobj.typename#')>
 					<cfset trayLastUpdated = application.fapi.prettyDate(stobj.dateTimeLastUpdated)>
 					<cfset trayLastUpdatedPrecise = dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy') & " " & timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')>
 					<cfset trayUpdatedBy = application.fapi.getContentType("dmProfile").getProfile(stobj.lastupdatedby).label>
 
 
-					
+					<!--- set up object status info --->
 					<cfswitch expression="#stobj.status#">
 					<cfcase value="draft">
-
 						<cfset trayStatus = "<strong>Draft</strong>">
-						
-<!--- 
-							<grid:div class="webtopOverviewStatusBox" style="background-color:##C0FFFF;text-align:center;border-bottom:1px solid ##B5B5B5;margin-bottom:3px;">
-								<cfoutput>
-									DRAFT: last updated <a id="webtop-overview-lastupdated" title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</a>.
-									<skin:toolTip selector="##webtop-overview-lastupdated">Last updated on #dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# at #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#</skin:toolTip>
-									
-									<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
-										(<skin:buildLink objectid="#stobj.versionID#" view="#stParam.view#" bodyView="#stParam.bodyView#" linktext="show approved" urlParameters="showdraft=0" />)
-									</cfif>
-								</cfoutput>
-							</grid:div>
- --->
-						
+						<cfset trayIcon = "alert">
+						<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
+							<cfset trayStatusLink = "<a class='farcryTrayStatusLink' href='#application.fapi.fixURL(url='#form.refererURL#', addvalues='showdraft=0')#'>Show Approved</a>">
+						</cfif>
 					</cfcase>
 					<cfcase value="pending">
-
 						<cfset trayStatus = "<em>Pending</em>">
-						
-<!--- 
-							<grid:div class="webtopOverviewStatusBox" style="background-color:##FFE0C0;text-align:center;border-bottom:1px solid ##B5B5B5;margin-bottom:3px;">
-								<cfoutput>
-									PENDING: awaiting approval since <a id="webtop-overview-lastupdated" title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</a>.
-									<skin:toolTip selector="##webtop-overview-lastupdated">Last updated on #dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# at #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#</skin:toolTip>
-									
-									<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
-										(<skin:buildLink objectid="#stobj.versionID#" view="#stParam.view#" bodyView="#stParam.bodyView#" linktext="show approved" urlParameters="showdraft=0" />)
-									</cfif>
-								</cfoutput>
-							</grid:div>
- --->
-
-
+						<cfset trayIcon = "alert">
+						<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
+							<cfset trayStatusLink = "<a class='farcryTrayStatusLink' href='#application.fapi.fixURL(url='#form.refererURL#', addvalues='showdraft=0')#'>Show Approved</a>">
+						</cfif>
 					</cfcase>
 					<cfcase value="approved">
-
 						<cfset trayStatus = "Approved">
-
-<!--- 
-							<grid:div class="webtopOverviewStatusBox" style="background-color:##C0FFC0;text-align:center;border-bottom:1px solid ##B5B5B5;margin-bottom:3px;">
-								<cfoutput>
-									APPROVED: <a id="webtop-overview-lastupdated" title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</a>.
-									<skin:toolTip selector="##webtop-overview-lastupdated"
-										configuration="position:'bottom center',relative:true" style="width:300px;">Last updated on #dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# at #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#</skin:toolTip>
-									
-									<cfif structKeyExists(stobj,"versionID") AND structKeyExists(stobj,"status") AND stobj.status EQ "approved">
-										<cfset qDraft = createObject("component", "#application.packagepath#.farcry.versioning").checkIsDraft(objectid=stobj.objectid,type=stobj.typename)>
-										<cfif qDraft.recordcount>
-											(<skin:buildLink objectid="#qDraft.objectid#" view="#stParam.view#" bodyView="#stParam.bodyView#" linktext="show draft" urlParameters="showdraft=1" />)
-										</cfif>
-									</cfif>	
-								</cfoutput>
-							</grid:div>
- --->
-							
+						<cfset trayIcon = "check">
+						<cfif structKeyExists(stobj,"versionID") AND structKeyExists(stobj,"status") AND stobj.status EQ "approved">
+							<cfset qDraft = createObject("component", "#application.packagepath#.farcry.versioning").checkIsDraft(objectid=stobj.objectid,type=stobj.typename)>
+							<cfif qDraft.recordcount>
+								<cfset trayStatusLink = "<a class='farcryTrayStatusLink' href='#application.fapi.fixURL(url='#form.refererURL#', addvalues='showdraft=1')#'>Show Draft</a>">
+							</cfif>
+						</cfif>	
 					</cfcase>
 					</cfswitch>
 
 
-					<span id="farcryTray-status">#trayStatus#</span> <span id="farcryTray-contentType">#trayContentType#</span>
+					<span class="ui-icon ui-icon-#trayIcon#" style="float: left; margin-top: 7px; margin-right: 3px;"></span><span id="farcryTray-status">#trayStatus#</span> <span id="farcryTray-contentType">#trayContentType#</span>
+					#trayStatusLink#
 					<span class="farcryTraySeparator">|</span>
 					Updated <span id="farcryTray-lastUpdated" title="#trayLastUpdatedPrecise#">#trayLastUpdated#</span>
 					by <span id="farcryTray-updatedBy">#trayUpdatedBy#</span>
@@ -282,6 +250,7 @@
 				<ul>
 					<li><a href="#application.fapi.fixURL(url='#application.url.webtop#', removevalues="")#"><span class="ui-icon ui-icon-calculator"></span>Webtop</a></li>
 					<li><a href="#application.fapi.fixURL(url='#form.refererURL#', removevalues="", addvalues='logout=1')#"><span class="ui-icon ui-icon-power"></span>Logout</a></li>
+					<li class="farcryTrayPageSpeed"><a title="Page rendering speed"><span class="ui-icon ui-icon-clock" style="background-position:-81px -112px;"></span> #url.totalTickCount# ms</a></li>
 				</ul>
 			</div>
 
