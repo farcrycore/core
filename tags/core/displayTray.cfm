@@ -31,7 +31,7 @@
 		<cfparam name="session.fc.trayWebskin" default="trayStandard" />
 		<cfset session.fc.trayWebskin = "trayStandard" />
 		
-		<cfset request.fc.totalTickCount = (GetTickCount() - request.fc.startTickCount) / 1000 />
+		<cfset request.fc.totalTickCount = (GetTickCount() - request.fc.startTickCount) />
 		
 		<cfset urlTray = application.fapi.getLink(type=url.type, objectid=url.objectid, urlParameters='ajaxmode=1') />
 
