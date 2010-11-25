@@ -59,20 +59,6 @@
 	</cffunction>
 	
 
-	<cfscript>
-	function arrayReverse(inArray){
-		var outArray = ArrayNew(1);
-		var i=0;
-			var j = 1;
-		for (i=ArrayLen(inArray);i GT 0;i=i-1){
-			outArray[j] = inArray[i];
-			j = j + 1;
-		}
-		return outArray;
-	}
-
-	</cfscript>
-	
 	<cffunction name="getPackagePath" hint="Returns full package for a component based on its name - useful for determing whether this component is a core or custom effort ">
 		<!--- Now that we're using APPLICATION.TYPES[TYPENAME].TYPEPATH this function is deprecated ~Tom --->
 		<cfargument name="name" required="true">
