@@ -33,6 +33,7 @@
 	
 	<cfparam name="cookie.FARCRYTRAYSTATE" default="minimised">
 	<cfparam name="cookie.FARCRYTRAYPOSITION" default="bottom">
+	<cfparam name="cookie.FARCRYTRAYHIDDEN" default="false">
 	
 	<cfset farcryTrayClass = "">
 	<cfif cookie.farcryTrayState eq "expanded">
@@ -45,26 +46,37 @@
 	<cfelse>
 		<cfset farcryTrayClass = farcryTrayClass & " farcryTrayBottom">
 	</cfif>
+	<cfif cookie.farcryTrayHidden eq "true">
+		<cfset farcryTrayClass = farcryTrayClass & " farcryTrayHidden">
+	</cfif>
 
 	
 	// restore tray state and position
 	$j("##farcryTray").attr("class", "#farcryTrayClass#");
 
-	// show/hide tray
+	// expand/minimise tray
 	$j(".farcryTrayTitlebar").click(function(){
 		var $f = $j("##farcryTray");
-		if ($f.hasClass("farcryTrayMinimised")) {
-			$j(".farcryTrayBody").slideDown(function(){
-				$f.removeClass("farcryTrayMinimised").addClass("farcryTrayExpanded");
-			});
-			document.cookie = "FARCRYTRAYSTATE=expanded;expires=" + new Date(2050,1,1).toGMTString() + ";path=/";
+		if ($f.hasClass("farcryTrayHidden")) {
+			$f.removeClass("farcryTrayHidden");
+			document.cookie = "FARCRYTRAYHIDDEN=false;expires=" + new Date(2050,1,1).toGMTString() + ";path=/";
 		}
-		else {
-			$j(".farcryTrayBody").slideUp(function(){
-				$f.removeClass("farcryTrayExpanded").addClass("farcryTrayMinimised");
-			});
-			document.cookie = "FARCRYTRAYSTATE=minimised;expires=" + new Date(2050,1,1).toGMTString() + ";path=/";
+		else
+		{
+			if ($f.hasClass("farcryTrayMinimised")) {
+				$j(".farcryTrayBody").slideDown(function(){
+					$f.removeClass("farcryTrayMinimised").addClass("farcryTrayExpanded");
+				});
+				document.cookie = "FARCRYTRAYSTATE=expanded;expires=" + new Date(2050,1,1).toGMTString() + ";path=/";
+			}
+			else {
+				$j(".farcryTrayBody").slideUp(function(){
+					$f.removeClass("farcryTrayExpanded").addClass("farcryTrayMinimised");
+				});
+				document.cookie = "FARCRYTRAYSTATE=minimised;expires=" + new Date(2050,1,1).toGMTString() + ";path=/";
+			}
 		}
+		return false;
 	});
 
 	// swap docking position
@@ -90,6 +102,17 @@
 		}
 		return false;
 	});
+
+	// hide tray
+	$j("##farcryTray-hide").click(function(){
+		var $f = $j("##farcryTray");
+		$f.addClass("farcryTrayHidden");
+		$f.removeClass("farcryTrayContextMenuVisible");	
+		$j(".farcryTrayBody").attr("style","");
+		document.cookie = "FARCRYTRAYHIDDEN=true;expires=" + new Date(2050,1,1).toGMTString() + ";path=/";
+		return false;
+	});
+
 
 	
 	// show menu on click
@@ -193,7 +216,8 @@
 			<div class="farcryTrayContextMenu">
 				<div class="farcryTrayContextMenuBody">
 					<ul>
-						<li><a id="farcryTray-dock" href="##"><span class="ui-icon ui-icon-carat-2-n-s"></span>Switch tray position</a></li>	
+						<li><a id="farcryTray-dock" href="##"><span class="ui-icon ui-icon-carat-2-n-s"></span>Switch Tray Position</a></li>	
+						<li><a id="farcryTray-hide" href="##"><span class="ui-icon ui-icon-carat-2-e-w"></span>Hide Tray</a></li>	
 						<li class="farcryTrayContextMenuSeparator"></li>
 						<li><a href="#application.fapi.fixURL(url='#form.refererURL#', removevalues='', addvalues='rebuild=page')#"><span class="ui-icon ui-icon-arrowrefresh-1-s"></span>Rebuild Page</a></li>
 						<li><a href="#application.fapi.fixURL(url='#form.refererURL#', removevalues='', addvalues='rebuild=all')#" onclick="return confirm('This will clear the cache for the entire website.\nAre you sure you want to continue?');"><span class="ui-icon ui-icon-refresh"></span>Rebuild Site</a></li>
