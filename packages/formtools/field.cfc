@@ -273,14 +273,14 @@
 				<cfcase value="contains">
 					<cfparam name="arguments.stFilterProps.value" default="" />
 					<cfif len(arguments.stFilterProps.value)>
-						<cfoutput>#arguments.filterProperty# LIKE '%#arguments.stFilterProps.value#%'</cfoutput>
+						<cfoutput>#arguments.filterProperty# LIKE '%#replace(arguments.stFilterProps.value,"'","''","ALL")#%'</cfoutput>
 					</cfif>
 				</cfcase>
 				
 				<cfcase value="exactly">
 					<cfparam name="arguments.stFilterProps.value" default="" />
 					<cfif len(arguments.stFilterProps.value)>
-						<cfoutput>#arguments.filterProperty# = '%#arguments.stFilterProps.value#%'</cfoutput>
+						<cfoutput>#arguments.filterProperty# = '%#replace(arguments.stFilterProps.value,"'","''","ALL")#%'</cfoutput>
 					</cfif>
 				</cfcase>
 
