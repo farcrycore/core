@@ -219,10 +219,10 @@
 						<li><a id="farcryTray-dock" href="##"><span class="ui-icon ui-icon-carat-2-n-s"></span>Switch Tray Position</a></li>	
 						<li><a id="farcryTray-hide" href="##"><span class="ui-icon ui-icon-carat-2-e-w"></span>Hide Tray</a></li>	
 						<li class="farcryTrayContextMenuSeparator"></li>
-						<li><a href="#application.fapi.fixURL(url='#form.refererURL#', removevalues='', addvalues='rebuild=page')#"><span class="ui-icon ui-icon-arrowrefresh-1-s"></span>Rebuild Page</a></li>
-						<li><a href="#application.fapi.fixURL(url='#form.refererURL#', removevalues='', addvalues='rebuild=all')#" onclick="return confirm('This will clear the cache for the entire website.\nAre you sure you want to continue?');"><span class="ui-icon ui-icon-refresh"></span>Rebuild Site</a></li>
+						<li><a href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='rebuild=page')#"><span class="ui-icon ui-icon-arrowrefresh-1-s"></span>Rebuild Page</a></li>
+						<li><a href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='rebuild=all')#" onclick="return confirm('This will clear the cache for the entire website.\nAre you sure you want to continue?');"><span class="ui-icon ui-icon-refresh"></span>Rebuild Site</a></li>
 						<li class="farcryTrayContextMenuSeparator"></li>
-						<li><a href="#application.fapi.fixURL(url='#form.refererURL#', removevalues="", addvalues='updateapp=#application.updateappkey#')#" onclick="return confirm('This will restart the entire website and may take up to a few minutes.\nAre you sure you want to continue?');"><span class="ui-icon ui-icon-trash"></span>Update Application</a></li>
+						<li><a href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='updateapp=#application.updateappkey#')#" onclick="return confirm('This will restart the entire website and may take up to a few minutes.\nAre you sure you want to continue?');"><span class="ui-icon ui-icon-trash"></span>Update Application</a></li>
 						<li class="farcryTrayContextMenuSeparator"></li>
 						<cfif findNoCase("bDebug=1", "#form.refererURL#") OR findNoCase("bDebug/1", "#form.refererURL#")>
 							<li><a class="farcryTrayMenuSelected" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='bDebug=0')#"><span class="ui-icon ui-icon-wrench"></span>Debug Mode</a></li>
@@ -261,9 +261,9 @@
 					<a id="farcryTray-caching" class="farcryTrayButtonDisabled" title="Caching is disabled when showing drafts, rules, debugging or webskin tracer"><span class="ui-icon ui-icon-script"></span>Caching</a>
 				<cfelse>
 					<cfif request.mode.flushcache>				
-						<a id="farcryTray-caching" href="#application.fapi.fixURL(url='#form.refererURL#', removevalues='', addvalues='flushcache=0')#" title="Showing latest pages (click to show cached)"><span class="ui-icon ui-icon-script"></span>Caching</a>
+						<a id="farcryTray-caching" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='flushcache=0')#" title="Showing latest pages (click to show cached)"><span class="ui-icon ui-icon-script"></span>Caching</a>
 					<cfelse>
-						<a id="farcryTray-caching" class="farcryTrayButtonSelected" href="#application.fapi.fixURL(url='#form.refererURL#', removevalues='', addvalues='flushcache=1')#" title="Showing cached pages (click to show latest)"><span class="ui-icon ui-icon-script"></span>Caching</a>
+						<a id="farcryTray-caching" class="farcryTrayButtonSelected" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='flushcache=1')#" title="Showing cached pages (click to show latest)"><span class="ui-icon ui-icon-script"></span>Caching</a>
 					</cfif>
 				</cfif>
 			</div>
@@ -272,8 +272,8 @@
 		<div class="farcryTrayBody">
 			<div class="farcryTrayBodyMenu">
 				<ul>
-					<li><a href="#application.fapi.fixURL(url='#application.url.webtop#', removevalues="")#"><span class="ui-icon ui-icon-calculator"></span>Webtop</a></li>
-					<li><a href="#application.fapi.fixURL(url='#form.refererURL#', removevalues="", addvalues='logout=1')#"><span class="ui-icon ui-icon-power"></span>Logout</a></li>
+					<li><a href="#application.fapi.fixURL(url='#application.url.webtop#')#"><span class="ui-icon ui-icon-calculator"></span>Webtop</a></li>
+					<li><a href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='logout=1')#"><span class="ui-icon ui-icon-power"></span>Logout</a></li>
 					<li class="farcryTrayPageSpeed"><a title="Page rendering speed"><span class="ui-icon ui-icon-clock" style="background-position:-81px -112px;"></span> #url.totalTickCount# ms</a></li>
 				</ul>
 			</div>

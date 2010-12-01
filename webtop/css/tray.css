@@ -19,6 +19,7 @@
 	margin: 0;
 	padding: 0;
 	list-style: none;
+	background: none;
 }
 
 .farcryTrayBottom {
@@ -44,9 +45,9 @@
 .farcryTrayContainer {
 	position: relative;
 	background: white;
-	-webkit-box-shadow: 0 0 8px rgba(64,64,64,0.25);
-	   -moz-box-shadow: 0 0 8px rgba(64,64,64,0.25);
-		    box-shadow: 0 0 8px rgba(64,64,64,0.25);
+	-webkit-box-shadow: 0 0 8px rgba(128,128,128,0.75);
+	   -moz-box-shadow: 0 0 8px rgba(128,128,128,0.75);
+		    box-shadow: 0 0 8px rgba(128,128,128,0.75);
 	margin: 0 20px;
 	zoom: 1;
 	border: 1px solid #c8c8c8\9; /* IE */
@@ -59,9 +60,9 @@
 }
 
 .farcryTrayContainer:hover {
-	-webkit-box-shadow: 0 0 9px rgba(64,64,64,0.5);
-	   -moz-box-shadow: 0 0 9px rgba(64,64,64,0.5);
-		    box-shadow: 0 0 9px rgba(64,64,64,0.5);
+	-webkit-box-shadow: 0 0 9px rgba(64,64,64,0.75);
+	   -moz-box-shadow: 0 0 9px rgba(64,64,64,0.75);
+		    box-shadow: 0 0 9px rgba(64,64,64,0.75);
 }
 
 .farcryTrayTitlebar {
@@ -208,7 +209,7 @@
 	font-size: 0px;
 }
 
-.farcryTrayContextMenuBody a {
+#farcryTray .farcryTrayContextMenuBody a {
 	display: block;
 	padding-right: 16px;
 	padding: 3px 16px 4px 3px;	
@@ -220,19 +221,19 @@
 	font-size: 13px;
 	line-height: 16px;
 }
-.farcryTrayContextMenuBody a:hover {
+#farcryTray .farcryTrayContextMenuBody a:hover {
 	text-decoration: underline;
 	background: #f0f0f0;	
 	cursor: pointer;
 }
 
 
-.farcryTrayContextMenuBody li a span {
+#farcryTray .farcryTrayContextMenuBody li a span {
 	float: left;
 	margin-right: 3px;
 }
 
-.farcryTrayContextMenuBody a.farcryTrayMenuSelected {
+#farcryTray .farcryTrayContextMenuBody a.farcryTrayMenuSelected {
 	padding: 2px 15px 3px 2px;	
 	border: 1px solid #b7d1e3;
 	background: #eff5f9;
@@ -245,7 +246,7 @@
 	line-height: 30px;
 }
 
-.farcryTrayButtons a {
+#farcryTray .farcryTrayButtons a {
 	display: block;
 	float: left;
 	padding: 3px 7px 4px 3px;
@@ -257,7 +258,7 @@
 	text-decoration: none;
 	color: black;
 }
-.farcryTrayButtons a:hover {
+#farcryTray .farcryTrayButtons a:hover {
 	text-decoration: underline;
 	background: #f0f0f0;
 }
@@ -265,12 +266,12 @@
 	float: left;
 	margin-right: 3px;
 }
-.farcryTrayButtons a.farcryTrayButtonSelected {
+#farcryTray .farcryTrayButtons a.farcryTrayButtonSelected {
 	padding: 2px 6px 3px 2px;
 	border: 1px solid #b7d1e3;
 	background: #eff5f9;
 }
-.farcryTrayButtons a.farcryTrayButtonDisabled {
+#farcryTray .farcryTrayButtons a.farcryTrayButtonDisabled {
 	padding: 2px 6px 3px 2px;
 	border: 1px solid #aaaaaa;
 	background: #ffffff;
@@ -278,7 +279,7 @@
 	-moz-opacity: 0.25;
 	opacity: 0.25;
 }
-.farcryTrayButtons a.farcryTrayButtonDisabled:hover{
+#farcryTray .farcryTrayButtons a.farcryTrayButtonDisabled:hover{
 	text-decoration: none;
 }
 .farcryTrayBody {
@@ -304,7 +305,7 @@
 	
 }
 
-.farcryTrayBodyMenu a {
+#farcryTray .farcryTrayBodyMenu a {
 	display: block;
 	padding: 3px 7px 4px 3px;
 	margin: 4px 0 0 3px;
@@ -317,7 +318,7 @@
 	font-size: 13px;
 	line-height: 16px;	
 }
-.farcryTrayBodyMenu a:hover {
+#farcryTray .farcryTrayBodyMenu a:hover {
 	text-decoration: underline;
 	background: #f0f0f0;
 }
@@ -331,7 +332,7 @@
 	filter: alpha(opacity=25);
 	zoom: 1;
 }
-.farcryTrayPageSpeed a:hover {
+#farcryTray .farcryTrayPageSpeed a:hover {
 	text-decoration: none;
 	background: none;	
 }
@@ -347,9 +348,11 @@
 	padding: 4px 10px 4px 0;
 	text-align: left;
 	font-weight: bold;
+	font-size: 13px;
 }
 .farcryTrayBodyContentDetails td {
 	padding: 4px;
+	font-size: 13px;
 }
 .farcryTrayBodyContentDetails table {
 	clear: none;
