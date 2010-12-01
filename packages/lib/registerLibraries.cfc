@@ -57,6 +57,14 @@
 								});
 							</cfoutput>
 		</skin:registerJS>
+		
+		<skin:registerJS	id="jquery-uploadify"
+							baseHREF="#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4"
+							lFiles="swfobject.js,jquery.uploadify.v2.1.4.min.js" />
+							
+		<skin:registerJS	id="jquery-crop"
+							baseHREF="#application.url.webtop#/thirdparty/Jcrop/js"
+							lFiles="jquery.Jcrop.js" />
 							
 							
 		<skin:registerJS 	id="gritter"
@@ -95,6 +103,14 @@
 							.ui-dialog .ui-dialog-content { padding:0.5em 0; }
 							</cfoutput>
 		</skin:registerCSS>
+		
+		<skin:registerCSS	id="jquery-uploadify"
+							baseHREF="#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4"
+							lFiles="uploadify.css" />
+							
+		<skin:registerCSS	id="jquery-crop"
+							baseHREF="#application.url.webtop#/thirdparty/Jcrop/css"
+							lFiles="jquery.Jcrop.css" />
 				
 		<skin:registerCSS 	id="farcry-form"
 							baseHREF="#application.url.webtop#"

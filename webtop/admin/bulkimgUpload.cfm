@@ -63,7 +63,7 @@
 	
 	
 	<cflock name="MultipleImageUpload" timeout="10" throwontimeout="false">
-		<cfset stProperties = oImageFormtool.ImageAutoGenerateBeforeSave(stProperties=stProperties, stFields=application.stCoapi.dmImage.stProps,stFormPost=stFormPost) />	
+		<cfset stProperties = oImageFormtool.ImageAutoGenerateBeforeSave(typename="dmImage",stProperties=stProperties, stFields=application.stCoapi.dmImage.stProps,stFormPost=stFormPost) />	
 		<cfset stResult = oImage.createData(stProperties=stProperties,user="multiupload") />
 	</cflock>
 	

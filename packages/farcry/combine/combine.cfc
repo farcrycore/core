@@ -271,7 +271,7 @@
 			<cfif len(trim(arguments.append))>
 				<cfset sOutput = sOutput & trim(arguments.append) />
 			</cfif>
-			
+			<cftry>
 			<cfscript>
 			// 'Minify' the javascript with jsmin
 			if(variables.bJsMin and sType eq 'js')
@@ -285,7 +285,7 @@
 			
 			//output contents
 			//outputContent(sOutput, sType, variables.sCacheControl);
-			</cfscript>
+			</cfscript><cfcatch><cfdump var="#arguments#"><cfabort></cfcatch></cftry>
 			
 			<!--- write the cache file and cleanup (delete) any older cache files --->
 			<cfif variables.bCache>

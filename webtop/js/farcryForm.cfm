@@ -49,6 +49,25 @@
 		}
 	};
 	
+	function getValueData(base,prefix){
+		base = base || {};
+		var property = "";
+		
+		// get the post values
+		for (var property in base) {
+			if ($j('##' + prefix + property).val()) {
+				base[property] = [];
+				$j('input[name='+prefix+property+'],select[name='+prefix+property+'],textarea[name='+prefix+property+']').each(function(){ 
+					var self = $j(this);
+					if (self.val()!=="") base[property].push(self.val());
+				});
+				base[property] = base[property].join();
+			}
+		}
+		
+		return base;
+	};
+	
 	function ajaxUpdate(event) {
 		var values = {};
 		var reenable = [];
@@ -68,23 +87,14 @@
 			}
 			
 			// get the post values
-			for (var property in values) {
-				if ($j('##' + event.data.prefix+property).val()) {
-					values[property] = [];
-					$j('input[name='+event.data.prefix+property+'],select[name='+event.data.prefix+property+'],textarea[name='+event.data.prefix+property+']').each(function(){ 
-						var self = $j(this);
-						if (self.val()!=="") values[property].push(self.val());
-					});
-					values[property] = values[property].join();
-				}
-			}
+			values = getValueData(values,event.data.prefix);
 			
 			// for each watcher
 			for (var i=0; i<$fc.watchedfields[event.data.prefix][event.data.property].length; i++) {
 				$fc.watchloading++;
 				(function(watcher){
 					// post the AJAX request
-					$j("##"+watcher.prefix+watcher.property+"ajaxdiv").html(watcher.ftLoaderHTML).load('#application.url.farcry#/facade/ftajax.cfm?ajaxmode=1&formtool='+watcher.formtool+'&typename='+watcher.typename+'&fieldname='+watcher.fieldname+'&property='+watcher.property+'&objectid='+watcher.objectid,
+					$j("##"+watcher.prefix+watcher.property+"ajaxdiv").html(watcher.ftLoaderHTML).load('#application.url.webtop#/facade/ftajax.cfm?ajaxmode=1&formtool='+watcher.formtool+'&typename='+watcher.typename+'&fieldname='+watcher.fieldname+'&property='+watcher.property+'&objectid='+watcher.objectid,
 						values,
 						function(response){
 							$j("##"+watcher.fieldname+"ajaxdiv").html(response.responseText);

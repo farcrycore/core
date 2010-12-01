@@ -105,7 +105,21 @@
 
 
 
-
+	<cffunction name="getAjaxURL" access="public" output="false" returntype="string" hint="Returns the URL to use for custom AJAX functionality">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+		
+		<cfargument name="combined" required="false" type="boolean" default="false" hint="Force the url parameters into ?/abc/def format" />
+		
+		<cfif arguments.combined>
+			<cfreturn "#application.url.webtop#/facade/ftajax.cfm?/ajaxmode/1/formtool/#arguments.stMetadata.ftType#/typename/#arguments.typename#/fieldname/#arguments.fieldname#/property/#arguments.stMetadata.name#/objectid/#arguments.stObject.objectid#" />
+		<cfelse>
+			<cfreturn "#application.url.webtop#/facade/ftajax.cfm?ajaxmode=1&formtool=#arguments.stMetadata.ftType#&typename=#arguments.typename#&fieldname=#arguments.fieldname#&property=#arguments.stMetadata.name#&objectid=#arguments.stObject.objectid#" />
+		</cfif>
+	</cffunction>
+	
 	<cffunction name="addWatch" access="public" output="true" returntype="string" hint="Adds ajax update functionality for the field">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
