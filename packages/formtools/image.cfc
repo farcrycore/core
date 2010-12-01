@@ -344,6 +344,7 @@
 						var q = parseFloat($j("##image-crop-quality").val());
 						
 						$j('##'+prefix+property+"RESIZEMETHOD").val(c.x.toString()+","+c.y.toString()+"-"+c.x2.toString()+","+c.y2.toString());
+						$j('##'+prefix+property+"QUALITY").val(q);
 						$j('##'+prefix+property+"_autogenerate .image-crop-select-button").hide();
 						$j('##'+prefix+property+"_autogenerate .image-crop-information").show()
 							.find(".image-crop-a-x").html(c.x).end()
@@ -408,6 +409,7 @@
 							<cfif arguments.stMetadata.ftAllowResize>
 								<div class="image-custom-crop" style="display:none;">
 									<input type="hidden" name="#arguments.fieldname#RESIZEMETHOD" id="#arguments.fieldname#RESIZEMETHOD" value="" />
+									<input type="hidden" name="#arguments.fieldname#QUALITY" id="#arguments.fieldname#QUALITY" value="" />
 									<ft:button value="Select Exactly How To Crop Your Image" class="image-crop-select-button" onclick="$fc.uploadify.selectCrop('#prefix#','#arguments.stMetadata.name#','#arguments.stMetadata.ftSourceField#',#arguments.stMetadata.ftImageWidth#,#arguments.stMetadata.ftImageHeight#,'#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#');return false;" />
 									<div class="image-crop-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">When you save, this image will be created by cropping #application.stCOAPI[arguments.typename].stProps[listfirst(arguments.stMetadata.ftSourceField,":")].metadata.ftLabel# to <span class="image-crop-a-x"></span>,<span class="image-crop-a-y"></span>-<span class="image-crop-b-x"></span>,<span class="image-crop-b-y"></span> (<span class="image-crop-width"></span>x<span class="image-crop-height"></span>px), then resizing the result to the target dimensions<cfif arguments.stMetadata.ftAllowResizeQuality> (<span class="image-crop-quality"></span>% quality)</cfif>. <a href="##" onclick="$fc.uploadify.removeCrop('#prefix#','#arguments.stMetadata.name#');return false;">Cancel custom crop</a></div>
 								</div>
@@ -511,6 +513,7 @@
 		
 		<cfset var stResult = structnew() />
 		<cfset var bFixed = false />
+		<cfset var stSource = structnew() />
 		<cfset var stFile = structnew() />
 		<cfset var stImage = structnew() />
 		<cfset var resizeinfo = "" />
@@ -526,7 +529,8 @@
 		<cfif structkeyexists(url,"crop")>
 			<cfset source = arguments.stObject[listfirst(arguments.stMetadata.ftSourceField,":")] />
 			<cfif isvalid("uuid",source)>
-				<cfset source = application.fapi.getContentObject(objectid=source)[listlast(arguments.stMetadata.ftSourceField,":")] />
+				<cfset stSource = application.fapi.getContentObject(objectid=source) />
+				<cfset source = stSource[listlast(arguments.stMetadata.ftSourceField,":")] />
 			</cfif>
 			
 			<cfif not structkeyexists(arguments.stMetadata,"ftImageWidth") or not isnumeric(arguments.stMetadata.ftImageWidth)><cfset arguments.stMetadata.ftImageWidth = 0 /></cfif>
