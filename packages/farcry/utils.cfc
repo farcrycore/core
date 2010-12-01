@@ -532,9 +532,9 @@
 
 		
 		<cfif not structkeyexists(arguments,"removevalues")>
-			<cfset arguments.removevalues = "furl,flushcache,bAjax,designmode,draftmode,updateapp,bShowTray,logout" />
+			<cfset arguments.removevalues = "furl,flushcache,bAjax,designmode,draftmode,showdraft,rebuild,updateapp,bShowTray,logout" />
 		<cfelseif left(arguments.removevalues,1) eq "+">
-			<cfset arguments.removevalues = "furl,flushcache,bAjax,designmode,draftmode,updateapp,bShowTray,logout,#mid(arguments.removevalues,2,len(arguments.removevalues))#">
+			<cfset arguments.removevalues = "furl,flushcache,bAjax,designmode,draftmode,showdraft,rebuild,updateapp,bShowTray,logout,#mid(arguments.removevalues,2,len(arguments.removevalues))#">
 		</cfif>
 		
 		<!--- Normalise FU --->

@@ -80,42 +80,12 @@
 			});
 		}
 		
-		$fc.traySwitch = function(webskin){
-		    $j('##farcrytray').html('');
-			$j.ajax({
-				type: "POST",
-				cache: false,
-				<cfif findNoCase("?",urlTray)>
-					url: '#urlTray#' + '&view=' + webskin + '&totalTickCount=#request.fc.totalTickCount#', 
-				<cfelse>
-					url: '#urlTray#' + '?view=' + webskin + '&totalTickCount=#request.fc.totalTickCount#', 
-				</cfif>
-				
-				complete: function(data){
-					$j('##farcrytray').html(data.responseText);					
-				},
-				data:{
-					refererURL:'#cgi.script_name#?#cgi.query_string#'
-					<cfloop collection="#request.fc.trayData#" item="thistag.traydatakey">
-						<cfif issimplevalue(request.fc.trayData[thistag.traydatakey])>
-							, '#thistag.traydatakey#':'#jsstringformat(request.fc.trayData[thistag.traydatakey])#'
-						<cfelse>
-							<cfif thistag.traydatakey eq "profile"><cfset application.fapi.addProfilePoint("End","End") /></cfif>
-							<cfwddx action="cfml2wddx" input="#request.fc.trayData[thistag.traydatakey]#" output="thistag.traydatawddx" />
-							, '#thistag.traydatakey#':'#jsstringformat(thistag.traydatawddx)#'
-						</cfif>
-					</cfloop>
-				},
-				dataType: "html"
-			});
-		}
 		
 		$fc.trayAction = function(urlParams){
 		    document.location = '#cgi.script_name#?#cgi.query_string#&' + urlParams;
 		}
 			
 		$fc.editTrayObject = function(typename,objectid) {
-			$fc.traySwitch('displayAdminBarHidden');
 			$fc.objectAdminAction('Inline Edit', '#application.url.webtop#/edittabOverview.cfm?typename=' + typename + '&objectid=' + objectid + '&method=edit&ref=iframe');		
 		};	
 		
