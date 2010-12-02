@@ -229,11 +229,11 @@
 									.find(".image-status").attr("title","This file has been updated on the server").html('<span class="ui-icon ui-icon-info" style="float:left;">&nbsp;</span>').end()
 									.find(".image-filename").html(results.filename).end()
 									.find(".image-preview").attr("href",results.fullpath).end()
-									.find(".image-size").html(results.size.toString()).end();
+									.find(".image-size").html(results.size.toString()).end()
+									.find(".image-width").html(results.width.toString()).end()
+									.find(".image-height").html(results.height.toString()).end();
 								if (results.resizedetails){
 									$j('##'+prefix+property+"_complete")
-										.find(".image-width").html(results.resizedetails.width.toString()).end()
-										.find(".image-height").html(results.resizedetails.height.toString()).end()
 										.find(".image-quality").html(results.resizedetails.quality.toString()).end()
 										.find(".image-resize-information").show().end();
 								}
@@ -291,6 +291,7 @@
 					// get the post values
 					var values = {};
 					$j('[name^="'+prefix+property+'"]').each(function(){ if (this.name!=prefix+property+"NEW") values[this.name.slice(prefix.length)]=""; });
+					values[sourceField] = "";
 					values = getValueData(values,prefix);
 					
 					$j("body").append("<div id='image-crop-overlay'><div class='ui-widget-overlay' style='width:"+docwidth+"px;height:"+docheight+"px;'></div><div style='width:"+(overlaywidth+22)+"px;height:"+(overlayheight+22)+"px;position:absolute;left:"+overlayleft+"px; top:"+overlaytop+"px;' class='ui-widget-shadow ui-corner-all'></div><div id='image-crop-ui' class='ui-widget ui-widget-content ui-corner-all' style='position: absolute;width:"+overlaywidth+"px;height:"+overlayheight+"px;left:"+overlayleft+"px;top:"+overlaytop+"px; padding: 10px;'></div></div>");
@@ -369,10 +370,10 @@
 		</script></cfoutput></skin:htmlHead>
 	    
 	    <cfsavecontent variable="metadatainfo">
-			<cfif len(arguments.stMetadata.ftImageWidth) or len(arguments.stMetadata.ftImageHeight)>
-				<cfoutput>Dimensions: <cfif isnumeric(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth gt 0>#arguments.stMetadata.ftImageWidth#<cfelse>any width</cfif> x <cfif isnumeric(arguments.stMetadata.ftImageHeight) and arguments.stMetadata.ftImageHeight gt 0>#arguments.stMetadata.ftImageHeight#<cfelse>any height</cfif> (#predefinedCrops[arguments.stMetadata.ftAutoGenerateType]#)<br></cfoutput>
+			<cfif (isnumeric(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth gt 0) or (isnumeric(arguments.stMetadata.ftImageHeight) and arguments.stMetadata.ftImageHeight gt 0)>
+				<cfoutput>Dimensions: <cfif isnumeric(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth gt 0>#arguments.stMetadata.ftImageWidth#<cfelse>any width</cfif> x <cfif isnumeric(arguments.stMetadata.ftImageHeight) and arguments.stMetadata.ftImageHeight gt 0>#arguments.stMetadata.ftImageHeight#<cfelse>any height</cfif> (#predefinedCrops[arguments.stMetadata.ftAutoGenerateType]#)<br>Quality Setting: #round(arguments.stMetadata.ftQuality*100)#%<br></cfoutput>
 			</cfif>
-			<cfoutput>Image must be of type #arguments.stMetadata.ftAllowedExtensions#<br>Quality Setting: #round(arguments.stMetadata.ftQuality*100)#%</cfoutput>
+			<cfoutput>Image must be of type #arguments.stMetadata.ftAllowedExtensions#</cfoutput>
 		</cfsavecontent>
 	    
 	    <cfif len(arguments.stMetadata.ftSourceField)>
@@ -384,7 +385,7 @@
 					<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="false" />
 					<cfif arguments.stMetadata.ftAllowUpload>
 				    	<div id="#arguments.fieldname#_upload" style="display:none;">
-				    		<span id="image-traditional-switch" class="ui-icon ui-icon-shuffle" title="Switch between traditional upload and live upload" style="float:left;"><a href="##" class="ui-icon ui-icon-shuffle" onclick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','traditional')">&nbsp;</a></span>
+			    		<a href="##" id="image-traditional-switch" title="Switch between traditional upload and live upload" style="float:left;" onclick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','traditional')"><span class="ui-icon ui-icon-shuffle"&nbsp;</span></a>
 							<div style="margin-left:15px">
 					    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
 					    		<div id="#arguments.fieldname#_error" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
@@ -457,7 +458,7 @@
 					<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
 					<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="false" />
 			    	<div id="#arguments.fieldname#_upload"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
-			    		<span id="image-traditional-switch" class="ui-icon ui-icon-shuffle" title="Switch between traditional upload and live upload" style="float:left;"><a href="##" onclick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','traditional')">&nbsp;</a></span>
+			    		<a href="##" id="image-traditional-switch" title="Switch between traditional upload and live upload" style="float:left;" onclick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','traditional')"><span class="ui-icon ui-icon-shuffle"&nbsp;</span></a>
 						<div style="margin-left:15px">
 				    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
 				    		<div id="#arguments.fieldname#_error" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
@@ -490,8 +491,8 @@
 					    <div id="#arguments.fieldname#_complete" style="display:none;">
 				    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
 				    		<div style="margin-left:15px;">
-					    		<span class="image-filename"></span> (<a class="image-preview" href="##" target="_blank">Preview</a>)
-					    		Size: <span class="image-size"></span>KB<span class="image-resize-information">
+					    		<span class="image-filename"></span> (<a class="image-preview" href="##" target="_blank">Preview</a>)<br>
+					    		Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
 					    		<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
 					    		<a href="##" class="image-replace" onclick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','upload');return false;">Repace this image with one from your computer</a>
 							</div>
@@ -549,7 +550,14 @@
 								Coordinates: (<span id="image-crop-a-x">?</span>,<span id="image-crop-a-y">?</span>) to (<span id="image-crop-b-x">?</span>,<span id="image-crop-b-y">?</span>)<br>
 								Dimensions: <span id="image-crop-width">?</span>px x <span id="image-crop-height">?</span>px<br>
 								<cfif arguments.stMetadata.ftImageWidth gt 0 and arguments.stMetadata.ftImageHeight gt 0>
-									Ratio: <cfif arguments.stMetadata.ftImageWidth gt arguments.stMetadata.ftImageHeight>#numberformat(arguments.stMetadata.ftImageWidth/arguments.stMetadata.ftImageHeight,"9.99")#:1<cfelse>1:#numberformat(arguments.stMetadata.ftImageHeight/arguments.stMetadata.ftImageWidth,"9.99")#</cfif> <span style="font-style:italic;">(NOTE: the size ratio is predefined for this field)</span><br>
+									Ratio: 
+									<cfif arguments.stMetadata.ftImageWidth gt arguments.stMetadata.ftImageHeight>
+										#numberformat(arguments.stMetadata.ftImageWidth/arguments.stMetadata.ftImageHeight,"9.99")#:1
+									<cfelseif arguments.stMetadata.ftImageWidth lt arguments.stMetadata.ftImageHeight>
+										1:#numberformat(arguments.stMetadata.ftImageHeight/arguments.stMetadata.ftImageWidth,"9.99")#
+									<cfelse><!--- Equal --->
+										1:1
+									</cfif> <span style="font-style:italic;">(NOTE: the size ratio is predefined for this field)</span><br>
 								<cfelse>
 									Ratio: <span id="image-crop-ratio-num">?</span>:<span id="image-crop-ratio-den">?</span><br>
 								</cfif>
@@ -566,8 +574,8 @@
 						</div>
 						<div class="uniForm image-crop-actions">
 							<ft:buttonPanel>
-								<a href="##" onclick="$fc.uploadify.endCrop();return false" style="padding-right:10px;">Cancel</a>
-								<ft:button value="Crop and Resize" id="image-crop-finalize" onclick="$fc.uploadify.finalizeCrop();return false" />
+								<a href="##" onclick="$fc.uploadify.endCrop();return false;" style="padding-right:10px;">Cancel</a>
+								<ft:button value="Crop and Resize" id="image-crop-finalize" onclick="$fc.uploadify.finalizeCrop();return false;" />
 							</ft:buttonPanel>
 						</div>
 					</div>
@@ -575,7 +583,7 @@
 				
 				<cfreturn html />
 			<cfelse>
-				<cfreturn "<p>The source field is empty. <a href='##' onclick='$fc.uploadify.endCrop();return false'>Close</a></p>" />
+				<cfreturn "<p>The source field is empty. <a href='##' onclick='$fc.uploadify.endCrop();return false;'>Close</a></p>" />
 			</cfif>
 		</cfif>
 		
@@ -593,13 +601,13 @@
 			<cfset bFixed = fixImage("#application.path.imageroot##stResult.value#",arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
 			
 			<cfif bFixed>
-				<cfimage action="info" source="#application.path.imageroot##stResult.value#" structname="stImage" />
-				<cfset resizeinfo = ', "resizedetails" : { "quality" : #round(arguments.stFieldPost.stSupporting.Quality*100)#, "width" : #stImage.width#, "height" : #stImage.height# }' />
+				<cfset resizeinfo = ', "resizedetails" : { "quality" : #round(arguments.stFieldPost.stSupporting.Quality*100)# }' />
 			</cfif>
 			
 			<cfset stFile = getFileInfo(application.path.imageroot & stResult.value) />
+			<cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" />
 			<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
-			<cfreturn '{ "value" : "#jsstringformat(stResult.value)#", "filename": "#jsstringformat(listlast(stResult.value,'/'))#", "fullpath" : "#jsstringformat(application.url.imageroot & stResult.value)#", "size" : #round(stFile.size/1024)# #resizeinfo# }' />
+			<cfreturn '{ "value" : "#jsstringformat(stResult.value)#", "filename": "#jsstringformat(listlast(stResult.value,'/'))#", "fullpath" : "#jsstringformat(application.url.imageroot & stResult.value)#", "size" : #round(stFile.size/1024)#, "width" : #stImage.width#, "height" : #stImage.height# #resizeinfo# }' />
 		</cfif>
 		
 		<cfreturn "" />
@@ -1323,9 +1331,9 @@
 	
 	<cffunction name="onFileChange" access="public" returntype="any" output="false" hint="Called internally (by the image formtool) just before a new image is returned to calling code.">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
-		<cfargument name="objectid" required="true" type="struct" hint="The id of the record that this field is part of.">
+		<cfargument name="objectid" required="true" type="uuid" hint="The id of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
-		<cfargument name="value" required="true" type="struct" hint="The new filename value" />
+		<cfargument name="value" required="true" type="string" hint="The new filename value" />
 		
 		
 	</cffunction>
