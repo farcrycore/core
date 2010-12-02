@@ -385,7 +385,7 @@
 					<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="false" />
 					<cfif arguments.stMetadata.ftAllowUpload>
 				    	<div id="#arguments.fieldname#_upload" style="display:none;">
-			    		<a href="##" id="image-traditional-switch" title="Switch between traditional upload and live upload" style="float:left;" onclick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','traditional')"><span class="ui-icon ui-icon-shuffle"&nbsp;</span></a>
+			    		<a href="##" id="image-traditional-switch" title="Switch between traditional upload and inline upload" style="float:left;" onclick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','traditional')"><span class="ui-icon ui-icon-shuffle"&nbsp;</span></a>
 							<div style="margin-left:15px">
 					    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
 					    		<div id="#arguments.fieldname#_error" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
@@ -395,7 +395,7 @@
 					    	</div>
 						</div>
 				    	<div id="#arguments.fieldname#_traditional" style="display:none;">
-				    		<span id="image-traditional-switch" class="ui-icon ui-icon-shuffle" title="Swheightitch between traditional upload and live upload" style="float:left;"><a href="##" class="ui-icon ui-icon-shuffle" onclick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','traditional')">&nbsp;</a></span>
+				    		<span id="image-traditional-switch" class="ui-icon ui-icon-shuffle" title="Swheightitch between traditional upload and inline upload" style="float:left;"><a href="##" class="ui-icon ui-icon-shuffle" onclick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','traditional')">&nbsp;</a></span>
 							<div style="margin-left:15px">
 					    		<input type="file" name="#arguments.fieldname#TRADITIONAL" id="#arguments.fieldname#TRADITIONAL" />
 					    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
@@ -458,7 +458,7 @@
 					<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
 					<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="false" />
 			    	<div id="#arguments.fieldname#_upload"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
-			    		<a href="##" id="image-traditional-switch" title="Switch between traditional upload and live upload" style="float:left;" onclick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','traditional')"><span class="ui-icon ui-icon-shuffle"&nbsp;</span></a>
+			    		<a href="##" id="image-traditional-switch" title="Switch between traditional upload and inline upload" style="float:left;" onclick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','traditional')"><span class="ui-icon ui-icon-shuffle"&nbsp;</span></a>
 						<div style="margin-left:15px">
 				    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
 				    		<div id="#arguments.fieldname#_error" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
@@ -468,7 +468,7 @@
 				    	</div>
 					</div>
 			    	<div id="#arguments.fieldname#_traditional" style="display:none;">
-			    		<span id="image-traditional-switch" class="ui-icon ui-icon-shuffle" title="Switch between traditional upload and live upload" style="float:left;"><a href="##" class="ui-icon ui-icon-shuffle" onclick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','traditional')">&nbsp;</a></span>
+			    		<span id="image-traditional-switch" class="ui-icon ui-icon-shuffle" title="Switch between traditional upload and inline upload" style="float:left;"><a href="##" class="ui-icon ui-icon-shuffle" onclick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','traditional')">&nbsp;</a></span>
 						<div style="margin-left:15px">
 				    		<input type="file" name="#arguments.fieldname#TRADITIONAL" id="#arguments.fieldname#TRADITIONAL" />
 				    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
