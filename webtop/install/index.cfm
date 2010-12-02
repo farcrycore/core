@@ -3,6 +3,7 @@
 
 <cfif structKeyExists(url, "restartInstaller")>
 	<cfset structDelete(session, "oUI") />
+	<cfset structDelete(session, "oInstall") />
 	<cflocation url="index.cfm" addtoken="false" />
 </cfif>
 
