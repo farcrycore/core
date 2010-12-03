@@ -218,7 +218,7 @@
 						</select>	
 					
 						Year 				
-						<select name="#arguments.fieldname#Year" id="#argumentsBSLWAR-90.fieldname#Year" class="selectInput" style="float:none;">
+						<select name="#arguments.fieldname#Year" id="#arguments.fieldname#Year" class="selectInput" style="float:none;">
 							<option value="">--</option>
 							<cfloop from="#arguments.stMetadata.ftStartYear#" to="#arguments.stMetadata.ftEndYear#" index="i" step="#step#">
 								<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND Year(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#i#</option>
