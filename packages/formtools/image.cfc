@@ -153,159 +153,121 @@
 	    <skin:loadCSS id="jquery-crop" />
 	    <skin:htmlHead id="farcry-uploadify"><cfoutput><script type="text/javascript">
 	    <!--- <skin:loadJS id="farcry-uploadify"><script type="text/javascript"><cfoutput> --->
-		    $fc.uploadify = {
-		    	"switchMode" : function(prefix,property,mode){
-		    		switch (mode){
-		    			case "upload":
-		    				$j('##'+prefix+property+'_complete').hide();
-		    				$j('##'+prefix+property+'_autogenerate').hide();
-		    				$j('##'+prefix+property+'_traditional').hide();
-		    				$j('##'+prefix+property+'TRADITIONAL').val("");
-		    				$j('##'+prefix+preperty+'RESIZEMETHOD').val("");
-		    				$j('##'+prefix+property+'DELETE').val("false");
-		    				$j('##'+prefix+property+'_upload').show();
-		    				break;
-		    			case "complete":
-		    				$j('##'+prefix+property+'_upload').hide();
-		    				$j('##'+prefix+property+'_autogenerate').hide();
-		    				$j('##'+prefix+property+'_traditional').hide();
-		    				if ($j('##'+prefix+property).val().length){
-			    				$j('##'+prefix+property+'_upload').find(".image-cancel-upload").show();
-			    				$j('##'+prefix+property+'_autogenerate').find(".image-cancel-replace").show();
-			    			}
-		    				$j('##'+prefix+property+'_complete').show();
-		    				break;
-		    			case "autogenerate":
-		    				$j('##'+prefix+property+'_upload').hide();
-		    				$j('##'+prefix+property+'_complete').hide();
-		    				$j('##'+prefix+property+'_traditional').hide();
-		    				$j('##'+prefix+property+'DELETE').val("true");
-		    				$j('##'+prefix+property+'_autogenerate').show();
-		    				break;
-		    			case "traditional":
-		    				if ($j('##'+prefix+property+'_traditional').is(":visible")){
-			    				$j('##'+prefix+property+'_traditional').hide();
-		    					$j('##'+prefix+property+'TRADITIONAL').val("");
-			    				$j('##'+prefix+property+'_upload').show();
-		    				}
-		    				else {
-			    				$j('##'+prefix+property+'_upload').hide();
-			    				$j('##'+prefix+property+'_traditional').show();
-			    			}
-		    				break;
+	    	(function(jQuery){
+	    		var defaults = {
+	    			"selected"		: "",
+	    			"onInit"		: null,
+	    			"onOpen"		: null,
+	    			"onOpenTarget"	: {},
+	    			"onClose"		: null,
+	    			"onCloseTarget"	: {},
+	    			"autoWireClass"	: "a.select-view,button.select-view",
+	    			"eventData"		: {}
+	    		};
+	    		
+	    		jQuery.fn.multiView = function(data){
+	    			data = jQuery.extend(true,data || {},defaults);
+	    			var views = [];
+	    			
+	    			if (data.onInit) this.bind("multiviewInit",data,eventData,data.onInit);
+	    			if (data.onOpen) this.bind("multiviewOpen",data.eventData,data.onOpen);
+    				for (target in data.onOpenTarget)
+    					this.bind("multiviewOpen"+target,data.eventData,data.onOpenTarget[target]);
+	    			if (data.onClose) this.bind("multiviewClose",data.eventData,data.onClose);
+    				for (target in data.onCloseTarget)
+    					this.bind("multiviewClose"+target,data.eventData,data.onCloseTarget[target]);
+	    			
+	    			jQuery("> div",this).each(function(){
+	    				var $self = jQuery(this);
+	    				var viewname = ""
+	   					var classes = this.className.split(" ");
+	   					for (var i=0;i<classes.length;i++)
+	   						if (classes[i].search(/^\w+-view$/)>-1) viewname = classes[i].slice(0,-5);
+	   					views.push(viewname);
+	   					
+	    				if (data.selected.length && $self.hasClass(data.selected+"-view") && !$self.not(":visible")){
+	    					// show selected
+	    					$self.show();
+	    				}
+	    				else if (!data.selected.length && $self.is(":visible")){
+	    					// no initial view provided - select first visible one
+    						data.selected = viewname;
+	    				}
+	    				else if ($self.is(":visible")){
+	    					// hide everything else
+	    					$self.hide();
+	    				}
+	    			});
+	    			this.data("multiview.currentview",data.selected);
+	    			this.data("multiview.allviews",views);
+	    			this.trigger("multiviewOpen",[ this.find("> ."+data.selected+"-view"),data.selected ]);
+	    			
+	    			jQuery(data.autoWireClass,this).bind("click",{ "multiview":this },function(event){
+	    				event.data.multiview.selectView(this.href.split("##")[1]);
+	    				return false;
+	    			});
+	    			
+		    		this.trigger("multiviewInit");
+		    		
+		    		return this;
+	    		};
+	    		
+	    		jQuery.fn.selectView = function(newview){
+	    			var oldview = this.data("multiview.currentview");
+	    			if (oldview && oldview != newview) {
+	    				var $oldview = this.findView(oldview);
+	    				this.trigger("multiviewClose",[ $oldview[0],oldview ]).trigger("multiviewClose"+oldview,[ $oldview[0],oldview ]);
+	    				$oldview.hide();
+	    			}
+	    			if (oldview != newview){
+		    			this.data("multiview.currentview",newview);
+		    			var $newview = this.findView(newview);
+		    			$newview.show();
+		    			this.trigger("multiviewOpen",[ $newview[0],newview ]).trigger("multiviewOpen"+newview,[ $newview[0],newview ]);
 		    		}
-		    	},
-		    	"setupUploader" : function(prefix,property,url,filetypes){
-			    	$j('##'+prefix+property+"NEW").uploadify({
-			    		'buttonText'	: 'Select File',
-						'uploader'  	: '#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4/uploadify.swf',
-						'script'    	: url,
-						'checkScript'	: url+"&check=1",
-						'cancelImg' 	: '#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4/cancel.png',
-						'auto'      	: true,
-						'fileExt'		: filetypes,
-						'fileDataName'	: property+"NEW",
-						'method'		: "POST",
-						'scriptData'	: {},
-						'onSelectOnce' 	: function(event,data){
-							// hide any previous results
-							$j('##'+prefix+property+"_error").hide();
-							
-							// get the post values
-							var values = {};
-							$j('[name^="'+prefix+property+'"]').each(function(){ if (this.name!=prefix+property+"NEW") values[this.name.slice(prefix.length)]=""; });
-							values = getValueData(values,prefix);
-							$j('##'+prefix+property+"NEW").uploadifySettings("scriptData",values);
-						},
-						'onComplete'	: function(event, ID, fileObj, response, data){
-							var results = $j.parseJSON(response);
-							$j('##'+prefix+property+"NEW").uploadifyClearQueue();
-							if (results.error){
-								$j('##'+prefix+property+"_error").html(results.error).show();
-							}
-							else{
-								$j('##'+prefix+property).val(results.value);
-								$j('##'+prefix+property+"_complete")
-									.find(".image-status").attr("title","This file has been updated on the server").html('<span class="ui-icon ui-icon-info" style="float:left;">&nbsp;</span>').end()
-									.find(".image-filename").html(results.filename).end()
-									.find(".image-preview").attr("href",results.fullpath).end()
-									.find(".image-size").html(results.size.toString()).end()
-									.find(".image-width").html(results.width.toString()).end()
-									.find(".image-height").html(results.height.toString()).end();
-								if (results.resizedetails){
-									$j('##'+prefix+property+"_complete")
-										.find(".image-quality").html(results.resizedetails.quality.toString()).end()
-										.find(".image-resize-information").show().end();
-								}
-								else {
-									$j('##'+prefix+property+"_complete").find(".image-resize-information").hide().end();
-								}
-								$fc.uploadify.switchMode(prefix,property,"complete");
-							}
-						},
-						'onError'		: function(a, b, c, d){
-							var error_text = "";
-							$j('##'+prefix+property+"NEW").uploadifyClearQueue();
-							if (d.status == 404) {
-								error_text = 'Could not find upload script';
-							}
-							else if (d.type === "HTTP") {
-								error_text = 'error '+d.type+": "+d.status,d;
-							}
-							else if (d.type ==="File Size"){
-								error_text = c.name+' '+d.type+' Limit: '+Math.round(d.sizeLimit);
-							}
-							else {
-								error_text = 'error '+d.type+": "+d.text;
-							}
-							$j('##'+prefix+property+"_error").html(error_text).show();
-						}
-					});
-				},
-				"setEnableCustomCrop" : function(prefix,property,enabled){
-					if (enabled){
-						$j('##'+prefix+property+'_autogenerate').find(".image-custom-crop").show();
-					}
-					else{
-						$j('##'+prefix+property+'_autogenerate').find(".image-custom-crop").hide();
-					}
-				},
-				"bindCustomCrop" : function(prefix,property,sourceField,def){
-					var $source = $j("##"+prefix+sourceField);
-					$fc.uploadify.setEnableCustomCrop(prefix,property,def);
-					if ($source.length)
-						setInterval(function(){ $fc.uploadify.setEnableCustomCrop(prefix,property,$source.val().length>0); },500);
-				},
-				"selectCrop" : function(prefix,property,sourceField,width,height,url){
-					var docwidth = $j(document).width();
-					var docheight = $j(document).height();
-					var viewportwidth = $j(window).width();
-					var viewportheight = $j(window).height();
+		    		
+		    		return this;
+	    		};
+	    		
+	    		jQuery.fn.findView = function(view){
+	    			return this.find("> ."+view+"-view");
+	    		};
+	    	})($j);
+	    	
+	    	(function(jQuery){
+		    	$fc.cropper = function(sourceobject, url, width, height, postvalues){
+		    		
+		    		var cropper = this;
+		    		
+	    			var docwidth = jQuery(document).width();
+					var docheight = jQuery(document).height();
+					var viewportwidth = jQuery(window).width();
+					var viewportheight = jQuery(window).height();
 					var overlaywidth = viewportwidth - 100;
 					var overlayheight = viewportheight - 100;
-					var overlayleft = $j(document).scrollLeft()+(viewportwidth-overlaywidth)/2;
-					var overlaytop = $j(document).scrollTop()+(viewportheight-overlayheight)/2;
+					var overlayleft = jQuery(document).scrollLeft()+(viewportwidth-overlaywidth)/2;
+					var overlaytop = jQuery(document).scrollTop()+(viewportheight-overlayheight)/2;
 					
-					$fc.uploadify.current_crop_selection = null;
+					var current_crop_selection = null;
 					
-					// get the post values
-					var values = {};
-					$j('[name^="'+prefix+property+'"]').each(function(){ if (this.name!=prefix+property+"NEW") values[this.name.slice(prefix.length)]=""; });
-					values[sourceField] = "";
-					values = getValueData(values,prefix);
+					// Add crop dialog markup
+					jQuery("body").append("<div id='image-crop-overlay'><div class='ui-widget-overlay' style='width:"+docwidth+"px;height:"+docheight+"px;'></div><div style='width:"+(overlaywidth+22)+"px;height:"+(overlayheight+22)+"px;position:absolute;left:"+overlayleft+"px; top:"+overlaytop+"px;' class='ui-widget-shadow ui-corner-all'></div><div id='image-crop-ui' class='ui-widget ui-widget-content ui-corner-all' style='position: absolute;width:"+overlaywidth+"px;height:"+overlayheight+"px;left:"+overlayleft+"px;top:"+overlaytop+"px; padding: 10px;'></div></div>");
 					
-					$j("body").append("<div id='image-crop-overlay'><div class='ui-widget-overlay' style='width:"+docwidth+"px;height:"+docheight+"px;'></div><div style='width:"+(overlaywidth+22)+"px;height:"+(overlayheight+22)+"px;position:absolute;left:"+overlayleft+"px; top:"+overlaytop+"px;' class='ui-widget-shadow ui-corner-all'></div><div id='image-crop-ui' class='ui-widget ui-widget-content ui-corner-all' style='position: absolute;width:"+overlaywidth+"px;height:"+overlayheight+"px;left:"+overlayleft+"px;top:"+overlaytop+"px; padding: 10px;'></div></div>");
-					$j("##image-crop-overlay .ui-widget-overlay").bind("click",function(e) { if (this==e.target) $fc.uploadify.endCrop(prefix,property); });
-					$j("##image-crop-ui").load(url+"&crop=1",values,function(){
-						var $x1 = $j("##image-crop-a-x");
-						var $y1 = $j("##image-crop-a-y");
-						var $x2 = $j("##image-crop-b-x");
-						var $y2 = $j("##image-crop-b-y");
-						var $w = $j("##image-crop-width");
-						var $h = $j("##image-crop-height");
-						var $rn = $j("##image-crop-ratio-num");
-						var $rd = $j("##image-crop-ratio-den");
-						$j("##cropable-image").Jcrop({
+					// Add event to end cropping when the overlay is clicked
+					jQuery("##image-crop-overlay .ui-widget-overlay").bind("click",function(e) { if (this==e.target) cropper.cancelCrop(); });
+					
+					// Load and add events to crop HTML
+					jQuery.ajaxSetup({ timeout:5000 });
+					jQuery("##image-crop-ui").load(url+"&crop=1",postvalues,function(){
+						var $x1 = jQuery("##image-crop-a-x");
+						var $y1 = jQuery("##image-crop-a-y");
+						var $x2 = jQuery("##image-crop-b-x");
+						var $y2 = jQuery("##image-crop-b-y");
+						var $w = jQuery("##image-crop-width");
+						var $h = jQuery("##image-crop-height");
+						var $rn = jQuery("##image-crop-ratio-num");
+						var $rd = jQuery("##image-crop-ratio-den");
+						jQuery("##cropable-image").Jcrop({
 							"minSize" : [width,height],
 							"aspectRatio" : (width && height)?width/height:0,
 							"boxWidth" : overlaywidth * 0.65,
@@ -327,45 +289,210 @@
 								}
 							},
 							"onSelect" : function(c){
-								$fc.uploadify.current_crop_selection = c;
+								current_crop_selection = c;
 							}
 						});
-						//$j("##image-crop-cancel").button({}).bind("click",function() { $fc.uploadify.endCrop(prefix,property); return false; });
-						$j("##image-crop-finalize").button({}).bind("click",function() { $fc.uploadify.finalizeCrop(prefix,property); return false; });
-						$j("##image-crop-overlay .image-crop-instructions").height(overlayheight-50);
+						jQuery("##image-crop-cancel").bind("click",function() { cropper.cancelCrop(); return false; });
+						jQuery("##image-crop-finalize").button({}).bind("click",function() { cropper.finalizeCrop(); return false; });
+						jQuery("##image-crop-overlay .image-crop-instructions").height(overlayheight-50);
 					});
-				},
-				"endCrop" : function(prefix,property){
-					$j.Jcrop('##cropable-image').destroy();
-					$j("##image-crop-overlay").remove();
-				},
-				"finalizeCrop" : function(prefix,property){
-					if ($fc.uploadify.current_crop_selection){
-						var c = $fc.uploadify.current_crop_selection;
-						var q = parseFloat($j("##image-crop-quality").val());
-						
-						$j('##'+prefix+property+"RESIZEMETHOD").val(c.x.toString()+","+c.y.toString()+"-"+c.x2.toString()+","+c.y2.toString());
-						$j('##'+prefix+property+"QUALITY").val(q);
-						$j('##'+prefix+property+"_autogenerate .image-crop-select-button").hide();
-						$j('##'+prefix+property+"_autogenerate .image-crop-information").show()
-							.find(".image-crop-a-x").html(c.x).end()
-							.find(".image-crop-a-y").html(c.y).end()
-							.find(".image-crop-b-x").html(c.x2).end()
-							.find(".image-crop-b-y").html(c.y2).end()
-							.find(".image-crop-width").html(c.w).end()
-							.find(".image-crop-height").html(c.h).end()
-							.find(".image-crop-quality").html((q*100).toFixed(0)).end();
-					}
 					
-					$j.Jcrop('##cropable-image').destroy();
-					$j("##image-crop-overlay").remove();
-				},
-				"removeCrop" : function(prefix,property){
-					$j('##'+prefix+property+"RESIZEMETHOD").val("");
-					$j('##'+prefix+property+"_autogenerate .image-crop-information").hide();
-					$j('##'+prefix+property+"_autogenerate .image-crop-select-button").show();
-				}
-		    };
+					this.cancelCrop = function(){
+						jQuery.Jcrop('##cropable-image').destroy();
+						jQuery("##image-crop-overlay").remove();
+						jQuery(sourceobject).trigger("cancelcrop");
+					};
+					
+					this.finalizeCrop = function(){
+						$j.Jcrop('##cropable-image').destroy();
+						$j("##image-crop-overlay").remove();
+						
+						if (current_crop_selection){
+							var quality = "";
+							if (jQuery("##image-crop-quality").length) parseFloat(jQuery("##image-crop-quality").val());
+							
+							jQuery(sourceobject).trigger("savecrop",[ current_crop_selection, quality ]);
+						}
+						else
+							jQuery(sourceobject).trigger("cancelcrop");
+					};
+					
+					return this;
+		    	};
+		    })($j);
+	    	
+	    	$fc.imageformtool = function(prefix,property){
+	    		function ImageFormtool(prefix,property) {
+	    			var imageformtool = this;
+	    			this.prefix = prefix;
+	    			this.property = property;
+	    			this.multiview = "";
+	    			
+	    			this.inputs = {};
+	    			this.views = {};
+	    			this.elements = {};
+	    			
+	    			this.init = function(url,filetypes,sourceField,width,height){
+	    				imageformtool.url = url;
+	    				imageformtool.filetypes = filetypes;
+	    				imageformtool.sourceField = sourceField;
+	    				imageformtool.width = width;
+	    				imageformtool.height = height;
+	    				
+	    				imageformtool.inputs.resizemethod  = $j('##'+prefix+property+'RESIZEMETHOD');
+	    				imageformtool.inputs.quality  = $j('##'+prefix+property+'QUALITY');
+	    				imageformtool.inputs.delete = $j('##'+prefix+property+'DELETE');
+	    				imageformtool.inputs.traditional = $j('##'+prefix+property+'TRADITIONAL');
+	    				imageformtool.inputs.new = $j('##'+prefix+property+'NEW');
+	    				imageformtool.inputs.base = $j('##'+prefix+property);
+	    				
+			    		imageformtool.multiview = $j("##"+prefix+property+"-multiview").multiView({ 
+				    			"onOpenTarget" : {
+				    				"upload" : function(event){  },
+				    				"complete" : function(event){ 
+					    				if (imageformtool.inputs.base.val().length){
+						    				$j(this).find(".image-cancel-upload").show();
+						    				$j(this).find(".image-cancel-replace").show();
+						    			}
+					    			},
+				    				"autogenerate" : function(event){ 
+					    				if (imageformtool.inputs.base.val().length){
+						    				imageformtool.inputs.delete.val("true");
+						    			}
+				    				},
+				    				"traditional" : function(event){  }
+				    			},
+				    			"onCloseTarget" : {
+				    				"upload" : function(event){  },
+				    				"complete" : function(event){  },
+				    				"autogenerate" : function(event){ 
+				    					imageformtool.inputs.resizemethod.val(""); 
+				    					imageformtool.inputs.delete.val("false"); 
+				    				},
+				    				"traditional" : function(event){ 
+				    					imageformtool.inputs.traditional.val(""); 
+				    				}
+				    			}
+				    		})
+			    			.find("a.image-crop-select-button,button.image-crop-select-button").bind("click",function(){ $fc.cropper(imageformtool,url,width,height,imageformtool.getPostValues()); return false; }).end()
+			    			.find("a.image-crop-cancel-button,button.image-crop-cancel-button").bind("click",function(){ imageformtool.removeCrop(); return false; }).end();
+			    		
+	    				$j(imageformtool).bind("filechange.updatedisplay",function(event,results){
+	    					if (results.value.length>0){
+		    					var complete = imageformtool.multiview.findView("complete")
+									.find(".image-status").attr("title","This file has been updated on the server").html('<span class="ui-icon ui-icon-info" style="float:left;">&nbsp;</span>').end()
+									.find(".image-filename").html(results.filename).end()
+									.find(".image-preview").attr("href",results.fullpath).end()
+									.find(".image-size").html(results.size).end()
+									.find(".image-width").html(results.width).end()
+									.find(".image-height").html(results.height).end();
+								if (results.resizedetails){
+									complete.find(".image-quality").html(results.resizedetails.quality.toString()).end();
+									complete.find(".image-resize-information").show().end();
+								}
+								else {
+									complete.find(".image-resize-information").hide().end();
+								}
+								imageformtool.multiview.selectView("complete");
+							}
+	    				}).bind("fileerror.updatedisplay",function(event,error,message){
+							$j('##'+prefix+property+"_error").html(message).show();
+	    				}).bind("cancelcrop",function(){
+	    				
+	    				}).bind("savecrop",function(event,c,q){
+							imageformtool.inputs.resizemethod.val(c.x.toString()+","+c.y.toString()+"-"+c.x2.toString()+","+c.y2.toString());
+							imageformtool.inputs.quality.val(q);
+							imageformtool.multiview.findView("autogenerate")
+								.find(".image-crop-select-button").hide().end()
+								.find(".image-crop-information").show()
+									.find(".image-crop-a-x").html(c.x).end()
+									.find(".image-crop-a-y").html(c.y).end()
+									.find(".image-crop-b-x").html(c.x2).end()
+									.find(".image-crop-b-y").html(c.y2).end()
+									.find(".image-crop-width").html(c.w).end()
+									.find(".image-crop-height").html(c.h).end()
+									.find(".image-crop-quality").html((q*100).toFixed(0)).end();
+	    				});
+	    				
+	    				if (sourceField.length>0){
+		    				$j($fc.imageformtool(prefix,sourceField)).bind("filechange",function(event,results){
+		    					imageformtool.enableCrop(results.value.length>0);
+		    				});
+		    			}
+			    		
+			    		imageformtool.inputs.new.uploadify({
+				    		'buttonText'	: 'Select File',
+							'uploader'  	: '#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4/uploadify.swf',
+							'script'    	: url,
+							'checkScript'	: url+"&check=1",
+							'cancelImg' 	: '#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4/cancel.png',
+							'auto'      	: true,
+							'fileExt'		: filetypes,
+							'fileDataName'	: property+"NEW",
+							'method'		: "POST",
+							'scriptData'	: {},
+							'onSelectOnce' 	: function(event,data){
+								// hide any previous results
+								$j('##'+prefix+property+"_error").hide();
+								
+								// attached related fields to uploadify post
+								imageformtool.inputs.new.uploadifySettings("scriptData",imageformtool.getPostValues());
+							},
+							'onComplete'	: function(event, ID, fileObj, response, data){
+								var results = $j.parseJSON(response);
+								imageformtool.inputs.new.uploadifyClearQueue();
+								if (results.error){
+									$j(imageformtool).trigger("fileerror",[ "500",results.error ]);
+								}
+								else{
+									imageformtool.inputs.base.val(results.value);
+									$j(imageformtool).trigger("filechange",[ results ]);
+								}
+							},
+							'onError'		: function(event, ID, fileObj, errorObj){
+								imageformtool.inputs.new.uploadifyClearQueue();
+								if (d.status == 404)
+									$j(imageformtool).trigger("fileerror",[ errorObj.status.toString(),'Could not find upload script' ]);
+								else if (d.type === "HTTP")
+									$j(imageformtool).trigger("fileerror",[ errorObj.status.toString(),'error '+errorObj.type+": "+errorObj.status ]);
+								else if (d.type ==="File Size")
+									$j(imageformtool).trigger("fileerror",[ "filesize",fileObj.name+' '+errorObj.type+' Limit: '+Math.round(errorObj.sizeLimit) ]);
+								else
+									$j(imageformtool).trigger("fileerror",[ errorObj.type,'error '+errorObj.type+": "+errorObj.text ]);
+							}
+						});
+	    			};
+	    			
+	    			this.getPostValues = function(){
+						// get the post values
+						var values = {};
+						$j('[name^="'+prefix+property+'"]').each(function(){ if (this.name!=prefix+property+"NEW") values[this.name.slice(prefix.length)]=""; });
+						if (imageformtool.sourceField) values[imageformtool.sourceField] = "";
+						values = getValueData(values,prefix);
+						
+						return values;
+	    			};
+	    			
+	    			this.enableCrop = function(enabled){
+						if (enabled)
+							imageformtool.multiview.findView("autogenerate").find(".image-custom-crop").show();
+						else
+							imageformtool.multiview.findView("autogenerate").find(".image-custom-crop").hide();
+					};
+	    			
+	    			this.removeCrop = function(){
+						imageformtool.inputs.resizemethod.val("");
+						imageformtool.inputs.quality.val("");
+						imageformtool.multiview.findView("autogenerate")
+							.find(".image-crop-information").hide().end()
+							.find(".image-crop-select-button").show().end();
+						$j(imageformtool).trigger("removedcrop");
+					};
+	    		};
+	    		
+	    		if (!this[prefix+property]) this[prefix+property] = new ImageFormtool(prefix,property);
+	    		return this[prefix+property];
+	    	};
 		<!--- </cfoutput></script></skin:loadJS> --->
 		</script></cfoutput></skin:htmlHead>
 	    
@@ -383,70 +510,69 @@
 				<div class="multiField">
 					<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
 					<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="false" />
-					<cfif arguments.stMetadata.ftAllowUpload>
-				    	<div id="#arguments.fieldname#_upload" style="display:none;">
-			    		<a href="##" id="image-traditional-switch" title="Switch between traditional upload and inline upload" style="float:left;" onclick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','traditional')"><span class="ui-icon ui-icon-shuffle"&nbsp;</span></a>
-							<div style="margin-left:15px">
-					    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
-					    		<div id="#arguments.fieldname#_error" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
-					    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
-					    		<script type="text/javascript">$fc.uploadify.setupUploader('#prefix#','#arguments.stMetadata.name#','#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#')</script>
-					    		<div class="image-cancel-upload" style="clear:both;"><a href="##" onClick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','autogenerate');return false;">Cancel - I don't want to upload an image</a></div>
-					    	</div>
+					<div id="#arguments.fieldname#-multiview">
+						<cfif arguments.stMetadata.ftAllowUpload>
+					    	<div id="#arguments.fieldname#_upload" class="upload-view" style="display:none;">
+				    			<a href="##upload" id="image-traditional-switch" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle"&nbsp;</span></a>
+								<div style="margin-left:15px">
+						    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
+						    		<div id="#arguments.fieldname#_error" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
+						    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
+						    		<div class="image-cancel-upload" style="clear:both;"><a href="##autogenerate" class="select-view">Cancel - I don't want to upload an image</a></div>
+						    	</div>
+							</div>
+					    	<div id="#arguments.fieldname#_traditional" class="traditional-view" style="display:none;">
+					    		<a href="##upload" id="image-traditional-switch" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle"&nbsp;</span></a>
+								<div style="margin-left:15px">
+						    		<input type="file" name="#arguments.fieldname#TRADITIONAL" id="#arguments.fieldname#TRADITIONAL" />
+						    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
+						    		<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##complete" class="select-view">Cancel - I don't want to replace this image</a></div>
+						    	</div>
+							</div>
+						</cfif>
+						<div id="#arguments.fieldname#_autogenerate" class="autogenerate-view"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
+							<span class="image-status" title="#metadatainfo#"><span class="ui-icon ui-icon-help" style="float:left;">&nbsp;</span></span>
+						    <div style="margin-left:15px;">
+								Image will be automatically generated based on the image selected for #application.stCOAPI[arguments.typename].stProps[listfirst(arguments.stMetadata.ftSourceField,":")].metadata.ftLabel#.<br>
+								<cfif arguments.stMetadata.ftAllowResize>
+									<div class="image-custom-crop"<cfif not structkeyexists(arguments.stObject,arguments.stMetadata.ftSourceField) or not len(arguments.stObject[arguments.stMetadata.ftSourceField])> style="display:none;"</cfif>>
+										<input type="hidden" name="#arguments.fieldname#RESIZEMETHOD" id="#arguments.fieldname#RESIZEMETHOD" value="" />
+										<input type="hidden" name="#arguments.fieldname#QUALITY" id="#arguments.fieldname#QUALITY" value="" />
+										<ft:button value="Select Exactly How To Crop Your Image" class="image-crop-select-button" onclick="return false;" />
+										<div class="image-crop-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Your crop settings will be applied when you save. <a href="##" class="image-crop-cancel-button">Cancel custom crop</a></div>
+									</div>
+								</cfif>
+								<cfif arguments.stMetadata.ftAllowUpload>
+									<a href="##upload" class="select-view">Or select an image upload from your computer</a>
+								</cfif>
+								<div class="image-cancel-replace" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##complete" class="select-view">Cancel - I don't want to replace this image</a></div>
+							</div>
 						</div>
-				    	<div id="#arguments.fieldname#_traditional" style="display:none;">
-				    		<span id="image-traditional-switch" class="ui-icon ui-icon-shuffle" title="Swheightitch between traditional upload and inline upload" style="float:left;"><a href="##" class="ui-icon ui-icon-shuffle" onclick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','traditional')">&nbsp;</a></span>
-							<div style="margin-left:15px">
-					    		<input type="file" name="#arguments.fieldname#TRADITIONAL" id="#arguments.fieldname#TRADITIONAL" />
-					    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
-					    		<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##" onClick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','complete');return false;">Cancel - I don't want to replace this image</a></div>
-					    	</div>
-						</div>
-					</cfif>
-					<div id="#arguments.fieldname#_autogenerate"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
-						<span class="image-status" title="#metadatainfo#"><span class="ui-icon ui-icon-help" style="float:left;">&nbsp;</span></span>
-					    <div style="margin-left:15px;">
-							Image will be automatically generated based on the image selected for #application.stCOAPI[arguments.typename].stProps[listfirst(arguments.stMetadata.ftSourceField,":")].metadata.ftLabel#.<br>
-							<cfif arguments.stMetadata.ftAllowResize>
-								<div class="image-custom-crop" style="display:none;">
-									<input type="hidden" name="#arguments.fieldname#RESIZEMETHOD" id="#arguments.fieldname#RESIZEMETHOD" value="" />
-									<input type="hidden" name="#arguments.fieldname#QUALITY" id="#arguments.fieldname#QUALITY" value="" />
-									<ft:button value="Select Exactly How To Crop Your Image" class="image-crop-select-button" onclick="$fc.uploadify.selectCrop('#prefix#','#arguments.stMetadata.name#','#arguments.stMetadata.ftSourceField#',#arguments.stMetadata.ftImageWidth#,#arguments.stMetadata.ftImageHeight#,'#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#');return false;" />
-									<div class="image-crop-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">This image will be created by from the source image. <a href="##" onclick="$fc.uploadify.removeCrop('#prefix#','#arguments.stMetadata.name#');return false;">Cancel custom crop</a></div>
+						<cfif len(arguments.stMetadata.value)>
+						    <cfset stFile = GetFileInfo("#application.path.imageroot##arguments.stMetadata.value#") />
+						    <cfimage action="info" source="#application.path.imageroot##arguments.stMetadata.value#" structName="stImage" />
+						    <div id="#arguments.fieldname#_complete" class="complete-view">
+					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
+					    		<div style="margin-left:15px;">
+						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> (<a class="image-preview" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank">Preview</a>)<br>
+						    		Size: <span class="image-size">#round(stFile.size/1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
+						    		<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
+						    		<a href="##autogenerate" class="image-replace select-view">Repace this image</a>
 								</div>
-							</cfif>
-							<cfif arguments.stMetadata.ftAllowUpload>
-								<a href="##" onclick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','upload');return false;">Or select an image upload from your computer</a>
-							</cfif>
-							<div class="image-cancel-replace" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##" onClick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','complete');return false;">Cancel - I don't want to replace this image</a></div>
-							<script type="text/javascript">
-								$fc.uploadify.bindCustomCrop('#prefix#','#arguments.stMetadata.name#','#arguments.stMetadata.ftSourceField#',#structkeyexists(arguments.stObject,arguments.stMetadata.ftSourceField) and len(arguments.stObject[arguments.stMetadata.ftSourceField])#);
-							</script>
-						</div>
+							</div>
+						<cfelse>
+						    <div id="#arguments.fieldname#_complete" class="complete-view" style="display:none;">
+					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
+					    		<div style="margin-left:15px;">
+						    		<span class="image-filename"></span> (<a class="image-preview" href="##" target="_blank">Preview</a>)<br>
+						    		Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
+									<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
+						    		<a href="##autogenerate" class="image-replace select-view">Repace this image</a>
+								</div>
+							</div>
+						</cfif>
 					</div>
-					<cfif len(arguments.stMetadata.value)>
-					    <cfset stFile = GetFileInfo("#application.path.imageroot##arguments.stMetadata.value#") />
-					    <cfimage action="info" source="#application.path.imageroot##arguments.stMetadata.value#" structName="stImage" />
-					    <div id="#arguments.fieldname#_complete">
-				    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
-				    		<div style="margin-left:15px;">
-					    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> (<a class="image-preview" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank">Preview</a>)<br>
-					    		Size: <span class="image-size">#round(stFile.size/1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
-					    		<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
-					    		<a href="##" class="image-replace" onclick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','autogenerate');return false;">Repace this image</a>
-							</div>
-						</div>
-					<cfelse>
-					    <div id="#arguments.fieldname#_complete" style="display:none;">
-				    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
-				    		<div style="margin-left:15px;">
-					    		<span class="image-filename"></span> (<a class="image-preview" href="##" target="_blank">Preview</a>)<br>
-					    		Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
-								<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
-					    		<a href="##" class="image-replace" onclick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','autogenerate');return false;">Repace this image</a>
-							</div>
-						</div>
-					</cfif>
+					<script type="text/javascript">$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').init('#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#','#arguments.stMetadata.ftSourceField#',#arguments.stMetadata.ftImageWidth#,#arguments.stMetadata.ftImageHeight#);</script>
 				</div>
 			</cfoutput></cfsavecontent>
 			
@@ -457,48 +583,50 @@
 			    <div class="multiField">
 					<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
 					<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="false" />
-			    	<div id="#arguments.fieldname#_upload"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
-			    		<a href="##" id="image-traditional-switch" title="Switch between traditional upload and inline upload" style="float:left;" onclick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','traditional')"><span class="ui-icon ui-icon-shuffle"&nbsp;</span></a>
-						<div style="margin-left:15px">
-				    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
-				    		<div id="#arguments.fieldname#_error" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
-				    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
-				    		<script type="text/javascript">$fc.uploadify.setupUploader('#prefix#','#arguments.stMetadata.name#','#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#')</script>
-				    		<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##" onClick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','complete');return false;">Cancel - I don't want to replace this image</a></div>
-				    	</div>
-					</div>
-			    	<div id="#arguments.fieldname#_traditional" style="display:none;">
-			    		<span id="image-traditional-switch" class="ui-icon ui-icon-shuffle" title="Switch between traditional upload and inline upload" style="float:left;"><a href="##" class="ui-icon ui-icon-shuffle" onclick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','traditional')">&nbsp;</a></span>
-						<div style="margin-left:15px">
-				    		<input type="file" name="#arguments.fieldname#TRADITIONAL" id="#arguments.fieldname#TRADITIONAL" />
-				    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
-				    		<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##" onClick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','complete');return false;">Cancel - I don't want to replace this image</a></div>
-				    	</div>
-					</div>
-					<cfif len(arguments.stMetadata.value)>
-					    <cfset stFile = GetFileInfo("#application.path.imageroot##arguments.stMetadata.value#") />
-					    <cfimage action="info" source="#application.path.imageroot##arguments.stMetadata.value#" structName="stImage" />
-					    <div id="#arguments.fieldname#_complete">
-				    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
-				    		<div style="margin-left:15px;">
-					    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> (<a class="image-preview" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank">Preview</a>)<br>
-					    		Size: <span class="image-size">#round(stFile.size/1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
-								<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
-					    		<a href="##" class="image-replace" onclick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','upload');return false;">Repace this image with one from your computer</a>
-							</div>
+					<div id="#arguments.fieldname#-multiview">
+				    	<div id="#arguments.fieldname#_upload" class="upload-view"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
+				    		<a href="##traditional" id="image-traditional-switch" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle"&nbsp;</span></a>
+							<div style="margin-left:15px">
+					    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
+					    		<div id="#arguments.fieldname#_error" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
+					    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
+					    		<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##complete" class="select-view">Cancel - I don't want to replace this image</a></div>
+					    	</div>
 						</div>
-					<cfelse>
-					    <div id="#arguments.fieldname#_complete" style="display:none;">
-				    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
-				    		<div style="margin-left:15px;">
-					    		<span class="image-filename"></span> (<a class="image-preview" href="##" target="_blank">Preview</a>)<br>
-					    		Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
-					    		<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
-					    		<a href="##" class="image-replace" onclick="$fc.uploadify.switchMode('#prefix#','#arguments.stMetadata.name#','upload');return false;">Repace this image with one from your computer</a>
-							</div>
+				    	<div id="#arguments.fieldname#_traditional" class="traditional-view" style="display:none;">
+				    		<a href="##upload" id="image-traditional-switch" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle"&nbsp;</span></a>
+							<div style="margin-left:15px">
+					    		<input type="file" name="#arguments.fieldname#TRADITIONAL" id="#arguments.fieldname#TRADITIONAL" />
+					    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
+					    		<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##complete" class="select-view">Cancel - I don't want to replace this image</a></div>
+					    	</div>
 						</div>
-					</cfif>
-			    </div>
+						<cfif len(arguments.stMetadata.value)>
+						    <cfset stFile = GetFileInfo("#application.path.imageroot##arguments.stMetadata.value#") />
+						    <cfimage action="info" source="#application.path.imageroot##arguments.stMetadata.value#" structName="stImage" />
+						    <div id="#arguments.fieldname#_complete" class="complete-view">
+					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
+					    		<div style="margin-left:15px;">
+						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> (<a class="image-preview" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank">Preview</a>)<br>
+						    		Size: <span class="image-size">#round(stFile.size/1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
+									<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
+						    		<a href="##upload" class="image-replace select-view">Repace this image with one from your computer</a>
+								</div>
+							</div>
+						<cfelse>
+						    <div id="#arguments.fieldname#_complete" class="complete-view" style="display:none;">
+					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
+					    		<div style="margin-left:15px;">
+						    		<span class="image-filename"></span> (<a class="image-preview" href="##" target="_blank">Preview</a>)<br>
+						    		Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
+						    		<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
+						    		<a href="##upload" class="image-replace select-view">Repace this image with one from your computer</a>
+								</div>
+							</div>
+						</cfif>
+					</div>
+					<script type="text/javascript">$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').init('#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#','#arguments.stMetadata.ftSourceField#',#arguments.stMetadata.ftImageWidth#,#arguments.stMetadata.ftImageHeight#);</script>
+				</div>
 		    </cfoutput></cfsavecontent>
 			
 		</cfif>
@@ -574,8 +702,8 @@
 						</div>
 						<div class="uniForm image-crop-actions">
 							<ft:buttonPanel>
-								<a href="##" onclick="$fc.uploadify.endCrop();return false;" style="padding-right:10px;">Cancel</a>
-								<ft:button value="Crop and Resize" id="image-crop-finalize" onclick="$fc.uploadify.finalizeCrop();return false;" />
+								<a href="##" id="image-crop-cancel" style="padding-right:10px;">Cancel</a>
+								<ft:button value="Crop and Resize" id="image-crop-finalize" onclick="$fc.imageformtool.finalizeCrop();return false;" />
 							</ft:buttonPanel>
 						</div>
 					</div>
@@ -583,7 +711,7 @@
 				
 				<cfreturn html />
 			<cfelse>
-				<cfreturn "<p>The source field is empty. <a href='##' onclick='$fc.uploadify.endCrop();return false;'>Close</a></p>" />
+				<cfreturn "<p>The source field is empty. <a href='##' onclick='$fc.imageformtool.endCrop();return false;'>Close</a></p>" />
 			</cfif>
 		</cfif>
 		
