@@ -139,7 +139,7 @@
 			
 		<cfif arguments.stMetadata.ftToggleOffDateTime>
 		
-			<skin:onReady>
+			<skin:onReady>)
 			<cfoutput>	
 			<cfif application.fapi.showFarcryDate(arguments.stMetadata.value) >
 				$j("###arguments.fieldname#include").attr('checked', true);
@@ -218,7 +218,7 @@
 						</select>	
 					
 						Year 				
-						<select name="#arguments.fieldname#Year" id="#arguments.fieldname#Year" class="selectInput" style="float:none;">
+						<select name="#arguments.fieldname#Year" id="#argumentsBSLWAR-90.fieldname#Year" class="selectInput" style="float:none;">
 							<option value="">--</option>
 							<cfloop from="#arguments.stMetadata.ftStartYear#" to="#arguments.stMetadata.ftEndYear#" index="i" step="#step#">
 								<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND Year(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#i#</option>
@@ -235,13 +235,15 @@
 		<cfdefaultcase>
 			
 			<cfparam name="arguments.stMetadata.ftShowTime" default="true">
+			<cfparam name="arguments.stMetadata.ftMaxDate" default="" />
+			<cfparam name="arguments.stMetadata.ftMinDate" default="" />
 			
 			<skin:loadJS id="jquery-ui" />
 			<skin:loadCSS id="jquery-ui" />
 			
 			<skin:onReady>
 				<cfoutput>
-				$j("###arguments.fieldname#").datepicker({dateFormat:'#arguments.stMetadata.ftJQDateFormatMask#',showOn: 'both', buttonImage: '#application.url.farcry#/js/dateTimePicker/cal.gif', buttonImageOnly: true});
+					$j("###arguments.fieldname#").datepicker({dateFormat:'#arguments.stMetadata.ftJQDateFormatMask#',showOn: 'both', buttonImage: '#application.url.farcry#/js/dateTimePicker/cal.gif', buttonImageOnly: true<cfif len(arguments.stMetadata.ftMaxDate)>, maxDate: #cf2jsDate(arguments.stMetadata.ftMaxDate)#</cfif><cfif len(arguments.stMetadata.ftMinDate)>, minDate: #cf2jsDate(arguments.stMetadata.ftMinDate)#</cfif>});
 				</cfoutput>
 			</skin:onReady>
 			
@@ -663,7 +665,7 @@
 		<cfreturn resultHTML />
 	</cffunction>
 	
-	<cffunction name="getFilterSQL">
+	<cffunction name="getFilterSQL">ef
 
 		<cfargument name="filterTypename" />
 		<cfargument name="filterProperty" />
@@ -739,6 +741,18 @@
 		</cfsavecontent>
 
 		<cfreturn resultHTML />
+	</cffunction>
+	
+	<cffunction name="cf2jsDate" access="private" output="false" returnType="string" hint="converts a cf date object to a js date object">
+		<cfargument name="cfDate" required="true" default="#now()#" type="string" />
+		
+		<cfset var jsDate = "" />
+		
+		<cfif (isDate(arguments.cfDate))>
+			<cfset jsDate = "new Date(#year(arguments.cfDate)#, #(month(arguments.cfDate)-1)#, #day(arguments.cfDate)#, #hour(arguments.cfDate)#, #minute(arguments.cfDate)#, #second(arguments.cfDate)#)" />
+		</cfif>
+		
+		<cfreturn jsDate />
 	</cffunction>
 	
 </cfcomponent> 
