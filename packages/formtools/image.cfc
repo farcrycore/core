@@ -151,8 +151,8 @@
 	    <skin:loadCSS id="jquery-uploadify" />
 	    <skin:loadJS id="jquery-crop" />
 	    <skin:loadCSS id="jquery-crop" />
-	    <skin:htmlHead id="farcry-uploadify"><cfoutput><script type="text/javascript">
-	    <!--- <skin:loadJS id="farcry-uploadify"><script type="text/javascript"><cfoutput> --->
+	    <!--- <skin:htmlHead id="farcry-imageformtool"><cfoutput><script type="text/javascript"> --->
+	    <skin:loadJS id="farcry-imageformtool"><script type="text/javascript"><cfoutput>
 	    	(function(jQuery){
 	    		var defaults = {
 	    			"selected"		: "",
@@ -522,8 +522,8 @@
 	    		if (!this[prefix+property]) this[prefix+property] = new ImageFormtool(prefix,property);
 	    		return this[prefix+property];
 	    	};
-		<!--- </cfoutput></script></skin:loadJS> --->
-		</script></cfoutput></skin:htmlHead>
+		</cfoutput></script></skin:loadJS>
+		<!--- </script></cfoutput></skin:htmlHead> --->
 	    
 	    <cfsavecontent variable="metadatainfo">
 			<cfif (isnumeric(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth gt 0) or (isnumeric(arguments.stMetadata.ftImageHeight) and arguments.stMetadata.ftImageHeight gt 0)>
