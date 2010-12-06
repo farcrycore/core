@@ -374,7 +374,7 @@
 				    				}
 				    			}
 				    		})
-			    			.find("a.image-crop-select-button,button.image-crop-select-button").bind("click",function(){ $fc.cropper(imageformtool,url,width,height,imageformtool.getPostValues()); return false; }).end()
+			    			.find("a.image-crop-select-button,button.image-crop-select-button").bind("click",function(){ $j('##'+prefix+property+"_croperror").hide();$fc.cropper(imageformtool,url,width,height,imageformtool.getPostValues()); return false; }).end()
 			    			.find("a.image-crop-cancel-button,button.image-crop-cancel-button").bind("click",function(){ imageformtool.removeCrop(); return false; }).end();
 			    		
 	    				$j(imageformtool).bind("filechange.updatedisplay",function(event,results){
@@ -395,8 +395,8 @@
 								}
 								imageformtool.multiview.selectView("complete");
 							}
-	    				}).bind("fileerror.updatedisplay",function(event,error,message){
-							$j('##'+prefix+property+"_error").html(message).show();
+	    				}).bind("fileerror.updatedisplay",function(event,action,error,message){
+							$j('##'+prefix+property+"_"+action+"error").html(message).show();
 	    				}).bind("cancelcrop",function(){
 	    				
 	    				}).bind("savecrop",function(event,c,q){
@@ -412,11 +412,17 @@
 									.find(".image-crop-width").html(c.w).end()
 									.find(".image-crop-height").html(c.h).end()
 									.find(".image-crop-quality").html((q*100).toFixed(0)).end();
+							imageformtool.applyCrop();
 	    				});
 	    				
 	    				if (sourceField.length>0){
 		    				$j($fc.imageformtool(prefix,sourceField)).bind("filechange",function(event,results){
-		    					imageformtool.enableCrop(results.value.length>0);
+		    					if (results.value.length){
+			    					imageformtool.enableCrop(true);
+									imageformtool.applyCrop();
+								}
+								else
+									iamgeformtool.enableCrop(false);
 		    				});
 		    			}
 			    		
@@ -433,7 +439,7 @@
 							'scriptData'	: {},
 							'onSelectOnce' 	: function(event,data){
 								// hide any previous results
-								$j('##'+prefix+property+"_error").hide();
+								$j('##'+prefix+property+"_uploaderror").hide();
 								
 								// attached related fields to uploadify post
 								imageformtool.inputs.new.uploadifySettings("scriptData",imageformtool.getPostValues());
@@ -442,7 +448,7 @@
 								var results = $j.parseJSON(response);
 								imageformtool.inputs.new.uploadifyClearQueue();
 								if (results.error){
-									$j(imageformtool).trigger("fileerror",[ "500",results.error ]);
+									$j(imageformtool).trigger("fileerror",[ "upload","500",results.error ]);
 								}
 								else{
 									imageformtool.inputs.base.val(results.value);
@@ -452,13 +458,13 @@
 							'onError'		: function(event, ID, fileObj, errorObj){
 								imageformtool.inputs.new.uploadifyClearQueue();
 								if (d.status == 404)
-									$j(imageformtool).trigger("fileerror",[ errorObj.status.toString(),'Could not find upload script' ]);
+									$j(imageformtool).trigger("fileerror",[ "upload",errorObj.status.toString(),'Could not find upload script' ]);
 								else if (d.type === "HTTP")
-									$j(imageformtool).trigger("fileerror",[ errorObj.status.toString(),'error '+errorObj.type+": "+errorObj.status ]);
+									$j(imageformtool).trigger("fileerror",[ "upload",errorObj.status.toString(),'error '+errorObj.type+": "+errorObj.status ]);
 								else if (d.type ==="File Size")
-									$j(imageformtool).trigger("fileerror",[ "filesize",fileObj.name+' '+errorObj.type+' Limit: '+Math.round(errorObj.sizeLimit) ]);
+									$j(imageformtool).trigger("fileerror",[ "upload","filesize",fileObj.name+' '+errorObj.type+' Limit: '+Math.round(errorObj.sizeLimit) ]);
 								else
-									$j(imageformtool).trigger("fileerror",[ errorObj.type,'error '+errorObj.type+": "+errorObj.text ]);
+									$j(imageformtool).trigger("fileerror",[ "upload",errorObj.type,'error '+errorObj.type+": "+errorObj.text ]);
 							}
 						});
 	    			};
@@ -479,6 +485,29 @@
 						else
 							imageformtool.multiview.findView("autogenerate").find(".image-custom-crop").hide();
 					};
+	    			
+	    			this.applyCrop = function(){
+						$j.ajax({
+							type : "POST",
+							url : imageformtool.url,
+							data : imageformtool.getPostValues(),
+							success : function(results){
+								if (results.error){
+									$j(imageformtool).trigger("fileerror",[ "crop", "500",results.error ]);
+								}
+								else{
+									imageformtool.inputs.base.val(results.value);
+									$j('##'+prefix+property+"_croperror").hide();
+									imageformtool.multiview.findView("autogenerate").find(".image-crop-information").hide();
+									$j(imageformtool).trigger("filechange",[ results ]);
+								}
+							},
+							error : function(XMLHttpRequest, textStatus, errorThrown){
+								$j(imageformtool).trigger("fileerror",[ "crop",textStatus,errorThrown.toString() ]);
+							},
+							dataType : "json"
+						});
+	    			};
 	    			
 	    			this.removeCrop = function(){
 						imageformtool.inputs.resizemethod.val("");
@@ -513,17 +542,17 @@
 					<div id="#arguments.fieldname#-multiview">
 						<cfif arguments.stMetadata.ftAllowUpload>
 					    	<div id="#arguments.fieldname#_upload" class="upload-view" style="display:none;">
-				    			<a href="##upload" id="image-traditional-switch" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle"&nbsp;</span></a>
+				    			<a href="##traditional" id="image-traditional-switch" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle"&nbsp;</span></a>
 								<div style="margin-left:15px">
 						    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
-						    		<div id="#arguments.fieldname#_error" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
+						    		<div id="#arguments.fieldname#_uploaderror" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
 						    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
 						    		<div class="image-cancel-upload" style="clear:both;"><a href="##autogenerate" class="select-view">Cancel - I don't want to upload an image</a></div>
 						    	</div>
 							</div>
 					    	<div id="#arguments.fieldname#_traditional" class="traditional-view" style="display:none;">
-					    		<a href="##upload" id="image-traditional-switch" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle"&nbsp;</span></a>
-								<div style="margin-left:15px">
+				    			<a href="##upload" id="image-traditional-switch" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle"&nbsp;</span></a>
+					    		<div style="margin-left:15px">
 						    		<input type="file" name="#arguments.fieldname#TRADITIONAL" id="#arguments.fieldname#TRADITIONAL" />
 						    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
 						    		<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##complete" class="select-view">Cancel - I don't want to replace this image</a></div>
@@ -539,7 +568,8 @@
 										<input type="hidden" name="#arguments.fieldname#RESIZEMETHOD" id="#arguments.fieldname#RESIZEMETHOD" value="" />
 										<input type="hidden" name="#arguments.fieldname#QUALITY" id="#arguments.fieldname#QUALITY" value="" />
 										<ft:button value="Select Exactly How To Crop Your Image" class="image-crop-select-button" onclick="return false;" />
-										<div class="image-crop-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Your crop settings will be applied when you save. <a href="##" class="image-crop-cancel-button">Cancel custom crop</a></div>
+										<div id="#arguments.fieldname#_croperror" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
+						    			<div class="image-crop-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Your crop settings will be applied when you save. <a href="##" class="image-crop-cancel-button">Cancel custom crop</a></div>
 									</div>
 								</cfif>
 								<cfif arguments.stMetadata.ftAllowUpload>
@@ -588,7 +618,7 @@
 				    		<a href="##traditional" id="image-traditional-switch" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle"&nbsp;</span></a>
 							<div style="margin-left:15px">
 					    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
-					    		<div id="#arguments.fieldname#_error" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
+					    		<div id="#arguments.fieldname#_uploaderror" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
 					    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
 					    		<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##complete" class="select-view">Cancel - I don't want to replace this image</a></div>
 					    	</div>
@@ -641,13 +671,14 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 		
 		<cfset var stResult = structnew() />
-		<cfset var bFixed = false />
+		<cfset var stFixed = structnew() />
 		<cfset var stSource = structnew() />
 		<cfset var stFile = structnew() />
 		<cfset var stImage = structnew() />
 		<cfset var resizeinfo = "" />
 		<cfset var source = "" />
 		<cfset var html = "" />
+		<cfset var json = "" />
 		
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 		
@@ -721,27 +752,56 @@
 			<cfreturn '{ "error" : "#jsstringformat(stResult.stError.message)#", "value" : "#jsstringformat(stResult.value)#" }' />
 		</cfif>
 		
-		<cfif isdefined("stResult.value") and len(stResult.value)>
+		<cfif stResult.bChanged and isdefined("stResult.value") and len(stResult.value)>
 			
-			<cfparam name="arguments.stFieldPost.stSupporting.ResizeMethod" default="#arguments.stMetadata.ftAutoGenerateType#" />
-			<cfparam name="arguments.stFieldPost.stSupporting.Quality" default="#arguments.stMetadata.ftQuality#" />
+			<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"ResizeMethod") or not isnumeric(arguments.stFieldPost.stSupporting.ResizeMethod)><cfset arguments.stFieldPost.stSupporting.ResizeMethod = arguments.stMetadata.ftAutoGenerateType /></cfif>
+			<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"Quality") or not isnumeric(arguments.stFieldPost.stSupporting.Quality)><cfset arguments.stFieldPost.stSupporting.Quality = arguments.stMetadata.ftQuality /></cfif>
 			
-			<cfset bFixed = fixImage("#application.path.imageroot##stResult.value#",arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
+			<cfset stFixed = fixImage("#application.path.imageroot##stResult.value#",arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
 			
-			<cfif bFixed>
-				<cfset resizeinfo = ', "resizedetails" : { "quality" : #round(arguments.stFieldPost.stSupporting.Quality*100)# }' />
+			<cfif stFixed.bSuccess>
+				<cfset json = ', "resizedetails" : { "method":"#arguments.stFieldPost.stSupporting.ResizeMethod#", "quality" : #round(arguments.stFieldPost.stSupporting.Quality*100)# }' />
+				<cfset stResult.value = stFixed.value />
 			</cfif>
 			
 			<cfset stFile = getFileInfo(application.path.imageroot & stResult.value) />
 			<cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" />
+			<cfset json = '{ "value" : "#jsstringformat(stResult.value)#", "filename": "#jsstringformat(listlast(stResult.value,'/'))#", "fullpath" : "#jsstringformat(application.url.imageroot & stResult.value)#", "size" : #round(stFile.size/1024)#, "width" : #stImage.width#, "height" : #stImage.height# #json# }' />
+			
 			<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
-			<cfreturn '{ "value" : "#jsstringformat(stResult.value)#", "filename": "#jsstringformat(listlast(stResult.value,'/'))#", "fullpath" : "#jsstringformat(application.url.imageroot & stResult.value)#", "size" : #round(stFile.size/1024)#, "width" : #stImage.width#, "height" : #stImage.height# #resizeinfo# }' />
+			
+			<cfreturn json />
+			
+		</cfif>
+		
+		<cfif not len(stResult.value) and structkeyexists(arguments.stMetadata,"ftSourceField") and len(arguments.stMetadata.ftSourceField)>
+		
+			<cfset stResult = handleFileSource(sourceField=arguments.stMetadata.ftSourceField,stObject=arguments.stObject,destination=arguments.stMetadata.ftDestination,stFields=application.stCOAPI[arguments.typename].stProps) />
+			
+			<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"ResizeMethod") or not len(arguments.stFieldPost.stSupporting.ResizeMethod)><cfset arguments.stFieldPost.stSupporting.ResizeMethod = arguments.stMetadata.ftAutoGenerateType /></cfif>
+			<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"Quality") or not isnumeric(arguments.stFieldPost.stSupporting.Quality)><cfset arguments.stFieldPost.stSupporting.Quality = arguments.stMetadata.ftQuality /></cfif>
+			
+			<cfset stFixed = fixImage("#application.path.imageroot##stResult.value#",arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
+			
+			<cfif stFixed.bSuccess><cfdump var="#stResult#">
+				<cfset json = ', "resizedetails" : { "method":"#arguments.stFieldPost.stSupporting.ResizeMethod#","quality" : #round(arguments.stFieldPost.stSupporting.Quality*100)# }' />
+				<cfset stResult.value = stFixed.value />
+			</cfif>
+			
+			<cfset stFile = getFileInfo(application.path.imageroot & stResult.value) />
+			<cftry><cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" /><cfcatch><cfdump var="#cfcatch#"><cfdump var="#stFixed#"><cfabort></cfcatch></cftry>
+			<cfset json = '{ "value" : "#jsstringformat(stResult.value)#", "filename": "#jsstringformat(listlast(stResult.value,'/'))#", "fullpath" : "#jsstringformat(application.url.imageroot & stResult.value)#", "size" : #round(stFile.size/1024)#, "width" : #stImage.width#, "height" : #stImage.height#, "q":"#jsstringformat(cgi.query_string)#" #json# }' />
+			
+			<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
+			
+			<cfreturn json />
+			
 		</cfif>
 		
 		<cfreturn "" />
 	</cffunction>
 	
-	<cffunction name="fixImage" access="public" output="false" returntype="boolean" hint="Fixes an image's size, returns true if the image needed to be corrected and false otherwise">
+	<cffunction name="fixImage" access="public" output="false" returntype="struct" hint="Fixes an image's size, returns true if the image needed to be corrected and false otherwise">
 		<cfargument name="filename" type="string" required="true" hint="The image" />
 		<cfargument name="stMetadata" type="struct" required="true" hint="Property metadata" />
 		<cfargument name="resizeMethod" type="string" required="true" default="#arguments.stMetadata.ftAutoGenerateType#" hint="The resizing method to use to fix the size." />
@@ -749,6 +809,7 @@
 		
 		<cfset var stGeneratedImageArgs = structnew() />
 		<cfset var stImage = structnew() />
+		<cfset var stGeneratedImage = structnew() />
 		<cfset var q = "" />
 		
 		<cfimage action="info" source="#arguments.filename#" structname="stImage" />
@@ -794,9 +855,9 @@
 		   or (stGeneratedImageArgs.height gt 0 and stGeneratedImageArgs.height neq stImage.height)
 		   or len(stGeneratedImageArgs.lCustomEffects)>
 			<cfset stGeneratedImage = GenerateImage(argumentCollection=stGeneratedImageArgs) />
-			<cfreturn true />
+			<cfreturn passed(arguments.stMetadata.ftDestination & "/" & stGeneratedImage.filename) />
 		<cfelse>
-			<cfreturn false />
+			<cfreturn failed(arguments.filename) />
 		</cfif>
 	</cffunction>
 	
@@ -985,7 +1046,11 @@
 				<cfparam name="arguments.stFieldPost.stSupporting.ResizeMethod" default="#arguments.stMetadata.ftAutoGenerateType#" />
 				<cfparam name="arguments.stFieldPost.stSupporting.Quality" default="#arguments.stMetadata.ftQuality#" />
 				
-				<cfset bFixed = fixImage("#application.path.imageroot##stResult.value#",arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
+				<cfset stFixed = fixImage("#application.path.imageroot##stResult.value#",arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
+				
+				<cfif stFixed.bSucess>
+					<cfset stResult.value = stFixed.value />
+				</cfif>
 				
 			</cfif>
 			
@@ -1076,6 +1141,7 @@
 		<cfset var imageDestination = arguments.Source />
 		<cfset var imageFileName = "" />
 		<cfset var sourceImage = imageNew() />
+		<cfset var newImage = "" />
 		<cfset var cropXOrigin = 0 />
 		<cfset var cropYOrigin = 0 />
 		<cfset var padImage = imageNew() />
@@ -1087,6 +1153,9 @@
 		<cfset var usePercent = 0 />
 		<cfset var pixels = 0 />
 		<cfset var bModified = false />
+		<cfset var oImageEffects = "" />
+		<cfset var aMethods = "" />
+		<cfset var stImageAttributeCollection = structnew() />
 		<cfset stResult.bSuccess = true />
 		<cfset stResult.message = "" />
 		<cfset stResult.filename = "" />
@@ -1399,11 +1468,13 @@
 				stImageAttributeCollection.destination = imageDestination;
 				stImageAttributeCollection.overwrite = "true";
 				if(right(imageDestination, 4) eq ".jpg" or right(imageDestination, 5) eq ".jpeg"){
-					stImageCollection.quality = arguments.quality; // This setting (from Adobe) is for jpg images only and would cause errors if used on other image types
+					stImageAttributeCollection.quality = arguments.quality; // This setting (from Adobe) is for jpg images only and would cause errors if used on other image types
 				}
 			</cfscript>
 		
 			<cfimage attributeCollection="#stImageAttributeCollection#" />
+			
+			<cfset stResult.filename = listlast(stImageAttributeCollection.destination,"/\") />
 		</cfif>
 		
 		<cfreturn stResult />
@@ -1416,7 +1487,7 @@
 		
 		<cfset var thisfield = "" />
 		<cfset var stResult = structnew() />
-		<cfset var bFixed = false />
+		<cfset var stFixed = false />
 		
 		<cfloop list="#StructKeyList(arguments.stFields)#" index="thisfield">
 			<!--- If this is an image field and doesn't already have a file attached, is included in this POST update, and can be generated from a source... --->
@@ -1432,7 +1503,11 @@
 					<cfparam name="arguments.stFormPost.#thisfield#.stSupporting.ResizeMethod" default="#arguments.stFields[thisfield].metadata.ftAutoGenerateType#" />
 					<cfparam name="arguments.stFormPost.#thisfield#.stSupporting.Quality" default="#arguments.stFields[thisfield].metadata.ftQuality#" />
 					
-					<cfset bFixed = fixImage("#application.path.imageroot##stResult.value#",arguments.stFields[thisfield].metadata,arguments.stFormPost[thisfield].stSupporting.ResizeMethod,arguments.stFormPost[thisfield].stSupporting.Quality) />
+					<cfset stFixed = fixImage("#application.path.imageroot##stResult.value#",arguments.stFields[thisfield].metadata,arguments.stFormPost[thisfield].stSupporting.ResizeMethod,arguments.stFormPost[thisfield].stSupporting.Quality) />
+					
+					<cfif stFixed.bSuccess>
+						<cfset stResult.value = stFixed.value />
+					</cfif>
 					
 					<cfset onFileChange(typename=arguments.typename,objectid=arguments.stProperties.objectid,stMetadata=arguments.stFields[thisfield].metadata,value=stResult.value) />
 					<cfset stProperties[thisfield] = stResult.value />
