@@ -783,13 +783,13 @@
 			
 			<cfset stFixed = fixImage("#application.path.imageroot##stResult.value#",arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
 			
-			<cfif stFixed.bSuccess><cfdump var="#stResult#">
+			<cfif stFixed.bSuccess>
 				<cfset json = ', "resizedetails" : { "method":"#arguments.stFieldPost.stSupporting.ResizeMethod#","quality" : #round(arguments.stFieldPost.stSupporting.Quality*100)# }' />
 				<cfset stResult.value = stFixed.value />
 			</cfif>
 			
 			<cfset stFile = getFileInfo(application.path.imageroot & stResult.value) />
-			<cftry><cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" /><cfcatch><cfdump var="#cfcatch#"><cfdump var="#stFixed#"><cfabort></cfcatch></cftry>
+			<cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" />
 			<cfset json = '{ "value" : "#jsstringformat(stResult.value)#", "filename": "#jsstringformat(listlast(stResult.value,'/'))#", "fullpath" : "#jsstringformat(application.url.imageroot & stResult.value)#", "size" : #round(stFile.size/1024)#, "width" : #stImage.width#, "height" : #stImage.height#, "q":"#jsstringformat(cgi.query_string)#" #json# }' />
 			
 			<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
@@ -1048,7 +1048,7 @@
 				
 				<cfset stFixed = fixImage("#application.path.imageroot##stResult.value#",arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
 				
-				<cfif stFixed.bSucess>
+				<cfif stFixed.bSuccess>
 					<cfset stResult.value = stFixed.value />
 				</cfif>
 				
