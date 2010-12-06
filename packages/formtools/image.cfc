@@ -151,8 +151,8 @@
 	    <skin:loadCSS id="jquery-uploadify" />
 	    <skin:loadJS id="jquery-crop" />
 	    <skin:loadCSS id="jquery-crop" />
-	    <!--- <skin:htmlHead id="farcry-imageformtool"><cfoutput><script type="text/javascript"> --->
-	    <skin:loadJS id="farcry-imageformtool"><script type="text/javascript"><cfoutput>
+	    <skin:htmlHead id="farcry-imageformtool"><cfoutput><script type="text/javascript">
+	    <!--- <skin:loadJS id="farcry-imageformtool"><script type="text/javascript"><cfoutput> --->
 	    	(function(jQuery){
 	    		var defaults = {
 	    			"selected"		: "",
@@ -179,7 +179,7 @@
 	    			
 	    			jQuery("> div",this).each(function(){
 	    				var $self = jQuery(this);
-	    				var viewname = ""
+	    				var viewname = "";
 	   					var classes = this.className.split(" ");
 	   					for (var i=0;i<classes.length;i++)
 	   						if (classes[i].search(/^\w+-view$/)>-1) viewname = classes[i].slice(0,-5);
@@ -341,9 +341,9 @@
 	    				
 	    				imageformtool.inputs.resizemethod  = $j('##'+prefix+property+'RESIZEMETHOD');
 	    				imageformtool.inputs.quality  = $j('##'+prefix+property+'QUALITY');
-	    				imageformtool.inputs.delete = $j('##'+prefix+property+'DELETE');
+	    				imageformtool.inputs.deletef = $j('##'+prefix+property+'DELETE');
 	    				imageformtool.inputs.traditional = $j('##'+prefix+property+'TRADITIONAL');
-	    				imageformtool.inputs.new = $j('##'+prefix+property+'NEW');
+	    				imageformtool.inputs.newf = $j('##'+prefix+property+'NEW');
 	    				imageformtool.inputs.base = $j('##'+prefix+property);
 	    				
 			    		imageformtool.multiview = $j("##"+prefix+property+"-multiview").multiView({ 
@@ -357,7 +357,7 @@
 					    			},
 				    				"autogenerate" : function(event){ 
 					    				if (imageformtool.inputs.base.val().length){
-						    				imageformtool.inputs.delete.val("true");
+						    				imageformtool.inputs.deletef.val("true");
 						    			}
 				    				},
 				    				"traditional" : function(event){  }
@@ -367,7 +367,7 @@
 				    				"complete" : function(event){  },
 				    				"autogenerate" : function(event){ 
 				    					imageformtool.inputs.resizemethod.val(""); 
-				    					imageformtool.inputs.delete.val("false"); 
+				    					imageformtool.inputs.deletef.val("false"); 
 				    				},
 				    				"traditional" : function(event){ 
 				    					imageformtool.inputs.traditional.val(""); 
@@ -426,7 +426,7 @@
 		    				});
 		    			}
 			    		
-			    		imageformtool.inputs.new.uploadify({
+			    		imageformtool.inputs.newf.uploadify({
 				    		'buttonText'	: 'Select File',
 							'uploader'  	: '#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4/uploadify.swf',
 							'script'    	: url,
@@ -442,11 +442,11 @@
 								$j('##'+prefix+property+"_uploaderror").hide();
 								
 								// attached related fields to uploadify post
-								imageformtool.inputs.new.uploadifySettings("scriptData",imageformtool.getPostValues());
+								imageformtool.inputs.newf.uploadifySettings("scriptData",imageformtool.getPostValues());
 							},
 							'onComplete'	: function(event, ID, fileObj, response, data){
 								var results = $j.parseJSON(response);
-								imageformtool.inputs.new.uploadifyClearQueue();
+								imageformtool.inputs.newf.uploadifyClearQueue();
 								if (results.error){
 									$j(imageformtool).trigger("fileerror",[ "upload","500",results.error ]);
 								}
@@ -456,7 +456,7 @@
 								}
 							},
 							'onError'		: function(event, ID, fileObj, errorObj){
-								imageformtool.inputs.new.uploadifyClearQueue();
+								imageformtool.inputs.newf.uploadifyClearQueue();
 								if (d.status == 404)
 									$j(imageformtool).trigger("fileerror",[ "upload",errorObj.status.toString(),'Could not find upload script' ]);
 								else if (d.type === "HTTP")
@@ -522,8 +522,8 @@
 	    		if (!this[prefix+property]) this[prefix+property] = new ImageFormtool(prefix,property);
 	    		return this[prefix+property];
 	    	};
-		</cfoutput></script></skin:loadJS>
-		<!--- </script></cfoutput></skin:htmlHead> --->
+		<!--- </cfoutput></script></skin:loadJS> --->
+		</script></cfoutput></skin:htmlHead>
 	    
 	    <cfsavecontent variable="metadatainfo">
 			<cfif (isnumeric(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth gt 0) or (isnumeric(arguments.stMetadata.ftImageHeight) and arguments.stMetadata.ftImageHeight gt 0)>
@@ -542,7 +542,7 @@
 					<div id="#arguments.fieldname#-multiview">
 						<cfif arguments.stMetadata.ftAllowUpload>
 					    	<div id="#arguments.fieldname#_upload" class="upload-view" style="display:none;">
-				    			<a href="##traditional" id="image-traditional-switch" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle"&nbsp;</span></a>
+				    			<a href="##traditional" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle">&nbsp;</span></a>
 								<div style="margin-left:15px">
 						    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
 						    		<div id="#arguments.fieldname#_uploaderror" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
@@ -551,7 +551,7 @@
 						    	</div>
 							</div>
 					    	<div id="#arguments.fieldname#_traditional" class="traditional-view" style="display:none;">
-				    			<a href="##upload" id="image-traditional-switch" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle"&nbsp;</span></a>
+				    			<a href="##upload" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle">&nbsp;</span></a>
 					    		<div style="margin-left:15px">
 						    		<input type="file" name="#arguments.fieldname#TRADITIONAL" id="#arguments.fieldname#TRADITIONAL" />
 						    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
@@ -615,7 +615,7 @@
 					<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="false" />
 					<div id="#arguments.fieldname#-multiview">
 				    	<div id="#arguments.fieldname#_upload" class="upload-view"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
-				    		<a href="##traditional" id="image-traditional-switch" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle"&nbsp;</span></a>
+				    		<a href="##traditional" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle">&nbsp;</span></a>
 							<div style="margin-left:15px">
 					    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
 					    		<div id="#arguments.fieldname#_uploaderror" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
@@ -624,7 +624,7 @@
 					    	</div>
 						</div>
 				    	<div id="#arguments.fieldname#_traditional" class="traditional-view" style="display:none;">
-				    		<a href="##upload" id="image-traditional-switch" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle"&nbsp;</span></a>
+				    		<a href="##upload" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle">&nbsp;</span></a>
 							<div style="margin-left:15px">
 					    		<input type="file" name="#arguments.fieldname#TRADITIONAL" id="#arguments.fieldname#TRADITIONAL" />
 					    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
