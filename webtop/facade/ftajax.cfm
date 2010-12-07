@@ -5,7 +5,7 @@
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 
 <cfloop collection="#url#" item="key">
-	<cfif refind("/formtool/\w+",key)>
+	<cfif refindnocase("/formtool/\w+",key)>
 		<cfloop from="1" to="#listlen(key,'/')#" index="i" step="2">
 			<cfset url[listgetat(key,i,"/")] = listgetat(key,i+1,"/") />
 		</cfloop>
