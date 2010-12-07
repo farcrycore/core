@@ -19,7 +19,7 @@
 	<cfparam  name="attributes.style" default="">
 
 	<cfoutput>
-		<div class="buttonHolde #attributes.class#" style="#attributes.style#">
+		<div class="buttonHolder #attributes.class#" style="#attributes.style#">
 	</cfoutput>
 </cfif>
 
