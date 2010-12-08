@@ -908,7 +908,7 @@
 				<!--- This means there is already a file associated with this object. The new file must have the same name. --->
 				<cfset uploadFileName = listLast(arguments.existingfile, "/\") />
 				
-				<cffile action="upload" filefield="#arguments.uploadfield#" destination="#application.path.imageRoot##arguments.destination#" nameconflict="MakeUnique" />
+				<cffile action="upload" filefield="#arguments.uploadfield#" destination="#application.path.imageRoot##arguments.destination#" nameconflict="MakeUnique" mode="664" />
 				
 				<cfif listlast(arguments.existingfile,".") eq listlast(cffile.serverFileExt,".")>
 					<cffile action="rename" source="#application.path.imageRoot##arguments.destination#/#cffile.ServerFile#" destination="#uploadFileName#" />
@@ -923,7 +923,7 @@
 			<cfelse>
 				
 				<!--- There is no image currently so we simply upload the image and make it unique  --->
-				<cffile action="upload" filefield="#arguments.uploadfield#" destination="#application.path.imageRoot##arguments.destination#" nameconflict="MakeUnique" />
+				<cffile action="upload" filefield="#arguments.uploadfield#" destination="#application.path.imageRoot##arguments.destination#" nameconflict="MakeUnique" mode="664" />
 				
 				<cfif listFindNoCase(arguments.allowedExtensions,cffile.serverFileExt)>
 					<cfset stResult = passed("#arguments.destination#/#cffile.ServerFile#") />
@@ -990,7 +990,7 @@
 				<cfset finalfilename = arguments.destination & '/' & listfirst(listlast(sourcefilename,"\/"),".") & uniqueid & "." & listlast(sourcefilename,".") />
 			</cfloop>
 			
-			<cffile action="copy" source="#application.path.imageRoot##sourcefilename#" destination="#application.path.imageRoot##finalfilename#" />
+			<cffile action="copy" source="#application.path.imageRoot##sourcefilename#" destination="#application.path.imageRoot##finalfilename#" mode="664" />
 			<cfreturn passed(finalfilename) />
 		<cfelse>
 			<cfreturn passed("") />
@@ -1221,7 +1221,7 @@
 			<cfif NOT arguments.bSelfSourced>
 				<cffile action="copy" 
 					source="#arguments.Source#"
-					destination="#ImageDestination#">
+					destination="#ImageDestination#" mode="664">
 			</cfif>
 			
 			<!--- update the return filename --->       

@@ -457,7 +457,7 @@ input.f-submit {padding: 1px 3px;background:##666;color:##fff;font-weight:bold;f
 						file="#attributes.storagedir#/#attributes.owner#.plp"
 						output="#wddxPLP#"
 						addnewline="No"
-						charset="utf-8">
+						charset="utf-8" mode="664">
 				</cflock>
 				<cfcatch type="Any">
 					<cfset request.cfdumpinited = false>

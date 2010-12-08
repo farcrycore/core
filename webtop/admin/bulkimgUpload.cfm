@@ -32,7 +32,7 @@
 		</cfif>
 	
 	
-		<cffile action="UPLOAD" filefield="FILEDATA" destination="#physicalPath#/#form.FILENAME#" nameconflict="MAKEUNIQUE" />
+		<cffile action="UPLOAD" filefield="FILEDATA" destination="#physicalPath#/#form.FILENAME#" nameconflict="MAKEUNIQUE" mode="664" />
 			
 		<cfcatch>
 			<cflog log="Application" type="error" text="#form.fieldNames# #cfcatch.Message# #cfcatch.Detail#" />

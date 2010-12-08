@@ -418,7 +418,7 @@
 						<cffile action="UPLOAD"
 							filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
 							destination="#filePath##arguments.stMetadata.ftDestination#"		        	
-							nameconflict="MakeUnique" />
+							nameconflict="MakeUnique" mode="664" />
 					
 						<cfif listFindNoCase(arguments.stMetadata.ftAllowedFileExtensions,cffile.serverFileExt)>
 							<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#cffile.ServerFile#" destination="#uploadFileName#" />
@@ -431,7 +431,7 @@
 						<cffile action="UPLOAD"
 							filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
 							destination="#filePath##arguments.stMetadata.ftDestination#"		        	
-							nameconflict="MakeUnique">
+							nameconflict="MakeUnique" mode="664">
 					
 						<cfif listFindNoCase(arguments.stMetadata.ftAllowedFileExtensions,cffile.serverFileExt)>
 							<cfset newFileName = cffile.ServerFile>

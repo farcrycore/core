@@ -47,7 +47,7 @@
 		<cfset Local.nl = Chr(13) & Chr(10) />
 		
 		<cfif FileExists(Variables.tmpfile)>
-			<cffile action="write" file="#Variables.tmpfile#" output="!#Local.nl#^#ArrayToList(Arguments.words, '#Local.nl#^')#" />
+			<cffile action="write" file="#Variables.tmpfile#" output="!#Local.nl#^#ArrayToList(Arguments.words, '#Local.nl#^')#" mode="664" />
 		<cfelse>
 			<cfset throwError("PSpell support was not found.") />
 		</cfif>
@@ -82,7 +82,7 @@
 		<cfset Local.nl = Chr(13) & Chr(10) />
 
 		<cfif FileExists(Variables.tmpfile)>
-			<cffile action="write" file="#Variables.tmpfile#" output="!#Local.nl#^#Arguments.word##Local.nl#" />
+			<cffile action="write" file="#Variables.tmpfile#" output="!#Local.nl#^#Arguments.word##Local.nl#" mode="664" />
 		<cfelse>
 			<cfset throwError("Error opening tmp file.") />
 		</cfif>

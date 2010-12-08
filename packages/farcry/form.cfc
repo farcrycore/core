@@ -80,7 +80,7 @@ $out:$
 				</cfif>
 
 				<!--- upload file --->
-				<cffile  action="UPLOAD" filefield="#arguments.formField#" destination="#arguments.destination#" nameconflict="#arguments.nameconflict#" accept="#arguments.accept#">
+				<cffile  action="UPLOAD" filefield="#arguments.formField#" destination="#arguments.destination#" nameconflict="#arguments.nameconflict#" accept="#arguments.accept#" mode="664">
 
 				<!--- check if filename has bad characters --->
 				<cfif refindnocase("[\$\^\s\%\*''""<>,\&?]",cffile.serverfile) gt 0>

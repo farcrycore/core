@@ -287,7 +287,7 @@ type properties
 			<cfif stLocal.stFile.action EQ "move">			
 				<cffile action="move" source="#stLocal.stFile.sourceDir##stLocal.stFile.sourceFilename#" destination="#stLocal.stFile.destinationdir##stLocal.stFile.destinationFilename#">
 			<cfelse>
-				<cffile action="copy" source="#stLocal.stFile.sourceDir##stLocal.stFile.sourceFilename#" destination="#stLocal.stFile.destinationdir#">
+				<cffile action="copy" source="#stLocal.stFile.sourceDir##stLocal.stFile.sourceFilename#" destination="#stLocal.stFile.destinationdir#" mode="664">
 				<cffile action="rename" source="#stLocal.stFile.destinationdir##stLocal.stFile.sourceFilename#" destination="#stLocal.stFile.destinationdir##stLocal.stFile.destinationFilename#">
 			</cfif>			
 		</cfif>

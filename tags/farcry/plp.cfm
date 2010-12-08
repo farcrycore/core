@@ -381,7 +381,7 @@ TODO:
 						file="#attributes.storagedir#/#attributes.owner#.plp"
 						output="#wddxPLP#"
 						addnewline="No"
-						charset="utf-8">
+						charset="utf-8" mode="664">
 				</cflock>
 				<cfcatch type="Any">
 					<cfset request.cfdumpinited = false>

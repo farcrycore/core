@@ -93,7 +93,7 @@ $Developer: Brendan Sisson (brendan@daemon.com.au) $
 
 				<cftry>
 					<!--- generate file --->
-					<cffile action="write" file="#filePath#" output="#toString(stExport)#" addnewline="no" nameconflict="OVERWRITE">
+					<cffile action="write" file="#filePath#" output="#toString(stExport)#" addnewline="no" nameconflict="OVERWRITE" mode="664">
 					<cfcatch>
 					<cfset subS=listToArray('#application.path.project#,#application.config.general.exportPath#')>			
 					<cfoutput>#application.rb.formatRBString("exportDirNotExists",subS)#</cfoutput>

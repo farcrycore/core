@@ -10,7 +10,7 @@
 	<cfset values.projectname = application.ApplicationName />
 	<cfset values.typename = url.typename />
 	<cfset content = substitute(content,values) />
-	<cffile action="write" file="#application.path.project#/webskin/#url.typename#/displayPageStandard.cfm" output="#content#" />
+	<cffile action="write" file="#application.path.project#/webskin/#url.typename#/displayPageStandard.cfm" output="#content#" mode="664" />
 	
 	<cfoutput>
 		<p class="success">Standard page created</p>
@@ -30,7 +30,7 @@
 	<cfset values.projectname = application.ApplicationName />
 	<cfset values.typename = url.typename />
 	<cfset content = substitute(content,values) />
-	<cffile action="write" file="#application.path.project#/webskin/#url.typename#/displayTeaserStandard.cfm" output="#content#" />
+	<cffile action="write" file="#application.path.project#/webskin/#url.typename#/displayTeaserStandard.cfm" output="#content#" mode="664" />
 	
 	<cfoutput>
 		<p class="success">Standard teaser created</p>
