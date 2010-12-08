@@ -665,7 +665,7 @@
 		<cfreturn resultHTML />
 	</cffunction>
 	
-	<cffunction name="getFilterSQL">ef
+	<cffunction name="getFilterSQL">
 
 		<cfargument name="filterTypename" />
 		<cfargument name="filterProperty" />
