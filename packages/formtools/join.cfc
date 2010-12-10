@@ -15,7 +15,7 @@
 	<cfproperty name="ftLibrarySelectedListStyle" default="" type="string" hint="write your own inline style for the class" />
 	<cfproperty name="ftLibraryListItemWidth" default="" type="string" hint="???" />
 	<cfproperty name="ftLibraryListItemHeight" default="" type="string" hint="???"/>
-	<cfproperty name="ftRenderType" default="Library" options="Library, list or checkbox" type="string" hint="Specify how to render the form element for the array, library pop-up, select dropdown, or list of checkbox buttons."/>
+	<cfproperty name="ftRenderType" default="Library" options="Library, list, checkbox or radio" type="string" hint="Specify how to render the form element for the array, library pop-up, select dropdown, or list of checkbox or radio buttons."/>
 	<cfproperty name="ftSelectSize" default="10" type="string" hint="Specify the number of items displayed of a select list."/>
 	<cfproperty name="ftSelectMultiple" default="true" options="true,false" type="boolean" hint="Allow selection of multiple items from a select list. Values - true or false, if this property is omitted then allowing multiple select is default"/>
 	<cfproperty name="ftAllowLibraryEdit" default="false" hint="???"/>
@@ -141,7 +141,7 @@
 			
 			</cfcase>
 			
-			<cfcase value="radio">
+			<cfcase value="radio,checkbox">
 				<!-------------------------------------------------------------------------- 
 				generate library data query to populate library interface 
 				--------------------------------------------------------------------------->
@@ -176,22 +176,26 @@
 						<cfif qLibraryList.recordcount>
 							<cfoutput>
 							
-							<cfif len(arguments.stMetadata.ftFirstListLabel)>
+							<cfif arguments.stMetadata.ftRenderType eq 'radio' and len(arguments.stMetadata.ftFirstListLabel)>
 								<label for="#arguments.fieldname#_none">
-									<input type="radio" 
+									<input type="#arguments.stMetadata.ftRenderType#" 
 										id="#arguments.fieldname#_none" 
 										name="#arguments.fieldname#" class="formCheckbox #arguments.stMetadata.ftclass#"
-										<cfif arguments.stObject[arguments.stMetaData.Name] EQ ""> checked</cfif> 
+										<cfif isSimpleValue(arguments.stObject[arguments.stMetaData.Name]) and arguments.stObject[arguments.stMetaData.Name] EQ ""> checked="checked"</cfif> 
 										value="" />
 									<cfif isDefined("qLibraryList.label")>#arguments.stMetadata.ftFirstListLabel#</cfif>
 								</label>
 							</cfif>
 							<cfloop query="qLibraryList">
 								<label for="#arguments.fieldname#_#replace(qLibraryList.objectid,'-','','ALL')#">
-									<input type="radio" 
+									<input type="#arguments.stMetadata.ftRenderType#" 
 										id="#arguments.fieldname#_#replace(qLibraryList.objectid,'-','','ALL')#" 
 										name="#arguments.fieldname#" class="formCheckbox #arguments.stMetadata.ftclass#"
-										<cfif arguments.stObject[arguments.stMetaData.Name] EQ qLibraryList.objectid> checked</cfif> 
+										<cfif isSimpleValue(arguments.stObject[arguments.stMetaData.Name]) and arguments.stObject[arguments.stMetaData.Name] EQ qLibraryList.objectid> 
+										checked="checked"
+										<cfelseif isArray(arguments.stObject[arguments.stMetaData.Name]) and listFindNoCase(arrayToList(arguments.stObject[arguments.stMetaData.Name]),qLibraryList.objectid)>
+										checked="checked"
+										</cfif> 
 										value="#qLibraryList.objectid#" />
 									<skin:view objectid="#qLibraryList.objectid#" webskin="#arguments.stMetadata.ftLibrarySelectedWebskin#" alternateHTML="#qLibraryList.label#" />
 								</label>
