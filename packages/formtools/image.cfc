@@ -158,7 +158,7 @@
 	    <!--- <skin:htmlHead id="farcry-imageformtool-css"><cfoutput><style type="text/css"> --->
 	    <skin:loadCSS id="farcry-imageformtool"><style type="text/css"><cfoutput>
 	    	.indicator { background: url("/webtop/images/indicator.gif") repeat scroll 0 0 transparent; }
-		</cfoutput></style></skin:loadJS>
+		</cfoutput></style></skin:loadCSS>
 		<!--- </style></cfoutput></skin:htmlHead> --->
 	    <!--- <skin:htmlHead id="farcry-imageformtool-js"><cfoutput><script type="text/javascript"> --->
 	    <skin:loadJS id="farcry-imageformtool"><script type="text/javascript"><cfoutput>
