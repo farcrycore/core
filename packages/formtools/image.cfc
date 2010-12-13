@@ -126,7 +126,7 @@
 	    <cfset var metadatainfo = "" />
 	    <cfset var prefix = left(arguments.fieldname,len(arguments.fieldname)-len(arguments.stMetadata.name)) />
 		
-		 
+		
 	    <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 		<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 		<cfimport taglib="/farcry/core/tags/grid/" prefix="grid" />
@@ -146,13 +146,22 @@
 	    <cfparam name="arguments.stMetadata.ftShowConversionInfo" default="true"><!--- Set to false to hide the conversion information that will be applied to the uploaded image --->
 	    <cfparam name="arguments.stMetadata.ftAllowedExtensions" default="jpg,jpeg,png,gif"><!--- The extentions allowed to be uploaded --->
 	    
+	    <cfif len(arguments.stMetadata.value) and not fileexists(application.path.imageroot & arguments.stMetadata.value)>
+			<cfset arguments.stMetadata.value = "" />
+		</cfif>
+	    
 	    <skin:loadJS id="jquery" />
 	    <skin:loadJS id="jquery-uploadify" />
 	    <skin:loadCSS id="jquery-uploadify" />
 	    <skin:loadJS id="jquery-crop" />
 	    <skin:loadCSS id="jquery-crop" />
-	    <skin:htmlHead id="farcry-imageformtool"><cfoutput><script type="text/javascript">
-	    <!--- <skin:loadJS id="farcry-imageformtool"><script type="text/javascript"><cfoutput> --->
+	    <!--- <skin:htmlHead id="farcry-imageformtool-css"><cfoutput><style type="text/css"> --->
+	    <skin:loadCSS id="farcry-imageformtool"><style type="text/css"><cfoutput>
+	    	.indicator { background: url("/webtop/images/indicator.gif") repeat scroll 0 0 transparent; }
+		</cfoutput></style></skin:loadJS>
+		<!--- </style></cfoutput></skin:htmlHead> --->
+	    <!--- <skin:htmlHead id="farcry-imageformtool-js"><cfoutput><script type="text/javascript"> --->
+	    <skin:loadJS id="farcry-imageformtool"><script type="text/javascript"><cfoutput>
 	    	(function(jQuery){
 	    		var defaults = {
 	    			"selected"		: "",
@@ -229,13 +238,24 @@
 		    		return this;
 	    		};
 	    		
+	    		jQuery.fn.currentView = function(){
+	    			return this.data("multiview.currentview");
+	    		};
+	    		
+	    		jQuery.fn.addView = function(name,html,selected){
+	    			this.append("<div class='"+name+"-view' style='display:none;'>"+html+"</div>");
+	    			this.data("multiview.allviews",this.data("multiview.allviews").push(name));
+	    			if (selected) this.selectView(name);
+	    			return this;
+	    		};
+	    		
 	    		jQuery.fn.findView = function(view){
 	    			return this.find("> ."+view+"-view");
 	    		};
 	    	})($j);
 	    	
 	    	(function(jQuery){
-		    	$fc.cropper = function(sourceobject, url, width, height, postvalues){
+		    	$fc.cropper = function(sourceobject, url, width, height, postvalues, allowcancel){
 		    		
 		    		var cropper = this;
 		    		
@@ -247,6 +267,7 @@
 					var overlayheight = viewportheight - 100;
 					var overlayleft = jQuery(document).scrollLeft()+(viewportwidth-overlaywidth)/2;
 					var overlaytop = jQuery(document).scrollTop()+(viewportheight-overlayheight)/2;
+					if (!(allowcancel===false)) allowcancel = true;
 					
 					var current_crop_selection = null;
 					
@@ -254,11 +275,11 @@
 					jQuery("body").append("<div id='image-crop-overlay'><div class='ui-widget-overlay' style='width:"+docwidth+"px;height:"+docheight+"px;'></div><div style='width:"+(overlaywidth+22)+"px;height:"+(overlayheight+22)+"px;position:absolute;left:"+overlayleft+"px; top:"+overlaytop+"px;' class='ui-widget-shadow ui-corner-all'></div><div id='image-crop-ui' class='ui-widget ui-widget-content ui-corner-all' style='position: absolute;width:"+overlaywidth+"px;height:"+overlayheight+"px;left:"+overlayleft+"px;top:"+overlaytop+"px; padding: 10px;'></div></div>");
 					
 					// Add event to end cropping when the overlay is clicked
-					jQuery("##image-crop-overlay .ui-widget-overlay").bind("click",function(e) { if (this==e.target) cropper.cancelCrop(); });
+					if (allowcancel) jQuery("##image-crop-overlay .ui-widget-overlay").bind("click",function(e) { if (this==e.target) cropper.cancelCrop(); });
 					
 					// Load and add events to crop HTML
 					jQuery.ajaxSetup({ timeout:5000 });
-					jQuery("##image-crop-ui").load(url+"&crop=1",postvalues,function(){
+					jQuery("##image-crop-ui").load(url+"&crop=1&allowcancel="+allowcancel,postvalues,function(){
 						var $x1 = jQuery("##image-crop-a-x");
 						var $y1 = jQuery("##image-crop-a-y");
 						var $x2 = jQuery("##image-crop-b-x");
@@ -271,7 +292,7 @@
 							"minSize" : [width,height],
 							"aspectRatio" : (width && height)?width/height:0,
 							"boxWidth" : overlaywidth * 0.65,
-							"boxHeight" : overlayheight-50,
+							"boxHeight" : overlayheight,
 							"onChange" : function(c){
 								$x1.html(c.x);
 								$y1.html(c.y);
@@ -358,6 +379,7 @@
 				    				"autogenerate" : function(event){ 
 					    				if (imageformtool.inputs.base.val().length){
 						    				imageformtool.inputs.deletef.val("true");
+											$j(this).find(".image-crop-select-button").show().end()
 						    			}
 				    				},
 				    				"traditional" : function(event){  }
@@ -374,15 +396,18 @@
 				    				}
 				    			}
 				    		})
-			    			.find("a.image-crop-select-button,button.image-crop-select-button").bind("click",function(){ $j('##'+prefix+property+"_croperror").hide();$fc.cropper(imageformtool,url,width,height,imageformtool.getPostValues()); return false; }).end()
+			    			.find("a.image-crop-select-button,button.image-crop-select-button").bind("click",function(){ imageformtool.beginCrop(true); return false; }).end()
 			    			.find("a.image-crop-cancel-button,button.image-crop-cancel-button").bind("click",function(){ imageformtool.removeCrop(); return false; }).end();
 			    		
 	    				$j(imageformtool).bind("filechange.updatedisplay",function(event,results){
 	    					if (results.value.length>0){
+	    						var previewsize = { width:results.width, height:results.height };
+	    						if (previewsize.width > 400) previewsize = { width:400, height:previewsize.height*400/previewsize.width };
+	    						if (previewsize.height > 400) previewsize = { width:previewsize.width*400/previewsize.height, height:400 };
 		    					var complete = imageformtool.multiview.findView("complete")
-									.find(".image-status").attr("title","This file has been updated on the server").html('<span class="ui-icon ui-icon-info" style="float:left;">&nbsp;</span>').end()
+									.find(".image-status").attr("title","This file has been updated on the server").tooltip({ delay: 0, showURL: false	}).html('<span class="ui-icon ui-icon-info" style="float:left;">&nbsp;</span>').end()
 									.find(".image-filename").html(results.filename).end()
-									.find(".image-preview").attr("href",results.fullpath).end()
+									.find(".image-preview").attr("href",results.fullpath).attr("title","<img src='"+results.fullpath+"?"+new Date().getTime()+"' width='"+previewsize.width.toString()+"px' height='"+previewsize.height.toString()+"px' />").tooltip({ delay: 0, showURL: false	}).end()
 									.find(".image-size").html(results.size).end()
 									.find(".image-width").html(results.width).end()
 									.find(".image-height").html(results.height).end();
@@ -486,12 +511,19 @@
 							imageformtool.multiview.findView("autogenerate").find(".image-custom-crop").hide();
 					};
 	    			
+	    			this.beginCrop = function(allowcancel){
+	    				$j('##'+prefix+property+"_croperror").hide();
+	    				$fc.cropper(imageformtool,imageformtool.url,imageformtool.width,imageformtool.height,imageformtool.getPostValues(),allowcancel);
+	    			};
+	    			
 	    			this.applyCrop = function(){
+	    				imageformtool.multiview.findView("autogenerate").find(".ui-icon-help").removeClass("ui-icon-help").addClass("indicator");
 						$j.ajax({
 							type : "POST",
 							url : imageformtool.url,
 							data : imageformtool.getPostValues(),
 							success : function(results){
+	    						imageformtool.multiview.findView("autogenerate").find(".indicator").removeClass("indicator").addClass("ui-icon-help");
 								if (results.error){
 									$j(imageformtool).trigger("fileerror",[ "crop", "500",results.error ]);
 								}
@@ -503,6 +535,7 @@
 								}
 							},
 							error : function(XMLHttpRequest, textStatus, errorThrown){
+	    						imageformtool.multiview.findView("autogenerate").find(".indicator").removeClass("indicator").addClass("ui-icon-help");
 								$j(imageformtool).trigger("fileerror",[ "crop",textStatus,errorThrown.toString() ]);
 							},
 							dataType : "json"
@@ -522,8 +555,8 @@
 	    		if (!this[prefix+property]) this[prefix+property] = new ImageFormtool(prefix,property);
 	    		return this[prefix+property];
 	    	};
-		<!--- </cfoutput></script></skin:loadJS> --->
-		</script></cfoutput></skin:htmlHead>
+		</cfoutput></script></skin:loadJS>
+		<!--- </script></cfoutput></skin:htmlHead> --->
 	    
 	    <cfsavecontent variable="metadatainfo">
 			<cfif (isnumeric(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth gt 0) or (isnumeric(arguments.stMetadata.ftImageHeight) and arguments.stMetadata.ftImageHeight gt 0)>
@@ -581,23 +614,33 @@
 						<cfif len(arguments.stMetadata.value)>
 						    <cfset stFile = GetFileInfo("#application.path.imageroot##arguments.stMetadata.value#") />
 						    <cfimage action="info" source="#application.path.imageroot##arguments.stMetadata.value#" structName="stImage" />
+						    <cfset previewwidth = stImage.width />
+						    <cfset previewheight = stImage.height />
+						    <cfif previewwidth gt 400>
+								<cfset previewheight = previewheight * 400 / previewwidth />
+								<cfset previewwidth = 400 />
+							</cfif>
+						    <cfif previewheight gt 400>
+								<cfset previewwidth = previewwidth * 400 / previewheight />
+								<cfset previewheight = 400 />
+							</cfif>
 						    <div id="#arguments.fieldname#_complete" class="complete-view">
 					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
 					    		<div style="margin-left:15px;">
-						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> (<a class="image-preview" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank">Preview</a>)<br>
+						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> (<a class="image-preview" title="<img src='#application.url.imageroot##arguments.stMetadata.value#' width='#previewwidth#' height='#previewheight#' />" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank">Preview</a>)<br>
 						    		Size: <span class="image-size">#round(stFile.size/1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
 						    		<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
-						    		<a href="##autogenerate" class="image-replace select-view">Repace this image</a>
+						    		<a href="##autogenerate" class="image-replace select-view">Replace this image</a>
 								</div>
 							</div>
 						<cfelse>
 						    <div id="#arguments.fieldname#_complete" class="complete-view" style="display:none;">
 					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
 					    		<div style="margin-left:15px;">
-						    		<span class="image-filename"></span> (<a class="image-preview" href="##" target="_blank">Preview</a>)<br>
+						    		<span class="image-filename"></span> (<a class="image-preview" title="<img src='' />" href="##" target="_blank">Preview</a>)<br>
 						    		Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
 									<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
-						    		<a href="##autogenerate" class="image-replace select-view">Repace this image</a>
+						    		<a href="##autogenerate" class="image-replace select-view">Replace this image</a>
 								</div>
 							</div>
 						</cfif>
@@ -634,23 +677,33 @@
 						<cfif len(arguments.stMetadata.value)>
 						    <cfset stFile = GetFileInfo("#application.path.imageroot##arguments.stMetadata.value#") />
 						    <cfimage action="info" source="#application.path.imageroot##arguments.stMetadata.value#" structName="stImage" />
+						    <cfset previewwidth = stImage.width />
+						    <cfset previewheight = stImage.height />
+						    <cfif previewwidth gt 400>
+								<cfset previewheight = previewheight * 400 / previewwidth />
+								<cfset previewwidth = 400 />
+							</cfif>
+						    <cfif previewheight gt 400>
+								<cfset previewwidth = previewwidth * 400 / previewheight />
+								<cfset previewheight = 400 />
+							</cfif>
 						    <div id="#arguments.fieldname#_complete" class="complete-view">
 					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
 					    		<div style="margin-left:15px;">
-						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> (<a class="image-preview" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank">Preview</a>)<br>
+						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> (<a class="image-preview" title="<img src='#application.url.imageroot##arguments.stMetadata.value#' width='#previewwidth#' height='#previewheight#' />" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank">Preview</a>)<br>
 						    		Size: <span class="image-size">#round(stFile.size/1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
 									<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
-						    		<a href="##upload" class="image-replace select-view">Repace this image with one from your computer</a>
+						    		<a href="##upload" class="image-replace select-view">Replace this image with one from your computer</a>
 								</div>
 							</div>
 						<cfelse>
 						    <div id="#arguments.fieldname#_complete" class="complete-view" style="display:none;">
 					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
 					    		<div style="margin-left:15px;">
-						    		<span class="image-filename"></span> (<a class="image-preview" href="##" target="_blank">Preview</a>)<br>
+						    		<span class="image-filename"></span> (<a class="image-preview" title="<img src='' />" href="##" target="_blank">Preview</a>)<br>
 						    		Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
 						    		<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
-						    		<a href="##upload" class="image-replace select-view">Repace this image with one from your computer</a>
+						    		<a href="##upload" class="image-replace select-view">Replace this image with one from your computer</a>
 								</div>
 							</div>
 						</cfif>
@@ -696,6 +749,7 @@
 			<cfif not structkeyexists(arguments.stMetadata,"ftImageWidth") or not isnumeric(arguments.stMetadata.ftImageWidth)><cfset arguments.stMetadata.ftImageWidth = 0 /></cfif>
 			<cfif not structkeyexists(arguments.stMetadata,"ftImageHeight") or not isnumeric(arguments.stMetadata.ftImageHeight)><cfset arguments.stMetadata.ftImageHeight = 0 /></cfif>
 	    	<cfparam name="arguments.stMetadata.ftAllowResizeQuality" default="false">
+	    	<cfparam name="url.allowcancel" default="1" />
 	    	
 			<cfif len(source)>
 				<cfsavecontent variable="html"><cfoutput>
@@ -733,7 +787,7 @@
 						</div>
 						<div class="uniForm image-crop-actions">
 							<ft:buttonPanel>
-								<a href="##" id="image-crop-cancel" style="padding-right:10px;">Cancel</a>
+								<cfif url.allowcancel><a href="##" id="image-crop-cancel" style="padding-right:10px;">Cancel</a></cfif>
 								<ft:button value="Crop and Resize" id="image-crop-finalize" onclick="$fc.imageformtool.finalizeCrop();return false;" />
 							</ft:buttonPanel>
 						</div>
