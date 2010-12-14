@@ -107,7 +107,7 @@
 		<cfreturn this>
 	</cffunction>
 	
-	<cffunction name="edit" access="public" output="true" returntype="string" hint="his will return a string of formatted HTML text to enable the user to edit the data">
+	<cffunction name="edit" access="public" output="false" returntype="string" hint="his will return a string of formatted HTML text to enable the user to edit the data">
 	    <cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 	    <cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 	    <cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
@@ -151,17 +151,20 @@
 		</cfif>
 	    
 	    <skin:loadJS id="jquery" />
+	    <skin:loadJS id="jquery-tooltip" />
+	    <skin:loadJS id="jquery-tooltip-auto" />
+	    <skin:loadCSS id="jquery-tooltip" />
 	    <skin:loadJS id="jquery-uploadify" />
 	    <skin:loadCSS id="jquery-uploadify" />
 	    <skin:loadJS id="jquery-crop" />
 	    <skin:loadCSS id="jquery-crop" />
 	    <!--- <skin:htmlHead id="farcry-imageformtool-css"><cfoutput><style type="text/css"> --->
-	    <skin:loadCSS id="farcry-imageformtool"><style type="text/css"><cfoutput>
+	    <skin:loadCSS id="farcry-imageformtool"><cfoutput>
 	    	.indicator { background: url("/webtop/images/indicator.gif") repeat scroll 0 0 transparent; }
-		</cfoutput></style></skin:loadCSS>
+		</cfoutput><</skin:loadCSS>
 		<!--- </style></cfoutput></skin:htmlHead> --->
 	    <!--- <skin:htmlHead id="farcry-imageformtool-js"><cfoutput><script type="text/javascript"> --->
-	    <skin:loadJS id="farcry-imageformtool"><script type="text/javascript"><cfoutput>
+	    <skin:loadJS id="farcry-imageformtool"><cfoutput>
 	    	(function(jQuery){
 	    		var defaults = {
 	    			"selected"		: "",
@@ -341,6 +344,13 @@
 					return this;
 		    	};
 		    })($j);
+	    	
+	    	(function(jQuery){
+	    		if (console && console.log)
+		    		jQuery.fn.log = function(label){ console.log(label,this);return this; };
+	    		else
+		    		jQuery.fn.log = function(label){ return this; };
+	    	})($j);
 	    	
 	    	$fc.imageformtool = function(prefix,property){
 	    		function ImageFormtool(prefix,property) {
@@ -555,7 +565,7 @@
 	    		if (!this[prefix+property]) this[prefix+property] = new ImageFormtool(prefix,property);
 	    		return this[prefix+property];
 	    	};
-		</cfoutput></script></skin:loadJS>
+		</cfoutput></skin:loadJS>
 		<!--- </script></cfoutput></skin:htmlHead> --->
 	    
 	    <cfsavecontent variable="metadatainfo">
