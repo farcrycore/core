@@ -349,13 +349,6 @@
 		    	};
 		    })($j);
 	    	
-	    	(function(jQuery){
-	    		if (console && console.log)
-		    		jQuery.fn.log = function(label){ console.log(label,this);return this; };
-	    		else
-		    		jQuery.fn.log = function(label){ return this; };
-	    	})($j);
-	    	
 	    	$fc.imageformtool = function(prefix,property){
 	    		function ImageFormtool(prefix,property) {
 	    			var imageformtool = this;
