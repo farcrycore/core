@@ -40,10 +40,21 @@
 					lFields="#url.property#"
 					r_stFields="stFields" />
 	<cfelse>
+		<cfset objPropValues = structNew()>
+		<cfif structKeyExists(form, "propertyValue") AND len(form.propertyValue)>
+			<cfset stMetadata = application.fapi.getPropertyMetadata(typename="#stobj.typename#", property="#url.property#") />
+			<cfif stMetadata.type EQ "array">
+				<cfset objPropValues[url.property] = listToArray(form.propertyValue)>
+			<cfelse>
+				<cfset objPropValues[url.property] = form.propertyValue>
+			</cfif>
+		</cfif>
+		
 		<ft:object	typename="#stobj.typename#" 
 					objectID="#stobj.objectid#" 
 					lFields="#url.property#" 
-					r_stFields="stFields" />
+					r_stFields="stFields"
+					stPropValues="#objPropValues#" />
 	</cfif>	
 </cfsilent>
 

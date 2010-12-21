@@ -552,34 +552,16 @@ function setRowBackground (childCheckbox) {
 		});	
 	}
 	fcForm.detachLibraryItem = function(typename,objectid,property,formfieldname,itemids) {
-		$j.ajax({
-			cache: false,
-			type: "POST",
- 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
-			data: {detachID: itemids },
-			dataType: "html",
-			complete: function(data){		
-				$j('##join-item-' + itemids).hide('blind',{},500);			
-				$j('##join-item-' + itemids).remove();	
-				$j('##' + formfieldname).attr('value','');	
-				var aItems = $j('##' + formfieldname + '-library-wrapper').sortable('toArray',{'attribute':'serialize'});
-				$j('##' + formfieldname).attr('value',aItems.join(","));				
-			}
-		});	
+		$j('##join-item-' + itemids).hide('blind',{},500);			
+		$j('##join-item-' + itemids).remove();	
+		$j('##' + formfieldname).attr('value','');	
+		var aItems = $j('##' + formfieldname + '-library-wrapper').sortable('toArray',{'attribute':'serialize'});
+		$j('##' + formfieldname).attr('value',aItems.join(","));
 	}
 	fcForm.detachAllLibraryItems = function(typename,objectid,property,formfieldname,itemids) {
-		$j.ajax({
-			cache: false,
-			type: "POST",
- 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
-			data: {detachID: itemids },
-			dataType: "html",
-			complete: function(data){	
-				$j('##' + formfieldname).attr('value', '');		
-				$j('##join-' + objectid + '-' + property).hide('blind',{},500);		
-				$j('##join-' + objectid + '-' + property).remove();			
-			}
-		});	
+		$j('##' + formfieldname).attr('value', '');		
+		$j('##join-' + objectid + '-' + property).hide('blind',{},500);		
+		$j('##join-' + objectid + '-' + property).remove();			
 	}
 		
 	fcForm.initLibrary = function(typename,objectid,property,urlParams) {
@@ -603,30 +585,6 @@ function setRowBackground (childCheckbox) {
   
   			
 		$j("input.checker").click(function(e) {			
-			if($j(e.target).attr('checked')){
-				$j.ajax({
-					cache: false,
-					type: "POST",
-		 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property + "&" + urlParams,
-					data: {addID: $j(e.target).val() },
-					dataType: "html",
-					complete: function(data){
-						fcForm.initLibrarySummary(typename,objectid,property,urlParams);
-					}
-				});		
-			} else {
-				$j.ajax({
-					cache: false,
-					type: "POST",
-		 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property + "&" + urlParams,
-					data: {detachID: $j(e.target).val() },
-					dataType: "html",
-					complete: function(data){
-						fcForm.initLibrarySummary(typename,objectid,property,urlParams);			
-					}
-				});	
-			};
-			
 			if(e.target.type == 'radio'){
 				$j('tr.selector-wrap').removeClass('rowselected');
 				$j(this).parents('tr.selector-wrap').addClass('rowselected');
@@ -647,17 +605,7 @@ function setRowBackground (childCheckbox) {
 	};
 	
 	fcForm.initLibrarySummary = function(typename,objectid,property,urlParams) {
-		$j.ajax({
-			type: "POST",
-			cache: false,
-					url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayLibrarySummary' + '&property=' + property + "&" + urlParams, 
-			complete: function(data){
-				$j('##librarySummary-' + typename + '-' + property).html(data.responseText);
-					
-			},
-			data:{},
-			dataType: "html"
-		});
+
 	}
 	
 	fcForm.refreshProperty = function(typename,objectid,property,id) {
@@ -669,7 +617,9 @@ function setRowBackground (childCheckbox) {
 				$j("##" + id + '-library-wrapper').html(msg);
 				fcForm.initSortable(typename,objectid,property,id);	
 		   	},
-			data:{},
+			data:{
+				propertyValue: $j('##'+id).val()
+			},
 			dataType: "html"
 		});
 	}	
@@ -680,19 +630,7 @@ function setRowBackground (childCheckbox) {
 			//handle: 'td.buttonGripper',
 			axis: 'y',
 			update: function(event,ui){
-				$j.ajax({
-					type: "POST",
-					cache: false,
-	  				url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
-					data: {'sortIDs': $j('##' + id + '-library-wrapper').sortable('toArray',{'attribute':'serialize'}).join(",") },
-					complete: function(data){
-						$j('##' + id).attr('value','');		
-						var aItems = $j('##' + id + '-library-wrapper').sortable('toArray',{'attribute':'serialize'});
-						$j('##' + id).attr('value',aItems.join(","));
-						
-					},
-					dataType: "html"
-				});
+				$j('##'+id).val($j('##' + id + '-library-wrapper').sortable('toArray',{'attribute':'serialize'}).join(","));
 			}
 		});
 		
@@ -783,5 +721,65 @@ function setRowBackground (childCheckbox) {
 			$j($fc.objectAdminActionDiv).dialog('open');
 			$j('iframe',$j($fc.objectAdminActionDiv)).attr('src',url);
 			
-		};					
+		};
+		
+		var userselection = [];
+		var inputField;
+		fcForm.selections = {
+			init: function(aTypename,aProperty,aId) {
+				
+				typename = aTypename;
+				property = aProperty;
+				id = aId;
+				
+				inputField = $j('##'+aId,parent.document);
+				
+				if(inputField.val().length) {
+					userselection = inputField.val().split(',');
+				}
+				
+				fcForm.selections.statusupdate(property);
+				
+				$j("tr.selector-wrap input[name='selected']").live('click', function(e) {
+					var el = $(this);
+					if (el.is(':radio')) {
+						userselection = [el.val()];
+					} else if (el.is(':checked')) {
+						fcForm.selections.add(el.val());
+					} else {
+						fcForm.selections.remove(el.val());
+					}
+					inputField.val(userselection.toString());
+					fcForm.selections.statusupdate(property);
+				});
+			},
+			add: function(objID){
+				if($j.inArray(objID, userselection) == -1) {
+					userselection.push(objID);
+				}
+			},
+			remove: function(objID){
+				var arrPos = $j.inArray(objID, userselection);
+				if(arrPos >= 0) {
+					userselection.splice(arrPos,1);
+				}
+			},
+			statusupdate: function(property) {
+				var nbrSelections = userselection.length;
+				var statusText = '<div id="OKMsg">' + nbrSelections + ' items selected.</div>';
+			
+				if(nbrSelections == 0) {
+					statusText = '<div id="errorMsg">No items have been selected.</div>';
+				}
+				
+				$j('##librarySummary-' + typename + '-' + property).html(statusText);
+			},
+			reinitpage: function() {
+				$j('tr.selector-wrap').removeClass('rowselected');
+				$j("tr.selector-wrap input[name='selected']").attr('checked',false);
+				$j.each(userselection, function(){
+					$j("tr.selector-wrap input[value='"+this+"']").attr('checked',true).parents('tr.selector-wrap').addClass('rowselected');
+				});
+			}
+		};
 </cfoutput>					

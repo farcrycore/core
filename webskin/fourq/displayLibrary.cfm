@@ -47,7 +47,6 @@
 		</cfquery>
 	</cfif>
 			
-	 
 	<!--- SETUP THE QUERY DATA --->
 	<cfset bFoundLibraryData = false />
 		
@@ -190,7 +189,9 @@
 		<cfoutput>
 		<script type="text/javascript">
 		$j(function(){
-			fcForm.initLibrary('#stobj.typename#','#stobj.objectid#','#url.property#');	
+			fcForm.initLibrary('#stobj.typename#','#stobj.objectid#','#url.property#');
+			
+			fcForm.selections.reinitpage();
 		});
 		</script>
 		</cfoutput>

@@ -49,6 +49,7 @@ START WEBSKIN
 	<cfset newLibraryObjectID = "" />	
 	<cfset stOnExit = structNew() />
 	<cfset stOnExit.type = "HTML" />
+	<cfset formHiddenInputName = "fc#replace(stobj.objectid,"-","","all")##url.property#">
 	<ft:processForm action="Save">
 		<ft:processFormObjects typename="#url.filterTypename#">
 			<cfset newLibraryObjectID = stproperties.objectid />
@@ -67,6 +68,7 @@ START WEBSKIN
 						data: {addID: '#newLibraryObjectID#'},
 						dataType: "html",
 						complete: function(data){
+							$j('###formHiddenInputName#', parent.document).val($j('###formHiddenInputName#', parent.document).val() + ',#newLibraryObjectID#');
 							parent.$j('###stobj.typename##stobj.objectid##url.property#').dialog('close');
 						}
 					});		
@@ -92,6 +94,7 @@ START WEBSKIN
 						data: {addID: '#newLibraryObjectID#'},
 						dataType: "html",
 						complete: function(data){
+							$j('###formHiddenInputName#', parent.document).val($j('###formHiddenInputName#', parent.document).val() + ',#newLibraryObjectID#');
 							parent.$j('###stobj.typename##stobj.objectid##url.property#').dialog('close');
 						}
 					});		

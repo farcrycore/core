@@ -79,7 +79,11 @@
 		<skin:view stobject="#stobj#" webskin="displayLibrary" />
 	</cfif>	
 	
-
+	<skin:onReady>
+		<cfoutput>
+			fcForm.selections.init('#stobj.typename#','#url.property#','fc#Replace(stObj.objectid,"-","","all")##url.property#');
+		</cfoutput>
+	</skin:onReady>	
 	
 	<admin:footer>
 	
