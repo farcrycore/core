@@ -429,7 +429,10 @@
 				<cfset stMD = getMetadata(createobject("component",thispath)) />
 				<cfif not structkeyexists(stMD,"bAbstract") or not stMD.bAbstract>
 					<cfset oDB.initialiseTableMetadata(typename=thispath) />
-					<cfset oDB.deployType(typename=thispath,bDropTable=true,dsn=arguments.dsn) />
+					<cfset result = oDB.deployType(typename=thispath,bDropTable=true,dsn=arguments.dsn) />
+					<cfif not result.bSuccess>
+						<cfset this.uicomponent.setError(error=duplicate(result.results[1])) />
+					</cfif>
 					
 					<!--- Create farCOAPI record --->
 					<cfif thispackage eq "rules" or thispackage eq "types">

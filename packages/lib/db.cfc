@@ -262,7 +262,7 @@
 			</cfcase>
 			<cfcase value="string,nstring,varchar" delimiters=",">
 				<cfset stResult.type = "string" />
-				<cfset stResult.precision = "MAX" />
+				<cfset stResult.precision = "250" />
 			</cfcase>
 			<cfcase value="uuid">
 				<cfset stResult.type = "string" />
