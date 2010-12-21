@@ -532,7 +532,11 @@ function setRowBackground (childCheckbox) {
 				$j('##join-item-' + itemids).remove();	
 				$j('##' + formfieldname).attr('value','');	
 				var aItems = $j('##' + formfieldname + '-library-wrapper').sortable('toArray',{'attribute':'serialize'});
-				$j('##' + formfieldname).attr('value',aItems.join(","));
+				if($j.isArray(aItems)) {
+					$j('##' + formfieldname).val(aItems.join(","));
+				} else {
+					$j('##' + formfieldname).val('');
+				}
 				
 			}
 		});	
@@ -556,7 +560,11 @@ function setRowBackground (childCheckbox) {
 		$j('##join-item-' + itemids).remove();	
 		$j('##' + formfieldname).attr('value','');	
 		var aItems = $j('##' + formfieldname + '-library-wrapper').sortable('toArray',{'attribute':'serialize'});
-		$j('##' + formfieldname).attr('value',aItems.join(","));
+		if($j.isArray(aItems)) {
+			$j('##' + formfieldname).val(aItems.join(","));
+		} else {
+			$j('##' + formfieldname).val('');
+		}
 	}
 	fcForm.detachAllLibraryItems = function(typename,objectid,property,formfieldname,itemids) {
 		$j('##' + formfieldname).attr('value', '');		
