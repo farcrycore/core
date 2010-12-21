@@ -405,7 +405,7 @@ function setRowBackground (childCheckbox) {
 							$fc.openDialogIFrame = function(title,url,width,height){
 								var w = width ? width : 600;
 								var h = height ? height : $j(window).height()-50;
-								var fcDialog = $j("<div id='fc-dialog-iframe'><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0'></iframe></div>")
+								var fcDialog = $j("<div id='fc-dialog-iframe' style='padding:20px;'><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0'></iframe></div>")
 								
 								$j("body").prepend(fcDialog);
 								$j(fcDialog).dialog({
