@@ -151,7 +151,7 @@ START WEBSKIN
 		<ft:fieldHint>
 			<cfoutput>
 			This is the person who last updated this content item.
-			You can see the <a onclick="$fc.openDialog('Audit', '#application.url.farcry#/edittabAudit.cfm?objectid=#stobj.objectid#')">Audit Trail</a> or 
+			You can see the <a onclick="$fc.openDialogIFrame('Audit', '#application.url.farcry#/edittabAudit.cfm?objectid=#stobj.objectid#', 800, 700)">Audit Trail</a> or 
 			<a onclick="$fc.openDialog('Archive', '#application.url.farcry#/archive.cfm?objectid=#stobj.objectid#')">Rollback</a> to a previous version of this content item.
 			</cfoutput>
 		</ft:fieldHint>
