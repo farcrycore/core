@@ -132,7 +132,7 @@ body.iframed-tree {height:80%}
 #iframe-sideTree {width:100%;height:100%;}
 
 
-body.iframed-content {background: #fff url("images/content_bg_2.gif") no-repeat fixed 0 -20px;width:96%;height:90%}
+body.iframed-content {background: #fff url("images/content_bg_2.gif") no-repeat fixed 0 -20px;width:96%;height:90%; padding-left:1px;}
 body.iframed-content h3 {margin-top:0;font-size:135%}
 .iframe-nav-form {margin: 0 0 10px}
 .iframe-nav-form-zoom {border-bottom: 1px solid #f1f1f1;padding: 3px 0 10px;margin:0 0 1em;}
