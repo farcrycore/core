@@ -7,6 +7,7 @@
 
 	<!--- environment variables --->
 	<cfparam name="request.fc.startTickCount" default="#GetTickCount()#" />
+	<cfparam name="url.bHideContextMenu" default="false" type="boolean" />
 	<cfparam name="request.bHideContextMenu" default="false" type="boolean" /><!--- Hide the tray.  For backwards compatibility --->
 	<cfparam name="request.fc.trayData" default="#structnew()#" />
 	
@@ -14,7 +15,11 @@
 	<cfset request.fc.trayData.type = url.type />
 	<cfset request.fc.trayData.view = url.view />
 	<cfset request.fc.trayData.bodyView = url.bodyView />
-
+	
+	<cfif request.bHideContextMenu eq true or request.fc.bShowTray eq false or url.bHideContextMenu>
+		<cfexit method="exittag"/>
+	</cfif>
+	
 </cfif>
 
 <cfif thistag.executionMode eq "End">
