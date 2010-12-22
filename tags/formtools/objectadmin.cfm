@@ -887,7 +887,7 @@ user --->
 				
 				<cfset stObjectAdminData = getObjectAdminData(st="#st#", typename="#attributes.typename#", stPermissions="#stPermissions#") />
 				<cfset st = application.fapi.structMerge(st,stObjectAdminData) />
-				
+
 				<!--- <ft:paginateLoop r_stObject="st" bIncludeFields="true" bIncludeObjects="false" stpermissions="#stpermissions#" lCustomActions="#attributes.lCustomActions#" bTypeAdmin="true" typename="#attributes.typename#">
 			 --->		
 						<cfoutput>
@@ -928,7 +928,8 @@ user --->
 										</cfif>
 									<cfelse><!--- Normal field --->
 										<cfif structKeyExists(st, attributes.aCustomColumns[i])>
-											<ft:object objectID="#st.objectid#" lFields="#attributes.aCustomColumns[i]#" format="display" r_stFields="stFields" />
+
+											<ft:object objectID="#st.objectid#" lFields="#attributes.aCustomColumns[i]#" format="display" r_stFields="stFields" typename='#attributes.typename#'/>
 							
 											<cfoutput><td>#stFields[attributes.aCustomColumns[i]].html#</td></cfoutput>			
 										<cfelse>
@@ -938,9 +939,10 @@ user --->
 									
 								</cfloop>
 							</cfif>
-							
+
 							<cfif len(attributes.columnList)>
-								<ft:object objectID="#st.objectid#" lFields="#attributes.columnlist#" format="display" r_stFields="stFields" />
+
+								<ft:object objectID="#st.objectid#" lFields="#attributes.columnlist#" format="display" r_stFields="stFields" typename='#attributes.typename#'/>
 							
 								<cfloop list="#attributes.columnlist#" index="i">
 									<cfif structKeyExists(stFields, i)>
