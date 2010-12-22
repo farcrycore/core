@@ -52,7 +52,7 @@
 			</menu>
 			<menu id="securitylogs" sequence="130" label="Audit Reporting" permission="SecurityPolicyManagementTab">
 				<menuitem id="securitylogs" sequence="10" label="Security Logs" link="/admin/customadmin.cfm?module=customlists/farLog_security.cfm" />
-				<menuitem id="useractivityovertime" sequence="30" label="User Activity Over Time" link="/conjuror/invocation.cfm?typename=audituserovertime" />
+				<menuitem id="useractivityovertime" sequence="30" label="User Activity Over Time" link="/admin/customadmin.cfm?module=customlists/farUserActivity.cfm" />
 			</menu>
 			<menu id="cachemanagement" sequence="220" label="Cache Management">
 				<menuitem id="objbrokersummary" sequence="10" label="Object Broker Report" link="/admin/objectBrokerReport.cfm" />
