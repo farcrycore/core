@@ -27,14 +27,47 @@
 	 		ftLabel="Home address"
  			ftType="longchar"
 			ftLimit="150"/>
+			
+	<p>Textarea with a minimum of 100 characters and a maximum of 250 characters, TRUNCATE excess data</p>
+	<cfproperty
+ 			ftSeq="15"
+ 			ftFieldset="Contact"
+ 			name="address"
+	 		type="longchar"
+	 		hint="address of occupant"
+	 		required="false"
+	 		default=""
+	 		ftLabel="Home address"
+ 			ftType="longchar"
+			ftLimitMin="100"
+			ftLimit="250" />
+			
+	<p>Textarea with a minimum of 100 characters and a maximum of 250 characters, WARN on excess data, with custom warning message.</p>
+	<cfproperty
+ 			ftSeq="15"
+ 			ftFieldset="Contact"
+ 			name="address"
+	 		type="longchar"
+	 		hint="address of occupant"
+	 		required="false"
+	 		default=""
+	 		ftLabel="Home address"
+ 			ftType="longchar"
+			ftLimitMin="100"
+			ftLimit="250"
+			ftLimitOverage="warn"
+			ftLimitWarning="You have exceeded the maximum number of characters" />
 --->
 
 <cfcomponent extends="field" name="longchar" displayname="longchar" hint="Used to liase with longchar type fields"> 
 
 	<cfproperty name="ftStyle" required="false" default="" hint="The style for the text area" />
 	<cfproperty name="ftLimit" required="false" default="0" hint="Limits the amount of data the user can input. Provides a counter above text area" />
-	
-	<cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
+	<cfproperty name="ftLimitMin" required="false" default="" hint="Use with ftLimit to define a range of acceptable characters" />
+	<cfproperty name="ftLimitOverage" required="false" default="truncate" hint="Character limiter method: truncate (default) - truncates user input, warn - notifies user of excess data" />
+	<cfproperty name="ftLimitWarning" required="false" default="You have exceeded the maximum character limit for this field" hint="Warning message" />
+		
+	<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 	
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.longchar" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
@@ -56,9 +89,6 @@
 		
 		<cfparam name="arguments.stMetadata.ftStyle" default="">
 		<cfparam name="arguments.stMetadata.ftLimit" default="0">
-		<cfparam name="arguments.stMetadata.ftLimitOverage" default="truncate">
-		<cfparam name="arguments.stMetadata.ftLimitWarning" default="You have exceeded the maximum character limit for this field">
-		<cfparam name="arguments.stMetadata.ftRangeLength" default="">
 	
 		<cfif CGI.HTTP_USER_AGENT contains "MSIE" or CGI.HTTP_USER_AGENT contains "gecko">
 			<cfset bIsGoodBrowser = "1">
@@ -105,6 +135,7 @@
 							</cfif>
 							} 					
 							else {
+								
 							<cfif bIsGoodBrowser>
 									
 								objCounter = document.getElementById("dm_ct_countDown_" + FieldName);
@@ -144,12 +175,12 @@
 			</skin:htmlHead>
 		</cfif>
 		
-		<!--- add range validation --->
-		<cfif len(arguments.stMetadata.ftRangeLength)>
+		<!--- if range available set validation --->
+		<cfif len(arguments.stMetadata.ftLimitMin) AND len(arguments.stMetadata.ftLimit)>
 			<cfset arguments.stMetadata.ftClass = listAppend(arguments.stMetadata.ftClass,"rangeLength"," ") />
 			<skin:onReady>
 				<cfoutput>
-					$.validator.addClassRules("rangeLength", {rangelength:[#arguments.stMetadata.ftRangeLength#]});	
+					$.validator.addClassRules("rangeLength", {rangelength:[#arguments.stMetadata.ftLimitMin#,#arguments.stMetadata.ftLimit#]});	
 				</cfoutput>
 			</skin:onReady>
 		</cfif>
