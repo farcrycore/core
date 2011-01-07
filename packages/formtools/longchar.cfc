@@ -89,6 +89,9 @@
 		
 		<cfparam name="arguments.stMetadata.ftStyle" default="">
 		<cfparam name="arguments.stMetadata.ftLimit" default="0">
+		<cfparam name="arguments.stMetadata.ftLimitOverage" default="truncate">
+		<cfparam name="arguments.stMetadata.ftLimitWarning" default="You have exceeded the maximum number of characters">
+		<cfparam name="arguments.stMetadata.ftLimitMin" default="">
 	
 		<cfif CGI.HTTP_USER_AGENT contains "MSIE" or CGI.HTTP_USER_AGENT contains "gecko">
 			<cfset bIsGoodBrowser = "1">
