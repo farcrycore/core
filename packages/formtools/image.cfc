@@ -107,7 +107,7 @@
 		<cfreturn this>
 	</cffunction>
 	
-	<cffunction name="edit" access="public" output="false" returntype="string" hint="his will return a string of formatted HTML text to enable the user to edit the data">
+	<cffunction name="edit" access="public" output="true" returntype="string" hint="his will return a string of formatted HTML text to enable the user to edit the data">
 	    <cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 	    <cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 	    <cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
@@ -168,7 +168,9 @@
 		</cfoutput></skin:loadCSS>
 		<!--- </style></cfoutput></skin:htmlHead> --->
 	    <!--- <skin:htmlHead id="farcry-imageformtool-js"><cfoutput><script type="text/javascript"> --->
-	    <skin:loadJS id="farcry-imageformtool"><cfoutput>
+	   <cfoutput> <script type="text/javascript" charset="utf-8">
+	    	
+
 	    	(function(jQuery){
 	    		var defaults = {
 	    			"selected"		: "",
@@ -321,18 +323,20 @@
 							}
 						});
 						jQuery("##image-crop-cancel").bind("click",function() { cropper.cancelCrop(); return false; });
-						jQuery("##image-crop-finalize").button({}).bind("click",function() { cropper.finalizeCrop(); return false; });
+						jQuery("##image-crop-finalize").button({}).bind("click",function() {cropper.finalizeCrop(); return false; });
 						jQuery("##image-crop-overlay .image-crop-instructions").height(overlayheight-50);
 					});
 					
 					this.cancelCrop = function(){
+						alert('cancel')
 						jQuery.Jcrop('##cropable-image').destroy();
 						jQuery("##image-crop-overlay").remove();
 						jQuery(sourceobject).trigger("cancelcrop");
 					};
 					
 					this.finalizeCrop = function(){
-						$j.Jcrop('##cropable-image').destroy();
+						
+						jQuery.Jcrop('##cropable-image').destroy();
 						$j("##image-crop-overlay").remove();
 						
 						if (current_crop_selection){
@@ -350,6 +354,7 @@
 		    })($j);
 	    	
 	    	$fc.imageformtool = function(prefix,property){
+
 	    		function ImageFormtool(prefix,property) {
 	    			var imageformtool = this;
 	    			this.prefix = prefix;
@@ -361,6 +366,7 @@
 	    			this.elements = {};
 	    			
 	    			this.init = function(url,filetypes,sourceField,width,height,inline){
+
 	    				imageformtool.url = url;
 	    				imageformtool.filetypes = filetypes;
 	    				imageformtool.sourceField = sourceField;
@@ -554,7 +560,9 @@
 	    			
 	    			this.beginCrop = function(allowcancel){
 	    				$j('##'+prefix+property+"_croperror").hide();
-	    				$fc.cropper(imageformtool,imageformtool.url,imageformtool.width,imageformtool.height,imageformtool.getPostValues(),allowcancel);
+
+						$fc.cropper(imageformtool,imageformtool.url,imageformtool.width,imageformtool.height,imageformtool.getPostValues(),allowcancel);
+	    				
 	    			};
 	    			
 	    			this.applyCrop = function(){
@@ -602,8 +610,7 @@
 	    		if (!this[prefix+property]) this[prefix+property] = new ImageFormtool(prefix,property);
 	    		return this[prefix+property];
 	    	};
-		</cfoutput></skin:loadJS>
-		<!--- </script></cfoutput></skin:htmlHead> --->
+			</script></cfoutput>
 	    
 	    <cfsavecontent variable="metadatainfo">
 			<cfif (isnumeric(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth gt 0) or (isnumeric(arguments.stMetadata.ftImageHeight) and arguments.stMetadata.ftImageHeight gt 0)>
