@@ -328,7 +328,6 @@
 					});
 					
 					this.cancelCrop = function(){
-						alert('cancel')
 						jQuery.Jcrop('##cropable-image').destroy();
 						jQuery("##image-crop-overlay").remove();
 						jQuery(sourceobject).trigger("cancelcrop");
