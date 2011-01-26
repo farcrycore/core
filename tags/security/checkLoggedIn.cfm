@@ -72,8 +72,10 @@
 		
 		<cfif len(attributes.loginurl)>
 			<cfset loginURL = "#attributes.loginurl#" />
+		<cfelseif not findNoCase( "/webtop", cgi.script_name )>
+			<cfset loginURL = application.url.webtoplogin />
 		<cfelse>
-			<cfset loginURL = "#application.url.webtop#/login.cfm" />
+			<cfset loginURL = application.url.webtoplogin />
 		</cfif>
 		
 		
