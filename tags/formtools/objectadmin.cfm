@@ -368,7 +368,7 @@ user --->
 		<cfset stRecordSet.recordsPerPage = attributes.numitems />
 	<cfelse>
 
-		<cfset oFormtoolUtil = createObject("component", "farcry.core.packages.farcry.formtools") />
+		<cfset oFormtoolUtil = createObject("component", application.fc.utils.getPath(package="farcry", component="formtools")) />
 		
 		<cfset sqlColumns="objectid,locked,lockedby" />		
 	

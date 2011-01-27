@@ -86,7 +86,7 @@
 			<cfset SQLOrderBy = stMetadata.ftLibraryDataSQLOrderBy />
 		</cfif>
 		
-		<cfset oFormTools = createObject("component","farcry.core.packages.farcry.formtools")>
+		<cfset oFormTools = createObject("component", application.fc.utils.getPath(package="farcry", component="formtools"))>
 		<cfset stLibraryData = oFormTools.getRecordset(typename="#url.filterTypename#", sqlColumns="objectid", sqlOrderBy="#SQLOrderBy#", SQLWhere="#SQLWhere#", RecordsPerPage="0") />
 		<cfset qAll = stLibraryData.q />		
 		<cfset bFoundLibraryData = true />
