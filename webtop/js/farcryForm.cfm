@@ -620,6 +620,10 @@ function setRowBackground (childCheckbox) {
 	}
 	
 	fcForm.refreshProperty = function(typename,objectid,property,id) {
+		var propertydata = { propertyValue: $j('##'+id).val() };
+		$j("select[name^="+id+"],input[name^="+id+"]").each(function(){
+			if (this.name!=id) propertydata[this.name.slice(id.length)] = $j(this).val();
+		});
 		$j.ajax({
 			type: "POST",
 			cache: false,
@@ -628,9 +632,7 @@ function setRowBackground (childCheckbox) {
 				$j("##" + id + '-library-wrapper').html(msg);
 				fcForm.initSortable(typename,objectid,property,id);	
 		   	},
-			data:{
-				propertyValue: $j('##'+id).val()
-			},
+			data:propertydata,
 			dataType: "html"
 		});
 	}	
