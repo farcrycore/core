@@ -392,7 +392,7 @@
 				    				"autogenerate" : function(event){ 
 					    				if (imageformtool.inputs.base.val().length){
 						    				imageformtool.inputs.deletef.val("true");
-											$j(this).find(".image-crop-select-button").show().end()
+											$j(this).find(".image-custom-crop, .image-crop-select-button").show().end();
 						    			}
 				    				},
 				    				"traditional" : function(event){  },
@@ -418,7 +418,9 @@
 				    			}
 				    		})
 			    			.find("a.image-crop-select-button,button.image-crop-select-button").bind("click",function(){ imageformtool.beginCrop(true); return false; }).end()
-			    			.find("a.image-crop-cancel-button,button.image-crop-cancel-button").bind("click",function(){ imageformtool.removeCrop(); return false; }).end();
+			    			.find("a.image-crop-cancel-button,button.image-crop-cancel-button").bind("click",function(){ imageformtool.removeCrop(); return false; }).end()
+			    			.find("button.image-delete-button").bind("click",function(){ imageformtool.deleteImage(); return false; }).end()
+			    			.find("button.image-deleteall-button").bind("click",function(){ imageformtool.deleteAllRelatedImages(); return false; }).end();
 			    		if (imageformtool.inline){
 			    			imageformtool.inlineview = $j("##"+prefix+property+"-inline")
 			    				.find("a.image-crop-select-button").bind("click",function(){ 
@@ -485,7 +487,7 @@
 	    				if (sourceField.length>0){
 		    				$j($fc.imageformtool(prefix,sourceField)).bind("filechange",function(event,results){
 		    					if (results.value.length){
-			    					imageformtool.enableCrop(true);
+			    					//imageformtool.enableCrop(true);
 									imageformtool.applyCrop();
 									if (imageformtool.inline) 
 										imageformtool.inlineview
@@ -494,6 +496,9 @@
 								}
 								else
 									iamgeformtool.enableCrop(false);
+		    				});
+		    				$j($fc.imageformtool(prefix,sourceField)).bind("deleteall",function(){
+		    					imageformtool.deleteImage("autogenerate");
 		    				});
 		    			}
 			    		
@@ -518,12 +523,12 @@
 							'onComplete'	: function(event, ID, fileObj, response, data){
 								var results = $j.parseJSON(response);
 								imageformtool.inputs.newf.uploadifyClearQueue();
-								if (results.error){
-									$j(imageformtool).trigger("fileerror",[ "upload","500",results.error ]);
+								if (results.error) {
+									$j(imageformtool).trigger("fileerror", ["upload", "500", results.error]);
 								}
-								else{
+								else {
 									imageformtool.inputs.base.val(results.value);
-									$j(imageformtool).trigger("filechange",[ results ]);
+									$j(imageformtool).trigger("filechange", [results]);
 								}
 							},
 							'onError'		: function(event, ID, fileObj, errorObj){
@@ -578,19 +583,25 @@
 									imageformtool.inlineview.find(".image-status .indicator").removeClass("indicator").addClass("ui-icon-image");
 								else
 	    							imageformtool.multiview.findView("autogenerate").find(".indicator").removeClass("indicator").addClass("ui-icon-help");
-								if (results.error){
-									$j(imageformtool).trigger("fileerror",[ "crop", "500",results.error ]);
+								
+								// results is null if there is already an image 
+								if (results) {
+									if (results.error) {
+										$j(imageformtool).trigger("fileerror", ["crop", "500", results.error]);
+									}
+									else {
+										imageformtool.inputs.base.val(results.value);
+										$j('##' + prefix + property + "_croperror").hide();
+										imageformtool.multiview.findView("autogenerate").find(".image-crop-information").hide();
+										$j(imageformtool).trigger("filechange", [results]);
+									}
 								}
-								else{
-									imageformtool.inputs.base.val(results.value);
-									$j('##'+prefix+property+"_croperror").hide();
-									imageformtool.multiview.findView("autogenerate").find(".image-crop-information").hide();
-									$j(imageformtool).trigger("filechange",[ results ]);
-								}
+								imageformtool.enableCrop(true)
 							},
 							error : function(XMLHttpRequest, textStatus, errorThrown){
 	    						imageformtool.multiview.findView("autogenerate").find(".indicator").removeClass("indicator").addClass("ui-icon-help");
 								$j(imageformtool).trigger("fileerror",[ "crop",textStatus,errorThrown.toString() ]);
+								imageformtool.enableCrop(true)
 							},
 							dataType : "json"
 						});
@@ -604,6 +615,40 @@
 							.find(".image-crop-select-button").show().end();
 						$j(imageformtool).trigger("removedcrop");
 					};
+					
+					this.deleteImage =  function(viewToShow){
+						var afterDeleteView = viewToShow || "upload";
+						
+						imageformtool.inputs.deletef.val("true");
+						
+						var postData = imageformtool.getPostValues();
+						
+						if (imageformtool.sourceField.length > 0) {
+							postData[imageformtool.sourceField] = ''
+						}
+						$j.ajax({
+							type : "POST",
+							url : imageformtool.url,
+							data : postData,
+							success : function(results){
+								imageformtool.inputs.base.val('');
+								imageformtool.inputs.deletef.val("false");
+								imageformtool.multiview.selectView(afterDeleteView);
+								imageformtool.multiview.find('.image-cancel-upload, .image-custom-crop, .image-cancel-replace').hide();
+							},
+							error : function(XMLHttpRequest, textStatus, errorThrown){
+								$j(imageformtool).trigger("fileerror",[ "crop",textStatus,errorThrown.toString() ]);
+							},
+							dataType : "json"
+						});						
+					}
+					this.deleteAllRelatedImages =  function(){
+						//trigger related to be deleted
+						$j(imageformtool).trigger("deleteall");
+						
+						//delete source
+						imageformtool.deleteImage();
+					}
 	    		};
 	    		
 	    		if (!this[prefix+property]) this[prefix+property] = new ImageFormtool(prefix,property);
@@ -633,7 +678,7 @@
 						    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
 						    		<div id="#arguments.fieldname#_uploaderror" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
 						    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
-						    		<div class="image-cancel-upload" style="clear:both;"><a href="##autogenerate" class="select-view">Cancel - I don't want to upload an image</a></div>
+						    		<div class="image-cancel-upload" style="clear:both;"><a href="##complete" class="select-view">Cancel - I don't want to upload an image</a></div>
 						    	</div>
 							</div>
 					    	<div id="#arguments.fieldname#_traditional" class="traditional-view" style="display:none;">
@@ -642,6 +687,14 @@
 						    		<input type="file" name="#arguments.fieldname#TRADITIONAL" id="#arguments.fieldname#TRADITIONAL" />
 						    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
 						    		<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##complete" class="select-view">Cancel - I don't want to replace this image</a></div>
+						    	</div>
+							</div>
+					    	<div id="#arguments.fieldname#_delete" class="delete-view" style="display:none;">
+					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
+								<div style="margin-left:15px">
+						    		<button class="image-delete-button" id="#arguments.fieldname#DeleteThis">Delete this image</button>
+						    		
+						    		<div class="image-cancel-upload"><a href="##complete" class="select-view">Cancel - I don't want to delete</a></div>
 						    	</div>
 							</div>
 						</cfif>
@@ -677,7 +730,7 @@
 						    <div id="#arguments.fieldname#_complete" class="complete-view">
 					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
 					    		<div style="margin-left:15px;">
-						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#application.url.imageroot##arguments.stMetadata.value#' width='#previewwidth#' height='#previewheight#' />" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank">Preview</a> | <a href="##autogenerate" class="image-replace select-view">Replace</a> )<br>
+						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#application.url.imageroot##arguments.stMetadata.value#' width='#previewwidth#' height='#previewheight#' />" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank">Preview</a> | <a href="##autogenerate" class="image-replace select-view">Replace</a> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="image-replace select-view">Upload</a> | <a href="##delete" class="image-replace select-view">Delete</a></cfif> )<br>
 						    		Size: <span class="image-size">#round(stFile.size/1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
 						    		<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
 						    	</div>
@@ -686,7 +739,7 @@
 						    <div id="#arguments.fieldname#_complete" class="complete-view" style="display:none;">
 					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
 					    		<div style="margin-left:15px;">
-						    		<span class="image-filename"></span> ( <a class="image-preview" title="<img src='' />" href="##" target="_blank">Preview</a> | <a href="##autogenerate" class="image-replace select-view">Replace</a> )<br>
+						    		<span class="image-filename"></span> ( <a class="image-preview" title="<img src='' />" href="##" target="_blank">Preview</a> | <a href="##autogenerate" class="image-replace select-view">Replace</a> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="image-replace select-view">Upload</a> | <a href="##delete" class="image-replace select-view">Delete</a></cfif> )<br>
 						    		Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
 									<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
 						    	</div>
@@ -722,6 +775,15 @@
 					    		<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##complete" class="select-view">Cancel - I don't want to replace this image</a></div>
 					    	</div>
 						</div>
+				    	<div id="#arguments.fieldname#_delete" class="delete-view" style="display:none;">
+				    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
+							<div style="margin-left:15px">
+					    		<button class="image-delete-button">Delete this image</button>
+					    		<button class="image-deleteall-button">Delete this and the related images</button>
+					    		
+					    		<div class="image-cancel-upload"><a href="##complete" class="select-view">Cancel - I don't want to delete</a></div>
+					    	</div>
+						</div>
 						<cfif len(arguments.stMetadata.value)>
 						    <cfset stFile = GetFileInfo("#application.path.imageroot##arguments.stMetadata.value#") />
 						    <cfimage action="info" source="#application.path.imageroot##arguments.stMetadata.value#" structName="stImage" />
@@ -738,7 +800,7 @@
 						    <div id="#arguments.fieldname#_complete" class="complete-view">
 					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
 					    		<div style="margin-left:15px;">
-						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#application.url.imageroot##arguments.stMetadata.value#' width='#previewwidth#' height='#previewheight#' />" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank">Preview</a> | <a href="##upload" class="image-replace select-view">Replace</a> )<br>
+						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#application.url.imageroot##arguments.stMetadata.value#' width='#previewwidth#' height='#previewheight#' />" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank">Preview</a> | <a href="##upload" class="image-replace select-view">Replace</a> | <a href="##delete" class="image-replace select-view">Delete</a> )<br>
 						    		Size: <span class="image-size">#round(stFile.size/1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
 									<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
 						    	</div>
@@ -747,7 +809,7 @@
 						    <div id="#arguments.fieldname#_complete" class="complete-view" style="display:none;">
 					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
 					    		<div style="margin-left:15px;">
-						    		<span class="image-filename"></span> ( <a class="image-preview" title="<img src='' />" href="##" target="_blank">Preview</a> | <a href="##upload" class="image-replace select-view">Replace</a> )<br>
+						    		<span class="image-filename"></span> ( <a class="image-preview" title="<img src='' />" href="##" target="_blank">Preview</a> | <a href="##upload" class="image-replace select-view">Replace</a> | <a href="##delete" class="image-replace select-view">Delete</a> )<br>
 						    		Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
 						    		<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
 						    	</div>
@@ -1000,21 +1062,22 @@
 			<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"ResizeMethod") or not len(arguments.stFieldPost.stSupporting.ResizeMethod)><cfset arguments.stFieldPost.stSupporting.ResizeMethod = arguments.stMetadata.ftAutoGenerateType /></cfif>
 			<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"Quality") or not isnumeric(arguments.stFieldPost.stSupporting.Quality)><cfset arguments.stFieldPost.stSupporting.Quality = arguments.stMetadata.ftQuality /></cfif>
 			
-			<cfset stFixed = fixImage("#application.path.imageroot##stResult.value#",arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
-			
-			<cfif stFixed.bSuccess>
-				<cfset json = ', "resizedetails" : { "method":"#arguments.stFieldPost.stSupporting.ResizeMethod#","quality" : #round(arguments.stFieldPost.stSupporting.Quality*100)# }' />
-				<cfset stResult.value = stFixed.value />
+			<cfif len(stResult.value)>
+				<cfset stFixed = fixImage("#application.path.imageroot##stResult.value#",arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
+				
+				<cfif stFixed.bSuccess>
+					<cfset json = ', "resizedetails" : { "method":"#arguments.stFieldPost.stSupporting.ResizeMethod#","quality" : #round(arguments.stFieldPost.stSupporting.Quality*100)# }' />
+					<cfset stResult.value = stFixed.value />
+				</cfif>
+
+				<cfset stFile = getFileInfo(application.path.imageroot & stResult.value) />
+				<cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" />
+				<cfset json = '{ "value" : "#jsstringformat(stResult.value)#", "filename": "#jsstringformat(listlast(stResult.value,'/'))#", "fullpath" : "#jsstringformat(application.url.imageroot & stResult.value)#", "size" : #round(stFile.size/1024)#, "width" : #stImage.width#, "height" : #stImage.height#, "q":"#jsstringformat(cgi.query_string)#" #json# }' />
+				
+				<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
+				
+				<cfreturn json />
 			</cfif>
-			
-			<cfset stFile = getFileInfo(application.path.imageroot & stResult.value) />
-			<cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" />
-			<cfset json = '{ "value" : "#jsstringformat(stResult.value)#", "filename": "#jsstringformat(listlast(stResult.value,'/'))#", "fullpath" : "#jsstringformat(application.url.imageroot & stResult.value)#", "size" : #round(stFile.size/1024)#, "width" : #stImage.width#, "height" : #stImage.height#, "q":"#jsstringformat(cgi.query_string)#" #json# }' />
-			
-			<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
-			
-			<cfreturn json />
-			
 		</cfif>
 		
 		<cfreturn "" />
