@@ -49,11 +49,11 @@
 
 		<cfif structKeyExists(request, "passwordChanged")>
 			<cfoutput>
-				<p id="OKMsg">A confirmation email with your NEW password has been sent to your email address and should arrive shortly.</p>
+				<p id="OKMsg">A link to change your password has been sent to your email address and should arrive shortly.</p>
 			</cfoutput>
 		<cfelse>
 			<cfoutput>
-				<p>So you forgot your password. Please enter your userid below to reset. An email with your new password will be sent to your email address.</p>
+				<p>So you forgot your password. Please enter your userid below to reset. An email with a link to change your password will be sent to your email address.</p>
 			</cfoutput>
 
 			<ft:object typename="farUser" lfields="userID" />
@@ -61,7 +61,6 @@
 			<ft:buttonPanel>
 				<ft:button value="Reset Password" />
 			</ft:buttonPanel>
-
 		</cfif>
 		
 		
@@ -76,7 +75,7 @@
 		</sec:CheckPermission>			
 			
 		<cfoutput> 
-			<li><skin:buildLink href="#application.url.webtop#/login.cfm">Login</skin:buildLink></li></cfoutput>
+			<li><skin:buildLink href="#application.url.webtoplogin#">Login</skin:buildLink></li></cfoutput>
 		<cfoutput></ul></cfoutput>
 	
 

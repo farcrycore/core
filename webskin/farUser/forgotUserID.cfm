@@ -20,7 +20,7 @@
 			<cfquery datasource="#application.dsn#" name="qProfileFromEmail">
 			SELECT objectid,username 
 			FROM dmProfile
-			WHERE emailAddress = '#stProperties.emailAddress#'
+			WHERE emailAddress = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stProperties.emailAddress#">
 			AND userDirectory = 'CLIENTUD'
 			</cfquery>
 			
@@ -84,7 +84,7 @@
 		</sec:CheckPermission>			
 			
 		<cfoutput>
-			<li><skin:buildLink href="#application.url.webtop#/login.cfm">Login</skin:buildLink></li></cfoutput>
+			<li><skin:buildLink href="#application.url.webtoplogin#">Login</skin:buildLink></li></cfoutput>
 		<cfoutput></ul></cfoutput>
 	
 			
