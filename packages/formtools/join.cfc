@@ -508,7 +508,7 @@
 			    FROM qArrayRecords
 			    WHERE data = '#listFirst(i,":")#'
 			    <cfif listLast(i,":") NEQ listFirst(i,":")><!--- SEQ PASSED IN --->
-			    	AND seq = #listLast(i,":")#
+			    	AND seq = '#listLast(i,":")#'
 			    </cfif>
 			    </cfquery>
 			
