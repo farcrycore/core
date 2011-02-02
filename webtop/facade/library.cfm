@@ -152,7 +152,7 @@ IT IS SET IN  AJAXUPDATEARRAY FUNCTION OF THE LIBRARY.CFC
 				<cfset tableMetadata.parseMetadata(md=getMetadata(oPrimary)) />		
 				<cfset stFields = variables.tableMetadata.getTableDefinition() />
 				
-				<cfset o = createObject("component","farcry.core.packages.fourq.gateway.dbGateway").init(dsn=application.dsn,dbowner="")>
+				<cfset o = createObject("component","farcry.core.packages.fourq.gateway.DBGateway").init(dsn=application.dsn,dbowner="",dbtype=application.dbtype)>
 				<cfset aProps = o.createArrayTableData(tableName=url.PrimaryTypename & "_" & url.PrimaryFieldName,objectid=url.PrimaryObjectID,tabledef=stFields[PrimaryFieldName].Fields,aprops=stwizard.Data[PrimaryObjectID][url.PrimaryFieldname])>
 		
 				<cfset stwizard.Data[url.PrimaryObjectID][url.PrimaryFieldname] = aProps>

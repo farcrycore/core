@@ -109,7 +109,7 @@
 					</cfif>
 				</cfif>			
 				<cfset stFields = application.stcoapi[PrimaryTypename].tableDefinition />				
-				<cfset o = createObject("component","farcry.core.packages.fourq.gateway.dbGateway").init(dsn=application.dsn,dbowner="")>
+				<cfset o = createObject("component","farcry.core.packages.fourq.gateway.DBGateway").init(dsn=application.dsn,dbowner="",dbtype=application.dbtype)>
 				<cfset aProps = o.createArrayTableData(tableName=PrimaryTypename & "_" & PrimaryFieldName,objectid=arguments.PrimaryObjectID,tabledef=stFields[PrimaryFieldName].Fields,aprops=stwizard.Data[PrimaryObjectID][arguments.PrimaryFieldname])>
 		
 				<cfset stwizard.Data[PrimaryObjectID][arguments.PrimaryFieldname] = aProps>
