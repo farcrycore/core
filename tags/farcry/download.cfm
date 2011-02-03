@@ -127,7 +127,11 @@ accommodate legacy implementations
 		<cfheader name="cache-control" value="" />
 		<cfheader name="pragma" value="" />
 		<cftry>
-		<cfcontent type="#stLocation.mimeType#" file="#stLocation.path#" deletefile="No" reset="Yes" />
+			<cfif StructKeyExists(stLocation,"mimeType")> <!--- mimetype could be unknown - happend with .dot --->
+				<cfcontent type="#stLocation.mimeType#" file="#stLocation.path#" deletefile="No" reset="Yes" />
+			<cfelse>
+				<cfcontent file="#stLocation.path#" deletefile="No" reset="Yes" />
+			</cfif>
 		<cfcatch><!--- prevent unnecessary log entries when user cancels download whilst it is in progress ---></cfcatch>
 		</cftry>
 	<cfelse>
