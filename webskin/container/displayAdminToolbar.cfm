@@ -100,7 +100,7 @@ $fc.containerAdmin = function(title,url,containerID,containerURL){
 		height: h,
 		close: function(event, ui) {
 			$fc.reloadContainer(containerID,containerURL);
-			$j(fcDialog).dialog( 'destroy' ).remove();
+			$j('##' + containerID + '-dialog').html(); <!--- remove iframe to avoid loading again when destroying dialog --->
 		}
 		
 	});
