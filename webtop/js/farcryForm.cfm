@@ -726,7 +726,7 @@ function setRowBackground (childCheckbox) {
 					height: $j(window).height()-15,
 					close: function(event, ui) {
 						$j("html").css('overflow', 'auto');
-						window.location.reload(true);
+						location = location.href.split("##")[0];
 					}
 				});
 			}
