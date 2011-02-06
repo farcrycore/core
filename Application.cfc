@@ -750,6 +750,8 @@
 		<cfelse>
 			<cfset application.url.webtop = "#cgi.context_path##application.url.webroot#/webtop" />
 		</cfif>
+		<cfset application.url.webtoplogin = "#application.url.webtop#/login.cfm" />
+		<cfset application.url.publiclogin = application.url.webtoplogin />
 		<cfset application.url.farcry = "#application.url.webtop#" /><!--- Legacy variable. Developers should use application.url.webtop --->
 		<cfset application.url.imageRoot = "#application.url.webroot#">
 		<cfset application.url.fileRoot = "#application.url.webroot#/files">
@@ -834,7 +836,7 @@
 
 		
 		<!--- FAPI INIT --->
-		<cfset application.fapi = createObject("component", "farcry.core.packages.lib.fapi").init() /><!--- FarCry API Functions --->
+		<cfset application.fapi = createObject("component", application.fc.utils.getPath(package="lib", component="fapi")).init() /><!--- FarCry API Functions --->
 		<cfset application.fc.lib = createObject("component", "farcry.core.packages.lib.lib").init() /><!--- FarCry libraries --->
 		
 		

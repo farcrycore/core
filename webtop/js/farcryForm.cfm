@@ -1,6 +1,9 @@
 <cfoutput>
 
-	var $fc = {};
+	if(typeof($fc) == 'undefined'){
+		var $fc = {};
+	}
+	
 	
 	//==================================================================================
 	// ftWatch JavaScript
@@ -49,6 +52,25 @@
 		}
 	};
 	
+	function getValueData(base,prefix){
+		base = base || {};
+		var property = "";
+		
+		// get the post values
+		for (var property in base) {
+			if ($j('##' + prefix + property).val()) {
+				base[property] = [];
+				$j('input[name='+prefix+property+'],select[name='+prefix+property+'],textarea[name='+prefix+property+']').each(function(){ 
+					var self = $j(this);
+					if (self.val()!=="") base[property].push(self.val());
+				});
+				base[property] = base[property].join();
+			}
+		}
+		
+		return base;
+	};
+	
 	function ajaxUpdate(event) {
 		var values = {};
 		var reenable = [];
@@ -68,23 +90,14 @@
 			}
 			
 			// get the post values
-			for (var property in values) {
-				if ($j('##' + event.data.prefix+property).val()) {
-					values[property] = [];
-					$j('input[name='+event.data.prefix+property+'],select[name='+event.data.prefix+property+'],textarea[name='+event.data.prefix+property+']').each(function(){ 
-						var self = $j(this);
-						if (self.val()!=="") values[property].push(self.val());
-					});
-					values[property] = values[property].join();
-				}
-			}
+			values = getValueData(values,event.data.prefix);
 			
 			// for each watcher
 			for (var i=0; i<$fc.watchedfields[event.data.prefix][event.data.property].length; i++) {
 				$fc.watchloading++;
 				(function(watcher){
 					// post the AJAX request
-					$j("##"+watcher.prefix+watcher.property+"ajaxdiv").html(watcher.ftLoaderHTML).load('#application.url.farcry#/facade/ftajax.cfm?ajaxmode=1&formtool='+watcher.formtool+'&typename='+watcher.typename+'&fieldname='+watcher.fieldname+'&property='+watcher.property+'&objectid='+watcher.objectid,
+					$j("##"+watcher.prefix+watcher.property+"ajaxdiv").html(watcher.ftLoaderHTML).load('#application.url.webtop#/facade/ftajax.cfm?ajaxmode=1&formtool='+watcher.formtool+'&typename='+watcher.typename+'&fieldname='+watcher.fieldname+'&property='+watcher.property+'&objectid='+watcher.objectid,
 						values,
 						function(response){
 							$j("##"+watcher.fieldname+"ajaxdiv").html(response.responseText);
@@ -361,7 +374,7 @@ function setRowBackground (childCheckbox) {
 }		
 
 									
-							$fc.openDialog = function(title,url,width,height,fnClose){
+							$fc.openDialog = function(title,url,width,height){
 								var fcDialog = $j("<div></div>")
 								w = width ? width : 600;
 								h = height ? height : $j(window).height()-50;
@@ -372,10 +385,9 @@ function setRowBackground (childCheckbox) {
 									title:title,
 									width: w,
 									height: h,
-									close: function(event, ui) {for (k in $j) console.log(k);
+									close: function(event, ui) {
 										$j(fcDialog).dialog( 'destroy' );
 										$j(fcDialog).remove();
-										if (fnClose) fnClose();
 									}
 									
 								});
@@ -393,10 +405,10 @@ function setRowBackground (childCheckbox) {
 							};	
 							
 							
-							$fc.openDialogIFrame = function(title,url,width,height,fnClose){
+							$fc.openDialogIFrame = function(title,url,width,height){
 								var w = width ? width : 600;
 								var h = height ? height : $j(window).height()-50;
-								var fcDialog = $j("<div id='fc-dialog-iframe'><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0'></iframe></div>")
+								var fcDialog = $j("<div id='fc-dialog-iframe' style='padding:20px;'><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0'></iframe></div>")
 								
 								$j("body").prepend(fcDialog);
 								$j(fcDialog).dialog({
@@ -408,7 +420,6 @@ function setRowBackground (childCheckbox) {
 									close: function(event, ui) {
 										$j(fcDialog).dialog( 'destroy' );
 										$j(fcDialog).remove();
-										if (fnClose) fnClose();
 									}
 									
 								});
@@ -524,7 +535,11 @@ function setRowBackground (childCheckbox) {
 				$j('##join-item-' + itemids).remove();	
 				$j('##' + formfieldname).attr('value','');	
 				var aItems = $j('##' + formfieldname + '-library-wrapper').sortable('toArray',{'attribute':'serialize'});
-				$j('##' + formfieldname).attr('value',aItems.join(","));
+				if($j.isArray(aItems)) {
+					$j('##' + formfieldname).val(aItems.join(","));
+				} else {
+					$j('##' + formfieldname).val('');
+				}
 				
 			}
 		});	
@@ -544,34 +559,20 @@ function setRowBackground (childCheckbox) {
 		});	
 	}
 	fcForm.detachLibraryItem = function(typename,objectid,property,formfieldname,itemids) {
-		$j.ajax({
-			cache: false,
-			type: "POST",
- 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
-			data: {detachID: itemids },
-			dataType: "html",
-			complete: function(data){		
-				$j('##join-item-' + itemids).hide('blind',{},500);			
-				$j('##join-item-' + itemids).remove();	
-				$j('##' + formfieldname).attr('value','');	
-				var aItems = $j('##' + formfieldname + '-library-wrapper').sortable('toArray',{'attribute':'serialize'});
-				$j('##' + formfieldname).attr('value',aItems.join(","));				
-			}
-		});	
+		$j('##join-item-' + itemids).hide('blind',{},500);			
+		$j('##join-item-' + itemids).remove();	
+		$j('##' + formfieldname).attr('value','');	
+		var aItems = $j('##' + formfieldname + '-library-wrapper').sortable('toArray',{'attribute':'serialize'});
+		if($j.isArray(aItems)) {
+			$j('##' + formfieldname).val(aItems.join(","));
+		} else {
+			$j('##' + formfieldname).val('');
+		}
 	}
 	fcForm.detachAllLibraryItems = function(typename,objectid,property,formfieldname,itemids) {
-		$j.ajax({
-			cache: false,
-			type: "POST",
- 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
-			data: {detachID: itemids },
-			dataType: "html",
-			complete: function(data){	
-				$j('##' + formfieldname).attr('value', '');		
-				$j('##join-' + objectid + '-' + property).hide('blind',{},500);		
-				$j('##join-' + objectid + '-' + property).remove();			
-			}
-		});	
+		$j('##' + formfieldname).attr('value', '');		
+		$j('##join-' + objectid + '-' + property).hide('blind',{},500);		
+		$j('##join-' + objectid + '-' + property).remove();			
 	}
 		
 	fcForm.initLibrary = function(typename,objectid,property,urlParams) {
@@ -595,30 +596,6 @@ function setRowBackground (childCheckbox) {
   
   			
 		$j("input.checker").click(function(e) {			
-			if($j(e.target).attr('checked')){
-				$j.ajax({
-					cache: false,
-					type: "POST",
-		 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property + "&" + urlParams,
-					data: {addID: $j(e.target).val() },
-					dataType: "html",
-					complete: function(data){
-						fcForm.initLibrarySummary(typename,objectid,property,urlParams);
-					}
-				});		
-			} else {
-				$j.ajax({
-					cache: false,
-					type: "POST",
-		 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property + "&" + urlParams,
-					data: {detachID: $j(e.target).val() },
-					dataType: "html",
-					complete: function(data){
-						fcForm.initLibrarySummary(typename,objectid,property,urlParams);			
-					}
-				});	
-			};
-			
 			if(e.target.type == 'radio'){
 				$j('tr.selector-wrap').removeClass('rowselected');
 				$j(this).parents('tr.selector-wrap').addClass('rowselected');
@@ -639,20 +616,14 @@ function setRowBackground (childCheckbox) {
 	};
 	
 	fcForm.initLibrarySummary = function(typename,objectid,property,urlParams) {
-		$j.ajax({
-			type: "POST",
-			cache: false,
-					url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayLibrarySummary' + '&property=' + property + "&" + urlParams, 
-			complete: function(data){
-				$j('##librarySummary-' + typename + '-' + property).html(data.responseText);
-					
-			},
-			data:{},
-			dataType: "html"
-		});
+
 	}
 	
 	fcForm.refreshProperty = function(typename,objectid,property,id) {
+		var propertydata = { propertyValue: $j('##'+id).val() };
+		$j("select[name^="+id+"],input[name^="+id+"]").each(function(){
+			if (this.name!=id) propertydata[this.name.slice(id.length)] = $j(this).val();
+		});
 		$j.ajax({
 			type: "POST",
 			cache: false,
@@ -661,7 +632,7 @@ function setRowBackground (childCheckbox) {
 				$j("##" + id + '-library-wrapper').html(msg);
 				fcForm.initSortable(typename,objectid,property,id);	
 		   	},
-			data:{},
+			data:propertydata,
 			dataType: "html"
 		});
 	}	
@@ -672,19 +643,7 @@ function setRowBackground (childCheckbox) {
 			//handle: 'td.buttonGripper',
 			axis: 'y',
 			update: function(event,ui){
-				$j.ajax({
-					type: "POST",
-					cache: false,
-	  				url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
-					data: {'sortIDs': $j('##' + id + '-library-wrapper').sortable('toArray',{'attribute':'serialize'}).join(",") },
-					complete: function(data){
-						$j('##' + id).attr('value','');		
-						var aItems = $j('##' + id + '-library-wrapper').sortable('toArray',{'attribute':'serialize'});
-						$j('##' + id).attr('value',aItems.join(","));
-						
-					},
-					dataType: "html"
-				});
+				$j('##'+id).val($j('##' + id + '-library-wrapper').sortable('toArray',{'attribute':'serialize'}).join(","));
 			}
 		});
 		
@@ -767,7 +726,7 @@ function setRowBackground (childCheckbox) {
 					height: $j(window).height()-15,
 					close: function(event, ui) {
 						$j("html").css('overflow', 'auto');
-						window.location.reload(true);
+						window.location = window.location.href.split("##")[0];
 					}
 				});
 			}
@@ -775,5 +734,65 @@ function setRowBackground (childCheckbox) {
 			$j($fc.objectAdminActionDiv).dialog('open');
 			$j('iframe',$j($fc.objectAdminActionDiv)).attr('src',url);
 			
-		};					
+		};
+		
+		var userselection = [];
+		var inputField;
+		fcForm.selections = {
+			init: function(aTypename,aProperty,aId) {
+				
+				typename = aTypename;
+				property = aProperty;
+				id = aId;
+				
+				inputField = $j('##'+aId,parent.document);
+				
+				if(inputField.val().length) {
+					userselection = inputField.val().split(',');
+				}
+				
+				fcForm.selections.statusupdate(property);
+				
+				$j("tr.selector-wrap input[name='selected']").live('click', function(e) {
+					var el = $(this);
+					if (el.is(':radio')) {
+						userselection = [el.val()];
+					} else if (el.is(':checked')) {
+						fcForm.selections.add(el.val());
+					} else {
+						fcForm.selections.remove(el.val());
+					}
+					inputField.val(userselection.toString());
+					fcForm.selections.statusupdate(property);
+				});
+			},
+			add: function(objID){
+				if($j.inArray(objID, userselection) == -1) {
+					userselection.push(objID);
+				}
+			},
+			remove: function(objID){
+				var arrPos = $j.inArray(objID, userselection);
+				if(arrPos >= 0) {
+					userselection.splice(arrPos,1);
+				}
+			},
+			statusupdate: function(property) {
+				var nbrSelections = userselection.length;
+				var statusText = '<div id="OKMsg">' + nbrSelections + ' items selected.</div>';
+			
+				if(nbrSelections == 0) {
+					statusText = '<div id="errorMsg">No items have been selected.</div>';
+				}
+				
+				$j('##librarySummary-' + typename + '-' + property).html(statusText);
+			},
+			reinitpage: function() {
+				$j('tr.selector-wrap').removeClass('rowselected');
+				$j("tr.selector-wrap input[name='selected']").attr('checked',false);
+				$j.each(userselection, function(){
+					$j("tr.selector-wrap input[value='"+this+"']").attr('checked',true).parents('tr.selector-wrap').addClass('rowselected');
+				});
+			}
+		};
 </cfoutput>					

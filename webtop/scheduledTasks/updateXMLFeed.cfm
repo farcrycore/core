@@ -59,27 +59,27 @@ $out:$
 	
 	<!--- RSS --->
 	<cfif not fileexists("#application.path.project#/www#stObj.directory#/rss.xml")>
-		<cffile action="write" file="#application.path.project#/www#stObj.directory#/rss.xml" output="" />
+		<cffile action="write" file="#application.path.project#/www#stObj.directory#/rss.xml" output="" mode="664" />
 	</cfif>
 	<cfhttp url="http://#cgi.http_host#/#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&view=feedRSS" />
-	<cffile action="write" file="#application.path.project#/www#stObj.directory#/rss.xml" output="#cfhttp.fileContent#" />
+	<cffile action="write" file="#application.path.project#/www#stObj.directory#/rss.xml" output="#cfhttp.fileContent#" mode="664" />
 	<cfoutput><p>Created <a href="#stObj.directory#/rss.xml">RSS feed</a></p></cfoutput>
 	
 	<!--- Atom --->
 	<cfif not fileexists("#application.path.project#/www#stObj.directory#/atom.xml")>
-		<cffile action="write" file="#application.path.project#/www#stObj.directory#/atom.xml" output="" />
+		<cffile action="write" file="#application.path.project#/www#stObj.directory#/atom.xml" output="" mode="664" />
 	</cfif>
 	<cfhttp url="http://#cgi.http_host#/#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&view=feedAtom" />
-	<cffile action="write" file="#application.path.project#/www#stObj.directory#/atom.xml" output="#cfhttp.fileContent#" />
+	<cffile action="write" file="#application.path.project#/www#stObj.directory#/atom.xml" output="#cfhttp.fileContent#" mode="664" />
 	<cfoutput><p>Created <a href="#stObj.directory#/atom.xml">Atom feed</a></p></cfoutput>
 	
 	<!--- RSS --->
 	<cfif len(stObj.mediaproperty)>
 		<cfif not fileexists("#application.path.project#/www#stObj.directory#/podcast.xml")>
-			<cffile action="write" file="#application.path.project#/www#stObj.directory#/podcast.xml" output="" />
+			<cffile action="write" file="#application.path.project#/www#stObj.directory#/podcast.xml" output="" mode="664" />
 		</cfif>
 		<cfhttp url="http://#cgi.http_host#/#application.url.webroot#/index.cfm?objectid=#stObj.objectid#&view=feedPodcast" />
-		<cffile action="write" file="#application.path.project#/www#stObj.directory#/podcast.xml" output="#cfhttp.fileContent#" />
+		<cffile action="write" file="#application.path.project#/www#stObj.directory#/podcast.xml" output="#cfhttp.fileContent#" mode="664" />
 		<cfoutput><p>Created <a href="#stObj.directory#/podcast.xml">iTunes podcast</a></p></cfoutput>
 	</cfif>
 <cfelse>

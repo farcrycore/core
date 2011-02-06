@@ -368,7 +368,7 @@ user --->
 		<cfset stRecordSet.recordsPerPage = attributes.numitems />
 	<cfelse>
 
-		<cfset oFormtoolUtil = createObject("component", "farcry.core.packages.farcry.formtools") />
+		<cfset oFormtoolUtil = createObject("component", application.fc.utils.getPath(package="farcry", component="formtools")) />
 		
 		<cfset sqlColumns="objectid,locked,lockedby" />		
 	
@@ -887,7 +887,7 @@ user --->
 				
 				<cfset stObjectAdminData = getObjectAdminData(st="#st#", typename="#attributes.typename#", stPermissions="#stPermissions#") />
 				<cfset st = application.fapi.structMerge(st,stObjectAdminData) />
-				
+
 				<!--- <ft:paginateLoop r_stObject="st" bIncludeFields="true" bIncludeObjects="false" stpermissions="#stpermissions#" lCustomActions="#attributes.lCustomActions#" bTypeAdmin="true" typename="#attributes.typename#">
 			 --->		
 						<cfoutput>
@@ -938,7 +938,7 @@ user --->
 									
 								</cfloop>
 							</cfif>
-							
+
 							<cfif len(attributes.columnList)>
 								<ft:object objectID="#st.objectid#" typename="#attributes.typename#" lFields="#attributes.columnlist#" format="display" r_stFields="stFields" />
 							
@@ -1089,57 +1089,60 @@ user --->
 				</td>
 				<skin:toolTip id="oa-overview-tooltip" selector=".oa-overview">Open up the overview screen for this object.</skin:toolTip>
 			</cfif>
-			<!--- We do not include the Edit Link if workflow is available for this content item. The user must go to the overview page. --->
-			<cfif not listLen(lWorkflowTypenames)>	
-				<cfif structKeyExists(arguments.st,"locked") AND arguments.st.locked neq 0 AND arguments.st.lockedby neq '#application.security.getCurrentUserID()#'>
-					<td>
-					<a id="oa-locked-#arguments.st.objectid#" name="oa-locked-#arguments.st.objectid#" title="Unlock" href="##">
-						<span class="ui-icon ui-icon-locked" style="float:left;">&nbsp;</span>
-					</a>
-					</td>
-					<skin:onReady>
-						$j('##oa-locked-#arguments.st.objectid#').click(function() {
-							selectObjectID('#arguments.st.objectid#');
-							btnSubmit('#request.farcryForm.name#', 'unlock');
-						});		
-					</skin:onReady>	
-					<skin:toolTip id="oa-unlock-tooltip" selector="##oa-locked-#arguments.st.objectid#">Unlock this object.</skin:toolTip>	
-				<cfelseif structKeyExists(arguments.stPermissions, "iEdit") AND arguments.stPermissions.iEdit>
-					<cfif structKeyExists(arguments.st,"bHasMultipleVersion")>
-						<cfif NOT(arguments.st.bHasMultipleVersion) AND arguments.st.status EQ "approved">
-					
-							<td>
-							<a ft:objectid="#arguments.st.objectid#"  class="oa-create-draft" title="Create Draft Object" href="##">
-								<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>
-							</a>
-							</td>
-							<skin:toolTip id="oa-create-draft-tooltip" selector=".oa-create-draft">Create a draft version of this object and begin editing.</skin:toolTip>
-						<cfelseif arguments.st.bHasMultipleVersion>
-							<!--- Still go to the create draft page but that page will find the already existing draft and not create a new one. --->
-							<td>
-							<a ft:objectid="#arguments.st.objectid#"  class="oa-edit-draft" title="Edit Draft Object" href="##">
-								<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>
-							</a>
-							</td>
-							<skin:toolTip id="oa-edit-draft-tooltip" selector=".oa-edit-draft">Edit the draft version of this object.</skin:toolTip>						
+			
+			<cfif attributes.bEditCol>
+				<!--- We do not include the Edit Link if workflow is available for this content item. The user must go to the overview page. --->
+				<cfif not listLen(lWorkflowTypenames)>	
+					<cfif structKeyExists(arguments.st,"locked") AND arguments.st.locked neq 0 AND arguments.st.lockedby neq '#application.security.getCurrentUserID()#'>
+						<td>
+						<a id="oa-locked-#arguments.st.objectid#" name="oa-locked-#arguments.st.objectid#" title="Unlock" href="##">
+							<span class="ui-icon ui-icon-locked" style="float:left;">&nbsp;</span>
+						</a>
+						</td>
+						<skin:onReady>
+							$j('##oa-locked-#arguments.st.objectid#').click(function() {
+								selectObjectID('#arguments.st.objectid#');
+								btnSubmit('#request.farcryForm.name#', 'unlock');
+							});		
+						</skin:onReady>	
+						<skin:toolTip id="oa-unlock-tooltip" selector="##oa-locked-#arguments.st.objectid#">Unlock this object.</skin:toolTip>	
+					<cfelseif structKeyExists(arguments.stPermissions, "iEdit") AND arguments.stPermissions.iEdit>
+						<cfif structKeyExists(arguments.st,"bHasMultipleVersion")>
+							<cfif NOT(arguments.st.bHasMultipleVersion) AND arguments.st.status EQ "approved">
+						
+								<td>
+								<a ft:objectid="#arguments.st.objectid#"  class="oa-create-draft" title="Create Draft Object" href="##">
+									<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>
+								</a>
+								</td>
+								<skin:toolTip id="oa-create-draft-tooltip" selector=".oa-create-draft">Create a draft version of this object and begin editing.</skin:toolTip>
+							<cfelseif arguments.st.bHasMultipleVersion>
+								<!--- Still go to the create draft page but that page will find the already existing draft and not create a new one. --->
+								<td>
+								<a ft:objectid="#arguments.st.objectid#"  class="oa-edit-draft" title="Edit Draft Object" href="##">
+									<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>
+								</a>
+								</td>
+								<skin:toolTip id="oa-edit-draft-tooltip" selector=".oa-edit-draft">Edit the draft version of this object.</skin:toolTip>						
+							<cfelse>
+								<td>
+								<a ft:objectid="#arguments.st.objectid#"  class="oa-edit" title="Edit" href="##">
+									<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>
+								</a>
+								</td>	
+								<skin:toolTip id="oa-edit-tooltip" selector=".oa-edit">Edit this object.</skin:toolTip>			
+							</cfif>
 						<cfelse>
 							<td>
 							<a ft:objectid="#arguments.st.objectid#"  class="oa-edit" title="Edit" href="##">
 								<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>
 							</a>
-							</td>	
-							<skin:toolTip id="oa-edit-tooltip" selector=".oa-edit">Edit this object.</skin:toolTip>			
+							</td>
+							<skin:toolTip id="oa-edit-tooltip" selector=".oa-edit">Edit this object.</skin:toolTip>	
 						</cfif>
-					<cfelse>
-						<td>
-						<a ft:objectid="#arguments.st.objectid#"  class="oa-edit" title="Edit" href="##">
-							<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>
-						</a>
-						</td>
-						<skin:toolTip id="oa-edit-tooltip" selector=".oa-edit">Edit this object.</skin:toolTip>	
 					</cfif>
-				</cfif>
-			</cfif>	
+				</cfif>	
+			</cfif>
 			
 			<cfif attributes.bPreviewCol>
 				<td>

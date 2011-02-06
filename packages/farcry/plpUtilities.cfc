@@ -42,7 +42,7 @@
 			<cfif arguments.bPLPStorage>
 				<cflock name="_plpaccess" timeout="10">
 					<cfwddx action="cfml2wddx" input="#arguments.stPLP#" output="stLocal.wddxPLP">
-					<cffile action="write" file="#application.path.plpstorage#/#application.security.getCurrentUserID()#_#arguments.stPLP.plp.output.objectID#.plp" output="#stLocal.wddxPLP#" addnewline="No" charset="utf-8">
+					<cffile action="write" file="#application.path.plpstorage#/#application.security.getCurrentUserID()#_#arguments.stPLP.plp.output.objectID#.plp" output="#stLocal.wddxPLP#" addnewline="No" charset="utf-8" mode="664">
 				</cflock>
 
 			<cfelse>

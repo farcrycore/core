@@ -5,7 +5,6 @@
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 <cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
-<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">

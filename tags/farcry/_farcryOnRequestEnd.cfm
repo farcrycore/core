@@ -37,7 +37,6 @@ $in: $
 $out:$
 --->
 
-<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 <cfimport taglib="/farcry/core/tags/core" prefix="core" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 

@@ -23,8 +23,8 @@
 		
 		<!--- JS LIBRARIES --->
 		<skin:registerJS 	id="jquery"
-							baseHREF="#application.url.webtop#/thirdparty/jquery-1-4-1/js"
-							lFiles="jquery-1.4.1.min.js">
+							baseHREF="#application.url.webtop#/thirdparty/jquery/js"
+							lFiles="jquery-1.4.3.min.js">
 							
 							<cfoutput>
 								var $j = jQuery.noConflict();
@@ -36,13 +36,9 @@
 							baseHREF="#application.url.webtop#/thirdparty/jquery-1-4-1/js"
 							lFiles="jquery-ui-1.8.custom.min.js" />
 		
-			
-				
-
 		<skin:registerJS 	id="tinymce"
 							baseHREF="#application.url.webtop#/thirdparty/tiny_mce"
-							lFiles="tiny_mce_gzip.js"
-							bCombine="false" />
+							lFiles="jquery.tinymce.js" />
 
 		<skin:registerJS 	id="jquery-validate"
 							baseHREF="#application.url.webtop#/thirdparty/jquery-validate"
@@ -61,6 +57,14 @@
 								});
 							</cfoutput>
 		</skin:registerJS>
+		
+		<skin:registerJS	id="jquery-uploadify"
+							baseHREF="#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4"
+							lFiles="swfobject.js,jquery.uploadify.v2.1.4.min.js" />
+							
+		<skin:registerJS	id="jquery-crop"
+							baseHREF="#application.url.webtop#/thirdparty/Jcrop/js"
+							lFiles="jquery.Jcrop.js" />
 							
 							
 		<skin:registerJS 	id="gritter"
@@ -99,6 +103,14 @@
 							.ui-dialog .ui-dialog-content { padding:0.5em 0; }
 							</cfoutput>
 		</skin:registerCSS>
+		
+		<skin:registerCSS	id="jquery-uploadify"
+							baseHREF="#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4"
+							lFiles="uploadify.css" />
+							
+		<skin:registerCSS	id="jquery-crop"
+							baseHREF="#application.url.webtop#/thirdparty/Jcrop/css"
+							lFiles="jquery.Jcrop.css" />
 				
 		<skin:registerCSS 	id="farcry-form"
 							baseHREF="#application.url.webtop#"

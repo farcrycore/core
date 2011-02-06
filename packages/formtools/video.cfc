@@ -93,7 +93,7 @@
 			<cffile action="UPLOAD"
 		        filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
 		        destination="#application.path.project#/www#arguments.stMetadata.ftDestination#"
-				nameconflict="MAKEUNIQUE">					
+				nameconflict="MAKEUNIQUE" mode="664">					
 									
 			<!--- </cfif> --->
 			<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#cffile.ServerFile#">

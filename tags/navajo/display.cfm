@@ -29,7 +29,6 @@
 <cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
-<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs" />
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/core/" prefix="core" />
 
@@ -49,7 +48,7 @@
 <cfparam name="attributes.objectid" default="" />
 <cfparam name="attributes.typename" default="" />
 <!--- <cfparam name="attributes.method" default="" type="string" /> --->
-<cfparam name="attributes.loginpath" default="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#" type="string">
+<cfparam name="attributes.loginpath" default="#application.fapi.getLink(href=application.url.publiclogin,urlParameters='returnUrl='&URLEncodedFormat(cgi.script_name&'?'&cgi.query_string))#" type="string">
 
 <!--- passing in attributes.objectid will override the url value. This is done when a dmNavigation recusively calls the template. --->
 <cfif len(attributes.objectid)>
@@ -63,7 +62,6 @@
 <cfparam name="url.objectid" default="" />
 <cfparam name="url.type" default="" />
 <cfparam name="url.view" default="" />
-
 
 <!--- 
 <!--- Handle options for passing object/type in --->

@@ -32,7 +32,7 @@
 		</cfif>
 	
 	
-		<cffile action="UPLOAD" filefield="FILEDATA" destination="#physicalPath#/#form.FILENAME#" nameconflict="MAKEUNIQUE" />
+		<cffile action="UPLOAD" filefield="FILEDATA" destination="#physicalPath#/#form.FILENAME#" nameconflict="MAKEUNIQUE" mode="664" />
 			
 		<cfcatch>
 			<cflog log="Application" type="error" text="#form.fieldNames# #cfcatch.Message# #cfcatch.Detail#" />
@@ -63,7 +63,7 @@
 	
 	
 	<cflock name="MultipleImageUpload" timeout="10" throwontimeout="false">
-		<cfset stProperties = oImageFormtool.ImageAutoGenerateBeforeSave(stProperties=stProperties, stFields=application.stCoapi.dmImage.stProps,stFormPost=stFormPost) />	
+		<cfset stProperties = oImageFormtool.ImageAutoGenerateBeforeSave(typename="dmImage",stProperties=stProperties, stFields=application.stCoapi.dmImage.stProps,stFormPost=stFormPost) />	
 		<cfset stResult = oImage.createData(stProperties=stProperties,user="multiupload") />
 	</cflock>
 	

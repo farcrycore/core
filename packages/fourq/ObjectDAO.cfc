@@ -300,7 +300,7 @@
 
 		
 		
-		<cffile action="write" file="c:\webapps\b2\packages\types\#arguments.typename#.cfc" output="#NewComponent#">
+		<cffile action="write" file="c:\webapps\b2\packages\types\#arguments.typename#.cfc" output="#NewComponent#" mode="664">
 
 		
 	</cffunction>

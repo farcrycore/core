@@ -31,7 +31,7 @@
 	<cffile action="UPLOAD"
 		filefield="filedata" 
 		destination="#filePath##stMetadata.ftDestination#/"		        	
-		nameconflict="MakeUnique" />
+		nameconflict="MakeUnique" mode="664" />
 	<cffile action="rename" source="#filePath##stMetadata.ftDestination#/#File.ServerFile#" destination="#uploadFileName#" />
 	<cfset cleanFileName = uploadFileName />
 	<cfset newFileName = uploadFileName />
@@ -40,7 +40,7 @@
 	<cffile action="UPLOAD"
 		filefield="filedata" 
 		destination="#filePath##stMetadata.ftDestination#/"		        	
-		nameconflict="MakeUnique">
+		nameconflict="MakeUnique" mode="664">
 	<cfset newFileName = cffile.ServerFile>
 </cfif>
 

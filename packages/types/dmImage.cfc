@@ -38,7 +38,6 @@ type properties
 	ftType="Image" 
 	ftDestination="/images/dmImage/StandardImage" 
 	ftImageWidth="400" 
-	ftImageHeight="1000" 
 	ftAutoGenerateType="FitInside" 
 	ftSourceField="SourceImage" 
 	ftCreateFromSourceDefault="true" 

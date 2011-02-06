@@ -9,7 +9,7 @@
 <cfoutput>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<title>{##fct.title}</title>
+	<title></title>
 	<script language="javascript" type="text/javascript" src="../../tiny_mce_popup.js"></script>
 	<script language="javascript" type="text/javascript" src="../../utils/mctabs.js"></script>
 	<script language="javascript" type="text/javascript">
@@ -99,16 +99,15 @@
 		var farcrytypename = tinyMCEPopup.getParam("farcrytypename");
 		var farcryrichtextfield = tinyMCEPopup.getParam("farcryrichtextfield");
 		if (farcryobjectid != null && farcrytypename != null && farcryrichtextfield != null) {
-			// Fix relative
-
+			// Fix relative	
 			$j.ajax({
 			   type: "POST",
 			   url: '#application.url.farcry#/facade/tinyMCE.cfc?method=ajaxGetTemplateDropdowns',
-			   data: 'objectID=' + farcryobjectid + '&Typename=' + farcrytypename + '&richtextfield=' + farcryrichtextfield,
+			   data: 'objectID=' + farcryobjectid + '&Typename=' + farcrytypename + '&richtextfield=' + farcryrichtextfield + '&' + $j('form.uniForm div.multiField input:hidden',parent.document).serialize() + '&' + $j('##wizardID',parent.document).serialize(),
 			   cache: false,
 			   timeout: 2000,
 			   success: function(msg){
-			   		$j('##templatedropdowns').html(msg);			     	
+			   		$j('##templatedropdowns').html(msg);
 			   }
 			 });			
 			

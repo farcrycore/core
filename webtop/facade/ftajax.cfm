@@ -4,26 +4,19 @@
 
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 
+<cfloop collection="#url#" item="key">
+	<cfif refindnocase("/formtool/\w+",key)>
+		<cfloop from="1" to="#listlen(key,'/')#" index="i" step="2">
+			<cfset url[listgetat(key,i,"/")] = listgetat(key,i+1,"/") />
+		</cfloop>
+		<cfbreak />
+	</cfif>
+</cfloop>
 
 <cfparam name="url.formtool" />
 <cfparam name="url.typename" />
 <cfparam name="url.property" />
 <cfparam name="url.fieldname" />
-
-
-<!--------------------------------------------------------------------------------------- 
-THE SAVE NEEDS TO BE FIXED SO THAT THE OBJECT IS PASSED THROUGH <FT:PROCESSFORMOBJECTS />
-A simple setdata causes problems with things like arrays being saved as empty strings.
- --------------------------------------------------------------------------------------->
- 
-<!--- Save the updated object to the session --->
-
-
-<!---<ft:processFormObjects objectID="#url.objectid#" bSessionOnly="true">
-	<cfloop list="#structKeylist(stProperties)#" index="key">
-		<cfoutput>#stProperties[key]##chr(13)##chr(10)#</cfoutput>
-	</cfloop>
-</ft:processFormObjects>--->
 
 
 <cfset stMetadata = duplicate(application.stCOAPI[url.typename].stProps[url.property].metadata) />
@@ -36,7 +29,10 @@ A simple setdata causes problems with things like arrays being saved as empty st
 <!--- SET THE VALUE PASSED INTO THE FORMTOOL --->
 <cfif len(url.property) AND structKeyExists(form, url.property)>
 	<cfset stMetadata.value = form[url.property] />
+<cfelse>
+	<cfset stMetadata.value = "" />
 </cfif>
+<cfset stMetadata.FormFieldPrefix = left(url.fieldname,len(url.fieldname)-len(url.property)) />
 
 <cfif structkeyexists(url,"objectid")>
 	<cfset stObj = oType.getData(objectid=url.objectid) />
@@ -46,13 +42,18 @@ A simple setdata causes problems with things like arrays being saved as empty st
 
 
 <!--- Update the object with any other fields that have come through --->
+<cfset stFieldPost = structnew() />
+<cfset stFieldPost.stSupporting = structnew() />
+<cfset stFieldPost.stSupporting.value = stMetadata.value />
 <cfif structkeyexists(form,"fieldnames")>
 	<cfloop list="#form.fieldnames#" index="key">
-		<!---<cfoutput>#form[key]##chr(13)##chr(10)#</cfoutput>--->
+		
 		<cfif application.fapi.getPropertyMetadata( typename=url.typename, property=key, md='type', default='string' ) EQ "array">
 			<cfset stObj[key] = listToArray(form[key]) />
-		<cfelse>
+		<cfelseif structkeyexists(application.stCOAPI[url.typename].stProps,key)>
 		<cfset stObj[key] = form[key] />
+		<cfelseif refindnocase("^#url.property#",key)>
+			<cfset stFieldPost.stSupporting[mid(key,len(url.property)+1,len(key))] = form[key] />
 		</cfif>
 		
 	</cfloop>
@@ -63,6 +64,7 @@ A simple setdata causes problems with things like arrays being saved as empty st
 	<cfset stResult = application.fapi.setData(stProperties="#stObj#", bSessionOnly="true") />
 </cfif>
 
+<!--- Figure out ajax method --->
 <cfif structKeyExists(stMetadata,"ftAjaxMethod") AND len(stMetadata.ftAjaxMethod)>
 	<cfset FieldMethod = stMetadata.ftAjaxMethod />
 
@@ -84,6 +86,7 @@ A simple setdata causes problems with things like arrays being saved as empty st
 	<cfinvokeargument name="stObject" value="#stObj#" />
 	<cfinvokeargument name="stMetadata" value="#stMetadata#" />
 	<cfinvokeargument name="fieldname" value="#url.fieldname#" />
+	<cfinvokeargument name="stFieldPost" value="#stFieldPost#" />
 </cfinvoke>
 
 <cfcontent reset="true">

@@ -13,7 +13,7 @@
 	<cfset values.itemlabel = "#application.stCOAPI[url.typename].displayname#" />
 	<cfset values.filename = "#url.typename#" />
 	<cfset content = substitute(content,values) />
-	<cffile action="write" file="#application.path.project#/customadmin/#url.typename#.xml" output="#content#" />
+	<cffile action="write" file="#application.path.project#/customadmin/#url.typename#.xml" output="#content#" mode="664" />
 	
 	<!--- Create object admin --->
 	<cffile action="read" file="#application.path.core#/webtop/admin/scaffolds/typeadmin/objectadmin.txt" variable="content" />
@@ -27,7 +27,7 @@
 	<cfif not directoryexists("#application.path.project#/customadmin/customlists")>
 		<cfdirectory action="create" directory="#application.path.project#/customadmin/customlists" />
 	</cfif>
-	<cffile action="write" file="#application.path.project#/customadmin/customlists/#url.typename#.cfm" output="#content#" />
+	<cffile action="write" file="#application.path.project#/customadmin/customlists/#url.typename#.cfm" output="#content#" mode="664" />
 	
 	<cfoutput>
 		<p class="success">Type administration page created</p>

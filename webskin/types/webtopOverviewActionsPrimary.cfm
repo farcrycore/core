@@ -26,7 +26,6 @@ FARCRY INCLUDE FILES
  ------------------>
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/navajo" prefix="nj" />
-<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 <cfimport taglib="/farcry/core/tags/grid/" prefix="grid" />
@@ -317,7 +316,7 @@ START WEBSKIN
 							class="secondary"  
 							type="button" 
 							style="width:180px;"
-							onClick="$fc.openDialogIFrame('Permissions', '#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&method=adminPermissions');" />
+							onClick="$fc.openDialogIFrame('Permissions', '#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&typename=#stObj.typename#&method=adminPermissions');" />
 			</cfif>	
 		</cfif>	
 

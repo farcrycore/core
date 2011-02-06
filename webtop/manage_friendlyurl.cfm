@@ -3,8 +3,6 @@
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
-<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">
-<cfimport taglib="/farcry/core/tags/grid/" prefix="grid">
 
 
 <!--- 
@@ -195,25 +193,6 @@ manage friendly urls for a particular object id
 												$j('###prefix#-redirect-to-wrap').hide('blind',{},500);
 											}										
 										});
-										
-										<!--- 
-										el.on('change', function(n,c) {
-											var currentValue = Ext.getDom('#stFields.redirectionType.FORMFIELDNAME#').value;
-											if (currentValue != 'none') {
-												
-												Ext.get('#prefix#-redirect-to-wrap').slideIn('t', {
-												    easing: 'easeIn',
-												    duration: .5,
-												    useDisplay: true
-												});
-											} else {
-												Ext.get('#prefix#-redirect-to-wrap').slideOut('t', {
-												    easing: 'easeOut',
-												    duration: .5,
-												    useDisplay: true
-												});
-											}
-										});	 --->
 									</skin:onReady>
 								</td>
 								<cfif qFUCurrent.bDefault>

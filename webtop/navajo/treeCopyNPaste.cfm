@@ -58,7 +58,7 @@ $out:$
 	
 	<cfset var filenameCopy = generateUniqueFilename(arguments.filename)>
 	<cfif fileExists("#arguments.filepath#\#arguments.filename#")>
-		<cffile action="copy" source="#arguments.filepath#\#arguments.filename#" destination="#arguments.filepath#\#filenameCopy#"> 
+		<cffile action="copy" source="#arguments.filepath#\#arguments.filename#" destination="#arguments.filepath#\#filenameCopy#" mode="664"> 
 	</cfif>
 	<cfreturn filenameCopy>
 </cffunction>

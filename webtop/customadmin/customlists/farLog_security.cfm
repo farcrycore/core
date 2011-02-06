@@ -11,9 +11,18 @@
 
 <cfset stFilterMetaData.userid.ftType = "list" />
 <cfset stFilterMetaData.userid.ftListData = "getUserList" />
+<cfset stFilterMetaData.userid.ftListDataTypeName = "farLog" />
+<cfset stFilterMetaData.userid.ftRenderType = "dropdown" />
+<cfset stFilterMetaData.userid.ftselectmultiple = "false" />
+
+
 
 <cfset stFilterMetaData.event.ftType = "list" />
 <cfset stFilterMetaData.event.ftListData = "getEventList_Security" />
+<cfset stFilterMetaData.event.ftListDataTypeName = "farLog" />
+<cfset stFilterMetaData.event.ftRenderType = "dropdown" />
+<cfset stFilterMetaData.event.ftselectmultiple = "false" />
+
 
 <cfset stFilterMetaData.datetimecreatedby.default = "" />
 

@@ -218,13 +218,7 @@
 		
 			<cfdefaultcase>
 				<cfif arguments.stMetadata.type EQ "array">		
-					<cfquery datasource="#application.dsn#" name="qArrayField">
-					SELECT *
-					FROM #arguments.typename#_#arguments.stMetaData.Name#
-					WHERE parentID = '#arguments.stObject.objectID#'
-					ORDER BY seq
-					</cfquery>	
-					<cfset joinItems = valueList(qArrayField.data) />
+					<cfset joinItems = arrayToList(arguments.stObject[arguments.stMetadata.name]) />
 				<cfelse>
 					<cfset joinItems = arguments.stObject[arguments.stMetadata.name] />
 				</cfif>
@@ -271,7 +265,7 @@
 												class="ui-state-default ui-corner-all"
 												value="Delete" 
 												text="delete" 
-												confirmText="Are you sure you want to delete this item" 
+												confirmText="Are you sure you want to delete this item? Doing so will immediately remove this item from the database." 
 												onClick="fcForm.deleteLibraryItem('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#i#');" />
 										<cfelseif stActions.ftRemoveType EQ "remove">
 											<ft:button
@@ -280,7 +274,7 @@
 												class="ui-state-default ui-corner-all"
 												value="Remove" 
 												text="remove" 
-												confirmText="Are you sure you want to remove this item" 
+												confirmText="Are you sure you want to remove this item? Doing so will only unlink this content item. The content will remain in the database." 
 												onClick="fcForm.detachLibraryItem('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#i#');" />
 								 
 										</cfif>
@@ -514,7 +508,7 @@
 			    FROM qArrayRecords
 			    WHERE data = '#listFirst(i,":")#'
 			    <cfif listLast(i,":") NEQ listFirst(i,":")><!--- SEQ PASSED IN --->
-			    	AND seq = #listLast(i,":")#
+			    	AND seq = '#listLast(i,":")#'
 			    </cfif>
 			    </cfquery>
 			

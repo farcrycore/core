@@ -22,94 +22,87 @@
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/security" prefix="sec" />
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
-
+<cfparam name="url.linkuser" default="true"  />
 <!--- 
  // VIEW
 --------------------------------------------------------------------------------------------------->
 <admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
-
+<skin:onReady id="object-admin-popup">
+	<cfoutput>
+	$j(document).ready(function(){
+		$j(".user-stats").click(function(e){
+			e.preventDefault();
+			$j( "##fc-dialog-iframe-user").attr("src", "/webtop/edittabUserStats.cfm?username=" + $j(this).attr('href') + "&linkuser=false")
+			$j( "##fc-dialog-div-user" ).dialog({
+				height: 600,
+				width: 700,
+				modal: true
+			});
+		});
+	});
+	</cfoutput>
+</skin:onReady>
 <sec:CheckPermission error="true" permission="ObjectAuditTab">
 	<cfset oAudit = createObject("component", "#application.packagepath#.farcry.audit") />
 	<cfset qLog = oAudit.getAuditLog(objectid=url.objectid) />
 	
-	<cfoutput>	<h3>#application.rb.getResource("workflow.headings.auditTrace@text","Audit Trace")#</h3></cfoutput>
+	<cfoutput>	
+		<h3>#application.rb.getResource("workflow.headings.auditTrace@text","Audit Trace")# for #application.fapi.getContentObject(objectid=url.objectid).label#</h3>
+	</cfoutput>
 	
-	<cfif qLog.recordcount gt 0>
+	<skin:pagination query="#qLog#" typename="farLog" r_stObject="stLog" paginationID="farLog" recordsPerPage="10" pageLinks="10">
 		<cfoutput>
-		<table width="100%" class="objectAdmin">
-		<tr>
-			<th>#application.rb.getResource("workflow.labels.date@label","Date")#</th>
-			<th>#application.rb.getResource("workflow.labels.changeType@label","Change Type")#</th>
-			<!--- <th>#application.rb.getResource("workflow.labels.location@label","Location")#</th> --->
-			<th>#application.rb.getResource("workflow.labels.notes@label","Notes")#</th>
-			<th>#application.rb.getResource("workflow.labels.user@label","User")#</th>
-		</tr>
-		</cfoutput>
-		<cfloop query="qLog">
-			<!--- TODO: Why do we have this redundant CFIF which outputs the same info regardless? JSC --->
-			<cfif structKeyExists(url, "user")>
-				<cfif url.user eq username>
-					<cfoutput>
-					<tr class="#IIF(qLog.currentrow MOD 2, de("alt"), de(""))#">
-						<td>
-						#application.thisCalendar.i18nDateFormat(datetimestamp,session.dmProfile.locale,application.longF)# 
-						#application.thisCalendar.i18nTimeFormat(datetimestamp,session.dmProfile.locale,application.shortF)#
-						</td>
-						<td>#audittype#</td>
-						<!--- <td>#location#</td> --->
-						<td>
-							<cfif notes neq "">
-								#notes#
-							<cfelse>
-								<em>#application.rb.getResource("workflow.messages.notAvailable@label","n/a")#</em>
-							</cfif>
-						</td>
-						<td><a href="edittabAudit.cfm?objectid=#objectid#&amp;user=#username#">#username#</a></td>
-					</tr></cfoutput>
-				</cfif>	
-			<cfelse>
-				<cfoutput>
-				<tr class="#IIF(qLog.currentrow MOD 2, de("alt"), de(""))#">
-					<td>
-					#application.thisCalendar.i18nDateFormat(datetimestamp,session.dmProfile.locale,application.longF)# 
-					#application.thisCalendar.i18nTimeFormat(datetimestamp,session.dmProfile.locale,application.shortF)#
-					</td>
-					<td>#audittype#</td>
-					<!--- <td>#location#</td> --->
-					<td>
-						<cfif notes neq "">
-							#notes#
-						<cfelse>
-							<em>#application.rb.getResource("workflow.messages.notAvailable@label","n/a")#</em>
-						</cfif>
-					</td>
-					<td><a href="edittabAudit.cfm?objectid=#objectid#&user=#username#">#username#</a></td>
-				</tr></cfoutput>
+			<cfif stLog.recordsetrow mod 10 eq 1 or stLog.recordsetrow eq 1>
+				<table width="100%" class="objectAdmin">
+					<tr>
+						<th>#application.rb.getResource("workflow.labels.date@label","Date")#</th>
+						<th>#application.rb.getResource("workflow.labels.changeType@label","Change Type")#</th>
+						<th>#application.rb.getResource("workflow.labels.notes@label","Notes")#</th>
+						<th>#application.rb.getResource("workflow.labels.user@label","User")#</th>
+					</tr>
 			</cfif>
-		</cfloop>
-
-		<cfif structKeyExists(url, "user")>
-			<cfoutput>
-			<tr>
-				<td colspan="5" align="right"><span class="frameMenuBullet">&raquo;</span> <a href="edittabAudit.cfm?objectid=#url.objectid#">#application.rb.getResource("workflow.buttons.showAllUsers@label","Show all users")#</a></td>
-			</tr></cfoutput>
-		</cfif>
-
-		<cfoutput>
-		</table></cfoutput>
+			<tr <cfif stLog.CURRENTROWCLASS eq 'oddrow'>class='alt'</cfif>
+				<td>
+					<span id="oa-date-#stLog.objectid#">#application.fapi.prettyDate(stLog.datetimestamp)#</span>
+					<skin:toolTip id="oa-date-#stLog.objectid#" selector="##oa-date-#stLog.objectid#">#dateformat(stLog.datetimestamp, "dd/mm/yyyy hh:mm:ss")#</skin:toolTip>
+				</td>
+				<td>#stLog.audittype#</td>
+				<td>
+					#stLog.notes#
+				</td>
+				<td>
+					<cfset quser=application.fapi.getContentObjects(typename='dmProfile', username_eq="#stLog.username#", lProperties="label") />
 	
-	<cfelse>
-		<cfoutput>
-		<table cellpadding="5" cellspacing="0" border="0" style="margin-left:30px;">
-			<tr>
-				<td colspan="5">#application.rb.getResource("workflow.messages.noTraceRecorded@text","No trace recorded.")#</td>
+					<cfif url.linkuser>
+						<a href="#stLog.username#" class="user-stats">#quser.label#</a>
+					<cfelse>
+						#quser.label#
+					</cfif>
+				</td>
 			</tr>
-		</table></cfoutput>
+			<cfif stLog.recordsetrow mod 10 eq 0 or stLog.recordsetrow eq stLog.recordsetcount>
+				</table>
+			</cfif>
+		</cfoutput>
+	</skin:pagination>
+	
+	<cfif qLog.recordcount eq 0>
+		<cfoutput>
+			#application.rb.getResource("workflow.messages.noTraceRecorded@text","No trace recorded.")#
+		</cfoutput>
 	</cfif>
 </sec:CheckPermission>
 
 <!--- setup footer --->
 <admin:footer>
+
+<cfoutput>
+	<div id='fc-dialog-div-user' style="padding:10px;"><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0' id="fc-dialog-iframe-user"></iframe></div>
+</cfoutput>
+
+<skin:loadJS id="jquery-ui"/>
+<skin:loadCSS id="jquery-ui"/>
 
 <cfsetting enablecfoutputonly="false" />

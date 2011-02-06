@@ -202,7 +202,7 @@
 		
 		<cfif attributes.bimageautogenerate>
 			<cfset oImageFormTool = createObject("component", application.formtools["image"].packagepath) />
-			<cfset Caller[attributes.r_stProperties] = oImageFormTool.ImageAutoGenerateBeforeSave(stProperties=Caller[attributes.r_stProperties],stFields=stFields, stFormPost=Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost']) />
+			<cfset Caller[attributes.r_stProperties] = oImageFormTool.ImageAutoGenerateBeforeSave(typename=typename,stProperties=Caller[attributes.r_stProperties],stFields=stFields, stFormPost=Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost']) />
 		</cfif>
 		
 		<cfif structKeyExists(stType,"BeforeSave")>

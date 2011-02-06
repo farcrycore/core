@@ -366,7 +366,7 @@
 		return infoStruct;
 		</cfscript>
 	</cffunction>
-	¨
+	ï¿½
 	<!--- 
 	/** 
 	* Marks given abstract pathname so that only read operations are allowed
@@ -456,12 +456,12 @@ Note that if this operation fails it may have succeeded in creating some of the 
 	* @access      public
 	* @output      suppressed 
 	* @param       directoryPath (string)        Required. Absolute directory path
-	* @param       throwIfMissing (boolean)      Optional. Default to false. Raise an exception if the directory doesn’t exists. Default to false
+	* @param       throwIfMissing (boolean)      Optional. Default to false. Raise an exception if the directory doesnï¿½t exists. Default to false
 	 */
 	--->
 	<cffunction name="deleteDirectory" access="public" output="false" hint="Delete a directory, including all its contents">
 		<cfargument name="directoryPath" type="string" required="true" hint="Absolute directory path">
-		<cfargument name="throwIfMissing" type="boolean" required="false" default="false" hint="Raise an exception if the directory doesn’t exists. Default to false">
+		<cfargument name="throwIfMissing" type="boolean" required="false" default="false" hint="Raise an exception if the directory doesnï¿½t exists. Default to false">
 		<cfscript>
 		var filePaths = getFilePaths(arguments.directoryPath);
 		var dirPaths = getDirectoryPaths(arguments.directoryPath);
@@ -609,7 +609,7 @@ Note that if this operation fails it may have succeeded in creating some of the 
 		<cftry>
 			<!--- Lock on copy. In order to have a unique name for the lock we use the file url --->
 			<cflock timeout="10" throwontimeout="yes" type="readonly" name="#arguments.source#">
-				<cffile action="copy" source="#arguments.source#" destination="#arguments.destination#" charset="#arguments.fileCharset#">
+				<cffile action="copy" source="#arguments.source#" destination="#arguments.destination#" charset="#arguments.fileCharset#" mode="664">
 			</cflock>
 			<cfcatch type="any">
 				<!--- Throw an error if something went wrong (read permissions, locks or the like) --->
@@ -624,13 +624,13 @@ Note that if this operation fails it may have succeeded in creating some of the 
 	* @access      public
 	* @output      suppressed 
 	* @param       filePath (string)             Required. Absolute file path
-	* @param       throwIfMissing (boolean)      Optional. Default to false. Raise an exception if the file doesn’t exists. Default to false
+	* @param       throwIfMissing (boolean)      Optional. Default to false. Raise an exception if the file doesnï¿½t exists. Default to false
 	* @exception   tmt_file_io
 	 */
 	--->
 	<cffunction name="deleteFile" access="public" output="false" hint="Delete a file">
 		<cfargument name="filePath" type="string" required="true" hint="Absolute file path">
-		<cfargument name="throwIfMissing" type="boolean" required="false" default="false" hint="Raise an exception if the file doesn’t exists. Default to false">
+		<cfargument name="throwIfMissing" type="boolean" required="false" default="false" hint="Raise an exception if the file doesnï¿½t exists. Default to false">
 		<cfif arguments.throwIfMissing>
 			<!--- Throw an error if the file doesn't exist --->
 			<cfset checkFilePath(arguments.filePath)>
@@ -755,7 +755,7 @@ Note that if this operation fails it may have succeeded in creating some of the 
 	* @output      suppressed 
 	* @param       filePath (string)             Required. Absolute file path
 	* @param       fileContent (string)          Required. Content of the file to be created
-	* @param       throwIfMissing (boolean)      Optional. Default to false. Raise an exception if the file doesn’t exists. Default to false
+	* @param       throwIfMissing (boolean)      Optional. Default to false. Raise an exception if the file doesnï¿½t exists. Default to false
 	* @param       fileCharset (string)          Optional. Default to #variables.charset#. Charset used. Default to a predefined value
 	* @exception   tmt_file_io
 	 */
@@ -763,7 +763,7 @@ Note that if this operation fails it may have succeeded in creating some of the 
 	<cffunction name="writeFile" access="public" output="false" hint="Write to a text file">
 		<cfargument name="filePath" type="string" required="true" hint="Absolute file path">
 		<cfargument name="fileContent" type="string" required="true" hint="Content of the file to be created">
-		<cfargument name="throwIfMissing" type="boolean" required="false" default="false" hint="Raise an exception if the file doesn’t exists. Default to false">
+		<cfargument name="throwIfMissing" type="boolean" required="false" default="false" hint="Raise an exception if the file doesnï¿½t exists. Default to false">
 		<cfargument name="fileCharset" type="string" required="false" default="#variables.charset#" hint="Charset used. Default to a predefined value">
 		<cfif arguments.throwIfMissing>
 			<!--- Throw an error if the file doesn't exist --->
@@ -772,7 +772,7 @@ Note that if this operation fails it may have succeeded in creating some of the 
 		<cftry>
 			<!--- Lock file on write. In order to have a unique name for the lock we use the file url --->
 			<cflock timeout="10" throwontimeout="yes" type="readonly" name="#arguments.filePath#">
-				<cffile action="write" charset="#arguments.fileCharset#" file="#arguments.filePath#" output="#arguments.fileContent#">
+				<cffile action="write" charset="#arguments.fileCharset#" file="#arguments.filePath#" output="#arguments.fileContent#" mode="664">
 			</cflock>
 			<cfcatch type="any">
 				<!--- Throw an error if something went wrong (read permissions, locks or the like) --->

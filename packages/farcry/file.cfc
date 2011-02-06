@@ -116,6 +116,7 @@ $out:$
 		<cfset stMimes["dmg"] = "application/octet-stream" />
 		<cfset stMimes["dms"] = "application/octet-stream" />
 		<cfset stMimes["doc"] = "application/msword" />
+		<cfset stMimes["dot"] = "application/msword" />
 		<cfset stMimes["dp"] = "application/commonground" />
 		<cfset stMimes["drw"] = "application/drafting" />
 		<cfset stMimes["dump"] = "application/octet-stream" />

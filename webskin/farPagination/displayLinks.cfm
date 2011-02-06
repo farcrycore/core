@@ -41,7 +41,8 @@ START WEBSKIN
 <cfif getPageTo() GT 1>
 	<cfoutput>
 	<div class="paginator-wrap">
-		<div class="paginator">	
+		<div class="paginator">
+			#renderLink(linkid="first", linkText="first")#
 			#renderLink(linkid="previous", linkText="< previous")#
 			
 			<cfloop from="#getPageFrom()#" to="#getPageTo()#" index="i">
@@ -49,6 +50,7 @@ START WEBSKIN
 			</cfloop>
 			
 			#renderLink(linkid="next", linkText="next >")#
+			#renderLink(linkid="last", linkText="last")#
 			<cfif arguments.stParam.bDisplayTotalRecords>
 				<span class="resultCount">Displaying <span class="numberCount">#getRecordFrom()#</span> - <span class="numberCount">#getRecordTo()#</span> of <span class="numberCount">#getTotalRecords()#</span> result<cfif getTotalRecords() neq 1>s</cfif></span>
 			</cfif> 

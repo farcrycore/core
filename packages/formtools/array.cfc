@@ -182,28 +182,15 @@
 		    	
 			
 			<cfloop list="#stFieldPost.value#" index="i">			
-						
-				<cfquery dbtype="query" name="qCurrentArrayItem">
-			    SELECT * 
-			    FROM qArrayRecords
-			    WHERE data = '#listFirst(i,":")#'
-			    <cfif listLast(i,":") NEQ listFirst(i,":")><!--- SEQ PASSED IN --->
-			    	AND seq = #listLast(i,":")#
-			    </cfif>
-			    </cfquery>
-			
+				
 				<!--- If it is an extended array (more than the standard 4 fields), we return the array as an array of structs --->
-				<cfif listlen(qCurrentArrayItem.columnlist) GT 4>
+				<cfif structkeyexists(application.stCOAPI,"#arguments.typename#_#stMetadata.name#") or (structkeyexists(arguments.stMetadata,"arrayProps") and len(arguments.stMetadata.arrayProps))>
 					<cfset stArrayData = structNew() />
-					
+					<cfset stArrayData.data = i />
+					<cfset stArrayData.typename = application.fapi.findType(i) />
 					<cfloop list="#qCurrentArrayItem.columnList#" index="iColumn">
-						<cfif qCurrentArrayItem.recordCount>
-							<cfset stArrayData[iColumn] = qCurrentArrayItem[iColumn][1] />
-						<cfelse>
-							<cfset stArrayData[iColumn] = "" />
-						</cfif>
+						<cfset stArrayData[iColumn] = "" />
 					</cfloop>
-					
 					<cfset stArrayData.seq = arrayLen(aField) + 1 />
 					 
 					<cfset ArrayAppend(aField,stArrayData)>

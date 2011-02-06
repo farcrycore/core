@@ -4,12 +4,12 @@
 	<cfset variables.oIndexSite="">
 	
 	<!--- public /////////--->
-	<cffunction name="init" returntype="farcry.core.packages.googleSiteMap.SiteMap" access="public">
+	<cffunction name="init" returntype="farcry.core.packages.googlesitemap.SiteMap" access="public">
 		<cfreturn this>
 	</cffunction>
 
 	<cffunction name="addSite" access="public" description="adds a site to the site map">
-		<cfargument name="site" type="farcry.core.packages.googleSiteMap.sitemap.Site">
+		<cfargument name="site" type="farcry.core.packages.googlesitemap.sitemap.Site">
 		
 		<cfset arrayAppend(variables.aSites,arguments.site)>
 	</cffunction>
@@ -35,12 +35,12 @@
 	</cffunction>
 	
 	<cffunction name="setIndexSite" access="public" returntype="void" hint="sets the index site map">
-		<cfargument name="oSite" required="true" type="farcry.core.packages.googleSiteMap.sitemap.Site">
+		<cfargument name="oSite" required="true" type="farcry.core.packages.googlesitemap.sitemap.Site">
 		
 		<cfset variables.oIndexSite=arguments.oSite>
 	</cffunction>
 	
-	<cffunction name="getIndexSite" returntype="farcry.core.packages.googleSiteMap.sitemap.Site" access="public" description="returns xml object created by createSiteMap">
+	<cffunction name="getIndexSite" returntype="farcry.core.packages.googlesitemap.sitemap.Site" access="public" description="returns xml object created by createSiteMap">
 		<cfreturn variables.oIndexSite>
 	</cffunction>
 	
@@ -62,8 +62,8 @@
 		<cfargument name="changefreq" required="false" default="monthly" type="string">
 		<cfargument name="servername" required="false" default="#cgi.server_name#" type="string">
 	
-		<cfset var oSiteMapData=createObject("component", "farcry.core.packages.googleSiteMap.sitemap.SiteMapData").init()>
-		<cfset var oSiteIndex=createObject("component", "farcry.core.packages.googleSiteMap.sitemap.SiteIndex").init()>
+		<cfset var oSiteMapData=createObject("component", "farcry.core.packages.googlesitemap.sitemap.SiteMapData").init()>
+		<cfset var oSiteIndex=createObject("component", "farcry.core.packages.googlesitemap.sitemap.SiteIndex").init()>
 		<cfset var indexXmlString="">
 		
 		<cfsavecontent variable="indexXmlString">
@@ -106,10 +106,10 @@
 	
 	
 	<cffunction name="outputSite" access="public" description="out puts a site as an xml file to the hard drive">
-		<cfargument name="oSite" required="true" type="farcry.core.packages.googleSiteMap.sitemap.Site">
+		<cfargument name="oSite" required="true" type="farcry.core.packages.googlesitemap.sitemap.Site">
 		<cfargument name="filePath" required="true" type="string">
 
-		<cffile action="Write" file="#arguments.filePath#" output="#toString(arguments.oSite.getSiteMap())#">  
+		<cffile action="Write" file="#arguments.filePath#" output="#toString(arguments.oSite.getSiteMap())#" mode="664">  
 	</cffunction>
 	
 	
@@ -121,10 +121,10 @@
 		<cfargument name="bIncludeNavigation" required="false" default="false">
 		
 		<!--- first add into sitemap index --->					
-		<cfset var oSite=createObject('component', 'farcry.core.packages.googleSiteMap.sitemap.Site').init()>
-		<cfset var oSiteMapData=createObject('component', 'farcry.core.packages.googleSiteMap.sitemap.SiteMapData').init()>
+		<cfset var oSite=createObject('component', 'farcry.core.packages.googlesitemap.sitemap.Site').init()>
+		<cfset var oSiteMapData=createObject('component', 'farcry.core.packages.googlesitemap.sitemap.SiteMapData').init()>
 		<!--- now generate xmlData for the site --->
-		<cfset var DataGenerator=createObject('component', 'farcry.core.packages.googleSiteMap.sitemap.SiteDataGenerator').init()>
+		<cfset var DataGenerator=createObject('component', 'farcry.core.packages.googlesitemap.sitemap.SiteDataGenerator').init()>
 		
 		
 		<cfswitch expression="#arguments.siteMapType#">
@@ -168,9 +168,9 @@
 			<cfset stSiteConfig=structNew()>
 			<cfset stSiteConfig=SiteConfig.getData(qSites.objectid)>
 			
-			<cfset oSite=createObject('component', 'farcry.core.packages.googleSiteMap.sitemap.Site').init(stSiteConfig.domainName,stSiteConfig.siteName)>
+			<cfset oSite=createObject('component', 'farcry.core.packages.googlesitemap.sitemap.Site').init(stSiteConfig.domainName,stSiteConfig.siteName)>
 			<!--- now generate xmlData for the site --->
-			<cfset DataGenerator=createObject('component', 'farcry.core.packages.googleSiteMap.sitemap.SiteDataGenerator').init()>
+			<cfset DataGenerator=createObject('component', 'farcry.core.packages.googlesitemap.sitemap.SiteDataGenerator').init()>
 			<cfset DataGenerator.setSiteConfig(stSiteConfig)>
 			<!--- set more news types if nessesary --->
 			<cfif len(arguments.newsTypes)>
@@ -178,7 +178,7 @@
 			</cfif>
 			<cfset xmlData=DataGenerator.generateSiteData()>
 			<!--- add it to the site mapData object --->
-			<cfset oSiteMapData=createObject('component', 'farcry.core.packages.googleSiteMap.sitemap.SiteMapData').init()>
+			<cfset oSiteMapData=createObject('component', 'farcry.core.packages.googlesitemap.sitemap.SiteMapData').init()>
 			<cfset oSiteMapData.setXMLString(xmlData)>
 			<!--- addit to the site --->
 			<cfset oSite.setSiteMapData(oSiteMapData)>

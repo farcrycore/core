@@ -92,7 +92,6 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 
 		
 		
-		<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
 		
@@ -141,9 +140,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			
 			<skin:loadJS id="jquery" />
 			
-			<skin:htmlHead id="webskinAjaxLoader">
+			<skin:loadJS id="webskinAjaxLoader">
 			<cfoutput>		
-			<script type="text/javascript">
 				$j.fn.loadAjaxWebskin = function (config){
 					var self = this;
 					config = config || self.data("loadWebskinAjax") || {};
@@ -173,10 +171,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				 });
 					
 					return self;
-			}
-			</script>
+				}
 			</cfoutput>
-			</skin:htmlHead>
+			</skin:loadJS>
 			
 			<!--- Get the url for the ajax webskin loader --->			
 			<!--- TODO: The ampDelim variable causes the link to be in the & 

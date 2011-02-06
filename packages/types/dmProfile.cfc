@@ -200,8 +200,6 @@ OBJECT METHODS
 		<cfset var stUser = oUser.getByUserID(application.factory.oUtils.listSlice(stObj.userName,1,-2,"_")) />
 		<cfset var stReturn = structNew() />
 		
-		<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
-		
 		<cfif stobj.username EQ "farcry_CLIENTUD">
 			<!--- DO NOT ALLOW FARCRY USER TO BE DELETED. IT SHOULD ONLY BE PERMITTED TO BE FLAGGED AS INACTIVE --->
 			<cfset stReturn.bSuccess = false>

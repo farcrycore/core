@@ -49,6 +49,7 @@ START WEBSKIN
 	<cfset newLibraryObjectID = "" />	
 	<cfset stOnExit = structNew() />
 	<cfset stOnExit.type = "HTML" />
+	<cfset formHiddenInputName = "fc#replace(stobj.objectid,"-","","all")##url.property#">
 	<ft:processForm action="Save">
 		<ft:processFormObjects typename="#url.filterTypename#">
 			<cfset newLibraryObjectID = stproperties.objectid />
@@ -67,6 +68,7 @@ START WEBSKIN
 						data: {addID: '#newLibraryObjectID#'},
 						dataType: "html",
 						complete: function(data){
+							$j('###formHiddenInputName#', parent.document).val($j('###formHiddenInputName#', parent.document).val() + ',#newLibraryObjectID#');
 							parent.$j('###stobj.typename##stobj.objectid##url.property#').dialog('close');
 						}
 					});		
@@ -78,28 +80,29 @@ START WEBSKIN
 		<wiz:processWizardObjects typename="#url.filterTypename#">
 			<cfset newLibraryObjectID = stproperties.objectid />
 		</wiz:processWizardObjects>
-	 
-	<!------------------------ 
-	SETUP THE EXIT PROCESS 
-	--------------------------->
+		
+		<!------------------------ 
+		SETUP THE EXIT PROCESS 
+		--------------------------->
 		<cfsavecontent variable="stOnExit.content"><cfoutput>
-	<script type="text/javascript">
-	$j(function() {
-		$j.ajax({
-			cache: false,
-			type: "POST",
+			<script type="text/javascript">
+				$j(function() {
+					$j.ajax({
+						cache: false,
+						type: "POST",
 			 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=#stobj.typename#&objectid=#stobj.objectid#&view=displayAjaxUpdateJoin&property=#url.property#',
-			data: {addID: '#newLibraryObjectID#'},
-			dataType: "html",
-			complete: function(data){
-				parent.$j('###stobj.typename##stobj.objectid##url.property#').dialog('close');
-			}
-		});		
-	});
-	</script>
+						data: {addID: '#newLibraryObjectID#'},
+						dataType: "html",
+						complete: function(data){
+							$j('###formHiddenInputName#', parent.document).val($j('###formHiddenInputName#', parent.document).val() + ',#newLibraryObjectID#');
+							parent.$j('###stobj.typename##stobj.objectid##url.property#').dialog('close');
+						}
+					});		
+				});
+			</script>
 		</cfoutput></cfsavecontent>
 	</wiz:processWizard>
-			
+	 
 	<ft:processForm action="Cancel">
 		<!------------------------ 
 		SETUP THE EXIT PROCESS 
@@ -120,7 +123,7 @@ START WEBSKIN
 			</script>
 		</cfoutput></cfsavecontent>
 	</wiz:processWizard>
-			
+	 
 	<cfif not len(newLibraryObjectID)>
 		<cfset stNewObject = application.fapi.getNewContentObject(typename="#url.filterTypename#", key="newLibraryObject") />
 		<cfset newLibraryObjectID = stNewObject.objectid />

@@ -17,18 +17,27 @@
 		<cfparam name="stprops[arguments.richtextfield].metadata.ftTemplateTypeList" default="" />
 		<cfparam name="stprops[arguments.richtextfield].metadata.ftTemplateSnippetWebskinPrefix" default="insertSnippet" />
 		<cfparam name="stprops[arguments.richtextfield].metadata.ftTemplateWebskinPrefixList" default="insertHTML" />
+				
+		<!--- Get wizard data if exists --->
+		<cfif structKeyExists(form,"wizardid") and len(form.wizardid)>
+			<cfset form.wizardid = listFirst(form.wizardid)> <!--- got the wizard id twice sometimes --->
+			<cfset owizard = createObject("component",application.stcoapi['dmWizard'].packagepath)>
+			<cfset stwizard = owizard.Read(wizardID=form.wizardid)>
+			<cfset stObject = stwizard.Data[stObject.objectid]>
+		</cfif>
 		
-		<!--- <cfquery datasource="#application.dsn#" name="qImages">
-		select top 10 * 
-		from avnImage
-		where label <> ''
-		</cfquery> --->
-		
-	<!--- 	<cfquery datasource="#application.dsn#" name="qImages">
-		select * 
-		from #arguments.typename#_#arguments.ftImageTypename#
-		where parentid = '#arguments.objectid#'
-		</cfquery> --->
+		<!--- Overwrite data if user currently changing some relations - Hidden fields passed in via ajax --->
+		<cfloop list="#structKeyList(stProps)#" index="fieldname">
+			<cfset fcFormFieldName = "fc#replace(stObject.objectid,"-","","all")##fieldname#">
+			<cfif structKeyExists(form,fcFormFieldName)>
+				<cfif stProps[fieldname].metadata.type EQ "array">
+					<cfset stObject[fieldname] = listToArray(form[fcFormFieldName])>
+				<cfelse>
+					<cfset stObject[fieldname] = form[fcFormFieldName]>
+				</cfif>
+			</cfif>
+		</cfloop> 
+
 		<cfoutput>
 			<div class="tabs">
 				<ul>
@@ -45,16 +54,11 @@
 			</div>
 		</cfoutput>
 		
-	
-	
-	<cfoutput>
-		<div class="panel_wrapper">
-	</cfoutput>
-	
+		<cfoutput>
+			<div class="panel_wrapper">
+		</cfoutput>
 	
 		<cfset bCurrent = true />
-		
-		
 		
 		<cfloop list="#stprops[arguments.richtextfield].metadata.ftTemplateTypeList#" index="templateTypename">
 			
@@ -80,16 +84,7 @@
 					
 					<cfif stProps[fieldname].metadata.type EQ "array">
 						<cfif listContainsNoCase(stProps[fieldname].metadata.ftJoin,templateTypename)>
-						
-							<cfquery datasource="#application.dsn#" name="qRelated">
-							SELECT data
-							FROM #typename#_#fieldname#
-							WHERE parentID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#">
-							AND typename = <cfqueryparam cfsqltype="cf_sql_varchar" value="#templateTypename#">
-							ORDER BY SEQ
-							</cfquery>
-							
-							<cfset lRelatedObjectIDs = listAppend(lRelatedObjectIDs, valueList(qRelated.data)) />
+							<cfset lRelatedObjectIDs = listAppend(lRelatedObjectIDs, arrayToList(stObject[fieldname])) />
 						</cfif>
 					<cfelseif stProps[fieldname].metadata.type EQ "UUID">
 						<cfif listContainsNoCase(stProps[fieldname].metadata.ftJoin,templateTypename) AND len(stObject[fieldname])>
@@ -103,14 +98,16 @@
 			<cfoutput>		
 			
 				<div id="#templateTypename#_panel" class="panel <cfif bCurrent>current</cfif>">
-					
-						<cfif listLen(lRelatedObjectIDs)>
-							<cfquery datasource="#application.dsn#" name="qObjects">
-							select * 
-							from #templateTypename#
-							where objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lRelatedObjectIDs#" />)
-							</cfquery>
+					<cfif NOT qWebskins.recordcount>
+						<p>No Webskins: #application.stcoapi[TemplateTypename].displayname#</p>
+					<cfelseif listLen(lRelatedObjectIDs)>
+						<cfquery datasource="#application.dsn#" name="qObjects">
+						select * 
+						from #templateTypename#
+						where objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lRelatedObjectIDs#" />)
+						</cfquery>
 						
+						<cfif qObjects.recordcount>
 							<table class="properties" style="margin-top:20px;">
 							<tr> 
 								<td class="column1"><label id="#templateTypename#objectidlabel" for="#templateTypename#objectid">Item</label></td> 
@@ -164,20 +161,14 @@
 								</div>
 								
 							</div>
-						
 						<cfelse>
 							<p>No Related #application.stcoapi[TemplateTypename].displayname#(s)</p>
-						</cfif>	
+						</cfif>
+					<cfelse>
+						<p>No Related #application.stcoapi[TemplateTypename].displayname#(s)</p>
+					</cfif>	
 							
-						
-					
-							
-					
-								
 				</div>
-				
-				
-				
 				
 			</cfoutput>
 			
@@ -185,87 +176,73 @@
 			
 		</cfloop>
 		
-		
-		
 		<cfif structKeyExists(stProps[arguments.richtextfield].metadata, "ftTemplateSnippetWebskinPrefix")>
 			<cfset oObject = createobject("component", application.stcoapi[arguments.typename].packagepath) />
 			<cfset qObjectWebskins = oObject.getWebskins(typename="#arguments.typename#", prefix="#stProps[arguments.richtextfield].metadata.ftTemplateSnippetWebskinPrefix#") />
 				
-			
-			
 			<cfoutput>		
 				
 				<div id="generic_panel" class="panel">
 	
-							
+					<table class="properties" style="margin-top:20px;">
+					<tr> 
+						<td class="column1"><label id="genericwebskinlabel" for="genericwebskin">Template</label></td> 
+						<td>
+							<cfif qObjectWebskins.recordCount>
+								<select id="genericwebskin" name="genericwebskin" onchange="$j('##insertgeneric').css('display','');">
+									<option value="">--select a display type--</option>
+									<cfloop query="qObjectWebskins">
+										<option value="#ReplaceNoCase(qObjectWebskins.name, ".cfm", "", "all")#">#ReplaceNoCase(qObjectWebskins.displayname, ".cfm", "", "all")#</option>
+									</cfloop>									
+								</select>
+							<cfelse>
+								-- No Generic Templates Available --
+							</cfif>
+						</td> 
+					</tr> 
+					<cfif qObjectWebskins.recordCount>
+						<tr> 
+							<td class="column1">&nbsp; </td>
+							<td>
+								<input type="hidden" id="genericobjectid" name="genericobjectid" value="#arguments.objectid#">
+								<input type="button" name="preview" value="preview" onclick="setPreview($j('##genericobjectid').attr('value'), '#arguments.typename#', $j('##genericwebskin').attr('value'), 'generic');" />
+							</td> 
+						</tr> 
 						
-							<table class="properties" style="margin-top:20px;">
-							<tr> 
-								<td class="column1"><label id="genericwebskinlabel" for="genericwebskin">Template</label></td> 
-								<td>
-									<cfif qObjectWebskins.recordCount>
-										<select id="genericwebskin" name="genericwebskin" onchange="$j('##insertgeneric').css('display','');">
-											<option value="">--select a display type--</option>
-											<cfloop query="qObjectWebskins">
-												<option value="#ReplaceNoCase(qObjectWebskins.name, ".cfm", "", "all")#">#ReplaceNoCase(qObjectWebskins.displayname, ".cfm", "", "all")#</option>
-											</cfloop>									
-										</select>
-									<cfelse>
-										-- No Generic Templates Available --
-									</cfif>
-								</td> 
-							</tr> 
-							<cfif qObjectWebskins.recordCount>
-								<tr> 
-									<td class="column1">&nbsp; </td>
-									<td>
-										<input type="hidden" id="genericobjectid" name="genericobjectid" value="#arguments.objectid#">
-										<input type="button" name="preview" value="preview" onclick="setPreview($j('##genericobjectid').attr('value'), '#arguments.typename#', $j('##genericwebskin').attr('value'), 'generic');" />
-									</td> 
-								</tr> 
-								
-							</cfif>
-							</table>
-							
-							<cfif qObjectWebskins.recordCount>
-								<fieldset>
-									<legend>Preview</legend>
-									<div id="prevgenericDIV">
-										<iframe id="prevgeneric" src="" width="100%" height="150" style="border:0px solid ##a0a0a0;">
-										
-										</iframe>
-									</div>
-								</fieldset>
-							</cfif>
-							
-							<div class="mceActionPanel">
-								<div style="float: left">
-									<input type="button" id="insertgeneric" name="insertgeneric" value="Insert" onclick="insertSomething('#arguments.typename#', 'generic');" style="display:none;" />
-								</div>
+					</cfif>
+					</table>
 					
-								<div style="float: right">
-									<input type="button" id="cancel" name="cancel" value="Cancel" onclick="tinyMCEPopup.close();" />
-								</div>
+					<cfif qObjectWebskins.recordCount>
+						<fieldset>
+							<legend>Preview</legend>
+							<div id="prevgenericDIV">
+								<iframe id="prevgeneric" src="" width="100%" height="150" style="border:0px solid ##a0a0a0;">
 								
+								</iframe>
 							</div>
+						</fieldset>
+					</cfif>
+					
+					<div class="mceActionPanel">
+						<div style="float: left">
+							<input type="button" id="insertgeneric" name="insertgeneric" value="Insert" onclick="insertSomething('#arguments.typename#', 'generic');" style="display:none;" />
+						</div>
+			
+						<div style="float: right">
+							<input type="button" id="cancel" name="cancel" value="Cancel" onclick="tinyMCEPopup.close();" />
+						</div>
 						
-					
-							
-					
-								
+					</div>
+						
 				</div>
-				
-				
-				
 				
 			</cfoutput>
 			
 		</cfif>
 		
-		
-	<cfoutput>
-		</div>
-	</cfoutput>
+		<cfoutput>
+			</div>
+		</cfoutput>
 		
 	</cffunction>
 	

@@ -21,9 +21,6 @@
 	</code>
 --->
 
-<!--- Import Tag Libraries --->
-<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
-
 <cfif not thistag.HasEndTag>
 
 	<cfabort showerror="Does not have an end tag..." >

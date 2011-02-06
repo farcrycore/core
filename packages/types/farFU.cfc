@@ -1556,7 +1556,7 @@
 			FROM	#application.dbowner#farFU u inner join 
 					#application.dbowner#refObjects r on r.objectid = u.refobjectid
 			WHERE	refobjectid = <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
-				AND fuStatus IN (<cfqueryparam value="#stLocal.fuStatus#" list="true">)
+				AND fuStatus IN (<cfqueryparam value="#stLocal.fuStatus#" list="true" cfsqltype="cf_sql_integer">)
 			ORDER BY fuStatus DESC
 			</cfquery>
 		</cfdefaultcase>

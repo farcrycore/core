@@ -38,7 +38,7 @@
 	</sec:CheckPermission>			
 		
 	<cfoutput>
-		<li><skin:buildLink href="#application.url.webtop#/login.cfm">Login</skin:buildLink></li></cfoutput>
+		<li><skin:buildLink href="#application.url.webtoplogin#">Login</skin:buildLink></li></cfoutput>
 	<cfoutput></ul></cfoutput>
 </ft:buttonPanel>
 
