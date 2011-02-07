@@ -481,11 +481,12 @@
 						<!--- <div class="#request.stFarcryFormValidation[stObj.ObjectID][i].stError.class#">#request.stFarcryFormValidation[stObj.ObjectID][i].stError.message#</div> --->
 					</cfsavecontent>
 					
-					<!--- focus 1st error --->
 					<skin:onReady id="focusValidationError"> <!--- grab prop name from app scope to ensure correct case --->
-						<cfoutput>document.getElementById("#variables.prefix##application.stCoapi[stObj.typename].stProps[i].metadata.name#").focus();</cfoutput>
+						<cfoutput>
+							if (document.getElementById("#variables.prefix##application.stCoapi[stObj.typename].stProps[i].metadata.name#") != null)
+								document.getElementById("#variables.prefix##application.stCoapi[stObj.typename].stProps[i].metadata.name#").focus();
+						</cfoutput>
 					</skin:onReady>
-					
 					
 					<cfset variables.errorClass = "error" />
 				</cfif>
