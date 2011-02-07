@@ -482,8 +482,8 @@
 					</cfsavecontent>
 					
 					<!--- focus 1st error --->
-					<skin:onReady id="focusValidationError"> 
-						<cfoutput>document.getElementById("#variables.prefix##i#").focus();</cfoutput>
+					<skin:onReady id="focusValidationError"> <!--- grab prop name from app scope to ensure correct case --->
+						<cfoutput>document.getElementById("#variables.prefix##application.stCoapi[stObj.typename].stProps[i].metadata.name#").focus();</cfoutput>
 					</skin:onReady>
 					
 					
