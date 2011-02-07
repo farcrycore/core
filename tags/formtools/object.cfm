@@ -481,6 +481,12 @@
 						<!--- <div class="#request.stFarcryFormValidation[stObj.ObjectID][i].stError.class#">#request.stFarcryFormValidation[stObj.ObjectID][i].stError.message#</div> --->
 					</cfsavecontent>
 					
+					<!--- focus 1st error --->
+					<skin:onReady id="focusValidationError"> 
+						<cfoutput>document.getElementById("#variables.prefix##i#").focus();</cfoutput>
+					</skin:onReady>
+					
+					
 					<cfset variables.errorClass = "error" />
 				</cfif>
 				
