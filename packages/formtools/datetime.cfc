@@ -202,7 +202,7 @@
 					
 					<div id="#arguments.fieldname#-wrap">
 						Day 
-						<select name="#arguments.fieldname#Day" id="#arguments.fieldname#Day" class="selectInput <cfif structkeyexists(arguments.stMetadata,"ftValidation") and listcontains(arguments.stMetadata.ftValidation,"required")>required</cfif>" style="float:none;">
+						<select name="#arguments.fieldname#Day" id="#arguments.fieldname#Day" class="selectInput <cfif structkeyexists(arguments.stMetadata,"ftValidation") and listcontains(arguments.stMetadata.ftValidation,"required")>required</cfif>" style="float:none;width:auto;">
 						<option value="">--</option>
 						<cfloop from="1" to="31" index="i">
 							<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND Day(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#i#</option>
@@ -210,7 +210,7 @@
 						</select>
 					
 						Month 
-						<select name="#arguments.fieldname#Month" id="#arguments.fieldname#Month" class="selectInput <cfif structkeyexists(arguments.stMetadata,"ftValidation") and listcontains(arguments.stMetadata.ftValidation,"required")>required</cfif>" style="float:none;">
+						<select name="#arguments.fieldname#Month" id="#arguments.fieldname#Month" class="selectInput <cfif structkeyexists(arguments.stMetadata,"ftValidation") and listcontains(arguments.stMetadata.ftValidation,"required")>required</cfif>" style="float:none;width:auto;">
 							<option value="">--</option>
 							<cfloop from="1" to="12" index="i">
 								<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND Month(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#localeMonths[i]#</option>
@@ -218,7 +218,7 @@
 						</select>	
 					
 						Year 				
-						<select name="#arguments.fieldname#Year" id="#arguments.fieldname#Year" class="selectInput <cfif structkeyexists(arguments.stMetadata,"ftValidation") and listcontains(arguments.stMetadata.ftValidation,"required")>required</cfif>" style="float:none;">
+						<select name="#arguments.fieldname#Year" id="#arguments.fieldname#Year" class="selectInput <cfif structkeyexists(arguments.stMetadata,"ftValidation") and listcontains(arguments.stMetadata.ftValidation,"required")>required</cfif>" style="float:none;width:auto;">
 							<option value="">--</option>
 							<cfloop from="#arguments.stMetadata.ftStartYear#" to="#arguments.stMetadata.ftEndYear#" index="i" step="#step#">
 								<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND Year(arguments.stMetadata.value) EQ i> selected="selected"</cfif>>#i#</option>
