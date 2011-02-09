@@ -12,11 +12,11 @@
 			<div class="fieldAlign">
 		</cfoutput>
 		
-				<cfoutput><select name="selectuserdirectories" id="selectuserdirectories" onchange="window.location='#application.fapi.getLink(href=application.url.webtoplogin,urlParameters='ud='+this.value)#';"></cfoutput>
+				<cfoutput><select name="selectuserdirectories" id="selectuserdirectories" onchange="window.location=this.value;"></cfoutput>
 				
 				<cfloop list="#application.security.getAllUD()#" index="thisud">
 					<cfoutput>
-						<option value="#thisud#"<cfif application.security.getDefaultUD() eq thisud> selected="selected"</cfif>>#application.security.userdirectories[thisud].title#</option>
+						<option value="#application.fapi.getLink(href=application.url.webtoplogin,urlParameters=thisud)#"<cfif application.security.getDefaultUD() eq thisud> selected="selected"</cfif>>#application.security.userdirectories[thisud].title#</option>
 					</cfoutput>
 				</cfloop>
 				
