@@ -183,7 +183,7 @@
 	    			"eventData"		: {}
 	    		};
 	    		
-	    		jQuery.fn.multiView = function(data){
+	    		jQuery.fn.multiView = function initMultiview(data){
 	    			data = jQuery.extend(true,data || {},defaults);
 	    			var views = [];
 	    			
@@ -195,7 +195,7 @@
     				for (target in data.onCloseTarget)
     					this.bind("multiviewClose"+target,data.eventData,data.onCloseTarget[target]);
 	    			
-	    			jQuery("> div",this).each(function(){
+	    			jQuery("> div",this).each(function initMultiviewPage(){
 	    				var $self = jQuery(this);
 	    				var viewname = "";
 	   					var classes = this.className.split(" ");
@@ -220,7 +220,7 @@
 	    			this.data("multiview.allviews",views);
 	    			this.trigger("multiviewOpen",[ this.find("> ."+data.selected+"-view"),data.selected ]);
 	    			
-	    			jQuery(data.autoWireClass,this).bind("click",{ "multiview":this },function(event){
+	    			jQuery(data.autoWireClass,this).bind("click",{ "multiview":this },function onMultiviewAutowireClick(event){
 	    				event.data.multiview.selectView(this.href.split("##")[1]);
 	    				return false;
 	    			});
@@ -230,7 +230,7 @@
 		    		return this;
 	    		};
 	    		
-	    		jQuery.fn.selectView = function(newview){
+	    		jQuery.fn.selectView = function multiViewSelect(newview){
 	    			var oldview = this.data("multiview.currentview");
 	    			if (oldview && oldview != newview) {
 	    				var $oldview = this.findView(oldview);
@@ -247,24 +247,24 @@
 		    		return this;
 	    		};
 	    		
-	    		jQuery.fn.currentView = function(){
+	    		jQuery.fn.currentView = function multiViewCurrent(){
 	    			return this.data("multiview.currentview");
 	    		};
 	    		
-	    		jQuery.fn.addView = function(name,html,selected){
+	    		jQuery.fn.addView = function multiViewAdd(name,html,selected){
 	    			this.append("<div class='"+name+"-view' style='display:none;'>"+html+"</div>");
 	    			this.data("multiview.allviews",this.data("multiview.allviews").push(name));
 	    			if (selected) this.selectView(name);
 	    			return this;
 	    		};
 	    		
-	    		jQuery.fn.findView = function(view){
+	    		jQuery.fn.findView = function multiViewFind(view){
 	    			return this.find("> ."+view+"-view");
 	    		};
 	    	})($j);
 	    	
 	    	(function(jQuery){
-		    	$fc.cropper = function(sourceobject, url, width, height, postvalues, allowcancel){
+		    	$fc.cropper = function cropperObject(sourceobject, url, width, height, postvalues, allowcancel){
 		    		
 		    		var cropper = this;
 		    		
@@ -284,11 +284,11 @@
 					jQuery("body").append("<div id='image-crop-overlay'><div class='ui-widget-overlay' style='width:"+docwidth+"px;height:"+docheight+"px;'></div><div style='width:"+(overlaywidth+22)+"px;height:"+(overlayheight+22)+"px;position:absolute;left:"+overlayleft+"px; top:"+overlaytop+"px;' class='ui-widget-shadow ui-corner-all'></div><div id='image-crop-ui' class='ui-widget ui-widget-content ui-corner-all' style='position: absolute;width:"+overlaywidth+"px;height:"+overlayheight+"px;left:"+overlayleft+"px;top:"+overlaytop+"px; padding: 10px;'></div></div>");
 					
 					// Add event to end cropping when the overlay is clicked
-					if (allowcancel) jQuery("##image-crop-overlay .ui-widget-overlay").bind("click",function(e) { if (this==e.target) cropper.cancelCrop(); });
+					if (allowcancel) jQuery("##image-crop-overlay .ui-widget-overlay").bind("click",function onCropperOverlayClick(e) { if (this==e.target) cropper.cancelCrop(); });
 					
 					// Load and add events to crop HTML
 					jQuery.ajaxSetup({ timeout:5000 });
-					jQuery("##image-crop-ui").load(url+"&crop=1&allowcancel="+allowcancel,postvalues,function(){
+					jQuery("##image-crop-ui").load(url+"&crop=1&allowcancel="+allowcancel,postvalues,function cropperLoadDialog(){
 						var $x1 = jQuery("##image-crop-a-x");
 						var $y1 = jQuery("##image-crop-a-y");
 						var $x2 = jQuery("##image-crop-b-x");
@@ -302,7 +302,7 @@
 							"aspectRatio" : (width && height)?width/height:0,
 							"boxWidth" : overlaywidth * 0.65,
 							"boxHeight" : overlayheight,
-							"onChange" : function(c){
+							"onChange" : function onCropperSelectionChange(c){
 								$x1.html(c.x);
 								$y1.html(c.y);
 								$x2.html(c.x2);
@@ -322,18 +322,18 @@
 								current_crop_selection = c;
 							}
 						});
-						jQuery("##image-crop-cancel").bind("click",function() { cropper.cancelCrop(); return false; });
-						jQuery("##image-crop-finalize").button({}).bind("click",function() {cropper.finalizeCrop(); return false; });
+						jQuery("##image-crop-cancel").bind("click",function onCropperCancel() { cropper.cancelCrop(); return false; });
+						jQuery("##image-crop-finalize").button({}).bind("click",function onCropperFinalize() {cropper.finalizeCrop(); return false; });
 						jQuery("##image-crop-overlay .image-crop-instructions").height(overlayheight-50);
 					});
 					
-					this.cancelCrop = function(){
+					this.cancelCrop = function cropperCancel(){
 						jQuery.Jcrop('##cropable-image').destroy();
 						jQuery("##image-crop-overlay").remove();
 						jQuery(sourceobject).trigger("cancelcrop");
 					};
 					
-					this.finalizeCrop = function(){
+					this.finalizeCrop = function cropperFinalize(){
 						
 						jQuery.Jcrop('##cropable-image').destroy();
 						$j("##image-crop-overlay").remove();
@@ -352,7 +352,7 @@
 		    	};
 		    })($j);
 	    	
-	    	$fc.imageformtool = function(prefix,property){
+	    	$fc.imageformtool = function imageFormtoolObject(prefix,property){
 
 	    		function ImageFormtool(prefix,property) {
 	    			var imageformtool = this;
@@ -364,7 +364,7 @@
 	    			this.views = {};
 	    			this.elements = {};
 	    			
-	    			this.init = function(url,filetypes,sourceField,width,height,inline){
+	    			this.init = function initImageFormtool(url,filetypes,sourceField,width,height,inline){
 
 	    				imageformtool.url = url;
 	    				imageformtool.filetypes = filetypes;
@@ -382,48 +382,48 @@
 	    				
 			    		imageformtool.multiview = $j("##"+prefix+property+"-multiview").multiView({ 
 				    			"onOpenTarget" : {
-				    				"upload" : function(event){  },
-				    				"complete" : function(event){ 
+				    				"upload" : function onImageFormtoolOpenUpload(event){  },
+				    				"complete" : function onImageFormtoolOpenComplete(event){ 
 					    				if (imageformtool.inputs.base.val().length){
 						    				$j(this).find(".image-cancel-upload").show();
 						    				$j(this).find(".image-cancel-replace").show();
 						    			}
 					    			},
-				    				"autogenerate" : function(event){ 
+				    				"autogenerate" : function onImageFormtoolOpenAutogenerate(event){ 
 					    				if (imageformtool.inputs.base.val().length){
 						    				imageformtool.inputs.deletef.val("true");
 											$j(this).find(".image-custom-crop, .image-crop-select-button").show().end();
 						    			}
 				    				},
-				    				"traditional" : function(event){  },
-				    				"cancel" : function(event){ 
+				    				"traditional" : function onImageFormtoolOpenTraditional(event){  },
+				    				"cancel" : function onImageFormtoolOpenCancel(event){ 
 				    					imageformtool.inlineview.find("span.action-cancel").hide();
 				    					imageformtool.inlineview.find("span.not-cancel").show();
 				    				}
 				    			},
 				    			"onCloseTarget" : {
-				    				"upload" : function(event){  },
-				    				"complete" : function(event){  },
-				    				"autogenerate" : function(event){ 
+				    				"upload" : function onImageFormtoolCloseUpload(event){  },
+				    				"complete" : function onImageFormtoolCloseComplete(event){  },
+				    				"autogenerate" : function onImageFormtoolCloseAutogenerate(event){ 
 				    					imageformtool.inputs.resizemethod.val(""); 
 				    					imageformtool.inputs.deletef.val("false"); 
 				    				},
-				    				"traditional" : function(event){ 
+				    				"traditional" : function onImageFormtoolCloseTraditional(event){ 
 				    					imageformtool.inputs.traditional.val(""); 
 				    				},
-				    				"cancel" : function(event){
+				    				"cancel" : function onImageFormtoolCloseCancel(event){
 				    					imageformtool.inlineview.find("span.not-cancel").hide();
 				    					imageformtool.inlineview.find("span.action-cancel").show();
 				    				}
 				    			}
 				    		})
-			    			.find("a.image-crop-select-button,button.image-crop-select-button").bind("click",function(){ imageformtool.beginCrop(true); return false; }).end()
-			    			.find("a.image-crop-cancel-button,button.image-crop-cancel-button").bind("click",function(){ imageformtool.removeCrop(); return false; }).end()
-			    			.find("button.image-delete-button").bind("click",function(){ imageformtool.deleteImage(); return false; }).end()
-			    			.find("button.image-deleteall-button").bind("click",function(){ imageformtool.deleteAllRelatedImages(); return false; }).end();
+			    			.find("a.image-crop-select-button,button.image-crop-select-button").bind("click",function onImageFormtoolCustomCrop(){ imageformtool.beginCrop(true); return false; }).end()
+			    			.find("a.image-crop-cancel-button,button.image-crop-cancel-button").bind("click",function onImageFormtoolCancelCrop(){ imageformtool.removeCrop(); return false; }).end()
+			    			.find("button.image-delete-button").bind("click",function onImageFormtoolDelete(){ imageformtool.deleteImage(); return false; }).end()
+			    			.find("button.image-deleteall-button").bind("click",function onImageFormtoolDeleteAll(){ imageformtool.deleteAllRelatedImages(); return false; }).end();
 			    		if (imageformtool.inline){
 			    			imageformtool.inlineview = $j("##"+prefix+property+"-inline")
-			    				.find("a.image-crop-select-button").bind("click",function(){ 
+			    				.find("a.image-crop-select-button").bind("click",function onImageFormtoolCustomCropInline(){ 
 			    					imageformtool.inputs.deletef.val("true");
 			    					imageformtool.beginCrop(true); 
 			    					return false; 
@@ -434,7 +434,7 @@
 			    				}).end();
 				    	}
 			    		
-	    				$j(imageformtool).bind("filechange.updatedisplay",function(event,results){
+	    				$j(imageformtool).bind("filechange.updatedisplay",function onImageFormtoolFilechangeUpdate(event,results){
 	    					if (results.value.length>0){
 	    						var previewsize = { width:results.width, height:results.height };
 	    						if (previewsize.width > 400) previewsize = { width:400, height:previewsize.height*400/previewsize.width };
@@ -464,11 +464,11 @@
 									imageformtool.multiview.selectView("complete");
 								}
 							}
-	    				}).bind("fileerror.updatedisplay",function(event,action,error,message){
+	    				}).bind("fileerror.updatedisplay",function onImageFormtoolFileerrorDisplay(event,action,error,message){
 							$j('##'+prefix+property+"_"+action+"error").html(message).show();
 	    				}).bind("cancelcrop",function(){
 	    				
-	    				}).bind("savecrop",function(event,c,q){
+	    				}).bind("savecrop",function onImageFormtoolSaveCrop(event,c,q){
 							imageformtool.inputs.resizemethod.val(c.x.toString()+","+c.y.toString()+"-"+c.x2.toString()+","+c.y2.toString());
 							imageformtool.inputs.quality.val(q);
 							imageformtool.multiview.findView("autogenerate")
@@ -485,7 +485,7 @@
 	    				});
 	    				
 	    				if (sourceField.length>0){
-		    				$j($fc.imageformtool(prefix,sourceField)).bind("filechange",function(event,results){
+		    				$j($fc.imageformtool(prefix,sourceField)).bind("filechange",function onImageFilechangePropogate(event,results){
 		    					if (results.value.length){
 			    					//imageformtool.enableCrop(true);
 									imageformtool.applyCrop();
@@ -494,10 +494,11 @@
 											.find("span.action-crop").show().end()
 											.find("span.dependant-options").show().end();
 								}
-								else
-									iamgeformtool.enableCrop(false);
+								else {
+									imageformtool.enableCrop(false);
+								}
 		    				});
-		    				$j($fc.imageformtool(prefix,sourceField)).bind("deleteall",function(){
+		    				$j($fc.imageformtool(prefix,sourceField)).bind("deleteall",function onImageFormtoolDeleteAllPropogate(){
 		    					imageformtool.deleteImage("autogenerate");
 		    				});
 		    			}
@@ -545,7 +546,7 @@
 						});
 	    			};
 	    			
-	    			this.getPostValues = function(){
+	    			this.getPostValues = function imageFormtoolGetPostValues(){
 						// get the post values
 						var values = {};
 						$j('[name^="'+prefix+property+'"]').each(function(){ if (this.name!=prefix+property+"NEW") values[this.name.slice(prefix.length)]=""; });
@@ -555,21 +556,25 @@
 						return values;
 	    			};
 	    			
-	    			this.enableCrop = function(enabled){
-						if (enabled)
+	    			this.enableCrop = function imageFormtoolEnableCrop(enabled){
+						if (enabled){
 							imageformtool.multiview.findView("autogenerate").find(".image-custom-crop").show();
-						else
+							imageformtool.multiview.findView("complete").find(".regenerate-link").show();
+						}
+						else {
 							imageformtool.multiview.findView("autogenerate").find(".image-custom-crop").hide();
+							imageformtool.multiview.findView("complete").find(".regenerate-link").hide();
+						}
 					};
 	    			
-	    			this.beginCrop = function(allowcancel){
+	    			this.beginCrop = function imageFormtoolBeginCrop(allowcancel){
 	    				$j('##'+prefix+property+"_croperror").hide();
 
 						$fc.cropper(imageformtool,imageformtool.url,imageformtool.width,imageformtool.height,imageformtool.getPostValues(),allowcancel);
 	    				
 	    			};
 	    			
-	    			this.applyCrop = function(){
+	    			this.applyCrop = function imageFormtoolApplyCrop(){
 	    				if (imageformtool.inline)
 	    					imageformtool.inlineview.find(".image-status .ui-icon-image").removeClass("ui-icon-image").addClass("indicator");
 	    				else
@@ -578,7 +583,7 @@
 							type : "POST",
 							url : imageformtool.url,
 							data : imageformtool.getPostValues(),
-							success : function(results){
+							success : function imageFormtoolApplyCropSuccess(results){
 								if (imageformtool.inline)
 									imageformtool.inlineview.find(".image-status .indicator").removeClass("indicator").addClass("ui-icon-image");
 								else
@@ -598,7 +603,7 @@
 								}
 								imageformtool.enableCrop(true)
 							},
-							error : function(XMLHttpRequest, textStatus, errorThrown){
+							error : function imageFormtoolApplyCropError(XMLHttpRequest, textStatus, errorThrown){
 	    						imageformtool.multiview.findView("autogenerate").find(".indicator").removeClass("indicator").addClass("ui-icon-help");
 								$j(imageformtool).trigger("fileerror",[ "crop",textStatus,errorThrown.toString() ]);
 								imageformtool.enableCrop(true)
@@ -607,7 +612,7 @@
 						});
 	    			};
 	    			
-	    			this.removeCrop = function(){
+	    			this.removeCrop = function imageFormtoolRemoveCrop(){
 						imageformtool.inputs.resizemethod.val("");
 						imageformtool.inputs.quality.val("");
 						imageformtool.multiview.findView("autogenerate")
@@ -616,7 +621,7 @@
 						$j(imageformtool).trigger("removedcrop");
 					};
 					
-					this.deleteImage =  function(viewToShow){
+					this.deleteImage =  function imageFormtoolDeleteImage(viewToShow){
 						var afterDeleteView = viewToShow || "upload";
 						
 						imageformtool.inputs.deletef.val("true");
@@ -630,19 +635,20 @@
 							type : "POST",
 							url : imageformtool.url,
 							data : postData,
-							success : function(results){
+							success : function imageFormtoolDeleteImageSuccess(results){
 								imageformtool.inputs.base.val('');
 								imageformtool.inputs.deletef.val("false");
 								imageformtool.multiview.selectView(afterDeleteView);
 								imageformtool.multiview.find('.image-cancel-upload, .image-custom-crop, .image-cancel-replace').hide();
+								$j(imageformtool).trigger("filechange", [results]);
 							},
-							error : function(XMLHttpRequest, textStatus, errorThrown){
+							error : function imageFormtoolDeleteImageError(XMLHttpRequest, textStatus, errorThrown){
 								$j(imageformtool).trigger("fileerror",[ "crop",textStatus,errorThrown.toString() ]);
 							},
 							dataType : "json"
 						});						
 					}
-					this.deleteAllRelatedImages =  function(){
+					this.deleteAllRelatedImages = function imageFormtoolDeleteAllRelatedImages(){
 						//trigger related to be deleted
 						$j(imageformtool).trigger("deleteall");
 						
@@ -692,8 +698,7 @@
 					    	<div id="#arguments.fieldname#_delete" class="delete-view" style="display:none;">
 					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
 								<div style="margin-left:15px">
-						    		<button class="image-delete-button" id="#arguments.fieldname#DeleteThis">Delete this image</button>
-						    		
+						    		<ft:button class="image-delete-button" id="#arguments.fieldname#DeleteThis" value="Delete this image" onclick="return false;" />						    		
 						    		<div class="image-cancel-upload"><a href="##complete" class="select-view">Cancel - I don't want to delete</a></div>
 						    	</div>
 							</div>
@@ -730,7 +735,7 @@
 						    <div id="#arguments.fieldname#_complete" class="complete-view">
 					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
 					    		<div style="margin-left:15px;">
-						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#application.url.imageroot##arguments.stMetadata.value#' width='#previewwidth#' height='#previewheight#' />" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank">Preview</a> | <a href="##autogenerate" class="image-replace select-view">Replace</a> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="image-replace select-view">Upload</a> | <a href="##delete" class="image-replace select-view">Delete</a></cfif> )<br>
+						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#application.url.imageroot##arguments.stMetadata.value#' width='#previewwidth#' height='#previewheight#' />" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
 						    		Size: <span class="image-size">#round(stFile.size/1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
 						    		<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
 						    	</div>
@@ -739,7 +744,7 @@
 						    <div id="#arguments.fieldname#_complete" class="complete-view" style="display:none;">
 					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
 					    		<div style="margin-left:15px;">
-						    		<span class="image-filename"></span> ( <a class="image-preview" title="<img src='' />" href="##" target="_blank">Preview</a> | <a href="##autogenerate" class="image-replace select-view">Replace</a> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="image-replace select-view">Upload</a> | <a href="##delete" class="image-replace select-view">Delete</a></cfif> )<br>
+						    		<span class="image-filename"></span> ( <a class="image-preview" title="<img src='' />" href="##" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
 						    		Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
 									<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
 						    	</div>
@@ -778,8 +783,8 @@
 				    	<div id="#arguments.fieldname#_delete" class="delete-view" style="display:none;">
 				    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
 							<div style="margin-left:15px">
-					    		<button class="image-delete-button">Delete this image</button>
-					    		<button class="image-deleteall-button">Delete this and the related images</button>
+					    		<ft:button class="image-delete-button" value="Delete this image" onclick="return false;" />
+					    		<ft:button class="image-delete-button" value="Delete this and the related images" onclick="return false;" />
 					    		
 					    		<div class="image-cancel-upload"><a href="##complete" class="select-view">Cancel - I don't want to delete</a></div>
 					    	</div>
@@ -800,7 +805,7 @@
 						    <div id="#arguments.fieldname#_complete" class="complete-view">
 					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
 					    		<div style="margin-left:15px;">
-						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#application.url.imageroot##arguments.stMetadata.value#' width='#previewwidth#' height='#previewheight#' />" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank">Preview</a> | <a href="##upload" class="image-replace select-view">Replace</a> | <a href="##delete" class="image-replace select-view">Delete</a> )<br>
+						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#application.url.imageroot##arguments.stMetadata.value#' width='#previewwidth#' height='#previewheight#' />" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
 						    		Size: <span class="image-size">#round(stFile.size/1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
 									<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
 						    	</div>
@@ -809,7 +814,7 @@
 						    <div id="#arguments.fieldname#_complete" class="complete-view" style="display:none;">
 					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
 					    		<div style="margin-left:15px;">
-						    		<span class="image-filename"></span> ( <a class="image-preview" title="<img src='' />" href="##" target="_blank">Preview</a> | <a href="##upload" class="image-replace select-view">Replace</a> | <a href="##delete" class="image-replace select-view">Delete</a> )<br>
+						    		<span class="image-filename"></span> ( <a class="image-preview" title="<img src='' />" href="##" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
 						    		Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
 						    		<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
 						    	</div>
@@ -1033,26 +1038,33 @@
 			<cfreturn '{ "error" : "#jsstringformat(stResult.stError.message)#", "value" : "#jsstringformat(stResult.value)#" }' />
 		</cfif>
 		
-		<cfif stResult.bChanged and isdefined("stResult.value") and len(stResult.value)>
+		<cfif stResult.bChanged>
+		
+			<cfif isdefined("stResult.value") and len(stResult.value)>
 			
-			<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"ResizeMethod") or not isnumeric(arguments.stFieldPost.stSupporting.ResizeMethod)><cfset arguments.stFieldPost.stSupporting.ResizeMethod = arguments.stMetadata.ftAutoGenerateType /></cfif>
-			<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"Quality") or not isnumeric(arguments.stFieldPost.stSupporting.Quality)><cfset arguments.stFieldPost.stSupporting.Quality = arguments.stMetadata.ftQuality /></cfif>
+				<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"ResizeMethod") or not isnumeric(arguments.stFieldPost.stSupporting.ResizeMethod)><cfset arguments.stFieldPost.stSupporting.ResizeMethod = arguments.stMetadata.ftAutoGenerateType /></cfif>
+				<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"Quality") or not isnumeric(arguments.stFieldPost.stSupporting.Quality)><cfset arguments.stFieldPost.stSupporting.Quality = arguments.stMetadata.ftQuality /></cfif>
+				
+				<cfset stFixed = fixImage("#application.path.imageroot##stResult.value#",arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
+				
+				<cfif stFixed.bSuccess>
+					<cfset json = ', "resizedetails" : { "method":"#arguments.stFieldPost.stSupporting.ResizeMethod#", "quality" : #round(arguments.stFieldPost.stSupporting.Quality*100)# }' />
+					<cfset stResult.value = stFixed.value />
+				</cfif>
+				
+				<cfset stFile = getFileInfo(application.path.imageroot & stResult.value) />
+				<cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" />
+				<cfset json = '{ "value" : "#jsstringformat(stResult.value)#", "filename": "#jsstringformat(listlast(stResult.value,'/'))#", "fullpath" : "#jsstringformat(application.url.imageroot & stResult.value)#", "size" : #round(stFile.size/1024)#, "width" : #stImage.width#, "height" : #stImage.height# #json# }' />
+				
+				<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
+				
+				<cfreturn json />
+				
+			<cfelse>
+				
+				<cfreturn '{ "value" : "", "filename" : "", "fullpath" : "" }' />
 			
-			<cfset stFixed = fixImage("#application.path.imageroot##stResult.value#",arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
-			
-			<cfif stFixed.bSuccess>
-				<cfset json = ', "resizedetails" : { "method":"#arguments.stFieldPost.stSupporting.ResizeMethod#", "quality" : #round(arguments.stFieldPost.stSupporting.Quality*100)# }' />
-				<cfset stResult.value = stFixed.value />
 			</cfif>
-			
-			<cfset stFile = getFileInfo(application.path.imageroot & stResult.value) />
-			<cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" />
-			<cfset json = '{ "value" : "#jsstringformat(stResult.value)#", "filename": "#jsstringformat(listlast(stResult.value,'/'))#", "fullpath" : "#jsstringformat(application.url.imageroot & stResult.value)#", "size" : #round(stFile.size/1024)#, "width" : #stImage.width#, "height" : #stImage.height# #json# }' />
-			
-			<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
-			
-			<cfreturn json />
-			
 		</cfif>
 		
 		<cfif not len(stResult.value) and structkeyexists(arguments.stMetadata,"ftSourceField") and len(arguments.stMetadata.ftSourceField)>
@@ -1080,7 +1092,7 @@
 			</cfif>
 		</cfif>
 		
-		<cfreturn "" />
+		<cfreturn "{}" />
 	</cffunction>
 	
 	<cffunction name="fixImage" access="public" output="false" returntype="struct" hint="Fixes an image's size, returns true if the image needed to be corrected and false otherwise">

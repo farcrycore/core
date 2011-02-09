@@ -98,6 +98,11 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<!--- Initialise webskin trace array --->
 		<cfparam name="request.aAncestorWebskinsTrace" default="#arrayNew(1)#" /><!--- To Be Used for Trace Tree --->
 		
+		<!--- Setup the current request.aAncestorWebskins in case this does not yet exist --->
+		<cfif not structKeyExists(request, "aAncestorWebskins")>
+			<cfset request.aAncestorWebskins = arrayNew(1) />
+		</cfif>	
+		
 		<!--- init fourq --->
 		<cfset webskinTypename = getTypeName() /><!--- Set the typename to the typename of this object instance --->
 		
