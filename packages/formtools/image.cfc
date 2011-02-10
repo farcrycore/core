@@ -232,10 +232,17 @@
 	    		
 	    		jQuery.fn.selectView = function multiViewSelect(newview){
 	    			var oldview = this.data("multiview.currentview");
+	    			var history = this.data("multiview.history") || [];
+	    			
 	    			if (oldview && oldview != newview) {
 	    				var $oldview = this.findView(oldview);
 	    				this.trigger("multiviewClose",[ $oldview[0],oldview ]).trigger("multiviewClose"+oldview,[ $oldview[0],oldview ]);
 	    				$oldview.hide();
+	    				if (newview == "back") 
+	    					newview = history.pop();
+	    				else
+	    					history.push(oldview);
+	    				this.data("multiview.history",history);
 	    			}
 	    			if (oldview != newview){
 		    			this.data("multiview.currentview",newview);
@@ -684,22 +691,22 @@
 						    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
 						    		<div id="#arguments.fieldname#_uploaderror" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
 						    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
-						    		<div class="image-cancel-upload" style="clear:both;"><a href="##complete" class="select-view">Cancel - I don't want to upload an image</a></div>
+						    		<div class="image-cancel-upload" style="clear:both;"><a href="##back" class="select-view">Cancel - I don't want to upload an image</a></div>
 						    	</div>
 							</div>
 					    	<div id="#arguments.fieldname#_traditional" class="traditional-view" style="display:none;">
-				    			<a href="##upload" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle">&nbsp;</span></a>
+				    			<a href="##back" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle">&nbsp;</span></a>
 					    		<div style="margin-left:15px">
 						    		<input type="file" name="#arguments.fieldname#TRADITIONAL" id="#arguments.fieldname#TRADITIONAL" />
 						    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
-						    		<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##complete" class="select-view">Cancel - I don't want to replace this image</a></div>
+						    		<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##back" class="select-view">Cancel - I don't want to replace this image</a></div>
 						    	</div>
 							</div>
 					    	<div id="#arguments.fieldname#_delete" class="delete-view" style="display:none;">
 					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
 								<div style="margin-left:15px">
 						    		<ft:button class="image-delete-button" id="#arguments.fieldname#DeleteThis" value="Delete this image" onclick="return false;" />						    		
-						    		<div class="image-cancel-upload"><a href="##complete" class="select-view">Cancel - I don't want to delete</a></div>
+						    		<div class="image-cancel-upload"><a href="##back" class="select-view">Cancel - I don't want to delete</a></div>
 						    	</div>
 							</div>
 						</cfif>
@@ -716,7 +723,7 @@
 						    			<div class="image-crop-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Your crop settings will be applied when you save. <a href="##" class="image-crop-cancel-button">Cancel custom crop</a></div>
 									</div>
 								</cfif>
-								<div class="image-cancel-replace" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##complete" class="select-view">Cancel - I don't want to replace this image</a></div>
+								<div><cfif arguments.stMetadata.ftAllowUpload><a href="##upload" class="select-view">Upload - I want to use my own image</a></cfif><span class="image-cancel-replace" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><cfif arguments.stMetadata.ftAllowUpload> | </cfif><a href="##complete" class="select-view">Cancel - I don't want to replace this image</a></span></div>
 							</div>
 						</div>
 						<cfif len(arguments.stMetadata.value)>
@@ -769,15 +776,15 @@
 					    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
 					    		<div id="#arguments.fieldname#_uploaderror" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
 					    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
-					    		<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##complete" class="select-view">Cancel - I don't want to replace this image</a></div>
+					    		<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##back" class="select-view">Cancel - I don't want to replace this image</a></div>
 					    	</div>
 						</div>
 				    	<div id="#arguments.fieldname#_traditional" class="traditional-view" style="display:none;">
-				    		<a href="##upload" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle">&nbsp;</span></a>
+				    		<a href="##back" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle">&nbsp;</span></a>
 							<div style="margin-left:15px">
 					    		<input type="file" name="#arguments.fieldname#TRADITIONAL" id="#arguments.fieldname#TRADITIONAL" />
 					    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
-					    		<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##complete" class="select-view">Cancel - I don't want to replace this image</a></div>
+					    		<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##back" class="select-view">Cancel - I don't want to replace this image</a></div>
 					    	</div>
 						</div>
 				    	<div id="#arguments.fieldname#_delete" class="delete-view" style="display:none;">
@@ -786,7 +793,7 @@
 					    		<ft:button class="image-delete-button" value="Delete this image" onclick="return false;" />
 					    		<ft:button class="image-delete-button" value="Delete this and the related images" onclick="return false;" />
 					    		
-					    		<div class="image-cancel-upload"><a href="##complete" class="select-view">Cancel - I don't want to delete</a></div>
+					    		<div class="image-cancel-upload"><a href="##back" class="select-view">Cancel - I don't want to delete</a></div>
 					    	</div>
 						</div>
 						<cfif len(arguments.stMetadata.value)>
