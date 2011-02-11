@@ -1066,10 +1066,6 @@
 				<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
 				
 				<cfreturn json />
-				
-			<cfelse>
-				
-				<cfreturn '{ "value" : "", "filename" : "", "fullpath" : "" }' />
 			
 			</cfif>
 		</cfif>
