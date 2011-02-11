@@ -971,6 +971,7 @@
 		<cfset var source = "" />
 		<cfset var html = "" />
 		<cfset var json = "" />
+		<cfset var stJSON = structnew() />
 		
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 		
@@ -1042,7 +1043,10 @@
 		<cfset stResult = handleFilePost(objectid=arguments.stObject.objectid,existingfile=arguments.stMetadata.value,uploadfield="#arguments.stMetadata.name#NEW",destination=arguments.stMetadata.ftDestination,allowedExtensions=arguments.stMetadata.ftAllowedExtensions,stFieldPost=arguments.stFieldPost.stSupporting) />
 		
 		<cfif isdefined("stResult.stError.message") and len(stResult.stError.message)>
-			<cfreturn '{ "error" : "#jsstringformat(stResult.stError.message)#", "value" : "#jsstringformat(stResult.value)#" }' />
+			<cfset stJSON = structnew() />
+			<cfset stJSON["error"] = stResult.stError.message />
+			<cfset stJSON["value"] = stResult.value />
+			<cfreturn serializeJSON(stJSON) />
 		</cfif>
 		
 		<cfif stResult.bChanged>
@@ -1054,18 +1058,26 @@
 				
 				<cfset stFixed = fixImage("#application.path.imageroot##stResult.value#",arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
 				
+				<cfset stJSON = structnew() />
 				<cfif stFixed.bSuccess>
-					<cfset json = ', "resizedetails" : { "method":"#arguments.stFieldPost.stSupporting.ResizeMethod#", "quality" : #round(arguments.stFieldPost.stSupporting.Quality*100)# }' />
+					<cfset stJSON["resizedetails"] = structnew() />
+					<cfset stJSON["resizedetails"]["method"] = arguments.stFieldPost.stSupporting.ResizeMethod />
+					<cfset stJSON["resizedetails"]["quality"] = round(arguments.stFieldPost.stSupporting.Quality*100) />
 					<cfset stResult.value = stFixed.value />
 				</cfif>
 				
 				<cfset stFile = getFileInfo(application.path.imageroot & stResult.value) />
 				<cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" />
-				<cfset json = '{ "value" : "#jsstringformat(stResult.value)#", "filename": "#jsstringformat(listlast(stResult.value,'/'))#", "fullpath" : "#jsstringformat(application.url.imageroot & stResult.value)#", "size" : #round(stFile.size/1024)#, "width" : #stImage.width#, "height" : #stImage.height# #json# }' />
+				<cfset stJSON["value"] = stResult.value />
+				<cfset stJSON["filename"] = listlast(stResult.value,'/') />
+				<cfset stJSON["fullpath"] = application.url.imageroot & getDirectoryFromPath(stResult.value) & urlencodedformat(getFileFromPath(stResult.value)) />
+				<cfset stJSON["size"] = round(stFile.size/1024) />
+				<cfset stJSON["width"] = stImage.width />
+				<cfset stJSON["height"] = stImage.height />
 				
 				<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
 				
-				<cfreturn json />
+				<cfreturn serializeJSON(stJSON) />
 			
 			</cfif>
 		</cfif>
@@ -1080,18 +1092,27 @@
 			<cfif len(stResult.value)>
 				<cfset stFixed = fixImage("#application.path.imageroot##stResult.value#",arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
 				
+				<cfset stJSON = structnew() />
 				<cfif stFixed.bSuccess>
-					<cfset json = ', "resizedetails" : { "method":"#arguments.stFieldPost.stSupporting.ResizeMethod#","quality" : #round(arguments.stFieldPost.stSupporting.Quality*100)# }' />
+					<cfset stJSON["resizedetails"] = structnew() />
+					<cfset stJSON["resizedetails"]["method"] = arguments.stFieldPost.stSupporting.ResizeMethod />
+					<cfset stJSON["resizedetails"]["quality"] = round(arguments.stFieldPost.stSupporting.Quality*100) />
 					<cfset stResult.value = stFixed.value />
 				</cfif>
 
 				<cfset stFile = getFileInfo(application.path.imageroot & stResult.value) />
 				<cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" />
-				<cfset json = '{ "value" : "#jsstringformat(stResult.value)#", "filename": "#jsstringformat(listlast(stResult.value,'/'))#", "fullpath" : "#jsstringformat(application.url.imageroot & stResult.value)#", "size" : #round(stFile.size/1024)#, "width" : #stImage.width#, "height" : #stImage.height#, "q":"#jsstringformat(cgi.query_string)#" #json# }' />
+				<cfset stJSON["value"] = stResult.value />
+				<cfset stJSON["filename"] = listlast(stResult.value,'/') />
+				<cfset stJSON["fullpath"] = application.url.imageroot & getDirectoryFromPath(stResult.value) & urlencodedformat(getFileFromPath(stResult.value)) />
+				<cfset stJSON["size"] = round(stFile.size/1024) />
+				<cfset stJSON["width"] = stImage.width />
+				<cfset stJSON["height"] = stImage.height />
+				<cfset stJSON["q"] = cgi.query_string />
 				
 				<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
 				
-				<cfreturn json />
+				<cfreturn serializeJSON(stJSON) />
 			</cfif>
 		</cfif>
 		
