@@ -68,7 +68,11 @@ START WEBSKIN
 						data: {addID: '#newLibraryObjectID#'},
 						dataType: "html",
 						complete: function(data){
-							$j('###formHiddenInputName#', parent.document).val($j('###formHiddenInputName#', parent.document).val() + ',#newLibraryObjectID#');
+							<cfif stMetadata.ftSelectMultiple>
+								$j('###formHiddenInputName#', parent.document).val($j('###formHiddenInputName#', parent.document).val() + ',#newLibraryObjectID#');
+							<cfelse>
+								$j('###formHiddenInputName#', parent.document).val('#newLibraryObjectID#');
+							</cfif>
 							parent.$j('###stobj.typename##stobj.objectid##url.property#').dialog('close');
 						}
 					});		
@@ -94,7 +98,11 @@ START WEBSKIN
 						data: {addID: '#newLibraryObjectID#'},
 						dataType: "html",
 						complete: function(data){
-							$j('###formHiddenInputName#', parent.document).val($j('###formHiddenInputName#', parent.document).val() + ',#newLibraryObjectID#');
+							<cfif stMetadata.ftSelectMultiple>
+								$j('###formHiddenInputName#', parent.document).val($j('###formHiddenInputName#', parent.document).val() + ',#newLibraryObjectID#');
+							<cfelse>
+								$j('###formHiddenInputName#', parent.document).val('#newLibraryObjectID#');
+							</cfif>
 							parent.$j('###stobj.typename##stobj.objectid##url.property#').dialog('close');
 						}
 					});		
