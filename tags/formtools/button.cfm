@@ -165,6 +165,13 @@
 			</skin:onReady>
 		</cfif>
 		
+		<cfif attributes.bDefaultAction>
+			<skin:onReady>
+			<cfoutput>
+				$j("###attributes.id#").addClass('defaultAction');
+			</cfoutput>
+			</skin:onReady>
+		</cfif>		
 
 		<cfif attributes.bSpamProtect AND isDefined("Request.farcryForm.Name")>
 		

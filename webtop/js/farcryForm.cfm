@@ -795,4 +795,20 @@ function setRowBackground (childCheckbox) {
 				});
 			}
 		};
+		
+		
+	<!--- 
+		Handles the default action when the user hits the enter button. 
+		Script from http://greatwebguy.com/programming/dom/default-html-button-submit-on-enter-with-jquery/ 
+	--->
+	$j("form input, form select").live('keypress', function (e) {
+		if ($j(this).parents('form').find('.defaultAction').length <= 0)
+			return true;
+		if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+			$j(this).parents('form').find('.defaultAction').click();
+			return false;
+		} else {
+			return true;
+		}
+	});	
 </cfoutput>					

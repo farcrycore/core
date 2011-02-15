@@ -637,7 +637,7 @@ user --->
 					<cfif len(HTMLfiltersAttributes)>	
 						<ft:button value="Clear Filter" validate="false" />
 					</cfif>
-					<ft:button value="Apply Filter" />
+					<ft:button value="Apply Filter" bDefaultAction="true" />
 				</ft:buttonPanel>
 				
 			<cfoutput><br class="clearer" /></div></div></cfoutput>
