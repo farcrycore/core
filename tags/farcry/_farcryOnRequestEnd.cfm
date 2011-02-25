@@ -39,6 +39,7 @@ $out:$
 
 <cfimport taglib="/farcry/core/tags/core" prefix="core" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/misc" prefix="misc" />
 
 <!--- If we are in the middle of a <skin:location> then we dont want to output a bunch of javascript --->
 <cfif not structKeyExists(request.fc, "bLocating")>
@@ -108,6 +109,16 @@ $out:$
 					<cfset application.fapi.throw(argumentCollection="#cfcatch#") />
 				</cfcatch>
 			</cftry>	
+		</cfif>
+		
+		<cfif structkeyexists(request,"rootwebskin")>
+			<cfif request.rootwebskin.okToCache eq 1 and request.rootwebskin.proxyCacheTimeout gt 0>
+				<misc:cacheControl seconds="#request.rootwebskin.proxyCacheTimeout#" />
+			<cfelseif request.rootwebskin.okToCache eq 1>
+				<misc:cacheControl seconds="#application.defaultProxyCacheTimeout#" />
+			<cfelseif application.defaultProxyCacheTimeout eq 0>
+				<misc:cacheControl />
+			</cfif>
 		</cfif>
 	</cfif>
 	

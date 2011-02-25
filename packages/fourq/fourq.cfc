@@ -415,6 +415,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		<cfset stCurrentView.cacheStatus = application.coapi.coapiadmin.getWebskinCacheStatus(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
 		<cfset stCurrentView.cacheTimeout = application.coapi.coapiadmin.getWebskinCacheTimeOut(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
+		<cfset stCurrentView.proxyCacheTimeout = application.coapi.coapiadmin.getWebskinProxyCacheTimeOut(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
 		<cfset stCurrentView.cacheByURL = application.coapi.coapiadmin.getWebskincacheByURL(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
 		<cfset stCurrentView.cacheFlushOnFormPost = application.coapi.coapiadmin.getWebskincacheFlushOnFormPost(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
 		<cfset stCurrentView.cacheByForm = application.coapi.coapiadmin.getWebskincacheByForm(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
@@ -507,6 +508,11 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					<cfif stCurrentView.cacheTimeout LT request.aAncestorWebskins[i].cacheTimeout>
 						<cfset request.aAncestorWebskins[i].cacheTimeout = stCurrentView.cacheTimeout />
 					</cfif>
+					
+					<!--- If the proxy timeout of this webskin is less than its parents, reset the parents timeout so timeout propogates upwards --->
+					<cfif stCurrentView.proxyCacheTimeout neq -1 and (stCurrentView.proxyCacheTimeout LT request.aAncestorWebskins[i].proxyCacheTimeout or request.aAncestorWebskins[i].proxyCacheTimeout eq -1)>
+						<cfset request.aAncestorWebskins[i].proxyCacheTimeout = stCurrentView.proxyCacheTimeout />
+					</cfif>
 						
 				</cfloop>
 				
@@ -543,6 +549,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		</cfif>
 		
 		<!--- Remove the current view (last item in the array) from the Ancestor Webskins array --->
+		<cfif arraylen(request.aAncestorWebskins) eq 1>
+			<cfset request.rootwebskin = request.aAncestorWebskins[1] />
+		</cfif>
 		<cfset ArrayDeleteAt(request.aAncestorWebskins, arrayLen(request.aAncestorWebskins)) />
 		
 		<cfreturn webskinHTML />

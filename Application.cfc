@@ -710,6 +710,7 @@
 		<cfparam name="this.bObjectBroker" default="true" />
 		<cfparam name="this.ObjectBrokerMaxObjectsDefault" default="1000" />
 		<cfparam name="this.defaultWebskinCacheTimeout" default="1400" /><!--- Default timeout in seconds --->
+		<cfparam name="this.defaultProxyCacheTimeout" default="-1" /><!--- Default timeout in seconds. -1=no cache directives --->
 		
 		<!--- Option to archive --->
 		<cfparam name="this.bUseMediaArchive" default="false" />
@@ -843,6 +844,7 @@
 		<cfset application.bObjectBroker = this.bObjectBroker />
 		<cfset application.ObjectBrokerMaxObjectsDefault = this.ObjectBrokerMaxObjectsDefault />
 		<cfset application.defaultWebskinCacheTimeout = this.defaultWebskinCacheTimeout />
+		<cfset application.defaultProxyCacheTimeout = this.defaultProxyCacheTimeout />
 
 
 		<!------------------------------------------ 

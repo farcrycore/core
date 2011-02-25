@@ -51,10 +51,13 @@ Matt Dawson (mad@daemon.com.au)
 
 <cfparam name="url.CacheControlDebug" default="0">
 
-<cfif not( isDefined("attributes.days") OR
-			isDefined("attributes.hours") OR
-			isDefined("attributes.minutes") OR
-			isDefined("attributes.seconds") ) >
+<cfset totalseconds = 0 />
+<cfif isdefined("attributes.days")><cfset totalseconds = totalseconds + attributes.days * 86400 /></cfif>
+<cfif isdefined("attributes.hours")><cfset totalseconds = totalseconds + attributes.hours * 3600 /></cfif>
+<cfif isdefined("attributes.minutes")><cfset totalseconds = totalseconds + attributes.minutes * 60 /></cfif>
+<cfif isdefined("attributes.seconds")><cfset totalseconds = totalseconds + attributes.seconds /></cfif>
+
+<cfif totalseconds eq 0>
 	<CFHEADER NAME="Expires" VALUE="Tue, 01 Jan 1985 00:00:01 GMT">
 	<CFHEADER NAME="Pragma" VALUE="no-cache">
 	<CFHEADER NAME="cache-control" VALUE="no-cache, no-store, must-revalidate">
@@ -64,35 +67,19 @@ Matt Dawson (mad@daemon.com.au)
 	<META HTTP-EQUIV="Pragma" CONTENT="no-cache" />
 	<META HTTP-EQUIV="cache-control" CONTENT="no-cache, no-store, must-revalidate" />
 	</cfoutput>
+	
 	<cfif ( url.CacheControlDebug neq 0 )>
 		<cfoutput>Page cached until: Page not cached</cfoutput>
 	</cfif>
 <cfelse>
-	<cfscript>
-	gmt = gettimezoneinfo();
-	gmt = gmt.utcHourOffset;
-	if (gmt EQ 0)
-	{
-		gmt="";
-	}
-	else if (gmt GT 0)
-	{
-		gmt="+"&gmt;
-	}
-
-	dateTo=now();
-	if ( isDefined("attributes.days") ) dateTo = dateAdd( 'D', #attributes.days#, dateTo );
-	if ( isDefined("attributes.hours") )dateTo = dateAdd( 'H', #attributes.hours#, dateTo );
-	if ( isDefined("attributes.minutes") )dateTo = dateAdd( 'N', #attributes.minutes#, dateTo );
-	if ( isDefined("attributes.seconds") )dateTo = dateAdd( 'S', #attributes.seconds#, dateTo );
-	dateString = "#DateFormat( dateTo, 'DDD, DD MMM YYYY' )# #TimeFormat( dateTo, 'HH:mm:ss' )# GMT#gmt#";
 	
-	if ( url.CacheControlDebug neq 0 ) writeoutput("Page cached until: #dateString#");
-	</cfscript>
+	<cfif url.CacheControlDebug neq 0><cfoutput>Page cached for: #totalseconds# seconds</cfoutput></cfif>
 	
-	<CFHEADER NAME="Expires" VALUE="#dateString#">
-	<cfoutput>
-	<META HTTP-EQUIV="Expires" CONTENT="#dateString#" />
-	</cfoutput>
+	<CFHEADER NAME="Cache-Control" VALUE="max-age=#totalseconds#,s-maxage=#totalseconds#">
+	<cfoutput><META HTTP-EQUIV="Cache-Control" CONTENT="max-age=#totalseconds#,s-maxage=#totalseconds#" /></cfoutput>
+	
+	<cfif ( url.CacheControlDebug neq 0 )>
+		<cfoutput>Page cached for: #totalseconds# seconds</cfoutput>
+	</cfif>
 </cfif>
 <cfsetting enablecfoutputonly="No">
