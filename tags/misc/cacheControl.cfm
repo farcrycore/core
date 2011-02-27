@@ -62,24 +62,24 @@ Matt Dawson (mad@daemon.com.au)
 	<CFHEADER NAME="Pragma" VALUE="no-cache">
 	<CFHEADER NAME="cache-control" VALUE="no-cache, no-store, must-revalidate">
 	
-	<cfoutput>
-	<META HTTP-EQUIV="Expires" CONTENT="Tue, 01 Jan 1985 00:00:01 GMT" />
-	<META HTTP-EQUIV="Pragma" CONTENT="no-cache" />
-	<META HTTP-EQUIV="cache-control" CONTENT="no-cache, no-store, must-revalidate" />
-	</cfoutput>
-	
-	<cfif ( url.CacheControlDebug neq 0 )>
-		<cfoutput>Page cached until: Page not cached</cfoutput>
-	</cfif>
+	<cfhtmlhead text='<META HTTP-EQUIV="Expires" CONTENT="Tue, 01 Jan 1985 00:00:01 GMT" /><META HTTP-EQUIV="cache-control" CONTENT="no-cache, no-store, must-revalidate" /><!-- Page cached until: not cached -->'>
 <cfelse>
+	<cfset gmt = gettimezoneinfo() />
+	<cfset gmt = gmt.utcHourOffset />
 	
-	<cfif url.CacheControlDebug neq 0><cfoutput>Page cached for: #totalseconds# seconds</cfoutput></cfif>
+	<cfif gmt EQ 0>
+		<cfset gmt = "" />
+	<cfelseif gmt GT 0>
+		<cfset gmt = "-" & gmt />
+	<cfelseif gmt lt 0>
+		<cfset gmt = "+" & abs(gmt) />
+	</cfif>
+	
+	<cfset dateTo = dateAdd( 'S', totalseconds, now() ) />
+	<cfset dateString = "#DateFormat( dateTo, 'DDD, DD MMM YYYY' )# #TimeFormat( dateTo, 'HH:mm:ss' )# GMT#gmt#" />
 	
 	<CFHEADER NAME="Cache-Control" VALUE="max-age=#totalseconds#,s-maxage=#totalseconds#">
-	<cfoutput><META HTTP-EQUIV="Cache-Control" CONTENT="max-age=#totalseconds#,s-maxage=#totalseconds#" /></cfoutput>
-	
-	<cfif ( url.CacheControlDebug neq 0 )>
-		<cfoutput>Page cached for: #totalseconds# seconds</cfoutput>
-	</cfif>
+	<cfhtmlhead text='<META HTTP-EQUIV="Cache-Control" CONTENT="max-age=#totalseconds#,s-maxage=#totalseconds#" /><!-- Page cached until: #dateString# (#totalseconds# seconds) -->'>
 </cfif>
+
 <cfsetting enablecfoutputonly="No">
