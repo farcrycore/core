@@ -29,7 +29,7 @@
 	
 	<!--- Generate our id based on the baseHREF and files passed in. --->
 	<cfif not len(stCSS.id)>
-		<cfset stCSS.id = hash("#stCSS.baseHREF##stCSS.lFiles#") />
+		<cfset stCSS.id = hash("#stCSS.baseHREF##stCSS.lFiles##stCSS.lCombineIDs#") />
 	</cfif>
 	
 	
