@@ -118,8 +118,8 @@
 		<cfset propertytypemap["longchar"] = "cf_sql_varchar" />
 		<cfset propertytypemap["nstring"] = "cf_sql_varchar" />
 		<cfset propertytypemap["uuid"] = "cf_sql_varchar" />
-		<cfset propertytypemap["date"] = "cf_sql_date" />
-		<cfset propertytypemap["datetime"] = "cf_sql_date" />
+		<cfset propertytypemap["date"] = "cf_sql_timestamp" />
+		<cfset propertytypemap["datetime"] = "cf_sql_timestamp" />
 		<cfset propertytypemap["numeric"] = "cf_sql_numeric" />
 		<cfset propertytypemap["integer"] = "cf_sql_numeric" />
 		<cfset propertytypemap["boolean"] = "cf_sql_numeric" />
@@ -227,13 +227,13 @@
 									(
 										<cfif f.value>
 											#f.property# IS NULL
-											<cfif f.sqltype eq "cf_sql_date"><!--- Special case to handle the various null date formats --->
+											<cfif f.sqltype eq "cf_sql_timestamp"><!--- Special case to handle the various null date formats --->
 												OR #f.property# = <cfqueryparam cfsqltype="#f.sqltype#" value="1 January 2050" />
 												OR #f.property# > <cfqueryparam cfsqltype="#f.sqltype#" value="#dateadd('yyyy',100,now())#" />
 											</cfif>
 										<cfelse>
 											#f.property# IS NOT NULL
-											<cfif propertytypemap[f.type] eq "cf_sql_date"><!--- Special case to handle the various null date formats --->
+											<cfif propertytypemap[f.type] eq "cf_sql_timestamp"><!--- Special case to handle the various null date formats --->
 												AND NOT #f.property# = <cfqueryparam cfsqltype="#f.sqltype#" value="1 January 2050" />
 												AND #f.property# < <cfqueryparam cfsqltype="#f.sqltype#" value="#dateadd('yyyy',100,now())#" />
 											</cfif>
@@ -241,7 +241,12 @@
 									)
 								</cfcase>
 								<cfcase value="lt,lte,gt,gte" delimiters=",">
-									<cfif f.sqltype eq "cf_sql_date"><!--- Special case to handle the various null date formats --->
+									<cfif f.sqltype eq "cf_sql_timestamp"><!--- Special case to handle the various null date formats --->
+										<!--- LTE and GT filters with a date but no time need to be increased by a day, to imitate a date comparison using a timestamp --->
+										<cfif hour(f.value) eq 0 and minute(f.value) eq 0 and second(f.value) eq 0 and (f.filter eq "lte" or f.filter eq "gt")>
+											<cfset f.value = dateadd("d",1,f.value) />
+										</cfif>
+										
 										(
 											#f.property# is null
 											OR #f.property# = <cfqueryparam cfsqltype="#f.sqltype#" value="1 January 2050" />
