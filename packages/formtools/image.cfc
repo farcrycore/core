@@ -163,7 +163,7 @@
 	    <skin:loadCSS id="jquery-crop" />
 	    <!--- <skin:htmlHead id="farcry-imageformtool-css"><cfoutput><style type="text/css"> --->
 	    <skin:loadCSS id="farcry-imageformtool"><cfoutput>
-	    	.indicator { background: url("/webtop/images/indicator.gif") repeat scroll 0 0 transparent; }
+	    	##indicator { background: url("/webtop/images/indicator.gif") repeat scroll 0 0 transparent; }
 	    	.dependant-label { font-weight:bold; }
 		</cfoutput></skin:loadCSS>
 		<!--- </style></cfoutput></skin:htmlHead> --->
@@ -582,19 +582,13 @@
 	    			};
 	    			
 	    			this.applyCrop = function imageFormtoolApplyCrop(){
-	    				if (imageformtool.inline)
-	    					imageformtool.inlineview.find(".image-status .ui-icon-image").removeClass("ui-icon-image").addClass("indicator");
-	    				else
-	    					imageformtool.multiview.findView("autogenerate").find(".ui-icon-help").removeClass("ui-icon-help").addClass("indicator");
+	    				imageformtool.multiview.selectView("working");
 						$j.ajax({
 							type : "POST",
 							url : imageformtool.url,
 							data : imageformtool.getPostValues(),
 							success : function imageFormtoolApplyCropSuccess(results){
-								if (imageformtool.inline)
-									imageformtool.inlineview.find(".image-status .indicator").removeClass("indicator").addClass("ui-icon-image");
-								else
-	    							imageformtool.multiview.findView("autogenerate").find(".indicator").removeClass("indicator").addClass("ui-icon-help");
+								imageformtool.multiview.selectView("back");
 								
 								// results is null if there is already an image 
 								if (results) {
@@ -725,6 +719,10 @@
 								</cfif>
 								<div><cfif arguments.stMetadata.ftAllowUpload><a href="##upload" class="select-view">Upload - I want to use my own image</a></cfif><span class="image-cancel-replace" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><cfif arguments.stMetadata.ftAllowUpload> | </cfif><a href="##complete" class="select-view">Cancel - I don't want to replace this image</a></span></div>
 							</div>
+						</div>
+						<div id="#arguments.fieldname#_working" class="working-view" style="display:none;">
+							<span class="image-status" title="#metadatainfo#"><span id="indicator" class="ui-icon" style="float:left;">>&nbsp;</span></span>
+						    <div style="margin-left:15px;">Generating image...</div>
 						</div>
 						<cfif len(arguments.stMetadata.value)>
 						    <cfset stFile = GetFileInfo("#application.path.imageroot##arguments.stMetadata.value#") />
