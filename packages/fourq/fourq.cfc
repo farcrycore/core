@@ -415,7 +415,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		<cfset stCurrentView.cacheStatus = application.coapi.coapiadmin.getWebskinCacheStatus(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
 		<cfset stCurrentView.cacheTimeout = application.coapi.coapiadmin.getWebskinCacheTimeOut(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
-		<cfset stCurrentView.proxyCacheTimeout = application.coapi.coapiadmin.getWebskinProxyCacheTimeOut(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
+		<cfset stCurrentView.proxyCacheTimeout = application.coapi.coapiadmin.getProxyCacheTimeOut(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
 		<cfset stCurrentView.cacheByURL = application.coapi.coapiadmin.getWebskincacheByURL(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
 		<cfset stCurrentView.cacheFlushOnFormPost = application.coapi.coapiadmin.getWebskincacheFlushOnFormPost(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
 		<cfset stCurrentView.cacheByForm = application.coapi.coapiadmin.getWebskincacheByForm(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />

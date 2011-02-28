@@ -617,7 +617,7 @@
 		
 	</cffunction>
 		
-	<cffunction name="getWebskinProxyCacheTimeOut" returntype="string" access="public" output="false" hint="Returns the objectbroker timeout value of a webskin. A result of 0 will FORCE any ancestor webskins to NEVER cache. The default value is the objectBrokerWebskinCacheTimeout value set in the type cfc which defaults to 1400 minutes">
+	<cffunction name="getProxyCacheTimeOut" returntype="string" access="public" output="false" hint="Returns the objectbroker timeout value of a webskin. A result of 0 will FORCE any ancestor webskins to NEVER cache. The default value is the objectBrokerWebskinCacheTimeout value set in the type cfc which defaults to 1400 minutes">
 		<cfargument name="typename" type="string" required="true" />
 		<cfargument name="template" type="string" required="true" />
 		<cfargument name="path" type="string" required="false" />
