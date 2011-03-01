@@ -45,7 +45,7 @@ br.clearer {clear: both;height:1px;line-height:1px;}
 
 
 /* =HEADINGS */
-h1, h2, h3, h4, h5, h6 {font-family: arial,verdana,sans-serif;margin: 1.2em 0 0}
+h1, h2, h3, h4, h5, h6 {font-family: arial,verdana,sans-serif;margin: 1.2em 0 0; font-weight: bold;}
 h1 {font-size: 156%;margin: 0}
 h2 {font-size: 116%}
 h3 {font-size: 112%}
