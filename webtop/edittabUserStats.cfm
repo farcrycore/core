@@ -18,7 +18,7 @@
 		$j(".object-stats").click(function(e){
 	
 			e.preventDefault();
-			$j( "##fc-dialog-iframe-object").attr("src", "/webtop//edittabAudit.cfm?objectid=" + $j(this).attr('href') + "&linkuser=false")
+			$j( "##fc-dialog-iframe-object").attr("src", "#application.url.webtop#/edittabAudit.cfm?objectid=" + $j(this).attr('href') + "&linkuser=false")
 			$j( "##fc-dialog-div-object" ).dialog({
 				height: 600,
 				width: 700,

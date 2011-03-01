@@ -163,7 +163,7 @@
 	    <skin:loadCSS id="jquery-crop" />
 	    <!--- <skin:htmlHead id="farcry-imageformtool-css"><cfoutput><style type="text/css"> --->
 	    <skin:loadCSS id="farcry-imageformtool"><cfoutput>
-	    	##indicator { background: url("/webtop/images/indicator.gif") repeat scroll 0 0 transparent; }
+	    	##indicator { background: url("#application.url.webtop#/images/indicator.gif") repeat scroll 0 0 transparent; }
 	    	.dependant-label { font-weight:bold; }
 		</cfoutput></skin:loadCSS>
 		<!--- </style></cfoutput></skin:htmlHead> --->

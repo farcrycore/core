@@ -384,7 +384,7 @@
 	<p>Register a CSS library into the application:</p>
 	<code>
 		<cfset application.fapi.registerCSS(	id="jquery-ui",
-												path="/webtop/thirdparty/jquery/css/base",
+												baseHREF="#application.url.webtop#/thirdparty/jquery/css/base",
 												lFiles="ui.core.css,ui.resizable.css,ui.accordion.css,ui.dialog.css,ui.slider.css,ui.tabs.css,ui.datepicker.css,ui.progressbar.css,ui.theme.css") />
 	</code>
 	 --->	
@@ -419,7 +419,7 @@
 	<p>Register a JS library into the application:</p>
 	<code>
 		<cfset application.fapi.registerJS(	id="jquery",
-											path="/webtop/thirdparty/jquery/js",
+											baseHREF="#application.url.webtop#/thirdparty/jquery/js",
 											lFiles="jquery-1.3.2.min.js,ui.core.js,ui.accordion.js,ui.datepicker.js,ui.dialog.js,ui.draggable.js,ui.droppable.js,ui.progressbar.js,ui.resizable.js,ui.selectable.js,ui.slider.js,ui.sortable.js,ui.tabs.js,effects.core.js,effects.blind.js,effects.bounce.js,effects.clip.js,effects.drop.js,effects.explode.js,effects.fold.js,effects.highlight.js,effects.pulsate.js,effects.scale.js,effects.shake.js,effects.slide.js,effects.transfer.js") />
 	</code>
 	 --->	
