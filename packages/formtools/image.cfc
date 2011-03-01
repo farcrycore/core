@@ -448,7 +448,7 @@
 				    	}
 			    		
 	    				$j(imageformtool).bind("filechange.updatedisplay",function onImageFormtoolFilechangeUpdate(event,results){
-	    					if (results.value.length>0){
+	    					if (results.value && results.value.length>0){
 	    						var previewsize = { width:results.width, height:results.height };
 	    						if (previewsize.width > 400) previewsize = { width:400, height:previewsize.height*400/previewsize.width };
 	    						if (previewsize.height > 400) previewsize = { width:previewsize.width*400/previewsize.height, height:400 };
@@ -499,7 +499,7 @@
 	    				
 	    				if (sourceField.length>0){
 		    				$j($fc.imageformtool(prefix,sourceField)).bind("filechange",function onImageFilechangePropogate(event,results){
-		    					if (results.value.length){
+		    					if (results.value && results.value.length){
 			    					//imageformtool.enableCrop(true);
 									imageformtool.applyCrop();
 									if (imageformtool.inline) 
@@ -510,8 +510,7 @@
 								else {
 									imageformtool.enableCrop(false);
 								}
-		    				});
-		    				$j($fc.imageformtool(prefix,sourceField)).bind("deleteall",function onImageFormtoolDeleteAllPropogate(){
+		    				}).bind("deleteall",function onImageFormtoolDeleteAllPropogate(){
 		    					imageformtool.deleteImage("autogenerate");
 		    				});
 		    			}
@@ -796,7 +795,7 @@
 				    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
 							<div style="margin-left:15px">
 					    		<ft:button class="image-delete-button" value="Delete this image" type="button" onclick="return false;" />
-					    		<ft:button class="image-delete-button" value="Delete this and the related images" type="button" onclick="return false;" />
+					    		<ft:button class="image-deleteall-button" value="Delete this and the related images" type="button" onclick="return false;" />
 					    		
 					    		<div class="image-cancel-upload"><a href="##back" class="select-view">Cancel - I don't want to delete</a></div>
 					    	</div>
