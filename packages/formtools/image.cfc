@@ -236,7 +236,7 @@
 	    			
 	    			if (oldview && oldview != newview) {
 	    				var $oldview = this.findView(oldview);
-	    				this.trigger("multiviewClose",[ $oldview[0],oldview ]).trigger("multiviewClose"+oldview,[ $oldview[0],oldview ]);
+	    				this.trigger("multiviewClose",[ $oldview[0],oldview,newview ]).trigger("multiviewClose"+oldview,[ $oldview[0],oldview,newview ]);
 	    				$oldview.hide();
 	    				if (newview == "back") 
 	    					newview = history.pop();
@@ -248,7 +248,7 @@
 		    			this.data("multiview.currentview",newview);
 		    			var $newview = this.findView(newview);
 		    			$newview.show();
-		    			this.trigger("multiviewOpen",[ $newview[0],newview ]).trigger("multiviewOpen"+newview,[ $newview[0],newview ]);
+		    			this.trigger("multiviewOpen",[ $newview[0],newview,oldview ]).trigger("multiviewOpen"+newview,[ $newview[0],newview,oldview ]);
 		    		}
 		    		
 		    		return this;
@@ -411,9 +411,15 @@
 				    			"onCloseTarget" : {
 				    				"upload" : function onImageFormtoolCloseUpload(event){  },
 				    				"complete" : function onImageFormtoolCloseComplete(event){  },
-				    				"autogenerate" : function onImageFormtoolCloseAutogenerate(event){ 
-				    					imageformtool.inputs.resizemethod.val(""); 
-				    					imageformtool.inputs.deletef.val("false"); 
+				    				"autogenerate" : function onImageFormtoolCloseAutogenerate(event,oldviewdiv,oldview,newview){
+				    					if (newview!="working"){ 
+					    					imageformtool.inputs.resizemethod.val("");
+					    					imageformtool.inputs.deletef.val("false");
+					    				}
+				    				},
+				    				"working" : function onImageFormtoolCloseAutogenerate(event){
+				    					imageformtool.inputs.resizemethod.val("");
+					    				imageformtool.inputs.deletef.val("false");
 				    				},
 				    				"traditional" : function onImageFormtoolCloseTraditional(event){ 
 				    					imageformtool.inputs.traditional.val(""); 
@@ -583,31 +589,32 @@
 	    			
 	    			this.applyCrop = function imageFormtoolApplyCrop(){
 	    				imageformtool.multiview.selectView("working");
+	    				
 						$j.ajax({
 							type : "POST",
 							url : imageformtool.url,
 							data : imageformtool.getPostValues(),
 							success : function imageFormtoolApplyCropSuccess(results){
-								imageformtool.multiview.selectView("back");
-								
 								// results is null if there is already an image 
 								if (results) {
 									if (results.error) {
 										$j(imageformtool).trigger("fileerror", ["crop", "500", results.error]);
+										imageformtool.multiview.selectView("autogenerate");
 									}
 									else {
 										imageformtool.inputs.base.val(results.value);
 										$j('##' + prefix + property + "_croperror").hide();
 										imageformtool.multiview.findView("autogenerate").find(".image-crop-information").hide();
 										$j(imageformtool).trigger("filechange", [results]);
+										imageformtool.multiview.selectView("complete");
 									}
 								}
 								imageformtool.enableCrop(true)
 							},
 							error : function imageFormtoolApplyCropError(XMLHttpRequest, textStatus, errorThrown){
-	    						imageformtool.multiview.findView("autogenerate").find(".indicator").removeClass("indicator").addClass("ui-icon-help");
 								$j(imageformtool).trigger("fileerror",[ "crop",textStatus,errorThrown.toString() ]);
-								imageformtool.enableCrop(true)
+								imageformtool.enableCrop(true);
+								imageformtool.multiview.selectView("autogenerate");
 							},
 							dataType : "json"
 						});
