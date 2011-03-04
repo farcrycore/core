@@ -182,7 +182,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					}
 					
 					$j.ajax({
-						type		: "POST",
+						type		: "GET",
 						url			: config.action,
 						cache		: false,
 						timeout		: config.timeout*1000,
