@@ -53,7 +53,8 @@ It just ignores the inner ones.
 		<cfparam name="attributes.bAjaxSubmission" default="false">
 		<cfparam name="attributes.ajaxMaskMsg" default="Form Submitting, please wait...">
 		<cfparam name="attributes.ajaxMaskCls" default="x-mask-loading">
-		<cfparam name="attributes.ajaxTimout" default="30">
+		<cfparam name="attributes.ajaxTimeout" default="30">
+		<cfparam name="attributes.ajaxTarget" default=""><!--- jQuery selector specifying the target element for the form response. Defaults to the FORM element. --->
 		<cfparam name="attributes.bAddFormCSS" default="true" /><!--- Uses uniform (http://sprawsm.com/uni-form/) --->
 		<cfparam name="attributes.bFieldHighlight" default="true"><!--- Highlight fields when focused --->
 		<cfparam name="attributes.bFocusFirstField" default="false" /><!--- Focus on first form element. --->
@@ -196,7 +197,7 @@ It just ignores the inner ones.
 			<!--- Add the function call to onsubmit --->
 			<cfsavecontent variable="sAjaxSubmission">
 				<cfoutput>
-		        farcryForm_ajaxSubmission('#attributes.Name#','#attributes.Action#','#attributes.ajaxMaskMsg#','#attributes.ajaxMaskCls#', #attributes.ajaxTimout#);
+		        farcryForm_ajaxSubmission('#attributes.Name#','#attributes.Action#','#attributes.ajaxMaskMsg#','#attributes.ajaxMaskCls#', #attributes.ajaxTimeout#<cfif len(attributes.ajaxTarget)>,'#attributes.ajaxTarget#'</cfif>);
 		        return false;
 				</cfoutput>				
 			</cfsavecontent>

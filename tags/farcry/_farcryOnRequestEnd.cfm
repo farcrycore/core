@@ -110,15 +110,15 @@ $out:$
 				</cfcatch>
 			</cftry>	
 		</cfif>
-		
-		<cfif structkeyexists(request.fc,"okToCache") and request.fc.okToCache>
-			<cfif request.fc.proxyCacheTimeout gt -1>
-				<!--- Page ok to cache, a webskin has specified a cache timeout --->
-				<misc:cacheControl seconds="#request.fc.proxyCacheTimeout#" />
-			<cfelseif application.defaultProxyCacheTimeout gt -1>
-				<!--- Page ok to cache, no webskin has specified a cache --->
-				<misc:cacheControl seconds="#application.defaultProxyCacheTimeout#" />
-			</cfif>
+	</cfif>
+	
+	<cfif isdefined("request.fc.okToCache") and request.fc.okToCache>
+		<cfif structkeyexists(request.fc,"proxyCacheTimeout") and request.fc.proxyCacheTimeout gt -1>
+			<!--- Page ok to cache, a webskin has specified a cache timeout --->
+			<misc:cacheControl seconds="#request.fc.proxyCacheTimeout#" />
+		<cfelseif application.defaultProxyCacheTimeout gt -1>
+			<!--- Page ok to cache, no webskin has specified a cache --->
+			<misc:cacheControl seconds="#application.defaultProxyCacheTimeout#" />
 		</cfif>
 	</cfif>
 	
