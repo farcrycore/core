@@ -111,13 +111,13 @@ $out:$
 			</cftry>	
 		</cfif>
 		
-		<cfif structkeyexists(request,"rootwebskin")>
-			<cfif request.rootwebskin.okToCache eq 1 and request.rootwebskin.proxyCacheTimeout gt 0>
-				<misc:cacheControl seconds="#request.rootwebskin.proxyCacheTimeout#" />
-			<cfelseif request.rootwebskin.okToCache eq 1>
+		<cfif structkeyexists(request.fc,"okToCache") and request.fc.okToCache>
+			<cfif request.fc.proxyCacheTimeout gt -1>
+				<!--- Page ok to cache, a webskin has specified a cache timeout --->
+				<misc:cacheControl seconds="#request.fc.proxyCacheTimeout#" />
+			<cfelseif application.defaultProxyCacheTimeout gt -1>
+				<!--- Page ok to cache, no webskin has specified a cache --->
 				<misc:cacheControl seconds="#application.defaultProxyCacheTimeout#" />
-			<cfelseif application.defaultProxyCacheTimeout eq 0>
-				<misc:cacheControl />
 			</cfif>
 		</cfif>
 	</cfif>

@@ -297,7 +297,7 @@
 						path=stWebskinDetails.path, 
 						lProperties="displayname,author,description,cacheStatus,cacheTimeout,proxyCacheTimeout,cacheByURL,cacheFlushOnFormPost,cacheByForm,cacheByRoles,cacheByVars,cacheTypeWatch,cacheFlushOnObjectChange,fuAlias,viewstack,viewbinding,allowredirect", 
 						lTypes="string,string,string,numeric,numeric,numeric,boolean,boolean,boolean,boolean,string,string,boolean,string,string,string,boolean", 
-						lDefaults=" , , ,0,#application.defaultWebskinCacheTimeout#,0,false,false,false,false, , ,false, ,#stWebskinDetails.viewstack#,#stWebskinDetails.viewbinding#,1"
+						lDefaults=" , , ,0,#application.defaultWebskinCacheTimeout#,-1,false,false,false,false, , ,false, ,#stWebskinDetails.viewstack#,#stWebskinDetails.viewbinding#,1"
 					) />
 				
 				<!--- Assign the metadata --->
