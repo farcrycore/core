@@ -42,7 +42,6 @@
 	<cfproperty name="ftDropdownFirstItem" default="" hint="Used when ftRenderType is set to dropDown, prepends an option to select list with null value." />	
 		
 	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
-	<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 
 
@@ -159,11 +158,11 @@
 				</cfsavecontent>
 
 			
-				<extjs:onReady>
+				<skin:onReady>
 				<cfoutput>
 				    createFormtoolTree('#arguments.fieldname#','#rootID#', '#application.url.webtop#/facade/getCategoryNodes.cfm', '#rootNodeText#','#lSelectedCategoryID#', 'categoryIconCls');											
 				</cfoutput>
-				</extjs:onReady>
+				</skin:onReady>
 			</cfcase>
 			<cfcase value="jquery">
 				

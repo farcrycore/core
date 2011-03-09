@@ -63,7 +63,6 @@
 		<cfparam name="arguments.stMetadata.ftRenderType" default="jquery" type="string" />
 		
 		<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
-		<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs" />
 		
 		<cfif structkeyexists(arguments.stMetadata,"ftWatch") and len(arguments.stObject[arguments.stMetadata.ftWatch])>
 			<cfset rootID = arguments.stObject[arguments.stMetadata.ftWatch] />
@@ -143,11 +142,11 @@
 				
 
 			
-				<extjs:onReady>
+				<skin:onReady>
 				<cfoutput>
 				    createFormtoolTree('#arguments.fieldname#','#rootID#', '#application.url.webtop#/facade/getNavigationNodes.cfm', '#rootNodeText#','#lSelectedNaviIDs#', 'categoryIconCls');											
 				</cfoutput>
-				</extjs:onReady>
+				</skin:onReady>
 				
 			</cfdefaultcase>
 			
