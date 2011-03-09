@@ -111,7 +111,7 @@
 		<!--- createdby // string --->
 		<cfset assertEquals(schema.fields.createdby.name,"createdby","Incorrect name value") />
 		<cfset assertEquals(schema.fields.createdby.type,"string","Incorrect type value") />
-		<cfset assertEquals(schema.fields.createdby.precision,"255","Incorrect precision value") />
+		<cfset assertEquals(schema.fields.createdby.precision,"250","Incorrect precision value") />
 		<cfset assertEquals(schema.fields.createdby.bPrimaryKey,false,"Incorrect bPrimaryKey value") />
 		<cfset assertEquals(schema.fields.createdby.nullable,false,"Incorrect nullable value") />
 		<cfset assertEquals(schema.fields.createdby.default,"","Incorrect default value") />
@@ -195,7 +195,7 @@
 		<cfset assertEquals(listsort(lcase(structkeylist(schema.fields.b.fields)),"text"),"data,parentid,q,r,s,seq,t,typename","Incorrect array fields generated") />
 		
 		<cfset assertEquals(schema.fields.b.fields.q.type,"string","Incorrect extended string field type value") />
-		<cfset assertEquals(schema.fields.b.fields.q.precision,"255","Incorrect extended string field precision value") />
+		<cfset assertEquals(schema.fields.b.fields.q.precision,"250","Incorrect extended string field precision value") />
 		<cfset assertEquals(schema.fields.b.fields.q.nullable,true,"Incorrect extended string field nullable value") />
 		<cfset assertEquals(schema.fields.b.fields.q.default,"NULL","Incorrect extended string field default value") />
 		
@@ -245,7 +245,7 @@
 		<!--- fields --->
 		<cfset assertEquals(listsort(lcase(structkeylist(schema.fields.c.fields)),"text"),"a,b,createdby,datetimecreated,datetimelastupdated,label,lastupdatedby,locked,lockedby,objectid,ownedby,parentid,seq","Incorrect array fields generated") />
 		<cfset assertEquals(schema.fields.c.fields.a.type,"string","Incorrect extended string field type value") />
-		<cfset assertEquals(schema.fields.c.fields.a.precision,"255","Incorrect extended string field precision value") />
+		<cfset assertEquals(schema.fields.c.fields.a.precision,"250","Incorrect extended string field precision value") />
 		<cfset assertEquals(schema.fields.c.fields.a.nullable,true,"Incorrect extended string field nullable value") />
 		<cfset assertEquals(schema.fields.c.fields.a.default,"NULL","Incorrect extended string field default value") />
 	</cffunction>
