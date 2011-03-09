@@ -167,10 +167,8 @@
 	    	.dependant-label { font-weight:bold; }
 		</cfoutput></skin:loadCSS>
 		<!--- </style></cfoutput></skin:htmlHead> --->
-	    <!--- <skin:htmlHead id="farcry-imageformtool-js"><cfoutput><script type="text/javascript"> --->
-	   <cfoutput> <script type="text/javascript" charset="utf-8">
-	    	
-
+	    <skin:htmlHead id="farcry-imageformtool-js"><cfoutput><script type="text/javascript">
+	    <!--- <cfoutput> <script type="text/javascript" charset="utf-8"> --->
 	    	(function(jQuery){
 	    		var defaults = {
 	    			"selected"		: "",
@@ -615,7 +613,8 @@
 								imageformtool.enableCrop(true);
 								imageformtool.multiview.selectView("autogenerate");
 							},
-							dataType : "json"
+							dataType : "json",
+							timeout : 120000
 						});
 	    			};
 	    			
@@ -668,6 +667,7 @@
 	    		return this[prefix+property];
 	    	};
 			</script></cfoutput>
+		<skin:htmlHead>
 	    
 	    <cfsavecontent variable="metadatainfo">
 			<cfif (isnumeric(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth gt 0) or (isnumeric(arguments.stMetadata.ftImageHeight) and arguments.stMetadata.ftImageHeight gt 0)>
@@ -1481,6 +1481,8 @@
 		<cfset stResult.bSuccess = true />
 		<cfset stResult.message = "" />
 		<cfset stResult.filename = "" />
+		
+		<cfsetting requesttimeout="120" />
 		
 		<cfif not fileexists(arguments.source)>
 			<cfset stResult.bSuccess = False />
