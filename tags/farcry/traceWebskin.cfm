@@ -36,6 +36,7 @@
 		<cfset stTrace.template = attributes.template />
 		<cfset stTrace.path = replaceNoCase(application.coapi.coapiadmin.getWebskinPath(typename=attributes.typename, template=attributes.template), "\", "/") />
 		<cfset stTrace.cacheTimeout = application.coapi.coapiadmin.getWebskinCacheTimeOut(typename=attributes.typename, template=attributes.template) />
+		<cfset stTrace.proxyCacheTimeout = application.coapi.coapiadmin.getProxyCacheTimeOut(typename=attributes.typename, template=attributes.template) />
 		<cfset stTrace.cacheStatus = application.coapi.coapiadmin.getWebskinCacheStatus(typename=attributes.typename, template=attributes.template) />
 		<cfset stTrace.cacheByVars = application.coapi.coapiadmin.getWebskinCacheByVars(typename=attributes.typename, template=attributes.template) />
 		<cfset stTrace.cacheByRoles = application.coapi.coapiadmin.getWebskinCacheByRoles(typename=attributes.typename, template=attributes.template) />
@@ -111,6 +112,10 @@
 										<cfif len(stTrace.cacheByVars)>
 											<div>* Caching by the following Variables:</div>
 											<div style="padding:0px 20px;"><cfloop list="#stTrace.cacheByVars#" index="i"><div>- #i#</div></cfloop></div>
+										</cfif>
+										
+										<cfif stTrace.proxyCacheTimeout gt -1>
+											<div>* Proxy cache timeout: #stTrace.proxyCacheTimeout#</div>
 										</cfif>
 									</td>
 								</tr>

@@ -377,7 +377,7 @@ user --->
 		</cfif>
 		
 		<cfset stRecordset = oFormtoolUtil.getRecordset(paginationID="#attributes.typename#", sqlColumns=sqlColumns, typename="#attributes.typename#", RecordsPerPage="#attributes.numitems#", sqlOrderBy="#session.objectadminFilterObjects[attributes.typename].sqlOrderBy#", sqlWhere="#attributes.sqlWhere#", lCategories="#attributes.lCategories#", bCheckVersions=true) />	
-	</cfif>	
+	</cfif>
 	
 
 	<!------------------------
@@ -637,7 +637,7 @@ user --->
 					<cfif len(HTMLfiltersAttributes)>	
 						<ft:button value="Clear Filter" validate="false" />
 					</cfif>
-					<ft:button value="Apply Filter" />
+					<ft:button value="Apply Filter" bDefaultAction="true" />
 				</ft:buttonPanel>
 				
 			<cfoutput><br class="clearer" /></div></div></cfoutput>

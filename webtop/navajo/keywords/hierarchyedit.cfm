@@ -15,26 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-
-$Header: /cvs/farcry/core/webtop/navajo/keywords/hierarchyedit.cfm,v 1.17.2.1 2006/01/16 22:55:42 gstewart Exp $
-$Author: gstewart $
-$Date: 2006/01/16 22:55:42 $
-$Name: milestone_3-0-1 $
-$Revision: 1.17.2.1 $
-
-|| DESCRIPTION || 
-$Description: Displays category tree $
-
-
-|| DEVELOPER ||
-$Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au)$
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
---->
+<!--- @@Description: Displays JS category tree hierarchy edit interface. --->
 <cfprocessingDirective pageencoding="utf-8">
 <cfoutput>
 <html>
@@ -51,7 +32,6 @@ $out:$
 </cfscript>
 
 <!--- CREATE NEW HIERARCHY --->
-
 <cfif isDefined("message")>
 	<cfoutput>
 		<h4 align="center" style="color:red">#message#</h4>

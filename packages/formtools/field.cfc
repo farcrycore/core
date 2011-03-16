@@ -210,7 +210,7 @@
 	FILTERING FUNCTIONS
 	 ------------------>	
 	<cffunction name="getFilterUIOptions">
-		<cfreturn "contains,exactly,is empty,is not empty" />
+		<cfreturn "contains,starts with,ends with,exactly,is empty,is not empty" />
 	</cffunction>
 	
 	<cffunction name="editFilterUI">
@@ -231,7 +231,7 @@
 			
 			<cfswitch expression="#arguments.filterType#">
 				
-				<cfcase value="contains,exactly">
+				<cfcase value="contains,starts with,ends with,exactly">
 					<cfparam name="arguments.stFilterProps.value" default="" />
 					<cfoutput>
 					<input type="string" name="#arguments.fieldname#value" value="#arguments.stFilterProps.value#" />
@@ -254,7 +254,7 @@
 			
 			<cfswitch expression="#arguments.filterType#">
 				
-				<cfcase value="contains,exactly">
+				<cfcase value="contains,starts with,ends with,exactly">
 					<cfif structKeyExists(arguments.stFilterProps, "value")>
 						<cfoutput>
 						#arguments.stFilterProps.value#
@@ -288,6 +288,20 @@
 					<cfparam name="arguments.stFilterProps.value" default="" />
 					<cfif len(arguments.stFilterProps.value)>
 						<cfoutput>#arguments.filterProperty# LIKE '%#replace(arguments.stFilterProps.value,"'","''","ALL")#%'</cfoutput>
+					</cfif>
+				</cfcase>
+				
+				<cfcase value="starts with">
+					<cfparam name="arguments.stFilterProps.value" default="" />
+					<cfif len(arguments.stFilterProps.value)>
+						<cfoutput>#arguments.filterProperty# LIKE '#replace(arguments.stFilterProps.value,"'","''","ALL")#%'</cfoutput>
+					</cfif>
+				</cfcase>
+				
+				<cfcase value="ends with">
+					<cfparam name="arguments.stFilterProps.value" default="" />
+					<cfif len(arguments.stFilterProps.value)>
+						<cfoutput>#arguments.filterProperty# LIKE '%#replace(arguments.stFilterProps.value,"'","''","ALL")#'</cfoutput>
 					</cfif>
 				</cfcase>
 				

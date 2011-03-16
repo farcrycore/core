@@ -29,7 +29,7 @@
 	
 	<!--- Generate our id based on the baseHREF and files passed in. --->
 	<cfif not len(stJS.id)>
-		<cfset stJS.id = hash("#stJS.baseHREF##stJS.lFiles#") />
+		<cfset stJS.id = hash("#stJS.baseHREF##stJS.lFiles##stJS.lCombineIDs#") />
 	</cfif>
 	
 	

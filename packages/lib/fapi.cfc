@@ -118,8 +118,8 @@
 		<cfset propertytypemap["longchar"] = "cf_sql_varchar" />
 		<cfset propertytypemap["nstring"] = "cf_sql_varchar" />
 		<cfset propertytypemap["uuid"] = "cf_sql_varchar" />
-		<cfset propertytypemap["date"] = "cf_sql_date" />
-		<cfset propertytypemap["datetime"] = "cf_sql_date" />
+		<cfset propertytypemap["date"] = "cf_sql_timestamp" />
+		<cfset propertytypemap["datetime"] = "cf_sql_timestamp" />
 		<cfset propertytypemap["numeric"] = "cf_sql_numeric" />
 		<cfset propertytypemap["integer"] = "cf_sql_numeric" />
 		<cfset propertytypemap["boolean"] = "cf_sql_numeric" />
@@ -227,13 +227,13 @@
 									(
 										<cfif f.value>
 											#f.property# IS NULL
-											<cfif f.sqltype eq "cf_sql_date"><!--- Special case to handle the various null date formats --->
+											<cfif f.sqltype eq "cf_sql_timestamp"><!--- Special case to handle the various null date formats --->
 												OR #f.property# = <cfqueryparam cfsqltype="#f.sqltype#" value="1 January 2050" />
 												OR #f.property# > <cfqueryparam cfsqltype="#f.sqltype#" value="#dateadd('yyyy',100,now())#" />
 											</cfif>
 										<cfelse>
 											#f.property# IS NOT NULL
-											<cfif propertytypemap[f.type] eq "cf_sql_date"><!--- Special case to handle the various null date formats --->
+											<cfif propertytypemap[f.type] eq "cf_sql_timestamp"><!--- Special case to handle the various null date formats --->
 												AND NOT #f.property# = <cfqueryparam cfsqltype="#f.sqltype#" value="1 January 2050" />
 												AND #f.property# < <cfqueryparam cfsqltype="#f.sqltype#" value="#dateadd('yyyy',100,now())#" />
 											</cfif>
@@ -241,7 +241,12 @@
 									)
 								</cfcase>
 								<cfcase value="lt,lte,gt,gte" delimiters=",">
-									<cfif f.sqltype eq "cf_sql_date"><!--- Special case to handle the various null date formats --->
+									<cfif f.sqltype eq "cf_sql_timestamp"><!--- Special case to handle the various null date formats --->
+										<!--- LTE and GT filters with a date but no time need to be increased by a day, to imitate a date comparison using a timestamp --->
+										<cfif hour(f.value) eq 0 and minute(f.value) eq 0 and second(f.value) eq 0 and (f.filter eq "lte" or f.filter eq "gt")>
+											<cfset f.value = dateadd("d",1,f.value) />
+										</cfif>
+										
 										(
 											#f.property# is null
 											OR #f.property# = <cfqueryparam cfsqltype="#f.sqltype#" value="1 January 2050" />
@@ -379,7 +384,7 @@
 	<p>Register a CSS library into the application:</p>
 	<code>
 		<cfset application.fapi.registerCSS(	id="jquery-ui",
-												path="/webtop/thirdparty/jquery/css/base",
+												baseHREF="#application.url.webtop#/thirdparty/jquery/css/base",
 												lFiles="ui.core.css,ui.resizable.css,ui.accordion.css,ui.dialog.css,ui.slider.css,ui.tabs.css,ui.datepicker.css,ui.progressbar.css,ui.theme.css") />
 	</code>
 	 --->	
@@ -414,7 +419,7 @@
 	<p>Register a JS library into the application:</p>
 	<code>
 		<cfset application.fapi.registerJS(	id="jquery",
-											path="/webtop/thirdparty/jquery/js",
+											baseHREF="#application.url.webtop#/thirdparty/jquery/js",
 											lFiles="jquery-1.3.2.min.js,ui.core.js,ui.accordion.js,ui.datepicker.js,ui.dialog.js,ui.draggable.js,ui.droppable.js,ui.progressbar.js,ui.resizable.js,ui.selectable.js,ui.slider.js,ui.sortable.js,ui.tabs.js,effects.core.js,effects.blind.js,effects.bounce.js,effects.clip.js,effects.drop.js,effects.explode.js,effects.fold.js,effects.highlight.js,effects.pulsate.js,effects.scale.js,effects.shake.js,effects.slide.js,effects.transfer.js") />
 	</code>
 	 --->	

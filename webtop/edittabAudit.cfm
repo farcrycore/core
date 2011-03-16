@@ -34,7 +34,7 @@
 	$j(document).ready(function(){
 		$j(".user-stats").click(function(e){
 			e.preventDefault();
-			$j( "##fc-dialog-iframe-user").attr("src", "/webtop/edittabUserStats.cfm?username=" + $j(this).attr('href') + "&linkuser=false")
+			$j( "##fc-dialog-iframe-user").attr("src", "#application.url.webtop#/edittabUserStats.cfm?username=" + $j(this).attr('href') + "&linkuser=false")
 			$j( "##fc-dialog-div-user" ).dialog({
 				height: 600,
 				width: 700,

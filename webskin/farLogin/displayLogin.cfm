@@ -81,21 +81,7 @@ START WEBSKIN
 				<!--- SELECT USER DIRECTORY --->
 				<!--- --------------------- --->
 				<cfif listlen(application.security.getAllUD()) GT 1>
-		
-					<ft:fieldset>
-						<ft:field label="Select User Directory" for="selectuserdirectories">
-						
-							<cfoutput><select name="selectuserdirectories" id="selectuserdirectories" class="selectInput" onchange="window.location='#application.fapi.getLink(urlParameters=stLocal.loginparams)#&ud='+this.value;"></cfoutput>
-							
-							<cfloop list="#application.security.getAllUD()#" index="thisud">
-								<cfoutput>
-									<option value="#thisud#"<cfif structKeyExists(arguments.stParam, "ud") AND arguments.stParam.ud eq thisud> selected="selected"</cfif>>#application.security.userdirectories[thisud].title#</option>
-								</cfoutput>
-							</cfloop>
-							
-							<cfoutput></select></cfoutput>	
-						</ft:field>
-					</ft:fieldset>	
+					<sec:SelectUDLogin />
 				</cfif>
 
 

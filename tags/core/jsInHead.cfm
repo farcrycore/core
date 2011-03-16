@@ -41,7 +41,7 @@
 			<cfset stJS = aJS[i] />
 
 			<cfif stJS.bCombine>
-				<cfset idHash = hash("#stJS.baseHREF##stJS.lFiles##stJS.prepend##stJS.append#") />
+				<cfset idHash = hash("#stJS.baseHREF##stJS.lFiles##stJS.lCombineIDs##stJS.prepend##stJS.append#") />
 				
 				<cfset sCacheFileName = "" />
 				

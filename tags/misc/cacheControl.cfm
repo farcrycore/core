@@ -51,48 +51,35 @@ Matt Dawson (mad@daemon.com.au)
 
 <cfparam name="url.CacheControlDebug" default="0">
 
-<cfif not( isDefined("attributes.days") OR
-			isDefined("attributes.hours") OR
-			isDefined("attributes.minutes") OR
-			isDefined("attributes.seconds") ) >
+<cfset totalseconds = 0 />
+<cfif isdefined("attributes.days")><cfset totalseconds = totalseconds + attributes.days * 86400 /></cfif>
+<cfif isdefined("attributes.hours")><cfset totalseconds = totalseconds + attributes.hours * 3600 /></cfif>
+<cfif isdefined("attributes.minutes")><cfset totalseconds = totalseconds + attributes.minutes * 60 /></cfif>
+<cfif isdefined("attributes.seconds")><cfset totalseconds = totalseconds + attributes.seconds /></cfif>
+
+<cfif totalseconds eq 0>
 	<CFHEADER NAME="Expires" VALUE="Tue, 01 Jan 1985 00:00:01 GMT">
 	<CFHEADER NAME="Pragma" VALUE="no-cache">
 	<CFHEADER NAME="cache-control" VALUE="no-cache, no-store, must-revalidate">
 	
-	<cfoutput>
-	<META HTTP-EQUIV="Expires" CONTENT="Tue, 01 Jan 1985 00:00:01 GMT" />
-	<META HTTP-EQUIV="Pragma" CONTENT="no-cache" />
-	<META HTTP-EQUIV="cache-control" CONTENT="no-cache, no-store, must-revalidate" />
-	</cfoutput>
-	<cfif ( url.CacheControlDebug neq 0 )>
-		<cfoutput>Page cached until: Page not cached</cfoutput>
-	</cfif>
+	<cfhtmlhead text='<META HTTP-EQUIV="Expires" CONTENT="Tue, 01 Jan 1985 00:00:01 GMT" /><META HTTP-EQUIV="cache-control" CONTENT="no-cache, no-store, must-revalidate" /><!-- Page cached until: not cached -->'>
 <cfelse>
-	<cfscript>
-	gmt = gettimezoneinfo();
-	gmt = gmt.utcHourOffset;
-	if (gmt EQ 0)
-	{
-		gmt="";
-	}
-	else if (gmt GT 0)
-	{
-		gmt="+"&gmt;
-	}
-
-	dateTo=now();
-	if ( isDefined("attributes.days") ) dateTo = dateAdd( 'D', #attributes.days#, dateTo );
-	if ( isDefined("attributes.hours") )dateTo = dateAdd( 'H', #attributes.hours#, dateTo );
-	if ( isDefined("attributes.minutes") )dateTo = dateAdd( 'N', #attributes.minutes#, dateTo );
-	if ( isDefined("attributes.seconds") )dateTo = dateAdd( 'S', #attributes.seconds#, dateTo );
-	dateString = "#DateFormat( dateTo, 'DDD, DD MMM YYYY' )# #TimeFormat( dateTo, 'HH:mm:ss' )# GMT#gmt#";
+	<cfset gmt = gettimezoneinfo() />
+	<cfset gmt = gmt.utcHourOffset />
 	
-	if ( url.CacheControlDebug neq 0 ) writeoutput("Page cached until: #dateString#");
-	</cfscript>
+	<cfif gmt EQ 0>
+		<cfset gmt = "" />
+	<cfelseif gmt GT 0>
+		<cfset gmt = "-" & gmt />
+	<cfelseif gmt lt 0>
+		<cfset gmt = "+" & abs(gmt) />
+	</cfif>
 	
-	<CFHEADER NAME="Expires" VALUE="#dateString#">
-	<cfoutput>
-	<META HTTP-EQUIV="Expires" CONTENT="#dateString#" />
-	</cfoutput>
+	<cfset dateTo = dateAdd( 'S', totalseconds, now() ) />
+	<cfset dateString = "#DateFormat( dateTo, 'DDD, DD MMM YYYY' )# #TimeFormat( dateTo, 'HH:mm:ss' )# GMT#gmt#" />
+	
+	<CFHEADER NAME="Cache-Control" VALUE="max-age=#totalseconds#,s-maxage=#totalseconds#">
+	<cfhtmlhead text='<META HTTP-EQUIV="Cache-Control" CONTENT="max-age=#totalseconds#,s-maxage=#totalseconds#" /><!-- Page cached until: #dateString# (#totalseconds# seconds) -->'>
 </cfif>
+
 <cfsetting enablecfoutputonly="No">

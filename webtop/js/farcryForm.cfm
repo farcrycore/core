@@ -315,11 +315,12 @@ function btnSubmit(formName,value) {
 	}
 }
 		
-function farcryForm_ajaxSubmission(formname,action,maskMsg,maskCls,ajaxTimeout){
+function farcryForm_ajaxSubmission(formname,action,maskMsg,maskCls,ajaxTimeout,ajaxTarget){
 	var a = action ? action : $j('##' + formname).attr('action');
 	if (maskMsg == undefined){var maskMsg = 'Form Submitting, please wait...'};
 	if (maskCls == undefined){var maskCls = 'mask-ajax-submission'};
 	if (ajaxTimeout == undefined){var ajaxTimeout = 30}; // the number of seconds to wait
+	if (ajaxTarget == undefined){var ajaxTarget = "##" + formname + "formwrap"; }; // The ajax update target
 	
 	if (ajaxTimeout > 0) {
 		ajaxTimeout = ajaxTimeout * 1000; // convert to milliseconds
@@ -337,9 +338,9 @@ function farcryForm_ajaxSubmission(formname,action,maskMsg,maskCls,ajaxTimeout){
 	   timeout: ajaxTimeout,
 	   success: function(msg){
 	   		if(maskMsg.length){
-	   			$j("##" + formname + 'formwrap').unmask();
+	   			$j(ajaxTarget).unmask();
 			}
-			$j('##' + formname + 'formwrap').html(msg);						     	
+			$j(ajaxTarget).html(msg);						     	
 	   }
 	 });
 }
@@ -795,4 +796,20 @@ function setRowBackground (childCheckbox) {
 				});
 			}
 		};
+		
+		
+	<!--- 
+		Handles the default action when the user hits the enter button. 
+		Script from http://greatwebguy.com/programming/dom/default-html-button-submit-on-enter-with-jquery/ 
+	--->
+	$j("form input, form select").live('keypress', function (e) {
+		if ($j(this).parents('form').find('.defaultAction').length <= 0)
+			return true;
+		if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+			$j(this).parents('form').find('.defaultAction').click();
+			return false;
+		} else {
+			return true;
+		}
+	});	
 </cfoutput>					

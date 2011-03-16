@@ -33,7 +33,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 	$j(document).ready(function(){
 		$j(".user-stats").click(function(e){
 			e.preventDefault();
-			$j( "##fc-dialog-iframe").attr("src", "/webtop/edittabUserStats.cfm?username=" + $j(this).attr('href'))
+			$j( "##fc-dialog-iframe").attr("src", "#application.url.webtop#/edittabUserStats.cfm?username=" + $j(this).attr('href'))
 			$j( "##fc-dialog-div" ).dialog({
 				height: 800,
 				width: 800,

@@ -337,7 +337,7 @@ form div.notes p, form div small {line-height: 125%;}
 /* start new formtool formatting styles */
 
 	div.farcryButtonWrap-outer{
-		background:transparent url(/webtop/css/forms/images/farcryButtonSprite-left.gif) no-repeat top left;
+		background:transparent url(forms/images/farcryButtonSprite-left.gif) no-repeat top left;
 		border:0px;
 		padding:0px 15px 0px 0px;
 		margin:0px 0px 0px 0px;
@@ -346,7 +346,7 @@ form div.notes p, form div small {line-height: 125%;}
 		
 	}
 	div.farcryButtonWrap-inner{
-		background:transparent url(/webtop/css/forms/images/farcryButtonSprite-right.gif) no-repeat top right;
+		background:transparent url(forms/images/farcryButtonSprite-right.gif) no-repeat top right;
 		border:0px solid green;
 		padding:0px 3px 0px 0px;
 		margin:0px 0px 0px 3px;
@@ -406,7 +406,7 @@ form div.notes p, form div small {line-height: 125%;}
 
 .f-btn .f-btn-bg {
 	background-color:transparent;
-	background-image: url(/webtop/css/forms/images/f-btn-blue.gif);
+	background-image: url(forms/images/f-btn-blue.gif);
 	padding:0 !important;
 	border:none !important;
 }
@@ -660,7 +660,7 @@ body.ext-opera .f-btn-large button {
 
 	li.x-tree-node {background-image:none;}
 	.x-tree-node img.categoryIconCls,  .x-tree-node-collapsed img.categoryIconCls, .x-tree-node-expanded img.categoryIconCls{
-	    background-image:url(/webtop/images/treeimages/customIcons/NavApproved.gif);
+	    background-image:url(../images/treeimages/customIcons/NavApproved.gif);
 	}
 	/*The following styles fix an IE bugs where some of the display is hidden*/
 	ul {position:static;}

@@ -43,7 +43,7 @@
 			<cfset stCSS = aCSS[i] />
 		
 			<cfif structKeyExists(stCSS, "bCombine") AND stCSS.bCombine>
-				<cfset idHash = hash("#stCSS.baseHREF##stCSS.lFiles##stCSS.prepend##stCSS.append#") />
+				<cfset idHash = hash("#stCSS.baseHREF##stCSS.lFiles##stCSS.lCombineIDs##stCSS.prepend##stCSS.append#") />
 			
 				<cfset sCacheFileName = "" />
 			

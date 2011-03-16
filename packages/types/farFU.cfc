@@ -1552,6 +1552,17 @@
 			ORDER BY fuStatus DESC
 			</cfquery>
 		</cfcase>
+		<cfcase value="postgresql">					
+			<cfquery datasource="#application.dsn#" name="stLocal.qList">
+			SELECT	u.*
+			FROM	#application.dbowner#farFU u, 
+					#application.dbowner#refObjects r
+			WHERE	r.objectid = u.refobjectid
+					AND u.refobjectid = <cfqueryparam value="#arguments.objectid#" cfsqltype="cf_sql_varchar">
+					AND u.fuStatus IN (#stLocal.fuStatus#)
+			ORDER BY fuStatus DESC
+			</cfquery>
+		</cfcase>
 		<cfdefaultcase>
 			<cfquery datasource="#application.dsn#" name="stLocal.qList">
 			SELECT	u.*
