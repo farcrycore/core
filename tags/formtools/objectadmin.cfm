@@ -175,9 +175,19 @@ user --->
 <cfelse>
 
 	<cfset oTypeAdmin = createobject("component", "#application.packagepath#.farcry.objectadmin").init(stprefs=session.objectadmin[attributes.typename], attributes=attributes)>
-	
 
-	
+	<cfif isDefined("attributes.r_oTypeAdmin")>
+		<cfset caller[attributes.r_oTypeAdmin]=oTypeAdmin>
+	</cfif>	
+</cfif>
+
+
+
+
+</cfif>
+
+<cfif thistag.executionMode eq "End">
+
 	<cfif len(attributes.title)>
 		<cfoutput><h1><skin:icon icon="#application.stCOAPI[attributes.typename].icon#" default="farcrycore" />#attributes.title#</h1></cfoutput>
 	</cfif>
@@ -637,7 +647,7 @@ user --->
 					<cfif len(HTMLfiltersAttributes)>	
 						<ft:button value="Clear Filter" validate="false" />
 					</cfif>
-					<ft:button value="Apply Filter" bDefaultAction="true" />
+					<ft:button value="Apply Filter" />
 				</ft:buttonPanel>
 				
 			<cfoutput><br class="clearer" /></div></div></cfoutput>
@@ -980,14 +990,6 @@ user --->
 	
 	</ft:form>
 
-</cfif>
-
-
-
-
-</cfif>
-
-<cfif thistag.executionMode eq "End">
 
 </cfif> 
 
