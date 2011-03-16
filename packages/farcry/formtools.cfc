@@ -472,13 +472,6 @@
 			
 			
 			
-
-			<cfquery name="qFormToolRecordset" datasource="#application.dsn#">
-			SELECT #arguments.sqlColumns#
-				<cfif bHasversionID>
-					,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = tbl.objectid) as bHasMultipleVersion
-				</cfif> 
-			FROM #arguments.typename# tbl
 			<cfif bHasVersionID>
 				<cfquery name="qrecordcount" datasource="#application.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
 					SELECT count(distinct objectid) as CountAll
@@ -527,13 +520,14 @@
 				</cfquery>
 			</cfif>
 
-			<!--- Record limiting for oracle --->
-			<!--- 
-				Commented this as not necessary. Number to display per page is processed elsewhere.
-				<cfif application.dbtype EQ "ora">
-					AND rownum <= #arguments.RecordsPerPage#
-				</cfif>
-			 --->
+			<cfquery name="qFormToolRecordset" datasource="#application.dsn#">
+			SELECT #arguments.sqlColumns#
+				<cfif bHasversionID>
+					,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = tbl.objectid) as bHasMultipleVersion
+				</cfif> 
+			FROM #arguments.typename# tbl
+			
+			WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 			
 			<cfif len(trim(arguments.sqlOrderBy))>
 				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
