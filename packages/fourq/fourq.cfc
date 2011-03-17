@@ -191,7 +191,10 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 								self.html('');
 							}
 							self.html(msg);
-						}
+						},
+						jsonp		: false,
+						jsonpCallback:config.id,
+						cache		: true
 					});
 					
 					return self;
@@ -213,6 +216,16 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					urlParameters="#arguments.ajaxURLParameters#&ajaxmode=1",
 					ampDelim="&"
 				) />
+				
+				<skin:onReady><cfoutput>
+					$j('###arguments.ajaxID#').loadAjaxWebskin({
+						action			: '#urlAjaxLoader#', 
+						timeout			: #ARGUMENTS.ajaxTimeout#, 
+						showIndicator	: #arguments.ajaxShowLoadIndicator#,
+						indicatorText	: '#arguments.ajaxIndicatorText#',
+						id				: '#stObj.typename#_#arguments.template#'
+					});
+				</cfoutput></skin:onReady>
 			<cfelse>
 				<cfset urlAjaxLoader = application.fapi.getLink(
 					type="#webskinTypename#",
@@ -220,6 +233,16 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					urlParameters="#arguments.ajaxURLParameters#&ajaxmode=1",
 					ampDelim="&"
 				) />
+				
+				<skin:onReady><cfoutput>
+					$j('###arguments.ajaxID#').loadAjaxWebskin({
+						action			: '#urlAjaxLoader#', 
+						timeout			: #ARGUMENTS.ajaxTimeout#, 
+						showIndicator	: #arguments.ajaxShowLoadIndicator#,
+						indicatorText	: '#arguments.ajaxIndicatorText#',
+						id				: '#webskinTypename#_#arguments.template#'
+					});
+				</cfoutput></skin:onReady>
 			</cfif> 
 			<cfsavecontent variable="stWebskin.webskinHTML">
 				
@@ -231,15 +254,6 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					<cfoutput><div id="#arguments.ajaxID#"></div></cfoutput>
 				
 				</farcry:traceWebskin>
-				
-				<skin:onReady><cfoutput>
-					$j('###arguments.ajaxID#').loadAjaxWebskin({
-						action			: '#urlAjaxLoader#', 
-						timeout			: #ARGUMENTS.ajaxTimeout#, 
-						showIndicator	: #arguments.ajaxShowLoadIndicator#,
-						indicatorText	: '#arguments.ajaxIndicatorText#'
-					});
-				</cfoutput></skin:onReady>
 				
 			</cfsavecontent>
 		<cfelse>
