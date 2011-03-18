@@ -291,6 +291,7 @@ object methods
 			</cfif>
 			<cfset stObj.typename = "farConfig" />
 			<cfset stObj.configkey = arguments.key />
+			<cfset stObj.datetimecreated = now() />
 				
 			<!--- Save the config data (ensures that new configs and new properties are saved) --->
 			<cfset setData(stProperties=stObj,bAudit=arguments.bAudit) />
