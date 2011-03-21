@@ -80,7 +80,7 @@
 		
 		
 		<cfif len(attributes.message)>
-			<cfset session.fc.loginMessage = attributes.message />
+			<skin:bubble title="Security" message="#attributes.message#" tags="security,warning" />
 		</cfif>
 		
 		<!--- SETUP THE RETURN URL. --->

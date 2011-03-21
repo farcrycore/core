@@ -49,6 +49,15 @@ START WEBSKIN
 		
 			<ft:form>	
 				
+				<skin:pop tags="security" start="<ul id='errorMsg'>" end="</ul>">
+					<cfoutput>
+						<li>
+							<cfif len(trim(message.title))><strong>#message.title#</strong></cfif><cfif len(trim(message.title)) and len(trim(message.message))>: </cfif>
+							<cfif len(trim(message.message))>#message.message#</cfif>
+						</li>
+					</cfoutput>
+				</skin:pop>
+				
 				<!--- -------------- --->
 				<!--- SELECT PROJECT --->
 				<!--- -------------- --->
