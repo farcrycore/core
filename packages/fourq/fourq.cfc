@@ -191,7 +191,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 								self.html('');
 							}
 							self.html(msg);
-						}
+						},
+						cache		: true
 					});
 					
 					return self;
