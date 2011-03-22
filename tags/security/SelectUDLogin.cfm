@@ -16,7 +16,7 @@
 				
 				<cfloop list="#application.security.getAllUD()#" index="thisud">
 					<cfoutput>
-						<option value="#application.fapi.getLink(href=application.url.webtoplogin,urlParameters=thisud)#"<cfif application.security.getDefaultUD() eq thisud> selected="selected"</cfif>>#application.security.userdirectories[thisud].title#</option>
+						<option value="#application.fapi.getLink(href=application.url.webtoplogin,urlParameters='ud=#thisud#')#"<cfif application.security.getDefaultUD() eq thisud> selected="selected"</cfif>>#application.security.userdirectories[thisud].title#</option>
 					</cfoutput>
 				</cfloop>
 				
