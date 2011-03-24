@@ -36,6 +36,7 @@
 	<cfparam name="attributes.bHideForms" default="false" /><!--- Setting this to true will allow the processing of the webskin to continue but ignore any subsequent <ft:form /> tags. --->
 	<cfparam name="attributes.Exit" default="false"><!--- @@hint: If set to true the ft:form on the page will not show it's contents after this process runs. Note this doesn't stop page execution, just does not render ft:form contents. @@default: false --->
 	<cfparam name="attributes.bSpamProtect" default="false"><!--- Instantiates cfformprotection to ensure the button is not clicked by spam. --->
+	<cfparam name="attributes.stSpamProtectConfig" default="#structNew()#" /><!--- config data that will override the config set in the webtop. --->
 	
 	
 	<cfset variables.EnterFormProcess = false>
@@ -94,22 +95,33 @@
 	<cfelse>
 		
 		<cfif attributes.bSpamProtect>
-			<cfif structKeyExists(session.stFarCryFormSpamProtection, "#form.farcryFormSubmitted#")>
-				<!--- Supposed to enter form process but form protection is on so we need to protect --->
-				<cfset cffp = CreateObject("component","farcry.core.webtop.cffp.cfformprotect.cffpVerify").init(ConfigPath="#application.path.core#/webtop/cffp/cfformprotect", stConfig=session.stFarCryFormSpamProtection["#form.farcryFormSubmitted#"]["#FORM.FarcryFormSubmitButton#"]) />
+			<cfif not structkeyexists(session,"stFarCryFormSpamProtection")>
+				<!--- User was sessionless until they POST'd (happens behind reverse proxies) - set up as best we can here --->
+				<cfparam name="session.stFarCryFormSpamProtection" default="#structNew()#" />
+				<cfparam name="session.stFarCryFormSpamProtection['#form.farcryFormSubmitted#']" default="#structNew()#" />
+				
+				<cfset session.stFarCryFormSpamProtection['#form.farcryFormSubmitted#']['#FORM.FarcryFormSubmitButton#'] = structNew() />
+				<cfset session.stFarCryFormSpamProtection['#form.farcryFormSubmitted#']['#FORM.FarcryFormSubmitButton#'].bSpamProtect = true />
+				<cfloop list="#structKeyList(attributes)#" index="protectionAttribute">
+					<cfif findNoCase("protection_", protectionAttribute)>
+						<cfset protectionAttributeName = mid(protectionAttribute,12,len(protectionAttribute)) />
+						<cfset session.stFarCryFormSpamProtection['#form.farcryFormSubmitted#']['#FORM.FarcryFormSubmitButton#']['#protectionAttributeName#'] = attributes["#protectionAttribute#"] />
+					</cfif>
+				</cfloop>
+				<cfloop collection="#attributes.stSpamProtectConfig#" item="protectionAttributeName">
+					<cfset session.stFarCryFormSpamProtection['#form.farcryFormSubmitted#']['#FORM.FarcryFormSubmitButton#']['#protectionAttributeName#'] = attributes.stSpamProtectConfig["#protectionAttribute#"] />
+				</cfloop>
+			</cfif>
+			
+			<!--- Supposed to enter form process but form protection is on so we need to protect --->
+			<cfset cffp = CreateObject("component","farcry.core.webtop.cffp.cfformprotect.cffpVerify").init(ConfigPath="#application.path.core#/webtop/cffp/cfformprotect", stConfig=session.stFarCryFormSpamProtection["#form.farcryFormSubmitted#"]["#FORM.FarcryFormSubmitButton#"]) />
 
-				<!--- now we can test the form submission --->
-				<cfif NOT Cffp.testSubmission(form)>
-					<!--- The submission has failed the form test. --->
-					<cfset variables.EnterFormProcess = false>
-					<cfexit>
-				</cfif>
-			<cfelse>
-
-				<!--- The submission of the form was not made by the correct session. --->
+			<!--- now we can test the form submission --->
+			<cfif NOT Cffp.testSubmission(form)>
+				<!--- The submission has failed the form test. --->
 				<cfset variables.EnterFormProcess = false>
 				<cfexit>
-			</cfif>	
+			</cfif>
 		</cfif>	
 	</cfif>
 
