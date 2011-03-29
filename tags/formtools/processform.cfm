@@ -95,7 +95,7 @@
 	<cfelse>
 		
 		<cfif attributes.bSpamProtect>
-			<cfif not structkeyexists(session,"stFarCryFormSpamProtection")>
+			<cfif not structkeyexists(session,"stFarCryFormSpamProtection") or not structkeyexists(session.stFarCryFormSpamProtection,form.farcryFormSubmitted) or not structkeyexists(session.stFarCryFormSpamProtection[form.farcryFormSubmitted],FORM.FarcryFormSubmitButton)>
 				<!--- User was sessionless until they POST'd (happens behind reverse proxies) - set up as best we can here --->
 				<cfparam name="session.stFarCryFormSpamProtection" default="#structNew()#" />
 				<cfparam name="session.stFarCryFormSpamProtection['#form.farcryFormSubmitted#']" default="#structNew()#" />
