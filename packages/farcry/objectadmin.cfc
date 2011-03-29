@@ -286,11 +286,11 @@ environment references (might be nice to clean these up)
 	
 	<cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 	
-	<sec:CheckPermission permission="Create" type="#attributes.typename#" result="stPermissions.iCreate" />
-	<sec:CheckPermission permission="Delete" type="#attributes.typename#" result="stPermissions.iDelete" />
-	<sec:CheckPermission permission="RequestApproval" type="#attributes.typename#" result="stPermissions.iRequestApproval" />
-	<sec:CheckPermission permission="Approve" type="#attributes.typename#" result="stPermissions.iApprove" />
-	<sec:CheckPermission permission="Edit" type="#attributes.typename#" result="stPermissions.iEdit" />
+	<sec:CheckPermission permission="Create" type="#attributes.permissionset#" result="stPermissions.iCreate" />
+	<sec:CheckPermission permission="Delete" type="#attributes.permissionset#" result="stPermissions.iDelete" />
+	<sec:CheckPermission permission="RequestApproval" type="#attributes.permissionset#" result="stPermissions.iRequestApproval" />
+	<sec:CheckPermission permission="Approve" type="#attributes.permissionset#" result="stPermissions.iApprove" />
+	<sec:CheckPermission permission="Edit" type="#attributes.permissionset#" result="stPermissions.iEdit" />
 	<sec:CheckPermission permission="ObjectDumpTab" result="stPermissions.iDumpTab" />
 	<sec:CheckPermission permission="Developer" result="stPermissions.iDeveloper" />
 	
@@ -403,7 +403,7 @@ environment references (might be nice to clean these up)
 			stBut.value="Add";
 			stBut.class="f-submit";
 			stBut.onClick="";
-			stBut.permission=application.security.checkPermission(permission="Create",type=attributes.typename);
+			stBut.permission=application.security.checkPermission(permission="Create",type=attributes.permissionset);
 			stBut.buttontype="add";
 			arrayAppend(aDefaultButtons,stBut);
 
@@ -416,7 +416,7 @@ environment references (might be nice to clean these up)
 			// todo: i18n
 			stBut.onClick="";
 			stBut.confirmText="Are you sure you wish to delete these objects?";
-			stBut.permission=application.security.checkPermission(permission="Delete",type=attributes.typename);
+			stBut.permission=application.security.checkPermission(permission="Delete",type=attributes.permissionset);
 			stBut.buttontype="delete";
 			arrayAppend(aDefaultButtons,stBut);
 
@@ -442,7 +442,7 @@ environment references (might be nice to clean these up)
 				stBut.value="Request Approval";
 				stBut.class="f-submit";
 				stBut.onClick="";
-				stBut.permission=application.security.checkPermission(permission="RequestApproval",type=attributes.typename);
+				stBut.permission=application.security.checkPermission(permission="RequestApproval",type=attributes.permissionset);
 				stBut.buttontype="requestapproval";
 				arrayAppend(aDefaultButtons,stBut);
 			// set status to approved/draft
@@ -453,7 +453,7 @@ environment references (might be nice to clean these up)
 				stBut.value="Approve";
 				stBut.class="f-submit";
 				stBut.onClick="";
-				stBut.permission=application.security.checkPermission(permission="Approve",type=attributes.typename);
+				stBut.permission=application.security.checkPermission(permission="Approve",type=attributes.permissionset);
 				stBut.buttontype="approve";
 				arrayAppend(aDefaultButtons,stBut);
 				//send to draft
@@ -463,7 +463,7 @@ environment references (might be nice to clean these up)
 				stBut.value="Send to Draft";
 				stBut.class="f-submit";
 				stBut.onClick="";
-				stBut.permission=application.security.checkPermission(permission="Approve",type=attributes.typename);
+				stBut.permission=application.security.checkPermission(permission="Approve",type=attributes.permissionset);
 				stBut.buttontype="sendtodraft";
 				arrayAppend(aDefaultButtons,stBut);
 

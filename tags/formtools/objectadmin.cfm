@@ -175,9 +175,19 @@ user --->
 <cfelse>
 
 	<cfset oTypeAdmin = createobject("component", "#application.packagepath#.farcry.objectadmin").init(stprefs=session.objectadmin[attributes.typename], attributes=attributes)>
-	
 
-	
+	<cfif isDefined("attributes.r_oTypeAdmin")>
+		<cfset caller[attributes.r_oTypeAdmin]=oTypeAdmin>
+	</cfif>	
+</cfif>
+
+
+
+
+</cfif>
+
+<cfif thistag.executionMode eq "End">
+
 	<cfif len(attributes.title)>
 		<cfoutput><h1><skin:icon icon="#application.stCOAPI[attributes.typename].icon#" default="farcrycore" />#attributes.title#</h1></cfoutput>
 	</cfif>
@@ -291,7 +301,7 @@ user --->
 								<cfif len(session.objectadminFilterObjects[attributes.typename].stObject[i])>
 									<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
 										<cfset whereValue = ReplaceNoCase(trim(LCase(j)),"'", "''", "all") />
-										<cfoutput>AND #i# LIKE '%#whereValue#%'</cfoutput>
+										<cfoutput>AND lower(#i#) LIKE '%#whereValue#%'</cfoutput> 
 									</cfloop>
 								</cfif>
 							</cfcase>
@@ -320,7 +330,7 @@ user --->
 									<cfloop list="#session.objectadminFilterObjects[attributes.typename].stObject[i]#" index="j">
 										<cfif listcontains("string,nstring,longchar", PrimaryPackage.stProps[i].metadata.type)>
 											<cfset whereValue = ReplaceNoCase(trim(j),"'", "''", "all") />
-											<cfoutput>AND #i# LIKE '%#whereValue#%'</cfoutput>
+											<cfoutput>AND lower(#i#) LIKE '%#whereValue#%'</cfoutput> 
 										<cfelseif listcontains("numeric,integer", PrimaryPackage.stProps[i].metadata.type)>
 											<cfset whereValue = ReplaceNoCase(j,"'", "''", "all") />
 											<cfif isNumeric(whereValue)>
@@ -637,7 +647,7 @@ user --->
 					<cfif len(HTMLfiltersAttributes)>	
 						<ft:button value="Clear Filter" validate="false" />
 					</cfif>
-					<ft:button value="Apply Filter" bDefaultAction="true" />
+					<ft:button value="Apply Filter" />
 				</ft:buttonPanel>
 				
 			<cfoutput><br class="clearer" /></div></div></cfoutput>
@@ -978,14 +988,6 @@ user --->
 	
 	</ft:form>
 
-</cfif>
-
-
-
-
-</cfif>
-
-<cfif thistag.executionMode eq "End">
 
 </cfif> 
 

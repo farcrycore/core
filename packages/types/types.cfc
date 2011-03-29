@@ -1269,7 +1269,7 @@ default handlers
 		<cfelse> <!--- Dirty hack to get this query working for MySQL and possibly Postgres --->
 			<cfquery datasource="#application.dsn#" name="qSearchResults">
 				SELECT objectID as "key" , label FROM #application.dbowner##getTypeName()#	
-				WHERE label like <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.criteria#%">
+				WHERE lower(label) like <cfqueryparam cfsqltype="cf_sql_varchar" value="%#arguments.criteria#%">
 				Order by label
 			</cfquery>
 		</cfif>

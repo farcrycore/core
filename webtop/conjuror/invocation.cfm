@@ -127,11 +127,20 @@ Pseudo:
 				<!--- site tree redirect --->
 				<cfset onExitProcess.Type = "HTML" />
 				<cfsavecontent variable="onExitProcess.Content">
-					<cfoutput>
-					<script type="text/javascript">
-						location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#returnStruct.ObjectID#&ref=#url.ref#';
-					</script>
-					</cfoutput>
+					<!--- Container don't have a webtopOverview.cfm... just close dialog --->
+					<cfif returnStruct.typename eq "container">
+						<cfoutput>
+							<script type="text/javascript">
+								parent.$j('.ui-dialog-content').dialog('close');
+							</script>
+						</cfoutput>
+					<cfelse>
+						<cfoutput>
+							<script type="text/javascript">
+								location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#returnStruct.ObjectID#&ref=#url.ref#';
+							</script>
+						</cfoutput>
+					</cfif>
 				</cfsavecontent>
 			<cfelse>
 				<!--- site tree redirect --->

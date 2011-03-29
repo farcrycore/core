@@ -62,7 +62,7 @@ is returned. --->
 	<!--- trim off the matching items at the end --->
 	<cfloop condition="arguments.startOld lte arguments.endOld and arguments.startNew lte arguments.endNew and arguments.aOld[arguments.endOld] eq arguments.aNew[arguments.endNew]">
 		<cfset st = structCreate(oldindex=arguments.endOld, newindex=arguments.endNew, diff="=", oldvalue=arguments.aOld[arguments.endOld], newvalue=arguments.aNew[arguments.endNew]) />
-		<cfset arrayappend(aMatchingEnd,st) />
+		<cfset arrayprepend(aMatchingEnd,st) />
 		<cfset arguments.endOld = arguments.endOld - 1 />
 		<cfset arguments.endNew = arguments.endNew - 1 />
 	</cfloop>

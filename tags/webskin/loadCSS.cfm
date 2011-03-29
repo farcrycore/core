@@ -14,7 +14,7 @@
 	<cfparam name="attributes.baseHREF" default=""><!--- The url baseHREF to the css files--->
 	<cfparam name="attributes.hostname" default=""><!--- The hostname from which to load the css files--->
 	<cfparam name="attributes.lFiles" default=""><!--- The files to include in that baseHREF --->
-	<cfparam name="attributes.media" default="all"><!--- the media type to use in the style tag --->
+	<cfparam name="attributes.media" default=""><!--- the media type to use in the style tag --->
 	<cfparam name="attributes.condition" default=""><!--- the condition to wrap around the style tag --->
 	<cfparam name="attributes.prepend" default=""><!--- any CSS to prepend to the beginning of the script block --->
 	<cfparam name="attributes.append" default=""><!--- any CSS to append to the end of the script block --->
@@ -70,6 +70,9 @@
 		<cfelse>
 			<cfif not isBoolean(stCSS.bCombine)>
 				<cfset stCSS.bCombine = true />
+			</cfif>
+			<cfif not len(stCSS.media)>
+				<cfset stCSS.media = "all" />
 			</cfif>
 		</cfif>
 		
