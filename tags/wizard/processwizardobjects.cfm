@@ -43,10 +43,6 @@
 	<!--- Could be types or rules.. --->
 	<cfparam name="attributes.PackageType" default="types">
 	
-		
-	<!--- Flag to process image autogenerate routine.. --->
-	<cfparam name="attributes.bimageautogenerate" default="false" />
-	
 	<!--- list of arrayList fields to process on AfterSave.. --->
 	<cfparam name="attributes.lArrayListGenerate" default="" />
 	
@@ -146,10 +142,8 @@
 			<cfset bResult = structAppend(Caller[attributes.r_stProperties], stwizard.data[Caller[attributes.r_stProperties].objectid], false )  />
 		</cfif>
 
-		<cfif attributes.bimageautogenerate>
-			<cfset oImageFormTool = createObject("component", application.formtools["image"].packagepath) />
-			<cfset Caller[attributes.r_stProperties] = oImageFormTool.ImageAutoGenerateBeforeSave(typename=typename,stProperties=Caller[attributes.r_stProperties],stFields=stFields, stFormPost=Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost']) />
-		</cfif>
+		<cfset oImageFormTool = createObject("component", application.formtools["image"].packagepath) />
+		<cfset Caller[attributes.r_stProperties] = oImageFormTool.ImageAutoGenerateBeforeSave(typename=typename,stProperties=Caller[attributes.r_stProperties],stFields=stFields, stFormPost=Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost']) />
 		
 		<cfif structKeyExists(oType,"BeforeSave")>
 			<cfset Caller[attributes.r_stProperties] = oType.BeforeSave(stProperties=Caller[attributes.r_stProperties],stFields=stFields, stFormPost=Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost']) />	
@@ -385,10 +379,6 @@
 				</cfinvoke>
 							
 				<cfset "Caller.#attributes.r_stProperties#.#i#" = stResult.Value>
-				
-				<cfif ftFieldMetadata.ftType eq "image">
-					<cfset attributes.bimageautogenerate="true" />
-				</cfif>
 				
 				<cfif ftFieldMetadata.ftType eq "array">
 					<cfloop list="#structKeyList(stFields)#" index="j">

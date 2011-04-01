@@ -357,8 +357,8 @@
 		    	};
 		    })($j);
 	    	
-	    	$fc.imageformtool = function imageFormtoolObject(prefix,property){
-
+	    	$fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
+				
 	    		function ImageFormtool(prefix,property) {
 	    			var imageformtool = this;
 	    			this.prefix = prefix;
@@ -496,8 +496,9 @@
 	    				});
 	    				
 	    				if (sourceField.length>0){
-		    				$j($fc.imageformtool(prefix,sourceField)).bind("filechange",function onImageFilechangePropogate(event,results){
-		    					if (results.value && results.value.length){
+	    					
+	    					function handleSourceChange(newval){
+		    					if (newval && newval.length){
 			    					//imageformtool.enableCrop(true);
 									imageformtool.applyCrop();
 									if (imageformtool.inline) 
@@ -508,9 +509,28 @@
 								else {
 									imageformtool.enableCrop(false);
 								}
-		    				}).bind("deleteall",function onImageFormtoolDeleteAllPropogate(){
-		    					imageformtool.deleteImage("autogenerate");
-		    				});
+	    					};
+	    					
+	    					if (sourceField.indexOf(":")>-1){
+	    						var $sourceField = $j("##"+prefix+sourceField.split(":")[0]);
+	    						var existingval = $sourceField.val();
+	    						var pending = false;
+	    						function checkSource(){
+	    							var newval = $sourceField.val();
+	    							if (newval!=existingval && !pending){console.log(newval);
+	    								existingval = newval;
+	    								handleSourceChange(newval);
+	    							};
+	    						};
+	    						setInterval(checkSource,500);
+	    					}
+	    					else {
+			    				$j($fc.imageformtool(prefix,sourceField)).bind("filechange",function onImageFilechangePropogate(event,results){
+			    					handleSourceChange(results.value);
+			    				}).bind("deleteall",function onImageFormtoolDeleteAllPropogate(){
+			    					imageformtool.deleteImage("autogenerate");
+			    				});
+			    			}
 		    			}
 			    		
 			    		imageformtool.inputs.newf.uploadify({
@@ -560,7 +580,7 @@
 						// get the post values
 						var values = {};
 						$j('[name^="'+prefix+property+'"]').each(function(){ if (this.name!=prefix+property+"NEW") values[this.name.slice(prefix.length)]=""; });
-						if (imageformtool.sourceField) values[imageformtool.sourceField] = "";
+						if (imageformtool.sourceField) values[imageformtool.sourceField.split(":")[0]] = "";
 						values = getValueData(values,prefix);
 						
 						return values;
@@ -634,9 +654,8 @@
 						
 						var postData = imageformtool.getPostValues();
 						
-						if (imageformtool.sourceField.length > 0) {
-							postData[imageformtool.sourceField] = ''
-						}
+						if (imageformtool.sourceField.length) postData[imageformtool.sourceField.split(":")[0]] = '';
+						
 						$j.ajax({
 							type : "POST",
 							url : imageformtool.url,
@@ -715,7 +734,7 @@
 						    <div style="margin-left:15px;">
 								Image will be automatically generated based on the image selected for #application.stCOAPI[arguments.typename].stProps[listfirst(arguments.stMetadata.ftSourceField,":")].metadata.ftLabel#.<br>
 								<cfif arguments.stMetadata.ftAllowResize>
-									<div class="image-custom-crop"<cfif not structkeyexists(arguments.stObject,arguments.stMetadata.ftSourceField) or not len(arguments.stObject[arguments.stMetadata.ftSourceField])> style="display:none;"</cfif>>
+									<div class="image-custom-crop"<cfif not structkeyexists(arguments.stObject,arguments.stMetadata.ftSourceField) or not len(arguments.stObject[listfirst(arguments.stMetadata.ftSourceField,":")])> style="display:none;"</cfif>>
 										<input type="hidden" name="#arguments.fieldname#RESIZEMETHOD" id="#arguments.fieldname#RESIZEMETHOD" value="" />
 										<input type="hidden" name="#arguments.fieldname#QUALITY" id="#arguments.fieldname#QUALITY" value="" />
 										<ft:button value="Select Exactly How To Crop Your Image" class="image-crop-select-button" type="button" onclick="return false;" />
@@ -924,7 +943,7 @@
 							<span class="action-preview action"<cfif not len(arguments.stMetadata.value)> style="display:none;"</cfif>>
 								<a class="image-preview" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank" title="#preview#">Preview</a> | 
 							</span>
-							<span class="action-crop action"<cfif not len(arguments.stObject[arguments.stMetadata.ftSourceField])> style="display:none;"</cfif>>
+							<span class="action-crop action"<cfif not len(arguments.stObject[listfirst(arguments.stMetadata.ftSourceField,":")])> style="display:none;"</cfif>>
 								<a class="image-crop-select-button" href="##">Custom crop</a><cfif arguments.stMetadata.ftAllowUpload> | </cfif>
 							</span>
 							<cfif arguments.stMetadata.ftAllowUpload><span class="action-upload action"><a href="##upload" class="image-upload-select-button select-view">Upload</a></span></cfif>
@@ -1294,14 +1313,18 @@
 		</cfif>
 		
 		<!--- Get the source filename --->
-	    <cfif arguments.stFields[sourceFieldName].metadata.ftType EQ "uuid">
-			<!--- This means that the source image is from an image library. We now expect that the source image is located in the source field of the image library --->
-			<cfset stImage = application.fapi.getContentObject(objectid="#arguments.stObject[sourceFieldName]#") />
-			<cfif structKeyExists(stImage, libraryFieldName) AND len(stImage[libraryFieldName])>
-				<cfset sourcefilename = stImage[libraryFieldName] />
+		<cfif len(arguments.stObject[sourceFieldName])>
+		    <cfif arguments.stFields[sourceFieldName].metadata.ftType EQ "uuid">
+				<!--- This means that the source image is from an image library. We now expect that the source image is located in the source field of the image library --->
+				<cfset stImage = application.fapi.getContentObject(objectid="#arguments.stObject[sourceFieldName]#") />
+				<cfif structKeyExists(stImage, libraryFieldName) AND len(stImage[libraryFieldName])>
+					<cfset sourcefilename = stImage[libraryFieldName] />
+				</cfif>
+			<cfelse>
+				<cfset sourcefilename = arguments.stObject[sourceFieldName] />
 			</cfif>
 		<cfelse>
-			<cfset sourcefilename = arguments.stObject[sourceFieldName] />
+			<cfset sourcefilename = "" />
 		</cfif>
 		
 		<!--- Copy the source into the new field --->
