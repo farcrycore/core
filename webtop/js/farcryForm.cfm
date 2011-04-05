@@ -625,10 +625,11 @@ function setRowBackground (childCheckbox) {
 		$j("select[name^="+id+"],input[name^="+id+"]").each(function(){
 			if (this.name!=id) propertydata[this.name.slice(id.length)] = $j(this).val();
 		});
+		var prefix = id.slice(0,id.length-property.length);
 		$j.ajax({
 			type: "POST",
 			cache: false,
- 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxRefreshJoinProperty' + '&property=' + property,
+ 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxRefreshJoinProperty' + '&property=' + property + '&prefix=' + prefix,
 		 	success: function(msg){
 				$j("##" + id + '-library-wrapper').html(msg);
 				fcForm.initSortable(typename,objectid,property,id);	
