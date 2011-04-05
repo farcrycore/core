@@ -463,7 +463,7 @@ function setRowBackground (childCheckbox) {
 			
 		});
 		$j(newDialogDiv).dialog('open');
-		$j('iframe',$j(newDialogDiv)).attr('src','#application.fapi.getWebroot()#/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=displayLibraryTabs' + '&property=' + property + '&' + urlparameters);
+		$j('iframe',$j(newDialogDiv)).attr('src','#application.fapi.getWebroot()#/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=displayLibraryTabs' + '&property=' + property + '&fieldname=' + id + '&' + urlparameters);
 	};
 	
 
