@@ -14,7 +14,7 @@
 		<cfargument name="dbowner" type="string" required="false" default="#application.dbowner#" />
 		
 		<cfset variables.paths = getDBTypes() />
-		<cfset initialiseGateway(dsn=arguments.dsn,dbtype=arguments.dbtype,dbowner=arguments.dbowner) />
+		<cfset variables.gateways[arguments.dsn] = initialiseGateway(dsn=arguments.dsn,dbtype=arguments.dbtype,dbowner=arguments.dbowner) />
 		
 		<cfreturn this />
 	</cffunction>
@@ -25,21 +25,45 @@
 		<cfset var gatewaypath = "" />
 		<cfset var o = "" />
 		<cfset var stMeta = structnew() />
+		<cfset var dbtype = "" />
 		<cfset var thisdbtype = "" />
 		<cfset var stResult = structnew() />
 		<cfset var qItems = "" />
+		<cfset var locations = "#expandpath('/farcry/core/packages/dbgateways/')#|farcry.core.packages.dbgateways" />
+		<cfset var thislocation = "" />
+		
+		<!--- Update potential gateway locations --->
+		<cfif structkeyexists(application,"plugins")>
+			<cfloop list="#application.plugins#" index="thislocation">
+				<cfif directoryexists(expandpath('/farcry/plugins/#thislocation#/packages/dbgateways/'))>
+					<cfset locations = listappend(locations,"#expandpath('/farcry/plugins/#thislocation#/packages/dbgateways/')#|farcry.plugins.#thislocation#.packages.dbgateways") />
+				</cfif>
+			</cfloop>
+		</cfif>
+		<cfif structkeyexists(application,"projectdirectoryname")>
+			<cfif directoryexists(expandpath('/farcry/projects/#application.projectdirectoryname#/packages/dbgateways/'))>
+				<cfset locations = listappend(locations,"#expandpath('/farcry/projects/#application.projectdirectoryname#/packages/dbgateways/')#|farcry.projects.#application.projectdirectoryname#.packages.dbgateways") />
+			</cfif>
+		</cfif>
 		
 		<!--- Work out which gateway component corresponds to which dbtype --->
-		<cfdirectory action="list" directory="#expandpath('/farcry')#/core/packages/dbgateways/" filter="*.cfc" name="qItems" />
-		<cfloop query="qItems">
-			<cfset gatewaypath = "farcry.core.packages.dbgateways.#listfirst(name,".")#" />
-			<cfset o = createobject("component",gatewaypath) />
-			<cfset stMeta = getmetadata(o) />
-			<cfif structkeyexists(stMeta,"dbtype")>
-				<cfloop list="#stMeta.dbtype#" index="thisdbtype">
-					<cfset stResult[listfirst(thisdbtype,":")] = gatewaypath />
+		<cfloop list="#locations#" index="thislocation">
+			<cfdirectory action="list" directory="#listfirst(thislocation,'|')#" filter="*.cfc" name="qItems" />
+			<cfloop query="qItems">
+				<cfset gatewaypath = "#listlast(thislocation,'|')#.#listfirst(name,'.')#" />
+				<cfset o = createobject("component",gatewaypath) />
+				<cfset stMeta = getmetadata(o) />
+				<cfif structkeyexists(stMeta,"dbtype")>
+					<cfset dbtype = listfirst(stMeta.dbtype,":") />
+				<cfelse>
+					<cfset dbtype = listlast(stMeta.fullname,".") />
+				</cfif>
+				
+				<cfloop list="#dbtype#" index="thisdbtype">
+					<cfparam name="stResult.#thisdbtype#" default="#arraynew(1)#" />
+					<cfset arrayappend(stResult[thisdbtype],gatewaypath) />
 				</cfloop>
-			</cfif>
+			</cfloop>
 		</cfloop>
 		
 		<cfreturn stResult />
@@ -50,14 +74,33 @@
 		<cfargument name="dbtype" type="string" required="true" />
 		<cfargument name="dbowner" type="string" required="true" />
 		
-		<cfif structkeyexists(variables.paths,arguments.dbtype)>
-			<cfset variables.gateways[arguments.dsn] = createObject('component',variables.paths[arguments.dbtype]).init(argumentCollection=arguments) />
-		<cfelse>
-			<cftrace type="warning" inline="false" text="Creating #variables.paths['default']# gateway for #arguments.dsn# because no recognized connection type was specified in argument 'dbtype' to method getGateway(). Connection type passed was <strong>#arguments.dbtype#</strong>" />
-			<cfset variables.gateways[arguments.dsn] = createObject('component',variables.paths["default"]).init(argumentCollection=arguments) />
+		<cfset var i = 0 />
+		<cfset var oMixin = "" />
+		<cfset var thismethod = "" />
+		<cfset var oGateway = "" />
+		
+		<cfif not structkeyexists(variables.paths,arguments.dbtype)>
+			<cflog file="coapi" type="warning" text="Creating #variables.paths['default']# gateway for #arguments.dsn# because no recognized connection type was specified in argument 'dbtype' to method getGateway(). Connection type passed was <strong>#arguments.dbtype#</strong>" />
+			<cfset arguments.dbtype = "default" />
 		</cfif>
 		
-		<cfreturn variables.gateways[arguments.dsn] />
+		<cfset oGateway = createObject('component',variables.paths[arguments.dbtype][1]).init(argumentCollection=arguments) />
+		<cfif arguments.dbtype neq "default">
+			<cfloop from="1" to="#arraylen(variables.paths['default'])#" index="i">
+				<cfset oMixin = createobject("component",variables.paths['default'][i]) />
+				<cfloop collection="#oMixin#" item="thismethod">
+					<cfset oGateway["#thismethod#"] = oMixin[thismethod] />
+				</cfloop>
+			</cfloop>
+		</cfif>
+		<cfloop from="2" to="#arraylen(variables.paths[arguments.dbtype])#" index="i">
+			<cfset oMixin = createobject("component",variables.paths[arguments.dbtype][i]) />
+			<cfloop collection="#oMixin#" item="thismethod">
+				<cfset oGateway["#thismethod#"] = oMixin[thismethod] />
+			</cfloop>
+		</cfloop>
+		
+		<cfreturn oGateway />
 	</cffunction>
 	
 	<cffunction name="getGateway" access="public" output="false" returntype="any" hint="Gets the gateway for the given db connection parameters">
@@ -67,12 +110,13 @@
 		
 		<cfif not structKeyExists(variables.gateways,arguments.dsn) and structkeyexists(arguments,"dbtype") and structkeyexists(arguments,"dbowner")>
 			<!--- This is a new DSN, initialise the gateway --->
-			<cfreturn initialiseGateway(argumentCollection=arguments) />
+			<cfset variables.gateways[arguments.dsn] = initialiseGateway(argumentCollection=arguments) />
 		<cfelseif not structKeyExists(variables.gateways,arguments.dsn)>
 			<cfthrow message="getGateway() requires an existing DSN or DSN and DBType and DBOwner" />
-		<cfelse><!--- DSN exists --->
-			<cfreturn variables.gateways[arguments.dsn] />
 		</cfif>
+		
+		<!--- DSN exists --->
+		<cfreturn variables.gateways[arguments.dsn] />
 	</cffunction>
 	
 	<cffunction name="initialiseTableMetadata" access="public" output="false" returntype="any" hint="Initialises and returns table metadata for a given content type">
@@ -425,7 +469,7 @@
 	
 	
 	<!--- GENERAL ACCESS --->
-	<cffunction name="createData" access="public" output="true" returntype="struct" hint="Create an object including array properties.  Pass in a structure of property values; arrays should be passed as an array. The objectID can be ommitted and one will be created, passed in as an argument or passed in as a key of stProperties argument.">
+	<cffunction name="createData" access="public" output="false" returntype="struct" hint="Create an object including array properties.  Pass in a structure of property values; arrays should be passed as an array. The objectID can be ommitted and one will be created, passed in as an argument or passed in as a key of stProperties argument.">
 		<cfargument name="typename" type="string" required="true" hint="The name of the content type" />
 		<cfargument name="stProperties" type="struct" required="true" />
 		<cfargument name="dsn" type="string" required="true" />
@@ -484,6 +528,19 @@
 		</cfif>
 		
     	<cfreturn stReturn />
+	</cffunction>
+	
+	
+	<!--- CUSTOM FUNCTION ACCESS --->
+	<cffunction name="run" access="public" output="false" returntype="any" hint="Simplifies access to gateway specific functions provided by plugins or projects. Returns false if the mixin does not exist.">
+		<cfargument name="name" type="string" required="true" hint="The name of the mixin function to run" />
+		<cfargument name="dsn" type="string" required="true" />
+		
+		<cfset var result = false />
+		
+		<cfinvoke component="#getGateway(dsn=arguments.dsn)#" method="#arguments.name#" argumentCollection="#arguments#" returnvariable="result"></cfinvoke>
+		
+		<cfreturn result />
 	</cffunction>
 	
 	

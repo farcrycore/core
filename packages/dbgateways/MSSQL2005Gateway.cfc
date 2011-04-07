@@ -24,8 +24,8 @@
 		
 		<cfif not isDeployed(schema=arguments.schema)>
 			<cftry>
-				<cfquery datasource="#variables.dsn#" result="queryresult">
-					CREATE TABLE #variables.dbowner##arguments.schema.tablename#(
+				<cfquery datasource="#this.dsn#" result="queryresult">
+					CREATE TABLE #this.dbowner##arguments.schema.tablename#(
 					
 					<cfloop collection="#arguments.schema.fields#" item="thisfield">
 						<cfif arguments.schema.fields[thisfield].type neq "array">
@@ -110,8 +110,8 @@
 		<cfset stResult.results = arraynew(1) />
 		
 		<cftry>
-			<cfquery datasource="#variables.dsn#" result="queryresult">
-				ALTER TABLE #variables.dbowner##arguments.schema.tablename#
+			<cfquery datasource="#this.dsn#" result="queryresult">
+				ALTER TABLE #this.dbowner##arguments.schema.tablename#
 				ADD #stProp.name# 
 				<cfswitch expression="#stProp.type#">
 					<cfcase value="numeric">
@@ -176,7 +176,7 @@
 		
 		<cftry>
 			<!--- Remove any defaults on column (default constraints can effect the alterability of a column) --->
-			<cfquery datasource="#variables.dsn#" name="qDefault">
+			<cfquery datasource="#this.dsn#" name="qDefault">
 				select		d.name
 				from		sys.columns c
 							inner join
@@ -189,19 +189,19 @@
 							and t.name=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.schema.tablename#" />
 			</cfquery>
 			<cfif qDefault.recordcount>
-				<cfquery datasource="#variables.dsn#" result="queryresult">
-					ALTER TABLE #variables.dbowner##arguments.schema.tablename#
+				<cfquery datasource="#this.dsn#" result="queryresult">
+					ALTER TABLE #this.dbowner##arguments.schema.tablename#
 					DROP CONSTRAINT #qDefault.name#
 				</cfquery>
 				<cfset arrayappend(stResult.results,queryresult) />
 				
-				<cfquery datasource="#variables.dsn#" name="qDefault">
+				<cfquery datasource="#this.dsn#" name="qDefault">
 					select		d.name
 					from		sys.objects d
 					where		d.name=<cfqueryparam cfsqltype="cf_sql_varchar" value="#qDefault.name#" />
 				</cfquery>
 				<cfif qDefault.recordcount>
-					<cfquery datasource="#variables.dsn#" result="queryresult">
+					<cfquery datasource="#this.dsn#" result="queryresult">
 						DROP DEFAULT #qDefault.name#
 					</cfquery>
 					<cfset arrayappend(stResult.results,queryresult) />
@@ -217,8 +217,8 @@
 			</cfloop>
 			
 			<!--- Alter column --->
-			<cfquery datasource="#variables.dsn#" result="queryresult">
-				ALTER TABLE #variables.dbowner##arguments.schema.tablename#
+			<cfquery datasource="#this.dsn#" result="queryresult">
+				ALTER TABLE #this.dbowner##arguments.schema.tablename#
 				ALTER COLUMN #arguments.oldpropertyname#
 				<cfswitch expression="#stProp.type#">
 					<cfcase value="numeric">
@@ -239,7 +239,7 @@
 			
 			<!--- Rename column --->
 			<cfif arguments.propertyname neq arguments.oldpropertyname>
-				<cfquery datasource="#variables.dsn#" result="queryresult">
+				<cfquery datasource="#this.dsn#" result="queryresult">
 					EXEC sp_rename '#arguments.schema.tablename#.#arguments.oldpropertyname#', '#arguments.propertyname#', 'COLUMN'
 				</cfquery>
 				<cfset arrayappend(stResult.results,queryresult) />
@@ -248,8 +248,8 @@
 			<!--- Add new default --->
 			<cfif stProp.type neq "longchar" and (not stProp.type eq "numeric" or isnumeric(stProp.default))>
 				<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
-				<cfquery datasource="#variables.dsn#" result="queryresult">
-					ALTER TABLE #variables.dbowner##arguments.schema.tablename#
+				<cfquery datasource="#this.dsn#" result="queryresult">
+					ALTER TABLE #this.dbowner##arguments.schema.tablename#
 						ADD CONSTRAINT def_#arguments.schema.tablename#_#arguments.propertyname#
 						<cfif stVal.null>
 							DEFAULT NULL
@@ -307,7 +307,7 @@
 		<cfset stResult.fields = structnew() />
 		
 		<!--- Get all tables in database--->
-		<cfquery name="qTables" datasource="#variables.dsn#">
+		<cfquery name="qTables" datasource="#this.dsn#">
 				select 	Table_name as name
 				from 	Information_schema.Tables
 				where 	Table_type = 'BASE TABLE' 
@@ -320,7 +320,7 @@
 			<cfset myTable = qTables[columnlist][currentrow]>
 			
 			<!--- Get column details of each table--->
-			<cfquery name="qColumns" datasource="#variables.dsn#">
+			<cfquery name="qColumns" datasource="#this.dsn#">
 				select 		*
 				from		information_schema.columns
 				where		table_name=<cfqueryparam cfsqltype="cf_sql_varchar" value="#mytable#">

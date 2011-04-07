@@ -72,8 +72,8 @@
 		
 		<cfif not isDeployed(schema=arguments.schema)>
 			<cftry>
-				<cfquery datasource="#variables.dsn#" result="queryresult">
-					CREATE TABLE #variables.dbowner##arguments.schema.tablename#(
+				<cfquery datasource="#this.dsn#" result="queryresult">
+					CREATE TABLE #this.dbowner##arguments.schema.tablename#(
 					
 					<cfloop collection="#arguments.schema.fields#" item="thisfield">
 						<cfif arguments.schema.fields[thisfield].type neq "array">
@@ -154,8 +154,8 @@
 		<cfset stResult.results = arraynew(1) />
 		
 		<cftry>
-			<cfquery datasource="#variables.dsn#" result="queryresult">
-				ALTER TABLE #variables.dbowner##arguments.schema.tablename#
+			<cfquery datasource="#this.dsn#" result="queryresult">
+				ALTER TABLE #this.dbowner##arguments.schema.tablename#
 				ADD #stProp.name# 
 				<cfswitch expression="#stProp.type#">
 					<cfcase value="numeric">
@@ -212,8 +212,8 @@
 		<cfset stResult.results = arraynew(1) />
 		
 		<cftry>
-			<cfquery datasource="#variables.dsn#" result="queryresult">
-				ALTER TABLE #variables.dbowner##arguments.schema.tablename#
+			<cfquery datasource="#this.dsn#" result="queryresult">
+				ALTER TABLE #this.dbowner##arguments.schema.tablename#
 				CHANGE #arguments.oldpropertyname# #stProp.name# 
 				<cfswitch expression="#stProp.type#">
 					<cfcase value="numeric">
@@ -268,8 +268,8 @@
 		<cfset stResult.results = arraynew(1) />
 		
 		<cftry>
-			<cfquery datasource="#variables.dsn#" result="queryresult">
-				ALTER TABLE #variables.dbowner##arguments.schema.tablename#
+			<cfquery datasource="#this.dsn#" result="queryresult">
+				ALTER TABLE #this.dbowner##arguments.schema.tablename#
 				DROP		#arguments.propertyname#
 			</cfquery>
 			
@@ -298,7 +298,7 @@
 		<cfset var getMySQLIndexes = "" />
 		
 		<!--- Get all tables in database--->
-		<cfquery name="getMySQLIndexes" datasource="#variables.dsn#">
+		<cfquery name="getMySQLIndexes" datasource="#this.dsn#">
 			SHOW INDEX FROM #arguments.tablename#
 		</cfquery>
 		
@@ -345,7 +345,7 @@
 		<cfset stResult.fields = structnew() />
 		
 		<!--- Get all tables in database--->
-		<cfquery name="getMySQLTables" datasource="#variables.dsn#">
+		<cfquery name="getMySQLTables" datasource="#this.dsn#">
 			SHOW TABLES like '#arguments.tablename#'
 		</cfquery>
 		
@@ -354,7 +354,7 @@
 			<cfset myTable = GetMySQLTables[columnlist][currentrow]>
 			
 			<!--- Get column details of each table--->
-			<cfquery name="GetMySQLColumns" datasource="#variables.dsn#">
+			<cfquery name="GetMySQLColumns" datasource="#this.dsn#">
 				SHOW COLUMNS FROM #myTable#
 			</cfquery>
 			
@@ -437,7 +437,7 @@
 		<cfset var stTemp = structnew() />
 		
 		<!--- Get basic table columns--->
-		<cfquery datasource="#variables.dsn#" name="qTables">
+		<cfquery datasource="#this.dsn#" name="qTables">
 			SHOW TABLES like '#arguments.typename#'
 		</cfquery>
 		<cfloop query="qTables">
@@ -445,7 +445,7 @@
 		</cfloop>
 		
 		<!--- Get extended array tables --->
-		<cfquery datasource="#variables.dsn#" name="qTables">
+		<cfquery datasource="#this.dsn#" name="qTables">
 			show tables
 		</cfquery>
 		<cfquery dbtype="query" name="qTables">

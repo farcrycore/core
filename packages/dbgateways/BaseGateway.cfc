@@ -6,9 +6,9 @@
 		<cfargument name="dbowner" type="string" required="true" />
 		<cfargument name="dbtype" type="string" required="true" />
 		
-		<cfset variables.dbowner = arguments.dbowner />
-		<cfset variables.dsn = arguments.dsn />
-		<cfset variables.dbtype = arguments.dbtype />
+		<cfset this.dbowner = arguments.dbowner />
+		<cfset this.dsn = arguments.dsn />
+		<cfset this.dbtype = arguments.dbtype />
 		
 		<cfreturn this />
 	</cffunction>
@@ -52,10 +52,10 @@
 		<cftry>
 			<!--- anything else / needs to be checked as this does not work for all databases--->
 			<cfquery datasource="#arguments.dsn#" result="queryresult">
-				UPDATE 	#variables.dbowner##arguments.tablename#
-				SET 	#variables.dbowner##arguments.tablename#.typename = refObjects.typename		
-				FROM 	#variables.dbowner##arguments.tablename# INNER JOIN refObjects
-						ON #variables.dbowner##arguments.tablename#.data=refObjects.objectid	
+				UPDATE 	#this.dbowner##arguments.tablename#
+				SET 	#this.dbowner##arguments.tablename#.typename = refObjects.typename		
+				FROM 	#this.dbowner##arguments.tablename# INNER JOIN refObjects
+						ON #this.dbowner##arguments.tablename#.data=refObjects.objectid	
 				WHERE 	parentID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.parentid#" />
 			</cfquery>
 			
@@ -122,9 +122,9 @@
 	  	</cfloop>
 	  	
 	  	<!--- Find existing array values --->
-	  	<cfquery datasource="#variables.dsn#" name="qExisting">
+	  	<cfquery datasource="#this.dsn#" name="qExisting">
 			select		#structkeylist(arguments.schema.fields)#
-			from		#variables.dbowner##arguments.schema.tablename#
+			from		#this.dbowner##arguments.schema.tablename#
 			where		parentid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.parentid#" />
 			order by	seq
 		</cfquery>
@@ -198,8 +198,8 @@
 		
 		<cftry>
 			<!--- build query --->
-			<cfquery datasource="#variables.dsn#" name="qCreateData" result="queryresult">
-				INSERT INTO #variables.dbowner##arguments.schema.tablename# (
+			<cfquery datasource="#this.dsn#" name="qCreateData" result="queryresult">
+				INSERT INTO #this.dbowner##arguments.schema.tablename# (
 					<cfset bFirst = true />
 					<cfloop collection="#arguments.stProperties#" item="thisfield">
 						<cfif structkeyexists(arguments.schema.fields,thisfield) and not arguments.schema.fields[thisfield].type eq "array">
@@ -269,9 +269,9 @@
 		</cfloop>
 		
 		<!--- Check to see if the objectID already exists in the database --->
-		<cfquery datasource="#variables.dsn#" name="qRecordExists">
+		<cfquery datasource="#this.dsn#" name="qRecordExists">
 			SELECT 	#arraytolist(arguments.schema.indexes.primary.fields)# 
-			FROM 	#variables.dbowner##arguments.schema.tablename#
+			FROM 	#this.dbowner##arguments.schema.tablename#
 			WHERE 	<cfset bFirst = true />
 					<cfloop list="#arraytolist(arguments.schema.indexes.primary.fields)#" index="thisfield">
 						<cfif NOT bFirst>AND</cfif><cfset bFirst = false />
@@ -294,8 +294,8 @@
 			<cftry>
 				<!--- build query --->
 				<cfset bFirst = true />
-				<cfquery datasource="#variables.dsn#" name="qSetData" result="queryresult">
-					UPDATE	#variables.dbowner##arguments.schema.tablename#
+				<cfquery datasource="#this.dsn#" name="qSetData" result="queryresult">
+					UPDATE	#this.dbowner##arguments.schema.tablename#
 					SET		<cfloop collection="#arguments.stProperties#" item="thisfield">
 								<cfif structkeyexists(arguments.schema.fields,thisfield) and not arguments.schema.fields[thisfield].type eq "array" and not listcontains(arraytolist(arguments.schema.indexes.primary.fields),thisfield)>
 									<cfif NOT bFirst>,</cfif><cfset bFirst = false />
@@ -386,9 +386,9 @@
 		</cfloop>
 		
 		<cftry>
-			<cfquery datasource="#variables.dsn#" name="qGetData">
+			<cfquery datasource="#this.dsn#" name="qGetData">
 				SELECT 	#sqlSelect# 
-				FROM 	#variables.dbowner##arguments.schema.tablename#
+				FROM 	#this.dbowner##arguments.schema.tablename#
 				WHERE 	<cfset bFirst = true />
 						<cfloop list="#arraytolist(arguments.schema.indexes.primary.fields)#" index="thisfield">
 							<cfif NOT bFirst>AND</cfif><cfset bFirst = false />
@@ -403,10 +403,10 @@
 			
 		 	<cfcatch type="database">
 				<!--- Looks like a property has not yet been deployed. If so, simply try a select * --->
-				<farcry:logevent object="#arguments.objectID#" type="#variables.dbowner##arguments.schema.tablename#" event="getData" notes="Error running getdata(). #cfcatch.detail#"  />
-				<cfquery datasource="#variables.dsn#" name="qGetData">
+				<farcry:logevent object="#arguments.objectID#" type="#this.dbowner##arguments.schema.tablename#" event="getData" notes="Error running getdata(). #cfcatch.detail#"  />
+				<cfquery datasource="#this.dsn#" name="qGetData">
 					SELECT 	*
-					FROM 	#variables.dbowner##arguments.schema.tablename#
+					FROM 	#this.dbowner##arguments.schema.tablename#
 					WHERE 	<cfset bFirst = true />
 							<cfloop list="#arraytolist(arguments.schema.indexes.primary.fields)#" index="thisfield">
 								<cfif NOT bFirst>AND</cfif><cfset bFirst = false />
@@ -442,7 +442,7 @@
 						<!--- getdata for array properties --->
 						<cfquery datasource="#arguments.dsn#" name="qArrayData">
 				  			select 		#structkeylist(arguments.schema.fields[thisfield].fields)# 
-				  			from 		#variables.dbowner##arguments.schema.fields[thisfield].tablename#
+				  			from 		#this.dbowner##arguments.schema.fields[thisfield].tablename#
 							where 		parentID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectID#" />
 							order by 	seq
 						</cfquery>
@@ -460,7 +460,7 @@
 						<!--- getdata for array properties --->
 						<cfquery datasource="#arguments.dsn#" name="qArrayData">
 				  			select 		data 
-				  			from 		#variables.dbowner##arguments.schema.fields[thisfield].tablename#
+				  			from 		#this.dbowner##arguments.schema.fields[thisfield].tablename#
 							where 		parentID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectID#" />
 							order by 	seq
 						</cfquery>
@@ -504,12 +504,12 @@
 		
 		<cftransaction>
 			<cftry>
-				<cfquery datasource="#variables.dsn#" result="queryresult">
+				<cfquery datasource="#this.dsn#" result="queryresult">
 					DELETE 
 					FROM 	#arguments.schema.tablename#
 					WHERE 	<cfset bFirst = true />
 							<cfloop list="#arraytolist(arguments.schema.indexes.primary.fields)#" index="thisfield">
-								<cfif NOT bFirst>AND</cfif><cfset bFirst = false />
+							pro	<cfif NOT bFirst>AND</cfif><cfset bFirst = false />
 								
 								<cfif arguments.schema.fields[thisfield].type eq "numeric">
 									#thisfield# = <cfqueryparam cfsqltype="cf_sql_numeric" value="#arguments[thisfield]#" />
@@ -523,7 +523,7 @@
 				<!--- Delete array data - only applicable for standard types (i.e. objectid primary key) --->
 				<cfloop collection="#arguments.schema.fields#" item="thisfield">
 					<cfif arguments.schema.fields[thisfield].type eq 'array'>
-						<cfquery datasource="#variables.dsn#" result="queryresult">
+						<cfquery datasource="#this.dsn#" result="queryresult">
 							DELETE 
 							FROM 	#arguments.schema.fields[thisfield].tablename#
 							WHERE 	parentid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
@@ -555,7 +555,7 @@
 		
 		<cfif isDeployed(arguments.schema)>
 			<cftry>
-				<cfquery datasource="#variables.dsn#" result="queryresult">
+				<cfquery datasource="#this.dsn#" result="queryresult">
 					DROP TABLE #arguments.schema.tablename#
 				</cfquery>
 				
@@ -599,16 +599,16 @@
 		<cftry>
 			<cfswitch expression="#stIndex.type#">
 				<cfcase value="primary">
-					<cfquery datasource="#variables.dsn#" result="queryresult">
-					 	ALTER TABLE 	#variables.dbowner##arguments.schema.tablename#
+					<cfquery datasource="#this.dsn#" result="queryresult">
+					 	ALTER TABLE 	#this.dbowner##arguments.schema.tablename#
 						ADD 			PRIMARY KEY
 										(#arraytolist(stIndex.fields)#)
 					</cfquery>
 				</cfcase>
 				<cfcase value="unclustered">
-					<cfquery datasource="#variables.dsn#" result="queryresult">
+					<cfquery datasource="#this.dsn#" result="queryresult">
 					 	CREATE INDEX 	#stIndex.name# 
-					 	ON 				#variables.dbowner##arguments.schema.tablename# 
+					 	ON 				#this.dbowner##arguments.schema.tablename# 
 					 					(#arraytolist(stIndex.fields)#)
 					</cfquery>
 				</cfcase>
@@ -683,15 +683,15 @@
 		<cftry>
 			<cfswitch expression="#stIndex.type#">
 				<cfcase value="primary">
-					<cfquery datasource="#variables.dsn#" result="queryresult">
-						ALTER TABLE 	#variables.dbowner##arguments.schema.tablename#
+					<cfquery datasource="#this.dsn#" result="queryresult">
+						ALTER TABLE 	#this.dbowner##arguments.schema.tablename#
 						DROP 			PRIMARY KEY
 					</cfquery>
 				</cfcase>
 				<cfcase value="unclustered">
-					<cfquery datasource="#variables.dsn#" result="queryresult">
+					<cfquery datasource="#this.dsn#" result="queryresult">
 					 	DROP INDEX 		#stDB.indexes[arguments.indexname].name# 
-					 	ON 				#variables.dbowner##arguments.schema.tablename#
+					 	ON 				#this.dbowner##arguments.schema.tablename#
 					</cfquery>
 				</cfcase>
 			</cfswitch>
@@ -837,9 +837,9 @@
 		<cfargument name="schema" type="struct" required="true" hint="Table schema to check" />
 		
 		<cftry>
-			<cfquery datasource="#variables.dsn#" name="stLocal.qDeployed">
+			<cfquery datasource="#this.dsn#" name="stLocal.qDeployed">
 				SELECT count(*)
-				FROM #variables.dbowner##arguments.schema.tablename#
+				FROM #this.dbowner##arguments.schema.tablename#
 			</cfquery>
 			
 			<cfcatch type="database">
