@@ -143,18 +143,23 @@ START WEBSKIN
 	CALL THE RELEVENT EDIT PROCESS
 	 ------------------------------>
 	<cfset oType = application.fapi.getContentType("#url.filterTypename#") />		
-		<cfset html = oType.getView(objectID="#newLibraryObjectID#", webskin="libraryAdd", onExitProcess="#stOnExit#", alternateHTML="", bIgnoreSecurity="true") />
+	<cfset html = oType.getView(objectID="#newLibraryObjectID#", webskin="libraryAdd", onExitProcess="#stOnExit#", alternateHTML="", bIgnoreSecurity="true") />
 	
 	<cfif len(html)>
-	    <cfoutput>#html#</cfoutput>
+		<cfoutput>#html#</cfoutput>
 	<cfelse>
-		<admin:Header Title="Library">
+		<cfset html = oType.getView(objectID="#newLibraryObjectID#", webskin="edit", onExitProcess="#stOnExit#", alternateHTML="", bIgnoreSecurity="true") />
+		<admin:Header Title="Library" />
+		<cfif len(html)>
+			<cfoutput>#html#</cfoutput>
+		<cfelse>
 			<!--- THIS IS THE LEGACY WAY OF DOING THINGS AND STAYS FOR BACKWARDS COMPATIBILITY --->
-		    <cfinvoke component="#oType#" method="edit">
-		        <cfinvokeargument name="objectId" value="#newLibraryObjectID#" />
-		        <cfinvokeargument name="onExitProcess" value="#stOnExit#" />
-		    </cfinvoke>
-		<admin:footer>
+			<cfinvoke component="#oType#" method="edit">
+				<cfinvokeargument name="objectId" value="#newLibraryObjectID#" />
+				<cfinvokeargument name="onExitProcess" value="#stOnExit#" />
+			</cfinvoke>
+		</cfif>
+		<admin:footer />
 	</cfif>
 	
 	<!-------------------------------------------------- 
