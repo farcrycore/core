@@ -44,10 +44,10 @@ START WEBSKIN
 	<cfset oType = application.fapi.getContentType(type) />		
 	<cfset html = oType.getView(objectID="#url.editID#", webskin="libraryEdit", onExitProcess="#stOnExit#", alternateHTML="", bIgnoreSecurity="true") />
 	
-	<cfif len(html)>
-		<cfoutput>#html#</cfoutput>
-	<cfelse>
-		<admin:Header Title="Library" />
+	<admin:Header Title="Library" />
+		<cfif len(html)>
+			<cfoutput>#html#</cfoutput>
+		<cfelse>
 			<cfset html = oType.getView(objectID="#url.editID#", webskin="edit", onExitProcess="#stOnExit#", alternateHTML="", bIgnoreSecurity="true") />
 			<cfif len(html)>
 				<cfoutput>#html#</cfoutput>
@@ -58,8 +58,8 @@ START WEBSKIN
 					<cfinvokeargument name="onExitProcess" value="#stOnExit#" />
 				</cfinvoke>
 			</cfif>
-		<admin:footer />
-	</cfif>
+		</cfif>
+	<admin:footer />
 		
 	
 	<skin:onReady>

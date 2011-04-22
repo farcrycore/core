@@ -145,22 +145,22 @@ START WEBSKIN
 	<cfset oType = application.fapi.getContentType("#url.filterTypename#") />		
 	<cfset html = oType.getView(objectID="#newLibraryObjectID#", webskin="libraryAdd", onExitProcess="#stOnExit#", alternateHTML="", bIgnoreSecurity="true") />
 	
-	<cfif len(html)>
-		<cfoutput>#html#</cfoutput>
-	<cfelse>
-		<cfset html = oType.getView(objectID="#newLibraryObjectID#", webskin="edit", onExitProcess="#stOnExit#", alternateHTML="", bIgnoreSecurity="true") />
-		<admin:Header Title="Library" />
+	<admin:Header Title="Library" />
 		<cfif len(html)>
 			<cfoutput>#html#</cfoutput>
 		<cfelse>
-			<!--- THIS IS THE LEGACY WAY OF DOING THINGS AND STAYS FOR BACKWARDS COMPATIBILITY --->
-			<cfinvoke component="#oType#" method="edit">
-				<cfinvokeargument name="objectId" value="#newLibraryObjectID#" />
-				<cfinvokeargument name="onExitProcess" value="#stOnExit#" />
-			</cfinvoke>
+			<cfset html = oType.getView(objectID="#newLibraryObjectID#", webskin="edit", onExitProcess="#stOnExit#", alternateHTML="", bIgnoreSecurity="true") />
+			<cfif len(html)>
+				<cfoutput>#html#</cfoutput>
+			<cfelse>
+				<!--- THIS IS THE LEGACY WAY OF DOING THINGS AND STAYS FOR BACKWARDS COMPATIBILITY --->
+				<cfinvoke component="#oType#" method="edit">
+					<cfinvokeargument name="objectId" value="#newLibraryObjectID#" />
+					<cfinvokeargument name="onExitProcess" value="#stOnExit#" />
+				</cfinvoke>
+			</cfif>
 		</cfif>
-		<admin:footer />
-	</cfif>
+	<admin:footer />
 	
 	<!-------------------------------------------------- 
 	RENAME THE DIALOG WINDOW WITH THE CURRENT TYPENAME
