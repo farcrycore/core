@@ -25,10 +25,10 @@
 
 		<cfif not findNoCase( "login.cfm", cgi.script_name )>  
 			<!--- If the user is not logged in, then they are redirected to the login page with no message --->
-			<sec:checkLoggedIn url="#arguments.targetPage#" />  
+			<sec:checkLoggedIn url="#arguments.targetPage#?#cgi.query_string#" />  
 	
 			<!--- If the user is logged in but does not have the admin permission, then they are redirected with a message --->
-			<sec:checkLoggedIn url="#arguments.targetPage#" lPermissions="admin" message="You do not have permission to access the webtop" />  
+			<sec:checkLoggedIn url="#arguments.targetPage#?#cgi.query_string#" lPermissions="admin" message="You do not have permission to access the webtop" />  
 		</cfif>  		
 		
 		<!--- Restrict access if webtop access is disabled --->

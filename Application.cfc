@@ -710,6 +710,7 @@
 		<cfparam name="this.bObjectBroker" default="true" />
 		<cfparam name="this.ObjectBrokerMaxObjectsDefault" default="1000" />
 		<cfparam name="this.defaultWebskinCacheTimeout" default="1400" /><!--- Default timeout in seconds --->
+		<cfparam name="this.defaultProxyCacheTimeout" default="-1" /><!--- Default timeout in seconds. -1=no cache directives --->
 		
 		<!--- Option to archive --->
 		<cfparam name="this.bUseMediaArchive" default="false" />
@@ -750,6 +751,8 @@
 		<cfelse>
 			<cfset application.url.webtop = "#cgi.context_path##application.url.webroot#/webtop" />
 		</cfif>
+		<cfset application.url.webtoplogin = "#application.url.webtop#/login.cfm" />
+		<cfset application.url.publiclogin = application.url.webtoplogin />
 		<cfset application.url.farcry = "#application.url.webtop#" /><!--- Legacy variable. Developers should use application.url.webtop --->
 		<cfset application.url.imageRoot = "#application.url.webroot#">
 		<cfset application.url.fileRoot = "#application.url.webroot#/files">
@@ -831,7 +834,7 @@
 
 		
 		<!--- FAPI INIT --->
-		<cfset application.fapi = createObject("component", "farcry.core.packages.lib.fapi").init() /><!--- FarCry API Functions --->
+		<cfset application.fapi = createObject("component", application.fc.utils.getPath(package="lib", component="fapi")).init() /><!--- FarCry API Functions --->
 		<cfset application.fc.lib = createObject("component", "farcry.core.packages.lib.lib").init() /><!--- FarCry libraries --->
 		
 		
@@ -841,6 +844,7 @@
 		<cfset application.bObjectBroker = this.bObjectBroker />
 		<cfset application.ObjectBrokerMaxObjectsDefault = this.ObjectBrokerMaxObjectsDefault />
 		<cfset application.defaultWebskinCacheTimeout = this.defaultWebskinCacheTimeout />
+		<cfset application.defaultProxyCacheTimeout = this.defaultProxyCacheTimeout />
 
 
 		<!------------------------------------------ 
