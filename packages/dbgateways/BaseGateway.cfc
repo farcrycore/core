@@ -509,7 +509,7 @@
 					FROM 	#arguments.schema.tablename#
 					WHERE 	<cfset bFirst = true />
 							<cfloop list="#arraytolist(arguments.schema.indexes.primary.fields)#" index="thisfield">
-							pro	<cfif NOT bFirst>AND</cfif><cfset bFirst = false />
+								<cfif NOT bFirst>AND</cfif><cfset bFirst = false />
 								
 								<cfif arguments.schema.fields[thisfield].type eq "numeric">
 									#thisfield# = <cfqueryparam cfsqltype="cf_sql_numeric" value="#arguments[thisfield]#" />
@@ -534,6 +534,7 @@
 				
 				<cfcatch type="database">
 					<cfset stResult.bSuccess = false />
+					<cfset stResult.message = cfcatch.message />
 					<cfset arrayappend(stResult.results,cfcatch) />
 				</cfcatch>
 			</cftry>
