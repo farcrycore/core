@@ -183,22 +183,41 @@
 			from	#application.dbowner#dmPermission
 		</cfquery>
 		
-		<!--- Add data --->
-		<cfloop query="qPermissions">
-			<cfset stObj = structnew() />
-			<cfset stObj.objectid = application.fc.utils.createJavaUUID() />
-			<cfset stObj.title = permissionname />
-			<cfset stObj.shortcut = permissionname />
-			<cfset stObj.label = permissionname />
-			<cfif permissiontype neq "PolicyGroup">
-				<cfparam name="stObj.aRelatedtypes" default="#arraynew(1)#" />
-				<cfset arrayappend(stObj.aRelatedtypes,permissiontype) />
-			</cfif>
+		<cfswitch expression="#application.dbtype#">
+			<cfcase value="mssql">
+				<cfquery datasource="#application.dsn#">
+					insert into #application.dbowner#farPermission(createdby,datetimecreated,datetimelastupdated,label,lastupdatedby,locked,lockedBy,objectid,ownedby,shortcut,title)
+					(select '' as createdBy, getdate() as datetimecreated, getdate() as datetimelastupdated, permissionname as label, 'upgrade' as lastupdatedby, 0 as locked, '' as lockedBy, left(newid(),23)+right(newid(),12) as objectid, '' as ownedBy, permissionname as shortcut, permissionname as title
+					from #application.dbowner#dmPermission)
+				</cfquery>
+				<cfquery datasource="#application.dsn#">
+					insert into #application.dbowner#farPermission_aRelatedTypes(parentid,data,typename,seq)
+					(select np.objectid as parentid,op.permissiontype as data,'' as typename,1 as seq
+					from #application.dbowner#farPermission np join #application.dbowner#dmPermission op on np.shortcut=op.permissionname
+					where op.permissiontype<>'PolicyGroup')
+				</cfquery>
+			</cfcase>
 			
-			<cfset oPermission.createData(stProperties=stObj,user="migratescript",auditNote="Data migrated from pre 4.1") />
+			<cfdefaultcase>
+				<!--- Add data --->
+				<cfloop query="qPermissions">
+					<cfset stObj = structnew() />
+					<cfset stObj.objectid = application.fc.utils.createJavaUUID() />
+					<cfset stObj.title = permissionname />
+					<cfset stObj.shortcut = permissionname />
+					<cfset stObj.label = permissionname />
+					<cfif permissiontype neq "PolicyGroup">
+						<cfparam name="stObj.aRelatedtypes" default="#arraynew(1)#" />
+						<cfset arrayappend(stObj.aRelatedtypes,permissiontype) />
+					</cfif>
+					
+					<cfset oPermission.createData(stProperties=stObj,user="migratescript",auditNote="Data migrated from pre 4.1") />
+					
+					<cfset stResult[permissionid] = stObj.objectid />
+				</cfloop>
+			</cfdefaultcase>
 			
-			<cfset stResult[permissionid] = stObj.objectid />
-		</cfloop>
+		</cfswitch>
 		
 		<!--- Add new permisions - the generic permission set --->
 		<cfloop list="Approve,Create,Delete,Edit,RequestApproval,CanApproveOwnContent" index="perm">
@@ -220,39 +239,66 @@
 		<cfset var oRole = createObject("component", application.stcoapi["farRole"].packagePath) />
 		<cfset var stObj = structnew() />
 		
-		<!--- Get data --->
-		<cfquery datasource="#application.dsn#" name="qPolicyGroups">
-			select	*
-			from	#application.dbowner#dmPolicyGroup
-		</cfquery>
-		
-		<!--- Add data --->
-		<cfloop query="qPolicyGroups">
-			<cfset stObj = structnew() />
-			<cfset stObj.objectid = application.fc.utils.createJavaUUID() />
-			<cfset stObj.title = policygroupname />
-			<cfset stObj.label = policygroupname />
-			<cfif policygroupname eq "Anonymous">
-				<cfset stObj.isdefault = true />
-			</cfif>
+		<cfswitch expression="#application.dbtype#">
+			<cfcase value="mssql">
+				<cfquery datasource="#application.dsn#">
+					insert into #application.dbowner#farRole(createdBy,datetimecreated,datetimelastupdated,isdefault,label,lastupdatedby,locked,lockedBy,objectid,ownedby,title,webskins)
+					(select 'upgrade' as createdBy, getdate() as datetimecreated, getdate() as datetimelastupdated, 
+						case policygroupname when 'Anonymous' then 1 else 0 end as isdefault, policygroupname as label, 
+						'upgrade' as lastupdatedby, 0 as locked, '' as lockedBy, left(newid(),23)+right(newid(),12) as objectid,
+						'' as ownedby, policygroupname as title, case when policygroupname='Anonymous' then 'display*' + char(13) + char(10) + 'execute*' when policygroupname in ('Contributors','Publishers','SiteAdmin','SysAdmin') then '*' else '' end as webskins
+					from #application.dbowner#dmPolicyGroup)
+				</cfquery>
+				
+				<cfquery datasource="#application.dsn#" name="qPolicyGroups">
+					select	objectid,title,policygroupid
+					from	#application.dbowner#farRole r
+							join
+							#application.dbowner#dmPolicyGroup pg
+							on r.title=pg.policygroupname
+				</cfquery>
+				<cfloop query="qPolicyGroups">
+					<cfset stResult[qPolicyGroups.policygroupid] = qPolicyGroups.objectid />
+					<cfset stResult[qPolicyGroups.title] = qPolicyGroups.objectid />
+				</cfloop>
+			</cfcase>
 			
-			<cfswitch expression="#policygroupname#">
-				<cfcase value="anonymous">
-					<cfset stObj.webskins = "display*#chr(13)##chr(10)#execute*" />
-				</cfcase>
-				<cfcase value="Contributors,Publishers,SiteAdmin,SysAdmin" delimiters=",">
-					<cfset stObj.webskins = "*" />
-				</cfcase>
-				<cfdefaultcase>
-					<cfset stObj.webskins = "" />
-				</cfdefaultcase>
-			</cfswitch>
-			
-			<cfset oRole.createData(stProperties=stObj,user="migratescript",auditNote="Data migrated from pre 4.1") />
-			
-			<cfset stResult[policygroupid] = stObj.objectid />
-			<cfset stResult[stObj.title] = stObj.objectid />
-		</cfloop>		
+			<cfdefaultcase>
+				<!--- Get data --->
+				<cfquery datasource="#application.dsn#" name="qPolicyGroups">
+					select	*
+					from	#application.dbowner#dmPolicyGroup
+				</cfquery>
+				
+				<!--- Add data --->
+				<cfloop query="qPolicyGroups">
+					<cfset stObj = structnew() />
+					<cfset stObj.objectid = application.fc.utils.createJavaUUID() />
+					<cfset stObj.title = policygroupname />
+					<cfset stObj.label = policygroupname />
+					<cfif policygroupname eq "Anonymous">
+						<cfset stObj.isdefault = true />
+					</cfif>
+					
+					<cfswitch expression="#policygroupname#">
+						<cfcase value="anonymous">
+							<cfset stObj.webskins = "display*#chr(13)##chr(10)#execute*" />
+						</cfcase>
+						<cfcase value="Contributors,Publishers,SiteAdmin,SysAdmin" delimiters=",">
+							<cfset stObj.webskins = "*" />
+						</cfcase>
+						<cfdefaultcase>
+							<cfset stObj.webskins = "" />
+						</cfdefaultcase>
+					</cfswitch>
+					
+					<cfset oRole.createData(stProperties=stObj,user="migratescript",auditNote="Data migrated from pre 4.1") />
+					
+					<cfset stResult[policygroupid] = stObj.objectid />
+					<cfset stResult[stObj.title] = stObj.objectid />
+				</cfloop>		
+			</cfdefaultcase>
+		</cfswitch>
 		
 		<cfreturn stResult />
 	</cffunction>
@@ -263,24 +309,50 @@
 		<cfset var oGroup = createObject("component", application.stcoapi["farGroup"].packagePath) />
 		<cfset var stObj = structnew() />
 		
-		<!--- Get data --->
-		<cfquery datasource="#application.dsn#" name="qGroups">
-			select	*
-			from	#application.dbowner#dmGroup
-		</cfquery>
-		
-		<!--- Add data --->
-		<cfloop query="qGroups">
-			<cfset stObj = structnew() />
-			<cfset stObj.objectid = application.fc.utils.createJavaUUID() />
-			<cfset stObj.title = groupname />
-			<cfset stObj.label = groupname />
+		<cfswitch expression="#application.dbtype#">
+			<cfcase value="mssql">
+				<cfquery datasource="#application.dsn#">
+					insert into farGroup(createdby,datetimecreated,datetimelastupdated,label,lastupdatedby,locked,lockedBy,objectid,ownedby,title)
+					(select 'upgrade' as createdBy, getdate() as datetimecreated, getdate() as datetimelastupdated,groupname as label,
+						'upgrade' as lastupdatedby,0 as locked,'' as lockedBy,left(newid(),23)+right(newid(),12) as objectid,
+						'' as ownedby,groupname as title
+					from #application.dbowner#dmGroup)
+				</cfquery>
+				
+				<cfquery datasource="#application.dsn#" name="qGroups">
+					select	objectid,title,groupid
+					from	#application.dbowner#farGroup ng
+							join
+							#application.dbowner#dmGroup og
+							on ng.title=og.groupname
+				</cfquery>
+				<cfloop query="qGroups">
+					<cfset stResult[qGroups.groupid] = qGroups.objectid />
+					<cfset stResult[qGroups.title] = qGroups.objectid />
+				</cfloop>
+			</cfcase>
 			
-			<cfset oGroup.createData(stProperties=stObj,user="migratescript",auditNote="Data migrated from pre 4.1") />
-			
-			<cfset stResult[groupid] = stObj.objectid />
-			<cfset stResult[groupname] = stObj.objectid />
-		</cfloop>		
+			<cfdefaultcase>
+				<!--- Get data --->
+				<cfquery datasource="#application.dsn#" name="qGroups">
+					select	*
+					from	#application.dbowner#dmGroup
+				</cfquery>
+				
+				<!--- Add data --->
+				<cfloop query="qGroups">
+					<cfset stObj = structnew() />
+					<cfset stObj.objectid = application.fc.utils.createJavaUUID() />
+					<cfset stObj.title = groupname />
+					<cfset stObj.label = groupname />
+					
+					<cfset oGroup.createData(stProperties=stObj,user="migratescript",auditNote="Data migrated from pre 4.1") />
+					
+					<cfset stResult[groupid] = stObj.objectid />
+					<cfset stResult[groupname] = stObj.objectid />
+				</cfloop>		
+			</cfdefaultcase>
+		</cfswitch>
 		
 		<cfreturn stResult />
 	</cffunction>
@@ -294,29 +366,50 @@
 		<cfset var property = "" />
 		<cfset var oAlterType = createObject("component", "farcry.core.packages.farcry.alterType") />
 		
-		<!--- Get data --->
-		<cfquery datasource="#application.dsn#" name="qUsers">
-			select	*
-			from	#application.dbowner#dmUser
-		</cfquery>
-		
-		<!--- Add data --->
-		<cfloop query="qUsers">
-			<cfset stObj = structnew() />
-			<cfset stObj.objectid = application.fc.utils.createJavaUUID() />
-			<cfset stObj.userid = userlogin />
-			<cfset stObj.password = userpassword />
-			<cfset stObj.label = userlogin />
-			<cfif userstatus eq 4>
-				<cfset stObj.userstatus = "active" />
-			<cfelse>
-				<cfset stObj.userstatus = "disabled" />
-			</cfif>
+		<cfswitch expression="#application.dbtype#">
+			<cfcase value="mssql">
+				<cfquery datasource="#application.dsn#">
+					insert into #application.dbowner#farUser(createdby,datetimecreated,datetimelastupdated,label,lastupdatedby,lGroups,locked,lockedBy,objectid,ownedby,password,userid,userstatus)
+					(select 'upgrade' as createdby,getdate() as datetimecreated,getdate() as datetimelastupdated,userlogin as label,
+						'upgrade' as lastupdatedby, '' as lGroups,0 as locked,'' as lockedBy,left(newid(),23)+right(newid(),12) as objectid,
+						'' as ownedby, userpassword as password,userlogin as userid,case userstatus when 4 then 'active' else 'inactive' end as userstatus
+					from #application.dbowner#dmUser)
+				</cfquery>
+				
+				<cfquery datasource="#application.dsn#" name="qUsers">
+					select userid,objectid from farUser
+				</cfquery>
+				<cfloop query="qUsers">
+					<cfset stResult[qUsers.userid] = qUsers.objectid />
+				</cfloop>
+			</cfcase>
 			
-			<cfset oUser.createData(stProperties=stObj,user="migratescript",auditNote="Data migrated from pre 4.1") />
-			
-			<cfset stResult[userid] = stObj.objectid />
-		</cfloop>
+			<cfdefaultcase>
+				<!--- Get data --->
+				<cfquery datasource="#application.dsn#" name="qUsers">
+					select	*
+					from	#application.dbowner#dmUser
+				</cfquery>
+				
+				<!--- Add data --->
+				<cfloop query="qUsers">
+					<cfset stObj = structnew() />
+					<cfset stObj.objectid = application.fc.utils.createJavaUUID() />
+					<cfset stObj.userid = userlogin />
+					<cfset stObj.password = userpassword />
+					<cfset stObj.label = userlogin />
+					<cfif userstatus eq 4>
+						<cfset stObj.userstatus = "active" />
+					<cfelse>
+						<cfset stObj.userstatus = "disabled" />
+					</cfif>
+					
+					<cfset oUser.createData(stProperties=stObj,user="migratescript",auditNote="Data migrated from pre 4.1") />
+					
+					<cfset stResult[userid] = stObj.objectid />
+				</cfloop>
+			</cfdefaultcase>
+		</cfswitch>
 
 		<cfloop collection="#application.types#" item="typename">
 			<cfloop list="createdby,lastupdatedby,lockedby" index="property">
@@ -422,24 +515,42 @@
 			order by	userid
 		</cfquery>
 		
-		<!--- Add data --->
-		<cfoutput query="qUserGroups" group="userid">
-			<!--- Make sure user still exists before migrating --->
-			<cfif structKeyExists(arguments.users, qUserGroups.userid)>
-				<cfset stObj = oUser.getData(objectid=arguments.users[qUserGroups.userid]) />
-				<cfparam name="stObj.aGroups" default="#arraynew(1)#" />
+		<cfswitch expression="#application.dbtype#">
+			<cfcase value="mssql">
+				<cfquery datasource="#application.dsn#">
+					insert into farUser_aGroups(parentid,data,typename,seq)
+					(select fu.objectid as parentid,fg.objectid as data,'farGroup' as typename,0 as seq from farUser fu
+					join dmUser du on fu.userid=du.userLogin
+					join dmUserToGroup dug on du.userid=dug.userid
+					join dmGroup dg on dug.groupid=dg.groupid
+					join farGroup fg on dg.groupName=fg.title)
+				</cfquery>
 				
-				<cfoutput>
-					<!--- Make sure group still exists before migrating --->
-					<cfif structKeyExists(arguments.groups, qUserGroups.groupid)>
-  						<cfset arrayappend(stObj.aGroups,arguments.groups[qUserGroups.groupid]) />
-	  					<cfset result = result + 1 />
+				<cfset result = qUserGroups.recordcount />
+			</cfcase>
+			
+			<cfdefaultcase>
+				<!--- Add data --->
+				<cfoutput query="qUserGroups" group="userid">
+					<!--- Make sure user still exists before migrating --->
+					<cfif structKeyExists(arguments.users, qUserGroups.userid)>
+						<cfset stObj = oUser.getData(objectid=arguments.users[qUserGroups.userid]) />
+						<cfparam name="stObj.aGroups" default="#arraynew(1)#" />
+						
+						<cfoutput>
+							<!--- Make sure group still exists before migrating --->
+							<cfif structKeyExists(arguments.groups, qUserGroups.groupid)>
+								<cfset arrayappend(stObj.aGroups,arguments.groups[qUserGroups.groupid]) />
+								<cfset result = result + 1 />
+							</cfif>
+						</cfoutput>
+						
+						<cfset oUser.setData(stProperties=stObj,user="migratescript",auditNote="Data migrated from pre 4.1") />
 					</cfif>
 				</cfoutput>
-				
-				<cfset oUser.setData(stProperties=stObj,user="migratescript",auditNote="Data migrated from pre 4.1") />
-			</cfif>
-		</cfoutput>
+			</cfdefaultcase>
+		</cfswitch>
+		
 		<cfreturn result />
 	</cffunction>
 
@@ -486,34 +597,83 @@
 		<cfset var oRole = createObject("component", application.stcoapi["farRole"].packagePath) />
 		<cfset var oBarnacle = createObject("component", application.stcoapi["farBarnacle"].packagePath) />
 		
-		<!--- Get data --->
-		<cfquery datasource="#application.dsn#" name="qBarnacles">
-			select		*
-			from		#application.dbowner#dmPermissionBarnacle
-			where		status = 1
-			order by	PolicyGroupId
-		</cfquery>
-		
-		<!--- Add data --->
-		<cfoutput query="qBarnacles" group="PolicyGroupId">
-			<cfif structkeyexists(arguments.roles,PolicyGroupId)>
-				<cfparam name="stRole.aPermissions" default="#arraynew(1)#" />
+		<cfswitch expression="#application.dbtype#">
+			<cfcase value="mssql">
+				<cfquery datasource="#application.dsn#">
+					insert into #application.dbowner#farBarnacle(barnaclevalue,createdby,datetimecreated,datetimelastupdated,label,lastupdatedby,locked,lockedby,objectid,objecttype,ownedby,permissionid,referenceid,roleid)
+					(select ob.status as barnaclevalue,'upgrade' as createdby,getdate() as datetimecreated,getdate() as datetimelastupdated,
+						'' as label,'upgrade' as lastupdatedby,0 as locked,'' as lockedBy,
+						left(newid(),23)+right(newid(),12) as objectid,ref.typename as objecttype,
+						'' as ownedby,np.objectid as permissionid,reference1 as referenceid,nr.objectid as roleid
+					from #application.dbowner#dmPermissionBarnacle ob
+					join #application.dbowner#refObjects ref on ob.reference1=ref.objectid
+					join #application.dbowner#dmPermission op on ob.permissionid=op.permissionid
+					join #application.dbowner#farPermission np on op.permissionname=np.title
+					join #application.dbowner#dmPolicyGroup olr on ob.policygroupid=olr.policygroupid
+					join #application.dbowner#farRole nr on olr.policygroupname=nr.title
+					where reference1 like '________-____-____-________________' and status=1)
+				</cfquery>
+				<cfquery datasource="#application.dsn#" name="qBarnacles">
+					select * from #application.dbowner#dmPermissionBarnacle where reference1 like '________-____-____-________________' and status=1
+				</cfquery>
+				<cfset result = result + qBarnacles.recordcount />
 				
-				<cfoutput>
-					<cfif structkeyexists(arguments.permissions,permissionid)>
-						<cfif len(reference1) and isvalid("uuid",reference1)>
-							<!--- If this barnacle is related to a particular item, the new barnacle structure (which refers to items in an array) has already been created --->
-							<cfset oBarnacle.updateRight(role=arguments.roles[PolicyGroupId],permission=arguments.permissions[permissionid],object=reference1,right=status)>
-						<cfelseif reference1 eq "PolicyGroup">
-							<!--- If this barnacle isn't related to a particular item, add it as a generic permission to this role --->
-							<cfset oRole.updatePermission(role=arguments.roles[PolicyGroupId],permission=arguments.permissions[permissionid],has=true) />
-						</cfif>
+				<cfquery datasource="#application.dsn#">
+					ALTER TABLE dbo.farRole_aPermissions ADD [tempseq] int NOT NULL IDENTITY (1, 1)
+				</cfquery>
+				<cfquery datasource="#application.dsn#">
+					insert into farRole_aPermissions(data,parentid,seq,typename)
+					(select np.objectid as data, nr.objectid as parentid, 0 as seq, 'farPermission' as typename
+					from dmPermissionBarnacle ob
+					join dmPermission op on ob.permissionid=op.permissionid
+					join farPermission np on op.permissionname=np.title
+					join dmPolicyGroup olr on ob.policygroupid=olr.policygroupid
+					join farRole nr on olr.policygroupname=nr.title
+					where reference1='PolicyGroup' and status=1)
+				</cfquery>
+				<cfquery datasource="#application.dsn#">
+					update farRole_aPermissions set seq=[tempseq]
+				</cfquery>
+				<cfquery datasource="#application.dsn#">
+					ALTER TABLE farRole_aPermissions DROP COLUMN [tempseq]
+				</cfquery>
+				<cfquery datasource="#application.dsn#" name="qBarnacles">
+					select * from #application.dbowner#dmPermissionBarnacle where reference1 like 'PolicyGroup' and status=1
+				</cfquery>
+				<cfset result = result + qBarnacles.recordcount />
+			</cfcase>
+			
+			<cfdefaultcase>
+				<!--- Get data --->
+				<cfquery datasource="#application.dsn#" name="qBarnacles">
+					select		*
+					from		#application.dbowner#dmPermissionBarnacle
+					where		status = 1
+					order by	PolicyGroupId
+				</cfquery>
+				
+				<!--- Add data --->
+				<cfoutput query="qBarnacles" group="PolicyGroupId">
+					<cfif structkeyexists(arguments.roles,PolicyGroupId)>
+						<cfparam name="stRole.aPermissions" default="#arraynew(1)#" />
 						
-						<cfset result = result + 1 />
+						<cfoutput>
+							<cfif structkeyexists(arguments.permissions,permissionid)>
+								<cfif len(reference1) and isvalid("uuid",reference1)>
+									<!--- If this barnacle is related to a particular item, the new barnacle structure (which refers to items in an array) has already been created --->
+									<cfset oBarnacle.updateRight(role=arguments.roles[PolicyGroupId],permission=arguments.permissions[permissionid],object=reference1,right=status)>
+								<cfelseif reference1 eq "PolicyGroup">
+									<!--- If this barnacle isn't related to a particular item, add it as a generic permission to this role --->
+									<cfset oRole.updatePermission(role=arguments.roles[PolicyGroupId],permission=arguments.permissions[permissionid],has=true) />
+								</cfif>
+								
+								<cfset result = result + 1 />
+							</cfif>
+						</cfoutput>
 					</cfif>
 				</cfoutput>
-			</cfif>
-		</cfoutput>
+			</cfdefaultcase>
+		</cfswitch>
 		
 		<!--- Attach the new permissions - the generic permission set --->
 		<cfset oRole.updatePermission(role=arguments.roles["Contributors"],permission="genericCreate",has=true) />
