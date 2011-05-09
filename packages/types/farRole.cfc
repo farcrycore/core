@@ -115,18 +115,19 @@ object methods
 		<cfset var result = "" />
 		<cfset var qProfiles = querynew("empty") />
 		<cfset var userlist = "" />
+		<cfset var thisuser = "" />
 		
 		<cfloop list="#arguments.roles#" index="role">
 			<cfset arrayappend(users,"") />
 			<cfloop list="#rolesToGroups(role)#" index="group">
 				<cftry>
-				<cfset userlist = arraytolist(application.security.userdirectories[listlast(group,'_')].getGroupUsers(listfirst(group,'_'))) />
-				<cfcatch>
-					<cftrace type="warning" category="farRole.getAuthenticatedProfiles" text="Could not generate userlist." var="cfcatch.message" />
-				</cfcatch>
+					<cfset userlist = arraytolist(application.security.userdirectories[listlast(group,'_')].getGroupUsers(listfirst(group,'_'))) />
+					<cfcatch>
+						<cftrace type="warning" category="farRole.getAuthenticatedProfiles" text="Could not generate userlist." var="cfcatch.message" />
+					</cfcatch>
 				</cftry>
 				<cfloop list="#userlist#" index="user">
-					<cfif not listcontains(users[arraylen(users)],"#user#_#listlast(group,'_')#")>
+					<cfif not listcontains(users[arraylen(users)],"#user#_#listlast(group,'_')#") and listlen(users[arraylen(users)]) lte 200>
 						<cfset users[arraylen(users)] = listappend(users[arraylen(users)],"#user#_#listlast(group,'_')#") />
 					</cfif>
 				</cfloop>
