@@ -85,7 +85,7 @@
 		</cfif>
 		
 		<cfset oGateway = createObject('component',variables.paths[arguments.dbtype][1]).init(argumentCollection=arguments) />
-		<cfif arguments.dbtype neq "default">
+		<cfif arguments.dbtype neq "default" and structkeyexists(variables.paths,"default")>
 			<cfloop from="1" to="#arraylen(variables.paths['default'])#" index="i">
 				<cfset oMixin = createobject("component",variables.paths['default'][i]) />
 				<cfloop collection="#oMixin#" item="thismethod">
