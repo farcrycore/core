@@ -123,8 +123,8 @@
 		<cfset propertytypemap["numeric"] = "cf_sql_numeric" />
 		<cfset propertytypemap["integer"] = "cf_sql_numeric" />
 		<cfset propertytypemap["boolean"] = "cf_sql_numeric" />
-		<cfset propertytypemap["array"] = "" />
-		<cfset propertytypemap["category"] = "" />
+		<cfset propertytypemap["array"] = "cf_sql_varchar" />
+		<cfset propertytypemap["category"] = "cf_sql_varchar" />
 		
 		<cfset comparisonmap["lt"] = "<" />
 		<cfset comparisonmap["lte"] = "<=" />
