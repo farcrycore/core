@@ -381,12 +381,10 @@
 			<!--- Authenticate user --->
 			<cfset stResult = this.userdirectories[ud].authenticate(argumentCollection="#arguments#") />
 			
-			<!--- This allows your userdirectory check multiple user directories and pass back the successfull one. --->
-			<cfif not structKeyExists(stResult, "UD")>
-				<cfset stResult.UD = ud />
-			</cfif>
-			
 			<cfif structkeyexists(stResult,"authenticated")>
+				<!--- This allows your userdirectory check multiple user directories and pass back the successfull one. --->
+				<cfparam name="stResult.UD" default="#ud#" />
+				
 				<cfif not stResult.authenticated>
 					<farcry:logevent type="security" event="loginfailed" userid="#stResult.userid#_#stResult.UD#" notes="#stResult.message#" />
 					<cfbreak />
