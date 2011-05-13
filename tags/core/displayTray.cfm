@@ -38,8 +38,6 @@
 		
 		<cfset request.fc.totalTickCount = (GetTickCount() - request.fc.startTickCount) />
 		
-		<cfset urlTray = application.fapi.getLink(type=url.type, objectid=url.objectid, urlParameters='ajaxmode=1') />
-
 		<!--- import libraries --->
 		<skin:loadJS id="jquery" />
 		<skin:loadJS id="jquery-ui" />
@@ -55,17 +53,11 @@
 
 		$fc.loadTray = function(){
 		    $j('##farcryTray').html('');
-		    
-		    <cfif findNoCase("?",urlTray)>
-		    	var urlSeparator = "&";
-		    <cfelse>
-		    	var urlSeparator = "?";
-			</cfif>
 					    
 			$j.ajax({
 				type: "POST",
 				cache: false,
-				url: '#urlTray#' + urlSeparator + 'view=trayContainer&totalTickCount=#request.fc.totalTickCount#', 
+				url: '#application.fapi.getLink(type=url.type, view="trayContainer", objectid=url.objectid, urlParameters="ajaxmode=1&totalTickCount=#request.fc.totalTickCount#")#', 
 				complete: function(data){
 					$j('##farcryTray').html(data.responseText);					
 				},

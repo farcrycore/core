@@ -86,4 +86,67 @@
 		
 	</cffunction>
 
+	
+	<!------------------ 
+	FILTERING FUNCTIONS
+	 ------------------>	
+	<cffunction name="getFilterUIOptions">
+		<cfreturn "is true,is false" />
+	</cffunction>
+	
+	<cffunction name="editFilterUI">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+		<cfargument name="stPackage" required="false" type="struct" hint="Contains the metadata for the all fields for the current typename.">
+				
+		<cfargument name="filterTypename" />
+		<cfargument name="filterProperty" />
+		<cfargument name="filterType" />
+		<cfargument name="stFilterProps" />
+		
+		<cfset var resultHTML = "" />
+		
+		<cfreturn resultHTML />
+	</cffunction>
+	
+	<cffunction name="displayFilterUI">
+		<cfargument name="filterType" />
+		<cfargument name="stFilterProps" />
+		
+		<cfset var resultHTML = "" />
+		
+		<cfreturn resultHTML />
+	</cffunction>
+	
+
+	<cffunction name="getFilterSQL">
+		
+		<cfargument name="filterTypename" />
+		<cfargument name="filterProperty" />
+		<cfargument name="filterType" />
+		<cfargument name="stFilterProps" />
+		
+		<cfset var resultHTML = "" />
+		
+		<cfsavecontent variable="resultHTML">
+			
+			<cfswitch expression="#arguments.filterType#">
+				
+				<cfcase value="is true">
+					<cfoutput>#arguments.filterProperty# = 1</cfoutput>
+				</cfcase>
+				
+				<cfcase value="is false">
+					<cfoutput>#arguments.filterProperty# = 0</cfoutput>
+				</cfcase>
+				
+			</cfswitch>
+			
+		</cfsavecontent>
+		
+		<cfreturn resultHTML />
+	</cffunction>
+		
 </cfcomponent> 

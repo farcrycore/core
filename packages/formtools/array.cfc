@@ -173,13 +173,6 @@
 			<cfif right(stFieldPost.value,1) EQ ",">
 				<cfset stFieldPost.value = left(stFieldPost.value,len(stFieldPost.value)-1) />
 			</cfif>	
-					
-			<cfquery datasource="#application.dsn#" name="qArrayRecords">
-		    SELECT * 
-		    FROM #application.dbowner##arguments.typename#_#stMetadata.name#
-		    WHERE parentID = '#arguments.objectid#'
-		    </cfquery>
-		    	
 			
 			<cfloop list="#stFieldPost.value#" index="i">			
 				

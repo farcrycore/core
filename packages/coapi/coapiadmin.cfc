@@ -397,7 +397,7 @@
 					
 					SELECT 		*
 					FROM 		request.fc.stProjectDirectorys.qAll
-					WHERE 		typename = <cfqueryparam cfsqltype="cf_sql_varchar" value="#aExtends[i]#" />
+					WHERE 		lower(typename) = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(aExtends[i])#" />
 								AND name NOT IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#valuelist(qResult.name)#" />)
 								<cfif listLen(arguments.excludeWebskins)>
 									AND lower(methodname) NOT IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lCase(arguments.excludeWebskins)#" />)
@@ -408,7 +408,7 @@
 				<cfquery dbtype="query" name="qResult">
 					SELECT 		*
 					FROM 		request.fc.stProjectDirectorys.qAll
-					WHERE 		typename = <cfqueryparam cfsqltype="cf_sql_varchar" value="#aExtends[i]#" />
+					WHERE 		lower(typename) = <cfqueryparam cfsqltype="cf_sql_varchar" value="#lcase(aExtends[i])#" />
 								<cfif listLen(arguments.excludeWebskins)>
 									AND lower(methodname) NOT IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lCase(arguments.excludeWebskins)#" />)
 								</cfif>

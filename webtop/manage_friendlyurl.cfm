@@ -1,24 +1,25 @@
-<cfsetting enablecfoutputonly="true">
+<cfsetting enablecfoutputonly="true" />
 
-<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
-<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">
-<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
+<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/grid/" prefix="grid" />
 
 
 <!--- 
 manage friendly urls for a particular object id
  --->
 
-<cfparam name="url.objectid" default="">
-<cfparam name="fatalerrormessage" default="">
-<cfparam name="errormessage" default="">
-<cfparam name="bFormSubmitted" default="no">
-<cfparam name="friendly_url" default="">
-<cfparam name="additional_params" default="">
-<cfparam name="lArchiveObjectID" default="">
-<cfparam name="fuStatus" default="2">
-<cfparam name="redirectionType" default="301">
-<cfparam name="redirectTo" default="system">
+<cfparam name="url.objectid" default="" />
+<cfparam name="fatalerrormessage" default="" />
+<cfparam name="errormessage" default="" />
+<cfparam name="bFormSubmitted" default="no" />
+<cfparam name="friendly_url" default="" />
+<cfparam name="additional_params" default="" />
+<cfparam name="lArchiveObjectID" default="" />
+<cfparam name="fuStatus" default="2" />
+<cfparam name="redirectionType" default="301" />
+<cfparam name="redirectTo" default="system" />
 
 
 <cfset stRefObject = application.coapi.coapiUtilities.getContentObject(objectid="#url.objectid#") />
@@ -258,4 +259,4 @@ manage friendly urls for a particular object id
 	
 
 <admin:footer>
-<cfsetting enablecfoutputonly="false">
+<cfsetting enablecfoutputonly="false" />

@@ -13,7 +13,9 @@
 
 
 <cfif application.fapi.isLoggedIn()>
-		
+	
+	<cfparam name="url.fieldname" default="fc#Replace(stObj.objectid,'-','','all')##url.property#" />
+	
 	<skin:loadJS id="jquery" />
 	<skin:loadJS id="jquery-ui" />
 	<skin:loadCSS id="jquery-ui" />	
@@ -81,7 +83,7 @@
 	
 	<skin:onReady>
 		<cfoutput>
-			fcForm.selections.init('#stobj.typename#','#url.property#','fc#Replace(stObj.objectid,"-","","all")##url.property#');
+			fcForm.selections.init('#stobj.typename#','#url.property#','#url.fieldname#');
 		</cfoutput>
 	</skin:onReady>	
 	

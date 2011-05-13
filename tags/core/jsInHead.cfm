@@ -5,6 +5,8 @@
 
 <cfif thistag.executionMode eq "Start">
 	
+	<cfparam name="request.mode.ajax" default="0">
+	
 	<cfif NOT request.mode.ajax>
 		<cfparam name="request.inHead.aJSLibraries" default="#arrayNew(1)#" />
 		<cfparam name="request.inHead.stJSLibraries" default="#structNew()#" />

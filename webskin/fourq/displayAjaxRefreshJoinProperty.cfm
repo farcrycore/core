@@ -27,7 +27,7 @@
  --->
 
 <cfparam name="url.property" type="string" /><!--- The name of the property we are updating. --->
-
+<cfparam name="url.prefix" default="" />
 
 <cfset request.hideLibraryWrapper = true />
 
@@ -38,7 +38,8 @@
 					objectID="#stobj.objectid#" 
 					wizardID="#url.wizardID#" 
 					lFields="#url.property#"
-					r_stFields="stFields" />
+					r_stFields="stFields"
+					prefix="#url.prefix#" />
 	<cfelse>
 		<cfset objPropValues = structNew()>
 		<cfif structKeyExists(form, "propertyValue") AND len(form.propertyValue)>
@@ -54,7 +55,8 @@
 					objectID="#stobj.objectid#" 
 					lFields="#url.property#" 
 					r_stFields="stFields"
-					stPropValues="#objPropValues#" />
+					stPropValues="#objPropValues#"
+					prefix="#url.prefix#" />
 	</cfif>	
 </cfsilent>
 
