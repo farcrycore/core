@@ -51,7 +51,9 @@
 	<cfset bFoundLibraryData = false />
 		
 	<cfif structKeyExists(stMetadata, "ftLibraryData") AND len(stMetadata.ftLibraryData)>
-		<cfparam name="stMetadata.ftLibraryDataTypename" default="#url.filterTypename#" />
+		<cfif not structkeyexists(stMetadata,"ftLibraryDataTypename") or not len(stMetadata.ftLibraryDataTypename)>
+			<cfset stMetadata.ftLibraryDataTypename = url.filterTypename />
+		</cfif>
 		
 		<cfset oLibraryData = application.fapi.getContentType("#stMetadata.ftLibraryDataTypename#") />
 			
