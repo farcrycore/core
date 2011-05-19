@@ -43,6 +43,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <skin:loadJS id="farcry-form" />
 <skin:loadJS id="jquery-ui" />
 <skin:loadCSS id="jquery-ui" />
+<skin:loadCSS id="objectadmin-ie7" />
 
 
 <cfif thistag.executionMode eq "Start">
