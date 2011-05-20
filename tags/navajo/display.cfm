@@ -88,7 +88,7 @@
 				<cfsetting enablecfoutputonly="false" />
 				<cfexit method="exittag" />	
 			<cfelseif fileexists("#application.path.webroot#/errors/404.cfm")>				
-				<cfinclude template="#application.path.webroot#/errors/404.cfm" />
+				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/www/errors/404.cfm" />
 				<cfsetting enablecfoutputonly="false" />
 				<cfexit method="exittag" />	
 			</cfif>
@@ -128,8 +128,8 @@
 				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/404.cfm" />
 				<cfsetting enablecfoutputonly="false" />
 				<cfexit method="exittag" />	
-			<cfelseif fileexists("#application.path.webroot#/errors/404.cfm")>	
-				<cfinclude template="#application.path.webroot#/errors/404.cfm" />
+			<cfelseif fileexists("#application.path.webroot#/errors/404.cfm")>
+				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/www/errors/404.cfm" />
 				<cfsetting enablecfoutputonly="false" />
 				<cfexit method="exittag" />	
 			</cfif>
