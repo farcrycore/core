@@ -295,6 +295,11 @@
 			<cfcase value="boolean">
 				<cfset stResult.type = "numeric" />
 				<cfset stResult.precision = "1,0" />
+				<cfif stResult.default eq true>
+					<cfset stResult.default = 1>
+				<cfelse>
+					<cfset stResult.default = 0>
+				</cfif>
 			</cfcase>
 			<cfcase value="date,datetime" delimiters=",">
 				<cfset stResult.type = "datetime" />
