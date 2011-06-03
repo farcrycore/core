@@ -21,6 +21,8 @@
 	</code>
 --->
 
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+
 <cfif not thistag.HasEndTag>
 
 	<cfabort showerror="Does not have an end tag..." >
@@ -188,9 +190,9 @@
 				<cfif structKeyExists(stLocal.stOnExit, "Content")>
 					<cfif len(stLocal.stOnExit.Content)>
 						<cfif stLocal.stOnExit.Content EQ "refresh">
-							<cflocation url="#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#" addtoken="false">
+							<skin:location href="#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#" addtoken="false" />
 						<cfelse>
-							<cflocation url="#stLocal.stOnExit.Content#" addtoken="false">
+							<skin:location href="#stLocal.stOnExit.Content#" addtoken="false" />
 						</cfif>
 					<cfelse>
 						<!--- DO NOTHING --->
