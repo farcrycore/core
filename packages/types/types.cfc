@@ -245,12 +245,12 @@ default handlers
 		<cfargument name="bSessionOnly" type="boolean" required="false" default="false"><!--- This property allows you to save the changes to the Temporary Object Store for the life of the current session. ---> 
 		<cfargument name="bAfterSave" type="boolean" required="false" default="true" hint="This allows the developer to skip running the types afterSave function.">	
 		<cfargument name="bSetDefaultCoreProperties" type="boolean" required="false" default="true" hint="This allows the developer to skip defaulting the core properties if they dont exist.">	
+		<cfargument name="previousStatus" type="string" required="false" />
 		
 		<cfset var stResult = StructNew()>
 		<cfset var stresult_friendly = StructNew()>
 		<cfset var stObj = structnew() />
 		<cfset var fnStatusChange = "" />
-		<cfset var previousstatus = "" />
 		
 		<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
 		
@@ -293,22 +293,24 @@ default handlers
 		
 		<cfif structkeyexists(arguments.stProperties,"status") and len(arguments.stProperties.status)>
 			<cfset stObj = getData(objectid=arguments.stProperties.objectid) />
-			<cfif arguments.stProperties.status neq stObj.status>
-				<cfset previousstatus = stObj.status />
+			<cfif not structkeyexists(arguments,"previousStatus") or not len(arguments.previousStatus)>
+				<cfset arguments.previousStatus = stObj.status />
+			</cfif>
+			<cfif arguments.stProperties.status neq arguments.previousStatus>
 				<cfset structappend(stObj,arguments.stProperties,true) />
 				
 				<cfif structkeyexists(this,"on#arguments.stProperties.status#")>
 					<cfinvoke component="#this#" method="on#arguments.stProperties.status#">
 						<cfinvokeargument name="typename" value="#arguments.stProperties.typename#" />
 						<cfinvokeargument name="stProperties" value="#stObj#" />
-						<cfinvokeargument name="previousStatus" value="#previousstatus#" />
+						<cfinvokeargument name="previousStatus" value="#arguments.previousStatus#" />
 					</cfinvoke>
 				<cfelse>
 					<cfinvoke component="#this#" method="onStatusChange">
 						<cfinvokeargument name="typename" value="#arguments.stProperties.typename#" />
 						<cfinvokeargument name="stProperties" value="#stObj#" />
 						<cfinvokeargument name="newstatus" value="#stObj.status#" />
-						<cfinvokeargument name="previousStatus" value="#previousstatus#" />
+						<cfinvokeargument name="previousStatus" value="#arguments.previousStatus#" />
 					</cfinvoke>
 				</cfif>
 			</cfif>

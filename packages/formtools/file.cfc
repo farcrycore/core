@@ -636,7 +636,7 @@
 			<cfset arguments.stObject = application.fapi.getContentObject(objectid=arguments.objectid,typename=arguments.typename) />
 		</cfif>
 		
-		<cfset stLocation = getFileLocation(argumentCollection=arguments) />
+		<cfset stLocation = getFileLocation(argumentCollection=arguments,firstLook="public") />
 		
 		<cfif not directoryexists("#newPath##arguments.stMetadata.ftDestination#")>
 			<cfdirectory action="create" directory="#newPath##arguments.stMetadata.ftDestination#" mode="777" />
@@ -662,7 +662,7 @@
 			<cfset arguments.stObject = application.fapi.getContentObject(objectid=arguments.objectid,typename=arguments.typename) />
 		</cfif>
 		
-		<cfset stLocation = getFileLocation(argumentCollection=arguments) />
+		<cfset stLocation = getFileLocation(argumentCollection=arguments,firstLook="secure") />
 		
 		<cfif structisempty(stLocation)><cfabort showerror="shouldn't be here">
 			<cfreturn />
@@ -671,7 +671,7 @@
 		<cfif not directoryexists("#newPath##arguments.stMetadata.ftDestination#")>
 			<cfdirectory action="create" directory="#newPath##arguments.stMetadata.ftDestination#" mode="777" />
 		</cfif>
-		
+		<cflog file="debug" text="Moving #stLocation.fullpath# to #newPath##arguments.stObject[arguments.stMetadata.name]#">
 		<cffile action="move" source="#stLocation.fullpath#" destination="#newPath##arguments.stObject[arguments.stMetadata.name]#" />
 	</cffunction>
 	
@@ -683,6 +683,7 @@
 		<cfargument name="stObject" type="struct" required="false" hint="Provides the object" />
 		
 		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
+		<cfargument name="firstLook" type="string" required="false" hint="Where should we look for the file first. The default is to look based on permissions and status" />
 		
 		<cfset var stResult = structnew() />
 		<cfset var filepermission = 0 />
@@ -725,7 +726,13 @@
 			<!--- Objects that are not ALWAYS secured and have been approved should be available under the webroot --->
 			
 			<!--- check file exists --->
-			<cfif fileExists("#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#")>
+			<cfif structkeyexists(arguments,"firstLook") and arguments.firstLook eq "secure" and fileExists("#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#")>
+				<!--- This happens if the file is being moved from secure to public - we expect the file to be in secure --->
+				<cfset stResult.isCorrectLocation = true />
+				<cfset stResult.type = "stream" />
+				<cfset stResult.path = "#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#" />
+				<cfset stResult.fullpath = "#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#" />
+			<cfelseif fileExists("#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#")>
 				<cfset stResult.isCorrectLocation = true />
 				<cfset stResult.type = "redirect" />
 				<cfset stResult.path = "#application.fapi.getFileWebRoot()##arguments.stObject[arguments.stMetadata.name]#" />
@@ -751,7 +758,12 @@
 			<cfset stResult.type = "stream" />
 			
 			<!--- check file exists --->
-			<cfif fileExists("#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#")>
+			<cfif structkeyexists(arguments,"firstLook") and arguments.firstLook eq "public" and fileexists("#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#")>
+				<!--- This happens if the file is being moved from public to secure - we expect the file to be in public --->
+				<cfset stResult.isCorrectLocation = true />
+				<cfset stResult.path = "#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#" />
+				<cfset stResult.fullpath = stResult.path />
+			<cfelseif fileExists("#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#")>
 				<cfset stResult.isCorrectLocation = true />
 				<cfset stResult.path = "#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#" />
 				<cfset stResult.fullpath = stResult.path />
