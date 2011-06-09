@@ -506,10 +506,10 @@
 					<cfinvokeargument name="stFieldPost" value="#Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i]#">
 					<cfinvokeargument name="stMetadata" value="#ftFieldMetadata#">
 				</cfinvoke>
-							
-				<cfset Caller[attributes.r_stProperties][i] = stResult.Value />
 				
-				<cfif ftFieldMetadata.ftType eq "array">
+				<cfset Caller[attributes.r_stProperties][i] = stResult.Value />
+			
+				<cfif ftFieldMetadata.Type eq "array">
 					<cfloop list="#structKeyList(stFields)#" index="j">
 						<cfif structKeyExists(stFields[j].metadata, "ftType") AND structKeyExists(stFields[j].metadata, "ftArrayField") AND stFields[j].metadata.ftType EQ "arrayList" AND stFields[j].metadata.ftArrayField EQ i>
 						

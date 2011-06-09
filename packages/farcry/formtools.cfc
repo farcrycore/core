@@ -813,23 +813,25 @@
 				<cfelse>
 					<cfset item = stData.label />
 				</cfif>
-							
-				<!--- add the link if requested --->
-				<cfif arguments.bIncludeLink>
-					<cfsavecontent variable="item">							
-						<skin:buildLink objectid="#itemData#"><cfoutput>#item#</cfoutput></skin:buildLink>
-					</cfsavecontent>
-				</cfif>
 				
-				<!--- If in a list, then append with li tags otherwise append to list --->
-				<cfswitch expression="#arguments.listType#">
-				<cfcase value="unordered,ordered">
-					<cfset result = "#result#<li>#item#</li>" />
-				</cfcase>
-				<cfdefaultcase>
-					<cfset result= listAppend(result, item) />
-				</cfdefaultcase>
-				</cfswitch>
+				<cfif not item eq "(incomplete)">
+					<!--- add the link if requested --->
+					<cfif arguments.bIncludeLink>
+						<cfsavecontent variable="item">							
+							<skin:buildLink objectid="#itemData#"><cfoutput>#item#</cfoutput></skin:buildLink>
+						</cfsavecontent>
+					</cfif>
+					
+					<!--- If in a list, then append with li tags otherwise append to list --->
+					<cfswitch expression="#arguments.listType#">
+					<cfcase value="unordered,ordered">
+						<cfset result = "#result#<li>#item#</li>" />
+					</cfcase>
+					<cfdefaultcase>
+						<cfset result= listAppend(result, item) />
+					</cfdefaultcase>
+					</cfswitch>
+				</cfif>
 			</cfif>
 		</cfloop>
 		
