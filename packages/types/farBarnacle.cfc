@@ -163,7 +163,7 @@
 		<cfreturn numberFormat(result) />
 	</cffunction>
 	
-	<cffunction name="getInheritedRight" access="public" output="true" returntype="numeric" hint="Returns the right that would be granted if this barnacle was set to inherit">
+	<cffunction name="getInheritedRight" access="public" output="false" returntype="numeric" hint="Returns the right that would be granted if this barnacle was set to inherit">
 		<cfargument name="barnacle" type="string" required="false" default="" hint="The barnacle being queried" />
 		<cfargument name="role" type="string" required="false" default="" hint="The roles to check" />
 		<cfargument name="permission" type="string" required="false" default="" hint="The permission the barnacle is based on" />
