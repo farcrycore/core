@@ -94,7 +94,7 @@
 		<cfset var thisresult = -1 />
 		<cfset var qSecured = "" />
 		<cfset var typename = "" />
-		
+
 		<!--- If request cache is turned on (mainly for Manage Permissions) use that --->
 		<cfif arguments.requestcache>
 			<cfif not structkeyexists(request,"barnaclecache")>
@@ -150,28 +150,20 @@
 				<cfreturn 1 />
 			</cfif>
 			
-			<cfloop list="#arguments.role#" index="thisrole">
-				<!--- If the name of the role was passed in, get the objectid --->
-				<cfif not isvalid("uuid",thisrole)>
-					<cfset thisrole = application.security.factory.role.getID(thisrole) />
-				</cfif>
-				
-				<cfset thisresult = getBarnacle(thisrole,arguments.permission,arguments.object).barnaclevalue />
-				
-				<!--- Result is the most permissable right. 1 is the most permissable, so if that is returned we don't need to check any more --->
-				<cfif thisresult eq 1>
-					<cfreturn 1 />
-				<cfelseif thisresult gt result>
-					<cfset result = thisresult />
-				</cfif>
-			</cfloop>
-		</cfif>
+			<cfset thisrole = arguments.role>
+			<!--- If the name of the role was passed in, get the objectid --->
+			<cfif not isvalid("uuid",thisrole)>
+				<cfset thisrole = application.security.factory.role.getID(thisrole) />
+			</cfif>
+			
+			<cfset result = getBarnacle(thisrole,arguments.permission,arguments.object).barnaclevalue />
 
+		</cfif>
 		
 		<cfreturn numberFormat(result) />
 	</cffunction>
 	
-	<cffunction name="getInheritedRight" access="public" output="false" returntype="numeric" hint="Returns the right that would be granted if this barnacle was set to inherit">
+	<cffunction name="getInheritedRight" access="public" output="true" returntype="numeric" hint="Returns the right that would be granted if this barnacle was set to inherit">
 		<cfargument name="barnacle" type="string" required="false" default="" hint="The barnacle being queried" />
 		<cfargument name="role" type="string" required="false" default="" hint="The roles to check" />
 		<cfargument name="permission" type="string" required="false" default="" hint="The permission the barnacle is based on" />
@@ -180,13 +172,12 @@
 		
 		<cfset var stBarnacle = structnew() />
 		<cfset var thisobject = "" />
-		<cfset var thisresult = 0 />
 		<cfset var result = -1 />
 		<cfset var typename = "" />
-		<cfset var qAncestors = "" />
+		<cfset var qResult = "" />
 		
 		<cfset var inheritedRightHashID = hash("#arguments.barnacle#-#arguments.role#-#arguments.permission#-#arguments.object#-#arguments.requestcache#") />
-		
+
 		<cfparam name="request.stinheritedRightCache" default="#structNew()#" />
 		
 		<cfif structKeyExists(request.stinheritedRightCache, inheritedRightHashID)>
@@ -241,30 +232,47 @@
 				<cfset typename = thisobject.typename />
 			</cfif>
 		</cfif>
-		
+
 		<!--- If this is a tree type, get the ancestors --->
 		<cfif listcontainsnocase("dmNavigation",typename)>
-			<cfset qAncestors = application.factory.oTree.getAncestors(objectid=arguments.object) />
-			<cfset arguments.object = application.factory.oUtils.listReverse(listappend(valuelist(qAncestors.objectid),arguments.object)) />
+
+			<cfquery name="qResult" datasource="#application.dsn#">
+				select	*
+				from	#application.dbowner#nested_tree_objects t
+						inner join
+						#application.dbowner#farBarnacle b
+						on t.objectid=b.referenceid
+				where	nleft <= (
+						    select	nleft
+						    from	nested_tree_objects
+						    where	objectid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.object#" />
+						)
+						and nright >= (
+						    select	nright
+						    from	nested_tree_objects
+						    where	objectid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.object#" />
+						)
+
+						and roleid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.role#" />
+						and permissionid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.permission#" />
+						and barnaclevalue<>0
+
+				order by nlevel desc
+			</cfquery>
+
+			<cfif qResult.recordCount gt 0>
+				<cfset result = qResult.barnaclevalue[1]>
+			<cfelse>
+				<!--- If every object says inherit right up the ancestory chain then deny --->
+				<cfset result = -1>
+			</cfif>
+
+		<cfelse>
+			<cfset result = getRight(role=arguments.role,permission=arguments.permission,object=arguments.object) />
 		</cfif>
 		
-		<!--- Check each object --->
-		<cfloop list="#arguments.object#" index="thisobject">
-		
-			<!--- Default is -1 when there is no barnacle --->
-			<cfset thisresult = getRight(role=arguments.role,permission=arguments.permission,object=thisobject) />
-		
-			<cfif thisresult neq 0>
-				<!--- If the permission is specified rather than inherited, return it --->
-				<cfset request.stInheritedRightCache[inheritedRightHashID] = thisresult />
-				<cfreturn thisresult />
-			</cfif>
-			
-		</cfloop>
-		
-		<!--- If every role says inherit right up the ancestory chain then deny --->
-		<cfset request.stInheritedRightCache[inheritedRightHashID] = -1 />
-		<cfreturn -1 />
+		<cfset request.stInheritedRightCache[inheritedRightHashID] = result />
+		<cfreturn result />
 	</cffunction>
 	
 	<cffunction name="checkPermission" access="public" output="false" returntype="boolean" hint="Checks the permission on an object">
@@ -272,13 +280,13 @@
 		<cfargument name="permission" type="uuid" required="true" hint="The permission to check" />
 		<cfargument name="role" type="string" required="false" hint="List of roles to check" />
 		
-		<cfset var actual = -1 />
 		<cfset var typename = "" />
+		<cfset var thisrole = "" />
 		
 		<cfset var hashID = hash("#arguments.object#-#arguments.permission#-#arguments.role#") />		
 
 		<cfparam name="request.stCheckPermissionCache" default="#structNew()#" />
-		
+
 		<cfif structKeyExists(request.stCheckPermissionCache, hashID)>
 			<cfreturn request.stCheckPermissionCache[hashID] />
 		</cfif>
@@ -299,24 +307,20 @@
 		<cfif not listcontains(application.security.factory.permission.getAllPermissions(typename),arguments.permission)>
 			<cfreturn 1 />
 		</cfif>
-		
-		<cfset actual = getRight(role=arguments.role,permission=arguments.permission,object=arguments.object) />
-		
-		<cfif actual eq 0>
-			<cfif getInheritedRight(role=arguments.role,permission=arguments.permission,object=arguments.object) eq 1>
+
+		<!--- check each role --->
+		<cfloop list="#arguments.role#" index="thisrole">
+			
+			<!--- return as soon as any role has explicit grant permission --->
+			<cfif getInheritedRight(role=thisrole,permission=arguments.permission,object=arguments.object) eq 1>
 				<cfset request.stCheckPermissionCache[hashID] = 1 />
 				<cfreturn 1 />
-			<cfelse>
-				<cfset request.stCheckPermissionCache[hashID] = 0 />
-				<cfreturn 0 />
 			</cfif>
-		<cfelseif actual eq 1>
-			<cfset request.stCheckPermissionCache[hashID] = 1 />
-			<cfreturn 1 />
-		<cfelse>
-			<cfset request.stCheckPermissionCache[hashID] = 0 />
-			<cfreturn 0 />
-		</cfif>
+
+		</cfloop>
+
+		<cfset request.stCheckPermissionCache[hashID] = 0 />
+		<cfreturn 0 />
 	</cffunction>
 
 	<cffunction name="updateRight" access="public" output="false" returntype="void" hint="Adds or removes a permission">
