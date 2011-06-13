@@ -75,41 +75,35 @@
 			</cfif>
 			
 			<cfsavecontent variable="JS">
-				<cfoutput>
-				<!-- 
-				ID: #stJS.id#<cfif len(stJS.lCombineIDs)>
-				PACKAGED: #stJS.lCombineIDs#</cfif>
-				FILES: #stJS.lFullFilebaseHREFs#
-				 -->
-				</cfoutput>
+<cfoutput>
+  <!-- 
+  ID: #stJS.id#<cfif len(stJS.lCombineIDs)>
+  PACKAGED: #stJS.lCombineIDs#</cfif>
+  FILES: #stJS.lFullFilebaseHREFs#
+  -->
+</cfoutput>
 				
 				<cfif len(stJS.condition)>
-					<cfoutput><!--[#stJS.condition#]>
-					</cfoutput>
+					<cfoutput>  <!--[#stJS.condition#]>#chr(13)#</cfoutput>
 				</cfif>
 				
 				<cfif stJS.bCombine>
-					<cfoutput>
-					<script src="#stJS.hostname##application.url.webroot#/cache/#sCacheFileName#" type="text/javascript"></script>
-					</cfoutput>
+					<cfoutput>  <script src="#stJS.hostname##application.url.webroot#/cache/#sCacheFileName#" type="text/javascript"></script>#chr(13)#</cfoutput>
 				<cfelse>
 					<cfloop list="#stJS.lFiles#" index="i">						
 						<cfif left(i,1) NEQ "/">
 							<cfset i = "/#i#" /><!--- add slash --->
 						</cfif>
-						<cfoutput>
-						<script src="#stJS.hostname##stJS.baseHREF##i#" type="text/javascript"></script>
-						</cfoutput>
+						<cfoutput>  <script src="#stJS.hostname##stJS.baseHREF##i#" type="text/javascript"></script>#chr(13)#</cfoutput>
 					</cfloop>
 				</cfif>
 				<cfif len(stJS.condition)>
-					<cfoutput><![endif]-->
-					</cfoutput>	
+					<cfoutput>  <![endif]-->#chr(13)#</cfoutput>	
 				</cfif>	
 				
 			</cfsavecontent>
 			
-			<cfhtmlhead text="#JS#">
+			<cfhtmlhead text="#JS#" />
 	
 		</cfloop>
 	</cfif>

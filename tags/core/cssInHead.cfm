@@ -78,39 +78,34 @@
 			</cfif>
 		
 			<cfsavecontent variable="css">
-				<cfoutput>
-				<!-- 
-				ID: #stCSS.id#<cfif len(stCSS.lCombineIDs)>
-				PACKAGED: #stCSS.lCombineIDs#</cfif>
-				FILES: #stCSS.lFullFilebaseHREFs#
-				 -->
-				</cfoutput>
+<cfoutput>#chr(13)#
+  <!-- 
+  ID: #stCSS.id#<cfif len(stCSS.lCombineIDs)>
+  PACKAGED: #stCSS.lCombineIDs#</cfif>
+  FILES: #stCSS.lFullFilebaseHREFs#
+  -->
+</cfoutput>
 			
 				<cfif len(stCSS.condition)>
-					<cfoutput><!--[#stCSS.condition#]>
-					</cfoutput>
+					<cfoutput>  <!--[#stCSS.condition#]>#chr(13)#</cfoutput>
 				</cfif>
 			
 				<cfif stCSS.bCombine>
-					<cfoutput>
-					<link rel="stylesheet" type="text/css" href="#stCSS.hostname##application.url.webroot#/cache/#sCacheFileName#" media="#stCSS.media#" #tagEnding#>
-					</cfoutput>
+					<cfoutput>  <link rel="stylesheet" type="text/css" href="#stCSS.hostname##application.url.webroot#/cache/#sCacheFileName#" media="#stCSS.media#" #tagEnding#>#chr(13)#</cfoutput>
 				<cfelse>
 					<cfloop list="#stCSS.lFiles#" index="i">						
 						<cfif left(i,1) NEQ "/">
 							<cfset i = "/#i#" /><!--- add slash --->
 						</cfif>
-						<cfoutput>
-						<link rel="stylesheet" type="text/css" href="#stCSS.hostname##stCSS.baseHREF##i#" media="#stCSS.media#" #tagEnding#>
-						</cfoutput>
+						<cfoutput>  <link rel="stylesheet" type="text/css" href="#stCSS.hostname##stCSS.baseHREF##i#" media="#stCSS.media#" #tagEnding#>#chr(13)#</cfoutput>
 					</cfloop>
 				</cfif>
 				<cfif len(stCSS.condition)>
-					<cfoutput><![endif]-->
-					</cfoutput>	
+					<cfoutput>  <![endif]-->#chr(13)#</cfoutput>	
 				</cfif>		
 			</cfsavecontent>
-			<cfhtmlhead text="#css#">
+
+			<cfhtmlhead text="#css#" />
 		
 		</cfloop>
 	</cfif>
