@@ -92,7 +92,7 @@
 	<cfproperty name="ftbSetAntialiasing" type="boolean" hint="<cfimage> support property" required="false" default="true" />
 	<cfproperty name="ftInterpolation" type="string" hint="<cfimage> support property" required="false" default="highestQuality" />
 	<cfproperty name="ftQuality" type="numeric" hint="<cfimage> support property" required="false" default="0.75" />
-	<cfproperty name="ftbUploadOnly" type="boolean" hint="???" required="false" default="false" />
+	<cfproperty name="ftbUploadOnly" type="boolean" hint="Only upload the image and do not optimize or process it. Very useful for source images. Otherwise FarCry will optimize the source image, then read from that dequalitized image to make other optimized images. Can be used for any image field (not just source images)." required="false" default="false" />
 	<cfproperty name="ftCropPosition" type="string" hint="Used when ftAutoGenerateType = aspectCrop" required="false" default="center" />
 	<cfproperty name="ftThumbnailBevel" type="boolean" hint="???" required="false" default="false" />
 	<cfproperty name="ftWatermark" type="string" hint="The path relative to the webroot of an image to use as a watermark." required="false" default="" />
