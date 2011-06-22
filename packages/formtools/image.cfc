@@ -385,6 +385,13 @@
 	    				imageformtool.inputs.newf = $j('##'+prefix+property+'NEW');
 	    				imageformtool.inputs.base = $j('##'+prefix+property);
 	    				
+	    				var bUUIDSource = false;
+	    				if (sourceField.indexOf(":")>-1){
+	    					bUUIDSource = true;
+	    					sourceField = sourceField.split(":")[0];
+	    					imageformtool.sourceField = sourceField;
+	    				}
+	    				
 			    		imageformtool.multiview = $j("##"+prefix+property+"-multiview").multiView({ 
 				    			"onOpenTarget" : {
 				    				"upload" : function onImageFormtoolOpenUpload(event){  },
@@ -511,13 +518,13 @@
 								}
 	    					};
 	    					
-	    					if (sourceField.indexOf(":")>-1){
-	    						var $sourceField = $j("##"+prefix+sourceField.split(":")[0]);
+	    					if (bUUIDSource){
+	    						var $sourceField = $j("##"+prefix+sourceField);
 	    						var existingval = $sourceField.val();
 	    						var pending = false;
 	    						function checkSource(){
 	    							var newval = $sourceField.val();
-	    							if (newval!=existingval && !pending){console.log(newval);
+	    							if (newval!=existingval && !pending){
 	    								existingval = newval;
 	    								handleSourceChange(newval);
 	    							};
@@ -580,7 +587,7 @@
 						// get the post values
 						var values = {};
 						$j('[name^="'+prefix+property+'"]').each(function(){ if (this.name!=prefix+property+"NEW") values[this.name.slice(prefix.length)]=""; });
-						if (imageformtool.sourceField) values[imageformtool.sourceField.split(":")[0]] = "";
+						if (imageformtool.sourceField) values[imageformtool.sourceField] = "";
 						values = getValueData(values,prefix);
 						
 						return values;
@@ -654,7 +661,7 @@
 						
 						var postData = imageformtool.getPostValues();
 						
-						if (imageformtool.sourceField.length) postData[imageformtool.sourceField.split(":")[0]] = '';
+						if (imageformtool.sourceField.length) postData[imageformtool.sourceField] = '';
 						
 						$j.ajax({
 							type : "POST",
@@ -781,7 +788,7 @@
 							</div>
 						</cfif>
 					</div>
-					<script type="text/javascript">$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').init('#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#','#ListFirst(arguments.stMetadata.ftSourceField,":")#',#arguments.stMetadata.ftImageWidth#,#arguments.stMetadata.ftImageHeight#);</script>
+					<script type="text/javascript">$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').init('#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#','#arguments.stMetadata.ftSourceField#',#arguments.stMetadata.ftImageWidth#,#arguments.stMetadata.ftImageHeight#);</script>
 				</div>
 			</cfoutput></cfsavecontent>
 			
