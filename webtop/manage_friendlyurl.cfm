@@ -167,7 +167,7 @@ manage friendly urls for a particular object id
 							<cfoutput>
 							<ft:object objectid="#qFUCurrent.objectid[currentRow]#" typename="farFU" r_stFields="stFields" stPropMetadata="#stPropMetdata#" r_stPrefix="prefix" />
 							<tr class="alt">
-								<cfif qFUCurrent.fuStatus EQ 1>
+								<cfif qFUCurrent.bDefault EQ 1>
 									<td>&nbsp;</td>
 								<cfelse>
 									<td><input type="checkbox" name="lArchiveObjectID" value="#qFUCurrent.objectid#"></td>
