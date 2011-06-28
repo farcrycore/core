@@ -443,7 +443,7 @@ user --->
 	
 	<ft:processForm action="overview">
 		<!--- TODO: Check Permissions. --->
-		<cfset overviewURL = "#application.url.farcry#/edittabOverview.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module#">
+		<cfset overviewURL = "#application.url.farcry#/edittabOverview.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module##pluginURL#">
 		<skin:onReady>
 			<cfoutput>
 				$fc.objectAdminAction('Administration', '#overviewURL#');
