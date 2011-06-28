@@ -1917,4 +1917,26 @@
 		</cfif>
 	</cffunction> 
 
+	<cffunction name="duplicateFile" access="public" output="false" returntype="string" hint="For use with duplicateObject, copies the associated file and returns the new unique filename">
+		<cfargument name="stObject" type="struct" required="false" hint="Provides the object" />
+		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
+		
+		<cfset var newfilename = "" />
+		<cfset var uniquekey = 1 />
+		
+		<cfif not fileexists(application.path.imageroot & arguments.stObject[arguments.stMetadata.name])>
+			<cfreturn "" />
+		</cfif>
+		
+		<cfset newfilename = rereplacenocase(arguments.stObject[arguments.stMetadata.name],"((.[\w\d]+)?)$","#uniquekey#\1") />
+		<cfloop condition="fileexists(application.path.imageroot & newfilename)">
+			<cfset uniquekeye = uniquekey + 1 />
+			<cfset newfilename = rereplacenocase(arguments.stObject[arguments.stMetadata.name],"((.[\w\d]+)?)$","#uniquekey#\1") />
+		</cfloop>
+		
+		<cffile action="copy" source="#application.path.imageroot##arguments.stObject[arguments.stMetadata.name]#" destination="#application.path.imageroot##newfilename#" mode="777" />
+		
+		<cfreturn newfilename />
+	</cffunction>
+	
 </cfcomponent> 
