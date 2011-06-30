@@ -1059,8 +1059,12 @@ user --->
 		<cfset editURL = listAppend(editURL,'plugin=#attributes.plugin#', '&') />
 	</cfif>	
 	
-	<cfset createDraftURL = "#application.url.farcry#/navajo/createDraftObject.cfm?ref=iframe">
-
+	<cfset createDraftURL = "#application.url.farcry#/navajo/createDraftObject.cfm?ref=iframe&method=#attributes.editMethod#">
+	<cfif not structIsEmpty(attributes.editUrlParams)>
+		<cfloop collection="#attributes.editUrlParams#" item="key">
+			<cfset createDraftURL="#createDraftURL#&#key#=#attributes.editUrlParams[key]#">
+		</cfloop>
+	</cfif>	
 
 	
 	<skin:onReady id="object-admin-actions">
