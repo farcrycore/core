@@ -292,7 +292,7 @@
 				<!--- 
 				IF THE ARRAY TABLE HAS HAD A CFC CREATED FOR IT IN ORDER TO EXTEND IT THEN WE USE STANDARD GET, SET & DELETE.
 				 --->
-				<cfif structKeyExists(application, "types") AND structKeyExists(application.types, tableName) AND arguments.aProps[i].seq NEQ i>
+				<cfif structKeyExists(application, "types") AND structKeyExists(application.types, tableName)>
 					
 					<!--- Use the extended arrayTable's' objectid and Set the seq to the new position in the array --->
 					<cfset arguments.aProps[i].objectid = qDuplicate.objectid />	
