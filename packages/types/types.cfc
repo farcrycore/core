@@ -1065,6 +1065,8 @@ default handlers
 		<cfset var thisprop = "" />
 		<cfset var stLocation = structnew() />
 		<cfset var oCon = application.fapi.getContentType("container") />
+		<cfset var stObj = getData(arguments.objectid) />
+		<cfset var newid = application.fapi.getUUID() />
 		
 		<cfif application.security.isLoggedIn()>
 			<cfset arguments.User = application.security.getCurrentUserID()>
@@ -1081,7 +1083,21 @@ default handlers
 		<cfloop query="arguments.qRelated">
 			<!--- Copy the object itself --->
 			<cfset stDuplicate = application.fapi.getContentObject(typename=arguments.qRelated.typename,objectid=arguments.qRelated.objectid) />
-			<cfset stDuplicate.objectid = application.fapi.getUUID() />
+			
+			<!--- Update UUIDs --->
+			<cfif stDuplicate.objectid neq arguments.objectid>
+				<cfset stDuplicate.objectid = application.fapi.getUUID() />
+				
+				<cfloop from="1" to="#arraylen(application.stCOAPI[stObj.typename].aJoins)#" index="thisjoin">
+					<cfif application.stCOAPI[stObj.typename].aJoins[thisjoin].coapitype eq stDuplicate.typename and application.stCOAPI[stObj.typename].aJoins[thisjoin].direction eq "from" and application.stCOAPI[stObj.typename].aJoins[thisjoin].type eq "uuid">
+						<cfset stDuplicate[application.stCOAPI[stObj.typename].aJoins[thisjoin]] = newID />
+					</cfif>
+				</cfloop>
+			<cfelse>
+				<cfset stDuplicate.objectid = newid />
+			</cfif>
+			
+			<!--- Update system properties --->
 			<cfset stDuplicate.createdby = user />
 			<cfset stDuplicate.datetimecreated = now() />
 			<cfset stDuplicate.ownedby = user />
@@ -1090,12 +1106,14 @@ default handlers
 			<cfif structkeyexists(stDuplicate,"status")>
 				<cfset stDuplicate.status = "draft" />
 			</cfif>
+			
 			<!--- Make copies of any attached files / images --->
 			<cfloop collection="#application.stCOAPI[arguments.qRelated.typename].stProps#" item="thisprop">
 				<cfif structkeyexists(application.stCOAPI[arguments.qRelated.typename].stProps[thisprop].metadata,"ftType") and structkeyexists(application.formtools[application.stCOAPI[arguments.qRelated.typename].stProps[thisprop].metadata.ftType].oFactory,"duplicateFile")>
 					<cfset stDuplicate[thisprop] = application.formtools[application.stCOAPI[arguments.qRelated.typename].stProps[thisprop].metadata.ftType].oFactory.duplicateFile(stDuplicate,application.stCOAPI[arguments.qRelated.typename].stProps[thisprop].metadata) />
 				</cfif>
 			</cfloop>
+			
 			<cfset application.fapi.setData(stProperties=stDuplicate) />
 			
 			<!--- Copy containers --->

@@ -817,10 +817,10 @@
 			<cfreturn "" />
 		</cfif>
 		
-		<cfset newfilename = rereplacenocase(arguments.stObject[arguments.stMetadata.name],"((.[\w\d]+)?)$","#uniquekey#\1") />
+		<cfset newfilename = rereplacenocase(arguments.stObject[arguments.stMetadata.name],"((\.[\w\d]+)?)$","#uniquekey#\1") />
 		<cfloop condition="fileexists(application.path.defaultfilepath & newfilename) or fileexists(application.path.securefilepathath & newfilename)">
-			<cfset uniquekeye = uniquekey + 1 />
-			<cfset newfilename = rereplacenocase(arguments.stObject[arguments.stMetadata.name],"((.[\w\d]+)?)$","#uniquekey#\1") />
+			<cfset uniquekey = uniquekey + 1 />
+			<cfset newfilename = rereplacenocase(arguments.stObject[arguments.stMetadata.name],"((\.[\w\d]+)?)$","#uniquekey#\1") />
 		</cfloop>
 		
 		<cfif isSecured(arguments.stObject,arguments.stMetadata)>
