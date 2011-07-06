@@ -911,6 +911,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		   		
 		   		<cfset stResult = application.fc.lib.db.setData(stProperties=arguments.stProperties,typename=getTypePath(),dsn=arguments.dsn) />	   	
 		   		<cfif not stResult.bSuccess and stResult.message eq "Object does not exist">
+			   		<cfset structappend(arguments.stProperties,getDefaultObject(arguments.stProperties.objectid,arguments.stProperties.typename),false) />
 					<cfset stResult = application.fc.lib.db.createData(stProperties=arguments.stProperties,typename=getTypePath(),dsn=arguments.dsn) />	   	
 					<cfset stProperties.objectid = stResult.objectid />
 				</cfif>
