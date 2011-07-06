@@ -77,6 +77,14 @@
 			<cfset stJS.lFullFilebaseHREFs = "" />
 		</cfif>
 		
+		<!--- Identify external files --->
+		<cfif refindnocase("(^|,)http[s]?\://",stJS.lFullFilebaseHREFs)>
+			<cfset stJS.bCombine = false />
+			<cfset stJS.bExternal = true />
+		<cfelse>
+			<cfset stJS.bExternal = false />
+		</cfif>
+		
 		<!--- Add the id to the array to make sure we keep track of the order in which these libraries need to appear. --->
 		<cfset arrayAppend(request.inHead.aJSLibraries, stJS.id) />
 		

@@ -83,6 +83,14 @@
 			<cfset stCSS.lFullFilebaseHREFs = "" />
 		</cfif>
 		
+		<!--- Identify external files --->
+		<cfif refindnocase("(^|,)http[s]?\://",stCSS.lFullFilebaseHREFs)>
+			<cfset stCSS.bCombine = false />
+			<cfset stCSS.bExternal = true />
+		<cfelse>
+			<cfset stCSS.bExternal = false />
+		</cfif>
+		
 		<!--- Add the id to the array to make sure we keep track of the order in which these libraries need to appear. --->
 		<cfset arrayAppend(request.inHead.aCSSLibraries, stCSS.id) />
 		

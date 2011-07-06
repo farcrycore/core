@@ -89,17 +89,14 @@
 				</cfif>
 				
 				<cfif stJS.bCombine>
-					<cfoutput>
-					<script src="#stJS.hostname##application.url.cache#/#sCacheFileName#" type="text/javascript"></script>
-					</cfoutput>
+					<cfoutput><script src="#stJS.hostname##application.url.cache#/#sCacheFileName#" type="text/javascript"></script></cfoutput>
+				<cfelseif stJS.bExternal>
+					<cfloop list="#stJS.lFullFilebaseHREFs#" index="i">
+						<cfoutput><script src="#i#" type="text/javascript"></script></cfoutput>
+					</cfloop>
 				<cfelse>
-					<cfloop list="#stJS.lFiles#" index="i">						
-						<cfif left(i,1) NEQ "/">
-							<cfset i = "/#i#" /><!--- add slash --->
-						</cfif>
-						<cfoutput>
-						<script src="#stJS.hostname##stJS.baseHREF##i#" type="text/javascript"></script>
-						</cfoutput>
+					<cfloop list="#stJS.lFiles#" index="i">
+						<cfoutput><script src="#stJS.hostname##stJS.baseHREF##i#" type="text/javascript"></script></cfoutput>
 					</cfloop>
 				</cfif>
 				<cfif len(stJS.condition)>

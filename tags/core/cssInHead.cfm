@@ -92,17 +92,14 @@
 				</cfif>
 			
 				<cfif stCSS.bCombine>
-					<cfoutput>
-					<link rel="stylesheet" type="text/css" href="#stCSS.hostname##application.url.cache#/#sCacheFileName#" media="#stCSS.media#" #tagEnding#>
-					</cfoutput>
+					<cfoutput><link rel="stylesheet" type="text/css" href="#stCSS.hostname##application.url.cache#/#sCacheFileName#" media="#stCSS.media#" #tagEnding#></cfoutput>
+				<cfelseif stCSS.bExternal>
+					<cfloop list="#stCSS.lFullFilebaseHREFs#" index="i">
+						<cfoutput><link rel="stylesheet" type="text/css" href="#i#" media="#stCSS.media#" #tagEnding#></cfoutput>
+					</cfloop>
 				<cfelse>
-					<cfloop list="#stCSS.lFiles#" index="i">						
-						<cfif left(i,1) NEQ "/">
-							<cfset i = "/#i#" /><!--- add slash --->
-						</cfif>
-						<cfoutput>
-						<link rel="stylesheet" type="text/css" href="#stCSS.hostname##stCSS.baseHREF##application.url.cache#/#i#" media="#stCSS.media#" #tagEnding#>
-						</cfoutput>
+					<cfloop list="#stCSS.lFiles#" index="i">
+						<cfoutput><link rel="stylesheet" type="text/css" href="#stCSS.hostname##stCSS.baseHREF##application.url.cache#/#i#" media="#stCSS.media#" #tagEnding#></cfoutput>
 					</cfloop>
 				</cfif>
 				<cfif len(stCSS.condition)>
