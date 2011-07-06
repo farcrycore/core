@@ -166,7 +166,7 @@
 						
 						writeOutput("<li");
 						if(request.sectionObjectID eq application.navid.home){
-							homeclass=homeclass & ' active ';
+							homeclass=homeclass & ' #attributes.ActiveClass# ';
 						}
 						writeOutput(" class="""&trim(homeclass)&"""");
 						writeOutput("><a href=""#application.url.webroot#/"">");
