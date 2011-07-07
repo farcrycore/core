@@ -78,7 +78,7 @@
 		</cfif>
 		
 		<!--- Identify external files --->
-		<cfif refindnocase("(^|,)http[s]?\://",stJS.lFullFilebaseHREFs)>
+		<cfif refindnocase("(^|,)http[s]?\://",stJS.lFiles)>
 			<cfset stJS.bCombine = false />
 			<cfset stJS.bExternal = true />
 		<cfelse>

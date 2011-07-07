@@ -91,13 +91,17 @@
 				<cfif stJS.bCombine>
 					<cfoutput><script src="#stJS.hostname##application.url.cache#/#sCacheFileName#" type="text/javascript"></script></cfoutput>
 				<cfelseif stJS.bExternal>
-					<cfloop list="#stJS.lFullFilebaseHREFs#" index="i">
+					<cfif len(trim(stJS.prepend))><cfoutput><script type="text/javascript">#stJS.prepend#</script></cfoutput></cfif>
+					<cfloop list="#stJS.lFiles#" index="i">
 						<cfoutput><script src="#i#" type="text/javascript"></script></cfoutput>
 					</cfloop>
+					<cfif len(trim(stJS.append))><cfoutput><script type="text/javascript">#stJS.append#</script></cfoutput></cfif>
 				<cfelse>
+					<cfif len(trim(stJS.prepend))><cfoutput><script type="text/javascript">#stJS.prepend#</script></cfoutput></cfif>
 					<cfloop list="#stJS.lFiles#" index="i">
 						<cfoutput><script src="#stJS.hostname##stJS.baseHREF##i#" type="text/javascript"></script></cfoutput>
 					</cfloop>
+					<cfif len(trim(stJS.append))><cfoutput><script type="text/javascript">#stJS.append#</script></cfoutput></cfif>
 				</cfif>
 				<cfif len(stJS.condition)>
 					<cfoutput><![endif]-->

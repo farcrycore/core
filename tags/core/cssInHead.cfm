@@ -94,13 +94,17 @@
 				<cfif stCSS.bCombine>
 					<cfoutput><link rel="stylesheet" type="text/css" href="#stCSS.hostname##application.url.cache#/#sCacheFileName#" media="#stCSS.media#" #tagEnding#></cfoutput>
 				<cfelseif stCSS.bExternal>
-					<cfloop list="#stCSS.lFullFilebaseHREFs#" index="i">
+					<cfif len(trim(stCSS.prepend))><cfoutput><style type="text/css">#stCSS.prepend#</style></cfoutput></cfif>
+					<cfloop list="#stCSS.lFiles#" index="i">
 						<cfoutput><link rel="stylesheet" type="text/css" href="#i#" media="#stCSS.media#" #tagEnding#></cfoutput>
 					</cfloop>
+					<cfif len(trim(stCSS.append))><cfoutput><style type="text/css">#stCSS.append#</style></cfoutput></cfif>
 				<cfelse>
+					<cfif len(trim(stCSS.prepend))><cfoutput><style type="text/css">#stCSS.prepend#</style></cfoutput></cfif>
 					<cfloop list="#stCSS.lFiles#" index="i">
 						<cfoutput><link rel="stylesheet" type="text/css" href="#stCSS.hostname##stCSS.baseHREF##application.url.cache#/#i#" media="#stCSS.media#" #tagEnding#></cfoutput>
 					</cfloop>
+					<cfif len(trim(stCSS.append))><cfoutput><style type="text/css">#stCSS.append#</style></cfoutput></cfif>
 				</cfif>
 				<cfif len(stCSS.condition)>
 					<cfoutput><![endif]-->
