@@ -2296,7 +2296,7 @@
 	
 		<cfloop list="#arguments.lTypes#" index="typeName">
 			
-			<cfif structKeyExists(application.stCoapi[typeName],"bObjectBroker") AND application.stCoapi[typeName].bObjectBroker>
+			<cfif structkeyexists(application.stCOAPI,typename) AND structKeyExists(application.stCoapi[typeName],"bObjectBroker") AND application.stCoapi[typeName].bObjectBroker>
 			
 				<cfset application.objectbroker[typeName] = structNew() />
 				<cfset application.objectbroker[typeName].aObjects = arrayNew(1) />
