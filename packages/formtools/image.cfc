@@ -1058,7 +1058,7 @@
 						<div class="uniForm image-crop-actions">
 							<ft:buttonPanel>
 								<cfif url.allowcancel><a href="##" id="image-crop-cancel" style="padding-right:10px;">Cancel</a></cfif>
-								<ft:button value="Crop and Resize" id="image-crop-finalize" onclick="$fc.imageformtool.finalizeCrop();return false;" />
+								<ft:button value="Crop and Resize" id="image-crop-finalize" onclick="$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').finalizeCrop();return false;" />
 							</ft:buttonPanel>
 						</div>
 					</div>
@@ -1066,7 +1066,7 @@
 				
 				<cfreturn html />
 			<cfelse>
-				<cfreturn "<p>The source field is empty. <a href='##' onclick='$fc.imageformtool.endCrop();return false;'>Close</a></p>" />
+				<cfreturn "<p>The source field is empty. <a href='##' onclick='$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').endCrop();return false;'>Close</a></p>" />
 			</cfif>
 		</cfif>
 		
