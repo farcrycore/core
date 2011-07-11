@@ -756,7 +756,7 @@
 		<cfset application.url.farcry = "#application.url.webtop#" /><!--- Legacy variable. Developers should use application.url.webtop --->
 		<cfset application.url.imageRoot = "#application.url.webroot#">
 		<cfset application.url.fileRoot = "#application.url.webroot#/files">
-		
+		<cfset application.url.cache = "#application.url.webroot#/cache">
 		
 		<!----------------------------------------
 		 SET THE MAIN PHYSICAL PATH INFORMATION
