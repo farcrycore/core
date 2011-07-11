@@ -88,14 +88,19 @@
 				</cfif>
 				
 				<cfif stJS.bCombine>
-					<cfoutput>  <script src="#stJS.hostname##application.url.webroot#/cache/#sCacheFileName#" type="text/javascript"></script>#chr(13)#</cfoutput>
-				<cfelse>
-					<cfloop list="#stJS.lFiles#" index="i">						
-						<cfif left(i,1) NEQ "/">
-							<cfset i = "/#i#" /><!--- add slash --->
-						</cfif>
-						<cfoutput>  <script src="#stJS.hostname##stJS.baseHREF##i#" type="text/javascript"></script>#chr(13)#</cfoutput>
+					<cfoutput><script src="#stJS.hostname##application.url.cache#/#sCacheFileName#" type="text/javascript"></script></cfoutput>
+				<cfelseif stJS.bExternal>
+					<cfif len(trim(stJS.prepend))><cfoutput><script type="text/javascript">#stJS.prepend#</script></cfoutput></cfif>
+					<cfloop list="#stJS.lFiles#" index="i">
+						<cfoutput><script src="#i#" type="text/javascript"></script></cfoutput>
 					</cfloop>
+					<cfif len(trim(stJS.append))><cfoutput><script type="text/javascript">#stJS.append#</script></cfoutput></cfif>
+				<cfelse>
+					<cfif len(trim(stJS.prepend))><cfoutput><script type="text/javascript">#stJS.prepend#</script></cfoutput></cfif>
+					<cfloop list="#stJS.lFiles#" index="i">
+						<cfoutput><script src="#stJS.hostname##stJS.baseHREF##i#" type="text/javascript"></script></cfoutput>
+					</cfloop>
+					<cfif len(trim(stJS.append))><cfoutput><script type="text/javascript">#stJS.append#</script></cfoutput></cfif>
 				</cfif>
 				<cfif len(stJS.condition)>
 					<cfoutput>  <![endif]-->#chr(13)#</cfoutput>	

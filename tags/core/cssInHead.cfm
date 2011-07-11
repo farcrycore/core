@@ -91,14 +91,19 @@
 				</cfif>
 			
 				<cfif stCSS.bCombine>
-					<cfoutput>  <link rel="stylesheet" type="text/css" href="#stCSS.hostname##application.url.webroot#/cache/#sCacheFileName#" media="#stCSS.media#" #tagEnding#>#chr(13)#</cfoutput>
-				<cfelse>
-					<cfloop list="#stCSS.lFiles#" index="i">						
-						<cfif left(i,1) NEQ "/">
-							<cfset i = "/#i#" /><!--- add slash --->
-						</cfif>
-						<cfoutput>  <link rel="stylesheet" type="text/css" href="#stCSS.hostname##stCSS.baseHREF##i#" media="#stCSS.media#" #tagEnding#>#chr(13)#</cfoutput>
+					<cfoutput><link rel="stylesheet" type="text/css" href="#stCSS.hostname##application.url.cache#/#sCacheFileName#" media="#stCSS.media#" #tagEnding#></cfoutput>
+				<cfelseif stCSS.bExternal>
+					<cfif len(trim(stCSS.prepend))><cfoutput><style type="text/css">#stCSS.prepend#</style></cfoutput></cfif>
+					<cfloop list="#stCSS.lFiles#" index="i">
+						<cfoutput><link rel="stylesheet" type="text/css" href="#i#" media="#stCSS.media#" #tagEnding#></cfoutput>
 					</cfloop>
+					<cfif len(trim(stCSS.append))><cfoutput><style type="text/css">#stCSS.append#</style></cfoutput></cfif>
+				<cfelse>
+					<cfif len(trim(stCSS.prepend))><cfoutput><style type="text/css">#stCSS.prepend#</style></cfoutput></cfif>
+					<cfloop list="#stCSS.lFiles#" index="i">
+						<cfoutput><link rel="stylesheet" type="text/css" href="#stCSS.hostname##stCSS.baseHREF##application.url.cache#/#i#" media="#stCSS.media#" #tagEnding#></cfoutput>
+					</cfloop>
+					<cfif len(trim(stCSS.append))><cfoutput><style type="text/css">#stCSS.append#</style></cfoutput></cfif>
 				</cfif>
 				<cfif len(stCSS.condition)>
 					<cfoutput>  <![endif]-->#chr(13)#</cfoutput>	

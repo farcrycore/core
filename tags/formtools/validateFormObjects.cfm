@@ -401,7 +401,34 @@
 
 		<cfif structKeyExists(FORM,"#ProcessingFormObjectPrefix##i#")>
 			
-		
+			<!--- Need to put all the form fields relevent to this field into a struct. This will include any fields that begin with the name of the field. ie. OrderDate field will also put OrderDateDay, OrderDateMonth and OrderDateYear into the struct --->
+			<cfset Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i] = StructNew()>
+			<cfset Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i].value = "">
+			<cfset Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i].stSupporting = StructNew()>
+
+			<cfloop list="#StructKeyList(FORM)#" index="j">
+				<cfif FindNoCase("#ProcessingFormObjectPrefix##i#",j)>
+				
+					<!--- This will strip out the prefix from the FormFields and enable us to send a clean formpost structure to validate with only the current object formfields by their original name. --->
+					<cfif "#ProcessingFormObjectPrefix##i#" EQ j>
+						<!--- This is the actual field value --->
+						<cfset Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i].value = FORM[j]>
+					<cfelse>
+						<!--- These are supporting fields --->
+						<cfset Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i].stSupporting[ReplaceNoCase(j,'#ProcessingFormObjectPrefix##i#','')] = FORM[j]>
+					</cfif>
+					
+				</cfif>
+			</cfloop>
+
+		</cfif>
+	</cfloop>
+	
+			
+	<cfloop list="#lFields#" index="i" >
+
+		<cfif structKeyExists(FORM,"#ProcessingFormObjectPrefix##i#")>
+			
 			<cfset Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['MetaData'][i] = StructNew()>
 
 			<cfset Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['MetaData'][i] = Duplicate(stFields[i].MetaData)>
@@ -429,36 +456,9 @@
 					<cfset ftFieldMetadata.ftType = "Field">
 				</cfif>
 			</cfif>	
-		
-		
-				
-			<!--- Need to put all the form fields relevent to this field into a struct. This will include any fields that begin with the name of the field. ie. OrderDate field will also put OrderDateDay, OrderDateMonth and OrderDateYear into the struct --->
-			<cfset Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i] = StructNew()>
-			<cfset Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i].value = "">
-			<cfset Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i].stSupporting = StructNew()>
-
-			<cfloop list="#StructKeyList(FORM)#" index="j">
-				<cfif FindNoCase("#ProcessingFormObjectPrefix##i#",j)>
-				
-					<!--- This will strip out the prefix from the FormFields and enable us to send a clean formpost structure to validate with only the current object formfields by their original name. --->
-					<cfif "#ProcessingFormObjectPrefix##i#" EQ j>
-						<!--- This is the actual field value --->
-						<cfset Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i].value = FORM[j]>
-					<cfelse>
-						<!--- These are supporting fields --->
-						<cfset Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i].stSupporting[ReplaceNoCase(j,'#ProcessingFormObjectPrefix##i#','')] = FORM[j]>
-					</cfif>
-					
-				</cfif>
-			</cfloop>
-
-	
 			
-			
-				
-					
 			<!--- Default fieldType to the object type --->
-			<cfset tFieldType = createobject("component",application.stCOAPI[FORM['#ProcessingFormObjectPrefix#typename']].packagepath) />
+			<cfset tFieldType = createobject("component",application.stCOAPI[FORM['#ProcessingFormObjectPrefix#typename']].packagepath) />\
 				
 			<!--- Need to determine which method to run on the field --->
 			<cfif len(ftFieldMetadata.ftValidateMethod)>
@@ -475,22 +475,13 @@
 				<cfset tFieldType = application.formtools[ftFieldMetadata.ftType].oFactory.init() />
 			</cfif>
 			
-			<!--- Need to determine which method to run on the field --->	
-			<cfif structKeyExists(ftFieldMetadata,"ftValidateMethod") AND len(ftFieldMetadata.ftValidateMethod)>
-				<cfset FieldMethod = ftFieldMetadata.ftValidateMethod>
-			<cfelseif structKeyExists(stType,"ftValidate#ftFieldMetadata.Name#")>
-				<cfset FieldMethod = "ftValidate#ftFieldMetadata.Name#">						
-				<cfset tFieldType = stType>
-			<cfelse>
-				<cfset FieldMethod = "validate">
-			</cfif>	
-
 			<cfif i EQ "ObjectID" or i EQ "typename">
 				<cfset "Caller.#attributes.r_stProperties#.#i#" = Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i].value>
 			<cfelse>
 				<cfinvoke component="#tFieldType#" method="#FieldMethod#" returnvariable="stResult">
 					<cfinvokeargument name="ObjectID" value="#FORM['#ProcessingFormObjectPrefix#objectid']#">
-					<cfinvokeargument name="Typename" value="#FORM['#ProcessingFormObjectPrefix#typename']#">			
+					<cfinvokeargument name="Typename" value="#FORM['#ProcessingFormObjectPrefix#typename']#">
+					<cfinvokeargument name="stFormPost" value="#Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost']#">
 					<cfinvokeargument name="stFieldPost" value="#Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost'][i]#">
 					<cfinvokeargument name="stMetadata" value="#ftFieldMetadata#">
 				</cfinvoke>
@@ -506,9 +497,9 @@
 					<cfset structDelete(form, "FARCRYFORMSUBMITBUTTON") />
 					<cfset structDelete(form, "FARCRYFORMSUBMITTED") />
 				</cfif>
-							
+						<cftry>	
 				<cfset Caller[attributes.r_stProperties][i] = stResult.Value />
-				
+				<cfcatch><cfdump var="#Request.farcryForm.stObjects[ProcessingFormObjectPrefix]['FormPost']#"><cfdump var="#i#"><cfdump var="#stResult#"><cfabort></cfcatch></cftry>
 				
 				
 				
