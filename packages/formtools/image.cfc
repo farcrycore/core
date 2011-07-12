@@ -1094,21 +1094,25 @@
 					<cfset stJSON["resizedetails"]["method"] = arguments.stFieldPost.stSupporting.ResizeMethod />
 					<cfset stJSON["resizedetails"]["quality"] = round(arguments.stFieldPost.stSupporting.Quality*100) />
 					<cfset stResult.value = stFixed.value />
+				<cfelseif structkeyexists(stFixed,"error")>
+					<cfset stResult.value = "" />
+					<cfset stResult.error = stFixed.error />
 				</cfif>
 				
-				<cfset stFile = getFileInfo(application.path.imageroot & stResult.value) />
-				<cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" />
-				<cfset stJSON["value"] = stResult.value />
-				<cfset stJSON["filename"] = listlast(stResult.value,'/') />
-				<cfset stJSON["fullpath"] = application.url.imageroot & getDirectoryFromPath(stResult.value) & urlencodedformat(getFileFromPath(stResult.value)) />
-				<cfset stJSON["size"] = round(stFile.size/1024) />
-				<cfset stJSON["width"] = stImage.width />
-				<cfset stJSON["height"] = stImage.height />
+				<cfif not structkeyexists(stResult,"error")>
+					<cfset stFile = getFileInfo(application.path.imageroot & stResult.value) />
+					<cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" />
+					<cfset stJSON["value"] = stResult.value />
+					<cfset stJSON["filename"] = listlast(stResult.value,'/') />
+					<cfset stJSON["fullpath"] = application.url.imageroot & getDirectoryFromPath(stResult.value) & urlencodedformat(getFileFromPath(stResult.value)) />
+					<cfset stJSON["size"] = round(stFile.size/1024) />
+					<cfset stJSON["width"] = stImage.width />
+					<cfset stJSON["height"] = stImage.height />
 				
-				<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
+					<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
+				</cfif>
 				
 				<cfreturn serializeJSON(stJSON) />
-			
 			</cfif>
 		</cfif>
 		
@@ -1128,19 +1132,24 @@
 					<cfset stJSON["resizedetails"]["method"] = arguments.stFieldPost.stSupporting.ResizeMethod />
 					<cfset stJSON["resizedetails"]["quality"] = round(arguments.stFieldPost.stSupporting.Quality*100) />
 					<cfset stResult.value = stFixed.value />
+				<cfelseif structkeyexists(stFixed,"error")>
+					<cfset stResult.value = "" />
+					<cfset stResult.error = stFixed.error />
 				</cfif>
-
-				<cfset stFile = getFileInfo(application.path.imageroot & stResult.value) />
-				<cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" />
-				<cfset stJSON["value"] = stResult.value />
-				<cfset stJSON["filename"] = listlast(stResult.value,'/') />
-				<cfset stJSON["fullpath"] = application.url.imageroot & getDirectoryFromPath(stResult.value) & urlencodedformat(getFileFromPath(stResult.value)) />
-				<cfset stJSON["size"] = round(stFile.size/1024) />
-				<cfset stJSON["width"] = stImage.width />
-				<cfset stJSON["height"] = stImage.height />
-				<cfset stJSON["q"] = cgi.query_string />
 				
-				<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
+				<cfif not structkeyexists(stResult,"error")>
+					<cfset stFile = getFileInfo(application.path.imageroot & stResult.value) />
+					<cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" />
+					<cfset stJSON["value"] = stResult.value />
+					<cfset stJSON["filename"] = listlast(stResult.value,'/') />
+					<cfset stJSON["fullpath"] = application.url.imageroot & getDirectoryFromPath(stResult.value) & urlencodedformat(getFileFromPath(stResult.value)) />
+					<cfset stJSON["size"] = round(stFile.size/1024) />
+					<cfset stJSON["width"] = stImage.width />
+					<cfset stJSON["height"] = stImage.height />
+					<cfset stJSON["q"] = cgi.query_string />
+					
+					<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
+				</cfif>
 				
 				<cfreturn serializeJSON(stJSON) />
 			</cfif>
@@ -1402,11 +1411,20 @@
 				
 				<cfif stFixed.bSuccess>
 					<cfset stResult.value = stFixed.value />
+				<cfelseif structkeyexists(stFixed,"bSuccess")>
+					<cfset stResult = failed("",stFixed.error) />
 				</cfif>
 				
+				<cfif structkeyexists(stFixed,"error")>
+					<cfset onFileChange(typename=arguments.typename,objectid=arguments.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
+				</cfif>
+				
+			<cfelse>
+			
+				<cfset onFileChange(typename=arguments.typename,objectid=arguments.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
+			
 			</cfif>
 			
-			<cfset onFileChange(typename=arguments.typename,objectid=arguments.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
 		</cfif>
 		
 		<!--- ----------------- --->
@@ -1865,10 +1883,14 @@
 					
 					<cfif stFixed.bSuccess>
 						<cfset stResult.value = stFixed.value />
+					<cfelseif structkeyexists(stFixed,"error")>
+						<cfset stResult = failed("",stFixed.error) />
 					</cfif>
 					
-					<cfset onFileChange(typename=arguments.typename,objectid=arguments.stProperties.objectid,stMetadata=arguments.stFields[thisfield].metadata,value=stResult.value) />
-					<cfset stProperties[thisfield] = stResult.value />
+					<cfif not structkeyexists(stFixed,"error")>
+						<cfset onFileChange(typename=arguments.typename,objectid=arguments.stProperties.objectid,stMetadata=arguments.stFields[thisfield].metadata,value=stResult.value) />
+						<cfset stProperties[thisfield] = stResult.value />
+					</cfif>
 					
 				</cfif>
 			
