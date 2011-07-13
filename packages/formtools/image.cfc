@@ -1002,6 +1002,7 @@
 		<cfset var html = "" />
 		<cfset var json = "" />
 		<cfset var stJSON = structnew() />
+		<cfset var prefix = left(arguments.fieldname,len(arguments.fieldname)-len(arguments.stMetadata.name)) />
 		
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 		
