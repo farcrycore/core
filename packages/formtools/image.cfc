@@ -167,8 +167,9 @@
 	    	.dependant-label { font-weight:bold; }
 		</cfoutput></skin:loadCSS>
 		<!--- </style></cfoutput></skin:htmlHead> --->
-	    <skin:htmlHead id="farcry-imageformtool-js"><cfoutput><script type="text/javascript">
+	    <!--- <skin:htmlHead id="farcry-imageformtool-js"><cfoutput><script type="text/javascript"> --->
 	    <!--- <cfoutput> <script type="text/javascript" charset="utf-8"> --->
+		<skin:loadJS id="image-formtool"><cfoutput>
 	    	(function(jQuery){
 	    		var defaults = {
 	    			"selected"		: "",
@@ -692,8 +693,8 @@
 	    		if (!this[prefix+property]) this[prefix+property] = new ImageFormtool(prefix,property);
 	    		return this[prefix+property];
 	    	};
-			</script></cfoutput>
-		<skin:htmlHead>
+		<!--- </script></cfoutput><skin:htmlHead> --->
+		</cfoutput></skin:loadJS>
 	    
 	    <cfsavecontent variable="metadatainfo">
 			<cfif (isnumeric(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth gt 0) or (isnumeric(arguments.stMetadata.ftImageHeight) and arguments.stMetadata.ftImageHeight gt 0)>
