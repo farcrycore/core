@@ -1006,7 +1006,11 @@
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 		
 		<cfif structkeyexists(url,"check")>
-			<cfreturn "[]" />
+			<cfif isdefined("url.callback")>
+				<cfreturn "#url.callback#([])" />
+			<cfelse>
+				<cfreturn "[]" />
+			</cfif>
 		</cfif>
 		
 		<cfif structkeyexists(url,"crop")>
@@ -1058,7 +1062,7 @@
 						<div class="uniForm image-crop-actions">
 							<ft:buttonPanel>
 								<cfif url.allowcancel><a href="##" id="image-crop-cancel" style="padding-right:10px;">Cancel</a></cfif>
-								<ft:button value="Crop and Resize" id="image-crop-finalize" onclick="$fc.imageformtool.finalizeCrop();return false;" />
+								<ft:button value="Crop and Resize" id="image-crop-finalize" onclick="$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').finalizeCrop();return false;" />
 							</ft:buttonPanel>
 						</div>
 					</div>
@@ -1066,7 +1070,7 @@
 				
 				<cfreturn html />
 			<cfelse>
-				<cfreturn "<p>The source field is empty. <a href='##' onclick='$fc.imageformtool.endCrop();return false;'>Close</a></p>" />
+				<cfreturn "<p>The source field is empty. <a href='##' onclick='$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').endCrop();return false;'>Close</a></p>" />
 			</cfif>
 		</cfif>
 		
@@ -1076,7 +1080,12 @@
 			<cfset stJSON = structnew() />
 			<cfset stJSON["error"] = stResult.stError.message />
 			<cfset stJSON["value"] = stResult.value />
-			<cfreturn serializeJSON(stJSON) />
+			
+			<cfif isdefined("url.callback")>
+				<cfreturn "#url.callback#(#serializeJSON(stJSON)#)" />
+			<cfelse>
+				<cfreturn serializeJSON(stJSON) />
+			</cfif>
 		</cfif>
 		
 		<cfif stResult.bChanged>
@@ -1094,21 +1103,31 @@
 					<cfset stJSON["resizedetails"]["method"] = arguments.stFieldPost.stSupporting.ResizeMethod />
 					<cfset stJSON["resizedetails"]["quality"] = round(arguments.stFieldPost.stSupporting.Quality*100) />
 					<cfset stResult.value = stFixed.value />
+				<cfelseif structkeyexists(stFixed,"error")>
+					<cfset stResult.value = "" />
+					<cfset stResult.error = stFixed.error />
+					
+					<cfset stJSON.error = stFixed.error />
 				</cfif>
 				
-				<cfset stFile = getFileInfo(application.path.imageroot & stResult.value) />
-				<cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" />
-				<cfset stJSON["value"] = stResult.value />
-				<cfset stJSON["filename"] = listlast(stResult.value,'/') />
-				<cfset stJSON["fullpath"] = application.url.imageroot & getDirectoryFromPath(stResult.value) & urlencodedformat(getFileFromPath(stResult.value)) />
-				<cfset stJSON["size"] = round(stFile.size/1024) />
-				<cfset stJSON["width"] = stImage.width />
-				<cfset stJSON["height"] = stImage.height />
+				<cfif not structkeyexists(stResult,"error")>
+					<cfset stFile = getFileInfo(application.path.imageroot & stResult.value) />
+					<cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" />
+					<cfset stJSON["value"] = stResult.value />
+					<cfset stJSON["filename"] = listlast(stResult.value,'/') />
+					<cfset stJSON["fullpath"] = application.url.imageroot & getDirectoryFromPath(stResult.value) & urlencodedformat(getFileFromPath(stResult.value)) />
+					<cfset stJSON["size"] = round(stFile.size/1024) />
+					<cfset stJSON["width"] = stImage.width />
+					<cfset stJSON["height"] = stImage.height />
 				
-				<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
+					<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
+				</cfif>
 				
-				<cfreturn serializeJSON(stJSON) />
-			
+				<cfif isdefined("url.callback")>
+					<cfreturn "#url.callback#(#serializeJSON(stJSON)#)" />
+				<cfelse>
+					<cfreturn serializeJSON(stJSON) />
+				</cfif>
 			</cfif>
 		</cfif>
 		
@@ -1128,25 +1147,40 @@
 					<cfset stJSON["resizedetails"]["method"] = arguments.stFieldPost.stSupporting.ResizeMethod />
 					<cfset stJSON["resizedetails"]["quality"] = round(arguments.stFieldPost.stSupporting.Quality*100) />
 					<cfset stResult.value = stFixed.value />
+				<cfelseif structkeyexists(stFixed,"error")>
+					<cfset stResult.value = "" />
+					<cfset stResult.error = stFixed.error />
+					
+					<cfset stJSON.error = stFixed.error />
 				</cfif>
-
-				<cfset stFile = getFileInfo(application.path.imageroot & stResult.value) />
-				<cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" />
-				<cfset stJSON["value"] = stResult.value />
-				<cfset stJSON["filename"] = listlast(stResult.value,'/') />
-				<cfset stJSON["fullpath"] = application.url.imageroot & getDirectoryFromPath(stResult.value) & urlencodedformat(getFileFromPath(stResult.value)) />
-				<cfset stJSON["size"] = round(stFile.size/1024) />
-				<cfset stJSON["width"] = stImage.width />
-				<cfset stJSON["height"] = stImage.height />
-				<cfset stJSON["q"] = cgi.query_string />
 				
-				<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
+				<cfif not structkeyexists(stResult,"error")>
+					<cfset stFile = getFileInfo(application.path.imageroot & stResult.value) />
+					<cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" />
+					<cfset stJSON["value"] = stResult.value />
+					<cfset stJSON["filename"] = listlast(stResult.value,'/') />
+					<cfset stJSON["fullpath"] = application.url.imageroot & getDirectoryFromPath(stResult.value) & urlencodedformat(getFileFromPath(stResult.value)) />
+					<cfset stJSON["size"] = round(stFile.size/1024) />
+					<cfset stJSON["width"] = stImage.width />
+					<cfset stJSON["height"] = stImage.height />
+					<cfset stJSON["q"] = cgi.query_string />
+					
+					<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
+				</cfif>
 				
-				<cfreturn serializeJSON(stJSON) />
+				<cfif isdefined("url.callback")>
+					<cfreturn "#url.callback#(#serializeJSON(stJSON)#)" />
+				<cfelse>
+					<cfreturn serializeJSON(stJSON) />
+				</cfif>
 			</cfif>
 		</cfif>
 		
-		<cfreturn "{}" />
+		<cfif isdefined("url.callback")>
+			<cfreturn "#url.callback#({})" />
+		<cfelse>
+			<cfreturn "{}" />
+		</cfif>
 	</cffunction>
 	
 	<cffunction name="fixImage" access="public" output="false" returntype="struct" hint="Fixes an image's size, returns true if the image needed to be corrected and false otherwise">
@@ -1402,11 +1436,20 @@
 				
 				<cfif stFixed.bSuccess>
 					<cfset stResult.value = stFixed.value />
+				<cfelseif structkeyexists(stFixed,"bSuccess")>
+					<cfset stResult = failed("",stFixed.error) />
 				</cfif>
 				
+				<cfif structkeyexists(stFixed,"error")>
+					<cfset onFileChange(typename=arguments.typename,objectid=arguments.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
+				</cfif>
+				
+			<cfelse>
+			
+				<cfset onFileChange(typename=arguments.typename,objectid=arguments.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
+			
 			</cfif>
 			
-			<cfset onFileChange(typename=arguments.typename,objectid=arguments.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
 		</cfif>
 		
 		<!--- ----------------- --->
@@ -1687,15 +1730,7 @@
 					<cfset cropYOrigin = (newImage.height - arguments.Height)/2>  
 				</cfif> 
 				
-				<cftry>
-					<cfset ImageCrop(newImage,cropXOrigin,cropYOrigin,arguments.Width,arguments.Height)>
-					<cfcatch type="any">
-						<cfdump var="#newImage#">
-						<cfdump var="#arguments#" label="#cropXOrigin#-#cropYOrigin#">
-						<cfdump var="#cfcatch#">
-						<cfabort>
-					</cfcatch>
-				</cftry>
+				<cfset ImageCrop(newImage,cropXOrigin,cropYOrigin,arguments.Width,arguments.Height)>
 			</cfcase> 
 			
 			<cfdefaultcase>
@@ -1865,10 +1900,14 @@
 					
 					<cfif stFixed.bSuccess>
 						<cfset stResult.value = stFixed.value />
+					<cfelseif structkeyexists(stFixed,"error")>
+						<cfset stResult = failed("",stFixed.error) />
 					</cfif>
 					
-					<cfset onFileChange(typename=arguments.typename,objectid=arguments.stProperties.objectid,stMetadata=arguments.stFields[thisfield].metadata,value=stResult.value) />
-					<cfset stProperties[thisfield] = stResult.value />
+					<cfif not structkeyexists(stFixed,"error")>
+						<cfset onFileChange(typename=arguments.typename,objectid=arguments.stProperties.objectid,stMetadata=arguments.stFields[thisfield].metadata,value=stResult.value) />
+						<cfset stProperties[thisfield] = stResult.value />
+					</cfif>
 					
 				</cfif>
 			
@@ -1917,4 +1956,26 @@
 		</cfif>
 	</cffunction> 
 
+	<cffunction name="duplicateFile" access="public" output="false" returntype="string" hint="For use with duplicateObject, copies the associated file and returns the new unique filename">
+		<cfargument name="stObject" type="struct" required="false" hint="Provides the object" />
+		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
+		
+		<cfset var newfilename = "" />
+		<cfset var uniquekey = 1 />
+		
+		<cfif not fileexists(application.path.imageroot & arguments.stObject[arguments.stMetadata.name])>
+			<cfreturn "" />
+		</cfif>
+		
+		<cfset newfilename = rereplacenocase(arguments.stObject[arguments.stMetadata.name],"((\.[\w\d]+)?)$","#uniquekey#\1") />
+		<cfloop condition="fileexists(application.path.imageroot & newfilename)">
+			<cfset uniquekey = uniquekey + 1 />
+			<cfset newfilename = rereplacenocase(arguments.stObject[arguments.stMetadata.name],"((\.[\w\d]+)?)$","#uniquekey#\1") />
+		</cfloop>
+		
+		<cffile action="copy" source="#application.path.imageroot##arguments.stObject[arguments.stMetadata.name]#" destination="#application.path.imageroot##newfilename#" mode="777" />
+		
+		<cfreturn newfilename />
+	</cffunction>
+	
 </cfcomponent> 
