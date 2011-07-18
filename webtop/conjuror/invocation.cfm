@@ -123,6 +123,16 @@
 						</cfoutput>
 					</cfif>
 				</cfsavecontent>
+			<cfelseif url.ref eq "dialogiframe">
+				<!--- close the $fc.openDialogIFrame() --->
+				<cfset onExitProcess.Type = "HTML" />
+				<cfsavecontent variable="onExitProcess.Content">
+					<cfoutput>
+						<script type="text/javascript">
+							parent.location = parent.location;
+						</script>
+					</cfoutput>
+				</cfsavecontent>
 			<cfelse>
 				<!--- site tree redirect --->
 				<cfset onExitProcess.Type = "HTML" />
