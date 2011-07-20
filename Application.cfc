@@ -203,8 +203,7 @@
 				</cfif>
 			</cfloop>
 		</cfif>
-		
-		
+
 
 		<!----------------------------------------
 		 LOCALES
@@ -291,6 +290,18 @@
 			<cfset application.catID[qCategories.objectid] = qCategories.categoryLabel />
 		</cfloop>
 
+
+		<!----------------------------------- 
+		CALL THE PLUGINS AFTER INIT VARIABLES
+		 ----------------------------------->
+		<cfif isDefined("application.plugins")>
+			<cfloop list="#application.plugins#" index="plugin">
+				<cfif fileExists("#application.path.plugins#/#plugin#/config/_serverSpecificVarsAfterInit.cfm")>
+					<cfinclude template="/farcry/plugins/#plugin#/config/_serverSpecificVarsAfterInit.cfm">
+				</cfif>
+			</cfloop>
+		</cfif>
+		
 		
 		<!----------------------------------- 
 		CALL THE PROJECTS AFTER INIT VARIABLES
@@ -311,20 +322,8 @@
 
 
 		<!----------------------------------- 
-		CALL THE PLUGINS AFTER INIT VARIABLES
-		 ----------------------------------->
-		<cfif isDefined("application.plugins")>
-			<cfloop list="#application.plugins#" index="plugin">
-				<cfif fileExists("#application.path.plugins#/#plugin#/config/_serverSpecificVarsAfterInit.cfm")>
-					<cfinclude template="/farcry/plugins/#plugin#/config/_serverSpecificVarsAfterInit.cfm">
-				</cfif>
-			</cfloop>
-		</cfif>
-		
-		
-		<!----------------------------------- 
-		CALL THE PLUGINS AFTER INIT VARIABLES
-		 ----------------------------------->
+		APPLICAION UPTIME INFO
+		------------------------------------>
 		<cfif not isdefined("application.fcstats.updateapp") or not isquery(application.fcstats.updateapp)>
 			<cfparam name="application.fcstats" default="#structnew()#" />
 			<cfset application.fcstats.updateapp = querynew("when,howlong","time,bigint") />
