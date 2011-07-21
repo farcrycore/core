@@ -346,6 +346,7 @@
 		<cfset var sqlSelect = "" />
 		<cfset var qGetData = "" />
 		<cfset var stObj = structnew() />
+		<cfset var key = "" />
 		<cfset var qArrayData = "" />
 		<cfset var i = 0 />
 		<cfset var thiscol = "" />
