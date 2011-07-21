@@ -44,7 +44,7 @@ $out:$
 
 <cfif IsStruct(stObj) and not StructIsEmpty(stObj) and stObj.typename eq "dmXMLExport">
     <cfscript>
-        o = createObject("component", application.types[stArgs.typename].typePath);
+        o = createObject("component", application.types[stObj.typename].typePath);
         o.generate(stObj.objectid);
     </cfscript>
 <cfelseif IsStruct(stObj) and not StructIsEmpty(stObj) and stObj.typename eq "farWebfeed">

@@ -44,7 +44,7 @@ $out:$
 
 <cfif len(lCategories)>
 	<!--- get objects in selected categories --->
-	<cfset qObjects = oCategories.getData(typename=stObj.contentType,lCategoryIDs=lCategories,dsn=application.dsn,maxRows=stObj.NUMBEROFITEMS)>
+	<cfset qObjects = application.fapi.getContentObjects(typename=stObj.contentType,lProperties="*",categories_in=lCategories,orderby="datetimecreated desc",maxrows=stObj.numberOfItems) />
 <cfelse>
 	<!--- get all objects --->
 	<cfobject component="#application.types[stObj.contentType].typePath#" name="oContentType">
@@ -84,9 +84,9 @@ $out:$
 			<cfloop query="qObjects">
 				<cfset bShow = 1>
 				<!--- check object is available for publishing --->
-				<cfif isDefined("qObjects.publishDate") and qObjects.publishDate gt now()>
+				<cfif isDefined("qObjects.publishDate") and len(qObjects.publishdate) and qObjects.publishDate gt now()>
 					<cfset bShow = 0>
-				<cfelseif isDefined("qObjects.expiryDate") and qObjects.expiryDate lt now()>
+				<cfelseif isDefined("qObjects.expiryDate") and len(qObjects.expiryDate) and qObjects.expiryDate lt now()>
 					<cfset bShow = 0>
 				<cfelseif isDefined("qObjects.status") and qObjects.status neq "approved">
 					<cfset bShow = 0>
