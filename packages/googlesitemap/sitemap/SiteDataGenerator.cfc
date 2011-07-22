@@ -152,11 +152,11 @@
         <!--- VE: sort query through a requery; externallink may not be 
 			filled because we would get double URL's in the sitemap this is 
 			prohibited by google.---> 
-			
+
         <cfquery name="qNavSorted" dbtype="query"> 
-			SELECT DISTINCT objectid,nlevel,nleft,datetimelastupdated,externallink 
+			SELECT objectid,nlevel,nleft,datetimelastupdated,externallink 
             FROM qNavUnsorted 
-            WHERE externallink = '' 
+            WHERE externallink = '' OR externallink is NULL
             ORDER BY nLeft,objectName ASC 
         </cfquery>
 		
