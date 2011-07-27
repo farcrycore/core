@@ -42,6 +42,15 @@ a {color: ##116EAF;}
 		</cfif>
 		
 		<!----------------------------------------
+		 WEB URL PATHS
+		 ---------------------------------------->
+		<cfset application.url.webroot = url.projectURL />
+		<cfset application.url.farcry = url.webtopURL />
+		<cfset application.url.imageRoot = "#application.url.webroot#">
+		<cfset application.url.fileRoot = "#application.url.webroot#/files">
+		<cfset application.url.webtop = url.webtopURL />
+		
+		<!----------------------------------------
 		 SET THE MAIN PHYSICAL PATH INFORMATION
 		 ---------------------------------------->
 		<cfset application.path.project = expandpath("/farcry/projects/#application.projectDirectoryName#") />
@@ -55,14 +64,10 @@ a {color: ##116EAF;}
 		
 		<cfset application.path.mediaArchive = "#application.path.project#/mediaArchive">
 		
+		<cfset application.path.webroot = expandpath(application.url.webroot) />
 		
-		<!----------------------------------------
-		 WEB URL PATHS
-		 ---------------------------------------->
-		<cfset application.url.webroot = "" />
-		<cfset application.url.farcry = "#application.url.webroot#/webtop" />
-		<cfset application.url.imageRoot = "#application.url.webroot#">
-		<cfset application.url.fileRoot = "#application.url.webroot#/files">
+		
+		<cfset application.DEFAULTWEBSKINCACHETIMEOUT = 1400 />
 		
 		
 		<!----------------------------------------
@@ -107,16 +112,16 @@ a {color: ##116EAF;}
 	<cfparam name="application.factory" default="#structNew()#" />
 	<cfparam name="application.factory.oUtils" default="#createobject("component","#application.packagepath#.farcry.utils")#" />
 	
-	<!---------------------------------------------- 
-	INITIALISE THE COAPIADMIN SINGLETON
-	----------------------------------------------->
-	<cfset application.coapi.coapiadmin = createObject("component", "farcry.core.packages.coapi.coapiadmin").init() />
-		
 	<cfset application.fc = structNew() /><!--- FarCry Namespace in the application scope --->
 	<cfset application.fc.factory = structNew() /><!--- Struct to contain any factory classes that can be used by the application --->
 	<cfset application.fc.utils = createObject("component", "farcry.core.packages.farcry.utils").init() /><!--- FarCry Utility Functions --->
 	<cfset application.fapi = createObject("component", "farcry.core.packages.lib.fapi").init() /><!--- FarCry API Functions --->
 	<cfset application.fc.lib = createObject("component", "farcry.core.packages.lib.lib").init() /><!--- FarCry libraries --->
+	
+	<!---------------------------------------------- 
+	INITIALISE THE COAPIADMIN SINGLETON
+	----------------------------------------------->
+	<cfset application.coapi.coapiadmin = createObject("component", "farcry.core.packages.coapi.coapiadmin").init() />
 	
 	<cfset application.fc.factory['farCoapi'] = createObject("component", "farcry.core.packages.types.farCoapi") />		
 		
@@ -477,6 +482,8 @@ a {color: ##116EAF;}
 	<cfparam name="url.dsn" type="string" />
 	<cfparam name="url.dbType" type="string" />
 	<cfparam name="url.dbOwner" type="string" />
+	<cfparam name="url.projectURL" type="string" />
+	<cfparam name="url.webtopURL" type="string" />
 	
 	<cfif url.dbtype EQ "mssql" AND NOT len(url.dbowner)>
 		<cfset url.dbowner = "dbo." />
