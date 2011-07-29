@@ -41,7 +41,7 @@
 	
 	<cfif len(form.searchTypename)>
 		<cfquery datasource="#application.dsn#" name="qFiltered">
-			SELECT objectid
+			SELECT objectid as [key]
 			FROM #url.filterTypename#
 			WHERE label like <cfqueryparam cfsqltype="cf_sql_varchar" value="%#form.searchTypename#%" />
 		</cfquery>
@@ -61,9 +61,16 @@
 		<cfif structkeyexists(oLibraryData, stMetadata.ftLibraryData)>
 			<cfset bFoundLibraryData = true />
 			
-			<cfinvoke component="#oLibraryData#" method="#stMetadata.ftLibraryData#" returnvariable="libraryDataResult">
-				<cfinvokeargument name="primaryID" value="#stobj.objectid#" />
-			</cfinvoke>					
+			<cfif isdefined("qFiltered")>
+				<cfinvoke component="#oLibraryData#" method="#stMetadata.ftLibraryData#" returnvariable="libraryDataResult">
+					<cfinvokeargument name="primaryID" value="#stobj.objectid#" />
+					<cfinvokeargument name="qFilter" value="#qFiltered#" />
+				</cfinvoke>
+			<cfelse>
+				<cfinvoke component="#oLibraryData#" method="#stMetadata.ftLibraryData#" returnvariable="libraryDataResult">
+					<cfinvokeargument name="primaryID" value="#stobj.objectid#" />
+				</cfinvoke>
+			</cfif>
 			
 			<cfif isStruct(libraryDataResult)>
 				<cfset qAll = libraryDataResult.q />			
@@ -82,6 +89,14 @@
 		<cfif structKeyExists(stMetadata, "ftLibraryDataSQLWhere") and len(stMetadata["ftLibraryDataSQLWhere"])>
 			<cfset SQLWhere = " #SQLWhere# AND (#stMetadata.ftLibraryDataSQLWhere#)" />
 		</cfif>
+		
+		<cfif isdefined("qFiltered")>
+			<cfif qFiltered.recordcount>
+				<cfset SQLWhere = "#SQLWhere# AND objectid in ('#listchangedelims(valuelist(qFiltered.key),"','")#')" />
+			<cfelse>
+				<cfset SQLWhere = "#SQLWhere# AND 0=1" />
+			</cfif>
+		</cfif>
 
 		<cfset SQLOrderBy = "datetimelastupdated desc" />
 		<cfif structKeyExists(stMetadata, "ftLibraryDataSQLOrderBy")>
@@ -94,17 +109,8 @@
 		<cfset bFoundLibraryData = true />
 	</cfif>
 	
-
-	<cfif isDefined("qFiltered")>
-		<cfquery dbtype="query" name="qResult">
-			SELECT qAll.*
-			FROM qAll,qFiltered
-			WHERE qAll.objectid = qFiltered.objectid
-		</cfquery>	
-	<cfelse>
-		<cfset qResult = qAll />
-	</cfif>
-		
+	<cfset qResult = qAll />
+	
 	<cfset formAction = application.fapi.getLink(type='#stobj.typename#', objectid='#stobj.objectid#', view='displayLibrary', urlParameters="filterTypename=#url.filterTypename#&property=#url.property#&ajaxmode=1") />
 	
 	<ft:form name="#stobj.typename#_#url.property#_#url.filterTypename#" bAjaxSubmission="true" action="#formAction#">		
@@ -151,7 +157,7 @@
 		<cfelse>
 			<cfset lSelected = stobj[url.property] />
 		</cfif>
-			
+		
 		<!--- DISPLAY THE SELECTION OPTIONS --->	
 		<skin:pagination query="#qResult#" 
 			submissionType="form"
