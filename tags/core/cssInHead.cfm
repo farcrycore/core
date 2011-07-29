@@ -32,7 +32,7 @@
 			<cfset arrayprepend(aCSS,stCSS) />
 		</cfloop>
 		<cfloop from="#arraylen(aCSS)#" to="1" index="i" step="-1">
-			<cfif listcontainsnocase(toremove,aCSS[i].id)>
+			<cfif refindnocase("(^|,)#aCSS[i].id#(,|$)",toremove)>
 				<cfset arraydeleteat(aCSS,i) />
 			</cfif>
 		</cfloop>
