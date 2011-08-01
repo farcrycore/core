@@ -97,6 +97,7 @@
 	<cfproperty name="ftThumbnailBevel" type="boolean" hint="???" required="false" default="false" />
 	<cfproperty name="ftWatermark" type="string" hint="The path relative to the webroot of an image to use as a watermark." required="false" default="" />
 	<cfproperty name="ftWatermarkTransparency" type="numeric" hint="The transparency to apply to the watermark." required="false" default="90" />
+	<cfproperty name="ftSizeLimit" type="numeric" hint="File size limit for upload. 0 is no-limit" required="false" default="0" />
 	
 	
 	
@@ -148,7 +149,8 @@
 	    <cfparam name="arguments.stMetadata.ftPadColor" default="##ffffff">
 	    <cfparam name="arguments.stMetadata.ftShowConversionInfo" default="true"><!--- Set to false to hide the conversion information that will be applied to the uploaded image --->
 	    <cfparam name="arguments.stMetadata.ftAllowedExtensions" default="jpg,jpeg,png,gif"><!--- The extentions allowed to be uploaded --->
-	    
+	    <cfparam name="arguments.stMetadata.ftSizeLimit" default="0" />
+		
 	    <cfif len(arguments.stMetadata.value) and not fileexists(application.path.imageroot & arguments.stMetadata.value)>
 			<cfset arguments.stMetadata.value = "" />
 		</cfif>
@@ -369,7 +371,7 @@
 	    			this.views = {};
 	    			this.elements = {};
 	    			
-	    			this.init = function initImageFormtool(url,filetypes,sourceField,width,height,inline){
+	    			this.init = function initImageFormtool(url,filetypes,sourceField,width,height,inline,sizeLimit){
 
 	    				imageformtool.url = url;
 	    				imageformtool.filetypes = filetypes;
@@ -377,6 +379,7 @@
 	    				imageformtool.width = width;
 	    				imageformtool.height = height;
 	    				imageformtool.inline = inline || false;
+						imageformtool.sizeLimit = sizeLimit || null;
 	    				
 	    				imageformtool.inputs.resizemethod  = $j('##'+prefix+property+'RESIZEMETHOD');
 	    				imageformtool.inputs.quality  = $j('##'+prefix+property+'QUALITY');
@@ -482,7 +485,7 @@
 									imageformtool.multiview.selectView("complete");
 								}
 							}
-	    				}).bind("fileerror.updatedisplay",function onImageFormtoolFileerrorDisplay(event,action,error,message){
+	    				}).bind("fileerror.updatedisplay",function onImageFormtoolFileerrorDisplay(event,action,error,message){console.log(event,action,error,message);
 							$j('##'+prefix+property+"_"+action+"error").html(message).show();
 	    				}).bind("cancelcrop",function(){
 	    				
@@ -551,16 +554,19 @@
 							'fileDataName'	: property+"NEW",
 							'method'		: "POST",
 							'scriptData'	: {},
+							'sizeLimit'		: imageformtool.sizeLimit,
 							'onSelectOnce' 	: function(event,data){
-								// hide any previous results
-								$j('##'+prefix+property+"_uploaderror").hide();
-								
 								// attached related fields to uploadify post
 								imageformtool.inputs.newf.uploadifySettings("scriptData",imageformtool.getPostValues());
 							},
 							'onComplete'	: function(event, ID, fileObj, response, data){
 								var results = $j.parseJSON(response);
+								
 								imageformtool.inputs.newf.uploadifyClearQueue();
+								
+								// hide any previous results
+								$j('##'+prefix+property+"_uploaderror").hide();
+								
 								if (results.error) {
 									$j(imageformtool).trigger("fileerror", ["upload", "500", results.error]);
 								}
@@ -571,14 +577,12 @@
 							},
 							'onError'		: function(event, ID, fileObj, errorObj){
 								imageformtool.inputs.newf.uploadifyClearQueue();
-								if (d.status == 404)
-									$j(imageformtool).trigger("fileerror",[ "upload",errorObj.status.toString(),'Could not find upload script' ]);
-								else if (d.type === "HTTP")
-									$j(imageformtool).trigger("fileerror",[ "upload",errorObj.status.toString(),'error '+errorObj.type+": "+errorObj.status ]);
-								else if (d.type ==="File Size")
-									$j(imageformtool).trigger("fileerror",[ "upload","filesize",fileObj.name+' '+errorObj.type+' Limit: '+Math.round(errorObj.sizeLimit) ]);
+								if (errorObj.type === "HTTP")
+									$j(imageformtool).trigger("fileerror",[ "upload",errorObj.status.toString(),'Error '+errorObj.type+": "+errorObj.status ]);
+								else if (errorObj.type ==="File Size")
+									$j(imageformtool).trigger("fileerror",[ "upload","filesize",fileObj.name+" is not within the file size limit of "+Math.round(imageformtool.sizeLimit/1048576)+"MB" ]);
 								else
-									$j(imageformtool).trigger("fileerror",[ "upload",errorObj.type,'error '+errorObj.type+": "+errorObj.text ]);
+									$j(imageformtool).trigger("fileerror",[ "upload",errorObj.type,'Error '+errorObj.type+": "+errorObj.text ]);
 							}
 						});
 	    			};
@@ -788,7 +792,7 @@
 							</div>
 						</cfif>
 					</div>
-					<script type="text/javascript">$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').init('#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#','#arguments.stMetadata.ftSourceField#',#arguments.stMetadata.ftImageWidth#,#arguments.stMetadata.ftImageHeight#);</script>
+					<script type="text/javascript">$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').init('#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#','#arguments.stMetadata.ftSourceField#',#arguments.stMetadata.ftImageWidth#,#arguments.stMetadata.ftImageHeight#,false,#arguments.stMetadata.ftSizeLimit#);</script>
 				</div>
 			</cfoutput></cfsavecontent>
 			
@@ -858,7 +862,7 @@
 							</div>
 						</cfif>
 					</div>
-					<script type="text/javascript">$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').init('#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#','#arguments.stMetadata.ftSourceField#',#arguments.stMetadata.ftImageWidth#,#arguments.stMetadata.ftImageHeight#);</script>
+					<script type="text/javascript">$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').init('#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#','#arguments.stMetadata.ftSourceField#',#arguments.stMetadata.ftImageWidth#,#arguments.stMetadata.ftImageHeight#,false,#arguments.stMetadata.ftSizeLimit#);</script>
 					<cfif len(arguments.stMetadata.ftInlineDependants)><div style="margin-top: 10px; margin-left: 20px; font-weight: bold; font-style: italic;">Image sizes:</div></cfif>
 				</cfoutput>
 				
@@ -909,7 +913,8 @@
 	    <cfparam name="arguments.stMetadata.ftPadColor" default="##ffffff">
 	    <cfparam name="arguments.stMetadata.ftShowConversionInfo" default="true"><!--- Set to false to hide the conversion information that will be applied to the uploaded image --->
 	    <cfparam name="arguments.stMetadata.ftAllowedExtensions" default="jpg,jpeg,png,gif"><!--- The extentions allowed to be uploaded --->
-	    
+	    <cfparam name="arguments.stMetadata.ftSizeLimit" default="0" />
+		
 	    <!--- Metadata --->
 	    <cfsavecontent variable="metadatainfo">
 			<cfif (isnumeric(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth gt 0) or (isnumeric(arguments.stMetadata.ftImageHeight) and arguments.stMetadata.ftImageHeight gt 0)>
@@ -978,7 +983,7 @@
 						</div>
 					</div>
 				</cfif>
-				<script type="text/javascript">$fc.imageformtool('#arguments.prefix#','#arguments.stMetadata.name#').init('#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#','#arguments.stMetadata.ftSourceField#',#arguments.stMetadata.ftImageWidth#,#arguments.stMetadata.ftImageHeight#,true);</script>
+				<script type="text/javascript">$fc.imageformtool('#arguments.prefix#','#arguments.stMetadata.name#').init('#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#','#arguments.stMetadata.ftSourceField#',#arguments.stMetadata.ftImageWidth#,#arguments.stMetadata.ftImageHeight#,true,#arguments.stMetadata.ftSizeLimit#);</script>
 				<br class="clear">
 			</div>
 		</cfoutput></cfsavecontent>
@@ -1070,7 +1075,7 @@
 			</cfif>
 		</cfif>
 		
-		<cfset stResult = handleFilePost(objectid=arguments.stObject.objectid,existingfile=arguments.stMetadata.value,uploadfield="#arguments.stMetadata.name#NEW",destination=arguments.stMetadata.ftDestination,allowedExtensions=arguments.stMetadata.ftAllowedExtensions,stFieldPost=arguments.stFieldPost.stSupporting) />
+		<cfset stResult = handleFilePost(objectid=arguments.stObject.objectid,existingfile=arguments.stMetadata.value,uploadfield="#arguments.stMetadata.name#NEW",destination=arguments.stMetadata.ftDestination,allowedExtensions=arguments.stMetadata.ftAllowedExtensions,stFieldPost=arguments.stFieldPost.stSupporting,sizeLimit=arguments.stMetadata.ftSizeLimit) />
 		
 		<cfif isdefined("stResult.stError.message") and len(stResult.stError.message)>
 			<cfset stJSON = structnew() />
@@ -1229,6 +1234,7 @@
 		<cfset var uploadFileName = "" />
 		<cfset var archivedFile = "" />
 		<cfset var stResult = passed(arguments.existingfile) />
+		<cfset var stFile = structnew() />
 		
 		<cfparam name="stFieldPost.NEW" default="" />
 		<cfparam name="stFieldPost.DELETE" default="false" /><!--- Boolean --->
@@ -1265,14 +1271,18 @@
 				<!--- This means there is already a file associated with this object. The new file must have the same name. --->
 				<cfset uploadFileName = listLast(arguments.existingfile, "/\") />
 				
-				<cffile action="upload" filefield="#arguments.uploadfield#" destination="#application.path.imageRoot##arguments.destination#" nameconflict="MakeUnique" mode="664" />
+				<cffile action="upload" filefield="#arguments.uploadfield#" destination="#application.path.imageRoot##arguments.destination#" nameconflict="MakeUnique" mode="664" result="stFile" />
 				
-				<cfif listlast(arguments.existingfile,".") eq listlast(cffile.serverFileExt,".")>
-					<cffile action="rename" source="#application.path.imageRoot##arguments.destination#/#cffile.ServerFile#" destination="#uploadFileName#" />
+				<cfif arguments.sizeLimit and arguments.sizeLimit lt stFile.filesize>
+					<cffile action="delete" file="#application.path.imageRoot##arguments.destination#/#stFile.ServerFile#" />
+					<cffile action="move" source="#archivedFile#" destination="#application.path.imageRoot##arguments.existingfile#" />
+					<cfset stResult = failed(value=arguments.existingfile,message="#stFile.serverfile# is not within the file size limit of #round(arguments.sizeLimit/1048576)#MB") />
+				<cfelseif listlast(arguments.existingfile,".") eq listlast(stFile.serverFileExt,".")>
+					<cffile action="rename" source="#application.path.imageRoot##arguments.destination#/#stFile.ServerFile#" destination="#uploadFileName#" />
 					<cfset stResult = passed("#arguments.destination#/#uploadFileName#") />
 		    		<cfset stResult.bChanged = true />
 				<cfelse>
-					<cffile action="delete" file="#application.path.imageRoot##arguments.destination#/#cffile.ServerFile#" />
+					<cffile action="delete" file="#application.path.imageRoot##arguments.destination#/#stFile.ServerFile#" />
 					<cffile action="move" source="#archivedFile#" destination="#application.path.imageRoot##arguments.existingfile#" />
 					<cfset stResult = failed(value=arguments.existingfile,message="Replacement images must have the same extension") />
 				</cfif>
@@ -1280,13 +1290,16 @@
 			<cfelse>
 				
 				<!--- There is no image currently so we simply upload the image and make it unique  --->
-				<cffile action="upload" filefield="#arguments.uploadfield#" destination="#application.path.imageRoot##arguments.destination#" nameconflict="MakeUnique" mode="664" />
+				<cffile action="upload" filefield="#arguments.uploadfield#" destination="#application.path.imageRoot##arguments.destination#" nameconflict="MakeUnique" mode="664" result="stFile" />
 				
-				<cfif listFindNoCase(arguments.allowedExtensions,cffile.serverFileExt)>
-					<cfset stResult = passed("#arguments.destination#/#cffile.ServerFile#") />
+				<cfif arguments.sizeLimit and arguments.sizeLimit lt stFile.fileSize>
+					<cffile action="delete" file="#application.path.imageRoot##arguments.destination#/#stFile.ServerFile#" />
+					<cfset stResult = failed(value=arguments.existingfile,message="#stFile.serverfile# is not within the file size limit of #round(arguments.sizeLimit/1048576)#MB") />
+				<cfelseif listFindNoCase(arguments.allowedExtensions,stFile.serverFileExt)>
+					<cfset stResult = passed("#arguments.destination#/#stFile.ServerFile#") />
 		    		<cfset stResult.bChanged = true />
 				<cfelse>
-					<cffile action="delete" file="#application.path.imageRoot##arguments.destination#/#cffile.ServerFile#" />
+					<cffile action="delete" file="#application.path.imageRoot##arguments.destination#/#stFile.ServerFile#" />
 					<cfset stResult = failed(value="",message="Images must have one of these extensions: #arguments.allowedExtensions#") />
 				</cfif>
 				
@@ -1399,7 +1412,7 @@
 		<cfset var lFormField = "" /> 
 		
 		
-		<cfset stResult = handleFilePost(objectid=arguments.objectid,existingfile=arguments.stFieldPost.value,uploadfield="#arguments.stMetadata.FormFieldPrefix##arguments.stMetadata.name#TRADITIONAL",destination=arguments.stMetadata.ftDestination,allowedExtensions=arguments.stMetadata.ftAllowedExtensions,stFieldPost=arguments.stFieldPost.stSupporting) />
+		<cfset stResult = handleFilePost(objectid=arguments.objectid,existingfile=arguments.stFieldPost.value,uploadfield="#arguments.stMetadata.FormFieldPrefix##arguments.stMetadata.name#TRADITIONAL",destination=arguments.stMetadata.ftDestination,allowedExtensions=arguments.stMetadata.ftAllowedExtensions,stFieldPost=arguments.stFieldPost.stSupporting,sizeLimit=arguments.stMetadata.ftSizeLimit) />
 		
 		<cfif stResult.bChanged>
 			<cfif isdefined("stResult.value") and len(stResult.value)>
@@ -1424,7 +1437,6 @@
 				<cfset onFileChange(typename=arguments.typename,objectid=arguments.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
 			
 			</cfif>
-			
 		</cfif>
 		
 		<!--- ----------------- --->
@@ -1705,15 +1717,7 @@
 					<cfset cropYOrigin = (newImage.height - arguments.Height)/2>  
 				</cfif> 
 				
-				<cftry>
-					<cfset ImageCrop(newImage,cropXOrigin,cropYOrigin,arguments.Width,arguments.Height)>
-					<cfcatch type="any">
-						<cfdump var="#newImage#">
-						<cfdump var="#arguments#" label="#cropXOrigin#-#cropYOrigin#">
-						<cfdump var="#cfcatch#">
-						<cfabort>
-					</cfcatch>
-				</cftry>
+				<cfset ImageCrop(newImage,cropXOrigin,cropYOrigin,arguments.Width,arguments.Height)>
 			</cfcase> 
 			
 			<cfdefaultcase>
@@ -1959,6 +1963,22 @@
 		<cffile action="copy" source="#application.path.imageroot##arguments.stObject[arguments.stMetadata.name]#" destination="#application.path.imageroot##newfilename#" mode="777" />
 		
 		<cfreturn newfilename />
+	</cffunction>
+	
+	<cffunction name="failed" access="public" output="false" returntype="struct" hint="This will return a struct with stMessage">
+		<cfargument name="value" required="true" type="any" hint="The value that is to be returned.">
+		<cfargument name="message" required="false" type="string" default="Not a valid value" hint="The message that will appear under the field.">
+		<cfargument name="class" required="false" type="string" default="validation-advice" hint="The class of the div wrapped around the message.">
+	
+		<cfset var r_stResult = structNew() />
+		<cfset r_stResult.value = arguments.value />
+		<cfset r_stResult.bSuccess = false />
+		<cfset r_stResult.stError = structNew() />
+		<cfset r_stResult.stError.message = HTMLEditFormat(arguments.message) />
+		<cfset r_stResult.stError.class = arguments.class />
+		<cfset r_stResult.bChanged = false />
+		
+		<cfreturn r_stResult />
 	</cffunction>
 	
 </cfcomponent> 
