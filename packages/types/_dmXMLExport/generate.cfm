@@ -95,9 +95,13 @@ $out:$
 				<cfif bShow>
 					<cfoutput>
 					<item>
-						<title>#xmlFormat(replace(rereplace(qObjects.label, "</?[^>]*>", "", "all"),"�","'","ALL"))#</title>
+						<title>#cleanText(qObjects.label)#</title>
 						<link>http://#cgi.http_host##application.url.conjurer#?objectid=#qObjects.objectid#</link>
-						<description><cfif isdefined("qObjects.teaser") and len(qObjects.teaser)>#xmlFormat(replace(qObjects.teaser,"�","'","ALL"))#<cfelseif isdefined("qObjects.body") and len(qObjects.body)>#xmlFormat(replace(oRSS.HTMLStripper(left(qObjects.body,255)),"�","'","ALL"))#...</cfif></description>
+						<cfif isdefined("qObjects.teaser") and len(qObjects.teaser)>
+							<description>#cleanText(qObjects.teaser)#</description>
+						<cfelseif isdefined("qObjects.body") and len(qObjects.body)>
+							<description>#cleanText(qObjects.body,true)#...</description>
+						</cfif>
 						<guid isPermaLink="false">#qObjects.objectid#</guid>
 						<!--- <dc:subject>subject</dc:subject> --->
 						<dc:date>#dateFormat(qObjects.dateTimeLastUpdated,"yyyy-mm-dd")#T#timeFormat(qObjects.dateTimeLastUpdated,"hh:mm:ss")##numberFormat((stTimeZone.utcHourOffset * -1),"+00")#:#numberFormat(abs(stTimeZone.utcMinuteOffset),"00")#</dc:date>
@@ -120,9 +124,13 @@ $out:$
 				<cfif bShow>
 					<cfoutput>
 					<item>
-						<title>#xmlFormat(replace(rereplace(stObjects[obj].label, "</?[^>]*>", "", "all"),"�","'","ALL"))#</title>
+						<title>#cleanText(stObjects[obj].label)#</title>
 						<link>http://#cgi.http_host##application.url.conjurer#?objectid=#obj#</link>
-						<description><cfif structKeyExists(stObjects[obj],"teaser") and len(stObjects[obj].teaser)>#xmlFormat(replace(stObjects[obj].teaser,"�","'","ALL"))#<cfelseif structKeyExists(stObjects[obj],"body") and len(stObjects[obj].body)>#xmlFormat(replace(oRSS.HTMLStripper(left(stObjects[obj].body,255)),"�","'","ALL"))#...</cfif></description>
+						<cfif structKeyExists(stObjects[obj],"teaser") and len(stObjects[obj].teaser)>
+							<description>#cleanText(stObjects[obj].teaser)#</description>
+						<cfelseif structKeyExists(stObjects[obj],"body") and len(stObjects[obj].body)>
+							<description>#cleanText(stObjects[obj].body,true)#...</description>
+						</cfif>
 						<guid isPermaLink="false">#obj#</guid>
 						<!--- <dc:subject>subject</dc:subject> --->
 						<dc:date>#dateFormat(stObjects[obj].dateTimeLastUpdated,"yyyy-mm-dd")#T#timeFormat(stObjects[obj].dateTimeLastUpdated,"hh:mm:ss")##numberFormat((stTimeZone.utcHourOffset * -1),"+00")#:#numberFormat(abs(stTimeZone.utcMinuteOffset),"00")#</dc:date>
@@ -148,4 +156,17 @@ $out:$
 	<cffile action="write" file="#application.path.project#/#application.config.general.exportPath#/#stObj.xmlFile#" output="#toString(stFeed)#" addnewline="no" nameconflict="OVERWRITE" mode="664">
 	<cfcatch><cfoutput>#application.path.project#/#application.config.general.exportPath#/#stObj.xmlFile# directory doesn't exist. Please create before trying to export.</cfoutput></cfcatch>
 </cftry>
+
+
+<cffunction name="cleanText" output="false" returntype="string">
+	<cfargument name="s" type="string" required="true" />
+	<cfargument name="bHTML" type="boolean" required="false" default="false" />
+	
+	<cfif arguments.bHTML>
+		<cfset arguments.s = oRSS.HTMLStripper(left(stObjects[obj].body,255)) />
+	</cfif>
+	
+	<cfreturn xmlFormat(replacelist(arguments.s,"#chr(8211)#,#chr(8212)#,#chr(8216)#,#chr(8217)#,#chr(8220)#,#chr(8221)#","#chr(45)#,#chr(45)#,#chr(39)#,#chr(39)#,#chr(34)#,#chr(34)#")) />
+</cffunction>
+
 <cfsetting enablecfoutputonly="false">
