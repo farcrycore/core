@@ -270,6 +270,7 @@
 		<cfargument name="bPrimaryKey" type="boolean" required="false" default="false" />
 		<cfargument name="default" type="any" required="false" default="" />
 		<cfargument name="index" type="string" required="false" default="" />
+		<cfargument name="savable" type="boolean" required="false" default="true" />
 		
 		<cfset var stResult = structnew() />
 		
@@ -278,6 +279,7 @@
 		<cfset stResult.bPrimaryKey = arguments.bPrimaryKey />
 		<cfset stResult.default = arguments.default />
 		<cfset stResult.index = arguments.index />
+		<cfset stResult.savable = arguments.savable />
 		
 		<cfif stResult.index eq "true">
 			<cfset stResult.index = "#name#_index" />
@@ -377,6 +379,7 @@
 		<cfset var bPrimaryKey = false />
 		<cfset var stResult = "" />
 		<cfset var index = "" />
+		<cfset var savable = true />
 		
 		<cfif structkeyexists(arguments.data,"dbNullable")>
 			<cfset nullable = arguments.data.dbNullable />
@@ -408,7 +411,11 @@
 			<cfset index = arguments.data.dbIndex />
 		</cfif>
 		
-		<cfset stResult = createFieldStruct(name=name,nullable=nullable,default=default,type=type,precision=precision,bPrimaryKey=bPrimaryKey,index=index) />
+		<cfif structkeyexists(arguments.data,"bSave") and not arguments.data.bSave>
+			<cfset savable = false />
+		</cfif>
+		
+		<cfset stResult = createFieldStruct(name=name,nullable=nullable,default=default,type=type,precision=precision,bPrimaryKey=bPrimaryKey,index=index,savable=savable) />
 		
 		<cfif type eq "array">
 			<!--- If there is an array content type for this property, that overrides everything else --->
