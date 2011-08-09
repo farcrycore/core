@@ -36,7 +36,7 @@
 	<cfparam name="request.inHead.aJSLibraries" default="#arrayNew(1)#" />
 	<cfparam name="request.inHead.stJSLibraries" default="#structNew()#" />
 	
-	<cfif NOT structKeyExists(request.inhead.stJSLibraries, stJS.id)>
+	<cfif NOT structKeyExists(request.inhead.stJSLibraries, stJS.id) or not listcontainsnocase(arraytolist(request.inHead.aJSLibraries),stJS.id)>
 		
 		<!--- If this id is registered, use those values for defaults --->
 		<cfif structKeyExists(application.fc.stJSLibraries, stJS.id)>

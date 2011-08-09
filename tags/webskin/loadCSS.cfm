@@ -37,7 +37,7 @@
 	<cfparam name="request.inHead.stCSSLibraries" default="#structNew()#" />
 	
 	
-	<cfif NOT structKeyExists(request.inhead.stCSSLibraries, stCSS.id)>
+	<cfif NOT structKeyExists(request.inhead.stCSSLibraries, stCSS.id) or not listcontainsnocase(arraytolist(request.inHead.aCSSLibraries),stCSS.id)>
 		
 		<cfif structKeyExists(application.fc.stCSSLibraries, stCSS.id)>
 			<cfif not len(stCSS.lCombineIDs)>
