@@ -30,37 +30,7 @@ FARCRY IMPORT FILES
 
 <skin:loadCSS id="webtop" />
 
-<skin:loadCSS id="farcry-form">
-	<cfoutput>
-	.uniForm .fieldset {
-		margin:30px 0 0 0;
-		padding:5px;
-	}
-	
-	.uniForm .fieldset .legend {
-		color:##324E7C;
-		margin:0;
-		padding:0px;
-		font-size:107%;
-	}
-	
-	.ctrlHolder {
-		background:##E4E4E4;
-	}
-	
-	.uniForm .ctrlHolder .label {
-		font-weight: bold;
-	}
-	
-	.uniForm .helpsection {
-		margin:10px 0px;
-	}
-	
-	.uniForm .buttonHolder{ text-align: right; margin:5px 0 10px 0;padding:5px;border:1px solid ##CCCCCC;border-width:1px 0px;background-color:##F4F4F4;}
-	
-	.uniForm .fc-button {padding:5px;}
-	</cfoutput>
-</skin:loadCSS>
+<skin:loadCSS id="farcry-form" />
 
 <!------------------ 
 START WEBSKIN

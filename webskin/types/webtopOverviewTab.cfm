@@ -55,7 +55,7 @@ FARCRY INCLUDE FILES
 			<cfswitch expression="#stobj.status#">
 			<cfcase value="draft">
 				
-					<grid:div class="webtopOverviewStatusBox" style="background-color:##C0FFFF;">
+					<grid:div class="webtopOverviewStatusBox fc-shadowbox" style="background-color:##C0FFFF;">
 						<cfoutput>
 							DRAFT: last updated <a title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</a>.
 							
@@ -68,7 +68,7 @@ FARCRY INCLUDE FILES
 			</cfcase>
 			<cfcase value="pending">
 				
-					<grid:div class="webtopOverviewStatusBox" style="background-color:##FFE0C0;">
+					<grid:div class="webtopOverviewStatusBox fc-shadowbox" style="background-color:##FFE0C0;">
 						<cfoutput>
 							PENDING: awaiting approval since <a title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</a>.
 							
@@ -80,7 +80,7 @@ FARCRY INCLUDE FILES
 			</cfcase>
 			<cfcase value="approved">
 				
-					<grid:div class="webtopOverviewStatusBox" style="background-color:##C0FFC0;">
+					<grid:div class="webtopOverviewStatusBox fc-shadowbox" style="background-color:##C0FFC0;">
 						<cfoutput>
 							APPROVED: <a title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</a>.
 							
@@ -108,14 +108,14 @@ FARCRY INCLUDE FILES
 		<grid:div id="#tabID#">
 			<cfoutput>        	
 			<ul>
-				<li style="background-image:none;padding:0px;"><a href="##tabs-summary">General</a></li>
+				<li><a href="##tabs-summary">General</a></li>
 				<cfif application.fapi.getContentTypeMetadata(typename="#stobj.typename#", md="bFriendly", default="false")>
-					<li style="background-image:none;padding:0px;"><a href="##tabs-seo">SEO</a></li>
+					<li><a href="##tabs-seo">SEO</a></li>
 				</cfif>
-				<li style="background-image:none;padding:0px;"><a href="##tabs-misc">Miscellaneous</a></li>
+				<li><a href="##tabs-misc">Miscellaneous</a></li>
 				<cfloop query="stLocal.qTabs">
 					<cfif stLocal.qTabs.methodname neq "webtopOverviewTab" and isdefined("application.stCOAPI.#stObj.typename#.stWebskins.#stLocal.qTabs.methodname#.displayname")>
-						<li style="background-image:none;padding:0px;"><a href="#application.fapi.getLink(objectid=stObj.objectid,view=stLocal.qTabs.methodname,urlparameters='ajaxmode=1')#">#application.stCOAPI[stObj.typename].stWebskins[stLocal.qTabs.methodname].displayname#</a></li>
+						<li><a href="#application.fapi.getLink(objectid=stObj.objectid,view=stLocal.qTabs.methodname,urlparameters='ajaxmode=1')#">#application.stCOAPI[stObj.typename].stWebskins[stLocal.qTabs.methodname].displayname#</a></li>
 					</cfif>
 				</cfloop>
 			</ul>
