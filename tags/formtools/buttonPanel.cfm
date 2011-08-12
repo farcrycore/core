@@ -15,8 +15,10 @@
 
 <cfif thistag.ExecutionMode EQ "Start">
 	
-	<cfparam  name="attributes.class" default="">
+	<cfparam  name="attributes.class" default="ui-widget-header">
 	<cfparam  name="attributes.style" default="">
+	
+	<cfset bPrimaryDefined = false />
 
 	<cfoutput>
 		<div class="buttonHolder #attributes.class#" style="#attributes.style#">

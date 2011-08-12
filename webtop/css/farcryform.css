@@ -1,0 +1,222 @@
+	body {
+		font-size:11px;
+		font-family: Arial;
+	}	
+	.uniForm .fieldset {
+		margin:10px 0 20px 0;
+		padding:5px;
+	}
+	
+	.uniForm .fieldset .legend {
+		color:#324E7C;
+		margin:0;
+		padding:0px;
+		font-size:150%;
+	}
+	
+	.ctrlHolder {
+		border:1px solid #DFDFDF;
+		border-width:1px 0 0 0;
+		background:none;
+		zoom:1;
+	}
+	
+	.uniForm .ctrlHolder .label {
+		font-weight: bold;
+	}
+	
+	.uniForm .helpsection {
+		margin:10px 0px;
+		color:#324E7C;
+	}
+	
+	.uniForm .buttonHolder { 
+		text-align: right; 
+		margin:5px 0 10px 0;
+		padding:5px 10px 5px 10px;
+		/* border: 1px solid #7eaadc; */
+		/* border-width: 1px 0px 0px 0px; */
+		/* background: #DAE3F0 none; */
+	}
+	
+	.uniForm .ctrlHolder.array .buttonHolder {
+		padding:5px 10px 5px 164px;
+	}
+	
+	/*
+	.uniForm .ui-button-text-only .ui-button-text {
+		padding: 2px 4px;
+	}
+	.uniForm .ui-button-text-icon-primary .ui-button-text {
+		padding: 2px 4px 2px 24px;
+	}
+	.uniForm .buttonHolder .fc-btn .ui-button-text {
+		padding: 4px 11px;
+	}
+	 */
+	.uniForm .fc-button {
+		padding:5px;
+		margin-right:5px;
+	}
+	
+	.uniForm .multiField, .uniForm .blockLabels .multiField {
+		width: 100%;
+	}
+	
+	.uniForm .inlineLabels .formHint {
+		margin-left:157px;
+		width:55%;
+	}
+	
+	.uniForm select {
+		margin-left:0px;
+		-moz-border-radius: 0;
+		-webkit-border-radius: 0;
+		border-radius: 0;
+		font-size: 11px;
+	}
+	
+	.uniForm textarea {
+		padding:2px;
+		-moz-border-radius: 0;
+		-webkit-border-radius: 0;
+		border-radius: 0;
+		font-size: 11px;
+	}
+	
+	.uniForm input,
+	.uniForm input[type="text"],
+	.uniForm input[type="password"] {
+		padding:2px;
+		-moz-border-radius: 0;
+		-webkit-border-radius: 0;
+		border-radius: 0;
+		font-size: 11px;
+	}
+	
+	
+	
+
+	
+
+	.uniForm .ctrlHolder {
+		text-align:left;
+	}
+	.uniForm .inlineLabels .label {
+		width:150px;
+		text-align: left;
+		
+		margin:0px 5px 0px 0px;
+		line-height:18px;
+	}
+	
+	.uniForm select {
+		border:1px solid #ccc;	
+	}
+	
+	.uniForm .buttonHolder a.fc-btn {
+		
+		padding: 4px 11px;
+		line-height: 1.4;
+	}
+	
+	a.fc-btn, a.fc-btn:link, a.fc-btn:visited, a.fc-btn:active {
+		padding:0px;
+		color:#38667F;
+		background: transparent none;
+	}
+	
+	a.fc-btn:hover {
+		
+	}	
+	
+/* SPLIT BUTTON */
+		.jquery-ui-split-button {
+			display:inline-block;
+			
+		}
+		.jquery-ui-split-button .ui-menu {
+			padding:0px;
+		}
+		
+		.jquery-ui-split-button .ui-menu .ui-menu-item a {
+			font-weight: normal;
+			background:#ffffff none;
+			padding:2px;
+		}
+		.jquery-ui-split-button .ui-menu .ui-menu-item a:hover {
+			background:#496ea4 none;
+			color: #ffffff;
+		}
+		
+		.jquery-ui-split-button .ui-menu .ui-menu-item a span.ui-button-text {
+			padding:1px 2px 1px 5px;
+			font-size:1em;
+			font-weight:normal;
+		}
+		
+		.jquery-ui-split-button.ui-buttonset {
+			margin-right:.1em;
+			border:none;
+		}
+		
+		.ui-button,
+		.jquery-ui-split-button.ui-buttonset {
+			margin-left:5px;
+		}
+		
+		.jquery-ui-split-button.ui-buttonset ul {
+			display:none;
+			position:absolute;
+			box-shadow:5px 5px 5px #ddd;
+			border:2px solid #ddd;
+			z-index:99;
+		}			
+					
+		.jquery-ui-split-button.ui-buttonset ul li .ui-button {
+			margin: -1px -1px -1px -1px;
+		}
+		
+		.jquery-ui-split-button.ui-buttonset ul li {
+			text-align:left;
+			white-space:nowrap;
+		}
+		
+		.jquery-ui-split-button.ui-buttonset ul li a.ui-button {
+			margin: -1px -1px -1px -1px;
+			text-align:left;
+			border:none;
+		}
+		
+		.jquery-ui-split-button.ui-buttonset ul li em {
+			padding:1px 2px 1px 2px;
+			display:inline-block;
+			font-style:normal;
+			font-weight:bold;
+			color:#636B75;
+		}
+
+	
+	
+	
+	div.fc-shadowbox {
+	
+		padding:10px 10px 10px 10px;
+		margin: 0px 0px 15px 0px;
+		background-color:#F1F1F1;
+		-moz-border-radius: 3px;
+		border-radius: 3px;
+		-moz-box-shadow: 2px 2px 5px #ddd;
+		-webkit-box-shadow: 2px 2px 5px #ddd;
+		box-shadow: 2px 2px 5px #ddd;
+		border:1px solid #ddd;
+		height:auto;
+		line-height: 14px;
+		
+	}
+	
+	div.fc-shadowbox h3 {
+		margin-top:0px;
+	}	
+	
+	

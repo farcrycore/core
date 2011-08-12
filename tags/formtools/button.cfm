@@ -3,7 +3,7 @@
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <cfparam name="attributes.value" /><!--- @@hint: The event submitted and captured by an ft:processForm tag. @@required: true --->
-<cfparam name="attributes.type" default="" /><!--- button or submit. Default is 'submit' if inside an ft:form and 'button' if not. --->
+<cfparam name="attributes.type" default="submit" /><!--- button or submit. Default is 'submit'. --->
 <cfparam name="attributes.text" default="#attributes.value#" /><!--- The text that will appear on the button. Default is the value. --->
 <cfparam name="attributes.id" default="f-btn-#application.fapi.getUUID()#"><!--- The unique id of the button --->
 <cfparam name="attributes.validate" default=""><!--- Should the form be validated before the onClick event is fired. Default is 'true' for type submit and 'false' for buttons. --->
@@ -24,6 +24,10 @@
 <cfparam name="attributes.bDefaultAction" default="false" /><!--- Default action when someone presses enter on a form. --->
 <cfparam name="attributes.icon" default="" /><!--- The jquery-ui icon to use --->
 <cfparam name="attributes.title" default="" /><!--- The title of the button --->
+<cfparam name="attributes.priority" default="" /><!--- the level of button (primary,secondary,tertiary) --->
+<cfparam name="attributes.textOnClick" default="" /><!--- what should the text change to when the button is clicked.  --->
+<cfparam name="attributes.textOnSubmit" default="" /><!--- what should the text change to when the button is submitted.  --->
+<cfparam name="attributes.disableOnSubmit" default="true" /><!--- should the button be disabled when the form is submitted --->
 
 <cfif not thistag.HasEndTag>
 	<cfabort showerror="FarCry Buttons must have an end tag...">
@@ -37,23 +41,47 @@
 	<skin:loadJS id="farcry-form" />
 	
 	<skin:loadCSS id="jquery-ui" />
+	
+	
+	<cfif not len(attributes.priority) AND len(attributes.text)>	
+		<cfif listFindNoCase(GetBaseTagList(),"cf_buttonPanel")>
+			
+			<cfset THISTAG.Parent = GetBaseTagData( "cf_buttonPanel" ) />
+				
+			<cfif structKeyExists(THISTAG.Parent, "bPrimaryDefined") AND NOT THISTAG.Parent.bPrimaryDefined>
+				<cfset attributes.priority = "primary">
+				
+				<cfset THISTAG.Parent.bPrimaryDefined = true>
+			<cfelse>
+				<cfset attributes.priority = "secondary">
+			</cfif>
+		<cfelse>
+			<cfset attributes.priority = "secondary">
+		</cfif>
+	</cfif>
+	<cfif len(attributes.priority)>	
+	
+		
+		<cfif listFindNoCase(GetBaseTagList(),"cf_splitButton") AND attributes.renderType EQ "link">
+			<!--- NO PRIORITY IN SPLIT BUTTON LINKS --->
+		<cfelse>
+			<cfset attributes.class = listAppend(attributes.class, "ui-priority-#attributes.priority#", " ")>
+		</cfif>
+	</cfif>
+	
+	
+	<cfset stButtonAttributes = structNew()>
 
 	<!--- I18 conversion of label --->
 	<cfset attributes.text = application.rb.getResource('#attributes.rbkey#@label',attributes.text) />
 	
-	<!--- If not in a farcry form, default the type as a button. --->
-	<cfif NOT isDefined("Request.farcryForm.Name")>
-		<cfif not len(attributes.type)>
-			<cfset attributes.Type = "button" />
-		</cfif>
-	
-	<!--- Otherwise default to submit --->
-	<cfelse>
-		<cfif not len(attributes.type)>
-			<cfset attributes.Type = "submit" />
+	<cfif not len(attributes.title)>
+		<cfif len(attributes.text)>
+			<cfset attributes.title = attributes.text>
+		<cfelse>
+			<cfset attributes.title = attributes.value>
 		</cfif>
 	</cfif>
-
 
 	<!--- Default validate to true if submitting and false if just a button --->
 	<cfif not len(attributes.validate)>
@@ -66,34 +94,47 @@
 	
 	<!--- run the button click event if in a form --->
 	<cfif isDefined("Request.farcryForm.Name")>
-		<cfset attributes.onClick = listAppend(attributes.onClick, "btnClick('#Request.farcryForm.Name#','#jsStringFormat(attributes.value)#')", ";")  />
+		<!--- <cfset attributes.onClick = listAppend(attributes.onClick, "btnClick('#Request.farcryForm.Name#','#jsStringFormat(attributes.value)#')", ";")  /> --->
+		
+		<cfset stButtonAttributes.click = jsStringFormat(attributes.value)>
 	</cfif>
 	
 	<!--- ONLY ADD JS VALIDATION IF VALIDATION LOADED IN THE ft:form --->
 	<cfif isDefined("Request.farcryForm.Name") AND Request.farcryForm.Validation>
 		<cfif attributes.validate>
-			<cfset attributes.onClick = listAppend(attributes.onClick, "btnTurnOnServerSideValidation()", ";") />
+			<!--- <cfset attributes.onClick = listAppend(attributes.onClick, "btnTurnOnServerSideValidation()", ";") /> --->
+			<cfset stButtonAttributes.turnonserversidevalidation = 1>
 		<cfelse>
-			<cfset attributes.onClick = listAppend(attributes.onClick, "btnTurnOffServerSideValidation()", ";") />
+			<!--- <cfset attributes.onClick = listAppend(attributes.onClick, "btnTurnOffServerSideValidation()", ";") /> --->
 			<cfset attributes.class = listAppend(attributes.class, "cancel", " ") />
+			
+			<cfset stButtonAttributes.turnoffserversidevalidation = 1>
 		</cfif>		
 	</cfif>
 	
 	<!--- A value that will be placed in the hidden form field form.selectedObjectID on submission. --->
 	<cfif len(attributes.SelectedObjectID)>		
-		<cfset attributes.Onclick = listAppend(attributes.onClick, "selectedObjectID('#attributes.SelectedObjectID#')", ";") />
+		<!--- <cfset attributes.Onclick = listAppend(attributes.onClick, "selectedObjectID('#attributes.SelectedObjectID#')", ";") /> --->
+		
+		<cfset attributes.class = listAppend(attributes.class, "fc-action-selected-object-id", " ") />
+		<cfset stButtonAttributes.selectedobjectid = attributes.SelectedObjectID>
 	</cfif>
 
 	<!--- A URL that you would like the button to redirect the page too. --->
 	<cfif len(attributes.url)>
 		<cfset attributes.Type = "button" />
 		<cfset attributes.url = jsStringFormat(attributes.url) />
-		<cfset attributes.onClick = listAppend(attributes.onClick, "btnURL('#attributes.url#','#attributes.target#')", ";") />
+		<!--- <cfset attributes.onClick = listAppend(attributes.onClick, "btnURL('#attributes.url#','#attributes.target#')", ";") /> --->
+		
+		<cfset stButtonAttributes.url = attributes.url>
+		<cfset stButtonAttributes.target = attributes.target>
 	</cfif>
 
 	<!--- If we are not validating, we need to update the attribute on the form --->
 	<cfif isDefined("Request.farcryForm.Name") AND NOT attributes.validate>
-		<cfset attributes.onClick = listPrepend(attributes.onClick, "$j('###Request.farcryForm.Name#').attr('fc:validate',false)", ";") />
+		<!--- <cfset attributes.onClick = listPrepend(attributes.onClick, "$j('###Request.farcryForm.Name#').attr('fc:validate',false)", ";") /> --->
+		
+		<cfset stButtonAttributes.turnoffclientsidevalidation = 1>
 	</cfif>
 	
 	<!--- Make sure that confirmation is run first for a button --->
@@ -101,15 +142,27 @@
 		<!--- I18 conversion of label --->
 		<cfset attributes.confirmText = application.rb.getResource('#attributes.rbkey#@confirmtext',attributes.confirmText) />
 		<cfset attributes.confirmText = jsStringFormat(attributes.confirmText) />
-		<cfset attributes.onClick = listPrepend(attributes.onClick, "if(!confirm('#Attributes.ConfirmText#')){return false}", ";") />
+		<!--- <cfset attributes.onClick = listPrepend(attributes.onClick, "if(!confirm('#Attributes.ConfirmText#')){return false}", ";") /> --->
+		
+		<cfset attributes.class = listAppend(attributes.class, "fc-action-confirm-text", " ") />
+		<cfset stButtonAttributes.confirmtext = jsstringformat(Attributes.ConfirmText)>
 	</cfif>
 	
+
+	<cfif attributes.bDefaultAction>
+		<cfset attributes.class = listAppend(attributes.class, "defaultAction", " ") />
+	</cfif>		
 	
 	
 	<cfif attributes.type EQ "submit">
-		<cfset attributes.onClick = "#attributes.onClick#;#request.farcryForm.onSubmit#;btnSubmit('#Request.farcryForm.Name#','#jsStringFormat(attributes.value)#');" />	
-	</cfif>
+		<cfif isDefined("request.farcryForm.onSubmit") AND len(request.farcryForm.onSubmit)>
+			<cfset attributes.onClick = listAppend(attributes.onClick,"#request.farcryForm.onSubmit#",";") >
+		</cfif>
+		<!--- <cfset attributes.onClick = "#attributes.onClick#;#request.farcryForm.onSubmit#;btnSubmit('#Request.farcryForm.Name#','#jsStringFormat(attributes.value)#');" />	 --->
 	
+		<cfset stButtonAttributes.submit = jsstringformat(attributes.value)>
+	
+	</cfif>
 	
 	<!--- Set the default action if requested --->
 	<cfif isDefined("Request.farcryForm.defaultAction")>
@@ -118,61 +171,76 @@
 		</cfif>
 	</cfif>
 	
+	<cfif len(attributes.onClick)>
+		<cfset stButtonAttributes.onclick = attributes.onClick>
+	</cfif>
+	<!--- 
+	<cfwddx input="#stButtonAttributes#" output="fcSettings" action="cfml2js" topLevelVariable="fcSettings" /> --->
+
+	
+
 	<!--- Output the button if not just returning the info --->
 	<cfif not len(attributes.r_stButton)>
 		<cfswitch expression="#attributes.renderType#">
 		<cfcase value="link">
+			
+			<cfif NOT listFindNoCase(GetBaseTagList(),"cf_splitButton")>
+				<cfset attributes.class = listPrepend(attributes.class, "fc-btn", " ")>
+			</cfif>
+			
 			<cfoutput><a id="#attributes.id#" name="#attributes.id#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="#attributes.class#" style="#attributes.style#" href="##">#attributes.text#</a></cfoutput>
 		</cfcase>
 		<cfcase value="button">
-			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="#attributes.class#" style="#attributes.style#;" <cfif attributes.disabled>disabled</cfif>>#attributes.text#</button></cfoutput>
+			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="fc-btn #attributes.class#" style="#attributes.style#;" <cfif attributes.disabled>disabled</cfif>>#attributes.text#</button></cfoutput>
 		</cfcase>
 		
 		<!--- Default FarcryButton --->
 		<cfdefaultcase>
-			<cfset buttonSettings = "" />
+			<cfset attributes.class = listAppend(attributes.class, "jquery-ui-btn", " ") />
+			<cfset stButtonAttributes.buttonsettings = "">
+			<cfset stSettings = structNew()>
 			 
-			<cfif len(attributes.icon)>
-				<cfset buttonSettings = listAppend(buttonSettings, "icons: {primary: '#attributes.icon#'}") />
+			<cfif listLen(attributes.icon)>
+				<cfset stSettings.icons = structNew()>
+				<cfif len(trim(listFirst(attributes.icon)))>
+					<cfset stSettings.icons.primary = trim(listFirst(attributes.icon))>
+				</cfif>
+				<cfif listLen(attributes.icon) GT 1 AND  len(trim(listLast(attributes.icon)))>
+					<cfset stSettings.icons.secondary = trim(listLast(attributes.icon))>
+				</cfif>
 			</cfif>
 			
 			<cfif not len(attributes.text)>
-				<cfset buttonSettings = listAppend(buttonSettings, "text: false") />
+				<cfset stSettings.text = false>
+				
 				<cfset attributes.text = "&nbsp;" />
 			</cfif>		
 			
-			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="#attributes.class#" style="#attributes.style#;" <cfif attributes.disabled>disabled</cfif>>#attributes.text#</button></cfoutput>
+			<cfoutput>
+				<button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="fc-btn #attributes.class#" style="#attributes.style#" <cfif attributes.disabled>disabled</cfif> <cfif len(attributes.textOnClick)>fc:textOnClick="#attributes.textOnClick#"</cfif> <cfif len(attributes.textOnSubmit)>fc:textOnSubmit="#attributes.textOnSubmit#"</cfif> <cfif attributes.disableOnSubmit>fc:disableOnSubmit="1"</cfif>>#attributes.text#</button></cfoutput>
 				
 
+			
+			<cfset buttonsettings = lcase( SerializeJSON( stSettings ) )>
+			
 			<skin:onReady>
-			<cfoutput>	
-			$j("###attributes.id#").button({#buttonSettings#});
-			</cfoutput>
+				<cfoutput>
+				$j('###attributes.id#').button( #buttonsettings# );</cfoutput>
 			</skin:onReady>
-				
+			
+			
 		</cfdefaultcase>
 		</cfswitch>
-
-		
-		<cfif len(attributes.onClick)>
-			<skin:onReady>
+	
+	
+		<cfset fcSettings = SerializeJSON(stButtonAttributes)>
+		<skin:onReady>
 			<cfoutput>
-			$j("###attributes.id#").click(function() {
-				#attributes.OnClick#
-				return false;
-			});
-			</cfoutput>
-			</skin:onReady>
-		</cfif>
+			$j('###attributes.id#').data('fcSettings', #fcSettings#);</cfoutput>
+		</skin:onReady>
 		
-		<cfif attributes.bDefaultAction>
-			<skin:onReady>
-			<cfoutput>
-				$j("###attributes.id#").addClass('defaultAction');
-			</cfoutput>
-			</skin:onReady>
-		</cfif>		
-
+		
+		
 		<cfif attributes.bSpamProtect AND isDefined("Request.farcryForm.Name")>
 		
 			<cfif not structKeyExists(request, "bRenderFormSpamProtection")>
@@ -197,3 +265,4 @@
 		<cfset caller[attributes.r_stButton].name = "FarcryForm#attributes.Type#Button=#attributes.value#">
 	</cfif>
 </cfif>
+

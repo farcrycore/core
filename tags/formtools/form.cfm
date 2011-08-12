@@ -38,7 +38,6 @@ It just ignores the inner ones.
 		<skin:loadJS id="jquery" />		
 		<skin:loadJS id="farcry-form" />
 		<skin:loadJS id="jquery-tooltip" />
-		<skin:loadJS id="jquery-tooltip-auto" />
 		<skin:loadCSS id="jquery-tooltip" />
 		
 	
@@ -220,7 +219,17 @@ It just ignores the inner ones.
 				</cfif>			
 					 
 				if(valid){
+					
 					#attributes.onSubmit#;
+					
+					$j("###attributes.Name# .fc-btn, ###attributes.Name# .jquery-ui-split-button ul li a").each(function(index,el){
+						
+						if( $j(el).attr('fc:disableOnSubmit') ) {
+							 $j(el).attr('disabled', 'disabled');
+						};
+						
+					});
+					
 				} else {
 					$fc.fv#attributes.Name#.focusInvalid();
 					return false;
@@ -229,7 +238,8 @@ It just ignores the inner ones.
 			</cfoutput>				
 		</skin:onReady>
 		
-			
+		
+		
 		<!--- Close the dive if we have the ajax wrapper --->
 		<cfif attributes.bAjaxSubmission AND NOT structKeyExists(form, "farcryformajaxsubmission")>
 			<cfoutput></div></cfoutput>

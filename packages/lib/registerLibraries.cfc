@@ -24,7 +24,7 @@
 		<!--- JS LIBRARIES --->
 		<skin:registerJS 	id="jquery"
 							baseHREF="#application.url.webtop#/thirdparty/jquery/js"
-							lFiles="jquery-1.4.3.min.js">
+							lFiles="jquery-1.6.2.min.js">
 							
 							<cfoutput>
 								var $j = jQuery.noConflict();
@@ -33,8 +33,8 @@
 		</skin:registerJS>		
 			
 		<skin:registerJS 	id="jquery-ui"
-							baseHREF="#application.url.webtop#/thirdparty/jquery-1-4-1/js"
-							lFiles="jquery-ui-1.8.custom.min.js" />
+							baseHREF="#application.url.webtop#/thirdparty/jquery/js"
+							lFiles="jquery-ui-1.8.15.custom.min.js" />
 		
 		<skin:registerJS 	id="tinymce"
 							baseHREF="#application.url.webtop#/thirdparty/tiny_mce"
@@ -94,15 +94,8 @@
 							lFiles="reset.css,fonts.css,main.css" />
 							
 		<skin:registerCSS 	id="jquery-ui"
-							baseHREF="#application.url.webtop#/thirdparty/jquery-1-4-1/css/base"
-							lFiles="jquery-ui-1.8.custom.css">
-							
-							<cfoutput>
-							.ui-widget {font-size:1em;}
-							.ui-dialog .ui-dialog-titlebar {padding:1px 5px 1px 5px;}
-							.ui-dialog .ui-dialog-content { padding:0.5em 0; }
-							</cfoutput>
-		</skin:registerCSS>
+							baseHREF="#application.url.webtop#/thirdparty/jquery/css/Aristo"
+							lFiles="jquery-ui-1.8.7.custom.css,custom.css" />
 		
 		<skin:registerCSS	id="jquery-uploadify"
 							baseHREF="#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4"
@@ -114,7 +107,7 @@
 				
 		<skin:registerCSS 	id="farcry-form"
 							baseHREF="#application.url.webtop#"
-							lFiles="/css/wizard.css,/thirdparty/loadmask/jquery.loadmask.css,/thirdparty/uni-form/css/uni-form-generic.css,/thirdparty/uni-form/css/uni-form.css,/thirdparty/jquery-treeview/jquery.treeview.css">
+							lFiles="/css/wizard.css,/thirdparty/loadmask/jquery.loadmask.css,/thirdparty/uni-form/css/uni-form-generic.css,/thirdparty/uni-form/css/uni-form.css,/thirdparty/jquery-treeview/jquery.treeview.css,/css/farcryform.css">
 							
 							<cfoutput>
 							ul.treeview span { font-size:10px; vertical-align: top}

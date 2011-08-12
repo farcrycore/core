@@ -36,6 +36,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
+<cfimport taglib="/farcry/core/tags/grid/" prefix="grid">
 
 
 
@@ -629,14 +630,15 @@ user --->
 	
 		<skin:loadJS id="jquery" />
 		
-		<ft:form style="padding:10px; border: 1px solid ##CCCCCC;background-color:##f1f1f1;margin-bottom:10px; ">
+		<grid:div class="fc-shadowbox">
+		<ft:form style="">
 			<cfoutput>
 			<div style="color:##E17000;">
 				<div style="font-size:90%;margin-right:10px;padding:2px;">
-					<a onclick="$j('##filterForm').toggle('fast');">#application.rb.getResource('objectadmin.messages.Filtering@text','FILTERING')#</a>
+					<ft:button type="button" value="Filter" icon="ui-icon-search" class="small" text="#application.rb.getResource('objectadmin.messages.Filtering@text','FILTERING')#" onclick="$j('##filterForm').toggle('fast');" />
+					<!--- <a onclick="$j('##filterForm').toggle('fast');">#application.rb.getResource('objectadmin.messages.Filtering@text','FILTERING')#</a> --->
 				</div>
 			</div>
-			<br class="clearer" />
 			</cfoutput>
 			
 			<cfoutput><div id="filterForm" style="<cfif not listLen(HTMLfiltersAttributes)>display:none;</cfif>"><div style="padding:5px;"></cfoutput>
@@ -644,15 +646,16 @@ user --->
 				<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" stPropMetaData="#attributes.stFilterMetaData#" />
 				
 				<ft:buttonPanel>
-					<cfif len(HTMLfiltersAttributes)>	
-						<ft:button value="Clear Filter" validate="false" />
-					</cfif>
 					<ft:button value="Apply Filter" />
+					<cfif len(HTMLfiltersAttributes)>	
+						<ft:button value="Clear Filter" validate="false" style="float:left;" />
+					</cfif>
 				</ft:buttonPanel>
 				
 			<cfoutput><br class="clearer" /></div></div></cfoutput>
 			
 		</ft:form>
+		</grid:div>
 	</cfif>
 	
 
@@ -1079,101 +1082,78 @@ user --->
 			});
 		</cfoutput>
 	</skin:onReady>
-
-		<table class="object-admin-actions layout">
-		<tr>		
-			<cfif attributes.bViewCol>		
-				<td>
-				
-				<a ft:objectid="#arguments.st.objectid#"  class="oa-overview" title="Overview" href="##">
-					<span class="ui-icon ui-icon-arrow-4-diag" style="float:left;">&nbsp;</span>
-				</a>
-				</td>
-				<skin:toolTip id="oa-overview-tooltip" selector=".oa-overview">Open up the overview screen for this object.</skin:toolTip>
-			</cfif>
-			
-			<cfif attributes.bEditCol>
-				<!--- We do not include the Edit Link if workflow is available for this content item. The user must go to the overview page. --->
-				<cfif not listLen(lWorkflowTypenames)>	
-					<cfif structKeyExists(arguments.st,"locked") AND arguments.st.locked neq 0 AND arguments.st.lockedby neq '#application.security.getCurrentUserID()#'>
-						<td>
-						<a id="oa-locked-#arguments.st.objectid#" name="oa-locked-#arguments.st.objectid#" title="Unlock" href="##">
-							<span class="ui-icon ui-icon-locked" style="float:left;">&nbsp;</span>
-						</a>
-						</td>
-						<skin:onReady>
-							$j('##oa-locked-#arguments.st.objectid#').click(function() {
-								selectObjectID('#arguments.st.objectid#');
-								btnSubmit('#request.farcryForm.name#', 'unlock');
-							});		
-						</skin:onReady>	
-						<skin:toolTip id="oa-unlock-tooltip" selector="##oa-locked-#arguments.st.objectid#">Unlock this object.</skin:toolTip>	
-					<cfelseif structKeyExists(arguments.stPermissions, "iEdit") AND arguments.stPermissions.iEdit>
-						<cfif structKeyExists(arguments.st,"bHasMultipleVersion")>
-							<cfif NOT(arguments.st.bHasMultipleVersion) AND arguments.st.status EQ "approved">
-						
-								<td>
-								<a ft:objectid="#arguments.st.objectid#"  class="oa-create-draft" title="Create Draft Object" href="##">
-									<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>
-								</a>
-								</td>
-								<skin:toolTip id="oa-create-draft-tooltip" selector=".oa-create-draft">Create a draft version of this object and begin editing.</skin:toolTip>
-							<cfelseif arguments.st.bHasMultipleVersion>
-								<!--- Still go to the create draft page but that page will find the already existing draft and not create a new one. --->
-								<td>
-								<a ft:objectid="#arguments.st.objectid#"  class="oa-edit-draft" title="Edit Draft Object" href="##">
-									<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>
-								</a>
-								</td>
-								<skin:toolTip id="oa-edit-draft-tooltip" selector=".oa-edit-draft">Edit the draft version of this object.</skin:toolTip>						
-							<cfelse>
-								<td>
-								<a ft:objectid="#arguments.st.objectid#"  class="oa-edit" title="Edit" href="##">
-									<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>
-								</a>
-								</td>	
-								<skin:toolTip id="oa-edit-tooltip" selector=".oa-edit">Edit this object.</skin:toolTip>			
-							</cfif>
-						<cfelse>
-							<td>
-							<a ft:objectid="#arguments.st.objectid#"  class="oa-edit" title="Edit" href="##">
-								<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>
-							</a>
-							</td>
-							<skin:toolTip id="oa-edit-tooltip" selector=".oa-edit">Edit this object.</skin:toolTip>	
-						</cfif>
-					</cfif>
-				</cfif>	
-			</cfif>
-			
-			<cfif attributes.bPreviewCol>
-				<td>
-				<a ft:objectid="#arguments.st.objectid#"  class="oa-preview" title="Overview" href="##">
-					<span class="ui-icon ui-icon-search" style="float:left;">&nbsp;</span>
-				</a>
-				</td>
-				<skin:toolTip id="oa-preview-tooltip" selector=".oa-preview">Preview this object.</skin:toolTip>
-			</cfif>	
-			
 		
+		<ft:splitButton>
+			<cfif attributes.bViewCol>	
+				<ft:button value="Overview" text="Overview" title="Open up the overview screen for this object" style="" priority="secondary" class="small" type="button" onclick="$fc.objectAdminAction('Administration', '#overviewURL#&objectid=#arguments.st.objectid#');" />
+			</cfif>
+			
+			<cfif attributes.bEditCol OR attributes.bPreviewCol>
+				<ft:button value="Options" text="" title="Options" style="" icon=" ,ui-icon-triangle-1-s" priority="secondary" class="small" />
+			
+			
+				<cfoutput>
+				<ul>
 					
-			<cfif listLen(attributes.lCustomActions)>			
-				<td>
-				<select name="action#st.currentrow#" id="action#st.currentrow#" onchange="selectObjectID('#arguments.st.objectid#');btnSubmit('#request.farcryForm.name#', this.value);">
-					<option value="">-- Custom --</option>
+					<cfif attributes.bEditCol>
+
+				
+						<!--- We do not include the Edit Link if workflow is available for this content item. The user must go to the overview page. --->
+						<cfif not listLen(lWorkflowTypenames)>	
+							<cfif structKeyExists(arguments.st,"locked") AND arguments.st.locked neq 0 AND arguments.st.lockedby neq '#application.security.getCurrentUserID()#'>
+								<li>
+									<ft:button value="Unlock" title="Unlock this object" renderType="link" selectedObjectID="#arguments.st.objectid#" />
+								</li>
+							<cfelseif structKeyExists(arguments.stPermissions, "iEdit") AND arguments.stPermissions.iEdit>
+								<cfif structKeyExists(arguments.st,"bHasMultipleVersion")>
+									<cfif NOT(arguments.st.bHasMultipleVersion) AND arguments.st.status EQ "approved">
+										<li>
+											<ft:button value="Create Draft Object" title="Create a draft version of this object and begin editing" renderType="link" type="button" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
+										</li>
+									<cfelseif arguments.st.bHasMultipleVersion>
+										<!--- Still go to the create draft page but that page will find the already existing draft and not create a new one. --->
+										<li>
+											<ft:button value="Edit Draft" title="Edit the draft version of this object"  renderType="link" type="button" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
+										</li>					
+									<cfelse>
+										<li>
+											<ft:button value="Edit" title="Edit this object"  renderType="link" type="button" onclick="$fc.objectAdminAction('Administration', '#editURL#&objectid=#arguments.st.objectid#');" />
+										</li>			
+									</cfif>
+								<cfelse>
+									<li>
+										<ft:button value="Edit" title="Edit this object"  renderType="link" type="button" onclick="$fc.objectAdminAction('Administration', '#editURL#&objectid=#arguments.st.objectid#');" />
+									</li>
+								</cfif>
+							</cfif>
+						</cfif>	
+					
+					</cfif>
 					
 					
+					<cfif attributes.bPreviewCol>
+						<li>
+							<ft:button value="Preview" title="Preview this object" renderType="link" type="button" onclick="$fc.objectAdminAction('Preview', '#application.url.webroot#/index.cfm?flushcache=1&objectid=#arguments.st.objectid#');" />
+						</li>
+					</cfif>		
+					
+							
+			
 					<cfif listLen(attributes.lCustomActions)>
 						<cfloop list="#attributes.lCustomActions#" index="i">
-							<option value="#listFirst(i, ":")#">#listLast(i, ":")#</option>
+							<li>
+								<ft:button value="#listFirst(i, ":")#" text="#listLast(i, ":")#" renderType="link" />
+							</li>
 						</cfloop>
 					</cfif>
-					<!--- <option value="delete">Delete</option> --->
-				</select>
-				</td>
-			</cfif>
-		</tr>				
-		</table>	
+													
+				</ul>
+				</cfoutput>	
+				
+				
+				
+			</cfif>		
+		</ft:splitButton>
 		
 		</cfoutput>
 		

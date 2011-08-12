@@ -377,7 +377,7 @@ function setRowBackground (childCheckbox) {
 									
 							$fc.openDialog = function(title,url,width,height){
 								var fcDialog = $j("<div></div>")
-								w = width ? width : 600;
+								w = width ? width : '90%';
 								h = height ? height : $j(window).height()-50;
 								$j("body").prepend(fcDialog);
 								$j(fcDialog).dialog({
@@ -407,11 +407,12 @@ function setRowBackground (childCheckbox) {
 							
 							
 							$fc.openDialogIFrame = function(title,url,width,height){
-								var w = width ? width : 600;
+								var w = width ? width : '90%';
 								var h = height ? height : $j(window).height()-50;
 								var fcDialog = $j("<div id='fc-dialog-iframe' style='padding:20px;'><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0'></iframe></div>")
 								
 								$j("body").prepend(fcDialog);
+								$j("html").css('overflow', 'hidden');
 								$j(fcDialog).dialog({
 									bgiframe: true,
 									modal: true,
@@ -419,6 +420,7 @@ function setRowBackground (childCheckbox) {
 									width: w,
 									height: h,
 									close: function(event, ui) {
+										$j("html").css('overflow', 'auto');
 										$j(fcDialog).dialog( 'destroy' );
 										$j(fcDialog).remove();
 									}
@@ -446,9 +448,8 @@ function setRowBackground (childCheckbox) {
 			title:'Library',
 			draggable:false,
 			resizable:false,
-			position:['left','top'],
-			width: "99%",
-			height: $j(window).height()-15,
+			width: "90%",
+			height: $j(window).height()-50,
 			buttons: {
 				Ok: function() {
 					$j(this).dialog('close');
@@ -474,14 +475,13 @@ function setRowBackground (childCheckbox) {
 		$j("html").css('overflow', 'hidden');
 		$j(newDialogDiv).dialog({
 			bgiframe: true,
-			//modal: true,
+			modal: true,
 			title:'Add New',
 			closeOnEscape: false,
 			draggable:false,
 			resizable:false,
-			position:['left','top'],
-			width: "99%",
-			height: $j(window).height()-15,
+			width: "90%",
+			height: $j(window).height()-50,
 			close: function(event, ui) {
 				$j("html").css('overflow', 'auto');
 				fcForm.refreshProperty(typename,objectid,property,id);
@@ -507,9 +507,8 @@ function setRowBackground (childCheckbox) {
 			closeOnEscape: false,
 			draggable:false,
 			resizable:false,
-			position:['left','top'],
-			width: "99%",
-			height: $j(window).height()-15,
+			width: "90%",
+			height: $j(window).height()-50,
 			close: function(event, ui) {
 				$j("html").css('overflow', 'auto');
 				fcForm.refreshProperty(typename,objectid,property,id);
@@ -723,9 +722,8 @@ function setRowBackground (childCheckbox) {
 					title:title,
 					draggable:false,
 					resizable:false,
-					position:['left','top'],
-					width: "99%",
-					height: $j(window).height()-15,
+					width: "90%",
+					height: $j(window).height()-50,
 					close: function(event, ui) {
 						$j("html").css('overflow', 'auto');
 						window.location = window.location.href.split("##")[0];
@@ -813,4 +811,85 @@ function setRowBackground (childCheckbox) {
 			return true;
 		}
 	});	
+		
+
+
+
+		$j(document).ready(function() {	
+
+			
+			$j('.fc-btn, .jquery-ui-split-button ul li a').live('click', function(e) {
+				
+				var fcSettings = $j(this).data('fcSettings');	
+				
+				if( fcSettings.CLICK ) {
+					
+					if( fcSettings.TEXTONCLICK ) {
+						$j(this).find('.ui-button-text')
+							.css('width', $j(this).find('.ui-button-text').width())
+							.css('height', $j(this).find('.ui-button-text').height())
+							.html( "<img src='/wsimages/ajax-loader.gif' style='width:16px;height:16px;' />");
+							//.html( $j(this).attr('fc:textOnClick') );
+					};
+					
+					btnClick( $j(this).closest('form').attr('id') , fcSettings.CLICK );
+				};
+				
+				if( fcSettings.SELECTEDOBJECTID ) {
+					selectedObjectID( fcSettings.SELECTEDOBJECTID );
+				};
+						
+							
+				if( fcSettings.TURNOFFSERVERSIDEVALIDATION ) {
+					btnTurnOffServerSideValidation();
+				};
+				
+				if( fcSettings.TURNONSERVERSIDEVALIDATION ) {
+					btnTurnOnServerSideValidation();
+				};
+				
+				
+				if( fcSettings.TURNOFFCLIENTSIDEVALIDATION ) {
+					$j(this).closest('form').attr('fc:validate',false);
+				};				
+				
+				
+				if( fcSettings.CONFIRMTEXT ) {
+					if( !confirm( fcSettings.CONFIRMTEXT ) ) {
+						return false;
+					}
+				};				
+				
+				if( fcSettings.URL ) {
+					btnURL( fcSettings.URL , fcSettings.TARGET )
+				};
+				
+				if( fcSettings.TEXTONCLICK ) {
+					$j(this).find('.ui-button-text')
+						.css('width', $j(this).find('.ui-button-text').width())
+						.css('height', $j(this).find('.ui-button-text').height())
+						.html( fcSettings.TEXTONCLICK );
+				};
+				
+				if( fcSettings.ONCLICK ) {
+					eval( fcSettings.ONCLICK );
+				};
+				
+				
+				if( fcSettings.SUBMIT ) {
+				
+					
+					if( fcSettings.TEXTONSUBMIT ) {
+						$j(this).find('.ui-button-text')
+							.css('width', $j(this).find('.ui-button-text').width())
+							.css('height', $j(this).find('.ui-button-text').height())
+							.html( fcSettings.TEXTONSUBMIT );
+					};
+					
+					
+					btnSubmit( $j(this).closest('form').attr('id') , fcSettings.SUBMIT );
+				};
+				return false;
+			});	
+		});					
 </cfoutput>					
