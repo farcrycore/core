@@ -20,6 +20,11 @@
 <!--- @@description: A standard HTML div tag usefull when coding so that opening and closing cfoutput tags are not required thereby cleaning up output.  --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
+
+<cfif not thistag.HasEndTag>
+	<cfabort showerror="Does not have an end tag..." />
+</cfif>
+
 <cfif thistag.executionMode eq "Start">
 	<cfparam name="attributes.id" default="" />
 	<cfparam name="attributes.class" default="" />
