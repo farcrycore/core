@@ -1,0 +1,106 @@
+.ui-datepicker .ui-state-highlight {
+	border-color: #5F83B9;
+}
+.ui-datepicker .ui-slider .ui-slider-handle {
+	background-image: url(images/slider_handles.png)
+}
+.ui-tabs .ui-tabs-nav li a {
+	font-weight:normal;
+}
+
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected a, 
+.ui-tabs .ui-tabs-nav li.ui-state-disabled a, 
+.ui-tabs .ui-tabs-nav li.ui-state-processing a {
+	cursor: pointer;
+}
+
+.ui-tabs .ui-tabs-nav li a:hover,
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected a:hover, 
+.ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-selected a:hover {
+	background-image: none !important;
+	background-image: -webkit-gradient(linear, left top,left bottom, color-stop(0, #ECECEC),color-stop(1, #fff)) !important;
+	background-image: -moz-linear-gradient( center top, #ECECEC 0%, #fff 100%) !important;
+} 
+
+
+.ui-dialog .ui-dialog-titlebar a:hover {
+	background-color: transparent !important;
+} 
+
+
+
+.ui-progressbar.small {
+	background: #fff url(/js/jquery/css/Aristo/images/progress_bar_10px.png) 0 -12px repeat-x;
+}
+.ui-progressbar.small .ui-progressbar-value {
+	background: #fff url(/js/jquery/css/Aristo/images/progress_bar_10px.png) 0 0 repeat-x;
+}
+
+
+	.ui-dialog {
+		max-width: 980px;
+	}	
+	.ui-dialog.fullscreen {
+		max-width: 2040px;
+	}	
+	
+	.ui-widget-content .ui-priority-primary,
+	.ui-priority-primary {
+		float:left;
+		margin-left:0px;
+		/*margin-right:5px;*/
+	}
+	.ui-widget-content .ui-priority-secondary,
+	.ui-priority-secondary {
+	
+	}
+	
+.ui-button.small .ui-button-text {
+	font-size:10px;
+	padding-top:1px;
+	padding-bottom:1px;
+}	
+.ui-button.small.ui-button-icon-only .ui-icon {
+	margin-top:-9px;
+	margin-left:-9px;
+}	
+.ui-button.small.ui-button-icon-only {
+	width:20px;
+}	
+.ui-button.small.ui-button-icon-only .ui-button-text {
+	padding-left:0px;
+	padding-right:0px;
+	
+}	
+	
+/* PRIMARY BUTTONS
+----------------------------------*/
+.ui-priority-primary, .ui-widget-content .ui-priority-primary, .ui-widget-header .ui-priority-primary { border: 1px solid #9D9D9D; font-weight: normal; color: #313131; }
+
+.ui-priority-primary .ui-icon {background-image: url(images/ui-icons_454545_256x240.png); }	
+	
+.ui-button.ui-priority-primary {
+	outline: none;
+	color: #1c4257; border-color: #7096ab;
+	background: url(images/bg_fallback.png) 0 -50px repeat-x;
+	background: -webkit-gradient(
+		linear,
+		left bottom,
+		left top,
+		color-stop(1, rgb(185,224,245)),
+		color-stop(0, rgb(146,189,214))
+	);
+	background: -moz-linear-gradient(
+		center top,
+		rgb(185,224,245),
+		rgb(146,189,214)
+	);
+}
+
+.ui-button.ui-priority-primary.ui-state-hover {
+	-webkit-box-shadow: 0 0 8px rgba(0, 0, 0, 0.15), 0 1px 0 rgba(255,255,255,0.8) inset;
+	   -moz-box-shadow: 0 0 8px rgba(0, 0, 0, 0.15), 0 1px 0 rgba(255,255,255,0.8) inset; 
+			box-shadow: 0 0 8px rgba(0, 0, 0, 0.15), 0 1px 0 rgba(255,255,255,0.8) inset;
+}
+|
+	
