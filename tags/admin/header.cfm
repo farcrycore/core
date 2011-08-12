@@ -60,41 +60,7 @@ $in: [bCacheControl] output cache control headers; default true. $
 
 <skin:loadCSS id="webtop" />
 
-<skin:loadCSS id="farcry-form">
-	<cfoutput>
-	.uniForm .fieldset {
-		margin:0 0 10px 0;
-		padding:5px;
-	}
-	
-	.uniForm .fieldset .legend {
-		color:##324E7C;
-		margin:0;
-		padding:0px;
-		font-size:107%;
-	}
-	
-	.ctrlHolder {
-		border:1px solid ##DFDFDF;
-		border-width:1px 0 0 0;
-		background:none;
-		zoom:1;
-	}
-	
-	.uniForm .ctrlHolder .label {
-		font-weight: bold;
-	}
-	
-	.uniForm .helpsection {
-		margin:10px 0px;
-		color:##324E7C;
-	}
-	
-	.uniForm .buttonHolder{ text-align: right; margin:5px 0 10px 0;padding:5px;border:1px solid ##CCCCCC;border-width:1px 0px;background-color:##F4F4F4;}
-	
-	.uniForm .fc-button {padding:5px;margin-right:5px;}
-	</cfoutput>
-</skin:loadCSS>
+<skin:loadCSS id="farcry-form" />
 
 
 <cfoutput>
