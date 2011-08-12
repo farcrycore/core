@@ -145,6 +145,11 @@
 									<cfif DateDiff('n', stCacheWebskin.datetimecreated, now()) LT stCacheWebskin.cacheTimeout >
 										<cfset stResult.webskinHTML = stCacheWebskin.webskinHTML />
 										
+										<!--- Update request browser timeout --->
+										<cfif stCacheWebskin.browserCacheTimeout neq -1 and (not structkeyexists(request.fc,"browserCacheTimeout") or stCacheWebskin.browserCacheTimeout lt request.fc.browserCacheTimeout)>
+											<cfset request.fc.browserCacheTimeout = stCacheWebskin.browserCacheTimeout />
+										</cfif>
+										
 										<!--- Update request proxy timeout --->
 										<cfif stCacheWebskin.proxyCacheTimeout neq -1 and (not structkeyexists(request.fc,"proxyCacheTimeout") or stCacheWebskin.proxyCacheTimeout lt request.fc.proxyCacheTimeout)>
 											<cfset request.fc.proxyCacheTimeout = stCacheWebskin.proxyCacheTimeout />
@@ -463,6 +468,7 @@
 								<cfset stCacheWebskin.inHead = duplicate(arguments.stCurrentView.inHead) />
 								<cfset stCacheWebskin.cacheStatus = arguments.stCurrentView.cacheStatus />
 								<cfset stCacheWebskin.cacheTimeout = arguments.stCurrentView.cacheTimeout />
+								<cfset stCacheWebskin.browserCacheTimeout = arguments.stCurrentView.browserCacheTimeout />
 								<cfset stCacheWebskin.proxyCacheTimeout = arguments.stCurrentView.proxyCacheTimeout />
 	
 								<cfset stCacheWebskin.webskinCacheID = generateWebskinCacheID(

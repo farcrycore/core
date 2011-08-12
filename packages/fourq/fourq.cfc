@@ -416,6 +416,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		<cfset stCurrentView.cacheStatus = application.coapi.coapiadmin.getWebskinCacheStatus(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
 		<cfset stCurrentView.cacheTimeout = application.coapi.coapiadmin.getWebskinCacheTimeOut(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
+		<cfset stCurrentView.browserCacheTimeout = application.coapi.coapiadmin.getBrowserCacheTimeOut(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
 		<cfset stCurrentView.proxyCacheTimeout = application.coapi.coapiadmin.getProxyCacheTimeOut(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
 		<cfset stCurrentView.cacheByURL = application.coapi.coapiadmin.getWebskincacheByURL(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
 		<cfset stCurrentView.cacheFlushOnFormPost = application.coapi.coapiadmin.getWebskincacheFlushOnFormPost(typename=arguments.webskinTypename, template=arguments.webskinTemplate) />
@@ -510,6 +511,11 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 						<cfset request.aAncestorWebskins[i].cacheTimeout = stCurrentView.cacheTimeout />
 					</cfif>
 					
+					<!--- If the browser timeout of this webskin is less than its parent's, update the parent's timeout --->
+					<cfif stCurrentView.browserCacheTimeout gt -1 and (request.aAncestorWebskins[i].browserCacheTimeout eq -1 or stCurrentView.browserCacheTimeout lt request.aAncestorWebskins[i].browserCacheTimeout)>
+						<cfset request.aAncestorWebskins[i].browserCacheTimeout = stCurrentView.browserCacheTimeout />
+					</cfif>
+					
 					<!--- If the proxy timeout of this webskin is less than its parent's, update the parent's timeout --->
 					<cfif stCurrentView.proxyCacheTimeout gt -1 and (request.aAncestorWebskins[i].proxyCacheTimeout eq -1 or stCurrentView.proxyCacheTimeout lt request.aAncestorWebskins[i].proxyCacheTimeout)>
 						<cfset request.aAncestorWebskins[i].proxyCacheTimeout = stCurrentView.proxyCacheTimeout />
@@ -535,6 +541,11 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				
 				<cfif stCurrentView.cacheByRoles>
 					<cfset application.fapi.setAncestorsCacheByRoles() />
+				</cfif>
+				
+				<!--- Update request browser timeout --->
+				<cfif stCurrentView.browserCacheTimeout neq -1 and (not structkeyexists(request.fc,"browserCacheTimeout") or stCurrentView.browserCacheTimeout lt request.fc.browserCacheTimeout)>
+					<cfset request.fc.browserCacheTimeout = stCurrentView.browserCacheTimeout />
 				</cfif>
 				
 				<!--- Update request proxy timeout --->

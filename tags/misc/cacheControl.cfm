@@ -50,19 +50,29 @@ Matt Dawson (mad@daemon.com.au)
 --->
 
 <cfparam name="url.CacheControlDebug" default="0">
+<cfparam name="attributes.browserSeconds" default="-1" />
+<cfparam name="attributes.proxySeconds" default="-1" />
 
-<cfset totalseconds = 0 />
-<cfif isdefined("attributes.days")><cfset totalseconds = totalseconds + attributes.days * 86400 /></cfif>
-<cfif isdefined("attributes.hours")><cfset totalseconds = totalseconds + attributes.hours * 3600 /></cfif>
-<cfif isdefined("attributes.minutes")><cfset totalseconds = totalseconds + attributes.minutes * 60 /></cfif>
-<cfif isdefined("attributes.seconds")><cfset totalseconds = totalseconds + attributes.seconds /></cfif>
+<cfif isdefined("attributes.days") or isdefined("attributes.hours") or isdefined("attributes.minutes") or isdefined("attributes.seconds")>
+	<cfset totalseconds = 0 />
+	<cfif isdefined("attributes.days")><cfset totalseconds = totalseconds + attributes.days * 86400 /></cfif>
+	<cfif isdefined("attributes.hours")><cfset totalseconds = totalseconds + attributes.hours * 3600 /></cfif>
+	<cfif isdefined("attributes.minutes")><cfset totalseconds = totalseconds + attributes.minutes * 60 /></cfif>
+	<cfif isdefined("attributes.seconds")><cfset totalseconds = totalseconds + attributes.seconds /></cfif>
+	<cfif attributes.browserSeconds eq -1>
+		<cfset attributes.browserSeconds = totalseconds />
+	</cfif>
+	<cfif attributes.proxySeconds eq -1>
+		<cfset attributes.proxySeconds = totalseconds />
+	</cfif>
+</cfif>
 
-<cfif totalseconds eq 0>
+<cfif attributes.browserSeconds lte 0 and attributes.proxySeconds lte 0>
 	<CFHEADER NAME="Expires" VALUE="Tue, 01 Jan 1985 00:00:01 GMT">
 	<CFHEADER NAME="Pragma" VALUE="no-cache">
 	<CFHEADER NAME="cache-control" VALUE="no-cache, no-store, must-revalidate">
 	
-	<cfhtmlhead text='<META HTTP-EQUIV="Expires" CONTENT="Tue, 01 Jan 1985 00:00:01 GMT" /><META HTTP-EQUIV="cache-control" CONTENT="no-cache, no-store, must-revalidate" /><!-- Page cached until: not cached -->'>
+	<cfhtmlhead text='<META HTTP-EQUIV="Expires" CONTENT="Tue, 01 Jan 1985 00:00:01 GMT" /><META HTTP-EQUIV="cache-control" CONTENT="no-cache, no-store, must-revalidate" />'>
 <cfelse>
 	<cfset gmt = gettimezoneinfo() />
 	<cfset gmt = gmt.utcHourOffset />
@@ -75,11 +85,16 @@ Matt Dawson (mad@daemon.com.au)
 		<cfset gmt = "+" & abs(gmt) />
 	</cfif>
 	
-	<cfset dateTo = dateAdd( 'S', totalseconds, now() ) />
-	<cfset dateString = "#DateFormat( dateTo, 'DDD, DD MMM YYYY' )# #TimeFormat( dateTo, 'HH:mm:ss' )# GMT#gmt#" />
+	<cfset maxagestring = "" />
+	<cfif attributes.browserSeconds gt -1>
+		<cfset maxagestring = listappend(maxagestring,"max-age=#attributes.browserSeconds#") />
+	</cfif>
+	<cfif attributes.proxySeconds gt -1>
+		<cfset maxagestring = listappend(maxagestring,"s-maxage=#attributes.proxySeconds#") />
+	</cfif>
 	
-	<CFHEADER NAME="Cache-Control" VALUE="max-age=#totalseconds#,s-maxage=#totalseconds#">
-	<cfhtmlhead text='<META HTTP-EQUIV="Cache-Control" CONTENT="max-age=#totalseconds#,s-maxage=#totalseconds#" /><!-- Page cached until: #dateString# (#totalseconds# seconds) -->'>
+	<CFHEADER NAME="Cache-Control" VALUE="#maxagestring#">
+	<cfhtmlhead text='<META HTTP-EQUIV="Cache-Control" CONTENT="#maxagestring#" />'>
 </cfif>
 
 <cfsetting enablecfoutputonly="No">
