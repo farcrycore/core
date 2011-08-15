@@ -265,8 +265,7 @@ body.container-management h1 {padding: 10px 0 14px 40px;background: transparent 
  /* =DATA-TABLES */
 
 	table.objectAdmin {border-collapse:collapse;border:none;background:#fff;margin: .3em 0 1.5em;border-bottom: 1px solid #ccc;border-left: 1px solid #ccc}
-	/* form table.objectAdmin {font-size:92%} */
-	table.objectAdmin table {font-size:110%}
+	table.objectAdmin table {font-size:95%}
 		table.objectAdmin caption {text-align:left;font: bold 145% arial;padding: 5px 10px;background:#fff}
 		table.objectAdmin th {color: #fff;border-top: 1px solid #A5B9D0;border-right: 1px solid #A5B9D0;text-align: left;padding: 2px 2px 2px 2px;background: #9EB4CC url("images/th_bg.gif") repeat-x 0 0; vertical-align: top; font-weight: normal; font-face: tahoma,helvetica,sans-serif;}
 		table.objectAdmin th.order-asc {background-position: 100% -100px;padding-right:25px}

@@ -310,14 +310,24 @@ $in: SessionID -- $
 					onsubmit: false, // let the onsubmit function handle the validation
 					errorElement: "p",
 					errorClass: "errorField",					   
+					wrapper: "div",  // a wrapper around the error message					   
 					errorPlacement: function(error, element) {
-					   error.prependTo( element.parent("div.ctrlHolder") );
-					},
+						if ( $j("###attributes.formName#").width() < 650 ) {
+					  		error.prependTo( element.closest("div.ctrlHolder") );
+				         } else {
+				            offset = element.offset();
+				            error.insertBefore(element)
+				            error.addClass('errorField-wrap');  // add a class to the wrapper
+				            error.css('position', 'absolute');
+				            error.css('left', offset.left + element.outerWidth() + 5);
+				            error.css('top', offset.top);
+				         }
+			        },
 					highlight: function(element, errorClass) {
-					   $j(element).parent("div.ctrlHolder").addClass('error');
+					   $j(element).closest("div.ctrlHolder").addClass('error');
 					},
 					unhighlight: function(element, errorClass) {
-					   $j(element).parent("div.ctrlHolder").removeClass('error');
+					   $j(element).closest("div.ctrlHolder").removeClass('error');
 					}
 
 				});

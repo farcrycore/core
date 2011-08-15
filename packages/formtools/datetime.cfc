@@ -243,7 +243,17 @@
 			
 			<skin:onReady>
 				<cfoutput>
-					$j("###arguments.fieldname#").datepicker({dateFormat:'#arguments.stMetadata.ftJQDateFormatMask#',showOn: 'both', buttonImage: '#application.url.farcry#/js/dateTimePicker/cal.gif', buttonImageOnly: true<cfif len(arguments.stMetadata.ftMaxDate)>, maxDate: #cf2jsDate(arguments.stMetadata.ftMaxDate)#</cfif><cfif len(arguments.stMetadata.ftMinDate)>, minDate: #cf2jsDate(arguments.stMetadata.ftMinDate)#</cfif>});
+					$j("###arguments.fieldname#").datepicker({
+						dateFormat:'#arguments.stMetadata.ftJQDateFormatMask#',
+						showOn: 'both', 
+						buttonImage: '#application.url.farcry#/js/dateTimePicker/cal.gif', 
+						buttonImageOnly: true,						
+						onSelect: function(dateText, inst) {
+							$j(this).trigger('change');
+						}
+						<cfif len(arguments.stMetadata.ftMaxDate)>, maxDate: #cf2jsDate(arguments.stMetadata.ftMaxDate)#</cfif>
+						<cfif len(arguments.stMetadata.ftMinDate)>, minDate: #cf2jsDate(arguments.stMetadata.ftMinDate)#</cfif>
+					});
 				</cfoutput>
 			</skin:onReady>
 			
@@ -274,8 +284,8 @@
 					</cfif>
 					
 					<div id="#arguments.fieldname#-wrap">
-						<label class="inlineLabel" for="#arguments.fieldname#"></label>
-						<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftCFDateFormatMask)#" class="textInput" style="width:100px;" >
+						<!--- <label class="inlineLabel" for="#arguments.fieldname#"></label> --->
+						<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftCFDateFormatMask)#" class="textInput #arguments.stMetadata.ftClass#" style="width:100px;#arguments.stMetadata.ftStyle#" >
 						<input type="hidden" name="#arguments.fieldname#rendertype" id="#arguments.fieldname#rendertype" value="#arguments.stMetadata.ftRenderType#">
 						<cfif arguments.stMetadata.ftShowTime>
 							<select name="#arguments.fieldname#Hour">

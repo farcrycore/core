@@ -722,7 +722,7 @@ function setRowBackground (childCheckbox) {
 					title:title,
 					draggable:false,
 					resizable:false,
-					width: "90%",
+					width: "95%",
 					height: $j(window).height()-50,
 					close: function(event, ui) {
 						$j("html").css('overflow', 'auto');
