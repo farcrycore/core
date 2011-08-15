@@ -112,6 +112,7 @@ START WEBSKIN
 			<ft:button 	value="Unlock" 
 						text="<h1>UNLOCK</h1>#application.rb.formatRBString('workflow.labels.lockedwhen@label', stLockedBy.label,'Locked by YOU')#"
 						class="primary"
+						priority="primary"
 						rbkey="workflow.labels.lockedwhen@label" 
 						url="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#&ref=#url.ref#" />
 		<cfelseif stOverviewParams.stPermissions.iDeveloperPermission eq 1>
@@ -119,6 +120,7 @@ START WEBSKIN
 			<ft:button 	value="Unlock" 
 						text="<h1>UNLOCK</h1>#application.rb.formatRBString('workflow.labels.lockedwhen@label', stLockedBy.label,'Locked by {1}')#"
 						class="primary"
+						priority="primary"
 						rbkey="workflow.labels.lockedwhen@label" 
 						url="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#&ref=#url.ref#" />
 		<cfelse>
@@ -126,6 +128,7 @@ START WEBSKIN
 			<ft:button	value="Unlock" 
 						text="<h1>LOCKED</h1>#uCase(application.rb.formatRBString('workflow.labels.lockedby@label', stLockedBy.label,'<span style="color:red">Locked by {1}</span>'))#"
 						class="primary"
+						priority="primary"
 						type="button"
 						rbkey="workflow.labels.lockedwhen@label" 
 						onclick="alert('You do not have permission to unlock this content item.')" />		
@@ -169,6 +172,7 @@ START WEBSKIN
 									text="<h1>EDIT</h1>Edit content item"
 									title="Edit content item"
 									class="primary" 
+									priority="primary"
 									rbkey="workflow.buttons.edit" 
 									url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=#url.ref#&typename=#stobj.typeName#" />
 					</cfif>
@@ -186,6 +190,7 @@ START WEBSKIN
 									text="<h1>EDIT</h1>Edit content item"
 									title="Edit content item"
 									class="primary"
+									priority="primary"
 									rbkey="workflow.buttons.edit" 
 									url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=#url.ref#&typename=#stobj.typeName#" />
 					</cfif>
@@ -197,6 +202,7 @@ START WEBSKIN
 									text="<h1>EDIT</h1>Create Underlying Draft"
 									title="Create Underlying Draft"
 									class="primary"
+									priority="primary"
 									rbkey="workflow.buttons.createdraft" 
 									url="#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#stobj.objectID#&typename=#stobj.typeName#&ref=#url.ref#" />
 					</cfif>
@@ -227,7 +233,8 @@ START WEBSKIN
 				<ft:button	value="Edit this content item" 
 							text="<h1>EDIT</h1>Edit Content Item"
 							title="Edit Content Item"
-							class="primary" 
+							class="primary"
+							priority="primary" 
 							rbkey="workflow.buttons.edit" 
 							url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=#url.ref#&typename=#stobj.typeName#" />
 			</cfif>
