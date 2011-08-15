@@ -104,15 +104,15 @@
 	</cfif>
 		
 	<cfset formAction = application.fapi.getLink(type='#stobj.typename#', objectid='#stobj.objectid#', view='displayLibrary', urlParameters="filterTypename=#url.filterTypename#&property=#url.property#&ajaxmode=1") />
-	
-	<ft:form name="#stobj.typename#_#url.property#_#url.filterTypename#" bAjaxSubmission="true" action="#formAction#">		
-		<grid:div style="padding:5px; border: 1px solid ##CCCCCC;background-color:##f1f1f1;margin-bottom:5px; ">
+
+	<ft:form name="#stobj.typename#_#url.property#_#url.filterTypename#" bAjaxSubmission="true" action="#formAction#" style="width:99%;">		
+		<grid:div class="fc-shadowbox"><!---  style="padding:5px; border: 1px solid ##CCCCCC;background-color:##f1f1f1;margin-bottom:5px; " --->
 			<cfoutput>
 			<div style="display:inline;color:##E17000">
-				<div style="font-size:90%;margin-right:10px;padding:2px;float:left;">
-					<a onclick="$j('##filterForm-#url.filterTypename#').toggle('slow');">FILTERING</a>							
-				</div>	
-				<br class="clearer" />						
+				<div style="font-size:90%;padding:2px;float:left;">
+					<ft:button type="button" value="Filter" icon="ui-icon-search" class="small" text="#application.rb.getResource('objectadmin.messages.Filtering@text','FILTERING')#" onclick="$j('##filterForm-#url.filterTypename#').toggle('slow');" />
+					<!--- <a onclick="$j('##filterForm-#url.filterTypename#').toggle('slow');">FILTERING</a>							 --->
+				</div>						
 			</div>
 			<br class="clearer" />
 			<div id="filterForm-#url.filterTypename#" style="<cfif not len(form.searchTypename)>display:none;</cfif>">
@@ -124,15 +124,12 @@
 						</grid:div>
 					</fieldset>
 					<ft:buttonPanel>
-						<ft:button value="Search" renderType="button" class="btn-small" />
+						<ft:button value="Search" class="small" priority="primary" />
 						<cfif len(form.searchTypename)>
-							<ft:button value="Clear Search" renderType="button" class="btn-generic" onClick="$j('##searchTypename-#stobj.typename#-#url.property#-#url.filterTypename#').attr('value','');" />
+							<ft:button value="Clear Search" class="small" priority="secondary" style="float:left;" onClick="$j('##searchTypename-#stobj.typename#-#url.property#-#url.filterTypename#').attr('value','');" />
 						</cfif>
 					</ft:buttonPanel>
-					
-					<br class="clearer" />
 				</div>
-				<br class="clearer" />
 			</div>
 			</cfoutput>
 		</grid:div>
@@ -160,20 +157,20 @@
 
 			<cfif stCurrentRow.bFirst>
 				<cfoutput>
-				<table class="objectAdmin" style="width:100%">
+				<table class="objectAdmin" style="width:100%;table-layout:fixed;">
 				</cfoutput>
 			</cfif>
 				
 			<cfoutput>
-				<tr class="ctrlHolder selector-wrap #stCurrentRow.currentRowClass#" style="cursor:pointer;">
-					<td class="" style="width:20px;padding:3px;">
+				<tr class="selector-wrap #stCurrentRow.currentRowClass#" style="cursor:pointer;">
+					<td style="width:25px;padding:3px;">
 						<cfif stMetadata.type EQ "array">
 							<input type="checkbox" id="selected_#stCurrentRow.currentRow#" name="selected" class="checker" value="#stCurrentRow.objectID#" <cfif listFindNoCase(lSelected,stCurrentRow.objectid)>checked="checked"</cfif> />
 						<cfelse>
 							<input type="radio" id="selected_#stCurrentRow.currentRow#" name="selected" class="checker" value="#stCurrentRow.objectID#" <cfif listFindNoCase(lSelected,stCurrentRow.objectid)>checked="checked"</cfif> />
 						</cfif>
 					</td>
-					<td class="#stCurrentRow.currentRowClass#" style="padding:3px;">
+					<td style="padding:3px;">
 						<skin:view objectid="#stCurrentRow.objectid#" webskin="librarySelected" bIgnoreSecurity="true" />
 					</td>					
 				</tr>
