@@ -764,6 +764,15 @@ user --->
 				
 				<cfoutput>
 				<table width="100%" class="objectAdmin">
+					<cfif attributes.bSelectCol>
+						<col style="width:40px;" />
+					</cfif>
+					<cfif attributes.bShowActionList>
+						<col style="width:125px;" />
+					</cfif>
+					<cfif structKeyExists(st,"bHasMultipleVersion")>
+						<col style="width:50px;" />
+					</cfif>
 				<thead>
 					<tr class="#st.currentRowClass#">			
 				</cfoutput>
@@ -772,7 +781,7 @@ user --->
 				 		
 						
 						<cfif attributes.bShowActionList>
-							<cfoutput><th style="min-width:75px;">#application.rb.getResource('objectadmin.columns.action@label','Action')#</th></cfoutput>
+							<cfoutput><th>#application.rb.getResource('objectadmin.columns.action@label','Action')#</th></cfoutput>
 						</cfif>
 						
 						<cfif structKeyExists(st,"bHasMultipleVersion")>
@@ -927,7 +936,7 @@ user --->
 								</cfoutput>
 							</cfif>
 							<cfif attributes.bShowActionList>
-								<cfoutput><td class="objectadmin-actions" nowrap="nowrap" style="width:20px;white-space:nowrap;">#st.action#</td></cfoutput>
+								<cfoutput><td class="objectadmin-actions" nowrap="nowrap" style="text-align:center;">#st.action#</td></cfoutput>
 							</cfif>
 					 		<cfif structKeyExists(st,"bHasMultipleVersion")>
 						 		<cfoutput><td style="width:20px;white-space:nowrap;">#application.rb.getResource("constants.status.#st.status#@label",st.status)#</td></cfoutput>
