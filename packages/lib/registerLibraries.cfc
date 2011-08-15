@@ -24,13 +24,7 @@
 		<!--- JS LIBRARIES --->
 		<skin:registerJS 	id="jquery"
 							baseHREF="#application.url.webtop#/thirdparty/jquery/js"
-							lFiles="jquery-1.6.2.min.js">
-							
-							<cfoutput>
-								var $j = jQuery.noConflict();
-								var $ = jQuery.noConflict();							
-							</cfoutput>	
-		</skin:registerJS>		
+							lFiles="jquery-1.6.2.min.js,noconflict.js" />	
 			
 		<skin:registerJS 	id="jquery-ui"
 							baseHREF="#application.url.webtop#/thirdparty/jquery/js"
