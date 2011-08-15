@@ -646,9 +646,9 @@ user --->
 				<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" stPropMetaData="#attributes.stFilterMetaData#" />
 				
 				<ft:buttonPanel>
-					<ft:button value="Apply Filter" />
+					<ft:button value="Apply Filter" class="small" />
 					<cfif len(HTMLfiltersAttributes)>	
-						<ft:button value="Clear Filter" validate="false" style="float:left;" />
+						<ft:button value="Clear Filter" validate="false" class="small" style="float:left;" />
 					</cfif>
 				</ft:buttonPanel>
 				

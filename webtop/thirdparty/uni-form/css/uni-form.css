@@ -120,4 +120,13 @@ AND MODIFYING IT WITH YOUR OWN PROPERTIES/VALUES. THIS IS RECOMMENDED BECAUSE IF
 YOU CAN VERY EASILY REVERT TO A GENERIC STYLE OF UNI-FORM. BEST OF LUCK... 
 */
 
+.uniForm div.message{
+    padding-left: 7px;
+    width:200px;
+}
+
+.uniForm div.error{
+    border-width: 1px 0px 0px 0px;
+}
+
 /* ------------------------------------------------------------------------------ */

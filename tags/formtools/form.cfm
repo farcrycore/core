@@ -171,9 +171,15 @@ It just ignores the inner ones.
 						onsubmit: false, // let the onsubmit function handle the validation
 						errorElement: "p",
 						errorClass: "errorField",					   
+						wrapper: "div",  // a wrapper around the error message					   
 						errorPlacement: function(error, element) {
-						   error.prependTo( element.parents("div.ctrlHolder") );
-						},
+				            offset = element.offset();
+				            error.insertBefore(element)
+				            error.addClass('message');  // add a class to the wrapper
+				            error.css('position', 'absolute');
+				            error.css('left', offset.left + element.outerWidth());
+				            error.css('top', offset.top);
+				        },
 						highlight: function(element, errorClass) {
 						   $j(element).parents("div.ctrlHolder").addClass('error');
 						},
