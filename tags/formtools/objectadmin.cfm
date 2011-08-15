@@ -748,7 +748,8 @@ user --->
 				evenRowClass=""
 				r_stObject="st"
 				bDisplayTotalRecords="#attributes.bDisplayTotalRecords#">
-	
+
+
 		
 			<cfif st.bFirst>
 				<cfif len(attributes.SortableColumns)>
@@ -758,7 +759,7 @@ user --->
 				<cfoutput>
 				<table width="100%" class="objectAdmin">
 				<thead>
-					<tr>			
+					<tr class="#st.currentRowClass#">			
 				</cfoutput>
 				
 				 		<cfif attributes.bSelectCol><cfoutput><th><cfif attributes.bCheckAll><input type="checkbox" id="checkall" name="checkall" onclick="checkUncheckAll(this);" title="Check All" /><cfelse>Select</cfif></th></cfoutput></cfif>
