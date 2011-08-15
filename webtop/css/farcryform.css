@@ -219,4 +219,12 @@
 		margin-top:0px;
 	}	
 	
+	div.fc-shadowbox .buttonHolder  {
+		margin-bottom: 0px;
+		background: none;
+		border: 1px solid #DFDFDF;
+		border-width: 1px 0 0 0;
+		padding-left: 0;
+	}	
+	
 	
