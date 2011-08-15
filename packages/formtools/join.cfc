@@ -199,6 +199,7 @@
 										value="#qLibraryList.objectid#" />
 									<skin:view objectid="#qLibraryList.objectid#" webskin="#arguments.stMetadata.ftLibrarySelectedWebskin#" alternateHTML="#qLibraryList.label#" />
 								</label>
+								<br class="clear" />
 							</cfloop>
 								<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" />
 								<br class="clear" />
@@ -250,8 +251,8 @@
 										<cfif stActions.ftAllowEdit>
 											<ft:button
 												Type="button" 
-												renderType="button"
-												class="ui-state-default ui-corner-all"
+												priority="secondary"
+												class="small"
 												value="Edit"
 												text="edit" 
 												onClick="fcForm.openLibraryEdit('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#i#');" />
@@ -261,8 +262,8 @@
 										<cfif stActions.ftRemoveType EQ "delete">
 											<ft:button
 												Type="button" 
-												renderType="button"
-												class="ui-state-default ui-corner-all"
+												priority="secondary"
+												class="small"
 												value="Delete" 
 												text="delete" 
 												confirmText="Are you sure you want to delete this item? Doing so will immediately remove this item from the database." 
@@ -270,8 +271,8 @@
 										<cfelseif stActions.ftRemoveType EQ "remove">
 											<ft:button
 												Type="button" 
-												renderType="button"
-												class="ui-state-default ui-corner-all"
+												priority="secondary"
+												class="small"
 												value="Remove" 
 												text="remove" 
 												confirmText="Are you sure you want to remove this item? Doing so will only unlink this content item. The content will remain in the database." 
@@ -296,36 +297,6 @@
 					<cfoutput>
 						
 						
-							<cfif stActions.ftAllowSelect>
-								<ft:button	Type="button" 
-											renderType="button"
-											class="ui-state-default ui-corner-all"
-											value="select" 
-											onClick="fcForm.openLibrarySelect('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');" />
-								
-							</cfif>
-							
-							<cfif listLen(joinItems)>
-								
-								<cfif stActions.ftRemoveType EQ "delete">
-									<ft:button	Type="button" 
-												renderType="button"
-												class="ui-state-default ui-corner-all"
-												value="Delete All" 
-												text="delete all" 
-												confirmText="Are you sure you want to delete all the attached items?"
-												onClick="fcForm.deleteAllLibraryItems('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems#');" />
-								<cfelseif stActions.ftRemoveType EQ "remove">
-									<ft:button	Type="button" 
-												renderType="button"
-												class="ui-state-default ui-corner-all"
-												value="Remove All" 
-												text="remove all" 
-												confirmText="Are you sure you want to remove all the attached items?"
-												onClick="fcForm.detachAllLibraryItems('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems#');" />
-									
-								</cfif>
-							</cfif>
 							<cfif arguments.stMetadata.ftAllowCreate>
 							
 
@@ -343,8 +314,8 @@
 									</skin:onReady>
 								<cfelse>
 									<ft:button	Type="button" 
-												renderType="button"
-												class="ui-state-default ui-corner-all"
+												priority="secondary"
+												class="small"
 												value="Create" 
 												text="create" 
 												onClick="fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');" />
@@ -354,6 +325,36 @@
 								</cfif>
 								
 								
+							</cfif>
+							<cfif stActions.ftAllowSelect>
+								<ft:button	Type="button" 
+											priority="secondary"
+											class="small"
+											value="select" 
+											onClick="fcForm.openLibrarySelect('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');" />
+								
+							</cfif>
+							
+							<cfif listLen(joinItems)>
+								
+								<cfif stActions.ftRemoveType EQ "delete">
+									<ft:button	Type="button" 
+												priority="secondary"
+												class="small"
+												value="Delete All" 
+												text="delete all" 
+												confirmText="Are you sure you want to delete all the attached items?"
+												onClick="fcForm.deleteAllLibraryItems('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems#');" />
+								<cfelseif stActions.ftRemoveType EQ "remove">
+									<ft:button	Type="button" 
+												priority="secondary"
+												class="small"
+												value="Remove All" 
+												text="remove all" 
+												confirmText="Are you sure you want to remove all the attached items?"
+												onClick="fcForm.detachAllLibraryItems('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems#');" />
+									
+								</cfif>
 							</cfif>
 						
 					</cfoutput>
