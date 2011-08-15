@@ -332,11 +332,13 @@ ul.x-tab-strip li a {padding:0px;}
 #webtopOverviewActions button.primary {
 	width:180px;
 	height:100px;
+	margin-left:0px;
 }
 #webtopOverviewActions button.secondary {
 	width:180px;
 	min-height:50px;
 	margin-top:10px;
+	margin-left:0px;
 }
 .webtopOverviewStatusBox {
 	border:1px solid black;
