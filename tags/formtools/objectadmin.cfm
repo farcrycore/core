@@ -190,7 +190,14 @@ user --->
 <cfif thistag.executionMode eq "End">
 
 	<cfif len(attributes.title)>
-		<cfoutput><h1><skin:icon icon="#application.stCOAPI[attributes.typename].icon#" default="farcrycore" />#attributes.title#</h1></cfoutput>
+		<cfoutput>
+		<table class="layout" style="padding:5px;margin-bottom:10px;">
+		<tr>
+			<td style="width:35px;"><skin:icon icon="#application.stCOAPI[attributes.typename].icon#" size="32" default="farcrycore" alt="#uCase(application.fapi.getContentTypeMetadata(attributes.typename,'displayname',attributes.typename))#" /></td>
+			<td style="vertical-align:center;"><h1>#attributes.title#</h1></td>
+		</tr>
+		</table>			
+		</cfoutput>
 	</cfif>
 	
 	<cfset stPrefs = oTypeAdmin.getPrefs() />
@@ -625,40 +632,6 @@ user --->
 		</cfif>
 	</cfif>
 
-	<!--- ONLY SHOW THE FILTERING IF WE HAVE RECORDS OR IF WE ARE ALREADY FILTERING --->
-	<cfif listLen(attributes.lFilterFields) AND (listLen(HTMLfiltersAttributes) OR stRecordset.q.recordCount)>
-	
-		<skin:loadJS id="jquery" />
-		
-		<grid:div class="fc-shadowbox">
-		<ft:form style="">
-			<cfoutput>
-			<div style="color:##E17000;">
-				<div style="font-size:90%;margin-right:10px;padding:2px;">
-					<ft:button type="button" value="Filter" icon="ui-icon-search" class="small" text="#application.rb.getResource('objectadmin.messages.Filtering@text','FILTERING')#" onclick="$j('##filterForm').toggle('fast');" />
-					<!--- <a onclick="$j('##filterForm').toggle('fast');">#application.rb.getResource('objectadmin.messages.Filtering@text','FILTERING')#</a> --->
-				</div>
-			</div>
-			</cfoutput>
-			
-			<cfoutput><div id="filterForm" style="<cfif not listLen(HTMLfiltersAttributes)>display:none;</cfif>"><div style="padding:5px;"></cfoutput>
-			
-				<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" stPropMetaData="#attributes.stFilterMetaData#" />
-				
-				<ft:buttonPanel>
-					<ft:button value="Apply Filter" class="small" />
-					<cfif len(HTMLfiltersAttributes)>	
-						<ft:button value="Clear Filter" validate="false" class="small" style="float:left;" />
-					</cfif>
-				</ft:buttonPanel>
-				
-			<cfoutput><br class="clearer" /></div></div></cfoutput>
-			
-		</ft:form>
-		</grid:div>
-	</cfif>
-	
-
 	<cfif len(attributes.description)>
 		<cfoutput>#attributes.description#</cfoutput>
 	</cfif>
@@ -700,12 +673,18 @@ user --->
 									<cfset buttontext = attributes.aButtons[i].value />
 								</cfif>
 								
-								<ft:button text="#attributes.aButtons[i].value#" value="#attributes.aButtons[i].value#" rbkey="objectadmin.buttons.#rereplace(attributes.aButtons[i].value,'[^\w]+','','ALL')#" onclick="#onclickJS#" confirmText="#attributes.aButtons[i].confirmText#" class="secondaryAction" />
-								<!---<input type="#attributes.aButtons[i].type#" name="#attributes.aButtons[i].name#" value="#attributes.aButtons[i].value#" class="formButton"<cfif len(attributes.aButtons[i].onclick)> onclick="#attributes.aButtons[i].onclick#"</cfif> /> --->
+								<ft:button text="#attributes.aButtons[i].value#" value="#attributes.aButtons[i].value#" rbkey="objectadmin.buttons.#rereplace(attributes.aButtons[i].value,'[^\w]+','','ALL')#" onclick="#onclickJS#" confirmText="#attributes.aButtons[i].confirmText#" />
 							</cfif>
 						</cfif>
 					</cfif>
 				</cfloop>
+				
+						
+				<!--- ONLY SHOW THE FILTERING IF WE HAVE RECORDS OR IF WE ARE ALREADY FILTERING --->
+				<cfif listLen(attributes.lFilterFields) AND (listLen(HTMLfiltersAttributes) OR stRecordset.q.recordCount)>
+					<ft:button type="button" value="Filter" icon="ui-icon-search" class="small" priority="primary" style="float:right;margin-top:5px;" text="#application.rb.getResource('objectadmin.messages.Filtering@text','Show Filter')#" onclick="$j('##filterForm').toggle('fast');" />
+				</cfif>
+				
 				</ft:buttonPanel>
 			</cfif>
 		</cfsavecontent>
@@ -732,6 +711,32 @@ user --->
 			</cfoutput>
 		</skin:pop>
 		
+
+		<!--- ONLY SHOW THE FILTERING IF WE HAVE RECORDS OR IF WE ARE ALREADY FILTERING --->
+		<cfif listLen(attributes.lFilterFields) AND (listLen(HTMLfiltersAttributes) OR stRecordset.q.recordCount)>
+					
+			<cfoutput>
+			<div id="filterForm" style="<cfif not listLen(HTMLfiltersAttributes)>display:none;</cfif>">
+				<grid:div class="fc-shadowbox">
+				
+					<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" stPropMetaData="#attributes.stFilterMetaData#" />
+					
+					<ft:buttonPanel style="margin-bottom:0px;">
+						<ft:button value="Apply Filter" class="small" />
+						<cfif len(HTMLfiltersAttributes)>	
+							<ft:button value="Clear Filter" validate="false" class="small" style="float:left;" />
+						</cfif>
+					</ft:buttonPanel>
+				</grid:div>
+			</div>
+			</cfoutput>
+			
+			
+			
+		</cfif>
+		
+				
+		
 	
 		<cfif stRecordset.q.recordCount>
 			<skin:pagination
@@ -747,6 +752,7 @@ user --->
 				oddRowClass="alt"
 				evenRowClass=""
 				r_stObject="st"
+				top="false"
 				bDisplayTotalRecords="#attributes.bDisplayTotalRecords#">
 
 

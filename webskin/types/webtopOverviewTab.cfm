@@ -44,8 +44,8 @@ FARCRY INCLUDE FILES
 <cfoutput>
 <table class="layout" style="width:100%;padding:5px;">
 <tr>
-	<td style="width:50px;"><skin:icon icon="#application.stCOAPI[stobj.typename].icon#" size="48" default="farcrycore" alt="#uCase(application.fapi.getContentTypeMetadata(stobj.typename,'displayname',stobj.typename))#" /></td>
-	<td style="width:50%;"><h1>#stobj.label#</h1></td>
+	<td style="width:35px;"><skin:icon icon="#application.stCOAPI[stobj.typename].icon#" size="32" default="farcrycore" alt="#uCase(application.fapi.getContentTypeMetadata(stobj.typename,'displayname',stobj.typename))#" /></td>
+	<td style="width:50%;vertical-align:center;"><h1>#stobj.label#</h1></td>
 	<td>
 
 		<!--- CONTENT ITEM STATUS --->
