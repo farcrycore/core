@@ -293,7 +293,7 @@
 						<cfoutput><input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" /></cfoutput>
 					</cfif>
 					
-					<ft:buttonPanel style="">
+					<ft:buttonPanel style="border:none;">
 					<cfoutput>
 						
 						
