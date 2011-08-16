@@ -111,6 +111,7 @@ START WEBSKIN
 			<!--- locked by current user --->
 			<ft:button 	value="Unlock" 
 						text="<h1>UNLOCK</h1>#application.rb.formatRBString('workflow.labels.lockedwhen@label', stLockedBy.label,'Locked by YOU')#"
+						title="Unlock this content item"
 						class="primary"
 						priority="primary"
 						rbkey="workflow.labels.lockedwhen@label" 
@@ -119,6 +120,7 @@ START WEBSKIN
 			<!--- locked by another user --->
 			<ft:button 	value="Unlock" 
 						text="<h1>UNLOCK</h1>#application.rb.formatRBString('workflow.labels.lockedwhen@label', stLockedBy.label,'Locked by {1}')#"
+						title="Unlock this content item"
 						class="primary"
 						priority="primary"
 						rbkey="workflow.labels.lockedwhen@label" 
@@ -127,6 +129,7 @@ START WEBSKIN
 			<!--- locked by another user --->
 			<ft:button	value="Unlock" 
 						text="<h1>LOCKED</h1>#uCase(application.rb.formatRBString('workflow.labels.lockedby@label', stLockedBy.label,'<span style="color:red">Locked by {1}</span>'))#"
+						title="Unlock this content item"
 						class="primary"
 						priority="primary"
 						type="button"
