@@ -219,7 +219,8 @@
 		margin-top:0px;
 	}	
 	
-	div.fc-shadowbox .buttonHolder  {
+	div.fc-shadowbox .buttonHolder,
+	.multiField .buttonHolder  {
 		margin-bottom: 0px;
 		background: none;
 		border: 1px solid #DFDFDF;
