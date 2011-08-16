@@ -38,11 +38,15 @@
 
 
 	.ui-dialog {
-		max-width: 980px;
+		max-width: 1024px;
 	}	
 	.ui-dialog.fullscreen {
 		max-width: 2040px;
 	}	
+	
+	.ui-widget {
+		font-size:1em;
+	}
 	
 	.ui-widget-content .ui-priority-primary,
 	.ui-priority-primary {
@@ -54,6 +58,9 @@
 	.ui-priority-secondary {
 	
 	}
+.ui-button .ui-button-text {
+	font-size:13px;
+}
 	
 .ui-button.small .ui-button-text {
 	font-size:10px;
@@ -87,13 +94,13 @@
 		linear,
 		left bottom,
 		left top,
-		color-stop(1, rgb(185,224,245)),
-		color-stop(0, rgb(146,189,214))
+		color-stop(1, #B9E0F5),
+		color-stop(0, #92BDD6)
 	);
 	background: -moz-linear-gradient(
 		center top,
-		rgb(185,224,245),
-		rgb(146,189,214)
+		#B9E0F5,
+		#92BDD6
 	);
 }
 

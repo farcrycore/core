@@ -765,10 +765,10 @@ user --->
 				<cfoutput>
 				<table width="100%" class="objectAdmin">
 					<cfif attributes.bSelectCol>
-						<col style="width:40px;" />
+						<col style="width:10px;" />
 					</cfif>
 					<cfif attributes.bShowActionList>
-						<col style="width:125px;" />
+						<col style="width:25px;" />
 					</cfif>
 					<cfif structKeyExists(st,"bHasMultipleVersion")>
 						<col style="width:50px;" />
@@ -926,7 +926,7 @@ user --->
 						
 							<cfif attributes.bSelectCol>
 								<cfoutput>
-								<td style="width:20px;white-space:nowrap;">
+								<td style="white-space:nowrap;">
 									#st.select# 
 									<!--- #st.recordSetRow#			 --->					
 									<cfif structKeyExists(st,"locked") AND st.locked neq 0>
@@ -1099,7 +1099,7 @@ user --->
 		</cfoutput>
 	</skin:onReady>
 		
-		<ft:splitButton>
+		<ft:splitButton style="margin-left:0px;">
 			<cfif attributes.bViewCol>	
 				<ft:button value="Overview" text="Overview" title="Open up the overview screen for this object" style="" priority="secondary" class="small" type="button" onclick="$fc.objectAdminAction('Administration', '#overviewURL#&objectid=#arguments.st.objectid#');" />
 			</cfif>
