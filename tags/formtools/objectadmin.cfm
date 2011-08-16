@@ -936,7 +936,7 @@ user --->
 								</cfoutput>
 							</cfif>
 							<cfif attributes.bShowActionList>
-								<cfoutput><td class="objectadmin-actions" nowrap="nowrap" style="text-align:center;">#st.action#</td></cfoutput>
+								<cfoutput><td class="objectadmin-actions" nowrap="nowrap" style="text-align:center;padding:3px 5px;">#st.action#</td></cfoutput>
 							</cfif>
 					 		<cfif structKeyExists(st,"bHasMultipleVersion")>
 						 		<cfoutput><td style="width:20px;white-space:nowrap;">#application.rb.getResource("constants.status.#st.status#@label",st.status)#</td></cfoutput>
@@ -1069,40 +1069,44 @@ user --->
 	<cfset createDraftURL = "#application.url.farcry#/navajo/createDraftObject.cfm?ref=iframe">
 
 
-	
-	<skin:onReady id="object-admin-actions">
-		<cfoutput>
-			$j('a.oa-overview').click(function() {
-				$fc.objectAdminAction('Administration', '#overviewURL#&objectid=' + $j(this).attr('ft:objectid'));
-				return false;
-			});
-			
-			$j('a.oa-edit').click(function() {
-				$fc.objectAdminAction('Administration', '#editURL#&objectid=' + $j(this).attr('ft:objectid'));
-				return false;
-			});
-			
-			$j('a.oa-preview').click(function() {
-				$fc.objectAdminAction('Preview', '#application.url.webroot#/index.cfm?flushcache=1&objectid=' + $j(this).attr('ft:objectid'));
-				return false;
-			});
-			
-			$j('a.oa-create-draft').click(function() {
-				$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=' + $j(this).attr('ft:objectid'));
-				return false;
-			});
-			
-			$j('a.oa-edit-draft').click(function() {
-				$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=' + $j(this).attr('ft:objectid'));
-				return false;
-			});
-		</cfoutput>
-	</skin:onReady>
 		
-		<ft:splitButton style="margin-left:0px;">
+		
 			<cfif attributes.bViewCol>	
-				<ft:button value="Overview" text="Overview" title="Open up the overview screen for this object" style="" priority="secondary" class="small" type="button" onclick="$fc.objectAdminAction('Administration', '#overviewURL#&objectid=#arguments.st.objectid#');" />
+				<ft:button value="Overview" text="" title="Open up the overview screen for this object" style="margin-left:0px;" icon="ui-icon-newwin" priority="secondary" class="small" type="button" onclick="$fc.objectAdminAction('Administration', '#overviewURL#&objectid=#arguments.st.objectid#');" />
 			</cfif>
+			<cfif attributes.bEditCol>
+		
+				<!--- We do not include the Edit Link if workflow is available for this content item. The user must go to the overview page. --->
+				<cfif not listLen(lWorkflowTypenames)>	
+					<cfif structKeyExists(arguments.st,"locked") AND arguments.st.locked neq 0 AND arguments.st.lockedby neq '#application.security.getCurrentUserID()#'>
+						<ft:button value="Unlock" text="" title="Unlock this object" style="margin-left:0px;" icon="ui-icon-unlocked" priority="secondary" class="small" type="button" selectedObjectID="#arguments.st.objectid#" />
+					<cfelseif structKeyExists(arguments.stPermissions, "iEdit") AND arguments.stPermissions.iEdit>
+						<cfif structKeyExists(arguments.st,"bHasMultipleVersion")>
+							<cfif NOT(arguments.st.bHasMultipleVersion) AND arguments.st.status EQ "approved">
+								
+									<ft:button value="Create Draft Object" text="" title="Create a draft version of this object and begin editing" style="margin-left:0px;" icon="ui-icon-pencil" priority="secondary" class="small" type="button" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
+								
+							<cfelseif arguments.st.bHasMultipleVersion>
+								<!--- Still go to the create draft page but that page will find the already existing draft and not create a new one. --->
+								
+									<ft:button value="Edit Draft" text="" title="Edit the draft version of this object" type="button" style="margin-left:0px;" icon="ui-icon-pencil" priority="secondary" class="small" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
+											
+							<cfelse>
+								
+									<ft:button value="Edit" text="" title="Edit this object" type="button" style="margin-left:0px;" icon="ui-icon-pencil" priority="secondary" class="small" onclick="$fc.objectAdminAction('Administration', '#editURL#&objectid=#arguments.st.objectid#');" />
+									
+							</cfif>
+						<cfelse>
+							
+								<ft:button value="Edit" text="" title="Edit this object" type="button" style="margin-left:0px;" icon="ui-icon-pencil" priority="secondary" class="small" onclick="$fc.objectAdminAction('Administration', '#editURL#&objectid=#arguments.st.objectid#');" />
+							
+						</cfif>
+					</cfif>
+				</cfif>	
+			
+			</cfif>
+			
+		<ft:splitButton style="margin-left:0px;">
 			
 			<cfif attributes.bEditCol OR attributes.bPreviewCol>
 				<ft:button value="Options" text="" title="Options" style="" icon=" ,ui-icon-triangle-1-s" priority="secondary" class="small" />
@@ -1111,6 +1115,11 @@ user --->
 				<cfoutput>
 				<ul>
 					
+					<cfif attributes.bViewCol>	
+						<li>
+							<ft:button value="Overview" text="Overview" title="Open up the overview screen for this object" type="button" renderType="link" onclick="$fc.objectAdminAction('Administration', '#overviewURL#&objectid=#arguments.st.objectid#');" />
+						</li>
+					</cfif>
 					<cfif attributes.bEditCol>
 
 				
