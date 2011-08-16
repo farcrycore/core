@@ -682,7 +682,7 @@ user --->
 						
 				<!--- ONLY SHOW THE FILTERING IF WE HAVE RECORDS OR IF WE ARE ALREADY FILTERING --->
 				<cfif listLen(attributes.lFilterFields) AND (listLen(HTMLfiltersAttributes) OR stRecordset.q.recordCount)>
-					<ft:button type="button" value="Filter" icon="ui-icon-search" class="small" priority="primary" style="float:right;margin-top:5px;" text="#application.rb.getResource('objectadmin.messages.Filtering@text','Show Filter')#" onclick="$j('##filterForm').toggle('fast');" />
+					<ft:button type="button" value="Filter" icon="ui-icon-search" class="small" priority="primary" style="float:right;margin-top:5px;" text="#application.rb.getResource('objectadmin.messages.Filtering@text','Show Filter')#" onclick="$j('##filterForm').toggle('blind');" />
 				</cfif>
 				
 				</ft:buttonPanel>
@@ -716,8 +716,8 @@ user --->
 		<cfif listLen(attributes.lFilterFields) AND (listLen(HTMLfiltersAttributes) OR stRecordset.q.recordCount)>
 					
 			<cfoutput>
-			<div id="filterForm" style="<cfif not listLen(HTMLfiltersAttributes)>display:none;</cfif>">
-				<grid:div class="fc-shadowbox">
+			<div id="filterForm" style="<cfif not listLen(HTMLfiltersAttributes)>display:none;</cfif>text-align:center;">
+				<grid:div class="fc-shadowbox" style="width:600px;margin:0px auto;">
 				
 					<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" stPropMetaData="#attributes.stFilterMetaData#" />
 					
@@ -728,6 +728,7 @@ user --->
 						</cfif>
 					</ft:buttonPanel>
 				</grid:div>
+				<br style="clear:both;" />
 			</div>
 			</cfoutput>
 			
