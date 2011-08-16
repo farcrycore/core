@@ -636,7 +636,7 @@ user --->
 		<cfoutput>#attributes.description#</cfoutput>
 	</cfif>
 	
-	<ft:form Name="#attributes.name#">
+	<ft:form Name="#attributes.name#ButtonBar">
 	
 		<!--- output user responses --->
 		<cfif len(message_error)><cfoutput><p id="error" class="fade"><span class="error">#message_error#</span></p></cfoutput></cfif>
@@ -693,6 +693,9 @@ user --->
 
 		<cfoutput>#html_buttonbar#</cfoutput>
 		
+	</ft:form>
+	
+	
 		<skin:pop tags="error" start="<ul id='errorMsg'>" end="</ul>">
 			<cfoutput>
 				<li>
@@ -714,30 +717,30 @@ user --->
 
 		<!--- ONLY SHOW THE FILTERING IF WE HAVE RECORDS OR IF WE ARE ALREADY FILTERING --->
 		<cfif listLen(attributes.lFilterFields) AND (listLen(HTMLfiltersAttributes) OR stRecordset.q.recordCount)>
+			<ft:form Name="#attributes.name#Filter">		
+				<cfoutput>
+				<div id="filterForm" style="<cfif not listLen(HTMLfiltersAttributes)>display:none;</cfif>text-align:center;">
+					<grid:div class="fc-shadowbox" style="width:600px;margin:0px auto;">
 					
-			<cfoutput>
-			<div id="filterForm" style="<cfif not listLen(HTMLfiltersAttributes)>display:none;</cfif>text-align:center;">
-				<grid:div class="fc-shadowbox" style="width:600px;margin:0px auto;">
-				
-					<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" stPropMetaData="#attributes.stFilterMetaData#" />
-					
-					<ft:buttonPanel style="margin-bottom:0px;">
-						<ft:button value="Apply Filter" class="small" />
-						<cfif len(HTMLfiltersAttributes)>	
-							<ft:button value="Clear Filter" validate="false" class="small" style="float:left;" />
-						</cfif>
-					</ft:buttonPanel>
-				</grid:div>
-				<br style="clear:both;" />
-			</div>
-			</cfoutput>
-			
+						<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" stPropMetaData="#attributes.stFilterMetaData#" />
+						
+						<ft:buttonPanel style="margin-bottom:0px;">
+							<ft:button value="Apply Filter" class="small" />
+							<cfif len(HTMLfiltersAttributes)>	
+								<ft:button value="Clear Filter" validate="false" class="small" style="float:left;" />
+							</cfif>
+						</ft:buttonPanel>
+					</grid:div>
+					<br style="clear:both;" />
+				</div>
+				</cfoutput>
+			</ft:form>
 			
 			
 		</cfif>
 		
 				
-		
+	<ft:form Name="#attributes.name#">	
 	
 		<cfif stRecordset.q.recordCount>
 			<skin:pagination
