@@ -105,10 +105,30 @@
 		
 	<cfset formAction = application.fapi.getLink(type='#stobj.typename#', objectid='#stobj.objectid#', view='displayLibrary', urlParameters="filterTypename=#url.filterTypename#&property=#url.property#&ajaxmode=1") />
 
-	<ft:form name="#stobj.typename#_#url.property#_#url.filterTypename#" bAjaxSubmission="true" action="#formAction#" style="width:99%;">		
-		<grid:div class="fc-shadowbox"><!---  style="padding:5px; border: 1px solid ##CCCCCC;background-color:##f1f1f1;margin-bottom:5px; " --->
+	<ft:form name="#stobj.typename#_#url.property#_#url.filterTypename#" bAjaxSubmission="true" action="#formAction#">		
+		<grid:div class="fc-shadowbox" style="width:350px;margin:0px auto 10px auto;"><!---  style="padding:5px; border: 1px solid ##CCCCCC;background-color:##f1f1f1;margin-bottom:5px; " --->
 			<cfoutput>
-			<div style="display:inline;color:##E17000">
+			<table class="layout">
+			<tr>
+				<td>
+					<div class="filter-field-wrap" style="margin-right:10px;" ft:objectid="87A874A0-C775-11E0-8342040CCEE182E2" ft:typename="toroFilterSale" ft:property="term" ft:default="">
+						
+						<label for="fc87A874A0C77511E08342040CCEE182E2term" class="label" style="font-size:11px;">Search label</label> 
+						<input type="text" id="searchTypename-#stobj.typename#-#url.property#-#url.filterTypename#" name="searchTypename" class="textInput" value="#form.searchTypename#" style="width:150px;font-size:11px;" />
+				
+					</div>		
+				</td>
+				<td style="vertical-align:bottom;">
+					<ft:button value="Search" class="small" priority="primary" />
+				</td>
+				<cfif len(form.searchTypename)>
+					<td style="vertical-align:bottom;">
+						<ft:button value="Clear Search" class="small" priority="secondary" style="float:left;" onClick="$j('##searchTypename-#stobj.typename#-#url.property#-#url.filterTypename#').attr('value','');" />
+					</td>
+				</cfif>
+			</tr>
+			</table>
+			<!--- <div style="display:inline;color:##E17000">
 				<div style="font-size:90%;padding:2px;float:left;">
 					<ft:button type="button" value="Filter" icon="ui-icon-search" class="small" text="#application.rb.getResource('objectadmin.messages.Filtering@text','FILTERING')#" onclick="$j('##filterForm-#url.filterTypename#').toggle('slow');" />
 					<!--- <a onclick="$j('##filterForm-#url.filterTypename#').toggle('slow');">FILTERING</a>							 --->
@@ -130,7 +150,7 @@
 						</cfif>
 					</ft:buttonPanel>
 				</div>
-			</div>
+			</div> --->
 			</cfoutput>
 		</grid:div>
 			
@@ -153,11 +173,12 @@
 			oddRowClass="alt"
 			evenRowClass=""
 			r_stObject="stCurrentRow"
-  			bDisplayTotalRecords="true">
+  			bDisplayTotalRecords="true"
+			top="false">
 
 			<cfif stCurrentRow.bFirst>
 				<cfoutput>
-				<table class="objectAdmin" style="width:100%;table-layout:fixed;">
+				<table class="objectAdmin" style="width:99%;table-layout:fixed;">
 				</cfoutput>
 			</cfif>
 				

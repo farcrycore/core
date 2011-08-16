@@ -33,12 +33,12 @@
 	</cfloop>
 	
 	
-	<admin:header title="Library Selector" style="width:100%;height:100%">		
+	<admin:header title="Library Selector" style="width:99%;height:99%">		
 	
 	<ft:form>				
 	<cfoutput>
 	<!-- summary pod with green arrow -->
-	<div class="summary-pod" style="width:100%;">
+	<div class="summary-pod" style="width:99%;">
 		<span id="librarySummary-#stobj.typename#-#url.property#" style="text-align:center;width:100%;"><p>&nbsp;</p></span>
 		
 		<cfset formAction = application.fapi.getLink(type='#stobj.typename#', objectid='#stobj.objectid#', view='displayLibrarySelected', urlParameters="property=#url.property#&ajaxmode=1") />
