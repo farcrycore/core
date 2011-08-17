@@ -6,8 +6,11 @@
 		<cfset var typename = "" />
 		<cfset var bSuccess = true />
 		
-		<cfif arguments.bFlush OR NOT structKeyExists(application, "objectBroker")>
+		<cfif arguments.bFlush OR NOT structKeyExists(application, "objectBroker") OR NOT structKeyExists(application, "objectrecycler")>
 			<cfset application.objectbroker =  structNew() />
+			
+			<!--- This Java object gathers objects that were put in the broker but marked for garbage collection --->
+			<cfset application.objectrecycler =  createObject("java", "java.lang.ref.ReferenceQueue") />
 			
 			<cfif structkeyexists(application,"stCOAPI")>
 				<cfloop list="#structKeyList(application.stcoapi)#" index="typename">
@@ -37,24 +40,60 @@
 		<cfreturn bResult />
 	</cffunction>
 	
+	<cffunction name="GetObjectCacheEntry" access="private" output="false" returntype="struct" hint="Get an object's cache entry in the object broker">
+		<cfargument name="ObjectID" required="yes" type="UUID">
+		<cfargument name="typename" required="true" type="string">
+		
+		<!---
+			This method returns one of three different kinds of structures:
+				- On a live entry cache hit, it returns a reference to the cache entry struct with "stobj" and "stWebskins" keys
+				- On a dead entry cache hit, it returns a new struct with a "bDead" key  
+				- On a cache miss, it returns a new empty struct  
+		 --->
+		
+		<cfset var objRef = structNew()>
+		<cfset var stCacheEntry = structNew()>
+		
+		<!--- If the type is stored in the objectBroker and the Object is currently in the ObjectBroker --->
+		<cfif structkeyexists(application.objectbroker, arguments.typename)
+			 	AND structkeyexists(application.objectbroker[arguments.typename], arguments.objectid)>
+			<!--- Try to dereference the soft object reference in the broker --->
+			<cftry>
+				<cfset objRef = application.objectbroker[arguments.typename][arguments.objectid] />
+				<cfset stCacheEntry = objRef.get() />
+				<cfcatch />
+			</cftry>
+			<cfif not isDefined("stCacheEntry")>
+				<!--- Soft reference is empty: cache entry must have been recycled --->
+				<cfset stCacheEntry.bDead = true /> 
+				<cftrace type="warning" category="coapi" var="arguments.typename" text="Broker recycled reference hit.">
+			<cfelseif structKeyExists(stCacheEntry,"stobj")>
+				<!--- Cache hit --->
+				<cftrace type="information" category="coapi" var="stobj.typename" text="Broker object cache hit.">
+			<cfelse>
+				<!--- Cache miss: entry was snatched from right under our nose!--->
+			</cfif>
+		<cfelse>
+			<!--- Cache miss --->
+		</cfif>
+		<cfreturn stCacheEntry>
+	</cffunction>
+		
 	<cffunction name="GetFromObjectBroker" access="public" output="false" returntype="struct">
 		<cfargument name="ObjectID" required="yes" type="UUID">
 		<cfargument name="typename" required="true" type="string">
 		
 		<cfset var stobj = structNew()>
+		<cfset var stCacheEntry = structNew()>
 		
 		<cfif application.bObjectBroker>
-			<!--- If the type is stored in the objectBroker and the Object is currently in the ObjectBroker --->
-			<cflock name="objectBroker-#application.applicationname#-#arguments.typename#" type="readOnly" timeout="2" throwontimeout="true">	
-				<cfif structkeyexists(application.objectbroker, arguments.typename) 
-						AND structkeyexists(application.objectbroker[arguments.typename], arguments.objectid)
-						AND structkeyexists(application.objectbroker[arguments.typename][arguments.objectid], "stobj" )>
-					
-					<cfset stobj = duplicate(application.objectbroker[arguments.typename][arguments.objectid].stobj)>
-					<!--- <cftrace type="information" category="coapi" var="stobj.typename" text="getData() used objectpool cache."> --->
-					
-				</cfif>
-			</cflock>
+			<cfset stCacheEntry = GetObjectCacheEntry(objectId=arguments.objectId,typename=arguments.typename)>
+			<cfif StructKeyExists(stCacheEntry,"stobj")>
+				<cfset stObj = duplicate(stCacheEntry.stobj) />
+			<cfelseif StructKeyExists(stCacheEntry,"bDead")>
+				<!--- "Bring out your dead!" --->
+				<cfset reapDeadEntriesFromBroker() />
+			</cfif>
 		</cfif>
 		
 		<cfreturn stobj>
@@ -82,6 +121,7 @@
 		<cfset var lCcacheByVars= "" />
 		<cfset var hashString = "" />
 		<cfset var iViewState = "" />
+		<cfset var stCacheEntry = structNew() />
 		
 		
 		<cfset stResult.webskinCacheID = "" />
@@ -113,14 +153,12 @@
 			<cfif structKeyExists(request,"mode") AND (request.mode.flushcache EQ 1 OR request.mode.showdraft EQ 1 OR request.mode.tracewebskins eq 1 OR request.mode.design eq 1 OR request.mode.lvalidstatus NEQ "approved" OR (structKeyExists(url, "updateapp") AND url.updateapp EQ 1))>
 				<!--- DO NOT USE CACHE IF IN DESIGN MODE or SHOWING MORE THAN APPROVED OBJECTS or UPDATING APP --->
 			<cfelse>
-				<cflock name="objectBroker-#application.applicationname#-#arguments.typename#" type="readOnly" timeout="2" throwontimeout="true">	
 					<cfif structKeyExists(application.stcoapi[webskinTypename].stWebskins, arguments.template)>
 						<cfif application.stcoapi[webskinTypename].stWebskins[arguments.template].cacheStatus EQ 1>
 							<cfif structkeyexists(arguments,"objectid")>
-								<cfif structKeyExists(application.objectbroker, arguments.typename)
-									AND 	structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)
-									AND 	structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")
-									AND 	structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins, arguments.template)>
+								<cfset stCacheEntry = GetObjectCacheEntry(objectID=arguments.objectID,typename=arguments.typename)>
+								<cfif structKeyExists(stCacheEntry,"stWebskins")
+									AND 	structKeyExists(stCacheEntry.stWebskins, arguments.template)>
 								
 									<cfset stResult.webskinCacheID = generateWebskinCacheID(
 											typename="#webskinTypename#", 
@@ -129,8 +167,8 @@
 									) />
 									
 	
-									<cfif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template], hash("#stResult.webskinCacheID#"))>
-										<cfset stCacheWebskin = application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template]["#hash('#stResult.webskinCacheID#')#"] />
+									<cfif structKeyExists(stCacheEntry.stWebskins[arguments.template], hash("#stResult.webskinCacheID#"))>
+										<cfset stCacheWebskin = stCacheEntry.stWebskins[arguments.template]["#hash('#stResult.webskinCacheID#')#"] />
 									</cfif>								
 									
 								</cfif>
@@ -258,7 +296,6 @@
 							</cfif>
 						</cfif>
 					</cfif>
-				</cflock>
 			
 			</cfif>
 			
@@ -426,6 +463,7 @@
 		<cfargument name="stCurrentView" required="true" type="struct">
 		
 		<cfset var webskinHTML = "" />
+		<cfset var stCacheEntry = structNew() />
 		<cfset var bAdded = "false" />
 		<cfset var stCacheWebskin = structNew() />
 		<cfset var hashString = "" />
@@ -454,10 +492,11 @@
 			<cfelseif len(arguments.HTML)>
 				<cfif structKeyExists(application.stcoapi[webskinTypename].stWebskins, arguments.template) >
 					<cfif application.stcoapi[webskinTypename].bObjectBroker AND application.stcoapi[webskinTypename].stWebskins[arguments.template].cacheStatus EQ 1>
-						<cfif structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)>
-							<cflock name="objectBroker-#application.applicationname#-#arguments.typename#" type="exclusive" timeout="2" throwontimeout="true">
-								<cfif not structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")>
-									<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins = structNew() />
+						<cfset stCacheEntry = GetObjectCacheEntry(ObjectID=arguments.objectid,typename=arguments.typename)>
+						<cfif structKeyExists(stCacheEntry, "stobj")>
+							<!--- Cache hit --->
+								<cfif not structKeyExists(stCacheEntry, "stWebskins")>
+									<cfset stCacheEntry.stWebskins = structNew() />
 								</cfif>			
 								
 								<!--- Add the current State of the request.inHead scope into the broker --->
@@ -478,11 +517,10 @@
 															) />
 								
 																
-								<cfset application.objectbroker[arguments.typename][arguments.objectid].stWebskins[arguments.template][hash("#stCacheWebskin.webskinCacheID#")] = stCacheWebskin />
+								<cfset stCacheEntry.stWebskins[arguments.template][hash("#stCacheWebskin.webskinCacheID#")] = stCacheWebskin />
 
 																
 								<cfset bAdded = true />
-							</cflock>
 						</cfif>
 					</cfif>
 				</cfif>
@@ -499,15 +537,17 @@
 		<cfargument name="template" required="true" type="string">
 		
 		<cfset var bSuccess = "true" />
+		<cfset var stCacheEntry = structNew() />
 		
 		
 		<cfif application.bObjectBroker>
 		
 			<cfif len(arguments.typename) AND structKeyExists(application.objectbroker, arguments.typename)>
 				<cfif structKeyExists(application.objectbroker[arguments.typename], arguments.objectid)>
-					<cfif structKeyExists(application.objectbroker[arguments.typename][arguments.objectid], "stWebskins")>
+					<cfset stCacheEntry = GetObjectCacheEntry(ObjectID=arguments.objectid,typename=arguments.typename)>
+					<cfif structKeyExists(stCacheEntry, "stWebskins")>
 						<cflock name="objectBroker-#application.applicationname#-#arguments.typename#" type="exclusive" timeout="2" throwontimeout="true">
-							<cfset structDelete(application.objectbroker[arguments.typename][arguments.objectid].stWebskins, arguments.template) />
+							<cfset structDelete(stCacheEntry.stWebskins, arguments.template) />
 						</cflock>
 					</cfif>
 				</cfif>
@@ -519,41 +559,80 @@
 		
 	</cffunction>
 	
+	<cffunction name="putObjectCacheEntry" access="public" output="true" returntype="boolean">
+		<cfargument name="stCacheEntry" required="true" type="struct">
+		<cfargument name="objectid" required="true" type="UUID">
+		<cfargument name="typename" required="true" type="string">
+				
+		<cfif structkeyexists(application.objectbroker, arguments.typename)>	
+			<!--- Create a soft reference to the cache entry and put it in the object broker --->
+			<cftry>
+				<cfset application.objectbroker[arguments.typename][arguments.objectid] =
+						createObject("java", "java.lang.ref.SoftReference").init(arguments.stCacheEntry, application.objectrecycler) />
+				<cfreturn true />
+				<!--- An expression error likely a race condition (ie. not structkeyexists(application.objectbroker, arguments.typename)) --->
+				<cfcatch type="expression" />
+			</cftry>
+		</cfif>
+		<cfreturn false />
+	</cffunction>
 	
 	
 	<cffunction name="AddToObjectBroker" access="public" output="true" returntype="boolean">
 		<cfargument name="stObj" required="yes" type="struct">
 		<cfargument name="typename" required="true" type="string">
 		
+		<cfset var bSuccess = false />
+		<cfset var stCacheEntry = structNew() />
+		
 		<cfif application.bObjectBroker>
 			<!--- if the type is to be stored in the objectBroker --->
 			<cfif structkeyexists(arguments.stObj, "objectid") AND structkeyexists(application.objectbroker, arguments.typename)>
+				<!--- Prepare a cache entry --->
+				<cfset stCacheEntry.stObj = duplicate(arguments.stObj) /> 
+				<cfset stCacheEntry.stWebskins = structNew() />
+				
 				<cflock name="objectBroker-#application.applicationname#-#arguments.typename#" type="exclusive" timeout="2" throwontimeout="true">
-					<!--- Create a key in the types object broker using the object id --->
-					<cfset application.objectbroker[arguments.typename][arguments.stObj.objectid] = structNew() />
-					
-					<!--- Add the stobj into the new key. --->
-					<cfset application.objectbroker[arguments.typename][arguments.stObj.objectid].stobj = duplicate(arguments.stObj) />
-					
-					<!--- Prepare for any webskins that may be placed in the object broker --->
-					<cfset application.objectbroker[arguments.typename][arguments.stObj.objectid].stWebskins = structNew() />
-					
-					<!--- Add the objectid to the end of the FIFO array so we know its the latest to be added --->
-					<cfset arrayappend(application.objectbroker[arguments.typename].aObjects,arguments.stObj.ObjectID)>
+					<cfif putObjectCacheEntry(stCacheEntry=stCacheEntry, objectid=arguments.stObj.objectid, typename=arguments.typename)>
+						<!--- Add the objectid to the end of the FIFO array so we know its the latest to be added --->
+						<cfset arrayappend(application.objectbroker[arguments.typename].aObjects,arguments.stObj.ObjectID)>
+						<cfset bSuccess = true />
+					</cfif>
 				</cflock>
 				
-				<!--- Cleanup the object broker just in case we have reached our limit of objects as defined by the metadata. --->
-				<cfset cleanupObjectBroker(typename=arguments.typename)>
-				<cfreturn true>
-			<cfelse>
-				<cfreturn false>
+				<cfif bSuccess>
+					<!--- Cleanup the object broker just in case we have reached our limit of objects as defined by the metadata. --->
+					<cfset cleanupObjectBroker(typename=arguments.typename)>
+				</cfif>
 			</cfif>
-		<cfelse>
-			<cfreturn false>
 		</cfif>
+		<cfreturn bSuccess />
 	</cffunction>
 	
+	<cffunction name="reapDeadEntriesFromBroker" access="public" output="false" returntype="void" hint="Cleans out soft references to recycled objects in the object broker.">
 		
+		<cfset var objRef = StructNew() />
+		<cfset var stCacheEntry = StructNew() />
+		
+		<cfif application.bObjectBroker>
+			<!--- Poll the object recycler for a soft reference to an object recycled by the garbage collector --->
+			<cfset objRef = application.objectrecycler.poll() />
+			
+			<cfloop condition="#isDefined("objRef")#">
+				<!--- We got a soft reference: try to grab the contained object --->
+				<cfset stCacheEntry = objRef.get() />
+				<!--- Is the inner object still available with objectid and typename values? --->
+				<cfif IsDefined("stCacheEntry") and StructKeyExists(stCacheEntry,"stobj")
+						and StructKeyExists(stCacheEntry.stobj,"objectid") and StructKeyExists(stCacheEntry.stObj,"typename")>
+					<!--- Delete any references to the object in the broker --->
+					<cfset RemoveFromObjectBroker(lObjectIDs=stObj.objectID,typename=stObj.typename) />
+				</cfif>
+				
+				<!--- Poll the object recycler for another soft reference --->
+				<cfset objRef = application.objectrecycler.poll() />
+			</cfloop>
+		</cfif>
+	</cffunction>
 	
 	<cffunction name="CleanupObjectBroker" access="public" output="false" returntype="void" hint="Removes 10% of the items in the object broker if it is full.">
 		<cfargument name="typename" required="yes" type="string">
@@ -564,6 +643,9 @@
 		<cfset var objectToDelete = "" />
 		
 		<cfif application.bObjectBroker>
+			<!--- Reap any recycled entries first. If we're lucky we might not need to evict any objects still present in the cache. --->
+			<cfset reapDeadEntriesFromBroker() />
+			
 			<cfif arraylen(application.objectbroker[arguments.typename].aObjects) GT application.objectbroker[arguments.typename].maxObjects>
 				
 				<cfset numberToRemove =  Round(application.objectbroker[arguments.typename].maxObjects / 10) />
