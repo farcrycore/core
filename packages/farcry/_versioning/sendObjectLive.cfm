@@ -104,7 +104,7 @@ $out:$
 			arguments.stDraftObject.versionID = "";
 			arguments.stDraftObject.dateTimeLastUpdated = createODBCDateTime(Now());
 			arguments.stDraftObject.dateTimeCreated = createODBCDateTime(arguments.stDraftObject.dateTimeCreated);
-			o.setData(stProperties=arguments.stDraftObject,auditNote='Draft version sent live');
+			o.setData(stProperties=arguments.stDraftObject,auditNote='Draft version sent live',previousStatus="draft");
 			
 			stResult.result = true;
 			stResult.message = 'Update Successful';

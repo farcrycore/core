@@ -84,7 +84,7 @@ START WEBSKIN
 			</ft:fieldHint>
 		</ft:field>
 		
-		<ft:field label="Alternative">
+		<ft:field label="Alternative" bMultiField="true">
 		
 			<cfset bHasOthers = false />
 			<cfloop query="qFUCurrent">

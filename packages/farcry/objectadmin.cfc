@@ -406,7 +406,18 @@ environment references (might be nice to clean these up)
 			stBut.permission=application.security.checkPermission(permission="Create",type=attributes.permissionset);
 			stBut.buttontype="add";
 			arrayAppend(aDefaultButtons,stBut);
-
+		
+		// Copy button
+			stBut=structNew();
+			stBut.type="button";
+			stBut.name="copy";
+			stBut.value="Copy";
+			stBut.class="f-submit";
+			stBut.onClick="";
+			stBut.permission=application.security.checkPermission(permission="Create",type=attributes.permissionset) and application.security.checkPermission(permission="Edit",type=attributes.permissionset);
+			stBut.buttontype="copy";
+			arrayAppend(aDefaultButtons,stBut);
+		
 		// delete object(s)
 			stBut=structNew();
 			stBut.type="button";

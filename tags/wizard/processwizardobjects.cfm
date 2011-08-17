@@ -380,7 +380,9 @@
 							
 				<cfset "Caller.#attributes.r_stProperties#.#i#" = stResult.Value>
 				
-				<cfif ftFieldMetadata.ftType eq "array">
+					
+				
+				<cfif ftFieldMetadata.Type eq "array">
 					<cfloop list="#structKeyList(stFields)#" index="j">
 						<cfif structKeyExists(stFields[j].metadata, "ftType") AND structKeyExists(stFields[j].metadata, "ftArrayField") AND stFields[j].metadata.ftType EQ "arrayList" AND stFields[j].metadata.ftArrayField EQ i>
 						
@@ -397,7 +399,7 @@
 		
 		</cfif>
 	</cfloop>
-	
+		
 	<cfif structKeyExists(FORM,"#ProcessingFormObjectPrefix#typename")>
 		<cfset "Caller.#attributes.r_stProperties#.typename" = Evaluate("FORM['#ProcessingFormObjectPrefix#typename']")>
 	</cfif>

@@ -131,15 +131,30 @@
 		<cfset comparisonmap["gt"] = ">" />
 		<cfset comparisonmap["gte"] = ">=" />
 		
+		
 		<!--- Add argument based filters to filter array --->
 		<cfparam name="arguments.aFilters" default="#arraynew(1)#" />
 		<cfloop collection="#arguments#" item="thisargument">
 			<cfif refindnocase("_(eq|neq|gt|gte|lt|lte|in|notin|like|isnull)$",thisargument)>
-				<cfset arrayappend(arguments.aFilters,struct(
-						property=listdeleteat(thisargument,listlen(thisargument,'_'),'_'),
-						filter=listlast(thisargument,'_'),
-						value=arguments[thisargument])
-				) />
+				<cfif listcontainsnocase("categories_in,categories_eq",thisargument) and not structkeyexists(application.stCOAPI[arguments.typename].stProps,"categories")>
+					<!--- Convert generic category filters (categories_eq, categories_in) to specific filters --->
+					<cfloop collection="#application.stCOAPI[arguments.typename].stProps#" item="thisproperty">
+						<cfif application.stCOAPI[arguments.typename].stProps[thisproperty].metadata.fttype eq "category">
+							<cfset arrayappend(arguments.aFilters,struct(
+									property=thisproperty,
+									filter=listlast(thisargument,'_'),
+									value=arguments[thisargument])
+							) />
+							<cfbreak />
+						</cfif>
+					</cfloop>
+				<cfelse>
+					<cfset arrayappend(arguments.aFilters,struct(
+							property=listdeleteat(thisargument,listlen(thisargument,'_'),'_'),
+							filter=listlast(thisargument,'_'),
+							value=arguments[thisargument])
+					) />
+				</cfif>
 			</cfif>
 		</cfloop>
 		
@@ -2296,7 +2311,7 @@
 	
 		<cfloop list="#arguments.lTypes#" index="typeName">
 			
-			<cfif structKeyExists(application.stCoapi[typeName],"bObjectBroker") AND application.stCoapi[typeName].bObjectBroker>
+			<cfif structkeyexists(application.stCOAPI,typename) AND structKeyExists(application.stCoapi[typeName],"bObjectBroker") AND application.stCoapi[typeName].bObjectBroker>
 			
 				<cfset application.objectbroker[typeName] = structNew() />
 				<cfset application.objectbroker[typeName].aObjects = arrayNew(1) />

@@ -87,11 +87,12 @@ $out:$
 	<cfif structkeyexists(astObj[1],"status")>
 		<cfoutput>
 		<script type="text/javascript">	
-		function deSelectAll()
+		function deSelectAll(allapprovers)
 		{
-			if(document.form.lApprovers[0].checked = true){
-				for(var i = 1;i < document.form.lApprovers.length;i++)
-					document.form.lApprovers[i].checked = false;
+			if(allapprovers.checked = true){
+				$j('input[name=lApprovers]').each(function(index){
+					if (index>0) this.checked = false;
+				});
 			}
 			return true;
 		}
@@ -112,11 +113,11 @@ $out:$
 				
 				<cfif url.status eq "requestApproval" and structcount(stApprovers)>
 					<ft:field label="Notify Approvers" bMultiField="true">
-						<input type="checkbox" onclick="if(this.checked)deSelectAll();" name="lApprovers" value="all" checked="checked"> #application.rb.getResource("workflow.fields.requestApprovalFrom@allApprovers","All approvers")#<br />
+						<input type="checkbox" onclick="if(this.checked)deSelectAll(this);" name="lApprovers" value="all" checked="checked" id="allapprovers"> #application.rb.getResource("workflow.fields.requestApprovalFrom@allApprovers","All approvers")#<br />
 						<!--- loop over approvers and display ones that have email profiles --->
 						<cfloop collection="#stApprovers#" item="item">
 						    <cfif stApprovers[item].emailAddress neq "" AND stApprovers[item].bReceiveEmail and stApprovers[item].userName neq application.security.isLoggedIn()>
-								<input type="checkbox" name="lApprovers" onclick="if(this.checked)document.form.lApprovers[0].checked = false;" value="#stApprovers[item].userName#"><cfif len(stApprovers[item].firstName) gt 0> #stApprovers[item].firstName# #stApprovers[item].lastName#<cfelse>#stApprovers[item].userName#</cfif><br />
+								<input type="checkbox" name="lApprovers" onclick="if(this.checked) $j('input[name=lApprovers]')[0].checked = false;" value="#stApprovers[item].userName#"><cfif len(stApprovers[item].firstName) gt 0> #stApprovers[item].firstName# #stApprovers[item].lastName#<cfelse>#stApprovers[item].userName#</cfif><br />
 							</cfif>
 						</cfloop>
 						

@@ -39,6 +39,12 @@
 	</cfif>
 </cfif>
 
+<!--- archive friendly urls --->
+<cfset qFU = application.fc.factory.farFU.getFUList(objectid=stObj.objectid) />
+<cfloop query="qFU">
+	<cfset application.fc.factory.farFU.archiveFU(objectid=qFU.objectid) />
+</cfloop>
+
 <!--- if this objecttype is used in tree, then it may have been used as a tree Item  --->
 <cfif structKeyExists(application.types[stObj.typename],"bUseInTree")>
 	

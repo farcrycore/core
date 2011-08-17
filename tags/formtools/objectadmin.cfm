@@ -43,6 +43,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <skin:loadJS id="farcry-form" />
 <skin:loadJS id="jquery-ui" />
 <skin:loadCSS id="jquery-ui" />
+<skin:loadCSS id="objectadmin-ie7" />
 
 
 <cfif thistag.executionMode eq "Start">
@@ -111,6 +112,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 
 
 <cfparam name="attributes.editMethod" default="edit" type="string">
+<cfparam name="attributes.copyMethod" default="copy" type="string">
 
 <cfparam name="attributes.PackageType" default="types" type="string">
 
@@ -123,6 +125,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 
 <cfparam name="attributes.rbkey" default="coapi.#attributes.typename#.objectadmin" />
 <cfparam name="attributes.addUrlParams" default="#structnew()#" /><!--- if any extra params need to be passed into the add screen need to a struct e.g paramStruct.parentid='whatever'--->
+<cfparam name="attributes.copyUrlParams" default="#structnew()#" /><!--- if any extra params need to be passed into the copy screen need to a struct e.g paramStruct.parentid='whatever'--->
 <cfparam name="attributes.editUrlParams" default="#structnew()#" /><!--- if any extra params need to be passed into the edit screen need to a struct e.g paramStruct.parentid='whatever'--->
 
 <!--- Convert attributes.lCustomColumns to array of structs --->
@@ -394,18 +397,32 @@ user --->
 	PROCESS THE FORM
 	 ------------------------>
 	
-	<cfset addURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=#application.fc.utils.createJavaUUID()#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module#" />
+	<!--- Various URLs --->
+	<cfif Len(attributes.plugin)>
+		<cfset pluginURL = "&plugin=#attributes.plugin#" /><!--- we need this when using a plugin like farcrycms, to be able to redirect back to the plugin object admin instead of the project or core object admin --->
+	</cfif>
 	
-	<!--- if any extra params need to be passed into the add screen --->
+	<cfset addURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=#application.fc.utils.createJavaUUID()#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module##pluginURL#" />
 	<cfif not structIsEmpty(attributes.addUrlParams)>
 		<cfloop collection="#attributes.addUrlParams#" item="key">
 			<cfset addURL="#addURL#&#key#=#attributes.addUrlParams[key]#">
 		</cfloop>
 	</cfif>	
 	
-	<cfif Len(attributes.plugin)>
-		<cfset addURL = addURL&"&plugin=#attributes.plugin#" />
-		<cfset pluginURL = "&plugin=#attributes.plugin#" /><!--- we need this when using a plugin like farcrycms, to be able to redirect back to the plugin object admin instead of the project or core object admin --->
+	<cfif structkeyexists(form,"objectid")>
+		<cfset EditURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=#listfirst(form.objectid)#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module##pluginURL#">
+		<cfif not structIsEmpty(attributes.editUrlParams)>
+			<cfloop collection="#attributes.editUrlParams#" item="key">
+				<cfset EditURL="#EditURL#&#key#=#attributes.editUrlParams[key]#">
+			</cfloop>
+		</cfif>	
+		
+		<cfset copyURL = '#application.url.webtop#/conjuror/invocation.cfm?objectid=#listfirst(form.objectid)#&typename=#attributes.typename#&method=#attributes.copyMethod#&ref=iframe&module=#attributes.module##pluginURL#&editURL=#urlencodedformat(editURL)#' />
+		<cfif not structIsEmpty(attributes.copyUrlParams)>
+			<cfloop collection="#attributes.copyUrlParams#" item="key">
+				<cfset copyURL="#copyURL#&#key#=#attributes.copyUrlParams[key]#">
+			</cfloop>
+		</cfif>
 	</cfif>
 	
 	<ft:processForm action="add">
@@ -416,32 +433,25 @@ user --->
 		</skin:onReady>
 	</ft:processForm>
 	
-	
-	
-	<ft:processForm action="overview">
-		<!--- TODO: Check Permissions. --->
-		<cfset EditURL = "#application.url.farcry#/edittabOverview.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module#">
-		<cfif Len(attributes.plugin)><cfset EditURL = EditURL&"&plugin=#attributes.plugin#"></cfif>
+	<ft:processForm action="copy">
 		<skin:onReady>
 			<cfoutput>
-				$fc.objectAdminAction('Administration', '#EditURL#');
+				$fc.objectAdminAction('Administration', '#copyURL#');
 			</cfoutput>
 		</skin:onReady>
 	</ft:processForm>
 	
+	<ft:processForm action="overview">
+		<!--- TODO: Check Permissions. --->
+		<cfset overviewURL = "#application.url.farcry#/edittabOverview.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module##pluginURL#">
+		<skin:onReady>
+			<cfoutput>
+				$fc.objectAdminAction('Administration', '#overviewURL#');
+			</cfoutput>
+		</skin:onReady>
+	</ft:processForm>
 	
 	<ft:processForm action="edit">
-	
-		<!--- TODO: Check Permissions. --->
-		<cfset EditURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=#form.objectid#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module#">
-		<!--- if any extra params need to be passed into the add screen --->
-		<cfif not structIsEmpty(attributes.editUrlParams)>
-			<cfloop collection="#attributes.editUrlParams#" item="key">
-				<cfset EditURL="#EditURL#&#key#=#attributes.editUrlParams[key]#">
-			</cfloop>
-		</cfif>	
-		
-		<cfif Len(attributes.plugin)><cfset EditURL = EditURL&"&plugin=#attributes.plugin#"></cfif>
 		<skin:onReady>
 			<cfoutput>
 				$fc.objectAdminAction('Administration', '#EditURL#');
@@ -1047,8 +1057,12 @@ user --->
 		<cfset editURL = listAppend(editURL,'plugin=#attributes.plugin#', '&') />
 	</cfif>	
 	
-	<cfset createDraftURL = "#application.url.farcry#/navajo/createDraftObject.cfm?ref=iframe">
-
+	<cfset createDraftURL = "#application.url.farcry#/navajo/createDraftObject.cfm?ref=iframe&method=#attributes.editMethod#">
+	<cfif not structIsEmpty(attributes.editUrlParams)>
+		<cfloop collection="#attributes.editUrlParams#" item="key">
+			<cfset createDraftURL="#createDraftURL#&#key#=#attributes.editUrlParams[key]#">
+		</cfloop>
+	</cfif>	
 
 	
 	<skin:onReady id="object-admin-actions">
