@@ -661,7 +661,8 @@
 					<cfset arrayappend(aChanges,createChange(action="repairColumn",schema=arguments.stDiff.newMetadata,propertyname=arguments.propertyname)) />
 				</cfcase>
 				<cfcase value="-">
-					<cfset arrayappend(aChanges,createChange(action="dropColumn",schema=arguments.stDiff.newMetadata,propertyname=arguments.propertyname)) />
+					<!--- Don't drop columns by default. Code left in place as a reference. --->
+					<!--- <cfset arrayappend(aChanges,createChange(action="dropColumn",schema=arguments.stDiff.newMetadata,propertyname=arguments.propertyname)) /> --->
 				</cfcase>
 			</cfswitch>
 		<cfelseif structkeyexists(arguments,"indexname")>
@@ -693,7 +694,8 @@
 					</cfloop>
 				</cfcase>
 				<cfcase value="-">
-					<cfset arrayappend(aChanges,createChange(action="dropSchema",schema=arguments.stDiff.oldMetadata)) />
+					<!--- Don't drop tables by default. Code left in place as a reference. --->
+					<!--- <cfset arrayappend(aChanges,createChange(action="dropSchema",schema=arguments.stDiff.oldMetadata)) /> --->
 				</cfcase>
 			</cfswitch>
 		</cfif>
