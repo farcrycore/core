@@ -21,7 +21,21 @@
 			</cfif>
 		</cfif>	
 
+		<cfif not isdefined("application.fcstats.objectbroker") or not isobject(application.fcstats.objectbroker)>
+			<cfparam name="application.fcstats" default="#structnew()#" />
+			<cfset application.fcstats.objectbroker = createObject("component","farcry.core.packages.lib.objectBrokerStats").init() />
+		</cfif>
+
 		<cfreturn this />
+	</cffunction>
+	
+	<cffunction name="trackObjectEvent" output="false" returntype="void">
+		<cfargument name="eventname" type="string" required="true" />
+		<cfargument name="typename" type="string" required="true" />
+		<cfargument name="objectid" type="string" required="true" />
+		
+		<!---<cflog file="broker" type="information" text="Event:#arguments.eventname# Type:#arguments.typename# OID:#arguments.objectid#" />--->		
+		<cfset application.fcstats.objectbroker.trackObjectEvent(argumentCollection=arguments) />
 	</cffunction>
 	
 	<cffunction name="configureType" access="public" output="false" returntype="boolean">
@@ -40,7 +54,7 @@
 		<cfreturn bResult />
 	</cffunction>
 	
-	<cffunction name="GetObjectCacheEntry" access="private" output="false" returntype="struct" hint="Get an object's cache entry in the object broker">
+	<cffunction name="GetObjectCacheEntry" access="public" output="false" returntype="struct" hint="Get an object's cache entry in the object broker">
 		<cfargument name="ObjectID" required="yes" type="UUID">
 		<cfargument name="typename" required="true" type="string">
 		
@@ -65,16 +79,20 @@
 			</cftry>
 			<cfif not isDefined("stCacheEntry")>
 				<!--- Soft reference is empty: cache entry must have been recycled --->
-				<cfset stCacheEntry.bDead = true /> 
+				<cfset stCacheEntry.bDead = true />
+				<cfset trackObjectEvent(eventname="nullhit",typename=arguments.typename,objectid=arguments.objectid) /> 
 				<cftrace type="warning" category="coapi" var="arguments.typename" text="Broker recycled reference hit.">
 			<cfelseif structKeyExists(stCacheEntry,"stobj")>
 				<!--- Cache hit --->
+				<cfset trackObjectEvent(eventname="hit",typename=arguments.typename,objectid=arguments.objectid) />
 				<cftrace type="information" category="coapi" var="stobj.typename" text="Broker object cache hit.">
 			<cfelse>
 				<!--- Cache miss: entry was snatched from right under our nose!--->
+				<cfset trackObjectEvent(eventname="miss",typename=arguments.typename,objectid=arguments.objectid) />
 			</cfif>
 		<cfelse>
 			<!--- Cache miss --->
+			<cfset trackObjectEvent(eventname="miss",typename=arguments.typename,objectid=arguments.objectid) />
 		</cfif>
 		<cfreturn stCacheEntry>
 	</cffunction>
@@ -601,6 +619,7 @@
 				</cflock>
 				
 				<cfif bSuccess>
+					<cfset trackObjectEvent(eventname="add",typename=arguments.typename,objectid=arguments.stObj.objectid) />
 					<!--- Cleanup the object broker just in case we have reached our limit of objects as defined by the metadata. --->
 					<cfset cleanupObjectBroker(typename=arguments.typename)>
 				</cfif>
@@ -625,7 +644,7 @@
 				<cfif IsDefined("stCacheEntry") and StructKeyExists(stCacheEntry,"stobj")
 						and StructKeyExists(stCacheEntry.stobj,"objectid") and StructKeyExists(stCacheEntry.stObj,"typename")>
 					<!--- Delete any references to the object in the broker --->
-					<cfset RemoveFromObjectBroker(lObjectIDs=stObj.objectID,typename=stObj.typename) />
+					<cfset RemoveFromObjectBroker(lObjectIDs=stObj.objectID, typename=stObj.typename, eventName="reap") />
 				</cfif>
 				
 				<!--- Poll the object recycler for another soft reference --->
@@ -654,7 +673,7 @@
 						<cfset lRemoveObjectIDs = listAppend(lRemoveObjectIDs, application.objectbroker[arguments.typename].aObjects[i]) />			
 					</cfloop>
 					
-					<cfset removeFromObjectBroker(lObjectIDs=lRemoveObjectIDs, typename=arguments.typename) />
+					<cfset removeFromObjectBroker(lObjectIDs=lRemoveObjectIDs, typename=arguments.typename, eventName="evict") />
 				</cfif>
 				
 				
@@ -665,8 +684,9 @@
 	
 	<cffunction name="RemoveFromObjectBroker" access="public" output="true" returntype="void">
 		<cfargument name="lObjectIDs" required="true" type="string">
-		<cfargument name="typename" required="true" type="string" default="">
-		
+		<cfargument name="typename" required="true" type="string">
+		<cfargument name="eventName" required="false" type="string" default="flush" hint="Name of event that triggered the removal {flush,reap,evict}">
+			
 		<cfset var aObjectIds = arrayNew(1) />
 		<cfset var oWebskinAncestor = application.fapi.getContentType("dmWebskinAncestor") />						
 		<cfset var qWebskinAncestors = queryNew("blah") />
@@ -714,7 +734,11 @@
 						</cfdefaultcase>
 					</cfswitch>					
 				</cflock>
-					
+				
+				<!--- Track the trigger event for each object ID passed in --->
+				<cfloop list="#arguments.lObjectIDs#" index="i">
+					<cfset trackObjectEvent(eventname=arguments.eventName,typename=arguments.typename,objectid=i) />	
+				</cfloop>
 			</cfif>
 		</cfif>
 	</cffunction>

@@ -15,7 +15,9 @@ function TypeOf(x) {
    if( listFindNoCase( structKeyList( GetFunctionList() ), "isXMLDoc" ) AND
 isXMLDoc(x)) return "xml";
    // Trick the explorer into thinking references are structures and dereference them as needed
-   if(isObject(x) and isInstanceOf(x,"java.lang.ref.Reference")) return "structure";
+   if(isObject(x) and (isInstanceOf(x,"java.lang.ref.Reference") or isInstanceOf(x,"java.util.concurrent.atomic.AtomicInteger"))) {
+       return "structure";
+   }
    
    return "unknown";  
 }
