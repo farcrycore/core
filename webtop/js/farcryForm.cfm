@@ -789,10 +789,10 @@ function setRowBackground (childCheckbox) {
 			},
 			statusupdate: function(property) {
 				var nbrSelections = userselection.length;
-				var statusText = '<div id="OKMsg">' + nbrSelections + ' items selected.</div>';
+				var statusText = '<div class="ui-state-highlight ui-corner-all">' + nbrSelections + ' items selected.</div>';
 			
 				if(nbrSelections == 0) {
-					statusText = '<div id="errorMsg">No items have been selected.</div>';
+					statusText = '<div class="ui-state-error ui-corner-all">No items have been selected.</div>';
 				}
 				
 				$j('##librarySummary-' + typename + '-' + property).html(statusText);

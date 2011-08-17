@@ -38,7 +38,7 @@
 	<ft:form>				
 	<cfoutput>
 	<!-- summary pod with green arrow -->
-	<div class="summary-pod" style="width:99%;">
+	<div class="summary-pod" style="width:99%;margin-bottom: 10px;">
 		<span id="librarySummary-#stobj.typename#-#url.property#" style="text-align:center;width:100%;"><p>&nbsp;</p></span>
 		
 		<cfset formAction = application.fapi.getLink(type='#stobj.typename#', objectid='#stobj.objectid#', view='displayLibrarySelected', urlParameters="property=#url.property#&ajaxmode=1") />

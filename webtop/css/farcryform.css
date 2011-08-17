@@ -33,10 +33,11 @@
 	.uniForm .buttonHolder { 
 		text-align: right; 
 		margin:5px 0 10px 0;
-		padding:5px 10px 5px 10px;
+		padding:5px 10px 0px 10px;
 		background: -webkit-gradient(linear,left bottom,left top,color-stop(1,#F0F0F0),color-stop(0,#E8E8E8));
 		background: -moz-linear-gradient(center top,#F0F0F0,#E8E8E8);
 	}
+	
 	/*
 	.uniForm .ctrlHolder.array .buttonHolder {
 		padding:5px 10px 5px 164px;
