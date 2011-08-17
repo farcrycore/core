@@ -33,7 +33,7 @@
 			
 			<cfoutput>
 				<script type="text/javascript">
-				if (parent.$fc.objectAdminActionDiv === undefined) {
+				if (parent.$fc === undefined || parent.$fc.objectAdminActionDiv === undefined) {
 					location = "#url.returnto#";
 				} else {
 					parent.$fc.objectAdminActionDiv.dialog('close');
@@ -49,7 +49,7 @@
 				if(parent['sidebar'].frames['sideTree'])
 					parent['sidebar'].frames['sideTree'].location= parent['sidebar'].frames['sideTree'].location;
 				
-				if (parent.$fc.objectAdminActionDiv === undefined) {
+				if (parent.$fc === undefined || parent.$fc.objectAdminActionDiv === undefined) {
 					location = "#url.returnto#";
 				} else {
 					parent.$fc.objectAdminActionDiv.dialog('close');

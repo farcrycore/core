@@ -159,7 +159,7 @@ START WEBSKIN
 					<!--- check user can approve object --->
 					<cfif stOverviewParams.stPermissions.iApprove eq 1 OR stOverviewParams.stPermissions.iApproveOwn EQ 1>
 						<ft:button 	value="Send content item live"
-									text="PUBLISH<br>Approve content item"
+									text="PUBLISH<br>Approve content"
 									title="Approve content item"
 									class="secondary"
 									rbkey="workflow.buttons.sendlive" 
@@ -266,16 +266,23 @@ START WEBSKIN
 								<cfif stOverviewParams.stPermissions.iDelete eq 1>
 									<cfif structkeyexists(stobj,"versionid") and len(stObj.versionid)>
 										<cfset returnto = "returnto=#urlencodedformat('#cgi.script_name#?objectid=#stObj.versionid#&ref=#url.ref#')#" />
+										<ft:button 	value="Delete"
+													text="DISCARD<br>Only draft version"
+													title="Discard this draft version."
+													class="secondary"   
+													rbkey="workflow.buttons.delete" 
+													url="navajo/delete.cfm?ObjectId=#stobj.objectId#&#returnto#&ref=#url.ref#" 
+													confirmText="Are you sure you wish to discard this draft version? The approved version will remain." />
 									<cfelse>
 										<cfset returnto = "" />
+										<ft:button 	value="Delete"
+													text="DELETE<br>Delete Content Item."
+													title="Delete Content Item."
+													class="secondary"   
+													rbkey="workflow.buttons.delete" 
+													url="navajo/delete.cfm?ObjectId=#stobj.objectId#&#returnto#&ref=#url.ref#" 
+													confirmText="Are you sure you wish to delete this content item?" />
 									</cfif>
-									<ft:button 	value="Delete"
-												text="DELETE<br>Delete Content Item."
-												title="Delete Content Item."
-												class="secondary"   
-												rbkey="workflow.buttons.delete" 
-												url="navajo/delete.cfm?ObjectId=#stobj.objectId#&#returnto#&ref=#url.ref#" 
-												confirmText="Are you sure you wish to delete this content item?" />
 								</cfif>
 							</cfif>
 					</cfif>
