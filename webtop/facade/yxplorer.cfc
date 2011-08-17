@@ -14,6 +14,8 @@ function TypeOf(x) {
    if(isBoolean(x)) return "boolean";
    if( listFindNoCase( structKeyList( GetFunctionList() ), "isXMLDoc" ) AND
 isXMLDoc(x)) return "xml";
+   // Trick the explorer into thinking references are structures and dereference them as needed
+   if(isObject(x) and isInstanceOf(x,"java.lang.ref.Reference")) return "structure";
    
    return "unknown";  
 }
@@ -21,10 +23,14 @@ isXMLDoc(x)) return "xml";
 
 
 	<cffunction name="getScope" returntype="array" access="private" >
-		<cfargument name="object" required="true" type="struct">
+		<cfargument name="object" required="true" type="any">
 		<cfset var myCollection = structNew()>
 		<cfset var myResult = arrayNew(1)>
 		<cfset var counter = 0>
+		<!--- If the object is really a reference, return a reference scope --->
+		<cfif isObject(object) and isInstanceOf(object,"java.lang.ref.Reference")>
+			<cfreturn getReference(object)>
+		</cfif>
 		<cfloop collection="#object#" item="key">
 			<cfset counter = counter + 1>
 			<cfset myResult[counter] = structNew()>
@@ -44,6 +50,28 @@ isXMLDoc(x)) return "xml";
 	<cffunction name="getSql" returntype="array" access="private" >
 		<cfargument name="q" required="true" type="query">	
 		<cfreturn toArray(q)>
+	</cffunction>
+
+	<cffunction name="getReference" returntype="array" access="private" >
+		<cfargument name="ref" required="true" type="any">
+		<cfset var myResult = arrayNew(1)>	
+		<cfset var target = ref.get()>
+		<cfset myResult[1] = StructNew()>
+		<cfif IsDefined("target")>
+			<cfset myResult[1].Label = "*">
+			<cfset myResult[1].Type = typeof(target)>
+			<cfif IsSimpleValue(target)>
+				<cfset myResult[1].value = target>
+			<cfelse>
+				<cfset myResult[1].value = "complex">
+			</cfif>
+		<cfelse>
+			<!--- Reference is empty --->
+			<cfset myResult[1].Label = "Null">
+			<cfset myResult[1].Type = "unknown">
+			<cfset myResult[1].value = "Null">
+		</cfif>
+		<cfreturn myResult>
 	</cffunction>
 	
 	<cffunction name="flashDGFormat" returntype="array" output="false" access="public">
@@ -92,7 +120,12 @@ isXMLDoc(x)) return "xml";
 		<cfset isroot = true>
 		<cfloop list="#inScope#" delimiters="." index="scope">
 				<cfif not isroot>
-					<cfset fString = fString &"['#scope#']">
+					<cfif scope is "*">
+						<!--- Java reference object: add .get() call to dereference --->
+						<cfset fString = fString & ".get()">
+					<cfelse>
+						<cfset fString = fString &"['#scope#']">
+					</cfif>
 				<cfelse>
 					<cfset fString = scope>
 					<cfset isroot = false>
@@ -125,16 +158,16 @@ isXMLDoc(x)) return "xml";
 		<cfset toReturn = evaluate(scope)>
 		<cfswitch expression="#typeOf(toReturn)#">
 			<cfcase value="query">
-				<cfset myRes.DATA = queryToArray(evaluate(scope))>
+				<cfset myRes.DATA = queryToArray(toReturn)>
 			</cfcase>
 			<cfcase value="array">
-				<cfset myRes.DATA = flashDGFormat(evaluate(scope))>
+				<cfset myRes.DATA = flashDGFormat(toReturn)>
 			</cfcase>
 			<cfcase value="custom function">
-				<cfset myRes.DATA = getFunction(evaluate(scope))>
+				<cfset myRes.DATA = getFunction(toReturn)>
 			</cfcase>
 			<cfdefaultcase>
-				<cfset myRes.DATA = getScope(evaluate(scope))>
+				<cfset myRes.DATA = getScope(toReturn)>
 			</cfdefaultcase>
 
 		</cfswitch>
