@@ -34,9 +34,8 @@
 		text-align: right; 
 		margin:5px 0 10px 0;
 		padding:5px 10px 5px 10px;
-		/* border: 1px solid #7eaadc; */
-		/* border-width: 1px 0px 0px 0px; */
-		/* background: #DAE3F0 none; */
+		background: -webkit-gradient(linear,left bottom,left top,color-stop(1,#F0F0F0),color-stop(0,#E8E8E8));
+		background: -moz-linear-gradient(center top,#F0F0F0,#E8E8E8);
 	}
 	/*
 	.uniForm .ctrlHolder.array .buttonHolder {

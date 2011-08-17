@@ -413,6 +413,7 @@ function setRowBackground (childCheckbox) {
 								
 								$j("body").prepend(fcDialog);
 								$j("html").css('overflow', 'hidden');
+								$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '0.3');
 								$j(fcDialog).dialog({
 									bgiframe: true,
 									modal: true,
@@ -421,6 +422,7 @@ function setRowBackground (childCheckbox) {
 									height: h,
 									close: function(event, ui) {
 										$j("html").css('overflow', 'auto');
+										$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '1');
 										$j(fcDialog).dialog( 'destroy' );
 										$j(fcDialog).remove();
 									}
@@ -442,6 +444,7 @@ function setRowBackground (childCheckbox) {
 		var newDialogDiv = $j("<div><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0'></iframe></div>");
 		$j("body").prepend(newDialogDiv);
 		$j("html").css('overflow', 'hidden');
+		$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '0.3');
 		$j(newDialogDiv).dialog({
 			bgiframe: true,
 			modal: true,
@@ -457,6 +460,7 @@ function setRowBackground (childCheckbox) {
 			},
 			close: function(event, ui) {
 				$j("html").css('overflow', 'auto');
+				$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '1');
 				fcForm.refreshProperty(typename,objectid,property,id);
 				$j(newDialogDiv).dialog( 'destroy' );
 				$j(newDialogDiv).remove();
@@ -473,6 +477,7 @@ function setRowBackground (childCheckbox) {
 		var filterTypename = $j('##' + id + '-add-type').val();
 		$j("body").prepend(newDialogDiv);
 		$j("html").css('overflow', 'hidden');
+		$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '0.3');
 		$j(newDialogDiv).dialog({
 			bgiframe: true,
 			modal: true,
@@ -484,6 +489,7 @@ function setRowBackground (childCheckbox) {
 			height: $j(window).height()-50,
 			close: function(event, ui) {
 				$j("html").css('overflow', 'auto');
+				$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '1');
 				fcForm.refreshProperty(typename,objectid,property,id);
 				$j(newDialogDiv).dialog( 'destroy' );
 				$j(newDialogDiv).remove();
@@ -499,7 +505,8 @@ function setRowBackground (childCheckbox) {
 	fcForm.openLibraryEdit = function(typename,objectid,property,id,editid) {
 		var newDialogDiv = $j("<div id='" + typename + objectid + property + "'><iframe style='width:100%;height:100%;border-width:0px;' frameborder='0'></iframe></div>")
 		$j("body").prepend(newDialogDiv);
-		$j("html").css('overflow', 'hidden');		
+		$j("html").css('overflow', 'hidden');	
+		$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '0.3');	
 		$j(newDialogDiv).dialog({
 			bgiframe: true,
 			modal: true,
@@ -511,6 +518,7 @@ function setRowBackground (childCheckbox) {
 			height: $j(window).height()-50,
 			close: function(event, ui) {
 				$j("html").css('overflow', 'auto');
+				$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '1');
 				fcForm.refreshProperty(typename,objectid,property,id);
 				$j(newDialogDiv).dialog( 'destroy' );
 				$j(newDialogDiv).remove();
@@ -716,6 +724,7 @@ function setRowBackground (childCheckbox) {
 				$fc.objectAdminActionDiv = $j("<div><iframe style='width:100%;height:99%;' frameborder='0'></iframe></div>");
 				$j("body").prepend($fc.objectAdminActionDiv);
 				$j("html").css('overflow', 'hidden');
+				$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '0.3');
 				$j($fc.objectAdminActionDiv).dialog({
 					bgiframe: true,
 					modal: true,
@@ -726,6 +735,7 @@ function setRowBackground (childCheckbox) {
 					height: $j(window).height()-50,
 					close: function(event, ui) {
 						$j("html").css('overflow', 'auto');
+						$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '1');
 						window.location = window.location.href.split("##")[0];
 					}
 				});
@@ -811,6 +821,167 @@ function setRowBackground (childCheckbox) {
 			return true;
 		}
 	});	
+		
+		
+	<!--- AUTOSELECT FUNCTIONS --->
+	$fc.uuidSelect = function(el,ui) {
+		var $wrapper = $j(el).parent('.wrapper');
+		var $elValue = $wrapper.find('.value').first();
+		var id = ui.item ? ui.item.id : "";
+		var label = ui.item ? ui.item.label : "";
+			
+
+		
+		if(id != ""){		
+			el.attr('value',label);	
+	       	$elValue.attr('value',id);				
+		}
+		
+		$j.ajax({
+			type: "POST",
+			cache: false,
+			url: '/index.cfm?ajaxmode=1&type=' + $wrapper.attr('ft:typename') + '&objectid=' + $wrapper.attr('ft:objectid') + '&view=ajaxRunMethod', 
+			//context: $j(this),
+			error: function(data){	
+				alert('change unsuccessful. Please refresh the page.');
+			},
+			complete: function(){
+				
+			},
+			data: {
+				method:'updateBOM',
+				property: $wrapper.attr('ft:property'),
+				value: $elValue.attr('value')
+			},
+			dataType: "html",
+			timeout: 2000
+		});						
+		
+		
+		return false;	
+	};
+	
+
+		<!--- 
+		$j("###arguments.fieldname#Clear").button({
+            icons: {
+                primary: 'ui-icon-minus'
+            },
+            text: false
+        }).click(function() {
+        	$j("###arguments.fieldname#").attr('value','');
+			$j("###arguments.fieldname#Entry").attr('value','');
+			
+
+			$j.ajax({
+				type: "POST",
+				cache: false,
+				url: '/index.cfm?ajaxmode=1&type=exoBOM&objectid=#stobj.objectid#&view=ajaxRunMethod', 
+				context: $j(this),
+				success: function(data){
+					<!--- if ($j(this).is('input')) {
+						$j(this).val(data);
+					} --->
+				}, 
+				error: function(data){	
+					alert('change unsuccessful. Please refresh the page.');
+				},
+				complete: function(){
+					
+				},
+				data: {
+					method:'updateBOM',
+					property: 'productID',
+					value: $j("###arguments.fieldname#").attr('value')
+				},
+				dataType: "html",
+				timeout: 2000
+			});						
+						
+        }); --->
+
+	
+		$j('.edit-uuid').live('click', function(event) { 
+			
+			var libraryObjectID = $j(this).parent('.wrapper').find('input.value').attr('value');
+			var $wrapper = $j(this).parent('.wrapper');
+			
+			var newDialogDiv = $j("<div id='dialog'><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0'></iframe></div>");
+			$j("body").prepend(newDialogDiv);
+			$j("html").css('overflow', 'hidden');
+			$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '0.3');
+			$j(newDialogDiv).dialog({
+				bgiframe: true,
+				modal: true,
+				title:'Edit',
+				draggable:false,
+				resizable:false,
+				width: '90%',
+				height: $j(window).height()-50,
+				close: function(event, ui) {
+					$j("html").css('overflow', 'auto');
+					$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '1');
+					$j(newDialogDiv).dialog( 'destroy' );
+					$j(newDialogDiv).remove();
+					$j.ajax({
+						type: "POST",
+						cache: false,
+			 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + $wrapper.attr('ft:typename') + '&objectid=' + $wrapper.attr('ft:objectid') + '&view=displayAjaxRefreshJoinProperty' + '&property=' + $wrapper.attr('ft:property'),
+					 	success: function(msg){
+							$wrapper.html(msg);
+							//fcForm.initSortable(typename,objectid,property,id);	
+					   	},
+						data:{},
+						dataType: "html"
+					});
+				}
+				
+			});
+			$j(newDialogDiv).dialog('open');
+			$j('iframe',$j(newDialogDiv)).attr('src','#application.fapi.getWebroot()#/index.cfm?view=displayPageAdmin&bodyView=edit&objectid=' + libraryObjectID);
+					 
+		});
+
+	
+		$j('.open-uuid-library').live('click', function(event) { 
+
+			var $wrapper = $j(this).parent('.wrapper');
+			
+			var newDialogDiv = $j("<div id='dialog'><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0'></iframe></div>");
+			$j("body").prepend(newDialogDiv);
+			$j("html").css('overflow', 'hidden');
+			$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '0.3');
+			$j(newDialogDiv).dialog({
+				bgiframe: true,
+				modal: true,
+				title:'Edit',
+				draggable:false,
+				resizable:false,
+				width: '90%',
+				height: $j(window).height()-50,
+				close: function(event, ui) {
+					$j("html").css('overflow', 'auto');
+					$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '1');
+					$j(newDialogDiv).dialog( 'destroy' );
+					$j(newDialogDiv).remove();
+					$j.ajax({
+						type: "POST",
+						cache: false,
+			 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + $wrapper.attr('ft:typename') + '&objectid=' + $wrapper.attr('ft:objectid') + '&view=displayAjaxRefreshJoinProperty' + '&property=' + $wrapper.attr('ft:property'),
+					 	success: function(msg){
+							$wrapper.html(msg);
+							//fcForm.initSortable(typename,objectid,property,id);	
+					   	},
+						data:{},
+						dataType: "html"
+					});
+				}
+				
+			});
+			$j(newDialogDiv).dialog('open');
+			$j('iframe',$j(newDialogDiv)).attr('src','#application.fapi.getWebroot()#/index.cfm?type=' + $wrapper.attr('ft:typename') + '&objectid=' + $wrapper.attr('ft:objectid') + '&view=displayLibraryTabs' + '&property=' + $wrapper.attr('ft:property'));
+				 
+		});		
 		
 
 
