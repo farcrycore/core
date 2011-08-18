@@ -67,6 +67,8 @@
 	<cfproperty name="ftLimitMin" required="false" default="" hint="Use with ftLimit to define a range of acceptable characters" />
 	<cfproperty name="ftLimitOverage" required="false" default="truncate" hint="Character limiter method: truncate (default) - truncates user input, warn - notifies user of excess data" />
 	<cfproperty name="ftLimitWarning" required="false" default="You have exceeded the maximum character limit for this field" hint="Warning message" />
+	<cfproperty name="ftIncludeWrap" required="false" default="true" hint="Include the div wrappers required for a standard form. Turn off if you wish to handle your own layout." />
+	<cfproperty name="ftAutoResize" required="false" default="false" hint="Should the textarea use jquery autoresize to resize to comfortable " />
 		
 	<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 	
@@ -94,6 +96,12 @@
 		<cfparam name="arguments.stMetadata.ftLimitWarning" default="You have exceeded the maximum number of characters">
 		<cfparam name="arguments.stMetadata.ftLimitMin" default="">
 	
+		<cfif isBoolean(arguments.stMetadata.ftAutoresize) AND arguments.stMetadata.ftAutoresize>
+			<skin:loadJS id="jquery" />
+			<skin:loadJS id="jquery-autoresize" />
+			<cfset arguments.stMetadata.ftClass = listAppend(arguments.stMetadata.ftAutoresize, "autoresize", " ")>
+		</cfif>
+	
 		<cfif CGI.HTTP_USER_AGENT contains "MSIE" or CGI.HTTP_USER_AGENT contains "gecko">
 			<cfset bIsGoodBrowser = "1">
 		<cfelse>
@@ -105,8 +113,6 @@
 			<skin:htmlHead>
 				<cfoutput>
 					<script language="javascript">
-						<!--  to hide script contents from old browsers
-
 						function UpdateCounter_#arguments.fieldname#(FormName, FieldName) {
 						
 							counter = (window.document.forms[FormName][FieldName].value.length);
@@ -173,7 +179,7 @@
 							
 							}
 						}
-						// end hiding contents from old browsers  -->
+						
 					</script>
 				</cfoutput>
 			</skin:htmlHead>
@@ -193,9 +199,16 @@
 			<!--- Place custom code here! --->
 			
 			<cfoutput>
-				<div class="multiField">
+				<cfif arguments.stMetadata.ftIncludeWrap>
+					<div class="multiField">
+				</cfif>
+				
 					<div id="#arguments.fieldname#DIV" style="#fieldStyle#;">
-						<div class="blockLabel">
+						
+						<cfif arguments.stMetadata.ftIncludeWrap>
+							<div class="blockLabel">
+						</cfif>
+						
 						<cfif isBoolean(arguments.stMetadata.ftLimit) and arguments.stMetadata.ftLimit>							
 							<cfset onKeyUp = "javascript:UpdateCounter_#arguments.fieldname#('#request.farcryForm.name#', '#arguments.FieldName#')" />
 							<cfset onKeyDown = "javascript:UpdateCounter_#arguments.fieldname#('#request.farcryForm.name#', '#arguments.FieldName#')" />
@@ -207,16 +220,24 @@
 								<p style="clear:both;" id="dm_ct_Text_#arguments.fieldname#"><input id="dm_ct_countDown_#arguments.fieldname#" disabled type="text" name="counter" size="#len(arguments.stMetadata.ftLimit)#" value="#arguments.stMetadata.ftLimit# characters Max">/#arguments.stMetadata.ftLimit#</p>
 							</cfif>
 							<script type="text/javascript">
-							<!--  to hide script contents from old browsers
+							
 								UpdateCounter_#arguments.fieldname#('#request.farcryForm.name#','#arguments.FieldName#');
-							// end hiding contents from old browsers  -->
+							
 							</script>
 						<cfelse>
 							<textarea name="#arguments.fieldname#" id="#arguments.fieldname#" class="textareaInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" onkeyup="#onKeyUp#" onkeydown="#onKeyDown#">#arguments.stMetadata.value#</textarea>
 						</cfif>
-						</div>
+						
+						<cfif arguments.stMetadata.ftIncludeWrap>
+							</div>
+						</cfif>
+						
 					</div>
-				</div>
+					
+				<cfif arguments.stMetadata.ftIncludeWrap>
+					</div>
+				</cfif>
+				
 			</cfoutput>
 			
 		</cfsavecontent>

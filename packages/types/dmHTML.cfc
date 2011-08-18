@@ -51,6 +51,7 @@ type properties
 	ftSeq="5" ftwizardStep="Start" ftFieldset="SEO" ftLabel="Keyword Tag(s)"
 	ftHint="Keep it simple and relevant: 10-20 keywords per page. Limited to 900 characters including spaces."
 	ftType="longchar" ftLimit="900"
+	ftAutoResize="true"
 	fthelptitle="Search Engine Optimization" 
 	ftHelpSection="The keywords and description that you enter here will provide search engines with extra information that describes your page. Remember that a good SEO strategy is much more than just a good description and keywords.">
 	
@@ -58,11 +59,13 @@ type properties
 	name="extendedmetadata" type="longchar" hint="HTML head section for extended keywords." required="no" default=""
 	ftSeq="6" ftwizardStep="Start" ftFieldset="SEO" ftlabel="Description Tag"
 	ftHint="Concise summary of the page, with an upper limit 170 characters, including spaces."
-	ftLimit="170" />
+	ftLimit="170"
+	ftAutoResize="true" />
 
 <cfproperty 
 	name="Teaser" type="longchar" hint="Teaser text." required="no" default=""
-	ftSeq="10" ftwizardStep="Body" ftFieldset="Teaser">
+	ftSeq="10" ftwizardStep="Body" ftFieldset="Teaser"
+	ftAutoResize="true">
 	
 <cfproperty 
 	name="teaserImage" type="uuid" ftType="uuid" hint="UUID of image to display in teaser" required="no" default=""

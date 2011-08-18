@@ -228,4 +228,6 @@
 		padding-left: 0;
 	}	
 	
-	
+	.uniForm .textareaInput.autoresize {
+		height: 40px;
+	}

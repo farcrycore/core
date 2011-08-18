@@ -133,3 +133,10 @@
 .uniForm input[type="password"] {
 	font-size: 12px;
 }
+
+
+
+a.ui-datepicker-next-hover,
+a.ui-datepicker-prev-hover {
+	background-color:transparent;
+}
