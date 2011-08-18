@@ -90,7 +90,7 @@ FARCRY INCLUDE FILES
 </skin:htmlHead>
 
 <cfoutput>
-<table class="layout" style="width:100%;padding:5px;table-layout:fixed;">
+<table class="layout" style="width:100%;padding:5px;table-layout:fixed;margin-bottom:10px;">
 <tr>
 	<td style="width:35px;"><skin:icon icon="#application.stCOAPI[stobj.typename].icon#" size="32" default="farcrycore" alt="#uCase(application.fapi.getContentTypeMetadata(stobj.typename,'displayname',stobj.typename))#" /></td>
 	<td style="width:50%;vertical-align:center;"><h1 style="text-align:left;">#stobj.label#</h1></td>
