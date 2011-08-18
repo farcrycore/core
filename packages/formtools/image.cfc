@@ -542,7 +542,7 @@
 		    			}
 			    		
 			    		imageformtool.inputs.newf.uploadify({
-				    		'buttonText'	: 'Select File',
+				    		'buttonImg'		: '#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4//selectImage.png',
 							'uploader'  	: '#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4/uploadify.swf',
 							'script'    	: url,
 							'checkScript'	: url+"/check/1",
@@ -713,7 +713,7 @@
 					<div id="#arguments.fieldname#-multiview">
 						<cfif arguments.stMetadata.ftAllowUpload>
 					    	<div id="#arguments.fieldname#_upload" class="upload-view" style="display:none;">
-				    			<a href="##traditional" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle">&nbsp;</span></a>
+				    			<a href="##traditional" class="fc-btn select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle">&nbsp;</span></a>
 								<div style="margin-left:15px">
 						    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
 						    		<div id="#arguments.fieldname#_uploaderror" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
@@ -722,7 +722,7 @@
 						    	</div>
 							</div>
 					    	<div id="#arguments.fieldname#_traditional" class="traditional-view" style="display:none;">
-				    			<a href="##back" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle">&nbsp;</span></a>
+				    			<a href="##back" class="fc-btn select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle">&nbsp;</span></a>
 					    		<div style="margin-left:15px">
 						    		<input type="file" name="#arguments.fieldname#TRADITIONAL" id="#arguments.fieldname#TRADITIONAL" />
 						    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
@@ -802,7 +802,7 @@
 					<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="false" />
 					<div id="#arguments.fieldname#-multiview">
 				    	<div id="#arguments.fieldname#_upload" class="upload-view"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
-				    		<a href="##traditional" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle">&nbsp;</span></a>
+							<a href="##traditional" class="fc-btn select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle">&nbsp;</span></a>
 							<div style="margin-left:15px">
 					    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
 					    		<div id="#arguments.fieldname#_uploaderror" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
@@ -811,7 +811,7 @@
 					    	</div>
 						</div>
 				    	<div id="#arguments.fieldname#_traditional" class="traditional-view" style="display:none;">
-				    		<a href="##back" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle">&nbsp;</span></a>
+				    		<a href="##back" class="fc-btn select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle">&nbsp;</span></a>
 							<div style="margin-left:15px">
 					    		<input type="file" name="#arguments.fieldname#TRADITIONAL" id="#arguments.fieldname#TRADITIONAL" />
 					    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
@@ -1063,8 +1063,10 @@
 						</div>
 						<div class="uniForm image-crop-actions">
 							<ft:buttonPanel>
-								<cfif url.allowcancel><a href="##" id="image-crop-cancel" style="padding-right:10px;">Cancel</a></cfif>
 								<ft:button value="Crop and Resize" id="image-crop-finalize" onclick="$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').finalizeCrop();return false;" />
+								<cfif url.allowcancel>
+									<a href="##" id="image-crop-cancel" style="padding-right:10px;">Cancel</a>
+								</cfif>
 							</ft:buttonPanel>
 						</div>
 					</div>
