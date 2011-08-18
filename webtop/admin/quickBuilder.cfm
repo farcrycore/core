@@ -221,7 +221,9 @@ $out:$
 	<!------------------- 
 	THE FORM
 	 --------------------->
-	
+		<skin:loadJS id="jquery" />
+		<skin:loadJS id="jquery-autoresize" />
+		
 	    <cfset o = createObject("component", "#application.packagepath#.farcry.tree") />
 	    <cfset qNodes = o.getDescendants(dsn=application.dsn, objectid=application.navid.root) />
 		
@@ -243,7 +245,7 @@ $out:$
 				
 				<ft:field label="#application.rb.getResource("quickbuilder.labels.structure@label","Structure")#">
 					<cfoutput>
-						<textarea name="structure" id="structure" class="textareaInput"></textarea>
+						<textarea name="structure" id="structure" class="textareaInput autoresize"></textarea>
 					</cfoutput>
 					
 					<ft:fieldHint>
