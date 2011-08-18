@@ -46,6 +46,7 @@ FARCRY INCLUDE FILES
 <cfoutput>
 <style type="text/css">
 	.draft {
+		float:right;
 		outline: none;
 		color: ##000;
 		border: 1px solid ##595959;
@@ -57,6 +58,7 @@ FARCRY INCLUDE FILES
 		padding:5px 10px 5px 10px ;
 	}
 	.pending {
+		float:right;
 		outline: none;
 		color: ##000;
 		border: 1px solid ##8f6e09;
@@ -68,6 +70,7 @@ FARCRY INCLUDE FILES
 		padding:5px 10px 5px 10px ;
 	}
 	.approved {
+		float:right;
 		outline: none;
 		color: ##000;
 		border: 1px solid ##0e7109;
