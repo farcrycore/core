@@ -61,8 +61,6 @@ Matt Dawson (mad@daemon.com.au)
 	<CFHEADER NAME="Expires" VALUE="Tue, 01 Jan 1985 00:00:01 GMT">
 	<CFHEADER NAME="Pragma" VALUE="no-cache">
 	<CFHEADER NAME="cache-control" VALUE="no-cache, no-store, must-revalidate">
-	
-	<cfhtmlhead text='<META HTTP-EQUIV="Expires" CONTENT="Tue, 01 Jan 1985 00:00:01 GMT" /><META HTTP-EQUIV="cache-control" CONTENT="no-cache, no-store, must-revalidate" /><!-- Page cached until: not cached -->'>
 <cfelse>
 	<cfset gmt = gettimezoneinfo() />
 	<cfset gmt = gmt.utcHourOffset />
@@ -79,7 +77,6 @@ Matt Dawson (mad@daemon.com.au)
 	<cfset dateString = "#DateFormat( dateTo, 'DDD, DD MMM YYYY' )# #TimeFormat( dateTo, 'HH:mm:ss' )# GMT#gmt#" />
 	
 	<CFHEADER NAME="Cache-Control" VALUE="max-age=#totalseconds#,s-maxage=#totalseconds#">
-	<cfhtmlhead text='<META HTTP-EQUIV="Cache-Control" CONTENT="max-age=#totalseconds#,s-maxage=#totalseconds#" /><!-- Page cached until: #dateString# (#totalseconds# seconds) -->'>
 </cfif>
 
 <cfsetting enablecfoutputonly="No">
