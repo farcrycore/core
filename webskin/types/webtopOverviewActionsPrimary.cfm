@@ -101,8 +101,6 @@ START WEBSKIN
 <cfparam name="url.ref" default="overview" />
 
 
-		
-
 	<cfif isBoolean(stobj.locked) AND stobj.locked>
 		<cfset stLockedBy = application.fapi.getContentType("dmProfile").getProfile(stobj.lockedby) />
 		
@@ -213,9 +211,10 @@ START WEBSKIN
 						<cfset buttonValue = application.rb.getResource("sendBackToDraft") />
 						<cfif structKeyExists(stobj,"versionID") AND bHasDraft>
 							<ft:button 	value="Send this content item back to draft (deleting the draft version)" 
-										text="UNPUBLISH<br>Send To Draft."
-										title="Send To Draft."
-										class="secondary"
+										text="<h1>UNPUBLISH</h1>Send To Draft"
+										title="Send To Draft"
+										class="primary"
+										priority="primary"
 										rbkey="workflow.buttons.sendbacktodraftdeletedraft" 
 										url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=draft&typename=#stobj.typeName#&ref=#url.ref#"
 										confirmText="This will delete the currently underlying draft version. Are you sure you wish to continue?" />
@@ -268,7 +267,7 @@ START WEBSKIN
 										<cfset returnto = "returnto=#urlencodedformat('#cgi.script_name#?objectid=#stObj.versionid#&ref=#url.ref#')#" />
 										<ft:button 	value="Delete"
 													text="DISCARD<br>Only draft version"
-													title="Discard this draft version."
+													title="Discard this draft version"
 													class="secondary"   
 													rbkey="workflow.buttons.delete" 
 													url="navajo/delete.cfm?ObjectId=#stobj.objectId#&#returnto#&ref=#url.ref#" 
@@ -276,8 +275,8 @@ START WEBSKIN
 									<cfelse>
 										<cfset returnto = "" />
 										<ft:button 	value="Delete"
-													text="DELETE<br>Delete Content Item."
-													title="Delete Content Item."
+													text="DELETE<br>Delete Content Item"
+													title="Delete Content Item"
 													class="secondary"   
 													rbkey="workflow.buttons.delete" 
 													url="navajo/delete.cfm?ObjectId=#stobj.objectId#&#returnto#&ref=#url.ref#" 
@@ -292,14 +291,15 @@ START WEBSKIN
 					
 					<cfif stOverviewParams.stPermissions.iApprove eq 1> <!--- check user can approve object --->
 						<ft:button 	value="Send content item live" 
-									text="PUBLISH<br>Send content item live."
-									title="Send content item live."
-									class="secondary"  
+									text="<h1>PUBLISH</h1>Send content item live"
+									title="Send content item live"
+									class="primary"  
+									priority="primary"  
 									rbkey="workflow.buttons.sendlive" 
 									url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=approved&ref=#url.ref#" />
 						<!--- send back to draft --->
 						<ft:button 	value="Send this content item back to draft"
-									text="REJECT<br>Send back to draft."
+									text="REJECT<br>Send back to draft"
 									title="Send back to draft."
 									class="secondary"   
 									rbkey="workflow.buttons.sendbacktodraft" 
@@ -313,8 +313,8 @@ START WEBSKIN
 						<!--- check user can delete --->
 						<cfif stOverviewParams.stPermissions.iDelete eq 1>
 							<ft:button 	value="Delete"  
-										text="DELETE<br>Delete this content item."
-										title="Delete this content item."
+										text="DELETE<br>Delete this content item"
+										title="Delete this content item"
 										class="secondary"   
 										rbkey="workflow.buttons.delete" 
 										url="navajo/delete.cfm?ObjectId=#stobj.objectId#&typename=#stobj.typeName#&ref=#url.ref#" 
@@ -328,8 +328,8 @@ START WEBSKIN
 			<!--- check user can delete --->
 			<cfif stOverviewParams.stPermissions.iDelete eq 1>
 				<ft:button 	value="Delete" 
-							text="DELETE<br>Delete this content item."
-							title="Delete this content item."
+							text="DELETE<br>Delete this content item"
+							title="Delete this content item"
 							class="secondary"   
 							rbkey="workflow.buttons.delete" 
 							url="navajo/delete.cfm?ObjectId=#stobj.objectId#&typename=#stobj.typeName#&ref=#url.ref#" 
@@ -385,7 +385,6 @@ START WEBSKIN
 					rbkey="workflow.buttons.close" 
 					onClick="parent.$fc.objectAdminActionDiv.dialog('close');" />
 	</cfif>
-	
 
 <cfsetting enablecfoutputonly="false">
 
