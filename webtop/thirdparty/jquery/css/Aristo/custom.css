@@ -99,8 +99,8 @@
 	outline: none;
 	color: #193759; 
 	border-color: #7096ab;
-	background: -webkit-gradient( linear, left bottom, left top, color-stop(1, #E6EFF9), color-stop(0, #8DABD9) );
-	background: -moz-linear-gradient( center top , #E6EFF9, #8DABD9	);
+	background: -webkit-gradient( linear, left bottom, left top, color-stop(1, #CBDAEF), color-stop(0, #8DABD9) );
+	background: -moz-linear-gradient( center top , #CBDAEF, #8DABD9	);
 }
 .ui-state-default.ui-button.ui-priority-secondary
 .ui-button.ui-priority-secondary {
