@@ -48,11 +48,11 @@ FARCRY INCLUDE FILES
 	.draft {
 		float:right;
 		outline: none;
-		color: ##000;
+		color: ##fff;
 		border: 1px solid ##595959;
-		background: -webkit-gradient(linear,left bottom,left top,color-stop(1,##bebebe),color-stop(0,##9f9f9f));
+		background: -webkit-gradient(linear,left bottom,left top,color-stop(1,##D52D2D),color-stop(0,##cc0000));
 		font-weight: bold;
-		text-shadow: 0 1px 0 ##b0b0b0;
+		text-shadow: 0 1px 0 ##000;
 		font-size: 14px;
 		<!--- -webkit-border-radius: 3px; --->
 		padding:5px 10px 5px 10px ;
@@ -87,6 +87,13 @@ FARCRY INCLUDE FILES
 	.approved a {
 		background:transparent;
 		text-shadow: none;
+		color:##fff;
+	}
+	
+	.draft a:hover,
+	.pending a:hover,
+	.approved a:hover {
+		color:##eee;
 	}
 </style>
 </cfoutput>
@@ -96,7 +103,7 @@ FARCRY INCLUDE FILES
 <table class="layout" style="width:100%;padding:5px;table-layout:fixed;margin-bottom:10px;">
 <tr>
 	<td style="width:35px;"><skin:icon icon="#application.stCOAPI[stobj.typename].icon#" size="32" default="farcrycore" alt="#uCase(application.fapi.getContentTypeMetadata(stobj.typename,'displayname',stobj.typename))#" /></td>
-	<td style="width:50%;vertical-align:center;"><h1 style="text-align:left;">#stobj.label#</h1></td>
+	<td style="vertical-align:center;"><h1 style="text-align:left;">#stobj.label#</h1></td>
 	<td>
 
 		<!--- CONTENT ITEM STATUS --->
