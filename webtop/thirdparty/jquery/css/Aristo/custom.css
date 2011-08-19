@@ -84,6 +84,7 @@
 /* PRIMARY BUTTONS
 ----------------------------------*/
 .ui-priority-primary, .ui-widget-content .ui-priority-primary, .ui-widget-header .ui-priority-primary { border: 1px solid #9D9D9D; font-weight: normal; color: #313131; }
+.ui-priority-secondary, .ui-widget-content .ui-priority-secondary,  .ui-widget-header .ui-priority-secondary { opacity: 1; filter:Alpha(Opacity=100); font-weight: normal; }
 
 .ui-priority-primary .ui-icon {background-image: url(images/ui-icons_454545_256x240.png); }	
 	
