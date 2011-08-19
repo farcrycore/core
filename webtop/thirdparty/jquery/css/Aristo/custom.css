@@ -95,6 +95,14 @@
 	background: -moz-linear-gradient( center top , #efefef, #e0e0e0	);
 }
 
+.ui-state-active, .ui-widget-content .ui-state-active, .ui-widget-header .ui-state-active {	
+	outline: none;
+	color: #193759; 
+	border-color: #7096ab;
+	background: -webkit-gradient( linear, left bottom, left top, color-stop(1, #CBDAEF), color-stop(0, #8DABD9) );
+	background: -moz-linear-gradient( center top , #CBDAEF, #8DABD9	);
+}
+
 .ui-state-default.ui-button.ui-priority-primary {
 	outline: none;
 	color: #193759; 
@@ -139,4 +147,16 @@
 a.ui-datepicker-next-hover,
 a.ui-datepicker-prev-hover {
 	background-color:transparent;
+}
+
+
+
+.ui-dialog.nested {
+	border:1px solid #ddd;
+	-webkit-box-shadow: none;
+	   -moz-box-shadow: none;
+	        box-shadow: none;
+}
+.ui-dialog.nested .ui-dialog-titlebar {
+	opacity: 0.2;
 }

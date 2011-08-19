@@ -413,7 +413,7 @@ function setRowBackground (childCheckbox) {
 								
 								$j("body").prepend(fcDialog);
 								$j("html").css('overflow', 'hidden');
-								$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '0.3');
+								$j("div.ui-dialog", parent.document.body).addClass('nested');
 								$j(fcDialog).dialog({
 									bgiframe: true,
 									modal: true,
@@ -422,7 +422,7 @@ function setRowBackground (childCheckbox) {
 									height: h,
 									close: function(event, ui) {
 										$j("html").css('overflow', 'auto');
-										$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '1');
+										$j("div.ui-dialog", parent.document.body).removeClass('nested');
 										$j(fcDialog).dialog( 'destroy' );
 										$j(fcDialog).remove();
 									}
@@ -444,7 +444,7 @@ function setRowBackground (childCheckbox) {
 		var newDialogDiv = $j("<div><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0'></iframe></div>");
 		$j("body").prepend(newDialogDiv);
 		$j("html").css('overflow', 'hidden');
-		$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '0.3');
+		$j("div.ui-dialog", parent.document.body).addClass('nested');
 		$j(newDialogDiv).dialog({
 			bgiframe: true,
 			modal: true,
@@ -460,7 +460,7 @@ function setRowBackground (childCheckbox) {
 			},
 			close: function(event, ui) {
 				$j("html").css('overflow', 'auto');
-				$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '1');
+				$j("div.ui-dialog", parent.document.body).removeClass('nested');
 				fcForm.refreshProperty(typename,objectid,property,id);
 				$j(newDialogDiv).dialog( 'destroy' );
 				$j(newDialogDiv).remove();
@@ -477,7 +477,7 @@ function setRowBackground (childCheckbox) {
 		var filterTypename = $j('##' + id + '-add-type').val();
 		$j("body").prepend(newDialogDiv);
 		$j("html").css('overflow', 'hidden');
-		$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '0.3');
+		$j("div.ui-dialog", parent.document.body).addClass('nested');
 		$j(newDialogDiv).dialog({
 			bgiframe: true,
 			modal: true,
@@ -489,7 +489,7 @@ function setRowBackground (childCheckbox) {
 			height: $j(window).height()-50,
 			close: function(event, ui) {
 				$j("html").css('overflow', 'auto');
-				$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '1');
+				$j("div.ui-dialog", parent.document.body).removeClass('nested');
 				fcForm.refreshProperty(typename,objectid,property,id);
 				$j(newDialogDiv).dialog( 'destroy' );
 				$j(newDialogDiv).remove();
@@ -506,7 +506,7 @@ function setRowBackground (childCheckbox) {
 		var newDialogDiv = $j("<div id='" + typename + objectid + property + "'><iframe style='width:100%;height:100%;border-width:0px;' frameborder='0'></iframe></div>")
 		$j("body").prepend(newDialogDiv);
 		$j("html").css('overflow', 'hidden');	
-		$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '0.3');	
+		$j("div.ui-dialog", parent.document.body).addClass('nested');	
 		$j(newDialogDiv).dialog({
 			bgiframe: true,
 			modal: true,
@@ -518,7 +518,7 @@ function setRowBackground (childCheckbox) {
 			height: $j(window).height()-50,
 			close: function(event, ui) {
 				$j("html").css('overflow', 'auto');
-				$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '1');
+				$j("div.ui-dialog", parent.document.body).removeClass('nested');
 				fcForm.refreshProperty(typename,objectid,property,id);
 				$j(newDialogDiv).dialog( 'destroy' );
 				$j(newDialogDiv).remove();
@@ -724,7 +724,7 @@ function setRowBackground (childCheckbox) {
 				$fc.objectAdminActionDiv = $j("<div><iframe style='width:100%;height:99%;' frameborder='0'></iframe></div>");
 				$j("body").prepend($fc.objectAdminActionDiv);
 				$j("html").css('overflow', 'hidden');
-				$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '0.3');
+				$j("div.ui-dialog", parent.document.body).addClass('nested');
 				$j($fc.objectAdminActionDiv).dialog({
 					bgiframe: true,
 					modal: true,
@@ -735,7 +735,7 @@ function setRowBackground (childCheckbox) {
 					height: $j(window).height()-50,
 					close: function(event, ui) {
 						$j("html").css('overflow', 'auto');
-						$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '1');
+						$j("div.ui-dialog", parent.document.body).removeClass('nested');
 						window.location = window.location.href.split("##")[0];
 					}
 				});
@@ -909,7 +909,7 @@ function setRowBackground (childCheckbox) {
 			var newDialogDiv = $j("<div id='dialog'><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0'></iframe></div>");
 			$j("body").prepend(newDialogDiv);
 			$j("html").css('overflow', 'hidden');
-			$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '0.3');
+			$j("div.ui-dialog", parent.document.body).addClass('nested');
 			$j(newDialogDiv).dialog({
 				bgiframe: true,
 				modal: true,
@@ -920,7 +920,7 @@ function setRowBackground (childCheckbox) {
 				height: $j(window).height()-50,
 				close: function(event, ui) {
 					$j("html").css('overflow', 'auto');
-					$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '1');
+					$j("div.ui-dialog", parent.document.body).removeClass('nested');
 					$j(newDialogDiv).dialog( 'destroy' );
 					$j(newDialogDiv).remove();
 					$j.ajax({
@@ -950,7 +950,7 @@ function setRowBackground (childCheckbox) {
 			var newDialogDiv = $j("<div id='dialog'><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0'></iframe></div>");
 			$j("body").prepend(newDialogDiv);
 			$j("html").css('overflow', 'hidden');
-			$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '0.3');
+			$j("div.ui-dialog", parent.document.body).addClass('nested');
 			$j(newDialogDiv).dialog({
 				bgiframe: true,
 				modal: true,
@@ -961,7 +961,7 @@ function setRowBackground (childCheckbox) {
 				height: $j(window).height()-50,
 				close: function(event, ui) {
 					$j("html").css('overflow', 'auto');
-					$j("div.ui-dialog-titlebar", parent.document.body).css('opacity', '1');
+					$j("div.ui-dialog", parent.document.body).removeClass('nested');
 					$j(newDialogDiv).dialog( 'destroy' );
 					$j(newDialogDiv).remove();
 					$j.ajax({
