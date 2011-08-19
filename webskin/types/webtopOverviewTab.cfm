@@ -56,6 +56,7 @@ FARCRY INCLUDE FILES
 		font-size: 14px;
 		<!--- -webkit-border-radius: 3px; --->
 		padding:5px 10px 5px 10px ;
+		text-align:center;
 	}
 	.pending {
 		float:right;
@@ -68,6 +69,7 @@ FARCRY INCLUDE FILES
 		font-size: 14px;
 		<!--- -webkit-border-radius: 3px; --->
 		padding:5px 10px 5px 10px ;
+		text-align:center;
 	}
 	.approved {
 		float:right;
@@ -80,6 +82,7 @@ FARCRY INCLUDE FILES
 		font-size: 14px;
 		<!--- -webkit-border-radius: 3px; --->
 		padding:5px 10px 5px 10px ;
+		text-align:center;
 	}
 	
 	.draft a,
@@ -115,10 +118,11 @@ FARCRY INCLUDE FILES
 				
 				<grid:div class="draft">
 					<cfoutput>
-						DRAFT: last updated <span style="cursor:pointer;" title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</span>.
+						<div>DRAFT</div>
+						<div style="font-size:11px;">last updated <span style="cursor:pointer;" title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</span></div>
 						
 						<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
-							(<skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="versionID=#stobj.versionID#" linktext="toggle approved" /> )
+							<div style="font-size:11px;"><skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="versionID=#stobj.versionID#" linktext="show approved version" /></div>
 						</cfif>
 					</cfoutput>
 				</grid:div>
@@ -128,10 +132,11 @@ FARCRY INCLUDE FILES
 				
 					<grid:div class="pending">
 						<cfoutput>
-							PENDING: awaiting approval since <span style="cursor:pointer;" title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</span>.
+							<div>PENDING</div>
+							<div style="font-size:11px;">awaiting approval since <span style="cursor:pointer;" title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</span></div>
 							
 							<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
-								(<skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="versionID=#stobj.versionID#" linktext="toggle approved" /> )
+								<div style="font-size:11px;"><skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="versionID=#stobj.versionID#" linktext="show approved version" /></div>
 							</cfif>
 						</cfoutput>
 					</grid:div>
@@ -140,12 +145,13 @@ FARCRY INCLUDE FILES
 				
 					<grid:div class="approved">
 						<cfoutput>
-							APPROVED: <span style="cursor:pointer;" title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</span>.
+							<div>APPROVED</div> 
+							<div style="font-size:11px;">last approved <span style="cursor:pointer;" title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</span></div>
 							
 							<cfif structKeyExists(stobj,"versionID") AND structKeyExists(stobj,"status") AND stobj.status EQ "approved">
 								<cfset qDraft = createObject("component", "#application.packagepath#.farcry.versioning").checkIsDraft(objectid=stobj.objectid,type=stobj.typename)>
 								<cfif qDraft.recordcount>
-									(<skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="versionID=#qDraft.objectid#" linktext="toggle draft" /> )
+									<div style="font-size:11px;"><skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="versionID=#qDraft.objectid#" linktext="show #qDraft.status# version" /></div>
 								</cfif>
 							</cfif>	
 						</cfoutput>
