@@ -52,6 +52,12 @@
 							</cfoutput>
 		</skin:registerJS>
 		
+
+		<skin:registerJS 	id="jquery-autoresize" 
+							baseHREF="#application.url.webtop#/thirdparty/jquery.autoresize" 
+							lFiles="autoresize.jquery.min.js,custom.js" />
+							
+		
 		<skin:registerJS	id="jquery-uploadify"
 							baseHREF="#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4"
 							lFiles="swfobject.js,jquery.uploadify.v2.1.4.min.js" />
