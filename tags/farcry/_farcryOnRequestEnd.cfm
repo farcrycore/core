@@ -112,17 +112,21 @@ $out:$
 		</cfif>
 	</cfif>
 	
-	<cfif isdefined("request.fc.okToCache") and request.fc.okToCache>
-		<!--- Page ok to cache, a webskin has specified a cache timeout --->
-		<cfif not isdefined("request.fc.browserCacheTimeout") or request.fc.browserCacheTimeout eq -1>
-			<cfset request.fc.browserCacheTimeout = application.defaultBrowserCacheTimeout />
-		</cfif>
-		<cfif not isdefined("request.fc.proxyCacheTimeout") or request.fc.proxyCacheTimeout eq -1>
-			<cfset request.fc.proxyCacheTimeout = application.defaultProxyCacheTimeout />
+	<cfif not GetPageContext().GetResponse().IsCommitted()>
+		<cfif isdefined("request.fc.okToCache") and request.fc.okToCache>
+			<!--- Page ok to cache, a webskin has specified a cache timeout --->
+			<cfif not isdefined("request.fc.browserCacheTimeout") or request.fc.browserCacheTimeout eq -1>
+				<cfset request.fc.browserCacheTimeout = application.defaultBrowserCacheTimeout />
+			</cfif>
+			<cfif not isdefined("request.fc.proxyCacheTimeout") or request.fc.proxyCacheTimeout eq -1>
+				<cfset request.fc.proxyCacheTimeout = application.defaultProxyCacheTimeout />
+			</cfif>
+		<cfelse>
+			<cfset request.fc.browserCacheTimeout = 0 />
+			<cfset request.fc.proxyCacheTimeout = 0 />
 		</cfif>
 		<misc:cacheControl browserSeconds="#request.fc.browserCacheTimeout#" proxySeconds="#request.fc.proxyCacheTimeout#" />
 	</cfif>
-	
 </cfif>
 
 
