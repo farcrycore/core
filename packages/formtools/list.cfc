@@ -207,7 +207,7 @@
 								<cfelse>
 									<cfset optionValue = ListFirst(i,":") />
 								</cfif>
-								<label class="inlineLabel">
+								<label>
 									<input type="checkbox" name="#arguments.fieldname#" class="checkboxInput #IIF(listLen(lData) eq tmpCount ,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" id="#arguments.fieldname#" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />										
 									<!--- <label class="fieldsectionlabel" class="fieldsectionlabel" for="#arguments.fieldname#">#ListLast(i , ":")#</label> --->
 									<!--- MPS: styles aren't working so we are removing label for now until we have time to look at the css --->
@@ -235,8 +235,8 @@
 									<cfelse>
 										<cfset optionValue = ListFirst(i,":") />
 									</cfif>
-									<label class="inlineLabel">
-										<input type="radio" name="#arguments.fieldname#" id="#arguments.fieldname#"  class="#IIF(listLen(lData) eq tmpCount,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />
+									<label>
+										<input type="radio" name="#arguments.fieldname#" id="#arguments.fieldname#"  class="required #IIF(listLen(lData) eq tmpCount,DE(" #arguments.stMetadata.ftClass#"),DE(""))#" value="#optionValue#"<cfif listFindNoCase(arguments.stMetadata.value, optionValue)> checked="checked"</cfif> />
 										<!--- <label class="fieldsectionlabel" class="fieldsectionlabel" for="#arguments.fieldname#">#ListLast(i , ":")#</label> --->
 										<!--- MPS: styles aren't working so we are removing label for now until we have time to look at the css --->
 										#ListLast(i , ":")#

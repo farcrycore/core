@@ -53,7 +53,8 @@ START WEBSKIN
 	<cfparam name="attributes.oddRowClass" default="oddrow" type="string"><!--- The class name returned in stobjects for each "even" current row --->
 	<cfparam name="attributes.evenRowClass" default="evenrow" type="string"><!--- The class name returned in stobjects for each "odd" current row --->
 	<cfparam name="attributes.bDisplayTotalRecords" default="0" /><!--- display the total records or not --->
-	
+	<cfparam name="attributes.r_pageLinksHtml" default="" type="string" /><!--- Save page links html to a variable so we can return it to the caller --->
+
 	<!------------------------------------------------------------------------------------ 
 		Check if they have passed in the attribute as the NAME of a query/array in the caller.
 		IF SO, change it to the reference to the calling query/array.
@@ -99,6 +100,12 @@ START WEBSKIN
 		<cfoutput>
 			<input type="hidden" name="paginationpage#attributes.paginationID#" id="paginationpage#Request.farcryForm.Name#" value="" />
 		</cfoutput>
+	</cfif>
+		
+	<cfif len(attributes.r_pageLinksHtml)>
+		<!--- Save page links html to a variable so we can return it to the caller --->
+		<cfset pageLinksHtml = oPagination.getView(template="displayLinks", position="top" ) />
+		<cfset caller[attributes.r_pageLinksHtml] = pageLinksHtml />
 	</cfif>
 	
 	<!--- Render the pagination at the top --->

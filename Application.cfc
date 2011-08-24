@@ -709,6 +709,7 @@
 		<cfparam name="this.bObjectBroker" default="true" />
 		<cfparam name="this.ObjectBrokerMaxObjectsDefault" default="1000" />
 		<cfparam name="this.defaultWebskinCacheTimeout" default="1400" /><!--- Default timeout in seconds --->
+		<cfparam name="this.defaultBrowserCacheTimeout" default="-1" /><!--- Default timeout in seconds. -1=no cache directives --->
 		<cfparam name="this.defaultProxyCacheTimeout" default="-1" /><!--- Default timeout in seconds. -1=no cache directives --->
 		
 		<!--- Option to archive --->
@@ -756,7 +757,6 @@
 		<cfset application.url.imageRoot = "#application.url.webroot#">
 		<cfset application.url.fileRoot = "#application.url.webroot#/files">
 		<cfset application.url.cache = "#application.url.webroot#/cache">
-		
 		
 		<!----------------------------------------
 		 SET THE MAIN PHYSICAL PATH INFORMATION
@@ -847,6 +847,7 @@
 		<cfset application.ObjectBrokerMaxObjectsDefault = this.ObjectBrokerMaxObjectsDefault />
 		<cfset application.defaultWebskinCacheTimeout = this.defaultWebskinCacheTimeout />
 		<cfset application.defaultProxyCacheTimeout = this.defaultProxyCacheTimeout />
+		<cfset application.defaultBrowserCacheTimeout = this.defaultBrowserCacheTimeout />
 
 
 		<!------------------------------------------ 

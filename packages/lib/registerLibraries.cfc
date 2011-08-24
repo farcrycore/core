@@ -116,6 +116,11 @@
 							ul.treeview .hover { color: ##000; }
 							</cfoutput>
 		</skin:registerCSS>
+		
+		<skin:registerCSS	id="objectadmin-ie7"
+							baseHREF="#application.url.webtop#/css"
+							lFiles="objectadmin-ie7.css"
+							condition="if IE 7" />
 
 		<skin:registerCSS 	id="farcry-pagination"
 							baseHREF="#application.url.webtop#"

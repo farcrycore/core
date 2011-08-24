@@ -78,17 +78,16 @@
 			</cfif>
 		
 			<cfsavecontent variable="css">
-				<cfoutput>
-				<!-- 
-				ID: #stCSS.id#<cfif len(stCSS.lCombineIDs)>
-				PACKAGED: #stCSS.lCombineIDs#</cfif>
-				FILES: #stCSS.lFullFilebaseHREFs#
-				 -->
-				</cfoutput>
+<cfoutput>#chr(13)#
+  <!-- 
+  ID: #stCSS.id#<cfif len(stCSS.lCombineIDs)>
+  PACKAGED: #stCSS.lCombineIDs#</cfif>
+  FILES: #stCSS.lFullFilebaseHREFs#
+  -->
+</cfoutput>
 			
 				<cfif len(stCSS.condition)>
-					<cfoutput><!--[#stCSS.condition#]>
-					</cfoutput>
+					<cfoutput>  <!--[#stCSS.condition#]>#chr(13)#</cfoutput>
 				</cfif>
 			
 				<cfif stCSS.bCombine>
@@ -107,11 +106,11 @@
 					<cfif len(trim(stCSS.append))><cfoutput><style type="text/css">#stCSS.append#</style></cfoutput></cfif>
 				</cfif>
 				<cfif len(stCSS.condition)>
-					<cfoutput><![endif]-->
-					</cfoutput>	
+					<cfoutput>  <![endif]-->#chr(13)#</cfoutput>	
 				</cfif>		
 			</cfsavecontent>
-			<cfhtmlhead text="#css#">
+
+			<cfhtmlhead text="#css#" />
 		
 		</cfloop>
 	</cfif>

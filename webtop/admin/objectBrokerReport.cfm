@@ -34,17 +34,29 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 
+<!--- Reap any dead entries to update stats --->
+<cfset application.fc.lib.objectbroker.reapDeadEntriesFromBroker() />
+
 <admin:header />
 <ft:form>
 <cfoutput>
 	<h1>Object Broker Settings</h1>
 	<p>Object broker has been activated for the following content types.</p>
 
+<style type="text/css">
+	.table-1 td, .table-1 th {padding:5px}
+</style>
+
 <table class="table-1">
 <tr>
 	<th>Typename</th>
 	<th>Cached Objects</th>
 	<th>Capacity %</th>
+	<th>Hits/Misses</th>
+	<th>Hit %</th>
+	<th>Flushes</th>
+	<th>Evicts</th>
+	<th>Null Hits (Reaps)</th>
 	<th>Skin Cache Detail</th>
 </tr>
 <cfloop collection="#application.types#" item="key">
@@ -64,6 +76,21 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 				N/A
 			</cfif>
 		</td>
+		<cfif isDefined("application.fcstats.objectbroker.typeCounters") and structKeyExists(application.fcstats.objectbroker.typeCounters,key)>
+			<cfset stCounters = application.fcstats.objectbroker.typeCounters[key] />
+			<cfset hitRatio = stCounters.hit.get() / (stCounters.hit.get()+stCounters.miss.get()) />
+			<td>#ToString(stCounters.hit)#/#ToString(stCounters.miss)#</td>
+			<td>#Round(hitRatio*100)#%</td>
+			<td>#ToString(stCounters.flush)#</td>
+			<td>#ToString(stCounters.evict)#</td>
+			<td>#ToString(stCounters.nullhit)# (#ToString(stCounters.reap)#)</td>
+		<cfelse>
+			<td>-</td>
+			<td>-</td>
+			<td>-</td>
+			<td>-</td>
+			<td>-</td>
+		</cfif>
 		<td>
 			<cfif structKeyExists(form, "selectedObjectID") AND form.selectedObjectID EQ key>
 				<cfset maxSkins = 0 />
@@ -73,9 +100,10 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 				<cfset maxSkinsObjectID = "">
 				<cfloop collection="#application.objectbroker[key]#" item="obj">
 					<cfif obj NEQ "MAXOBJECTS" AND obj NEQ "AOBJECTS">
-						<cfif structKeyExists(application.objectBroker[key][obj], "stWebskins")>
-							<cfloop collection="#application.objectBroker[key][obj].stWebskins#" item="webskinName">
-								<cfset currentSkins  = StructCount(application.objectBroker[key][obj].stWebskins[webskinName]) />
+						<cfset stCacheEntry = application.fc.lib.objectbroker.GetObjectCacheEntry(objectid=obj,typename=key) />
+						<cfif structKeyExists(stCacheEntry, "stWebskins")>
+							<cfloop collection="#stCacheEntry.stWebskins#" item="webskinName">
+								<cfset currentSkins  = StructCount(stCacheEntry.stWebskins[webskinName]) />
 								<cfset totalSkins = totalSkins + currentSkins />
 								<cfif currentSkins LT minSkins OR minSkins EQ 0>
 									<cfset minSkins = currentSkins />

@@ -377,63 +377,64 @@
 		<cfset stLocal.stObj = application.coapi.coapiutilities.getContentObject(objectid="#arguments.objectid#", typename="#arguments.typename#") />
 		
 		<!--- Make sure we want friendly urls on this content type --->
-		<cfif StructKeyExists(application.stcoapi[stLocal.stObj.typename],"bFriendly") AND application.stcoapi[stLocal.stObj.typename].bFriendly>
-			
-			<!--- Only create friendly urls on approved content --->
-			<cfif not StructKeyExists(stLocal.stObj,"status") OR stLocal.stObj.status EQ "approved">
-
-				<!--- Get the current system fu object for a given refobjectid --->
-				<cfset stLocal.stCurrentSystemObject = getSystemObject(refObjectID="#arguments.objectid#") />
-				
-				<!--- Generate the new system FU for the current object --->
-				<cfset stLocal.newFriendlyURL = getSystemFU(objectID="#arguments.objectid#", typename="#arguments.typename#") />
-				
-				<cfif structIsEmpty(stLocal.stCurrentSystemObject)>
-				
-					<!--- See if their is a current default object --->
-					<cfset stLocal.stCurrentDefaultObject = getDefaultFUObject(refObjectID="#arguments.objectid#") />
-				
-					<!--- No System FU object currently set --->
-					<cfset stLocal.stCurrentSystemObject.objectid = application.fc.utils.createJavaUUID() />
-					<cfset stLocal.stCurrentSystemObject.refObjectID = arguments.objectid />
-					<cfset stLocal.stCurrentSystemObject.fuStatus = 1 />
-					<cfset stLocal.stCurrentSystemObject.redirectionType = "none" />
-					<cfset stLocal.stCurrentSystemObject.redirectTo = "default" />
-					<cfset stLocal.stCurrentSystemObject.friendlyURL = getUniqueFU(friendlyURL="#left(stLocal.newFriendlyURL,245)#") />
-					
-					<!--- If no default object, set this as the default --->
-					<cfif structIsEmpty(stLocal.stCurrentDefaultObject)>
-						<cfset stLocal.stCurrentSystemObject.bDefault = 1 />
-					</cfif>
-					<cftry>
-					<cfset stLocal.stResult = setData(stProperties="#stLocal.stCurrentSystemObject#") />
-					<cfcatch type="any">
-						<cfoutput><p>#getUniqueFU(friendlyURL="#stLocal.newFriendlyURL#")#</p></cfoutput>
-						<cfdump var="#stLocal#" expand="false" label="stLocal" /><cfdump var="#cfcatch#"><cfabort showerror="debugging" />
-					</cfcatch>
-					</cftry>
-				<cfelse>
-					<cfset stLocal.newFriendlyURL = getUniqueFU(friendlyURL="#left(stLocal.newFriendlyURL,245)#", FUID="#stLocal.stCurrentSystemObject.objectid#") />
-					<cfif stLocal.newFriendlyURL NEQ stLocal.stCurrentSystemObject.friendlyURL>
-						<!--- NEED TO ARCHIVE OLD SYSTEM OBJECT AND UPDATE --->
-						<cfset stLocal.stResult = archiveFU(objectid="#stLocal.stCurrentSystemObject.objectid#") />
-						<cfset stLocal.stCurrentSystemObject.friendlyURL = stLocal.newFriendlyURL />
-						<cfset stLocal.stResult = setData(stProperties="#stLocal.stCurrentSystemObject#") />
-					</cfif>
-				</cfif>
-		
-				<cfset setMapping(objectid="#stLocal.stCurrentSystemObject.objectid#") />				
-				
-				
-			<cfelse>
-				<cfset stLocal.stResult.bSuccess = false />
-				<cfset stLocal.stResult.message = "Friendly URLs" />
-			</cfif>
-		<cfelse>
+		<cfif not StructKeyExists(application.stcoapi[stLocal.stObj.typename],"bFriendly") or not application.stcoapi[stLocal.stObj.typename].bFriendly>
 			<cfset stLocal.stResult.bSuccess = false />
 			<cfset stLocal.stResult.message = "#arguments.typename# does not require friendly URLs" />
+			<cfreturn stLocal.stResult />
+		</cfif>
+			
+		<!--- Only create friendly urls on approved content --->
+		<cfif StructKeyExists(stLocal.stObj,"status") and not stLocal.stObj.status EQ "approved">
+			<cfset stLocal.stResult.bSuccess = false />
+			<cfset stLocal.stResult.message = "Object not approved" />
+			<cfreturn stLocal.stResult />
 		</cfif>
 		
+		<!--- Get current default and system FUs --->
+		<cfset stLocal.stCurrentDefaultObject = getDefaultFUObject(refObjectID=arguments.objectid) />
+		<cfset stLocal.stCurrentSystemObject = getSystemObject(refObjectID="#arguments.objectid#") />
+		
+		<!--- If the default isn't the system FU, and the system FU has been deleted, don't regenerate one --->
+		<cfif structisempty(stLocal.stCurrentSystemObject) and not structisempty(stLocal.stCurrentDefaultObject) and stLocal.stCurrentDefaultObject.bDefault>
+			<cfset stLocal.stResult.bSuccess = false />
+			<cfset stLocal.stResult.message = "System FU not needed" />
+			<cfreturn stLocal.stResult />
+		</cfif>
+		
+		<!--- Generate the new system FU for the current object --->
+		<cfset stLocal.newFriendlyURL = getSystemFU(objectID="#arguments.objectid#", typename="#arguments.typename#") />
+		
+		<cfif structIsEmpty(stLocal.stCurrentSystemObject)>
+			<!--- No System FU object currently set --->
+			<cfset stLocal.stCurrentSystemObject.objectid = application.fc.utils.createJavaUUID() />
+			<cfset stLocal.stCurrentSystemObject.refObjectID = arguments.objectid />
+			<cfset stLocal.stCurrentSystemObject.fuStatus = 1 />
+			<cfset stLocal.stCurrentSystemObject.redirectionType = "none" />
+			<cfset stLocal.stCurrentSystemObject.redirectTo = "default" />
+			<cfset stLocal.stCurrentSystemObject.friendlyURL = getUniqueFU(friendlyURL="#left(stLocal.newFriendlyURL,245)#") />
+			
+			<!--- If no default object, set this as the default --->
+			<cfif structIsEmpty(stLocal.stCurrentDefaultObject)>
+				<cfset stLocal.stCurrentSystemObject.bDefault = 1 />
+			</cfif>
+			<cftry>
+			<cfset stLocal.stResult = setData(stProperties="#stLocal.stCurrentSystemObject#") />
+			<cfcatch type="any">
+				<cfoutput><p>#getUniqueFU(friendlyURL="#stLocal.newFriendlyURL#")#</p></cfoutput>
+				<cfdump var="#stLocal#" expand="false" label="stLocal" /><cfabort showerror="debugging" />
+			</cfcatch>
+			</cftry>
+		<cfelse>
+			<cfset stLocal.newFriendlyURL = getUniqueFU(friendlyURL="#left(stLocal.newFriendlyURL,245)#", FUID="#stLocal.stCurrentSystemObject.objectid#") />
+			<cfif stLocal.newFriendlyURL NEQ stLocal.stCurrentSystemObject.friendlyURL>
+				<!--- NEED TO ARCHIVE OLD SYSTEM OBJECT AND UPDATE --->
+				<cfset stLocal.stResult = archiveFU(objectid="#stLocal.stCurrentSystemObject.objectid#") />
+				<cfset stLocal.stCurrentSystemObject.friendlyURL = stLocal.newFriendlyURL />
+				<cfset stLocal.stResult = setData(stProperties="#stLocal.stCurrentSystemObject#") />
+			</cfif>
+		</cfif>
+
+		<cfset setMapping(objectid="#stLocal.stCurrentSystemObject.objectid#") />
 			
 		<cfreturn stLocal.stResult />
 	</cffunction>

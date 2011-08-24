@@ -179,7 +179,7 @@ object methods
 		
 		<cfif len(arguments.permission)>
 			<cfloop query="qRoles">
-				<sec:CheckPermission permission="#arguments.permission#" type="#arguments.type#" objectid="#arguments.objectid#" roles="#qRoles.title#" result="haspermission" />
+				<sec:CheckPermission permission="#arguments.permission#" type="#arguments.type#" objectid="#arguments.objectid#" roles="#qRoles.objectid#" result="haspermission" />
 				<cfif haspermission>
 					<cfset result = listappend(result,qRoles.objectid) />
 				</cfif>

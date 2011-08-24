@@ -97,8 +97,9 @@ It just ignores the inner ones.
 		<cfset Request.farcryForm.stObjects = "#StructNew()#" />
 		<cfset Request.farcryForm.bAjaxSubmission = "#attributes.bAjaxSubmission#" />
 		<cfset Request.farcryForm.lFarcryObjectsRendered = "" />	
-		<cfset Request.farcryForm.defaultAction = "#attributes.defaultAction#" />	
-		
+		<cfif not structkeyexists(request.farcryForm,"defaultAction") or not len(request.farcryForm.defaultAction)>
+			<cfset Request.farcryForm.defaultAction = "#attributes.defaultAction#" />	
+		</cfif>
 
 		<!--- Add form protection --->
 		<cfparam name="session.stFarCryFormSpamProtection" default="#structNew()#" />
@@ -245,6 +246,15 @@ It just ignores the inner ones.
 					return false;
 				}
 		    });
+			<cfif len(Request.farcryForm.defaultAction)>
+				$j('###attributes.Name# input,select').live("keypress",function(e){
+				if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+					$j('button[value=#replace(replacelist(Request.farcryForm.defaultAction,"\,!,"",##,$,%,&,',(,),*,+,.,/,:,;,<,=,>,?,@,[,],^,`,{,|,},~","\\\,\\!,\\"",\\##,\\$,\\%,\\&,\\',\\(,\\),\\*,\\+,\\.,\\/,\\:,\\;,\\<,\\=,\\>,\\?,\\@,\\[,\\],\\^,\\`,\\{,\\|,\\},\\~"), ",", "\\,", "ALL")#]').click();
+					return false;
+				} else {
+					return true;
+				}
+			});</cfif>
 			</cfoutput>				
 		</skin:onReady>
 		
