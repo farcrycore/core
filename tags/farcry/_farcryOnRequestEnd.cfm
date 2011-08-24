@@ -113,7 +113,7 @@ $out:$
 	</cfif>
 	
 	<cfif not GetPageContext().GetResponse().IsCommitted()>
-		<cfif isdefined("request.fc.okToCache") and request.fc.okToCache>
+		<cfif not isdefined("request.fc.okToCache") or request.fc.okToCache>
 			<!--- Page ok to cache, a webskin has specified a cache timeout --->
 			<cfif not isdefined("request.fc.browserCacheTimeout") or request.fc.browserCacheTimeout eq -1>
 				<cfset request.fc.browserCacheTimeout = application.defaultBrowserCacheTimeout />
