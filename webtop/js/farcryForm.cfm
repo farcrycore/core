@@ -23,18 +23,20 @@
 		$fc.watchingtracker[prefix][property] = $fc.watchingtracker[prefix][property] || {};
 		
 		//add the watches
-		$j("select[name="+prefix+property+"], input[name="+prefix+property+"][type=text], input[name="+prefix+property+"][type=password]").bind("change",{ prefix:prefix, property: property },ajaxUpdate);
-		$j("input[name="+prefix+property+"][type=checkbox], input[name="+prefix+property+"][type=radio]").bind("click",{ prefix:prefix, property: property },ajaxUpdate);
-		$j("input[name="+prefix+property+"][type=hidden]").each(function(el){
-			var lastvalue = el.value;
+		$j("select[name="+prefix+property+"], input[name="+prefix+property+"][type=text], input[name="+prefix+property+"][type=password]").live("change",{ prefix:prefix, property: property },ajaxUpdate);
+		$j("input[name="+prefix+property+"][type=checkbox], input[name="+prefix+property+"][type=radio]").live("click",{ prefix:prefix, property: property },ajaxUpdate);
+		var el = $j("input[name="+prefix+property+"][type=hidden]");
+		if (el.size()){
+			var lastvalue = el.val();
 			setInterval(function(){
-				if (el.value !== lastvalue) {
-					lastvalue = el.value;
+				var el = $j("input[name="+prefix+property+"][type=hidden]");
+				if (el.val() !== lastvalue) {
+					lastvalue = el.val();
 					var ev = { data:{ prefix:prefix, property: property } };
-					el.call(ajaxUpdate,ev);
+					ajaxUpdate.call(el[0],ev);
 				}
 			},100);
-		});
+		};
 		
 		
 		// if the property hasn't had its watch setup already, do so
