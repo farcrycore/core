@@ -1090,7 +1090,7 @@ default handlers
 				
 				<cfloop from="1" to="#arraylen(application.stCOAPI[stObj.typename].aJoins)#" index="thisjoin">
 					<cfif application.stCOAPI[stObj.typename].aJoins[thisjoin].coapitype eq stDuplicate.typename and application.stCOAPI[stObj.typename].aJoins[thisjoin].direction eq "from" and application.stCOAPI[stObj.typename].aJoins[thisjoin].type eq "uuid">
-						<cfset stDuplicate[application.stCOAPI[stObj.typename].aJoins[thisjoin]] = newID />
+						<cfset stDuplicate[application.stCOAPI[stObj.typename].aJoins[thisjoin].property] = newID />
 					</cfif>
 				</cfloop>
 			<cfelse>
