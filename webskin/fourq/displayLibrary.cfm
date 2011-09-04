@@ -41,7 +41,7 @@
 	
 	<cfif len(form.searchTypename)>
 		<cfquery datasource="#application.dsn#" name="qFiltered">
-			SELECT objectid as [key]
+			SELECT objectid as 'key'
 			FROM #url.filterTypename#
 			WHERE label like <cfqueryparam cfsqltype="cf_sql_varchar" value="%#form.searchTypename#%" />
 		</cfquery>
