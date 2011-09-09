@@ -237,7 +237,7 @@
 				    		arrayuploadformtool.uploadify.uploadify({
 					    		'buttonText'	: 'Select File',
 								'uploader'  	: '#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4/uploadify.swf',
-								'script'    	: url,
+								'script'    	: url+"/upload/1",
 								'checkScript'	: url+"/check/1",
 								'cancelImg' 	: '#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4/cancel.png',
 								'hideButton'	: true,
@@ -269,20 +269,19 @@
 									if (data.percentage<100)
 										$("##"+fieldname+ID+"ProgressBar").animate({'width': data.percentage + '%'},250);	
 									else
-										$("##fileupload-"+ID+" .uploadifyFeedback",arrayuploadformtool.displaylist).html("<span style='color:##0099FF;font-weight:bold;'>processing image...</span");
+										$("##join-item-"+ID+" .uploadifyFeedback",arrayuploadformtool.displaylist).html("<span style='color:##0099FF;font-weight:bold;'>processing image...</span");
 								},
 								'onCancel'		: function(event,ID,fileObj,data){
-									$("##fileupload-"+ID,arrayuploadformtool.displaylist).remove();
+									$("##join-item-"+ID,arrayuploadformtool.displaylist).remove();
 								},
 								'onComplete'	: function(event, ID, fileObj, response, data){
 									var results = $.parseJSON(response);
 									
 									if (results.error && results.error.length){
-										errorloc = $("##fileupload-"+ID+" .uploadifyFeedback",arrayuploadformtool.displaylist).html("<span style='color:##FF0000;font-weight:bold;'>Server error: "+results.error+"</span>");
+										errorloc = $("##join-item-"+ID+" .uploadifyFeedback",arrayuploadformtool.displaylist).html("<span style='color:##FF0000;font-weight:bold;'>Server error: "+results.error+"</span>");
 									}
-									else {
-										var i = $("##fileupload-"+ID,arrayuploadformtool.displaylist)[0].id.split("-")[2];
-										$("##fileupload-"+ID,arrayuploadformtool.displaylist).replaceWith(arrayuploadformtool.getHTML("newitem",{
+									else {console.log(results);
+										$("##join-item-"+ID,arrayuploadformtool.displaylist).replaceWith(arrayuploadformtool.getHTML("newitem",{
 											itemid		: results.objectid,
 											displayhtml : results.html
 										}));
@@ -869,121 +868,123 @@
 			<cfreturn serializeJSON(aItems) />
 		</cfif>
 		
-		<cfif application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftType eq "file">
-			
-			<cfset stResult = handleFilePost(
-				objectid=arguments.stObject.objectid,
-				uploadfield="#arguments.stMetadata.name#UPLOAD",
-				relativeDestination=application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftDestination,
-				absoluteDestination=application.path.defaultfilepath & application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftDestination,
-				allowedExtensions=arguments.stMetadata.ftAllowedFileExtensions,
-				stFieldPost=arguments.stFieldPost.stSupporting,
-				sizeLimit=arguments.stMetadata.ftSizeLimit) />
-			
-		<cfelse><!--- File property is an image formtool --->
-			
-			<cfset stResult = handleFilePost(
-				objectid=arguments.stObject.objectid,
-				uploadfield="#arguments.stMetadata.name#UPLOAD",
-				relativeDestination=application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftDestination,
-				absoluteDestination=application.path.imageroot & application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftDestination,
-				allowedExtensions=arguments.stMetadata.ftAllowedFileExtensions,
-				stFieldPost=arguments.stFieldPost.stSupporting,
-				sizeLimit=arguments.stMetadata.ftSizeLimit) />
-				
-		</cfif>
-		
-		<cfif isdefined("stResult.stError.message") and len(stResult.stError.message)>
-			<cfset stJSON = structnew() />
-			<cfset stJSON["error"] = stResult.stError.message />
-			<cfset stJSON["value"] = stResult.value />
-			<cfreturn serializeJSON(stJSON) />
-		</cfif>
-		
-		<cfif stResult.bChanged and isdefined("stResult.value") and len(stResult.value)>
-				
+		<cfif structkeyexists(url,"upload")><!--- Edit an array item --->
 			<cfif application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftType eq "file">
-			
-				<cfset stFile = getFileInfo(application.path.defaultfilepath & stResult.value) />
 				
-				<cfset stNewObject = application.fapi.getNewContentObject(typename=arguments.stMetadata.ftJoin) />
-				<cfset stNewObject.label = listfirst(listlast(stResult.value,"/"),".") />
-				<cfset stNewObject[arguments.stMetadata.ftFileProperty] = stResult.value />
-				<cfset application.fapi.setData(stProperties=stNewObject) />
-				
-				<cfif structkeyexists(application.formtools.file.oFactory,"onFileChange")>
-					<cfset application.formtools.file.oFactory.onFileChange(typename=arguments.stMetadata.ftJoin,objectid=stNewObject.objectid,stMetadata=application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata,value=stResult.value) />
-				</cfif>
-				
-				<cfset stJSON = structnew() />
-				<cfset stJSON["objectid"] = stNewObject.objectid />
-				<cfset stJSON["value"] = stResult.value />
-				<cfset stJSON["filename"] = listlast(stResult.value,"/") />
-				<cfset stJSON["fullpath"] = application.path.fileroot & getDirectoryFromPath(stResult.value) & urlencodedformat(getFileFromPath(stResult.value)) />
-				<cfset stJSON["size"] = round(stFile.size/1024) />
-				<skin:view objectid="#stNewObject.objectid#" typename="#arguments.stMetadata.ftJoin#" webskin="#arguments.stMetadata.ftListWebskin#" bIgnoreSecurity="true" r_html="html" alternateHTML="OBJECT NO LONGER EXISTS" />
-				<cfset stJSON["html"] = html />
+				<cfset stResult = handleFilePost(
+					objectid=arguments.stObject.objectid,
+					uploadfield="#arguments.stMetadata.name#UPLOAD",
+					relativeDestination=application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftDestination,
+					absoluteDestination=application.path.defaultfilepath & application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftDestination,
+					allowedExtensions=arguments.stMetadata.ftAllowedFileExtensions,
+					stFieldPost=arguments.stFieldPost.stSupporting,
+					sizeLimit=arguments.stMetadata.ftSizeLimit) />
 				
 			<cfelse><!--- File property is an image formtool --->
 				
-				<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"ResizeMethod") or not isnumeric(arguments.stFieldPost.stSupporting.ResizeMethod)>
-					<cfset arguments.stFieldPost.stSupporting.ResizeMethod = application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftAutoGenerateType />
-				</cfif>
-				<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"Quality") or not isnumeric(arguments.stFieldPost.stSupporting.Quality)>
-					<cfset arguments.stFieldPost.stSupporting.Quality = application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftQuality />
-				</cfif>
-				
-				<cftry>
-					<cfset stFixed = application.formtools.image.oFactory.fixImage("#application.path.imageroot##stResult.value#",application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
+				<cfset stResult = handleFilePost(
+					objectid=arguments.stObject.objectid,
+					uploadfield="#arguments.stMetadata.name#UPLOAD",
+					relativeDestination=application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftDestination,
+					absoluteDestination=application.path.imageroot & application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftDestination,
+					allowedExtensions=arguments.stMetadata.ftAllowedFileExtensions,
+					stFieldPost=arguments.stFieldPost.stSupporting,
+					sizeLimit=arguments.stMetadata.ftSizeLimit) />
 					
-					<cfset stJSON = structnew() />
+			</cfif>
+			
+			<cfif isdefined("stResult.stError.message") and len(stResult.stError.message)>
+				<cfset stJSON = structnew() />
+				<cfset stJSON["error"] = stResult.stError.message />
+				<cfset stJSON["value"] = stResult.value />
+				<cfreturn serializeJSON(stJSON) />
+			</cfif>
+			
+			<cfif stResult.bChanged and isdefined("stResult.value") and len(stResult.value)>
+					
+				<cfif application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftType eq "file">
+				
+					<cfset stFile = getFileInfo(application.path.defaultfilepath & stResult.value) />
+					
 					<cfset stNewObject = application.fapi.getNewContentObject(typename=arguments.stMetadata.ftJoin) />
 					<cfset stNewObject.label = listfirst(listlast(stResult.value,"/"),".") />
-					<cfif structkeyexists(application.stCOAPI[arguments.stMetadata.ftJoin].stProps,"title")>
-						<cfset stNewObject.title = stNewObject.label />
-					</cfif>
-					<cfif structkeyexists(application.stCOAPI[arguments.stMetadata.ftJoin].stProps,"name")>
-						<cfset stNewObject.name = stNewObject.label />
-					</cfif>
 					<cfset stNewObject[arguments.stMetadata.ftFileProperty] = stResult.value />
-					<cfloop collection="#application.stCOAPI[arguments.stMetadata.ftJoin].stProps#" item="thisfield">
-						<cfif isdefined("application.stCOAPI.#arguments.stMetadata.ftJoin#.stProps.#thisfield#.metadata.ftType") 
-							and application.stCOAPI[arguments.stMetadata.ftJoin].stProps[thisfield].metadata.ftType eq "image"
-							and isdefined("application.stCOAPI.#arguments.stMetadata.ftJoin#.stProps.#thisfield#.metadata.ftSourceField")
-							and listfirst(application.stCOAPI[arguments.stMetadata.ftJoin].stProps[thisfield].metadata.ftSourceField,":") eq arguments.stMetadata.ftFileProperty>
-							
-							<cfset stFP[thisfield] = structnew() />
-							
-						</cfif>
-					</cfloop>
-					<cfset stNewObject = application.formtools.image.oFactory.ImageAutoGenerateBeforeSave(typename=stNewObject.typename,stProperties=stNewObject,stFields=application.stCOAPI[arguments.stMetadata.ftJoin].stProps,stFormPost=stFP) />
 					<cfset application.fapi.setData(stProperties=stNewObject) />
 					
-					<cfif structkeyexists(application.formtools.image.oFactory,"onFileChange")>
-						<cfset application.formtools.image.oFactory.onFileChange(typename=arguments.stMetadata.ftJoin,objectid=stNewObject.objectid,stMetadata=application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata,value=stResult.value) />
+					<cfif structkeyexists(application.formtools.file.oFactory,"onFileChange")>
+						<cfset application.formtools.file.oFactory.onFileChange(typename=arguments.stMetadata.ftJoin,objectid=stNewObject.objectid,stMetadata=application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata,value=stResult.value) />
 					</cfif>
 					
-					<cfset stFile = getFileInfo(application.path.imageroot & stResult.value) />
-					
-					<cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" />
+					<cfset stJSON = structnew() />
 					<cfset stJSON["objectid"] = stNewObject.objectid />
 					<cfset stJSON["value"] = stResult.value />
-					<cfset stJSON["filename"] = listlast(stResult.value,'/') />
-					<cfset stJSON["fullpath"] = application.url.imageroot & getDirectoryFromPath(stResult.value) & urlencodedformat(getFileFromPath(stResult.value)) />
+					<cfset stJSON["filename"] = listlast(stResult.value,"/") />
+					<cfset stJSON["fullpath"] = application.path.fileroot & getDirectoryFromPath(stResult.value) & urlencodedformat(getFileFromPath(stResult.value)) />
 					<cfset stJSON["size"] = round(stFile.size/1024) />
 					<skin:view objectid="#stNewObject.objectid#" typename="#arguments.stMetadata.ftJoin#" webskin="#arguments.stMetadata.ftListWebskin#" bIgnoreSecurity="true" r_html="html" alternateHTML="OBJECT NO LONGER EXISTS" />
 					<cfset stJSON["html"] = html />
 					
-					<cfcatch>
-						<cfset stJSON["error"] = cfcatch.message />
-						<cfset stJSON["value"] = "" />
-					</cfcatch>
-				</cftry>
+				<cfelse><!--- File property is an image formtool --->
+					
+					<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"ResizeMethod") or not isnumeric(arguments.stFieldPost.stSupporting.ResizeMethod)>
+						<cfset arguments.stFieldPost.stSupporting.ResizeMethod = application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftAutoGenerateType />
+					</cfif>
+					<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"Quality") or not isnumeric(arguments.stFieldPost.stSupporting.Quality)>
+						<cfset arguments.stFieldPost.stSupporting.Quality = application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftQuality />
+					</cfif>
+					
+					<cftry>
+						<cfset stFixed = application.formtools.image.oFactory.fixImage("#application.path.imageroot##stResult.value#",application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
+						
+						<cfset stJSON = structnew() />
+						<cfset stNewObject = application.fapi.getNewContentObject(typename=arguments.stMetadata.ftJoin) />
+						<cfset stNewObject.label = listfirst(listlast(stResult.value,"/"),".") />
+						<cfif structkeyexists(application.stCOAPI[arguments.stMetadata.ftJoin].stProps,"title")>
+							<cfset stNewObject.title = stNewObject.label />
+						</cfif>
+						<cfif structkeyexists(application.stCOAPI[arguments.stMetadata.ftJoin].stProps,"name")>
+							<cfset stNewObject.name = stNewObject.label />
+						</cfif>
+						<cfset stNewObject[arguments.stMetadata.ftFileProperty] = stResult.value />
+						<cfloop collection="#application.stCOAPI[arguments.stMetadata.ftJoin].stProps#" item="thisfield">
+							<cfif isdefined("application.stCOAPI.#arguments.stMetadata.ftJoin#.stProps.#thisfield#.metadata.ftType") 
+								and application.stCOAPI[arguments.stMetadata.ftJoin].stProps[thisfield].metadata.ftType eq "image"
+								and isdefined("application.stCOAPI.#arguments.stMetadata.ftJoin#.stProps.#thisfield#.metadata.ftSourceField")
+								and listfirst(application.stCOAPI[arguments.stMetadata.ftJoin].stProps[thisfield].metadata.ftSourceField,":") eq arguments.stMetadata.ftFileProperty>
+								
+								<cfset stFP[thisfield] = structnew() />
+								
+							</cfif>
+						</cfloop>
+						<cfset stNewObject = application.formtools.image.oFactory.ImageAutoGenerateBeforeSave(typename=stNewObject.typename,stProperties=stNewObject,stFields=application.stCOAPI[arguments.stMetadata.ftJoin].stProps,stFormPost=stFP) />
+						<cfset application.fapi.setData(stProperties=stNewObject) />
+						
+						<cfif structkeyexists(application.formtools.image.oFactory,"onFileChange")>
+							<cfset application.formtools.image.oFactory.onFileChange(typename=arguments.stMetadata.ftJoin,objectid=stNewObject.objectid,stMetadata=application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata,value=stResult.value) />
+						</cfif>
+						
+						<cfset stFile = getFileInfo(application.path.imageroot & stResult.value) />
+						
+						<cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" />
+						<cfset stJSON["objectid"] = stNewObject.objectid />
+						<cfset stJSON["value"] = stResult.value />
+						<cfset stJSON["filename"] = listlast(stResult.value,'/') />
+						<cfset stJSON["fullpath"] = application.url.imageroot & getDirectoryFromPath(stResult.value) & urlencodedformat(getFileFromPath(stResult.value)) />
+						<cfset stJSON["size"] = round(stFile.size/1024) />
+						<skin:view objectid="#stNewObject.objectid#" typename="#arguments.stMetadata.ftJoin#" webskin="#arguments.stMetadata.ftListWebskin#" bIgnoreSecurity="true" r_html="html" alternateHTML="OBJECT NO LONGER EXISTS" />
+						<cfset stJSON["html"] = html />
+						
+						<cfcatch>
+							<cfset stJSON["error"] = cfcatch.message />
+							<cfset stJSON["value"] = "" />
+						</cfcatch>
+					</cftry>
+					
+				</cfif>
+					
+				<cfreturn serializeJSON(stJSON) />
 				
 			</cfif>
-				
-			<cfreturn serializeJSON(stJSON) />
-			
 		</cfif>
 		
 		<cfreturn "{}" />
