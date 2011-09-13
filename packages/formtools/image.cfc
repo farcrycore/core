@@ -1251,7 +1251,7 @@
 			<cfset createFolderPath("#application.path.imageRoot##arguments.destination#") />
 		</cfif>
 		
-		<cfif ((structkeyexists(form,arguments.uploadfield) and len(form[arguments.uploadfield])) or stFieldPost.DELETE) and len(arguments.existingfile) AND fileExists("#application.path.imageRoot##arguments.existingfile#")>
+		<cfif ((structkeyexists(form,arguments.uploadfield) and len(form[arguments.uploadfield])) or (isBoolean(stFieldPost.DELETE) and stFieldPost.DELETE)) and len(arguments.existingfile) AND fileExists("#application.path.imageRoot##arguments.existingfile#")>
 			
 			<cfif NOT DirectoryExists("#application.path.mediaArchive##arguments.destination#")>
 				<cfdirectory action="create" directory="#application.path.mediaArchive##arguments.destination#" />
