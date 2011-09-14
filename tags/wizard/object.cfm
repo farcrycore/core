@@ -416,6 +416,10 @@
 			<cfelse>
 				<cfset CALLER[i] = StructNew()>
 			</cfif>
+			
+			<cfset CALLER[i].lFieldsToRender = lFieldsToRender>
+			<cfset CALLER[i].lHiddenFields = attributes.lHiddenFields>
+			<cfset CALLER[i].fieldPrefix = variables.prefix>
 		</cfloop>
 	</cfif>
 	
