@@ -1181,7 +1181,7 @@ user --->
 					<cfif listLen(attributes.lCustomActions)>
 						<cfloop list="#attributes.lCustomActions#" index="i">
 							<li>
-								<ft:button value="#listFirst(i, ":")#" text="#listLast(i, ":")#" renderType="link" />
+								<ft:button value="#listFirst(i, ":")#" text="#listLast(i, ":")#" renderType="link" selectedObjectID="#arguments.st.objectid#" />
 							</li>
 						</cfloop>
 					</cfif>
