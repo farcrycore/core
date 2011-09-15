@@ -646,7 +646,7 @@ user --->
 		<cfoutput>#attributes.description#</cfoutput>
 	</cfif>
 	
-	<ft:form Name="#attributes.name#ButtonBar">
+	<ft:form Name="#attributes.name#">
 	
 		<!--- output user responses --->
 		<cfif len(message_error)><cfoutput><p id="error" class="fade"><span class="error">#message_error#</span></p></cfoutput></cfif>
@@ -702,8 +702,7 @@ user --->
 
 
 		<cfoutput>#html_buttonbar#</cfoutput>
-		
-	</ft:form>
+	
 	
 	
 		<skin:pop tags="error" start="<ul id='errorMsg'>" end="</ul>">
@@ -749,9 +748,6 @@ user --->
 			
 		</cfif>
 		
-				
-	<ft:form Name="#attributes.name#">	
-	
 		<cfif stRecordset.q.recordCount>
 			<skin:pagination
 				paginationID="#attributes.typename#"
