@@ -683,7 +683,8 @@
 					<cfset arrayappend(aChanges,createChange(action="repairIndex",schema=arguments.stDiff.newMetadata,indexname=arguments.indexname)) />
 				</cfcase>
 				<cfcase value="-">
-					<cfset arrayappend(aChanges,createChange(action="dropIndex",schema=arguments.stDiff.newMetadata,indexname=arguments.indexname)) />
+					<!--- Don't drop indexes by default. Code left in place as a reference. --->
+					<!--- <cfset arrayappend(aChanges,createChange(action="dropIndex",schema=arguments.stDiff.newMetadata,indexname=arguments.indexname)) /> --->
 				</cfcase>
 			</cfswitch>
 		<cfelse><!--- Table diff --->
