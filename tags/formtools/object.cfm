@@ -52,6 +52,7 @@
 	<cfparam name="attributes.style" default=""><!--- style with which to set all farcry form tags --->
 	<cfparam name="attributes.format" default="edit"><!--- edit or display --->
 	<cfparam name="attributes.IncludeLabel" default="1">
+	<cfparam name="attributes.labelClass" default="label"><!--- The class to be applied to all labels --->
 	<cfparam name="attributes.IncludeFieldSet" default="">
 	<cfparam name="attributes.IncludeBR" default="1">
 	<cfparam name="attributes.InTable" default="0">
@@ -501,7 +502,7 @@
 					</cfif>
 		
 					<cfif bShowLabel AND isDefined("Attributes.IncludeLabel") AND attributes.IncludeLabel EQ 1>
-						<cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#" class="label">#ftFieldMetadata.ftlabel#<cfif findNoCase("required",ftFieldMetadata.ftClass)> <em>*</em> </cfif></label></cfoutput>
+						<cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#" class="#attributes.labelClass#">#ftFieldMetadata.ftlabel#<cfif findNoCase("required",ftFieldMetadata.ftClass)> <em>*</em> </cfif></label></cfoutput>
 					</cfif>
 					
 					<cfoutput>
@@ -518,7 +519,7 @@
 				
 				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].HTML = returnHTML>
 				<cfsavecontent variable="Request.farcryForm.stObjects.#variables.prefix#.MetaData.#ftFieldMetadata.Name#.Label">
-					<cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#" class="label">#ftFieldMetadata.ftlabel#<cfif findNoCase("required",ftFieldMetadata.ftClass)> <em>*</em> </cfif></label></cfoutput>
+					<cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#" class="#attributes.labelClass#">#ftFieldMetadata.ftlabel#<cfif findNoCase("required",ftFieldMetadata.ftClass)> <em>*</em> </cfif></label></cfoutput>
 				</cfsavecontent>
 				
 			</cfif>
