@@ -53,6 +53,7 @@ START WEBSKIN
 	<cfparam name="attributes.oddRowClass" default="oddrow" type="string"><!--- The class name returned in stobjects for each "even" current row --->
 	<cfparam name="attributes.evenRowClass" default="evenrow" type="string"><!--- The class name returned in stobjects for each "odd" current row --->
 	<cfparam name="attributes.bDisplayTotalRecords" default="0" /><!--- display the total records or not --->
+	<cfparam name="attributes.linksWebskin" default="displayLinks" /><!--- webskin to use for rendering the pagination scroll ---> 
 	<cfparam name="attributes.r_pageLinksHtml" default="" type="string" /><!--- Save page links html to a variable so we can return it to the caller --->
 
 	<!------------------------------------------------------------------------------------ 
@@ -104,13 +105,13 @@ START WEBSKIN
 		
 	<cfif len(attributes.r_pageLinksHtml)>
 		<!--- Save page links html to a variable so we can return it to the caller --->
-		<cfset pageLinksHtml = oPagination.getView(template="displayLinks", position="top" ) />
+		<cfset pageLinksHtml = oPagination.getView(template="#attributes.linksWebskin#", position="top" ) /> 
 		<cfset caller[attributes.r_pageLinksHtml] = pageLinksHtml />
 	</cfif>
 	
 	<!--- Render the pagination at the top --->
 	<cfif attributes.top>
-		<cfset topPagination = oPagination.getView(template="displayLinks", position="top", stparam=attributes ) />
+		<cfset topPagination = oPagination.getView(template="#attributes.linksWebskin#", position="top", stparam=attributes ) />
 		<cfoutput>#topPagination#</cfoutput>
 	</cfif>
 	
@@ -143,7 +144,7 @@ START WEBSKIN
 	<cfelse>
 		<!--- MEANS THERE WERE NO RECORDS SO SIMPLY CALL THE BOTTOM --->
 		<cfif attributes.bottom>
-			<cfset bottomPagination = oPagination.getView(template="displayLinks", position="bottom",stparam=attributes ) />
+			<cfset bottomPagination = oPagination.getView(template="#attributes.linksWebskin#", position="bottom",stparam=attributes ) /> 
 			<cfoutput>#bottomPagination#</cfoutput>
 		</cfif>	
 		<cfexit method="exittag" />
@@ -185,7 +186,7 @@ START WEBSKIN
 	<cfelse>
 		<!--- After the last record, we render the pagination. --->
 		<cfif attributes.bottom>
-			<cfset bottomPagination = oPagination.getView(template="displayLinks", position="bottom", stparam=attributes) />
+			<cfset bottomPagination = oPagination.getView(template="#attributes.linksWebskin#", position="bottom", stparam=attributes) /> 
 			<cfoutput>#bottomPagination#</cfoutput>
 		</cfif>
 	</cfif>
