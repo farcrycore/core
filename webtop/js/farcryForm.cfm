@@ -60,11 +60,12 @@
 		
 		// get the post values
 		for (var property in base) {
-			if ($j('##' + prefix + property).val()) {
+			var inputs = $j('input[name='+prefix+property+'],select[name='+prefix+property+'],textarea[name='+prefix+property+']');
+			if (inputs.size()) {
 				base[property] = [];
-				$j('input[name='+prefix+property+'],select[name='+prefix+property+'],textarea[name='+prefix+property+']').each(function(){ 
+				inputs.each(function(){ 
 					var self = $j(this);
-					if (self.val()!=="") base[property].push(self.val());
+					if ((!(self.is("[type=radio]") || self.is("[type=radio]")) || self.is(":checked")) && self.val()!=="") base[property].push(self.val());
 				});
 				base[property] = base[property].join();
 			}
