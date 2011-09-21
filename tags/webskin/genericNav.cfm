@@ -46,6 +46,7 @@
 <cfparam name="attributes.bHideSecuredNodes" default="0"><!--- MJB: check if option to Hide Nav Node Items that user does't have permission to access: default to 0 for backward compatibility --->
 <cfparam name="attributes.afilter" default="#arrayNew(1)#">
 <cfparam name="attributes.lColumns" default="externallink,lNavIDAlias" />
+<cfparam name="attributes.homeAlias" default="home" />
 
 
 <!--- // get navigation items --->
@@ -60,7 +61,7 @@
 
 <cfif attributes.bIncludeHome>
 	<!--- // get application.navid.home objectName --->
-	<cfset homeNode = o.getNode(objectID=#application.navid.home#)>
+	<cfset homeNode = o.getNode(objectID=#application.navid[attributes.homeAlias]#)>
 </cfif>
 
 <cfif attributes.bLast>
@@ -163,11 +164,11 @@
 						}				
 						
 						writeOutput("<li");
-						if(request.sectionObjectID eq application.navid.home){
+						if(request.sectionObjectID eq application.navid[attributes.homeAlias]){
 							homeclass=homeclass & ' #attributes.ActiveClass# ';
 						}
 						writeOutput(" class="""&trim(homeclass)&"""");
-						writeOutput("><a href=""#application.url.webroot#/"">#homeNode.objectName#</a></li>");
+						writeOutput("><a href=""#application.fapi.getLink(alias=attributes.homeAlias)#"">#homeNode.objectName#</a></li>");
 					}
 					ul=ul+1;
 				}
