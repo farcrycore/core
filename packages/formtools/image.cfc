@@ -1425,13 +1425,11 @@
 				
 				<cfif stFixed.bSuccess>
 					<cfset stResult.value = stFixed.value />
-				<cfelseif structkeyexists(stFixed,"bSuccess")>
-					<cfset stResult = failed("",stFixed.error) />
+				<cfelseif structkeyexists(stFixed,"stError")>
+					<cfreturn failed("",stFixed.stError.message) />
 				</cfif>
 				
-				<cfif structkeyexists(stFixed,"error")>
-					<cfset onFileChange(typename=arguments.typename,objectid=arguments.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
-				</cfif>
+				<cfset onFileChange(typename=arguments.typename,objectid=arguments.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
 				
 			<cfelse>
 			
