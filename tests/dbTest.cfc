@@ -650,6 +650,7 @@
 		<cfset gateway.deploySchema(schema=schema,bDropTable=true) />
 		
 		<cfset schema.fields["i"].default = "there" />
+		<cfset schema.fields["i"].nullable = false />
 		
 		<cfset stDiff = this.db.getGateway(this.dsn).diffSchema(schema=schema) />
 		
@@ -659,7 +660,7 @@
 		<cfset assertEquals(listsort(lcase(structkeylist(stDiff.tables.dummyContentTypeA.fields)),"text"),"i","Undeployed property not identified") />
 		<cfset assertEquals(listsort(lcase(structkeylist(stDiff.tables.dummyContentTypeA.fields.i)),"text"),"conflict,newmetadata,oldmetadata,resolution","Incorrect correction metadata returned") />
 		<cfset assertEquals(stDiff.tables.dummyContentTypeA.fields.i.conflict,"Altered property","Incorrect conflict identified") />
-		<cfset assertEquals(stDiff.tables.dummyContentTypeA.fields.i.oldmetadata.default,"hello","Old metadata incorrect") />
+		<cfset assertEquals(stDiff.tables.dummyContentTypeA.fields.i.oldmetadata.default,"NULL","Old metadata incorrect") />
 		<cfset assertEquals(stDiff.tables.dummyContentTypeA.fields.i.newmetadata.default,"there","New metadata incorrect") />
 	</cffunction>
 	
