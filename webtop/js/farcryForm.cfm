@@ -23,18 +23,20 @@
 		$fc.watchingtracker[prefix][property] = $fc.watchingtracker[prefix][property] || {};
 		
 		//add the watches
-		$j("select[name="+prefix+property+"], input[name="+prefix+property+"][type=text], input[name="+prefix+property+"][type=password]").bind("change",{ prefix:prefix, property: property },ajaxUpdate);
-		$j("input[name="+prefix+property+"][type=checkbox], input[name="+prefix+property+"][type=radio]").bind("click",{ prefix:prefix, property: property },ajaxUpdate);
-		$j("input[name="+prefix+property+"][type=hidden]").each(function(el){
-			var lastvalue = el.value;
+		$j("select[name="+prefix+property+"], input[name="+prefix+property+"][type=text], input[name="+prefix+property+"][type=password]").live("change",{ prefix:prefix, property: property },ajaxUpdate);
+		$j("input[name="+prefix+property+"][type=checkbox], input[name="+prefix+property+"][type=radio]").live("click",{ prefix:prefix, property: property },ajaxUpdate);
+		var el = $j("input[name="+prefix+property+"][type=hidden]");
+		if (el.size()){
+			var lastvalue = el.val();
 			setInterval(function(){
-				if (el.value !== lastvalue) {
-					lastvalue = el.value;
+				var el = $j("input[name="+prefix+property+"][type=hidden]");
+				if (el.val() !== lastvalue) {
+					lastvalue = el.val();
 					var ev = { data:{ prefix:prefix, property: property } };
-					el.call(ajaxUpdate,ev);
+					ajaxUpdate.call(el[0],ev);
 				}
 			},100);
-		});
+		};
 		
 		
 		// if the property hasn't had its watch setup already, do so
@@ -58,11 +60,12 @@
 		
 		// get the post values
 		for (var property in base) {
-			if ($j('##' + prefix + property).val()) {
+			var inputs = $j('input[name='+prefix+property+'],select[name='+prefix+property+'],textarea[name='+prefix+property+']');
+			if (inputs.size()) {
 				base[property] = [];
-				$j('input[name='+prefix+property+'],select[name='+prefix+property+'],textarea[name='+prefix+property+']').each(function(){ 
+				inputs.each(function(){ 
 					var self = $j(this);
-					if (self.val()!=="") base[property].push(self.val());
+					if ((!(self.is("[type=radio]") || self.is("[type=radio]")) || self.is(":checked")) && self.val()!=="") base[property].push(self.val());
 				});
 				base[property] = base[property].join();
 			}
@@ -437,6 +440,7 @@ function setRowBackground (childCheckbox) {
 							
 	fcForm.openLibrarySelect = function(typename,objectid,property,id,urlparameters) {
 		urlparameters = urlparameters ? urlparameters : '';
+		var yPos = $j("html").scrollTop();
 		var newDialogDiv = $j("<div><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0'></iframe></div>");
 		$j("body").prepend(newDialogDiv);
 		$j("html").css('overflow', 'hidden');
@@ -459,6 +463,7 @@ function setRowBackground (childCheckbox) {
 				fcForm.refreshProperty(typename,objectid,property,id);
 				$j(newDialogDiv).dialog( 'destroy' );
 				$j(newDialogDiv).remove();
+				$j("html").scrollTop(yPos);
 			}
 			
 		});
