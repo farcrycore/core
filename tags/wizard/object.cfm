@@ -24,6 +24,7 @@
 	<cfparam name="attributes.style" default=""><!--- style with which to set all farcry form tags --->
 	<cfparam name="attributes.format" default="edit"><!--- edit or display --->
 	<cfparam name="attributes.IncludeLabel" default="1">
+	<cfparam name="attributes.labelClass" default="label"><!--- The class to be applied to all labels --->
 	<cfparam name="attributes.IncludeFieldSet" default="1">
 	<cfparam name="attributes.IncludeBR" default="1">
 	<cfparam name="attributes.InTable" default="0">
@@ -379,7 +380,7 @@
 					</cfif>
 		
 					<cfif bShowLabel AND isDefined("Attributes.IncludeLabel") AND attributes.IncludeLabel EQ 1>
-						<cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#" class="label"><cfif findNoCase("required",ftFieldMetadata.ftValidation)><em>*</em> </cfif>#ftFieldMetadata.ftlabel#</label></cfoutput>
+						<cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#" class="#attributes.labelClass#"><cfif findNoCase("required",ftFieldMetadata.ftValidation)><em>*</em> </cfif>#ftFieldMetadata.ftlabel#</label></cfoutput>
 					</cfif>
 					
 					<cfoutput>							
@@ -397,7 +398,7 @@
 				
 				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].HTML = returnHTML>
 				<cfsavecontent variable="Request.farcryForm.stObjects.#variables.prefix#.MetaData.#ftFieldMetadata.Name#.Label">
-					<cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#" class="label"><cfif findNoCase("required",ftFieldMetadata.ftClass)><em>*</em> </cfif>#ftFieldMetadata.ftlabel#</label></cfoutput>
+					<cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#" class="#attributes.label#"><cfif findNoCase("required",ftFieldMetadata.ftClass)><em>*</em> </cfif>#ftFieldMetadata.ftlabel#</label></cfoutput>
 				</cfsavecontent>
 				
 			</cfif>
@@ -416,6 +417,10 @@
 			<cfelse>
 				<cfset CALLER[i] = StructNew()>
 			</cfif>
+			
+			<cfset CALLER[i].lFieldsToRender = lFieldsToRender>
+			<cfset CALLER[i].lHiddenFields = attributes.lHiddenFields>
+			<cfset CALLER[i].fieldPrefix = variables.prefix>
 		</cfloop>
 	</cfif>
 	

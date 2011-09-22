@@ -51,6 +51,7 @@
 <cfelse>
 	<cfparam name="attributes.lColumns" default="externallink,lNavIDAlias" />
 </cfif>
+<cfparam name="attributes.homeAlias" default="home" />
 
 
 <!--- // get navigation items --->
@@ -65,7 +66,7 @@
 
 <cfif attributes.bIncludeHome>
 	<!--- // get application.navid.home objectName --->
-	<cfset homeNode = o.getNode(objectID=#application.navid.home#)>
+	<cfset homeNode = o.getNode(objectID=#application.navid[attributes.homeAlias]#)>
 </cfif>
 
 <cfif attributes.bLast>
@@ -165,11 +166,11 @@
 						}				
 						
 						writeOutput("<li");
-						if(request.sectionObjectID eq application.navid.home){
+						if(request.sectionObjectID eq application.navid[attributes.homeAlias]){
 							homeclass=homeclass & ' #attributes.ActiveClass# ';
 						}
 						writeOutput(" class="""&trim(homeclass)&"""");
-						writeOutput("><a href=""#application.url.webroot#/"">");
+						writeOutput("><a href=""#application.fapi.getLink(alias=attributes.homeAlias)#/"">");
 						if(attributes.bSpan) writeOutput("<span>");
 						writeOutput("#homeNode.objectName#");
 						if(attributes.bSpan) writeOutput("</span>");

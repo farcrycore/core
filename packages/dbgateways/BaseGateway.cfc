@@ -425,7 +425,9 @@
 		<cfif qGetData.recordCount>
 			<!--- convert query to structure --->
 			<cfloop list="#qGetData.columnlist#" index="key">
-				<cfset stObj[key] = getValueFromDB(schema=arguments.schema.fields[key],value=qGetData[key][1]) />
+				<cfif structKeyExists(arguments.schema.fields, key)>
+					<cfset stObj[key] = getValueFromDB(schema=arguments.schema.fields[key],value=qGetData[key][1]) />
+				</cfif>
 			</cfloop>
 			
 			<cfset stObj.typename = arguments.schema.tablename />

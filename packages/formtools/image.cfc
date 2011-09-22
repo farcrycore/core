@@ -1008,7 +1008,7 @@
 		<cfset var html = "" />
 		<cfset var json = "" />
 		<cfset var stJSON = structnew() />
-		<cfset var prefix = left(arguments.fieldname,len(arguments.fieldname)-len(arguments.stMetadata.name)) />
+	    <cfset var prefix = left(arguments.fieldname,len(arguments.fieldname)-len(arguments.stMetadata.name)) />
 		
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 		
@@ -1279,7 +1279,7 @@
 			<cfset createFolderPath("#application.path.imageRoot##arguments.destination#") />
 		</cfif>
 		
-		<cfif ((structkeyexists(form,arguments.uploadfield) and len(form[arguments.uploadfield])) or stFieldPost.DELETE) and len(arguments.existingfile) AND fileExists("#application.path.imageRoot##arguments.existingfile#")>
+		<cfif ((structkeyexists(form,arguments.uploadfield) and len(form[arguments.uploadfield])) or (isBoolean(stFieldPost.DELETE) and stFieldPost.DELETE)) and len(arguments.existingfile) AND fileExists("#application.path.imageRoot##arguments.existingfile#")>
 			
 			<cfif NOT DirectoryExists("#application.path.mediaArchive##arguments.destination#")>
 				<cfdirectory action="create" directory="#application.path.mediaArchive##arguments.destination#" />
@@ -1453,13 +1453,11 @@
 				
 				<cfif stFixed.bSuccess>
 					<cfset stResult.value = stFixed.value />
-				<cfelseif structkeyexists(stFixed,"bSuccess")>
-					<cfset stResult = failed("",stFixed.error) />
+				<cfelseif structkeyexists(stFixed,"stError")>
+					<cfreturn failed("",stFixed.stError.message) />
 				</cfif>
 				
-				<cfif structkeyexists(stFixed,"error")>
-					<cfset onFileChange(typename=arguments.typename,objectid=arguments.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
-				</cfif>
+				<cfset onFileChange(typename=arguments.typename,objectid=arguments.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
 				
 			<cfelse>
 			
