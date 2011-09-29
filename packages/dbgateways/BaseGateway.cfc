@@ -84,6 +84,7 @@
 		<cfset var value2 = "" />
 		<cfset var sendback = "" />
 		<cfset var result = "" />
+		<cfset var aData = duplicate(arguments.aProperties) />
 	  	
 	  	<cfimport taglib="/farcry/core/tags/misc" prefix="misc" />
 	  	
@@ -91,34 +92,34 @@
 	  	<cfset stResult.results = arraynew(1) />
 	  	
 	  	<!--- Convert array to array of structs and normalise seq --->
-	  	<cfloop from="1" to="#arraylen(arguments.aProperties)#" index="i">
-			<cfif isstruct(arguments.aProperties[i])>
-				<cfif not structkeyexists(arguments.aProperties[i],"parentid")>
-					<cfset arguments.aProperties[i].parentid = arguments.parentid />
+	  	<cfloop from="1" to="#arraylen(aData)#" index="i">
+			<cfif isstruct(aData[i])>
+				<cfif not structkeyexists(aData[i],"parentid")>
+					<cfset aData[i].parentid = arguments.parentid />
 				</cfif>
-				<cfif not structkeyexists(arguments.aProperties[i],"seq")>
-					<cfset arguments.aProperties[i].seq = i />
+				<cfif not structkeyexists(aData[i],"seq")>
+					<cfset aData[i].seq = i />
 				</cfif>
 			<cfelse>
 				<cfset stData = structnew() />
-				<cfif refind("\:\d+",arguments.aProperties[i])>
+				<cfif refind("\:\d+",aData[i])>
 					<cfset stData.parentid = arguments.parentid />
-					<cfset stData.seq = listlast(arguments.aProperties[i],":") />
-					<cfset stData.data = listfirst(arguments.aProperties[i],":") />
+					<cfset stData.seq = listlast(aData[i],":") />
+					<cfset stData.data = listfirst(aData[i],":") />
 					<cfset stData.typename = application.fapi.findType(objectid = stData.data) />
 				<cfelse>
 					<cfset stData.parentid = arguments.parentid />
 					<cfset stData.seq = i />
-					<cfset stData.data = arguments.aProperties[i] />
+					<cfset stData.data = aData[i] />
 					<cfset stData.typename = application.fapi.findType(objectid = stData.data) />
 				</cfif>
 				
-				<cfset arguments.aProperties[i] = stData />
+				<cfset aData[i] = stData />
 			</cfif>
 		</cfloop>
-		<misc:sort values="#arguments.aProperties#" result="arguments.aProperties"><cfset sendback = value1.seq - value2.seq /></misc:sort>
-	  	<cfloop from="1" to="#arraylen(arguments.aProperties)#" index="i">
-	  		<cfset arguments.aProperties[i].seq = i />
+		<misc:sort values="#aData#" result="aData"><cfset sendback = value1.seq - value2.seq /></misc:sort>
+	  	<cfloop from="1" to="#arraylen(aData)#" index="i">
+	  		<cfset aData[i].seq = i />
 	  	</cfloop>
 	  	
 	  	<!--- Find existing array values --->
@@ -130,21 +131,21 @@
 		</cfquery>
 	  	
 	  	<!--- Update DB --->
-	  	<cfloop from="1" to="#max(arraylen(arguments.aProperties),qExisting.recordcount)#" index="i">
+	  	<cfloop from="1" to="#max(arraylen(aData),qExisting.recordcount)#" index="i">
 		  	
-			<cfif i gt arraylen(arguments.aProperties)>
+			<cfif i gt arraylen(aData)>
 				<!--- Delete item from DB --->
 				<cfset combineResults(stResult,deleteData(schema=arguments.schema,parentid=arguments.parentid,seq=qExisting.seq[i])) />
-			<cfelseif arguments.aProperties[i].seq gt qExisting.recordcount>
+			<cfelseif aData[i].seq gt qExisting.recordcount>
 				<!--- Add item to DB --->
-				<cfset combineResults(stResult,createData(schema=arguments.schema,stProperties=arguments.aProperties[i])) />
-			<cfelseif bExtended or arguments.aProperties[i].data neq qExisting.data[i]>
+				<cfset combineResults(stResult,createData(schema=arguments.schema,stProperties=aData[i])) />
+			<cfelseif bExtended or aData[i].data neq qExisting.data[i]>
 				<cfif qExisting.seq[i] neq i><!--- Too complicated - just delete the bugger and add the new one --->
 					<!--- Delete item from DB --->
 					<cfset combineResults(stResult,deleteData(schema=arguments.schema,parentid=arguments.parentid,seq=qExisting.seq[i])) />
-					<cfset combineResults(stResult,createData(schema=arguments.schema,stProperties=arguments.aProperties[i])) />
+					<cfset combineResults(stResult,createData(schema=arguments.schema,stProperties=aData[i])) />
 				<cfelse>
-					<cfset combineResults(stResult,setData(schema=arguments.schema,stProperties=arguments.aProperties[i])) />
+					<cfset combineResults(stResult,setData(schema=arguments.schema,stProperties=aData[i])) />
 				</cfif>
 			</cfif>
 			
