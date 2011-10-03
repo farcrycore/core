@@ -39,10 +39,18 @@ accommodate legacy implementations
 	<cfset attributes.objectid = url.objectid />
 </cfif>
 
+<cfif isDefined("url.typename")>
+	<cfset attributes.typename = url.typename />
+</cfif>
+
 <cfif isdefined("url.fieldname") and len(url.fieldname)>
 	<cfset attributes.fieldname = url.fieldname />
 </cfif>
 
+
+<cfif isDefined("url.disp")>
+	<cfset attributes.disp = url.disp />
+</cfif>
 <!--- environment variables --->
 <cfparam name="request.mode.lvalidstatus" default="approved" type="string" />
 
@@ -52,6 +60,7 @@ accommodate legacy implementations
 <!--- optional attributes --->
 <cfparam name="attributes.fieldname" type="string" default="" />
 <cfparam name="attributes.typename" type="string" default="" />
+<cfparam name="attributes.disp" type="string" default="attachment" />
 
 <!--- determine typename if its not supplied --->
 <cfif not len(attributes.typename)>
@@ -123,7 +132,7 @@ accommodate legacy implementations
 	DOWNLOAD FILE
 	------------------------------------->
 	<cfif stLocation.type eq "stream">
-		<cfheader name="content-disposition" VALUE='attachment; filename="#stLocation.fileName#"' />
+		<cfheader name="content-disposition" VALUE='#attributes.disp#; filename="#stLocation.fileName#"' />
 		<cfheader name="cache-control" value="" />
 		<cfheader name="pragma" value="" />
 		<cftry>
