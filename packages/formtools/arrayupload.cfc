@@ -295,6 +295,16 @@
 										errorloc.html("<span style='color:##FF0000;font-weight:bold;'>File size: File is not within the file size limit of "+Math.round(sizeLimit/1048576).toString()+"MB</span>");
 									else
 										errorloc.html("<span style='color:##FF0000;font-weight:bold;'>"+errorObj.type+": "+errorObj.text+"</span>");
+								},
+								'onSWFReady'	: function(){
+									var uploadaction = $("##uploadaction");
+									$("###arguments.fieldname#-library-wrapper object").css({
+										width			: uploadaction.width(),
+										height			: uploadaction.height(),
+										position		: "relative",
+										left			: uploadaction.width()+5,
+										top				: 4
+									});
 								}
 							});
 							
@@ -303,17 +313,6 @@
 							}).live("mouseout",function(e){
 								$(this).removeClass("fc-grabbable");
 							});
-							
-							setTimeout(function(){
-								var buttonoffset = $("##uploadaction").offset();
-								$("###arguments.fieldname#-library-wrapper object").css({
-									width			: $("##uploadaction").width(),
-									height			: $("##uploadaction").height(),
-									position		: "relative",
-									left			: $("##uploadaction").width()+5,
-									top				: 4
-								});
-							},500);
 		    			    
 		    			};
 		    			
@@ -593,7 +592,7 @@
 					
 					<ft:button	Type="button"
 								renderType="button"
-								class="ui-state-default ui-corner-all"
+								class="ui-state-default ui-corner-all uploadaction"
 								value="Upload"
 								text="upload"
 								id="uploadaction" />
