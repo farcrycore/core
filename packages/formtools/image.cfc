@@ -1101,8 +1101,7 @@
 					<cfset stJSON["resizedetails"]["quality"] = round(arguments.stFieldPost.stSupporting.Quality*100) />
 					<cfset stResult.value = stFixed.value />
 				<cfelseif structkeyexists(stFixed,"error")>
-					<cfset stResult.value = "" />
-					<cfset stResult.error = stFixed.error />
+					<!--- Do nothing - an error from fixImage means there was no resize --->
 				</cfif>
 				
 				<cfif not structkeyexists(stResult,"error")>
@@ -1139,8 +1138,7 @@
 					<cfset stJSON["resizedetails"]["quality"] = round(arguments.stFieldPost.stSupporting.Quality*100) />
 					<cfset stResult.value = stFixed.value />
 				<cfelseif structkeyexists(stFixed,"error")>
-					<cfset stResult.value = "" />
-					<cfset stResult.error = stFixed.error />
+					<!--- Do nothing - an error from fixImage means there was no resize --->
 				</cfif>
 				
 				<cfif not structkeyexists(stResult,"error")>
@@ -1426,7 +1424,7 @@
 				<cfif stFixed.bSuccess>
 					<cfset stResult.value = stFixed.value />
 				<cfelseif structkeyexists(stFixed,"stError")>
-					<cfreturn failed("",stFixed.stError.message) />
+					<!--- Do nothing - an error from fixImage means there was no resize --->
 				</cfif>
 				
 				<cfset onFileChange(typename=arguments.typename,objectid=arguments.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
@@ -1887,10 +1885,10 @@
 					<cfif stFixed.bSuccess>
 						<cfset stResult.value = stFixed.value />
 					<cfelseif structkeyexists(stFixed,"error")>
-						<cfset stResult = failed("",stFixed.error) />
+						<!--- Do nothing - an error from fixImage means there was no resize --->
 					</cfif>
 					
-					<cfif not structkeyexists(stFixed,"error")>
+					<cfif not structkeyexists(stResult,"error")>
 						<cfset onFileChange(typename=arguments.typename,objectid=arguments.stProperties.objectid,stMetadata=arguments.stFields[thisfield].metadata,value=stResult.value) />
 						<cfset stProperties[thisfield] = stResult.value />
 					</cfif>
