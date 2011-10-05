@@ -744,6 +744,7 @@
 	    <cfset var aItems = "" />
 	    <cfset var stActions = structnew() />
 	    <cfset var editprefix = "" />
+	    <cfset var stNewObject = structnew() />
 		
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
