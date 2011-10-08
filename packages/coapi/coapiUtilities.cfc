@@ -115,11 +115,7 @@
 			<cfset st.objectid = application.fc.utils.createJavaUUID() />
 			
 			<cfset st.lastupdatedby = userlogin />
-			<cfset st.datetimelastupdated = now() />
-			<!--- // todo: not sure createdby/datetimecreated should be changed for DRAFT GB 20050126 --->
-			<cfset st.createdby = userlogin />
-			<cfset st.datetimecreated = Now() />
-			
+			<cfset st.datetimelastupdated = now() />			
 			
 			<cfloop list="#structKeyList(st)#" index="iField">
 				<cfif isArray(st[iField]) AND arrayLen(st[iField])>
