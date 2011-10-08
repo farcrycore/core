@@ -86,6 +86,13 @@ It just ignores the inner ones.
 		</cfif>
 		
 
+		<!--- Make sure attribute is numeric for javascript --->
+		<cfif not IsBoolean(attributes.Validation) OR attributes.Validation>
+			<cfset attributes.Validation = 1>
+		<cfelse>
+			<cfset attributes.Validation = 0>
+		</cfif>
+		
 		<!--- Keep the form information available in the request scope --->
 		<cfset Request.farcryForm = "#StructNew()#" />
 		<cfset Request.farcryForm.Name = "#attributes.Name#" />
@@ -97,9 +104,8 @@ It just ignores the inner ones.
 		<cfset Request.farcryForm.stObjects = "#StructNew()#" />
 		<cfset Request.farcryForm.bAjaxSubmission = "#attributes.bAjaxSubmission#" />
 		<cfset Request.farcryForm.lFarcryObjectsRendered = "" />	
-		<cfif not structkeyexists(request.farcryForm,"defaultAction") or not len(request.farcryForm.defaultAction)>
-			<cfset Request.farcryForm.defaultAction = "#attributes.defaultAction#" />	
-		</cfif>
+		<cfset Request.farcryForm.defaultAction = "#attributes.defaultAction#" />	
+		
 
 		<!--- Add form protection --->
 		<cfparam name="session.stFarCryFormSpamProtection" default="#structNew()#" />
@@ -121,7 +127,6 @@ It just ignores the inner ones.
 					enctype="multipart/form-data" 
 					class="#attributes.class#"  
 					style="#attributes.style#" >
-			
 			
 			<cfif attributes.bAjaxSubmission>
 				<!--- We use the hidden field to tell the submission that we do not need to include the wrap. --->
