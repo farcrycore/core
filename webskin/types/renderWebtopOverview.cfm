@@ -29,8 +29,6 @@ FARCRY INCLUDE FILES
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
-<cfimport taglib="/farcry/core/tags/extjs/" prefix="extjs">
-<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">
 <cfimport taglib="/farcry/core/tags/grid/" prefix="grid">
 
@@ -255,69 +253,7 @@ START WEBSKIN
 		<cfoutput><br style="clear:both;" /></cfoutput>
 
 </ft:form>
-<!--- 
-	<extjs:layout id="webtopOverviewViewport" container="Viewport" layout="border">
-		<extjs:item region="center" container="TabPanel" activeTab="0">
-			
-			<cfset oWorkflow = createObject("component", application.stcoapi.farWorkflow.packagepath) />
-			
-			<cfif StructKeyExists(stobj,"status")>
-			
-				<cfif len(stobj.status)>
-					<cfset mainTabStatus = stobj.status />
-				<cfelse>
-					<cfset mainTabStatus = "NO STATUS" />
-				</cfif>
-				
-				
-				
-						
 
-						
-				<cfif stobj.status NEQ "" AND NOT structIsEmpty(stDraftObject)>
-					<extjs:item title="#application.rb.getResource('workflow.constants.#stDraftObject.status#@label',stDraftObject.status)#" container="Panel" layout="border">
-
- 						<extjs:item region="center" container="Panel" layout="border">			
-							<extjs:item region="center" autoScroll="true">
-				
-								<cfset workflowHTML = oWorkflow.renderWorkflow(referenceID="#stDraftObject.objectid#", referenceTypename="#stDraftObject.typename#") />
-								<cfoutput>#workflowHTML#</cfoutput>
-								<skin:view objectid="#stDraftObject.objectid#" webskin="webtopOverviewSummary" />
-							</extjs:item>
-						</extjs:item>	
-						<extjs:item region="east" layout="accordion" width="250" cls="webtopOverviewActions">
-							<skin:view objectid="#stDraftObject.objectid#" webskin="webtopOverviewActions" />
-						</extjs:item>
-							
-
-						
-					</extjs:item>
-				</cfif>	
-			<cfelse>
-				<cfset mainTabStatus = "Approved/Live" />
-			</cfif>
-			
-
-	
-							
-			<extjs:item title="#application.rb.getResource('workflow.constants.#mainTabStatus#@label',mainTabStatus)#" container="Panel" layout="border">
-				<extjs:item region="center" container="Panel" layout="border">			
-					<extjs:item region="center" autoScroll="true">
-						<cfset workflowHTML = oWorkflow.renderWorkflow(referenceID="#stobj.objectid#", referenceTypename="#stobj.typename#") />
-						<cfoutput>#workflowHTML#</cfoutput>
-						<skin:view objectid="#stobj.objectid#" webskin="webtopOverviewSummary" />
-					</extjs:item>
-				</extjs:item>			
-				<extjs:item region="east" layout="accordion" width="250" cls="webtopOverviewActions">
-					<skin:view objectid="#stobj.objectid#" webskin="webtopOverviewActions" />
-				</extjs:item>	
-				
-				
-			</extjs:item>
-		</extjs:item>		
-	</extjs:layout>
- --->
-<!--- </cfif> --->
 
 
 <cfsetting enablecfoutputonly="false">
