@@ -26,7 +26,6 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
-<cfimport taglib="/farcry/core/tags/extjs" prefix="extjs" />
 
 
 
@@ -37,7 +36,11 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 			<cfset stRefObject = application.coapi.coapiUtilities.getContentObject(objectid="#stFU.refObjectID#") />	
 			<cfif not structIsEmpty(stRefObject)>
 				<cfset EditURL = "#application.url.webtop#/conjuror/invocation.cfm?objectid=#stRefObject.objectid#&typename=#stRefObject.typename#&method=edit&ref=extjsIFrame">
-				<extjs:iframeDialog url="#EditURL#" title="Edit" width="95%" height="95%" resizable="true"  />
+				<skin:onReady>
+					<cfoutput>
+					$fc.openDialogIFrame('Edit', '#EditURL#');
+					</cfoutput>
+				</skin:onReady>
 				<cfset form.FARCRYFORMSUBMITTED = "" />
 				<cfset form.FARCRYFORMSUBMITBUTTON = "" />	
 			</cfif>
@@ -54,7 +57,11 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 			<cfset stRefObject = application.coapi.coapiUtilities.getContentObject(objectid="#stFU.refObjectID#") />			
 			<cfif not structIsEmpty(stRefObject)>
 				<cfset EditURL = "#application.url.webtop#/edittabOverview.cfm?objectid=#stRefObject.objectid#&typename=#stRefObject.typename#&method=edit&ref=extjsIFrame">
-				<extjs:iframeDialog url="#EditURL#" title="Edit" width="95%" height="95%" resizable="true"  />
+				<skin:onReady>
+					<cfoutput>
+					$fc.openDialogIFrame('Edit', '#EditURL#');
+					</cfoutput>
+				</skin:onReady>
 			</cfif>	
 		</cfif>
 	</cfif>
