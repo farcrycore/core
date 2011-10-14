@@ -405,7 +405,7 @@
 			
 		 	<cfcatch type="database">
 				<!--- Looks like a property has not yet been deployed. If so, simply try a select * --->
-				<farcry:logevent object="#arguments.objectID#" type="#this.dbowner##arguments.schema.tablename#" event="getData" notes="Error running getdata(). #cfcatch.detail#"  />
+				<cflog file="fourq" text="Error running getdata() for #arguments.objectID# (#arguments.schema.tablename#): #cfcatch.detail#"  />
 				<cfquery datasource="#this.dsn#" name="qGetData">
 					SELECT 	*
 					FROM 	#this.dbowner##arguments.schema.tablename#
