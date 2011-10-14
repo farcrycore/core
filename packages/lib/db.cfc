@@ -404,7 +404,7 @@
 		<cfif structkeyexists(arguments.data,"dbType")>
 			<cfset type = arguments.data.dbType />
 		<cfelse>
-			<cfset type = "string" />
+			<cfset type = arguments.data.type />
 		</cfif>
 		
 		<cfif structkeyexists(arguments.data,"dbPrimaryKey")>
