@@ -18,7 +18,8 @@
 				<!-- removing bulk file uploader until UI is improved
 				<menuitem id="bulkfileupload" sequence="40" label="Bulk File Upload" link="/conjuror/invocation.cfm?typename=bulkFileUpload" />
 				 -->
-				<menuitem id="listdmflash" sequence="30" label="Flash Library" link="/admin/customadmin.cfm?module=customlists/dmflash.cfm" />
+				<!-- flash library deprecated
+				<menuitem id="listdmflash" sequence="30" label="Flash Library" link="/admin/customadmin.cfm?module=customlists/dmflash.cfm" /> -->
 			</menu>
 			<menu id="categorisation" sequence="40" permission="ContentCategorisationTab" label="Category Management">
 				<menuitem id="managekeywords" sequence="10" label="Manage Keywords" link="/navajo/keywords/hierarchyedit.cfm" icon="custom" description="Manage your category keyword hierarchy and category aliases. You can have as many branches as you need, and the category tree can be created to any depth." />		
@@ -26,7 +27,8 @@
 				<menuitem id="quickcategorybuilder" sequence="30" label="Category Tree Quick Builder" link="/admin/quickBuilderCat.cfm" />	
 			</menu>
 			<menu id="exportfeeds" sequence="50" label="Content Export">
-				<menuitem id="exportwebfeed" sequence="15" label="Web Feeds" link="/customadmin/customlists/farWebfeed.cfm" relatedtype="farwebfeed" />
+			<!-- web feeds deprecated
+			<menuitem id="exportwebfeed" sequence="15" label="Web Feeds" link="/customadmin/customlists/farWebfeed.cfm" relatedtype="farwebfeed" /> -->
 				<menuitem id="exportSkeleton" sequence="21" label="Export As Project Skeleton" link="/content/exportSkeleton.cfm" />
 				<menuitem id="exportgeneral" sequence="20" label="General Export" link="/content/export.cfm" />
 			</menu>
@@ -56,7 +58,8 @@
 			</menu>
 			<menu id="cachemanagement" sequence="220" label="Cache Management">
 				<menuitem id="objbrokersummary" sequence="10" label="Object Broker Report" link="/admin/objectBrokerReport.cfm" />
-				<menuitem id="cachesummary" sequence="200" label="Cache Summary" link="/admin/cacheSummary.cfm" />
+				<!-- old skool farcry cache tag is long dead
+				<menuitem id="cachesummary" sequence="200" label="Cache Summary" link="/admin/cacheSummary.cfm" /> -->
 			</menu>
 		</subsection>
 		
