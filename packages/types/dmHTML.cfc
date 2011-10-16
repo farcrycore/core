@@ -1,4 +1,4 @@
-<!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
+<!--- @@Copyright: Daemon Pty Limited 2002-2011, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
 
@@ -25,56 +25,28 @@ type properties
 ------------------------------------------------------------------------->	
 <cfproperty 
 	name="Title" type="string" hint="Title of content item." required="no" default="" 
-	ftSeq="1" ftwizardStep="Start" ftFieldset="General Details" ftValidation="required" 
+	ftSeq="1" ftwizardStep="Web Page" ftFieldset="General Details" ftValidation="required" 
 	ftHint="This title will appear as the major title on the page. It should not be confused with the title that appears in the navigation.">
 
 <cfproperty 
-	name="reviewDate" type="date" hint="The date for which the object will be reviewed." required="no" default=""
-	ftSeq="2" ftwizardStep="Start" ftFieldset="General Details" ftLabel="Review Date" 
-	ftHint="Optionally enter a date to remind you when this content should be reviewed."
-	ftType="datetime" ftToggleOffDateTime="true">
-	
-<cfproperty 
-	name="ownedby" displayname="Owned by" type="string" hint="Username for owner." required="No" default=""
-	ftSeq="3" ftwizardStep="Start" ftFieldset="General Details" ftLabel="Owned By"
-	ftHint="This should be set to the person responsible for this page. Any questions... ask this person."
-	ftType="list" ftRenderType="dropdown" ftListData="getOwners" >
-	
-<cfproperty 
 	name="displayMethod" type="string" hint="Display method to render this HTML object with." required="yes" default="displayPageStandard" 
-	ftSeq="4" ftwizardStep="Start" ftFieldset="General Details" ftLabel="Page Layout" 
+	ftSeq="4" ftwizardStep="Web Page" ftFieldset="General Details" ftLabel="Page Layout" 
 	ftHint="This selection will determine the overall layout of the page."
 	ftType="webskin" ftPrefix="displayPage" >
 
 <cfproperty 
-	name="metaKeywords" type="string" hint="HTML head section metakeywords." required="no" default="" 
-	ftSeq="5" ftwizardStep="Start" ftFieldset="SEO" ftLabel="Keyword Tag(s)"
-	ftHint="Keep it simple and relevant: 10-20 keywords per page. Limited to 900 characters including spaces."
-	ftType="longchar" ftLimit="900"
-	ftAutoResize="true"
-	fthelptitle="Search Engine Optimization" 
-	ftHelpSection="The keywords and description that you enter here will provide search engines with extra information that describes your page. Remember that a good SEO strategy is much more than just a good description and keywords.">
-	
-<cfproperty 
-	name="extendedmetadata" type="longchar" hint="HTML head section for extended keywords." required="no" default=""
-	ftSeq="6" ftwizardStep="Start" ftFieldset="SEO" ftlabel="Description Tag"
-	ftHint="Concise summary of the page, with an upper limit 170 characters, including spaces."
-	ftLimit="170"
-	ftAutoResize="true" />
-
-<cfproperty 
 	name="Teaser" type="longchar" hint="Teaser text." required="no" default=""
-	ftSeq="10" ftwizardStep="Body" ftFieldset="Teaser"
+	ftSeq="10" ftwizardStep="Web Page" ftFieldset="Teaser"
 	ftAutoResize="true">
 	
 <cfproperty 
 	name="teaserImage" type="uuid" ftType="uuid" hint="UUID of image to display in teaser" required="no" default=""
-	ftSeq="11" ftwizardStep="Body" ftFieldset="Teaser" ftLabel="Teaser Image"
+	ftSeq="11" ftwizardStep="Web Page" ftFieldset="Teaser" ftLabel="Teaser Image"
 	ftJoin="dmImage" ftLibraryData="getTeaserImageLibraryData" ftLibraryDataTypename="dmHTML">
 
 <cfproperty 
 	name="Body" type="longchar" hint="Main body of content." required="no" default="" 
-	ftSeq="12" ftwizardStep="Body" ftFieldset="Body" ftLabel="Body" 
+	ftSeq="12" ftwizardStep="Web Page" ftFieldset="Body" ftLabel="Body" 
 	ftType="richtext" 
 	ftImageArrayField="aObjectIDs" ftImageTypename="dmImage" ftImageField="StandardImage"
 	ftTemplateTypeList="dmImage,dmFile,dmFlash,dmNavigation,dmHTML" ftTemplateWebskinPrefixList="insertHTML"
@@ -83,19 +55,58 @@ type properties
 
 <cfproperty 
 	name="aObjectIDs" type="array" hint="Related media items for this content item." required="no" default=""
-	ftSeq="13" ftwizardStep="Body" ftFieldset="Relationships" ftLabel="Associated Media" 
+	ftSeq="13" ftwizardStep="Web Page" ftFieldset="Relationships" ftLabel="Associated Media" 
 	ftType="array" ftJoin="dmImage,dmFile,dmFlash" 
 	ftShowLibraryLink="false" ftAllowAttach="true" ftAllowAdd="true" ftAllowEdit="true" ftRemoveType="detach"
 	bSyncStatus="true">
 
 <cfproperty 
 	name="aRelatedIDs" type="array" ftType="array" hint="Holds object pointers to related objects. Can be of mixed types." required="no" default="" 
-	ftSeq="14" ftwizardStep="Body" ftFieldset="Relationships" ftLabel="Associated Content"
+	ftSeq="14" ftwizardStep="Web Page" ftFieldset="Relationships" ftLabel="Associated Content"
 	ftJoin="dmNavigation,dmHTML" >
 
+<!--- 
+ // seo
+--------------------------------------------------------------------------------------------------->
 <cfproperty 
-	name="catHTML" type="nstring" hint="Topic." required="no" default="" 
-	ftSeq="20" ftwizardStep="Categorisation" ftLabel="Categories"
+	name="seoTitle" type="string" hint="SEO title of content item." required="no" default="" 
+	ftSeq="32" ftwizardStep="SEO" ftFieldset="SEO"
+	ftlimit="69" ftLimitOverage="warn" ftAutoResize="true"
+	ftHint="If specified, the SEO title will be used instead of the page title for the TITLE tag. This title will be used as the preferred title by search engines. Different search engines have different lengths of snippet title: Google 69, Yahoo 72, Bing 65."
+	fttype="longchar"
+	fthelptitle="Search Engine Optimization" 
+	ftHelpSection="The keywords and description that you enter here will provide search engines with extra information that describes your page. Remember that a good SEO strategy is much more than just a good description and keywords." />
+	
+<cfproperty 
+	name="extendedmetadata" type="longchar" hint="HTML head section for extended keywords." required="no" default=""
+	ftSeq="35" ftwizardStep="SEO" ftFieldset="SEO" ftlabel="Description Tag"
+	ftHint="Concise summary of the page. Different search engines have different character limits (including spaces) for their search snippet: Google 156, Yahoo 161, Bing 150."
+	ftLimit="170" ftLimitOverage="warn"
+	ftAutoResize="true" />
+
+<cfproperty 
+	name="metaKeywords" type="string" hint="HTML head section metakeywords." required="no" default="" 
+	ftSeq="38" ftwizardStep="SEO" ftFieldset="SEO" ftLabel="Keyword Tag(s)"
+	ftHint="Keep it simple and relevant: 10-20 keywords per page. Limited to 900 characters including spaces."
+	ftType="longchar" ftLimit="900"
+	ftAutoResize="true" ftLimitOverage="warn" />
+
+
+<cfproperty 
+	name="ownedby" displayname="Owned by" type="string" hint="Username for owner." required="No" default=""
+	ftSeq="50" ftwizardStep="Miscellaneaous" ftFieldset="Content Details" ftLabel="Owned By"
+	ftHint="This should be set to the person responsible for this page. Any questions... ask this person."
+	ftType="list" ftRenderType="dropdown" ftListData="getOwners" >
+	
+<cfproperty 
+	name="reviewDate" type="date" hint="The date for which the object will be reviewed." required="no" default=""
+	ftSeq="52" ftwizardStep="Miscellaneaous" ftFieldset="Content Details" ftLabel="Review Date" 
+	ftHint="Optionally enter a date to remind you when this content should be reviewed."
+	ftType="datetime" ftToggleOffDateTime="true" ftShowTime="false">
+	
+<cfproperty 
+	name="catHTML" type="string" hint="Topic." required="no" default="" 
+	ftSeq="54" ftwizardStep="Miscellaneaous" ftLabel="Categories"
 	ftType="Category" ftAlias="root" />
 
 
@@ -136,7 +147,7 @@ object methods
 		
 		<!--- Find any dmHTML pages that reference this html page. --->
 		<cfquery datasource="#application.dsn#" name="qRelated">
-		SELECT * FROM dmHTML_aRelatedIDs
+		SELECT parentid FROM dmHTML_aRelatedIDs
 		WHERE data = '#stobj.objectid#'
 		</cfquery>
 		
