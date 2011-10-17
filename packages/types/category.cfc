@@ -204,7 +204,7 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 					<cfset sqlMaxRows = " top #numberFormat(arguments.maxRows)# ">
 					<cfset bSqlMax = 1>
 				</cfcase>
-				<cfcase value="mysql,oracle,postgresql">
+				<cfcase value="mysql,postgresql">
 					<cfset sqlMaxRows = " LIMIT #numberFormat(arguments.maxRows)# ">
 					<cfset bSqlMax = 0>
 				</cfcase>
