@@ -280,7 +280,7 @@
 									if (results.error && results.error.length){
 										errorloc = $("##join-item-"+ID+" .uploadifyFeedback",arrayuploadformtool.displaylist).html("<span style='color:##FF0000;font-weight:bold;'>Server error: "+results.error+"</span>");
 									}
-									else {console.log(results);
+									else {
 										$("##join-item-"+ID,arrayuploadformtool.displaylist).replaceWith(arrayuploadformtool.getHTML("newitem",{
 											itemid		: results.objectid,
 											displayhtml : results.html
@@ -745,6 +745,7 @@
 	    <cfset var aItems = "" />
 	    <cfset var stActions = structnew() />
 	    <cfset var editprefix = "" />
+	    <cfset var stNewObject = structnew() />
 		
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />

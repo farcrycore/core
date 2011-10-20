@@ -174,6 +174,10 @@
 		<cfloop condition="not structisempty(tmpMD)">
 			<cfif structkeyexists(tmpMD,"properties")>
 				<cfloop from="1" to="#arrayLen(tmpMD.properties)#" index="i">
+					<cfif structkeyexists(tmpMD.properties[i],"type") and tmpMD.properties[i].type eq "any">
+						<cfset structdelete(tmpMD.properties[i],"type") />
+					</cfif>
+					
 					<cfif structkeyexists(stPropMap,tmpMD.properties[i].name)>
 						<cfset structappend(aProps[stPropMap[tmpMD.properties[i].name]],tmpMD.properties[i],false) />
 					<cfelse>

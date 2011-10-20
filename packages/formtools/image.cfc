@@ -1857,7 +1857,7 @@
 			<cfif bModified>
 				<cfimage action="write" source="#newImage#" destination="#imageDestination#" overwrite="true" />
 				<!--- Workaround for missing 'mode' attribute in the <cfimage> tag :: Set UNIX file rights to 'user:group' --->
-				<cffile action="rename" source="#imageDestination#" destination="#imageDestination#" mode="664" />
+				<cfset FileSetAccessMode("#imageDestination#", "664") />
 			<cfelse>
 				<!--- No changes, the file is already in place ... we're done --->
 			</cfif>
@@ -1874,7 +1874,7 @@
 		
 			<cfimage attributeCollection="#stImageAttributeCollection#" />
 			<!--- Workaround for missing 'mode' attribute in the <cfimage> tag :: Set UNIX file rights to 'user:group' --->
-			<cffile action="rename" source="#imageDestination#" destination="#imageDestination#" mode="664" />
+			<cfset FileSetAccessMode("#imageDestination#", "664") />
 			
 			<cfset stResult.filename = listlast(stImageAttributeCollection.destination,"/\") />
 		</cfif>
