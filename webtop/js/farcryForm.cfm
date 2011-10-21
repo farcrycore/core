@@ -1048,7 +1048,8 @@ function setRowBackground (childCheckbox) {
 				};
 				
 				if( fcSettings.ONCLICK ) {
-					eval( fcSettings.ONCLICK );
+					eval("var fn = function(){ "+fcSettings.ONCLICK+" }");
+					if (fn.call(this,e)===false) return false;
 				};
 				
 				

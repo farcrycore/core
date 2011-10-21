@@ -591,7 +591,7 @@
 				<ft:buttonPanel><cfoutput>
 					<input type="file" name="#arguments.fieldname#UPLOAD" id="#arguments.fieldname#UPLOAD" />
 					
-					<ft:button	Type="button"
+					<ft:button	Type="button" priority="secondary"
 								renderType="button"
 								class="ui-state-default ui-corner-all"
 								value="Upload"
@@ -600,7 +600,7 @@
 					
 				
 					<cfif stActions.ftAllowSelect>
-						<ft:button	Type="button" 
+						<ft:button	Type="button" priority="secondary"
 									renderType="button"
 									class="ui-state-default ui-corner-all"
 									value="select" 
@@ -610,7 +610,7 @@
 					
 					<cfif arguments.stMetadata.ftAllowRemoveAll>
 						<cfif stActions.ftRemoveType EQ "delete">
-							<ft:button	Type="button" 
+							<ft:button	Type="button" priority="secondary" 
 										renderType="button"
 										class="ui-state-default ui-corner-all"
 										value="Remove All" 
@@ -618,7 +618,7 @@
 										confirmText="Are you sure you want to delete the attached items? Doing so will immediately remove them from the database."
 										onClick="$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').removeAllItems();return false;" />
 						<cfelseif stActions.ftRemoveType EQ "remove">
-							<ft:button	Type="button" 
+							<ft:button	Type="button" priority="secondary" 
 										renderType="button"
 										class="ui-state-default ui-corner-all"
 										value="Remove All" 
