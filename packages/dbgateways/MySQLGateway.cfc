@@ -161,6 +161,8 @@
 					<cfcase value="numeric">
 						<cfif stProp.precision eq "1,0">
 							tinyint(1)
+						<cfelseif listlast(stProp.precision) eq "0">
+							int
 						<cfelse>
 							decimal(#stProp.precision#)
 						</cfif>
@@ -217,6 +219,8 @@
 					<cfcase value="numeric">
 						<cfif stProp.precision eq "1,0">
 							tinyint(1)
+						<cfelseif listlast(stProp.precision) eq "0">
+							int
 						<cfelse>
 							decimal(#stProp.precision#)
 						</cfif>
@@ -291,24 +295,32 @@
 		<cfargument name="tablename" type="string" required="True" hint="The table to introspect" />
 		
 		<cfset var stResult = structnew() />
-		<cfset var qIndexes = "" />
-		<cfset var thiscolumn = "" />
+		<cfset var getMySQLIndexes = "" />
 		
-		<cfdbinfo datasource="#this.dsn#" type="index" table="#arguments.tablename#" name="qIndexes" />
+		<!--- Get all tables in database--->
+		<cfquery name="getMySQLIndexes" datasource="#this.dsn#">
+			SHOW INDEX FROM #arguments.tablename#
+		</cfquery>
 		
-		<cfloop query="qIndexes">
-			<cfset stResult[qIndexes.index_name] = structnew() />
-			<cfset stResult[qIndexes.index_name].name = qIndexes.index_name />
-			<cfif qIndexes.index_name eq "primary">
-				<cfset stResult[qIndexes.index_name].type = "primary" />
+		<cfquery name="getMySQLIndexes" dbtype="query">
+			select		*
+			from		getMySQLIndexes
+			order by	Key_name,Seq_in_index
+		</cfquery>
+		
+		<cfoutput query="getMySQLIndexes" group="Key_name">
+			<cfset stResult[getMySQLIndexes.Key_Name] = structnew() />
+			<cfset stResult[getMySQLIndexes.Key_Name].name = getMySQLIndexes.Key_Name />
+			<cfif getMySQLIndexes.Key_Name eq "primary">
+				<cfset stResult[getMySQLIndexes.Key_Name].type = "primary" />
 			<cfelse>
-				<cfset stResult[qIndexes.index_name].type = "unclustered" />
+				<cfset stResult[getMySQLIndexes.Key_Name].type = "unclustered" />
 			</cfif>
-			<cfset stResult[qIndexes.index_name].fields = arraynew(1) />
-			<cfloop list="#qIndexes.column_name#" index="thiscolumn">
-				<cfset arrayappend(stResult[qIndexes.index_name].fields,trim(thiscolumn)) />
-			</cfloop>
-		</cfloop>
+			<cfset stResult[getMySQLIndexes.Key_Name].fields = arraynew(1) />
+			<cfoutput>
+				<cfset arrayappend(stResult[getMySQLIndexes.Key_Name].fields,getMySQLIndexes.Column_name) />
+			</cfoutput>
+		</cfoutput>
 		
 		<cfreturn stResult />
 	</cffunction>
@@ -317,7 +329,13 @@
 		<cfargument name="tablename" type="string" required="True" hint="The table to introspect" />
 		
 		<cfset var stResult = structnew() />
-		<cfset var qColumns = "" />
+		<cfset var getMySQLTables = "" />
+		<cfset var myTable = "" />
+		<cfset var GetMySQLColumns = "" />
+		<cfset var openbracket = "" />
+		<cfset var closebracket = "" />
+		<cfset var myLength = "" />
+		<cfset var myType = "" />
 		<cfset var stColumn = structnew() />
 		<cfset var thisindex = "" />
 		<cfset var thisfield = "" />
@@ -326,54 +344,77 @@
 		<cfset stResult.tablename = arguments.tablename />
 		<cfset stResult.fields = structnew() />
 		
-		<cfdbinfo datasource="#application.dsn#" type="columns" table="#arguments.tablename#" name="qColumns" />
+		<!--- Get all tables in database--->
+		<cfquery name="getMySQLTables" datasource="#this.dsn#">
+			SHOW TABLES like '#arguments.tablename#'
+		</cfquery>
 		
-		<!--- Loop thru columns --->
-		<cfloop query="qColumns">
-			<cfset stColumn = structnew() />
-			<cfset stColumn.name = qColumns.column_name />
-			<cfif qColumns.is_nullable>
-				<cfset stColumn.nullable = true />
-			<cfelse>
-				<cfset stColumn.nullable = false />
-			</cfif>
-			<cfset stColumn.default = qColumns.column_default_value />
-			<cfif stColumn.default eq "" and stColumn.nullable>
-				<cfset stColumn.default = "NULL" />
-			</cfif>
-			<cfset stColumn.precision = "" />
-			<cfset stColumn.type = qColumns.type_name />
+		<cfloop query="getMySQLTables">
+			<!--- Get tablename --->
+			<cfset myTable = GetMySQLTables[columnlist][currentrow]>
 			
-			<cfswitch expression="#stColumn.type#">
-				<cfcase value="longtext">
-					<cfset stColumn.type = "longchar" />
-				</cfcase>
-				<cfcase value="tinyint">
-					<cfset stColumn.type = "numeric" />
-					<cfset stColumn.precision = "1,0" />
-				</cfcase>
-				<cfcase value="varchar">
-					<cfset stColumn.type = "string" />
-					<cfset stColumn.precision = qColumns.char_octet_length />
-				</cfcase>
-				<cfcase value="decimal">
-					<cfset stColumn.type = "numeric" />
-					<cfset stColumn.precision = "#qColumns.column_size#,#qColumns.decimal_digits#" />
-				</cfcase>
-				<cfcase value="int">
-					<cfset stColumn.type = "numeric" />
-					<cfset stColumn.precision = "#qColumns.column_size#,0" />
-				</cfcase>
-				<cfcase value="datetime">
-					<cfif stColumn.default gt dateadd('yyyy',100,now()) and stColumn.nullable>
-						<cfset stColumn.default = "NULL" />
-					<cfelseif stColumn.default gt dateadd('yyyy',100,now())>
-						<cfset stColumn.default = "" />
-					</cfif>
-				</cfcase>
-			</cfswitch>
+			<!--- Get column details of each table--->
+			<cfquery name="GetMySQLColumns" datasource="#this.dsn#">
+				SHOW COLUMNS FROM #myTable#
+			</cfquery>
 			
-			<cfset stResult.fields[stColumn.name] = stColumn />
+			<!--- Loop thru columns --->
+			<cfloop query="GetMySQLColumns">
+				<cfset stColumn = structnew() />
+				<cfset stColumn.name = GetMySQLColumns.field />
+				<cfif GetMySQLColumns.null eq "yes">
+					<cfset stColumn.nullable = true />
+				<cfelse>
+					<cfset stColumn.nullable = false />
+				</cfif>
+				<cfset stColumn.default = GetMySQLColumns.default />
+				<cfif stColumn.default eq "" and stColumn.nullable>
+					<cfset stColumn.default = "NULL" />
+				</cfif>
+				<cfset stColumn.precision = "" />
+				
+				<cfif find("(",type)>
+					<cfset openbracket = find("(",GetMySQLColumns.type) />
+					<cfset closebracket = find(")",GetMySQLColumns.type) />
+					<cfset stColumn.precision = mid(GetMySQLColumns.type,openbracket+1,closebracket-(openbracket+1)) />
+					<cfset stColumn.type = left(GetMySQLColumns.type,openbracket-1) />
+				<cfelse>
+					<cfset stColumn.type = GetMySQLColumns.type />
+					<cfset stColumn.precision = "" />
+				</cfif>
+				
+				<cfswitch expression="#stColumn.type#">
+					<cfcase value="longtext,text" delimiters=",">
+						<cfset stColumn.type = "longchar" />
+					</cfcase>
+					<cfcase value="tinyint">
+						<cfset stColumn.type = "numeric" />
+						<cfset stColumn.precision = "1,0" />
+					</cfcase>
+					<cfcase value="varchar">
+						<cfset stColumn.type = "string" />
+						<cfif stColumn.precision eq "2000">
+							<cfset stColumn.precision = "MAX" />
+						</cfif>
+					</cfcase>
+					<cfcase value="decimal">
+						<cfset stColumn.type = "numeric" />
+					</cfcase>
+					<cfcase value="int">
+						<cfset stColumn.type = "numeric" />
+						<cfset stColumn.precision = "#stColumn.precision#,0" />
+					</cfcase>
+					<cfcase value="datetime">
+						<cfif stColumn.default gt dateadd('yyyy',100,now()) and stColumn.nullable>
+							<cfset stColumn.default = "NULL" />
+						<cfelseif stColumn.default gt dateadd('yyyy',100,now())>
+							<cfset stColumn.default = "" />
+						</cfif>
+					</cfcase>
+				</cfswitch>
+				
+				<cfset stResult.fields[stColumn.name] = stColumn />
+			</cfloop>
 		</cfloop>
 		
 		<!--- Table indexes --->
@@ -394,32 +435,33 @@
 		
 		<cfset var stResult = structnew() />
 		<cfset var stTemp = structnew() />
-		<cfset var qAllTables = "" />
-		<cfset var qTables = "" />
 		
 		<!--- Get basic table columns--->
-		<cfdbinfo datasource="#application.dsn#" type="tables" name="qAllTables" />
-		
-		<cfquery dbtype="query" name="qTables">
-			select * from qAllTables where table_name like '#arguments.typename#'
+		<cfquery datasource="#this.dsn#" name="qTables">
+			SHOW TABLES like '#arguments.typename#'
 		</cfquery>
 		<cfloop query="qTables">
-			<cfset structappend(stResult,introspectTable(qTables.table_name),true) />
+			<cfset structappend(stResult,introspectTable(qTables[columnlist][currentrow]),true) />
 		</cfloop>
 		
 		<!--- Get extended array tables --->
+		<cfquery datasource="#this.dsn#" name="qTables">
+			show tables
+		</cfquery>
 		<cfquery dbtype="query" name="qTables">
-			select * from qAllTables where upper(table_name) like '#ucase(arguments.typename)#@_%' escape '@'
+			select 	#qTables.columnlist# as name
+			from 	qTables
+			where 	upper(#qTables.columnlist#) like '#ucase(arguments.typename)#@_%' escape '@'
 		</cfquery>
 		
 		<cfloop query="qTables">
 			<cfset stTemp = structnew() />
-			<cfset stTemp.name = listlast(qTables.table_name,"_") />
+			<cfset stTemp.name = listlast(qTables[columnlist][currentrow],"_") />
 			<cfset stTemp.type = "array" />
 			<cfset stTemp.default = "NULL" />
 			<cfset stTemp.nullable = true />
-			<cfset structappend(stTemp,introspectTable(qTables.table_name),true) />
-			<cfset stResult.fields[listlast(qTables.table_name,"_")] = stTemp />
+			<cfset structappend(stTemp,introspectTable(qTables[columnlist][currentrow]),true) />
+			<cfset stResult.fields[listlast(qTables[columnlist][currentrow],"_")] = stTemp />
 		</cfloop>
 	
 		<cfreturn stResult />
