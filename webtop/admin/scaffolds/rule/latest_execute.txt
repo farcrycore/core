@@ -1,29 +1,19 @@
 <cfsetting enablecfoutputonly="true">
 <!--- @@displayname: Display latest [DISPLAYNAME] items --->
-
+<!---
+rule properties:
+	numItems; number of items displayed per page
+	numPages; total number of pages to display
+--->
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
-<cfset o = createObject("component",application.types['[TYPENAME]'].typepath)>
-<cfset qRecordSet = queryNew("objectID") />
-<cfset lCategoryObjectIDs = "" />
-<cfset qObjectsMatchingCategories = queryNew("objectID") />
 
-<cfif listLen(stObj.Category)>
-	<cfset qObjectsMatchingCategories = createObject("component","farcry.core.packages.farcry.category").getData(typename="[TYPENAME]", lCategoryids=stobj.Category) />
-	<cfset lCategoryObjectIDs = valueList(qObjectsMatchingCategories.objectid) />
-</cfif>		
+<!--- get content items --->
+<cfset q=application.fapi.getContentObjects(typename="[TYPENAME]", orderby="datetimelastupdated DESC")>
 
-<cfset qRecordSet = o.getMultipleByQuery(maxRows=stObj.numItems, OrderBy="title", sortOrder="desc", lObjectIDs="#lCategoryObjectIDs#") />
-
-<!--- IS THERE INTRO TEXT SET? --->
-<cfif len(stObj.teaser)>		
-	<cfset arrayAppend(request.aInvocations,stObj.teaser) />			
-</cfif>
-
-<cfoutput><div class="latest[TYPENAME]list"></cfoutput>
-<cfloop query="qRecordSet">
-	<skin:view typename="[TYPENAME]" objectid="#qRecordSet.ObjectID#" webskin="displayTeaserStandard" />
-</cfloop>
-<cfoutput></div></cfoutput>
+<!--- paginate results --->
+<skin:pagination query="#q#" typename="[TYPENAME]" r_stObject="stContent" paginationID="rule" recordsPerPage="#stObj.numItems#" pageLinks="#stObj.numPages#" top="false">
+	<skin:view objectID="#stContent.objectID#" typename="[TYPENAME]" webskin="displayTeaserStandard" />
+</skin:pagination>
 
 <cfsetting enablecfoutputonly="false">

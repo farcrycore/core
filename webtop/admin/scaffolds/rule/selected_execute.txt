@@ -5,17 +5,8 @@
 
 <cfset oType = createObject("component",application.stCoapi.[TYPENAME].packagePath)>
 
-<cfoutput><h3>#stObj.title#</h3></cfoutput>
-<cfif len(stObj.teaser)>
-	<cfoutput><p>#stObj.teaser#</p></cfoutput>
-</cfif>
-
-<cfif arraylen(stObj.aObjectIDs)>
-	<cfoutput><div class="selected[TYPENAME]list"></cfoutput>
-	<cfloop from="1" to="#arraylen(stObj.aObjectIDs)#" index="i">
-		<skin:view typename="[TYPENAME]" objectid="#stObj.aObjectIDs[i]#" webskin="displayTeaserStandard" />
-	</cfloop>
-	<cfoutput></div></cfoutput>
-</cfif>
+<cfloop from="1" to="#arraylen(stObj.aContent)#" index="i">
+	<skin:view typename="[TYPENAME]" objectid="#stObj.aContent[i]#" webskin="displayTeaserStandard" />
+</cfloop>
 
 <cfsetting enablecfoutputonly="false">
