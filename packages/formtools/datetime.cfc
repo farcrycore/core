@@ -139,7 +139,7 @@
 			
 		<cfif arguments.stMetadata.ftToggleOffDateTime>
 			
-			<skin:onReady>)
+			<skin:onReady>
 			<cfoutput>	
 			<cfif application.fapi.showFarcryDate(arguments.stMetadata.value) >
 				$j("###arguments.fieldname#include").attr('checked', true);
