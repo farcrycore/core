@@ -49,7 +49,7 @@
 		{
 			variables.jarFileArray = arrayNew(1);
 			arrayAppend(variables.jarFileArray, arguments.jarPath & "/combine.jar");
-			arrayAppend(variables.jarFileArray, arguments.jarPath & "/yuicompressor-2.4.2.jar");
+			arrayAppend(variables.jarFileArray, arguments.jarPath & "/yuicompressor-2.4.6.jar");
 			arguments.javaLoader.init(variables.jarFileArray);
 		}
 		
