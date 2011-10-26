@@ -9,8 +9,7 @@
 		<cfset var aMajorMinor = "" />
 		
 		<!--- This points to the jar we want to load. Could also load a directory of .class files --->
-		<cfset paths[1] = expandPath("/farcry/core/packages/farcry/uuid/uuid-3.0.jar") />
-		<cfset paths[2] = expandPath("/farcry/core/packages/farcry/uuid/jug.jar") />
+		<cfset paths[1] = expandPath("/farcry/core/packages/farcry/uuid/uuid-3.2.jar") />
 		
 		<cfset arrlen = arrayLen(aJarPaths) />
 		<cfif arrlen>
@@ -81,10 +80,6 @@
 			<cfset newUUID = oUUID.init() />
 			<cfset newUUID = javaUUIDtoCFUUID(newUUID) />
 			
-		<cfelseif (variables.aJVMMajorMinor[1] eq 1 and variables.aJVMMajorMinor[2] lte 4)>
-			<cfset oUUID = loader.create("org.doomdark.uuid.UUIDGenerator").getInstance() />
-			<cfset newUUID = oUUID.generateTimeBasedUUID().toString() />
-			<cfset newUUID = javaUUIDtoCFUUID(newUUID) />
 		<cfelse>
 			<cfset newUUID = createUUID() />
 		</cfif>
