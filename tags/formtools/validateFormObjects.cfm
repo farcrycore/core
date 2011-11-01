@@ -458,7 +458,7 @@
 			</cfif>	
 			
 			<!--- Default fieldType to the object type --->
-			<cfset tFieldType = createobject("component",application.stCOAPI[FORM['#ProcessingFormObjectPrefix#typename']].packagepath) />\
+			<cfset tFieldType = createobject("component",application.stCOAPI[FORM['#ProcessingFormObjectPrefix#typename']].packagepath) />
 				
 			<!--- Need to determine which method to run on the field --->
 			<cfif len(ftFieldMetadata.ftValidateMethod)>
