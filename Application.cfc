@@ -25,8 +25,7 @@
 	THIS MUST BE DONE OUTSIDE OF THE APPLICATION AS IT MAY BE CALLED BEFORE THE APPLICATION IS INITIALISED
 	 --->
 	<cfif structKeyExists(url, "furl") AND url.furl EQ "/pingFU">				
-		<cfoutput>PING FU SUCCESS</cfoutput>
-		<cfabort>
+		<cfcontent type="text/plain" variable="#ToBinary( ToBase64('PING FU SUCCESS') )#" reset="Yes">
 	</cfif>
 	
 	
