@@ -375,9 +375,18 @@
 				
 				
 		
-		<cfset tFieldType = application.formtools[ftFieldMetadata.ftType].oFactory.init() />
-		<cfset tFieldType = createObject("component", application.formtools[ftFieldMetadata.ftType].packagePath).init() />
+		<cfset tFieldType = application.fapi.getFormtool(ftFieldMetadata.ftType) />
+		
+		<!--- If we have temporarily changed the formtool type, then make sure we have the required defaults. --->
+		<cfif ftFieldMetadata.ftType NEQ application.fapi.getPropertyMetadata(typename='#typename#', property='#i#', md='ftType')>
+			
+			<cfset stFormtoolDefaults = application.coapi.coapiAdmin.getFormtoolDefaults(formtool=ftFieldMetadata.ftType) />
 
+			<cfset structAppend(ftFieldMetadata,stFormtoolDefaults,false) />
+
+		</cfif>
+		
+		
 		<!--- Need to determine which method to run on the field --->		
 		<cfif structKeyExists(ftFieldMetadata, "ftDisplayOnly") AND ftFieldMetadata.ftDisplayOnly OR ftFieldMetadata.ftType EQ "arrayList">
 			<cfset FieldMethod = "display" />
@@ -466,7 +475,7 @@
 					</cfinvoke>
 					<cfset variables.returnHTML = application.formtools[ftFieldMetadata.ftType].oFactory.addWatch(typename=typename,stObject=stObj,stMetadata=ftFieldMetadata,fieldname="#variables.prefix##ftFieldMetadata.Name#",html=variables.returnHTML) />
 										
-					<cfcatch><cfdump var="#cfcatch#" expand="false"></cfcatch>
+					<cfcatch><cfdump var="#cfcatch#" expand="false"><cfabort></cfcatch>
 				</cftry>
 				
 				<cfset variables.errorClass = "" />
