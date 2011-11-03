@@ -2330,7 +2330,7 @@
 		<cfargument name="section" type="string" required="true" hint="The name of point grouping" />
 		<cfargument name="label" type="string" required="true" hint="The name of the profile point" />
 		
-		<cfif isdefined("url.profile") and url.profile>
+		<cfif structkeyexists(url,"profile") and (url.profile eq "1" or url.profile eq application.updateappkey)>
 			<cfparam name="request.fc.trayData" default="#structnew()#" />
 			<cfif not isdefined("request.fc.trayData.profile")>
 				<cfset request.fc.trayData.profile = querynew("section,label,tick","varchar,varchar,bigint") />
@@ -2349,6 +2349,7 @@
 	
 	<cffunction name="getProfileHTML" access="public" output="false" returnType="string" hint="Returns HTML for displaying the profile">
 		<cfargument name="profile" type="query" required="true" hint="The chart that we want to chart" />
+		<cfargument name="bLongForm" type="boolean" required="false" default="false" />
 		
 		<cfset var html = "" />
 		<cfset var seriesdata = "" />
@@ -2359,6 +2360,7 @@
 		<cfset var availablecolours = "E41A1C,377EB8,4DAF4A,984EA3,FF7F00,A65628,F781BF,999999" />
 		<cfset var stJSON = "" />
 		<cfset var i = 0 />
+		<cfset var width = 400 />
 		
 		<cfloop query="arguments.profile">
 			<cfif arguments.profile.section neq "End">
@@ -2373,13 +2375,17 @@
 			<cfset seriesscale = listappend(seriesscale,"0,#seriestotal#") />
 		</cfloop>
 		
+		<cfif arguments.bLongForm>
+			<cfset width = 670 />
+		</cfif>
+		
 		<!--- Get image map info --->
-		<cfhttp url="http://chart.apis.google.com/chart?chbh=23,0,0&chs=400x23&cht=bhs&chco=#seriescolours#&chds=#seriesscale#&chd=t:#seriesdata#&chdlp=b&chof=json" result="stJSON" />
+		<cfhttp url="http://chart.apis.google.com/chart?chbh=23,0,0&chs=#width#x23&cht=bhs&chco=#seriescolours#&chds=#seriesscale#&chd=t:#seriesdata#&chdlp=b&chof=json" result="stJSON" />
 		<cfset stJSON = DeserializeJSON(stJSON.filecontent) />
 		
 		<!--- Generate HTML --->
 		<cfsavecontent variable="html"><cfoutput>
-			<img src="http://chart.apis.google.com/chart?chbh=23,0,0&chs=400x23&cht=bhs&chco=#seriescolours#&chds=#seriesscale#&chd=t:#seriesdata#&chdlp=b" width="400" height="23" alt="" usemap="##request-profile" />
+			<img src="http://chart.apis.google.com/chart?chbh=23,0,0&chs=#width#x23&cht=bhs&chco=#seriescolours#&chds=#seriesscale#&chd=t:#seriesdata#&chdlp=b" width="#width#" height="23" alt="" usemap="##request-profile" />
 			<map name="request-profile">
 			<cfset visibleindex = 0 />
 			<cfloop from="1" to="#arraylen(stJSON.chartshape)#" index="i">
@@ -2392,10 +2398,10 @@
 					  coords='#arraytolist(stJSON.chartshape[i].coords)#' 
 					  href='##request-profile-details-#visibleindex#' 
 					  rel='##request-profile-details-#visibleindex#' 
-					  onclick='$j("div.request-profile-details-selected").css("font-weight","normal").removeClass("request-profile-details-selected");$j("##"+this.href.split("##")[1]).css("font-weight","bold").addClass("request-profile-details-selected");'>
+					  onclick='$j("div.request-profile-details-selected").css("font-weight","normal").removeClass("request-profile-details-selected");$j("##"+this.href.split("##")[1]).css("font-weight","bold").addClass("request-profile-details-selected");var itempos=$j(this.href).position;$j("##request-profile-deatils").scrollTop(itempos.top);return false;'>
 			</cfloop>
 			</map>
-			<div id='request-profile-details' style='height:65px;overflow:scroll;'>
+			<div id='request-profile-details' style='<cfif arguments.bLongForm>height:350px<cfelse>height:65px</cfif>;overflow:scroll;'>
 			<cfloop query="arguments.profile">
 				<cfif arguments.profile.section neq "End">
 					<div id="request-profile-details-#arguments.profile.currentrow#" style="color:###listgetat(availablecolours,arguments.profile.currentrow mod listlen(availablecolours) + 1)#;"><span class="ticks" style="width:35px;display:inline-block;">#arguments.profile.tick[arguments.profile.currentrow+1]-arguments.profile.tick#</span> #jsstringformat(arguments.profile.section)# - #jsstringformat(arguments.profile.label)#</div>
@@ -2410,7 +2416,7 @@
 	<cffunction name="addRequestLog" access="public" output="false" returnType="numeric" hint="Adds an item to the request log">
 		<cfargument name="text" type="string" required="true" hint="The text of the log line" />
 		
-		<cfif isdefined("url.profile") and url.profile>
+		<cfif structkeyexists(url,"profile") and (url.profile eq "1" or url.profile eq application.updateappkey)>
 			<cfparam name="request.fc.trayData" default="#structnew()#" />
 			<cfif not isdefined("request.fc.trayData.log")>
 				<cfset request.fc.trayData.log = querynew("when,text","time,varchar") />
@@ -2428,11 +2434,12 @@
 	
 	<cffunction name="getRequestLogHTML" access="public" output="false" returnType="string" hint="Returns display for the log">
 		<cfargument name="log" type="query" required="true" hint="The log query to output" />
+		<cfargument name="bLongForm" type="boolean" required="false" default="false" />
 		
 		<cfset var html = "" />
 		
 		<cfsavecontent variable="html"><cfoutput>
-			<textarea cols="80" rows="5" wrap="off"><cfloop query="arguments.log">#arguments.log.text##chr(13)##chr(10)#</cfloop></textarea>
+			<textarea cols="80" rows="5" wrap="off"<cfif arguments.bLongForm> style="width:670px;height:373px;"</cfif>><cfloop query="arguments.log">#arguments.log.text##chr(13)##chr(10)#</cfloop></textarea>
 		</cfoutput></cfsavecontent>
 		
 		<cfreturn html />

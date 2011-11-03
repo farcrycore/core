@@ -837,6 +837,38 @@
 			}
 		
 		}
+		else {
+			// profile mode
+			if (isDefined("arguments.stURL.profile") and arguments.stURL.profile eq application.updateappkey) {
+				request.mode.profile = 1;
+			}
+			// webskintrace
+			if (isDefined("arguments.stURL.tracewebskins") and arguments.stURL.tracewebskins eq application.updateappkey) {
+				request.mode.tracewebskins = 1;
+			}
+		
+			// bypass caching
+			if (isDefined("arguments.stURL.flushcache") and arguments.stURL.flushcache eq application.updateappkey) {
+				request.mode.flushcache = val(arguments.stURL.flushcache);
+				session.dmSec.Authentication.flushcache = request.mode.flushcache;
+			}
+		
+			// view content as stage
+			if (isDefined("arguments.stURL.showdraft") and arguments.stURL.showdraft eq application.updateappkey) {
+				request.mode.showdraft = 1;
+				session.dmSec.Authentication.showdraft = request.mode.showdraft;
+			}
+		
+			// rebuild page / everything
+			if (isDefined("arguments.stURL.rebuild") and arguments.stURL.rebuild eq "page-#application.updateappkey#") {
+				request.mode.rebuild = "page";
+				request.mode.flushcache = 1;
+			}
+			if (isDefined("arguments.stURL.rebuild") and arguments.stURL.rebuild eq "all-#application.updateappkey#") {
+				request.mode.rebuild = "all";
+				application.fc.lib.objectbroker.init(bFlush=true);
+			}
+		}
 		
 		// set valid status for content
 		if (request.mode.showdraft) {
