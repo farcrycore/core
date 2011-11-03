@@ -849,7 +849,12 @@
 		
 			// bypass caching
 			if (isDefined("arguments.stURL.flushcache") and arguments.stURL.flushcache eq application.updateappkey) {
-				request.mode.flushcache = val(arguments.stURL.flushcache);
+				if (isDefined("session.dmSec.Authentication.flushcache")){
+					request.mode.flushcache = not session.dmSec.Authentication.flushcache;
+				}
+				else {
+					request.mode.flushcache = 1;
+				}
 				session.dmSec.Authentication.flushcache = request.mode.flushcache;
 			}
 		
