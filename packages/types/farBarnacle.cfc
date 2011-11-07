@@ -41,7 +41,7 @@
 		
 		<cfif qBarnacle.recordcount>
 			<cfloop list="#qBarnacle.columnlist#" index="col">
-				<cfset stBarnacle[col] = qBarnacle[col] />
+				<cfset stBarnacle[col] = qBarnacle[col][1] />
 			</cfloop>
 		<cfelse>
 			<!--- Barnacle didn't exist - create it --->
