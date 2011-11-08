@@ -12,6 +12,8 @@
 	<cfproperty ftSeq="23" ftFieldset="SysAdmin Properties" name="bugemail" type="string" default="support@daemon.com.au" hint="???" ftLabel="Bug email" ftType="email" />
 	<cfproperty ftSeq="24" ftFieldset="SysAdmin Properties" name="componentdocurl" type="numeric" default="/CFIDE/componentutils/componentdetail.cfm" hint="???" ftLabel="Component doc URL" ftType="string" />
 	<cfproperty ftSeq="25" ftFieldset="SysAdmin Properties" name="genericadminnumitems" type="numeric" default="15" hint="???" ftLabel="Generic admin number of items" ftType="integer" />
+	<cfproperty ftSeq="26" ftFieldset="SysAdmin Properties" name="bEmailErrors" type="boolean" default="0" ftLabel="Email errors" />
+	<cfproperty ftSeq="27" ftFieldset="SysAdmin Properties" name="errorEmail" type="string" default="" ftLabel="Error email" ftType="email" />
 
 
 <!--- login properties --->

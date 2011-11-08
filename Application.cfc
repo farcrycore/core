@@ -263,20 +263,8 @@
 		FARCRY CORE INITIALISATION
 		 --------------------------------->
 		<cfinclude template="/farcry/core/tags/farcry/_farcryApplicationInit.cfm" />
-
-
-		<!------------------------------------
-		OBJECT BROKER
-		 ------------------------------------>		
-		<cfif structkeyexists(application, "bObjectBroker") AND application.bObjectBroker>
-			
-			<cfloop list="#structKeyList(application.stcoapi)#" index="typename">
-
-				<cfif application.stcoapi[typename].bObjectBroker>					
-					<cfset bSuccess = application.fc.lib.objectBroker.configureType(typename=typename, MaxObjects=application.stcoapi[typename].ObjectBrokerMaxObjects) />
-				</cfif>
-			</cfloop>
-		</cfif>
+		
+		<cfset application.fc.lib.objectbroker.init(true) />
 
 		<!----------------------------------- 
 		SETUP CATEGORY APPLICATION STRUCTURE
@@ -438,56 +426,61 @@
 		<cfargument name="Exception" type="any" required="true" />
 		<cfargument name="EventName" type="string" required="false" default="" />
 		
-		<cfset var stException = arguments.exception />
+		<cfset var machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
+		<cfset var instanceName = createObject("java", "jrunx.kernel.JRun").getServerName() />
+		<cfset var bot = IIF(!request.fc.hasSessionScope,DE("bot"),DE("not a bot")) />
+		
+		<cfset var stException = duplicate(arguments.exception) />
+		
+		<cfset var stacktrace = "" />
+		<cfset var i = 0 />
+		<cfset var newline = "
+" />
+		
 		<cfif structKeyExists(arguments.exception, "rootcause")>
-			<cfset stException = arguments.exception.rootcause />
+			<cfset stException = duplicate(arguments.exception.rootcause) />
 		</cfif>
 		
-		<!--- rudimentary error handler --->
-		<!--- TODO: need a pretty error handler for the webtop --->
-		<cfoutput>	
-			<h1>There was a problem with that last request!</h1>	
-			<p>Please push "back" on your browser or go back <a style="text-decoration:underline" href="/">home</a></p>
-			<h3>Error Details</h3>
-			<table border="1" cellpadding="5" style="border-collapse:collapse;">
-			<cfif structKeyExists(stException, "message")>
-				<tr><th align="right" style="vertical-align:top;">Message</th><td>#stException.message#</td></tr>
-			</cfif>
-			<cfif structKeyExists(stException, "type")>
-				<tr><th align="right" style="vertical-align:top;">Exception Type</th><td>#stException.type#</td></tr>
-			</cfif>
-			<cfif structKeyExists(stException, "detail")>
-				<tr><th align="right" style="vertical-align:top;">Detail</th><td>#stException.detail#</td></tr>
-			</cfif>
-			<cfif structKeyExists(stException, "extended_info")>
-				<tr><th align="right" style="vertical-align:top;">Extended Info</th><td>#stException.extended_info#</td></tr>
-			</cfif>
-			<cfif structKeyExists(stException, "queryError")>
-				<tr><th align="right" style="vertical-align:top;">Error</th><td>#stException.queryError#</td></tr>
-			</cfif>
-			<cfif structKeyExists(stException, "sql")>
-				<tr><th align="right" style="vertical-align:top;">SQL</th><td>#stException.sql#</td></tr>
-			</cfif>
-			<cfif structKeyExists(stException, "where")>
-				<tr><th align="right" style="vertical-align:top;">Where</th><td>#stException.where#</td></tr>
-			</cfif>
-
-			<cfif structKeyExists(stException, "TagContext")>
-				<tr>
-					<th align="right" style="vertical-align:top;">Tag Context</th>
-					<td>
-						<ul>
-						<cfloop from="1" to="#arrayLen(stException.TagContext)#" index="i">
-							<li>#stException.TagContext[i].template# (line: #stException.TagContext[i].line#)</li>
-						</cfloop>
-						</ul>	
-					</td>
-				</tr>
-			</cfif>
+		<!--- Log the error --->
+		<cflog log="application" application="true" type="error" text="#stException.message#. The specific sequence of files included or processed is #stException.TagContext[1].template#, line: #stException.TagContext[1].line#" />
+		<cfloop from="1" to="#arraylen(stException.TagContext)#" index="i">
+			<cfset stacktrace = listappend(stacktrace,"#stException.TagContext[i].template#:#stException.TagContext[i].line#",newline) />
+		</cfloop>
+		<cflog file="exception" application="true" type="error" text="#stException.message#. The specific sequence of files included or processed is #stException.TagContext[1].template#, line: #stException.TagContext[1].line##newline##stacktrace#" />
+		
+		<!--- Email error --->
+		<cfif isdefined("application.config.general.bEmailErrors") and application.config.general.bEmailErrors and len(application.config.general.errorEmail)>
+			<cfmail to="#application.config.general.errorEmail#" from="#application.config.general.adminEmail#" subject="#application.applicationname#: #stException.message# (#bot#)" type="html"><cfoutput>
+				<h3>Error Overview</h3>
+				<table>
+					<tr><th style="text-align:right;">Machine:</th><td>#machineName#</td></tr>
+					<tr><th style="text-align:right;">Instance:</th><td>#instancename#</td></tr>
+					<tr><th style="text-align:right;">Message:</th><td>#stException.message#</td></tr>
+					<tr><th style="text-align:right;">Browser:</th><td>#cgi.http_user_agent#</td></tr>
+					<tr><th style="text-align:right;">DateTime:</th><td>#now()#</td></tr>
+					<tr><th style="text-align:right;">Host:</th><td>#cgi.http_host#</td></tr>
+					<tr><th style="text-align:right;">HTTPReferer:</th><td>#cgi.http_referer#</td></tr>
+					<tr><th style="text-align:right;">QueryString:</th><td>#cgi.query_string#</td></tr>
+					<tr><th style="text-align:right;">RemoteAddress:</th><td>#cgi.remote_addr#</td></tr>
+					<tr><th style="text-align:right;">Bot:</th><td>#bot#</td></tr>
+				</table>
 			
-			</table>		
-			
-		</cfoutput>
+				<h3>Root Cause</h3>
+				<cfdump var="#stException#" label="Error Diagnostics">
+			</cfoutput></cfmail>
+		</cfif>
+		
+		<!--- Display error to user --->
+		<cfcontent reset="true" />
+		<cfif fileexists("#application.path.project#/errors/500.cfm")>
+			<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/500.cfm" />
+		<cfelseif fileexists("#application.path.webroot#/errors/500.cfm")>				
+			<cfinclude template="#application.url.webroot#/errors/500.cfm" />
+		<cfelse>
+			<cfinclude template="/farcry/core/webtop/errors/500.cfm" />
+		</cfif>
+		<cfsetting enablecfoutputonly="false" />
+		
 		<cfreturn />
 	</cffunction>
 

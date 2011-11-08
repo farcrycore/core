@@ -80,18 +80,24 @@
 	<cfif NOT len(url.type)>
 		
 		<!--- IF THIS IS NOT THE HOME PAGE AND WE HAVE A 404 PAGE, THEN CALL THE 404 --->
-		<cfif 	structKeyExists(url, "furl") 
-				AND url.furl NEQ "/">	
-				
+		<cfif structKeyExists(url, "furl") AND url.furl NEQ "/">	
+			
+			<cfset machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
+			<cfset instanceName = createObject("java", "jrunx.kernel.JRun").getServerName() />
+			
+			<cfcontent reset="true" />
+			
 			<cfif fileexists("#application.path.project#/errors/404.cfm")>
 				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/404.cfm" />
-				<cfsetting enablecfoutputonly="false" />
-				<cfexit method="exittag" />	
 			<cfelseif fileexists("#application.path.webroot#/errors/404.cfm")>				
 				<cfinclude template="#application.url.webroot#/errors/404.cfm" />
-				<cfsetting enablecfoutputonly="false" />
-				<cfexit method="exittag" />	
+			<cfelse>
+				<cfinclude template="/farcry/core/webtop/errors/404.cfm" />
 			</cfif>
+			
+			<cfsetting enablecfoutputonly="false" />
+			<cfexit method="exittag" />
+			
 		</cfif>
 		
 		<!--- If we make it to here, we just have to redirect to the home page. --->
@@ -124,22 +130,22 @@
 		<cfcatch type="Any">
 			<farcry:logevent object="#url.objectid#" type="display" event="404" />
 
+			<cfset machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
+			<cfset instanceName = createObject("java", "jrunx.kernel.JRun").getServerName() />
+			
+			<cfcontent reset="true" />
+			
 			<cfif fileexists("#application.path.project#/errors/404.cfm")>
 				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/404.cfm" />
-				<cfsetting enablecfoutputonly="false" />
-				<cfexit method="exittag" />	
-			<cfelseif fileexists("#application.path.webroot#/errors/404.cfm")>	
+			<cfelseif fileexists("#application.path.webroot#/errors/404.cfm")>				
 				<cfinclude template="#application.url.webroot#/errors/404.cfm" />
-				<cfsetting enablecfoutputonly="false" />
-				<cfexit method="exittag" />	
+			<cfelse>
+				<cfinclude template="/farcry/core/webtop/errors/404.cfm" />
 			</cfif>
 			
-			<!--- If we make it to here, we just have to redirect to the home page. --->
-			<cfif application.fapi.checkNavID("home")>
-				<cflocation url="#application.url.conjurer#?objectid=#application.fapi.getNavID('home')#" addtoken="No" />
-			<cfelse>
-				<cflocation url="#application.url.webroot#/" addtoken="No">
-			</cfif>
+			<cfsetting enablecfoutputonly="false" />
+			<cfexit method="exittag" />
+			
 		</cfcatch>
 	</cftry>
 
