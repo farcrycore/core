@@ -729,8 +729,7 @@
 	<cffunction name="diffSchema" access="public" returntype="struct" output="false" hint="Compares type metadata to the actual database schema">
 		<cfargument name="schema" type="struct" required="true" hint="The type schema" />
 		
-		<cfset var stDB = introspectType(arguments.schema.tablename) />
-		
+		<cfset var stDB = structnew() />
 		<cfset var stResult = structnew() />
 		<cfset var thisfield = "" />
 		<cfset var stThisResult = structnew() />
@@ -744,6 +743,8 @@
 			<cfset stResult.tables[arguments.schema.tablename].newmetadata = arguments.schema />
 			<cfset stResult.tables[arguments.schema.tablename].resolution = "+" />
 		<cfelse>
+			<cfset stDB = introspectType(arguments.schema.tablename) />
+			
 			<cfset stResult.tables[arguments.schema.tablename] = structnew() />
 			<cfset stResult.tables[arguments.schema.tablename].fields = structnew() />
 			<cfset stResult.tables[arguments.schema.tablename].indexes = structnew() />
@@ -772,7 +773,7 @@
 				<cfset stThisResult = structnew() />
 				
 				<cfif not structkeyexists(arguments.schema.fields,thisfield)>
-					<cftry><cfif stDB.fields[thisfield].type eq "array">
+					<cfif stDB.fields[thisfield].type eq "array">
 						<cfset stResult.tables[stDB.fields[thisfield].tablename] = structnew() />
 						<cfset stResult.tables[stDB.fields[thisfield].tablename].conflict = "Surplus table" />
 						<cfset stResult.tables[stDB.fields[thisfield].tablename].oldMetadata = stDB.fields[thisfield] />
@@ -783,7 +784,7 @@
 						<cfset stThisResult.oldMetadata = stDB.fields[thisfield] />
 						
 						<cfset stResult.tables[arguments.schema.tablename].fields[thisfield] = stThisResult />
-					</cfif><cfcatch><cfdump var="#stDB.fields#"><cfabort></cfcatch></cftry>
+					</cfif>
 				</cfif>
 			</cfloop>
 			
@@ -841,8 +842,10 @@
 	<cffunction name="isDeployed" access="public" output="false" returntype="boolean" hint="Returns True if the table is already deployed">
 		<cfargument name="schema" type="struct" required="true" hint="Table schema to check" />
 		
+		<cfset var q = "" />
+		
 		<cftry>
-			<cfquery datasource="#this.dsn#" name="stLocal.qDeployed">
+			<cfquery datasource="#this.dsn#" name="q">
 				SELECT count(*)
 				FROM #this.dbowner##arguments.schema.tablename#
 			</cfquery>

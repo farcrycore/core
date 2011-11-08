@@ -107,57 +107,10 @@
 		<skin:loadCSS id="jquery-ui" />
 	    <skin:loadJS id="jquery-uploadify" />
 	    <skin:loadCSS id="jquery-uploadify" />
+		<skin:loadJS id="jquery-modal" />
 	    
 		<skin:loadJS id="array-upload"><script type="text/javascript"><cfoutput>
 		<!--- <skin:htmlHead id="array-upload-js"><cfoutput><script type="text/javascript"> --->
-			// minimalist lightbox
-			(function(fc,$){
-				fc.openLB = function startOverlay(html,width,height,backgroundclose) {
-					var newContent = $(html);
-					width = width || 425;
-					height = height || 355;
-					
-					//add the elements to the dom
-					$("body")
-						.append('<div class="fc-overlay" style="height:'+$(document).height()+'px;'+(backgroundclose>0?'cursor:pointer;':'')+'"></div>')
-						.append('<div class="fc-overlaycontainer"></div>')
-						.css({"overflow-y":"hidden"});
-				
-					//animate the semitransparant layer
-					var overlay = $(".fc-overlay").animate({"opacity":"0.6"}, 400, "linear");
-					if (backgroundclose>0) overlay.bind("click",function(){ fc.closeLB(); });
-				
-					//add the lightbox image to the DOM
-					$(".fc-overlaycontainer")
-						.html(html)
-						.css({
-							"top":        $(document).scrollTop()+$(window).height()/2,
-							"left":       "50%",				
-							"width":      width,
-							"height":     height
-						})
-						.css({
-							"margin-top": -($(".fc-overlaycontainer").height()/2),
-							"margin-left": -($(".fc-overlaycontainer").width()/2) //to position it in the middle
-						})
-						.animate({"opacity":"1"}, 400, "linear")
-						.find(".closeLB").bind("click",function(){ fc.closeLB();return false; });
-					fc.lbContainer = $(".fc-overlaycontainer");
-				};
-				
-				fc.closeLB = function removeOverlay() {
-					// allow users to be able to close the lightbox
-					$(".fc-overlaycontainer, .fc-overlay").animate({"opacity":"0"}, 200, "linear", function(){
-						$(".fc-overlaycontainer, .fc-overlay").remove();
-						$("body").css({"overflow-y":""});
-					});
-				};
-				
-				fc.updateLB = function(html){
-					$(".fc-overlaycontainer").html(html);
-				};
-			})($fc,jQuery);
-			
 			(function($){
 				if (!fcForm.arrayuploadwrapped){
 					fcForm.arrayuploadwrapped = true;
@@ -443,7 +396,7 @@
 								dataType: "html",
 								success: function(data){
 		    						$("##join-item-"+objectid+" .fc-edit").html("<span class='ui-icon ui-icon-pencil'></span>");
-									$fc.openLB(data,"auto","auto",true);
+									$fc.openModal(data,"auto","auto",true);
 								}
 							});
 		    			};
@@ -464,7 +417,7 @@
 										displayhtml : data.html
 									}));
 									arrayuploadformtool.displaylist.sortable("refresh");
-									$fc.closeLB();
+									$fc.closeModal();
 								}
 							});
 		    			};
@@ -509,9 +462,6 @@
 		</cfoutput></script></skin:loadJS>
 		<!--- </script></cfoutput></skin:htmlHead> --->
 		<skin:loadCSS id="array-upload"><style type="text/css"><cfoutput>
-			.fc-overlay { position:absolute; top:0px; left:0px; height:100%; width:100%; background:##FFF; opacity:0; filter:alpha(opacity=0); z-index:150; }
-			.fc-overlaycontainer { position:absolute; opacity:0; filter:alpha(opacity=0); left:-9999em; z-index:151; }
-			
 			.fc-arrayupload-item { zoom:1; }
 				.fc-arrayupload-item a, .fc-arrayupload-item a:link, .fc-arrayupload-item a:visited, .fc-arrayupload-item a:hover, .fc-arrayupload-item a:active { background:##FFFFFF; }
 				.uploadifyProgress { background-color:##E5E5E5;margin-top:10px; }
@@ -815,7 +765,7 @@
 					<ft:form>
 						<ft:object objectid="#form.item#" lFields="#arguments.stMetadata.ftEditableProperties#" r_stPrefix="editprefix" />
 						<ft:buttonPanel>
-							<a href="##" class="closeLB">cancel</a>&nbsp;<ft:button value="Save" onclick="var base={};var props='#arguments.stMetadata.ftEditableProperties#'.split(',');for (var i in props) base[props[i]]='';$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').saveItem('#form.item#',getValueData(base,'#editprefix#'));return false;" />
+							<a href="##" class="closeModal">cancel</a>&nbsp;<ft:button value="Save" onclick="var base={};var props='#arguments.stMetadata.ftEditableProperties#'.split(',');for (var i in props) base[props[i]]='';$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').saveItem('#form.item#',getValueData(base,'#editprefix#'));return false;" />
 						</ft:buttonPanel>
 					</ft:form>
 				</div>

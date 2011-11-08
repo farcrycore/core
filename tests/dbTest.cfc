@@ -342,7 +342,7 @@
 	
 	<cffunction name="isDeployed_false" access="public" displayname="Is deployed =&gt; false" hint="" dependsOn="initialiseGateway">
 		<cfset var gateway = this.db.initialiseGateway(dsn=this.dsn,dbowner=this.dbowner,dbtype=this.dbtype) />
-		<cfset var bDeployed = this.db.isDeployed(typename="farcry.core.tests.resources.dummyContentTypeB",dsn=this.dsn) />
+		<cfset var bDeployed = this.db.isDeployed(typename="farcry.core.tests.resources.dummyContentTypeC",dsn=this.dsn) />
 		
 		<cfset assertFalse(bDeployed,"Table exists") />
 	</cffunction>
@@ -815,6 +815,7 @@
 	<cffunction name="dropIndex" access="public" displayname="Drop index" dependsOn="deployType,dropType,diffSchema_deletedindex">
 		<cfset var schema = structnew() />
 		<cfset var stDiff = structnew() />
+		<cfset var stTemp = structnew() />
 		
 		<cfset var gateway = this.db.initialiseGateway(dsn=this.dsn,dbowner=this.dbowner,dbtype=this.dbtype) />
 		
@@ -825,7 +826,7 @@
 		
 		<cfset structdelete(schema.indexes,"y_index") />
 		<cfset schema.fields["e"].index = "" />
-		<cfset gateway.dropIndex(schema=schema,indexname="y_index") />
+		<cfset stTemp = gateway.dropIndex(schema=schema,indexname="y_index") />
 		
 		<cfset stDiff = this.db.getGateway(this.dsn).diffSchema(schema=schema) />
 		
@@ -897,6 +898,7 @@
 	<cffunction name="repairProperty_stringdefault" access="public" displayname="Repair property (string default)" dependsOn="deployType,dropType,diffSchema_stringdefault">
 		<cfset var schema = structnew() />
 		<cfset var stDiff = structnew() />
+		<cfset var stTemp = structnew() />
 		
 		<cfset var gateway = this.db.initialiseGateway(dsn=this.dsn,dbowner=this.dbowner,dbtype=this.dbtype) />
 		
@@ -907,7 +909,7 @@
 		
 		<cfset schema.fields["i"].default = "there" />
 		
-		<cfset gateway.repairColumn(schema=schema,propertyname="i") />
+		<cfset stTemp = gateway.repairColumn(schema=schema,propertyname="i") />
 		
 		<cfset stDiff = this.db.getGateway(this.dsn).diffSchema(schema=schema) />
 		
@@ -1050,6 +1052,7 @@
 	<cffunction name="repairIndex_array" access="public" displayname="Repair index in array" dependsOn="deployType,dropType,diffSchema_changedindex">
 		<cfset var schema = structnew() />
 		<cfset var stDiff = structnew() />
+		<cfset var stTemp = structnew() />
 		
 		<cfset var gateway = this.db.initialiseGateway(dsn=this.dsn,dbowner=this.dbowner,dbtype=this.dbtype) />
 		
@@ -1062,7 +1065,7 @@
 		<cfset schema.fields["c"].indexes.b_index.fields = listtoarray("a,b") />
 		<cfset schema.fields["c"].fields["a"].index = "b_index" />
 		
-		<cfset gateway.repairIndex(schema=schema.fields["c"],indexname="b_index") />
+		<cfset stTemp = gateway.repairIndex(schema=schema.fields["c"],indexname="b_index") />
 		
 		<cfset stDiff = this.db.getGateway(this.dsn).diffSchema(schema=schema) />
 		

@@ -1,0 +1,2 @@
+.fc-overlay { position:absolute; top:0px; left:0px; height:100%; width:100%; background:#FFF; opacity:0; filter:alpha(opacity=0); z-index:150; }
+.fc-overlaycontainer { position:absolute; opacity:0; filter:alpha(opacity=0); left:-9999em; z-index:151; }

@@ -128,12 +128,12 @@
 		
 		<cfquery datasource="#application.dsn#" name="qGroups">
 			select	g.title
-			from	(
+			from	
 						#application.dbowner#farUser u
 						inner join
 						#application.dbowner#farUser_aGroups ug
 						on u.objectid=ug.parentid
-					)
+					
 					inner join
 					#application.dbowner#farGroup g
 					on ug.data=g.objectid

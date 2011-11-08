@@ -475,7 +475,7 @@
 					</cfinvoke>
 					<cfset variables.returnHTML = application.formtools[ftFieldMetadata.ftType].oFactory.addWatch(typename=typename,stObject=stObj,stMetadata=ftFieldMetadata,fieldname="#variables.prefix##ftFieldMetadata.Name#",html=variables.returnHTML) />
 										
-					<cfcatch><cfdump var="#cfcatch#" expand="false"></cfcatch>
+					<cfcatch><cfdump var="#cfcatch#" expand="false"><cfabort></cfcatch>
 				</cftry>
 				
 				<cfset variables.errorClass = "" />
@@ -487,7 +487,7 @@
 					AND NOT request.stFarcryFormValidation[stObj.ObjectID][i].bSuccess >
 					
 					<cfsavecontent variable="variables.formValidationMessage">
-						<cfoutput><p class="errorField" htmlfor="#variables.prefix##i#">#request.stFarcryFormValidation[stObj.ObjectID][i].stError.message#</p></cfoutput>
+						<cfoutput><p class="errorField" htmlfor="#variables.prefix##i#" for="#variables.prefix##i#">#request.stFarcryFormValidation[stObj.ObjectID][i].stError.message#</p></cfoutput>
 						<!--- <div class="#request.stFarcryFormValidation[stObj.ObjectID][i].stError.class#">#request.stFarcryFormValidation[stObj.ObjectID][i].stError.message#</div> --->
 					</cfsavecontent>
 					

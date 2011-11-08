@@ -47,7 +47,7 @@
 			
 		</cfif>
 		
-		<cfif form.currentStep eq 6 and form.farcrySubmitButton EQ "INSTALL NOW">
+		<cfif form.currentStep eq 6 and listfind("INSTALL NOW,INSTALL+NOW",form.farcrySubmitButton)>
 			<cfset session.oUI.currentStep = "install" />
 		</cfif>
 		

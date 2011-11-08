@@ -16,15 +16,14 @@
 	<cfset request.fc.trayData.view = url.view />
 	<cfset request.fc.trayData.bodyView = url.bodyView />
 	
-	<cfif request.bHideContextMenu eq true or request.fc.bShowTray eq false or url.bHideContextMenu>
-		<cfexit method="exittag"/>
-	</cfif>
-	
 </cfif>
 
 <cfif thistag.executionMode eq "End">
-
-	<cfif len(url.type) 
+	
+	<cfset application.fapi.addProfilePoint("End","End") />
+	
+	<cfif (request.bHideContextMenu eq true or request.fc.bShowTray eq false or url.bHideContextMenu)
+		AND len(url.type) 
 		AND NOT structKeyExists(application.rules, url.type) 
 		AND request.mode.bAdmin 
 		AND NOT structKeyExists(request.fc, "bAdminTrayRendered") 
@@ -67,7 +66,6 @@
 						<cfif issimplevalue(request.fc.trayData[thistag.traydatakey])>
 							, '#thistag.traydatakey#':'#jsstringformat(request.fc.trayData[thistag.traydatakey])#'
 						<cfelse>
-							<cfif thistag.traydatakey eq "profile"><cfset application.fapi.addProfilePoint("End","End") /></cfif>
 							<cfwddx action="cfml2wddx" input="#request.fc.trayData[thistag.traydatakey]#" output="thistag.traydatawddx" />
 							, '#thistag.traydatakey#':'#jsstringformat(thistag.traydatawddx)#'
 						</cfif>
@@ -97,6 +95,36 @@
 	
 		
 		</cfoutput>
+		
+		<farcry:webskinTracer />
+	<cfelseif isdefined("request.fc.trayData.profile") 
+		AND request.mode.profile
+		AND NOT structKeyExists(request.fc, "bAdminTrayRendered") 
+		AND NOT request.mode.ajax>
+		
+		<cfset request.fc.bAdminTrayRendered = true />
+		
+		<skin:loadJS id="jquery-modal" />
+		<skin:loadCSS id="jquery-modal" />
+		
+		<cfsavecontent variable="profilehtml"><cfoutput>
+			<div id="info-picker">
+				<a href="##" onclick="$j('div.request-html').hide();$j(this.rel).show();return false;" rel="##request-profile-html">Profiling</a> |
+				<a href="##" onclick="$j('div.request-html').hide();$j(this.rel).show();return false;" rel="##request-log-html">Log</a>
+			</div>
+			<div id="request-profile-html" class="request-html">#application.fapi.getProfileHTML(request.fc.trayData.profile,true)#</div>
+			<div id="request-log-html" class="request-html" style="display:none;">#application.fapi.getRequestLogHTML(request.fc.trayData.log,true)#</div>
+		</cfoutput></cfsavecontent>
+		<skin:onReady><cfoutput>
+			$fc.openModal('#jsstringformat(trim(profilehtml))#','auto','auto',1,1);
+		</cfoutput></skin:onReady>
+		
+		<farcry:webskinTracer />
+	<cfelseif request.mode.tracewebskins
+		AND NOT structKeyExists(request.fc, "bAdminTrayRendered") 
+		AND NOT request.mode.ajax>
+		
+		<cfset request.fc.bAdminTrayRendered = true />
 		
 		<farcry:webskinTracer />
 	</cfif>
