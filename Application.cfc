@@ -567,7 +567,7 @@
 		</cfif>
 		
 		<cfcatch type="lock">
-			<cfheader statuscode="500" statustext="Internal Server Error" />
+			<cfheader statuscode="503" statustext="Service Unavailable" />
 			<cfoutput><h1>Application Restarting</h1><p>Please come back in a few minutes.</p></cfoutput>
 			<cfabort />
 		</cfcatch>
