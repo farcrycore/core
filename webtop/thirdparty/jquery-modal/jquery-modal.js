@@ -1,4 +1,5 @@
 // minimalist modal window
+$fc = $fc || {};
 (function(fc,$){
 	fc.openModal = function startOverlay(html,width,height,backgroundclose,addchrome) {
 		var newContent = $(html);
