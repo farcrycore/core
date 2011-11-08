@@ -87,6 +87,10 @@
 		<skin:registerJS 	id="swfobject"
 							baseHREF="#application.url.webtop#/js"
 							lFiles="swfobject.js" />
+							
+		<skin:registerJS 	id="jquery-modal"
+							baseHREF="#application.url.webtop#/thirdparty/jquery-modal"
+							lFiles="jquery-modal.js" />
 
 		<!--- CSS LIBRARIES --->
 		<skin:registerCSS 	id="webtop"
@@ -111,6 +115,10 @@
 		<skin:registerCSS	id="jquery-crop"
 							baseHREF="#application.url.webtop#/thirdparty/Jcrop/css"
 							lFiles="jquery.Jcrop.css" />
+							
+		<skin:registerCSS 	id="jquery-modal"
+							baseHREF="#application.url.webtop#/thirdparty/jquery-modal"
+							lFiles="jquery-modal.css" />
 				
 		<skin:registerCSS 	id="farcry-form"
 							baseHREF="#application.url.webtop#"
