@@ -466,7 +466,39 @@
 				</table>
 			
 				<h3>Root Cause</h3>
-				<cfdump var="#stException#" label="Error Diagnostics">
+				<table>
+					<cfif structKeyExists(stException, "type") and len(stException.type)>
+						<tr><th>Exception Type</th><td>#stException.type#</td></tr>
+					</cfif>
+					<cfif structKeyExists(stException, "detail") and len(stException.detail)>
+						<tr><th>Detail</th><td>#stException.detail#</td></tr>
+					</cfif>
+					<cfif structKeyExists(stException, "extended_info") and len(stException.extended_info)>
+						<tr><th>Extended Info</th><td>#stException.extended_info#</td></tr>
+					</cfif>
+					<cfif structKeyExists(stException, "queryError") and len(stException.queryError)>
+						<tr><th>Error</th><td>#stException.queryError#</td></tr>
+					</cfif>
+					<cfif structKeyExists(stException, "sql") and len(stException.sql)>
+						<tr><th>SQL</th><td>#stException.sql#</td></tr>
+					</cfif>
+					<cfif structKeyExists(stException, "where") and len(stException.where)>
+						<tr><th>Where</th><td>#stException.where#</td></tr>
+					</cfif>
+					
+					<cfif structKeyExists(stException, "TagContext") and arraylen(stException.TagContext)>
+						<tr>
+							<th>Tag Context</th>
+							<td>
+								<ul>
+								<cfloop from="1" to="#arrayLen(stException.TagContext)#" index="i">
+									<li>#stException.TagContext[i].template# (line: #stException.TagContext[i].line#)</li>
+								</cfloop>
+								</ul>	
+							</td>
+						</tr>
+					</cfif>
+				</table>
 			</cfoutput></cfmail>
 		</cfif>
 		
