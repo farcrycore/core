@@ -170,9 +170,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 						success		: function(msg){
 							if (config.showIndicator == true) {
 								self.html('');
+							self.html(msg);
 						},
 						cache		: true
-							self.html(msg);
 				   }
 				 });
 					
