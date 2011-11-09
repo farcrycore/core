@@ -160,9 +160,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					
 					if (config.showIndicator == true) {
 						self.html('<div class="loading-indicator">' + config.indicatorText + '</div>');
-				}
-				
-				$j.ajax({
+					}
+					
+					$j.ajax({
 						type		: "GET",
 						url			: config.action,
 						cache		: false,
@@ -170,11 +170,11 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 						success		: function(msg){
 							if (config.showIndicator == true) {
 								self.html('');
+							}
 							self.html(msg);
 						},
 						cache		: true
-				   }
-				 });
+					});
 					
 					return self;
 				}
