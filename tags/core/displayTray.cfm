@@ -22,7 +22,7 @@
 	
 	<cfset application.fapi.addProfilePoint("End","End") />
 	
-	<cfif (request.bHideContextMenu eq true or request.fc.bShowTray eq false or url.bHideContextMenu)
+	<cfif (request.bHideContextMenu eq false and request.fc.bShowTray and url.bHideContextMenu eq false)
 		AND len(url.type) 
 		AND NOT structKeyExists(application.rules, url.type) 
 		AND request.mode.bAdmin 
