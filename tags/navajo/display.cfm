@@ -83,7 +83,12 @@
 		<cfif structKeyExists(url, "furl") AND url.furl NEQ "/">	
 			
 			<cfset machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
-			<cfset instanceName = createObject("java", "jrunx.kernel.JRun").getServerName() />
+			
+			<cfset instanceName = "Unknown" />
+			<cftry>
+				<cfset instanceName = createObject("java", "jrunx.kernel.JRun").getServerName() />
+				<cfcatch></cfcatch>
+			</cftry>
 			
 			<cfcontent reset="true" />
 			
@@ -131,7 +136,12 @@
 			<farcry:logevent object="#url.objectid#" type="display" event="404" />
 
 			<cfset machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
-			<cfset instanceName = createObject("java", "jrunx.kernel.JRun").getServerName() />
+			
+			<cfset instanceName = "Unknown" />
+			<cftry>
+				<cfset instanceName = createObject("java", "jrunx.kernel.JRun").getServerName() />
+				<cfcatch></cfcatch>
+			</cftry>
 			
 			<cfcontent reset="true" />
 			
