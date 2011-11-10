@@ -425,7 +425,7 @@
 		<cfargument name="EventName" type="string" required="false" default="" />
 		
 		<cfset var machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
-		<cfset var instanceName = createObject("java", "jrunx.kernel.JRun").getServerName() />
+		<cfset var instanceName = "Unknown" />
 		<cfset var bot = IIF(!request.fc.hasSessionScope,DE("bot"),DE("not a bot")) />
 		
 		<cfset var stException = duplicate(arguments.exception) />
@@ -434,6 +434,11 @@
 		<cfset var i = 0 />
 		<cfset var newline = "
 " />
+		
+		<cftry>
+			<cfset instanceName = createObject("java", "jrunx.kernel.JRun").getServerName() />
+			<cfcatch></cfcatch>
+		</cftry>
 		
 		<cfif structKeyExists(arguments.exception, "rootcause")>
 			<cfset stException = duplicate(arguments.exception.rootcause) />
