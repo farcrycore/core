@@ -54,29 +54,26 @@
 				
 				<h2>Error Details</h2>
 				<table>
-					<cfif structKeyExists(stException, "message")>
-						<tr><th>Message</th><td>#stException.message#</td></tr>
-					</cfif>
-					<cfif structKeyExists(stException, "type")>
+					<cfif structKeyExists(stException, "type") and len(stException.type)>
 						<tr><th>Exception Type</th><td>#stException.type#</td></tr>
 					</cfif>
-					<cfif structKeyExists(stException, "detail")>
+					<cfif structKeyExists(stException, "detail") and len(stException.detail)>
 						<tr><th>Detail</th><td>#stException.detail#</td></tr>
 					</cfif>
-					<cfif structKeyExists(stException, "extended_info")>
+					<cfif structKeyExists(stException, "extended_info") and len(stException.extended_info)>
 						<tr><th>Extended Info</th><td>#stException.extended_info#</td></tr>
 					</cfif>
-					<cfif structKeyExists(stException, "queryError")>
+					<cfif structKeyExists(stException, "queryError") and len(stException.queryError)>
 						<tr><th>Error</th><td>#stException.queryError#</td></tr>
 					</cfif>
-					<cfif structKeyExists(stException, "sql")>
+					<cfif structKeyExists(stException, "sql") and len(stException.sql)>
 						<tr><th>SQL</th><td>#stException.sql#</td></tr>
 					</cfif>
-					<cfif structKeyExists(stException, "where")>
+					<cfif structKeyExists(stException, "where") and len(stException.where)>
 						<tr><th>Where</th><td>#stException.where#</td></tr>
 					</cfif>
 					
-					<cfif structKeyExists(stException, "TagContext")>
+					<cfif structKeyExists(stException, "TagContext") and arraylen(stException.TagContext)>
 						<tr>
 							<th>Tag Context</th>
 							<td>
