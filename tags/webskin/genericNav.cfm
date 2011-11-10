@@ -170,7 +170,13 @@
 							homeclass=homeclass & ' #attributes.ActiveClass# ';
 						}
 						writeOutput(" class="""&trim(homeclass)&"""");
-						writeOutput("><a href=""#application.fapi.getLink(alias=attributes.homeAlias)#/"">");
+						homeURL = application.fapi.getLink(alias=attributes.homeAlias);
+						if (len(homeURL)){
+							writeOutput("><a href=""#homeURL#"">");
+						}
+						else {
+							writeOutput("><a href=""/"">");
+						}
 						if(attributes.bSpan) writeOutput("<span>");
 						writeOutput("#homeNode.objectName#");
 						if(attributes.bSpan) writeOutput("</span>");
