@@ -251,7 +251,7 @@
 			IF OBJECT_ID('tempdb..##thetops') IS NOT NULL 	drop table ##thetops
 			CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL);
 			
-			INSERT ##thetops (objectID)
+			INSERT INTO ##thetops (objectID)
 			SELECT TOP #theSQLTop# tbl.objectid
 			FROM #arguments.typename# tbl
 			<cfif bHasVersionID>
@@ -389,7 +389,7 @@
 				IF OBJECT_ID('tempdb..##thetops') IS NOT NULL 	drop table ##thetops
 				CREATE TABLE ##thetops (objectID varchar(40), myint int IDENTITY(1,1) NOT NULL);
 				
-				INSERT ##thetops (objectID)
+				INSERT INTO ##thetops (objectID)
 				SELECT TOP #theSQLTop# tbl.objectid
 				FROM #arguments.typename# tbl
 				<cfif bHasVersionID>
