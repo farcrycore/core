@@ -528,10 +528,17 @@
 			FROM #arguments.typename# tbl
 			
 			WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+			<cfif l_sqlCatIds neq "">
+				AND objectid IN (
+					SELECT DISTINCT objectid
+					FROM refCategories
+					WHERE categoryID IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
+				)
+			</cfif>
 			
 			<cfif len(trim(arguments.sqlOrderBy))>
 				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
-			</cfif>			
+			</cfif>
 
 			<cfif application.dbtype NEQ "ora"> <!--- record limiting for everyone else --->
 				LIMIT #arguments.RecordsPerPage# OFFSET #toprow#
