@@ -519,6 +519,11 @@
 				<cfset thisdefault = listgetat(arguments.lDefaults,i) />
 			</cfif>
 			
+			<cfif not isValid("variablename",template)>
+				<cfthrow 	message="Invalid webskin filename (#path#)."
+							detail=" FarCry webskin names must adhere to the standard ColdFusion variable naming conventions. For example, no spaces in filename." />
+			</cfif>
+			
 			<cfif isdefined("application.stcoapi.#typename#.stWebskins.#template#.#thisvar#")>
 				
 				<!--- Get the cached value if available --->
