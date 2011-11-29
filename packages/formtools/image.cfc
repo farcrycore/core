@@ -208,7 +208,7 @@
 	    					// show selected
 	    					$self.show();
 	    				}
-	    				else if (!data.selected.length && $self.is(":visible")){
+	    				else if (!data.selected.length && $self.is(":visible") || $self.css("display")=="block"){
 	    					// no initial view provided - select first visible one
     						data.selected = viewname;
 	    				}
@@ -486,7 +486,7 @@
 									imageformtool.multiview.selectView("complete");
 								}
 							}
-	    				}).bind("fileerror.updatedisplay",function onImageFormtoolFileerrorDisplay(event,action,error,message){console.log(event,action,error,message);
+	    				}).bind("fileerror.updatedisplay",function onImageFormtoolFileerrorDisplay(event,action,error,message){
 							$j('##'+prefix+property+"_"+action+"error").html(message).show();
 	    				}).bind("cancelcrop",function(){
 	    				
