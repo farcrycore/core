@@ -208,7 +208,7 @@
 	    					// show selected
 	    					$self.show();
 	    				}
-	    				else if (!data.selected.length && $self.is(":visible")){
+	    				else if (!data.selected.length && ($self.is(":visible") || $self.css("display")=="block")){
 	    					// no initial view provided - select first visible one
     						data.selected = viewname;
 	    				}
@@ -1598,7 +1598,10 @@
 				<cfreturn stResult />
 			</cfcatch>
 		</cftry>
-	
+		
+		<!--- Default image filename --->
+		<cfset stResult.filename = listlast(arguments.source,"\/") />
+		
 		<cfif len(arguments.destination)>
 			<cfset imageFileName = replace(arguments.source, "\", "/", "all") />
 			<cfset imageFileName = listLast(imageFileName, "/") />
