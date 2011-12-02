@@ -507,6 +507,7 @@
 		
 		<!--- Display error to user --->
 		<cfcontent reset="true" />
+		<cfheader statuscode="500" statustext="Internal Server Error" />
 		<cfif fileexists("#application.path.project#/errors/500.cfm")>
 			<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/500.cfm" />
 		<cfelseif fileexists("#application.path.webroot#/errors/500.cfm")>				

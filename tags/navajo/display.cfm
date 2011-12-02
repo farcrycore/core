@@ -91,7 +91,7 @@
 			</cftry>
 			
 			<cfcontent reset="true" />
-			
+			<cfheader statuscode="404" statustext="Not Found" />
 			<cfif fileexists("#application.path.project#/errors/404.cfm")>
 				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/404.cfm" />
 			<cfelseif fileexists("#application.path.webroot#/errors/404.cfm")>				
@@ -144,7 +144,7 @@
 			</cftry>
 			
 			<cfcontent reset="true" />
-			
+			<cfheader statuscode="404" statustext="Not Found" />
 			<cfif fileexists("#application.path.project#/errors/404.cfm")>
 				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/404.cfm" />
 			<cfelseif fileexists("#application.path.webroot#/errors/404.cfm")>
