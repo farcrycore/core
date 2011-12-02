@@ -947,6 +947,7 @@ default handlers
 		<cfparam name="url.editURL" />
 		
 		<!--- Get list of related content --->
+		<cfparam name="application.stCOAPI.#stObj.typename#.aJoins" default="#arraynew(1)#" />
 		<cfloop from="1" to="#arraylen(application.stCOAPI[stObj.typename].aJoins)#" index="thisjoin">
 			<cfif application.stCOAPI[stObj.typename].aJoins[thisjoin].direction eq "from" and application.stCOAPI[stObj.typename].aJoins[thisjoin].type eq "uuid">
 				<cfset stSearch = structnew() />
@@ -1072,7 +1073,7 @@ default handlers
 		
 		<cfset queryaddrow(arguments.qRelated) />
 		<cfset querysetcell(arguments.qRelated,"objectid",arguments.objectid) />
-		<cfset querysetcell(arguments.qRelated,"typename",getTableName()) />
+		<cfset querysetcell(arguments.qRelated,"typename",getTypename()) />
 		
 		<cfloop query="arguments.qRelated">
 			<!--- Copy the object itself --->

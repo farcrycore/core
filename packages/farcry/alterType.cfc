@@ -324,6 +324,8 @@ $out:$
 		<cfset var stJoin = structnew() />
 		
 		<cfloop collection="#arguments.stCOAPI#" item="thistype">
+			<cfparam name="arguments.stCOAPI.#thistype#.aJoins" default="#arraynew(1)#" />
+			
 			<cfloop collection="#arguments.stCOAPI[thistype].stProps#" item="thisproperty">
 				<cfif listcontainsnocase("array,uuid",arguments.stCOAPI[thistype].stProps[thisproperty].metadata.type) and structkeyexists(arguments.stCOAPI[thistype].stProps[thisproperty].metadata,"ftJoin")>
 					<cfloop list="#arguments.stCOAPI[thistype].stProps[thisproperty].metadata.ftJoin#" index="othertype">
@@ -335,7 +337,6 @@ $out:$
 							<cfset stJoin.property = thisproperty />
 							<cfset stJoin.direction = "to" />
 							<cfset stJoin.type = arguments.stCOAPI[thistype].stProps[thisproperty].metadata.type />
-							<cfparam name="arguments.stCOAPI.#thistype#.aJoins" default="#arraynew(1)#" />
 							<cfset arrayappend(arguments.stCOAPI[thistype].aJoins,stJoin) />
 							
 							<cfset stJoin = duplicate(stJoin) />
@@ -343,7 +344,6 @@ $out:$
 							<cfset stJoin.coapitypeother = othertype />
 							<cfset stJoin.class = arguments.stCOAPI[thistype].class />
 							<cfset stJoin.direction = "from" />
-							<cfparam name="arguments.stCOAPI.#othertype#.aJoins" default="#arraynew(1)#" />
 							<cfset arrayappend(arguments.stCOAPI[othertype].aJoins,stJoin) />
 						</cfif>
 					</cfloop>
