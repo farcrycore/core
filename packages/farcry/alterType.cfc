@@ -330,6 +330,7 @@ $out:$
 				<cfif listcontainsnocase("array,uuid",arguments.stCOAPI[thistype].stProps[thisproperty].metadata.type) and structkeyexists(arguments.stCOAPI[thistype].stProps[thisproperty].metadata,"ftJoin")>
 					<cfloop list="#arguments.stCOAPI[thistype].stProps[thisproperty].metadata.ftJoin#" index="othertype">
 						<cfif structkeyexists(arguments.stCOAPI,othertype)>
+							<cfparam name="arguments.stCOAPI.#othertype#.aJoins" default="#arraynew(1)#" />
 							<cfset stJoin = structnew() />
 							<cfset stJoin.coapitype = othertype />
 							<cfset stJoin.coapitypeother = thistype />
