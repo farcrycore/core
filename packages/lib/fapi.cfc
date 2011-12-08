@@ -171,7 +171,7 @@
 		</cfloop>
 		
 		<cfquery datasource="#application.dsn#" name="q" maxrows="#arguments.maxRows#">
-			select		#arguments.lProperties#, '#arguments.typename#' as typename
+			select		#preserveSingleQuotes(arguments.lProperties)#, '#arguments.typename#' as typename
 			from		#application.dbowner##arguments.typename#
 			where		1=1
 						<cfif structkeyexists(application.stCOAPI[arguments.typename].stProps,"status")>
