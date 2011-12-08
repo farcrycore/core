@@ -180,6 +180,7 @@
 		
 		<cfset var stResult = structnew() />
 		<cfset var queryresult = "" />
+		<cfset var bFirst = false />
 		
 		<!--- set defaults for status --->
 		<cfset stResult.bSuccess = true />
