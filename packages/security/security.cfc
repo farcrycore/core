@@ -109,6 +109,11 @@
 		<cfset var result = -1 />
 		<cfset var oType = "" />
 		<cfset var navID = "" />
+		<cfset var bPermitted = 0 />
+		<cfset var barnacleID = "">
+		<cfset var iRole = "">
+		<cfset var bRight = "">
+		<cfset var genericPermissionID = "">
 		
 		<!--- If the role was left empty, use current user's roles --->
 		<cfif not len(arguments.role)>
@@ -130,24 +135,33 @@
 		
 			<cfset result = this.factory.role.checkWebskin(role=arguments.role,type=arguments.type,webskin=arguments.webskin) />
 			
-		<cfelseif len(arguments.type) and len(arguments.permission)>
+		<cfelseif NOT len(arguments.object) AND len(arguments.type) and len(arguments.permission)>
 		
-			<!--- Aliasing of typename to permission name for backward compatibility --->
-			<cfswitch expression="#arguments.type#">
-				<cfcase value="dmNews">
-					<cfset arguments.type = "News" />
-				</cfcase>
-				<cfcase value="dmFacts">
-					<cfset arguments.type = "Fact" />
-				</cfcase>
-				<cfcase value="dmEvent">
-					<cfset arguments.type = "Event" />
-				</cfcase>
-				<cfcase value="dmLink">
-					<cfset arguments.type = "Link" />
-				</cfcase>
-			</cfswitch>
-		
+			
+			<cfset genericPermissionID = application.security.factory.permission.getID(name="generic#arguments.permission#")>
+			
+			<cfif len(genericPermissionID)>
+				
+				<cfset barnacleID = application.fapi.getContentType("farCoapi").getCoapiObjectID(arguments.type)>
+				<cfset bPermitted = 0 />
+				
+				<cfloop list="#arguments.role#" index="iRole">
+					<cfset bRight = application.fapi.getContentType("farBarnacle").getRight(role="#iRole#", permission="#genericPermissionID#", object="#barnacleID#", objecttype="farCoapi")>
+					<cfif bRight GT 0>
+						<cfset result = 1 />
+						<cfbreak>
+					</cfif>
+				</cfloop>
+				
+				<cfif result NEQ 1>
+					<cfset result = this.factory.role.getRight(role=arguments.role, permission=genericPermissionID) />
+				</cfif>
+			<cfelse>
+				<!--- This should only happen for checks to object permissions that don't have corresponding type permissions --->
+				<cfset result = 1 />
+			</cfif>
+			
+		<!--- 
 			<cfif this.factory.permission.permissionExists("#arguments.type##arguments.permission#")>
 				<cfset result = this.factory.role.getRight(role=arguments.role, permission=this.factory.permission.getID("#arguments.type##arguments.permission#")) />
 			<cfelseif this.factory.permission.permissionExists("generic#arguments.permission#")>
@@ -155,7 +169,7 @@
 			<cfelse>
 				<!--- This should only happen for checks to object permissions that don't have corresponding type permissions --->
 				<cfset result = 1 />
-			</cfif>
+			</cfif> --->
 		
 		<cfelseif len(arguments.permission)>
 		
@@ -169,26 +183,26 @@
 			
 			<cfif result LT 0>
 				<!--- If an object was provided check the barnacle for that object, otherwise check the basic permission --->
-				<cfif isvalid("uuid",arguments.object)>
+				<cfif len(arguments.object)>
 				
 					
-					<cfif not len(arguments.type) or not structKeyExists(application.stCoapi, arguments.type)>
+					<cfif len(arguments.object) AND not len(arguments.type)>
 						<cfset arguments.type = application.fapi.findType(arguments.object) />
 					</cfif>
 					
 					<cfif arguments.type EQ "dmNavigation">
 						<cfset result = 1 /><!--- permission check on dmNavigation is handled below. --->
 					<cfelse>
-						<cfset result = this.factory.barnacle.checkPermission(object=arguments.object,permission=arguments.permission,role=arguments.role) />
+						<cfset result = this.factory.barnacle.checkPermission(object=arguments.object, objecttype="#arguments.type#", permission=arguments.permission,role=arguments.role) />
 					</cfif>
 					
 					<!--- Also check the permission on the parent nav node --->
-					<cfif len(arguments.type) AND structKeyExists(application.stCOAPI[arguments.type], "bUseInTree") AND application.stCOAPI[arguments.type].bUseInTree>
+					<cfif len(arguments.type) AND structKeyExists(application.stCOAPI, arguments.type) AND structKeyExists(application.stCOAPI[arguments.type], "bUseInTree") AND application.stCOAPI[arguments.type].bUseInTree>
 						<cfset oType = application.fapi.getContentType(arguments.type) />
 						<cfset navID = oType.getNavID(objectid=arguments.object,typename=arguments.type) />	
 						<cfset result = result and (not len(navID) or this.factory.barnacle.checkPermission(object=navID,permission=arguments.permission,role=arguments.role)) />
-						
 					</cfif>
+					
 				<cfelse>
 					<cfset result = this.factory.role.getRight(role=arguments.role,permission=arguments.permission) />
 				</cfif>

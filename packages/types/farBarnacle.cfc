@@ -1,7 +1,7 @@
 <cfcomponent displayname="Barnacle" hint="Used to grant an item specific permissions." extends="types" output="false" bRefObjects="false">
 	<cfproperty name="roleid" type="uuid" default="" hint="The role this barnacle is attached to" ftSeq="1" ftFieldset="" ftLabel="Role" ftType="uuid" ftJoin="farRole" />
 	<cfproperty name="permissionid" type="uuid" default="" hint="The permission this barnacle is controlling" ftSeq="2" ftFieldset="" ftLabel="Permission" ftType="uuid" ftJoin="farPermission" />
-	<cfproperty name="referenceid" type="uuid" default="" hint="The object this barnacle is attached to" ftSeq="3" ftFieldset="" ftLabel="Object" ftType="uuid" ftJoin="dmNavigation" />
+	<cfproperty name="referenceid" type="uuid" default="" hint="The object this barnacle is attached to" ftSeq="3" ftFieldset="" ftLabel="Object" ftType="uuid" ftJoin="dmNavigation,farCoapi" />
 	<cfproperty name="objecttype" type="string" default="" hint="The type of the object" ftSeq="4" ftFieldset="" ftLabel="Type" ftType="string" />
 	<cfproperty name="barnaclevalue" type="numeric" default="0" hint="Deny: -1, Inherity (only for tree types): 0, Grant: 1. Absence of a barnacle implies inherit. If the object can't inherit that is equivilent to deny." ftSeq="5" ftFieldset="" ftLabel="Right" ftType="list" ftList="-1:Deny,0:Inherit,1:Grant" />
 	
@@ -18,7 +18,7 @@
 	<cffunction name="getBarnacle" access="public" output="false" returntype="struct" hint="Returns a barnacle based on the permission and role and object">
 		<cfargument name="role" type="uuid" required="true" hint="The role the barnacle is attached to" />
 		<cfargument name="permission" type="uuid" required="true" hint="The permission the barnacle is based on" />
-		<cfargument name="object" type="uuid" required="true" hint="The object the barnacle is attached to" />
+		<cfargument name="object" type="string" required="true" hint="The object the barnacle is attached to" />
 		
 		<cfset var qBarnacle = "" />
 		<cfset var stBarnacle = structnew() />
@@ -86,6 +86,7 @@
 		<cfargument name="role" type="string" required="false" default="" hint="The role the barnacle is attached to" />
 		<cfargument name="permission" type="string" required="false" default="" hint="The permission the barnacle is based on" />
 		<cfargument name="object" type="string" required="false" default="" hint="The object the barnacle is attached to" />
+		<cfargument name="objecttype" type="string" required="false" default="" hint="The type of object to check." />
 		<cfargument name="requestcache" type="boolean" required="false" default="false" hint="Use request cache" />
 		
 		<cfset var stBarnacle = structnew() />
@@ -124,7 +125,7 @@
 			<cfset arguments.permission = stBarnacle.permissionid />
 			<cfset arguments.object = stBarnacle.referenceid />
 			
-		<cfelseif isvalid("uuid",arguments.permission) and isvalid("uuid",arguments.object)>
+		<cfelseif isvalid("uuid",arguments.permission) and len(arguments.object)>
 			
 			<cfif not len(arguments.role)>
 				<cfset arguments.role = application.security.getCurrentRoles() />
@@ -138,13 +139,16 @@
 		</cfif>
 		
 		<!--- If this type hasn't been secured (i.e. no object permissions) default to grant --->
-		<cfset typename = findType(arguments.object) />
-		<cfif len(typename)>
+		
+		<cfif not len(arguments.objecttype)>
+			<cfset arguments.objecttype = findType(arguments.object) />
+		</cfif>
+		<cfif len(arguments.objecttype)>
 			<cfquery datasource="#application.dsn#" name="qSecured">
 				select	count(parentid) as secured
 				from	#application.dbowner#farPermission_aRelatedtypes
 				where	parentid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.permission#" />
-						and data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#typename#" />
+						and data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objecttype#" />
 			</cfquery>
 			<cfif not qSecured.secured>
 				<cfreturn 1 />
@@ -168,6 +172,7 @@
 		<cfargument name="role" type="string" required="false" default="" hint="The roles to check" />
 		<cfargument name="permission" type="string" required="false" default="" hint="The permission the barnacle is based on" />
 		<cfargument name="object" type="string" required="false" default="" hint="The object the barnacle is attached to" />
+		<cfargument name="objecttype" type="string" required="false" default="" hint="The type of object to check." />
 		<cfargument name="requestcache" type="boolean" required="false" default="false" hint="Use request cache" />
 		
 		<cfset var stBarnacle = structnew() />
@@ -217,7 +222,7 @@
 			<cfset arguments.permission = stBarnacle.permissionid />
 			<cfset arguments.object = stBarnacle.referenceid />
 			
-		<cfelseif not (len(arguments.role) and isvalid("uuid",arguments.permission) and isvalid("uuid",arguments.object))>
+		<cfelseif not (len(arguments.role) and isvalid("uuid",arguments.permission) and len(arguments.object))>
 		
 			<!--- Invalid arguments --->
 			<cfthrow message="farBarnacle.getInheritedRight: required arguments - barnacle or role + permission + object" />
@@ -225,16 +230,20 @@
 		</cfif>
 		
 		<!--- Get object type --->
-		<cfset typename = findType(arguments.object) />
-		<cfif not len(typename)>
+		
+		
+		<cfif not len(arguments.objecttype)>
+			<cfset arguments.objecttype = findType(arguments.object) />
+		</cfif>
+		<cfif not len(arguments.objecttype)>
 			<cfset thisobject = getData(objectid=arguments.object) />
 			<cfif structkeyexists(thisobject,"typename")>
-				<cfset typename = thisobject.typename />
+				<cfset arguments.objecttype = thisobject.typename />
 			</cfif>
 		</cfif>
 
 		<!--- If this is a tree type, get the ancestors --->
-		<cfif listcontainsnocase("dmNavigation",typename)>
+		<cfif listcontainsnocase("dmNavigation",arguments.objecttype)>
 
 			<cfquery name="qResult" datasource="#application.dsn#">
 				select	*
@@ -268,7 +277,7 @@
 			</cfif>
 
 		<cfelse>
-			<cfset result = getRight(role=arguments.role,permission=arguments.permission,object=arguments.object) />
+			<cfset result = getRight(role=arguments.role,permission=arguments.permission,object=arguments.object, objecttype=arguments.objecttype) />
 		</cfif>
 		
 		<cfset request.stInheritedRightCache[inheritedRightHashID] = result />
@@ -276,14 +285,15 @@
 	</cffunction>
 	
 	<cffunction name="checkPermission" access="public" output="false" returntype="boolean" hint="Checks the permission on an object">
-		<cfargument name="object" type="uuid" required="true" hint="The objectid to check. If it is for a tree type, searches up the ancestor list, and returns the first non-zero (not inherited) result, false if there isn't one." />
+		<cfargument name="object" type="string" required="true" hint="The referenceid to check. If it is for a tree type, searches up the ancestor list, and returns the first non-zero (not inherited) result, false if there isn't one." />
 		<cfargument name="permission" type="uuid" required="true" hint="The permission to check" />
+		<cfargument name="objecttype" type="string" required="false" default="" hint="The type of object to check." />
 		<cfargument name="role" type="string" required="false" hint="List of roles to check" />
 		
 		<cfset var typename = "" />
 		<cfset var thisrole = "" />
 		
-		<cfset var hashID = hash("#arguments.object#-#arguments.permission#-#arguments.role#") />		
+		<cfset var hashID = hash("#arguments.object#-#arguments.permission#-#arguments.objecttype#-#arguments.role#") />		
 
 		<cfparam name="request.stCheckPermissionCache" default="#structNew()#" />
 
@@ -291,7 +301,9 @@
 			<cfreturn request.stCheckPermissionCache[hashID] />
 		</cfif>
 		
-		<cfset typename = application.coapi.coapiAdmin.findType(arguments.object) />
+		<cfif not len(arguments.objecttype)>
+			<cfset arguments.objecttype = application.coapi.coapiAdmin.findType(arguments.object) />
+		</cfif>
 		
 		<!--- Check existence of permission --->
 		<cfif not isvalid("uuid",arguments.permission)>
@@ -302,9 +314,10 @@
 				<cfreturn 1 />
 			</cfif>
 		</cfif>
+		
 		<!--- If permission is not related to this type, grant it --->
 		<!--- This allows FarCry to easily handle the many combinations of type and object permission setups --->
-		<cfif not listcontains(application.security.factory.permission.getAllPermissions(typename),arguments.permission)>
+		<cfif not listcontains(application.security.factory.permission.getAllPermissions(arguments.objecttype),arguments.permission)>
 			<cfreturn 1 />
 		</cfif>
 
@@ -312,7 +325,7 @@
 		<cfloop list="#arguments.role#" index="thisrole">
 			
 			<!--- return as soon as any role has explicit grant permission --->
-			<cfif getInheritedRight(role=thisrole,permission=arguments.permission,object=arguments.object) eq 1>
+			<cfif getInheritedRight(role=thisrole,permission=arguments.permission,object=arguments.object, objecttype="#arguments.objecttype#") eq 1>
 				<cfset request.stCheckPermissionCache[hashID] = 1 />
 				<cfreturn 1 />
 			</cfif>
@@ -376,7 +389,9 @@
 		<cfargument name="bAfterSave" type="boolean" required="false" default="true" hint="This allows the developer to skip running the types afterSave function.">	
 		
 		<!--- Update object type --->
-		<cfset arguments.stProperties.objecttype = findType(arguments.stProperties.referenceid) />
+		<cfif not structKeyExists(arguments.stProperties, "objecttype") OR not len(arguments.stProperties.objecttype)>
+			<cfset arguments.stProperties.objecttype = findType(arguments.stProperties.referenceid) />
+		</cfif>
 		
 		<!--- Clear security cache --->
 		<cfset application.security.initCache() />

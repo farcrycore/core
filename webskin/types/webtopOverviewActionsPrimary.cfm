@@ -339,19 +339,17 @@ START WEBSKIN
 
 	
 		
-		<!--- create child objects for dmNavigation --->
-		<cfif stobj.typename EQ  "dmNavigation">
-	
-			<cfif application.security.checkPermission("ModifyPermissions") and listcontains(application.fapi.getPropertyMetadata(typename="farBarnacle", property="referenceid", md="ftJoin", default=""), stObj.typename)>
-				<ft:button 	value="Modify Permissions" 
-							text="PERMISSIONS<br>User access"
-							title="User access"
-							class="secondary"  
-							type="button" 
-							style="width:180px;"
-							onClick="$fc.openDialogIFrame('Permissions', '#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&typename=#stObj.typename#&method=adminPermissions');" />
-			</cfif>	
+		<!--- Modify permissions at Object Level  --->
+		<cfif application.security.checkPermission("ModifyPermissions") and listcontains(application.fapi.getPropertyMetadata(typename="farBarnacle", property="referenceid", md="ftJoin", default=""), stObj.typename)>
+			<ft:button 	value="Modify Permissions" 
+						text="PERMISSIONS<br>User access"
+						title="User access"
+						class="secondary"  
+						type="button" 
+						style="width:180px;"
+						onClick="$fc.openDialogIFrame('Permissions', '#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&typename=#stObj.typename#&method=adminPermissions');" />
 		</cfif>	
+		
 
 
 

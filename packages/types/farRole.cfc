@@ -24,6 +24,12 @@ type properties
 	<cfproperty name="aGroups" type="array" default="" hint="The user directory groups that this role has been assigned to" ftSeq="3" ftWizardStep="Groups" ftLabel="Groups" ftType="array" ftJoin="farRole" ftRenderType="list" ftLibraryData="getGroups" ftShowLibraryLink="false" />
 	<cfproperty name="aPermissions" type="array" hint="The simple permissions that are granted as part of this role" ftSeq="11" ftWizardStep="Permissions" ftLabel="Permissions" ftJoin="farPermission" />
 	<cfproperty name="webskins" type="longchar" default="" hint="A list of wildcard items that match the webkins this role can access" ftSeq="21" ftWizardStep="Webskins" ftLabel="Webskins" ftType="longchar" ftHint="Filters should be in the form: [type.][prefix*|webskin]<br />e.g. display* grants access to all webskins prefixed with display<br />dmNews.stats grants access to the stats dmNews webskin<br />dmEvent.* grants access to all event webskins" />
+	
+	<!--- System Properties --->
+	<cfproperty name="sitePermissions" type="longchar" default="" hint="wddx of site permissions for this role" ftLabel="Site Permissions" bSave="false" />
+	<cfproperty name="webtopPermissions" type="longchar" default="" hint="wddx of webtop permissions for this role" ftLabel="Webtop Permissions" bSave="false" />
+	<cfproperty name="typePermissions" type="longchar" default="" hint="wddx of type permissions for this role" ftLabel="type Permissions" bSave="false" />
+
 
 <!---------------------------------------------- 
 object methods
@@ -492,50 +498,52 @@ object methods
 		<cfset var stO = structnew() />
 		<cfset var i = 0 />
 		
-		<cfif structkeyexists(arguments.stProperties,"aPermissions")>
-			<!--- If this setData happened because of the library there may be :seq values in the array data --->
-			<cfloop from="1" to="#arraylen(arguments.stProperties.aPermissions)#" index="i">
-				<cfif refind(":[\d\.]+$",arguments.stProperties.aPermissions[i])>
-					<cfset arguments.stProperties.aPermissions[i] = listfirst(arguments.stProperties.aPermissions[i],":") />
-				</cfif>
-			</cfloop>
-			
-			<!--- Removed permissions --->
-			<cfloop list="#application.fapi.listDiff(arraytolist(arguments.stProperties.aPermissions),arraytolist(stOld.aPermissions))#" index="thisperm">
-				<!--- Notify objects of permission change --->
-				<cfset typepermissiontype = application.security.factory.permission.getTypePermissionType(objectid=thisperm) />
-				<cfif len(typepermissiontype)>
-					<cfquery datasource="#application.dsn#" name="qObjects">
-						select		objectid
-						from		#application.dbowner##typepermissiontype#
-					</cfquery>
-					
-					<cfparam name="stO.#typepermissiontype#" default="#application.fapi.getContentType(typename=typepermissiontype)#" />
-					<cfloop query="qObjects">
-						<cfset stO[typepermissiontype].onSecurityChange(changetype="type",objectid=qObjects.objectid,typename=typepermissiontype,farRoleID=arguments.stProperties.objectid,farPermissionID=thisperm,oldright=1,newright=0) />
-					</cfloop>
-				</cfif>
-			</cfloop>
-			
-			<!--- Added permissions --->
-			<cfloop list="#application.fapi.listDiff(arraytolist(stOld.aPermissions),arraytolist(arguments.stProperties.aPermissions))#" index="thisperm">
-				<!--- Notify objects of permission change --->
-				<cfset typepermissiontype = application.security.factory.permission.getTypePermissionType(objectid=thisperm) />
-				<cfif len(typepermissiontype)>
-					<cfquery datasource="#application.dsn#" name="qObjects">
-						select		objectid
-						from		#application.dbowner##typepermissiontype#
-					</cfquery>
-					
-					<cfparam name="stO.#typepermissiontype#" default="#application.fapi.getContentType(typename=typepermissiontype)#" />
-					<cfloop query="qObjects">
-						<cfset stO[typepermissiontype].onSecurityChange(changetype="type",objectid=qObjects.objectid,typename=typepermissiontype,farRoleID=arguments.stProperties.objectid,farPermissionID=thisperm,oldright=0,newright=1) />
-					</cfloop>
-				</cfif>
-			</cfloop>
+		<cfif not arguments.bSessionOnly>
+			<cfif structkeyexists(arguments.stProperties,"aPermissions")>
+				<!--- If this setData happened because of the library there may be :seq values in the array data --->
+				<cfloop from="1" to="#arraylen(arguments.stProperties.aPermissions)#" index="i">
+					<cfif refind(":[\d\.]+$",arguments.stProperties.aPermissions[i])>
+						<cfset arguments.stProperties.aPermissions[i] = listfirst(arguments.stProperties.aPermissions[i],":") />
+					</cfif>
+				</cfloop>
+				
+				<!--- Removed permissions --->
+				<cfloop list="#application.fapi.listDiff(arraytolist(arguments.stProperties.aPermissions),arraytolist(stOld.aPermissions))#" index="thisperm">
+					<!--- Notify objects of permission change --->
+					<cfset typepermissiontype = application.security.factory.permission.getTypePermissionType(objectid=thisperm) />
+					<cfif len(typepermissiontype)>
+						<cfquery datasource="#application.dsn#" name="qObjects">
+							select		objectid
+							from		#application.dbowner##typepermissiontype#
+						</cfquery>
+						
+						<cfparam name="stO.#typepermissiontype#" default="#application.fapi.getContentType(typename=typepermissiontype)#" />
+						<cfloop query="qObjects">
+							<cfset stO[typepermissiontype].onSecurityChange(changetype="type",objectid=qObjects.objectid,typename=typepermissiontype,farRoleID=arguments.stProperties.objectid,farPermissionID=thisperm,oldright=1,newright=0) />
+						</cfloop>
+					</cfif>
+				</cfloop>
+				
+				<!--- Added permissions --->
+				<cfloop list="#application.fapi.listDiff(arraytolist(stOld.aPermissions),arraytolist(arguments.stProperties.aPermissions))#" index="thisperm">
+					<!--- Notify objects of permission change --->
+					<cfset typepermissiontype = application.security.factory.permission.getTypePermissionType(objectid=thisperm) />
+					<cfif len(typepermissiontype)>
+						<cfquery datasource="#application.dsn#" name="qObjects">
+							select		objectid
+							from		#application.dbowner##typepermissiontype#
+						</cfquery>
+						
+						<cfparam name="stO.#typepermissiontype#" default="#application.fapi.getContentType(typename=typepermissiontype)#" />
+						<cfloop query="qObjects">
+							<cfset stO[typepermissiontype].onSecurityChange(changetype="type",objectid=qObjects.objectid,typename=typepermissiontype,farRoleID=arguments.stProperties.objectid,farPermissionID=thisperm,oldright=0,newright=1) />
+						</cfloop>
+					</cfif>
+				</cfloop>
+			</cfif>
 		</cfif>
 		
-		<cfreturn super.setData(stProperties=arguments.stProperties,user=arguments.user,auditNote=arguments.auditNote,bAudit=arguments.bAudit,dsn=arguments.dsn,bSessionOnly=arguments.bSessionOnly,bAfterSave=arguments.bAfterSave) />
+		<cfreturn super.setData(argumentCollection=arguments) />
 	</cffunction>
 	
 
@@ -614,4 +622,377 @@ object methods
 		<cfreturn "{rows:[#rows#],total:#total#}" />
 	</cffunction>
 
+	<cffunction name="upgradeV62" access="public" output="false" returntype="struct" hint="Upgrades Role and Permissions">
+
+		<cfset var q = "">
+		<cfset var schema = application.fc.lib.db.getTableMetadata("farPermission")>
+		<cfset var aRelatedTypes = arrayNew(1) />	
+		<cfset var aChanges = arrayNew(1)>
+		<cfset var aResults = arrayNew(1)>
+		<cfset var qAllRoles = "">
+		<cfset var oPermission = application.fapi.getContentType("farPermission")>	
+		<cfset var oRole = application.fapi.getContentType("farRole")>	
+		<cfset var oCoapi = application.fapi.getContentType("farCoapi")>
+		<cfset var stTypeMetadata = application.fc.lib.db.getGateway(dsn=application.dsn).introspectType("farPermission")>
+		<cfset var qGenericPermissions = "">
+		<cfset var stGenericPermission = "">
+		<cfset var qCoapiPermissions = "">
+		<cfset var stPermission = "">
+		<cfset var stCoapiPermission = "">
+		<cfset var lTypes = "" />
+		<cfset var qCheckBarnacleExists = "">
+		<cfset var stWebtop = "">
+		
+		<cfif NOT structKeyExists(stTypeMetadata.fields, "bSystem")>
+		
+
+			
+			<cfquery datasource="#application.dsn#" name="qAllRoles">
+			select * from farRole
+			</cfquery>
+			
+			
+			<!--- Deploy bSystem Property --->
+			<cfset arrayappend(aChanges, application.fc.lib.db.createChange(action="addColumn", schema="#schema#", propertyname='bSystem') ) />
+			<cfset arrayappend(aChanges, application.fc.lib.db.createChange(action="addColumn", schema="#schema#", propertyname='hint') ) />
+			<cfset arrayappend(aChanges, application.fc.lib.db.createChange(action="addColumn", schema="#schema#", propertyname='bDisabled') ) />
+			<cfset aResults = application.fc.lib.db.deployChanges(aChanges,application.dsn) />
+			
+			
+			<!--- Site Tree Permissions --->
+			<cfquery datasource="#application.dsn#" name="q">
+			select objectid from farPermission
+			where ObjectID in (
+				select parentid from farPermission_aRelatedtypes
+			)
+			</cfquery>
+			
+			<cfloop query="q">
+				<cfset stPermission = oPermission.getData(q.objectid)>
+				<cfset stPermission.bSystem = 1>
+				
+				<cfset oPermission.setData(stProperties="#stPermission#")>
+				
+			</cfloop>
+			
+			
+			<!--- Type Permissions --->
+			
+			<cfset lTypes = structKeyList(application.types) />
+				
+			<cfquery datasource="#application.dsn#" name="qGenericPermissions">
+			select objectid 
+			from farPermission
+			WHERE shortcut like 'generic%'
+			</cfquery>
+
+			<cfloop query="qGenericPermissions">
+				<cfset stGenericPermission = oPermission.getData(qGenericPermissions.objectid)>
+				<cfset stGenericPermission.bSystem = 1>
+				<cfif NOT application.fapi.arrayFind(stGenericPermission.aRelatedTypes, "farCoapi")>
+					<cfset arrayAppend(stGenericPermission.aRelatedTypes, "farCoapi") />
+				</cfif>
+				<cfset oPermission.setData(stProperties="#stGenericPermission#")>
+				
+				
+				<!--- Update all the type specific permissions --->
+				<cfloop list="#lTypes#" index="iType">
+					<cfset stCoapiType = oCoapi.getCoapiObject("#iType#") />
+				
+					<cfquery datasource="#application.dsn#" name="qCoapiPermissions">
+					select objectid from farPermission
+					WHERE label = '#replaceNoCase(stGenericPermission.shortcut,"generic","#iType#")#'
+					OR label = '#replaceNoCase(stGenericPermission.shortcut,"generic","#application.fapi.getContentTypeMetadata('#iType#', 'displayname')#")#'
+					</cfquery>
+
+					
+					<cfif qCoapiPermissions.recordCount>
+					
+					
+					
+						<cfset stCoapiPermission = oPermission.getData(qCoapiPermissions.objectid)>
+						<cfset stCoapiPermission.bSystem = 1>
+						<cfset stCoapiPermission.bDisabled = 1>
+						<cfset oPermission.setData(stProperties="#stCoapiPermission#")>
+						
+						
+						<cfloop query="qAllRoles">
+							<cfset stRole = oRole.getData(qAllRoles.objectid)>
+							<cfif application.fapi.arrayFind(stRole.aPermissions, stCoapiPermission.objectid)>
+								
+								<cfquery datasource="#application.dsn#" name="qCheckBarnacleExists">
+								SELECT objectid
+								FROM farBarnacle
+								WHERE roleid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stRole.objectid#">
+								AND permissionID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stGenericPermission.objectid#">
+								AND referenceid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stCoapiType.objectid#">
+								AND objecttype = <cfqueryparam cfsqltype="cf_sql_varchar" value="farCoapi">
+								</cfquery>
+								
+								<cfif not qCheckBarnacleExists.recordCount>
+									<cfset stResult = application.fapi.setData(
+										typename="farBarnacle", 
+										objectID="#application.fapi.getUUID()#", 
+										roleid="#stRole.objectid#",
+										permissionID="#stGenericPermission.objectid#",
+										referenceid="#stCoapiType.objectid#",
+										objecttype="farCoapi",
+										barnaclevalue="1"
+										) />
+								</cfif>
+							</cfif>	
+							
+							
+						</cfloop>
+						
+					</cfif>
+					
+				</cfloop>
+				
+			</cfloop>
+			
+			
+			<!--- KNOWN SYSTEM PERMISSIONS --->
+			
+			
+			<cfquery datasource="#application.dsn#" name="q">
+			select objectid from farPermission
+			where shortcut IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="Admin,AdminSearchTab,EventApprove,EventCanApproveOwnContent,EventCreate,EventDelete,EventEdit,EventRequestApproval,FactApprove,FactCanApproveOwnContent,FactCreate,FactDelete,FactEdit,FactRequestApproval,MainNavReportingTab,MainNavSecurityTab">)
+			</cfquery>
+			<cfloop query="q">
+				<cfset stPermission = oPermission.getData(q.objectid)>
+				<cfset stPermission.bSystem = 1>
+				<cfset oPermission.setData(stProperties="#stPermission#")>
+
+			</cfloop>
+			
+			
+			
+			<!--- Webtop Permissions --->
+			
+			
+			<cfset viewWebtopItemID = oPermission.getID("viewWebtopItem")>
+			
+			<cfif len(viewWebtopItemID)>
+				<cfset stPermission = oPermission.getData(viewWebtopItemID)>
+				<cfset stPermission.bSystem = 1>
+				<cfset arrayAppend(stPermission.aRelatedTypes,"webtop")>
+				
+				<cfset oPermission.setData(stProperties="#stPermission#")>
+			<cfelse>
+				<cfset stPermission = structNew()>
+				<cfset stPermission.objectid = application.fapi.getUUID()>
+				<cfset stPermission.typename = "farPermission">
+				<cfset stPermission.label = "viewWebtopItem">
+				<cfset stPermission.title = "viewWebtopItem">
+				<cfset stPermission.shortcut = "viewWebtopItem">
+				<cfset stPermission.aRelatedTypes = "#arrayNew(1)#">
+				<cfset arrayAppend(stPermission.aRelatedTypes,"webtop")>
+				<cfset stPermission.bSystem = 1>
+			
+				<cfset oPermission.setData(stProperties="#stPermission#")>
+			</cfif>
+			
+			<cfset viewWebtopItemID = oPermission.getID("viewWebtopItem")>
+			
+			
+			<cfset stWebtop = application.factory.oWebtop.getItem(honoursecurity="false") />
+			<cfloop list="#stWebtop.CHILDORDER#" index="i">
+				
+				<cfset stLevel1 = stWebtop.children[i] />
+				<cfset barnacleID = hash(stLevel1.rbKey)>
+				
+				<cfloop query="qAllRoles">
+			
+					<cfset stRole = oRole.getData(qAllRoles.objectid)>
+					<cfif structKeyExists(stLevel1, "permission") AND len(stLevel1.permission)>
+						<cfset securityPermissionID = oPermission.getID("#stLevel1.permission#")>
+						
+						<cfif len(securityPermissionID)>
+							<cfset stSecurityPermission = oPermission.getData(securityPermissionID)>
+							<cfset stSecurityPermission.bSystem = 1>
+							
+							<cfset oPermission.setData(stProperties="#stSecurityPermission#")>
+						
+							<cfif application.fapi.arrayFind(stRole.aPermissions, securityPermissionID)>
+						
+								<cfquery datasource="#application.dsn#" name="qCheckBarnacleExists">
+								SELECT objectid
+								FROM farBarnacle
+								WHERE roleid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stRole.objectid#">
+								AND permissionID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#viewWebtopItemID#">
+								AND referenceid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#barnacleID#">
+								AND objecttype = <cfqueryparam cfsqltype="cf_sql_varchar" value="webtop">
+								</cfquery>
+								
+								<cfif not qCheckBarnacleExists.recordCount>
+									<cfset stResult = application.fapi.setData(
+										typename="farBarnacle", 
+										objectID="#application.fapi.getUUID()#", 
+										roleid="#stRole.objectid#",
+										permissionID="#viewWebtopItemID#",
+										referenceid="#barnacleID#",
+										objecttype="webtop",
+										barnaclevalue="1"
+										) />
+								</cfif>
+							</cfif>
+						</cfif>
+					</cfif>
+				</cfloop>
+				
+				<cfif listLen(stLevel1.CHILDORDER)>
+						
+					<cfloop list="#stLevel1.CHILDORDER#" index="j">
+					
+						<cfset stLevel2 = stLevel1.children[j] />
+						<cfset barnacleID = hash(stLevel2.rbKey)>
+				
+						<cfloop query="qAllRoles">
+					
+							<cfset stRole = oRole.getData(qAllRoles.objectid)>
+							<cfif structKeyExists(stLevel2, "permission") AND len(stLevel2.permission)>
+								<cfset securityPermissionID = oPermission.getID("#stLevel2.permission#")>
+						
+								<cfif len(securityPermissionID)>
+									<cfset stSecurityPermission = oPermission.getData(securityPermissionID)>
+									<cfset stSecurityPermission.bSystem = 1>
+									
+									<cfset oPermission.setData(stProperties="#stSecurityPermission#")>
+									
+									<cfif application.fapi.arrayFind(stRole.aPermissions, securityPermissionID)>
+								
+										<cfquery datasource="#application.dsn#" name="qCheckBarnacleExists">
+										SELECT objectid
+										FROM farBarnacle
+										WHERE roleid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stRole.objectid#">
+										AND permissionID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#viewWebtopItemID#">
+										AND referenceid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#barnacleID#">
+										AND objecttype = <cfqueryparam cfsqltype="cf_sql_varchar" value="webtop">
+										</cfquery>
+										
+										<cfif not qCheckBarnacleExists.recordCount>
+											<cfset stResult = application.fapi.setData(
+												typename="farBarnacle", 
+												objectID="#application.fapi.getUUID()#", 
+												roleid="#stRole.objectid#",
+												permissionID="#viewWebtopItemID#",
+												referenceid="#barnacleID#",
+												objecttype="webtop",
+												barnaclevalue="1"
+												) />
+										</cfif>
+									</cfif>
+								</cfif>
+							</cfif>
+						</cfloop>
+			
+						<cfif listLen(stLevel2.CHILDORDER)>
+								
+							<cfloop list="#stLevel2.CHILDORDER#" index="k">
+							
+								<cfset stLevel3 = stLevel2.children[k] />
+								<cfset barnacleID = hash(stLevel3.rbKey)>
+				
+								<cfloop query="qAllRoles">
+							
+									<cfset stRole = oRole.getData(qAllRoles.objectid)>
+									<cfif structKeyExists(stLevel3, "permission") AND len(stLevel3.permission)>
+										<cfset securityPermissionID = oPermission.getID("#stLevel3.permission#")>
+						
+										<cfif len(securityPermissionID)>
+											<cfset stSecurityPermission = oPermission.getData(securityPermissionID)>
+											<cfset stSecurityPermission.bSystem = 1>
+											
+											<cfset oPermission.setData(stProperties="#stSecurityPermission#")>
+										
+											<cfif application.fapi.arrayFind(stRole.aPermissions, securityPermissionID)>
+										
+												<cfquery datasource="#application.dsn#" name="qCheckBarnacleExists">
+												SELECT objectid
+												FROM farBarnacle
+												WHERE roleid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stRole.objectid#">
+												AND permissionID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#viewWebtopItemID#">
+												AND referenceid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#barnacleID#">
+												AND objecttype = <cfqueryparam cfsqltype="cf_sql_varchar" value="webtop">
+												</cfquery>
+												
+												<cfif not qCheckBarnacleExists.recordCount>
+													<cfset stResult = application.fapi.setData(
+														typename="farBarnacle", 
+														objectID="#application.fapi.getUUID()#", 
+														roleid="#stRole.objectid#",
+														permissionID="#viewWebtopItemID#",
+														referenceid="#barnacleID#",
+														objecttype="webtop",
+														barnaclevalue="1"
+														) />
+												</cfif>
+											</cfif>
+										</cfif>
+									</cfif>
+								</cfloop>
+								
+								<cfif listLen(stLevel3.CHILDORDER)>
+									
+									<cfloop list="#stLevel3.CHILDORDER#" index="l">
+									
+										<cfset stLevel4 = stLevel3.children[l] />
+										<cfset barnacleID = hash(stLevel4.rbKey)>
+				
+										<cfloop query="qAllRoles">
+									
+											<cfset stRole = oRole.getData(qAllRoles.objectid)>
+											<cfif structKeyExists(stLevel4, "permission") AND len(stLevel4.permission)>
+												<cfset securityPermissionID = oPermission.getID("#stLevel4.permission#")>
+						
+												<cfif len(securityPermissionID)>
+													<cfset stSecurityPermission = oPermission.getData(securityPermissionID)>
+													<cfset stSecurityPermission.bSystem = 1>
+													
+													<cfset oPermission.setData(stProperties="#stSecurityPermission#")>
+												
+													<cfif application.fapi.arrayFind(stRole.aPermissions, securityPermissionID)>
+												
+														<cfquery datasource="#application.dsn#" name="qCheckBarnacleExists">
+														SELECT objectid
+														FROM farBarnacle
+														WHERE roleid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stRole.objectid#">
+														AND permissionID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#viewWebtopItemID#">
+														AND referenceid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#barnacleID#">
+														AND objecttype = <cfqueryparam cfsqltype="cf_sql_varchar" value="webtop">
+														</cfquery>
+														
+														<cfif not qCheckBarnacleExists.recordCount>
+															<cfset stResult = application.fapi.setData(
+																typename="farBarnacle", 
+																objectID="#application.fapi.getUUID()#", 
+																roleid="#stRole.objectid#",
+																permissionID="#viewWebtopItemID#",
+																referenceid="#barnacleID#",
+																objecttype="webtop",
+																barnaclevalue="1"
+																) />
+														</cfif>
+													</cfif>
+												</cfif>
+											</cfif>
+										</cfloop>
+										
+										
+									</cfloop>
+									
+								</cfif>
+							</cfloop>
+						</cfif>
+					</cfloop>
+				</cfif>
+			</cfloop>
+		</cfif>
+		
+		
+		<cfreturn application.fapi.success("upgraded successfully.") />
+		
+	</cffunction>
+	
 </cfcomponent>

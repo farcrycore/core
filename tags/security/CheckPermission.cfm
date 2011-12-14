@@ -31,6 +31,7 @@
 <!--- Result variable --->
 <cfparam name="attributes.result" type="string" default="" /><!--- Set to a variable name to output result. Defaults to nothing. --->
 
+
 <cfif thistag.ExecutionMode EQ "Start">
 	<cfset permitted = true />
 	
@@ -73,7 +74,7 @@
 		
 		<!--- Check object permissions --->
 		<cfloop list="#attributes.objectpermission#" index="perm">
-			<cfset permitted = permitted and application.security.checkPermission(permission=perm,object=attributes.objectid,role=attributes.roles) />
+			<cfset permitted = permitted and application.security.checkPermission(permission=perm,object=attributes.objectid,type=attributes.type,role=attributes.roles) />
 		</cfloop>
 		
 		<!--- Check type permissions --->
@@ -85,12 +86,12 @@
 		<cfloop list="#attributes.webskinpermission#" index="perm">
 			<cfset permitted = permitted and application.security.checkPermission(webskin=perm,type=attributes.type,role=attributes.roles) />
 		</cfloop>
-		
+
 		<!--- Save result of check --->
 		<cfif len(attributes.result)>
 			<cfset evaluate("caller.#attributes.result#=#iif(permitted,"1","0")#") />
 		</cfif>
-		
+
 		<cfif permitted>
 			<!--- Permission granted - skip to content --->
 			<cfsetting enablecfoutputonly="false" />

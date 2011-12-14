@@ -4,492 +4,542 @@
 <cfimport taglib="/farcry/core/tags/grid/" prefix="grid" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
+
+<!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
+
+<!--- @@description:
+IMPORTANT: 
+This is a bit of a mish-mash of a edit webskin. It uses both wizard and session object to manage different parts of the role.
+Permissions are managed by a session object whereas all other fields are managed by the wizard.
+ --->
+
+
+
 <cfset setLock(stObj=stObj,locked=true) />
+
+
+
+
+<!-------------------------------- 
+PREPARE SITE PERMISSIONS
+--------------------------------->
+<cfif isWDDX(stobj.sitePermissions)>
+	<cfwddx action="wddx2cfml" input="#stobj.sitePermissions#" output="request.stSitePermissions" />
+<cfelse>
+	<cfset request.stSitePermissions = structNew() />
+</cfif>
+
+<cfif structKeyExists(form, "sitePermissionsSubmitted")>
+	<cfloop collection="#form#" item="iField">
+		<cfif left(iField,14) EQ "barnacleValue-">
+			<cfset request.stSitePermissions['#form.permissionID#'][ right(iField, 35) ] = form[iField] />
+		</cfif>
+	</cfloop>
+	
+	<cfwddx action="cfml2wddx" input="#request.stSitePermissions#" output="wddxSitePermissions" />
+	<cfset application.fapi.setData(typename="farRole",
+									objectid="#stobj.objectid#",
+									sitePermissions="#wddxSitePermissions#", 
+									bSessionOnly="true")>
+</cfif>
+
+
+
+
+
+<!-------------------------------- 
+PREPARE WEBTOP PERMISSIONS
+--------------------------------->
+<cfif isWDDX(stobj.webtopPermissions)>
+	<cfwddx action="wddx2cfml" input="#stobj.webtopPermissions#" output="request.stWebtopPermissions" />
+<cfelse>
+	<cfset request.stWebtopPermissions = structNew() />
+</cfif>
+
+<cfif structKeyExists(form, "webtopPermissionsSubmitted")>
+	<cfloop collection="#form#" item="iField">
+		<cfif left(iField,14) EQ "barnacleValue-">
+			<cfset request.stWebtopPermissions['#form.permissionID#'][ mid(iField,15, len(iField)-14) ] = form[iField] />
+		</cfif>
+	</cfloop>
+	
+	<cfwddx action="cfml2wddx" input="#request.stWebtopPermissions#" output="wddxWebtopPermissions" />
+	<cfset application.fapi.setData(typename="farRole",
+									objectid="#stobj.objectid#",
+									webtopPermissions="#wddxWebtopPermissions#", 
+									bSessionOnly="true")>
+</cfif>
+
+
+
+<!-------------------------------- 
+PREPARE TYPE PERMISSIONS
+--------------------------------->
+
+<cfset request.lTypePermissions = application.security.factory.permission.getAllPermissions('farCoapi') />
+
+
+<cfif isWDDX(stobj.typePermissions)>
+	<cfwddx action="wddx2cfml" input="#stobj.typePermissions#" output="request.stTypePermissions" />
+<cfelse>
+	<cfparam name="request.stTypePermissions" default="#structNew()#" />
+	
+
+	<cfquery datasource="#application.dsn#" name="qBarnacles">
+	SELECT *
+	FROM farBarnacle
+	WHERE objecttype = <cfqueryparam cfsqltype="cf_sql_varchar" value="farCoapi">
+	AND roleid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stobj.objectid#">
+	AND permissionID IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#request.lTypePermissions#">)
+	</cfquery>
+	
+	<cfloop query="qBarnacles">
+		<cfparam name="request.stTypePermissions['#qBarnacles.permissionID#']" default="#structNew()#" />
+		<cfset request.stTypePermissions['#qBarnacles.permissionID#']['#qBarnacles.referenceID#'] = qBarnacles.barnaclevalue >
+	</cfloop>
+	
+	
+	<cfwddx action="cfml2wddx" input="#request.stTypePermissions#" output="wddxTypePermissions" />
+	<cfset application.fapi.setData(typename="farRole",
+									objectid="#stobj.objectid#",
+									typePermissions="#wddxTypePermissions#", 
+									bSessionOnly="true")>
+									
+</cfif>
+
 
 
 <!--- Always save wizard WDDX data --->
 <wiz:processwizard excludeAction="Cancel">
 
 	<!--- Save the Primary wizard Object --->
-	<wiz:processwizardObjects typename="#stobj.typename#" />	
+	<wiz:processwizardObjects typename="#stobj.typename#">
+		
+	</wiz:processwizardObjects>	
 		
 </wiz:processwizard>
 
-<wiz:processwizard action="Save" Savewizard="true" Exit="true" /><!--- Save wizard Data to Database and remove wizard --->
-<wiz:processwizard action="Cancel" Removewizard="true" Exit="true" /><!--- remove wizard --->
+<wiz:processwizard action="Save" Savewizard="true" Exit="true"><!--- Save wizard Data to Database and remove wizard --->
+	
+	
+	<!--- Need to update the aPermissions field with the one from the session because it is the session object that we are managing permissions with. --->
+	<cfset stwizard.data[stobj.objectid].aPermissions = stobj.aPermissions />
+	
+
+
+	<cfset oBarnacle = application.fapi.getContentType("farBarnacle") />
+	
+	
+	<!-------------------------------- 
+	SAVE SITE PERMISSIONS TO DB 
+	--------------------------------->	
+	
+	<cfloop list="#structKeyList(request.stSitePermissions)#" index="iPermission">
+		<cfquery datasource="#application.dsn#" name="qPermissionBarnacles">
+		SELECT *
+		FROM farBarnacle
+		WHERE objecttype = <cfqueryparam cfsqltype="cf_sql_varchar" value="dmNavigation">
+		AND farBarnacle.roleid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stobj.objectid#">
+		AND farBarnacle.permissionid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#iPermission#">
+		</cfquery>
+		
+		<cfloop collection="#request.stSitePermissions['#iPermission#']#" item="iReferenceID">
+			<cfquery dbtype="query" name="qBarnacleExists">
+			SELECT *
+			FROM qPermissionBarnacles
+			WHERE referenceID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#iReferenceID#">
+			</cfquery>
+			
+			<cfset newBarnacleValue = request.stSitePermissions[iPermission][iReferenceID] />
+			
+			<cfif qBarnacleExists.recordCount>
+				<cfif newBarnacleValue EQ 0>
+					<cfset oBarnacle.delete(qBarnacleExists.objectid)>
+				<cfelse>
+					<cfif qBarnacleExists.barnaclevalue NEQ newBarnacleValue>
+						<cfset application.fapi.setData(typename="farBarnacle", objectID="#qBarnacleExists.objectid#", referenceID="#iReferenceID#", objecttype="#qBarnacleExists.objecttype#", barnaclevalue="#newBarnacleValue#") />
+					</cfif>
+				</cfif>
+				
+			<cfelse>
+				<cfif newBarnacleValue NEQ 0>
+					<cfset application.fapi.setData(
+						typename="farBarnacle", 
+						objectID="#application.fapi.getUUID()#", 
+						roleid="#stobj.objectid#",
+						permissionID="#iPermission#",
+						referenceid="#iReferenceID#",
+						objecttype="dmNavigation",
+						barnaclevalue="#newBarnacleValue#"
+						) />
+				</cfif>
+			</cfif>
+		</cfloop>
+	</cfloop>
+	
+	
+	
+	<!--- 
+	SAVE WEBTOP PERMISSIONS TO DB
+	 --->
+	
+	
+	<cfloop list="#structKeyList(request.stWebtopPermissions)#" index="iPermission">
+		<cfquery datasource="#application.dsn#" name="qPermissionBarnacles">
+		SELECT *
+		FROM farBarnacle
+		WHERE objecttype = <cfqueryparam cfsqltype="cf_sql_varchar" value="webtop">
+		AND farBarnacle.roleid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stobj.objectid#">
+		AND farBarnacle.permissionid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#iPermission#">
+		</cfquery>
+		
+		<cfloop collection="#request.stWebtopPermissions['#iPermission#']#" item="iReferenceID">
+			
+			<cfquery dbtype="query" name="qBarnacleExists">
+			SELECT *
+			FROM qPermissionBarnacles
+			WHERE referenceID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#iReferenceID#">
+			</cfquery>
+			
+			<cfset newBarnacleValue = request.stWebtopPermissions[iPermission][iReferenceID] />
+			
+			<cfif qBarnacleExists.recordCount>
+				<cfif newBarnacleValue EQ 0>
+					<cfset oBarnacle.delete(qBarnacleExists.objectid)>
+				<cfelse>
+					<cfif qBarnacleExists.barnaclevalue NEQ newBarnacleValue>
+						<cfset stResult =  application.fapi.setData(typename="farBarnacle", objectID="#qBarnacleExists.objectid#", referenceID="#iReferenceID#", objecttype="#qBarnacleExists.objecttype#", barnaclevalue="#newBarnacleValue#") />
+					</cfif>
+				</cfif>
+				
+			<cfelse>
+				<cfif newBarnacleValue NEQ 0>
+					<cfset stResult = application.fapi.setData(
+						typename="farBarnacle", 
+						objectID="#application.fapi.getUUID()#", 
+						roleid="#stobj.objectid#",
+						permissionID="#iPermission#",
+						referenceid="#iReferenceID#",
+						objecttype="webtop",
+						barnaclevalue="#newBarnacleValue#"
+						) />
+				</cfif>
+			</cfif>
+		</cfloop>
+	</cfloop>
+	
+	
+	
+	<!--- 
+	SAVE TYPE PERMISSIONS TO DB
+	 --->
+	
+	
+	<cfloop list="#structKeyList(request.stTypePermissions)#" index="iPermission">
+		<cfquery datasource="#application.dsn#" name="qPermissionBarnacles">
+		SELECT *
+		FROM farBarnacle
+		WHERE objecttype = <cfqueryparam cfsqltype="cf_sql_varchar" value="farCoapi">
+		AND farBarnacle.roleid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stobj.objectid#">
+		AND farBarnacle.permissionid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#iPermission#">
+		</cfquery>
+		
+		<cfloop collection="#request.stTypePermissions['#iPermission#']#" item="iReferenceID">
+			<cfquery dbtype="query" name="qBarnacleExists">
+			SELECT *
+			FROM qPermissionBarnacles
+			WHERE referenceID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#iReferenceID#">
+			</cfquery>
+			
+			<cfset newBarnacleValue = request.stTypePermissions[iPermission][iReferenceID] />
+			
+			<cfif qBarnacleExists.recordCount>
+				<cfif newBarnacleValue EQ 0>
+					<cfset oBarnacle.delete(qBarnacleExists.objectid)>
+				<cfelse>
+					<cfif qBarnacleExists.barnaclevalue NEQ newBarnacleValue>
+						<cfset application.fapi.setData(typename="farBarnacle", objectID="#qBarnacleExists.objectid#", referenceID="#iReferenceID#", objecttype="#qBarnacleExists.objecttype#", barnaclevalue="#newBarnacleValue#") />
+					</cfif>
+				</cfif>
+				
+			<cfelse>
+				<cfif newBarnacleValue NEQ 0>
+					<cfset stResult = application.fapi.setData(
+						typename="farBarnacle", 
+						objectID="#application.fapi.getUUID()#", 
+						roleid="#stobj.objectid#",
+						permissionID="#iPermission#",
+						referenceid="#iReferenceID#",
+						objecttype="farCoapi",
+						barnaclevalue="#newBarnacleValue#"
+						) />
+				</cfif>
+			</cfif>
+		</cfloop>
+	</cfloop>
+	
+	
+	<cfset structDelete(Session.TempObjectStore, stobj.objectid)>
+</wiz:processwizard>
+<wiz:processwizard action="Cancel" Removewizard="true" Exit="true" ><!--- remove wizard --->
+	<cfset structDelete(Session.TempObjectStore, stobj.objectid)>
+</wiz:processwizard>
+
+
+<skin:htmlHead>
+<cfoutput>
+<style type="text/css">
+.inherit {opacity:0.4;}
+
+.ui-button.small.barnacleBox {
+	width: 50px;
+	height: 16px;
+	float:right;
+	margin:0px 0px 0px 5px;
+}
+
+.ui-button.small.barnacleBox .ui-icon {
+	margin-top: -8px;
+	margin-left: -8px;
+}
+
+##permissionTree li {
+	font-size:10px;
+}
+
+.permButton.ui-button {
+	padding:0px 0px 5px 0px;	
+	width: 50px;
+	height: 16px;
+	float:right;
+}
+</style>
+</cfoutput>
+</skin:htmlHead>
+
 
 
 <wiz:wizard ReferenceID="#stobj.objectid#">
 
-		
-		<!--- 
-		Webtop, Section, SubSection, Menu, MenuItem
-		 --->
-		<skin:loadJS id="jquery" />
-		<skin:loadJS id="jquery-ui" />
-		<skin:loadCSS id="jquery-ui" />
-		
 
-	<skin:onReady>
-			<cfoutput>
-				$j('.perm').change(function() {
-					var el = $j(this);
-					if (el.is(':checked')) {
-						var permValue = 1;
-					} else {
-						var permValue = 0;
-					};
 					
-					if(permValue == 1) {
-						$j(this).closest( 'div,li' ).find( 'input:checkbox' ).each(function (i) {
-							if( $j(this).attr('id') != $j(el).attr('id')) {
-								$j(this).attr('checked','checked');
-								$j(this).css('opacity', 1);
-							}
-						});
-						
-						$j(this).parents( 'div,li' ).children( 'input:checkbox' ).each(function (i) {
-							if ( $j(this).not(':checked')) {
-								$j(this).attr('checked','checked');
-							};
-						});
-						
-						$j(this).parents( 'div,li' ).children( 'input:checkbox' ).each(function (i) {
-							
-							
-							var selectors = $j(this).closest( 'div,li' ).find( 'input:checkbox' ).length;
-							var selected = 0;
-							$j(this).closest( 'div,li' ).find( 'input:checkbox' ).each(function(index, el) {
-								if ( $j(el).is(':checked') ) {
-									selected++;
-								};
-								
-							});
-							console.log(selected + '==' + selectors);
-							if (selected == selectors) {
-								$j(this).css('opacity', 1)
-							} else if ( selected > 0 ) {
-								$j(this).css('opacity', 0.5)
-							} else {
-								$j(this).css('opacity', 1 )
-							}
-							
-							
-						});
-						
-					};
-					if(permValue == 0) {
-						$j(this).closest( 'div,li' ).find( 'input:checkbox' ).each(function (i) {
-							if( $j(this).attr('id') != $j(el).attr('id')) {
-								$j(this).removeAttr('checked');
-								$j(this).css('opacity', 1);
-							}
-						});
-						
-						$j(this).parents( 'div,li' ).children( 'input:checkbox' ).each(function (i) {							
-							
-							var selectors = $j(this).closest( 'div,li' ).find( 'input:checkbox' ).length;
-							var selected = 0;
-							$j(this).closest( 'div,li' ).find( 'input:checkbox' ).each(function(index, el) {
-								if ( $j(el).is(':checked') ) {
-									selected++;
-								};
-								
-							});
-							
-							if (selected == selectors) {
-								$j(this).css('opacity', 1)
-							} else if ( selected > 0 ) {
-								$j(this).css('opacity', 0.5)
-							} else {
-								$j(this).css('opacity', 1 )
-							}
-							
-							
-						});
-					};
-					
-				});
-			</cfoutput>
-			</skin:onReady>
-
-
-<!--- 		
-		<skin:onReady>
-		<cfoutput>
-			$j('.perm').change(function() {
-				var el = $j(this);
-				var permValue = el.val();
-				if(permValue == 'none') {
-					$j(this).closest( 'div,li' ).find( 'select' ).each(function (i) {
-						if( $j(this).attr('id') != $j(el).attr('id')) {
-							$j(this).val(permValue);
-							$j(this).attr('disabled','disabled');
-						}
-					});
-					
-					$j(this).parents( 'div,li' ).children( 'select' ).each(function (i) {
-						if ( $j(this).val() == 'all') {
-							$j(this).val( 'selected' );	
-						};
-					});
-				};
-				if(permValue == 'all') {
-					$j(this).closest( 'div,li' ).find( 'select' ).each(function (i) {
-						if( $j(this).attr('id') != $j(el).attr('id')) {
-							$j(this).val(permValue);	
-							$j(this).attr('disabled','disabled');
-						}
-					});
-					
-					$j(this).parents( 'div,li' ).children( 'select' ).each(function (i) {
-						if ( $j(this).val() == 'none') {
-							$j(this).val( 'selected' );	
-						};
-					});
-				};
-				if(permValue == 'selected') {
-					
-					$j(this).siblings( 'div' ).children( 'select' ).each(function (i) {
-						if( $j(this).attr('id') != $j(el).attr('id')) {
-							$j(this).removeAttr('disabled');
-						}
-					});
-					
-					$j(this).siblings( 'ul' ).children( 'li' ).children( 'select' ).each(function (i) {
-						console.log($j(this));
-						if( $j(this).attr('id') != $j(el).attr('id')) {
-							$j(this).removeAttr('disabled');
-						}
-					});
-					
-					$j(this).parents( 'div,li' ).children( 'select' ).each(function (i) {
-						if ( $j(this).val() == 'none') {
-							$j(this).val( 'selected' );	
-						};
-					});
-				};
-				
-			});
-		</cfoutput>
-		</skin:onReady>
-				 --->
-				
-					
-		<wiz:step name="Groups">
+		<wiz:step name="General">
 			
 			<wiz:object typename="#stobj.typename#" ObjectID="#stobj.objectID#" lfields="title,isdefault,aGroups" format="edit" intable="false" />
 			
 		</wiz:step>
 
-	
-		<wiz:step name="Permissions">
+					
+		<wiz:step name="Site Permissions">
 			
-			<wiz:object typename="#stobj.typename#" ObjectID="#stobj.objectID#" lfields="aPermissions" format="edit" intable="false" />
+			<skin:view typename="farRole" objectid="#stobj.objectid#" webskin="editSitePermissions" />
 			
 		</wiz:step>
 
-	
-		<wiz:step name="Webskins">
+					
+		<wiz:step name="Webtop Visibility">
 			
-			<wiz:object typename="#stobj.typename#" ObjectID="#stobj.objectID#" lfields="webskins" format="edit" intable="false" />
+			<skin:view typename="farRole" objectid="#stobj.objectid#" webskin="editWebtopPermissions" />
+			
+		</wiz:step>
+
+					
+		<wiz:step name="Content Type Security">
+			
+			<skin:view typename="farRole" objectid="#stobj.objectid#" webskin="editTypePermissions" />
 			
 		</wiz:step>
 	
-	
-	
-		<wiz:step name="Navigation">
-
-			
-
-			<cfoutput>
-			<div style="background-color:red;color:white;font-size:14px;text-align:center;margin:5px 5px 10px 5px;">PROOF OF CONCEPT ONLY</div>
-			</cfoutput>
-
-			<cfset o = createObject("component", "#application.packagepath#.farcry.tree")>
-			
-			<cfset qNav = o.getDescendants(objectid=application.navID['root'], bIncludeSelf="true") />
+		<wiz:step name="General Permissions">
 			
 			
-			<cfset currentlevel= 0 />
-			<cfset ul= 0 />
-			<cfset bHomeFirst = false /> <!--- // used to stop the first node being flagged as first if home link is inserted. --->
-			<cfset bFirstNodeInLevel = true /> <!--- // used to track the first node in each level.	 --->			
-			
-			<cfset bHighlightFirst= true />
-			<cfset bIncludeSpan= true />
-			
-			
+			<cfquery datasource="#application.dsn#" name="qPermissions">
+			SELECT *
+			FROM farPermission
+			WHERE bSystem <> 1
+			ORDER BY title
+			</cfquery>
 			
 			<cfoutput>
-				
-			<cfloop query="qNav">
-				<cfset previousLevel= currentlevel />
-				<cfset currentlevel=qNav.nLevel />
-				<cfset itemclass = "">
-				
-				<cfif previouslevel eq 0>
-					<ul>
-					
-					<cfset ul = ul + 1 >
-				<cfelseif currentlevel gt previouslevel>
-					<!--- // if new level, open new list --->
-					<ul>
-						
-					<cfset ul = ul + 1 >
-					<cfset bFirstNodeInLevel = true />
-				<cfelseif currentlevel lt previouslevel>
-					<!--- // if end of level, close current item --->
-					</li>
-					<!--- // close lists until at correct level --->
-					#repeatString("</ul></li>",previousLevel-currentLevel)#
-					<cfset ul = ul - ( previousLevel - currentLevel ) />
-				<cfelse>
-					<!--- // close item --->
-					</li>
-				</cfif>
-				<cfif bHighlightFirst>
-					<cfif previouslevel eq 0 AND bHomeFirst>
-						<!--- //top level and home link is first --->
+			<table class="objectAdmin" style="table-layout:fixed;width:100%;">
+			<colgroup>
+				<col style="width:200px;">
+				<col style="width:60px;">
+				<col>
+			</colgroup>
+			<thead>
+			<tr>
+				<th>Permission</th>
+				<th>Access</th>
+				<th>Hint</th>
+			</tr>
+			</thead>
+			
+			<tbody>
+			
+			<cfloop query="qPermissions">
+
+				<tr>
+					<cfif application.fapi.arrayFind(stobj.aPermissions, qPermissions.objectid)>
+						<cfset allowAccess = 1>
 					<cfelse>
-						<cfif bFirstNodeInLevel>
-							<cfset itemclass= itemclass & 'first ' />
-							<cfset bFirstNodeInLevel=false />
-						</cfif>
+						<cfset allowAccess = -1>
 					</cfif>
 					
-				</cfif>
-				<!--- // open a list item --->
-				<li style="margin-left:40px;">
-					
-				<input type="checkbox" value="1" class="perm" id="#qNav.objectid#" name="#qNav.objectid#" />
-				<!--- <select class="perm" id="#qNav.objectid#" <cfif qNav.nLevel NEQ 0>disabled="disabled"</cfif>>
-					<cfif qNav.nRight-qNav.nLeft GT 1>
-						<option value="none">No</option>
-						<option value="all">Yes</option>
-						<option value="selected">Selected</option>
+					<cfif allowAccess EQ 1>
+						<cfset priority = "ui-priority-primary">
+						<cfset icon = "ui-icon-check">
 					<cfelse>
-						<option value="none">No</option>
-						<option value="all">Yes</option>
+						<cfset priority = "ui-priority-secondary">
+						<cfset icon = "ui-icon-close">
 					</cfif>
-				</select> --->
-				
-				#trim(qNav.ObjectName)#
-						
-			</cfloop>
-			
-			#repeatString("</li></ul>",ul)#
-			</cfoutput>
-	
-		</wiz:step>
-		
-
-	
-		<wiz:step name="Webtop">
-
-			
-
-			<cfoutput>
-			<div style="background-color:red;color:white;font-size:14px;text-align:center;margin:5px 5px 10px 5px;">PROOF OF CONCEPT ONLY</div>
-			</cfoutput>
-
-
-			
-			<!--- WEBTOP PERMISSIONS --->
-			
-			<cfset stWebtop = application.factory.oWebtop.getItem(honoursecurity="false") />
-
-			
-			
-			
-			<grid:div class="level0">
-			
-				<cfoutput>
-				<input type="checkbox" value="1" class="perm" id="root" name="root" />
-				<!--- <select class="perm" id="root">
-					<cfif listLen(stWebtop.CHILDORDER)>
-						<option value="none">No</option>
-						<option value="all">Yes</option>
-						<option value="selected">Selected</option>
-					<cfelse>
-						<option value="none">No</option>
-						<option value="all">Yes</option>
-					</cfif>
-				</select> --->
-				Webtop
-				</cfoutput>
 					
-				<cfloop list="#stWebtop.CHILDORDER#" index="i">
-					
-					<cfset stLevel1 = stWebtop.children[i] />
-					
-					<grid:div class="level1" style="padding-left:40px;">
 					<cfoutput>
-					
-						<input type="checkbox" value="1" class="perm" id="#stLevel1.rbKey#" name="#stLevel1.rbKey#" />
-						<!--- <select class="perm" id="#stLevel1.rbKey#" disabled="disabled">
-							<cfif listLen(stLevel1.CHILDORDER)>
-								<option value="none">No</option>
-								<option value="all">Yes</option>
-								<option value="selected">Selected</option>
-							<cfelse>
-								<option value="none">No</option>
-								<option value="all">Yes</option>
-							</cfif>
-						</select> --->
-						#stLevel1.label#
-					
+					<td>#qPermissions.shortcut#</td>
+					<td>
+						<button id="perm-#qPermissions.objectid#" class="permButton small barnacleBox #priority# #icon#" fticon="#icon#" value="#allowAccess#" type="button" ftpermissionid="#qPermissions.objectid#" ftbarnaclevalue="#numberformat(allowAccess)#"></button>
+					</td>	
+					<td>#qPermissions.hint#</td>
 					</cfoutput>
 					
-					<cfif listLen(stLevel1.CHILDORDER)>
-						<cfloop list="#stLevel1.CHILDORDER#" index="j">
-						
-							<cfset stLevel2 = stLevel1.children[j] />
-						
-							<grid:div class="level2" style="padding-left:40px;">
-								<cfoutput>
-								<input type="checkbox" value="1" class="perm" id="#stLevel2.rbKey#" name="#stLevel2.rbKey#" />
-								<!--- <select class="perm" id="#stLevel2.rbKey#" disabled="disabled">
-									<cfif listLen(stLevel2.CHILDORDER)>
-										<option value="none">No</option>
-										<option value="all">Yes</option>
-										<option value="selected">Selected</option>
-									<cfelse>
-										<option value="none">No</option>
-										<option value="all">Yes</option>
-									</cfif>
-								</select> --->
-								#stLevel2.label#
-							
-								</cfoutput>		
-								
-								<cfif listLen(stLevel2.CHILDORDER)>
-									<cfloop list="#stLevel2.CHILDORDER#" index="k">
-									
-										<cfset stLevel3 = stLevel2.children[k] />
-										<grid:div class="level3" style="padding-left:40px;">
-										
-											<cfoutput>
-											<input type="checkbox" value="1" class="perm" id="#stLevel3.rbKey#" name="#stLevel3.rbKey#" />
-											<!--- <select class="perm" id="#stLevel3.rbKey#" disabled="disabled">
-												<cfif listLen(stLevel3.CHILDORDER)>
-													<option value="none">No</option>
-													<option value="all">Yes</option>
-													<option value="selected">Selected</option>
-												<cfelse>
-													<option value="none">No</option>
-													<option value="all">Yes</option>
-												</cfif>
-											</select> --->
-											#stLevel3.label#
-											</cfoutput>		
-											
-											<cfif listLen(stLevel3.CHILDORDER)>
-												<cfloop list="#stLevel3.CHILDORDER#" index="l">
-												
-													<cfset stLevel4 = stLevel3.children[l] />
-													
-													<grid:div class="level4" style="padding-left:40px;">
-														<cfoutput>
-														<input type="checkbox" value="1" class="perm" id="#stLevel4.rbKey#" name="#stLevel4.rbKey#" />
-														<!--- <select class="perm" id="#stLevel4.rbKey#" disabled="disabled">
-															<cfif listLen(stLevel4.CHILDORDER)>
-																<option value="none">No</option>
-																<option value="all">Yes</option>
-																<option value="selected">Selected</option>
-															<cfelse>
-																<option value="none">No</option>
-																<option value="all">Yes</option>
-															</cfif>
-														</select> --->
-														#stLevel4.label#
-														</cfoutput>		
-													</grid:div>
-												
-												</cfloop>						
-											</cfif>
-										
-										</grid:div>
-										
-									
-									</cfloop>			
-								</cfif>
-							
-							</grid:div>
-						
-						</cfloop>
-				
-					</cfif>
-					
-					</grid:div>
-				
-				</cfloop>
+				</tr>
 			
-			</grid:div>
+			
+				
+			</cfloop>
+			</tbody>
+			</table>
+			</cfoutput>
+			<skin:onReady>
+			<cfoutput>
+				
+			$j('.permButton').each(function (i) {
+			
+				
+				$j(this).button({
+			        text: false,
+					icons: {
+			            primary: $j(this).attr('fticon')
+			        }
+			     });
+		   });
+
+			$j('.permButton').click(function() {
+				var el = $j(this);
+				var permission = $j(this).attr('ftpermissionid');
+				var permitted = $j(this).attr('ftbarnaclevalue');
+				
+					
+					
+					if(permitted == 1) {
+						$j(this).attr('ftbarnaclevalue', '-1');
+						$j(this).removeClass('ui-priority-primary').addClass('ui-priority-secondary');
+						$j(this).find('.ui-icon').removeClass('ui-icon-check').addClass('ui-icon-close');
+						
+					} else {
+						$j(this).attr('ftbarnaclevalue', '1');
+						$j(this).removeClass('ui-priority-secondary').addClass('ui-priority-primary');
+						$j(this).find('.ui-icon').removeClass('ui-icon-close').addClass('ui-icon-check');
+					};
+					
+					var permitted = $j(this).attr('ftbarnaclevalue');
+				   
+				   
+				   
+				
+					$j.ajax({
+					   type: "POST",
+					   url: '/index.cfm?ajaxmode=1&type=farRole&objectid=#stobj.objectid#&view=editAjaxSaveGenericPermission',
+					   dataType: "html",
+					   cache: false,
+					   context: $j(this),
+					   timeout: 15000,
+					   data: {
+							permissionid: $j(this).attr('ftpermissionid'),
+							barnaclevalue: $j(this).attr('ftbarnaclevalue')
+						},
+					   success: function(msg){
+					   		$j(this).find('.ui-icon').removeClass('ui-icon-bullet');
+					   },
+					   error: function(data){	
+							alert('change unsuccessful. The page will be refreshed.');
+							location=location;
+						},
+						complete: function(){
+							
+						}
+					 });
+						 
+					 
+			});</cfoutput>
+			</skin:onReady>
+			
+			
+			<!--- <wiz:object typename="#stobj.typename#" ObjectID="#stobj.objectID#" lfields="aPermissions" format="edit" intable="false" /> --->
+			
 		</wiz:step>
-		
 
 	
 		<wiz:step name="Webskin">
-
-			
-
-			<cfoutput>
-			<div style="background-color:red;color:white;font-size:14px;text-align:center;margin:5px 5px 10px 5px;">PROOF OF CONCEPT ONLY</div>
-			</cfoutput>
-
 		
 			<wiz:object typename="#stobj.typename#" ObjectID="#stobj.objectID#" lfields="webskins" format="edit" intable="false" r_stPrefix="prefix" />
 			
-			<cfset roleWebskins = stwizard.data[stobj.objectid].webskins>
-
-<!--- 
-			<cfoutput>
-			<p><ft:button value="Refresh Webskin Permissions" onClick="$fc.refreshWebskinPermissions();" renderType="link" confirmText="Are you sure you want to " /></p>
-			</cfoutput> --->
-			<skin:onReady>
+			
+			<ft:buttonPanel>
+				<ft:button value="Show Permissions Below" type="button" priority="secondary" class="small" style="float:left;" onClick="$fc.wizardSubmission( $j(this).closest('form').attr('id'),'Show Permissions');" />
+			</ft:buttonPanel>
+			
+			<ft:processForm action="Show Permissions">
+				<cfset roleWebskins = stwizard.data[stobj.objectid].webskins>
+	
+	<!--- 
 				<cfoutput>
-				var accordion = $j("##webskin-permissions");
-				accordion.accordion({
-					autoHeight: false,
-					collapsible:true,
-					animated:false
-				});
-				</cfoutput>
-			</skin:onReady>
-
-			<grid:div id="webskin-permissions">
-				<cfset lTypesAndRules = structKeyList(application.stCoapi) />
-				
-				<cfloop list="#lTypesAndRules#" index="i">
-
-					<cfoutput><h3><a href="##">#i# (#application.stCoapi[i].displayName#)</a></h3></cfoutput>
+				<p><ft:button value="Refresh Webskin Permissions" onClick="$fc.refreshWebskinPermissions();" renderType="link" confirmText="Are you sure you want to " /></p>
+				</cfoutput> --->
+				<skin:onReady>
+					<cfoutput>
+					var accordion = $j("##webskin-permissions");
+					accordion.accordion({
+						autoHeight: false,
+						collapsible:true,
+						animated:false
+					});
+					</cfoutput>
+				</skin:onReady>
+	
+				<grid:div id="webskin-permissions">
+					<cfset lTypesAndRules = structKeyList(application.stCoapi) />
 					
-					<grid:div id="wrap-#i#" style="">
-					<cfset qWebskins = application.stCoapi[i].qWebskins>
-					<cfloop query="qWebskins">
-						<cfset bPermitted = false />		
-						<cfloop list="#roleWebskins#" index="filter" delimiters="#chr(10)##chr(13)#,">
-							<cfif (not find(".",filter) or listfirst(filter,".") eq "*" or listfirst(filter,".") eq i or reFindNoCase(replace(listFirst(filter,"."),"*",".*","ALL"),i)) 
-									and reFindNoCase(replace(listlast(filter,"."),"*",".*","ALL"),application.stCoapi[i].qWebskins.name)>
-								<cfset bPermitted = true />
-							</cfif>
+					<cfloop list="#lTypesAndRules#" index="i">
+	
+						<cfoutput><h3><a href="##">#i# (#application.stCoapi[i].displayName#)</a></h3></cfoutput>
 						
+						<grid:div id="wrap-#i#" style="">
+						<cfset qWebskins = application.stCoapi[i].qWebskins>
+						<cfloop query="qWebskins">
+							<cfset bPermitted = false />		
+							<cfloop list="#roleWebskins#" index="filter" delimiters="#chr(10)##chr(13)#,">
+								<cfif (not find(".",filter) or listfirst(filter,".") eq "*" or listfirst(filter,".") eq i or reFindNoCase(replace(listFirst(filter,"."),"*",".*","ALL"),i)) 
+										and reFindNoCase(replace(listlast(filter,"."),"*",".*","ALL"),application.stCoapi[i].qWebskins.name)>
+									<cfset bPermitted = true />
+								</cfif>
+							
+							</cfloop>
+												
+							<cfoutput>
+							
+								<cfif bPermitted EQ true>
+									<span style="color:green;">#application.stCoapi[i].qWebskins.name#</span><br />
+								<cfelse>
+									<span style="color:red;">#application.stCoapi[i].qWebskins.name#</span><br />
+								</cfif>
+							
+							</cfoutput>
 						</cfloop>
-											
-						<cfoutput>
-						
-							<cfif bPermitted EQ true>
-								<span style="color:green;">#application.stCoapi[i].qWebskins.name#</span><br />
-							<cfelse>
-								<span style="color:red;">#application.stCoapi[i].qWebskins.name#</span><br />
-							</cfif>
-						
-						</cfoutput>
+						</grid:div>
 					</cfloop>
-					</grid:div>
-				</cfloop>
-			</grid:div>
+				</grid:div>
+			</ft:processForm>
 		</wiz:step>
 
 

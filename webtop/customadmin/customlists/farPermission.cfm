@@ -39,11 +39,11 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 <ft:objectadmin 
 	typename="farPermission"
 	title="Permission Admin"
-	columnList="shortcut,title"
+	columnList="shortcut,bSystem,bDisabled,hint"
 	aCustomColumns="#aCustomColumns#"
-	sortableColumns="shortcut,title"
-	lFilterFields="title,shortcut"
-	sqlorderby="title asc" />
+	sortableColumns="shortcut,bSystem,bDisabled"
+	lFilterFields="shortcut"
+	sqlorderby="shortcut asc" />
 
 <admin:footer />
 

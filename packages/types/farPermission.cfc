@@ -29,7 +29,7 @@ type properties
 		
 	<cfproperty 
 		name="shortcut" type="string" default="" hint="Shortcut for permission to use in code" 
-		ftSeq="2" ftFieldset="General Details" ftLabel="Code Shortcut" ftvalidation="required"
+		ftSeq="2" ftFieldset="General Details" ftLabel="Alias" ftvalidation="required"
 		fthint="The code shortcut is the variable name for the permission used in programming. It must adhere to the standard CF variable naming convention. Note if you change this value you may need to make corresponding changes in your code base." 
 		ftType="string" />
 		
@@ -45,6 +45,22 @@ type properties
 		fthint="Assign the security roles that will have access to this permission."
 		ftType="reversearray" ftJoin="farRole" ftSelectMultiple="true" ftJoinProperty="aPermissions" bSave="false" />
 
+	<cfproperty 
+		name="bSystem" type="boolean" default="0"  required="yes" hint="Defines if the permission is required and managed by the FarCry framework." 
+		ftSeq="5" ftFieldset="General Details" ftLabel="System Permission" 
+		fthint="Defines if the permission is required and managed by the FarCry framework." />
+		
+	<cfproperty 
+		name="hint" type="longchar" default="" hint="A hint describing how/where this permission is used"
+		ftSeq="6" ftFieldset="General Details" ftLabel="Hint" ftvalidation=""
+		fthint="A hint describing how/where this permission is used"
+		ftType="longchar" />
+		
+	<cfproperty 
+		name="bDisabled" type="boolean" default="0"  required="yes" hint="Defines if the permission is to be disabled ready for deletion" 
+		ftSeq="7" ftFieldset="General Details" ftLabel="Disabled" 
+		fthint="Defines if the permission is to be disabled ready for deletion." />
+		
 <!---------------------------------------------- 
 library data methods; used by formtools
 ----------------------------------------------->
@@ -99,7 +115,7 @@ object methods
 		
 		<cfif permissionExists("#arguments.typename##arguments.permission#")>
 			<cfreturn getID("#arguments.typename##arguments.permission#") />
-		<cfelseif this.factory.permission.permissionExists("generic#arguments.permission#")>
+		<cfelseif permissionExists("generic#arguments.permission#")>
 			<cfreturn getID("generic#arguments.permission#") />
 		<cfelse>
 			<cfreturn "" />
@@ -178,7 +194,7 @@ object methods
 		<cfset var stRole = structnew() />
 		<cfset var stO = structnew() />
 		
-		<cfif arraylen(arguments.stProperties.aRelatedtypes)>
+		<cfif structKeyExists(arguments.stProperties, "aRelatedTypes") AND arraylen(arguments.stProperties.aRelatedtypes)>
 			<!--- Find related role-permissions --->
 			<cfquery datasource="#application.dsn#" name="qRoles">
 				select	parentid as objectid, seq
@@ -186,17 +202,9 @@ object methods
 				where	data=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.stProperties.objectid#" />
 			</cfquery>
 			
-			<!--- Remove them from the roles --->
-			<cfloop query="qRoles">
-				<!--- Delete the barnacle --->
-				<cfset stRole = application.security.factory.role.getData(qRoles.objectid[currentrow]) />
-				<cfset arraydeleteat(stRole.aPermissions,qRoles.seq[currentrow]) />
-				<cfset application.security.factory.role.setData(stRole) />
-			</cfloop>
-			
 			<!--- Find barnacles with types not in the new list --->
 			<cfquery datasource="#application.dsn#" name="qBarnacles">
-				select	objectid,referenceid,roleid,barnaclevalue
+				select	objectid,referenceid,roleid,barnaclevalue,objecttype,permissionID
 				from	#application.dbowner#farBarnacle
 				where	permissionid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.stProperties.objectid#" />
 						and objecttype not in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#arraytolist(arguments.stProperties.aRelatedtypes)#" />)
@@ -219,23 +227,12 @@ object methods
 				from	#application.dbowner#farBarnacle
 				where	permissionid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.stProperties.objectid#" />
 			</cfquery>
-			
-			<!--- Remove barnacles --->
-			<cfloop query="qBarnacles">
-				<cfset application.security.factory.barnacle.delete(objectid=qBarnacles.objectid[currentrow]) />
-				
-				<!--- Update permissions on objects --->
-				<cfif qBarnacles.barnaclevalue neq 1>
-					<cfparam name="stO.#qBarnacles.objecttype#" default="#application.fapi.getContentType(typename=qBarnacles.objecttype)#" />
-					<cfset stO[qBarnacles.objecttype].onSecurityChange(changetype="object",objectid=qBarnacles.referenceid,typename=qBarnacles.objecttype,farRoleID=qBarnacles.roleid,farPermissionID=qBarnacles.permissionid,oldright=qBarnacles.barnaclevalue,newright=1) />
-				</cfif>
-			</cfloop>
 		</cfif>
 		
 		<!--- Remove objectid lookup --->
 		<cfset application.security.initCache() />
 
-		<cfreturn super.setData(stProperties=arguments.stProperties,user=arguments.user,auditNote=arguments.auditNote,bAudit=arguments.bAudit,dsn=arguments.dsn,bSessionOnly=arguments.bSessionOnly,bAfterSave=arguments.bAfterSave) />
+		<cfreturn super.setData(argumentCollection="#arguments#") />
 	</cffunction>
 	
 	<cffunction name="getAllPermissions" access="public" output="false" returntype="string" hint="Returns a list of all permissions (optionally restricted by related type)">

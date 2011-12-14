@@ -64,7 +64,7 @@ alternatives for entire UI library
 	<cfset request.dm_counter_text_function_is_already_outputted = true>
 	<cfoutput>
 	<script type="text/javascript">
-	<!--  to hide script contents from old browsers
+	
 	function UpdateCounter(FormName, FieldName) {
 		counter = (window.document.forms[FormName][FieldName].value.length);
 		if (counter < #Attributes.Counter#){
@@ -93,7 +93,7 @@ alternatives for entire UI library
 		</cfif>
 		}
 	}
-	// end hiding contents from old browsers  -->
+	
 	</script>
 	</cfoutput>
 	</cfif>
@@ -112,9 +112,9 @@ alternatives for entire UI library
 	
 
 	<script type="text/javascript">
-	<!--  to hide script contents from old browsers
+	
 		UpdateCounter('#Attributes.FormName#','#Attributes.FieldName#');
-	// end hiding contents from old browsers  -->
+	
 	</script>
 
 

@@ -306,7 +306,7 @@ $out:$
 				<q4:contentobjectget objectId="#key#" r_stObject="stObj">
 				
 				<cfif NOT structIsEmpty(stObj)>
-					<cfif stObj.label NEQ "(incomplete)"> <!--- incompletet items check .: dont send incomplete items live --->
+					<cfif structKeyExists(stobj, "status") AND stObj.label NEQ "(incomplete)"> <!--- incompletet items check .: dont send incomplete items live --->
 						
 						
 						<cfinvoke component="#application.packagepath#.farcry.versioning" method="getVersioningRules" objectID="#key#" returnvariable="stRules">

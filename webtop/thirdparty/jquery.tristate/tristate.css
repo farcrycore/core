@@ -1,0 +1,33 @@
+/****************************************************************************
+**
+**		file: checkbox.css
+**		version: 1.0
+**		author: Ben Belcourt
+**		creation date: 09.17.2009
+**
+**		This file contains the styles for the 3 state checkboxes.
+**
+****************************************************************************/
+ul.triState li { 
+	clear: both;
+	line-height: 1.3;
+	list-style: none;
+	padding: 0 0 20px 0; 
+}
+ul.triState a.checkbox {
+	background: url(3-state-checkbox.gif) 0 0 no-repeat;
+	display: block;
+	float: left;
+	height: 13px;
+	margin: .15em 5px 3px 3px;
+	overflow: hidden;
+	text-indent: -999em;
+	width: 13px;
+}
+	ul.triState ul li a.checkbox { margin-left: 2px; _margin-left: 3px;}
+	
+	ul.triState a.checked { background-position: 0 -13px; }
+	ul.triState a.partial { background-position: 0 -26px; }
+	ul.triState li li {
+			padding: 10px 0 0 18px;
+		}

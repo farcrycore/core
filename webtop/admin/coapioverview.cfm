@@ -292,11 +292,11 @@
 		tr.none { background-color:##f0f0f0; }
 			tr.none td { padding:2px; }
 			
-			td.class, th.class { width:5em; }
+			td.class, th.class { width:8em; }
 			td.name, th.name {  }
-			td.location, th.location { width:20em; }
-			td.conflicts, th.conflicts { width:10em; }
-			td.actions, th.actions { width:10em; }
+			td.location, th.location { width:12em; }
+			td.conflicts, th.conflicts { width:12em; }
+			td.actions, th.actions { width:12em; }
 	</style>
 </cfoutput></skin:htmlHead>
 
@@ -310,12 +310,12 @@
 <ft:form>
 	<cfoutput>
 		<h2>Conflicts</h2>
-		<table style="width:100%;">
+		<table style="width:100%;table-layout:fixed;" class="objectAdmin">
 			<tr>
 				<th class="class">Class</th>
 				<th class="name">Name</th>
 				<th class="conflicts">Conflict</th>
-				<th class="actions">Apply Defaults (<label><input type="checkbox" name="selectall" value="" onclick="$j('input[name=deploydefaults]').attr('checked',(this.checked?'checked':''));" /> All</label>)</th>
+				<th class="actions"><label><input type="checkbox" name="selectall" value="" onclick="$j('input[name=deploydefaults]').attr('checked',(this.checked?'checked':''));" /></label> Apply Defaults</th>
 			</tr>
 	</cfoutput>
 	<cfset count = 0 />
@@ -355,7 +355,13 @@
 <cfloop list="project,#application.fapi.listReverse(application.plugins)#,core" index="thislocation">
 	<cfoutput>
 		<h2>#stLocations[thislocation]#</h2>
-		<table style="width:100%;">
+		<table style="width:100%;table-layout:fixed;" class="objectAdmin">
+			<tr>
+				<th class="class">Class</th>
+				<th class="name">Name</th>
+				<th class="location">Location</th>
+				<th class="actions">Info</th>
+			</tr>
 	</cfoutput>
 	<cfset count = 0 />
 	<cfloop query="qTypes">

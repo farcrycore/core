@@ -307,6 +307,12 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfset var stResult = this.stWebtop />
 		<cfset var id = "" />
 		<cfset var stTempResult = structnew() />
+		<cfset var iRole = "">
+		<cfset var bPermitted = "">
+		<cfset var bRight = "">
+		<cfset var barnacleID = "">
+		<cfset var webtopPermissionID = application.security.factory.permission.getID(name="viewWebtopItem")>
+		<cfset var oBarnacle = application.fapi.getContentType("farBarnacle")>
 		
 		<cfif isstruct(arguments.parent)>
 			<!--- Use that as stResult --->
@@ -346,8 +352,21 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		
 		<!--- Remove children that the user doesn't have permission for --->
 		<cfloop collection="#stResult.children#" item="id">
-			<cfif not arguments.honoursecurity or not structkeyexists(stResult.children[id],"permission") or application.security.checkPermission(permission=stResult.children[id].permission)>
-				<!--- Perform same process on allowed child --->
+			
+			<cfset bPermitted = 0 />
+			<cfset barnacleID = hash(stResult.children[id].rbKey)>
+			
+			<cfloop list="#application.security.getCurrentRoles()#" index="iRole">
+				<cfset bRight = oBarnacle.getRight(role="#iRole#", permission="#webtopPermissionID#", object="#barnacleID#", objecttype="webtop")>
+				<cfif bRight NEQ 0>
+					<cfset bPermitted = bRight>
+				</cfif>
+				<cfif bRight GT 0>
+					<cfbreak>
+				</cfif>
+			</cfloop>
+			
+			<cfif not arguments.honoursecurity or bPermitted GTE 0>
 				<cfset getItem(stResult.children[id],arguments.honoursecurity,true) />
 			<cfelse>
 				<!--- Remove restricted child --->

@@ -258,6 +258,10 @@ Apps Processing
 	<cfset application.sysInfo.bApps = "false" />
 </cfif>
 
+<!-------------------------------------------------------
+AUTOMATIC UPGRADES
+-------------------------------------------------------->
+<cfset application.fapi.getContentType("farRole").upgradeV62()>
 
 <!-------------------------------------------------------
 Alert user that application scope has been refreshed

@@ -64,7 +64,7 @@
 			function changePermission(id, hiddenid,aHash){
 				$j("##" + id).val(nextpermissiontype[$j("##" + id).val()]);
 				$j("##" + hiddenid).val(permissiontypevalue[$j("##" + id).val()]);
-				$j("##" + id).html(aHash[$j("##" + id).val()]);
+				$j("##" + id).html("<span class='ui-button-text'>" + aHash[$j("##" + id).val()] + "</span>");
 				<!--- $j('##' + id + '-tbl-wrap .f-btn-bg').css({'background-image:url(' + permissiontypecolor[$j("##" + hiddenid).val()] + ')'}); --->
 			}
 		</script>
