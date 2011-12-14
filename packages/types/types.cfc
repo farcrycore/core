@@ -310,7 +310,7 @@ default handlers
 			</cfif>
 		</cfif>
 			
-		<cfset stresult = super.setData(stProperties=arguments.stProperties, dsn=arguments.dsn, bSessionOnly=arguments.bSessionOnly) />
+		<cfset stresult = super.setData(stProperties=arguments.stProperties, dsn=arguments.dsn, bSessionOnly=arguments.bSessionOnly, bSetDefaultCoreProperties=arguments.bSetDefaultCoreProperties) />
 		
 		<!--- ONLY RUN THROUGH IF SAVING TO DB --->
 		<cfif not arguments.bSessionOnly AND arguments.bAfterSave>
@@ -385,6 +385,7 @@ default handlers
 		<cfset var stCurrentObject = structNew() />
 		<cfset var stObject = duplicate(arguments.stobj) /><!--- Duplicating so that we are not referencing the passed object --->
 		<cfset var bSessionOnly = false />
+		<cfset var stProperties = structNew() />
 		
 		<!--- Determine who the record is being locked/unlocked by --->		
 		<cfif not len(arguments.lockedBy)>
@@ -406,16 +407,18 @@ default handlers
 			<cfif structKeyExists(stCurrentObject, "bDefaultObject") AND stCurrentObject.bDefaultObject>
 				<cfset bSessionOnly = true />
 			</cfif>
-			<cfset stObject.locked = arguments.locked>
-			<cfif arguments.locked>
-				<cfset stObject.lockedby=arguments.lockedby>
-			<cfelse>
-				<cfset stObject.lockedby="">
+			<cfif NOT arguments.locked>
+				<cfset arguments.lockedby="">
 			</cfif>
 			
+			<cfset stProperties.objectid = stCurrentObject.objectid />
+			<cfset stProperties.typename = stCurrentObject.typename />
+			<cfset stProperties.locked = arguments.locked />
+			<cfset stProperties.lockedby = arguments.lockedby />
+		
 			
 			<!--- call fourq.setdata() (ie super) to bypass prepop of sys attributes by types.setdata() --->
-			<cfset setdata(stProperties="#stObject#", user="#arguments.lockedby#", bAudit="#arguments.bAudit#", dsn="#arguments.dsn#", bAfterSave="false", bSetDefaultCoreProperties="false", bSessionOnly="#bSessionOnly#")>
+			<cfset setdata(stProperties="#stProperties#", user="#arguments.lockedby#", bAudit="#arguments.bAudit#", dsn="#arguments.dsn#", bAfterSave="false", bSetDefaultCoreProperties="false", bSessionOnly="#bSessionOnly#")>
 
 		</cfif>
 	</cffunction>
@@ -700,26 +703,35 @@ default handlers
 		<cfset var newLabel = "" />
 		
 		<cfif structKeyExists(arguments.stProperties, "typename") AND application.stcoapi[arguments.stProperties.typename].bAutoSetLabel>
-			<cfloop list="#StructKeyList(application.stcoapi[arguments.stProperties.typename].stProps)#" index="field">
-				<cfif structKeyExists(arguments.stProperties,field) AND isDefined("application.stcoapi.#arguments.stProperties.typename#.stProps.#field#.Metadata.bLabel") AND application.stcoapi[arguments.stProperties.typename].stProps[field].Metadata.bLabel>
-					<cfset newLabel = "#newLabel# #arguments.stProperties[field]#">
-				</cfif>
-			</cfloop>
-	
-			<cfif not len(newLabel)>
-				<cfif structKeyExists(arguments.stProperties,"Title")>
-					<cfset newLabel = "#arguments.stProperties.title#">
-				<cfelseif structKeyExists(arguments.stProperties,"Name")>
-					<cfset newLabel = "#arguments.stProperties.name#">
-				<cfelse>
-					<cfloop list="#StructKeyList(arguments.stProperties)#" index="field">
-						<cfif FindNoCase("Name",field) AND field NEQ "typename">
-							<cfset newLabel = "#newLabel# #arguments.stProperties[field]#">
-						</cfif>
-					</cfloop>
-				</cfif>
+		
+			<skin:view typename="#arguments.stProperties.typename#" objectid="#arguments.stProperties.objectid#" webskin="displayLabel" alternateHTML="" r_html="newLabel" />
+			
+			<!--- Make sure we are not just getting the default (incomplete) label --->
+			<cfif newLabel EQ "(incomplete)">
+				<cfset newLabel = "">
 			</cfif>
 			
+			<cfif not len(newLabel)>
+				<cfloop list="#StructKeyList(application.stcoapi[arguments.stProperties.typename].stProps)#" index="field">
+					<cfif structKeyExists(arguments.stProperties,field) AND isDefined("application.stcoapi.#arguments.stProperties.typename#.stProps.#field#.Metadata.bLabel") AND application.stcoapi[arguments.stProperties.typename].stProps[field].Metadata.bLabel>
+						<cfset newLabel = "#newLabel# #arguments.stProperties[field]#">
+					</cfif>
+				</cfloop>
+		
+				<cfif not len(newLabel)>
+					<cfif structKeyExists(arguments.stProperties,"Title")>
+						<cfset newLabel = "#arguments.stProperties.title#">
+					<cfelseif structKeyExists(arguments.stProperties,"Name")>
+						<cfset newLabel = "#arguments.stProperties.name#">
+					<cfelse>
+						<cfloop list="#StructKeyList(arguments.stProperties)#" index="field">
+							<cfif FindNoCase("Name",field) AND field NEQ "typename">
+								<cfset newLabel = "#newLabel# #arguments.stProperties[field]#">
+							</cfif>
+						</cfloop>
+					</cfif>
+				</cfif>
+			</cfif>
 		</cfif>
 		
 		<cfreturn trim(newLabel) />
@@ -1233,7 +1245,7 @@ default handlers
 			<cfif isdefined("application.stCOAPI.#arguments.typename#.stProps.#thisprop#.metadata.ftType") and len(application.stCOAPI[arguments.typename].stProps[thisprop].metadata.ftType)>
 				<cfset arguments.stMetadata = application.stCOAPI[arguments.typename].stProps[thisprop].metadata />
 				<cfset oFactory = application.formtools[arguments.stMetadata.ftType].oFactory />
-				<cfif structkeyexists(oFactory,"onDelete")>
+				<cfif structkeyexists(oFactory,"onSecurityChange")>
 					<cfset oFactory.onSecurityChange(argumentCollection=arguments) />
 				</cfif>
 			</cfif>

@@ -750,7 +750,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#">
 		<cfargument name="dbowner" type="string" required="false" default="#application.dbowner#">
 		
-    	<cfset stReturn = application.fc.lib.db.createData(typename=getTypePath(),stProperties=arguments.stProperties,objectid=arguments.objectid,dsn=arguments.dsn) />
+		<cfset stReturn = application.fc.lib.db.createData(typename=getTypePath(),stProperties=arguments.stProperties,objectid=arguments.objectid,dsn=arguments.dsn) />
 		
 		<!--- only create a record in refObjects if one doesnt already exist --->
 		<cfif len(application.fapi.findType(objectId = stReturn.objectId)) eq 0>
@@ -860,6 +860,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="stProperties" required="true">
 		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
 		<cfargument name="bSessionOnly" type="string" required="false" default="false">
+		<cfargument name="bSetDefaultCoreProperties" type="boolean" required="false" default="true" hint="This allows the developer to skip defaulting the core properties if they dont exist.">	
+		
 		
 	    <cfset var stResult = StructNew() />
 	    <cfset var stDefaultProperties = "" />
@@ -918,20 +920,26 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				<!--- Make sure we remove the object from the objectBroker if we update something --->
 			    <cfif structkeyexists(arguments.stProperties, "objectid")>
 				    <cfset application.fc.lib.objectbroker.RemoveFromObjectBroker(lObjectIDs=arguments.stProperties.ObjectID,typename=getTypeName())>
-			    </cfif>	    
-		   		
+			    </cfif>	
+				
+				<!--- If this object is in the temporary session store, we need to include all the other properties in the session --->		
+				<cfif arguments.bSetDefaultCoreProperties AND structKeyExists(session, "TempObjectStore") AND  structKeyExists(Session.TempObjectStore, arguments.stProperties.ObjectID)>
+					<cfset StructAppend(arguments.stProperties, Session.TempObjectStore[arguments.stProperties.ObjectID],false)>	
+				</cfif>
+
 		   		<cfset stResult = application.fc.lib.db.setData(stProperties=arguments.stProperties,typename=getTypePath(),dsn=arguments.dsn) />	   	
-		   		<cfif not stResult.bSuccess and stResult.message eq "Object does not exist">
+		   		
+				<cfif not stResult.bSuccess and stResult.message eq "Object does not exist">
 			   		<cfset structappend(arguments.stProperties,getDefaultObject(arguments.stProperties.objectid,arguments.stProperties.typename),false) />
 					<cfset stResult = application.fc.lib.db.createData(stProperties=arguments.stProperties,typename=getTypePath(),dsn=arguments.dsn) />	   	
 					<cfset stProperties.objectid = stResult.objectid />
 				</cfif>
 		   		
 			   	<!--- Make sure we remove the object from the TempObjectStore if we update something --->
-		   		<cfif structKeyExists(session, "TempObjectStore") AND structKeyExists(Session.TempObjectStore,arguments.stProperties.ObjectID)>
+		   		<cfif arguments.bSetDefaultCoreProperties AND  structKeyExists(session, "TempObjectStore") AND structKeyExists(Session.TempObjectStore,arguments.stProperties.ObjectID)>
 			   		<cfset structdelete(Session.TempObjectStore, arguments.stProperties.ObjectID) />
 			   	</cfif>
-			   		   	 
+				 
 		   	</cfif>		   	
 	   	</cflock>
 		
