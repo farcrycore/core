@@ -2,6 +2,13 @@
 
 <cfheader statuscode="500" statustext="Internal Server Error" />
 
+<cfset showError = false>
+<cfif reFindNoCase("^#application.url.webtop#", cgi.script_name)>
+	<cfset showError = true>
+<cfelseif isdefined("url.debug") AND url.debug>
+	<cfset showError = true>
+</cfif>
+
 <!--- rudimentary error handler --->
 <cfoutput>
 	<html>
@@ -9,17 +16,11 @@
 			<title>There was a problem with that last request</title>
 			<style type="text/css">
 				body { 
-					width:960px; 
-					margin:20px auto; 
-					border: 1px solid ##c8c8c8\9; 
+					margin:0px; 
 					background-color:##FFFFFF; 
 					padding:15px; 
-					-webkit-box-shadow: 0 0 8px rgba(128,128,128,0.75); 
-					-moz-box-shadow: 0 0 8px rgba(128,128,128,0.75); 
-					box-shadow: 0 0 8px rgba(128,128,128,0.75); 
 					font-family: Arial, Helvetica, sans-serif;
 				}
-				
 				table, td, th {
 					border: 0 none;
 					border-collapse:collapse;
@@ -31,13 +32,16 @@
 				td, th {
 					padding:5px;
 				}
+				h1 {
+					margin-top: 0;
+				}
 			</style>
 		</head>
 		<body>
 			<h1>There was a problem with that last request</h1>	
 			<p>Please push "back" on your browser or go back <a style="text-decoration:underline" href="/">home</a></p>
 			
-			<cfif not isdefined("url.debug") or not url.debug><!--</cfif>
+			<cfif not showError><!--</cfif>
 				<h2>Error Overview</h2>
 				<table>
 					<tr><th>Machine:</th><td>#machineName#</td></tr>
@@ -86,7 +90,7 @@
 						</tr>
 					</cfif>
 				</table>
-			<cfif not isdefined("url.debug") or not url.debug>--></cfif>
+			<cfif not showError>--></cfif>
 		</body>
 	</html>		
 </cfoutput>

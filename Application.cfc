@@ -504,19 +504,31 @@
 				</table>
 			</cfoutput></cfmail>
 		</cfif>
-		
-		<!--- Display error to user --->
-		<cfcontent reset="true" />
-		<cfheader statuscode="500" statustext="Internal Server Error" />
-		<cfif fileexists("#application.path.project#/errors/500.cfm")>
-			<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/500.cfm" />
-		<cfelseif fileexists("#application.path.webroot#/errors/500.cfm")>				
-			<cfinclude template="#application.url.webroot#/errors/500.cfm" />
-		<cfelse>
+
+
+		<cfparam name="application.url.webtop" default="/webtop">
+		<cfif reFindNoCase("^#application.url.webtop#", cgi.script_name)>
+
+			<!--- Display built-in error page for webtop errors --->
 			<cfinclude template="/farcry/core/webtop/errors/500.cfm" />
-		</cfif>
-		<cfsetting enablecfoutputonly="false" />
+			<cfsetting enablecfoutputonly="false" />
+
+		<cfelse>
 		
+			<!--- Display error to user --->
+			<cfcontent reset="true" />
+			<cfheader statuscode="500" statustext="Internal Server Error" />
+			<cfif fileexists("#application.path.project#/errors/500.cfm")>
+				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/500.cfm" />
+			<cfelseif fileexists("#application.path.webroot#/errors/500.cfm")>				
+				<cfinclude template="#application.url.webroot#/errors/500.cfm" />
+			<cfelse>
+				<cfinclude template="/farcry/core/webtop/errors/500.cfm" />
+			</cfif>
+			<cfsetting enablecfoutputonly="false" />
+
+		</cfif>
+			
 		<cfreturn />
 	</cffunction>
 
