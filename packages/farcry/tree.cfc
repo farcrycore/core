@@ -288,7 +288,7 @@ $out:$
 		     (t.externalRedirectURL <> '')
 		     OR</cfif>
 		     t.objectId in (SELECT da.parentid
-		                    FROM #q.typename#_aObjectIds da
+		                    FROM #q.typename#_aObjectIDs da
 		                    INNER JOIN refObjects r ON da.data = r.objectid
 		                    AND r.typename in (#listQualify(arguments.l404Check,"'")#)))
 		     </cfif>
