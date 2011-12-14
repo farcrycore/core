@@ -625,7 +625,8 @@ object methods
 	<cffunction name="upgradeV62" access="public" output="false" returntype="struct" hint="Upgrades Role and Permissions">
 
 		<cfset var q = "">
-		<cfset var schema = application.fc.lib.db.getTableMetadata("farPermission")>
+		<cfset var schemaPermission = application.fc.lib.db.getTableMetadata("farPermission")>
+		<cfset var schemaRole = application.fc.lib.db.getTableMetadata("farRole")>
 		<cfset var aRelatedTypes = arrayNew(1) />	
 		<cfset var aChanges = arrayNew(1)>
 		<cfset var aResults = arrayNew(1)>
@@ -653,10 +654,14 @@ object methods
 			
 			
 			<!--- Deploy bSystem Property --->
-			<cfset arrayappend(aChanges, application.fc.lib.db.createChange(action="addColumn", schema="#schema#", propertyname='bSystem') ) />
-			<cfset arrayappend(aChanges, application.fc.lib.db.createChange(action="addColumn", schema="#schema#", propertyname='hint') ) />
-			<cfset arrayappend(aChanges, application.fc.lib.db.createChange(action="addColumn", schema="#schema#", propertyname='bDisabled') ) />
+			<cfset arrayappend(aChanges, application.fc.lib.db.createChange(action="addColumn", schema="#schemaPermission#", propertyname='bSystem') ) />
+			<cfset arrayappend(aChanges, application.fc.lib.db.createChange(action="addColumn", schema="#schemaPermission#", propertyname='hint') ) />
+			<cfset arrayappend(aChanges, application.fc.lib.db.createChange(action="addColumn", schema="#schemaPermission#", propertyname='bDisabled') ) />
+			<cfset arrayappend(aChanges, application.fc.lib.db.createChange(action="addColumn", schema="#schemaRole#", propertyname='sitePermissions') ) />
+			<cfset arrayappend(aChanges, application.fc.lib.db.createChange(action="addColumn", schema="#schemaRole#", propertyname='webtopPermissions') ) />
+			<cfset arrayappend(aChanges, application.fc.lib.db.createChange(action="addColumn", schema="#schemaRole#", propertyname='typePermissions') ) />
 			<cfset aResults = application.fc.lib.db.deployChanges(aChanges,application.dsn) />
+			
 			
 			
 			<!--- Site Tree Permissions --->
@@ -701,8 +706,8 @@ object methods
 				
 					<cfquery datasource="#application.dsn#" name="qCoapiPermissions">
 					select objectid from farPermission
-					WHERE label = '#replaceNoCase(stGenericPermission.shortcut,"generic","#iType#")#'
-					OR label = '#replaceNoCase(stGenericPermission.shortcut,"generic","#application.fapi.getContentTypeMetadata('#iType#', 'displayname')#")#'
+					WHERE lower(shortcut) = '#lcase(replaceNoCase(stGenericPermission.shortcut,"generic","#iType#") )#'
+					OR lower(shortcut) = '#lcase(replaceNoCase(stGenericPermission.shortcut,"generic","#application.fapi.getContentTypeMetadata('#iType#', 'displayname')#") )#'
 					</cfquery>
 
 					
@@ -825,7 +830,17 @@ object methods
 								AND objecttype = <cfqueryparam cfsqltype="cf_sql_varchar" value="webtop">
 								</cfquery>
 								
-								<cfif not qCheckBarnacleExists.recordCount>
+								<cfif qCheckBarnacleExists.recordCount>
+									<cfset stResult = application.fapi.setData(
+										typename="farBarnacle", 
+										objectID="#qCheckBarnacleExists.objectid#", 
+										roleid="#stRole.objectid#",
+										permissionID="#viewWebtopItemID#",
+										referenceid="#barnacleID#",
+										objecttype="webtop",
+										barnaclevalue="1"
+										) />
+								<cfelse>
 									<cfset stResult = application.fapi.setData(
 										typename="farBarnacle", 
 										objectID="#application.fapi.getUUID()#", 
@@ -834,6 +849,38 @@ object methods
 										referenceid="#barnacleID#",
 										objecttype="webtop",
 										barnaclevalue="1"
+										) />
+								</cfif>
+							<cfelse>
+						
+								<cfquery datasource="#application.dsn#" name="qCheckBarnacleExists">
+								SELECT objectid
+								FROM farBarnacle
+								WHERE roleid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stRole.objectid#">
+								AND permissionID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#viewWebtopItemID#">
+								AND referenceid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#barnacleID#">
+								AND objecttype = <cfqueryparam cfsqltype="cf_sql_varchar" value="webtop">
+								</cfquery>
+								
+								<cfif qCheckBarnacleExists.recordCount>
+									<cfset stResult = application.fapi.setData(
+										typename="farBarnacle", 
+										objectID="#qCheckBarnacleExists.objectid#", 
+										roleid="#stRole.objectid#",
+										permissionID="#viewWebtopItemID#",
+										referenceid="#barnacleID#",
+										objecttype="webtop",
+										barnaclevalue="-1"
+										) />
+								<cfelse>
+									<cfset stResult = application.fapi.setData(
+										typename="farBarnacle", 
+										objectID="#application.fapi.getUUID()#", 
+										roleid="#stRole.objectid#",
+										permissionID="#viewWebtopItemID#",
+										referenceid="#barnacleID#",
+										objecttype="webtop",
+										barnaclevalue="-1"
 										) />
 								</cfif>
 							</cfif>
@@ -861,6 +908,38 @@ object methods
 									<cfset oPermission.setData(stProperties="#stSecurityPermission#")>
 									
 									<cfif application.fapi.arrayFind(stRole.aPermissions, securityPermissionID)>
+						
+										<cfquery datasource="#application.dsn#" name="qCheckBarnacleExists">
+										SELECT objectid
+										FROM farBarnacle
+										WHERE roleid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stRole.objectid#">
+										AND permissionID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#viewWebtopItemID#">
+										AND referenceid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#barnacleID#">
+										AND objecttype = <cfqueryparam cfsqltype="cf_sql_varchar" value="webtop">
+										</cfquery>
+										
+										<cfif qCheckBarnacleExists.recordCount>
+											<cfset stResult = application.fapi.setData(
+												typename="farBarnacle", 
+												objectID="#qCheckBarnacleExists.objectid#", 
+												roleid="#stRole.objectid#",
+												permissionID="#viewWebtopItemID#",
+												referenceid="#barnacleID#",
+												objecttype="webtop",
+												barnaclevalue="1"
+												) />
+										<cfelse>
+											<cfset stResult = application.fapi.setData(
+												typename="farBarnacle", 
+												objectID="#application.fapi.getUUID()#", 
+												roleid="#stRole.objectid#",
+												permissionID="#viewWebtopItemID#",
+												referenceid="#barnacleID#",
+												objecttype="webtop",
+												barnaclevalue="1"
+												) />
+										</cfif>
+									<cfelse>
 								
 										<cfquery datasource="#application.dsn#" name="qCheckBarnacleExists">
 										SELECT objectid
@@ -871,7 +950,17 @@ object methods
 										AND objecttype = <cfqueryparam cfsqltype="cf_sql_varchar" value="webtop">
 										</cfquery>
 										
-										<cfif not qCheckBarnacleExists.recordCount>
+										<cfif qCheckBarnacleExists.recordCount>
+											<cfset stResult = application.fapi.setData(
+												typename="farBarnacle", 
+												objectID="#qCheckBarnacleExists.objectid#", 
+												roleid="#stRole.objectid#",
+												permissionID="#viewWebtopItemID#",
+												referenceid="#barnacleID#",
+												objecttype="webtop",
+												barnaclevalue="-1"
+												) />
+										<cfelse>
 											<cfset stResult = application.fapi.setData(
 												typename="farBarnacle", 
 												objectID="#application.fapi.getUUID()#", 
@@ -879,7 +968,7 @@ object methods
 												permissionID="#viewWebtopItemID#",
 												referenceid="#barnacleID#",
 												objecttype="webtop",
-												barnaclevalue="1"
+												barnaclevalue="-1"
 												) />
 										</cfif>
 									</cfif>
@@ -917,7 +1006,17 @@ object methods
 												AND objecttype = <cfqueryparam cfsqltype="cf_sql_varchar" value="webtop">
 												</cfquery>
 												
-												<cfif not qCheckBarnacleExists.recordCount>
+												<cfif qCheckBarnacleExists.recordCount>
+													<cfset stResult = application.fapi.setData(
+														typename="farBarnacle", 
+														objectID="#qCheckBarnacleExists.objectid#", 
+														roleid="#stRole.objectid#",
+														permissionID="#viewWebtopItemID#",
+														referenceid="#barnacleID#",
+														objecttype="webtop",
+														barnaclevalue="1"
+														) />
+												<cfelse>
 													<cfset stResult = application.fapi.setData(
 														typename="farBarnacle", 
 														objectID="#application.fapi.getUUID()#", 
@@ -926,6 +1025,38 @@ object methods
 														referenceid="#barnacleID#",
 														objecttype="webtop",
 														barnaclevalue="1"
+														) />
+												</cfif>
+											<cfelse>
+										
+												<cfquery datasource="#application.dsn#" name="qCheckBarnacleExists">
+												SELECT objectid
+												FROM farBarnacle
+												WHERE roleid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stRole.objectid#">
+												AND permissionID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#viewWebtopItemID#">
+												AND referenceid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#barnacleID#">
+												AND objecttype = <cfqueryparam cfsqltype="cf_sql_varchar" value="webtop">
+												</cfquery>
+												
+												<cfif qCheckBarnacleExists.recordCount>
+													<cfset stResult = application.fapi.setData(
+														typename="farBarnacle", 
+														objectID="#qCheckBarnacleExists.objectid#", 
+														roleid="#stRole.objectid#",
+														permissionID="#viewWebtopItemID#",
+														referenceid="#barnacleID#",
+														objecttype="webtop",
+														barnaclevalue="-1"
+														) />
+												<cfelse>
+													<cfset stResult = application.fapi.setData(
+														typename="farBarnacle", 
+														objectID="#application.fapi.getUUID()#", 
+														roleid="#stRole.objectid#",
+														permissionID="#viewWebtopItemID#",
+														referenceid="#barnacleID#",
+														objecttype="webtop",
+														barnaclevalue="-1"
 														) />
 												</cfif>
 											</cfif>
@@ -963,7 +1094,17 @@ object methods
 														AND objecttype = <cfqueryparam cfsqltype="cf_sql_varchar" value="webtop">
 														</cfquery>
 														
-														<cfif not qCheckBarnacleExists.recordCount>
+														<cfif qCheckBarnacleExists.recordCount>
+															<cfset stResult = application.fapi.setData(
+																typename="farBarnacle", 
+																objectID="#qCheckBarnacleExists.objectid#", 
+																roleid="#stRole.objectid#",
+																permissionID="#viewWebtopItemID#",
+																referenceid="#barnacleID#",
+																objecttype="webtop",
+																barnaclevalue="1"
+																) />
+														<cfelse>
 															<cfset stResult = application.fapi.setData(
 																typename="farBarnacle", 
 																objectID="#application.fapi.getUUID()#", 
@@ -972,6 +1113,38 @@ object methods
 																referenceid="#barnacleID#",
 																objecttype="webtop",
 																barnaclevalue="1"
+																) />
+														</cfif>
+													<cfelse>
+												
+														<cfquery datasource="#application.dsn#" name="qCheckBarnacleExists">
+														SELECT objectid
+														FROM farBarnacle
+														WHERE roleid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stRole.objectid#">
+														AND permissionID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#viewWebtopItemID#">
+														AND referenceid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#barnacleID#">
+														AND objecttype = <cfqueryparam cfsqltype="cf_sql_varchar" value="webtop">
+														</cfquery>
+														
+														<cfif qCheckBarnacleExists.recordCount>
+															<cfset stResult = application.fapi.setData(
+																typename="farBarnacle", 
+																objectID="#qCheckBarnacleExists.objectid#", 
+																roleid="#stRole.objectid#",
+																permissionID="#viewWebtopItemID#",
+																referenceid="#barnacleID#",
+																objecttype="webtop",
+																barnaclevalue="-1"
+																) />
+														<cfelse>
+															<cfset stResult = application.fapi.setData(
+																typename="farBarnacle", 
+																objectID="#application.fapi.getUUID()#", 
+																roleid="#stRole.objectid#",
+																permissionID="#viewWebtopItemID#",
+																referenceid="#barnacleID#",
+																objecttype="webtop",
+																barnaclevalue="-1"
 																) />
 														</cfif>
 													</cfif>
