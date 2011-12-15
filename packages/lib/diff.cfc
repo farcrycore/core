@@ -140,8 +140,6 @@
 		<cfset var stTemp = structnew() />
 		<cfset var i = 0 />
 		
-		<cfimport taglib="/farcry/core/tags/misc" prefix="misc" />
-		
 		<cfset stResult.left = arguments.left />
 		<cfset stResult.right = arguments.right />
 		<cfset stResult.leftHighlighted = arguments.left />
@@ -164,14 +162,14 @@
 				<cfset stResult.right = getHTMLAsText(stResult.right) />
 				<cfset stResult.different = (stResult.left neq stResult.right) />
 				<cfif stResult.different>
-					<misc:diff old="#stringToArray(stResult.left)#" new="#stringToArray(stResult.right)#" diff="stResult.aDiff" />
+					<cfset stResult.aDiff = getDiff(aOld=stringToArray(stResult.left),aNew=stringToArray(stResult.right)) />
 					<cfset structappend(stResult,convertDiffToHighlights(stResult.aDiff),true) />
 				</cfif>
 			</cfcase>
 			<cfcase value="string,longchar" delimiters=",">
 				<cfset stResult.different = (stResult.left neq stResult.right) />
 				<cfif stResult.different>
-					<misc:diff old="#stringToArray(stResult.left)#" new="#stringToArray(stResult.right)#" diff="stResult.aDiff" />
+					<cfset stResult.aDiff = getDiff(aOld=stringToArray(stResult.left),aNew=stringToArray(stResult.right)) />
 					<cfset structappend(stResult,convertDiffToHighlights(stResult.aDiff),true) />
 				</cfif>
 			</cfcase>
@@ -182,7 +180,7 @@
 				<cfset stResult.right = application.formtools.category.oFactory.display(typename=arguments.typename,fieldname=arguments.stMetadata.name,stMetadata=arguments.stMetadata,stObject=stTemp) />
 				<cfset stResult.different = (stResult.left neq stResult.right) />
 				<cfif stResult.different>
-					<misc:diff old="#stringToArray(stResult.left)#" new="#stringToArray(stResult.right)#" diff="stResult.aDiff" />
+					<cfset stResult.aDiff = getDiff(aOld=stringToArray(stResult.left),aNew=stringToArray(stResult.right)) />
 					<cfset structappend(stResult,convertDiffToHighlights(stResult.aDiff),true) />
 				</cfif>
 			</cfcase>
@@ -220,7 +218,7 @@
 				</cfloop>
 				<cfset stResult.different = (stResult.leftHighlighted neq stResult.rightHighlighted) />
 				<cfif stResult.different>
-					<misc:diff old="#stringToArray(stResult.leftHighlighted)#" new="#stringToArray(stResult.rightHighlighted)#" diff="stResult.aDiff" />
+					<cfset stResult.aDiff = getDiff(aOld=stringToArray(stResult.leftHighlighted),aNew=stringToArray(stResult.rightHighlighted)) />
 					<cfset structappend(stResult,convertDiffToHighlights(stResult.aDiff),true) />
 				</cfif>
 			</cfcase>
@@ -274,10 +272,18 @@
 		<cfset var j = 0 />
 		<cfset var st = structnew() />
 		
-		<cfparam name="arguments.startOld" default="1" />
-		<cfparam name="arguments.endOld" default="#arraylen(arguments.aOld)#" />
-		<cfparam name="arguments.startNew" default="1" />
-		<cfparam name="arguments.endNew" default="#arraylen(arguments.aNew)#" />
+		<cfif not structkeyexists(arguments,"startOld") or not isnumeric(arguments.startOld)>
+			<cfset arguments.startOld = 1 />
+		</cfif>
+		<cfif not structkeyexists(arguments,"endOld") or not isnumeric(arguments.endOld)>
+			<cfset arguments.endOld = arraylen(arguments.aOld) />
+		</cfif>
+		<cfif not structkeyexists(arguments,"startNew") or not isnumeric(arguments.startNew)>
+			<cfset arguments.startNew = 1 />
+		</cfif>
+		<cfif not structkeyexists(arguments,"endNew") or not isnumeric(arguments.endNew)>
+			<cfset arguments.endNew = arraylen(arguments.aNew) />
+		</cfif>
 		
 		<!--- Special case: old array is empty --->
 		<cfif not arraylen(arguments.aOld)>

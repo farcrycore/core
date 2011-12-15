@@ -23,7 +23,7 @@
 <cfset stLocal.stResults = application.fc.lib.diff.performObjectDiff(stLocal.stLeft,stLocal.stRight) />
 <cfset stLocal.qMetadata = application.types[stLocal.stLeft.typename].qMetadata />
 <cfquery dbtype="query" name="stLocal.qMetadata">
-	SELECT 		distinct propertyname
+	SELECT 		distinct propertyname, ftSeq
 	FROM 		stLocal.qMetadata
 	ORDER BY 	ftSeq
 </cfquery>
