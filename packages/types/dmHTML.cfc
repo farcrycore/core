@@ -94,19 +94,19 @@ type properties
 
 <cfproperty 
 	name="ownedby" displayname="Owned by" type="string" hint="Username for owner." required="No" default=""
-	ftSeq="50" ftwizardStep="Miscellaneaous" ftFieldset="Content Details" ftLabel="Owned By"
+	ftSeq="50" ftwizardStep="Miscellaneous" ftFieldset="Content Details" ftLabel="Owned By"
 	ftHint="This should be set to the person responsible for this page. Any questions... ask this person."
 	ftType="list" ftRenderType="dropdown" ftListData="getOwners" >
 	
 <cfproperty 
 	name="reviewDate" type="date" hint="The date for which the object will be reviewed." required="no" default=""
-	ftSeq="52" ftwizardStep="Miscellaneaous" ftFieldset="Content Details" ftLabel="Review Date" 
+	ftSeq="52" ftwizardStep="Miscellaneous" ftFieldset="Content Details" ftLabel="Review Date" 
 	ftHint="Optionally enter a date to remind you when this content should be reviewed."
 	ftType="datetime" ftToggleOffDateTime="true" ftShowTime="false">
 	
 <cfproperty 
 	name="catHTML" type="string" hint="Topic." required="no" default="" 
-	ftSeq="54" ftwizardStep="Miscellaneaous" ftLabel="Categories"
+	ftSeq="54" ftwizardStep="Miscellaneous" ftFieldset="Content Details" ftLabel="Categories"
 	ftType="Category" ftAlias="root" />
 
 
