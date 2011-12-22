@@ -176,7 +176,6 @@ FARCRY INCLUDE FILES
 				<cfif application.fapi.getContentTypeMetadata(typename="#stobj.typename#", md="bFriendly", default="false")>
 					<li><a href="##tabs-seo">SEO</a></li>
 				</cfif>
-				<li><a href="##tabs-misc">Miscellaneous</a></li>
 				<cfloop query="stLocal.qTabs">
 					<cfif stLocal.qTabs.methodname neq "webtopOverviewTab" and isdefined("application.stCOAPI.#stObj.typename#.stWebskins.#stLocal.qTabs.methodname#.displayname")>
 						<li><a href="#application.fapi.getLink(objectid=stObj.objectid,view=stLocal.qTabs.methodname,urlparameters='ajaxmode=1')#">#application.stCOAPI[stObj.typename].stWebskins[stLocal.qTabs.methodname].displayname#</a></li>
