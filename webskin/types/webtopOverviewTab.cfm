@@ -202,12 +202,6 @@ FARCRY INCLUDE FILES
 			</cfif>
 			
 			
-		
-			
-			<grid:div id="tabs-misc">
-				<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="webtopOverviewMisc" />
-			</grid:div>
-			
 		</grid:div>
 	
 <cfsetting enablecfoutputonly="false">

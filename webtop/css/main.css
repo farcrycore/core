@@ -19,9 +19,9 @@ body.iframed-content {
 	font-size: 12px;
 }
 /* =LINKS */
-a,a:link,a:visited,a:hover,a:active {background:transparent;text-decoration:underline;cursor:pointer;padding:2px 0} 
+a,a:link,a:visited,a:hover,a:active {background-color:transparent;text-decoration:underline;cursor:pointer;padding:2px 0} 
 a:link, a:visited, a:hover, a:active {color:#E17000}
-a:hover {color:#fff;background:#E17000} 
+a:hover {color:#fff;background-color:#E17000} 
 
 ul.webtop {position:relative;margin: 0 .3em 1em 0;padding: 0;list-style-type:disc:}
 ol.webtop {margin: .5em .5em}
@@ -60,7 +60,7 @@ h6 {font-size: 83%}
 #view-site {position:absolute;top:5px;right:20px;font-weight:bold}
 #view-site a:link {color:#fff} 
 #view-site a:visited {color:#fff} 
-#view-site a:hover,a:active {color:#26568D;background:#fff} 
+#view-site a:hover,a:active {color:#26568D;background-color:#fff} 
 
 
 /* =LAYOUT-HEADER */
@@ -127,8 +127,8 @@ body.iframed, body.iframed-home {padding-left:14px;background: #5B7FB9 url("imag
 	body.iframed ul, body.iframed-home ul {margin-bottom:6px}
 	body.iframed h3, body.iframed-home h3 {text-transform:uppercase;color:#fff;font-size:86%;border-top: 1px solid #7B96C0;padding: 6px 0 0 3px;margin-top:0}
 	body.iframed, body.iframed-home {color:#fff}
-	body.iframed a:link, body.iframed a:visited, body.iframed a:hover, body.iframed a:active {color:#fff;background:transparent;text-decoration:none;padding:0}
-	body.iframed a:hover, body.iframed a:active {background:#97ACCD}
+	body.iframed a:link, body.iframed a:visited, body.iframed a:hover, body.iframed a:active {color:#fff;background-color:transparent;text-decoration:none;padding:0}
+	body.iframed a:hover, body.iframed a:active {background-color:#97ACCD}
 body.iframed-tree {height:80%}
 
 #iframe-sideTree {width:100%;height:100%;}
@@ -217,7 +217,7 @@ ul.object-overview-actions {margin-right: 130px}
 /* =ALL BLUE LEFT HAND COL */
 body.iframed-home a:link {color:#fff} 
 body.iframed-home a:visited {color:#fff} 
-body.iframed-home a:hover, body.iframed-home a:active {color:#26568D;background:#fff} 
+body.iframed-home a:hover, body.iframed-home a:active {color:#26568D;background-color:#fff} 
 
 
 .refreshtree {display:inline;height:18px;width:16px;margin-left:5px}
@@ -254,8 +254,8 @@ dl.dl-style2 dd {margin:0;padding: 1px 0}
 /* =WIZARDS */
 .wizard-nav {float:right;width:110px}
 .wizard-nav a {display:block;width:100px;border: 1px solid #ccc;font-size:86%;margin: 0 0 3px}
-.wizard-nav a:link, .wizard-nav a:visited, .wizard-nav a:hover, .wizard-nav a:active {text-decoration:none;background:#fff;padding: 3px 5px}
-.wizard-nav a:hover {background:#FFF4E9;color:#E17000;border: 1px solid #E17000}
+.wizard-nav a:link, .wizard-nav a:visited, .wizard-nav a:hover, .wizard-nav a:active {text-decoration:none;background-color:#fff;padding: 3px 5px}
+.wizard-nav a:hover {background-color:#FFF4E9;color:#E17000;border: 1px solid #E17000}
 .wizard-nav br {display:none}
 
 .icon {margin: 0 0 10px}
@@ -429,3 +429,10 @@ table.object-admin-actions td a .ui-icon {
 .rowselected {
 	background-color: #F4F8FD !important;
 }
+
+/* WEBTOP OVERVIEW */
+#tabs-summary .developer-actions { right:0; position:absolute; padding-right:16px; }
+	#tabs-summary .developer-actions a, #tabs-summary .developer-actions .objectid { padding:0; display:inline-block; vertical-align:middle; }
+	#tabs-summary .developer-actions a:hover { background-color:transparent; }
+
+	.comment { margin-left: 19px; }

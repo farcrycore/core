@@ -29,7 +29,6 @@ FARCRY INCLUDE FILES
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
-<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">
 <cfimport taglib="/farcry/core/tags/grid/" prefix="grid">
 
@@ -57,6 +56,13 @@ TO: A refactor is required of all this now that we have webskin goodness.
 	</cfif>
 </cfif>
 <cfset session.overviewRef = url.ref />
+
+<cfif structkeyexists(url,"rollback") and isvalid("uuid",url.rollback)>
+	<!--- rollback archive --->
+	<cfset stRollback = archiveRollback(objectID=stObj.objectid,archiveId=url.rollback,typename=stObj.typename) />
+	<skin:bubble message="Rolled back to previous version" />
+	<skin:location url="#application.fapi.fixURL(removevalues='rollback')#" addtoken="false" />
+</cfif>
 
 
 <ft:form>
