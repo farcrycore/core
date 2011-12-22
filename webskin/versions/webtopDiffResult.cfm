@@ -39,7 +39,7 @@
 	<cfset stLocal.rightArchive = stLocal.stRight.objectid />
 	<cfwddx action="wddx2cfml" input="#stLocal.stRight.objectWDDX#" output="stLocal.stRight" />
 	<cfset stLocal.stProfile = stLocal.oProfile.getProfile(username=stLocal.stRight.createdby) />
-	<cfif structkeyexists(stProfile,"lastname") and len(stProfile.lastname)>
+	<cfif structkeyexists(stLocal.stProfile,"lastname") and len(stLocal.stProfile.lastname)>
 		<cfset stLocal.rightLabel = "#dateformat(stLocal.stRight.datetimecreated,'d mmm yyyy')#, #timeformat(stLocal.stRight.datetimecreated,'h:mmtt')# - #stLocal.stProfile.firstname# #stLocal.stProfile.lastname#" />
 	<cfelse>
 		<cfset stLocal.rightLabel = "#dateformat(stLocal.stRight.datetimecreated,'d mmm yyyy')#, #timeformat(stLocal.stRight.datetimecreated,'h:mmtt')# - #listfirst(stLocal.stRight.createdby,'_')#" />
