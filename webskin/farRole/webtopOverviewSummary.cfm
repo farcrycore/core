@@ -36,6 +36,13 @@ START WEBSKIN
 <!--- 
 editSitePermissions,editTypePermissions,editWebtopPermissions
  --->
+<cfoutput>
+	<div class="developer-actions">
+		<div class="objectid" style="display:none;">#stObj.objectid#</div>
+		<a onclick="var oid = $j(this).siblings('.objectid').toggle();selectText(oid[0]);return false;" title="See objectid" class="ui-icon ui-icon-tag">&nbsp;</a>
+		<a onclick="$fc.openDialog('Property Dump', '#application.url.farcry#/object_dump.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#');return false;" title="Open a window containing all the raw data of this content item" class="ui-icon ui-icon-calculator">&nbsp;</a>
+	</div>
+</cfoutput>
 
 	
 <ft:fieldset legend="#application.fapi.getContentTypeMetadata(stobj.typename,'displayname',stobj.typename)# Information">
