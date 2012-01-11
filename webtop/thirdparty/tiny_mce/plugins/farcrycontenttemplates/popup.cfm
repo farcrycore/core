@@ -93,17 +93,18 @@
 				alert('Please select all options');	
 			}
 		}
-		
+
 		// determine farcryobjectid
 		var farcryobjectid = tinyMCEPopup.getParam("farcryobjectid");
 		var farcrytypename = tinyMCEPopup.getParam("farcrytypename");
 		var farcryrichtextfield = tinyMCEPopup.getParam("farcryrichtextfield");
 		if (farcryobjectid != null && farcrytypename != null && farcryrichtextfield != null) {
+
 			// Fix relative	
 			$j.ajax({
 			   type: "POST",
 			   url: '#application.url.farcry#/facade/tinyMCE.cfc?method=ajaxGetTemplateDropdowns',
-			   data: 'objectID=' + farcryobjectid + '&Typename=' + farcrytypename + '&richtextfield=' + farcryrichtextfield + '&' + $j('form.uniForm div.multiField input:hidden',parent.document).serialize() + '&' + $j('##wizardID',parent.document).serialize(),
+			   data: 'objectID=' + farcryobjectid + '&Typename=' + farcrytypename + '&richtextfield=' + farcryrichtextfield + '&' + $j('form.uniForm div.multiField input:hidden',opener.document).serialize() + '&' + $j('##wizardID',opener.document).serialize(),
 			   cache: false,
 			   timeout: 2000,
 			   success: function(msg){
