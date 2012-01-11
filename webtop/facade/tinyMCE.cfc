@@ -33,7 +33,10 @@
 				<cfif stProps[fieldname].metadata.type EQ "array">
 					<cfset stObject[fieldname] = listToArray(form[fcFormFieldName])>
 				<cfelse>
-					<cfset stObject[fieldname] = form[fcFormFieldName]>
+					<!--- don't replace objectid --->
+					<cfif fieldname NEQ 'ObjectID'>
+						<cfset stObject[fieldname] = form[fcFormFieldName]>
+					</cfif>
 				</cfif>
 			</cfif>
 		</cfloop> 
