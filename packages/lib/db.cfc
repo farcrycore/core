@@ -305,12 +305,12 @@
 			<cfcase value="boolean">
 				<cfset stResult.type = "numeric" />
 				<cfset stResult.precision = "1,0" />
-				<cfif not stResult.nullable>
-					<cfif stResult.default eq true>
-						<cfset stResult.default = 1>
-					<cfelse>
-						<cfset stResult.default = 0>
-					</cfif>
+				<cfif stResult.default eq true>
+					<cfset stResult.default = 1>
+				<cfelseif stResult.default eq false>
+					<cfset stResult.default = 0>
+				<cfelse>
+					<cfset stResult.default = "">
 				</cfif>
 			</cfcase>
 			<cfcase value="date,datetime" delimiters=",">
