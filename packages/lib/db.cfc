@@ -303,8 +303,10 @@
 				<cfset stResult.precision = "1,0" />
 				<cfif stResult.default eq true>
 					<cfset stResult.default = 1>
-				<cfelse>
+				<cfelseif stResult.default eq false>
 					<cfset stResult.default = 0>
+				<cfelse>
+					<cfset stResult.default = "">
 				</cfif>
 			</cfcase>
 			<cfcase value="date,datetime" delimiters=",">
