@@ -126,7 +126,7 @@
 				<cfif methodExists(stMeta,'getSiteMapData')>
 					<cfset qTypeData=oObj.getSiteMapData()>
 				<cfelse>
-					<cfset qTypeData=getTypeData()>
+					<cfset qTypeData=getTypeData(type)>
 				</cfif>
 				<!--- check to see if there is a generateSiteMapXML method in the component --->
 				
@@ -171,11 +171,11 @@
 		<cfsavecontent variable="xmlString">
 			<cfloop query="arguments.qNavData">
 				<cfsavecontent variable="strUrl">
-					<skin:buildlink includedomain="true" domain="#SiteConfig.domainName#" urlOnly="true" objectid="#qNavSorted.objectid#" externallink="#qNavSorted.externallink#" />
+					<skin:buildlink includedomain="true" domain="#SiteConfig.domainName#" urlOnly="true" objectid="#qNavData.objectid#" externallink="#qNavData.externallink#" />
 				</cfsavecontent> 
 				<!--- avoiding white space here hence the 1 line of code --->
 				<cfoutput> 
-		        	<url><loc>#XmlFormat(strUrl)#</loc><priority><cfif qNavSorted.nlevel LTE 2>1.0<cfelseif qNavSorted.nlevel LTE 3>0.9<cfelse>#numberformat(log10 (qNavSorted.nlevel),'0._')#</cfif></priority> <lastmod>#DateFormat(qNavSorted.datetimelastupdated,'yyyy-mm-dd')#</lastmod> <changefreq><cfif qNavSorted.nlevel LTE 2>daily<cfelse>weekly</cfif></changefreq></url>
+		        	<url><loc>#XmlFormat(strUrl)#</loc><priority><cfif qNavData.nlevel LTE 2>1.0<cfelseif qNavData.nlevel LTE 3>0.9<cfelse>#numberformat(log10 (qNavData.nlevel),'0._')#</cfif></priority> <lastmod>#DateFormat(qNavData.datetimelastupdated,'yyyy-mm-dd')#</lastmod> <changefreq><cfif qNavData.nlevel LTE 2>daily<cfelse>weekly</cfif></changefreq></url>
 				</cfoutput>
 			</cfloop>    
 		</cfsavecontent>
