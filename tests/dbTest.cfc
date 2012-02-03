@@ -660,7 +660,7 @@
 		<cfset assertEquals(listsort(lcase(structkeylist(stDiff.tables.dummyContentTypeA.fields)),"text"),"i","Undeployed property not identified") />
 		<cfset assertEquals(listsort(lcase(structkeylist(stDiff.tables.dummyContentTypeA.fields.i)),"text"),"conflict,newmetadata,oldmetadata,resolution","Incorrect correction metadata returned") />
 		<cfset assertEquals(stDiff.tables.dummyContentTypeA.fields.i.conflict,"Altered property","Incorrect conflict identified") />
-		<cfset assertEquals(stDiff.tables.dummyContentTypeA.fields.i.oldmetadata.default,"NULL","Old metadata incorrect") />
+		<cfset assertEquals(stDiff.tables.dummyContentTypeA.fields.i.oldmetadata.default,"hello","Old metadata incorrect") />
 		<cfset assertEquals(stDiff.tables.dummyContentTypeA.fields.i.newmetadata.default,"there","New metadata incorrect") />
 	</cffunction>
 	
@@ -1723,6 +1723,28 @@
 			where	parentid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#stResult.objectid#" />
 		</cfquery>
 		<cfset assertEquals(q.recordcount,0,"Record found in extended array table") />
+	</cffunction>
+	
+	
+	<cffunction name="FC1906_repairProperty_integertostring" access="public" displayname="FC-1906: Repair property (integer to string)" dependsOn="deployType,dropType,diffSchema_numerictostring">
+		<cfset var schema = structnew() />
+		<cfset var stDiff = structnew() />
+		
+		<cfset var gateway = this.db.initialiseGateway(dsn=this.dsn,dbowner=this.dbowner,dbtype=this.dbtype) />
+		
+		<cfset this.db.initialiseTableMetadata("farcry.core.tests.resources.dummyContentTypeA") />
+		<cfset schema = this.db.getTableMetadata("farcry.core.tests.resources.dummyContentTypeA") />
+		
+		<cfset gateway.deploySchema(schema=schema,bDropTable=true) />
+		
+		<cfset schema.fields["h"].type = "string" />
+		<cfset schema.fields["h"].precision = "250" />
+		
+		<cfset gateway.repairColumn(schema=schema,propertyname="h") />
+		
+		<cfset stDiff = this.db.getGateway(this.dsn).diffSchema(schema=schema) />
+		
+		<cfset assertTrue(structisempty(stDiff.tables),"Table conflicts") />
 	</cffunction>
 	
 </cfcomponent>
