@@ -222,19 +222,19 @@
 									if (data.percentage<100)
 										$("##"+fieldname+ID+"ProgressBar").animate({'width': data.percentage + '%'},250);	
 									else
-										$("##join-item-"+ID+" .uploadifyFeedback",arrayuploadformtool.displaylist).html("<span style='color:##0099FF;font-weight:bold;'>processing image...</span");
+										$("##join-item-#arguments.stMetadata.name#-"+ID+" .uploadifyFeedback",arrayuploadformtool.displaylist).html("<span style='color:##0099FF;font-weight:bold;'>processing image...</span");
 								},
 								'onCancel'		: function(event,ID,fileObj,data){
-									$("##join-item-"+ID,arrayuploadformtool.displaylist).remove();
+									$("##join-item-#arguments.stMetadata.name#-"+ID,arrayuploadformtool.displaylist).remove();
 								},
 								'onComplete'	: function(event, ID, fileObj, response, data){
 									var results = $.parseJSON(response);
 									
 									if (results.error && results.error.length){
-										errorloc = $("##join-item-"+ID+" .uploadifyFeedback",arrayuploadformtool.displaylist).html("<span style='color:##FF0000;font-weight:bold;'>Server error: "+results.error+"</span>");
+										errorloc = $("##join-item-#arguments.stMetadata.name#-"+ID+" .uploadifyFeedback",arrayuploadformtool.displaylist).html("<span style='color:##FF0000;font-weight:bold;'>Server error: "+results.error+"</span>");
 									}
 									else {
-										$("##join-item-"+ID,arrayuploadformtool.displaylist).replaceWith(arrayuploadformtool.getHTML("newitem",{
+										$("##join-item-#arguments.stMetadata.name#-"+ID,arrayuploadformtool.displaylist).replaceWith(arrayuploadformtool.getHTML("newitem",{
 											itemid		: results.objectid,
 											displayhtml : results.html
 										}));
@@ -341,14 +341,14 @@
 									},
 									dataType: "html",
 									success: function(data){
-										for (var i=0;i<objectids.length;i++) $("##join-item-"+objectids[i],arrayuploadformtool.displaylist).remove();
+										for (var i=0;i<objectids.length;i++) $("##join-item-#arguments.stMetadata.name#-"+objectids[i],arrayuploadformtool.displaylist).remove();
 										arrayuploadformtool.displaylist.sortable("refresh");
 									}
 								});
 		    				}
 		    				else {
 		    					for (var i=0;i<objectids.length;i++) {
-		    						$("##join-item-"+objectids[i],arrayuploadformtool.displaylist).remove();
+		    						$("##join-item-#arguments.stMetadata.name#-"+objectids[i],arrayuploadformtool.displaylist).remove();
 		    					}
 		    					arrayuploadformtool.displaylist.sortable("refresh");
 		    				};
@@ -373,7 +373,7 @@
 									dataType: "html",
 									success: function(data){
 										for (var i=0;i<data.length;i++)
-											$("##join-item-"+data[i].objectid,arrayuploadformtool.displaylist).replaceWith(arrayuploadformtool.getHTML("newitem",{
+											$("##join-item-#arguments.stMetadata.name#-"+data[i].objectid,arrayuploadformtool.displaylist).replaceWith(arrayuploadformtool.getHTML("newitem",{
 												itemid		: data[i].objectid,
 												displayhtml : data[i].html
 											}));
@@ -385,7 +385,7 @@
 		    			};
 		    			
 		    			this.editItem = function(objectid){
-		    				$("##join-item-"+objectid+" .fc-edit").html("<img src='#application.url.webtop#/images/indicator.gif' />");
+		    				$("##join-item-#arguments.stMetadata.name#-"+objectid+" .fc-edit").html("<img src='#application.url.webtop#/images/indicator.gif' />");
 							$.ajax({
 								cache: false,
 								type: "POST",
@@ -395,7 +395,7 @@
 								},
 								dataType: "html",
 								success: function(data){
-		    						$("##join-item-"+objectid+" .fc-edit").html("<span class='ui-icon ui-icon-pencil'></span>");
+		    						$("##join-item-#arguments.stMetadata.name#-"+objectid+" .fc-edit").html("<span class='ui-icon ui-icon-pencil'></span>");
 									$fc.openModal(data,"auto","auto",true);
 								}
 							});
@@ -412,7 +412,7 @@
 								data: d,
 								dataType: "json",
 								success: function(data){
-									$("##join-item-"+data.objectid,arrayuploadformtool.displaylist).replaceWith(arrayuploadformtool.getHTML("newitem",{
+									$("##join-item-#arguments.stMetadata.name#-"+data.objectid,arrayuploadformtool.displaylist).replaceWith(arrayuploadformtool.getHTML("newitem",{
 										itemid		: data.objectid,
 										displayhtml : data.html
 									}));
@@ -446,7 +446,7 @@
 		    				}
 		    				if (aRemove.length) arrayuploadformtool.removeItems(aRemove);
 		    				for (var i=0;i<afterSelect.length;i++){
-		    					if ($("##join-item-"+afterSelect[i],arrayuploadformtool.displaylist).size()==0) aAdd.push(afterSelect[i]);	
+		    					if ($("##join-item-#arguments.stMetadata.name#-"+afterSelect[i],arrayuploadformtool.displaylist).size()==0) aAdd.push(afterSelect[i]);	
 		    				}
 		    				if (aAdd.length) arrayuploadformtool.addItems(aAdd);
 		    				if (editid.length) arrayuploadformtool.refreshItems([ editid ]);
@@ -487,7 +487,7 @@
 				<cfloop from="1" to="#arraylen(joinItems)#" index="i">
 					<cfif arguments.stMetadata.ftView eq 'tiled'>
 						<cfoutput>
-							<li id="join-item-#joinItems[i]#" class="sort arrayupload-item fc-tile-view">
+							<li id="join-item-#arguments.stMetadata.name#-#joinItems[i]#" class="sort arrayupload-item fc-tile-view">
 								<div class="fc-tile-view-container" style="width:#arguments.stMetadata.ftTileWidth#px;height:#arguments.stMetadata.ftTileHeight#px;">
 									<div class="fc-grabbar">&nbsp;</div>
 									<div class="fc-arrayupload-actions">
@@ -507,7 +507,7 @@
 						</cfoutput>
 					<cfelse>
 						<cfoutput>
-							<li id="join-item-#joinItems[i]#" class="sort fc-arrayupload-item fc-list-view">
+							<li id="join-item-#arguments.stMetadata.name#-#joinItems[i]#" class="sort fc-arrayupload-item fc-list-view">
 								<div class="fc-list-view-container">
 									<table class="fc-list-view-table">
 										<tr>
@@ -585,7 +585,7 @@
 				<cfif arguments.stMetadata.ftView eq 'tiled'>
 					<cfoutput>
 						<script type="text/template" id="uploaditem-#arguments.fieldname#">
-							<li id="join-item-{{ID}}" class="sort fc-arrayupload-item fc-tile-view">
+							<li id="join-item-{{property}}-{{ID}}" class="sort fc-arrayupload-item fc-tile-view">
 								<div class="fc-tile-view-container" style="width:#arguments.stMetadata.ftTileWidth#px;height:#arguments.stMetadata.ftTileHeight#px;">
 									<div class="fc-grabbar">&nbsp;</div>
 									<div class="fc-arrayupload-actions">
@@ -603,7 +603,7 @@
 							</li>
 						</script>
 						<script type="text/template" id="newitem-#arguments.fieldname#">
-							<li id="join-item-{{itemid}}" class="sort fc-arrayupload-item fc-tile-view">
+							<li id="join-item-{{property}}-{{itemid}}" class="sort fc-arrayupload-item fc-tile-view">
 								<div class="fc-tile-view-container" style="width:#arguments.stMetadata.ftTileWidth#px;height:#arguments.stMetadata.ftTileHeight#px;">
 									<div class="fc-grabbar">&nbsp;</div>
 									<div class="fc-arrayupload-actions">
@@ -620,7 +620,7 @@
 				<cfelse>
 					<cfoutput>
 						<script type="text/template" id="uploaditem-#arguments.fieldname#">
-							<li id="join-item-{{ID}}" class="sort fc-arrayupload-item fc-list-view">
+							<li id="join-item-{{property}}-{{ID}}" class="sort fc-arrayupload-item fc-list-view">
 								<div class="fc-list-view-container">
 									<table class="fc-list-view-table">
 										<tr>
@@ -644,7 +644,7 @@
 							</li>
 						</script>
 						<script type="text/template" id="newitem-#arguments.fieldname#">
-							<li id="join-item-{{itemid}}" class="sort fc-arrayupload-item fc-list-view">
+							<li id="join-item-{{property}}-{{itemid}}" class="sort fc-arrayupload-item fc-list-view">
 								<div class="fc-list-view-container">
 									<table class="fc-list-view-table">
 										<tr>
@@ -1031,7 +1031,7 @@
 			<cfoutput><ul id="join-#stObject.objectid#-#arguments.stMetadata.name#" class="arrayDetailView" style="list-style-type:none;border:1px solid ##ebebeb;border-width:1px 1px 0px 1px;margin:0px;"></cfoutput>
 			
 			<cfloop from="1" to="#arraylen(joinItems)#" index="i"><cfoutput>
-				<li id="join-item-#joinItems[i]#" class="" style="clear:both;border:1px solid ##ebebeb;padding:5px;zoom:1;">
+				<li id="join-item-#arguments.stMetadata.name#-#joinItems[i]#" class="" style="clear:both;border:1px solid ##ebebeb;padding:5px;zoom:1;">
 					<skin:view objectid="#joinItems[i]#" typename="#arguments.stMetadata.ftJoin#" webskin="#arguments.stMetadata.ftLibrarySelectedWebskin#" r_html="htmlLabel" alternateHTML="OBJECT NO LONGER EXISTS" />
 				</li>
 			</cfoutput></cfloop>
