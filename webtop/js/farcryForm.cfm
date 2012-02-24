@@ -537,8 +537,8 @@ function setRowBackground (childCheckbox) {
 			data: {deleteID: itemids },
 			dataType: "html",
 			complete: function(data){
-				$j('##join-item-' + itemids).hide('blind',{},500);			
-				$j('##join-item-' + itemids).remove();	
+				$j('##join-item-' + property + '-' + itemids).hide('blind',{},500);			
+				$j('##join-item-' + property + '-' + itemids).remove();	
 				$j('##' + formfieldname).attr('value','');	
 				var aItems = $j('##' + formfieldname + '-library-wrapper').sortable('toArray',{'attribute':'serialize'});
 				if($j.isArray(aItems)) {
@@ -565,8 +565,8 @@ function setRowBackground (childCheckbox) {
 		});	
 	}
 	fcForm.detachLibraryItem = function(typename,objectid,property,formfieldname,itemids) {
-		$j('##join-item-' + itemids).hide('blind',{},500);			
-		$j('##join-item-' + itemids).remove();	
+		$j('##join-item-' + property + '-' + itemids).hide('blind',{},500);			
+		$j('##join-item-' + property + '-' + itemids).remove();	
 		$j('##' + formfieldname).attr('value','');	
 		var aItems = $j('##' + formfieldname + '-library-wrapper').sortable('toArray',{'attribute':'serialize'});
 		if($j.isArray(aItems)) {
