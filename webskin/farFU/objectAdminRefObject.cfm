@@ -15,9 +15,13 @@ FARCRY IMPORT FILES
 <!------------------ 
 START WEBSKIN
  ------------------>
-<cfset stRefObject = application.coapi.coapiUtilities.getContentObject(objectid="#stobj.refObjectID#") />
-
-<cfif not structIsEmpty(stRefObject)>
-	<skin:view typename="#stRefObject.typename#" objectid="#stRefObject.objectid#" template="librarySelected" alternateHTML="#stRefObject.label#" />
+<cfif isValid("uuid",stobj.refObjectId)>
+	<cfset stRefObject = application.coapi.coapiUtilities.getContentObject(objectid="#stobj.refObjectID#") />
+	
+	<cfif not structIsEmpty(stRefObject)>
+		<skin:view typename="#stRefObject.typename#" objectid="#stRefObject.objectid#" template="librarySelected" alternateHTML="#stRefObject.label#" />
+	</cfif>
+<cfelse>
+	<cfoutput>Object does not exist</cfoutput>
 </cfif>
 <cfsetting enablecfoutputonly="false">
