@@ -241,7 +241,7 @@
 									</cfcatch>
 								</cftry>
 								<cfoutput>
-								<li id="join-item-#i#" class="sort #iif(counter mod 2,de('oddrow'),de('evenrow'))#" serialize="#i#" style="clear:both;border:1px solid ##ebebeb;padding:5px;zoom:1;">
+								<li id="join-item-#arguments.stMetadata.name#-#i#" class="sort #iif(counter mod 2,de('oddrow'),de('evenrow'))#" serialize="#i#" style="clear:both;border:1px solid ##ebebeb;padding:5px;zoom:1;">
 									<table style="width:100%;">
 									<tr>
 									<td class="" style="cursor:move;padding:3px;"><span class="ui-icon ui-icon-arrow-2-n-s"></span></td>
