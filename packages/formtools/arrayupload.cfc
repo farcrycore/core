@@ -108,6 +108,7 @@
 	    <skin:loadJS id="jquery-uploadify" />
 	    <skin:loadCSS id="jquery-uploadify" />
 		<skin:loadJS id="jquery-modal" />
+		<skin:loadCSS id="jquery-modal" />
 	    
 		<skin:loadJS id="array-upload"><script type="text/javascript"><cfoutput>
 		<!--- <skin:htmlHead id="array-upload-js"><cfoutput><script type="text/javascript"> --->
