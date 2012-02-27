@@ -342,6 +342,9 @@ object methods
 			<cfset config[thisprop] = replacelist(config[thisprop],"&gt;,&lt;,&apos;,&quot;,&amp;",">,<,',"",&") />
 		</cfloop>
 		
+		<!--- run the config object's process method --->
+		<cfset config = application.fapi.getContentType(getForm(arguments.stProperties.configKey)).process(fields = config) />
+		
 		<cfset application.config[arguments.stProperties.configkey] = duplicate(config) />
 		
 		<cfreturn arguments.stProperties />
