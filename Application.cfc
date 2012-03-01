@@ -487,6 +487,33 @@
 		<cfreturn />
 	</cffunction>
 
+
+	<cffunction name="OnMissingTemplate" access="public" returntype="void" output="true" hint="Fires when a non-existent coldfusion file is requested">
+		<cfargument name="thePage" type="string" required="true" />
+		
+		<cfset var machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
+		<cfset var instanceName = "Unknown" />
+		
+		<cftry>
+			<cfset instanceName = createObject("java", "jrunx.kernel.JRun").getServerName() />
+			<cfcatch></cfcatch>
+		</cftry>
+		
+		<cfcontent reset="true" />
+		<cfheader statuscode="404" statustext="Not Found" />
+		<cfif fileexists("#application.path.project#/errors/404.cfm")>
+			<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/404.cfm" />
+		<cfelseif fileexists("#application.path.webroot#/errors/404.cfm")>				
+			<cfinclude template="#application.url.webroot#/errors/404.cfm" />
+		<cfelse>
+			<cfinclude template="/farcry/core/webtop/errors/404.cfm" />
+		</cfif>
+		
+		<cfsetting enablecfoutputonly="false" />
+		
+		<cfreturn />
+	</cffunction>
+	
  
 	<cffunction name="farcryUpdateApp" access="private" output="false" hint="Initialise farcry Application." returntype="void">
 		<!---------------------------------------- 
