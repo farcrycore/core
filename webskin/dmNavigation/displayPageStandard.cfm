@@ -28,11 +28,11 @@
 	</cfcase>
 	
 	<cfcase value="internalRedirectID"><!--- This is a fallback - usually these will be handled in the link --->
-		<skin:location objectid="#stObj.internalRedirectID#" />
+		<skin:location objectid="#stObj.internalRedirectID#" statusCode="302" />
 	</cfcase>
 	
 	<cfcase value="externalRedirectURL"><!--- This is a fallback - usually these will be handled in the link --->
-		<cflocation url="#stObj.externalRedirectURL#" addtoken="false" />
+		<cflocation url="#stObj.externalRedirectURL#" statusCode="302" addtoken="false" />
 	</cfcase>
 	
 	<cfcase value="aObjectIds">

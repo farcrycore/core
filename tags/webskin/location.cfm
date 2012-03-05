@@ -28,27 +28,32 @@
 
 <cfif thistag.executionMode eq "Start">
 
-	<cfparam name="attributes.url" default=""><!--- the actual href to link to. This is to provide similar syntax to <cflocation /> however attributes.href should be used. --->
-	<cfparam name="attributes.href" default="#attributes.url#"><!--- the actual href to link to. Defaults to attributes.url --->
-	<cfparam name="attributes.alias" default=""><!--- Navigation alias to use to find the objectid --->
-	<cfparam name="attributes.objectid" default=""><!--- Added to url parameters; navigation obj id --->
-	<cfparam name="attributes.type" default=""><!--- Added to url parameters: Typename used with type webskin views --->
-	<cfparam name="attributes.view" default=""><!--- Added to url parameters: Webskin name used with type webskin views --->
-	<cfparam name="attributes.bodyView" default=""><!--- Added to url parameters: Webskin name used with type webskin views --->
-	<cfparam name="attributes.externallink" default="">
-	<cfparam name="attributes.stParameters" default="#StructNew()#">
-	<cfparam name="attributes.urlParameters" default="">
-	<cfparam name="attributes.includeDomain" default="false">
-	<cfparam name="attributes.Domain" default="#cgi.http_host#">
+	<cfparam name="attributes.url" default="" /><!--- the actual href to link to. This is to provide similar syntax to <cflocation /> however attributes.href should be used. --->
+	<cfparam name="attributes.href" default="#attributes.url#" /><!--- the actual href to link to. Defaults to attributes.url --->
+	<cfparam name="attributes.alias" default="" /><!--- Navigation alias to use to find the objectid --->
+	<cfparam name="attributes.objectid" default="" /><!--- Added to url parameters; navigation obj id --->
+	<cfparam name="attributes.type" default="" /><!--- Added to url parameters: Typename used with type webskin views --->
+	<cfparam name="attributes.view" default="" /><!--- Added to url parameters: Webskin name used with type webskin views --->
+	<cfparam name="attributes.bodyView" default="" /><!--- Added to url parameters: Webskin name used with type webskin views --->
+	<cfparam name="attributes.externallink" default="" />
+	<cfparam name="attributes.stParameters" default="#StructNew()#" />
+	<cfparam name="attributes.urlParameters" default="" />
+	<cfparam name="attributes.includeDomain" default="false" />
+	<cfparam name="attributes.Domain" default="#cgi.http_host#" />
 	<cfparam name="attributes.addToken" default="false" />
-	<cfparam name="attributes.ampDelim" default="&">	
+	<cfparam name="attributes.ampDelim" default="&" />
+	<cfparam name="attributes.statusCode" default="" /><!--- Optional: add a status code to the cflocation redirect --->
 	
 	<cfset attributes.url = application.fapi.getLink(argumentCollection="#attributes#") />		
 	
 	<cfset request.fc.bLocating = true />
 	
 	<cfset createobject("component","farcry.core.Application").onRequestEnd() />
-	<cflocation url="#attributes.url#" addtoken="#attributes.addToken#" />
+	<cfif attributes.statusCode eq "">
+		<cflocation url="#attributes.url#" addtoken="#attributes.addToken#" />
+	<cfelse>
+		<cflocation url="#attributes.url#" statusCode="#attributes.statusCode#" addtoken="#attributes.addToken#" />
+	</cfif>
 	
 </cfif>
 	

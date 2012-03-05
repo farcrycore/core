@@ -172,7 +172,7 @@
 			<!---<skin:bubble title="Currently Viewing a Draft Object" message="You are currently viewing a draft object. Your profile has now been changed to 'Showing Drafts'." />--->
 		<cfelse>			
 			<!--- send to login page and return in draft mode --->
-			<skin:location url="#attributes.loginpath#" urlParameters="showdraft=1&error=draft" />
+			<skin:location url="#attributes.loginpath#" urlParameters="showdraft=1&error=draft" statusCode="302" />
 		</cfif>
 	</cfif>
 	
