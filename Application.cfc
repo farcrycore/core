@@ -735,7 +735,11 @@
 		<cfparam name="this.defaultWebskinCacheTimeout" default="1400" /><!--- Default timeout in seconds --->
 		<cfparam name="this.defaultBrowserCacheTimeout" default="-1" /><!--- Default timeout in seconds. -1=no cache directives --->
 		<cfparam name="this.defaultProxyCacheTimeout" default="-1" /><!--- Default timeout in seconds. -1=no cache directives --->
-		
+
+		<cfparam name="this.bUseDeviceDetection" default="false" /><!--- Device detection is enabled when this flag is set to true --->
+		<cfparam name="this.bUseMobileWebskins" default="false" /><!--- Mobile webskins are enabled when this flag is set to true --->
+		<cfparam name="this.bUseTabletWebskins" default="false" /><!--- Tablet webskins are enabled when this flag is set to true --->
+
 		<!--- Option to archive --->
 		<cfparam name="this.bUseMediaArchive" default="false" />
 		
@@ -878,6 +882,14 @@
 		INITIALISE THE COMBINED JS STRUCTURE USED TO COMBINE MULTIPLE JS FILES
 		 ------------------------------------------>
 		<cfset application.stCombinedFarcryJS = structNew() />
+
+
+		<!------------------------------------------ 
+		USE DEVICE DETECTION? (i.e. mobile webskins)
+		 ------------------------------------------>
+		<cfset application.bUseDeviceDetection = this.bUseDeviceDetection />
+		<cfset application.bUseMobileWebskins = this.bUseMobileWebskins />
+		<cfset application.bUseTabletWebskins = this.bUseTabletWebskins />
 
 
 		<!------------------------------------------ 
