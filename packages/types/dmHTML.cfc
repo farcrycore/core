@@ -47,7 +47,7 @@ type properties
 	ftType="webskin" ftPrefix="displayPage" >
 
 <cfproperty 
-	name="metaKeywords" type="string" hint="HTML head section metakeywords." required="no" default="" 
+	name="metaKeywords" type="longchar" hint="HTML head section metakeywords." required="no" default="" 
 	ftSeq="5" ftwizardStep="Start" ftFieldset="SEO" ftLabel="Keyword Tag(s)"
 	ftHint="Keep it simple and relevant: 10-20 keywords per page. Limited to 900 characters including spaces."
 	ftType="longchar" ftLimit="900"
