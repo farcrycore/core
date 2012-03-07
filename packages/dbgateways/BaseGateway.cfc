@@ -140,9 +140,15 @@
 				<!--- Add item to DB --->
 				<cfset combineResults(stResult,createData(schema=arguments.schema,stProperties=aData[i])) />
 			<cfelseif bExtended or aData[i].data neq qExisting.data[i]>
+
 				<cfif qExisting.seq[i] neq i><!--- Too complicated - just delete the bugger and add the new one --->
 					<!--- Delete item from DB --->
-					<cfset combineResults(stResult,deleteData(schema=arguments.schema,parentid=arguments.parentid,seq=qExisting.seq[i])) />
+				    <cfif structKeyExists(arguments.schema.fields,"objectid")>
+					    <!--- extended arrays use "objectid" as the primary key --->
+					    <cfset combineResults(stResult,deleteData(schema=arguments.schema,objectid=qExisting.objectid[i],seq=qExisting.seq[i])) />
+					<cfelse>
+						<cfset combineResults(stResult,deleteData(schema=arguments.schema,parentid=arguments.parentid,seq=qExisting.seq[i])) />
+				    </cfif>
 					<cfset combineResults(stResult,createData(schema=arguments.schema,stProperties=aData[i])) />
 				<cfelse>
 					<cfset combineResults(stResult,setData(schema=arguments.schema,stProperties=aData[i])) />
