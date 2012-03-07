@@ -969,6 +969,14 @@
 								<cfset stResult.objectid = fuParam />
 								<cfset fuVars = listdeleteat(fuVars,listfind(fuVars,"@objectid")) />
 								
+								<!--- If the form [/type]/objectid was used, and there is an actual FU available, setup a redirect to that --->
+								<cfset stLocal.stDefaultFU = getDefaultFUObject(stResult.objectid) />
+								<cfif not structIsEmpty(stLocal.stDefaultFU) AND stLocal.stDefaultFU.objectid NEQ stResult.objectid AND stLocal.stDefaultFU.redirectionType EQ "none">
+									<!--- NOTE: URL information is still included in a redirect struct as the redirect will not be honoured for ajax requests --->
+									<cfset stResult["__redirectionURL"] = "#application.url.webroot##stLocal.stDefaultFU.friendlyURL#" />
+									<cfset stResult["__redirectionType"] = "301" />
+								</cfif>
+								
 								<!--- Type and ObjectID can be used together - but only in that order. Don't check for type anymore. --->
 								<cfif listcontains(fuVars,"@type")>
 									<cfset stResult.type = application.fapi.findType(fuParam) />
@@ -992,6 +1000,9 @@
 								</cfif>
 								
 								<cfif not structisempty(stWS)>
+									<cfif structkeyexists(stResult,"__redirectionURL")>
+										<cfset stResult["__redirectionURL"] = stResult["__redirectionURL"] & "/" & fuParam />
+									</cfif>
 								
 									<!--- We can call any webskin in the viewstack if in ajax mode --->
 									<cfif listcontainsnocase("page,any,ajax",stWS.viewstack) or findNoCase('ajaxmode',arguments.fuParameters)>
@@ -1006,8 +1017,7 @@
 										 --->
 										<cfif not listcontainsnocase("body,any",stWS.viewstack)>
 											<cfthrow message="This webskin (type:#stResult.type# & webskin:#stWS.methodname#) is not positioned in the view stack as page, body, any or ajax." />
-										</cfif>						
-										
+										</cfif>
 									</cfif>
 								</cfif>
 							</cfif>
@@ -1026,6 +1036,10 @@
 								</cfif>
 								
 								<cfif not structisempty(stWS)>
+									<cfif structkeyexists(stResult,"__redirectionURL")>
+										<cfset stResult["__redirectionURL"] = stResult["__redirectionURL"] & "/" & fuParam />
+									</cfif>
+									
 									<cfif listcontainsnocase("body,any",stWS.viewstack)>
 										<cfset stResult.bodyView = stWS.methodname />
 										<cfset fuVars = listdeleteat(fuVars,listfind(fuVars,"@bodyview")) />
@@ -1052,6 +1066,11 @@
 						<cfdefaultcase><!--- This can only happen if the case "@paramname" sets a variable name --->
 							<cfset stResult[paramType] = fuParam />
 							<cfset fuVars = "@paramname" /><!--- Next token will be a parameter name --->
+							
+							<cfif structkeyexists(stResult,"__redirectionURL")>
+								<cfset stResult["__redirectionURL"] = stResult["__redirectionURL"] & "/" & paramType & "/" & fuParam />
+							</cfif>
+							
 							<cfbreak />
 						</cfdefaultcase>
 					</cfswitch>

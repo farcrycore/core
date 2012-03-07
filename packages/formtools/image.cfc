@@ -486,7 +486,7 @@
 									imageformtool.multiview.selectView("complete");
 								}
 							}
-	    				}).bind("fileerror.updatedisplay",function onImageFormtoolFileerrorDisplay(event,action,error,message){console.log(event,action,error,message);
+	    				}).bind("fileerror.updatedisplay",function onImageFormtoolFileerrorDisplay(event,action,error,message){
 							$j('##'+prefix+property+"_"+action+"error").html(message).show();
 	    				}).bind("cancelcrop",function(){
 	    				

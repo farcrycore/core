@@ -459,6 +459,7 @@
 		<cfelse>	
 			
 			<cfset variables.returnHTML = "">
+
 			
 			<cfif structKeyExists(tFieldType,FieldMethod)>
 				
@@ -480,12 +481,14 @@
 				
 				<cfset variables.errorClass = "" />
 				<cfset variables.formValidationMessage = "" />
+				<cfset variables.formValidationMessageInner = "" />
 				<cfif structKeyExists(request, "stFarcryFormValidation")
 					AND structKeyExists(request.stFarcryFormValidation, stObj.ObjectID)
 					AND structKeyExists(request.stFarcryFormValidation[stObj.ObjectID], i)
 					AND structKeyExists(request.stFarcryFormValidation[stObj.ObjectID][i], "bSuccess")
 					AND NOT request.stFarcryFormValidation[stObj.ObjectID][i].bSuccess >
 					
+					<cfset variables.formValidationMessageInner = request.stFarcryFormValidation[stObj.ObjectID][i].stError.message>
 					<cfsavecontent variable="variables.formValidationMessage">
 						<cfoutput><p class="errorField" htmlfor="#variables.prefix##i#" for="#variables.prefix##i#">#request.stFarcryFormValidation[stObj.ObjectID][i].stError.message#</p></cfoutput>
 						<!--- <div class="#request.stFarcryFormValidation[stObj.ObjectID][i].stError.class#">#request.stFarcryFormValidation[stObj.ObjectID][i].stError.message#</div> --->
@@ -527,7 +530,7 @@
 			<cfelse>
 				
 				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].HTML = returnHTML>
-				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].errorMessage = variables.formValidationMessage>
+				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].errorMessage = variables.formValidationMessageInner />
 				<cfsavecontent variable="Request.farcryForm.stObjects.#variables.prefix#.MetaData.#ftFieldMetadata.Name#.Label">
 					<cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#" class="#attributes.labelClass#">#ftFieldMetadata.ftlabel#<cfif findNoCase("required",ftFieldMetadata.ftClass)> <em>*</em> </cfif></label></cfoutput>
 				</cfsavecontent>

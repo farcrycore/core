@@ -22,10 +22,18 @@
 </cfif>
 
 <cfif not len(attributes.location)>
-	<cftry>
-		<cfset attributes.location = "#getPageContext().getPage().getCurrentTemplatePath()#" />
-		<cfcatch type="any"><!--- Ignore error and leave blank. Probably means that the CF Engine is not Adobe ---></cfcatch>
-	</cftry>
+	<cfset aStackTrace = createobject("java","java.lang.Exception").init().getStackTrace() />
+	<cfset fcpath = expandpath("/farcry") />
+	<cfset foundfirst = false />
+	<cfloop from="1" to="#arraylen(aStackTrace)#" index="i">
+		<cfset attributes.location = "#aStackTrace[i].getFileName()#:#aStackTrace[i].getLineNumber()#" />
+		<cfif findnocase(fcpath,attributes.location)>
+			<cfif foundfirst>
+				<cfbreak />
+			</cfif>
+			<cfset foundfirst = true />
+		</cfif>
+	</cfloop>
 </cfif>
 
 <cfset stObj = structnew() />

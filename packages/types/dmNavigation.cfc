@@ -114,7 +114,7 @@
 			</cfquery>
 		</cfif>
 		
-		 <cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=arguments.stProperties.objectid,typename=arguments.stProperties.typename) />
+		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=arguments.stProperties.objectid,typename=arguments.stProperties.typename) />
 		
 		<cfreturn stProperties />
 	</cffunction>

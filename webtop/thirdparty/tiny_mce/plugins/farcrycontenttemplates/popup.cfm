@@ -104,7 +104,7 @@
 			$j.ajax({
 			   type: "POST",
 			   url: '#application.url.farcry#/facade/tinyMCE.cfc?method=ajaxGetTemplateDropdowns',
-			   data: 'objectID=' + farcryobjectid + '&Typename=' + farcrytypename + '&richtextfield=' + farcryrichtextfield + '&' + $j('form.uniForm div.multiField input:hidden',opener.document).serialize() + '&' + $j('##wizardID',opener.document).serialize(),
+			   data: 'objectID=' + farcryobjectid + '&Typename=' + farcrytypename + '&richtextfield=' + farcryrichtextfield + '&' + $j('form.uniForm div.multiField input:hidden',(parent || opener).document).serialize() + '&' + $j('##wizardID',(parent || opener).document).serialize(),
 			   cache: false,
 			   timeout: 2000,
 			   success: function(msg){

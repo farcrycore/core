@@ -117,7 +117,7 @@ $out:$
 		pLevel = q.Plevel;	
 		
 		sql ="
-		   insert #arguments.dbowner#nested_tree_objects (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
+		   insert into #arguments.dbowner#nested_tree_objects (ObjectID, ParentID, ObjectName, TypeName, Nleft, Nright, Nlevel)
 		  values ('#arguments.objectid#', '#arguments.parentid#', '#arguments.objectName#', '#arguments.typeName#', #maxr# + 1, #maxr# + 2,  #plevel# + 1)";  
 		scriptQuery(sql=sql, dsn=arguments.dsn);	  
 	}

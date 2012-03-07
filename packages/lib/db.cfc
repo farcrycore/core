@@ -293,10 +293,6 @@
 		</cfif>
 		<cfset stResult.index = listsort(stResult.index,"textnocase","asc") />
 		
-		<cfif stResult.nullable>
-			<cfset stResult.default = "NULL" />
-		</cfif>
-		
 		<cfswitch expression="#arguments.type#">
 			<cfcase value="array">
 				<cfset stResult.type = "array" />

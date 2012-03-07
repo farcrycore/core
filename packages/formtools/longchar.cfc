@@ -110,134 +110,67 @@
 		
 		<cfif isNumeric(arguments.stMetadata.ftLimit)>
 			<cfset arguments.stMetadata.ftRangeLength = "0,#arguments.stMetadata.ftLimit#" />
-			<skin:htmlHead>
-				<cfoutput>
-					<script language="javascript">
-						function UpdateCounter_#arguments.fieldname#(FormName, FieldName) {
-						
-							counter = (window.document.forms[FormName][FieldName].value.length);
-							
-							if (counter > #arguments.stMetadata.ftLimit#) {
-								<cfif arguments.stMetadata.ftLimitOverage EQ "truncate">
-									window.document.forms[FormName][FieldName].value = window.document.forms[FormName][FieldName].value.substr(0,#arguments.stMetadata.ftLimit#);
-									counter = #arguments.stMetadata.ftLimit#;
-									alert("The text was too long and has been truncated to #arguments.stMetadata.ftLimit# characters");
-								<cfelseif arguments.stMetadata.ftLimitOverage EQ "warn">
-									
-								</cfif>
-							}		
-							if (counter <= #arguments.stMetadata.ftLimit#){
-							<cfif bIsGoodBrowser>
-								objCounter = document.getElementById("dm_ct_countDown_" + FieldName);
-								objCounter.innerText = counter;
-								objCounter.innerHTML = counter;
-								
-								<cfif arguments.stMetadata.ftLimitOverage EQ "warn">
-									if (objCounter.style.color == "rgb(255, 0, 0)") {
-										objCounter.style.color = "rgb(0, 0, 0)";
-										document.getElementById("dm_ct_overage_" + FieldName).style.display = "none";
-									}
-								</cfif>
-								
-							<cfelse>
-								window.document.forms[FormName][FieldName].value = counter;
-								oldvalue = window.document.forms[FormName][FieldName].value;
-							</cfif>
-							} 					
-							else {
-								
-							<cfif bIsGoodBrowser>
-									
-								objCounter = document.getElementById("dm_ct_countDown_" + FieldName);
-								
-								<cfif arguments.stMetadata.ftLimitOverage EQ "truncate">
-									<!--- (8:Backspace) (45:Insert) (46:Delete) (33-40:Up,Down,Left,Right,PgUp,PgDown,Home,End) --->
-									if (!(event.keyCode == "8" || event.keyCode == "46" || (event.keyCode >= "33" && event.keyCode <= "40"))) {
-										event.returnValue=false;
-									}
-	
-									objCounter.innerText = "#arguments.stMetadata.ftLimit#";
-									objCounter.innerHTML = "#arguments.stMetadata.ftLimit#";
-								<cfelseif arguments.stMetadata.ftLimitOverage EQ "warn">
-									if (objCounter.style.color == "" || objCounter.style.color == "rgb(0, 0, 0)") {
-										objCounter.style.color = "rgb(255, 0, 0)";
-										document.getElementById("dm_ct_overage_" + FieldName).style.display = "block";
-									}
-								
-									objCounter.innerText = counter;
-									objCounter.innerHTML = counter;
-								</cfif>
-								
-							<cfelse>
-								<cfif arguments.stMetadata.ftLimitOverage EQ "truncate">
-									if (counter > #arguments.stMetadata.ftLimit#) {
-											window.document.forms[FormName][FieldName].value = oldvalue;
-									}
-									window.document.forms[FormName][FieldName].value = "#arguments.stMetadata.ftLimit#";
-								</cfif>
-							</cfif>
-							
-							}
+			<skin:loadJS id="jquery" />
+			<skin:htmlHead id="long-char"><cfoutput><script language="javascript"><!--
+				function updateLoncharCounter(FieldName, limit, overage, key) {
+					var field = $j("##"+FieldName);
+					var counter = $j("##"+FieldName).val().length;
+					var counterel = $j("##dm_ct_countDown_"+FieldName);
+					var overageel = $j("##dm_ct_overage_"+FieldName);
+					var result = true;
+					
+					if (counter > limit) {
+						if (overage == "truncate"){
+							field.val(field.val().substr(0,limit));
+							counter = limit;
+							alert("The text was too long and has been truncated to " + limit.toString() + " characters");
 						}
+					}
+					
+					if (counter <= limit) {
+						counterel.html(counter.toString());
 						
-					</script>
-				</cfoutput>
-			</skin:htmlHead>
+						if (overage=="warn"){
+							counterel.css("color","##000000");
+							overageel.hide();
+						}
+					} 					
+					else {
+						if (overage=="truncate"){
+							if (!(key==8 || key==46 || (key>=33 && key<=40))) result = false;
+							counterel.html(limit.toString());
+						}
+						else if (overage=="warn"){
+							counterel.css("color","##FF0000").html(counter.toString());
+							overageel.show();
+						}
+					}
+				}
+				// end hiding contents from old browsers  -->
+			</script></cfoutput></skin:htmlHead>
 		</cfif>
 		
 		<!--- if range available set validation --->
 		<cfif len(arguments.stMetadata.ftLimitMin) AND len(arguments.stMetadata.ftLimit)>
 			<cfset arguments.stMetadata.ftClass = listAppend(arguments.stMetadata.ftClass,"rangeLength"," ") />
-			<skin:onReady>
-				<cfoutput>
-					$.validator.addClassRules("rangeLength", {rangelength:[#arguments.stMetadata.ftLimitMin#,#arguments.stMetadata.ftLimit#]});	
-				</cfoutput>
-			</skin:onReady>
+			<skin:onReady><cfoutput>$.validator.addClassRules("rangeLength", {rangelength:[#arguments.stMetadata.ftLimitMin#,#arguments.stMetadata.ftLimit#]});</cfoutput></skin:onReady>
 		</cfif>
 		
 		<cfsavecontent variable="html">
 			<!--- Place custom code here! --->
 			
 			<cfoutput>
-				<cfif arguments.stMetadata.ftIncludeWrap>
-					<div class="multiField">
-				</cfif>
-				
+				<div class="multiField">
 					<div id="#arguments.fieldname#DIV" style="#fieldStyle#;">
-						
-						<cfif arguments.stMetadata.ftIncludeWrap>
-							<div class="blockLabel">
-						</cfif>
-						
-						<cfif isBoolean(arguments.stMetadata.ftLimit) and arguments.stMetadata.ftLimit>							
-							<cfset onKeyUp = "javascript:UpdateCounter_#arguments.fieldname#('#request.farcryForm.name#', '#arguments.FieldName#')" />
-							<cfset onKeyDown = "javascript:UpdateCounter_#arguments.fieldname#('#request.farcryForm.name#', '#arguments.FieldName#')" />
-							<textarea name="#arguments.fieldname#" id="#arguments.fieldname#" class="textareaInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" onkeyup="#onKeyUp#" onkeydown="#onKeyDown#" >#arguments.stMetadata.value#</textarea>
-							
-							<cfif bIsGoodBrowser>
+						<div class="blockLabel">
+							<textarea name="#arguments.fieldname#" id="#arguments.fieldname#" class="textareaInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#">#arguments.stMetadata.value#</textarea>
+							<cfif isBoolean(arguments.stMetadata.ftLimit) and arguments.stMetadata.ftLimit>
 								<p style="clear:both;" id="dm_ct_Text_#arguments.fieldname#"><span id="dm_ct_countDown_#arguments.fieldname#">0</span>/#arguments.stMetadata.ftLimit# <span id="dm_ct_overage_#arguments.fieldname#" style="color:red;display:none;">#arguments.stMetadata.ftLimitWarning#</span></p> 
-							<cfelse>
-								<p style="clear:both;" id="dm_ct_Text_#arguments.fieldname#"><input id="dm_ct_countDown_#arguments.fieldname#" disabled type="text" name="counter" size="#len(arguments.stMetadata.ftLimit)#" value="#arguments.stMetadata.ftLimit# characters Max">/#arguments.stMetadata.ftLimit#</p>
+								<script type="text/javascript">$j("###arguments.fieldname#").keydown(function(e){ updateLoncharCounter("#arguments.fieldname#", #arguments.stMetadata.ftLimit#, "#arguments.stMetadata.ftLimitOverage#", e.keyCode) });</script>
 							</cfif>
-							<script type="text/javascript">
-							
-								UpdateCounter_#arguments.fieldname#('#request.farcryForm.name#','#arguments.FieldName#');
-							
-							</script>
-						<cfelse>
-							<textarea name="#arguments.fieldname#" id="#arguments.fieldname#" class="textareaInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" onkeyup="#onKeyUp#" onkeydown="#onKeyDown#">#arguments.stMetadata.value#</textarea>
-						</cfif>
-						
-						<cfif arguments.stMetadata.ftIncludeWrap>
-							</div>
-						</cfif>
-						
+						</div>
 					</div>
-					
-				<cfif arguments.stMetadata.ftIncludeWrap>
-					</div>
-				</cfif>
-				
+				</div>
 			</cfoutput>
 			
 		</cfsavecontent>

@@ -104,6 +104,7 @@
 		
 		<cfset request.fc.bAdminTrayRendered = true />
 		
+		<skin:loadJS id="jquery" />
 		<skin:loadJS id="jquery-modal" />
 		<skin:loadCSS id="jquery-modal" />
 		

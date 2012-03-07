@@ -469,24 +469,96 @@
 				</table>
 			
 				<h3>Root Cause</h3>
-				<cfdump var="#stException#" label="Error Diagnostics">
+				<table>
+					<cfif structKeyExists(stException, "type") and len(stException.type)>
+						<tr><th>Exception Type</th><td>#stException.type#</td></tr>
+					</cfif>
+					<cfif structKeyExists(stException, "detail") and len(stException.detail)>
+						<tr><th>Detail</th><td>#stException.detail#</td></tr>
+					</cfif>
+					<cfif structKeyExists(stException, "extended_info") and len(stException.extended_info)>
+						<tr><th>Extended Info</th><td>#stException.extended_info#</td></tr>
+					</cfif>
+					<cfif structKeyExists(stException, "queryError") and len(stException.queryError)>
+						<tr><th>Error</th><td>#stException.queryError#</td></tr>
+					</cfif>
+					<cfif structKeyExists(stException, "sql") and len(stException.sql)>
+						<tr><th>SQL</th><td>#stException.sql#</td></tr>
+					</cfif>
+					<cfif structKeyExists(stException, "where") and len(stException.where)>
+						<tr><th>Where</th><td>#stException.where#</td></tr>
+					</cfif>
+					
+					<cfif structKeyExists(stException, "TagContext") and arraylen(stException.TagContext)>
+						<tr>
+							<th>Tag Context</th>
+							<td>
+								<ul>
+								<cfloop from="1" to="#arrayLen(stException.TagContext)#" index="i">
+									<li>#stException.TagContext[i].template# (line: #stException.TagContext[i].line#)</li>
+								</cfloop>
+								</ul>	
+							</td>
+						</tr>
+					</cfif>
+				</table>
 			</cfoutput></cfmail>
 		</cfif>
-		
-		<!--- Display error to user --->
-		<cfcontent reset="true" />
-		<cfif fileexists("#application.path.project#/errors/500.cfm")>
-			<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/500.cfm" />
-		<cfelseif fileexists("#application.path.webroot#/errors/500.cfm")>				
-			<cfinclude template="#application.url.webroot#/errors/500.cfm" />
-		<cfelse>
+
+
+		<cfparam name="application.url.webtop" default="/webtop">
+		<cfif reFindNoCase("^#application.url.webtop#", cgi.script_name)>
+
+			<!--- Display built-in error page for webtop errors --->
 			<cfinclude template="/farcry/core/webtop/errors/500.cfm" />
+			<cfsetting enablecfoutputonly="false" />
+
+		<cfelse>
+		
+			<!--- Display error to user --->
+			<cfcontent reset="true" />
+			<cfheader statuscode="500" statustext="Internal Server Error" />
+			<cfif fileexists("#application.path.project#/errors/500.cfm")>
+				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/500.cfm" />
+			<cfelseif fileexists("#application.path.webroot#/errors/500.cfm")>				
+				<cfinclude template="#application.url.webroot#/errors/500.cfm" />
+			<cfelse>
+				<cfinclude template="/farcry/core/webtop/errors/500.cfm" />
+			</cfif>
+			<cfsetting enablecfoutputonly="false" />
+
 		</cfif>
+			
+		<cfreturn />
+	</cffunction>
+	
+	
+	<cffunction name="OnMissingTemplate" access="public" returntype="void" output="true" hint="Fires when a non-existent coldfusion file is requested">
+		<cfargument name="thePage" type="string" required="true" />
+		
+		<cfset var machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
+		<cfset var instanceName = "Unknown" />
+		
+		<cftry>
+			<cfset instanceName = createObject("java", "jrunx.kernel.JRun").getServerName() />
+			<cfcatch></cfcatch>
+		</cftry>
+		
+		<cfcontent reset="true" />
+		<cfheader statuscode="404" statustext="Not Found" />
+		<cfif fileexists("#application.path.project#/errors/404.cfm")>
+			<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/404.cfm" />
+		<cfelseif fileexists("#application.path.webroot#/errors/404.cfm")>				
+			<cfinclude template="#application.url.webroot#/errors/404.cfm" />
+		<cfelse>
+			<cfinclude template="/farcry/core/webtop/errors/404.cfm" />
+		</cfif>
+		
 		<cfsetting enablecfoutputonly="false" />
 		
 		<cfreturn />
 	</cffunction>
-
+	
 
 	<cffunction name="OnMissingTemplate" access="public" returntype="void" output="true" hint="Fires when a non-existent coldfusion file is requested">
 		<cfargument name="thePage" type="string" required="true" />
@@ -565,6 +637,7 @@
 		</cfif>
 		
 		<cfcatch type="lock">
+			<cfheader statuscode="503" statustext="Service Unavailable" />
 			<cfoutput><h1>Application Restarting</h1><p>Please come back in a few minutes.</p></cfoutput>
 			<cfabort />
 		</cfcatch>

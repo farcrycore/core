@@ -98,7 +98,7 @@
 				<cfelse>
 					<cfif len(trim(stJS.prepend))><cfoutput><script type="text/javascript">#stJS.prepend#</script></cfoutput></cfif>
 					<cfloop list="#stJS.lFiles#" index="i">
-						<cfoutput><script src="#stJS.hostname##stJS.baseHREF##i#" type="text/javascript"></script></cfoutput>
+						<cfoutput><script src="#stJS.hostname##stJS.baseHREF#/#i#" type="text/javascript"></script></cfoutput>
 					</cfloop>
 					<cfif len(trim(stJS.append))><cfoutput><script type="text/javascript">#stJS.append#</script></cfoutput></cfif>
 				</cfif>

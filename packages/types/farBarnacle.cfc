@@ -246,27 +246,22 @@
 		<cfif listcontainsnocase("dmNavigation",arguments.objecttype)>
 
 			<cfquery name="qResult" datasource="#application.dsn#">
-				select	*
+				select	t.*, b.*
 				from	#application.dbowner#nested_tree_objects t
 						inner join
 						#application.dbowner#farBarnacle b
-						on t.objectid=b.referenceid
-				where	nleft <= (
-						    select	nleft
-						    from	nested_tree_objects
-						    where	objectid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.object#" />
-						)
-						and nright >= (
-						    select	nright
-						    from	nested_tree_objects
-						    where	objectid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.object#" />
-						)
-
-						and roleid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.role#" />
-						and permissionid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.permission#" />
-						and barnaclevalue<>0
-
-				order by nlevel desc
+						on t.objectid=b.referenceid,
+						
+						#application.dbowner#nested_tree_objects tc
+					
+				where	t.nleft <= tc.nleft and t.nright >= tc.nright
+						and tc.objectid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.object#" />
+						
+						and b.roleid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.role#" />
+						and b.permissionid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.permission#" />
+						and b.barnaclevalue<>0
+					
+				order by t.nlevel desc
 			</cfquery>
 
 			<cfif qResult.recordCount gt 0>

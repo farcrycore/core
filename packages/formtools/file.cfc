@@ -717,7 +717,7 @@
 		<!--- draft will be secured --->
 		<!--- ftSecure=true will always be secured --->
 		<!--- anonymous access=false will always be secured --->
-		<cfif isSecured(arguments.stObject,arguments.stMetadata)>
+		<cfif NOT isSecured(arguments.stObject,arguments.stMetadata)>
 			<!--- Objects that are not ALWAYS secured and have been approved should be available under the webroot --->
 			
 			<!--- check file exists --->
