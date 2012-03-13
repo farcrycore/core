@@ -23,9 +23,9 @@
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->	
-<cfproperty 
-	name="Title" type="string" hint="Title of content item." required="no" default="" 
-	ftSeq="1" ftwizardStep="Start" ftFieldset="General Details" ftValidation="required" 
+<cfproperty
+	name="Title" type="string" ftLabel="Title" ftType="string" hint="Title of content item." required="no" default=""
+	ftSeq="1" ftwizardStep="Start" ftFieldset="General Details" ftValidation="required"
 	ftHint="This title will appear as the major title on the page. It should not be confused with the title that appears in the navigation.">
 
 <cfproperty 
@@ -55,13 +55,13 @@ type properties
 	ftHelpSection="The keywords and description that you enter here will provide search engines with extra information that describes your page. Remember that a good SEO strategy is much more than just a good description and keywords.">
 	
 <cfproperty 
-	name="extendedmetadata" type="longchar" hint="HTML head section for extended keywords." required="no" default=""
+	name="extendedmetadata" type="longchar" ftType="longchar" hint="HTML head section for extended keywords." required="no" default=""
 	ftSeq="6" ftwizardStep="Start" ftFieldset="SEO" ftlabel="Description Tag"
 	ftHint="Concise summary of the page, with an upper limit 170 characters, including spaces."
 	ftLimit="170" />
 
 <cfproperty 
-	name="Teaser" type="longchar" hint="Teaser text." required="no" default=""
+	name="Teaser" type="longchar" ftLabel="Teaser" ftType="longchar" hint="Teaser text." required="no" default=""
 	ftSeq="10" ftwizardStep="Body" ftFieldset="Teaser">
 	
 <cfproperty 
