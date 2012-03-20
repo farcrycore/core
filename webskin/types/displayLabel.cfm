@@ -19,6 +19,7 @@
 <!--- @@displayname: Display Label --->
 <!--- @@description: Displays the label of the object and is available to all content types  --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
+<!--- @@cachestatus: -1 --->
 
 
 <!------------------ 
@@ -30,6 +31,31 @@ FARCRY IMPORT FILES
 <!------------------ 
 START WEBSKIN
  ------------------>
-<cfoutput>#stobj.label#</cfoutput>
+<cfset newLabel = "">
+
+<cfloop list="#StructKeyList(application.stcoapi[stObject.typename].stProps)#" index="field">
+    <cfif structKeyExists(stObject,field) AND isDefined("application.stcoapi.#stObject.typename#.stProps.#field#.Metadata.bLabel") AND application.stcoapi[stObject.typename].stProps[field].Metadata.bLabel>
+        <cfset newLabel = "#newLabel# #stObject[field]#">
+    </cfif>
+</cfloop>
+
+<cfif not len(newLabel)>
+    <cfif structKeyExists(stObject,"Title")>
+        <cfset newLabel = "#stObject.title#">
+    <cfelseif structKeyExists(stObject,"Name")>
+        <cfset newLabel = "#stObject.name#">
+    <cfelse>
+        <cfloop list="#StructKeyList(stObject)#" index="field">
+            <cfif FindNoCase("Name",field) AND field NEQ "typename">
+                <cfset newLabel = "#newLabel# #stObject[field]#">
+            </cfif>
+        </cfloop>
+    </cfif>
+</cfif>
+<cfif not len(newLabel)>
+    <cfset newLabel = "(incomplete)">
+<cfelse>
+    <cfoutput>#newLabel#</cfoutput>
+</cfif>
 
 <cfsetting enablecfoutputonly="false">

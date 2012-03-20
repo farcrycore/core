@@ -685,7 +685,7 @@ default handlers
 			<cfset arguments.stProperties.label = newLabel />
 		</cfif>
 		
-		
+
 		<cfset stProperties.datetimelastupdated = now() />
 		
 		<cfreturn stProperties>
@@ -703,35 +703,9 @@ default handlers
 		<cfset var newLabel = "" />
 		
 		<cfif structKeyExists(arguments.stProperties, "typename") AND application.stcoapi[arguments.stProperties.typename].bAutoSetLabel>
-		
-			<skin:view typename="#arguments.stProperties.typename#" objectid="#arguments.stProperties.objectid#" webskin="displayLabel" alternateHTML="" r_html="newLabel" />
 			
-			<!--- Make sure we are not just getting the default (incomplete) label --->
-			<cfif newLabel EQ "(incomplete)">
-				<cfset newLabel = "">
-			</cfif>
+			<skin:view stObject="#arguments.stProperties#" webskin="displayLabel" alternateHTML="" r_html="newLabel" />
 			
-			<cfif not len(newLabel)>
-				<cfloop list="#StructKeyList(application.stcoapi[arguments.stProperties.typename].stProps)#" index="field">
-					<cfif structKeyExists(arguments.stProperties,field) AND isDefined("application.stcoapi.#arguments.stProperties.typename#.stProps.#field#.Metadata.bLabel") AND application.stcoapi[arguments.stProperties.typename].stProps[field].Metadata.bLabel>
-						<cfset newLabel = "#newLabel# #arguments.stProperties[field]#">
-					</cfif>
-				</cfloop>
-		
-				<cfif not len(newLabel)>
-					<cfif structKeyExists(arguments.stProperties,"Title")>
-						<cfset newLabel = "#arguments.stProperties.title#">
-					<cfelseif structKeyExists(arguments.stProperties,"Name")>
-						<cfset newLabel = "#arguments.stProperties.name#">
-					<cfelse>
-						<cfloop list="#StructKeyList(arguments.stProperties)#" index="field">
-							<cfif FindNoCase("Name",field) AND field NEQ "typename">
-								<cfset newLabel = "#newLabel# #arguments.stProperties[field]#">
-							</cfif>
-						</cfloop>
-					</cfif>
-				</cfif>
-			</cfif>
 		</cfif>
 		
 		<cfreturn trim(newLabel) />
