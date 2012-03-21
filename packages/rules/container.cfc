@@ -57,7 +57,20 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 		
 		<cfreturn stNewObject>
 	</cffunction>
-	
+
+	<cffunction name="setData" access="public" output="false" returntype="struct" hint="Update the record for an objectID including array properties.  Pass in a structure of property values; arrays should be passed as an array.">
+		<cfargument name="stProperties" required="true">
+		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
+		<cfargument name="bSessionOnly" type="string" required="false" default="false">
+		<cfargument name="bAfterSave" type="boolean" required="false" default="true" hint="This allows the developer to skip running the types afterSave function.">
+		<cfset var stAfterSave = "" />
+		<cfset var stResult = super.setData(argumentCollection = arguments) />
+		<cfif not arguments.bSessionOnly AND arguments.bAfterSave>
+			<cfset stAfterSave = afterSave(argumentCollection = arguments) />
+		</cfif>
+		<cfreturn stResult />
+	</cffunction>
+
 	<cffunction name="createDataRefContainer" hint="creates an entry into refContainers table">
 		<cfargument name="objectid" required="Yes" type="UUID" hint="objectid of object that container belongs to">
 		<cfargument name="containerid" required="Yes" type="UUID" default="object id of container">
