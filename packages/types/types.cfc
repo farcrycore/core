@@ -1210,6 +1210,12 @@ default handlers
 				</cfif>
 			</cfif>
 		</cfloop>
+
+		<!--- #FC-2624: If the FarCry Solr Pro plugin is installed, try to delete this record --->
+		<cfif listFindNoCase(application.plugins,"farcrysolrpro")>
+			<cfset createObject("component","farcry.plugins.farcrysolrpro.packages.custom.eventHandler").onDelete(argumentCollection = arguments) />
+		</cfif>
+
 	</cffunction>
 	
 	<cffunction name="onSecurityChange" returntype="void" access="public" output="false" hint="Performs any updates necessary for a security change">

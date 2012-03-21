@@ -1140,7 +1140,11 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			</cfif>
 			
 		</cfif>
-		
+
+		<!--- #FC-2624: If the FarCry Solr Pro plugin is installed, try to index this record --->
+		<cfif listFindNoCase(application.plugins,"farcrysolrpro")>
+			<cfset stProperties = createObject("component","farcry.plugins.farcrysolrpro.packages.custom.eventHandler").afterSave(argumentCollection = arguments) />
+		</cfif>
 
 		<cfreturn stProperties />
 	</cffunction>
