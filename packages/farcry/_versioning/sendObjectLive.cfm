@@ -103,7 +103,7 @@ $out:$
 			arguments.stDraftObject.objectid = arguments.stDraftObject.versionID;
 			arguments.stDraftObject.versionID = "";
 			arguments.stDraftObject.dateTimeLastUpdated = createODBCDateTime(Now());
-			arguments.stDraftObject.dateTimeCreated = createODBCDateTime(arguments.stDraftObject.dateTimeCreated);
+			structDelete(arguments.stDraftObject,"dateTimeCreated"); // do not update created time when publishing.
 			o.setData(stProperties=arguments.stDraftObject,auditNote='Draft version sent live',previousStatus="draft");
 			
 			stResult.result = true;
