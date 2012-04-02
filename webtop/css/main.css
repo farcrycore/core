@@ -349,12 +349,35 @@ ul.x-tab-strip li a {padding:0px;}
 	width:180px;
 	height:100px;
 	margin-left:0px;
+	background:#CBDAEF\9;
+	border:1px solid #7096AB\9;
 }
 #webtopOverviewActions button.secondary {
 	width:180px;
 	min-height:50px;
 	margin-top:10px;
 	margin-left:0px;
+	background:#f5f5f5\9;
+	border:1px solid #cccccc\9;
+	border-bottom-color:#888\9;
+	color:#333333\9;
+}
+#webtopOverviewActions button.primary:hover {
+	background:#8DABD9\9;
+	border-bottom-color:#0055CC\9;
+}
+#webtopOverviewActions button.secondary:hover {
+	background:#E6E6E6\9;
+	border-color:#B3B3B3\9;
+	border-bottom-color:#666\9;
+}
+#webtopOverviewActions button.primary:active {
+	background:#8DABD9\9;
+	border-bottom-color:#7096AB\9;
+}
+#webtopOverviewActions button.secondary:active {
+	background:#D9D9D9\9;
+	border-color:#B3B3B3\9;
 }
 .webtopOverviewStatusBox {
 	border:1px solid black;
@@ -369,8 +392,43 @@ ul.x-tab-strip li a {padding:0px;}
 .webtopSummarySection h2 {
 	margin:10px 0px 0px 0px;
 	font-weight:bold;
-}	
+}
 
+.buttonHolder .fc-btn.ui-button.ui-priority-primary {
+	background:#8DABD9\9;
+}
+.buttonHolder .fc-btn.ui-button.ui-priority-primary:hover {
+	background:#CBDAEF\9;
+}
+.buttonHolder .fc-btn.ui-button.ui-priority-primary:active {
+	border:1px solid #193759\9;
+}
+.buttonHolder .fc-btn.ui-button.ui-priority-secondary {
+	/*
+	background:#f5f5f5\9;
+	border:1px solid #cccccc\9;
+	border-color:#E6E6E6 #E6E6E6 #BFBFBF\9;
+	border-bottom-color:#B3B3B3\9;
+	color:#333333\9;
+	*/
+}
+.buttonHolder .fc-btn.ui-button.ui-priority-secondary:hover {
+	background:#E0E0E0\9;
+}
+.buttonHolder .fc-btn.ui-button.ui-priority-secondary:active {
+	border:1px solid #222\9;
+}
+
+.approved {
+	background:#00B500\9;
+}
+.draft {
+	background:#D52D2D\9;
+}
+
+.ui-tabs .ui-tabs-nav .ui-state-default:hover a {
+	background:whiteSmoke\9;
+}
 
 table.navtree td {
 	font-size:11px;
@@ -427,12 +485,14 @@ table.object-admin-actions td a .ui-icon {
 }
 
 .rowselected {
-	background-color: #F4F8FD !important;
+	background-color: #F4F8FD;
 }
 
 /* WEBTOP OVERVIEW */
 #tabs-summary .developer-actions { right:0; position:absolute; padding-right:16px; }
 	#tabs-summary .developer-actions a, #tabs-summary .developer-actions .objectid { padding:0; display:inline-block; vertical-align:middle; }
 	#tabs-summary .developer-actions a:hover { background-color:transparent; }
-
+	#tabs-summary .developer-actions a.ui-icon-tag { position:absolute\9; top:1px\9; right:36px\9; }
+	#tabs-summary .developer-actions a.ui-icon-calculator { position:absolute\9; top:1px\9; right:16px\9; }
+	#tabs-summary .developer-actions div.objectid { margin-right:40px\9; }
 	.comment { margin-left: 19px; }
