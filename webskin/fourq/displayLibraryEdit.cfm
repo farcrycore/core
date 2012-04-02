@@ -27,7 +27,8 @@ START WEBSKIN
 	<cfparam name="url.editID" type="string" />
 	
 	<cfset stMetadata = application.fapi.getPropertyMetadata(typename="#stobj.typename#", property="#url.property#") />
-		
+	<cfset stMetadata = application.fapi.getFormtool(stMetadata.type).prepMetadata(stObject = stobj, stMetadata = stMetadata) />
+
 	<cfset stOnExit = structNew() />
 	<cfset stOnExit.type = "HTML" />
 	<cfsavecontent variable="stOnExit.content">

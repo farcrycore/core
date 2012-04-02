@@ -50,7 +50,7 @@
 		<skin:loadJS id="jquery-ui" />
 		<skin:loadCSS id="jquery-ui" />
 		
-
+		<cfset arguments.stMetadata = prepMetadata(stObject = arguments.stObject, stMetadata = arguments.stMetadata) />
 		
 		<!--- SETUP stActions --->
 		<cfset stActions.ftAllowSelect = arguments.stMetadata.ftAllowSelect />
@@ -397,11 +397,13 @@
 		<cfset var html = "" />
 		<cfset var oData = "" />
 
+		<cfset arguments.stMetadata = prepMetadata(stObject = arguments.stObject, stMetadata = arguments.stMetadata) />
+
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedWebskin" default="librarySelected">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListClass" default="thumbNailsWrap">
 		<cfparam name="arguments.stMetadata.ftLibrarySelectedListStyle" default="">
 		<cfparam name="arguments.stMetadata.ftJoin" default="">
-		
+
 		<!--- We need to get the Array Field Items as a query --->
 		<cfset o = createObject("component",application.stcoapi[arguments.typename].packagepath)>
 		
@@ -643,7 +645,7 @@
 		<cfset var stO = structNew() />
 		<cfset var libraryData = "" />
 		
-		
+		<cfset arguments.stMetadata = prepMetadata(stObject = arguments.stObject, stMetadata = arguments.stMetadata) />
 		
 		<!---
 		<cfset var oFourQ = createObject("component","farcry.core.packages.fourq.fourq")><!--- TODO: this needs to be removed when we add typename to array tables. ---> 
@@ -882,8 +884,11 @@
  		<cfreturn ReturnHTML />
 
 	</cffunction>
-		
-	
 
+	<cffunction name="prepMetadata" access="public" output="false" returntype="struct" hint="Allows modification of property metadata in the displayLibrary* webskins">
+		<cfargument name="stObject" type="struct" required="true" hint="The object being edited" />
+		<cfargument name="stMetadata" type="struct" required="true" hint="The property metadata" />
+		<cfreturn arguments.stMetadata />
+	</cffunction>
 			
 </cfcomponent>

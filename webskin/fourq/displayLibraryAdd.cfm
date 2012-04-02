@@ -30,7 +30,8 @@ START WEBSKIN
 	<cfparam name="url.filterTypename" type="string" default="" />
 	
 	<cfset stMetadata = application.fapi.getPropertyMetadata(typename="#stobj.typename#", property="#url.property#") />
-	
+	<cfset stMetadata = application.fapi.getFormtool(stMetadata.type).prepMetadata(stObject = stobj, stMetadata = stMetadata) />
+
 	<cfif not len(url.filterTypename)>		
 		<cfset url.filterTypename = listFirst(stMetadata.ftJoin) />
 	</cfif>
