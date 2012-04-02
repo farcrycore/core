@@ -59,7 +59,7 @@ START WEBSKIN
 		<cfelse>
 			<cfset stMetadata = application.fapi.getPropertyMetadata(typename="#stobj.typename#", property="#url.property#") />
 		</cfif>
-				
+		<cfset stMetadata = application.fapi.getFormtool(stMetadata.type).prepMetadata(stObject = stobj, stMetadata = stMetadata) />
 
 		<!--- DETERMINE THE SELECTED ITEMS --->
 		<cfif stobj.typename EQ "farFilterProperty">

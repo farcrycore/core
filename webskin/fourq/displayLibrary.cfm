@@ -26,7 +26,9 @@
 		<cfif left(md,2) EQ "ft" AND structKeyExists(stMetadata, md)>
 			<cfset stMetadata[md] = url[md] />
 		</cfif>
-	</cfloop>		
+	</cfloop>
+
+	<cfset stMetadata = application.fapi.getFormtool(stMetadata.type).prepMetadata(stObject = stobj, stMetadata = stMetadata) />
 	
 	<!--- FILTERING SETUP --->
 	<cfif not len(url.filterTypename)>		
