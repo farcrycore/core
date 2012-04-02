@@ -22,7 +22,6 @@
 	
 	<cfset stMetadata = application.fapi.getPropertyMetadata(typename="#stobj.typename#", property="#url.property#") />
 
-	
 	<!------------------------------------------------------------------------------------------------ 
 	Loop over the url and if any url parameters match any formtool metadata (prefix 'ft'), then override the metadata.
 	 ------------------------------------------------------------------------------------------------>
@@ -31,7 +30,8 @@
 			<cfset stMetadata[md] = url[md] />
 		</cfif>
 	</cfloop>
-	
+
+	<cfset stMetadata = application.fapi.getFormtool(stMetadata.type).prepMetadata(stObject = stobj, stMetadata = stMetadata) />
 	
 	<admin:header title="Library Selector" style="width:99%;height:99%">		
 	

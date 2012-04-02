@@ -20,6 +20,7 @@ START WEBSKIN
 <cfparam name="lSelected" type="string" default=""/>
 <!--- DETERMINE METADATA --->
 <cfset stMetadata = application.fapi.getPropertyMetadata(typename="#stobj.typename#", property="#url.property#") />
+<cfset stMetadata = application.fapi.getFormtool(stMetadata.type).prepMetadata(stObject = stobj, stMetadata = stMetadata) />
 
 <!--- DETERMINE THE SELECTED ITEMS --->
 <cfif isArray(stobj[url.property])>
