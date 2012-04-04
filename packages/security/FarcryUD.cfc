@@ -81,7 +81,58 @@
 		</cfloop>
 		<cfthrow message="Hash does not match any known hash formats" detail="Hashed password did not match any available PasswordHash objects. Did you override or delete NullHash.cfc?" />
 	</cffunction>
-
+	
+	<cffunction name="queryUserPassword" access="private" output="false" returntype="query" hint="Return a query of farUser rows that match the provided credentials">
+		<cfargument name="username" type="string" required="true" />
+		<cfargument name="password" type="string" required="true" />
+		
+		<cfset var qUser = "" />
+		<cfset var authenticatedObjectId = "" />
+		<cfset var oHash = "" />
+		
+		<!--- Find the user --->
+		<cfquery datasource="#application.dsn#" name="qUser">
+			select	objectid,userid,password,userstatus
+			from	#application.dbowner#farUser
+			where	userid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#trim(arguments.username)#" />
+		</cfquery>
+		
+		<!--- Try to match the entered password against the users in the DB --->
+		<cfloop query="qUser">
+			<cfset oHash = findHash(qUser.password) />
+			<cfif oHash.passwordMatch(password=arguments.password,hashedPassword=qUser.password)>
+				<cfset authenticatedObjectId = qUser.objectid />
+				<cfbreak />
+			</cfif>
+		</cfloop>
+		
+		<cfif Len(authenticatedObjectId)>
+			<!--- Return the row with the password match --->
+			<cfquery dbtype="query" name="qUser">
+				select *
+				from qUser
+				where objectid = '#authenticatedObjectId#'
+			</cfquery>
+			<!--- Does the hashed password need to be updated? --->
+			<cfif hashedPasswordIsStale(hashedPassword=qUser.password,password=arguments.password)>
+				<cfquery datasource="#application.dsn#">
+					update	#application.dbowner#farUser
+					set		password=<cfqueryparam cfsqltype="cf_sql_varchar" value="#encodePassword(arguments.password)#" />
+					where	objectid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#authenticatedObjectId#" />
+				</cfquery>
+			</cfif>
+		<cfelse>
+			<!--- Delete all rows from the query --->
+			<cfquery dbtype="query" name="qUser">
+				select *
+				from qUser
+				where 0 = 1
+			</cfquery>
+		</cfif>
+		
+		<cfreturn qUser />
+	</cffunction>
+	
 	<!--- ====================
 	  UD Interface functions
 	===================== --->
@@ -94,66 +145,18 @@
 		<cfset var stResult = structnew() />
 		<cfset var stProperties = structnew() />
 		<cfset var qUser = "" />
-		<cfset var authenticatedObjectId = "" />
-		<cfset var oHash = "" />
 		
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 		
 		
 		<!--- For backward compatability, check for userlogin and password in form. This should be removed once we're willing to not support pre 4.1 login templates --->
 		<cfif structkeyexists(form,"userlogin") and structkeyexists(form,"password")>
-			
-			<!--- Find the user --->
-			<cfquery datasource="#application.dsn#" name="qUser">
-				select	*
-				from	#application.dbowner#farUser
-				where	userid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#trim(form.userlogin)#" />
-			</cfquery>
-			
+			<cfset qUser = queryUserPassword(form.userlogin,form.password) />
 			<cfset stResult.userid = trim(form.userlogin) />
 		<cfelse>
 			<ft:processform>
 				<ft:processformObjects typename="#getLoginForm()#">
-					<!--- Find the user --->
-					<cfquery datasource="#application.dsn#" name="qUser">
-						select	objectid,userid,password,userstatus
-						from	#application.dbowner#farUser
-						where	userid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#trim(stProperties.username)#" />
-					</cfquery>
-					
-					<!--- Try to match the entered password against the users in the DB --->
-					<cfloop query="qUser">
-						<cfset oHash = findHash(qUser.password) />
-						<cfif oHash.passwordMatch(password=stProperties.password,hashedPassword=qUser.password)>
-							<cfset authenticatedObjectId = qUser.objectid />
-							<cfbreak />
-						</cfif>
-					</cfloop>
-					
-					<cfif Len(authenticatedObjectId)>
-						<!--- Return the row with the password match --->
-						<cfquery dbtype="query" name="qUser">
-							select *
-							from qUser
-							where objectid = '#authenticatedObjectId#'
-						</cfquery>
-						<!--- Does the hashed password need to be updated? --->
-						<cfif hashedPasswordIsStale(hashedPassword=qUser.password,password=stProperties.password)>
-							<cfquery datasource="#application.dsn#">
-								update	#application.dbowner#farUser
-								set		password=<cfqueryparam cfsqltype="cf_sql_varchar" value="#encodePassword(stProperties.password)#" />
-								where	objectid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#authenticatedObjectId#" />
-							</cfquery>
-						</cfif>
-					<cfelse>
-						<!--- Delete all rows from the query --->
-						<cfquery dbtype="query" name="qUser">
-							select *
-							from qUser
-							where 0 = 1
-						</cfquery>
-					</cfif>
-					
+					<cfset qUser = queryUserPassword(stProperties.username,stProperties.password) />
 					<cfset stResult.userid = trim(stProperties.username) />
 				</ft:processformObjects>
 			</ft:processform>
