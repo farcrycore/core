@@ -22,6 +22,7 @@
 	<cfproperty ftSeq="33" ftFieldset="Login Properties" name="loginattemptsallowed" type="numeric" default="3" hint="???" ftLabel="Login attempts allowed" ftType="integer" />
 	<cfproperty ftSeq="34" ftFieldset="Login Properties" name="loginattemptstimeout" type="numeric" default="10" hint="???" ftLabel="Login attempts timeout" ftType="integer" />
 	<cfproperty ftSeq="35" ftFieldset="Login Properties" name="defaultUserDirectory" type="string" default="" hint="User directory selected by default when multiple are available" ftLabel="Default user directory" ftType="list" ftListData="listUserDirectories" />
+	<cfproperty ftSeq="36" ftFieldset="Login Properties" name="passwordHashAlgorithm" type="string" default="" hint="Algorithm used to encrypt passwords in the database" ftLabel="Password hashing algorithm" ftType="list" ftListData="listHashAlgorithms" />
 
 
 <!--- file media properties --->
@@ -64,6 +65,27 @@
 		</cfloop>
 		
 		<cfreturn qUD />
+	</cffunction>
+
+	<cffunction name="listHashAlgorithms" access="public" returntype="query" description="Returns the available password hash algorithms" output="false">
+		<cfset var qPwdHash = querynew("name,value") />
+		<cfset var aPwdHashes = application.security.userdirectories.CLIENTUD.getOrderedHashArray() />
+		<cfset var pwdHashCount = arrayLen(aPwdHashes) />
+		<cfset var i = "" />
+		<cfset var oPwdHash = "" />
+		
+		<cfset queryaddrow(qPwdHash) />
+		<cfset querysetcell(qPwdHash,"value","") />
+		<cfset querysetcell(qPwdHash,"name","System default") />
+		
+		<cfloop index="i" from="1" to="#pwdHashCount#">
+			<cfset oPwdHash = aPwdHashes[i] />
+			<cfset queryaddrow(qPwdHash) />
+			<cfset querysetcell(qPwdHash,"value",oPwdHash.key) />
+			<cfset querysetcell(qPwdHash,"name",oPwdHash.title) />
+		</cfloop>
+		
+		<cfreturn qPwdHash />
 	</cffunction>
 
 </cfcomponent>
