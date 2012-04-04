@@ -2,6 +2,7 @@
 			key="CLIENTUD" bEncrypted="true" standardHash="none">
 	
 	<cffunction name="init" access="public" output="true" returntype="any" hint="Does initialisation of user directory">
+		<cfargument name="cryptLib" type="any" hint="Interface to 3rd-party Java crypto libraries" />
 		
 		<cfset var comp = "" />
 		<cfset var oHash = "" />
@@ -12,7 +13,7 @@
 		
 		<cfloop list="#application.factory.oUtils.getComponents('security')#" index="comp">
 			<cfif not listFindNoCase("PasswordHash",comp) and application.factory.oUtils.extends(application.factory.oUtils.getPath("security",comp),"farcry.core.packages.security.PasswordHash")>
-				<cfset oHash = createobject("component",application.factory.oUtils.getPath("security",comp)).init() />
+				<cfset oHash = createobject("component",application.factory.oUtils.getPath("security",comp)).init(arguments.cryptLib) />
 				<cfif oHash.isAvailable()>
 					<cfset variables.stHashes[oHash.key] = oHash />
 				</cfif>

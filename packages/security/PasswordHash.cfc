@@ -1,6 +1,8 @@
 <cfcomponent hint="I encode passwords for storage and compare passwords against previously encoded strings">
 
 	<cffunction name="init" access="public" output="true" returntype="any" hint="constructor">
+		<cfargument name="cryptLib" type="any" hint="Interface to 3rd-party Java crypto libraries" />
+		
 		<cfset var stMetadata = getMetadata(this) />
 		<cfset var attr = "" />
 		
