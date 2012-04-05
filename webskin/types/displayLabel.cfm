@@ -33,21 +33,21 @@ START WEBSKIN
  ------------------>
 <cfset newLabel = "">
 
-<cfloop list="#StructKeyList(application.stcoapi[stObject.typename].stProps)#" index="field">
-    <cfif structKeyExists(stObject,field) AND isDefined("application.stcoapi.#stObject.typename#.stProps.#field#.Metadata.bLabel") AND application.stcoapi[stObject.typename].stProps[field].Metadata.bLabel>
-        <cfset newLabel = "#newLabel# #stObject[field]#">
+<cfloop list="#StructKeyList(application.stcoapi[stObj.typename].stProps)#" index="field">
+    <cfif structKeyExists(stObj,field) AND isDefined("application.stcoapi.#stObj.typename#.stProps.#field#.Metadata.bLabel") AND application.stcoapi[stObj.typename].stProps[field].Metadata.bLabel>
+        <cfset newLabel = "#newLabel# #stObj[field]#">
     </cfif>
 </cfloop>
 
 <cfif not len(newLabel)>
-    <cfif structKeyExists(stObject,"Title")>
-        <cfset newLabel = "#stObject.title#">
-    <cfelseif structKeyExists(stObject,"Name")>
-        <cfset newLabel = "#stObject.name#">
+    <cfif structKeyExists(stObj,"Title")>
+        <cfset newLabel = "#stObj.title#">
+    <cfelseif structKeyExists(stObj,"Name")>
+        <cfset newLabel = "#stObj.name#">
     <cfelse>
-        <cfloop list="#StructKeyList(stObject)#" index="field">
+        <cfloop list="#StructKeyList(stObj)#" index="field">
             <cfif FindNoCase("Name",field) AND field NEQ "typename">
-                <cfset newLabel = "#newLabel# #stObject[field]#">
+                <cfset newLabel = "#newLabel# #stObj[field]#">
             </cfif>
         </cfloop>
     </cfif>
