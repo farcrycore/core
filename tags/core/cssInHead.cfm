@@ -53,6 +53,21 @@
 					<cfif structKeyExists(application.fc.stCSSLibraries[idHash],"sCacheFileName")>
 						<cfif fileExists('#application.path.cache#/#application.fc.stCSSLibraries[idHash].sCacheFileName#')>
 							<cfset sCacheFileName = application.fc.stCSSLibraries[idHash].sCacheFileName />
+							
+							<cfif request.mode.livecombine>
+								<cfset latest = createdatetime(1970,1,1,1,1,1) />
+								<cfloop list="#stCSS.lFullFilebaseHREFs#" index="thisfile">
+									<cfset stAttr = getFileInfo(expandpath(thisfile)) />
+									<cfif datecompare(latest,stAttr.lastmodified) lt 0>
+										<cfset latest = stAttr.lastmodified />
+									</cfif>
+								</cfloop>
+								
+								<cfif not structkeyexists(application.fc.stCSSLibraries[idHash],"modified") or datecompare(application.fc.stCSSLibraries[idHash].modified,latest) lt 0>
+									<cfset application.fc.stCSSLibraries[idHash].modified = latest />
+									<cfset sCacheFileName = "" />
+								</cfif>
+							</cfif>
 						</cfif>
 					</cfif>
 				<cfelse>
@@ -91,7 +106,7 @@
 				</cfif>
 			
 				<cfif stCSS.bCombine>
-					<cfoutput><link rel="stylesheet" type="text/css" href="#stCSS.hostname##application.url.cache#/#sCacheFileName#" media="#stCSS.media#" #tagEnding#></cfoutput>
+					<cfoutput><link rel="stylesheet" id="stylesheet-#stCSS.id#" rel="#stCSS.lFullFilebaseHREFs#" type="text/css" href="#stCSS.hostname##application.url.cache#/#sCacheFileName#" media="#stCSS.media#" #tagEnding#></cfoutput>
 				<cfelseif stCSS.bExternal>
 					<cfif len(trim(stCSS.prepend))><cfoutput><style type="text/css">#stCSS.prepend#</style></cfoutput></cfif>
 					<cfloop list="#stCSS.lFiles#" index="i">
@@ -107,7 +122,7 @@
 				</cfif>
 				<cfif len(stCSS.condition)>
 					<cfoutput>  <![endif]-->#chr(13)#</cfoutput>	
-				</cfif>		
+				</cfif>
 			</cfsavecontent>
 
 			<cfhtmlhead text="#css#" />

@@ -51,6 +51,21 @@
 					<cfif structKeyExists(application.fc.stJSLibraries[idHash],"sCacheFileName")>
 						<cfif fileExists('#application.path.cache#/#application.fc.stJSLibraries[idHash].sCacheFileName#')>
 							<cfset sCacheFileName = application.fc.stJSLibraries[idHash].sCacheFileName />
+							
+							<cfif request.mode.livecombine>
+								<cfset latest = createdatetime(1970,1,1,1,1,1) />
+								<cfloop list="#stJS.lFullFilebaseHREFs#" index="thisfile">
+									<cfset stAttr = getFileInfo(expandpath(thisfile)) />
+									<cfif datecompare(latest,stAttr.lastmodified) lt 0>
+										<cfset latest = stAttr.lastmodified />
+									</cfif>
+								</cfloop>
+								
+								<cfif not structkeyexists(application.fc.stJSLibraries[idHash],"modified") or datecompare(application.fc.stJSLibraries[idHash].modified,latest) lt 0>
+									<cfset application.fc.stJSLibraries[idHash].modified = latest />
+									<cfset sCacheFileName = "" />
+								</cfif>
+							</cfif>
 						</cfif>
 					</cfif>
 				<cfelse>

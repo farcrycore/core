@@ -130,4 +130,92 @@
 		<farcry:webskinTracer />
 	</cfif>
 	
+	<cfif request.mode.livecombine>
+		<skin:onReady id="css-updater"><cfoutput>
+			(function(){
+				if ($fc && $fc.livecombine) return;
+				
+				var aStylesheets = [];
+				var stilltorefresh = 0;
+				$fc = $fc || {};
+				$fc.livecombine = 1;
+				
+				$j("link[type=text/css]").each(function(){
+					var data = {};
+					if (!this.id || !this.id.length){
+						this.id = "stylesheet-"+this.href.replace(/[^\w\d]+/g,"-");
+					}
+					data.id = this.id;
+					data.href = this.href;
+					data.rel = this.rel || "";
+					if (data.href.search(/^https?:\/\//i,this.href) > -1 && data.href.replace(/https?:\/\/([^\/]+)\/.*/i,"$1") == document.location.host)
+						data.href = data.href.replace(/https?:\/\/[^\/]+(\/.*)/i,"$1");
+					aStylesheets.push(data);
+				});
+				
+				function loadStylesheet(data,failedFn){
+					var el = $j("##"+data.id);
+					var wrap = document.createElement('div');
+					wrap.appendChild(el[0].cloneNode(true));
+					var oldHTML = wrap.innerHTML;
+					var newHTML = oldHTML.replace(/href=(["'])[^"']+(["'])/,"href='"+data.href+"'");
+					stilltorefresh += 1;
+					var newElement = $j(newHTML).insertAfter(el).each(function(){
+						var self = this;
+						var sheet = "", cssRules = "";
+						
+						if ( 'sheet' in self ) {
+							sheet = 'sheet'; cssRules = 'cssRules';
+						}
+						else {
+							sheet = 'styleSheet'; cssRules = 'rules';
+						}
+						
+						var checkLoadedID = setInterval(function(){
+							try{
+								if ( self[sheet] && self[sheet][cssRules].length ){
+									console.log("loaded "+data.href);
+									el.remove();
+									stilltorefresh -= 1;
+									clearInterval(checkLoadedID);
+									clearTimeout(checkTimeoutID);
+									if (stilltorefresh == 0) setTimeout(refreshStylesheets,2000); 
+								}
+							}
+							catch(e) {} finally {}
+						},50);
+						
+						var checkTimeoutID = setTimeout(function(){
+							newElement.remove();
+							console.log("failed to load "+data.href);
+							stilltorefresh -= 1;
+							clearInterval(checkLoadedID);
+							clearTimeout(checkTimeoutID);
+							if (stilltorefresh == 0) setTimeout(refreshStylesheets,2000);
+							
+							if (failedFn) failedFn(data);
+						},2000);
+					});
+				};
+				
+				function refreshStylesheets(){
+					$j.post("#application.url.webtop#/facade/cssrefresh.cfm",{
+						stylesheets:window.JSON.stringify(aStylesheets)
+					},function(data){
+						for (var i=0;i<data.length;i++){
+							if (aStylesheets[i].href != data[i].href) {
+								loadStylesheet(data[i],function(data){ alert(data.href); });
+								aStylesheets[i].href = data[i].href;
+							}
+						}
+						
+						if (stilltorefresh == 0) setTimeout(refreshStylesheets,2000);
+					},"json");
+				};
+				
+				setTimeout(refreshStylesheets,2000);
+			})();
+		</cfoutput></skin:onReady>
+	</cfif>
+	
 </cfif>

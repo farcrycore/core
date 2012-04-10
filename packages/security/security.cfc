@@ -750,174 +750,102 @@
 	
 	<cffunction name="initRequestMode" access="public" output="false" returntype="struct" hint="Sets up the request.mode struct and other request settings based on the current users security permissions">
 		<cfargument name="stURL" type="struct" required="true" default="#url#" hint="Reference to the URL struct" />
-
-		<cfscript>
-		request.fc.bShowTray = true;
+		
+		<cfset var thisvar = "" />
+		<cfset var urlvar = "" />
+		<cfset var sessionmodes = "designmode:design,flushcache,showdraft,debug,livecombine" />
+		<cfset var requestmodes = "profile,tracewebskins,bShowTray" />
+		
+		<cfset request.fc.bShowTray = true />
+		
+		<!--- init request.mode with defaults --->
+		<cfset request.mode = {
+			debug			= 0,
+			livecombine		= 0,
+			design 			= 0,
+			flushcache 		= 0,
+			rebuild 		= "auto",
+			showdraft 		= 0,
+			ajax 			= 0,
+			tracewebskins 	= 0,
+			profile 		= 0,
+			bDeveloper 		= 0,
+			showcontainers 	= 0,
+			showtables 		= 0,
+			showerror 		= 0,
+			showdebugoutput	= 0,
+			bAdmin 			= 0,
+			lValidStatus	= "approved"
+		} />
+		
+		<!--- init session.fc.mode with defaults --->
+		<cfparam name="session.fc" default="#structnew()#" />
+		
+		<!--- admin options visible in page --->
+		<cfif  IsDefined("session.dmSec.Authentication.bAdmin")>
+			<cfset request.mode.bAdmin = session.dmSec.Authentication.bAdmin />
+		</cfif>
+		
+		<!--- normalize bdebug --->
+		<cfif structkeyexists(arguments.stURL,"bDebug")>
+			<cfset arguments.stURL.debug = argument.stURL.bDebug />
+		</cfif>
+		
+		<!--- session modes --->
+		<cfloop list="#sessionmodes#" index="thisvar">
+			<cfset urlvar = listfirst(thisvar,":") />
+			<cfset thisvar = listlast(thisvar,":") />
 			
-		// init request.mode with defaults
-		request.mode = structNew();
-		request.mode.design = 0;
-		request.mode.flushcache = 0;
-		request.mode.rebuild = "auto";
-		request.mode.showdraft = 0;
-		request.mode.ajax = 0;
-		request.mode.tracewebskins = 0;
-		request.mode.profile = 0;
-		
-		// Developer Mode
-		request.mode.bDeveloper = 0;
-		
-		// container management
-		// default to off, conjurer determines permissions based on nav-node
-		request.mode.showcontainers = 0; 
-		
-		// miscellaneous options to be added
-		request.mode.showtables = 0;
-		request.mode.showerror = 0;
-		request.mode.showdebugoutput = 0;
-		
-		// admin options visible in page
-		if (IsDefined("session.dmSec.Authentication.bAdmin")) {
-			request.mode.bAdmin = session.dmSec.Authentication.bAdmin; 
-		} else {
-			request.mode.bAdmin = 0; // default to off
-		}
+			<cfparam name="session.fc.mode.#thisvar#" default="0" />
 			
-		// if user has admin priveleges, determine mode values
-		if (request.mode.bAdmin) {
-		// designmode
-			if (isDefined("arguments.stURL.designmode")) {
-				request.mode.design = val(arguments.stURL.designmode);
-				session.dmSec.Authentication.designmode = request.mode.design;
-			} else if (isDefined("session.dmSec.Authentication.designmode")) {
-				request.mode.design = session.dmSec.Authentication.designmode;
-			} else {
-				request.mode.design = 0;
-			}
-		// profile mode
-			if (isDefined("arguments.stURL.profile")) {
-				request.mode.profile = val(arguments.stURL.profile);
-			} else {
-				request.mode.profile = 0;
-			}
-		// webskintrace
-			if (isDefined("arguments.stURL.tracewebskins")) {
-				request.mode.tracewebskins = arguments.stURL.tracewebskins;
-			} else {
-				request.mode.tracewebskins = 0;
-			}
+			<cfif structkeyexists(arguments.stURL,urlvar) and arguments.stURL[urlvar] eq 0>
+				<cfset request.mode[thisvar] = 0 />
+				<cfset session.fc.mode[thisvar] = 0 />
+			<cfelseif structkeyexists(arguments.stURL,urlvar) and arguments.stURL[urlvar] eq application.updateappkey or (request.mode.bAdmin and arguments.stURL[urlvar] eq 1)>
+				<cfset request.mode[thisvar] = 1 />
+				<cfset session.fc.mode[thisvar] = 1 />
+			<cfelseif isdefined("session.fc.mode.#thisvar#")>
+				<cfset request.mode[thisvar] = session.fc.mode[thisvar] />
+			</cfif>
+		</cfloop>
 		
-		// bypass caching
-			if (isDefined("arguments.stURL.flushcache")) {
-				request.mode.flushcache = val(arguments.stURL.flushcache);
-				session.dmSec.Authentication.flushcache = request.mode.flushcache;
-			} else if (isDefined("session.dmSec.Authentication.flushcache")) {
-				request.mode.flushcache = session.dmSec.Authentication.flushcache;
-			} else {
-				request.mode.flushcache = 0;
-			}
-		
-		// view content as stage
-			if (isDefined("arguments.stURL.showdraft")) {
-				request.mode.showdraft = val(arguments.stURL.showdraft);
-				session.dmSec.Authentication.showdraft = request.mode.showdraft;
-			} else if (isDefined("session.dmSec.Authentication.showdraft")) {
-				request.mode.showdraft = session.dmSec.Authentication.showdraft;
-			} else {
-				request.mode.showdraft = 0;
-			}
-		
-		// disable tray
-			if (isDefined("arguments.stURL.bShowTray")) {
-				request.fc.bShowTray = val(arguments.stURL.bShowTray);
-				//session.dmProfile.bShowTray = request.fc.bShowTray;
-			} else if (isDefined("session.dmProfile.bShowTray")) {
-				//request.fc.bShowTray = session.dmProfile.bShowTray;
-			} else {
-				//request.fc.bShowTray = 0;
-				//session.dmProfile.bShowTray = request.fc.bShowTray;
-			}
-		
-		// rebuild page / everything
-			if (isDefined("arguments.stURL.rebuild")) {
-				request.mode.rebuild = arguments.stURL.rebuild;
-				if (url.rebuild eq "page"){
-					request.mode.flushcache = 1;
-		}
-				else if (arguments.stURL.rebuild eq "all"){
-					application.fc.lib.objectbroker.init(bFlush=true);
-				}
-			}
-			else {
-				request.mode.rebuild = "auto";
-			}
-		
-		}
-		else {
-			// profile mode
-			if (isDefined("arguments.stURL.profile") and arguments.stURL.profile eq application.updateappkey) {
-				request.mode.profile = 1;
-			}
-			// webskintrace
-			if (isDefined("arguments.stURL.tracewebskins") and arguments.stURL.tracewebskins eq application.updateappkey) {
-				request.mode.tracewebskins = 1;
-			}
-		
-			// bypass caching
-			if (isDefined("arguments.stURL.flushcache") and arguments.stURL.flushcache eq application.updateappkey) {
-				if (isDefined("session.dmSec.Authentication.flushcache")){
-					request.mode.flushcache = not session.dmSec.Authentication.flushcache;
-				}
-				else {
-					request.mode.flushcache = 1;
-				}
-				session.dmSec.Authentication.flushcache = request.mode.flushcache;
-			}
-		
-			// view content as stage
-			if (isDefined("arguments.stURL.showdraft") and arguments.stURL.showdraft eq application.updateappkey) {
-				request.mode.showdraft = 1;
-				session.dmSec.Authentication.showdraft = request.mode.showdraft;
-			}
-		
-			// rebuild page / everything
-			if (isDefined("arguments.stURL.rebuild") and arguments.stURL.rebuild eq "page-#application.updateappkey#") {
-				request.mode.rebuild = "page";
-				request.mode.flushcache = 1;
-			}
-			if (isDefined("arguments.stURL.rebuild") and arguments.stURL.rebuild eq "all-#application.updateappkey#") {
-				request.mode.rebuild = "all";
-				application.fc.lib.objectbroker.init(bFlush=true);
-			}
-		}
-		
-		// set valid status for content
-		if (request.mode.showdraft) {
-			request.mode.lValidStatus = "draft,pending,approved";
-		} else {
-			request.mode.lValidStatus = "approved";
-		}
-	
-		// ajaxmode
-		// Ensure that if ajaxmode is defined multiple times, then we only get the last one.
-		if (structKeyExists(arguments.stURL, "ajaxmode")) {
-			arguments.stURL.ajaxmode = listLast(arguments.stURL.ajaxmode);
-		}
-		if (isDefined("form") and structKeyExists(form, "ajaxmode")) {
-			form.ajaxmode = listLast(form.ajaxmode);
-		}
-		
-		if ((isDefined("arguments.stURL.ajaxmode") and arguments.stURL.ajaxmode) or (isDefined("form.ajaxmode") and form.ajaxmode)) {
-			request.mode.ajax = true;
-		} else {
-			request.mode.ajax = false;
-		}
+		<!--- request only modes --->
+		<cfloop list="#requestmodes#" index="thisvar">
+			<cfset urlvar = listfirst(thisvar,":") />
+			<cfset thisvar = listlast(thisvar,":") />
 			
-		// Deprecated variables
-		// TODO remove these when possible
-		request.lValidStatus = request.mode.lValidStatus; //deprecated
-		</cfscript>
+			<cfif structkeyexists(arguments.stURL,urlvar)>
+				<cfif arguments.stURL[thisvar] eq 0>
+					<cfset request.mode[thisvar] = 0 />
+				<cfelseif arguments.stURL[urlvar] eq application.updateappkey or (request.mode.bAdmin and arguments.stURL[urlvar] eq 1)>
+					<cfset request.mode[thisvar] = 1 />
+				</cfif>
+			</cfif>
+		</cfloop>
+		
+		<!--- rebuild options --->
+		<cfif structkeyexists(arguments.stURL,"rebuild")>
+			<cfif arguments.stURL.rebuild eq "page" or arguments.stURL.rebuild eq "page-#application.updateappkey#">
+				<cfset request.mode.rebuild = "page" />
+				<cfset request.mode.flushcache = 1 />
+			<cfelseif arguments.stURL.rebuild eq "all" or arguments.stURL.rebuild eq "all-#application.updateappkey#">
+				<cfset request.mode.rebuild = "all" />
+				<cfset application.fc.lib.objectbroker.init(bFlush=true) />
+			</cfif>
+		</cfif>
+		
+		<!--- set valid status for content --->
+		<cfif request.mode.showdraft>
+			<cfset request.mode.lValidStatus = "draft,pending,approved" />
+		</cfif>
+		<cfset request.lValidStatus = request.mode.lValidStatus />
+		
+		<!--- ajax mode --->
+		<cfif (structKeyExists(arguments.stURL,"ajaxmode") and listlast(arguments.stURL.ajaxmode)) or (structKeyExists(form,"ajaxmode") and listlast(form.ajaxmode))>
+			<cfset request.mode.ajax = 1 />
+		</cfif>
 		
 		<cfreturn application.fapi.success() />
 	</cffunction>
+	
 </cfcomponent>
