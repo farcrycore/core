@@ -1,4 +1,4 @@
-<cfcomponent displayname="scrypt (very strong)" hint="I encode passwords using scrypt, which was designed to be far stronger than bcrypt." extends="PasswordHash"
+<cfcomponent displayname="scrypt (very strong; uses more memory than bcrypt)" hint="I encode passwords using scrypt, which was designed to be far stronger than bcrypt." extends="PasswordHash"
 			key="scrypt" seq="9500" workFactor="14" memoryCost="8" parallelFactor="1">
 
 	<cffunction name="init" access="public" output="true" returntype="any" hint="constructor">

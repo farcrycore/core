@@ -5,7 +5,7 @@
 		ftSeq="1" ftFieldset="Directories and Storage" ftLabel="Default user directory"
 		ftHint="" hint="User directory selected by default when multiple are available">
 
-	<cfproperty name="passwordHashAlgorithm" type="string" ftType="list" ftListData="listHashAlgorithms"
+	<cfproperty name="passwordHashAlgorithm" type="string" default="bcrypt" ftType="list" ftListData="listHashAlgorithms"
 		ftSeq="2" ftFieldset="Directories and Storage" ftLabel="Password hashing algorithm"
 		ftHint="" hint="Algorithm used to encrypt passwords in the database">
 
@@ -33,10 +33,6 @@
 		<cfset var pwdHashCount = arrayLen(aPwdHashes) />
 		<cfset var i = "" />
 		<cfset var oPwdHash = "" />
-		
-		<cfset queryaddrow(qPwdHash) />
-		<cfset querysetcell(qPwdHash,"value","") />
-		<cfset querysetcell(qPwdHash,"name","System default") />
 		
 		<cfloop index="i" from="1" to="#pwdHashCount#">
 			<cfset oPwdHash = aPwdHashes[i] />

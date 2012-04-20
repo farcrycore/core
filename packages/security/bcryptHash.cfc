@@ -1,5 +1,5 @@
-<cfcomponent title="bcrypt (strong)" hint="I encode passwords using a popular secure password hashing algorithm called bcrypt. I am very slow, but that makes me very secure!" extends="PasswordHash"
-			key="bcrypt" seq="9500" workFactor="10">
+<cfcomponent title="bcrypt (strong; recommended)" hint="I encode passwords using a popular secure password hashing algorithm called bcrypt. I am very slow, but that makes me very secure!" extends="PasswordHash"
+			key="bcrypt" seq="9001" workFactor="10">
 
 	<cffunction name="init" access="public" output="true" returntype="any" hint="constructor">
 		<cfargument name="cryptLib" type="any" hint="Interface to 3rd-party Java crypto libraries" />

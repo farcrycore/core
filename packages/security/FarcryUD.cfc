@@ -1,5 +1,5 @@
 <cfcomponent displayname="Farcry User Directory" hint="Provides the interface for the FarCry user directory" extends="UserDirectory" output="false"
-			key="CLIENTUD" bEncrypted="true" standardHash="none">
+			key="CLIENTUD" bEncrypted="true" standardHash="bcrypt">
 	
 	<cffunction name="init" access="public" output="true" returntype="any" hint="Does initialisation of user directory">
 		<cfargument name="cryptLib" type="any" hint="Interface to 3rd-party Java crypto libraries" />
