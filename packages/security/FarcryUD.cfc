@@ -46,8 +46,8 @@
 
 	<cffunction name="getOutputHash" access="public" returntype="PasswordHash" output="false" hint="Return the hash used to encoded passwords">
 
-		<cfif structKeyExists(application.config.general,"passwordHashAlgorithm") and structKeyExists(variables.stHashes,application.config.general.passwordHashAlgorithm)>
-			<cfreturn variables.stHashes[application.config.general.passwordHashAlgorithm] />
+		<cfif structKeyExists(application.config.security,"passwordHashAlgorithm") and structKeyExists(variables.stHashes,application.config.security.passwordHashAlgorithm)>
+			<cfreturn variables.stHashes[application.config.security.passwordHashAlgorithm] />
 		<cfelse>
 			<cfreturn variables.stHashes[this.standardHash] />
 		</cfif>
