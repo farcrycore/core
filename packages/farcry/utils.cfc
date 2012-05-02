@@ -320,9 +320,12 @@
 		<cfargument name="locations" type="string" required="false" default="" />
 		<cfargument name="path" type="struct" required="false" default="#structnew()#" hint="Application file paths" />
 		<cfargument name="projectDirectoryName" type="string" required="false" default="#application.projectDirectoryName#" hint="" />
+		<cfargument name="scope" type="string" required="false" default="ONE" hint="ONE: return path of first matching component only. ALL: return a list of all matching paths." />
 		
 		<cfset var item = "" />
 		<cfset var sDir = "" />
+		<cfset var sPath = "" />
+		<cfset var sPathList = "" />
 		
 		<cfif not isdefined("arguments.path.core")>
 			<cfset arguments.path.core = application.path.core />
@@ -341,18 +344,18 @@
 			<cfswitch expression="#item#">
 				<cfcase value="core">
 					<cfif fileexists("#arguments.path.core#/packages/#arguments.package#/#arguments.component#.cfc")>
-						<cfreturn "farcry.core.packages.#arguments.package#.#arguments.component#" />
+						<cfset sPath = "farcry.core.packages.#arguments.package#.#arguments.component#" />
 					</cfif>
 				</cfcase>
 				<cfcase value="project">
 					<cfif fileexists("#arguments.path.project#/packages/#arguments.package#/#arguments.component#.cfc")>
-						<cfreturn "farcry.projects.#arguments.projectDirectoryName#.packages.#arguments.package#.#arguments.component#" />
+						<cfset sPath = "farcry.projects.#arguments.projectDirectoryName#.packages.#arguments.package#.#arguments.component#" />
 					<cfelseif arguments.package eq "types" and fileexists("#arguments.path.project#/packages/system/#arguments.component#.cfc")>
 						<!--- Best practice is to put extensions of core types into the system package --->
-						<cfreturn "farcry.projects.#arguments.projectDirectoryName#.packages.system.#arguments.component#" />
+						<cfset sPath = "farcry.projects.#arguments.projectDirectoryName#.packages.system.#arguments.component#" />
 					<cfelseif arguments.package eq "system" and fileexists("#arguments.path.project#/packages/types/#arguments.component#.cfc")>
 						<!--- Best practice is to put extensions of core types into the system package --->
-						<cfreturn "farcry.projects.#arguments.projectDirectoryName#.packages.types.#arguments.component#" />
+						<cfset sPath = "farcry.projects.#arguments.projectDirectoryName#.packages.types.#arguments.component#" />
 					</cfif>
 				</cfcase>
 				<cfdefaultcase><!--- Plugin --->
@@ -362,19 +365,27 @@
 						<cfset sDir = expandpath("/farcry/plugins/#item#") />
 					</cfif>
 					<cfif fileexists("#sDir#/packages/#arguments.package#/#arguments.component#.cfc")>
-						<cfreturn "farcry.plugins.#item#.packages.#arguments.package#.#arguments.component#" />
+						<cfset sPath = "farcry.plugins.#item#.packages.#arguments.package#.#arguments.component#" />
 					<cfelseif arguments.package eq "types" and fileexists("#sDir#/packages/system/#arguments.component#.cfc")>
 						<!--- Best practice is to put extensions of core types into the system package --->
-						<cfreturn "farcry.plugins.#item#.packages.system.#arguments.component#" />
+						<cfset sPath = "farcry.plugins.#item#.packages.system.#arguments.component#" />
 					<cfelseif arguments.package eq "system" and fileexists("#sDir#/packages/types/#arguments.component#.cfc")>
 						<!--- Best practice is to put extensions of core types into the system package --->
-						<cfreturn "farcry.plugins.#item#.packages.types.#arguments.component#" />
+						<cfset sPath = "farcry.plugins.#item#.packages.types.#arguments.component#" />
 					</cfif>
 				</cfdefaultcase>
 			</cfswitch>
+			<cfif Len(sPath)>
+				<cfif arguments.scope is "one">
+					<cfreturn sPath />
+				<cfelse>
+					<cfset sPathList = ListAppend(sPathList, sPath) />
+					<cfset sPath = "" />
+				</cfif>
+			</cfif>
 		</cfloop>
 		
-		<cfreturn "" />
+		<cfreturn sPathList />
 	</cffunction>
 
 	<cffunction name="getComponents" access="public" output="false" returntype="string" hint="Returns a list of components for a package" bDocument="true">
