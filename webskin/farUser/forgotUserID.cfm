@@ -35,6 +35,7 @@
 			</cfif>
 
 		</cfif>
+		<ft:break />
 	</ft:processFormObjects>
 </ft:processForm>
 
