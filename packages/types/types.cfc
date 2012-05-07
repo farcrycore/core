@@ -226,6 +226,15 @@ default handlers
 		<cfif arguments.bAudit and (not isDefined("application.stcoapi.#getTypeName()#.bAudit") or application.stcoapi[getTypeName()].bAudit)>
 			<farcry:logevent object="#stNewObject.objectid#" type="types" event="create" notes="#arguments.auditNote#" />
 		</cfif>
+
+		<!--- Announce the save event to listeners --->
+		<cfset stEventParams.typename = getTypeName() />
+		<cfset stEventParams.stProperties = arguments.stProperties />
+		<cfset stEventParams.user = arguments.user />
+		<cfset stEventParams.auditNote = arguments.auditNote />
+		<cfset stEventParams.bSessionOnly = false />
+		<cfset stEventParams.bAfterSave = false />
+		<cfset application.fc.lib.events.announce(component="fcTypes",eventName="saved",stParams=stEventParams) />
 				
 		<cfreturn stNewObject>
 	</cffunction>
@@ -245,6 +254,8 @@ default handlers
 		<cfset var stresult_friendly = StructNew()>
 		<cfset var stObj = structnew() />
 		<cfset var fnStatusChange = "" />
+		<cfset var stEventParams = StructNew() />
+		<cfset var stStatusEventParams = StructNew() />
 		
 		<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
 		
@@ -307,6 +318,12 @@ default handlers
 						<cfinvokeargument name="previousStatus" value="#arguments.previousStatus#" />
 					</cfinvoke>
 				</cfif>
+				<!--- Announce the status change event to listeners --->
+				<cfset stStatusEventParams.typename = arguments.stProperties.typename />
+				<cfset stStatusEventParams.stObject = stObj />
+				<cfset stStatusEventParams.newStatus = stObj.status />
+				<cfset stStatusEventParams.previousStatus = arguments.previousStatus />
+				<cfset application.fc.lib.events.announce(component="fcTypes",eventName="statusChanged",stParams=stStatusEventParams) />
 			</cfif>
 		</cfif>
 			
@@ -332,6 +349,15 @@ default handlers
 			<farcry:logevent object="#arguments.stProperties.objectid#" type="types" event="update" notes="#arguments.auditNote#" />
 		</cfif>
 		
+		<!--- Announce the save event to listeners --->
+		<cfset stEventParams.typename = arguments.stProperties.typename />
+		<cfset stEventParams.stProperties = arguments.stProperties />
+		<cfset stEventParams.user = arguments.user />
+		<cfset stEventParams.auditNote = arguments.auditNote />
+		<cfset stEventParams.bSessionOnly = arguments.bSessionOnly />
+		<cfset stEventParams.bAfterSave = arguments.bAfterSave />
+		<cfset application.fc.lib.events.announce(component="fcTypes",eventName="saved",stParams=stEventParams) />
+
 		<cfreturn stresult>
 	</cffunction>
 	
@@ -1138,6 +1164,7 @@ default handlers
 		<cfset var collectionName = "">
 		<cfset var stlocal = StructNew()>
 		<cfset var stReturn = StructNew()>
+		<cfset var stEventParams = StructNew() />
 		
 		<cfif not len(arguments.user)>
 			<cfif application.security.isLoggedIn()>
@@ -1169,6 +1196,13 @@ default handlers
 			<cfset arguments.auditNote = "#stObj.label# (#stObj.typename#) deleted.">
 		</cfif>
 		<farcry:logevent object="#arguments.objectid#" type="types" event="delete" notes="#arguments.auditNote#" />
+		
+		<!--- Announce the delete event to listeners --->
+		<cfset stEventParams.typename = stObj.typename />
+		<cfset stEventParams.stObject = stObj />
+		<cfset stEventParams.user = arguments.user />
+		<cfset stEventParams.auditNote = arguments.auditNote />
+		<cfset application.fc.lib.events.announce(component="fcTypes",eventName="deleted",stParams=stEventParams) />
 		
 		<cfset stReturn.bSuccess = true>
 		<cfset stReturn.message = "#stObj.label# (#stObj.typename#) deleted.">
@@ -1231,6 +1265,9 @@ default handlers
 				</cfif>
 			</cfif>
 		</cfloop>
+				
+		<!--- Announce the security change event to listeners --->
+		<cfset application.fc.lib.events.announce(component="fcTypes",eventName="securityChanged",stParams=arguments) />
 	</cffunction>
 	
 	<cffunction name="renderObjectOverview" access="public" hint="Renders entire object overiew" output="true">
