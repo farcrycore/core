@@ -192,6 +192,7 @@ default handlers
 		<cfargument name="bAudit" type="boolean" default="true" required="false" hint="Set to false to disable logging" />
 		
 		<cfset var stNewObject = "" />
+		<cfset var stEventParams = StructNew() />
 		
 		
 		<cfif not len(arguments.user)>
