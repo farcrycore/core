@@ -52,6 +52,7 @@ accommodate legacy implementations
 <!--- optional attributes --->
 <cfparam name="attributes.fieldname" type="string" default="" />
 <cfparam name="attributes.typename" type="string" default="" />
+<cfparam name="attributes.loginpath" default="#application.fapi.getLink(href=application.url.publiclogin,urlParameters='returnUrl='&URLEncodedFormat(cgi.script_name&'?'&cgi.query_string))#" type="string">
 
 <!--- determine typename if its not supplied --->
 <cfif not len(attributes.typename)>
@@ -78,6 +79,8 @@ accommodate legacy implementations
 			<cfset request.mode.showdraft = 1 />
 			<!---<cfset session.dmSec.Authentication.showdraft = request.mode.showdraft />--->
 			<cfset request.mode.lValidStatus = "draft,pending,approved" />
+		<cfelseif len(attributes.loginpath)>
+			<skin:location url="#attributes.loginpath#" urlParameters="showdraft=1&error=draft" />
 		<cfelse>
 			<cfthrow type="core.tags.farcry.download" message="File not available." detail="You are not authorised to view this file." />
 		</cfif>		
