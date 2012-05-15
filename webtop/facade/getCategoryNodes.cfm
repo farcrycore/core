@@ -45,52 +45,63 @@
 	ORDER BY nleft
 </cfquery>
 
-<cfoutput>[</cfoutput>
+<cfset aResult = arraynew(1) />
 
-	<cfloop query="qTree">
-		<cfset tempLeft=qTree.nLeft>
-		<cfset tempRight=qTree.nRight>
-		<cfif qTree.currentRow NEQ 1><cfoutput>,</cfoutput></cfif>
-
-		<cfoutput>
-			{"id": "#qTree.objectid#", "text": "<label for='fccat-#qTree.objectid#'><input id='fccat-#qTree.objectid#' name='#form.fieldname#'  type='<cfif form.multiple>checkbox<cfelse>radio</cfif>' value='#qTree.objectid#' <cfif listFindNoCase(form.lSelectedItems, qTree.objectid)>checked</cfif> /> #jsstringFormat(qTree.objectname)#</label>", "leaf":  </cfoutput>
-		<cfif qTree.nRight - qTree.nLeft EQ 1>
-			<cfoutput>true</cfoutput>
+<cfloop query="qTree">
+	<cfset stNode = structnew() />
+	<cfset stNode["id"] = qTree.objectid />
+	
+	<cfset stNode["text"] = "<label for='fccat-#qTree.objectid#'><input id='fccat-#qTree.objectid#' name='#form.fieldname#'  type='" />
+	<cfif form.multiple>
+		<cfset stNode["text"] = stNode["text"] & "checkbox" />
+	<cfelse>
+		<cfset stNode["text"] = stNode["text"] & "radio" />
+	</cfif>
+	<cfset stNode["text"] = stNode["text"] & "' value='#qTree.objectid#' " />
+	<cfif listFindNoCase(form.lSelectedItems, qTree.objectid)>
+		<cfset stNode["text"] = stNode["text"] & "checked" />
+	</cfif>
+	<cfset stNode["text"] = stNode["text"] & "	/> #qTree.objectname#</label>" />
+	
+	<cfif qTree.nRight - qTree.nLeft EQ 1>
+		<cfset stNode["leaf"] = true />
+	<cfelse>
+		<cfset stNode["leaf"] = false />
+	</cfif>
+	
+	<cfif listContainsNoCase(form.lSelectedItems,qTree.objectID)>
+		<cfset stNode["checked"] = true />
+	</cfif>
+	
+	<cfset tempLeft=qTree.nLeft>
+	<cfset tempRight=qTree.nRight>
+	<cfif qTree.nRight - qTree.nLeft NEQ 1>
+		<cfset expanded = false />
+		<cfloop query="qTreeCategories">
+			<cfif tempRight GT qTreeCategories.nRight AND qTreeCategories.nLeft GT tempLeft>
+				<cfset expanded = true />
+			</cfif>
+		</cfloop>
+		<cfif expanded>
+			<cfset stNode["expanded"] = true />
+			<cfset stNode["children"] = arraynew(1) />
+			<cf_getCategoryNodes node="#qTree.objectid#" variable="stNode.children">
 		<cfelse>
-			<cfoutput>false </cfoutput>
-		</cfif>
-		
-
-		
-		<cfif listContainsNoCase(form.lSelectedItems,qTree.objectID)>
-			<cfoutput>,"checked":true</cfoutput>
-		</cfif>
-
-
-
-		<cfif qTree.nRight - qTree.nLeft NEQ 1>
-			<cfset expanded = false />
-			<cfloop query="qTreeCategories">
-				<cfif tempRight GT qTreeCategories.nRight AND tempLeft LT qTreeCategories.nLeft>
-					<cfset expanded = true />
-				</cfif>
-			</cfloop>
-			<cfif expanded>
-				<cfoutput>, "expanded":true, "children":</cfoutput>
-				<cf_getCategoryNodes node="#qTree.objectid#">
+			<cfif qTree.nRight - qTree.nLeft EQ 1>
+				<cfset stNode["hasChildren"] = false />
 			<cfelse>
-				<cfoutput>,"hasChildren": </cfoutput>
-				<cfif qTree.nRight - qTree.nLeft EQ 1>
-					<cfoutput>false</cfoutput>
-				<cfelse>
-					<cfoutput>true</cfoutput>
-				</cfif>
-							
+				<cfset stNode["hasChildren"] = true />
 			</cfif>
 		</cfif>
-		<cfoutput>}</cfoutput>
-	</cfloop>
+	</cfif>
+	
+	<cfset arrayappend(aResult,stNode) />
+</cfloop>
 
-<cfoutput>]</cfoutput>
+<cfif isdefined("attributes.variable")>
+	<cfset "caller.#attributes.variable#" = aResult />
+<cfelse>
+	<cfcontent type="application/json" variable="#ToBinary( ToBase64( serializejson(aResult) ) )#" reset="Yes">
+</cfif>
 
 <cfsetting enablecfoutputonly="false" />
