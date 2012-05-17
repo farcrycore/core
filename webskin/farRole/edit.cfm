@@ -484,62 +484,6 @@ PREPARE TYPE PERMISSIONS
 		
 			<wiz:object typename="#stobj.typename#" ObjectID="#stobj.objectID#" lfields="webskins" format="edit" intable="false" r_stPrefix="prefix" />
 			
-			
-			<ft:buttonPanel>
-				<ft:button value="Show Permissions Below" type="button" priority="secondary" class="small" style="float:left;" onClick="$fc.wizardSubmission( $j(this).closest('form').attr('id'),'Show Permissions');" />
-			</ft:buttonPanel>
-			
-			<ft:processForm action="Show Permissions">
-				<cfset roleWebskins = stwizard.data[stobj.objectid].webskins>
-	
-	<!--- 
-				<cfoutput>
-				<p><ft:button value="Refresh Webskin Permissions" onClick="$fc.refreshWebskinPermissions();" renderType="link" confirmText="Are you sure you want to " /></p>
-				</cfoutput> --->
-				<skin:onReady>
-					<cfoutput>
-					var accordion = $j("##webskin-permissions");
-					accordion.accordion({
-						autoHeight: false,
-						collapsible:true,
-						animated:false
-					});
-					</cfoutput>
-				</skin:onReady>
-	
-				<grid:div id="webskin-permissions">
-					<cfset lTypesAndRules = structKeyList(application.stCoapi) />
-					
-					<cfloop list="#lTypesAndRules#" index="i">
-	
-						<cfoutput><h3><a href="##">#i# (#application.stCoapi[i].displayName#)</a></h3></cfoutput>
-						
-						<grid:div id="wrap-#i#" style="">
-						<cfset qWebskins = application.stCoapi[i].qWebskins>
-						<cfloop query="qWebskins">
-							<cfset bPermitted = false />		
-							<cfloop list="#roleWebskins#" index="filter" delimiters="#chr(10)##chr(13)#,">
-								<cfif (not find(".",filter) or listfirst(filter,".") eq "*" or listfirst(filter,".") eq i or reFindNoCase(replace(listFirst(filter,"."),"*",".*","ALL"),i)) 
-										and reFindNoCase(replace(listlast(filter,"."),"*",".*","ALL"),application.stCoapi[i].qWebskins.name)>
-									<cfset bPermitted = true />
-								</cfif>
-							
-							</cfloop>
-												
-							<cfoutput>
-							
-								<cfif bPermitted EQ true>
-									<span style="color:green;">#application.stCoapi[i].qWebskins.name#</span><br />
-								<cfelse>
-									<span style="color:red;">#application.stCoapi[i].qWebskins.name#</span><br />
-								</cfif>
-							
-							</cfoutput>
-						</cfloop>
-						</grid:div>
-					</cfloop>
-				</grid:div>
-			</ft:processForm>
 		</wiz:step>
 
 

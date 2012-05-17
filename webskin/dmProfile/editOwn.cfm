@@ -5,6 +5,7 @@
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
 <cfset stProfile = getData(objectid=session.dmProfile.objectid) />
 <cfif structkeyexists(stObj,"bDefaultObject") and stObj.bDefaultObject>
@@ -34,6 +35,8 @@ ACTION
 <ft:processform action="Save,Cancel" url="#application.url.webtop#/overview/home.cfm?UPDATEAPP=false&sec=home&SUB=overview" />
 
 
+<admin:header>
+
 <!----------------------------- 
 VIEW	
 ------------------------------>
@@ -60,5 +63,7 @@ VIEW
 		<ft:button value="Cancel" validation="false" />
 	</ft:buttonPanel>
 </ft:form>
+
+<admin:footer>
 
 <cfsetting enablecfoutputonly="false" />

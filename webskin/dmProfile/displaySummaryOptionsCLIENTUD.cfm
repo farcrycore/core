@@ -2,12 +2,14 @@
 <!--- @@displayname: Summary options (CLIENTUD) --->
 <!--- @@description: Farcry UD specific options --->
 
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+
 <cfset stUser = createObject("component", application.stcoapi["farUser"].packagePath).getByUserID(listfirst(stObj.username,"_")) />
 
 <cfoutput>
 	<li>
 		<small>
-			<a href="#application.url.farcry#/conjuror/invocation.cfm?objectid=#stUser.objectid#&typename=farUser&method=editOwnPassword" target="content" title="#application.rb.getResource('coapi.farUser.general.changepassword@label','Change password')#">#application.rb.getResource('coapi.farUser.general.changepassword@label','Change password')#</a>
+			<skin:buildLink objectid="#stUser.objectid#" view="editOwnPassword" target="content" title="#application.rb.getResource('coapi.farUser.general.changepassword@label','Change password')#">#application.rb.getResource('coapi.farUser.general.changepassword@label','Change password')#</skin:buildLink>
 		</small>
 	</li>
 </cfoutput>

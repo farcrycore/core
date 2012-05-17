@@ -4,6 +4,7 @@
 
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
+<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
 <cfset stUser = getByUserId(application.factory.oUtils.listSlice(session.security.userid,1,-2,"_")) />
 <cfif structkeyexists(stObj,"bDefaultObject") and stObj.bDefaultObject>
@@ -32,8 +33,11 @@ ACTION
 <!----------------------------- 
 VIEW	
 ------------------------------>
-<ft:form heading="#application.rb.getResource('coapi.farUser.general.changepassword@label','Change password')#">
+<admin:header>
 
+<cfoutput><h1>#application.rb.getResource('coapi.farUser.general.changepassword@label','Change password')#</h1></cfoutput>
+
+<ft:form>
 	<cfset stMetadata = structnew() />
 	<cfset stMetadata.password.ftRenderType = "changepassword" />
 	<cfset stMetadata.password.ftLabel = "Your Profile Password" />
@@ -46,5 +50,6 @@ VIEW
 	</ft:buttonPanel>
 </ft:form>
 
+<admin:footer>
 
 <cfsetting enablecfoutputonly="false" />

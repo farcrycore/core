@@ -28,7 +28,7 @@
 	<ul class="webtop">
 		<li>
 			<small>
-				<a href="#application.url.farcry#/conjuror/invocation.cfm?objectID=#session.dmProfile.objectID#&typename=dmProfile&method=editOwn" target="content" title="#application.rb.getResource('coapi.dmProfile.general.editprofile@label','Edit your profile')#">#application.rb.getResource('coapi.dmProfile.general.editprofile@label','Edit your profile')#</a>
+				<skin:buildLink objectid="#session.dmProfile.objectID#" view="editOwn" target="content" title="#application.rb.getResource('coapi.dmProfile.general.editprofile@label','Edit your profile')#">#application.rb.getResource('coapi.dmProfile.general.editprofile@label','Edit your profile')#</skin:buildLink>
 			</small>
 		</li>
 		<skin:view typename="dmProfile" objectid="#stObj.objectid#" webskin="displaySummaryOptions#application.security.getCurrentUD()#" alternateHTML="" />

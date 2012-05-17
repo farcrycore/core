@@ -235,6 +235,62 @@ object methods
 		<cfreturn 0 />
 	</cffunction>
 	
+	<cffunction name="matchWebskin" access="private" output="false" returntype="any" hint="Returns true if the given webskin is granted by the specified filters">
+		<cfargument name="typename" type="string" required="true" />
+		<cfargument name="webskin" type="string" required="true" />
+		<cfargument name="filters" type="string" required="true" />
+		<cfargument name="debug" type="boolean" required="false" default="false" />
+		
+		<cfset var searchstring = "#arguments.typename#.#arguments.webskin#" />
+		<cfset var result = false />
+		<cfset var stResult = structnew() />
+		<cfset var filter = "" />
+		<cfset var reFilter = "" />
+		<cfset var match = true />
+		<cfset var allFilters = "" />
+		
+		<cfset stResult["result"] = false />
+		<cfset stResult["reason"] = "no match" />
+		
+		<cfloop list="#arguments.filters#" index="filter" delimiters="#chr(10)##chr(13)#,">
+			<cfif left(filter,1) eq "!">
+				<cfset match = false />
+				<cfset filter = mid(filter,2,len(filter)) />
+			<cfelse>
+				<cfset match = true />
+			</cfif>
+			
+			<cfif not find(".",filter)>
+				<cfset reFilter = "^.*\." & replace(filter,"*",".*","ALL") & "$" />
+			<cfelse>
+				<cfset reFilter = "^" & replace(replace(filter,".","\."),"*",".*","ALL") & "$" />
+			</cfif>
+			
+			<cfif refindnocase(reFilter,searchstring)>
+				<cfif arguments.debug>
+					<cfset stResult["result"] = match />
+					<cfset stResult["reason"] = "matches #filter#" />
+					<cfif match eq false><!--- On exception match, return immediately --->
+						<cfreturn stResult />
+					</cfif>
+				<cfelse>
+					<cfset result = match />
+					<cfif match eq false><!--- On exception match, return immediately --->
+						<cfreturn result />
+					</cfif>
+				</cfif>
+			<cfelseif arguments.debug>
+				<cfset allFilters = listappend(allFilters,reFilter) />
+			</cfif>
+		</cfloop>
+		
+		<cfif arguments.debug>
+			<cfreturn stResult />
+		<cfelse>
+			<cfreturn result />
+		</cfif>
+	</cffunction>
+	
 	<cffunction name="checkWebskin" access="public" output="false" returntype="boolean" hint="Returns true if this role grants access the the webskin">
 		<cfargument name="role" type="string" required="true" hint="The roles to check" />
 		<cfargument name="type" type="string" required="true" hint="The type to check" />
@@ -243,6 +299,7 @@ object methods
 		<cfset var thisrole = "" />
 		<cfset var stRole = structnew() />
 		<cfset var filter = "" />
+		<cfset var result = 0 />
 		
 		<cfloop list="#arguments.role#" index="thisrole">
 			<!--- If the name of the role was passed in, get the objectid --->
@@ -251,17 +308,11 @@ object methods
 			</cfif>
 			
 			<cfset stRole = getData(thisrole) />
-			<cfloop list="#stRole.webskins#" index="filter" delimiters="#chr(10)##chr(13)#,">
-				<cfif (not find(".",filter) or listfirst(filter,".") eq "*" or listfirst(filter,".") eq arguments.type or reFindNoCase(replace(listFirst(filter,"."),"*",".*","ALL"),arguments.type)) 
-						and reFindNoCase(replace(listlast(filter,"."),"*",".*","ALL"),arguments.webskin)>
-					<cfreturn 1 />
-				<cfelse>
-					<cfset 0 />
-				</cfif>
-			</cfloop>
+			
+			<cfset result = result or matchWebskin(arguments.type,arguments.webskin,stRole.webskins) />
 		</cfloop>
 		
-		<cfreturn false />
+		<cfreturn result />
 	</cffunction>
 	
 	<cffunction name="getID" access="public" output="false" returntype="string" hint="Returns the objectid for the specified object. Will return empty string if the role is not found">
@@ -546,22 +597,143 @@ object methods
 		<cfreturn super.setData(argumentCollection=arguments) />
 	</cffunction>
 	
-
-	<cffunction name="filterWebskins" access="public" output="false" returntype="query" hint="Returns a query of the webskins that match this filter">
-		<cfargument name="webskins" type="query" required="true" hint="The webskin query" />
-		<cfargument name="filter" type="string" required="true" hint="The filter to apply" />
+	
+	<cffunction name="ftEditWebskins" access="public" returntype="string" description="This will return a string of formatted HTML text to enable the editing of the property" output="false">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 		
-		<cfset var qResult = "" />
+		<cfset var html = "" />
 		
-		<cfquery dbtype="query" name="qResult">
-			select	methodname
-			from	arguments.webskins
-			where 	methodname like <cfqueryparam cfsqltype="cf_sql_varchar" value="#replace(arguments.filter,'*','%')#" />
-		</cfquery>
+		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		
-		<cfreturn qResult />
+		<skin:loadJS id="jquery" />
+		
+		<cfsavecontent variable="html"><cfoutput>
+			<div class="multiField">
+				<div class="blockLabel">
+					<textarea name="#arguments.fieldname#" id="#arguments.fieldname#" class="textareaInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#">#arguments.stMetadata.value#</textarea>
+					<p><a href="##" id="testfilters">Test Filters</a></p>
+					<div id="testfiltersresult"></div>
+				</div>
+			</div>
+			<script type="text/javascript">
+				function arrayToSelect(id,data){
+					var select = [ "<select id='", id, "'>", "<option value=''>-- all --</option>" ];
+					
+					for (var i=0; i<data.length; i++){
+						select.push("<option>");
+						select.push(data[i]);
+						select.push("</option>");
+					}
+					select.push("</select>");
+					
+					return select.join("");
+				};
+				
+				function getTypes(data){
+					var values = {}, result = [];
+					
+					for (var type in data) values[type] = true;
+					for (var value in values) result.push(value);
+					
+					result.sort();
+					
+					return result;
+				};
+				
+				function getWebskins(data){
+					var values = {}, result = [];
+					
+					for (var type in data) {
+						for (var webskin in data[type])
+							values[webskin] = true;
+					}
+					for (var value in values) result.push(value);
+					
+					result.sort();
+					
+					return result;
+				};
+				
+				$j("##selectfilterstype,##selectfilterswebskin").live("change",function(){
+					var type = $j("##selectfilterstype").val();
+					var webskin = $j("##selectfilterswebskin").val();
+					$j("##filterresult tbody tr").hide();
+					$j("##filterresult tbody tr" + (type.length ? ":has(.typename_"+type+")" : "") + (webskin.length ? ":has(.webskin_"+webskin+")" : "")).show();
+				});
+				$j("##testfilters").bind("click",function(){
+					var selectedtype = $j("##selectfilterstype").val();
+					var selectedwebskin = $j("##selectfilterswebskin").val();
+					$j("##testfiltersresult").html("<div style='text-align:center;'><img src='#application.url.webtop#/images/loading.gif' alt='Loading...'></p>");
+					$j.post(
+						'#application.formtools.longchar.oFactory.getAjaxURL(argumentCollection=arguments)#',
+						{ '#arguments.stMetadata.name#':$j("###arguments.fieldname#").val() },
+						function(data){
+							if (data.error){
+								html = [ "<h2>ERROR: ", data.error, "</h2>", "<table>" ];
+								
+								for (var i=0; i<data.trace.length; i++){
+									html.push("<tr><td>");
+									html.push(data.trace[i].TEMPLATE);
+									html.push("</td><td>");
+									html.push(data.trace[i].LINE);
+									html.push("</td></tr>");
+								}
+								
+								html.push("</table>");
+								
+								$j("##testfiltersresult").html(html.join(""));
+							}
+							else{
+								var types = getTypes(data), type="", webskins = getWebskins(data), webskin="";
+								
+								var html = [ "<table id='filterresult'>", "<thead>", "<tr>", "<td>", arrayToSelect("selectfilterstype",getTypes(data)), "</td>", "<td>", arrayToSelect("selectfilterswebskin",getWebskins(data)), "</td>", "<td>", "</td>", "</tr>", "</thead>", "<tbody>" ];
+								for (var i=0; i<types.length; i++){
+									type = types[i];
+									
+									for (var j=0; j<webskins.length; j++){
+										webskin = webskins[j];
+										
+										if (data[type][webskin]){
+											html.push("<tr");
+											if (data[type][webskin].result)
+												html.push(" style='color:##009900;'");
+											else
+												html.push(" style='color:##FF0000;'");
+											html.push("><td class='typename typename_");
+											html.push(type);
+											html.push("'>");
+											html.push(type);
+											html.push("</td><td class='webskin webskin_");
+											html.push(webskin);
+											html.push("'>");
+											html.push(webskin);
+											html.push("</td><td class='reason'>");
+											html.push(data[type][webskin].reason);
+											html.push("</td></tr>");
+										}
+									}
+								}
+								html.push("</tbody>");
+								html.push("</table>");
+								
+								$j("##testfiltersresult").html(html.join(""));
+								
+								$j("##selectfilterstype").val(selectedtype);
+								$j("##selectfilterswebskin").val(selectedwebskin).trigger("change");
+							}
+						},
+						"json"
+					);
+				});
+			</script>
+		</cfoutput></cfsavecontent>
+		
+		<cfreturn html />
 	</cffunction>
-
+	
 	<cffunction name="ftAjaxWebskins" output="false" returntype="string" hint="Response to ajax requests for this formtool">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
@@ -572,54 +744,28 @@ object methods
 		<cfset var stWebskins = structnew() />
 		<cfset var methodname = "" />
 		<cfset var types = "" />
-		<cfset var filter = "" />
-		<cfset var qWebskins = querynew("empty") />
-		<cfset var rows = "" />
-		<cfset var total = 0 />
 		<cfset var webskin = "" />
 		
 		<cfimport taglib="/farcry/core/tags/misc" prefix="misc" />
 		
-		<cfparam name="form.filters" default="" />
-		
-		<!--- Initialize webskin result set --->
-		<misc:map values="#application.stCOAPI#" index="thistype" value="metadata" result="stWebskins" resulttype="struct" sendback="typesendback">
-			<misc:map values="#metadata.qWebskins#" index="currentrow" value="webskin" result="typesendback.#thistype#" resulttype="struct" sendback="webskinsendback">
-				<cfif len(webskin.methodname) and webskin.methodname neq "deniedaccess">
-					<cfset webskinsendback[webskin.methodname] = "Denied" />
-				</cfif>
-			</misc:map>
-		</misc:map>
-		
-		<!--- Update granted webskins --->
-		<cfloop list="#form.filters#" index="filter" delimiters="#chr(10)##chr(13)#,">
-			<cfif not find(".",filter) or listfirst(filter,".") eq "*">
-				<cfset types = structkeylist(application.stCOAPI) />
-			<cfelse>
-				<cfset types = listfirst(filter,".") />
-			</cfif>
-			
-			<cfloop list="#types#" index="thistype">
-				<cfset qWebskins = filterWebskins(application.stCOAPI[thistype].qWebskins,listlast(filter,".")) />
-				<cfloop query="qWebskins">
-					<cfif methodname neq "deniedaccess">
-						<cfset stWebskins[thistype][methodname] = "Granted" />
+		<cftry>
+			<!--- Generate result set --->
+			<misc:map values="#application.stCOAPI#" index="thistype" value="metadata" result="stWebskins" resulttype="struct" sendback="typesendback">
+				<misc:map values="#metadata.qWebskins#" index="currentrow" value="webskin" result="typesendback.#thistype#" resulttype="struct" sendback="webskinsendback">
+					<cfif len(webskin.methodname) and webskin.methodname neq "deniedaccess">
+						<cfset webskinsendback[webskin.methodname] = matchWebskin(thistype,webskin.methodname,arguments.stMetadata.value,true) />
 					</cfif>
-				</cfloop>
-			</cfloop>
-		</cfloop>
+				</misc:map>
+			</misc:map>
+			
+			<cfcatch>
+				<cfset stWebskins = structnew() />
+				<cfset stWebskins["error"] = cfcatch.message />
+				<cfset stWebskins["trace"] = cfcatch.TagContext />
+			</cfcatch>
+		</cftry>
 		
-		<!--- Output result --->
-		<cfset rows = "" />
-		<cfset total = 0 />
-		<cfloop collection="#stWebskins#" item="thistype">
-			<cfloop collection="#stWebskins[thistype]#" item="webskin">
-				<cfset rows = listappend(rows,"{Type:'#thistype#',Webskin:'#Webskin#',Right:'#stWebskins[thistype][webskin]#'}") />
-				<cfset total = total + 1 />
-			</cfloop>
-		</cfloop>
-		
-		<cfreturn "{rows:[#rows#],total:#total#}" />
+		<cfreturn serializeJSON(stWebskins) />
 	</cffunction>
 
 	<cffunction name="upgradeV62" access="public" output="false" returntype="struct" hint="Upgrades Role and Permissions">
