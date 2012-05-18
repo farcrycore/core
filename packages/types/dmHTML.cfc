@@ -35,7 +35,7 @@ type properties
 	ftType="webskin" ftPrefix="displayPage" >
 
 <cfproperty 
-	name="Teaser" type="longchar" hint="Teaser text." required="no" default=""
+	name="Teaser" type="longchar" ftLabel="Teaser" ftType="longchar" hint="Teaser text." required="no" default=""
 	ftSeq="10" ftwizardStep="Web Page" ftFieldset="Teaser"
 	ftAutoResize="true">
 	

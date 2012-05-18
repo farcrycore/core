@@ -85,7 +85,6 @@ accommodate legacy implementations
 	<cfif request.mode.bAdmin>
 		<!--- SET DRAFT MODE ONLY FOR THIS REQUEST. --->
 		<cfset request.mode.showdraft = 1 />
-		<!---<cfset session.dmSec.Authentication.showdraft = request.mode.showdraft />--->
 		<cfset request.mode.lValidStatus = "draft,pending,approved" />
 	<cfelseif len(attributes.loginpath)>
 		<skin:location url="#attributes.loginpath#" urlParameters="showdraft=1&error=draft" />
