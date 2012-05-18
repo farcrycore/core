@@ -150,40 +150,60 @@ $out:$
 		<cfargument name="iconname" type="string" required="true" hint="The name of the icon to retrieve" />
 		<cfargument name="size" type="string" required="true" default="48" hint="The size of the icon required" />
 		<cfargument name="default" type="string" required="false" default="custom.png" hint="The default icon to use" />
-	
+		
 		<cfset var thisplugin = "" />
 		<cfset var icon = lcase(arguments.iconname) />
+		<cfset var iconReturn = ''>
 		
 		<cfif not find(".",icon)>
 			<cfset icon = "#icon#.png" />
 		</cfif>
-	
-		<cfif fileexists("#application.path.webroot#/wsimages/icons/#arguments.size#/#icon#")>
-			<cfreturn "#application.path.webroot#/wsimages/icons/#arguments.size#/#icon#" />
-		</cfif>
-		<cfif fileexists("#application.path.webroot#/images/icons/#icon#")>
-			<cfreturn "#application.path.webroot#/images/icons/#arguments.size#/#icon#" />
-		</cfif>
 		
-		<cfloop list="#application.factory.oUtils.listReverse(application.plugins)#" index="thisplugin">
-			<cfif fileexists("#application.path.project#/www/#thisplugin#/wsimages/icons/#arguments.size#/#icon#")>
-				<cfreturn "#application.path.project#/www/#thisplugin#/wsimages/icons/#arguments.size#/#icon#" />
+		<cftry>
+			<cfif NOT LEN(iconReturn) AND fileexists("#application.path.webroot#/wsimages/icons/#arguments.size#/#icon#")>
+				<cfset iconReturn = "#application.path.webroot#/wsimages/icons/#arguments.size#/#icon#" />
 			</cfif>
-			<cfif fileexists("#application.path.plugins#/#thisplugin#/www/wsimages/icons/#arguments.size#/#icon#")>
-				<cfreturn "#application.path.plugins#/#thisplugin#/www/wsimages/icons/#arguments.size#/#icon#" />
+			<cfif NOT LEN(iconReturn) AND fileexists("#application.path.webroot#/images/icons/#icon#")>
+				<cfset iconReturn = "#application.path.webroot#/images/icons/#arguments.size#/#icon#" />
 			</cfif>
-		</cfloop>
+			
+			<cfif NOT LEN(iconReturn)>
+				<cfloop list="#application.factory.oUtils.listReverse(application.plugins)#" index="thisplugin">
+					<cfif NOT LEN(iconReturn) AND fileexists("#application.path.project#/www/#thisplugin#/wsimages/icons/#arguments.size#/#icon#")>
+						<cfset iconReturn = "#application.path.project#/www/#thisplugin#/wsimages/icons/#arguments.size#/#icon#" />
+					</cfif>
+					<cfif NOT LEN(iconReturn) AND fileexists("#application.path.plugins#/#thisplugin#/www/wsimages/icons/#arguments.size#/#icon#")>
+						<cfset iconReturn = "#application.path.plugins#/#thisplugin#/www/wsimages/icons/#arguments.size#/#icon#" />
+					</cfif>
+				</cfloop>
+			</cfif>
+			
+			<cfcatch>
+				<cfset iconReturn = ''>
+			</cfcatch>
+		</cftry>
 		
-		<cfif fileexists("#application.path.core#/webtop/icons/#arguments.size#/#icon#")>
-			<cfreturn "#application.path.core#/webtop/icons/#arguments.size#/#icon#" />
-		</cfif>	
+		<cftry>
+			<cfif NOT LEN(iconReturn) AND fileexists("#application.path.core#/webtop/icons/#arguments.size#/#icon#")>
+				<cfset iconReturn = "#application.path.core#/webtop/icons/#arguments.size#/#icon#" />
+			</cfif>
+			
+			<!--- If all else fails, check to see if the icon is located under the image root --->
+			<cfif NOT LEN(iconReturn) AND fileexists("#application.path.imageRoot##arguments.iconname#")>
+				<cfset iconReturn = "#application.path.imageRoot##arguments.iconname#" />
+			</cfif>
+			
+			<cfcatch>
+				<cfset iconReturn = ''>
+			</cfcatch>
+		</cftry>
 		
-		<!--- If all else fails, check to see if the icon is located under the image root --->
-		<cfif fileexists("#application.path.imageRoot##arguments.iconname#")>
-			<cfreturn "#application.path.imageRoot##arguments.iconname#" />
+		<!--- if no icon was found, return the default --->
+		<cfif NOT LEN(iconReturn)>
+			<cfset iconReturn = "#application.path.core#/webtop/icons/#arguments.size#/#arguments.default#" />
 		</cfif>
-	
-		<cfreturn "#application.path.core#/webtop/icons/#arguments.size#/#arguments.default#" />
+		
+		<cfreturn iconReturn />
 	</cffunction>
 	
 	<cffunction name="setupMetadataQuery" output="false" displayname="Sets up the metadata query containing formtool structure information" returntype="query" access="private">
