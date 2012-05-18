@@ -8,6 +8,7 @@
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 
 <cfset aChanges = arraynew(1) />
+<cfset changedTypes = "" />
 
 <ft:processform action="Apply Default Resolutions">
 	<cfparam name="form.deploydefaults" default="" />
@@ -16,6 +17,7 @@
 		<cfloop collection="#stDiff.tables#" item="thistable">
 			<cfset aChanges = application.fc.lib.db.mergeChanges(aChanges,application.fc.lib.db.getDefaultChanges(stDiff=stDiff.tables[thistable])) />
 		</cfloop>
+		<cfset changedTypes = listappend(changedTypes,thistype) />
 	</cfloop>
 </ft:processform>
 
@@ -77,18 +79,30 @@
 				</cfif>
 			</cfcase>
 		</cfswitch>
+		
+		<cfif structkeyexists(application.stCOAPI,thistable)>
+			<cfset changedTypes = listappend(changedTypes,thistable) />
+		</cfif>
 	</cfloop>
 </ft:processform>
 
 <cfset aResults = arraynew(1) />
 <cfset aResults = application.fc.lib.db.deployChanges(aChanges,application.dsn) />
-<cfloop from="1" to="#arraylen(aResults)#" index="i">
-	<cfif structkeyexists(aResults[i],"message") and aResults[i].bSuccess>
-		<skin:bubble message="#aResults[i].message#" tags="coapichange,success" />
-	<cfelseif structkeyexists(aResults[i],"message")>
-		<skin:bubble message="#aResults[i].message#" tags="coapichange,error" />
-	</cfif>
-</cfloop>
+<cfif arraylen(aResults)>
+	<cfloop from="1" to="#arraylen(aResults)#" index="i">
+		<cfif structkeyexists(aResults[i],"message") and aResults[i].bSuccess>
+			<skin:bubble message="#aResults[i].message#" tags="coapichange,success" />
+		<cfelseif structkeyexists(aResults[i],"message")>
+			<skin:bubble message="#aResults[i].message#" tags="coapichange,error" />
+		</cfif>
+	</cfloop>
+	
+	<cfset application.fc.lib.objectbroker.init(true) />
+	<skin:bubble message="Application cache has been flushed" tags="coapichange,success" />
+	
+	<cfquery datasource="#application.dsn#" name="qDeleteWizards">delete from dmWizard where ReferenceID in (select objectid from refObjects where typename in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#changedTypes#">))</cfquery>
+	<skin:bubble message="Wizard data has been deleted for updated types" tags="coapichange,success" />
+</cfif>
 
 <skin:loadCSS id="farcry-form" />
 <cfoutput><div class="uniForm"></cfoutput>
