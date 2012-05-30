@@ -230,6 +230,7 @@ default handlers
 
 		<!--- Announce the save event to listeners --->
 		<cfset stEventParams.typename = getTypeName() />
+		<cfset stEventParams.otype = this />
 		<cfset stEventParams.stProperties = arguments.stProperties />
 		<cfset stEventParams.user = arguments.user />
 		<cfset stEventParams.auditNote = arguments.auditNote />
@@ -321,6 +322,7 @@ default handlers
 				</cfif>
 				<!--- Announce the status change event to listeners --->
 				<cfset stStatusEventParams.typename = arguments.stProperties.typename />
+				<cfset stStatusEventParams.oType = this />
 				<cfset stStatusEventParams.stObject = stObj />
 				<cfset stStatusEventParams.newStatus = stObj.status />
 				<cfset stStatusEventParams.previousStatus = arguments.previousStatus />
@@ -352,6 +354,7 @@ default handlers
 		
 		<!--- Announce the save event to listeners --->
 		<cfset stEventParams.typename = arguments.stProperties.typename />
+		<cfset stEventParams.oType = this />
 		<cfset stEventParams.stProperties = arguments.stProperties />
 		<cfset stEventParams.user = arguments.user />
 		<cfset stEventParams.auditNote = arguments.auditNote />
@@ -1200,6 +1203,7 @@ default handlers
 		
 		<!--- Announce the delete event to listeners --->
 		<cfset stEventParams.typename = stObj.typename />
+		<cfset stEventParams.oType = this />
 		<cfset stEventParams.stObject = stObj />
 		<cfset stEventParams.user = arguments.user />
 		<cfset stEventParams.auditNote = arguments.auditNote />
@@ -1247,6 +1251,7 @@ default handlers
 		<cfset var thisprop = "" />
 		<cfset var oFactory = "" />
 		<cfset var stMetadata = "" />
+		<cfset var stEventParams = StructCopy(arguments) />
 		
 		<cfif not structkeyexists(arguments,"stObject")>
 			<cfset arguments.stObject = getData(objectid=arguments.objectid) />
@@ -1263,7 +1268,8 @@ default handlers
 		</cfloop>
 				
 		<!--- Announce the security change event to listeners --->
-		<cfset application.fc.lib.events.announce(component="fcTypes",eventName="securityChanged",stParams=arguments) />
+		<cfset stEventParms.oType = this />
+		<cfset application.fc.lib.events.announce(component="fcTypes",eventName="securityChanged",stParams=stEventParams) />
 	</cffunction>
 	
 	<cffunction name="renderObjectOverview" access="public" hint="Renders entire object overiew" output="true">
