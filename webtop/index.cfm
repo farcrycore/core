@@ -68,7 +68,7 @@
 				<div id="admin-tools">
 					<div id="powered-by"><a href="#application.url.webtop#/aboutfarcry.cfm" onclick="$j.get(this.href,function(html){ $fc.openModal(html,1000,455,true,true); });return false;"><img src="images/powered_by_farcry.gif" alt="farcry" /></a></div>
 					<p>Welcome <cfif StructKeyExists(session.dmProfile,"firstname")><strong>#session.dmProfile.firstname#</strong> (<a href="#application.fapi.getLink(objectid=session.dmProfile.objectID,view='editOwn')#" target="content" title="#application.rb.getResource('coapi.dmProfile.general.editprofile@label','Edit your profile')#">#application.rb.getResource('coapi.dmProfile.general.editprofile@label','Edit your profile')#</a>)</cfif><br />
-					<a href="#application.url.webtop#/overview/home.cfm" target="content">Dashboard</a>&nbsp;&nbsp;|&nbsp;&nbsp;<skin:buildLink alias="home" target="_top">View Site</skin:buildLink>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#application.url.farcry#/index.cfm?logout=1" target="_top">Logout</a>
+					<a href="#application.url.webtop#/overview/home.cfm" target="content">Dashboard</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#application.fapi.getLink(alias='home')#" target="_top">View Site</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#application.url.farcry#/index.cfm?logout=1" target="_top">Logout</a>
 					</p>
 				</div>
 				
