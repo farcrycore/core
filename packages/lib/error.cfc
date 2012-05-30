@@ -117,7 +117,7 @@
 	</cffunction>
 	
 	<cffunction name="normalizeError" access="public" returntype="struct" output="false" hint="Simplifies and auguments error struct">
-		<cfargument name="exception" type="struct" required="true" />
+		<cfargument name="exception" type="any" required="true" />
 		<cfargument name="bIncludeCore" type="boolean" required="false" default="true" />
 		
 		<cfset var stException = structnew() />
