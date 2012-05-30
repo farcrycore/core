@@ -12,7 +12,7 @@
 		<cfargument name="eventName" type="string" required="true" hint="Event to announce" />
 		<cfargument name="stParams" type="struct" default="#structNew()#" hint="Event parameters" />
 		
-		<cfset var aListeners = getListeners(arguments.component,request.mode.debug) />
+		<cfset var aListeners = getListeners(arguments.component) />
 		<cfset var i = 0 />
 		
 		<cfloop from="1" to="#arraylen(aListeners)#" index="i">
