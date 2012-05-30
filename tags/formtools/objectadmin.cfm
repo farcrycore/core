@@ -692,7 +692,7 @@ user --->
 					<ft:buttonPanel style="margin-bottom:0px;">
 						<ft:button value="Apply Filter" class="small" />
 						<cfif len(HTMLfiltersAttributes)>	
-							<ft:button value="Clear Filter" validate="false" class="small" style="float:left;" />
+							<ft:button value="Clear Filter" validate="false" class="small" />
 						</cfif>
 					</ft:buttonPanel>
 				</grid:div>
