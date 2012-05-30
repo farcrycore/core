@@ -6,7 +6,7 @@
 
 <cfoutput>
 
-<a href="" class="fc-switch-device-desktop">Full Site</a>
+<a href="" class="fc-switch-device-desktop">View Full Site</a>
 
 </body>
 </html>

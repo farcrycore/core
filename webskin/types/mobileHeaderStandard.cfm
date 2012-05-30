@@ -25,7 +25,7 @@
 <h1>#application.config.general.sitetitle#</h1>
 </cfoutput>
 
-<skin:genericNav navID="#application.navid.home#" id="nav" depth="2" bActive="true" bIncludeHome="true">
+<skin:genericNav navID="#application.navid.home#" id="nav" depth="1" bActive="true" bIncludeHome="true">
 
 
 <cfsetting enablecfoutputonly="false">
