@@ -42,11 +42,11 @@
 	<cfsavecontent variable="jsOutput"><cfoutput>
 		<script type="text/javascript">
 			jQuery(document).ready(function($) {
-				var $thisinput = $("###attributes.prefix##attributes.field#");
-				var $thisdisplay = $("###attributes.prefix##attributes.field#_display");
+				var $thisinput = $j("###attributes.prefix##attributes.field#");
+				var $thisdisplay = $j("###attributes.prefix##attributes.field#_display");
 				var $boundfields = {};
 				<cfloop list="#lFields#" index="thisfield">
-					$boundfields.#thisfield# = $("###attributes.prefix##thisfield#");
+					$boundfields.#thisfield# = $j("###attributes.prefix##thisfield#");
 				</cfloop>
 				var aRequiredFields = new String("#attributes.lRequiredFields#").split(",");
 				

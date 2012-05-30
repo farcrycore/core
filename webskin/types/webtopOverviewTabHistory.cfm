@@ -182,11 +182,11 @@
 			});
 			
 			$j("div.showalltext").live("click",function(){
-				var texts = $(this).parents("tr:first div.view-property");
+				var texts = $j(this).parents("tr:first div.view-property");
 				if (texts.hasClass("full-view"))
 					texts.css("height",100).removeClass("full-view");
 				else
-					texts.css("height",$(this).parents(".property-value").data("full-height")).addClass("full-view");
+					texts.css("height",$j(this).parents(".property-value").data("full-height")).addClass("full-view");
 				return false;
 			}).live("mouseover",function(){
 				$j(this).parents("tr:first").find(".showalltext").css("background-color","##CBDAEF");

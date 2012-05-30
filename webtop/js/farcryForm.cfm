@@ -769,7 +769,7 @@ function setRowBackground (childCheckbox) {
 				fcForm.selections.statusupdate(property);
 				
 				$j("tr.selector-wrap input[name='selected']").live('click', function(e) {
-					var el = $(this);
+					var el = $j(this);
 					if (el.is(':radio')) {
 						userselection = [el.val()];
 					} else if (el.is(':checked')) {

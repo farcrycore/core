@@ -590,7 +590,7 @@
 								<div class="fc-tile-view-container" style="width:#arguments.stMetadata.ftTileWidth#px;height:#arguments.stMetadata.ftTileHeight#px;">
 									<div class="fc-grabbar">&nbsp;</div>
 									<div class="fc-arrayupload-actions">
-										<a href="javascript:$('##{{fieldname}}UPLOAD').uploadifyCancel('{{ID}}')" title="Cancel Upload">
+										<a href="javascript:$j('##{{fieldname}}UPLOAD').uploadifyCancel('{{ID}}')" title="Cancel Upload">
 											<span class="ui-icon ui-icon-closethick"></span>
 										</a>
 									</div>
@@ -635,7 +635,7 @@
 												</div>
 											</td>
 											<td class="" style="padding:3px;white-space:nowrap;">
-												<a href="javascript:$('##{{fieldname}}UPLOAD').uploadifyCancel('{{ID}}')" title="Cancel Upload">
+												<a href="javascript:$j('##{{fieldname}}UPLOAD').uploadifyCancel('{{ID}}')" title="Cancel Upload">
 													<span class="ui-icon ui-icon-closethick"></span>
 												</a>
 											</td>

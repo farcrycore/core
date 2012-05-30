@@ -308,7 +308,7 @@
 										</cfloop>
 									</select>
 									<skin:onReady>
-										$('###arguments.fieldname#-add-type').change(function() {
+										$j('###arguments.fieldname#-add-type').change(function() {
 											fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');
 										});
 									</skin:onReady>
