@@ -111,7 +111,7 @@
 	<tr>
 		<td id="footer" style="height:25px;">
 			<div>
-				<p>Copyright &copy; <a href="http://www.daemon.com.au" target="_blank">Daemon</a> 1997-#year(now())#, #createObject("component", "#application.packagepath#.farcry.sysinfo").getVersionTagline()#</p>
+				<p>Copyright &copy; <a href="http://www.daemon.com.au" target="_blank">Daemon</a> 1997-#year(now())#, #application.sysInfo.farcryVersionTagLine#</p>
 			</div>		
 		</td>
 	</tr>

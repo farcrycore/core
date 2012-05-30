@@ -35,8 +35,8 @@ START WEBSKIN
 		<div class="loginFooter">
 			<img src="#application.url.webtop#/images/powered_by_farcry_watermark.gif" />
 			<h3>Tell it to someone who cares</h3>
-			<p><small>Copyright &copy; <a href="http://www.daemon.com.au" target="_blank">Daemon</a> 1997-#year(now())#<br />#createObject("component", "#application.packagepath#.farcry.sysinfo").getVersionTagline()#</small></p>
-		</div>
+		    <p><small>Copyright &copy; <a href="http://www.daemon.com.au" target="_blank">Daemon</a> 1997-#year(now())#<br />#application.sysInfo.farcryVersionTagLine#</small></p>
+        </div>
 		<br class="clearer" />
 	</div>
 

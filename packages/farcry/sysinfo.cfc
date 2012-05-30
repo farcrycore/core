@@ -27,7 +27,13 @@
 </cffunction>
 
 <cffunction name="getVersionTagline" access="public" output="false" hint="Returns a string detailing the current FarCry CMS build details." returntype="string">
-	<cfreturn "You are currently running version <strong>#getMajorVersion()#-#getMinorVersion()#-#getPatchVersion()#</strong> of <a href='http://www.farcrycore.org' target='_blank'>Farcry Core</a>." />
+	<cfset var stCoreVersion = getCoreVersion() >
+	
+	<cfif stCoreVersion.svndate eq "">
+		<cfreturn "You are currently running version <strong>#stCoreVersion.major#-#stCoreVersion.minor#-#stCoreVersion.patch#</strong> of <a href='http://www.farcrycore.org' target='_blank'>Farcry Core</a>." />
+	<cfelse>
+		<cfreturn "You are currently running version <strong>#stCoreVersion.major#-#stCoreVersion.minor#-#stCoreVersion.patch# from SVN on #stCoreVersion.svndate#</strong> of <a href='http://www.farcrycore.org' target='_blank'>Farcry Core</a>." />
+	</cfif>
 </cffunction>
 
 <cffunction name="getBuildNumber" access="public" output="false" hint="Returns the contents of the build file if it exists, otherwise assumes it to be under subversion" returntype="string">
@@ -80,6 +86,18 @@
 </cffunction>
 
 
+<cffunction name="getSVNDate" access="public" output="false" hint="Returns the contents of the SVN version file date if it exists" returntype="string">
+	<cfset var svnDate = "" /><!--- Return --->
+	
+	<cfif directoryExists('#application.path.core#/.svn')>
+		<cfdirectory action="list" recurse="false" directory="#application.path.core#/" type="dir" filter=".svn" name="svnDate">
+		<cfset svnDate = LSDateFormat(svnDate.dateLastModified, "dd mmmm yyyy")>
+	</cfif>
+	
+	<cfreturn svnDate />
+</cffunction>
+
+
 
 <cffunction name="getCoreVersion" access="public" returntype="struct" hint="returns a structure containing the major, minor, patch and build version of farcry.">
 	
@@ -89,6 +107,7 @@
 	<cfset coreVersion.minor = getMinorVersion() />
 	<cfset coreVersion.patch = getPatchVersion() />
 	<cfset coreVersion.build = getBuildNumber() />
+	<cfset coreVersion.svndate = getSVNDate() />
 
 	<cfreturn coreVersion>
 </cffunction>

@@ -190,7 +190,7 @@ Build NavIDs from Navigation Nodes
 <cfparam name="application.sysInfo" default="#structNew()#" type="struct" />
 <cfparam name="application.sysInfo.machineName" default="#oSysInfo.getMachineName()#" />
 <cfparam name="application.sysInfo.instanceName" default="#oSysInfo.getInstanceName()#" />
-<cfparam name="application.sysInfo.farcryVersionTagLine" default="oSysInfo.getVersionTagline()" />
+<cfparam name="application.sysInfo.farcryVersionTagLine" default="#oSysInfo.getVersionTagline()#" />
 <cfparam name="application.sysinfo.bwebtopaccess" default="true" type="boolean" />
 
 <!------------------------------------------------------------
