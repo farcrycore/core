@@ -2,7 +2,7 @@
 
 	<!--- FC-2624: Load the SolrPro plugin's event handler only if the plugin is present without an fcTypes event listener --->
 	<cfif listFindNoCase(application.plugins,"farcrysolrpro")
-				and not Len(application.fc.utils.getPath(package="types",component="fcTypes",locations="farcrysolrpro"))>
+				and not Len(application.fc.utils.getPath(package="events",component="fcTypes",locations="farcrysolrpro"))>
 		
 		<cfset variables.solrProEventHandler = createObject("component","farcry.plugins.farcrysolrpro.packages.custom.eventHandler") />
 	</cfif>
