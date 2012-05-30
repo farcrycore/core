@@ -380,8 +380,8 @@ function setRowBackground (childCheckbox) {
 									
 							$fc.openDialog = function(title,url,width,height){
 								var fcDialog = $j("<div></div>")
-								w = width ? width : '90%';
-								h = height ? height : $j(window).height()-50;
+								w = width ? width : $j(window).width()-40;
+								h = height ? height : $j(window).height()-40;
 								$j("body").prepend(fcDialog);
 								$j(fcDialog).dialog({
 									bgiframe: true,
@@ -410,8 +410,8 @@ function setRowBackground (childCheckbox) {
 							
 							
 							$fc.openDialogIFrame = function(title,url,width,height){
-								var w = width ? width : '90%';
-								var h = height ? height : $j(window).height()-50;
+								var w = width ? width : $j(window).width()-40;
+								var h = height ? height : $j(window).height()-40;
 								var fcDialog = $j("<div id='fc-dialog-iframe' style='padding:20px;'><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0'></iframe></div>")
 								
 								$j("body").prepend(fcDialog);
@@ -455,8 +455,8 @@ function setRowBackground (childCheckbox) {
 			title:'Library',
 			draggable:false,
 			resizable:false,
-			width: "90%",
-			height: $j(window).height()-50,
+			width: $j(window).width()-20,
+			height: $j(window).height()-20,
 			buttons: {
 				Ok: function() {
 					$j(this).dialog('close');
@@ -490,8 +490,8 @@ function setRowBackground (childCheckbox) {
 			closeOnEscape: false,
 			draggable:false,
 			resizable:false,
-			width: "90%",
-			height: $j(window).height()-50,
+			width: $j(window).width()-20,
+			height: $j(window).height()-20,
 			close: function(event, ui) {
 				$j("html").css('overflow', 'auto');
 				$j("div.ui-dialog", parent.document.body).removeClass('nested');
@@ -519,8 +519,8 @@ function setRowBackground (childCheckbox) {
 			closeOnEscape: false,
 			draggable:false,
 			resizable:false,
-			width: "90%",
-			height: $j(window).height()-50,
+			width: $j(window).width()-20,
+			height: $j(window).height()-20,
 			close: function(event, ui) {
 				$j("html").css('overflow', 'auto');
 				$j("div.ui-dialog", parent.document.body).removeClass('nested');
@@ -736,8 +736,8 @@ function setRowBackground (childCheckbox) {
 					title:title,
 					draggable:false,
 					resizable:false,
-					width: "95%",
-					height: $j(window).height()-50,
+					width: $j(window).width()-40,
+					height: $j(window).height()-40,
 					close: function(event, ui) {
 						$j("html").css('overflow', 'auto');
 						$j("div.ui-dialog", parent.document.body).removeClass('nested');
@@ -921,8 +921,8 @@ function setRowBackground (childCheckbox) {
 				title:'Edit',
 				draggable:false,
 				resizable:false,
-				width: '90%',
-				height: $j(window).height()-50,
+				width: $j(window).width()-20,
+				height: $j(window).height()-20,
 				close: function(event, ui) {
 					$j("html").css('overflow', 'auto');
 					$j("div.ui-dialog", parent.document.body).removeClass('nested');
@@ -962,8 +962,8 @@ function setRowBackground (childCheckbox) {
 				title:'Edit',
 				draggable:false,
 				resizable:false,
-				width: '90%',
-				height: $j(window).height()-50,
+				width: $j(window).width()-20,
+				height: $j(window).height()-20,
 				close: function(event, ui) {
 					$j("html").css('overflow', 'auto');
 					$j("div.ui-dialog", parent.document.body).removeClass('nested');

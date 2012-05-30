@@ -64,7 +64,8 @@
 }
 	
 .ui-button.small .ui-button-text {
-	font-size:10px;
+	font-size:11px;
+	font-weight: normal;
 	padding-top:1px;
 	padding-bottom:1px;
 }	
@@ -133,24 +134,10 @@
 	border-bottom: 1px solid #B6B6B6;
 }
 
-
-
-.uniForm textarea,
-.uniForm input,
-.uniForm select,
-.uniForm input[type="text"],
-.uniForm input[type="password"] {
-	font-size: 12px;
-}
-
-
-
 a.ui-datepicker-next-hover,
 a.ui-datepicker-prev-hover {
 	background-color:transparent;
 }
-
-
 
 .ui-dialog.nested {
 	border:1px solid #ddd;

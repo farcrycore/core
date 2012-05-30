@@ -269,14 +269,14 @@ body.container-management h1 {padding: 10px 0 14px 40px;background: transparent 
 	table.objectAdmin {border-collapse:collapse;border:none;background:#fff;margin: .3em 0 1.5em;border-bottom: 1px solid #ccc;border-left: 1px solid #ccc}
 	table.objectAdmin table {font-size:95%}
 		table.objectAdmin caption {text-align:left;font: bold 145% arial;padding: 5px 10px;background:#fff}
-		table.objectAdmin th {color: #fff;border-top: 1px solid #A5B9D0;border-right: 1px solid #A5B9D0;text-align: left;padding: 2px 2px 2px 2px;background: #9EB4CC url("images/th_bg.gif") repeat-x 0 0; vertical-align: top; font-weight: normal; font-face: tahoma,helvetica,sans-serif;}
+		table.objectAdmin th {color: #fff;border-top: 1px solid #A5B9D0;border-right: 1px solid #A5B9D0;text-align: left;padding: 2px 2px 2px 2px;background: #9EB4CC url("images/th_bg.gif") repeat-x 0 0; vertical-align: middle; font-weight: normal; font-face: tahoma,helvetica,sans-serif;}
 		table.objectAdmin th.order-asc {background-position: 100% -100px;padding-right:25px}
 		table.objectAdmin th.order-desc {background-position: 100% -200px;padding-right:25px}
 			table.objectAdmin th a:link, table.objectAdmin th a:visited, table.objectAdmin th a:hover, table.objectAdmin th a:active {color:#fff}
 			table.objectAdmin th.alt a:link, table.objectAdmin th.alt a:visited {color:#E17000}
 			table.objectAdmin th.alt a:hover, table.objectAdmin th.alt a:active {color:#fff}
 			table.objectAdmin th img {display:block;float:right;margin:0}
-		table.objectAdmin td {border-top: 1px solid #ccc;border-right: 1px solid #ccc;padding: 2px 10px; vertical-align: top;}
+		table.objectAdmin td {border-top: 1px solid #ccc;border-right: 1px solid #ccc;padding: 2px 10px; vertical-align: middle;}
 		table.objectAdmin th select, table.objectAdmin th select option {background-color: #FFFFFF !important; color: #324e7c !important;}
 		table.objectAdmin th.nobg {border:none;background:#fff}
 		table.objectAdmin tr.alt {background: #f1f1f1} 
@@ -394,6 +394,9 @@ ul.x-tab-strip li a {padding:0px;}
 	font-weight:bold;
 }
 
+.buttonHolder .fc-btn {
+  float:none;
+}
 .buttonHolder .fc-btn.ui-button.ui-priority-primary {
 	background:#8DABD9\9;
 }
@@ -429,6 +432,7 @@ ul.x-tab-strip li a {padding:0px;}
 .ui-tabs .ui-tabs-nav .ui-state-default:hover a {
 	background:whiteSmoke\9;
 }
+
 
 table.navtree td {
 	font-size:11px;

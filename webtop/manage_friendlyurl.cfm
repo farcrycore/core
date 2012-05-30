@@ -160,7 +160,7 @@ manage friendly urls for a particular object id
 							<cfset stPropMetdata.redirectionType="#structNew()#" />
 							<cfset stPropMetdata.friendlyurl.ftStyle="width:100%" />
 							<cfset stPropMetdata.redirectionType="#structNew()#" />
-							<cfset stPropMetdata.redirectionType.ftStyle="width:100%" />
+							<cfset stPropMetdata.redirectionType.ftStyle="width:90%" />
 							<cfset stPropMetdata.redirectTo="#structNew()#" />
 							<cfset stPropMetdata.redirectTo.ftStyle="width:100%" />
 							

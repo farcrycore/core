@@ -127,31 +127,4 @@ YOU CAN VERY EASILY REVERT TO A GENERIC STYLE OF UNI-FORM. BEST OF LUCK...
 }
 
 
-
-.errorField-wrap {
-    display: block;
-    z-index: 5000;
-    cursor: pointer;
-}
-.errorField-wrap .errorField {
-    width: 100%;
-    background: #AF4C4C;
-    position:relative;
-    z-index:5001;
-    color: #fff;
-    width: 130px;
-    font-family: tahoma;
-    font-size: 11px;
-    border: 2px solid #ddd;
-    box-shadow: 0 0 6px #000;
-    -moz-box-shadow: 0 0 6px #000;
-    -webkit-box-shadow: 0 0 6px #000;
-    padding: 2px 6px 2px 6px;
-    border-radius: 6px;
-    -moz-border-radius: 6px;
-    -webkit-border-radius: 6px;
-}	
-
-
-
 /* ------------------------------------------------------------------------------ */

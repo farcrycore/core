@@ -179,16 +179,7 @@ It just ignores the inner ones.
 						errorClass: "errorField",					   
 						wrapper: "div",  // a wrapper around the error message					   
 						errorPlacement: function(error, element) {
-							if ( $j("###attributes.Name#").width() < 650 ) {
-						  		error.prependTo( element.closest("div.ctrlHolder") );
-					         } else {
-					            offset = element.offset();
-					            error.insertBefore(element)
-					            error.addClass('errorField-wrap');  // add a class to the wrapper
-					            error.css('position', 'absolute');
-					            error.css('left', offset.left + element.outerWidth() + 5);
-					            error.css('top', offset.top);
-					         }
+					  		error.prependTo( element.closest("div.ctrlHolder") );
 				        },
 						highlight: function(element, errorClass) {
 						   $j(element).closest("div.ctrlHolder").addClass('error');

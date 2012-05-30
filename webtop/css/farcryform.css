@@ -1,6 +1,4 @@
-	body {
-		font-family: Arial;
-	}	
+	
 	.uniForm .fieldset {
 		margin:10px 0 20px 0;
 		padding:5px;
@@ -10,7 +8,7 @@
 		color:#324E7C;
 		margin:0;
 		padding:0px;
-		font-size:150%;
+		font-size:130%;
 	}
 	
 	.ctrlHolder {
@@ -32,9 +30,14 @@
 	.uniForm .buttonHolder { 
 		text-align: right; 
 		margin:5px 0 10px 0;
-		padding:5px 10px 0px 10px;
+		padding:5px 10px 0px 5px;
 		background: -webkit-gradient(linear,left bottom,left top,color-stop(1,#F0F0F0),color-stop(0,#E8E8E8));
 		background: -moz-linear-gradient(center top,#F0F0F0,#E8E8E8);
+	}
+
+	.uniForm .buttonHolder .ui-button {
+		margin-left: 0;
+		margin-right: 5px;
 	}
 	
 	/*
@@ -61,37 +64,33 @@
 	.uniForm .multiField, .uniForm .blockLabels .multiField {
 		width: 100%;
 	}
+  
+  .uniForm .checkboxInput {
+    margin-top:8px;
+  }
 	
 	.uniForm .inlineLabels .formHint {
-		margin-left:157px;
+    font-size: 12px;
+		margin-left: 37%;
 		width:55%;
 	}
 	
 	.uniForm select {
-		margin-left:0px;
-		-moz-border-radius: 0;
-		-webkit-border-radius: 0;
-		border-radius: 0;
-		font-size: 12px;
 	}
 	
 	.uniForm textarea {
-		padding:2px;
-		-moz-border-radius: 0;
-		-webkit-border-radius: 0;
-		border-radius: 0;
-		font-size: 12px;
 	}
-	
-	.uniForm input,
+
+/*	
 	.uniForm input[type="text"],
 	.uniForm input[type="password"] {
-		padding:2px;
-		-moz-border-radius: 0;
-		-webkit-border-radius: 0;
-		border-radius: 0;
-		font-size: 12px;
+    width: 53.6% !important;
 	}
+*/
+
+  .uniForm .focused {
+    background:whiteSmoke !important;
+  }
 	
 	
 	
@@ -102,15 +101,12 @@
 		text-align:left;
 	}
 	.uniForm .inlineLabels .label {
-		width:150px;
-		text-align: left;
-		
-		margin:0px 5px 0px 0px;
-		line-height:18px;
-	}
-	
-	.uniForm select {
-		border:1px solid #ccc;	
+    display: inline-block;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 5px;
+    float: left;
+    padding-top: 5px;
 	}
 	
 	.uniForm .buttonHolder a.fc-btn {
@@ -149,9 +145,13 @@
 		}
 		
 		.jquery-ui-split-button .ui-menu .ui-menu-item a span.ui-button-text {
-			padding:1px 2px 1px 5px;
+			padding:2px 12px 2px 8px;
 			font-size:1em;
 			font-weight:normal;
+			-webkit-text-shadow: none;
+			-moz-text-shadow: none;
+			-o-text-shadow: none;
+			text-shadow: none;
 		}
 		
 		.jquery-ui-split-button.ui-buttonset {
@@ -167,7 +167,7 @@
 		.jquery-ui-split-button.ui-buttonset ul {
 			display:none;
 			position:absolute;
-			box-shadow:5px 5px 5px #ddd;
+			box-shadow:0 2px 5px #ddd;
 			border:2px solid #ddd;
 			z-index:99;
 		}			
@@ -194,9 +194,6 @@
 			font-weight:bold;
 			color:#636B75;
 		}
-
-	
-	
 	
 	div.fc-shadowbox {
 	
@@ -205,9 +202,11 @@
 		background-color:#F1F1F1;
 		-moz-border-radius: 3px;
 		border-radius: 3px;
+		/*
 		-moz-box-shadow: 2px 2px 5px #ddd;
 		-webkit-box-shadow: 2px 2px 5px #ddd;
 		box-shadow: 2px 2px 5px #ddd;
+		*/
 		border:1px solid #ddd;
 		height:auto;
 		line-height: 14px;
@@ -220,13 +219,104 @@
 	
 	div.fc-shadowbox .buttonHolder,
 	.multiField .buttonHolder  {
-		margin-bottom: 0px;
-		background: none;
-		border: 1px solid #DFDFDF;
+		margin-top: 0;
+		margin-bottom: 0;
+		background: #EBEBEB;
+		border: 1px solid #EBEBEB;
 		border-width: 1px 0 0 0;
 		padding-left: 0;
+		padding-right: 1px;
 	}	
 	
 	.uniForm .textareaInput.autoresize {
 		height: 40px;
 	}
+
+
+.uniForm .textInput,
+.uniForm .textareaInput {
+  background:#fff;
+  border:1px solid #ccc;
+  display:inline-block;
+  *display:inline;
+  font-size:13px;
+  font-weight:normal;
+  line-height:18px;
+  margin:0;
+  padding:3px;
+  vertical-align:middle;
+  width:270px;
+  *zoom:1;
+/*
+  -webkit-border-radius:3px;
+  -moz-border-radius:3px;
+  border-radius:3px;
+*/  
+  -webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075);
+  -moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075);
+  box-shadow:inset 0 1px 1px rgba(0,0,0,0.075);
+  -webkit-transition:border linear 0.2s,box-shadow linear 0.2s;
+  -moz-transition:border linear 0.2s,box-shadow linear 0.2s;
+  -ms-transition:border linear 0.2s,box-shadow linear 0.2s;
+  -o-transition:border linear 0.2s,box-shadow linear 0.2s;
+  transition:border linear 0.2s,box-shadow linear 0.2s;
+}
+.uniForm .textInput {
+  height:18px;
+}
+.uniForm .textareaInput {
+  height:12em;
+  resize:vertical;
+}
+.uniForm .textInput:focus,
+.uniForm .textareaInput:focus {
+  border-color:rgba(82,168,236,0.8);
+  outline:0;
+  outline:this dotted \9;
+  -webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075),0 0 8px rgba(82,168,236,0.6);
+  -moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.075),0 0 8px rgba(82,168,236,0.6);
+  box-shadow:inset 0 1px 1px rgba(0,0,0,0.075),0 0 8px rgba(82,168,236,0.6);
+}
+.uniForm .selectInput {
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  background:#fff;
+  border:1px solid #ccc;
+  /*display:inline-block;*/
+  font-size:13px;
+  font-weight:normal;
+  line-height:18px;
+  margin:0;
+  padding:3px;
+/*
+  vertical-align:middle;
+  width:280px;
+  -webkit-border-radius:3px;
+  -moz-border-radius:3px;
+  border-radius:3px;
+*/
+}
+.uniForm .selectInput:focus {
+  outline:this dotted #eee;
+  outline 5px auto -webkit-focus-ring-color;
+  outline-offset:-2px;
+  -webkit-box-shadow:none;
+  -moz-box-shadow:none;
+  box-shadow:none;
+}	
+
+#objectadminFilter .ui-button.small {
+	float: none;
+}
+#objectadminFilter .ui-button.small .ui-button-text {
+	font-size: 11px;
+	font-weight: bold;
+}
+#filterForm .ui-button.small .ui-button-text {
+	padding-top: 2px;
+	padding-bottom: 2px;
+	font-size: 14px;
+}
+#filterForm .buttonHolder {
+	background: #f1f1f1;
+}
