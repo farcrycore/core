@@ -123,7 +123,7 @@
 		<cfset var stException = structnew() />
 		<cfset var stResult = collectRequestInfo() />
 		
-		<cfset var aStack = arraynew() />
+		<cfset var aStack = arraynew(1) />
 		<cfset var stLine = structnew() />
 		<cfset var i = 0 />
 		
