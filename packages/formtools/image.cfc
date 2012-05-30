@@ -90,8 +90,8 @@
 	<cfproperty name="ftlCustomEffects" type="string" hint="<cfimage> support property" required="false" default="" />
 	<cfproperty name="ftConvertImageToFormat" type="string" hint="<cfimage> support property" required="false" default="" />
 	<cfproperty name="ftbSetAntialiasing" type="boolean" hint="<cfimage> support property" required="false" default="true" />
-	<cfproperty name="ftInterpolation" type="string" hint="<cfimage> support property" required="false" default="highestQuality" />
-	<cfproperty name="ftQuality" type="numeric" hint="<cfimage> support property" required="false" default="0.75" />
+	<cfproperty name="ftInterpolation" type="string" hint="<cfimage> support property" required="false" default="blackman" />
+	<cfproperty name="ftQuality" type="numeric" hint="<cfimage> support property" required="false" default="0.8" />
 	<cfproperty name="ftbUploadOnly" type="boolean" hint="Only upload the image and do not optimize or process it. Very useful for source images. Otherwise FarCry will optimize the source image, then read from that dequalitized image to make other optimized images. Can be used for any image field (not just source images)." required="false" default="false" />
 	<cfproperty name="ftCropPosition" type="string" hint="Used when ftAutoGenerateType = aspectCrop" required="false" default="center" />
 	<cfproperty name="ftThumbnailBevel" type="boolean" hint="???" required="false" default="false" />
@@ -1204,7 +1204,7 @@
 		<cfparam name="arguments.stMetadata.ftLCustomEffects" default="" />
 		<cfparam name="arguments.stMetadata.ftConvertImageToFormat" default="" />
 		<cfparam name="arguments.stMetadata.ftbSetAntialiasing" default="true" />
-		<cfparam name="arguments.stMetadata.ftInterpolation" default="highestQuality" />
+		<cfparam name="arguments.stMetadata.ftInterpolation" default="blackman" />
 		<cfparam name="arguments.stMetadata.ftQuality" default="#arguments.quality#" />
 		<cfif not len(arguments.resizeMethod)><cfset arguments.resizeMethod = arguments.stMetadata.ftAutoGenerateType /></cfif>
 		
@@ -1533,8 +1533,8 @@
 		<cfargument name="lCustomEffects" type="string" required="false" default="" hint="List of methods to run for effects with their arguments and values. The methods are order dependant replecting how they are listed here. Example: ftLCustomEffects=""roundCorners();reflect(opacity=40,backgroundColor='black');""" />
 		<cfargument name="convertImageToFormat" type="string" required="false" default="" hint6="Convert image to a specific format. Set value to image extension. Example: 'gif'. Leave blank for no conversion. Default=blank (no conversion)" />
 		<cfargument name="bSetAntialiasing" type="boolean" required="true" default="true" hint="Use Antialiasing (better image, but slower performance)" />
-		<cfargument name="interpolation" type="string" required="true" default="highestQuality" hint="set the interpolation level on the image compression" />
-		<cfargument name="quality" type="string" required="false" default="0.75" hint="Quality of the JPEG destination file. Applies only to files with an extension of JPG or JPEG. Valid values are fractions that range from 0 through 1 (the lower the number, the lower the quality). Examples: 1, 0.9, 0.1. Default = 0.75" />
+		<cfargument name="interpolation" type="string" required="true" default="blackman" hint="set the interpolation level on the image compression" />
+		<cfargument name="quality" type="string" required="false" default="0.8" hint="Quality of the JPEG destination file. Applies only to files with an extension of JPG or JPEG. Valid values are fractions that range from 0 through 1 (the lower the number, the lower the quality). Examples: 1, 0.9, 0.1. Default = 0.8" />
 		<cfargument name="bUploadOnly" type="boolean" required="false" default="false" hint="The image file will be uploaded with no image optimization or changes." />
 		<cfargument name="bSelfSourced" type="boolean" required="false" default="false" hint="The image file will be uploaded with no image optimization or changes." />
 		<cfargument name="ResizeMethod" type="string" required="true" default="" hint="The y origin of the crop area. Options are center, topleft, topcenter, topright, left, right, bottomleft, bottomcenter, bottomright" />
