@@ -67,6 +67,7 @@ h6 {font-size: 83%}
 #header {background:#fff;width:100%}
 
 	#powered-by {float:left;width:96px;margin-right: 13px}
+	#powered-by a:hover { background-image:none; background-color:transparent; }
 	#powered-by img {border-right: 1px solid #D2D2D2}
 
 	#site-name {float:left;width:65%;font-size:76%;padding: 13px 0 10px 10px}
@@ -75,7 +76,7 @@ h6 {font-size: 83%}
 		#site-name h1 {padding: 15px 0 5px;font-size:195%;display:inline}
 		#site-name h2 {display:inline;color:#999;font-style:italic}
 	
-	#admin-tools {font-size:86%;padding: 2px 0 0;width:220px;margin: 5px 0 0;float:right}
+	#admin-tools {font-size:86%;padding: 2px 0 0;width:350px;margin: 5px 0 0;float:right}
 	#admin-tools p {margin: 0;padding: 0}
 	
 	#nav {margin: 0 0 0 20px;height: 2.15em;font-size:96%;clear:left}
