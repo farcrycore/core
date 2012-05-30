@@ -40,17 +40,7 @@
 			<p>Please push "back" on your browser or go back <a style="text-decoration:underline" href="/">home</a></p>
 			
 			<cfif not showError><!--</cfif>
-				<h2>Error Overview</h2>
-				<table>
-					<tr><th>Machine:</th><td>#machineName#</td></tr>
-					<tr><th>Instance:</th><td>#instancename#</td></tr>
-					<tr><th>Browser:</th><td>#cgi.http_user_agent#</td></tr>
-					<tr><th>DateTime:</th><td>#now()#</td></tr>
-					<tr><th>Host:</th><td>#cgi.http_host#</td></tr>
-					<tr><th>HTTPReferer:</th><td>#cgi.http_referer#</td></tr>
-					<tr><th>QueryString:</th><td>#cgi.query_string#</td></tr>
-					<tr><th>RemoteAddress:</th><td>#cgi.remote_addr#</td></tr>
-				</table>
+			#errorHTML#
 			<cfif not showError>--></cfif>
 		</body>
 	</html>		

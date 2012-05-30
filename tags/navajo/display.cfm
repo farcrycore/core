@@ -63,19 +63,6 @@
 <cfparam name="url.type" default="" />
 <cfparam name="url.view" default="" />
 
-<!--- 
-<!--- Handle options for passing object/type in --->
-<cfif not len(attributes.typename) and structkeyexists(url,"type")>
-	<cfset attributes.typename = url.type />
-</cfif>
-<cfif not len(attributes.objectid) and structkeyexists(url,"objectid")>
-	<cfset attributes.objectid = url.objectid />
-</cfif>
-<cfif structkeyexists(url,"view")>
-	<cfset attributes.method = url.view />
-</cfif> --->
-
-
 
 <!--- get standard webskin names by device type --->
 <cfset stWebskins = application.fapi.getDeviceWebskinNames()>
@@ -93,29 +80,9 @@
 	<cfif NOT len(url.type)>
 		
 		<!--- IF THIS IS NOT THE HOME PAGE AND WE HAVE A 404 PAGE, THEN CALL THE 404 --->
-		<cfif structKeyExists(url, "furl") AND url.furl NEQ "/">	
-			
-			<cfset machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
-			
-			<cfset instanceName = "Unknown" />
-			<cftry>
-				<cfset instanceName = createObject("java", "jrunx.kernel.JRun").getServerName() />
-				<cfcatch></cfcatch>
-			</cftry>
-			
-			<cfcontent reset="true" />
-			<cfheader statuscode="404" statustext="Not Found" />
-			<cfif fileexists("#application.path.project#/errors/404.cfm")>
-				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/404.cfm" />
-			<cfelseif fileexists("#application.path.webroot#/errors/404.cfm")>				
-				<cfinclude template="#application.url.webroot#/errors/404.cfm" />
-			<cfelse>
-				<cfinclude template="/farcry/core/webtop/errors/404.cfm" />
-			</cfif>
-			
-			<cfsetting enablecfoutputonly="false" />
-			<cfexit method="exittag" />
-			
+		<cfif structKeyExists(url, "furl") AND url.furl NEQ "/">
+			<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("No objectid or type specified")) />
+			<cfexit method="tag" />
 		</cfif>
 		
 		<!--- If we make it to here, we just have to redirect to the home page. --->
@@ -146,28 +113,8 @@
 		
 		<cfcatch type="Any">
 			<farcry:logevent object="#url.objectid#" type="display" event="404" />
-
-			<cfset machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
-			
-			<cfset instanceName = "Unknown" />
-			<cftry>
-				<cfset instanceName = createObject("java", "jrunx.kernel.JRun").getServerName() />
-				<cfcatch></cfcatch>
-			</cftry>
-			
-			<cfcontent reset="true" />
-			<cfheader statuscode="404" statustext="Not Found" />
-			<cfif fileexists("#application.path.project#/errors/404.cfm")>
-				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/404.cfm" />
-			<cfelseif fileexists("#application.path.webroot#/errors/404.cfm")>
-				<cfinclude template="#application.url.webroot#/errors/404.cfm" />
-			<cfelse>
-				<cfinclude template="/farcry/core/webtop/errors/404.cfm" />
-			</cfif>
-			
-			<cfsetting enablecfoutputonly="false" />
-			<cfexit method="exittag" />
-			
+			<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("Object [#url.objectid#] does not exist")) />
+			<cfexit method="tag" />
 		</cfcatch>
 	</cftry>
 
@@ -272,8 +219,7 @@
 		<cfif application.fapi.hasWebskin(typename="#stobj.typename#", webskin="#stWebskins.page#")>
 			<skin:view objectid="#stobj.objectid#" typename="#stobj.typename#" webskin="#stWebskins.page#" />
 		<cfelse>
-			<cfthrow 
-				message="I was looking at the type: #stobj.typename# and couldn't find a #stWebskins.page#. You'll want to create the default view for this object. To do that, create a #stWebskins.page#.cfm webskin in the webskin folder in a directory named #stobj.typename#." />
+			<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("I was looking at the type: #stobj.typename# and couldn't find a #stWebskins.page#. You'll want to create the default view for this object. To do that, create a #stWebskins.page#.cfm webskin in the webskin folder in a directory named #stobj.typename#.")) />
 		</cfif>
 	</cfif>
 
@@ -320,7 +266,9 @@
 			<skin:view typename="#url.type#" webskin="#url.view#" />
 			
 		<cfelse>
-			<cfthrow message="For the default view of a type, create a #stWebskins.page# webskin." />
+			
+			<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("I was looking at the type: #stobj.typename# and couldn't find a #stWebskins.page#.")) />
+			
 		</cfif>	
 		
 	<cfelse>
