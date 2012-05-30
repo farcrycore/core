@@ -130,8 +130,6 @@
 				</cfsavecontent>			
 			</cfcase>
 			<cfcase value="extjs">
-				<!--- <skin:htmlHead library="extjs" />
-				<skin:htmlHead library="farcryForm" /> --->
 				
 				<cfsavecontent variable="html">
 					
