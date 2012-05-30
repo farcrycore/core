@@ -430,7 +430,7 @@
 		<cfdbinfo datasource="#application.dsn#" type="tables" name="qAllTables" />
 		
 		<cfquery dbtype="query" name="qTables">
-			select * from qAllTables where table_name like '#arguments.typename#'
+			select * from qAllTables where upper(table_name) like '#ucase(arguments.typename)#'
 		</cfquery>
 		<cfloop query="qTables">
 			<cfset structappend(stResult,introspectTable(qTables.table_name),true) />
