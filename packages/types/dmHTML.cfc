@@ -81,11 +81,11 @@ type properties
 	name="extendedmetadata" type="longchar" hint="HTML head section for extended keywords." required="no" default=""
 	ftSeq="35" ftwizardStep="SEO" ftFieldset="SEO" ftlabel="Description Tag"
 	ftHint="Concise summary of the page. Different search engines have different character limits (including spaces) for their search snippet: Google 156, Yahoo 161, Bing 150."
-	ftLimit="170" ftLimitOverage="warn"
+	ftType="longchar" ftLimit="170" ftLimitOverage="warn"
 	ftAutoResize="true" />
 
 <cfproperty 
-	name="metaKeywords" type="string" hint="HTML head section metakeywords." required="no" default="" 
+	name="metaKeywords" type="longchar" hint="HTML head section metakeywords." required="no" default="" 
 	ftSeq="38" ftwizardStep="SEO" ftFieldset="SEO" ftLabel="Keyword Tag(s)"
 	ftHint="Keep it simple and relevant: 10-20 keywords per page. Limited to 900 characters including spaces."
 	ftType="longchar" ftLimit="900"
