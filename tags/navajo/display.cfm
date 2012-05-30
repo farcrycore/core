@@ -82,7 +82,7 @@
 		<!--- IF THIS IS NOT THE HOME PAGE AND WE HAVE A 404 PAGE, THEN CALL THE 404 --->
 		<cfif structKeyExists(url, "furl") AND url.furl NEQ "/">
 			<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("No objectid or type specified")) />
-			<cfexit method="tag" />
+			<cfexit method="exittag" />
 		</cfif>
 		
 		<!--- If we make it to here, we just have to redirect to the home page. --->
@@ -114,7 +114,7 @@
 		<cfcatch type="Any">
 			<farcry:logevent object="#url.objectid#" type="display" event="404" />
 			<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("Object [#url.objectid#] does not exist")) />
-			<cfexit method="tag" />
+			<cfexit method="exittag" />
 		</cfcatch>
 	</cftry>
 
