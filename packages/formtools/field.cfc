@@ -28,9 +28,18 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
 		<cfset var html = "" />
+		<cfset var maxLength = 0 />
+
+		<cfif 
+			structKeyExists(application.fc.lib.db.tablemetadata,arguments.typename) AND 
+			structKeyExists(application.fc.lib.db.tablemetadata[arguments.typename].fields,arguments.stMetadata.name) AND
+			application.fc.lib.db.tablemetadata[arguments.typename].fields[arguments.stMetadata.name].precision GT 0>
+			
+			<cfset maxLength = application.fc.lib.db.tablemetadata[arguments.typename].fields[arguments.stMetadata.name].precision />
+		</cfif>
 	
 		<cfsavecontent variable="html">
-			<cfoutput><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#HTMLEditFormat(arguments.stMetadata.value)#" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" /></cfoutput>
+			<cfoutput><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#HTMLEditFormat(arguments.stMetadata.value)#" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" <cfif maxLength>maxLength="#maxLength#"</cfif> /></cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html>
