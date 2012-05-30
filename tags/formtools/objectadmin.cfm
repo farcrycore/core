@@ -433,7 +433,7 @@ user --->
 			</cfloop>
 		</cfif>
 	</cfif>
-	
+
 	<ft:processForm action="add">
 		<skin:onReady>
 			<cfoutput>
@@ -443,11 +443,16 @@ user --->
 	</ft:processForm>
 	
 	<ft:processForm action="copy">
+		
 		<skin:onReady>
 			<cfoutput>
-				$fc.objectAdminAction('Administration', '#copyURL#');
+				<cfif structkeyexists(form,"objectid")>
+					$fc.objectAdminAction('Administration', '#copyURL#');
+				<cfelse>
+					<skin:bubble title="Warning" message="No objects selected" />	
+				</cfif>	
 			</cfoutput>
-		</skin:onReady>
+		</skin:onReady>		
 	</ft:processForm>
 	
 	<ft:processForm action="overview">
@@ -470,11 +475,15 @@ user --->
 	
 	<ft:processForm action="view">
 		<!--- TODO: Check Permissions. --->
+		<cfif structkeyexists(form,"objectid")>
 		<cfoutput>
 			<script language="javascript">
 				var newWin = window.open("#application.url.webroot#/index.cfm?objectID=#form.objectid#&flushcache=1","viewWindow","resizable=yes,menubar=yes,scrollbars=yes,width=800,height=600,location=yes");
 			</script>
 		</cfoutput>
+		<cfelse>
+			<skin:bubble title="Warning" message="No objects selected" />	
+		</cfif>
 		<!--- <cflocation URL="#application.url.webroot#/index.cfm?objectID=#form.objectid#&flushcache=1" addtoken="false" /> --->
 	</ft:processForm>
 	
@@ -483,7 +492,11 @@ user --->
 			<!--- TODO: Check Permissions. --->
 			<skin:onReady>
 				<cfoutput>
-					$fc.objectAdminAction('Flow', '#application.stPlugins.flow.url#/?startid=#form.objectid#&flushcache=1');
+					<cfif structkeyexists(form,"objectid")>
+						$fc.objectAdminAction('Flow', '#application.stPlugins.flow.url#/?startid=#form.objectid#&flushcache=1');
+					<cfelse>
+						<skin:bubble title="Warning" message="No objects selected" />	
+					</cfif>	
 				</cfoutput>
 			</skin:onReady>
 		</ft:processForm>
@@ -493,7 +506,11 @@ user --->
 		<!--- TODO: Check Permissions. --->
 		<skin:onReady>
 			<cfoutput>
-				$fc.objectAdminAction('Administration', '#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=requestapproval');
+				<cfif structkeyexists(form,"objectid")>
+					$fc.objectAdminAction('Administration', '#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=requestapproval');.
+				<cfelse>
+					<skin:bubble title="Warning" message="No objects selected" />	
+				</cfif>
 			</cfoutput>
 		</skin:onReady>
 	</ft:processForm>
@@ -502,7 +519,11 @@ user --->
 		<!--- TODO: Check Permissions. --->
 		<skin:onReady>
 			<cfoutput>
-				$fc.objectAdminAction('Administration', '#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=approved');
+				<cfif structkeyexists(form,"objectid")>
+					$fc.objectAdminAction('Administration', '#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=approved');
+				<cfelse>
+					<skin:bubble title="Warning" message="No objects selected" />	
+				</cfif>
 			</cfoutput>
 		</skin:onReady>
 	</ft:processForm>
@@ -514,20 +535,27 @@ user --->
 	
 	<ft:processForm action="Send to Draft">
 		<!--- TODO: Check Permissions. --->
-		<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=draft" addtoken="false" />
+		<cfif structkeyexists(form,"objectid")>
+			<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=draft" addtoken="false" />
+		<cfelse>
+			<skin:bubble title="Warning" message="No objects selected" />	
+		</cfif>	
 	</ft:processForm>
 	
 	<ft:processForm action="properties">
-		
-		<cfif len(form.objectid)>				
-			<skin:onReady>
-				<cfoutput>
-					<cfloop list="#form.objectid#" index="i">
-						$fc.objectAdminAction('Properties', '#application.url.farcry#/object_dump.cfm?objectid=#i#&typename=#attributes.typename#');
-					</cfloop>
-				</cfoutput>
-			</skin:onReady>
-		</cfif>
+		<cfif structkeyexists(form,"objectid")>
+			<cfif len(form.objectid)>				
+				<skin:onReady>
+					<cfoutput>
+						<cfloop list="#form.objectid#" index="i">
+							$fc.objectAdminAction('Properties', '#application.url.farcry#/object_dump.cfm?objectid=#i#&typename=#attributes.typename#');
+						</cfloop>
+					</cfoutput>
+				</skin:onReady>
+			</cfif>
+		<cfelse>
+			<skin:bubble title="Warning" message="No objects selected" />
+		</cfif>					
 	</ft:processForm>
 	
 	<!-----------------------------------------------
