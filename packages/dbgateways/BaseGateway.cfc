@@ -187,6 +187,11 @@
 		<cfset var stResult = structnew() />
 		<cfset var queryresult = "" />
 		<cfset var bFirst = false />
+ 		
+		<!--- AJM --->
+		<cfset var thisfield   = "" >
+		<cfset var stVal       = "" >
+		<cfset var qCreateData = "">
 		
 		<!--- set defaults for status --->
 		<cfset stResult.bSuccess = true />
@@ -359,6 +364,7 @@
 		<cfset var i = 0 />
 		<cfset var thiscol = "" />
 		<cfset var thisext = structnew() />
+		<cfset var bFirst = false />
 		
 		<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
 		
@@ -502,6 +508,7 @@
 		<cfset var thisfield = "" />
 		<cfset var stResult = structnew() />
 		<cfset var queryresult = "" />
+		<cfset var bFirst = true />
 		
 		<cfset stResult.bSuccess = true>
 		<cfset stResult.results = arraynew(1) />
