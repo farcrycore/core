@@ -967,7 +967,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var stProps = structNew() />
 		<cfset var aAllRelated = arrayNew(1) />
 		<cfset var changeStatus = "" >
-		<cfset var stVersionRules = structNew() />	
+		<cfset var stVersionRules = structNew() />
+		<cfset var stparent = structnew() />
 
 
 		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=arguments.stProperties.objectid,typename=arguments.stProperties.typename) />
@@ -1116,6 +1117,15 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					</cfif>
 					
 				</cfloop>
+				
+				<!--- approve parent if necessary --->
+				<cfif arguments.stProperties.typename neq "dmNavigation" and structkeyexists(application.stCOAPI[arguments.stProperties.typename],"bUseInTree") and application.stCOAPI[arguments.stProperties.typename].bUseInTree>
+					<cfset stParent = application.fapi.getContentObject(typename="dmNavigation",objectid=getNavID(objectid=arguments.stProperties.objectid,typename=arguments.stProperties.typename)) />
+					<cfif application.security.checkPermission(permission="Approve",object=stParent.objectid) and stParent.status eq "draft">
+						<cfset stParent.status = changeStatus />
+						<cfset application.fapi.setData(stProperties=stParent) />
+					</cfif>
+				</cfif>
 				
 				<!--- LOOP THROUGH THE ARRAY OF RELATED OBJECTS TO FIND ALL OBJECTS NOT APPROVED AND APPROVE THEM --->
 				<cfif arrayLen(aAllRelated)>			
