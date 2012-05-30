@@ -122,7 +122,7 @@
 		<cfset var stUsersProfile = structNew() />
 		<cfset var oClientUD = application.security.userdirectories.CLIENTUD /> 
 		
-		<cfif oClientUD.bEncrypted and arguments.stProperties.password neq stUser.password>
+		<cfif structKeyExists(arguments.stProperties,"password") and oClientUD.bEncrypted and arguments.stProperties.password neq stUser.password>
 			<cfset arguments.stProperties.password = oClientUD.encodePassword(arguments.stProperties.password) />
 		</cfif>
 		

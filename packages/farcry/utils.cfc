@@ -830,5 +830,32 @@
 												  arguments.stateCommandString) />
 		
 	</cffunction>
+	
+	<cffunction name="generateRandomString" access="public" returntype="string" output="false" hint="Generate a very-hard-to-predict 40-character string">
+		<cfargument name="seed" type="string" default="" hint="An optional random-looking string (like a UUID) to add a few more bits of randomness" />
+		
+		<cfset var source = "" />
+		<cfset var randomHex = "" />
+		<cfset var i = 0 />
+		
+		<!--- Generate a "securely pseudo-random" 12-digit hex string (roughly 48 bits of entropy) --->
+		<cfloop index="i" from="1" to="3">
+			<cfset randomHex = FormatBaseN(RandRange(0, 65535, "SHA1PRNG"), 16) />
+			<cfset source = source & Right("000" & randomHex, 4) />
+		</cfloop>
+		
+		<!--- Append the seed string --->
+		<cfset source = source & arguments.seed />
+		
+		<!--- Hash and truncate the source to get a 40-digit hex string (48 bits of entropy hiding in 160 bits of hex data) --->
+		<cfreturn UCase(Left(Hash(source, "SHA-256"), 40)) />
+	</cffunction>
+	
+	<cffunction name="isGeneratedRandomString" access="public" returntype="boolean" output="false" hint="Return true if the given string looks like it came from generateRandomString()">
+		<cfargument name="testString" type="string" required="true" />
+		
+		<cfreturn REFindNoCase("^[0-9a-f]{40}$",arguments.testString) />
+	</cffunction>
+	
 
 </cfcomponent>

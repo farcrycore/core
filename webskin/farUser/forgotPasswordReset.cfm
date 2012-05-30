@@ -59,7 +59,7 @@
 				<ft:buttonPanel>
 					<ft:button value="Reset Password" />
 				</ft:buttonPanel>
-			<cfelseif StructKeyExists(url,"rh") and isValid("UUID",url.rh)> <!--- coming from email --->
+			<cfelseif StructKeyExists(url,"rh") and application.fc.utils.isGeneratedRandomString(url.rh)> <!--- coming from email --->
 				<!--- check which user it is --->
 				<cfquery datasource="#application.dsn#" name="qFarUser">
 					SELECT objectid

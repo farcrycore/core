@@ -72,5 +72,58 @@
 	</cffunction>
 	
 	<!--- ////////////////////////////////////////////////////////////////// --->
-	
+
+	<cffunction name="generateRandomStringTest" access="public">
+		<cfset var testObject = CreateObject("component","farcry.core.packages.farcry.utils").init() />
+		<cfset var aRandomString = ArrayNew(1) />
+		<cfset var randomString = "" />
+		<cfset var expectedRandomStringLen = 40 />
+		<cfset var i = 0 />
+		<cfset var sampleCharPos = 0 />
+		<cfset var sampleCharLen = 5 />
+		<cfset var strNum1 = 0 />
+		<cfset var strNum2 = 0 />
+		
+		<!---
+			Any test of the randomness of a function is inherently non-deterministic.
+			That is, even if the function is truly random, there is a chance that the test will fail.
+			
+			The probability of a truly random hexadecimal string generator failing a single run of this test is about 1.5%
+				(the calculation of this probability is left as an exercise for the reader).
+			The probability of a padded UUID generator failing a single run of this test is likely to be over 90%
+				(in one sample of 40 test runs against a padded CreateUUID(), all 40 tests failed).
+		--->
+		
+		<!--- Generate a series of random strings --->
+		<cfloop index="i" from="1" to="100">
+			<cfset aRandomString[i] = testObject.generateRandomString() />
+			<cfset assertEquals(expectedRandomStringLen,Len(aRandomString[i]),"Len(aRandomString[#i#])") />
+			<cfset debug(aRandomString[i]) />
+		</cfloop>
+		
+		<!--- Simple randomised testing of the series to find similarities in pairs of substrings --->
+		<cfloop index="i" from="1" to="1000">
+			<!--- Select a random pair of strings in the array --->
+			<cfset strNum1 = RandRange(1,99) />
+			<cfset strNum2 = RandRange(strNum1+1,100) />
+			
+			<!--- Select a random position for a sample --->
+			<cfset sampleCharPos = RandRange(1,expectedRandomStringLen - sampleCharLen) />
+			
+			<!--- Check that the same sample substring in each of the selected strings are not equal --->
+			<cfset assertTrue(Mid(aRandomString[strNum1],sampleCharPos,sampleCharLen) neq Mid(aRandomString[strNum2],sampleCharPos,sampleCharLen),
+					"Random test #i# failed: string #strNum1# [#aRandomString[strNum1]#] vs string #strNum2# [#aRandomString[strNum2]# position #sampleCharPos#]") />
+		</cfloop>
+		
+	</cffunction>
+
+	<cffunction name="isGeneratedRandomStringTest" access="public">
+		<cfset var testObject = CreateObject("component","farcry.core.packages.farcry.utils").init() />
+		
+		<cfset assertFalse(testObject.isGeneratedRandomString("This Isnt A GeneratedRandomString String"), "Non-hexadecimal string") />
+		<cfset assertFalse(testObject.isGeneratedRandomString("0718E7431C16D4F8A447CB14D8DCB365734"), "String too short") />
+		<cfset assertFalse(testObject.isGeneratedRandomString("0718E7431C16D4F8A447CB14D8DCB3657341379DBCD18FEA742"), "String too long") />
+		<cfset assertTrue( testObject.isGeneratedRandomString("0718E7431C16D4F8A447CB14D8DCB36573406D8C"), "Correct length hexadecimal string") />
+	</cffunction>
+
 </cfcomponent>
