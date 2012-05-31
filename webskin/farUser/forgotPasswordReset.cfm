@@ -17,18 +17,26 @@
 			AND structKeyExists(FORM, "#FORM.farcryFormPrefixes#objectid") 
 			AND session.resetPWUserID eq FORM["#FORM.farcryFormPrefixes#objectid"]
 		>
-		<ft:processFormObjects typename="farUser" r_stProperties="stProperties">
-			<cfif structKeyExists(stProperties, "password") 
-				AND structKeyExists(FORM, "#FORM.farcryFormPrefixes#passwordConfirm") 
-				AND stProperties.password eq FORM["#FORM.farcryFormPrefixes#passwordConfirm"]>
+		
+		<ft:validateFormObjects typename="farUser" objectid="#session.resetPWUserID#" />
+		
+		<cfif request.stFarcryFormValidation.bSuccess>
+			<ft:processFormObjects typename="farUser" r_stProperties="stProperties">
+				<cfif structKeyExists(stProperties, "password")>
 				
-				<cfset structDelete(session,"resetPWUserID")>
+					<cfset structDelete(session,"resetPWUserID")>
 				
-				<cfset request.pwchanged = true />
-			<cfelse>
-				<cfset request.error = true />
-			</cfif>
-		</ft:processFormObjects>
+					<cfset request.pwchanged = true />
+					
+					<!--- Clear out the password reset key --->
+					<cfset stProperties.forgotPasswordHash = "" />
+				<cfelse>
+					<cfset request.error = true />
+				</cfif>
+			</ft:processFormObjects>
+		<cfelse>
+			<cfset request.error = true />
+		</cfif>
 	<cfelse>
 		<cfset request.error = true />
 	</cfif>	
@@ -70,11 +78,6 @@
 				<cfif qFarUser.recordCount eq 1>
 					<!--- Set reset hash into session to make sure it is still the same user when updating --->
 					<cfset session.resetPWUserID = qFarUser.objectid>
-					<!--- delete reset hash on user object --->
-					<cfset stUser = structNew() />
-					<cfset stUser.objectid = qFarUser.objectid />
-					<cfset stUser.forgotPasswordHash = "" />
-					<cfset setData(stProperties="#stUser#") />		
 					
 					<ft:object typename="farUser" objectid="#qFarUser.objectid#" lfields="password" />
 	

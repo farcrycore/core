@@ -18,7 +18,7 @@
 <!--- @@Developer: Blair Mackenzie (blair@daemon.com.au) --->
 <cfcomponent displayname="FarCry User" hint="User model for the Farcry User Directory." extends="types" output="false" description="" fuAlias="user">
 	<cfproperty ftSeq="1" ftFieldset="User" name="userid" type="string" default="" hint="The unique id for this user. Used for logging in" ftLabel="User ID" ftType="string" bLabel="true" ftValidation="required" />
-	<cfproperty ftSeq="2" ftFieldset="User" name="password" type="string" default="" hint="" ftLabel="Password" ftType="password" ftRenderType="confirmpassword" ftShowLabel="false" ftValidation="required" />
+	<cfproperty ftSeq="2" ftFieldset="User" name="password" type="string" default="" hint="" ftLabel="Password" ftType="password" ftRenderType="confirmpassword" ftShowLabel="false" ftValidation="required" ftValidateOldMethod="ftCheckOldPassword" />
 	<cfproperty ftSeq="3" ftFieldset="User" name="userstatus" type="string" default="active" hint="The status of this user; active, inactive, pending." ftLabel="User status" ftType="list" ftList="active:Active,inactive:Inactive,pending:Pending" />
 	<cfproperty ftSeq="4" ftFieldset="User" name="aGroups" type="array" default="" hint="The groups this member is a member of" ftLabel="Groups" ftType="array" ftJoin="farGroup" />
 	<cfproperty name="lGroups" type="longchar" default="" hint="The groups this member is a member of (list generated automatically)" ftLabel="Groups" ftType="arrayList" ftArrayField="aGroups" ftJoin="farGroup" />
@@ -175,6 +175,38 @@
 		<!--- ----------------- --->
 		<cfreturn stResult>
 		
+	</cffunction>
+
+	<cffunction name="ftCheckOldPassword" access="public" output="false" returntype="struct" hint="Validate the previous value of the password">
+		<cfargument name="ObjectID" required="true" type="UUID" hint="The objectid of the object that this field is part of.">
+		<cfargument name="Typename" required="true" type="string" hint="the typename of the objectid.">
+		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		
+		<cfset var oClientUD = application.security.userdirectories.CLIENTUD />
+		<cfset var oField = createObject("component", application.formtools["field"].packagePath) />
+		<cfset var st = getData(objectid=arguments.objectid) />
+		<cfset var stResult = "" />
+		
+		<cfif oClientUD.bEncrypted>
+			<!--- Password hash check --->
+			<cfif oClientUD.passwordMatchesHash(password=arguments.stFieldPost.value,hashedPassword=st.password)>
+				<cfset stResult = oField.passed(value=arguments.stFieldPost.value) />
+			<cfelse>
+				<cflog text="Password change: Failed password hash check" type="information" />
+				<cfset stResult = oField.failed(value="", message="The current password you entered was incorrect") />
+			</cfif>
+		<cfelse>
+			<!--- Case-sensitive string compare --->
+			<cfif not Compare(arguments.stFieldPost.value,st.password)>
+				<cfset stResult = oField.passed(value=arguments.stFieldPost.value) />
+			<cfelse>
+				<cflog text="Password change: Failed case-sensitive string check" type="information" />
+				<cfset stResult = oField.failed(value="", message="The current password you entered was incorrect") />
+			</cfif>
+		</cfif>
+		
+		<cfreturn stResult />
 	</cffunction>
 	
 </cfcomponent>

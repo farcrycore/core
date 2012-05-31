@@ -35,6 +35,13 @@
 		<cfreturn getOutputHash().encode(arguments.password) />
 	</cffunction>
 
+	<cffunction name="passwordMatchesHash" access="public" returntype="boolean" output="false" hint="Check if a clear password matches an encoded hash">
+		<cfargument name="password" type="string" hint="Input password" required="true" />
+		<cfargument name="hashedPassword" type="string" required="true" hint="Hashed password" />
+		
+		<cfreturn findHash(hashedPassword=arguments.hashedPassword).passwordMatch(password=arguments.password,hashedPassword=arguments.hashedPassword) />
+	</cffunction>
+
 	<cffunction name="hashedPasswordIsStale" access="public" returntype="boolean" output="false" hint="Is the hashed password stale (i.e. needs to be regenerated)?">
 		<cfargument name="hashedPassword" type="string" required="true" hint="Hashed password" />
 		<cfargument name="password" type="string" required="true" hint="Source password" />
@@ -99,8 +106,7 @@
 		
 		<!--- Try to match the entered password against the users in the DB --->
 		<cfloop query="qUser">
-			<cfset oHash = findHash(qUser.password) />
-			<cfif oHash.passwordMatch(password=arguments.password,hashedPassword=qUser.password)>
+			<cfif passwordMatchesHash(password=arguments.password,hashedPassword=qUser.password)>
 				<cfset authenticatedObjectId = qUser.objectid />
 				<cfbreak />
 			</cfif>
