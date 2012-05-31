@@ -15,20 +15,29 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<cfcomponent extends="types" displayname="Image" hint="A global image library that can be referenced from other content types. All images have a source image and an automatically generated standard and thumbnail size image for use within your content.">
+<cfcomponent 
+	extends="types" 
+	displayname="Image" hint="A global image library that can be referenced from other content types. All images have a source image and an automatically generated standard and thumbnail size image for use within your content.">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->
-<cfproperty ftSeq="2" ftFieldset="General Details" name="title" type="nstring" hint="Image title." required="no" default="" blabel="true" ftlabel="Image Title" /> 
-<cfproperty ftSeq="4" ftFieldset="General Details" name="alt" type="nstring" hint="Alternate text" required="no" default="" fttype="longchar" ftlabel="Alternative Text" /> 
+<cfproperty 
+	name="title" type="string" hint="Image title." required="no" default="" blabel="true" 
+	ftSeq="2" ftFieldset="General Details" ftlabel="Image Title" ftValidation="required" />
+
+<cfproperty 
+	name="alt" type="string" precision="1000" hint="Alternate text" required="no" default=""
+	ftSeq="4" ftFieldset="General Details" ftlabel="Alternative Text"
+	fttype="longchar" ftlimit="999" /> 
 
 <!--- image file locations --->
-<cfproperty ftSeq="22" ftFieldset="Image Files" name="SourceImage" type="string" hint="The URL location of the uploaded image" required="No" default="" 
+<cfproperty 
+	name="SourceImage" type="string" hint="The URL location of the uploaded image" required="No" default="" 
+	ftSeq="22" ftFieldset="Image Files" ftlabel="Source Image" 
 	ftType="Image" 
 	ftCreateFromSourceOption="false" 
 	ftAllowResize="false"
 	ftDestination="/images/dmImage/SourceImage" 
-	ftlabel="Source Image" 
 	ftImageWidth="" 
 	ftImageHeight=""
 	ftbUploadOnly="true"
@@ -37,7 +46,7 @@ type properties
 <cfproperty ftSeq="24" ftFieldset="Image Files" name="StandardImage" type="string" hint="The URL location of the optimised uploaded image that should be used for general display" required="no" default="" 
 	ftType="Image" 
 	ftDestination="/images/dmImage/StandardImage" 
-	ftImageWidth="400" 
+	ftImageWidth="600" 
 	ftAutoGenerateType="FitInside" 
 	ftSourceField="SourceImage" 
 	ftCreateFromSourceDefault="true" 
@@ -46,7 +55,9 @@ type properties
 	ftlabel="Mid Size Image"
 	ftHint="This image is generally used throughout your project as the main image. Most often you would have this created automatically from the high quality source image you upload." />  
 
-<cfproperty ftSeq="26" ftFieldset="Image Files" name="ThumbnailImage" type="string" hint="The URL location of the thumnail of the uploaded image that should be used in " required="no" default="" 
+<cfproperty 
+	name="ThumbnailImage" type="string" hint="The URL location of the thumnail of the uploaded image that should be used in " required="no" default="" 
+	ftSeq="26" ftFieldset="Image Files" ftlabel="Thumbnail Image"
 	ftType="Image"  
 	ftDestination="/images/dmImage/ThumbnailImage" 
 	ftImageWidth="80" 
@@ -56,11 +67,13 @@ type properties
 	ftCreateFromSourceDefault="true" 
 	ftAllowUpload="true" 
 	ftQuality=".75"
-	ftlabel="Thumbnail Image"
 	ftHint="This image is generally used throughout your project as the thumbnail teaser image. Most often you would have this created automatically from the high quality source image you upload." />
 
 <!--- image categorisation --->
-<cfproperty ftSeq="42" ftFieldset="Categorisation" name="catImage" type="string" hint="Image categorisation." required="no" default="" ftlabel="Category" fttype="category" ftalias="dmimage" ftselectmultiple="true" />
+<cfproperty 
+	name="catImage" type="string" precision="1000" hint="Image categorisation." required="no" default="" 
+	ftSeq="42" ftFieldset="Categorisation" ftlabel="Category" 
+	fttype="category" ftalias="dmimage" ftselectmultiple="true" />
 
 <!--- system property; ie. not in default edit handlers --->
 <cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft" ftlabel="Status" />
