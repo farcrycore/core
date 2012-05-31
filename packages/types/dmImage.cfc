@@ -26,7 +26,7 @@ type properties
 	ftSeq="2" ftFieldset="General Details" ftlabel="Image Title" ftValidation="required" />
 
 <cfproperty 
-	name="alt" type="string" precision="1000" hint="Alternate text" required="no" default=""
+	name="alt" type="string" dbprecision="1000" hint="Alternate text" required="no" default=""
 	ftSeq="4" ftFieldset="General Details" ftlabel="Alternative Text"
 	fttype="longchar" ftlimit="999" /> 
 
@@ -71,7 +71,7 @@ type properties
 
 <!--- image categorisation --->
 <cfproperty 
-	name="catImage" type="string" precision="1000" hint="Image categorisation." required="no" default="" 
+	name="catImage" type="string" dbprecision="1000" hint="Image categorisation." required="no" default="" 
 	ftSeq="42" ftFieldset="Categorisation" ftlabel="Category" 
 	fttype="category" ftalias="dmimage" ftselectmultiple="true" />
 
