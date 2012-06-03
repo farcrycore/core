@@ -106,7 +106,7 @@
 				</cfif>
 			
 				<cfif stCSS.bCombine>
-					<cfoutput><link rel="stylesheet" id="stylesheet-#stCSS.id#" rel="#stCSS.lFullFilebaseHREFs#" type="text/css" href="#stCSS.hostname##application.url.cache#/#sCacheFileName#" media="#stCSS.media#" #tagEnding#></cfoutput>
+					<cfoutput><link rel="stylesheet" id="stylesheet-#stCSS.id#" type="text/css" href="#stCSS.hostname##application.url.cache#/#sCacheFileName#" media="#stCSS.media#" #tagEnding#></cfoutput>
 				<cfelseif stCSS.bExternal>
 					<cfif len(trim(stCSS.prepend))><cfoutput><style type="text/css">#stCSS.prepend#</style></cfoutput></cfif>
 					<cfloop list="#stCSS.lFiles#" index="i">
