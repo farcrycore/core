@@ -191,9 +191,14 @@
 		
 		<cfset var stacktrace = createObject("java","java.lang.StringBuffer").init() />
 		<cfset var i = 0 />
+		<cfset var firstline = "N/A" />
+		
+		<cfif arraylen(arguments.exception.stack)>
+			<cfset firstline = "#arguments.exception.stack[1].template#, line: #arguments.exception.stack[1].line#" />
+		</cfif>
 		
 		<cfif arguments.bApplication>
-			<cflog log="application" application="true" type="error" text="#arguments.exception.message#. The specific sequence of files included or processed is #arguments.exception.stack[1].template#, line: #arguments.exception.stack[1].line#" />
+			<cflog log="application" application="true" type="error" text="#arguments.exception.message#. The specific sequence of files included or processed is #firstline#" />
 		</cfif>
 		<cfif arguments.bException>
 			<cfloop from="1" to="#arraylen(arguments.exception.stack)#" index="i">
@@ -204,7 +209,7 @@
 					<cfset stacktrace.append(variables.newline) />
 				</cfif>
 			</cfloop>
-			<cflog file="exception" application="true" type="error" text="#arguments.exception.message#. The specific sequence of files included or processed is #arguments.exception.stack[1].template#, line: #arguments.exception.stack[1].line##newline##stacktrace.toString()#" />
+			<cflog file="exception" application="true" type="error" text="#arguments.exception.message#. The specific sequence of files included or processed is #firstline##newline##stacktrace.toString()#" />
 		</cfif>	
 	</cffunction>
 	
