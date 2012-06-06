@@ -6,6 +6,7 @@
 	<cfproperty name="ftAllowCreate" required="false" default="true" options="true,false" hint="Allows user create new record within the library picker"/>
 	<cfproperty name="ftAllowEdit" required="false" default="false" options="true,false" hint="Allows user edit new record within the library picker"/>
 	<cfproperty name="ftRemoveType" required="false" default="remove" options="delete,detach" hint="detach will only remove from the join, delete will remove from the database"/><!--- detach or delete --->
+	<cfproperty name="ftAllowRemoveAll" required="false" default="false" options="true,false" hint="Allows user to remove all items at once"/>
 	
 	<cfproperty name="ftlibrarydatasqlwhere" required="false" default="" hint="A simple where clause filter for the library data result set. Must be in the form PROPERTY OPERATOR VALUE. For example, status = 'approved'"/><!--- detach or delete --->
 	<cfproperty name="ftlibrarydatasqlorderby" required="false" default="datetimelastupdated desc" hint="Nominate a specific property to order library results by."/><!--- detach or delete --->
@@ -68,12 +69,12 @@
 			<cfset stActions.ftRemoveType = "remove" />
 		</cfif>
 		
-		
+
 		
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 		
 			<cfcase value="list">
-				<cfif arguments.stMetadata.type EQ "array">		
+				<cfif arguments.stMetadata.type EQ "array">									
 					<cfset joinItems = arrayToList(arguments.stObject[arguments.stMetadata.name]) />
 				<cfelse>
 					<cfset joinItems = arguments.stObject[arguments.stMetadata.name] />
@@ -84,7 +85,7 @@
 				generate library data query to populate library interface 
 				--------------------------------------------------------------------------->
 				<cfif structkeyexists(stMetadata, "ftLibraryData") AND len(stMetadata.ftLibraryData)>	
-				
+
 					<cfif not structKeyExists(stMetadata, "ftLibraryDataTypename") OR not len(stMetadata.ftLibraryDataTypename)>
 						<cfset stMetadata.ftLibraryDataTypename = arguments.typename />
 					</cfif>
@@ -98,14 +99,14 @@
 						</cfinvoke>
 						
 						<cfif isStruct(libraryData)>
-							<cfset qLibraryList = libraryData.q>
+							<cfset qLibraryList = libraryData.q>						
 						<cfelse>
 							<cfset qLibraryList = libraryData />
 						</cfif>
 					</cfif>
 				<cfelse>
 					<!--- if nothing exists to generate library data then cobble something together --->
-					<cfset qLibraryList = createObject("component", application.types[listFirst(arguments.stMetadata.ftJoin)].typepath).getLibraryData() />
+					<cfset qLibraryList = createObject("component", application.types[listFirst(arguments.stMetadata.ftJoin)].typepath).getLibraryData(arguments.stMetadata.ftlibrarydatasqlwhere,arguments.stMetadata.ftlibrarydatasqlorderby) />								
 				</cfif>
 		
 				<cfsavecontent variable="returnHTML">
@@ -305,7 +306,7 @@
 								
 							</cfif>
 							
-							<cfif listLen(joinItems)>
+							<cfif listLen(joinItems) and arguments.stMetadata.ftAllowRemoveAll>
 								
 								<cfif stActions.ftRemoveType EQ "delete">
 									<ft:button	Type="button" 
