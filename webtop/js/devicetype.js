@@ -14,12 +14,15 @@ $j(function(){
 
 	$j(".fc-switch-device-desktop").live("click", function(){
 		switchDeviceType("desktop");
+		return false;
 	});
 	$j(".fc-switch-device-mobile").live("click", function(){
 		switchDeviceType("mobile");
+		return false;
 	});
 	$j(".fc-switch-device-tablet").live("click", function(){
 		switchDeviceType("tablet");
+		return false;
 	});
 	
 });

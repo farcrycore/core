@@ -65,12 +65,12 @@
 
 
 <!--- get standard webskin names by device type --->
-<cfset stWebskins = application.fapi.getDeviceWebskinNames()>
+<cfset stWebskins = application.fc.lib.device.getDeviceWebskinNames()>
 
 <!--- TODO: device redirection --->
 <!---
-<cfif application.fapi.isDeviceRedirectionEnabled() AND application.fapi.getDeviceType() neq application.fapi.getDomainDeviceType()>
-	<cfset application.fapi.redirectDevice()>
+<cfif application.fc.lib.device.isDeviceRedirectionEnabled() AND application.fc.lib.device.getDeviceType() neq application.fc.lib.device.getDomainDeviceType()>
+	<cfset application.fc.lib.device.redirectDevice()>
 </cfif>
 --->
 
@@ -208,7 +208,7 @@
 	<cfelseif structKeyExists(stObj, "displayMethod") AND len(stObj.displayMethod)>
 	
 		<!--- Update the view with the display method --->
-		<cfset url.view = application.fapi.getDeviceWebskin(stObj.typename, stObj.displayMethod) />
+		<cfset url.view = application.fc.lib.device.getDeviceWebskin(stObj.typename, stObj.displayMethod) />
 		
 		<!--- Use the display method stored with the object --->
 		<skin:view objectid="#stobj.objectid#" typename="#stobj.typename#" webskin="#url.view#" alternateHTML="" />
