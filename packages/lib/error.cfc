@@ -402,6 +402,16 @@
 		<cfset var instanceName = arguments.stException.instancename />
 		<cfset var bot = arguments.stException.bot />
 		
+		<cfset var showError = false>
+		
+		<cfif reFindNoCase("^#application.url.webtop#", cgi.script_name)>
+			<cfset showError = true />
+		<cfelseif isdefined("url.debug") AND url.debug>
+			<cfset showError = true />
+		<cfelseif isdefined("request.mode.debug") and request.mode.debug>
+			<cfset showError = true />
+		</cfif>
+		
 		<cfparam name="application.url.webtop" default="/webtop">
 		
 		<cfcontent reset="true" />

@@ -426,22 +426,6 @@
 		
 		<cfset var stException = structnew() />
 		<cfset var oError = "" />
-		<cfset var errorHTML = "" />
-		
-		<!--- For backwards compatability --->
-		<cfset var machineName = "" />
-		<cfset var instanceName = "" />
-		<cfset var bot = false />
-		
-		<cfset var showError = false>
-		
-		<cfif reFindNoCase("^#application.url.webtop#", cgi.script_name)>
-			<cfset showError = true />
-		<cfelseif isdefined("url.debug") AND url.debug>
-			<cfset showError = true />
-		<cfelseif isdefined("request.mode.debug") and request.mode.debug>
-			<cfset showError = true />
-		</cfif>
 		
 		<cfif isdefined("application.fapi.fc.lib.error")>
 			<cfset oError = application.fapi.fc.lib.error />
