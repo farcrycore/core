@@ -133,7 +133,7 @@
 	</cfcase>
 	
 	<cfcase value="SCOPE,STRUCT" delimiters=",">
-		<cfset keys = listtoarray(listsort(lcase(structkeylist(selectedvar)),"text")) />
+		<cfset keys = listtoarray(listsort(structkeylist(selectedvar),"textnocase")) />
 		
 		<cfif arraylen(keys)>
 			<cfset colcount = 5 />
