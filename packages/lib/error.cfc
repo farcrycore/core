@@ -110,6 +110,7 @@
 		<cfargument name="message" type="string" required="false" default="Page does not exist" />
 		
 		<cfset var stError = collectRequestInfo() />
+		
 		<cfset stError["message"] = arguments.message />
 		<cfset stError["url"] = duplicate(URL) />
 		
@@ -259,7 +260,7 @@
 				</cfif>
 				
 				<cfif structKeyExists(arguments.exception, "stack") and arraylen(arguments.exception.stack)>
-					<cfset output.append("<tr><th>Tag Context:</th><td><ul>") />
+					<cfset output.append("<tr><th valign='top'>Tag Context:</th><td><ul>") />
 					<cfloop from="1" to="#arrayLen(arguments.exception.stack)#" index="i">
 						<cfif arguments.bHighlightNonCore && arguments.exception.stack[i].location neq "core">
 							<cfset output.append("<li><strong>#arguments.exception.stack[i].template# (line: #arguments.exception.stack[i].line#)</strong></li>") />
@@ -271,7 +272,7 @@
 				</cfif>
 				
 				<cfif structKeyExists(arguments.exception, "url")>
-					<cfset output.append("<tr><th>Post-process URL:</th><td><ul>") />
+					<cfset output.append("<tr><th valign='top'>Post-process URL:</th><td><ul>") />
 					<cfloop list="#listsort(structkeylist(arguments.exception.url),'textnocase')#" index="i">
 						<cfset output.append("<li>#i# = #htmleditformat(arguments.exception.url[i])#</li>") />
 					</cfloop>
@@ -401,8 +402,9 @@
 		<cfset var machineName = arguments.stException.machinename />
 		<cfset var instanceName = arguments.stException.instancename />
 		<cfset var bot = arguments.stException.bot />
+		<cfset var output = "" />
 		
-		<cfset var showError = false>
+		<cfset var showError = false />
 		
 		<cfif reFindNoCase("^#application.url.webtop#", cgi.script_name)>
 			<cfset showError = true />
@@ -421,7 +423,7 @@
 			<cfinclude template="/farcry/core/webtop/errors/#statuscode#.cfm" />
 		<cfelseif fileexists("#application.path.project#/errors/#statuscode#.cfm")>
 			<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/#statuscode#.cfm" />
-		<cfelseif fileexists("#application.path.webroot#/errors/#statuscode#.cfm")>				
+		<cfelseif fileexists("#application.path.webroot#/errors/#statuscode#.cfm")>
 			<cfinclude template="#application.url.webroot#/errors/#statuscode#.cfm" />
 		<cfelse>
 			<cfinclude template="/farcry/core/webtop/errors/#statuscode#.cfm" />

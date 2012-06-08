@@ -455,7 +455,6 @@
 		
 		<cfset var stException = structnew() />
 		<cfset var oError = "" />
-		<cfset var errorHTML = "" />
 		
 		<cfif isdefined("application.fapi.fc.lib.error")>
 			<cfset oError = application.fapi.fc.lib.error />
@@ -464,8 +463,6 @@
 		</cfif>
 		
 		<cfset oError.showErrorPage("404 Page missing",oError.create404Error(arguments.message)) />
-		
-		<cfsetting enablecfoutputonly="false" />
 		
 		<cfreturn />
 	</cffunction>
@@ -562,10 +559,6 @@
 		<cfset application.fapi.addProfilePoint("Request initialisation","Parse URL") />
 		<cfif refindnocase("/index.cfm$",cgi.script_name)>
 			<cfset structAppend(url, application.fc.factory.farFU.parseURL(),true) />
-			<cfif structkeyexists(url,"404")>
-				<cfset onMissingTemplate(url["404"]) />
-				<cfabort>
-			</cfif>
 		</cfif>
 		
 

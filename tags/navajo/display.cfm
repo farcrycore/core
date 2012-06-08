@@ -58,6 +58,11 @@
 	<cfset url.type = attributes.typename />
 </cfif>
 
+<cfif structKeyExists(url, "404")>
+	<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error(url["404"])) />
+	<cfexit method="exittag" />
+</cfif>
+
 <!--- DEFAULT URL PARAMETERS. url.bodyView is set depending on whether the call is a type webskin call or not. --->
 <cfparam name="url.objectid" default="" />
 <cfparam name="url.type" default="" />
