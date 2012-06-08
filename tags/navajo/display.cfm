@@ -272,7 +272,7 @@
 			
 		<cfelse>
 			
-			<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("I was looking at the type: #stobj.typename# and couldn't find a #stWebskins.page#.")) />
+			<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("I was looking at the type: #url.type# and couldn't find a #stWebskins.page#.")) />
 			
 		</cfif>	
 		
