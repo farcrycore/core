@@ -140,7 +140,7 @@
 				$fc = $fc || {};
 				$fc.livecombine = 1;
 				
-				$j("link[type=text/css]").each(function(){
+				$j("link[type=text\/css]").each(function(){
 					var data = {};
 					if (!this.id || !this.id.length){
 						this.id = "stylesheet-"+this.href.replace(/[^\w\d]+/g,"-");
