@@ -146,7 +146,7 @@
 			<cfif left(stLine.template,len(application.path.core)) eq application.path.core>
 				<cfset stLine["location"] = "core" />
 			<cfelseif left(stLine.template,len(application.path.plugins)) eq application.path.plugins>
-				<cfset stLine["location"] = listfirst(mid(stLine.template,len(application.path.plugins+1),len(stLine.template)),"/\") />
+				<cfset stLine["location"] = listfirst(mid(stLine.template,len(application.path.plugins)+1,len(stLine.template)),"/\") />
 			<cfelseif left(stLine.template,len(application.path.project)) eq application.path.project or left(stLine.template,len(application.path.webroot)) eq application.path.webroot>
 				<cfset stLine["location"] = "project" />
 			<cfelseif refindnocase("\.java$",stLine.template)>
