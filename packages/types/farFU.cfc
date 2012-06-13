@@ -751,6 +751,8 @@
 		<cfif structkeyexists(stResult,"bodyView")>
 			<cfif structkeyexists(this.webskinFU[stResult.type],stResult.bodyView)>
 				<cfset stResult.bodyView = "#this.webskinFU[stResult.type][stResult.bodyView]#" />
+			<cfelseif structkeyexists(application.stCOAPI[stResult.type].stWebskins,stResult.bodyView)>
+				<!--- parameter is already the webskin name --->
 			<cfelse>
 				<!--- If the view is not a valid webskin for this type ... return immediately --->
 				<cfset stResult["404"] = "Webskin [#stResult.bodyView#] does not exist for type [#stResult.type#]" />
