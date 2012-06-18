@@ -589,12 +589,20 @@
 		<cfargument name="bForce" required="false" default="false" hint="Force the URL Struct to use this as the FU and not look for a default. This captures the problem where there IS no default.">
 		
 		<cfset var stFU = getData(objectid="#arguments.objectid#") />
+		<cfset var thisfu = "" />
 		
 		<cfset this.stMappings[stFU.friendlyURL] = createURLStruct(farFUID=arguments.objectid,bForce=arguments.bForce) />
 		
 		<cfif stFU.bDefault>
 			<!--- fu lookup --->
 			<cfset this.stLookup[stFU.refobjectid] = stFU />
+			
+			<!--- Remove archived URLs from the cache - ensures that they will get reloaded with redirect information --->
+			<cfloop collection="#this.stMappings#" item="thisfu">
+				<cfif structkeyexists(this.stMappings[thisfu],"objectid") and this.stMappings[thisfu].objectid eq stFU.refobjectid and thisfu neq stFU.friendlyURL>
+					<cfset structdelete(this.stMappings,thisfu) />
+				</cfif>
+			</cfloop>
 		</cfif>
 		
 	</cffunction>
