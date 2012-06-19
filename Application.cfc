@@ -612,6 +612,7 @@
 		<cfcatch type="lock">
 			<cfheader statuscode="503" statustext="Service Unavailable" />
 			<cfoutput><h1>Application Restarting</h1><p>Please come back in a few minutes.</p></cfoutput>
+			<cfset request.fcInitError = true />
 			<cfabort />
 		</cfcatch>
 		
@@ -620,6 +621,7 @@
 			<cfset structdelete(application,"bInit") />
 			<!--- report error to user --->
 			<cfoutput><h1>Application Failed to Initialise</h1></cfoutput>
+			<cfset request.fcInitError = true />
 			<cfdump var="#cfcatch#" expand="false" />
 			<cfabort />
 		</cfcatch>
