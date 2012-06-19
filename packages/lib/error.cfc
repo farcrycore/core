@@ -94,7 +94,7 @@
 		<cfset stResult["machinename"] = application.sysInfo.machineName />
 		<cfset stResult["instancename"] = application.sysInfo.instanceName />
 		<cfset stResult["bot"] = IIF(!request.fc.hasSessionScope,DE("bot"),DE("not a bot")) />
-		<cfset stResult["browser"] = cgi.http_host />
+		<cfset stResult["browser"] = cgi.HTTP_USER_AGENT />
 		<cfset stResult["datetime"] = now() />
 		<cfset stResult["host"] = cgi.http_host />
 		<cfset stResult["httpreferer"] = cgi.http_referer />
