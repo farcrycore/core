@@ -427,8 +427,8 @@
 		<cfset var stException = structnew() />
 		<cfset var oError = "" />
 		
-		<cfif isdefined("application.fapi.fc.lib.error")>
-			<cfset oError = application.fapi.fc.lib.error />
+		<cfif isdefined("application.fc.lib.error")>
+			<cfset oError = application.fc.lib.error />
 		<cfelse>
 			<cfset oError = createobject("component","farcry.core.packages.lib.error") />
 		</cfif>
@@ -456,8 +456,8 @@
 		<cfset var stException = structnew() />
 		<cfset var oError = "" />
 		
-		<cfif isdefined("application.fapi.fc.lib.error")>
-			<cfset oError = application.fapi.fc.lib.error />
+		<cfif isdefined("application.fc.lib.error")>
+			<cfset oError = application.fc.lib.error />
 		<cfelse>
 			<cfset oError = createobject("component","farcry.core.packages.lib.error") />
 		</cfif>
