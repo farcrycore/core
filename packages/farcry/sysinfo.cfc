@@ -103,11 +103,11 @@
 	
 	<cfset var coreVersion = structNew() />
 	
-	<cfset coreVersion.major = getMajorVersion() />
-	<cfset coreVersion.minor = getMinorVersion() />
-	<cfset coreVersion.patch = getPatchVersion() />
-	<cfset coreVersion.build = getBuildNumber() />
-	<cfset coreVersion.svndate = getSVNDate() />
+	<cfset coreVersion["major"] = getMajorVersion() />
+	<cfset coreVersion["minor"] = getMinorVersion() />
+	<cfset coreVersion["patch"] = getPatchVersion() />
+	<cfset coreVersion["build"] = getBuildNumber() />
+	<cfset coreVersion["svndate"] = getSVNDate() />
 
 	<cfreturn coreVersion>
 </cffunction>
