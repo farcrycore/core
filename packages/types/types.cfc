@@ -1449,11 +1449,17 @@ default handlers
 	</cffunction>
 			
 	<cffunction name="getLibraryData" access="public" output="false" returntype="query" hint="Return a query of all content instances for generic library interface.">
+		<cfargument name="sqlwhere" required="false" default="">
+		<cfargument name="sqlorderby" required="false" default="label">
 		<cfset var qLibraryList=queryNew("ObjectID,Label") />
+
 		<cfquery datasource="#application.dsn#" name="qLibraryList">
 		SELECT *
 		FROM #getTypename()#
-		ORDER BY label
+		<cfif len(arguments.sqlwhere)>
+		WHERE #PreserveSingleQuotes(arguments.sqlwhere)#
+		</cfif>
+		ORDER BY #arguments.sqlorderby#
 		</cfquery>
 		<cfreturn qLibraryList />
 	</cffunction>

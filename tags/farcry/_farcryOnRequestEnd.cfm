@@ -41,8 +41,8 @@ $out:$
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/misc" prefix="misc" />
 
-<!--- If we are in the middle of a <skin:location> then we dont want to output a bunch of javascript --->
-<cfif not structKeyExists(request.fc, "bLocating")>
+<!--- If we are in the middle of a <skin:location> or we failed to init then we dont want to output a bunch of javascript --->
+<cfif not structKeyExists(request.fc, "bLocating") and not structKeyExists(request,"fcInitError")>
 
 	<skin:pop format="gritter" />
 

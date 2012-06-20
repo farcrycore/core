@@ -35,7 +35,7 @@ START WEBSKIN
 
 <!--- INCLUDE THE CSS IN THE HEADER --->
 <skin:loadCSS id="farcry-pagination" />
-
+<cfparam name="arguments.stParam.bDisplayTotalRecords" default="0">
 
 <!--- OUTPUT THE MARKUP FOR THE PAGINATOR --->
 <cfif getPageTo() GT 1>

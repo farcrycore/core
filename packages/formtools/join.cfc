@@ -6,6 +6,7 @@
 	<cfproperty name="ftAllowCreate" required="false" default="true" options="true,false" hint="Allows user create new record within the library picker"/>
 	<cfproperty name="ftAllowEdit" required="false" default="false" options="true,false" hint="Allows user edit new record within the library picker"/>
 	<cfproperty name="ftRemoveType" required="false" default="remove" options="delete,detach" hint="detach will only remove from the join, delete will remove from the database"/><!--- detach or delete --->
+	<cfproperty name="ftAllowRemoveAll" required="false" default="false" options="true,false" hint="Allows user to remove all items at once"/>
 	
 	<cfproperty name="ftlibrarydatasqlwhere" required="false" default="" hint="A simple where clause filter for the library data result set. Must be in the form PROPERTY OPERATOR VALUE. For example, status = 'approved'"/><!--- detach or delete --->
 	<cfproperty name="ftlibrarydatasqlorderby" required="false" default="datetimelastupdated desc" hint="Nominate a specific property to order library results by."/><!--- detach or delete --->
@@ -105,7 +106,7 @@
 					</cfif>
 				<cfelse>
 					<!--- if nothing exists to generate library data then cobble something together --->
-					<cfset qLibraryList = createObject("component", application.types[listFirst(arguments.stMetadata.ftJoin)].typepath).getLibraryData() />
+					<cfset qLibraryList = createObject("component", application.types[listFirst(arguments.stMetadata.ftJoin)].typepath).getLibraryData(arguments.stMetadata.ftlibrarydatasqlwhere,arguments.stMetadata.ftlibrarydatasqlorderby) />
 				</cfif>
 		
 				<cfsavecontent variable="returnHTML">
@@ -297,6 +298,36 @@
 					<cfoutput>
 						
 						
+							<cfif stActions.ftAllowSelect>
+								<ft:button	Type="button" 
+											renderType="button"
+											class="ui-state-default ui-corner-all"
+											value="select" 
+											onClick="fcForm.openLibrarySelect('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');" />
+								
+							</cfif>
+							
+							<cfif listLen(joinItems) and arguments.stMetadata.ftAllowRemoveAll>
+								
+								<cfif stActions.ftRemoveType EQ "delete">
+									<ft:button	Type="button" 
+												renderType="button"
+												class="ui-state-default ui-corner-all"
+												value="Delete All" 
+												text="delete all" 
+												confirmText="Are you sure you want to delete all the attached items?"
+												onClick="fcForm.deleteAllLibraryItems('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems#');" />
+								<cfelseif stActions.ftRemoveType EQ "remove">
+									<ft:button	Type="button" 
+												renderType="button"
+												class="ui-state-default ui-corner-all"
+												value="Remove All" 
+												text="remove all" 
+												confirmText="Are you sure you want to remove all the attached items?"
+												onClick="fcForm.detachAllLibraryItems('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems#');" />
+									
+								</cfif>
+							</cfif>
 							<cfif arguments.stMetadata.ftAllowCreate>
 							
 
