@@ -295,39 +295,9 @@
 					</cfif>
 					
 					<ft:buttonPanel style="border:none;">
+						
 					<cfoutput>
-						
-						
-							<cfif stActions.ftAllowSelect>
-								<ft:button	Type="button" 
-											renderType="button"
-											class="ui-state-default ui-corner-all"
-											value="select" 
-											onClick="fcForm.openLibrarySelect('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');" />
-								
-							</cfif>
-							
-							<cfif listLen(joinItems) and arguments.stMetadata.ftAllowRemoveAll>
-								
-								<cfif stActions.ftRemoveType EQ "delete">
-									<ft:button	Type="button" 
-												renderType="button"
-												class="ui-state-default ui-corner-all"
-												value="Delete All" 
-												text="delete all" 
-												confirmText="Are you sure you want to delete all the attached items?"
-												onClick="fcForm.deleteAllLibraryItems('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems#');" />
-								<cfelseif stActions.ftRemoveType EQ "remove">
-									<ft:button	Type="button" 
-												renderType="button"
-												class="ui-state-default ui-corner-all"
-												value="Remove All" 
-												text="remove all" 
-												confirmText="Are you sure you want to remove all the attached items?"
-												onClick="fcForm.detachAllLibraryItems('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems#');" />
-									
-								</cfif>
-							</cfif>
+
 							<cfif arguments.stMetadata.ftAllowCreate>
 							
 
@@ -366,7 +336,7 @@
 								
 							</cfif>
 							
-							<cfif listLen(joinItems)>
+							<cfif listLen(joinItems) and arguments.stMetadata.ftAllowRemoveAll>
 								
 								<cfif stActions.ftRemoveType EQ "delete">
 									<ft:button	Type="button" 
