@@ -24,7 +24,7 @@
 type properties
 ------------------------------------------------------------------------->	
 <cfproperty 
-	name="Title" type="string" hint="Title of content item." required="no" default="" 
+	name="Title" type="string" hint="Title of content item." required="no" default="" ftType="string" ftLabel="Title"
 	ftSeq="1" ftwizardStep="Web Page" ftFieldset="General Details" ftValidation="required" 
 	ftHint="This title will appear as the major title on the page. It should not be confused with the title that appears in the navigation.">
 
