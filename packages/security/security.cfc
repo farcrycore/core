@@ -737,6 +737,7 @@
 
 		<cfscript>
 		request.fc.bShowTray = true;
+		request.fc.okToCache = -1;
 			
 		// init request.mode with defaults
 		request.mode = structNew();

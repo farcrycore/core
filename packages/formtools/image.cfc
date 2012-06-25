@@ -1033,43 +1033,67 @@
 	    	<cfparam name="url.allowcancel" default="1" />
 	    	
 			<cfif len(source)>
+				<cfimage action="info" source="#application.path.imageroot##source#" structName="stImage" />
+				
 				<cfsavecontent variable="html"><cfoutput>
 					<div style="float:left;background-color:##cccccc;height:100%;width:65%;margin-right:2%;">
 						<img id="cropable-image" src="#application.url.imageroot##source#" />
 					</div>
 					<div style="float:left;width:30%;">
 						<div class="image-crop-instructions" style="overflow-y:auto;overlow-y:hidden;">
-							<p class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;">
-								Your selection:<br>
-								Coordinates: (<span id="image-crop-a-x">?</span>,<span id="image-crop-a-y">?</span>) to (<span id="image-crop-b-x">?</span>,<span id="image-crop-b-y">?</span>)<br>
-								Dimensions: <span id="image-crop-width">?</span>px x <span id="image-crop-height">?</span>px<br>
-								<cfif arguments.stMetadata.ftImageWidth gt 0 and arguments.stMetadata.ftImageHeight gt 0>
-									Ratio: 
-									<cfif arguments.stMetadata.ftImageWidth gt arguments.stMetadata.ftImageHeight>
-										#numberformat(arguments.stMetadata.ftImageWidth/arguments.stMetadata.ftImageHeight,"9.99")#:1
-									<cfelseif arguments.stMetadata.ftImageWidth lt arguments.stMetadata.ftImageHeight>
-										1:#numberformat(arguments.stMetadata.ftImageHeight/arguments.stMetadata.ftImageWidth,"9.99")#
-									<cfelse><!--- Equal --->
-										1:1
-									</cfif> <span style="font-style:italic;">(NOTE: the size ratio is predefined for this field)</span><br>
-								<cfelse>
-									Ratio: <span id="image-crop-ratio-num">?</span>:<span id="image-crop-ratio-den">?</span><br>
-								</cfif>
-								Quality: <cfif arguments.stMetadata.ftAllowResizeQuality><input id="image-crop-quality" value="#arguments.stMetadata.ftQuality#" /><cfelse>#round(arguments.stMetadata.ftQuality*100)#%<input type="hidden" id="image-crop-quality" value="#arguments.stMetadata.ftQuality#" /></cfif>
-							</p>
-							<p>To choose a crop area:</p>
-							<ol style="padding-left:40px;">
-								<li style="list-style:decimal outside;">Click on the image where the first corner should be, and hold down the mouse button</li>
-								<li style="list-style:decimal outside;">While holding the mouse button down, drag the pointer to the opposite corner. The area you're selecting should be highlighted.</li>
-								<li style="list-style:decimal outside;">You can drag the selection box around the image if it isn't in the right place, or drag the edges and corners if the box isn't the right shape.</li>
-								<li style="list-style:decimal outside;">Click "Crop and Resize" when you're happy.</li>
-								<li style="list-style:decimal outside;">Our server will create the new image for you when you save.</li>
-							</ol>
+							<cfif (arguments.stMetadata.ftImageWidth eq 0 or arguments.stMetadata.ftImageWidth lte stImage.width)
+									and (arguments.stMetadata.ftImageHeight eq 0 or arguments.stMetadata.ftImageHeight lte stImage.height)>
+								<p class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;">
+									Your selection:<br>
+									Coordinates: (<span id="image-crop-a-x">?</span>,<span id="image-crop-a-y">?</span>) to (<span id="image-crop-b-x">?</span>,<span id="image-crop-b-y">?</span>)<br>
+									Dimensions: <span id="image-crop-width">?</span>px x <span id="image-crop-height">?</span>px<br>
+									<cfif arguments.stMetadata.ftImageWidth gt 0 and arguments.stMetadata.ftImageHeight gt 0>
+										Ratio: 
+										<cfif arguments.stMetadata.ftImageWidth gt arguments.stMetadata.ftImageHeight>
+											#numberformat(arguments.stMetadata.ftImageWidth/arguments.stMetadata.ftImageHeight,"9.99")#:1
+										<cfelseif arguments.stMetadata.ftImageWidth lt arguments.stMetadata.ftImageHeight>
+											1:#numberformat(arguments.stMetadata.ftImageHeight/arguments.stMetadata.ftImageWidth,"9.99")#
+										<cfelse><!--- Equal --->
+											1:1
+										</cfif> <span style="font-style:italic;">(NOTE: the size ratio is predefined for this field)</span><br>
+									<cfelse>
+										Ratio: <span id="image-crop-ratio-num">?</span>:<span id="image-crop-ratio-den">?</span><br>
+									</cfif>
+									Quality: <cfif arguments.stMetadata.ftAllowResizeQuality><input id="image-crop-quality" value="#arguments.stMetadata.ftQuality#" /><cfelse>#round(arguments.stMetadata.ftQuality*100)#%<input type="hidden" id="image-crop-quality" value="#arguments.stMetadata.ftQuality#" /></cfif>
+								</p>
+								<p>To choose a crop area:</p>
+								<ol style="padding-left:40px;">
+									<li style="list-style:decimal outside;">Click on the image where the first corner should be, and hold down the mouse button</li>
+									<li style="list-style:decimal outside;">While holding the mouse button down, drag the pointer to the opposite corner. The area you're selecting should be highlighted.</li>
+									<li style="list-style:decimal outside;">You can drag the selection box around the image if it isn't in the right place, or drag the edges and corners if the box isn't the right shape.</li>
+									<li style="list-style:decimal outside;">Click "Crop and Resize" when you're happy.</li>
+									<li style="list-style:decimal outside;">Our server will create the new image for you when you save.</li>
+								</ol>
+							<cfelse>
+								<!--- not croppable --->
+								<p class="image-resize-information ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;">
+									<cfif arguments.stMetadata.ftImageWidth eq 0 or arguments.stMetadata.ftImageWidth lt stImage.width>
+										<!--- width is fine ... --->
+										The height of the source image (#stImage.height#px) is too small (minimum #arguments.stMetadata.ftImageHeight#px).
+									<cfelseif arguments.stMetadata.ftImageHeight eq 0 or arguments.stMetadata.ftImageHeight lt stImage.height>
+										<!--- height is fine ... --->
+										The width of the source image (#stImage.width#px) is too small (minimum #arguments.stMetadata.ftImageWidth#px).
+									<cfelse>
+										<!--- neither are fine ... --->
+										The source image (#stImage.width#x#stImage.height#px) is too small (minimum #arguments.stMetadata.ftImageWidth#x#arguments.stMetadata.ftImageHeight#px).
+									</cfif>
+								</p>
+							</cfif>
 						</div>
 						<div class="uniForm image-crop-actions">
 							<ft:buttonPanel>
 								<cfif url.allowcancel><a href="##" id="image-crop-cancel" style="padding-right:10px;">Cancel</a></cfif>
-								<ft:button value="Crop and Resize" id="image-crop-finalize" onclick="$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').finalizeCrop();return false;" />
+								<cfif (arguments.stMetadata.ftImageWidth eq 0 or arguments.stMetadata.ftImageWidth lte stImage.width)
+										and (arguments.stMetadata.ftImageHeight eq 0 or arguments.stMetadata.ftImageHeight lte stImage.height)>
+									<ft:button value="Crop and Resize" id="image-crop-finalize" />
+								<cfelse>
+									<ft:button value="Crop and Resize" id="image-crop-finalize" disabled="true" />
+								</cfif>
 							</ft:buttonPanel>
 						</div>
 					</div>

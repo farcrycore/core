@@ -89,6 +89,27 @@
 							</td>
 						</tr>
 					</cfif>
+					
+					<cfif structkeyexists(stException, "detail") and len(stException.detail)>
+						<tr>
+							<th>Detail</th>
+							<td>#stException.detail#</td>
+						</tr>
+					</cfif>
+					
+					<cfif structkeyexists(stException, "extendedinfo") and len(stException.extendedinfo)>
+						<tr>
+							<th>Extended Information</th>
+							<td>#stException.extendedinfo#</td>
+						</tr>
+					</cfif>
+					
+					<cfif structkeyexists(stException, "stacktrace") and len(stException.stacktrace)>
+						<tr>
+							<th>Stack Trace</th>
+							<td>#rereplace(stException.stacktrace,"\sat ","<br>at ","ALL")#</td>
+						</tr>
+					</cfif>
 				</table>
 			<cfif not showError>--></cfif>
 		</body>

@@ -334,9 +334,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					<cfelseif structKeyExists(arguments, "alternateHTML")>
 						<cfset stWebskin.webskinHTML = arguments.alternateHTML />
 					<cfelse>
-						<cfthrow type="Application" 
-								message="Error: Template not found [/webskin/#webskinTypename#/#arguments.template#.cfm] and no alternate html provided."
-								detail="Error: Template not found [/webskin/#webskinTypename#/#arguments.template#.cfm] and no alternate html provided. typename: #stobj.typename#. objectid: #stobj.objectid#." />
+						<!--- This is a temporary solution - 6.2 handles this better --->
+						<cflocation url="http://#cgi.server_name#/errors/404.cfm?thepage=#urlEncodedFormat(url.furl)#" addToken="false" />
 					</cfif>	
 				</cfif>		
 			<cfelse>
