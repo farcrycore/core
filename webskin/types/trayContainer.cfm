@@ -139,6 +139,7 @@
 	<cfif stObj.typename neq "farCOAPI">
 		$j('##farcryTray-edit').click(function(){
 			$fc.editTrayObject('#stObj.typename#', '#stObj.objectid#');
+			return false;
 		});
 	</cfif>
 	
