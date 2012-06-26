@@ -1,12 +1,13 @@
 <cfcomponent title="bcrypt (strong; recommended)" hint="I encode passwords using a popular secure password hashing algorithm called bcrypt. I am very slow, but that makes me very secure!" extends="PasswordHash"
 			key="bcrypt" seq="9001" workFactor="10">
 
+	<cfset variables.loadPaths = [expandPath("/farcry/core/packages/security/crypt/jbcrypt-0.3m.jar")] />
+
 	<cffunction name="init" access="public" output="true" returntype="any" hint="constructor">
-		<cfargument name="cryptLib" type="any" hint="Interface to 3rd-party Java crypto libraries" />
 		
-		<cfset super.init(cryptLib=arguments.cryptLib) />
+		<cfset super.init() />
 		
-		<cfset variables.oBCryptClass = arguments.cryptLib.create("org.mindrot.jbcrypt.BCrypt") />
+		<cfset variables.oBCryptClass = createJavaClass("org.mindrot.jbcrypt.BCrypt") />
 		
 		<cfreturn this />
 	</cffunction>

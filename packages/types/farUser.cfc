@@ -123,7 +123,7 @@
 		<cfset var oClientUD = application.security.userdirectories.CLIENTUD /> 
 		
 		<cfif structKeyExists(arguments.stProperties,"password") and oClientUD.bEncrypted and arguments.stProperties.password neq stUser.password>
-			<cfset arguments.stProperties.password = oClientUD.encodePassword(arguments.stProperties.password) />
+			<cfset arguments.stProperties.password = application.security.cryptlib.encodePassword(password=arguments.stProperties.password,hashName=oClientUD.getOutputHashName()) />
 		</cfif>
 		
 		<!--- Clear security cache --->
@@ -140,8 +140,8 @@
 		
 		<cfset var oClientUD = application.security.userdirectories.CLIENTUD /> 
 		
-		<cfif oClientUD.bEncrypted>
-			<cfset arguments.stProperties.password = oClientUD.encodePassword(arguments.stProperties.password) />
+		<cfif structKeyExists(arguments.stProperties,"password") and oClientUD.bEncrypted>
+			<cfset arguments.stProperties.password = application.security.cryptlib.encodePassword(password=arguments.stProperties.password,hashName=oClientUD.getOutputHashName()) />
 		</cfif>
 		
 		<cfreturn super.createData(arguments.stProperties,arguments.user,arguments.auditNote,arguments.dsn) />
@@ -190,7 +190,7 @@
 		
 		<cfif oClientUD.bEncrypted>
 			<!--- Password hash check --->
-			<cfif oClientUD.passwordMatchesHash(password=arguments.stFieldPost.value,hashedPassword=st.password)>
+			<cfif application.security.cryptlib.passwordMatchesHash(password=arguments.stFieldPost.value,hashedPassword=st.password)>
 				<cfset stResult = oField.passed(value=arguments.stFieldPost.value) />
 			<cfelse>
 				<cfset stResult = oField.failed(value="", message="The current password you entered was incorrect") />

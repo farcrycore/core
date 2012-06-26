@@ -1,12 +1,14 @@
 <cfcomponent displayname="scrypt (very strong; uses more memory than bcrypt)" hint="I encode passwords using scrypt, which was designed to be far stronger than bcrypt." extends="PasswordHash"
 			key="scrypt" seq="9500" workFactor="14" memoryCost="8" parallelFactor="1">
 
+	<cfset variables.loadPaths = [expandPath("/farcry/core/packages/security/crypt/scrypt-1.3.1.jar")] />
+
 	<cffunction name="init" access="public" output="true" returntype="any" hint="constructor">
 		<cfargument name="cryptLib" type="any" hint="Interface to 3rd-party Java crypto libraries" />
 		
-		<cfset super.init(cryptLib=arguments.cryptLib) />
+		<cfset super.init() />
 		
-		<cfset variables.oSCryptClass = arguments.cryptLib.create("com.lambdaworks.crypto.SCryptUtil") />
+		<cfset variables.oSCryptClass = createJavaClass("com.lambdaworks.crypto.SCryptUtil") />
 		
 		<!--- scrypt's cpuCost paramater = 2^workfactor (which is equivalent to bit shifting) --->
 		<cfset variables.cpuCost = BitSHLN(1,this.workFactor) />

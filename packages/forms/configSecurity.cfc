@@ -55,7 +55,7 @@
 
 	<cffunction name="listHashAlgorithms" access="public" returntype="query" description="Returns the available password hash algorithms" output="false">
 		<cfset var qPwdHash = querynew("name,value") />
-		<cfset var aPwdHashes = application.security.userdirectories.CLIENTUD.getOrderedHashArray() />
+		<cfset var aPwdHashes = application.security.cryptlib.getOrderedHashArray() />
 		<cfset var pwdHashCount = arrayLen(aPwdHashes) />
 		<cfset var i = "" />
 		<cfset var oPwdHash = "" />
