@@ -83,6 +83,9 @@
 				<menuitem id="fumanagement" sequence="10" label="Manage Friendly URLs" link="/admin/customadmin.cfm?module=customlists/farFU.cfm" />
 				<menuitem id="furebuild" sequence="20" label="Rebuild Friendly URLs" link="/admin/rebuildFU.cfm" />
 			</menu>
+			<menu id="securitytools" sequence="150" label="Security Tools">
+				<menuitem id="upgradepasswords" sequence="10" label="Upgrade Password Security" link="/admin/customadmin.cfm?module=utilities/upgradePasswords.cfm" />
+			</menu>
 		</subsection>
 
 	</section>

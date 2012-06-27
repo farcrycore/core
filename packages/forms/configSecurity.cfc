@@ -67,7 +67,7 @@
 		<cfloop index="i" from="1" to="#pwdHashCount#">
 			<cfset oPwdHash = aPwdHashes[i] />
 			<cfset queryaddrow(qPwdHash) />
-			<cfset querysetcell(qPwdHash,"value",oPwdHash.key) />
+			<cfset querysetcell(qPwdHash,"value",oPwdHash.alias) />
 			<cfset querysetcell(qPwdHash,"name",oPwdHash.title) />
 		</cfloop>
 		

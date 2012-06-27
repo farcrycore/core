@@ -1,5 +1,5 @@
-<cfcomponent displayname="scrypt (very strong)" hint="I encode passwords using scrypt, which was designed to be far stronger than bcrypt." extends="PasswordHash"
-			key="scrypt" seq="9500" workFactor="14" memoryCost="8" parallelFactor="1">
+<cfcomponent displayname="scrypt (very strong; not as heavily tested as bcrypt)" hint="I encode passwords using scrypt, which was designed to be far stronger than bcrypt." extends="PasswordHash"
+			alias="scrypt" seq="9500" workFactor="14" memoryCost="8" parallelFactor="1">
 
 	<cfset variables.loadPaths = [expandPath("/farcry/core/packages/security/crypt/scrypt-1.3.1.jar")] />
 
@@ -8,7 +8,11 @@
 		
 		<cfset super.init() />
 		
-		<cfset variables.oSCryptClass = createJavaClass("com.lambdaworks.crypto.SCryptUtil") />
+		<!--- Allow the java loader to fail silently: we can report the failure via isAvailable() --->
+		<cftry>
+			<cfset variables.oSCryptClass = createJavaClass("com.lambdaworks.crypto.SCryptUtil") />
+			<cfcatch></cfcatch>
+		</cftry>
 		
 		<!--- scrypt's cpuCost paramater = 2^workfactor (which is equivalent to bit shifting) --->
 		<cfset variables.cpuCost = BitSHLN(1,this.workFactor) />
@@ -25,6 +29,10 @@
 		<cfset variables.hashParams = FormatBaseN(this.workFactor,16) & variables.hashParams />
 		
 		<cfreturn this />
+	</cffunction>
+
+	<cffunction name="isAvailable" hint="Is the hashing agorithm available in this environment?" access="public" returntype="boolean">
+		<cfreturn structKeyExists(variables,"oSCryptClass") />
 	</cffunction>
 
 	<cffunction name="matchesHashFormat" hint="Does the string match the format for this hash?" access="public" returntype="boolean">

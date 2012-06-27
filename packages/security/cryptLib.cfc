@@ -10,9 +10,7 @@
 		<cfloop list="#application.factory.oUtils.getComponents('security')#" index="comp">
 			<cfif not listFindNoCase("PasswordHash",comp) and application.factory.oUtils.extends(application.factory.oUtils.getPath("security",comp),"farcry.core.packages.security.PasswordHash")>
 				<cfset oHash = createobject("component",application.factory.oUtils.getPath("security",comp)).init() />
-				<cfif oHash.isAvailable()>
-					<cfset variables.stHashes[oHash.key] = oHash />
-				</cfif>
+				<cfset variables.stHashes[oHash.alias] = oHash />
 			</cfif>
 		</cfloop>
 		
@@ -53,7 +51,7 @@
 	<cffunction name="isHashAlgorithmSupported" access="public" returntype="boolean" output="false" hint="Is this hash algorithm supported?">
 		<cfargument name="hashName" type="string" required="true" hint="Alias of hash algorithm" />
 
-		<cfreturn structKeyExists(variables.stHashes,arguments.hashName) />
+		<cfreturn structKeyExists(variables.stHashes,arguments.hashName) and variables.stHashes[arguments.hashName].isAvailable() />
 	</cffunction>
 
 	<cffunction name="getHashComponent" access="public" returntype="PasswordHash" output="false" hint="Return a hash algorithm component">
@@ -70,13 +68,15 @@
 		
 		<cfloop list="#variables.lOrderedHashes#" index="hashKey">
 			<cfset oHash = variables.stHashes[hashKey] />
-			<cfset ArrayAppend(aHashes,oHash) />
+			<cfif oHash.isAvailable()>
+				<cfset ArrayAppend(aHashes,oHash) />
+			</cfif>
 		</cfloop>
 		
 		<cfreturn aHashes />
 	</cffunction>
 
-	<cffunction name="findHash" access="private" output="false" returntype="PasswordHash" hint="Returns a PasswordHash component that can verify this hashed password">
+	<cffunction name="findHash" access="public" output="false" returntype="PasswordHash" hint="Returns a PasswordHash component that can verify this hashed password">
 		<cfargument name="hashedPassword" type="string" hint="Hashed password string" required="true" />
 		
 		<cfset var hashKey = "" />
@@ -84,11 +84,11 @@
 		
 		<cfloop list="#variables.lOrderedHashes#" index="hashKey">
 			<cfset oHash = variables.stHashes[hashKey] />
-			<cfif oHash.matchesHashFormat(arguments.hashedPassword)>
+			<cfif oHash.isAvailable() and oHash.matchesHashFormat(arguments.hashedPassword)>
 				<cfreturn oHash />
 			</cfif>
 		</cfloop>
-		<cfthrow message="Hash does not match any known hash formats" detail="Hashed password did not match any available PasswordHash objects. Did you override or delete NullHash.cfc?" />
+		<cfthrow message="Password hash does not match any available hash formats" detail="Hashed password did not match any available PasswordHash objects. Did you override or delete NullHash.cfc?" />
 	</cffunction>
 
 
