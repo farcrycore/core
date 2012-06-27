@@ -1,5 +1,5 @@
-<cfcomponent displayname="Unsalted MD5 (extremely weak; provided for backwards compatibility only)" hint="I store passwords as unsalted MD5 hashes. I offer no protection against bad guys." extends="PasswordHash"
-			key="unsalted">
+<cfcomponent displayname="Unsalted MD5 (extremely weak; DO NOT USE)" hint="I store passwords as unsalted MD5 hashes. I offer no protection against bad guys." extends="PasswordHash"
+			alias="md5">
 
 	<cffunction name="matchesHashFormat" hint="Does the string match the format for this hash?" access="public" returntype="boolean">
 		<cfargument name="input" type="string" hint="String that may be a password hash" required="true" />

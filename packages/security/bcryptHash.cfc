@@ -1,5 +1,5 @@
 <cfcomponent title="bcrypt (strong; recommended)" hint="I encode passwords using a popular secure password hashing algorithm called bcrypt. I am very slow, but that makes me very secure!" extends="PasswordHash"
-			key="bcrypt" seq="9001" workFactor="10">
+			alias="bcrypt" seq="9001" workFactor="10">
 
 	<cfset variables.loadPaths = [expandPath("/farcry/core/packages/security/crypt/jbcrypt-0.3m.jar")] />
 
@@ -7,9 +7,17 @@
 		
 		<cfset super.init() />
 		
-		<cfset variables.oBCryptClass = createJavaClass("org.mindrot.jbcrypt.BCrypt") />
+		<!--- Allow java loader to fail silently: we can report the failure via isAvailable() --->
+		<cftry>
+			<cfset variables.oBCryptClass = createJavaClass("org.mindrot.jbcrypt.BCrypt") />
+			<cfcatch></cfcatch>
+		</cftry>
 		
 		<cfreturn this />
+	</cffunction>
+	
+	<cffunction name="isAvailable" hint="Is the hashing agorithm available in this environment?" access="public" returntype="boolean">
+		<cfreturn structKeyExists(variables,"oBCryptClass") />
 	</cffunction>
 
 	<cffunction name="matchesHashFormat" hint="Does the string match the format for this hash?" access="public" returntype="boolean">

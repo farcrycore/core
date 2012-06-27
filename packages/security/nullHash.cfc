@@ -1,5 +1,5 @@
 <cfcomponent displayname="No hashing (store passwords as plain text)" hint="I store passwords in the clear. I make no attempt to hide the password." extends="PasswordHash"
-			key="none" seq="10000" bCaseSensitive="false">
+			alias="none" seq="10000" bCaseSensitive="false">
 	
 	<cffunction name="matchesHashFormat" hint="Does the string match the format for this hash?" access="public" returntype="boolean">
 		<cfargument name="input" type="string" hint="String that may be a password hash" required="true" />
