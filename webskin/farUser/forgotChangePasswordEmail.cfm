@@ -1,6 +1,6 @@
 <cfset stProperties = structNew() />
 <cfset stProperties.objectid = stobj.objectid />
-<cfset stProperties.forgotPasswordHash = application.fc.utils.createJavaUUID() />
+<cfset stProperties.forgotPasswordHash = application.fc.utils.generateRandomString() />
 
 <cfset stResult = setData(stProperties="#stProperties#") />
 

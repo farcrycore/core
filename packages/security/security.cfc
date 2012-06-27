@@ -56,6 +56,8 @@
 		<cfset this.factory.permission = createObject("component", application.factory.oUtils.getPath("types","farPermission")) />
 		<cfset this.factory.barnacle = createObject("component", application.factory.oUtils.getPath("types","farBarnacle")) />
 		
+		<cfset this.cryptlib = createObject("component", application.factory.oUtils.getPath("security","cryptLib")).init() />
+		
 		<!--- User directories --->
 		<cfset this.userdirectories = structnew() />
 		<cfset this.userdirectoryorder = "" />
@@ -255,7 +257,9 @@
 		<cfif structKeyExists(url, "ud")>
 			<cfset result = url.ud />
 		<cfelse>			
-			<cfif isdefined("application.config.general.defaultUserDirectory") and len(application.config.general.defaultUserDirectory)>
+			<cfif isdefined("application.config.security.defaultUserDirectory") and len(application.config.security.defaultUserDirectory)>
+				<cfset result = application.config.security.defaultUserDirectory />
+			<cfelseif isdefined("application.config.general.defaultUserDirectory") and len(application.config.general.defaultUserDirectory)>
 				<cfset result = application.config.general.defaultUserDirectory />
 			<cfelse>
 				<cfset result = listfirst(getAllUD()) />

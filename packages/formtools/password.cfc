@@ -23,6 +23,8 @@
 
 <cfcomponent extends="field" name="password" displayname="password" hint="Used to liase with password type fields"> 
 	<cfproperty name="ftRenderType" default="changepassword" hint="This formtool offers a number of ways to render the input. (changepassword, confirmPassword)" />
+	<cfproperty name="ftValidateOldMethod" hint="The function that will be used to validate the old property value on form submission" />
+	<cfproperty name="ftValidateNewMethod" hint="The function that will be used to validate the new property value on form submission" />
 	
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.password" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
@@ -109,31 +111,34 @@
 		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		
-		<cfset var o = createObject("component",application.stCOAPI['#arguments.Typename#'].packagepath) />
-		<cfset var st = o.getData(objectid=arguments.objectid) />
-		
-		<!--- Default the password to the current value --->
-		<cfset var stResult = passed(value=st[arguments.stMetadata.name]) />
-
+		<cfset var stResult = "" />
+		<cfset var stNewFieldPost = "" />
 		
 		<cfif structKeyExists(arguments.stFieldPost.stSupporting, "New") AND structKeyExists(arguments.stFieldPost.stSupporting, "Confirm")>
 
-			<cfif arguments.stFieldPost.value EQ st[arguments.stMetadata.name]>
-				<cfif len(arguments.stFieldPost.stSupporting.New) AND arguments.stFieldPost.stSupporting.New EQ arguments.stFieldPost.stSupporting.Confirm>
-					<cfset stResult = passed(value=arguments.stFieldPost.stSupporting.New) />
+			<!--- Perform old-value validation --->
+			<cfset stResult = validateOld(argumentcollection=arguments) />
+			
+			<cfif stResult.bSuccess>
+				<!--- The new and confirm password must be non-blank and a case-sensitive match --->
+				<cfif not len(arguments.stFieldPost.stSupporting.New) OR compare(arguments.stFieldPost.stSupporting.New,arguments.stFieldPost.stSupporting.Confirm)>
+					<cfset stResult = failed(value="", message="Your new password confirmation did not match.") />
 				<cfelse>
-					<cfset stResult = failed(value="#stResult.value#", message="Your new password confirmation did not match.") />
-				</cfif>	
-			<cfelse>
-				<cfset stResult = failed(value="#stResult.value#", message="The current password you entered was incorrect") />
+					<!--- Perform new-value validation against the value in the "New" field --->
+					<cfset stNewFieldPost = StructCopy(arguments.stFieldPost) />
+					<cfset stNewFieldPost.value = arguments.stFieldPost.stSupporting.New />
+					<cfset stResult = validateNew(objectID=arguments.objectID,typename=arguments.typename,stFieldPost=stNewFieldPost,stMetadata=arguments.stMetaData) />
+				</cfif>
 			</cfif>
 		<cfelseif structKeyExists(arguments.stFieldPost.stSupporting, "Confirm")>
 			
-			<cfif len(arguments.stFieldPost.value) AND arguments.stFieldPost.value EQ arguments.stFieldPost.stSupporting.Confirm>
-				<cfset stResult = passed(value=arguments.stFieldPost.value) />
+			<!--- The new and confirm password must be non-blank and be equal including case --->
+			<cfif not len(arguments.stFieldPost.value) OR compare(arguments.stFieldPost.value,arguments.stFieldPost.stSupporting.Confirm)>
+				<cfset stResult = failed(value="", message="Your password confirmation did not match.") />
 			<cfelse>
-				<cfset stResult = failed(value="#stResult.value#", message="Your password confirmation did not match.") />
-			</cfif>	
+				<!--- Perform new-value validation --->
+				<cfset stResult = validateNew(argumentCollection=arguments) />
+			</cfif>
 		<cfelse>
 			<cfset stResult = passed(value=arguments.stFieldPost.value) />
 		</cfif>
@@ -143,6 +148,57 @@
 		<!--- ----------------- --->
 		<cfreturn stResult>
 		
+	</cffunction>
+
+	<cffunction name="validateOld" access="public" output="true" returntype="struct" hint="Validate the previous value of the password">
+		<cfargument name="ObjectID" required="true" type="UUID" hint="The objectid of the object that this field is part of.">
+		<cfargument name="Typename" required="true" type="string" hint="the typename of the objectid.">
+		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		
+		<cfset var o = createObject("component",application.stCOAPI['#arguments.Typename#'].packagepath) />
+		<cfset var stResult = "" />
+		<cfset var st = "" />
+
+		<!--- If the property has a ftValidateOldMethod attribute and the type object provides the method, use it --->
+		<cfif structKeyExists(arguments.stMetadata,"ftValidateOldMethod") and len(arguments.stMetadata.ftValidateOldMethod)
+				and structKeyExists(o,arguments.stMetadata.ftValidateOldMethod)>
+			<cfinvoke component="#o#" method="#arguments.stMetadata.ftValidateOldMethod#" argumentcollection="#arguments#" returnvariable="stResult" />
+		<cfelse>
+			<cfset st = o.getData(objectid=arguments.objectid) />
+			
+			<!--- Default is case-insensitive match (for backwards compatibility) --->
+			<cfif arguments.stFieldPost.value EQ st[arguments.stMetadata.name]>
+				<cfset stResult = passed(value=arguments.stFieldPost.value) />
+			<cfelse>
+				<!--- Return a blank value on failure so as not to reveal the stored password --->
+				<cfset stResult = failed(value="", message="The current password you entered was incorrect") />
+			</cfif>
+		</cfif>
+		
+		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="validateNew" access="public" output="true" returntype="struct" hint="Validate the new value of the password">
+		<cfargument name="ObjectID" required="true" type="UUID" hint="The objectid of the object that this field is part of.">
+		<cfargument name="Typename" required="true" type="string" hint="the typename of the objectid.">
+		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		
+		<cfset var o = createObject("component",application.stCOAPI['#arguments.Typename#'].packagepath) />
+		<cfset var stResult = "" />
+		<cfset var st = "" />
+		
+		<!--- If the property has a ftValidateNewMethod attribute and the type object provides the method, use it --->
+		<cfif structKeyExists(arguments.stMetadata,"ftValidateNewMethod") and len(arguments.stMetadata.ftValidateNewMethod)
+				and structKeyExists(o,arguments.stMetadata.ftValidateNewMethod)>
+			<cfinvoke component="#o#" method="#arguments.stMetadata.ftValidateNewMethod#" argumentcollection="#arguments#" returnvariable="stResult" />
+		<cfelse>
+			<!--- Default is to accept any new password --->
+			<cfset stResult = passed(value=arguments.stFieldPost.value) />
+		</cfif>
+		
+		<cfreturn stResult />
 	</cffunction>
 
 </cfcomponent>

@@ -18,7 +18,7 @@
 <!--- @@Developer: Blair Mackenzie (blair@daemon.com.au) --->
 <cfcomponent displayname="FarCry User" hint="User model for the Farcry User Directory." extends="types" output="false" description="" fuAlias="user">
 	<cfproperty ftSeq="1" ftFieldset="User" name="userid" type="string" default="" hint="The unique id for this user. Used for logging in" ftLabel="User ID" ftType="string" bLabel="true" ftValidation="required" />
-	<cfproperty ftSeq="2" ftFieldset="User" name="password" type="string" default="" hint="" ftLabel="Password" ftType="password" ftRenderType="confirmpassword" ftShowLabel="false" ftValidation="required" />
+	<cfproperty ftSeq="2" ftFieldset="User" name="password" type="string" default="" hint="" ftLabel="Password" ftType="password" ftRenderType="confirmpassword" ftShowLabel="false" ftValidation="required" ftValidateOldMethod="ftCheckOldPassword" ftValidateNewMethod="ftCheckPasswordPolicy" />
 	<cfproperty ftSeq="3" ftFieldset="User" name="userstatus" type="string" default="active" hint="The status of this user; active, inactive, pending." ftLabel="User status" ftType="list" ftList="active:Active,inactive:Inactive,pending:Pending" />
 	<cfproperty ftSeq="4" ftFieldset="User" name="aGroups" type="array" default="" hint="The groups this member is a member of" ftLabel="Groups" ftType="array" ftJoin="farGroup" />
 	<cfproperty name="lGroups" type="longchar" default="" hint="The groups this member is a member of (list generated automatically)" ftLabel="Groups" ftType="arrayList" ftArrayField="aGroups" ftJoin="farGroup" />
@@ -120,9 +120,10 @@
 		<cfset var stUser = getData(objectid=arguments.stProperties.objectid) />
 		<cfset var oProfile = createObject("component", application.stcoapi["dmProfile"].packagePath) />
 		<cfset var stUsersProfile = structNew() />
+		<cfset var oClientUD = application.security.userdirectories.CLIENTUD /> 
 		
-		<cfif application.security.userdirectories.CLIENTUD.bEncrypted and arguments.stProperties.password neq stUser.password>
-			<cfset arguments.stProperties.password = hash(arguments.stProperties.password) />
+		<cfif structKeyExists(arguments.stProperties,"password") and oClientUD.bEncrypted and arguments.stProperties.password neq stUser.password>
+			<cfset arguments.stProperties.password = application.security.cryptlib.encodePassword(password=arguments.stProperties.password,hashName=oClientUD.getOutputHashName()) />
 		</cfif>
 		
 		<!--- Clear security cache --->
@@ -137,8 +138,10 @@
 		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Created">
 		<cfargument name="dsn" required="No" default="#application.dsn#"> 
 		
-		<cfif application.security.userdirectories.CLIENTUD.bEncrypted>
-			<cfset arguments.stProperties.password = hash(arguments.stProperties.password) />
+		<cfset var oClientUD = application.security.userdirectories.CLIENTUD /> 
+		
+		<cfif structKeyExists(arguments.stProperties,"password") and oClientUD.bEncrypted>
+			<cfset arguments.stProperties.password = application.security.cryptlib.encodePassword(password=arguments.stProperties.password,hashName=oClientUD.getOutputHashName()) />
 		</cfif>
 		
 		<cfreturn super.createData(arguments.stProperties,arguments.user,arguments.auditNote,arguments.dsn) />
@@ -172,6 +175,71 @@
 		<!--- ----------------- --->
 		<cfreturn stResult>
 		
+	</cffunction>
+
+	<cffunction name="ftCheckOldPassword" access="public" output="false" returntype="struct" hint="Validate the previous value of the password">
+		<cfargument name="ObjectID" required="true" type="UUID" hint="The objectid of the object that this field is part of.">
+		<cfargument name="Typename" required="true" type="string" hint="the typename of the objectid.">
+		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		
+		<cfset var oClientUD = application.security.userdirectories.CLIENTUD />
+		<cfset var oField = createObject("component", application.formtools["field"].packagePath) />
+		<cfset var st = getData(objectid=arguments.objectid) />
+		<cfset var stResult = "" />
+		
+		<cfif oClientUD.bEncrypted>
+			<!--- Password hash check --->
+			<cfif application.security.cryptlib.passwordMatchesHash(password=arguments.stFieldPost.value,hashedPassword=st.password)>
+				<cfset stResult = oField.passed(value=arguments.stFieldPost.value) />
+			<cfelse>
+				<cfset stResult = oField.failed(value="", message="The current password you entered was incorrect") />
+			</cfif>
+		<cfelse>
+			<!--- Case-sensitive string compare --->
+			<cfif not Compare(arguments.stFieldPost.value,st.password)>
+				<cfset stResult = oField.passed(value=arguments.stFieldPost.value) />
+			<cfelse>
+				<cfset stResult = oField.failed(value="", message="The current password you entered was incorrect") />
+			</cfif>
+		</cfif>
+		
+		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="ftCheckPasswordPolicy" access="public" output="true" returntype="struct" hint="Validate the new value of the password">
+		<cfargument name="ObjectID" required="true" type="UUID" hint="The objectid of the object that this field is part of.">
+		<cfargument name="Typename" required="true" type="string" hint="the typename of the objectid.">
+		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		
+		<cfset var st = getData(objectid=arguments.objectid) />
+		<cfset var stResult = "" />
+		<cfset var oField = createObject("component", application.formtools["field"].packagePath) />
+		<cfset var oSecurityConfig = "">
+		<cfset var regex = "">
+		<cfset var passwordStrengthHint = "">
+		<cfparam name="arguments.stMetadata.ftPasswordStrengthHelp" default="">
+
+
+		<!--- get the password policy regex/help from the component metadata, else the security config --->
+		<cfif structKeyExists(arguments.stMetadata, "ftPasswordStrengthRegex") AND len(arguments.stMetadata.ftPasswordStrengthRegex)>
+			<cfset regex = arguments.stMetadata.ftPasswordStrengthRegex>
+			<cfset passwordStrengthHint = arguments.stMetadata.ftPasswordStrengthHelp>
+		<cfelseif isDefined("application.config.security.passwordMinLength") AND application.config.security.passwordMinLength gt 0>
+			<cfset oSecurityConfig = application.fapi.getContentType(typename="configSecurity")>
+			<cfset regex = oSecurityConfig.getPasswordPolicyRegex()>
+			<cfset passwordStrengthHint = application.config.security.passwordPolicyHint>
+		</cfif>
+		
+		<!--- check password strength if we have a password policy regex --->
+		<cfif len(regex) AND NOT REFind(regex,arguments.stFieldPost.value)>
+			<cfset stResult = oField.failed(value=arguments.stFieldPost.value, message="Your new password does not meet the minimum required password strength. #passwordStrengthHint#") />
+		<cfelse>
+			<cfset stResult = oField.passed(value=arguments.stFieldPost.value) />
+		</cfif>
+		
+		<cfreturn stResult />
 	</cffunction>
 	
 </cfcomponent>

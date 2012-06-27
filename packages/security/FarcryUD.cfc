@@ -1,4 +1,75 @@
-<cfcomponent displayname="Farcry User Directory" hint="Provides the interface for the FarCry user directory" extends="UserDirectory" output="false" key="CLIENTUD" bEncrypted="false">
+<cfcomponent displayname="Farcry User Directory" hint="Provides the interface for the FarCry user directory" extends="UserDirectory" output="false"
+			key="CLIENTUD" bEncrypted="true" standardHash="none">
+	
+	<cffunction name="init" access="public" output="true" returntype="any" hint="Does initialisation of user directory">
+		
+		<cfset super.init() />
+		
+		<cfif not structKeyExists(this,"standardHash")>
+			<cfset this.standardHash = application.security.cryptlib.getDefaultHashName() />
+		</cfif>
+		
+		<cfreturn this />
+	</cffunction>
+
+	<cffunction name="getOutputHashName" access="public" returntype="string" output="false" hint="Return the name of the hash used to encoded passwords">
+
+		<cfif structKeyExists(application.config.security,"passwordHashAlgorithm") and application.security.cryptlib.isHashAlgorithmSupported(application.config.security.passwordHashAlgorithm)>
+			<cfreturn application.config.security.passwordHashAlgorithm />
+		<cfelse>
+			<cfreturn this.standardHash />
+		</cfif>
+	</cffunction>
+	
+	<cffunction name="queryUserPassword" access="private" output="false" returntype="query" hint="Return a query of farUser rows that match the provided credentials">
+		<cfargument name="username" type="string" required="true" />
+		<cfargument name="password" type="string" required="true" />
+		
+		<cfset var qUser = "" />
+		<cfset var authenticatedObjectId = "" />
+		<cfset var hashName = getOutputHashName() />
+		
+		<!--- Find the user --->
+		<cfquery datasource="#application.dsn#" name="qUser">
+			select	objectid,userid,password,userstatus
+			from	#application.dbowner#farUser
+			where	userid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#trim(arguments.username)#" />
+		</cfquery>
+		
+		<!--- Try to match the entered password against the users in the DB --->
+		<cfloop query="qUser">
+			<cfif application.security.cryptlib.passwordMatchesHash(password=arguments.password,hashedPassword=qUser.password)>
+				<cfset authenticatedObjectId = qUser.objectid />
+				<cfbreak />
+			</cfif>
+		</cfloop>
+		
+		<cfif Len(authenticatedObjectId)>
+			<!--- Return the row with the password match --->
+			<cfquery dbtype="query" name="qUser">
+				select *
+				from qUser
+				where objectid = '#authenticatedObjectId#'
+			</cfquery>
+			<!--- Does the hashed password need to be updated? --->
+			<cfif application.security.cryptlib.hashedPasswordIsStale(hashedPassword=qUser.password,password=arguments.password,hashname=hashName)>
+				<cfquery datasource="#application.dsn#">
+					update	#application.dbowner#farUser
+					set		password=<cfqueryparam cfsqltype="cf_sql_varchar" value="#application.security.cryptlib.encodePassword(password=arguments.password,hashname=hashName)#" />
+					where	objectid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#authenticatedObjectId#" />
+				</cfquery>
+			</cfif>
+		<cfelse>
+			<!--- Delete all rows from the query --->
+			<cfquery dbtype="query" name="qUser">
+				select *
+				from qUser
+				where 0 = 1
+			</cfquery>
+		</cfif>
+		
+		<cfreturn qUser />
+	</cffunction>
 	
 	<!--- ====================
 	  UD Interface functions
@@ -15,63 +86,15 @@
 		
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 		
-		<cfif isdefined("Application.dmSec.UserDirectory.CLIENTUD.bEncrypted")>
-			<cfset this.bEncrypted = Application.dmSec.UserDirectory.CLIENTUD.bEncrypted />
-		</cfif>
 		
 		<!--- For backward compatability, check for userlogin and password in form. This should be removed once we're willing to not support pre 4.1 login templates --->
 		<cfif structkeyexists(form,"userlogin") and structkeyexists(form,"password")>
-			<!--- If password encryption is enabled, hash the password --->
-			<cfif this.bEncrypted>
-				<cfset form.password = hash(form.password) />
-			</cfif>
-			
-			<!--- Find the user --->
-			<cfquery datasource="#application.dsn#" name="qUser">
-				select	*
-				from	#application.dbowner#farUser
-				where	userid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#trim(form.userlogin)#" />
-						and password=<cfqueryparam cfsqltype="cf_sql_varchar" value="#form.password#" />
-			</cfquery>
-			
+			<cfset qUser = queryUserPassword(form.userlogin,form.password) />
 			<cfset stResult.userid = trim(form.userlogin) />
 		<cfelse>
 			<ft:processform>
 				<ft:processformObjects typename="#getLoginForm()#">
-					<!--- If password encryption is enabled, hash the password --->
-					<cfif this.bEncrypted>
-						<cfset stProperties.unhashed = stProperties.password />
-						<cfset stProperties.password = hash(stProperties.password) />
-					</cfif>
-					
-					<!--- Find the user --->
-					<cfquery datasource="#application.dsn#" name="qUser">
-						select	*
-						from	#application.dbowner#farUser
-						where	userid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#trim(stProperties.username)#" />
-								and password=<cfqueryparam cfsqltype="cf_sql_varchar" value="#stProperties.password#" />
-					</cfquery>
-					
-					<!--- If this failed, it might be because encryption was turned on after the password was set --->
-					<cfif this.bEncrypted and qUser.recordcount eq 0>
-						<cfquery datasource="#application.dsn#" name="qUser">
-							select	*
-							from	#application.dbowner#farUser
-							where	userid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#trim(stProperties.username)#" />
-									and password=<cfqueryparam cfsqltype="cf_sql_varchar" value="#stProperties.unhashed#" />
-						</cfquery>
-						
-						<!--- It worked! Fix the password in the database. --->
-						<cfif qUser.recordcount>
-							<cfquery datasource="#application.dsn#">
-								update	#application.dbowner#farUser
-								set		password=<cfqueryparam cfsqltype="cf_sql_varchar" value="#stProperties.password#" />
-								where	userid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#trim(stProperties.username)#" />
-										and password=<cfqueryparam cfsqltype="cf_sql_varchar" value="#stProperties.unhashed#" />
-							</cfquery>
-						</cfif>
-					</cfif>
-					
+					<cfset qUser = queryUserPassword(stProperties.username,stProperties.password) />
 					<cfset stResult.userid = trim(stProperties.username) />
 				</ft:processformObjects>
 			</ft:processform>
