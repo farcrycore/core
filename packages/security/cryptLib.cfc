@@ -6,6 +6,7 @@
 		
 		<!--- Add paths to .jar and .class files --->
 		<cfset arrayappend(variables.loadPaths, expandPath("/farcry/core/packages/security/crypt/jbcrypt-0.3m.jar")) />
+		<cfset arrayappend(variables.loadPaths, expandPath("/farcry/core/packages/security/crypt/scrypt-1.3.1.jar")) />
 		
 		<cfreturn this />
 	</cffunction>
