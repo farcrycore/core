@@ -3,7 +3,8 @@
 <!--- @@description: Form for users to change their own password --->
 
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
+<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <cfset stUser = getByUserId(application.factory.oUtils.listSlice(session.security.userid,1,-2,"_")) />
 <cfif structkeyexists(stObj,"bDefaultObject") and stObj.bDefaultObject>
@@ -19,15 +20,15 @@
 ACTION	
 ------------------------------>
 <ft:processform action="Save">
-	<ft:validateFormObjects objectid="#stobj.objectid#" />
+	<ft:validateFormObjects typename="farUser" objectid="#stobj.objectid#" />
 	
-	<ft:processformobjects objectid="#stobj.objectid#" />
-	<cfoutput>
-		<span class="success">Your password has been updated.</span>
-	</cfoutput>
+	<cfif request.stFarcryFormValidation.bSuccess>
+		<ft:processformobjects objectid="#stobj.objectid#" />
+		<skin:bubble title="Your password has been updated" />
+	</cfif>
 </ft:processform>
 
-<ft:processform action="Save,Cancel" url="#application.url.webtop#/overview/home.cfm?UPDATEAPP=false&sec=home&SUB=overview" />
+<ft:processform action="Save,Cancel" url="#application.url.webtop#/overview/content.cfm?UPDATEAPP=false&sec=home&SUB=overview" />
 
 <!----------------------------- 
 VIEW	
@@ -38,7 +39,9 @@ VIEW
 	<cfset stMetadata.password.ftRenderType = "changepassword" />
 	<cfset stMetadata.password.ftLabel = "Your Profile Password" />
 
-	<ft:object objectid="#stObj.objectid#" typename="farUser" lfields="password" stPropMetadata="#stMetadata#" IncludeFieldSet="false"  />
+	<!--- Paranoid security precaution: don't give the stored password to the form renderer --->
+	<cfset stObj.password = "" />
+	<ft:object stObject="#stObj#" typename="farUser" lfields="password" stPropMetadata="#stMetadata#" IncludeFieldSet="false"  />
 
 	<ft:buttonPanel>
 		<ft:button value="Save" text="Change Password" color="orange" />
