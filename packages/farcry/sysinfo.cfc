@@ -11,19 +11,31 @@
 	</cfif>
 </cffunction>
 
+<cffunction name="getContainerType" returntype="string" output="false" access="public" hint="Returns the servlet container type (JRun4 or J2EE)">
+	<cfif IsDefined("server.coldfusion.appserver")>
+		<cfreturn server.coldfusion.appserver />
+	<cfelse>
+		<cfreturn "unknown" />
+	</cfif>
+</cffunction>
+
 <cffunction name="getMachineName" returntype="string" output="false" access="public" hint="Returns the active machine name.">
 	<cfset var machineName=createObject("java", "java.net.InetAddress").localhost.getHostName()>
 	<cfreturn machinename>
 </cffunction>
 
 <cffunction name="getInstanceName" returntype="string" output="false" access="public" hint="Returns the active server instance name.">
-	<cfset var instanceName="" />
-	
-	<cfif getEngine() eq "coldfusion">
-		<cfreturn createObject("java", "jrunx.kernel.JRun").getServerName() />
-	<cfelse>
-		<cfreturn "unknown" />
-	</cfif>
+	<cfswitch expression="#getContainerType()#">
+		<cfcase value="jrun4" >
+			<cfreturn createObject("java", "jrunx.kernel.JRun").getServerName() />
+		</cfcase>
+		<cfcase value="j2ee">
+			<cfreturn getPageContext().getServletContext().getServletContextName() />
+		</cfcase>
+		<cfdefaultcase>
+			<cfreturn "unknown" />
+		</cfdefaultcase>
+	</cfswitch>
 </cffunction>
 
 <cffunction name="getVersionTagline" access="public" output="false" hint="Returns a string detailing the current FarCry CMS build details." returntype="string">
