@@ -1,7 +1,9 @@
-<cfcomponent hint="I encode passwords for storage and compare passwords against previously encoded strings">
+<cfcomponent hint="I am an abstract component for encoding passwords for storage and comparing passwords against previously encoded strings">
 
+	<!--- Array of Java class paths required for this component. Leave empty if no special Java libraries are needed. --->
+	<cfset variables.loadPaths = [] />
+	
 	<cffunction name="init" access="public" output="true" returntype="any" hint="constructor">
-		<cfargument name="cryptLib" type="any" hint="Interface to 3rd-party Java crypto libraries" />
 		
 		<cfset var stMetadata = getMetadata(this) />
 		<cfset var attr = "" />
@@ -67,6 +69,24 @@
 		
 		<cfthrow message="The #this.alias# password encoding needs to implement the passwordMatch function" />
 		<cfreturn false />
+	</cffunction>
+
+	<!--- Private Java library helper functions --->
+
+	<cffunction access="private" name="getJavaLoader" returntype="any" output="false">
+		
+		<!--- Lazy-loading the JavaLoader makes it easier for plugins/projects to add custom crypto libraries --->
+		<cfif not structKeyExists(variables,"loader")>
+			<cfset variables.loader = createObject("component", "farcry.core.packages.farcry.javaloader.JavaLoader"
+														).init(variables.loadPaths) />
+		</cfif>
+		<cfreturn variables.loader />
+	</cffunction>
+
+	<cffunction access="private" name="createJavaClass" returntype="any" output="false" hint="Return a java class from the crypto libraries">
+		<cfargument name="className" type="string" required="true" />
+		
+		<cfreturn getJavaLoader().create(arguments.className) />
 	</cffunction>
 
 </cfcomponent>

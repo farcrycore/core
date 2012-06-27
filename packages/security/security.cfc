@@ -56,7 +56,7 @@
 		<cfset this.factory.permission = createObject("component", application.factory.oUtils.getPath("types","farPermission")).fourqInit() />
 		<cfset this.factory.barnacle = createObject("component", application.factory.oUtils.getPath("types","farBarnacle")).fourqInit() />
 		
-		<cfset this.factory.cryptlib = createObject("component", application.factory.oUtils.getPath("security","cryptLib")).init() />
+		<cfset this.cryptlib = createObject("component", application.factory.oUtils.getPath("security","cryptLib")).init() />
 		
 		<!--- User directories --->
 		<cfset this.userdirectories = structnew() />
@@ -64,7 +64,7 @@
 		
 		<cfloop list="#application.factory.oUtils.getComponents('security')#" index="comp">
 			<cfif comp neq "UserDirectory" and application.factory.oUtils.extends(application.factory.oUtils.getPath("security",comp),"farcry.core.packages.security.UserDirectory")>
-				<cfset ud = createobject("component",application.factory.oUtils.getPath("security",comp)).init(this.factory.cryptlib) />
+				<cfset ud = createobject("component",application.factory.oUtils.getPath("security",comp)).init() />
 				<cfset this.userdirectories[ud.key] = ud />
 				<cfset this.userdirectoryorder = listappend(this.userdirectoryorder,ud.key) />
 			</cfif>
