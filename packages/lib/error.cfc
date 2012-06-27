@@ -91,8 +91,16 @@
 	<cffunction name="collectRequestInfo" access="public" returntype="struct" output="false" hint="Returns a struct containing information that should be included in every error report">
 		<cfset var stResult = structnew() />
 		
-		<cfset stResult["machinename"] = application.sysInfo.machineName />
-		<cfset stResult["instancename"] = application.sysInfo.instanceName />
+		<cfif isdefined("application.sysInfo.machineName")>
+			<cfset stResult["machinename"] = application.sysInfo.machineName />
+		<cfelse>
+			<cfset stResult["machinename"] = "Unknown" />
+		</cfif>
+		<cfif isdefined("application.sysInfo.machineName")>
+			<cfset stResult["instancename"] = application.sysInfo.instanceName />
+		<cfelse>
+			<cfset stResult["instancename"] = "Unknown" />
+		</cfif>
 		<cfset stResult["bot"] = IIF(!request.fc.hasSessionScope,DE("bot"),DE("not a bot")) />
 		<cfset stResult["browser"] = cgi.HTTP_USER_AGENT />
 		<cfset stResult["datetime"] = now() />
