@@ -118,9 +118,10 @@
 		<cfset var stUser = getData(objectid=arguments.stProperties.objectid) />
 		<cfset var oProfile = createObject("component", application.stcoapi["dmProfile"].packagePath) />
 		<cfset var stUsersProfile = structNew() />
+		<cfset var oClientUD = application.security.userdirectories.CLIENTUD /> 
 		
-		<cfif application.security.userdirectories.CLIENTUD.bEncrypted and arguments.stProperties.password neq stUser.password>
-			<cfset arguments.stProperties.password = hash(arguments.stProperties.password) />
+		<cfif oClientUD.bEncrypted and arguments.stProperties.password neq stUser.password>
+			<cfset arguments.stProperties.password = oClientUD.encodePassword(arguments.stProperties.password) />
 		</cfif>
 		
 		<!--- Clear security cache --->
@@ -135,8 +136,10 @@
 		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Created">
 		<cfargument name="dsn" required="No" default="#application.dsn#"> 
 		
-		<cfif application.security.userdirectories.CLIENTUD.bEncrypted>
-			<cfset arguments.stProperties.password = hash(arguments.stProperties.password) />
+		<cfset var oClientUD = application.security.userdirectories.CLIENTUD /> 
+		
+		<cfif oClientUD.bEncrypted>
+			<cfset arguments.stProperties.password = oClientUD.encodePassword(arguments.stProperties.password) />
 		</cfif>
 		
 		<cfreturn super.createData(arguments.stProperties,arguments.user,arguments.auditNote,arguments.dsn) />
