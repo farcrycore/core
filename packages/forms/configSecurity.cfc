@@ -7,7 +7,7 @@
 		ftSeq="1" ftFieldset="Directories and Storage" ftLabel="Default user directory"
 		ftHint="" hint="User directory selected by default when multiple are available">
 
-	<cfproperty name="passwordHashAlgorithm" type="string" ftType="list" ftListData="listHashAlgorithms"
+	<cfproperty name="passwordHashAlgorithm" type="string" default="none" ftType="list" ftListData="listHashAlgorithms"
 		ftSeq="2" ftFieldset="Directories and Storage" ftLabel="Password hashing algorithm"
 		ftHint="" hint="Algorithm used to encrypt passwords in the database">
 
