@@ -75,7 +75,7 @@ type properties
 	ftHint="If specified, the SEO title will be used instead of the page title for the TITLE tag. This title will be used as the preferred title by search engines. Different search engines have different lengths of snippet title: Google 69, Yahoo 72, Bing 65."
 	fttype="longchar"
 	fthelptitle="Search Engine Optimization" 
-	ftHelpSection="The keywords and description that you enter here will provide search engines with extra information that describes your page. Remember that a good SEO strategy is much more than just a good description and keywords.<br><img title='google-title-description-length' src='http://placehold.it/560x80&text=Example+of+Google+Snippet+Goes+Here' alt='google-title-description-length' width='560' height='80' style='border: 7px solid ##ccc; margin-left: 150px;'>" />
+	ftHelpSection="The keywords and description that you enter here will provide search engines with extra information that describes your page. Remember that a good SEO strategy is much more than just a good description and keywords." />
 	
 <cfproperty 
 	name="extendedmetadata" type="longchar" hint="HTML head section for extended keywords." required="no" default=""
