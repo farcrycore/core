@@ -141,6 +141,7 @@
 	<cfset coreVersion["patch"] = getPatchVersion() />
 	<cfset coreVersion["build"] = getBuildNumber() />
 	<cfset coreVersion["svndate"] = getSVNDate() />
+	<cfset coreVersion["string"] = coreVersion.major & "." & coreVersion.minor & "." & coreVersion.patch />
 
 	<cfreturn coreVersion>
 </cffunction>
