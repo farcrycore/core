@@ -15,7 +15,7 @@
 <cfset oMd5thenbcryptHash = application.security.cryptlib.getHashComponent("md5thenbcrypt") />
 
 <cfquery name="qUsers" datasource="#application.dsn#">
-	SELECT objectid,password
+	SELECT objectid,password,datetimelastupdated
 	FROM #application.dbowner#farUser
 	where password not like '%$%'
 </cfquery>
@@ -36,12 +36,12 @@
 	
 	<cfif newPassword neq qUsers.password>
 		<cfquery name="qUpdateUser" datasource="#application.dsn#">
-			UPDATE #application.dbowner#farUser
-			SET
-				password = <cfqueryparam cfsqltype="cf_sql_varchar" value="#newPassword#">,
-				datetimelastupdated = <cfqueryparam cfsqltype="cf_sql_timestamp" value="#Now()#">,
-				lastupdatedby = 'passwordfix'
-			WHERE objectid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#qUsers.objectid#">
+			UPDATE 	#application.dbowner#farUser
+			SET		password = <cfqueryparam cfsqltype="cf_sql_varchar" value="#newPassword#">,
+					datetimelastupdated = <cfqueryparam cfsqltype="cf_sql_timestamp" value="#Now()#">,
+					lastupdatedby = 'passwordfix'
+			WHERE 	objectid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#qUsers.objectid#">
+					and datetimelastupdated = <cfqueryparam cfsqltype="cf_sql_timestamp" value="#qUsers.datetimelastupdated#" />
 		</cfquery>
 	</cfif>
 	
