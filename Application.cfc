@@ -424,110 +424,25 @@
 		<cfargument name="Exception" type="any" required="true" />
 		<cfargument name="EventName" type="string" required="false" default="" />
 		
-		<cfset var machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
-		<cfset var instanceName = "Unknown" />
-		<cfset var bot = IIF(!request.fc.hasSessionScope,DE("bot"),DE("not a bot")) />
+		<cfset var stException = structnew() />
+		<cfset var oError = "" />
 		
-		<cfset var stException = duplicate(arguments.exception) />
-		
-		<cfset var stacktrace = "" />
-		<cfset var i = 0 />
-		<cfset var newline = "
-" />
-		
-		<cftry>
-			<cfset instanceName = createObject("java", "jrunx.kernel.JRun").getServerName() />
-			<cfcatch></cfcatch>
-		</cftry>
-		
-		<cfif structKeyExists(arguments.exception, "rootcause")>
-			<cfset stException = duplicate(arguments.exception.rootcause) />
+		<cfif isdefined("application.fc.lib.error")>
+			<cfset oError = application.fc.lib.error />
+		<cfelse>
+			<cfset oError = createobject("component","farcry.core.packages.lib.error") />
 		</cfif>
 		
-		<!--- Log the error --->
-		<cflog log="application" application="true" type="error" text="#stException.message#. The specific sequence of files included or processed is #stException.TagContext[1].template#, line: #stException.TagContext[1].line#" />
-		<cfloop from="1" to="#arraylen(stException.TagContext)#" index="i">
-			<cfset stacktrace = listappend(stacktrace,"#stException.TagContext[i].template#:#stException.TagContext[i].line#",newline) />
-		</cfloop>
-		<cflog file="exception" application="true" type="error" text="#stException.message#. The specific sequence of files included or processed is #stException.TagContext[1].template#, line: #stException.TagContext[1].line##newline##stacktrace#" />
+		<cfset stException = oError.normalizeError(arguments.exception) />
+		
+		<cfset oError.log(stException) />
 		
 		<!--- Email error --->
 		<cfif isdefined("application.config.general.bEmailErrors") and application.config.general.bEmailErrors and len(application.config.general.errorEmail)>
-			<cfmail to="#application.config.general.errorEmail#" from="#application.config.general.adminEmail#" subject="#application.applicationname#: #stException.message# (#bot#)" type="html"><cfoutput>
-				<h3>Error Overview</h3>
-				<table>
-					<tr><th style="text-align:right;">Machine:</th><td>#machineName#</td></tr>
-					<tr><th style="text-align:right;">Instance:</th><td>#instancename#</td></tr>
-					<tr><th style="text-align:right;">Message:</th><td>#stException.message#</td></tr>
-					<tr><th style="text-align:right;">Browser:</th><td>#cgi.http_user_agent#</td></tr>
-					<tr><th style="text-align:right;">DateTime:</th><td>#now()#</td></tr>
-					<tr><th style="text-align:right;">Host:</th><td>#cgi.http_host#</td></tr>
-					<tr><th style="text-align:right;">HTTPReferer:</th><td>#cgi.http_referer#</td></tr>
-					<tr><th style="text-align:right;">QueryString:</th><td>#cgi.query_string#</td></tr>
-					<tr><th style="text-align:right;">RemoteAddress:</th><td>#cgi.remote_addr#</td></tr>
-					<tr><th style="text-align:right;">Bot:</th><td>#bot#</td></tr>
-				</table>
-			
-				<h3>Root Cause</h3>
-				<table>
-					<cfif structKeyExists(stException, "type") and len(stException.type)>
-						<tr><th>Exception Type</th><td>#stException.type#</td></tr>
-					</cfif>
-					<cfif structKeyExists(stException, "detail") and len(stException.detail)>
-						<tr><th>Detail</th><td>#stException.detail#</td></tr>
-					</cfif>
-					<cfif structKeyExists(stException, "extended_info") and len(stException.extended_info)>
-						<tr><th>Extended Info</th><td>#stException.extended_info#</td></tr>
-					</cfif>
-					<cfif structKeyExists(stException, "queryError") and len(stException.queryError)>
-						<tr><th>Error</th><td>#stException.queryError#</td></tr>
-					</cfif>
-					<cfif structKeyExists(stException, "sql") and len(stException.sql)>
-						<tr><th>SQL</th><td>#stException.sql#</td></tr>
-					</cfif>
-					<cfif structKeyExists(stException, "where") and len(stException.where)>
-						<tr><th>Where</th><td>#stException.where#</td></tr>
-					</cfif>
-					
-					<cfif structKeyExists(stException, "TagContext") and arraylen(stException.TagContext)>
-						<tr>
-							<th>Tag Context</th>
-							<td>
-								<ul>
-								<cfloop from="1" to="#arrayLen(stException.TagContext)#" index="i">
-									<li>#stException.TagContext[i].template# (line: #stException.TagContext[i].line#)</li>
-								</cfloop>
-								</ul>	
-							</td>
-						</tr>
-					</cfif>
-				</table>
-			</cfoutput></cfmail>
+			<cfmail to="#application.config.general.errorEmail#" from="#application.config.general.adminEmail#" subject="#application.applicationname#: #stException.message# (#stException.bot#)" type="text/plain"><cfoutput>#oError.formatError(stException,"text")#</cfoutput></cfmail>
 		</cfif>
-
-
-		<cfparam name="application.url.webtop" default="/webtop">
-		<cfif reFindNoCase("^#application.url.webtop#", cgi.script_name)>
-
-			<!--- Display built-in error page for webtop errors --->
-			<cfinclude template="/farcry/core/webtop/errors/500.cfm" />
-			<cfsetting enablecfoutputonly="false" />
-
-		<cfelse>
 		
-			<!--- Display error to user --->
-			<cfcontent reset="true" />
-			<cfheader statuscode="500" statustext="Internal Server Error" />
-			<cfif fileexists("#application.path.project#/errors/500.cfm")>
-				<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/500.cfm" />
-			<cfelseif fileexists("#application.path.webroot#/errors/500.cfm")>				
-				<cfinclude template="#application.url.webroot#/errors/500.cfm" />
-			<cfelse>
-				<cfinclude template="/farcry/core/webtop/errors/500.cfm" />
-			</cfif>
-			<cfsetting enablecfoutputonly="false" />
-
-		</cfif>
+		<cfset oError.showErrorPage("500 Internal Server Error",stException) />
 			
 		<cfreturn />
 	</cffunction>
@@ -535,26 +450,18 @@
 	
 	<cffunction name="OnMissingTemplate" access="public" returntype="void" output="true" hint="Fires when a non-existent coldfusion file is requested">
 		<cfargument name="thePage" type="string" required="true" />
+		<cfargument name="message" type="string" required="false" default="Page does not exist" />
 		
-		<cfset var machineName = createObject("java", "java.net.InetAddress").localhost.getHostName() />
-		<cfset var instanceName = "Unknown" />
+		<cfset var stException = structnew() />
+		<cfset var oError = "" />
 		
-		<cftry>
-			<cfset instanceName = createObject("java", "jrunx.kernel.JRun").getServerName() />
-			<cfcatch></cfcatch>
-		</cftry>
-		
-		<cfcontent reset="true" />
-		<cfheader statuscode="404" statustext="Not Found" />
-		<cfif fileexists("#application.path.project#/errors/404.cfm")>
-			<cfinclude template="/farcry/projects/#application.projectDirectoryName#/errors/404.cfm" />
-		<cfelseif fileexists("#application.path.webroot#/errors/404.cfm")>				
-			<cfinclude template="#application.url.webroot#/errors/404.cfm" />
+		<cfif isdefined("application.fc.lib.error")>
+			<cfset oError = application.fc.lib.error />
 		<cfelse>
-			<cfinclude template="/farcry/core/webtop/errors/404.cfm" />
+			<cfset oError = createobject("component","farcry.core.packages.lib.error") />
 		</cfif>
 		
-		<cfsetting enablecfoutputonly="false" />
+		<cfset oError.showErrorPage("404 Page missing",oError.create404Error(arguments.message)) />
 		
 		<cfreturn />
 	</cffunction>

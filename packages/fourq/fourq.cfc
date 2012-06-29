@@ -334,8 +334,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					<cfelseif structKeyExists(arguments, "alternateHTML")>
 						<cfset stWebskin.webskinHTML = arguments.alternateHTML />
 					<cfelse>
-						<!--- This is a temporary solution - 6.2 handles this better --->
-						<cflocation url="http://#cgi.server_name#/errors/404.cfm?thepage=#urlEncodedFormat(url.furl)#" addToken="false" />
+						<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("No objectid or type specified")) />
 					</cfif>	
 				</cfif>		
 			<cfelse>
