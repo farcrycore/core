@@ -136,10 +136,10 @@
 		<cfset var stLine = structnew() />
 		<cfset var i = 0 />
 		
+		<cfset stException = arguments.exception />
+		
 		<cfif structKeyExists(arguments.exception, "rootcause")>
-			<cfset stException = arguments.exception.rootcause />
-		<cfelse>
-			<cfset stException = arguments.exception />
+			<cfset structappend(duplicate(arguments.exception),arguments.exception.rootcause,true) />
 		</cfif>
 		
 		<cfset stResult["message"] = stException.message />
@@ -193,8 +193,8 @@
 		<cfreturn stResult />
 	</cffunction>
 	
-	<cffunction name="logError" access="public" output="false" returntype="void" hint="Logs error to application and exception log files">
-		<cfargument name="exception" type="struct" required="true" />
+	<cffunction name="log" access="public" output="false" returntype="void" hint="Logs error to application and exception log files">
+		<cfargument name="log" type="struct" required="true" />
 		<cfargument name="bApplication" type="boolean" required="false" default="true" />
 		<cfargument name="bException" type="boolean" required="false" default="true" />
 		
@@ -202,23 +202,23 @@
 		<cfset var i = 0 />
 		<cfset var firstline = "N/A" />
 		
-		<cfif arraylen(arguments.exception.stack)>
-			<cfset firstline = "#arguments.exception.stack[1].template#, line: #arguments.exception.stack[1].line#" />
+		<cfif structkeyexists(arguments.log,"stack") and arraylen(arguments.log.stack)>
+			<cfset firstline = "The specific sequence of files included or processed is #arguments.log.stack[1].template#, line: #arguments.log.stack[1].line#" />
 		</cfif>
 		
-		<cfif arguments.bApplication>
-			<cflog log="application" application="true" type="error" text="#arguments.exception.message#. The specific sequence of files included or processed is #firstline#" />
+		<cfif arguments.bApplication and structkeyexists(arguments.log,"message")>
+			<cflog log="application" application="true" type="error" text="#arguments.log.message#. #firstline#" />
 		</cfif>
-		<cfif arguments.bException>
-			<cfloop from="1" to="#arraylen(arguments.exception.stack)#" index="i">
-				<cfset stacktrace.append(arguments.exception.stack[i].template) />
+		<cfif arguments.bException and structkeyexists(arguments.log,"stack") and structkeyexists(arguments.log,"message")>
+			<cfloop from="1" to="#arraylen(arguments.log.stack)#" index="i">
+				<cfset stacktrace.append(arguments.log.stack[i].template) />
 				<cfset stacktrace.append(":") />
-				<cfset stacktrace.append(arguments.exception.stack[i].line) />
-				<cfif i eq arraylen(arguments.exception.stack)>
+				<cfset stacktrace.append(arguments.log.stack[i].line) />
+				<cfif i eq arraylen(arguments.log.stack)>
 					<cfset stacktrace.append(variables.newline) />
 				</cfif>
 			</cfloop>
-			<cflog file="exception" application="true" type="error" text="#arguments.exception.message#. The specific sequence of files included or processed is #firstline##newline##stacktrace.toString()#" />
+			<cflog file="exception" application="true" type="error" text="#arguments.log.message#. #firstline##newline##stacktrace.toString()#" />
 		</cfif>	
 	</cffunction>
 	
