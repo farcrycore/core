@@ -136,10 +136,10 @@
 		<cfset var stLine = structnew() />
 		<cfset var i = 0 />
 		
+		<cfset stException = arguments.exception />
+		
 		<cfif structKeyExists(arguments.exception, "rootcause")>
-			<cfset stException = arguments.exception.rootcause />
-		<cfelse>
-			<cfset stException = arguments.exception />
+			<cfset structappend(duplicate(arguments.exception),arguments.exception.rootcause,true) />
 		</cfif>
 		
 		<cfset stResult["message"] = stException.message />
