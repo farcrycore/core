@@ -1356,7 +1356,6 @@
 	<!--- MISCELLANEOUS //////////////////////////////////// --->
 	
 	<cffunction name="throw" access="public" returntype="void" output="false" hint="Provides similar functionality to the cfthrow tag but is automatically incorporated to use the resource bundles.">
-		
 		<cfargument name="message" type="string" required="false" default="" />
 		<cfargument name="errorcode" type="string" required="false" default="" />
 		<cfargument name="detail" type="string" required="false" default="" />
@@ -1364,81 +1363,7 @@
 		<cfargument name="object" type="object" required="false" />
 		<cfargument name="type" type="string" required="false" default="" />
 		
-		<!--- Resource Bundle Options --->
-		<cfargument name="key" type="string" required="false" default="" /><!--- Resource Bundle Key --->
-		<cfargument name="locale" type="string" required="false" default="" /><!--- Locale --->		
-		<cfargument name="substituteValues" type="array" required="false" default="#arrayNew(1)#" /><!--- Array of substitue values used by the resource bundle text --->
-		
-		<!--- This little chestnut will automatically setup the message and detail strings in the resource bundle and provide translations --->
-		<cfif len(arguments.message)>
-			<cfif not len(arguments.key)>
-				<cfset arguments.key = "FAPI.throw.#rereplaceNoCase(arguments.message, '[^/w]+', '_', 'all')#" />
-			</cfif>
-			
-			<cfset arguments.message = getResource(key="#arguments.key#@message", default=arguments.message, locale=arguments.locale, substituteValues=arguments.substituteValues) />
-			
-			<cfif len(arguments.detail)>
-				<cfset arguments.detail = getResource(key="#arguments.key#@detail", default=arguments.detail, locale=arguments.locale, substituteValues=arguments.substituteValues) />
-			</cfif>
-		</cfif>
-		
-		<!--- THE FOLLOWING LIST PROVIDES THE DIFFERENT WAYS cfthrow CAN BE CALLED:
-	 	Required attributes: 'type'. Optional attributes: 'detail,errorcode,extendedinfo,message'.
-		Required attributes: 'message'. Optional attributes: 'detail,errorcode,extendedinfo'.
-		Required attributes: 'extendedinfo'. Optional attributes: 'detail,errorcode'.
-		Required attributes: 'errorcode'. Optional attributes: 'detail'.  
-		Required attributes: 'detail'. Optional attributes: None.
-		Required attributes: 'object'. Optional attributes: None.
-		  --->
-		
-		<cfif len(arguments.type)>
-			<cfthrow 
-				type="#arguments.type#"
-				message="#arguments.message#" 
-				detail="#arguments.detail#" 
-				errorcode="#arguments.errorcode#" 
-				extendedinfo="#arguments.extendedinfo#"  
-			 />
-			
-		<cfelseif len(arguments.message)>
-
-			<cfthrow 
-				message="#arguments.message#" 
-				detail="#arguments.detail#" 
-				errorcode="#arguments.errorcode#" 
-				extendedinfo="#arguments.extendedinfo#"  
-			 />			
-		<cfelseif len(arguments.extendedinfo)>
-			<cfthrow 
-				extendedinfo="#arguments.extendedinfo#"
-				detail="#arguments.detail#" 
-				errorcode="#arguments.errorcode#" 
-			 />				
-		<cfelseif len(arguments.errorcode)>
-			<cfthrow 
-				errorcode="#arguments.errorcode#" 
-				detail="#arguments.detail#" 
-			 />				
-		<cfelseif len(arguments.errorcode)>
-			<cfthrow 
-				errorcode="#arguments.errorcode#" 
-				detail="#arguments.detail#" 
-			 />			
-		<cfelseif len(arguments.detail)>
-			<cfthrow
-				detail="#arguments.detail#" 
-			 />			
-		<cfelseif structKeyExists(arguments, "object")>
-			<cfthrow
-				object="#arguments.object#" 
-			 />		
-		<cfelse>
-			<cfthrow 
-				message="Attribute validation error for the CFTHROW tag."
-				detail="The tag has an invalid attribute combination: detail,errorcode,extendedinfo,message,object,type. Possible combinations are:<li>Required attributes: 'type'. Optional attributes: 'detail,errorcode,extendedinfo,message'. <li>Required attributes: 'message'. Optional attributes: 'detail,errorcode,extendedinfo'. <li>Required attributes: 'extendedinfo'. Optional attributes: 'detail,errorcode'. <li>Required attributes: 'errorcode'. Optional attributes: 'detail'. <li>Required attributes: None. Optional attributes: None. <li>Required attributes: 'detail'. Optional attributes: None. <li>Required attributes: 'object'. Optional attributes: None."
-			/>	 
-		</cfif>
-	
+		<cfreturn application.fc.lib.error.throw(argumentCollection=arguments) />
 	</cffunction>
 		
 	<!--- @@description:

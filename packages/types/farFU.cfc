@@ -710,11 +710,9 @@
 				<cfset stResult.view = "#this.webskinFU[stResult.type][stResult.view]#" />
 			<cfelseif structkeyexists(application.stCOAPI[stResult.type].stWebskins,stResult.view)>
 				<!--- parameter is already the webskin name --->
-			<cfelseif structkeyexists(stResult,"bDebug") and stResult.bDebug>
-				<!--- View does not exist: throw an error --->
-				<cfthrow message="Webskin [#stResult.view#] does not exist for type [#stResult.type#]" />
 			<cfelse>
 				<!--- If the view is not a valid webskin for this type ... return immediately --->
+				<cfset stResult["404"] = "Webskin [#stResult.view#] does not exist for type [#stResult.type#]" />
 				<cfreturn stResult />
 			</cfif>
 			
@@ -723,10 +721,12 @@
 			
 			<!--- Check the page viewbinding --->
 			<cfif structkeyexists(stResult,"objectid") and not listcontainsnocase("any,object",application.stCOAPI[stResult.type].stWebskins[stResult.view].viewbinding)>
-				<cfthrow message="You are trying to bind an object [#stResult.objectid#] to a type webskin [#stResult.view#]" />
+				<cfset stResult["404"] = "You are trying to bind an object [#stResult.objectid#] to a type webskin [#stResult.view#]" />
+				<cfreturn stResult />
 			</cfif>
 			<cfif not structkeyexists(stResult,"objectid") and not listcontainsnocase("any,type",application.stCOAPI[stResult.type].stWebskins[stResult.view].viewbinding)>
-				<cfthrow message="You are trying to bind a type [#stResult.type#] to an object webskin [#stResult.view#]" />
+				<cfset stResult["404"] = "You are trying to bind a type [#stResult.type#] to an object webskin [#stResult.view#]" />
+				<cfreturn stResult />
 			</cfif>
 		</cfif>
 		
@@ -734,11 +734,11 @@
 		<cfif structkeyexists(stResult,"bodyView")>
 			<cfif structkeyexists(this.webskinFU[stResult.type],stResult.bodyView)>
 				<cfset stResult.bodyView = "#this.webskinFU[stResult.type][stResult.bodyView]#" />
-			<cfelseif structkeyexists(stResult,"bDebug") and stResult.bDebug>
-				<!--- View does not exist: throw an error --->
-				<cfthrow message="Webskin [#stResult.bodyView#] does not exist for type [#stResult.type#]" />
+			<cfelseif structkeyexists(application.stCOAPI[stResult.type].stWebskins,stResult.bodyView)>
+				<!--- parameter is already the webskin name --->
 			<cfelse>
 				<!--- If the view is not a valid webskin for this type ... return immediately --->
+				<cfset stResult["404"] = "Webskin [#stResult.bodyView#] does not exist for type [#stResult.type#]" />
 				<cfreturn stResult />
 			</cfif>
 			
@@ -746,10 +746,12 @@
 			
 			<!--- Check the body viewbinding --->
 			<cfif structkeyexists(stResult,"objectid") and not listcontainsnocase("any,object",application.stCOAPI[stResult.type].stWebskins[stResult.bodyView].viewbinding)>
-				<cfthrow message="You are trying to bind an object [#stResult.objectid#] to a type webskin [#stResult.bodyView#]" />
+				<cfset stResult["404"] = "You are trying to bind an object [#stResult.objectid#] to a type webskin [#stResult.bodyView#]" />
+				<cfreturn stResult />
 			</cfif>
 			<cfif not structkeyexists(stResult,"objectid") and not listcontainsnocase("any,type",application.stCOAPI[stResult.type].stWebskins[stResult.bodyView].viewbinding)>
-				<cfthrow message="You are trying to bind a type [#stResult.type#] to an object webskin [#stResult.bodyView#]" />
+				<cfset stResult["404"] = "You are trying to bind a type [#stResult.type#] to an object webskin [#stResult.bodyView#]" />
+				<cfreturn stResult />
 			</cfif>
 		</cfif>
 		
