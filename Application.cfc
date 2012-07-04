@@ -436,7 +436,7 @@
 		<cfset stException = oError.normalizeError(arguments.exception) />
 		<cfset errorHTML = oError.formatError(stException,"html") />
 		
-		<cfset oError.log(stException) />
+		<cfset oError.logData(stException) />
 		
 		<!--- Email error --->
 		<cfif isdefined("application.config.general.bEmailErrors") and application.config.general.bEmailErrors and len(application.config.general.errorEmail)>
