@@ -167,142 +167,109 @@
 			
 		</cfloop>
 		
-		<!--- create a string to be used as an Etag - in the response header --->
-		<cfset etag = arguments.id & '--' & trim(lastModified) & '-' & hash(sCorrectedFiles) & '-' & hash(arguments.prepend) & '-' & hash(arguments.append) />
+		<!--- combine the file contents into 1 string --->
+		<cfset sOutput = '' />
+		<cfloop list="#arguments.files#" delimiters="#sDelimiter#" index="sFilePath">
 		
-		<!--- 
-			output the etag, this allows the browser to make conditional requests
-			(i.e. browser says to server: only return me the file if your eTag is different to mine)
-		--->
-		<cfif variables.bEtags>
-			<cfheader name="ETag" value="""#etag#""">
+			<cfset sExpandedFilePath = expandPath(sFilePath) />
+		
+			<cfif listLast(sFilePath,".") EQ "cfm">
+				<cfsavecontent variable="sFileContent">
+					<cfinclude template="#sFilePath#" />
+				</cfsavecontent>
+			<cfelse>
+				<cffile action="read" variable="sFileContent" file="#sExpandedFilePath#" />
+			</cfif>
+			
+			
+			
+			<!--- CHANGE URL PATHS IN CSS FILES --->
+			<cfif sType EQ "CSS">
+				
+				<cfset fileDir = application.factory.oUtils.listSlice(sFilePath,1,-2,"/") />
+					
+	
+				<cfset start = findNoCase("url(",sFileContent) />
+				
+				<cfloop condition="start GT 0">
+					
+					
+					<cfset nextCharPos = 4>
+					<cfset nextChar = mid(sFileContent,start+4,1) />
+					
+					<cfif nextChar EQ '"'>
+						<cfset nextCharPos = 5>
+					</cfif>		
+					
+					<cfif nextChar EQ "'">
+						<cfset nextCharPos = 5>
+					</cfif>
+					
+					<cfset nextChar = mid(sFileContent,start+nextCharPos,1) />
+					
+					<cfif nextChar NEQ "/">		
+						<cfset sFileContent = insert("#fileDir#/",sFileContent,start+nextCharPos-1)>					
+					</cfif>
+					
+					<cfset start = findNoCase("url(", sFileContent, start+nextCharPos) />	
+					
+				</cfloop>	
+				
+			 </cfif>
+			 
+			<cfset sOutput = sOutput & variables.sOutputDelimiter & sFileContent />
+		</cfloop>
+		
+		<cfif len(trim(arguments.prepend))>
+			<cfset sOutput = trim(arguments.prepend) & sOutput />
+		</cfif>
+		<cfif len(trim(arguments.append))>
+			<cfset sOutput = sOutput & trim(arguments.append) />
+		</cfif>
+		<cftry>
+		<cfscript>
+		// 'Minify' the javascript with jsmin
+		if(variables.bJsMin and sType eq 'js')
+		{
+			sOutput = compressJsWithJSMin(sOutput);
+		}
+		else if(variables.bYuiCss and sType eq 'css')
+		{
+			sOutput = compressCssWithYUI(sOutput);
+		}
+		
+		//output contents
+		//outputContent(sOutput, sType, variables.sCacheControl);
+		</cfscript><cfcatch><cfdump var="#arguments#"><cfabort></cfcatch></cftry>
+		
+		<!--- create a string to be used as an Etag - in the response header --->
+		<cfset etag = arguments.id & '-' & hash(sOutput) />
+		
+		<cfif variables.bCache>
+			
+			<!--- try to return a cached version of the file --->		
+			<cfset sCacheFileName = etag & '.' & sType />
+			<cfset sCacheFile = variables.sCachePath & '/' & sCacheFileName />
+			<cfif fileExists(sCacheFile)>
+				<cfreturn sCacheFileName />
+			</cfif>
+			
 		</cfif>
 		
-		<!--- 
-			if the browser is doing a conditional request, then only send it the file if the browser's
-			etag doesn't match the server's etag (i.e. the browser's file is different to the server's)
-		 --->
-		<cfif (structKeyExists(cgi, 'HTTP_IF_NONE_MATCH') and cgi.HTTP_IF_NONE_MATCH contains eTag) and variables.bEtags and variables.bEnable304s>
-			<!--- nothing has changed, return nothing --->
-			<cfcontent type="#variables.stContentTypes[sType]#">
-			<cfheader statuscode="304" statustext="Not Modified">
-			
-			<!--- specific Cache-Control header? --->
-			<cfif len(variables.sCacheControl)>
-				<cfheader name="Cache-Control" value="#variables.sCacheControl#">
-			</cfif>
-			
-			<cfreturn />
-		<cfelse>
-			<!--- first time visit, or files have changed --->
-			
-			<cfif variables.bCache>
-				
-				<!--- try to return a cached version of the file --->		
-				<cfset sCacheFileName = etag & '.' & sType />
-				<cfset sCacheFile = variables.sCachePath & '/' & sCacheFileName />
-				<cfif fileExists(sCacheFile)>
-					<cfreturn sCacheFileName />
-					<!--- 
-						<cffile action="read" file="#sCacheFile#" variable="sOutput" />
-						<!--- output contents --->
-						<cfset outputContent(sOutput, sType, variables.sCacheControl) />
-					 --->					
+		<!--- write the cache file and cleanup (delete) any older cache files --->
+		<cfif variables.bCache>
+			<cflock name="#application.applicationname#-#arguments.id#-write-combine" throwontimeout="false" timeout="2">
+				<!--- TODO: Find a better way to cleanup. Now ignoring cleanup as there may be more than 1 version of a library in the case of a developer overriding default libraries for the front end. --->
+				<!---
+				<cfdirectory action="list" directory="#variables.sCachePath#" filter="#arguments.id#--*.#sType#" name="qToDelete" />
+				<cfif qToDelete.recordCount>
+					<cfloop query="qToDelete">
+						<cffile action="delete" file="#qToDelete.directory#/#qToDelete.name#" />
+					</cfloop>
 				</cfif>
-				
-			</cfif>
-			
-			<!--- combine the file contents into 1 string --->
-			<cfset sOutput = '' />
-			<cfloop list="#arguments.files#" delimiters="#sDelimiter#" index="sFilePath">
-			
-				<cfset sExpandedFilePath = expandPath(sFilePath) />
-			
-				<cfif listLast(sFilePath,".") EQ "cfm">
-					<cfsavecontent variable="sFileContent">
-						<cfinclude template="#sFilePath#" />
-					</cfsavecontent>
-				<cfelse>
-					<cffile action="read" variable="sFileContent" file="#sExpandedFilePath#" />
-				</cfif>
-				
-				
-				
-				<!--- CHANGE URL PATHS IN CSS FILES --->
-				<cfif sType EQ "CSS">
-					
-					<cfset fileDir = application.factory.oUtils.listSlice(sFilePath,1,-2,"/") />
-						
-		
-					<cfset start = findNoCase("url(",sFileContent) />
-					
-					<cfloop condition="start GT 0">
-						
-						
-						<cfset nextCharPos = 4>
-						<cfset nextChar = mid(sFileContent,start+4,1) />
-						
-						<cfif nextChar EQ '"'>
-							<cfset nextCharPos = 5>
-						</cfif>		
-						
-						<cfif nextChar EQ "'">
-							<cfset nextCharPos = 5>
-						</cfif>
-						
-						<cfset nextChar = mid(sFileContent,start+nextCharPos,1) />
-						
-						<cfif nextChar NEQ "/">		
-							<cfset sFileContent = insert("#fileDir#/",sFileContent,start+nextCharPos-1)>					
-						</cfif>
-						
-						<cfset start = findNoCase("url(", sFileContent, start+nextCharPos) />	
-						
-					</cfloop>	
-					
-				 </cfif>
-				 
-				<cfset sOutput = sOutput & variables.sOutputDelimiter & sFileContent />
-			</cfloop>
-			
-			<cfif len(trim(arguments.prepend))>
-				<cfset sOutput = trim(arguments.prepend) & sOutput />
-			</cfif>
-			<cfif len(trim(arguments.append))>
-				<cfset sOutput = sOutput & trim(arguments.append) />
-			</cfif>
-			<cftry>
-			<cfscript>
-			// 'Minify' the javascript with jsmin
-			if(variables.bJsMin and sType eq 'js')
-			{
-				sOutput = compressJsWithJSMin(sOutput);
-			}
-			else if(variables.bYuiCss and sType eq 'css')
-			{
-				sOutput = compressCssWithYUI(sOutput);
-			}
-			
-			//output contents
-			//outputContent(sOutput, sType, variables.sCacheControl);
-			</cfscript><cfcatch><cfdump var="#arguments#"><cfabort></cfcatch></cftry>
-			
-			<!--- write the cache file and cleanup (delete) any older cache files --->
-			<cfif variables.bCache>
-				<cflock name="#application.applicationname#-#arguments.id#-write-combine" throwontimeout="false" timeout="2">
-					<!--- TODO: Find a better way to cleanup. Now ignoring cleanup as there may be more than 1 version of a library in the case of a developer overriding default libraries for the front end. --->
-					<!---
-					<cfdirectory action="list" directory="#variables.sCachePath#" filter="#arguments.id#--*.#sType#" name="qToDelete" />
-					<cfif qToDelete.recordCount>
-						<cfloop query="qToDelete">
-							<cffile action="delete" file="#qToDelete.directory#/#qToDelete.name#" />
-						</cfloop>
-					</cfif>
-					--->
-					<cffile action="write" file="#sCacheFile#" output="#sOutput#" mode="664" />
-				</cflock>
-			</cfif>
-			
+				--->
+				<cffile action="write" file="#sCacheFile#" output="#sOutput#" mode="664" />
+			</cflock>
 		</cfif>
 		
 		<cfreturn sCacheFileName />
