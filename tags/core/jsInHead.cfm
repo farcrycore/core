@@ -67,7 +67,7 @@
 				<cfif not len(sCacheFileName) and stJS.bCombine>
 					<cflock name="#idhash#" timeout="10">
 						<cfif structKeyExists(application.fc.stJSLibraries,idHash) AND NOT request.mode.flushcache
-							and structKeyExists(application.fc.stJSLibraries[],"sCacheFileName")
+							and structKeyExists(application.fc.stJSLibraries[idHash],"sCacheFileName")
 							and fileExists('#application.path.cache#/#application.fc.stJSLibraries[idHash].sCacheFileName#')>
 							
 							<cfset sCacheFileName = application.fc.stJSLibraries[idHash].sCacheFileName />
