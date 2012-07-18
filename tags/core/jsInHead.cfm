@@ -64,7 +64,7 @@
 														) />
 				</cfif>
 				
-				<cfif not len(sCacheFileName) and stCSS.bCombine>
+				<cfif not len(sCacheFileName) and stJS.bCombine>
 					<cflock name="#idhash#" timeout="10">
 						<cfif structKeyExists(application.fc.stJSLibraries,idHash) AND NOT request.mode.flushcache
 							and structKeyExists(application.fc.stJSLibraries[],"sCacheFileName")
