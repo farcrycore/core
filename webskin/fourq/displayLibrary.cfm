@@ -18,9 +18,8 @@
 	<cfparam name="lSelected" type="string" default=""/>
 	
 	<cfset stMetadata = application.fapi.getPropertyMetadata(typename="#stobj.typename#", property="#url.property#") />
-	<cfset stMetadata = application.fapi.getFormtool(stMetadata.type).prepMetadata(stObject = stobj, stMetadata = stMetadata) />
 
-	<!------------------------------------------------------------------------------------------------ 
+	<!------------------------------------------------------------------------------------------------
 	Loop over the url and if any url parameters match any formtool metadata (prefix 'ft'), then override the metadata.
 	 ------------------------------------------------------------------------------------------------>
 	<cfloop collection="#url#" item="md">
@@ -28,8 +27,6 @@
 			<cfset stMetadata[md] = url[md] />
 		</cfif>
 	</cfloop>
-
-	<cfset stMetadata = application.fapi.getFormtool(stMetadata.type).prepMetadata(stObject = stobj, stMetadata = stMetadata) />
 
 	<cfset stMetadata = application.fapi.getFormtool(stMetadata.type).prepMetadata(stObject = stobj, stMetadata = stMetadata) />
 
