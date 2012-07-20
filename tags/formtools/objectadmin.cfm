@@ -449,7 +449,7 @@ user --->
 				<cfif structkeyexists(form,"objectid")>
 					$fc.objectAdminAction('Administration', '#copyURL#');
 				<cfelse>
-					<skin:bubble title="Warning" message="No objects selected" />	
+					<cfset message_error = "No Objects Selected">
 				</cfif>	
 			</cfoutput>
 		</skin:onReady>		
@@ -482,7 +482,7 @@ user --->
 			</script>
 		</cfoutput>
 		<cfelse>
-			<skin:bubble title="Warning" message="No objects selected" />	
+			<cfset message_error = "No Objects Selected">	
 		</cfif>
 		<!--- <cflocation URL="#application.url.webroot#/index.cfm?objectID=#form.objectid#&flushcache=1" addtoken="false" /> --->
 	</ft:processForm>
@@ -495,7 +495,7 @@ user --->
 					<cfif structkeyexists(form,"objectid")>
 						$fc.objectAdminAction('Flow', '#application.stPlugins.flow.url#/?startid=#form.objectid#&flushcache=1');
 					<cfelse>
-						<skin:bubble title="Warning" message="No objects selected" />	
+						<cfset message_error = "No Objects Selected">	
 					</cfif>	
 				</cfoutput>
 			</skin:onReady>
@@ -509,7 +509,7 @@ user --->
 				<cfif structkeyexists(form,"objectid")>
 					$fc.objectAdminAction('Administration', '#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=requestapproval');.
 				<cfelse>
-					<skin:bubble title="Warning" message="No objects selected" />	
+					<cfset message_error = "No Objects Selected">	
 				</cfif>
 			</cfoutput>
 		</skin:onReady>
@@ -522,7 +522,7 @@ user --->
 				<cfif structkeyexists(form,"objectid")>
 					$fc.objectAdminAction('Administration', '#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=approved');
 				<cfelse>
-					<skin:bubble title="Warning" message="No objects selected" />	
+					<cfset message_error = "No Objects Selected">	
 				</cfif>
 			</cfoutput>
 		</skin:onReady>
@@ -538,7 +538,7 @@ user --->
 		<cfif structkeyexists(form,"objectid")>
 			<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=draft" addtoken="false" />
 		<cfelse>
-			<skin:bubble title="Warning" message="No objects selected" />	
+			<cfset message_error = "No Objects Selected">	
 		</cfif>	
 	</ft:processForm>
 	
@@ -554,7 +554,7 @@ user --->
 				</skin:onReady>
 			</cfif>
 		<cfelse>
-			<skin:bubble title="Warning" message="No objects selected" />
+			<cfset message_error = "No Objects Selected">
 		</cfif>					
 	</ft:processForm>
 	
@@ -565,7 +565,10 @@ user --->
 	<cfscript>
 	// response: action message container for objectadmin
 	response="";
-	message_error = "";
+	if (not isDefined("message_error")){
+		message_error = "";
+	}
+
 	
 	// add: content item added
 	// JS window.location from button press
