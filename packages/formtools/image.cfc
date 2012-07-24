@@ -70,7 +70,7 @@
 
 <cfcomponent name="Image" displayname="image" Extends="field" hint="Field component to liase with all Image types">
 	<!--- 
-	 // documentation 
+	 // documentation ft
 	--------------------------------------------------------------------------------------------------->
 	<cfproperty name="ftstyle" type="string" hint="???" required="false" default="" />
 	<cfproperty name="ftDestination" type="string" hint="???" required="false" default="/images" />
@@ -1355,6 +1355,92 @@
 		<cfreturn stResult />
 	</cffunction>
 	
+	<cffunction name="handleFileLocal" access="public" output="false" returntype="struct" hint="Handles using a local file as the new image and returns standard formtool result struct">
+		<cfargument name="objectid" type="uuid" required="true" hint="The objectid of the edited object" />
+		<cfargument name="existingfile" type="string" required="true" hint="Current value of property" />
+		<cfargument name="localfile" type="string" required="true" hint="The local file" />
+		<cfargument name="destination" type="string" required="true" hint="Destination of file" />
+		<cfargument name="allowedExtensions" type="string" required="true" hint="The acceptable extensions" />
+		<cfargument name="sizeLimit" type="numeric" required="false" default="0" hint="Maximum size of file in bytes" />
+		
+		<cfset var uploadFileName = "" />
+		<cfset var archivedFile = "" />
+		<cfset var stResult = passed(arguments.existingfile) />
+		<cfset var stFile = structnew() />
+		<cfset var i = 0 />
+		
+		<cfset stResult.bChanged = false />
+		
+		<!--- If developer has entered an ftDestination, make sure it starts with a slash --->
+		<cfif len(arguments.destination) AND left(arguments.destination,1) NEQ "/">
+			<cfset arguments.destination = "/#arguments.destination#" />
+		</cfif>
+		
+		<cfif NOT DirectoryExists("#application.path.imageRoot##arguments.destination#")>
+			<cfset createFolderPath("#application.path.imageRoot##arguments.destination#") />
+		</cfif>
+		
+	  	<cfif fileexists(arguments.localfile)>
+	  	
+			<cfif len(arguments.existingfile) AND fileExists("#application.path.imageRoot##arguments.existingfile#")>
+				
+				<cfif NOT DirectoryExists("#application.path.mediaArchive##arguments.destination#")>
+					<cfdirectory action="create" directory="#application.path.mediaArchive##arguments.destination#" />
+				</cfif>
+				
+				<cfset archivedFile = "#application.path.mediaArchive##arguments.destination#/#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#listLast(arguments.existingfile, '/')#" />
+				<cffile action="move" source="#application.path.imageRoot##arguments.existingfile#" destination="#archivedFile#" />
+			    
+			    <cfset stResult = passed("") />
+			    <cfset stResult.bChanged = true />
+			    
+			</cfif>
+			
+			<cfif len(arguments.existingfile)>
+	    		
+				<!--- This means there is already a file associated with this object. The new file must have the same name. --->
+				<cfset uploadFileName = listLast(arguments.existingfile, "/\") />
+				
+				<cfset stFile = getFileInfo(arguments.localfile) />
+				
+				<cfif arguments.sizeLimit and arguments.sizeLimit lt stFile.filesize>
+					<cffile action="move" source="#archivedFile#" destination="#application.path.imageRoot##arguments.existingfile#" />
+					<cfset stResult = failed(value=arguments.existingfile,message="#arguments.localfile# is not within the file size limit of #round(arguments.sizeLimit/1048576)#MB") />
+				<cfelseif listlast(arguments.existingfile,".") eq listlast(arguments.localfile,".")>
+					<cffile action="move" source="#arguments.localfile#" destination="#application.path.imageRoot##arguments.destination#/#uploadFileName#" mode="664" />
+					<cfset stResult = passed("#arguments.destination#/#uploadFileName#") />
+					<cfset stResult.bChanged = true />
+				<cfelse>
+					<cffile action="move" source="#archivedFile#" destination="#application.path.imageRoot##arguments.existingfile#" />
+					<cfset stResult = failed(value=arguments.existingfile,message="Replacement images must have the same extension") />
+				</cfif>
+				
+			<cfelse>
+				
+				<cfset stFile = getFileInfo(arguments.localfile) />
+				
+				<cfif arguments.sizeLimit and arguments.sizeLimit lt stFile.fileSize>
+					<cfset stResult = failed(value=arguments.existingfile,message="#arguments.localfile# is not within the file size limit of #round(arguments.sizeLimit/1048576)#MB") />
+				<cfelseif listFindNoCase(arguments.allowedExtensions,listlast(arguments.localfile,"."))>
+					<cfset uploadFileName = getFileFromPath(arguments.localfile) />
+					<cfloop condition="fileexists(application.path.imageRoot & arguments.destination & '/' & uploadFileName)">
+						<cfset i = i + 1 />
+						<cfset uploadFileName = rereplace(getFileFromPath(arguments.localfile),"(\.\w+)$","#i#\1") />
+					</cfloop>
+					<cffile action="move" source="#arguments.localfile#" destination="#application.path.imageRoot##arguments.destination#/#uploadFileName#" mode="664" />
+					<cfset stResult = passed("#arguments.destination#/#uploadFileName#") />
+					<cfset stResult.bChanged = true />
+				<cfelse>
+					<cfset stResult = failed(value="",message="Images must have one of these extensions: #arguments.allowedExtensions#") />
+				</cfif>
+				
+			</cfif>
+			
+		</cfif>
+		
+		<cfreturn stResult />
+	</cffunction>
+	
 	<cffunction name="handleFileSource" access="public" output="false" returntype="struct" hint="Handles the alternate case to handleFileSubmission where the file is sourced from another property">
 		<cfargument name="sourceField" type="string" required="true" hint="The source field to use" />
 		<cfargument name="stObject" type="struct" required="true" hint="The full set of object properties" />
@@ -1605,9 +1691,7 @@
 		<!--- Image has changed --->
 		<cftry>
 			<!--- Read image into memory --->
-			<cfset sourceImage = ImageRead(arguments.source) />
-			<!--- Duplicate the image so we don't damage the source --->
-			<cfset newImage = imageDuplicate(sourceImage) />
+			<cfset newImage = ImageRead(arguments.source) />
 			<cfif arguments.bSetAntialiasing is true>
 				<cfset ImageSetAntialiasing(newImage,"on") />
 			</cfif>
