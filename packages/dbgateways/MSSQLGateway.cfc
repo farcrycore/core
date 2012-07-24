@@ -623,7 +623,7 @@
 							<cfset stColumn.precision = "MAX" />
 						</cfif>
 					</cfcase>
-					<cfcase value="decimal,numeric,int" delimiters=",">
+					<cfcase value="decimal,numeric,int,bigint" delimiters=",">
 						<cfset stColumn.type = "numeric" />
 						<cfset stColumn.precision = "#qColumns.numeric_precision#,#qColumns.numeric_scale#" />
 					</cfcase>
