@@ -2,13 +2,6 @@
 
 <cfheader statuscode="500" statustext="Internal Server Error" />
 
-<cfset showError = false>
-<cfif reFindNoCase("^#application.url.webtop#", cgi.script_name)>
-	<cfset showError = true>
-<cfelseif isdefined("url.debug") AND url.debug>
-	<cfset showError = true>
-</cfif>
-
 <!--- rudimentary error handler --->
 <cfoutput>
 	<html>

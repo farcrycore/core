@@ -68,6 +68,11 @@
 <cfparam name="url.type" default="" />
 <cfparam name="url.view" default="" />
 
+
+
+<!--- get standard webskin names by device type --->
+<cfset stWebskins = application.fc.lib.device.getDeviceWebskinNames()>
+
 <!--- method for dealing with the missing url param... redirect to home page --->
 <cfif NOT len(url.objectid)>
 	<cfif NOT len(url.type)>
@@ -88,11 +93,6 @@
 </cfif>
 
 <cfif len(url.objectid)>
-	<!---
-	The webskin name that can be used as the body view webskin
-	Default for call on objectid is "DISPLAYBODY"
-	 --->
-	<cfparam name="url.bodyView" default="displayBody" />
 	
 	<!--- grab the object we are displaying --->
 	<cftry>
@@ -111,7 +111,15 @@
 			<cfexit method="exittag" />
 		</cfcatch>
 	</cftry>
-
+	
+	<!--- The webskin name that can be used as the body view webskin --->
+	<cfif structkeyexists(url,"bodyView") and len(url.bodyView)>
+		<!--- Update the view with the display method --->
+		<cfset url.bodyView = application.fc.lib.device.getDeviceWebskin(stObj.typename, url.bodyView) />
+	<cfelse>
+		<cfset url.bodyView = stWebskins.body />
+	</cfif>
+	
 	<!--- 
 	CHECK TO SEE IF OBJECT IS IN DRAFT
 	- If the current user is not permitted to see draft objects, then make them login 
@@ -185,15 +193,15 @@
 		</cfif>
 	</cfif>
 	
-	
 	<!--- determine display method for object --->
 	<cfset request.stObj = stObj>
 
 
-	
-
 	<cfif len(url.view)>
 		<cftry>
+		<!--- Update the view with the display method --->
+		<cfset url.view = application.fc.lib.device.getDeviceWebskin(stObj.typename, url.view) />
+		
 		<!--- Use the requested view --->
 		<skin:view objectid="#stobj.objectid#" typename="#stObj.typename#" webskin="#url.view#" alternateHTML="" />
 
@@ -203,41 +211,49 @@
 		</cfcatch>
 		</cftry>
 	<cfelseif structKeyExists(stObj, "displayMethod") AND len(stObj.displayMethod)>
-	
+		
 		<!--- Update the view with the display method --->
-		<cfset url.view = stObj.displayMethod />
+		<cfset url.view = application.fc.lib.device.getDeviceWebskin(stObj.typename, stObj.displayMethod) />
 		
 		<!--- Use the display method stored with the object --->
 		<skin:view objectid="#stobj.objectid#" typename="#stobj.typename#" webskin="#url.view#" alternateHTML="" />
 
 	<cfelse>
-	
-		
-		<!--- All else fails, try the displayPageStandard webskin --->
-		<cfif application.fapi.hasWebskin(typename="#stobj.typename#" , webskin="displayPageStandard")>
-			<skin:view objectid="#stobj.objectid#" typename="#stobj.typename#" webskin="displayPageStandard" />
+
+		<!--- All else fails, try the standard page webskin --->
+		<cfif application.fapi.hasWebskin(typename="#stobj.typename#", webskin="#stWebskins.page#")>
+			<skin:view objectid="#stobj.objectid#" typename="#stobj.typename#" webskin="#stWebskins.page#" />
 		<cfelse>
 			<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("I was looking at the type: #stobj.typename# and couldn't find a #stWebskins.page#. You'll want to create the default view for this object. To do that, create a #stWebskins.page#.cfm webskin in the webskin folder in a directory named #stobj.typename#.")) />
 		</cfif>
 	</cfif>
+
+
 <cfelse>
+
 	<cfset application.fapi.addProfilePoint("Display","Type") />
-	<!---
-	The webskin name that can be used as the body view webskin
-	Default for call on type webskin is "DISPLAYTYPEBODY"
-	 --->
-	<cfparam name="url.bodyView" default="displayTypeBody" />
+	
+	<!--- Default method for typewebskins is standard page --->
+	<cfif len(url.view)>
+		<!--- Update the view with the display method --->
+		<cfset url.view = application.fc.lib.device.getDeviceWebskin(url.type, url.view) />
+	<cfelse>
+		<cfset url.view = stWebskins.page />
+	</cfif>
+	
+	<!--- The webskin name that can be used as the body view webskin --->
+	<cfif structkeyexists(url,"bodyView")and len(url.bodyView)>
+		<!--- Update the view with the display method --->
+		<cfset url.bodyView = application.fc.lib.device.getDeviceWebskin(url.type, url.bodyView) />
+	<cfelse>
+		<cfset url.bodyView = stWebskins.typeBody />
+	</cfif>
 	
 	<!--- If we are in designmode then check the containermanagement permissions --->
 	<cfif request.mode.design>
 		<!--- set the users container management permission --->
 		<sec:CheckPermission type="#url.type#" permission="ContainerManagement" result="iShowContainers" />
 		<cfset request.mode.showcontainers = iShowContainers />
-	</cfif>
-	
-	<!--- Default method for typewebskins is displayPageStandard --->
-	<cfif not len(url.view)>
-		<cfset url.view = "displayPageStandard" />
 	</cfif>
 	
 	<!--- Handle type webskins --->
@@ -273,5 +289,4 @@
 
 <core:displayTray />
 
-<cfsetting enablecfoutputonly="No">
-
+<cfsetting enablecfoutputonly="false" />

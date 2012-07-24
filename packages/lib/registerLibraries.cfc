@@ -82,8 +82,12 @@
 							Ext.BLANK_IMAGE_URL = '#application.url.webtop#/js/ext/resources/images/default/s.gif';
 							</cfoutput>
 		</skin:registerJS>
-							
-	
+
+
+		<skin:registerJS 	id="farcry-devicetype"
+							baseHREF="#application.url.webtop#/js"
+							lFiles="devicetype.js" />
+
 		<skin:registerJS 	id="swfobject"
 							baseHREF="#application.url.webtop#/js"
 							lFiles="swfobject.js" />
