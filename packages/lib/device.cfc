@@ -71,9 +71,13 @@
 		<cfargument name="userAgent" type="string" required="false" default="#cgi.user_agent#">
 
 		<cfset var deviceType = "desktop">
-
+		
+		<!--- Varnish user agents --->
+		<cfif listfindnocase("mobile,tablet,desktop",arguments.userAgent)>
+			<cfset deviceType = arguments.userAgent />
+		
 		<!--- iOS Devices --->
-		<cfif reFindNoCase("(iPod|iPhone)", arguments.userAgent)>
+		<cfelseif reFindNoCase("(iPod|iPhone)", arguments.userAgent)>
 			<cfset deviceType = "mobile">
 		<cfelseif reFindNoCase("iPad", arguments.userAgent)>
 			<cfset deviceType = "tablet">
