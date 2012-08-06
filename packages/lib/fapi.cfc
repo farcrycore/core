@@ -2287,6 +2287,8 @@
 		<cfset var i = 0 />
 		<cfset var width = 400 />
 		
+		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+		
 		<cfloop query="arguments.profile">
 			<cfif arguments.profile.section neq "End">
 				<cfset thisdata = arguments.profile.tick[arguments.profile.currentrow+1]-arguments.profile.tick />
@@ -2305,27 +2307,37 @@
 		</cfif>
 		
 		<!--- Get image map info --->
-		<cfhttp url="http://chart.apis.google.com/chart?chbh=23,0,0&chs=#width#x23&cht=bhs&chco=#seriescolours#&chds=#seriesscale#&chd=t:#seriesdata#&chdlp=b&chof=json" result="stJSON" />
-		<cfset stJSON = DeserializeJSON(stJSON.filecontent) />
+		<skin:onReady><cfoutput>
+			var profile = #serializeJSON(arguments.profile,true)#;
+			
+			$j("area").live("click",function(){
+				$j("div.request-profile-details-selected").css("font-weight","normal").removeClass("request-profile-details-selected");
+				$j("##"+this.href.split("##")[1]).css("font-weight","bold").addClass("request-profile-details-selected");
+				$j("##request-profile-deatils").scrollTop($j(this.href).position.top);
+				return false;
+			});
+			
+			$j.getJSON("http://chart.apis.google.com/chart?chbh=23,0,0&chs=#width#x23&cht=bhs&chco=#seriescolours#&chds=#seriesscale#&chd=t:#seriesdata#&chdlp=b&chof=json",function(data){
+				var html = [ '<map name="request-profile">' ];
+				var visibleindex = -1;
+				
+				for (var i=0; i<data.chartshape.length; i++){
+					visibleindex = visibleindex + 1;
+					
+					for (; profile.DATA.tick[visibleindex+1]-profile.DATA.tick[visibleindex]==0; visibleindex++);
+					
+					html.push("<area name='"+data.chartshape[i].name+"' shape='"+data.chartshape[i].type+"' coords='"+data.chartshape[i].coords.join(",")+"' href='##request-profile-details-"+(visibleindex+1)+"' rel='##request-profile-details-"+(visibleindex+1)+"'>");
+				}
+				
+				html.push('</map>');
+				
+				$j("##profile-chart").after(html.join("")).attr("usemap","##request-profile");
+			});
+		</cfoutput></skin:onReady>
 		
 		<!--- Generate HTML --->
 		<cfsavecontent variable="html"><cfoutput>
-			<img src="http://chart.apis.google.com/chart?chbh=23,0,0&chs=#width#x23&cht=bhs&chco=#seriescolours#&chds=#seriesscale#&chd=t:#seriesdata#&chdlp=b" width="#width#" height="23" alt="" usemap="##request-profile" />
-			<map name="request-profile">
-			<cfset visibleindex = 0 />
-			<cfloop from="1" to="#arraylen(stJSON.chartshape)#" index="i">
-				<cfset visibleindex = visibleindex + 1 />
-				<cfloop condition="arguments.profile.tick[visibleindex+1]-arguments.profile.tick[visibleindex] eq 0">
-					<cfset visibleindex = visibleindex + 1 />
-				</cfloop>
-				<area name='#stJSON.chartshape[i].name#' 
-					  shape='#stJSON.chartshape[i].type#' 
-					  coords='#arraytolist(stJSON.chartshape[i].coords)#' 
-					  href='##request-profile-details-#visibleindex#' 
-					  rel='##request-profile-details-#visibleindex#' 
-					  onclick='$j("div.request-profile-details-selected").css("font-weight","normal").removeClass("request-profile-details-selected");$j("##"+this.href.split("##")[1]).css("font-weight","bold").addClass("request-profile-details-selected");var itempos=$j(this.href).position;$j("##request-profile-deatils").scrollTop(itempos.top);return false;'>
-			</cfloop>
-			</map>
+			<img src="http://chart.apis.google.com/chart?chbh=23,0,0&chs=#width#x23&cht=bhs&chco=#seriescolours#&chds=#seriesscale#&chd=t:#seriesdata#&chdlp=b" width="#width#" height="23" alt="" id="profile-chart" />
 			<div id='request-profile-details' style='<cfif arguments.bLongForm>height:350px<cfelse>height:65px</cfif>;overflow:scroll;'>
 			<cfloop query="arguments.profile">
 				<cfif arguments.profile.section neq "End">
