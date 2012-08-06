@@ -101,7 +101,7 @@
 		<cfelse>
 			<cfset stResult["instancename"] = "Unknown" />
 		</cfif>
-		<cfset stResult["bot"] = IIF(!request.fc.hasSessionScope,DE("bot"),DE("not a bot")) />
+		<cfset stResult["bot"] = IIF(!isdefined("request.fc.hasSessionScope") || !request.fc.hasSessionScope,DE("bot"),DE("not a bot")) />
 		<cfset stResult["browser"] = cgi.HTTP_USER_AGENT />
 		<cfset stResult["datetime"] = now() />
 		<cfset stResult["host"] = cgi.http_host />
