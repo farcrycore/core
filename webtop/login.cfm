@@ -22,6 +22,7 @@
 
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/core/" prefix="core" />
 
 <!--------------------------------------
 CUSTOM LOGIN
@@ -41,10 +42,18 @@ GENERIC LOGIN
 
 	<cfset stResult = application.security.processLogin() />
 
-	<cfif stResult.authenticated>
+	<cfif stResult.authenticated and not request.mode.profile>
 		<cflocation url="#URLDecode(stResult.loginReturnURL)#" addtoken="false" />
 	<cfelse>
 		<skin:view typename="#stResult.loginTypename#" template="#stResult.loginWebskin#" stParam="#stResult#" />
+		
+		<cfset request.fc.bShowTray = false />
+		<cfset url.objectid = "" />
+		<cfset url.type = "" />
+		<cfset url.view = "" />
+		<cfset url.bodyView = "" />
+		
+		<core:displayTray />
 	</cfif>
 </cfif>
 
