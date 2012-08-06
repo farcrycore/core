@@ -135,7 +135,11 @@
 		  	
 			<cfif i gt arraylen(aData)>
 				<!--- Delete item from DB --->
-				<cfset combineResults(stResult,deleteData(schema=arguments.schema,parentid=arguments.parentid,seq=qExisting.seq[i])) />
+				<cfif listfindnocase(qExisting.columnlist,"objectid")>
+					<cfset combineResults(stResult,deleteData(schema=arguments.schema,objectid=qExisting.objectid[i])) />
+				<cfelse>
+					<cfset combineResults(stResult,deleteData(schema=arguments.schema,parentid=arguments.parentid,seq=qExisting.seq[i])) />
+				</cfif>
 			<cfelseif aData[i].seq gt qExisting.recordcount>
 				<!--- Add item to DB --->
 				<cfset combineResults(stResult,createData(schema=arguments.schema,stProperties=aData[i])) />
