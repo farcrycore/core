@@ -61,7 +61,7 @@ accommodate legacy implementations
 </cfif>
 <cfif not len(attributes.typename)>
 	<!--- call onMissingTemplate if downloadObject not found --->
-	<cfset oApp=createObject("component","farcry.projects.#application.applicationname#.www.application")>
+	<cfset oApp=createObject("component","farcry.projects.#application.projectdirectoryname#.www.application")>
 	<cfset oApp.onMissingTemplate(thepage=cgi.QUERY_STRING)>
 </cfif>
 
