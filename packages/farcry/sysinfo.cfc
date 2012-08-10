@@ -25,14 +25,24 @@
 </cffunction>
 
 <cffunction name="getInstanceName" returntype="string" output="false" access="public" hint="Returns the active server instance name.">
-	<cfset var instanceName="" />
-	
-	<cftry>
-		<cfset instancename=createObject("java", "jrunx.kernel.JRun").getServerName() />
-		<cfcatch type="any"><!--- Ignore Error. Means the Server is not running on JRun ---></cfcatch>
-	</cftry>
-	
-	<cfreturn instanceName>
+	<cfswitch expression="#getContainerType()#">
+		<cfcase value="jrun4" >
+			<cfreturn createObject("java", "jrunx.kernel.JRun").getServerName() />
+		</cfcase>
+		<cfcase value="j2ee">
+			<cfif getEngine() is "coldfusion">
+				<!--- Use a try/catch in case CFIDE.adminapi.runtime is restricted or unavailable --->
+				<cftry>
+					<cfreturn createObject("component", "CFIDE.adminapi.runtime").getInstanceName() />
+					<cfcatch></cfcatch>
+				</cftry>
+			</cfif>
+			<cfreturn getPageContext().getServletContext().getServletContextName() />
+		</cfcase>
+		<cfdefaultcase>
+			<cfreturn "unknown" />
+		</cfdefaultcase>
+	</cfswitch>
 </cffunction>
 
 <cffunction name="getVersionTagline" access="public" output="false" hint="Returns a string detailing the current FarCry CMS build details." returntype="string">
