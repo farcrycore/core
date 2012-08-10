@@ -132,6 +132,7 @@
 	<cfargument name="title" default="" /><!--- The title of the anchor tag --->
 	<cfargument name="class" default="" /><!--- Allows a class to be added to the link --->
 	<cfargument name="style" default="" /><!--- Allows a style to be added to the link --->
+	<cfargument name="id" default="" /><!--- Allows an id to be added to the link --->
 	<cfargument name="bIncludeSpan" default="true" /><!--- Add span tag around disabled links --->
 	
 	<cfset var stLink = getLink(arguments.linkID) />
@@ -156,7 +157,7 @@
 			</cfif>
 
 		<cfelse>
-			<skin:buildLink href="#stLink.href#" onclick="#stLink.onclick#;" class="#stLink.class# #arguments.class#" style="#arguments.style#" title="#arguments.title#" linktext="#arguments.linktext#" />
+			<skin:buildLink id="#arguments.id#" href="#stLink.href#" onclick="#stLink.onclick#;" class="#stLink.class# #arguments.class#" style="#arguments.style#" title="#arguments.title#" linktext="#arguments.linktext#" />
 		</cfif>	
 
 	</cfif>
