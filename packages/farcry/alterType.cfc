@@ -410,14 +410,17 @@ $out:$
 			</cfquery>
 			<cfloop query="qTypeWatcherWebskins">
 				<cfloop list="#qTypeWatcherWebskins.cacheTypeWatch#" index="i">
-					<cfif not structKeyExists(application.stCOAPI[i].stTypeWatchWebskins, thistype)>
-						<cfset application.stCOAPI[i].stTypeWatchWebskins[thisType] = arrayNew(1) />
+					<cfset item = trim(i)>
+					<cfif structKeyExists(application.stCOAPI, item)>
+						<cfif NOT structKeyExists(application.stCOAPI[item].stTypeWatchWebskins, thistype)>
+							<cfset application.stCOAPI[item].stTypeWatchWebskins[thisType] = arrayNew(1) />
+						</cfif>
+						<cfset arrayAppend(application.stCOAPI[item].stTypeWatchWebskins[thisType], qTypeWatcherWebskins.methodname) />
 					</cfif>
-					<cfset arrayAppend(application.stCOAPI[i].stTypeWatchWebskins[thisType], qTypeWatcherWebskins.methodname) />
 				</cfloop>
 			</cfloop>
 		</cfloop>
-		
+
 		<cfset updateJoins(application.stCOAPI) />
 	</cffunction>
 
