@@ -30,6 +30,13 @@
 			<cfreturn createObject("java", "jrunx.kernel.JRun").getServerName() />
 		</cfcase>
 		<cfcase value="j2ee">
+			<cfif getEngine() is "coldfusion">
+				<!--- Use a try/catch in case CFIDE.adminapi.runtime is restricted or unavailable --->
+				<cftry>
+					<cfreturn createObject("component", "CFIDE.adminapi.runtime").getInstanceName() />
+					<cfcatch></cfcatch>
+				</cftry>
+			</cfif>
 			<cfreturn getPageContext().getServletContext().getServletContextName() />
 		</cfcase>
 		<cfdefaultcase>
