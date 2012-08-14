@@ -536,7 +536,11 @@ user --->
 	<ft:processForm action="Send to Draft">
 		<!--- TODO: Check Permissions. --->
 		<cfif structkeyexists(form,"objectid")>
-			<cflocation URL="#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=draft" addtoken="false" />
+			<skin:onReady>
+				<cfoutput>
+					$fc.objectAdminAction('Administration', '#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=draft');
+				</cfoutput>
+			</skin:onReady>
 		<cfelse>
 			<cfset message_error = "No Objects Selected">	
 		</cfif>	
