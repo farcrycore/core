@@ -746,7 +746,7 @@ $.extend($.validator, {
 	classRules: function(element) {
 		var rules = {};
 		var classes = $(element).attr('class');
-		classes && $.each(classes.split(' '), function() {
+		classes && $.each(classes.toString().split(' '), function() {
 			if (this in $.validator.classRuleSettings) {
 				$.extend(rules, $.validator.classRuleSettings[this]);
 			}
