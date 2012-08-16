@@ -803,7 +803,7 @@
 			<cfif structkeyexists(arguments.stURL,urlvar) and arguments.stURL[urlvar] eq 0>
 				<cfset request.mode[thisvar] = 0 />
 				<cfset session.fc.mode[thisvar] = 0 />
-			<cfelseif structkeyexists(arguments.stURL,urlvar) and (arguments.stURL[urlvar] eq application.updateappkey or (request.mode.bAdmin and arguments.stURL[urlvar] eq 1))>
+			<cfelseif structkeyexists(arguments.stURL,urlvar) and ((arguments.stURL[urlvar] eq application.updateappkey AND application.updateappkey neq 1) or (request.mode.bAdmin and arguments.stURL[urlvar] eq 1))>
 				<cfset request.mode[thisvar] = 1 />
 				<cfset session.fc.mode[thisvar] = 1 />
 			<cfelseif isdefined("session.fc.mode.#thisvar#")>
@@ -819,7 +819,7 @@
 			<cfif structkeyexists(arguments.stURL,urlvar)>
 				<cfif arguments.stURL[thisvar] eq 0>
 					<cfset request.mode[thisvar] = 0 />
-				<cfelseif arguments.stURL[urlvar] eq application.updateappkey or (request.mode.bAdmin and arguments.stURL[urlvar] eq 1)>
+				<cfelseif (arguments.stURL[urlvar] eq application.updateappkey AND application.updateappkey neq 1) or (request.mode.bAdmin and arguments.stURL[urlvar] eq 1)>
 					<cfset request.mode[thisvar] = 1 />
 				</cfif>
 			</cfif>
