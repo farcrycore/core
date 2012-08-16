@@ -49,7 +49,7 @@
 			<cfset newstring = rereplacenocase(newstring,"(\s*(<td[^>]*>|</td>|<th[^>]*>|</th>)\s*)+","|","ALL") />
 			<cfset newstring = rereplacenocase(newstring,"\s*<tr[^>]*>(.*?)</tr>\s*","\1#this.nl#","ALL") />
 			<cfset result = replace(result,mid(result,st.pos[1],st.len[1]),newString & this.nl & " " & this.nl) />
-			<cfset st = refindnocase("<table[^>]*>.*?</table>",result,st.pos[1]+len(newString)+3,true) />
+			<cfset st = refindnocase("<table[^>]*>(.*?)</table>",result,st.pos[1]+len(newString)+3,true) />
 		</cfloop>
 		
 		<!--- Images --->
