@@ -7,6 +7,7 @@
 	
 	<cfparam name="request.mode.ajax" default="0">
 	<cfparam name="request.mode.flushcache" default="0">
+	<cfparam name="request.mode.livecombine" default="0">
 	
 	<cfif NOT request.mode.ajax>
 		<cfparam name="request.inHead.aJSLibraries" default="#arrayNew(1)#" />
