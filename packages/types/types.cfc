@@ -1066,7 +1066,7 @@ default handlers
 		<cfset var stLocation = structnew() />
 		<cfset var oCon = application.fapi.getContentType("container") />
 		<cfset var stObj = getData(arguments.objectid) />
-		<cfset var newid = application.fapi.getUUID() />
+		<cfset var newmainid = application.fapi.getUUID() />
 		
 		<cfif application.security.isLoggedIn()>
 			<cfset arguments.User = application.security.getCurrentUserID()>
@@ -1079,6 +1079,7 @@ default handlers
 		<cfset queryaddrow(arguments.qRelated) />
 		<cfset querysetcell(arguments.qRelated,"objectid",arguments.objectid) />
 		<cfset querysetcell(arguments.qRelated,"typename",getTableName()) />
+		<cfset querysetcell(arguments.qRelated,"newid",newmainid) />
 		
 		<cfloop query="arguments.qRelated">
 			<!--- Copy the object itself --->
@@ -1090,11 +1091,11 @@ default handlers
 				
 				<cfloop from="1" to="#arraylen(application.stCOAPI[stObj.typename].aJoins)#" index="thisjoin">
 					<cfif application.stCOAPI[stObj.typename].aJoins[thisjoin].coapitype eq stDuplicate.typename and application.stCOAPI[stObj.typename].aJoins[thisjoin].direction eq "from" and application.stCOAPI[stObj.typename].aJoins[thisjoin].type eq "uuid">
-						<cfset stDuplicate[application.stCOAPI[stObj.typename].aJoins[thisjoin].property] = newID />
+						<cfset stDuplicate[application.stCOAPI[stObj.typename].aJoins[thisjoin].property] = newmainid />
 					</cfif>
 				</cfloop>
 			<cfelse>
-				<cfset stDuplicate.objectid = newid />
+				<cfset stDuplicate.objectid = newmainid />
 			</cfif>
 			
 			<!--- Update system properties --->
@@ -1137,7 +1138,7 @@ default handlers
 			<farcry:logevent object="#arguments.qRelated.objectid#" type="types" event="copy" notes="Copied to [#stDuplicate.objectid#] as part of [#arguments.objectid#]" />
 		</cfloop>
 		
-		<cfreturn arguments.qRelated.newid[arguments.qRelated.recordcount] />
+		<cfreturn newmainid />
 	</cffunction>
 	
 	<cffunction name="delete" access="public" hint="Basic delete method for all objects. Deletes content item and removes Verity entries." returntype="struct" output="false">
