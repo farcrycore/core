@@ -91,12 +91,14 @@
         
         /* Float the input elements */
       .uniForm .inlineLabels .textInput,
-      .uniForm .inlineLabels .checkboxInput,
       .uniForm .inlineLabels .fileUpload,
       .uniForm .inlineLabels .passwordInput,
       .uniForm .inlineLabels .radioInput,
       .uniForm .inlineLabels .selectInput,
       .uniForm .inlineLabels .textareaInput{ float: left; }
+
+      /* Don't float the checkboxinput elements */
+      .uniForm .inlineLabels .checkboxInput{ float: none; }
 
       /* Postition the hints */
       .uniForm .inlineLabels .formHint{ clear: both; float: none; }
