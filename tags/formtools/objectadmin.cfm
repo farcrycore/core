@@ -1130,7 +1130,7 @@ user --->
 				<!--- We do not include the Edit Link if workflow is available for this content item. The user must go to the overview page. --->
 				<cfif not listLen(lWorkflowTypenames)>	
 					<cfif structKeyExists(arguments.st,"locked") AND arguments.st.locked neq 0 AND arguments.st.lockedby neq '#application.security.getCurrentUserID()#'>
-						<ft:button value="Unlock" text="" title="Unlock this object" style="margin-left:0px;" icon="ui-icon-unlocked" priority="secondary" class="small" type="button" selectedObjectID="#arguments.st.objectid#" />
+						<ft:button value="Unlock" text="" title="Unlock this object" style="margin-left:0px;" icon="ui-icon-unlocked" priority="secondary" class="small" type="submit" selectedObjectID="#arguments.st.objectid#" />
 					<cfelseif structKeyExists(arguments.stPermissions, "iEdit") AND arguments.stPermissions.iEdit>
 						<cfif structKeyExists(arguments.st,"bHasMultipleVersion")>
 							<cfif NOT(arguments.st.bHasMultipleVersion) AND arguments.st.status EQ "approved">
