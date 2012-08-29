@@ -954,7 +954,8 @@ default handlers
 		
 		<!--- Get list of related content --->
 		<cfloop from="1" to="#arraylen(application.stCOAPI[stObj.typename].aJoins)#" index="thisjoin">
-			<cfif application.stCOAPI[stObj.typename].aJoins[thisjoin].direction eq "from" and application.stCOAPI[stObj.typename].aJoins[thisjoin].type eq "uuid">
+			<cfif application.stCOAPI[stObj.typename].aJoins[thisjoin].direction eq "from" and application.stCOAPI[stObj.typename].aJoins[thisjoin].type eq "uuid" 
+					and (not structkeyexists(application.stCOAPI[application.stCOAPI[stObj.typename].aJoins[thisjoin].coapiType],"bCopyable") or application.stCOAPI[application.stCOAPI[stObj.typename].aJoins[thisjoin].coapiType].bCopyable)>
 				<cfset stSearch = structnew() />
 				<cfset stSearch.typename = application.stCOAPI[stObj.typename].aJoins[thisjoin].coapiType />
 				<cfset stSearch.lProperties = "objectid,label" />
