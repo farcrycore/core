@@ -287,10 +287,16 @@
 		<cfargument name="createOptions" type="string" required="false" default="" />
 		
 		<cfset var html = "" />
-		<cfset var q = application.fapi.getContentObjects(typename=arguments.typename,lProperties="objectid,label",status=arguments.lValidStatus,label_like="%#arguments.search#%",objectid_notin=arguments.excludeList,orderby="label") />
+		<cfset var q = "" />
 		<cfset var st = structnew() />
 		<cfset var aResult = arraynew(1) />
 		<cfset var i = 0 />
+		
+		<cfif structkeyexists(application.stCOAPI[arguments.typename].stProps,"versionID")>
+			<cfset q = application.fapi.getContentObjects(typename=arguments.typename,lProperties="objectid,label",status=arguments.lValidStatus,label_like="%#arguments.search#%",objectid_notin=arguments.excludeList,versionid_eq="",orderby="label") />
+		<cfelse>
+			<cfset q = application.fapi.getContentObjects(typename=arguments.typename,lProperties="objectid,label",status=arguments.lValidStatus,label_like="%#arguments.search#%",objectid_notin=arguments.excludeList,orderby="label") />
+		</cfif>
 		
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		
