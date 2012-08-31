@@ -110,20 +110,17 @@ type properties
 			<cfset stLocal.stFile.action = "move">
 		</cfif>
 
-		<cfswitch expression="#stLocal.stObj.typename#">
-			<!--- archive file --->
-			<cfcase value="dmFile">
-				<cfif StructKeyExists(application.config.file,"archivefiles") AND application.config.file.archivefiles EQ "true">
+		<cfif StructKeyExists(application.config.general,"bdoarchive") AND application.config.general.bdoarchive EQ "true">
+			<cfswitch expression="#stLocal.stObj.typename#">
+				<!--- archive file --->
+				<cfcase value="dmFile">
 					<cfset stLocal.stFile.sourceDir = "#application.path.project##pathSep#www#pathSep#files#pathSep#">
 					<cfset stLocal.stFile.sourceFileName = "#stLocal.stObj.fileName#">
 					<cfset stLocal.stFile.destinationFileName = "#stLocal.stProps.archiveID#.#ListLast(stLocal.stFile.sourceFileName,'.')#">
 					<cfset stLocal.fReturnStruct = fMoveFile(stLocal.stFile)>
-				</cfif>
-			</cfcase>
-	
-			<!--- archive image --->
-			<cfcase value="dmimage">
-				<cfif StructKeyExists(application.config.image,"archivefiles") AND application.config.file.archivefiles EQ "true">
+				</cfcase>
+				<!--- archive image --->
+				<cfcase value="dmimage">
 					<!--- default image --->
 					<cfset stLocal.stFile.sourceDir = "#stLocal.stObj.originalImagePath##pathSep#">
 					<cfset stLocal.stFile.sourceFileName = "#stLocal.stObj.imageFile#">
@@ -141,13 +138,13 @@ type properties
 					<cfset stLocal.stFile.sourceFileName = "#stLocal.stObj.optimisedImage#">
 					<cfset stLocal.stFile.destinationFileName = "#stLocal.stProps.archiveID#_optimised.#ListLast(stLocal.stFile.sourceFileName,'.')#">
 					<cfset stLocal.fReturnStruct = fMoveFile(stLocal.stFile)>
-				</cfif>
-			</cfcase>
-			
-			<cfdefaultcase>
-				<!--- dont do anything --->
-			</cfdefaultcase>
-		</cfswitch>
+				</cfcase>
+				
+				<cfdefaultcase>
+					<!--- dont do anything --->
+				</cfdefaultcase>
+			</cfswitch>
+		</cfif>
 	</cfif>
 
 	<cfset fArchiveRelatedObject(stLocal.stObj)>
