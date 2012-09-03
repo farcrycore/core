@@ -280,10 +280,10 @@
 					var docheight = jQuery(document).height();
 					var viewportwidth = jQuery(window).width();
 					var viewportheight = jQuery(window).height();
-					var overlaywidth = viewportwidth - 100;
-					var overlayheight = viewportheight - 100;
-					var overlayleft = jQuery(document).scrollLeft()+(viewportwidth-overlaywidth)/2;
-					var overlaytop = jQuery(document).scrollTop()+(viewportheight-overlayheight)/2;
+					var overlaywidth = viewportwidth - 60;
+					var overlayheight = viewportheight - 60;
+					var overlayleft = jQuery(document).scrollLeft()-10+(viewportwidth-overlaywidth)/2;
+					var overlaytop = jQuery(document).scrollTop()-10+(viewportheight-overlayheight)/2;
 					if (!(allowcancel===false)) allowcancel = true;
 					
 					var current_crop_selection = null;
@@ -301,38 +301,73 @@
 						var $y1 = jQuery("##image-crop-a-y");
 						var $x2 = jQuery("##image-crop-b-x");
 						var $y2 = jQuery("##image-crop-b-y");
+						var $d = jQuery("##image-crop-dimensions");
 						var $w = jQuery("##image-crop-width");
 						var $h = jQuery("##image-crop-height");
+						var $wf = jQuery("##image-crop-width-final");
+						var $hf = jQuery("##image-crop-height-final");
 						var $rn = jQuery("##image-crop-ratio-num");
 						var $rd = jQuery("##image-crop-ratio-den");
+						var $warning = jQuery("##image-crop-warning");
 						jQuery("##cropable-image").Jcrop({
-							"minSize" : [width,height],
+							//"minSize" : [width,height],
 							"aspectRatio" : (width && height)?width/height:0,
 							"boxWidth" : overlaywidth * 0.65,
 							"boxHeight" : overlayheight,
 							"onChange" : function onCropperSelectionChange(c){
-								$x1.html(c.x);
-								$y1.html(c.y);
-								$x2.html(c.x2);
-								$y2.html(c.y2);
-								$w.html(c.w);
-								$h.html(c.h);
+								$x1.html(parseInt(c.x));
+								$y1.html(parseInt(c.y));
+								$x2.html(parseInt(c.x2));
+								$y2.html(parseInt(c.y2));
+								$w.html(parseInt(c.w));
+								$h.html(parseInt(c.h));
 								if (c.w>c.h){
-									$rn.html((c.w/c.h).toFixed(2));
-									$rd.html("1");
+									if (c.h <= 0) {
+										$rn.html("Any");
+									}
+									else {
+										$rn.html((c.w/c.h).toFixed(2));
+										$rd.html("1");
+									}
 								}
 								else {
+									if (c.w <= 0) {
+										$rd.html("Any");
+									}
+									else {
+										$rd.html((c.h/c.w).toFixed(2));
+									}
 									$rn.html("1");
-									$rd.html((c.h/c.w).toFixed(2));
+								}
+								if (width || height) {
+									if (width == NaN || width == 0) {
+										$wf.html(parseInt(height*(c.w/c.h)) || "?");
+									}
+									if (height == NaN || height == 0) {
+										$hf.html(parseInt(width/(c.w/c.h)) || "?");
+									}
+									if ((width && c.w && c.w < width) || (height && c.h && c.h < height)) {
+										$holder.css("background-color", "red");
+										$d.css("color", "red");
+										$warning.css("display", "block");
+									}
+									else {
+										$holder.css("background-color", "green");
+										$d.css("color", "inherit");
+										$warning.css("display", "none");
+									}
 								}
 							},
 							"onSelect" : function(c){
 								current_crop_selection = c;
 							}
 						});
+						// get the jcrop holder div after jcrop has been created in the dom
+						var $holder = jQuery(".jcrop-holder");
+
 						jQuery("##image-crop-cancel").bind("click",function onCropperCancel() { cropper.cancelCrop(); return false; });
 						jQuery("##image-crop-finalize").button({}).bind("click",function onCropperFinalize() {cropper.finalizeCrop(); return false; });
-						jQuery("##image-crop-overlay .image-crop-instructions").height(overlayheight-50);
+						jQuery("##image-crop-overlay .image-crop-instructions").height(overlayheight-70);
 					});
 					
 					this.cancelCrop = function cropperCancel(){
@@ -455,18 +490,20 @@
 				    				return false;
 			    				}).end();
 				    	}
-			    		
-	    				$j(imageformtool).bind("filechange.updatedisplay",function onImageFormtoolFilechangeUpdate(event,results){
+
+	    				$j(imageformtool).bind("filechange",function onImageFormtoolFilechangeUpdate(event,results){
 	    					if (results.value && results.value.length>0){
 	    						var previewsize = { width:results.width, height:results.height };
 	    						if (previewsize.width > 400) previewsize = { width:400, height:previewsize.height*400/previewsize.width };
 	    						if (previewsize.height > 400) previewsize = { width:previewsize.width*400/previewsize.height, height:400 };
+
 		    					var complete = imageformtool.multiview.findView("complete")
 									.find(".image-status").attr("title","This file has been updated on the server").tooltip({ delay: 0, showURL: false	}).html('<span class="ui-icon ui-icon-info" style="float:left;">&nbsp;</span>').end()
 									.find(".image-filename").html(results.filename).end()
 									.find(".image-size").html(results.size).end()
 									.find(".image-width").html(results.width).end()
 									.find(".image-height").html(results.height).end();
+
 								if (results.resizedetails){
 									complete.find(".image-quality").html(results.resizedetails.quality.toString()).end();
 									complete.find(".image-resize-information").show().end();
@@ -491,17 +528,17 @@
 	    				}).bind("cancelcrop",function(){
 	    				
 	    				}).bind("savecrop",function onImageFormtoolSaveCrop(event,c,q){
-							imageformtool.inputs.resizemethod.val(c.x.toString()+","+c.y.toString()+"-"+c.x2.toString()+","+c.y2.toString());
+							imageformtool.inputs.resizemethod.val(parseInt(c.x)+","+parseInt(c.y)+"-"+parseInt(c.x2)+","+parseInt(c.y2));
 							imageformtool.inputs.quality.val(q);
 							imageformtool.multiview.findView("autogenerate")
 								.find(".image-crop-select-button").hide().end()
 								.find(".image-crop-information").show()
-									.find(".image-crop-a-x").html(c.x).end()
-									.find(".image-crop-a-y").html(c.y).end()
-									.find(".image-crop-b-x").html(c.x2).end()
-									.find(".image-crop-b-y").html(c.y2).end()
-									.find(".image-crop-width").html(c.w).end()
-									.find(".image-crop-height").html(c.h).end()
+									.find(".image-crop-a-x").html(parseInt(c.x)).end()
+									.find(".image-crop-a-y").html(parseInt(c.y)).end()
+									.find(".image-crop-b-x").html(parseInt(c.x2)).end()
+									.find(".image-crop-b-y").html(parseInt(c.y2)).end()
+									.find(".image-crop-width").html(parseInt(c.w)).end()
+									.find(".image-crop-height").html(parseInt(c.h)).end()
 									.find(".image-crop-quality").html((q*100).toFixed(0)).end();
 							imageformtool.applyCrop();
 	    				});
@@ -1034,15 +1071,15 @@
 	    	
 			<cfif len(source)>
 				<cfsavecontent variable="html"><cfoutput>
-					<div style="float:left;background-color:##cccccc;height:100%;width:65%;margin-right:2%;">
+					<div style="float:left;background-color:##cccccc;height:100%;width:65%;margin-right:1%;">
 						<img id="cropable-image" src="#application.url.imageroot##source#" />
 					</div>
-					<div style="float:left;width:30%;">
+					<div style="float:left;width:33%;">
 						<div class="image-crop-instructions" style="overflow-y:auto;overlow-y:hidden;">
-							<p class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;">
-								Your selection:<br>
+							<p class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;">
+								<strong style="font-weight:bold">Selection:</strong><br>
 								Coordinates: (<span id="image-crop-a-x">?</span>,<span id="image-crop-a-y">?</span>) to (<span id="image-crop-b-x">?</span>,<span id="image-crop-b-y">?</span>)<br>
-								Dimensions: <span id="image-crop-width">?</span>px x <span id="image-crop-height">?</span>px<br>
+								<span id="image-crop-dimensions">Dimensions: <span id="image-crop-width">?</span>px x <span id="image-crop-height">?</span>px</span><br>
 								<cfif arguments.stMetadata.ftImageWidth gt 0 and arguments.stMetadata.ftImageHeight gt 0>
 									Ratio: 
 									<cfif arguments.stMetadata.ftImageWidth gt arguments.stMetadata.ftImageHeight>
@@ -1051,26 +1088,29 @@
 										1:#numberformat(arguments.stMetadata.ftImageHeight/arguments.stMetadata.ftImageWidth,"9.99")#
 									<cfelse><!--- Equal --->
 										1:1
-									</cfif> <span style="font-style:italic;">(NOTE: the size ratio is predefined for this field)</span><br>
+									</cfif> <span style="font-style:italic;">(Fixed aspect ratio)</span><br>
 								<cfelse>
 									Ratio: <span id="image-crop-ratio-num">?</span>:<span id="image-crop-ratio-den">?</span><br>
 								</cfif>
+								<strong style="font-weight:bold">Output:</strong><br>
+								Dimensions: <span id="image-crop-width-final">#arguments.stMetadata.ftImageWidth#</span>px x <span id="image-crop-height-final">#arguments.stMetadata.ftImageHeight#</span>px<br>
 								Quality: <cfif arguments.stMetadata.ftAllowResizeQuality><input id="image-crop-quality" value="#arguments.stMetadata.ftQuality#" /><cfelse>#round(arguments.stMetadata.ftQuality*100)#%<input type="hidden" id="image-crop-quality" value="#arguments.stMetadata.ftQuality#" /></cfif>
 							</p>
-							<p>To choose a crop area:</p>
-							<ol style="padding-left:40px;">
-								<li style="list-style:decimal outside;">Click on the image where the first corner should be, and hold down the mouse button</li>
-								<li style="list-style:decimal outside;">While holding the mouse button down, drag the pointer to the opposite corner. The area you're selecting should be highlighted.</li>
+							<p id="image-crop-warning" style="display:none;background-color: ##FCF8E3;border: 1px solid ##FBEED5;color: ##ab7708;margin: 10px 0 0 0;padding:0.7em;text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);">
+								<strong style="font-weight:bold">Warning:</strong> The selected crop area is smaller than the output size. To avoid poor image quality choose a larger crop or use a higher resolution source image.
+							</p>							
+							<p style="margin-top: 0.7em">To select a crop area:</p>
+							<ol style="padding-left:20px;padding-top:0.7em">
+								<li style="list-style:decimal outside;">Click and drag from the point on the image where the top left corner of the crop will start to the bottom right corner where the crop will finish.</li>
 								<li style="list-style:decimal outside;">You can drag the selection box around the image if it isn't in the right place, or drag the edges and corners if the box isn't the right shape.</li>
-								<li style="list-style:decimal outside;">Click "Crop and Resize" when you're happy.</li>
-								<li style="list-style:decimal outside;">Our server will create the new image for you when you save.</li>
+								<li style="list-style:decimal outside;">Click "Crop and Resize" when you're done.</li>
 							</ol>
 						</div>
 						<div class="uniForm image-crop-actions">
-							<ft:buttonPanel>
+							<ft:buttonPanel style="border:none;background: none">
 								<ft:button value="Crop and Resize" id="image-crop-finalize" onclick="$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').finalizeCrop();return false;" />
 								<cfif url.allowcancel>
-									<a href="##" id="image-crop-cancel" style="padding-right:10px;">Cancel</a>
+									<a href="##" id="image-crop-cancel" style="position:relative;top:13px;padding-right:10px;background:none">Cancel</a>
 								</cfif>
 							</ft:buttonPanel>
 						</div>
