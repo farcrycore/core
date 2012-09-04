@@ -769,6 +769,7 @@ object methods
 	</cffunction>
 
 	<cffunction name="upgradeV62" access="public" output="false" returntype="struct" hint="Upgrades Role and Permissions">
+		<cfargument name="force" type="boolean" required="false" default="false" />
 
 		<cfset var q = "">
 		<cfset var schemaPermission = application.fc.lib.db.getTableMetadata("farPermission")>
@@ -801,7 +802,7 @@ object methods
 			<cfset bDoUpgrade = (q.recordcount eq 1) />
 		</cfif>
 		
-		<cfif bDoUpgrade or (isdefined("url.forceupdate") and url.forceupdate eq application.updateappkey)>
+		<cfif bDoUpgrade or arguments.force>
 		
 			<cfset application.fapi.addRequestLog("Running 6.2 upgrade") />
 			
