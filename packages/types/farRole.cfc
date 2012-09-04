@@ -780,7 +780,8 @@ object methods
 		<cfset var oPermission = application.fapi.getContentType("farPermission")>	
 		<cfset var oRole = application.fapi.getContentType("farRole")>	
 		<cfset var oCoapi = application.fapi.getContentType("farCoapi")>
-		<cfset var stTypeMetadata = application.fc.lib.db.getGateway(dsn=application.dsn).introspectType("farPermission")>
+		<cfset var stPermissionMetadata = application.fc.lib.db.getGateway(dsn=application.dsn).introspectType("farPermission")>
+		<cfset var stRoleMetadata = application.fc.lib.db.getGateway(dsn=application.dsn).introspectType("farRole")>
 		<cfset var qGenericPermissions = "">
 		<cfset var stGenericPermission = "">
 		<cfset var qCoapiPermissions = "">
@@ -789,16 +790,20 @@ object methods
 		<cfset var lTypes = "" />
 		<cfset var qCheckBarnacleExists = "">
 		<cfset var stWebtop = "">
-		<cfset var updateReady = NOT structKeyExists(stTypeMetadata.fields, "bSystem") />
+		<cfset var i = 0 />
+		<cfset var j = 0 />
+		<cfset var k = 0 />
+		<cfset var c = 0 />
+		<cfset var bDoUpgrade = NOT structKeyExists(stPermissionMetadata.fields, "bSystem") />
 		
-		<cfif not updateReady>
+		<cfif not bDoUpgrade>
 			<cfquery datasource="#application.dsn#" name="q">select distinct bSystem from farPermission</cfquery>
-			<cfset updateReady = (q.recordcount eq 1) />
+			<cfset bDoUpgrade = (q.recordcount eq 1) />
 		</cfif>
 		
-		<cfif updateReady>
+		<cfif bDoUpgrade or (isdefined("url.forceupdate") and url.forceupdate eq application.updateappkey)>
 		
-
+			<cfset application.fapi.addRequestLog("Running 6.2 upgrade") />
 			
 			<cfquery datasource="#application.dsn#" name="qAllRoles">
 			select * from farRole
@@ -806,17 +811,30 @@ object methods
 			
 			
 			<!--- Deploy bSystem Property --->
-			<cfset arrayappend(aChanges, application.fc.lib.db.createChange(action="addColumn", schema="#schemaPermission#", propertyname='bSystem') ) />
-			<cfset arrayappend(aChanges, application.fc.lib.db.createChange(action="addColumn", schema="#schemaPermission#", propertyname='hint') ) />
-			<cfset arrayappend(aChanges, application.fc.lib.db.createChange(action="addColumn", schema="#schemaPermission#", propertyname='bDisabled') ) />
-			<cfset arrayappend(aChanges, application.fc.lib.db.createChange(action="addColumn", schema="#schemaRole#", propertyname='sitePermissions') ) />
-			<cfset arrayappend(aChanges, application.fc.lib.db.createChange(action="addColumn", schema="#schemaRole#", propertyname='webtopPermissions') ) />
-			<cfset arrayappend(aChanges, application.fc.lib.db.createChange(action="addColumn", schema="#schemaRole#", propertyname='typePermissions') ) />
+			<cfif NOT structKeyExists(stPermissionMetadata.fields, "bSystem")>
+				<cfset arrayappend(aChanges, application.fc.lib.db.createChange(action="addColumn", schema="#schemaPermission#", propertyname='bSystem') ) />
+			</cfif>
+			<cfif NOT structKeyExists(stPermissionMetadata.fields, "hint")>
+				<cfset arrayappend(aChanges, application.fc.lib.db.createChange(action="addColumn", schema="#schemaPermission#", propertyname='hint') ) />
+			</cfif>
+			<cfif NOT structKeyExists(stPermissionMetadata.fields, "bDisabled")>
+				<cfset arrayappend(aChanges, application.fc.lib.db.createChange(action="addColumn", schema="#schemaPermission#", propertyname='bDisabled') ) />
+			</cfif>
+			<cfif NOT structKeyExists(stRoleMetadata.fields, "sitePermissions")>
+				<cfset arrayappend(aChanges, application.fc.lib.db.createChange(action="addColumn", schema="#schemaRole#", propertyname='sitePermissions') ) />
+			</cfif>
+			<cfif NOT structKeyExists(stRoleMetadata.fields, "webtopPermissions")>
+				<cfset arrayappend(aChanges, application.fc.lib.db.createChange(action="addColumn", schema="#schemaRole#", propertyname='webtopPermissions') ) />
+			</cfif>
+			<cfif NOT structKeyExists(stRoleMetadata.fields, "typePermissions")>
+				<cfset arrayappend(aChanges, application.fc.lib.db.createChange(action="addColumn", schema="#schemaRole#", propertyname='typePermissions') ) />
+			</cfif>
 			<cfset aResults = application.fc.lib.db.deployChanges(aChanges,application.dsn) />
 			
 			<cfquery datasource="#application.dsn#">
 				delete from farPermission_aRelatedTypes where data in ('farCoapi','webtop')
 			</cfquery>
+			<cfset application.fapi.addRequestLog("Removed pre-existing farCOAPI / webtop permissions") />
 			
 			
 			<!--- Site Tree Permissions --->
@@ -832,10 +850,10 @@ object methods
 					update farPermission set bSystem=1 where objectid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#q.objectid#" />
 				</cfquery>
 			</cfloop>
+			<cfset application.fapi.addRequestLog("Updated #q.recordcount# object permissions") />
 			
 			
 			<!--- Type Permissions --->
-			
 			<cfset lTypes = structKeyList(application.types) />
 				
 			<cfquery datasource="#application.dsn#" name="qGenericPermissions">
@@ -893,10 +911,10 @@ object methods
 								<cfif not qCheckBarnacleExists.recordCount>
 									<cfquery datasource="#application.dsn#">
 										 INSERT INTO farBarnacle ( 
-											"createdby", "datetimecreated", "datetimelastupdated", "label", "lastupdatedby", "locked", "lockedBy", "ObjectID", "ownedby",
-											"roleid", "permissionID", "referenceID", "objecttype", "barnaclevalue"
+											createdby, datetimecreated, datetimelastupdated, label, lastupdatedby, locked, lockedBy, ObjectID, ownedby,
+											roleid, permissionID, referenceID, objecttype, barnaclevalue
 										) VALUES ( 
-											'6.2 upgrade', getdate(), getdate(), '', '6.2 upgrade', 0, '', '#application.fapi.getUUID()#', '',
+											'6.2 upgrade', <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">, <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">, '', '6.2 upgrade', 0, '', '#application.fapi.getUUID()#', '',
 											'#stRole.objectid#', '#stGenericPermission.objectid#', '#stCoapiType.objectid#', 'farCoapi', 1
 										)
 									</cfquery>
@@ -911,11 +929,10 @@ object methods
 				</cfloop>
 				
 			</cfloop>
+			<cfset application.fapi.addRequestLog("Updated #qGenericPermissions.recordcount * listlen(lTypes)# type permissions") />
 			
 			
 			<!--- KNOWN SYSTEM PERMISSIONS --->
-			
-			
 			<cfquery datasource="#application.dsn#" name="q">
 			select objectid from farPermission
 			where shortcut IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="Admin,AdminSearchTab,EventApprove,EventCanApproveOwnContent,EventCreate,EventDelete,EventEdit,EventRequestApproval,FactApprove,FactCanApproveOwnContent,FactCreate,FactDelete,FactEdit,FactRequestApproval,MainNavReportingTab,MainNavSecurityTab">)
@@ -925,12 +942,10 @@ object methods
 					update farPermission set bSystem=1, bDisabled=1 where objectid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#q.objectid#" />
 				</cfquery>
 			</cfloop>
-			
+			<cfset application.fapi.addRequestLog("Updated #q.recordcount# system permissions") />
 			
 			
 			<!--- Webtop Permissions --->
-			
-			
 			<cfset viewWebtopItemID = oPermission.getID("viewWebtopItem")>
 			
 			<cfif len(viewWebtopItemID)>
@@ -952,7 +967,7 @@ object methods
 						createdby, datetimecreated, datetimelastupdated, label, lastupdatedby, locked, lockedBy, ObjectID, ownedby,
 						title, shortcut, bSystem
 					) VALUES ( 
-						'6.2 upgrade', getdate(), getdate(), 'viewWebtopItem', '6.2 upgrade', 0, '', '#tempID#', '',
+						'6.2 upgrade', <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">, <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">, 'viewWebtopItem', '6.2 upgrade', 0, '', '#tempID#', '',
 						'viewWebtopItem', 'viewWebtopItem', 1
 					)
 				</cfquery>
@@ -965,6 +980,7 @@ object methods
 					)
 				</cfquery>
 			</cfif>
+			<cfset application.fapi.addRequestLog("Added webtop to viewWebtopItem") />
 			
 			<cfset viewWebtopItemID = oPermission.getID("viewWebtopItem")>
 			
@@ -1004,10 +1020,10 @@ object methods
 								<cfelse>
 									<cfquery datasource="#application.dsn#">
 										 INSERT INTO farBarnacle ( 
-											"createdby", "datetimecreated", "datetimelastupdated", "label", "lastupdatedby", "locked", "lockedBy", "ObjectID", "ownedby",
-											"roleid", "permissionID", "referenceID", "objecttype", "barnaclevalue"
+											createdby, datetimecreated, datetimelastupdated, label, lastupdatedby, locked, lockedBy, ObjectID, ownedby,
+											roleid, permissionID, referenceID, objecttype, barnaclevalue
 										) VALUES ( 
-											'6.2 upgrade', getdate(), getdate(), '', '6.2 upgrade', 0, '', '#application.fapi.getUUID()#', '',
+											'6.2 upgrade', <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">, <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">, '', '6.2 upgrade', 0, '', '#application.fapi.getUUID()#', '',
 											'#stRole.objectid#', '#viewWebtopItemID#', '#barnacleID#', 'webtop', 1
 										)
 									</cfquery>
@@ -1030,10 +1046,10 @@ object methods
 								<cfelse>
 									<cfquery datasource="#application.dsn#">
 										 INSERT INTO farBarnacle ( 
-											"createdby", "datetimecreated", "datetimelastupdated", "label", "lastupdatedby", "locked", "lockedBy", "ObjectID", "ownedby",
-											"roleid", "permissionID", "referenceID", "objecttype", "barnaclevalue"
+											createdby, datetimecreated, datetimelastupdated, label, lastupdatedby, locked, lockedBy, ObjectID, ownedby,
+											roleid, permissionID, referenceID, objecttype, barnaclevalue
 										) VALUES ( 
-											'6.2 upgrade', getdate(), getdate(), '', '6.2 upgrade', 0, '', '#application.fapi.getUUID()#', '',
+											'6.2 upgrade', <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">, <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">, '', '6.2 upgrade', 0, '', '#application.fapi.getUUID()#', '',
 											'#stRole.objectid#', '#viewWebtopItemID#', '#barnacleID#', 'webtop', -1
 										)
 									</cfquery>
@@ -1042,6 +1058,7 @@ object methods
 						</cfif>
 					</cfif>
 				</cfloop>
+				<cfset c = c + qAllRoles.recordcount />
 				
 				<cfif listLen(stLevel1.CHILDORDER)>
 						
@@ -1079,10 +1096,10 @@ object methods
 										<cfelse>
 											<cfquery datasource="#application.dsn#">
 												 INSERT INTO farBarnacle ( 
-													"createdby", "datetimecreated", "datetimelastupdated", "label", "lastupdatedby", "locked", "lockedBy", "ObjectID", "ownedby",
-													"roleid", "permissionID", "referenceID", "objecttype", "barnaclevalue"
+													createdby, datetimecreated, datetimelastupdated, label, lastupdatedby, locked, lockedBy, ObjectID, ownedby,
+													roleid, permissionID, referenceID, objecttype, barnaclevalue
 												) VALUES ( 
-													'6.2 upgrade', getdate(), getdate(), '', '6.2 upgrade', 0, '', '#application.fapi.getUUID()#', '',
+													'6.2 upgrade', <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">, <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">, '', '6.2 upgrade', 0, '', '#application.fapi.getUUID()#', '',
 													'#stRole.objectid#', '#viewWebtopItemID#', '#barnacleID#', 'webtop', 1
 												)
 											</cfquery>
@@ -1105,10 +1122,10 @@ object methods
 										<cfelse>
 											<cfquery datasource="#application.dsn#">
 												 INSERT INTO farBarnacle ( 
-													"createdby", "datetimecreated", "datetimelastupdated", "label", "lastupdatedby", "locked", "lockedBy", "ObjectID", "ownedby",
-													"roleid", "permissionID", "referenceID", "objecttype", "barnaclevalue"
+													createdby, datetimecreated, datetimelastupdated, label, lastupdatedby, locked, lockedBy, ObjectID, ownedby,
+													roleid, permissionID, referenceID, objecttype, barnaclevalue
 												) VALUES ( 
-													'6.2 upgrade', getdate(), getdate(), '', '6.2 upgrade', 0, '', '#application.fapi.getUUID()#', '',
+													'6.2 upgrade', <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">, <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">, '', '6.2 upgrade', 0, '', '#application.fapi.getUUID()#', '',
 													'#stRole.objectid#', '#viewWebtopItemID#', '#barnacleID#', 'webtop', -1
 												)
 											</cfquery>
@@ -1117,6 +1134,7 @@ object methods
 								</cfif>
 							</cfif>
 						</cfloop>
+						<cfset c = c + qAllRoles.recordcount />
 			
 						<cfif listLen(stLevel2.CHILDORDER)>
 								
@@ -1154,10 +1172,10 @@ object methods
 												<cfelse>
 													<cfquery datasource="#application.dsn#">
 														 INSERT INTO farBarnacle ( 
-															"createdby", "datetimecreated", "datetimelastupdated", "label", "lastupdatedby", "locked", "lockedBy", "ObjectID", "ownedby",
-															"roleid", "permissionID", "referenceID", "objecttype", "barnaclevalue"
+															createdby, datetimecreated, datetimelastupdated, label, lastupdatedby, locked, lockedBy, ObjectID, ownedby,
+															roleid, permissionID, referenceID, objecttype, barnaclevalue
 														) VALUES ( 
-															'6.2 upgrade', getdate(), getdate(), '', '6.2 upgrade', 0, '', '#application.fapi.getUUID()#', '',
+															'6.2 upgrade', <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">, <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">, '', '6.2 upgrade', 0, '', '#application.fapi.getUUID()#', '',
 															'#stRole.objectid#', '#viewWebtopItemID#', '#barnacleID#', 'webtop', 1
 														)
 													</cfquery>
@@ -1180,10 +1198,10 @@ object methods
 												<cfelse>
 													<cfquery datasource="#application.dsn#">
 														 INSERT INTO farBarnacle ( 
-															"createdby", "datetimecreated", "datetimelastupdated", "label", "lastupdatedby", "locked", "lockedBy", "ObjectID", "ownedby",
-															"roleid", "permissionID", "referenceID", "objecttype", "barnaclevalue"
+															createdby, datetimecreated, datetimelastupdated, label, lastupdatedby, locked, lockedBy, ObjectID, ownedby,
+															roleid, permissionID, referenceID, objecttype, barnaclevalue
 														) VALUES ( 
-															'6.2 upgrade', getdate(), getdate(), '', '6.2 upgrade', 0, '', '#application.fapi.getUUID()#', '',
+															'6.2 upgrade', <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">, <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">, '', '6.2 upgrade', 0, '', '#application.fapi.getUUID()#', '',
 															'#stRole.objectid#', '#viewWebtopItemID#', '#barnacleID#', 'webtop', -1
 														)
 													</cfquery>
@@ -1192,6 +1210,7 @@ object methods
 										</cfif>
 									</cfif>
 								</cfloop>
+								<cfset c = c + qAllRoles.recordcount />
 								
 								<cfif listLen(stLevel3.CHILDORDER)>
 									
@@ -1229,10 +1248,10 @@ object methods
 														<cfelse>
 															<cfquery datasource="#application.dsn#">
 																 INSERT INTO farBarnacle ( 
-																	"createdby", "datetimecreated", "datetimelastupdated", "label", "lastupdatedby", "locked", "lockedBy", "ObjectID", "ownedby",
-																	"roleid", "permissionID", "referenceID", "objecttype", "barnaclevalue"
+																	createdby, datetimecreated, datetimelastupdated, label, lastupdatedby, locked, lockedBy, ObjectID, ownedby,
+																	roleid, permissionID, referenceID, objecttype, barnaclevalue
 																) VALUES ( 
-																	'6.2 upgrade', getdate(), getdate(), '', '6.2 upgrade', 0, '', '#application.fapi.getUUID()#', '',
+																	'6.2 upgrade', <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">, <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">, '', '6.2 upgrade', 0, '', '#application.fapi.getUUID()#', '',
 																	'#stRole.objectid#', '#viewWebtopItemID#', '#barnacleID#', 'webtop', 1
 																)
 															</cfquery>
@@ -1255,10 +1274,10 @@ object methods
 														<cfelse>
 															<cfquery datasource="#application.dsn#">
 																 INSERT INTO farBarnacle ( 
-																	"createdby", "datetimecreated", "datetimelastupdated", "label", "lastupdatedby", "locked", "lockedBy", "ObjectID", "ownedby",
-																	"roleid", "permissionID", "referenceID", "objecttype", "barnaclevalue"
+																	createdby, datetimecreated, datetimelastupdated, label, lastupdatedby, locked, lockedBy, ObjectID, ownedby,
+																	roleid, permissionID, referenceID, objecttype, barnaclevalue
 																) VALUES ( 
-																	'6.2 upgrade', getdate(), getdate(), '', '6.2 upgrade', 0, '', '#application.fapi.getUUID()#', '',
+																	'6.2 upgrade', <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">, <cfqueryparam cfsqltype="cf_sql_timestamp" value="#now()#">, '', '6.2 upgrade', 0, '', '#application.fapi.getUUID()#', '',
 																	'#stRole.objectid#', '#viewWebtopItemID#', '#barnacleID#', 'webtop', -1
 																)
 															</cfquery>
@@ -1270,6 +1289,7 @@ object methods
 										
 										
 									</cfloop>
+									<cfset c = c + qAllRoles.recordcount />
 									
 								</cfif>
 							</cfloop>
@@ -1277,9 +1297,10 @@ object methods
 					</cfloop>
 				</cfif>
 			</cfloop>
+			<cfset application.fapi.addRequestLog("Updated #c# webtop barnacles") />
 		</cfif>
 		
-		
+		<cfset application.fapi.addRequestLog("Finished 6.2 update") />
 		<cfreturn application.fapi.success("upgraded successfully.") />
 		
 	</cffunction>
