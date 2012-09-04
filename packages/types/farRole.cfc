@@ -794,10 +794,10 @@ object methods
 		<cfset var j = 0 />
 		<cfset var k = 0 />
 		<cfset var c = 0 />
-		<cfset var bDoUpgrade = NOT structKeyExists(stPermissionMetadata.fields, "bSystem") />
+		<cfset var bDoUpgrade = NOT structKeyExists(stPermissionMetadata.fields, "bDisabled") />
 		
 		<cfif not bDoUpgrade>
-			<cfquery datasource="#application.dsn#" name="q">select distinct bSystem from farPermission</cfquery>
+			<cfquery datasource="#application.dsn#" name="q">select distinct bDisabled from farPermission</cfquery>
 			<cfset bDoUpgrade = (q.recordcount eq 1) />
 		</cfif>
 		
