@@ -329,7 +329,16 @@ default handlers
 				<cfset application.fc.lib.events.announce(component="fcTypes",eventName="statusChanged",stParams=stStatusEventParams) />
 			</cfif>
 		</cfif>
+		
+		<cfif not arguments.bSessionOnly and structkeyexists(application.stCOAPI[arguments.stProperties.typename],"bArchive") and application.stCOAPI[arguments.stProperties.typename].bArchive>
+			<cfset stObj = getData(objectid=arguments.stProperties.objectid) />
+			<cfset structappend(arguments.stProperties,stObj,false) />
 			
+			<cfif not structkeyexists(stObj,"bDefaultObject") and not structkeyexists(stObj,"versionID") and (not structkeyexists(stObj,"status") or stObj.status eq "approved") and application.fc.lib.diff.performObjectDiff(stObj,arguments.stProperties).countDifferent neq 0>
+				<cfset application.factory.oVersioning.archiveObject(objectid=arguments.stProperties.objectid,typename=stObj.typename) />
+			</cfif>
+		</cfif>
+		
 		<cfset stresult = super.setData(stProperties=arguments.stProperties, dsn=arguments.dsn, bSessionOnly=arguments.bSessionOnly, bSetDefaultCoreProperties=arguments.bSetDefaultCoreProperties) />
 		
 		<!--- ONLY RUN THROUGH IF SAVING TO DB --->

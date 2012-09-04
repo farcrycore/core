@@ -14,20 +14,18 @@
 </cfif>
 <cfif stLocal.stLeft.typename eq "dmArchive">
 	<cfset stLocal.leftArchive = stLocal.stLeft.objectid />
+	<cfset stLocal.leftLabel = "#dateformat(stLocal.stLeft.datetimecreated,'d mmm yyyy')#, #timeformat(stLocal.stLeft.datetimecreated,'h:mmtt')#" />
 	<cfwddx action="wddx2cfml" input="#stLocal.stLeft.objectWDDX#" output="stLocal.stLeft" />
-	<cfset stLocal.stProfile = stLocal.oProfile.getProfile(username=stLocal.stLeft.createdby) />
-	<cfif structkeyexists(stLocal.stProfile,"lastname") and len(stLocal.stProfile.lastname)>
-		<cfset stLocal.leftLabel = "#dateformat(stLocal.stLeft.datetimecreated,'d mmm yyyy')#, #timeformat(stLocal.stLeft.datetimecreated,'h:mmtt')# - #stLocal.stProfile.firstname# #stLocal.stProfile.lastname#" />
-	<cfelse>
-		<cfset stLocal.leftLabel = "#dateformat(stLocal.stLeft.datetimecreated,'d mmm yyyy')#, #timeformat(stLocal.stLeft.datetimecreated,'h:mmtt')# - #listfirst(stLocal.stLeft.createdby,'_')#" />
-	</cfif>
+<cfelseif structkeyexists(stLocal.stRight,"status")>
+	<cfset stLocal.leftLabel = "#ucase(left(stLocal.stLeft.status,1))##lcase(mid(stLocal.stLeft.status,2,100))#" />
 <cfelse>
-	<cfset stLocal.stProfile = stLocal.oProfile.getProfile(username=stLocal.stLeft.lastupdatedby) />
-	<cfif structkeyexists(stLocal.stProfile,"lastname") and len(stLocal.stProfile.lastname)>
-		<cfset stLocal.leftLabel = "#ucase(left(stLocal.stLeft.status,1))##lcase(mid(stLocal.stLeft.status,2,100))# - #stLocal.stProfile.firstname# #stLocal.stProfile.lastname#" />
-	<cfelse>
-		<cfset stLocal.leftLabel = "#ucase(left(stLocal.stLeft.status,1))##lcase(mid(stLocal.stLeft.status,2,100))# - #listfirst(stLocal.stLeft.lastupdatedby,'_')#" />
-	</cfif>
+	<cfset stLocal.leftLabel = "Live" />
+</cfif>
+<cfset stLocal.stProfile = stLocal.oProfile.getProfile(username=stLocal.stLeft.lastupdatedby) />
+<cfif structkeyexists(stLocal.stProfile,"lastname") and len(stLocal.stProfile.lastname)>
+	<cfset stLocal.leftLabel = "#stLocal.leftLabel#- #stLocal.stProfile.firstname# #stLocal.stProfile.lastname#" />
+<cfelse>
+	<cfset stLocal.leftLabel = "#stLocal.leftLabel# - #listfirst(stLocal.stLeft.lastupdatedby,'_')#" />
 </cfif>
 
 <cfset stLocal.stRight = application.fapi.getContentObject(objectid=url.right) />
@@ -37,20 +35,18 @@
 </cfif>
 <cfif stLocal.stRight.typename eq "dmArchive">
 	<cfset stLocal.rightArchive = stLocal.stRight.objectid />
+	<cfset stLocal.rightLabel = "#dateformat(stLocal.stRight.datetimecreated,'d mmm yyyy')#, #timeformat(stLocal.stRight.datetimecreated,'h:mmtt')#" />
 	<cfwddx action="wddx2cfml" input="#stLocal.stRight.objectWDDX#" output="stLocal.stRight" />
-	<cfset stLocal.stProfile = stLocal.oProfile.getProfile(username=stLocal.stRight.createdby) />
-	<cfif structkeyexists(stLocal.stProfile,"lastname") and len(stLocal.stProfile.lastname)>
-		<cfset stLocal.rightLabel = "#dateformat(stLocal.stRight.datetimecreated,'d mmm yyyy')#, #timeformat(stLocal.stRight.datetimecreated,'h:mmtt')# - #stLocal.stProfile.firstname# #stLocal.stProfile.lastname#" />
-	<cfelse>
-		<cfset stLocal.rightLabel = "#dateformat(stLocal.stRight.datetimecreated,'d mmm yyyy')#, #timeformat(stLocal.stRight.datetimecreated,'h:mmtt')# - #listfirst(stLocal.stRight.createdby,'_')#" />
-	</cfif>
+<cfelseif structkeyexists(stLocal.stRight,"status")>
+	<cfset stLocal.rightLabel = "#ucase(left(stLocal.stRight.status,1))##lcase(mid(stLocal.stRight.status,2,100))#" />
 <cfelse>
-	<cfset stLocal.stProfile = stLocal.oProfile.getProfile(username=stLocal.stRight.lastupdatedby) />
-	<cfif structkeyexists(stLocal.stProfile,"lastname") and len(stLocal.stProfile.lastname)>
-		<cfset stLocal.rightLabel = "#ucase(left(stLocal.stRight.status,1))##lcase(mid(stLocal.stRight.status,2,100))# - #stLocal.stProfile.firstname# #stLocal.stProfile.lastname#" />
-	<cfelse>
-		<cfset stLocal.rightLabel = "#ucase(left(stLocal.stRight.status,1))##lcase(mid(stLocal.stRight.status,2,100))# - #listfirst(stLocal.stRight.lastupdatedby,'_')#" />
-	</cfif>
+	<cfset stLocal.rightLabel = "Live" />
+</cfif>
+<cfset stLocal.stProfile = stLocal.oProfile.getProfile(username=stLocal.stRight.lastupdatedby) />
+<cfif structkeyexists(stLocal.stProfile,"lastname") and len(stLocal.stProfile.lastname)>
+	<cfset stLocal.rightLabel = "#stLocal.rightLabel# - #stLocal.stProfile.firstname# #stLocal.stProfile.lastname#" />
+<cfelse>
+	<cfset stLocal.rightLabel = "#stLocal.rightLabel# - #listfirst(stLocal.stRight.lastupdatedby,'_')#" />
 </cfif>
 
 <cfset stLocal.stResults = application.fc.lib.diff.performObjectDiff(stLocal.stLeft,stLocal.stRight) />
@@ -78,7 +74,7 @@
 				#stLocal.rightLabel#
 				<cfif len(stLocal.rightArchive)>
 					[<a href="##" class="rollback" rel="#stLocal.rightArchive#">rollback</a>]
-				<cfelseif stLocal.stRight.status eq "draft">
+				<cfelseif structkeyexists(stLocal.stRight,"status") and stLocal.stRight.status eq "draft">
 					[<a href="##" class="discarddraft" rel="#stLocal.stRight.objectid#">discard</a>]
 				</cfif>
 			</th>

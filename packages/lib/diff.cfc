@@ -139,6 +139,7 @@
 		<cfset var stResult = structnew() />
 		<cfset var stTemp = structnew() />
 		<cfset var i = 0 />
+		<cfset var j = 0 />
 		
 		<cfset stResult.left = arguments.left />
 		<cfset stResult.right = arguments.right />
@@ -184,7 +185,7 @@
 					<cfset structappend(stResult,convertDiffToHighlights(stResult.aDiff),true) />
 				</cfif>
 			</cfcase>
-			<cfcase value="datetime,navigation,uuid" delimiters=",">
+			<cfcase value="datetime,navigation" delimiters=",">
 				<cfset stTemp[arguments.stMetadata.name] = arguments.left />
 				<cfset arguments.stMetadata.value = arguments.left />
 				<cfset stResult.left = application.formtools[stResult.formtool].oFactory.display(typename=arguments.typename,fieldname=arguments.stMetadata.name,stMetadata=arguments.stMetadata,stObject=stTemp) />
@@ -205,21 +206,66 @@
 				<cfset stResult.rightHighlighted = round(stResult.right) />
 				<cfset stResult.different = (stResult.left neq stResult.right) />
 			</cfcase>
-			<cfcase value="array">
+			<cfcase value="uuid">
 				<cfset stResult.leftHighlighted = "" />
-				<cfloop from="1" to="#arraylen(stResult.left)#" index="i">
-					<cfset stTemp = application.fapi.getContentObject(objectid=stResult.left[i]) />
-					<cfset stResult.leftHighlighted = stResult.leftHighlighted & "* " & stTemp.label & " [" & application.stCOAPI[stTemp.typename].displayName & "]" & this.nl />
-				</cfloop>
+				<cfif len(stResult.left)>
+					<cfset stTemp = application.fapi.getContentObject(objectid=stResult.left) />
+					<cfset stResult.leftHighlighted = stTemp.label & " [" & application.stCOAPI[stTemp.typename].displayName & "]" & this.nl />
+				</cfif>
 				<cfset stResult.rightHighlighted = "" />
-				<cfloop from="1" to="#arraylen(stResult.right)#" index="i">
-					<cfset stTemp = application.fapi.getContentObject(objectid=stResult.right[i]) />
-					<cfset stResult.rightHighlighted = stResult.rightHighlighted & "* " & stTemp.label & " [" & application.stCOAPI[stTemp.typename].displayName & "]" & this.nl />
-				</cfloop>
+				<cfif len(stResult.right)>
+					<cfset stTemp = application.fapi.getContentObject(objectid=stResult.right) />
+					<cfset stResult.rightHighlighted = stTemp.label & " [" & application.stCOAPI[stTemp.typename].displayName & "]" & this.nl />
+				</cfif>
 				<cfset stResult.different = (stResult.leftHighlighted neq stResult.rightHighlighted) />
 				<cfif stResult.different>
 					<cfset stResult.aDiff = getDiff(aOld=stringToArray(stResult.leftHighlighted),aNew=stringToArray(stResult.rightHighlighted)) />
 					<cfset structappend(stResult,convertDiffToHighlights(stResult.aDiff),true) />
+				</cfif>
+			</cfcase>
+			<cfcase value="array">
+				<cfif (arraylen(stResult.left) and isstruct(stResult.left[1])) or (arraylen(stResult.right) and isstruct(stResult.right[1]))>
+					<cfset stResult.leftRemoved = 0 />
+					<cfset stResult.rightAdded = 0 />
+					<cfloop from="1" to="#arraylen(stResult.left)#" index="i">
+						<cfif i gt arraylen(stResult.right)>
+							<cfset stResult.leftRemoved = stResult.leftRemoved + 1 />
+						<cfelseif serializeJSON(stResult.left[i]) neq serializeJSON(stResult.right[i])>
+							<cfset stResult.leftRemoved = stResult.leftRemoved + 1 />
+							<cfset stResult.rightAdded = stResult.rightAdded + 1 />
+						</cfif>
+					</cfloop>
+					<cfif arraylen(stResult.left) lt arraylen(stResult.right)>
+						<cfset stResult.rightAdded = stResult.rightAdded + arraylen(stResult.right) - arraylen(stResult.left) />
+					</cfif>
+					
+					<cfif stResult.leftRemoved eq 1>
+						<cfset stResult.leftHighlighted = "<span style='color:##CC2504;font-weight:bold;'>1 item removed</span>" />
+					<cfelseif stResult.leftRemoved gt 1>
+						<cfset stResult.leftHighlighted = "<span style='color:##CC2504;font-weight:bold;'>#stResult.leftRemoved# items removed</span>" />
+					</cfif>
+					
+					<cfif stResult.rightAdded eq 1>
+						<cfset stResult.rightHighlighted = "<span style='color:##00BF0D;font-weight:bold;'>1 item added</span>" />
+					<cfelseif stResult.rightAdded gt 1>
+						<cfset stResult.rightHighlighted = "<span style='color:##00BF0D;font-weight:bold;'>#stResult.rightAdded# items added</span>" />
+					</cfif>
+				<cfelse>
+					<cfset stResult.leftHighlighted = "" />
+					<cfloop from="1" to="#arraylen(stResult.left)#" index="i">
+						<cfset stTemp = application.fapi.getContentObject(objectid=stResult.left[i]) />
+						<cfset stResult.leftHighlighted = stResult.leftHighlighted & "* " & stTemp.label & " [" & application.stCOAPI[stTemp.typename].displayName & "]" & this.nl />
+					</cfloop>
+					<cfset stResult.rightHighlighted = "" />
+					<cfloop from="1" to="#arraylen(stResult.right)#" index="i">
+						<cfset stTemp = application.fapi.getContentObject(objectid=stResult.right[i]) />
+						<cfset stResult.rightHighlighted = stResult.rightHighlighted & "* " & stTemp.label & " [" & application.stCOAPI[stTemp.typename].displayName & "]" & this.nl />
+					</cfloop>
+					<cfset stResult.different = (stResult.leftHighlighted neq stResult.rightHighlighted) />
+					<cfif stResult.different>
+						<cfset stResult.aDiff = getDiff(aOld=stringToArray(stResult.leftHighlighted),aNew=stringToArray(stResult.rightHighlighted)) />
+						<cfset structappend(stResult,convertDiffToHighlights(stResult.aDiff),true) />
+					</cfif>
 				</cfif>
 			</cfcase>
 		</cfswitch>
