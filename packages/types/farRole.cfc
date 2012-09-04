@@ -789,8 +789,14 @@ object methods
 		<cfset var lTypes = "" />
 		<cfset var qCheckBarnacleExists = "">
 		<cfset var stWebtop = "">
+		<cfset var updateReady = NOT structKeyExists(stTypeMetadata.fields, "bSystem") />
 		
-		<cfif NOT structKeyExists(stTypeMetadata.fields, "bSystem")>
+		<cfif not updateReady>
+			<cfquery datasource="#application.dsn#" name="q">select distinct bSystem from farPermission</cfquery>
+			<cfset updateReady = (q.recordcount eq 1) />
+		</cfif>
+		
+		<cfif updateReady>
 		
 
 			
