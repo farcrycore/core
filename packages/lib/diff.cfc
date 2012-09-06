@@ -286,14 +286,16 @@
 		
 		<cfloop collection="#arguments.left#" item="prop">
 			<cfif not prop eq "typename">
-				<cfset stPropMetadata = duplicate(application.stCOAPI[arguments.left.typename].stProps[prop].metadata) />
-				<cfif structkeyexists(arguments.stMetadata,prop)>
-					<cfset structappend(stPropMetadata,arguments.stMetadata[prop],true) />
-				</cfif>
-				<cfif structkeyexists(stPropMetadata,"ftSeq") and len(stPropMetadata.ftSeq)>
-					<cfset stResult[prop] = performPropertyDiff(typename=arguments.left.typename,left=arguments.left[prop],right=arguments.right[prop],stMetadata=stPropMetadata) />
-					<cfif stResult[prop].different>
-						<cfset stResult.countDifferent = stResult.countDifferent + 1 />
+				<cfif structKeyExists(application.stCOAPI[arguments.left.typename].stProps, prop)>
+					<cfset stPropMetadata = duplicate(application.stCOAPI[arguments.left.typename].stProps[prop].metadata) />
+					<cfif structkeyexists(arguments.stMetadata,prop)>
+						<cfset structappend(stPropMetadata,arguments.stMetadata[prop],true) />
+					</cfif>
+					<cfif structkeyexists(stPropMetadata,"ftSeq") and len(stPropMetadata.ftSeq)>
+						<cfset stResult[prop] = performPropertyDiff(typename=arguments.left.typename,left=arguments.left[prop],right=arguments.right[prop],stMetadata=stPropMetadata) />
+						<cfif stResult[prop].different>
+							<cfset stResult.countDifferent = stResult.countDifferent + 1 />
+						</cfif>
 					</cfif>
 				</cfif>
 			</cfif>
