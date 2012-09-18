@@ -64,11 +64,22 @@
 			<cfset arguments.stMetadata.ftJoin = listfirst(arguments.stMetadata.ftJoin) />
 		</cfif>
 		
+		<!--- ftSelectMultiple is used by the library webskins --->
+		<cfif not structkeyexists(arguments.stMetadata,"ftSelectMultiple")>
+			<cfif arguments.stMetadata.type eq "array">
+				<cfset arguments.stMetadata.ftSelectMultiple = true />
+				<cfset application.stCOAPI[arguments.typename].stProps[arguments.stMetadata.name].metadata.ftSelectMultiple = true />
+			<cfelse>
+				<cfset arguments.stMetadata.ftSelectMultiple = false />
+				<cfset application.stCOAPI[arguments.typename].stProps[arguments.stMetadata.name].metadata.ftSelectMultiple = false />
+			</cfif>
+		</cfif>
+		
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		
 		<skin:loadJS id="jquery" />
-		<skin:loadJS id="typeahead" baseHREF="/farcry/core/webtop/js/select2" lFiles="select2.js,typeahead.js" />
-		<skin:loadCSS id="typeahead" baseHREf="/farcry/core/webtop/js/select2" lFiles="select2.css" append=".chzn-container-multi .chzn-choices .search-choice .search-choice-close { padding:0; }" />
+		<skin:loadJS id="typeahead" baseHREF="/farcry/core/webtop/thirdparty/select2" lFiles="select2.js,typeahead.js" />
+		<skin:loadCSS id="typeahead" baseHREf="/farcry/core/webtop/thirdparty/select2" lFiles="select2.css" append=".chzn-container-multi .chzn-choices .search-choice .search-choice-close { padding:0; }" />
 		
 		<cfsavecontent variable="html">
 			<cfoutput>
@@ -259,6 +270,7 @@
 		<cfset var i = 0 />
 		<cfset var result = "" />
 		<cfset var st = "" />
+		<cfset var q = "" />
 		
 		<cfif not isarray(arguments.value)>
 			<cfset arguments.value = listtoarray(arguments.value) />
@@ -268,8 +280,8 @@
 			<cfif listlen(arguments.value[i],"|") eq 2>
 				<cfset result = listappend(result,arguments.value[i]) />
 			<cfelse>
-				<cfset st = application.fapi.getContentObject(typename=arguments.typename,objectid=arguments.value[i]) />
-				<cfset result = listappend(result,"#arguments.value[i]#|#st.label#") />
+				<cfset st = application.fapi.getContentObject(objectid=arguments.value[i]) />
+				<cfset result = listappend(result,"#st.objectid#|#st.label#") />
 			</cfif>
 		</cfloop>
 		

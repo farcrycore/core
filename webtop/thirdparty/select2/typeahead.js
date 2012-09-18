@@ -30,6 +30,7 @@
 			},config);
 			thisconfig.multiple = stringtruthyness[thisconfig.multiple];
 			thisconfig.watch = thisconfig.watch.split ? thisconfig.watch.split(",") : [];
+			self.data("typeahead-config",thisconfig);
 			
 			var propertyname = fieldname.slice(thisconfig.prefix.length);
 			
@@ -57,6 +58,7 @@
 				};
 				
 				result[propertyname] = self.select2("val");
+				if (result[propertyname].constructor == Array) result[propertyname] = result[propertyname].join();
 				
 				for (var i=0; i<thisconfig.watch.length; i++){
 					result[thisconfig.watch[i]] = [];
@@ -130,6 +132,8 @@
 					val.pop();
 					$j(this).select2("val",val);
 					$j("#"+fieldname+"-add-type").val(e.val[e.val.length-1].slice(1));
+					e.val.pop();
+					$j("#"+fieldname).val(e.val.join(","));
 					
 					fcForm.openLibraryAdd(thisconfig.typename,thisconfig.objectid,propertyname,fieldname);
 				}
@@ -140,7 +144,8 @@
 				fcForm.refreshProperty = function(typename,objectid,property,id){
 					if ($j("#"+id).siblings(".select2-container").size()){
 						$j.getJSON(thisconfig.ajaxurl,{ resolvelabels:$j("#"+id).val() },function(data){
-							$j("#"+id).select2("val",thisconfig.multiple ? data : data[0]);
+							var self = $j("#"+id), thisconfig = self.data("typeahead-config");
+							self.select2("val",thisconfig.multiple ? data : data[0]);
 						});
 					}
 					else{
@@ -156,6 +161,6 @@
 	};
 	
 	$(function(){
-		$(".typeahead").typeahead();
+		$("input.typeahead,select.typeahead").typeahead();
 	})
 })(jQuery);
