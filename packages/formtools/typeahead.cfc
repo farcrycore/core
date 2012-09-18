@@ -312,7 +312,7 @@
 		
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		
-		<cfif arguments.paginate>
+		<cfif not arguments.paginate>
 			<cfloop query="q">
 				<cfset st = structnew() />
 				<cfset st["id"] = q.objectid />
