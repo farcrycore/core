@@ -133,12 +133,19 @@
 		<cfset var aResult = arraynew(1) />
 		<cfset var st = structnew() />
 		<cfset var id = "" />
+		<cfset var html = "" />
+		
+		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		
 		<cfif isdefined("url.resolvelabels")>
 			<cfloop list="#convertPropertyToValue(listtoarray(url.resolvelabels),arguments.stMetadata.ftJoin)#" index="id">
 				<cfset st = structnew() />
 				<cfset st["id"] = listfirst(id,"|") />
 				<cfset st["text"] = listlast(id,"|") />
+				
+				<skin:view objectid="#st['id']#" typename="#arguments.typename#" webskin="librarySelected" alteranateHTML="#st['text']#" r_html="html" />
+				<cfset st["librarySelected"] = trim(html) />
+				
 				<cfset arrayappend(aResult,st) />
 			</cfloop>
 			
@@ -319,7 +326,7 @@
 				<cfset st["text"] = q.label />
 				
 				<skin:view objectid="#q.objectid#" typename="#arguments.typename#" webskin="librarySelected" alteranateHTML="#q.label#" r_html="html" />
-				<cfset st["librarySelected"] = html />
+				<cfset st["librarySelected"] = trim(html) />
 				
 				<cfset arrayappend(aResult,st) />
 			</cfloop>
@@ -330,7 +337,7 @@
 				<cfset st["text"] = q.label[i] />
 				
 				<skin:view objectid="#q.objectid[i]#" typename="#arguments.typename#" webskin="librarySelected" alteranateHTML="#q.label[i]#" r_html="html" />
-				<cfset st["librarySelected"] = html />
+				<cfset st["librarySelected"] = trim(html) />
 				
 				<cfset arrayappend(aResult,st) />
 			</cfloop>

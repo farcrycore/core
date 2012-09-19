@@ -86,7 +86,7 @@
 						}
 						
 						for (var i=0; i<thisconfig.data.length; i++)
-							if (thisconfig.data[i].text.toLowerCase().indexOf(options.term.toLowerCase()) > -1) result.results.push(thisconfig.data[i]);
+							if (thisconfig.data[i].text.toString().toLowerCase().indexOf(options.term.toLowerCase()) > -1) result.results.push(thisconfig.data[i]);
 						
 						if (result.results.length > options.page * thisconfig.pagesize)
 							result.more = true;
@@ -145,7 +145,8 @@
 					if ($j("#"+id).siblings(".select2-container").size()){
 						$j.getJSON(thisconfig.ajaxurl,{ resolvelabels:$j("#"+id).val() },function(data){
 							var self = $j("#"+id), thisconfig = self.data("typeahead-config");
-							self.select2("val",thisconfig.multiple ? data : data[0]);
+							if (thisconfig.data) thisconfig.data.push(data[data.length-1]);
+							self.select2("data",thisconfig.multiple ? data : data[0]);
 						});
 					}
 					else{
