@@ -93,8 +93,8 @@
 			<cfwddx action="wddx2cfml" input="#wddxRefCat#" output="qRefCat" />
 			<cfloop query="qRefCat">
 				<cfset stProperties = structnew() />
-				<cfset stProperties.ObjectID = qTree.ObjectID />
-				<cfset stProperties.categoryID = qTree.categoryID />
+				<cfset stProperties.ObjectID = qRefCat.ObjectID />
+				<cfset stProperties.categoryID = qRefCat.categoryID />
 				<cfset arguments.factory.createData(typename="refCategories",stProperties=stProperties,dsn=arguments.dsn) />
 			</cfloop>
 
