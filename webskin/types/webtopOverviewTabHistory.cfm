@@ -17,7 +17,7 @@
 	<cfset qLog = application.fapi.getContentType(typename="farLog").filterLog(objectid=stObj.versionID,event='comment,topending,toapproved,todraft,update') />
 <cfelse>
 	<cfset qLog = application.fapi.getContentType(typename="farLog").filterLog(objectid=stObj.objectID,event='comment,topending,toapproved,todraft,update') />
-</cfif>z
+</cfif>
 <cfquery dbtype="query" name="qLog">
 	select * from qLog where event in ('comment','topending','toapproved','todraft') or (event='update' and notes like 'Archive rolled back')
 </cfquery>
