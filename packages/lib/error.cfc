@@ -111,6 +111,9 @@
 		<cfset stResult["remoteaddress"] = cgi.remote_addr />
 		<cfset stResult["host"] = cgi.http_host />
 		
+		<!--- Add arguments to result --->
+		<cfset structappend(stResult,arguments,false) />
+		
 		<cfreturn stResult />
 	</cffunction>
 	
@@ -359,23 +362,25 @@
 	<cffunction name="getStack" access="public" returntype="array" output="false" hint="Returns a stack array">
 		<cfargument name="bIncludeCore" type="boolean" required="false" default="true" />
 		<cfargument name="bIncludeJava" type="boolean" required="false" default="true" />
+		<cfargument name="ignoreLines" type="numeric" required="false" default="0" hint="Number of stack lines to omit from result" />
 		
 		<cfset var aResult = arraynew(1) />
-		<cfset var aStacktrace = createobject("java","java.lang.Exception").init().getStackTrace() />
+		<cfset var aStacktrace = createobject("java","java.lang.Throwable").getStackTrace() />
 		<cfset var stLine = structnew() />
 		<cfset var i = 0 />
 		<cfset var found = 0 />
+		<cfset var ignored = 0 />
 		
 		<cfloop from="1" to="#arraylen(aStackTrace)#" index="i">
 			<cfset stLine = structnew() />
 			<cfset stLine["template"] = aStackTrace[i].getFileName() />
 			<cfset stLine["line"] = aStackTrace[i].getLineNumber() />
 			
-			<cfif refindnocase("\.(cfc|cfm)$",stLine.template)>
+			<cfif structkeyexists(stLine,"template") and refindnocase("\.(cfc|cfm)$",stLine.template)>
 				<cfset found = found + 1 />
 			</cfif>
 			
-			<cfif found gte 2>
+			<cfif found gt 1>
 				<cfif left(stLine.template,len(application.path.core)) eq application.path.core>
 					<cfset stLine["location"] = "core" />
 				<cfelseif left(stLine.template,len(application.path.plugins)) eq application.path.plugins>
@@ -388,8 +393,10 @@
 					<cfset stLine["location"] = "external" />
 				</cfif>
 				
-				<cfif (arguments.bIncludeCore or stLine["location"] neq "core") and (arguments.bIncludeJava or stLine["location"] neq "java")>
+				<cfif (arguments.bIncludeCore or stLine["location"] neq "core") and (arguments.bIncludeJava or stLine["location"] neq "java") and ignored gte arguments.ignoreLines>
 					<cfset arrayappend(aResult,stLine) />
+				<cfelseif (arguments.bIncludeCore or stLine["location"] neq "core") and (arguments.bIncludeJava or stLine["location"] neq "java") and ignored lt arguments.ignoreLines>
+					<cfset ignored = ignored + 1 />
 				</cfif>
 			</cfif>
 		</cfloop>
