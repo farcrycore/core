@@ -47,7 +47,10 @@ accommodate legacy implementations
 <cfparam name="request.mode.lvalidstatus" default="approved" type="string" />
 
 <!--- required attributes --->
-<cfparam name="attributes.objectid" type="uuid" />
+<cfif not structkeyexists(attributes,"objectid") or not isvalid("uuid",attributes.objectid)>
+	<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("Object not specfied")) />
+	<cfexit method="exittag" />
+</cfif>
 
 <!--- optional attributes --->
 <cfparam name="attributes.fieldname" type="string" default="" />
@@ -60,8 +63,8 @@ accommodate legacy implementations
 </cfif>
 <cfif not len(attributes.typename)>
 	<!--- call onMissingTemplate if downloadObject not found --->
-	<cfset oApp=createObject("component","farcry.projects.#application.applicationname#.www.application")>
-	<cfset oApp.onMissingTemplate(thepage=cgi.QUERY_STRING)>
+	<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("Object type not specfied")) />
+	<cfexit method="exittag" />
 </cfif>
 
 <!--- get content item --->
@@ -72,18 +75,20 @@ accommodate legacy implementations
 <!--- todo: should be checking standard view permission --->
 
 <!--- check status of file --->
-<cfif structKeyExists(stFile, "status")>
-	<cfif NOT listFind(request.mode.lvalidstatus, stFile.status)>
-		<cfif request.mode.bAdmin>
-			<!--- SET DRAFT MODE ONLY FOR THIS REQUEST. --->
-			<cfset request.mode.showdraft = 1 />
-			<!---<cfset session.dmSec.Authentication.showdraft = request.mode.showdraft />--->
-			<cfset request.mode.lValidStatus = "draft,pending,approved" />
-		<cfelseif len(attributes.loginpath)>
-			<skin:location url="#attributes.loginpath#" urlParameters="showdraft=1&error=draft" />
-		<cfelse>
-			<cfthrow type="core.tags.farcry.download" message="File not available." detail="You are not authorised to view this file." />
-		</cfif>		
+<cfif not structkeyexists(stFile,"objectid") or (structkeyexists(stFile,"bDefaultObject") and stFile.bDefaultObject)>
+	<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("Object does not exist")) />
+	<cfexit method="exittag" />
+<cfelseif structKeyExists(stFile, "status") and NOT listFind(request.mode.lvalidstatus, stFile.status)>
+	<cfif request.mode.bAdmin>
+		<!--- SET DRAFT MODE ONLY FOR THIS REQUEST. --->
+		<cfset request.mode.showdraft = 1 />
+		<!---<cfset session.dmSec.Authentication.showdraft = request.mode.showdraft />--->
+		<cfset request.mode.lValidStatus = "draft,pending,approved" />
+	<cfelseif len(attributes.loginpath)>
+		<skin:location url="#attributes.loginpath#" urlParameters="showdraft=1&error=draft" />
+	<cfelse>
+		<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("You are not authorised to view this file")) />
+		<cfexit method="exittag" />
 	</cfif>
 </cfif>
 
@@ -118,7 +123,8 @@ accommodate legacy implementations
 <!--- What to do if the returned struct is empty (i.e. user doesn't have permission) --->
 <cfif structisempty(stLocation) or structkeyexists(stLocation,"message")>
 	
-	<!--- Do nothing --->
+	<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("File does not exist")) />
+	<cfexit method="exittag" />
 	
 <cfelse>
 
