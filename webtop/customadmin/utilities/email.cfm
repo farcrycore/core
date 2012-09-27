@@ -44,7 +44,7 @@
 		<cfset form.attachment = cffile.ServerDirectory & "/" & cffile.serverfile />
 	</cfif>
 	
-	<cfset result = application.fc.lib.email.send(argumentCollection=form) />
+	<cfset result = application.fc.lib.email.send(to=form.to,bcc=form.bcc,from=form.from,subject=form.subject,bodyPlain=form.bodyPlain,bodyHTML=form.bodyHTML,attachment=form.attachment) />
 	
 	<cfif isdefined("form.attachment") and len(form.attachment)>
 		<cffile action="delete" file="#form.attachment#" />
@@ -53,7 +53,7 @@
 	<cfif result eq "Success">
 		<skin:bubble message="Email successfully sent" />
 	<cfelse>
-		<skin:bubble message="Error sending email: #result#" tags="error" />
+		<skin:bubble message="#result#" tags="error" />
 	</cfif>
 </ft:processform>
 

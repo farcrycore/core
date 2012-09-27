@@ -89,7 +89,7 @@
 	</cffunction>
 	
 	<cffunction name="collectRequestInfo" access="public" returntype="struct" output="false" hint="Returns a struct containing information that should be included in every error report">
-		<cfset var stResult = structnew() />
+		<cfset var stResult = duplicate(arguments) />
 		
 		<cfif isdefined("application.sysInfo.machineName")>
 			<cfset stResult["machinename"] = application.sysInfo.machineName />
