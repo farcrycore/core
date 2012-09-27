@@ -9,21 +9,11 @@ is returned. --->
 </cfif>
 
 <cfif thistag.ExecutionMode eq "start">
-	<cfparam name="attributes.old" /><!--- The old value. This should either be a string (will be stripped of HTML tags and compared by word) or an array. --->
+	<cfparam name="attributes.old" /><!--- The old value. This should be a string (will be stripped of HTML tags and compared by word) --->
 	<cfparam name="attributes.new" /><!--- The new value. This should be in the same format as old. --->
 	<cfparam name="attributes.diff" default="diff" /><!--- The variable that the result is stored in. During execution this variable contains individual diff structs: { diff="+|-|=", oldindex, oldvalue, newindex, newvalue }. After execution this variable contains an array of all diffs. Defaults to "diff" --->
 	
-	<cfif isarray(attributes.old) and isarray(attributes.new)>
-		<cfset thistag.aDiff = application.fc.lib.diff.getDiff(attributes.old,attributes.new) />
-	<cfelse>
-		<!--- Turn the old string into an array of words --->
-		<cfset aOld = listtoarray(rereplace(rereplace(attributes.old,"<[^>]+>","","ALL"),"[^A-Za-z]+"," ","ALL")," ") />
-		
-		<!--- Turn the new string into an array of words --->
-		<cfset aNew = listtoarray(rereplace(rereplace(attributes.new,"<[^>]+>","","ALL"),"[^A-Za-z]+"," ","ALL")," ") />
-		
-		<cfset thistag.aDiff = application.fc.lib.diff.getDiff(aOld,aNew) />
-	</cfif>
+	<cfset thistag.aDiff = application.fc.lib.diff.getDiff(attributes.old,attributes.new) />
 	
 	<cfif arraylen(thistag.aDiff)>
 		<cfset thistag.index = 1 />
