@@ -261,8 +261,14 @@ $out:$
 			<cfset stResult.packagepath = application.factory.oUtils.getPath(arguments.package,arguments.name) />
 			<cfset stResult.package = arguments.package />
 			
-			<cfset o = createObject("Component", stResult.packagepath) />		
-			<cfset stMetaData = getMetaData(o) />
+			<cftry>
+				<cfset o = createObject("Component", stResult.packagepath) />		
+				<cfset stMetaData = getMetaData(o) />
+				
+				<cfcatch>
+					<cfthrow message="Error instantiating #stResult.packagepath#: #cfcatch.message#" />
+				</cfcatch>
+			</cftry>
 			
 			<cfif structKeyExists(stMetaData,"bAbstract") and stMetaData.bAbstract>
 			
