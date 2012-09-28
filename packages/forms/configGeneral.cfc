@@ -14,6 +14,7 @@
 	<cfproperty ftSeq="25" ftFieldset="SysAdmin Properties" name="genericadminnumitems" type="numeric" default="15" hint="???" ftLabel="Generic admin number of items" ftType="integer" />
 	<cfproperty ftSeq="26" ftFieldset="SysAdmin Properties" name="bEmailErrors" type="boolean" default="0" ftLabel="Email errors" />
 	<cfproperty ftSeq="27" ftFieldset="SysAdmin Properties" name="errorEmail" type="string" default="" ftLabel="Error email" ftType="email" />
+	<cfproperty ftSeq="28" ftFieldset="SysAdmin Properties" name="emailWhitelist" type="longchar" ftLabel="Email Whitelist" ftHint="Emails sent through the email library are filtered by this list (leave empty for no filtering). Each LINE can be the full email domain (e.g. daemon.com.au), or a full email address (e.g. support@daemon.com.au).">
 
 
 <!--- login properties --->

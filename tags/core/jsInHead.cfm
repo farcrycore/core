@@ -81,13 +81,25 @@
 				</cfif>
 				
 				<cfif not len(sCacheFileName) and stJS.bCombine>
-					<cfset sCacheFileName = application.fc.utils.combine(	id=stJS.id,
-																		files=stJS.lFullFilebaseHREFs,
-																		type="js",
-																		prepend=stJS.prepend,
-																		append=stJS.append) />
-				
-					<cfset application.fc.stJSLibraries[idHash].sCacheFileName = sCacheFileName />
+					<cflock name="#idhash#" timeout="10">
+						<cfif structKeyExists(application.fc.stJSLibraries,idHash) AND NOT request.mode.flushcache
+							and structKeyExists(application.fc.stJSLibraries[idHash],"sCacheFileName")
+							and fileExists('#application.path.cache#/#application.fc.stJSLibraries[idHash].sCacheFileName#')>
+							
+							<cfset sCacheFileName = application.fc.stJSLibraries[idHash].sCacheFileName />
+							
+						<cfelse>
+						
+							<cfset sCacheFileName = application.fc.utils.combine(	id=stJS.id,
+																				files=stJS.lFullFilebaseHREFs,
+																				type="js",
+																				prepend=stJS.prepend,
+																				append=stJS.append) />
+						
+							<cfset application.fc.stJSLibraries[idHash].sCacheFileName = sCacheFileName />
+						
+						</cfif>
+					</cflock>
 				</cfif>
 			</cfif>
 			

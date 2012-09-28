@@ -759,6 +759,7 @@
 		<cfset var requestmodes = "profile,tracewebskins,bShowTray" />
 		
 		<cfset request.fc.bShowTray = true />
+		<cfset request.fc.okToCache = true />
 		
 		<!--- init request.mode with defaults --->
 		<cfset request.mode = {

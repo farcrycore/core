@@ -6,6 +6,8 @@
 <cfif thistag.executionMode eq "Start">
 
 	<cfparam name="request.mode.ajax" default="0">
+	<cfparam name="request.mode.flushcache" default="0">
+	<cfparam name="request.mode.livecombine" default="0">
 
 	<cfif NOT request.mode.ajax>
 		<cfparam name="request.inHead.aCSSLibraries" default="#arrayNew(1)#" />
@@ -80,15 +82,27 @@
 															bCombine="#stCSS.bCombine#"
 															) />
 				</cfif>
-			
+				
 				<cfif not len(sCacheFileName) and stCSS.bCombine>
-					<cfset sCacheFileName = application.fc.utils.combine(	id=stCSS.id,
-																			files=stCSS.lFullFilebaseHREFs,
-																			type="css",
-																			prepend=stCSS.prepend,
-																			append=stCSS.append) />
-			
-					<cfset application.fc.stCSSLibraries[idHash].sCacheFileName = sCacheFileName />
+					<cflock name="#idhash#" timeout="10">
+						<cfif structKeyExists(application.fc.stCSSLibraries,idHash) 
+							and structKeyExists(application.fc.stCSSLibraries[idHash],"sCacheFileName")
+							and fileExists('#application.path.cache#/#application.fc.stCSSLibraries[idHash].sCacheFileName#')>
+							
+							<cfset sCacheFileName = application.fc.stCSSLibraries[idHash].sCacheFileName />
+							
+						<cfelse>
+						
+							<cfset sCacheFileName = application.fc.utils.combine(	id=stCSS.id,
+																					files=stCSS.lFullFilebaseHREFs,
+																					type="css",
+																					prepend=stCSS.prepend,
+																					append=stCSS.append) />
+					
+							<cfset application.fc.stCSSLibraries[idHash].sCacheFileName = sCacheFileName />
+						
+						</cfif>
+					</cflock>
 				</cfif>
 			</cfif>
 		

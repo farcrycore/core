@@ -781,7 +781,7 @@ $.extend($.validator, {
 	classRules: function(element) {
 		var rules = {};
 		var classes = $(element).attr('class');
-		classes && $.each(classes.split(' '), function() {
+		classes && $.each(classes.toString().split(' '), function() {
 			if (this in $.validator.classRuleSettings) {
 				$.extend(rules, $.validator.classRuleSettings[this]);
 			}
@@ -1140,6 +1140,7 @@ $.format = $.validator.format;
 			return ajax.apply(this, arguments);
 		};
 	}
+<<<<<<< .working
 })(jQuery);
 
 // provides cross-browser focusin and focusout events
@@ -1186,3 +1187,5 @@ $.format = $.validator.format;
 		}
 	});
 })(jQuery);
+=======
+})(jQuery);>>>>>>> .merge-right.r12335

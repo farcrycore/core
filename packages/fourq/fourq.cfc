@@ -1143,6 +1143,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 							<cfloop query="qRelated">
 								<cfset stProps = structNew() />
 								<cfset stProps.objectid = qRelated.objectid />
+								<cfset stProps.typename = iTypename />
 								<cfset stProps.status = changeStatus />
 								
 								<cfset stResult = oType.setData(stProperties=stProps,auditNote="Status changed to #changeStatus#") />
@@ -1156,7 +1157,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			</cfif>
 			
 		</cfif>
-
+		
 		<cfreturn stProperties />
 	</cffunction>
 

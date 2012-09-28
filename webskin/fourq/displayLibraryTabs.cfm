@@ -31,7 +31,7 @@
 		</cfif>
 	</cfloop>
 
-	<cfset stMetadata = application.fapi.getFormtool(stMetadata.type).prepMetadata(stObject = stobj, stMetadata = stMetadata) />
+	<cfset stMetadata = application.fapi.getFormtool(stMetadata.ftType).prepMetadata(stObject = stobj, stMetadata = stMetadata) />
 	
 	<admin:header title="Library Selector" style="width:99%;height:99%">		
 	

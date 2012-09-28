@@ -37,6 +37,7 @@
 		<cfset var stDeployResult = structNew() />
 		<cfset var classID =  ""/>
 		<cfset var stProperties = structNew() />
+		<cfset var stNew = structnew() />
 		
 		<cfset init() />
 		
