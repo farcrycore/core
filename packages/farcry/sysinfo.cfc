@@ -117,19 +117,6 @@
 	<cfreturn svnDate />
 </cffunction>
 
-<cffunction name="getSVNDate" access="public" output="false" hint="Returns the contents of the SVN version file date if it exists" returntype="string">
-	<cfargument name="dir" type="string" required="false" default="#application.path.core#" />
-	
-	<cfset var svnDate = "" /><!--- Return --->
-	
-	<cfif directoryExists('#arguments.dir#/.svn')>
-		<cfdirectory action="list" recurse="false" directory="#arguments.dir#/" type="dir" filter=".svn" name="svnDate">
-		<cfset svnDate = LSDateFormat(svnDate.dateLastModified, "dd mmmm yyyy")>
-	</cfif>
-	
-	<cfreturn svnDate />
-</cffunction>
-
 <cffunction name="getServerVersion" access="public" output="false" hint="Returns the server (Railo or ColdFusion) version">
 	<cfset var stVersion = structnew() />
 	
