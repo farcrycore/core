@@ -1,6 +1,4 @@
-﻿<cfscript>
-
-/*
+﻿<!---
  * Diff Match and Patch
  *
  * Copyright 2006 Google Inc.
@@ -26,83 +24,114 @@
  * Marco Spescha, @maertsch
  * on Mar 07, 2012
  *
- */
-
-component {
+--->
+<cfcomponent>
 	
-	public struct function init(javaloader){
-		// load java-class with javaloader if not already provided
-		if(not isDefined('arguments.javaloader')){
-			this.javaloader = createObject("component", "farcry.core.packages.farcry.javaloader.JavaLoader").init([
-				expandPath('/farcry/core/packages/lib/diff/diff_match_patch-current.jar')
-			]);
-		}else{
-			this.javaloader = arguments.javaloader;
-		}		
+	<cffunction name="init" access="public" returntype="struct" output="false">
+		<cfargument name="javaloader" required="false" />
 		
-		// get and save diff-match-patch instance
-		this.dmp = getDiffMatchPatchInstance(); 
-				
-		return this;
-	}
+		<!--- load java-class with javaloader if not already provided --->
+		<cfif not isDefined('arguments.javaloader')>
+			<cfset this.javaloader = createObject("component", "farcry.core.packages.farcry.javaloader.JavaLoader").init(listtoarray(
+				expandPath('/farcry/core/packages/lib/diff/diff_match_patch-current.jar')
+			)) />
+		<cfelse>
+			<cfset this.javaloader = arguments.javaloader />
+		</cfif>
+		
+		<!--- get and save diff-match-patch instance --->
+		<cfset this.dmp = getDiffMatchPatchInstance() />
+		
+		<cfreturn this />
+	</cffunction>
 	
 	
-	/* Private */
+	<!--- Private --->
 	
-	private any function getDiffMatchPatchInstance(){
-		return this.javaloader.create('name.fraser.neil.plaintext.diff_match_patch').init();
-	}
+	<cffunction name="getDiffMatchPatchInstance" access="private" returntype="any" output="false">
+		
+		<cfreturn this.javaloader.create('name.fraser.neil.plaintext.diff_match_patch').init() />
+	</cffunction>
 	
 	
-	/* Public */
+	<!--- Public --->
 	
-	public array function diff_main(text1,text2){
-		return this.dmp.diff_main(arguments.text1,arguments.text2);
-	}
+	<cffunction name="diff_main" access="public" returntype="array" output="false">
+		<cfargument name="text1" type="string" required="true" />
+		<cfargument name="text2" type="string" required="true" />
+		
+		<cfreturn this.dmp.diff_main(arguments.text1,arguments.text2) />
+	</cffunction>
 	
-	public void function diff_cleanupSemantic(diffs){
-		return this.dmp.diff_cleanupSemantic(arguments.diffs);
-	}
+	<cffunction name="diff_cleanupSemantic" access="public" returntype="void" output="false">
+		<cfargument name="diffs" required="true" />
+		
+		<cfreturn this.dmp.diff_cleanupSemantic(arguments.diffs) />
+	</cffunction>
 	
-	public void function diff_cleanupEfficiency(diffs){
-		return this.dmp.diff_cleanupEfficiency(arguments.diffs);
-	}
+	<cffunction name="diff_cleanupEfficiency" access="public" returntype="void" output="false">
+		<cfargument name="diffs" required="true" />
+		
+		<cfreturn this.dmp.diff_cleanupEfficiency(arguments.diffs) />
+	</cffunction>
 	
-	public numeric function diff_levenshtein(diffs){
-		return this.dmp.diff_levenshtein(arguments.diffs);
-	}
+	<cffunction name="diff_levenshtein" access="public" returntype="void" output="false">
+		<cfargument name="diffs" required="true" />
+		
+		<cfreturn this.dmp.diff_levenshtein(arguments.diffs) />
+	</cffunction>
 	
-	public string function diff_prettyHtml(diffs){
-		return this.dmp.diff_prettyHtml(arguments.diffs);
-	}
+	<cffunction name="diff_prettyHtml" access="public" returntype="void" output="false">
+		<cfargument name="diffs" required="true" />
+		
+		<cfreturn this.dmp.diff_prettyHtml(arguments.diffs) />
+	</cffunction>
 	
-	public any function match_main(text,pattern,loc){
-		return this.dmp.match_main(arguments.text,arguments.pattern,arguments.loc);
-	}
+	<cffunction name="match_main" access="public" returntype="void" output="false">
+		<cfargument name="text" required="true" />
+		<cfargument name="pattern" required="true" />
+		<cfargument name="loc" required="true" />
+		
+		<cfreturn this.dmp.match_main(arguments.text,arguments.pattern,arguments.loc) />
+	</cffunction>
 	
-	public any function patch_make_text(text1, text2){
-		return this.dmp.patch_make(arguments.text1,arguments.text2);
-	}
+	<cffunction name="patch_make_text" access="public" returntype="void" output="false">
+		<cfargument name="text1" type="string" required="true" />
+		<cfargument name="text2" type="string" required="true" />
+		
+		<cfreturn this.dmp.patch_make(arguments.text1,arguments.text2) />
+	</cffunction>
 	
-	public any function patch_make_diffs(diffs){
-		return this.dmp.patch_make(arguments.diffs);
-	}
+	<cffunction name="patch_make_diffs" access="public" returntype="void" output="false">
+		<cfargument name="diffs" required="true" />
+		
+		<cfreturn this.dmp.patch_make(arguments.diffs) />
+	</cffunction>
 	
-	public any function patch_make_text_diffs(text1, diffs){
-		return this.dmp.patch_make(arguments.text1, arguments.diffs);
-	}
+	<cffunction name="patch_make_text_diffs" access="public" returntype="void" output="false">
+		<cfargument name="text1" required="true" />
+		<cfargument name="diffs" required="true" />
+		
+		<cfreturn this.dmp.patch_make(arguments.text1, arguments.diffs) />
+	</cffunction>
 	
-	public any function patch_toText(patches){
-		return this.dmp.patch_toText(arguments.patches);
-	}
+	<cffunction name="patch_toText" access="public" returntype="void" output="false">
+		<cfargument name="patches" required="true" />
+		
+		<cfreturn this.dmp.patch_toText(arguments.patches) />
+	</cffunction>
 	
-	public any function patch_fromText(text){
-		return this.dmp.patch_fromText(arguments.text);
-	}
+	<cffunction name="patch_fromText" access="public" returntype="void" output="false">
+		<cfargument name="text" required="true" />
+		
+		<cfreturn this.dmp.patch_fromText(arguments.text) />
+	</cffunction>
 	
-	public any function patch_apply(patches, text1){
-		return this.dmp.patch_apply(arguments.patches, arguments.text1);
-	}
+	<cffunction name="patch_apply" access="public" returntype="void" output="false">
+		<cfargument name="patches" required="true" />
+		<cfargument name="text1" required="true" />
+		
+		<cfreturn this.dmp.patch_apply(arguments.patches, arguments.text1) />
+	</cffunction>
 	
-}	
-</cfscript>
+</cfcomponent>
