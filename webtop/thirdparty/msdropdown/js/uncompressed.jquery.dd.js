@@ -84,7 +84,7 @@
 															var currentOptOption = optChild[currentopt];
 															 var aid = aidoptfix+"_"+(current)+"_"+(currentopt);
 															 var arrow = $(currentOptOption).attr("title");
-															 arrow = (arrow.length==0) ? "" : '<img src="'+arrow+'" align="left" /> ';
+															 arrow = (typeof arrow == "undefined" || arrow.length==0 || options.showIcon==false) ? "" : '<img src="'+arrow+'" align="left" /> ';
 															 var sText = $(currentOptOption).text();
 															 var sValue = $(currentOptOption).val();
 															 var sEnabledClass = ($(currentOptOption).attr("disabled")==true) ? "disabled" : "enabled";
@@ -105,7 +105,7 @@
 								 } else {
 									 var aid = aidfix+"_"+(current);
 									 var arrow = $(currentOption).attr("title");
-									 arrow = (arrow.length==0) ? "" : '<img src="'+arrow+'" align="left" /> ';									 
+									 arrow = (typeof arrow == "undefined" || arrow.length==0 || options.showIcon==false) ? "" : '<img src="'+arrow+'" align="left" /> ';									 
 									 var sText = $(currentOption).text();
 									 var sValue = $(currentOption).val();
 									 var sEnabledClass = ($(currentOption).attr("disabled")==true) ? "disabled" : "enabled";
@@ -146,7 +146,7 @@
 		var inputhidden = getPostID("postInputhidden");
 		var sText = $("#"+elementid+" option:selected").text();
 		var arrow = $("#"+elementid+" option:selected").attr("title");
-		arrow = (arrow.length==0 || arrow==undefined || options.showIcon==false) ? "" : '<img src="'+arrow+'" align="left" /> ';
+		arrow = (typeof arrow == "undefined" || arrow.length==0 || options.showIcon==false) ? "" : '<img src="'+arrow+'" align="left" /> ';
 		var sDiv = '<div id="'+titleid+'" class="'+styles.ddTitle+'"';
 		sDiv += '>';
 		sDiv += '<span id="'+arrowid+'" class="'+styles.arrow+'"></span><span class="textTitle" id="'+titletextid+'">'+arrow + sText+'</span></div>';
