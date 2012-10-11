@@ -101,7 +101,9 @@
 				<!--- User was sessionless until they POST'd (happens behind reverse proxies) - set up as best we can here --->
 				<cfparam name="session.stFarCryFormSpamProtection" default="#structNew()#" />
 				<cfparam name="session.stFarCryFormSpamProtection['#form.farcryFormSubmitted#']" default="#structNew()#" />
-				
+			</cfif>
+			
+			<cfif not structkeyexists(session.stFarCryFormSpamProtection,form.farcryFormSubmitted) or not structkeyexists(session.stFarCryFormSpamProtection['#form.farcryFormSubmitted#'],FORM.FarcryFormSubmitButton)>
 				<cfset session.stFarCryFormSpamProtection['#form.farcryFormSubmitted#']['#FORM.FarcryFormSubmitButton#'] = structNew() />
 				<cfset session.stFarCryFormSpamProtection['#form.farcryFormSubmitted#']['#FORM.FarcryFormSubmitButton#'].bSpamProtect = true />
 				<cfloop list="#structKeyList(attributes)#" index="protectionAttribute">
