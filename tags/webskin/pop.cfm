@@ -49,9 +49,9 @@
 	<cfthrow message="skin:pop must have an end tag" />
 </cfif>
 
-<cfparam name="session.aGritterMessages" default="#arraynew(1)#" />
-
-<cfif thistag.ExecutionMode eq "start">
+<cfif thistag.ExecutionMode eq "start" and isdefined("session")>
+	<cfparam name="session.aGritterMessages" default="#arraynew(1)#" />
+	
 	<cfset thistag.thismessage = 1 />
 	<cfset thistag.tagregex = "(^|,)(#replace(attributes.tags,',','|','ALL')#)($|,)" />
 	<cfset thistag.allout = "" />
@@ -92,7 +92,7 @@
 	<cfset "caller.#attributes.variable#" = duplicate(session.aGritterMessages[thistag.thismessage]) />
 </cfif>
 
-<cfif thistag.ExecutionMode eq "end">
+<cfif thistag.ExecutionMode eq "end" and isdefined("session")>
 	<!--- Output for built in message formats --->
 	<cfswitch expression="#attributes.format#">
 		<cfcase value="gritter">
