@@ -311,9 +311,9 @@ $.extend($.validator, {
 			});
 
 			function delegate(event) {
-				var validator = $.data(this.form, "validator"),
+				var validator = $.data(this[0].form, "validator"),
 					eventType = "on" + event.type.replace(/^validate/, "");
-				validator.settings[eventType] && validator.settings[eventType].call(validator, this, event);
+				validator.settings[eventType] && validator.settings[eventType].call(validator, this[0], event);
 			}
 			$(this.currentForm)
 			       .delegate("[type='text'], [type='password'], [type='file'], select, textarea, " +
