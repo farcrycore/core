@@ -440,6 +440,11 @@
 		<cfreturn aAncestors>
 	</cffunction>
 	
+	<cffunction name="prepMetadata" access="public" output="false" returntype="struct" hint="Allows modification of property metadata in the displayLibrary* webskins">
+		<cfargument name="stObject" type="struct" required="true" hint="The object being edited" />
+		<cfargument name="stMetadata" type="struct" required="true" hint="The property metadata" />
+		<cfreturn arguments.stMetadata />
+	</cffunction>
 	
 	
 </cfcomponent> 
