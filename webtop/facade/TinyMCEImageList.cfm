@@ -1,13 +1,13 @@
 <cfsetting enablecfoutputonly="true" />
 <cfsetting showdebugoutput="false" />
 
+<cfset qImages = queryNew("")>
 
 <!--- Get the related images --->
 <cfset qRelatedImages = application.fapi.getRelatedContent(	objectid="#url.relatedObjectid#", 
 															typename="#url.relatedTypename#", 
 															filter="#url.ftImageListFilterTypename#"
 															) />
-
 
 <cfif qRelatedImages.recordCount>
 	<!--- Get the information for the array to be passed back. --->
