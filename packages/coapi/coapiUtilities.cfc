@@ -241,21 +241,16 @@
 	
 		<!--- IF WE ARE ONLY LOOKING FOR A PARTICULAR RELATIONSHIP, CHECK IT HERE --->
 		<cfif not len(arguments.arrayType) OR arguments.arrayType EQ iType>
-			
 			<!--- LOOP THROUGH PROPERTIES IN THE CURRENT TYPENAME LOOKING FOR RELATED CONTENT --->
-			<cfloop collection="#application.stcoapi[arguments.typename].stprops#" item="iProp">
-				
+			<cfloop collection="#application.stcoapi[arguments.typename].stprops#" item="iProp">		
 				<!--- IGNORE OBJECTID PROPERTY --->
-				<cfif iProp NEQ "objectid">
-					
+				<cfif iProp NEQ "objectid">					
 					<!--- IF WE ARE ONLY LOOKING AT RELATIONSHIPS DEFINED BY A SINGLE PROPERTY, ONLY LOOK AT THAT PROPERTY --->
-					<cfif not len(arguments.arrayProperty) OR listFindNoCase(arguments.arrayProperty, iProp)>
-					
+					<cfif not len(arguments.arrayProperty) OR listFindNoCase(arguments.arrayProperty, iProp)>					
 						<!--- MAKE SURE THAT THE PROPERTY HAS FTJOIN METADATA --->
 						<cfif structKeyExists(application.stcoapi[iType].stprops[iProp].metadata, "ftJoin")>
-						
 							<!--- IF WE ARE ONLY LOOKING FOR REALTED CONTENT OF A SPECIFIC TYPE, MAKE SURE THIS PROPERTY HAS THAT TYPE RELATED --->
-							<cfif not len(arguments.filter) OR listFindNoCase(application.stcoapi[iType].stprops[iProp].metadata.ftJoin, arguments.filter)>
+							<cfif not len(arguments.filter) OR listFindNoCase(application.stcoapi[iType].stprops[iProp].metadata.ftJoin, arguments.filter) GT 0 OR application.stcoapi[iType].buseintree>							
 								<cfset q = queryNew("objectid,typename") />						
 								
 								<!--- IF THE PROPERTY IS AN ARRAY, LOOK IN THIS OBJECTS ARRAY TABLE FOR RELATED CONTENT --->
@@ -316,8 +311,7 @@
 		<cfloop collection="#application.stcoapi#" item="iType">
 			
 			<!--- IF WE ARE ONLY LOOKING FOR A PARTICULAR RELATIONSHIP, CHECK IT HERE --->
-			<cfif not len(arguments.arrayType) OR arguments.arrayType EQ iType>
-				
+			<cfif not len(arguments.arrayType) OR arguments.arrayType EQ iType>			
 				<!--- IGNORE OUR BASE CONTENT TYPE. THIS WAS HANDLED ABOVE --->
 				<cfif iType NEQ arguments.typename>
 				
@@ -364,7 +358,7 @@
 											SELECT objectid,typename FROM qRelatedContent
 											UNION
 											SELECT objectid,typename FROM q
-											</cfquery>
+											</cfquery>									
 										<cfelse>
 											<cfset qRelatedContent = duplicate(q) />
 										</cfif>
