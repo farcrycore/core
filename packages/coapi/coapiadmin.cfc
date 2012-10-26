@@ -187,6 +187,7 @@
 		
 	
 			<cfset request.fc.stProjectDirectorys = structNew() />
+			<cfset request.fc.stWebskins = structnew() />
 			
 			<cfset request.stPluginDirectorys = structNew() />
 			<cfparam name="application.plugins" default="" />
@@ -302,7 +303,8 @@
 				
 				<!--- Assign the metadata --->
 				<cfset structappend(stWebskinDetails,stWebskinMetadata,true) />
-	
+				<cfparam name="request.fc.stWebskins.#request.fc.stProjectDirectorys.qAll.typename#" default="#structnew()#" />
+				<cfset request.fc.stWebskins[request.fc.stProjectDirectorys.qAll.typename][stWebskinDetails.methodname] = stWebskinDetails />
 				
 				<!--- UPDATE THE METADATA QUERY --->
 				<cfloop list="path,methodname,displayname,author,description,cacheStatus,cacheTimeout,browserCacheTimeout,proxyCacheTimeout,cacheByURL,cacheFlushOnFormPost,cacheByForm,cacheByRoles,cacheByVars,cacheTypeWatch,cacheFlushOnObjectChange,fuAlias,viewstack,viewbinding,allowredirect" index="thisvar">
@@ -371,8 +373,8 @@
 		IN THIS CASE, ANY FILTERING OPTIONS PASSED IN (prefix,viewBinding,viewStack) AS ARGUMENTS WILL BE IGNORED.
 		 --->		
 		<cfparam name="request.fc.stcoapiWebskins" default="#structNew()#" />
-		<cfparam name="request.fc.stcoapiWebskins[arguments.typename]" default="#structNew()#" />
-		
+		<cfparam name="request.fc.stcoapiWebskins.#arguments.typename#" default="#structNew()#" />
+		<cfparam name="request.fc.stWebskins" default="#structnew()#" />
 		
 		<!--- INITIALIZE PROJECT DIRECTORIES IF REQUIRED --->
 		<cfset setupProjectDirectorys() />
@@ -387,6 +389,10 @@
 		
 		<!--- Loop through ancestors in order of precedence, only adding webskins that have not already been defined --->
 		<cfloop from="1" to="#arrayLen(aExtends)#" index="i">
+			<cfparam name="request.fc.stWebskins.#arguments.typename#" default="#structnew()#" />
+			<cfparam name="request.fc.stWebskins.#lcase(aExtends[i])#" default="#structnew()#" />
+			<cfset structappend(request.fc.stWebskins[arguments.typename],request.fc.stWebskins[lcase(aExtends[i])],false) />
+			
 			<cfif isquery(qResult) and qResult.recordcount>
 				<!--- Some webskins have been retrieved already, merge in any new ones defined for this ancestor --->
 				<cfquery dbtype="query" name="qResult">
@@ -491,17 +497,48 @@
 		<cfargument name="lProperties" type="string" required="true" />
 		<cfargument name="lTypes" type="string" required="false" default="" />
 		<cfargument name="lDefaults" type="string" required="false" default="" />
-	
-		<cfset var result = "" />
+		
 		<cfset var templateCode = "" />
-		<cfset var pos = "" />	
-		<cfset var count = "" />		
 		<cfset var i = "" />		
 		<cfset var stResult = structNew() />
 		<cfset var thisvar = "" />
 		<cfset var thistype = "" />
 		<cfset var thisdefault = "" />
+		<cfset var stMatch = structnew() />
+		<cfset var start = 1 />
 		
+		<!--- Check that the webskin can be used as a variable name --->
+		<cfif not isValid("variablename",template)>
+			<cfthrow 	message="Invalid webskin filename (#path#)."
+						detail=" FarCry webskin names must adhere to the standard ColdFusion variable naming conventions. For example, no spaces in filename." />
+		</cfif>
+		
+		<!--- Figure out the file path of the webskin --->
+		<cfif NOT structKeyExists(arguments, "path")>
+			<cfif len(arguments.typename) AND len(arguments.template)>
+				<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
+			<cfelse>
+				<cfthrow type="Application" detail="Error: [parseWebskinMetadata] You must pass in a path or both the typename and template, #arguments.toString()#" />	
+			</cfif>
+		</cfif>
+		
+		<!--- Load file --->
+		<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
+			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
+		<cfelse>
+			<cfthrow type="Application" detail="Error: [parseWebskinMetadata] Webskin file does not exist, #arguments.toString()#" />
+		</cfif>
+		
+		<!--- Find and extract every "@@variable: value" pair --->
+		<cfloop condition="structisempty(stMatch) or stMatch.pos[1]">
+			<cfset stMatch = refind("@@(\w+):(.*?)(--->|@@)",templateCode,start,true) />
+			<cfif stMatch.pos[1]>
+				<cfset stResult[trim(mid(templateCode,stMatch.pos[2],stMatch.len[2]))] = trim(mid(templateCode,stMatch.pos[3],stMatch.len[3])) />
+				<cfset start = stMatch.pos[1] + stMatch.len[1] - 2 />
+			</cfif>
+		</cfloop>
+		
+		<!--- Apply defaults and validate types --->
 		<cfloop from="1" to="#listlen(arguments.lProperties)#" index="i">
 			<cfset thisvar = listgetat(arguments.lProperties,i) />
 			
@@ -517,46 +554,6 @@
 				<cfset thisdefault = "" />
 			<cfelse>
 				<cfset thisdefault = listgetat(arguments.lDefaults,i) />
-			</cfif>
-			
-			<cfif not isValid("variablename",template)>
-				<cfthrow 	message="Invalid webskin filename (#path#)."
-							detail=" FarCry webskin names must adhere to the standard ColdFusion variable naming conventions. For example, no spaces in filename." />
-			</cfif>
-			
-			<cfif isdefined("application.stcoapi.#typename#.stWebskins.#template#.#thisvar#")>
-				
-				<!--- Get the cached value if available --->
-				<cfset stResult[thisvar] = application.stcoapi['#typename#'].stWebskins['#template#'][thisvar] />
-				
-			<cfelse>
-				
-				<cfif not len(templateCode)>
-					<!--- Figure out the file path of the webskin --->
-					<cfif NOT structKeyExists(arguments, "path")>
-						<cfif len(arguments.typename) AND len(arguments.template)>
-							<cfset arguments.path = getWebskinPath(typename=arguments.typename, template=arguments.template) />
-						<cfelse>
-							<cfthrow type="Application" detail="Error: [parseWebskinMetadata] You must pass in a path or both the typename and template, #arguments.toString()#" />	
-						</cfif>
-					</cfif>
-					
-					<!--- Load file --->
-					<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
-						<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateCode">
-					<cfelse>
-						<cfthrow type="Application" detail="Error: [parseWebskinMetadata] Webskin file does not exist, #arguments.toString()#" />
-					</cfif>
-				</cfif>
-				
-				<!--- Extract the variable --->
-				<cfset pos = findNoCase('@@#thisvar#:', templateCode)>
-				<cfif pos GT 0>
-					<cfset pos = pos + len(thisvar) + 3>
-					<cfset count = refindNoCase('(--->|@@)', templateCode, pos)-pos>
-					<cfset stResult[thisvar] = trim(listLast(mid(templateCode,  pos, count), ":"))>
-				</cfif>
-				
 			</cfif>
 			
 			<cfif not structKeyExists(stResult, thisvar) or not isvalid(thistype,stResult[thisvar])>

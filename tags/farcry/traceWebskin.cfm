@@ -81,6 +81,12 @@
 								</cfloop>
 							</td>
 						</tr>
+						<cfif structkeyexists(application.stCOAPI[stTrace.typename].stWebskins[stTrace.template],"postprocess") and len(application.stCOAPI[stTrace.typename].stWebskins[stTrace.template].postprocess)>
+							<tr>
+								<th>Post-processing</th>
+								<td>#application.stCOAPI[stTrace.typename].stWebskins[stTrace.template].postprocess#</td>
+							</tr>
+						</cfif>
 					
 						<cfif stTrace.cacheStatus EQ 1>
 							<cfif structKeyExists(application.stcoapi, stTrace.typename) AND application.stcoapi[stTrace.typename].bObjectBroker>										

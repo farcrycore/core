@@ -440,7 +440,12 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfinclude template="#arguments.WebskinPath#">
 			
 			</farcry:traceWebskin>
-		</cfsavecontent>	
+		</cfsavecontent>
+		
+		<!--- Apply post-processing --->
+		<cfif structkeyexists(application.fc.lib,"postprocess") and structkeyexists(application.stCOAPI[arguments.webskinTypename].stWebskins[arguments.webskinTemplate],"postprocess") and len(application.stCOAPI[arguments.webskinTypename].stWebskins[arguments.webskinTemplate].postprocess)>
+			<cfset webskinHTML = application.fc.lib.postprocess.apply(webskinHTML,application.stCOAPI[arguments.webskinTypename].stWebskins[arguments.webskinTemplate].postprocess) />
+		</cfif>
 		
 		<cfif structKeyExists(request,"mode") AND (request.mode.flushcache EQ 1 OR request.mode.showdraft EQ 1 OR request.mode.tracewebskins eq 1 OR request.mode.design eq 1 OR request.mode.lvalidstatus NEQ "approved" OR (structKeyExists(url, "updateapp") AND url.updateapp EQ 1))>
 			<!--- NOT CACHING SO IGNORE --->
@@ -1340,17 +1345,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 
 		<!--- Get webkins: webskins for this type, then webskins for extends types --->
 		<cfset stReturnMetadata.qWebskins = application.coapi.coapiAdmin.getWebskins(typename="#componentname#", bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#",packagepath=stReturnMetadata.packagepath,aExtends=stReturnMetadata.aExtends) />
-
-
-		<cfset stReturnMetadata.stWebskins = structNew() />
-		<cfloop query="stReturnMetadata.qWebskins">
-			<cfset stReturnMetadata.stWebskins[stReturnMetadata.qWebskins.METHODNAME[currentRow]] = structNew() />
-			<cfloop list="#stReturnMetadata.qWebskins.columnList#" index="ixCol">
-				<cfset stReturnMetadata.stWebskins[stReturnMetadata.qWebskins.METHODNAME[currentRow]][ixCol] = stReturnMetadata.qWebskins[ixCol][currentRow] />
-			</cfloop>
-		</cfloop>
-	
-	
+		<cfset stReturnMetadata.stWebskins = request.fc.stWebskins[componentname] />
+		
+		
 		<!--- Setup a location to store all the webskins that need to be watched for CRUD changes --->
 		<cfset stReturnMetadata.stTypeWatchWebskins = structNew() />
 		
