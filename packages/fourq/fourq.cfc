@@ -417,7 +417,6 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset stCurrentView.inHead.stJSLibraries = structNew() />
 		<cfset stCurrentView.inHead.aJSLibraries = arrayNew(1) />
 		
-		
 		<cfset arrayAppend(request.aAncestorWebskins, stCurrentView) />					
 		
 		<!--- Here we are initialising the viewStates. After the call to the webskin, we will know which view states were used  --->
@@ -1420,17 +1419,25 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					<cfreturn application.fapi.getResource(key="coapi.#getTypeName()#.properties.#arguments.property#@label",default=application.stCOAPI[getTypeName()].stProps[arguments.property].metadata["name"]) />
 				</cfif>
 			</cfcase>
+			<cfcase value="hint">
+				<cfif len(application.stCOAPI[getTypeName()].stProps[arguments.property].metadata["ftHint"])>
+					<cfreturn application.fapi.getResource(key="coapi.#getTypeName()#.properties.#arguments.property#@hint",default=application.stCOAPI[getTypeName()].stProps[arguments.property].metadata["ftHint"]) />
+				<cfelse>
+					<cfreturn application.fapi.getResource(key="coapi.#getTypeName()#.properties.#arguments.property#@hint",default="") />
+				</cfif>
+			</cfcase>
 		</cfswitch>
 		
 		<cfreturn application.rb.getResource("coapi.#getTypeName()#.properties.#arguments.property#@#arguments.value#","") />
 	</cffunction>
 
 	<cffunction name="getI18Step" access="public" output="false" returntype="string" hint="Provides access to I18 values for labels etc">
-		<cfargument name="step" type="numeric" required="true" hint="The step being queried" />
+		<cfargument name="step" type="any" required="true" hint="The step being queried" />
 		<cfargument name="value" type="string" required="false" hint="The value required i.e. label, helptitle, helpsection" default="label" />
 		
 		<cfset var qSteps = "" />
 		<cfset var prop = arguments.value />
+		<cfset var defaultvalue = "" />
 		
 		<cfswitch expression="#arguments.value#">
 			<cfcase value="label">
@@ -1438,25 +1445,42 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			</cfcase>
 		</cfswitch>
 		
-		<cfquery dbtype="query" name="qSteps">
-			select		ftWizardStep
-			from		application.stCOAPI.#getTypeName()#.qMetadata
-			where		ftWizardStep <> '#getTypeName()#'
-			group by 	ftWizardStep
-			order by	ftSeq
-		</cfquery>
+		<cfif isnumeric(arguments.step)>
+			<cfquery dbtype="query" name="qSteps">
+				select		ftWizardStep
+				from		application.stCOAPI.#getTypeName()#.qMetadata
+				where		ftWizardStep <> '#getTypeName()#'
+				group by 	ftWizardStep
+				order by	ftSeq
+			</cfquery>
+			
+			<cfset arguments.step = qSteps.ftWizardStep[arguments.step] />
+			
+			<cfset defaultvalue = qSteps[prop][arguments.step] />
+		<cfelse>
+			<cfquery dbtype="query" name="qSteps">
+				select		ftWizardStep
+				from		application.stCOAPI.#getTypeName()#.qMetadata
+				where		ftWizardStep = '#arguments.step#'
+				group by 	ftWizardStep
+				order by	ftSeq
+			</cfquery>
+			
+			<cfset defaultvalue = qSteps[prop][1] />
+		</cfif>
 		
-		<cfreturn application.rb.getResource("coapi.#getTypeName()#.steps.#arguments.step#@#arguments.value#",qSteps[prop][arguments.step]) />
+		<cfreturn application.rb.getResource("coapi.#getTypeName()#.steps.#arguments.step#@#arguments.value#",defaultvalue) />
 	</cffunction>
 
 	<cffunction name="getI18Fieldset" access="public" output="false" returntype="string" hint="Provides access to I18 values for labels etc">
-		<cfargument name="step" type="numeric" required="false" hint="The step being queried" default="0" />
-		<cfargument name="fieldset" type="numeric" required="true" hint="The fieldset being queried" default="0" />
+		<cfargument name="step" type="any" required="false" hint="The step being queried" />
+		<cfargument name="fieldset" type="any" required="true" hint="The fieldset being queried" default="0" />
 		<cfargument name="value" type="string" required="false" hint="The value required i.e. label, helptitle, helpsection" default="label" />
 		
 		<cfset var qSteps = "" />
 		<cfset var qFieldsets = "" />
 		<cfset var prop = arguments.value />
+		<cfset var defaultvalue = "" />
 		
 		<cfswitch expression="#arguments.value#">
 			<cfcase value="label">
@@ -1470,7 +1494,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			</cfcase>
 		</cfswitch>
 		
-		<cfif arguments.step>
+		<cfif structkeyexists(arguments,"step") and isnumeric(arguments.step)>
 			<cfquery dbtype="query" name="qSteps">
 				select		ftWizardStep
 				from		application.stCOAPI.#getTypeName()#.qMetadata
@@ -1478,22 +1502,39 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				group by 	ftWizardStep
 				order by	ftSeq
 			</cfquery>
+			
+			<cfset arguments.step = qSteps.ftWizardStep[arguments.step] />
 		</cfif>
 		
-		<cfquery dbtype="query" name="qFieldsets">
-			select		ftFieldset, ftHelpTitle, ftHelpSection
-			from		application.stCOAPI.#getTypeName()#.qMetadata
-			<cfif arguments.step>
-				where		ftWizardStep = '#qSteps.ftWizardStep[arguments.step]#'
-			</cfif>
-			group by	ftFieldSet, ftHelpTitle, ftHelpSection
-			order by	ftSeq
-		</cfquery>
-		
-		<cfif arguments.step>
-			<cfreturn application.rb.getResource("coapi.#getTypeName()#.steps.#arguments.step#.fieldsets.#arguments.fieldset#@#arguments.value#",qFieldsets[prop][arguments.fieldset]) />
+		<cfif isnumeric(arguments.fieldset)>
+			<cfquery dbtype="query" name="qFieldsets">
+				select		ftFieldset, ftHelpTitle, ftHelpSection
+				from		application.stCOAPI.#getTypeName()#.qMetadata
+				where		ftWizardStep = '#arguments.step#'
+				group by	ftFieldSet, ftHelpTitle, ftHelpSection
+				order by	ftSeq
+			</cfquery>
+			
+			<cfset arguments.fieldset = qFieldsets.ftFieldset[arguments.fieldset] />
+			
+			<cfset defaultvalue = qFieldsets[prop][arguments.fieldset] />
 		<cfelse>
-			<cfreturn application.rb.getResource("coapi.#getTypeName()#.fieldsets.#arguments.fieldset#@#arguments.value#",qFieldsets[prop][arguments.fieldset]) />
+			<cfquery dbtype="query" name="qFieldsets">
+				select		ftFieldset, ftHelpTitle, ftHelpSection
+				from		application.stCOAPI.#getTypeName()#.qMetadata
+				where		ftWizardStep = '#arguments.step#'
+							and ftFieldset = '#arguments.fieldset#'
+				group by	ftFieldSet, ftHelpTitle, ftHelpSection
+				order by	ftSeq
+			</cfquery>
+			
+			<cfset defaultvalue = qFieldsets[prop][1] />
+		</cfif>
+		
+		<cfif structkeyexists(arguments,"step")>
+			<cfreturn application.rb.getResource("coapi.#getTypeName()#.steps.#arguments.step#.fieldsets.#arguments.fieldset#@#arguments.value#",defaultvalue) />
+		<cfelse>
+			<cfreturn application.rb.getResource("coapi.#getTypeName()#.fieldsets.#arguments.fieldset#@#arguments.value#",defaultvalue) />
 		</cfif>
 	</cffunction>
 	

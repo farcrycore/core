@@ -828,7 +828,7 @@ default handlers
 					ORDER BY ftSeq
 					</cfquery>
 				
-					<wiz:step name="#iWizardStep#">
+					<wiz:step name="#getI18Step(step=iWizardStep,value='label')#">
 						
 
 						<cfquery dbtype="query" name="qFieldSets">
@@ -858,7 +858,7 @@ default handlers
 								ORDER BY ftSeq
 								</cfquery>
 								
-								<wiz:object typename="#stobj.typename#" ObjectID="#stobj.objectID#" lfields="#valuelist(qFieldset.propertyname)#" format="edit" intable="false" legend="#iFieldSet#" helptitle="#qFieldset.fthelptitle#" helpsection="#qFieldset.fthelpsection#" />
+								<wiz:object typename="#stobj.typename#" ObjectID="#stobj.objectID#" lfields="#valuelist(qFieldset.propertyname)#" format="edit" intable="false" legend="#getI18Fieldset(step=iWizardStep,fieldset=iFieldSet,value='label')#" helptitle="#getI18Fieldset(step=iWizardStep,fieldset=iFieldSet,value='helptitle')#" helpsection="#getI18Fieldset(step=iWizardStep,fieldset=iFieldSet,value='helpsection')#" />
 							</cfloop>
 							
 						<cfelse>
@@ -930,7 +930,7 @@ default handlers
 						ORDER BY ftSeq
 						</cfquery>
 						
-						<ft:object typename="#stobj.typename#" ObjectID="#stobj.objectID#" format="edit" lExcludeFields="label" lFields="#valuelist(qFieldset.propertyname)#" inTable="false" IncludeFieldSet="true" Legend="#iFieldset#" helptitle="#qFieldset.fthelptitle#" helpsection="#qFieldset.fthelpsection#" />
+						<ft:object typename="#stobj.typename#" ObjectID="#stobj.objectID#" format="edit" lExcludeFields="label" lFields="#valuelist(qFieldset.propertyname)#" inTable="false" IncludeFieldSet="true" Legend="#getI18Fieldset(fieldset=iFieldSet,value='label')#" helptitle="#getI18Fieldset(fieldset=iFieldSet,value='helptitle')#" helpsection="#getI18Fieldset(fieldset=iFieldSet,value='helpsection')#" />
 					</cfloop>
 					
 					

@@ -230,7 +230,13 @@
 		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i] = StructNew()>
 
 		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i] = Duplicate(stFields[i].MetaData)>		
-
+		
+		<!--- I18 conversion of field properties --->
+		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].ftLabel = oType.getI18Property(property=i,value='label') />
+		<cfif structkeyexists(Request.farcryForm.stObjects[variables.prefix]['MetaData'][i],"ftHint") and len(Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].ftHint)>
+			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].ftHint = oType.getI18Property(property=i,value='hint') />
+		</cfif>
+		
 		
 		<!--- If we have been sent stPropValues for this field then we need to set it to this value  --->
 		<cfif structKeyExists(attributes.stPropValues,i)>
