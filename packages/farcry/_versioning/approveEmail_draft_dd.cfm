@@ -38,6 +38,7 @@ $out:$
 <cfsetting enablecfoutputonly="Yes">
 
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
 <!--- get object details --->
 <q4:contentobjectget objectID="#arguments.objectID#" r_stObject="stObj">
@@ -57,25 +58,35 @@ stProfile = o_profile.getProfile(userName=stObj.lastupdatedby);
         <cfset fromEmail = stProfile.emailAddress>
     </cfif>
 
-<cfmail to="#stProfile.emailAddress#" from="#fromEmail#" subject="#application.config.general.sitetitle# - Object sent back to Draft">
-Hi <cfif len(stProfile.firstName) gt 0>#stProfile.firstName#<cfelse>#stProfile.userName#</cfif>,
-
-Your object "<cfif isDefined("stObj.title") and len(trim(stObj.title))>#stObj.title#<cfelseif isDefined("stObj.label") and len(trim(stObj.label))>#stObj.label#<cfelse>undefined</cfif>" has been sent back to draft.
-
-<cfif arguments.comment neq "">
-Comments added on status change:
-#arguments.comment#
+<cfif len(stProfile.firstName)>
+	<cfset name = stProfile.firstName />
+<cfelse>
+	<cfset name = stProfile.userName />
 </cfif>
+<cfif isDefined("stObj.title") and len(trim(stObj.title))>
+	<cfset title = stObj.title />
+<cfelseif isDefined("stObj.label") and len(trim(stObj.label))>
+	<cfset title = stObj.label />
+<cfelse>
+	<cfset title = "undefined" />
+</cfif>
+<cfif isDefined("arguments.approveURL")>
+	<cfset link = "#urldecode(arguments.approveURL)#&objectID=#arguments.objectID#&status=draft" />
+<cfelse>
+	<cfset link = "#application.config.general.adminServer##application.url.farcry#/index.cfm?section=dynamic&objectID=#arguments.objectID#&status=draft" />
+</cfif>
+<cfmail to="#stProfile.emailAddress#" from="#fromEmail#" subject="#application.fapi.getResource('workflow.email.senttodraft@subject','{1} - Object sent back to Draft',application.config.general.sitetitle)#"><admin:resource key="workflow.email.senttodraft@html" var1="#name#" var2="#title#" var3="#arguments.comment#" var4="#link#">
+Hi {1},
+
+Your object "{2}" has been sent back to draft.
+
+Comments added on status change:
+{3}
 
 You may edit this page by browsing to the following location:
+{4}
 
-<cfif isDefined("arguments.approveURL")>
-#urldecode(arguments.approveURL)#&objectID=#arguments.objectID#&status=draft
-<cfelse>	
-#application.config.general.adminServer##application.url.farcry#/index.cfm?section=dynamic&objectID=#arguments.objectID#&status=draft
-</cfif>
-
-</cfmail>
+</admin:resource></cfmail>
 
 </cfif>
 

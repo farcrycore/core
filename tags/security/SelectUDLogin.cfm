@@ -7,7 +7,7 @@
 <cfif thistag.ExecutionMode eq "Start">
 	<cfif listlen(application.security.getAllUD()) GT 1>
 		<ft:fieldset>
-			<ft:field label="Select User Directory" for="selectuserdirectories">
+			<ft:field label="Select User Directory" for="selectuserdirectories" rbkey="security.login.selectuserdirectory">
 			
 				<cfoutput><select name="selectuserdirectories" id="selectuserdirectories" onchange="window.location=this.value;"></cfoutput>
 				

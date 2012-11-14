@@ -28,6 +28,7 @@ getCurrentRow() 	Get the current row of the recordset for the current page of th
 FARCRY IMPORT FILES
  ------------------>
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
 <!------------------ 
 START WEBSKIN
@@ -42,17 +43,17 @@ START WEBSKIN
 	<cfoutput>
 	<div class="paginator-wrap">
 		<div class="paginator">
-			#renderLink(linkid="first", linkText="first")#
-			#renderLink(linkid="previous", linkText="&lt; previous")#
+			#renderLink(linkid="first", linktext=application.fapi.getResource('coapi.farPagination.first@label','first'))#
+			#renderLink(linkid="previous", linktext=application.fapi.getResource('coapi.farPagination.previous@label','&lt; previous'))#
 			
 			<cfloop from="#getPageFrom()#" to="#getPageTo()#" index="i">
 				#renderLink(linkid=i)#
 			</cfloop>
 			
-			#renderLink(linkid="next", linkText="next &gt;")#
-			#renderLink(linkid="last", linkText="last")#
+			#renderLink(linkid="next", linkText=application.fapi.getResource('coapi.farPagination.next@label',"next &gt;"))#
+			#renderLink(linkid="last", linkText=application.fapi.getResource('coapi.farPagination.last@label',"last"))#
 			<cfif arguments.stParam.bDisplayTotalRecords>
-				<span class="resultCount">Displaying <span class="numberCount">#getRecordFrom()#</span> - <span class="numberCount">#getRecordTo()#</span> of <span class="numberCount">#getTotalRecords()#</span> result<cfif getTotalRecords() neq 1>s</cfif></span>
+				<span class="resultCount"><admin:resource key="coapi.farPagination.displaying@html" var1="#getRecordFrom()#" var2="#getRecordTo()#" var3="#getTotalRecords()#">Displaying <span class="numberCount">{1}</span> - <span class="numberCount">{2}</span> of <span class="numberCount">{3}</span> result/s</admin:resource></span>
 			</cfif> 
 		</div>
 	</div>

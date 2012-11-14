@@ -12,10 +12,16 @@
 		<cfset attributes.variables = tmp />
 	</cfif>
 	
+	<cfloop collection="#attributes#" item="thisattr">
+		<cfif refind("var\d+",thisattr)>
+			<cfset attributes.variables[mid(thisattr,4,len(thisattr))] = attributes[thisattr] />
+		</cfif>
+	</cfloop>
+	
 	<cfif arraylen(attributes.variables)>
-		<cfset thistag.GeneratedContent = application.rb.formatRBString(attributes.key,attributes.variables,trim(thistag.GeneratedContent)) />
+		<cfset thistag.GeneratedContent = application.fapi.getResource(attributes.key,trim(thistag.GeneratedContent),attributes.variables) />
 	<cfelse>
-		<cfset thistag.GeneratedContent = application.rb.getResource(attributes.key,trim(thistag.GeneratedContent)) />
+		<cfset thistag.GeneratedContent = application.fapi.getResource(attributes.key,trim(thistag.GeneratedContent)) />
 	</cfif>
 </cfif>
 

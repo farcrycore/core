@@ -71,7 +71,7 @@ START WEBSKIN
 					
 					<cfif arraylen(aDomainProjects) gt 1>
 						<ft:fieldset>
-							<ft:field label="Project Selection" for="selectFarcryProject">
+							<ft:field label="Project Selection" for="selectFarcryProject" rbkey="security.login.projectselection">
 								<cfoutput>
 								<select name="selectFarcryProject" id="selectFarcryProject" class="selectInput" onchange="window.location='#application.fapi.getLink(urlParameters=stLocal.loginparams)#&farcryProject='+this.value;">						
 									<cfloop from="1" to="#arraylen(aDomainProjects)#" index="i">
@@ -101,7 +101,7 @@ START WEBSKIN
 				
 	
 					<cfif isdefined("arguments.stParam.message") and len(arguments.stParam.message)>
-						<skin:bubble message="#arguments.stParam.message#" tags="security,information" />
+						<skin:bubble message="#arguments.stParam.message#" tags="security,information" rbkey="security.message.#rereplace(arguments.stParam.message,'[^\w]','','ALL')#" />
 					</cfif>
 					
 					<ft:button value="Log In" rbkey="security.buttons.login" />
@@ -112,15 +112,15 @@ START WEBSKIN
 				<cfoutput><ul class="loginForgot"></cfoutput>
 					<sec:CheckPermission webskinpermission="forgotPassword" type="farUser">
 						<cfoutput> 
-							<li><skin:buildLink type="farUser" view="forgotPassword">Forgot Password</skin:buildLink></li></cfoutput>
+							<li><skin:buildLink type="farUser" view="forgotPassword" rbkey="coapi.farLogin.login.forgotpassword">Forgot Password</skin:buildLink></li></cfoutput>
 					</sec:CheckPermission>
 					<sec:CheckPermission webskinpermission="forgotUserID" type="farUser">
 						<cfoutput> 
-							<li><skin:buildLink type="farUser" view="forgotUserID">Forgot UserID</skin:buildLink></li></cfoutput>
+							<li><skin:buildLink type="farUser" view="forgotUserID" rbkey="coapi.farLogin.login.forgotuserid">Forgot UserID</skin:buildLink></li></cfoutput>
 					</sec:CheckPermission>			
 					<sec:CheckPermission webskinpermission="registerNewUser" type="farUser">
 						<cfoutput> 
-							<li><skin:buildLink type="farUser" view="registerNewUser">Register New User</skin:buildLink></li></cfoutput>
+							<li><skin:buildLink type="farUser" view="registerNewUser" rbkey="coapi.farLogin.login.registernewuser">Register New User</skin:buildLink></li></cfoutput>
 					</sec:CheckPermission>
 				<cfoutput></ul></cfoutput>
 

@@ -73,7 +73,9 @@
 	<cfset stButtonAttributes = structNew()>
 
 	<!--- I18 conversion of label --->
-	<cfset attributes.text = application.rb.getResource('#attributes.rbkey#@label',attributes.text) />
+	<cfif len(attributes.text)>
+		<cfset attributes.text = application.rb.getResource('#attributes.rbkey#@label',attributes.text) />
+	</cfif>
 	
 	<cfif not len(attributes.title)>
 		<cfif len(attributes.text)>
@@ -81,6 +83,8 @@
 		<cfelse>
 			<cfset attributes.title = attributes.value>
 		</cfif>
+	<cfelse>
+		<cfset attributes.title = application.rb.getResource('#attributes.rbkey#@title',attributes.title) />
 	</cfif>
 
 	<!--- Default validate to true if submitting and false if just a button --->
@@ -142,7 +146,6 @@
 		<!--- I18 conversion of label --->
 		<cfset attributes.confirmText = application.rb.getResource('#attributes.rbkey#@confirmtext',attributes.confirmText) />
 		<cfset attributes.confirmText = jsStringFormat(attributes.confirmText) />
-		<!--- <cfset attributes.onClick = listPrepend(attributes.onClick, "if(!confirm('#Attributes.ConfirmText#')){return false}", ";") /> --->
 		
 		<cfset attributes.class = listAppend(attributes.class, "fc-action-confirm-text", " ") />
 		<cfset stButtonAttributes.confirmtext = jsstringformat(Attributes.ConfirmText)>

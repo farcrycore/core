@@ -47,11 +47,14 @@
 
 <cffunction name="getVersionTagline" access="public" output="false" hint="Returns a string detailing the current FarCry CMS build details." returntype="string">
 	<cfset var stCoreVersion = getCoreVersion() >
+	<cfset var aVariables = arraynew(1) />
 	
 	<cfif stCoreVersion.svndate eq "">
-		<cfreturn "You are currently running version <strong>#stCoreVersion.major#-#stCoreVersion.minor#-#stCoreVersion.patch#</strong> of <a href='http://www.farcrycore.org' target='_blank'>Farcry Core</a>." />
+		<cfreturn application.fapi.getResource("webtop@copyright","You are currently running version <strong>{1}</strong> of <a href='http://www.farcrycore.org' target='_blank'>Farcry Core</a>.","#stCoreVersion.major#-#stCoreVersion.minor#-#stCoreVersion.patch#") />
 	<cfelse>
-		<cfreturn "You are currently running version <strong>#stCoreVersion.major#-#stCoreVersion.minor#-#stCoreVersion.patch# from SVN on #stCoreVersion.svndate#</strong> of <a href='http://www.farcrycore.org' target='_blank'>Farcry Core</a>." />
+		<cfset arrayappend(aVariables,"#stCoreVersion.major#-#stCoreVersion.minor#-#stCoreVersion.patch#") />
+		<cfset arrayappend(aVariables,stCoreVersion.svndate) />
+		<cfreturn application.fapi.getResource("webtop@copyrightwithsvn","You are currently running version <strong>{1} from SVN on {2}</strong> of <a href='http://www.farcrycore.org' target='_blank'>Farcry Core</a>.",aVariables) />
 	</cfif>
 </cffunction>
 

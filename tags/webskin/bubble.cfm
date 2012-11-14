@@ -36,6 +36,8 @@ FARCRY IMPORT FILES
 <cfparam name="attributes.sticky" default="false" type="boolean" /><!--- Keep the message displayed until the user actively closes. --->
 <cfparam name="attributes.image" default="" /><!--- Image to display with the message --->
 <cfparam name="attributes.tags" default="" /><!--- Tags to identify message categories later --->
+<cfparam name="attributes.rbkey" default="general.message.#rereplace(attributes.title,'[^\w]','','ALL')#-#rereplace(attributes.message,'[^\w]','','ALL')#" /><!--- The resource path for this message. --->
+<cfparam name="attributes.variables" default="#arraynew(1)#" /><!--- Variables for resource translation --->
 
 <!--- legacy attribute --->
 <cfif structKeyExists(attributes,"bAutoHide")>
@@ -49,13 +51,25 @@ FARCRY IMPORT FILES
 </cfif>
 
 <cfif thistag.executionMode eq "End">
-
+	
+	<cfloop collection="#attributes#" item="thisattr">
+		<cfif refind("var\d+",thisattr)>
+			<cfset attributes.variables[mid(thisattr,4,len(thisattr))] = attributes[thisattr] />
+		</cfif>
+	</cfloop>
+	
 	<cfif not len(attributes.message)>
 		<cfset attributes.message = thisTag.generatedContent />
 	</cfif>
 	
 	<cfif not len(trim(attributes.message))>
 		<cfset attributes.message = "&nbsp;" />
+	<cfelseif len(attributes.rbkey)>
+		<cfset attributes.message = application.fapi.getResource(attributes.rbkey & "@message",attributes.message,attributes.variables) />
+	</cfif>
+	
+	<cfif len(trim(attributes.title)) and len(attributes.rbkey)>
+		<cfset attributes.title = application.fapi.getResource(attributes.rbkey & "@title",attributes.title,attributes.variables) />
 	</cfif>
 	
 	<cfset thisTag.generatedContent = "" />

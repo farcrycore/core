@@ -12,17 +12,43 @@
 		<cfargument name="attachments" type="array" required="false" default="#arraynew(1)#" hint="Array of absolute path filenames, to be attached to the email" />
 		<cfargument name="attachment" type="string" required="false" default="" hint="If there is only one attachment, it can be attached with this argument" />
 		
+		<cfargument name="rbkey" type="string" required="false" default="" hint="Resource key for translation" />
+		<cfargument name="variables" type="any" required="false" default="#arraynew(1)#" hint="Resource translation variables" />
+		
 		<cfset var i = 0 />
 		<cfset var spaces = "" />
 		<cfset var type = "text/plain" />
 		<cfset var stSend = duplicate(arguments) />
 		<cfset var result = cleanArguments(stSend) />
+		<cfset var tmp = "" />
 		
 		<cfif result neq "Success">
 			<cfreturn result />
 		<cfelseif not len(stSend.to)>
 			<!--- Whitelist removed all to addresses - just return out --->
 			<cfreturn "Success" />
+		</cfif>
+		
+		<cfif len(arguments.rbkey)>
+			<cfif not isarray(attributes.variables)>
+				<cfset tmp = arraynew(1) />
+				<cfset tmp[1] = attributes.variables />
+				<cfset attributes.variables = tmp />
+			</cfif>
+			
+			<cfloop collection="#attributes#" item="i">
+				<cfif refind("var\d+",i)>
+					<cfset attributes.variables[mid(thisattr,4,len(i))] = attributes[i] />
+				</cfif>
+			</cfloop>
+			
+			<cfset stSend.subject = application.fapi.getResource(arguments.rbkey & "@subject",stSend.subject,arguments.variables) />
+			<cfif len(stSend.bodyPlain)>
+				<cfset stSend.bodyPlain = application.fapi.getResource(arguments.rbkey & "@text",stSend.bodyPlain,arguments.variables) />
+			</cfif>
+			<cfif len(stSend.bodyHTML)>
+				<cfset stSend.bodyHTML = application.fapi.getResource(arguments.rbkey & "@html",stSend.bodyHTML,arguments.variables) />
+			</cfif>
 		</cfif>
 		
 		<cftry>

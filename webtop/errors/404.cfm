@@ -11,7 +11,7 @@
 <cfoutput>
 	<html>
 		<head>
-			<title>That page could not be found</title>
+			<title>#application.fapi.getResource('error.404@title','That page could not be found')#</title>
 			<style type="text/css">
 				body { 
 					margin:0px; 
@@ -36,8 +36,8 @@
 			</style>
 		</head>
 		<body>
-			<h1>That page could not be found</h1>	
-			<p>Please push "back" on your browser or go back <a style="text-decoration:underline" href="/">home</a></p>
+			<h1>#application.fapi.getResource('error.404@title','That page could not be found')#</h1>
+			#application.fapi.getResource('error.goback@html','<p>Please push "back" on your browser or go back <a style="text-decoration:underline" href="/">home</a></p>')#
 			
 			<cfif not showError><!--</cfif>
 			#errorHTML#

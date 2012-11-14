@@ -9,7 +9,7 @@
 <cfoutput>
 	<li>
 		<small>
-			<skin:buildLink objectid="#stUser.objectid#" view="editOwnPassword" target="content" title="#application.rb.getResource('coapi.farUser.general.changepassword@label','Change password')#">#application.rb.getResource('coapi.farUser.general.changepassword@label','Change password')#</skin:buildLink>
+			<skin:buildLink objectid="#stUser.objectid#" view="editOwnPassword" target="content" title="Change password" rbkey="coapi.farUser.general.changepassword">Change password</skin:buildLink>
 		</small>
 	</li>
 </cfoutput>

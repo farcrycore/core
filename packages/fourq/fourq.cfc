@@ -1420,7 +1420,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				</cfif>
 			</cfcase>
 			<cfcase value="hint">
-				<cfif len(application.stCOAPI[getTypeName()].stProps[arguments.property].metadata["ftHint"])>
+				<cfif isdefined("application.stCOAPI.#getTypename()#.stProps.#arguments.property#.metadata.ftHint") and len(application.stCOAPI[getTypeName()].stProps[arguments.property].metadata["ftHint"])>
 					<cfreturn application.fapi.getResource(key="coapi.#getTypeName()#.properties.#arguments.property#@hint",default=application.stCOAPI[getTypeName()].stProps[arguments.property].metadata["ftHint"]) />
 				<cfelse>
 					<cfreturn application.fapi.getResource(key="coapi.#getTypeName()#.properties.#arguments.property#@hint",default="") />
@@ -1510,7 +1510,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfquery dbtype="query" name="qFieldsets">
 				select		ftFieldset, ftHelpTitle, ftHelpSection
 				from		application.stCOAPI.#getTypeName()#.qMetadata
-				where		ftWizardStep = '#arguments.step#'
+				<cfif structkeyexists(arguments,"step")>
+					where	ftWizardStep = '#arguments.step#'
+				</cfif>
 				group by	ftFieldSet, ftHelpTitle, ftHelpSection
 				order by	ftSeq
 			</cfquery>
@@ -1522,8 +1524,10 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfquery dbtype="query" name="qFieldsets">
 				select		ftFieldset, ftHelpTitle, ftHelpSection
 				from		application.stCOAPI.#getTypeName()#.qMetadata
-				where		ftWizardStep = '#arguments.step#'
-							and ftFieldset = '#arguments.fieldset#'
+				where		<cfif structkeyexists(arguments,"step")>
+								ftWizardStep = '#arguments.step#' and
+							</cfif>
+							ftFieldset = '#arguments.fieldset#'
 				group by	ftFieldSet, ftHelpTitle, ftHelpSection
 				order by	ftSeq
 			</cfquery>

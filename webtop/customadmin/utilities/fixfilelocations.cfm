@@ -82,7 +82,7 @@
 	
 	<ft:form><ft:button value="Fix files" /></ft:form>
 <cfelse>
-	<admin:resource key="webtop.utilities.fixfilelocations.nowrongfiles@text" variables="#wrong#"><cfoutput>
+	<admin:resource key="webtop.utilities.fixfilelocations.nowrongfiles@text"><cfoutput>
 		<p class="success">This application has no files in incorrect locations.</p>
 	</cfoutput></admin:resource>
 </cfif>

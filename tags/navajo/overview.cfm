@@ -70,9 +70,9 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 			{	stType = structNew();
 				stType.typename = aTypes[i];
 				if (structKeyExists(application.types[aTypes[i]],'displayname'))   //displayname *seemed* most appropriate without adding new metadata
-					stType.description = application.types[aTypes[i]].displayName;
+					stType.description = application.fapi.getResource('coapi.#aTypes[i]#@label',application.types[aTypes[i]].displayName);
 				else
-					stType.description = aTypes[i];
+					stType.description = application.fapi.getResource('coapi.#aTypes[i]#@label',aTypes[i]);
 				arrayAppend(a,stType);
 			}	
 		}	
@@ -83,9 +83,9 @@ $Developer: Brendan Sisson (brendan@daemon.com.au)$
 			{	stType = structNew();
 				stType.typename = aTypes[i];
 				if (structKeyExists(application.types[aTypes[i]],'displayname'))   //displayname *seemed* most appropriate without adding new metadata
-					stType.description = application.types[aTypes[i]].displayName;
+					stType.description = application.fapi.getResource('coapi.#aTypes[i]#@label',application.types[aTypes[i]].displayName);
 				else
-					stType.description = aTypes[i];
+					stType.description = application.fapi.getResource('coapi.#aTypes[i]#@label',aTypes[i]);
 				arrayAppend(a,stType);
 			}	
 		}	
@@ -639,8 +639,12 @@ function getToggleImage( objId )
 		cm = customIconMapType['externallink'][st];
 	}
 	
-	var alt = "Current Status: "+thisObject['STATUS']+" Created By: "+thisObject['ATTR_CREATEDBY']+" on "+thisObject['ATTR_DATETIMECREATED']+
-			"Last Updated By: "+thisObject['ATTR_LASTUPDATEDBY']+" on "+thisObject['ATTR_DATETIMELASTUPDATED'];
+	var alt = "#application.fapi.getResource('sitetree.messages.statusandownership@text','Current Status: {1} Created By: {2} on {3} Last Updated By: {4} on {5}')#"
+		.replace("{1}",thisObject['STATUS'])
+		.replace("{2}",thisObject['ATTR_CREATEDBY'])
+		.replace("{3}",thisObject['ATTR_DATETIMECREATED'])
+		.replace("{4}",thisObject['ATTR_LASTUPDATEDBY'])
+		.replace("{5}",thisObject['ATTR_DATETIMELASTUPDATED']);
 			
 	
 	 return "<img src=\""+cm+"\" width=\""+zoom+"\" height=\""+zoom+"\" alt=\""+alt+"\">"; 
@@ -1164,7 +1168,7 @@ function menuOption_Copy()
 
 o = new Object();
 objectMenu['Cut'] = o;
-o.text = "Cut";
+o.text = "#application.rb.getResource('sitetree.contextmenu.cut@label','Cut')#";
 o.js = "menuOption_Cut();";
 o.jsvalidate = "(objects[lastSelectedId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')?1:0";
 o.bShowDisabled = "0";
@@ -1205,9 +1209,13 @@ function menuOption_Paste()
 		if (objects[copyNodeId]['TYPENAME'].toLowerCase() == '#lCase(attributes.nodetype)#')
 		{
 			if(pasteAction == 'copy')
-			pasteMsg = 'Do you wish to copy the node ' + getObjectTitle( copyNodeId ) + ' to ' + getObjectTitle( lastSelectedId );
+				pasteMsg = '#application.fapi.getResource("sitetree.contextmenu.doyouwishtocopy@text","Do you wish to copy the node {1} to {2}")#'
+					.replace("{1}",getObjectTitle( copyNodeId ))
+					.replace("{2}",getObjectTitle( lastSelectedId ));
 			else if(pasteAction == 'cut')
-				pasteMsg = 'Do you wish to cut and paste the node ' + getObjectTitle( copyNodeId ) + ' to ' + getObjectTitle( lastSelectedId );
+				pasteMsg = '#application.fapi.getResource("sitetree.contextmenu.doyouwishtocopyandpaste@text","Do you wish to cut and paste the node {1} to {2}")#'
+					.replace("{1}",getObjectTitle( copyNodeId ))
+					.replace("{2}",getObjectTitle( lastSelectedId ));
 		}
 		if (confirm(pasteMsg))
 		{

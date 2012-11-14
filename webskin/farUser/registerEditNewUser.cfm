@@ -2,6 +2,7 @@
 
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
 
 
@@ -10,7 +11,7 @@
 
 	<cfoutput>
 		<div class="loginInfo">
-			Enter your details below to register for #application.config.general.siteTitle#
+			<admin:resource key="coapi.farLogin.register.blurb@text" var1="#application.config.general.siteTitle#">Enter your details below to register for {1}</admin:resource>
 		</div>
 	</cfoutput>
 

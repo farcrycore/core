@@ -1549,8 +1549,8 @@
 	<cffunction name="getResource" access="public" output="false" returntype="string" hint="Returns the resource string" bDocument="true">
 		<cfargument name="key" type="string" required="true" />
 		<cfargument name="default" type="string" required="false" default="#arguments.key#" />
-		<cfargument name="locale" type="string" required="false" default="" />
 		<cfargument name="substituteValues" required="no" default="#arrayNew(1)#" />
+		<cfargument name="locale" type="string" required="false" default="" />
 		
 		<cfset arguments.rbString = arguments.key />
 		

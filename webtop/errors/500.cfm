@@ -6,7 +6,7 @@
 <cfoutput>
 	<html>
 		<head>
-			<title>There was a problem with that last request</title>
+			<title>#application.fapi.getResource('error.500@title','There was a problem with that last request')#</title>
 			<style type="text/css">
 				body { 
 					margin:0px; 
@@ -31,8 +31,8 @@
 			</style>
 		</head>
 		<body>
-			<h1>There was a problem with that last request</h1>	
-			<p>Please push "back" on your browser or go back <a style="text-decoration:underline" href="/">home</a></p>
+			<h1>#application.fapi.getResource('error.500@title','There was a problem with that last request')#</h1>
+			#application.fapi.getResource('error.goback@html','<p>Please push "back" on your browser or go back <a style="text-decoration:underline" href="/">home</a></p>')#
 			
 			<cfif not showError><!--</cfif>
 			#errorHTML#

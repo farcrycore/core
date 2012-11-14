@@ -26,8 +26,8 @@
 	<cfwddx action="wddx2cfml" input="#form.profile#" output="stLocal.profile" />
 	<cfwddx action="wddx2cfml" input="#form.log#" output="stLocal.log" />
 		<div id="info-picker">
-			<a href="##" onclick="$j('div.request-html').hide();$j(this.rel).show();return false;" rel="##request-profile-html">Profiling</a> |
-			<a href="##" onclick="$j('div.request-html').hide();$j(this.rel).show();return false;" rel="##request-log-html">Log</a>
+			<a href="##" onclick="$j('div.request-html').hide();$j(this.rel).show();return false;" rel="##request-profile-html"><admin:resource key='tray.profile.profiling@title'>Profiling</admin:resource></a> |
+			<a href="##" onclick="$j('div.request-html').hide();$j(this.rel).show();return false;" rel="##request-log-html"><admin:resource key='tray.profile.log@title'>Log</admin:resource></a>
 		</div>
 		<div id="request-profile-html" class="request-html">#application.fapi.getProfileHTML(stLocal.profile)#</div>
 		<div id="request-log-html" class="request-html" style="display:none;">#application.fapi.getRequestLogHTML(stLocal.log)#</div>
@@ -37,30 +37,21 @@
 
 	<table border="0" cellpadding="0" cellspacing="0">
 	<tr>
-		<th>Content Type</th>
-		<td>#application.fapi.getContentTypeMetadata(typename='#contentTypename#', md='displayName', default='#stobj.typename#')#</td>
+		<th><admin:resource key='tray.summary.contenttype@label'>Content Type</admin:resource></th>
+		<td><admin:resource key='coapi.#contentTypename#@label'>#application.fapi.getContentTypeMetadata(typename='#contentTypename#', md='displayName', default='#stobj.typename#')#</admin:resource></td>
 	</tr>
 	<tr>
-		<th>Label</th>
+		<th><admin:resource key='tray.summary.label@label'>Label</admin:resource></th>
 		<td>#stobj.label#</td>
 	</tr>
 	<tr>
-		<th>Page View</th>
+		<th><admin:resource key='tray.summary.pageview@label'>Page View</admin:resource></th>
 		<td>#application.fapi.getWebskinDisplayName(stobj.typename, arguments.stParam.view)# (#arguments.stParam.view#)</td>
 	</tr>
 	<tr>
-		<th>Body View</th>
+		<th><admin:resource key='tray.summary.bodyview@label'>Body View</admin:resource></th>
 		<td>#application.fapi.getWebskinDisplayName(stobj.typename, arguments.stParam.bodyView)# (#arguments.stParam.bodyView#)</td>
 	</tr>
-	<!--- 
-	<cfif structKeyExists(stobj, "lastupdatedby")>
-		<cfset stLastUpdatedBy = application.fapi.getContentType("dmProfile").getProfile(stobj.lastupdatedby) />
-		<tr>
-			<th>#getI18Property('lastupdatedby','label')#</th>
-			<td>#stLastUpdatedBy.Label# (#application.fapi.prettyDate(stobj.datetimelastupdated)#)</td>
-		</tr>
-	</cfif>
-	 --->
 	</table>
 
 </cfif>

@@ -1,8 +1,6 @@
 <!--- 
 // ACTION: update nested tree model //
 --->
-<cfdump var="#form#" expand="false" label="form" />
-<cfabort showerror="debugging" />
 <cfif NOT structIsEmpty(form)>
 
 	<cfif isDefined("attachntmorphans")>

@@ -66,10 +66,14 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 
 <cfparam name="session.objectadmin" default="#structnew()#" type="struct">
 
-<cfif structkeyexists(application.stCOAPI[attributes.typename],"displayname") and len(application.stCOAPI[attributes.typename].displayname)>
-	<cfparam name="attributes.title" default="#application.rb.formatRBString('coapi.#attributes.typename#.headings.typeadministration@text',application.stCOAPI[attributes.typename].displayname,'{1} Administration')#">
+<cfif not len("attributes.title")>
+	<cfif structkeyexists(application.stCOAPI[attributes.typename],"displayname") and len(application.stCOAPI[attributes.typename].displayname)>
+		<cfparam name="attributes.title" default="#application.rb.formatRBString('#attributes.rbkey#@title',application.fapi.getResource(key='coapi.#attributes.typename#@label',default=application.stCOAPI[attributes.typename].displayname),'{1} Administration')#">
+	<cfelse>
+		<cfparam name="attributes.title" default="#application.rb.formatRBString('#attributes.rbkey#@title',attributes.typename,'{1} Administration')#">
+	</cfif>
 <cfelse>
-	<cfparam name="attributes.title" default="#application.rb.formatRBString('coapi.#attributes.typename#.headings.typeadministration@text',attributes.typename,'{1} Administration')#">
+	<cfparam name="attributes.title" default="#application.rb.formatRBString('#attributes.rbkey#@title','',attributes.title)#">
 </cfif>
 
 <cfparam name="attributes.ColumnList" default="" type="string">

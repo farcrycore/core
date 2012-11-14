@@ -22,10 +22,10 @@
 				<cfset arguments.key = "FAPI.throw.#rereplaceNoCase(arguments.message, '[^/w]+', '_', 'all')#" />
 			</cfif>
 			
-			<cfset arguments.message = getResource(key="#arguments.key#@message", default=arguments.message, locale=arguments.locale, substituteValues=arguments.substituteValues) />
+			<cfset arguments.message = padResource(key="#arguments.key#@message", default=arguments.message, locale=arguments.locale, substituteValues=arguments.substituteValues) />
 			
 			<cfif len(arguments.detail)>
-				<cfset arguments.detail = getResource(key="#arguments.key#@detail", default=arguments.detail, locale=arguments.locale, substituteValues=arguments.substituteValues) />
+				<cfset arguments.detail = padResource(key="#arguments.key#@detail", default=arguments.detail, locale=arguments.locale, substituteValues=arguments.substituteValues) />
 			</cfif>
 		</cfif>
 		
@@ -239,51 +239,51 @@
 			</cfcase>
 			
 			<cfcase value="html">
-				<cfset output.append("<h2>Error Overview</h2><table>") />
-				<cfset output.append("<tr><th>Machine:</th><td>#arguments.exception.machineName#</td></tr>") />
-				<cfset output.append("<tr><th>Instance:</th><td>#arguments.exception.instancename#</td></tr>") />
-				<cfset output.append("<tr><th>Message:</th><td>#arguments.exception.message#</td></tr>") />
-				<cfset output.append("<tr><th>Browser:</th><td>#arguments.exception.browser#</td></tr>") />
-				<cfset output.append("<tr><th>DateTime:</th><td>#arguments.exception.datetime#</td></tr>") />
-				<cfset output.append("<tr><th>Host:</th><td>#arguments.exception.host#</td></tr>") />
-				<cfset output.append("<tr><th>HTTPReferer:</th><td>#arguments.exception.httpreferer#</td></tr>") />
-				<cfset output.append("<tr><th>QueryString:</th><td>#arguments.exception.querystring#</td></tr>") />
-				<cfset output.append("<tr><th>RemoteAddress:</th><td>#arguments.exception.remoteaddress#</td></tr>") />
-				<cfset output.append("<tr><th>Bot:</th><td>#arguments.exception.bot#</td></tr>") />
-				<cfset output.append("</table><h2>Error Details</h2><table>") />
+				<cfset output.append("<h2>#padResource('error.overview@label','Error Overview')#</h2><table>") />
+				<cfset output.append("<tr><th>#padResource('error.overview.machine@label','Machine')#:</th><td>#arguments.exception.machineName#</td></tr>") />
+				<cfset output.append("<tr><th>#padResource('error.overview.instance@label','Instance')#:</th><td>#arguments.exception.instancename#</td></tr>") />
+				<cfset output.append("<tr><th>#padResource('error.overview.message@label','Message')#:</th><td>#arguments.exception.message#</td></tr>") />
+				<cfset output.append("<tr><th>#padResource('error.overview.browser@label','Browser')#:</th><td>#arguments.exception.browser#</td></tr>") />
+				<cfset output.append("<tr><th>#padResource('error.overview.datetime@label','DateTime')#:</th><td>#arguments.exception.datetime#</td></tr>") />
+				<cfset output.append("<tr><th>#padResource('error.overview.host@label','Host')#:</th><td>#arguments.exception.host#</td></tr>") />
+				<cfset output.append("<tr><th>#padResource('error.overview.httpreferer@label','HTTPReferer')#:</th><td>#arguments.exception.httpreferer#</td></tr>") />
+				<cfset output.append("<tr><th>#padResource('error.overview.querystring@label','QueryString')#:</th><td>#arguments.exception.querystring#</td></tr>") />
+				<cfset output.append("<tr><th>#padResource('error.overview.remoteaddress@label','RemoteAddress')#:</th><td>#arguments.exception.remoteaddress#</td></tr>") />
+				<cfset output.append("<tr><th>#padResource('error.overview.bot@label','Bot')#:</th><td>#arguments.exception.bot#</td></tr>") />
+				<cfset output.append("</table><h2>#padResource('error.details@label','Error Details')#</h2><table>") />
 				<cfif structKeyExists(arguments.exception, "type") and len(arguments.exception.type)>
-					<cfset output.append("<tr><th>Exception Type:</th><td>#arguments.exception.type#</td></tr>") />
+					<cfset output.append("<tr><th>#padResource('error.details.exceptiontype@label','Exception Type')#:</th><td>#arguments.exception.type#</td></tr>") />
 				</cfif>
 				<cfif structKeyExists(arguments.exception, "detail") and len(arguments.exception.detail)>
-					<cfset output.append("<tr><th>Detail:</th><td>#arguments.exception.detail#</td></tr>") />
+					<cfset output.append("<tr><th>#padResource('error.details.detail@label','Detail')#:</th><td>#arguments.exception.detail#</td></tr>") />
 				</cfif>
 				<cfif structKeyExists(arguments.exception, "extended_info") and len(arguments.exception.extended_info)>
-					<cfset output.append("<tr><th>Extended Info:</th><td>#arguments.exception.extended_info#</td></tr>") />
+					<cfset output.append("<tr><th>#padResource('error.details.extendedinfo@label','Extended Info')#:</th><td>#arguments.exception.extended_info#</td></tr>") />
 				</cfif>
 				<cfif structKeyExists(arguments.exception, "queryError") and len(arguments.exception.queryError)>
-					<cfset output.append("<tr><th>Error:</th><td>#arguments.exception.queryError#</td></tr>") />
+					<cfset output.append("<tr><th>#padResource('error.details.error@label','Error')#:</th><td>#arguments.exception.queryError#</td></tr>") />
 				</cfif>
 				<cfif structKeyExists(arguments.exception, "sql") and len(arguments.exception.sql)>
-					<cfset output.append("<tr><th>SQL:</th><td>#arguments.exception.sql#</td></tr>") />
+					<cfset output.append("<tr><th>#padResource('error.details.sql@label','SQL')#:</th><td>#arguments.exception.sql#</td></tr>") />
 				</cfif>
 				<cfif structKeyExists(arguments.exception, "where") and len(arguments.exception.where)>
-					<cfset output.append("<tr><th>Where:</th><td>#arguments.exception.where#</td></tr>") />
+					<cfset output.append("<tr><th>#padResource('error.details.where@label','Where')#:</th><td>#arguments.exception.where#</td></tr>") />
 				</cfif>
 				
 				<cfif structKeyExists(arguments.exception, "stack") and arraylen(arguments.exception.stack)>
-					<cfset output.append("<tr><th valign='top'>Tag Context:</th><td><ul>") />
+					<cfset output.append("<tr><th valign='top'>#padResource('error.details.tagcontext@label','Tag Context')#:</th><td><ul>") />
 					<cfloop from="1" to="#arrayLen(arguments.exception.stack)#" index="i">
 						<cfif arguments.bHighlightNonCore && arguments.exception.stack[i].location neq "core">
-							<cfset output.append("<li><strong>#arguments.exception.stack[i].template# (line: #arguments.exception.stack[i].line#)</strong></li>") />
+							<cfset output.append("<li><strong>#arguments.exception.stack[i].template# (#padResource('error.line@label','line')#: #arguments.exception.stack[i].line#)</strong></li>") />
 						<cfelse>
-							<cfset output.append("<li>#arguments.exception.stack[i].template# (line: #arguments.exception.stack[i].line#)</li>") />
+							<cfset output.append("<li>#arguments.exception.stack[i].template# (#padResource('error.line@label','line')#: #arguments.exception.stack[i].line#)</li>") />
 						</cfif>
 					</cfloop>
 					<cfset output.append("</ul></td></tr>") />
 				</cfif>
 				
 				<cfif structKeyExists(arguments.exception, "url")>
-					<cfset output.append("<tr><th valign='top'>Post-process URL:</th><td><ul>") />
+					<cfset output.append("<tr><th valign='top'>#padResource('error.details.postprocessurl@label','Post-process URL')#:</th><td><ul>") />
 					<cfloop list="#listsort(structkeylist(arguments.exception.url),'textnocase')#" index="i">
 						<cfset output.append("<li>#i# = #htmleditformat(arguments.exception.url[i])#</li>") />
 					</cfloop>
@@ -294,56 +294,56 @@
 			</cfcase>
 			
 			<cfcase value="text">
-				<cfset output.append("ERROR OVERVIEW" & variables.newline) />
-				<cfset output.append("Machine:           #arguments.exception.machineName#" & variables.newline) />
-				<cfset output.append("Instance:          #arguments.exception.instancename#" & variables.newline) />
-				<cfset output.append("Message:           #arguments.exception.message#" & variables.newline) />
-				<cfset output.append("Browser:           #arguments.exception.browser#" & variables.newline) />
-				<cfset output.append("DateTime:          #arguments.exception.datetime#" & variables.newline) />
-				<cfset output.append("Host:              #arguments.exception.host#" & variables.newline) />
-				<cfset output.append("HTTPReferer:       #arguments.exception.httpreferer#" & variables.newline) />
-				<cfset output.append("QueryString:       #arguments.exception.querystring#" & variables.newline) />
-				<cfset output.append("RemoteAddress:     #arguments.exception.remoteaddress#" & variables.newline) />
-				<cfset output.append("Bot:               #arguments.exception.bot#" & variables.newline) />
+				<cfset output.append(ucase(padResource('error.overview@label','Error Overview')) & variables.newline) />
+				<cfset output.append("#padResource('error.overview.machine@label','Machine','',20)# : #arguments.exception.machineName#" & variables.newline) />
+				<cfset output.append("#padResource('error.overview.instance@label','Instance','',20)# : #arguments.exception.instancename#" & variables.newline) />
+				<cfset output.append("#padResource('error.overview.message@label','Message','',20)# : #arguments.exception.message#" & variables.newline) />
+				<cfset output.append("#padResource('error.overview.browser@label','Browser','',20)# : #arguments.exception.browser#" & variables.newline) />
+				<cfset output.append("#padResource('error.overview.datetime@label','DateTime','',20)# : #arguments.exception.datetime#" & variables.newline) />
+				<cfset output.append("#padResource('error.overview.host@label','Host','',20)# : #arguments.exception.host#" & variables.newline) />
+				<cfset output.append("#padResource('error.overview.httpreferer@label','HTTPReferer','',20)# : #arguments.exception.httpreferer#" & variables.newline) />
+				<cfset output.append("#padResource('error.overview.querystring@label','QueryString','',20)# : #arguments.exception.querystring#" & variables.newline) />
+				<cfset output.append("#padResource('error.overview.remoteaddress@label','RemoteAddress','',20)# : #arguments.exception.remoteaddress#" & variables.newline) />
+				<cfset output.append("#padResource('error.overview.bot@label','Bot','',20)# : #arguments.exception.bot#" & variables.newline) />
 				<cfset output.append(variables.newline) />
 				
-				<cfset output.append("ERROR DETAILS" & variables.newline) />
+				<cfset output.append(ucase(padResource('error.details@label','Error Details')) & variables.newline) />
 				<cfif structKeyExists(arguments.exception, "type") and len(arguments.exception.type)>
-					<cfset output.append("Exception Type:    #arguments.exception.type#" & variables.newline) />
+					<cfset output.append("#padResource('error.details.exceptiontype@label','Exception Type','',20)# : #arguments.exception.type#" & variables.newline) />
 				</cfif>
 				<cfif structKeyExists(arguments.exception, "detail") and len(arguments.exception.detail)>
-					<cfset output.append("Detail:            #arguments.exception.detail#" & variables.newline) />
+					<cfset output.append("#padResource('error.details.detail@label','Detail','',20)# : #arguments.exception.detail#" & variables.newline) />
 				</cfif>
 				<cfif structKeyExists(arguments.exception, "extended_info") and len(arguments.exception.extended_info)>
-					<cfset output.append("Extended Info:     #arguments.exception.extended_info#" & variables.newline) />
+					<cfset output.append("#padResource('error.details.extendedinfo@label','Extended Info','',20)# : #arguments.exception.extended_info#" & variables.newline) />
 				</cfif>
 				<cfif structKeyExists(arguments.exception, "queryError") and len(arguments.exception.queryError)>
-					<cfset output.append("Error:             #arguments.exception.queryError#" & variables.newline) />
+					<cfset output.append("#padResource('error.details.error@label','Error','',20)# : #arguments.exception.queryError#" & variables.newline) />
 				</cfif>
 				<cfif structKeyExists(arguments.exception, "sql") and len(arguments.exception.sql)>
-					<cfset output.append("SQL:               #arguments.exception.sql#" & variables.newline) />
+					<cfset output.append("#padResource('error.details.sql@label','SQL','',20)# : #arguments.exception.sql#" & variables.newline) />
 				</cfif>
 				<cfif structKeyExists(arguments.exception, "where") and len(arguments.exception.where)>
-					<cfset output.append("Where:             #arguments.exception.where#" & variables.newline) />
+					<cfset output.append("#padResource('error.details.where@label','Where','',20)# : #arguments.exception.where#" & variables.newline) />
 				</cfif>
 				
 				<cfif structKeyExists(arguments.exception, "stack") and arraylen(arguments.exception.stack)>
-					<cfset output.append("Tag Context:     ") />
+					<cfset output.append("#padResource('error.details.tagcontext@label','Tag Context','',20)#:     ") />
 					<cfloop from="1" to="#arrayLen(arguments.exception.stack)#" index="i">
 						<cfif i neq 1>
-							<cfset output.append("                 ")>
+							<cfset output.append("                  ")>
 						</cfif>
 						
 						<cfif arguments.bHighlightNonCore && arguments.exception.stack[i].location neq "core">
-							<cfset output.append("* #arguments.exception.stack[i].template# (line: #arguments.exception.stack[i].line#)" & variables.newline) />
+							<cfset output.append("* #arguments.exception.stack[i].template# (#padResource('error.line@label','line')#: #arguments.exception.stack[i].line#)" & variables.newline) />
 						<cfelse>
-							<cfset output.append("- #arguments.exception.stack[i].template# (line: #arguments.exception.stack[i].line#)" & variables.newline) />
+							<cfset output.append("- #arguments.exception.stack[i].template# (#padResource('error.line@label','line')#: #arguments.exception.stack[i].line#)" & variables.newline) />
 						</cfif>
 					</cfloop>
 				</cfif>
 				
 				<cfif structKeyExists(arguments.exception, "url")>
-					<cfset output.append("Post-process URL:  ") />
+					<cfset output.append("#padResource('error.details.postprocessurl@label','Post-process URL','',20)# : ") />
 					<cfloop list="#listsort(structkeylist(arguments.exception.url),'textnocase')#" index="i">
 						<cfif not first>
 							<cfset output.append("                 ")>
@@ -447,6 +447,22 @@
 		<cfif arguments.abort>
 			<cfabort />
 		</cfif>
+	</cffunction>
+	
+	<cffunction name="padResource" access="public" output="false" returntype="string" hint="Gets resource and pads it to required length">
+		<cfargument name="key" type="string" required="true" />
+		<cfargument name="default" type="string" required="false" default="#arguments.key#" />
+		<cfargument name="substituteValues" required="no" default="#arrayNew(1)#" />
+		<cfargument name="length" required="no" default="0" hint="Required length" />
+		<cfargument name="locale" type="string" required="false" default="" />
+		
+		<cfset var resource = application.fapi.getResource(argumentCollection=arguments) />
+		
+		<cfif arguments.length and len(resource) lt arguments.length>
+			<cfset resource = resource & repeatstring(" ",arguments.length-len(resource)) />
+		</cfif>
+		
+		<cfreturn resource />
 	</cffunction>
 	
 </cfcomponent>

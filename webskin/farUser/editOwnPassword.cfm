@@ -25,7 +25,7 @@ ACTION
 	
 	<cfif request.stFarcryFormValidation.bSuccess>
 		<ft:processformobjects objectid="#stobj.objectid#" />
-		<skin:bubble title="Your password has been updated" />
+		<skin:bubble title="Your password has been updated" rbkey="coapi.farUser.changepassword.passwordchanged" />
 	</cfif>
 </ft:processform>
 

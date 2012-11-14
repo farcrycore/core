@@ -1,4 +1,5 @@
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
 <cfset stProperties = structnew() />
 <cfset stProperties.objectid = stobj.objectid />
@@ -13,25 +14,25 @@
 
 <cfoutput><div class="loginInfo"></cfoutput>
 
-<cfoutput>
-	<p>Your Registration is now complete</p>
-	<p><skin:buildLink objectid="#application.navid.home#">Click here</skin:buildlink> to return to the home page.</p>
-</cfoutput>
+<admin:resource key="coapi.farLogin.register.complete@html" var1="#application.fapi.getLink(objectid=application.navid.home)#"><cfoutput>
+	<p>Your Registration is now complete</p></admin:resource>
+	<p><a href="{1}">Click here</a> to return to the home page.</p>
+</cfoutput></admin:resource>
 
 
 <ft:buttonPanel>
 	<cfoutput><ul class="loginForgot"></cfoutput>
 	<sec:CheckPermission webskinpermission="forgotUserID" type="farUser">
 		<cfoutput>
-			<li><skin:buildLink type="farUser" view="forgotUserID">Forgot UserID</skin:buildLink></li></cfoutput>
+			<li><skin:buildLink type="farUser" view="forgotUserID" rbkey="coapi.farLogin.login.forgotuserid">Forgot UserID</skin:buildLink></li></cfoutput>
 	</sec:CheckPermission>			
 	<sec:CheckPermission webskinpermission="registerNewUser" type="farUser">
 		<cfoutput>
-			<li><skin:buildLink type="farUser" view="registerNewUser">Register New User</skin:buildLink></li></cfoutput>
+			<li><skin:buildLink type="farUser" view="registerNewUser" rbkey="coapi.farLogin.login.registernewuser">Register New User</skin:buildLink></li></cfoutput>
 	</sec:CheckPermission>			
 		
 	<cfoutput>
-		<li><skin:buildLink href="#application.url.webtoplogin#">Login</skin:buildLink></li></cfoutput>
+		<li><skin:buildLink href="#application.url.webtoplogin#" rbkey="coapi.farLogin.login.login">Login</skin:buildLink></li></cfoutput>
 	<cfoutput></ul></cfoutput>
 </ft:buttonPanel>
 

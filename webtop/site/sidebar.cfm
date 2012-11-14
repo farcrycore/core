@@ -4,6 +4,7 @@
 
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
+<cfimport taglib="/farcry/core/tags/admin" prefix="admin">
 
 
 <skin:loadCSS id="webtop" />
@@ -155,7 +156,7 @@ function refreshiFrame(iFrameName){
 <!--- display quick links in dropdown for tree --->
 <cfif ArrayLen(aZoom)>
 <form name="frmZoom" action="" method="get" class="iframe-nav-form-zoom" style="margin-top:10px">
-	<small><strong>Quick Zoom:</strong></small>
+	<small><strong><admin:resource key="webtop.general.quickzoom@label">Quick Zoom</admin:resource>:</strong></small>
 	 <select name="rootObjectID" onChange="document.forms['frmZoom'].parentSectionId.value=document.getElementById('subjump').rootObjectID.value;this.form.submit();">
 		<cfloop from="1" to="#ArrayLen(aZoom)#" index="i">
 		<option value="#aZoom[i].value#"<cfif URL.rootObjectid EQ aZoom[i].value> selected="true"</cfif>>#aZoom[i].text#</option></cfloop>

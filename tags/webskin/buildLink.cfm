@@ -46,6 +46,7 @@
 	<cfparam name="attributes.anchor" default=""><!--- Anchor to place at the end of the URL string. --->
 	<cfparam name="attributes.onclick" default=""><!--- the js code to place in onclick --->
 	<cfparam name="attributes.ampDelim" default="&amp;"><!--- @@attrhint: the default ampersand delimiter as used by getLink --->
+	<cfparam name="attributes.rbkey" default="" /><!--- If set, FarCry will use the specified resource for @text and @title with the provided attribute values as the defaults --->
 
 	<cfset href = application.fapi.getLink(argumentCollection="#attributes#") />
 
@@ -57,6 +58,11 @@
 	<cfelseif len(attributes.r_url)>
 		<cfset "caller.#attributes.r_url#" = href />
 	<cfelse>
+		<!--- translate the title --->
+		<cfif len(attributes.rbkey)>
+			<cfset attributes.title = application.fapi.getResource(key=attributes.rbkey & "@title",default=attributes.title) />
+		</cfif>
+		
 		<!--- display link --->
 		<cfset tagoutput='<a href="#href#"'>
 		<cfif len(attributes.id)>
@@ -94,6 +100,11 @@
 			<!--- USE THE LINKTEXT AS GENERATED CONTENT IF AVAILABLE --->
 			<cfif len(attributes.linktext)>
 				<cfset thistag.GeneratedContent = attributes.linktext />
+			</cfif>
+			
+			<!--- TRANSLATE THE TEXT --->
+			<cfif len(attributes.rbkey)>
+				<cfset thistag.GeneratedContent = application.fapi.getResource(key=attributes.rbkey & "@text",default=thistag.GeneratedContent) />
 			</cfif>
 			
 			<!--- IF WE DONT HAVE ANY GENERATED CONTENT, GO FIND THE LABEL OF THE OBJECT --->

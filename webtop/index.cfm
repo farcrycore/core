@@ -67,8 +67,8 @@
 				
 				<div id="admin-tools">
 					<div id="powered-by"><a href="#application.url.webtop#/aboutfarcry.cfm" onclick="$j.get(this.href,function(html){ $fc.openModal(html,1000,455,true,true); });return false;"><img src="images/powered_by_farcry.gif" alt="farcry" /></a></div>
-					<p>Welcome <cfif StructKeyExists(session.dmProfile,"firstname")><strong>#session.dmProfile.firstname#</strong> (<a href="#application.fapi.getLink(objectid=session.dmProfile.objectID,view='editOwn')#" target="content" title="#application.rb.getResource('coapi.dmProfile.general.editprofile@label','Edit your profile')#">#application.rb.getResource('coapi.dmProfile.general.editprofile@label','Edit your profile')#</a>)</cfif><br />
-					<a href="#application.url.webtop#/overview/home.cfm" target="content">Dashboard</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#application.fapi.getLink(alias='home')#" target="_top">View Site</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#application.url.farcry#/index.cfm?logout=1" target="_top">Logout</a>
+					<p><cfif StructKeyExists(session.dmProfile,"firstname")><admin:resource key="coapi.dmProfile.general.welcome@text" var1="#session.dmProfile.firstname#">Welcome <strong>#session.dmProfile.firstname#</strong></admin:resource><cfelse><admin:resource key="coapi.dmProfile.general.welcomenoname@text">Welcome</admin:resource></cfif> (<a href="#application.fapi.getLink(objectid=session.dmProfile.objectID,view='editOwn')#" target="content" title="Edit your profile" rbkey="coapi.dmProfile.general.editprofile">Edit your profile</a>)<br />
+					<a href="#application.url.webtop#/overview/home.cfm" target="content" rbkey="coapi.dmProfile.general.dashboard">Dashboard</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#application.fapi.getLink(alias='home')#" target="_top" rbkey="coapi.dmProfile.general.viewsite">View Site</a>&nbsp;&nbsp;|&nbsp;&nbsp;<a href="#application.url.farcry#/index.cfm?logout=1" target="_top" rbkey="coapi.dmProfile.general.logout">Logout</a>
 					</p>
 				</div>
 				
@@ -128,8 +128,8 @@
 <cfelseif altexpansion gt 200>
 	<!--- Alternate size is greater than the default size --->
 	<cfoutput>
-		<a href="##" id="tree-button-max"><span>Expand Sidebar</span></a>
-		<a href="##" id="tree-button-min"><span>Default Sidebar</span></a>
+		<a href="##" id="tree-button-max"><span><admin:resource key="webtop.general.expandsidebar@text">Expand Sidebar</admin:resource></span></a>
+		<a href="##" id="tree-button-min"><span><admin:resource key="webtop.general.defaultsidebar@text">Default Sidebar</admin:resource></span></a>
 	</cfoutput>	
 
 	<skin:onReady>
@@ -164,8 +164,8 @@
 <cfelseif altexpansion lt 200>
 	<!--- Alternate size is smaller than the default size --->
 	<cfoutput>
-		<a href="##" id="content-button-max" title="Expand Sidebar"><span>Expand Sidebar</span></a>
-		<a href="##" id="content-button-min" title="Default Sidebar"><span>Default Sidebar</span></a>
+		<a href="##" id="content-button-max" title="Expand Sidebar"><span><admin:resource key="webtop.general.expandsidebar@text">Expand Sidebar</admin:resource></span></a>
+		<a href="##" id="content-button-min" title="Default Sidebar"><span><admin:resource key="webtop.general.defaultsidebar@text">Default Sidebar</admin:resource></span></a>
 	</cfoutput>	
 
 	<skin:onReady>
