@@ -193,7 +193,7 @@
 		<cfreturn stResult />
 	</cffunction>
 	
-	<cffunction name="log" access="public" output="false" returntype="void" hint="Logs error to application and exception log files">
+	<cffunction name="logData" access="public" output="false" returntype="void" hint="Logs error to application and exception log files">
 		<cfargument name="log" type="struct" required="true" />
 		<cfargument name="bApplication" type="boolean" required="false" default="true" />
 		<cfargument name="bException" type="boolean" required="false" default="true" />
