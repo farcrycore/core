@@ -516,6 +516,7 @@
 	<cffunction name="logout" access="public" output="false" returntype="void" hint="" bDocument="true">
 		<cfset structdelete(session,"security") />
 		<cfset structdelete(session,"dmProfile") />
+		<cfset structdelete(session.fc,"mode") />
 		
 		<!--- DEPRECIATED VARIABLE --->
 		<cfset structdelete(session,"dmSec") />
