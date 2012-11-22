@@ -433,6 +433,13 @@
 		<cfset var stException = structnew() />
 		<cfset var oError = "" />
 		
+		<!--- increase the request timeout a little, in case the error was caused by a request timeout --->
+		<cfif structkeyexists(server,"railo")>
+			<cfsetting requesttimeout="#getPageContext().getRequestTimeout() + 5000#" />
+		<cfelseif structkeyexists(server,"coldfusion")>
+			<cfsetting requesttimeout="#CreateObject("java", "coldfusion.runtime.RequestMonitor").GetRequestTimeout() + 5#" />
+		</cfif>
+		
 		<cfif isdefined("application.fc.lib.error")>
 			<cfset oError = application.fc.lib.error />
 		<cfelse>

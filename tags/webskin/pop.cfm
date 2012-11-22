@@ -47,11 +47,13 @@
 
 <cfif not thistag.HasEndTag>
 	<cfthrow message="skin:pop must have an end tag" />
+<cfelseif not isdefined("session.aGritterMessages")>
+	<cfexit method="exittag" />
 </cfif>
 
-<cfparam name="session.aGritterMessages" default="#arraynew(1)#" />
-
 <cfif thistag.ExecutionMode eq "start">
+	<cfparam name="session.aGritterMessages" default="#arraynew(1)#" />
+	
 	<cfset thistag.thismessage = 1 />
 	<cfset thistag.tagregex = "(^|,)(#replace(attributes.tags,',','|','ALL')#)($|,)" />
 	<cfset thistag.allout = "" />

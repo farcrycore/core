@@ -392,6 +392,13 @@ user --->
 		<cfset stRecordSet.countAll = attributes.qRecordSet.recordCount />
 		<cfset stRecordSet.currentPage = 0 />
 		<cfset stRecordSet.recordsPerPage = attributes.numitems />
+		
+		<cfquery dbtype="query" name="stRecordset.q">
+			select		*
+			from		stRecordset.q
+			where		#preservesinglequotes(attributes.sqlWhere)#
+			<cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy neq "datetimelastupdated desc">order by	#session.objectadminFilterObjects[attributes.typename].sqlOrderBy#</cfif>
+		</cfquery>
 	<cfelse>
 
 		<cfset oFormtoolUtil = createObject("component", application.fc.utils.getPath(package="farcry", component="formtools")) />
