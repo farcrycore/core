@@ -67,13 +67,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="session.objectadmin" default="#structnew()#" type="struct">
 
 <cfif not len("attributes.title")>
-	<cfif structkeyexists(application.stCOAPI[attributes.typename],"displayname") and len(application.stCOAPI[attributes.typename].displayname)>
-		<cfparam name="attributes.title" default="#application.rb.formatRBString('#attributes.rbkey#@title',application.fapi.getResource(key='coapi.#attributes.typename#@label',default=application.stCOAPI[attributes.typename].displayname),'{1} Administration')#">
-	<cfelse>
-		<cfparam name="attributes.title" default="#application.rb.formatRBString('#attributes.rbkey#@title',attributes.typename,'{1} Administration')#">
-	</cfif>
-<cfelse>
-	<cfparam name="attributes.title" default="#application.rb.formatRBString('#attributes.rbkey#@title','',attributes.title)#">
+	<cfset attributes.title = "{1} Administration" />
 </cfif>
 
 <cfparam name="attributes.ColumnList" default="" type="string">
@@ -198,11 +192,17 @@ user --->
 <cfif thistag.executionMode eq "End">
 
 	<cfif len(attributes.title)>
+		<cfif structkeyexists(application.stCOAPI[attributes.typename],"displayname") and len(application.stCOAPI[attributes.typename].displayname)>
+			<cfset typelabel = application.stCOAPI[attributes.typename].displayname />
+		<cfelse>
+			<cfset typelabel = attributes.typename />
+		</cfif>
+		
 		<cfoutput>
 		<table class="layout" style="padding:5px;margin-bottom:10px;">
 		<tr>
 			<td style="width:35px;"><skin:icon icon="#application.stCOAPI[attributes.typename].icon#" size="32" default="farcrycore" alt="#uCase(application.fapi.getContentTypeMetadata(attributes.typename,'displayname',attributes.typename))#" /></td>
-			<td style="vertical-align:center;"><h1>#attributes.title#</h1></td>
+			<td style="vertical-align:center;"><h1><admin:resource key="#attributes.rbkey#@title" var1="typelabel">#attributes.title#</admin:resource></h1></td>
 		</tr>
 		</table>			
 		</cfoutput>
@@ -708,9 +708,9 @@ user --->
 					<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" stPropMetaData="#attributes.stFilterMetaData#" bValidation="#attributes.bFilterValidation#" />
 					
 					<ft:buttonPanel style="margin-bottom:0px;">
-						<ft:button value="Apply Filter" class="small" />
+						<ft:button value="Apply Filter" rbkey="#attributes.rbkey#.applyfilter@label" class="small" />
 						<cfif len(HTMLfiltersAttributes)>	
-							<ft:button value="Clear Filter" validate="false" class="small" />
+							<ft:button value="Clear Filter" validate="false" rbkey="#attributes.rbkey#.clearfilter@label" class="small" />
 						</cfif>
 					</ft:buttonPanel>
 				</grid:div>
@@ -920,8 +920,8 @@ user --->
 											<th>
 											<select name="#attributes.aCustomColumns[i].property#sqlOrderBy" onchange="javascript:$j('##sqlOrderBy').attr('value',this.value);btnSubmit('#request.farcryForm.name#', 'sort');" style="width:80px;">
 												<option value=""></option>
-												<option value="#attributes.aCustomColumns[i].property# asc"<cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i].property# asc"> selected="selected"</cfif>>asc</option>
-												<option value="#attributes.aCustomColumns[i].property# desc"<cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i].property# desc"> selected="selected"</cfif>>desc</option>
+												<option value="#attributes.aCustomColumns[i].property# asc"<cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i].property# asc"> selected="selected"</cfif>><admin:resource key="#attributes.rbkey#.asc@label">asc</admin:resource></option>
+												<option value="#attributes.aCustomColumns[i].property# desc"<cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i].property# desc"> selected="selected"</cfif>><admin:resource key="#attributes.rbkey#.desc@label">desc</admin:resource></option>
 											</select>
 											</th>
 											</cfoutput>						
@@ -934,8 +934,8 @@ user --->
 											<th>
 											<select name="#attributes.aCustomColumns[i]#sqlOrderBy" onchange="javascript:$j('##sqlOrderBy').attr('value',this.value);btnSubmit('#request.farcryForm.name#', 'sort');" style="width:80px;">
 												<option value=""></option>
-												<option value="#attributes.aCustomColumns[i]# asc"<cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i]# asc"> selected="selected"</cfif>>asc</option>
-												<option value="#attributes.aCustomColumns[i]# desc"<cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i]# desc"> selected="selected"</cfif>>desc</option>
+												<option value="#attributes.aCustomColumns[i]# asc"<cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i]# asc"> selected="selected"</cfif>><admin:resource key="#attributes.rbkey#.asc@label">asc</admin:resource></option>
+												<option value="#attributes.aCustomColumns[i]# desc"<cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#attributes.aCustomColumns[i]# desc"> selected="selected"</cfif>><admin:resource key="#attributes.rbkey#.desc@label">desc</admin:resource></option>
 											</select>
 											</th>
 											</cfoutput>
@@ -952,8 +952,8 @@ user --->
 										<cfoutput>
 										<select name="#i#sqlOrderBy" onchange="javascript:$j('##sqlOrderBy').attr('value',this.value);btnSubmit('#request.farcryForm.name#', 'sort');" style="width:80px;">
 											<option value=""></option>
-											<option value="#i# asc"<cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# asc"> selected="selected"</cfif>>asc</option>
-											<option value="#i# desc"<cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# desc"> selected="selected"</cfif>>desc</option>
+											<option value="#i# asc"<cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# asc"> selected="selected"</cfif>><admin:resource key="#attributes.rbkey#.asc@label">asc</admin:resource></option>
+											<option value="#i# desc"<cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# desc"> selected="selected"</cfif>><admin:resource key="#attributes.rbkey#.desc@label">desc</admin:resource></option>
 										</select>
 										</cfoutput>
 									<cfelse>

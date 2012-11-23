@@ -219,8 +219,8 @@ $in: SessionID -- $
 			
 		<div class="wizard-pagination">
 			<ul>
-				<cfif stwizard.CurrentStep LT ListLen(stwizard.Steps)><li class="li-next"><ft:button value="Next" text="#application.rb.getResource('forms.buttons.Next@label','Next')#" renderType="link" /></li></cfif>
-				<cfif stwizard.CurrentStep GT 1><li class="li-prev"><ft:button value="Previous" text="#application.rb.getResource('forms.buttons.Next@label','Back')#" renderType="link" /></li></cfif>
+				<cfif stwizard.CurrentStep LT ListLen(stwizard.Steps)><li class="li-next"><ft:button value="Next" rbkey="forms.buttons.Next" text="Next" renderType="link" /></li></cfif>
+				<cfif stwizard.CurrentStep GT 1><li class="li-prev"><ft:button value="Previous" rbkey="forms.buttons.Back" text="Back" renderType="link" /></li></cfif>
 			</ul>	
 		</div>
 
@@ -241,8 +241,8 @@ $in: SessionID -- $
 				<cfloop list="#stwizard.Steps#" index="i">
 					<li><a href="javascript:$fc.wizardSubmission('#Request.farcryForm.Name#','#i#')"><cfif ListGetAt(stwizard.Steps,stwizard.CurrentStep) EQ i><strong>#i#</strong><cfelse>#i#</cfif></a></li>
 				</cfloop>
-				<li class="li-complete"><a href="javascript:$fc.wizardSubmission('#Request.farcryForm.Name#','Save');">#application.rb.getResource("forms.buttons.Complete@label","Complete")#</a></li>
-				<li class="li-cancel"><a href="javascript:$fc.wizardCancelConfirm('#Request.farcryForm.Name#', '#confirmation#');">#application.rb.getResource("forms.buttons.Cancel@label","Cancel")#</a></li>
+				<li class="li-complete"><a href="javascript:$fc.wizardSubmission('#Request.farcryForm.Name#','Save');"><admin:resource key="forms.buttons.Complete@label">Complete</admin:resource></a></li>
+				<li class="li-cancel"><a href="javascript:$fc.wizardCancelConfirm('#Request.farcryForm.Name#', '#confirmation#');"><admin:resource key="forms.buttons.Cancel@label">Cancel</admin:resource></a></li>
 			</ul>
 		</div>
 
@@ -255,8 +255,8 @@ $in: SessionID -- $
 		
 		<div class="wizard-pagination pg-bot">
 			<ul>
-				<cfif stwizard.CurrentStep LT ListLen(stwizard.Steps)><li class="li-next"><ft:button value="Next" text="#application.rb.getResource('forms.buttons.Next@label','Next')#" renderType="link" /></li></cfif>
-				<cfif stwizard.CurrentStep GT 1><li class="li-prev"><ft:button value="Previous" text="#application.rb.getResource('forms.buttons.Next@label','Back')#" renderType="link" /></li></cfif>
+				<cfif stwizard.CurrentStep LT ListLen(stwizard.Steps)><li class="li-next"><ft:button value="Next" rbkey="forms.buttons.Next" text="Next" renderType="link" /></li></cfif>
+				<cfif stwizard.CurrentStep GT 1><li class="li-prev"><ft:button value="Previous" rbkey="forms.buttons.Back" text="Back" renderType="link" /></li></cfif>
 			</ul>			
 		</div>
 				

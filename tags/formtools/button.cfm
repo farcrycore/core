@@ -72,7 +72,7 @@
 	
 	<cfset stButtonAttributes = structNew()>
 
-	<!--- I18 conversion of label --->
+	<!--- I18N conversion of label --->
 	<cfif len(attributes.text)>
 		<cfset attributes.text = application.rb.getResource('#attributes.rbkey#@label',attributes.text) />
 	</cfif>
