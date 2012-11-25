@@ -708,9 +708,9 @@ user --->
 					<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" stPropMetaData="#attributes.stFilterMetaData#" bValidation="#attributes.bFilterValidation#" />
 					
 					<ft:buttonPanel style="margin-bottom:0px;">
-						<ft:button value="Apply Filter" rbkey="#attributes.rbkey#.applyfilter@label" class="small" />
+						<ft:button value="Apply Filter" rbkey="#attributes.rbkey#.applyfilter" class="small" />
 						<cfif len(HTMLfiltersAttributes)>	
-							<ft:button value="Clear Filter" validate="false" rbkey="#attributes.rbkey#.clearfilter@label" class="small" />
+							<ft:button value="Clear Filter" validate="false" rbkey="#attributes.rbkey#.clearfilter" class="small" />
 						</cfif>
 					</ft:buttonPanel>
 				</grid:div>
