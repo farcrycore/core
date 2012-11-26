@@ -99,7 +99,7 @@
 	<cffunction name="getCurrentLocale" access="public" output="false" returntype="string" hint="Returns the current locale string based on if the client is logged in or not" bDocument="true">
 		<cfset var currentLocale = "" />
 		
-		<cfif structkeyexists(session,"dmProfile")>
+		<cfif isDefined("session.dmProfile.locale")>
 			<cfset currentLocale = session.dmProfile.locale />
 		<cfelse>
 			<cfset currentLocale = application.config.general.locale />
