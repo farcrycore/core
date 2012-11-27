@@ -456,7 +456,11 @@
 		<cfargument name="length" required="no" default="0" hint="Required length" />
 		<cfargument name="locale" type="string" required="false" default="" />
 		
-		<cfset var resource = application.fapi.getResource(argumentCollection=arguments) />
+		<cfset var resource = arguments.default />
+		
+		<cfif isdefined("application.fapi")>
+			<cfset resource = application.fapi.getResource(argumentCollection=arguments) />
+		</cfif>
 		
 		<cfif arguments.length and len(resource) lt arguments.length>
 			<cfset resource = resource & repeatstring(" ",arguments.length-len(resource)) />
