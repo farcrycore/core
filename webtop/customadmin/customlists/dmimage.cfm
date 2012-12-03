@@ -32,6 +32,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 
 <ft:objectadmin
 	typename="dmImage"
+    title="Image Admin"
 	columnList="title,datetimelastUpdated,status,ThumbnailImage" 
 	sortableColumns="title,datetimelastUpdated,status"
 	lFilterFields="title,catImage"
