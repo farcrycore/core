@@ -76,7 +76,7 @@ h6 {font-size: 83%}
 		#site-name h1 {padding: 15px 0 5px;font-size:195%;display:inline}
 		#site-name h2 {display:inline;color:#999;font-style:italic}
 	
-	#admin-tools {font-size:86%;padding: 2px 0 0;width:350px;margin: 5px 0 0;float:right}
+	#admin-tools {font-size:86%;width:350px;margin: 5px 0 0;float:right}
 	#admin-tools p {margin: 0;padding: 0}
 	
 	#nav {margin: 0 0 0 20px;height: 2.15em;font-size:96%;clear:left}
