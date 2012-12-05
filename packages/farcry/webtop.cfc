@@ -172,6 +172,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfset var stResult = arguments.struct1 />
 		<cfset var key = "" />
 		<cfset var id = "" />
+		<cfset var stResultTemp = structNew()>
 		
 		<cfparam name="stResult.children" default="#structnew()#" />
 		<cfparam name="stResult.mergeType" default="" />
@@ -210,6 +211,12 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 					</cfif>
 				</cfloop>
 			</cfcase>
+
+			<cfcase value="delete">
+				<cfset stResult = structNew()>
+				<cfset stResult.children = structNew()>
+				<cfset stResult.mergeType = "delete">
+			</cfcase>
 			
 			<cfdefaultcase><!--- Default case is "merge" --->
 				<!--- append root2.stAttributes to root1.stAttributes --->
@@ -220,7 +227,12 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 						<!--- Merge children --->
 						<cfloop collection="#arguments.struct2[key]#" item="id">
 							<cfif structkeyexists(stResult.children,id)>
-								<cfset stResult.children[id] = mergeWebtopStruct(stResult.children[id],arguments.struct2.children[id]) />
+								<cfset stResultTemp = mergeWebtopStruct(stResult.children[id],arguments.struct2.children[id]) />
+								<cfif stResultTemp.mergeType eq "delete">
+									<cfset structDelete(stResult.children, id)>
+								<cfelse>
+									<cfset stResult.children[id] = stResultTemp />
+								</cfif>
 							<cfelse>
 								<cfset stResult.children[id] = duplicate(arguments.struct2.children[id]) />
 							</cfif>
@@ -266,6 +278,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfparam name="arguments.item.altexpansion" default="0" />
 		
 		<!--- Update children --->
+		<cfparam name="arguments.item.children" default="#structNew()#" />
 		<cfloop collection="#arguments.item.children#" item="id">
 			<cfset updateDerivedAttributes(arguments.item.children[id],arguments.item.rbkey) />
 		</cfloop>
@@ -274,27 +287,29 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfset arguments.item.childorder = arraytolist(structsort(arguments.item.children,"numeric","asc","sequence")) />
 		
 		<!--- Tag specfic defaults --->
-		<cfswitch expression="#arguments.item.itemtype#">
-			<cfcase value="section">
-				<cfparam name="arguments.item.description" default="" />
-				<cfparam name="arguments.item.icon" default="" />
-				<cfparam name="arguments.item.relatedType" default="" />
-			</cfcase>
-			<cfcase value="subsection">
-				<cfparam name="arguments.item.description" default="" />
-				<cfparam name="arguments.item.icon" default="" />
-				<cfparam name="arguments.item.relatedType" default="" />
-			</cfcase>
-			<cfcase value="menu">
-				<cfparam name="arguments.item.description" default="" />
-			</cfcase>
-			<cfcase value="menuitem">
-				<cfparam name="arguments.item.linkType" default="" />
-				<cfparam name="arguments.item.description" default="" />
-				<cfparam name="arguments.item.icon" default="" />
-				<cfparam name="arguments.item.relatedType" default="" />
-			</cfcase>
-		</cfswitch>
+		<cfif structKeyExists(arguments.item, "itemtype")>
+			<cfswitch expression="#arguments.item.itemtype#">
+				<cfcase value="section">
+					<cfparam name="arguments.item.description" default="" />
+					<cfparam name="arguments.item.icon" default="" />
+					<cfparam name="arguments.item.relatedType" default="" />
+				</cfcase>
+				<cfcase value="subsection">
+					<cfparam name="arguments.item.description" default="" />
+					<cfparam name="arguments.item.icon" default="" />
+					<cfparam name="arguments.item.relatedType" default="" />
+				</cfcase>
+				<cfcase value="menu">
+					<cfparam name="arguments.item.description" default="" />
+				</cfcase>
+				<cfcase value="menuitem">
+					<cfparam name="arguments.item.linkType" default="" />
+					<cfparam name="arguments.item.description" default="" />
+					<cfparam name="arguments.item.icon" default="" />
+					<cfparam name="arguments.item.relatedType" default="" />
+				</cfcase>
+			</cfswitch>
+		</cfif>
 		
 		<cfreturn arguments.item />
 	</cffunction>
