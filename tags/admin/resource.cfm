@@ -13,7 +13,7 @@
 	</cfif>
 	
 	<cfloop collection="#attributes#" item="thisattr">
-		<cfif refind("var\d+",thisattr)>
+		<cfif refindnocase("var\d+",thisattr)>
 			<cfset attributes.variables[mid(thisattr,4,len(thisattr))] = attributes[thisattr] />
 		</cfif>
 	</cfloop>
