@@ -835,6 +835,9 @@
 		<cfset application.fapi = createObject("component", application.fc.utils.getPath(package="lib", component="fapi")).init() /><!--- FarCry API Functions --->
 		<cfset application.fc.lib = createObject("component", "farcry.core.packages.lib.lib").init() /><!--- FarCry libraries --->
 		
+		<!--- SQL Log --->
+		<cfset application.fc.lib.db.setLogLocation("#application.path.project#/log/fourq.sql") />
+		
 		
 		<!------------------------------------------ 
 		USE OBJECT BROKER?

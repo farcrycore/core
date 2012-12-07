@@ -12,9 +12,13 @@
 		<cfargument name="dsn" type="string" required="false" default="#application.dsn#" />
 		<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#" />
 		<cfargument name="dbowner" type="string" required="false" default="#application.dbowner#" />
+		<cfargument name="loglocation" type="string" required="false" default="" />
 		
 		<cfset variables.paths = getDBTypes() />
 		<cfset variables.gateways[arguments.dsn] = initialiseGateway(dsn=arguments.dsn,dbtype=arguments.dbtype,dbowner=arguments.dbowner) />
+		
+		<cfset this.logChangeFlags = "" />
+		<cfset this.logLocation = arguments.loglocation />
 		
 		<cfreturn this />
 	</cffunction>
@@ -493,8 +497,9 @@
 		<cfargument name="dsn" type="string" required="true" />
 		
 		<cfset var stReturn = StructNew()>
+		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,arguments.typename),"this.logLocation",DE("")) />
 		
-		<cfset stReturn = getGateway(dsn=arguments.dsn).createData(schema=getTableMetadata(arguments.typename),stProperties=stProperties)>
+		<cfset stReturn = getGateway(dsn=arguments.dsn).createData(schema=getTableMetadata(arguments.typename),stProperties=stProperties,logLocation=logLocation) />
 		
 		<cfif NOT stReturn.bSuccess>
 			<cflog text="#stReturn.message# #stReturn.results[arraylen(stReturn.results)].detail# [SQL: #stReturn.results[arraylen(stReturn.results)].sql#]" file="coapi" type="error" application="yes" />
@@ -508,7 +513,9 @@
 		<cfargument name="stProperties" required="true" />
 		<cfargument name="dsn" type="string" required="true" />
 		
-		<cfreturn getGateway(dsn=arguments.dsn).setData(schema=getTableMetadata(arguments.typename),stProperties=arguments.stProperties) />
+		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,listlast(arguments.typename,".")),"this.logLocation",DE("")) />
+		
+		<cfreturn getGateway(dsn=arguments.dsn).setData(schema=getTableMetadata(arguments.typename),stProperties=arguments.stProperties,logLocation=logLocation) />
 	</cffunction>
 	
 	<cffunction name="setArrayData" access="public" output="false" returntype="struct" hint="Passes update an array update to the gateway">
@@ -518,7 +525,9 @@
 		<cfargument name="aProperties" required="true" type="array" />
 		<cfargument name="dsn" type="string" required="true" />
 		
-		<cfreturn getGateway(dsn=arguments.dsn).setArrayData(schema=getTableMetadata(arguments.typename).fields[arguments.propertyname],aProperties=arguments.aProperties,parentid=arguments.objectid) />
+		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,arguments.typename),"this.logLocation",DE("")) />
+		
+		<cfreturn getGateway(dsn=arguments.dsn).setArrayData(schema=getTableMetadata(arguments.typename).fields[arguments.propertyname],aProperties=arguments.aProperties,parentid=arguments.objectid,logLocation=logLocation) />
 	</cffunction>
 	
 	<cffunction name="getData" access="public" output="false" returntype="struct" hint="Get data for a specific objectid and return as a structure, including array properties and typename.">
@@ -537,9 +546,10 @@
 		<cfargument name="dsn" type="string" required="true" />
 		
 		<cfset var stReturn = StructNew()>
+		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,arguments.typename),"this.logLocation",DE("")) />
 		
 		<cfset arguments.schema = getTableMetadata(arguments.typename) />
-		<cfset stReturn = getGateway(dsn=arguments.dsn).deleteData(argumentCollection=arguments) />
+		<cfset stReturn = getGateway(dsn=arguments.dsn).deleteData(argumentCollection=arguments,logLocation=logLocation) />
 		
 		<cfif NOT stReturn.bSuccess>
 			<cflog text="#stReturn.message# #stReturn.results[arraylen(stReturn.results)].detail# [SQL: #stReturn.results[arraylen(stReturn.results)].sql#]" file="coapi" type="error" application="yes" />
@@ -549,12 +559,83 @@
 	</cffunction>
 	
 	
+	<!--- LOGGING --->
+	
+	<cffunction name="getLogLocation" access="public" output="false" returntype="string" hint="Sets the file to which SQL is logged">
+		
+		<cfreturn this.logLocation />
+	</cffunction>
+	
+	<cffunction name="setLogLocation" access="public" output="false" returntype="void" hint="Sets the file to which SQL is logged">
+		<cfargument name="logLocation" type="string" required="true" />
+		
+		<cfset this.logLocation = arguments.logLocation />
+	</cffunction>
+	
+	<cffunction name="getLogChangeFlags" access="public" output="false" returntype="string" hint="Returns a list of the types that are flaged to have all SQL logged">
+		
+		<cfreturn this.logChangeFlags />
+	</cffunction>
+	
+	<cffunction name="setLogChangeFlags" access="public" output="false" returntype="void" hint="Sets the list of the types that are flaged to have all SQL logged">
+		<cfargument name="logChanges" type="string" required="true" />
+		
+		<cfif len(arguments.logChanges) and not directoryexists(getdirectoryfrompath(this.logLocation))>
+			<cfdirectory action="create" directory="#getdirectoryfrompath(this.logLocation)#" mode="770" />
+		</cfif>
+		<cfif len(arguments.logChanges) and not fileexists(this.loglocation)>
+			<cffile action="write" file="#this.loglocation#" output="" mode="770" />
+		</cfif>
+		
+		<cfset this.logChangeFlags = arguments.logChanges />
+	</cffunction>
+	
+	<cffunction name="getLog" access="public" output="false" returntype="any" hint="Loads and returns the SQL log">
+		<cfargument name="asArray" type="boolean" required="false" default="false" />
+		
+		<cfset var sqllog = "" />
+		<cfset var st = structnew() />
+		<cfset var aResult = arraynew(1) />
+		<cfset var result = "" />
+		
+		<cffile action="read" file="#this.loglocation#" variable="sqllog" />
+		
+		<cfif not arguments.asArray>
+			<cfreturn sqllog />
+		</cfif>
+		
+		<cfloop condition="structisempty(st) or (arraylen(st.pos) and st.pos[1])">
+			<cfset st = refind("(\r?\n\r?\n)(?=([^']*'[^']*')*[^']*$)",sqllog,1,true) />
+			<cfif arraylen(st.pos) and st.pos[1] and st.pos[1] eq 1>
+				<cfset sqllog = mid(sqllog,2,len(sqllog)) />
+			<cfelseif arraylen(st.pos) and st.pos[1] and st.pos[1]>
+				<cfset result = left(sqllog,st.pos[1]-1) />
+				<cfset sqllog = mid(sqllog,st.pos[1]+1,len(sqllog)) />
+				
+				<cfif len(trim(result))>
+					<cfset arrayappend(aResult,trim(result)) />
+				</cfif>
+			</cfif>
+		</cfloop>
+		
+		<cfreturn aResult />
+	</cffunction>
+	
+	<cffunction name="clearLog" access="public" output="false" returntype="void" hint="Clears the SQL log">
+		
+		<cffile action="write" file="#this.loglocation#" output="" mode="770" />
+	</cffunction>
+	
+		
 	<!--- CUSTOM FUNCTION ACCESS --->
 	<cffunction name="run" access="public" output="false" returntype="any" hint="Simplifies access to gateway specific functions provided by plugins or projects. Returns false if the mixin does not exist.">
 		<cfargument name="name" type="string" required="true" hint="The name of the mixin function to run" />
 		<cfargument name="dsn" type="string" required="true" />
 		
 		<cfset var result = false />
+		
+		<cfset arguments.logChangeFlags = this.logChangeFlags />
+		<cfset arguments.logLocation = this.logLocation />
 		
 		<cfinvoke component="#getGateway(dsn=arguments.dsn)#" method="#arguments.name#" argumentCollection="#arguments#" returnvariable="result"></cfinvoke>
 		
@@ -575,14 +656,18 @@
 		<cfargument name="bDropTable" type="boolean" required="true" />
 		<cfargument name="dsn" type="string" required="true" />
 		
-		<cfreturn getGateway(dsn=arguments.dsn).deploySchema(schema=getTableMetadata(arguments.typename),bDropTable=arguments.bDropTable) />
+		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,arguments.typename),"this.logLocation",DE("")) />
+		
+		<cfreturn getGateway(dsn=arguments.dsn).deploySchema(schema=getTableMetadata(arguments.typename),bDropTable=arguments.bDropTable,logLocation=logLocation) />
 	</cffunction>
 	
 	<cffunction name="dropType" access="public" returntype="struct" output="false">
 		<cfargument name="typename" type="string" required="true" hint="The name of the content type" />
 		<cfargument name="dsn" type="string" required="true" />
 		
-		<cfreturn getGateway(dsn=arguments.dsn).dropSchema(schema=getTableMetadata(arguments.typename)) />
+		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,arguments.typename),"this.logLocation",DE("")) />
+		
+		<cfreturn getGateway(dsn=arguments.dsn).dropSchema(schema=getTableMetadata(arguments.typename),logLocation=logLocation) />
 	</cffunction>
 	
 	<cffunction name="diffSchema" access="public" returntype="struct" output="false" hint="Compares type metadata to the actual database schema">
@@ -601,8 +686,10 @@
 		<cfset var stResult = structnew() />
 		<cfset var i = 0 />
 		<cfset var gateway = getGateway(arguments.dsn) />
+		<cfset var logLocation = "" />
 		
 		<cfloop from="1" to="#arraylen(arguments.changes)#" index="i">
+			<cfset arguments.changes[i].logLocation = iif(listfindnocase(this.logChangeFlags,listfirst(arguments.changes[i].schema.tablename,"_")),"this.logLocation",DE("")) />
 			<cfinvoke component="#gateway#" method="#arguments.changes[i].action#" argumentcollection="#arguments.changes[i]#" returnvariable="stResult" />
 			<cfif stResult.bSuccess and structkeyexists(arguments.changes[i],"success")>
 				<cfset stResult.message = arguments.changes[i].success />

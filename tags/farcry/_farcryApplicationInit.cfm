@@ -146,6 +146,7 @@ test for the existance of each and act accordingly
 <cfloop list="#oConfig.getConfigKeys()#" index="configkey">
 	<cfset application.config[configkey] = oConfig.getConfig(configkey) />
 </cfloop>
+<cfset application.fc.lib.db.setLogChangeFlags(application.config.general.logDBChanges) />
 
 <!--- wrap this in a cftry catch in case the policystore isn't initialised yet  --->
 <!--- <cfif StructKeyExists(request,"init") AND request.init eq 0> --->

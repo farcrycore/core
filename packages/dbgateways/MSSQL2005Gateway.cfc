@@ -5,6 +5,7 @@
 	<cffunction name="deploySchema" access="public" output="false" returntype="struct" hint="Deploys the table structure for a FarCry type into a MySQL database.">
 		<cfargument name="schema" type="struct" required="true" />
 		<cfargument name="bDropTable" type="boolean" required="false" default="false" />
+		<cfargument name="logLocation" type="string" required="false" default="" />
 		
 		<cfset var stResult = structNew() />
 		<cfset var queryresult = structnew() />
@@ -19,7 +20,7 @@
     	<cfset stResult.bSuccess = true />
 		
 		<cfif arguments.bDropTable>
-			<cfset stResult = dropSchema(schema=arguments.schema)>
+			<cfset stResult = dropSchema(schema=arguments.schema,logLocation=arguments.logLocation)>
 		</cfif>
 		
 		<cfif not isDeployed(schema=arguments.schema)>
@@ -69,6 +70,9 @@
 				</cfquery>
 				
 				<cfset arrayappend(stResult.results,queryresult) />
+				<cfif len(arguments.logLocation)>
+					<cfset logQuery(arguments.logLocation,queryresult) />
+				</cfif>
 			
 				<cfcatch type="database">
 					<cfset arrayappend(stResult.results,cfcatch) />
@@ -80,12 +84,12 @@
 		<cfif stResult.bSuccess>
 			<cfloop collection="#arguments.schema.fields#" item="thisfield">
 				<cfif arguments.schema.fields[thisfield].type eq 'array'>
-					<cfset combineResults(stResult,deploySchema(schema=arguments.schema.fields[thisfield],bDropTable=arguments.bDropTable)) />
+					<cfset combineResults(stResult,deploySchema(schema=arguments.schema.fields[thisfield],bDropTable=arguments.bDropTable,logLocation=arguments.logLocation)) />
 				</cfif>
 			</cfloop>
 			
 			<cfloop collection="#arguments.schema.indexes#" item="thisindex">
-				<cfset combineResults(stResult,addIndex(schema=arguments.schema,indexname=thisindex)) />
+				<cfset combineResults(stResult,addIndex(schema=arguments.schema,indexname=thisindex,logLocation=arguments.logLocation)) />
 			</cfloop>
 		</cfif>
 		
@@ -101,6 +105,7 @@
 	<cffunction name="addColumn" access="public" output="false" returntype="struct" hint="Runs an ALTER sql command for the property. Not for use with array properties.">
 		<cfargument name="schema" type="struct" required="true" hint="The type schema" />
 		<cfargument name="propertyname" type="string" required="true" hint="The property to add" />
+		<cfargument name="logLocation" type="string" required="false" default="" />
 		
 		<cfset var stProp = arguments.schema.fields[arguments.propertyname] />
 		<cfset var stResult = structnew() />
@@ -142,6 +147,9 @@
 			</cfquery>
 			
 			<cfset arrayappend(stResult.results,queryresult) />
+			<cfif len(arguments.logLocation)>
+				<cfset logQuery(arguments.logLocation,queryresult) />
+			</cfif>
 			
 			<cfcatch type="database">
 				<cfset stResult.bSuccess = false />
@@ -162,6 +170,7 @@
 		<cfargument name="schema" type="struct" required="true" hint="The type schema" />
 		<cfargument name="propertyname" type="string" required="true" hint="The property to repair" />
 		<cfargument name="oldpropertyname" type="string" required="false" default="#arguments.propertyname#" hint="The property to rename" />
+		<cfargument name="logLocation" type="string" required="false" default="" />
 		
 		<cfset var stProp = arguments.schema.fields[arguments.propertyname] />
 		<cfset var stResult = structnew() />
@@ -194,6 +203,9 @@
 					DROP CONSTRAINT #qDefault.name#
 				</cfquery>
 				<cfset arrayappend(stResult.results,queryresult) />
+				<cfif len(arguments.logLocation)>
+					<cfset logQuery(arguments.logLocation,queryresult) />
+				</cfif>
 				
 				<cfquery datasource="#this.dsn#" name="qDefault">
 					select		d.name
@@ -205,6 +217,9 @@
 						DROP DEFAULT #qDefault.name#
 					</cfquery>
 					<cfset arrayappend(stResult.results,queryresult) />
+					<cfif len(arguments.logLocation)>
+						<cfset logQuery(arguments.logLocation,queryresult) />
+					</cfif>
 				</cfif>
 			</cfif>
 			
@@ -212,7 +227,7 @@
 			<cfloop collection="#stCurrentSchema.indexes#" item="thisindex">
 				<cfif refindnocase("(^|,)#arguments.oldpropertyname#($|,)",arraytolist(stCurrentSchema.indexes[thisindex].fields))>
 					<cfset lIndexesToRestore = listappend(lIndexesToRestore,thisindex) />
-					<cfset combineResults(stResult,dropIndex(stCurrentSchema,thisindex)) />
+					<cfset combineResults(stResult,dropIndex(schema=stCurrentSchema,indexname=thisindex,logLocation=arguments.logLocation)) />
 				</cfif>
 			</cfloop>
 			
@@ -236,6 +251,9 @@
 			</cfquery>
 			
 			<cfset arrayappend(stResult.results,queryresult) />
+			<cfif len(arguments.logLocation)>
+				<cfset logQuery(arguments.logLocation,queryresult) />
+			</cfif>
 			
 			<!--- Rename column --->
 			<cfif arguments.propertyname neq arguments.oldpropertyname>
@@ -243,6 +261,9 @@
 					EXEC sp_rename '#arguments.schema.tablename#.#arguments.oldpropertyname#', '#arguments.propertyname#', 'COLUMN'
 				</cfquery>
 				<cfset arrayappend(stResult.results,queryresult) />
+				<cfif len(arguments.logLocation)>
+					<cfset logQuery(arguments.logLocation,queryresult) />
+				</cfif>
 			</cfif>
 			
 			<!--- Add new default --->
@@ -263,11 +284,14 @@
 						FOR #arguments.propertyname#
 				</cfquery>
 				<cfset arrayappend(stResult.results,queryresult) />
+				<cfif len(arguments.logLocation)>
+					<cfset logQuery(arguments.logLocation,queryresult) />
+				</cfif>
 			</cfif>
 			
 			<!--- Readd old indexes --->
 			<cfloop list="#lIndexesToRestore#" index="thisindex">
-				<cfset addIndex(stCurrentSchema,thisindex) />
+				<cfset addIndex(schema=stCurrentSchema,indexname=thisindex,logLocation=arguments.logLocation) />
 			</cfloop>
 			
 			<cfcatch type="database">

@@ -15,6 +15,7 @@
 	<cfproperty ftSeq="26" ftFieldset="SysAdmin Properties" name="bEmailErrors" type="boolean" default="0" ftLabel="Email errors" />
 	<cfproperty ftSeq="27" ftFieldset="SysAdmin Properties" name="errorEmail" type="string" default="" ftLabel="Error email" ftType="email" />
 	<cfproperty ftSeq="28" ftFieldset="SysAdmin Properties" name="emailWhitelist" type="longchar" ftLabel="Email Whitelist" ftHint="Emails sent through the email library are filtered by this list (leave empty for no filtering). Each LINE can be the full email domain (e.g. daemon.com.au), or a full email address (e.g. support@daemon.com.au).">
+	<cfproperty ftSeq="29" ftFieldset="SysAdmin Properties" name="logDBChanges" type="longchar" ftLabel="Log DB Changes" ftHint="Flag specific types to say that all db changes should be logged" ftType="list" ftSelectMultiple="true" ftListData="listTypes" />
 
 
 <!--- login properties --->
@@ -67,6 +68,38 @@
 		
 		<cfreturn qUD />
 	</cffunction>
-
+	
+	<cffunction name="listTypes" access="public" returntype="query" description="Returns the types in this application" output="false">
+		<cfset var qResult = querynew("value,name,order","varchar,varchar,integer") />
+		<cfset var k = "" />
+		
+		<cfset queryaddrow(qResult) />
+		<cfset querysetcell(qResult,"value","") />
+		<cfset querysetcell(qResult,"name","None") />
+		<cfset querysetcell(qResult,"order",0) />
+		
+		<cfloop collection="#application.stCOAPI#" item="k">
+			<cfif application.stCOAPI[k].class eq "type" and structkeyexists(application.stCOAPI[k],"displayname")>
+				<cfset queryaddrow(qResult) />
+				<cfset querysetcell(qResult,"value",k) />
+				<cfset querysetcell(qResult,"name",application.stCOAPI[k].displayname) />
+				<cfset querysetcell(qResult,"order",1) />
+			</cfif>
+		</cfloop>
+		
+		<cfquery dbtype="query" name="qResult">select * from qResult order by [order],[name]</cfquery>
+		
+		<cfreturn qResult />
+	</cffunction>
+	
+	
+	<cffunction name="process" access="public" output="false" returntype="struct">
+		<cfargument name="fields" type="struct" required="true" />
+		
+		<cfset application.fc.lib.db.setLogChangeFlags(arguments.fields.logDBChanges) />
+		
+		<cfreturn arguments.fields />
+	</cffunction>
+		
 
 </cfcomponent>

@@ -9,6 +9,8 @@
 		<cfset this.dbowner = arguments.dbowner />
 		<cfset this.dsn = arguments.dsn />
 		<cfset this.dbtype = arguments.dbtype />
+		<cfset this.newline = "
+" />
 		
 		<cfreturn this />
 	</cffunction>
@@ -38,10 +40,31 @@
 		<cfreturn arguments.firstResult />
 	</cffunction>
 	
+	<cffunction name="logQuery" access="public" returntype="void" output="false" hint="Logs specified query result to the specified file">
+		<cfargument name="logfile" type="string" required="true" hint="Log file" />
+		<cfargument name="queryresult" type="struct" required="true" hint="Query result variable" />
+		
+		<cfset var sql = trim(rereplace(arguments.queryresult.sql,"\s+(?=([^']*'[^']*')*[^']*$)"," ","ALL")) & ";" & this.newline />
+		<cfset var st = refind("\?(?=([^']*'[^']*')*[^']*$)",sql,1,true) />
+		<cfset var paramindex = 1 />
+		<cfset var sqlParam = "" />
+		
+		<cfloop condition="arraylen(st.pos) and st.pos[1]">
+			<cfset sqlParam = replace(arguments.queryresult.sqlParameters[paramindex],"'","''","ALL") />
+			<cfset sql = left(sql,st.pos[1]-1) & "'#sqlParam#'" & mid(sql,st.pos[1]+st.len[1],len(sql)) />
+			<cfset st = refind("\?(?=([^']*'[^']*')*[^']*$)",sql,st.pos[1]+len(sqlParam)+1,true) />
+			<cfset paramindex = paramindex + 1 />
+		</cfloop>
+		
+		<cffile action="append" file="#arguments.logfile#" output="-- #dateformat(now(),'yyyy-mm-dd')# #timeformat(now(),'hh:mm:ss')##this.newline##sql#" addnewline="true" mode="660" />
+	</cffunction>
+	
+	
 	<!--- INTERNAL DB FUNCTIONS --->
 	<cffunction name="setArrayTypenames" access="public" returntype="struct" output="false" hint="Updates the typenames of a standard array property">
 		<cfargument name="tablename" type="struct" required="true" hint="The table of the array property" />
     	<cfargument name="parentid" type="uuid" required="true" hint="The parentid of the array property" />
+		<cfargument name="logLocation" type="string" required="false" default="" />
 		
 		<cfset var queryresult = "" />
 		<cfset var stResult = structnew() />
@@ -60,6 +83,9 @@
 			</cfquery>
 			
 			<cfset arrayappend(stResult.results,queryresult) />
+			<cfif len(arguments.logLocation)>
+				<cfset logQuery(arguments.logLocation,queryresult) />
+			</cfif>
 			
 			<cfcatch type="database">
 				<cfset stResult.bSuccess = false />
@@ -74,6 +100,7 @@
 	  	<cfargument name="schema" type="struct" required="true" hint="Type metadata" />
     	<cfargument name="aProperties" type="array" required="true" />
 		<cfargument name="parentid" type="uuid" required="true" hint="The parentid of the array property" />
+		<cfargument name="logLocation" type="string" required="false" default="" />
 		
 		<cfset var stResult = structnew() />
 		<cfset var qExisting = "" />
@@ -136,26 +163,26 @@
 			<cfif i gt arraylen(aData)>
 				<!--- Delete item from DB --->
 				<cfif listfindnocase(qExisting.columnlist,"objectid")>
-					<cfset combineResults(stResult,deleteData(schema=arguments.schema,objectid=qExisting.objectid[i])) />
+					<cfset combineResults(stResult,deleteData(schema=arguments.schema,objectid=qExisting.objectid[i],logLocation=arguments.logLocation)) />
 				<cfelse>
-					<cfset combineResults(stResult,deleteData(schema=arguments.schema,parentid=arguments.parentid,seq=qExisting.seq[i])) />
+					<cfset combineResults(stResult,deleteData(schema=arguments.schema,parentid=arguments.parentid,seq=qExisting.seq[i],logLocation=arguments.logLocation)) />
 				</cfif>
 			<cfelseif aData[i].seq gt qExisting.recordcount>
 				<!--- Add item to DB --->
-				<cfset combineResults(stResult,createData(schema=arguments.schema,stProperties=aData[i])) />
+				<cfset combineResults(stResult,createData(schema=arguments.schema,stProperties=aData[i],logLocation=arguments.logLocation)) />
 			<cfelseif bExtended or aData[i].data neq qExisting.data[i]>
 
 				<cfif qExisting.seq[i] neq i><!--- Too complicated - just delete the bugger and add the new one --->
 					<!--- Delete item from DB --->
 				    <cfif structKeyExists(arguments.schema.fields,"objectid")>
 					    <!--- extended arrays use "objectid" as the primary key --->
-					    <cfset combineResults(stResult,deleteData(schema=arguments.schema,objectid=qExisting.objectid[i],seq=qExisting.seq[i])) />
+					    <cfset combineResults(stResult,deleteData(schema=arguments.schema,objectid=qExisting.objectid[i],seq=qExisting.seq[i],logLocation=arguments.logLocation)) />
 					<cfelse>
-						<cfset combineResults(stResult,deleteData(schema=arguments.schema,parentid=arguments.parentid,seq=qExisting.seq[i])) />
+						<cfset combineResults(stResult,deleteData(schema=arguments.schema,parentid=arguments.parentid,seq=qExisting.seq[i],logLocation=arguments.logLocation)) />
 				    </cfif>
-					<cfset combineResults(stResult,createData(schema=arguments.schema,stProperties=aData[i])) />
+					<cfset combineResults(stResult,createData(schema=arguments.schema,stProperties=aData[i],logLocation=arguments.logLocation)) />
 				<cfelse>
-					<cfset combineResults(stResult,setData(schema=arguments.schema,stProperties=aData[i])) />
+					<cfset combineResults(stResult,setData(schema=arguments.schema,stProperties=aData[i],logLocation=arguments.logLocation)) />
 				</cfif>
 			</cfif>
 			
@@ -187,6 +214,7 @@
 		<cfargument name="schema" type="struct" required="true" hint="Type metadata" />
     	<cfargument name="stProperties" type="struct" required="true" />
 		<!--- Additional optional arguments for each primary key field --->
+		<cfargument name="logLocation" type="string" required="false" default="" />
 		
 		<cfset var stResult = structnew() />
 		<cfset var queryresult = "" />
@@ -239,6 +267,9 @@
 			</cfquery>
 				
 			<cfset arrayappend(stResult.results,queryresult) />
+			<cfif len(arguments.logLocation)>
+				<cfset logQuery(arguments.logLocation,queryresult) />
+			</cfif>
 			
 			<cfcatch type="database">
 				<cfset stResult.bSuccess = false />
@@ -250,7 +281,7 @@
 		<!--- Insert any array property data - only applicable for standard types i.e. has an objectid primarykey --->		
 		<cfloop collection="#arguments.schema.fields#" item="thisfield">
 			<cfif structkeyexists(arguments.schema.fields,thisfield) and arguments.schema.fields[thisfield].type eq 'array' AND structKeyExists(arguments.stProperties,thisfield)>
-				<cfset combineResults(stResult,setArrayData(schema=arguments.schema.fields[thisfield],aProperties=arguments.stProperties[thisfield],parentid=arguments.stProperties.objectid)) />
+				<cfset combineResults(stResult,setArrayData(schema=arguments.schema.fields[thisfield],aProperties=arguments.stProperties[thisfield],parentid=arguments.stProperties.objectid,logLocation=arguments.logLocation)) />
 			</cfif>
 		</cfloop>
 		
@@ -264,6 +295,7 @@
 	<cffunction name="setData" access="public" returntype="struct" output="false" hint="Performs an UPDATE for the given schema and properties">
 	  	<cfargument name="schema" type="struct" required="true" hint="Type metadata" />
     	<cfargument name="stProperties" type="struct" required="true" />
+		<cfargument name="logLocation" type="string" required="false" default="" />
 	  	
    		<cfset var thisfield = "" />
    		<cfset var qRecordExists = queryNew("blah") />
@@ -334,6 +366,9 @@
 				</cfquery>
 				
 				<cfset arrayappend(stResult.results,queryresult) />
+				<cfif len(arguments.logLocation)>
+					<cfset logQuery(arguments.logLocation,queryresult) />
+				</cfif>
 				
 				<cfcatch type="database">
 					<cfset stResult.bSuccess = false />
@@ -344,7 +379,7 @@
 			<!--- Insert any array property data - only applicable for standard types i.e. has an objectid primarykey --->		
 			<cfloop collection="#arguments.schema.fields#" item="thisfield">
 				<cfif arguments.schema.fields[thisfield].type eq 'array' AND structKeyExists(arguments.stProperties,thisfield)>
-					<cfset combineResults(stResult,setArrayData(schema=arguments.schema.fields[thisfield],aProperties=arguments.stProperties[thisfield],parentid=arguments.stProperties.objectid)) />
+					<cfset combineResults(stResult,setArrayData(schema=arguments.schema.fields[thisfield],aProperties=arguments.stProperties[thisfield],parentid=arguments.stProperties.objectid,logLocation=arguments.logLocation)) />
 				</cfif>
 			</cfloop>
 			
@@ -508,6 +543,7 @@
 	<cffunction name="deleteData" access="public" output="false" returntype="struct" hint="Delete the specified objectid and corresponding data, including array properties and refObjects.">
 		<cfargument name="schema" type="struct" required="true" hint="The type schema" />
 		<!--- Additional required arguments for each primary key field --->
+		<cfargument name="logLocation" type="string" required="false" default="" />
 		
 		<cfset var thisfield = "" />
 		<cfset var stResult = structnew() />
@@ -541,6 +577,9 @@
 							</cfloop>
 				</cfquery>
 				<cfset arrayappend(stResult.results,queryresult) />
+				<cfif len(arguments.logLocation)>
+					<cfset logQuery(arguments.logLocation,queryresult) />
+				</cfif>
 			
 				<!--- Delete array data - only applicable for standard types (i.e. objectid primary key) --->
 				<cfloop collection="#arguments.schema.fields#" item="thisfield">
@@ -551,6 +590,9 @@
 							WHERE 	parentid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.objectid#" />
 						</cfquery>
 						<cfset arrayappend(stResult.results,queryresult) />
+						<cfif len(arguments.logLocation)>
+							<cfset logQuery(arguments.logLocation,queryresult) />
+						</cfif>
 					</cfif>
 				</cfloop>
 				
@@ -568,6 +610,7 @@
 	<!--- DEPLOYMENT --->
 	<cffunction name="dropSchema" access="public" output="false" returntype="struct" hint="Drops the table structure for a FarCry type">
 		<cfargument name="schema" type="struct" required="true" />
+		<cfargument name="logLocation" type="string" required="false" default="" />
 		
 		<cfset var stResult = structNew() />
 		<cfset var queryresult = structnew() />
@@ -583,6 +626,9 @@
 				</cfquery>
 				
 				<cfset arrayappend(stResult.results,queryresult) />
+				<cfif len(arguments.logLocation)>
+					<cfset logQuery(arguments.logLocation,queryresult) />
+				</cfif>
 				
 				<cfcatch>
 					<cfset arrayappend(stResult.results,cfcatch) />
@@ -594,7 +640,7 @@
 		<cfif stResult.bSuccess>
 			<cfloop collection="#arguments.schema.fields#" item="thisfield">
 				<cfif arguments.schema.fields[thisfield].type eq 'array'>
-					<cfset combineResults(stResult,dropSchema(schema=arguments.schema.fields[thisfield])) />
+					<cfset combineResults(stResult,dropSchema(schema=arguments.schema.fields[thisfield],logLocation=arguments.logLocation)) />
 				</cfif>
 			</cfloop>
 		</cfif>
@@ -611,6 +657,7 @@
 	<cffunction name="addIndex" access="public" output="false" returntype="struct" hint="Deploys the index into a MySQL database.">
 		<cfargument name="schema" type="struct" required="true" />
 		<cfargument name="indexname" type="string" required="true" />
+		<cfargument name="logLocation" type="string" required="false" default="" />
 		
 		<cfset var stIndex = arguments.schema.indexes[arguments.indexname] />
 		<cfset var stResult = structnew() />
@@ -638,6 +685,9 @@
 			</cfswitch>
 			
 			<cfset arrayappend(stResult.results,queryresult) />
+			<cfif len(arguments.logLocation)>
+				<cfset logQuery(arguments.logLocation,queryresult) />
+			</cfif>
 			
 			<cfcatch type="database">
 				<cfset stResult.bSuccess = false />
@@ -657,6 +707,7 @@
 	<cffunction name="repairIndex" access="public" output="false" returntype="struct" hint="Repairs the index in a MySQL database.">
 		<cfargument name="schema" type="struct" required="true" />
 		<cfargument name="indexname" type="string" required="true" />
+		<cfargument name="logLocation" type="string" required="false" default="" />
 		
 		<cfset var stIndex = arguments.schema.indexes[arguments.indexname] />
 		<cfset var stResult = structnew() />
@@ -666,8 +717,8 @@
 		<cfset stResult.results = arraynew(1) />
 		
 		<cftry>
-			<cfset stResult = dropIndex(arguments.schema,arguments.indexname) />
-			<cfset combineResults(stResult,addIndex(arguments.schema,arguments.indexname)) />
+			<cfset stResult = dropIndex(schema=arguments.schema,indexname=arguments.indexname,logLocation=arguments.logLocation) />
+			<cfset combineResults(stResult,addIndex(schema=arguments.schema,indexname=arguments.indexname,logLocation=arguments.logLocation)) />
 			
 			<cfcatch>
 				<cfset stResult.bSuccess = false />
@@ -688,6 +739,7 @@
 	<cffunction name="dropIndex" access="public" output="false" returntype="struct" hint="Drops the index from a MySQL database.">
 		<cfargument name="schema" type="struct" required="true" />
 		<cfargument name="indexname" type="string" required="true" />
+		<cfargument name="logLocation" type="string" required="false" default="" />
 		
 		<cfset var stResult = structnew() />
 		<cfset var queryresult = "" />
@@ -720,6 +772,9 @@
 			</cfswitch>
 			
 			<cfset arrayappend(stResult.results,queryresult) />
+			<cfif len(arguments.logLocation)>
+				<cfset logQuery(arguments.logLocation,queryresult) />
+			</cfif>
 			
 			<cfcatch type="database">
 				<cfset stResult.bSuccess = false />

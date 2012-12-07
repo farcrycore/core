@@ -10,6 +10,16 @@
 <cfset aChanges = arraynew(1) />
 <cfset changedTypes = "" />
 
+<cfif isdefined("url.logchanges")>
+	<cfset application.config.general.logDBChanges = url.logchanges />
+	<cfset qConfig = application.fapi.getContentObjects(typename="farConfig",configkey_eq="general") />
+	<cfset stConfig = application.fapi.getContentObject(typename="farConfig",objectid=qConfig.objectid) />
+	<cfwddx action="cfml2wddx" input="#application.config.general#" output="stConfig.configdata" />
+	<cfset application.fapi.setData(stProperties=stConfig) />
+	<cfoutput>true</cfoutput>
+	<cfabort>
+</cfif>
+
 <ft:processform action="Apply Default Resolutions">
 	<cfparam name="form.deploydefaults" default="" />
 	<cfloop list="#form.deploydefaults#" index="thistype">
@@ -273,6 +283,8 @@
 	order by	label
 </cfquery>
 
+<cfset lLogChangeFlags = application.fc.lib.db.getLogChangeFlags() />
+
 <admin:header />
 
 <skin:loadJS id="jquery" />
@@ -311,14 +323,36 @@
 			td.location, th.location { width:12em; }
 			td.conflicts, th.conflicts { width:12em; }
 			td.actions, th.actions { width:12em; }
+			td.logchanges, th.logchanges { width:1.5em; }
 	</style>
 </cfoutput></skin:htmlHead>
 
 <skin:onReady><cfoutput>
-	$j("a.openindialog").bind("click",function(){
+	$j("a.openindialog").live("click",function(){
 		$fc.openDialogIFrame(this.title,this.href,700,600);
 		return false;
 	});
+	
+	var logBuffer = 0;
+	function updateLogChanges(){
+		if (logBuffer)
+			clearTimeout(logBuffer);
+		
+		logBuffer = setTimeout(function(){
+			var logchanges = $j.map($j("td.logchanges input:checked").toArray(),function(value){
+				return value.value;
+			}).join();
+			
+			$j.get("#application.fapi.fixURL(addvalues='logchanges=abcdef')#".replace("abcdef",logchanges));
+			
+			logBuffer = 0;
+		},1500);
+	};
+	$j("th.logchanges input").live("click",function(){
+		$j("th.logchanges input, td.logchanges input").not(this).attr("checked",$j(this).attr("checked")=="checked"?true:false);
+		updateLogChanges();
+	});
+	$j("td.logchanges input").live("click",updateLogChanges);
 </cfoutput></skin:onReady>
 
 <ft:form>
@@ -375,6 +409,7 @@
 				<th class="name">Name</th>
 				<th class="location">Location</th>
 				<th class="actions">Info</th>
+				<th class="logchanges"><input type="checkbox" name="logchanges" value="" title="Log changes on ALL types" /></th>
 			</tr>
 	</cfoutput>
 	<cfset count = 0 />
@@ -403,12 +438,13 @@
 							<a href="#application.url.farcry#/admin/scaffold.cfm?typename=#qTypes.typename#" class="openindialog" title="Scaffold">Scaffold</a>
 						</cfif>
 					</td>
+					<td class="logchanges"><input type="checkbox" name="logchanges" value="#qTypes.typename#" title="Log changes on THIS type" <cfif listfindnocase(lLogChangeFlags,qTypes.typename)>checked</cfif> /></td>
 				</tr>
 			</cfoutput>
 		</cfif>
 	</cfloop>
 	<cfif not count>
-		<cfoutput><tr class="none"><td colspan="4">No COAPI types</td></tr></cfoutput>
+		<cfoutput><tr class="none"><td colspan="5">No COAPI types</td></tr></cfoutput>
 	</cfif>
 	<cfoutput>
 		</table>
