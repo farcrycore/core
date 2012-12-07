@@ -218,6 +218,7 @@
 	-webkit-border-radius: 3px;
 	-moz-border-radius: 3px;
 	border-radius: 3px;
+	font-weight: normal;
 	font-size: 13px;
 	line-height: 16px;
 }
@@ -257,6 +258,7 @@
 	line-height: 16px;
 	text-decoration: none;
 	color: black;
+	font-weight: normal;
 }
 #farcryTray .farcryTrayButtons a:hover {
 	text-decoration: underline;
@@ -314,7 +316,8 @@
 	border-radius: 3px;
 	line-height: 16px;
 	text-decoration: none;
-	color: black;	
+	color: black;
+	font-weight: normal;
 	font-size: 13px;
 	line-height: 16px;	
 }
@@ -347,11 +350,13 @@
 .farcryTrayBodyContentDetails th {
 	padding: 4px 10px 4px 0;
 	text-align: left;
+	color: #000;
 	font-weight: bold;
 	font-size: 13px;
 }
 .farcryTrayBodyContentDetails td {
 	padding: 4px;
+	color: #000;
 	font-size: 13px;
 }
 .farcryTrayBodyContentDetails table {

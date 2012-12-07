@@ -17,14 +17,14 @@
 .ui-tabs .ui-tabs-nav li a:hover,
 .ui-tabs .ui-tabs-nav li.ui-tabs-selected a:hover, 
 .ui-tabs.ui-tabs-collapsible .ui-tabs-nav li.ui-tabs-selected a:hover {
-	background-image: none !important;
-	background-image: -webkit-gradient(linear, left top,left bottom, color-stop(0, #ECECEC),color-stop(1, #fff)) !important;
-	background-image: -moz-linear-gradient( center top, #ECECEC 0%, #fff 100%) !important;
+	background-image: none;
+	background-image: -webkit-gradient(linear, left top,left bottom, color-stop(0, #ECECEC),color-stop(1, #fff));
+	background-image: -moz-linear-gradient( center top, #ECECEC 0%, #fff 100%);
 } 
 
 
 .ui-dialog .ui-dialog-titlebar a:hover {
-	background-color: transparent !important;
+	background-color: transparent;
 } 
 
 
