@@ -622,20 +622,13 @@
 
 		
 		<!--- Check to make sure the farFU table has been deployed --->
-		<cftry>
-			<cfquery datasource="#application.dsn#" name="stLocal.qPing">
-				SELECT 	count(objectID)
-				FROM 	#application.dbowner#farFU
-			</cfquery>
-		
-			<cfcatch type="database">
-				<cflock name="deployFarFUTable" timeout="30">
-					<!--- The table has not been deployed. We need to deploy it now --->
-					<cfset application.fc.lib.db.deployType(typename="farFU",bDropTable=true,dsn=application.dsn) />
-					<cfset migrate() />
-				</cflock>		
-			</cfcatch>
-		</cftry>
+		<cfif not application.fc.lib.db.isDeployed(typename="farFU",dsn=application.dsn)>
+			<cflock name="deployFarFUTable" timeout="30">
+				<!--- The table has not been deployed. We need to deploy it now --->
+				<cfset application.fc.lib.db.deployType(typename="farFU",dsn=application.dsn) />
+				<cfset migrate() />
+			</cflock>		
+		</cfif>
 		
 		
 		<!--- retrieve list of all dmNavigation FU's that are not retired --->

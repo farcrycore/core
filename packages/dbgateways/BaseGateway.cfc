@@ -911,24 +911,21 @@
 		
 		<cfreturn stResult />
 	</cffunction>
- 	
+
 	<cffunction name="isDeployed" access="public" output="false" returntype="boolean" hint="Returns True if the table is already deployed">
 		<cfargument name="schema" type="struct" required="true" hint="Table schema to check" />
 		
 		<cfset var q = "" />
+		<cfset var dbo = left(this.dbowner, len(this.dbowner)-1)>
+
+		<cfquery datasource="#this.dsn#" name="q">
+			SELECT * 
+			FROM INFORMATION_SCHEMA.TABLES 
+			WHERE TABLE_SCHEMA = '#dbo#' 
+			AND  TABLE_NAME = '#arguments.schema.tablename#'
+		</cfquery>
 		
-		<cftry>
-			<cfquery datasource="#this.dsn#" name="q">
-				SELECT count(*)
-				FROM #this.dbowner##arguments.schema.tablename#
-			</cfquery>
-			
-			<cfcatch type="database">
-				<cfreturn false />
-			</cfcatch>
-		</cftry>
-		
-		<cfreturn true />
+		<cfreturn q.recordCount gt 0 />
 	</cffunction>
-	
+
 </cfcomponent>
