@@ -442,4 +442,18 @@
 		</cfif>
 	</cffunction>
 	
+	<cffunction name="getResource" access="private" output="false" returntype="string" hint="Returns the resource string">
+		<cfargument name="key" type="string" required="true" />
+		<cfargument name="default" type="string" required="false" default="#arguments.key#" />
+		<cfargument name="locale" type="string" required="false" default="" />
+		<cfargument name="substituteValues" required="no" default="#arrayNew(1)#" />
+		
+		<!--- Error being handled may have occurred before application.fapi was loaded --->
+		<cfif not isDefined("application.fapi")>
+			<cfreturn arguments.default />
+		</cfif>
+		
+		<cfreturn application.fapi.getResource(argumentCollection=arguments) />
+	</cffunction>
+	
 </cfcomponent>
