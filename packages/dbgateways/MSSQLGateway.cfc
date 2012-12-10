@@ -766,5 +766,27 @@
 		
 		<cfreturn b />
 	</cffunction>
-	
+
+	<cffunction name="isDeployed" access="public" output="false" returntype="boolean" hint="Returns True if the table is already deployed">
+		<cfargument name="schema" type="struct" required="true" hint="Table schema to check" />
+		
+		<cfset var q = "" />
+		<cfset var dbo = "">
+		<cfif len(this.dbowner)>
+			<cfset dbo = left(this.dbowner, len(this.dbowner)-1)>
+		</cfif>
+
+		<cfquery datasource="#this.dsn#" name="q">
+			SELECT * 
+			FROM INFORMATION_SCHEMA.TABLES 
+			WHERE 
+				TABLE_NAME = '#arguments.schema.tablename#'
+				<cfif len(dbo)>
+					AND TABLE_SCHEMA = '#dbo#'
+				</cfif>
+		</cfquery>
+		
+		<cfreturn q.recordCount gt 0 />
+	</cffunction>
+
 </cfcomponent>
