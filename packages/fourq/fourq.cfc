@@ -1250,7 +1250,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 
 		<!--- Get webkins: webskins for this type, then webskins for extends types --->
 		<cfset stReturnMetadata.qWebskins = application.coapi.coapiAdmin.getWebskins(typename="#componentname#", bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#",packagepath=stReturnMetadata.packagepath,aExtends=stReturnMetadata.aExtends) />
-		<cfset stReturnMetadata.stWebskins = request.fc.stWebskins[componentname] />
+		<cfset stReturnMetadata.stWebskins = duplicate(request.fc.stWebskins[componentname]) />
 		
 		
 		<!--- Setup a location to store all the webskins that need to be watched for CRUD changes --->
