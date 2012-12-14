@@ -139,10 +139,12 @@
 		<cfset var stLine = structnew() />
 		<cfset var i = 0 />
 		
-		<cfset stException = arguments.exception />
+		<cfset stException = duplicate(arguments.exception) />
 		
-		<cfif structKeyExists(arguments.exception, "rootcause")>
-			<cfset structappend(duplicate(arguments.exception),arguments.exception.rootcause,true) />
+		<cfif structKeyExists(stException, "rootcause")>
+			<cfset stException = stException.rootcause />
+		<cfelseif structkeyexists(stException, "cause")>
+			<cfset stException = stException.cause />
 		</cfif>
 		
 		<cfset stResult["message"] = stException.message />
@@ -458,7 +460,7 @@
 		
 		<cfset var resource = arguments.default />
 		
-		<cfif isdefined("application.fapi")>
+		<cfif isdefined("application.fapi") and isdefined("application.rb")>
 			<cfset resource = application.fapi.getResource(argumentCollection=arguments) />
 		</cfif>
 		
