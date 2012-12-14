@@ -298,6 +298,7 @@ $out:$
 				</cfif>
 				
 				<cfparam name="stResult.bObjectBroker" default="false" />
+				<cfparam name="stResult.bUseInTree" default="false" />
 				
 				<cfswitch expression="#arguments.package#">
 					<cfcase value="types">
