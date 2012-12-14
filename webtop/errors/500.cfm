@@ -6,7 +6,7 @@
 <cfoutput>
 	<html>
 		<head>
-			<title>#application.fapi.getResource('error.500@title','There was a problem with that last request')#</title>
+			<title><cfif isdefined("application.fapi") and isdefined("application.rb")>#application.fapi.getResource('error.500@title','There was a problem with that last request')#<cfelse>There was a problem with that last request</cfif></title>
 			<style type="text/css">
 				body { 
 					margin:0px; 
@@ -31,9 +31,13 @@
 			</style>
 		</head>
 		<body>
-			<h1>#application.fapi.getResource('error.500@title','There was a problem with that last request')#</h1>
-			#application.fapi.getResource('error.goback@html','<p>Please push "back" on your browser or go back <a style="text-decoration:underline" href="/">home</a></p>')#
-			
+			<cfif isdefined("application.fapi") and isdefined("application.rb")>
+				<h1>#application.fapi.getResource('error.500@title','There was a problem with that last request')#</h1>
+				#application.fapi.getResource('error.goback@html','<p>Please push "back" on your browser or go back <a style="text-decoration:underline" href="/">home</a></p>')#
+			<cfelse>
+				<h1>There was a problem with that last request</h1>
+				<p>Please push "back" on your browser or go back <a style="text-decoration:underline" href="/">home</a></p>
+			</cfif>
 			<cfif not showError><!--</cfif>
 			#errorHTML#
 			<cfif not showError>--></cfif>
