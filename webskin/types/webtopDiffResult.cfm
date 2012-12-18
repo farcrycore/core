@@ -16,7 +16,7 @@
 	<cfset stLocal.leftArchive = stLocal.stLeft.objectid />
 	<cfset stLocal.leftLabel = "#dateformat(stLocal.stLeft.datetimecreated,'d mmm yyyy')#, #timeformat(stLocal.stLeft.datetimecreated,'h:mmtt')#" />
 	<cfwddx action="wddx2cfml" input="#stLocal.stLeft.objectWDDX#" output="stLocal.stLeft" />
-<cfelseif structkeyexists(stLocal.stRight,"status")>
+<cfelseif structkeyexists(stLocal.stLeft,"status")>
 	<cfset stLocal.leftLabel = "#ucase(left(stLocal.stLeft.status,1))##lcase(mid(stLocal.stLeft.status,2,100))#" />
 <cfelse>
 	<cfset stLocal.leftLabel = "Live" />
