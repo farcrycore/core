@@ -221,7 +221,7 @@
 				}
 				// write the link
 				writeOutput("><a href="""&href&"""");
-				if (structkeyexists(qNav,"target") and len(qNav.target)) writeOutput("target='#qNav.target[i]#'");
+				if (structkeyexists(qNav,"target") and len(qNav.target)) writeOutput(" target='#qNav.target[i]#'");
 				writeOutput(">");
 				if(attributes.bSpan) writeOutput("<span>");
 				writeOutput(trim(qNav.ObjectName[i]));
