@@ -68,7 +68,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 
 
 <cfparam name="attributes.title" default="" type="string">
-<cfif not len("attributes.title")>
+<cfif not len(attributes.title)>
 	<cfset attributes.title = "{1} Administration" />
 </cfif>
 
@@ -204,7 +204,7 @@ user --->
 		<table class="layout" style="padding:5px;margin-bottom:10px;">
 		<tr>
 			<td style="width:35px;"><skin:icon icon="#application.stCOAPI[attributes.typename].icon#" size="32" default="farcrycore" alt="#uCase(application.fapi.getContentTypeMetadata(attributes.typename,'displayname',attributes.typename))#" /></td>
-			<td style="vertical-align:center;"><h1><admin:resource key="#attributes.rbkey#@title" var1="typelabel">#attributes.title#</admin:resource></h1></td>
+			<td style="vertical-align:center;"><h1><admin:resource key="#attributes.rbkey#@title" var1="#typelabel#">#attributes.title#</admin:resource></h1></td>
 		</tr>
 		</table>			
 		</cfoutput>
