@@ -133,12 +133,14 @@
 		<!--- 1. http://www.youtube.com/watch?v=yLeNvCJbM90&version=3&hl=en_US&rel=0 --->
 		<!--- 2. http://youtu.be/yLeNvCJbM90?version=3&hl=en_US&rel=0 --->
 		<!--- 3. http://www.youtube.com/v/yLeNvCJbM90?version=3&hl=en_US&rel=0 --->
+		<!--- 4. http://www.youtube.com/watch?v=x-rG8p7-A74  --->
+		<!--- 5. http://www.youtube.com/watch?v=_SkcrPsLc1M --->
 		
 		<!--- This regex matches URLs similar to test case 1 --->
-		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br/?>|^|\n)http:\/\/(?:www\.)?youtube\.com\/watch\?v=(\w+)[^\s]*?(</p>|<br/?>|$|\n)",replacement) />
+		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br/?>|^|\n)http:\/\/(?:www\.)?youtube\.com\/watch\?v=([\w-_]+)[^\s]*?(</p>|<br/?>|$|\n)",replacement) />
 		
 		<!--- This regex matches URLs similar to test cases 2 & 3 --->
-		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br/?>|^|\n)http:\/\/(?:(?:www\.)?youtube\.com\/v|youtu\.be)\/(\w+)[^\s]*?(</p>|<br/?>|$|\n)",replacement) />
+		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br/?>|^|\n)http:\/\/(?:(?:www\.)?youtube\.com\/v|youtu\.be)\/([\w-_]+)[^\s]*?(</p>|<br/?>|$|\n)",replacement) />
 		
 		<cfreturn arguments.input />
 	</cffunction>
