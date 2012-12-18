@@ -66,6 +66,8 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 
 <cfparam name="session.objectadmin" default="#structnew()#" type="struct">
 
+
+<cfparam name="attributes.title" default="" type="string">
 <cfif not len("attributes.title")>
 	<cfset attributes.title = "{1} Administration" />
 </cfif>
