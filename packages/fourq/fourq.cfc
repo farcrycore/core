@@ -1353,11 +1353,11 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		<cfif isnumeric(arguments.step)>
 			<cfquery dbtype="query" name="qSteps">
-				select		ftWizardStep
+				select		ftWizardStep, min(ftSeq) as seq
 				from		application.stCOAPI.#getTypeName()#.qMetadata
 				where		ftWizardStep <> '#getTypeName()#'
 				group by 	ftWizardStep
-				order by	ftSeq
+				order by	seq
 			</cfquery>
 			
 			<cfset arguments.step = qSteps.ftWizardStep[arguments.step] />
@@ -1365,11 +1365,11 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfset defaultvalue = qSteps[prop][arguments.step] />
 		<cfelse>
 			<cfquery dbtype="query" name="qSteps">
-				select		ftWizardStep
+				select		ftWizardStep, min(ftSeq) as seq
 				from		application.stCOAPI.#getTypeName()#.qMetadata
 				where		ftWizardStep = '#arguments.step#'
 				group by 	ftWizardStep
-				order by	ftSeq
+				order by	seq
 			</cfquery>
 			
 			<cfset defaultvalue = qSteps[prop][1] />
@@ -1402,11 +1402,11 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		<cfif structkeyexists(arguments,"step") and isnumeric(arguments.step)>
 			<cfquery dbtype="query" name="qSteps">
-				select		ftWizardStep
+				select		ftWizardStep, min(ftSeq) as seq
 				from		application.stCOAPI.#getTypeName()#.qMetadata
 				where		ftWizardStep <> '#getTypeName()#'
 				group by 	ftWizardStep
-				order by	ftSeq
+				order by	seq
 			</cfquery>
 			
 			<cfset arguments.step = qSteps.ftWizardStep[arguments.step] />
@@ -1414,13 +1414,13 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		
 		<cfif isnumeric(arguments.fieldset)>
 			<cfquery dbtype="query" name="qFieldsets">
-				select		ftFieldset, ftHelpTitle, ftHelpSection
+				select		ftFieldset, ftHelpTitle, ftHelpSection, min(ftSeq) as seq
 				from		application.stCOAPI.#getTypeName()#.qMetadata
 				<cfif structkeyexists(arguments,"step")>
 					where	ftWizardStep = '#arguments.step#'
 				</cfif>
 				group by	ftFieldSet, ftHelpTitle, ftHelpSection
-				order by	ftSeq
+				order by	seq
 			</cfquery>
 			
 			<cfset arguments.fieldset = qFieldsets.ftFieldset[arguments.fieldset] />
@@ -1428,14 +1428,14 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfset defaultvalue = qFieldsets[prop][arguments.fieldset] />
 		<cfelse>
 			<cfquery dbtype="query" name="qFieldsets">
-				select		ftFieldset, ftHelpTitle, ftHelpSection
+				select		ftFieldset, ftHelpTitle, ftHelpSection, min(ftSeq) as seq
 				from		application.stCOAPI.#getTypeName()#.qMetadata
 				where		<cfif structkeyexists(arguments,"step")>
 								ftWizardStep = '#arguments.step#' and
 							</cfif>
 							ftFieldset = '#arguments.fieldset#'
 				group by	ftFieldSet, ftHelpTitle, ftHelpSection
-				order by	ftSeq
+				order by	seq
 			</cfquery>
 			
 			<cfset defaultvalue = qFieldsets[prop][1] />
