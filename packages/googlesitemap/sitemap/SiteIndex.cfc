@@ -1,4 +1,4 @@
-<cfcomponent name="indexSite" extends="site" displayname="index site" hint="I am an a site index that points to other site maps">
+<cfcomponent name="indexSite" extends="Site" displayname="index site" hint="I am an a site index that points to other site maps">
 	
 	<cffunction name="createSiteMap" access="public" returntype="void" description="create an xml object out of SiteMapData">
 		<cfargument name="siteMapNameSpace" required="false" default="http://www.sitemaps.org/schemas/sitemap/0.9">
