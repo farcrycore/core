@@ -2224,9 +2224,9 @@
 	</cffunction>	
 	
 	<!--- @@examples:
-		<p>Searches project, plugins and core and returns the url for the best matching icon.</p>
+		<p>Flushes cache on the list of typenames passed in.</p>
 		<code>
-			#application.fapi.getIconURL(icon='dmHTML', size=16)# 
+			#application.fapi.flushCache(lTypes='dmNavigation,dmHTML')# 
 		</code>
 	 --->	
 	<cffunction name="flushCache" access="public" output="false" returnType="void" hint="Flushes cache of passed in typename">
