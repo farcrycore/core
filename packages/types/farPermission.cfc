@@ -77,6 +77,9 @@ library data methods; used by formtools
 					<cfset querysetcell(qResult,"label","#application.stCOAPI[thistype].displayname#")>
 				</cfif>
 			</cfloop>
+			<cfset queryaddrow(qResult) />
+			<cfset querysetcell(qResult,"objectid","webtop") />
+			<cfset querysetcell(qResult,"label","Webtop")>
 		</cfif>
 		
 		<cfreturn qResult />
