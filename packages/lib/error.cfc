@@ -202,6 +202,8 @@
 		<cfargument name="log" type="struct" required="true" />
 		<cfargument name="bApplication" type="boolean" required="false" default="true" />
 		<cfargument name="bException" type="boolean" required="false" default="true" />
+		<cfargument name="logFile" type="string" required="false" default="" />
+		<cfargument name="logType" type="string" required="true" default="error" />
 		
 		<cfset var stacktrace = createObject("java","java.lang.StringBuffer").init() />
 		<cfset var i = 0 />
@@ -211,20 +213,36 @@
 			<cfset firstline = "The specific sequence of files included or processed is #arguments.log.stack[1].template#, line: #arguments.log.stack[1].line#" />
 		</cfif>
 		
-		<cfif arguments.bApplication and structkeyexists(arguments.log,"message")>
-			<cflog log="application" application="true" type="error" text="#arguments.log.message#. #firstline#" />
+		<cfif structKeyExists(arguments,"logFile") and len(arguments.logFile) and structkeyexists(arguments.log,"message")>
+			<cfif NOT structkeyexists(arguments.log,"stack")>
+				<cflog file="#arguments.logFile#" application="true" type="#arguments.logType#" text="#arguments.log.message#. #firstline#" />
+			<cfelse>
+				<cfloop from="1" to="#arraylen(arguments.log.stack)#" index="i">
+					<cfset stacktrace.append(arguments.log.stack[i].template) />
+					<cfset stacktrace.append(":") />
+					<cfset stacktrace.append(arguments.log.stack[i].line) />
+					<cfif i eq arraylen(arguments.log.stack)>
+						<cfset stacktrace.append(variables.newline) />
+					</cfif>
+				</cfloop>
+				<cflog file="#arguments.logFile#" application="true" type="#arguments.logType#" text="#arguments.log.message#. #firstline##newline##stacktrace.toString()#" />
+			</cfif>
+		<cfelse>
+			<cfif arguments.bApplication and structkeyexists(arguments.log,"message")>
+				<cflog log="application" application="true" type="error" text="#arguments.log.message#. #firstline#" />
+			</cfif>
+			<cfif arguments.bException and structkeyexists(arguments.log,"stack") and structkeyexists(arguments.log,"message")>
+				<cfloop from="1" to="#arraylen(arguments.log.stack)#" index="i">
+					<cfset stacktrace.append(arguments.log.stack[i].template) />
+					<cfset stacktrace.append(":") />
+					<cfset stacktrace.append(arguments.log.stack[i].line) />
+					<cfif i eq arraylen(arguments.log.stack)>
+						<cfset stacktrace.append(variables.newline) />
+					</cfif>
+				</cfloop>
+				<cflog file="exception" application="true" type="#arguments.logType#" text="#arguments.log.message#. #firstline##newline##stacktrace.toString()#" />
+			</cfif>	
 		</cfif>
-		<cfif arguments.bException and structkeyexists(arguments.log,"stack") and structkeyexists(arguments.log,"message")>
-			<cfloop from="1" to="#arraylen(arguments.log.stack)#" index="i">
-				<cfset stacktrace.append(arguments.log.stack[i].template) />
-				<cfset stacktrace.append(":") />
-				<cfset stacktrace.append(arguments.log.stack[i].line) />
-				<cfif i eq arraylen(arguments.log.stack)>
-					<cfset stacktrace.append(variables.newline) />
-				</cfif>
-			</cfloop>
-			<cflog file="exception" application="true" type="error" text="#arguments.log.message#. #firstline##newline##stacktrace.toString()#" />
-		</cfif>	
 	</cffunction>
 	
 	<cffunction name="formatError" access="public" output="false" returntype="any" hint="Formats normalized error for use in HTML or email">
@@ -405,7 +423,6 @@
 		
 		<cfreturn aResult />
 	</cffunction>
-	
 	
 	<cffunction name="showErrorPage" access="public" output="true" returntype="void" hint="Returns output of projects error page">
 		<cfargument name="type" type="string" required="true" hint="404 | 500" />

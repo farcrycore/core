@@ -21,11 +21,11 @@
 		<cfset var stSend = duplicate(arguments) />
 		<cfset var result = cleanArguments(stSend) />
 		<cfset var tmp = "" />
+		<cfset var stLog = "" />
 		
 		<cfif result neq "Success">
 			<cfreturn result />
-		<cfelseif not len(stSend.to)>
-			<!--- Whitelist removed all to addresses - just return out --->
+		<cfelseif not len(stSend.to)> <!--- Whitelist removed all to addresses return out --->
 			<cfreturn "Success" />
 		</cfif>
 		
@@ -63,30 +63,33 @@
 					<cfoutput>#stSend.bodyPlain# #stSend.bodyHTML#</cfoutput>
 				</cfif>
 			</cfmail>
-			
+
+			<cfset logEmail(argumentCollection=stSend, message="sent #arguments.subject# to #arguments.to#") />
 			<cfreturn "Success" />
 			
 			<cfcatch>
-				<cfset logEmailError(argumentCollection=stSend, message=cfcatch.message) />
+				<cfset logEmail(argumentCollection=stSend, message=cfcatch.message) />
 				<cfreturn cfcatch.message />
 			</cfcatch>
 		</cftry>
 	</cffunction>
 	
 	
-	<cffunction name="cleanArguments" returntype="string" output="false" access="public" hint="Cleans and validates SEND arguments (struct argument is modified) and returns 'Success' if the email is ready to go, and the error if not.">
+	<cffunction name="cleanArguments" returntype="string" output="true" access="public" hint="Cleans and validates SEND arguments (struct argument is modified) and returns 'Success' if the email is ready to go, and the error if not.">
 		<cfargument name="mailArguments" type="struct" required="true" />
 		
 		<cfset var i = 0 />
 		<cfset var spaces = "" />
 		<cfset var email = "" />
 		<cfset var emailList = "" />
+		<cfset var white = "" />
+		<cfset var bSend = false />
 		
 		<cfset arguments.mailArguments.type = "text/plain" />
 		
 		<!--- There MUST be an email body --->
 		<cfif not len(arguments.mailArguments.bodyPlain) and not len(arguments.mailArguments.bodyHTML)>
-			<cfset logEmailError(argumentCollection=arguments.mailArguments, message="No email body provided") />
+			<cfset logEmail(argumentCollection=arguments.mailArguments, message="No email body provided") />
 			<cfreturn "No email body provided" />
 		</cfif>
 		
@@ -110,23 +113,37 @@
 		<!--- If the white list is active, block any emails not sent to it --->
 		<cfif isdefined("application.config.general.emailWhitelist") and len(application.config.general.emailWhitelist)>
 			<cfloop list="#arguments.mailArguments.to#" index="email">
-				<cfif listfindnocase(application.config.general.emailWhitelist,listlast(email,"@")) or listfindnocase(application.config.general.emailWhitelist,email)>
-					<cfset logEmailError(argumentCollection=arguments.mailArguments, message="Not on email white list [#email#]") />
-				<cfelse>
+				<cfset bSend = false />
+
+				<cfloop list="#application.config.general.emailWhitelist#" index="white" delimiters="#chr(10)#">
+
+					<cfdump var="#email# #white#">
+					
+					<cfif len(email) AND findNoCase(white,email)>
+						<cfset bSend = true />
+						<cfbreak />
+					</cfif>
+				</cfloop>
+			
+				<cfif bSend>
 					<cfset emailList = listappend(emailList,email) />
+				<cfelse>
+					<cfset logEmail(argumentCollection=arguments.mailArguments, message="Not on email white list [#email#]") />
 				</cfif>
+
 			</cfloop>
+			
 			<cfset arguments.mailArguments.to = emailList />
 		</cfif>
 		
 		<cfreturn "Success" />
 	</cffunction>
 	
-	<cffunction name="logEmailError" output="false" access="private" returntype="void" hint="Logs email errors">
+	<cffunction name="logEmail" output="false" access="private" returntype="void" hint="Log emails">
 		<cfargument name="message" type="string" required="true" />
 		
-		<cfset arguments.logtype = "email" />
-		<cfset application.fc.lib.error.logData(log=application.fc.lib.error.collectRequestInfo(argumentCollection=arguments),bApplication=false) />
+		<cfset arguments.logType = "email" />
+		<cfset application.fc.lib.error.logData(log=application.fc.lib.error.collectRequestInfo(argumentCollection=arguments),bApplication=false,logFile="mailout",logType="email") />
 	</cffunction>
 	
 </cfcomponent>
