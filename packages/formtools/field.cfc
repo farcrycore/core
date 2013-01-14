@@ -33,13 +33,15 @@
 		<cfif 
 			structKeyExists(application.fc.lib.db.tablemetadata,arguments.typename) AND 
 			structKeyExists(application.fc.lib.db.tablemetadata[arguments.typename].fields,arguments.stMetadata.name) AND
-			application.fc.lib.db.tablemetadata[arguments.typename].fields[arguments.stMetadata.name].precision GT 0>
+			len(application.fc.lib.db.tablemetadata[arguments.typename].fields[arguments.stMetadata.name].precision)>
 			
-			<cfset maxLength = application.fc.lib.db.tablemetadata[arguments.typename].fields[arguments.stMetadata.name].precision />
+			<cfif NOT findNoCase(",", application.fc.lib.db.tablemetadata[arguments.typename].fields[arguments.stMetadata.name].precision)>
+				<cfset maxLength = application.fc.lib.db.tablemetadata[arguments.typename].fields[arguments.stMetadata.name].precision />
+			</cfif>
 		</cfif>
 	
 		<cfsavecontent variable="html">
-			<cfoutput><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#HTMLEditFormat(arguments.stMetadata.value)#" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" <cfif maxLength>maxLength="#maxLength#"</cfif> /></cfoutput>
+			<cfoutput><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#HTMLEditFormat(arguments.stMetadata.value)#" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" <cfif maxLength neq 0>maxLength="#maxLength#"</cfif> /></cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html>
