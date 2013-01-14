@@ -64,11 +64,11 @@
 				</cfif>
 			</cfmail>
 
-			<cfset logEmail(argumentCollection=stSend, message="SENT: '#arguments.subject#' From:'#arguments.from#' To:'#arguments.to#' was successfully sent using farcry core") />
+			<cfset logEmail(argumentCollection=stSend, message="SENT: successfully sent using farcry core.") />
 			<cfreturn "Success" />
 			
 			<cfcatch>
-				<cfset logEmail(argumentCollection=stSend, message="ERROR: '#arguments.subject#' From:'#arguments.from#' To:'#arguments.to#' - " & cfcatch.message) />
+				<cfset logEmail(argumentCollection=stSend, message="ERROR: " & cfcatch.message) />
 				<cfreturn cfcatch.message />
 			</cfcatch>
 		</cftry>
@@ -89,7 +89,7 @@
 		
 		<!--- There MUST be an email body --->
 		<cfif not len(arguments.mailArguments.bodyPlain) and not len(arguments.mailArguments.bodyHTML)>
-			<cfset logEmail(argumentCollection=arguments.mailArguments, message="ERROR: '#arguments.mailArguments.subject#' From:'#arguments.mailArguments.from#' To:'#arguments.mailArguments.to#' - No email body provided") />
+			<cfset logEmail(argumentCollection=arguments.mailArguments, message="ERROR: No email body provided.") />
 			<cfreturn "No email body provided" />
 		</cfif>
 		
@@ -115,7 +115,7 @@
 			<cfloop list="#arguments.mailArguments.to#" index="email">
 				<cfset bSend = false />
 
-				<cfloop list="#application.config.general.emailWhitelist#" index="white" delimiters="#chr(13)#">
+				<cfloop list="#application.config.general.emailWhitelist#" index="white" delimiters="#chr(10)#">
 					<cfif len(email) AND findNoCase(white,email)>
 						<cfset bSend = true />
 						<cfbreak />
@@ -125,7 +125,7 @@
 				<cfif bSend>
 					<cfset emailList = listappend(emailList,email) />
 				<cfelse>
-					<cfset logEmail(argumentCollection=arguments.mailArguments, message="WHITELIST: '#arguments.mailArguments.subject#' From:'#arguments.mailArguments.from#' To:'#arguments.mailArguments.to#' - Not in email white list") />
+					<cfset logEmail(argumentCollection=arguments.mailArguments, message="WHITELIST: Not in email white list.") />
 				</cfif>
 
 			</cfloop>
@@ -140,6 +140,11 @@
 		<cfargument name="message" type="string" required="true" />
 		
 		<cfset arguments.logType = "email" />
+		
+		<cfif isDefined("arguments.subject") AND isDefined("arguments.from") AND isDefined("arguments.to")>
+			<cfset arguments.message = arguments.message & " '#arguments.subject#' From:'#arguments.from#' To:'#arguments.to#'" />
+		</cfif>
+		
 		<cfset application.fc.lib.error.logData(log=application.fc.lib.error.collectRequestInfo(argumentCollection=arguments),bApplication=false,logFile="mailout",logType="email") />
 	</cffunction>
 	
