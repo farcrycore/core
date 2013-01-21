@@ -33,7 +33,7 @@
 			<cfset arrayprepend(aJS,stJS) />
 		</cfloop>
 		<cfloop from="#arraylen(aJS)#" to="1" index="i" step="-1">
-			<cfif listfindnocase(toremove,aJS[i].id)>
+			<cfif refindnocase("(^|,)#aJS[i].id#(,|$)",toremove)>
 				<cfset arraydeleteat(aJS,i) />
 			</cfif>
 		</cfloop>
@@ -50,7 +50,7 @@
 				
 				<cfif structKeyExists(application.fc.stJSLibraries,idHash) AND NOT request.mode.flushcache>
 					<cfif structKeyExists(application.fc.stJSLibraries[idHash],"sCacheFileName")>
-						<cfif fileExists(application.path.project & '/www/cache/#application.fc.stJSLibraries[idHash].sCacheFileName#')>
+						<cfif fileExists('#application.path.webroot#/cache/#application.fc.stJSLibraries[idHash].sCacheFileName#')>
 							<cfset sCacheFileName = application.fc.stJSLibraries[idHash].sCacheFileName />
 						</cfif>
 					</cfif>
@@ -65,13 +65,25 @@
 				</cfif>
 				
 				<cfif not len(sCacheFileName) and stJS.bCombine>
-					<cfset sCacheFileName = application.fc.utils.combine(	id=stJS.id,
-																		files=stJS.lFullFilebaseHREFs,
-																		type="js",
-																		prepend=stJS.prepend,
-																		append=stJS.append) />
-				
-					<cfset application.fc.stJSLibraries[idHash].sCacheFileName = sCacheFileName />
+					<cflock name="#idhash#" timeout="10">
+						<cfif structKeyExists(application.fc.stJSLibraries,idHash) AND NOT request.mode.flushcache
+							and structKeyExists(application.fc.stJSLibraries[idHash],"sCacheFileName")
+							and fileExists('#application.path.webroot#/cache/#application.fc.stJSLibraries[idHash].sCacheFileName#')>
+							
+							<cfset sCacheFileName = application.fc.stJSLibraries[idHash].sCacheFileName />
+							
+						<cfelse>
+						
+							<cfset sCacheFileName = application.fc.utils.combine(	id=stJS.id,
+																				files=stJS.lFullFilebaseHREFs,
+																				type="js",
+																				prepend=stJS.prepend,
+																				append=stJS.append) />
+						
+							<cfset application.fc.stJSLibraries[idHash].sCacheFileName = sCacheFileName />
+						
+						</cfif>
+					</cflock>
 				</cfif>
 			</cfif>
 			

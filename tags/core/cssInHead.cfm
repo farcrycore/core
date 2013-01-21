@@ -51,7 +51,7 @@
 			
 				<cfif structKeyExists(application.fc.stCSSLibraries,idHash)>
 					<cfif structKeyExists(application.fc.stCSSLibraries[idHash],"sCacheFileName")>
-						<cfif fileExists(application.path.project & '/www/cache/#application.fc.stCSSLibraries[idHash].sCacheFileName#')>
+						<cfif fileExists('#application.path.webroot#/cache/#application.fc.stCSSLibraries[idHash].sCacheFileName#')>
 							<cfset sCacheFileName = application.fc.stCSSLibraries[idHash].sCacheFileName />
 						</cfif>
 					</cfif>
@@ -67,13 +67,25 @@
 				</cfif>
 			
 				<cfif not len(sCacheFileName) and stCSS.bCombine>
-					<cfset sCacheFileName = application.fc.utils.combine(	id=stCSS.id,
-																			files=stCSS.lFullFilebaseHREFs,
-																			type="css",
-																			prepend=stCSS.prepend,
-																			append=stCSS.append) />
-			
-					<cfset application.fc.stCSSLibraries[idHash].sCacheFileName = sCacheFileName />
+					<cflock name="#idhash#" timeout="10">
+						<cfif structKeyExists(application.fc.stCSSLibraries,idHash) 
+							and structKeyExists(application.fc.stCSSLibraries[idHash],"sCacheFileName")
+							and fileExists('#application.path.webroot#/cache/#application.fc.stCSSLibraries[idHash].sCacheFileName#')>
+							
+							<cfset sCacheFileName = application.fc.stCSSLibraries[idHash].sCacheFileName />
+							
+						<cfelse>
+						
+							<cfset sCacheFileName = application.fc.utils.combine(	id=stCSS.id,
+																					files=stCSS.lFullFilebaseHREFs,
+																					type="css",
+																					prepend=stCSS.prepend,
+																					append=stCSS.append) />
+					
+							<cfset application.fc.stCSSLibraries[idHash].sCacheFileName = sCacheFileName />
+						
+						</cfif>
+					</cflock>
 				</cfif>
 			</cfif>
 		
