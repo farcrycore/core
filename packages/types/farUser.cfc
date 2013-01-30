@@ -23,6 +23,8 @@
 	<cfproperty ftSeq="4" ftFieldset="User" name="aGroups" type="array" default="" hint="The groups this member is a member of" ftLabel="Groups" ftType="array" ftJoin="farGroup" />
 	<cfproperty name="lGroups" type="longchar" default="" hint="The groups this member is a member of (list generated automatically)" ftLabel="Groups" ftType="arrayList" ftArrayField="aGroups" ftJoin="farGroup" />
 	
+	<cfproperty name="forgotPasswordHash" type="string" default="" hint="A hash stored temporarily to reset user password" />
+	
 	<cffunction name="getByUserID" access="public" output="false" returntype="struct" hint="Returns the data struct for the specified user id">
 		<cfargument name="userid" type="string" required="true" hint="The user id" />
 		
