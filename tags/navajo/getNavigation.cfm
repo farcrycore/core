@@ -23,53 +23,58 @@
 	<cfabort showerror="object id must be passed to getNavigation" />
 </cfif>
 
-<!--- Make sure we have an attributes.objectid --->
-<cfset attributes.objectid = stObject.objectid />
+<cfset lObjectIds = ''>
+<cfset parentNav = ''>
 
-<cfscript>
-	
-	oNav = createObject("component",application.types['dmNavigation'].typepath);
-	typename = stObject.typename;
+<cfif structKeyExists(stObject, "objectid")>
 
-	lObjectIds = '';
-	parentNav = '';	
+	<!--- Make sure we have an attributes.objectid --->
+	<cfset attributes.objectid = stObject.objectid />
 		
-	/*if we are trying to find the navigation node a version is in,
-	then we need to find the object that this is a version of*/
-	if (isDefined("stObject.versionId") and len(stObject.versionId)) {
-		attributes.objectId=stObject.versionid;	
+	<cfscript>
 		
-		/* If a user has extended dmNavigation and added versions to it, then a draft objects navid is its approved version. */
-		if (stObject.typename IS "dmNavigation"){
-			stObject = oNav.getData(objectid=attributes.objectId);
-		}	
-	}
-	
-	
-	// MJB Removed check for attributes.bInclusive. 
-	if (stObject.typename IS "dmNavigation") //not sure what or why anything would require this - included for legacy support, i suspect its redundant. PH
-	{
-		parentNav=stObject;		
-		lObjectIds=attributes.objectId;
-	}
-	else	
-	{	
-		
-		q = oNav.getParent(objectid=attributes.objectid);
-		if(NOT q.recordcount) 
-		{
-			 //this condition should never happen. Keeping in for legacy support only.
-		}
-		else
-		{
-			lObjectIds = q.parentid;
-			if (len(attributes.r_stObject))  //get parent as object if required
-				parentNav = oNav.getData(objectid=lObjectIds,dsn=application.dsn);
+		oNav = createObject("component",application.types['dmNavigation'].typepath);
+		typename = stObject.typename;
+
 			
-		}	
+		/*if we are trying to find the navigation node a version is in,
+		then we need to find the object that this is a version of*/
+		if (isDefined("stObject.versionId") and len(stObject.versionId)) {
+			attributes.objectId=stObject.versionid;	
+			
+			/* If a user has extended dmNavigation and added versions to it, then a draft objects navid is its approved version. */
+			if (stObject.typename IS "dmNavigation"){
+				stObject = oNav.getData(objectid=attributes.objectId);
+			}	
+		}
+		
+		
+		// MJB Removed check for attributes.bInclusive. 
+		if (stObject.typename IS "dmNavigation") //not sure what or why anything would require this - included for legacy support, i suspect its redundant. PH
+		{
+			parentNav=stObject;		
+			lObjectIds=attributes.objectId;
+		}
+		else	
+		{	
+			
+			q = oNav.getParent(objectid=attributes.objectid);
+			if(NOT q.recordcount) 
+			{
+				 //this condition should never happen. Keeping in for legacy support only.
+			}
+			else
+			{
+				lObjectIds = q.parentid;
+				if (len(attributes.r_stObject))  //get parent as object if required
+					parentNav = oNav.getData(objectid=lObjectIds,dsn=application.dsn);
 				
-	}
-</cfscript>
+			}	
+					
+		}
+	</cfscript>
+
+</cfif>
 
 <cfif len(attributes.r_objectId)>
 	<cfset "caller.#attributes.r_objectId#"=lObjectIds>
