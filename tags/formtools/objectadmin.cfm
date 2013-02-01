@@ -69,7 +69,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 
 <cfparam name="attributes.title" default="" type="string">
 <cfif not len(attributes.title)>
-	<cfset attributes.title = "{1} Administration" />
+	<cfset attributes.title = application.rb.getResource("coapi.#attributes.typename#.headings.typeadministration@text", "{1} Administration")>
 </cfif>
 
 <cfparam name="attributes.ColumnList" default="" type="string">
