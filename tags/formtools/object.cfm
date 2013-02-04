@@ -7,21 +7,21 @@
 	@@examples: 
 	<p>Basic usage. Rendering a packages/forms object:</p>
 	<code>
-		&tl;ft:object typename="mmInquiry" /&gt;
+		<ft:object typename="mmInquiry" />
 	</code>
 	
 	<p>Rendering specific fields</p>
 	<code>
-		&lt;ft:object typename="farLogin" lFields="username,password" prefix="login" legend="" /&gt;
+		<ft:object typename="farLogin" lFields="username,password" prefix="login" legend="" />
 	</code>
 	
 	<p>Separate items from the same contentType, but grouped so ft:processFormObjects only sees one object:</p>
 	<code>
-		&lt;h1&gt;Your Stuff&lt;/h1&gt;
-		&tl;ft:object typename="mmInquiry" lFields="firstname,lastname" key="thereCanBeOnlyOne" /&gt;
-
-		&lt;h1&gt;Other Stuff&lt;/h1&gt;
-		&tl;ft:object typename="mmInquiry" lFields="kidsname,dogsname" key="thereCanBeOnlyOne" /&gt;
+		<h1>Your Stuff</h1>
+		<ft:object typename="mmInquiry" lFields="firstname,lastname" key="thereCanBeOnlyOne" />
+		
+		<h1>Other Stuff</h1>
+		<ft:object typename="mmInquiry" lFields="kidsname,dogsname" key="thereCanBeOnlyOne" />
 	</code>
 --->
  <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
