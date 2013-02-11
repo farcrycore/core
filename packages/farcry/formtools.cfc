@@ -536,6 +536,10 @@
 				)
 			</cfif>
 			
+			<cfif bHasVersionID> 
+			and versionID is null 
+			</cfif> 
+			
 			<cfif len(trim(arguments.sqlOrderBy))>
 				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
 			</cfif>
