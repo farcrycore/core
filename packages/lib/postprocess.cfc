@@ -201,7 +201,7 @@
 		<!--- 1. https://gist.github.com/1018281 --->
 		
 		<!--- This regex matches URLs similar to test case 1 --->
-		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br/?>|^|\n)(https:\/\/gist\.github\.com\/\w+)(</p>|<br/?>|$|\n)",replacement) />
+		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br/?>|^|\n)(https:\/\/gist\.github\.com(\/\w+)+(</p>|<br/?>|$|\n)",replacement) />
 		
 		<cfreturn arguments.input />
 	</cffunction>
