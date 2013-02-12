@@ -183,7 +183,7 @@
 				<cfif structkeyexists(stResult,"errors")>
 					<cfset this.twitterstatus[aMatches[i][4].value] = "<a href='https://twitter.com/#aMatches[i][3].value#/status/#aMatches[1][4].value#'>https://twitter.com/#aMatches[i][3].value#/status/#aMatches[1][4].value#</a><!-- #stResult.errors[1].message#: https://api.twitter.com/1/statuses/oembed.json?id=#aMatches[i][4].value#&align=center -->" />
 				<cfelse>
-					<cfset this.twitterstatus[aMatches[i][4].value] = stResult.html />
+					<cfset this.twitterstatus[aMatches[i][4].value] = unescapeUnicode(stResult.html) />
 				</cfif>
 			</cfif>
 			<cfset arguments.input = left(arguments.input,aMatches[i][1].pos+offset-1) & this.twitterstatus[aMatches[i][4].value] & mid(arguments.input,aMatches[i][1].end+offset,len(arguments.input)) />
@@ -201,7 +201,7 @@
 		<!--- 1. https://gist.github.com/1018281 --->
 		
 		<!--- This regex matches URLs similar to test case 1 --->
-		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br/?>|^|\n)(https:\/\/gist\.github\.com(\/\w+)+(</p>|<br/?>|$|\n)",replacement) />
+		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br/?>|^|\n)(https:\/\/gist\.github\.com(\/\w+)+)(</p>|<br/?>|$|\n)",replacement) />
 		
 		<cfreturn arguments.input />
 	</cffunction>
@@ -210,6 +210,23 @@
 		<cfargument name="input" type="string" required="true" />
 		
 		<cfreturn rereplace(arguments.input,"(\s)\s+","\1","ALL") />
+	</cffunction>
+	
+	
+	
+	<cffunction name="unescapeUnicode" access="public" output="false" returntype="string" hint="Replaces unicode escape sequences with actual characters">
+		<cfargument name="source" type="string" required="true" />
+		
+		<cfset var st = structnew() />
+		
+		<cfloop condition="structisempty(st) or arraylen(st.pos) gte 2">
+			<cfset st = REFindNoCase("\\u([a-f0-9]{1,4})",arguments.source,1,true) />
+			<cfif arraylen(st.pos) gte 2>
+				<cfset arguments.source = mid(arguments.source,1,st.pos[1]-1) & chr(inputBaseN(mid(arguments.source,st.pos[2],st.len[2]),16)) & mid(arguments.source,st.pos[1]+st.len[1],10000) />
+			</cfif>
+		</cfloop>
+		
+		<cfreturn arguments.source />
 	</cffunction>
 	
 </cfcomponent>
