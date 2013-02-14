@@ -250,7 +250,7 @@
 						<!--- MAKE SURE THAT THE PROPERTY HAS FTJOIN METADATA --->
 						<cfif structKeyExists(application.stcoapi[iType].stprops[iProp].metadata, "ftJoin")>
 							<!--- IF WE ARE ONLY LOOKING FOR REALTED CONTENT OF A SPECIFIC TYPE, MAKE SURE THIS PROPERTY HAS THAT TYPE RELATED --->
-							<cfif not len(arguments.filter) OR listFindNoCase(application.stcoapi[iType].stprops[iProp].metadata.ftJoin, arguments.filter) GT 0 OR application.stcoapi[iType].buseintree>							
+							<cfif not len(arguments.filter) OR listFindNoCase(application.stcoapi[iType].stprops[iProp].metadata.ftJoin, arguments.filter) GT 0 OR (structKeyExists(application.stcoapi[iType], "buseintree") and application.stcoapi[iType].buseintree)>							
 								<cfset q = queryNew("objectid,typename") />						
 								
 								<!--- IF THE PROPERTY IS AN ARRAY, LOOK IN THIS OBJECTS ARRAY TABLE FOR RELATED CONTENT --->
