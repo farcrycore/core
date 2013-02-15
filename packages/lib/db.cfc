@@ -497,7 +497,7 @@
 		<cfargument name="dsn" type="string" required="true" />
 		
 		<cfset var stReturn = StructNew()>
-		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,arguments.typename),"this.logLocation",DE("")) />
+		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,arguments.typename) or this.logChangeFlags eq "*","this.logLocation",DE("")) />
 		
 		<cfset stReturn = getGateway(dsn=arguments.dsn).createData(schema=getTableMetadata(arguments.typename),stProperties=stProperties,logLocation=logLocation) />
 		
@@ -513,7 +513,7 @@
 		<cfargument name="stProperties" required="true" />
 		<cfargument name="dsn" type="string" required="true" />
 		
-		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,listlast(arguments.typename,".")),"this.logLocation",DE("")) />
+		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,listlast(arguments.typename,".")) or this.logChangeFlags eq "*","this.logLocation",DE("")) />
 		
 		<cfreturn getGateway(dsn=arguments.dsn).setData(schema=getTableMetadata(arguments.typename),stProperties=arguments.stProperties,logLocation=logLocation) />
 	</cffunction>
@@ -525,7 +525,7 @@
 		<cfargument name="aProperties" required="true" type="array" />
 		<cfargument name="dsn" type="string" required="true" />
 		
-		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,arguments.typename),"this.logLocation",DE("")) />
+		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,arguments.typename) or this.logChangeFlags eq "*","this.logLocation",DE("")) />
 		
 		<cfreturn getGateway(dsn=arguments.dsn).setArrayData(schema=getTableMetadata(arguments.typename).fields[arguments.propertyname],aProperties=arguments.aProperties,parentid=arguments.objectid,logLocation=logLocation) />
 	</cffunction>
@@ -546,7 +546,7 @@
 		<cfargument name="dsn" type="string" required="true" />
 		
 		<cfset var stReturn = StructNew()>
-		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,arguments.typename),"this.logLocation",DE("")) />
+		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,arguments.typename) or this.logChangeFlags eq "*","this.logLocation",DE("")) />
 		
 		<cfset arguments.schema = getTableMetadata(arguments.typename) />
 		<cfset stReturn = getGateway(dsn=arguments.dsn).deleteData(argumentCollection=arguments,logLocation=logLocation) />
@@ -656,7 +656,7 @@
 		<cfargument name="bDropTable" type="boolean" required="true" />
 		<cfargument name="dsn" type="string" required="true" />
 		
-		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,arguments.typename),"this.logLocation",DE("")) />
+		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,arguments.typename) or this.logChangeFlags eq "*","this.logLocation",DE("")) />
 		
 		<cfreturn getGateway(dsn=arguments.dsn).deploySchema(schema=getTableMetadata(arguments.typename),bDropTable=arguments.bDropTable,logLocation=logLocation) />
 	</cffunction>
@@ -665,7 +665,7 @@
 		<cfargument name="typename" type="string" required="true" hint="The name of the content type" />
 		<cfargument name="dsn" type="string" required="true" />
 		
-		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,arguments.typename),"this.logLocation",DE("")) />
+		<cfset var logLocation = iif(listfindnocase(this.logChangeFlags,arguments.typename) or this.logChangeFlags eq "*","this.logLocation",DE("")) />
 		
 		<cfreturn getGateway(dsn=arguments.dsn).dropSchema(schema=getTableMetadata(arguments.typename),logLocation=logLocation) />
 	</cffunction>
@@ -689,7 +689,7 @@
 		<cfset var logLocation = "" />
 		
 		<cfloop from="1" to="#arraylen(arguments.changes)#" index="i">
-			<cfset arguments.changes[i].logLocation = iif(listfindnocase(this.logChangeFlags,listfirst(arguments.changes[i].schema.tablename,"_")),"this.logLocation",DE("")) />
+			<cfset arguments.changes[i].logLocation = iif(listfindnocase(this.logChangeFlags,listfirst(arguments.changes[i].schema.tablename,"_")) or this.logChangeFlags eq "*","this.logLocation",DE("")) />
 			<cfinvoke component="#gateway#" method="#arguments.changes[i].action#" argumentcollection="#arguments.changes[i]#" returnvariable="stResult" />
 			<cfif stResult.bSuccess and structkeyexists(arguments.changes[i],"success")>
 				<cfset stResult.message = arguments.changes[i].success />
@@ -802,6 +802,28 @@
 		</cfif>
 		
 		<cfreturn aChanges />
+	</cffunction>
+	
+	<cffunction name="deployDefaultChanges" access="public" output="false" returntype="array" hint="Deploys all default schema changes and returns the results">
+		<cfargument name="types" type="string" required="false" default="*" />
+		
+		<cfset var thistype = "" />
+		<cfset var stDiff = structnew() />
+		<cfset var thistable = "" />
+		<cfset var aChanges = arraynew(1) />
+		
+		<cfif arguments.types eq "*">
+			<cfset arguments.types = structkeylist(this.tablemetadata) />
+		</cfif>
+		
+		<cfloop list="#arguments.types#" index="thistype">
+			<cfset stDiff = diffSchema(typename=thistype,dsn=application.dsn) />
+			<cfloop collection="#stDiff.tables#" item="thistable">
+				<cfset aChanges = mergeChanges(aChanges,getDefaultChanges(stDiff=stDiff.tables[thistable])) />
+			</cfloop>
+		</cfloop>
+		
+		<cfreturn deployChanges(aChanges,application.dsn) />
 	</cffunction>
 	
 </cfcomponent>
