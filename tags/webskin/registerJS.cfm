@@ -21,6 +21,20 @@
 	<cfparam name="attributes.prepend" default=""><!--- any JS to prepend to the begining of the script block --->
 	<cfparam name="attributes.append" default=""><!--- any JS to append to the end of the script block --->
 	<cfparam name="attributes.bCombine" default="true"><!--- Should the files be combined into a single cached js file. --->
+	<cfparam name="attributes.aliasof" default=""><!--- Flags this library as an alias of an existing one. The original library must already have been registered. --->
+	<cfparam name="attributes.core" default=""><!--- Flags this library as being a core library. This library should only be directly referenced by core. --->
+	
+	<cfif len(attributes.aliasof)>
+		<cfif structkeyexists(application.fc.stJSLibraries,attributes.aliasof)>
+			<cfloop collection="#application.fc.stJSLibraries[attributes.aliasof]#" item="key">
+				<cfif not structkeyexists(attributes,key) or not len(attributes[key])>
+					<cfset attributes[key] = application.fc.stJSLibraries[attributes.aliasof][key] />
+				</cfif>
+			</cfloop>
+		<cfelse>
+			<cfexit method="exittag">
+		</cfif>
+	</cfif>
 	
 	<cfif len(trim(thisTag.generatedContent))>
 		<cfset attributes.append = "#attributes.append##thisTag.generatedContent#" />

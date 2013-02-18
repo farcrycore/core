@@ -221,7 +221,7 @@ $out:$
 	<!------------------- 
 	THE FORM
 	 --------------------->
-		<skin:loadJS id="jquery" />
+		<skin:loadJS id="fc-jquery" />
 		<skin:loadJS id="jquery-autoresize" />
 		
 	    <cfset o = createObject("component", "#application.packagepath#.farcry.tree") />
@@ -263,7 +263,7 @@ $out:$
 				</ft:field>
 			
 		
-				<skin:loadJS id="jquery" />
+				<skin:loadJS id="fc-jquery" />
 				
 				<skin:htmlHead>
 				<cfoutput>

@@ -143,7 +143,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				<cfset arguments.ajaxID = "#stobj.typename#_#stobj.objectid#_#arguments.template#" />
 			</cfif>
 			
-			<skin:loadJS id="jquery" />
+			<skin:loadJS id="fc-jquery" />
 			
 			<skin:loadJS id="webskinAjaxLoader">
 			<cfoutput>		

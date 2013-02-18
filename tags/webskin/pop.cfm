@@ -71,13 +71,13 @@
 	<!--- Intialisation of built in message formats --->
 	<cfswitch expression="#attributes.format#">
 		<cfcase value="gritter">
-			<skin:loadJS id="jquery" />
+			<skin:loadJS id="fc-jquery" />
 			<skin:loadJS id="gritter" />
 			<skin:loadCSS id="gritter" />
 		</cfcase>
 		<cfcase value="headerblock">
-			<skin:loadJS id="jquery" />
-			<skin:loadJS id="jquery-ui" />
+			<skin:loadJS id="fc-jquery" />
+			<skin:loadJS id="fc-jquery-ui" />
 			<skin:loadCSS id="jquery-ui" />
 			<skin:loadCSS id="headerblock" />
 		</cfcase>

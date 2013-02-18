@@ -16,8 +16,8 @@
 	
 	<cfparam name="url.fieldname" default="fc#Replace(stObj.objectid,'-','','all')##url.property#" />
 	
-	<skin:loadJS id="jquery" />
-	<skin:loadJS id="jquery-ui" />
+	<skin:loadJS id="fc-jquery" />
+	<skin:loadJS id="fc-jquery-ui" />
 	<skin:loadCSS id="jquery-ui" />	
 	
 	<cfset stMetadata = application.fapi.getPropertyMetadata(typename="#stobj.typename#", property="#url.property#") />

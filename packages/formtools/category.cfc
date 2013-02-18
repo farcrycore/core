@@ -189,7 +189,7 @@
 			
 			<cfdefaultcase>
 				
-				<skin:loadJS id="jquery" />
+				<skin:loadJS id="fc-jquery" />
 				<skin:loadJS id="jquery-checkboxtree" basehref="#application.url.webtop#/thirdparty/checkboxtree/js" lFiles="jquery.checkboxtree.js" />
 				<skin:loadCSS id="jquery-checkboxtree" basehref="#application.url.webtop#/thirdparty/checkboxtree/css" lFiles="checkboxtree.css" />
 					

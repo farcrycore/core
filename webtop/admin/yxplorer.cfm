@@ -7,7 +7,7 @@
 
 <admin:header>
 
-<skin:loadJS id="jquery" />
+<skin:loadJS id="fc-jquery" />
 <skin:htmlHead><cfoutput>
 	<script type="text/javascript">
 		$j(function(){

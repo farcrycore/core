@@ -101,7 +101,7 @@
 		<cfparam name="arguments.stMetadata.ftRenderType" default="html" /><!--- html, flash, jquery --->
 		<cfparam name="arguments.stMetadata.ftAllowedFileExtensions" default="pdf,doc,ppt,xls,docx,pptx,xlsx,jpg,jpeg,png,gif,zip,rar,flv,swf,mpg,mpe,mpeg,m1s,mpa,mp2,m2a,mp2v,m2v,m2s,mov,qt,asf,asx,wmv,wma,wmx,rm,ra,ram,rmvb,mp3,mp4,3gp,ogm,mkv,avi"><!--- The extentions allowed to be uploaded --->
 		
-		<skin:loadJS id="jquery" />
+		<skin:loadJS id="fc-jquery" />
 		
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 			<cfcase value="html">
@@ -228,7 +228,7 @@
 				
 				<cfset facade = "#arguments.stMetadata.ftFacade#?#session.urltoken#&typename=#arguments.typename#&property=#arguments.stMetadata.name#&fieldname=#arguments.fieldname#&current=#urlencodedformat(arguments.stMetadata.value)#&farcryProject=#application.applicationName#">
 				
-				<skin:loadJS id="jquery" />
+				<skin:loadJS id="fc-jquery" />
 				
 				<skin:htmlHead><cfoutput>
 					<script type="text/javascript" src="#application.url.webtop#/facade/jqueryupload/jquery.flash.js"></script>
@@ -292,7 +292,7 @@
 				<cfparam name="arguments.stMetadata.ftMaxSize" default="-1" />
 				<cfparam name="arguments.stMetadata.ftOnComplete" default="" />
 				
-				<skin:loadJS id="jquery" />
+				<skin:loadJS id="fc-jquery" />
 				
 				<cfset facade = "#arguments.stMetadata.ftFacade#?#session.urltoken#&typename=#arguments.typename#&property=#arguments.stMetadata.name#&fieldname=#arguments.fieldname#&current=#urlencodedformat(arguments.stMetadata.value)#&farcryProject=#application.applicationName#">
 				

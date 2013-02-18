@@ -38,8 +38,8 @@
 		<cfset request.fc.totalTickCount = (GetTickCount() - request.fc.startTickCount) />
 		
 		<!--- import libraries --->
-		<skin:loadJS id="jquery" />
-		<skin:loadJS id="jquery-ui" />
+		<skin:loadJS id="fc-jquery" />
+		<skin:loadJS id="fc-jquery-ui" />
 		<skin:loadJS id="jquery-tooltip" />
 		<skin:loadJS id="farcry-form" />
 		<skin:loadCSS id="jquery-ui" />
@@ -104,7 +104,7 @@
 		
 		<cfset request.fc.bAdminTrayRendered = true />
 		
-		<skin:loadJS id="jquery" />
+		<skin:loadJS id="fc-jquery" />
 		<skin:loadJS id="jquery-modal" />
 		<skin:loadCSS id="jquery-modal" />
 		

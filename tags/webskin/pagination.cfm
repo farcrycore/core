@@ -77,7 +77,7 @@ START WEBSKIN
 	<!--- THIS HIDDEN FIELD WILL STORE THE PAGE REQUESTED IF PAGINATING USING A FORM POST --->
 	<cfif attributes.submissionType eq "form">
 	
-		<skin:loadJS id="jquery" />	
+		<skin:loadJS id="fc-jquery" />	
 		<skin:loadJS id="farcry-form" />
 		
 		<skin:htmlHead id="pageSubmitJS">

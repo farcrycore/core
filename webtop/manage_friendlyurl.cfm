@@ -101,8 +101,8 @@ manage friendly urls for a particular object id
 	<cfset qFUArchived = application.fc.factory.farFU.getFUList(objectid="#url.objectid#", fuStatus="archived") />
 	
 	
-	<skin:loadJS id="jquery" />
-	<skin:loadJS id="jquery-ui" />
+	<skin:loadJS id="fc-jquery" />
+	<skin:loadJS id="fc-jquery-ui" />
 	<skin:loadCSS id="jquery-ui" />
 	
 	<skin:onReady>

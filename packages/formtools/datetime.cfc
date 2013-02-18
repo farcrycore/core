@@ -238,7 +238,7 @@
 			<cfparam name="arguments.stMetadata.ftMaxDate" default="" />
 			<cfparam name="arguments.stMetadata.ftMinDate" default="" />
 			
-			<skin:loadJS id="jquery-ui" />
+			<skin:loadJS id="fc-jquery-ui" />
 			<skin:loadCSS id="jquery-ui" />
 			
 			<skin:onReady>

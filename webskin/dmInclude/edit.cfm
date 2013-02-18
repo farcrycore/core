@@ -72,7 +72,7 @@
 		
 		
 		<cfif qTypes.recordcount>
-			<skin:loadJS id="jquery" />
+			<skin:loadJS id="fc-jquery" />
 			<skin:htmlHead id="typewebskinformtool">
 				<cfoutput>
 				<script type="text/javascript">

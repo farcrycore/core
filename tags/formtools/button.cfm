@@ -36,8 +36,8 @@
 	
 <cfif thistag.executionMode eq "End">
 
-	<skin:loadJS id="jquery" />
-	<skin:loadJS id="jquery-ui" />
+	<skin:loadJS id="fc-jquery" />
+	<skin:loadJS id="fc-jquery-ui" />
 	<skin:loadJS id="farcry-form" />
 	
 	<skin:loadCSS id="jquery-ui" />

@@ -155,7 +155,7 @@
 			<cfset arguments.stMetadata.value = "" />
 		</cfif>
 	    
-	    <skin:loadJS id="jquery" />
+	    <skin:loadJS id="fc-jquery" />
 	    <skin:loadJS id="jquery-tooltip" />
 	    <skin:loadJS id="jquery-tooltip-auto" />
 	    <skin:loadCSS id="jquery-tooltip" />

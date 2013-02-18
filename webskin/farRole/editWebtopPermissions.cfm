@@ -14,8 +14,8 @@ ENVIRONMENT VARIABLES
 <cfparam name="request.stWebtopPermissions['#form.selectPermission#']" default="#structNew()#" />
 
 
-<skin:loadJS id="jquery" />
-<skin:loadJS id="jquery-ui" />
+<skin:loadJS id="fc-jquery" />
+<skin:loadJS id="fc-jquery-ui" />
 <skin:loadCSS id="jquery-ui" />
 
 

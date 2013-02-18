@@ -50,7 +50,7 @@
 
 		<cfset arguments.stMetadata = prepMetadata(stObject = arguments.stObject, stMetadata = arguments.stMetadata) />
 
-		<skin:loadJS id="jquery-ui" />
+		<skin:loadJS id="fc-jquery-ui" />
 		<skin:loadCSS id="jquery-ui" />
 
 		<!--- SETUP stActions --->

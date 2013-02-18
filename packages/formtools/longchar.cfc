@@ -97,7 +97,7 @@
 		<cfparam name="arguments.stMetadata.ftLimitMin" default="">
 	
 		<cfif isBoolean(arguments.stMetadata.ftAutoresize) AND arguments.stMetadata.ftAutoresize>
-			<skin:loadJS id="jquery" />
+			<skin:loadJS id="fc-jquery" />
 			<skin:loadJS id="jquery-autoresize" />
 			<cfset arguments.stMetadata.ftClass = listAppend(arguments.stMetadata.ftAutoresize, "autoresize", " ")>
 		</cfif>
@@ -110,7 +110,7 @@
 		
 		<cfif isNumeric(arguments.stMetadata.ftLimit)>
 			<cfset arguments.stMetadata.ftRangeLength = "0,#arguments.stMetadata.ftLimit#" />
-			<skin:loadJS id="jquery" />
+			<skin:loadJS id="fc-jquery" />
 			<skin:htmlHead id="long-char"><cfoutput><script language="javascript"><!--
 				function updateLoncharCounter(FieldName, limit, overage, key) {
 					var field = $j("##"+FieldName);

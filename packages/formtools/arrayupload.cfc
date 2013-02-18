@@ -102,8 +102,8 @@
 		</cfif>
 		
 		
-		<skin:loadJS id="jquery" />
-		<skin:loadJS id="jquery-ui" />
+		<skin:loadJS id="fc-jquery" />
+		<skin:loadJS id="fc-jquery-ui" />
 		<skin:loadCSS id="jquery-ui" />
 	    <skin:loadJS id="jquery-uploadify" />
 	    <skin:loadCSS id="jquery-uploadify" />

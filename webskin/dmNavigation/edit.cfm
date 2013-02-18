@@ -84,7 +84,7 @@
 
 <ft:form>
 
-<skin:loadJS id="jquery" />
+<skin:loadJS id="fc-jquery" />
 <skin:onReady><script type="text/javascript"><cfoutput>
 	$j("select[name$=navType]").bind("change",function(){
 		var self = this;

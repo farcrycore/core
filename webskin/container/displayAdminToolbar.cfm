@@ -15,8 +15,8 @@
 	<cfset stParam.desc = "#rereplace(stObj.label,'\w{8,8}-\w{4,4}-\w{4,4}-\w{16,16}_','')#" />
 </cfif>
 
-<skin:loadJS id="jquery" />
-<skin:loadJS id="jquery-ui" />
+<skin:loadJS id="fc-jquery" />
+<skin:loadJS id="fc-jquery-ui" />
 <skin:loadJS id="farcry-form" />
 
 <skin:loadCSS id="jquery-ui" />

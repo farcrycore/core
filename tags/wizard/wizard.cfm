@@ -90,7 +90,7 @@ $in: SessionID -- $
 		
 		
 		<!--- import libraries --->
-		<skin:loadJS id="jquery" />
+		<skin:loadJS id="fc-jquery" />
 		<skin:loadJS id="farcry-form" />
 		
 		

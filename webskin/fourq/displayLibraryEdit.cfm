@@ -15,7 +15,7 @@ FARCRY IMPORT FILES
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
 <cfset request.fc.bShowTray = false />
-<skin:loadJS id="jquery" />
+<skin:loadJS id="fc-jquery" />
 
 
 <!------------------ 

@@ -13,8 +13,8 @@
 	<cfif structKeyExists(request,"mode") AND request.mode.traceWebskins EQ true AND not request.mode.ajax>		
 		<cfif structKeyExists(request, "aAncestorWebskinsTrace") AND arrayLen(request.aAncestorWebskinsTrace)>
 		
-			<skin:loadJS id="jquery" />
-			<skin:loadJS id="jquery-ui" />
+			<skin:loadJS id="fc-jquery" />
+			<skin:loadJS id="fc-jquery-ui" />
 			<skin:loadCSS id="jquery-ui" />
 			
 			<skin:htmlHead id="webskin-tracer">

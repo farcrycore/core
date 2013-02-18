@@ -77,7 +77,7 @@
 		
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		
-		<skin:loadJS id="jquery" />
+		<skin:loadJS id="fc-jquery" />
 		<skin:loadJS id="typeahead" baseHREF="/farcry/core/webtop/thirdparty/select2" lFiles="select2.js,typeahead.js" />
 		<skin:loadCSS id="typeahead" baseHREf="/farcry/core/webtop/thirdparty/select2" lFiles="select2.css" append=".chzn-container-multi .chzn-choices .search-choice .search-choice-close { padding:0; }" />
 		

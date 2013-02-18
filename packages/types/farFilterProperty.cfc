@@ -53,7 +53,7 @@
 		<cfset var stFilter = application.fapi.getContentObject(typename="farFilter", objectid="#arguments.stObject.filterID#") />
 				
 		
-		<skin:loadJS id="jquery-ui" />
+		<skin:loadJS id="fc-jquery-ui" />
 		<skin:loadCSS id="jquery-ui" />
 		
 		<cfif len(stobject.property)>

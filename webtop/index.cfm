@@ -41,7 +41,7 @@
 <cfparam name="application.fc.settings.webtopheadingcolour" default="##ffffff" />
 
 <skin:loadCSS id="webtop" />
-<skin:loadJS id="jquery" />
+<skin:loadJS id="fc-jquery" />
 <skin:loadJS id="jquery-modal" />
 <skin:loadCSS id="jquery-modal" />
 

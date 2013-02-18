@@ -84,7 +84,7 @@
 	<div id='fc-dialog-div-object' style="padding:10px;"><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0' id="fc-dialog-iframe-object"></iframe></div>
 </cfoutput>
 
-<skin:loadJS id="jquery-ui"/>
+<skin:loadJS id="fc-jquery-ui"/>
 <skin:loadCSS id="jquery-ui"/>
 
 <admin:footer>

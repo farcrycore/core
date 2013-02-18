@@ -18,7 +18,7 @@ FARCRY IMPORT FILES
 
 
 <cfset request.fc.bShowTray = false />
-<skin:loadJS id="jquery" />
+<skin:loadJS id="fc-jquery" />
 
 
 <!------------------ 

@@ -56,7 +56,7 @@
 		</cfif>	
 		
 			
-		<skin:loadJS id="jquery" />
+		<skin:loadJS id="fc-jquery" />
 		<skin:loadJS id="tinymce" />
 		
 		<cfsavecontent variable="html">

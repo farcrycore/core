@@ -58,7 +58,7 @@
 </ft:processform>
 
 
-<skin:loadJS id="jquery" />
+<skin:loadJS id="fc-jquery" />
 <skin:loadJS id="tinymce" />
 <skin:onReady><cfoutput>
 	$j('textarea[name=bodyHTML]').tinymce({

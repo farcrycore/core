@@ -15,7 +15,7 @@
 <meta charset="utf-8">
 <title>#stParam.pageTitle# - #application.config.general.sitetitle#</title>
 
-<skin:loadJS id="jquery" />
+<skin:loadJS id="fc-jquery" />
 <skin:loadJS id="farcry-devicetype" />
 
 </head>

@@ -35,7 +35,7 @@ It just ignores the inner ones.
 		<cfset tagEnding = application.fapi.getDocType().tagEnding />		
 		
 		<!--- import libraries --->
-		<skin:loadJS id="jquery" />		
+		<skin:loadJS id="fc-jquery" />		
 		<skin:loadJS id="farcry-form" />
 		<skin:loadJS id="jquery-tooltip" />
 		<skin:loadCSS id="jquery-tooltip" />

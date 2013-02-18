@@ -3,7 +3,7 @@
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
-<skin:loadJS id="jquery" />
+<skin:loadJS id="fc-jquery" />
 
 
 <cfoutput>

@@ -67,7 +67,7 @@ FARCRY IMPORT FILES
 
 <cfif thistag.executionMode eq "End">
 
-	<skin:loadJS id="jquery" />
+	<skin:loadJS id="fc-jquery" />
 	<skin:loadJS id="jquery-tooltip" />
 	<skin:loadCSS id="jquery-tooltip" />
 

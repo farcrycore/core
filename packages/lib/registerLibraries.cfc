@@ -22,26 +22,29 @@
 		<cfset application.fc.stCSSLibraries = structNew() />
 		
 		<!--- JS LIBRARIES --->
-		<skin:registerJS 	id="jquery"
+		<skin:registerJS 	id="fc-jquery" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/jquery/js"
-							lFiles="jquery-1.6.4.min.js,noconflict.js" />	
+							lFiles="jquery-1.6.4.min.js,noconflict.js" />
+		<skin:registerJS 	id="jquery" aliasof="fc-jquery" core="false" />
 			
-		<skin:registerJS 	id="jquery-ui"
+		<skin:registerJS 	id="fc-jquery-ui" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/jquery/js"
 							lFiles="jquery-ui-1.8.15.custom.min.js" />
+		<skin:registerJS 	id="jquery-ui" aliasof="fc-jquery-ui" core="false" />
 		
-		<skin:registerJS 	id="tinymce"
+		<skin:registerJS 	id="tinymce" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/tiny_mce"
 							lFiles="jquery.tinymce.js" />
 
-		<skin:registerJS 	id="jquery-validate"
+		<skin:registerJS 	id="jquery-validate" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/jquery-validate"
 							lFiles="jquery.validate.js" />
 
-		<skin:registerJS 	id="jquery-tooltip"
+		<skin:registerJS 	id="jquery-tooltip" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/jquery-tooltip"
 							lFiles="jquery.tooltip.min.js" />
-		<skin:registerJS	id="jquery-tooltip-auto">
+		
+		<skin:registerJS	id="jquery-tooltip-auto" core="true">
 							<cfoutput>
 								jQuery(function(){
 									jQuery('a[title],div[title],span[title],area[title]').not('.fancybox,.nojqtooltip').tooltip({ 
@@ -51,48 +54,45 @@
 								});
 							</cfoutput>
 		</skin:registerJS>
-		
 
-		<skin:registerJS 	id="jquery-autoresize" 
+		<skin:registerJS 	id="jquery-autoresize" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/jquery.autoresize" 
 							lFiles="autoresize.jquery.min.js,custom.js" />
-							
 		
-		<skin:registerJS	id="jquery-uploadify"
+		<skin:registerJS	id="jquery-uploadify" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4"
 							lFiles="swfobject.js,jquery.uploadify.v2.1.4.min.js" />
 							
-		<skin:registerJS	id="jquery-crop"
+		<skin:registerJS	id="jquery-crop" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/Jcrop/js"
 							lFiles="jquery.Jcrop.js" />
 							
-							
-		<skin:registerJS 	id="gritter"
+		<skin:registerJS 	id="gritter" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/gritter/js"
 							lFiles="jquery.gritter.js" />
 
-		<skin:registerJS 	id="farcry-form"
+		<skin:registerJS 	id="farcry-form" core="true"
 							baseHREF="#application.url.webtop#"
 							lFiles="/js/farcryForm.cfm,/thirdparty/loadmask/jquery.loadmask.min.js,/thirdparty/uni-form/js/uni-form.jquery.js,/thirdparty/jquery-treeview/jquery.treeview.js,/thirdparty/jquery-treeview/jquery.treeview.async.js" />
-
-		<skin:registerJS 	id="ext"
+		
+		<skin:registerJS 	id="fc-ext" core="true"
 							baseHREF="#application.url.webtop#/js/ext"
 							lFiles="/adapter/ext/ext-base.js,/ext-all.js">
 							<cfoutput>
 							Ext.BLANK_IMAGE_URL = '#application.url.webtop#/js/ext/resources/images/default/s.gif';
 							</cfoutput>
 		</skin:registerJS>
-
-
-		<skin:registerJS 	id="farcry-devicetype"
+		
+		<skin:registerJS 	id="fc-farcry-devicetype" core="true"
 							baseHREF="#application.url.webtop#/js"
 							lFiles="devicetype.js" />
-
-		<skin:registerJS 	id="swfobject"
+		
+		<skin:registerJS 	id="swfobject" core="true"
 							baseHREF="#application.url.webtop#/js"
 							lFiles="swfobject.js" />
+		<skin:registerJS 	id="farcry-devicetype" aliasof="fc-farcry-devicetype" core="false" />
 							
-		<skin:registerJS 	id="jquery-modal"
+		<skin:registerJS 	id="jquery-modal" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/jquery-modal"
 							lFiles="jquery-modal.js" />
 

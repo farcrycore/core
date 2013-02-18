@@ -148,7 +148,7 @@
 		
 		<cfif len(arguments.stMetadata.ftWatch)>
 			
-			<skin:loadJS id="jquery" />
+			<skin:loadJS id="fc-jquery" />
 			
 			<cfsavecontent variable="result">
 				<skin:onReady>

@@ -608,7 +608,7 @@ object methods
 		
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		
-		<skin:loadJS id="jquery" />
+		<skin:loadJS id="fc-jquery" />
 		
 		<cfsavecontent variable="html"><cfoutput>
 			<div class="multiField">
