@@ -42,7 +42,7 @@ body {
 
 }
 body.webtop {
-	padding-top: 120px;
+	padding-top: 128px;
 	background: #fff url(images/pw_maze_white.png) repeat-x 0 95px;	
 }
 
@@ -380,6 +380,9 @@ table.table-hover tbody tr:hover > td {
 
 
 /* objectadmin styles */
+.farcry-objectadmin {
+	margin-top: 1em;
+}
 table.table td.actions {
 	padding: 3px;
 }
@@ -442,6 +445,34 @@ table.table .checkbox {
 	margin: 0 -2px 0 -2px;
 }
 
+/* overrides for existing farcry objectadmin buttons */
+.btn.small {
+	font-size: inherit;
+}
+.objectadmin-actions .btn {
+	margin-right: -2px;
+}
+.objectadmin-actions .only-icon {
+	
+}
+.uniForm .btn.btn-primary {
+	background: #4b8bba;
+	text-shadow: none;
+	color: #fff;
+	border: none;
+}
+.uniForm .btn.btn-primary:hover,
+.uniForm .btn.btn-primary:focus {
+	background: #0e65a2;
+	box-shadow: 0 0 1px rgba(0,0,0,0.6) inset;
+	text-shadow: none;
+	color: #fff;
+}
+.uniForm .btn.btn-primary:active {
+	background: #0c5582;
+	text-shadow: none;
+	color: #fff;
+}
 
 
 /* farcry button bar */
@@ -455,6 +486,15 @@ table.table .checkbox {
 }
 .farcry-button-bar .btn {
 	padding: 8px 14px;
+}
+
+/* overrides for existing farcry buttonHolder */
+.uniForm .buttonHolder.farcry-button-bar {
+	background: none;
+	border: none;
+	padding: 0;
+	margin: 0 0 1em 0;
+
 }
 
 

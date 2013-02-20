@@ -696,32 +696,46 @@ user --->
 		<cfoutput>#attributes.description#</cfoutput>
 	</cfif>
 	
-		
 
-	<!--- ONLY SHOW THE FILTERING IF WE HAVE RECORDS OR IF WE ARE ALREADY FILTERING --->
-	<cfif listLen(attributes.lFilterFields) AND (listLen(HTMLfiltersAttributes) OR stRecordset.q.recordCount)>
-		<ft:form Name="#attributes.name#Filter" Validation="#attributes.bFilterValidation#">	
-			<ft:button type="button" value="Filter" icon="ui-icon-search" class="small" priority="primary" style="" text="#application.rb.getResource('objectadmin.messages.Filtering@text','Show Filter')#" onclick="$j('##filterForm').toggle('blind');" />
-				
-			<cfoutput>
-			<div id="filterForm" style="<cfif not listLen(HTMLfiltersAttributes)>display:none;</cfif>text-align:center;clear:both;">
-				<grid:div class="fc-shadowbox" style="width:600px;">
-				
-					<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" stPropMetaData="#attributes.stFilterMetaData#" bValidation="#attributes.bFilterValidation#" />
+
+	<cfif structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true>
+
+		<cfoutput>
+			<div class="input-prepend input-append pull-right" style="position: relative; z-index:2">
+				<button class="btn fc-tooltip" style="height: 30px; border-radius:0" data-toggle="tooltip" data-placement="top" title="" data-original-title="Advanced Filtering"><b class="icon-menu only-icon"></b></button>
+				<input class="span2" type="text" placeholder="Search..." style="width: 240px;">
+				<button class="btn" style="height: 30px; border-radius:0"><b class="icon-search only-icon"></b></button>
+			</div>				
+		</cfoutput>
+
+	<cfelse>		
+
+		<!--- ONLY SHOW THE FILTERING IF WE HAVE RECORDS OR IF WE ARE ALREADY FILTERING --->
+		<cfif listLen(attributes.lFilterFields) AND (listLen(HTMLfiltersAttributes) OR stRecordset.q.recordCount)>
+			<ft:form Name="#attributes.name#Filter" Validation="#attributes.bFilterValidation#">	
+				<ft:button type="button" value="Filter" icon="ui-icon-search" class="small" priority="primary" style="" text="#application.rb.getResource('objectadmin.messages.Filtering@text','Show Filter')#" onclick="$j('##filterForm').toggle('blind');" />
 					
-					<ft:buttonPanel style="margin-bottom:0px;">
-						<ft:button value="Apply Filter" rbkey="#attributes.rbkey#.applyfilter" class="small" />
-						<cfif len(HTMLfiltersAttributes)>	
-							<ft:button value="Clear Filter" validate="false" rbkey="#attributes.rbkey#.clearfilter" class="small" />
-						</cfif>
-					</ft:buttonPanel>
-				</grid:div>
-				<br style="clear:both;" />
-			</div>
-			</cfoutput>
-		</ft:form>
-		
-		
+				<cfoutput>
+				<div id="filterForm" style="<cfif not listLen(HTMLfiltersAttributes)>display:none;</cfif>text-align:center;clear:both;">
+					<grid:div class="fc-shadowbox" style="width:600px;">
+					
+						<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" stPropMetaData="#attributes.stFilterMetaData#" bValidation="#attributes.bFilterValidation#" />
+						
+						<ft:buttonPanel style="margin-bottom:0px;">
+							<ft:button value="Apply Filter" rbkey="#attributes.rbkey#.applyfilter" class="small" />
+							<cfif len(HTMLfiltersAttributes)>	
+								<ft:button value="Clear Filter" validate="false" rbkey="#attributes.rbkey#.clearfilter" class="small" />
+							</cfif>
+						</ft:buttonPanel>
+					</grid:div>
+					<br style="clear:both;" />
+				</div>
+				</cfoutput>
+			</ft:form>
+			
+			
+		</cfif>
+
 	</cfif>
 	
 				
@@ -739,7 +753,7 @@ user --->
 		<cfsavecontent variable="html_buttonbar">
 		
 			<cfif len(attributes.lButtons)>
-				<ft:buttonPanel style="text-align:left;">
+				<ft:buttonPanel style="text-align:left;" class="farcry-button-bar btn-group">
 				<cfloop from="1" to="#arraylen(attributes.aButtons)#" index="i">
 					
 					
@@ -763,8 +777,28 @@ user --->
 								<cfelse>
 									<cfset buttontext = attributes.aButtons[i].value />
 								</cfif>
-								
-								<ft:button text="#attributes.aButtons[i].value#" value="#attributes.aButtons[i].value#" rbkey="objectadmin.buttons.#rereplace(attributes.aButtons[i].value,'[^\w]+','','ALL')#" onclick="#onclickJS#" confirmText="#attributes.aButtons[i].confirmText#" />
+
+								<cfset icon = "">
+								<cfset class = "">
+								<cfif structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true>
+									<!--- bootstrap --->
+
+									<cfif attributes.aButtons[i].value eq "Add">
+										<cfset icon = "plus">
+										<cfset class = "btn-primary">
+									</cfif>
+									<cfif attributes.aButtons[i].value eq "Copy">
+										<cfset icon = "copy">
+									</cfif>
+									<cfif attributes.aButtons[i].value eq "Delete">
+										<cfset icon = "trash">
+									</cfif>
+									<cfif attributes.aButtons[i].value eq "Unlock">
+										<cfset icon = "unlock">
+									</cfif>
+								</cfif>
+
+								<ft:button text="#attributes.aButtons[i].value#" value="#attributes.aButtons[i].value#" class="#class#" icon="#icon#" rbkey="objectadmin.buttons.#rereplace(attributes.aButtons[i].value,'[^\w]+','','ALL')#" onclick="#onclickJS#" confirmText="#attributes.aButtons[i].confirmText#" />
 							</cfif>
 						</cfif>
 					</cfif>
@@ -823,7 +857,13 @@ user --->
 				</cfif>
 				
 				<cfoutput>
-				<table width="100%" class="objectAdmin">
+
+				<cfif structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true>
+					<table width="100%" class="farcry-objectadmin table table-striped table-hover">
+				<cfelse>
+					<table width="100%" class="objectAdmin">
+				</cfif>
+
 					<cfif attributes.bSelectCol>
 						<col style="width:10px;" />
 					</cfif>
@@ -882,12 +922,18 @@ user --->
 							</cfloop>
 						</cfif>
 						
-						<cfloop list="#attributes.columnlist#" index="i">				
+						<cfloop list="#attributes.columnlist#" index="i">
+
+							<cfset headerColumnStyle = "">
+							<cfif isDefined("PrimaryPackage.stProps.#trim(i)#.metadata.ftType") AND PrimaryPackage.stProps[#trim(i)#].metadata.ftType eq "datetime">
+								<cfset headerColumnStyle = "width: 10em;">
+							</cfif>
+
 								
 							<cfif isDefined("PrimaryPackage.stProps.#trim(i)#.metadata.ftLabel")>
-								<cfoutput><th>#o.getI18Property(i,"label")#</th></cfoutput>
+								<cfoutput><th style="#headerColumnStyle#">#o.getI18Property(i,"label")#</th></cfoutput>
 							<cfelse>
-								<cfoutput><th>#i#</th></cfoutput>
+								<cfoutput><th style="#headerColumnStyle#">#i#</th></cfoutput>
 							</cfif>
 							
 						</cfloop>
@@ -896,8 +942,8 @@ user --->
 					</tr>
 					</cfoutput>
 					
-					
-					<cfif len(attributes.SortableColumns)>
+
+					<cfif len(attributes.SortableColumns) AND NOT (structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true)>
 						<cfoutput>
 						<tr>
 						</cfoutput>
@@ -977,10 +1023,14 @@ user --->
 				<cfset stObjectAdminData = getObjectAdminData(st="#st#", typename="#attributes.typename#", stPermissions="#stPermissions#") />
 				<cfset st = application.fapi.structMerge(st,stObjectAdminData) />
 
+
+				<cfif structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true>
+					<cfset st.currentRowClass = "">
+				</cfif>
+
 				<!--- <ft:paginateLoop r_stObject="st" bIncludeFields="true" bIncludeObjects="false" stpermissions="#stpermissions#" lCustomActions="#attributes.lCustomActions#" bTypeAdmin="true" typename="#attributes.typename#">
 			 --->		
 						<cfoutput>
-						<tbody>
 						<tr class="#st.currentRowClass#">
 						</cfoutput>
 						
@@ -1042,7 +1092,6 @@ user --->
 							</cfif>
 						<cfoutput>
 						</tr>
-						</tbody>
 						</cfoutput>
 					
 					
@@ -1148,21 +1197,21 @@ user --->
 						<cfif structKeyExists(arguments.st,"bHasMultipleVersion")>
 							<cfif NOT(arguments.st.bHasMultipleVersion) AND arguments.st.status EQ "approved">
 								
-									<ft:button value="Create Draft Object" text="" title="Create a draft version of this object and begin editing" style="margin-left:0px;" icon="ui-icon-pencil" priority="secondary" class="small" type="button" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
+									<ft:button value="Create Draft Object" text="" title="Create a draft version of this object and begin editing" style="margin-left:0px;" icon="ui-icon-pencil" priority="secondary" class="small btn-edit" type="button" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
 								
 							<cfelseif arguments.st.bHasMultipleVersion>
 								<!--- Still go to the create draft page but that page will find the already existing draft and not create a new one. --->
 								
-									<ft:button value="Edit Draft" text="" title="Edit the draft version of this object" type="button" style="margin-left:0px;" icon="ui-icon-pencil" priority="secondary" class="small" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
+									<ft:button value="Edit Draft" text="" title="Edit the draft version of this object" type="button" style="margin-left:0px;" icon="ui-icon-pencil" priority="secondary" class="small btn-edit" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
 											
 							<cfelse>
 								
-									<ft:button value="Edit" text="" title="Edit this object" type="button" style="margin-left:0px;" icon="ui-icon-pencil" priority="secondary" class="small" onclick="$fc.objectAdminAction('Administration', '#editURL#&objectid=#arguments.st.objectid#');" />
+									<ft:button value="Edit" text="" title="Edit this object" type="button" style="margin-left:0px;" icon="ui-icon-pencil" priority="secondary" class="small btn-edit" onclick="$fc.objectAdminAction('Administration', '#editURL#&objectid=#arguments.st.objectid#');" />
 									
 							</cfif>
 						<cfelse>
 							
-								<ft:button value="Edit" text="" title="Edit this object" type="button" style="margin-left:0px;" icon="ui-icon-pencil" priority="secondary" class="small" onclick="$fc.objectAdminAction('Administration', '#editURL#&objectid=#arguments.st.objectid#');" />
+								<ft:button value="Edit" text="" title="Edit this object" type="button" style="margin-left:0px;" icon="ui-icon-pencil" priority="secondary" class="small btn-edit" onclick="$fc.objectAdminAction('Administration', '#editURL#&objectid=#arguments.st.objectid#');" />
 							
 						</cfif>
 					</cfif>
@@ -1173,7 +1222,7 @@ user --->
 		<ft:splitButton style="margin-left:0px;">
 			
 			<cfif attributes.bEditCol OR attributes.bPreviewCol>
-				<ft:button value="Options" text="" title="Options" style="" icon=" ,ui-icon-triangle-1-s" priority="secondary" class="small" />
+				<ft:button value="Options" text="" title="More" style="" icon="ui-icon-triangle-1-s" priority="secondary" class="small btn" />
 			
 			
 				<cfoutput>

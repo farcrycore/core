@@ -199,39 +199,72 @@
 		
 		<!--- Default FarcryButton --->
 		<cfdefaultcase>
-			<cfset attributes.class = listAppend(attributes.class, "jquery-ui-btn", " ") />
-			<cfset stButtonAttributes.buttonsettings = "">
-			<cfset stSettings = structNew()>
-			 
-			<cfif listLen(attributes.icon)>
-				<cfset stSettings.icons = structNew()>
-				<cfif len(trim(listFirst(attributes.icon)))>
-					<cfset stSettings.icons.primary = trim(listFirst(attributes.icon))>
-				</cfif>
-				<cfif listLen(attributes.icon) GT 1 AND  len(trim(listLast(attributes.icon)))>
-					<cfset stSettings.icons.secondary = trim(listLast(attributes.icon))>
-				</cfif>
-			</cfif>
-			
-			<cfif not len(attributes.text)>
-				<cfset stSettings.text = false>
-				
-				<cfset attributes.text = "&nbsp;" />
-			</cfif>		
-			
-			<cfoutput>
-				<button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="fc-btn #attributes.class#" style="#attributes.style#" <cfif attributes.disabled>disabled</cfif> <cfif len(attributes.textOnClick)>fc:textOnClick="#attributes.textOnClick#"</cfif> <cfif len(attributes.textOnSubmit)>fc:textOnSubmit="#attributes.textOnSubmit#"</cfif> <cfif attributes.disableOnSubmit>fc:disableOnSubmit="1"</cfif>>#attributes.text#</button></cfoutput>
-				
 
-			
-			<cfset buttonsettings = lcase( SerializeJSON( stSettings ) )>
-			
-			<skin:onReady>
+			<cfif structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true>
+				<!--- bootstrap --->
+				<cfset attributes.icon = replace(attributes.icon, "ui-icon-", "")>
+				<cfif attributes.icon eq "newwin">
+					<cfset attributes.icon = "grid only-icon">
+				</cfif>
+				<cfif attributes.icon eq "pencil">
+					<cfset attributes.text = "Edit">
+				</cfif>
+				<cfif attributes.icon eq "triangle-1-s">
+					<cfset attributes.icon = "caret-down only-icon">
+				</cfif>
+
 				<cfoutput>
-				$j('###attributes.id#').button( #buttonsettings# );</cfoutput>
-			</skin:onReady>
-			
-			
+					<button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" 
+						type="#attributes.type#" value="#attributes.value#" 
+						<cfif len(attributes.title)> title="#attributes.title#"</cfif> 
+						class="fc-btn btn #attributes.class#" style="#attributes.style#" 
+						<cfif attributes.disabled>disabled</cfif> 
+						<cfif len(attributes.textOnClick)>fc:textOnClick="#attributes.textOnClick#"</cfif> 
+						<cfif len(attributes.textOnSubmit)>fc:textOnSubmit="#attributes.textOnSubmit#"</cfif> 
+						<cfif attributes.disableOnSubmit>fc:disableOnSubmit="1"</cfif>>
+							<cfif len(attributes.icon)>
+								<i class="icon-#attributes.icon#"></i>
+							</cfif>
+							#attributes.text#
+						</button>
+				</cfoutput>
+
+			<cfelse>
+				<!--- jquery ui --->
+
+				<cfset stSettings = structNew()>
+				<cfif not len(attributes.text)>
+					<cfset stSettings.text = false>
+					
+					<cfset attributes.text = "&nbsp;" />
+				</cfif>
+
+				<cfset attributes.class = listAppend(attributes.class, "jquery-ui-btn", " ") />
+				<cfset stButtonAttributes.buttonsettings = "">
+
+				<cfif listLen(attributes.icon)>
+					<cfset stSettings.icons = structNew()>
+					<cfif len(trim(listFirst(attributes.icon)))>
+						<cfset stSettings.icons.primary = trim(listFirst(attributes.icon))>
+					</cfif>
+					<cfif listLen(attributes.icon) GT 1 AND  len(trim(listLast(attributes.icon)))>
+						<cfset stSettings.icons.secondary = trim(listLast(attributes.icon))>
+					</cfif>
+				</cfif>
+
+				<cfoutput>
+					<button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="fc-btn #attributes.class#" style="#attributes.style#" <cfif attributes.disabled>disabled</cfif> <cfif len(attributes.textOnClick)>fc:textOnClick="#attributes.textOnClick#"</cfif> <cfif len(attributes.textOnSubmit)>fc:textOnSubmit="#attributes.textOnSubmit#"</cfif> <cfif attributes.disableOnSubmit>fc:disableOnSubmit="1"</cfif>>#attributes.text#</button>
+				</cfoutput>
+				
+				<cfset buttonsettings = lcase( SerializeJSON( stSettings ) )>
+				
+				<skin:onReady>
+					<cfoutput>
+					$j('###attributes.id#').button( #buttonsettings# );</cfoutput>
+				</skin:onReady>
+
+			</cfif>
+
 		</cfdefaultcase>
 		</cfswitch>
 	

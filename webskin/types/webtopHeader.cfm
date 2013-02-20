@@ -3,9 +3,10 @@
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
-<!--- for some reason we are getting here without logging in sometimes, so some variables need to be param'd --->
 <cfparam name="session.writingDir" default="ltr" />
 <cfparam name="session.userLanguage" default="en" />
+
+<cfset request.fcwebtopbootstrap = true>
 
 <!--- get sections --->
 <cfset stWebtop = application.factory.oWebtop.getAllItems() />
@@ -25,6 +26,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" dir="#session.writingDir#" lang="#session.userLanguage#">
 <head>
 <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+<meta http-equiv="X-UA-Compatible" content="IE=Edge">
 <title>[#application.applicationname#] #application.config.general.sitetitle# - FarCry Webtop</title>
 
 <!--- TODO: register --->
