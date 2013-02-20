@@ -34,6 +34,10 @@
 		<cfelse>
 			<cfexit method="exittag">
 		</cfif>
+	<cfelse>
+		<cfif NOT len(attributes.core)>
+			<cfset attributes.core = false>
+		</cfif>
 	</cfif>
 	
 	<cfif len(trim(thisTag.generatedContent))>
