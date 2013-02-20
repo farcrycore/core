@@ -313,11 +313,32 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		
 		<cfreturn arguments.item />
 	</cffunction>
+
+
+	<cffunction name="getAllItems" access="public" output="false" returntype="struct" hint="Returns a translated webtop struct with all restricted items filtered out. This is a wrapper for getItem which will cache the resultant webtop structure.">
+
+		<cfset var webtopPermissionID = application.security.factory.permission.getID(name="viewWebtopItem")>
+		<cfset var currentRoles = application.security.getCurrentRoles()>
+		<cfset var rolesHash = hash("webtop-#currentRoles#")>
+		<cfset var oBarnacle = application.fapi.getContentType("farBarnacle")>
+		<cfset var stResult = structNew()>
+
+		<cfif NOT structKeyExists(application.security.stPermissions, rolesHash)>
+			<cfset application.security.stPermissions[rolesHash] = getItem(webtopPermissionID=webtopPermissionID, currentRoles=currentRoles, oBarnacle=oBarnacle)>
+		</cfif>
+		<cfset stResult = application.security.stPermissions[rolesHash]>
+
+		<cfreturn stResult>
+	</cffunction>
+
 	
 	<cffunction name="getItem" access="public" output="false" returntype="struct" hint="Returns a translated webtop struct with all restricted items filtered out">
 		<cfargument name="parent" type="any" required="false" default="#this.stWebtop#" hint="The parent item to retrieve" />
 		<cfargument name="honoursecurity" type="boolean" required="false" default="true" hint="Set to false to ignore security" />
 		<cfargument name="duplicated" type="boolean" required="false" default="false" hint="Used to ensure the struct is only duplicated once" />
+		<cfargument name="webtopPermissionID" type="string" required="false" default="" hint="The permission ID to use for determining webtop view permissions" />
+		<cfargument name="currentRoles" type="string" required="false" default="" hint="A list of the roles of the current user" />
+		<cfargument name="oBarnacle" required="false" default="" hint="A farBarnacle object used for rights lookups" />
 		
 		<cfset var stResult = this.stWebtop />
 		<cfset var id = "" />
@@ -326,8 +347,16 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfset var bPermitted = "">
 		<cfset var bRight = "">
 		<cfset var barnacleID = "">
-		<cfset var webtopPermissionID = application.security.factory.permission.getID(name="viewWebtopItem")>
-		<cfset var oBarnacle = application.fapi.getContentType("farBarnacle")>
+
+		<cfif NOT len(arguments.webtopPermissionID)>
+			<cfset arguments.webtopPermissionID = application.security.factory.permission.getID(name="viewWebtopItem")>
+		</cfif>
+		<cfif NOT len(arguments.currentRoles)>
+			<cfset arguments.currentRoles = application.security.getCurrentRoles()>
+		</cfif>
+		<cfif NOT isObject(arguments.oBarnacle)>
+			<cfset oBarnacle = application.fapi.getContentType("farBarnacle")>
+		</cfif>
 		
 		<cfif isstruct(arguments.parent)>
 			<!--- Use that as stResult --->
@@ -369,20 +398,30 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfloop collection="#stResult.children#" item="id">
 			
 			<cfset bPermitted = 0 />
-			<cfset barnacleID = hash(stResult.children[id].rbKey)>
-			
-			<cfloop list="#application.security.getCurrentRoles()#" index="iRole">
-				<cfset bRight = oBarnacle.getRight(role="#iRole#", permission="#webtopPermissionID#", object="#barnacleID#", objecttype="webtop")>
-				<cfif bRight NEQ 0>
-					<cfset bPermitted = bRight>
-				</cfif>
-				<cfif bRight GT 0>
-					<cfbreak>
-				</cfif>
-			</cfloop>
+			<cfset hashKey = hash("#webtopPermissionID#-#currentRoles#-#stResult.children[id].rbKey#") />
+
+			<cfif structKeyExists(application.security.stPermissions, "#hashKey#")>
+				<cfset bPermitted = application.security.stPermissions[hashKey] />
+			<cfelse>
+				<cfset barnacleID = hash(stResult.children[id].rbKey)>
+				
+				<cfloop list="#currentRoles#" index="iRole">
+					<cfset bRight = oBarnacle.getRight(role="#iRole#", permission="#webtopPermissionID#", object="#barnacleID#", objecttype="webtop")>
+					<cfif bRight NEQ 0>
+						<cfset bPermitted = bRight>
+					</cfif>
+					<cfif bRight GT 0>
+						<cfbreak>
+					</cfif>
+				</cfloop>
+
+				<cfset application.security.stPermissions[hashKey] = bPermitted />
+
+			</cfif>
+
 			
 			<cfif not arguments.honoursecurity or bPermitted GTE 0>
-				<cfset getItem(stResult.children[id],arguments.honoursecurity,true) />
+				<cfset getItem(parent=stResult.children[id], honoursecurity=arguments.honoursecurity, duplicated=true, webtopPermissionID=arguments.webtopPermissionID, currentRoles=arguments.currentRoles, oBarnacle=arguments.oBarnacle) />
 			<cfelse>
 				<!--- Remove restricted child --->
 				<cfset structdelete(stResult.children,id) />
@@ -475,6 +514,58 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfset sReturn = urlUtil.appendURLParams(address=sReturn, paramStruct=stParams, replaceExisting=false) />
 		
 		<cfreturn sReturn />
+	</cffunction>
+
+
+	<cffunction name="getItemByID" output="false" returntype="struct">
+		<cfargument name="stWebtop" type="struct" required="true">
+		<cfargument name="id" type="string" required="true">
+
+		<cfset var stItem = stWebtop>
+		<cfset var item = "">
+
+		<cfloop list="#arguments.id#" delimiters="." index="item">
+			<cfset stItem = stItem.children[item]>
+		</cfloop>
+
+		<cfreturn stItem>
+	</cffunction>
+
+	<cffunction name="getItemBodyInclude" output="false" returntype="string">
+		<cfargument name="stWebtop" type="struct" required="true">
+		<cfargument name="id" type="string" required="true">
+
+		<cfset var stItem = getItemByID(stWebtop, arguments.id)>
+		<cfset var stParams = structNew()>
+		<cfset var itemLink = "">
+		<cfset var bodyInclude = "">
+
+		<cfset var urlUtil = createobject("component","farcry.core.packages.farcry.UrlUtility") />
+
+		<cfif structKeyExists(stItem, "link")>
+			<cfset itemLink = stItem.link>
+		<cfelseif structKeyExists(stItem, "content")>
+			<cfset itemLink = stItem.content>
+		</cfif>
+
+		<cfif len(itemLink)>	
+			<cfset stParams = urlUtil.getURLParamStruct("?" & listLast(itemLink, "?")) />
+			<cfset structAppend(url, stParams, false)>
+			<cfif reFind("^/admin/customadmin.cfm", itemLink)>
+				<cfif structKeyExists(stParams, "plugin") AND len(stParams.plugin)>
+		 			<cfset bodyInclude = "/farcry/plugins/" & stParams.plugin & "/customadmin/" & stParams.module>
+				<cfelse>
+		 			<cfset bodyInclude = "/farcry/projects/#application.projectDirectoryName#/customadmin/" & stParams.module>
+					<cfif NOT fileExists(expandPath(bodyInclude))>
+		 				<cfset bodyInclude = "/farcry/core/webtop/customadmin/" & stParams.module>
+					</cfif>
+				</cfif>
+			<cfelse>
+				<cfset bodyInclude = "/farcry/core/webtop/" & itemLink>
+			</cfif>
+		</cfif>
+
+		<cfreturn bodyInclude>
 	</cffunction>
 
 </cfcomponent>

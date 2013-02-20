@@ -107,6 +107,8 @@
     margin-bottom: 5px;
     float: left;
     padding-top: 5px;
+    background: none;
+    color: #000;
 	}
 	
 	.uniForm .buttonHolder a.fc-btn {
@@ -319,4 +321,9 @@
 }
 #filterForm .buttonHolder {
 	background: #f1f1f1;
+}
+
+
+ul.arrayDetailView {
+	margin: 0;
 }

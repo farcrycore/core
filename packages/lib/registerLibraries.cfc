@@ -97,6 +97,10 @@
 							lFiles="jquery-modal.js" />
 
 		<!--- CSS LIBRARIES --->
+		<skin:registerCSS 	id="webtop7"
+							baseHREF="#application.url.webtop#/css"
+							lFiles="webtop7.css,main7.css" />
+
 		<skin:registerCSS 	id="webtop"
 							baseHREF="#application.url.webtop#/css"
 							lFiles="reset.css,fonts.css,main.css" />

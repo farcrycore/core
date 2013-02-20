@@ -1,0 +1,626 @@
+/*
+	colors
+
+	primary tab active blue: 0e65a2
+	primary tab inactive gradient: f2f2f2 (top) dddddd (bottom)
+
+	secondary nav bg blue: 166ca8
+	secondary nav bottom border blue: 4b8bba	<--- same as primary button
+	secondary tab active blue: 5b90b6
+
+	dropdown nav active blue: dae8f2
+
+	primary button blue: 4b8bba					<--- same as secondary nav bottom border
+	button hover: 555555
+	button normal: dddddd
+	button edit orange: ff9900
+
+	table row hover orange: fff6eb
+
+	DONE
+	V active / focus colour on edit button
+
+	TODO
+	- use less and replace colours with variables
+	- on button hover / active colours use a function to lighten / darken the colour set in the variable
+
+
+*/
+
+/*
+@primary-tab-bg-active: #0e65a2;
+@primary-tab-bg: #f2f2f2;
+*/
+
+
+body {
+	/*font-family: Helvetica, Arial, sans-serif;*/
+	/*font-family: 'Droid Sans', sans-serif;*/
+	/*font-family: 'Source Sans Pro', sans-serif;*/
+	/*font-family: 'Open Sans', sans-serif;*/
+	font-family: Helvetica, Arial, sans-serif;
+
+}
+body.webtop {
+	padding-top: 120px;
+	background: #fff url(images/pw_maze_white.png) repeat-x 0 95px;	
+}
+
+
+h1, h2, h3, h4, h5, h6 {
+	color: #333;
+	font-family: Helvetica, Arial, sans-serif;
+}
+
+h3 {
+	font-size: 20px;
+}
+
+a {
+	color: #e17000;
+}
+a:hover {
+	color: #e17000;
+}
+
+
+
+.farcry-header {
+	background: #fff;
+	font-family: Helvetica, Arial, sans-serif;
+	z-index: 99;
+
+	box-shadow: 0 0 8px rgba(0,0,0,0.25);
+}
+
+.farcry-header-top {
+	display: table;
+}
+.farcry-header-top img {
+	max-width: none; /* remove bootstrap "fix" on images in tables */
+}
+.farcry-header-top-row {
+	display: table-row;
+}
+
+.farcry-header-brand {
+	display: table-cell;
+	vertical-align: middle;
+	padding: 15px 25px 15px 0;
+	height: 40px; /* acts as min-height on a table cell */
+}
+.farcry-header-brand img {
+	/* fit inside 150x60 */
+}
+
+.farcry-header-tabs {
+	display: table-cell;
+	vertical-align: bottom;
+	width: 90%;
+
+	font-weight: bold;
+}
+
+.farcry-header-environment {
+	position: absolute;
+	top: 0;
+	left: 50%;
+	margin-left: -12.5%;
+	opacity: 0.75;
+	font-size: 13px;
+	padding: 4px 12px;
+	background: #66cc44;
+	color: white;
+	max-height: 0px;
+}
+.farcry-header-environment:hover {
+	max-height: none;
+}
+
+
+
+/* customise bootstrap tabs for the main farcry tabbed nav */
+
+.navbar .farcry-header-tabs .nav-tabs {
+	border-bottom: none;
+	margin-left: 1px;
+}
+.navbar .farcry-header-tabs .nav-tabs > li {
+	margin-bottom: 0;
+	margin-left: -1px;
+}
+.navbar .farcry-header-tabs .nav a {
+	color: #333;
+	background: #f2f2f2; /* @fc-primary-tab */
+	box-shadow: none;
+	border: none;
+	border-radius: 0;
+}
+.navbar .farcry-header-tabs .nav a:hover,
+.navbar .farcry-header-tabs .nav a:focus {
+	background: #555555; /* @fc-btn-hover */
+	color: #fff;
+	text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+}
+.navbar .farcry-header-tabs .nav .active a,
+.navbar .farcry-header-tabs .nav a:active {
+	background: #0e65a2; /* @fc-primary-tab-active */
+	color: #fff;
+	text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+}
+
+/* customise bootstrap nav for the secondary farcry nav bar */
+.navbar .farcry-secondary-nav .navbar-inner {
+	border-top: 3px solid #0e65a2; /* @fc-primary-tab-active */;
+	background: #166ca8 url(images/webtop-nav-bg.png) repeat-x 0 0;
+	filter: none;
+	border-bottom: 1px solid #4b8bba; /* @fc-secondary-nav-bottom */
+	min-height: 36px;
+
+	font-weight: bold;
+}
+.navbar .farcry-secondary-nav .nav {
+	padding-top: 1px;
+	padding-bottom: 2px;
+}
+.navbar .farcry-secondary-nav .navbar-inner .nav > li > a {
+	padding-top: 6px;
+	padding-bottom: 6px;
+	color: #fff;
+	text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+}
+.navbar .farcry-secondary-nav .navbar-inner .nav > li > a:hover,
+.navbar .farcry-secondary-nav .navbar-inner .nav > .active > a,
+.navbar .farcry-secondary-nav .navbar-inner .nav > .active > a:hover,
+.navbar .farcry-secondary-nav .navbar-inner .nav > .active > a:focus {
+	color: #fff;
+	background: #5b90b6;
+	box-shadow: none;
+}
+
+.navbar .farcry-secondary-nav .nav > li {
+	margin-right: 3px;
+}
+
+.navbar .farcry-secondary-nav .nav > li.dropdown.open .dropdown-toggle {
+	background: #5b90b6; /* @fc-secondary-tab-active */
+	color: #fff;
+	text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+}
+.navbar .farcry-secondary-nav .nav > li:hover > a {
+	background: #5b90b6; /* @fc-secondary-tab-active */
+	color: #fff;
+	text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+}
+
+/* bootstrap extension to support mega menus with multiple nav lists per dropdown */
+.dropdown .dropdown-mega-menu {
+}
+.dropdown-mega-menu ul {
+	width: 100%;
+}
+.mega-2 {
+	min-width: 380px;
+}
+.mega-2 ul {
+	width: 50%;
+}
+.mega-3 {
+	min-width: 570px;
+}
+.mega-3 ul {
+	width: 33.3%;
+}
+.mega-4 {
+	min-width: 760px;
+}
+.mega-4 ul {
+	width: 25%;
+}
+
+.dropdown .dropdown-mega-menu {
+	border: 3px solid #5b90b6; /* @fc-secondary-tab-active */
+	border-radius: 0;
+	margin-top: -1px;
+	padding-top: 5px;
+}
+
+.dropdown .dropdown-mega-menu ul {
+	float: left;
+	margin: 0;
+	list-style: none;
+	padding: 0;
+	height: 100%;
+}
+.dropdown .dropdown-mega-menu ul li {
+	border-right: 1px solid #dae8f2; /* @fc-dropdown-nav-active */
+}
+.dropdown .dropdown-mega-menu ul:last-child li {
+	border-right: none;
+}
+.dropdown .dropdown-mega-menu ul li.nav-header {
+	margin: 0;
+	padding: 12px 14px 3px 14px;
+	color: #0e65a2;
+}
+.dropdown .dropdown-mega-menu ul li.nav-header:first-child {
+	padding-top: 3px;
+}
+
+.dropdown .dropdown-mega-menu li > a {
+	display: block;
+	padding: 3px 14px;
+	clear: both;
+	font-weight: normal;
+	line-height: 20px;
+	color: #333333;
+	/*white-space: nowrap;*/
+	min-width: 120px;
+}
+.dropdown .dropdown-mega-menu li > a:hover,
+.dropdown .dropdown-mega-menu li > a:focus {
+	padding: 3px 14px;
+	background: #dae8f2; /* @fc-dropdown-nav-active */
+	color: #333;
+	text-decoration: none;
+}
+.dropdown .dropdown-mega-menu .active > a,
+.dropdown .dropdown-mega-menu .active > a:hover,
+.dropdown .dropdown-mega-menu .active > a:focus {
+	background: #dae8f2; /* @fc-dropdown-nav-active */
+	color: #333;
+}
+
+
+/* customise bootstrap dropdown menu */
+.dropdown .dropdown-menu {
+/*
+	border: 3px solid #5b90b6; // @fc-secondary-tab-active
+*/
+	border-radius: 0;
+	margin-top: -1px;
+	padding-top: 5px;
+}
+.dropdown .dropdown-menu li > a {
+	color: #333;
+	padding: 3px 14px;
+	filter: none;
+}
+.dropdown .dropdown-menu li > a:hover,
+.dropdown .dropdown-menu li > a:focus {
+	background: #dae8f2; /* @fc-dropdown-nav-active */
+	text-decoration: none;
+}
+.dropdown .dropdown-menu .active > a,
+.dropdown .dropdown-menu .active > a:hover,
+.dropdown .dropdown-menu .active > a:focus {
+	background: #dae8f2; /* @fc-dropdown-nav-active */
+	color: #333;
+	padding: 3px 14px;
+}
+.dropdown .dropdown-menu li.nav-header {
+	padding: 3px 14px;
+	color: #0e65a2;
+}
+
+
+
+
+.farcry-header-utility {
+	display: table-cell;
+	vertical-align: middle;
+	white-space: nowrap;
+}
+
+.farcry-header-logo {
+	display: inline-block;
+	padding: 10px 15px;
+	border-right: 1px solid #eee;
+}
+
+.farcry-header-user {
+	display: inline-block;
+	padding: 10px 10px;
+	margin-left: 5px;
+	cursor: pointer;
+}
+.farcry-header-user.open,
+.farcry-header-user:hover {
+	background: #f2f2f2;
+}
+.farcry-header-user.open img,
+.farcry-header-user:hover img {
+	display: none;
+}
+.farcry-header-user.open .cog,
+.farcry-header-user:hover .cog {
+	display: inline-block;
+}
+.farcry-header-user .cog b {
+	margin-top: 0;
+}
+
+.farcry-header-profile img {
+	display: inline-block;
+	margin-right: 7px;
+}
+.farcry-header-profile .cog {
+	display: none;
+	margin-right: 7px;
+	background: #555;
+	color: #fff;
+	width: 24px;
+	height: 22px;
+	padding-top: 2px;
+	text-align: center;
+	vertical-align: middle;
+}
+.farcry-header-profile span {
+
+}
+
+
+
+/* customise bootstrap table styles */
+table.table th {
+	border-bottom: 2px solid #ddd;
+	font-family: Helvetica, Arial, sans-serif;
+}
+table.table tbody + tbody {
+	border: none;
+}
+
+table.table td {
+	padding: 7px;
+	font-family: Helvetica, Arial, sans-serif;
+}
+table.table-hover tbody tr:hover > td {
+	background: #fff6eb;
+}
+
+
+/* objectadmin styles */
+table.table td.actions {
+	padding: 3px;
+}
+table.table td.actions .btn {
+	margin-left: 0px;
+	margin-right: 2px;
+}
+table.table .checkbox {
+	margin-top: -2px;
+	padding: 0;
+}
+
+
+/* customise bootstrap button styles */
+.btn {
+	background: #e8e8e8;
+	border-radius: 0;
+	border: 0;
+	color: #555;
+	box-shadow: 0 0 1px rgba(0,0,0,0.25) inset;
+	font-family: Helvetica, Arial, sans-serif;
+}
+.btn:hover,
+.btn:focus {
+	background: #f8f8f8;
+	box-shadow: 0 0 1px rgba(0,0,0,0.4) inset;
+	/*text-shadow: 0 1px 1px #000;*/
+	/*color: #fff;*/
+}
+.btn:active {
+	background: #cccccc;
+}
+.btn-primary {
+	background: #4b8bba;
+	text-shadow: none;
+	color: #fff;
+}
+.btn-primary:hover,
+.btn-primary:focus {
+	background: #0e65a2;
+	box-shadow: 0 0 1px rgba(0,0,0,0.6) inset;
+	text-shadow: none;
+	color: #fff;
+}
+.btn-primary:active {
+	background: #0c5582;
+	text-shadow: none;
+	color: #fff;
+}
+
+/* tweak icon position in buttons */
+.btn [class^="icon"] {
+	font-size: 16px;
+	margin-top: 0;
+	margin-right: 2px;
+	margin-left: -4px;
+	text-shadow: none;
+}
+.btn [class^="icon"].only-icon {
+	margin: 0 -2px 0 -2px;
+}
+
+
+
+/* farcry button bar */
+.farcry-button-bar {
+	background: #f8f8f8;
+}
+.farcry-button-bar.btn-group > .btn {
+	margin-left: 0;
+	margin-right: 2px;
+	border-radius: 0;
+}
+.farcry-button-bar .btn {
+	padding: 8px 14px;
+}
+
+
+/* tall buttons */
+.farcry-button-bar .btn-tall {
+	padding: 16px 18px;
+}
+.farcry-button-bar .btn-tall.btn-primary {
+
+}
+
+/* tall buttons with 2 lines of text */
+.farcry-button-bar .btn-tall2 {
+	padding: 10px 18px;
+	vertical-align: middle;
+}
+.btn.btn-tall2 [class^="icon"] {
+	float: left;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+.btn-tall2 .btn-label {
+	float: left;
+	text-align: left;
+	line-height: 16px;
+	margin-left: 0.5em;
+}
+.btn-tall2 .btn-label small {
+	display: block;
+	font-size: 80%;
+	font-weight: normal;
+}
+
+
+/* split buttons */
+.btn-group  .btn.btn-split {
+	border-radius: 0;
+}
+.btn-group > .btn-split + .dropdown-toggle {
+	border-radius: 0;
+	box-shadow:	0 0 1px rgba(0,0,0,0.2) inset;
+	margin-left: -1px;
+	margin-right: 2px;
+	background: #dddddd;
+}
+.btn-group.open > .btn-split + .dropdown-toggle, 
+.btn-group > .btn-split + .dropdown-toggle:hover {
+	background: #cccccc;
+}
+
+
+
+/* farcry object admin edit button */
+table.table .btn {
+
+}
+table.table .btn-edit:hover {
+	background: #ff9900;
+	text-shadow: none;
+	color: #fff;
+}
+table.table .btn-edit:active {
+	background: #dd7700;
+	text-shadow: none;
+	color: #fff;
+}
+
+
+/* customising bootstrap label tags */
+.label {
+	text-shadow: none;
+}
+
+/* customising bootstrap pagination */
+/* comment out for now... this selector will be slow */
+/*
+.pagination > ul > li > a,
+.pagination > ul > li > span {
+	border-radius: 0;
+}
+*/
+
+
+/* customise bootstrap modals */
+.modal-backdrop {
+	background: #fff;
+}
+
+.modal {
+	width: 960px;
+	max-width: 95%;
+	height: 90%;
+	max-height: 80%;
+	margin-left: -480px;
+
+	border-radius: 2px;
+	border: 1px solid #c0c0c0;
+}
+
+
+
+/* objectadmin tree */
+.fc-treestate-visible {
+	display: table-row;
+}
+.fc-treestate-hidden {
+	display: none;
+}
+
+.fc-icon-treestate,
+.fc-icon-spacer {
+	width: 1em;
+}
+.fc-icon-treestate:before,
+.fc-icon-spacer::before {
+	display: inline-block;
+	position: relative;
+	width: 15px;
+	height: 15px;
+	background: #555;
+	color: #fff;
+	font-size: 15px;
+	font-weight: bold;
+	text-align: center;
+	border-radius: 2px;
+	margin-right: 5px;
+	line-height: 16px;
+}
+.fc-treestate-expand .fc-icon-treestate:before {
+	content: "+";
+}
+.fc-treestate-collapse .fc-icon-treestate:before {
+	content: "-";
+}
+.fc-icon-spacer::before {
+	width: 15px;
+	background: none;
+	border-radius: none;
+	content: " ";
+}
+
+
+/* icomoon / bootstrap icon conflicts */
+.icon-cog,
+.icon-minus,
+.icon-pencil,
+.icon-plus,
+.icon-question-sign,
+.icon-search,
+.icon-star,
+.icon-trash
+{
+	background: none;
+}
+
+
+/* MEDIA QUERIES AND RESPONSIVE-RELATIVE STYLES */
+
+/* match bootstrap media query and change header to absolute instead of fixed */
+@media only screen and (max-width: 1024px) {
+	.navbar-fixed-top {
+		position: absolute;
+	}
+}
+/* undo bootstrap responsive nav padding changes */
+.navbar-fixed-top .navbar-inner {
+	padding: 0;
+}
+
