@@ -1137,10 +1137,15 @@ user --->
 
 
 	<cfif structKeyExists(arguments.st, "bHasMultipleVersion") AND arguments.st.bHasMultipleVersion>
-		<cfset stObjectAdminData.status = "draft/approved" />
+		<cfif structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true>
+			<cfset stObjectAdminData.status = "<label class='label label-warning'>Draft</label> + <label class='label label-info'>Approved</label>" />
+		<cfelse>
+			<cfset stObjectAdminData.status = "draft/approved" />
+		</cfif>
 	<cfelseif structKeyExists(arguments.st, "status")>
 		<cfset stObjectAdminData.status = arguments.st.status />
 	</cfif>
+
 	
 	
 	<cfif structIsEmpty(arguments.stPermissions)>

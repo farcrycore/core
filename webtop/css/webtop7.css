@@ -568,6 +568,15 @@ table.table .btn-edit:active {
 	text-shadow: none;
 }
 
+/* override old farcry label styles in objectadmin */
+.uniForm .farcry-objectadmin .label {
+	display: inline;
+	padding: 2px 4px;
+	line-height: 14px;
+}
+
+
+
 /* customising bootstrap pagination */
 /* comment out for now... this selector will be slow */
 /*
