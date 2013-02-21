@@ -21,6 +21,11 @@
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin">
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
 
+<cfparam name="url.objectid" default="">
+<cfparam name="url.typename" default="">
+<cfparam name="url.view" default="">
+<cfparam name="url.bodyView" default="">
+
 <!--- get sections --->
 <cfset stWebtop = application.factory.oWebtop.getAllItems()>
 
@@ -52,6 +57,11 @@
 		<cfif NOT len(url.menu)>
 			<cfset url.menu = listfirst(stWebtop.children[url.sec].children[url.sub].childorder)>
 		</cfif>
+		<cfif structKeyExists(stWebtop.children[url.sec].children[url.sub], "children") and structKeyExists(stWebtop.children[url.sec].children[url.sub].children, url.menu)>
+			<cfif NOT len(url.menuitem)>
+				<cfset url.menuitem = listfirst(stWebtop.children[url.sec].children[url.sub].children[url.menu].childorder)>
+			</cfif>
+		</cfif>
 	</cfif>
 </cfif>
 
@@ -67,27 +77,33 @@
 	<cfset url.id = listAppend(url.id, url.menuitem, ".")>
 </cfif>
 
+<!--- determine which view to use --->
+<!--- should use url variables first, then variables from webtop.xml, then default values --->
+<cfset stItem = application.factory.oWebtop.getItemDetails(stWebtop, url.id)>
+<cfif NOT len(url.typename)>
+	<cfif structKeyExists(stItem, "typename")>
+		<cfset url.typename = stItem.typename>
+	<cfelse>
+		<cfset url.typename = "dmNavigation">
+	</cfif>
+</cfif>
+<cfif NOT len(url.view)>
+	<cfif structKeyExists(stItem, "view")>
+		<cfset url.view = stItem.view>
+	<cfelse>
+		<cfset url.view = "webtopPageStandard">
+	</cfif>
+</cfif>
+<cfif NOT len(url.bodyView)>
+	<cfif structKeyExists(stItem, "bodyView")>
+		<cfset url.bodyView = stItem.bodyView>
+	<cfelse>
+		<cfset url.bodyView = "webtopBody">
+	</cfif>
+</cfif>
 
-
-<cfparam name="url.objectid" default="">
-<cfparam name="url.typename" default="dmHTML">
-<cfparam name="url.view" default="webtopPageStandard">
-<cfparam name="url.bodyView" default="webtopBody">
-
-<!--- determine which body view to use --->
-<!--- 
-match attributes, in priority order:
-- content
-- link
-- typename + webskin (optional: + view)
- --->
-
-<cfset bodyInclude = application.factory.oWebtop.getItemBodyInclude(stWebtop, url.id)>
-
-
-<!--- show standard webtop page --->
-
-	<skin:view typename="#url.typename#" webskin="#url.view#" bodyInclude="#bodyInclude#" />
+<!--- execute the view on the type / object --->
+<skin:view objectid="#url.objectid#" typename="#url.typename#" webskin="#url.view#" bodyInclude="#stItem.bodyInclude#" />
 
 
 <cfsetting enablecfoutputonly="false">

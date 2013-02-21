@@ -531,16 +531,28 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfreturn stItem>
 	</cffunction>
 
-	<cffunction name="getItemBodyInclude" output="false" returntype="string">
+	<cffunction name="getItemDetails" output="false" returntype="struct">
 		<cfargument name="stWebtop" type="struct" required="true">
 		<cfargument name="id" type="string" required="true">
 
 		<cfset var stItem = getItemByID(stWebtop, arguments.id)>
 		<cfset var stParams = structNew()>
 		<cfset var itemLink = "">
-		<cfset var bodyInclude = "">
+		<cfset var stResult = structNew()>
+
+		<cfset stResult.bodyInclude = "">
 
 		<cfset var urlUtil = createobject("component","farcry.core.packages.farcry.UrlUtility") />
+
+		<cfif structKeyExists(stItem, "typename")>
+			<cfset stResult.typename = stItem.typename>
+		</cfif>
+		<cfif structKeyExists(stItem, "view")>
+			<cfset stResult.view = stItem.view>
+		</cfif>
+		<cfif structKeyExists(stItem, "bodyView")>
+			<cfset stResult.bodyView = stItem.bodyView>
+		</cfif>
 
 		<cfif structKeyExists(stItem, "link")>
 			<cfset itemLink = stItem.link>
@@ -553,19 +565,19 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 			<cfset structAppend(url, stParams, false)>
 			<cfif reFind("^/admin/customadmin.cfm", itemLink)>
 				<cfif structKeyExists(stParams, "plugin") AND len(stParams.plugin)>
-		 			<cfset bodyInclude = "/farcry/plugins/" & stParams.plugin & "/customadmin/" & stParams.module>
+		 			<cfset stResult.bodyInclude = "/farcry/plugins/" & stParams.plugin & "/customadmin/" & stParams.module>
 				<cfelse>
-		 			<cfset bodyInclude = "/farcry/projects/#application.projectDirectoryName#/customadmin/" & stParams.module>
-					<cfif NOT fileExists(expandPath(bodyInclude))>
-		 				<cfset bodyInclude = "/farcry/core/webtop/customadmin/" & stParams.module>
+		 			<cfset stResult.bodyInclude = "/farcry/projects/#application.projectDirectoryName#/customadmin/" & stParams.module>
+					<cfif NOT fileExists(expandPath(stResult.bodyInclude))>
+		 				<cfset stResult.bodyInclude = "/farcry/core/webtop/customadmin/" & stParams.module>
 					</cfif>
 				</cfif>
 			<cfelse>
-				<cfset bodyInclude = "/farcry/core/webtop/" & itemLink>
+				<cfset stResult.bodyInclude = "/farcry/core/webtop/" & itemLink>
 			</cfif>
 		</cfif>
 
-		<cfreturn bodyInclude>
+		<cfreturn stResult>
 	</cffunction>
 
 </cfcomponent>
