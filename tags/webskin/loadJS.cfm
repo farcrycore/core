@@ -20,6 +20,7 @@
 	<cfparam name="attributes.append" default=""><!--- any JS to append to the end of the script block --->
 	<cfparam name="attributes.bCombine" default=""><!--- Should the files be combined into a single cached js file. Passing true/false will override how it was registered. --->
 	
+	
 	<cfif len(trim(thisTag.generatedContent))>
 		<cfset attributes.append = "#attributes.append##thisTag.generatedContent#" />
 		<cfset thisTag.generatedContent = "" />
@@ -59,6 +60,7 @@
 			<cfset stJS.bCombine = application.fc.stJSLibraries[stJS.id].bCombine />
 		</cfif>
 		<cfset stJS.aliasof = application.fc.stJSLibraries[stJS.id].aliasof />
+		
 		<cfset stJS.core = application.fc.stJSLibraries[stJS.id].core />
 	<cfelse>
 		<cfif not isBoolean(stJS.bCombine)>
@@ -108,7 +110,11 @@
 	
 	<cfelse>
 	
-		<cfset stJS = request.inHead.stJSLibraries[stJS.id] />
+		<cfif structKeyExists(request.inHead.stJSLibraries, stJS.id)>
+			<cfset stJS = request.inHead.stJSLibraries[stJS.id] />
+		<cfelse>
+			<cfset stJS = request.inHead.stJSLibraries[stJS.aliasof] />
+		</cfif>
 	
 	</cfif>
 	
