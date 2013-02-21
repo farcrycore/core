@@ -54,7 +54,7 @@
 			<cfset classID = stNew.objectid />
 		</cfif>
 		
-		<cfset stResult = getData(objectid="#classID#") />		
+		<cfset stResult = getData(typename="farCoapi", objectid="#classID#") />		
 		
 		<cfif not structKeyExists(application.coapiID, "#arguments.name#")>
 			<cfset application.coapiID["#arguments.name#"] = stResult.objectid />
