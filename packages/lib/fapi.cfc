@@ -448,7 +448,7 @@
 		<cfargument name="prepend" default="" hint="Any JS code you wish to have placed before the library." />
 		<cfargument name="append" default="" hint="Any JS code you wish to have placed after the library." />
 		<cfargument name="bCombine" default="true" hint="Should the files be combined into a single cached js file.">
-		<cfargument name="alias" default="" hint="Flags this library as an alias of an existing one. The original library must already have been registered.">
+		<cfargument name="aliasof" default="" hint="Flags this library as an alias of an existing one. The original library must already have been registered.">
 		<cfargument name="core" default="false" hint="Flags this library as being a core library. This library should only be directly referenced by core.">
 		
 		<cfparam name="application.fc.stJSLibraries" default="#structNew()#" />
