@@ -81,11 +81,11 @@
 				<!--- Soft reference is empty: cache entry must have been recycled --->
 				<cfset stCacheEntry.bDead = true />
 				<cfset trackObjectEvent(eventname="nullhit",typename=arguments.typename,objectid=arguments.objectid) /> 
-				<cftrace type="warning" category="coapi" var="arguments.typename" text="Broker recycled reference hit.">
+				<!--- <cftrace type="warning" category="coapi" var="arguments.typename" text="Broker recycled reference hit."> --->
 			<cfelseif structKeyExists(stCacheEntry,"stobj")>
 				<!--- Cache hit --->
 				<cfset trackObjectEvent(eventname="hit",typename=arguments.typename,objectid=arguments.objectid) />
-				<cftrace type="information" category="coapi" var="stobj.typename" text="Broker object cache hit.">
+				<!--- <cftrace type="information" category="coapi" var="stobj.typename" text="Broker object cache hit."> --->
 			<cfelse>
 				<!--- Cache miss: entry was snatched from right under our nose!--->
 				<cfset trackObjectEvent(eventname="miss",typename=arguments.typename,objectid=arguments.objectid) />
@@ -147,7 +147,7 @@
 
 		<cfif arguments.typename EQ "farCoapi">
 			<!--- This means its a type webskin and we need to look for the timeout value on the related type. --->			
-			<cfset stCoapi = application.fc.factory['farCoapi'].getData(objectid="#arguments.objectid#") />
+			<cfset stCoapi = application.fc.factory['farCoapi'].getData(typename="farCoapi", objectid="#arguments.objectid#") />
 			<cfset webskinTypename = stCoapi.name />
 		</cfif>
 
@@ -492,7 +492,7 @@
 		
 		<cfif arguments.typename EQ "farCoapi">
 			<!--- This means its a type webskin and we need to look for the timeout value on the related type. --->		
-			<cfset stCoapi = application.fc.factory['farCoapi'].getData(objectid="#arguments.objectid#") />
+			<cfset stCoapi = application.fc.factory['farCoapi'].getData(typename="farCoapi", objectid="#arguments.objectid#") />
 			<cfset webskinTypename = stCoapi.name />
 		</cfif>
 		
@@ -602,6 +602,7 @@
 		
 		<cfset var bSuccess = false />
 		<cfset var stCacheEntry = structNew() />
+		<cfset var aObjectIds = arrayNew(1) />
 		
 		<cfif application.bObjectBroker>
 			<!--- if the type is to be stored in the objectBroker --->
@@ -612,7 +613,21 @@
 				
 				<cflock name="objectBroker-#application.applicationname#-#arguments.typename#" type="exclusive" timeout="2" throwontimeout="true">
 					<cfif putObjectCacheEntry(stCacheEntry=stCacheEntry, objectid=arguments.stObj.objectid, typename=arguments.typename)>
-						<!--- Add the objectid to the end of the FIFO array so we know its the latest to be added --->
+						
+						<!--- Remove it first in case we are here because of a missing soft reference object --->
+						<cfset aObjectIds = ListToArray(arguments.stObj.ObjectID)>				
+						
+						<cfswitch expression="#server.coldfusion.productname#">
+							<cfcase value="Railo">
+								<cfset oCaster = createObject('java','railo.runtime.op.Caster') />
+								<cfset application.objectBroker[arguments.typename].aObjects.removeAll(oCaster.toList(aObjectIds)) />
+							</cfcase>
+							<cfdefaultcase>
+								<cfset application.objectBroker[arguments.typename].aObjects.removeAll(aObjectIds) >
+							</cfdefaultcase>
+						</cfswitch>		
+						
+						<!--- Add the objectid to the end of the FIFO array so we know its the latest to be added --->						
 						<cfset arrayappend(application.objectbroker[arguments.typename].aObjects,arguments.stObj.ObjectID)>
 						<cfset bSuccess = true />
 					</cfif>
@@ -700,20 +715,20 @@
 
 		<cfif application.bObjectBroker and len(arguments.typename)>
 			
-				<!--- Remove any ancestor webskins that include a fragment of this object --->
-				<cfloop list="#arguments.lObjectIDs#" index="i">				
-					
-						<!--- Find any ancestor webskins and delete them as well --->
+			<!--- Remove any ancestor webskins that include a fragment of this object --->
+			<cfloop list="#arguments.lObjectIDs#" index="i">				
+			
+				<!--- Find any ancestor webskins and delete them as well --->
 				<cfset qWebskinAncestors = oWebskinAncestor.getAncestorWebskins(webskinObjectID=i, webskinTypename=arguments.typename) />
-							
-						<cfif qWebskinAncestors.recordCount>
-							<cfloop query="qWebskinAncestors">
+				
+				<cfif qWebskinAncestors.recordCount>
+					<cfloop query="qWebskinAncestors">
 						<cfset bSuccess = removeWebskin(objectid=qWebskinAncestors.ancestorID,typename=qWebskinAncestors.ancestorRefTypename,template=qWebskinAncestors.ancestorTemplate) />
-							</cfloop>
-						</cfif>
+					</cfloop>
+				</cfif>
 				
-				</cfloop>
-				
+			</cfloop>
+			
 			<cfif structkeyexists(application.objectbroker, arguments.typename)>	
 				<!--- Remove all references to these objects --->
 				<cflock name="objectBroker-#application.applicationname#-#arguments.typename#" type="exclusive" timeout="2" throwontimeout="true">
