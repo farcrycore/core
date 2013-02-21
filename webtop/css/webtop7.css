@@ -452,9 +452,6 @@ table.table .checkbox {
 .objectadmin-actions .btn {
 	margin-right: -2px;
 }
-.objectadmin-actions .only-icon {
-	
-}
 .uniForm .btn.btn-primary {
 	background: #4b8bba;
 	text-shadow: none;
@@ -548,15 +545,15 @@ table.table .checkbox {
 
 
 /* farcry object admin edit button */
-table.table .btn {
+.farcry-objectadmin .btn {
 
 }
-table.table .btn-edit:hover {
+.farcry-objectadmin .btn-edit:hover {
 	background: #ff9900;
 	text-shadow: none;
 	color: #fff;
 }
-table.table .btn-edit:active {
+.farcry-objectadmin .btn-edit:active {
 	background: #dd7700;
 	text-shadow: none;
 	color: #fff;

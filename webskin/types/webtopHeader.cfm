@@ -13,10 +13,10 @@
 
 <!--- init user profile info --->
 <cfset webtopUsername = "FarCry User">
-<cfif structKeyExists(session.dmProfile,"firstname")>
+<cfif structKeyExists(session.dmProfile,"firstname") AND len(session.dmProfile.firstname)>
 	<cfset webtopUsername = session.dmProfile.firstname>
 </cfif>
-<cfif structKeyExists(session.dmProfile,"lastname")>
+<cfif structKeyExists(session.dmProfile,"lastname") AND len(session.dmProfile.lastname)>
 	<cfset webtopUsername = webtopUsername & " " & session.dmProfile.lastname>
 </cfif>
 
@@ -57,9 +57,11 @@
 						</admin:loopwebtop>
 
 					</ul>
+<!--- 
 					<div class="farcry-header-environment">
 						STAGING SERVER (stage.daemon.com.au)
 					</div>
+ --->
 				</div>
 				<div class="farcry-header-utility">
 					<div class="farcry-header-logo">
