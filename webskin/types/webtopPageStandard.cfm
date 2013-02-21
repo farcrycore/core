@@ -3,19 +3,20 @@
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
+<cfparam name="stParam.bodyInclude" default="">
 
-<skin:viewlite typename="dmHTML" webskin="webtopHeader" />
+<skin:view typename="dmHTML" webskin="webtopHeader" />
 
 <!--- body --->
 <cfif isValid("uuid", url.objectid)>
 	<skin:view objectid="#url.objectid#" typename="#url.typename#" webskin="#url.bodyView#" />
-<cfelseif structKeyExists(attributes, "bodyInclude") AND len(attributes.bodyInclude)>
-	<cfmodule template="#attributes.bodyInclude#">
+<cfelseif structKeyExists(stParam, "bodyInclude") AND len(stParam.bodyInclude)>
+	<cfmodule template="#stParam.bodyInclude#">
 <cfelse>
-	<skin:viewlite typename="#url.typename#" webskin="#url.bodyView#" />
+	<skin:view typename="#url.typename#" webskin="#url.bodyView#" />
 </cfif>
 
-<skin:viewlite typename="dmHTML" webskin="webtopFooter" />
+<skin:view typename="dmHTML" webskin="webtopFooter" />
 
 
 <cfsetting enablecfoutputonly="false">

@@ -87,7 +87,7 @@ match attributes, in priority order:
 
 <!--- show standard webtop page --->
 
-	<skin:viewlite typename="#url.typename#" webskin="#url.view#" bodyInclude="#bodyInclude#" />
+	<skin:view typename="#url.typename#" webskin="#url.view#" bodyInclude="#bodyInclude#" />
 
 
 <cfsetting enablecfoutputonly="false">
