@@ -5,6 +5,13 @@
 			</div>
 		</div>
 
+		<div class="farcry-footer container-fluid">
+			<div class="row-fluid">
+				<div class="span12">
+					Copyright &copy; <a href="http://www.daemon.com.au" target="_blank">Daemon</a> 1997-#year(now())#, #application.sysInfo.farcryVersionTagLine#
+				</div>
+			</div>
+		</div>
 
 		<script src="js/jquery.js"></script>
 		<script src="js/bootstrap.min.js"></script>

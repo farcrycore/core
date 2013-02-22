@@ -5,12 +5,12 @@
 	primary tab inactive gradient: f2f2f2 (top) dddddd (bottom)
 
 	secondary nav bg blue: 166ca8
-	secondary nav bottom border blue: 4b8bba	<--- same as primary button
-	secondary tab active blue: 5b90b6
+	secondary nav bottom border blue: 3e84b5
+	secondary tab active blue: 3e84b5
 
 	dropdown nav active blue: dae8f2
 
-	primary button blue: 4b8bba					<--- same as secondary nav bottom border
+	primary button blue: 3e84b5
 	button hover: 555555
 	button normal: dddddd
 	button edit orange: ff9900
@@ -43,7 +43,8 @@ body {
 }
 body.webtop {
 	padding-top: 128px;
-	background: #fff url(images/pw_maze_white.png) repeat-x 0 95px;	
+	/*background: #fff url(images/pw_maze_white.png) repeat 0 95px;*/
+	background: #eee;
 }
 
 
@@ -152,9 +153,9 @@ a:hover {
 /* customise bootstrap nav for the secondary farcry nav bar */
 .navbar .farcry-secondary-nav .navbar-inner {
 	border-top: 3px solid #0e65a2; /* @fc-primary-tab-active */;
-	background: #166ca8 url(images/webtop-nav-bg.png) repeat-x 0 0;
+	background: #0e65a2;
 	filter: none;
-	border-bottom: 1px solid #4b8bba; /* @fc-secondary-nav-bottom */
+	border-bottom: 1px solid #0e65a2; /* @fc-secondary-nav-bottom */
 	min-height: 36px;
 
 	font-weight: bold;
@@ -174,7 +175,7 @@ a:hover {
 .navbar .farcry-secondary-nav .navbar-inner .nav > .active > a:hover,
 .navbar .farcry-secondary-nav .navbar-inner .nav > .active > a:focus {
 	color: #fff;
-	background: #5b90b6;
+	background: #3e84b5;
 	box-shadow: none;
 }
 
@@ -183,12 +184,12 @@ a:hover {
 }
 
 .navbar .farcry-secondary-nav .nav > li.dropdown.open .dropdown-toggle {
-	background: #5b90b6; /* @fc-secondary-tab-active */
+	background: #3e84b5; /* @fc-secondary-tab-active */
 	color: #fff;
 	text-shadow: 0 1px 1px rgba(0,0,0,0.25);
 }
 .navbar .farcry-secondary-nav .nav > li:hover > a {
-	background: #5b90b6; /* @fc-secondary-tab-active */
+	background: #3e84b5; /* @fc-secondary-tab-active */
 	color: #fff;
 	text-shadow: 0 1px 1px rgba(0,0,0,0.25);
 }
@@ -219,7 +220,7 @@ a:hover {
 }
 
 .dropdown .dropdown-mega-menu {
-	border: 3px solid #5b90b6; /* @fc-secondary-tab-active */
+	border: 3px solid #3e84b5; /* @fc-secondary-tab-active */
 	border-radius: 0;
 	margin-top: -1px;
 	padding-top: 5px;
@@ -275,7 +276,7 @@ a:hover {
 /* customise bootstrap dropdown menu */
 .dropdown .dropdown-menu {
 /*
-	border: 3px solid #5b90b6; // @fc-secondary-tab-active
+	border: 3px solid #3e84b5; // @fc-secondary-tab-active
 */
 	border-radius: 0;
 	margin-top: -1px;
@@ -360,6 +361,30 @@ a:hover {
 }
 
 
+.farcry-main {
+	background: white;
+	border: 1px solid #E3E3E3;
+	border-radius: 2px 2px 2px 2px;
+	margin: -8px 8px 8px 8px;
+	padding-top: 10px;	
+}
+
+.farcry-footer {
+	/*background: #ccc;*/
+}
+.farcry-footer .span12 {
+	text-align: right;
+	color: #aaa;
+	font-size: 80%;
+}
+.farcry-footer a {
+	color: #999;
+}
+.farcry-footer strong {
+	font-weight: normal;
+}
+
+
 
 /* customise bootstrap table styles */
 table.table th {
@@ -416,7 +441,7 @@ table.table .checkbox {
 	background: #cccccc;
 }
 .btn-primary {
-	background: #4b8bba;
+	background: #3e84b5;
 	text-shadow: none;
 	color: #fff;
 }
@@ -452,8 +477,36 @@ table.table .checkbox {
 .objectadmin-actions .btn {
 	margin-right: -2px;
 }
+
+.objectadmin-actions .jquery-ui-split-button .btn {
+	background: #e8e8e8;
+	border-radius: 0 !important;
+	border: 0;
+	margin: 0 -2px 0 0;
+	padding: 4px 12px;
+	color: #555;
+	box-shadow: 0 0 1px rgba(0,0,0,0.25) inset;
+	font-family: Helvetica, Arial, sans-serif;
+}
+.objectadmin-actions .jquery-ui-split-button .btn .ui-button-text {
+	padding: 0;
+	line-height: inherit;
+}
+.objectadmin-actions .jquery-ui-split-button .btn:hover,
+.objectadmin-actions .jquery-ui-split-button .btn:focus {
+	background: #f8f8f8;
+	box-shadow: 0 0 1px rgba(0,0,0,0.4) inset;
+	/*text-shadow: 0 1px 1px #000;*/
+	/*color: #fff;*/
+}
+.objectadmin-actions .jquery-ui-split-button .btn:active {
+	background: #cccccc;
+}
+
+
+
 .uniForm .btn.btn-primary {
-	background: #4b8bba;
+	background: #3e84b5;
 	text-shadow: none;
 	color: #fff;
 	border: none;
