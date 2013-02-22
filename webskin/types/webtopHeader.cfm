@@ -36,7 +36,7 @@
 <!--- /TODO: register --->
 
 	<skin:loadCSS id="webtop" baseHREF="#application.url.webtop#/css" lFiles="webtop7.css,main7.css" />
-
+	<skin:loadJS id="fc-jquery" />
 
 </head>
 <body id="sec-#url.sec#" class="webtop">

@@ -419,7 +419,12 @@ table.table .checkbox {
 	margin-top: -2px;
 	padding: 0;
 }
-
+th.objectadmin-sortable span {
+	cursor: pointer;
+}
+th.objectadmin-sortable span:hover {
+	text-decoration: underline;
+}
 
 /* customise bootstrap button styles */
 .btn {

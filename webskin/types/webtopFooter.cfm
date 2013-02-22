@@ -13,31 +13,30 @@
 			</div>
 		</div>
 
-		<script src="js/jquery.js"></script>
 		<script src="js/bootstrap.min.js"></script>
 
 		<script type="text/javascript">
-		$(function(){
+		$j(function(){
 
 			/* enable bootstrap menus to work on hover */
-			$(".farcry-secondary-nav .nav > li.dropdown").hover(function(){
-				clearTimeout($.data(this, "timer"));
-				$("li.open").removeClass("open");
-				$(this).addClass("open");
+			$j(".farcry-secondary-nav .nav > li.dropdown").hover(function(){
+				clearTimeout($j.data(this, "timer"));
+				$j("li.open").removeClass("open");
+				$j(this).addClass("open");
 			}, function(){
 				var dropdown = this;
-				$.data(this, "timer", setTimeout(function() {
-					$(dropdown).removeClass("open");
+				$j.data(this, "timer", setTimeout(function() {
+					$j(dropdown).removeClass("open");
 				}, 1000));
 			});
 
 			/* allow a clicked dropdown link in the secondary nav to stay open */
-			$(".farcry-secondary-nav").on("click", ".nav > li.open > a", function(evt){
+			$j(".farcry-secondary-nav").on("click", ".nav > li.open > a", function(evt){
 				return false;
 			});
 
 			/* testing tooltips */
-			$(".fc-tooltip").tooltip();
+			$j(".fc-tooltip").tooltip();
 
 		});
 		</script>

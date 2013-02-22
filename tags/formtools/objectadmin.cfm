@@ -929,12 +929,40 @@ user --->
 								<cfset headerColumnStyle = "width: 10em;">
 							</cfif>
 
-								
-							<cfif isDefined("PrimaryPackage.stProps.#trim(i)#.metadata.ftLabel")>
-								<cfoutput><th style="#headerColumnStyle#">#o.getI18Property(i,"label")#</th></cfoutput>
-							<cfelse>
-								<cfoutput><th style="#headerColumnStyle#">#i#</th></cfoutput>
+							<cfset orderField = listFirst(session.objectadminFilterObjects[attributes.typename].sqlOrderBy, " ")>
+							<cfset orderDirection = listLast(session.objectadminFilterObjects[attributes.typename].sqlOrderBy, " ")>
+
+							<cfset sortableClass = "">
+							<cfset sortableDirection = "">
+							<cfif listFindNoCase(attributes.sortableColumns, i)>
+								<cfset sortableClass = "objectadmin-sortable">
+								<cfif orderField eq i>
+									<cfset sortableDirection = orderDirection>
+								<cfelse>
+									<cfset sortableDirection = "DESC">
+								</cfif>
 							</cfif>
+								
+							<cfoutput>
+								<th class="#sortableClass#" data-field="#i#" data-direction="#sortableDirection#" data-form="#request.farcryForm.name#" style="#headerColumnStyle#">
+								<span>
+									<cfif isDefined("PrimaryPackage.stProps.#trim(i)#.metadata.ftLabel")>
+										#o.getI18Property(i,"label")#
+									<cfelse>
+										#i#
+									</cfif>
+
+									<cfif orderField eq i>
+										<cfif orderDirection eq "ASC">
+											<i class="icon-caret-up"></i>
+										<cfelseif orderDirection eq "DESC">
+											<i class="icon-caret-down"></i>
+										</cfif>
+									</cfif>
+								</span>
+								</th>
+							</cfoutput>
+
 							
 						</cfloop>
 						
@@ -1133,6 +1161,25 @@ user --->
 	
 	</ft:form>
 
+	<cfoutput>
+		<script type="text/javascript">
+			$j(function(){
+				$j(".farcry-objectadmin").on("click", "th.objectadmin-sortable span", function() {
+					var f = $j(this).closest("form");
+					var th = $j(this).parent();
+					var sortOrder = th.data("field");
+					if (th.data("direction") == "DESC") {
+						sortOrder += " ASC";
+					}
+					else {
+						sortOrder += " DESC";
+					}
+					f.find("##sqlOrderBy").val(sortOrder);
+					btnSubmit(th.data("form"), 'sort');
+				});
+			});
+		</script>
+	</cfoutput>
 
 </cfif> 
 
