@@ -1049,10 +1049,19 @@ user --->
 								<cfoutput><td class="objectadmin-actions" nowrap="nowrap" style="text-align:center;padding:3px 5px;">#st.action#</td></cfoutput>
 							</cfif>
 					 		<cfif structKeyExists(st,"bHasMultipleVersion")>
-						 		<cfoutput><td style="width:20px;white-space:nowrap;">#application.rb.getResource("constants.status.#st.status#@label",st.status)#</td></cfoutput>
+					 			<cfset statusOutput = application.rb.getResource("constants.status.#st.status#@label",st.status)>
+								<cfif structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true>
+						 			<cfif st.status eq "draft">
+							 			<cfset statusOutput = "<span class='label label-warning'>" & statusOutput & "</span>">
+							 		<cfelseif st.status eq "approved">
+							 			<cfset statusOutput = "<span class='label label-info'>" & statusOutput & "</span>">
+							 		<cfelseif st.status eq "draft/approved">
+							 			<cfset statusOutput = "<span class='label label-warning'>" & statusOutput & "</span>">
+							 			<cfset statusOutput = replace(statusOutput, " + ", "</span> + <span class='label label-info'>", "one")>
+						 			</cfif>
+						 		</cfif>
+						 		<cfoutput><td style="white-space:nowrap;">#statusOutput#</td></cfoutput>
 							</cfif>
-							
-							
 	
 							<cfif arrayLen(attributes.aCustomColumns)>
 								<cfset oType = createObject("component", PrimaryPackagePath) />
@@ -1083,6 +1092,14 @@ user --->
 							
 								<cfloop list="#attributes.columnlist#" index="i">
 									<cfif structKeyExists(stFields, i)>
+										<cfif i eq "status" AND structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true>
+											<cfset stFields[i].HTML = reReplace(stFields[i].HTML, "(.)", "\u\1", "one")>
+											<cfif stFields[i].HTML eq "draft">
+												<cfset stFields[i].HTML = "<span class='label label-warning'>#stFields[i].HTML#</span>">
+											<cfelseif stFields[i].HTML eq "approved">
+												<cfset stFields[i].HTML = "<span class='label label-info'>#stFields[i].HTML#</span>">
+											</cfif>
+										</cfif>
 										<cfoutput><td>#stFields[i].HTML#</td></cfoutput>			
 									<cfelse>
 										<cfoutput><td>-- not available --</td>	</cfoutput>			
@@ -1137,15 +1154,10 @@ user --->
 
 
 	<cfif structKeyExists(arguments.st, "bHasMultipleVersion") AND arguments.st.bHasMultipleVersion>
-		<cfif structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true>
-			<cfset stObjectAdminData.status = "<label class='label label-warning'>Draft</label> + <label class='label label-info'>Approved</label>" />
-		<cfelse>
-			<cfset stObjectAdminData.status = "draft/approved" />
-		</cfif>
+		<cfset stObjectAdminData.status = "draft/approved" />
 	<cfelseif structKeyExists(arguments.st, "status")>
-		<cfset stObjectAdminData.status = arguments.st.status />
+		<cfset stObjectAdminData.status = arguments.st.status>
 	</cfif>
-
 	
 	
 	<cfif structIsEmpty(arguments.stPermissions)>
