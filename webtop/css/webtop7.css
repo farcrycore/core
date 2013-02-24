@@ -408,6 +408,9 @@ table.table-hover tbody tr:hover > td {
 .farcry-objectadmin {
 	margin-top: 1em;
 }
+.farcry-objectadmin input[type="checkbox"] {
+	margin: 0;
+}
 table.table td.actions {
 	padding: 3px;
 }
@@ -478,6 +481,11 @@ th.objectadmin-sortable span:hover {
 /* overrides for existing farcry objectadmin buttons */
 .btn.small {
 	font-size: inherit;
+}
+.objectadmin-actions {
+	text-align: left !important;
+	padding: 3px;
+	padding-right: 12px;
 }
 .objectadmin-actions .btn {
 	margin-right: -2px;

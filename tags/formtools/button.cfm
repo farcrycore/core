@@ -209,6 +209,10 @@
 				<cfif attributes.icon eq "pencil">
 					<cfset attributes.text = "Edit">
 				</cfif>
+				<cfif attributes.icon eq "unlocked">
+					<cfset attributes.icon = "unlock">
+					<cfset attributes.text = "Unlock">
+				</cfif>
 				<cfif attributes.icon eq "triangle-1-s">
 					<cfset attributes.icon = "caret-down only-icon">
 				</cfif>

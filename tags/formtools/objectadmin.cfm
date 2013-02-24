@@ -864,28 +864,19 @@ user --->
 					<table width="100%" class="objectAdmin">
 				</cfif>
 
-					<cfif attributes.bSelectCol>
-						<col style="width:10px;" />
-					</cfif>
-					<cfif attributes.bShowActionList>
-						<col style="width:25px;" />
-					</cfif>
-					<cfif structKeyExists(st,"bHasMultipleVersion")>
-						<col style="width:50px;" />
-					</cfif>
 				<thead>
 					<tr class="#st.currentRowClass#">			
 				</cfoutput>
 				
-				 		<cfif attributes.bSelectCol><cfoutput><th><cfif attributes.bCheckAll><input type="checkbox" id="checkall" name="checkall" onclick="checkUncheckAll(this);" title="Check All" /><cfelse>Select</cfif></th></cfoutput></cfif>
+				 		<cfif attributes.bSelectCol><cfoutput><th style="width:1.5em;"><cfif attributes.bCheckAll><input type="checkbox" id="checkall" name="checkall" onclick="checkUncheckAll(this);" title="Check All" /><cfelse>Select</cfif></th></cfoutput></cfif>
 				 		
 						
 						<cfif attributes.bShowActionList>
-							<cfoutput><th>#application.rb.getResource('objectadmin.columns.action@label','Action')#</th></cfoutput>
+							<cfoutput><th style="width:10em;">#application.rb.getResource('objectadmin.columns.action@label','Action')#</th></cfoutput>
 						</cfif>
 						
 						<cfif structKeyExists(st,"bHasMultipleVersion")>
-					 		<cfoutput><th>#application.rb.getResource('objectadmin.columns.status@label',"Status")#</th></cfoutput>
+					 		<cfoutput><th style="width:9em;">#application.rb.getResource('objectadmin.columns.status@label',"Status")#</th></cfoutput>
 						</cfif>
 						<!---<cfif attributes.bEditCol><th>Edit</th></cfif>
 						<cfif attributes.bViewCol><th>View</th></cfif>
