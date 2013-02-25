@@ -4,8 +4,10 @@
 	
 	<cfif structkeyexists(server,"railo")>
 		<cfreturn "railo" />
-	<cfelseif structkeyexists(server,"coldfusion")>
+	<cfelseif structkeyexists(server,"coldfusion") and structkeyexists(server.coldfusion,"productversion") and listfirst(server.coldfusion.productversion) lte "9">
 		<cfreturn "coldfusion" />
+	<cfelseif structkeyexists(server,"coldfusion") and structkeyexists(server.coldfusion,"productversion") and listfirst(server.coldfusion.productversion) gt "9">
+		<cfreturn "coldfusion-tomcat" />		
 	<cfelse>
 		<cfreturn "unknown" />
 	</cfif>

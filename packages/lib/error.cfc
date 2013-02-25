@@ -96,7 +96,7 @@
 		<cfelse>
 			<cfset stResult["machinename"] = "Unknown" />
 		</cfif>
-		<cfif isdefined("application.sysInfo.machineName")>
+		<cfif isdefined("application.sysInfo.instanceName")>
 			<cfset stResult["instancename"] = application.sysInfo.instanceName />
 		<cfelse>
 			<cfset stResult["instancename"] = "Unknown" />
