@@ -170,6 +170,7 @@
 							homeclass=homeclass & ' #attributes.ActiveClass# ';
 						}
 						writeOutput(" class="""&trim(homeclass)&"""");
+						
 						homeURL = application.fapi.getLink(alias=attributes.homeAlias);
 						if (len(homeURL)){
 							writeOutput("><a href=""#homeURL#"">");
@@ -220,7 +221,7 @@
 				}
 				// write the link
 				writeOutput("><a href="""&href&"""");
-				if (structkeyexists(qNav,"target") and len(qNav.target)) writeOutput("target='#qNav.target[i]#'");
+				if (structkeyexists(qNav,"target") and len(trim(qNav.target[i]))) writeOutput(' target="#qNav.target[i]#"');
 				writeOutput(">");
 				if(attributes.bSpan) writeOutput("<span>");
 				writeOutput(trim(qNav.ObjectName[i]));
