@@ -65,7 +65,7 @@
 		<cfif listFindNoCase(GetBaseTagList(),"cf_splitButton") AND attributes.renderType EQ "link">
 			<!--- NO PRIORITY IN SPLIT BUTTON LINKS --->
 		<cfelse>
-			<cfset attributes.class = listAppend(attributes.class, "ui-priority-#attributes.priority#", " ")>
+			<cfset attributes.class = listAppend(attributes.class, "ui-priority-#attributes.priority# btn-#attributes.priority#", " ")>
 		</cfif>
 	</cfif>
 	

@@ -453,6 +453,7 @@ th.objectadmin-sortable span:hover {
 	background: #3e84b5;
 	text-shadow: none;
 	color: #fff;
+	box-shadow: 0 0 1px rgba(0,0,0,0.4) inset;
 }
 .btn-primary:hover,
 .btn-primary:focus {
@@ -524,6 +525,7 @@ th.objectadmin-sortable span:hover {
 	text-shadow: none;
 	color: #fff;
 	border: none;
+	box-shadow: 0 0 1px rgba(0,0,0,0.4) inset;
 }
 .uniForm .btn.btn-primary:hover,
 .uniForm .btn.btn-primary:focus {

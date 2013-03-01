@@ -59,6 +59,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <!---<cfset editobjectURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=##recordset.objectID[recordset.currentrow]##&typename=avnArticle&method=edit&ref=typeadmin&module=customlists/avnArticle.cfm" />
  --->
 
+<cfparam name="form.q" default="">
 
 <cfparam name="form.Criteria" default="" />
 <cfparam name="pluginURL" default="" /><!--- used in case we are in a plugin object admin --->
@@ -363,6 +364,23 @@ user --->
 							
 						</cfif>
 					</cfloop>
+
+				<!--- simple search --->
+				<cfoutput>
+					<cfif len(form.q) AND (structKeyExists(PrimaryPackage.stProps, "label") OR structKeyExists(PrimaryPackage.stProps, "title") OR structKeyExists(PrimaryPackage.stProps, "name"))>
+						AND ( 1=2
+							<cfif structKeyExists(PrimaryPackage.stProps, "label")>
+								OR label LIKE '%#form.q#%'
+							</cfif>
+							<cfif structKeyExists(PrimaryPackage.stProps, "title")>
+								OR title LIKE '%#form.q#%'
+							</cfif>
+							<cfif structKeyExists(PrimaryPackage.stProps, "name")>
+								OR name LIKE '%#form.q#%'
+							</cfif>
+						)
+					</cfif>
+				</cfoutput>
 				
 			</cfsavecontent>
 	
@@ -413,7 +431,7 @@ user --->
 		
 		<cfset stRecordset = oFormtoolUtil.getRecordset(paginationID="#attributes.typename#", sqlColumns=sqlColumns, typename="#attributes.typename#", RecordsPerPage="#attributes.numitems#", sqlOrderBy="#session.objectadminFilterObjects[attributes.typename].sqlOrderBy#", sqlWhere="#attributes.sqlWhere#", lCategories="#attributes.lCategories#", bCheckVersions=true) />	
 	</cfif>
-	
+
 
 	<!------------------------
 	PROCESS THE FORM
@@ -698,47 +716,47 @@ user --->
 	
 
 
+<!--- 
 	<cfif structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true>
+ --->
 
-		<cfoutput>
-			<div class="input-prepend input-append pull-right" style="position: relative; z-index:2">
-				<button class="btn fc-tooltip" style="height: 30px; border-radius:0" data-toggle="tooltip" data-placement="top" title="" data-original-title="Advanced Filtering"><b class="icon-menu only-icon"></b></button>
-				<input class="span2" type="text" placeholder="Search..." style="width: 240px;">
-				<button class="btn" style="height: 30px; border-radius:0"><b class="icon-search only-icon"></b></button>
-			</div>				
-		</cfoutput>
 
-	<cfelse>		
-
-		<!--- ONLY SHOW THE FILTERING IF WE HAVE RECORDS OR IF WE ARE ALREADY FILTERING --->
-		<cfif listLen(attributes.lFilterFields) AND (listLen(HTMLfiltersAttributes) OR stRecordset.q.recordCount)>
-			<ft:form Name="#attributes.name#Filter" Validation="#attributes.bFilterValidation#">	
+	<!--- ONLY SHOW THE FILTERING IF WE HAVE RECORDS OR IF WE ARE ALREADY FILTERING --->
+	<cfif listLen(attributes.lFilterFields) AND (listLen(HTMLfiltersAttributes) OR stRecordset.q.recordCount)>
+		<ft:form Name="#attributes.name#Filter" Validation="#attributes.bFilterValidation#">	
+			<cfif NOT (structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true)>
 				<ft:button type="button" value="Filter" icon="ui-icon-search" class="small" priority="primary" style="" text="#application.rb.getResource('objectadmin.messages.Filtering@text','Show Filter')#" onclick="$j('##filterForm').toggle('blind');" />
-					
-				<cfoutput>
-				<div id="filterForm" style="<cfif not listLen(HTMLfiltersAttributes)>display:none;</cfif>text-align:center;clear:both;">
-					<grid:div class="fc-shadowbox" style="width:600px;">
-					
-						<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" stPropMetaData="#attributes.stFilterMetaData#" bValidation="#attributes.bFilterValidation#" />
-						
-						<ft:buttonPanel style="margin-bottom:0px;">
-							<ft:button value="Apply Filter" rbkey="#attributes.rbkey#.applyfilter" class="small" />
-							<cfif len(HTMLfiltersAttributes)>	
-								<ft:button value="Clear Filter" validate="false" rbkey="#attributes.rbkey#.clearfilter" class="small" />
-							</cfif>
-						</ft:buttonPanel>
-					</grid:div>
-					<br style="clear:both;" />
-				</div>
-				</cfoutput>
-			</ft:form>
-			
-			
-		</cfif>
-
-	</cfif>
-	
+			</cfif>
 				
+			<cfoutput>
+			<div id="filterForm" style="<cfif not listLen(HTMLfiltersAttributes)>display:none;</cfif>clear:both;">
+				<grid:div class="fc-shadowbox" style="width:600px;">
+					<h3>Advanced Filtering</h3>
+					<ft:object objectid="#session.objectadminFilterObjects[attributes.typename].stObject.objectid#" typename="#attributes.typename#" lFields="#attributes.lFilterFields#" lExcludeFields="" includeFieldset="false" stPropMetaData="#attributes.stFilterMetaData#" bValidation="#attributes.bFilterValidation#" />
+					
+					<ft:buttonPanel style="margin-bottom:0px;">
+						<ft:button value="Apply Filter" rbkey="#attributes.rbkey#.applyfilter" class="small" />
+						<cfif len(HTMLfiltersAttributes)>	
+							<ft:button value="Clear Filter" validate="false" rbkey="#attributes.rbkey#.clearfilter" class="small" />
+						</cfif>
+					</ft:buttonPanel>
+				</grid:div>
+				<br style="clear:both;" />
+			</div>
+			</cfoutput>
+		</ft:form>
+	</cfif>
+
+
+	<cfif structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true>
+		<cfoutput>
+			<form action="" method="post" class="input-prepend input-append pull-right" style="position: relative; z-index:2">
+				<button type="button" class="btn fc-tooltip" onclick="$j('##filterForm').toggle('blind'); " style="height: 30px; border-radius:0" data-toggle="tooltip" data-placement="top" title="" data-original-title="Advanced Filtering"><b class="icon-menu only-icon"></b></button>
+				<input name="q" class="span2" type="text" placeholder="Search..." value="#form.q#" style="width: 240px;">
+				<button class="btn" style="height: 30px; border-radius:0"><b class="icon-search only-icon"></b></button>
+			</form>				
+		</cfoutput>
+	</cfif>
 			
 	
 	<ft:form Name="#attributes.name#">
