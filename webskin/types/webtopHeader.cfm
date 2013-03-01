@@ -69,7 +69,13 @@
 					</div>
 					<div class="farcry-header-user dropdown">
 						<div class="farcry-header-profile dropdown-toggle" data-toggle="dropdown">
-							<img src="images/avatar.png">
+							<span class="avatar">
+								<!--- cfif avtar in profile then... --->
+									<!--- <img src="images/avatar.png"> --->
+								<!--- cfelse --->
+									<i class="icon-user"></i>
+								<!--- /cfif --->
+							</span>
 							<i class="cog"><b class="icon-cog"></b></i>
 
 							<span>#webtopUsername# &nbsp;<b class="icon-caret-down"></b></span>

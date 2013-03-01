@@ -25,7 +25,7 @@ Instead of a list of all class selectors,
 you can use the generic selector below, but it's slower:
 [class*="icon-"]:before {
 */
-.icon-caret-up:before, .icon-caret-down:before, .icon-question-sign:before, .icon-star-empty:before, .icon-star:before, .icon-ellipsis:before, .icon-pencil:before, .icon-clipboard:before, .icon-grid:before, .icon-search:before, .icon-unlock:before, .icon-trash:before, .icon-copy:before, .icon-plus:before, .icon-newspaper:before, .icon-cog:before, .icon-menu:before {
+.icon-caret-up:before, .icon-caret-down:before, .icon-question-sign:before, .icon-star-empty:before, .icon-star:before, .icon-ellipsis:before, .icon-pencil:before, .icon-clipboard:before, .icon-grid:before, .icon-search:before, .icon-unlock:before, .icon-trash:before, .icon-copy:before, .icon-plus:before, .icon-newspaper:before, .icon-cog:before, .icon-menu:before, .icon-untitled:before, .icon-user:before {
 	font-family: 'icomoon';
 	speak: none;
 	font-style: normal;
@@ -83,4 +83,10 @@ you can use the generic selector below, but it's slower:
 }
 .icon-menu:before {
 	content: "\e005";
+}
+.icon-untitled:before {
+	content: "\f000";
+}
+.icon-user:before {
+	content: "\e006";
 }

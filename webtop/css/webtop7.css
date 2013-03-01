@@ -329,8 +329,8 @@ a:hover {
 .farcry-header-user:hover {
 	background: #f2f2f2;
 }
-.farcry-header-user.open img,
-.farcry-header-user:hover img {
+.farcry-header-user.open .avatar,
+.farcry-header-user:hover .avatar {
 	display: none;
 }
 .farcry-header-user.open .cog,
@@ -341,9 +341,16 @@ a:hover {
 	margin-top: 0;
 }
 
-.farcry-header-profile img {
+.farcry-header-profile .avatar {
 	display: inline-block;
 	margin-right: 7px;
+	background: #3e84b5;
+	color: #fff;
+	width: 24px;
+	height: 23px;
+	padding-top: 1px;
+	text-align: center;
+	vertical-align: middle;
 }
 .farcry-header-profile .cog {
 	display: none;
