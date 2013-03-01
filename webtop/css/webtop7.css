@@ -2,7 +2,7 @@
 	colors
 
 	primary tab active blue: 0e65a2
-	primary tab inactive gradient: f2f2f2 (top) dddddd (bottom)
+	primary tab inactive: e8e8e8 
 
 	secondary nav bg blue: 166ca8
 	secondary nav bottom border blue: 3e84b5
@@ -29,7 +29,7 @@
 
 /*
 @primary-tab-bg-active: #0e65a2;
-@primary-tab-bg: #f2f2f2;
+@primary-tab-bg: #e8e8e8;
 */
 
 
@@ -132,7 +132,7 @@ a:hover {
 }
 .navbar .farcry-header-tabs .nav a {
 	color: #333;
-	background: #f2f2f2; /* @fc-primary-tab */
+	background: #e8e8e8; /* @fc-primary-tab */
 	box-shadow: none;
 	border: none;
 	border-radius: 0;
