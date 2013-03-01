@@ -24,7 +24,7 @@
 		<!--- JS LIBRARIES --->
 		<skin:registerJS 	id="fc-jquery" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/jquery/js"
-							lFiles="jquery-1.8.3.min.js,noconflict.js" />
+							lFiles="jquery-1.7.2.min.js,noconflict.js" />
 		<skin:registerJS 	id="jquery" aliasof="fc-jquery" core="false" />
 			
 		<skin:registerJS 	id="fc-jquery-ui" core="true"
