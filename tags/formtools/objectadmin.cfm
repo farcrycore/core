@@ -261,7 +261,7 @@ user --->
 	</cfif>
 	
 	
-	<cfif len(attributes.lFilterFields)>
+	<cfif len(attributes.lFilterFields) OR len(form.q)>
 	
 			<cfset oFilterType = createObject("component", PrimaryPackagePath) />
 		
@@ -750,10 +750,15 @@ user --->
 
 	<cfif structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true>
 		<cfoutput>
-			<form action="" method="post" class="input-prepend input-append pull-right" style="position: relative; z-index:2">
-				<button type="button" class="btn fc-tooltip" onclick="$j('##filterForm').toggle('blind'); " style="height: 30px; border-radius:0" data-toggle="tooltip" data-placement="top" title="" data-original-title="Advanced Filtering"><b class="icon-menu only-icon"></b></button>
-				<input name="q" class="span2" type="text" placeholder="Search..." value="#form.q#" style="width: 240px;">
-				<button class="btn" style="height: 30px; border-radius:0"><b class="icon-search only-icon"></b></button>
+			<form id="farcry-objectadmin-form" action="" method="post" class="input-prepend input-append pull-right" style="position: relative; z-index:2">
+				<cfif len(attributes.lFilterFields)>
+					<button type="button" class="btn fc-tooltip" onclick="$j('##filterForm').toggle('blind'); " style="height: 30px; border-radius:0" data-toggle="tooltip" data-placement="top" title="" data-original-title="Advanced Filtering"><b class="icon-menu only-icon"></b></button>
+				</cfif>
+				<input id="farcry-objectadmin-q" name="q" class="span2" type="text" placeholder="Search..." value="#form.q#" style="width: 240px;">
+				<cfif len(form.q)>
+					<button type="button" class="btn" onclick="javascript: $j('##farcry-objectadmin-q').val(''); $j('##farcry-objectadmin-form').submit();" style="height: 30px; border-radius:0; font-size: 20px; font-weight: bold; padding: 4px 10px;">&times;</button>
+				</cfif>
+				<button type="submit" class="btn" style="height: 30px; border-radius:0"><b class="icon-search only-icon"></b></button>
 			</form>				
 		</cfoutput>
 	</cfif>
