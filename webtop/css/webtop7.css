@@ -719,6 +719,18 @@ th.objectadmin-sortable span:hover {
 }
 
 
+/* pagination */
+.pagination a:focus {
+	color: inherit;
+}
+.pagination .pagination-totals {
+	color: #888;
+}
+.pagination .numberCount {
+	font-weight: bold;
+}
+
+
 /* icomoon / bootstrap icon conflicts */
 .icon-cog,
 .icon-minus,

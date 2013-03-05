@@ -34,31 +34,73 @@ FARCRY IMPORT FILES
 START WEBSKIN
  ------------------>
 
-<!--- INCLUDE THE CSS IN THE HEADER --->
-<skin:loadCSS id="farcry-pagination" />
-<cfparam name="arguments.stParam.bDisplayTotalRecords" default="0">
+<cfif structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true>
 
-<!--- OUTPUT THE MARKUP FOR THE PAGINATOR --->
-<cfif getPageTo() GT 1>
-	<cfoutput>
-	<div class="paginator-wrap">
-		<div class="paginator">
-			#renderLink(linkid="first", linktext=application.fapi.getResource('coapi.farPagination.first@label','first'))#
-			#renderLink(linkid="previous", linktext=application.fapi.getResource('coapi.farPagination.previous@label','&lt; previous'))#
-			
-			<cfloop from="#getPageFrom()#" to="#getPageTo()#" index="i">
-				#renderLink(linkid=i)#
-			</cfloop>
-			
-			#renderLink(linkid="next", linkText=application.fapi.getResource('coapi.farPagination.next@label',"next &gt;"))#
-			#renderLink(linkid="last", linkText=application.fapi.getResource('coapi.farPagination.last@label',"last"))#
+	<cfif getPageTo() GT 1>
+		<cfoutput>
+		<div class="pagination">
 			<cfif arguments.stParam.bDisplayTotalRecords>
-				<span class="resultCount"><admin:resource key="coapi.farPagination.displaying@html" var1="#getRecordFrom()#" var2="#getRecordTo()#" var3="#getTotalRecords()#">Displaying <span class="numberCount">{1}</span> - <span class="numberCount">{2}</span> of <span class="numberCount">{3}</span> result/s</admin:resource></span>
+				<div class="pull-right pagination-totals"><admin:resource key="coapi.farPagination.displaying@html" var1="#getRecordFrom()#" var2="#getRecordTo()#" var3="#getTotalRecords()#">Displaying <span class="numberCount">{1}</span> - <span class="numberCount">{2}</span> of <span class="numberCount">{3}</span> result(s)</admin:resource></div>
 			</cfif> 
+			<ul>
+				<cfif getCurrentPage() GT 1>
+					<li>#renderLink(linkid="first", linktext=application.fapi.getResource('coapi.farPagination.first@label','First'))#</li>
+					<li>#renderLink(linkid="previous", linktext=application.fapi.getResource('coapi.farPagination.previous@label','&lt; Previous'))#</li>
+				<cfelse>
+					<li class="disabled"><a href="##" onclick="return false;">#application.fapi.getResource('coapi.farPagination.first@label','First')#</a></li>
+					<li class="disabled"><a href="##" onclick="return false;">#application.fapi.getResource('coapi.farPagination.previous@label','&lt; Previous')#</a></li>
+				</cfif>
+				<cfloop from="#getPageFrom()#" to="#getPageTo()#" index="i">
+					<cfset stLink = getLink(i) />
+					
+					<cfif getCurrentPage() EQ stLink.page>
+						<li class="active"><a href="##" onclick="return false;">#stLink.page#</a></li>
+					<cfelse>
+						<li>#renderLink(linkid=i, bIncludeSpan=0)#</li>
+					</cfif>
+				</cfloop>
+				
+				<cfif getCurrentPage() LT getLastPage()>
+					<li>#renderLink(linkid="next", linkText=application.fapi.getResource('coapi.farPagination.next@label',"Next &gt;"))#</li>
+					<li>#renderLink(linkid="last", linkText=application.fapi.getResource('coapi.farPagination.last@label',"Last"))#</li>
+				<cfelse>
+					<li class="disabled"><a href="##" onclick="return false;">#application.fapi.getResource('coapi.farPagination.next@label',"Next &gt;")#</a></li>
+					<li class="disabled"><a href="##" onclick="return false;">#application.fapi.getResource('coapi.farPagination.last@label',"Last")#</a></li>
+				</cfif>
+				
+			</ul>	
 		</div>
-	</div>
-	</cfoutput>	
-</cfif>
+		</cfoutput>
+	</cfif>	
 
+<cfelse>
+
+	<!--- INCLUDE THE CSS IN THE HEADER --->
+	<skin:loadCSS id="farcry-pagination" />
+	<cfparam name="arguments.stParam.bDisplayTotalRecords" default="0">
+
+	<!--- OUTPUT THE MARKUP FOR THE PAGINATOR --->
+	<cfif getPageTo() GT 1>
+		<cfoutput>
+		<div class="paginator-wrap">
+			<div class="paginator">
+				#renderLink(linkid="first", linktext=application.fapi.getResource('coapi.farPagination.first@label','first'))#
+				#renderLink(linkid="previous", linktext=application.fapi.getResource('coapi.farPagination.previous@label','&lt; previous'))#
+				
+				<cfloop from="#getPageFrom()#" to="#getPageTo()#" index="i">
+					#renderLink(linkid=i)#
+				</cfloop>
+				
+				#renderLink(linkid="next", linkText=application.fapi.getResource('coapi.farPagination.next@label',"next &gt;"))#
+				#renderLink(linkid="last", linkText=application.fapi.getResource('coapi.farPagination.last@label',"last"))#
+				<cfif arguments.stParam.bDisplayTotalRecords>
+					<span class="resultCount"><admin:resource key="coapi.farPagination.displaying@html" var1="#getRecordFrom()#" var2="#getRecordTo()#" var3="#getTotalRecords()#">Displaying <span class="numberCount">{1}</span> - <span class="numberCount">{2}</span> of <span class="numberCount">{3}</span> result/s</admin:resource></span>
+				</cfif> 
+			</div>
+		</div>
+		</cfoutput>	
+	</cfif>
+
+</cfif>
 
 <cfsetting enablecfoutputonly="false">
