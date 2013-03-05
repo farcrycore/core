@@ -1201,7 +1201,7 @@ default handlers
 		<!--- check if need to archive object --->
 		<cfif application.config.general.bDoArchive EQ "true">
 			<cfset stLocal.archiveObject = createobject("component",application.types.dmArchive.typepath)>
-			<cfset stLocal.returnVar = stLocal.archiveObject.fArchiveObject(stObj)>
+			<cfset stLocal.returnVar = stLocal.archiveObject.archiveObject(stObj)>
 		</cfif>
 		
 		<cfset onDelete(typename=stObj.typename,stObject=stObj) />
@@ -1305,7 +1305,7 @@ default handlers
  		<!--- <cfset var stResult = application.factory.oVersioning.archiveObject(objectid=arguments.objectid,typename=arguments.typename)> --->
 
 		<cfset stLocal.objArchive = CreateObject("component","#application.packagepath#.types.dmArchive")>
-		<cfset stLocal.returnStruct = stLocal.objArchive.fArchiveObject(stObj)>
+		<cfset stLocal.returnStruct = stLocal.objArchive.archiveObject(stObj)>
 
 		<cfreturn stLocal.returnStruct>
 	</cffunction>
