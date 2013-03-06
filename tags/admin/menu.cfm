@@ -83,6 +83,7 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 			</cfoutput>
 			
 			<admin:loopwebtop parent="#menu#" item="menuitem">
+				<cfparam name="menuitem.link" default="">
 				<cfswitch expression="#menuitem.linkType#">
 					<cfcase value="External">
 						<cfoutput>
