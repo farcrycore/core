@@ -117,6 +117,10 @@ $out:$
 		<cfset stMimes["dms"] = "application/octet-stream" />
 		<cfset stMimes["doc"] = "application/msword" />
 		<cfset stMimes["dot"] = "application/msword" />
+		<cfset stMimes["docx"] = "application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+		<cfset stMimes["dotx"] = "application/vnd.openxmlformats-officedocument.wordprocessingml.template" />
+		<cfset stMimes["docm"] = "application/vnd.ms-word.document.macroEnabled.12" />
+		<cfset stMimes["dotm"] = "application/vnd.ms-word.template.macroEnabled.12" />
 		<cfset stMimes["dp"] = "application/commonground" />
 		<cfset stMimes["drw"] = "application/drafting" />
 		<cfset stMimes["dump"] = "application/octet-stream" />
@@ -389,8 +393,6 @@ $out:$
 		<cfset stMimes["png"] = "image/png" />
 		<cfset stMimes["pnm"] = "application/x-portable-anymap" />
 		<cfset stMimes["pnm"] = "image/x-portable-anymap" />
-		<cfset stMimes["pot,"] = "application/vnd.ms-powerpoint" />
-		<cfset stMimes["pot"] = "application/mspowerpoint" />
 		<cfset stMimes["pot"] = "application/vnd.ms-powerpoint" />
 		<cfset stMimes["pov"] = "model/x-pov" />
 		<cfset stMimes["ppa"] = "application/vnd.ms-powerpoint" />
@@ -398,6 +400,13 @@ $out:$
 		<cfset stMimes["pps"] = "application/mspowerpoint" />
 		<cfset stMimes["ppt"] = "application/mspowerpoint" />
 		<cfset stMimes["ppz"] = "application/mspowerpoint" />
+		<cfset stMimes["pptx"] = "application/vnd.openxmlformats-officedocument.presentationml.presentation" />
+		<cfset stMimes["potx"] = "application/vnd.openxmlformats-officedocument.presentationml.template" />
+		<cfset stMimes["ppsx"] = "application/vnd.openxmlformats-officedocument.presentationml.slideshow" />
+		<cfset stMimes["ppam"] = "application/vnd.ms-powerpoint.addin.macroEnabled.12" />
+		<cfset stMimes["pptm"] = "application/vnd.ms-powerpoint.presentation.macroEnabled.12" />
+		<cfset stMimes["potm"] = "application/vnd.ms-powerpoint.template.macroEnabled.12" />
+		<cfset stMimes["ppsm"] = "application/vnd.ms-powerpoint.slideshow.macroEnabled.12" />
 		<cfset stMimes["prc"] = "application/x-pilot" />
 		<cfset stMimes["pre"] = "application/x-freelance" />
 		<cfset stMimes["prf"] = "application/pics-rules" />
@@ -638,6 +647,12 @@ $out:$
 		<cfset stMimes["xlt"] = "application/excel" />
 		<cfset stMimes["xlv"] = "application/excel" />
 		<cfset stMimes["xlw"] = "application/excel" />
+		<cfset stMimes["xlsx"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+		<cfset stMimes["xltx"] = "application/vnd.openxmlformats-officedocument.spreadsheetml.template" />
+		<cfset stMimes["xlsm"] = "application/vnd.ms-excel.sheet.macroEnabled.12" />
+		<cfset stMimes["xltm"] = "application/vnd.ms-excel.template.macroEnabled.12" />
+		<cfset stMimes["xlam"] = "application/vnd.ms-excel.addin.macroEnabled.12" />
+		<cfset stMimes["xlsb"] = "application/vnd.ms-excel.sheet.binary.macroEnabled.12" />
 		<cfset stMimes["xm"] = "audio/xm" />
 		<cfset stMimes["xml"] = "text/xml" />
 		<cfset stMimes["xmz"] = "xgl/movie" />
@@ -654,7 +669,7 @@ $out:$
 		<cfset stMimes["zip"] = "application/zip" />
 		<cfset stMimes["zoo"] = "application/octet-stream" />
 		<cfset stMimes["zsh"] = "text/x-script.zsh" />
-		
+				
 		<cfreturn stMimes />
 	</cffunction>
 
