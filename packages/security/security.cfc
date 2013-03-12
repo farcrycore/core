@@ -528,7 +528,10 @@
 	
 
 
-	<!--- CACHE FUNCTIONS - SHOULD ONLY BE ACCESSED BY CORE CODE --->
+	<!--- CACHE FUNCTIONS - SHOULD O:795)
+TEMPLATE	 /home/frank/Workspaces/Eclipse 4.2 Platform IDE/corporate/core/packages/security/security.cfc
+TYPE	 CFML
+NLY BE ACCESSED BY CORE CODE --->
 	<cffunction name="setCache" access="public" output="false" returntype="boolean" hint="Sets up the ermission cache structure">
 		<cfargument name="role" type="uuid" required="true" hint="The role to cache" />
 		<cfargument name="permission" type="uuid" required="false" hint="The permission to cache" />
@@ -792,7 +795,7 @@
 		
 		<!--- normalize bdebug --->
 		<cfif structkeyexists(arguments.stURL,"bDebug")>
-			<cfset arguments.stURL.debug = argument.stURL.bDebug />
+			<cfset arguments.stURL.debug = arguments.stURL.bDebug />
 		</cfif>
 		
 		<!--- session modes --->
