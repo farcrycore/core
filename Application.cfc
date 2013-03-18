@@ -435,9 +435,9 @@
 		
 		<!--- increase the request timeout a little, in case the error was caused by a request timeout --->
 		<cfif structkeyexists(server,"railo")>
-			<cfsetting requesttimeout="#getPageContext().getRequestTimeout() + 5000#" />
+			<cfsetting requesttimeout="#getPageContext().getRequestTimeout() + 10000#" />
 		<cfelseif structkeyexists(server,"coldfusion")>
-			<cfsetting requesttimeout="#CreateObject("java", "coldfusion.runtime.RequestMonitor").GetRequestTimeout() + 5#" />
+			<cfsetting requesttimeout="#CreateObject("java", "coldfusion.runtime.RequestMonitor").GetRequestTimeout() + 10#" />
 		</cfif>
 		
 		<cfif isdefined("application.fc.lib.error")>
@@ -571,7 +571,7 @@
 			
 		<!--- PARSE THE URL CHECKING FOR FRIENDLY URLS (url.furl) --->
 		<cfset application.fapi.addProfilePoint("Request initialisation","Parse URL") />
-		<cfif refindnocase("/index.cfm$",cgi.script_name)>
+		<cfif refindnocase("/index.cfm$",cgi.script_name) and not refindnocase("^" & application.url.webtop,cgi.script_name)>
 			<cfset structAppend(url, application.fc.factory.farFU.parseURL(),true) />
 		</cfif>
 		

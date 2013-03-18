@@ -51,9 +51,9 @@
 	</cfif>
 	
 	<cfif result eq "Success">
-		<skin:bubble message="Email successfully sent" />
+		<skin:bubble message="Email successfully sent" tags="email,success" />
 	<cfelse>
-		<skin:bubble message="#result#" tags="error" />
+		<skin:bubble message="#result#" tags="error" tags="email,error" />
 	</cfif>
 </ft:processform>
 

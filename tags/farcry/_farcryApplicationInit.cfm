@@ -162,10 +162,7 @@ Build NavIDs from Navigation Nodes
 
 <!--- Build catids from category nodes --->
 
-<cfscript>
-	oCat = createObject("component", "#application.packagepath#.farcry.category");
-	application.catid = oCat.getCatAliases();
-</cfscript>
+<cfset application.catid = application.factory.oCategory.getCatAliases() />
 <!--- /_config.cfm --->
 
 
@@ -272,7 +269,7 @@ AUTOMATIC UPGRADES
 Alert user that application scope has been refreshed
 -------------------------------------------------------->
 <cfif isDefined("URL.updateApp") AND isBoolean(URL.updateApp) AND URL.updateApp>
-	<skin:bubble title="Update App Complete" tags="system,updateapp,information" sticky="true">
+	<skin:bubble title="Update App Complete" tags="system,updateapp,info" sticky="true">
 		<cfoutput>The application scope has been refreshed</cfoutput>
 	</skin:bubble>
 </cfif>

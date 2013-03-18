@@ -101,7 +101,7 @@ START WEBSKIN
 				
 	
 					<cfif isdefined("arguments.stParam.message") and len(arguments.stParam.message)>
-						<skin:bubble message="#arguments.stParam.message#" tags="security,information" rbkey="security.message.#rereplace(arguments.stParam.message,'[^\w]','','ALL')#" />
+						<skin:bubble message="#arguments.stParam.message#" tags="security,info" rbkey="security.message.#rereplace(arguments.stParam.message,'[^\w]','','ALL')#" />
 					</cfif>
 					
 					<ft:button value="Log In" rbkey="security.buttons.login" />

@@ -197,7 +197,7 @@
 						<cfset trayStatus = "#application.fapi.getResource('workflow.constants.approved@label','Approved')#">
 						<cfset trayIcon = "check">
 						<cfif structKeyExists(stobj,"versionID") AND structKeyExists(stobj,"status") AND stobj.status EQ "approved">
-							<cfset qDraft = createObject("component", "#application.packagepath#.farcry.versioning").checkIsDraft(objectid=stobj.objectid,type=stobj.typename)>
+							<cfset qDraft = application.factory.oVersioning.checkIsDraft(objectid=stobj.objectid,type=stobj.typename)>
 							<cfif qDraft.recordcount>
 								<cfset trayStatusLink = "<a class='farcryTrayStatusLink' href='#application.fapi.fixURL(url='#form.refererURL#', addvalues='showdraft=1')#'>#application.fapi.getResource(key='tray.button.showdraft@label',default='Show Draft')#</a>">
 							</cfif>

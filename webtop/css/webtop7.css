@@ -413,7 +413,7 @@ table.table-hover tbody tr:hover > td {
 
 
 /* objectadmin styles */
-.farcry-objectadmin {
+.farcry-objectadmin-body {
 	margin-top: 1em;
 }
 .farcry-objectadmin input[type="checkbox"] {

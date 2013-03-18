@@ -377,6 +377,17 @@ function setRowBackground (childCheckbox) {
 	}
 }		
 
+function updateSelectedObjectIDs (childCheckbox) {
+	var input = $j(childCheckbox).parents("form").find("input[name=SelectedObjectID]"), curvals = input.val().split(",");
+	
+	if (curvals.indexOf(this.value))
+		curvals.splice(curvals.indexOf(this.value),1);
+	else
+		curvals.push(this.value);
+	
+	input.val(curvals.join(","));
+}		
+
 									
 							$fc.openDialog = function(title,url,width,height){
 								var fcDialog = $j("<div></div>")

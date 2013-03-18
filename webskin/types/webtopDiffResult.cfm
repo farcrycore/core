@@ -49,7 +49,7 @@
 	<cfset stLocal.rightLabel = "#stLocal.rightLabel# - #listfirst(stLocal.stRight.lastupdatedby,'_')#" />
 </cfif>
 
-<cfset stLocal.stResults = application.fc.lib.diff.performObjectDiff(stLocal.stLeft,stLocal.stRight) />
+<cfset stLocal.stResults = application.fc.lib.diff.getObjectDiff(stLocal.stLeft,stLocal.stRight) />
 <cfset stLocal.qMetadata = application.types[stLocal.stLeft.typename].qMetadata />
 <cfquery dbtype="query" name="stLocal.qMetadata">
 	SELECT 		distinct propertyname, ftSeq

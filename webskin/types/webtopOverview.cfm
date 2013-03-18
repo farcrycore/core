@@ -60,7 +60,7 @@ TO: A refactor is required of all this now that we have webskin goodness.
 <cfif structkeyexists(url,"rollback") and isvalid("uuid",url.rollback)>
 	<!--- rollback archive --->
 	<cfset stRollback = archiveRollback(objectID=stObj.objectid,archiveId=url.rollback,typename=stObj.typename) />
-	<skin:bubble message="Rolled back to previous version" />
+	<skin:bubble message="Rolled back to previous version" tags="types,archive,info" />
 	<skin:location url="#application.fapi.fixURL(removevalues='rollback')#" addtoken="false" />
 </cfif>
 

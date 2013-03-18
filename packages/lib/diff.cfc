@@ -138,7 +138,7 @@
 		<cfreturn aResult />
 	</cffunction>
 	
-	<cffunction name="performPropertyDiff" access="public" output="false" returntype="struct" hint="Performs diff on the property according to its type">
+	<cffunction name="getPropertyDiff" access="public" output="false" returntype="struct" hint="Performs diff on the property according to its type">
 		<cfargument name="typename" required="true" />
 		<cfargument name="left" required="true" />
 		<cfargument name="right" required="true" />
@@ -169,14 +169,14 @@
 			<cfcase value="richtext">
 				<cfset stResult.left = getHTMLAsText(stResult.left) />
 				<cfset stResult.right = getHTMLAsText(stResult.right) />
-				<cfset stResult.different = (stResult.left neq stResult.right) />
+				<cfset stResult.different = compare(stResult.left,stResult.right) neq 0 />
 				<cfif stResult.different>
 					<cfset stResult.aDiff = getDiff(old=stResult.left,new=stResult.right) />
 					<cfset structappend(stResult,convertDiffToHighlights(stResult.aDiff),true) />
 				</cfif>
 			</cfcase>
 			<cfcase value="string,longchar" delimiters=",">
-				<cfset stResult.different = (stResult.left neq stResult.right) />
+				<cfset stResult.different = compare(stResult.left,stResult.right) neq 0 />
 				<cfif stResult.different>
 					<cfset stResult.aDiff = getDiff(old=stResult.left,new=stResult.right) />
 					<cfset structappend(stResult,convertDiffToHighlights(stResult.aDiff),true) />
@@ -187,7 +187,7 @@
 				<cfset stResult.left = application.formtools.category.oFactory.display(typename=arguments.typename,fieldname=arguments.stMetadata.name,stMetadata=arguments.stMetadata,stObject=stTemp) />
 				<cfset stTemp[arguments.stMetadata.name] = arguments.right />
 				<cfset stResult.right = application.formtools.category.oFactory.display(typename=arguments.typename,fieldname=arguments.stMetadata.name,stMetadata=arguments.stMetadata,stObject=stTemp) />
-				<cfset stResult.different = (stResult.left neq stResult.right) />
+				<cfset stResult.different = compare(stResult.left,stResult.right) neq 0 />
 				<cfif stResult.different>
 					<cfset stResult.aDiff = getDiff(old=stResult.left,new=stResult.right) />
 					<cfset structappend(stResult,convertDiffToHighlights(stResult.aDiff),true) />
@@ -202,17 +202,17 @@
 				<cfset arguments.stMetadata.value = arguments.right />
 				<cfset stResult.right = application.formtools[stResult.formtool].oFactory.display(typename=arguments.typename,fieldname=arguments.stMetadata.name,stMetadata=arguments.stMetadata,stObject=stTemp) />
 				<cfset stResult.rightHighlighted = arguments.right />
-				<cfset stResult.different = (stResult.left neq stResult.right) />
+				<cfset stResult.different = compare(stResult.left,stResult.right) neq 0 />
 			</cfcase>
 			<cfcase value="webskin">
 				<cfset stResult.leftHighlighted = application.coapi.coapiadmin.getWebskinDisplayname(typename=arguments.typename, template=arguments.left) />
 				<cfset stResult.rightHighlighted = application.coapi.coapiadmin.getWebskinDisplayname(typename=arguments.typename, template=arguments.right) />
-				<cfset stResult.different = (stResult.left neq stResult.right) />
+				<cfset stResult.different = compare(stResult.left,stResult.right) neq 0 />
 			</cfcase>
 			<cfcase value="integer">
 				<cfset stResult.leftHighlighted = round(stResult.left) />
 				<cfset stResult.rightHighlighted = round(stResult.right) />
-				<cfset stResult.different = (stResult.left neq stResult.right) />
+				<cfset stResult.different = compare(stResult.left,stResult.right) neq 0 />
 			</cfcase>
 			<cfcase value="uuid">
 				<cfset stResult.leftHighlighted = "" />
@@ -225,7 +225,7 @@
 					<cfset stTemp = application.fapi.getContentObject(objectid=stResult.right) />
 					<cfset stResult.rightHighlighted = stTemp.label & " [" & application.stCOAPI[stTemp.typename].displayName & "]" & this.nl />
 				</cfif>
-				<cfset stResult.different = (stResult.leftHighlighted neq stResult.rightHighlighted) />
+				<cfset stResult.different = compare(stResult.leftHighlighted,stResult.rightHighlighted) neq 0 />
 				<cfif stResult.different>
 					<cfset stResult.aDiff = getDiff(old=stResult.leftHighlighted,new=stResult.rightHighlighted) />
 					<cfset structappend(stResult,convertDiffToHighlights(stResult.aDiff),true) />
@@ -269,7 +269,7 @@
 						<cfset stTemp = application.fapi.getContentObject(objectid=stResult.right[i]) />
 						<cfset stResult.rightHighlighted = stResult.rightHighlighted & "* " & stTemp.label & " [" & application.stCOAPI[stTemp.typename].displayName & "]" & this.nl />
 					</cfloop>
-					<cfset stResult.different = (stResult.leftHighlighted neq stResult.rightHighlighted) />
+					<cfset stResult.different = compare(stResult.leftHighlighted,stResult.rightHighlighted) neq 0 />
 					<cfif stResult.different>
 						<cfset stResult.aDiff = getDiff(old=stResult.leftHighlighted,new=stResult.rightHighlighted) />
 						<cfset structappend(stResult,convertDiffToHighlights(stResult.aDiff),true) />
@@ -281,10 +281,11 @@
 		<cfreturn stResult />
 	</cffunction>
 	
-	<cffunction name="performObjectDiff" access="public" output="false" returntype="struct" hint="Performs diff on all visible properties according to their type">
+	<cffunction name="getObjectDiff" access="public" output="false" returntype="struct" hint="Performs diff on all visible properties according to their type">
 		<cfargument name="left" type="struct" required="true" />
 		<cfargument name="right" type="struct" required="true" />
 		<cfargument name="stMetadata" type="struct" required="false" default="#structnew()#" />
+		<cfargument name="includeInvisibleProperties" type="boolean" required="false" default="false" hint="Set to true to include properties that aren't displayed in forms. Note that this will never include system properties, only content properties." />
 		
 		<cfset var stPropMetadata = structnew() />
 		<cfset var prop = "" />
@@ -299,8 +300,8 @@
 					<cfif structkeyexists(arguments.stMetadata,prop)>
 						<cfset structappend(stPropMetadata,arguments.stMetadata[prop],true) />
 					</cfif>
-					<cfif structkeyexists(stPropMetadata,"ftSeq") and len(stPropMetadata.ftSeq)>
-						<cfset stResult[prop] = performPropertyDiff(typename=arguments.left.typename,left=arguments.left[prop],right=arguments.right[prop],stMetadata=stPropMetadata) />
+					<cfif (structkeyexists(stPropMetadata,"ftSeq") and len(stPropMetadata.ftSeq)) or (arguments.includeInvisibleProperties and not listfindnocase("ObjectID,label,datetimecreated,createdby,ownedby,datetimelastupdated,lastupdatedby,lockedBy,locked,versionid,status",prop))>
+						<cfset stResult[prop] = getPropertyDiff(typename=arguments.left.typename,left=arguments.left[prop],right=arguments.right[prop],stMetadata=stPropMetadata) />
 						<cfif stResult[prop].different>
 							<cfset stResult.countDifferent = stResult.countDifferent + 1 />
 						</cfif>
@@ -308,7 +309,7 @@
 				</cfif>
 			</cfif>
 		</cfloop>
-		
+
 		<cfreturn stResult />
 	</cffunction>
 	

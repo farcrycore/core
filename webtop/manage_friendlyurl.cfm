@@ -45,7 +45,7 @@ manage friendly urls for a particular object id
 		<cfif not stResult.bSuccess>
 			<skin:bubble title="#stResult.message#" autoHide="false" tags="type,farFU,error" />
 		<cfelse>
-			<skin:bubble title="Alternative Friendly URL Created" autoHide="true" tags="type,farFU,created,information">
+			<skin:bubble title="Alternative Friendly URL Created" autoHide="true" tags="type,farFU,created,info">
 				<cfoutput>Your Friendly URL (#stProperties.friendlyURL#) has been created.</cfoutput>
 			</skin:bubble>
 		</cfif>

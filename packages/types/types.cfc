@@ -192,7 +192,6 @@ default handlers
 		<cfargument name="bAudit" type="boolean" default="true" required="false" hint="Set to false to disable logging" />
 		
 		<cfset var stNewObject = "" />
-		<cfset var stEventParams = StructNew() />
 		
 		
 		<cfif not len(arguments.user)>
@@ -229,14 +228,14 @@ default handlers
 		</cfif>
 
 		<!--- Announce the save event to listeners --->
-		<cfset stEventParams.typename = getTypeName() />
-		<cfset stEventParams.otype = this />
-		<cfset stEventParams.stProperties = arguments.stProperties />
-		<cfset stEventParams.user = arguments.user />
-		<cfset stEventParams.auditNote = arguments.auditNote />
-		<cfset stEventParams.bSessionOnly = false />
-		<cfset stEventParams.bAfterSave = false />
-		<cfset application.fc.lib.events.announce(component="fcTypes",eventName="saved",stParams=stEventParams) />
+		<cfset application.fc.lib.events.announce(	component="fcTypes", eventName="saved",
+													typename=getTypeName(),
+													oType = this,
+													stProperties = arguments.stProperties,
+													user = arguments.user,
+													auditNote = arguments.auditNote,
+													bSessionOnly = false,
+													bAfterSave = false ) />
 				
 		<cfreturn stNewObject>
 	</cffunction>
@@ -256,8 +255,6 @@ default handlers
 		<cfset var stresult_friendly = StructNew()>
 		<cfset var stObj = structnew() />
 		<cfset var fnStatusChange = "" />
-		<cfset var stEventParams = StructNew() />
-		<cfset var stStatusEventParams = StructNew() />
 		
 		<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
 		
@@ -320,32 +317,24 @@ default handlers
 						<cfinvokeargument name="previousStatus" value="#arguments.previousStatus#" />
 					</cfinvoke>
 				</cfif>
+				
 				<!--- Announce the status change event to listeners --->
-				<cfset stStatusEventParams.typename = arguments.stProperties.typename />
-				<cfset stStatusEventParams.oType = this />
-				<cfset stStatusEventParams.stObject = stObj />
-				<cfset stStatusEventParams.newStatus = stObj.status />
-				<cfset stStatusEventParams.previousStatus = arguments.previousStatus />
-				<cfset application.fc.lib.events.announce(component="fcTypes",eventName="statusChanged",stParams=stStatusEventParams) />
+				<cfset application.fc.lib.events.announce(	component = "fcTypes", eventName = "statusChanged",
+															typename = arguments.stProperties.typename,
+															oType = this,
+															stObject = stObj,
+															newStatus = stObj.status,
+															previousStatus = arguments.previousStatus,
+															auditNote = arguments.auditNote) />
 			</cfif>
 		</cfif>
 		
-		<cfif not arguments.bSessionOnly and structkeyexists(application.stCOAPI[arguments.stProperties.typename],"bArchive") and application.stCOAPI[arguments.stProperties.typename].bArchive>
-			<cfset stObj = getData(objectid=arguments.stProperties.objectid) />
-			<cfset structappend(arguments.stProperties,stObj,false) />
-			
-			<cfif not structkeyexists(stObj,"bDefaultObject") and not structkeyexists(stObj,"versionID") and (not structkeyexists(stObj,"status") or stObj.status eq "approved") and application.fc.lib.diff.performObjectDiff(stObj,arguments.stProperties).countDifferent neq 0>
-				<cfset application.factory.oVersioning.archiveObject(objectid=arguments.stProperties.objectid,typename=stObj.typename) />
-			</cfif>
-		</cfif>
-		
-		<cfset stresult = super.setData(stProperties=arguments.stProperties, dsn=arguments.dsn, bSessionOnly=arguments.bSessionOnly, bSetDefaultCoreProperties=arguments.bSetDefaultCoreProperties) />
+		<cfset stresult = super.setData(stProperties=arguments.stProperties, dsn=arguments.dsn, bSessionOnly=arguments.bSessionOnly, bSetDefaultCoreProperties=arguments.bSetDefaultCoreProperties,auditNote=arguments.auditNote) />
 		
 		<!--- ONLY RUN THROUGH IF SAVING TO DB --->
 		<cfif not arguments.bSessionOnly AND arguments.bAfterSave>
 			
 	   	 	<cfset stAfterSave = afterSave(argumentCollection=arguments) />
-	   	 	
 	   	 			
 			<!--- set friendly url for content item. --->
 			<!--- TODO: Checking for application.fc so that it is ignored on Install. This needs to be more eloquent --->	
@@ -354,7 +343,6 @@ default handlers
 			</cfif>
 			
 		</cfif>
-
 		
 		<!--- log update --->
 		<cfif not arguments.bSessionOnly AND arguments.bAudit>
@@ -362,14 +350,14 @@ default handlers
 		</cfif>
 		
 		<!--- Announce the save event to listeners --->
-		<cfset stEventParams.typename = arguments.stProperties.typename />
-		<cfset stEventParams.oType = this />
-		<cfset stEventParams.stProperties = arguments.stProperties />
-		<cfset stEventParams.user = arguments.user />
-		<cfset stEventParams.auditNote = arguments.auditNote />
-		<cfset stEventParams.bSessionOnly = arguments.bSessionOnly />
-		<cfset stEventParams.bAfterSave = arguments.bAfterSave />
-		<cfset application.fc.lib.events.announce(component="fcTypes",eventName="saved",stParams=stEventParams) />
+		<cfset application.fc.lib.events.announce(	component = "fcTypes", eventName = "saved",
+													typename = arguments.stProperties.typename,
+													oType = this,
+													stProperties = arguments.stProperties,
+													user = arguments.user,
+													auditNote = arguments.auditNote,
+													bSessionOnly = arguments.bSessionOnly,
+													bAfterSave = arguments.bAfterSave) />
 
 		<cfreturn stresult>
 	</cffunction>
@@ -1005,11 +993,11 @@ default handlers
 					</cfquery>
 					<cfset duplicateID = duplicateObject(objectid=stObj.objectid,qRelated=qAllRelated) />
 					
-					<skin:bubble title="Object Copied" message="'#stObj.label#' and #qAllRelated.recordcount# related item/s have been copied" />
+					<skin:bubble title="Object Copied" message="'#stObj.label#' and #qAllRelated.recordcount# related item/s have been copied" tags="types,updated,info" />
 				<cfelse>
 					<cfset duplicateID = duplicateObject(objectid=stObj.objectid) />
 					
-					<skin:bubble title="Object Copied" message="'#stObj.label#' and no related items have been copied" />
+					<skin:bubble title="Object Copied" message="'#stObj.label#' and no related items have been copied" tags="types,updated,info" />
 				</cfif>
 				<skin:location href="#application.fapi.fixURL(url=url.editURL,addvalues='objectid=#duplicateID#')#" />
 			</ft:processForm>
@@ -1067,7 +1055,7 @@ default handlers
 		<cfelse>
 			
 			<cfset duplicateID = duplicateObject(objectid=stObj.objectid) />
-			<skin:bubble title="Object Copied" message="'#stObj.label#' has been copied" />
+			<skin:bubble title="Object Copied" message="'#stObj.label#' has been copied" tags="types,updated,info" />
 			<skin:location href="#application.fapi.fixURL(url=url.editURL,addvalues='objectid=#duplicateID#')#" />
 			
 		</cfif>
@@ -1179,7 +1167,6 @@ default handlers
 		<cfset var collectionName = "">
 		<cfset var stlocal = StructNew()>
 		<cfset var stReturn = StructNew()>
-		<cfset var stEventParams = StructNew() />
 		
 		<cfif not len(arguments.user)>
 			<cfif application.security.isLoggedIn()>
@@ -1195,14 +1182,16 @@ default handlers
 			<cfreturn stReturn>
 		</cfif>
 		
+		<!--- Announce the delete event to listeners --->
+		<cfset application.fc.lib.events.announce(	component = "fcTypes", eventName = "beforedelete",
+													typename = stObj.typename,
+													oType = this,
+													stObject = stObj,
+													user = arguments.user,
+													auditNote = arguments.auditNote) />
+		
 		<!--- done first cause need to remove associtaion to library object --->
 		<cfinclude template="_types/delete.cfm">
-
-		<!--- check if need to archive object --->
-		<cfif application.config.general.bDoArchive EQ "true">
-			<cfset stLocal.archiveObject = createobject("component",application.types.dmArchive.typepath)>
-			<cfset stLocal.returnVar = stLocal.archiveObject.archiveObject(stObj)>
-		</cfif>
 		
 		<cfset onDelete(typename=stObj.typename,stObject=stObj) />
 
@@ -1213,12 +1202,12 @@ default handlers
 		<farcry:logevent object="#arguments.objectid#" type="types" event="delete" notes="#arguments.auditNote#" />
 		
 		<!--- Announce the delete event to listeners --->
-		<cfset stEventParams.typename = stObj.typename />
-		<cfset stEventParams.oType = this />
-		<cfset stEventParams.stObject = stObj />
-		<cfset stEventParams.user = arguments.user />
-		<cfset stEventParams.auditNote = arguments.auditNote />
-		<cfset application.fc.lib.events.announce(component="fcTypes",eventName="deleted",stParams=stEventParams) />
+		<cfset application.fc.lib.events.announce(	component = "fcTypes", eventName = "deleted",
+													typename = stObj.typename,
+													oType = this,
+													stObject = stObj,
+													user = arguments.user,
+													auditNote = arguments.auditNote) />
 		
 		<cfset stReturn.bSuccess = true>
 		<cfset stReturn.message = "#stObj.label# (#stObj.typename#) deleted.">
@@ -1262,7 +1251,6 @@ default handlers
 		<cfset var thisprop = "" />
 		<cfset var oFactory = "" />
 		<cfset var stMetadata = "" />
-		<cfset var stEventParams = StructCopy(arguments) />
 		
 		<cfif not structkeyexists(arguments,"stObject")>
 			<cfset arguments.stObject = getData(objectid=arguments.objectid) />
@@ -1277,10 +1265,9 @@ default handlers
 				</cfif>
 			</cfif>
 		</cfloop>
-				
+		
 		<!--- Announce the security change event to listeners --->
-		<cfset stEventParms.oType = this />
-		<cfset application.fc.lib.events.announce(component="fcTypes",eventName="securityChanged",stParams=stEventParams) />
+		<cfset application.fc.lib.events.announce(component="fcTypes",eventName="securityChanged",oType=this) />
 	</cffunction>
 	
 	<cffunction name="renderObjectOverview" access="public" hint="Renders entire object overiew" output="true">
@@ -1295,28 +1282,13 @@ default handlers
 
 	</cffunction>
 	
-	<cffunction name="archiveObject" access="public" returntype="struct" hint="Archives any farcry object">
-		<!--- TODO: move out of this abstract class to proposed version abstract class 20050802 GB --->
-		<cfargument name="objectID" type="uuid" required="true">
-		<cfargument name="typename" type="string" required="false">
-
-		<cfset var stLocal = StructNew()> <!--- local struct to hold all local values --->			
-		<cfset var stObj = getData(arguments.objectID)>
- 		<!--- <cfset var stResult = application.factory.oVersioning.archiveObject(objectid=arguments.objectid,typename=arguments.typename)> --->
-
-		<cfset stLocal.objArchive = CreateObject("component","#application.packagepath#.types.dmArchive")>
-		<cfset stLocal.returnStruct = stLocal.objArchive.archiveObject(stObj)>
-
-		<cfreturn stLocal.returnStruct>
-	</cffunction>
-	
 	<cffunction name="archiveRollback" access="public" returntype="struct" hint="Sends a archived object live and archives current version">
 		<!--- TODO: move out of this abstract class to proposed version abstract class 20050802 GB --->
 		<cfargument name="objectID" type="uuid" required="true">
 		<cfargument name="archiveID"  type="uuid" required="true" hint="the archived object to be sent back live">
 		<cfargument name="typename" type="string" default="" required="false">
 		
- 		<cfset var stResult = application.factory.oVersioning.rollbackArchive(objectid=arguments.objectid,typename=arguments.typename,archiveID=arguments.archiveID)>
+ 		<cfset var stResult = application.fapi.getContentType("dmArchive").rollbackArchive(objectid=arguments.objectid,typename=arguments.typename,archiveID=arguments.archiveID)>
 		
 		<cfreturn stResult>
 	</cffunction>

@@ -73,7 +73,7 @@
 	<cfparam name="request.inHead.aJSLibraries" default="#arrayNew(1)#" />
 	<cfparam name="request.inHead.stJSLibraries" default="#structNew()#" />
 	
-	<cfif (NOT structKeyExists(request.inhead.stJSLibraries, stJS.id) and NOT structKeyExists(request.inhead.stJSLibraries, stJS.aliasof))>
+	<cfif NOT structKeyExists(request.inhead.stJSLibraries, stJS.id)>
 		
 		<!--- Normalise files --->
 		<cfif len(stJS.lFiles)>
@@ -92,6 +92,7 @@
 		
 		<!--- Add the id to the array to make sure we keep track of the order in which these libraries need to appear. --->
 		<!--- Project libraries are inserted before core libraries --->
+		<!--- Duplicates, aka jquery / fc-jquery, are handled in core:jsInHead --->
 		<cfif not stJS.core and arraylen(request.inHead.aJSLibraries) and request.inHead.stJSLibraries[request.inHead.aJSLibraries[arraylen(request.inHead.aJSLibraries)]].core>
 			<cfset i = 1 />
 			<cfloop condition="i lt arraylen(request.inHead.aJSLibraries) and request.inHead.stJSLibraries[request.inHead.aJSLibraries[i]].core eq false">
@@ -104,17 +105,10 @@
 		
 		<!--- Add the JS information to the struct so we will be able to load it all correctly into the header at the end of the request. --->
 		<cfset request.inHead.stJSLibraries[stJS.id] = stJS />
-		<cfif len(request.inHead.stJSLibraries[stJS.id].aliasof)>
-			<cfset request.inHead.stJSLibraries[application.fc.stJSLibraries[stJS.id].aliasof] = stJS />
-		</cfif>
 	
 	<cfelse>
 	
-		<cfif structKeyExists(request.inHead.stJSLibraries, stJS.id)>
-			<cfset stJS = request.inHead.stJSLibraries[stJS.id] />
-		<cfelse>
-			<cfset stJS = request.inHead.stJSLibraries[stJS.aliasof] />
-		</cfif>
+		<cfset stJS = request.inHead.stJSLibraries[stJS.id] />
 	
 	</cfif>
 	

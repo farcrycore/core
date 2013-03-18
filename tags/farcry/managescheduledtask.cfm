@@ -59,7 +59,7 @@
 	<cfset stCron.timeOut = 60 />
 	<cfset oCron.setData(stProperties=stCron) />
 	
-	<skin:bubble message="Task '#attributes.title#' created" tags="sheduledtask,created,information" />
+	<skin:bubble message="Task '#attributes.title#' created" tags="sheduledtask,created,info" />
 	
 	<cflocation url="#cgi.script_name#?#rereplace(cgi.query_string,'(\?|&)createtask=[^&]*','')#" />
 </cfif>
@@ -75,7 +75,7 @@
 	<cfif qCron.recordcount>
 		
 		<cfset oCron.delete(objectid=qCron.objectid[1]) />
-		<skin:bubble message="Task '#attributes.title#' deleted" tags="scheduledtask,deleted,information" />
+		<skin:bubble message="Task '#attributes.title#' deleted" tags="scheduledtask,deleted,info" />
 	
 	<cfelse>
 	

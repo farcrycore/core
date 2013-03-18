@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<cfcomponent displayname="Configuration" extends="types" output="false" bSystem="true" hint="Many aspects of the application can be configured to behave specifically as you need them.  Modify the setup by tweaking the configuration just the way you need it.">
+<cfcomponent displayname="Configuration" extends="types" output="false" hint="Many aspects of the application can be configured to behave specifically as you need them.  Modify the setup by tweaking the configuration just the way you need it." bSystem="true" bArchive="true">
 <!---------------------------------------------- 
 type properties
 ----------------------------------------------->

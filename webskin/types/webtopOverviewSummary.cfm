@@ -65,7 +65,7 @@ START WEBSKIN
 	
 	<!--- If this is the draft version then check to see if there are actually any differences --->
 	<cfif structkeyexists(stObj,"status") and stObj.status eq "draft" and structkeyexists(stObj,"versionid") and len(stObj.versionID)>
-		<cfset stLocal.stResults = application.fc.lib.diff.performObjectDiff(getData(objectid=stObj.versionID),stObj) />
+		<cfset stLocal.stResults = application.fc.lib.diff.getObjectDiff(getData(objectid=stObj.versionID),stObj) />
 		<cfif stLocal.stResults.countDifferent eq 0>
 			<cfoutput>
 				<div id="OKMsg"><p>

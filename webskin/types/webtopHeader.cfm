@@ -150,7 +150,7 @@
 	<div class="farcry-main container-fluid">
 		<div class="row-fluid">
 			<div class="span12">
-
+				<div id="bubbles"></div>
 </cfoutput>
 
 <cfsetting enablecfoutputonly="false">

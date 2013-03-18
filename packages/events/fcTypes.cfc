@@ -1,4 +1,4 @@
-<cfcomponent hint="Listener for FarCry COAPI events">
+<cfcomponent hint="Solr Event listener for backwards compatibility">
 
 	<!--- FC-2624: Load the SolrPro plugin's event handler only if the plugin is present without an fcTypes event listener --->
 	<cfif listFindNoCase(application.plugins,"farcrysolrpro")
@@ -6,7 +6,7 @@
 		
 		<cfset variables.solrProEventHandler = createObject("component","farcry.plugins.farcrysolrpro.packages.custom.eventHandler") />
 	</cfif>
-
+	
 	<cffunction name="saved" access="public" hint="I am invoked when a content object has been saved">
 		<cfargument name="typename" type="string" required="true" hint="The type of the object" />
 		<cfargument name="oType" type="any" required="true" hint="A CFC instance of the object type" />
@@ -32,24 +32,5 @@
 			<cfset variables.solrProEventHandler.onDelete(typename=arguments.typename, stObject=arguments.stObject) />
 		</cfif>
 	</cffunction>
-
-	<!---
-	<cffunction name="statusChanged" access="public" hint="I am invoked when the status of a content object has changed">
-		<cfargument name="typename" type="string" required="true" hint="The type of the object" />
-		<cfargument name="oType" type="any" required="true" hint="A CFC instance of the object type" />
-		<cfargument name="stObject" type="struct" required="true" hint="The object" />
-		<cfargument name="newStatus" type="string" required="true" />
-		<cfargument name="previousStatus" type="string" required="true" />
-		
-	</cffunction>
-
-	<cffunction name="securityChanged" access="public" hint="I am invoked when the security of a content object has changed">
-		<cfargument name="typename" type="string" required="true" hint="The type of the object" />
-		<cfargument name="oType" type="any" required="true" hint="A CFC instance of the object type" />
-		<cfargument name="stObject" type="struct" required="true" hint="The object" />
-		
-	</cffunction>
-	
-	--->
 
 </cfcomponent>

@@ -39,7 +39,7 @@ ACTION
 		<cfset application.config[configkey] = oConfig.getConfig(configkey) />
 	</cfloop>
 	
-	<skin:bubble title="Configuration has been reloaded" />
+	<skin:bubble title="Configuration has been reloaded" tags="config,info" />
 </ft:processform>
 
 <ft:processform action="Delete / reset">
@@ -55,14 +55,14 @@ ACTION
 				<cfif structkeyexists(application.stCOAPI[thisform],"displayname")>
 					<cfset stConfig.configkey = application.stCOAPI[thisform].displayname />
 				</cfif>
-				<skin:bubble title="Configuration reset" message="#stconfig.configkey# has been reset" />
+				<skin:bubble title="Configuration reset" message="#stconfig.configkey# has been reset" tags="config,info" />
 			<cfelse>
 				<cfset structdelete(application.config,stConfig.configkey) />
-				<skin:bubble title="Configuration deleted" message="#stconfig.configkey# has been deleted" />
+				<skin:bubble title="Configuration deleted" message="#stconfig.configkey# has been deleted" tags="config,info" />
 			</cfif>
 		</cfloop>
 	<cfelse>
-		<skin:bubble title="Error" message="No configurations selected" />
+		<skin:bubble title="Error" message="No configurations selected" tags="config,error" />
 	</cfif>
 </ft:processform>
 

@@ -102,6 +102,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.numPageDisplay" default="5" type="numeric">
 
 <cfparam name="attributes.lButtons" default="*" type="string">
+<cfparam name="attributes.lButtonsEmpty" default="add" type="string">
 <cfparam name="attributes.bPaginateTop" default="true" type="boolean">
 <cfparam name="attributes.bPaginateBottom" default="true" type="boolean">
 <cfparam name="attributes.bDisplayTotalRecords" default="true" type="boolean" />
@@ -131,6 +132,8 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.copyUrlParams" default="#structnew()#" /><!--- if any extra params need to be passed into the copy screen need to a struct e.g paramStruct.parentid='whatever'--->
 <cfparam name="attributes.editUrlParams" default="#structnew()#" /><!--- if any extra params need to be passed into the edit screen need to a struct e.g paramStruct.parentid='whatever'--->
 
+<cfparam name="attributes.emptymessage" default="You do not currently have an content. Use the [Add] button above to begin." />
+
 <!--- Convert attributes.lCustomColumns to array of structs --->
 <cfif listLen(attributes.lCustomColumns)>
 	<cfloop list="#attributes.lCustomColumns#" index="i">
@@ -144,6 +147,11 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <!--- I18 conversion off text output attributes --->
 <cfset attributes.description = application.rb.getResource("#attributes.rbkey#.description@text",attributes.description) />
 
+<cfif structkeyexists(application.stCOAPI[attributes.typename],"displayname") and len(application.stCOAPI[attributes.typename].displayname)>
+	<cfset typelabel = application.stCOAPI[attributes.typename].displayname />
+<cfelse>
+	<cfset typelabel = attributes.typename />
+</cfif>
 
 <cfif NOT structKeyExists(session.objectadmin, attributes.typename)>
 	<cfset structInsert(session.objectadmin, attributes.typename, structnew())>
@@ -195,12 +203,6 @@ user --->
 <cfif thistag.executionMode eq "End">
 
 	<cfif len(attributes.title)>
-		<cfif structkeyexists(application.stCOAPI[attributes.typename],"displayname") and len(application.stCOAPI[attributes.typename].displayname)>
-			<cfset typelabel = application.stCOAPI[attributes.typename].displayname />
-		<cfelse>
-			<cfset typelabel = attributes.typename />
-		</cfif>
-		
 		<cfoutput>
 		<table class="layout" style="padding:5px;margin-bottom:10px;">
 		<tr>
@@ -235,7 +237,7 @@ user --->
 						<cfoutput>#stResult.message#</cfoutput>
 					</skin:bubble>
 				<cfelse>
-					<skin:bubble title="Deleted - #stDeletingObject.label#" bAutoHide="true" tags="type,#attributes.typename#,deleted,information" />
+					<skin:bubble title="Deleted - #stDeletingObject.label# <a href='?id=#url.id#&typename=dmArchive&bodyView=webtopBody&archivetype=#attributes.typename#' style='margin-left:10px;'>undo</a>" bAutoHide="true" tags="type,#attributes.typename#,deleted,info" />
 				</cfif>
 			</cfloop>
 		</cfif>
@@ -577,20 +579,8 @@ user --->
 		</cfif>	
 	</ft:processForm>
 	
-	<ft:processForm action="properties">
-		<cfif structkeyexists(form,"objectid")>
-			<cfif len(form.objectid)>				
-				<skin:onReady>
-					<cfoutput>
-						<cfloop list="#form.objectid#" index="i">
-							$fc.objectAdminAction('Properties', '#application.url.farcry#/object_dump.cfm?objectid=#i#&typename=#attributes.typename#');
-						</cfloop>
-					</cfoutput>
-				</skin:onReady>
-			</cfif>
-		<cfelse>
-			<cfset message_error = "No Objects Selected">
-		</cfif>					
+	<ft:processForm action="Undelete">
+		<cflocation url="?id=#url.id#&typename=dmArchive&bodyView=webtopBody&archivetype=#attributes.typename#" addtoken="false" />
 	</ft:processForm>
 	
 	<!-----------------------------------------------
@@ -716,11 +706,6 @@ user --->
 	
 
 
-<!--- 
-	<cfif structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true>
- --->
-
-
 	<!--- ONLY SHOW THE FILTERING IF WE HAVE RECORDS OR IF WE ARE ALREADY FILTERING --->
 	<cfif listLen(attributes.lFilterFields) AND (listLen(HTMLfiltersAttributes) OR stRecordset.q.recordCount)>
 		<ft:form Name="#attributes.name#Filter" Validation="#attributes.bFilterValidation#">	
@@ -783,7 +768,7 @@ user --->
 					<cfif attributes.lButtons EQ "*" or listFindNoCase(attributes.lButtons,attributes.aButtons[i].value)>
 					
 						<!--- IF NO RECORDSET THEN ONLY THE ADD BUTTON SHOULD BE DISPLAYED --->
-						<cfif stRecordset.q.recordCount OR attributes.aButtons[i].value EQ "add">
+						<cfif stRecordset.q.recordCount OR listfind(attributes.lButtonsEmpty,attributes.aButtons[i].value)>
 
 							<cfif not len(attributes.aButtons[i].permission) or (isboolean(attributes.aButtons[i].permission) and attributes.aButtons[i].permission) or (not isboolean(attributes.aButtons[i].permission) and application.security.checkPermission(permission=attributes.aButtons[i].permission) EQ 1)>
 								
@@ -805,23 +790,28 @@ user --->
 								<cfset class = "">
 								<cfif structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true>
 									<!--- bootstrap --->
-
-									<cfif attributes.aButtons[i].value eq "Add">
-										<cfset icon = "plus">
-										<cfset class = "btn-primary">
-									</cfif>
-									<cfif attributes.aButtons[i].value eq "Copy">
-										<cfset icon = "copy">
-									</cfif>
-									<cfif attributes.aButtons[i].value eq "Delete">
-										<cfset icon = "trash">
-									</cfif>
-									<cfif attributes.aButtons[i].value eq "Unlock">
-										<cfset icon = "unlock">
+									<cfif structkeyexists(attributes.aButtons[i],"icon")>
+										<cfset icon =  attributes.aButtons[i].icon />
+									<cfelse>
+										<cfswitch expression="#attributes.aButtons[i].value#">
+											<cfcase value="Add">
+												<cfset icon = "plus">
+												<cfset class = "btn-primary">
+											</cfcase>
+											<cfcase value="Copy">
+												<cfset icon = "copy">
+											</cfcase>
+											<cfcase value="Delete">
+												<cfset icon = "trash">
+											</cfcase>
+											<cfcase value="Unlock">
+												<cfset icon = "unlock">
+											</cfcase>
+										</cfswitch>
 									</cfif>
 								</cfif>
 
-								<ft:button text="#attributes.aButtons[i].value#" value="#attributes.aButtons[i].value#" class="#class#" icon="#icon#" rbkey="objectadmin.buttons.#rereplace(attributes.aButtons[i].value,'[^\w]+','','ALL')#" onclick="#onclickJS#" confirmText="#attributes.aButtons[i].confirmText#" />
+								<ft:button text="#buttontext#" value="#attributes.aButtons[i].value#" class="#class#" icon="#icon#" rbkey="objectadmin.buttons.#rereplace(attributes.aButtons[i].value,'[^\w]+','','ALL')#" onclick="#onclickJS#" confirmText="#attributes.aButtons[i].confirmText#" />
 							</cfif>
 						</cfif>
 					</cfif>
@@ -833,27 +823,18 @@ user --->
 		
 
 
-		<cfoutput>#html_buttonbar#</cfoutput>
-	
-	
-	
-		<skin:pop tags="error" start="<ul id='errorMsg'>" end="</ul>">
-			<cfoutput>
-				<li>
-					<cfif len(trim(message.title))><strong>#message.title#</strong></cfif><cfif len(trim(message.title)) and len(trim(message.message))>: </cfif>
-					<cfif len(trim(message.message))>#message.message#</cfif>
-				</li>
-			</cfoutput>
-		</skin:pop>
+		<cfoutput>
+			#html_buttonbar#
+			<div class="farcry-objectadmin-body">
+		</cfoutput>
 		
-		<skin:pop tags="#attributes.typename#" start="<ul id='OKMsg'>" end="</ul>">
-			<cfoutput>
-				<li>
-					<cfif len(trim(message.title))><strong>#message.title#</strong></cfif><cfif len(trim(message.title)) and len(trim(message.message))>: </cfif>
-					<cfif len(trim(message.message))>#message.message#</cfif>
-				</li>
-			</cfoutput>
-		</skin:pop>
+		<skin:pop tags="#attributes.typename#"><cfoutput>
+			<div class="alert <cfif listfindnocase(message.tags,'info')> alert-info<cfelseif listfindnocase(message.tags,'error')> alert-error<cfelseif listfindnocase(message.tags,'success')> alert-success</cfif>">
+				<button type='button' class='close' data-dismiss='alert'>&times;</button>
+				<cfif len(trim(message.title))><strong>#message.title#</strong></cfif>
+				<cfif len(trim(message.message))>#message.message#</cfif>
+			</div>
+		</cfoutput></skin:pop>
 		
 		<cfif stRecordset.q.recordCount>
 			<skin:pagination
@@ -901,9 +882,6 @@ user --->
 						<cfif structKeyExists(st,"bHasMultipleVersion")>
 					 		<cfoutput><th style="width:9em;">#application.rb.getResource('objectadmin.columns.status@label',"Status")#</th></cfoutput>
 						</cfif>
-						<!---<cfif attributes.bEditCol><th>Edit</th></cfif>
-						<cfif attributes.bViewCol><th>View</th></cfif>
-						<cfif attributes.bFlowCol><th>Flow</th></cfif> --->
 						
 						<cfset o = createobject("component",PrimaryPackagepath) />
 						
@@ -997,10 +975,7 @@ user --->
 							</cfif>
 					 		<cfif structKeyExists(st,"bHasMultipleVersion")>
 						 		<cfoutput><th>&nbsp;</th></cfoutput>
-							</cfif>
-							<!---<cfif attributes.bEditCol><th>&nbsp;</th></cfif>
-							<cfif attributes.bViewCol><th>&nbsp;</th></cfif>
-							<cfif attributes.bFlowCol><th>&nbsp;</th></cfif> --->					
+							</cfif>			
 							<cfif arrayLen(attributes.aCustomColumns)>
 								<cfset oType = createObject("component", PrimaryPackagePath) />
 								<cfloop from="1" to="#arrayLen(attributes.aCustomColumns)#" index="i">
@@ -1069,9 +1044,7 @@ user --->
 				<cfif structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true>
 					<cfset st.currentRowClass = "">
 				</cfif>
-
-				<!--- <ft:paginateLoop r_stObject="st" bIncludeFields="true" bIncludeObjects="false" stpermissions="#stpermissions#" lCustomActions="#attributes.lCustomActions#" bTypeAdmin="true" typename="#attributes.typename#">
-			 --->		
+					
 						<cfoutput>
 						<tr class="#st.currentRowClass#">
 						</cfoutput>
@@ -1166,12 +1139,14 @@ user --->
 	
 	<cfelse>
 		<cfif listLen(HTMLfiltersAttributes)>
-			<cfoutput><div id="errorMsg">NO RESULTS MATCHED YOUR FILTER</div></cfoutput>
+			<cfoutput><div class="alert alert-error">NO RESULTS MATCHED YOUR FILTER</div></cfoutput>
 		<cfelse>
-			<cfoutput><div id="OKMsg">YOU DO NOT CURRENTLY HAVE ANY CONTENT. USE THE [ADD] BUTTON ABOVE TO BEGIN.</div></cfoutput>
+			<cfoutput><div class="alert alert-info"><admin:resource key="#attributes.rbkey#.emptymessage@text" var1="#typelabel#">#attributes.emptymessage#</admin:resource></div></cfoutput>
 		</cfif>
 		
 	</cfif>
+	
+	<cfoutput></div></cfoutput>
 	
 	</ft:form>
 
@@ -1210,7 +1185,7 @@ user --->
 		<cfset lWorkflowTypenames = application.fapi.getContentType("farWorkflow").getWorkflowList(arguments.typename) />
 	</cfif>
 
-	<cfset stObjectAdminData.select = "<input type='checkbox' name='objectid' value='#arguments.st.objectid#' onclick='setRowBackground(this);' class='formCheckbox' />" />
+	<cfset stObjectAdminData.select = "<input type='checkbox' name='objectid' value='#arguments.st.objectid#' onclick='setRowBackground(this);updateSelectedObjectIDs(this);' class='formCheckbox' />" />
 
 
 
@@ -1349,7 +1324,7 @@ user --->
 					
 					<cfif attributes.bPreviewCol>
 						<li>
-							<ft:button value="Preview" title="Preview this object" renderType="link" type="button" onclick="$fc.objectAdminAction('Preview', '#application.url.webroot#/index.cfm?flushcache=1&objectid=#arguments.st.objectid#');" />
+							<ft:button value="Preview" title="Preview this object" renderType="link" type="button" onclick="$fc.objectAdminAction('Preview', '#application.url.webroot#/index.cfm?flushcache=1&objectid=#arguments.st.objectid#&type=#attributes.typename#');" />
 						</li>
 					</cfif>		
 					

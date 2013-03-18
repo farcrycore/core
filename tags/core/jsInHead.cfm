@@ -14,6 +14,13 @@
 		<cfparam name="request.inHead.stJSLibraries" default="#structNew()#" />
 		<cfset aJS = arraynew(1) />
 		
+		<!--- Remove alias duplicates --->
+		<cfloop list="#arraytolist(request.inHead.aJSLibraries)#" index="i">
+			<cfif len(request.inHead.stJSLibraries[i].aliasOf) and arrayfind(request.inHead.aJSLibraries,request.inHead.stJSLibraries[i].aliasOf)>
+				<cfset arraydeleteat(request.inHead.aJSLibraries,arrayfind(request.inHead.aJSLibraries,request.inHead.stJSLibraries[i].aliasOf)) />
+			</cfif>
+		</cfloop>
+		
 		<!--- Processes library packages --->
 		<cfset toremove = "" />
 		<cfloop from="#arraylen(request.inHead.aJSLibraries)#" to="1" index="i" step="-1">

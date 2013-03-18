@@ -479,7 +479,19 @@ environment references (might be nice to clean these up)
 				arrayAppend(aDefaultButtons,stBut);
 
 		}
-
+		
+		if (structkeyexists(application.stCOAPI,attributes.typename) and application.stCOAPI[attributes.typename].bArchive){
+			// undelete button
+				stBut=structNew();
+				stBut.type="button";
+				stBut.name="undelete";
+				stBut.value="Undelete";
+				stBut.class="f-submit";
+				stBut.onClick="";
+				stBut.permission=application.security.checkPermission(permission="Create",type=attributes.permissionset);
+				stBut.buttontype="undelete";
+				arrayAppend(aDefaultButtons,stBut);
+		}
 	</cfscript>
 	<cfreturn aDefaultButtons />
 </cffunction>

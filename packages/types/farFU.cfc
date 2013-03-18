@@ -2,7 +2,8 @@
 	displayname="FarCry Friendly URL Table" hint="Manages FarCry Friendly URL's" extends="types" output="false" 
 	bDocument="true" scopelocation="application.fc.factory.farFU" 
 	bObjectBroker="true" objectBrokerMaxObjects="10000" 
-	fuAlias="fu">
+	fuAlias="fu"
+	bSystem="true">
 	
 	<cfproperty 
 		name="refobjectid" type="string" default="" hint="stores the objectid of the related object" 
@@ -433,9 +434,9 @@
 				<cfset stLocal.stResult = setData(stProperties="#stLocal.stCurrentSystemObject#") />
 			</cfif>
 		</cfif>
-
+		
 		<cfset setMapping(objectid="#stLocal.stCurrentSystemObject.objectid#") />
-			
+		
 		<cfreturn stLocal.stResult />
 	</cffunction>
 
@@ -511,7 +512,7 @@
 						<cfset systemFU = "/#ListLast(application.stcoapi[stobj.typename].name,'.')#" />
 					</cfif>	
 				</cfif>			
-			
+				
 				<cfif structKeyExists(stobj, "fu") AND len(trim(stobj.fu))>
 					<cfset systemFU = systemFU & "/#stobj.fu#">
 				<cfelse>

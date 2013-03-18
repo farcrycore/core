@@ -84,8 +84,7 @@ START WEBSKIN
 
 	
 <cfif structKeyExists(stobj,"versionID") AND structKeyExists(stobj,"status") AND stobj.status EQ "approved">
-	<cfset oVersioning = createObject("component", "#application.packagepath#.farcry.versioning")>
-	<cfset qDraft = oVersioning.checkIsDraft(objectid=stobj.objectid,type=stobj.typename)>
+	<cfset qDraft = application.factory.oVersioning.checkIsDraft(objectid=stobj.objectid,type=stobj.typename)>
 	<cfif qDraft.recordcount>
 		<cfset stDraftObject = getData(qDraft.objectid)>
 		<cfset bHasDraft = true />

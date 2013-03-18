@@ -148,9 +148,9 @@ $out:$
 	<ft:processForm action="Submit">	
 	
 		<cfloop index="attributes.objectID" list="#attributes.lObjectIDs#">
-			<q4:contentobjectget objectId="#attributes.objectId#" r_stObject="stObj">
+			<cfset stObj = application.fapi.getContentObject(objectid=attributes.objectid) />
 			
-			<cfinvoke component="#application.packagepath#.farcry.versioning" method="getVersioningRules" objectID="#stObj.objectid#" returnvariable="stRules">
+			<cfset stRules = application.factory.oVersioning.getVersioningRules(objectid=stObj.objectid,typename=stObj.typename) />
 
 			<cfif not structkeyexists(stObj, "status")>
 				<cfoutput>
@@ -171,20 +171,14 @@ $out:$
 				<cfset permission = "approve,canApproveOwnContent">
 				<cfset active = 1>
 				<!--- send out emails informing object has been approved --->
-				<cfinvoke component="#application.packagepath#.farcry.versioning" method="approveEmail_approved">
-					<cfinvokeargument name="objectId" value="#stObj.objectID#"/>
-					<cfinvokeargument name="comment" value="#form.commentlog#"/>
-				</cfinvoke>
+				<cfset application.factory.oVersioning.approveEmail_approved(objectid=stObj.objectid,comment=form.commentlog) />
 
 
 			<cfelseif url.status eq "draft">
 				<cfset status = 'draft'>
 				<cfset permission = "approve,canApproveOwnContent">
 				<!--- send out emails informing object has been sent back to draft --->
-				<cfinvoke component="#application.packagepath#.farcry.versioning" method="approveEmail_draft">
-					<cfinvokeargument name="objectId" value="#stObj.objectID#"/>
-					<cfinvokeargument name="comment" value="#form.commentlog#"/>
-				</cfinvoke>
+				<cfset application.factory.oVersioning.approveEmail_draft(objectid=stObj.objectid,comment=form.commentlog) />
 				<cfset active = 0>
 				
 			<cfelseif url.status eq "requestApproval">
@@ -200,19 +194,10 @@ $out:$
 				</cfif>
 				
 				<!--- send out emails informing object needs approval --->
-				<cfinvoke component="#application.packagepath#.farcry.versioning" method="approveEmail_pending">
-					<cfinvokeargument name="objectId" value="#pendingObject#"/>
-					<cfinvokeargument name="comment" value="#form.commentlog#"/>
-					<cfif isdefined("form.lApprovers") and len(form.lApprovers)>
-						<cfif listLen(form.lApprovers) gt 1 and listFind(form.lApprovers,"all")>
-							<cfinvokeargument name="lApprovers" value="all"/>
-						<cfelse>
-							<cfinvokeargument name="lApprovers" value="#form.lApprovers#"/>
-						</cfif>					
-					<cfelse>
-						<cfinvokeargument name="lApprovers" value="all"/>
-					</cfif>
-				</cfinvoke>
+				<cfif not isdefined("form.lApprovers") or not len(form.lApprovers) or listfindnocase(form.lApprovers,"all")>
+					<cfset form.lApprovers = "all" />
+				</cfif>
+				<cfset application.factory.oVersioning.approveEmail_pending(objectid=pendingObject,comment=form.commentLog,lApprovers=form.lApprovers) />
 				
 			<cfelse>
 				<cfoutput><b>#application.rb.formatRBString("workflow.messages.unknownStatusPassed@text",url.status,"Unknown status passed. ({1})")#<b><br></cfoutput><cfabort>
@@ -303,18 +288,17 @@ $out:$
 			
 			<!--- update the structure data for object update --->
 			<cfloop list="#keyList#" index="key">
-				<q4:contentobjectget objectId="#key#" r_stObject="stObj">
+				<cfset stObj = application.fapi.getContentObject(objectid=key) />
 				
 				<cfif NOT structIsEmpty(stObj)>
 					<cfif structKeyExists(stobj, "status") AND stObj.label NEQ "(incomplete)"> <!--- incompletet items check .: dont send incomplete items live --->
 						
-						
-						<cfinvoke component="#application.packagepath#.farcry.versioning" method="getVersioningRules" objectID="#key#" returnvariable="stRules">
+						<cfset stRules = application.factory.oVersioning.getVersioningRules(objectid=key,typename=stObj.typename) />
 						
 						<!--- If the user is trying to approve or request approval an approved object, we will assume they are trying to change the status the draft object if there is one. --->
 						<cfif (url.status eq "approved" OR url.status eq "requestApproval") AND stobj.status EQ "approved" and stRules.bDraftVersionExists AND len(stRules.draftobjectID)>
-							<q4:contentobjectget objectId="#stRules.draftobjectID#" r_stObject="stObj">
-							<cfinvoke component="#application.packagepath#.farcry.versioning" method="getVersioningRules" objectID="#stObj.objectid#" returnvariable="stRules">
+							<cfset stObj = application.fapi.getContentObject(objectid=stRules.draftobjectID) />
+							<cfset stRules = application.factory.oVersioning.getVersioningRules(objectid=stObj.objectid,typename=stObj.typename) />
 						</cfif>
 						
 						<!--- prepare date fields --->
@@ -336,8 +320,8 @@ $out:$
 						
 
 						<cfif stRules.bLiveVersionExists and url.status eq "approved">
-							 <!--- Then we want to swap live/draft and archive current live --->
-							<cfinvoke component="#application.packagepath#.farcry.versioning" method="sendObjectLive" objectID="#stObj.objectid#"  stDraftObject="#stObj#" returnvariable="stRules">
+							<!--- Then we want to swap live/draft and archive current live --->
+							<cfset stRules = application.factory.oVersioning.sendObjectLive(objectid=stObj.objectid,stDraftObject=stObj) />
 							<cfparam name="returnObjectID" default="#stObj.objectid#">
 														
 						<cfelse>
@@ -358,7 +342,7 @@ $out:$
 							
 						</cfif>
 						
-						<skin:bubble title="#stObj.label#" message="Status changed to #status#" tags="type,#stObj.typename#,workflow,information" />
+						<skin:bubble title="#stObj.label#" message="Status changed to #status#" tags="type,#stObj.typename#,workflow,info" />
 						<farcry:logevent object="#stObj.objectid#" type="types" event="to#status#" note="#form.commentLog#" />
 						
 					</cfif> <!--- // incomplete items check  --->

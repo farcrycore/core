@@ -501,7 +501,9 @@
 		<cfargument name="dbowner" type="string" required="false" default="#application.dbowner#">
 		<cfargument name="bSessionOnly" type="string" required="false" default="false">
 		<cfargument name="bAfterSave" type="boolean" required="false" default="true" hint="This allows the developer to skip running the types afterSave function.">	
-	
+		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Updated">
+		<cfargument name="bAudit" type="boolean" required="No" default="1" hint="Pass in 0 if you wish no audit to take place">
+		
 		<cfset var o = "" />
 		<cfset var lReserved = "objectid,typename,stProperties,dsn,dbtype,dbowner,bSessionOnly,bAfterSave" />
 	
@@ -524,7 +526,7 @@
 		
 		<cfset o = getContentType(arguments.stProperties.typename) />
 		
-		<cfreturn o.setData(stProperties=arguments.stProperties,dsn=arguments.dsn,dbtype=arguments.dbtype,dbowner=arguments.dbowner,bSessionOnly=arguments.bSessionOnly,bAfterSave=arguments.bAfterSave) />
+		<cfreturn o.setData(argumentCollection=arguments) />
 	</cffunction>
 	
 	<cffunction name="setAncestorsCacheByVars" access="public" returntype="void" output="false" hint="This is generally used by tags to dynamically assign cacheByVar's to the webskin that called it and its ancestors.">

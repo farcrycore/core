@@ -863,7 +863,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="dsn" type="string" required="false" default="#application.dsn#">
 		<cfargument name="bSessionOnly" type="string" required="false" default="false">
 		<cfargument name="bSetDefaultCoreProperties" type="boolean" required="false" default="true" hint="This allows the developer to skip defaulting the core properties if they dont exist.">	
-		
+		<cfargument name="auditNote" type="string" required="false" default="">
 		
 	    <cfset var stResult = StructNew() />
 	    <cfset var stDefaultProperties = "" />
@@ -928,6 +928,13 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				<cfif arguments.bSetDefaultCoreProperties AND structKeyExists(session, "TempObjectStore") AND  structKeyExists(Session.TempObjectStore, arguments.stProperties.ObjectID)>
 					<cfset StructAppend(arguments.stProperties, Session.TempObjectStore[arguments.stProperties.ObjectID],false)>	
 				</cfif>
+				
+				<!--- Announce the save event to listeners --->
+				<cfset application.fc.lib.events.announce(	component = "fcTypes", eventName = "beforesave",
+															typename = arguments.stProperties.typename,
+															oType = this,
+															stProperties = arguments.stProperties,
+															auditNote = arguments.auditNote) />
 
 		   		<cfset stResult = application.fc.lib.db.setData(stProperties=arguments.stProperties,typename=getTypePath(),dsn=arguments.dsn) />	   	
 		   		
@@ -977,7 +984,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				<cfset changeStatus = "approved" />
 			<cfelseif arguments.stProperties.status EQ "draft">
 				<!--- IF CHANGING TO DRAFT AND NO LIVE VERSION EXISTS THEN SEND RELATED CONTENT TO DRAFT --->
-				<cfset stVersionRules = createObject("component", "#application.packagepath#.farcry.versioning").getVersioningRules(objectID=arguments.stProperties.objectid) />
+				<cfset stVersionRules = application.factory.oVersioning.getVersioningRules(objectID=arguments.stProperties.objectid) />
 				<cfif NOT stVersionRules.bLiveVersionExists>
 					<cfset changeStatus = "draft" />
 				</cfif>
@@ -1247,7 +1254,15 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfparam name="stReturnMetadata.objectBrokerWebskinCacheTimeout" default="1400" /> <!--- This a value in minutes (ie. 1 day) --->
  		<cfparam name="stReturnMetadata.excludeWebskins" default="" /> <!--- This enables projects to exclude webskins that may be contained in plugins. ---> 
  		<cfparam name="stReturnMetadata.fuAlias" default="#lcase(rereplace(stReturnMetadata.displayname,'[^\w]+','-','ALL'))#" /> <!--- This will store the alias of the typename that can be used by Friendly URLS ---> 
-
+		<cfparam name="stReturnMetadata.bSystem" default="false" />
+		<cfparam name="stReturnMetadata.bUseInTree"default="false" />
+		
+		<cfif refindnocase("\.types\.",stReturnMetadata.fullname)>
+			<cfparam name="stReturnMetadata.bArchive" default="#not stReturnMetadata.bSystem#" />
+		<cfelse>
+			<cfparam name="stReturnMetadata.bArchive" default="false" />
+		</cfif>
+		
 		<!--- Get webkins: webskins for this type, then webskins for extends types --->
 		<cfset stReturnMetadata.qWebskins = application.coapi.coapiAdmin.getWebskins(typename="#componentname#", bForceRefresh="true", excludeWebskins="#stReturnMetadata.excludeWebskins#",packagepath=stReturnMetadata.packagepath,aExtends=stReturnMetadata.aExtends) />
 		<cfset stReturnMetadata.stWebskins = duplicate(request.fc.stWebskins[componentname]) />

@@ -167,6 +167,11 @@
 		<cfset var stHTML = structNew() />
 		<cfset var qRelated = queryNew("blah") />
 		<cfset var qDeleteRelated = queryNew("blah") />
+		<cfset var qGetDescendants = "" />
+		<cfset var oNavigation = createObject("component", application.types.dmNavigation.typePath) />
+		<cfset var fuUrl = "" />
+		<cfset var i = 0 />
+		<cfset var objType = "" />
 		
 		<cfset var stReturn = StructNew()>
 		
@@ -174,23 +179,13 @@
 			<cfscript>
 				// get descendants
 				qGetDescendants = application.factory.oTree.getDescendants(objectid=stObj.objectID);
-				oNavigation = createObject("component", application.types.dmNavigation.typePath);
-
-				// delete actual object
-				super.delete(stObj.objectId);
-
+				
 				// delete fu
 				if (application.fc.factory.farFU.isUsingFU()) {
 					fuUrl = application.fc.factory.farFU.getFU(objectid=stObj.objectid);
 					application.fc.factory.farFU.deleteMapping(fuUrl);
 				}
-
-				// delete branch
-				application.factory.oTree.deleteBranch(objectid=stObj.objectID);
-
-				// remove permissions
-				application.factory.oAuthorisation.deletePermissionBarnacle(objectid=stObj.objectID);
-
+				
 				// check for associated objects 
 				if(structKeyExists(stObj,"aObjectIds") and arrayLen(stObj.aObjectIds)) {
 
@@ -206,44 +201,22 @@
 						}
 					}
 				}
-
+				
 				// loop over descendants
-				if (qGetDescendants.recordcount) {
-					for(loop0=1; loop0 LTE qGetDescendants.recordcount; loop0=loop0+1) {
-
-						//get descendant data
-						objDesc = getData(qGetDescendants.objectId[loop0]);
-
-						// delete associated descendants
-						if (arrayLen(objDesc.aObjectIds)) {
-
-							// loop over associated objects
-							for(i=1; i LTE arrayLen(objDesc.aObjectIds); i=i+1) {
-
-								// work out typename
-								objType = findType(objDesc.aObjectIds[i]);
-								if (len(objType)) {
-									// delete associated object
-									oType = createObject("component", application.types[objType].typePath);
-									oType.delete(objDesc.aObjectIds[i]);
-								}
-							}
-						}
-
-						// delete fu
-						if (application.fc.factory.farFU.isUsingFU()) {
-							fuUrl = application.fc.factory.farFU.getFU(objectid=qGetDescendants.objectId[loop0]);
-							application.fc.factory.farFU.deleteMapping(fuUrl);
-						}
-
-						// remove permissions
-						application.factory.oAuthorisation.deletePermissionBarnacle(objectid=qGetDescendants.objectId[loop0]);
-
-						// delete descendant
-						super.delete(qGetDescendants.objectId[loop0]);	
-
-					}
+				for(i=1; i LTE qGetDescendants.recordcount; i=i+1) {
+					// delete descendant
+					delete(qGetDescendants.objectId[i]);
 				}
+				
+				// delete actual object
+				super.delete(argumentCollection=arguments);
+				
+				// delete branch
+				application.factory.oTree.deleteBranch(objectid=stObj.objectID);
+				
+				// remove permissions
+				application.factory.oAuthorisation.deletePermissionBarnacle(objectid=stObj.objectID);
+				
 			</cfscript>
 			
 			<!--- Find any dmHTML pages that reference this navigation node. --->

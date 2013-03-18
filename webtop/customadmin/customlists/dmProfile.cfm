@@ -36,13 +36,13 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 		<cfset stUser = createobject("component",application.stCOAPI.farUser.packagepath).getByUserID(userID) />
 		
 		<cfif structIsEmpty(stUser)>
-			<skin:bubble title="Error" message="This profile does not have a valid user attached. Please edit this profile to create a username/password." />
+			<skin:bubble title="Error" message="This profile does not have a valid user attached. Please edit this profile to create a username/password." tags="security,error" />
 		<cfelse>
 			<cflocation url="#application.url.webtop#/conjuror/invocation.cfm?objectid=#stUser.objectid#&typename=farUser&method=editPassword&ref=typeadmin&module=customlists/dmProfile.cfm" />
 		</cfif>
 		
 	<cfelse>
-		<skin:bubble title="Error" message="'Change password' only applies to CLIENTUD users." />
+		<skin:bubble title="Error" message="'Change password' only applies to CLIENTUD users." tags="security,error" />
 	</cfif>
 </ft:processform>
 

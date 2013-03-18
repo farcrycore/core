@@ -35,6 +35,9 @@
 			<menu id="containermanagement" sequence="60" label="Container Management">
 				<menuitem id="reflectedContainers" sequence="10" label="Reflected Containers" link="/admin/customadmin.cfm?module=customlists/container.cfm" />		
 			</menu>
+			<menu id="undeletemenu" sequence="70" label="Undelete Content">
+				<menuitem id="undelete" sequence="10" label="Undelete Content" typename="dmArchive" />
+			</menu>
 		</subsection>
 	</section>
 

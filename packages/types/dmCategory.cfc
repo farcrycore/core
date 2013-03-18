@@ -1,4 +1,4 @@
 
-<cfcomponent displayname="category" extends="category" hint="Set of functions to perform metadata characterisation" bFriendly="1">
+<cfcomponent displayname="category" extends="category" hint="Set of functions to perform metadata characterisation" bFriendly="1" bSystem="true">
 	
 </cfcomponent>

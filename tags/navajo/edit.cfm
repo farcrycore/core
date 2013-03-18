@@ -119,11 +119,10 @@ $out:$
 	
 	<!--- See if we can edit this object --->
 	<cfset bAllowEdit = false />
-	<cfset oVersioning = createObject("component","#application.packagepath#.farcry.versioning") />
 	<cfset oLocking = createObject("component","#application.packagepath#.farcry.locking") />
 	<cfif structKeyExists(stObj,"versionID") AND structKeyExists(stObj,"status")>
-		<cfset stRules = oVersioning.getVersioningRules(objectid=attributes.objectid) />
-		<cfset oVersioning.checkEdit(stRules=stRules,stObj=stObj) />
+		<cfset stRules = application.factory.oVersioning.getVersioningRules(objectid=attributes.objectid) />
+		<cfset application.factory.oVersioning.checkEdit(stRules=stRules,stObj=stObj) />
 	</cfif>
 	
 	<cfif structCount(stObj)>		

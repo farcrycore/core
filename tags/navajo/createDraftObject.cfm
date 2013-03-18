@@ -29,7 +29,7 @@ Creates a draft object
 		<cfif structKeyExists(stObject, "versionID")>
 			
 			<!--- Check to see if a draft version already exists. If it does... simply use that one. --->
-			<cfset qDraftExists = createObject("component", "#application.packagepath#.farcry.versioning").checkIsDraft(objectid=stObject.objectid,type=stObject.typename)>
+			<cfset qDraftExists = application.factory.oVersioning.checkIsDraft(objectid=stObject.objectid,type=stObject.typename)>
 			
 			<cfif qDraftExists.recordCount>
 				<q4:contentobjectget objectid="#qDraftExists.objectid#" r_stobject="stProps">

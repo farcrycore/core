@@ -71,7 +71,7 @@ $out:$
 </span><p></p>
 </cfoutput>
 
-<cfinvoke component="#application.packagepath#.farcry.versioning" method="getVersioningRules" objectID="#url.objectID#" returnvariable="stRules">
+<cfset stRules = application.factory.oVersioning.getVersioningRules(objectid=url.objectid) />
 
 <cfset changestatus = true>
 <cfoutput>
@@ -140,20 +140,13 @@ $out:$
 			<cfset permission = "approve,canApproveOwnContent">
 			<cfset active = 1>
 			<!--- send out emails informing object has been approved --->
-			<cfinvoke component="#application.packagepath#.farcry.versioning" method="approveEmail_approved">
-				<cfinvokeargument name="objectId" value="#stObj.objectID#"/>
-				<cfinvokeargument name="comment" value="#form.commentlog#"/>
-			</cfinvoke>
-
+			<cfset application.factory.oVersioning.approveEmail_approved(objectid=stObj.objectid,comment=form.commentlog) />
 			
 		<cfelseif url.status eq "draft">
 			<cfset status = 'draft'>
 			<cfset permission = "approve,canApproveOwnContent">
 			<!--- send out emails informing object has been sent back to draft --->
-			<cfinvoke component="#application.packagepath#.farcry.versioning" method="approveEmail_draft">
-				<cfinvokeargument name="objectId" value="#stObj.objectID#"/>
-				<cfinvokeargument name="comment" value="#form.commentlog#"/>
-			</cfinvoke>
+			<cfset application.factory.oVersioning.appvoeEmail_draft(objectid=stObj.objectid,comment=form.commentlog) />
 			<cfset active = 0>
 			
 		<cfelseif url.status eq "requestApproval">
@@ -256,7 +249,7 @@ $out:$
 		<!--- update the structure data for object update --->
 	
 		<cfloop list="#keyList#" index="key">
-			<q4:contentobjectget objectId="#key#" r_stObject="stObj">
+			<cfset stObj = application.fapi.getContentObject(objectid=key) />
 			
 			<!--- prepare date fields --->
 			<cfloop collection="#stObj#" item="field">
@@ -268,11 +261,11 @@ $out:$
 			<cfset stObj.datetimelastupdated = createODBCDateTime(now()) />
 			<cfset stObj.status = status />
 			
-			<cfinvoke component="#application.packagepath#.farcry.versioning" method="getVersioningRules" objectID="#key#" returnvariable="stRules">
+			<cfset stRules = application.factory.oVersioning.getVersioningRules(objectid=key) />
 			
 			<cfif stRules.bLiveVersionExists and url.status eq "approved">
 				 <!--- Then we want to swap live/draft and archive current live --->
-				<cfinvoke component="#application.packagepath#.farcry.versioning" method="sendObjectLive" objectID="#key#"  stDraftObject="#stObj#" returnvariable="stRules">
+				 <cfset stRules = application.factory.oVersioning.sendObjectLive(objectid=key,stDraftObject=stObj) />
 				<cfset returnObjectID=stObj.objectid>
 			<cfelse>
 				<!--- a normal page, no underlying object --->
@@ -286,7 +279,7 @@ $out:$
 				</cfif>
 			</cfif>
 			
-			<skin:bubble title="#stObj.label#" message="Status changed to #status#" tags="type,#stObj.typename#,workflow,information" />
+			<skin:bubble title="#stObj.label#" message="Status changed to #status#" tags="type,#stObj.typename#,workflow,info" />
 			<farcry:logevent object="#stObj.objectid#" type="types" event="to#status#" notes="#form.commentLog#" />
 		</cfloop>
 		

@@ -50,7 +50,7 @@ If a versionid is passed then that is the one we wish to render as the overview.
 	<!--- Try and find a version of this object --->
 	<cfset variables.stObject = application.fapi.getContentObject(url.objectID) />
 	<cfif structKeyExists(variables.stObject,"versionID") AND structKeyExists(variables.stObject,"status") AND variables.stObject.status EQ "approved">
-		<cfset variables.qDraft = createObject("component", "#application.packagepath#.farcry.versioning").checkIsDraft(objectid=variables.stObject.objectid,type=variables.stObject.typename)>
+		<cfset variables.qDraft = application.factory.oVersioning.checkIsDraft(objectid=variables.stObject.objectid,type=variables.stObject.typename)>
 		<cfif variables.qDraft.recordcount>		
 			<cfset variables.overviewID = variables.qDraft.objectID />
 		</cfif>

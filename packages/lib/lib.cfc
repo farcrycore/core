@@ -12,7 +12,7 @@
 				<cfset this[libraryname] = createobject("component",oUtils.getPath("lib",libraryname)) />
 					
 					<cfcatch> 
-						<cfdump var="#libraryname#"><cfabort>
+						<cfdump var="#libraryname#"><cfdump var="#cfcatch#"><cfabort>
 					
 					</cfcatch>
 				</cftry>

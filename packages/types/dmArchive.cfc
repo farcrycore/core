@@ -35,22 +35,47 @@ $in: $
 $out:$
 --->
 
-<cfcomponent extends="types" displayname="dmArchive handler" hint="archive objects" bRefObjects="false">
+<cfcomponent extends="types" displayname="dmArchive handler" hint="archive objects" bRefObjects="false" bSystem="true">
 	<!------------------------------------------------------------------------
 	type properties
 	------------------------------------------------------------------------->
 
 	<cfproperty name="archiveID" type="UUID" required="no" default=""
 		hint="ID of archived entry">
-
+	
+	<cfproperty name="event" type="string" required="no" default="" ftLabel="Event"
+		hint="The event that triggered the creation of this archive">
+	
+	<cfproperty name="objectTypename" type="string" required="no" default="" ftLabel="Typename"
+		hint="The archived type">
+	
+	<cfproperty name="bDeleted" type="boolean" required="no" default="false" ftLabel="Deleted"
+		hint="True if this is the last archive of a deleted object">
+	
+	<cfproperty name="username" type="string" required="no" default="" ftLabel="User"
+		hint="The user that triggered this action">
+	
+	<cfproperty name="ipaddress" type="string" required="no" default="" ftLabel="IP Address"
+		hint="The IP from which this was done">
+	
+	<cfproperty name="lRoles" type="string" required="no" default="" ftLabel="Roles"
+		hint="The roles the user had">
+	
 	<cfproperty name="objectWDDX" type="longchar" required="no" default=""
 		hint="WDDX packet that defines the object being archived">
+	
+	<cfproperty name="metaWDDX" type="longchar" required="no" default=""
+		hint="WDDX packet that defines various metadata properties and relationships, including friendly URLs, tree location, categories, and archived file locations">
 	
 	
 	<!--- Object Methods --->
 	<cffunction name="archiveObject" access="public" hint="archiving of related items to content types (eg. files and images)" returntype="struct">
 		<cfargument name="stObj" required="yes" type="struct">
-	
+		<cfargument name="event" required="yes" type="string">
+		<cfargument name="username" required="yes" type="string">
+		<cfargument name="bDeleted" required="no" type="boolean" default="false">
+		<cfargument name="stMeta" required="no" type="struct" />
+		
 		<cfset var stLocal = StructNew()>
 		<cfset var pathSep = "\"><!--- default is windows path separator --->
 		<cfset var archiveDirectory = application.config.general.archivedirectory><!--- archive directory from config --->
@@ -73,8 +98,8 @@ $out:$
 			<cfset archiveDirectory= "#archiveDirectory##pathSep#">
 		</cfif>
 	
-			<cfset stLocal.directoryToCheck = ListDeleteAt(archiveDirectory,ListLen(archiveDirectory,pathSep),pathSep)>
-			<cfset stLocal.directoryNameToCheck = ListLast(archiveDirectory,pathSep)>
+		<cfset stLocal.directoryToCheck = ListDeleteAt(archiveDirectory,ListLen(archiveDirectory,pathSep),pathSep)>
+		<cfset stLocal.directoryNameToCheck = ListLast(archiveDirectory,pathSep)>
 		
 		<!--- create archive directorys if needed --->
 		<cfdirectory action="list" directory="#stLocal.directoryToCheck#" name="stLocal.qDirectory" filter="#stLocal.directoryNameToCheck#">
@@ -85,12 +110,24 @@ $out:$
 		</cfif>
 			
 		<cfwddx input="#stLocal.stObj#" output="stLocal.stLiveWDDX"  action="cfml2wddx">
-	
+		
+		<cfif not structkeyexists(arguments,"stMeta")>
+			<cfset arguments.stMeta = getMeta(stObject=arguments.stObj) />
+		</cfif>
+		<cfwddx input="#arguments.stMeta#" output="stLocal.stMetaWDDX"  action="cfml2wddx">
+		
 		<!--- set up the dmArchive structure to save --->
 		<cfset stLocal.stProps = structNew()>
 		<cfset stLocal.stProps.objectID = application.fc.utils.createJavaUUID()>
 		<cfset stLocal.stProps.archiveID = stLocal.stObj.objectID>
 		<cfset stLocal.stProps.objectWDDX = stLocal.stLiveWDDX>
+		<cfset stLocal.stProps.metaWDDX = stLocal.stMetaWDDX>
+		<cfset stLocal.stProps.event = arguments.event>
+		<cfset stLocal.stProps.objectTypename = arguments.stObj.typename>
+		<cfset stLocal.stProps.bDeleted = arguments.bDeleted>
+		<cfset stLocal.stProps.username = arguments.username>
+		<cfset stLocal.stProps.ipaddress = cgi.REMOTE_ADDR>
+		<cfset stLocal.stProps.lRoles = application.security.getCurrentRoles()>
 		<cfset stLocal.stProps.label = stLocal.stObj.label>
 		<!--- //end dmArchive struct --->  
 	
@@ -152,12 +189,12 @@ $out:$
 			</cfif>
 		</cfif>
 	
-		<cfset archiveRelatedObject(stLocal.stObj)>
+		<!--- <cfset archiveRelatedObject(stLocal.stObj)> --->
 		
 		<cfreturn stlocal.returnStruct>
-	</cffunction>	
+	</cffunction>
 	
-	<cffunction name="archiveRelatedObject" access="public" hint="archiving of related items to content types (eg. files and images)">
+	<!---<cffunction name="archiveRelatedObject" access="public" hint="archiving of related items to content types (eg. files and images)">
 		<cfargument name="stObj" required="yes" type="struct">
 	
 		<cfset var stLocal = StructNew()>
@@ -250,7 +287,7 @@ $out:$
 				</cfif>	
 			</cfloop>
 		</cfif>
-	</cffunction>
+	</cffunction>--->
 		
 	<cffunction name="moveFile" access="public" hint="move file from one location to another">
 		<cfargument name="stFile" required="yes" type="struct">
@@ -303,4 +340,210 @@ $out:$
 	
 	</cffunction>
 
+	<cffunction name="rollbackArchive" access="public" returntype="struct" hint="Sends a archived object live and archives current version">
+		<cfargument name="objectID" type="uuid" required="true">
+		<cfargument name="archiveID"  type="uuid" required="true" hint="the archived object to be sent back live">
+		<cfargument name="typename" type="string" required="false">
+		
+		<cfset var stResult = structnew() />
+		<cfset var stArchive = structnew() />
+		<cfset var stArchiveDetail = structnew() />
+		<cfset var stNav = structnew() />
+		<cfset var q = "" />
+		<cfset var stMeta = structnew() />
+		<cfset var stParent = structnew() />
+		
+		<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
+		
+		<cfif NOT structkeyexists(arguments,"typename")>
+			<cfset arguments.typename = createObject("component","farcry.core.packages.fourq.fourq").findType(objectid=arguments.objectid) />
+		</cfif>
+		
+		<cflock name="archive_#arguments.archiveID#" timeout="50" type="exclusive">
+			<!--- retrieve archive version --->
+			<cfset stArchive = getData(objectid=arguments.archiveID) />
+			
+			<cfset stResult.archive = stArchive />
+			
+			<!--- Convert wddx archive object --->
+			<cftry><cfwddx input="#stArchive.metawddx#" output="stMeta" action="wddx2cfml"><cfcatch><cfthrow message="meta error" detail="#serializeJSON(stArchive)#"></cfcatch></cftry>
+			<cfwddx input="#stArchive.objectwddx#" output="stArchiveDetail"  action="wddx2cfml">
+			<cfset stArchiveDetail.objectid = arguments.objectID>
+			<cfset stArchiveDetail.locked = 0>
+			<cfset stArchiveDetail.lockedBy = "">
+			
+			<cfset stResult.object = stArchiveDetail />
+			<cfset stResult.metadata = stMeta />
+			
+			<!--- Update current live object with archive property values	 --->
+			<cfset application.fapi.setData(stProperties=stArchiveDetail,auditNote='Archive rolled back')>
+			
+			<!--- If this is an undelete and has a parent, attempt to put it in the tree --->
+			<cfif stArchive.bDeleted eq true and isdefined("stMeta.tree.parent")>
+				<cfset stParent = application.fapi.getContentObject(typename="dmNavigation",objectid=stMeta.tree.parent) />
+				
+				<cfif structisempty(stParent) or structkeyexists(stParent,"bDefaultObject")>
+					<!--- Make sure there is an "Undelete navigation node" --->
+					<cfif structkeyexists(application.navid,"undelete")>
+						<cfset stParent = application.fapi.getContentObject(typename="dmNavigation",objectid=application.navid.undelete) />
+					<cfelse>
+						<cfset stParent = application.fapi.getContentObject(typename="dmNavigation",objectid=createuuid()) />
+						<cfset stParent.title = "Undelete" />
+						<cfset stParent.label = "Undelete" />
+						<cfset stParent.lNavIDAlias = "undelete" />
+						<cfset application.fapi.setData(stProperties=stParent) />
+						<cfset application.factory.oTree.setYoungest(parentid=application.navid.root,objectid=stParent.objectid,objectname=stParent.label,typename="dmNavigation") />
+						<cfset application.navid["undelete"] = stParent.objectID />
+					</cfif>
+				</cfif>
+				
+				<cfif stArchiveDetail.typename eq "dmNavigation">
+					<cfset application.factory.oTree.setYoungest(parentid=stParent.objectid,objectid=stArchiveDetail.objectid,objectname=stArchiveDetail.label,typename="dmNavigation") />
+				<cfelse>
+					<cfif not arrayfind(stParent.aObjectIDs,stArchiveDetail.objectid)>
+						<cfset arrayappend(stParent.aObjectIDs,stArchiveDetail.objectid) />
+						<cfset application.fapi.setData(stProperties=stParent) />
+					</cfif>
+				</cfif>
+				
+				<cfset stResult.parent = stParent />
+			</cfif>
+			
+			<!--- Make sure no existing archives for this object have bDeleted set to true --->
+			<cfset q = application.fapi.getContentObjects(typename="dmArchive",archiveID_eq=stArchive.archiveID,bDeleted_eq=true) />
+			<cfif q.recordcount>
+				<cfset stArchive = getData(objectid=q.objectid[1]) />
+				<cfset stArchive.bDeleted = false />
+				<cfset setData(stProperties=stArchive) />
+			</cfif>
+			
+			<cfif application.stCOAPI[typename].bUseInTree>
+				<!--- update tree --->
+				<nj:getNavigation objectId="#arguments.objectID#" bInclusive="1" r_stObject="stNav" r_ObjectId="arguments.objectId">
+				<cfif isstruct(stNav) and structkeyexists(stNav,"objectid")>
+					<nj:updateTree ObjectId="#stNav.objectId#">
+				</cfif>
+			</cfif>						
+		</cflock>
+		
+		<cfreturn stResult />
+	</cffunction>
+	
+	<cffunction name="undeleteArchive" access="public" returntype="struct" hint="Undeletes an archived object - throws an error if the selected archive has a live version">
+		<cfargument name="archiveID"  type="uuid" required="true" hint="the archived object to be sent back live">
+		
+		<cfset var stArchive = getData(objectid=arguments.archiveID) />
+		<cfset var q = application.fapi.getContentObjects(typename=stArchive.objectTypename,objectid_eq=stArchive.archiveID) />
+		
+		<cfif stArchive.bDeleted eq false>
+			<cfthrow message="Archive has not been flagged as the delete archive" type="undelete" />
+		<cfelseif q.recordcount>
+			<cfthrow message="Archive is for an object that still exists" type="undelete" />
+		</cfif>
+		
+		<cfreturn rollbackArchive(stArchive.archiveID,arguments.archiveID,stArchive.objectTypename) />
+	</cffunction>
+	
+	
+	<cffunction name="getMeta" access="public" output="false" returntype="struct" hint="Returns metadata for the specified object">
+		<cfargument name="stObject" type="struct" required="true" />
+		
+		<cfset var stResult = structnew() />
+		<cfset var q = "" />
+		
+		<!---  friendly URL archive (query as WDDX) --->
+		<cfset stResult.friendlyurls = application.fapi.getContentObjects(typename="farFU",lProperties="*",refObjectID_eq=arguments.stObject.objectid) />
+		
+		<!--- category archive (struct of UUID/label) --->
+		<cfquery datasource="#application.dsn#" name="stResult.categories">
+			select	objectid,label
+			from	dmCategory
+			where	objectid in (
+						select	categoryid
+						from	refCategories
+						where	objectid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.stObject.objectid#" />
+					)
+		</cfquery>
+		
+		<!--- peripheral tree data (parentid, array of children) --->
+		<cfif arguments.stObject.typename eq "dmNavigation">
+			<cfset stResult.tree = structnew() />
+			<cfset stResult.tree.parent = trim(application.factory.oTree.getParentID(objectid=arguments.stObject.objectid).parentid) />
+			<cfset stResult.tree.children = application.factory.oTree.getChildren(objectid=arguments.stObject.objectid) />
+		<cfelseif application.stCOAPI[arguments.stObject.typename].bUseInTree>
+			<cfset q = application.fapi.getContentType("dmNavigation").getParent(objectid=arguments.stObject.objectid) />
+			<cfif q.recordcount>
+				<cfset stResult.tree = structnew() />
+				<cfset stResult.tree.parent = q.parentid[1] />
+			</cfif>
+		</cfif>
+		
+		<cfreturn stResult />
+	</cffunction>
+	
+	
+	<cffunction name="ftDisplayEvent" access="public" output="false" returntype="string" hint="This will return a string of formatted HTML text to display.">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+		
+		<cfif len(arguments.stMetadata.value)>
+			<cfreturn ucase(left(arguments.stMetadata.value,1)) & mid(arguments.stMetadata.value,2,len(arguments.stMetadata.value)) />
+		<cfelse>
+			<cfreturn "Unknown" />
+		</cfif>
+	</cffunction>
+
+	<cffunction name="ftDisplayObjectTypename" access="public" output="false" returntype="string" hint="This will return a string of formatted HTML text to display.">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+
+		<cfif len(arguments.stMetadata.value) and structkeyexists(application.stCOAPI,arguments.stMetadata.value) and structkeyexists(application.stCOAPI[arguments.stMetadata.value],"displayname")>
+			<cfreturn application.stCOAPI[arguments.stMetadata.value].displayname />
+		<cfelse>
+			<cfreturn arguments.stMetadata.value />
+		</cfif>
+	</cffunction>
+	
+	<cffunction name="ftDisplayUsername" access="public" output="false" returntype="string" hint="This will return a string of formatted HTML text to display.">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+		
+		<cfset var username = arguments.stMetadata.value />
+		<cfset var stProfile = structnew() />
+		
+		<cfif not len(username)>
+			<cfset username = arguments.stObject.createdby />
+		</cfif>
+		
+		<cfset stProfile = application.fapi.getContentType("dmProfile").getProfile(username) />
+		
+		<cfif len(stProfile.firstname) or len(stProfile.lastname)>
+			<cfreturn trim(stProfile.firstname & " " & stProfile.lastname) & " (" & username & ")" />
+		<cfelse>
+			<cfreturn username />
+		</cfif>
+	</cffunction>
+	
+	<cffunction name="ftDisplayLRoles" access="public" output="false" returntype="string" hint="This will return a string of formatted HTML text to display.">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+		
+		<cfset var roles = "" />
+		<cfset var thisrole = "" />
+		
+		<cfloop list="#arguments.stMetadata.value#" index="thisrole">
+			<cfset roles = listappend(roles,application.security.factory.role.getLabel(thisrole)) />
+		</cfloop>
+		
+		<cfreturn replace(roles,",",", ","ALL") />
+	</cffunction>
+	
 </cfcomponent>

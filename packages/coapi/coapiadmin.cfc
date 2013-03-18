@@ -504,8 +504,12 @@
 		<cfset var thisvar = "" />
 		<cfset var thistype = "" />
 		<cfset var thisdefault = "" />
-		<cfset var stMatch = structnew() />
+		<cfset var matcher = "" />
 		<cfset var start = 1 />
+		
+		<cfif not structkeyexists(this,"commentVariableRegex")>
+			<cfset this.commentVariableRegex = createObject( "java", "java.util.regex.Pattern" ).compile(javaCast( "string", "@@(\w+):(.*?)(?:--->|@@)" )) />
+		</cfif>
 		
 		<!--- Check that the webskin can be used as a variable name --->
 		<cfif not isValid("variablename",template)>
@@ -530,12 +534,9 @@
 		</cfif>
 		
 		<!--- Find and extract every "@@variable: value" pair --->
-		<cfloop condition="structisempty(stMatch) or stMatch.pos[1]">
-			<cfset stMatch = refind("@@(\w+):(.*?)(--->|@@)",templateCode,start,true) />
-			<cfif stMatch.pos[1]>
-				<cfset stResult[trim(mid(templateCode,stMatch.pos[2],stMatch.len[2]))] = trim(mid(templateCode,stMatch.pos[3],stMatch.len[3])) />
-				<cfset start = stMatch.pos[1] + stMatch.len[1] - 2 />
-			</cfif>
+		<cfset matcher = this.commentVariableRegex.matcher(javaCast( "string", templateCode )) />
+		<cfloop condition="matcher.find()">
+			<cfset stResult[trim(matcher.group(javaCast( "int", 1 )))] = trim(matcher.group(javaCast( "int", 2 ))) />
 		</cfloop>
 		
 		<!--- Apply defaults and validate types --->

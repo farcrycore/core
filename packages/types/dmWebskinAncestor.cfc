@@ -31,7 +31,8 @@ $Developer: Matthew Bryant (mbryant@daemon.com.au) $
 --->
 <cfcomponent extends="types" displayName="Webskin Ancestors" hint="Holds all the ancestor webskins of each webskin."
 	bAudit="false"
-	bRefObjects="false">
+	bRefObjects="false"
+	bSystem="true">
 
     <!--- required properties --->	
     <cfproperty name="webskinObjectID" type="uuid" hint="The objectid of the webskin id we are defining the ancestor of" required="yes">
