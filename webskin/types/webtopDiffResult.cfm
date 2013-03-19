@@ -2,55 +2,52 @@
 <!--- @@viewBinding: type --->
 
 <cfparam name="url.left" type="uuid" />
+<cfparam name="url.lefttype" type="string" />
+<cfparam name="url.leftseq" type="numeric" />
 <cfparam name="url.right" type="uuid" />
+<cfparam name="url.righttype" type="string" />
+<cfparam name="url.rightseq" type="numeric" />
 
-<cfset stLocal.oProfile = application.fapi.getContentType("dmProfile") />
 
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
-<cfset stLocal.stLeft = application.fapi.getContentObject(objectid=url.left) />
-<cfset stLocal.leftArchive = "" />
-<cfif not structkeyexists(stLocal.stLeft,"typename")>
-	<cfset stLocal.stLeft = application.fapi.getContentObject(typename="dmArchive",objectid=url.left) />
+<cfset stLocal.stLeft = application.fapi.getContentObject(typename=url.lefttype,objectid=url.left) />
+<cfset stLocal.stRight = application.fapi.getContentObject(typename=url.righttype,objectid=url.right) />
+
+<!--- Older item on the left --->
+<cfif url.rightseq gt url.leftseq>
+	<cfset stLocal.tmp = stLocal.stLeft />
+	<cfset stLocal.stLeft = stLocal.stRight />
+	<cfset stLocal.stRight = stLocal.tmp />
+	
+	<cfset stLocal.tmp = url.left />
+	<cfset url.left = url.right />
+	<cfset url.right = stLocal.tmp />
+	
+	<cfset stLocal.tmp = url.lefttype />
+	<cfset url.lefttype = url.righttype />
+	<cfset url.righttype = stLocal.tmp />
+	
+	<cfset stLocal.tmp = url.leftseq />
+	<cfset url.leftseq = url.rightseq />
+	<cfset url.rightseq = stLocal.tmp />
 </cfif>
+
+<!--- Extract archives --->
 <cfif stLocal.stLeft.typename eq "dmArchive">
-	<cfset stLocal.leftArchive = stLocal.stLeft.objectid />
-	<cfset stLocal.leftLabel = "#dateformat(stLocal.stLeft.datetimecreated,'d mmm yyyy')#, #timeformat(stLocal.stLeft.datetimecreated,'h:mmtt')#" />
-	<cfwddx action="wddx2cfml" input="#stLocal.stLeft.objectWDDX#" output="stLocal.stLeft" />
-<cfelseif structkeyexists(stLocal.stLeft,"status")>
-	<cfset stLocal.leftLabel = "#ucase(left(stLocal.stLeft.status,1))##lcase(mid(stLocal.stLeft.status,2,100))#" />
+	<cfwddx action="wddx2cfml" input="#stLocal.stLeft.objectWDDX#" output="stLocal.stLeftData" />
 <cfelse>
-	<cfset stLocal.leftLabel = "Live" />
-</cfif>
-<cfset stLocal.stProfile = stLocal.oProfile.getProfile(username=stLocal.stLeft.lastupdatedby) />
-<cfif structkeyexists(stLocal.stProfile,"lastname") and len(stLocal.stProfile.lastname)>
-	<cfset stLocal.leftLabel = "#stLocal.leftLabel#- #stLocal.stProfile.firstname# #stLocal.stProfile.lastname#" />
-<cfelse>
-	<cfset stLocal.leftLabel = "#stLocal.leftLabel# - #listfirst(stLocal.stLeft.lastupdatedby,'_')#" />
-</cfif>
-
-<cfset stLocal.stRight = application.fapi.getContentObject(objectid=url.right) />
-<cfset stLocal.rightArchive = "" />
-<cfif not structkeyexists(stLocal.stRight,"typename")>
-	<cfset stLocal.stRight = application.fapi.getContentObject(typename="dmArchive",objectid=url.right) />
+	<cfset stLocal.stLeftData = stLocal.stLeft />
 </cfif>
 <cfif stLocal.stRight.typename eq "dmArchive">
-	<cfset stLocal.rightArchive = stLocal.stRight.objectid />
-	<cfset stLocal.rightLabel = "#dateformat(stLocal.stRight.datetimecreated,'d mmm yyyy')#, #timeformat(stLocal.stRight.datetimecreated,'h:mmtt')#" />
-	<cfwddx action="wddx2cfml" input="#stLocal.stRight.objectWDDX#" output="stLocal.stRight" />
-<cfelseif structkeyexists(stLocal.stRight,"status")>
-	<cfset stLocal.rightLabel = "#ucase(left(stLocal.stRight.status,1))##lcase(mid(stLocal.stRight.status,2,100))#" />
+	<cfwddx action="wddx2cfml" input="#stLocal.stRight.objectWDDX#" output="stLocal.stRightData" />
 <cfelse>
-	<cfset stLocal.rightLabel = "Live" />
-</cfif>
-<cfset stLocal.stProfile = stLocal.oProfile.getProfile(username=stLocal.stRight.lastupdatedby) />
-<cfif structkeyexists(stLocal.stProfile,"lastname") and len(stLocal.stProfile.lastname)>
-	<cfset stLocal.rightLabel = "#stLocal.rightLabel# - #stLocal.stProfile.firstname# #stLocal.stProfile.lastname#" />
-<cfelse>
-	<cfset stLocal.rightLabel = "#stLocal.rightLabel# - #listfirst(stLocal.stRight.lastupdatedby,'_')#" />
+	<cfset stLocal.stRightData = stLocal.stRight />
 </cfif>
 
-<cfset stLocal.stResults = application.fc.lib.diff.getObjectDiff(stLocal.stLeft,stLocal.stRight) />
-<cfset stLocal.qMetadata = application.types[stLocal.stLeft.typename].qMetadata />
+<!--- Differences --->
+<cfset stLocal.stResults = application.fc.lib.diff.getObjectDiff(stLocal.stLeftData,stLocal.stRightData) />
+<cfset stLocal.qMetadata = application.types[stLocal.stLeftData.typename].qMetadata />
 <cfquery dbtype="query" name="stLocal.qMetadata">
 	SELECT 		distinct propertyname, ftSeq
 	FROM 		stLocal.qMetadata
@@ -58,27 +55,38 @@
 </cfquery>
 
 <cfoutput>
-	<p>#stLocal.stResults.countDifferent# propert<cfif stLocal.stResults.countDifferent eq 1>y<cfelse>ies</cfif> changed.</p><br>
+	<script type="text/javascript">
+		diff.left = #url.leftseq#;
+		diff.right = #url.rightseq#;
+	</script>
 	<table width="100%" class="diff-items">
-		<tr>
-			<th style="font-weight:bold;">Property</th>
-			<th style="font-weight:bold;">
-				#stLocal.leftLabel#
-				<cfif len(stLocal.leftArchive)>
-					[<a href="##" class="rollback" rel="#stLocal.leftArchive#">rollback</a>]
-				<cfelseif stLocal.stLeft.status eq "draft">
-					[<a href="##" class="discarddraft" rel="#stLocal.stLeft.objectid#">discard</a>]
-				</cfif>
-			</th>
-			<th style="font-weight:bold;">
-				#stLocal.rightLabel#
-				<cfif len(stLocal.rightArchive)>
-					[<a href="##" class="rollback" rel="#stLocal.rightArchive#">rollback</a>]
-				<cfelseif structkeyexists(stLocal.stRight,"status") and stLocal.stRight.status eq "draft">
-					[<a href="##" class="discarddraft" rel="#stLocal.stRight.objectid#">discard</a>]
-				</cfif>
-			</th>
-		</tr>
+		<thead>
+			<tr>
+				<th class="diff-item-label">&nbsp;</th>
+				<th class="diff-item-value diff-label diff-item-left"><cfif structkeyexists(stLocal.stLeft,"status")>#application.fapi.getResource("workflow.constants.#stLocal.stLeft.status#@label",stLocal.stLeft.status)#<cfelse>#application.fapi.getResource("coapi.dmArchive.constants.older@label","Older")#</cfif></th>
+				<th class="diff-item-divider">&nbsp;</th>
+				<th class="diff-item-value diff-label diff-item-right"><cfif structkeyexists(stLocal.stRight,"status")>#application.fapi.getResource("workflow.constants.#stLocal.stRight.status#@label",stLocal.stRight.status)#<cfelse>#application.fapi.getResource("coapi.dmArchive.constants.newer@label","Newer")#</cfif></th>
+			</tr>
+			<tr>
+				<th class="diff-item-label">&nbsp;</th>
+				<th class="diff-item-value diff-item-teaser diff-item-left" rel="#stLocal.stLeft.objectid#">
+					<cfif stLocal.stLeft.typename eq "dmArchive">
+						<skin:view stObject="#stLocal.stLeft#" webskin="displayTeaserStandard" mode="display" />
+					<cfelse>
+						<skin:view typename="dmArchive" webskin="displayTeaserStandard" mode="display" liveObject="#stLocal.stLeft#" />
+					</cfif>
+				</th>
+				<th class="diff-item-divider">&nbsp;</th>
+				<th class="diff-item-value diff-item-teaser diff-item-right" rel="#stLocal.stRight.objectid#">
+					<cfif stLocal.stRight.typename eq "dmArchive">
+						<skin:view stObject="#stLocal.stRight#" webskin="displayTeaserStandard" mode="display" />
+					<cfelse>
+						<skin:view typename="dmArchive" webskin="displayTeaserStandard" mode="display" liveObject="#stLocal.stRight#" />
+					</cfif>
+				</th>
+			</tr>
+		</thead>
+		<tbody>
 </cfoutput>
 <cfif stLocal.stResults.countDifferent gt 0>
 	<cfset countprops = 0 />
@@ -86,17 +94,18 @@
 		<cfif structkeyexists(stLocal.stResults,stLocal.qMetadata.propertyname) and stLocal.stResults[stLocal.qMetadata.propertyname].different>
 			<cfset countprops = countprops + 1 />
 			<cfoutput>
-				<tr<cfif countprops mod 2 eq 1> style="background-color:##f8f8f8;"</cfif>>
-					<td width="20%" valign="top" style="padding:3px;">#stLocal.stResults[stLocal.qMetadata.propertyname].label#</td>
-					<td width="40%" valign="top" class="property-value" style="font-size:12px;white-space:pre-wrap;padding:3px;">#stLocal.stResults[stLocal.qMetadata.propertyname].leftHighlighted#</td>
-					<td width="40%" valign="top" class="property-value" style="font-size:12px;white-space:pre-wrap;padding:3px;">#stLocal.stResults[stLocal.qMetadata.propertyname].rightHighlighted#</td>
+				<cfif countprops mod 2 eq 1><tr class="alt"><cfelse><tr></cfif>
+					<td class="diff-item-label">#stLocal.stResults[stLocal.qMetadata.propertyname].label#</td>
+					<td class="diff-item-value" >#stLocal.stResults[stLocal.qMetadata.propertyname].leftHighlighted#</td>
+					<td class="diff-item-divider">&nbsp;</td>
+					<td class="diff-item-value">#stLocal.stResults[stLocal.qMetadata.propertyname].rightHighlighted#</td>
 				</tr>
 			</cfoutput>
 		</cfif>
 	</cfloop>
 <cfelse>
-	<cfoutput><tr><td colspan="3">No changes</td></tr></cfoutput>
+	<cfoutput><tr><td colspan="5">No changes</td></tr></cfoutput>
 </cfif>
-<cfoutput></table></cfoutput>
+<cfoutput></tbody></table></cfoutput>
 
 <cfsetting enablecfoutputonly="false" />

@@ -79,7 +79,7 @@
 		
 		<cfset q = application.fapi.getContentObjects(typename="dmArchive",lProperties="*",archiveID_eq=this.testProfile) />
 		<cfset assertEquals(1,q.recordcount,"Unexpected number of archives") />
-		<cfset assertEquals("save",q.event,"Incorrect archive event") />
+		<cfset assertEquals("saved",q.event,"Incorrect archive event") />
 		<cfset assertEquals("dmProfile",q.objectTypename,"Incorrect archive typename") />
 		<cfset assertEquals(0,q.bDeleted,"Incorrect archive bDeleted flag") />
 		<cfset assertEquals(application.security.getCurrentUserID(),q.username,"Incorrect archive username") />
@@ -101,7 +101,7 @@
 		
 		<cfset q = application.fapi.getContentObjects(typename="dmArchive",lProperties="*",archiveID_eq=this.testProfile) />
 		<cfset assertEquals(1,q.recordcount,"Unexpected number of archives") />
-		<cfset assertEquals("delete",q.event,"Incorrect archive event") />
+		<cfset assertEquals("deleted",q.event,"Incorrect archive event") />
 		<cfset assertEquals("dmProfile",q.objectTypename,"Incorrect archive typename") />
 		<cfset assertEquals(1,q.bDeleted,"Incorrect archive bDeleted flag") />
 		<cfset assertEquals(application.security.getCurrentUserID(),q.username,"Incorrect archive username") />
@@ -130,7 +130,7 @@
 		
 		<cfset q = application.fapi.getContentObjects(typename="dmArchive",lProperties="*",archiveID_eq=this.testProfile,orderby="datetimecreated desc") />
 		<cfset assertEquals(2,q.recordcount,"Unexpected number of archives") />
-		<cfset assertEquals("rollback",q.event[1],"Incorrect archive event") />
+		<cfset assertEquals("rolled back",q.event[1],"Incorrect archive event") />
 		<cfset assertEquals("dmProfile",q.objectTypename[1],"Incorrect archive typename") />
 		<cfset assertEquals(0,q.bDeleted[1],"Incorrect archive bDeleted flag") />
 		<cfset assertEquals(application.security.getCurrentUserID(),q.username[1],"Incorrect archive username") />
@@ -191,7 +191,7 @@
 		
 		<cfset q = application.fapi.getContentObjects(typename="dmArchive",lProperties="*",archiveID_eq=this.testIncludeApproved) />
 		<cfset assertEquals(1,q.recordcount,"Unexpected number of archives") />
-		<cfset assertEquals("save",q.event,"Incorrect archive event") />
+		<cfset assertEquals("saved",q.event,"Incorrect archive event") />
 		<cfset assertEquals("dmInclude",q.objectTypename,"Incorrect archive typename") />
 		<cfset assertEquals(0,q.bDeleted,"Incorrect archive bDeleted flag") />
 		<cfset assertEquals(application.security.getCurrentUserID(),q.username,"Incorrect archive username") />
@@ -215,7 +215,7 @@
 		
 		<cfset q = application.fapi.getContentObjects(typename="dmArchive",lProperties="*",archiveID_eq=this.testIncludeApproved) />
 		<cfset assertEquals(1,q.recordcount,"Unexpected number of archives") />
-		<cfset assertEquals("unpublish",q.event,"Incorrect archive event") />
+		<cfset assertEquals("unpublished",q.event,"Incorrect archive event") />
 		<cfset assertEquals("dmInclude",q.objectTypename,"Incorrect archive typename") />
 		<cfset assertEquals(0,q.bDeleted,"Incorrect archive bDeleted flag") />
 		<cfset assertEquals(application.security.getCurrentUserID(),q.username,"Incorrect archive username") />
@@ -257,7 +257,7 @@
 		
 		<cfset q = application.fapi.getContentObjects(typename="dmArchive",lProperties="*",archiveID_eq=this.testIncludeApproved) />
 		<cfset assertEquals(1,q.recordcount,"Unexpected number of archives") />
-		<cfset assertEquals("delete",q.event,"Incorrect archive event") />
+		<cfset assertEquals("deleted",q.event,"Incorrect archive event") />
 		<cfset assertEquals("dmInclude",q.objectTypename,"Incorrect archive typename") />
 		<cfset assertEquals(1,q.bDeleted,"Incorrect archive bDeleted flag") />
 		<cfset assertEquals(application.security.getCurrentUserID(),q.username,"Incorrect archive username") />
@@ -287,7 +287,7 @@
 		
 		<cfset q = application.fapi.getContentObjects(typename="dmArchive",lProperties="*",archiveID_eq=this.testIncludeApproved,orderby="datetimecreated desc") />
 		<cfset assertEquals(2,q.recordcount,"Unexpected number of archives") />
-		<cfset assertEquals("rollback",q.event,"Incorrect archive event") />
+		<cfset assertEquals("rolled back",q.event,"Incorrect archive event") />
 		<cfset assertEquals("dmInclude",q.objectTypename,"Incorrect archive typename") />
 		<cfset assertEquals(0,q.bDeleted,"Incorrect archive bDeleted flag") />
 		<cfset assertEquals(application.security.getCurrentUserID(),q.username,"Incorrect archive username") />
@@ -344,7 +344,7 @@
 		
 		<cfset q = application.fapi.getContentObjects(typename="dmArchive",lProperties="*",archiveID_eq=this.testHTMLApproved) />
 		<cfset assertEquals(1,q.recordcount,"Unexpected number of archives") />
-		<cfset assertEquals("publish",q.event,"Incorrect archive event") />
+		<cfset assertEquals("published",q.event,"Incorrect archive event") />
 		<cfset assertEquals("dmHTML",q.objectTypename,"Incorrect archive typename") />
 		<cfset assertEquals(0,q.bDeleted,"Incorrect archive bDeleted flag") />
 		<cfset assertEquals(application.security.getCurrentUserID(),q.username,"Incorrect archive username") />
@@ -368,7 +368,7 @@
 		
 		<cfset q = application.fapi.getContentObjects(typename="dmArchive",lProperties="*",archiveID_eq=this.testHTMLApproved) />
 		<cfset assertEquals(1,q.recordcount,"Unexpected number of archives") />
-		<cfset assertEquals("unpublish",q.event,"Incorrect archive event") />
+		<cfset assertEquals("unpublished",q.event,"Incorrect archive event") />
 		<cfset assertEquals("dmHTML",q.objectTypename,"Incorrect archive typename") />
 		<cfset assertEquals(0,q.bDeleted,"Incorrect archive bDeleted flag") />
 		<cfset assertEquals(application.security.getCurrentUserID(),q.username,"Incorrect archive username") />
@@ -400,7 +400,7 @@
 		
 		<cfset q = application.fapi.getContentObjects(typename="dmArchive",lProperties="*",archiveID_eq=this.testHTMLApproved) />
 		<cfset assertEquals(1,q.recordcount,"Unexpected number of archives") />
-		<cfset assertEquals("delete",q.event,"Incorrect archive event") />
+		<cfset assertEquals("deleted",q.event,"Incorrect archive event") />
 		<cfset assertEquals("dmHTML",q.objectTypename,"Incorrect archive typename") />
 		<cfset assertEquals(1,q.bDeleted,"Incorrect archive bDeleted flag") />
 		<cfset assertEquals(application.security.getCurrentUserID(),q.username,"Incorrect archive username") />
@@ -458,7 +458,7 @@
 		
 		<cfset q = application.fapi.getContentObjects(typename="dmArchive",lProperties="*",archiveID_eq=this.testHTMLApproved) />
 		<cfset assertEquals(1,q.recordcount,"Unexpected number of archives") />
-		<cfset assertEquals("publish",q.event,"Incorrect archive event") />
+		<cfset assertEquals("published",q.event,"Incorrect archive event") />
 		<cfset assertEquals("dmHTML",q.objectTypename,"Incorrect archive typename") />
 		<cfset assertEquals(0,q.bDeleted,"Incorrect archive bDeleted flag") />
 		<cfset assertEquals(application.security.getCurrentUserID(),q.username,"Incorrect archive username") />
@@ -497,7 +497,7 @@
 		
 		<cfset q = application.fapi.getContentObjects(typename="dmArchive",lProperties="*",archiveID_eq=this.testHTMLApproved,orderby="datetimecreated desc") />
 		<cfset assertEquals(2,q.recordcount,"Unexpected number of archives") />
-		<cfset assertEquals("rollback",q.event,"Incorrect archive event") />
+		<cfset assertEquals("rolled back",q.event,"Incorrect archive event") />
 		<cfset assertEquals("dmHTML",q.objectTypename,"Incorrect archive typename") />
 		<cfset assertEquals(0,q.bDeleted,"Incorrect archive bDeleted flag") />
 		<cfset assertEquals(application.security.getCurrentUserID(),q.username,"Incorrect archive username") />

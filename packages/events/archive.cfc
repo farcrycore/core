@@ -54,13 +54,13 @@
 		<!--- Archivable --->
 		<cfif arguments.auditNote eq "Archive rolled back">
 			<cfif request.mode.debug><cflog file="events" text="save #arguments.typename# #arguments.stProperties.objectid#: archived, rollback"></cfif>
-			<cfset this.oArchive.archiveObject(stObj=stObj,event="rollback",username=arguments.stProperties.lastupdatedby)>
+			<cfset this.oArchive.archiveObject(stObj=stObj,event="rolled back",username=arguments.stProperties.lastupdatedby)>
 		<cfelseif not structkeyexists(stObj,"versionID")>
 			<cfif request.mode.debug><cflog file="events" text="save #arguments.typename# #arguments.stProperties.objectid#: archived, save"></cfif>
-			<cfset this.oArchive.archiveObject(stObj=stObj,event="save",username=arguments.stProperties.lastupdatedby)>
+			<cfset this.oArchive.archiveObject(stObj=stObj,event="saved",username=arguments.stProperties.lastupdatedby)>
 		<cfelse>
 			<cfif request.mode.debug><cflog file="events" text="save #arguments.typename# #arguments.stProperties.objectid#: archived, publish"></cfif>
-			<cfset this.oArchive.archiveObject(stObj=stObj,event="publish",username=arguments.stProperties.lastupdatedby)>
+			<cfset this.oArchive.archiveObject(stObj=stObj,event="published",username=arguments.stProperties.lastupdatedby)>
 		</cfif>
 	</cffunction>
 	
@@ -101,10 +101,10 @@
 			<cfif structkeyexists(arguments.stObject,"versionid")>
 				<cfset q = application.fapi.getContentObjects(typename=arguments.typename,versionID_eq=arguments.stObject.objectid) />
 				<cfif request.mode.debug><cflog file="events" text="delete #arguments.typename# #arguments.stObject.objectid#: archived, deleted=#q.recordcount eq 0#"></cfif>
-				<cfset this.oArchive.archiveObject(stObj=arguments.stObject,event="delete",username=arguments.user,bDeleted=q.recordcount eq 0)>
+				<cfset this.oArchive.archiveObject(stObj=arguments.stObject,event="deleted",username=arguments.user,bDeleted=q.recordcount eq 0)>
 			<cfelse>
 				<cfif request.mode.debug><cflog file="events" text="save #arguments.typename# #arguments.stObject.objectid#: archived"></cfif>
-				<cfset this.oArchive.archiveObject(stObj=arguments.stObject,event="delete",username=arguments.user,bDeleted=1)>
+				<cfset this.oArchive.archiveObject(stObj=arguments.stObject,event="deleted",username=arguments.user,bDeleted=1)>
 			</cfif>
 				
 			<cfreturn />
@@ -189,7 +189,7 @@
 		
 		<!--- Archivable --->
 		<cfif request.mode.debug><cflog file="events" text="status changed #arguments.typename# #arguments.stObject.objectid#: archived"></cfif>
-		<cfset this.oArchive.archiveObject(stObj=stObj,event="unpublish",username=arguments.stObject.lastupdatedby) />
+		<cfset this.oArchive.archiveObject(stObj=stObj,event="unpublished",username=arguments.stObject.lastupdatedby) />
 	</cffunction>
 	
 </cfcomponent>
