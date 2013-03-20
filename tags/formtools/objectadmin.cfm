@@ -810,8 +810,12 @@ user --->
 										</cfswitch>
 									</cfif>
 								</cfif>
-
-								<ft:button text="#buttontext#" value="#attributes.aButtons[i].value#" class="#class#" icon="#icon#" rbkey="objectadmin.buttons.#rereplace(attributes.aButtons[i].value,'[^\w]+','','ALL')#" onclick="#onclickJS#" confirmText="#attributes.aButtons[i].confirmText#" />
+								
+								<cfif not structkeyexists(attributes.aButtons[i],"hint")>
+									<cfset attributes.aButtons[i].hint = "" />
+								</cfif>
+								
+								<ft:button text="#buttontext#" value="#attributes.aButtons[i].value#" title="#attributes.aButtons[i].hint#" class="#class#" icon="#icon#" rbkey="objectadmin.buttons.#rereplace(attributes.aButtons[i].value,'[^\w]+','','ALL')#" onclick="#onclickJS#" confirmText="#attributes.aButtons[i].confirmText#" />
 							</cfif>
 						</cfif>
 					</cfif>

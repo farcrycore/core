@@ -159,6 +159,8 @@
 	<cffunction name="delete" access="public" hint="Specific delete method for dmNavigation. Removes all descendants">
 		<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the object being deleted">
 		<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
+		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="">
+		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="">
 		
 		<!--- get object details --->
 		<cfset var stObj = getData(arguments.objectid)>
@@ -175,7 +177,25 @@
 		
 		<cfset var stReturn = StructNew()>
 		
+		<cfif not len(arguments.user)>
+			<cfif application.security.isLoggedIn()>
+				<cfset arguments.user = application.security.getCurrentUserID() />
+			<cfelse>
+				<cfset arguments.user = 'anonymous' />
+			</cfif>
+		</cfif>
+		
 		<cfif NOT structIsEmpty(stObj)>
+		
+			<!--- Announce the delete event to listeners --->
+			<!--- NOTE: this is the same event called by types.delete(). It is the reponsibility of the events listener to ignore duplicates. --->
+			<cfset application.fc.lib.events.announce(	component = "fcTypes", eventName = "beforedelete",
+														typename = stObj.typename,
+														oType = this,
+														stObject = stObj,
+														user = arguments.user,
+														auditNote = arguments.auditNote) />
+			
 			<cfscript>
 				// get descendants
 				qGetDescendants = application.factory.oTree.getDescendants(objectid=stObj.objectID);

@@ -83,15 +83,23 @@
 			<cfset this.oArchive = application.fapi.getContentType("dmArchive") />
 		</cfif>
 		
+		<!--- IN SOME CASES FARCRY NEEDS TO MANUALLY TRIGGER THIS EVENT EARLIER, CAUSING IT TO HAPPEN TWICE - PREVENT ANY AFTER THE FIRST --->
+		<cfif structkeyexists(request,"deleted") and listfind(request.deleted,arguments.stObject.objectid)>
+			<cfif request.mode.debug><cflog file="events" text="delete #arguments.typename# #arguments.stObject.objectid#: already handled"></cfif>
+			<cfreturn />
+		</cfif>
+		<cfparam name="request.deleted" default="" />
+		<cfset request.deleted = listappend(request.deleted,arguments.stObject.objectid) />
+		
 		<!--- NOT ARCHIVABLE --->
 		<cfif not application.stCOAPI[arguments.typename].bArchive>
-			<cfif request.mode.debug><cflog file="events" text="delete #arguments.typename# #arguments.stProperties.objectid#: not archivable"></cfif>
+			<cfif request.mode.debug><cflog file="events" text="delete #arguments.typename# #arguments.stObject.objectid#: not archivable"></cfif>
 			<cfreturn />
 		</cfif>
 		
 		<!--- OBJECT WITH APPROVED VERSION (drafts aren't archived) --->
 		<cfif structkeyexists(arguments.stObject,"versionid") and len(arguments.stObject.versionID)>
-			<cfif request.mode.debug><cflog file="events" text="delete #arguments.typename# #arguments.stProperties.objectid#: has approved version"></cfif>
+			<cfif request.mode.debug><cflog file="events" text="delete #arguments.typename# #arguments.stObject.objectid#: has approved version"></cfif>
 			<cfreturn />
 		</cfif>
 		

@@ -19,17 +19,35 @@
 
 		<script type="text/javascript">
 		$j(function(){
-
+			
 			/* enable bootstrap menus to work on hover */
 			$j(".farcry-secondary-nav .nav > li.dropdown").hover(function(){
 				clearTimeout($j.data(this, "timer"));
+				$j(document).off("mousemove.menu");
 				$j("li.open").removeClass("open");
 				$j(this).addClass("open");
 			}, function(){
-				var dropdown = this;
+				var dropdown = this, self = $j(this), megamenu = self.find(".dropdown-mega-menu"), menupos = megamenu.offset(), buffer = 60;
+				
 				$j.data(this, "timer", setTimeout(function() {
-					$j(dropdown).removeClass("open");
+					self.removeClass("open");
+					$j(document).off("mousemove.menu");
 				}, 1000));
+				
+				/* timer only applies while the mouse is a certain distance from the menu */
+				menupos = {
+					right : menupos.left + megamenu.width() + buffer,
+					bottom : menupos.top + megamenu.height() + buffer,
+					top : menupos.top,
+					left : menupos.left - buffer
+				};
+				$j(document).on("mousemove.menu",function(e){
+					if (e.pageX < menupos.left || e.pageX > menupos.right || e.pageY < menupos.top || e.pageY > menupos.bottom){
+						clearTimeout(self.data("timer"));
+						$j(document).off("mousemove.menu");
+						$j("li.open").removeClass("open");
+					}
+				});
 			});
 
 			/* allow a clicked dropdown link in the secondary nav to stay open */

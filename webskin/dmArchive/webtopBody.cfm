@@ -9,13 +9,34 @@
 	<cfset oArchive = application.fapi.getContentType("dmArchive") />
 	<cfloop list="#form.objectid#" index="thisobject">
 		<cftry>
-			<cfset stResult = oArchive.undeleteArchive(archiveID=thisobject) />
+			<cfset aResult = oArchive.undeleteArchive(archiveID=thisobject) />
 			
-			<cfif structkeyexists(stResult,"parent")>
-				<skin:bubble message="'#stArchive.label#' has been restored into the tree under '#stResult.parent.title#'" tags="dmArchive,info" />
+			<cfif structkeyexists(aResult[1],"parent")>
+				<skin:bubble message="'#aResult[1].object.label#' has been restored into the tree under '#aResult[1].parent.title#'" tags="dmArchive,info" />
 			<cfelse>
-				<skin:bubble message="'#stArchive.label#' has been restored" tags="dmArchive,info" />
+				<skin:bubble message="'#aResult[1].object.label#' has been restored" tags="dmArchive,info" />
 			</cfif>
+			
+			<cfcatch type="undelete">
+				<skin:bubble message="#cfcatch.message#" tags="dmArchive,error" />
+			</cfcatch>
+		</cftry>
+	</cfloop>
+</ft:processform>
+
+<ft:processform action="cascadingundelete" url="refresh">
+	<cfset oArchive = application.fapi.getContentType("dmArchive") />
+	<cfloop list="#form.objectid#" index="thisobject">
+		<cftry>
+			<cfset aResult = oArchive.undeleteArchive(archiveID=thisobject,cascade=true) />
+			
+			<cfloop from="1" to="#arraylen(aResult)#" index="i">
+				<cfif structkeyexists(aResult[i],"parent")>
+					<skin:bubble message="'#aResult[i].object.label#' has been restored into the tree under '#aResult[i].parent.title#'" tags="dmArchive,info" />
+				<cfelse>
+					<skin:bubble message="'#aResult[i].object.label#' has been restored" tags="dmArchive,info" />
+				</cfif>
+			</cfloop>
 			
 			<cfcatch type="undelete">
 				<skin:bubble message="#cfcatch.message#" tags="dmArchive,error" />
@@ -40,6 +61,14 @@
 <cfset stButton.onclick = "" />
 <cfset arrayappend(aButtons,stButton) />
 
+<cfset stButton = structnew() />
+<cfset stButton.text = "Cascading Undelete" />
+<cfset stButton.value = "cascadingundelete" />
+<cfset stButton.permission = "" />
+<cfset stButton.onclick = "" />
+<cfset stbutton.hint = "Cascade undelete to deleted children and related content">
+<cfset arrayappend(aButtons,stButton) />
+
 <cfset sqlWhere = "bDeleted=1" />
 
 <cfif structkeyexists(url,"archivetype")>
@@ -49,7 +78,7 @@
 		<cfset title = "Undelete #application.stCOAPI[url.archivetype].displayname#" />
 	<cfelse>
 		<cfset title = "Undelete #url.archiveType#" />
-	</cfif> />
+	</cfif>
 
 	<cfset stButton = structnew() />
 	<cfset stButton.text = "Go back" />
@@ -67,7 +96,7 @@
 	lFilterFields="label,objecttypename,username"
 	sqlorderby="datetimecreated desc"
 	sqlwhere="#sqlWhere#"
-	lButtons="undelete,goback" aButtons="#aButtons#"
+	lButtons="undelete,cascadingundelete,goback" aButtons="#aButtons#"
 	bEditCol="false"
 	emptymessage="No archives available for undelete"
 	lButtonsEmpty="goback" />

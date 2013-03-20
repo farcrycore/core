@@ -188,8 +188,6 @@ $out:$
 				</cfswitch>
 			</cfif>
 		</cfif>
-	
-		<!--- <cfset archiveRelatedObject(stLocal.stObj)> --->
 		
 		<cfreturn stlocal.returnStruct>
 	</cffunction>
@@ -409,6 +407,9 @@ $out:$
 				<cfset stResult.parent = stParent />
 			</cfif>
 			
+			<!--- Assign the previous categories --->
+			<cfset createobject("component","farcry.core.packages.farcry.category").assignCategories(objectid=stArchiveDetail.objectid,lCategoryIDs=valuelist(stMeta.categories.objectid),alias="root") />
+			
 			<!--- Make sure no existing archives for this object have bDeleted set to true --->
 			<cfset q = application.fapi.getContentObjects(typename="dmArchive",archiveID_eq=stArchive.archiveID,bDeleted_eq=true) />
 			<cfif q.recordcount>
@@ -429,19 +430,81 @@ $out:$
 		<cfreturn stResult />
 	</cffunction>
 	
-	<cffunction name="undeleteArchive" access="public" returntype="struct" hint="Undeletes an archived object - throws an error if the selected archive has a live version">
+	<cffunction name="undeleteArchive" access="public" returntype="array" hint="Undeletes an archived object - throws an error if the selected archive has a live version">
 		<cfargument name="archiveID"  type="uuid" required="true" hint="the archived object to be sent back live">
+		<cfargument name="cascade" type="boolean" required="false" default="false" hint="Set to true to automatically undelete children and related content" />
 		
 		<cfset var stArchive = getData(objectid=arguments.archiveID) />
+		<cfset var stArchiveObject = "" />
 		<cfset var q = application.fapi.getContentObjects(typename=stArchive.objectTypename,objectid_eq=stArchive.archiveID) />
+		<cfset var aResult = arraynew(1) />
+		<cfset var thisprop = "" />
+		<cfset var aResultSub = "" />
+		<cfset var i = 0 />
+		<cfset var j = 0 />
+		<cfset var objectTypename = "" />
 		
 		<cfif stArchive.bDeleted eq false>
-			<cfthrow message="Archive has not been flagged as the delete archive" type="undelete" />
+			<cfwddx action="cfml2wddx" input="#stArchive#" output="tmp">
+			<cfthrow message="Archive has not been flagged as the delete archive" type="undelete" detail="#tmp#" />
 		<cfelseif q.recordcount>
 			<cfthrow message="Archive is for an object that still exists" type="undelete" />
 		</cfif>
 		
-		<cfreturn rollbackArchive(stArchive.archiveID,arguments.archiveID,stArchive.objectTypename) />
+		<cfif len(stArchive.objectTypename)>
+			<cfset objectTypename = stArchive.objectTypename />
+		<cfelse>
+			<cfwddx action="wddx2cfml" input="#stArchive.objectWDDX#" output="stArchiveDetail" />
+			<cfset objectTypename = stArchiveDetail.typename />
+		</cfif>
+		
+		<cfset aResult[1] = rollbackArchive(stArchive.archiveID,arguments.archiveID,objectTypename) />
+		
+		<!--- Undelete related content --->
+		<cfloop collection="#aResult[1].object#" item="thisprop">
+			<cfif structkeyexists(application.stCOAPI[aResult[1].object.typename].stProps,thisprop) and application.stCOAPI[aResult[1].object.typename].stProps[thisprop].metadata.type eq "uuid">
+				<cfset q = application.fapi.getContentObjects(typename="dmArchive",archiveID_eq=aResult[1].object[thisprop],bDeleted_eq=true) />
+				
+				<cfif q.recordcount>
+					<cfset aResultSub = undeleteArchive(archiveID=q.objectid,cascade=arguments.cascade) />
+					
+					<cfloop from="1" to="#arraylen(aResultSub)#" index="i">
+						<cfset arrayappend(aResult,aResultSub[i]) />
+					</cfloop>
+				</cfif>
+			<cfelseif structkeyexists(application.stCOAPI[aResult[1].object.typename].stProps,thisprop) and application.stCOAPI[aResult[1].object.typename].stProps[thisprop].metadata.type eq "array">
+				<cfloop from="1" to="#arraylen(aResult[1].object[thisprop])#" index="i">
+					<cfif issimplevalue(aResult[1].object[thisprop][i])>
+						<cfset q = application.fapi.getContentObjects(typename="dmArchive",archiveID_eq=aResult[1].object[thisprop][i],bDeleted_eq=true) />
+						
+						<cfif q.recordcount>
+							<cfset aResultSub = undeleteArchive(archiveID=q.objectid,cascade=arguments.cascade) />
+							
+							<cfloop from="1" to="#arraylen(aResultSub)#" index="j">
+								<cfset arrayappend(aResult,aResultSub[j]) />
+							</cfloop>
+						</cfif>
+					</cfif>
+				</cfloop>
+			</cfif>
+		</cfloop>
+		
+		<!--- Undelete children --->
+		<cfif structkeyexists(aResult[1].metadata,"tree") and structkeyexists(aResult[1].metadata.tree,"children")>
+			<cfloop query="#aResult[1].metadata.tree.children#">
+				<cfset q = application.fapi.getContentObjects(typename="dmArchive",archiveID_eq=aResult[1].metadata.tree.children.objectid,bDeleted_eq=true) />
+				
+				<cfif q.recordcount>
+					<cfset aResultSub = undeleteArchive(archiveID=q.objectid,cascade=arguments.cascade) />
+					
+					<cfloop from="1" to="#arraylen(aResultSub)#" index="j">
+						<cfset arrayappend(aResult,aResultSub[j]) />
+					</cfloop>
+				</cfif>
+			</cfloop>
+		</cfif>
+		
+		<cfreturn aResult />
 	</cffunction>
 	
 	
@@ -450,19 +513,22 @@ $out:$
 		
 		<cfset var stResult = structnew() />
 		<cfset var q = "" />
+		<cfset var thisprop = "" />
 		
 		<!---  friendly URL archive (query as WDDX) --->
 		<cfset stResult.friendlyurls = application.fapi.getContentObjects(typename="farFU",lProperties="*",refObjectID_eq=arguments.stObject.objectid) />
 		
 		<!--- category archive (struct of UUID/label) --->
+		<cfset stResult.tmpcategories = "" />
+		<cfloop collection="#arguments.stObject#" item="thisprop">
+			<cfif structkeyexists(application.stCOAPI[arguments.stObject.typename].stProps,thisprop) and structkeyexists(application.stCOAPI[arguments.stObject.typename].stProps[thisprop].metadata,"ftType") and application.stCOAPI[arguments.stObject.typename].stProps[thisprop].metadata.ftType eq "category">
+				<cfset stResult.tmpcategories = listappend(stResult.tmpcategories,arguments.stObject[thisprop]) />
+			</cfif>
+		</cfloop>
 		<cfquery datasource="#application.dsn#" name="stResult.categories">
 			select	objectid,label
 			from	dmCategory
-			where	objectid in (
-						select	categoryid
-						from	refCategories
-						where	objectid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.stObject.objectid#" />
-					)
+			where	objectid in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#stResult.tmpcategories#" />)
 		</cfquery>
 		
 		<!--- peripheral tree data (parentid, array of children) --->
