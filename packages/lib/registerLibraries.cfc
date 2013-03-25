@@ -95,7 +95,7 @@
 		<skin:registerJS 	id="jquery-modal"
 							baseHREF="#application.url.webtop#/thirdparty/jquery-modal"
 							lFiles="jquery-modal.js" />
-
+		
 		<!--- CSS LIBRARIES --->
 		<skin:registerCSS 	id="webtop"
 							baseHREF="#application.url.webtop#/css"
