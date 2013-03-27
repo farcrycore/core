@@ -194,7 +194,7 @@
 			<cfoutput><a id="#attributes.id#" name="#attributes.id#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="#attributes.class#" style="#attributes.style#" href="##">#attributes.text#</a></cfoutput>
 		</cfcase>
 		<cfcase value="button">
-			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="fc-btn #attributes.class#" style="#attributes.style#;" <cfif attributes.disabled>disabled</cfif>>#attributes.text#</button></cfoutput>
+			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="fc-btn #attributes.class#" style="#attributes.style#;" <cfif attributes.disabled>disabled</cfif> <cfif len(attributes.textOnClick)>fc:textOnClick="#attributes.textOnClick#"</cfif> <cfif len(attributes.textOnSubmit)>fc:textOnSubmit="#attributes.textOnSubmit#"</cfif> <cfif attributes.disableOnSubmit>fc:disableOnSubmit="1"</cfif>>#attributes.text#</button></cfoutput>
 		</cfcase>
 		
 		<!--- Default FarcryButton --->
