@@ -555,12 +555,6 @@
 			<cftry>
 				<cffile action="delete" file="#stLocation.fullpath#" />
 				
-				<!--- Delete archived files --->
-				<cfdirectory action="list" directory="#application.path.mediaArchive##arguments.stMetadata.ftDestination#/" filter="#arguments.stObject.objectid#*" name="qArchive" />
-				<cfloop query="qArchive">
-					<cffile action="delete" file="#application.path.mediaArchive##arguments.stMetadata.ftDestination#/#qArchive.name#" />
-				</cfloop>
-				
 				<cfcatch><cfdump var="#cfcatch.message#"><cfdump var="#arguments#"><cfdump var="#stLocation#"><cfabort></cfcatch>
 			</cftry>
 		</cfif>
@@ -611,18 +605,48 @@
 		</cfif>
 	</cffunction>
 	
+	<cffunction name="onArchive" access="public" output="false" returntype="void" hint="Called from setData when an object is deleted">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="archiveID" type="uuid" required="true" hint="The ID of the new archive" />
+		
+		<cfreturn moveToArchive(stObject=arguments.stObject,stMetadata=arguments.stMetadata,archiveID=arguments.archiveID) />
+	</cffunction>
 	
-	<cffunction name="moveToSecure" access="public" output="false" returntype="void" hint="Moves the specified file to the secure location">
+	<cffunction name="onRollback" access="public" output="false" returntype="void" hint="Called from setData when an object is deleted">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="archiveID" type="uuid" required="true" hint="The ID of the archive being rolled back" />
+	
+		<cfset var filepermission = "" />
+		
+		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
+		
+		<sec:CheckPermission objectid="#arguments.objectid#" type="#arguments.typename#" permission="View" roles="Anonymous" result="filepermission" />
+		<cfif arguments.stMetadata.ftSecure eq "false" and (not structkeyexists(stObj,"status") or stObj.status eq "approved") and filepermission>
+			<cfreturn moveToPublic(stObject=arguments.stObject,stMetadata=arguments.stMetadata,archiveID=arguments.archiveID,fileAction="copy") />
+		<cfelse>
+			<cfreturn moveToSecure(stObject=arguments.stObject,stMetadata=arguments.stMetadata,archiveID=arguments.archiveID,fileAction="copy") />
+		</cfif>
+	</cffunction>
+	
+	
+	<cffunction name="moveToSecure" access="public" output="false" returntype="string" hint="Moves the specified file to the secure location">
 		<cfargument name="objectid" type="string" required="false" default="" hint="Object to retrieve" />
 		<cfargument name="typename" type="string" required="false" default="" hint="Type of the object to retrieve" />
 		<!--- OR --->
 		<cfargument name="stObject" type="struct" required="false" hint="Provides the object" />
 		
 		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
+		<cfargument name="archiveID" type="uuid" required="false" hint="Specify in order to move the file from the specified archive" />
+		<cfargument name="fileAction" type="string" required="false" default="move" />
 		
 		
 		<cfset var stLocation = structnew() />
 		<cfset var newPath = application.path.secureFilePath />
+		<cfset var i = 1 />
 		
 		<!--- Get the object if not passed in --->
 		<cfif not structkeyexists(arguments,"stObject")>
@@ -639,16 +663,29 @@
 			<cfdirectory action="create" directory="#newPath##arguments.stMetadata.ftDestination#" mode="777" />
 		</cfif>
 		
-		<cffile action="move" source="#stLocation.fullpath#" destination="#newPath##arguments.stObject[arguments.stMetadata.name]#" />
+		<cfif fileexists("#newPath##arguments.stObject[arguments.stMetadata.name]#")>
+			<cfloop condition="fileexists(newPath & rereplace(arguments.stObject[arguments.stMetadata.name],'(\.\w+$)',i & '$1'))">
+				<cfset i = i + 1 />
+			</cfloop>
+			
+			<!--- NOTE: this only works because types.setData passes stObject into these functions THEN saves --->
+			<cfset arguments.stObject[arguments.stMetadata.name] = rereplace(arguments.stObject[arguments.stMetadata.name],'(\.\w+$)',i & '$1') />
+		</cfif>
+		
+		<cffile action="#arguments.fileAction#" source="#stLocation.fullpath#" destination="#newPath##arguments.stObject[arguments.stMetadata.name]#"  />
+		
+		<cfreturn arguments.stObject[arguments.stMetadata.name] />
 	</cffunction>
 	
-	<cffunction name="moveToPublic" access="public" output="false" returntype="void" hint="Moves the specified file to the public location">
+	<cffunction name="moveToPublic" access="public" output="false" returntype="string" hint="Moves the specified file to the public location">
 		<cfargument name="objectid" type="string" required="false" default="" hint="Object to retrieve" />
 		<cfargument name="typename" type="string" required="false" default="" hint="Type of the object to retrieve" />
 		<!--- OR --->
 		<cfargument name="stObject" type="struct" required="false" hint="Provides the object" />
 		
 		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
+		<cfargument name="archiveID" type="uuid" required="false" hint="Specify in order to move the file from the specified archive" />
+		<cfargument name="fileAction" type="string" required="false" default="move" />
 		
 		
 		<cfset var stLocation = structnew() />
@@ -669,7 +706,64 @@
 			<cfdirectory action="create" directory="#newPath##arguments.stMetadata.ftDestination#" mode="777" />
 		</cfif>
 		
-		<cffile action="move" source="#stLocation.fullpath#" destination="#newPath##arguments.stObject[arguments.stMetadata.name]#" />
+		<cfif fileexists("#newPath##arguments.stObject[arguments.stMetadata.name]#")>
+			<cfloop condition="fileexists(newPath & rereplace(arguments.stObject[arguments.stMetadata.name],'(\.\w+$)',i & '$1'))">
+				<cfset i = i + 1 />
+			</cfloop>
+			
+			<!--- NOTE: this only works because types.setData passes stObject into these functions THEN saves --->
+			<cfset arguments.stObject[arguments.stMetadata.name] = rereplace(arguments.stObject[arguments.stMetadata.name],'(\.\w+$)',i & '$1') />
+		</cfif>
+		
+		<cffile action="#arguments.fileAction#" source="#stLocation.fullpath#" destination="#newPath##arguments.stObject[arguments.stMetadata.name]#" />
+		
+		<cfreturn arguments.stObject[arguments.stMetadata.name] />
+	</cffunction>
+	
+	<cffunction name="moveToArchive" access="public" output="false" returntype="string" hint="Moves the specified file to the public location">
+		<cfargument name="objectid" type="string" required="false" default="" hint="Object to retrieve" />
+		<cfargument name="typename" type="string" required="false" default="" hint="Type of the object to retrieve" />
+		<!--- OR --->
+		<cfargument name="stObject" type="struct" required="false" hint="Provides the object" />
+		
+		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
+		<cfargument name="archiveID" type="uuid" required="true" hint="Specify in order to move the file to the specified archive" />
+		
+		
+		<cfset var stLocation = structnew() />
+		<cfset var newPath = application.config.general.archivedirectory />
+		<cfset var newFile = "" />
+		
+		<cfif not directoryExists(newPath)>
+			<cfset newPath = "#application.path.project#/archive" />
+		</cfif>
+		
+		<cfif refind("[\\\/]$",newPath)>
+			<cfset newPath = left(newPath,len(newPath)-1) />
+		</cfif>
+		
+		<cfset newPath = newPath & "/#arguments.stObject.typename#" />
+		
+		<cfif not directoryExists(newPath)>
+			<cfdirectory action="create" directory="#newPath#" mode="777" />
+		</cfif>
+		
+		<!--- Get the object if not passed in --->
+		<cfif not structkeyexists(arguments,"stObject")>
+			<cfset arguments.stObject = application.fapi.getContentObject(objectid=arguments.objectid,typename=arguments.typename) />
+		</cfif>
+		
+		<cfset stLocation = getFileLocation(stObject=arguments.stObject,stMetadata=arguments.stMetadata,firstLook="secure") />
+		
+		<cfif not structkeyexists(stLocation,"fullpath")>
+			<cfreturn />
+		</cfif>
+		
+		<cfset newFile = "#arguments.archiveID#.#arguments.stMetadata.name#.#ListLast(stLocation.fullpath,'.')#" />
+		
+		<cffile action="copy" source="#stLocation.fullpath#" destination="#newPath#/#newFile#" />
+		
+		<cfreturn "/" & arguments.stObject.typename & "/" & newFile />
 	</cffunction>
 	
 	
@@ -681,9 +775,11 @@
 		
 		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
 		<cfargument name="firstLook" type="string" required="false" hint="Where should we look for the file first. The default is to look based on permissions and status" />
+		<cfargument name="archiveID" type="uuid" required="false" />
 		
 		<cfset var stResult = structnew() />
 		<cfset var filepermission = 0 />
+		<cfset var q = "" />
 		
 		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
 		
@@ -714,10 +810,42 @@
 		<!--- Determine the ACTUAL filename --->
 		<cfset stResult.filename = listLast(arguments.stObject[arguments.stMetadata.name],"/")>
 		
+		<cfif structkeyexists(arguments,"archiveID") and len(arguments.archiveID)>
+			
+			<!--- Return archived file --->
+			<cfif len(application.config.general.archivedirectory) and directoryExists(application.config.general.archivedirectory)>
+				<cfset stResult.fullpath = application.config.general.archivedirectory />
+				<cfif refind("[\\\/]$",stResult.fullpath)>
+					<cfset stResult.fullpath = left(stResult.fullpath,len(stResult.fullpath)-1) />
+				</cfif>
+			<cfelse>
+				<cfset stResult.fullpath = "#application.path.project#/archive" />
+			</cfif>
+			<cfset stResult.fullpath = stResult.fullpath />
+			
+			<cfif not directoryexists(stResult.fullpath)>
+				<cfset stResult = structnew() />
+				<cfset stResult.message = "File does not exist" />
+				<cfreturn stResult />
+			</cfif>
+			
+			<cfdirectory action="list" directory="#stResult.fullpath#/#arguments.stObject.typename#" filter="#arguments.archiveID#.#arguments.stMetadata.name#.*" type="file" name="q" />
+			<cfif not q.recordcount>
+				<cfset stResult = structnew() />
+				<cfset stResult.message = "File does not exist" />
+				<cfreturn stResult />
+			</cfif>
+			
+			<cfset stResult.location = "archive" />
+			<cfset stResult.isCorrectLocation = true />
+			<cfset stResult.type = "stream" />
+			<cfset stResult.path = "/#arguments.stObject.typename#/#q.name#" />
+			<cfset stResult.fullpath = stResult.fullpath & stResult.path />
+		
 		<!--- draft will be secured --->
 		<!--- ftSecure=true will always be secured --->
 		<!--- anonymous access=false will always be secured --->
-		<cfif NOT isSecured(arguments.stObject,arguments.stMetadata)>
+		<cfelseif NOT isSecured(arguments.stObject,arguments.stMetadata)>
 			<!--- Objects that are not ALWAYS secured and have been approved should be available under the webroot --->
 			
 			<!--- check file exists --->

@@ -2092,6 +2092,120 @@
 		</cfif>
 	</cffunction> 
 
+	<cffunction name="onArchive" access="public" output="false" returntype="void" hint="Called from setData when an object is deleted">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="archiveID" type="uuid" required="true" hint="The ID of the new archive" />
+		
+		<cfreturn moveToArchive(stObject=arguments.stObject,stMetadata=arguments.stMetadata,archiveID=arguments.archiveID) />
+	</cffunction>
+	
+	<cffunction name="onRollback" access="public" output="false" returntype="void" hint="Called from setData when an object is deleted">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="archiveID" type="uuid" required="true" hint="The ID of the archive being rolled back" />
+	
+		<cfreturn moveToPublic(stObject=arguments.stObject,stMetadata=arguments.stMetadata,archiveID=arguments.archiveID,fileAction="copy") />
+	</cffunction>
+	
+	<cffunction name="moveToArchive" access="public" output="false" returntype="void" hint="Moves the specified file to the public location">
+		<cfargument name="objectid" type="string" required="false" default="" hint="Object to retrieve" />
+		<cfargument name="typename" type="string" required="false" default="" hint="Type of the object to retrieve" />
+		<!--- OR --->
+		<cfargument name="stObject" type="struct" required="false" hint="Provides the object" />
+		
+		<cfargument name="archiveID" type="uuid" required="true" />
+		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
+		
+		
+		<cfset var newPath = application.config.general.archivedirectory />
+		<cfset var newFile = "" />
+		<cfset var archivePath = "" />
+		
+		<cfif not directoryExists(newPath)>
+			<cfset newPath = "#application.path.project#/archive" />
+		</cfif>
+		
+		<cfif refind("[\\\/]$",newPath)>
+			<cfset newPath = mid(newPath,1,len(newPath)-1) />
+		</cfif>
+		
+		<cfset newPath = newPath & "/#arguments.stObject.typename#" />
+		
+		<cfif not directoryExists(newPath)>
+			<cfdirectory action="create" directory="#newPath#" mode="777" />
+		</cfif>
+		
+		<!--- Get the object if not passed in --->
+		<cfif not structkeyexists(arguments,"stObject")>
+			<cfset arguments.stObject = application.fapi.getContentObject(objectid=arguments.objectid,typename=arguments.typename) />
+		</cfif>
+		
+		<cfset newFile = "#arguments.archiveID#.#arguments.stMetadata.name#.#ListLast(arguments.stObject[arguments.stMetadata.name],'.')#" />
+		
+		
+		<!--- Find archived file --->
+		<cfif len(application.config.general.archivedirectory) and directoryExists(application.config.general.archivedirectory)>
+			<cfset archivePath = application.config.general.archivedirectory />
+			<cfif refind("[\\\/]$",archivePath)>
+				<cfset archivePath = left(archivePath,len(archivePath)-1) />
+			</cfif>
+		<cfelse>
+			<cfset archivePath = "#application.path.project#/archive" />
+		</cfif>
+		<cfset archivePath = archivePath & "/#arguments.stObject.typename#" />
+		
+		<cfif not directoryexists(archivePath)>
+			<cfreturn "" />
+		</cfif>
+		
+		<cfdirectory action="list" directory="#archivePath#" filter="#arguments.archiveID#.#arguments.stMetadata.name#.*" type="file" name="q" />
+		<cfif not q.recordcount>
+			<cfreturn "" />
+		<cfelse>
+			<cfset archivePath = archivePath & "/" & q.name />
+		</cfif>
+		
+		
+		<cffile action="copy" source="#archivePath#" destination="#newPath#/#newFile#" />
+		
+		<cfreturn "/" & arguments.stObject.typename & "/" & newFile />
+	</cffunction>
+	
+	<cffunction name="moveToPublic" access="public" output="false" returntype="string" hint="Moves the specified file to the public location">
+		<cfargument name="objectid" type="string" required="false" default="" hint="Object to retrieve" />
+		<cfargument name="typename" type="string" required="false" default="" hint="Type of the object to retrieve" />
+		<!--- OR --->
+		<cfargument name="stObject" type="struct" required="false" hint="Provides the object" />
+		
+		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
+		<cfargument name="archiveID" type="uuid" required="false" hint="Specify in order to move the file from the specified archive" />
+		<cfargument name="fileAction" type="string" required="false" default="move" />
+		
+		
+		<cfset var newPath = application.path.imageroot />
+		
+		<!--- Get the object if not passed in --->
+		<cfif not structkeyexists(arguments,"stObject")>
+			<cfset arguments.stObject = application.fapi.getContentObject(objectid=arguments.objectid,typename=arguments.typename) />
+		</cfif>
+		
+		<cfif fileexists("#newPath##arguments.stObject[arguments.stMetadata.name]#")>
+			<cfloop condition="fileexists(newPath & rereplace(arguments.stObject[arguments.stMetadata.name],'(\.\w+$)',i & '$1'))">
+				<cfset i = i + 1 />
+			</cfloop>
+			
+			<!--- NOTE: this only works because types.setData passes stObject into these functions THEN saves --->
+			<cfset arguments.stObject[arguments.stMetadata.name] = rereplace(arguments.stObject[arguments.stMetadata.name],'(\.\w+$)',i & '$1') />
+		</cfif>
+		
+		<cffile action="#arguments.fileAction#" source="#newPath#/#arguments.archiveID#.#arguments.stMetadata.name#.#ListLast(arguments.stObject[arguments.stMetadata.name],'.')#" destination="#newPath##arguments.stObject[arguments.stMetadata.name]#" />
+		
+		<cfreturn arguments.stObject[arguments.stMetadata.name] />
+	</cffunction>
+	
 	<cffunction name="duplicateFile" access="public" output="false" returntype="string" hint="For use with duplicateObject, copies the associated file and returns the new unique filename">
 		<cfargument name="stObject" type="struct" required="false" hint="Provides the object" />
 		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />

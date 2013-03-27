@@ -77,51 +77,16 @@ $out:$
 		<cfargument name="stMeta" required="no" type="struct" />
 		
 		<cfset var stLocal = StructNew()>
-		<cfset var pathSep = "\"><!--- default is windows path separator --->
-		<cfset var archiveDirectory = application.config.general.archivedirectory><!--- archive directory from config --->
-		
-		<cfif not directoryExists("#archiveDirectory#")>
-			<cfset archiveDirectory = "#application.path.project#/archive" />
-		</cfif>
+		<cfset var thisprop = "" />
+		<cfset var stMetaData = structnew() />
 		
 		<cfset stlocal.returnStruct = StructNew()>
 		<cfset stLocal.stObj = StructCopy(arguments.stObj)>
 		
-		<cfif left(archiveDirectory,1) neq "/"><!--- not *nix path --->
-			<cfset archiveDirectory = replaceNoCase("#archiveDirectory#","/","\","all")>
-		<cfelse>
-			<cfset archiveDirectory = replaceNoCase("#archiveDirectory#","\","/","all")>
-			<cfset pathSep = "/">
-		</cfif>
-		
-		<cfif Right(archiveDirectory,1) NEQ pathSep>
-			<cfset archiveDirectory= "#archiveDirectory##pathSep#">
-		</cfif>
-	
-		<cfset stLocal.directoryToCheck = ListDeleteAt(archiveDirectory,ListLen(archiveDirectory,pathSep),pathSep)>
-		<cfset stLocal.directoryNameToCheck = ListLast(archiveDirectory,pathSep)>
-		
-		<!--- create archive directorys if needed --->
-		<cfdirectory action="list" directory="#stLocal.directoryToCheck#" name="stLocal.qDirectory" filter="#stLocal.directoryNameToCheck#">
-	
-		<!--- create a files directory --->
-		<cfif stLocal.qDirectory.recordcount EQ 0>
-			<cfdirectory action="create" directory="#archiveDirectory#">
-		</cfif>
-			
-		<cfwddx input="#stLocal.stObj#" output="stLocal.stLiveWDDX"  action="cfml2wddx">
-		
-		<cfif not structkeyexists(arguments,"stMeta")>
-			<cfset arguments.stMeta = getMeta(stObject=arguments.stObj) />
-		</cfif>
-		<cfwddx input="#arguments.stMeta#" output="stLocal.stMetaWDDX"  action="cfml2wddx">
-		
-		<!--- set up the dmArchive structure to save --->
+		<!--- Set up the dmArchive structure to save --->
 		<cfset stLocal.stProps = structNew()>
 		<cfset stLocal.stProps.objectID = application.fc.utils.createJavaUUID()>
 		<cfset stLocal.stProps.archiveID = stLocal.stObj.objectID>
-		<cfset stLocal.stProps.objectWDDX = stLocal.stLiveWDDX>
-		<cfset stLocal.stProps.metaWDDX = stLocal.stMetaWDDX>
 		<cfset stLocal.stProps.event = arguments.event>
 		<cfset stLocal.stProps.objectTypename = arguments.stObj.typename>
 		<cfset stLocal.stProps.bDeleted = arguments.bDeleted>
@@ -129,215 +94,41 @@ $out:$
 		<cfset stLocal.stProps.ipaddress = cgi.REMOTE_ADDR>
 		<cfset stLocal.stProps.lRoles = application.security.getCurrentRoles()>
 		<cfset stLocal.stProps.label = stLocal.stObj.label>
-		<!--- //end dmArchive struct --->  
-	
-		<cfset createData(stProperties=stLocal.stProps)>
-		<cfif stLocal.stObj.typename EQ "dmFile" OR stLocal.stObj.typename EQ "dmImage">
-	
-			<!--- struct to hold the information on where to move files to --->
-			<cfset stLocal.stFile = StructNew()>
-	
-			<cfdirectory action="list" directory="#archiveDirectory#" name="stLocal.qDirectory" filter="#stLocal.stObj.typename#">
-			<!--- create a files directory --->
-			<cfif stLocal.qDirectory.recordcount EQ 0>
-				<cfdirectory action="create" directory="#archiveDirectory##pathSep##stLocal.stObj.typename#">
-			</cfif>
-	
-			<cfset stLocal.stFile.destinationDir = "#archiveDirectory##stLocal.stObj.typename##pathSep#">
-					
-			<!--- check if item is part of library, if so then move a copy as others may reference it --->
-			<cfif structKeyExists(stLocal.stObj,"bLibrary") AND stLocal.stObj.bLibrary EQ 1>
-				<cfset stLocal.stFile.action = "copy">
-			<cfelse>
-				<cfset stLocal.stFile.action = "move">
-			</cfif>
-	
-			<cfif StructKeyExists(application.config.general,"bdoarchive") AND application.config.general.bdoarchive EQ "true">
-				<cfswitch expression="#stLocal.stObj.typename#">
-					<!--- archive file --->
-					<cfcase value="dmFile">
-						<cfset stLocal.stFile.sourceDir = "#application.path.project##pathSep#www#pathSep#files#pathSep#">
-						<cfset stLocal.stFile.sourceFileName = "#stLocal.stObj.fileName#">
-						<cfset stLocal.stFile.destinationFileName = "#stLocal.stProps.archiveID#.#ListLast(stLocal.stFile.sourceFileName,'.')#">
-						<cfset stLocal.fReturnStruct = moveFile(stLocal.stFile)>
-					</cfcase>
-					<!--- archive image --->
-					<cfcase value="dmimage">
-						<!--- default image --->
-						<cfset stLocal.stFile.sourceDir = "#stLocal.stObj.originalImagePath##pathSep#">
-						<cfset stLocal.stFile.sourceFileName = "#stLocal.stObj.imageFile#">
-						<cfset stLocal.stFile.destinationFileName = "#stLocal.stProps.archiveID#_default.#ListLast(stLocal.stFile.sourceFileName,'.')#">
-						<cfset stLocal.fReturnStruct = moveFile(stLocal.stFile)>
-			
-						<!--- thumbnail image --->
-						<cfset stLocal.stFile.sourceDir = "#stLocal.stObj.thumbnailImagePath##pathSep#">
-						<cfset stLocal.stFile.sourceFileName = "#stLocal.stObj.thumbnail#">
-						<cfset stLocal.stFile.destinationFileName = "#stLocal.stProps.archiveID#_thumb.#ListLast(stLocal.stFile.sourceFileName,'.')#">
-						<cfset stLocal.fReturnStruct = moveFile(stLocal.stFile)>
-			
-						<!--- optimised image --->				
-						<cfset stLocal.stFile.sourceDir = "#stLocal.stObj.optimisedImagePath##pathSep#">
-						<cfset stLocal.stFile.sourceFileName = "#stLocal.stObj.optimisedImage#">
-						<cfset stLocal.stFile.destinationFileName = "#stLocal.stProps.archiveID#_optimised.#ListLast(stLocal.stFile.sourceFileName,'.')#">
-						<cfset stLocal.fReturnStruct = moveFile(stLocal.stFile)>
-					</cfcase>
-					
-					<cfdefaultcase>
-						<!--- dont do anything --->
-					</cfdefaultcase>
-				</cfswitch>
-			</cfif>
+		
+		<!--- Add object data to archive --->
+		<cfwddx input="#stLocal.stObj#" output="stLocal.stProps.objectWDDX"  action="cfml2wddx">
+		
+		<!--- Get object metadata --->
+		<cfif not structkeyexists(arguments,"stMeta")>
+			<cfset arguments.stMeta = getMeta(stObject=arguments.stObj) />
 		</cfif>
+		
+		<!--- Archive media --->
+		<cfloop collection="#stLocal.stObj#" item="thisprop">
+			<cfif (issimplevalue(stLocal.stObj[thisprop]) and len(stLocal.stObj[thisprop])) and structkeyexists(application.stCOAPI[stLocal.stObj.typename].stProps,thisprop)>
+				<cfset stMetadata = application.stCOAPI[stLocal.stObj.typename].stProps[thisprop].metadata />
+				<cfparam name="stMetadata.ftType" default="#stMetadata.type#" />
+				
+				<cfif (not structkeyexists(stMetadata,"bArchive") or stMetadata.bArchive) and structkeyexists(application.formtools[stMetadata.ftType].oFactory,"onArchive")>
+					<cfset queryaddrow(arguments.stMeta.files) />
+					<cfset querysetcell(arguments.stMeta.files,"property",thisprop) />
+					<cfset querysetcell(arguments.stMeta.files,"filename",stLocal.stObj[thisprop]) />
+					<cfset querysetcell(arguments.stMeta.files,"archive",application.formtools[stMetadata.ftType].oFactory.onArchive(typename=stLocal.stObj.typename,stObject=stLocal.stObj,stMetadata=stMetadata,archiveID=stProps.objectid)) />
+				</cfif>
+			</cfif>
+		</cfloop>
+		
+		<cfwddx input="#arguments.stMeta#" output="stLocal.stProps.metaWDDX"  action="cfml2wddx">
+		
+		<cfset createData(stProperties=stLocal.stProps)>
+		
+		<cfset stLocal.returnstruct.archive = stLocal.stProps />
+		<cfset stLocal.returnstruct.object = stLocal.stObj />
+		<cfset stLocal.returnstruct.metadata = arguments.stMeta />
 		
 		<cfreturn stlocal.returnStruct>
 	</cffunction>
 	
-	<!---<cffunction name="archiveRelatedObject" access="public" hint="archiving of related items to content types (eg. files and images)">
-		<cfargument name="stObj" required="yes" type="struct">
-	
-		<cfset var stLocal = StructNew()>
-		<cfset var archiveDirectory = application.config.general.archivedirectory><!--- archive directory from config --->
-		
-		<cfif not directoryExists("#archiveDirectory#")>
-			<cfset archiveDirectory = "#application.path.project#/archive" />
-		</cfif>
-		
-		<cfset stLocal.stObj = StructCopy(arguments.stObj)>
-	
-		<cfif StructKeyExists(stLocal.stObj,"aObjectIDs")>
-			<cfloop index="stLocal.i" from="1" to="#ArrayLen(stLocal.stObj.aObjectIDs)#">
-		
-				<cfset stLocal.archiveType = findType(stLocal.stObj.aObjectIDs[stLocal.i])>
-	
-				<!--- create files directorys if needed --->
-				<cfdirectory action="list" directory="#archiveDirectory#" name="qDirectory" filter="#stLocal.archiveType#">
-				<!--- create a files directory --->
-				<cfif qDirectory.recordCount EQ 0>
-					<cfdirectory action="create" directory="#archiveDirectory#/#stLocal.archiveType#">
-				</cfif>
-	
-				<cfset stLocal.archiveObjectId = application.fc.utils.createJavaUUID()>
-	
-				<!--- create object specific object content type and then get data --->
-				<cfset stLocal.instanceObject = createobject("component",application.types[stLocal.archiveType].typepath)>
-				<cfset stLocal.stInstance = stLocal.instanceObject.getData(stLocal.stObj.aObjectIDs[stLocal.i])>
-		
-				<cfif StructKeyExists(stLocal.stInstance,"ObjectID")>
-					<!--- Convert current object to WDDX for archive --->
-					<cfwddx input="#stLocal.stInstance#" output="stLocal.stInstanceWDDX"  action="cfml2wddx">
-					<!--- archive object into database --->
-					<cfset stLocal.stProps = StructNew()>
-					<cfset stLocal.stProps.objectID = stLocal.archiveObjectId>
-					<cfset stLocal.stProps.archiveID = stLocal.stInstance.objectID>
-					<cfset stLocal.stProps.objectWDDX = stLocal.stInstanceWDDX>
-					<cfset stLocal.stProps.label = stLocal.stInstance.title>
-					<cfset stLocal.returnStruct = createData(stProperties=stLocal.stProps)>
-		
-					<!--- struct to hold the information on where to move files to --->
-					<cfset stLocal.stFile = StructNew()>
-					<cfif (Right(archiveDirectory,1) NEQ "\") AND (Right(archiveDirectory,1) NEQ "/")>
-						<cfset stLocal.stFile.destinationDir = "#archiveDirectory#/#stLocal.archiveType#/">
-					<cfelse>
-						<cfset stLocal.stFile.destinationDir = "#archiveDirectory##stLocal.archiveType#/">
-					</cfif>
-		
-					<!--- check if item is part of library, if so then move a copy as others may reference it --->
-					<cfif structKeyExists(stLocal.stInstance,"bLibrary") AND stLocal.stInstance.bLibrary EQ 1>
-						<cfset stLocal.stFile.action = "copy">
-					<cfelse>
-						<cfset stLocal.stFile.action = "move">
-					</cfif>
-	
-					<cfswitch expression="#stLocal.archiveType#">
-						<!--- archive file --->
-						<cfcase value="dmFile">
-							<cfset stLocal.stFile.sourceDir = "#application.path.project#/www/files/">
-							<cfset stLocal.stFile.sourceFileName = "#stLocal.stInstance.fileName#">
-							<cfset stLocal.stFile.destinationFileName = "#stLocal.archiveObjectId#.#ListLast(stLocal.stFile.sourceFileName,'.')#">
-							<cfset stLocal.returnStruct = moveFile(stLocal.stFile)>
-						</cfcase>
-			
-						<!--- archive image --->
-						<cfcase value="dmImage">
-							<!--- default image --->
-							<cfset stLocal.stFile.sourceDir = "#stLocal.stInstance.originalImagePath#/">
-							<cfset stLocal.stFile.sourceFileName = "#stLocal.stInstance.imageFile#">
-							<cfset stLocal.stFile.destinationFileName = "#stLocal.archiveObjectId#_default.#ListLast(stLocal.stFile.sourceFileName,'.')#">
-							<cfset stLocal.returnStruct = moveFile(stLocal.stFile)>
-			
-							<!--- thumbnail image --->
-							<cfset stLocal.stFile.sourceDir = "#stLocal.stInstance.thumbnailImagePath#/">
-							<cfset stLocal.stFile.sourceFileName = "#stLocal.stInstance.thumbnail#">
-							<cfset stLocal.stFile.destinationFileName = "#stLocal.archiveObjectId#_thumb.#ListLast(stLocal.stFile.sourceFileName,'.')#">
-							<cfset stLocal.returnStruct = moveFile(stLocal.stFile)>
-			
-							<!--- optimised image --->				
-							<cfset stLocal.stFile.sourceDir = "#stLocal.stInstance.optimisedImagePath#/">
-							<cfset stLocal.stFile.sourceFileName = "#stLocal.stInstance.optimisedImage#">
-							<cfset stLocal.stFile.destinationFileName = "#stLocal.archiveObjectId#_optimised.#ListLast(stLocal.stFile.sourceFileName,'.')#">
-							<cfset stLocal.returnStruct = moveFile(stLocal.stFile)>
-						</cfcase>
-						
-						<cfdefaultcase>
-							<!--- dont do anything --->
-						</cfdefaultcase>
-					</cfswitch>
-				</cfif>	
-			</cfloop>
-		</cfif>
-	</cffunction>--->
-		
-	<cffunction name="moveFile" access="public" hint="move file from one location to another">
-		<cfargument name="stFile" required="yes" type="struct">
-	
-		<cfset var stLocal = StructNew()>
-		<cfset var pathSep = "\"><!--- windows by default --->
-		<cfset stLocal.stFile = StructCopy(arguments.stFile)>
-	
-		<!---
-		stFile needs:	sourcedir 			=	source directory
-						destinationdir		=	destination directory
-						sourceFilename		=	file to copy
-						destinationFilename	=	file name which to rename it to
-						
-		TODO: need to be reviewed originally with nothing in the catch block - pt
-		--->
-	
-		<cftry>
-			<!--- extra precautions to check that directory is correct --->
-			<cfif left(stLocal.stFile.sourceDir,1) neq "/"><!--- not *nix path --->
-				<cfset stLocal.stFile.sourceDir = replaceNoCase("#stLocal.stFile.sourceDir#","/","\","all")>
-				<cfset stLocal.stFile.destinationdir = replaceNoCase("#stLocal.stFile.destinationdir#","/","\","all")>
-			<cfelse>
-				<cfset stLocal.stFile.sourceDir = replaceNoCase("#stLocal.stFile.sourceDir#","\","/","all")>
-				<cfset stLocal.stFile.destinationdir = replaceNoCase("#stLocal.stFile.destinationdir#","\","/","all")>
-				<cfset pathSep = "/">
-			</cfif>
-	
-			<cfif right(stLocal.stFile.sourceDir,1) NEQ pathSep>
-				<cfset stLocal.stFile.sourceDir = stLocal.stFile.sourceDir & pathSep>
-			</cfif>
-			<cfif right(stLocal.stFile.destinationdir,1) NEQ pathSep>
-				<cfset stLocal.stFile.destinationdir = stLocal.stFile.destinationdir & pathSep>
-			</cfif>
-	
-			<cfif fileExists("#stLocal.stFile.sourceDir##stLocal.stFile.sourceFilename#")>
-				<cfif stLocal.stFile.action EQ "move">			
-					<cffile action="move" source="#stLocal.stFile.sourceDir##stLocal.stFile.sourceFilename#" destination="#stLocal.stFile.destinationdir##stLocal.stFile.destinationFilename#">
-				<cfelse>
-					<cffile action="copy" source="#stLocal.stFile.sourceDir##stLocal.stFile.sourceFilename#" destination="#stLocal.stFile.destinationdir#" mode="664">
-					<cffile action="rename" source="#stLocal.stFile.destinationdir##stLocal.stFile.sourceFilename#" destination="#stLocal.stFile.destinationdir##stLocal.stFile.destinationFilename#">
-				</cfif>			
-			</cfif>
-	
-			<cfcatch type="any">
-				<cfoutput>dmArchive: Error in moveFile method call </cfoutput>
-				<cfdump var="#cfcatch#">
-			</cfcatch>
-		</cftry>
-	
-	</cffunction>
-
 	<cffunction name="rollbackArchive" access="public" returntype="struct" hint="Sends a archived object live and archives current version">
 		<cfargument name="objectID" type="uuid" required="true">
 		<cfargument name="archiveID"  type="uuid" required="true" hint="the archived object to be sent back live">
@@ -350,6 +141,9 @@ $out:$
 		<cfset var q = "" />
 		<cfset var stMeta = structnew() />
 		<cfset var stParent = structnew() />
+		<cfset var stPrev = structnew() />
+		<cfset var stMetadata = structnew() />
+		<cfset var stLocation = structnew() />
 		
 		<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 		
@@ -364,17 +158,39 @@ $out:$
 			<cfset stResult.archive = stArchive />
 			
 			<!--- Convert wddx archive object --->
-			<cftry><cfwddx input="#stArchive.metawddx#" output="stMeta" action="wddx2cfml"><cfcatch><cfthrow message="meta error" detail="#serializeJSON(stArchive)#"></cfcatch></cftry>
+			<cfwddx input="#stArchive.metawddx#" output="stMeta" action="wddx2cfml">
 			<cfwddx input="#stArchive.objectwddx#" output="stArchiveDetail"  action="wddx2cfml">
 			<cfset stArchiveDetail.objectid = arguments.objectID>
 			<cfset stArchiveDetail.locked = 0>
 			<cfset stArchiveDetail.lockedBy = "">
 			
+			<cfset stResult.previous = application.fapi.getContentObject(typename=stArchiveDetail.typename,objectid=stArchiveDetail.objectid) />
 			<cfset stResult.object = stArchiveDetail />
 			<cfset stResult.metadata = stMeta />
 			
+			<!--- Restore archived media --->
+			<cfloop query="#stMeta.files#">
+				<cfset stMetadata = application.stCOAPI[stArchiveDetail.typename].stProps[stMeta.files.property].metadata />
+				<cfparam name="stMetadata.ftType" default="#stMetadata.type#" />
+				
+				<cfif structkeyexists(application.formtools[stMetadata.ftType].oFactory,"onRollback")>
+					<!--- onRollback ALWAYS uses makeUnique - if the property has the same file with the same name, it will NOT be overwritten --->
+					<cfset stArchiveDetail[stMeta.files.property] = application.formtools[stMetadata.ftType].oFactory.onRollback(typename=stLocal.stObj.typename,stObject=stLocal.stObj,stMetadata=stMetadata,archiveID=stProps.objectid) />
+				</cfif>
+			</cfloop>
+			
 			<!--- Update current live object with archive property values	 --->
 			<cfset application.fapi.setData(stProperties=stArchiveDetail,auditNote='Archive rolled back')>
+			
+			<!--- Remove deprecated media --->
+			<cfloop query="#stMeta.files#">
+				<cfset stMetadata = application.stCOAPI[stArchiveDetail.typename].stProps[stMeta.files.property].metadata />
+				
+				<cfif structkeyexists(application.formtools[stMetadata.ftType].oFactory,"onRollback") and structkeyexists(application.formtools[stMetadata.ftType].oFactory,"onDelete") and stResult.previous[stMeta.files.property] neq stArchiveDetail[stMeta.files.property]>
+					<!--- in many cases, rolled back files will change from abc.pdf => abc1.pdf, and we need to delete the old filename --->
+					<cfset  application.formtools[stMetadata.ftType].oFactory.onDelete(typename=stLocal.stObj.typename,stObject=stResult.previous,stMetadata=stMetadata) />
+				</cfif>
+			</cfloop>
 			
 			<!--- If this is an undelete and has a parent, attempt to put it in the tree --->
 			<cfif stArchive.bDeleted eq true and isdefined("stMeta.tree.parent")>
@@ -543,6 +359,9 @@ $out:$
 				<cfset stResult.tree.parent = q.parentid[1] />
 			</cfif>
 		</cfif>
+		
+		<!--- initialize files query (populated in archiveObject) --->
+		<cfset stResult.files = querynew('property,filename,archive') />
 		
 		<cfreturn stResult />
 	</cffunction>
