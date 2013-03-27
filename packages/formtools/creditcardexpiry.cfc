@@ -43,13 +43,24 @@
 				return year > nowdate.getFullYear() || (year === nowdate.getFullYear() && month >= nowdate.getMonth()+1);
 			};
 			$j.validator.addMethod("creditcardexpiry", function(value, element) {
-				return this.optional(element) || (/^(0?[1-9]|1[12])\/(\d{2}|\d{4})$/i.test(value) && checkDate(value));
-			}, "Not a valid expiry date. Please enter MM/YY.");
+				return this.optional(element) || (/^(0?[1-9]|1[012])\/(\d{2}|\d{4})$/i.test(value) && checkDate(value));
+			}, "Not a valid expiry date. Please enter MM/YYYY.");
+			$j(document).delegate(".creditcardexpiry input","blur",function(){
+				if (/^(0?[1-9]|1[012])\/(\d{2}|\d{4})$/i.test(this.value)){
+					var parts = this.value.split("/"), month = parseInt(parts[0]), year = parseInt(parts[1]), nowdate = new Date(), futureyears = parseInt(nowdate.getFullYear().toString().slice(2)) + 20;
+					
+					if (parts[1].length === 2){
+						year = year < futureyears ? year + 2000 : year + 1900;
+					}
+					
+					this.value = (month < 10 ? "0" : "") + month.toString() + "/" + year.toString();
+				}
+			});
 		</cfoutput></skin:onReady>
 		
 		<cfsavecontent variable="html"><cfoutput>
 			<div class="multiField">
-				<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" maxLength="7" placeholder="MM/YY" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#">
+				<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" maxLength="7" placeholder="MM/YYYY" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#">
 			</div>
 		</cfoutput></cfsavecontent>
 		
@@ -84,16 +95,20 @@
 		<cfset var earliestdate = createdate(year(now()),month(now()),1) />
 		<cfset var expiry = "" />
 		
-		<cfif len(arguments.stFieldPost.value) and not refind("^(0[1-9]|1[0-2])\/(\d{2}|\d{4})$",arguments.stFieldPost.value)>
-			<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="Not a valid expiry date. Please enter MM/YY.") />
+		<cfif len(arguments.stFieldPost.value) and not refind("^(0[1-9]|1[012])\/(\d{2}|\d{4})$",arguments.stFieldPost.value)>
+			<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="Not a valid expiry date. Please enter MM/YYYY.") />
 		<cfelseif len(arguments.stFieldPost.value)>
 			<cfset expiry = createdate(listlast(arguments.stFieldPost.value,"/"),listfirst(arguments.stFieldPost.value,"/"),1) />
-			<cfset arguments.stFieldPost.value = "#numberformat(month(expiry),'00')#/#year(expiry)#" />
+			<cfset arguments.stFieldPost.value = numberformat(month(expiry),'00') & "/" & year(expiry) />
+			
+			<cfif len(arguments.stFieldPost.value) eq 6>
+				<cfset arguments.stFieldPost.value = "0" & arguments.stFieldPost.value />
+			</cfif>
 			
 			<cfif expiry gte earliestdate>
-				<cfset stResult = passed(value=arguments.stFieldPost.Value) />
+				<cfset stResult = passed(value=arguments.stFieldPost.value) />
 			<cfelse>
-				<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="Not a valid expiry date. Please enter MM/YY.") />
+				<cfset stResult = failed(value=arguments.stFieldPost.value, message="Not a valid expiry date. Please enter MM/YYYY.") />
 			</cfif>
 		<cfelse>
 			<cfset stResult = super.validate(argumentCollection=arguments) />
