@@ -145,7 +145,7 @@
 			<cfset arguments.message = arguments.message & " '#arguments.subject#' From:'#arguments.from#' To:'#arguments.to#'" />
 		</cfif>
 		
-		<cfset application.fc.lib.error.logData(log=application.fc.lib.error.collectRequestInfo(argumentCollection=arguments),bApplication=false,logFile="mailout",logType="email") />
+		<cfset application.fc.lib.error.logData(log=application.fc.lib.error.collectRequestInfo(argumentCollection=arguments),bApplication=false,logFile="mailout",logType="information") />
 	</cffunction>
 	
 </cfcomponent>
