@@ -768,7 +768,7 @@ user --->
 					<cfif attributes.lButtons EQ "*" or listFindNoCase(attributes.lButtons,attributes.aButtons[i].value)>
 					
 						<!--- IF NO RECORDSET THEN ONLY THE ADD BUTTON SHOULD BE DISPLAYED --->
-						<cfif stRecordset.q.recordCount OR listfind(attributes.lButtonsEmpty,attributes.aButtons[i].value)>
+						<cfif stRecordset.q.recordCount OR listfindnocase(attributes.lButtonsEmpty,attributes.aButtons[i].value)>
 
 							<cfif not len(attributes.aButtons[i].permission) or (isboolean(attributes.aButtons[i].permission) and attributes.aButtons[i].permission) or (not isboolean(attributes.aButtons[i].permission) and application.security.checkPermission(permission=attributes.aButtons[i].permission) EQ 1)>
 								

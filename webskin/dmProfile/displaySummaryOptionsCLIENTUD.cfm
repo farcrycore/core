@@ -3,15 +3,12 @@
 <!--- @@description: Farcry UD specific options --->
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
 <cfset stUser = createObject("component", application.stcoapi["farUser"].packagePath).getByUserID(listfirst(stObj.username,"_")) />
 
 <cfoutput>
-	<li>
-		<small>
-			<skin:buildLink objectid="#stUser.objectid#" view="editOwnPassword" target="content" title="Change password" rbkey="coapi.farUser.general.changepassword">Change password</skin:buildLink>
-		</small>
-	</li>
+	<li><a href="#application.url.webtop#?id=home.overview&typename=farUser&objectid=#stUser.objectid#&bodyView=editOwnPassword"><admin:resource key="coapi.farUser.general.changepassword">Change password</admin:resource></a></li>
 </cfoutput>
 
 <cfsetting enablecfoutputonly="false" />

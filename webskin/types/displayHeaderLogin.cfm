@@ -20,43 +20,37 @@
 <!--- @@description:   --->
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
-
-<!------------------ 
-FARCRY IMPORT FILES
- ------------------>
-<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
+<skin:loadCSS id="fc-bootstrap" />
+<skin:loadCSS id="fc-login" />
+<skin:loadJS id="fc-jquery" />
+<skin:loadJS id="fc-bootstrap" />
 
-<skin:loadCSS id="webtop" />
-
-<skin:loadCSS id="farcry-form" />
-
-<!------------------ 
-START WEBSKIN
- ------------------>
 <cfoutput>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head> 
-	<title>#application.config.general.siteTitle# :: #application.applicationname#</title>
-
-</head>
-
-<body id="sec-login">
-<div id="login">
-	<div class="loginLogo">		
-		<a href="#application.url.webroot#/index.cfm">
-			<!--- if there is a site logo, use it instead of the default placeholder --->       
-			<cfif structKeyExists(application.config.general,'siteLogoPath') and application.config.general.siteLogoPath NEQ "">
-				<img src="#application.config.general.siteLogoPath#" alt="#application.config.general.siteTitle#" />
-				<h1>#application.config.general.siteTitle#</h1>
-				<span>#application.config.general.siteTagLine#</span>	
-			<cfelse>
-				<img src="#application.url.webtop#/images/logo_placeholder.gif" alt="#application.config.general.siteTitle#" />
-			</cfif>
-		</a>	
-	</div>
+	<!DOCTYPE HTML>
+	<html>
+		<head>
+			<meta charset="UTF-8">
+			<title>FarCry Login</title>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Ubuntu:300,400,700">
+			<link href="#application.url.webtop#/css/icons.css" rel="stylesheet" media="screen">
+		</head>
+		
+		<body>
+			<div id="header">
+				<div class="container">
+					<h1><a href="http://www.farcrycore.org/" target="_blank" class="logo">FarCry Core &trade;</a></h1>
+					<h1><a href="#application.url.webroot#" target="_blank" class="logo"<cfif structKeyExists(application.config.general,'siteLogoPath') and application.config.general.siteLogoPath NEQ ""> style="background:url(#application.config.general.siteLogoPath#) center no-repeat;text-indent:-99999px;"</cfif>>#application.config.general.siteTitle#</a></h1>
+				</div><!-- /.container -->
+			</div><!-- /##header -->
+			<div id="content-main">
+				<div class="content-block">
+					<div class="content-header">
+						<h3>Sign In to FarCry</h3>
+					</div><!-- /.content-header -->
+					<div class="content-main">
 </cfoutput>
 
 <cfsetting enablecfoutputonly="false">

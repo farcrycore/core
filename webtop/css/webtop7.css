@@ -436,6 +436,7 @@ th.objectadmin-sortable span {
 th.objectadmin-sortable span:hover {
 	text-decoration: underline;
 }
+.table-striped tbody > tr.selected > td, .table-striped tbody > tr.selected:nth-child(2n+1) > td, .table-striped tbody > tr.selected > th, .table-striped tbody > tr.selected:nth-child(2n+1) > th { background-color:#F9E6D4; }
 
 /* customise bootstrap button styles */
 .btn {

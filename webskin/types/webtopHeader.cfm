@@ -30,11 +30,11 @@
 <title>[#application.applicationname#] #application.config.general.sitetitle# - FarCry Webtop</title>
 
 <!--- TODO: register --->
-	<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
 	<link href="css/icons.css" rel="stylesheet" media="screen">
 	<!--- <link href="css/webtop7.css" rel="stylesheet" media="screen"> --->
 <!--- /TODO: register --->
-
+	
+	<skin:loadCSS id="fc-bootstrap" />
 	<skin:loadCSS id="webtop" baseHREF="#application.url.webtop#/css" lFiles="webtop7.css,main7.css" />
 	<skin:loadJS id="fc-jquery" />
 
@@ -81,8 +81,9 @@
 							<span>#webtopUsername# &nbsp;<b class="icon-caret-down"></b></span>
 						</div>
 						<ul class="dropdown-menu pull-right">
-							<li><a href="##">Edit Profile</a></li>
-							<li><a href="##">Logout</a></li>
+							<li><a href="#application.url.webtop#?id=home.overview&typename=dmProfile&objectid=#session.dmProfile.objectid#&bodyView=editOwn"><admin:resource key="coapi.dmProfile.general.editprofile">Edit Profile</admin:resource></a></li>
+							<skin:view typename="dmProfile" objectid="#session.dmProfile.objectid#" webskin="displaySummaryOptions#application.security.getCurrentUD()#" alternateHTML="" />
+							<li><a href="#application.url.webtop#?logout=1"><admin:resource key="coapi.dmProfile.general.logout">Logout</admin:resource></a></li>
 							<li class="divider"></li>
 							<li class="nav-header">Developer Tools</li>
 							<li><a href="##">Webskin Tracer</a></li>

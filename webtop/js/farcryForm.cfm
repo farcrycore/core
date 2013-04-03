@@ -363,18 +363,7 @@ function checkUncheckAll(theElement) {
 
 
 function setRowBackground (childCheckbox) {
-	var row = childCheckbox.parentNode;
-	while (row && row.tagName.toLowerCase() != 'tr') {
-		row = row.parentNode;
-	}
-	if (row && row.style) {
-		if (childCheckbox.checked) {
-			row.style.backgroundColor = '##F9E6D4';
-		}
-		else {
-			row.style.backgroundColor = '';
-		}
-	}
+	$j(childCheckbox).parents("tr").first().toggleClass("selected");
 }		
 
 function updateSelectedObjectIDs (childCheckbox) {

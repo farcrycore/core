@@ -29,8 +29,6 @@ ACTION
 	</cfif>
 </ft:processform>
 
-<ft:processform action="Save,Cancel" url="#application.url.webtop#/overview/content.cfm?UPDATEAPP=false&sec=home&SUB=overview" />
-
 <!----------------------------- 
 VIEW	
 ------------------------------>

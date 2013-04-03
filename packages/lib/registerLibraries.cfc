@@ -95,7 +95,11 @@
 		<skin:registerJS 	id="jquery-modal" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/jquery-modal"
 							lFiles="jquery-modal.js" />
-
+		
+		<skin:registerJS	id="fc-bootstrap" core="true"
+							baseHREF='#application.url.webtop#/thirdparty/bootstrap'
+							lFiles="bootstrap.min.js" />
+		
 		<!--- CSS LIBRARIES --->
 		<skin:registerCSS 	id="webtop7"
 							baseHREF="#application.url.webtop#/css"
@@ -104,6 +108,15 @@
 		<skin:registerCSS 	id="webtop"
 							baseHREF="#application.url.webtop#/css"
 							lFiles="reset.css,fonts.css,main.css" />
+							
+		<skin:registerCSS 	id="fc-login"
+							baseHREF="#application.url.webtop#/css"
+							lFiles="login7.css" />
+							
+		<skin:registerCSS	id="fc-bootstrap"
+							baseHREF="#application.url.webtop#/thirdparty/bootstrap"
+							lFiles="bootstrap.min.css"
+							bCombined="false" />
 							
 		<skin:registerCSS 	id="jquery-ui"
 							baseHREF="#application.url.webtop#/thirdparty/jquery/css/Aristo"

@@ -1,0 +1,198 @@
+body {
+	background:#ffffff url(images/bg-login.png) 0 150px repeat-x;
+	min-height:100%;
+	padding-top:0;
+}
+#content-main {
+	background:url(images/bg-login-center-blue.png) 50% 0 no-repeat;
+	margin-bottom:50px;
+	padding-top:50px;
+}
+#content-main h3 {
+  font-size:18px;
+  font-weight:normal;
+  line-height:20px;
+}
+.content-block {
+  background:#fefefe;
+  border:1px solid #a9a39e;
+  margin-bottom:20px;
+  -webkit-border-radius:2px;
+  -moz-border-radius:2px;
+  border-radius:2px;
+}
+.content-header {
+  background:#eae9e5;
+  background-image:-webkit-gradient(linear,0 0,0 100%,from(#f7f6f3),to(#dddbd7));
+  background-image:-webkit-linear-gradient(top,#f7f6f3,#dddbd7);
+  background-image:-moz-linear-gradient(top,#f7f6f3,#dddbd7);
+  background-image:-o-linear-gradient(top,#f7f6f3,#dddbd7);
+  background-image:linear-gradient(to bottom,#f7f6f3,#dddbd7);
+  border-top:1px solid #ffffff;
+  border-bottom:1px solid #a9a39e;
+  color:#444444;
+  padding:0 15px;
+  position:relative;
+  text-shadow:0 1px 0 #ffffff;
+  -webkit-border-radius:2px 2px 0 0;
+  -moz-border-radius:2px 2px 0 0;
+  border-radius:2px 2px 0 0;
+}
+.content-main {
+  border:1px solid #ffffff;
+  padding:15px 15px 5px;
+  -webkit-border-radius:0 0 2px 2px;
+  -moz-border-radius:0 0 2px 2px;
+  border-radius:0 0 2px 2px;
+}
+.content-main > *:first-child {
+  margin-top:0;
+}
+@media (max-width:767px) {
+  #content-main {
+    margin:20px 10px 0;
+  }
+}
+html {
+  min-height:100%;
+}
+
+#content-main form {
+  padding:20px 0 40px;
+}
+#content-main form input[type="text"],
+#content-main form input[type="password"] {
+  font-size:24px;
+  height:30px;
+  line-height:30px;
+  margin-bottom:20px;
+  width:476px;
+}
+#content-main form .help-inline {
+  font-size:12px;
+  margin-top:16px;
+  padding-right:5px;
+}
+#content-main form .btn-group {
+  float:right;
+}
+#content-main form .btn {
+  font-size:16px;
+  font-weight:300;
+  line-height:normal;
+  padding:15px 30px;
+}
+#content-main form .btn.dropdown-toggle {
+  padding:15px;
+}
+#content-main .content-block {
+  border-color:#a9a39e;
+  margin:0 auto;
+  width:520px;
+  -webkit-box-shadow:0 30px 30px rgba(0,0,0,0.3);
+  -moz-box-shadow:0 30px 30px rgba(0,0,0,0.3);
+  box-shadow:0 30px 30px rgba(0,0,0,0.3);
+}
+#content-main .copyright {
+  font-size:12px;
+  padding:0 5px;
+  text-align:right;
+}
+
+
+#header {
+  padding-top:60px;
+  text-align:center;
+}
+#header h1 {
+  border-left:1px solid #ebebeb;
+  display:inline-block;
+  *display:inline;
+  margin:0;
+  padding:0 40px;
+  *zoom:1;
+}
+#header h1:first-child {
+  border-left:none;
+  margin-left:0;
+}
+#header .logo {
+  color:#303030;
+  display:inline-block;
+  *display:inline;
+  font-size:24px;
+  font-weight:300;
+  height:30px;
+  line-height:30px;
+  margin:30px 0;
+  *zoom:1;
+  -webkit-transition:color 0.3s;
+  -moz-transition:color 0.3s;
+  -o-transition:color 0.3s;
+  transition:color 0.3s;
+}
+#header .logo:hover,
+#header .logo:active {
+  color:#54af00;
+  text-decoration:none;
+  -webkit-transition:color 0.3s;
+  -moz-transition:color 0.3s;
+  -o-transition:color 0.3s;
+  transition:color 0.3s;
+}
+#header h1:first-child .logo {
+  background:url(images/farcry-logo.png) center no-repeat;
+  text-indent:-99999px;
+  width:145px;
+}
+li a.active { background-color:#3E84B5; color:#FFF; }
+@media (max-height:670px){
+  body {
+    background-position:0 90px;
+  }
+  #header {
+    padding-top:0;
+  }
+}
+@media (max-width:979px){
+  body {
+    background-position:0 90px;
+  }
+  #header {
+    padding-top:0;
+  }
+}
+@media (max-width:767px){
+  body {
+    background-position:0 100px;
+  }
+  #content-main {
+    margin-top:10px;
+    padding-top:0;
+  }
+  #content-main form {
+    padding:10px 0;
+  }
+  #content-main form fieldset {
+    margin:0 8px;
+  }
+  #content-main form input[type="text"],
+  #content-main form input[type="password"] {
+    margin-left:-8px;
+    width:100%;
+  }
+  #content-main form label {
+    margin-left:-8px;
+  }
+  #content-main .content-block {
+    width:auto;
+  }
+  #header h1 {
+    border:none;
+    display:block;
+    padding:0;
+  }
+  #header .logo {
+    margin:10px 0;
+  }
+}

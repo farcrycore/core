@@ -25,14 +25,12 @@ ACTION
 		<cfset structappend(session.dmProfile,stProperties,true) />
 
 		<skin:bubble title="Profile Saved" bAutoHide="false" tags="type,dmProfile,update,info">
-			<cfoutput>Your profile has been saved. You can always update your profile from the overview tab in the webtop.</cfoutput>
+			<cfoutput>Your profile has been saved. You can always update your profile by using the dropdown menu by your name in the top right.</cfoutput>
 		</skin:bubble>
 		
 		<cfset session.firstLogin = false />
 	</ft:processformobjects>
 </ft:processform>
-
-<ft:processform action="Save,Cancel" url="#application.url.webtop#/overview/home.cfm?UPDATEAPP=false&sec=home&SUB=overview" />
 
 
 <admin:header>

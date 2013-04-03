@@ -27,8 +27,11 @@ FARCRY IMPORT FILES
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
+<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
 
+
+<cfset qExtraOptions = querynew("label,url,selected","varchar,varchar,bit") />
 
 <cfif structKeyExists(url,'returnurl') and len(trim(url.returnurl))>
 	<cfset stLocal.loginparams = 'returnurl='&urlEncodedFormat(url.returnurl) />
@@ -36,106 +39,102 @@ FARCRY IMPORT FILES
 	<cfset stLocal.loginparams = '' />
 </cfif>
 
-<!------------------ 
-START WEBSKIN
- ------------------>	
+<cfif structKeyExists(server, "stFarcryProjects") AND structcount(server.stFarcryProjects) GT 1>
+	<cfset aDomainProjects = arraynew(1) />
+	<cfloop collection="#server.stFarcryProjects#" item="thisproject">
+		<cfif isstruct(server.stFarcryProjects[thisproject]) and listcontains(server.stFarcryProjects[thisproject].domains,cgi.http_host)>
+			<cfset arrayappend(aDomainProjects,thisproject) />
+		</cfif>
+	</cfloop>
+	
+	<cfif arraylen(aDomainProjects) gt 1>
+		<cfloop from="1" to="#arraylen(aDomainProjects)#" index="i">
+			<cfset queryaddrow(qExtraOptions) />
+			<cfset querysetcell(qExtraOptions,"label",server.stFarcryProjects[aDomainProjects[i]].displayname) />
+			<cfset querysetcell(qExtraOptions,"url",application.fapi.getLink(href=application.url.webtoplogin,urlParameters="#stLocal.loginparams#&farcryProject=#aDomainProjects[i]#")) />
+			<cfset querysetcell(qExtraOptions,"selected",cookie.currentFarcryProject eq aDomainProjects[i]) />
+		</cfloop>
+	</cfif>
+</cfif>			
+
+<cfif listlen(application.security.getAllUD()) gt 1>
+	<cfloop list="#application.security.getAllUD()#" index="thisud">
+		<cfset queryaddrow(qExtraOptions) />
+		<cfset querysetcell(qExtraOptions,"label",application.security.userdirectories[thisud].title) />
+		<cfset querysetcell(qExtraOptions,"url",application.fapi.getLink(href=application.url.webtoplogin,urlParameters="#stLocal.loginparams#&ud=#thisud#")) />
+		<cfset querysetcell(qExtraOptions,"selected",application.security.getDefaultUD() eq thisud) />
+	</cfloop>
+</cfif>
+
 
 <skin:view typename="farLogin" template="displayHeaderLogin" />
-	
-			
-		<cfoutput>
-		<div class="loginInfo">
-		</cfoutput>	
-		
-			<ft:form>	
-				
-				<skin:pop tags="security" start="<ul id='errorMsg'>" end="</ul>">
-					<cfoutput>
-						<li>
-							<cfif len(trim(message.title))><strong>#message.title#</strong></cfif><cfif len(trim(message.title)) and len(trim(message.message))>: </cfif>
-							<cfif len(trim(message.message))>#message.message#</cfif>
-						</li>
-					</cfoutput>
-				</skin:pop>
-				
-				<!--- -------------- --->
-				<!--- SELECT PROJECT --->
-				<!--- -------------- --->
-				<cfif structKeyExists(server, "stFarcryProjects") AND structcount(server.stFarcryProjects) GT 1>
-					<cfset aDomainProjects = arraynew(1) />
-					<cfloop collection="#server.stFarcryProjects#" item="thisproject">
-						<cfif isstruct(server.stFarcryProjects[thisproject]) and listcontains(server.stFarcryProjects[thisproject].domains,cgi.http_host)>
-							<cfset arrayappend(aDomainProjects,thisproject) />
-						</cfif>
-					</cfloop>
-					
-					<cfif arraylen(aDomainProjects) gt 1>
-						<ft:fieldset>
-							<ft:field label="Project Selection" for="selectFarcryProject" rbkey="security.login.projectselection">
-								<cfoutput>
-								<select name="selectFarcryProject" id="selectFarcryProject" class="selectInput" onchange="window.location='#application.fapi.getLink(urlParameters=stLocal.loginparams)#&farcryProject='+this.value;">						
-									<cfloop from="1" to="#arraylen(aDomainProjects)#" index="i">
-										<cfif len(aDomainProjects[i])>
-											<option value="#aDomainProjects[i]#"<cfif cookie.currentFarcryProject eq aDomainProjects[i]> selected="selected"</cfif>>#server.stFarcryProjects[aDomainProjects[i]].displayname#</option>
-										</cfif>
-									</cfloop>						
-								</select>
-								</cfoutput>
-							</ft:field>
-						</ft:fieldset>
-					</cfif>
-				</cfif>			
-				
-				<!--- --------------------- --->
-				<!--- SELECT USER DIRECTORY --->
-				<!--- --------------------- --->
-				<cfif listlen(application.security.getAllUD()) GT 1>
-					<sec:SelectUDLogin />
-				</cfif>
 
-
-				<ft:object typename="farLogin" lFields="username,password" prefix="login" legend="" focusField="username" />
-					
-				
-				<ft:buttonPanel>
-				
-	
-					<cfif isdefined("arguments.stParam.message") and len(arguments.stParam.message)>
-						<skin:bubble message="#arguments.stParam.message#" tags="security,info" rbkey="security.message.#rereplace(arguments.stParam.message,'[^\w]','','ALL')#" />
-					</cfif>
-					
-					<ft:button value="Log In" rbkey="security.buttons.login" />
-				</ft:buttonPanel>
-
-				
-				
-				<cfoutput><ul class="loginForgot"></cfoutput>
-					<sec:CheckPermission webskinpermission="forgotPassword" type="farUser">
-						<cfoutput> 
-							<li><skin:buildLink type="farUser" view="forgotPassword" rbkey="coapi.farLogin.login.forgotpassword">Forgot Password</skin:buildLink></li></cfoutput>
-					</sec:CheckPermission>
-					<sec:CheckPermission webskinpermission="forgotUserID" type="farUser">
-						<cfoutput> 
-							<li><skin:buildLink type="farUser" view="forgotUserID" rbkey="coapi.farLogin.login.forgotuserid">Forgot UserID</skin:buildLink></li></cfoutput>
-					</sec:CheckPermission>			
-					<sec:CheckPermission webskinpermission="registerNewUser" type="farUser">
-						<cfoutput> 
-							<li><skin:buildLink type="farUser" view="registerNewUser" rbkey="coapi.farLogin.login.registernewuser">Register New User</skin:buildLink></li></cfoutput>
-					</sec:CheckPermission>
-				<cfoutput></ul></cfoutput>
-
-				
-			</ft:form>
-			
-
-			
-		<cfoutput>
+<ft:form bAddFormCSS="false" class="clearfix">
+	<skin:pop><cfoutput>
+		<div class="alert alert-error">
+			<cfif len(trim(message.title))><strong>#message.title#</strong></cfif>
+			<cfif len(trim(message.message))>#message.message#</cfif>
 		</div>
-		</cfoutput>		
-				
+	</cfoutput></skin:pop>
 	
+	<cfif isdefined("arguments.stParam.message") and len(arguments.stParam.message)>
+		<cfoutput><div class="alert alert-warning"><admin:resource key="security.message.#rereplace(arguments.stParam.message,'[^\w]','','ALL')#">#arguments.stParam.message#</admin:resource></div></cfoutput>
+	</cfif>
+	
+	<ft:object typename="farLogin" lFields="username,password" prefix="login" legend="" focusField="username" r_stFields="stFields" />
+	
+	<cfoutput>
+		<fieldset>
+			<label for="#stFields.username.formfieldname#">#stFields.username.ftLabel#</label>
+			#stFields.username.html#
+		</fieldset>
+		<fieldset>
+			<label for="#stFields.password.formfieldname#">#stFields.password.ftLabel#</label>
+			#stFields.password.html#
+		</fieldset>
+	</cfoutput>
+	
+	<cfoutput><p class="help-inline"></cfoutput>
+	
+	<cfset hasPrev = false />
+	<sec:CheckPermission webskinpermission="forgotUserID" type="farUser">
+		<skin:buildLink type="farUser" view="forgotUserID" rbkey="coapi.farLogin.login.forgotuserid"><cfoutput>Forgot User Name</cfoutput></skin:buildLink>
+		
+		<cfset hasPrev = true />
+	</sec:CheckPermission>
+	<sec:CheckPermission webskinpermission="forgotPassword" type="farUser">
+		<cfif hasPrev>
+			<cfoutput> &middot; </cfoutput>
+		</cfif>
+		
+		<skin:buildLink type="farUser" view="forgotPassword" rbkey="coapi.farLogin.login.forgotpassword"><cfoutput>Forgot Password</cfoutput></skin:buildLink>
+		
+		<cfset hasPrev = true />
+	</sec:CheckPermission>
+	<sec:CheckPermission webskinpermission="registerNewUser" type="farUser">
+		<cfif hasPrev>
+			<cfoutput> &middot; </cfoutput>
+		</cfif>
+		
+		<skin:buildLink type="farUser" view="registerNewUser" rbkey="coapi.farLogin.login.registernewuser"><cfoutput>Register New User</cfoutput></skin:buildLink>
+	</sec:CheckPermission>
+	
+	<cfoutput>
+		</p>
+		<div class="btn-group">
+			<ft:button rendertype="button" class="btn" rbkey="security.buttons.login" value="Log In" />
+			<cfif qExtraOptions.recordcount>
+				<a class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
+				<ul class="dropdown-menu">
+					<cfloop query="qExtraOptions">
+						<li><a href="#qExtraOptions.url#"<cfif qExtraOptions.selected> class="active"</cfif>>#qExtraOptions.label#</a></li>
+					</cfloop>
+				</ul><!-- /.dropdown-menu -->
+			</cfif>
+		</div><!-- /.btn-group -->
+	</cfoutput>
+</ft:form>
 
 <skin:view typename="farLogin" template="displayFooterLogin" />
-
 
 <cfsetting enablecfoutputonly="false">
