@@ -58,6 +58,12 @@ FARCRY IMPORT FILES
 </cfif>			
 
 <cfif listlen(application.security.getAllUD()) gt 1>
+	<cfif qExtraOptions.recordcount>
+		<cfset queryaddrow(qExtraOptions) />
+		<cfset querysetcell(qExtraOptions,"label","divider") />
+		<cfset querysetcell(qExtraOptions,"url","divider") />
+	</cfif>
+	
 	<cfloop list="#application.security.getAllUD()#" index="thisud">
 		<cfset queryaddrow(qExtraOptions) />
 		<cfset querysetcell(qExtraOptions,"label",application.security.userdirectories[thisud].title) />
@@ -127,7 +133,11 @@ FARCRY IMPORT FILES
 				<a class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
 				<ul class="dropdown-menu">
 					<cfloop query="qExtraOptions">
-						<li><a href="#qExtraOptions.url#"<cfif qExtraOptions.selected> class="active"</cfif>>#qExtraOptions.label#</a></li>
+						<cfif qExtraOptions.url eq "divider">
+							<li class="divider"></li>
+						<cfelse>
+							<li><a href="#qExtraOptions.url#"<cfif qExtraOptions.selected> class="active"</cfif>>#qExtraOptions.label#</a></li>
+						</cfif>
 					</cfloop>
 				</ul><!-- /.dropdown-menu -->
 			</cfif>
