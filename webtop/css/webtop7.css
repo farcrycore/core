@@ -58,10 +58,10 @@ h3 {
 }
 
 a {
-	color: #e17000;
+	color: #3E8rB5;
 }
 a:hover {
-	color: #e17000;
+	color: #0E65A2;
 }
 
 
@@ -660,6 +660,10 @@ th.objectadmin-sortable span:hover {
 }
 */
 
+/* customize bootstrap alerts */
+.alert {
+    border-radius: 0;
+}
 
 /* customise bootstrap modals */
 .modal-backdrop {

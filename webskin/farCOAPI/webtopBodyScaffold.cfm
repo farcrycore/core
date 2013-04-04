@@ -18,15 +18,7 @@
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
-<cfoutput>
-	<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-	<html>
-		<head>
-			<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-			<title>Scaffold</title>
-		</head>
-		<body>
-</cfoutput>
+<admin:header>
 
 <skin:loadCSS lFiles="#application.url.farcry#/css/yui/reset-fonts.css" />
 <skin:loadCSS><style type="text/css"><cfoutput>
@@ -100,9 +92,6 @@
 
 </ft:form>
 
-<cfoutput>
-		</body>
-	</html>
-</cfoutput>
+<admin:footer>
 
 <cfsetting enablecfoutputonly="false" />

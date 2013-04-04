@@ -48,6 +48,11 @@
 		<cfset var st = refind("\?(?=([^']*'[^']*')*[^']*$)",sql,1,true) />
 		<cfset var paramindex = 1 />
 		<cfset var sqlParam = "" />
+		<cfset var comment = "#### #dateformat(now(),'yyyy-mm-dd')# #timeformat(now(),'hh:mm:ss')#" />
+		
+		<cfif structkeyexists(request,"id")>
+			<cfset comment = comment & ", " & request.id />
+		</cfif>
 		
 		<cfloop condition="arraylen(st.pos) and st.pos[1]">
 			<cfset sqlParam = replace(arguments.queryresult.sqlParameters[paramindex],"'","''","ALL") />
@@ -56,7 +61,7 @@
 			<cfset paramindex = paramindex + 1 />
 		</cfloop>
 		
-		<cffile action="append" file="#arguments.logfile#" output="-- #dateformat(now(),'yyyy-mm-dd')# #timeformat(now(),'hh:mm:ss')##this.newline##sql#" addnewline="true" mode="660" />
+		<cffile action="append" file="#arguments.logfile#" output="#comment##this.newline##sql#" addnewline="true" mode="660" />
 	</cffunction>
 	
 	

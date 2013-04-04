@@ -1,5 +1,30 @@
 <cfcomponent extends="BaseGateway" dbType="mssql:Microsoft SQL 2000 and before" usesDBOwner="true">
 	
+	<!--- UTILITY FUNCTIONS --->
+	<cffunction name="logQuery" access="public" returntype="void" output="false" hint="Logs specified query result to the specified file">
+		<cfargument name="logfile" type="string" required="true" hint="Log file" />
+		<cfargument name="queryresult" type="struct" required="true" hint="Query result variable" />
+		
+		<cfset var sql = trim(rereplace(arguments.queryresult.sql,"\s+(?=([^']*'[^']*')*[^']*$)"," ","ALL")) & "; GO" & this.newline />
+		<cfset var st = refind("\?(?=([^']*'[^']*')*[^']*$)",sql,1,true) />
+		<cfset var paramindex = 1 />
+		<cfset var sqlParam = "" />
+		<cfset var comment = "#### #dateformat(now(),'yyyy-mm-dd')# #timeformat(now(),'hh:mm:ss')#" />
+		
+		<cfif structkeyexists(request,"id")>
+			<cfset comment = comment & ", " & request.id />
+		</cfif>
+		
+		<cfloop condition="arraylen(st.pos) and st.pos[1]">
+			<cfset sqlParam = replace(arguments.queryresult.sqlParameters[paramindex],"'","''","ALL") />
+			<cfset sql = left(sql,st.pos[1]-1) & "'#sqlParam#'" & mid(sql,st.pos[1]+st.len[1],len(sql)) />
+			<cfset st = refind("\?(?=([^']*'[^']*')*[^']*$)",sql,st.pos[1]+len(sqlParam)+1,true) />
+			<cfset paramindex = paramindex + 1 />
+		</cfloop>
+		
+		<cffile action="append" file="#arguments.logfile#" output="#comment##this.newline##sql#" addnewline="true" mode="660" />
+	</cffunction>
+	
 	
 	<cffunction name="getValueForDB" access="public" output="false" returntype="struct" hint="Returns cfsqltype, null, and value for specified metadata and value">
 		<cfargument name="schema" type="struct" required="true" />

@@ -605,7 +605,7 @@
 		</cfif>
 		
 		<cfloop condition="structisempty(st) or (arraylen(st.pos) and st.pos[1])">
-			<cfset st = refind("(\r?\n\r?\n)(?=([^']*'[^']*')*[^']*$)",sqllog,1,true) />
+			<cfset st = refind("(\r?\n){2}",sqllog,1,true) />
 			<cfif arraylen(st.pos) and st.pos[1] and st.pos[1] eq 1>
 				<cfset sqllog = mid(sqllog,2,len(sqllog)) />
 			<cfelseif arraylen(st.pos) and st.pos[1] and st.pos[1]>

@@ -68,13 +68,13 @@
 		
 		<subsection id="coapi" sequence="100" permission="AdminCOAPITab" label="Developer Utilities" >
 			<menu id="application" sequence="10" label="Application">
-				<menuitem id="updateapp" sequence="10" label="Reload application" link="/admin/updateapp.cfm" />
-				<menuitem id="scopedump" label="Scope Dump" link="/admin/yxplorer.cfm" />
-				<menuitem id="systeminfo" label="System Information" link="/customadmin/utilities/systeminfo.cfm" />
+				<menuitem id="updateapp" sequence="10" label="Reload application" typename="UpdateApp" />
+				<menuitem id="scopedump" sequence="30" label="Scope Dump" link="/admin/yxplorer.cfm" />
+				<menuitem id="systeminfo" sequence="40" label="System Information" link="/customadmin/utilities/systeminfo.cfm" />
 			</menu>
 			<menu id="coapitools" sequence="20" label="COAPI Tools">
-				<menuitem id="coapioverview" sequence="10" label="COAPI Content Types" link="/admin/coapioverview.cfm" />
-				<menuitem id="coapisqllog" sequence="20" label="SQL Log" link="/admin/coapisqllog.cfm" />
+				<menuitem id="coapioverview" sequence="10" label="COAPI Content Types" typename="farCOAPI" />
+				<menuitem id="coapisqllog" sequence="20" label="SQL Log" typename="farCOAPI" bodyView="webtopBodySQLLog" />
 			</menu>
 			<menu id="diagnostics" sequence="30" label="Diagnostics">
 				<menuitem id="rebuildtree" sequence="10" label="Rebuild Tree Metadata" link="/admin/rebuildTree.cfm" />

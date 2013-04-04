@@ -285,45 +285,25 @@
 
 <cfset lLogChangeFlags = application.fc.lib.db.getLogChangeFlags() />
 
-<admin:header />
-
 <skin:loadJS id="fc-jquery" />
-<skin:loadJS id="fc-jquery-ui" />
 <skin:loadJS id="farcry-form" />
-
+<skin:loadJS id="fc-jquery-ui" />
 <skin:loadCSS id="jquery-ui" />
 
 <skin:htmlHead><cfoutput>
 	<style type="text/css">
-		h2 { font-weight:bold; }
-		
-		.table { font-weight:bold; }
-		
 		.undeployed { color:##23d729; }
 		.deleted { color:##ff0000; }
 		.altered { color:##d78b23; }
 		
 		a.titleonly { color:##000000; }
-		
-		tr.type, tr.rule, tr.schema { background-color:##eaeefe; }
-			tr.type.alt, tr.rule.alt, tr.schema.alt { background-color:##dde4fe; }
-			tr.type td, tr.rule td, tr.schema td { padding:2px; }
-		/*tr.rule { background-color:##feeaed; }
-			tr.rule.alt { background-color:##fedde4; }
-			tr.rule td { padding:2px; }
-		tr.schema { background-color:##eafeeb; }
-			tr.type td { padding:2px; }
-			tr.schema.alt { background-color:##ddfedf; }
-			tr.schema td { padding:2px; }*/
-		tr.none { background-color:##f0f0f0; }
-			tr.none td { padding:2px; }
 			
-			td.class, th.class { width:8em; }
-			td.name, th.name {  }
-			td.location, th.location { width:12em; }
-			td.conflicts, th.conflicts { width:12em; }
-			td.actions, th.actions { width:12em; }
-			td.logchanges, th.logchanges { width:1.5em; }
+		td.class, th.class { width:8em; }
+		td.name, th.name {  }
+		td.location, th.location { width:12em; }
+		td.conflicts, th.conflicts { width:12em; }
+		td.actions, th.actions { width:12em; }
+		td.logchanges, th.logchanges { width:1.5em; }
 	</style>
 </cfoutput></skin:htmlHead>
 
@@ -355,41 +335,49 @@
 	$j("td.logchanges input").live("click",updateLogChanges);
 </cfoutput></skin:onReady>
 
-<ft:form>
-	<cfoutput>
-		<h2>Conflicts</h2>
-		<table style="width:100%;table-layout:fixed;" class="objectAdmin">
-			<tr>
-				<th class="class">Class</th>
-				<th class="name">Name</th>
-				<th class="conflicts">Conflict</th>
-				<th class="actions"><label><input type="checkbox" name="selectall" value="" onclick="$j('input[name=deploydefaults]').attr('checked',(this.checked?'checked':''));" /></label> Apply Defaults</th>
-			</tr>
-	</cfoutput>
-	<cfset count = 0 />
-	<cfloop query="qTypes">
-		<cfif len(qTypes.conflicts)>
-			<cfset count = count+1 />
-			<cfoutput>
-				<tr class="#qTypes.class#<cfif count mod 2 eq 0> alt</cfif>">
-					<td class="class">#ucase(left(qTypes.class,1))##mid(qTypes.class,2,10)#</td>
-					<td class="name">#qTypes.label#</td>
-					<td class="conflicts">
-						<a href="#application.url.webtop#/admin/coapiconflicts.cfm?typename=#qTypes.packagepath#" class="openindialog" title="#qTypes.label# Conflicts" id="#qTypes.typename#_conflicts">Resolve conflicts</a>
-						<skin:tooltip id="#qTypes.typename#_conflicts" selector="###qTypes.typename#_conflicts" message="#qTypes.conflicts#" />
-					</td>
-					<td class="actions"><input type="checkbox" name="deploydefaults" value="#qTypes.packagepath#" /></td>
-				</tr>
-			</cfoutput>
-		</cfif>
-	</cfloop>
-	<cfif not count>
-		<cfoutput><tr class="none"><td colspan="4">No conflicts</td></tr></cfoutput>
+<cfset conflictCount = 0 />
+<cfloop query="qTypes">
+	<cfif len(qTypes.conflicts)>
+		<cfset conflictCount = conflictCount + 1 />
 	</cfif>
-	<cfoutput>
-		</table>
-	</cfoutput>
-	<cfif count>
+</cfloop>
+
+<cfoutput><h1>COAPI Overview</h1></cfoutput>
+
+<cfif conflictCount>
+	<ft:form>
+		<cfoutput>
+			<h2>Conflicts</h2>
+			<table style="width:100%;table-layout:fixed;" class="farcry-objectadmin table table-striped table-hover">
+				<thead>
+					<tr>
+						<th class="class">Class</th>
+						<th class="name">Name</th>
+						<th class="conflicts">Conflict</th>
+						<th class="actions"><label><input type="checkbox" name="selectall" value="" onclick="$j('input[name=deploydefaults]').attr('checked',(this.checked?'checked':''));" /> Apply Defaults</label></th>
+					</tr>
+				</thead>
+				<tbody>
+		</cfoutput>
+		<cfloop query="qTypes">
+			<cfif len(qTypes.conflicts)>
+				<cfoutput>
+					<tr class="#qTypes.class#">
+						<td class="class">#ucase(left(qTypes.class,1))##mid(qTypes.class,2,10)#</td>
+						<td class="name">#qTypes.label#</td>
+						<td class="conflicts">
+							<a href="#application.fapi.getLink(type='farCOAPI',view='webtopBodyConflicts',urlParameters='typename=#qTypes.packagepath#')#" class="openindialog" title="#qTypes.label# Conflicts" id="#qTypes.typename#_conflicts">Resolve conflicts</a>
+							<skin:tooltip id="#qTypes.typename#_conflicts" selector="###qTypes.typename#_conflicts" message="#qTypes.conflicts#" />
+						</td>
+						<td class="actions"><input type="checkbox" name="deploydefaults" value="#qTypes.packagepath#" /></td>
+					</tr>
+				</cfoutput>
+			</cfif>
+		</cfloop>
+		<cfoutput>
+				</tbody>
+			</table>
+		</cfoutput>
 		<ft:buttonPanel>
 			<cfoutput>
 				<label>Show debug output <input type="checkbox" name="debug" value="1"<cfif (structkeyexists(form,"debug") and form.debug) or (structkeyexists(url,"debug") and url.debug)> checked</cfif>></label>&nbsp;
@@ -397,34 +385,37 @@
 			</cfoutput>
 			<ft:button value="Apply Default Resolutions" />
 		</ft:buttonPanel>
-	</cfif>
-</ft:form>
+	</ft:form>
+<cfelse>
+	<cfoutput><div class="alert alert-success">No schema conflicts</div></cfoutput>
+</cfif>
 
 <cfloop list="project,#application.fapi.listReverse(application.plugins)#,core" index="thislocation">
 	<cfoutput>
 		<h2>#stLocations[thislocation]#</h2>
-		<table style="width:100%;table-layout:fixed;" class="objectAdmin">
-			<tr>
-				<th class="class">Class</th>
-				<th class="name">Name</th>
-				<th class="location">Location</th>
-				<th class="actions">Info</th>
-				<th class="logchanges"><input type="checkbox" name="logchanges" value="" title="Log changes on ALL types" /></th>
-			</tr>
+		<table style="width:100%;table-layout:fixed;" class="farcry-objectadmin table table-striped table-hover">
+			<thead>
+				<tr>
+					<th class="class">Class</th>
+					<th class="name">Name</th>
+					<th class="location">Location</th>
+					<th class="actions">Info</th>
+					<th class="logchanges"><input type="checkbox" name="logchanges" value="" title="Log changes on ALL types" /></th>
+				</tr>
+			</thead>
+			<tbody>
 	</cfoutput>
 	<cfset count = 0 />
 	<cfloop query="qTypes">
 		<cfif listcontains(qTypes.locationids,thislocation)>
 			<cfset count = count+1 />
 			<cfoutput>
-				<tr class="#qTypes.class#<cfif count mod 2 eq 0> alt</cfif>">
+				<tr class="#qTypes.class#">
 					<td class="class">#ucase(left(qTypes.class,1))##mid(qTypes.class,2,10)#</td>
 					<td class="name">#qTypes.label#</td>
 					<td class="location">
-						<cfset bFirst = 1 />
 						<cfloop list="#qTypes.locations#" index="thispath">
-							<cfif not bFirst>, <cfset bFirst = 0 /></cfif>
-							<a href="##" class="titleonly" onclick="return false;" title="#listlast(thispath,':')#">#listfirst(thispath,':')#</a>
+							<span title="#listlast(thispath,':')#">#listfirst(thispath,':')#</span><cfif thispath neq listlast(qTypes.locations)>, </cfif>
 						</cfloop>
 					</td>
 					<td class="actions">
@@ -434,8 +425,8 @@
 							<a href="/CFIDE/componentutils/componentdetail.cfm?COMPONENT=#packagepath#" class="openindialog" title="ColdFusion Documentation">Docs</a>
 						</cfif>
 						<cfif listcontains("rule,type",qTypes.class)>
-							|
-							<a href="#application.url.farcry#/admin/scaffold.cfm?typename=#qTypes.typename#" class="openindialog" title="Scaffold">Scaffold</a>
+							&middot;
+							<a href="#application.fapi.getLink(type='farCOAPI',view='webtopBodyScaffold',urlParameters='typename=#qTypes.typename#')#" class="openindialog" title="Scaffold">Scaffold</a>
 						</cfif>
 					</td>
 					<td class="logchanges"><input type="checkbox" name="logchanges" value="#qTypes.typename#" title="Log changes on THIS type" <cfif listfindnocase(lLogChangeFlags,qTypes.typename)>checked</cfif> /></td>
@@ -447,10 +438,9 @@
 		<cfoutput><tr class="none"><td colspan="5">No COAPI types</td></tr></cfoutput>
 	</cfif>
 	<cfoutput>
+			<tbody>
 		</table>
 	</cfoutput>
 </cfloop>
-
-<admin:footer />
 
 <cfsetting enablecfoutputonly="false" />

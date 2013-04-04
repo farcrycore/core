@@ -13,8 +13,6 @@
 </cfif>
 
 
-<admin:header>
-
 <skin:htmlHead><cfoutput><style type="text/css">
 	##sqllog {}
 		.sql { 
@@ -28,7 +26,7 @@
 		.sql.minimized {
 			height: 1.5em;
 		}
-	h1 a { font-size:65%; font-weight:normal; }
+	h1 .options { font-size:65%; font-weight:normal; margin-left:15px; }
 </style></cfoutput></skin:htmlHead>
 <skin:onReady><cfoutput>
 	function selectText(element) {
@@ -52,16 +50,19 @@
 	});
 </cfoutput></skin:onReady>
 
-<cfset aLog = application.fc.lib.db.getLog(asArray=true) />
+<cfset aLog = application.fc.lib.db.getLog(asArray=true) /> --->
 <cfset formatter = createobject("java","org.hibernate.jdbc.util.BasicFormatterImpl").init() />
 
 <cfoutput>
 	<h1>
 		<admin:resource key="webtop.utilities.coapisqllog@title">SQL Log</admin:resource>
-		&nbsp;&nbsp;
-		<a href="#application.fapi.fixURL(addvalues='clear=1',removevalues='format')#">clear log</a>
-		<a href="#application.fapi.fixURL(addvalues='format=#not url.format#',removevalues='clear')#">toggle formatting</a>
-		<a href="##selectall" class="selectall">select all</a>
+		<span class="options">
+			<a href="#application.fapi.fixURL(addvalues='clear=1',removevalues='format')#">clear log</a>
+			&middot;
+			<a href="#application.fapi.fixURL(addvalues='format=#not url.format#',removevalues='clear')#">toggle formatting</a>
+			&middot;
+			<a href="##selectall" class="selectall">select all</a>
+		</span>
 	</h1>	
 	<div id="sqllog">
 </cfoutput>
@@ -82,12 +83,16 @@
 	</div>
 </cfoutput>
 
-<admin:footer>
-
 <cffunction name="htmlifyWhitespace">
 	<cfargument name="text" />
 	
-	<cfreturn rereplace(rereplace(rereplace(arguments.text,"\n","<br>","ALL"),"\t","    ","ALL")," ","&nbsp;","ALL") />
+	<cfset var result = arguments.text />
+	
+	<cfset result = replace(result,chr(10),"<br>","ALL") />
+	<cfset result = replace(result,chr(9),"    ","ALL") />
+	<cfset result = replace(result," ","&nbsp;","ALL") />
+	
+	<cfreturn result />
 </cffunction>
 
 <cfsetting enablecfoutputonly="false" />

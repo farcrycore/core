@@ -226,17 +226,20 @@
 					FROM 	qThis
 				</cfquery>
 				<cfloop query="qThis">
-					<cfset webskinID = webskinID + 1 />
-					<cfset querysetcell(qThis, 'id', webskinID, qThis.currentRow) />		
-					<cfset querysetcell(qThis, 'directory', replaceNoCase(qThis.directory,"\","/","all"), qThis.currentRow) />		
-					<cfset querysetcell(qThis, 'typename', "#listLast(qThis.directory,"/")#", qThis.currentRow) />		
-					<cfset querysetcell(qThis, 'webskin', "/#qThis.typename#/#qThis.name#", qThis.currentRow) />	
-					<!--- 
-					TODO: This code does not work on windows. Must be a relative path.
-					<cfset querysetcell(qThis, 'path', replace(qThis.directory,expandpath('/farcry'),'/farcry'), qThis.currentRow) />
-					--->	
-					<cfset querysetcell(qThis, 'path', "#webskinrel#/#listLast(qThis.directory,"/")#", qThis.currentRow) />			
+					<cfif listlen(replacenocase(qThis.directory,expandpath(webskinrel),""),"/\") eq 1>
+						<cfset webskinID = webskinID + 1 />
+						<cfset querysetcell(qThis, 'id', webskinID, qThis.currentRow) />
+						<cfset querysetcell(qThis, 'directory', replaceNoCase(qThis.directory,"\","/","all"), qThis.currentRow) />
+						<cfset querysetcell(qThis, 'typename', "#listLast(qThis.directory,"/")#", qThis.currentRow) />
+						<cfset querysetcell(qThis, 'webskin', "/#qThis.typename#/#qThis.name#", qThis.currentRow) />
+						<cfset querysetcell(qThis, 'path', "#webskinrel#/#listLast(qThis.directory,"/")#", qThis.currentRow) />
+					<cfelse>
+						<cfset querysetcell(qThis, 'id', -1, qThis.currentRow) />
+					</cfif>
 				</cfloop>
+				<cfquery dbtype="query" name="qThis">
+					SELECT * FROM qThis WHERE id>-1
+				</cfquery>
 				
 				<!--- Add new webskins to summary --->
 				<cfif isdefined("request.fc.stProjectDirectorys.qAll") and request.fc.stProjectDirectorys.qAll.recordcount>
