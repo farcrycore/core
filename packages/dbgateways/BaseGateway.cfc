@@ -127,6 +127,9 @@
 				<cfif not structkeyexists(aData[i],"seq")>
 					<cfset aData[i].seq = i />
 				</cfif>
+				<cfif not len(aData[i].seq)>
+					<cfset aData[i].seq = i />
+				</cfif>
 			<cfelse>
 				<cfset stData = structnew() />
 				<cfif refind("\:\d+",aData[i])>
