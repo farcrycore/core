@@ -376,6 +376,22 @@ object methods
 		ACTION:
 		 - default form processing
 		---------------------------------------->
+		<cfif structkeyexists(url,"iframe")>
+			<cfset onExitProcess = structNew() />
+			<cfset onExitProcess.Type = "HTML" />
+			<cfsavecontent variable="onExitProcess.content">
+				<cfoutput>
+					<script type="text/javascript">
+						parent.$j(parent.$fc.objectAdminActionDiv).dialog("close");
+					</script>
+				</cfoutput>
+			</cfsavecontent>
+		<cfelse>
+			<cfset onExitProcess = structnew() />
+			<cfset onExitProcess.type = "URL" />
+			<cfset onExitProcess.content = "refresh" />
+		</cfif>
+		
 		<ft:processForm action="Save" Exit="true">
 			<ft:processFormObjects typename="#stobj.typename#" />
 		</ft:processForm>

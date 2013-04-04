@@ -44,7 +44,7 @@
 	<section id="admin" sequence="4000" permission="MainNavAdminTab" label="Admin" icon="config" description="Configure and secure your website">
 		<subsection id="general" sequence="10" label="General Admin" permission="AdminGeneralTab">
 			<menu id="configuration" sequence="10" label="Configuration">
-				<menuitem id="listfarconfig" sequence="1" permission="developer" label="Edit Config" link="/admin/customadmin.cfm?module=customlists/farConfig.cfm" relatedtype="farConfig" />
+				<menuitem id="listfarconfig" sequence="1" permission="developer" label="Edit Config" typename="farConfig" />
 				<menuitem id="scheduledtasks" sequence="10" label="Scheduled Tasks" link="/customadmin/customlists/dmCron.cfm" relatedtype="dmCron" />
 			</menu>
 			<menu id="farcryud" sequence="100" label="User Directory" permission="SecurityPolicyManagementTab">
