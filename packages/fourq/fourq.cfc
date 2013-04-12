@@ -274,7 +274,11 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 				
 				<cfif len(stWebskin.webskinHTML)>			
 					<cfset application.fapi.addRequestLog("Retrieved webskin from cache [#stobj.objectid#, #stobj.typename#, #arguments.template#, #stWebskin.webskinCacheID#]") />
-	
+					
+					<cfif not isdefined("request.aAncestorWebskins") or not arraylen(request.aAncestorWebskins)>
+						<cfset request.fc.okToCache = true />
+					</cfif>
+					
 					<!--- ONLY KEEP TRACK OF THE ANCESTRY IF SET TO FLUSHONOBJECTCHANGE OR TYPEWATCH --->
 					<cfif application.coapi.coapiadmin.getWebskinCacheFlushOnObjectChange(typename=stobj.typename, template=arguments.template) 
 						OR len(application.coapi.coapiadmin.getWebskinCacheTypeWatch(typename=stobj.typename, template=arguments.template))>
