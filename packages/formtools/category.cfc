@@ -35,17 +35,35 @@
 <cfcomponent extends="field" name="category" displayname="category" bDocument="true" hint="Field component to liase with all category field types"> 
 
 	<cfproperty name="ftAlias" default="" hint="Used to render only a particular branch of the category tree." />
-	<cfproperty name="ftLegend" default="" hint="Used when ftRenderType is set to prototype or extjs. Inserts a legend above category tree." />
 	<cfproperty name="ftRenderType" default="jquery" hint="This formtool offers a number of ways to render the input. (dropdown, prototype, extjs, jquery)" />
 	<cfproperty name="ftSelectMultiple" default="true" hint="Allow selection of multiple items in category tree. (true, false)" />
 	<cfproperty name="ftSelectSize" default="5" hint="Used when ftRenderType is set to dropDown, specifies the size of the select field." />
 	<cfproperty name="ftDropdownFirstItem" default="" hint="Used when ftRenderType is set to dropDown, prepends an option to select list with null value." />	
-		
+	
+	<cfproperty name="ftJQueryAllowEdit" default="true" />
+	<cfproperty name="ftJQueryAllowAdd" default="true" />
+	<cfproperty name="ftJQueryAllowRemove" default="true" />
+	<cfproperty name="ftJQueryAllowMove" default="true" />
+	<cfproperty name="ftJQueryAllowSelect" default="true" />
+	<cfproperty name="ftJQueryQuickEdit" default="false" hint="If ftJQueryAllowSelect is false and this is true, then clicking a node shows the edit icons (default behaviour is to only show them on a long click)" />
+	<cfproperty name="ftJQueryOnEdit" default="" hint="Overrides the default Javascript which performs this task (should expect 'node' variable)" />
+	<cfproperty name="ftJQueryOnAdd" default="" hint="Overrides the default Javascript which performs thistask (should expect 'node' and 'newid' variables)" />
+	<cfproperty name="ftJQueryOnRemove" default="" hint="Overrides the default Javascript which performs thistask (should expect 'node' variable)" />
+	<cfproperty name="ftJQueryOnMove" default="" hint="Overrides the default Javascript which performs thistask (should expect 'node', 'parent', 'position', and 'finishMove' variables)" />
+	<cfproperty name="ftJQueryOnSelect" default="" hint="Overrides the default Javascript which performs thistask (should expect 'node' and 'selected' variables)" />
+	<cfproperty name="ftJQueryOnUpdateStart" default="" hint="Overrides the default Javascript which runs when an ajax update operation starts" />
+	<cfproperty name="ftJQueryOnUpdateFinish" default="" hint="Overrides the default Javascript which runs when an ajax update operation finishes" />
+	<cfproperty name="ftJQueryOnUpdateError" default="" hint="Overrides the default Javascript which runs when an ajax update operation errors (should expect 'error' and 'code' variables)" />
+	<cfproperty name="ftJQueryVisibleInputs" default="true" hint="Controls whether the checkbox / radio buttons are shown to the user" />
+	<cfproperty name="ftEditableProperties" default="categoryLabel" hint="List of the properties that the user can edit in the case of ftJQueryAllowEdit and ftJQueryAllowAdd" />
+	<cfproperty name="ftJQueryURL" default="true" hint="Overrides the AJAX URL" />
+	
 	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 
 
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.category" output="false" hint="Returns a copy of this initialised object">
+		
 		<cfreturn this>
 	</cffunction>
 	
@@ -56,187 +74,15 @@
 		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
 		<cfset var html = "" />
-		<cfset var navid = "" />
-		<cfset var oCategory = createObject("component",'farcry.core.packages.farcry.category')>
-		<cfset var lSelectedCategoryID = "" >
-		<cfset var lCategoryBranch = "" />
-		<cfset var CategoryName = "" />
-		<cfset var i = "" />
-		<cfset var rootNodeText = "" />
-		<cfset var rootID = "" />
 		
-		
-		<cfif structKeyExists(application.catid, arguments.stMetadata.ftAlias)>
-			<cfset rootID = application.catid[arguments.stMetadata.ftAlias] >
-		<cfelse>
-			<cfset rootID = application.catid['root'] >
-		</cfif>
-		
-		<cfset lSelectedCategoryID = oCategory.getCategories(objectid=arguments.stObject.ObjectID,bReturnCategoryIDs=true,alias=arguments.stMetadata.ftAlias) />
-		
-		<cfset rootNodeText = oCategory.getCategoryNamebyID(categoryid=rootID) />
-
-
-		
-
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
-			
 			<cfcase value="dropdown">
-				<cfset lCategoryBranch = oCategory.getCategoryBranchAsList(lCategoryIDs=rootID) />
-							
-				<cfsavecontent variable="html">
-					<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#"  <cfif arguments.stMetadata.ftSelectMultiple>size="#arguments.stMetadata.ftSelectSize#" multiple="true"</cfif> class="selectInput #arguments.stMetadata.ftSelectSize# #arguments.stMetadata.ftClass#"></cfoutput>
-					<cfloop list="#lCategoryBranch#" index="i">
-						<!--- If the item is the actual alias requested then it is not selectable. --->
-						<cfif i EQ rootID>
-							<cfif len(arguments.stMetadata.ftDropdownFirstItem)>
-								<cfoutput><option value="">#arguments.stMetadata.ftDropdownFirstItem#</option></cfoutput>
-							<cfelse>
-								<cfset CategoryName = oCategory.getCategoryNamebyID(categoryid=i,typename='dmCategory') />
-								<cfoutput><option value="">#CategoryName#</option></cfoutput>
-							</cfif>
-							
-						<cfelse>
-							<cfset CategoryName = oCategory.getCategoryNamebyID(categoryid=i,typename='dmCategory') />
-							<cfoutput><option value="#i#"<cfif listContainsNoCase(lSelectedCategoryID, i)> selected="selected"</cfif>>#CategoryName#</option></cfoutput>
-						</cfif>
-						
-					</cfloop>
-					<cfoutput></select></cfoutput>
-				</cfsavecontent>
+				<cfset html = editDropdown(argumentCollection=arguments) />
 			</cfcase>
-			
-			<cfcase value="prototype">
-				<cfsavecontent variable="html">
-				
-					<cfoutput><fieldset style="width: 300px;">
-						<cfif len(arguments.stMetadata.ftLegend)><legend>#arguments.stMetadata.ftLegend#</legend></cfif>
-					
-						<div class="fieldsection optional full">
-												
-							<div class="fieldwrap">
-							</cfoutput>
-
-								<ft:NTMPrototypeTree id="#arguments.fieldname#" navid="#rootID#" depth="99" bIncludeHome=1 lSelectedItems="#lSelectedCategoryID#" bSelectMultiple="#arguments.stMetadata.ftSelectMultiple#">
-							
-							<cfoutput>
-							</div>
-							
-							<br class="fieldsectionbreak" />
-						</div>
-						<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" />
-					</fieldset></cfoutput>
-							
-				</cfsavecontent>			
-			</cfcase>
-			<cfcase value="extjs">
-				
-				<cfsavecontent variable="html">
-					
-					<cfoutput><fieldset style="width: 300px;">
-						<cfif len(arguments.stMetadata.ftLegend)><legend>#arguments.stMetadata.ftLegend#</legend></cfif>
-					
-						<!--- <div id="tree-div" style="border:1px solid #c3daf9;"></div> --->
-						<div class="fieldsection optional full">
-											
-							<div class="fieldwrap">
-								
-								<div id="#arguments.fieldname#-tree-div"></div>	
-								
-							</div>
-							
-							<br class="fieldsectionbreak" />
-						</div>
-						<input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="#lSelectedCategoryID#" />
-						<input type="hidden" name="#arguments.fieldname#" value="" />
-					</fieldset>
-					</cfoutput>
-				
-								
-				</cfsavecontent>
-
-			
-				<skin:onReady>
-				<cfoutput>
-				    createFormtoolTree('#arguments.fieldname#','#rootID#', '#application.url.webtop#/facade/getCategoryNodes.cfm', '#rootNodeText#','#lSelectedCategoryID#', 'categoryIconCls');											
-				</cfoutput>
-				</skin:onReady>
-			</cfcase>
-			<cfcase value="jquery">
-				
-
-				<skin:onReady>
-				<cfoutput>
-					$j("###arguments.fieldname#_list").treeview({
-						url: "#application.url.webtop#/facade/getCategoryNodes.cfm?node=#rootID#&fieldname=#arguments.fieldname#&multiple=#arguments.stMetadata.ftSelectMultiple#&lSelectedItems=#lSelectedCategoryID#"
-					})
-				</cfoutput>
-				</skin:onReady>
-				
-				<cfsavecontent variable="html">
-				
-
-					<cfoutput>
-					<div class="multiField">
-						<ul id="#arguments.fieldname#_list" class="treeview"></ul>
-					</div>
-					<input type="hidden" name="#arguments.fieldname#" value="" />	
-					</cfoutput>
-					
-				</cfsavecontent>			
-			</cfcase>
-			
 			
 			<cfdefaultcase>
-				
-				<skin:loadJS id="fc-jquery" />
-				<skin:loadJS id="jquery-checkboxtree" basehref="#application.url.webtop#/thirdparty/checkboxtree/js" lFiles="jquery.checkboxtree.js" />
-				<skin:loadCSS id="jquery-checkboxtree" basehref="#application.url.webtop#/thirdparty/checkboxtree/css" lFiles="checkboxtree.css" />
-					
-							
-				<skin:onReady>
-				<cfoutput>
-					$j.ajax({
-					   type: "POST",
-					   url: '#application.fapi.getLink(type="dmCategory", objectid="#rootID#", view="displayCheckboxTree", urlParameters="ajaxmode=1")#',
-					   data: {
-					   	fieldname: '#arguments.fieldname#',
-					   	rootNodeID:'#rootID#', 
-					   	selectedObjectIDs: '#lSelectedCategoryID#'
-						},
-					   cache: false,
-					   success: function(msg){
-					   		$j("###arguments.fieldname#-checkboxDiv").html(msg);
-							$j("###arguments.fieldname#-checkboxTree").checkboxTree({
-									collapsedarrow: "#application.url.webtop#/thirdparty/checkboxtree/images/checkboxtree/img-arrow-collapsed.gif",
-									expandedarrow: "#application.url.webtop#/thirdparty/checkboxtree/images/checkboxtree/img-arrow-expanded.gif",
-									blankarrow: "#application.url.webtop#/thirdparty/checkboxtree/images/checkboxtree/img-arrow-blank.gif",
-									checkchildren: false,
-									checkparents: false
-							});	
-							$j("###arguments.fieldname#-checkboxDiv input:checked").addClass('mjb');	 
-							$j("###arguments.fieldname#-checkboxDiv input:checked").parent().addClass('mjb');	     	
-					   }
-					 });
-				
-					
-				</cfoutput>
-				</skin:onReady>
-				
-				<cfsavecontent variable="html">
-				
-
-					<cfoutput>
-					<div class="multiField">
-						<div id="#arguments.fieldname#-checkboxDiv">loading...</div>
-						<input type="hidden" name="#arguments.fieldname#" value="" />			
-					</div>
-					</cfoutput>
-					
-				</cfsavecontent>			
+				<cfset html = editJQuery(argumentCollection=arguments) />		
 			</cfdefaultcase>
-			
-			
 		</cfswitch>
 		
 		<cfreturn html>
@@ -302,12 +148,238 @@
 		<cfreturn stResult>
 		
 	</cffunction>
+	
+	
+	<cffunction name="editDropdown" access="public" output="false" returntype="string" hint="Returns a string for editing">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
+		<cfset var html = "" />
+		<cfset var oCategory = createObject("component",'farcry.core.packages.farcry.category')>
+		<cfset var lSelectedCategoryID = "" >
+		<cfset var lCategoryBranch = "" />
+		<cfset var CategoryName = "" />
+		<cfset var i = "" />
+		<cfset var rootNodeText = "" />
+		<cfset var rootID = application.catid['root'] />
+		
+		<cfif structKeyExists(application.catid, arguments.stMetadata.ftAlias)>
+			<cfset rootID = application.catid[arguments.stMetadata.ftAlias] >
+		</cfif>
+		
+		<cfset lSelectedCategoryID = oCategory.getCategories(objectid=arguments.stObject.ObjectID,bReturnCategoryIDs=true,alias=arguments.stMetadata.ftAlias) />
+		<cfset rootNodeText = oCategory.getCategoryNamebyID(categoryid=rootID) />
+		<cfset lCategoryBranch = oCategory.getCategoryBranchAsList(lCategoryIDs=rootID) />
+					
+		<cfsavecontent variable="html">
+			<cfoutput><select id="#arguments.fieldname#" name="#arguments.fieldname#"  <cfif arguments.stMetadata.ftSelectMultiple>size="#arguments.stMetadata.ftSelectSize#" multiple="true"</cfif> class="selectInput #arguments.stMetadata.ftSelectSize# #arguments.stMetadata.ftClass#"></cfoutput>
+			<cfloop list="#lCategoryBranch#" index="i">
+				<!--- If the item is the actual alias requested then it is not selectable. --->
+				<cfif i EQ rootID>
+					<cfif len(arguments.stMetadata.ftDropdownFirstItem)>
+						<cfoutput><option value="">#arguments.stMetadata.ftDropdownFirstItem#</option></cfoutput>
+					<cfelse>
+						<cfset CategoryName = oCategory.getCategoryNamebyID(categoryid=i,typename='dmCategory') />
+						<cfoutput><option value="">#CategoryName#</option></cfoutput>
+					</cfif>
+				<cfelse>
+					<cfset CategoryName = oCategory.getCategoryNamebyID(categoryid=i,typename='dmCategory') />
+					<cfoutput><option value="#i#"<cfif listContainsNoCase(lSelectedCategoryID, i)> selected="selected"</cfif>>#CategoryName#</option></cfoutput>
+				</cfif>
+				
+			</cfloop>
+			<cfoutput></select></cfoutput>
+		</cfsavecontent>
+		
+		<cfreturn html>
+	</cffunction>
+	
+	<cffunction name="editJQuery" access="public" output="false" returntype="string" hint="Returns a string for editing">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+		
+		<cfset var html = "" />
+		<cfset var stTree = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=application.catid.root) />
+		<cfset var stBranch = structnew() />
+		
+		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
+		<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
+		
+		<skin:loadJS id="fc-jquery" />
+		<skin:loadJS id="jquery-tree" />
+		<skin:loadCSS id="jquery-tree" />
+		<skin:loadJS id="category-formtool" />
+		<skin:loadJS id="jquery-modal" />
+		<skin:loadCSS id="jquery-modal" />
+		<skin:loadCSS id="fc-icons" />
+		
+		<cfif len(arguments.stMetadata.ftAlias) or arguments.stMetadata.ftAlias eq "root" or not structkeyexists(application.catid,arguments.stMetadata.ftAlias)>
+			<cfset stBranch = stTree />
+		<cfelse>
+			<cfset stBranch = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=application.catid[arguments.stMetadata.ftAlias]) />
+		</cfif>
+		<cfset stBranch["roothash"] = stTree.hash />
+		
+		<cfsavecontent variable="html"><cfoutput>
+			<div class="multiField">
+				<div id="#arguments.fieldname#-tree"></div>
+				<input type="hidden" name="#arguments.fieldname#" value="">
+				<script type="text/javascript">
+					$j("###arguments.fieldname#-tree").farcryTree({
+						data : [#serializeJSON(stBranch)#],
+						dataUrl : <cfif len(arguments.stMetadata.ftJQueryURL)>'#arguments.stMetadata.ftJQueryURL#'<cfelse>'#getAjaxUrl(argumentCollection=arguments)#'</cfif>,
+						rootid : '#stBranch.id#',
+						newid : '#createuuid()#',
+						fieldName : '#arguments.fieldname#',
+						selected : #serializeJSON(listtoarray(arguments.stMetadata.value))#,
+						allowEdit : #serializeJSON(arguments.stMetadata.ftJQueryAllowEdit)#,
+						allowAdd : #serializeJSON(arguments.stMetadata.ftJQueryAllowEdit)#,
+						allowRemove : #serializeJSON(arguments.stMetadata.ftJQueryAllowEdit)#,
+						allowMove : #serializeJSON(arguments.stMetadata.ftJQueryAllowEdit)#,
+						allowSelect : #serializeJSON(arguments.stMetadata.ftJQueryAllowEdit)#,
+						quickEdit : #serializeJSON(arguments.stMetadata.ftJQueryQuickEdit)#,
+						selectMultiple : #serializeJSON(arguments.stMetadata.ftSelectMultiple)#,
+						visibleInputs : #serializeJSON(arguments.stMetadata.ftJQueryVisibleInputs)#
+						
+						<cfif len(arguments.stMetadata.ftJQueryOnEdit)>,onEditNode:function onEdit#arguments.fieldname#(node){ #arguments.stMetadata.ftJQueryOnEdit# }</cfif>
+						<cfif len(arguments.stMetadata.ftJQueryOnAdd)>,onAddNode:function onAdd#arguments.fieldname#(node,newid){ #arguments.stMetadata.ftJQueryOnAdd# }</cfif>
+						<cfif len(arguments.stMetadata.ftJQueryOnRemove)>,onRemoveNode:function onRemove#arguments.fieldname#(node){ #arguments.stMetadata.ftJQueryOnRemove# }</cfif>
+						<cfif len(arguments.stMetadata.ftJQueryOnMove)>,onMoveNode:function onMove#arguments.fieldname#(node,parent,position,finishMove){ #arguments.stMetadata.ftJQueryOnMove# }</cfif>
+						<cfif len(arguments.stMetadata.ftJQueryOnSelect)>,onSelectNode:function onSelect#arguments.fieldname#(node,selected){ #arguments.stMetadata.ftJQueryOnSelect# }</cfif>
+						<cfif len(arguments.stMetadata.ftJQueryOnUpdateStart)>,onUpdateStart:function onUpdateStart#arguments.fieldname#(event){ #arguments.stMetadata.ftJQueryOnUpdateStart# }</cfif>
+						<cfif len(arguments.stMetadata.ftJQueryOnUpdateFinish)>,onUpdateFinish:function onUpdateFinish#arguments.fieldname#(event){ #arguments.stMetadata.ftJQueryOnUpdateFinish# }</cfif>
+						<cfif len(arguments.stMetadata.ftJQueryOnUpdateError)>,onUpdateError:function onUpdateError#arguments.fieldname#(event,error,code){ #arguments.stMetadata.ftJQueryOnUpdateError# }</cfif>
+					});
+				</script>
+			</div>
+		</cfoutput></cfsavecontent>
+		
+		<cfreturn html />
+	</cffunction>
+	
+	<cffunction name="ajax" output="false" returntype="string" hint="Response to ajax requests for this formtool">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+		
+		<cfset var stTree = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=application.catid.root) />
+		<cfset var stResult = structnew() />
+		<cfset var stCat = structnew() />
+		
+		<cfif arguments.stMetadata.ftRenderType neq "jquery">
+			<cfreturn super.ajax(argumentCollection=arguments) />
+		</cfif>
+		
+		<cfif isdefined("url.hash") and stTree.hash neq url.hash>
+			<cfset stResult = structnew() />
+			<cfset stResult["error"] = "The tree has changed since you last loaded the page." />
+			<cfset stResult["code"] = "treechanged" />
+			<cfreturn serializeJSON(stResult) />
+		</cfif>
+		
+		<cftry>
+			<cfif arguments.stMetadata.ftJQueryAllowMove and isdefined("url.move")>
+				<cfset stResult = application.factory.oTree.moveBranch(objectid=url.move,parentid=url.to,pos=url.position) />
+				<cfset stTree = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=application.catid.root) />
+				<cfset stResult["roothash"] = stTree.hash />
+				<cfreturn serializeJSON(stResult) />
+			<cfelseif arguments.stMetadata.ftJQueryAllowAdd and isdefined("url.add")>
+				<cfset stCat = application.fapi.getContentObject(objectid=url.add) />
+				<cfset stResult = application.factory.oTree.setYoungest(objectid=url.add,parentid=url.to,objectname=stCat.label,typename=stCat.typename) />
+				<cfset stTree = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=application.catid.root) />
+				<cfset stResult["roothash"] = stTree.hash />
+				<cfreturn serializeJSON(stResult) />
+			<cfelseif arguments.stMetadata.ftJQueryAllowRemove and isdefined("url.remove")>
+				<cfset stResult = application.fapi.getContentType("dmCategory").deleteCategory(dsn=application.dsn,categoryid=url.remove) />
+				<cfset stTree = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=application.catid.root) />
+				<cfset stResult["roothash"] = stTree.hash />
+				<cfreturn serializeJSON(stResult) />
+			<cfelseif isdefined("url.node")>
+				<cfif url.node eq stTree.id>
+					<cfset stResult = stTree />
+					<cfset stResult["roothash"] = stTree.hash />
+				<cfelse>
+					<cfset stResult = application.factory.oTree.getDescendantsAsNestedStruct(dsn=application.dsn,objectid=url.node) />
+					<cfset stResult["roothash"] = stTree.hash />
+				</cfif>
+				<cfset stResult["newid"] = createuuid() />
+				<cfreturn serializeJSON(stResult) />
+			<cfelseif (arguments.stMetadata.ftJQueryAllowAdd or arguments.stMetadata.ftJQueryAllowEdit) and isdefined("url.update")>
+				<cfset stSource = structnew() />
+				<cfset stSource.objectid = url.update />
+				<cfset stSource.typename = "dmCategory" />
+				<cfloop list="#arguments.stMetadata.ftEditableProperties#" index="thisfield">
+					<cfset stSource[thisfield] = form["_#thisfield#"] />
+				</cfloop>
+				<cfif structkeyexists(stSource,"categoryLabel")>
+					<cfset stSource.label = stSource.categoryLabel />
+				</cfif>
+				<cfset application.fapi.setData(stProperties=stSource) />
+				
+				<cfreturn serializeJSON(stSource) />
+			<cfelseif (arguments.stMetadata.ftJQueryAllowAdd or arguments.stMetadata.ftJQueryAllowEdit) and isdefined("url.edit")>
+				<cfset request.mode.ajax = true />
+				<cfsavecontent variable="html"><cfoutput>
+					<div style="border: 1px solid ##c8c8c8\9;background-color:##FFFFFF;padding:15px;-webkit-box-shadow: 0 0 8px rgba(128,128,128,0.75);-moz-box-shadow: 0 0 8px rgba(128,128,128,0.75);box-shadow: 0 0 8px rgba(128,128,128,0.75);">
+						<ft:form>
+							<ft:object objectid="#url.edit#" typename="dmCategory" lFields="#arguments.stMetadata.ftEditableProperties#" r_stPrefix="editprefix" />
+							<ft:buttonPanel>
+								<a href="##" class="closeModal">cancel</a>&nbsp;<ft:button value="Save" onclick="var base={};var props='#arguments.stMetadata.ftEditableProperties#'.split(',');for (var i in props) base[props[i]]='';$fc.tree.saveObject('#url.edit#',getValueData(base,'#editprefix#'));$fc.closeModal();return false;" />
+							</ft:buttonPanel>
+						</ft:form>
+					</div>
+				</cfoutput></cfsavecontent>
+				
+				<cfset stResult["html"] = html />
+				<cfreturn serializeJSON(stResult) />
+			<cfelse>
+				<cfset stResult = structnew() />
+				<cfset stResult["error"] = "That is not a valid request" />
+				<cfset stResult["code"] = "apierror" />
+				<cfreturn serializeJSON(stResult) />
+			</cfif>
+			
+			<cfcatch>
+				<cfset stResult = structnew() />
+				<cfset stResult["error"] = cfcatch.message />
+				<cfset stResult["code"] = "cfmlerror" />
+				<cfreturn serializeJSON(stResult) />
+			</cfcatch>
+		</cftry>
+		
+		<cfreturn "" />
+	</cffunction>
+	
+	
+	<cffunction name="branchAsLI" access="private" output="false" returntype="string">
+		<cfargument name="branch" type="struct" required="true" />
+		
+		<cfset var result = "" />
+		<cfset var thisarg = "" />
+		<cfset var i = 0 />
+		
+		<cfset result = result & '<li id="#arguments.branch.objectid#">#arguments.branch.objectname#<ul>' />
+		
+		<cfloop from="1" to="#arraylen(arguments.branch.children)#" index="i">
+			<cfset result = result & branchAsLI(branch=arguments.branch.children[i]) />
+		</cfloop>
+			
+		<cfset result = result & '</ul></li>' />
+		
+		<cfreturn result />
+	</cffunction>
+	
 
 	<!------------------ 
 	FILTERING FUNCTIONS
 	 ------------------>	
 	<cffunction name="getFilterUIOptions">
+		
 		<cfreturn "related to all,related to any" />
 	</cffunction>
 	

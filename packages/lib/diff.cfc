@@ -148,6 +148,7 @@
 		<cfset var stTemp = structnew() />
 		<cfset var i = 0 />
 		<cfset var j = 0 />
+		<cfset var thistype = "" />
 		
 		<cfset stResult.left = arguments.left />
 		<cfset stResult.right = arguments.right />
@@ -210,8 +211,17 @@
 				<cfset stResult.different = compare(stResult.left,stResult.right) neq 0 />
 			</cfcase>
 			<cfcase value="integer">
-				<cfset stResult.leftHighlighted = round(stResult.left) />
-				<cfset stResult.rightHighlighted = round(stResult.right) />
+				<cfif len(stResult.left)>
+					<cfset stResult.leftHighlighted = round(stResult.left) />
+				<cfelse>
+					<cfset stResutl.leftHighlighted = stResult.left />
+				</cfif>
+				<cfif len(stResult.right)>
+					<cfset stResult.rightHighlighted = round(stResult.right) />
+				<cfelse>
+					<cfset stResult.rightHighlighted = stResult.right />
+				</cfif>
+				
 				<cfset stResult.different = compare(stResult.left,stResult.right) neq 0 />
 			</cfcase>
 			<cfcase value="uuid">
@@ -261,13 +271,23 @@
 				<cfelse>
 					<cfset stResult.leftHighlighted = "" />
 					<cfloop from="1" to="#arraylen(stResult.left)#" index="i">
-						<cfset stTemp = application.fapi.getContentObject(objectid=stResult.left[i]) />
-						<cfset stResult.leftHighlighted = stResult.leftHighlighted & "* " & stTemp.label & " [" & application.stCOAPI[stTemp.typename].displayName & "]" & this.nl />
+						<cfset thistype = application.fapi.findType(stResult.left[i]) />
+						<cfif len(thistype)>
+							<cfset stTemp = application.fapi.getContentObject(typename=thistype,objectid=stResult.left[i]) />
+							<cfset stResult.leftHighlighted = stResult.leftHighlighted & "* " & stTemp.label & " [" & application.stCOAPI[stTemp.typename].displayName & "]" & this.nl />
+						<cfelse>
+							<cfset stResult.leftHighlighted = stResult.leftHighlighted & "* " & stResult.left[i] & " [Unknown Type]" & this.nl />
+						</cfif>
 					</cfloop>
 					<cfset stResult.rightHighlighted = "" />
 					<cfloop from="1" to="#arraylen(stResult.right)#" index="i">
-						<cfset stTemp = application.fapi.getContentObject(objectid=stResult.right[i]) />
-						<cfset stResult.rightHighlighted = stResult.rightHighlighted & "* " & stTemp.label & " [" & application.stCOAPI[stTemp.typename].displayName & "]" & this.nl />
+						<cfset thistype = application.fapi.findType(stResult.right[i]) />
+						<cfif len(thistype)>
+							<cfset stTemp = application.fapi.getContentObject(typename=thistype,objectid=stResult.right[i]) />
+							<cfset stResult.rightHighlighted = stResult.rightHighlighted & "* " & stTemp.label & " [" & application.stCOAPI[stTemp.typename].displayName & "]" & this.nl />
+						<cfelse>
+							<cfset stResult.rightHighlighted = stResult.rightHighlighted & "* " & stResult.right[i] & " [Unknown Type]" & this.nl />
+						</cfif>
 					</cfloop>
 					<cfset stResult.different = compare(stResult.leftHighlighted,stResult.rightHighlighted) neq 0 />
 					<cfif stResult.different>

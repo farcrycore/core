@@ -75,6 +75,14 @@
 							baseHREF="#application.url.webtop#"
 							lFiles="/js/farcryForm.cfm,/thirdparty/loadmask/jquery.loadmask.min.js,/thirdparty/uni-form/js/uni-form.jquery.js,/thirdparty/jquery-treeview/jquery.treeview.js,/thirdparty/jquery-treeview/jquery.treeview.async.js" />
 		
+		<skin:registerJS	id="jquery-tree" core="true"
+							baseHREF="#application.url.webtop#/thirdparty/jqTree"
+							lFiles="tree.jquery.js" />
+		
+		<skin:registerJS	id="category-formtool" core="true"
+							baseHREF="#application.url.webtop#/thirdparty/jqTree"
+							lFiles="category-formtool.js" />
+		
 		<skin:registerJS 	id="fc-ext" core="true"
 							baseHREF="#application.url.webtop#/js/ext"
 							lFiles="/adapter/ext/ext-base.js,/ext-all.js">
@@ -118,6 +126,10 @@
 							lFiles="bootstrap.min.css"
 							bCombined="false" />
 							
+		<skin:registerCSS	id="fc-icons"
+							baseHREF="#application.url.webtop#/css"
+							lFiles="icons.css" />
+							
 		<skin:registerCSS 	id="jquery-ui"
 							baseHREF="#application.url.webtop#/thirdparty/jquery/css/Aristo"
 							lFiles="jquery-ui-1.8.7.custom.css,custom.css" />
@@ -133,7 +145,11 @@
 		<skin:registerCSS 	id="jquery-modal"
 							baseHREF="#application.url.webtop#/thirdparty/jquery-modal"
 							lFiles="jquery-modal.css" />
-				
+		
+		<skin:registerCSS	id="jquery-tree" core="true"
+							baseHREF="#application.url.webtop#/thirdparty/jqTree"
+							lFiles="jqtree.css" />
+		
 		<skin:registerCSS 	id="farcry-form"
 							baseHREF="#application.url.webtop#"
 							lFiles="/css/wizard.css,/thirdparty/loadmask/jquery.loadmask.css,/thirdparty/uni-form/css/uni-form-generic.css,/thirdparty/uni-form/css/uni-form.css,/thirdparty/jquery-treeview/jquery.treeview.css,/css/farcryform.css">

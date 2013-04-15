@@ -104,6 +104,13 @@ $out:$
 				</script></cfoutput>
 			</cfcase>
 			
+			<cfcase value="refresh">
+				<!--- reload overview page --->
+				<cfoutput><script type="text/javascript">
+					location = window.location;
+				</script></cfoutput>
+			</cfcase>
+			
 			<cfdefaultcase>
 				<!--- get parent for update tree --->
 				<cf_getNavigation objectId="#attributes.objectid#" bInclusive="1" r_stObject="stNav" r_ObjectId="navIdSrcPerm">

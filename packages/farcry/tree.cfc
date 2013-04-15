@@ -124,91 +124,6 @@ $out:$
 	<cfreturn qReturn>
 </cffunction>
 
-<!--- 
-	<cffunction name="getDescendants" access="public" returntype="query" hint="Get the entire branch" output="yes">
-	<cfargument name="objectid" required="yes" type="UUID">
-	<cfargument name="depth" required="false" type="string" default="0">
-	<cfargument name="lColumns" required="false" type="string">
-	<cfargument name="aFilter" required="false" type="array">
-	<cfargument name="dsn" required="false" type="string" default="#application.dsn#">
-	<cfargument name="bIncludeSelf" required="false" type="boolean" default="0" hint="set this to 1 if you want to include the objectid you are passing">
-	<cfset var qreturn = "">
-	<cfset var sql = structNew()>
-	<cfset var nlevel = 34567890> <!--- unlikely that we should ever have a table this deep --->
-	<cfset var q = ''>
-	<cfset var i = 1>
-	<cfscript>
-	//get descendants of supplied object, optionally to a supplied depth (1 = 1 level down, etc)
-	//returns a recordset of ids and labels, in order of "birth". If no rowcount, no descendants
-	// get details of node passed in
-	sql.statement = "
-		SELECT nleft, nright, typename, nlevel
-		from nested_tree_objects
-		where objectid = '#arguments.objectid#'";
-	q = query(sql=sql.statement, dsn=arguments.dsn);
-	// set reset nlevel based on arguments.depth
-	if (arguments.depth GT 0)
-		nlevel = q.nlevel + arguments.depth ;
-	if (isDefined("arguments.lcolumns") OR isDefined("arguments.aFilter")) {
-		if (q.recordCount) {
-			// determine additional columns
-			sql.columns="";
-			if (isDefined("arguments.lcolumns") AND len(arguments.lcolumns))
-				sql.columns="," & arguments.lcolumns;
-			// build filter
-			sql.filter="";
-			if (isDefined("arguments.aFilter") AND arraylen(arguments.aFilter)) {
-				For (i=1;i LTE arraylen(arguments.aFilter); i=i+1) {
-					sql.filter=sql.filter & 'AND ' & arguments.aFilter[i];
-				}
-			}
-			sql.statement = "
-				select n.objectid,n.parentid,n.typename,n.nleft,n.nright,n.nlevel,n.ObjectName #sql.columns#
-				FROM nested_tree_objects n, #q.typename# t
-				where
-				t.objectid = n.objectid
-				and nleft";
-			if(arguments.bincludeself)
-				sql.statement = sql.statement & ">= ";
-			else
-				sql.statement = sql.statement & "> ";
-			sql.statement = sql.statement & "#q.nleft#
-				and nleft < #q.nright#
-				and typename = '#q.typename#'
-				and nlevel <= #nlevel#
-				#sql.filter#
-				order by nleft";
-			qReturn = query(sql=sql.statement, dsn=arguments.dsn);
-			//dump(qReturn);
-		} else {
-			throwerror("#arguments.objectid# is not a valid objectID for getDescendants()");
-		}
-	} else {
-	// efficient sql for minimal arguments
-		if (q.recordCount) {
-			sql.statement = "
-				select * from nested_tree_objects
-				where nleft";
-			if(arguments.bincludeself)
-				sql.statement = sql.statement & ">= ";
-			else
-				sql.statement = sql.statement & "> ";
-			sql.statement = sql.statement & "  #q.nleft#
-				and nleft < #q.nright#
-				and typename = '#q.typename#'
-				and nlevel <= #nlevel#
-				order by nleft";
-			qReturn = query(sql=sql.statement, dsn=arguments.dsn);
-			//dump(qReturn);
-		} else {
-			qReturn = queryNew('objectid,parentid,typename,nleft,nright,nlevel,ObjectName');
-		}
-	}
-	</cfscript>
-
-	<cfreturn qReturn>
-</cffunction> --->
-
 <cffunction name="getDescendants" access="public" output="false" returntype="query" hint="Get the entire branch with the option to hide empty nodes from the results" bDocument="true">
     <cfargument name="objectid" required="yes" type="UUID" />
     <cfargument name="depth" required="false" type="string" default="0" />
@@ -320,6 +235,7 @@ $out:$
 	<cfinclude template="_tree/getSiblings.cfm">
 	<cfreturn qReturn>
 </cffunction>
+
 <cffunction name="getNode" access="public" returntype="query" hint="Gets any given node in the nested tree model" output="No">
 	<cfargument name="objectid" required="yes" type="UUID">
 	<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
@@ -330,6 +246,7 @@ $out:$
 	</cfquery>
 	<cfreturn q>
 </cffunction>
+
 <cffunction name="getSecondaryNav" access="public" returntype="query" hint="Get the Secondary Nav" output="No">
 	<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
 	<cfargument name="objectid" required="yes" type="UUID">
@@ -368,6 +285,7 @@ $out:$
 	</cfquery>
 	<cfreturn q>
 </cffunction>
+
 <cffunction name="getRootNode" access="public" returntype="query" hint="Get root node for the specified typename." output="No" bDocument="true">
 	<cfargument name="dsn" required="false" type="string" default="#application.dsn#">
 	<cfargument name="typename" required="yes" type="string">
@@ -634,4 +552,62 @@ $out:$
 	<cfinclude template="_tree/fixBranch.cfm">
 	<cfreturn nReturn>
 </cffunction>
+
+<cffunction name="getDescendantsAsNestedStruct" access="public" returntype="struct" hint="Returns result of a getDescendants method as a nested CFML structure">
+	<cfargument name="objectid" required="yes" type="UUID" />
+    <cfargument name="depth" required="false" type="string" default="0" />
+    <cfargument name="lColumns" required="false" type="string" default="" />
+    <cfargument name="dsn" required="false" type="string" default="#application.dsn#" />
+    <cfargument name="dbowner" required="false" type="string" default="#application.dbowner#" />
+	
+	<cfset var qDescendants = getDescendants(argumentCollection=arguments,bIncludeSelf=true) />
+	<cfset var stRoot = structnew() />
+	<cfset var aStack = arraynew(1) />
+	<cfset var stNode = structnew() />
+	<cfset var thisprop = "" />
+	<cfset var i = 0 />
+	
+	<cfloop query="qDescendants">
+		<cfset stNode = structnew() />
+		<cfset stNode["children"] = arraynew(1) />
+		<cfloop list="#qDescendants.columnlist#" index="thisprop">
+			<cfset stNode[thisprop] = qDescendants[thisprop][qDescendants.currentrow] />
+		</cfloop>
+		<cfset stNode["id"] = stNode.objectid />
+		<cfset stNode["label"] = stNode.objectname />
+		
+		<cfif arraylen(aStack)>
+			<!--- pop items of the stack until we get to the parent --->
+			<cfloop condition="aStack[1].nlevel gte stNode.nlevel">
+				<cfset aStack[1]["hashlist"] = aStack[1].id />
+				<cfloop from="1" to="#arraylen(aStack[1].children)#" index="i">
+					<cfset aStack[1]["hashlist"] = listappend(aStack[1]["hashlist"],aStack[1].children[i].hash) />
+				</cfloop>
+				<cfset aStack[1]["hash"] = hash(aStack[1]["hashlist"]) />
+				
+				<cfset arraydeleteat(aStack,1) />
+			</cfloop>
+			
+			<cfset arrayappend(aStack[1].children,stNode) />
+		<cfelse>
+			<cfset stRoot = stNode />
+		</cfif>
+		
+		<cfset arrayprepend(aStack,stNode) />
+	</cfloop>
+	
+	<!--- pop items of the stack --->
+	<cfloop condition="arraylen(aStack)">
+		<cfset aStack[1]["hashlist"] = aStack[1].id />
+		<cfloop from="1" to="#arraylen(aStack[1].children)#" index="i">
+			<cfset aStack[1]["hashlist"] = listappend(aStack[1]["hashlist"],aStack[1].children[i].hash) />
+		</cfloop>
+		<cfset aStack[1]["hash"] = hash(aStack[1]["hashlist"]) />
+		
+		<cfset arraydeleteat(aStack,1) />
+	</cfloop>
+	
+	<cfreturn stRoot />
+</cffunction>
+
 </cfcomponent>

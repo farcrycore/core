@@ -19,6 +19,7 @@
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4" />
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
+<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj" />
 <!--- include function libraries 
 	<cfinclude template="/farcry/core/webtop/includes/utilityFunctions.cfm">
 	<cfinclude template="/farcry/core/webtop/includes/cfFunctionWrappers.cfm">
@@ -131,6 +132,16 @@
 					<cfoutput>
 						<script type="text/javascript">
 							parent.location = parent.location;
+						</script>
+					</cfoutput>
+				</cfsavecontent>
+			<cfelseif url.ref eq "refresh">
+				<cfset onExitProcess.Type = "HTML" />
+				<cfsavecontent variable="onExitProcess.Content">
+					<cfoutput>
+						<script type="text/javascript">
+							if (parent.updateObject)
+								parent.updateObject('#returnStruct.objectid#');
 						</script>
 					</cfoutput>
 				</cfsavecontent>

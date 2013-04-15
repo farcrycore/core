@@ -30,12 +30,12 @@
 <title>[#application.applicationname#] #application.config.general.sitetitle# - FarCry Webtop</title>
 
 <!--- TODO: register --->
-	<link href="css/icons.css" rel="stylesheet" media="screen">
+	
 	<!--- <link href="css/webtop7.css" rel="stylesheet" media="screen"> --->
 <!--- /TODO: register --->
-	
 	<skin:loadCSS id="fc-bootstrap" />
 	<skin:loadCSS id="webtop" baseHREF="#application.url.webtop#/css" lFiles="webtop7.css,main7.css" />
+	<skin:loadCSS id="fc-icons" />
 	<skin:loadJS id="fc-jquery" />
 	<skin:loadJS id="fc-bootstrap" />
 

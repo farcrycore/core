@@ -41,8 +41,8 @@ $out:$
                                         of destination parent --->
 
 <!--- set positive result --->
-<cfset stTmp.bSucess = "true">
-<cfset stTmp.message = "Branch pruned and grafted.">
+<cfset stTmp["bSucess"] = "true">
+<cfset stTmp["message"] = "Branch pruned and grafted.">
 
 <!--- <cftry>  --->
 <!--- 

@@ -35,11 +35,10 @@ $in: objectid $
 $out:$
 --->
 <cfprocessingDirective pageencoding="utf-8"><cfoutput>
-<script type="text/javascript">		
+<script type="text/javascript">
 // update tree
 if(parent['sidebar'].frames['sideTree'] && parent['sidebar'].frames['sideTree'].getObjectDataAndRender)
 	parent['sidebar'].frames['sideTree'].getObjectDataAndRender('#attributes.objectId#');
-//if (top.frames['sideTree'] && top.frames['treeFrame'].getObjectDataAndRender){
-//	top.frames['treeFrame'].getObjectDataAndRender( '#attributes.objectId#' );
-
+if (parent.updateObject)
+	parent.updateObject('#attributes.objectid#');
 </script></cfoutput>

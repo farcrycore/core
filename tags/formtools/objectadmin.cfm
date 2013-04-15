@@ -51,14 +51,6 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 	<cfparam name="attributes.typename" default="" />
 	<cfparam name="attributes.columnlist" default="label,datetimelastupdated" />
 
-   <!---
-        get multiple users in pagination
-    --->
-
-
-<!---<cfset editobjectURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=##recordset.objectID[recordset.currentrow]##&typename=avnArticle&method=edit&ref=typeadmin&module=customlists/avnArticle.cfm" />
- --->
-
 <cfparam name="form.q" default="">
 
 <cfparam name="form.Criteria" default="" />
