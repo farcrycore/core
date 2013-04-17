@@ -124,7 +124,7 @@
 	<cfset stLocal.qArchives = application.fapi.getContentObjects(typename="dmArchive",lProperties="*",archiveID_eq=stObj.objectid,orderBy="datetimecreated desc") />
 </cfif>
 
-<cfloop query="#stLocal.qArchives#">
+<cfloop query="stLocal.qArchives">
 	<cfset stLocal.stArchive = structnew() />
 	
 	<cfloop list="#stLocal.qArchives.columnlist#" index="thiscol">
