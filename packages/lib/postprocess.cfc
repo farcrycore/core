@@ -137,10 +137,10 @@
 		<!--- 5. http://www.youtube.com/watch?v=_SkcrPsLc1M --->
 		
 		<!--- This regex matches URLs similar to test case 1 --->
-		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br/?>|^|\n)http:\/\/(?:www\.)?youtube\.com\/watch\?v=([\w-_]+)[^\s]*?(</p>|<br/?>|$|\n)",replacement) />
+		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br/?>|^|\n)(?:<a [^>]+>)?http:\/\/(?:www\.)?youtube\.com\/watch\?v=([\w-_]+)[^\s]*?(?:</a>)?(</p>|<br/?>|$|\n)",replacement) />
 		
 		<!--- This regex matches URLs similar to test cases 2 & 3 --->
-		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br/?>|^|\n)http:\/\/(?:(?:www\.)?youtube\.com\/v|youtu\.be)\/([\w-_]+)[^\s]*?(</p>|<br/?>|$|\n)",replacement) />
+		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br/?>|^|\n)(?:<a [^>]+>)?http:\/\/(?:(?:www\.)?youtube\.com\/v|youtu\.be)\/([\w-_]+)[^\s]*?(?:</a>)?(</p>|<br/?>|$|\n)",replacement) />
 		
 		<cfreturn arguments.input />
 	</cffunction>
@@ -155,7 +155,7 @@
 		<!--- 1. http://vimeo.com/50351080 --->
 		
 		<!--- This regex matches URLs similar to test case 1 --->
-		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br/?>|^|\n)http:\/\/vimeo\.com\/(\w+)[^\s]*?(</p>|<br/?>|$|\n)",replacement) />
+		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br/?>|^|\n)(?:<a [^>]+>)?http:\/\/vimeo\.com\/(\w+)[^\s]*?(?:</a>)?(</p>|<br/?>|$|\n)",replacement) />
 		
 		<cfreturn arguments.input />
 	</cffunction>
@@ -174,7 +174,7 @@
 		<!--- 2. https://twitter.com/twitterapi/status/133640144317198338 --->
 		
 		<!--- This regex matches URLs similar to test cases 1 and 2 --->
-		<cfset aMatches = regexMatch(arguments.input,"(<p>|<br/?>|^|\n)https?:\/\/twitter\.com\/(\w+)/status(?:es)?/(\w+)(</p>|<br/?>|$|\n)") />
+		<cfset aMatches = regexMatch(arguments.input,"(<p>|<br/?>|^|\n)(?:<a [^>]+>)?https?:\/\/twitter\.com\/(\w+)/status(?:es)?/(\w+)(?:</a>)?(</p>|<br/?>|$|\n)") />
 		
 		<cfloop from="1" to="#arraylen(aMatches)#" index="i">
 			<cfif not structkeyexists(this.twitterstatus,hash(aMatches[i][4].value))>
@@ -201,7 +201,7 @@
 		<!--- 1. https://gist.github.com/1018281 --->
 		
 		<!--- This regex matches URLs similar to test case 1 --->
-		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br/?>|^|\n)(https:\/\/gist\.github\.com(\/\w+)+)(</p>|<br/?>|$|\n)",replacement) />
+		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br/?>|^|\n)(?:<a [^>]+>)?(https:\/\/gist\.github\.com(\/\w+)+)(?:</a>)?(</p>|<br/?>|$|\n)",replacement) />
 		
 		<cfreturn arguments.input />
 	</cffunction>
