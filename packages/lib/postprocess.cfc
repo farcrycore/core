@@ -128,7 +128,7 @@
 		<cfargument name="width" type="numeric" required="false" default="560" />
 		<cfargument name="height" type="numeric" required="false" default="315" />
 		
-		<cfset var replacement = '<iframe width="#arguments.width#" height="#arguments.height#" src="http://www.youtube.com/embed/$2" frameborder="0" allowfullscreen></iframe>' />
+		<cfset var replacement = '<iframe width="#arguments.width#" height="#arguments.height#" src="http://www.youtube.com/embed/$2?wmode=transparent" frameborder="0" allowfullscreen></iframe>' />
 		
 		<!--- 1. http://www.youtube.com/watch?v=yLeNvCJbM90&version=3&hl=en_US&rel=0 --->
 		<!--- 2. http://youtu.be/yLeNvCJbM90?version=3&hl=en_US&rel=0 --->
