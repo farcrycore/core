@@ -95,7 +95,7 @@
 								data-placeholder="#arguments.stMetadata.ftPlaceholder#" 
 								data-value="#convertPropertyToValue(arguments.stMetadata.value,arguments.stMetadata.ftJoin)#" 
 								
-								data-data='#getResultsAsJSON(typename=arguments.stMetadata.ftJoin,search='',paginate=false,lValidStatus=lValidStatus)#'
+								data-data='#getResultsAsJSON(typename=arguments.stMetadata.ftJoin,stObject=arguments.stObject,stMetadata=arguments.stMetadata,search='',paginate=false,lValidStatus=lValidStatus)#'
 								data-createoptions='#getCreatesAsJSON(createOptions=createOptions)#'
 								
 								value="<cfif arguments.stMetadata.type eq 'array'>#arraytolist(arguments.stMetadata.value)#<cfelse>#arguments.stMetadata.value#</cfif>" />
@@ -168,7 +168,7 @@
 			
 			<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 			
-			<cfcontent type="application/json" variable="#ToBinary( ToBase64( getResultsAsJSON(typename=arguments.stMetadata.ftJoin,search=url.search,page=url.page,excludeList=url[arguments.stMetadata.name],lValidStatus=lValidStatus,createOptions=createOptions) ) )#" reset="yes" />
+			<cfcontent type="application/json" variable="#ToBinary( ToBase64( getResultsAsJSON(typename=arguments.stMetadata.ftJoin,stObject=arguments.stObject,stMetadata=arguments.stMetadata,search=url.search,page=url.page,excludeList=url[arguments.stMetadata.name],lValidStatus=lValidStatus,createOptions=createOptions) ) )#" reset="yes" />
 		</cfif>
 		
 		<cfreturn "" />
@@ -297,6 +297,8 @@
 	
 	<cffunction name="getResultsAsJSON" output="false" access="private" returntype="string">
 		<cfargument name="typename" type="string" required="true" />
+		<cfargument name="stObject" type="struct" required="true" />
+		<cfargument name="stMetadata" type="struct" required="true" />
 		<cfargument name="search" type="string" required="true" />
 		<cfargument name="paginate" type="boolean" required="false" default="true" />
 		<cfargument name="page" type="numeric" required="false" default="1" />
@@ -310,13 +312,41 @@
 		<cfset var st = structnew() />
 		<cfset var aResult = arraynew(1) />
 		<cfset var i = 0 />
-		
+
+
+		<!--- find data --->
 		<cfif structkeyexists(application.stCOAPI[arguments.typename].stProps,"versionID")>
-			<cfset q = application.fapi.getContentObjects(typename=arguments.typename,lProperties="objectid,label",status=arguments.lValidStatus,label_like="%#arguments.search#%",objectid_notin=arguments.excludeList,versionid_eq="",orderby="label") />
+			<cfset q = application.fapi.getContentObjects(typename=arguments.typename,lProperties="objectid,label,objectid AS [key]",status=arguments.lValidStatus,label_like="%#arguments.search#%",objectid_notin=arguments.excludeList,versionid_eq="",orderby="label") />
 		<cfelse>
-			<cfset q = application.fapi.getContentObjects(typename=arguments.typename,lProperties="objectid,label",status=arguments.lValidStatus,label_like="%#arguments.search#%",objectid_notin=arguments.excludeList,orderby="label") />
+			<cfset q = application.fapi.getContentObjects(typename=arguments.typename,lProperties="objectid,label,objectid AS [key]",status=arguments.lValidStatus,label_like="%#arguments.search#%",objectid_notin=arguments.excludeList,orderby="label") />
 		</cfif>
-		
+
+		<!-------------------------------------------------------------------------- 
+		generate library data query to populate library interface 
+		--------------------------------------------------------------------------->
+		<cfif structkeyexists(arguments.stMetadata, "ftLibraryData") AND len(arguments.stMetadata.ftLibraryData)>	
+			<cfif not structKeyExists(arguments.stMetadata, "ftLibraryDataTypename") OR not len(arguments.stMetadata.ftLibraryDataTypename)>
+				<cfset arguments.stMetadata.ftLibraryDataTypename = arguments.typename />
+			</cfif>
+			<cfset oPrimary = application.fapi.getContentType(arguments.stMetadata.ftLibraryDataTypename) />
+			
+			<!--- use ftlibrarydata method from primary content type --->
+			<cfif structkeyexists(oprimary, arguments.stMetadata.ftLibraryData)>
+				<cfinvoke component="#oPrimary#" method="#arguments.stMetadata.ftLibraryData#" returnvariable="libraryData">
+					<cfinvokeargument name="primaryID" value="#arguments.stobject.objectid#" />
+					<cfinvokeargument name="qFilter" value="#q#" />
+				</cfinvoke>	
+					
+				<cfif isStruct(libraryData)>
+					<cfset q = libraryData.q>
+				<cfelse>
+					<cfset q = libraryData />
+				</cfif>		
+				
+			</cfif>
+		</cfif>
+
+
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		
 		<cfif not arguments.paginate>
