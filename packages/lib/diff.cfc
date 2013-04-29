@@ -194,7 +194,7 @@
 					<cfset structappend(stResult,convertDiffToHighlights(stResult.aDiff),true) />
 				</cfif>
 			</cfcase>
-			<cfcase value="datetime,navigation" delimiters=",">
+			<cfcase value="datetime" delimiters=",">
 				<cfset stTemp[arguments.stMetadata.name] = arguments.left />
 				<cfset arguments.stMetadata.value = arguments.left />
 				<cfset stResult.left = application.formtools[stResult.formtool].oFactory.display(typename=arguments.typename,fieldname=arguments.stMetadata.name,stMetadata=arguments.stMetadata,stObject=stTemp) />
@@ -224,14 +224,14 @@
 				
 				<cfset stResult.different = compare(stResult.left,stResult.right) neq 0 />
 			</cfcase>
-			<cfcase value="uuid">
+			<cfcase value="uuid,navigation">
 				<cfset stResult.leftHighlighted = "" />
-				<cfif len(stResult.left)>
+				<cfif len(stResult.left) AND isValid("uuid", stResult.left)>
 					<cfset stTemp = application.fapi.getContentObject(objectid=stResult.left) />
 					<cfset stResult.leftHighlighted = stTemp.label & " [" & application.stCOAPI[stTemp.typename].displayName & "]" & this.nl />
 				</cfif>
 				<cfset stResult.rightHighlighted = "" />
-				<cfif len(stResult.right)>
+				<cfif len(stResult.right) AND isValid("uuid", stResult.right)>
 					<cfset stTemp = application.fapi.getContentObject(objectid=stResult.right) />
 					<cfset stResult.rightHighlighted = stTemp.label & " [" & application.stCOAPI[stTemp.typename].displayName & "]" & this.nl />
 				</cfif>
