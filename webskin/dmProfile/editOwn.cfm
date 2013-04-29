@@ -20,7 +20,7 @@
 <!----------------------------- 
 ACTION	
 ------------------------------>
-<ft:processform action="Save">
+<ft:processform action="Save" url="refresh">
 	<ft:processformobjects objectid="#stobj.objectid#">
 		<cfset structappend(session.dmProfile,stProperties,true) />
 
