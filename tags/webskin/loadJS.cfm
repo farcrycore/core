@@ -19,6 +19,7 @@
 	<cfparam name="attributes.prepend" default=""><!--- any JS to prepend to the beginning of the script block --->
 	<cfparam name="attributes.append" default=""><!--- any JS to append to the end of the script block --->
 	<cfparam name="attributes.bCombine" default=""><!--- Should the files be combined into a single cached js file. Passing true/false will override how it was registered. --->
+	<cfparam name="attributes.core" default="false"><!--- Set to true if this JS is part of core and should be loaded after other JS --->
 	
 	
 	<cfif len(trim(thisTag.generatedContent))>
@@ -67,7 +68,6 @@
 			<cfset stJS.bCombine = true />
 		</cfif>
 		<cfset stJS.aliasof = "" />
-		<cfset stJS.core = false />
 	</cfif>
 	
 	<cfparam name="request.inHead.aJSLibraries" default="#arrayNew(1)#" />

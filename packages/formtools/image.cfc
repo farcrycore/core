@@ -171,7 +171,7 @@
 		<!--- </style></cfoutput></skin:htmlHead> --->
 	    <!--- <skin:htmlHead id="farcry-imageformtool-js"><cfoutput><script type="text/javascript"> --->
 	    <!--- <cfoutput> <script type="text/javascript" charset="utf-8"> --->
-		<skin:loadJS id="image-formtool"><cfoutput>
+		<skin:loadJS id="image-formtool" core="true"><cfoutput>
 	    	(function(jQuery){
 	    		var defaults = {
 	    			"selected"		: "",
