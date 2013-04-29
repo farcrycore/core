@@ -13,11 +13,19 @@
 
 <!--- init user profile info --->
 <cfset webtopUsername = "FarCry User">
+<cfset webtopGravatarHash = "00000000000000000000000000000000">
+<cfset webtopAvatar = "">
 <cfif structKeyExists(session.dmProfile,"firstname") AND len(session.dmProfile.firstname)>
 	<cfset webtopUsername = session.dmProfile.firstname>
 </cfif>
 <cfif structKeyExists(session.dmProfile,"lastname") AND len(session.dmProfile.lastname)>
 	<cfset webtopUsername = webtopUsername & " " & session.dmProfile.lastname>
+</cfif>
+<cfif structKeyExists(session.dmProfile, "emailAddress") AND len(session.dmProfile.emailAddress)>
+	<cfset webtopGravatarHash = lcase(hash(lcase(trim(session.dmProfile.emailAddress))))>
+</cfif>
+<cfif structKeyExists(session.dmProfile, "avatar") AND len(session.dmProfile.avatar)>
+	<cfset webtopAvatar = session.dmProfile.avatar>
 </cfif>
 
 
@@ -72,11 +80,12 @@
 					<div class="farcry-header-user dropdown">
 						<div class="farcry-header-profile dropdown-toggle" data-toggle="dropdown">
 							<span class="avatar">
-								<!--- cfif avtar in profile then... --->
-									<!--- <img src="images/avatar.png"> --->
-								<!--- cfelse --->
-									<i class="icon-user"></i>
-								<!--- /cfif --->
+								<cfif len(webtopAvatar)>
+									<img src="#webtopAvatar#" width="24" height="25">
+								<cfelse>
+									<img src="//www.gravatar.com/avatar/#webtopGravatarHash#?d=blank" width="24" height="25">
+								</cfif>
+								<i class="icon-user"></i>
 							</span>
 							<i class="cog"><b class="icon-cog"></b></i>
 

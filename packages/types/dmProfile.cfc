@@ -29,7 +29,13 @@ TYPE PROPERTIES
     <cfproperty ftSeq="24" ftFieldset="Contact details" name="bReceiveEmail" type="boolean" default="1" required="yes" ftType="boolean" hint="Does user receive workflow and system email notices." fthint="Select this option if you want to receive email notifications from FarCry." ftLabel="Receive Emails" />
     <cfproperty name="phone" type="string" default="" required="no" hint="Profile object phone number" ftSeq="25" ftFieldset="Contact details" ftLabel="Phone" />
     <cfproperty name="fax" type="string" default="" required="no" hint="Profile object fax number" ftSeq="26" ftFieldset="Contact details" ftLabel="Fax" />
-    
+
+	<cfproperty name="avatar" type="string" default="" 
+		ftSeq="30" ftFieldset="Profile" ftLabel="Profile Image" 
+		ftType="image" ftDestination="/images/dmProfile/avatar"
+		ftAutoGenerateType="center" ftImageWidth="80" ftImageHeight="80"
+		ftAllowUpload="true" ftQuality="1.0" ftInterpolation="blackman">
+
 	<cfproperty name="position" type="string" default="" required="no" hint="Profile object position" ftSeq="31" ftFieldSet="Organisation" ftLabel="Position" />
     <cfproperty name="department" type="string" default="" required="no" hint="Profile object department" ftSeq="32" ftFieldSet="Organisation" ftLabel="Department" />
 	

@@ -348,15 +348,20 @@ a:hover {
 }
 
 .farcry-header-profile .avatar {
+	position: relative;
 	display: inline-block;
 	margin-right: 7px;
 	background: #3e84b5;
 	color: #fff;
 	width: 24px;
-	height: 23px;
-	padding-top: 1px;
+	height: 24px;
 	text-align: center;
 	vertical-align: middle;
+}
+.farcry-header-profile .avatar img {
+	position: absolute;
+	top: 0;
+	left: 0;
 }
 .farcry-header-profile .cog {
 	display: none;

@@ -29,7 +29,7 @@ VIEW
 </cfoutput>
 
 <ft:form>
-	<ft:object objectid="#stObj.objectid#" typename="dmProfile" lfields="firstname,lastname,breceiveemail,emailaddress,phone,fax,position,department,locale,overviewHome" lhiddenFields="username,userdirectory" legend="User details" />
+	<ft:object objectid="#stObj.objectid#" typename="dmProfile" lfields="firstname,lastname,breceiveemail,emailaddress,avatar,phone,fax,position,department,locale,overviewHome" lhiddenFields="username,userdirectory" legend="User details" />
 	
 	<ft:buttonPanel>
 		<ft:button value="Save" color="orange" />

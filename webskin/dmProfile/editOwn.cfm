@@ -52,7 +52,7 @@ VIEW
 </cfif>
 
 <ft:form>
-	<ft:object objectid="#stObj.objectid#" typename="dmProfile" lfields="firstname,lastname,phone,fax,emailaddress,breceiveemail" legend="Contact Details" />
+	<ft:object objectid="#stObj.objectid#" typename="dmProfile" lfields="firstname,lastname,phone,fax,emailaddress,breceiveemail,avatar" legend="Contact Details" />
 	<ft:object objectid="#stObj.objectid#" typename="dmProfile" lfields="position,department" legend="Job Details" />
 	<ft:object objectid="#stObj.objectid#" typename="dmProfile" lfields="locale" legend="Language Details" />
 	
