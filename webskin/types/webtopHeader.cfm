@@ -30,9 +30,6 @@
 <title>[#application.applicationname#] #application.config.general.sitetitle# - FarCry Webtop</title>
 
 <!--- TODO: register --->
-	
-	<!--- <link href="css/webtop7.css" rel="stylesheet" media="screen"> --->
-<!--- /TODO: register --->
 	<skin:loadCSS id="fc-bootstrap" />
 	<skin:loadCSS id="webtop" baseHREF="#application.url.webtop#/css" lFiles="webtop7.css,main7.css" />
 	<skin:loadCSS id="fc-icons" />
@@ -47,7 +44,11 @@
 			<div class="farcry-header-top-row">
 				<div class="farcry-header-brand">
 					<a target="_blank" href="/">
-						<img src="images/brand.png" alt="#application.config.general.sitetitle#"><!-- fit inside 150x60 -->
+						<cfif len(application.fapi.getConfig("general", "webtoplogopath"))>
+							<img src="#application.fapi.getConfig("general", "webtoplogopath")#" alt="#application.config.general.sitetitle#"><!--- fit inside 180x60 --->
+						<cfelse>
+							#application.fapi.getConfig("general", "sitetitle")#
+						</cfif>
 					</a>
 				</div>
 				<div class="farcry-header-tabs">

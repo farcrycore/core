@@ -58,10 +58,10 @@ h3 {
 }
 
 a {
-	color: #3E8rB5;
+	color: #e17000;
 }
 a:hover {
-	color: #0E65A2;
+	color: #e17000;
 }
 
 
@@ -87,8 +87,14 @@ a:hover {
 .farcry-header-brand {
 	display: table-cell;
 	vertical-align: middle;
-	padding: 15px 25px 15px 0;
-	height: 40px; /* acts as min-height on a table cell */
+	padding: 0 25px 0 0;
+	height: 70px; /* acts as min-height on a table cell */
+}
+.farcry-header-brand a {
+	white-space: nowrap;
+	color: #000;
+	font-weight: bold;
+	font-size: 150%;
 }
 .farcry-header-brand img {
 	/* fit inside 150x60 */

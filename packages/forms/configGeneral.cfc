@@ -1,10 +1,14 @@
 <cfcomponent displayname="General Config" hint="General configuration settings for the web application." extends="forms" output="false" key="general">
 
 <!--- site description --->
-	<cfproperty ftSeq="10" ftFieldset="Site Description" name="sitetagline" type="string" default="tell it to someone who cares" hint="???" ftLabel="Site tag line" ftType="string" />
-	<cfproperty ftSeq="11" ftFieldset="Site Description" name="sitetitle" type="string" default="farcry" hint="???" ftLabel="Site title" ftType="string" />
+	<cfproperty ftSeq="10" ftFieldset="Site Description" name="sitetitle" type="string" default="farcry" hint="???" ftLabel="Site title" ftType="string" />
+	<cfproperty ftSeq="11" ftFieldset="Site Description" name="sitetagline" type="string" default="tell it to someone who cares" hint="???" ftLabel="Site tag line" ftType="string" />
 	<cfproperty ftSeq="12" ftFieldset="Site Description" name="sitelogopath" type="string" default="" hint="???" ftLabel="Logo path" ftType="string" />
-
+	<cfproperty name="webtoplogopath" type="string" default="" 
+		ftSeq="13" ftFieldset="Site Description" ftLabel="Webtop Logo" 
+		ftType="image" ftDestination="/wsimages"
+		ftAutoGenerateType="fitinside" ftImageWidth="180" ftImageHeight="60"
+		ftAllowUpload="true" ftbUploadOnly="true" ftQuality="1.0" ftInterpolation="blackman">
 
 <!--- sysadmin properties --->
 	<cfproperty ftSeq="21" ftFieldset="SysAdmin Properties" name="adminemail" type="string" default="support@daemon.com.au" hint="The email address to be used by the system for admin functions" ftLabel="Administration email" ftType="email" />
