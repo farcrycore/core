@@ -346,13 +346,11 @@
 		<cfargument name="stFieldPost" required="true" type="struct" hint="The fields that are relevent to this field type. Includes Value and stSupporting">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		
-		<cfset var filePath = "" />
-		<cfset var stResult = structNew()>	
-		<cfset var uploadFileName = "" />
+		<cfset var filelocation = "" />
+		<cfset var stResult = structNew()>
 		<cfset var qDuplicates = queryNew("blah") />
 		<cfset var cleanFileName = "" />
 		<cfset var newFileName = "" />
-		<cfset var lFormField = "" />
 		<cfset var stObj = application.fapi.getContentObject(objectid=arguments.objectid,typename=arguments.typename) />
 		<cfset var filepermission = 0 />
 			
@@ -373,98 +371,52 @@
 		
 		<sec:CheckPermission objectid="#arguments.objectid#" type="#arguments.typename#" permission="View" roles="Anonymous" result="filepermission" />
 		<cfif arguments.stMetadata.ftSecure eq "false" and (not structkeyexists(stObj,"status") or stObj.status eq "approved") and filepermission>
-			<cfset filePath = application.path.defaultFilePath />
+			<cfset filelocation = "publicfiles" />
 		<cfelse>
-			<cfset filePath = application.path.secureFilePath />
+			<cfset filelocation = "privatefiles" />
 		</cfif>
+		
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
-		<cfif NOT DirectoryExists("#filePath##arguments.stMetadata.ftDestination#")>
-			<cfdirectory action="create" directory="#filePath##arguments.stMetadata.ftDestination#">
-		</cfif>	
-		
-		<cfif len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#Delete"]) AND fileExists("#filePath##FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Delete']#")>
-			
-			<!--- create media archive directory as required --->
-			<cfif NOT DirectoryExists("#application.path.mediaArchive#")>
-				<cfdirectory action="create" directory="#application.path.mediaArchive#">
-			</cfif>
-			
-			<!--- create typename/property directory archive as required --->
-			<cfif NOT DirectoryExists("#application.path.mediaArchive##arguments.stMetadata.ftDestination#")>
-				<cfdirectory action="create" directory="#application.path.mediaArchive##arguments.stMetadata.ftDestination#">
-			</cfif>
-			
-			<!--- generate media archive entry --->
-		 	<cffile 
-			   action = "move"
-			   source = "#filePath##FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Delete']#"
-			   destination = "#application.path.mediaArchive##arguments.stMetadata.ftDestination#/#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#listLast(FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Delete'], '/')#">
-	
+		<cfif len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#Delete"]) AND application.fc.lib.cdn.ioFileExists(location=fileLocation,file=FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Delete'])>
+			<cfset application.fc.lib.cdn.ioMoveFile(
+				source_location=fileLocation,
+				source_file=FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#Delete"],
+				dest_location="archive",
+				dest_file="#arguments.stMetadata.ftDestination#/#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#listLast(FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Delete'], '/')#"
+			) />
 		</cfif>
 			
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 			<cfcase value="html">
 				<cfif len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#New"])>
-			
-			
-					<cfif structKeyExists(form, "#stMetadata.FormFieldPrefix##stMetadata.Name#") AND  len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#"])>
-						<!--- This means there is currently a file associated with this object. We need to override this file --->
-						
-						<cfset lFormField = replace(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#"], '\', '/', "all")>			
-						<cfset uploadFileName = listLast(lFormField, "/") />
-						
-						<cffile action="UPLOAD"
-							filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
-							destination="#filePath##arguments.stMetadata.ftDestination#"		        	
-							nameconflict="MakeUnique" mode="664" />
-					
-						<cfif listFindNoCase(arguments.stMetadata.ftAllowedFileExtensions,cffile.serverFileExt)>
-							<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#cffile.ServerFile#" destination="#uploadFileName#" />
-							<cfset newFileName = uploadFileName>
+					<cftry>
+						<cfif structKeyExists(form, "#stMetadata.FormFieldPrefix##stMetadata.Name#") AND  len(form["#stMetadata.FormFieldPrefix##stMetadata.Name#"])>
+							<!--- This means there is currently a file associated with this object. We need to override this file --->
+							<cfset stResult.value = application.fc.lib.cdn.ioUploadFile(
+								location=fileLocation,
+								destination=form["#stMetadata.FormFieldPrefix##stMetadata.Name#"],
+								field="#stMetadata.FormFieldPrefix##stMetadata.Name#New",
+								nameconflict="overwrite",
+								acceptedextensions=arguments.stMetadata.ftAllowedFileExtensions
+							) />
 						<cfelse>
-							<cffile action="delete" file="#filePath##arguments.stMetadata.ftDestination#/#cffile.ServerFile#" />
-						</cfif>
-					<cfelse>
-						<!--- There is no image currently so we simply upload the image and make it unique  --->
-						<cffile action="UPLOAD"
-							filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
-							destination="#filePath##arguments.stMetadata.ftDestination#"		        	
-							nameconflict="MakeUnique" mode="664">
-					
-						<cfif listFindNoCase(arguments.stMetadata.ftAllowedFileExtensions,cffile.serverFileExt)>
-							<cfset newFileName = cffile.ServerFile>
-						<cfelse>
-							<cffile action="delete" file="#filePath##arguments.stMetadata.ftDestination#/#cffile.ServerFile#" />
+							<!--- There is no image currently so we simply upload the image and make it unique  --->
+							<cfset stResult.value = application.fc.lib.cdn.ioUploadFile(
+								location=fileLocation,
+								destination=arguments.stMetadata.ftDestination,
+								field="#stMetadata.FormFieldPrefix##stMetadata.Name#New",
+								nameconflict="makeunique",
+								uniqueamong="privatefiles,publicfiles",
+								acceptedextensions=arguments.stMetadata.ftAllowedFileExtensions
+							) />
 						</cfif>
 						
-					</cfif>
-		
-			
-					<cfif len(newFileName)>
-						<!--- Replace all none alphanumeric characters --->
-						<cfset cleanFileName = reReplaceNoCase(newFileName, "[^a-z0-9.\-\_]","", "all") />
-						
-						<!--- If the filename has changed, rename the file
-						Note: doing a quick check to make sure the cleanfilename doesnt exist. If it does, prepend the count+1 to the end.
-						 --->
-						<cfif cleanFileName NEQ newFileName>
-							<cfif fileExists("#filePath##arguments.stMetadata.ftDestination#/#cleanFileName#")>
-								<cfdirectory action="list" directory="#filePath##arguments.stMetadata.ftDestination#" filter="#listFirst(cleanFileName, '.')#*" name="qDuplicates" />
-								<cfif qDuplicates.RecordCount>
-									<cfset cleanFileName = "#listFirst(cleanFileName, '.')##qDuplicates.recordCount+1#.#listLast(cleanFileName,'.')#">
-								</cfif>
-								 
-							</cfif>
-							
-							<cffile action="rename" source="#filePath##arguments.stMetadata.ftDestination#/#newFileName#" destination="#cleanFileName#" />
-						</cfif>			
-												
-						<!--- </cfif> --->
-						<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#cleanFileName#">
-					</cfif>
-					
+						<cfcatch type="uploaderror">
+							<cfset stResult = failed(value=form["#stMetadata.FormFieldPrefix##stMetadata.Name#"],message=cfcatch.message) />
+						</cfcatch>
+					</cftry>
 				</cfif>
 			</cfcase>
 		
@@ -495,6 +447,7 @@
 		<cfargument name="previousStatus" type="string" required="true" hint="The previous status of the object" />
 		
 		<cfset var filepermission = 0 />
+		<cfset var currentLocation = "" />
 		
 		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
 		
@@ -503,9 +456,13 @@
 		<!--- Draft content should always be secured --->
 		<!--- ftSecure=true will already be secured --->
 		<!--- anonymous access=false will already be secured --->
-		<sec:CheckPermission objectid="#arguments.stObject.objectid#" type="#arguments.typename#" permission="View" roles="Anonymous" result="filepermission" />
-		<cfif len(arguments.stObject[arguments.stMetadata.name]) and arguments.previousStatus eq "approved" and not arguments.stMetadata.ftSecure and filepermission>
-			<cfset moveToSecure(argumentCollection=arguments) />
+		<cfif len(arguments.stObject[arguments.stMetadata.name])>
+			<cfset currentLocation = application.fc.lib.cdn.ioFindFile(locations="publicfiles,privatefiles",file=arguments.stObject[arguments.stMetadata.name]) />
+			<sec:CheckPermission objectid="#arguments.stObject.objectid#" type="#arguments.typename#" permission="View" roles="Anonymous" result="filepermission" />
+			
+			<cfif len(currentLocation) and currentLocation neq "privatefiles" and arguments.previousStatus eq "approved" and not arguments.stMetadata.ftSecure and filepermission>
+				<cfset application.fc.lib.cdn.ioMoveFile(source_location=currentLocation,source_file=arguments.stObject[arguments.stMetadata.name],dest_location="privatefiles") />
+			</cfif>
 		</cfif>
 	</cffunction>
 	
@@ -516,14 +473,19 @@
 		<cfargument name="previousStatus" type="string" required="true" hint="The previous status of the object" />
 		
 		<cfset var filepermission = 0 />
+		<cfset var currentLocation = "" />
 		
 		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
 		
 		<!--- Approved content should be moved to public if not secured --->
 		<!--- ftSecure=true should not be moved --->
 		<!--- anonymous access=false should not be moved --->
-		<cfif len(arguments.stObject[arguments.stMetadata.name]) and not isSecured(arguments.stObject,arguments.stMetadata)>
-			<cfset moveToPublic(argumentCollection=arguments) />
+		<cfif len(arguments.stObject[arguments.stMetadata.name])>
+			<cfset currentLocation = application.fc.lib.cdn.ioFindFile(locations="privatefiles,publicfiles",file=arguments.stObject[arguments.stMetadata.name]) />
+			
+			<cfif len(currentLocation) and currentLocation neq "publicfiles" and not isSecured(arguments.stObject,arguments.stMetadata)>
+				<cfset application.fc.lib.cdn.ioMoveFile(source_location=currentLocation,source_file=arguments.stObject[arguments.stMetadata.name],dest_location="publicfiles") />
+			</cfif>
 		</cfif>
 	</cffunction>
 	
@@ -532,37 +494,16 @@
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		
-		<cfset var stLocation = "" />
-		<cfset var filepermission = 0 />
-		<cfset var qArchive = "" />
+		<cfset var currentLocation = "" />
 		
 		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
 		
-		<cfif not len(arguments.stObject[arguments.stMetadata.name])>
-			<cfreturn /><!--- No file attached --->
-		</cfif>
-		
-		<cftry>
-			<cfset stLocation = getFileLocation(argumentCollection=arguments) />
+		<cfif len(arguments.stObject[arguments.stMetadata.name])>
+			<cfset currentLocation = application.fc.lib.cdn.ioFindFile(locations="privatefiles,publicfiles",file=arguments.stObject[arguments.stMetadata.name]) />
 			
-			<cfcatch>
-				<cfset stLocation = structnew() />
-			</cfcatch>
-		</cftry>
-		
-		<!--- Delete file --->
-		<cfif structKeyExists(stLocation,"fullpath") AND len(stLocation.fullpath)>
-			<cftry>
-				<cffile action="delete" file="#stLocation.fullpath#" />
-				
-				<!--- Delete archived files --->
-				<cfdirectory action="list" directory="#application.path.mediaArchive##arguments.stMetadata.ftDestination#/" filter="#arguments.stObject.objectid#*" name="qArchive" />
-				<cfloop query="qArchive">
-					<cffile action="delete" file="#application.path.mediaArchive##arguments.stMetadata.ftDestination#/#qArchive.name#" />
-				</cfloop>
-				
-				<cfcatch><cfdump var="#cfcatch.message#"><cfdump var="#arguments#"><cfdump var="#stLocation#"><cfabort></cfcatch>
-			</cftry>
+			<cfif len(currentLocation)>
+				<cfset application.fc.lib.cdn.ioDeleteFile(location=currentLocation,file=arguments.stObject[arguments.stMetadata.name]) />
+			</cfif>
 		</cfif>
 	</cffunction>
 	
@@ -579,97 +520,47 @@
 		
 		<cfset var access = 0 />
 		<cfset var stPermission = "" />
+		<cfset var currentLocation = "" />
+		<cfset var newLocation = "" />
 		
 		<cfif not structkeyexists(arguments,"stObject")>
 			<cfset arguments.stObject = getData(objectid=arguments.objectid) />
 		</cfif>
 		
-		<!--- Check for the other permission --->
-		<cfset stPermission = application.security.factory.permission.getData(objectid=arguments.farPermissionID) />
-		<cfif changetype eq "type">
-			<cfset access = arguments.newRight and application.security.checkPermission(object=arguments.stObject.objectid,role=arguments.farRoleID,permission=right(stPermission.shortcut,len(stPermission.shortcut)-len(arguments.stObject.typename))) />
-		<cfelse><!--- changetype eq "object" --->
-			<cfif arguments.newRight eq -1>
-				<cfset access = 0 />
-			<cfelse>
-				<cfset access = 1 />
+		<cfif len(arguments.stObject[arguments.stMetadata.name])>
+			<!--- Check for the other permission --->
+			<cfset stPermission = application.security.factory.permission.getData(objectid=arguments.farPermissionID) />
+			<cfif changetype eq "type">
+				<cfset access = arguments.newRight and application.security.checkPermission(object=arguments.stObject.objectid,role=arguments.farRoleID,permission=right(stPermission.shortcut,len(stPermission.shortcut)-len(arguments.stObject.typename))) />
+			<cfelse><!--- changetype eq "object" --->
+				<cfif arguments.newRight eq -1>
+					<cfset access = 0 />
+				<cfelse>
+					<cfset access = 1 />
+				</cfif>
+				<cfset access = access and application.security.checkPermission(permission=stPermission.shortcut,type=arguments.stObject.typename,role=arguments.farRoleID) />
 			</cfif>
-			<cfset access = access and application.security.checkPermission(permission=stPermission.shortcut,type=arguments.stObject.typename,role=arguments.farRoleID) />
-		</cfif>
-		
-		<!--- If it is the anonymous role and the view permission that has changed, move the file --->
-		<cfif arguments.farRoleID eq application.security.factory.role.getID("anonymous") 
-			and (
-				( changetype eq "object" and stPermission.shortcut eq "View" ) or
-				( changetype eq "type" and arguments.farPermissionID eq application.security.factory.permission.getTypePermission(arguments.stObject.typename,"View") )
-			)>
+			
 			<cfif access eq 1>
-				<cfset moveToPublic(argumentCollection=arguments) />
+				<cfset currentLocation = application.fc.lib.cdn.ioFindFile(locations="privatefiles,publicfiles",file=arguments.stObject[arguments.stMetadata.name]) />
+				<cfset newLocation = "publicfiles" />
 			<cfelse>
-				<cfset moveToSecure(argumentCollection=arguments) />
+				<cfset currentLocation = application.fc.lib.cdn.ioFindFile(locations="publicfiles,privatefiles",file=arguments.stObject[arguments.stMetadata.name]) />
+				<cfset newLocation = "privatefiles" />
+			</cfif>
+			
+			<!--- If it is the anonymous role and the view permission that has changed, move the file --->
+			<cfif len(currentLocation)
+				and currentLocation neq newLocation
+				and arguments.farRoleID eq application.security.factory.role.getID("anonymous") 
+				and (
+					( changetype eq "object" and stPermission.shortcut eq "View" ) or
+					( changetype eq "type" and arguments.farPermissionID eq application.security.factory.permission.getTypePermission(arguments.stObject.typename,"View") )
+				)>
+				
+				<cfset application.fc.lib.cdn.ioMoveFile(source_location=currentLocation,source_file=arguments.stObject[arguments.stMetadata.name],dest_location=newpath) />
 			</cfif>
 		</cfif>
-	</cffunction>
-	
-	
-	<cffunction name="moveToSecure" access="public" output="false" returntype="void" hint="Moves the specified file to the secure location">
-		<cfargument name="objectid" type="string" required="false" default="" hint="Object to retrieve" />
-		<cfargument name="typename" type="string" required="false" default="" hint="Type of the object to retrieve" />
-		<!--- OR --->
-		<cfargument name="stObject" type="struct" required="false" hint="Provides the object" />
-		
-		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
-		
-		
-		<cfset var stLocation = structnew() />
-		<cfset var newPath = application.path.secureFilePath />
-		
-		<!--- Get the object if not passed in --->
-		<cfif not structkeyexists(arguments,"stObject")>
-			<cfset arguments.stObject = application.fapi.getContentObject(objectid=arguments.objectid,typename=arguments.typename) />
-		</cfif>
-		
-		<cfset stLocation = getFileLocation(argumentCollection=arguments,firstLook="public") />
-		
-		<cfif not structkeyexists(stLocation,"fullpath")>
-			<cfreturn />
-		</cfif>
-		
-		<cfif not directoryexists("#newPath##arguments.stMetadata.ftDestination#")>
-			<cfdirectory action="create" directory="#newPath##arguments.stMetadata.ftDestination#" mode="777" />
-		</cfif>
-		
-		<cffile action="move" source="#stLocation.fullpath#" destination="#newPath##arguments.stObject[arguments.stMetadata.name]#" />
-	</cffunction>
-	
-	<cffunction name="moveToPublic" access="public" output="false" returntype="void" hint="Moves the specified file to the public location">
-		<cfargument name="objectid" type="string" required="false" default="" hint="Object to retrieve" />
-		<cfargument name="typename" type="string" required="false" default="" hint="Type of the object to retrieve" />
-		<!--- OR --->
-		<cfargument name="stObject" type="struct" required="false" hint="Provides the object" />
-		
-		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
-		
-		
-		<cfset var stLocation = structnew() />
-		<cfset var newPath = application.path.defaultFilePath />
-		
-		<!--- Get the object if not passed in --->
-		<cfif not structkeyexists(arguments,"stObject")>
-			<cfset arguments.stObject = application.fapi.getContentObject(objectid=arguments.objectid,typename=arguments.typename) />
-		</cfif>
-		
-		<cfset stLocation = getFileLocation(argumentCollection=arguments,firstLook="secure") />
-		
-		<cfif not structkeyexists(stLocation,"fullpath")>
-			<cfreturn />
-		</cfif>
-		
-		<cfif not directoryexists("#newPath##arguments.stMetadata.ftDestination#")>
-			<cfdirectory action="create" directory="#newPath##arguments.stMetadata.ftDestination#" mode="777" />
-		</cfif>
-		
-		<cffile action="move" source="#stLocation.fullpath#" destination="#newPath##arguments.stObject[arguments.stMetadata.name]#" />
 	</cffunction>
 	
 	
@@ -683,106 +574,51 @@
 		<cfargument name="firstLook" type="string" required="false" hint="Where should we look for the file first. The default is to look based on permissions and status" />
 		
 		<cfset var stResult = structnew() />
-		<cfset var filepermission = 0 />
-		
-		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
-		
-		<!--- Does the user have access to this object --->
-		<sec:CheckPermission objectid="#arguments.stObject.objectid#" type="#arguments.stObject.typename#" permission="View" result="filepermission" />
-		<cfif not filepermission>
-			<cfset stResult = structnew() />
-			<cfset stResult.message = "Permission denied" />
-			<cfreturn structnew() />
-		</cfif>
 		
 		<!--- Throw an error if the field is empty --->
 		<cfif NOT len(arguments.stObject[arguments.stMetadata.name])>
 			<cfset stResult = structnew() />
-			<cfset stResult.message = "No file defined" />
+			<cfset stResult.method = "none" />
+			<cfset stResult.error = "No file defined" />
 			<cfreturn stResult />
+		</cfif>
+		
+		<cfif isSecured(stObject=arguments.stObject)>
+			<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="privatefiles",file=arguments.stObject[arguments.stMetadata.name]) />
 		<cfelse>
-			<cfset stResult.relativepath = arguments.stObject[arguments.stMetadata.name] />
+			<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="publicfiles",file=arguments.stObject[arguments.stMetadata.name]) />
 		</cfif>
 		
-		<!--- Ensure that the first character of the path in the DB is a  "/" --->
-		<cfif left(arguments.stObject[arguments.stMetadata.name],1) NEQ "/">
-			<cfset arguments.stObject[arguments.stMetadata.name] = "/#arguments.stObject[arguments.stMetadata.name]#" />
+		<cfreturn stResult />
+	</cffunction>
+	
+	<cffunction name="checkFileLocation" access="public" output="false" returntype="struct" hint="Checks that the location of the specified file is correct (i.e. privatefiles vs publicfiles)">
+		<cfargument name="objectid" type="string" required="false" default="" hint="Object to retrieve" />
+		<cfargument name="typename" type="string" required="false" default="" hint="Type of the object to retrieve" />
+		<!--- OR --->
+		<cfargument name="stObject" type="struct" required="false" hint="Provides the object" />
+		
+		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
+		
+		
+		<cfset var stResult = structnew() />
+		
+		<!--- Throw an error if the field is empty --->
+		<cfif NOT len(arguments.stObject[arguments.stMetadata.name])>
+			<cfset stResult = structnew() />
+			<cfset stResult.error = "No file defined" />
+			<cfreturn stResult />
 		</cfif>
-		<!--- Replace any  "\" with "/" for compatibility with everything --->
-		<cfset arguments.stObject[arguments.stMetadata.name] = replace(arguments.stObject[arguments.stMetadata.name],"\","/","all")>
 		
-		<!--- Determine the ACTUAL filename --->
-		<cfset stResult.filename = listLast(arguments.stObject[arguments.stMetadata.name],"/")>
-		
-		<!--- draft will be secured --->
-		<!--- ftSecure=true will always be secured --->
-		<!--- anonymous access=false will always be secured --->
-		<cfif NOT isSecured(arguments.stObject,arguments.stMetadata)>
-			<!--- Objects that are not ALWAYS secured and have been approved should be available under the webroot --->
-			
-			<!--- check file exists --->
-			<cfif structkeyexists(arguments,"firstLook") and arguments.firstLook eq "secure" and fileExists("#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#")>
-				<!--- This happens if the file is being moved from secure to public - we expect the file to be in secure --->
-				<cfset stResult.location = "secure" />
-				<cfset stResult.isCorrectLocation = true />
-				<cfset stResult.type = "stream" />
-				<cfset stResult.path = "#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#" />
-				<cfset stResult.fullpath = "#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#" />
-			<cfelseif fileExists("#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#")>
-				<cfset stResult.location = "public" />
-				<cfset stResult.isCorrectLocation = true />
-				<cfset stResult.type = "redirect" />
-				<cfset stResult.path = "#application.fapi.getFileWebRoot()##arguments.stObject[arguments.stMetadata.name]#" />
-				<cfset stResult.fullpath = "#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#" />
-			<cfelseif fileExists("#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#")>
-				<cfset stResult.location = "secure" />
-				<cfset stResult.isCorrectLocation = false />
-				<cfset stResult.locationShouldBe = "public" />
-				
-				<!--- If the permission gets assigned AFTER the object is sent to approved the file may still be in the secured directory. --->
-				<cfset stResult.type = "stream" />
-				<cfset stResult.path = "#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#" />
-				<cfset stResult.fullpath = "#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#" />
-			<cfelse>
-				<cfset stResult = structnew() />
-				<cfset stResult.message = "File is missing" />
-				<cfreturn stResult />
-			</cfif>
-			
-			<!--- determine mime type --->
-			<cfset stResult.mimeType=getPageContext().getServletContext().getMimeType("#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#") />
+		<cfif isSecured(stObject=arguments.stObject,stMetadata=arguments.stMetadata)>
+			<cfset stResult.correctlocation = "privatefiles" />
+			<cfset stResult.currentlocation = application.fc.lib.cdn.ioFindFile(locations="privatefiles,publicfiles",file=arguments.stObject[arguments.stMetadata.name]) />
 		<cfelse>
-			<!--- Everything else must be streamed from a path --->
-			<cfset stResult.type = "stream" />
-			
-			<!--- check file exists --->
-			<cfif structkeyexists(arguments,"firstLook") and arguments.firstLook eq "public" and fileexists("#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#")>
-				<!--- This happens if the file is being moved from public to secure - we expect the file to be in public --->
-				<cfset stResult.location = "public" />
-				<cfset stResult.isCorrectLocation = true />
-				<cfset stResult.path = "#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#" />
-				<cfset stResult.fullpath = stResult.path />
-			<cfelseif fileExists("#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#")>
-				<cfset stResult.location = "secure" />
-				<cfset stResult.isCorrectLocation = true />
-				<cfset stResult.path = "#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#" />
-				<cfset stResult.fullpath = stResult.path />
-			<cfelseif fileexists("#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#")>
-				<cfset stResult.location = "public" />
-				<cfset stResult.isCorrectLocation = false />
-				<cfset stResult.locationShouldBe = "secure" />
-				
-				<cfset stResult.path = "#application.path.defaultfilepath##arguments.stObject[arguments.stMetadata.name]#" />
-				<cfset stResult.fullpath = stResult.path />
-			<cfelse>
-				<cfset stResult = structnew() />
-				<cfset stResult.message = "File is missing" />
-				<cfreturn stResult />
-			</cfif>
-			
-			<!--- determine mime type --->
-			<cfset stResult.mimeType=getPageContext().getServletContext().getMimeType("#application.path.securefilepath##arguments.stObject[arguments.stMetadata.name]#") />
+			<cfset stResult.correctlocation = "publicfiles" />
+			<cfset stResult.currentlocation = application.fc.lib.cdn.ioFindFile(locations="publicfiles,privatefiles",file=arguments.stObject[arguments.stMetadata.name]) />
 		</cfif>
+		
+		<cfset stResult.correct = stResult.correctlocation eq stResult.currentlocation />
 		
 		<cfreturn stResult />
 	</cffunction>
@@ -809,27 +645,24 @@
 		<cfargument name="stObject" type="struct" required="false" hint="Provides the object" />
 		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
 		
-		<cfset var stLocation = getFileLocation(argumentCollection=arguments) />
-		<cfset var newfilename = "" />
-		<cfset var uniquekey = 1 />
+		<cfset var currentfilename = arguments.stObject[arguments.stMetadata.name] />
+		<cfset var currentlocation = "" />
 		
-		<cfif not structkeyexists(stLocation,"fullpath")>
+		<cfif not len(currentfilename)>
 			<cfreturn "" />
 		</cfif>
 		
-		<cfset newfilename = rereplacenocase(arguments.stObject[arguments.stMetadata.name],"((\.[\w\d]+)?)$","#uniquekey#\1") />
-		<cfloop condition="fileexists(application.path.defaultfilepath & newfilename) or fileexists(application.path.securefilepathath & newfilename)">
-			<cfset uniquekey = uniquekey + 1 />
-			<cfset newfilename = rereplacenocase(arguments.stObject[arguments.stMetadata.name],"((\.[\w\d]+)?)$","#uniquekey#\1") />
-		</cfloop>
+		<cfset currentlocation = application.fc.lib.cdn.ioFindFile(locations="privatefiles,publicfiles",file=currentfilename) />
 		
-		<cfif isSecured(arguments.stObject,arguments.stMetadata)>
-			<cffile action="copy" source="#stLocation.fullpath#" destination="#application.path.securefilepath##newfilename#" mode="777" />
-		<cfelse>
-			<cffile action="copy" source="#stLocation.fullpath#" destination="#application.path.defaultfilepath##newfilename#" mode="777" />
+		<cfif not len(currentpath)>
+			<cfreturn "" />
 		</cfif>
 		
-		<cfreturn newfilename />
+		<cfif isSecured(arguments.stObject,arguments.stMetadata)>
+			<cfreturn application.fc.lib.cdn.ioCopyFile(source_location=currentlocation,source_file=currentfilename,dest_location="privatefiles",dest_file=newfilename,nameconflict="makeunique",uniqueamong="privatefiles,publicfiles") />
+		<cfelse>
+			<cfreturn application.fc.lib.cdn.ioCopyFile(source_pathlocation=currentlocation,source_file=currentfilename,dest_location="publicfiles",dest_file=newfilename,nameconflict="makeunique",uniqueamong="privatefiles,publicfiles") />
+		</cfif>
 	</cffunction>
 	
 </cfcomponent> 

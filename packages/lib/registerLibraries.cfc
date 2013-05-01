@@ -58,6 +58,10 @@
 							lFiles="autoresize.jquery.min.js,custom.js" />
 							
 		
+		<skin:registerJS	id="image-formtool"
+							baseHREF="#application.url.webtop#/thirdparty/image-formtool"
+							lFiles="image-formtool.js" />
+							
 		<skin:registerJS	id="jquery-uploadify"
 							baseHREF="#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4"
 							lFiles="swfobject.js,jquery.uploadify.v2.1.4.min.js" />
@@ -105,6 +109,10 @@
 							baseHREF="#application.url.webtop#/thirdparty/jquery/css/Aristo"
 							lFiles="jquery-ui-1.8.7.custom.css,custom.css" />
 		
+		<skin:registerCSS	id="image-formtool"
+							baseHREF="#application.url.webtop#/thirdparty/image-formtool"
+							lFiles="image-formtool.css" />
+							
 		<skin:registerCSS	id="jquery-uploadify"
 							baseHREF="#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4"
 							lFiles="uploadify.css" />

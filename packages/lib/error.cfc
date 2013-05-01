@@ -207,7 +207,7 @@
 		
 		<cfset var stacktrace = createObject("java","java.lang.StringBuffer").init() />
 		<cfset var i = 0 />
-		<cfset var firstline = "N/A" />
+		<cfset var firstline = "" />
 		
 		<cfif structkeyexists(arguments.log,"stack") and arraylen(arguments.log.stack)>
 			<cfset firstline = "The specific sequence of files included or processed is #arguments.log.stack[1].template#, line: #arguments.log.stack[1].line#" />
@@ -215,7 +215,7 @@
 		
 		<cfif structKeyExists(arguments,"logFile") and len(arguments.logFile) and structkeyexists(arguments.log,"message")>
 			<cfif NOT structkeyexists(arguments.log,"stack")>
-				<cflog file="#arguments.logFile#" application="true" type="#arguments.logType#" text="#arguments.log.message#. #firstline#" />
+				<cflog file="#arguments.logFile#" application="true" type="information" text="#arguments.log.message#" />
 			<cfelse>
 				<cfloop from="1" to="#arraylen(arguments.log.stack)#" index="i">
 					<cfset stacktrace.append(arguments.log.stack[i].template) />
@@ -225,7 +225,7 @@
 						<cfset stacktrace.append(variables.newline) />
 					</cfif>
 				</cfloop>
-				<cflog file="#arguments.logFile#" application="true" type="#arguments.logType#" text="#arguments.log.message#. #firstline##newline##stacktrace.toString()#" />
+				<cflog file="#arguments.logFile#" application="true" type="information" text="#arguments.log.message#. #firstline##newline##stacktrace.toString()#" />
 			</cfif>
 		<cfelse>
 			<cfif arguments.bApplication and structkeyexists(arguments.log,"message")>

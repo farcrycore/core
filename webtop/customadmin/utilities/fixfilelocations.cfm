@@ -5,15 +5,12 @@
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 
-<cfset stWrong = structnew() />
-<cfset wrong = 0 />
+<cfset qWrong = querynew("typename,property,objectid,label,filename,currentlocation,correctlocation") />
 
 <cfloop collection="#application.stCOAPI#" item="thistype">
 	<cfif listcontains("type,rule",application.stCOAPI[thistype].class)>
 		<cfloop collection="#application.stCOAPI[thistype].stProps#" item="thisprop">
 			<cfif isdefined("application.stCOAPI.#thistype#.stProps.#thisprop#.metadata.ftType") and application.stCOAPI[thistype].stProps[thisprop].metadata.ftType eq "file">
-				<cfparam name="stWrong[thistype]" default="#structnew()#" />
-				<cfparam name="stWrong[thistype][thisprop]" default="#querynew('objectid,label,filename,shouldbe')#" />
 				<cfset o = application.fapi.getContentType(typename=thistype) />
 				<cfquery datasource="#application.dsn#" name="q">
 					select		objectid,label,#thisprop#
@@ -22,17 +19,18 @@
 				</cfquery>
 				
 				<cfloop query="q">
-					<cfset stLocation = o.getFileLocation(objectid=q.objectid,typename=thistype,fieldname=thisprop) />
-					<cfif structkeyexists(stLocation,"isCorrectLocation") and not stLocation.isCorrectLocation>
-						<cfset queryaddrow(stWrong[thistype][thisprop]) />
-						<cfset querysetcell(stWrong[thistype][thisprop],"objectid",q.objectid) />
-						<cfset querysetcell(stWrong[thistype][thisprop],"label",q.label) />
-						<cfset querysetcell(stWrong[thistype][thisprop],"filename",listlast(q[thisprop][q.currentrow],"\/")) />
-						<cfset querysetcell(stWrong[thistype][thisprop],"shouldbe",stLocation.locationShouldBe) />
+					<cfset stCheck = application.formtools.file.oFactory.checkFileLocation(objectid=q.objectid,typename=thistype,stMetadata=application.stCOAPI[thistype].stProps[thisprop].metadata) />
+					<cfif structkeyexists(stLocation,"correct") and not stLocation.correct>
+						<cfset queryaddrow(qWrong) />
+						<cfset querysetcell(qWrong,"typename",thistype) />
+						<cfset querysetcell(qWrong,"property",thisprop) />
+						<cfset querysetcell(qWrong,"objectid",q.objectid) />
+						<cfset querysetcell(qWrong,"label",q.label) />
+						<cfset querysetcell(qWrong,"filename",listlast(q[thisprop][q.currentrow],"\/")) />
+						<cfset querysetcell(qWrong,"currentlocation",stLocation.currentlocation) />
+						<cfset querysetcell(qWrong,"correctlocation",stLocation.correctlocation) />
 					</cfif>
 				</cfloop>
-				
-				<cfset wrong = wrong + stWrong[thistype][thisprop].recordcount />
 			</cfif>
 		</cfloop>
 	</cfif>
@@ -40,24 +38,20 @@
 
 <cfset message = "" />
 <ft:processForm action="Fix files">
-	<cfloop collection="#stWrong#" item="thistype">
-		<cfloop collection="#stWrong[thistype]#" item="thisprop">
-			<cfloop query="stWrong.#thistype#.#thisprop#">
-				<cfset aVars = arraynew(1) />
-				<cfset aVars[1] = label />
-				<cfset aVars[2] = filename />
-				<cfset aVars[3] = thistype />
-				<cfset aVars[4] = thisprop />
-				
-				<cfif shouldbe eq "public">
-					<cfset application.formtools.file.oFactory.moveToPublic(objectid=objectid,typename=thistype,stMetadata=application.stCOAPI[thistype].stProps[thisprop].metadata) />
-					<cfset message = message & application.fapi.getResource("webtop.utilities.fixfilelocations.topublic@text","'{2}' ({3}) moved to public directory<br />","",aVars) />
-				<cfelse>
-					<cfset application.formtools.file.oFactory.moveToSecure(objectid=objectid,typename=thistype,stMetadata=application.stCOAPI[thistype].stProps[thisprop].metadata) />
-					<cfset message = message & application.fapi.getResource("webtop.utilities.fixfilelocations.tosecure@text","'{2}' ({3}) moved to secure directory<br />","",aVars) />
-				</cfif>
-			</cfloop>
-		</cfloop>
+	<cfloop query="qWrong">
+		<cfset aVars = arraynew(1) />
+		<cfset aVars[1] = qWrong.label />
+		<cfset aVars[2] = qWrong.filename />
+		<cfset aVars[3] = qWrong.thistype />
+		<cfset aVars[4] = qWrong.thisprop />
+		
+		<cfset application.fc.lib.file.ioMoveFile(source_location=qWrong.currentlocation,source_file=qWrong.filename,dest_location=qWrong.correctlocation) />
+		
+		<cfif qWrong.correctlocation eq "publicfiles">
+			<cfset message = message & application.fapi.getResource("webtop.utilities.fixfilelocations.topublic@text","'{2}' ({3}) moved to public directory<br />","",aVars) />
+		<cfelse>
+			<cfset message = message & application.fapi.getResource("webtop.utilities.fixfilelocations.tosecure@text","'{2}' ({3}) moved to secure directory<br />","",aVars) />
+		</cfif>
 	</cfloop>
 </ft:processForm>
 
@@ -75,8 +69,8 @@
 
 <cfif len(message)>
 	<cfoutput><p class="success">#message#</p></cfoutput>
-<cfelseif wrong>
-	<admin:resource key="webtop.utilities.fixfilelocations.wrongfiles@text" variables="#wrong#"><cfoutput>
+<cfelseif qWrong.recordcount>
+	<admin:resource key="webtop.utilities.fixfilelocations.wrongfiles@text" variables="#qWrong.recordcount#"><cfoutput>
 		<p class="error">This application has {1} file/s in incorrect locations.</p>
 	</cfoutput></admin:resource>
 	

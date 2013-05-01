@@ -249,8 +249,7 @@
 			
 			<!--- try to return a cached version of the file --->		
 			<cfset sCacheFileName = etag & '.' & sType />
-			<cfset sCacheFile = variables.sCachePath & '/' & sCacheFileName />
-			<cfif fileExists(sCacheFile)>
+			<cfif application.fc.lib.cdn.ioFileExists(location="cache",file=sCacheFileName)>
 				<cfreturn sCacheFileName />
 			</cfif>
 			
@@ -268,7 +267,7 @@
 					</cfloop>
 				</cfif>
 				--->
-				<cffile action="write" file="#sCacheFile#" output="#sOutput#" mode="664" />
+				<cfset sCacheFileName = application.fc.lib.cdn.ioWriteFile(location="cache",file=sCacheFileName,data=sOutput) />
 			</cflock>
 		</cfif>
 		

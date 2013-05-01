@@ -89,15 +89,8 @@
 		
 		
 		<cfif len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#New"])>
-	
-			<cffile action="UPLOAD"
-		        filefield="#stMetadata.FormFieldPrefix##stMetadata.Name#New" 
-		        destination="#application.path.project#/www#arguments.stMetadata.ftDestination#"
-				nameconflict="MAKEUNIQUE" mode="664">					
-									
-			<!--- </cfif> --->
-			<cfset stResult.value = "#arguments.stMetadata.ftDestination#/#cffile.ServerFile#">
 			
+			<cfset stResult.value = application.fc.lib.cdn.ioUploadFile(location="publicfiles",destination=arguments.stMetadata.ftDestination,field="#stMetadata.FormFieldPrefix##stMetadata.Name#New",nameconflict="makeunique",uniqueamong="publicfiles,securefiles") />
 			
 		</cfif>
 		
