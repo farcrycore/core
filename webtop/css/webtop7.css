@@ -489,7 +489,7 @@ th.objectadmin-sortable span:hover {
 
 /* tweak icon position in buttons */
 .btn [class^="icon"] {
-	font-size: 16px;
+	/*font-size: 16px;*/
 	margin-top: 0;
 	margin-right: 2px;
 	margin-left: -4px;
