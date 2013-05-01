@@ -12,7 +12,7 @@
 		<cfset var stProps = duplicate(arguments.stProperties) />
 
 		<!--- nothing to archive when an update app is happening --->
-		<cfif isDefined("application.bInit") AND application.bInit eq false>
+		<cfif NOT isDefined("application.bInit") OR application.bInit eq false>
 			<cfreturn />
 		</cfif>
 
