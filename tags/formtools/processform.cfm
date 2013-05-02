@@ -147,7 +147,7 @@
 	<!--- If you set bHideForms, you are effectively exiting the webskin but not redirecting anywhere --->
 	<cfif structKeyExists(attributes, "bHideForms") AND isBoolean(attributes.bHideForms) AND attributes.bHideForms>
 		<cfset attributes.exit = true />
-		<cfset stLocal.onExitProcess = "" />
+		<cfset stLocal.onExitProcess = "hideforms" />
 	</cfif>
 	
 
@@ -164,6 +164,25 @@
 		<cfif not structKeyExists(stLocal, "onExitProcess")>
 			<cfif structKeyExists(caller, "arguments") AND structKeyExists(caller.arguments, "onExitProcess")>
 				<cfset stLocal.onExitProcess = caller.arguments.onExitProcess />		
+			</cfif>
+		</cfif>
+
+		<cfif not isDefined("stLocal.onExitProcess") OR not isStruct(stLocal.onExitProcess)>
+			<cfif not len(stLocal.onExitProcess)>
+				<cfif structKeyExists(url, "dialogID")>
+										
+	
+					<cfset stLocal.onExitProcess = structNew()>
+					<cfset stLocal.onExitProcess.type = "HTML">
+					<cfsavecontent variable="stLocal.onExitProcess.content">
+						<cfoutput>
+						<script type="text/javascript">
+						<!--- parent.$j('###url.dialogID#').dialog('close'); --->
+						parent.$('##fcModal').modal('hide');
+						</script>
+						</cfoutput>
+					</cfsavecontent>
+				</cfif>
 			</cfif>
 		</cfif>
 		
@@ -193,6 +212,8 @@
 					<cfif len(stLocal.stOnExit.Content)>
 						<cfif stLocal.stOnExit.Content EQ "refresh">
 							<skin:location href="#cgi.SCRIPT_NAME#?#cgi.QUERY_STRING#" addtoken="false" />
+						<cfelseif stLocal.stOnExit.Content EQ "hideforms">
+							<!--- DO NOTHING --->
 						<cfelse>
 							<skin:location href="#stLocal.stOnExit.Content#" addtoken="false" />
 						</cfif>

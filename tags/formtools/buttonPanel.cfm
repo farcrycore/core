@@ -15,7 +15,7 @@
 
 <cfif thistag.ExecutionMode EQ "Start">
 	
-	<cfparam  name="attributes.class" default="ui-widget-header">
+	<cfparam  name="attributes.class" default="form-actions">
 	<cfparam  name="attributes.style" default="">
 	
 	<cfset bPrimaryDefined = false />

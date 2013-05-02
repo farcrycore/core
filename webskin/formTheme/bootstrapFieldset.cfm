@@ -43,19 +43,26 @@
 		<cfset innerHTML = thisTag.generatedContent />
 		<cfset thisTag.generatedContent = "" />
 	</cfif>
-
-	<cfset formtheme = application.fapi.getDefaultFormTheme()>
 	
+	<cfoutput><fieldset class="fieldset" style="#trim(attributes.style)#"></cfoutput>
 	
-	<!--- Ensure that the webskin exists for the formtheme otherwise default to bootstrap --->
-	<cfif structKeyExists(application.forms.formTheme.stWebskins, '#formtheme#Fieldset') >
-		<cfset modulePath = application.forms.formTheme.stWebskins['#formtheme#Fieldset'].path>
-	<cfelse>
-		<cfset modulePath = application.forms.formTheme.stWebskins['bootstrapFieldset'].path>
+	<cfif len(attributes.legend)>
+		<cfoutput><legend>#trim(attributes.legend)#</legend></cfoutput>
 	</cfif>
-		
-	<cfmodule template="#modulePath#" attributecollection="#attributes#">
-		<cfoutput>#innerHTML#</cfoutput>
-	</cfmodule>
+	
+	<cfif len(attributes.helpText)>
+		<cfoutput>
+        	<div class="helpsection">
+				<cfif len(attributes.helpTitle)>
+					<h4>#attributes.helpTitle#</h4>
+				</cfif>
+				<p>#attributes.helpText#</p>
+			</div>	
+        </cfoutput>
+	</cfif>
+	
+	<cfoutput>#innerHTML#</cfoutput>	
+	
+	<cfoutput></fieldset></cfoutput>
 </cfif>
 

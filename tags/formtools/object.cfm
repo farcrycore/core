@@ -48,12 +48,15 @@
 	<cfparam name="attributes.ObjectLabel" default=""><!--- Used to group and label rendered object if required --->
 	<cfparam name="attributes.lFields" default=""><!--- List of fields to render --->
 	<cfparam name="attributes.lExcludeFields" default="label"><!--- List of fields to exclude from render --->
-	<cfparam name="attributes.class" default=""><!--- class with which to set all farcry form tags --->
-	<cfparam name="attributes.style" default=""><!--- style with which to set all farcry form tags --->
+	<cfparam name="attributes.class" default=""><!--- wrapper class around output --->
+	<cfparam name="attributes.style" default=""><!--- wrapper style around output --->
 	<cfparam name="attributes.format" default="edit"><!--- edit or display --->
 	<cfparam name="attributes.IncludeLabel" default="1">
-	<cfparam name="attributes.labelClass" default="label"><!--- The class to be applied to all labels --->
+	<cfparam name="attributes.labelClass" default="control-label"><!--- The class to be applied to all labels --->
 	<cfparam name="attributes.IncludeFieldSet" default="">
+	<cfparam name="attributes.legend" default=""><!--- the legend to output on the fieldset --->
+	<cfparam name="attributes.helpTitle" default=""><!--- title for the help section --->
+	<cfparam name="attributes.helpText" default=""><!--- text to provide help information for the fieldset --->
 	<cfparam name="attributes.IncludeBR" default="1">
 	<cfparam name="attributes.InTable" default="0">
 	<cfparam name="attributes.insidePLP" default="0"><!--- how are we rendering the form --->
@@ -69,8 +72,10 @@
 	<cfparam name="attributes.bShowFieldHints" default="true" type="boolean"><!--- Flag to determine if the field hints are display. --->
 	<cfparam name="attributes.prefix" default="" /><!--- Allows the developer to pass in the prefix they wish to use. Default is the objectid stripped of the dashes. --->
 	<cfparam name="attributes.focusField" default="" /><!--- Enter the name of the field to focus on when rendering the form. --->
+	<cfparam name="attributes.autosave" default="" /><!--- Enter boolean to toggle default autosave values on properties --->
 	
-
+	
+	<cfset variables.stReturnFields = structNew()>
 
 	<!--- If the attributes [IncludeFieldSet] has not been explicitly defined, work out the value. --->
 	<cfif attributes.includeFieldSet EQ "">
@@ -228,7 +233,6 @@
 			</cfif>
 		</cfloop>
 	</cfif>
-	
 
 		
 	<!--- CHECK TO SEE IF OBJECTED HAS ALREADY BEEN RENDERED. IF SO, USE SAME PREFIX --->
@@ -267,7 +271,7 @@
 		</cfif>
 	</cfif>
 	
-	<cfoutput><input type="hidden" name="FarcryFormPrefixes" value="#variables.prefix#" /></cfoutput>
+	
 	<cfset Request.farcryForm.stObjects[variables.prefix] = StructNew()>
 		
 	
@@ -283,14 +287,16 @@
 		<cfset Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.lock = true />
 	</cfif>
 
-
-	
-	<cfoutput><div class="#attributes.class#"></cfoutput>
+<!--- 
+	<cfif len(attributes.class)>
+		<cfoutput><div class="#attributes.class#"></cfoutput>
+	</cfif>
 	<cfif attributes.IncludeFieldSet>
 		<cfoutput><fieldset class="fieldset"></cfoutput>
 	
 		<cfif isDefined("attributes.legend") and len(attributes.legend)>
-			<cfoutput><h2 class="legend">#attributes.legend#</h2></cfoutput>
+			<!--- <cfoutput><h2 class="legend">#attributes.legend#</h2></cfoutput> --->
+			<cfoutput><legend>#attributes.legend#</legend></cfoutput>
 		</cfif>	
 	</cfif>
 	
@@ -303,10 +309,14 @@
 				<p>#attributes.HelpSection#</p>
 			</div>
 		</cfoutput>
-	</cfif>
+	</cfif> --->
+	
+	
+	<cfset ftTypeMetadataAutoSave = application.fapi.getContentTypeMetadata(typename="#typename#", md="ftAutoSave", default="") />
 	
 
 	<cfloop list="#lFieldsToRender#" index="i">
+		
 		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i] = StructNew()>
 
 		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i] = Duplicate(stFields[i].MetaData)>
@@ -315,6 +325,8 @@
 		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].ftLabel = oType.getI18Property(property=i,value='label') />
 		<cfif structkeyexists(Request.farcryForm.stObjects[variables.prefix]['MetaData'][i],"ftHint") and len(Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].ftHint)>
 			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].ftHint = oType.getI18Property(property=i,value='hint') />
+		<cfelse>
+			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].ftHint = "" />	
 		</cfif>
 		
 		
@@ -350,7 +362,7 @@
 			<cfset StructAppend(ftFieldMetadata, attributes.stPropMetadata[ftFieldMetadata.Name])>
 		</cfif>
 		
-		
+
 		<!--- Add validation classes --->
 		<cfif attributes.bValidation>
 			<cfif len(ftFieldMetadata.ftValidation)>
@@ -375,7 +387,7 @@
 			</cfif>
 		</cfif>		
 				
-				
+		<cfparam name="ftFieldMetadata.ftShowLabel" default="true" />	
 				
 		
 		<cfset tFieldType = application.fapi.getFormtool(ftFieldMetadata.ftType) />
@@ -493,7 +505,7 @@
 					
 					<cfset variables.formValidationMessageInner = request.stFarcryFormValidation[stObj.ObjectID][i].stError.message>
 					<cfsavecontent variable="variables.formValidationMessage">
-						<cfoutput><p class="errorField" htmlfor="#variables.prefix##i#" for="#variables.prefix##i#">#request.stFarcryFormValidation[stObj.ObjectID][i].stError.message#</p></cfoutput>
+						<cfoutput>#request.stFarcryFormValidation[stObj.ObjectID][i].stError.message#</cfoutput>
 						<!--- <div class="#request.stFarcryFormValidation[stObj.ObjectID][i].stError.class#">#request.stFarcryFormValidation[stObj.ObjectID][i].stError.message#</div> --->
 					</cfsavecontent>
 					
@@ -503,10 +515,234 @@
 				
 			</cfif>
 
-						
-			<cfif NOT len(Attributes.r_stFields)>
+			<cfif isDefined("request.hideAutoSaveWrapper") AND request.hideAutoSaveWrapper EQ 1>
+				<!--- Leave returnHTML as is --->
+			<cfelse>
+			
 				
-				<grid:div class="ctrlHolder #ftFieldMetadata.ftLabelAlignment#Labels #ftFieldMetadata.ftType# #variables.errorClass#">
+			
+				<cfsavecontent variable="variables.returnHTML">
+					<cfoutput>
+					<span id="wrap-#variables.prefix##ftFieldMetadata.Name#" class="propertyRefreshWrap" ft:format="#attributes.format#" ft:type="#stObj.typename#" ft:objectid="#stObj.objectid#" ft:property="#ftFieldMetadata.Name#" ft:prefix="#variables.prefix#" ft:watchFieldname="#stObj.typename#.#ftFieldMetadata.Name#" ft:reloadOnAutoSave="#yesNoFormat(ftFieldMetadata.ftReloadOnAutoSave)#" ft:refreshPropertyOnAutoSave="#yesNoFormat(ftFieldMetadata.ftRefreshPropertyOnAutoSave)#" watchFieldname="#stObj.typename#.#ftFieldMetadata.Name#" ft:watchingFields="<cfif structKeyExists(FTFIELDMETADATA, "ftWatchingFields")>#ftFieldMetadata.ftWatchingFields#</cfif>" >
+						#variables.returnHTML#
+					</span>
+					</cfoutput>
+				</cfsavecontent>
+				
+				<!--- TODO: --->
+				<!--- <cfif ftFieldMetadata.ftMultifield>
+					<cfsavecontent variable="variables.returnHTML">
+						<cfoutput><div class="multiField">#variables.returnHTML#</div></cfoutput>
+					</cfsavecontent>
+				</cfif> --->
+				
+			
+				<cfset bAddAutoSave = false>
+				
+				<cfif len(attributes.autosave)>
+					<cfset bAddAutoSave = attributes.autosave />
+				<cfelseif isDefined("Request.farcryForm.autoSave") AND len(Request.farcryForm.autoSave)>
+					<cfset bAddAutoSave = Request.farcryForm.autoSave />
+				<cfelse>
+					<cfif ftTypeMetadataAutoSave EQ "*" OR listFindNoCase(ftTypeMetadataAutoSave,ftFieldMetadata.Name)>
+						<cfset bAddAutoSave = true>
+					<cfelseif ftFieldMetadata.ftAutoSave>
+						<cfset bAddAutoSave = true>
+					</cfif>
+				</cfif>
+				
+				<cfif bAddAutoSave>
+						
+					
+					<cfsavecontent variable="variables.returnHTML">
+						<cfoutput>
+						<span class="wrap-save-on-change">#variables.returnHTML#</span>
+						</cfoutput>
+					</cfsavecontent>
+					
+					
+					<!--- '#application.url.webtop#/facade/ftajax.cfm?ajaxmode=1&formtool='+watcher.formtool+'&typename='+watcher.typename+'&fieldname='+watcher.fieldname+'&property='+watcher.property+'&objectid='+watcher.objectid --->
+					
+					<cfif NOT request.mode.ajax><!--- We do not want multiple of this live watching code on a page --->
+						<skin:onReady id="wrap-save-on-change">
+						<cfoutput>
+							
+							$fc.reloadWebskinWraps = function(options) {
+								var $defaultOptions = {
+								    typename: '',
+								    objectid: '',
+								    webskin: ''
+								}
+								
+								var $options = $.extend({}, $defaultOptions, options || {});
+								
+								$j('.webskin-wrap').each(function(index) {
+									var $webskinWrap = $j(this);
+									var $webskinTypename = $webskinWrap.attr('ft:typename');
+									var $webskinObjectID = $webskinWrap.attr('ft:objectid');
+									var $webskinView = $webskinWrap.attr('ft:webskin');
+									
+									var bRefresh = true;
+									
+									if($options.typename.length){
+										if( $webskinTypename != $options.typename ) {
+											bRefresh = false;
+										}
+									}
+									
+									if($options.objectid.length){
+										if( $webskinObjectID != $options.objectid ) {
+											bRefresh = false;
+										}
+									}
+									
+									if($options.webskin.length){
+										if( $webskinView != $options.webskin ) {
+											bRefresh = false;
+										}
+									}
+									
+									if (bRefresh){
+										$fc.reloadWebskinWrap($webskinWrap);
+									}
+								});
+								
+							}
+							
+							$fc.reloadWebskinWrap = function($webskinWrap,focusFieldID) {
+								
+								focusFieldID = focusFieldID ? focusFieldID : '';
+								
+								
+								var $webskinTypename = $webskinWrap.attr('ft:typename');
+								var $webskinObjectID = $webskinWrap.attr('ft:objectid');
+								var $webskinView = $webskinWrap.attr('ft:webskin');
+								
+								$j( $webskinWrap ).toromask('&nbsp;');
+								$j( $webskinWrap ).load('/index.cfm?ajaxmode=1&type=' + $webskinTypename + '&objectid=' + $webskinObjectID + '&view=' + $webskinView, function(){
+									$j( $webskinWrap ).torounmask('');
+									if (focusFieldID.length){ $j('##' + focusFieldID).focus(); }
+								});
+							}
+							
+							$j(document).on('change', '.wrap-save-on-change input:not(.helper),.wrap-save-on-change textarea:not(.helper),.wrap-save-on-change select:not(.helper)', function() {	
+								
+								
+								var $propertyWrap = $j(this).closest('.propertyRefreshWrap');
+								var propertyPrefix = $propertyWrap.attr('ft:prefix');
+								var propertyType = $propertyWrap.attr('ft:type');
+								var propertyObjectID = $propertyWrap.attr('ft:objectid');
+								var propertyName = $propertyWrap.attr('ft:property');
+								var propertyWatchingFields = $propertyWrap.attr('ft:watchingFields');
+								var reloadOnAutoSave = $propertyWrap.attr('ft:reloadOnAutoSave');
+								var autoSaveToSessionOnly = $j(this).closest('form').hasClass('autoSaveToSessionOnly');
+								
+								var $webskinWrap = $j(this).closest('.webskin-wrap');
+								var webskinType = $webskinWrap.attr('ft:typename');
+								var webskinObjectID = $webskinWrap.attr('ft:objectid');
+								var webskinView = $webskinWrap.attr('ft:webskin');
+								
+								lData = $propertyWrap.find("input,textarea,select").serialize();
+								lData = lData.replace(new RegExp( propertyPrefix, "gi" ),"");
+								
+								$j.ajaxq('AutoSave',{
+								
+									type: "POST",
+									cache: false,
+									url: '/index.cfm?ajaxmode=1&type=' + propertyType + '&objectid=' + propertyObjectID + '&view=ajaxSaveProperty&bSessionOnly=' + autoSaveToSessionOnly + '&propertyName=' + propertyName, 
+									context: $j(this),
+									success: function(data){
+										
+										$j('.webskin-wrap').each(function(index) {
+											var $currentWebskinWrap = $j(this);
+											
+											var $webskinWatchFields = $j(this).attr("ft:watchFields");
+											
+											if ($webskinWatchFields.length){
+												var valueArray = $webskinWatchFields.split(",");
+																						
+												for(var i=0; i<valueArray.length; i++){
+													if (valueArray[i] == (propertyPrefix + propertyName) ){
+														// refresh the webskin wrap
+														$fc.reloadWebskinWrap( $currentWebskinWrap );	
+													} else if(valueArray[i] == (propertyName) ){
+														// refresh the webskin wrap
+														$fc.reloadWebskinWrap( $currentWebskinWrap );	
+													}
+												}
+														
+											}						
+										});
+										
+										
+										if(data['BSUCCESS'] == 1) {
+											var focusFieldID = '';
+											if ($webskinWrap.length) {
+												var focusFieldID = $(':focus').attr('id');
+												$fc.reloadWebskinWrap($webskinWrap, focusFieldID);
+												
+											} else {
+												
+												if (reloadOnAutoSave == 'Yes'){
+													location=location;
+												} else {
+													$fc.refreshProperty( $j(this).closest('span.propertyRefreshWrap') );
+													
+													if (propertyWatchingFields.length){
+														var valueArray = propertyWatchingFields.split(",");
+																								
+														for(var i=0; i<valueArray.length; i++){
+															if (valueArray[i].indexOf('.') !== -1) {
+																// refresh all properties regardless of object
+																var elSelector = "span.propertyRefreshWrap[ft\\:watchFieldname='" + valueArray[i] + "']";
+																
+																$j(elSelector).each(function(index) {
+																	$fc.refreshProperty( $j(this) );
+																});
+																		
+															} else {			
+																// only refresh the current objects property
+																if ($j('##' + propertyPrefix + valueArray[i]).is(":focus")){
+																	focusFieldID = $j('##' + propertyPrefix + valueArray[i]).attr('id');
+																}
+																
+																$fc.refreshProperty( $j('##wrap-' + propertyPrefix + valueArray[i]), focusFieldID );
+															}
+														}
+													}
+												}
+											}
+										} else {
+											$fc.refreshProperty( $j(this).closest('span.propertyRefreshWrap') );
+											if (data['MESSAGE'].length){
+												alert(data['MESSAGE']);
+											} else {
+												alert('Field [' + propertyName + '] was not saved');
+											}
+										}
+										
+									}, 
+									error: function(data){	
+									},
+									complete: function(){
+									},
+									data: lData,
+									
+									timeout: 15000
+								});
+											
+														
+							});
+						</cfoutput>
+						</skin:onReady>
+					</cfif>
+				</cfif>
+				
+			</cfif>	
+			
+			<cfif NOT len(Attributes.r_stFields) and 1 eq 0>
+				
+				<grid:div class="control-group ctrlHolder #ftFieldMetadata.ftLabelAlignment#Labels #ftFieldMetadata.ftType# #variables.errorClass#">
 					
 					<cfoutput>#variables.formValidationMessage#</cfoutput>
 					
@@ -520,24 +756,44 @@
 						<cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#" class="#attributes.labelClass#">#ftFieldMetadata.ftlabel#<cfif findNoCase("required",ftFieldMetadata.ftClass)> <em>*</em> </cfif></label></cfoutput>
 					</cfif>
 					
+	
 					<cfoutput>
+					<div class="controls">
+						
+		
 						#variables.returnHTML#
+						
+						<cfif attributes.bShowFieldHints AND structKeyExists(ftFieldMetadata,"ftHint") and len(ftFieldMetadata.ftHint)>
+							<!--- <cfoutput><p class="formHint">#ftFieldMetadata.ftHint#</p></cfoutput> --->
+							<cfoutput><span class="help-inline">#ftFieldMetadata.ftHint#</span></cfoutput>
+						<cfelse>
+							<!--- <cfoutput><br style="clear:both;"></cfoutput> --->
+						</cfif>
+						
+					</div>
 					</cfoutput>
 					
-	
-					<cfif attributes.bShowFieldHints AND structKeyExists(ftFieldMetadata,"ftHint") and len(ftFieldMetadata.ftHint)>
-						<cfoutput><p class="formHint">#ftFieldMetadata.ftHint#</p></cfoutput>
-					</cfif>
-					<cfoutput><br style="clear:both;"></cfoutput>
 				</grid:div>
 			<cfelse>
 				
-				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].HTML = returnHTML>
+				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].HTML = variables.returnHTML>
+				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].errorClass = variables.errorClass />
 				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].errorMessage = variables.formValidationMessageInner />
-				<cfsavecontent variable="Request.farcryForm.stObjects.#variables.prefix#.MetaData.#ftFieldMetadata.Name#.Label">
-					<cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#" class="#attributes.labelClass#">#ftFieldMetadata.ftlabel#<cfif findNoCase("required",ftFieldMetadata.ftClass)> <em>*</em> </cfif></label></cfoutput>
-				</cfsavecontent>
-				
+			
+				<cfif structKeyExists(ftFieldMetadata, "ftshowlabel")>
+					<cfset bShowLabel = ftFieldMetadata.ftShowLabel />
+				<cfelse>
+					<cfset bShowLabel = true />
+				</cfif>
+	
+				<cfif bShowLabel AND isDefined("Attributes.IncludeLabel") AND attributes.IncludeLabel EQ 1>
+					<cfsavecontent variable="Request.farcryForm.stObjects.#variables.prefix#.MetaData.#ftFieldMetadata.Name#.Label">
+						<!--- <cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#" class="#attributes.labelClass#">#ftFieldMetadata.ftlabel#<cfif findNoCase("required",ftFieldMetadata.ftClass)> <em>*</em> </cfif></label></cfoutput> --->
+						<cfoutput>#ftFieldMetadata.ftlabel#<cfif findNoCase("required",ftFieldMetadata.ftClass)> <em>*</em> </cfif></cfoutput>
+					</cfsavecontent>
+				<cfelse>
+					<cfset Request.farcryForm.stObjects[#variables.prefix#].MetaData[#ftFieldMetadata.Name#].Label = "">
+				</cfif>
 			</cfif>
 		</cfif>
 	</cfloop>
@@ -547,7 +803,7 @@
 	
 
 	
-	<cfif len(Attributes.r_stFields)>
+	<cfif len(Attributes.r_stFields) or 1 eq 1>
 		<cfloop list="#attributes.r_stFields#" index="i">
 			<cfif structKeyExists(Request.farcryForm.stObjects[variables.prefix],'MetaData')>
 				<cfset CALLER[i] = Request.farcryForm.stObjects[variables.prefix]['MetaData']>
@@ -573,12 +829,74 @@
 
 <cfif thistag.ExecutionMode EQ "End">
 
-
+	<cfif not len(Attributes.r_stFields)>
+		
+		<cfset attributes.formtheme = application.fapi.getConfig('formTheme','webtop')>
+		
+		<cfsavecontent variable="fieldsHTML">
+			
+					
+			<cfoutput>
+		
+			
+			
+			<!--- FIELDS --->
+			<cfloop list="#lFieldsToRender#" index="i">
+				
+				<cfset ftFieldMetadata = Request.farcryForm.stObjects[variables.prefix]['MetaData'][i]>
+				
+		
+				<ft:field 	for="#ftFieldMetadata.formFieldName#" 
+							label="#ftFieldMetadata.label#" 
+							hint="#ftFieldMetadata.ftHint#" 
+							errorMessage="#ftFieldMetadata.errorMessage#"
+							class="#ftFieldMetadata.ftType# #ftFieldMetadata.errorClass#">
+										
+					<cfoutput>#ftFieldMetadata.html#</cfoutput>
+					
+				</ft:field>
+			</cfloop>
+			
+			
+				
+			</cfoutput>	
+			
+			
+			
+				
+		</cfsavecontent>
 	
-	<cfif attributes.IncludeFieldSet>
-		<cfoutput></fieldset></cfoutput>
+	
+	
+			<!--- WRAPPER --->
+			<cfif len(attributes.class) OR len(attributes.style)>
+				<div class="#attributes.class#" style="#attributes.style#">
+			</cfif>
+			
+			<!--- END WRAPPER --->
+			<cfif len(attributes.class)>
+				</div>
+			</cfif>		
+			
+	<!--- 
+	-Wrap		
+	 -Fieldset
+	  - Helpsection
+	  - field
+	  - field
+		 --->
+		<cfif attributes.IncludeFieldSet>
+			<ft:fieldset legend="#attributes.legend#" helpTitle="#attributes.helpTitle#" helpText="#attributes.helpText#">
+				<cfoutput>#fieldsHTML#</cfoutput>
+			</ft:fieldset>
+		<cfelse>
+			<cfoutput>#fieldsHTML#</cfoutput>
+		</cfif>
+		
 	</cfif>
-	<cfoutput></div></cfoutput>
+	
+	
+	<cfoutput><input type="hidden" name="FarcryFormPrefixes" value="#variables.prefix#" /></cfoutput>
 	
 	<cfparam name="Request.farcryForm.lFarcryObjectsRendered" default="">
 

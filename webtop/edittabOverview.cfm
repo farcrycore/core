@@ -60,14 +60,13 @@ If a versionid is passed then that is the one we wish to render as the overview.
 </cfif>
 
 
-<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#" />
-
+<skin:view typename="dmHTML" webskin="webtopHeaderModal" />
 
 <sec:CheckPermission error="true" permission="ObjectOverviewTab">
 	<skin:view objectid="#variables.overviewID#" webskin="webtopOverview" />
 </sec:CheckPermission>
 
 <!--- setup footer --->
-<admin:footer>
+<skin:view typename="dmHTML" webskin="webtopFooterModal" />
 
 <cfsetting enablecfoutputonly="false" />

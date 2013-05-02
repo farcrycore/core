@@ -141,6 +141,8 @@
 </cfloop>
 
 <cfoutput>
+	<div id="diff-results" style="margin-top:20px;"></div>
+	
 	<script type="text/javascript">
 		window.diff = {
 			versions : #serializeJSON(aVersions)#,
@@ -302,8 +304,9 @@
 						.on("click",diff.clickAnywhere);
 				}
 				
-				if (this.versions.length > 1)
+				if (this.versions.length > 1){					
 					this.updateResults(0,1);
+				}
 			}
 		};
 		
@@ -324,7 +327,7 @@
 		.selectable-item:hover { background-color:##F9F9F9; }
 		.selectable-item.selected { background-color:##ffffbf ; }
 	</style>
-	<div id="diff-results" style="margin-top:20px;"></div>
+	
 </cfoutput>
 
 <cfsetting enablecfoutputonly="false" />

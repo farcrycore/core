@@ -80,9 +80,22 @@
 <!--- determine which view to use --->
 <!--- should use url variables first, then variables from webtop.xml, then default values --->
 <cfset stItem = application.factory.oWebtop.getItemDetails(stWebtop, url.id)>
+<cfif structKeyExists(stItem, "type")>
+	<cfset url.typename = stItem.type>
+</cfif>
+<cfif structKeyExists(stItem, "typename")>
+	<cfset url.typename = stItem.typename>
+</cfif>
+<cfif structKeyExists(stItem, "view")>
+	<cfset url.view = stItem.view>
+</cfif>
+<cfif structKeyExists(stItem, "bodyView")>
+	<cfset url.bodyView = stItem.bodyView>
+</cfif>
+
 <cfif NOT len(url.typename)>
-	<cfif structKeyExists(stItem, "typename")>
-		<cfset url.typename = stItem.typename>
+	<cfif structKeyExists(stItem, "type")>
+		<cfset url.typename = stItem.type>
 	<cfelse>
 		<cfset url.typename = "dmNavigation">
 	</cfif>
@@ -103,6 +116,7 @@
 		<cfset url.bodyView = "webtopBody">
 	</cfif>
 </cfif>
+
 
 <!--- execute the view on the type / object --->
 <skin:view objectid="#url.objectid#" typename="#url.typename#" webskin="#url.view#" bodyInclude="#stItem.bodyInclude#" />

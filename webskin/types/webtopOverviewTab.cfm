@@ -28,6 +28,7 @@ FARCRY INCLUDE FILES
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">
 <cfimport taglib="/farcry/core/tags/grid/" prefix="grid">
+<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 
 
 <!--- ENVIRONMENT VARIABLES --->
@@ -169,39 +170,30 @@ FARCRY INCLUDE FILES
 			
 			
 		<cfset tabID = "directory#replace(stObj.objectid,'-','','ALL')#" />
-		<grid:div id="#tabID#">
-			<cfoutput>        	
-			<ul style="padding-right: 150px;">
-				<li><a href="##tabs-summary">General</a></li>
-				<cfif application.fapi.getContentTypeMetadata(typename="#stobj.typename#", md="bFriendly", default="false")>
-					<li><a href="##tabs-seo">SEO</a></li>
-				</cfif>
-				<cfloop query="stLocal.qTabs">
-					<cfif stLocal.qTabs.methodname neq "webtopOverviewTab" and isdefined("application.stCOAPI.#stObj.typename#.stWebskins.#stLocal.qTabs.methodname#.displayname")>
-						<li><a href="#application.fapi.getLink(objectid=stObj.objectid,view=stLocal.qTabs.methodname,urlparameters='ajaxmode=1')#">#application.stCOAPI[stObj.typename].stWebskins[stLocal.qTabs.methodname].displayname#</a></li>
-					</cfif>
-				</cfloop>
-			</ul>
-            </cfoutput>
-			
-			<skin:onReady>
-				<cfoutput>$j("###tabID#").tabs();</cfoutput>
-			</skin:onReady>
-			
-			<grid:div id="tabs-summary">	
+		<admin:tabs id="#tabID#">
+			<cfoutput>  
+			<admin:tabItem id="tabs-summary" title="General">
 				<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="webtopOverviewSummary" />
-			</grid:div>
+			</admin:tabItem>      
 			
-			
-			<!--- FRIENDLY URL --->
 			<cfif application.fapi.getContentTypeMetadata(typename="#stobj.typename#", md="bFriendly", default="false")>
-				<grid:div id="tabs-seo">
+				<admin:tabItem id="SEO">
 					<skin:view typename="#stobj.typename#" objectid="#stobj.objectid#" webskin="webtopOverviewSEO" />
-				</grid:div>
-			</cfif>
-			
-			
-		</grid:div>
+				</admin:tabItem>     
+			</cfif>	
+		
+			<cfloop query="stLocal.qTabs">
+				<cfif stLocal.qTabs.methodname neq "webtopOverviewTab" and isdefined("application.stCOAPI.#stObj.typename#.stWebskins.#stLocal.qTabs.methodname#.displayname")>
+					<admin:tabItem id="#tabID#-custom-#stLocal.qTabs.currentRow#" 
+									title="#application.stCOAPI[stObj.typename].stWebskins[stLocal.qTabs.methodname].displayname#">
+								
+							<skin:view typename="#stobj.typename#" objectid="#stObj.objectid#" webskin="#stLocal.qTabs.methodname#">
+					
+					</admin:tabItem>
+				</cfif>
+			</cfloop>
+			 </cfoutput>
+		</admin:tabs>
 	
 <cfsetting enablecfoutputonly="false">
 		

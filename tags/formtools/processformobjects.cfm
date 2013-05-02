@@ -507,19 +507,20 @@
 					<cfinvokeargument name="stMetadata" value="#ftFieldMetadata#">
 				</cfinvoke>
 				
-				<cfset Caller[attributes.r_stProperties][i] = stResult.Value />
-			
-				<cfif ftFieldMetadata.Type eq "array">
-					<cfloop list="#structKeyList(stFields)#" index="j">
-						<cfif structKeyExists(stFields[j].metadata, "ftType") AND structKeyExists(stFields[j].metadata, "ftArrayField") AND stFields[j].metadata.ftType EQ "arrayList" AND stFields[j].metadata.ftArrayField EQ i>
-						
-							<cfset attributes.lArrayListGenerate = listAppend(attributes.lArrayListGenerate, j) />
-							
-						</cfif>
-						
-					</cfloop>
-				</cfif>
+				<cfif stResult.bSuccess>
+					<cfset Caller[attributes.r_stProperties][i] = stResult.Value />
 				
+					<cfif ftFieldMetadata.Type eq "array">
+						<cfloop list="#structKeyList(stFields)#" index="j">
+							<cfif structKeyExists(stFields[j].metadata, "ftType") AND structKeyExists(stFields[j].metadata, "ftArrayField") AND stFields[j].metadata.ftType EQ "arrayList" AND stFields[j].metadata.ftArrayField EQ i>
+							
+								<cfset attributes.lArrayListGenerate = listAppend(attributes.lArrayListGenerate, j) />
+								
+							</cfif>
+							
+						</cfloop>
+					</cfif>
+				</cfif>
 				
 				
 			</cfif>

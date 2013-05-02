@@ -54,10 +54,12 @@ It just ignores the inner ones.
 		<cfparam name="attributes.ajaxMaskCls" default="x-mask-loading">
 		<cfparam name="attributes.ajaxTimeout" default="30">
 		<cfparam name="attributes.ajaxTarget" default=""><!--- jQuery selector specifying the target element for the form response. Defaults to the FORM element. --->
-		<cfparam name="attributes.bAddFormCSS" default="true" /><!--- Uses uniform (http://sprawsm.com/uni-form/) --->
 		<cfparam name="attributes.bFieldHighlight" default="true"><!--- Highlight fields when focused --->
 		<cfparam name="attributes.bFocusFirstField" default="false" /><!--- Focus on first form element. --->
 		<cfparam name="attributes.defaultAction" default="" /><!--- The default action to be used if user presses enter key on browser that doesn't fire onClick event of first button. --->
+		<cfparam name="attributes.autoSave" default="false" /><!--- Enter boolean to toggle default autosave values on properties --->
+		<cfparam name="attributes.autoSaveToSessionOnly" default="false" /><!--- If there are any autosave fields, should they save to the session only? --->
+
 
 		<!--- Keeps track of all the form name in the request to make sure they are all unique --->
 		<cfparam name="Request.farcryFormList" default="">		
@@ -71,16 +73,15 @@ It just ignores the inner ones.
 		<cfif not len(attributes.action)>
 			<cfset attributes.Action = "#application.fapi.fixURL()#" />
 		</cfif>
+
 		
-		<!--- If this is going to be a uniform, include relevent js and css --->
-		<cfif attributes.bAddFormCSS>		
-		
-			<cfset attributes.class = listAppend(attributes.class,"uniForm"," ") />
-			<skin:loadCSS id="farcry-form" />				
+		<cfif attributes.autoSaveToSessionOnly>
+			<cfset attributes.class = listAppend(attributes.class,"autoSaveToSessionOnly"," ") />
 		</cfif>
 		
 		<cfif attributes.bFocusFirstField>
 			<skin:onReady>
+				<cfoutput>$('###attributes.Name# :input:visible:enabled:first').focus();</cfoutput>
 				<cfoutput>$j('###attributes.Name# :input:visible:enabled:first').addClass('focus');</cfoutput>
 			</skin:onReady>
 		</cfif>
@@ -105,6 +106,7 @@ It just ignores the inner ones.
 		<cfset Request.farcryForm.bAjaxSubmission = "#attributes.bAjaxSubmission#" />
 		<cfset Request.farcryForm.lFarcryObjectsRendered = "" />	
 		<cfset Request.farcryForm.defaultAction = "#attributes.defaultAction#" />	
+		<cfset Request.farcryForm.autoSave = "" />	
 		
 
 		<!--- Add form protection --->
@@ -112,7 +114,7 @@ It just ignores the inner ones.
 		<cfparam name="session.stFarCryFormSpamProtection['#attributes.Name#']" default="#structNew()#" />
 			
 		
-		<cfoutput>
+		<!--- <cfoutput>
 			
 			<!--- Setup the ajax wrapper if this is the first render of the form. When the ajax submission is made, the returned HTML is placed in this div. --->
 			<cfif attributes.bAjaxSubmission AND NOT structKeyExists(form, "farcryformajaxsubmission")>
@@ -133,35 +135,60 @@ It just ignores the inner ones.
 				<input type="hidden" name="farcryformajaxsubmission" value="1" #tagEnding#>
 			</cfif>
 					
-		</cfoutput> 
+		</cfoutput>  --->
 	
 	</cfif>
 	
 	<cfif thistag.ExecutionMode EQ "End" and isDefined("Variables.CorrectForm")>
+
+		<cfset innerHTML = "" />
+		<cfif len(thisTag.generatedContent)>
+			<cfset innerHTML = thisTag.generatedContent />
+			<cfset thisTag.generatedContent = "" />
+		</cfif>
+		
 	
-		<!--- Render the hidden form fields used to post the state of the farcry form. --->
-		<cfoutput>
-			<input type="hidden" name="FarcryFormPrefixes" value="" #tagEnding#>
-			<input type="hidden" name="FarcryFormSubmitButton" value="" #tagEnding#><!--- This is an empty field so that if the form is submitted, without pressing a farcryFormButton, the FORM.FarcryFormSubmitButton variable will still exist. --->
-			<input type="hidden" name="FarcryFormSubmitButtonClicked#attributes.Name#" id="FarcryFormSubmitButtonClicked#attributes.Name#" class="fc-button-clicked" value="#Request.farcryForm.defaultAction#" #tagEnding#><!--- This contains the name of the farcry button that was clicked --->
-			<input type="hidden" name="FarcryFormSubmitted"  value="#attributes.Name#" #tagEnding#><!--- Contains the name of the farcry form submitted --->
-			<input type="hidden" name="SelectedObjectID" class="fc-selected-object-id" value="" #tagEnding#><!--- Hidden Field to take a UUID from the attributes.SelectedObjectID on ft:button --->
+		<cfset formtheme = application.fapi.getDefaultFormTheme()>
 		
-			<input type="hidden" name="farcryFormValidation" id="farcryFormValidation#attributes.Name#" class="fc-server-side-validation" value="#attributes.Validation#" #tagEnding#><!--- Let the form submission know if it to perform serverside validation --->
+		
+		
+		<!--- Ensure that the webskin exists for the formtheme otherwise default to bootstrap --->
+		<cfif structKeyExists(application.forms.formTheme.stWebskins, '#formtheme#Form') >
+			<cfset modulePath = application.forms.formTheme.stWebskins['#formtheme#Form'].path>
+		<cfelse>
+			<cfset modulePath = application.forms.formTheme.stWebskins['bootstrapForm'].path>
+		</cfif>
+		
+		
+		<!--- Setup the ajax wrapper if this is the first render of the form. When the ajax submission is made, the returned HTML is placed in this div. --->
+		<cfif attributes.bAjaxSubmission AND NOT structKeyExists(form, "farcryformajaxsubmission")>
+			<cfoutput><div id="#attributes.Name#formwrap" class="ajaxformwrap"></cfoutput>				
+		</cfif>
+			
+		<cfmodule template="#modulePath#" attributecollection="#attributes#">
+			<cfoutput>#innerHTML#</cfoutput>
 	
-		</form>
-		</cfoutput>	
+	
+			<!--- Render the hidden form fields used to post the state of the farcry form. --->
+			<cfoutput>
+				<input type="hidden" name="FarcryFormPrefixes" value="" #tagEnding#>
+				<input type="hidden" name="FarcryFormSubmitButton" value="" #tagEnding#><!--- This is an empty field so that if the form is submitted, without pressing a farcryFormButton, the FORM.FarcryFormSubmitButton variable will still exist. --->
+				<input type="hidden" name="FarcryFormSubmitButtonClicked#attributes.Name#" id="FarcryFormSubmitButtonClicked#attributes.Name#" class="fc-button-clicked" value="#Request.farcryForm.defaultAction#" #tagEnding#><!--- This contains the name of the farcry button that was clicked --->
+				<input type="hidden" name="FarcryFormSubmitted"  value="#attributes.Name#" #tagEnding#><!--- Contains the name of the farcry form submitted --->
+				<input type="hidden" name="SelectedObjectID" class="fc-selected-object-id" value="" #tagEnding#><!--- Hidden Field to take a UUID from the attributes.SelectedObjectID on ft:button --->
+			
+				<input type="hidden" name="farcryFormValidation" id="farcryFormValidation#attributes.Name#" class="fc-server-side-validation" value="#attributes.Validation#" #tagEnding#><!--- Let the form submission know if it to perform serverside validation --->
 		
+			
+			</cfoutput>		
+	
+		</cfmodule>
+	
+
 		
-		<cfif attributes.bAddFormCSS AND attributes.bFieldHighlight>
-						
-			<skin:onReady>
-				<cfoutput>
-				if(typeof $j('###attributes.Name#').uniform != "undefined") {
-					$j('###attributes.Name#').uniform();
-				}
-				</cfoutput>
-			</skin:onReady>
+		<!--- Close the div if we have the ajax wrapper --->
+		<cfif attributes.bAjaxSubmission AND NOT structKeyExists(form, "farcryformajaxsubmission")>
+			<cfoutput></div></cfoutput>
 		</cfif>
 		
 		
@@ -243,7 +270,7 @@ It just ignores the inner ones.
 				}
 		    });
 			<cfif len(Request.farcryForm.defaultAction)>
-				$j('###attributes.Name# input,select').live("keypress",function(e){
+				$j('###attributes.Name# input,select').on("keypress",function(e){
 				if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
 					$j('button[value=#replace(replacelist(Request.farcryForm.defaultAction,"\,!,"",##,$,%,&,',(,),*,+,.,/,:,;,<,=,>,?,@,[,],^,`,{,|,},~","\\\,\\!,\\"",\\##,\\$,\\%,\\&,\\',\\(,\\),\\*,\\+,\\.,\\/,\\:,\\;,\\<,\\=,\\>,\\?,\\@,\\[,\\],\\^,\\`,\\{,\\|,\\},\\~"), ",", "\\,", "ALL")#]').click();
 					return false;
@@ -255,11 +282,6 @@ It just ignores the inner ones.
 		</skin:onReady>
 		
 		
-		
-		<!--- Close the dive if we have the ajax wrapper --->
-		<cfif attributes.bAjaxSubmission AND NOT structKeyExists(form, "farcryformajaxsubmission")>
-			<cfoutput></div></cfoutput>
-		</cfif>
 			
 			
 		<!--- Clear the farcry form from the request scope now that it is complete. --->

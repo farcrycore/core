@@ -33,6 +33,7 @@ $TODO: get rid of this crack edittabEdit.cfm GB$
 $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 --->
 <!--- import tag libraries --->
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
@@ -52,13 +53,13 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 </cfif>
 
 <!--- set up page header --->
-<admin:header writingDir="#session.writingDir#" userLanguage="#session.userLanguage#">
+<skin:view typename="dmHTML" webskin="webtopHeaderModal" />
 
 <sec:CheckPermission error="true" permission="ObjectEditTab">
 	<nj:edit objectid="#url.objectid#" typename="#url.typename#" cancelCompleteURL="#application.url.farcry#/edittabOverview.cfm?objectid=#url.objectid#&ref=#url.ref#" />
 </sec:CheckPermission>
 
 <!--- setup footer --->
-<admin:footer>
+<skin:view typename="dmHTML" webskin="webtopFooterModal" />
 
 <cfsetting enablecfoutputonly="false" />

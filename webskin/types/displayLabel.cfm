@@ -54,8 +54,8 @@ START WEBSKIN
 </cfif>
 <cfif not len(newLabel)>
     <cfset newLabel = "(incomplete)">
-<cfelse>
-    <cfoutput>#newLabel#</cfoutput>
 </cfif>
+
+<cfoutput>#newLabel#</cfoutput>
 
 <cfsetting enablecfoutputonly="false">

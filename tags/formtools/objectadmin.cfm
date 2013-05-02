@@ -729,7 +729,7 @@ user --->
 		<cfoutput>
 			<form id="farcry-objectadmin-form" action="" method="post" class="input-prepend input-append pull-right" style="position: relative; z-index:2">
 				<cfif len(attributes.lFilterFields)>
-					<button type="button" class="btn fc-tooltip" onclick="$j('##filterForm').toggle('blind'); " style="height: 30px; border-radius:0" data-toggle="tooltip" data-placement="top" title="" data-original-title="Advanced Filtering"><b class="icon-menu only-icon"></b></button>
+					<button type="button" class="btn fc-tooltip" onclick="$j('##filterForm').toggle('blind'); " style="height: 30px; border-radius:0" data-toggle="tooltip" data-placement="top" title="" data-original-title="Advanced Filtering"><b class="icon-filter only-icon"></b></button>
 				</cfif>
 				<input id="farcry-objectadmin-q" name="q" class="span2" type="text" placeholder="Search..." value="#form.q#" style="width: 240px;">
 				<cfif len(form.q)>
@@ -1234,33 +1234,33 @@ user --->
 		
 		
 			<cfif attributes.bViewCol>	
-				<ft:button value="Overview" text="" title="Open up the overview screen for this object" style="margin-left:0px;" icon="ui-icon-newwin" priority="secondary" class="small" type="button" onclick="$fc.objectAdminAction('Administration', '#overviewURL#&objectid=#arguments.st.objectid#');" />
+				<ft:button value="Overview" text="" title="Open up the overview screen for this object" icon="icon-th" type="button" onclick="$fc.objectAdminAction('Administration', '#overviewURL#&objectid=#arguments.st.objectid#');" />
 			</cfif>
 			<cfif attributes.bEditCol>
 		
 				<!--- We do not include the Edit Link if workflow is available for this content item. The user must go to the overview page. --->
 				<cfif not listLen(lWorkflowTypenames)>	
 					<cfif structKeyExists(arguments.st,"locked") AND arguments.st.locked neq 0 AND arguments.st.lockedby neq '#application.security.getCurrentUserID()#'>
-						<ft:button value="Unlock" text="" title="Unlock this object" style="margin-left:0px;" icon="ui-icon-unlocked" priority="secondary" class="small" type="submit" selectedObjectID="#arguments.st.objectid#" />
+						<ft:button value="Unlock" text="" title="Unlock this object" style="margin-left:0px;" icon="ui-icon-unlocked icon-unlock" class="" type="submit" selectedObjectID="#arguments.st.objectid#" />
 					<cfelseif structKeyExists(arguments.stPermissions, "iEdit") AND arguments.stPermissions.iEdit>
 						<cfif structKeyExists(arguments.st,"bHasMultipleVersion")>
 							<cfif NOT(arguments.st.bHasMultipleVersion) AND arguments.st.status EQ "approved">
 								
-									<ft:button value="Create Draft Object" text="" title="Create a draft version of this object and begin editing" style="margin-left:0px;" icon="ui-icon-pencil" priority="secondary" class="small btn-edit" type="button" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
+									<ft:button value="Create Draft Object" text="" title="Create a draft version of this object and begin editing" icon="icon-pencil"  class="btn-edit" type="button" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
 								
 							<cfelseif arguments.st.bHasMultipleVersion>
 								<!--- Still go to the create draft page but that page will find the already existing draft and not create a new one. --->
 								
-									<ft:button value="Edit Draft" text="" title="Edit the draft version of this object" type="button" style="margin-left:0px;" icon="ui-icon-pencil" priority="secondary" class="small btn-edit" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
+									<ft:button value="Edit Draft" text="Edit" title="Edit the draft version of this object" type="button" icon="icon-pencil" class="btn-edit" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
 											
 							<cfelse>
 								
-									<ft:button value="Edit" text="" title="Edit this object" type="button" style="margin-left:0px;" icon="ui-icon-pencil" priority="secondary" class="small btn-edit" onclick="$fc.objectAdminAction('Administration', '#editURL#&objectid=#arguments.st.objectid#');" />
+									<ft:button value="Edit" text="Edit" title="Edit this object" type="button" icon="icon-pencil" class="btn-edit" onclick="$fc.objectAdminAction('Administration', '#editURL#&objectid=#arguments.st.objectid#');" />
 									
 							</cfif>
 						<cfelse>
 							
-								<ft:button value="Edit" text="" title="Edit this object" type="button" style="margin-left:0px;" icon="ui-icon-pencil" priority="secondary" class="small btn-edit" onclick="$fc.objectAdminAction('Administration', '#editURL#&objectid=#arguments.st.objectid#');" />
+								<ft:button value="Edit" text="Edit" title="Edit this object" type="button" icon="icon-pencil" class="btn-edit" onclick="$fc.objectAdminAction('Administration', '#editURL#&objectid=#arguments.st.objectid#');" />
 							
 						</cfif>
 					</cfif>
@@ -1271,11 +1271,13 @@ user --->
 		<ft:splitButton style="margin-left:0px;">
 			
 			<cfif attributes.bEditCol OR attributes.bPreviewCol>
-				<ft:button value="Options" text="" title="More" style="" icon="ui-icon-triangle-1-s" priority="secondary" class="small btn" />
+				<!--- <ft:button value="Options" text="" title="More" style="" icon="icon-cog" priority="secondary" class="small btn" /> --->
 			
 			
 				<cfoutput>
-				<ul>
+				<button class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
+
+						 <ul class="dropdown-menu">
 					
 					<cfif attributes.bViewCol>	
 						<li>

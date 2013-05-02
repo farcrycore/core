@@ -16,6 +16,7 @@
 	--->
 <cfprocessingDirective pageencoding="utf-8">
 <!--- include tag libraries --->
+<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4" />
 <cfimport taglib="/farcry/core/tags/security/" prefix="sec" />
@@ -62,7 +63,10 @@
 		<cfset method = "update" />
 	</cfif>
 </cfif>
-<admin:header>
+
+
+<skin:view typename="dmHTML" webskin="webtopHeaderModal" />
+
 <!--- 
 	check method permissions for this content and user 
 	worth noting that additional permission check should exist within the method being invoked
@@ -176,5 +180,7 @@
 		</cfif>
 	</cfif>
 </sec:CheckPermission>
-<admin:footer>
+
+
+<skin:view typename="dmHTML" webskin="webtopFooterModal" />
 <cfsetting enablecfoutputonly="No">

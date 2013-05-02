@@ -7,6 +7,7 @@
 <cfparam name="session.userLanguage" default="en" />
 
 <cfset request.fcwebtopbootstrap = true>
+<cfset request.fc.inWebtop = 1>
 
 <!--- get sections --->
 <cfset stWebtop = application.factory.oWebtop.getAllItems() />
@@ -39,8 +40,9 @@
 
 <!--- TODO: register --->
 	<skin:loadCSS id="fc-bootstrap" />
-	<skin:loadCSS id="webtop" baseHREF="#application.url.webtop#/css" lFiles="webtop7.css,main7.css" />
-	<skin:loadCSS id="fc-icons" />
+	<skin:loadCSS id="fc-fontawesome" />
+	<skin:loadCSS id="webtop7" />
+	<!--- <skin:loadCSS id="fc-icons" /> --->
 	<skin:loadJS id="fc-jquery" />
 	<skin:loadJS id="fc-bootstrap" />
 

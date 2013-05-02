@@ -28,40 +28,40 @@
 <cfparam name="attributes.labelAlignment" default="inline"><!---  options:inline,block; Used by FarCry Form Layouts for positioning of labels. inline or block. --->
 <cfparam name="attributes.for" default=""><!--- The fieldname the label is for --->
 <cfparam name="attributes.class" default="string"><!---  The class to apply to the field wrapping div. --->
-<cfparam name="attributes.bMultiField" default="false"><!--- Setting this to true, will wrap a div with a class 'multiField', that floats the field correctly, to allow more than just a simple input to be displayed. --->
+<cfparam name="attributes.style" default=""><!---  The class to apply to the field wrapping div. --->
 <cfparam name="attributes.hint" default=""><!--- This will place a hint below the field --->
+<cfparam name="attributes.errorMessage" default=""><!--- This will place an errormessage above the field --->
 <cfparam name="attributes.rbkey" default="coapi.field.#rereplace(attributes.label,'[^\w]','','ALL')#" /><!--- The resource path for this field. --->
 
-
 <cfif thistag.ExecutionMode eq "start">
-	<cfif len(attributes.label) and len(attributes.rbkey)>
-		<cfset attributes.label = application.fapi.getResource(key=attributes.rbkey & "@label",default=attributes.label) />
-	</cfif>
-	<cfif len(attributes.hint) and len(attributes.rbkey)>
-		<cfset attributes.hint = application.fapi.getResource(key=attributes.rbkey & "@hint",default=attributes.hint) />
-	</cfif>
-	
-	<cfoutput>
-	<div class="ctrlHolder <cfif attributes.labelAlignment EQ "inline">inlineLabels<cfelse>blockLabels</cfif> #attributes.class#">
-		<label class="label" <cfif len(attributes.for)>for="#attributes.for#"</cfif>>#attributes.label#</label>
-		<cfif attributes.bMultiField>
-			<div class="multiField">
-		</cfif>
-	</cfoutput>
+	<!--- DO NOTHING --->
 </cfif>
 
 
 
 <cfif thistag.ExecutionMode eq "end">
-	<cfoutput>
-		<cfif attributes.bMultiField>
-			</div>
-		</cfif>
-		<cfif len(trim(attributes.hint))>
-			<p class="formHint">#trim(attributes.hint)#</p>
-		</cfif>
-		<br style="clear: both;"/>
-	</div>	
-	</cfoutput>
+
+	<cfset innerHTML = "" />
+	<cfif len(thisTag.generatedContent)>
+		<cfset innerHTML = thisTag.generatedContent />
+		<cfset thisTag.generatedContent = "" />
+	</cfif>
+	
+
+	<cfset formtheme = application.fapi.getDefaultFormTheme()>
+	
+	
+	
+	<!--- Ensure that the webskin exists for the formtheme otherwise default to bootstrap --->
+	<cfif structKeyExists(application.forms.formTheme.stWebskins, '#formtheme#Field') >
+		<cfset modulePath = application.forms.formTheme.stWebskins['#formtheme#Field'].path>
+	<cfelse>
+		<cfset modulePath = application.forms.formTheme.stWebskins['bootstrapField'].path>
+	</cfif>
+		
+	<cfmodule template="#modulePath#" attributecollection="#attributes#">
+		<cfoutput>#innerHTML#</cfoutput>
+	</cfmodule>
+	
 </cfif>
 
