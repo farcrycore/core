@@ -39,7 +39,7 @@
 	<skin:loadJS id="farcry-form" />
 	
 	
-	<!--- <cfif not len(attributes.priority) AND len(attributes.text)>	
+	<cfif not len(attributes.priority) AND len(attributes.text)>	
 		<cfif listFindNoCase(GetBaseTagList(),"cf_buttonPanel")>
 			
 			<cfset THISTAG.Parent = GetBaseTagData( "cf_buttonPanel" ) />
@@ -54,7 +54,7 @@
 		<cfelse>
 			<cfset attributes.priority = "secondary">
 		</cfif>
-	</cfif> --->
+	</cfif>
 <!--- 	<cfif len(attributes.priority)>	
 	
 		
