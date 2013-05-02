@@ -36,14 +36,10 @@
 	
 <cfif thistag.executionMode eq "End">
 
-	<skin:loadJS id="fc-jquery" />
-	<skin:loadJS id="fc-jquery-ui" />
 	<skin:loadJS id="farcry-form" />
 	
-	<skin:loadCSS id="jquery-ui" />
 	
-	
-	<cfif not len(attributes.priority) AND len(attributes.text)>	
+	<!--- <cfif not len(attributes.priority) AND len(attributes.text)>	
 		<cfif listFindNoCase(GetBaseTagList(),"cf_buttonPanel")>
 			
 			<cfset THISTAG.Parent = GetBaseTagData( "cf_buttonPanel" ) />
@@ -58,8 +54,8 @@
 		<cfelse>
 			<cfset attributes.priority = "secondary">
 		</cfif>
-	</cfif>
-	<cfif len(attributes.priority)>	
+	</cfif> --->
+<!--- 	<cfif len(attributes.priority)>	
 	
 		
 		<cfif listFindNoCase(GetBaseTagList(),"cf_splitButton") AND attributes.renderType EQ "link">
@@ -67,15 +63,13 @@
 		<cfelse>
 			<cfset attributes.class = listAppend(attributes.class, "ui-priority-#attributes.priority# btn-#attributes.priority#", " ")>
 		</cfif>
-	</cfif>
+	</cfif> --->
 	
 	
 	<cfset stButtonAttributes = structNew()>
 
-	<!--- I18N conversion of label --->
-	<cfif len(attributes.text)>
-		<cfset attributes.text = application.rb.getResource('#attributes.rbkey#@label',attributes.text) />
-	</cfif>
+	<!--- I18 conversion of label --->
+	<cfset attributes.text = application.rb.getResource('#attributes.rbkey#@label',attributes.text) />
 	
 	<cfif not len(attributes.title)>
 		<cfif len(attributes.text)>
@@ -83,8 +77,6 @@
 		<cfelse>
 			<cfset attributes.title = attributes.value>
 		</cfif>
-	<cfelse>
-		<cfset attributes.title = application.rb.getResource('#attributes.rbkey#@title',attributes.title) />
 	</cfif>
 
 	<!--- Default validate to true if submitting and false if just a button --->
@@ -146,6 +138,7 @@
 		<!--- I18 conversion of label --->
 		<cfset attributes.confirmText = application.rb.getResource('#attributes.rbkey#@confirmtext',attributes.confirmText) />
 		<cfset attributes.confirmText = jsStringFormat(attributes.confirmText) />
+		<!--- <cfset attributes.onClick = listPrepend(attributes.onClick, "if(!confirm('#Attributes.ConfirmText#')){return false}", ";") /> --->
 		
 		<cfset attributes.class = listAppend(attributes.class, "fc-action-confirm-text", " ") />
 		<cfset stButtonAttributes.confirmtext = jsstringformat(Attributes.ConfirmText)>
@@ -197,78 +190,33 @@
 			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="fc-btn #attributes.class#" style="#attributes.style#;" <cfif attributes.disabled>disabled</cfif>>#attributes.text#</button></cfoutput>
 		</cfcase>
 		
-		<!--- Default FarcryButton --->
+		<!--- Default FarcryButton based on form theme --->
 		<cfdefaultcase>
+			
+			
 
-			<cfif structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true>
-				<!--- bootstrap --->
-				<cfset attributes.icon = replace(attributes.icon, "ui-icon-", "")>
-				<cfif attributes.icon eq "newwin">
-					<cfset attributes.icon = "grid only-icon">
-				</cfif>
-				<cfif attributes.icon eq "pencil">
-					<cfset attributes.text = "Edit">
-				</cfif>
-				<cfif attributes.icon eq "unlocked">
-					<cfset attributes.icon = "unlock">
-					<cfset attributes.text = "Unlock">
-				</cfif>
-				<cfif attributes.icon eq "triangle-1-s">
-					<cfset attributes.icon = "caret-down only-icon">
-				</cfif>
-
-				<cfoutput>
-					<button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" 
-						type="#attributes.type#" value="#attributes.value#" 
-						<cfif len(attributes.title)> title="#attributes.title#"</cfif> 
-						class="fc-btn btn #attributes.class#" style="#attributes.style#" 
-						<cfif attributes.disabled>disabled</cfif> 
-						<cfif len(attributes.textOnClick)>fc:textOnClick="#attributes.textOnClick#"</cfif> 
-						<cfif len(attributes.textOnSubmit)>fc:textOnSubmit="#attributes.textOnSubmit#"</cfif> 
-						<cfif attributes.disableOnSubmit>fc:disableOnSubmit="1"</cfif>>
-							<cfif len(attributes.icon)>
-								<i class="icon-#attributes.icon#"></i>
-							</cfif>
-							#attributes.text#
-						</button>
-				</cfoutput>
-
+			<cfset innerHTML = "" />
+			<cfif len(thisTag.generatedContent)>
+				<cfset innerHTML = thisTag.generatedContent />
+				<cfset thisTag.generatedContent = "" />
+			</cfif>
+			
+		
+			<cfset formtheme = application.fapi.getDefaultFormTheme()>
+			
+			
+			
+			<!--- Ensure that the webskin exists for the formtheme otherwise default to bootstrap --->
+			<cfif structKeyExists(application.forms.formTheme.stWebskins, '#formtheme#Button') >
+				<cfset modulePath = application.forms.formTheme.stWebskins['#formtheme#Button'].path>
 			<cfelse>
-				<!--- jquery ui --->
-
-				<cfset stSettings = structNew()>
-				<cfif not len(attributes.text)>
-					<cfset stSettings.text = false>
-					
-					<cfset attributes.text = "&nbsp;" />
-				</cfif>
-
-				<cfset attributes.class = listAppend(attributes.class, "jquery-ui-btn", " ") />
-				<cfset stButtonAttributes.buttonsettings = "">
-
-				<cfif listLen(attributes.icon)>
-					<cfset stSettings.icons = structNew()>
-					<cfif len(trim(listFirst(attributes.icon)))>
-						<cfset stSettings.icons.primary = trim(listFirst(attributes.icon))>
-					</cfif>
-					<cfif listLen(attributes.icon) GT 1 AND  len(trim(listLast(attributes.icon)))>
-						<cfset stSettings.icons.secondary = trim(listLast(attributes.icon))>
-					</cfif>
-				</cfif>
-
-				<cfoutput>
-					<button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="fc-btn #attributes.class#" style="#attributes.style#" <cfif attributes.disabled>disabled</cfif> <cfif len(attributes.textOnClick)>fc:textOnClick="#attributes.textOnClick#"</cfif> <cfif len(attributes.textOnSubmit)>fc:textOnSubmit="#attributes.textOnSubmit#"</cfif> <cfif attributes.disableOnSubmit>fc:disableOnSubmit="1"</cfif>>#attributes.text#</button>
-				</cfoutput>
-				
-				<cfset buttonsettings = lcase( SerializeJSON( stSettings ) )>
-				
-				<skin:onReady>
-					<cfoutput>
-					$j('###attributes.id#').button( #buttonsettings# );</cfoutput>
-				</skin:onReady>
-
+				<cfset modulePath = application.forms.formTheme.stWebskins['bootstrapButton'].path>
 			</cfif>
 
+			
+			<cfmodule template="#modulePath#" attributecollection="#attributes#"></cfmodule>
+			
+			
 		</cfdefaultcase>
 		</cfswitch>
 	
