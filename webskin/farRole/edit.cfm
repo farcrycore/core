@@ -319,7 +319,7 @@ PREPARE TYPE PERMISSIONS
 
 
 
-<wiz:wizard ReferenceID="#stobj.objectid#">
+<wiz:wizard ReferenceID="#stobj.objectid#" bFocusFirstField="false">
 
 
 					

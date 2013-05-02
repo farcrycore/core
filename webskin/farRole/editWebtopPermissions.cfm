@@ -37,6 +37,8 @@ ENVIRONMENT VARIABLES
 	margin-top: -8px;
 	margin-left: -8px;
 }
+
+.barnacleValue,.inheritBarnacleValue {width:20px;}
 </style>
 </cfoutput>
 </skin:htmlHead>
@@ -71,14 +73,17 @@ ENVIRONMENT VARIABLES
 			</cfif>
 			
 			<cfif allowAccess EQ 1>
-				<cfset priority = "ui-priority-primary">
-				<cfset icon = "ui-icon-check">
+				<cfset priority = "btn-primary">
+				<cfset icon = "icon-ok">
 			<cfelse>
-				<cfset priority = "ui-priority-secondary">
-				<cfset icon = "ui-icon-close">
+				<cfset priority = "btn-danger">
+				<cfset icon = "icon-remove">
 			</cfif>
+			
 			<cfoutput>
-			<button id="bAllowAccess" class="permButton small barnacleBox #priority# #icon#" fticon="#icon#" value="#allowAccess#" type="button" ftpermissionid="#accessPermissionID#" ftbarnaclevalue="#numberformat(allowAccess)#"></button>
+			<button id="bAllowAccess" class="btn btn-small permButton barnacleBox #priority#" value="#allowAccess#" type="button" 
+					ftpermissionid="#accessPermissionID#" 
+					ftbarnaclevalue="#numberformat(allowAccess)#"><i class=" #icon#"></i></button>
 			</cfoutput>
 			
 			
@@ -117,22 +122,21 @@ ENVIRONMENT VARIABLES
 			
 			
 			<!--- We always have webtop permission as checked --->
-			<cfset priority = "primary">
-			<cfset icon = "ui-icon-check">
+			<cfset priority = "btn-primary">
+			<cfset icon = "icon-ok">
 			<cfset class="" />
 			
 			<ft:button 
 				id="webtopRoot"
 				value="perm" 
 				text="" 
-				priority="#priority#" 
 				icon="#icon#" 
 				type="button" 
-				class="permButton small barnacleBox #class#"
+				class="btn btn-small permButton small barnacleBox #class# #priority#"
 				onClick="alert('Use the webtop access permission above to turn off access to the webtop.');return false;" />
 			
-			<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="1" style="width:10px;">
-			<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="1" style="width:10px;">
+			<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="1">
+			<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="1">
 		
 			<span style="font-size:10px;">
 				&nbsp;Webtop
@@ -168,29 +172,28 @@ ENVIRONMENT VARIABLES
 						</cfif>
 					</cfif>
 					
-					<cfset priority = "secondary">
-					<cfset icon = "ui-icon-close">
+					<cfset priority = "">
+					<cfset icon = "icon-remove">
 					<cfset class="inherit" />
 					<cfif currentBarnacleValue EQ 1>
-						<cfset priority = "primary">
-						<cfset icon = "ui-icon-check">
+						<cfset priority = "btn-primary">
+						<cfset icon = "icon-ok">
 						<cfset class="" />
 					<cfelseif currentBarnacleValue EQ -1>
-						<cfset priority = "secondary">
-						<cfset icon = "ui-icon-close">
+						<cfset priority = "btn-danger">
+						<cfset icon = "icon-remove">
 						<cfset class="" />
 					</cfif>
 					
 					<ft:button 
 						value="perm" 
 						text="" 
-						priority="#priority#" 
 						icon="#icon#" 
 						type="button" 
-						class="permButton small barnacleBox #class#" />
+						class="btn btn-small permButton small barnacleBox #class# #priority#" />
 					
-					<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="#currentBarnacleValue#" style="width:10px;">
-					<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="" style="width:10px;">
+					<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="#currentBarnacleValue#">
+					<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="">
 				
 					<span style="font-size:10px;">
 						&nbsp;#stLevel1.label#
@@ -225,29 +228,28 @@ ENVIRONMENT VARIABLES
 								</cfif>
 							</cfif>
 							
-							<cfset priority = "secondary">
-							<cfset icon = "ui-icon-close">
+							<cfset priority = "">
+							<cfset icon = "icon-remove">
 							<cfset class="inherit" />
 							<cfif currentBarnacleValue EQ 1>
-								<cfset priority = "primary">
-								<cfset icon = "ui-icon-check">
+								<cfset priority = "btn-primary">
+								<cfset icon = "icon-ok">
 								<cfset class="" />
 							<cfelseif currentBarnacleValue EQ -1>
-								<cfset priority = "secondary">
-								<cfset icon = "ui-icon-close">
+								<cfset priority = "btn-danger">
+								<cfset icon = "icon-remove">
 								<cfset class="" />
 							</cfif>
 							
 							<ft:button 
 								value="perm" 
 								text="" 
-								priority="#priority#" 
 								icon="#icon#" 
 								type="button" 
-								class="permButton small barnacleBox #class#" />
+								class="btn btn-small permButton small barnacleBox #class# #priority#" />
 							
-							<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="#currentBarnacleValue#" style="width:10px;">
-							<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="" style="width:10px;">
+							<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="#currentBarnacleValue#">
+							<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="">
 						
 							<span style="font-size:10px;">
 								&nbsp;#stLevel2.label#
@@ -282,29 +284,28 @@ ENVIRONMENT VARIABLES
 											</cfif>
 										</cfif>
 										
-										<cfset priority = "secondary">
-										<cfset icon = "ui-icon-close">
+										<cfset priority = "">
+										<cfset icon = "icon-remove">
 										<cfset class="inherit" />
 										<cfif currentBarnacleValue EQ 1>
-											<cfset priority = "primary">
-											<cfset icon = "ui-icon-check">
+											<cfset priority = "btn-primary">
+											<cfset icon = "icon-ok">
 											<cfset class="" />
 										<cfelseif currentBarnacleValue EQ -1>
-											<cfset priority = "secondary">
-											<cfset icon = "ui-icon-close">
+											<cfset priority = "btn-danger">
+											<cfset icon = "icon-remove">
 											<cfset class="" />
 										</cfif>
 										
 										<ft:button 
 											value="perm" 
 											text="" 
-											priority="#priority#" 
 											icon="#icon#" 
 											type="button" 
-											class="permButton small barnacleBox #class#" />
+											class="btn btn-small permButton small barnacleBox #class# #priority#" />
 										
-										<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="#currentBarnacleValue#" style="width:10px;">
-										<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="" style="width:10px;">
+										<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="#currentBarnacleValue#">
+										<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="">
 									
 										<span style="font-size:10px;">
 											&nbsp;#stLevel3.label#
@@ -338,29 +339,28 @@ ENVIRONMENT VARIABLES
 														</cfif>
 													</cfif>
 													
-													<cfset priority = "secondary">
-													<cfset icon = "ui-icon-close">
+													<cfset priority = "">
+													<cfset icon = "icon-remove">
 													<cfset class="inherit" />
 													<cfif currentBarnacleValue EQ 1>
-														<cfset priority = "primary">
-														<cfset icon = "ui-icon-check">
+														<cfset priority = "btn-primary">
+														<cfset icon = "icon-ok">
 														<cfset class="" />
 													<cfelseif currentBarnacleValue EQ -1>
-														<cfset priority = "secondary">
-														<cfset icon = "ui-icon-close">
+														<cfset priority = "btn-danger">
+														<cfset icon = "icon-remove">
 														<cfset class="" />
 													</cfif>
 													
 													<ft:button 
 														value="perm" 
 														text="" 
-														priority="#priority#" 
 														icon="#icon#" 
 														type="button" 
-														class="permButton small barnacleBox #class#" />
+														class="btn btn-small permButton small barnacleBox #class# #priority#" />
 													
-													<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="#currentBarnacleValue#" style="width:10px;">
-													<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="" style="width:10px;">
+													<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="#currentBarnacleValue#">
+													<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="">
 												
 													<span style="font-size:10px;">
 														&nbsp;#stLevel4.label#
@@ -434,8 +434,8 @@ ENVIRONMENT VARIABLES
 							$j(elDescendant).siblings( '.inheritBarnacleValue' ).val(1);
 							
 							if (descendantValue == 0) { //only descendants that inherit
-								$j(elDescendant).removeClass('ui-priority-secondary').addClass('ui-priority-primary');
-								$j(elDescendant).find('.ui-icon').removeClass('ui-icon-close').addClass('ui-icon-check');
+								$j(elDescendant).addClass('btn-primary');
+								$j(elDescendant).find('i').removeClass('icon-remove').addClass('icon-ok');
 								
 							}
 							return false;
@@ -445,8 +445,8 @@ ENVIRONMENT VARIABLES
 							$j(elDescendant).siblings( '.inheritBarnacleValue' ).val(-1);
 							
 							if (descendantValue == 0) { //only descendants that inherit
-								$j(elDescendant).removeClass('ui-priority-primary').addClass('ui-priority-secondary');
-								$j(elDescendant).find('.ui-icon').removeClass('ui-icon-check').addClass('ui-icon-close');
+								$j(elDescendant).removeClass('btn-primary');
+								$j(elDescendant).find('i').removeClass('icon-ok').addClass('icon-remove');
 								
 							}
 							return false;
@@ -462,67 +462,73 @@ ENVIRONMENT VARIABLES
 		var barnacleValue = $j(this).siblings( '.barnacleValue' ).val();
 		var inheritBarnacleValue = $j(this).siblings( '.inheritBarnacleValue' ).val();
 		
-		// Different rules for first item in tree. Can Not Inherit.
-		if (  $j(this).parents( 'div,li' ).children( '.permButton' ).length == 1 ) {
-			<!--- DO NOTHING --->
-			<!--- if(barnacleValue == 1) {
-				$j(this).siblings( '.barnacleValue' ).val(-1);
-				$j(this).removeClass('ui-priority-primary').addClass('ui-priority-secondary');
-				$j(this).find('.ui-icon').removeClass('ui-icon-check').addClass('ui-icon-close');
-				$j(this).removeClass('inherit');
-			} else {
-				$j(this).siblings( '.barnacleValue' ).val(1);
-				$j(this).removeClass('ui-priority-secondary').addClass('ui-priority-primary');
-				$j(this).find('.ui-icon').removeClass('ui-icon-close').addClass('ui-icon-check');
-				$j(this).removeClass('inherit');
-			} --->
-			
-		} else {
 		
-			if(barnacleValue == 1) {
-				if(inheritBarnacleValue == -1) {
-					$j(this).siblings( '.barnacleValue' ).val(0);
-					$j(this).removeClass('ui-priority-primary').addClass('ui-priority-secondary');
-					$j(this).find('.ui-icon').removeClass('ui-icon-check').addClass('ui-icon-close');
-					$j(this).addClass('inherit');
-				} else {
-					$j(this).siblings( '.barnacleValue' ).val(0);
-					$j(this).removeClass('ui-priority-primarysecondary').addClass('ui-priority-primary');
-					$j(this).find('.ui-icon').removeClass('ui-icon-close').addClass('ui-icon-check');
-					$j(this).addClass('inherit');
-				};
-			};
-			
-			if(barnacleValue == -1) {
-				if(inheritBarnacleValue == 1) {
-					$j(this).siblings( '.barnacleValue' ).val(0);
-					$j(this).removeClass('ui-priority-secondary').addClass('ui-priority-primary');
-					$j(this).find('.ui-icon').removeClass('ui-icon-close').addClass('ui-icon-check');
-					$j(this).addClass('inherit');
-				} else {
+		
+		switch( $j(this).parents( 'div,li' ).children( '.permButton' ).length ) {
+			case 1:
+  				<!--- DO NOTHING --->
+				break;
+			case 2:
+				if(barnacleValue == -1) {
 					$j(this).siblings( '.barnacleValue' ).val(1);
-					$j(this).removeClass('ui-priority-secondary').addClass('ui-priority-primary');
-					$j(this).find('.ui-icon').removeClass('ui-icon-close').addClass('ui-icon-check');
-
-					
-												
-				};
-			};
-			
-			if(barnacleValue == 0) {
-				if(inheritBarnacleValue == 1) {
-					
+					$j(this).removeClass('btn-danger').addClass('btn-primary');
+					$j(this).find('i').removeClass('icon-remove').addClass('icon-ok');
+					$j(this).removeClass('inherit');
+				} else {
 					$j(this).siblings( '.barnacleValue' ).val(-1);
-					$j(this).removeClass('ui-priority-primary').addClass('ui-priority-secondary');
-					$j(this).find('.ui-icon').removeClass('ui-icon-check').addClass('ui-icon-close');
-				} else {
-					$j(this).siblings( '.barnacleValue' ).val(1);
-					$j(this).removeClass('ui-priority-secondary').addClass('ui-priority-primary');
-					$j(this).find('.ui-icon').removeClass('ui-icon-close').addClass('ui-icon-check');
-					
+					$j(this).removeClass('btn-primary').addClass('btn-danger');
+					$j(this).find('i').removeClass('icon-ok').addClass('icon-remove');
+					$j(this).removeClass('inherit');
+				}
+				
+  				break;
+			default:
+				if(barnacleValue == 1) {
+					if(inheritBarnacleValue == -1) {
+						$j(this).siblings( '.barnacleValue' ).val(0);
+						$j(this).removeClass('btn-primary');
+						$j(this).find('i').removeClass('icon-ok').addClass('icon-remove');
+						$j(this).addClass('inherit');
+					} else {
+						$j(this).siblings( '.barnacleValue' ).val(0);
+						$j(this).addClass('btn-primary');
+						$j(this).find('i').removeClass('icon-remove').addClass('icon-ok');
+						$j(this).addClass('inherit');
+					};
 				};
-				$j(this).removeClass('inherit');
-			};
+				
+				if(barnacleValue == -1) {
+					if(inheritBarnacleValue == 1) {
+						$j(this).siblings( '.barnacleValue' ).val(0);
+						$j(this).addClass('btn-primary');
+						$j(this).find('i').removeClass('icon-remove').addClass('icon-ok');
+						$j(this).addClass('inherit');
+					} else {
+						$j(this).siblings( '.barnacleValue' ).val(1);
+						$j(this).addClass('btn-primary').removeClass('btn-danger');
+						$j(this).find('i').removeClass('icon-remove').addClass('icon-ok');
+	
+						
+													
+					};
+				};
+				
+				if(barnacleValue == 0) {
+					if(inheritBarnacleValue == 1) {
+						
+						$j(this).siblings( '.barnacleValue' ).val(-1);
+						$j(this).removeClass('btn-primary').addClass('btn-danger');
+						$j(this).find('i').removeClass('icon-ok').addClass('icon-remove');
+					} else {
+						$j(this).siblings( '.barnacleValue' ).val(1);
+						$j(this).removeClass('btn-danger').addClass('btn-primary');
+						$j(this).find('i').removeClass('icon-remove').addClass('icon-ok');
+						
+					};
+					$j(this).removeClass('inherit');
+				};
+				
+			
 		}
 		
 		$fc.fixDescendants(el);
@@ -544,14 +550,9 @@ ENVIRONMENT VARIABLES
 	
 	
 	<!--- ALLOW WEBTOP ACCESS --->
-	$j('##bAllowAccess').each(function (i) {
-		$j(this).button({
-	        text: false,
-			icons: {
-	            primary: $j(this).attr('fticon')
-	        }
-	     });
-   });
+<!--- 	$j('##bAllowAccess').each(function (i) {
+		$j(this).children('i').removeClass().addClass($j(this).attr('fticon'));
+   }); --->
 
 	
 	$j('##bAllowAccess').click(function() {
@@ -565,9 +566,9 @@ ENVIRONMENT VARIABLES
 		if(barnacleValue == 1) {
 			
 			$j(this).attr('ftbarnaclevalue', '-1');
-			
-			$j(this).removeClass('ui-priority-primary').addClass('ui-priority-secondary');
-			$j(this).find('.ui-icon').removeClass('ui-icon-check').addClass('ui-icon-close');
+			$j(this).removeClass('btn-primary').addClass('btn-danger');
+			//$j(this).find('i').removeClass('icon-ok').addClass('icon-remove');
+			$j(this).children('i').removeClass().addClass('icon-remove');
 			$j(this).removeClass('inherit');
 			
 			$j('##webtopTreeWrap').hide('fast');
@@ -575,8 +576,9 @@ ENVIRONMENT VARIABLES
 		} else {
 			
 			$j(this).attr('ftbarnaclevalue', '1');
-			$j(this).removeClass('ui-priority-secondary').addClass('ui-priority-primary');
-			$j(this).find('.ui-icon').removeClass('ui-icon-close').addClass('ui-icon-check');
+			$j(this).addClass('btn-primary').removeClass('btn-danger');
+			//$j(this).find('i').removeClass('icon-remove').addClass('icon-ok');
+			$j(this).children('i').removeClass().addClass('icon-ok');
 			$j(this).removeClass('inherit');
 			
 			$j('##webtopTreeWrap').show('fast');
@@ -596,7 +598,7 @@ ENVIRONMENT VARIABLES
 				barnaclevalue: $j(this).attr('ftbarnaclevalue')
 			},
 		   success: function(msg){
-		   		$j(this).find('.ui-icon').removeClass('ui-icon-bullet');
+		   		$j(this).find('i').removeClass('icon-caret-right');
 		   },
 		   error: function(data){	
 				alert('change unsuccessful. The page will be refreshed.');
