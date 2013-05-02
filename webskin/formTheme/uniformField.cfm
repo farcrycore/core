@@ -59,7 +59,7 @@
 	
 	
 	<cfoutput>		
-	<div class="ctrlHolder #attributes.ftLabelAlignment#Labels" style="#attributes.style#">
+	<div class="ctrlHolder #attributes.labelAlignment#Labels" style="#attributes.style#">
 		
 		<cfif len(attributes.errorMessage)>
 			<p class="errorField" htmlfor="#attributes.for#" for="#attributes.for#">#attributes.errorMessage#</p>
