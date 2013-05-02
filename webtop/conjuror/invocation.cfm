@@ -149,6 +149,17 @@
 						</script>
 					</cfoutput>
 				</cfsavecontent>
+			<cfelseif structKeyExists(url, "dialogID")>
+										
+
+				<cfset onExitProcess.type = "HTML">
+				<cfsavecontent variable="onExitProcess.content">
+					<cfoutput>
+					<script type="text/javascript">
+					parent.$j('##fcModal').modal('hide');
+					</script>
+					</cfoutput>
+				</cfsavecontent>
 			<cfelse>
 				<!--- site tree redirect --->
 				<cfset onExitProcess.Type = "HTML" />

@@ -376,13 +376,13 @@ object methods
 		ACTION:
 		 - default form processing
 		---------------------------------------->
-		<cfif structkeyexists(url,"iframe")>
+		<cfif structKeyExists(url, "dialogID")>
 			<cfset onExitProcess = structNew() />
 			<cfset onExitProcess.Type = "HTML" />
 			<cfsavecontent variable="onExitProcess.content">
 				<cfoutput>
 					<script type="text/javascript">
-						parent.$j(parent.$fc.objectAdminActionDiv).dialog("close");
+					parent.$j('##fcModal').modal('hide');
 					</script>
 				</cfoutput>
 			</cfsavecontent>
@@ -393,6 +393,7 @@ object methods
 		</cfif>
 		
 		<ft:processForm action="Save" Exit="true">
+
 			<ft:processFormObjects typename="#stobj.typename#" />
 		</ft:processForm>
 	
@@ -403,7 +404,6 @@ object methods
 			<ft:object objectID="#arguments.ObjectID#" typename="#stObj.typename#" format="edit" lFields="#valuelist(qFields.propertyname)#" r_stFields="stFields" />
 			
 			<cfoutput>
-				<h1>#displayName#</h1>
 				#stFields.configData.html#
 			</cfoutput>
 			
