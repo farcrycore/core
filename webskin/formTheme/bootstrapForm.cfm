@@ -62,8 +62,8 @@
 	<skin:loadJS id="fc-bootstrap" />
 	<cfif attributes.bAddFormCSS>
 		<skin:loadCSS id="fc-bootstrap" />
+		<skin:loadCSS id="farcry-form" />
 	</cfif>
-	<skin:loadCSS id="farcry-form" />
 	
 	<cfoutput>
 	<form 	action="#attributes.Action#" 

@@ -68,8 +68,8 @@
 	<skin:loadJS id="fc-uniform" />
 	<cfif attributes.bAddFormCSS>
 		<skin:loadCSS id="fc-uniform" />
+		<skin:loadCSS id="farcry-form" />
 	</cfif>
-	<skin:loadCSS id="farcry-form" />
 	
 	
 	
