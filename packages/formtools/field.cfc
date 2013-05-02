@@ -8,13 +8,19 @@
 	<cfproperty name="ftType" required="false" hint="Tells the framework which of the formtool ui components to use when rendering your form. This will default to the [type]." />
 	<cfproperty name="ftLabel" required="false" hint="Used by the FarCry form layout as the label of the form field. This will default to the [name]." />
 	<cfproperty name="ftLabelAlignment" required="false" default="inline" options="inline,block" hint="Used by FarCry Form Layouts for positioning of labels. inline or block." />
+	<cfproperty name="ftMultiField" required="false" default="false" hint="add wrapper div with class of multiField for extra styling." />
 	<cfproperty name="ftClass" required="false" default="" hint="CSS Class that can be used on the formtool input" />
 	<cfproperty name="ftStyle" required="false" default="" hint="CSS Style that can be used on the formtool input" />
+	<cfproperty name="ftPlaceholder" required="false" default="" hint="CSS placeholder text" />
 	<cfproperty name="ftValidation" required="false" hint="List of CSS classes that can be used for js validation" />
 	<cfproperty name="ftEditMethod" required="false" hint="The function that will be used to render the html output for editing a property" />
 	<cfproperty name="ftDisplayMethod" required="false" hint="The function that will be used to render the html output for displaying a property" />
 	<cfproperty name="ftValidateMethod" required="false" hint="The function that will be used to render the html output for validating (processing) a property form submission" />
 	<cfproperty name="ftAjaxMethod" required="false" hint="The function that will be used to render the html output for ajax requests of a property" />
+	<cfproperty name="ftAutoSave" required="false" default="false" hint="Should the object be saved if the field changes?" />
+	<cfproperty name="ftWatchFields" required="false" default="" hint="If any of these fields change, then update the current field? Use the format 'typename.property' if you wish to update all field regardless of object. Use just 'property' if you wish to update just that object." />
+	<cfproperty name="ftReloadOnAutoSave" required="false" default="false" hint="If the property is autosaved, should the entire page be refreshed?" />
+	<cfproperty name="ftRefreshPropertyOnAutoSave" required="false" default="true" hint="If the property is autosaved, should the field be refreshed?" />
 	
 	
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.field" output="false" hint="Returns a copy of this initialised object">
@@ -41,7 +47,7 @@
 		</cfif>
 	
 		<cfsavecontent variable="html">
-			<cfoutput><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#HTMLEditFormat(arguments.stMetadata.value)#" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" <cfif maxLength neq 0>maxLength="#maxLength#"</cfif> /></cfoutput>
+			<cfoutput><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#HTMLEditFormat(arguments.stMetadata.value)#" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" placeholder="#arguments.stMetadata.ftPlaceholder#" <cfif maxLength neq 0>maxLength="#maxLength#"</cfif> /></cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html>
