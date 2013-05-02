@@ -10,10 +10,21 @@
 		
 		<cfset var stObj = "" />
 		<cfset var stProps = duplicate(arguments.stProperties) />
+		<cfset var lastupdatedby = "">
 
 		<!--- nothing to archive when an update app is happening --->
 		<cfif NOT isDefined("application.bInit") OR application.bInit eq false>
 			<cfreturn />
+		</cfif>
+
+		<cfif structKeyExists(arguments.stProperties, "lastupdatedby") AND len(arguments.stProperties.lastupdatedby)>
+			<cfset lastupdatedby = arguments.stProperties.lastupdatedby>
+		<cfelse>	
+			<cfif application.security.isLoggedIn()>
+				<cfset lastupdatedby = application.security.getCurrentUserID()>
+			<cfelse>
+				<cfset lastupdatedby = "Unknown">
+			</cfif>
 		</cfif>
 
 		<cfif not structkeyexists(this,"oArchive")>
@@ -59,13 +70,13 @@
 		<!--- Archivable --->
 		<cfif arguments.auditNote eq "Archive rolled back">
 			<cfif request.mode.debug><cflog file="events" text="save #arguments.typename# #arguments.stProperties.objectid#: archived, rollback"></cfif>
-			<cfset this.oArchive.archiveObject(stObj=stObj,event="rolled back",username=arguments.stProperties.lastupdatedby)>
+			<cfset this.oArchive.archiveObject(stObj=stObj,event="rolled back",username=lastupdatedby)>
 		<cfelseif not structkeyexists(stObj,"versionID")>
 			<cfif request.mode.debug><cflog file="events" text="save #arguments.typename# #arguments.stProperties.objectid#: archived, save"></cfif>
-			<cfset this.oArchive.archiveObject(stObj=stObj,event="saved",username=arguments.stProperties.lastupdatedby)>
+			<cfset this.oArchive.archiveObject(stObj=stObj,event="saved",username=lastupdatedby)>
 		<cfelse>
 			<cfif request.mode.debug><cflog file="events" text="save #arguments.typename# #arguments.stProperties.objectid#: archived, publish"></cfif>
-			<cfset this.oArchive.archiveObject(stObj=stObj,event="published",username=arguments.stProperties.lastupdatedby)>
+			<cfset this.oArchive.archiveObject(stObj=stObj,event="published",username=lastupdatedby)>
 		</cfif>
 	</cffunction>
 	
