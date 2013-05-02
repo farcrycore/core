@@ -85,7 +85,7 @@
 								<cfif len(webtopAvatar)>
 									<img src="#webtopAvatar#" width="24" height="25">
 								<cfelse>
-									<img src="//www.gravatar.com/avatar/#webtopGravatarHash#?d=blank" width="24" height="25">
+									<img class="gravatar" src="//www.gravatar.com/avatar/#webtopGravatarHash#?d=404" width="24" height="25">
 								</cfif>
 								<i class="icon-user"></i>
 							</span>
@@ -96,13 +96,14 @@
 						<ul class="dropdown-menu pull-right">
 							<li><a href="#application.url.webtop#?id=home.overview&typename=dmProfile&objectid=#session.dmProfile.objectid#&bodyView=editOwn"><admin:resource key="coapi.dmProfile.general.editprofile">Edit Profile</admin:resource></a></li>
 							<skin:view typename="dmProfile" objectid="#session.dmProfile.objectid#" webskin="displaySummaryOptions#application.security.getCurrentUD()#" alternateHTML="" />
-							<li><a href="#application.url.webtop#?logout=1"><admin:resource key="coapi.dmProfile.general.logout">Logout</admin:resource></a></li>
 							<!--- <li class="divider"></li>
 							<li class="nav-header">Developer Tools</li>
 							<li><a href="#application.fapi.fixURL(addvalues='tracewebskins=1')#">Webskin Tracer</a></li>
 							<li><a href="#application.fapi.fixURL(addvalues='profile=1')#">Profiler</a></li> --->
 							<li class="divider"></li>
 							<li><a href="#application.fapi.fixURL(addvalues='updateapp=1')#">Update Application</a></li>
+							<li class="divider"></li>
+							<li><a href="#application.url.webtop#?logout=1"><admin:resource key="coapi.dmProfile.general.logout">Logout</admin:resource></a></li>
 						</ul>
 					</div>
 				</div>
