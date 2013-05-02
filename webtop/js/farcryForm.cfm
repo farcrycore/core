@@ -379,62 +379,92 @@ function updateSelectedObjectIDs (childCheckbox) {
 
 									
 							$fc.openDialog = function(title,url,width,height){
-								var fcDialog = $j("<div></div>")
-								w = width ? width : $j(window).width()-40;
-								h = height ? height : $j(window).height()-40;
-								$j("body").prepend(fcDialog);
-								$j(fcDialog).dialog({
-									bgiframe: true,
-									modal: true,
+								
+													
+								return $fc.openBootstrapModal({
 									title:title,
-									width: w,
-									height: h,
-									close: function(event, ui) {
-										$j(fcDialog).dialog( 'destroy' );
-										$j(fcDialog).remove();
-									}
-									
-								});
-								$j(fcDialog).dialog('open');
-								$j.ajax({
-									type: "POST",
-									cache: false,
-									url: url, 
-									complete: function(data){
-										$j(fcDialog).html(data.responseText);			
-									},
-									data:{},
-									dataType: "html"
+									url:url,
+									onShown:function(){},
+									onHidden:function(){window.location.href.split("##")[0];} 
 								});
 							};	
 							
+																				
+							$fc.openBootstrapModal = function($settings){
+							
+								$settings = $j.extend({
+									keyboard	: 		false,
+									backdrop	: 		false,
+									width		:		$j(window).width()-20,
+									height		: 		$j(window).height()-20,
+									title		:		'New Modal',
+									url			:		'',
+									onShown		:		function () {
+															return true;
+														},
+									onHidden	:		function () {
+															return true;
+														},
+								  }, $settings);
+								
+								var modalLeftPos = 0;
+								var fcModalTPL = $j("<div id='fcModal' class='modal hide fade' style='' tabindex='-1' role='dialog' aria-labelledby='fcModalLabel' aria-hidden='true'><div class='modal-header'><button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button><h3 id='fcModalLabel'>Modal</h3></div><div class='modal-body' style='width: auto;min-height: 0px;max-height:900px;height: 455px;position: relative;border: 0;padding: 15px 15px 15px 15px;background: 0;overflow: auto;zoom: 1;'><iframe style='width: 100%;height: 99%;border-width: 0px;margin: 0;padding: 0;' frameborder='0'></iframe></div></div>");
+								if($j("##fcModal").length == 0) {
+									$j("body").append(fcModalTPL);
+								}
+								
+								$j('##fcModalLabel',$j('##fcModal')).html($settings.title);
+								
+								
+								$j('##fcModal').css('top', '5px');
+								$j('##fcModal').css('margin-left', '0px');
+								$j('##fcModal').css('max-height', $settings.height);
+								
+								$j('##fcModal').css('height', $settings.height);
+								$j('.modal-body').css('max-height', $settings.height);
+								$j('##fcModal').css('width', $settings.width);
+								$j('.modal-body').css('max-width', $settings.width);
+								
+								$j('.modal-body',$j('##fcModal')).css('height', $settings.height - 120);
+							
+							 	modalLeftPos = ( $j(window).width() - $j('##fcModal').width() ) / 2;
+								$j('##fcModal').css('left', modalLeftPos);
+							
+							
+								$j('##fcModal').modal({
+									keyboard: $settings.keyboard,
+									backdrop: $settings.backdrop
+									}).on('shown', function () {
+										
+										if ( $settings.url.indexOf("?") < 0 ) { $settings.url = $settings.url + '?' };
+										$settings.url=$settings.url + '&dialogID=fcModal'
+										$j('iframe',$j('##fcModal')).attr('src',$settings.url);
+										
+										$j("html").css('overflow', 'hidden');
+										$settings.onShown();
+										
+									}).on('hidden', function () {
+										//alert('hello');
+										<!--- console.log($j("html"));
+										$j("html").css('overflow', 'auto'); --->
+										$j('iframe',$j('##fcModal')).attr('src','');
+										
+										$settings.onHidden();
+									
+								})
+							};	
+
 							
 							$fc.openDialogIFrame = function(title,url,width,height){
-								var w = width ? width : $j(window).width()-40;
-								var h = height ? height : $j(window).height()-40;
-								var fcDialog = $j("<div id='fc-dialog-iframe' style='padding:20px;'><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0'></iframe></div>")
-								
-								$j("body").prepend(fcDialog);
-								$j("html").css('overflow', 'hidden');
-								$j("div.ui-dialog", parent.document.body).addClass('nested');
-								$j(fcDialog).dialog({
-									bgiframe: true,
-									modal: true,
+							
+	
+								return $fc.openBootstrapModal({
 									title:title,
-									width: w,
-									height: h,
-									close: function(event, ui) {
-										$j("html").css('overflow', 'auto');
-										$j("div.ui-dialog", parent.document.body).removeClass('nested');
-										$j(fcDialog).dialog( 'destroy' );
-										$j(fcDialog).remove();
-									}
-									
+									url:url,
+									onShown:function(){} ,
+									onHidden:function(){} 
 								});
-								$j(fcDialog).dialog('open');
-								$j('iframe',$j(fcDialog)).attr('src',url);
-								
-								return fcDialog;
+
 							};		
 							
 							
@@ -725,29 +755,13 @@ function updateSelectedObjectIDs (childCheckbox) {
 							
 
     	$fc.objectAdminAction = function(title,url) {
-			if ($fc.objectAdminActionDiv === undefined) {
-				$fc.objectAdminActionDiv = $j("<div><iframe style='width:100%;height:99%;' frameborder='0'></iframe></div>");
-				$j("body").prepend($fc.objectAdminActionDiv);
-				$j("html").css('overflow', 'hidden');
-				$j("div.ui-dialog", parent.document.body).addClass('nested');
-				$j($fc.objectAdminActionDiv).dialog({
-					bgiframe: true,
-					modal: true,
-					title:title,
-					draggable:false,
-					resizable:false,
-					width: $j(window).width()-40,
-					height: $j(window).height()-40,
-					close: function(event, ui) {
-						$j("html").css('overflow', 'auto');
-						$j("div.ui-dialog", parent.document.body).removeClass('nested');
-						window.location = window.location.href.split("##")[0];
-					}
-				});
-			}
 			
-			$j($fc.objectAdminActionDiv).dialog('open');
-			$j('iframe',$j($fc.objectAdminActionDiv)).attr('src',url);
+			return $fc.openBootstrapModal({
+				title:title,
+				url:url,
+				onShown:function(){},
+					onHidden:function(){window.location = window.location.href.split("##")[0];} 
+			});
 			
 		};
 		
@@ -816,7 +830,7 @@ function updateSelectedObjectIDs (childCheckbox) {
 		Handles the default action when the user hits the enter button. 
 		Script from http://greatwebguy.com/programming/dom/default-html-button-submit-on-enter-with-jquery/ 
 	--->
-	$j("form input, form select").live('keypress', function (e) {
+	$j(document).on("keypress","form input, form select", function (e) {
 		if ($j(this).parents('form').find('.defaultAction').length <= 0)
 			return true;
 		if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
@@ -866,135 +880,121 @@ function updateSelectedObjectIDs (childCheckbox) {
 		return false;	
 	};
 	
-
-		<!--- 
-		$j("###arguments.fieldname#Clear").button({
-            icons: {
-                primary: 'ui-icon-minus'
-            },
-            text: false
-        }).click(function() {
-        	$j("###arguments.fieldname#").attr('value','');
-			$j("###arguments.fieldname#Entry").attr('value','');
-			
-
-			$j.ajax({
-				type: "POST",
-				cache: false,
-				url: '/index.cfm?ajaxmode=1&type=exoBOM&objectid=#stobj.objectid#&view=ajaxRunMethod', 
-				context: $j(this),
-				success: function(data){
-					<!--- if ($j(this).is('input')) {
-						$j(this).val(data);
-					} --->
-				}, 
-				error: function(data){	
-					alert('change unsuccessful. Please refresh the page.');
-				},
-				complete: function(){
-					
-				},
-				data: {
-					method:'updateBOM',
-					property: 'productID',
-					value: $j("###arguments.fieldname#").attr('value')
-				},
-				dataType: "html",
-				timeout: 2000
-			});						
-						
-        }); --->
-
 	
-		$j('.edit-uuid').live('click', function(event) { 
-			
-			var libraryObjectID = $j(this).parent('.wrapper').find('input.value').attr('value');
-			var $wrapper = $j(this).parent('.wrapper');
-			
-			var newDialogDiv = $j("<div id='dialog'><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0'></iframe></div>");
-			$j("body").prepend(newDialogDiv);
-			$j("html").css('overflow', 'hidden');
-			$j("div.ui-dialog", parent.document.body).addClass('nested');
-			$j(newDialogDiv).dialog({
-				bgiframe: true,
-				modal: true,
-				title:'Edit',
-				draggable:false,
-				resizable:false,
-				width: $j(window).width()-20,
-				height: $j(window).height()-20,
-				close: function(event, ui) {
-					$j("html").css('overflow', 'auto');
-					$j("div.ui-dialog", parent.document.body).removeClass('nested');
-					$j(newDialogDiv).dialog( 'destroy' );
-					$j(newDialogDiv).remove();
-					$j.ajax({
-						type: "POST",
-						cache: false,
-			 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + $wrapper.attr('ft:typename') + '&objectid=' + $wrapper.attr('ft:objectid') + '&view=displayAjaxRefreshJoinProperty' + '&property=' + $wrapper.attr('ft:property'),
-					 	success: function(msg){
-							$wrapper.html(msg);
-							//fcForm.initSortable(typename,objectid,property,id);	
-					   	},
-						data:{},
-						dataType: "html"
-					});
-				}
-				
-			});
-			$j(newDialogDiv).dialog('open');
-			$j('iframe',$j(newDialogDiv)).attr('src','#application.fapi.getWebroot()#/index.cfm?view=displayPageAdmin&bodyView=edit&objectid=' + libraryObjectID);
-					 
-		});
-
 	
-		$j('.open-uuid-library').live('click', function(event) { 
-
-			var $wrapper = $j(this).parent('.wrapper');
-			
-			var newDialogDiv = $j("<div id='dialog'><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0'></iframe></div>");
-			$j("body").prepend(newDialogDiv);
-			$j("html").css('overflow', 'hidden');
-			$j("div.ui-dialog", parent.document.body).addClass('nested');
-			$j(newDialogDiv).dialog({
-				bgiframe: true,
-				modal: true,
-				title:'Edit',
-				draggable:false,
-				resizable:false,
-				width: $j(window).width()-20,
-				height: $j(window).height()-20,
-				close: function(event, ui) {
-					$j("html").css('overflow', 'auto');
-					$j("div.ui-dialog", parent.document.body).removeClass('nested');
-					$j(newDialogDiv).dialog( 'destroy' );
-					$j(newDialogDiv).remove();
-					$j.ajax({
-						type: "POST",
-						cache: false,
-			 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + $wrapper.attr('ft:typename') + '&objectid=' + $wrapper.attr('ft:objectid') + '&view=displayAjaxRefreshJoinProperty' + '&property=' + $wrapper.attr('ft:property'),
-					 	success: function(msg){
-							$wrapper.html(msg);
-							//fcForm.initSortable(typename,objectid,property,id);	
-					   	},
-						data:{},
-						dataType: "html"
-					});
-				}
-				
-			});
-			$j(newDialogDiv).dialog('open');
-			$j('iframe',$j(newDialogDiv)).attr('src','#application.fapi.getWebroot()#/index.cfm?type=' + $wrapper.attr('ft:typename') + '&objectid=' + $wrapper.attr('ft:objectid') + '&view=displayLibraryTabs' + '&property=' + $wrapper.attr('ft:property'));
-				 
-		});		
-		
-
 
 
 		$j(document).ready(function() {	
+	
+			<!--- 
+			$j("###arguments.fieldname#Clear").button({
+	            icons: {
+	                primary: 'ui-icon-minus'
+	            },
+	            text: false
+	        }).click(function() {
+	        	$j("###arguments.fieldname#").attr('value','');
+				$j("###arguments.fieldname#Entry").attr('value','');
+				
+	
+				$j.ajax({
+					type: "POST",
+					cache: false,
+					url: '/index.cfm?ajaxmode=1&type=exoBOM&objectid=#stobj.objectid#&view=ajaxRunMethod', 
+					context: $j(this),
+					success: function(data){
+						<!--- if ($j(this).is('input')) {
+							$j(this).val(data);
+						} --->
+					}, 
+					error: function(data){	
+						alert('change unsuccessful. Please refresh the page.');
+					},
+					complete: function(){
+						
+					},
+					data: {
+						method:'updateBOM',
+						property: 'productID',
+						value: $j("###arguments.fieldname#").attr('value')
+					},
+					dataType: "html",
+					timeout: 2000
+				});						
+							
+	        }); --->
+	
+		
+			$j(document).on('click','.edit-uuid', function(event) { 
+				
+				var libraryObjectID = $j(this).parents('.wrapper').find('input.value').attr('value');
+				var $wrapper = $j(this).parent('.wrapper');
+				
+				 
+				return $fc.openBootstrapModal({
+					title:'Edit',
+					url:'#application.fapi.getWebroot()#/index.cfm?view=webtopPageStandard&bodyView=edit&objectid=' + libraryObjectID,
+					onShown:function(){},
+					onHidden:function(){
 
+						$j.ajax({
+							type: "POST",
+							cache: false,
+				 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + $wrapper.attr('ft:typename') + '&objectid=' + $wrapper.attr('ft:objectid') + '&view=displayAjaxRefreshJoinProperty' + '&property=' + $wrapper.attr('ft:property'),
+						 	success: function(msg){
+								$wrapper.html(msg);
+						   	},
+							data:{},
+							dataType: "html"
+						});
+					} 
+				});		 
+			});
+	
+		
+			$j(document).on('click','.open-uuid-library', function(event) { 
+	
+				var $wrapper = $j(this).parent('.wrapper');
+				
+				var newDialogDiv = $j("<div id='dialog'><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0'></iframe></div>");
+				$j("body").prepend(newDialogDiv);
+				$j("html").css('overflow', 'hidden');
+				$j("div.ui-dialog", parent.document.body).addClass('nested');
+				$j(newDialogDiv).dialog({
+					bgiframe: true,
+					modal: true,
+					title:'Edit',
+					draggable:false,
+					resizable:false,
+					width: '90%',
+					height: $j(window).height()-50,
+					close: function(event, ui) {
+						$j("html").css('overflow', 'auto');
+						$j("div.ui-dialog", parent.document.body).removeClass('nested');
+						$j(newDialogDiv).dialog( 'destroy' );
+						$j(newDialogDiv).remove();
+						$j.ajax({
+							type: "POST",
+							cache: false,
+				 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + $wrapper.attr('ft:typename') + '&objectid=' + $wrapper.attr('ft:objectid') + '&view=displayAjaxRefreshJoinProperty' + '&property=' + $wrapper.attr('ft:property'),
+						 	success: function(msg){
+								$wrapper.html(msg);
+								//fcForm.initSortable(typename,objectid,property,id);	
+						   	},
+							data:{},
+							dataType: "html"
+						});
+					}
+					
+				});
+				$j(newDialogDiv).dialog('open');
+				$j('iframe',$j(newDialogDiv)).attr('src','#application.fapi.getWebroot()#/index.cfm?type=' + $wrapper.attr('ft:typename') + '&objectid=' + $wrapper.attr('ft:objectid') + '&view=displayLibraryTabs' + '&property=' + $wrapper.attr('ft:property'));
+					 
+			});	
+				
+				
 			
-			$j('.fc-btn, .jquery-ui-split-button ul li a').live('click', function(e) {
+			$j(document).on("click",".fc-btn, .jquery-ui-split-button ul li a", function(e) {
 				
 				var fcSettings = $j(this).data('fcSettings');	
 				
