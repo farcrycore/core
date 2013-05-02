@@ -306,7 +306,7 @@
 					    	</div>
 						</div>
 						<cfif len(arguments.stMetadata.value)>
-						    <cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stMetadata.value,datatype='image') />
+						    <cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stMetadata.value) />
 						    <cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=arguments.stMetadata.value,datatype='image')#" structName="stImage" />
 						    <cfset previewwidth = stImage.width />
 						    <cfset previewheight = stImage.height />

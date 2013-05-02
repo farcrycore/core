@@ -12,18 +12,16 @@
 	<cfset stResult["source"] = url.from />
 	<cfset stResult["destination"] = url.to />
 	
-		<cfset application.fc.lib.cdn.ioCopyFile(source_location=url.from,source_file=url.copy,dest_location=url.to) />
-		<cfset stResult["success"] = true />
-		
+	<cfset application.fc.lib.cdn.ioCopyFile(source_location=url.from,source_file=url.copy,dest_location=url.to) />
+	<cfset stResult["success"] = true />
 	
 	<cfcontent type="text/json" variable="#ToBinary( ToBase64( serializeJSON(stResult) ) )#" reset="Yes">
 </cfif>
 
 
 <cfparam name="form.source_location" default="" />
-<cfparam name="form.source_filter" default="" />
 <cfparam name="form.target_location" default="" />
-<cfparam name="form.target_filter" default="" />
+<cfparam name="form.filter" default="" />
 <cfparam name="form.copy" default="missing" />
 
 
@@ -31,8 +29,8 @@
 <cfset qFiles = querynew("file,inSource,inTarget","varchar,bit,bit") />
 
 <cfif len(form.source_location) and len(form.target_location) and form.source_location neq form.target_location>
-	<cfset qSourceFiles = application.fc.lib.cdn.ioGetDirectoryListing(location=form.source_location,dir=form.source_filter) />
-	<cfset qTargetFiles = application.fc.lib.cdn.ioGetDirectoryListing(location=form.target_location,dir=form.target_filter) />
+	<cfset qSourceFiles = application.fc.lib.cdn.ioGetDirectoryListing(location=form.source_location,dir=form.filter) />
+	<cfset qTargetFiles = application.fc.lib.cdn.ioGetDirectoryListing(location=form.target_location,dir=form.filter) />
 	
 	<cfset stFound = structnew() />
 	<cfloop query="qSourceFiles">
@@ -165,7 +163,6 @@
 					<option value="#qLocations.name#" <cfif form.source_location eq qLocations.name> selected</cfif>>#qLocations.name# (#ucase(qLocations.type)#)</option>
 				</cfloop>
 			</select>
-			<input id="source_filter" name="source_filter" value="#form.source_filter#" size="15" placeholder="sub-directory">
 		</cfoutput>
 	</ft:field>
 	
@@ -177,7 +174,12 @@
 					<option value="#qLocations.name#" <cfif form.target_location eq qLocations.name> selected</cfif>>#qLocations.name# (#ucase(qLocations.type)#)</option>
 				</cfloop>
 			</select>
-			<input id="target_filter" name="target_filter" value="#form.target_filter#" size="15" placeholder="sub-directory">
+		</cfoutput>
+	</ft:field>
+	
+	<ft:field label="Sub Directory" for="filter">
+		<cfoutput>
+			<input id="filter" name="filter" value="#form.filter#" size="15" placeholder="sub-directory">
 		</cfoutput>
 	</ft:field>
 	

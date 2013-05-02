@@ -1,4 +1,4 @@
-<cfcomponent displayname="File" hint="Encapsulates file persistence functionality" output="false" persistent="false">
+<cfcomponent displayname="File" hint="Encapsulates file persistence functionality" output="false" persistent="false" scopelocation="application.fapi">
 	
 	<cffunction name="init" returntype="any">
 		
@@ -12,7 +12,7 @@
 			<cfset this.cdns[thiscdn] = createobject("component",utils.getPath("cdn",thiscdn)) />
 			
 			<cfif structkeyexists(this.cdns[thiscdn],"init")>
-				<cfset this.cdns[thiscdn].init(this) />
+				<cfset this.cdns[thiscdn].init(cdn=this) />
 			</cfif>
 		</cfloop>
 		
@@ -71,7 +71,7 @@
 			</cfif>
 		</cfloop>
 		
-		<cfset this.locations[arguments.name] = this.cdns[arguments.cdn].validateConfig(arguments.locationinfo) />
+		<cfset this.locations[arguments.name] = this.cdns[arguments.cdn].validateConfig(config=arguments.locationinfo) />
 	</cffunction>
 	
 	<cffunction name="normalizePath" returntype="string" access="public" output="false" hint="Normalizes filename character set, replaces '\' with '/', removes trailing '/'">
@@ -94,7 +94,16 @@
 		<cfreturn arguments.path />
 	</cffunction>
 	
-	
+	<!--- @@description: 
+		<p>Does what it says on the box. Checks a single location to see if a file exists.</p>
+		
+		@@examples:
+		<code>
+			<cfif application.fc.lib.cdn.ioFileExists(location="cache",file=sCacheFileName)>
+			    <cfreturn sCacheFileName />
+			</cfif>
+		</code>
+	 --->
 	<cffunction name="ioFileExists" returntype="boolean" access="public" output="false" hint="Checks that a specified file exists">
 		<cfargument name="location" type="string" required="true" />
 		<cfargument name="file" type="string" required="true" />
@@ -106,6 +115,14 @@
 		<cfreturn this.cdns[config.cdn].ioFileExists(config=config,argumentCollection=arguments) />
 	</cffunction>
 	
+	<!--- @@description: 
+		<p>Searches the provided locations, and returns the first that contains the specified file, or an empty string if there isn't any.</p>
+		
+		@@examples:
+		<code>
+			<cfset currentLocation = application.fc.lib.cdn.ioFindFile(locations="privatefiles,publicfiles",file=arguments.stObject[arguments.stMetadata.name]) />
+		</code>
+	 --->
 	<cffunction name="ioFindFile" returntype="string" access="public" output="false" hint="Searches the provided locations, and returns the first that contains the specified file, or an empty string if none">
 		<cfargument name="locations" type="string" required="true" hint="The returned file will be unique for all the specified locations" />
 		<cfargument name="file" type="string" required="true" />
@@ -123,7 +140,20 @@
 		<cfreturn "" />
 	</cffunction>
 	
-	<cffunction name="ioGetUniqueFilename" returntype="string" access="public" output="false" hint="Returns a version of the specified filename which is unique.">
+	<!--- @@description: 
+		<p>
+			Returns a version of the specified filename which is unique among every listed location by appending numbers to the name. 
+			Note that it is rare to have to call this function directly, as all functions which put a file into a CDN have options to 
+			enforce filename uniqueness. However if you wish to change how FarCry enforces uniqueness, you can override this function 
+			in your project.
+		</p>
+		
+		@@examples:
+		<code>
+			<cfset moveto = ioGetUniqueFilename(locations="privatefiles,publicfiles",file=newfile) />
+		</code>
+	 --->
+	<cffunction name="ioGetUniqueFilename" returntype="string" access="public" output="false" hint="Returns a version of the specified filename which is unique among every listed location.">
 		<cfargument name="locations" type="string" required="false" hint="The returned file will be unique for all the specified locations. If this is not specified, the file will be treated as an absolute local file" />
 		<cfargument name="file" type="string" required="true" />
 		
@@ -147,6 +177,14 @@
 		<cfreturn currentfile />
 	</cffunction>
 	
+	<!--- @@description: 
+		<p>Returns the size of the file in bytes.</p>
+		
+		@@examples:
+		<code>
+			<cfoutput>Size: <span class="image-size">#round(application.fc.lib.cdn.ioGetFileSize(location="images",file=arguments.stMetadata.value)/1024)#</span>KB</cfoutput>
+		</code>
+	 --->
 	<cffunction name="ioGetFileSize" returntype="numeric" output="false" hint="Returns the size of the file in bytes">
 		<cfargument name="location" type="string" required="true" />
 		<cfargument name="file" type="string" required="true" />
@@ -158,6 +196,15 @@
 		<cfreturn this.cdns[config.cdn].ioGetFileSize(config=config,argumentCollection=arguments) />
 	</cffunction>
 	
+	<!--- @@description: 
+		<p>Returns serving information for the file - either method=redirect + path=URL OR method=stream + path=local path.</p>
+		
+		@@examples:
+		<code>
+			<cfset stImage = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stMetadata.value) />
+			<cfoutput><img src="#stImage.path#"></cfoutput>
+		</code>
+	 --->
 	<cffunction name="ioGetFileLocation" returntype="struct" output="false" hint="Returns serving information for the file - either method=redirect + path=URL OR method=stream + path=local path">
 		<cfargument name="location" type="string" required="true" />
 		<cfargument name="file" type="string" required="true" />
@@ -169,6 +216,14 @@
 		<cfreturn this.cdns[config.cdn].ioGetFileLocation(config=config,argumentCollection=arguments) />
 	</cffunction>
 	
+	<!--- @@description: 
+		<p>Writes the specified data to a file.</p>
+		
+		@@examples:
+		<code>
+			<cfset stResult.filename = application.fc.lib.cdn.ioWriteFile(location="images",file=filename,data=newImage,datatype="image",quality=arguments.quality,nameconflict="makeunique",uniqueamong="images") />
+		</code>
+	 --->
 	<cffunction name="ioWriteFile" returntype="string" access="public" output="false" hint="Writes the specified data to a file">
 		<cfargument name="location" type="string" required="true" />
 		<cfargument name="file" type="string" required="true" />
@@ -197,6 +252,14 @@
 		<cfreturn arguments.file />
 	</cffunction>
 	
+	<!--- @@description: 
+		<p>Reads from the specified file.</p>
+		
+		@@examples:
+		<code>
+			<cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=stResult.value,datatype='image')#" structName="stImage" />
+		</code>
+	 --->
 	<cffunction name="ioReadFile" returntype="any" access="public" output="false" hint="Reads from the specified file">
 		<cfargument name="location" type="string" required="true" />
 		<cfargument name="file" type="string" required="true" />
@@ -209,6 +272,23 @@
 		<cfreturn this.cdns[config.cdn].ioReadFile(config=config,argumentCollection=arguments) />
 	</cffunction>
 	
+	<!--- @@description: 
+		<p>Moves the specified file between locations.</p>
+		<p>
+			Note that when moving a file between different CDN types, this function moves the file to the local temporary directory,
+			then to the target location from there.
+		</p>
+		<p>Note that while every argument is marked as optional, in practice you need:</p>
+		<ul>
+			<li>source_location and source_file OR source_localpath</li>
+			<li>dest_location and dest_file OR dest_localpath</li>
+		</ul>
+		
+		@@examples:
+		<code>
+			<cfset application.fc.lib.cdn.ioMoveFile(source_location="publicfiles",source_file=arguments.stObject[arguments.stMetadata.name],dest_location="privatefiles") />
+		</code>
+	 --->
 	<cffunction name="ioMoveFile" returntype="string" access="public" output="false" hint="Moves the specified file between locations">
 		<cfargument name="source_location" type="string" required="false" />
 		<cfargument name="source_file" type="string" required="false" />
@@ -282,6 +362,28 @@
 		<cfreturn resultfilename />
 	</cffunction>
 	
+	<!--- @@description: 
+		<p>Copies the specified file between locations.</p>
+		<p>
+			Note that when copying a file between different CDN types, this function copies the file to the local temporary directory,
+			then moves it to the target location from there.
+		</p>
+		<p>Note that while every argument is marked as optional, in practice you need:</p>
+		<ul>
+			<li>source_location and source_file OR source_localpath</li>
+			<li>dest_location and dest_file OR dest_localpath</li>
+		</ul>
+		
+		@@examples:
+		<code>
+			<cfset application.fc.lib.cdn.ioCopyFile(
+				source_location="images",
+				source_file=stLocal.stInstance.thumbnail,
+				dest_location="archive",
+				dest_file="/#stLocal.stInstance.typename#/#stLocal.stProps.archiveID#_thumb.#ListLast(stLocal.stInstance.thumbnail,'.')#"
+			) />
+		</code>
+	 --->
 	<cffunction name="ioCopyFile" returntype="string" access="public" output="false" hint="Moves the specified file between paths">
 		<cfargument name="source_location" type="string" required="false" />
 		<cfargument name="source_file" type="string" required="false" />
@@ -355,6 +457,21 @@
 		<cfreturn resultfilename />
 	</cffunction>
 	
+	<!--- @@description: 
+		<p>Uploads the a file to the specified location.</p>
+		
+		@@examples:
+		<code>
+			<cfset stResult.value = application.fc.lib.cdn.ioUploadFile(
+			    location="securefiles",
+			    destination=arguments.stMetadata.ftDestination,
+			    field="#stMetadata.FormFieldPrefix##stMetadata.Name#New",
+			    nameconflict="makeunique",
+			    uniqueamong="privatefiles,publicfiles",
+			    acceptedextensions=arguments.stMetadata.ftAllowedFileExtensions
+			) />
+		</code>
+	 --->
 	<cffunction name="ioUploadFile" returntype="string" access="public" output="false" hint="Uploads the a file to the specified location">
 		<cfargument name="location" type="string" required="true" />
 		<cfargument name="destination" type="string" required="true" />
@@ -386,7 +503,7 @@
 			<cfset application.fapi.throw(message="Invalid extension. Valid extensions are {1}",type="uploaderror",substituteValues=[ replace(arguments.acceptextensions,",",", ","ALL") ]) />
 		</cfif>
 		
-		<!--- Check the uploaded extension --->
+		<!--- Check the size of the uploaded file --->
 		<cfif structkeyexists(arguments,"sizeLimit") and arguments.sizeLimit and getFileInfo(arguments.localfile).filesize gt arguments.sizeLimit>
 			<cffile action="delete" file="#tmpdir#/#cffile.serverFile#" />
 			<cfset application.fapi.throw(message="{1} is not within the file size limit of {2}MB",type="uploaderror",substituteValues=[ cffile.serverFile, round(arguments.sizeLimit/1048576) ]) />
@@ -410,6 +527,14 @@
 		<cfreturn filename />
 	</cffunction>
 	
+	<!--- @@description: 
+		<p>Deletes the specified file.</p>
+		
+		@@examples:
+		<code>
+			<cfset application.fc.lib.cdn.ioDeleteFile(location="images",file="/#arguments.stObject[arguments.stMetadata.name]#") />
+		</code>
+	 --->
 	<cffunction name="ioDeleteFile" returntype="void" output="false" hint="Deletes the specified file">
 		<cfargument name="location" type="string" required="true" />
 		<cfargument name="file" type="string" required="true" />
@@ -422,6 +547,19 @@
 	</cffunction>
 	
 	
+	<!--- @@description: 
+		<p>
+			Checks that a specified directory exists. All CDN functions which create a file already perform internal checks to 
+			find out if a directory needs to be created first. As a result, there is no example in core of a call to this function.
+		</p>
+		
+		@@examples:
+		<code>
+			<cfif application.fc.lib.cdn.ioDirectoryExists(location="images",file="/#stMetadata.ftDestination#")>
+			    <!--- something here --->
+			</cfif>
+		</code>
+	 --->
 	<cffunction name="ioDirectoryExists" returntype="boolean" access="public" output="false" hint="Checks that a specified directory exists">
 		<cfargument name="location" type="string" required="true" />
 		<cfargument name="dir" type="string" required="true" />
@@ -433,7 +571,21 @@
 		<cfset this.cdns[config.cdn].ioDirectoryExists(config=config,dir=arguments.dir) />
 	</cffunction>
 	
-	<cffunction name="ioCreateDirectory" returntype="void" access="public" output="false" hint="Creates the specified directory. Will create all missing directories">
+	<!--- @@description: 
+		<p>
+			Creates the specified directory, including parent directories. All CDN functions which create a file already perform 
+			internal checks and create directories as necessary. As a result, there is no example in core of a call to this function.
+		</p>
+		<p>Creates the specified directory, including parent directories.</p>
+		
+		@@examples:
+		<code>
+			<cfif application.fc.lib.cdn.ioDirectoryExists(location="images",file="/#stMetadata.ftDestination#")>
+			    <!--- something here --->
+			</cfif>
+		</code>
+	 --->
+	<cffunction name="ioCreateDirectory" returntype="void" access="public" output="false" hint="Creates the specified directory, including parent directories.">
 		<cfargument name="location" type="string" required="true" />
 		<cfargument name="dir" type="string" required="true" />
 		
@@ -444,7 +596,51 @@
 		<cfset this.cdns[config.cdn].ioCreateDirectory(config=config,dir=arguments.dir) />
 	</cffunction>
 	
-	<cffunction name="ioGetDirectoryListing" returntype="query" access="public" output="false" hint="Creates the specified directory. Will create all missing directories">
+	<!--- @@description: 
+		<p>
+			Returns a query containing the files under the specfied directory. The resulting query has a single field "file", which 
+			is the full path as would be passed into the other CDN functions. The results are recursive and do not include directories, 
+			except by implication.
+		</p>
+		<p>
+			It is worth noting that the "images" location is unusual in that it usually corresponds to the project WWW directory,
+			and so a naive query to the "images" location will return everything in the webroot. In practice, listings of "images"
+			should be filtered by /images.
+		</p>
+		
+		@@examples:
+		<code>
+			<cfset qSourceFiles = application.fc.lib.cdn.ioGetDirectoryListing(location=form.source_location,dir=form.source_filter) />
+			<cfset qTargetFiles = application.fc.lib.cdn.ioGetDirectoryListing(location=form.target_location,dir=form.target_filter) />
+			
+			<cfset stFound = structnew() />
+			<cfloop query="qSourceFiles">
+				<cfif not structkeyexists(stFound,qSourceFiles.file)>
+					<cfset stFound[qSourceFiles.file] = 1 />
+				<cfelse>
+					<cfset stFound[qSourceFiles.file] = stFound[qSourceFiles.file] + 1 />
+				</cfif>
+			</cfloop>
+			<cfloop query="qTargetFiles">
+				<cfif not structkeyexists(stFound,qTargetFiles.file)>
+					<cfset stFound[qTargetFiles.file] = 2 />
+				<cfelse>
+					<cfset stFound[qTargetFiles.file] = stFound[qTargetFiles.file] + 2 />
+				</cfif>
+			</cfloop>
+			
+			
+			<cfloop collection="#stFound#" item="thisfile">
+				<cfset queryaddrow(qFiles) />
+				<cfset querysetcell(qFiles,"file",thisfile) />
+				<cfset querysetcell(qFiles,"inSource",bitand(stFound[thisfile],1) eq 1) />
+				<cfset querysetcell(qFiles,"inTarget",bitand(stFound[thisfile],2) eq 2) />
+			</cfloop>
+			
+			<cfquery dbtype="query" name="qFiles">select * from qFiles order by file</cfquery>
+		</code>
+	 --->
+	<cffunction name="ioGetDirectoryListing" returntype="query" access="public" output="false" hint="Lists the files the specfied directory.">
 		<cfargument name="location" type="string" required="true" />
 		<cfargument name="dir" type="string" required="false" default="" />
 		

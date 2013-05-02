@@ -85,6 +85,9 @@
 			<cfif right(st.urlPathPrefix,1) eq "/">
 				<cfset st.urlPathPrefix = left(st.urlPathPrefix,len(st.urlPathPrefix)-1) />
 			</cfif>
+			<cfif refindnocase("^https?:",st.urlPathPrefix)>
+				<cfset st.urlPathPrefix = rereplacenocase(st.urlPathPrefix,"^https?:","") />
+			</cfif>
 		<cfelse>
 			<cfset application.fapi.throw(message="no '{1}' value defined",type="cdnconfigerror",detail=serializeJSON(arguments.config),substituteValues=[ 'urlPathPrefix' ]) />
 		</cfif>
@@ -524,10 +527,6 @@
 		<cfif structkeyexists(arguments,"source_config") and structkeyexists(arguments,"dest_config") and not isSameServer(arguments.source_config,arguments.dest_config)>
 		
 			<!--- Inter-FTP move --->
-			<cfif not structkeyexists(arguments,"dest_file")>
-				<cfset arguments.dest_file = arguments.source_file />
-			</cfif>
-			
 			<cfset tmpfile = getTempDirectory() & createuuid() & "." & listlast(arguments.source_file,".") />
 			<cfset ioMoveFile(source_config=arguments.source_config,source_file=arguments.source_file,dest_localpath=tmpfile) />
 			<cfset ioMoveFile(source_localpath=tmpfile,dest_config=arguments.dest_config,dest_file=arguments.dest_file) />
@@ -535,10 +534,6 @@
 		<cfelseif structkeyexists(arguments,"source_config") and structkeyexists(arguments,"dest_config") and isSameServer(arguments.source_config,arguments.dest_config)>
 			
 			<!--- Intra-FTP move --->
-			<cfif not structkeyexists(arguments,"dest_file")>
-				<cfset arguments.dest_file = arguments.source_file />
-			</cfif>
-			
 			<cfset connectionname = openConnection(config=arguments.source_config) />
 			
 			<cfif not ioDirectoryExists(config=arguments.dest_config,dir=getDirectoryFromPath(arguments.dest_file))>
@@ -644,10 +639,6 @@
 		<cfif structkeyexists(arguments,"source_config") and structkeyexists(arguments,"dest_config")>
 		
 			<!--- FTP copy --->
-			<cfif not structkeyexists(arguments,"dest_file")>
-				<cfset arguments.dest_file = arguments.source_file />
-			</cfif>
-			
 			<cfset tmpfile = getTempDirectory() & createuuid() & "." & listlast(arguments.source_file,".") />
 			<cfset ioCopyFile(source_config=arguments.source_config,source_file=arguments.source_file,dest_localpath=tmpfile) />
 			<cfset ioMoveFile(source_localpath=tmpfile,dest_config=arguments.dest_config,dest_file=arguments.dest_file) />

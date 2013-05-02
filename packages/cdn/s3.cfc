@@ -26,6 +26,10 @@
 			<cfset application.fapi.throw(message="no '{1}' value defined",type="cdnconfigerror",detail=serializeJSON(arguments.config),substituteValues=[ 'region' ]) />
 		</cfif>
 		
+		<cfif not structkeyexists(st,"domain")>
+			<cfset st.domain = "s3-#st.config.region#.amazonaws.com" />
+		</cfif>
+		
 		<cfif structkeyexists(st,"security") and not listfindnocase("public,private",arguments.config.security)>
 			<cfset application.fapi.throw(message="the '{1}' value must be one of ({2})",type="cdnconfigerror",detail=serializeJSON(arguments.config),substituteValues=[ 'security', 'public|private' ]) />
 		<cfelseif not structkeyexists(st,"security")>
@@ -125,9 +129,9 @@
 			<!--- Replace "\n" with "chr(10) to get a correct digest --->
 			<cfset signature = replace(signature,"\n","#chr(10)#","all") />
 			
-			<cfset urlpath = "//s3-#arguments.config.region#.amazonaws.com" & urlpath & "?AWSAccessKeyId=#arguments.config.accessKeyId#&Expires=#epochTime#&Signature=#urlencodedformat(HMAC_SHA1(signature,arguments.config.awsSecretKey))#" />
+			<cfset urlpath = "//" & arguments.config.domain & urlpath & "?AWSAccessKeyId=#arguments.config.accessKeyId#&Expires=#epochTime#&Signature=#urlencodedformat(HMAC_SHA1(signature,arguments.config.awsSecretKey))#" />
 		<cfelse>
-			<cfset urlpath = "//s3-#arguments.config.region#.amazonaws.com" & urlpath />
+			<cfset urlpath = "//" & arguments.config.domain & urlpath />
 		</cfif>
 		
 		<cfreturn urlpath />
@@ -283,10 +287,6 @@
 		<cfif structkeyexists(arguments,"source_config") and structkeyexists(arguments,"dest_config") and arguments.source_config.server neq arguments.dest_config.bucket>
 		
 			<!--- Inter-bucket move --->
-			<cfif not structkeyexists(arguments,"dest_file")>
-				<cfset arguments.dest_file = arguments.source_file />
-			</cfif>
-			
 			<cfset tmpfile = getTempDirectory() & createuuid() & ".tmp" />
 			<cfset ioMoveFile(source_config=arguments.source_config,source_file=arguments.source_file,dest_localpath=tmpfile) />
 			<cfset ioMoveFile(source_localpath=tmpfile,dest_config=arguments.dest_config,dest_file=arguments_dest_file) />
@@ -302,10 +302,6 @@
 			</cfif>
 			
 			<cfif structkeyexists(arguments,"dest_config") and (structkeyexists(arguments,"dest_file") or structkeyexists(arguments,"source_file"))>
-				<cfif not structkeyexists(arguments,"dest_file")>
-					<cfset arguments.dest_file = arguments.source_file />
-				</cfif>
-				
 				<cfset destfile = getS3Path(config=arguments.dest_config,file=arguments.dest_file) />
 				
 				<cfif structkeyexists(arguments,"source_config") and structkeyexists(arguments,"source_file")>
@@ -347,10 +343,6 @@
 		<cfif structkeyexists(arguments,"source_config") and structkeyexists(arguments,"dest_config") and arguments.source_config.bucket neq arguments.dest_config.bucket>
 		
 			<!--- Inter-bucket copy --->
-			<cfif not structkeyexists(arguments,"dest_file")>
-				<cfset arguments.dest_file = arguments.source_file />
-			</cfif>
-			
 			<cfset tmpfile = getTempDirectory() & createuuid() & ".tmp" />
 			<cfset ioCopyFile(source_config=arguments.source_config,source_file=arguments.source_file,dest_localpath=tmpfile) />
 			<cfset ioMoveFile(source_localpath=tmpfile,dest_config=arguments.dest_config,dest_file=arguments_dest_file) />
@@ -366,10 +358,6 @@
 			</cfif>
 			
 			<cfif structkeyexists(arguments,"dest_config") and (structkeyexists(arguments,"dest_file") or structkeyexists(arguments,"source_file"))>
-				<cfif not structkeyexists(arguments,"dest_file")>
-					<cfset arguments.dest_file = arguments.source_file />
-				</cfif>
-				
 				<cfset destfile = getS3Path(config=arguments.dest_config,file=arguments.dest_file) />
 				
 				<cffile action="copy" source="#sourcefile#" destination="#destfile#" nameconflict="overwrite" />

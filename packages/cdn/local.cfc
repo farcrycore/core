@@ -23,6 +23,9 @@
 		<cfif structkeyexists(st,"urlpath") and right(st.urlpath,1) eq "/">
 			<cfset st.urlpath = left(st.urlpath,len(st.urlpath)-1) />
 		</cfif>
+		<cfif refindnocase("^https?:",st.urlpath)>
+			<cfset st.urlpath = rereplacenocase(st.urlpath,"^https?:","") />
+		</cfif>
 		
 		<cfreturn st />
 	</cffunction>
@@ -48,6 +51,10 @@
 		<cfargument name="file" type="string" required="true" />
 		
 		<cfset var urlpath = "" />
+		
+		<cfif not structkeyexists(arguments.config,"urlPath")>
+			<cfset application.fapi.throw(message="no URL is available for CDN location [{1}]",type="cdnconfigerror",detail=serializeJSON(arguments.config),substituteValues=[ arguments.config.name ]) />
+		</cfif>
 		
 		<cfif left(arguments.file,1) eq "/">
 			<cfset urlpath = arguments.config.urlpath & arguments.file />
@@ -171,10 +178,6 @@
 		</cfif>
 		
 		<cfif structkeyexists(arguments,"dest_config") and (structkeyexists(arguments,"dest_file") or structkeyexists(arguments,"source_file"))>
-			<cfif not structkeyexists(arguments,"dest_file")>
-				<cfset arguments.dest_file = arguments.source_file />
-			</cfif>
-			
 			<cfset destfile = getFullPath(config=arguments.dest_config,file=arguments.dest_file) />
 		<cfelseif structkeyexists(arguments,"dest_localpath")>
 			<cfset destfile = arguments.dest_localpath />
@@ -206,10 +209,6 @@
 		</cfif>
 		
 		<cfif structkeyexists(arguments,"dest_config") and (structkeyexists(arguments,"dest_file") or structkeyexists(arguments,"source_file"))>
-			<cfif not struckeyexists(arguments,"dest_file")>
-				<cfset arguments.dest_file = arguments.source_file />
-			</cfif>
-			
 			<cfset destfile = getFullPath(config=arguments.dest_config,file=arguments.dest_file) />
 		<cfelseif structkeyexists(arguments,"dest_localpath")>
 			<cfset destfile = arguments.dest_localpath />
