@@ -73,7 +73,13 @@
 
 		<skin:registerJS 	id="farcry-form" core="true"
 							baseHREF="#application.url.webtop#"
-							lFiles="/js/farcryForm.cfm,/thirdparty/loadmask/jquery.loadmask.min.js,/thirdparty/uni-form/js/uni-form.jquery.js,/thirdparty/jquery-treeview/jquery.treeview.js,/thirdparty/jquery-treeview/jquery.treeview.async.js" />
+							lFiles="/js/farcryForm.cfm,/thirdparty/loadmask/jquery.loadmask.min.js,/thirdparty/jquery-treeview/jquery.treeview.js,/thirdparty/jquery-treeview/jquery.treeview.async.js" />
+		
+		
+		<skin:registerJS 	id="fc-uniform" core="true"
+							baseHREF="#application.url.webtop#"
+							lFiles="/thirdparty/uni-form/js/uni-form.jquery.js" />
+		
 		
 		<skin:registerJS	id="jquery-tree" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/jqTree"
@@ -126,9 +132,18 @@
 							lFiles="bootstrap.min.css"
 							bCombined="false" />
 							
+		<skin:registerCSS	id="fc-uniform"
+							baseHREF="#application.url.webtop#"
+							lFiles="/thirdparty/uni-form/css/uni-form-generic.css,/thirdparty/uni-form/css/uni-form.css"
+							bCombined="false" />
+							
 		<skin:registerCSS	id="fc-icons"
 							baseHREF="#application.url.webtop#/css"
-							lFiles="icons.css" />
+							lFiles="" /><!--- icons.css. removed for incompatibility with font-awesome. re-apply as required. --->
+							
+		<skin:registerCSS	id="fc-fontawesome"
+							baseHREF="#application.url.webtop#/thirdparty/font-awesome-3.0.2/css"
+							lFiles="font-awesome.css" />
 							
 		<skin:registerCSS 	id="jquery-ui"
 							baseHREF="#application.url.webtop#/thirdparty/jquery/css/Aristo"
@@ -152,7 +167,7 @@
 		
 		<skin:registerCSS 	id="farcry-form"
 							baseHREF="#application.url.webtop#"
-							lFiles="/css/wizard.css,/thirdparty/loadmask/jquery.loadmask.css,/thirdparty/uni-form/css/uni-form-generic.css,/thirdparty/uni-form/css/uni-form.css,/thirdparty/jquery-treeview/jquery.treeview.css,/css/farcryform.css">
+							lFiles="/css/wizard.css,/thirdparty/loadmask/jquery.loadmask.css,/thirdparty/jquery-treeview/jquery.treeview.css,/css/farcryform.css">
 							
 							<cfoutput>
 							ul.treeview span { font-size:10px; vertical-align: top}
