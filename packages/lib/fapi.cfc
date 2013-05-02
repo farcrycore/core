@@ -505,7 +505,7 @@
 		<cfargument name="bAudit" type="boolean" required="No" default="1" hint="Pass in 0 if you wish no audit to take place">
 		
 		<cfset var o = "" />
-		<cfset var lReserved = "objectid,typename,stProperties,dsn,dbtype,dbowner,bSessionOnly,bAfterSave" />
+		<cfset var lReserved = "objectid,typename,stProperties,dsn,dbtype,dbowner,auditNote,bAudit,bSessionOnly,bAfterSave" />
 	
 		<cfif not structKeyExists(arguments.stProperties, "objectid")>
 			<cfset arguments.stProperties.objectid = arguments.objectid />
@@ -1357,6 +1357,42 @@
 		<cfreturn application.url.fileRoot />
 	</cffunction>
 	
+
+		<!--- @@examples:
+			<p>Use to find the absolute filepath of a file property:</p>
+			<code>
+				<cfif len(stObj.brochureFile)>
+					<cfset absolutePath = application.fapi.getAbsoluteFilePath(typename='myType', property='brochureFile', relativePath="#stObj.brochureFile#")>
+					<cfcontent file="#absolutePath#" deletefile="No" reset="Yes" />
+				</cfif>
+			</code>
+		 --->	
+	<cffunction name="getAbsoluteFilePath" hint="Returns the absolute filepath by determining value of ftSecure attribute of the property">
+		<cfargument name="typename" required="true" />
+		<cfargument name="property" required="true" />
+		<cfargument name="relativePath" required="true" />
+		
+		<cfset var bSecure = application.fapi.getPropertyMetadata(typename="#arguments.typename#", property="#arguments.property#", md="ftSecure", default="false")>
+		<cfset var ftType = application.fapi.getPropertyMetadata(typename="#arguments.typename#", property="#arguments.property#", md="ftType", default="file")>
+		<cfset var filePath = "">
+		
+		<cfif bSecure>
+			<cfset filePath = application.path.secureFilePath />
+		<cfelse>
+			<cfif ftType EQ "image">
+				<cfset filePath = application.path.imageRoot />
+			<cfelse>
+				<cfset filePath = application.path.defaultFilePath />
+			</cfif>
+			
+		</cfif>
+		
+		<cfreturn "#filePath##trim(relativePath)#">
+	</cffunction>
+	
+
+	
+		
 	<!--- MISCELLANEOUS //////////////////////////////////// --->
 	
 	<cffunction name="throw" access="public" returntype="void" output="false" hint="Provides similar functionality to the cfthrow tag but is automatically incorporated to use the resource bundles.">
@@ -2385,6 +2421,25 @@
 		
 		<cfreturn html />
 	</cffunction>
+
+	
+	<!--- @@examples:
+		<p>Returns the current form theme based on request.fc.inWebtop.</p>
+		<code>
+			#application.fapi.getDefaultFormTheme()# 
+		</code>
+	 --->	
+	<cffunction name="getDefaultFormTheme" access="public" output="false" returnType="string" hint="Returns the current form theme based on request.fc.inWebtop">
+		<cfset var defaultFormTheme = "" />
+	
+		<cfif structKeyExists(request.fc, "inWebtop")>
+			<cfset defaultFormTheme = application.fapi.getConfig('formTheme','webtop') />
+		<cfelse>
+			<cfset defaultFormTheme = application.fapi.getConfig('formTheme','site') />
+		</cfif>
+
+		<cfreturn defaultFormTheme />
+	</cffunction>	
 
 
 </cfcomponent>
