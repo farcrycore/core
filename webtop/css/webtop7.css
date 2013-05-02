@@ -34,23 +34,25 @@
 
 
 body {
-	/*font-family: Helvetica, Arial, sans-serif;*/
+	/*font-family: Arial, Helvetica, sans-serif;*/
 	/*font-family: 'Droid Sans', sans-serif;*/
 	/*font-family: 'Source Sans Pro', sans-serif;*/
 	/*font-family: 'Open Sans', sans-serif;*/
-	font-family: Helvetica, Arial, sans-serif;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	line-height: 20px;
 
 }
 body.webtop {
 	padding-top: 128px;
-	/*background: #fff url(images/pw_maze_white.png) repeat 0 95px;*/
+	background: #fff url(images/pw_maze_white.png) repeat 0 95px;
 	background: #eee;
 }
 
 
 h1, h2, h3, h4, h5, h6 {
 	color: #333;
-	font-family: Helvetica, Arial, sans-serif;
+	font-family: Arial, Helvetica, sans-serif;
 }
 
 h3 {
@@ -68,7 +70,7 @@ a:hover {
 
 .farcry-header {
 	background: #fff;
-	font-family: Helvetica, Arial, sans-serif;
+	font-family: Arial, Helvetica, sans-serif;
 	z-index: 99;
 
 	box-shadow: 0 0 8px rgba(0,0,0,0.25);
@@ -363,6 +365,11 @@ a:hover {
 	top: 0;
 	left: 0;
 }
+.farcry-header-profile .avatar .gravatar {
+	background: #fff;
+}
+
+
 .farcry-header-profile .cog {
 	display: none;
 	margin-right: 7px;
@@ -408,7 +415,7 @@ a:hover {
 /* customise bootstrap table styles */
 table.table th {
 	border-bottom: 2px solid #ddd;
-	font-family: Helvetica, Arial, sans-serif;
+	font-family: Arial, Helvetica, sans-serif;
 }
 table.table tbody + tbody {
 	border: none;
@@ -416,7 +423,7 @@ table.table tbody + tbody {
 
 table.table td {
 	padding: 7px;
-	font-family: Helvetica, Arial, sans-serif;
+	font-family: Arial, Helvetica, sans-serif;
 }
 table.table-hover tbody tr:hover > td {
 	background: #fff6eb;
@@ -456,7 +463,7 @@ th.objectadmin-sortable span:hover {
 	border: 0;
 	color: #555;
 	box-shadow: 0 0 1px rgba(0,0,0,0.25) inset;
-	font-family: Helvetica, Arial, sans-serif;
+	font-family: Arial, Helvetica, sans-serif;
 }
 .btn:hover,
 .btn:focus {
@@ -520,7 +527,7 @@ th.objectadmin-sortable span:hover {
 	padding: 4px 12px;
 	color: #555;
 	box-shadow: 0 0 1px rgba(0,0,0,0.25) inset;
-	font-family: Helvetica, Arial, sans-serif;
+	font-family: Arial, Helvetica, sans-serif;
 }
 .objectadmin-actions .jquery-ui-split-button .btn .ui-button-text {
 	padding: 0;
@@ -574,12 +581,30 @@ th.objectadmin-sortable span:hover {
 }
 
 /* overrides for existing farcry buttonHolder */
+body .uniForm .buttonHolder {
+	background: none;
+	border: none;
+	padding: ;
+	margin: 0.5em 0 1em 0;
+	border-top: 1px solid #e3e3e3;
+	background: #f8f8f8;
+}
 .uniForm .buttonHolder.farcry-button-bar {
 	background: none;
 	border: none;
 	padding: 0;
 	margin: 0 0 1em 0;
 
+}
+
+
+/* overrides for uniform forms */
+body .uniForm .fieldset .legend {
+	font-size: 100%;
+	padding: 0 0 9px 6px;
+}
+body .uniForm .focused {
+	background: #f8f8f8 !important;
 }
 
 
@@ -693,6 +718,9 @@ th.objectadmin-sortable span:hover {
 }
 
 
+.fc-modal {
+	max-width: 990px;
+}
 
 /* objectadmin tree */
 .fc-treestate-visible {
