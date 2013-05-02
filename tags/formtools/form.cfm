@@ -54,6 +54,7 @@ It just ignores the inner ones.
 		<cfparam name="attributes.ajaxMaskCls" default="x-mask-loading">
 		<cfparam name="attributes.ajaxTimeout" default="30">
 		<cfparam name="attributes.ajaxTarget" default=""><!--- jQuery selector specifying the target element for the form response. Defaults to the FORM element. --->
+		<cfparam name="attributes.bAddFormCSS" default="true" /><!--- Add relevent form layout css --->
 		<cfparam name="attributes.bFieldHighlight" default="true"><!--- Highlight fields when focused --->
 		<cfparam name="attributes.bFocusFirstField" default="false" /><!--- Focus on first form element. --->
 		<cfparam name="attributes.defaultAction" default="" /><!--- The default action to be used if user presses enter key on browser that doesn't fire onClick event of first button. --->

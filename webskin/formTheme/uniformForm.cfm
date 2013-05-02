@@ -42,7 +42,7 @@
 <cfparam name="attributes.ajaxMaskCls" default="x-mask-loading">
 <cfparam name="attributes.ajaxTimeout" default="30">
 <cfparam name="attributes.ajaxTarget" default=""><!--- jQuery selector specifying the target element for the form response. Defaults to the FORM element. --->
-<cfparam name="attributes.bAddFormCSS" default="false" /><!--- Uses uniform (http://sprawsm.com/uni-form/) --->
+<cfparam name="attributes.bAddFormCSS" default="true" /><!--- Uses uniform (http://sprawsm.com/uni-form/) --->
 <cfparam name="attributes.bFieldHighlight" default="true"><!--- Highlight fields when focused --->
 <cfparam name="attributes.bFocusFirstField" default="false" /><!--- Focus on first form element. --->
 <cfparam name="attributes.defaultAction" default="" /><!--- The default action to be used if user presses enter key on browser that doesn't fire onClick event of first button. --->
@@ -66,7 +66,9 @@
 	
 	
 	<skin:loadJS id="fc-uniform" />
-	<skin:loadCSS id="fc-uniform" />
+	<cfif attributes.bAddFormCSS>
+		<skin:loadCSS id="fc-uniform" />
+	</cfif>
 	<skin:loadCSS id="farcry-form" />
 	
 	
