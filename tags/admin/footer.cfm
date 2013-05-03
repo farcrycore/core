@@ -31,6 +31,10 @@ $Description: Admin footer $
 $Developer: Brendan Sisson (brendan@daemon.com.au)$
 --->
 
+
+
+<cfexit method="exittag" />
+
 <!--- exit tag if its been closed, ie don't run twice --->
 <cfif thistag.executionmode eq "end">
 	<cfexit method="exittag" />

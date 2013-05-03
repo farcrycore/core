@@ -39,6 +39,7 @@ $in: [bCacheControl] output cache control headers; default true. $
 <cfimport taglib="/farcry/core/tags/misc/" prefix="misc">
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
 
+<cfexit method="exittag" />
 <!--- exit tag if its been closed, ie don't run twice --->
 <cfif thistag.executionmode eq "end">
 	<cfexit method="exittag" />
@@ -64,7 +65,7 @@ $in: [bCacheControl] output cache control headers; default true. $
 
 
 <cfoutput>
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!doctype html>
 <html lang="en">
 <head>
 		<!---  apply cach control metadata as required --->
