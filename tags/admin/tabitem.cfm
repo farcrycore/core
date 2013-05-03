@@ -1,3 +1,4 @@
+<cfsetting enablecfoutputonly="true">
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -15,34 +16,65 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/tags/admin/tabitem.cfm,v 1.2 2004/07/15 02:01:35 brendan Exp $
-$Author: brendan $
-$Date: 2004/07/15 02:01:35 $
-$Name: milestone_3-0-1 $
-$Revision: 1.2 $
+<!--- @@displayname:  --->
+<!--- @@description:   --->
+<!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
-|| DESCRIPTION || 
-Sets attributes for tab
 
-|| DEVELOPER ||
-Brendan Sisson (brendan@daemon.com.au)
+<!------------------ 
+FARCRY INCLUDE FILES
+ ------------------>
 
-|| ATTRIBUTES ||
-in: onclick, id, style, target, title
-out:
---->
-<cfsetting enablecfoutputonly="Yes">
 
-<cfprocessingDirective pageencoding="utf-8">
+<!------------------ 
+START TAG
+ ------------------>
+<cfset baseTagData = getBaseTagData("cf_tabs")>
 
-<cfparam name="attributes.onclick" default="">
-<cfparam name="attributes.id" default="">
-<cfparam name="attributes.style" default="">
-<cfparam name="attributes.target" default="">
-<cfparam name="attributes.title" default="">
+<cfif thistag.executionMode eq "Start">
+	<cfparam name="attributes.id">
+	<cfparam name="attributes.title" default="">
+	<cfparam name="attributes.href" default="">
+	<cfparam name="attributes.panelStyle" default="">
+	
 
-<cfassociate basetag="cf_tabs" datacollection="tabs">
+	<cfset stTab = structNew() />
+	<cfset stTab.id = attributes.id />
+	<cfif len(attributes.title)>
+		<cfset stTab.title = attributes.title />
+	<cfelse>
+		<cfset stTab.title = attributes.id />
+	</cfif>
+	<cfset stTab.href = attributes.href />
+	<cfset stTab.panelStyle = attributes.panelStyle />
+	<cfset stTab.HTML = "" />
+	<cfset stTab.bCurrent = false />
+	
+	<cfif not len( request.fc['#baseTagData.attributes.id#-tab'] )>
+		<cfset request.fc['#baseTagData.attributes.id#-tab'] = attributes.id>
 
-<cfsetting enablecfoutputonly="No">
+		<cfif baseTagData.attributes.bSticky>
+			<cfset session.fc['#attributes.id#-tab'] = attributes.id>
+		</cfif>
+				
+	</cfif>
+	
+	
+	<cfif request.fc['#baseTagData.attributes.id#-tab'] NEQ attributes.id>
+		<cfset arrayAppend(baseTagData.attributes.aTabs, stTab) />
+		<cfexit>
+	</cfif>
+</cfif>
+
+<cfif thistag.executionMode eq "End">
+
+	<cfset stTab.bCurrent = true>
+	<cfset stTab.HTML = "#stTab.HTML##thisTag.GeneratedContent#" />
+	<cfset arrayAppend(baseTagData.attributes.aTabs, stTab) />
+	
+	<cfset thisTag.GeneratedContent = "" />
+	
+</cfif>
+
+<cfsetting enablecfoutputonly="false">
+
