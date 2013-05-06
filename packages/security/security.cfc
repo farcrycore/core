@@ -222,16 +222,16 @@
 	</cffunction>
 
 	<cffunction name="getCurrentRoles" access="public" output="true" returntype="string" hint="Returns the roles of the current logged in user" bDocument="true">
+		<cfif not isdefined("this.cache.defaultroles")>
+			<cfset this.cache.defaultroles = this.factory.role.getDefaultRoles() />
+		</cfif>
 		<cfif isdefined("session.security.roles")>
 			<cfreturn application.factory.oUtils.listMerge(this.cache.defaultroles,session.security.roles) />
-		<cfelseif not isdefined("this.cache.defaultroles")>
-			<cfset this.cache.defaultroles = this.factory.role.getDefaultRoles() />
-			<cfreturn this.cache.defaultroles />
 		<cfelse>
 			<cfreturn this.cache.defaultroles />
 		</cfif>
 	</cffunction>
-	
+
 	<cffunction name="getCurrentUD" access="public" output="false" returntype="string" hint="Returns the UD of the current user" bDocument="true">
 		<cfif isdefined("session.security.userid")>
 			<cfreturn listlast(session.security.userid,"_") />
