@@ -389,7 +389,10 @@ function updateSelectedObjectIDs (childCheckbox) {
 								});
 							};	
 							
-																				
+							$fc.closeBootstrapModal = function(){	
+								parent.$('##fcModal').modal('hide');	
+							}	
+																			
 							$fc.openBootstrapModal = function($settings){
 							
 								$settings = $j.extend({
