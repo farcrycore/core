@@ -835,35 +835,24 @@
 		
 		<cfsavecontent variable="fieldsHTML">
 			
-					
-			<cfoutput>
-		
-			
-			
 			<!--- FIELDS --->
 			<cfloop list="#lFieldsToRender#" index="i">
 				
-				<cfset ftFieldMetadata = Request.farcryForm.stObjects[variables.prefix]['MetaData'][i]>
-				
-		
-				<ft:field 	for="#ftFieldMetadata.formFieldName#" 
-							label="#ftFieldMetadata.label#" 
-							hint="#ftFieldMetadata.ftHint#" 
-							errorMessage="#ftFieldMetadata.errorMessage#"
-							class="#ftFieldMetadata.ftType# #ftFieldMetadata.errorClass#">
-										
-					<cfoutput>#ftFieldMetadata.html#</cfoutput>
+				<cfif NOT ListFind(attributes.lHiddenFields,i)>
+					<cfset ftFieldMetadata = Request.farcryForm.stObjects[variables.prefix]['MetaData'][i]>
 					
-				</ft:field>
+					<ft:field 	for="#ftFieldMetadata.formFieldName#" 
+								label="#ftFieldMetadata.ftLabel#" 
+								hint="#ftFieldMetadata.ftHint#" 
+								errorMessage="#ftFieldMetadata.errorMessage#"
+								class="#ftFieldMetadata.ftType# #ftFieldMetadata.errorClass#">
+											
+						<cfoutput>#ftFieldMetadata.html#</cfoutput>
+						
+					</ft:field>
+				</cfif>
 			</cfloop>
 			
-			
-				
-			</cfoutput>	
-			
-			
-			
-				
 		</cfsavecontent>
 	
 	

@@ -83,7 +83,7 @@ It just ignores the inner ones.
 		<cfif attributes.bFocusFirstField>
 			<skin:onReady>
 				<cfoutput>
-					$j('###attributes.Name# :input:visible:enabled:first').addClass('focus').focus();
+					$j('###attributes.Name# :input:visible:enabled:first:not("button")').addClass('focus').focus();
 				</cfoutput>
 			</skin:onReady>
 		</cfif>
