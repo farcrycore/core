@@ -57,7 +57,7 @@
 
 		<skin:registerJS 	id="jquery-autoresize" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/jquery.autoresize" 
-							lFiles="autoresize.jquery.min.js,custom.js" />
+							lFiles="jquery.autosize-min.js" />
 		
 		<skin:registerJS	id="jquery-uploadify" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4"

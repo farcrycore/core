@@ -17,9 +17,12 @@
 
 
 
+<cfparam  name="attributes.class" default="">
+<cfparam  name="attributes.style" default="">
+
 
 <cfif thistag.ExecutionMode EQ "Start">
-	<cfoutput><div class="btn-group"></cfoutput>
+	<cfoutput><div class="btn-group #attributes.class#" style="#attributes.style#"></cfoutput>
 </cfif>
 
 <cfif thistag.ExecutionMode EQ "End">

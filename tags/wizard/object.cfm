@@ -24,8 +24,10 @@
 	<cfparam name="attributes.style" default=""><!--- style with which to set all farcry form tags --->
 	<cfparam name="attributes.format" default="edit"><!--- edit or display --->
 	<cfparam name="attributes.IncludeLabel" default="1">
-	<cfparam name="attributes.labelClass" default="label"><!--- The class to be applied to all labels --->
+	<cfparam name="attributes.labelClass" default="control-label"><!--- The class to be applied to all labels --->
 	<cfparam name="attributes.IncludeFieldSet" default="1">
+	<cfparam name="attributes.helpTitle" default=""><!--- title for the help section --->
+	<cfparam name="attributes.helpText" default=""><!--- text to provide help information for the fieldset --->
 	<cfparam name="attributes.IncludeBR" default="1">
 	<cfparam name="attributes.InTable" default="0">
 	<cfparam name="attributes.insidePLP" default="0"><!--- how are we rendering the form --->
@@ -204,6 +206,7 @@
 	<cfset Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.typename = typename>
 	<cfset Request.farcryForm.stObjects[variables.prefix].farcryformobjectinfo.ObjectLabel = attributes.ObjectLabel>
 
+	<!--- 
 
 	<!--- determine if we need to hide any legend specific css. --->
 	<cfset LegendClass = "" />
@@ -224,7 +227,9 @@
 		<cfoutput>
 			<p class="helpsection">#attributes.HelpSection#</p>
 		</cfoutput>
-	</cfif>
+	</cfif> 
+	
+	--->
 
 	<cfloop list="#lFieldsToRender#" index="i">
 		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i] = StructNew()>
@@ -235,6 +240,8 @@
 		<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].ftLabel = oType.getI18Property(property=i,value='label') />
 		<cfif structkeyexists(Request.farcryForm.stObjects[variables.prefix]['MetaData'][i],"ftHint") and len(Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].ftHint)>
 			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].ftHint = oType.getI18Property(property=i,value='hint') />
+		<cfelse>
+			<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].ftHint = "" />	
 		</cfif>
 		
 		
@@ -382,7 +389,7 @@
 			</cfif>
 				
 						
-			<cfif NOT len(Attributes.r_stFields)>
+			<cfif NOT len(Attributes.r_stFields) and 1 eq 0>
 				
 				<grid:div class="ctrlHolder #ftFieldMetadata.ftLabelAlignment#Labels #ftFieldMetadata.ftClass#">
 					
@@ -410,11 +417,33 @@
 					
 				</grid:div>	
 			<cfelse>
-				
+				<!--- 
 				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].HTML = returnHTML>
 				<cfsavecontent variable="Request.farcryForm.stObjects.#variables.prefix#.MetaData.#ftFieldMetadata.Name#.Label">
 					<cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#" class="#attributes.label#"><cfif findNoCase("required",ftFieldMetadata.ftClass)><em>*</em> </cfif>#ftFieldMetadata.ftlabel#</label></cfoutput>
 				</cfsavecontent>
+				
+				 --->
+				
+				
+				<cfset Request.farcryForm.stObjects[variables.prefix]['MetaData'][ftFieldMetadata.Name].HTML = variables.returnHTML>
+			
+				<cfif structKeyExists(ftFieldMetadata, "ftshowlabel")>
+					<cfset bShowLabel = ftFieldMetadata.ftShowLabel />
+				<cfelse>
+					<cfset bShowLabel = true />
+				</cfif>
+	
+				<cfif bShowLabel AND isDefined("Attributes.IncludeLabel") AND attributes.IncludeLabel EQ 1>
+					<cfsavecontent variable="Request.farcryForm.stObjects.#variables.prefix#.MetaData.#ftFieldMetadata.Name#.Label">
+						<!--- <cfoutput><label for="#variables.prefix##ftFieldMetadata.Name#" class="#attributes.labelClass#">#ftFieldMetadata.ftlabel#<cfif findNoCase("required",ftFieldMetadata.ftClass)> <em>*</em> </cfif></label></cfoutput> --->
+						<cfoutput>#ftFieldMetadata.ftlabel#<cfif findNoCase("required",ftFieldMetadata.ftClass)> <em>*</em> </cfif></cfoutput>
+					</cfsavecontent>
+				<cfelse>
+					<cfset Request.farcryForm.stObjects[#variables.prefix#].MetaData[#ftFieldMetadata.Name#].Label = "">
+				</cfif>
+				
+				
 				
 			</cfif>
 		</cfif>
@@ -425,7 +454,7 @@
 	
 
 	
-	<cfif len(Attributes.r_stFields)>
+	<cfif len(Attributes.r_stFields) or 1 eq 1>
 		<cfloop list="#attributes.r_stFields#" index="i">
 			<cfif structKeyExists(Request.farcryForm.stObjects[variables.prefix],'MetaData')>
 				<cfset CALLER[i] = Request.farcryForm.stObjects[variables.prefix]['MetaData']>
@@ -445,11 +474,67 @@
 
 <cfif thistag.ExecutionMode EQ "End">
 
+	<cfif not len(Attributes.r_stFields)>
+		
+		<cfset attributes.formtheme = application.fapi.getConfig('formTheme','webtop')>
+		
+		<cfsavecontent variable="fieldsHTML">
+			
+			<!--- FIELDS --->
+			<cfloop list="#lFieldsToRender#" index="i">
+				
+				<cfif NOT ListFind(attributes.lHiddenFields,i)>
+					<cfset ftFieldMetadata = Request.farcryForm.stObjects[variables.prefix]['MetaData'][i]>
+					
+					<ft:field 	for="#ftFieldMetadata.formFieldName#" 
+								label="#ftFieldMetadata.ftLabel#" 
+								hint="#ftFieldMetadata.ftHint#" 
+								class="#ftFieldMetadata.ftType#">
+											
+						<cfoutput>#ftFieldMetadata.html#</cfoutput>
+						
+					</ft:field>
+				</cfif>
+			</cfloop>
+			
+		</cfsavecontent>
+	
+	
+	
+		<!--- WRAPPER --->
+		<cfif len(attributes.class) OR len(attributes.style)>
+			<div class="#attributes.class#" style="#attributes.style#">
+		</cfif>
+		
+		<!--- END WRAPPER --->
+		<cfif len(attributes.class)>
+			</div>
+		</cfif>		
+			
+		<!--- 
+		-Wrap		
+		 -Fieldset
+		  - Helpsection
+		  - field
+		  - field
+			 --->
+		<cfif attributes.IncludeFieldSet>
+			<ft:fieldset legend="#attributes.legend#" helpTitle="#attributes.helpTitle#" helpText="#attributes.helpText#">
+				<cfoutput>#fieldsHTML#</cfoutput>
+			</ft:fieldset>
+		<cfelse>
+			<cfoutput>#fieldsHTML#</cfoutput>
+		</cfif>
+		
+	</cfif>
+	
+	
+<!--- 
 
 	<cfif attributes.IncludeFieldSet>
 		<cfoutput></fieldset></cfoutput>
 	</cfif>
-	<cfoutput></div></cfoutput>
+	<cfoutput></div></cfoutput> --->
 	
 	<cfparam name="Request.farcryForm.lFarcryObjectsRendered" default="">
 

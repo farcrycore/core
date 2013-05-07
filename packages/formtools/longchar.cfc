@@ -96,11 +96,6 @@
 		<cfparam name="arguments.stMetadata.ftLimitWarning" default="You have exceeded the maximum number of characters">
 		<cfparam name="arguments.stMetadata.ftLimitMin" default="">
 	
-		<cfif isBoolean(arguments.stMetadata.ftAutoresize) AND arguments.stMetadata.ftAutoresize>
-			<skin:loadJS id="fc-jquery" />
-			<skin:loadJS id="jquery-autoresize" />
-			<cfset arguments.stMetadata.ftClass = listAppend(arguments.stMetadata.ftAutoresize, "autoresize", " ")>
-		</cfif>
 	
 		<cfif CGI.HTTP_USER_AGENT contains "MSIE" or CGI.HTTP_USER_AGENT contains "gecko">
 			<cfset bIsGoodBrowser = "1">
@@ -158,12 +153,21 @@
 		
 		<cfsavecontent variable="html">
 			<!--- Place custom code here! --->
-			
+	
+			<cfif isBoolean(arguments.stMetadata.ftAutoresize) AND arguments.stMetadata.ftAutoresize>
+				<skin:loadJS id="fc-jquery" />
+				<skin:loadJS id="jquery-autoresize" />
+				<cfset arguments.stMetadata.ftClass = listAppend(arguments.stMetadata.ftClass, "autoresize", " ")>
+				<skin:onReady>
+				<cfoutput>$('###arguments.fieldname#').autosize();</cfoutput>
+				</skin:onReady>
+			</cfif>		
+				
 			<cfoutput>
 				<div class="multiField">
 					<div id="#arguments.fieldname#DIV" style="#fieldStyle#;">
 						<div class="blockLabel">
-							<textarea name="#arguments.fieldname#" id="#arguments.fieldname#" class="textareaInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#">#arguments.stMetadata.value#</textarea>
+							<textarea name="#arguments.fieldname#" id="#arguments.fieldname#" class="textareaInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" placeholder="#arguments.stMetadata.ftPlaceholder#">#arguments.stMetadata.value#</textarea>
 							<cfif isBoolean(arguments.stMetadata.ftLimit) and arguments.stMetadata.ftLimit>
 								<p style="clear:both;" id="dm_ct_Text_#arguments.fieldname#"><span id="dm_ct_countDown_#arguments.fieldname#">#len(arguments.stMetadata.value)#</span>/#arguments.stMetadata.ftLimit# <span id="dm_ct_overage_#arguments.fieldname#" style="color:red;display:none;">#arguments.stMetadata.ftLimitWarning#</span></p> 
 								<script type="text/javascript">$j("###arguments.fieldname#").keydown(function(e){ updateLoncharCounter("#arguments.fieldname#", #arguments.stMetadata.ftLimit#, "#arguments.stMetadata.ftLimitOverage#", e.keyCode) });</script>
