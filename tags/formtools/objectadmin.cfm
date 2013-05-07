@@ -1057,7 +1057,7 @@ user --->
 								</cfoutput>
 							</cfif>
 							<cfif attributes.bShowActionList>
-								<cfoutput><td class="objectadmin-actions" nowrap="nowrap" style="text-align:center;padding:3px 5px;">#st.action#</td></cfoutput>
+								<cfoutput><td class="objectadmin-actions" nowrap="nowrap" style="">#st.action#</td></cfoutput>
 							</cfif>
 					 		<cfif structKeyExists(st,"bHasMultipleVersion")>
 					 			<cfset statusOutput = application.rb.getResource("constants.status.#st.status#@label",st.status)>
@@ -1268,81 +1268,79 @@ user --->
 			
 			</cfif>
 			
-		<ft:splitButton style="margin-left:0px;">
+		
 			
 			<cfif attributes.bEditCol OR attributes.bPreviewCol>
-				<!--- <ft:button value="Options" text="" title="More" style="" icon="icon-cog" priority="secondary" class="small btn" /> --->
-			
-			
-				<cfoutput>
-				<button class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></button>
-
-						 <ul class="dropdown-menu">
-					
-					<cfif attributes.bViewCol>	
-						<li>
-							<ft:button value="Overview" text="Overview" title="Open up the overview screen for this object" type="button" renderType="link" onclick="$fc.objectAdminAction('Administration', '#overviewURL#&objectid=#arguments.st.objectid#');" />
-						</li>
-					</cfif>
-					<cfif attributes.bEditCol>
-
+				<ft:buttonGroup>
 				
-						<!--- We do not include the Edit Link if workflow is available for this content item. The user must go to the overview page. --->
-						<cfif not listLen(lWorkflowTypenames)>	
-							<cfif structKeyExists(arguments.st,"locked") AND arguments.st.locked neq 0 AND arguments.st.lockedby neq '#application.security.getCurrentUserID()#'>
-								<li>
-									<ft:button value="Unlock" title="Unlock this object" renderType="link" selectedObjectID="#arguments.st.objectid#" />
-								</li>
-							<cfelseif structKeyExists(arguments.stPermissions, "iEdit") AND arguments.stPermissions.iEdit>
-								<cfif structKeyExists(arguments.st,"bHasMultipleVersion")>
-									<cfif NOT(arguments.st.bHasMultipleVersion) AND arguments.st.status EQ "approved">
-										<li>
-											<ft:button value="Create Draft Object" title="Create a draft version of this object and begin editing" renderType="link" type="button" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
-										</li>
-									<cfelseif arguments.st.bHasMultipleVersion>
-										<!--- Still go to the create draft page but that page will find the already existing draft and not create a new one. --->
-										<li>
-											<ft:button value="Edit Draft" title="Edit the draft version of this object"  renderType="link" type="button" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
-										</li>					
+					<ft:button value="toggle" text="" icon=" ,caret" dropdownToggle="true" type="button" />
+					
+					<ft:dropdownMenu>
+					<cfoutput>
+						
+						<cfif attributes.bViewCol>	
+							<li>
+								<ft:button value="Overview" text="Overview" title="Open up the overview screen for this object" type="button" renderType="link" onclick="$fc.objectAdminAction('Administration', '#overviewURL#&objectid=#arguments.st.objectid#');" />
+							</li>
+						</cfif>
+						<cfif attributes.bEditCol>
+	
+					
+							<!--- We do not include the Edit Link if workflow is available for this content item. The user must go to the overview page. --->
+							<cfif not listLen(lWorkflowTypenames)>	
+								<cfif structKeyExists(arguments.st,"locked") AND arguments.st.locked neq 0 AND arguments.st.lockedby neq '#application.security.getCurrentUserID()#'>
+									<li>
+										<ft:button value="Unlock" title="Unlock this object" renderType="link" selectedObjectID="#arguments.st.objectid#" />
+									</li>
+								<cfelseif structKeyExists(arguments.stPermissions, "iEdit") AND arguments.stPermissions.iEdit>
+									<cfif structKeyExists(arguments.st,"bHasMultipleVersion")>
+										<cfif NOT(arguments.st.bHasMultipleVersion) AND arguments.st.status EQ "approved">
+											<li>
+												<ft:button value="Create Draft Object" title="Create a draft version of this object and begin editing" renderType="link" type="button" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
+											</li>
+										<cfelseif arguments.st.bHasMultipleVersion>
+											<!--- Still go to the create draft page but that page will find the already existing draft and not create a new one. --->
+											<li>
+												<ft:button value="Edit Draft" title="Edit the draft version of this object"  renderType="link" type="button" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
+											</li>					
+										<cfelse>
+											<li>
+												<ft:button value="Edit" title="Edit this object"  renderType="link" type="button" onclick="$fc.objectAdminAction('Administration', '#editURL#&objectid=#arguments.st.objectid#');" />
+											</li>			
+										</cfif>
 									<cfelse>
 										<li>
 											<ft:button value="Edit" title="Edit this object"  renderType="link" type="button" onclick="$fc.objectAdminAction('Administration', '#editURL#&objectid=#arguments.st.objectid#');" />
-										</li>			
+										</li>
 									</cfif>
-								<cfelse>
-									<li>
-										<ft:button value="Edit" title="Edit this object"  renderType="link" type="button" onclick="$fc.objectAdminAction('Administration', '#editURL#&objectid=#arguments.st.objectid#');" />
-									</li>
 								</cfif>
-							</cfif>
-						</cfif>	
-					
-					</cfif>
-					
-					
-					<cfif attributes.bPreviewCol>
-						<li>
-							<ft:button value="Preview" title="Preview this object" renderType="link" type="button" onclick="$fc.objectAdminAction('Preview', '#application.url.webroot#/index.cfm?flushcache=1&objectid=#arguments.st.objectid#&type=#attributes.typename#');" />
-						</li>
-					</cfif>		
-					
-							
-			
-					<cfif listLen(attributes.lCustomActions)>
-						<cfloop list="#attributes.lCustomActions#" index="i">
+							</cfif>	
+						
+						</cfif>
+						
+						
+						<cfif attributes.bPreviewCol>
 							<li>
-								<ft:button value="#listFirst(i, ":")#" text="#listLast(i, ":")#" renderType="link" selectedObjectID="#arguments.st.objectid#" />
+								<ft:button value="Preview" title="Preview this object" renderType="link" type="button" onclick="$fc.objectAdminAction('Preview', '#application.url.webroot#/index.cfm?flushcache=1&objectid=#arguments.st.objectid#&type=#attributes.typename#');" />
 							</li>
-						</cfloop>
-					</cfif>
-													
-				</ul>
-				</cfoutput>	
+						</cfif>		
+						
+								
 				
-				
+						<cfif listLen(attributes.lCustomActions)>
+							<cfloop list="#attributes.lCustomActions#" index="i">
+								<li>
+									<ft:button value="#listFirst(i, ":")#" text="#listLast(i, ":")#" renderType="link" selectedObjectID="#arguments.st.objectid#" />
+								</li>
+							</cfloop>
+						</cfif>
+							
+					</cfoutput>	
+					</ft:dropdownMenu>
+				</ft:buttonGroup>
 				
 			</cfif>		
-		</ft:splitButton>
+		
 		
 		</cfoutput>
 		
