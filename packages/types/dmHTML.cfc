@@ -37,7 +37,8 @@ type properties
 <cfproperty 
 	name="Teaser" type="longchar" ftLabel="Teaser" ftType="longchar" hint="Teaser text." required="no" default=""
 	ftSeq="10" ftwizardStep="Web Page" ftFieldset="Teaser"
-	ftAutoResize="true">
+	ftAutoResize="true"
+	ftClass="span5">
 	
 <cfproperty 
 	name="teaserImage" type="uuid" ftType="uuid" hint="UUID of image to display in teaser" required="no" default=""
@@ -72,6 +73,7 @@ type properties
 	name="seoTitle" type="string" hint="SEO title of content item." required="no" default="" 
 	ftSeq="32" ftwizardStep="SEO" ftFieldset="SEO" ftlabel="SEO Title"
 	ftlimit="69" ftLimitOverage="warn" ftAutoResize="true"
+	ftClass="span5"
 	ftHint="If specified, the SEO title will be used instead of the page title for the TITLE tag. This title will be used as the preferred title by search engines. Different search engines have different lengths of snippet title: Google 69, Yahoo 72, Bing 65."
 	fttype="longchar"
 	fthelptitle="Search Engine Optimization" 
@@ -82,14 +84,16 @@ type properties
 	ftSeq="35" ftwizardStep="SEO" ftFieldset="SEO" ftlabel="Description Tag"
 	ftHint="Concise summary of the page. Different search engines have different character limits (including spaces) for their search snippet: Google 156, Yahoo 161, Bing 150."
 	ftType="longchar" ftLimit="170" ftLimitOverage="warn"
-	ftAutoResize="true" />
+	ftAutoResize="true"
+	ftClass="span5" />
 
 <cfproperty 
 	name="metaKeywords" type="longchar" hint="HTML head section metakeywords." required="no" default="" 
 	ftSeq="38" ftwizardStep="SEO" ftFieldset="SEO" ftLabel="Keyword Tag(s)"
 	ftHint="Keep it simple and relevant: 10-20 keywords per page. Limited to 900 characters including spaces."
 	ftType="longchar" ftLimit="900"
-	ftAutoResize="true" ftLimitOverage="warn" />
+	ftAutoResize="true" ftLimitOverage="warn"
+	ftClass="span5" />
 
 
 <cfproperty 
