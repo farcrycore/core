@@ -406,6 +406,7 @@ function updateSelectedObjectIDs (childCheckbox) {
 															return true;
 														},
 									onHidden	:		function () {
+															window.location = window.location;
 															return true;
 														},
 								  }, $settings);
@@ -997,7 +998,7 @@ function updateSelectedObjectIDs (childCheckbox) {
 				
 				
 			
-			$j(document).on("click",".fc-btn, .jquery-ui-split-button ul li a", function(e) {
+			$j(document).on("click",".fc-btn, .dropdown-menu>li>a", function(e) {
 				
 				var fcSettings = $j(this).data('fcSettings');	
 				

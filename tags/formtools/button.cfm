@@ -28,6 +28,8 @@
 <cfparam name="attributes.textOnClick" default="" /><!--- what should the text change to when the button is clicked.  --->
 <cfparam name="attributes.textOnSubmit" default="" /><!--- what should the text change to when the button is submitted.  --->
 <cfparam name="attributes.disableOnSubmit" default="true" /><!--- should the button be disabled when the form is submitted --->
+<cfparam name="attributes.dropdownToggle" default="false" /><!--- used in combination with dropdownMenu to open the menu --->
+
 
 <cfif not thistag.HasEndTag>
 	<cfabort showerror="FarCry Buttons must have an end tag...">
@@ -48,11 +50,7 @@
 				<cfset attributes.priority = "primary">
 				
 				<cfset THISTAG.Parent.bPrimaryDefined = true>
-			<cfelse>
-				<cfset attributes.priority = "secondary">
 			</cfif>
-		<cfelse>
-			<cfset attributes.priority = "secondary">
 		</cfif>
 	</cfif>
 <!--- 	<cfif len(attributes.priority)>	
@@ -173,21 +171,27 @@
 	<!--- 
 	<cfwddx input="#stButtonAttributes#" output="fcSettings" action="cfml2js" topLevelVariable="fcSettings" /> --->
 
-	
+	<cfif attributes.dropdownToggle>
+		<cfset attributes.class = listAppend(attributes.class, "dropdown-toggle", " ") />
+	</cfif>
 
 	<!--- Output the button if not just returning the info --->
 	<cfif not len(attributes.r_stButton)>
 		<cfswitch expression="#attributes.renderType#">
 		<cfcase value="link">
 			
-			<cfif NOT listFindNoCase(GetBaseTagList(),"cf_splitButton")>
+			<cfif NOT listFindNoCase(GetBaseTagList(),"cf_dropdownMenu")>
+				<!--- 
+				Do not add the farcry button class if within a dropdown menu as it screws styles.
+				The action is still handled with the selector .dropdown-menu>li>a
+				  --->
 				<cfset attributes.class = listPrepend(attributes.class, "fc-btn", " ")>
 			</cfif>
 			
-			<cfoutput><a id="#attributes.id#" name="#attributes.id#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="#attributes.class#" style="#attributes.style#" href="##">#attributes.text#</a></cfoutput>
+			<cfoutput><a id="#attributes.id#" name="#attributes.id#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="#attributes.class#" style="#attributes.style#" href="##" <cfif attributes.dropdownToggle>data-toggle="dropdown"</cfif>>#attributes.text#</a></cfoutput>
 		</cfcase>
 		<cfcase value="button">
-			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="fc-btn #attributes.class#" style="#attributes.style#;" <cfif attributes.disabled>disabled</cfif>>#attributes.text#</button></cfoutput>
+			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="fc-btn #attributes.class#" style="#attributes.style#;" <cfif attributes.disabled>disabled</cfif>  <cfif attributes.dropdownToggle>data-toggle="dropdown"</cfif>>#attributes.text#</button></cfoutput>
 		</cfcase>
 		
 		<!--- Default FarcryButton based on form theme --->
