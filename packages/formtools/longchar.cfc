@@ -159,7 +159,7 @@
 				<skin:loadJS id="jquery-autoresize" />
 				<cfset arguments.stMetadata.ftClass = listAppend(arguments.stMetadata.ftClass, "autoresize", " ")>
 				<skin:onReady>
-				<cfoutput>$('###arguments.fieldname#').autosize();</cfoutput>
+				<cfoutput>$j('###arguments.fieldname#').autosize();</cfoutput>
 				</skin:onReady>
 			</cfif>		
 				
