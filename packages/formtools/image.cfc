@@ -1212,9 +1212,20 @@
 		<cfset stGeneratedImageArgs.PadColor = arguments.stMetadata.ftPadColor />
 		<cfset stGeneratedImageArgs.ResizeMethod = arguments.resizeMethod />
 		
-		<cfif (stGeneratedImageArgs.width gt 0 and stGeneratedImageArgs.width neq stImage.width)
-		   or (stGeneratedImageArgs.height gt 0 and stGeneratedImageArgs.height neq stImage.height)
-		   or len(stGeneratedImageArgs.lCustomEffects)>
+		<cfif (
+				(stGeneratedImageArgs.width gt 0 and stGeneratedImageArgs.width gt stImage.width)
+		   		or (stGeneratedImageArgs.height gt 0 and stGeneratedImageArgs.height gt stImage.height)
+			)
+			and listfindnocase("forceresize,pad,center,topleft,topcenter,topright,left,right,bottomleft,bottomcenter,bottomright",stGeneratedImageArgs.ResizeMethod)>
+		   
+			<!--- image is too small - only generate image for specific methods --->
+			<cfset stGeneratedImage = GenerateImage(argumentCollection=stGeneratedImageArgs) />
+			<cfreturn passed(arguments.stMetadata.ftDestination & "/" & stGeneratedImage.filename) />
+			
+		<cfelseif (stGeneratedImageArgs.width gt 0 and stGeneratedImageArgs.width lt stImage.width)
+			or (stGeneratedImageArgs.height gt 0 and stGeneratedImageArgs.height lt stImage.height)
+			or len(stGeneratedImageArgs.lCustomEffects)>
+			
 			<cfset stGeneratedImage = GenerateImage(argumentCollection=stGeneratedImageArgs) />
 			<cfreturn passed(arguments.stMetadata.ftDestination & "/" & stGeneratedImage.filename) />
 		<cfelse>
