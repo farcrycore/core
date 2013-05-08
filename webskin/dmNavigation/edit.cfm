@@ -85,6 +85,7 @@
 <ft:form>
 
 <skin:loadJS id="fc-jquery" />
+<skin:loadCSS id="fc-fontawesome" />
 <skin:onReady><script type="text/javascript"><cfoutput>
 	$j("select[name$=navType]").bind("change",function(){
 		var self = this;
@@ -100,7 +101,13 @@
 <cfoutput>
 <table class="layout" style="width:100%;padding:5px;">
 <tr>
-	<td style="width:50px;"><skin:icon icon="#application.stCOAPI[stobj.typename].icon#" size="48" default="farcrycore" alt="#uCase(application.fapi.getContentTypeMetadata(stobj.typename,'displayname',stobj.typename))#" /></td>
+	<td style="width:50px;">
+		<cfif len(application.stCOAPI[stObj.typename].icon)>
+			<i class="icon-#application.stCOAPI[stObj.typename].icon# icon-large"></i>
+		<cfelse>
+			<i class="icon-file icon-large"></i>
+		</cfif>
+	</td>
 	<td><h1>#stobj.label#</h1></td>
 	
 </tr>

@@ -901,11 +901,21 @@ default handlers
 			</ft:processForm>
 			
 			
+			<skin:loadCSS id="fc-fontawesome" />
 			
 			<ft:form bFocusFirstField="true">
 				
 					
-				<cfoutput><h1><skin:icon icon="#application.stCOAPI[stobj.typename].icon#" default="farcrycore" size="32" />#stobj.label#</h1></cfoutput>
+				<cfoutput>
+					<h1>
+						<cfif len(application.stCOAPI[stobj.typename].icon)>
+							<i class="icon-#application.stCOAPI[stobj.typename].icon# icon-large"></i>
+						<cfelse>
+							<i class="icon-file icon-large"></i>
+						</cfif>
+						#stobj.label#
+					</h1>
+				</cfoutput>
 				
 				<cfif listLen(lFieldSets)>
 					
@@ -1018,11 +1028,22 @@ default handlers
 			<ft:processForm action="Cancel" Exit="true" />
 			
 			
+			<skin:loadCSS id="fc-fontawesome" />
+			
 			<cfquery dbtype="query" name="qAllRelated">select * from qAllRelated order by typenamelabel,objectlabel</cfquery>
 			
 			<ft:form bFocusFirstField="true">
 				
-				<cfoutput><h1><skin:icon icon="#application.stCOAPI[stobj.typename].icon#" default="farcrycore" size="32" />#stobj.label#</h1></cfoutput>
+				<cfoutput>
+					<h1>
+						<cfif len(application.stCOAPI[stobj.typename].icon)>
+							<i class="icon-#application.stCOAPI[stobj.typename].icon# icon-large"></i>
+						<cfelse>
+							<i class="icon-file icon-large"></i>
+						</cfif>
+						#stobj.label#
+					</h1>
+				</cfoutput>
 				
 				<cfoutput>
 					<div>

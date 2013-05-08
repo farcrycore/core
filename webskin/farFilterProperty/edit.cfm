@@ -1,4 +1,7 @@
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
+<cfimport tablib="/farcry/core/tags/webskin" prefix="skin" />
+
+<skin:loadCSS id="fc-fontawesome" />
 
 <ft:object typename="#stobj.typename#" objectID="#stobj.objectid#" lfields="property,type,wddxDefinition,aRelated" r_stFields="stFields" />
 
@@ -13,8 +16,8 @@
 		#stFields.aRelated.html#
 	</td>
 	<td style="white-space:nowrap;">
-		<ft:button value="Delete Filter Property" text="" icon="ui-icon-minusthick" selectedObjectID="#stobj.objectid#" />
-		<ft:button value="Add Filter Property" text="" icon="ui-icon-plusthick" selectedObjectID="#stobj.filterID#" />
+		<ft:button value="Delete Filter Property" text="" icon="icon-minus" selectedObjectID="#stobj.objectid#" />
+		<ft:button value="Add Filter Property" text="" icon="icon-plus" selectedObjectID="#stobj.filterID#" />
 	</td>
 </tr>
 </cfoutput>

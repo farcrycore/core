@@ -14,6 +14,8 @@
 
 <cfset ruleDisplayName = application.fapi.getContentTypeMetadata(stobj.typename, "displayName", stobj.typename) />
 
+<skin:loadCSS id="fc-fontawesome" />
+
 <cfoutput>
 	<div class="ruleadmin">
 		
@@ -31,7 +33,7 @@
 				con:id="#containerID#"
 				con:url="#containerURL#">
 				
-				<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>
+				<i class="icon-pencil" style="float:left;"></i>
 			</a>
 			<skin:toolTip selector=".con-edit-rule">Edit the settings applicable to this rule.</skin:toolTip>
 			
@@ -44,7 +46,7 @@
 					class="con-refresh con-move-up-rule" 
 					href="#actionURL#" 
 					con:id="#containerID#">
-					<span class="ui-icon ui-icon-circle-triangle-n" style="float:left;">&nbsp;</span>
+					<i class="icon-caret-up"></i>
 				</a>
 				<skin:toolTip selector=".con-move-up-rule">Move this rule UP in the container.</skin:toolTip>
 			</cfif>
@@ -57,7 +59,7 @@
 					class="con-refresh con-move-down-rule" 
 					href="#actionURL#" 
 					con:id="#containerID#">
-					<span class="ui-icon ui-icon-circle-triangle-s" style="float:left;">&nbsp;</span>
+					<i class="icon-caret-down"></i>
 				</a>
 				<skin:toolTip selector=".con-move-down-rule">Move this rule DOWN in the container.</skin:toolTip>
 			
@@ -70,7 +72,7 @@
 				class="con-refresh con-delete-rule" 
 				href="#actionURL#" 
 				con:id="#containerID#">
-				<span class="ui-icon ui-icon-circle-close" style="float:left;">&nbsp;</span>
+				<i class="icon-remove">&nbsp;</i>
 			</a>
 			<skin:toolTip selector=".con-delete-rule">Delete this rule from the container.</skin:toolTip>
 		</div>

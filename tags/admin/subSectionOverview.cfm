@@ -44,6 +44,8 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 		<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 		<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 		
+		<skin:loadCSS id="fc-fontawesome" />
+		
 		<!--- Root url for webtop links --->
 		<cfset rooturl = "#application.url.farcry#/index.cfm?sec=#attributes.sectionid#" />
 		
@@ -97,7 +99,7 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 					<cfif len(menuitem.icon)>
 						<cfoutput>
 							<a href="#menuitem.link#" target="content">
-								<skin:icon icon="#menuitem.icon#" style="border:none;float:left;" class="overviewicon" />
+								<i class="icon-#menuitem.icon# icon-large"></i>
 							</a>
 						</cfoutput>
 					</cfif>

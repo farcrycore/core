@@ -31,7 +31,8 @@
 	
 	<!--- run the active project's constructor --->
 	<cfset this.projectConstructorLocation = getProjectConstructorLocation(plugin="webtop") />
-	<cfinclude template="#this.projectConstructorLocation#" />	
+	<cfinclude template="#this.projectConstructorLocation#" />
+	<cfset loadProjectOverride() />
 
 	<cfparam name="this.botDetection" default="true" />
 	<cfif this.botDetection>
@@ -490,6 +491,10 @@
 		<!--- TODO: this needs to be removed eventually. It is currently only in here so that users can updateapp when they upgrade without having to recycle CF --->
 		<cfparam name="application.updateappKey" default="1" />
 		
+		<cfif structkeyexists(url,"updateall")>
+			<cfset url.updateapp = url.updateall />
+		</cfif>
+		
 		<!--- determine if user has permission to perform updateapp; blocks potential denial of service attack --->
 		<cfif len(url.updateapp)>
 			<cfif url.updateapp EQ application.updateappKey>
@@ -521,6 +526,11 @@
 					<cfset application.bInit =  false />
 					<cfset url.updateapp = true />
 					<cfset OnApplicationStart() />
+					
+					<!--- If the updateall flag was on, we also need to deploy default schema updates --->
+					<cfif structkeyexists(url,"updateall")>
+						<cfset application.fc.lib.db.deployDefaultChanges() />
+					</cfif>
 					
 					<!--- set the initialised flag --->
 					<cfset application.bInit = true />
@@ -604,6 +614,7 @@
 	
 	<cffunction name="getProjectConstructorLocation" access="public" output="false" hint="Returns the location of the active project constructor." returntype="string">
 		<cfargument name="plugin" type="string" hint="The name of the plugin.">
+		<cfargument name="fileExtension" type="string" default="cfm" hint="'XML' if looking for the xml constructor override file">
 		
 		<cfset var loc = "" />
 		<cfset var virtualDirectory = "" />
@@ -622,12 +633,12 @@
 		</cfif>
 
 		<!--- If we ended up with a virtual directory we check to see if there is a farcryConstructor --->
-		<cfif len(virtualDirectory) AND fileExists(expandPath("/#virtualDirectory#/farcryConstructor.cfm"))>
-			<cfset loc = trim("/#virtualDirectory#/farcryConstructor.cfm") />
+		<cfif len(virtualDirectory) AND fileExists(expandPath("/#virtualDirectory#/farcryConstructor.#arguments.fileExtension#"))>
+			<cfset loc = trim("/#virtualDirectory#/farcryConstructor.#arguments.fileExtension#") />
 
-		<cfelseif fileExists(expandPath("/farcryConstructor.cfm"))>
+		<cfelseif fileExists(expandPath("/farcryConstructor.#arguments.fileExtension#"))>
 			<!--- Otherwise we check in the webroot --->
-			<cfset loc = trim("/farcryConstructor.cfm") />
+			<cfset loc = trim("/farcryConstructor.#arguments.fileExtension#") />
 		<cfelse>
 			<!--- If all else fails... --->
 			<!--- 1. See if the user has a cookie telling us what project to look at. --->
@@ -635,22 +646,22 @@
 				<cfset cookie.currentFarcryProject = url.farcryProject />
 			</cfif>
 			<cfif arguments.plugin EQ "webtop" AND structKeyExists(cookie, "currentFarcryProject")>
-				<cfif fileExists(expandPath("/#currentFarcryProject#/farcryConstructor.cfm"))>
-					<cfset loc = trim("/#currentFarcryProject#/farcryConstructor.cfm") />
+				<cfif fileExists(expandPath("/#currentFarcryProject#/farcryConstructor.#arguments.fileExtension#"))>
+					<cfset loc = trim("/#currentFarcryProject#/farcryConstructor.#arguments.fileExtension#") />
 				</cfif>
 			</cfif>
 			<!--- 2. If no cookie exists, see if server.stFarcryProjects holds any project names and list the first one found --->
 			<cfif loc eq "" and arguments.plugin EQ "webtop" and structKeyExists(server, "stFarcryProjects") and structcount(server.stFarcryProjects) GT 0>
 				<cfloop collection="#server.stFarcryProjects#" item="thisproject">
-					<cfif fileExists(expandPath("/#thisproject#/farcryConstructor.cfm"))>
-						<cfset loc = trim("/#thisproject#/farcryConstructor.cfm") />
+					<cfif fileExists(expandPath("/#thisproject#/farcryConstructor.#arguments.fileExtension#"))>
+						<cfset loc = trim("/#thisproject#/farcryConstructor.#arguments.fileExtension#") />
 						<cfbreak />
 					</cfif>
 				</cfloop>
 			</cfif>
 		</cfif>
 
-		<cfif not len(loc)>				
+		<cfif not len(loc) and arguments.fileExtension eq "cfm">				
 			<cfif fileExists(expandPath("#cgi.context_path#/webtop/install/noProject.cfm"))>
 				<cfset installLink = "#cgi.context_path#/webtop/install/noProject.cfm" />
 			<cfelse>
@@ -670,6 +681,17 @@
 		<cfreturn loc />
 	</cffunction>
 	
+	<cffunction name="loadProjectOverride" access="private" output="false" returntype="void" hint="Loads the project override XML (if there is one)">
+		<cfset var filename = getProjectConstructorLocation(plugin="webtop",fileExtension="xml") />
+		<cfset var xmlOverride = "" />
+		
+		<cfif len(filename)>
+			<cfset xmlOverride = xmlparse(expandpath(filename)) />
+			<cfif isdefined("xmlOverride.FarcryConstructor.plugins")>
+				<cfset this.plugins = xmlOverride.FarcryConstructor.plugins.xmlText />
+			</cfif>
+		</cfif>
+	</cffunction>
 
 	<cffunction name="getPluginName" access="public" output="false" hint="Returns the name of this plugin; core returns 'farcry'." returntype="string">
 		<cfreturn "farcry" />

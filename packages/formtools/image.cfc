@@ -163,9 +163,9 @@
 	    <skin:loadCSS id="jquery-uploadify" />
 	    <skin:loadJS id="jquery-crop" />
 	    <skin:loadCSS id="jquery-crop" />
+	    <skin:loadCSS id="fc-fontawesome" />
 	    <!--- <skin:htmlHead id="farcry-imageformtool-css"><cfoutput><style type="text/css"> --->
 	    <skin:loadCSS id="farcry-imageformtool"><cfoutput>
-	    	##indicator { background: url("#application.url.webtop#/images/indicator.gif") repeat scroll 0 0 transparent; }
 	    	.dependant-label { font-weight:bold; }
 		</cfoutput></skin:loadCSS>
 		<!--- </style></cfoutput></skin:htmlHead> --->
@@ -498,7 +498,7 @@
 	    						if (previewsize.height > 400) previewsize = { width:previewsize.width*400/previewsize.height, height:400 };
 
 		    					var complete = imageformtool.multiview.findView("complete")
-									.find(".image-status").attr("title","This file has been updated on the server").tooltip({ delay: 0, showURL: false	}).html('<span class="ui-icon ui-icon-info" style="float:left;">&nbsp;</span>').end()
+									.find(".image-status").attr("title","This file has been updated on the server").tooltip({ delay: 0, showURL: false	}).html('<i class="icon-info-sign" style="float:left;"></i>').end()
 									.find(".image-filename").html(results.filename).end()
 									.find(".image-size").html(results.size).end()
 									.find(".image-width").html(results.width).end()
@@ -754,24 +754,24 @@
 					<div id="#arguments.fieldname#-multiview">
 						<cfif arguments.stMetadata.ftAllowUpload>
 					    	<div id="#arguments.fieldname#_upload" class="upload-view" style="display:none;">
-				    			<a href="##traditional" class="fc-btn select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle">&nbsp;</span></a>
+				    			<a href="##traditional" class="fc-btn select-view" title="Switch between traditional upload and inline upload" style="float:left;"><i class="icon-random"></i></a>
 								<div style="margin-left:15px">
 						    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
 						    		<div id="#arguments.fieldname#_uploaderror" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
-						    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
+						    		<div><i style="float:left;" title="#metadatainfo#" class="icon-question-sign"></i> <span style="float:left;">Select an image to upload from your computer.</span></div>
 						    		<div class="image-cancel-upload" style="clear:both;"><a href="##back" class="select-view">Cancel - I don't want to upload an image</a></div>
 						    	</div>
 							</div>
 					    	<div id="#arguments.fieldname#_traditional" class="traditional-view" style="display:none;">
-				    			<a href="##back" class="fc-btn select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle">&nbsp;</span></a>
+				    			<a href="##back" class="fc-btn select-view" title="Switch between traditional upload and inline upload" style="float:left;"><i class="icon-random"></i></a>
 					    		<div style="margin-left:15px">
 						    		<input type="file" name="#arguments.fieldname#TRADITIONAL" id="#arguments.fieldname#TRADITIONAL" />
-						    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
+						    		<div><i style="float:left;" title="#metadatainfo#" class="icon-question-sign"></i> <span style="float:left;">Select an image to upload from your computer.</span></div>
 						    		<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##back" class="select-view">Cancel - I don't want to replace this image</a></div>
 						    	</div>
 							</div>
 					    	<div id="#arguments.fieldname#_delete" class="delete-view" style="display:none;">
-					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
+					    		<span class="image-status" title=""><i class="icon-picture" style="float:left;"></i></span>
 								<div style="margin-left:15px">
 						    		<ft:button class="image-delete-button" id="#arguments.fieldname#DeleteThis" type="button" value="Delete this image" onclick="return false;" />						    		
 						    		<div class="image-cancel-upload"><a href="##back" class="select-view">Cancel - I don't want to delete</a></div>
@@ -779,7 +779,7 @@
 							</div>
 						</cfif>
 						<div id="#arguments.fieldname#_autogenerate" class="autogenerate-view"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
-							<span class="image-status" title="#metadatainfo#"><span class="ui-icon ui-icon-help" style="float:left;">&nbsp;</span></span>
+							<span class="image-status" title="#metadatainfo#"><i class="icon-question-sign" style="float:left;"></i></span>
 						    <div style="margin-left:15px;">
 								Image will be automatically generated based on the image selected for #application.stCOAPI[arguments.typename].stProps[listfirst(arguments.stMetadata.ftSourceField,":")].metadata.ftLabel#.<br>
 								<cfif arguments.stMetadata.ftAllowResize>
@@ -795,7 +795,7 @@
 							</div>
 						</div>
 						<div id="#arguments.fieldname#_working" class="working-view" style="display:none;">
-							<span class="image-status" title="#metadatainfo#"><span id="indicator" class="ui-icon" style="float:left;">>&nbsp;</span></span>
+							<span class="image-status" title="#metadatainfo#"><i class="icon-spinner icon-spin" style="float:left;"></i></span>
 						    <div style="margin-left:15px;">Generating image...</div>
 						</div>
 						<cfif len(arguments.stMetadata.value)>
@@ -812,7 +812,7 @@
 								<cfset previewheight = 400 />
 							</cfif>
 						    <div id="#arguments.fieldname#_complete" class="complete-view">
-					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
+					    		<span class="image-status" title=""><i class="icon-picture" style="float:left;">&nbsp;</i></span>
 					    		<div style="margin-left:15px;">
 						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#application.url.imageroot##getDirectoryFromPath(arguments.stMetadata.value)##urlencodedformat(getFileFromPath(arguments.stMetadata.value))#' width='#previewwidth#' height='#previewheight#' />" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
 						    		Size: <span class="image-size">#round(stFile.size/1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
@@ -821,7 +821,7 @@
 							</div>
 						<cfelse>
 						    <div id="#arguments.fieldname#_complete" class="complete-view" style="display:none;">
-					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
+					    		<span class="image-status" title=""><i class="icon-picture" style="float:left;"></i></span>
 					    		<div style="margin-left:15px;">
 						    		<span class="image-filename"></span> ( <a class="image-preview" title="<img src='' />" href="##" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
 						    		Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
@@ -843,24 +843,24 @@
 					<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="false" />
 					<div id="#arguments.fieldname#-multiview">
 				    	<div id="#arguments.fieldname#_upload" class="upload-view"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
-							<a href="##traditional" class="fc-btn select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle">&nbsp;</span></a>
+							<a href="##traditional" class="fc-btn select-view" title="Switch between traditional upload and inline upload" style="float:left;"><i class="icon-random">&nbsp;</i></a>
 							<div style="margin-left:15px">
 					    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
 					    		<div id="#arguments.fieldname#_uploaderror" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
-					    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
+					    		<div><i style="float:left;" title="#metadatainfo#" class="icon-question-sign"></i> <span style="float:left;">Select an image to upload from your computer.</span></div>
 					    		<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##back" class="select-view">Cancel - I don't want to replace this image</a></div>
 					    	</div>
 						</div>
 				    	<div id="#arguments.fieldname#_traditional" class="traditional-view" style="display:none;">
-				    		<a href="##back" class="fc-btn select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle">&nbsp;</span></a>
+				    		<a href="##back" class="fc-btn select-view" title="Switch between traditional upload and inline upload" style="float:left;"><i class="icon-random">&nbsp;</i></a>
 							<div style="margin-left:15px">
 					    		<input type="file" name="#arguments.fieldname#TRADITIONAL" id="#arguments.fieldname#TRADITIONAL" />
-					    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
+					    		<div><i style="float:left;" title="#metadatainfo#" class="icon-question-sign"></i> <span style="float:left;">Select an image to upload from your computer.</span></div>
 					    		<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##back" class="select-view">Cancel - I don't want to replace this image</a></div>
 					    	</div>
 						</div>
 				    	<div id="#arguments.fieldname#_delete" class="delete-view" style="display:none;">
-				    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
+				    		<span class="image-status" title=""><i class="icon-picture" style="float:left;"></i></span>
 							<div style="margin-left:15px">
 					    		<ft:button class="image-delete-button" value="Delete this image" type="button" onclick="return false;" />
 					    		<ft:button class="image-deleteall-button" value="Delete this and the related images" type="button" onclick="return false;" />
@@ -882,7 +882,7 @@
 								<cfset previewheight = 400 />
 							</cfif>
 						    <div id="#arguments.fieldname#_complete" class="complete-view">
-					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
+					    		<span class="image-status" title=""><i class="icon-picture" style="float:left;">&nbsp;</i></span>
 					    		<div style="margin-left:15px;">
 						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#application.url.imageroot##getDirectoryFromPath(arguments.stMetadata.value)##urlencodedformat(getFileFromPath(arguments.stMetadata.value))#' width='#previewwidth#' height='#previewheight#' />" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
 						    		Size: <span class="image-size">#round(stFile.size/1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
@@ -891,7 +891,7 @@
 							</div>
 						<cfelse>
 						    <div id="#arguments.fieldname#_complete" class="complete-view" style="display:none;">
-					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
+					    		<span class="image-status" title=""><i class="icon-picture" style="float:left;"></i></span>
 					    		<div style="margin-left:15px;">
 						    		<span class="image-filename"></span> ( <a class="image-preview" title="<img src='' />" href="##" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
 						    		Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
@@ -985,7 +985,7 @@
 			
 				<input type="hidden" name="#arguments.fieldname#RESIZEMETHOD" id="#arguments.fieldname#RESIZEMETHOD" value="" />
 				<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="false" />
-				<span class="image-status" title="<cfif len(arguments.stMetadata.ftHint)>#arguments.stMetadata.ftHint#<br></cfif>#metadatainfo#"><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
+				<span class="image-status" title="<cfif len(arguments.stMetadata.ftHint)>#arguments.stMetadata.ftHint#<br></cfif>#metadatainfo#"><i class="icon-picture" style="float:left;"></i></span>
 				<span class="dependant-label">#arguments.stMetadata.ftLabel#</span>
 				<span class="dependant-options"<cfif not len(arguments.stMetadata.value) and not len(arguments.stObject[arguments.stMetadata.ftSourceField]) and not arguments.stMetadata.ftAllowUpload> style="display:none;"</cfif>>
 					(
@@ -1005,18 +1005,18 @@
 					<div id="#arguments.fieldname#-multiview">
 						<div id="#arguments.fieldname#_cancel" class="cancel-view"></div>
 				    	<div id="#arguments.fieldname#_upload" class="upload-view" style="display:none;">
-			    			<a href="##traditional" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle">&nbsp;</span></a>
+			    			<a href="##traditional" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><i class="icon-random">&nbsp;</i></a>
 							<div style="margin-left:15px">
 					    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
 					    		<div id="#arguments.fieldname#_uploaderror" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
-					    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
+					    		<div><i style="float:left;" title="#metadatainfo#" class="icon-question-sign"></i> <span style="float:left;">Select an image to upload from your computer.</span></div>
 					    	</div>
 						</div>
 				    	<div id="#arguments.fieldname#_traditional" class="traditional-view" style="display:none;">
-			    			<a href="##upload" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><span class="ui-icon ui-icon-shuffle">&nbsp;</span></a>
+			    			<a href="##upload" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><i class="icon-random">&nbsp;</i></a>
 				    		<div style="margin-left:15px">
 					    		<input type="file" name="#arguments.fieldname#TRADITIONAL" id="#arguments.fieldname#TRADITIONAL" />
-					    		<div><span style="float:left;" title="#metadatainfo#" class="ui-icon ui-icon-help">&nbsp;</span> <span style="float:left;">Select an image to upload from your computer.</span></div>
+					    		<div><i style="float:left;" title="#metadatainfo#" class="icon-question-sign"></i> <span style="float:left;">Select an image to upload from your computer.</span></div>
 					    	</div>
 						</div>
 					</div>

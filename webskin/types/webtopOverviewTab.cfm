@@ -106,7 +106,13 @@ FARCRY INCLUDE FILES
 <cfoutput>
 <table class="layout" style="width:100%;padding:5px;table-layout:fixed;margin-bottom:10px;">
 <tr>
-	<td style="width:35px;"><skin:icon icon="#application.stCOAPI[stobj.typename].icon#" size="32" default="farcrycore" alt="#uCase(application.fapi.getContentTypeMetadata(stobj.typename,'displayname',stobj.typename))#" /></td>
+	<td style="width:35px;">
+		<cfif len(application.stCOAPI[stobj.typename].icon)>
+			<i class="icon-#application.stCOAPI[stobj.typename].icon# icon-2x"></i>
+		<cfelse>
+			<i class="icon-file icon-2x"></i>
+		</cfif>
+	</td>
 	<td style="vertical-align:center;"><h1 style="text-align:left;">#stobj.label#</h1></td>
 	<td>
 

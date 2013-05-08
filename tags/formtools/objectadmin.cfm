@@ -193,12 +193,20 @@ user --->
 </cfif>
 
 <cfif thistag.executionMode eq "End">
-
+	
+	<skin:loadCSS id="fc-fontawesome" />
+	
 	<cfif len(attributes.title)>
 		<cfoutput>
 		<table class="layout" style="padding:5px;margin-bottom:10px;">
 		<tr>
-			<td style="width:35px;"><skin:icon icon="#application.stCOAPI[attributes.typename].icon#" size="32" default="farcrycore" alt="#uCase(application.fapi.getContentTypeMetadata(attributes.typename,'displayname',attributes.typename))#" /></td>
+			<td style="width:35px;">
+				<cfif len(application.stCOAPI[attributes.typename].icon)>
+					<i class="icon-#application.stCOAPI[attributes.typename].icon# icon-2x"></i>
+				<cfelse>
+					<i class="icon-file icon-2x"></i>
+				</cfif>
+			</td>
 			<td style="vertical-align:center;"><h1><admin:resource key="#attributes.rbkey#@title" var1="#typelabel#">#attributes.title#</admin:resource></h1></td>
 		</tr>
 		</table>			
@@ -702,7 +710,7 @@ user --->
 	<cfif listLen(attributes.lFilterFields) AND (listLen(HTMLfiltersAttributes) OR stRecordset.q.recordCount)>
 		<ft:form Name="#attributes.name#Filter" Validation="#attributes.bFilterValidation#">	
 			<cfif NOT (structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true)>
-				<ft:button type="button" value="Filter" icon="ui-icon-search" class="small" priority="primary" style="" text="#application.rb.getResource('objectadmin.messages.Filtering@text','Show Filter')#" onclick="$j('##filterForm').toggle('blind');" />
+				<ft:button type="button" value="Filter" icon="icon-search" class="small" priority="primary" style="" text="#application.rb.getResource('objectadmin.messages.Filtering@text','Show Filter')#" onclick="$j('##filterForm').toggle('blind');" />
 			</cfif>
 				
 			<cfoutput>
@@ -787,17 +795,17 @@ user --->
 									<cfelse>
 										<cfswitch expression="#attributes.aButtons[i].value#">
 											<cfcase value="Add">
-												<cfset icon = "plus">
+												<cfset icon = "icon-plus">
 												<cfset class = "btn-primary">
 											</cfcase>
 											<cfcase value="Copy">
-												<cfset icon = "copy">
+												<cfset icon = "icon-copy">
 											</cfcase>
 											<cfcase value="Delete">
-												<cfset icon = "trash">
+												<cfset icon = "icon-trash">
 											</cfcase>
 											<cfcase value="Unlock">
-												<cfset icon = "unlock">
+												<cfset icon = "icon-unlock">
 											</cfcase>
 										</cfswitch>
 									</cfif>
@@ -1241,12 +1249,12 @@ user --->
 				<!--- We do not include the Edit Link if workflow is available for this content item. The user must go to the overview page. --->
 				<cfif not listLen(lWorkflowTypenames)>	
 					<cfif structKeyExists(arguments.st,"locked") AND arguments.st.locked neq 0 AND arguments.st.lockedby neq '#application.security.getCurrentUserID()#'>
-						<ft:button value="Unlock" text="" title="Unlock this object" style="margin-left:0px;" icon="ui-icon-unlocked icon-unlock" class="" type="submit" selectedObjectID="#arguments.st.objectid#" />
+						<ft:button value="Unlock" text="" title="Unlock this object" style="margin-left:0px;" icon="icon-unlock" class="" type="submit" selectedObjectID="#arguments.st.objectid#" />
 					<cfelseif structKeyExists(arguments.stPermissions, "iEdit") AND arguments.stPermissions.iEdit>
 						<cfif structKeyExists(arguments.st,"bHasMultipleVersion")>
 							<cfif NOT(arguments.st.bHasMultipleVersion) AND arguments.st.status EQ "approved">
 								
-									<ft:button value="Create Draft Object" text="" title="Create a draft version of this object and begin editing" icon="icon-pencil"  class="btn-edit" type="button" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
+									<ft:button value="Create Draft Object" text="Edit" title="Create a draft version of this object and begin editing" icon="icon-pencil"  class="btn-edit" type="button" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
 								
 							<cfelseif arguments.st.bHasMultipleVersion>
 								<!--- Still go to the create draft page but that page will find the already existing draft and not create a new one. --->
@@ -1271,13 +1279,12 @@ user --->
 		
 			
 			<cfif attributes.bEditCol OR attributes.bPreviewCol>
-				<ft:buttonGroup>
+				<cfoutput><div class="btn-group"></cfoutput>
 				
 					<ft:button value="toggle" text="" icon=" ,caret" dropdownToggle="true" type="button" />
 					
-					<ft:dropdownMenu>
 					<cfoutput>
-						
+						<div class="dropdown-menu">
 						<cfif attributes.bViewCol>	
 							<li>
 								<ft:button value="Overview" text="Overview" title="Open up the overview screen for this object" type="button" renderType="link" onclick="$fc.objectAdminAction('Administration', '#overviewURL#&objectid=#arguments.st.objectid#');" />
@@ -1334,10 +1341,10 @@ user --->
 								</li>
 							</cfloop>
 						</cfif>
-							
-					</cfoutput>	
-					</ft:dropdownMenu>
-				</ft:buttonGroup>
+						
+						</div>
+					</cfoutput>
+				<cfoutput></div></cfoutput>
 				
 			</cfif>		
 		

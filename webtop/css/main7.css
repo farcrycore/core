@@ -429,10 +429,8 @@ table.object-admin-actions td a .ui-icon {
 }
 
 /* WEBTOP OVERVIEW */
-#tabs-summary .developer-actions { right:0; position:absolute; padding-right:16px; }
-	#tabs-summary .developer-actions a, #tabs-summary .developer-actions .objectid { padding:0; display:inline-block; vertical-align:middle; }
-	#tabs-summary .developer-actions a:hover { background-color:transparent; }
-	#tabs-summary .developer-actions a.ui-icon-tag { position:absolute\9; top:1px\9; right:36px\9; }
-	#tabs-summary .developer-actions a.ui-icon-calculator { position:absolute\9; top:1px\9; right:16px\9; }
-	#tabs-summary .developer-actions div.objectid { margin-right:40px\9; }
+.developer-actions { right:25px; position:absolute; }
+	.developer-actions a, .developer-actions .objectid { color:#333333; padding:0; display:inline-block; vertical-align:middle; margin-left:10px; }
+	.developer-actions a:hover { color:#333333; background-color:transparent; text-decoration:none; }
+	.developer-actions div.objectid { margin-right:40px\9; }
 	.comment { margin-left: 19px; }

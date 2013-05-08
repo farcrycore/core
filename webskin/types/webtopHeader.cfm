@@ -65,7 +65,7 @@
 					<ul class="nav nav-tabs">
 
 						<admin:loopwebtop parent="#stWebtop#" item="section" class="class">
-							<li id="nav-#section.id#" class="#class#<cfif url.sec eq section.id> active</cfif>"><a href="?id=#lcase(section.id)#">#trim(section.label)#</a></li>
+							<li id="nav-#section.id#" class="#class#<cfif url.sec eq section.id> active</cfif>"><a href="?id=#lcase(section.id)#"><cfif isdefined("section.icon")><i class="#section.icon#"></i> </cfif>#trim(section.label)#</a></li>
 						</admin:loopwebtop>
 
 					</ul>
@@ -117,10 +117,10 @@
 
 						<admin:loopwebtop parent="#stWebtop.children[url.sec]#" item="subsection" class="class">
 							<cfif structIsEmpty(subsection.children)>
-								<li class="#class#<cfif url.sub eq subsection.id> active</cfif>"><a href="?id=#lcase(url.sec)#.#lcase(subsection.id)#">#trim(subsection.label)#</a></li>
+								<li class="#class#<cfif url.sub eq subsection.id> active</cfif>"><a href="?id=#lcase(url.sec)#.#lcase(subsection.id)#"><cfif isdefined("subsection.icon")><i class="#subsection.icon#"></i> </cfif>#trim(subsection.label)#</a></li>
 							<cfelse>
 								<li id="nav-#subsection.id#" class="dropdown #class#<cfif url.sub eq subsection.id> active</cfif>">
-									<a href="?id=#lcase(url.sec)#.#lcase(subsection.id)#">#trim(subsection.label)#</a>
+									<a href="?id=#lcase(url.sec)#.#lcase(subsection.id)#"><cfif isdefined("subsection.icon")><i class="#subsection.icon#"></i> </cfif>#trim(subsection.label)#</a>
 
 									<cfset menuitemCount = 0>
 									<cfset columnCount = 1>
@@ -132,10 +132,10 @@
 												<cfset menuitemCount = 0>
 												<cfset columnCount = columnCount + 1>
 											</cfif>
-											<li class="nav-header">#trim(menu.label)#</li>
+											<li class="nav-header"><cfif isdefined("menu.icon")><i class="#menu.icon#"></i> </cfif>#trim(menu.label)#</li>
 											<cfset menuitemCount = menuitemCount + 1>
 											<admin:loopwebtop parent="#stWebtop.children[url.sec].children[subsection.id].children[menu.id]#" item="menuitem" class="menuitemclass">
-												<li class="#menuitemclass#<cfif url.menuitem eq menuitem.id AND url.menu eq menu.id> active</cfif>"><a href="?id=#lcase(url.sec)#.#lcase(subsection.id)#.#lcase(menu.id)#.#lcase(menuitem.id)#">#trim(menuitem.label)#</a></li>
+												<li class="#menuitemclass#<cfif url.menuitem eq menuitem.id AND url.menu eq menu.id> active</cfif>"><a href="?id=#lcase(url.sec)#.#lcase(subsection.id)#.#lcase(menu.id)#.#lcase(menuitem.id)#"><cfif isdefined("menuitem.icon")><i class="#menuitem.id#"></i> </cfif>#trim(menuitem.label)#</a></li>
 												<cfset menuitemCount = menuitemCount + 1>
 											</admin:loopwebtop>
 										</admin:loopwebtop>											

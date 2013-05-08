@@ -138,29 +138,6 @@
 				</cfif>
 			</tr>
 			</table>
-			<!--- <div style="display:inline;color:##E17000">
-				<div style="font-size:90%;padding:2px;float:left;">
-					<ft:button type="button" value="Filter" icon="ui-icon-search" class="small" text="#application.rb.getResource('objectadmin.messages.Filtering@text','FILTERING')#" onclick="$j('##filterForm-#url.filterTypename#').toggle('slow');" />
-					<!--- <a onclick="$j('##filterForm-#url.filterTypename#').toggle('slow');">FILTERING</a>							 --->
-				</div>						
-			</div>
-			<br class="clearer" />
-			<div id="filterForm-#url.filterTypename#" style="<cfif not len(form.searchTypename)>display:none;</cfif>">
-				<div style="padding:5px;">
-					<fieldset class="fieldset" style="margin:0px;">
-						<grid:div class="ctrlHolder inlineLabels">
-							<label for="searchTypename-#stobj.typename#-#url.property#-#url.filterTypename#" class="label">Label</label>	
-							<input type="text" id="searchTypename-#stobj.typename#-#url.property#-#url.filterTypename#" name="searchTypename" class="textInput" value="#form.searchTypename#" />
-						</grid:div>
-					</fieldset>
-					<ft:buttonPanel>
-						<ft:button value="Search" class="small" priority="primary" />
-						<cfif len(form.searchTypename)>
-							<ft:button value="Clear Search" class="small" priority="secondary" style="float:left;" onClick="$j('##searchTypename-#stobj.typename#-#url.property#-#url.filterTypename#').attr('value','');" />
-						</cfif>
-					</ft:buttonPanel>
-				</div>
-			</div> --->
 			</cfoutput>
 		</grid:div>
 			

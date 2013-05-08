@@ -25,270 +25,10 @@ Webtop, Section, SubSection, Menu, MenuItem
 <skin:loadJS id="fc-jquery" />
 <skin:loadJS id="fc-jquery-ui" />
 <skin:loadCSS id="jquery-ui" />
+<skin:loadCSS id="fc-fontawesome" />
 
-
-
-<skin:htmlHead>
-<cfoutput>
-<style type="text/css">
-.inherit {opacity:0.4;}
-
-.ui-button.small.barnacleBox {
-	width: 16px;
-	height: 16px;
-	float:left;
-	margin:0px;
-}
-
-.ui-button.small.barnacleBox .ui-icon {
-	margin-top: -8px;
-	margin-left: -8px;
-}
-</style>
-</cfoutput>
-</skin:htmlHead>
-
-
-
-
-<!--- 
-FORM
- --->
-
-<ft:form>
-	
-
-
-			<cfset o = createObject("component", "#application.packagepath#.farcry.tree")>
-			
-			<cfset qNode = o.getNode(objectid="#application.navID['root']#")>
-			<!--- <cfset qNav = o.getDescendants(objectid=application.navID['root'], bIncludeSelf="true") /> --->
-			
-			
-				<cfoutput>
-				
-				<select id="selectPermission" name="selectPermission">
-					<cfloop list="#permissions#" index="iPermission">
-						<option value="#iPermission#" <cfif iPermission EQ form.selectPermission>selected="selected"</cfif>>#application.security.factory.permission.getLabel(iPermission)#</option>
-					</cfloop>
-				</select>
-				Select Permission to Manage: 
-				</cfoutput>
-			
-			
-			<cfoutput>
-			
-			<input type="hidden" name="permissionID" value="#form.selectPermission#">
-			</cfoutput>
-			<skin:onReady>
-				<cfoutput>
-				$j('##selectPermission').change(function() {
-					btnSubmit( $j(this).closest('form').attr('id') ,'Change Site Permission');
-				});
-				</cfoutput>
-			</skin:onReady>
-			<cfquery datasource="#application.dsn#" name="qNav">
-			SELECT ntm.objectID, ntm.objectname, ntm.nleft, ntm.nright, ntm.nLevel, barnacle.barnacleValue, barnacle.roleid, barnacle.permissionID
-			FROM nested_tree_objects as ntm
-			LEFT OUTER JOIN (
-				SELECT farBarnacle.referenceID, farBarnacle.barnacleValue, farBarnacle.roleid, farBarnacle.permissionID
-				FROM farBarnacle
-				WHERE objecttype = <cfqueryparam cfsqltype="cf_sql_varchar" value="dmNavigation">
-				AND farBarnacle.roleid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stobj.objectid#">
-				AND farBarnacle.permissionid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#form.selectPermission#">
-			) barnacle ON ntm.objectid = barnacle.referenceid
-			WHERE ntm.nleft	>= <cfqueryparam cfsqltype="cf_sql_integer" value="#qNode.nLeft#">
-			AND ntm.nleft < <cfqueryparam cfsqltype="cf_sql_integer" value="#qNode.nRight#">
-			AND ntm.typename = <cfqueryparam cfsqltype="cf_sql_varchar" value="dmNavigation">
-			ORDER BY ntm.nleft
-			</cfquery>
-
-
-			<cfset currentlevel= 0 />
-			<cfset ul= 0 />
-			<cfset bHomeFirst = false /> <!--- // used to stop the first node being flagged as first if home link is inserted. --->
-			<cfset bFirstNodeInLevel = true /> <!--- // used to track the first node in each level.	 --->			
-			
-			<cfset bHighlightFirst= true />
-			<cfset bIncludeSpan= true />
-			
-			<cfset stParentPermissions = structNew() />
-			
-			<cfset stCurrentPermissionSet = request.stSitePermissions['#form.selectPermission#']>
-			
-			<cfoutput>
-				
-			<cfloop query="qNav">
-				<cfset previousLevel= currentlevel />
-				<cfset currentlevel=qNav.nLevel />
-				<cfset itemclass = "">
-				
-				<cfif structKeyExists(stCurrentPermissionSet, qNav.objectid)>
-					<cfset currentBarnacleValue = stCurrentPermissionSet[qNav.objectid] >
-				<cfelse>
-					<cfset currentBarnacleValue = numberFormat(qNav.barnacleValue) />
-				</cfif>
-				
-				<cfif previouslevel eq 0>
-					<ul id="siteTree">
-					
-					<cfset ul = ul + 1 >
-					
-				<cfelseif currentlevel gt previouslevel>
-					<!--- // if new level, open new list --->
-					<ul>
-						
-					<cfset ul = ul + 1 >
-					<cfset bFirstNodeInLevel = true />
-				<cfelseif currentlevel lt previouslevel>
-					<!--- // if end of level, close current item --->
-					</li>
-					<!--- // close lists until at correct level --->
-					#repeatString("</ul></li>",previousLevel-currentLevel)#
-					<cfset ul = ul - ( previousLevel - currentLevel ) />
-				<cfelse>
-					<!--- // close item --->
-					</li>
-				</cfif>
-				 
-				<cfif currentBarnacleValue NEQ "">
-					<cfset stParentPermissions[ul] = currentBarnacleValue >
-				</cfif>
-				
-				<cfloop from="#ul+1#" to="20" index="i">
-					<cfset structDelete( stParentPermissions , i )>
-				</cfloop>
-				
-				<cfset inheritBarnacleValue = -1 /><!--- default permission --->
-				<cfloop from="#ul-1#" to="0" step="-1" index="i">
-					<cfif structKeyExists(stParentPermissions, i) AND stParentPermissions[i] NEQ 0>
-						<cfset inheritBarnacleValue = stParentPermissions[i]>
-						<cfbreak>
-					</cfif>
-				</cfloop>
-				
-				
-				<!--- The First Node in the tree will always be DISALLOW if nothing explicitly set --->
-				<cfif qNav.currentRow EQ 1 AND currentBarnacleValue EQ 0>
-					<cfset currentBarnacleValue = -1>
-				</cfif>
-				
-				<!--- // open a list item --->
-				
-					
-				<cfset class = "">
-				<cfset value = 0>
-				<cfset priority = "secondary">
-				<cfset icon = "ui-icon-close">
-				<cfset bChecked = false>
-				
-			
-				<cfif currentBarnacleValue EQ 1>
-					<cfset bChecked = true>
-					<cfset value = 1>
-					<cfset priority = "primary">
-					<cfset icon = "ui-icon-check">
-				<cfelseif currentBarnacleValue EQ -1>
-					<cfset bChecked = false>
-					<cfset value = -1>
-					<cfset priority = "secondary">
-					<cfset icon = "ui-icon-close">
-				<cfelse>
-					<cfif inheritBarnacleValue EQ 1>
-						<cfset bChecked = true>
-						<cfset priority = "primary">
-						<cfset icon = "ui-icon-check">
-					<cfelse>
-						<cfset priority = "secondary">
-						<cfset icon = "ui-icon-close">
-					</cfif>
-					
-					<cfset value = 0>
-					<cfset class="inherit" />
-				</cfif>
-				
-				<li <cfif value EQ 0>class="closed"</cfif>>	
-				
-					<ft:button 
-						value="perm" 
-						text="" 
-						priority="#priority#" 
-						icon="#icon#" 
-						type="button" 
-						class="permButton small barnacleBox #class#"
-						onclick="" />
-					
-					<input type="hidden" class="barnacleValue" id="barnacleValue-#qNav.objectid#" name="barnacleValue-#qNav.objectid#" value="#value#" style="width:10px;">
-					<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#qNav.objectid#" value="#inheritBarnacleValue#" style="width:10px;">
-				
-					<span style="font-size:10px;">
-						&nbsp;#trim(qNav.ObjectName)#
-					</span>
-				
-				<!--- <br style="clear:both;" />	 --->
-			</cfloop>
-			
-			#repeatString("</li></ul>",ul)#
-			</cfoutput>
-	
-			<cfoutput>
-			<input type="hidden" name="sitePermissionsSubmitted" value="true">
-			</cfoutput>
-	
-</ft:form>	
-
-
-
-<skin:onReady>
-<cfoutput>
-	
-	$fc.fixDescendants = function(elParent) {
-		
-		// loop over all descendants of clicked item and if they are inheriting, adjust inherited value if required
-		$j(elParent).closest( 'div,li' ).find( '.permButton' ).each(function (i) {
-			
-			elDescendant = $j(this);
-			var descendantValue = $j(elDescendant).siblings( '.barnacleValue' ).val();
-			
-			if( $j(elDescendant).attr('id') != $j(elParent).attr('id')) {
-				
-				$j(this).parents( 'div,li' ).children( '.permButton' ).each(function (i) {
-				
-					var elDescendantParent = $j(this);
-					
-					if( $j(elDescendantParent).attr('id') != $j(elDescendant).attr('id')) {
-						
-						var descendantParentValue = $j(elDescendantParent).siblings( '.barnacleValue' ).val();
-						
-						
-						if (descendantParentValue == 1) {
-							$j(elDescendant).siblings( '.inheritBarnacleValue' ).val(1);
-							
-							if (descendantValue == 0) { //only descendants that inherit
-								$j(elDescendant).removeClass('ui-priority-secondary').addClass('ui-priority-primary');
-								$j(elDescendant).find('.ui-icon').removeClass('ui-icon-close').addClass('ui-icon-check');
-								
-							}
-							return false;
-						};
-						if (descendantParentValue == -1) {
-							
-							$j(elDescendant).siblings( '.inheritBarnacleValue' ).val(-1);
-							
-							if (descendantValue == 0) { //only descendants that inherit
-								$j(elDescendant).removeClass('ui-priority-primary').addClass('ui-priority-secondary');
-								$j(elDescendant).find('.ui-icon').removeClass('ui-icon-check').addClass('ui-icon-close');
-								
-							}
-							return false;
-						};
-					};
-				});
-			};
-		});				
-	};
-	
-	$j('.permButton').click(function() {
+<skin:onReady><cfoutput>
+	$j('##siteTree .permButton').click(function() {
 		var el = $j(this);
 		var barnacleValue = $j(this).siblings( '.barnacleValue' ).val();
 		var inheritBarnacleValue = $j(this).siblings( '.inheritBarnacleValue' ).val();
@@ -297,65 +37,40 @@ FORM
 		if (  $j(this).parents( 'div,li' ).children( '.permButton' ).length == 1 ) {
 			if(barnacleValue == 1) {
 				$j(this).siblings( '.barnacleValue' ).val(-1);
-				$j(this).removeClass('ui-priority-primary').addClass('ui-priority-secondary');
-				$j(this).find('.ui-icon').removeClass('ui-icon-check').addClass('ui-icon-close');
+				$j(this).find('.icon-ok-sign').removeClass('icon-ok-sign').addClass('icon-remove-sign');
 				$j(this).removeClass('inherit');
 			} else {
 				$j(this).siblings( '.barnacleValue' ).val(1);
-				$j(this).removeClass('ui-priority-secondary').addClass('ui-priority-primary');
-				$j(this).find('.ui-icon').removeClass('ui-icon-close').addClass('ui-icon-check');
+				$j(this).find('.icon-remove-sign').removeClass('icon-remove-sign').addClass('icon-ok-sign');
 				$j(this).removeClass('inherit');
 			}
 			
 		} else {
-		
-			if(barnacleValue == 1) {
+			if(barnacleValue == 1 || barnacleValue == -1) {
+				$j(this).siblings( '.barnacleValue' ).val(0);
+				$j(this).removeClass('permission-explicit').addClass('permission-inherit');
+				
 				if(inheritBarnacleValue == -1) {
-					$j(this).siblings( '.barnacleValue' ).val(0);
-					$j(this).removeClass('ui-priority-primary').addClass('ui-priority-secondary');
-					$j(this).find('.ui-icon').removeClass('ui-icon-check').addClass('ui-icon-close');
-					$j(this).addClass('inherit');
+					$j(this).find('.icon-ok-sign').removeClass('icon-ok-sign').addClass('icon-remove-sign');
 				} else {
-					$j(this).siblings( '.barnacleValue' ).val(0);
-					$j(this).removeClass('ui-priority-primarysecondary').addClass('ui-priority-primary');
-					$j(this).find('.ui-icon').removeClass('ui-icon-close').addClass('ui-icon-check');
-					$j(this).addClass('inherit');
+					$j(this).find('.icon-remove-sign').removeClass('icon-remove-sign').addClass('icon-ok-sign');
 				};
-			};
-			
-			if(barnacleValue == -1) {
+			}
+			else{
+				$j(this).removeClass('permission-inherit').addClass('permission-explicit');
+				
 				if(inheritBarnacleValue == 1) {
-					$j(this).siblings( '.barnacleValue' ).val(0);
-					$j(this).removeClass('ui-priority-secondary').addClass('ui-priority-primary');
-					$j(this).find('.ui-icon').removeClass('ui-icon-close').addClass('ui-icon-check');
-					$j(this).addClass('inherit');
-				} else {
-					$j(this).siblings( '.barnacleValue' ).val(1);
-					$j(this).removeClass('ui-priority-secondary').addClass('ui-priority-primary');
-					$j(this).find('.ui-icon').removeClass('ui-icon-close').addClass('ui-icon-check');
-
-					
-												
-				};
-			};
-			
-			if(barnacleValue == 0) {
-				if(inheritBarnacleValue == 1) {
-					
 					$j(this).siblings( '.barnacleValue' ).val(-1);
-					$j(this).removeClass('ui-priority-primary').addClass('ui-priority-secondary');
-					$j(this).find('.ui-icon').removeClass('ui-icon-check').addClass('ui-icon-close');
+					$j(this).find('.icon-ok-sign').removeClass('icon-ok-sign').addClass('icon-remove-sign');
 				} else {
 					$j(this).siblings( '.barnacleValue' ).val(1);
-					$j(this).removeClass('ui-priority-secondary').addClass('ui-priority-primary');
-					$j(this).find('.ui-icon').removeClass('ui-icon-close').addClass('ui-icon-check');
+					$j(this).find('.icon-remove-sign').removeClass('icon-remove-sign').addClass('icon-ok-sign');
 					
 				};
-				$j(this).removeClass('inherit');
 			};
 		}
 		
-		$fc.fixDescendants(el);
+		$fc.fixDescendants(el,true);
 	});
 			
 		
@@ -368,7 +83,172 @@ FORM
 		collapsed: true
 	});
 	
-</cfoutput>
-</skin:onReady>
+</cfoutput></skin:onReady>
 
+<skin:htmlHead><cfoutput>
+	<style type="text/css">
+		##siteTree a.permission-explicit:hover, ##siteTree a.permission-inherit:hover { text-decoration:none; }
+		##siteTree a.permission-explicit .icon-ok-sign { color:##006600; }
+		##siteTree a.permission-inherit .icon-ok-sign { color:##8bd68b; }
+		##siteTree a.permission-explicit .icon-remove-sign { color:##FF0000; }
+		##siteTree a.permission-inherit .icon-remove-sign { color:##FF8080; }
+	</style>
+</cfoutput></skin:htmlHead>
+
+
+<cfset o = createObject("component", "#application.packagepath#.farcry.tree")>
+
+<cfset qNode = o.getNode(objectid="#application.navID['root']#")>
+
+<ft:field label="Permission to Manage">
+	<cfoutput>
+		<select id="selectPermission" name="selectPermission">
+			<cfloop list="#permissions#" index="iPermission">
+				<option value="#iPermission#" <cfif iPermission EQ form.selectPermission>selected="selected"</cfif>>#application.security.factory.permission.getLabel(iPermission)#</option>
+			</cfloop>
+		</select>
+		<input type="hidden" name="permissionID" value="#form.selectPermission#">
+	</cfoutput>
+</ft:field>
+
+<skin:onReady><cfoutput>
+	$j('##selectPermission').change(function() {
+		btnSubmit( $j(this).closest('form').attr('id') ,'Change Site Permission');
+	});
+</cfoutput></skin:onReady>
+
+<cfquery datasource="#application.dsn#" name="qNav">
+	SELECT 		ntm.objectID, ntm.objectname, ntm.nleft, ntm.nright, ntm.nLevel, barnacle.barnacleValue, barnacle.roleid, barnacle.permissionID
+	FROM 		nested_tree_objects as ntm
+				LEFT OUTER JOIN (
+					SELECT 	farBarnacle.referenceID, farBarnacle.barnacleValue, farBarnacle.roleid, farBarnacle.permissionID
+					FROM 	farBarnacle
+					WHERE 	objecttype = <cfqueryparam cfsqltype="cf_sql_varchar" value="dmNavigation">
+							AND farBarnacle.roleid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stobj.objectid#">
+							AND farBarnacle.permissionid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#form.selectPermission#">
+				) barnacle ON ntm.objectid = barnacle.referenceid
+	WHERE 		ntm.nleft	>= <cfqueryparam cfsqltype="cf_sql_integer" value="#qNode.nLeft#">
+				AND ntm.nleft < <cfqueryparam cfsqltype="cf_sql_integer" value="#qNode.nRight#">
+				AND ntm.typename = <cfqueryparam cfsqltype="cf_sql_varchar" value="dmNavigation">
+	ORDER BY 	ntm.nleft
+</cfquery>
+
+
+<cfset currentlevel= 0 />
+<cfset ul= 0 />
+<cfset bHomeFirst = false /> <!--- // used to stop the first node being flagged as first if home link is inserted. --->
+<cfset bFirstNodeInLevel = true /> <!--- // used to track the first node in each level.	 --->			
+
+<cfset bHighlightFirst= true />
+<cfset bIncludeSpan= true />
+
+<cfset stParentPermissions = structNew() />
+
+<cfset stCurrentPermissionSet = request.stSitePermissions['#form.selectPermission#']>
+
+
+<ft:field label="Site Tree" bMultiField="true">
+	<cfloop query="qNav">
+		<cfset previousLevel= currentlevel />
+		<cfset currentlevel=qNav.nLevel />
+		<cfset itemclass = "">
+		
+		<cfif structKeyExists(stCurrentPermissionSet, qNav.objectid)>
+			<cfset currentBarnacleValue = stCurrentPermissionSet[qNav.objectid] >
+		<cfelse>
+			<cfset currentBarnacleValue = numberFormat(qNav.barnacleValue) />
+		</cfif>
+		
+		<cfif previouslevel eq 0>
+			<cfoutput><ul id="siteTree"></cfoutput>
+			
+			<cfset ul = ul + 1 >
+			
+		<cfelseif currentlevel gt previouslevel>
+			<!--- // if new level, open new list --->
+			<cfoutput><ul></cfoutput>
 				
+			<cfset ul = ul + 1 >
+			<cfset bFirstNodeInLevel = true />
+		<cfelseif currentlevel lt previouslevel>
+			<!--- // if end of level, close current item --->
+			<cfoutput></li></cfoutput>
+			<!--- // close lists until at correct level --->
+			<cfoutput>#repeatString("</ul></li>",previousLevel-currentLevel)#</cfoutput>
+			<cfset ul = ul - ( previousLevel - currentLevel ) />
+		<cfelse>
+			<!--- // close item --->
+			<cfoutput></li></cfoutput>
+		</cfif>
+		 
+		<cfif currentBarnacleValue NEQ "">
+			<cfset stParentPermissions[ul] = currentBarnacleValue >
+		</cfif>
+		
+		<cfloop from="#ul+1#" to="20" index="i">
+			<cfset structDelete( stParentPermissions , i )>
+		</cfloop>
+		
+		<cfset inheritBarnacleValue = -1 /><!--- default permission --->
+		<cfloop from="#ul-1#" to="0" step="-1" index="i">
+			<cfif structKeyExists(stParentPermissions, i) AND stParentPermissions[i] NEQ 0>
+				<cfset inheritBarnacleValue = stParentPermissions[i]>
+				<cfbreak>
+			</cfif>
+		</cfloop>
+		
+		<!--- The First Node in the tree will always be DISALLOW if nothing explicitly set --->
+		<cfif qNav.currentRow EQ 1 AND currentBarnacleValue EQ 0>
+			<cfset currentBarnacleValue = -1>
+		</cfif>
+		
+		<!--- // open a list item --->
+		
+		
+		<cfset value = 0>
+		<cfset priority = "permission-inherit">
+		<cfset icon = "icon-remove-sign">
+		<cfset bChecked = false>
+		
+	
+		<cfif currentBarnacleValue EQ 1>
+			<cfset bChecked = true>
+			<cfset value = 1>
+			<cfset priority = "permission-explicit">
+			<cfset icon = "icon-ok-sign">
+		<cfelseif currentBarnacleValue EQ -1>
+			<cfset bChecked = false>
+			<cfset value = -1>
+			<cfset priority = "permission-explicit">
+			<cfset icon = "icon-remove-sign">
+		<cfelse>
+			<cfif inheritBarnacleValue EQ 1>
+				<cfset bChecked = true>
+				<cfset priority = "permission-inherit">
+				<cfset icon = "icon-ok-sign">
+			<cfelse>
+				<cfset priority = "permission-inherit">
+				<cfset icon = "icon-remove-sign">
+			</cfif>
+			
+			<cfset value = 0>
+		</cfif>
+		
+		<cfoutput>
+			<li <cfif value EQ 0>class="closed"</cfif>>	
+			
+				<a id="node-#qNav.objectid#" class="permButton barnacleBox #priority#"><i class="#icon#"></i></a>
+				<input type="hidden" class="barnacleValue" id="barnacleValue-#qNav.objectid#" name="barnacleValue-#qNav.objectid#" value="#value#" style="width:10px;">
+				<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#qNav.objectid#" value="#inheritBarnacleValue#" style="width:10px;">
+			
+				<span style="font-size:10px;">
+					&nbsp;#trim(qNav.ObjectName)#
+				</span>
+		</cfoutput>
+	</cfloop>
+	
+	<cfoutput>
+		#repeatString("</li></ul>",ul)#
+		<input type="hidden" name="sitePermissionsSubmitted" value="true">
+	</cfoutput>
+</ft:field>

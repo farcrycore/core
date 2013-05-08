@@ -893,7 +893,7 @@ function updateSelectedObjectIDs (childCheckbox) {
 			<!--- 
 			$j("###arguments.fieldname#Clear").button({
 	            icons: {
-	                primary: 'ui-icon-minus'
+	                primary: 'icon-minus'
 	            },
 	            text: false
 	        }).click(function() {

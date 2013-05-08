@@ -10,6 +10,7 @@
 	<h1>Welcome to FarCry</h1>
 	<ul class="inlinedocs">
 			<li><a href="#application.url.webtop#/overview/home.cfm">
+				
 				<skin:icon icon="overview" class="overviewicon" style="border:none;float:left;" alt="" />
 			</a>
 			<a href="#application.url.webtop#/overview/home.cfm">Overview</a><br/>

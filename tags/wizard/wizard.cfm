@@ -79,7 +79,11 @@ $in: SessionID -- $
 	
 	<!--- SETUP THE DEFAULT ICON IF NOTHING PASSED --->
 	<cfif not len(attributes.icon)>
-		<cfset attributes.icon = "#application.stCOAPI[stwizard.Data[stWizard.primaryobjectid].typename].icon#" />
+		<cfif len(application.stCOAPI[stwizard.Data[stWizard.primaryobjectid].typename].icon)>
+			<cfset attributes.icon = "#application.stCOAPI[stwizard.Data[stWizard.primaryobjectid].typename].icon#" />
+		<cfelse>
+			<cfset attributes.icon = "file" />
+		</cfif>
 	</cfif>
 	
 	
@@ -181,6 +185,8 @@ $in: SessionID -- $
 
 <cfif thistag.executionMode eq "End">
 
+	<skin:loadCSS id="fc-fontawesome" />
+	
 	<cfset innerHTML = "" />
 	<cfif len(thisTag.generatedContent)>
 		<cfset innerHTML = thisTag.generatedContent />
@@ -237,7 +243,7 @@ $in: SessionID -- $
 				</ul>	
 			</div>
 	
-			<h1><skin:icon icon="#attributes.icon#" default="farcrycore" />
+			<h1><i class="icon-#attributes.icon# icon-large"></i>
 				<cfif len(attributes.title)>
 					#attributes.title#
 				<cfelse>

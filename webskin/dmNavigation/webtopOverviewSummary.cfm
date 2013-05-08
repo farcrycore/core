@@ -46,8 +46,8 @@
 <cfoutput>
 	<div class="developer-actions">
 		<div class="objectid" style="display:none;">#stObj.objectid#</div>
-		<a onclick="var oid = $j(this).siblings('.objectid').toggle();selectText(oid[0]);return false;" title="See objectid" class="ui-icon ui-icon-tag">&nbsp;</a>
-		<a onclick="$fc.openDialog('Property Dump', '#application.url.farcry#/object_dump.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#');return false;" title="Open a window containing all the raw data of this content item" class="ui-icon ui-icon-calculator">&nbsp;</a>
+		<a onclick="var oid = $j(this).siblings('.objectid').toggle();selectText(oid[0]);return false;" title="See objectid"><i class="icon-tag"></i></a>
+		<a onclick="$fc.openDialog('Property Dump', '#application.url.farcry#/object_dump.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#');return false;" title="Open a window containing all the raw data of this content item"><i class="icon-list-alt"></i></a>
 	</div>
 </cfoutput>
 
@@ -180,8 +180,12 @@
 						<tr>
 							<td>
 								<cfif structKeyExists(application.stCOAPI,contentTypename)>
-								<skin:icon icon="#application.stCOAPI[contentTypename].icon#" size="16" default="farcrycore" />
-								<skin:view typename="#contentTypename#" objectid="#stobj.externalLink#" webskin="displayLabel" />
+									<cfif len(application.stCOAPI[contentTypename].icon)>
+										<i class="icon-#application.stCOAPI[contentTypename].icon#"></i>
+									<cfelse>
+										<i class="icon-file"></i>
+									</cfif>
+									<skin:view typename="#contentTypename#" objectid="#stobj.externalLink#" webskin="displayLabel" />
 								</cfif>
 							</td>	
 							<td style="width:50px;"><ft:button value="Manage" renderType="link" selectedObjectID="#stobj.externalLink#" /></td>	
@@ -209,7 +213,11 @@
 							
 							<tr>
 								<td>
-									<skin:icon icon="#application.stCOAPI[contentTypename].icon#" size="16" default="farcrycore" />
+									<cfif len(application.stCOAPI[contentTypename].icon)>
+										<i class="icon-#application.stCOAPI[contentTypename].icon#"></i>
+									<cfelse>
+										<i class="icon-file"></i>
+									</cfif>
 									<skin:view typename="#contentTypename#" objectid="#stobj.aObjectIDs[i]#" webskin="displayLabel" />
 								</td>	
 								<td style="width:50px;"><ft:button value="Manage" renderType="link" selectedObjectID="#stobj.aObjectIDs[i]#" /></td>	
@@ -255,7 +263,13 @@
 										
 										<cfloop index="i" from="1" to="#ArrayLen(aTypesUseInTree)#">
 											<cfif aTypesUseInTree[i].typename NEQ "dmNavigation">
-												<option value="#aTypesUseInTree[i].typename#" title="#application.fapi.getIconURL(application.stCOAPI[aTypesUseInTree[i].typename].icon,16,'farcrycore')#">#aTypesUseInTree[i].description#</option>
+												<cfif len(application.stCOAPI[aTypesUseInTree[i].typename].icon)>
+													<cfset iconClass = "#application.stCOAPI[aTypesUseInTree[i].typename].icon#" />
+												<cfelse>
+													<cfset iconClass = "file" />
+												</cfif>
+												
+												<option value="#aTypesUseInTree[i].typename#" title="<i class='icon-#iconClass#'></i>">#aTypesUseInTree[i].description#</option>
 											</cfif>
 										</cfloop>
 										
@@ -277,7 +291,11 @@
 						<tr>
 							<td>
 								<cfif structKeyExists(application.stCOAPI,contentTypename)>
-									<skin:icon icon="#application.stCOAPI[contentTypename].icon#" size="16" default="farcrycore" />
+									<cfif len(application.stCOAPI[contentTypename].icon)>
+										<i class="icon-#application.stCOAPI[contentTypename].icon#"></i>
+									<cfelse>
+										<i class="icon-file"></i>
+									</cfif>
 									<skin:view typename="#contentTypename#" objectid="#stobj.internalRedirectID#" webskin="displayLabel" />
 								</cfif>
 							</td>	

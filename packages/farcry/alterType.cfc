@@ -281,7 +281,7 @@ $out:$
 				
 				<cfset stResult = o.initmetadata(stResult) />
 				
-				<cfparam name="stResult.icon" default="#arguments.name#" />
+				<cfparam name="stResult.icon" default="" />
 				
 				
 				<cfif listcontains("types,rules,forms,schema",arguments.package)>

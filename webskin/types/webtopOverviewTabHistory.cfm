@@ -24,7 +24,7 @@
 <cfif qLog.recordcount>
 	<cfoutput>
 		<div id="OKMsg">
-			<span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;">&nbsp;</span>
+			<i class="icon-info-sign" style="float: left; margin-right: .3em;"></i>
 			
 			<div class="comment">
 				<cfset stProfile = oProfile.getProfile(username=qLog.userid[1]) />

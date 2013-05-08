@@ -2,7 +2,6 @@
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 <cfimport taglib="/farcry/core/tags/grid" prefix="grid" />
 
-
 <cfquery datasource="#application.dsn#" name="qProperties">
 SELECT objectid
 FROM farFilterProperty
@@ -40,8 +39,8 @@ ORDER BY datetimecreated
 		<ft:field label="#stFields.property.html#" labelAlignment="inline" bMultiField="true">
 			
 			<grid:div style="float:right;">
-				<ft:button value="Delete Filter Property" text="" icon="ui-icon-minusthick" selectedObjectID="#qProperties.objectid#" />
-				<ft:button value="Add Filter Property" text="" icon="ui-icon-plusthick" selectedObjectID="#stobj.objectid#" />
+				<ft:button value="Delete Filter Property" text="" icon="icon-minus" selectedObjectID="#qProperties.objectid#" />
+				<ft:button value="Add Filter Property" text="" icon="icon-plus" selectedObjectID="#stobj.objectid#" />
 			</grid:div>
 			<cfoutput>
 				#stFields.type.html#
@@ -50,27 +49,4 @@ ORDER BY datetimecreated
 			</cfoutput>
 		</ft:field>
 	</cfloop>
-	<!---
-	
-	<cfif not qProperties.recordCount>
-		<cfset stNew = application.fapi.getNewContentObject(typename="farFilterProperty", key="newFilterProperty", filterID="#stobj.objectid#") />
-
-		<ft:object stobject="#stNew#" lfields="property,type,wddxDefinition,aRelated" r_stFields="stFields" />
-	
-		<ft:field label="#stFields.property.html#" labelAlignment="inline" bMultiField="true">
-			<grid:div style="float:right;">
-				<ft:button value="Add Filter Property" text="" icon="ui-icon-plusthick" selectedObjectID="#stobj.objectid#" />
-			</grid:div>
-			<cfoutput>
-				#stFields.type.html#
-				#stFields.wddxDefinition.html#
-				#stFields.aRelated.html#
-			</cfoutput>
-		</ft:field>
-	</cfif>--->
 </ft:fieldset>
-<!---<skin:onReady>
-	<cfoutput>
-		$j('##predicatedFilter :input').attr('disabled', 'disabled');
-	</cfoutput>
-</skin:onReady>--->

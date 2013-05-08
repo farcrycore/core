@@ -138,6 +138,7 @@
 				<skin:onReady><cfoutput>#thistag.allout#</cfoutput></skin:onReady>
 			</cfcase>
 			<cfcase value="headerblock">
+				<skin:loadCSS id="fc-fontawesome" />
 				<skin:onReady><script type="text/javascript"><cfoutput>
 					$j("body").prepend("<div id='header-message-block'></div>");
 					$j("span.close-message").live("click",function(){
@@ -146,7 +147,7 @@
 					});
 					$j([#thistag.allout#]).each(function(index){
 						var i = index;
-						$j("##header-message-block").append("<div id='message-"+i.toString()+"' class='message "+(this.TAGS!==""?this.TAGS.replace(/(^|,)/g,"tag-"):"")+"'>"+(this.TITLE.search(/\w/)>-1?"<strong>"+this.TITLE+"</strong>":"")+(this.TITLE.search(/\w/)>-1 && this.MESSAGE.search(/\w/)>-1?": ":"")+(this.MESSAGE.search(/\w/)>-1?this.MESSAGE:"")+"<span href='##' title='OK' class='ui-icon ui-icon-circle-close close-message'></span></div>");
+						$j("##header-message-block").append("<div id='message-"+i.toString()+"' class='message "+(this.TAGS!==""?this.TAGS.replace(/(^|,)/g,"tag-"):"")+"'>"+(this.TITLE.search(/\w/)>-1?"<strong>"+this.TITLE+"</strong>":"")+(this.TITLE.search(/\w/)>-1 && this.MESSAGE.search(/\w/)>-1?": ":"")+(this.MESSAGE.search(/\w/)>-1?this.MESSAGE:"")+"<span href='##' title='OK' class='icon-remove-sign close-message'></span></div>");
 						if (!this.STICKY) setTimeout(function(){ $j("##message-"+i.toString()+":visible").slideUp(); },this.PAUSE);
 					});
 				</cfoutput></script></skin:onReady>

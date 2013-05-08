@@ -285,208 +285,78 @@ PREPARE TYPE PERMISSIONS
 	<cfset structDelete(Session.TempObjectStore, stobj.objectid)>
 </wiz:processwizard>
 
-
-<skin:htmlHead>
-<cfoutput>
-<style type="text/css">
-.inherit {opacity:0.4;}
-
-.ui-button.small.barnacleBox {
-	width: 50px;
-	height: 16px;
-	float:right;
-	margin:0px 0px 0px 5px;
-}
-
-.ui-button.small.barnacleBox .ui-icon {
-	margin-top: -8px;
-	margin-left: -8px;
-}
-
-##permissionTree li {
-	font-size:10px;
-}
-
-.permButton.ui-button {
-	padding:0px 0px 5px 0px;	
-	width: 50px;
-	height: 16px;
-	float:right;
-}
-</style>
-</cfoutput>
-</skin:htmlHead>
-
-
+<skin:onReady id="fixDescendants"><cfoutput>
+	$fc.fixDescendants = function(elParent,clearRedundant) {
+		
+		elParent = elParent.closest("li");
+		clearRedundant = clearRedundant || false;
+		
+		var thisVal = elParent.find("> .barnacleValue").val(), thisInheritedVal = elParent.find("> .inheritBarnacleValue").val(), effectiveVal = thisVal==0 ? thisInheritedVal : thisVal;
+		
+		elParent.find("> ul > li").each(function(){ 
+			
+			var elDescendant = $j(this), descendantValue = elDescendant.find('> .barnacleValue').val();
+			
+			elDescendant.find("> .inheritBarnacleValue").val(effectiveVal);
+			
+			if (descendantValue==0){
+				if (effectiveVal==1){
+					elDescendant.find('> .permButton .icon-remove-sign').removeClass('icon-remove-sign').addClass('icon-ok-sign');
+				}
+				else if (effectiveVal==-1){
+					elDescendant.find('> .permButton .icon-ok-sign').removeClass('icon-ok-sign').addClass('icon-remove-sign');
+				}
+			}
+			else if (descendantValue==effectiveVal && clearRedundant){
+				elDescendant.find("> .barnacleValue").val(0);
+				elDescendant.find("> .permission-explicit").removeClass('permission-explicit').addClass('permission-inherit');
+			}
+			
+			$fc.fixDescendants(elDescendant);
+		});
+	};
+</cfoutput></skin:onReady>
 
 <wiz:wizard ReferenceID="#stobj.objectid#" bFocusFirstField="false">
-
-
-					
-		<wiz:step name="General">
-			
-			<wiz:object typename="#stobj.typename#" ObjectID="#stobj.objectID#" lfields="title,isdefault,aGroups" format="edit" intable="false" />
-			
-		</wiz:step>
-
-					
-		<wiz:step name="Site Permissions">
-			
-			<skin:view typename="farRole" objectid="#stobj.objectid#" webskin="editSitePermissions" />
-			
-		</wiz:step>
-
-					
-		<wiz:step name="Webtop Visibility">
-			
-			<skin:view typename="farRole" objectid="#stobj.objectid#" webskin="editWebtopPermissions" />
-			
-		</wiz:step>
-
-					
-		<wiz:step name="Content Type Security">
-			
-			<skin:view typename="farRole" objectid="#stobj.objectid#" webskin="editTypePermissions" />
-			
-		</wiz:step>
 	
-		<wiz:step name="General Permissions">
-			
-			
-			<cfquery datasource="#application.dsn#" name="qPermissions">
-			SELECT *
-			FROM farPermission
-			WHERE bSystem <> 1
-			ORDER BY title
-			</cfquery>
-			
-			<cfoutput>
-			<table class="objectAdmin" style="table-layout:fixed;width:100%;">
-			<colgroup>
-				<col style="width:200px;">
-				<col style="width:60px;">
-				<col>
-			</colgroup>
-			<thead>
-			<tr>
-				<th>Permission</th>
-				<th>Access</th>
-				<th>Hint</th>
-			</tr>
-			</thead>
-			
-			<tbody>
-			
-			<cfloop query="qPermissions">
+	<wiz:step name="General">
+		
+		<wiz:object typename="#stobj.typename#" ObjectID="#stobj.objectID#" lfields="title,isdefault,aGroups" format="edit" intable="false" />
+		
+	</wiz:step>
 
-				<tr>
-					<cfif application.fapi.arrayFind(stobj.aPermissions, qPermissions.objectid)>
-						<cfset allowAccess = 1>
-					<cfelse>
-						<cfset allowAccess = -1>
-					</cfif>
-					
-					<cfif allowAccess EQ 1>
-						<cfset priority = "ui-priority-primary">
-						<cfset icon = "ui-icon-check">
-					<cfelse>
-						<cfset priority = "ui-priority-secondary">
-						<cfset icon = "ui-icon-close">
-					</cfif>
-					
-					<cfoutput>
-					<td>#qPermissions.shortcut#</td>
-					<td>
-						<button id="perm-#qPermissions.objectid#" class="permButton small barnacleBox #priority# #icon#" fticon="#icon#" value="#allowAccess#" type="button" ftpermissionid="#qPermissions.objectid#" ftbarnaclevalue="#numberformat(allowAccess)#"></button>
-					</td>	
-					<td>#qPermissions.hint#</td>
-					</cfoutput>
-					
-				</tr>
-			
-			
 				
-			</cfloop>
-			</tbody>
-			</table>
-			</cfoutput>
-			<skin:onReady>
-			<cfoutput>
-				
-			$j('.permButton').each(function (i) {
-			
-				
-				$j(this).button({
-			        text: false,
-					icons: {
-			            primary: $j(this).attr('fticon')
-			        }
-			     });
-		   });
+	<wiz:step name="Site Permissions">
+		
+		<skin:view typename="farRole" objectid="#stobj.objectid#" webskin="editSitePermissions" />
+		
+	</wiz:step>
 
-			$j('.permButton').click(function() {
-				var el = $j(this);
-				var permission = $j(this).attr('ftpermissionid');
-				var permitted = $j(this).attr('ftbarnaclevalue');
 				
-					
-					
-					if(permitted == 1) {
-						$j(this).attr('ftbarnaclevalue', '-1');
-						$j(this).removeClass('ui-priority-primary').addClass('ui-priority-secondary');
-						$j(this).find('.ui-icon').removeClass('ui-icon-check').addClass('ui-icon-close');
-						
-					} else {
-						$j(this).attr('ftbarnaclevalue', '1');
-						$j(this).removeClass('ui-priority-secondary').addClass('ui-priority-primary');
-						$j(this).find('.ui-icon').removeClass('ui-icon-close').addClass('ui-icon-check');
-					};
-					
-					var permitted = $j(this).attr('ftbarnaclevalue');
-				   
-				   
-				   
-				
-					$j.ajax({
-					   type: "POST",
-					   url: '/index.cfm?ajaxmode=1&type=farRole&objectid=#stobj.objectid#&view=editAjaxSaveGenericPermission',
-					   dataType: "html",
-					   cache: false,
-					   context: $j(this),
-					   timeout: 15000,
-					   data: {
-							permissionid: $j(this).attr('ftpermissionid'),
-							barnaclevalue: $j(this).attr('ftbarnaclevalue')
-						},
-					   success: function(msg){
-					   		$j(this).find('.ui-icon').removeClass('ui-icon-bullet');
-					   },
-					   error: function(data){	
-							alert('change unsuccessful. The page will be refreshed.');
-							location=location;
-						},
-						complete: function(){
-							
-						}
-					 });
-						 
-					 
-			});</cfoutput>
-			</skin:onReady>
-			
-			
-			<!--- <wiz:object typename="#stobj.typename#" ObjectID="#stobj.objectID#" lfields="aPermissions" format="edit" intable="false" /> --->
-			
-		</wiz:step>
+	<wiz:step name="Webtop Visibility">
+		
+		<skin:view typename="farRole" objectid="#stobj.objectid#" webskin="editWebtopPermissions" />
+		
+	</wiz:step>
 
+				
+	<wiz:step name="Content Type Security">
+		
+		<skin:view typename="farRole" objectid="#stobj.objectid#" webskin="editTypePermissions" />
+		
+	</wiz:step>
+
+	<wiz:step name="General Permissions">
+		
+		<skin:view typename="farRole" objectid="#stobj.objectid#" webskin="editGeneralPermissions" />
+		
+	</wiz:step>
+
+
+	<wiz:step name="Webskin">
 	
-		<wiz:step name="Webskin">
+		<wiz:object typename="#stobj.typename#" ObjectID="#stobj.objectID#" lfields="webskins" format="edit" intable="false" r_stPrefix="prefix" />
 		
-			<wiz:object typename="#stobj.typename#" ObjectID="#stobj.objectID#" lfields="webskins" format="edit" intable="false" r_stPrefix="prefix" />
-			
-		</wiz:step>
+	</wiz:step>
 
-
-
-		
 </wiz:wizard>	

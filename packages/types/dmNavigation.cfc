@@ -402,7 +402,7 @@
 		</cfquery>
 		
 		<cfif qTypes.recordcount>
-		
+			<skin:loadCSS id="fc-fontawesome" />
 					
 			<cfsavecontent variable="html">
 				<cfoutput>
@@ -417,7 +417,11 @@
 							<input type="radio" name="#arguments.fieldname#typename" id="#arguments.fieldname#typename" value="#qTypes.typename#" />
 						</td>
 						<td style="padding:5px;vertical-align:top;border:1px solid ##DFDFDF;border-width:1px 0px 1px 0px;">
-							<img src="#application.fapi.getIconURL(application.stCOAPI[qTypes.typename].icon,48,'farcrycore')#" />
+							<cfif len(application.stCOAPI[qTypes.typename].icon)>
+								<i class="icon-#application.stCOAPI[qTypes.typename].icon# icon-large"></i>
+							<cfelse>
+								<i class="icon-file icon-large"></i>
+							</cfif>
 						</td>
 						<td style="vertical-align:top;border:1px solid ##DFDFDF;border-width:1px 1px 1px 0px;">
 							<b>#qTypes.displayname#</b><br>
@@ -431,16 +435,6 @@
 					<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" />
 					</div>
 				</cfoutput>
-				<!---
-				<cfoutput>
-					<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="" />
-					<select name="#arguments.fieldname#typename" id="#arguments.fieldname#typename">
-						<option value="">#application.rb.getResource("coapi.dmNavigation.properties.aObjectIDs@noneForSelect","-- None --")#</option>
-						<cfloop query="qTypes">
-							<option value="#qTypes.typename#" title="#application.fapi.getIconURL(application.stCOAPI[qTypes.typename].icon,16,'farcrycore')#">#qTypes.description#</option>
-						</cfloop>	
-					</select><br/>
-				</cfoutput>--->
 			</cfsavecontent>
 		<cfelse>
 			<cfsavecontent variable="html">

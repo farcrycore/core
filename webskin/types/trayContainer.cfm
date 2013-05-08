@@ -27,7 +27,7 @@
 		<cfset contentTypename = stobj.typename />
 	</cfif>	
 	
-
+	
 	<skin:onReady>
 	<script><!--- dummy --->
 	<cfoutput>	
@@ -168,7 +168,7 @@
 					</cfif>
 	
 					<cfset trayStatus = application.fapi.getResource(key='tray.status.#stobj.status#@label',default=stobj.status) />
-					<cfset trayIcon = "none">
+					<cfset trayIcon = "">
 					<cfset trayStatusLink = "">
 					<cfset trayContentType = application.fapi.getResource(key='coapi.#contentTypename#@label',default=application.fapi.getContentTypeMetadata(typename='#contentTypename#', md='displayName', default='#stobj.typename#')) />
 					
@@ -181,21 +181,21 @@
 					<cfswitch expression="#stobj.status#">
 					<cfcase value="draft">
 						<cfset trayStatus = "<strong>#application.fapi.getResource('workflow.constants.draft@label','Draft')#</strong>">
-						<cfset trayIcon = "alert">
+						<cfset trayIcon = "icon-exclamation-sign">
 						<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
 							<cfset trayStatusLink = "<a class='farcryTrayStatusLink' href='#application.fapi.fixURL(url='#form.refererURL#', addvalues='showdraft=0')#'>#application.fapi.getResource(key='tray.button.showapproved@label',default='Show Approved')#</a>">
 						</cfif>
 					</cfcase>
 					<cfcase value="pending">
 						<cfset trayStatus = "<em>#application.fapi.getResource('workflow.constants.pending@label','Pending')#</em>">
-						<cfset trayIcon = "alert">
+						<cfset trayIcon = "icon-exclamation-sign">
 						<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
 							<cfset trayStatusLink = "<a class='farcryTrayStatusLink' href='#application.fapi.fixURL(url='#form.refererURL#', addvalues='showdraft=0')#'>#application.fapi.getResource(key='tray.button.showapproved@label',default='Show Approved')#</a>">
 						</cfif>
 					</cfcase>
 					<cfcase value="approved">
 						<cfset trayStatus = "#application.fapi.getResource('workflow.constants.approved@label','Approved')#">
-						<cfset trayIcon = "check">
+						<cfset trayIcon = "icon-ok-sign">
 						<cfif structKeyExists(stobj,"versionID") AND structKeyExists(stobj,"status") AND stobj.status EQ "approved">
 							<cfset qDraft = application.factory.oVersioning.checkIsDraft(objectid=stobj.objectid,type=stobj.typename)>
 							<cfif qDraft.recordcount>
@@ -205,7 +205,7 @@
 					</cfcase>
 					</cfswitch>
 					
-					<span class="ui-icon ui-icon-#trayIcon#" style="float: left; margin-top: 7px; margin-right: 3px;"></span><span id="farcryTray-status">#trayStatus#</span> <span id="farcryTray-contentType">#trayContentType#</span>
+					<i class="#trayIcon#" style="float: left; margin-top: 7px; margin-right: 3px;"></i><span id="farcryTray-status">#trayStatus#</span> <span id="farcryTray-contentType">#trayContentType#</span>
 					#trayStatusLink#
 					<span class="farcryTraySeparator">|</span>
 					<admin:resource key="tray.information.updated@label" variables="#aUpdatedValues#">Updated <span id="farcryTray-lastUpdated" title="{1}">{2}</span> by <span id="farcryTray-updatedBy">{3}</span></admin:resource>
@@ -217,28 +217,28 @@
 			<div class="farcryTrayContextMenu">
 				<div class="farcryTrayContextMenuBody">
 					<ul>
-						<li><a id="farcryTray-dock" href="##"><span class="ui-icon ui-icon-carat-2-n-s"></span><admin:resource key='tray.button.switchtrayposition@label'>Switch Tray Position</admin:resource></a></li>	
-						<li><a id="farcryTray-hide" href="##"><span class="ui-icon ui-icon-carat-2-e-w"></span><admin:resource key='tray.button.hidetray@label'>Hide Tray</admin:resource></a></li>	
+						<li><a id="farcryTray-dock" href="##"><i class="icon-resize-vertical"></i><admin:resource key='tray.button.switchtrayposition@label'>Switch Tray Position</admin:resource></a></li>	
+						<li><a id="farcryTray-hide" href="##"><i class="icon-resize-horizontal"></i><admin:resource key='tray.button.hidetray@label'>Hide Tray</admin:resource></a></li>	
 						<li class="farcryTrayContextMenuSeparator"></li>
-						<li><a href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='rebuild=page')#"><span class="ui-icon ui-icon-arrowrefresh-1-s"></span><admin:resource key='tray.button.rebuildpage@label'>Rebuild Page</admin:resource></a></li>
-						<li><a href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='rebuild=all')#" onclick="return confirm('#jsstringformat(application.fapi.getResource(key='tray.button.rebuildsite@confirmtext',default='This will clear the cache for the entire website.\nAre you sure you want to continue?'))#');"><span class="ui-icon ui-icon-refresh"></span><admin:resource key='tray.button.rebuildsite@label'>Rebuild Site</admin:resource></a></li>
+						<li><a href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='rebuild=page')#"><i class="icon-refresh"></i><admin:resource key='tray.button.rebuildpage@label'>Rebuild Page</admin:resource></a></li>
+						<li><a href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='rebuild=all')#" onclick="return confirm('#jsstringformat(application.fapi.getResource(key='tray.button.rebuildsite@confirmtext',default='This will clear the cache for the entire website.\nAre you sure you want to continue?'))#');"><i class="icon-refresh"></i><admin:resource key='tray.button.rebuildsite@label'>Rebuild Site</admin:resource></a></li>
 						<li class="farcryTrayContextMenuSeparator"></li>
-						<li><a href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='updateapp=#application.updateappkey#')#" onclick="return confirm('#jsstringformat(application.fapi.getResource(key='tray.button.updateapplication@confirmtext',default='This will restart the entire website and may take up to a few minutes.\nAre you sure you want to continue?'))#');"><span class="ui-icon ui-icon-trash"></span><admin:resource key='tray.button.updateapplication@label'>Update Application</admin:resource></a></li>
+						<li><a href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='updateapp=#application.updateappkey#')#" onclick="return confirm('#jsstringformat(application.fapi.getResource(key='tray.button.updateapplication@confirmtext',default='This will restart the entire website and may take up to a few minutes.\nAre you sure you want to continue?'))#');"><i class="icon-trash"></i><admin:resource key='tray.button.updateapplication@label'>Update Application</admin:resource></a></li>
 						<li class="farcryTrayContextMenuSeparator"></li>
 						<cfif findNoCase("bDebug=1", "#form.refererURL#") OR findNoCase("bDebug/1", "#form.refererURL#")>
-							<li><a class="farcryTrayMenuSelected" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='bDebug=0')#"><span class="ui-icon ui-icon-wrench"></span><admin:resource key='tray.button.toggledebugmode@label'>Debug Mode</admin:resource></a></li>
+							<li><a class="farcryTrayMenuSelected" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='bDebug=0')#"><i class="icon-wrench"></i><admin:resource key='tray.button.toggledebugmode@label'>Debug Mode</admin:resource></a></li>
 						<cfelse>
-							<li><a href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='bDebug=1')#"><span class="ui-icon ui-icon-wrench"></span><admin:resource key='tray.button.toggledebugmode@label'>Debug Mode</admin:resource></a></li>
+							<li><a href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='bDebug=1')#"><i class="icon-wrench"></i><admin:resource key='tray.button.toggledebugmode@label'>Debug Mode</admin:resource></a></li>
 						</cfif>
 						<cfif findNoCase("profile=1", "#form.refererURL#") OR findNoCase("profile/1", "#form.refererURL#")>
-							<li><a class="farcryTrayMenuSelected" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='profile=0')#"><span class="ui-icon ui-icon-battery-3"></span><admin:resource key='tray.button.toggleprofiler@label'>Profiler</admin:resource></a></li>
+							<li><a class="farcryTrayMenuSelected" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='profile=0')#"><i class="icon-tasks"></i><admin:resource key='tray.button.toggleprofiler@label'>Profiler</admin:resource></a></li>
 						<cfelse>
-							<li><a href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='profile=1')#"><span class="ui-icon ui-icon-battery-3"></span><admin:resource key='tray.button.toggleprofiler@label'>Profiler</admin:resource></a></li>
+							<li><a href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='profile=1')#"><i class="icon-tasks"></i><admin:resource key='tray.button.toggleprofiler@label'>Profiler</admin:resource></a></li>
 						</cfif>
 						<cfif findNoCase("tracewebskins=1", "#form.refererURL#") OR findNoCase("tracewebskins/1", "#form.refererURL#")>
-							<li><a class="farcryTrayMenuSelected" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='tracewebskins=0')#"><span class="ui-icon ui-icon-note"></span><admin:resource key='tray.button.toggletracer@label'>Webskin Tracer</admin:resource></a></li>
+							<li><a class="farcryTrayMenuSelected" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='tracewebskins=0')#"><i class="icon-sitemap"></i><admin:resource key='tray.button.toggletracer@label'>Webskin Tracer</admin:resource></a></li>
 						<cfelse>
-							<li><a href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='tracewebskins=1')#"><span class="ui-icon ui-icon-note"></span><admin:resource key='tray.button.toggletracer@label'>Webskin Tracer</admin:resource></a></li>
+							<li><a href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='tracewebskins=1')#"><i class="icon-sitemap"></i><admin:resource key='tray.button.toggletracer@label'>Webskin Tracer</admin:resource></a></li>
 						</cfif>
 					</ul>
 				</div>			
@@ -247,24 +247,24 @@
 			<div class="farcryTrayOptions"></div>
 			
 			<div class="farcryTrayButtons">
-				<a id="farcryTray-edit" href="##"><span class="ui-icon ui-icon-pencil"></span><admin:resource key='tray.button.edit@label'>Edit</admin:resource></a>
+				<a id="farcryTray-edit" href="##"><i class="icon-pencil"></i><admin:resource key='tray.button.edit@label'>Edit</admin:resource></a>
 				<cfif request.mode.design and request.mode.showcontainers gt 0>	
-					<a id="farcryTray-rules" class="farcryTrayButtonSelected" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='designmode=0')#" title="<admin:resource key='tray.button.hiderules@hint'>Showing rules (click to turn off)</admin:resource>"><span class="ui-icon ui-icon-copy"></span><admin:resource key='tray.button.hiderules@label'>Rules</admin:resource></a>
+					<a id="farcryTray-rules" class="farcryTrayButtonSelected" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='designmode=0')#" title="<admin:resource key='tray.button.hiderules@hint'>Showing rules (click to turn off)</admin:resource>"><i class="icon-reorder"></i><admin:resource key='tray.button.hiderules@label'>Rules</admin:resource></a>
 				<cfelse>
-					<a id="farcryTray-rules" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='designmode=1')#" title="<admin:resource key='tray.button.showrules@hint'>Hiding rules (click to turn on)</admin:resource>"><span class="ui-icon ui-icon-copy"></span><admin:resource key='tray.button.showrules@label'>Rules</admin:resource></a>
+					<a id="farcryTray-rules" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='designmode=1')#" title="<admin:resource key='tray.button.showrules@hint'>Hiding rules (click to turn on)</admin:resource>"><i class="icon-reorder"></i><admin:resource key='tray.button.showrules@label'>Rules</admin:resource></a>
 				</cfif>
 				<cfif request.mode.showdraft>		
-					<a id="farcryTray-caching" class="farcryTrayButtonSelected" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='showdraft=0')#" title="<admin:resource key='tray.button.hidedrafts@hint'>Showing drafts (click to turn off)</admin:resource>"><span class="ui-icon ui-icon-document"></span><admin:resource key='tray.button.hidedrafts@label'>Drafts</admin:resource></a>
+					<a id="farcryTray-caching" class="farcryTrayButtonSelected" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='showdraft=0')#" title="<admin:resource key='tray.button.hidedrafts@hint'>Showing drafts (click to turn off)</admin:resource>"><i class="icon-file-alt"></i><admin:resource key='tray.button.hidedrafts@label'>Drafts</admin:resource></a>
 				<cfelse>
-					<a id="farcryTray-caching" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='showdraft=1')#" title="<admin:resource key='tray.button.showdrafts@hint'>Hiding Drafts (click to turn on)</admin:resource>"><span class="ui-icon ui-icon-document"></span><admin:resource key='tray.button.showdrafts@label'>Drafts</admin:resource></a>
+					<a id="farcryTray-caching" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='showdraft=1')#" title="<admin:resource key='tray.button.showdrafts@hint'>Hiding Drafts (click to turn on)</admin:resource>"><i class="icon-file-alt"></i><admin:resource key='tray.button.showdrafts@label'>Drafts</admin:resource></a>
 				</cfif>
 				<cfif request.mode.showdraft OR request.mode.design OR findNoCase("bDebug=1", "#form.refererURL#") OR findNoCase("bDebug/1", "#form.refererURL#") OR (findNoCase("tracewebskins=1", "#form.refererURL#") OR findNoCase("tracewebskins/1", "#form.refererURL#"))>
-					<a id="farcryTray-caching" class="farcryTrayButtonDisabled" title="<admin:resource key='tray.button.cacheadmin@hint'>Caching is disabled when showing drafts, rules, debugging or webskin tracer</admin:resource>"><span class="ui-icon ui-icon-script"></span><admin:resource key='tray.button.cacheadmin@label'>Caching</admin:resource></a>
+					<a id="farcryTray-caching" class="farcryTrayButtonDisabled" title="<admin:resource key='tray.button.cacheadmin@hint'>Caching is disabled when showing drafts, rules, debugging or webskin tracer</admin:resource>"><i class="icon-hdd"></i><admin:resource key='tray.button.cacheadmin@label'>Caching</admin:resource></a>
 				<cfelse>
 					<cfif request.mode.flushcache>				
-						<a id="farcryTray-caching" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='flushcache=0')#" title="<admin:resource key='tray.button.cacehenable@label'>Showing latest pages (click to show cached)</admin:resource>"><span class="ui-icon ui-icon-script"></span><admin:resource key='tray.button.cacehenable@label'>Caching</admin:resource></a>
+						<a id="farcryTray-caching" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='flushcache=0')#" title="<admin:resource key='tray.button.cacehenable@label'>Showing latest pages (click to show cached)</admin:resource>"><i class="icon-hdd"></i><admin:resource key='tray.button.cacehenable@label'>Caching</admin:resource></a>
 					<cfelse>
-						<a id="farcryTray-caching" class="farcryTrayButtonSelected" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='flushcache=1')#" title="<admin:resource key='tray.button.cacehdisable@label'>Showing cached pages (click to show latest)</admin:resource>"><span class="ui-icon ui-icon-script"></span><admin:resource key='tray.button.cacehdisable@label'>Caching</admin:resource></a>
+						<a id="farcryTray-caching" class="farcryTrayButtonSelected" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='flushcache=1')#" title="<admin:resource key='tray.button.cacehdisable@label'>Showing cached pages (click to show latest)</admin:resource>"><i class="icon-hdd"></i><admin:resource key='tray.button.cacehdisable@label'>Caching</admin:resource></a>
 					</cfif>
 				</cfif>
 			</div>
@@ -273,9 +273,9 @@
 		<div class="farcryTrayBody">
 			<div class="farcryTrayBodyMenu">
 				<ul>
-					<li><a href="#application.fapi.fixURL(url='#application.url.webtop#')#"><span class="ui-icon ui-icon-calculator"></span><admin:resource key='tray.button.webtop@label'>Webtop</admin:resource></a></li>
-					<li><a href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='logout=1')#"><span class="ui-icon ui-icon-power"></span><admin:resource key='tray.button.logout@label'>Logout</admin:resource></a></li>
-					<li class="farcryTrayPageSpeed"><a title="<admin:resource key='tray.information.renderingspeed@hint'>Page rendering speed</admin:resource>"><span class="ui-icon ui-icon-clock" style="background-position:-81px -112px;"></span> <admin:resource key='tray.information.renderingspeed@label' var1="#url.totalTickCount#">{1} ms</admin:resource></a></li>
+					<li><a href="#application.fapi.fixURL(url='#application.url.webtop#')#"><i class="icon-dashboard"></i><admin:resource key='tray.button.webtop@label'>Webtop</admin:resource></a></li>
+					<li><a href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='logout=1')#"><i class="icon-off"></i><admin:resource key='tray.button.logout@label'>Logout</admin:resource></a></li>
+					<li class="farcryTrayPageSpeed"><a title="<admin:resource key='tray.information.renderingspeed@hint'>Page rendering speed</admin:resource>"><i class="icon-time"></i> <admin:resource key='tray.information.renderingspeed@label' var1="#url.totalTickCount#">{1} ms</admin:resource></a></li>
 				</ul>
 			</div>
 
