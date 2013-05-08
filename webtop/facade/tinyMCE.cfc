@@ -115,7 +115,7 @@
 							<tr> 
 								<td class="column1"><label id="#templateTypename#objectidlabel" for="#templateTypename#objectid">Item</label></td> 
 								<td>
-									<select id="#templateTypename#objectid" name="#templateTypename#objectid" onchange="$j('##insert#templateTypename#').css('display','');">
+									<select id="#templateTypename#objectid" name="#templateTypename#objectid">
 										<option value="">-- Select #templateDisplayname# --</option>
 										<cfloop query="qObjects">
 											<option value="#qObjects.objectid#">#qObjects.label#</option>
@@ -126,7 +126,7 @@
 							<tr> 
 								<td class="column1"><label id="#templateTypename#webskinlabel" for="#templateTypename#webskin">Template</label></td> 
 								<td>
-									<select id="#templateTypename#webskin" name="#templateTypename#webskin" onchange="$j('##insert#templateTypename#').css('display','');">
+									<select id="#templateTypename#webskin" name="#templateTypename#webskin" onchange="$j('##insert#templateTypename#').css('display','');setPreview($j('###templateTypename#objectid').attr('value'), '#templateTypename#', $j('###templateTypename#webskin').attr('value'), '#templateTypename#');"> 
 										<option value="">-- Select a display type --</option>
 										<cfloop query="qWebskins">
 											<option value="#ReplaceNoCase(qWebskins.name, ".cfm", "", "all")#">#qWebskins.displayname#</option>
