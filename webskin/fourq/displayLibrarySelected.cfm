@@ -80,7 +80,13 @@ START WEBSKIN
 			</cfif>
 		<cfelse>
 			<cfif isArray(stobj[url.property])>
-				<cfset lSelected = arrayToList(stobj[url.property]) />
+				<cfloop array="#stobj[url.property]#"  index="i">
+					<cfif isStruct(i) and StructKeyExists(i,"data")>
+						<cfset lSelected = listappend(lSelected,i.data)>
+					<cfelse>
+						<cfset lSelected = listappend(lSelected,i)>
+					</cfif>
+				</cfloop>
 			<cfelse>
 				<cfset lSelected = stobj[url.property] />
 			</cfif>			
