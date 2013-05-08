@@ -135,9 +135,7 @@ $out:$
 				application.factory.oTree.moveBranch(dsn=application.dsn,objectID=URL.srcObjectID,parentID=URL.destObjectID);
 				
 				//updatetree(objectid=srcParentObjectID);
-			</cfscript>	
-			
-			<cfset application.fapi.setData(typename)>
+			</cfscript>
 		</cflock>
 			 <cfcatch>
 			 	<cfdump var="#cfcatch#">
