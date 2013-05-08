@@ -131,7 +131,7 @@
 	CHECK TO SEE IF OBJECT IS IN DRAFT
 	- If the current user is not permitted to see draft objects, then make them login 
 	--->
-	<cfif structkeyexists(stObj,"status") and stObj.status EQ "draft" and NOT ListContainsnocase(request.mode.lValidStatus, stObj.status)>
+	<cfif structkeyexists(stObj,"status") and NOT ListContainsnocase(request.mode.lValidStatus, stObj.status)>
 		<cfif request.mode.bAdmin>
 			<!--- SET DRAFT MODE ONLY FOR THIS REQUEST. --->
 			<cfset request.mode.showdraft = 1 />
