@@ -84,7 +84,7 @@ $in: SessionID -- $
 	
 	
 	<!--- Need Create a Form. Cant use <ft:form> because of incorrect nesting --->
-	<cfif NOT isDefined("Request.farcryForm.FormName")>
+	<cfif NOT isDefined("Request.farcryForm.name")>
 
 		<cfset Variables.CorrectForm = 1>
 		
