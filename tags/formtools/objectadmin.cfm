@@ -1203,7 +1203,7 @@ user --->
 	</cfif>
 	
 	<cfsavecontent variable="ActionDropdown">
-	<ft:buttonGroup>	
+		
 
 		<cfoutput>
 		
@@ -1271,7 +1271,7 @@ user --->
 		
 			
 			<cfif attributes.bEditCol OR attributes.bPreviewCol>
-				
+				<ft:buttonGroup>
 				
 					<ft:button value="toggle" text="" icon=" ,caret" dropdownToggle="true" type="button" />
 					
@@ -1337,13 +1337,13 @@ user --->
 							
 					</cfoutput>	
 					</ft:dropdownMenu>
-				
+				</ft:buttonGroup>
 				
 			</cfif>		
 		
 		
 		</cfoutput>
-		</ft:buttonGroup>
+		
 	</cfsavecontent>
 	
 	<cfset stObjectAdminData.action = ActionDropdown />
