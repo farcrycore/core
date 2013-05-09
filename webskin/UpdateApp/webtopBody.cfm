@@ -8,7 +8,7 @@
 	<ft:processformobjects typename="updateapp" />
 </ft:processform>
 
-<cfoutput><h1>Update Application</h1></cfoutput>
+<cfoutput><h1>Reload Application</h1></cfoutput>
 
 <ft:form>	
 	<cfset qMetadata = application.forms['UpdateApp'].qMetadata />
