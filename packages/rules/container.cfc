@@ -550,7 +550,9 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 				<cfset arrayappend(request.aInvocations, ruleHTML) />
 							
 			  	<cfcatch type="any">
-
+					
+					<cfset oError.logData(oError.normalizeError(cfcatch)) />
+					
 					<!--- show error if debugging --->
 					<cfif isdefined("url.debug") and url.debug EQ 1>
 						<cfset request.cfdumpinited = false>
