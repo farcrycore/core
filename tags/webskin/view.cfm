@@ -134,7 +134,7 @@
 			<cfinvokeargument name="bIgnoreSecurity" value="#attributes.bIgnoreSecurity#" />
 			<cfinvokeargument name="bAllowTrace" value="#attributes.bAllowTrace#" />
 			<!--- Developer can pass in alternate HTML to render if the webskin does not exist --->
-			<cfif len(attributes.alternateHTML)>
+			<cfif structkeyexists(attributes,"alternateHTML")>
 				<cfinvokeargument name="alternateHTML" value="#attributes.alternateHTML#" />
 			</cfif>
 		</cfinvoke>
