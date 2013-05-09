@@ -225,10 +225,10 @@
 						<li class="farcryTrayContextMenuSeparator"></li>
 						<li><a href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='updateapp=#application.updateappkey#')#" onclick="return confirm('#jsstringformat(application.fapi.getResource(key='tray.button.updateapplication@confirmtext',default='This will restart the entire website and may take up to a few minutes.\nAre you sure you want to continue?'))#');"><i class="icon-trash"></i><admin:resource key='tray.button.updateapplication@label'>Update Application</admin:resource></a></li>
 						<li class="farcryTrayContextMenuSeparator"></li>
-						<cfif findNoCase("bDebug=1", "#form.refererURL#") OR findNoCase("bDebug/1", "#form.refererURL#")>
-							<li><a class="farcryTrayMenuSelected" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='bDebug=0')#"><i class="icon-wrench"></i><admin:resource key='tray.button.toggledebugmode@label'>Debug Mode</admin:resource></a></li>
+						<cfif findNoCase("debug=1", "#form.refererURL#") OR findNoCase("debug/1", "#form.refererURL#")>
+							<li><a class="farcryTrayMenuSelected" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='debug=0')#"><i class="icon-wrench"></i><admin:resource key='tray.button.toggledebugmode@label'>Debug Mode</admin:resource></a></li>
 						<cfelse>
-							<li><a href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='bDebug=1')#"><i class="icon-wrench"></i><admin:resource key='tray.button.toggledebugmode@label'>Debug Mode</admin:resource></a></li>
+							<li><a href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='debug=1')#"><i class="icon-wrench"></i><admin:resource key='tray.button.toggledebugmode@label'>Debug Mode</admin:resource></a></li>
 						</cfif>
 						<cfif findNoCase("profile=1", "#form.refererURL#") OR findNoCase("profile/1", "#form.refererURL#")>
 							<li><a class="farcryTrayMenuSelected" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='profile=0')#"><i class="icon-tasks"></i><admin:resource key='tray.button.toggleprofiler@label'>Profiler</admin:resource></a></li>
@@ -258,7 +258,7 @@
 				<cfelse>
 					<a id="farcryTray-caching" href="#application.fapi.fixURL(url='#form.refererURL#', addvalues='showdraft=1')#" title="<admin:resource key='tray.button.showdrafts@hint'>Hiding Drafts (click to turn on)</admin:resource>"><i class="icon-file-alt"></i><admin:resource key='tray.button.showdrafts@label'>Drafts</admin:resource></a>
 				</cfif>
-				<cfif request.mode.showdraft OR request.mode.design OR findNoCase("bDebug=1", "#form.refererURL#") OR findNoCase("bDebug/1", "#form.refererURL#") OR (findNoCase("tracewebskins=1", "#form.refererURL#") OR findNoCase("tracewebskins/1", "#form.refererURL#"))>
+				<cfif request.mode.showdraft OR request.mode.design OR findNoCase("debug=1", "#form.refererURL#") OR findNoCase("debug/1", "#form.refererURL#") OR (findNoCase("tracewebskins=1", "#form.refererURL#") OR findNoCase("tracewebskins/1", "#form.refererURL#"))>
 					<a id="farcryTray-caching" class="farcryTrayButtonDisabled" title="<admin:resource key='tray.button.cacheadmin@hint'>Caching is disabled when showing drafts, rules, debugging or webskin tracer</admin:resource>"><i class="icon-hdd"></i><admin:resource key='tray.button.cacheadmin@label'>Caching</admin:resource></a>
 				<cfelse>
 					<cfif request.mode.flushcache>				

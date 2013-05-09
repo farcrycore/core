@@ -713,7 +713,7 @@
 		
 		<!--- If there is an objectid but no type ... return immediately --->
 		<cfif structkeyexists(stResult,"objectid") and not len(stResult.type)>
-			<cfif structkeyexists(stResult,"bDebug") and stResult.bDebug>
+			<cfif (structkeyexists(stResult,"debug") and stResult.debug)>
 				<cfthrow message="Objectid [#stResult.objectid#] does not refer to a valid record" />
 			<cfelse>
 				<cfreturn stResult />
