@@ -29,7 +29,7 @@
 	<cfparam name="attributes.ajaxTimeout" default="30" /><!--- parameters to pass for ajax call --->
 	<cfparam name="attributes.bIgnoreSecurity" default="false" /><!--- Should the getView() ignore webskin security --->
 	<cfparam name="attributes.bAllowTrace" default="true" /><!--- Sometimes having webskin trace information can break the integrity of a page. This allows you to turn it off. --->
-	
+	<!--- <cfparam name="attributes.alternateHTML" default="" /> ---><!--- If the webskin template does not exist and alternateHTML is provided, it is outputed instead --->
 	
 	<cfset lAttributes = "stobject,typename,objectid,key,template,webskin,stprops,stparam,r_html,r_objectid,hashKey,alternateHTML,onExitProcess,dsn,bAjax,ajaxID,ajaxShowloadIndicator,ajaxindicatorText,ajaxURLParameters,bIgnoreSecurity,bAllowTrace" />
 	<cfset attrib = "" />
@@ -134,7 +134,7 @@
 			<cfinvokeargument name="bIgnoreSecurity" value="#attributes.bIgnoreSecurity#" />
 			<cfinvokeargument name="bAllowTrace" value="#attributes.bAllowTrace#" />
 			<!--- Developer can pass in alternate HTML to render if the webskin does not exist --->
-			<cfif structKeyExists(attributes, "alternateHTML")>
+			<cfif len(attributes.alternateHTML)>
 				<cfinvokeargument name="alternateHTML" value="#attributes.alternateHTML#" />
 			</cfif>
 		</cfinvoke>
