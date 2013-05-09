@@ -30,62 +30,10 @@ type properties
 <!--- system property --->
 <cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft">
 
-<!--- deprecated properties: these properties should not be referenced and are here for backward compatability only --->
-<cfproperty name="filepath" type="string" hint="The location of the file on the webserver" required="no" default="">  
-<cfproperty name="fileSize" type="numeric" hint="The size of the file on the webserver (in bytes)" required="no" default="0">  
-<cfproperty name="fileType" type="string" hint="MIME content type of the saved file" required="no" default="">
-<cfproperty name="fileSubType" type="string" hint="MIME content subtype of the saved file" required="no" default="">
-<cfproperty name="fileExt" type="string" hint="The extension of the file on the webserver (without the period)" required="no" default="">
-<cfproperty name="bLibrary" type="boolean" hint="Flag to make file shared." required="no" default="1" ftLabel="Add file to library?" ftType="boolean" />
-
 
 <!------------------------------------------------------------------------
 object methods
 ------------------------------------------------------------------------->
-<cffunction name="BeforeSave" access="public" output="true" returntype="struct">
-	<cfargument name="stProperties" required="true" type="struct">
-	<cfargument name="stFields" required="true" type="struct">
-	<cfargument name="stFormPost" required="false" type="struct">
-	
-	<!--- 
-		This will set the default Label value. It first looks form the bLabel associated metadata.
-		Otherwise it will look for title, then name and then anything with the substring Name.
-	 --->
-	<cfset var NewLabel = "" />
-	<cfset var filepath = "" />
-	<cfset var fileContents = "" />
-	
-	<cfparam name="arguments.stProperties.label" default="">
-	
-	<cfif structKeyExists(arguments.stProperties,"Title")>
-		<cfset arguments.stProperties.label = "#arguments.stProperties.title#">
-	</cfif>
-	
-	<cfset arguments.stProperties.datetimelastupdated = now() />
-	
-	<cfif structKeyExists(arguments.stProperties,"filename") AND len(trim(arguments.stProperties.filename))>
-	
-		<cfif structKeyExists(arguments.stFields.filename.Metadata,"ftSecure") AND arguments.stFields.filename.Metadata.ftSecure>
-			<cfset filepath = application.path.secureFilePath />
-		<cfelse>
-			<cfset filepath = application.path.defaultFilePath />
-		</cfif>
-		
-		<cftry>
-			<cfset fullFilePath = "#filepath##arguments.stProperties.filename#" />
-			<cfset fileRead = createObject("java","java.io.FileInputStream").init(fullFilePath) />
-					
-			<cfset arguments.stProperties.fileSize = fileRead.available() />
-			<cfset arguments.stProperties.fileExt = "#listLast(arguments.stProperties.filename,".")#" />
-					
-			<cfset fileRead.close() />
-						
-			<cfcatch type="any"><!--- File may not exist i.e. development environments ---></cfcatch>
-		</cftry>
-	</cfif>
-	
-	<cfreturn stProperties>
-</cffunction>
 
 <cffunction name="fileInfo" output="false" returntype="query" access="private">
 	<cfargument name="fileName" type="string" required="true" />
