@@ -202,39 +202,44 @@
 	
 	<!--- determine display method for object --->
 	<cfset request.stObj = stObj>
+	<cfset url.type = stObj.typename />
 
 
 	<cfif len(url.view)>
-		<cftry>
+	
 		<!--- Update the view with the display method --->
 		<cfset url.view = application.fc.lib.device.getDeviceWebskin(stObj.typename, url.view) />
 		
-		<!--- Use the requested view --->
-		<skin:view objectid="#stobj.objectid#" typename="#stObj.typename#" webskin="#url.view#" alternateHTML="" />
-
-		<cfcatch type="any">
-			<cfdump var="#cfcatch#">
-			<cfabort>
-		</cfcatch>
-		</cftry>
 	<cfelseif structKeyExists(stObj, "displayMethod") AND len(stObj.displayMethod)>
 		
 		<!--- Update the view with the display method --->
 		<cfset url.view = application.fc.lib.device.getDeviceWebskin(stObj.typename, stObj.displayMethod) />
 		
-		<!--- Use the display method stored with the object --->
-		<skin:view objectid="#stobj.objectid#" typename="#stobj.typename#" webskin="#url.view#" alternateHTML="" />
-
-	<cfelse>
-
+	<cfelseif application.fapi.hasWebskin(typename="#stobj.typename#", webskin="#stWebskins.page#")>
+		
 		<!--- All else fails, try the standard page webskin --->
-		<cfif application.fapi.hasWebskin(typename="#stobj.typename#", webskin="#stWebskins.page#")>
-			<skin:view objectid="#stobj.objectid#" typename="#stobj.typename#" webskin="#stWebskins.page#" />
-		<cfelse>
-			<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("I was looking at the type: #stobj.typename# and couldn't find a #stWebskins.page#. You'll want to create the default view for this object. To do that, create a #stWebskins.page#.cfm webskin in the webskin folder in a directory named #stobj.typename#.")) />
-		</cfif>
+		<cfset url.view = stWebskins.page />
+		
+	<cfelse>
+		
+		<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("I was looking at the type: #stobj.typename# and couldn't find a #stWebskins.page#. You'll want to create the default view for this object. To do that, create a #stWebskins.page#.cfm webskin in the webskin folder in a directory named #stobj.typename#.")) />
+		
 	</cfif>
-
+	
+	<!--- Use the requested view --->
+	<skin:view objectid="#stobj.objectid#" typename="#stObj.typename#" webskin="#url.view#" alternateHTML="" r_html="result" />
+	
+	<cfif application.stCOAPI[stObj.typename].stWebskins[url.view].viewstack eq "data" and structkeyexists(application.stCOAPI[stObj.typename].stWebskins[url.view],"mimeType")>
+		<cfinvoke component="#application.fapi#" method="stream">
+			<cfinvokeargument name="content" value="#result#" />
+			<cfinvokeargument name="type" value="#application.stCOAPI[stObj.typename].stWebskins[url.view].mimeType#" />
+			<cfif structkeyexists(application.stCOAPI[stObj.typename].stWebskins[url.view],"filename")>
+				<cfinvokeargument name="filename" value="#application.stCOAPI[stObj.typename].stWebskins[url.view].filename#" />
+			</cfif>
+		</cfinvoke>
+	<cfelse>
+		<cfoutput>#result#</cfoutput>
+	</cfif>
 
 <cfelse>
 
@@ -282,7 +287,19 @@
 		<cfif application.fapi.hasWebskin(typename="#url.type#" , webskin="#url.view#")>
 
 			<!--- Call the view on the types coapi object --->
-			<skin:view typename="#url.type#" webskin="#url.view#" />
+			<skin:view typename="#url.type#" webskin="#url.view#" r_html="result" />
+			
+			<cfif application.stCOAPI[url.type].stWebskins[url.view].viewstack eq "data" and structkeyexists(application.stCOAPI[url.type].stWebskins[url.view],"mimeType")>
+				<cfinvoke component="#application.fapi#" method="stream">
+					<cfinvokeargument name="content" value="#result#" />
+					<cfinvokeargument name="type" value="#application.stCOAPI[url.type].stWebskins[url.view].mimeType#" />
+					<cfif structkeyexists(application.stCOAPI[url.type].stWebskins[url.view],"filename")>
+						<cfinvokeargument name="filename" value="#application.stCOAPI[url.type].stWebskins[url.view].filename#" />
+					</cfif>
+				</cfinvoke>
+			<cfelse>
+				<cfoutput>#result#</cfoutput>
+			</cfif>
 			
 		<cfelse>
 			

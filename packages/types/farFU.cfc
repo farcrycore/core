@@ -738,6 +738,10 @@
 			
 			<cfset stResult["__allowredirect"] = stResult["__allowredirect"] and application.stCOAPI[stResult.type].stWebskins[stResult.view].allowredirect />
 			
+			<cfif application.stCOAPI[stResult.type].stWebskins[stResult.view].viewstack eq "data">
+				<cfset stResult["__allowredirect"] = false />
+			</cfif>
+			
 			<!--- Check the page viewbinding --->
 			<cfif structkeyexists(stResult,"objectid") and not listcontainsnocase("any,object",application.stCOAPI[stResult.type].stWebskins[stResult.view].viewbinding)>
 				<cfset stResult["404"] = "You are trying to bind an object [#stResult.objectid#] to a type webskin [#stResult.view#]" />
@@ -1009,7 +1013,7 @@
 									</cfif>
 								
 									<!--- We can call any webskin in the viewstack if in ajax mode --->
-									<cfif listcontainsnocase("page,any,ajax",stWS.viewstack) or findNoCase('ajaxmode',arguments.fuParameters)>
+									<cfif listcontainsnocase("page,any,data",stWS.viewstack) or findNoCase('ajaxmode',arguments.fuParameters)>
 										<cfset stResult.view = stWS.methodname />
 										<cfset fuVars = listdeleteat(fuVars,listfind(fuVars,"@pageview")) />
 	
@@ -1421,7 +1425,7 @@
 				<cfset viewFU = arguments.view />
 			</cfif>
 			<!--- If we have defined the view, and not the bodyView and the view is not set to page, then in order for the URL Parsing to work, we MUST explicitly tell the url that the webskin is for the view --->
-			<cfif not structKeyExists(stView, "viewStack") OR not listFind("page,any", stView.viewStack)>
+			<cfif not structKeyExists(stView, "viewStack") OR not listFind("page,any,data", stView.viewStack)>
 				<cfif not len(arguments.bodyView)>
 					<cfset bMustUseRegularURLParams = true />
 				</cfif>

@@ -282,7 +282,7 @@ a:hover {
 
 
 /* customise bootstrap dropdown menu */
-.dropdown .dropdown-menu {
+.dropdown .dropdown-menu, #favourites .dropdown-menu {
 /*
 	border: 3px solid #3e84b5; // @fc-secondary-tab-active
 */
@@ -290,19 +290,24 @@ a:hover {
 	margin-top: -1px;
 	padding-top: 5px;
 }
-.dropdown .dropdown-menu li > a {
+.dropdown .dropdown-menu li > a, #favourites .dropdown-menu li > a {
 	color: #333;
 	padding: 3px 14px;
 	filter: none;
 }
 .dropdown .dropdown-menu li > a:hover,
-.dropdown .dropdown-menu li > a:focus {
+.dropdown .dropdown-menu li > a:focus,
+#favourites .dropdown-menu li > a:hover,
+#favourites .dropdown-menu li > a:focus {
 	background: #dae8f2; /* @fc-dropdown-nav-active */
 	text-decoration: none;
 }
 .dropdown .dropdown-menu .active > a,
 .dropdown .dropdown-menu .active > a:hover,
-.dropdown .dropdown-menu .active > a:focus {
+.dropdown .dropdown-menu .active > a:focus,
+#favourites .dropdown-menu .active > a,
+#favourites .dropdown-menu .active > a:hover,
+#favourites .dropdown-menu .active > a:focus {
 	background: #dae8f2; /* @fc-dropdown-nav-active */
 	color: #333;
 	padding: 3px 14px;
@@ -384,6 +389,30 @@ a:hover {
 .farcry-header-profile span {
 
 }
+
+#favourites a {
+	display:inline-block;
+}
+	 #favourites .favourited {
+		padding-right:2px;
+		display:inline-block;
+	}
+	#favourites .favourited.active {
+		color:#ffff00;
+	}
+	#favourites .favourites-toggle {
+		padding-left:2px;
+		display:inline-block;
+	}
+	#favourites .dropdown-menu .none { 
+		font-weight:normal;
+		color: #333333;
+	    filter: none;
+	    padding: 3px 14px; 
+	}
+	#favourites .dropdown-menu a { 
+		display:block;
+	}
 
 
 .farcry-main {

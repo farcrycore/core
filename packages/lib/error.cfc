@@ -258,6 +258,63 @@
 				<cfreturn serializeJSON(arguments.exception) />
 			</cfcase>
 			
+			<cfcase value="xml">
+				<cfset output.append('<?xml version="1.0" encoding="UTF-8" ?><error>') />
+				<cfset output.append("<machineName><![CDATA[#xmlformat(arguments.exception.machineName)#]]></machineName>") />
+				<cfset output.append("<instancename><![CDATA[#xmlformat(arguments.exception.instancename)#]]></instancename>") />
+				<cfset output.append("<message><![CDATA[#xmlformat(arguments.exception.message)#]]></message>") />
+				<cfset output.append("<browser><![CDATA[#xmlformat(arguments.exception.browser)#]]></browser>") />
+				<cfset output.append("<datetime><![CDATA[#xmlformat(arguments.exception.datetime)#]]></datetime>") />
+				<cfset output.append("<host><![CDATA[#xmlformat(arguments.exception.host)#]]></host>") />
+				<cfset output.append("<httpreferer><![CDATA[#xmlformat(arguments.exception.httpreferer)#]]></httpreferer>") />
+				<cfset output.append("<querystring><![CDATA[#xmlformat(arguments.exception.querystring)#]]></querystring>") />
+				<cfset output.append("<remoteaddress>#xmlformat(arguments.exception.remoteaddress)#</remoteaddress>") />
+				<cfset output.append("<bot>#arguments.exception.bot#</bot>") />
+				<cfif structKeyExists(arguments.exception, "type") and len(arguments.exception.type)>
+					<cfset output.append("<type><![CDATA[#xmlformat(arguments.exception.type)#]]></type>") />
+				</cfif>
+				<cfif structKeyExists(arguments.exception, "detail") and len(arguments.exception.detail)>
+					<cfset output.append("<detail><![CDATA[#xmlformat(arguments.exception.detail)#]]></detail>") />
+				</cfif>
+				<cfif structKeyExists(arguments.exception, "extended_info") and len(arguments.exception.extended_info)>
+					<cfset output.append("<extended_info><![CDATA[#xmlformat(arguments.exception.extended_info)#]]></extended_info>") />
+				</cfif>
+				<cfif structKeyExists(arguments.exception, "queryError") and len(arguments.exception.queryError)>
+					<cfset output.append("<queryError><![CDATA[#xmlformat(arguments.exception.queryError)#]]></queryError>") />
+				</cfif>
+				<cfif structKeyExists(arguments.exception, "sql") and len(arguments.exception.sql)>
+					<cfset output.append("<sql><![CDATA[#xmlformat(arguments.exception.sql)#]]></sql>") />
+				</cfif>
+				<cfif structKeyExists(arguments.exception, "where") and len(arguments.exception.where)>
+					<cfset output.append("<where><![CDATA[#xmlformat(arguments.exception.where)#]]></where>") />
+				</cfif>
+				
+				<cfif structKeyExists(arguments.exception, "stack") and arraylen(arguments.exception.stack)>
+					<cfset output.append("<stack>") />
+					<cfloop from="1" to="#arrayLen(arguments.exception.stack)#" index="i">
+						<cfset output.append("<item>") />
+						<cfset output.append("<template><![CDATA[#xmlformat(arguments.exception.stack[i].template)#]]></template>") />
+						<cfset output.append("<line>#arguments.exception.stack[i].line#</line>") />
+						<cfset output.append("<location><![CDATA[#xmlformat(arguments.exception.stack[i].location)#]]></location>") />
+						<cfset output.append("</item>") />
+					</cfloop>
+					<cfset output.append("</stack>") />
+				</cfif>
+				
+				<cfif structKeyExists(arguments.exception, "url")>
+					<cfset output.append("<url>") />
+					<cfloop list="#listsort(structkeylist(arguments.exception.url),'textnocase')#" index="i">
+						<cfset output.append("<variable>") />
+						<cfset output.append("<name><![CDATA[#xmlformat(i)#]]></name>") />
+						<cfset output.append("<value><![CDATA[#xmlformat(arguments.exception.url[i])#]]></value>") />
+						<cfset output.append("</variable>") />
+					</cfloop>
+					<cfset output.append("</url>") />
+				</cfif>
+				
+				<cfset output.append("</error>") />
+			</cfcase>
+			
 			<cfcase value="html">
 				<cfset output.append("<h2>#padResource('error.overview@label','Error Overview')#</h2><table>") />
 				<cfset output.append("<tr><th>#padResource('error.overview.machine@label','Machine')#:</th><td>#arguments.exception.machineName#</td></tr>") />
@@ -449,6 +506,33 @@
 		</cfif>
 		
 		<cfparam name="application.url.webtop" default="/webtop">
+		
+		<!--- in the case of data views (json, xml, etc), return stream the data back in that type --->
+		<cfif isdefined("url.type") and isdefined("url.view") 
+			and isdefined("application.stCOAPI.#url.type#.stWebskins.#url.view#.viewStack") 
+			and application.stCOAPI[url.type].stWebskins[url.view].viewStack eq "data" 
+			and isdefined("application.stCOAPI.#url.type#.stWebskins.#url.view#.mimeType")>
+			
+			<cfswitch expression="#application.stCOAPI[url.type].stWebskins[url.view].mimeType#">
+				<cfcase value="json,text/json" delimiters=",">
+					<cfheader statuscode="#statuscode#" statustext="#statusmessage#" />
+					<cfif showError>
+						<cfcontent type="text/json" variable="#ToBinary( ToBase64( '{ "error":' & application.fc.lib.formatError(exception=arguments.stException,format='json') & '}' ) )#" reset="Yes" />
+					<cfelse>
+						<cfcontent type="text/json" variable="#ToBinary( ToBase64( '{ "error":"There was an error with that request" }' ) )#" reset="Yes" />
+					</cfif>
+				</cfcase>
+				<cfcase value="xml,text/xml" delimiters=",">
+					<cfheader statuscode="#statuscode#" statustext="#statusmessage#" />
+					<cfif showError>
+						<cfcontent type="text/xml" variable="#ToBinary( ToBase64( application.fc.lib.formatError(exception=arguments.stException,format='xml') ) )#" reset="Yes" />
+					<cfelse>
+						<cfcontent type="text/xml" variable="#ToBinary( ToBase64( '<?xml version="1.0" encoding="UTF-8" ?><error>There was an error with that request</error>' ) )#" reset="Yes" />
+					</cfif>
+				</cfcase>
+			</cfswitch>
+		</cfif>
+
 		
 		<cfcontent reset="true" />
 		<cfheader statuscode="#statuscode#" statustext="#statusmessage#" />

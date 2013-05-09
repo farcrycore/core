@@ -19,7 +19,7 @@
 		$j(function(){
 			
 			/* enable bootstrap menus to work on hover */
-			$j(".farcry-secondary-nav .nav > li.dropdown").hover(function(){
+			$j(".farcry-secondary-nav .nav:first > li.dropdown").hover(function(){
 				clearTimeout($j.data(this, "timer"));
 				$j(document).off("mousemove.menu");
 				$j("li.open").removeClass("open");
@@ -49,7 +49,7 @@
 			});
 
 			/* allow a clicked dropdown link in the secondary nav to stay open */
-			$j(".farcry-secondary-nav").on("click", ".nav > li.open > a", function(evt){
+			$j(".farcry-secondary-nav").on("click", ".nav:first > li.open > a", function(evt){
 				return false;
 			});
 

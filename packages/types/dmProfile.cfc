@@ -35,7 +35,7 @@ TYPE PROPERTIES
 		ftType="image" ftDestination="/images/dmProfile/avatar"
 		ftAutoGenerateType="center" ftImageWidth="80" ftImageHeight="80"
 		ftAllowUpload="true" ftQuality="1.0" ftInterpolation="blackman">
-
+	
 	<cfproperty name="position" type="string" default="" required="no" hint="Profile object position" ftSeq="31" ftFieldSet="Organisation" ftLabel="Position" />
     <cfproperty name="department" type="string" default="" required="no" hint="Profile object department" ftSeq="32" ftFieldSet="Organisation" ftLabel="Department" />
 	
@@ -44,6 +44,8 @@ TYPE PROPERTIES
 	
 	<cfproperty name="notes" type="longchar" default="" required="no" hint="Additional notes" ftSeq="51" ftType="longchar" ftLabel="Notes" />
     
+	<cfproperty name="wddxPersonalisation" type="longchar" default="" required="no" hint="WDDX packet containing a user's personalisation settings." ftLabel="Personalization settings">
+	
 <!------------------------------
 OBJECT METHODS
 -------------------------------->

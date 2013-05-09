@@ -756,7 +756,55 @@
 
 		<cfreturn duplicate(result) />
 	</cffunction>
+	
+	<cffunction name="stream" access="public" output="false" returntype="void" hint="Stream content to the user with the specified mime type">
+		<cfargument name="content" type="string" required="true" />
+		<cfargument name="type" type="string" required="true" />
+		<cfargument name="filename" type="string" required="false" />
 		
+		<cfif structkeyexists(arguments,"filename") and len(arguments.filename)>
+			<cfheader name="Content-Disposition" value="attachment; filename=#arguments.filename#" />
+		</cfif>
+		
+		<cfswitch expression="#arguments.type#">
+			<cfcase value="html,htmlfragment" delimiters=",">
+				<cfset arguments.type = "text/html" />
+			</cfcase>
+			<cfcase value="text">
+				<cfset arguments.type = "text/html" />
+			</cfcase>
+			<cfcase value="json">
+				<cfset arguments.type = "text/json" />
+			</cfcase>
+			<cfcase value="xml">
+				<cfset arguments.type = "text/xml" />
+			</cfcase>
+			<cfcase value="csv">
+				<cfset arguments.type = "text/xml" />
+			</cfcase>
+		</cfswitch>
+		
+		<cfif not GetPageContext().GetResponse().IsCommitted()>
+			<cfimport taglib="/farcry/core/tags/misc" prefix="misc" />
+			
+			<cfif isdefined("request.fc.okToCache") and request.fc.okToCache>
+				<!--- Page ok to cache, a webskin has specified a cache timeout --->
+				<cfif not isdefined("request.fc.browserCacheTimeout") or request.fc.browserCacheTimeout eq -1>
+					<cfset request.fc.browserCacheTimeout = application.defaultBrowserCacheTimeout />
+				</cfif>
+				<cfif not isdefined("request.fc.proxyCacheTimeout") or request.fc.proxyCacheTimeout eq -1>
+					<cfset request.fc.proxyCacheTimeout = application.defaultProxyCacheTimeout />
+				</cfif>
+			<cfelse>
+				<cfset request.fc.browserCacheTimeout = 0 />
+				<cfset request.fc.proxyCacheTimeout = 0 />
+			</cfif>
+			
+			<misc:cacheControl browserSeconds="#request.fc.browserCacheTimeout#" proxySeconds="#request.fc.proxyCacheTimeout#" />
+		</cfif>
+		
+		<cfcontent type="#arguments.type#" variable="#ToBinary( ToBase64( trim(arguments.content) ) )#" reset="Yes" />
+	</cffunction>
 	
 	
 	<!--- @@examples:
@@ -943,7 +991,64 @@
 				<cfreturn structNew() />
 			</cfif>
 		</cffunction>
-	
+		
+		<!--- @@examples:
+			<p>Get the current user's favourites:</p>
+			<code>
+				<cfset aFavourites = application.fapi.getPersonalConfig("favourites",arraynew(1)) />
+			</code>
+		 --->
+		<cffunction name="getPersonalConfig" access="public" returntype="any" output="false" hint="Returns the personalisation value requested">
+			<cfargument name="key" type="string" required="true" />
+			<cfargument name="default" type="any" required="true" />
+			
+			<cfif not application.security.isLoggedIn()>
+				<cfreturn arguments.default />
+			</cfif>
+			
+			<cfif not structkeyexists(session.dmProfile,"wddxPersonalisation") or not len(session.dmProfile.wddxPersonalisation)>
+				<cfreturn arguments.default />
+			</cfif>
+			
+			<cfif not structkeyexists(session.dmProfile,"personalisation")>
+				<cfwddx action="wddx2cfml" input="#session.dmProfile.wddxPersonalisation#" output="session.dmProfile.personalisation" />
+			</cfif>
+			
+			<cfif structkeyexists(session.dmProfile.personalisation,arguments.key)>
+				<cfreturn session.dmProfile.personalisation[arguments.key] />
+			<cfelse>
+				<cfreturn arguments.default />
+			</cfif>
+		</cffunction>
+		
+		<!--- @@examples:
+			<p>Add a bookmark to the current user's favourites:</p>
+			<code>
+				<cfset aFavourites = application.fapi.getPersonalConfig("favourites",arraynew(1)) />
+				<cfset arrayappend(aFavourites,{ url:"http://twitter.com", label:"Twitter" }) />
+				<cfset application.fapi.setPersonalConfig("favourites",aFavourites) />
+			</code>
+		 --->
+		<cffunction name="setPersonalConfig" access="public" returntype="void" output="false" hint="Returns the personalisation value requested">
+			<cfargument name="key" type="string" required="true" />
+			<cfargument name="value" type="any" required="true" />
+			
+			<cfif not application.security.isLoggedIn()>
+				<cfreturn />
+			</cfif>
+			
+			<cfif not structkeyexists(session.dmProfile,"wddxPersonalisation") or not len(session.dmProfile.wddxPersonalisation)>
+				<cfset session.dmProfile.personalisation = structnew() />
+			</cfif>
+			
+			<cfset session.dmProfile.personalisation[arguments.key] = arguments.value />
+			
+			<cfwddx action="cfml2wddx" input="#session.dmProfile.personalisation#" output="session.dmProfile.wddxPersonalisation" />
+			
+			<cfset setData(stProperties=session.dmProfile) />
+		</cffunction>
+		
+		
 	<!--- GENERAL FARCRY --->
 	
 	

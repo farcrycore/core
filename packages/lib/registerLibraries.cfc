@@ -114,6 +114,10 @@
 							baseHREF='#application.url.webtop#/thirdparty/bootstrap'
 							lFiles="bootstrap.min.js" />
 		
+		<skin:registerJS	id="webtop7" core="true"
+							baseHREF='#application.url.webtop#/js'
+							lFiles="webtop7.js" />
+		
 		<!--- CSS LIBRARIES --->
 		<skin:registerCSS 	id="webtop7"
 							baseHREF="#application.url.webtop#/css"
