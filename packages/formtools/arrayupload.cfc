@@ -10,7 +10,7 @@
 	<cfproperty name="ftFileProperty" required="false" default="" hint="The property on the related type that the file is uploaded against. This defaults to sourceImage for dmImage and filename for dmFile. Other relationships must have an explicit value.">
 	<cfproperty name="ftAllowedFileExtensions" required="false" default="" hint="The list of file extensions allowed. The default is to borrow the attribute on the related file property." />
 	<cfproperty name="ftSizeLimit" required="false" default="" hint="The upload size limit. The default is to borrow the attribute on the related file property." />
-	<cfproperty name="ftSimUploadLimit" required="false" default="3" hint="The maximum number of simultaneous uploads." />
+	<cfproperty name="ftSimUploadLimit" required="false" default="1" hint="The maximum number of simultaneous uploads." />
 	<cfproperty name="ftEditableProperties" required="false" default="" hint="If ftAllowEdit is enabled, this property restricts which properties are ediable. Note that using this value will switch the default edit dialog to a minimalist one suitable for front end use.">
 	
 	<cfproperty name="ftlibrarydatasqlwhere" required="false" default="" hint="A simple where clause filter for the library data result set. Must be in the form PROPERTY OPERATOR VALUE. For example, status = 'approved'"/><!--- detach or delete --->
