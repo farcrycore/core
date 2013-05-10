@@ -10,7 +10,7 @@
 		<div class="farcry-footer container-fluid">
 			<div class="row-fluid">
 				<div class="span12">
-					Copyright &copy; <a href="http://www.daemon.com.au" target="_blank">Daemon</a> 1997-#year(now())#, #application.sysInfo.farcryVersionTagLine#
+					Copyright &copy; <a href="http://www.daemon.com.au" target="_blank">Daemon</a> 1997-#year(now())#. #application.sysInfo.farcryVersionTagLine#
 				</div>
 			</div>
 		</div>

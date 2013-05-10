@@ -66,8 +66,25 @@ html {
   height:30px;
   line-height:30px;
   margin-bottom:20px;
-  width:476px;
+  width:97%;
 }
+
+
+#content-main .uniForm .inlineLabels input[type="text"],
+#content-main .uniForm .inlineLabels input[type="password"],
+#content-main .uniForm .inlineLabels .textInput,
+#content-main .uniForm .inlineLabels .selectInput {
+  width: 97%;
+  height:auto;
+  font-size: 14px;
+  padding: 5px;
+  margin-bottom: 2px;
+}
+
+#content-main .uniForm .label {
+  text-shadow: none;
+}
+
 #content-main form .help-inline {
   font-size:12px;
   margin-top:16px;
@@ -94,11 +111,17 @@ html {
   box-shadow:0 30px 30px rgba(0,0,0,0.3);
 }
 #content-main .copyright {
-  font-size:12px;
+  font-size:11px;
   padding:0 5px;
   text-align:right;
+  color: #999999;
 }
-
+#content-main .copyright a {
+  color: #666666;
+}
+#content-main .copyright strong {
+  font-weight: normal;
+}
 
 #header {
   padding-top:60px;

@@ -21,7 +21,7 @@
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
 <cfoutput>
-						<p class="copyright">&copy; <a href="http://www.daemon.com.au" target="_blank">Daemon</a> 1997-#year(now())#<br />#application.sysInfo.farcryVersionTagLine#</p>
+						<p class="copyright">Copyright &copy; <a href="http://www.daemon.com.au" target="_blank">Daemon</a> 1997-#year(now())#.<br />#application.sysInfo.farcryVersionTagLine#</p>
 					</div><!-- /.content-main -->
 				</div><!-- /.content-block -->
 			</div><!-- /##content-main -->
