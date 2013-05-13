@@ -827,22 +827,24 @@
 				<cfset stResult = handleFilePost(
 					objectid=arguments.stObject.objectid,
 					uploadfield="#arguments.stMetadata.name#UPLOAD",
-					relativeDestination=application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftDestination,
-					absoluteDestination=application.path.defaultfilepath & application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftDestination,
+					destination=application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftDestination,
+					location="publicfiles",
 					allowedExtensions=arguments.stMetadata.ftAllowedFileExtensions,
 					stFieldPost=arguments.stFieldPost.stSupporting,
 					sizeLimit=arguments.stMetadata.ftSizeLimit) />
+				<cfset stResult.location = "publicfiles" />
 				
 			<cfelse><!--- File property is an image formtool --->
 				
 				<cfset stResult = handleFilePost(
 					objectid=arguments.stObject.objectid,
 					uploadfield="#arguments.stMetadata.name#UPLOAD",
-					relativeDestination=application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftDestination,
-					absoluteDestination=application.path.imageroot & application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftDestination,
+					destination=application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftDestination,
+					location="images",
 					allowedExtensions=arguments.stMetadata.ftAllowedFileExtensions,
 					stFieldPost=arguments.stFieldPost.stSupporting,
 					sizeLimit=arguments.stMetadata.ftSizeLimit) />
+				<cfset stResult.location = "images" />
 					
 			</cfif>
 			
@@ -854,10 +856,10 @@
 			</cfif>
 			
 			<cfif stResult.bChanged and isdefined("stResult.value") and len(stResult.value)>
-					
-				<cfif application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftType eq "file">
 				
-					<cfset stFile = getFileInfo(application.path.defaultfilepath & stResult.value) />
+				<cfif application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftType eq "file">
+					
+					<cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location=stResult.location,file=stResult.value) />
 					
 					<cfset stNewObject = application.fapi.getNewContentObject(typename=arguments.stMetadata.ftJoin) />
 					<cfset stNewObject.label = listfirst(listlast(stResult.value,"/"),".") />
@@ -872,8 +874,8 @@
 					<cfset stJSON["objectid"] = stNewObject.objectid />
 					<cfset stJSON["value"] = stResult.value />
 					<cfset stJSON["filename"] = listlast(stResult.value,"/") />
-					<cfset stJSON["fullpath"] = application.path.fileroot & getDirectoryFromPath(stResult.value) & urlencodedformat(getFileFromPath(stResult.value)) />
-					<cfset stJSON["size"] = round(stFile.size/1024) />
+					<cfset stJSON["fullpath"] = stFile.path />
+					<cfset stJSON["size"] = round(application.fc.lib.cdn.ioGetFileSize(location=stResult.location,file=stResult.value)/1024) />
 					<skin:view objectid="#stNewObject.objectid#" typename="#arguments.stMetadata.ftJoin#" webskin="#arguments.stMetadata.ftListWebskin#" bIgnoreSecurity="true" r_html="html" alternateHTML="OBJECT NO LONGER EXISTS" />
 					<cfset stJSON["html"] = html />
 					
@@ -916,14 +918,14 @@
 							<cfset application.formtools.image.oFactory.onFileChange(typename=arguments.stMetadata.ftJoin,objectid=stNewObject.objectid,stMetadata=application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata,value=stResult.value) />
 						</cfif>
 						
-						<cfset stFile = getFileInfo(application.path.imageroot & stResult.value) />
+						<cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location=stResult.location,file=stResult.value) />
 						
-						<cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" />
+						<cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location=stResult.location,file=stResult.value,datatype='image')#" structName="stImage" />
 						<cfset stJSON["objectid"] = stNewObject.objectid />
 						<cfset stJSON["value"] = stResult.value />
 						<cfset stJSON["filename"] = listlast(stResult.value,'/') />
-						<cfset stJSON["fullpath"] = application.url.imageroot & getDirectoryFromPath(stResult.value) & urlencodedformat(getFileFromPath(stResult.value)) />
-						<cfset stJSON["size"] = round(stFile.size/1024) />
+						<cfset stJSON["fullpath"] = stFile.path />
+						<cfset stJSON["size"] = round(application.fc.lib.cdn.ioGetFileSize(location=stResult.location,file=stResult.value)/1024) />
 						<skin:view objectid="#stNewObject.objectid#" typename="#arguments.stMetadata.ftJoin#" webskin="#arguments.stMetadata.ftListWebskin#" bIgnoreSecurity="true" r_html="html" alternateHTML="OBJECT NO LONGER EXISTS" />
 						<cfset stJSON["html"] = html />
 						
@@ -946,8 +948,8 @@
 	<cffunction name="handleFilePost" access="public" output="false" returntype="struct" hint="Handles image post and returns standard formtool result struct">
 		<cfargument name="objectid" type="uuid" required="true" hint="The objectid of the edited object" />
 		<cfargument name="uploadfield" type="string" required="true" hint="Traditional form saves will use <PREFIX><PROPERTY>NEW, ajax posts will use <PROPERTY>NEW ... so the caller needs to say which it is" />
-		<cfargument name="relativeDestination" type="string" required="true" hint="Destination of file" />
-		<cfargument name="absoluteDestination" type="string" required="true" hint="Destination of file" />
+		<cfargument name="destination" type="string" required="true" hint="Destination of file" />
+		<cfargument name="location" type="string" required="true" hint="Destination of file" />
 		<cfargument name="allowedExtensions" type="string" required="true" hint="The acceptable extensions" />
 		<cfargument name="sizeLimit" type="string" required="false" default="0" hint="Maximum file size accepted" />
 		<cfargument name="stFieldPost" type="struct" required="false" default="#structnew()#" hint="The supplementary data" />
@@ -962,28 +964,20 @@
 		<cfset stResult.bChanged = false />
 		
 		<!--- If developer has entered an ftDestination, make sure it starts with a slash --->
-		<cfif len(arguments.relativeDestination) AND left(arguments.relativeDestination,1) NEQ "/">
-			<cfset arguments.relativeDestination = "/#arguments.relativeDestination#" />
-		</cfif>
-		
-		<cfif NOT DirectoryExists(arguments.absoluteDestination)>
-			<cfdirectory action="create" directory="#arguments.absoluteDestination#" mode="777" />
+		<cfif len(arguments.destination) AND left(arguments.destination,1) NEQ "/">
+			<cfset arguments.destination = "/#arguments.destination#" />
 		</cfif>
 		
 	  	<cfif structkeyexists(form,arguments.uploadfield) and len(form[arguments.uploadfield])>
-	  	
-			<cffile action="upload" filefield="#arguments.uploadfield#" destination="#arguments.absoluteDestination#" nameconflict="MakeUnique" mode="664" result="stFile" />
-			
-			<cfif arguments.sizeLimit and arguments.sizeLimit lt stFile.fileSize>
-				<cffile action="delete" file="#arguments.absoluteDestination#/#stFile.ServerFile#" />
-				<cfset stResult = application.formtools.field.oFactory.failed(value="",message="#stFile.serverfile# is not within the file size limit of #round(arguments.sizeLimit/1048576)#MB") />
-			<cfelseif listFindNoCase(arguments.allowedExtensions,stFile.serverFileExt)>
-				<cfset stResult = application.formtools.field.oFactory.passed("#arguments.relativeDestination#/#stFile.ServerFile#") />
-	    		<cfset stResult.bChanged = true />
-			<cfelse>
-				<cffile action="delete" file="#arguments.absoluteDestination#/#stFile.ServerFile#" />
-				<cfset stResult = application.formtools.field.oFactory.failed(value="",message="Files must have one of these extensions: #arguments.allowedExtensions#") />
-			</cfif>
+	  		
+			<cftry>
+				<cfset uploadFileName = application.fc.lib.cdn.ioUploadFile(location=arguments.location,destination=arguments.destination,acceptextensions=arguments.allowedExtensions,field=arguments.uploadfield,sizeLimit=arguments.sizeLimit,nameconflict="makeunique") />
+				<cfset stResult = application.formtools.field.oFactory.passed(uploadFileName) />
+				
+				<cfcatch type="uploaderror">
+					<cfset stResult = application.formtools.field.oFactory.failed(value=arguments.existingfile,message=cfcatch.message) />
+				</cfcatch>
+			</cftry>
 			
 		</cfif>
 		

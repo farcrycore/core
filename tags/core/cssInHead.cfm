@@ -120,7 +120,8 @@
 				</cfif>
 			
 				<cfif stCSS.bCombine>
-					<cfoutput><link rel="stylesheet" id="stylesheet-#stCSS.id#" type="text/css" href="#stCSS.hostname##application.url.cache#/#sCacheFileName#" media="#stCSS.media#" #tagEnding#></cfoutput>
+					<cfset stLoc = application.fc.lib.cdn.ioGetFileLocation(location='cache',file=sCacheFileName) />
+					<cfoutput><link rel="stylesheet" id="stylesheet-#stCSS.id#" type="text/css" href="#stLoc.path#" media="#stCSS.media#" #tagEnding#></cfoutput>
 				<cfelseif stCSS.bExternal>
 					<cfif len(trim(stCSS.prepend))><cfoutput><style type="text/css">#stCSS.prepend#</style></cfoutput></cfif>
 					<cfloop list="#stCSS.lFiles#" index="i">
@@ -130,7 +131,7 @@
 				<cfelse>
 					<cfif len(trim(stCSS.prepend))><cfoutput><style type="text/css">#stCSS.prepend#</style></cfoutput></cfif>
 					<cfloop list="#stCSS.lFiles#" index="i">
-						<cfoutput><link rel="stylesheet" type="text/css" href="#stCSS.hostname##stCSS.baseHREF#/#i#" media="#stCSS.media#" #tagEnding#></cfoutput>
+						<cfoutput><link rel="stylesheet" type="text/css" href="#cgi.http_host##stCSS.baseHREF#/#i#" media="#stCSS.media#" #tagEnding#></cfoutput>
 					</cfloop>
 					<cfif len(trim(stCSS.append))><cfoutput><style type="text/css">#stCSS.append#</style></cfoutput></cfif>
 				</cfif>

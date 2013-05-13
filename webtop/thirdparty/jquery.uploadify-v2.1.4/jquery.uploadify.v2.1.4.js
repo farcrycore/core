@@ -222,7 +222,12 @@ if(jQuery)(
 								jQuery(this).closest('.uploadifyProgress').fadeOut(250,function() {jQuery(this).remove()});
 							}
 						});
-						if (event.data.toDisplay == 'percentage') displayData = ' - ' + data.percentage + '%';
+						if (event.data.toDisplay == 'percentage') {console.log(event.data);
+							if (data.percentage === 100 || data.percentage === "100")
+								displayData = ' - processing ...';
+							else
+								displayData = ' - ' + data.percentage + '%';
+						}
 						if (event.data.toDisplay == 'speed') displayData = ' - ' + data.speed + 'KB/s';
 						if (event.data.toDisplay == null) displayData = ' ';
 						jQuery("#" + jQuery(this).attr('id') + ID).find('.percentage').text(displayData);

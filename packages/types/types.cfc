@@ -1565,7 +1565,7 @@ default handlers
 			<cfset arguments.stMetadata = application.stCOAPI[arguments.stObject.typename].stProps[arguments.fieldname].metadata />
 		</cfif>
 		
-		<cfreturn application.formtools.file.oFactory.getFileLocation(argumentcollection=arguments) />
+		<cfreturn application.formtools[arguments.stMetadata.ftType].oFactory.getFileLocation(argumentcollection=arguments) />
 	</cffunction>
 	
 </cfcomponent>

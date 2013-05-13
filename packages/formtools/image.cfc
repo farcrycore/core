@@ -164,578 +164,16 @@
 	    <skin:loadJS id="jquery-crop" />
 	    <skin:loadCSS id="jquery-crop" />
 	    <skin:loadCSS id="fc-fontawesome" />
-	    <!--- <skin:htmlHead id="farcry-imageformtool-css"><cfoutput><style type="text/css"> --->
-	    <skin:loadCSS id="farcry-imageformtool"><cfoutput>
-	    	.dependant-label { font-weight:bold; }
-		</cfoutput></skin:loadCSS>
-		<!--- </style></cfoutput></skin:htmlHead> --->
-	    <!--- <skin:htmlHead id="farcry-imageformtool-js"><cfoutput><script type="text/javascript"> --->
-	    <!--- <cfoutput> <script type="text/javascript" charset="utf-8"> --->
-		<skin:loadJS id="image-formtool" core="true"><cfoutput>
-	    	(function(jQuery){
-	    		var defaults = {
-	    			"selected"		: "",
-	    			"onInit"		: null,
-	    			"onOpen"		: null,
-	    			"onOpenTarget"	: {},
-	    			"onClose"		: null,
-	    			"onCloseTarget"	: {},
-	    			"autoWireClass"	: "a.select-view,button.select-view",
-	    			"eventData"		: {}
-	    		};
-	    		
-	    		jQuery.fn.multiView = function initMultiview(data){
-	    			data = jQuery.extend(true,data || {},defaults);
-	    			var views = [];
-	    			
-	    			if (data.onInit) this.bind("multiviewInit",data,eventData,data.onInit);
-	    			if (data.onOpen) this.bind("multiviewOpen",data.eventData,data.onOpen);
-    				for (target in data.onOpenTarget)
-    					this.bind("multiviewOpen"+target,data.eventData,data.onOpenTarget[target]);
-	    			if (data.onClose) this.bind("multiviewClose",data.eventData,data.onClose);
-    				for (target in data.onCloseTarget)
-    					this.bind("multiviewClose"+target,data.eventData,data.onCloseTarget[target]);
-	    			
-	    			jQuery("> div",this).each(function initMultiviewPage(){
-	    				var $self = jQuery(this);
-	    				var viewname = "";
-	   					var classes = this.className.split(" ");
-	   					for (var i=0;i<classes.length;i++)
-	   						if (classes[i].search(/^\w+-view$/)>-1) viewname = classes[i].slice(0,-5);
-	   					views.push(viewname);
-	   					
-	    				if (data.selected.length && $self.hasClass(data.selected+"-view") && !$self.not(":visible")){
-	    					// show selected
-	    					$self.show();
-	    				}
-	    				else if (!data.selected.length && ($self.is(":visible") || $self.css("display")=="block")){
-	    					// no initial view provided - select first visible one
-    						data.selected = viewname;
-	    				}
-	    				else if ($self.is(":visible")){
-	    					// hide everything else
-	    					$self.hide();
-	    				}
-	    			});
-	    			this.data("multiview.currentview",data.selected);
-	    			this.data("multiview.allviews",views);
-	    			this.trigger("multiviewOpen",[ this.find("> ."+data.selected+"-view"),data.selected ]);
-	    			
-	    			jQuery(data.autoWireClass,this).bind("click",{ "multiview":this },function onMultiviewAutowireClick(event){
-	    				event.data.multiview.selectView(this.href.split("##")[1]);
-	    				return false;
-	    			});
-	    			
-		    		this.trigger("multiviewInit");
-		    		
-		    		return this;
-	    		};
-	    		
-	    		jQuery.fn.selectView = function multiViewSelect(newview){
-	    			var oldview = this.data("multiview.currentview");
-	    			var history = this.data("multiview.history") || [];
-	    			
-	    			if (oldview && oldview != newview) {
-	    				var $oldview = this.findView(oldview);
-	    				this.trigger("multiviewClose",[ $oldview[0],oldview,newview ]).trigger("multiviewClose"+oldview,[ $oldview[0],oldview,newview ]);
-	    				$oldview.hide();
-	    				if (newview == "back") 
-	    					newview = history.pop();
-	    				else
-	    					history.push(oldview);
-	    				this.data("multiview.history",history);
-	    			}
-	    			if (oldview != newview){
-		    			this.data("multiview.currentview",newview);
-		    			var $newview = this.findView(newview);
-		    			$newview.show();
-		    			this.trigger("multiviewOpen",[ $newview[0],newview,oldview ]).trigger("multiviewOpen"+newview,[ $newview[0],newview,oldview ]);
-		    		}
-		    		
-		    		return this;
-	    		};
-	    		
-	    		jQuery.fn.currentView = function multiViewCurrent(){
-	    			return this.data("multiview.currentview");
-	    		};
-	    		
-	    		jQuery.fn.addView = function multiViewAdd(name,html,selected){
-	    			this.append("<div class='"+name+"-view' style='display:none;'>"+html+"</div>");
-	    			this.data("multiview.allviews",this.data("multiview.allviews").push(name));
-	    			if (selected) this.selectView(name);
-	    			return this;
-	    		};
-	    		
-	    		jQuery.fn.findView = function multiViewFind(view){
-	    			return this.find("> ."+view+"-view");
-	    		};
-	    	})($j);
-	    	
-	    	(function(jQuery){
-		    	$fc.cropper = function cropperObject(sourceobject, url, width, height, postvalues, allowcancel){
-		    		
-		    		var cropper = this;
-		    		
-	    			var docwidth = jQuery(document).width();
-					var docheight = jQuery(document).height();
-					var viewportwidth = jQuery(window).width();
-					var viewportheight = jQuery(window).height();
-					var overlaywidth = viewportwidth - 60;
-					var overlayheight = viewportheight - 60;
-					var overlayleft = jQuery(document).scrollLeft()-10+(viewportwidth-overlaywidth)/2;
-					var overlaytop = jQuery(document).scrollTop()-10+(viewportheight-overlayheight)/2;
-					if (!(allowcancel===false)) allowcancel = true;
-					
-					var current_crop_selection = null;
-					
-					// Add crop dialog markup
-					jQuery("body").append("<div id='image-crop-overlay'><div class='ui-widget-overlay' style='width:"+docwidth+"px;height:"+docheight+"px;'></div><div style='width:"+(overlaywidth+22)+"px;height:"+(overlayheight+22)+"px;position:absolute;left:"+overlayleft+"px; top:"+overlaytop+"px;' class='ui-widget-shadow ui-corner-all'></div><div id='image-crop-ui' class='ui-widget ui-widget-content ui-corner-all' style='position: absolute;width:"+overlaywidth+"px;height:"+overlayheight+"px;left:"+overlayleft+"px;top:"+overlaytop+"px; padding: 10px;'></div></div>");
-					
-					// Add event to end cropping when the overlay is clicked
-					if (allowcancel) jQuery("##image-crop-overlay .ui-widget-overlay").bind("click",function onCropperOverlayClick(e) { if (this==e.target) cropper.cancelCrop(); });
-					
-					// Load and add events to crop HTML
-					jQuery.ajaxSetup({ timeout:5000 });
-					jQuery("##image-crop-ui").load(url+"&crop=1&allowcancel="+allowcancel,postvalues,function cropperLoadDialog(){
-						var $x1 = jQuery("##image-crop-a-x");
-						var $y1 = jQuery("##image-crop-a-y");
-						var $x2 = jQuery("##image-crop-b-x");
-						var $y2 = jQuery("##image-crop-b-y");
-						var $d = jQuery("##image-crop-dimensions");
-						var $w = jQuery("##image-crop-width");
-						var $h = jQuery("##image-crop-height");
-						var $wf = jQuery("##image-crop-width-final");
-						var $hf = jQuery("##image-crop-height-final");
-						var $rn = jQuery("##image-crop-ratio-num");
-						var $rd = jQuery("##image-crop-ratio-den");
-						var $warning = jQuery("##image-crop-warning");
-						jQuery("##cropable-image").Jcrop({
-							//"minSize" : [width,height],
-							"aspectRatio" : (width && height)?width/height:0,
-							"boxWidth" : overlaywidth * 0.65,
-							"boxHeight" : overlayheight,
-							"onChange" : function onCropperSelectionChange(c){
-								$x1.html(parseInt(c.x));
-								$y1.html(parseInt(c.y));
-								$x2.html(parseInt(c.x2));
-								$y2.html(parseInt(c.y2));
-								$w.html(parseInt(c.w));
-								$h.html(parseInt(c.h));
-								if (c.w>c.h){
-									if (c.h <= 0) {
-										$rn.html("Any");
-									}
-									else {
-										$rn.html((c.w/c.h).toFixed(2));
-										$rd.html("1");
-									}
-								}
-								else {
-									if (c.w <= 0) {
-										$rd.html("Any");
-									}
-									else {
-										$rd.html((c.h/c.w).toFixed(2));
-									}
-									$rn.html("1");
-								}
-								if (width || height) {
-									if (width == NaN || width == 0) {
-										$wf.html(parseInt(height*(c.w/c.h)) || "?");
-									}
-									if (height == NaN || height == 0) {
-										$hf.html(parseInt(width/(c.w/c.h)) || "?");
-									}
-									if ((width && c.w && c.w < width) || (height && c.h && c.h < height)) {
-										$holder.css("background-color", "red");
-										$d.css("color", "red");
-										$warning.css("display", "block");
-									}
-									else {
-										$holder.css("background-color", "green");
-										$d.css("color", "inherit");
-										$warning.css("display", "none");
-									}
-								}
-							},
-							"onSelect" : function(c){
-								current_crop_selection = c;
-							}
-						});
-						// get the jcrop holder div after jcrop has been created in the dom
-						var $holder = jQuery(".jcrop-holder");
-
-						jQuery("##image-crop-cancel").bind("click",function onCropperCancel() { cropper.cancelCrop(); return false; });
-						jQuery("##image-crop-finalize").button({}).bind("click",function onCropperFinalize() {cropper.finalizeCrop(); return false; });
-						jQuery("##image-crop-overlay .image-crop-instructions").height(overlayheight-70);
-					});
-					
-					this.cancelCrop = function cropperCancel(){
-						jQuery.Jcrop('##cropable-image').destroy();
-						jQuery("##image-crop-overlay").remove();
-						jQuery(sourceobject).trigger("cancelcrop");
-					};
-					
-					this.finalizeCrop = function cropperFinalize(){
-						
-						jQuery.Jcrop('##cropable-image').destroy();
-						$j("##image-crop-overlay").remove();
-						
-						if (current_crop_selection){
-							var quality = "";
-							if (jQuery("##image-crop-quality").length) parseFloat(jQuery("##image-crop-quality").val());
-							
-							jQuery(sourceobject).trigger("savecrop",[ current_crop_selection, quality ]);
-						}
-						else
-							jQuery(sourceobject).trigger("cancelcrop");
-					};
-					
-					return this;
-		    	};
-		    })($j);
-	    	
-	    	$fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
-				
-	    		function ImageFormtool(prefix,property) {
-	    			var imageformtool = this;
-	    			this.prefix = prefix;
-	    			this.property = property;
-	    			this.multiview = "";
-	    			
-	    			this.inputs = {};
-	    			this.views = {};
-	    			this.elements = {};
-	    			
-	    			this.init = function initImageFormtool(url,filetypes,sourceField,width,height,inline,sizeLimit){
-
-	    				imageformtool.url = url;
-	    				imageformtool.filetypes = filetypes;
-	    				imageformtool.sourceField = sourceField;
-	    				imageformtool.width = width;
-	    				imageformtool.height = height;
-	    				imageformtool.inline = inline || false;
-						imageformtool.sizeLimit = sizeLimit || null;
-	    				
-	    				imageformtool.inputs.resizemethod  = $j('##'+prefix+property+'RESIZEMETHOD');
-	    				imageformtool.inputs.quality  = $j('##'+prefix+property+'QUALITY');
-	    				imageformtool.inputs.deletef = $j('##'+prefix+property+'DELETE');
-	    				imageformtool.inputs.traditional = $j('##'+prefix+property+'TRADITIONAL');
-	    				imageformtool.inputs.newf = $j('##'+prefix+property+'NEW');
-	    				imageformtool.inputs.base = $j('##'+prefix+property);
-	    				
-	    				var bUUIDSource = false;
-	    				if (sourceField.indexOf(":")>-1){
-	    					bUUIDSource = true;
-	    					sourceField = sourceField.split(":")[0];
-	    					imageformtool.sourceField = sourceField;
-	    				}
-	    				
-			    		imageformtool.multiview = $j("##"+prefix+property+"-multiview").multiView({ 
-				    			"onOpenTarget" : {
-				    				"upload" : function onImageFormtoolOpenUpload(event){  },
-				    				"complete" : function onImageFormtoolOpenComplete(event){ 
-					    				if (imageformtool.inputs.base.val().length){
-						    				$j(this).find(".image-cancel-upload").show();
-						    				$j(this).find(".image-cancel-replace").show();
-						    			}
-					    			},
-				    				"autogenerate" : function onImageFormtoolOpenAutogenerate(event){ 
-					    				if (imageformtool.inputs.base.val().length){
-						    				imageformtool.inputs.deletef.val("true");
-											$j(this).find(".image-custom-crop, .image-crop-select-button").show().end();
-						    			}
-				    				},
-				    				"traditional" : function onImageFormtoolOpenTraditional(event){  },
-				    				"cancel" : function onImageFormtoolOpenCancel(event){ 
-				    					imageformtool.inlineview.find("span.action-cancel").hide();
-				    					imageformtool.inlineview.find("span.not-cancel").show();
-				    				}
-				    			},
-				    			"onCloseTarget" : {
-				    				"upload" : function onImageFormtoolCloseUpload(event){  },
-				    				"complete" : function onImageFormtoolCloseComplete(event){  },
-				    				"autogenerate" : function onImageFormtoolCloseAutogenerate(event,oldviewdiv,oldview,newview){
-				    					if (newview!="working"){ 
-					    					imageformtool.inputs.resizemethod.val("");
-					    					imageformtool.inputs.deletef.val("false");
-					    				}
-				    				},
-				    				"working" : function onImageFormtoolCloseAutogenerate(event){
-				    					imageformtool.inputs.resizemethod.val("");
-					    				imageformtool.inputs.deletef.val("false");
-				    				},
-				    				"traditional" : function onImageFormtoolCloseTraditional(event){ 
-				    					imageformtool.inputs.traditional.val(""); 
-				    				},
-				    				"cancel" : function onImageFormtoolCloseCancel(event){
-				    					imageformtool.inlineview.find("span.not-cancel").hide();
-				    					imageformtool.inlineview.find("span.action-cancel").show();
-				    				}
-				    			}
-				    		})
-			    			.find("a.image-crop-select-button,button.image-crop-select-button").bind("click",function onImageFormtoolCustomCrop(){ imageformtool.beginCrop(true); return false; }).end()
-			    			.find("a.image-crop-cancel-button,button.image-crop-cancel-button").bind("click",function onImageFormtoolCancelCrop(){ imageformtool.removeCrop(); return false; }).end()
-			    			.find("button.image-delete-button").bind("click",function onImageFormtoolDelete(){ imageformtool.deleteImage(); return false; }).end()
-			    			.find("button.image-deleteall-button").bind("click",function onImageFormtoolDeleteAll(){ imageformtool.deleteAllRelatedImages(); return false; }).end();
-			    		if (imageformtool.inline){
-			    			imageformtool.inlineview = $j("##"+prefix+property+"-inline")
-			    				.find("a.image-crop-select-button").bind("click",function onImageFormtoolCustomCropInline(){ 
-			    					imageformtool.inputs.deletef.val("true");
-			    					imageformtool.beginCrop(true); 
-			    					return false; 
-			    				}).end()
-			    				.find("span.action .select-view").bind("click",function(){
-				    				imageformtool.multiview.selectView(this.href.split("##")[1]);
-				    				return false;
-			    				}).end();
-				    	}
-
-	    				$j(imageformtool).bind("filechange",function onImageFormtoolFilechangeUpdate(event,results){
-	    					if (results.value && results.value.length>0){
-	    						var previewsize = { width:results.width, height:results.height };
-	    						if (previewsize.width > 400) previewsize = { width:400, height:previewsize.height*400/previewsize.width };
-	    						if (previewsize.height > 400) previewsize = { width:previewsize.width*400/previewsize.height, height:400 };
-
-		    					var complete = imageformtool.multiview.findView("complete")
-									.find(".image-status").attr("title","This file has been updated on the server").tooltip({ delay: 0, showURL: false	}).html('<i class="icon-info-sign" style="float:left;"></i>').end()
-									.find(".image-filename").html(results.filename).end()
-									.find(".image-size").html(results.size).end()
-									.find(".image-width").html(results.width).end()
-									.find(".image-height").html(results.height).end();
-
-								if (results.resizedetails){
-									complete.find(".image-quality").html(results.resizedetails.quality.toString()).end();
-									complete.find(".image-resize-information").show().end();
-								}
-								else {
-									complete.find(".image-resize-information").hide().end();
-								}
-								if (imageformtool.inline){
-									imageformtool.inlineview
-										.find("a.image-preview").attr("href",results.fullpath).attr("title","<img src='"+results.fullpath+"?"+new Date().getTime()+"' width='"+previewsize.width.toString()+"px' height='"+previewsize.height.toString()+"px' /><br><div style='width:"+previewsize.width.toString()+"px;'>"+results.size.toString()+"</span>KB, "+results.width.toString()+"px x "+results.height+"px</div>").tooltip({ delay: 0, showURL: false	}).end()
-										.find("span.action-preview").show().end()
-										.find("span.dependant-options").show().end();
-									imageformtool.multiview.selectView("cancel");
-								}
-								else{
-									imageformtool.multiview.find("a.image-preview").attr("href",results.fullpath).attr("title","<img src='"+results.fullpath+"?"+new Date().getTime()+"' width='"+previewsize.width.toString()+"px' height='"+previewsize.height.toString()+"px' />").tooltip({ delay: 0, showURL: false	}).end()
-									imageformtool.multiview.selectView("complete");
-								}
-							}
-	    				}).bind("fileerror.updatedisplay",function onImageFormtoolFileerrorDisplay(event,action,error,message){
-							$j('##'+prefix+property+"_"+action+"error").html(message).show();
-	    				}).bind("cancelcrop",function(){
-	    				
-	    				}).bind("savecrop",function onImageFormtoolSaveCrop(event,c,q){
-							imageformtool.inputs.resizemethod.val(parseInt(c.x)+","+parseInt(c.y)+"-"+parseInt(c.x2)+","+parseInt(c.y2));
-							imageformtool.inputs.quality.val(q);
-							imageformtool.multiview.findView("autogenerate")
-								.find(".image-crop-select-button").hide().end()
-								.find(".image-crop-information").show()
-									.find(".image-crop-a-x").html(parseInt(c.x)).end()
-									.find(".image-crop-a-y").html(parseInt(c.y)).end()
-									.find(".image-crop-b-x").html(parseInt(c.x2)).end()
-									.find(".image-crop-b-y").html(parseInt(c.y2)).end()
-									.find(".image-crop-width").html(parseInt(c.w)).end()
-									.find(".image-crop-height").html(parseInt(c.h)).end()
-									.find(".image-crop-quality").html((q*100).toFixed(0)).end();
-							imageformtool.applyCrop();
-	    				});
-	    				
-	    				if (sourceField.length>0){
-	    					
-	    					function handleSourceChange(newval){
-		    					if (newval && newval.length){
-			    					//imageformtool.enableCrop(true);
-									imageformtool.applyCrop();
-									if (imageformtool.inline) 
-										imageformtool.inlineview
-											.find("span.action-crop").show().end()
-											.find("span.dependant-options").show().end();
-								}
-								else {
-									imageformtool.enableCrop(false);
-								}
-	    					};
-	    					
-	    					if (bUUIDSource){
-	    						var $sourceField = $j("##"+prefix+sourceField);
-	    						var existingval = $sourceField.val();
-	    						var pending = false;
-	    						function checkSource(){
-	    							var newval = $sourceField.val();
-	    							if (newval!=existingval && !pending){
-	    								existingval = newval;
-	    								handleSourceChange(newval);
-	    							};
-	    						};
-	    						setInterval(checkSource,500);
-	    					}
-	    					else {
-			    				$j($fc.imageformtool(prefix,sourceField)).bind("filechange",function onImageFilechangePropogate(event,results){
-			    					handleSourceChange(results.value);
-			    				}).bind("deleteall",function onImageFormtoolDeleteAllPropogate(){
-			    					imageformtool.deleteImage("autogenerate");
-			    				});
-			    			}
-		    			}
-			    		
-			    		imageformtool.inputs.newf.uploadify({
-				    		'buttonImg'		: '#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4//selectImage.png',
-							'uploader'  	: '#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4/uploadify.swf',
-							'script'    	: url,
-							'checkScript'	: url+"/check/1",
-							'cancelImg' 	: '#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4/cancel.png',
-							'auto'      	: true,
-							'fileExt'		: filetypes,
-							'fileDataName'	: property+"NEW",
-							'method'		: "POST",
-							'scriptData'	: {},
-							'sizeLimit'		: imageformtool.sizeLimit,
-							'onSelectOnce' 	: function(event,data){
-								// attached related fields to uploadify post
-								imageformtool.inputs.newf.uploadifySettings("scriptData",imageformtool.getPostValues());
-							},
-							'onComplete'	: function(event, ID, fileObj, response, data){
-								var results = $j.parseJSON(response);
-								
-								imageformtool.inputs.newf.uploadifyClearQueue();
-								
-								// hide any previous results
-								$j('##'+prefix+property+"_uploaderror").hide();
-								
-								if (results.error) {
-									$j(imageformtool).trigger("fileerror", ["upload", "500", results.error]);
-								}
-								else {
-									imageformtool.inputs.base.val(results.value);
-									$j(imageformtool).trigger("filechange", [results]);
-								}
-							},
-							'onError'		: function(event, ID, fileObj, errorObj){
-								imageformtool.inputs.newf.uploadifyClearQueue();
-								if (errorObj.type === "HTTP")
-									$j(imageformtool).trigger("fileerror",[ "upload",errorObj.status.toString(),'Error '+errorObj.type+": "+errorObj.status ]);
-								else if (errorObj.type ==="File Size")
-									$j(imageformtool).trigger("fileerror",[ "upload","filesize",fileObj.name+" is not within the file size limit of "+Math.round(imageformtool.sizeLimit/1048576)+"MB" ]);
-								else
-									$j(imageformtool).trigger("fileerror",[ "upload",errorObj.type,'Error '+errorObj.type+": "+errorObj.text ]);
-							}
-						});
-	    			};
-	    			
-	    			this.getPostValues = function imageFormtoolGetPostValues(){
-						// get the post values
-						var values = {};
-						$j('[name^="'+prefix+property+'"]').each(function(){ if (this.name!=prefix+property+"NEW") values[this.name.slice(prefix.length)]=""; });
-						if (imageformtool.sourceField) values[imageformtool.sourceField] = "";
-						values = getValueData(values,prefix);
-						
-						return values;
-	    			};
-	    			
-	    			this.enableCrop = function imageFormtoolEnableCrop(enabled){
-						if (enabled){
-							imageformtool.multiview.findView("autogenerate").find(".image-custom-crop").show();
-							imageformtool.multiview.findView("complete").find(".regenerate-link").show();
-						}
-						else {
-							imageformtool.multiview.findView("autogenerate").find(".image-custom-crop").hide();
-							imageformtool.multiview.findView("complete").find(".regenerate-link").hide();
-						}
-					};
-	    			
-	    			this.beginCrop = function imageFormtoolBeginCrop(allowcancel){
-	    				$j('##'+prefix+property+"_croperror").hide();
-
-						$fc.cropper(imageformtool,imageformtool.url,imageformtool.width,imageformtool.height,imageformtool.getPostValues(),allowcancel);
-	    				
-	    			};
-	    			
-	    			this.applyCrop = function imageFormtoolApplyCrop(){
-	    				imageformtool.multiview.selectView("working");
-	    				
-						$j.ajax({
-							type : "POST",
-							url : imageformtool.url,
-							data : imageformtool.getPostValues(),
-							success : function imageFormtoolApplyCropSuccess(results){
-								// results is null if there is already an image 
-								if (results) {
-									if (results.error) {
-										$j(imageformtool).trigger("fileerror", ["crop", "500", results.error]);
-										imageformtool.multiview.selectView("autogenerate");
-									}
-									else {
-										imageformtool.inputs.base.val(results.value);
-										$j('##' + prefix + property + "_croperror").hide();
-										imageformtool.multiview.findView("autogenerate").find(".image-crop-information").hide();
-										$j(imageformtool).trigger("filechange", [results]);
-										imageformtool.multiview.selectView("complete");
-									}
-								}
-								imageformtool.enableCrop(true)
-							},
-							error : function imageFormtoolApplyCropError(XMLHttpRequest, textStatus, errorThrown){
-								$j(imageformtool).trigger("fileerror",[ "crop",textStatus,errorThrown.toString() ]);
-								imageformtool.enableCrop(true);
-								imageformtool.multiview.selectView("autogenerate");
-							},
-							dataType : "json",
-							timeout : 120000
-						});
-	    			};
-	    			
-	    			this.removeCrop = function imageFormtoolRemoveCrop(){
-						imageformtool.inputs.resizemethod.val("");
-						imageformtool.inputs.quality.val("");
-						imageformtool.multiview.findView("autogenerate")
-							.find(".image-crop-information").hide().end()
-							.find(".image-crop-select-button").show().end();
-						$j(imageformtool).trigger("removedcrop");
-					};
-					
-					this.deleteImage =  function imageFormtoolDeleteImage(viewToShow){
-						var afterDeleteView = viewToShow || "upload";
-						
-						imageformtool.inputs.deletef.val("true");
-						
-						var postData = imageformtool.getPostValues();
-						
-						if (imageformtool.sourceField.length) postData[imageformtool.sourceField] = '';
-						
-						$j.ajax({
-							type : "POST",
-							url : imageformtool.url,
-							data : postData,
-							success : function imageFormtoolDeleteImageSuccess(results){
-								imageformtool.inputs.base.val('');
-								imageformtool.inputs.deletef.val("false");
-								imageformtool.multiview.selectView(afterDeleteView);
-								imageformtool.multiview.find('.image-cancel-upload, .image-custom-crop, .image-cancel-replace').hide();
-								$j(imageformtool).trigger("filechange", [results]);
-							},
-							error : function imageFormtoolDeleteImageError(XMLHttpRequest, textStatus, errorThrown){
-								$j(imageformtool).trigger("fileerror",[ "crop",textStatus,errorThrown.toString() ]);
-							},
-							dataType : "json"
-						});						
-					}
-					this.deleteAllRelatedImages = function imageFormtoolDeleteAllRelatedImages(){
-						//trigger related to be deleted
-						$j(imageformtool).trigger("deleteall");
-						
-						//delete source
-						imageformtool.deleteImage();
-					}
-	    		};
-	    		
-	    		if (!this[prefix+property]) this[prefix+property] = new ImageFormtool(prefix,property);
-	    		return this[prefix+property];
-	    	};
-		<!--- </script></cfoutput><skin:htmlHead> --->
-		</cfoutput></skin:loadJS>
+	    
+	    <skin:loadCSS id="image-formtool" />
+		<skin:loadJS id="image-formtool" />
+		<skin:htmlHead><cfoutput>
+			<script type="text/javascript">
+				$fc.imageformtool.buttonImg = '#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4//selectImage.png';
+				$fc.imageformtool.uploader = '#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4/uploadify.swf';
+				$fc.imageformtool.cancelImg = '#application.url.webtop#/thirdparty/jquery.uploadify-v2.1.4/cancel.png';
+			</script>
+		</cfoutput></skin:htmlHead>
 	    
 	    <cfsavecontent variable="metadatainfo">
 			<cfif (isnumeric(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth gt 0) or (isnumeric(arguments.stMetadata.ftImageHeight) and arguments.stMetadata.ftImageHeight gt 0)>
@@ -799,8 +237,8 @@
 						    <div style="margin-left:15px;">Generating image...</div>
 						</div>
 						<cfif len(arguments.stMetadata.value)>
-						    <cfset stFile = GetFileInfo("#application.path.imageroot##arguments.stMetadata.value#") />
-						    <cfimage action="info" source="#application.path.imageroot##arguments.stMetadata.value#" structName="stImage" />
+						    <cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stMetadata.value) />
+						    <cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=arguments.stMetadata.value,datatype='image')#" structName="stImage" />
 						    <cfset previewwidth = stImage.width />
 						    <cfset previewheight = stImage.height />
 						    <cfif previewwidth gt 400>
@@ -814,8 +252,8 @@
 						    <div id="#arguments.fieldname#_complete" class="complete-view">
 					    		<span class="image-status" title=""><i class="icon-picture" style="float:left;">&nbsp;</i></span>
 					    		<div style="margin-left:15px;">
-						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#application.url.imageroot##getDirectoryFromPath(arguments.stMetadata.value)##urlencodedformat(getFileFromPath(arguments.stMetadata.value))#' width='#previewwidth#' height='#previewheight#' />" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
-						    		Size: <span class="image-size">#round(stFile.size/1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
+						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#stFile.path#' width='#previewwidth#' height='#previewheight#' />" href="#stFile.path#" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
+						    		Size: <span class="image-size">#round(application.fc.lib.cdn.ioGetFileSize(location="images",file=arguments.stMetadata.value)/1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
 						    		<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
 						    	</div>
 							</div>
@@ -869,8 +307,8 @@
 					    	</div>
 						</div>
 						<cfif len(arguments.stMetadata.value)>
-						    <cfset stFile = GetFileInfo("#application.path.imageroot##arguments.stMetadata.value#") />
-						    <cfimage action="info" source="#application.path.imageroot##arguments.stMetadata.value#" structName="stImage" />
+						    <cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stMetadata.value) />
+						    <cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=arguments.stMetadata.value,datatype='image')#" structName="stImage" />
 						    <cfset previewwidth = stImage.width />
 						    <cfset previewheight = stImage.height />
 						    <cfif previewwidth gt 400>
@@ -884,8 +322,8 @@
 						    <div id="#arguments.fieldname#_complete" class="complete-view">
 					    		<span class="image-status" title=""><i class="icon-picture" style="float:left;">&nbsp;</i></span>
 					    		<div style="margin-left:15px;">
-						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#application.url.imageroot##getDirectoryFromPath(arguments.stMetadata.value)##urlencodedformat(getFileFromPath(arguments.stMetadata.value))#' width='#previewwidth#' height='#previewheight#' />" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
-						    		Size: <span class="image-size">#round(stFile.size/1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
+						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#stFile.path#' width='#previewwidth#' height='#previewheight#' />" href="#stFile.path#" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
+						    		Size: <span class="image-size">#round(application.fc.lib.cdn.ioGetFileSize(location='images',file=arguments.stMetadata.value)/1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
 									<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
 						    	</div>
 							</div>
@@ -963,8 +401,8 @@
 		
 		<!--- Preview --->
 		<cfif len(arguments.stMetadata.value)>
-		    <cfset stFile = GetFileInfo("#application.path.imageroot##arguments.stMetadata.value#") />
-		    <cfimage action="info" source="#application.path.imageroot##arguments.stMetadata.value#" structName="stImage" />
+		    <cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stMetadata.value) />
+		    <cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=arguments.stMetadata.value,datatype='image')#" structName="stImage" />
 		    <cfset previewwidth = stImage.width />
 		    <cfset previewheight = stImage.height />
 		    <cfif previewwidth gt 400>
@@ -975,7 +413,7 @@
 				<cfset previewwidth = previewwidth * 400 / previewheight />
 				<cfset previewheight = 400 />
 			</cfif>
-			<cfset preview = "<img src='#application.url.imageroot##arguments.stMetadata.value#' width='#previewwidth#' height='#previewheight#' /><br><div style='width:#previewwidth#px;'>#round(stFile.size/1024)#</span>KB, #stImage.width#px x #stImage.height#px</div>" />
+			<cfset preview = "<img src='#stFile.path#' width='#previewwidth#' height='#previewheight#' /><br><div style='width:#previewwidth#px;'>#round(application.fc.lib.cdn.ioGetFileSize(location='images',file=arguments.stMetadata.value)/1024)#</span>KB, #stImage.width#px x #stImage.height#px</div>" />
 		<cfelse>
 			<cfset preview = "" />
 		</cfif>
@@ -1040,6 +478,7 @@
 		<cfset var stSource = structnew() />
 		<cfset var stFile = structnew() />
 		<cfset var stImage = structnew() />
+		<cfset var stLoc = structnew() />
 		<cfset var resizeinfo = "" />
 		<cfset var source = "" />
 		<cfset var html = "" />
@@ -1070,9 +509,11 @@
 	    	<cfparam name="url.allowcancel" default="1" />
 	    	
 			<cfif len(source)>
+				<cfset stLoc = application.fc.lib.cdn.ioGetFileLocation(location="images",file=source) />
+				
 				<cfsavecontent variable="html"><cfoutput>
 					<div style="float:left;background-color:##cccccc;height:100%;width:65%;margin-right:1%;">
-						<img id="cropable-image" src="#application.url.imageroot##source#" />
+						<img id="cropable-image" src="#stLoc.path#" />
 					</div>
 					<div style="float:left;width:33%;">
 						<div class="image-crop-instructions" style="overflow-y:auto;overlow-y:hidden;">
@@ -1144,7 +585,7 @@
 				<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"ResizeMethod") or not isnumeric(arguments.stFieldPost.stSupporting.ResizeMethod)><cfset arguments.stFieldPost.stSupporting.ResizeMethod = arguments.stMetadata.ftAutoGenerateType /></cfif>
 				<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"Quality") or not isnumeric(arguments.stFieldPost.stSupporting.Quality)><cfset arguments.stFieldPost.stSupporting.Quality = arguments.stMetadata.ftQuality /></cfif>
 				
-				<cfset stFixed = fixImage("#application.path.imageroot##stResult.value#",arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
+				<cfset stFixed = fixImage(stResult.value,arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
 				
 				<cfset stJSON = structnew() />
 				<cfif stFixed.bSuccess>
@@ -1157,12 +598,12 @@
 				</cfif>
 				
 				<cfif not structkeyexists(stResult,"error")>
-					<cfset stFile = getFileInfo(application.path.imageroot & stResult.value) />
-					<cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" />
+					<cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=stResult.value,datatype='image')#" structName="stImage" />
+					<cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=stResult.value) />
 					<cfset stJSON["value"] = stResult.value />
 					<cfset stJSON["filename"] = listlast(stResult.value,'/') />
-					<cfset stJSON["fullpath"] = application.url.imageroot & getDirectoryFromPath(stResult.value) & urlencodedformat(getFileFromPath(stResult.value)) />
-					<cfset stJSON["size"] = round(stFile.size/1024) />
+					<cfset stJSON["fullpath"] = stFile.path />
+					<cfset stJSON["size"] = round(application.fc.lib.cdn.ioGetFileSize(location="images",file=stResult.value)/1024) />
 					<cfset stJSON["width"] = stImage.width />
 					<cfset stJSON["height"] = stImage.height />
 				
@@ -1185,25 +626,24 @@
 			<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"Quality") or not isnumeric(arguments.stFieldPost.stSupporting.Quality)><cfset arguments.stFieldPost.stSupporting.Quality = arguments.stMetadata.ftQuality /></cfif>
 			
 			<cfif len(stResult.value)>
-				<cfset stFixed = fixImage("#application.path.imageroot##stResult.value#",arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
+				<cfset stFixed = fixImage(stResult.value,arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
 				
 				<cfset stJSON = structnew() />
 				<cfif stFixed.bSuccess>
 					<cfset stJSON["resizedetails"] = structnew() />
 					<cfset stJSON["resizedetails"]["method"] = arguments.stFieldPost.stSupporting.ResizeMethod />
 					<cfset stJSON["resizedetails"]["quality"] = round(arguments.stFieldPost.stSupporting.Quality*100) />
-					<cfset stResult.value = stFixed.value />
 				<cfelseif structkeyexists(stFixed,"error")>
 					<!--- Do nothing - an error from fixImage means there was no resize --->
 				</cfif>
 				
 				<cfif not structkeyexists(stResult,"error")>
-					<cfset stFile = getFileInfo(application.path.imageroot & stResult.value) />
-					<cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" />
+					<cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=stResult.value,datatype='image')#" structName="stImage" />
+					<cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=stResult.value) />
 					<cfset stJSON["value"] = stResult.value />
 					<cfset stJSON["filename"] = listlast(stResult.value,'/') />
-					<cfset stJSON["fullpath"] = application.url.imageroot & getDirectoryFromPath(stResult.value) & urlencodedformat(getFileFromPath(stResult.value)) />
-					<cfset stJSON["size"] = round(stFile.size/1024) />
+					<cfset stJSON["fullpath"] = stFile.path />
+					<cfset stJSON["size"] = round(application.fc.lib.cdn.ioGetFileSize(location="images",file=stResult.value)/1024) />
 					<cfset stJSON["width"] = stImage.width />
 					<cfset stJSON["height"] = stImage.height />
 					<cfset stJSON["q"] = cgi.query_string />
@@ -1236,8 +676,9 @@
 		<cfset var stImage = structnew() />
 		<cfset var stGeneratedImage = structnew() />
 		<cfset var q = "" />
+		<cfset var thisimage = application.fc.lib.cdn.ioReadFile(location="images",file=arguments.filename,datatype="image") />
 		
-		<cfimage action="info" source="#arguments.filename#" structname="stImage" />
+		<cfimage action="info" source="#thisimage#" structname="stImage" />
 		
 		<cfparam name="arguments.stMetadata.ftCropPosition" default="center" />
 		<cfparam name="arguments.stMetadata.ftCustomEffectsObjName" default="imageEffects" />
@@ -1249,7 +690,7 @@
 		<cfif not len(arguments.resizeMethod)><cfset arguments.resizeMethod = arguments.stMetadata.ftAutoGenerateType /></cfif>
 		
 		<cfset stGeneratedImageArgs.Source = arguments.filename />
-		<cfset stGeneratedImageArgs.Destination = "" />
+		<cfset stGeneratedImageArgs.Destination = arguments.filename />
 		
 		<cfif isNumeric(arguments.stMetadata.ftImageWidth)>
 			<cfset stGeneratedImageArgs.width = arguments.stMetadata.ftImageWidth />
@@ -1280,9 +721,10 @@
 		   or (stGeneratedImageArgs.height gt 0 and stGeneratedImageArgs.height neq stImage.height)
 		   or len(stGeneratedImageArgs.lCustomEffects)>
 			<cfset stGeneratedImage = GenerateImage(argumentCollection=stGeneratedImageArgs) />
-			<cfreturn passed(arguments.stMetadata.ftDestination & "/" & stGeneratedImage.filename) />
+			
+			<cfreturn passed(stGeneratedImage.filename) />
 		<cfelse>
-			<cfreturn failed(arguments.filename) />
+			<cfreturn passed(arguments.filename) />
 		</cfif>
 	</cffunction>
 	
@@ -1292,6 +734,8 @@
 		<cfargument name="uploadfield" type="string" required="true" hint="Traditional form saves will use <PREFIX><PROPERTY>NEW, ajax posts will use <PROPERTY>NEW ... so the caller needs to say which it is" />
 		<cfargument name="destination" type="string" required="true" hint="Destination of file" />
 		<cfargument name="allowedExtensions" type="string" required="true" hint="The acceptable extensions" />
+		<cfargument name="sizeLimit" type="numeric" required="false" default="0" hint="Maximum size of file in bytes" />
+		<cfargument name="bArchive" type="boolean" required="true" hint="True to archive old files" />
 		<cfargument name="stFieldPost" type="struct" required="false" default="#structnew()#" hint="The supplementary data" />
 		
 		<cfset var uploadFileName = "" />
@@ -1309,62 +753,79 @@
 			<cfset arguments.destination = "/#arguments.destination#" />
 		</cfif>
 		
-		<cfif NOT DirectoryExists("#application.path.imageRoot##arguments.destination#")>
-			<cfset createFolderPath("#application.path.imageRoot##arguments.destination#") />
-		</cfif>
-		
 		<cfif ((structkeyexists(form,arguments.uploadfield) and len(form[arguments.uploadfield])) or (isBoolean(stFieldPost.DELETE) and stFieldPost.DELETE)) and len(arguments.existingfile) AND fileExists("#application.path.imageRoot##arguments.existingfile#")>
-			
-			<cfif NOT DirectoryExists("#application.path.mediaArchive##arguments.destination#")>
-				<cfdirectory action="create" directory="#application.path.mediaArchive##arguments.destination#" />
+			<cfif arguments.bArchive>
+				<cfset archivedFile = application.fc.lib.cdn.ioMoveFile(
+					source_location="images",
+					source_file=arguments.existingfile,
+					dest_location="archive",
+					dest_file="#arguments.destination#/#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#listLast(arguments.existingfile, '/')#"
+				) />
+			<cfelse>
+				<cfset archivedFile = application.fc.lib.cdn.ioCopyFile(
+					source_location="images",
+					source_file=arguments.existingfile,
+					dest_localpath=getTempDirectory() & "#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#listLast(arguments.existingfile, '/')#"
+				) />
 			</cfif>
 			
-			<cfset archivedFile = "#application.path.mediaArchive##arguments.destination#/#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#listLast(arguments.existingfile, '/')#" />
-			<cffile action="move" source="#application.path.imageRoot##arguments.existingfile#" destination="#archivedFile#" />
-		    
 		    <cfset stResult = passed("") />
 		    <cfset stResult.bChanged = true />
 		    
 		</cfif>
 		
 	  	<cfif structkeyexists(form,arguments.uploadfield) and len(form[arguments.uploadfield])>
-	  	
+	  		
 	    	<cfif len(arguments.existingfile)>
 	    		
 				<!--- This means there is already a file associated with this object. The new file must have the same name. --->
-				<cfset uploadFileName = listLast(arguments.existingfile, "/\") />
-				
-				<cffile action="upload" filefield="#arguments.uploadfield#" destination="#application.path.imageRoot##arguments.destination#" nameconflict="MakeUnique" mode="664" result="stFile" />
-				
-				<cfif arguments.sizeLimit and arguments.sizeLimit lt stFile.filesize>
-					<cffile action="delete" file="#application.path.imageRoot##arguments.destination#/#stFile.ServerFile#" />
-					<cffile action="move" source="#archivedFile#" destination="#application.path.imageRoot##arguments.existingfile#" />
-					<cfset stResult = failed(value=arguments.existingfile,message="#stFile.serverfile# is not within the file size limit of #round(arguments.sizeLimit/1048576)#MB") />
-				<cfelseif listlast(arguments.existingfile,".") eq listlast(stFile.serverFileExt,".")>
-					<cffile action="rename" source="#application.path.imageRoot##arguments.destination#/#stFile.ServerFile#" destination="#uploadFileName#" />
-					<cfset stResult = passed("#arguments.destination#/#uploadFileName#") />
-		    		<cfset stResult.bChanged = true />
-				<cfelse>
-					<cffile action="delete" file="#application.path.imageRoot##arguments.destination#/#stFile.ServerFile#" />
-					<cffile action="move" source="#archivedFile#" destination="#application.path.imageRoot##arguments.existingfile#" />
-					<cfset stResult = failed(value=arguments.existingfile,message="Replacement images must have the same extension") />
-				</cfif>
+				<cftry>
+					<cfset uploadFileName = application.fc.lib.cdn.ioUploadFile(
+						location="images",
+						destination=arguments.existingFile,
+						field=arguments.uploadfield,
+						sizeLimit=arguments.sizeLimit
+					) />
+					
+					<cfset stResult = passed(uploadFileName) />
+					<cfset stResult.bChanged = true />
+					
+					<cfif not arguments.bArchive>
+						<cffile action="delete" file="#archivedFile#" />
+					</cfif>
+					
+					<cfcatch type="uploaderror">
+						<cfif arguments.bArchive>
+							<cfset application.fc.lib.cdn.ioMoveFile(
+								source_location="archive",
+								source_file=archivedFile,
+								dest_location="images",
+								dest_file=arguments.existingFile
+							) />
+						<cfelse>
+							<cfset archivedFile = application.fc.lib.cdn.ioMoveFile(
+								source_localpath=archivedFile,
+								dest_location="images",
+								dest_file=arguments.existingFile
+							) />
+						</cfif>
+						
+						<cfset stResult = failed(value=arguments.existingfile,message=cfcatch.message) />
+					</cfcatch>
+				</cftry>
 				
 			<cfelse>
 				
 				<!--- There is no image currently so we simply upload the image and make it unique  --->
-				<cffile action="upload" filefield="#arguments.uploadfield#" destination="#application.path.imageRoot##arguments.destination#" nameconflict="MakeUnique" mode="664" result="stFile" />
-				
-				<cfif arguments.sizeLimit and arguments.sizeLimit lt stFile.fileSize>
-					<cffile action="delete" file="#application.path.imageRoot##arguments.destination#/#stFile.ServerFile#" />
-					<cfset stResult = failed(value=arguments.existingfile,message="#stFile.serverfile# is not within the file size limit of #round(arguments.sizeLimit/1048576)#MB") />
-				<cfelseif listFindNoCase(arguments.allowedExtensions,stFile.serverFileExt)>
-					<cfset stResult = passed("#arguments.destination#/#stFile.ServerFile#") />
-		    		<cfset stResult.bChanged = true />
-				<cfelse>
-					<cffile action="delete" file="#application.path.imageRoot##arguments.destination#/#stFile.ServerFile#" />
-					<cfset stResult = failed(value="",message="Images must have one of these extensions: #arguments.allowedExtensions#") />
-				</cfif>
+				<cftry>
+					<cfset uploadFileName = application.fc.lib.cdn.ioUploadFile(location="images",destination=arguments.destination,acceptextensions=arguments.allowedExtensions,field=arguments.uploadfield,sizeLimit=arguments.sizeLimit) />
+					<cfset stResult = passed(uploadFileName) />
+					<cfset stResult.bChanged = true />
+					
+					<cfcatch type="uploaderror">
+						<cfset stResult = failed(value=arguments.existingfile,message=cfcatch.message) />
+					</cfcatch>
+				</cftry>
 				
 			</cfif>
 			
@@ -1380,12 +841,14 @@
 		<cfargument name="destination" type="string" required="true" hint="Destination of file" />
 		<cfargument name="allowedExtensions" type="string" required="true" hint="The acceptable extensions" />
 		<cfargument name="sizeLimit" type="numeric" required="false" default="0" hint="Maximum size of file in bytes" />
+		<cfargument name="bArchive" type="boolean" required="true" hint="True to archive old files" />
 		
 		<cfset var uploadFileName = "" />
 		<cfset var archivedFile = "" />
 		<cfset var stResult = passed(arguments.existingfile) />
 		<cfset var stFile = structnew() />
 		<cfset var i = 0 />
+		<cfset var errormessage = "" />
 		
 		<cfset stResult.bChanged = false />
 		
@@ -1394,62 +857,72 @@
 			<cfset arguments.destination = "/#arguments.destination#" />
 		</cfif>
 		
-		<cfif NOT DirectoryExists("#application.path.imageRoot##arguments.destination#")>
-			<cfset createFolderPath("#application.path.imageRoot##arguments.destination#") />
-		</cfif>
-		
 	  	<cfif fileexists(arguments.localfile)>
 	  	
-			<cfif len(arguments.existingfile) AND fileExists("#application.path.imageRoot##arguments.existingfile#")>
-				
-				<cfif NOT DirectoryExists("#application.path.mediaArchive##arguments.destination#")>
-					<cfdirectory action="create" directory="#application.path.mediaArchive##arguments.destination#" />
+    		<cfset errormessage = application.fc.lib.cdn.ioValidateFile(
+    			localpath=arguments.localfile,
+    			sizeLimit=arguments.sizeLimit,
+    			acceptextensions=arguments.allowedExtensions,
+    			existingFile=arguments.existingfile
+    		) />
+    		
+			<cfif len(arguments.existingfile)>
+				<cfif arguments.bArchive>
+					<cfset archivedFile = application.fc.lib.cdn.ioMoveFile(
+						source_location="images",
+						source_file=arguments.existingfile,
+						dest_location="archive",
+						dest_file="#arguments.destination#/#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#listLast(arguments.existingfile, '/')#"
+					) />
+				<cfelse>
+					<cfset archivedFile = application.fc.lib.cdn.ioCopyFile(
+						source_location="images",
+						source_file=arguments.existingfile,
+						dest_localpath=getTempDirectory() & "#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#listLast(arguments.existingfile, '/')#"
+					) />
 				</cfif>
 				
-				<cfset archivedFile = "#application.path.mediaArchive##arguments.destination#/#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#listLast(arguments.existingfile, '/')#" />
-				<cffile action="move" source="#application.path.imageRoot##arguments.existingfile#" destination="#archivedFile#" />
-			    
 			    <cfset stResult = passed("") />
 			    <cfset stResult.bChanged = true />
-			    
-			</cfif>
-			
-			<cfif len(arguments.existingfile)>
 	    		
-				<!--- This means there is already a file associated with this object. The new file must have the same name. --->
+				<!--- The new file must have the same name. --->
 				<cfset uploadFileName = listLast(arguments.existingfile, "/\") />
 				
-				<cfset stFile = getFileInfo(arguments.localfile) />
-				
-				<cfif arguments.sizeLimit and arguments.sizeLimit lt stFile.filesize>
-					<cffile action="move" source="#archivedFile#" destination="#application.path.imageRoot##arguments.existingfile#" />
-					<cfset stResult = failed(value=arguments.existingfile,message="#arguments.localfile# is not within the file size limit of #round(arguments.sizeLimit/1048576)#MB") />
-				<cfelseif listlast(arguments.existingfile,".") eq listlast(arguments.localfile,".")>
-					<cffile action="move" source="#arguments.localfile#" destination="#application.path.imageRoot##arguments.destination#/#uploadFileName#" mode="664" />
+				<cfif len(errormessage)>
+					<cfif arguments.bArchive>
+						<cfset archivedFile = application.fc.lib.cdn.ioMoveFile(
+							source_location="archive",
+							source_file=archivedFile,
+							dest_location="images",
+							dest_file=arguments.existingFile
+						) />
+					<cfelse>
+						<cfset archivedFile = application.fc.lib.cdn.ioMoveFile(
+							source_localpath=archivedFile,
+							dest_location="images",
+							dest_file=arguments.existingFile
+						) />
+					</cfif>
+					
+					<cfset stResult = failed(value=arguments.existingfile,message=errormessage) />
+				<cfelse>
+					<cfif not arguments.bArchive>
+						<cffile action="delete" file="#archivedFile#" />
+					</cfif>
+					
+					<cfset application.fc.lib.cdn.ioCopyFile(source_localpath=arguments.localpath,dest_location="images",dest_file=arguments.destination & "/" & uploadFilenName) />
 					<cfset stResult = passed("#arguments.destination#/#uploadFileName#") />
 					<cfset stResult.bChanged = true />
-				<cfelse>
-					<cffile action="move" source="#archivedFile#" destination="#application.path.imageRoot##arguments.existingfile#" />
-					<cfset stResult = failed(value=arguments.existingfile,message="Replacement images must have the same extension") />
 				</cfif>
 				
 			<cfelse>
 				
-				<cfset stFile = getFileInfo(arguments.localfile) />
-				
-				<cfif arguments.sizeLimit and arguments.sizeLimit lt stFile.fileSize>
-					<cfset stResult = failed(value=arguments.existingfile,message="#arguments.localfile# is not within the file size limit of #round(arguments.sizeLimit/1048576)#MB") />
-				<cfelseif listFindNoCase(arguments.allowedExtensions,listlast(arguments.localfile,"."))>
-					<cfset uploadFileName = getFileFromPath(arguments.localfile) />
-					<cfloop condition="fileexists(application.path.imageRoot & arguments.destination & '/' & uploadFileName)">
-						<cfset i = i + 1 />
-						<cfset uploadFileName = rereplace(getFileFromPath(arguments.localfile),"(\.\w+)$","#i#\1") />
-					</cfloop>
-					<cffile action="move" source="#arguments.localfile#" destination="#application.path.imageRoot##arguments.destination#/#uploadFileName#" mode="664" />
-					<cfset stResult = passed("#arguments.destination#/#uploadFileName#") />
+	    		<cfif len(errormessage)>
+					<cfset uploadFileName = application.fc.lib.cdn.ioCopyFile(source_localpath=arguments.localpath,dest_location="images",dest_file=arguments.destination & "/" & getFileFromPath(arguments.localfile)) />
+					<cfset stResult = passed(uploadFileName) />
 					<cfset stResult.bChanged = true />
 				<cfelse>
-					<cfset stResult = failed(value="",message="Images must have one of these extensions: #arguments.allowedExtensions#") />
+					<cfset stResult = failed(value="",message=errormessage) />
 				</cfif>
 				
 			</cfif>
@@ -1486,10 +959,6 @@
 			<cfset arguments.destination = "/#arguments.destination#" />
 		</cfif>
 		
-		<cfif NOT DirectoryExists("#application.path.imageRoot##arguments.destination#")>
-			<cfset createFolderPath("#application.path.imageRoot##arguments.destination#") />
-		</cfif>
-		
 		<!--- Get the source filename --->
 		<cfif len(arguments.stObject[sourceFieldName])>
 		    <cfif arguments.stFields[sourceFieldName].metadata.ftType EQ "uuid">
@@ -1507,13 +976,8 @@
 		
 		<!--- Copy the source into the new field --->
 		<cfif len(sourcefilename)>
-			<cfset finalfilename = arguments.destination & '/' & listlast(sourcefilename,"\/") />
-			<cfloop condition="fileexists(application.path.imageRoot & finalfilename)">
-				<cfset uniqueid = uniqueid + 1 />
-				<cfset finalfilename = arguments.destination & '/' & listfirst(listlast(sourcefilename,"\/"),".") & uniqueid & "." & listlast(sourcefilename,".") />
-			</cfloop>
+			<cfset finalfilename = application.fc.lib.cdn.ioCopyFile(source_location="images",source_file=sourcefilename,dest_location="images",dest_file=arguments.destination & "/" & listlast(sourcefilename,"\/"),nameconflict="makeunique",uniqueamong="images") />
 			
-			<cffile action="copy" source="#application.path.imageRoot##sourcefilename#" destination="#application.path.imageRoot##finalfilename#" mode="664" />
 			<cfreturn passed(finalfilename) />
 		<cfelse>
 			<cfreturn passed("") />
@@ -1522,29 +986,31 @@
 	</cffunction>
 	
 	<cffunction name="display" access="public" output="true" returntype="string" hint="This will return a string of formatted HTML text to display.">
-	  <cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
-	  <cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
-	  <cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
-	  <cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
-	
-	  <cfset var html = "" />
-	  
-	  <cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside">
-	  <cfparam name="arguments.stMetadata.ftImageWidth" default="0">
-	  <cfparam name="arguments.stMetadata.ftImageHeight" default="0">
-	  
-	  <cfsavecontent variable="html">
-	    <cfif len(arguments.stMetadata.value)>
-	      <cfoutput><img src="#application.fapi.getImageWebRoot()##arguments.stMetadata.value#" border="0"
-	        <cfif arguments.stMetadata.ftAutoGenerateType EQ "ForceSize" OR arguments.stMetadata.ftAutoGenerateType EQ "Pad" >
-	          <cfif len(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth GT 0>width="#arguments.stMetadata.ftImageWidth#"</cfif>
-	          <cfif len(arguments.stMetadata.ftImageHeight) and arguments.stMetadata.ftImageHeight GT 0>height="#arguments.stMetadata.ftImageHeight#"</cfif>
-	        </cfif>
-	      /></cfoutput>
-	    </cfif>
-	  </cfsavecontent>
-	  
-	  <cfreturn html>
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+		
+		<cfset var html = "" />
+		<cfset var stLoc = structnew() />
+		
+		<cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside">
+		<cfparam name="arguments.stMetadata.ftImageWidth" default="0">
+		<cfparam name="arguments.stMetadata.ftImageHeight" default="0">
+		
+		<cfsavecontent variable="html">
+			<cfif len(arguments.stMetadata.value)>
+				<cfset stLoc = getFileLocation(stObject=arguments.stObject,stMetadata=arguments.stMetadata) />
+				<cfoutput><img src="#stLoc.path#" border="0"</cfoutput>
+				<cfif arguments.stMetadata.ftAutoGenerateType EQ "ForceSize" OR arguments.stMetadata.ftAutoGenerateType EQ "Pad" >
+					<cfif len(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth GT 0><cfoutput> width="#arguments.stMetadata.ftImageWidth#"</cfoutput></cfif>
+					<cfif len(arguments.stMetadata.ftImageHeight) and arguments.stMetadata.ftImageHeight GT 0><cfoutput> height="#arguments.stMetadata.ftImageHeight#"</cfoutput></cfif>
+				</cfif>
+				<cfoutput>></cfoutput>
+			</cfif>
+		</cfsavecontent>
+		
+		<cfreturn html>
 	</cffunction>
 	
 	<cffunction name="validate" access="public" output="true" returntype="struct" hint="This will return a struct with bSuccess and stError">
@@ -1569,7 +1035,7 @@
 				<cfparam name="arguments.stFieldPost.stSupporting.ResizeMethod" default="#arguments.stMetadata.ftAutoGenerateType#" />
 				<cfparam name="arguments.stFieldPost.stSupporting.Quality" default="#arguments.stMetadata.ftQuality#" />
 				
-				<cfset stFixed = fixImage("#application.path.imageroot##stResult.value#",arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
+				<cfset stFixed = fixImage(stResult.value,arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
 				
 				<cfif stFixed.bSuccess>
 					<cfset stResult.value = stFixed.value />
@@ -1595,59 +1061,6 @@
 	</cffunction>
 	
 	
-	<cffunction name="createFolderPath" output="true" hint="Creates a folder branch" returntype="boolean">
-	  <cfargument name="folderPath" type="string" required="true">
-	  <cfargument name="mode" type="string" default="" required="false">
-	  
-	  
-	  <cfset var depth = "" />
-	  <cfset var thePath = replace(arguments.folderPath,"\", "/","ALL") />
-	  <cfset var arFolders = "" />
-	  <cfset var pathLen = 0 />
-	  <cfset var workingPath = "" />
-	  <cfset var bUNC = false />
-	  <cfset var indexStart = 1 />
-	
-	  <cfif left(arguments.folderPath,1) eq "/"><!--- *nix path --->
-	    <cfset workingPath = "/">
-	  <cfelseif left(arguments.folderPath,2) eq "\\"><!--- UNC Path --->
-	    <cfset bUNC = true>
-	    <cfset workingPath = "\\" & listFirst(arguments.folderPath, "\") & "\">
-	    <cfset indexStart = 2>
-	  <cfelse>
-	    <cfset workingPath = listFirst(thePath, "/")&"/"><!--- windows path --->
-	    <cfset thePath = listDeleteAt(thePath,1, "/")>
-	  </cfif>
-	  <cfset arFolders = listToArray(thePath, "/")>
-	  
-	  
-	  <cfloop from="#indexStart#" to="#arrayLen(arFolders)#" index="depth">
-	    
-	    <cfif bUNC>
-	      <cfset workingPath = workingPath.concat(arFolders[depth]&"\")>
-	    <cfelse>
-	      <cfset workingPath = workingPath.concat(arFolders[depth]&"/")>
-	    </cfif>
-	
-	    
-	    <cfif not directoryExists(workingPath)>
-	      <cftry>
-	      <cfif arguments.mode eq "">
-	        <cfdirectory action="create" directory="#workingPath#">     
-	      <cfelse>
-	        <cfdirectory action="create" directory="#workingPath#" mode="#arguments.mode#">
-	      </cfif>
-	      <cfcatch>
-	        <cfoutput>failed creating folder #workingPath#</cfoutput>
-	        <cfreturn false>
-	      </cfcatch>
-	      </cftry>
-	    </cfif>
-	  
-	  </cfloop>
-	  <cfreturn true>
-	</cffunction>
-	
 	<cffunction name="GenerateImage" access="public" output="false" returntype="struct">
 		<cfargument name="source" type="string" required="true" hint="The absolute path where the image that is being used to generate this new image is located." />
 		<cfargument name="destination" type="string" required="false" default="" hint="The absolute path where the image will be stored." />
@@ -1668,9 +1081,7 @@
 		<cfargument name="watermarkTransparency" type="string" required="false" default="90" hint="The transparency to apply to the watermark." />
 		
 		<cfset var stResult = structNew() />
-		<cfset var imageDestination = arguments.Source />
-		<cfset var imageFileName = "" />
-		<cfset var sourceImage = imageNew() />
+		<cfset var imageDestination = "" />
 		<cfset var newImage = "" />
 		<cfset var cropXOrigin = 0 />
 		<cfset var cropYOrigin = 0 />
@@ -1685,14 +1096,14 @@
 		<cfset var bModified = false />
 		<cfset var oImageEffects = "" />
 		<cfset var aMethods = "" />
-		<cfset var stImageAttributeCollection = structnew() />
+		
 		<cfset stResult.bSuccess = true />
 		<cfset stResult.message = "" />
 		<cfset stResult.filename = "" />
 		
 		<cfsetting requesttimeout="120" />
 		
-		<cfif not fileexists(arguments.source)>
+		<cfif not application.fc.lib.cdn.ioFileExists(location="images",file=arguments.source)>
 			<cfset stResult.bSuccess = False />
 			<cfset stResult.message = "File doesn't exist" />
 			<cfreturn stResult />
@@ -1706,10 +1117,19 @@
 		Pad - Reduces the width and height so that it fits in the box defined by the metadata width/height and then pads the image so it ends up being the metadata width/height
 		--->
 		
+		<cfif arguments.source eq arguments.destination>
+			<cfset imageDestination = arguments.destination />
+			<cfset arguments.bSelfSourced = true />
+		<cfelseif refind("\.\w+$",arguments.destination)>
+			<cfset imageDestination = arguments.destination />
+		<cfelse>
+			<cfset imageDestination = arguments.destination & "/" & listlast(arguments.source,"/\") />
+		</cfif>
+		
 		<!--- Image has changed --->
 		<cftry>
 			<!--- Read image into memory --->
-			<cfset newImage = ImageRead(arguments.source) />
+			<cfset newImage = application.fc.lib.cdn.ioReadFile(location="images",file=arguments.source,datatype="image") />
 			<cfif arguments.bSetAntialiasing is true>
 				<cfset ImageSetAntialiasing(newImage,"on") />
 			</cfif>
@@ -1723,50 +1143,12 @@
 			</cfcatch>
 		</cftry>
 		
-		<!--- Default image filename --->
-		<cfset stResult.filename = listlast(arguments.source,"\/") />
-		
-		<cfif len(arguments.destination)>
-			<cfset imageFileName = replace(arguments.source, "\", "/", "all") />
-			<cfset imageFileName = listLast(imageFileName, "/") />
-			
-			<cfset imageDestination = arguments.Destination />
-			
-			<!--- Create the directory for the image if it doesnt already exist --->
-			<cfif not directoryExists("#ImageDestination#")>
-				<cfdirectory action="create" directory="#ImageDestination#" />
-			</cfif>
-			
-			<!--- duplicates shouldnt exist, checks now in validate function for all image options --->
-			<cfif fileExists("#ImageDestination#/#imageFileName#") AND NOT arguments.bSelfSourced>
-			
-				<cffile 
-					action = "move"
-					source = "#ImageDestination#/#imageFileName#"
-					destination = "#ImageDestination#/#dateFormat(now(),'yyyymmdd')#_#timeFormat(now(),'hhmmssl')#_#imageFileName#">
-			
-			</cfif>
-			
-			<!--- Include the image filename into the image destination. --->
-			<cfset ImageDestination = "#ImageDestination#/#imageFileName#" />                 
-			
-			<!--- Copy the image to the new destination folder --->
-			<cfif NOT arguments.bSelfSourced>
-				<cffile action="copy" 
-					source="#arguments.Source#"
-					destination="#ImageDestination#" mode="664">
-			</cfif>
-			
-			<!--- update the return filename --->       
-			<cfset stResult.filename = imageFileName /> 
-		</cfif>
-		
-		
 		<cfif arguments.bUploadOnly is true>
 			<!--- We do not want to modify the file, so exit now --->
+			<cfset stResult.filename = application.fc.lib.cdn.ioCopyFile(source_location="images",source_file=arguments.source,dest_location="images",dest_file=imageDestination,nameconflict="makeunique",uniqueamong="images") /> 
 			<cfreturn stResult />
 		</cfif>
-	
+		
 		<cfswitch expression="#arguments.ResizeMethod#">
 		
 			<cfcase value="ForceSize">
@@ -1969,41 +1351,18 @@
 
 		<!--- Modify extension to convert image format --->
 		<cfif len(arguments.convertImageToFormat)>
-			<!--- Delete the working file --->
-			<cftry>
-				<cffile action="delete" file="#ImageDestination#">
-				<cfcatch></cfcatch>
-			</cftry>
 			<cfset ImageDestination = listSetAt(ImageDestination, listLen(ImageDestination, "."), replace(convertImageToFormat, ".", "", "all"), ".") />
-			<!--- update the return filename --->
-			<cfset stResult.filename = listLast(ImageDestination,"/") />
 			<cfset bModified = true />
 		</cfif>
-	
-		<cfif arguments.ResizeMethod eq "none">
-			<cfif bModified>
-				<cfimage action="write" source="#newImage#" destination="#imageDestination#" overwrite="true" />
-				<!--- Workaround for missing 'mode' attribute in the <cfimage> tag :: Set UNIX file rights to 'user:group' --->
-				<cfset FileSetAccessMode("#imageDestination#", "664") />
+		
+		<cfif arguments.ResizeMethod neq "none" or bModified>
+			<cfif NOT arguments.bSelfSourced>
+				<cfset stResult.filename = application.fc.lib.cdn.ioWriteFile(location="images",file=imageDestination,data=newImage,datatype="image",quality=arguments.quality,nameconflict="makeunique",uniqueamong="images") />
 			<cfelse>
-				<!--- No changes, the file is already in place ... we're done --->
+				<cfset stResult.filename = application.fc.lib.cdn.ioWriteFile(location="images",file=imageDestination,data=newImage,datatype="image",quality=arguments.quality,nameconflict="overwrite") />
 			</cfif>
 		<cfelse>
-			<cfscript>
-				stImageAttributeCollection.action = "write";
-				stImageAttributeCollection.source = newImage;
-				stImageAttributeCollection.destination = imageDestination;
-				stImageAttributeCollection.overwrite = "true";
-				if(right(imageDestination, 4) eq ".jpg" or right(imageDestination, 5) eq ".jpeg"){
-					stImageAttributeCollection.quality = arguments.quality; // This setting (from Adobe) is for jpg images only and would cause errors if used on other image types
-				}
-			</cfscript>
-		
-			<cfimage attributeCollection="#stImageAttributeCollection#" />
-			<!--- Workaround for missing 'mode' attribute in the <cfimage> tag :: Set UNIX file rights to 'user:group' --->
-			<cfset FileSetAccessMode("#imageDestination#", "664") />
-			
-			<cfset stResult.filename = listlast(stImageAttributeCollection.destination,"/\") />
+			<cfset stResult.filename = imageDestination />
 		</cfif>
 		
 		<cfreturn stResult />
@@ -2032,7 +1391,7 @@
 					<cfparam name="arguments.stFormPost.#thisfield#.stSupporting.ResizeMethod" default="#arguments.stFields[thisfield].metadata.ftAutoGenerateType#" />
 					<cfparam name="arguments.stFormPost.#thisfield#.stSupporting.Quality" default="#arguments.stFields[thisfield].metadata.ftQuality#" />
 					
-					<cfset stFixed = fixImage("#application.path.imageroot##stResult.value#",arguments.stFields[thisfield].metadata,arguments.stFormPost[thisfield].stSupporting.ResizeMethod,arguments.stFormPost[thisfield].stSupporting.Quality) />
+					<cfset stFixed = fixImage(stResult.value,arguments.stFields[thisfield].metadata,arguments.stFormPost[thisfield].stSupporting.ResizeMethod,arguments.stFormPost[thisfield].stSupporting.Quality) />
 					
 					<cfif stFixed.bSuccess>
 						<cfset stResult.value = stFixed.value />
@@ -2085,20 +1444,54 @@
 			<cfreturn /><!--- No file attached --->
 		</cfif>
 		
-		<cfif fileexists("#application.path.defaultImagePath#/#arguments.stObject[arguments.stMetadata.name]#")>
-			<cffile action="delete" file="#application.path.defaultImagePath#/#arguments.stObject[arguments.stMetadata.name]#" />
+		<cfif application.fc.lib.cdn.ioFileExists(location="images",file="/#arguments.stObject[arguments.stMetadata.name]#")>
+			<cfset application.fc.lib.cdn.ioDeleteFile(location="images",file="/#arguments.stObject[arguments.stMetadata.name]#") />
 		<cfelse>
 			<cfreturn /><!--- File doesn't actually exist --->
 		</cfif>
-	</cffunction> 
-
+	</cffunction>
+	
+	<cffunction name="getFileLocation" access="public" output="false" returntype="struct" hint="Returns information used to access the file: type (stream | redirect), path (file system path | absolute URL), filename, mime type">
+		<cfargument name="objectid" type="string" required="false" default="" hint="Object to retrieve" />
+		<cfargument name="typename" type="string" required="false" default="" hint="Type of the object to retrieve" />
+		<!--- OR --->
+		<cfargument name="stObject" type="struct" required="false" hint="Provides the object" />
+		
+		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
+		
+		<cfset var stResult = structnew() />
+		
+		<!--- Throw an error if the field is empty --->
+		<cfif NOT len(arguments.stObject[arguments.stMetadata.name])>
+			<cfset stResult = structnew() />
+			<cfset stResult.method = "none" />
+			<cfset stResult.error = "No file defined" />
+			<cfreturn stResult />
+		</cfif>
+		
+		<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stObject[arguments.stMetadata.name]) />
+		
+		<cfreturn stResult />
+	</cffunction>
+	
 	<cffunction name="onArchive" access="public" output="false" returntype="void" hint="Called from setData when an object is deleted">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="archiveID" type="uuid" required="true" hint="The ID of the new archive" />
 		
-		<cfreturn moveToArchive(stObject=arguments.stObject,stMetadata=arguments.stMetadata,archiveID=arguments.archiveID) />
+		<cfset var currentLocation = "" />
+		<cfset var archiveFile = "" />
+		
+		<cfif len(arguments.stObject[arguments.stMetadata.name])>
+			<cfset currentLocation = application.fc.lib.cdn.ioFindFile(locations="publicfiles,privatefiles",file=arguments.stObject[arguments.stMetadata.name]) />
+			
+			<cfset archiveFile = "/#arguments.stObject.typename#/#arguments.archiveID#.#arguments.stMetadata.name#.#ListLast(arguments.stObject[arguments.stMetadata.name],'.')#" />
+			
+			<cfset application.fc.lib.cdn.ioMoveFile(source_config=currentLocation,source_file=arguments.stObject[arguments.stMetadata.name],dest_config="archive",dest_file=archiveFile) />
+		</cfif>
+		
+		<cfreturn archiveFile />
 	</cffunction>
 	
 	<cffunction name="onRollback" access="public" output="false" returntype="void" hint="Called from setData when an object is deleted">
@@ -2106,126 +1499,31 @@
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="archiveID" type="uuid" required="true" hint="The ID of the archive being rolled back" />
-	
-		<cfreturn moveToPublic(stObject=arguments.stObject,stMetadata=arguments.stMetadata,archiveID=arguments.archiveID,fileAction="copy") />
-	</cffunction>
-	
-	<cffunction name="moveToArchive" access="public" output="false" returntype="void" hint="Moves the specified file to the public location">
-		<cfargument name="objectid" type="string" required="false" default="" hint="Object to retrieve" />
-		<cfargument name="typename" type="string" required="false" default="" hint="Type of the object to retrieve" />
-		<!--- OR --->
-		<cfargument name="stObject" type="struct" required="false" hint="Provides the object" />
 		
-		<cfargument name="archiveID" type="uuid" required="true" />
-		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
+		<cfset var archiveFile = "/#arguments.stObject.typename#/#arguments.archiveID#.#arguments.stMetadata.name#.#ListLast(arguments.stObject[arguments.stMetadata.name],'.')#" />
 		
-		
-		<cfset var newPath = application.config.general.archivedirectory />
-		<cfset var newFile = "" />
-		<cfset var archivePath = "" />
-		
-		<cfif not directoryExists(newPath)>
-			<cfset newPath = "#application.path.project#/archive" />
-		</cfif>
-		
-		<cfif refind("[\\\/]$",newPath)>
-			<cfset newPath = mid(newPath,1,len(newPath)-1) />
-		</cfif>
-		
-		<cfset newPath = newPath & "/#arguments.stObject.typename#" />
-		
-		<cfif not directoryExists(newPath)>
-			<cfdirectory action="create" directory="#newPath#" mode="777" />
-		</cfif>
-		
-		<!--- Get the object if not passed in --->
-		<cfif not structkeyexists(arguments,"stObject")>
-			<cfset arguments.stObject = application.fapi.getContentObject(objectid=arguments.objectid,typename=arguments.typename) />
-		</cfif>
-		
-		<cfset newFile = "#arguments.archiveID#.#arguments.stMetadata.name#.#ListLast(arguments.stObject[arguments.stMetadata.name],'.')#" />
-		
-		
-		<!--- Find archived file --->
-		<cfif len(application.config.general.archivedirectory) and directoryExists(application.config.general.archivedirectory)>
-			<cfset archivePath = application.config.general.archivedirectory />
-			<cfif refind("[\\\/]$",archivePath)>
-				<cfset archivePath = left(archivePath,len(archivePath)-1) />
-			</cfif>
-		<cfelse>
-			<cfset archivePath = "#application.path.project#/archive" />
-		</cfif>
-		<cfset archivePath = archivePath & "/#arguments.stObject.typename#" />
-		
-		<cfif not directoryexists(archivePath)>
-			<cfreturn "" />
-		</cfif>
-		
-		<cfdirectory action="list" directory="#archivePath#" filter="#arguments.archiveID#.#arguments.stMetadata.name#.*" type="file" name="q" />
-		<cfif not q.recordcount>
-			<cfreturn "" />
-		<cfelse>
-			<cfset archivePath = archivePath & "/" & q.name />
-		</cfif>
-		
-		
-		<cffile action="copy" source="#archivePath#" destination="#newPath#/#newFile#" />
-		
-		<cfreturn "/" & arguments.stObject.typename & "/" & newFile />
-	</cffunction>
-	
-	<cffunction name="moveToPublic" access="public" output="false" returntype="string" hint="Moves the specified file to the public location">
-		<cfargument name="objectid" type="string" required="false" default="" hint="Object to retrieve" />
-		<cfargument name="typename" type="string" required="false" default="" hint="Type of the object to retrieve" />
-		<!--- OR --->
-		<cfargument name="stObject" type="struct" required="false" hint="Provides the object" />
-		
-		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
-		<cfargument name="archiveID" type="uuid" required="false" hint="Specify in order to move the file from the specified archive" />
-		<cfargument name="fileAction" type="string" required="false" default="move" />
-		
-		
-		<cfset var newPath = application.path.imageroot />
-		
-		<!--- Get the object if not passed in --->
-		<cfif not structkeyexists(arguments,"stObject")>
-			<cfset arguments.stObject = application.fapi.getContentObject(objectid=arguments.objectid,typename=arguments.typename) />
-		</cfif>
-		
-		<cfif fileexists("#newPath##arguments.stObject[arguments.stMetadata.name]#")>
-			<cfloop condition="fileexists(newPath & rereplace(arguments.stObject[arguments.stMetadata.name],'(\.\w+$)',i & '$1'))">
-				<cfset i = i + 1 />
-			</cfloop>
-			
-			<!--- NOTE: this only works because types.setData passes stObject into these functions THEN saves --->
-			<cfset arguments.stObject[arguments.stMetadata.name] = rereplace(arguments.stObject[arguments.stMetadata.name],'(\.\w+$)',i & '$1') />
-		</cfif>
-		
-		<cffile action="#arguments.fileAction#" source="#newPath#/#arguments.archiveID#.#arguments.stMetadata.name#.#ListLast(arguments.stObject[arguments.stMetadata.name],'.')#" destination="#newPath##arguments.stObject[arguments.stMetadata.name]#" />
-		
-		<cfreturn arguments.stObject[arguments.stMetadata.name] />
+		<cfset application.fc.lib.cdn.ioMoveFile(source_config="archive",source_file=archiveFile,dest_config="images",dest_file=arguments.stObject[arguments.stMetadata.value]) />
 	</cffunction>
 	
 	<cffunction name="duplicateFile" access="public" output="false" returntype="string" hint="For use with duplicateObject, copies the associated file and returns the new unique filename">
 		<cfargument name="stObject" type="struct" required="false" hint="Provides the object" />
 		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
 		
+		<cfset var currentfilename = arguments.stObject[arguments.stMetadata.name] />
 		<cfset var newfilename = "" />
-		<cfset var uniquekey = 1 />
+		<cfset var currentlocation = "" />
 		
-		<cfif not fileexists(application.path.imageroot & arguments.stObject[arguments.stMetadata.name])>
+		<cfif not len(currentfilename)>
 			<cfreturn "" />
 		</cfif>
 		
-		<cfset newfilename = rereplacenocase(arguments.stObject[arguments.stMetadata.name],"((\.[\w\d]+)?)$","#uniquekey#\1") />
-		<cfloop condition="fileexists(application.path.imageroot & newfilename)">
-			<cfset uniquekey = uniquekey + 1 />
-			<cfset newfilename = rereplacenocase(arguments.stObject[arguments.stMetadata.name],"((\.[\w\d]+)?)$","#uniquekey#\1") />
-		</cfloop>
+		<cfset currentlocation = application.fc.lib.cdn.ioFindFile(locations="images",file=currentfilename) />
 		
-		<cffile action="copy" source="#application.path.imageroot##arguments.stObject[arguments.stMetadata.name]#" destination="#application.path.imageroot##newfilename#" mode="777" />
+		<cfif not len(currentpath)>
+			<cfreturn "" />
+		</cfif>
 		
-		<cfreturn newfilename />
+		<cfreturn application.fc.lib.cdn.ioCopyFile(source_pathlocation="images",source_file=currentfilename,dest_location="images",dest_file=newfilename,nameconflict="makeunique",uniqueamong="images") />
 	</cffunction>
 	
 	<cffunction name="failed" access="public" output="false" returntype="struct" hint="This will return a struct with stMessage">

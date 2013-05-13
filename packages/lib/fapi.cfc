@@ -407,7 +407,6 @@
 		<cfargument name="id" required="true" />
 		<cfargument name="lCombineIDs" default="" />
 		<cfargument name="baseHREF" default="" />
-		<cfargument name="hostname" default="" />
 		<cfargument name="lFiles" default="" />
 		<cfargument name="media" default="all" />
 		<cfargument name="condition" default="" hint="Used to wrap a conditional statement around the link tag." />
@@ -442,7 +441,6 @@
 		<cfargument name="id" required="true" />
 		<cfargument name="lCombineIDs" default="" />
 		<cfargument name="baseHREF" default="" />
-		<cfargument name="hostname" default="" />
 		<cfargument name="lFiles" default="" />
 		<cfargument name="condition" default="" hint="Used to wrap a conditional statement around the script tag." />
 		<cfargument name="prepend" default="" hint="Any JS code you wish to have placed before the library." />
@@ -1445,8 +1443,9 @@
 			</code>
 		 --->
 		<cffunction name="getImageWebRoot" access="public" returntype="string" output="false" hint="Returns the path inside the webroot where all image property paths are relative to. By default, this is the webroot of the project." bDocument="true">
-		
-			<cfreturn application.url.imageRoot />
+			<cfset var stLoc = application.fc.lib.cdn.ioGetFileLocation(location="images",file="") />
+			
+			<cfreturn stLoc.path />
 		</cffunction>
 			
 		<!--- @@examples:
@@ -1457,10 +1456,11 @@
 				</cfif>
 			</code>
 		 --->
-		<cffunction name="getFileWebRoot" access="public" returntype="string" output="false" hint="Returns the path inside the webroot where all file property paths are relative to. By default, this is /files insite the webroot of the project." bDocument="true">
-	
-		<cfreturn application.url.fileRoot />
-	</cffunction>
+		<cffunction name="getFileWebRoot" access="public" returntype="string" output="false" hint="Returns the path inside the webroot where all file property paths are relative to. By default, this is /files insite the webroot of the project." bDocument="true" bDeprecated="true">
+			<cfset deprecated("This function [application.fapi.getFileWebroot] has been deprecated since the implementation of core CDN functionality") />
+			
+			<cfreturn application.url.fileRoot />
+		</cffunction>
 	
 
 		<!--- @@examples:

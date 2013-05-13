@@ -129,7 +129,20 @@ type properties
 	
 	<!--- getData for object edit --->
 	<cfset stObj = this.getData(arguments.objectid)>
-	<cfinclude template="_dmImage/display.cfm">
+	
+	<cfif stObj.thumbnailimage neq "">
+		<cfoutput>#getI18Property("thumbnailimage","label")# <br /><div style="margin-left:20px;margin-top:20px;"><img src="#application.url.webroot##stObj.thumbnailimage#" alt="#stObj.alt#" border="0"></div></cfoutput>
+	</cfif>
+	<cfif stObj.standardimage neq "">
+		<cfoutput>getI18Property("standardimage","label") <br /><div style="margin-left:20px;margin-top:20px;"><img src="#application.url.webroot##stObj.StandardImage#" alt="#stObj.alt#" border="0"></div></cfoutput>
+	</cfif>
+	<cfif stObj.sourceimage neq "">
+		<cfoutput>#getI18Property("sourceimage","label")# <br /><div style="margin-left:20px;margin-top:20px;"><img src="#application.url.webroot##stObj.sourceimage#" alt="#stObj.alt#" border="0"></div></cfoutput>
+	</cfif>
+	
+	<cfif stObj.sourceimage eq "" and stObj.thumbnailimage eq "" and stObj.standardimage eq "">
+		<cfoutput><div style="margin-left:20px;margin-top:20px;">File does not exist.</div></cfoutput>
+	</cfif> 
 </cffunction>
 
 <cffunction name="delete" access="public" hint="Specific delete method for dmImage. Removes physical files from ther server." returntype="struct">
@@ -178,11 +191,7 @@ type properties
 		<cfset stReturn.bSuccess = false>
 		<cfset stReturn.message = stReturn.message & "Sorry image [#stObj.label#] cannot be delete because it is associated to <strong>#stLocal.relatedQty#</strong> other item(s).<br />">
 	</cfif>
-			
-
-	<cfif stReturn.bSuccess EQ true>
-		<cfinclude template="_dmImage/delete.cfm">
-	</cfif>
+	
 	<cfreturn stReturn>
 </cffunction>
 

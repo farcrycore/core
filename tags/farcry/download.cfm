@@ -21,7 +21,7 @@
 <!--- @@Developer: Geoff Bowers (modius@daemon.com.au) --->
 
 <!--- import tag libraries --->
-<cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
+<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
 
 <!--- run once only --->
 <cfif thistag.ExecutionMode eq "end">
@@ -80,10 +80,7 @@ accommodate legacy implementations
 <cfset oType = createObject("component", application.types[attributes.typename].packagePath) />
 <cfset stFile = oType.getData(objectid=attributes.objectid) />
 
-
-<!--- todo: should be checking standard view permission --->
-
-<!--- check status of file --->
+<!--- check status and permissions on file --->
 <cfif not structkeyexists(stFile,"objectid") or (structkeyexists(stFile,"bDefaultObject") and stFile.bDefaultObject)>
 	<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("Object does not exist")) />
 	<cfexit method="exittag" />
@@ -97,6 +94,17 @@ accommodate legacy implementations
 	<cfelse>
 		<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("You are not authorised to view this file")) />
 		<cfexit method="exittag" />
+	</cfif>
+</cfif>
+
+<!--- check view permission --->
+<sec:CheckPermission objectid="#stFile.objectid#" type="#stFile.typename#" permission="View" result="filepermission" />
+<cfif not filepermission>
+	<cfif application.security.isLoggedIn() or not len(attributes.loginpath)>
+		<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("You are not authorised to view this file")) />
+		<cfexit method="exittag" />
+	<cfelse>
+		<skin:location url="#attributes.loginpath#" urlParameters="showdraft=1&error=draft" />
 	</cfif>
 </cfif>
 
@@ -129,32 +137,33 @@ accommodate legacy implementations
 
 
 <!--- What to do if the returned struct is empty (i.e. user doesn't have permission) --->
-<cfif structisempty(stLocation) or structkeyexists(stLocation,"message")>
+<cfif structisempty(stLocation) or stLocation.method eq "none">
 	
-	<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("File does not exist")) />
+	<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error(stLocation.error)) />
 	<cfexit method="exittag" />
 	
 <cfelse>
-
+	
 	<!------------------------------------
 	DOWNLOAD FILE
 	------------------------------------->
-	<cfif stLocation.type eq "stream">
-		<cfheader name="content-disposition" VALUE='#attributes.disp#; filename="#stLocation.fileName#"' />
+	<cfif stLocation.method eq "stream">
+		<cfheader name="content-disposition" VALUE='#attributes.disp#; filename="#listlast(stLocation.path,'/')#"' />
 		<cfheader name="cache-control" value="" />
 		<cfheader name="pragma" value="" />
 		<cftry>
-			<cfif StructKeyExists(stLocation,"mimeType")> <!--- mimetype could be unknown - happend with .dot --->
-				<cfcontent type="#stLocation.mimeType#" file="#stLocation.path#" deletefile="No" reset="Yes" />
+			<cfif StructKeyExists(stLocation,"mimetype")> <!--- mimetype could be unknown - happend with .dot --->
+				<cfcontent type="#stLocation.mimetype#" file="#stLocation.path#" deletefile="No" reset="Yes" />
 			<cfelse>
 				<cfcontent file="#stLocation.path#" deletefile="No" reset="Yes" />
 			</cfif>
-		<cfcatch><!--- prevent unnecessary log entries when user cancels download whilst it is in progress ---></cfcatch>
+			
+			<cfcatch><!--- prevent unnecessary log entries when user cancels download whilst it is in progress ---></cfcatch>
 		</cftry>
-	<cfelse>
+	<cfelseif stLocation.method eq "redirect">
 		<cflocation url="#stLocation.path#" addtoken="false" />
 	</cfif>
-
+	
 </cfif>
 
 <cfsetting enablecfoutputonly="false" />

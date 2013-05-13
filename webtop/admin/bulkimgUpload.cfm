@@ -25,15 +25,19 @@
 	<cfset oImageFormtool = createObject("component", "farcry.core.packages.formtools.image") />
 
 	<cfset physicalPath = "#application.path.imageRoot#/#application.stCoapi.dmImage.STPROPS.SourceImage.METADATA.FTDESTINATION#" />
-
+	
+	<cfset stMeta = application.stCoapi.dmImage.stProps.SourceImage.metadata />
+	
 	<cftry>
-		<cfif not directoryExists("#physicalPath#")>
-			<cfset b = oImageFormtool.createFolderPath("#physicalPath#") />
-		</cfif>
-	
-	
-		<cffile action="UPLOAD" filefield="FILEDATA" destination="#physicalPath#/#form.FILENAME#" nameconflict="MAKEUNIQUE" mode="664" />
-			
+		<cfset stProperties = structNew() />
+		<cfset stProperties.objectid = application.fapi.getUUID() />
+		<cfset stProperties.typename = "dmImage" />
+		<cfset stProperties.sourceImage = application.fc.lib.cdn.ioUploadFile(location="images",destination=stMeta.ftDestination,acceptextensions=stMeta.ftAllowedExtensions,field="FILEDATA",sizeLimit=stMeta.ftSizeLimit,nameconflict="makeunique") />
+		<cfset stProperties.label = listlast(stProperties.sourceImage,"/") />
+		<cfset stProperties.title =listlast(stProperties.sourceImage,"/") />
+		<cfset stProperties.alt = listlast(stProperties.sourceImage,"/") />
+		<cfset stProperties.status = "approved" />
+		
 		<cfcatch>
 			<cflog log="Application" type="error" text="#form.fieldNames# #cfcatch.Message# #cfcatch.Detail#" />
 			<cfabort />
@@ -41,12 +45,6 @@
 	
 	</cftry>
 			
-	<cfset stProperties = structNew() />
-	<cfset stProperties.objectid = "#application.fc.utils.createJavaUUID()#" />
-	<cfset stProperties.label = "#cffile.serverFile#" />
-	<cfset stProperties.title = "#cffile.serverFile#" />
-	<cfset stProperties.alt = "#cffile.serverFile#" />
-	<cfset stProperties.status = "approved" />
 	
 	<cfif isdefined("form.categoryID")>
 		<cfset stProperties.catImage = form.categoryID />

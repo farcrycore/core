@@ -351,13 +351,8 @@ BEGIN: Application Initialise
 			<cfset ps.policyGroupTable = "dmPolicyGroup" />
 			<cfset ps.permissionBarnacleTable = "dmPermissionBarnacle" />
 			<cfset ps.externalGroupToPolicyGroupTable = "dmExternalGroupToPolicyGroup" />
-
-			<!--------------------------------- 
-			INITIALISE DMSEC
-			 --------------------------------->
-			<cfinclude template="/farcry/core/tags/farcry/_dmSec.cfm">
-
-
+			
+			
 			<!---------------------------------------------- 
 			INITIALISE THE COAPIADMIN SINGLETON
 			----------------------------------------------->
