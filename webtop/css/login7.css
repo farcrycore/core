@@ -1,3 +1,6 @@
+html {
+  min-height:100%;
+}
 body {
 	background:#ffffff url(images/bg-login.png) 0 150px repeat-x;
 	min-height:100%;
@@ -12,63 +15,48 @@ body {
   font-size:18px;
   font-weight:normal;
   line-height:20px;
+  margin: 0;
 }
 .content-block {
-  background:#fefefe;
-  border:1px solid #a9a39e;
+  background:#ffffff;
+  border:1px solid #cccccc;
   margin-bottom:20px;
-  -webkit-border-radius:2px;
-  -moz-border-radius:2px;
-  border-radius:2px;
 }
 .content-header {
-  background:#eae9e5;
-  background-image:-webkit-gradient(linear,0 0,0 100%,from(#f7f6f3),to(#dddbd7));
-  background-image:-webkit-linear-gradient(top,#f7f6f3,#dddbd7);
-  background-image:-moz-linear-gradient(top,#f7f6f3,#dddbd7);
-  background-image:-o-linear-gradient(top,#f7f6f3,#dddbd7);
-  background-image:linear-gradient(to bottom,#f7f6f3,#dddbd7);
-  border-top:1px solid #ffffff;
-  border-bottom:1px solid #a9a39e;
-  color:#444444;
-  padding:0 15px;
+  background:#f1f1f1;
+  border-bottom:1px solid #cccccc;
+  color:#333333;
+  padding: 10px 15px;
   position:relative;
   text-shadow:0 1px 0 #ffffff;
-  -webkit-border-radius:2px 2px 0 0;
-  -moz-border-radius:2px 2px 0 0;
-  border-radius:2px 2px 0 0;
 }
 .content-main {
   border:1px solid #ffffff;
   padding:15px 15px 5px;
-  -webkit-border-radius:0 0 2px 2px;
-  -moz-border-radius:0 0 2px 2px;
-  border-radius:0 0 2px 2px;
 }
 .content-main > *:first-child {
   margin-top:0;
 }
-@media (max-width:767px) {
-  #content-main {
-    margin:20px 10px 0;
-  }
-}
-html {
-  min-height:100%;
-}
 
 #content-main form {
-  padding:20px 0 40px;
-}
-#content-main form input[type="text"],
-#content-main form input[type="password"] {
-  font-size:24px;
-  height:30px;
-  line-height:30px;
-  margin-bottom:20px;
-  width:97%;
+  padding:20px 0;
 }
 
+#content-main form fieldset {
+  margin:0;
+  padding: 0;
+}
+
+
+#content-main form input[type="text"],
+#content-main form input[type="password"] {
+  font-size:19px;
+  height:26px;
+  line-height:26px;
+  margin-bottom:20px;
+  width:97%;
+  border-radius: 0;
+}
 
 #content-main .uniForm .inlineLabels input[type="text"],
 #content-main .uniForm .inlineLabels input[type="password"],
@@ -77,8 +65,14 @@ html {
   width: 97%;
   height:auto;
   font-size: 14px;
+  line-height: 16px;
   padding: 5px;
   margin-bottom: 2px;
+  border-radius: 0;
+}
+#content-main .uniForm .inlineLabels .selectInput {
+  padding: 4px;
+  box-sizing: border;
 }
 
 #content-main .uniForm .label {
@@ -87,37 +81,96 @@ html {
 
 #content-main form .help-inline {
   font-size:12px;
-  margin-top:16px;
+  margin-top:12px;
   padding-right:5px;
 }
 #content-main form .btn-group {
   float:right;
 }
-#content-main form .btn {
-  font-size:16px;
-  font-weight:300;
-  line-height:normal;
-  padding:15px 30px;
+
+#content-main .btn {
+  background: #e8e8e8;
+  border-radius: 0;
+  border: 0;
+  color: #555;
+  box-shadow: 0 0 1px rgba(0,0,0,0.25) inset;
+  font-family: Arial, Helvetica, sans-serif;
 }
-#content-main form .btn.dropdown-toggle {
-  padding:15px;
+#content-main .btn:hover,
+#content-main .btn:focus {
+  background: #f8f8f8;
+  box-shadow: 0 0 1px rgba(0,0,0,0.4) inset;
+  /*text-shadow: 0 1px 1px #000;*/
+  /*color: #fff;*/
 }
+#content-main .btn:active {
+  background: #cccccc;
+}
+#content-main .btn-primary {
+  background: #3e84b5;
+  text-shadow: none;
+  color: #fff;
+  box-shadow: 0 0 1px rgba(0,0,0,0.4) inset;
+}
+#content-main .btn-primary:hover,
+#content-main .btn-primary:focus {
+  background: #0e65a2;
+  box-shadow: 0 0 1px rgba(0,0,0,0.6) inset;
+  text-shadow: none;
+  color: #fff;
+}
+#content-main .btn-primary:active {
+  background: #0c5582;
+  text-shadow: none;
+  color: #fff;
+}
+
+#content-main .btn-group .btn {
+  border-radius: 0;
+}
+
+
+.dropdown .dropdown-menu {
+  border-radius: 0;
+  margin-top: -1px;
+  padding-top: 5px;
+}
+.dropdown .dropdown-menu li > a {
+  color: #333;
+  padding: 3px 14px;
+  filter: none;
+}
+.dropdown .dropdown-menu li > a:hover,
+.dropdown .dropdown-menu li > a:focus {
+  background: #dae8f2;
+  text-decoration: none;
+}
+.dropdown .dropdown-menu .active > a,
+.dropdown .dropdown-menu .active > a:hover,
+.dropdown .dropdown-menu .active > a:focus {
+  background: #0e65a2;
+  color: #fff;
+  padding: 3px 14px;
+}
+
+
 #content-main .content-block {
-  border-color:#a9a39e;
+  border-color:#cccccc;
   margin:0 auto;
   width:520px;
-  -webkit-box-shadow:0 30px 30px rgba(0,0,0,0.3);
-  -moz-box-shadow:0 30px 30px rgba(0,0,0,0.3);
-  box-shadow:0 30px 30px rgba(0,0,0,0.3);
+  -webkit-box-shadow:0 4px 16px rgba(0,0,0,0.25);
+  -moz-box-shadow:0 4px 16px rgba(0,0,0,0.25);
+  box-shadow:0 4px 16px rgba(0,0,0,0.25);
 }
 #content-main .copyright {
   font-size:11px;
+  line-height: 15px;
   padding:0 5px;
   text-align:right;
-  color: #999999;
+  color: #cccccc;
 }
 #content-main .copyright a {
-  color: #666666;
+  color: #999999;
 }
 #content-main .copyright strong {
   font-weight: normal;
@@ -137,7 +190,6 @@ html {
 }
 #header h1:first-child {
   border-left:none;
-  margin-left:0;
 }
 #header .logo {
   color:#303030;
@@ -145,10 +197,12 @@ html {
   *display:inline;
   font-size:24px;
   font-weight:300;
-  height:30px;
-  line-height:30px;
-  margin:30px 0;
+  height:60px;
+  line-height:60px;
+  margin:15px 0;
   *zoom:1;
+  background-position: center;
+  background-repeat: no-repeat;
   -webkit-transition:color 0.3s;
   -moz-transition:color 0.3s;
   -o-transition:color 0.3s;
@@ -156,18 +210,22 @@ html {
 }
 #header .logo:hover,
 #header .logo:active {
-  color:#54af00;
+  color:#000000;
   text-decoration:none;
   -webkit-transition:color 0.3s;
   -moz-transition:color 0.3s;
   -o-transition:color 0.3s;
   transition:color 0.3s;
 }
-#header h1:first-child .logo {
+#header h1 .farcry-logo {
+  width:145px;
   background:url(images/farcry-logo.png) center no-repeat;
   text-indent:-99999px;
-  width:145px;
 }
+#header h1 .webtop-logo {
+  width: 180px
+}
+
 li a.active { background-color:#3E84B5; color:#FFF; }
 @media (max-height:670px){
   body {
@@ -187,11 +245,15 @@ li a.active { background-color:#3E84B5; color:#FFF; }
 }
 @media (max-width:767px){
   body {
-    background-position:0 100px;
+    background-position:0 90px;
+  }
+  #header .container-fluid {
+    padding: 0;
   }
   #content-main {
-    margin-top:10px;
-    padding-top:0;
+  }
+  #content-main .content-block {
+    margin:0 10px;
   }
   #content-main form {
     padding:10px 0;
@@ -214,8 +276,16 @@ li a.active { background-color:#3E84B5; color:#FFF; }
     border:none;
     display:block;
     padding:0;
+    margin: 10px;
+    font-size: 25px;
+    line-height: 25px;
   }
-  #header .logo {
-    margin:10px 0;
+  #header h1 .logo {
+    margin:0;
   }
+  #header h1 .farcry-logo {
+    display: none;
+  }  
+
+
 }

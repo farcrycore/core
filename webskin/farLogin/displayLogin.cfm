@@ -104,7 +104,7 @@ FARCRY IMPORT FILES
 	
 	<cfset hasPrev = false />
 	<sec:CheckPermission webskinpermission="forgotUserID" type="farUser">
-		<skin:buildLink type="farUser" view="forgotUserID" rbkey="coapi.farLogin.login.forgotuserid"><cfoutput>Forgot User Name</cfoutput></skin:buildLink>
+		<skin:buildLink type="farUser" view="forgotUserID" rbkey="coapi.farLogin.login.forgotuserid"><cfoutput>Forgot Username</cfoutput></skin:buildLink>
 		
 		<cfset hasPrev = true />
 	</sec:CheckPermission>
@@ -127,16 +127,16 @@ FARCRY IMPORT FILES
 	
 	<cfoutput>
 		</p>
-		<div class="btn-group">
-			<ft:button rendertype="button" class="btn" rbkey="security.buttons.login" value="Log In" />
+		<div class="btn-group dropdown pull-right">
+			<ft:button rendertype="button" class="btn btn-primary btn-large" rbkey="security.buttons.login" value="Log In" />
 			<cfif qExtraOptions.recordcount>
-				<a class="btn dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
+				<a class="btn btn-primary btn-large dropdown-toggle" data-toggle="dropdown"><span class="caret"></span></a>
 				<ul class="dropdown-menu">
 					<cfloop query="qExtraOptions">
 						<cfif qExtraOptions.url eq "divider">
 							<li class="divider"></li>
 						<cfelse>
-							<li><a href="#qExtraOptions.url#"<cfif qExtraOptions.selected> class="active"</cfif>>#qExtraOptions.label#</a></li>
+							<li <cfif qExtraOptions.selected> class="active"</cfif>><a href="#qExtraOptions.url#">#qExtraOptions.label#</a></li>
 						</cfif>
 					</cfloop>
 				</ul><!-- /.dropdown-menu -->

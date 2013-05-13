@@ -34,15 +34,14 @@
 			<meta charset="UTF-8">
 			<title>FarCry Login</title>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0">
-			<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Ubuntu:300,400,700">
 			<link href="#application.url.webtop#/css/icons.css" rel="stylesheet" media="screen">
 		</head>
-		
+
 		<body>
 			<div id="header">
-				<div class="container">
-					<h1><a href="http://www.farcrycore.org/" target="_blank" class="logo">FarCry Core &trade;</a></h1>
-					<h1><a href="#application.url.webroot#" target="_blank" class="logo"<cfif structKeyExists(application.config.general,'siteLogoPath') and application.config.general.siteLogoPath NEQ ""> style="background:url(#application.config.general.siteLogoPath#) center no-repeat;text-indent:-99999px;"</cfif>>#application.config.general.siteTitle#</a></h1>
+				<div class="container-fluid">
+					<h1><a href="http://www.farcrycore.org/" target="_blank" class="logo farcry-logo">FarCry Core</a></h1>
+					<h1><a href="#application.url.webroot#/" target="_blank" class="logo webtop-logo"<cfif structKeyExists(application.config.general,'webtopLogoPath') and application.config.general.webtopLogoPath NEQ ""> style="background-image:url(#application.config.general.webtopLogoPath#);text-indent:-99999px;"</cfif>>#application.config.general.siteTitle#</a></h1>
 				</div><!-- /.container -->
 			</div><!-- /##header -->
 			<div id="content-main">
