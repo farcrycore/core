@@ -23,7 +23,7 @@
 		<cfif structkeyexists(st,"urlpath") and right(st.urlpath,1) eq "/">
 			<cfset st.urlpath = left(st.urlpath,len(st.urlpath)-1) />
 		</cfif>
-		<cfif refindnocase("^https?:",st.urlpath)>
+		<cfif structkeyexists(st,"urlpath") and refindnocase("^https?:",st.urlpath)>
 			<cfset st.urlpath = rereplacenocase(st.urlpath,"^https?:","") />
 		</cfif>
 		
