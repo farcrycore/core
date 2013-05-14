@@ -587,7 +587,7 @@
 				<cfset stResult.value = application.fc.lib.cdn.ioCopyFile(
 					source_localpath=arguments.localfile,
 					dest_location=fileLocation,
-					dest_file=arguments.destination & "/" listlast(arguments.localfile,"."),
+					dest_file=arguments.destination & "/" & listlast(arguments.localfile,"."),
 					nameconflict="makeunique",
 					uniqueamong="privatefiles,publicfiles"
 				) />
