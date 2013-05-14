@@ -27,7 +27,7 @@ $fc.addFavourite = function(api,url,label){
 // remove this page from favourites
 $fc.removeFavourite = function(api,url){
 	$j.getJSON(api+(api.indexOf("?")>-1?"&":"?")+"favURL="+encodeURIComponent(url),function(result){
-		if (result.success){console.log($j(".favourites-menu li:nth-child("+result.position+")"));
+		if (result.success){
 			$j(".favourites-menu li:nth-child("+result.position+")").remove();
 			if ($j(".favourites-menu > li").size()===1)
 				$j(".favourites-menu li.none").show();
