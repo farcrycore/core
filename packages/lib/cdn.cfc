@@ -478,25 +478,26 @@
 		</cfif>
 		
 		<!--- Check the size of the uploaded file --->
-		<cfif structkeyexists(arguments,"sizeLimit") and arguments.sizeLimit gt 0
+		<cfif structkeyexists(arguments,"sizeLimit") 
+			AND arguments.sizeLimit gt 0
 			AND (
 				(structkeyexists(arguments,"localpath") and getFileInfo(arguments.localpath).filesize gt arguments.sizeLimit)
 				OR (structkeyexists(arguments,"location") and ioGetFileSize(location=arguments.location,file=arguments.file) gt arguments.sizeLimit)
 			)>
 			
-			<cfset message = "{1} is not within the file size limit of {2}MB" />
-			<cfreturn application.fapi.getResource(key="FAPI.throw.#rereplaceNoCase(message, '[^/w]+', '_', 'all')#@message", default=message, substituteValues=[ cffile.serverFile, round(arguments.sizeLimit/1048576) ]) />
+			<cfset message = "File size is not within limit of {1}MB" />
+			<cfreturn application.fapi.getResource(key="FAPI.throw.#rereplaceNoCase(message, '[^/w]+', '_', 'all')#@message", default=message, substituteValues=round(arguments.sizeLimit/1048576)) />
 		</cfif>
 		
 		<!--- file destinations must must have the same extension as the new file --->
-		<cfif structkeyexists(arguments,"existingFile") 
+		<!--- <cfif structkeyexists(arguments,"existingFile") 
 			AND refind("\.\w+$",arguments.destination) 
 			AND listlast(arguments.file,".") neq listlast(arguments.existingFile)>
 			
 			<cfset message = "New file must have the same extension. Current extension is {1}" />
 			<cfreturn application.fapi.getResource(key="FAPI.throw.#rereplaceNoCase(message, '[^/w]+', '_', 'all')#@message", default=message, substituteValues=[ listlast(arguments.destination,".") ]) />
 		</cfif>
-		
+		 --->
 		<cfreturn "" />
 	</cffunction>
 	
