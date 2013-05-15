@@ -29,7 +29,10 @@
 	<cfif found>
 		<cfoutput>{ "error":["Page is already favourited"] }</cfoutput>
 	<cfelse>
-		<cfset arrayappend(aFavourites,{ url:url.favURL, label:favLabel }) />
+		<cfset stFav = structNew()>
+		<cfset stFav["url"] = url.favURL>
+		<cfset stFav["label"] = favLabel>
+		<cfset arrayappend(aFavourites, stFav) />
 		<misc:sort values="#aFavourites#">
 			<cfif value1.label lt value2.label>
 				<cfset sendback = -1 />
