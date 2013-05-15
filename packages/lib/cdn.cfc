@@ -81,10 +81,14 @@
 		<cfset arguments.path = replace(arguments.path,"\","/","ALL") />
 		
 		<!--- Remove duplicate slashes --->
-		<cfset arguments.path = replace(arguments.path,"//","/","ALL") />
+		<cfset arguments.path = rereplace(arguments.path,"(.)//","\1/","ALL") />
 		
 		<!--- Remove potentially invalid characters --->
-		<cfset arguments.path = reReplaceNoCase(arguments.path, "[^a-z0-9\.\-\_/ ]","", "all") />
+		<cfif refindnocase("\w:",arguments.path)>
+			<cfset arguments.path = left(arguments.path,2) & reReplaceNoCase(mid(arguments.path,3,len(arguments.path)), "[^a-z0-9\.\-\_/ ]","", "all") />
+		<cfelse>
+			<cfset arguments.path = reReplaceNoCase(arguments.path, "[^a-z0-9\.\-\_/ ]","", "all") />
+		</cfif>
 		
 		<!--- Remove trailing slash --->
 		<cfif right(arguments.path,1) eq "/">
@@ -471,10 +475,13 @@
 		<!--- Check the extension --->
 		<cfif structkeyexists(arguments,"acceptextensions") 
 			AND len(arguments.acceptextensions) 
-			AND not listfindnocase(arguments.acceptextensions,listlast(arguments.file,"."))>
+			AND (
+				(structkeyexists(arguments,"file") AND not listfindnocase(arguments.acceptextensions,listlast(arguments.file,".")))
+				OR (structkeyexists(arguments,"localpath") AND not listfindnocase(arguments.acceptextensions,listlast(arguments.localpath,".")))
+			)>
 			
 			<cfset message = "Invalid extension. Valid extensions are {1}" />
-			<cfreturn application.fapi.getResource(key="FAPI.throw.#rereplaceNoCase(message, '[^/w]+', '_', 'all')#@message", default=message, substituteValues=[ replace(arguments.acceptextensions,",",", ","ALL") ]) />
+			<cfreturn application.fapi.getResource(key="FAPI.throw.#rereplaceNoCase(message, '[^/w]+', '_', 'all')#@message", default=message, substituteValues=replace(arguments.acceptextensions,",",", ","ALL")) />
 		</cfif>
 		
 		<!--- Check the size of the uploaded file --->
@@ -490,14 +497,17 @@
 		</cfif>
 		
 		<!--- file destinations must must have the same extension as the new file --->
-		<!--- <cfif structkeyexists(arguments,"existingFile") 
-			AND refind("\.\w+$",arguments.destination) 
-			AND listlast(arguments.file,".") neq listlast(arguments.existingFile)>
-			
-			<cfset message = "New file must have the same extension. Current extension is {1}" />
-			<cfreturn application.fapi.getResource(key="FAPI.throw.#rereplaceNoCase(message, '[^/w]+', '_', 'all')#@message", default=message, substituteValues=[ listlast(arguments.destination,".") ]) />
+		<cfif structkeyexists(arguments,"existingFile") 
+			AND refind("\.\w+$",arguments.existingFile) 
+			AND (
+				(structkeyexists(arguments,"file") AND listlast(arguments.file,".") neq listlast(arguments.existingFile,"."))
+				OR (structkeyexists(arguments,"localpath") AND listlast(arguments.localpath,".") neq listlast(arguments.existingFile,"."))
+			)>
+			<cflog file="debug" text="#serializeJSON(arguments)#">
+			<cfset message = "New file must have the same extension. Current extension is [{1}]" />
+			<cfreturn application.fapi.getResource(key="FAPI.throw.#rereplaceNoCase(message, '[^/w]+', '_', 'all')#@message", default=message, substituteValues=listlast(arguments.existingFile,".")) />
 		</cfif>
-		 --->
+		
 		<cfreturn "" />
 	</cffunction>
 	
@@ -522,8 +532,8 @@
 		<cfargument name="field" type="string" required="true" />
 		<cfargument name="nameconflict" type="string" required="false" default="overwrite" options="makeunique,overwrite" />
 		<cfargument name="uniqueamong" type="string" required="false" default="" hint="If nameconflict=makeunique, then the file is made to be unique among this list of locations" />
-		<cfargument name="acceptextensions" type="string" required="false" />
-		<cfargument name="sizeLimit" type="numeric" required="false" />
+		<cfargument name="acceptextensions" type="string" required="false" default="" />
+		<cfargument name="sizeLimit" type="numeric" required="false" default="" />
 		
 		<cfset var filename = "" />
 		<cfset var cffile = structnew() />
@@ -547,7 +557,9 @@
 			sizeLimit=arguments.sizeLimit,
 			existingFile=arguments.destination
 		) />
-		<cfthrow message="#errormessage#" type="uploaderror" />
+		<cfif len(errormessage)>
+			<cfthrow message="#errormessage#" type="uploaderror" />
+		</cfif>
 		
 		<!--- DESTINATION can specify a directory or a file --->
 		<cfif refind("\.\w+$",arguments.destination)>
