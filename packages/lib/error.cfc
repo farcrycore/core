@@ -517,7 +517,7 @@
 				<cfcase value="json,text/json" delimiters=",">
 					<cfheader statuscode="#statuscode#" statustext="#statusmessage#" />
 					<cfif showError>
-						<cfcontent type="text/json" variable="#ToBinary( ToBase64( '{ "error":' & application.fc.lib.formatError(exception=arguments.stException,format='json') & '}' ) )#" reset="Yes" />
+						<cfcontent type="text/json" variable="#ToBinary( ToBase64( '{ "error":' & formatError(exception=arguments.stException,format='json') & '}' ) )#" reset="Yes" />
 					<cfelse>
 						<cfcontent type="text/json" variable="#ToBinary( ToBase64( '{ "error":"There was an error with that request" }' ) )#" reset="Yes" />
 					</cfif>
@@ -525,7 +525,7 @@
 				<cfcase value="xml,text/xml" delimiters=",">
 					<cfheader statuscode="#statuscode#" statustext="#statusmessage#" />
 					<cfif showError>
-						<cfcontent type="text/xml" variable="#ToBinary( ToBase64( application.fc.lib.formatError(exception=arguments.stException,format='xml') ) )#" reset="Yes" />
+						<cfcontent type="text/xml" variable="#ToBinary( ToBase64( formatError(exception=arguments.stException,format='xml') ) )#" reset="Yes" />
 					<cfelse>
 						<cfcontent type="text/xml" variable="#ToBinary( ToBase64( '<?xml version="1.0" encoding="UTF-8" ?><error>There was an error with that request</error>' ) )#" reset="Yes" />
 					</cfif>
