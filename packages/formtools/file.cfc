@@ -240,7 +240,6 @@
 						<tr>
 							<td valign="top" style="border:0 none;">
 								<cfif arguments.stMetadata.ftMaxSize gt 0><input name="MAX_FILE_SIZE" value="#arguments.stMetadata.ftMaxSize#" type="hidden" /></cfif>
-								<!--- <input type="hidden" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" value="" style="#arguments.stMetadata.ftstyle#" onchange="ftCheckFileName('#arguments.fieldname#');" /> --->
 								<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" style="#arguments.stMetadata.ftstyle#" onchange="ftCheckFileName('#arguments.fieldname#');" />
 								<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="" />
 								<script type="text/javascript">
@@ -369,12 +368,15 @@
 			<cfcase value="html">
 				<cfset stResult = handleFilePost(
 					objectid=arguments.objectid,
+					typename=arguments.typename,
 					existingFile=form["#stMetadata.FormFieldPrefix##stMetadata.Name#"],
-					uploadField="#stMetadata.FormFieldPrefix##stMetadata.Name#New",
+					uploadField="#stMetadata.FormFieldPrefix##stMetadata.Name#NEW",
 					destination=arguments.stMetadata.ftDestination,
+					secure=arguments.stMetadata.ftSecure,
+					status=iif(structkeyexists(stObj,"status"),"stObj.status",""""),
 					allowedExtensions=arguments.stMetadata.ftAllowedFileExtensions,
 					sizeLimit=arguments.stMetadata.ftMaxsize,
-					bArchvie=application.stCOAPI[arguments.typename].bArchive and (not structkeyexists(application.stCOAPI[arguments.typename].stProps[arguments.stMetadata.name],"bArchive") or application.stCOAPI[arguments.typename].stProps[arguments.stMetadata.name].bArchive),
+					bArchive=application.stCOAPI[arguments.typename].bArchive and (not structkeyexists(arguments.stMetadata,"ftArchive") or arguments.stMetadata.ftArchive),
 					stFieldPost=arguments.stFieldPost
 				) />
 			</cfcase>
@@ -401,10 +403,13 @@
 	
 	<cffunction name="handleFilePost" access="public" output="false" returntype="struct" hint="Handles image post and returns standard formtool result struct">
 		<cfargument name="objectid" type="uuid" required="true" hint="The objectid of the edited object" />
+		<cfargument name="typename" type="string" required="true" hint="The type of the edited object" />
 		<cfargument name="existingfile" type="string" required="true" hint="Current value of property" />
 		<cfargument name="uploadfield" type="string" required="true" hint="Traditional form saves will use <PREFIX><PROPERTY>NEW, ajax posts will use <PROPERTY>NEW ... so the caller needs to say which it is" />
 		<cfargument name="destination" type="string" required="true" hint="Destination of file" />
 		<cfargument name="allowedExtensions" type="string" required="true" hint="The acceptable extensions" />
+		<cfargument name="secure" type="boolean" required="true" hint="Whether this file needs to be stored securely" />
+		<cfargument name="status" type="string" required="true" hint="Status of object attached to" />
 		<cfargument name="sizeLimit" type="numeric" required="false" default="0" hint="Maximum size of file in bytes" />
 		<cfargument name="bArchive" type="boolean" required="true" hint="True to archive old files" />
 		<cfargument name="stFieldPost" type="struct" required="false" default="#structnew()#" hint="The supplementary data" />
@@ -426,7 +431,7 @@
 		</cfif>
 		
 		<sec:CheckPermission objectid="#arguments.objectid#" type="#arguments.typename#" permission="View" roles="Anonymous" result="filepermission" />
-		<cfif arguments.stMetadata.ftSecure eq "false" and (not structkeyexists(stObj,"status") or stObj.status eq "approved") and filepermission>
+		<cfif arguments.secure eq "false" and not listfindnocase("draft,pending",arguments.status) and filepermission>
 			<cfset filelocation = "publicfiles" />
 		<cfelse>
 			<cfset filelocation = "privatefiles" />
@@ -442,19 +447,19 @@
 					source_location=fileLocation,
 					source_file=arguments.existingFile,
 					dest_location="archive",
-					dest_file="#arguments.destination#/#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#listLast(FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Delete'], '/')#"
+					dest_file="#arguments.destination#/#arguments.objectid#-#round(getTickCount()/1000)#-#listLast(arguments.existingfile, '/')#"
 				) />
 			<cfelse>
 				<cfset archivedFile = application.fc.lib.cdn.ioCopyFile(
 					source_location=fileLocation,
 					source_file=arguments.existingfile,
-					dest_localpath=getTempDirectory() & "#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#listLast(arguments.existingfile, '/')#"
+					dest_localpath=getTempDirectory() & "#arguments.objectid#-#round(getTickCount()/1000)#-#listLast(arguments.existingfile, '/')#"
 				) />
 			</cfif>
 			
 		</cfif>
 		
-		<cfif len(stFieldPost.NEW)>
+		<cfif structkeyexists(form,arguments.uploadfield) and len(form[arguments.uploadfield])>
 			<cftry>
 				<cfif len(arguments.existingFile)>
 					<!--- This means there is currently a file associated with this object. We need to override this file --->
@@ -463,12 +468,12 @@
 						destination=arguments.existingFile,
 						field=arguments.uploadField,
 						nameconflict="overwrite",
-						acceptedextensions=arguments.allowedExtensions,
+						acceptextensions=arguments.allowedExtensions,
 						sizeLimit=arguments.sizeLimit
 					) />
 					
 					<cfif not arguments.bArchive>
-						<cffile action="delete" file="#archivedFile#" />
+						<cffile action="delete" file="-#archivedFile#" />
 					</cfif>
 				<cfelse>
 					<!--- There is no image currently so we simply upload the image and make it unique  --->
@@ -478,7 +483,7 @@
 						field=arguments.uploadField,
 						nameconflict="makeunique",
 						uniqueamong="privatefiles,publicfiles",
-						acceptedextensions=arguments.allowedExtensions,
+						acceptextensions=arguments.allowedExtensions,
 						sizeLimit=arguments.sizeLimit
 					) />
 				</cfif>
@@ -488,13 +493,13 @@
 						<cfset application.fc.lib.cdn.ioMoveFile(
 							source_location="archive",
 							source_file=archivedFile,
-							dest_location="images",
+							dest_location=fileLocation,
 							dest_file=arguments.existingFile
 						) />
 					<cfelseif len(archivedFile)>
 						<cfset archivedFile = application.fc.lib.cdn.ioMoveFile(
 							source_localpath=archivedFile,
-							dest_location="images",
+							dest_location=fileLocation,
 							dest_file=arguments.existingFile
 						) />
 					</cfif>
@@ -503,8 +508,8 @@
 				</cfcatch>
 			</cftry>
 		</cfif>
-	
-	
+		
+		
 		<!--- ----------------- --->
 		<!--- Return the Result --->
 		<!--- ----------------- --->
@@ -514,9 +519,12 @@
 	
 	<cffunction name="handleFileLocal" access="public" output="false" returntype="struct" hint="Handles using a local file as the new image and returns standard formtool result struct">
 		<cfargument name="objectid" type="uuid" required="true" hint="The objectid of the edited object" />
+		<cfargument name="typename" type="string" required="true" hint="The type of the edited object" />
 		<cfargument name="existingfile" type="string" required="true" hint="Current value of property" />
 		<cfargument name="localfile" type="string" required="true" hint="The local file" />
 		<cfargument name="destination" type="string" required="true" hint="Destination of file" />
+		<cfargument name="secure" type="boolean" required="true" hint="Whether this file needs to be stored securely" />
+		<cfargument name="status" type="string" required="true" hint="Status of object attached to" />
 		<cfargument name="allowedExtensions" type="string" required="true" hint="The acceptable extensions" />
 		<cfargument name="sizeLimit" type="numeric" required="false" default="0" hint="Maximum size of file in bytes" />
 		<cfargument name="bArchive" type="boolean" required="true" hint="True to archive old files" />
@@ -538,7 +546,7 @@
 		</cfif>
 		
 		<sec:CheckPermission objectid="#arguments.objectid#" type="#arguments.typename#" permission="View" roles="Anonymous" result="filepermission" />
-		<cfif arguments.stMetadata.ftSecure eq "false" and (not structkeyexists(stObj,"status") or stObj.status eq "approved") and filepermission>
+		<cfif arguments.secure eq "false" and not listfindnocase("draft,pending",arguments.status) and filepermission>
 			<cfset filelocation = "publicfiles" />
 		<cfelse>
 			<cfset filelocation = "privatefiles" />
@@ -551,13 +559,13 @@
 					source_location=fileLocation,
 					source_file=arguments.existingFile,
 					dest_location="archive",
-					dest_file="#arguments.destination#/#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#listLast(FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Delete'], '/')#"
+					dest_file="#arguments.destination#/#arguments.objectid#-#round(getTickCount()/1000)#-#listLast(FORM['#stMetadata.FormFieldPrefix##stMetadata.Name#Delete'], '/')#"
 				) />
 			<cfelse>
 				<cfset archivedFile = application.fc.lib.cdn.ioCopyFile(
 					source_location=fileLocation,
 					source_file=arguments.existingfile,
-					dest_localpath=getTempDirectory() & "#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#listLast(arguments.existingfile, '/')#"
+					dest_localpath=getTempDirectory() & "#arguments.objectid#-#round(getTickCount()/1000)#-#listLast(arguments.existingfile, '/')#"
 				) />
 			</cfif>
 			

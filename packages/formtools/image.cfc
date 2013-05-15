@@ -195,7 +195,7 @@
 				    			<a href="##traditional" class="fc-btn select-view" title="Switch between traditional upload and inline upload" style="float:left;"><i class="icon-random"></i></a>
 								<div style="margin-left:15px">
 						    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
-						    		<div id="#arguments.fieldname#_uploaderror" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
+						    		<div id="#arguments.fieldname#_uploaderror" class="alert alert-error" style="margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
 						    		<div><i style="float:left;" title="#metadatainfo#" class="icon-question-sign"></i> <span style="float:left;">Select an image to upload from your computer.</span></div>
 						    		<div class="image-cancel-upload" style="clear:both;"><a href="##back" class="select-view">Cancel - I don't want to upload an image</a></div>
 						    	</div>
@@ -225,8 +225,8 @@
 										<input type="hidden" name="#arguments.fieldname#RESIZEMETHOD" id="#arguments.fieldname#RESIZEMETHOD" value="" />
 										<input type="hidden" name="#arguments.fieldname#QUALITY" id="#arguments.fieldname#QUALITY" value="" />
 										<ft:button value="Select Exactly How To Crop Your Image" class="image-crop-select-button" type="button" onclick="return false;" />
-										<div id="#arguments.fieldname#_croperror" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
-						    			<div class="image-crop-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Your crop settings will be applied when you save. <a href="##" class="image-crop-cancel-button">Cancel custom crop</a></div>
+										<div id="#arguments.fieldname#_croperror" class="alert alert-error" style="margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
+						    			<div class="alert alert-info image-crop-information" style="padding:0.7em;margin-top:0.7em;display:none;">Your crop settings will be applied when you save. <a href="##" class="image-crop-cancel-button">Cancel custom crop</a></div>
 									</div>
 								</cfif>
 								<div><cfif arguments.stMetadata.ftAllowUpload><a href="##upload" class="select-view">Upload - I want to use my own image</a></cfif><span class="image-cancel-replace" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><cfif arguments.stMetadata.ftAllowUpload> | </cfif><a href="##complete" class="select-view">Cancel - I don't want to replace this image</a></span></div>
@@ -254,7 +254,7 @@
 					    		<div style="margin-left:15px;">
 						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#stFile.path#' width='#previewwidth#' height='#previewheight#' />" href="#stFile.path#" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
 						    		Size: <span class="image-size">#round(application.fc.lib.cdn.ioGetFileSize(location="images",file=arguments.stMetadata.value)/1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
-						    		<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
+						    		<div class="image-resize-information alert alert-info" style="margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
 						    	</div>
 							</div>
 						<cfelse>
@@ -263,7 +263,7 @@
 					    		<div style="margin-left:15px;">
 						    		<span class="image-filename"></span> ( <a class="image-preview" title="<img src='' />" href="##" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
 						    		Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
-									<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
+									<div class="image-resize-information alert alert-info" style="margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
 						    	</div>
 							</div>
 						</cfif>
@@ -284,7 +284,7 @@
 							<a href="##traditional" class="fc-btn select-view" title="Switch between traditional upload and inline upload" style="float:left;"><i class="icon-random">&nbsp;</i></a>
 							<div style="margin-left:15px">
 					    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
-					    		<div id="#arguments.fieldname#_uploaderror" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
+					    		<div id="#arguments.fieldname#_uploaderror" class="alert alert-error" style="margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
 					    		<div><i style="float:left;" title="#metadatainfo#" class="icon-question-sign"></i> <span style="float:left;">Select an image to upload from your computer.</span></div>
 					    		<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##back" class="select-view">Cancel - I don't want to replace this image</a></div>
 					    	</div>
@@ -324,7 +324,7 @@
 					    		<div style="margin-left:15px;">
 						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#stFile.path#' width='#previewwidth#' height='#previewheight#' />" href="#stFile.path#" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
 						    		Size: <span class="image-size">#round(application.fc.lib.cdn.ioGetFileSize(location='images',file=arguments.stMetadata.value)/1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
-									<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
+									<div class="image-resize-information alert alert-info" style="margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
 						    	</div>
 							</div>
 						<cfelse>
@@ -333,7 +333,7 @@
 					    		<div style="margin-left:15px;">
 						    		<span class="image-filename"></span> ( <a class="image-preview" title="<img src='' />" href="##" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
 						    		Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
-						    		<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
+						    		<div class="image-resize-information alert alert-info" style="margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
 						    	</div>
 							</div>
 						</cfif>
@@ -446,7 +446,7 @@
 			    			<a href="##traditional" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><i class="icon-random">&nbsp;</i></a>
 							<div style="margin-left:15px">
 					    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
-					    		<div id="#arguments.fieldname#_uploaderror" class="ui-state-error ui-corner-all" style="padding:0.7em;margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
+					    		<div id="#arguments.fieldname#_uploaderror" class="alert alert-error" style="margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
 					    		<div><i style="float:left;" title="#metadatainfo#" class="icon-question-sign"></i> <span style="float:left;">Select an image to upload from your computer.</span></div>
 					    	</div>
 						</div>
@@ -517,7 +517,7 @@
 					</div>
 					<div style="float:left;width:33%;">
 						<div class="image-crop-instructions" style="overflow-y:auto;overlow-y:hidden;">
-							<p class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;">
+							<p class="image-resize-information alert alert-info">
 								<strong style="font-weight:bold">Selection:</strong><br>
 								Coordinates: (<span id="image-crop-a-x">?</span>,<span id="image-crop-a-y">?</span>) to (<span id="image-crop-b-x">?</span>,<span id="image-crop-b-y">?</span>)<br>
 								<span id="image-crop-dimensions">Dimensions: <span id="image-crop-width">?</span>px x <span id="image-crop-height">?</span>px</span><br>
@@ -537,7 +537,7 @@
 								Dimensions: <span id="image-crop-width-final">#arguments.stMetadata.ftImageWidth#</span>px x <span id="image-crop-height-final">#arguments.stMetadata.ftImageHeight#</span>px<br>
 								Quality: <cfif arguments.stMetadata.ftAllowResizeQuality><input id="image-crop-quality" value="#arguments.stMetadata.ftQuality#" /><cfelse>#round(arguments.stMetadata.ftQuality*100)#%<input type="hidden" id="image-crop-quality" value="#arguments.stMetadata.ftQuality#" /></cfif>
 							</p>
-							<p id="image-crop-warning" style="display:none;background-color: ##FCF8E3;border: 1px solid ##FBEED5;color: ##ab7708;margin: 10px 0 0 0;padding:0.7em;text-shadow: 0 1px 0 rgba(255, 255, 255, 0.5);">
+							<p id="image-crop-warning alert" style="display:none;">
 								<strong style="font-weight:bold">Warning:</strong> The selected crop area is smaller than the output size. To avoid poor image quality choose a larger crop or use a higher resolution source image.
 							</p>							
 							<p style="margin-top: 0.7em">To select a crop area:</p>
@@ -564,7 +564,16 @@
 			</cfif>
 		</cfif>
 		
-		<cfset stResult = handleFilePost(objectid=arguments.stObject.objectid,existingfile=arguments.stMetadata.value,uploadfield="#arguments.stMetadata.name#NEW",destination=arguments.stMetadata.ftDestination,allowedExtensions=arguments.stMetadata.ftAllowedExtensions,stFieldPost=arguments.stFieldPost.stSupporting,sizeLimit=arguments.stMetadata.ftSizeLimit) />
+		<cfset stResult = handleFilePost(
+			objectid=arguments.stObject.objectid,
+			existingfile=arguments.stMetadata.value,
+			uploadfield="#arguments.stMetadata.name#NEW",
+			destination=arguments.stMetadata.ftDestination,
+			allowedExtensions=arguments.stMetadata.ftAllowedExtensions,
+			stFieldPost=arguments.stFieldPost.stSupporting,
+			sizeLimit=arguments.stMetadata.ftSizeLimit,
+			bArchive=application.stCOAPI[arguments.typename].bArchive and (not structkeyexists(arguments.stMetadata,"ftArchive") or arguments.stMetadata.ftArchive)
+		) />
 		
 		<cfif isdefined("stResult.stError.message") and len(stResult.stError.message)>
 			<cfset stJSON = structnew() />
@@ -754,18 +763,19 @@
 		</cfif>
 		
 		<cfif ((structkeyexists(form,arguments.uploadfield) and len(form[arguments.uploadfield])) or (isBoolean(stFieldPost.DELETE) and stFieldPost.DELETE)) and len(arguments.existingfile) AND fileExists("#application.path.imageRoot##arguments.existingfile#")>
+			
 			<cfif arguments.bArchive>
 				<cfset archivedFile = application.fc.lib.cdn.ioMoveFile(
 					source_location="images",
 					source_file=arguments.existingfile,
 					dest_location="archive",
-					dest_file="#arguments.destination#/#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#listLast(arguments.existingfile, '/')#"
+					dest_file="#arguments.destination#/#arguments.objectid#-#round(getTickCount()/1000)#-#listLast(arguments.existingfile, '/')#"
 				) />
 			<cfelse>
 				<cfset archivedFile = application.fc.lib.cdn.ioCopyFile(
 					source_location="images",
 					source_file=arguments.existingfile,
-					dest_localpath=getTempDirectory() & "#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#listLast(arguments.existingfile, '/')#"
+					dest_localpath=getTempDirectory() & "#arguments.objectid#-#round(getTickCount()/1000)#-#listLast(arguments.existingfile, '/')#"
 				) />
 			</cfif>
 			
@@ -872,13 +882,13 @@
 						source_location="images",
 						source_file=arguments.existingfile,
 						dest_location="archive",
-						dest_file="#arguments.destination#/#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#listLast(arguments.existingfile, '/')#"
+						dest_file="#arguments.destination#/#arguments.objectid#-#round(getTickCount()/1000)#-#listLast(arguments.existingfile, '/')#"
 					) />
 				<cfelse>
 					<cfset archivedFile = application.fc.lib.cdn.ioCopyFile(
 						source_location="images",
 						source_file=arguments.existingfile,
-						dest_localpath=getTempDirectory() & "#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#listLast(arguments.existingfile, '/')#"
+						dest_localpath=getTempDirectory() & "#arguments.objectid#-#round(getTickCount()/1000)#-#listLast(arguments.existingfile, '/')#"
 					) />
 				</cfif>
 				
@@ -1000,7 +1010,7 @@
 		
 		<cfsavecontent variable="html">
 			<cfif len(arguments.stMetadata.value)>
-				<cfset stLoc = getFileLocation(stObject=arguments.stObject,stMetadata=arguments.stMetadata) />
+				<cfset stLoc = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stMetadata.value) />
 				<cfoutput><img src="#stLoc.path#" border="0"</cfoutput>
 				<cfif arguments.stMetadata.ftAutoGenerateType EQ "ForceSize" OR arguments.stMetadata.ftAutoGenerateType EQ "Pad" >
 					<cfif len(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth GT 0><cfoutput> width="#arguments.stMetadata.ftImageWidth#"</cfoutput></cfif>
@@ -1027,7 +1037,16 @@
 		<cfset var lFormField = "" /> 
 		
 		
-		<cfset stResult = handleFilePost(objectid=arguments.objectid,existingfile=arguments.stFieldPost.value,uploadfield="#arguments.stMetadata.FormFieldPrefix##arguments.stMetadata.name#TRADITIONAL",destination=arguments.stMetadata.ftDestination,allowedExtensions=arguments.stMetadata.ftAllowedExtensions,stFieldPost=arguments.stFieldPost.stSupporting,sizeLimit=arguments.stMetadata.ftSizeLimit) />
+		<cfset stResult = handleFilePost(
+			objectid=arguments.objectid,
+			existingfile=arguments.stFieldPost.value,
+			uploadfield="#arguments.stMetadata.FormFieldPrefix##arguments.stMetadata.name#TRADITIONAL",
+			destination=arguments.stMetadata.ftDestination,
+			allowedExtensions=arguments.stMetadata.ftAllowedExtensions,
+			stFieldPost=arguments.stFieldPost.stSupporting,
+			sizeLimit=arguments.stMetadata.ftSizeLimit,
+			bArchive=application.stCOAPI[arguments.typename].bArchive and (not structkeyexists(arguments.stMetadata,"ftArchive") or arguments.stMetadata.ftArchive)
+		) />
 		
 		<cfif stResult.bChanged>
 			<cfif isdefined("stResult.value") and len(stResult.value)>
