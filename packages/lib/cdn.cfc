@@ -81,10 +81,14 @@
 		<cfset arguments.path = replace(arguments.path,"\","/","ALL") />
 		
 		<!--- Remove duplicate slashes --->
-		<cfset arguments.path = replace(arguments.path,"//","/","ALL") />
+		<cfset arguments.path = rereplace(arguments.path,"(.)//","\1/","ALL") />
 		
 		<!--- Remove potentially invalid characters --->
-		<cfset arguments.path = reReplaceNoCase(arguments.path, "[^a-z0-9\.\-\_/ ]","", "all") />
+		<cfif refindnocase("\w:",arguments.path)>
+			<cfset arguments.path = left(arguments.path,2) & reReplaceNoCase(mid(arguments.path,3,len(arguments.path)), "[^a-z0-9\.\-\_/ ]","", "all") />
+		<cfelse>
+			<cfset arguments.path = reReplaceNoCase(arguments.path, "[^a-z0-9\.\-\_/ ]","", "all") />
+		</cfif>
 		
 		<!--- Remove trailing slash --->
 		<cfif right(arguments.path,1) eq "/">
