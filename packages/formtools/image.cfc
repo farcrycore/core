@@ -1499,15 +1499,12 @@
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="archiveID" type="uuid" required="true" hint="The ID of the new archive" />
 		
-		<cfset var currentLocation = "" />
 		<cfset var archiveFile = "" />
 		
 		<cfif len(arguments.stObject[arguments.stMetadata.name])>
-			<cfset currentLocation = application.fc.lib.cdn.ioFindFile(locations="publicfiles,privatefiles",file=arguments.stObject[arguments.stMetadata.name]) />
-			
 			<cfset archiveFile = "/#arguments.stObject.typename#/#arguments.archiveID#.#arguments.stMetadata.name#.#ListLast(arguments.stObject[arguments.stMetadata.name],'.')#" />
 			
-			<cfset application.fc.lib.cdn.ioMoveFile(source_location=currentLocation,source_file=arguments.stObject[arguments.stMetadata.name],dest_location="archive",dest_file=archiveFile) />
+			<cfset application.fc.lib.cdn.ioMoveFile(source_location="images",source_file=arguments.stObject[arguments.stMetadata.name],dest_location="archive",dest_file=archiveFile) />
 		</cfif>
 		
 		<cfreturn archiveFile />
