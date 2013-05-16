@@ -815,7 +815,7 @@
 			<cfreturn stResult />
 		</cfif>
 		
-		<cfif isSecured(stObject=arguments.stObject)>
+		<cfif isSecured(stObject=arguments.stObject,stMetadata=arguments.stMetadata)>
 			<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="privatefiles",file=arguments.stObject[arguments.stMetadata.name]) />
 		<cfelse>
 			<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="publicfiles",file=arguments.stObject[arguments.stMetadata.name]) />
