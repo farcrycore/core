@@ -329,7 +329,7 @@ default handlers
 			</cfif>
 		</cfif>
 		
-		<cfset stresult = super.setData(stProperties=arguments.stProperties, dsn=arguments.dsn, bSessionOnly=arguments.bSessionOnly, bSetDefaultCoreProperties=arguments.bSetDefaultCoreProperties,auditNote=arguments.auditNote) />
+		<cfset stresult = super.setData(stProperties=arguments.stProperties, dsn=arguments.dsn, bSessionOnly=arguments.bSessionOnly, bSetDefaultCoreProperties=arguments.bSetDefaultCoreProperties,bAudit=arguments.bAudit,auditNote=arguments.auditNote) />
 		
 		<!--- ONLY RUN THROUGH IF SAVING TO DB --->
 		<cfif not arguments.bSessionOnly AND arguments.bAfterSave>

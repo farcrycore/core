@@ -864,6 +864,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="bSessionOnly" type="string" required="false" default="false">
 		<cfargument name="bSetDefaultCoreProperties" type="boolean" required="false" default="true" hint="This allows the developer to skip defaulting the core properties if they dont exist.">	
 		<cfargument name="auditNote" type="string" required="false" default="">
+		<cfargument name="bAudit" type="boolean" required="No" default="1" hint="Pass in 0 if you wish no audit to take place">
 		
 	    <cfset var stResult = StructNew() />
 	    <cfset var stDefaultProperties = "" />
@@ -934,6 +935,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 															typename = arguments.stProperties.typename,
 															oType = this,
 															stProperties = arguments.stProperties,
+															bAudit = arguments.bAudit,
 															auditNote = arguments.auditNote) />
 
 		   		<cfset stResult = application.fc.lib.db.setData(stProperties=arguments.stProperties,typename=getTypePath(),dsn=arguments.dsn) />	   	

@@ -7,6 +7,7 @@
 		<cfargument name="oType" type="any" required="true" hint="A CFC instance of the object type" />
 		<cfargument name="stProperties" type="struct" required="true" hint="The object" />
 		<cfargument name="auditNote" type="string" required="true" />
+		<cfargument name="bAudit" type="boolean" required="true" hint="Pass in 0 if you wish no audit to take place">
 		
 		<cfset var stObj = "" />
 		<cfset var stProps = duplicate(arguments.stProperties) />
@@ -16,7 +17,12 @@
 		<cfif NOT isDefined("application.bInit") OR application.bInit eq false>
 			<cfreturn />
 		</cfif>
-
+		
+		<!--- DON'T AUDIT === DON'T ARCHIVE --->
+		<cfif not arguments.bAudit>
+			<cfreturn />
+		</cfif>
+		
 		<cfif structKeyExists(arguments.stProperties, "lastupdatedby") AND len(arguments.stProperties.lastupdatedby)>
 			<cfset lastupdatedby = arguments.stProperties.lastupdatedby>
 		<cfelse>	
