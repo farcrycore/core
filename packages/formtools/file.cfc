@@ -767,7 +767,7 @@
 			
 			<cfset archiveFile = "/#arguments.stObject.typename#/#arguments.archiveID#.#arguments.stMetadata.name#.#ListLast(arguments.stObject[arguments.stMetadata.name],'.')#" />
 			
-			<cfset application.fc.lib.cdn.ioMoveFile(source_config=currentLocation,source_file=arguments.stObject[arguments.stMetadata.name],dest_config="archive",dest_file=archiveFile) />
+			<cfset application.fc.lib.cdn.ioMoveFile(source_location=currentLocation,source_file=arguments.stObject[arguments.stMetadata.name],dest_location="archive",dest_file=archiveFile) />
 		</cfif>
 		
 		<cfreturn archiveFile />
@@ -790,7 +790,7 @@
 			<cfset targetlocation = "privatefiles" />
 		</cfif>
 		
-		<cfset application.fc.lib.cdn.ioMoveFile(source_config="archive",source_file=archiveFile,dest_config=targetlocation,dest_file=arguments.stObject[arguments.stMetadata.value]) />
+		<cfset application.fc.lib.cdn.ioMoveFile(source_location="archive",source_file=archiveFile,dest_location=targetlocation,dest_file=arguments.stObject[arguments.stMetadata.value]) />
 	</cffunction>
 	
 	
