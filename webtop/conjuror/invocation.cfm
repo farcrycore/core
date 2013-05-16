@@ -170,7 +170,7 @@
 					<nj:updateTree objectId="#parentID#">
 					<cfoutput>
 					<script type="text/javascript">
-						parent['content'].location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#returnStruct.ObjectID#&ref=#url.ref#';
+						window.location.href = '#application.url.webtop#/edittabOverview.cfm?objectid=#returnStruct.ObjectID#&ref=#url.ref#';
 					</script>
 					</cfoutput>
 				</cfsavecontent>

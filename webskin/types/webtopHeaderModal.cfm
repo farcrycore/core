@@ -10,12 +10,11 @@
 <cfset request.fc.inWebtop = 1>
 
 
-<cfoutput>
-<!DOCTYPE html>
+<cfoutput><!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" dir="#session.writingDir#" lang="#session.userLanguage#">
 <head>
-<meta content="text/html; charset=UTF-8" http-equiv="content-type">
-<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <title>[#application.applicationname#] #application.config.general.sitetitle# - FarCry Webtop</title>
 
 <!--- TODO: register --->

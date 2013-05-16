@@ -118,7 +118,7 @@ $out:$
 				<cf_updateTree objectId="#navIdSrcPerm#" complete=0>
 				<!--- reload overview page --->
 				<cfoutput><script type="text/javascript">
-					parent['content'].location = '#application.url.farcry#/edittabOverview.cfm?objectid=#attributes.objectid#&ref=#url.ref#';
+					window.location = '#application.url.farcry#/edittabOverview.cfm?objectid=#attributes.objectid#&ref=#url.ref#';
 				</script></cfoutput>
 			</cfdefaultcase>
 		</cfswitch>

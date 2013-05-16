@@ -53,10 +53,16 @@ body.webtop {
 h1, h2, h3, h4, h5, h6 {
 	color: #333;
 	font-family: Arial, Helvetica, sans-serif;
+	font-weight: normal;
+	margin: 0 0 10px 0;
 }
 
-h3 {
-	font-size: 20px;
+h1 [class^="icon-"] {
+	display: inline-block;
+	position: relative;
+	top: -3px;
+	color: #999999;
+	font-size: 75%;
 }
 
 a {
@@ -140,14 +146,15 @@ a:hover {
 }
 .navbar .farcry-header-tabs .nav a {
 	color: #333;
-	background: #e8e8e8; /* @fc-primary-tab */
+	background: #f1f1f1;
 	box-shadow: none;
 	border: none;
 	border-radius: 0;
+	transition: color 0.1s, background 0.1s, text-shadow 0.1s;
 }
 .navbar .farcry-header-tabs .nav a:hover,
 .navbar .farcry-header-tabs .nav a:focus {
-	background: #555555; /* @fc-btn-hover */
+	background: #3E84B5; /* @fc-btn-hover */
 	color: #fff;
 	text-shadow: 0 1px 1px rgba(0,0,0,0.25);
 }
@@ -177,6 +184,7 @@ a:hover {
 	padding-bottom: 6px;
 	color: #fff;
 	text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+	transition: color 0.1s, background 0.1s, text-shadow 0.1s;
 }
 .navbar .farcry-secondary-nav .navbar-inner .nav > li > a:hover,
 .navbar .farcry-secondary-nav .navbar-inner .nav > .active > a,
@@ -227,36 +235,36 @@ a:hover {
 	width: 25%;
 }
 
-.dropdown .dropdown-mega-menu {
+.dropdown .dropdown-menu.dropdown-mega-menu {
 	border: 3px solid #3e84b5; /* @fc-secondary-tab-active */
 	border-radius: 0;
 	margin-top: -1px;
 	padding-top: 5px;
 }
 
-.dropdown .dropdown-mega-menu ul {
+.dropdown .dropdown-menu.dropdown-mega-menu ul {
 	float: left;
 	margin: 0;
 	list-style: none;
 	padding: 0;
 	height: 100%;
 }
-.dropdown .dropdown-mega-menu ul li {
+.dropdown .dropdown-menu.dropdown-mega-menu ul li {
 	border-right: 1px solid #dae8f2; /* @fc-dropdown-nav-active */
 }
-.dropdown .dropdown-mega-menu ul:last-child li {
+.dropdown .dropdown-menu.dropdown-mega-menu ul:last-child li {
 	border-right: none;
 }
-.dropdown .dropdown-mega-menu ul li.nav-header {
+.dropdown .dropdown-menu.dropdown-mega-menu ul li.nav-header {
 	margin: 0;
 	padding: 12px 14px 3px 14px;
 	color: #0e65a2;
 }
-.dropdown .dropdown-mega-menu ul li.nav-header:first-child {
+.dropdown .dropdown-menu.dropdown-mega-menu ul li.nav-header:first-child {
 	padding-top: 3px;
 }
 
-.dropdown .dropdown-mega-menu li > a {
+.dropdown .dropdown-menu.dropdown-mega-menu li > a {
 	display: block;
 	padding: 3px 14px;
 	clear: both;
@@ -266,17 +274,17 @@ a:hover {
 	/*white-space: nowrap;*/
 	min-width: 120px;
 }
-.dropdown .dropdown-mega-menu li > a:hover,
-.dropdown .dropdown-mega-menu li > a:focus {
+.dropdown .dropdown-menu.dropdown-mega-menu li > a:hover,
+.dropdown .dropdown-menu.dropdown-mega-menu li > a:focus {
 	padding: 3px 14px;
 	background: #dae8f2; /* @fc-dropdown-nav-active */
 	color: #333;
 	text-decoration: none;
 }
-.dropdown .dropdown-mega-menu .active > a,
-.dropdown .dropdown-mega-menu .active > a:hover,
-.dropdown .dropdown-mega-menu .active > a:focus {
-	background: #dae8f2; /* @fc-dropdown-nav-active */
+.dropdown .dropdown-menu.dropdown-mega-menu .active > a,
+.dropdown .dropdown-menu.dropdown-mega-menu .active > a:hover,
+.dropdown .dropdown-menu.dropdown-mega-menu .active > a:focus {
+	background: #dae8f2;
 	color: #333;
 }
 
@@ -425,11 +433,11 @@ a:hover {
 }
 
 .farcry-footer {
-	/*background: #ccc;*/
+
 }
 .farcry-footer .span12 {
 	text-align: right;
-	color: #aaa;
+	color: #bbb;
 	font-size: 80%;
 }
 .farcry-footer a {
@@ -460,20 +468,52 @@ table.table-hover tbody tr:hover > td {
 
 
 /* objectadmin styles */
+table.farcry-objectadmin td {
+	padding: 7px 7px 6px 7px;
+}
 .farcry-objectadmin-body {
 	margin-top: 1em;
 }
 .farcry-objectadmin input[type="checkbox"] {
 	margin: 0;
 }
-table.table td.actions {
+.farcry-objectadmin td.objectadmin-actions {
 	padding: 3px;
 }
-table.table td.actions .btn {
+.farcry-objectadmin td.objectadmin-actions .btn {
 	margin-left: 0px;
-	margin-right: 2px;
 }
-table.table .checkbox {
+.farcry-objectadmin td.objectadmin-actions .btn-group > .btn:first-child {
+	border-radius: 0;
+}
+
+
+.farcry-objectadmin .dropdown-menu {
+	border-radius: 0;
+	margin-top: -1px;
+	padding-top: 5px;
+}
+.farcry-objectadmin .dropdown-menu li > a {
+	color: #333;
+	padding: 3px 14px;
+	filter: none;
+}
+.farcry-objectadmin .dropdown-menu li > a:hover,
+.farcry-objectadmin .dropdown-menu li > a:focus {
+	background: #dae8f2;
+	color: #333;
+	text-decoration: none;
+}
+.farcry-objectadmin .dropdown-menu .active > a,
+.farcry-objectadmin .dropdown-menu .active > a:hover,
+.farcry-objectadmin .dropdown-menu .active > a:focus {
+	background: #0e65a2;
+	color: #fff;
+	padding: 3px 14px;
+}
+
+
+.farcry-objectadmin .checkbox {
 	margin-top: -2px;
 	padding: 0;
 }
@@ -751,12 +791,44 @@ body .uniForm .focused {
 	max-width: 990px;
 }
 
+
+
 /* objectadmin tree */
+
+/*
+.objectadmin .ui-sortable-placeholder {
+	border-top: 3px solid #999;
+	border-bottom: 3px solid #999;
+	visibility: visible !important;
+	width: 100%;
+	height: 35px !important;
+	padding: 0 !important;
+}
+.objectadmin .ui-sortable-placeholder td {
+	padding: 0 !important;
+}
+*/
+
+.objectadmin .ui-sortable-helper {
+	box-shadow: 0 0 16px rgba(0,0,0,0.2);
+}
+
+
 .fc-treestate-visible {
 	display: table-row;
 }
-.fc-treestate-hidden {
+.fc-treestate-hidden,
+.fc-treestate-hidden-dragging {
 	display: none;
+}
+.fc-treestate-disabled {
+	opacity: 0.4;
+}
+
+.fc-treestate-dragging,
+.fc-treestate-dragging .fc-treestate-collapse .fc-tree-title:hover,
+.fc-treestate-dragging .fc-treestate-expand .fc-tree-title:hover {
+	cursor: move;
 }
 
 .fc-icon-treestate,
@@ -767,28 +839,86 @@ body .uniForm .focused {
 .fc-icon-spacer::before {
 	display: inline-block;
 	position: relative;
-	width: 15px;
-	height: 15px;
-	background: #555;
+	width: 13px;
+	height: 14px;
+	background: #999;
 	color: #fff;
 	font-size: 15px;
 	font-weight: bold;
 	text-align: center;
 	border-radius: 2px;
+	padding-right: 1px;
+	margin-top: -5px;
 	margin-right: 5px;
 	line-height: 16px;
+	vertical-align: middle;
 }
 .fc-treestate-expand .fc-icon-treestate:before {
 	content: "+";
 }
 .fc-treestate-collapse .fc-icon-treestate:before {
 	content: "-";
+	line-height: 13px;
 }
 .fc-icon-spacer::before {
-	width: 15px;
+	width: 13px;
 	background: none;
 	border-radius: none;
 	content: " ";
+}
+
+.fc-treestate-collapse .fc-tree-title:hover,
+.fc-treestate-expand .fc-tree-title:hover {
+	cursor: pointer;
+	color: #000;
+}
+.fc-tree-title:hover .fc-icon-treestate:before {
+	background: #555;
+}
+
+
+.fc-tree-title .icon-stack {
+	width: 16px;
+	height: 16px;
+	margin-right: 4px;
+	font-size: 16px;
+	line-height: 17px;
+	text-align: left;
+	vertical-align: text-top;
+}
+tr:hover .fc-tree-title .icon-folder-close,
+tr:hover .fc-tree-title .icon-folder-open {
+	font-size: 18px;
+}
+
+.farcry-objectadmin .icon-stack .icon-pencil {
+    color: orange;
+    font-size: 0.8em;
+    line-height: 0.9;
+    text-align: right;
+    right: -2px;
+    text-shadow: 0 1px 0 #FFFFFF;
+}
+
+
+.fc-tree-title .icon-folder-close,
+.fc-tree-title .icon-folder-open {
+	color: #4b8bba;
+}
+.fc-tree-title:hover .icon-folder-close,
+.fc-tree-title:hover .icon-folder-open {
+	color: #0e65a2;
+}
+.fc-tree-title .icon-file {
+	color: #999;
+	font-size: 18px;
+}
+
+
+.fc-treestate-loading .fc-tree-title span::after {
+	display: inline-block;
+	font-size: 16px;
+	
 }
 
 
@@ -804,8 +934,17 @@ body .uniForm .focused {
 }
 
 
-/* icomoon / bootstrap icon conflicts */
+/* bootstrap alerts */
+body .alert {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+/* bootstrap icon conflicts */
 .icon-cog,
+.icon-file,
+.icon-folder-close,
+.icon-folder-open,
 .icon-minus,
 .icon-pencil,
 .icon-plus,

@@ -30,12 +30,17 @@
 </cfif>
 
 
-<cfoutput>
-<!DOCTYPE html>
+<!--- temporary --->
+<skin:loadCSS 	id="webtop"
+baseHREF="#application.url.webtop#/css"
+lFiles="webtop7.css,main7.css" />
+
+
+<cfoutput><!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" dir="#session.writingDir#" lang="#session.userLanguage#">
 <head>
-<meta content="text/html; charset=UTF-8" http-equiv="content-type">
-<meta http-equiv="X-UA-Compatible" content="IE=Edge">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <title>[#application.applicationname#] #application.config.general.sitetitle# - FarCry Webtop</title>
 
 <!--- TODO: register --->
@@ -135,7 +140,7 @@
 											<li class="nav-header"><cfif isdefined("menu.icon")><i class="#menu.icon#"></i> </cfif>#trim(menu.label)#</li>
 											<cfset menuitemCount = menuitemCount + 1>
 											<admin:loopwebtop parent="#stWebtop.children[url.sec].children[subsection.id].children[menu.id]#" item="menuitem" class="menuitemclass">
-												<li class="#menuitemclass#<cfif url.menuitem eq menuitem.id AND url.menu eq menu.id> active</cfif>"><a href="?id=#lcase(url.sec)#.#lcase(subsection.id)#.#lcase(menu.id)#.#lcase(menuitem.id)#"><cfif isdefined("menuitem.icon")><i class="#menuitem.id#"></i> </cfif>#trim(menuitem.label)#</a></li>
+												<li class="#menuitemclass#<cfif url.menuitem eq menuitem.id AND url.menu eq menu.id> active</cfif>"><a href="?id=#lcase(url.sec)#.#lcase(subsection.id)#.#lcase(menu.id)#.#lcase(menuitem.id)#<cfif isdefined("menuitem.urlparameters")>&#menuitem.urlparameters#</cfif>"><cfif isdefined("menuitem.icon")><i class="#menuitem.id#"></i> </cfif>#trim(menuitem.label)#</a></li>
 												<cfset menuitemCount = menuitemCount + 1>
 											</admin:loopwebtop>
 										</admin:loopwebtop>											
@@ -161,7 +166,7 @@
 									<cfset active = true />
 								</cfif>
 							</cfloop>
-							<a href="##" class="favourited <cfif active>active</cfif>" title="#application.fapi.getResource('webtop.utilities.favourites.favourite@text','Add or remove this page from your favourites')#" data-this="#application.fapi.fixURL()#" data-add="#application.fapi.getLink(type='dmProfile',view='ajaxAddFavourite')#" data-remove="#application.fapi.getLink(type='dmProfile',view='ajaxRemoveFavourite')#"><i class="icon-star"></i></a><a href="##" class="dropdown favourites-toggle" data-toggle="dropdown"><admin:resource key="webtop.utilties.favourites.favouritesmenu@text">Favourites</admin:resource><i class="icon-caret-down"></i></a>
+							<a href="##" class="favourited <cfif active>active</cfif>" title="#application.fapi.getResource('webtop.utilities.favourites.favourite@text','Add or remove this page from your favourites')#" data-this="#application.fapi.fixURL()#" data-add="#application.fapi.getLink(type='dmProfile',view='ajaxAddFavourite')#" data-remove="#application.fapi.getLink(type='dmProfile',view='ajaxRemoveFavourite')#"><i class="icon-star"></i></a><a href="##" class="dropdown favourites-toggle" data-toggle="dropdown"><admin:resource key="webtop.utilties.favourites.favouritesmenu@text">Favourites</admin:resource> <i class="icon-caret-down"></i></a>
 							<ul class="favourites-menu dropdown-menu">
 								<cfloop array="#aFavourites#" index="thisfavourite">
 									<li><a href="#thisfavourite.url#">#thisfavourite.label#</a></li>

@@ -46,8 +46,8 @@
 			<cfoutput>
 				<script type="text/javascript">
 				// check if edited from Content or Site (via sidetree)
-				if(parent['sidebar'].frames['sideTree'])
-					parent['sidebar'].frames['sideTree'].location= parent['sidebar'].frames['sideTree'].location;
+				//if(parent['sidebar'].frames['sideTree'])
+				//	parent['sidebar'].frames['sideTree'].location= parent['sidebar'].frames['sideTree'].location;
 				
 				if (parent.$fc === undefined || parent.$fc.objectAdminActionDiv === undefined) {
 					location = "#url.returnto#";

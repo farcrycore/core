@@ -104,11 +104,11 @@
 		<skin:registerJS 	id="fc-farcry-devicetype" core="true"
 							baseHREF="#application.url.webtop#/js"
 							lFiles="devicetype.js" />
+		<skin:registerJS 	id="farcry-devicetype" aliasof="fc-farcry-devicetype" core="false" />
 		
 		<skin:registerJS 	id="swfobject" core="true"
 							baseHREF="#application.url.webtop#/js"
 							lFiles="swfobject.js" />
-		<skin:registerJS 	id="farcry-devicetype" aliasof="fc-farcry-devicetype" core="false" />
 							
 		<skin:registerJS 	id="jquery-modal" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/jquery-modal"
@@ -150,7 +150,7 @@
 							lFiles="" /><!--- icons.css. removed for incompatibility with font-awesome. re-apply as required. --->
 							
 		<skin:registerCSS	id="fc-fontawesome"
-							baseHREF="#application.url.webtop#/thirdparty/font-awesome-3.0.2/css"
+							baseHREF="#application.url.webtop#/thirdparty/font-awesome-3.1.1/css"
 							lFiles="font-awesome.css" />
 							
 		<skin:registerCSS 	id="jquery-ui"

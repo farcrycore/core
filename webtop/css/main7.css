@@ -1,13 +1,5 @@
 
 
-ul.webtop {position:relative;margin: 0 .3em 1em 0;padding: 0;list-style-type:disc:}
-ol.webtop {margin: .5em .5em}
-ol.webtop li {margin-left: 2em;padding-left: 0;background: none; list-style-type: decimal}
-ul.webtop li {padding-left: 20px; background: transparent url("images/sprites.gif") no-repeat 0 -100px}
-ul.nomarker li {background:none;padding-left:0}
-
-select {background-color:#fff;}
-
 hr {margin: .3em 0 1em;background:#F1F1F1;height:1px;color:#F1F1F1;border:none}
 small, .small {font-size:11px}
 .clear {clear:both;position:relative;font-size:0;height:0;line-height:0} 
@@ -23,37 +15,14 @@ br.clearer {clear: both;height:1px;line-height:1px;}
 
 
 /* =HEADINGS */
-h1, h2, h3, h4, h5, h6 {font-family: arial,verdana,sans-serif;margin: 1.2em 0 0; font-weight: bold;}
-h1 {font-size: 156%;margin: 0}
-h2 {font-size: 116%}
-h3 {font-size: 112%}
-h4 {font-size: 102%}
-h5 {font-size: 92%}
-h6 {font-size: 83%}
+h1 {font-size: 27px}
+h2 {font-size: 24px}
+h3 {font-size: 22px}
+h4 {font-size: 18px}
+h5 {font-size: 16px}
+h6 {font-size: 14px}
 
 
-
-/* =LAYOUT-LOGIN PAGE */
-
-body#sec-login {background: #5A7EB9 url("images/full_page_bg.gif") repeat-x 0 0;height:auto}
-	#login {border: 8px solid #eee;background:#fff;width:700px;margin: 50px auto;padding: 20px;color:#999}
-	#login .loginLogo {float:left;width:265px;margin-right:10px;overflow:hidden;}
-	#login .loginInfo {float:left;width:415px;margin-right:0px;font-weight:bold;margin-bottom: 10px;}
-	#login .loginLogo h1 {font-size:105%;color:#116EAF;}
-	#login .loginLogo a {text-decoration:none;background:none;}
-	#login .loginLogo img {margin: 0 0 15px}
-	#login .loginLogo img, #login .loginLogo span {display:block;font: normal 80% arial;color:#999}
-
-
-	#login .loginFooter {clear:both;color:#ccc;border-top: 1px solid #eee;text-align:right;}
-	#login .loginFooter h3 { font: normal 80% arial;margin:0px;}
-	#login .loginFooter p { margin:10px 0px 0px 0px;}
-	#login .loginFooter a,#login .loginFooter a:hover {color: #ccc; background-color:#fff;text-decoration: underline;}
-	#login fieldset h5 {margin: 50px 0 0;padding:2px 5px}
-	#login .loginInfo form {width:425px;min-width:425px;}
-	#login .loginInfo form.formtool fieldset {border-style:none;}
-	#login .loginForgot {margin-top:10px;float:right;text-align:left;}
-	#login .error {clear:both;}
 
 
 
