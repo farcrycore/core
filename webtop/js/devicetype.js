@@ -12,6 +12,14 @@ $fc.setDeviceTypeCookie = function(deviceType) {
 	document.cookie = "FARCRYDEVICETYPE=" + deviceType + "; expires=" + date.toGMTString() + "; path=/;";
 }
 
+$fc.getDeviceType = function() {
+	var re = new RegExp("FARCRYDEVICETYPE=([^;]+)");
+	var value = re.exec(document.cookie);
+	var result = value[1] || "desktop";
+	return result;
+}
+
+
 $j(function(){
 
 	$j(".fc-switch-device-desktop").live("click", function(){
