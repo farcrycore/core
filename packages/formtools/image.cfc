@@ -1493,7 +1493,7 @@
 		<cfreturn stResult />
 	</cffunction>
 	
-	<cffunction name="onArchive" access="public" output="false" returntype="void" hint="Called from setData when an object is deleted">
+	<cffunction name="onArchive" access="public" output="false" returntype="string" hint="Called from setData when an object is deleted">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
@@ -1501,7 +1501,7 @@
 		
 		<cfset var archiveFile = "" />
 		
-		<cfif len(arguments.stObject[arguments.stMetadata.name])>
+		<cfif len(arguments.stObject[arguments.stMetadata.name]) and application.fc.lib.cdn.ioFileExists(location="images",file=arguments.stObject[arguments.stMetadata.name])>
 			<cfset archiveFile = "/#arguments.stObject.typename#/#arguments.archiveID#.#arguments.stMetadata.name#.#ListLast(arguments.stObject[arguments.stMetadata.name],'.')#" />
 			
 			<cfset application.fc.lib.cdn.ioMoveFile(source_location="images",source_file=arguments.stObject[arguments.stMetadata.name],dest_location="archive",dest_file=archiveFile) />
