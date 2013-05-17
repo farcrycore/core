@@ -24,8 +24,7 @@
 
 	- zoom on a particular node / tree section
 		- zoom to the users "home node" by default
-		- how should we deal with utility navigation? use a different page / menu item?
-		- files and images in the tree are gooooone?
+		V how should we deal with utility navigation? use a different page / menu item
 
 	- options dropdown:
 		- hook up existing functionality first
@@ -66,8 +65,13 @@
  --->
 
 
+<!--- set the default "home" root node --->
+<cfset userOverviewHome = "home">
+<cfif isDefined("session.dmProfile.overviewHome") AND len(session.dmProfile.overviewHome)>
+	<cfset userOverviewHome = session.dmProfile.overviewHome>
+</cfif>
 
-<cfparam name="url.alias" default="home">
+<cfparam name="url.alias" default="#userOverviewHome#">
 <cfparam name="url.rootobjectid" default="#application.fapi.getNavId(url.alias)#">
 
 
@@ -291,7 +295,9 @@
 			return $j(".objectadmin tr[data-objectid="+ id + "]");
 		}
 
-		function getDescendantsById(id) {
+		function getDescendantsById(id, bIncludeSelf) {
+			bIncludeSelf = bIncludeSelf || false;
+
 			var row = getRowById(id);
 			var nlevel = row.data("nlevel");
 
@@ -299,14 +305,18 @@
 			var children = $j();
 			var done = false;
 			var next = row;
+			if (bIncludeSelf) {
+				children = children.add(next);
+			}
 			while (done != true) {
 				next = next.next();
 				if (next.data("nlevel") > nlevel) {
 					children = children.add(next);
 				}
 				else {
-					if (!next.hasClass("ui-sortable-placeholder")) {
-						done = true;
+					done = true;
+					if (next.hasClass("ui-sortable-placeholder")) {
+						done = false;
 					}
 				}
 			}
@@ -320,16 +330,97 @@
 		}
 
 
-		function loadTreeChildRows(row) {
+		function getExpandedNodes() {
+			var expandedNodes = $j(".farcry-objectadmin tr.fc-treestate-collapse");
+			var aExpandedNodes = [];
+			expandedNodes.each(function(){
+				var thisObjectid = $j(this).data("objectid");
+				aExpandedNodes.push(thisObjectid);
+			});
+
+			return aExpandedNodes.join();
+		}
+
+		function setExpandedNodesCookie(lObjectid) {
+			lObjectid = lObjectid || getExpandedNodes();
+			// set session only cookie
+			document.cookie = "FCTREEEXPANDEDNODES=" + lObjectid + "; expires=0; path=/;";
+		}
+
+		function reloadTreeBranch(id) {
+			var row = getRowById(id);
+			loadTreeChildRows(row, true);
+		}
+
+
+
+
+		function loadExpandedAjaxNodes(id) {
+			// default id to root node
+			var root = $j(".farcry-objectadmin tbody tr:first");
+			id = id || root.data("objectid");
+
+			var children = getChildRows(id);
+
+			children.each(function(){
+				var childRow = $j(this);
+				if (childRow.hasClass("fc-treestate-collapse") && childRow.hasClass("fc-treestate-notloaded")) {
+
+					loadTreeChildRows(childRow);
+				}
+				else {
+					loadExpandedAjaxNodes(childRow.data("objectid"));
+				}
+			});
+
+		}
+
+/*
+		function expandTreeRows(row) {
+			var id = row.data("objectid");
+			var children = getChildRows(id);
+
+			row.removeClass("fc-treestate-expand").addClass("fc-treestate-collapse");
+			row.find(".fc-tree-title .icon-folder-close").removeClass("icon-folder-close").addClass("icon-folder-open");
+
+			children.each(function(){
+				var childRow = $j(this);
+				childRow.removeClass("fc-treestate-hidden").addClass("fc-treestate-visible");
+				if (childRow.hasClass("fc-treestate-collapse")) {
+					expandTreeRows(childRow);
+				}
+			});
+
+		}
+*/
+
+
+
+
+		function loadTreeChildRows(row, bReloadBranch) {
+
+			bReloadBranch = bReloadBranch || false;
 
 			var id = row.data("objectid");
 			var relativenlevel = row.data("indentlevel");
+			var descendants = $j();
+			var loadCollapsed = false;
 
-			row.removeClass("fc-treestate-loadchildren").addClass("fc-treestate-loading");
-			row.find(".fc-tree-title").append("<i class='icon-spinner icon-spin' style='margin-left:0.5em'></i>");
+			row.removeClass("fc-treestate-notloaded").addClass("fc-treestate-loading");
+			row.find(".fc-tree-title").first().append("<i class='icon-spinner icon-spin' style='margin-left:0.5em'></i>");
+
+
+			// if reloading a branch, find the deepest descendant nlevel in this branch so that an appropriate depth can be loaded
+			if (bReloadBranch) {
+				descendants = getDescendantsById(id, true);
+				// maintain the collapsed state of the branch when loading
+				if (row.hasClass("fc-treestate-expand")) {
+					loadCollapsed = true;
+				}
+			}
 
 			$j.ajax({
-				url: "/webtop/index.cfm?typename=dmNavigation&objectid=" + id + "&view=webtopTreeChildRows&responsetype=json",
+				url: "/webtop/index.cfm?typename=dmNavigation&objectid=" + id + "&view=webtopTreeChildRows&bReloadBranch=" + bReloadBranch + "&loadCollapsed=" + loadCollapsed + "&responsetype=json",
 				data: {
 					"relativenlevel": relativenlevel
 				},
@@ -337,9 +428,16 @@
 				success: function(response) {
 					response.success = response.success || false;
 					if (response.success) {
-						$j(response.html).insertAfter(row);
-						row.removeClass("fc-treestate-loading fc-treestate-expand").addClass("fc-treestate-collapse");
-						row.find(".fc-tree-title .icon-folder-close").removeClass("icon-folder-close").addClass("icon-folder-open");
+
+						if (bReloadBranch) {
+							$j(response.html).insertAfter(descendants.last());
+							descendants.remove();
+						}
+						else {
+							$j(response.html).insertAfter(row);
+							row.removeClass("fc-treestate-loading fc-treestate-expand").addClass("fc-treestate-collapse");
+							row.find(".fc-tree-title .icon-folder-close").removeClass("icon-folder-close").addClass("icon-folder-open");
+						}
 					}
 					else {
 // TODO: alert the user of an error with this request
@@ -347,10 +445,13 @@
 				},
 				error: function() {
 // TODO: alert the user of an error with this request
-					row.removeClass("fc-treestate-loading").addClass("fc-treestate-loadchildren");
+					row.removeClass("fc-treestate-loading").addClass("fc-treestate-notloaded");
 				},
 				complete: function() {
 					row.find(".fc-tree-title i.icon-spinner").remove();
+					setExpandedNodesCookie();
+					loadExpandedAjaxNodes(id);
+
 				}
 			});
 
@@ -391,14 +492,16 @@
 			var table = $j(this).closest(".objectadmin");
 			var row = $j(this).closest("tr");
 
-			if (row.hasClass("fc-treestate-loadchildren")) {
+			if (row.hasClass("fc-treestate-notloaded")) {
 				loadTreeChildRows(row);
 			}
 			else if (row.hasClass("fc-treestate-expand")) {
 				expandTreeRows(row);
+				setExpandedNodesCookie();
 			}
 			else if (row.hasClass("fc-treestate-collapse")) {
 				collapseTreeRow(row);
+				setExpandedNodesCookie();
 			}
 			return false;
 		});
@@ -406,6 +509,11 @@
 		$j(".objectadmin").on("click", ".fc-tree-title", function(evt){
 			$j(this).find(".fc-treestate-toggle").click();
 		});
+
+
+		$j(function(){
+			loadExpandedAjaxNodes();
+		})
 
 	</script>
 
