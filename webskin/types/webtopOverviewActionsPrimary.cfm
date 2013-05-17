@@ -35,7 +35,7 @@ FARCRY INCLUDE FILES
 <ft:processForm action="Delete" bHideForms="true">
 	<skin:onReady>
 	<cfoutput>
-		parent.$('##fcModal').modal('hide');
+		parent.$j('##fcModal').modal('hide');
 	</cfoutput>
 	</skin:onReady>
 </ft:processForm>
@@ -379,7 +379,7 @@ START WEBSKIN
 					class="secondary span3" 
 					type="button" 
 					rbkey="workflow.buttons.close" 
-					onClick="parent.$('##fcModal').modal('hide');" />
+					onClick="parent.$j('##fcModal').modal('hide');" />
 	</cfif>
 
 <cfsetting enablecfoutputonly="false">

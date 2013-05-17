@@ -178,7 +178,7 @@
 						<cfoutput>
 						<script type="text/javascript">
 						<!--- parent.$j('###url.dialogID#').dialog('close'); --->
-						parent.$('##fcModal').modal('hide');
+						parent.$j('##fcModal').modal('hide');
 						</script>
 						</cfoutput>
 					</cfsavecontent>
