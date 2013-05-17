@@ -392,7 +392,7 @@
 			<cfcase value="html">
 				<cfif len(FORM["#stMetadata.FormFieldPrefix##stMetadata.Name#New"])>
 					<cftry>
-						<cfif structKeyExists(form, "#stMetadata.FormFieldPrefix##stMetadata.Name#") AND  len(form["#stMetadata.FormFieldPrefix##stMetadata.Name#"])>
+						<cfif structKeyExists(form, "#stMetadata.FormFieldPrefix##stMetadata.Name#") AND len(form["#stMetadata.FormFieldPrefix##stMetadata.Name#"])>
 							<!--- This means there is currently a file associated with this object. We need to override this file --->
 							<cfset stResult.value = application.fc.lib.cdn.ioUploadFile(
 								location=fileLocation,
@@ -583,7 +583,7 @@
 			<cfreturn stResult />
 		</cfif>
 		
-		<cfif isSecured(stObject=arguments.stObject)>
+		<cfif isSecured(stObject=arguments.stObject,stMetadata=arguments.stMetadata)>
 			<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="privatefiles",file=arguments.stObject[arguments.stMetadata.name]) />
 		<cfelse>
 			<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="publicfiles",file=arguments.stObject[arguments.stMetadata.name]) />
