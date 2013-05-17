@@ -315,12 +315,23 @@
 		
 		<cfloop collection="#arguments.left#" item="prop">
 			<cfif not prop eq "typename">
-				<cfif structKeyExists(application.stCOAPI[arguments.left.typename].stProps, prop)>
+				<cfif structKeyExists(application.stCOAPI[arguments.left.typename].stProps, prop) 
+					AND not refindnocase("^farcry\.core\.packages\.(types\.types|types\.versions|rules\.rules)",application.stCOAPI[arguments.left.typename].stProps[prop].origin)>
+					
 					<cfset stPropMetadata = duplicate(application.stCOAPI[arguments.left.typename].stProps[prop].metadata) />
 					<cfif structkeyexists(arguments.stMetadata,prop)>
 						<cfset structappend(stPropMetadata,arguments.stMetadata[prop],true) />
 					</cfif>
-					<cfif (structkeyexists(stPropMetadata,"ftSeq") and len(stPropMetadata.ftSeq)) or (arguments.includeInvisibleProperties and not listfindnocase("ObjectID,label,datetimecreated,createdby,ownedby,datetimelastupdated,lastupdatedby,lockedBy,locked,versionid,status",prop))>
+					
+					<cfif (
+							not structkeyexists(stPropMetadata,"ftArchive")
+							OR stPropMetadata.ftArchive eq true
+						)
+						AND (
+							(structkeyexists(stPropMetadata,"ftSeq") AND len(stPropMetadata.ftSeq)) 
+							OR arguments.includeInvisibleProperties 
+						)>
+						
 						<cfset stResult[prop] = getPropertyDiff(typename=arguments.left.typename,left=arguments.left[prop],right=arguments.right[prop],stMetadata=stPropMetadata) />
 						<cfif stResult[prop].different>
 							<cfset stResult.countDifferent = stResult.countDifferent + 1 />

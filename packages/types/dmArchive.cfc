@@ -113,7 +113,7 @@ $out:$
 					<cfset queryaddrow(arguments.stMeta.files) />
 					<cfset querysetcell(arguments.stMeta.files,"property",thisprop) />
 					<cfset querysetcell(arguments.stMeta.files,"filename",stLocal.stObj[thisprop]) />
-					<cfset querysetcell(arguments.stMeta.files,"archive",application.formtools[stMetadata.ftType].oFactory.onArchive(typename=stLocal.stObj.typename,stObject=stLocal.stObj,stMetadata=stMetadata,archiveID=stProps.objectid)) />
+					<cfset querysetcell(arguments.stMeta.files,"archive",application.formtools[stMetadata.ftType].oFactory.onArchive(typename=stLocal.stObj.typename,stObject=stLocal.stObj,stMetadata=stMetadata,archiveID=stLocal.stProps.objectid)) />
 				</cfif>
 			</cfif>
 		</cfloop>

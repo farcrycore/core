@@ -440,7 +440,18 @@
 		<cfparam name="stFieldPost.NEW" default="" />
 		<cfparam name="stFieldPost.DELETE" default="false" /><!--- Boolean --->
 		
-		<cfif ((structkeyexists(form,arguments.uploadfield) and len(form[arguments.uploadfield])) or (isBoolean(stFieldPost.DELETE) and stFieldPost.DELETE)) and len(arguments.existingfile)>
+		<cfif (
+				(
+					structkeyexists(form,arguments.uploadfield) 
+					AND len(form[arguments.uploadfield])
+				) 
+				OR (
+					isBoolean(stFieldPost.DELETE) 
+					AND stFieldPost.DELETE
+				)
+			) 
+			AND len(arguments.existingfile)
+			AND application.fc.lib.cdn.ioFileExists(location=filelocation,file=arguments.existingfile)>
 			
 			<cfif arguments.bArchive>
 				<cfset archivedFile = application.fc.lib.cdn.ioMoveFile(
@@ -552,7 +563,8 @@
 			<cfset filelocation = "privatefiles" />
 		</cfif>
 		
-		<cfif len(arguments.existingfile)>
+		<cfif len(arguments.existingfile)
+			AND application.fc.lib.cdn.ioFileExists(location=filelocation,file=arguments.existingfile)>
 			
 			<cfif arguments.bArchive>
 				<cfset archivedFile = application.fc.lib.cdn.ioMoveFile(

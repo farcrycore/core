@@ -44,7 +44,7 @@
 	<!--- Date --->
 	<cfset stLocal.date = dateformat(stObject.datetimelastupdated,'d mmm yyyy') & " " & timeformat(stObject.datetimelastupdated,'h:mmtt') />
 	
-	<cfif arguments.stParam.mode eq "select" or (stLocal.deletePermission and structkeyexists(stObject,"status") and structkeyexists(stObject,"versionid") and stObject.status eq "approved")>
+	<cfif arguments.stParam.mode eq "select" or not structkeyexists(stObject,"status") or not structkeyexists(stObject,"versionid") or (stLocal.deletePermission and structkeyexists(stObject,"status") and structkeyexists(stObject,"versionid") and stObject.status eq "approved")>
 		<admin:resource key="coapi.dmArchive.teaser_displayonly@html" var1="#stLocal.event#" var2="#stLocal.username#" var3="#stLocal.date#"><cfoutput>
 			{1} by {2} on {3}
 		</cfoutput></admin:resource>
