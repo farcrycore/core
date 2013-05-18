@@ -44,21 +44,21 @@
 			<cfset packagepath=expandpath("/farcry/projects/#arguments.project#/packages/#arguments.package#") />
 			<cfset typepath="farcry.projects.#arguments.project#.packages.#arguments.package#" />
 			<cfif directoryExists(packagepath)>
-				<cfdirectory directory="#packagepath#" name="qComps" filter="*.cfc" sort="name" />
+				<cfdirectory directory="#packagepath#" name="qComps" filter="*.cfc" sort="name" listinfo="name" />
 				<!--- <cfdump var="#qcomps#" label="project: #packagepath#../../packages/#arguments.package#"> --->
 			</cfif>
 		<cfelseif packagedir eq "corepackage">
 			<cfset packagepath=expandpath("/farcry/core/packages/#arguments.package#") />
 			<cfset typepath="farcry.core.packages.#arguments.package#" />
 			<cfif directoryExists(packagepath)>
-				<cfdirectory directory="#packagepath#" name="qComps" filter="*.cfc" sort="name" />
+				<cfdirectory directory="#packagepath#" name="qComps" filter="*.cfc" sort="name" listinfo="name" />
 				<!--- <cfdump var="#qcomps#" label="core: #packagepath##arguments.package#"> --->
 			</cfif>
 		<cfelse>
 			<cfset packagepath=ExpandPath("/farcry/plugins/#packagedir#/packages/#arguments.package#") />
 			<cfset typepath="farcry.plugins.#packagedir#.packages.#arguments.package#" />
 			<cfif directoryExists(packagepath)>
-				<cfdirectory action="list" directory="#packagepath#" filter="*.cfc" name="qComps" sort="name" />
+				<cfdirectory action="list" directory="#packagepath#" filter="*.cfc" name="qComps" sort="name" listinfo="name" />
 				<!--- <cfdump var="#qcomps#" label="#packagedir#: #packagepath#"> --->
 			</cfif>
 		</cfif>
@@ -179,6 +179,10 @@
 		<cfset var pluginName = "" />
 		<cfset var stWebskinMetadata = "" />
 		<cfset var qSummary = "" />
+
+		<cfset var thisFile = "" />
+		<cfset var thisTypename = "" />
+		<cfset var thisFileParentDirectory = "" />
 		
 				
 		<cfif not structKeyExists(request.fc, "stProjectDirectorys")>
@@ -209,30 +213,39 @@
 				</cfswitch>
 				
 				<!--- Get all webskins --->
-				<cfset webskinpath = expandPath(webskinrel) />
-				<cfdirectory action="list" directory="#webskinpath#" filter="*.cfm" name="qThis" recurse="true" />
-				
+				<cfset webskinpath = replaceNoCase(expandPath(webskinrel),"\","/","all") />
+				<cfdirectory action="list" directory="#webskinpath#" filter="*.cfm" name="qThis" recurse="true" listinfo="name" />
+
 				<!--- Add extra columns to query --->
 				<cfquery dbtype="query" name="qThis">
 					SELECT 	<!--- from cfdirectory --->
 							*, 
+							'' AS directory,
 							
 							<!--- derived from cfdirectory right now --->
 							'' as typename, '' as webskin, cast(0 as integer) as id, '' as path, 
 							
 							<!--- extracted from webkin later --->
-							'anonymous' as author, datelastmodified, '' as description, name as displayname, 0 as cacheStatus, 0 as cacheTimeout, -1 as browserCacheTimeout, -1 as proxyCacheTimeout, 0 as cacheByURL, 0 as cacheFlushOnFormPost, 0 as cacheByForm, 0 as cacheByRoles, '' as cacheByVars, '' as cacheTypeWatch, 0 as cacheFlushOnObjectChange, name as methodname, '' as fuAlias, '' as viewstack, '' as viewbinding, '' as allowredirect
+							'anonymous' as author, '' as description, name as displayname, 0 as cacheStatus, 0 as cacheTimeout, -1 as browserCacheTimeout, -1 as proxyCacheTimeout, 0 as cacheByURL, 0 as cacheFlushOnFormPost, 0 as cacheByForm, 0 as cacheByRoles, '' as cacheByVars, '' as cacheTypeWatch, 0 as cacheFlushOnObjectChange, name as methodname, '' as fuAlias, '' as viewstack, '' as viewbinding, '' as allowredirect
 							
 					FROM 	qThis
 				</cfquery>
 				<cfloop query="qThis">
-					<cfif listlen(replacenocase(qThis.directory,expandpath(webskinrel),""),"/\") eq 1>
+					<cfif listLen(qThis.name, "/\") eq 2>
 						<cfset webskinID = webskinID + 1 />
-						<cfset querysetcell(qThis, 'id', webskinID, qThis.currentRow) />
-						<cfset querysetcell(qThis, 'directory', replaceNoCase(qThis.directory,"\","/","all"), qThis.currentRow) />
-						<cfset querysetcell(qThis, 'typename', "#listLast(qThis.directory,"/")#", qThis.currentRow) />
-						<cfset querysetcell(qThis, 'webskin', "/#qThis.typename#/#qThis.name#", qThis.currentRow) />
-						<cfset querysetcell(qThis, 'path', "#webskinrel#/#listLast(qThis.directory,"/")#", qThis.currentRow) />
+
+						<cfset thisFile = listLast(qThis.name,"/\")>
+						<cfset thisTypename = listFirst(qThis.name,"/\")>
+						<cfset thisFileParentDirectory = "#webskinpath#/#thisTypename#">
+
+						<cfset querysetcell(qThis, 'id', webskinID, qThis.currentRow) />		
+						<cfset querysetcell(qThis, 'directory', thisFileParentDirectory, qThis.currentRow) />		
+						<cfset querysetcell(qThis, 'typename', thisTypename, qThis.currentRow) />		
+						<cfset querysetcell(qThis, 'webskin', "/#thisTypename#/#thisFile#", qThis.currentRow) />	
+						<cfset querysetcell(qThis, 'methodname', thisFile, qThis.currentRow) />	
+						<cfset querysetcell(qThis, 'path', "#webskinrel#/#thisTypename#", qThis.currentRow) />
+						<cfset querysetcell(qThis, 'name', thisFile, qThis.currentRow) />
+
 					<cfelse>
 						<cfset querysetcell(qThis, 'id', -1, qThis.currentRow) />
 					</cfif>
@@ -240,7 +253,7 @@
 				<cfquery dbtype="query" name="qThis">
 					SELECT * FROM qThis WHERE id>-1
 				</cfquery>
-				
+
 				<!--- Add new webskins to summary --->
 				<cfif isdefined("request.fc.stProjectDirectorys.qAll") and request.fc.stProjectDirectorys.qAll.recordcount>
 					<cfquery dbtype="query" name="request.fc.stProjectDirectorys.qAll">
@@ -256,7 +269,8 @@
 				<cfelse>
 					<cfset request.fc.stProjectDirectorys.qAll = qThis />
 				</cfif>
-				
+
+
 				<!--- I don't think this get's used, but I'm leaving it until I can test properly --->
 				<cfset request.fc.stProjectDirectorys["q#pluginname#"] = qThis />
 			</cfloop>
