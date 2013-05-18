@@ -202,44 +202,45 @@
 	
 	<!--- determine display method for object --->
 	<cfset request.stObj = stObj>
-	<cfset url.type = stObj.typename />
 
 
 	<cfif len(url.view)>
-	
+
 		<!--- Update the view with the display method --->
 		<cfset url.view = application.fc.lib.device.getDeviceWebskin(stObj.typename, url.view) />
-		
+		<skin:view objectid="#stobj.objectid#" typename="#stObj.typename#" webskin="#url.view#" alternateHTML="" r_html="result" />
+
 	<cfelseif structKeyExists(stObj, "displayMethod") AND len(stObj.displayMethod)>
-		
+
 		<!--- Update the view with the display method --->
 		<cfset url.view = application.fc.lib.device.getDeviceWebskin(stObj.typename, stObj.displayMethod) />
-		
+		<skin:view objectid="#stobj.objectid#" typename="#stObj.typename#" webskin="#url.view#" alternateHTML="" r_html="result" />
+
 	<cfelseif application.fapi.hasWebskin(typename="#stobj.typename#", webskin="#stWebskins.page#")>
-		
-		<!--- All else fails, try the standard page webskin --->
-		<cfset url.view = stWebskins.page />
-		
+
+		<!--- use the standard page webskin if there is one --->
+		<!--- NOTE: do not set url.view here as recursive calls from dmNavigation will break --->
+		<skin:view objectid="#stobj.objectid#" typename="#stObj.typename#" webskin="#stWebskins.page#" alternateHTML="" r_html="result" />
+
 	<cfelse>
-		
+
 		<cfset application.fc.lib.error.showErrorPage("404 Page missing",application.fc.lib.error.create404Error("I was looking at the type: #stobj.typename# and couldn't find a #stWebskins.page#. You'll want to create the default view for this object. To do that, create a #stWebskins.page#.cfm webskin in the webskin folder in a directory named #stobj.typename#.")) />
 		
 	</cfif>
-	
-	<!--- Use the requested view --->
-	<skin:view objectid="#stobj.objectid#" typename="#stObj.typename#" webskin="#url.view#" alternateHTML="" r_html="result" />
-	
-	<cfif application.stCOAPI[stObj.typename].stWebskins[url.view].viewstack eq "data" and structkeyexists(application.stCOAPI[stObj.typename].stWebskins[url.view],"mimeType")>
+
+	<!--- either stream the webskin result with an appropriate mime type, or output it normally --->
+	<cfif application.stCOAPI[url.type].stWebskins[url.view].viewstack eq "data" and structkeyexists(application.stCOAPI[url.type].stWebskins[url.view],"mimeType")>
 		<cfinvoke component="#application.fapi#" method="stream">
 			<cfinvokeargument name="content" value="#result#" />
-			<cfinvokeargument name="type" value="#application.stCOAPI[stObj.typename].stWebskins[url.view].mimeType#" />
-			<cfif structkeyexists(application.stCOAPI[stObj.typename].stWebskins[url.view],"filename")>
-				<cfinvokeargument name="filename" value="#application.stCOAPI[stObj.typename].stWebskins[url.view].filename#" />
+			<cfinvokeargument name="type" value="#application.stCOAPI[url.type].stWebskins[url.view].mimeType#" />
+			<cfif structkeyexists(application.stCOAPI[url.type].stWebskins[url.view],"filename")>
+				<cfinvokeargument name="filename" value="#application.stCOAPI[url.type].stWebskins[url.view].filename#" />
 			</cfif>
 		</cfinvoke>
 	<cfelse>
 		<cfoutput>#result#</cfoutput>
 	</cfif>
+
 
 <cfelse>
 
