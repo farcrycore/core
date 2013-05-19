@@ -338,13 +338,13 @@
 				aExpandedNodes.push(thisObjectid);
 			});
 
-			return aExpandedNodes.join();
+			return aExpandedNodes.join('|');
 		}
 
 		function setExpandedNodesCookie(lObjectid) {
 			lObjectid = lObjectid || getExpandedNodes();
 			// set session only cookie
-			document.cookie = "FCTREEEXPANDEDNODES=" + lObjectid + "; expires=0; path=/;";
+			document.cookie = "FARCRYTREEEXPANDEDNODES=" + lObjectid + "; expires=0; path=/;";
 		}
 
 		function reloadTreeBranch(id) {
@@ -420,7 +420,7 @@
 			}
 
 			$j.ajax({
-				url: "/webtop/index.cfm?typename=dmNavigation&objectid=" + id + "&view=webtopTreeChildRows&bReloadBranch=" + bReloadBranch + "&loadCollapsed=" + loadCollapsed + "&responsetype=json",
+				url: "#application.url.webtop#/index.cfm?typename=dmNavigation&objectid=" + id + "&view=webtopTreeChildRows&bReloadBranch=" + bReloadBranch + "&loadCollapsed=" + loadCollapsed + "&responsetype=json",
 				data: {
 					"relativenlevel": relativenlevel
 				},

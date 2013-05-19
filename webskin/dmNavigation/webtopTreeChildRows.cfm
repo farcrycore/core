@@ -18,9 +18,11 @@
 <cfset treeLoadingDepth = 2>
 <cfset bRenderRoot = true>
 
-<!--- render the root when a relative nlevel has not been passed in --->
+<!--- do not render the root when a relative nlevel has been passed in --->
 <cfif url.relativeNLevel gt 0>
 	<cfset bRenderRoot = false>
+	<!--- the loading depth should be increased by 1 when when a relative nlevel has been passed in --->
+	<cfset treeLoadingDepth = treeLoadingDepth + 1>
 </cfif>
 <!--- render the root when reloading a branch --->
 <cfif url.bReloadBranch>
@@ -30,8 +32,12 @@
 </cfif>
 
 
-<!--- expanded tree nodes --->
-<cfparam name="cookie.fctreeexpandednodes" default="">
+<!--- initialize expanded tree nodes --->
+<cfparam name="cookie.FARCRYTREEEXPANDEDNODES" default="">
+<!--- add the root node if not loading collapsed --->
+<cfif NOT url.loadCollapsed AND NOT listFindNoCase(cookie.FARCRYTREEEXPANDEDNODES, rootObjectID, "|")>
+	<cfset cookie.FARCRYTREEEXPANDEDNODES = listAppend(cookie.FARCRYTREEEXPANDEDNODES, rootObjectID, "|")>
+</cfif>
 
 
 <cfset oTree = createObject("component","farcry.core.packages.farcry.tree")>
@@ -63,45 +69,40 @@
 		<cfset bRootNode = stNav.objectid eq rootObjectID>
 		<cfset bExpanded = false>
 		<cfset expandable = 0>
+		<cfset bUnexpandedAncestor = false>
 		<cfset aLeafNodes = arrayNew(1)>
 		<cfset childrenLoaded = false>
 
 		<!--- find child folders --->
 		<cfif qTree.recordCount gt qTree.currentRow + 1 AND qTree.nlevel[qTree.currentRow+1] gt qTree.nlevel>
 			<cfset expandable = 1>
-<!--- 			<cfset childrenLoaded = true> --->
+			<cfif qTree.nlevel lt treeMaxLevel>
+				<cfset childrenLoaded = true>	
+			</cfif>
 		</cfif>
 		<!--- find child leaves --->
 		<cfif arrayLen(stNav.aObjectIDs) gt 0>
 			<cfset expandable = 1>
+			<cfif qTree.nlevel lt treeMaxLevel>
+				<cfset aLeafNodes = oTree.getLeaves(qTree.objectid)>
+				<cfset childrenLoaded = true>	
+			</cfif>
 		</cfif>
 
 		<!--- determine if this node is currently expanded --->
 		<cfif bRootNode AND NOT url.loadCollapsed>
 			<cfset bExpanded = true>
-		<cfelseif listFindNoCase(cookie.fctreeexpandednodes, stNav.objectid)>
+		</cfif>
+		<cfif listFindNoCase(cookie.FARCRYTREEEXPANDEDNODES, stNav.objectid, "|")>
+			<cfset expandable = 1>
 			<cfset bExpanded = true>
 		</cfif>
 
-		<!--- get leaf nodes for the appropriate depth --->
-		<cfif qTree.nlevel lt treeMaxLevel>
-			<cfset aLeafNodes = oTree.getLeaves(qTree.objectid)>
-			<cfset childrenLoaded = true>				
-		</cfif>
-<!--- 
-		<cfif bExpanded>
-			<cfset aLeafNodes = oTree.getLeaves(qTree.objectid)>
-		</cfif>
- --->
-
-
 		<!--- if this node is expanded then show it as collapsable --->
-		<cfif expandable>
-			<cfif bExpanded>
-				<cfset thisClass = "fc-treestate-collapse">
-			<cfelse>
-				<cfset thisClass = "fc-treestate-expand">
-			</cfif>
+		<cfif bExpanded>
+			<cfset thisClass = "fc-treestate-collapse">
+		<cfelse>
+			<cfset thisClass = "fc-treestate-expand">
 		</cfif>
 
 
@@ -109,22 +110,38 @@
 		<cfset navIndentLevel = qTree.nlevel - baseNLevel - expandable + url.relativeNLevel + 1>
 
 
+		<!--- check that all visible ancestors are expanded --->
+		<cfset qAncestors = oTree.getAncestors(objectid=qTree.objectid, nlevel=qTree.nlevel-baseNLevel-1)>
+		<cfloop query="qAncestors">
+			<cfif NOT listFindNoCase(cookie.FARCRYTREEEXPANDEDNODES, qAncestors.objectid, "|") AND qAncestors.nlevel gt 0>
+				<!--- unexpanded ancestor found, so this node is not visible --->
+				<cfset bUnexpandedAncestor = true>
+			</cfif>
+		</cfloop>
+
+
 		<cfif bRenderRoot OR qTree.objectid neq rootObjectID>
 
+
 			<!--- if this node is expanded, or the parent nav node is expanded then this nav node will be visible --->
-			<cfif url.loadCollapsed AND NOT bRootNode>
+			<cfif bUnexpandedAncestor>
 				<cfset thisClass = thisClass & " fc-treestate-hidden">
-			<cfelseif bExpanded OR listFindNoCase(cookie.fctreeexpandednodes, qTree.parentid)>
-				<cfset thisClass = thisClass & " fc-treestate-visible">
+			<cfelseif url.loadCollapsed AND NOT bRootNode>
+				<cfset thisClass = thisClass & " fc-treestate-hidden">
 			<cfelseif qTree.parentid eq rootObjectID>
+				<cfset thisClass = thisClass & " fc-treestate-visible">
+			<cfelseif bExpanded OR listFindNoCase(cookie.FARCRYTREEEXPANDEDNODES, qTree.parentid, "|")>
 				<cfset thisClass = thisClass & " fc-treestate-visible">
 			<cfelse>
 				<cfset thisClass = thisClass & " fc-treestate-hidden">
 			</cfif>
 
+			<!--- load children using ajax --->
 			<cfif expandable AND NOT childrenLoaded>
 				<cfset thisClass = thisClass & " fc-treestate-notloaded">
 			</cfif>
+
+
 
 			<!--- urls --->
 			<cfset thisOverviewURL = "#application.url.webtop#/edittabOverview.cfm?objectid=#stNav.objectid#&ref=overview">
@@ -201,8 +218,12 @@
 
 			<cfset thisClass = "fc-treestate-hidden">
 			<!--- if the parent nav node is expanded then the leaf will be visible --->
-			<cfif NOT url.loadCollapsed AND (bRootNode OR listFindNoCase(cookie.fctreeexpandednodes, stNav.objectid))>
+			<cfif bRootNode OR bExpanded>
 				<cfset thisClass = "fc-treestate-visible">					
+			</cfif>
+			<!--- if the branch is loaded collapsed OR there is an unexpanded ancesotr then the leaf will be hidden --->
+			<cfif url.loadCollapsed OR bUnexpandedAncestor>
+				<cfset thisClass = "fc-treestate-hidden">
 			</cfif>
 
 
