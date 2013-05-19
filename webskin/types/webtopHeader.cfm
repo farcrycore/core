@@ -31,9 +31,7 @@
 
 
 <!--- temporary --->
-<skin:loadCSS 	id="webtop"
-baseHREF="#application.url.webtop#/css"
-lFiles="webtop7.css,main7.css" />
+<skin:loadCSS id="webtop" baseHREF="#application.url.webtop#/css" lFiles="webtop7.css,main7.css" />
 
 
 <cfoutput><!DOCTYPE html>
@@ -90,11 +88,11 @@ lFiles="webtop7.css,main7.css" />
 								<cfif len(webtopAvatar)>
 									<img src="#webtopAvatar#" width="24" height="25">
 								<cfelse>
-									<img class="gravatar" src="//www.gravatar.com/avatar/#webtopGravatarHash#?d=404" width="24" height="25">
+									<img class="gravatar" src="//www.gravatar.com/avatar/#webtopGravatarHash#?d=404" width="24" height="25" onerror="this.style.visibility='hidden';">
 								</cfif>
 								<i class="icon-user"></i>
 							</span>
-							<i class="cog"><b class="icon-cog"></b></i>
+							<span class="cog"><i class="icon-cog"></i></span>
 
 							<span>#webtopUsername# &nbsp;<b class="icon-caret-down"></b></span>
 						</div>

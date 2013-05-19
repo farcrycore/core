@@ -49,6 +49,11 @@ body.webtop {
 	background: #eee;
 }
 
+/* fix bootstrap default input rule */
+input {
+	font-family: Arial, Helvetica, sans-serif
+}
+
 
 h1, h2, h3, h4, h5, h6 {
 	color: #333;
@@ -346,6 +351,10 @@ a:hover {
 	margin-left: 5px;
 	cursor: pointer;
 }
+.farcry-header-user .icon-user {
+	display: inline-block;
+	margin-top: 5px;	
+}
 .farcry-header-user.open,
 .farcry-header-user:hover {
 	background: #f2f2f2;
@@ -358,9 +367,6 @@ a:hover {
 .farcry-header-user:hover .cog {
 	display: inline-block;
 }
-.farcry-header-user .cog b {
-	margin-top: 0;
-}
 
 .farcry-header-profile .avatar {
 	position: relative;
@@ -369,7 +375,9 @@ a:hover {
 	background: #3e84b5;
 	color: #fff;
 	width: 24px;
-	height: 24px;
+	height: 25px;
+	font-size: 14px;
+	line-height: 25px;
 	text-align: center;
 	vertical-align: middle;
 }
@@ -389,14 +397,14 @@ a:hover {
 	background: #555;
 	color: #fff;
 	width: 24px;
-	height: 22px;
-	padding-top: 2px;
+	height: 24px;
+	padding-top: 1px;
+	font-size: 14px;
+	line-height: 25px;
 	text-align: center;
 	vertical-align: middle;
 }
-.farcry-header-profile span {
 
-}
 
 #favourites a {
 	display:inline-block;
