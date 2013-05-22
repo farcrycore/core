@@ -370,7 +370,6 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 			});
 			
 			if (sourceField.length>0){
-				.find(".image-status").attr("title","This file has been updated on the server").tooltip({ delay: 0, showURL: false	}).html('<i class="icon-info-sign" style="float:left;"></i>').end()
 				function handleSourceChange(newval){
 					if (newval && newval.length){
     					//imageformtool.enableCrop(true);
