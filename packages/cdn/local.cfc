@@ -184,7 +184,8 @@
 		</cfif>
 		
 		<cfif not directoryExists(getDirectoryFromPath(destfile))>
-			<cfdirectory action="create" directory="#getDirectoryFromPath(destfile)#" mode="774" />
+			<cfdirectory action="create" directory="#getDirectoryFromPath(destfile)#" mode="777" />
+			<cfset fileSetAccessMode(getDirectoryFromPath(destfile), "777") />
 		</cfif>
 		
 		<cffile action="move" source="#sourcefile#" destination="#destfile#" mode="664" nameconflict="overwrite" />
@@ -215,7 +216,8 @@
 		</cfif>
 		
 		<cfif not directoryExists(getDirectoryFromPath(destfile))>
-			<cfdirectory action="create" directory="#getDirectoryFromPath(destfile)#" mode="774" />
+			<cfdirectory action="create" directory="#getDirectoryFromPath(destfile)#" mode="777" />
+			<cfset fileSetAccessMode(getDirectoryFromPath(destfile), "777") />
 		</cfif>
 		
 		<cffile action="copy" source="#sourcefile#" destination="#destfile#" mode="664" nameconflict="overwrite" />
@@ -240,7 +242,8 @@
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="dir" type="string" required="true" />
 		
-		<cfdirectory action="create" directory="#getFullPath(config=arguments.config,file=arguments.dir)#" mode="774" />
+		<cfdirectory action="create" directory="#getFullPath(config=arguments.config,file=arguments.dir)#" mode="777" />
+		<cfset fileSetAccessMode(getFullPath(config=arguments.config,file=arguments.dir), "777") />
 	</cffunction>
 	
 	<cffunction name="ioGetDirectoryListing" returntype="query" access="public" output="false" hint="Returns a query of the directory containing a 'file' column only. This filename will be equivilent to what is passed into other CDN functions.">
