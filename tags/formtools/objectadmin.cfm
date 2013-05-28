@@ -155,14 +155,6 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 	<cfset attributes.sqlWhere = "0=0" />
 </cfif>
 
-<cfif NOT structKeyExists(PrimaryPackage, "news")>
-
-<!--- this seems to be a problem for custom types when it gets to invocation.cfm. the permission set is not carried
-across and could potentially cause major stuff ups if news permissions (which is the default) is set to no for the
-user --->
-	<cfset structInsert(PrimaryPackage, "permissionset", "news", "yes")>
-</cfif>
-
 <!--- Make sure the type is deployed --->
 <cfset alterType = createObject("component","farcry.core.packages.farcry.alterType") />
 
