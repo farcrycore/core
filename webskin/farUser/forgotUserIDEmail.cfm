@@ -1,7 +1,4 @@
-
-
-
-
+<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
 <!--- Refresh stobj --->
 <cfset stobj = getData(objectid="#stobj.objectid#") />

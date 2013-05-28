@@ -149,14 +149,18 @@
 				
 				<cfloop list="#arguments.role#" index="iRole">
 					<cfset bRight = application.fapi.getContentType("farBarnacle").getRight(role="#iRole#", permission="#genericPermissionID#", object="#barnacleID#", objecttype="farCoapi")>
-					<cfif bRight GT 0>
+					<cfif bRight EQ 1>
 						<cfset result = 1 />
 						<cfbreak>
+					<cfelseif bRight eq -1>
+						<cfset result = -1 />
 					</cfif>
 				</cfloop>
 				
-				<cfif result NEQ 1>
+				<cfif result EQ 0>
 					<cfset result = this.factory.role.getRight(role=arguments.role, permission=genericPermissionID) />
+				<cfelseif result EQ -1>
+					<cfset result = 0 />
 				</cfif>
 			<cfelse>
 				<!--- This should only happen for checks to object permissions that don't have corresponding type permissions --->
@@ -222,16 +226,16 @@
 	</cffunction>
 
 	<cffunction name="getCurrentRoles" access="public" output="true" returntype="string" hint="Returns the roles of the current logged in user" bDocument="true">
+		<cfif not isdefined("this.cache.defaultroles")>
+			<cfset this.cache.defaultroles = this.factory.role.getDefaultRoles() />
+		</cfif>
 		<cfif isdefined("session.security.roles")>
 			<cfreturn application.factory.oUtils.listMerge(this.cache.defaultroles,session.security.roles) />
-		<cfelseif not isdefined("this.cache.defaultroles")>
-			<cfset this.cache.defaultroles = this.factory.role.getDefaultRoles() />
-			<cfreturn this.cache.defaultroles />
 		<cfelse>
 			<cfreturn this.cache.defaultroles />
 		</cfif>
 	</cffunction>
-	
+
 	<cffunction name="getCurrentUD" access="public" output="false" returntype="string" hint="Returns the UD of the current user" bDocument="true">
 		<cfif isdefined("session.security.userid")>
 			<cfreturn listlast(session.security.userid,"_") />
