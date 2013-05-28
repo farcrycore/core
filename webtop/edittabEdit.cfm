@@ -56,7 +56,7 @@ $DEVELOPER:Brendan Sisson (brendan@daemon.com.au)$
 <skin:view typename="dmHTML" webskin="webtopHeaderModal" />
 
 <sec:CheckPermission error="true" permission="ObjectEditTab">
-	<nj:edit objectid="#url.objectid#" typename="#url.typename#" cancelCompleteURL="#application.url.farcry#/edittabOverview.cfm?objectid=#url.objectid#&ref=#url.ref#" />
+	<nj:edit objectid="#url.objectid#" typename="#url.typename#" cancelCompleteURL="#application.url.farcry#/edittabOverview.cfm?typename=#url.typename#&objectid=#url.objectid#&ref=#url.ref#" />
 </sec:CheckPermission>
 
 <!--- setup footer --->

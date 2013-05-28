@@ -35,7 +35,7 @@ $in: $
 $out:$
 --->
 
-<cfcomponent extends="types" displayname="dmArchive handler" hint="archive objects" bRefObjects="false" bSystem="true">
+<cfcomponent extends="types" displayname="dmArchive handler" hint="archive objects" bRefObjects="false" bAudit="false" bArchive="false" bSystem="true">
 	<!------------------------------------------------------------------------
 	type properties
 	------------------------------------------------------------------------->

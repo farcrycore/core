@@ -117,6 +117,8 @@ body.popup #content {margin:0;background:transparent;padding:0}
 .utilBar label {display:inline}
 .gen-admin-filterby input.f-submit {margin-right:15px}
 
+.form-actions label { display:inline; }
+
 ul.object-overview-actions {margin-right: 130px}
 
 /* =ALL BLUE LEFT HAND COL */
@@ -398,8 +400,8 @@ table.object-admin-actions td a .ui-icon {
 }
 
 /* WEBTOP OVERVIEW */
-.developer-actions { right:25px; position:absolute; }
-	.developer-actions a, .developer-actions .objectid { color:#333333; padding:0; display:inline-block; vertical-align:middle; margin-left:10px; }
+.developer-actions { right:27px; position:absolute; }
+	.developer-actions a, .developer-actions .objectid { color:#333333; padding:0; display:inline-block; vertical-align:middle; margin-left:10px; cursor:pointer; }
 	.developer-actions a:hover { color:#333333; background-color:transparent; text-decoration:none; }
 	.developer-actions div.objectid { margin-right:40px\9; }
 	.comment { margin-left: 19px; }

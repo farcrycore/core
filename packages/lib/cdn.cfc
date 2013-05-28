@@ -565,7 +565,7 @@
 		<cfif refind("\.\w+$",arguments.destination)>
 			<cfset filename = arguments.destination />
 		<cfelse>
-			<cfset filename = arguments.destination & "/" & cffile.ServerFile />
+			<cfset filename = normalizePath(arguments.destination & "/" & cffile.ClientFile) />
 		</cfif>
 		
 		<cfset filename = ioMoveFile(source_localpath="#tmpdir##cffile.serverFile#",dest_location=arguments.location,dest_file=filename,nameconflict=arguments.nameconflict,uniqueamong=arguments.uniqueamong) />

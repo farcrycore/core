@@ -49,16 +49,19 @@
 	 --->
 	<cffunction name="getContentType" access="public" output="false" returntype="any" hint="Returns the an instantiated content type" bDocument="true">
 		<cfargument name="typename" type="string" required="true" />
+		<cfargument name="singleton" type="boolean" required="false" default="false" />
 		
 		<cfset var oResult = "" />
 		
-		<cfif structKeyExists(application.stCoapi, arguments.typename)>
+		<cfif structKeyExists(application.stCoapi, arguments.typename) and (arguments.singleton or request.inthread)>
+			<cfset oResult = application.stcoapi["#arguments.typename#"].oFactory />
+		<cfelseif structKeyExists(application.stCoapi, arguments.typename)>
 			<cfset oResult = createObject("component", application.stcoapi["#arguments.typename#"].packagePath) />
 		<cfelse>
 			<cfset message = getResource(key="FAPI.messages.contentTypeNotFound@text", default="The content type [{1}] is not available",locale="", substituteValues=array(arguments.typename)) />
 			<cfthrow message="#message#" />
 		</cfif>		
-
+		
 		<cfreturn oResult />
 	</cffunction>
 		
@@ -756,32 +759,73 @@
 	</cffunction>
 	
 	<cffunction name="stream" access="public" output="false" returntype="void" hint="Stream content to the user with the specified mime type">
-		<cfargument name="content" type="string" required="true" />
+		<cfargument name="content" type="any" required="true" />
 		<cfargument name="type" type="string" required="true" />
 		<cfargument name="filename" type="string" required="false" />
+		
+		<cfset var tmp = "" />
+		<cfset var field = "" />
 		
 		<cfif structkeyexists(arguments,"filename") and len(arguments.filename)>
 			<cfheader name="Content-Disposition" value="attachment; filename=#arguments.filename#" />
 		</cfif>
 		
+		<!--- handle different versions of the type argument, and check the type of content against them --->
 		<cfswitch expression="#arguments.type#">
 			<cfcase value="html,htmlfragment" delimiters=",">
 				<cfset arguments.type = "text/html" />
+				<cfif not issimplevalue(arguments.content)>
+					<cfthrow message="Content must be a string when streaming HTML" />
+				</cfif>
 			</cfcase>
 			<cfcase value="text">
-				<cfset arguments.type = "text/html" />
+				<cfset arguments.type = "text/plain" />
+				<cfif not issimplevalue(arguments.content)>
+					<cfthrow message="Content must be a string when streaming text" />
+				</cfif>
 			</cfcase>
 			<cfcase value="json">
 				<cfset arguments.type = "text/json" />
+				<cfif not issimplevalue(arguments.content)>
+					<cfset arguments.content = serializeJSON(arguments.content) />
+				</cfif>
 			</cfcase>
 			<cfcase value="xml">
 				<cfset arguments.type = "text/xml" />
+				<cfif isxml(arguments.content)>
+					<cfset arguments.content = arguments.content.toString() />
+				<cfelseif not issimplevalue(arguments.content)>
+					<cfwddx action="cfml2wddx" input="#arguments.content#" output="arguments.content" />
+				</cfif>
 			</cfcase>
 			<cfcase value="csv">
-				<cfset arguments.type = "text/xml" />
+				<cfset arguments.type = "text/csv" />
+				<cfif isquery(arguments.content)>
+					<cfset tmp = createObject("java","java.lang.StringBuffer").init() />
+					<cfloop list="#arguments.content.columnlist#" index="field">
+						<cfif field neq listfirst(arguments.content.columnlist)>
+							<cfset tmp.append(",") />
+						</cfif>
+						<cfset tmp.append(field) />
+					</cfloop>
+					<cfloop query="arguments.content">
+						<cfset tmp.append("
+") />
+						<cfloop list="#arguments.content.columnlist#" index="field">
+							<cfif field neq listfirst(arguments.content.columnlist)>
+								<cfset tmp.append(",") />
+							</cfif>
+							<cfset tmp.append(arguments.content[field][arguments.content.currentrow]) />
+						</cfloop>
+					</cfloop>
+					<cfset arguments.content = tmp.toString() />
+				<cfelseif not issimplevalue(arguments.content)>
+					<cfthrow message="Content must be a string or a query when streaming a CSV" />
+				</cfif>
 			</cfcase>
 		</cfswitch>
 		
+		<!--- add browser and proxy cache information, if it isn't too late' --->
 		<cfif not GetPageContext().GetResponse().IsCommitted()>
 			<cfimport taglib="/farcry/core/tags/misc" prefix="misc" />
 			
@@ -801,6 +845,7 @@
 			<misc:cacheControl browserSeconds="#request.fc.browserCacheTimeout#" proxySeconds="#request.fc.proxyCacheTimeout#" />
 		</cfif>
 		
+		<!--- stream the content --->
 		<cfcontent type="#arguments.type#" variable="#ToBinary( ToBase64( trim(arguments.content) ) )#" reset="Yes" />
 	</cffunction>
 	
@@ -1445,7 +1490,11 @@
 		<cffunction name="getImageWebRoot" access="public" returntype="string" output="false" hint="Returns the path inside the webroot where all image property paths are relative to. By default, this is the webroot of the project." bDocument="true">
 			<cfset var stLoc = application.fc.lib.cdn.ioGetFileLocation(location="images",file="") />
 			
-			<cfreturn left(stLoc.path,len(stLoc.path)-1) />
+			<cfif stLoc.path eq "/">
+				<cfreturn "" />
+			<cfelse>
+				<cfreturn left(stLoc.path,len(stLoc.path)-1) />
+			</cfif>
 		</cffunction>
 			
 		<!--- @@examples:

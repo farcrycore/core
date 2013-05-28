@@ -35,28 +35,13 @@ START WEBSKIN
 	<div class="developer-actions">
 		<div class="objectid" style="display:none;">#stObj.objectid#</div>
 		<a onclick="var oid = $j(this).siblings('.objectid').toggle();selectText(oid[0]);return false;" title="See objectid"><i class="icon-tag"></i></a>
-		<a onclick="$fc.openDialog('Property Dump', '#application.url.farcry#/object_dump.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#');return false;" title="Open a window containing all the raw data of this content item"><i class="icon-tag"></i></a>
+		<a onclick="$fc.openDialog('Property Dump', '#application.url.farcry#/object_dump.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#');return false;" title="Open a window containing all the raw data of this content item"><i class="icon-list-alt"></i></a>
 	</div>
 </cfoutput>
 
 <ft:fieldset legend="#application.fapi.getContentTypeMetadata(stobj.typename,'displayname',stobj.typename)# Information">
 	
-	
-
-	<ft:field label="Title" bMultiField="true">
-		<cfoutput>#stobj.title#</cfoutput>
-	</ft:field>	
-	<ft:field label="Alternate Text" bMultiField="true">
-		<cfoutput>#stobj.alt#</cfoutput>
-	</ft:field>	
-	<ft:field label="Thumbnail" bMultiField="true">
-		<cfif len(stobj.ThumbnailImage)>
-			<cfoutput><img src="#application.fapi.getimagewebroot()##stobj.thumbnailImage#" /></cfoutput>
-		<cfelse>
-			<cfoutput>-- no thumbnail --</cfoutput>
-		</cfif>
-	</ft:field>	
-	
+	<ft:object stObject="#stObj#" lFields="title,alt,thumbnailImage" format="display" bShowFieldHints="false" />	
 	
 	<cfif structKeyExists(stobj, "teaser")>
 		<ft:field label="Teaser" bMultiField="true">

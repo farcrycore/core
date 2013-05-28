@@ -13,9 +13,9 @@ $fc.setDeviceTypeCookie = function(deviceType) {
 }
 
 $fc.getDeviceType = function() {
-	var re = new RegExp("FARCRYDEVICETYPE=([^;]+)");
+	var re = new RegExp("FARCRYDEVICETYPE=([^;]+)","i");
 	var value = re.exec(document.cookie);
-	var result = value[1] || "desktop";
+	var result = value ? value[1] : "desktop";
 	return result;
 }
 

@@ -889,7 +889,7 @@
 					</cfif>
 					
 					<cftry>
-						<cfset stFixed = application.formtools.image.oFactory.fixImage("#application.path.imageroot##stResult.value#",application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
+						<cfset stFixed = application.formtools.image.oFactory.fixImage(stResult.value,application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
 						
 						<cfset stJSON = structnew() />
 						<cfset stNewObject = application.fapi.getNewContentObject(typename=arguments.stMetadata.ftJoin) />

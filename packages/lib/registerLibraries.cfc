@@ -59,7 +59,7 @@
 							baseHREF="#application.url.webtop#/thirdparty/jquery.autoresize" 
 							lFiles="jquery.autosize-min.js" />
 		
-		<skin:registerJS	id="image-formtool"
+		<skin:registerJS	id="image-formtool" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/image-formtool"
 							lFiles="image-formtool.js" />
 							

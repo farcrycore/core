@@ -116,20 +116,18 @@
 
 <skin:loadCSS id="farcry-form" />
 <cfoutput><div class="uniForm"></cfoutput>
-<skin:pop tags="error" start="<ul id='errorMsg'>" end="</ul>">
+<skin:pop tags="error" start="<div class='alert alert-error'>" end="</div>">
 	<cfoutput>
-		<li>
-			<cfif len(trim(message.title))><strong>#message.title#</strong></cfif><cfif len(trim(message.title)) and len(trim(message.message))>: </cfif>
-			<cfif len(trim(message.message))>#message.message#</cfif>
-		</li>
+		<cfif len(trim(message.title))><strong>#message.title#</strong></cfif><cfif len(trim(message.title)) and len(trim(message.message))>: </cfif>
+		<cfif len(trim(message.message))>#message.message#</cfif>
+		<br>
 	</cfoutput>
 </skin:pop>
-<skin:pop tags="coapichange" start="<ul id='OKMsg'>" end="</ul>">
+<skin:pop tags="coapichange" start="<div class='alert alert-success'>" end="</div>">
 	<cfoutput>
-		<li>
-			<cfif len(trim(message.title))><strong>#message.title#</strong></cfif><cfif len(trim(message.title)) and len(trim(message.message))>: </cfif>
-			<cfif len(trim(message.message))>#message.message#</cfif>
-		</li>
+		<cfif len(trim(message.title))><strong>#message.title#</strong></cfif><cfif len(trim(message.title)) and len(trim(message.message))>: </cfif>
+		<cfif len(trim(message.message))>#message.message#</cfif>
+		<br>
 	</cfoutput>
 </skin:pop>
 <cfoutput></div></cfoutput>
@@ -308,8 +306,8 @@
 </cfoutput></skin:htmlHead>
 
 <skin:onReady><cfoutput>
-	$j("a.openindialog").live("click",function(){
-		$fc.openDialogIFrame(this.title,this.href,700,600);
+	$j(document).on("click","a.openindialog",function(){
+		$fc.openDialogIFrame($j(this).data("title"),this.href,700,600);
 		return false;
 	});
 	
@@ -328,11 +326,11 @@
 			logBuffer = 0;
 		},1500);
 	};
-	$j("th.logchanges input").live("click",function(){
+	$j(document).on("click","input[name=logallchanges]",function(){
 		$j("th.logchanges input, td.logchanges input").not(this).attr("checked",$j(this).attr("checked")=="checked"?true:false);
 		updateLogChanges();
 	});
-	$j("td.logchanges input").live("click",updateLogChanges);
+	$j(document).on("click","input[name=logchanges]",updateLogChanges);
 </cfoutput></skin:onReady>
 
 <cfset conflictCount = 0 />
@@ -366,7 +364,7 @@
 						<td class="class">#ucase(left(qTypes.class,1))##mid(qTypes.class,2,10)#</td>
 						<td class="name">#qTypes.label#</td>
 						<td class="conflicts">
-							<a href="#application.fapi.getLink(type='farCOAPI',view='webtopBodyConflicts',urlParameters='typename=#qTypes.packagepath#')#" class="openindialog" title="#qTypes.label# Conflicts" id="#qTypes.typename#_conflicts">Resolve conflicts</a>
+							<a href="#application.url.webtop#/index.cfm?typename=farCOAPI&view=webtopPageModal&bodyview=webtopBodyConflicts&typepath=#qTypes.packagepath#" class="openindialog" data-title="#qTypes.label# Conflicts" id="#qTypes.typename#_conflicts">Resolve conflicts</a>
 							<skin:tooltip id="#qTypes.typename#_conflicts" selector="###qTypes.typename#_conflicts" message="#qTypes.conflicts#" />
 						</td>
 						<td class="actions"><input type="checkbox" name="deploydefaults" value="#qTypes.packagepath#" /></td>
@@ -380,10 +378,14 @@
 		</cfoutput>
 		<ft:buttonPanel>
 			<cfoutput>
-				<label>Show debug output <input type="checkbox" name="debug" value="1"<cfif (structkeyexists(form,"debug") and form.debug) or (structkeyexists(url,"debug") and url.debug)> checked</cfif>></label>&nbsp;
-				<label>Show SQL <input type="checkbox" name="sql" value="1"<cfif (structkeyexists(form,"sql") and form.sql) or (structkeyexists(url,"sql") and url.sql)> checked</cfif>></label>&nbsp;
+				<div class="pull-right">
+					<label>Show debug output <input type="checkbox" name="debug" value="1"<cfif (structkeyexists(form,"debug") and form.debug) or (structkeyexists(url,"debug") and url.debug)> checked</cfif>></label>&nbsp;
+					<label>Show SQL <input type="checkbox" name="sql" value="1"<cfif (structkeyexists(form,"sql") and form.sql) or (structkeyexists(url,"sql") and url.sql)> checked</cfif>></label>&nbsp;
 			</cfoutput>
 			<ft:button value="Apply Default Resolutions" />
+			<cfoutput>
+				</div>
+			</cfoutput>
 		</ft:buttonPanel>
 	</ft:form>
 <cfelse>
@@ -400,7 +402,7 @@
 					<th class="name">Name</th>
 					<th class="location">Location</th>
 					<th class="actions">Info</th>
-					<th class="logchanges"><input type="checkbox" name="logchanges" value="" title="Log changes on ALL types" /></th>
+					<th class="logchanges"><input type="checkbox" name="logallchanges" value="" title="Log changes on ALL types" /></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -420,13 +422,13 @@
 					</td>
 					<td class="actions">
 						<cfif listcontains(application.plugins,"farcrydoc") and listcontains("rule,type",qTypes.class)>
-							<a href="#application.fapi.getLink(type=qTypes.typename,view='docAll',urlParameters='ajaxmode=1')#" class="openindialog" title="FarCry Documentation">Docs</a>
+							<a href="#application.fapi.getLink(type=qTypes.typename,view='webtopPageModal',bodyview='docAll',urlParameters='ajaxmode=1')#" class="openindialog" data-title="FarCry Documentation">Docs</a>
 						<cfelse>
-							<a href="/CFIDE/componentutils/componentdetail.cfm?COMPONENT=#packagepath#" class="openindialog" title="ColdFusion Documentation">Docs</a>
+							<a href="/CFIDE/componentutils/componentdetail.cfm?COMPONENT=#packagepath#" class="openindialog" data-title="ColdFusion Documentation">Docs</a>
 						</cfif>
 						<cfif listcontains("rule,type",qTypes.class)>
 							&middot;
-							<a href="#application.fapi.getLink(type='farCOAPI',view='webtopBodyScaffold',urlParameters='typename=#qTypes.typename#')#" class="openindialog" title="Scaffold">Scaffold</a>
+							<a href="#application.fapi.getLink(type='farCOAPI',view='webtopPageModal',bodyview='webtopBodyScaffold',urlParameters='typename=#qTypes.typename#')#" class="openindialog" data-title="Scaffold">Scaffold</a>
 						</cfif>
 					</td>
 					<td class="logchanges"><input type="checkbox" name="logchanges" value="#qTypes.typename#" title="Log changes on THIS type" <cfif listfindnocase(lLogChangeFlags,qTypes.typename)>checked</cfif> /></td>

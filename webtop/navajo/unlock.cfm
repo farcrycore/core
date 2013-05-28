@@ -14,7 +14,7 @@
 		<cflocation url="#application.url.farcry#/index.cfm?section=home" addtoken="no">
 	<cfelse>
 		<!--- return to overview page --->
-		<cflocation url="#application.url.farcry#/edittabOverview.cfm?objectid=#url.objectid#&ref=#url.ref#" addtoken="no">
+		<cflocation url="#application.url.farcry#/edittabOverview.cfm?typename=#url.typename#&objectid=#url.objectid#&ref=#url.ref#" addtoken="no">
 	</cfif>
 <cfelse>
 	<!--- display error message --->

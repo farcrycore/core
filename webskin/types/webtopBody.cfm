@@ -4,7 +4,7 @@
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft">
 
 <ft:objectAdmin
-	typename="#url.typename#"
+	typename="#stObj.name#"
 	columnList="label,datetimelastupdated,datetimecreated"
 	sortableColumns="label,datetimelastupdated,datetimecreated"
 	lFilterFields="label"

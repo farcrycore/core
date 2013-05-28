@@ -86,7 +86,7 @@
 		<cfset lWorkflowTypenames = createObject("component", application.stcoapi.farWorkflow.packagepath).getWorkflowList(typename="#typename#") />
 		<cfif listLen(lWorkflowTypenames) OR (StructKeyExists(returnStruct, "versionid") AND StructKeyExists(returnStruct, "status") AND ListContains("approved,pending",returnStruct.status) and method neq "copy")>
 			<!--- any pending/approve items should go to overview --->
-			<cflocation url="#application.url.farcry#/edittabOverview.cfm?objectid=#URL.objectid#&ref=#url.ref#">
+			<cflocation url="#application.url.farcry#/edittabOverview.cfm?typename=#typename#&objectid=#URL.objectid#&ref=#url.ref#">
 			<cfabort>
 		<cfelse>
 			<!--- go to edit --->
@@ -124,7 +124,7 @@
 				<cfelse>
 						<cfoutput>
 							<script type="text/javascript">
-								location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#returnStruct.ObjectID#&ref=#url.ref#';
+								location.href = '#application.url.farcry#/edittabOverview.cfm?typename=#typename#&objectid=#returnStruct.ObjectID#&ref=#url.ref#';
 							</script>
 						</cfoutput>
 					</cfif>
@@ -170,7 +170,7 @@
 					<nj:updateTree objectId="#parentID#">
 					<cfoutput>
 					<script type="text/javascript">
-						window.location.href = '#application.url.webtop#/edittabOverview.cfm?objectid=#returnStruct.ObjectID#&ref=#url.ref#';
+						window.location.href = '#application.url.webtop#/edittabOverview.cfm?typename=#typename#&objectid=#returnStruct.ObjectID#&ref=#url.ref#';
 					</script>
 					</cfoutput>
 				</cfsavecontent>

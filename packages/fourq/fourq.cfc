@@ -544,7 +544,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			</cfif>
 		</cfif>
 		
-		<cfset request.fc.okToCache = request.aAncestorWebskins[1].okToCache />
+		<cfif structkeyexists(request,"fc")>
+			<cfset request.fc.okToCache = request.aAncestorWebskins[1].okToCache />
+		</cfif>
 		
 		<!--- Remove the current view (last item in the array) from the Ancestor Webskins array --->
 		<cfset ArrayDeleteAt(request.aAncestorWebskins, arrayLen(request.aAncestorWebskins)) />
@@ -752,7 +754,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfargument name="dbtype" type="string" required="false" default="#application.dbtype#">
 		<cfargument name="dbowner" type="string" required="false" default="#application.dbowner#">
 		
-		<cfset stReturn = application.fc.lib.db.createData(typename=getTypePath(),stProperties=arguments.stProperties,objectid=arguments.objectid,dsn=arguments.dsn) />
+		<cfset var stReturn = application.fc.lib.db.createData(typename=getTypePath(),stProperties=arguments.stProperties,objectid=arguments.objectid,dsn=arguments.dsn) />
 		
 		<!--- only create a record in refObjects if one doesnt already exist --->
 		<cfif len(application.fapi.findType(objectId = stReturn.objectId)) eq 0>
@@ -762,8 +764,9 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfif NOT stReturn.bSuccess>
 			<cflog text="#stReturn.message# #stReturn.results[arraylen(stReturn.results)].detail# [SQL: #stReturn.results[arraylen(stReturn.results)].sql#]" file="coapi" type="error" application="yes">
 		</cfif>
-
-		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(objectid=stReturn.objectid,typename=getTypeName()) />
+		
+		<cfparam name="arguments.stProperties.typename" default="#getTypename()#" />
+		<cfset application.fc.lib.objectbroker.flushTypeWatchWebskins(stObject=arguments.stProperties) />
 		
     	<cfreturn stReturn />
 	</cffunction>
@@ -920,6 +923,14 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			If the object is to be stored in the Database then run the appropriate gateway
 			----------------------------------------->	
 		   	<cfelse>
+				<!--- Announce the save event to listeners --->
+				<cfset application.fc.lib.events.announce(	component = "fcTypes", eventName = "beforesave",
+															typename = arguments.stProperties.typename,
+															oType = this,
+															stProperties = arguments.stProperties,
+															bAudit = arguments.bAudit,
+															auditNote = arguments.auditNote) />
+				
 				<!--- Make sure we remove the object from the objectBroker if we update something --->
 			    <cfif structkeyexists(arguments.stProperties, "objectid")>
 				    <cfset application.fc.lib.objectbroker.RemoveFromObjectBroker(lObjectIDs=arguments.stProperties.ObjectID,typename=getTypeName())>
@@ -930,14 +941,6 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 					<cfset StructAppend(arguments.stProperties, Session.TempObjectStore[arguments.stProperties.ObjectID],false)>	
 				</cfif>
 				
-				<!--- Announce the save event to listeners --->
-				<cfset application.fc.lib.events.announce(	component = "fcTypes", eventName = "beforesave",
-															typename = arguments.stProperties.typename,
-															oType = this,
-															stProperties = arguments.stProperties,
-															bAudit = arguments.bAudit,
-															auditNote = arguments.auditNote) />
-
 		   		<cfset stResult = application.fc.lib.db.setData(stProperties=arguments.stProperties,typename=getTypePath(),dsn=arguments.dsn) />	   	
 		   		
 				<cfif not stResult.bSuccess and stResult.message eq "Object does not exist">

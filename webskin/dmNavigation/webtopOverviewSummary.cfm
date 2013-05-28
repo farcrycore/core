@@ -69,7 +69,7 @@
 				
 				<cfif qAncestors.recordCount>
 					<cfloop query="qAncestors">
-						<skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="objectID=#qAncestors.objectid#" linktext="#qAncestors.objectName#" />
+						<skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="typename=dmNavigation&objectID=#qAncestors.objectid#" linktext="#qAncestors.objectName#" />
 						<cfoutput>&nbsp;&raquo;&nbsp;</cfoutput>
 					</cfloop>
 					<cfoutput>#stobj.label#</cfoutput>
@@ -78,88 +78,6 @@
 				</cfif>
 			</cfif>
 			
-			
-			<!---<cfoutput>
-            		
-				<div style="background-color:##2E4E7E;padding:5px;">
-					<cfset qAncestors = queryNew('nLevel')	/>
-						
-					<!--- BREADCRUMB --->	
-					<nj:getNavigation objectId="#stobj.objectid#" r_objectID="parentID" bInclusive="1">
-					
-					<cfif len(parentID)>
-						<cfset qAncestors = application.factory.oTree.getAncestors(objectid=parentID,bIncludeSelf=false) />
-						<cfloop query="qAncestors">
-							<table class="layout navtree">
-							<tr>
-								<cfloop from="1" to="#qAncestors.nLevel#" index="i">
-									<cfif qAncestors.nLevel EQ i>
-										<td><img width="16" height="16" src="/webtop/images/treeImages/nbe.gif"/></td>	
-									<cfelse>
-										<td><img width="16" height="16" src="/webtop/images/treeImages/s.gif"/></td>	
-									</cfif>
-								</cfloop>							
-								<td><img width="16" height="16" alt="#qAncestors.objectname#" src="/webtop/images/treeImages/customIcons/NavApproved.gif"/></td>
-								<td class="objectname"><skin:buildLink typename="dmNavigation" href="/webtop/edittabOverview.cfm?objectid=#qAncestors.objectid#" objectid="#qAncestors.objectid#" /></td>
-							</tr>
-							</table>					
-						</cfloop>
-					</cfif>
-					
-					<!--- TREE --->
-					
-					<table class="layout navtree">
-					<tr>
-						<cfloop query="qAncestors">
-							<cfif qAncestors.recordCount EQ qAncestors.currentRow>
-								<td><img width="16" height="16" src="/webtop/images/treeImages/nbe.gif"/></td>	
-							<cfelse>
-								<td><img width="16" height="16" src="/webtop/images/treeImages/s.gif"/></td>	
-							</cfif>
-						</cfloop>
-						<td><img width="16" height="16" alt="#qDescendents.objectname#" src="/webtop/images/treeImages/customIcons/NavApproved.gif"/></td>
-						<td class="objectname">>> #stobj.label#</td>
-					</tr>
-					</table>
-					
-					
-					<cfif qDescendents.recordCount>
-						<cfloop query="qDescendents">
-							<cfset stNavItem = getData(objectid="#qDescendents.objectid#") />
-							
-							
-							<table class="layout navtree">
-							<tr>
-								<cfloop query="qAncestors">
-									<td><img width="16" height="16" src="/webtop/images/treeImages/s.gif"/></td>
-								</cfloop>
-								<cfif qDescendents.recordCount EQ qDescendents.currentRow>
-									<td><img width="16" height="16" src="/webtop/images/treeImages/nbe.gif"/></td>
-								<cfelse>	
-									<td><img width="16" height="16" src="/webtop/images/treeImages/nme.gif"/></td>
-								</cfif>						
-								<td><img width="16" height="16" alt="#qDescendents.objectname#" src="/webtop/images/treeImages/customIcons/NavApproved.gif"/></td>
-								<td class="objectname"><skin:buildLink typename="dmNavigation" href="/webtop/edittabOverview.cfm?objectid=#qDescendents.objectid#" objectid="#qDescendents.objectid#" /></td>
-							</tr>
-							</table>
-							
-						</cfloop>
-					</cfif>
-					
-					
-					<!---<table class="layout navtree">
-					<tr>
-						<cfloop query="qAncestors">
-							<td><img width="16" height="16" src="/webtop/images/treeImages/s.gif"/></td>
-						</cfloop>	
-						<td><img width="16" height="16" src="/webtop/images/treeImages/nbe.gif"/></td>							
-						<td><img width="16" height="16" alt="Create Sub Navigation" src="/webtop/images/treeImages/customIcons/NavApproved.gif"/></td>
-						<td class="objectname"><ft:button value="*** CREATE SUB NAVIGATION ***" renderType="link" url="#application.url.farcry#/conjuror/evocation.cfm?parenttype=dmNavigation&objectId=#stobj.objectid#&typename=dmNavigation&ref=#url.ref#" /></td>
-					</tr>
-					</table>--->
-				</div>
-				
-            </cfoutput>--->
 			
 			<ft:fieldHint>
 				<cfoutput>

@@ -41,9 +41,9 @@
 	<cfoutput>
 		<script type="text/javascript">
 			<cfif len(newContentID)>
-				location.href = '#application.url.webtop#/edittabEdit.cfm?objectid=#newContentID#&ref=overview&typename=#application.fapi.findType(newContentID)#';
+				location.href = '#application.url.webtop#/edittabEdit.cfm?typename=dmNavigation&objectid=#newContentID#&ref=overview&typename=#application.fapi.findType(newContentID)#';
 			<cfelse>
-				location.href = '#application.url.webtop#/edittabOverview.cfm?objectid=#stObj.ObjectID#';
+				location.href = '#application.url.webtop#/edittabOverview.cfm?typename=dmNavigation&objectid=#stObj.ObjectID#';
 			</cfif>
 		</script>
 	</cfoutput>
@@ -60,7 +60,7 @@
 	<cfif structKeyExists(form, "selectedObjectID")>
 		<cfoutput>
 			<script type="text/javascript">
-				location.href = '#application.url.webtop#/edittabOverview.cfm?objectid=#form.selectedObjectID#';
+				location.href = '#application.url.webtop#/edittabOverview.cfm?typename=dmNavigation&objectid=#form.selectedObjectID#';
 			</script>
 		</cfoutput>		
 	</cfif>
@@ -77,7 +77,7 @@
 	
 	<cfoutput>
 		<script type="text/javascript">
-			location.href = '#application.url.webtop#/edittabOverview.cfm?objectid=#stObj.ObjectID#';
+			location.href = '#application.url.webtop#/edittabOverview.cfm?typename=dmNavigation&objectid=#stObj.ObjectID#';
 		</script>
 	</cfoutput>	
 </ft:processForm>

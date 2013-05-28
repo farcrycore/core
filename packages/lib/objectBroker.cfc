@@ -759,11 +759,11 @@
 	</cffunction>
 	
 	<cffunction name="flushTypeWatchWebskins" access="public" output="false" returntype="boolean" hint="Finds all webskins watching this type for any CRUD functions and flushes them from the cache">
-	 	<cfargument name="objectID" required="true" hint="The typename that the CRUD function was performed on." />
-	 	<cfargument name="typename" required="true" hint="" />
+	 	<cfargument name="objectID" required="false" hint="The typename that the CRUD function was performed on." />
+	 	<cfargument name="typename" required="false" hint="" />
+	 	<cfargument name="stObject" required="false" hint="Alternative to objectID+typename">
 		
-		<cfset var stObject = application.fapi.getContentObject(objectid=arguments.objectid,typename=arguments.typename) />
-		<cfset var stTypeWatchWebskins = application.stCoapi[arguments.typename].stTypeWatchWebskins />
+		<cfset var stTypeWatchWebskins = "" />
 		<cfset var iType = "" />
 		<cfset var iWebskin = "" />
 		<cfset var oCoapi = application.fapi.getContentType("farCoapi") />
@@ -772,7 +772,16 @@
 		<cfset var bSuccess = "" />
 		<cfset var qWebskinAncestors = "" />
 		
-		<cfif not structKeyExists(stObject, "status") OR stObject.status EQ "approved">
+		<cfif structkeyexists(arguments,"stObject")>
+			<cfset arguments.typename = arguments.stObject.typename />
+			<cfset arguments.objectid = arguments.stObject.objectid />
+		<cfelse>
+			<cfset arguments.stObject = application.fapi.getContentObject(objectid=arguments.objectid,typename=arguments.typename)>
+		</cfif>
+		
+		<cfset stTypeWatchWebskins = application.stCoapi[arguments.typename].stTypeWatchWebskins />
+		
+		<cfif not structKeyExists(arguments.stObject, "status") OR arguments.stObject.status EQ "approved">
 			<cfif not structIsEmpty(stTypeWatchWebskins)>
 				<cfloop collection="#stTypeWatchWebskins#" item="iType">
 					

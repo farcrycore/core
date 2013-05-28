@@ -205,7 +205,7 @@
 		this.finalizeCrop = function cropperFinalize(){
 			
 			jQuery.Jcrop('#cropable-image').destroy();
-			$j("#image-crop-overlay").remove();
+			jQuery("#image-crop-overlay").remove();
 			
 			if (current_crop_selection){
 				var quality = "";

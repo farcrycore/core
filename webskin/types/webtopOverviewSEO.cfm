@@ -40,7 +40,7 @@ START WEBSKIN
 	
 		<ft:fieldsetHelp>
 			<cfoutput>
-			Please refer to the <skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="versionID=#stobj.versionID#" linktext="approved" /> content item to manage friendly URLs.
+			Please refer to the <skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="typename=#stObj.typename#&versionID=#stobj.versionID#" linktext="approved" /> content item to manage friendly URLs.
 			</cfoutput>
 		</ft:fieldsetHelp>
 		

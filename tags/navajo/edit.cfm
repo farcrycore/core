@@ -100,7 +100,7 @@ $out:$
 			<cfcase value="iframe">
 				<!--- reload overview page --->
 				<cfoutput><script type="text/javascript">
-					location = '#application.url.farcry#/edittabOverview.cfm?objectid=#attributes.objectid#&ref=#url.ref#';
+					location = '#application.url.farcry#/edittabOverview.cfm?typename=#attributes.typename#&objectid=#attributes.objectid#&ref=#url.ref#';
 				</script></cfoutput>
 			</cfcase>
 			
@@ -111,6 +111,14 @@ $out:$
 				</script></cfoutput>
 			</cfcase>
 			
+			<cfcase value="closeDialog">
+				<!--- reload overview page --->
+				<cfoutput><script type="text/javascript">
+					if (parent && parent.$fc && parent.$fc.closeBootstrapModal)
+						parent.$fc.closeBootstrapModal();
+				</script></cfoutput>
+			</cfcase>
+			
 			<cfdefaultcase>
 				<!--- get parent for update tree --->
 				<cf_getNavigation objectId="#attributes.objectid#" bInclusive="1" r_stObject="stNav" r_ObjectId="navIdSrcPerm">
@@ -118,7 +126,7 @@ $out:$
 				<cf_updateTree objectId="#navIdSrcPerm#" complete=0>
 				<!--- reload overview page --->
 				<cfoutput><script type="text/javascript">
-					window.location = '#application.url.farcry#/edittabOverview.cfm?objectid=#attributes.objectid#&ref=#url.ref#';
+					window.location = '#application.url.farcry#/edittabOverview.cfm?typename=#attributes.typename#&objectid=#attributes.objectid#&ref=#url.ref#';
 				</script></cfoutput>
 			</cfdefaultcase>
 		</cfswitch>
@@ -164,7 +172,7 @@ $out:$
 		
 		<cfoutput>
 		<script type="text/javascript">
-			location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#&ref=#url.ref#';
+			location.href = '#application.url.farcry#/edittabOverview.cfm?typename=#attributes.typename#&objectid=#stObj.ObjectID#&ref=#url.ref#';
 		</script>
 		</cfoutput>
 	</cfsavecontent>

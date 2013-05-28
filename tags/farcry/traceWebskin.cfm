@@ -28,7 +28,7 @@
 	
 	
 
-	<cfif structKeyExists(request,"mode") AND request.mode.traceWebskins EQ true AND not request.mode.ajax>				
+	<cfif isdefined("request.mode.tracewebskins") AND request.mode.traceWebskins EQ true AND (not isdefined("request.mode.ajax") or not request.mode.ajax)>		
 		<cfset stTrace = structNew() />
 		<cfset stTrace.traceID = application.fapi.getUUID() />
 		<cfset stTrace.objectid = attributes.objectid />
@@ -156,7 +156,7 @@
 </cfif>
 
 <cfif thistag.executionMode eq "End">
-	<cfif structKeyExists(request,"mode") AND request.mode.traceWebskins EQ true AND not request.mode.ajax>			
+	<cfif isdefined("request.mode.tracewebskins") AND request.mode.traceWebskins EQ true AND (not isdefined("request.mode.ajax") or not request.mode.ajax)>
 		<cfif attributes.bAllowTrace>
 			<cfoutput></webskin></cfoutput>
 		</cfif>

@@ -403,12 +403,10 @@
 		
 		
 		<!--- Need to determine which method to run on the field --->		
-		<cfif structKeyExists(ftFieldMetadata, "ftDisplayOnly") AND ftFieldMetadata.ftDisplayOnly OR ftFieldMetadata.ftType EQ "arrayList">
-			<cfset FieldMethod = "display" />
-		<cfelseif structKeyExists(ftFieldMetadata,"Method")><!--- Have we been requested to run a specific method on the field. This can enable the user to run a display method inside an edit form for instance --->
+		<cfif structKeyExists(ftFieldMetadata,"Method")><!--- Have we been requested to run a specific method on the field. This can enable the user to run a display method inside an edit form for instance --->
 			<cfset FieldMethod = ftFieldMetadata.method>
 		<cfelse>
-			<cfif attributes.Format EQ "Edit">
+			<cfif attributes.Format EQ "Edit" and ftFieldMetadata.ftType NEQ "arrayList" and (not structKeyExists(ftFieldMetadata, "ftDisplayOnly") or not ftFieldMetadata.ftDisplayOnly)>
 				<cfif len(ftFieldMetadata.ftEditMethod)>
 					<cfset FieldMethod = ftFieldMetadata.ftEditMethod>
 					
@@ -843,7 +841,7 @@
 					
 					<ft:field 	for="#ftFieldMetadata.formFieldName#" 
 								label="#ftFieldMetadata.ftLabel#" 
-								hint="#ftFieldMetadata.ftHint#" 
+								hint="#iif(attributes.bShowFieldHints,'ftFieldMetadata.ftHint','""')#" 
 								errorMessage="#ftFieldMetadata.errorMessage#"
 								class="#ftFieldMetadata.ftType# #ftFieldMetadata.errorClass#">
 											

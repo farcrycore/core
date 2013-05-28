@@ -59,11 +59,14 @@ If a versionid is passed then that is the one we wish to render as the overview.
 	<cfthrow message="overview: You must pass an objectid or versionid" />
 </cfif>
 
+<cfif not structkeyexists(url,"typename")>
+	<cfset url.typename = application.fapi.findType(variables.overviewID) />
+</cfif>
 
 <skin:view typename="dmHTML" webskin="webtopHeaderModal" />
 
 <sec:CheckPermission error="true" permission="ObjectOverviewTab">
-	<skin:view objectid="#variables.overviewID#" webskin="webtopOverview" />
+	<skin:view objectid="#variables.overviewID#" typename="#url.typename#" webskin="webtopOverview" />
 </sec:CheckPermission>
 
 <!--- setup footer --->

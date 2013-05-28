@@ -94,7 +94,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.numPageDisplay" default="5" type="numeric">
 
 <cfparam name="attributes.lButtons" default="*" type="string">
-<cfparam name="attributes.lButtonsEmpty" default="add" type="string">
+<cfparam name="attributes.lButtonsEmpty" default="add,undelete" type="string">
 <cfparam name="attributes.bPaginateTop" default="true" type="boolean">
 <cfparam name="attributes.bPaginateBottom" default="true" type="boolean">
 <cfparam name="attributes.bDisplayTotalRecords" default="true" type="boolean" />
@@ -176,8 +176,12 @@ user --->
 <!--- If type isn't deployed, display error --->
 <cfif not application.fc.lib.db.isDeployed(typename=attributes.typename,dsn=application.dsn)>
 
-	<cfoutput>The '<cfif structkeyexists(application.stCOAPI[attributes.typename],"displayname")>#application.stCOAPI[attributes.typename].displayname#<cfelse>#listlast(application.stCOAPI[attributes.typename].name,'.')#</cfif>' content type has not been deployed yet. Click <a href="#cgi.SCRIPT_NAME#?#cgi.query_string#&deploy=true">here</a> to deploy it now.</cfoutput>
-
+	<cfoutput>
+		<h1><admin:resource key="#attributes.rbkey#@title" var1="#typelabel#">#attributes.title#</admin:resource></h1>
+		<p>The '<cfif structkeyexists(application.stCOAPI[attributes.typename],"displayname")>#application.stCOAPI[attributes.typename].displayname#<cfelse>#listlast(application.stCOAPI[attributes.typename].name,'.')#</cfif>' content type has not been deployed yet. Click <a href="#cgi.SCRIPT_NAME#?#cgi.query_string#&deploy=true">here</a> to deploy it now.</p>
+	</cfoutput>
+	<cfexit method="exittag" />
+	
 <cfelse>
 
 	<cfset oTypeAdmin = createobject("component", "#application.packagepath#.farcry.objectadmin").init(stprefs=session.objectadmin[attributes.typename], attributes=attributes)>
@@ -452,12 +456,19 @@ user --->
 	</cfif>	
 	
 	<cfif structkeyexists(form,"objectid")>
-		<cfset EditURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=#listfirst(form.objectid)#&typename=#attributes.typename#&method=#attributes.editMethod#&ref=iframe&module=#attributes.module##pluginURL#">
+		<cfset EditURL = "#application.url.farcry#/conjuror/invocation.cfm?objectid=#listfirst(form.objectid)#&typename=#attributes.typename#&method=#attributes.editMethod#&module=#attributes.module##pluginURL#">
+		
+		<cfif attributes.bViewCol>
+			<cfset EditURL = "#EditURL#&ref=closeDialog" />
+		<cfelse>
+			<cfset EditURL = "#EditURL#&ref=iframe" />
+		</cfif>
+		
 		<cfif not structIsEmpty(attributes.editUrlParams)>
 			<cfloop collection="#attributes.editUrlParams#" item="key">
 				<cfset EditURL="#EditURL#&#key#=#attributes.editUrlParams[key]#">
 			</cfloop>
-		</cfif>	
+		</cfif>
 		
 		<cfset copyURL = '#application.url.webtop#/conjuror/invocation.cfm?objectid=#listfirst(form.objectid)#&typename=#attributes.typename#&method=#attributes.copyMethod#&ref=iframe&module=#attributes.module##pluginURL#&editURL=#urlencodedformat(editURL)#' />
 		<cfif not structIsEmpty(attributes.copyUrlParams)>
@@ -466,7 +477,9 @@ user --->
 			</cfloop>
 		</cfif>
 	</cfif>
-
+	
+	<cfset bulkuploadURL = application.fapi.getLink(typename=attributes.typename,view="webtopPageModal",bodyView="webtopBodyBulkUpload") />
+	
 	<ft:processForm action="add">
 		<skin:onReady>
 			<cfoutput>
@@ -577,6 +590,14 @@ user --->
 		<cfelse>
 			<cfset message_error = "No Objects Selected">	
 		</cfif>	
+	</ft:processForm>
+	
+	<ft:processForm action="Bulk Upload">
+		<skin:onReady>
+			<cfoutput>
+				$fc.objectAdminAction('Administration', '#application.fapi.fixURL(addvalues="typename=#attributes.typename#&view=webtopPageModal&bodyView=webtopBodyBulkUpload")#');
+			</cfoutput>
+		</skin:onReady>
 	</ft:processForm>
 	
 	<ft:processForm action="Undelete">
@@ -760,8 +781,7 @@ user --->
 		
 		<cfsavecontent variable="html_buttonbar">
 		
-			<cfif len(attributes.lButtons)>
-				<ft:buttonPanel style="text-align:left;" class="farcry-button-bar btn-group">
+			<ft:buttonPanel style="text-align:left;" class="farcry-button-bar btn-group">
 				<cfloop from="1" to="#arraylen(attributes.aButtons)#" index="i">
 					
 					
@@ -821,8 +841,7 @@ user --->
 					</cfif>
 				</cfloop>
 				
-				</ft:buttonPanel>
-			</cfif>
+			</ft:buttonPanel>
 		</cfsavecontent>
 		
 
@@ -1278,53 +1297,13 @@ user --->
 			
 		
 			
-			<cfif attributes.bEditCol OR attributes.bPreviewCol>
+			<cfif attributes.bPreviewCol or len(attributes.lCustomActions)>
 				<cfoutput><div class="btn-group"></cfoutput>
 				
 					<ft:button value="toggle" text="" icon=" ,caret" dropdownToggle="true" type="button" />
 					
 					<cfoutput>
 						<div class="dropdown-menu">
-						<cfif attributes.bViewCol>	
-							<li>
-								<ft:button value="Overview" text="Overview" title="Open up the overview screen for this object" type="button" renderType="link" onclick="$fc.objectAdminAction('Administration', '#overviewURL#&objectid=#arguments.st.objectid#');" />
-							</li>
-						</cfif>
-						<cfif attributes.bEditCol>
-	
-					
-							<!--- We do not include the Edit Link if workflow is available for this content item. The user must go to the overview page. --->
-							<cfif not listLen(lWorkflowTypenames)>	
-								<cfif structKeyExists(arguments.st,"locked") AND arguments.st.locked neq 0 AND arguments.st.lockedby neq '#application.security.getCurrentUserID()#'>
-									<li>
-										<ft:button value="Unlock" title="Unlock this object" renderType="link" selectedObjectID="#arguments.st.objectid#" />
-									</li>
-								<cfelseif structKeyExists(arguments.stPermissions, "iEdit") AND arguments.stPermissions.iEdit>
-									<cfif structKeyExists(arguments.st,"bHasMultipleVersion")>
-										<cfif NOT(arguments.st.bHasMultipleVersion) AND arguments.st.status EQ "approved">
-											<li>
-												<ft:button value="Create Draft Object" title="Create a draft version of this object and begin editing" renderType="link" type="button" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
-											</li>
-										<cfelseif arguments.st.bHasMultipleVersion>
-											<!--- Still go to the create draft page but that page will find the already existing draft and not create a new one. --->
-											<li>
-												<ft:button value="Edit Draft" title="Edit the draft version of this object"  renderType="link" type="button" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
-											</li>					
-										<cfelse>
-											<li>
-												<ft:button value="Edit" title="Edit this object"  renderType="link" type="button" onclick="$fc.objectAdminAction('Administration', '#editURL#&objectid=#arguments.st.objectid#');" />
-											</li>			
-										</cfif>
-									<cfelse>
-										<li>
-											<ft:button value="Edit" title="Edit this object"  renderType="link" type="button" onclick="$fc.objectAdminAction('Administration', '#editURL#&objectid=#arguments.st.objectid#');" />
-										</li>
-									</cfif>
-								</cfif>
-							</cfif>	
-						
-						</cfif>
-						
 						
 						<cfif attributes.bPreviewCol>
 							<li>

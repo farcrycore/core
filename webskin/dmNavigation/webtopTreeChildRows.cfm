@@ -144,7 +144,7 @@
 
 
 			<!--- urls --->
-			<cfset thisOverviewURL = "#application.url.webtop#/edittabOverview.cfm?objectid=#stNav.objectid#&ref=overview">
+			<cfset thisOverviewURL = "#application.url.webtop#/edittabOverview.cfm?typename=#stNav.typename#&objectid=#stNav.objectid#&ref=overview">
 			<cfset thisEditURL = "#application.url.webtop#/edittabEdit.cfm?objectid=#stNav.objectid#&typename=#stNav.typename#">
 			<cfset thisPreviewURL = application.fapi.getLink(typename="dmNavigation", objectid=stNav.objectid, urlparameters="flushcache=1&showdraft=1")>
 
@@ -228,7 +228,7 @@
 
 
 			<!--- urls --->
-			<cfset thisOverviewURL = "#application.url.webtop#/edittabOverview.cfm?objectid=#stLeafNode.objectid#&ref=overview">
+			<cfset thisOverviewURL = "#application.url.webtop#/edittabOverview.cfm?typename=#stLeafNode.typename#&objectid=#stLeafNode.objectid#&ref=overview">
 			<cfset thisEditURL = "#application.url.webtop#/edittabEdit.cfm?objectid=#stLeafNode.objectid#&typename=#stLeafNode.typename#">
 			<cfset thisPreviewURL = application.fapi.getLink(typename=stLeafNode.typename, objectid=stLeafNode.objectid, urlparameters="flushcache=1&showdraft=1")>
 

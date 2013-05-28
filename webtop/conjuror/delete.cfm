@@ -67,7 +67,7 @@ merge of ../admin/navajo/delete.cfm and ../tags/navajo/delete.cfm
 		<!--- update overview page --->
 		<cfoutput>
 			<script>
-					top['editFrame'].location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#parentObjectID#';
+					top['editFrame'].location.href = '#application.url.farcry#/edittabOverview.cfm?typename=#srcObjParent.typename#&objectid=#parentObjectID#';
 			</script>
 		</cfoutput>
 	

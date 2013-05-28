@@ -839,7 +839,15 @@
 				
 				<!--- There is no image currently so we simply upload the image and make it unique  --->
 				<cftry>
-					<cfset uploadFileName = application.fc.lib.cdn.ioUploadFile(location="images",destination=arguments.destination,acceptextensions=arguments.allowedExtensions,field=arguments.uploadfield,sizeLimit=arguments.sizeLimit) />
+					<cfset uploadFileName = application.fc.lib.cdn.ioUploadFile(
+						location="images",
+						destination=arguments.destination,
+						acceptextensions=arguments.allowedExtensions,
+						field=arguments.uploadfield,
+						sizeLimit=arguments.sizeLimit,
+						nameconflict="makeunique"
+					) />
+					
 					<cfset stResult = passed(uploadFileName) />
 					<cfset stResult.bChanged = true />
 					
@@ -1434,8 +1442,9 @@
 	</cffunction>
 	
 	<cffunction name="onFileChange" access="public" returntype="any" output="false" hint="Called internally (by the image formtool) just before a new image is returned to calling code.">
-		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
-		<cfargument name="objectid" required="true" type="uuid" hint="The id of the record that this field is part of.">
+		<cfargument name="typename" required="false" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="objectid" required="false" type="uuid" hint="The id of the record that this field is part of.">
+		<cfargument name="stObject" required="false" type="struct" hint="Alternative to typename+objectid" />
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		<cfargument name="value" required="true" type="string" hint="The new filename value" />
 		

@@ -26,6 +26,7 @@
 	<cfparam name="attributes.IncludeLabel" default="1">
 	<cfparam name="attributes.labelClass" default="control-label"><!--- The class to be applied to all labels --->
 	<cfparam name="attributes.IncludeFieldSet" default="1">
+	<cfparam name="attributes.legend" default=""><!--- fieldset legend --->
 	<cfparam name="attributes.helpTitle" default=""><!--- title for the help section --->
 	<cfparam name="attributes.helpText" default=""><!--- text to provide help information for the fieldset --->
 	<cfparam name="attributes.IncludeBR" default="1">

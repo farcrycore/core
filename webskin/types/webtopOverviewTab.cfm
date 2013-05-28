@@ -129,7 +129,7 @@ FARCRY INCLUDE FILES
 						<div style="font-size:11px;">last updated <span style="cursor:pointer;" title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</span></div>
 						
 						<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
-							<div style="font-size:11px;"><skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="versionID=#stobj.versionID#" linktext="show approved version" /></div>
+							<div style="font-size:11px;"><skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="typename=#stObj.typename#&versionID=#stobj.versionID#" linktext="show approved version" /></div>
 						</cfif>
 					</cfoutput>
 				</grid:div>
@@ -143,7 +143,7 @@ FARCRY INCLUDE FILES
 							<div style="font-size:11px;">awaiting approval since <span style="cursor:pointer;" title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</span></div>
 							
 							<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
-								<div style="font-size:11px;"><skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="versionID=#stobj.versionID#" linktext="show approved version" /></div>
+								<div style="font-size:11px;"><skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="typename=#stObj.typename#&versionID=#stobj.versionID#" linktext="show approved version" /></div>
 							</cfif>
 						</cfoutput>
 					</grid:div>
@@ -158,7 +158,7 @@ FARCRY INCLUDE FILES
 							<cfif structKeyExists(stobj,"versionID") AND structKeyExists(stobj,"status") AND stobj.status EQ "approved">
 								<cfset qDraft = application.factory.oVersioning.checkIsDraft(objectid=stobj.objectid,type=stobj.typename)>
 								<cfif qDraft.recordcount>
-									<div style="font-size:11px;"><skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="versionID=#qDraft.objectid#" linktext="show #qDraft.status# version" /></div>
+									<div style="font-size:11px;"><skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="typename=#stObj.typename#&versionID=#qDraft.objectid#" linktext="show #qDraft.status# version" /></div>
 								</cfif>
 							</cfif>	
 						</cfoutput>

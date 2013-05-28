@@ -109,9 +109,9 @@
 	 --->
 	<cffunction name="getDeviceType" access="public" output="false" returntype="string" hint="Returns the device type string" bDocument="true">
 
-		<cfparam name="cookie.farcrydevicetype" default="#getUserAgentDeviceType()#">
+		<cfparam name="cookie.FARCRYDEVICETYPE" default="#getUserAgentDeviceType()#">
 
-		<cfreturn cookie.farcrydevicetype>
+		<cfreturn cookie.FARCRYDEVICETYPE>
 	</cffunction>
 
 	<!--- @@examples:
@@ -159,7 +159,7 @@
 	<cffunction name="setDeviceType" access="public" output="false" hint="Sets the device type string" bDocument="true">
 		<cfargument name="deviceType" type="string" required="true">
 
-		<cfset cookie.farcrydevicetype = arguments.deviceType>
+		<cfset cookie.FARCRYDEVICETYPE = arguments.deviceType>
 
 	</cffunction>
 
