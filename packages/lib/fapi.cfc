@@ -53,7 +53,7 @@
 		
 		<cfset var oResult = "" />
 		
-		<cfif structKeyExists(application.stCoapi, arguments.typename) and (arguments.singleton or request.inthread)>
+		<cfif structKeyExists(application.stCoapi, arguments.typename) and (arguments.singleton or isdefined("request.inthread"))>
 			<cfset oResult = application.stcoapi["#arguments.typename#"].oFactory />
 		<cfelseif structKeyExists(application.stCoapi, arguments.typename)>
 			<cfset oResult = createObject("component", application.stcoapi["#arguments.typename#"].packagePath) />
