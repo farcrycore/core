@@ -149,14 +149,18 @@
 				
 				<cfloop list="#arguments.role#" index="iRole">
 					<cfset bRight = application.fapi.getContentType("farBarnacle").getRight(role="#iRole#", permission="#genericPermissionID#", object="#barnacleID#", objecttype="farCoapi")>
-					<cfif bRight GT 0>
+					<cfif bRight EQ 1>
 						<cfset result = 1 />
 						<cfbreak>
+					<cfelseif bRight eq -1>
+						<cfset result = -1 />
 					</cfif>
 				</cfloop>
 				
-				<cfif result NEQ 1>
+				<cfif result EQ 0>
 					<cfset result = this.factory.role.getRight(role=arguments.role, permission=genericPermissionID) />
+				<cfelseif result EQ -1>
+					<cfset result = 0 />
 				</cfif>
 			<cfelse>
 				<!--- This should only happen for checks to object permissions that don't have corresponding type permissions --->
