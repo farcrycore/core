@@ -1336,7 +1336,11 @@
 		<cffunction name="getImageWebRoot" access="public" returntype="string" output="false" hint="Returns the path inside the webroot where all image property paths are relative to. By default, this is the webroot of the project." bDocument="true">
 			<cfset var stLoc = application.fc.lib.cdn.ioGetFileLocation(location="images",file="") />
 			
-			<cfreturn left(stLoc.path,len(stLoc.path)-1) />
+			<cfif stLoc.path eq "/">
+				<cfreturn "" />
+			<cfelse>
+				<cfreturn left(stLoc.path,len(stLoc.path)-1) />
+			</cfif>
 		</cffunction>
 			
 		<!--- @@examples:
