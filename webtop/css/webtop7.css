@@ -332,6 +332,23 @@ a:hover {
 
 
 
+.dropdown-menu > li > a:hover, 
+.dropdown-menu > li > a:focus, 
+.dropdown-submenu:hover > a, 
+.dropdown-submenu:focus > a {
+	color: #fff;
+	background: #3E84B5;
+}
+
+.dropdown .dropdown-submenu > a:after {
+	border-left-color: #999;
+	margin-right: -5px;
+}
+.dropdown .dropdown-submenu:hover > a:after {
+	border-left-color: #999;
+}
+
+
 
 .farcry-header-utility {
 	display: table-cell;

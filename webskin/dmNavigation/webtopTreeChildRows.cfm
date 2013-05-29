@@ -179,7 +179,24 @@
 						<button class="btn fc-tooltip" onclick="$fc.objectAdminAction('#stNav.label#', '#thisOverviewURL#'); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button>
 						<button class="btn btn-edit" type="button" onclick="$fc.objectAdminAction('#stNav.label#', '#thisEditURL#', { onHidden: function(){ reloadTreeBranch('#stNav.objectid#'); } }); return false;"><i class="icon-pencil"></i> Edit</button>
 						<a href="#thisPreviewURL#" class="btn fc-preview fc-tooltip" title="" data-original-title="Preview"><i class="icon-eye-open only-icon"></i></a>
-						<button class="btn" type="button"><i class="icon-caret-down only-icon"></i></button>
+
+<div class="btn-group"> 
+	<button data-toggle="dropdown" class="btn dropdown-toggle" type="button"><i class="icon-caret-down only-icon"></i></button>
+	<div class="dropdown-menu">
+		<li><a href="##" class="fc-zoom">Zoom</a></li>
+
+		<li class="dropdown-submenu">
+			<a href="##">Create</a>
+			<ul class="dropdown-menu">
+				<li><a href="##" class="">Navigation</a></li>
+			</ul>
+		</li>
+
+	</div>
+</div>
+
+
+
 					</td>
 					<td class="fc-tree-title">#repeatString('<i class="fc-icon-spacer"></i>', navIndentLevel)#<a class="fc-treestate-toggle" href="##"><i class="fc-icon-treestate"></i></a>#thisNodeIcon# <span>#stNav.label#</span></td>
 					<td>#thisStatusLabel#</td>

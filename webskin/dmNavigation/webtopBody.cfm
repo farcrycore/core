@@ -22,13 +22,18 @@
 	easy wins
 	---------
 
-	- zoom on a particular node / tree section
+	V zoom on a particular node / tree section
 		- zoom to the users "home node" by default
+		- move "up" one level if within the users home node
 		V how should we deal with utility navigation? use a different page / menu item
 
 	- options dropdown:
 		- hook up existing functionality first
-		- zoom to here
+			- create
+			- status
+			- permissions
+			- properties
+			- delete
 		- move node to a new parent
 
 
@@ -508,6 +513,13 @@
 
 		$j(".objectadmin").on("click", ".fc-tree-title", function(evt){
 			$j(this).find(".fc-treestate-toggle").click();
+		});
+
+		$j(".objectadmin").on("click", ".fc-zoom", function(evt){
+			var id = $j(this).closest("tr").data("objectid");
+			if (id.length) {
+				window.location = "#application.fapi.fixURL(removevalues="alias,rootobjectid")#&rootobjectid=" + id;
+			}
 		});
 
 
