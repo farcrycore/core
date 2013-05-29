@@ -1,3 +1,5 @@
+<cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
+
 <cfset stProperties = structNew() />
 <cfset stProperties.objectid = stobj.objectid />
 <cfset stProperties.forgotPasswordHash = application.fc.utils.generateRandomString() />

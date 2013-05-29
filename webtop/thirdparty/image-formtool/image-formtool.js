@@ -289,7 +289,7 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 	    				},
 	    				"working" : function onImageFormtoolCloseAutogenerate(event){
 	    					imageformtool.inputs.resizemethod.val("");
-		    				imageformtool.inputs.deletef.val("false");
+		    				imageformtool.inputs.deletef.val("true");
 	    				},
 	    				"traditional" : function onImageFormtoolCloseTraditional(event){ 
 	    					imageformtool.inputs.traditional.val(""); 
@@ -388,8 +388,19 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 					var $sourceField = $j("#"+prefix+sourceField);
 					var existingval = $sourceField.val();
 					var pending = false;
+
+					if (existingval.indexOf(",")>-1){
+			    		existingval = existingval.split(",")[0];
+				    };
+
 					function checkSource(){
+						var $sourceField = $j("#"+prefix+sourceField);
 						var newval = $sourceField.val();
+
+						if (newval.indexOf(",")>-1){
+				    		newval = newval.split(",")[0];
+					    };
+
 						if (newval!=existingval && !pending){
 							existingval = newval;
 							handleSourceChange(newval);
