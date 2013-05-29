@@ -229,7 +229,7 @@
 	</cfif>
 
 	<!--- either stream the webskin result with an appropriate mime type, or output it normally --->
-	<cfif application.stCOAPI[url.type].stWebskins[url.view].viewstack eq "data" and structkeyexists(application.stCOAPI[url.type].stWebskins[url.view],"mimeType")>
+	<cfif len(url.view) AND application.stCOAPI[url.type].stWebskins[url.view].viewstack eq "data" AND structkeyexists(application.stCOAPI[url.type].stWebskins[url.view],"mimeType")>
 		<cfinvoke component="#application.fapi#" method="stream">
 			<cfinvokeargument name="content" value="#result#" />
 			<cfinvokeargument name="type" value="#application.stCOAPI[url.type].stWebskins[url.view].mimeType#" />
