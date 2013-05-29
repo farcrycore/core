@@ -183,14 +183,19 @@
 <div class="btn-group"> 
 	<button data-toggle="dropdown" class="btn dropdown-toggle" type="button"><i class="icon-caret-down only-icon"></i></button>
 	<div class="dropdown-menu">
-		<li><a href="##" class="fc-zoom">Zoom</a></li>
+		<li><a href="##" class="fc-zoom"><i class="icon-zoom-in icon-fixed-width"></i> Zoom</a></li>
 
 		<li class="dropdown-submenu">
-			<a href="##">Create</a>
+			<a href="##"><i class="icon-add icon-fixed-width"></i> Create</a>
 			<ul class="dropdown-menu">
-				<li><a href="##" class="">Navigation</a></li>
+				<li><a href="##" class=""><i class="icon-folder-close icon-fixed-width"></i> Navigation</a></li>
+				<li><a href="##" class=""><i class="icon-file icon-fixed-width"></i> Web Page</a></li>
+				<li class="divider"></li>
+				<li><a href="##" class=""><i class="icon-blank icon-fixed-width"></i> Include</a></li>
 			</ul>
 		</li>
+		<li class="divider"></li>
+		<li><a href="##" class=""><i class="icon-trash icon-fixed-width"></i> Delete</a></li>
 
 	</div>
 </div>
