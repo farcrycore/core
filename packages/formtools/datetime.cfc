@@ -40,6 +40,14 @@
 			ftseq="5" ftfieldset="General" ftwizardStep="General Details"
 			ftType="datetime" ftToggleOffDateTime="true" ftlabel="Some Date" />
 	</code>
+	
+	<p>Datetime to be automatically set to the other field's date value.</p>
+	<code>
+		<cfproperty
+			name="endDate" type="date" hint="The start date of the event" required="no" default=""
+			ftseq="5" ftfieldset="General" ftwizardStep="General Details"
+			ftType="datetime" ftlabel="Some Date" ftWatch="startDate"/>
+	</code>
  --->
 
 <cfcomponent name="datetime" extends="field" displayname="datetime" bDocument="true" hint="Field component to liase with all datetime types"> 
@@ -126,7 +134,13 @@
 		<cfset var i = "">
 		<cfset var step=1>
 		
-		
+		<cfif structkeyexists(arguments.stMetadata,"ftWatch") and len(arguments.stMetadata.ftWatch)>
+			<cfif DateCompare(arguments.stObject[arguments.stMetadata.ftWatch], arguments.stMetadata.value) eq 1>
+				<cfset wDate = arguments.stObject[arguments.stMetadata.ftWatch] />
+				<cfset arguments.stMetadata.value = arguments.stObject[arguments.stMetadata.ftWatch]>
+			</cfif>
+		</cfif>
+
 		<!--- If a required field, then the user will not have the option to toggle off the date time --->
 		<cfif structkeyexists(arguments.stMetadata,"ftValidation") and listcontains(arguments.stMetadata.ftValidation,"required")>
 			<cfset arguments.stMetadata.ftToggleOffDateTime = "0" />
@@ -135,7 +149,6 @@
 		<cfif isDate(arguments.stMetadata.value)>
 			<cfset arguments.stMetadata.value = application.fapi.convertToApplicationTimezone(arguments.stMetadata.value) />
 		</cfif>
-		
 			
 		<cfif arguments.stMetadata.ftToggleOffDateTime>
 			
@@ -241,22 +254,6 @@
 			<skin:loadJS id="jquery-ui" />
 			<skin:loadCSS id="jquery-ui" />
 			
-			<skin:onReady>
-				<cfoutput>
-					$j("###arguments.fieldname#").datepicker({
-						dateFormat:'#arguments.stMetadata.ftJQDateFormatMask#',
-						showOn: 'both', 
-						buttonImage: '#application.url.farcry#/js/dateTimePicker/cal.gif', 
-						buttonImageOnly: true,						
-						onSelect: function(dateText, inst) {
-							$j(this).trigger('change');
-						}
-						<cfif len(arguments.stMetadata.ftMaxDate)>, maxDate: #cf2jsDate(arguments.stMetadata.ftMaxDate)#</cfif>
-						<cfif len(arguments.stMetadata.ftMinDate)>, minDate: #cf2jsDate(arguments.stMetadata.ftMinDate)#</cfif>
-					});
-				</cfoutput>
-			</skin:onReady>
-			
 			<!--- Just in case the developer has included lowercase mmmm or mmm which is not valid, we are changing to uppercase MMMM and MMM respectively. --->
 			
 			<cfif isDefined("session.dmProfile.locale") AND len(session.dmProfile.locale)>
@@ -264,12 +261,10 @@
 			<cfelse>
 				<cfset locale = "en_AU">
 			</cfif>			
-			
-			
+
 			<cfsavecontent variable="html">
 
 				<cfoutput>
-				
 				
 				<div class="multiField">
 					<cfif arguments.stMetadata.ftToggleOffDateTime>
@@ -287,6 +282,23 @@
 						<!--- <label class="inlineLabel" for="#arguments.fieldname#"></label> --->
 						<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftCFDateFormatMask)#" class="textInput #arguments.stMetadata.ftClass#" style="width:100px;#arguments.stMetadata.ftStyle#" >
 						<input type="hidden" name="#arguments.fieldname#rendertype" id="#arguments.fieldname#rendertype" value="#arguments.stMetadata.ftRenderType#">
+						
+						<skin:onReady>
+							<cfoutput>
+								$j("###arguments.fieldname#").datepicker({
+									dateFormat:'#arguments.stMetadata.ftJQDateFormatMask#',
+									showOn: 'both', 
+									buttonImage: '#application.url.farcry#/js/dateTimePicker/cal.gif', 
+									buttonImageOnly: true,						
+									onSelect: function(dateText, inst) {
+										$j(this).trigger('change');
+									}
+									<cfif len(arguments.stMetadata.ftMaxDate)>, maxDate: #cf2jsDate(arguments.stMetadata.ftMaxDate)#</cfif>
+									<cfif len(arguments.stMetadata.ftMinDate)>, minDate: #cf2jsDate(arguments.stMetadata.ftMinDate)#</cfif>
+								});
+							</cfoutput>
+						</skin:onReady>
+
 						<cfif arguments.stMetadata.ftShowTime>
 							<select name="#arguments.fieldname#Hour">
 							<cfloop from="1" to="12" index="i">
