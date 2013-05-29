@@ -279,7 +279,7 @@ a:hover {
 	/*white-space: nowrap;*/
 	min-width: 120px;
 }
-.dropdown .dropdown-menu.dropdown-mega-menu li > a:hover,
+.dropdown .dropdown-menu.dropdown-mega-menu li:hover > a,
 .dropdown .dropdown-menu.dropdown-mega-menu li > a:focus {
 	padding: 3px 14px;
 	background: #dae8f2; /* @fc-dropdown-nav-active */
@@ -295,59 +295,51 @@ a:hover {
 
 
 /* customise bootstrap dropdown menu */
-.dropdown .dropdown-menu, #favourites .dropdown-menu {
-/*
-	border: 3px solid #3e84b5; // @fc-secondary-tab-active
-*/
+.dropdown-menu {
 	border-radius: 0;
 	margin-top: -1px;
 	padding-top: 5px;
 }
-.dropdown .dropdown-menu li > a, #favourites .dropdown-menu li > a {
+.dropdown-menu li > a {
 	color: #333;
 	padding: 3px 14px;
 	filter: none;
 }
-.dropdown .dropdown-menu li > a:hover,
-.dropdown .dropdown-menu li > a:focus,
-#favourites .dropdown-menu li > a:hover,
-#favourites .dropdown-menu li > a:focus {
+.dropdown-menu li:hover > a,
+.dropdown-menu li > a:focus {
+	color: #333;
 	background: #dae8f2; /* @fc-dropdown-nav-active */
 	text-decoration: none;
 }
-.dropdown .dropdown-menu .active > a,
-.dropdown .dropdown-menu .active > a:hover,
-.dropdown .dropdown-menu .active > a:focus,
-#favourites .dropdown-menu .active > a,
-#favourites .dropdown-menu .active > a:hover,
-#favourites .dropdown-menu .active > a:focus {
+.dropdown-menu .active > a,
+.dropdown-menu .active:hover > a,
+.dropdown-menu .active > a:focus {
 	background: #dae8f2; /* @fc-dropdown-nav-active */
 	color: #333;
 	padding: 3px 14px;
 }
-.dropdown .dropdown-menu li.nav-header {
+.dropdown-menu li.nav-header {
 	padding: 3px 14px;
 	color: #0e65a2;
 }
 
-
-
-.dropdown-menu > li > a:hover, 
-.dropdown-menu > li > a:focus, 
-.dropdown-submenu:hover > a, 
-.dropdown-submenu:focus > a {
-	color: #fff;
-	background: #3E84B5;
+.dropdown-submenu > .dropdown-menu {
+	border-radius: 0;
 }
 
-.dropdown .dropdown-submenu > a:after {
-	border-left-color: #999;
+
+.dropdown-submenu > a:after {
+	border-left-color: #333;
 	margin-right: -5px;
 }
-.dropdown .dropdown-submenu:hover > a:after {
-	border-left-color: #999;
+.dropdown-submenu:hover > a:after {
+	border-left-color: #333;
 }
 
+/* icons in drop down menus */
+.dropdown-menu i[class^="icon-"] {
+	color: #777;
+}
 
 
 .farcry-header-utility {
@@ -512,30 +504,6 @@ table.farcry-objectadmin td {
 	border-radius: 0;
 }
 
-
-.farcry-objectadmin .dropdown-menu {
-	border-radius: 0;
-	margin-top: -1px;
-	padding-top: 5px;
-}
-.farcry-objectadmin .dropdown-menu li > a {
-	color: #333;
-	padding: 3px 14px;
-	filter: none;
-}
-.farcry-objectadmin .dropdown-menu li > a:hover,
-.farcry-objectadmin .dropdown-menu li > a:focus {
-	background: #dae8f2;
-	color: #333;
-	text-decoration: none;
-}
-.farcry-objectadmin .dropdown-menu .active > a,
-.farcry-objectadmin .dropdown-menu .active > a:hover,
-.farcry-objectadmin .dropdown-menu .active > a:focus {
-	background: #0e65a2;
-	color: #fff;
-	padding: 3px 14px;
-}
 
 
 .farcry-objectadmin .checkbox {
