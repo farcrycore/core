@@ -65,6 +65,20 @@
 	ftDestination="/images/lysaght/bslCaseStudy/featureImage" 
 	ftlabel="Feature Image" />
 
+<p>Crop the first image from an array source field</p>
+
+<cfproperty name="coverImage" type="string" required="no" default=""  
+	ftwizardStep="News Body" 
+	ftseq="43" ftfieldset="Images" 
+	ftType="image"
+	ftSourceField="aImages:SourceImage" 
+	ftAutoGenerateType="center"
+	ftCreateFromSourceDefault="true" 
+	ftAllowUpload="true"
+	ftImageWidth="150" ftImageHeight="150" 
+	ftDestination="/images/dmNews/coverImage" 
+	ftlabel="Cover Image 150x150" />
+
 --->
 
 
@@ -427,7 +441,7 @@
 				    				},
 				    				"working" : function onImageFormtoolCloseAutogenerate(event){
 				    					imageformtool.inputs.resizemethod.val("");
-					    				imageformtool.inputs.deletef.val("false");
+					    				imageformtool.inputs.deletef.val("true");
 				    				},
 				    				"traditional" : function onImageFormtoolCloseTraditional(event){ 
 				    					imageformtool.inputs.traditional.val(""); 
@@ -526,9 +540,15 @@
 	    						var existingval = $sourceField.val();
 	    						var pending = false;
 	    						function checkSource(){
+	    							var $sourceField = $j("##"+prefix+sourceField);
 	    							var newval = $sourceField.val();
 	    							if (newval!=existingval && !pending){
 	    								existingval = newval;
+
+		    							if (newval.indexOf(",")>-1){
+					    					newval = newval.split(",")[0];
+						    			}
+	    								
 	    								handleSourceChange(newval);
 	    							};
 	    						};
@@ -1017,6 +1037,9 @@
 		
 		<cfif structkeyexists(url,"crop")>
 			<cfset source = arguments.stObject[listfirst(arguments.stMetadata.ftSourceField,":")] />
+			<cfif isArray(source) and arrayLen(source)>
+				<cfset source = source[1] />
+			</cfif>
 			<cfif isvalid("uuid",source)>
 				<cfset stSource = application.fapi.getContentObject(objectid=source) />
 				<cfset source = stSource[listlast(arguments.stMetadata.ftSourceField,":")] />
@@ -1352,7 +1375,8 @@
 		</cfif>
 		
 		<!--- Get the source filename --->
-		<cfif len(arguments.stObject[sourceFieldName])>
+		
+		<cfif NOT isArray(arguments.stObject[sourceFieldName]) AND len(arguments.stObject[sourceFieldName])>
 		    <cfif arguments.stFields[sourceFieldName].metadata.ftType EQ "uuid">
 				<!--- This means that the source image is from an image library. We now expect that the source image is located in the source field of the image library --->
 				<cfset stImage = application.fapi.getContentObject(objectid="#arguments.stObject[sourceFieldName]#") />
@@ -1362,6 +1386,16 @@
 			<cfelse>
 				<cfset sourcefilename = arguments.stObject[sourceFieldName] />
 			</cfif>
+		<cfelseif isArray(arguments.stObject[sourceFieldName])>
+			<!--- if this is array, use only first item for cropping --->
+			<cfif arrayLen(arguments.stObject[sourceFieldName])>
+				<cfset stImage = application.fapi.getContentObject(objectid="#arguments.stObject[sourceFieldName][1]#") />
+				<cfset sourcefilename = stImage[libraryFieldName] />
+			</cfif>
+			
+
+			
+
 		<cfelse>
 			<cfset sourcefilename = "" />
 		</cfif>
