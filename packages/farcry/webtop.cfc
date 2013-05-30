@@ -347,7 +347,10 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfset var bPermitted = "">
 		<cfset var bRight = "">
 		<cfset var barnacleID = "">
-
+		<cfset var webtopAccessPermissionID = application.fapi.getContentType("farPermission").getID('admin')>
+		<cfset var oRole = application.fapi.getContentType("farRole")>
+		<cfset var stCurrentRole = "">
+		
 		<cfif NOT len(arguments.webtopPermissionID)>
 			<cfset arguments.webtopPermissionID = application.security.factory.permission.getID(name="viewWebtopItem")>
 		</cfif>
@@ -397,7 +400,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<!--- Remove children that the user doesn't have permission for --->
 		<cfloop collection="#stResult.children#" item="id">
 			
-			<cfset bPermitted = 0 />
+			<cfset bPermitted = -1 />
 			<cfset hashKey = hash("#webtopPermissionID#-#currentRoles#-#stResult.children[id].rbKey#") />
 
 			<cfif structKeyExists(application.security.stPermissions, "#hashKey#")>
@@ -406,12 +409,16 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 				<cfset barnacleID = hash(stResult.children[id].rbKey)>
 				
 				<cfloop list="#currentRoles#" index="iRole">
-					<cfset bRight = oBarnacle.getRight(role="#iRole#", permission="#webtopPermissionID#", object="#barnacleID#", objecttype="webtop")>
-					<cfif bRight NEQ 0>
-						<cfset bPermitted = bRight>
-					</cfif>
-					<cfif bRight GT 0>
-						<cfbreak>
+					
+					<cfset stCurrentRole = application.fapi.getContentObject(typename="farRole", objectid="#iRole#")>
+					
+					<cfif application.fapi.arrayFind(stCurrentRole.aPermissions, webtopAccessPermissionID)>
+						<cfset bRight = oBarnacle.getRight(role="#iRole#", permission="#webtopPermissionID#", object="#barnacleID#", objecttype="webtop")>
+						
+						<cfif bRight GTE 0>
+							<cfset bPermitted = 1>
+							<cfbreak>
+						</cfif>
 					</cfif>
 				</cfloop>
 
@@ -544,6 +551,9 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 
 		<cfset var urlUtil = createobject("component","farcry.core.packages.farcry.UrlUtility") />
 
+		<cfif structKeyExists(stItem, "type")>
+			<cfset stResult.typename = stItem.type>
+		</cfif>
 		<cfif structKeyExists(stItem, "typename")>
 			<cfset stResult.typename = stItem.typename>
 		</cfif>
@@ -552,6 +562,9 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		</cfif>
 		<cfif structKeyExists(stItem, "bodyView")>
 			<cfset stResult.bodyView = stItem.bodyView>
+		</cfif>
+		<cfif structKeyExists(stItem, "alias")>
+			<cfset stResult.alias = stItem.alias>
 		</cfif>
 
 		<cfif structKeyExists(stItem, "link")>
