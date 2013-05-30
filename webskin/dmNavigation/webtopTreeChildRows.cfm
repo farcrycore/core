@@ -174,17 +174,24 @@
 
 			<cfoutput>
 				<tr class="#thisClass#" data-objectid="#stNav.objectid#" data-nlevel="#qTree.nlevel#" data-indentlevel="#navIndentLevel-1#" data-nodetype="folder" data-parentid="#qTree.parentid#">
-					<td><input type="checkbox" class="checkbox"></td>
+					<td class="fc-hidden-compact"><input type="checkbox" class="checkbox"></td>
 					<td class="objectadmin-actions">
-						<button class="btn fc-tooltip" onclick="$fc.objectAdminAction('#stNav.label#', '#thisOverviewURL#'); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button>
-						<button class="btn btn-edit" type="button" onclick="$fc.objectAdminAction('#stNav.label#', '#thisEditURL#', { onHidden: function(){ reloadTreeBranch('#stNav.objectid#'); } }); return false;"><i class="icon-pencil"></i> Edit</button>
-						<a href="#thisPreviewURL#" class="btn fc-preview fc-tooltip" title="" data-original-title="Preview"><i class="icon-eye-open only-icon"></i></a>
+						<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" onclick="$fc.objectAdminAction('#stNav.label#', '#thisOverviewURL#'); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button>
+						<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button" onclick="$fc.objectAdminAction('#stNav.label#', '#thisEditURL#', { onHidden: function(){ reloadTreeBranch('#stNav.objectid#'); } }); return false;"><i class="icon-pencil"></i> Edit</button>
+						<a href="#thisPreviewURL#" class="btn fc-btn-preview fc-tooltip" title="" data-original-title="Preview"><i class="icon-eye-open only-icon"></i></a>
 
 <div class="btn-group"> 
 	<button data-toggle="dropdown" class="btn dropdown-toggle" type="button"><i class="icon-caret-down only-icon"></i></button>
 	<div class="dropdown-menu">
+		<li class="fc-visible-compact"><a href="##" class="fc-btn-overview"><i class="icon-th icon-fixed-width"></i> Overview</a></li>
+		<li class="fc-visible-compact"><a href="##" class="fc-btn-edit"><i class="icon-pencil icon-fixed-width"></i> Edit</a></li>
+		<li class="fc-visible-compact"><a href="##" class="fc-btn-preview"><i class="icon-eye-open icon-fixed-width"></i> Preview</a></li>
+		<li class="divider fc-visible-compact"></li>
+		<li><a href="##" class="fc-add"><i class="icon-plus icon-fixed-width"></i> Add Page</a></li>
 		<li><a href="##" class="fc-zoom"><i class="icon-zoom-in icon-fixed-width"></i> Zoom</a></li>
 
+
+<!--- 
 		<li class="dropdown-submenu">
 			<a href="##"><i class="icon-add icon-fixed-width"></i> Create</a>
 			<ul class="dropdown-menu">
@@ -194,6 +201,9 @@
 				<li><a href="##" class=""><i class="icon-blank icon-fixed-width"></i> Include</a></li>
 			</ul>
 		</li>
+ --->
+
+
 		<li class="divider"></li>
 		<li><a href="##" class=""><i class="icon-trash icon-fixed-width"></i> Delete</a></li>
 
@@ -203,9 +213,10 @@
 
 
 					</td>
-					<td class="fc-tree-title">#repeatString('<i class="fc-icon-spacer"></i>', navIndentLevel)#<a class="fc-treestate-toggle" href="##"><i class="fc-icon-treestate"></i></a>#thisNodeIcon# <span>#stNav.label#</span></td>
-					<td>#thisStatusLabel#</td>
-					<td title="#lsDateFormat(stNav.datetimelastupdated)# #lsTimeFormat(stNav.datetimelastupdated)#">#application.fapi.prettyDate(stNav.datetimelastupdated)#</td>
+					<td class="fc-tree-title fc-nowrap">#repeatString('<i class="fc-icon-spacer"></i>', navIndentLevel)#<a class="fc-treestate-toggle" href="##"><i class="fc-icon-treestate"></i></a>#thisNodeIcon# <span>#stNav.label#</span></td>
+					<td class="fc-nowrap-ellipsis fc-visible-compact">#application.fapi.getLink(type="dmNavigation", objectid=stNav.objectid)#</td>
+					<td class="fc-hidden-compact">#thisStatusLabel#</td>
+					<td class="fc-hidden-compact" title="#lsDateFormat(stNav.datetimelastupdated)# #lsTimeFormat(stNav.datetimelastupdated)#">#application.fapi.prettyDate(stNav.datetimelastupdated)#</td>
 				</tr>
 			</cfoutput>
 
@@ -293,16 +304,17 @@
 
 			<cfoutput>
 				<tr class="#thisClass#" data-objectid="#stLeafNode.objectid#" data-nlevel="#qTree.nlevel+1#" data-nodetype="leaf" data-parentid="#stNav.objectid#">
-					<td><input type="checkbox" class="checkbox"></td>
+					<td class="fc-hidden-compact"><input type="checkbox" class="checkbox"></td>
 					<td class="objectadmin-actions">
-						<button class="btn fc-tooltip" onclick="$fc.objectAdminAction('#stLeafNode.label#', '#thisOverviewURL#'); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button>
-						<button class="btn btn-edit" type="button" onclick="$fc.objectAdminAction('#stLeafNode.label#', '#thisEditURL#'); return false;"><i class="icon-pencil"></i> Edit</button>
-						<a href="#thisPreviewURL#" class="btn fc-preview fc-tooltip" title="" data-original-title="Preview"><i class="icon-eye-open only-icon"></i></a>
+						<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" onclick="$fc.objectAdminAction('#stLeafNode.label#', '#thisOverviewURL#'); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button>
+						<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button" onclick="$fc.objectAdminAction('#stLeafNode.label#', '#thisEditURL#'); return false;"><i class="icon-pencil"></i> Edit</button>
+						<a href="#thisPreviewURL#" class="btn fc-btn-preview fc-tooltip" title="" data-original-title="Preview"><i class="icon-eye-open only-icon"></i></a>
 						<button class="btn" type="button"><i class="icon-caret-down only-icon"></i></button>
 					</td>
-					<td class="fc-tree-title">#repeatString('<i class="fc-icon-spacer"></i>', leafIndentLevel)#<i class="fc-icon-spacer"></i>#thisLeafIcon# #stLeafNode.label#</td>
-					<td>#thisStatusLabel#</td>
-					<td title="#lsDateFormat(lastupdated)# #lsTimeFormat(lastupdated)#">#application.fapi.prettyDate(lastupdated)#</td>
+					<td class="fc-tree-title fc-nowrap">#repeatString('<i class="fc-icon-spacer"></i>', leafIndentLevel)#<i class="fc-icon-spacer"></i>#thisLeafIcon# #stLeafNode.label#</td>
+					<td class="fc-nowrap-ellipsis fc-visible-compact">#application.fapi.getLink(type=stLeafNode.typename, objectid=stLeafNode.objectid)#</td>
+					<td class="fc-hidden-compact">#thisStatusLabel#</td>
+					<td class="fc-hidden-compact" title="#lsDateFormat(lastupdated)# #lsTimeFormat(lastupdated)#">#application.fapi.prettyDate(lastupdated)#</td>
 				</tr>
 			</cfoutput>
 

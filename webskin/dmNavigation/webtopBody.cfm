@@ -124,11 +124,12 @@
 	<table class="objectadmin table table-hover farcry-objectadmin">
 	<thead>
 		<tr>
-			<th style="width: 1.5em"></th>
-			<th style="width: 12em">Actions</th>
+			<th class="fc-col-checkbox fc-hidden-compact"></th>
+			<th class="fc-col-actions">Actions</th>
 			<th>Title</th>
-			<th style="width: 9em">Status</th>
-			<th style="width: 11em">Last Updated</th>
+			<th class="fc-visible-compact">URL</th>
+			<th class="fc-col-status fc-hidden-compact">Status</th>
+			<th class="fc-col-date fc-hidden-compact">Last Updated</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -277,7 +278,7 @@
 		$j(function() {
 
 			/* bind preview buttons */
-			$j(".farcry-objectadmin").on("click", ".objectadmin-actions a.fc-preview", function(evt){
+			$j(".farcry-objectadmin").on("click", ".objectadmin-actions a.fc-btn-preview", function(evt){
 				//evt.preventDefault();
 				var previewURL = $j(this).attr("href");
 				showPreview(previewURL);
