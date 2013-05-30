@@ -814,7 +814,7 @@
 		
 	  	<cfif structkeyexists(form,arguments.uploadfield) and len(form[arguments.uploadfield])>
 	  		
-	    	<cfif len(arguments.existingfile) and application.fc.cdn.ioFileExists(location="images",file=arguments.existingfile)>
+	    	<cfif len(arguments.existingfile) and application.fc.lib.cdn.ioFileExists(location="images",file=arguments.existingfile)>
 	    		
 				<!--- This means there is already a file associated with this object. The new file must have the same name. --->
 				<cftry>
@@ -903,7 +903,7 @@
 			<cfset arguments.destination = "/#arguments.destination#" />
 		</cfif>
 		
-		<cfif len(arguments.existingfile) AND fileexists(arguments.localfile) AND application.fc.cdn.ioFileExists(location="images",file=arguments.existingfile)>
+		<cfif len(arguments.existingfile) AND fileexists(arguments.localfile) AND application.fc.lib.cdn.ioFileExists(location="images",file=arguments.existingfile)>
 	  	
     		<cfset errormessage = application.fc.lib.cdn.ioValidateFile(
     			localpath=arguments.localfile,
@@ -914,7 +914,7 @@
     		
 			<cfif len(errormessage)>
 				<cfset stResult = failed(value=arguments.existingfile,message=errormessage) />
-			<cfelseif len(arguments.existingfile) and application.fc.cdn.ioFileExists(location="images",file=arguments.existingfile)>
+			<cfelseif len(arguments.existingfile) and application.fc.lib.cdn.ioFileExists(location="images",file=arguments.existingfile)>
 				<cfif arguments.bArchive>
 					<cfset archivedFile = application.fc.lib.cdn.ioMoveFile(
 						source_location="images",
