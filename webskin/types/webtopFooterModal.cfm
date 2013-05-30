@@ -9,8 +9,9 @@
 
 		<script type="text/javascript">
 		$j(function(){
-		
-
+			/* fix for https://github.com/twitter/bootstrap/pull/7211 */
+			$j(document).off("click.dropdown-menu").on("click.dropdown-menu",function(e){ if (e.which===1) e.stopPropagation(); });
+			
 			/* testing tooltips */
 			$j(".fc-tooltip").tooltip();
 			
