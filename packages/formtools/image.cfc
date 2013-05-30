@@ -778,7 +778,7 @@
 		
 	  	<cfif structkeyexists(form,arguments.uploadfield) and len(form[arguments.uploadfield])>
 	  	
-	    	<cfif len(arguments.existingfile) and application.fc.cdn.ioFileExists(location="images",file=arguments.existingfile)>
+	    	<cfif len(arguments.existingfile) and application.fc.lib.cdn.ioFileExists(location="images",file=arguments.existingfile)>
 	    		
 				<!--- This means there is already a file associated with this object. The new file must have the same name. --->
 				<cftry>
@@ -835,7 +835,7 @@
 		
 	  	<cfif fileexists(arguments.localfile)>
 	  	
-			<cfif len(arguments.existingfile) AND application.fc.cdn.ioFileExists(location="images",file=arguments.existingfile)>
+			<cfif len(arguments.existingfile) AND application.fc.lib.cdn.ioFileExists(location="images",file=arguments.existingfile)>
 				
 				<cfset archivedFile = application.fc.lib.cdn.ioMoveFile(source_location="images",source_file=arguments.existingfile,dest_location="archive",dest_file="#arguments.destination#/#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#listLast(arguments.existingfile, '/')#") />
 				
