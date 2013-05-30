@@ -132,15 +132,22 @@ ENVIRONMENT VARIABLES
 			</cfif>
 		</cfif>
 		
-		<cfset currentSectionValue = currentBarnacleValue />
-		<cfif currentBarnacleValue EQ 1>
+		<cfif currentBarnacleValue eq 0>
+			<cfset priority = "permission-inherit">
+			<cfset currentSectionValue = currentWebtopValue />
+		<cfelse>
+			<cfset priority = "permission-explicit">
+			<cfset currentSectionValue = currentBarnacleValue />
+		</cfif>
+		
+		<cfif currentSectionValue EQ 1>
 			<cfset icon = "icon-ok-sign">
-		<cfelseif currentBarnacleValue EQ -1>
+		<cfelseif currentSectionValue EQ -1>
 			<cfset icon = "icon-remove-sign">
 		</cfif>
 		
 		<cfoutput>
-			<a class="permButton permission-explicit"><i class="#icon#"></i></a>
+			<a class="permButton #priority#"><i class="#icon#"></i></a>
 			<input type="hidden" class="barnacleValue" id="barnacleValue-#barnacleID#" name="barnacleValue-#barnacleID#" value="#currentBarnacleValue#">
 			<input type="hidden" class="inheritBarnacleValue" id="inheritBarnacleValue-#barnacleID#" value="#currentWebtopValue#">
 			<span style="font-size:10px;">&nbsp;#stLevel1.label#</span>
