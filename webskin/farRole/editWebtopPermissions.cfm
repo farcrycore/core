@@ -338,10 +338,8 @@ ENVIRONMENT VARIABLES
 		
 		if (barnacleValue===0)
 			newValue = inheritBarnacleValue===1 ? -1 : 1;
-		else if (barnacleValue===inheritBarnacleValue)
-			newValue = 0;
 		else
-			newValue = inheritBarnacleValue;
+			newValue = 0;
 		
 		$j(this).siblings(".barnacleValue").val(newValue);
 		
@@ -369,7 +367,7 @@ ENVIRONMENT VARIABLES
 	});
 	
 		
-	$fc.fixDescendants ( $j('##webtopRoot'), false );
+	$fc.fixDescendants ( $j('##webtopRoot'), true );
 		
 	$j("##webtopTree input.barnacleValue[value='1'],##webtopTree input.barnacleValue[value='-1']").each(function (i) {
 		$j(this).parents('li').removeClass("closed").addClass("open");
