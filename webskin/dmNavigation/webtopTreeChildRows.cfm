@@ -147,6 +147,8 @@
 			<cfset thisOverviewURL = "#application.url.webtop#/edittabOverview.cfm?typename=#stNav.typename#&objectid=#stNav.objectid#&ref=overview">
 			<cfset thisEditURL = "#application.url.webtop#/edittabEdit.cfm?objectid=#stNav.objectid#&typename=#stNav.typename#">
 			<cfset thisPreviewURL = application.fapi.getLink(typename="dmNavigation", objectid=stNav.objectid, urlparameters="flushcache=1&showdraft=1")>
+			<cfset thisCreateURL = "#application.url.webtop#/conjuror/evocation.cfm?parenttype=dmNavigation&objectId=#stNav.objectid#&typename=dmNavigation&ref=overview">
+			<cfset thisDeleteURL = "#application.url.webtop#/navajo/delete.cfm?objectid=#stNav.objectid#&ref=overview">
 
 			<!--- vary the status labels and icon by the object status --->
 			<cfset thisStatusLabel = "">
@@ -187,22 +189,8 @@
 		<li class="fc-visible-compact"><a href="##" class="fc-btn-edit"><i class="icon-pencil icon-fixed-width"></i> Edit</a></li>
 		<li class="fc-visible-compact"><a href="##" class="fc-btn-preview"><i class="icon-eye-open icon-fixed-width"></i> Preview</a></li>
 		<li class="divider fc-visible-compact"></li>
-		<li><a href="##" class="fc-add"><i class="icon-plus icon-fixed-width"></i> Add Page</a></li>
+		<li><a href="##" class="fc-add" onclick="$fc.objectAdminAction('Add Page', '#thisCreateURL#', { onHidden: function(){ reloadTreeBranch('#stNav.objectid#'); } }); return false;"><i class="icon-plus icon-fixed-width"></i> Add Page</a></li>
 		<li><a href="##" class="fc-zoom"><i class="icon-zoom-in icon-fixed-width"></i> Zoom</a></li>
-
-
-<!--- 
-		<li class="dropdown-submenu">
-			<a href="##"><i class="icon-add icon-fixed-width"></i> Create</a>
-			<ul class="dropdown-menu">
-				<li><a href="##" class=""><i class="icon-folder-close icon-fixed-width"></i> Navigation</a></li>
-				<li><a href="##" class=""><i class="icon-file icon-fixed-width"></i> Web Page</a></li>
-				<li class="divider"></li>
-				<li><a href="##" class=""><i class="icon-blank icon-fixed-width"></i> Include</a></li>
-			</ul>
-		</li>
- --->
-
 
 		<li class="divider"></li>
 		<li><a href="##" class=""><i class="icon-trash icon-fixed-width"></i> Delete</a></li>
@@ -309,7 +297,18 @@
 						<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" onclick="$fc.objectAdminAction('#stLeafNode.label#', '#thisOverviewURL#'); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button>
 						<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button" onclick="$fc.objectAdminAction('#stLeafNode.label#', '#thisEditURL#'); return false;"><i class="icon-pencil"></i> Edit</button>
 						<a href="#thisPreviewURL#" class="btn fc-btn-preview fc-tooltip" title="" data-original-title="Preview"><i class="icon-eye-open only-icon"></i></a>
-						<button class="btn" type="button"><i class="icon-caret-down only-icon"></i></button>
+
+<div class="btn-group"> 
+	<button data-toggle="dropdown" class="btn dropdown-toggle" type="button"><i class="icon-caret-down only-icon"></i></button>
+	<div class="dropdown-menu">
+		<li class="fc-visible-compact"><a href="##" class="fc-btn-overview"><i class="icon-th icon-fixed-width"></i> Overview</a></li>
+		<li class="fc-visible-compact"><a href="##" class="fc-btn-edit"><i class="icon-pencil icon-fixed-width"></i> Edit</a></li>
+		<li class="fc-visible-compact"><a href="##" class="fc-btn-preview"><i class="icon-eye-open icon-fixed-width"></i> Preview</a></li>
+		<li class="divider fc-visible-compact"></li>
+		<li><a href="##" class=""><i class="icon-trash icon-fixed-width"></i> Delete</a></li>
+
+	</div>
+</div>
 					</td>
 					<td class="fc-tree-title fc-nowrap">#repeatString('<i class="fc-icon-spacer"></i>', leafIndentLevel)#<i class="fc-icon-spacer"></i>#thisLeafIcon# #stLeafNode.label#</td>
 					<td class="fc-nowrap-ellipsis fc-visible-compact">#application.fapi.getLink(type=stLeafNode.typename, objectid=stLeafNode.objectid)#</td>
