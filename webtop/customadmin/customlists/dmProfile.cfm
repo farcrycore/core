@@ -60,7 +60,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 
 	<skin:onReady>
 	<cfoutput>
-		$fc.openDialog('Preview Webtop Security', '#application.fapi.getLink(type="dmProfile",objectid="#stProfile.objectid#", type="dmProfile", view="webtopPageModal",  bodyView="webtopBodyWebtopSecurity")#');
+		$fc.openDialog('Preview Webtop Security', '#application.fapi.getLink(type="dmProfile", objectid="#stProfile.objectid#", view="webtopPageModal",  bodyView="webtopBodyWebtopSecurity")#');
 	</cfoutput>
 	</skin:onReady>
 </ft:processform>
