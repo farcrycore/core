@@ -38,7 +38,14 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 		<cfif structIsEmpty(stUser)>
 			<skin:bubble title="Error" message="This profile does not have a valid user attached. Please edit this profile to create a username/password." tags="security,error" />
 		<cfelse>
-			<cflocation url="#application.url.webtop#/conjuror/invocation.cfm?objectid=#stUser.objectid#&typename=farUser&method=editPassword&ref=typeadmin&module=customlists/dmProfile.cfm" />
+
+
+			<skin:onReady>
+			<cfoutput>
+				$fc.openDialog('Edit Password', '#application.fapi.getLink(type="farUser",objectid="#stUser.objectid#", view="webtopPageModal",  bodyView="editPassword")#')
+			</cfoutput>
+			</skin:onReady>
+			<!--- <cflocation url="#application.url.webtop#/conjuror/invocation.cfm?objectid=#stUser.objectid#&typename=farUser&method=editPassword&ref=typeadmin&module=customlists/dmProfile.cfm" /> --->
 		</cfif>
 		
 	<cfelse>
@@ -46,6 +53,17 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 	</cfif>
 </ft:processform>
 
+
+<ft:processform action="Preview Webtop Security">	
+
+	<cfset stProfile = application.fapi.getContentObject(typename="dmProfile", objectid="#form.selectedobjectid#") />
+
+	<skin:onReady>
+	<cfoutput>
+		$fc.openDialog('Preview Webtop Security', '#application.fapi.getLink(type="dmProfile",objectid="#stProfile.objectid#", view="webtopPageModal",  bodyView="editPreviewWebtopSecurity")#');
+	</cfoutput>
+	</skin:onReady>
+</ft:processform>
 <!--- set up page header --->
 <admin:header title="User Admin" />
 
@@ -64,7 +82,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 	sortableColumns="userid,userstatus"
 	lFilterFields="username"
 	sqlorderby="username asc" 
-	lCustomActions="Change password"
+	lCustomActions="Change password,Preview Webtop Security"
 	lButtons="#lButtons#"
  />
 

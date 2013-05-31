@@ -25,7 +25,7 @@ ENVIRONMENT VARIABLES
 		##webtopTree a.permission-inherit .icon-ok-sign { color:##8bd68b; }
 		##webtopTree a.permission-explicit .icon-remove-sign { color:##FF0000; }
 		##webtopTree a.permission-inherit .icon-remove-sign { color:##FF8080; }
-		##webtopTree a.permButton, ##webtopTree a.permButton:hover, ##bAllowAccess, ##bAllowAccess:hover { cursor:pointer; text-decoration:none; }
+		##webtopTree a.permButton, ##webtopTree a.permButton:hover, ##bAllowAccess, ##bAllowAccess:hover { cursor:pointer; text-decoration:none;font-size:14px;}
 		##bAllowAccess .icon-ok-sign { color:##006600; }
 		##bAllowAccess .icon-remove-sign { color:##FF0000; }
 	</style>
@@ -343,6 +343,10 @@ ENVIRONMENT VARIABLES
 		var inheritBarnacleValue = parseInt(el.siblings( '.inheritBarnacleValue' ).val());
 		var newValue = 0;
 		
+		if (el.attr('id') == 'webtopRoot'){
+			return false;
+		}
+		
 		if (barnacleValue===0)
 			newValue = inheritBarnacleValue===1 ? -1 : 1;
 		else
@@ -377,7 +381,7 @@ ENVIRONMENT VARIABLES
 	$fc.fixDescendants ( $j('##webtopRoot'), true );
 		
 	$j("##webtopTree input.barnacleValue[value='1'],##webtopTree input.barnacleValue[value='-1']").each(function (i) {
-		$j(this).parents('li').removeClass("closed").addClass("open");
+		$j(this).parent('li').parents('li').removeClass("closed").addClass("open");
 	});
 	
 	$j("##webtopTree").treeview({
