@@ -104,7 +104,6 @@ ENVIRONMENT VARIABLES
 		
 		<cfoutput><a id="bAllowAccess" class="permButton" value="#allowAccess#" ftpermissionid="#accessPermissionID#" ftbarnaclevalue="#numberformat(allowAccess)#"><i class="#icon#"></i></a></cfoutput>
 		
-		<ft:fieldHint><cfoutput>Should this role be allowed to access the webtop?</cfoutput></ft:fieldHint>
 	</ft:field>
 	
 	<cfoutput>
