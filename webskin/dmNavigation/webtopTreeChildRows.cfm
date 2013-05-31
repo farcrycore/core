@@ -57,6 +57,8 @@
 <cfset treeMaxLevel = baseNLevel + treeLoadingDepth>
 
 
+<cfset stResponse = structNew()>
+<cfset stResponse["rows"] = arrayNew(1)>
 
 <cfsavecontent variable="html">
 	
@@ -107,7 +109,7 @@
 
 
 		<!--- tree indentation depth relative to the base nlevel of the page and the expandability of the node --->
-		<cfset navIndentLevel = qTree.nlevel - baseNLevel - expandable + url.relativeNLevel + 1>
+		<cfset navIndentLevel = qTree.nlevel - baseNLevel - expandable + url.relativeNLevel>
 
 
 		<!--- check that all visible ancestors are expanded --->
@@ -121,7 +123,6 @@
 
 
 		<cfif bRenderRoot OR qTree.objectid neq rootObjectID>
-
 
 			<!--- if this node is expanded, or the parent nav node is expanded then this nav node will be visible --->
 			<cfif bUnexpandedAncestor>
@@ -140,15 +141,6 @@
 			<cfif expandable AND NOT childrenLoaded>
 				<cfset thisClass = thisClass & " fc-treestate-notloaded">
 			</cfif>
-
-
-
-			<!--- urls --->
-			<cfset thisOverviewURL = "#application.url.webtop#/edittabOverview.cfm?typename=#stNav.typename#&objectid=#stNav.objectid#&ref=overview">
-			<cfset thisEditURL = "#application.url.webtop#/edittabEdit.cfm?objectid=#stNav.objectid#&typename=#stNav.typename#">
-			<cfset thisPreviewURL = application.fapi.getLink(typename="dmNavigation", objectid=stNav.objectid, urlparameters="flushcache=1&showdraft=1")>
-			<cfset thisCreateURL = "#application.url.webtop#/conjuror/evocation.cfm?parenttype=dmNavigation&objectId=#stNav.objectid#&typename=dmNavigation&ref=overview">
-			<cfset thisDeleteURL = "#application.url.webtop#/navajo/delete.cfm?objectid=#stNav.objectid#&ref=overview">
 
 			<!--- vary the status labels and icon by the object status --->
 			<cfset thisStatusLabel = "">
@@ -174,39 +166,67 @@
 			</cfif>
 
 
-			<cfoutput>
-				<tr class="#thisClass#" data-objectid="#stNav.objectid#" data-nlevel="#qTree.nlevel#" data-indentlevel="#navIndentLevel-1#" data-nodetype="folder" data-parentid="#qTree.parentid#">
-					<td class="fc-hidden-compact"><input type="checkbox" class="checkbox"></td>
-					<td class="objectadmin-actions">
-						<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" onclick="$fc.objectAdminAction('#stNav.label#', '#thisOverviewURL#'); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button>
-						<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button" onclick="$fc.objectAdminAction('#stNav.label#', '#thisEditURL#', { onHidden: function(){ reloadTreeBranch('#stNav.objectid#'); } }); return false;"><i class="icon-pencil"></i> Edit</button>
-						<a href="#thisPreviewURL#" class="btn fc-btn-preview fc-tooltip" title="" data-original-title="Preview"><i class="icon-eye-open only-icon"></i></a>
+			<cfset stFolderRow = structNew()>
+			<cfset stFolderRow["objectid"] = stNav.objectid>
+			<cfset stFolderRow["class"] = thisClass>
+			<cfset stFolderRow["nlevel"] = qTree.nlevel>
+			<cfset stFolderRow["nodetype"] = "folder">
+			<cfset stFolderRow["parentid"] = qTree.parentid>
+			<cfset stFolderRow["label"] = stNav.label>
+			<cfset stFolderRow["datetimelastupdated"] = "#lsDateFormat(stNav.datetimelastupdated)# #lsTimeFormat(stNav.datetimelastupdated)#">
+			<cfset stFolderRow["prettydatetimelastupdated"] = application.fapi.prettyDate(stNav.datetimelastupdated)>
+			<cfset stFolderRow["indentlevel"] = navIndentLevel>
+			<cfset stFolderRow["spacer"] = repeatString('<i class="fc-icon-spacer"></i>', navIndentLevel+1)>
+			<cfset stFolderRow["statuslabel"] = thisStatusLabel>
+			<cfset stFolderRow["nodeicon"] = thisNodeIcon>
+			<!--- urls --->
+			<cfset stFolderRow["thisOverviewURL"] = "#application.url.webtop#/edittabOverview.cfm?typename=#stNav.typename#&objectid=#stNav.objectid#&ref=overview">
+			<cfset stFolderRow["thisEditURL"] = "#application.url.webtop#/edittabEdit.cfm?objectid=#stNav.objectid#&typename=#stNav.typename#">
+			<cfset stFolderRow["thisPreviewURL"] = application.fapi.getLink(typename="dmNavigation", objectid=stNav.objectid, urlparameters="flushcache=1&showdraft=1")>
+			<cfset stFolderRow["thisCreateURL"] = "#application.url.webtop#/conjuror/evocation.cfm?parenttype=dmNavigation&objectId=#stNav.objectid#&typename=dmNavigation&ref=overview">
+			<cfset stFolderRow["thisDeleteURL"] = "#application.url.webtop#/navajo/delete.cfm?objectid=#stNav.objectid#&ref=overview">
 
-<div class="btn-group"> 
-	<button data-toggle="dropdown" class="btn dropdown-toggle" type="button"><i class="icon-caret-down only-icon"></i></button>
-	<div class="dropdown-menu">
-		<li class="fc-visible-compact"><a href="##" class="fc-btn-overview"><i class="icon-th icon-fixed-width"></i> Overview</a></li>
-		<li class="fc-visible-compact"><a href="##" class="fc-btn-edit"><i class="icon-pencil icon-fixed-width"></i> Edit</a></li>
-		<li class="fc-visible-compact"><a href="##" class="fc-btn-preview"><i class="icon-eye-open icon-fixed-width"></i> Preview</a></li>
-		<li class="divider fc-visible-compact"></li>
-		<li><a href="##" class="fc-add" onclick="$fc.objectAdminAction('Add Page', '#thisCreateURL#', { onHidden: function(){ reloadTreeBranch('#stNav.objectid#'); } }); return false;"><i class="icon-plus icon-fixed-width"></i> Add Page</a></li>
-		<li><a href="##" class="fc-zoom"><i class="icon-zoom-in icon-fixed-width"></i> Zoom</a></li>
 
-		<li class="divider"></li>
-		<li><a href="##" class=""><i class="icon-trash icon-fixed-width"></i> Delete</a></li>
+			<cfif url.responsetype eq "json">
 
+				<cfset arrayAppend(stResponse["rows"], stFolderRow)>
+
+			<cfelse>
+
+				<cfoutput>
+					<tr class="#stFolderRow["class"]#" data-objectid="#stFolderRow["objectid"]#" data-nlevel="#stFolderRow["nlevel"]#" data-indentlevel="#stFolderRow["indentlevel"]#" data-nodetype="#stFolderRow["nodetype"]#" data-parentid="#stFolderRow["parentid"]#">
+						<td class="fc-hidden-compact"><input type="checkbox" class="checkbox"></td>
+						<td class="objectadmin-actions">
+							<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" onclick="$fc.objectAdminAction('#stFolderRow["label"]#', '#stFolderRow["thisOverviewURL"]#'); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button>
+							<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button" onclick="$fc.objectAdminAction('#stFolderRow["label"]#', '#stFolderRow["thisEditURL"]#', { onHidden: function(){ reloadTreeBranch('#stFolderRow["objectid"]#'); } }); return false;"><i class="icon-pencil"></i> Edit</button>
+							<a href="#stFolderRow["thisPreviewURL"]#" class="btn fc-btn-preview fc-tooltip" title="" data-original-title="Preview"><i class="icon-eye-open only-icon"></i></a>
+
+	<div class="btn-group"> 
+		<button data-toggle="dropdown" class="btn dropdown-toggle" type="button"><i class="icon-caret-down only-icon"></i></button>
+		<div class="dropdown-menu">
+			<li class="fc-visible-compact"><a href="##" class="fc-btn-overview"><i class="icon-th icon-fixed-width"></i> Overview</a></li>
+			<li class="fc-visible-compact"><a href="##" class="fc-btn-edit"><i class="icon-pencil icon-fixed-width"></i> Edit</a></li>
+			<li class="fc-visible-compact"><a href="##" class="fc-btn-preview"><i class="icon-eye-open icon-fixed-width"></i> Preview</a></li>
+			<li class="divider fc-visible-compact"></li>
+			<li><a href="##" class="fc-add" onclick="$fc.objectAdminAction('Add Page', '#stFolderRow["thisCreateURL"]#', { onHidden: function(){ reloadTreeBranch('#stFolderRow["objectid"]#'); } }); return false;"><i class="icon-plus icon-fixed-width"></i> Add Page</a></li>
+			<li><a href="##" class="fc-zoom"><i class="icon-zoom-in icon-fixed-width"></i> Zoom</a></li>
+
+			<li class="divider"></li>
+			<li><a href="##" class=""><i class="icon-trash icon-fixed-width"></i> Delete</a></li>
+
+		</div>
 	</div>
-</div>
 
 
 
-					</td>
-					<td class="fc-tree-title fc-nowrap">#repeatString('<i class="fc-icon-spacer"></i>', navIndentLevel)#<a class="fc-treestate-toggle" href="##"><i class="fc-icon-treestate"></i></a>#thisNodeIcon# <span>#stNav.label#</span></td>
-					<td class="fc-nowrap-ellipsis fc-visible-compact">#application.fapi.getLink(type="dmNavigation", objectid=stNav.objectid)#</td>
-					<td class="fc-hidden-compact">#thisStatusLabel#</td>
-					<td class="fc-hidden-compact" title="#lsDateFormat(stNav.datetimelastupdated)# #lsTimeFormat(stNav.datetimelastupdated)#">#application.fapi.prettyDate(stNav.datetimelastupdated)#</td>
-				</tr>
-			</cfoutput>
+						</td>
+						<td class="fc-tree-title fc-nowrap">#stFolderRow["spacer"]#<a class="fc-treestate-toggle" href="##"><i class="fc-icon-treestate"></i></a>#thisNodeIcon# <span>#stFolderRow["label"]#</span></td>
+						<td class="fc-nowrap-ellipsis fc-visible-compact">#stFolderRow["thisPreviewURL"]#</td>
+						<td class="fc-hidden-compact">#stFolderRow["statuslabel"]#</td>
+						<td class="fc-hidden-compact" title="#stFolderRow["datetimelastupdated"]#">#stFolderRow["prettydatetimelastupdated"]#</td>
+					</tr>
+				</cfoutput>
+			</cfif>
 
 		</cfif>
 
@@ -234,8 +254,8 @@
 			</cfif>
 
 
-			<!--- leaf nodes are indented 1 level deeper than nav nodes --->
-			<cfset leafIndentLevel = navIndentLevel + 1>
+			<!--- leaf nodes are indented 2 "spaces" deeper than nav nodes (one for the expander icon, one for the extra level of indentation) --->
+			<cfset leafIndentLevel = navIndentLevel + 2>
 
 			<cfset thisClass = "fc-treestate-hidden">
 			<!--- if the parent nav node is expanded then the leaf will be visible --->
@@ -290,32 +310,60 @@
 			</cfif>
 
 
-			<cfoutput>
-				<tr class="#thisClass#" data-objectid="#stLeafNode.objectid#" data-nlevel="#qTree.nlevel+1#" data-nodetype="leaf" data-parentid="#stNav.objectid#">
-					<td class="fc-hidden-compact"><input type="checkbox" class="checkbox"></td>
-					<td class="objectadmin-actions">
-						<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" onclick="$fc.objectAdminAction('#stLeafNode.label#', '#thisOverviewURL#'); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button>
-						<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button" onclick="$fc.objectAdminAction('#stLeafNode.label#', '#thisEditURL#'); return false;"><i class="icon-pencil"></i> Edit</button>
-						<a href="#thisPreviewURL#" class="btn fc-btn-preview fc-tooltip" title="" data-original-title="Preview"><i class="icon-eye-open only-icon"></i></a>
+			<cfset stLeafRow = structNew()>
+			<cfset stLeafRow["objectid"] = stLeafNode.objectid>
+			<cfset stLeafRow["class"] = thisClass>
+			<cfset stLeafRow["nlevel"] = qTree.nlevel + 1>
+			<cfset stLeafRow["nodetype"] = "leaf">
+			<cfset stLeafRow["parentid"] = stNav.objectid>
+			<cfset stLeafRow["label"] = stLeafNode.label>
+			<cfset stLeafRow["datetimelastupdated"] = "#lsDateFormat(lastupdated)# #lsTimeFormat(lastupdated)#">
+			<cfset stLeafRow["prettydatetimelastupdated"] = application.fapi.prettyDate(stLeafNode.datetimelastupdated)>
+			<cfset stLeafRow["indentlevel"] = navIndentLevel>
+			<cfset stLeafRow["spacer"] = repeatString('<i class="fc-icon-spacer"></i>', leafIndentLevel)>
+			<cfset stLeafRow["statuslabel"] = thisStatusLabel>
+			<cfset stLeafRow["nodeicon"] = thisLeafIcon>
+			<!--- urls --->
+			<cfset stLeafRow["thisOverviewURL"] = "#application.url.webtop#/edittabOverview.cfm?typename=#stLeafNode.typename#&objectid=#stLeafNode.objectid#&ref=overview">
+			<cfset stLeafRow["thisEditURL"] = "#application.url.webtop#/edittabEdit.cfm?objectid=#stLeafNode.objectid#&typename=#stLeafNode.typename#">
+			<cfset stLeafRow["thisPreviewURL"] = application.fapi.getLink(typename=stLeafNode.typename, objectid=stLeafNode.objectid, urlparameters="flushcache=1&showdraft=1")>
+			<cfset stLeafRow["thisDeleteURL"] = "#application.url.webtop#/navajo/delete.cfm?objectid=#stLeafNode.objectid#&ref=overview">
 
-<div class="btn-group"> 
-	<button data-toggle="dropdown" class="btn dropdown-toggle" type="button"><i class="icon-caret-down only-icon"></i></button>
-	<div class="dropdown-menu">
-		<li class="fc-visible-compact"><a href="##" class="fc-btn-overview"><i class="icon-th icon-fixed-width"></i> Overview</a></li>
-		<li class="fc-visible-compact"><a href="##" class="fc-btn-edit"><i class="icon-pencil icon-fixed-width"></i> Edit</a></li>
-		<li class="fc-visible-compact"><a href="##" class="fc-btn-preview"><i class="icon-eye-open icon-fixed-width"></i> Preview</a></li>
-		<li class="divider fc-visible-compact"></li>
-		<li><a href="##" class=""><i class="icon-trash icon-fixed-width"></i> Delete</a></li>
 
+			<cfif url.responsetype eq "json">
+
+				<cfset arrayAppend(stResponse["rows"], stLeafRow)>
+
+			<cfelse>
+
+				<cfoutput>
+					<tr class="#stLeafRow["class"]#" data-objectid="#stLeafRow["objectid"]#" data-nlevel="#stLeafRow["nlevel"]#" data-nodetype="#stLeafRow["nodetype"]#" data-parentid="#stLeafRow["parentid"]#">
+						<td class="fc-hidden-compact"><input type="checkbox" class="checkbox"></td>
+						<td class="objectadmin-actions">
+							<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" onclick="$fc.objectAdminAction('#stLeafRow["label"]#', '#stLeafRow["thisOverviewURL"]#'); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button>
+							<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button" onclick="$fc.objectAdminAction('#stLeafRow["label"]#', '#stLeafRow["thisEditURL"]#'); return false;"><i class="icon-pencil"></i> Edit</button>
+							<a href="#stLeafRow["thisPreviewURL"]#" class="btn fc-btn-preview fc-tooltip" title="" data-original-title="Preview"><i class="icon-eye-open only-icon"></i></a>
+
+	<div class="btn-group"> 
+		<button data-toggle="dropdown" class="btn dropdown-toggle" type="button"><i class="icon-caret-down only-icon"></i></button>
+		<div class="dropdown-menu">
+			<li class="fc-visible-compact"><a href="##" class="fc-btn-overview"><i class="icon-th icon-fixed-width"></i> Overview</a></li>
+			<li class="fc-visible-compact"><a href="##" class="fc-btn-edit"><i class="icon-pencil icon-fixed-width"></i> Edit</a></li>
+			<li class="fc-visible-compact"><a href="##" class="fc-btn-preview"><i class="icon-eye-open icon-fixed-width"></i> Preview</a></li>
+			<li class="divider fc-visible-compact"></li>
+			<li><a href="##" class=""><i class="icon-trash icon-fixed-width"></i> Delete</a></li>
+
+		</div>
 	</div>
-</div>
-					</td>
-					<td class="fc-tree-title fc-nowrap">#repeatString('<i class="fc-icon-spacer"></i>', leafIndentLevel)#<i class="fc-icon-spacer"></i>#thisLeafIcon# #stLeafNode.label#</td>
-					<td class="fc-nowrap-ellipsis fc-visible-compact">#application.fapi.getLink(type=stLeafNode.typename, objectid=stLeafNode.objectid)#</td>
-					<td class="fc-hidden-compact">#thisStatusLabel#</td>
-					<td class="fc-hidden-compact" title="#lsDateFormat(lastupdated)# #lsTimeFormat(lastupdated)#">#application.fapi.prettyDate(lastupdated)#</td>
-				</tr>
-			</cfoutput>
+						</td>
+						<td class="fc-tree-title fc-nowrap">#stLeafRow["spacer"]#<i class="fc-icon-spacer"></i>#stLeafRow["nodeicon"]# #stLeafRow["label"]#</td>
+						<td class="fc-nowrap-ellipsis fc-visible-compact">#stLeafRow["thisPreviewURL"]#</td>
+						<td class="fc-hidden-compact">#stLeafRow["statuslabel"]#</td>
+						<td class="fc-hidden-compact" title="#stLeafRow["datetimelastupdated"]#">#stLeafRow["prettydatetimelastupdated"]#</td>
+					</tr>
+				</cfoutput>
+
+			</cfif>
 
 		</cfloop>
 
@@ -329,9 +377,7 @@
 <cfset out = html>
 
 <cfif url.responsetype eq "json">
-	<cfset stResponse = structNew()>
 	<cfset stResponse["success"] = true>
-	<cfset stResponse["html"] = trim(html)>
 	<cfcontent reset="true" type="application/json">
 	<cfset out = serializeJSON(stResponse)>
 </cfif>
