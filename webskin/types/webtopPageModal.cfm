@@ -9,7 +9,7 @@
 
 <!--- body --->
 <cfif isValid("uuid", url.objectid)>
-	<skin:view objectid="#url.objectid#" typename="#url.typename#" webskin="#url.bodyView#" />
+	<skin:view objectid="#url.objectid#" typename="#stObj.typename#" webskin="#url.bodyView#" />
 <cfelseif structKeyExists(stParam, "bodyInclude") AND len(stParam.bodyInclude)>
 	<cfmodule template="#stParam.bodyInclude#">
 <cfelse>

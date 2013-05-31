@@ -69,7 +69,7 @@ ENVIRONMENT VARIABLES
 	<cfset barnacleID = hash(stWebtop.rbKey)>
 	
 	
-	<cfquery name="qBarnacles">
+	<cfquery datasource="#application.dsn#" name="qBarnacles">
 		SELECT 	farBarnacle.referenceID, farBarnacle.barnacleValue, farBarnacle.roleid, farBarnacle.permissionID
 		FROM 	farBarnacle
 		WHERE 	objecttype = <cfqueryparam cfsqltype="cf_sql_varchar" value="webtop">
@@ -77,7 +77,7 @@ ENVIRONMENT VARIABLES
 				AND farBarnacle.permissionid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#form.selectPermission#">
 	</cfquery>
 
-	<cfquery name="qRoles">
+	<cfquery datasource="#application.dsn#" name="qRoles">
 	SELECT *
 	FROM farRole
 	WHERE objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lRoleIDs#">)
