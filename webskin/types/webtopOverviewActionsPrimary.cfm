@@ -35,7 +35,7 @@ FARCRY INCLUDE FILES
 <ft:processForm action="Delete" bHideForms="true">
 	<skin:onReady>
 	<cfoutput>
-		parent.$j('##fcModal').modal('hide');
+		$fc.closeBootstrapModal();
 	</cfoutput>
 	</skin:onReady>
 </ft:processForm>
@@ -109,7 +109,7 @@ START WEBSKIN
 			<ft:button 	value="Unlock" 
 						text="<h1>UNLOCK</h1>#application.rb.formatRBString('workflow.labels.lockedwhen@label', stLockedBy.label,'Locked by YOU')#"
 						title="Unlock this content item"
-						class="primary span3"
+						class="primary span3  btn-block"
 						priority="primary"
 						rbkey="workflow.labels.lockedwhen@label" 
 						url="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#&ref=#url.ref#" />
@@ -118,7 +118,7 @@ START WEBSKIN
 			<ft:button 	value="Unlock" 
 						text="<h1>UNLOCK</h1>#application.rb.formatRBString('workflow.labels.lockedwhen@label', stLockedBy.label,'Locked by {1}')#"
 						title="Unlock this content item"
-						class="primary span3"
+						class="primary span3  btn-block"
 						priority="primary"
 						rbkey="workflow.labels.lockedwhen@label" 
 						url="navajo/unlock.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#&ref=#url.ref#" />
@@ -127,7 +127,7 @@ START WEBSKIN
 			<ft:button	value="Unlock" 
 						text="<h1>LOCKED</h1>#uCase(application.rb.formatRBString('workflow.labels.lockedby@label', stLockedBy.label,'<span style="color:red">Locked by {1}</span>'))#"
 						title="Unlock this content item"
-						class="primary span3"
+						class="primary span3  btn-block"
 						priority="primary"
 						type="button"
 						rbkey="workflow.labels.lockedwhen@label" 
@@ -147,7 +147,7 @@ START WEBSKIN
 						<ft:button 	value="Edit this content item" 
 									text="<h1>EDIT</h1>Edit this content item"
 									title="Edit this content item"
-									class="primary span3"
+									class="primary span3  btn-block"
 									priority="primary"
 									rbkey="workflow.buttons.edit" 
 									url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=#url.ref#&typename=#stobj.typeName#" />
@@ -158,7 +158,7 @@ START WEBSKIN
 						<ft:button 	value="Send content item live"
 									text="PUBLISH<br>Approve content"
 									title="Approve content item"
-									class="secondary span3"
+									class="secondary span3  btn-block"
 									rbkey="workflow.buttons.sendlive" 
 									url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=approved" />	
 					</cfif>
@@ -171,7 +171,7 @@ START WEBSKIN
 						<ft:button 	value="Edit this content item"
 									text="<h1>EDIT</h1>Edit content item"
 									title="Edit content item"
-									class="primary span3" 
+									class="primary span3  btn-block" 
 									priority="primary"
 									rbkey="workflow.buttons.edit" 
 									url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=#url.ref#&typename=#stobj.typeName#" />
@@ -189,7 +189,7 @@ START WEBSKIN
 						<ft:button 	value="Edit this content item" 
 									text="<h1>EDIT</h1>Edit content item"
 									title="Edit content item"
-									class="primary span3"
+									class="primary span3  btn-block"
 									priority="primary"
 									rbkey="workflow.buttons.edit" 
 									url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=#url.ref#&typename=#stobj.typeName#" />
@@ -201,7 +201,7 @@ START WEBSKIN
 						<ft:button 	value="Create an editable draft version"
 									text="<h1>EDIT</h1>Create Underlying Draft"
 									title="Create Underlying Draft"
-									class="primary span3"
+									class="primary span3  btn-block"
 									priority="primary"
 									rbkey="workflow.buttons.createdraft" 
 									url="#application.url.farcry#/navajo/createDraftObject.cfm?objectID=#stobj.objectID#&typename=#stobj.typeName#&ref=#url.ref#" />
@@ -212,7 +212,7 @@ START WEBSKIN
 							<ft:button 	value="Send this content item back to draft (deleting the draft version)" 
 										text="<h1>UNPUBLISH</h1>Send To Draft"
 										title="Send To Draft"
-										class="primary span3"
+										class="primary span3  btn-block"
 										priority="primary"
 										rbkey="workflow.buttons.sendbacktodraftdeletedraft" 
 										url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=draft&typename=#stobj.typeName#&ref=#url.ref#"
@@ -221,7 +221,7 @@ START WEBSKIN
 							<ft:button 	value="Send this content item back to draft" 
 										text="UNPUBLISH<br>Send To Draft"
 										title="Send To Draft"
-										class="secondary span3" 
+										class="secondary span3  btn-block" 
 										rbkey="workflow.buttons.sendbacktodraft" 
 										url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=draft&typename=#stobj.typeName#&ref=#url.ref#" />
 						</cfif>
@@ -234,7 +234,7 @@ START WEBSKIN
 				<ft:button	value="Edit this content item" 
 							text="<h1>EDIT</h1>Edit Content Item"
 							title="Edit Content Item"
-							class="primary span3"
+							class="primary span3  btn-block"
 							priority="primary" 
 							rbkey="workflow.buttons.edit" 
 							url="edittabEdit.cfm?objectid=#stobj.objectid#&ref=#url.ref#&typename=#stobj.typeName#" />
@@ -251,7 +251,7 @@ START WEBSKIN
 							<ft:button 	value="Request approval" 
 										text="REQUEST APPROVAL<br>Send to an approver"
 										title="Send to an approver"
-										class="secondary span3"  
+										class="secondary span3  btn-block"  
 										rbkey="workflow.buttons.requestapproval" 
 										url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=requestapproval&ref=#url.ref#" />
 
@@ -267,7 +267,7 @@ START WEBSKIN
 										<ft:button 	value="Delete"
 													text="DISCARD<br>Only draft version"
 													title="Discard this draft version"
-													class="secondary span3"   
+													class="secondary span3  btn-block"   
 													rbkey="workflow.buttons.delete" 
 													url="navajo/delete.cfm?ObjectId=#stobj.objectId#&#returnto#&ref=#url.ref#" 
 													confirmText="Are you sure you wish to discard this draft version? The approved version will remain." />
@@ -276,7 +276,7 @@ START WEBSKIN
 										<ft:button 	value="Delete"
 													text="DELETE<br>Delete Content Item"
 													title="Delete Content Item"
-													class="secondary span3"   
+													class="secondary span3  btn-block"   
 													rbkey="workflow.buttons.delete" 
 													url="navajo/delete.cfm?ObjectId=#stobj.objectId#&#returnto#&ref=#url.ref#" 
 													confirmText="Are you sure you wish to delete this content item?" />
@@ -292,7 +292,7 @@ START WEBSKIN
 						<ft:button 	value="Send content item live" 
 									text="<h1>PUBLISH</h1>Send content item live"
 									title="Send content item live"
-									class="primary span3"  
+									class="primary span3  btn-block"  
 									priority="primary"  
 									rbkey="workflow.buttons.sendlive" 
 									url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=approved&ref=#url.ref#" />
@@ -300,7 +300,7 @@ START WEBSKIN
 						<ft:button 	value="Send this content item back to draft"
 									text="REJECT<br>Send back to draft"
 									title="Send back to draft."
-									class="secondary span3"   
+									class="secondary span3  btn-block"   
 									rbkey="workflow.buttons.sendbacktodraft" 
 									url="#application.url.farcry#/navajo/approve.cfm?objectid=#stobj.objectid#&status=draft&ref=#url.ref#" />
 					</cfif>
@@ -314,7 +314,7 @@ START WEBSKIN
 							<ft:button 	value="Delete"  
 										text="DELETE<br>Delete this content item"
 										title="Delete this content item"
-										class="secondary span3"   
+										class="secondary span3  btn-block"   
 										rbkey="workflow.buttons.delete" 
 										url="navajo/delete.cfm?ObjectId=#stobj.objectId#&typename=#stobj.typeName#&ref=#url.ref#" 
 										confirmText="Are you sure you wish to delete this content item?" />
@@ -329,7 +329,7 @@ START WEBSKIN
 				<ft:button 	value="Delete" 
 							text="DELETE<br>Delete this content item"
 							title="Delete this content item"
-							class="secondary span3"   
+							class="secondary span3  btn-block"   
 							rbkey="workflow.buttons.delete" 
 							url="navajo/delete.cfm?ObjectId=#stobj.objectId#&typename=#stobj.typeName#&ref=#url.ref#" 
 							confirmText="Are you sure you wish to delete this content item?" />
@@ -343,7 +343,7 @@ START WEBSKIN
 			<ft:button 	value="Modify Permissions" 
 						text="PERMISSIONS<br>User access"
 						title="User access"
-						class="secondary span3"  
+						class="secondary span3  btn-block"  
 						type="button" 
 						onClick="$fc.openDialogIFrame('Permissions', '#application.url.farcry#/conjuror/invocation.cfm?objectid=#stObj.objectid#&typename=#stObj.typename#&method=adminPermissions');" />
 		</cfif>	
@@ -364,7 +364,7 @@ START WEBSKIN
 		<ft:button 	value="Preview" 
 					text="PREVIEW<br>View Content Item"
 					title="View Content Item"
-					class="secondary span3" 
+					class="secondary span3  btn-block" 
 					rbkey="workflow.buttons.preview" 
 					url="#application.url.webroot#/index.cfm?objectid=#stobj.objectid#&flushcache=1&showdraft=1" 
 					target="#target#" />
@@ -376,10 +376,10 @@ START WEBSKIN
 		<ft:button 	value="Close" 
 					text="DONE<br>Finished with this item"
 					title="Finished with this item"
-					class="secondary span3" 
+					class="secondary span3  btn-block" 
 					type="button" 
 					rbkey="workflow.buttons.close" 
-					onClick="parent.$j('##fcModal').modal('hide');" />
+					onClick="$fc.closeBootstrapModal();" />
 	</cfif>
 
 <cfsetting enablecfoutputonly="false">
