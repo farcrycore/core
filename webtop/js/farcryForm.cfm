@@ -431,7 +431,7 @@
 				return true;
 			},
 			onHidden: function() {
-				window.location = window.location;
+				window.location.href = window.location.href.split('##')[0];
 				return true;
 			}
 		}, $settings);
@@ -475,48 +475,29 @@
 			}).off("hidden").on('hidden', function () {
 				$j("html").css('overflow', 'auto');
 				$j('iframe',$j('##fcModal')).attr('src','');
-				
 				$settings.onHidden();			
 		});
 	};
-
-
-	<!--- JOINS --->
+					
+	$fc.changeBootstrapModalTitle = function(title){	
+		parent.$j('##fcModalLabel').html(title);
+	}
 	
+	<!--- JOINS --->
+							
 	var fcForm = {};
 							
 	fcForm.openLibrarySelect = function(typename,objectid,property,id,urlparameters) {
 		urlparameters = urlparameters ? urlparameters : '';
-		var yPos = $j("html").scrollTop();
-		var newDialogDiv = $j("<div><iframe style='width:99%;height:99%;border-width:0px;' frameborder='0'></iframe></div>");
-		$j("body").prepend(newDialogDiv);
-		$j("html").css('overflow', 'hidden');
-		$j("div.ui-dialog", parent.document.body).addClass('nested');
-		$j(newDialogDiv).dialog({
-			bgiframe: true,
-			modal: true,
+		
+		$fc.openBootstrapModal({
 			title:'Library',
-			draggable:false,
-			resizable:false,
-			width: $j(window).width()-20,
-			height: $j(window).height()-20,
-			buttons: {
-				Ok: function() {
-					$j(this).dialog('close');
-				}
-			},
-			close: function(event, ui) {
-				$j("html").css('overflow', 'auto');
-				$j("div.ui-dialog", parent.document.body).removeClass('nested');
-				fcForm.refreshProperty(typename,objectid,property,id);
-				$j(newDialogDiv).dialog( 'destroy' );
-				$j(newDialogDiv).remove();
-				$j("html").scrollTop(yPos);
-			}
-			
+			url: '#application.fapi.getWebroot()#/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=webtopPageModal&bodyview=displayLibraryTabs' + '&property=' + property + '&fieldname=' + id + '&' + urlparameters,
+			onHidden:	function () {
+							fcForm.refreshProperty(typename,objectid,property,id);
+							return true;
+						}
 		});
-		$j(newDialogDiv).dialog('open');
-		$j('iframe',$j(newDialogDiv)).attr('src','#application.fapi.getWebroot()#/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=displayLibraryTabs' + '&property=' + property + '&fieldname=' + id + '&' + urlparameters);
 	};
 	
 
