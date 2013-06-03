@@ -133,13 +133,14 @@
 		</tr>
 	</thead>
 	<tbody>
-</cfoutput>
-
-
-<skin:view objectid="#rootObjectID#" typename="dmNavigation" webskin="webtopTreeChildRows" />
-
-
-<cfoutput>
+		<tr>
+			<td></td>
+			<td></td>
+			<td><i class="icon-spinner icon-spin"></i> &nbsp;Loading...</td>
+			<td></td>
+			<td></td>
+			<td></td>
+		</tr>
 	</tbody>
 	</table>
 
@@ -401,6 +402,62 @@
 */
 
 
+		function loadTreeData(data) {
+
+			var treeContent = $j(".objectadmin tbody");
+
+			// construct markup from data
+			var aRowMarkup = [];
+			for (i=0; i<data.rows.length; i++) {
+				var rowhtml = getRowMarkup(data.rows[i]);
+				aRowMarkup.push(rowhtml);
+			}
+
+			treeContent.html(aRowMarkup.join(""));
+
+			loadExpandedAjaxNodes();
+
+		}
+
+
+		function loadTree(rootobjectid) {
+
+			var treeContent = $j(".objectadmin tbody");
+
+
+			$j.ajax({
+				url: "#application.url.webtop#/index.cfm?typename=dmNavigation&objectid=" + rootobjectid + "&view=webtopTreeChildRows&bLoadRoot=true&ajaxmode=1&responsetype=json",
+				datatype: "json",
+				success: function(response) {
+					response.success = response.success || false;
+					if (response.success) {
+
+						// construct markup from response
+						var aRowMarkup = [];
+						for (i=0; i<response.rows.length; i++) {
+							var rowhtml = getRowMarkup(response.rows[i]);
+							aRowMarkup.push(rowhtml);
+						}
+
+						treeContent.html(aRowMarkup.join(""));
+
+
+					}
+					else {
+// TODO: alert the user of an error with this request
+					}
+				},
+				error: function() {
+// TODO: alert the user of an error with this request
+
+				},
+				complete: function() {
+					loadExpandedAjaxNodes();
+
+				}
+			});
+
+		}
 
 
 		function loadTreeChildRows(row, bReloadBranch) {
@@ -426,7 +483,7 @@
 			}
 
 			$j.ajax({
-				url: "#application.url.webtop#/index.cfm?typename=dmNavigation&objectid=" + id + "&view=webtopTreeChildRows&bReloadBranch=" + bReloadBranch + "&loadCollapsed=" + loadCollapsed + "&responsetype=json",
+				url: "#application.url.webtop#/index.cfm?typename=dmNavigation&objectid=" + id + "&view=webtopTreeChildRows&bReloadBranch=" + bReloadBranch + "&loadCollapsed=" + loadCollapsed + "&ajaxmode=1&responsetype=json",
 				data: {
 					"relativenlevel": relativenlevel
 				},
@@ -507,42 +564,42 @@
 			var dropdown = "";
 			if (row["nodetype"] == "folder") {
 				dropdown = 
-					[	'<li><a href="##" class="fc-add" onclick="$fc.objectAdminAction(\'Add Page\', \'' + row["thisCreateURL"] + '\', { onHidden: function(){ reloadTreeBranch(\'' + row["objectid"] + '\'); } }); return false;"><i class="icon-plus icon-fixed-width"></i> Add Page</a></li>'
-					,	'<li><a href="##" class="fc-zoom"><i class="icon-zoom-in icon-fixed-width"></i> Zoom</a></li>'
-					,	'<li class="divider"></li>'
-					,	'<li><a href="##" class=""><i class="icon-trash icon-fixed-width"></i> Delete</a></li>'
-				].join(" ");
+						'<li><a href="##" class="fc-add" onclick="$fc.objectAdminAction(\'Add Page\', \'' + row["thisCreateURL"] + '\', { onHidden: function(){ reloadTreeBranch(\'' + row["objectid"] + '\'); } }); return false;"><i class="icon-plus icon-fixed-width"></i> Add Page</a></li> '
+					+	'<li><a href="##" class="fc-zoom"><i class="icon-zoom-in icon-fixed-width"></i> Zoom</a></li> '
+					+	'<li class="divider"></li> '
+					+	'<li><a href="##" class=""><i class="icon-trash icon-fixed-width"></i> Delete</a></li> '
+				;
 			}
 			else if (row["nodetype"] == "leaf") {
 				dropdown = 
-					[	'<li><a href="##" class=""><i class="icon-trash icon-fixed-width"></i> Delete</a></li>'
-				].join(" ");
+						'<li><a href="##" class=""><i class="icon-trash icon-fixed-width"></i> Delete</a></li> '
+				;
 			}
 
 			var html = 
-				['<tr class="' + row["class"] + '" data-objectid="' + row["objectid"] + '" data-nlevel="' + row["nlevel"] + '" data-indentlevel="' + row["indentlevel"] + '" data-nodetype="' + row["nodetype"] + '" data-parentid="' + row["parentid"] + '">'
-				,	'<td class="fc-hidden-compact"><input type="checkbox" class="checkbox"></td>'
-				,	'<td class="objectadmin-actions">'
-				,		'<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" onclick="$fc.objectAdminAction(\'' + row["label"] + '\', \'' + row["thisOverviewURL"] + '\'); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button>'
-				,		'<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button" onclick="$fc.objectAdminAction(\'' + row["label"] + '\', \'' + row["thisEditURL"] + '\', { onHidden: function(){ reloadTreeBranch(\'' + row["objectid"] + '\'); } }); return false;"><i class="icon-pencil"></i> Edit</button>'
-				,		'<a href="' + row["thisPreviewURL"] + '" class="btn fc-btn-preview fc-tooltip" title="" data-original-title="Preview"><i class="icon-eye-open only-icon"></i></a>'
-				,		'<div class="btn-group">'
-				,			'<button data-toggle="dropdown" class="btn dropdown-toggle" type="button"><i class="icon-caret-down only-icon"></i></button>'
-				,			'<div class="dropdown-menu">'
-				,				'<li class="fc-visible-compact"><a href="##" class="fc-btn-overview"><i class="icon-th icon-fixed-width"></i> Overview</a></li>'
-				,				'<li class="fc-visible-compact"><a href="##" class="fc-btn-edit"><i class="icon-pencil icon-fixed-width"></i> Edit</a></li>'
-				,				'<li class="fc-visible-compact"><a href="##" class="fc-btn-preview"><i class="icon-eye-open icon-fixed-width"></i> Preview</a></li>'
-				,				'<li class="divider fc-visible-compact"></li>'
-				,       		dropdown
-				,			'</div>'
-				,		'</div>'
-				,	'</td>'
-				,	'<td class="fc-tree-title fc-nowrap">' + row["spacer"] + '<a class="fc-treestate-toggle" href="##"><i class="fc-icon-treestate"></i></a>' + row["nodeicon"] + ' <span>' + row["label"] + '</span></td>'
-				,	'<td class="fc-nowrap-ellipsis fc-visible-compact">' + row["thisPreviewURL"] + '</td>'
-				,	'<td class="fc-hidden-compact">' + row["statuslabel"] + '</td>'
-				,	'<td class="fc-hidden-compact" title="' + row["datetimelastupdated"] + '">' + row["prettydatetimelastupdated"] + '</td>'
-				,'</tr>'
-			].join(" ");
+				'<tr class="' + row["class"] + '" data-objectid="' + row["objectid"] + '" data-nlevel="' + row["nlevel"] + '" data-indentlevel="' + row["indentlevel"] + '" data-nodetype="' + row["nodetype"] + '" data-parentid="' + row["parentid"] + '"> '
+				+	'<td class="fc-hidden-compact"><input type="checkbox" class="checkbox"></td> '
+				+	'<td class="objectadmin-actions"> '
+				+		'<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" onclick="$fc.objectAdminAction(\'' + row["label"] + '\', \'' + row["thisOverviewURL"] + '\'); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button> '
+				+		'<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button" onclick="$fc.objectAdminAction(\'' + row["label"] + '\', \'' + row["thisEditURL"] + '\', { onHidden: function(){ reloadTreeBranch(\'' + row["objectid"] + '\'); } }); return false;"><i class="icon-pencil"></i> Edit</button> '
+				+		'<a href="' + row["thisPreviewURL"] + '" class="btn fc-btn-preview fc-tooltip" title="" data-original-title="Preview"><i class="icon-eye-open only-icon"></i></a> '
+				+		'<div class="btn-group"> '
+				+			'<button data-toggle="dropdown" class="btn dropdown-toggle" type="button"><i class="icon-caret-down only-icon"></i></button> '
+				+			'<div class="dropdown-menu"> '
+				+				'<li class="fc-visible-compact"><a href="##" class="fc-btn-overview"><i class="icon-th icon-fixed-width"></i> Overview</a></li> '
+				+				'<li class="fc-visible-compact"><a href="##" class="fc-btn-edit"><i class="icon-pencil icon-fixed-width"></i> Edit</a></li> '
+				+				'<li class="fc-visible-compact"><a href="##" class="fc-btn-preview"><i class="icon-eye-open icon-fixed-width"></i> Preview</a></li> '
+				+				'<li class="divider fc-visible-compact"></li> '
+				+       		dropdown
+				+			'</div> '
+				+		'</div> '
+				+	'</td> '
+				+	'<td class="fc-tree-title fc-nowrap">' + row["spacer"] + '<a class="fc-treestate-toggle" href="##"><i class="fc-icon-treestate"></i></a>' + row["nodeicon"] + ' <span>' + row["label"] + '</span></td> '
+				+	'<td class="fc-nowrap-ellipsis fc-visible-compact">' + row["thisPreviewURL"] + '</td> '
+				+	'<td class="fc-hidden-compact">' + row["statuslabel"] + '</td> '
+				+	'<td class="fc-hidden-compact" title="' + row["datetimelastupdated"] + '">' + row["prettydatetimelastupdated"] + '</td> '
+				+'</tr> '
+			;
 
 			return html;
 		}
@@ -579,10 +636,19 @@
 			}
 		});
 
+	</script>
+
+
+	<!--- get root tree data --->
+	<cfsavecontent variable="jsonData">
+		<skin:view objectid="#rootObjectID#" typename="dmNavigation" webskin="webtopTreeChildRows" responsetype="json" />
+	</cfsavecontent>
+
+	<script type="text/javascript">
 
 		$j(function(){
-			loadExpandedAjaxNodes();
-		})
+			loadTreeData(#jsonData#);
+		});
 
 	</script>
 

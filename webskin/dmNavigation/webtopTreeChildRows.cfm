@@ -7,8 +7,11 @@
 
 <cfparam name="url.relativeNLevel" default="0">
 <cfparam name="url.bReloadBranch" default="false">
+<cfparam name="url.bLoadRoot" default="false">
 <cfparam name="url.loadCollapsed" default="false">
 <cfparam name="url.responsetype" default="html">
+
+<cfparam name="stParam.responsetype" default="#url.responsetype#">
 
 
 <!--- root node --->
@@ -18,18 +21,23 @@
 <cfset treeLoadingDepth = 2>
 <cfset bRenderRoot = true>
 
-<!--- do not render the root when a relative nlevel has been passed in --->
+<!--- when a relative nlevel has been passed in, do not render the root and  --->
 <cfif url.relativeNLevel gt 0>
 	<cfset bRenderRoot = false>
 	<!--- the loading depth should be increased by 1 when when a relative nlevel has been passed in --->
 	<cfset treeLoadingDepth = treeLoadingDepth + 1>
 </cfif>
-<!--- render the root when reloading a branch --->
+<!--- when reloading a branch, render the root and indent by 1 --->
 <cfif url.bReloadBranch>
 	<cfset bRenderRoot = true>
-	<!--- the relative nlevel needs to be increased by 1 when reloading a branch --->
 	<cfset url.relativeNLevel = url.relativeNLevel + 1>
 </cfif>
+<!--- when loading the root, render the root and don't indent --->
+<cfif url.bLoadRoot>
+	<cfset bRenderRoot = true>
+	<cfset url.relativeNLevel = 0>
+</cfif>
+
 
 
 <!--- initialize expanded tree nodes --->
@@ -187,7 +195,7 @@
 			<cfset stFolderRow["thisDeleteURL"] = "#application.url.webtop#/navajo/delete.cfm?objectid=#stNav.objectid#&ref=overview">
 
 
-			<cfif url.responsetype eq "json">
+			<cfif stParam.responsetype eq "json">
 
 				<cfset arrayAppend(stResponse["rows"], stFolderRow)>
 
@@ -255,7 +263,7 @@
 
 
 			<!--- leaf nodes are indented 2 "spaces" deeper than nav nodes (one for the expander icon, one for the extra level of indentation) --->
-			<cfset leafIndentLevel = navIndentLevel + 2>
+			<cfset leafIndentLevel = navIndentLevel + 3>
 
 			<cfset thisClass = "fc-treestate-hidden">
 			<!--- if the parent nav node is expanded then the leaf will be visible --->
@@ -319,7 +327,7 @@
 			<cfset stLeafRow["label"] = stLeafNode.label>
 			<cfset stLeafRow["datetimelastupdated"] = "#lsDateFormat(lastupdated)# #lsTimeFormat(lastupdated)#">
 			<cfset stLeafRow["prettydatetimelastupdated"] = application.fapi.prettyDate(stLeafNode.datetimelastupdated)>
-			<cfset stLeafRow["indentlevel"] = navIndentLevel>
+			<cfset stLeafRow["indentlevel"] = leafIndentLevel>
 			<cfset stLeafRow["spacer"] = repeatString('<i class="fc-icon-spacer"></i>', leafIndentLevel)>
 			<cfset stLeafRow["statuslabel"] = thisStatusLabel>
 			<cfset stLeafRow["nodeicon"] = thisLeafIcon>
@@ -330,7 +338,7 @@
 			<cfset stLeafRow["thisDeleteURL"] = "#application.url.webtop#/navajo/delete.cfm?objectid=#stLeafNode.objectid#&ref=overview">
 
 
-			<cfif url.responsetype eq "json">
+			<cfif stParam.responsetype eq "json">
 
 				<cfset arrayAppend(stResponse["rows"], stLeafRow)>
 
@@ -356,7 +364,7 @@
 		</div>
 	</div>
 						</td>
-						<td class="fc-tree-title fc-nowrap">#stLeafRow["spacer"]#<i class="fc-icon-spacer"></i>#stLeafRow["nodeicon"]# #stLeafRow["label"]#</td>
+						<td class="fc-tree-title fc-nowrap">#stLeafRow["spacer"]##stLeafRow["nodeicon"]# #stLeafRow["label"]#</td>
 						<td class="fc-nowrap-ellipsis fc-visible-compact">#stLeafRow["thisPreviewURL"]#</td>
 						<td class="fc-hidden-compact">#stLeafRow["statuslabel"]#</td>
 						<td class="fc-hidden-compact" title="#stLeafRow["datetimelastupdated"]#">#stLeafRow["prettydatetimelastupdated"]#</td>
@@ -376,9 +384,11 @@
 <!--- output response --->
 <cfset out = html>
 
-<cfif url.responsetype eq "json">
+<cfif stParam.responsetype eq "json">
 	<cfset stResponse["success"] = true>
-	<cfcontent reset="true" type="application/json">
+	<cfif request.mode.ajax>
+		<cfcontent reset="true" type="application/json">		
+	</cfif>
 	<cfset out = serializeJSON(stResponse)>
 </cfif>
 
