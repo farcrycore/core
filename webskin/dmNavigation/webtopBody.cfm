@@ -24,7 +24,7 @@
 
 	V zoom on a particular node / tree section
 		- zoom to the users "home node" by default
-		- move "up" one level if within the users home node
+		- move "up" button (one level) if within the users home node
 		V how should we deal with utility navigation? use a different page / menu item
 
 	- options dropdown:
@@ -561,6 +561,12 @@
 
 		function getRowMarkup(row) {
 
+
+			var overviewURL = "#application.url.webtop#/edittabOverview.cfm?typename=" + row["typename"] + "&objectid=" + row["objectid"];
+			var createURL = "#application.url.webtop#/conjuror/evocation.cfm?parenttype=dmNavigation&typename=dmNavigation&objectid=" + row["objectid"];
+			var deleteURL = "#application.url.webtop#/navajo/delete.cfm?objectid=" + row["objectid"];
+
+
 			var dropdown = "";
 			if (row["nodetype"] == "folder") {
 				dropdown = 
@@ -577,12 +583,12 @@
 			}
 
 			var html = 
-				'<tr class="' + row["class"] + '" data-objectid="' + row["objectid"] + '" data-nlevel="' + row["nlevel"] + '" data-indentlevel="' + row["indentlevel"] + '" data-nodetype="' + row["nodetype"] + '" data-parentid="' + row["parentid"] + '"> '
+				'<tr class="' + row["class"] + '" data-objectid="' + row["objectid"] + '" data-typename="' + row["typename"] + '" data-nlevel="' + row["nlevel"] + '" data-indentlevel="' + row["indentlevel"] + '" data-nodetype="' + row["nodetype"] + '" data-parentid="' + row["parentid"] + '"> '
 				+	'<td class="fc-hidden-compact"><input type="checkbox" class="checkbox"></td> '
 				+	'<td class="objectadmin-actions"> '
-				+		'<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" onclick="$fc.objectAdminAction(\'' + row["label"] + '\', \'' + row["thisOverviewURL"] + '\'); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button> '
-				+		'<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button" onclick="$fc.objectAdminAction(\'' + row["label"] + '\', \'' + row["thisEditURL"] + '\', { onHidden: function(){ reloadTreeBranch(\'' + row["objectid"] + '\'); } }); return false;"><i class="icon-pencil"></i> Edit</button> '
-				+		'<a href="' + row["thisPreviewURL"] + '" class="btn fc-btn-preview fc-tooltip" title="" data-original-title="Preview"><i class="icon-eye-open only-icon"></i></a> '
+				+		'<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" onclick="$fc.objectAdminAction(\'' + row["label"] + '\', \'' + overviewURL + '\'); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button> '
+				+		'<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button" onclick="$fc.objectAdminAction(\'' + row["label"] + '\', \'' + row["editURL"] + '\', { onHidden: function(){ reloadTreeBranch(\'' + row["objectid"] + '\'); } }); return false;"><i class="icon-pencil"></i> Edit</button> '
+				+		'<a href="' + row["previewURL"] + '" class="btn fc-btn-preview fc-tooltip" title="" data-original-title="Preview"><i class="icon-eye-open only-icon"></i></a> '
 				+		'<div class="btn-group"> '
 				+			'<button data-toggle="dropdown" class="btn dropdown-toggle" type="button"><i class="icon-caret-down only-icon"></i></button> '
 				+			'<div class="dropdown-menu"> '
@@ -595,7 +601,7 @@
 				+		'</div> '
 				+	'</td> '
 				+	'<td class="fc-tree-title fc-nowrap">' + row["spacer"] + '<a class="fc-treestate-toggle" href="##"><i class="fc-icon-treestate"></i></a>' + row["nodeicon"] + ' <span>' + row["label"] + '</span></td> '
-				+	'<td class="fc-nowrap-ellipsis fc-visible-compact">' + row["thisPreviewURL"] + '</td> '
+				+	'<td class="fc-nowrap-ellipsis fc-visible-compact">' + row["previewURL"] + '</td> '
 				+	'<td class="fc-hidden-compact">' + row["statuslabel"] + '</td> '
 				+	'<td class="fc-hidden-compact" title="' + row["datetimelastupdated"] + '">' + row["prettydatetimelastupdated"] + '</td> '
 				+'</tr> '
