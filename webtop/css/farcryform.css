@@ -223,11 +223,11 @@
 	.multiField .buttonHolder  {
 		margin-top: 0;
 		margin-bottom: 0;
-		background: #EBEBEB;
-		border: 1px solid #EBEBEB;
+		background: #f1f1f1;
+		border: 1px solid #eeeeee;
 		border-width: 1px 0 0 0;
-		padding-left: 0;
-		padding-right: 1px;
+		padding: 8px;
+		padding-right: 20px;
 	}	
 	
 	.uniForm .textareaInput.autoresize {

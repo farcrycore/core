@@ -1,21 +1,21 @@
 /*
 	colors
 
-	primary tab active blue: 0e65a2
-	primary tab inactive: e8e8e8 
+	primary tab active blue: #0e65a2
+	primary tab inactive: #e8e8e8 
 
-	secondary nav bg blue: 166ca8
-	secondary nav bottom border blue: 3e84b5
-	secondary tab active blue: 3e84b5
+	secondary nav bg blue: #166ca8
+	secondary nav bottom border blue: #3e84b5
+	secondary tab active blue: #3e84b5
 
-	dropdown nav active blue: dae8f2
+	dropdown nav active blue: #dae8f2
 
-	primary button blue: 3e84b5
-	button hover: 555555
-	button normal: dddddd
-	button edit orange: ff9900
+	primary button blue: #3e84b5
+	button hover: #555555
+	button normal: #dddddd
+	button edit orange: #ff9900
 
-	table row hover orange: fff6eb
+	table row hover orange: #fff6eb
 
 	DONE
 	V active / focus colour on edit button
@@ -47,6 +47,11 @@ body.webtop {
 	padding-top: 128px;
 	background: #fff url(images/pw_maze_white.png) repeat 0 95px;
 	background: #eee;
+}
+
+body.webtop-modal {
+	padding-top: 10px;
+	background: #fff;
 }
 
 /* fix bootstrap default input rule */
@@ -516,12 +521,12 @@ table.table-hover tbody tr:hover > td {
 	background: #3e84b5;
 	text-shadow: none;
 	color: #fff;
-	box-shadow: 0 0 1px rgba(0,0,0,0.4) inset;
+	box-shadow: 0 0 1px rgba(0,0,0,0.5) inset;
 }
 .btn-primary:hover,
 .btn-primary:focus {
 	background: #0e65a2;
-	box-shadow: 0 0 1px rgba(0,0,0,0.6) inset;
+	box-shadow: 0 0 1px rgba(0,0,0,0.7) inset;
 	text-shadow: none;
 	color: #fff;
 }
@@ -814,7 +819,7 @@ body .uniForm .focused {
 }
 */
 
-/* customize bootstrap alerts */
+/* customise bootstrap alerts */
 .alert {
     border-radius: 0;
 }
@@ -1006,7 +1011,72 @@ body .alert {
 }
 
 
-/* MEDIA QUERIES AND RESPONSIVE-RELATIVE STYLES */
+
+/* customise bootstrap forms */
+
+legend {
+	color: #0e65a2;
+	border-color: #eee;
+}
+
+.form-horizontal .control-label {
+	text-align: left;
+	width: 240px;
+	color: #000;
+}
+
+.form-horizontal .controls {
+	margin-left: 240px;
+}
+
+input, select, textarea, .uneditable-input {
+    width: 90%;
+    max-width: 440px;
+    min-width: 240px;
+}
+select {
+	-webkit-box-sizing: content-box;
+	-moz-box-sizing: content-box; 	
+	box-sizing: content-box;
+	height: 20px;
+}
+textarea {
+	min-height: 80px;
+}
+
+select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+	border-radius: 1px;
+}
+input[type="file"], input[type="image"], input[type="submit"], input[type="reset"], input[type="button"], input[type="radio"], input[type="checkbox"] {
+	width: auto;
+	min-width: auto;
+	max-width: auto;
+}
+
+.help-inline {
+	color: #999;
+	padding-top: 8px;
+	font-size: 13px;
+}
+
+.form-actions {
+	text-align: right;
+	border-top: 1px solid #ddd;
+	background: #fff;
+}
+.form-actions .btn {
+	padding: 8px 20px;
+}
+
+.multiField .form-actions {
+	max-width: 440px;
+}
+.multiField .form-actions .btn {
+	padding: 4px 8px;
+	background: #ddd;
+}
+
+/* MEDIA QUERIES AND RESPONSIVE RELATED STYLES */
 
 /* match bootstrap media query and change header to absolute instead of fixed */
 @media only screen and (max-width: 1024px) {
