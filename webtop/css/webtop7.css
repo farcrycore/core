@@ -1029,28 +1029,34 @@ legend {
 	margin-left: 240px;
 }
 
-input, select, textarea, .uneditable-input {
+.controls input, .controls select, .controls textarea, .uneditable-input {
     width: 90%;
     max-width: 440px;
     min-width: 240px;
 }
-select {
+.controls input[type="file"],
+.controls input[type="image"],
+.controls input[type="submit"],
+.controls input[type="reset"],
+.controls input[type="button"],
+.controls input[type="radio"],
+.controls input[type="checkbox"] {
+	width: auto;
+	min-width: auto;
+	max-width: auto;
+}
+.controls select {
 	-webkit-box-sizing: content-box;
 	-moz-box-sizing: content-box; 	
 	box-sizing: content-box;
 	height: 20px;
 }
-textarea {
+.controls textarea {
 	min-height: 80px;
 }
 
 select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
 	border-radius: 1px;
-}
-input[type="file"], input[type="image"], input[type="submit"], input[type="reset"], input[type="button"], input[type="radio"], input[type="checkbox"] {
-	width: auto;
-	min-width: auto;
-	max-width: auto;
 }
 
 .help-inline {
