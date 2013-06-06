@@ -1,41 +1,54 @@
 <cfcomponent displayname="Environment Configuration" extends="forms" key="environment" output="false"
-	hint="Identify your FarCry application environment in the webtop using colors and labels">
+	hint="Identify your FarCry application environment in the webtop">
+
+	<cfproperty name="bShowEnvironment" type="boolean" default="true" required="false"
+		ftSeq="1" ftFieldset="Environment Label" ftLabel="Show Environment Label"
+		ftType="boolean" ftDefault="true"
+		ftHint="Check this box to show the Environment Label in the webtop header">
 
 	<cfproperty name="labelProduction" type="string" default="Production" required="false"
-		ftSeq="10" ftFieldset="Production Environment" ftLabel="Production Label"
+		ftSeq="10" ftFieldset="Production Environment" ftLabel="Label"
 		ftType="string">
 
 	<cfproperty name="colorProduction" type="string" default="##66CC44" required="false"
-		ftSeq="12" ftFieldset="Production Environment" ftLabel="Production Color"
+		ftSeq="12" ftFieldset="Production Environment" ftLabel="CSS Color"
 		ftType="string" ftDefault="##66CC44">
 
 	<cfproperty name="lDomainsProduction" type="longchar" default="" required="false"
-		ftSeq="11" ftFieldset="Production Environment" ftLabel="Production Domains" 
+		ftSeq="11" ftFieldset="Production Environment" ftLabel="Domains" 
 		ftType="longchar">
 
 	<cfproperty name="labelStaging" type="string" default="Staging" required="false"
-		ftSeq="20" ftFieldset="Staging Environment" ftLabel="Staging Label"
+		ftSeq="20" ftFieldset="Staging Environment" ftLabel="Label"
 		ftType="string">
 
 	<cfproperty name="colorStaging" type="string" default="##FFCC00" required="false"
-		ftSeq="22" ftFieldset="Staging Environment" ftLabel="Staging Color"
+		ftSeq="22" ftFieldset="Staging Environment" ftLabel="CSS Color"
 		ftType="string" ftDefault="##FFCC00">
 
 	<cfproperty name="lDomainsStaging" type="longchar" default="" required="false"
-		ftSeq="21" ftFieldset="Staging Environment" ftLabel="Staging Domains" 
+		ftSeq="21" ftFieldset="Staging Environment" ftLabel="Domains" 
 		ftType="longchar">
 
 	<cfproperty name="labelDevelopment" type="string" default="Development" required="false"
-		ftSeq="30" ftFieldset="Development Environment" ftLabel="Development Label"
+		ftSeq="30" ftFieldset="Development Environment" ftLabel="Label"
 		ftType="string">
 
 	<cfproperty name="colorDevelopment" type="string" default="##AAAAAA" required="false"
-		ftSeq="32" ftFieldset="Development Environment" ftLabel="Development Color"
+		ftSeq="32" ftFieldset="Development Environment" ftLabel="CSS Color"
 		ftType="string"  ftDefault="##AAAAAA">
 
 	<cfproperty name="lDomainsDevelopment" type="longchar" default="127.0.0.1,localhost,*.local" required="false"
 		ftSeq="31" ftFieldset="Development Environment" ftLabel="Development Domains" 
 		ftType="longchar" ftDefault="127.0.0.1,localhost,*.local">
+
+	<cfproperty name="labelUnknown" type="string" default="Unknown" required="false"
+		ftSeq="40" ftFieldset="Unknown Environment" ftLabel="Label"
+		ftType="string">
+
+	<cfproperty name="colorUnknown" type="string" default="##CC3333" required="false"
+		ftSeq="41" ftFieldset="Unknown Environment" ftLabel="CSS Color"
+		ftType="string" ftDefault="##CC3333">
 
 
 	<cffunction name="getEnvironment" returntype="string">
@@ -60,7 +73,7 @@
 			</cfloop>
 		</cfloop>
 
-		<cfreturn "development">
+		<cfreturn "unknown">
 	</cffunction>
 
 
