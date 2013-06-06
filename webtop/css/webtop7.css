@@ -1019,6 +1019,14 @@ legend {
 	border-color: #eee;
 }
 
+legend + .control-group {
+	margin-top: 0;
+}
+
+.control-group {
+	margin-bottom: 20px;
+}
+
 .form-horizontal .control-label {
 	text-align: left;
 	width: 240px;
@@ -1081,6 +1089,13 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 	padding: 4px 8px;
 	background: #ddd;
 }
+
+
+/* fix br clear */
+br[style^="clear:both"] {
+	display: none;
+}
+
 
 /* MEDIA QUERIES AND RESPONSIVE RELATED STYLES */
 

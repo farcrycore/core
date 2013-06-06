@@ -486,11 +486,16 @@
 				
 				<cfif NOT ListFind(attributes.lHiddenFields,i)>
 					<cfset ftFieldMetadata = Request.farcryForm.stObjects[variables.prefix]['MetaData'][i]>
-					
+					<cfparam name="ftFieldMetadata.errorClass" default="">
+					<cfparam name="ftFieldMetadata.errorMessage" default="">
+
 					<ft:field 	for="#ftFieldMetadata.formFieldName#" 
 								label="#ftFieldMetadata.ftLabel#" 
-								hint="#ftFieldMetadata.ftHint#" 
-								class="#ftFieldMetadata.ftType#">
+								labelAlignment="#ftFieldMetadata.ftLabelAlignment#" 
+								hint="#iif(attributes.bShowFieldHints,'ftFieldMetadata.ftHint','""')#" 
+								errorMessage="#ftFieldMetadata.errorMessage#"
+								class="#ftFieldMetadata.ftType# #ftFieldMetadata.errorClass#"
+								style="#ftFieldMetadata.ftStyle#">
 											
 						<cfoutput>#ftFieldMetadata.html#</cfoutput>
 						

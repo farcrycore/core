@@ -46,7 +46,7 @@ type properties
 
 <cfproperty 
 	name="Body" type="longchar" hint="Main body of content." required="no" default="" 
-	ftSeq="12" ftwizardStep="Web Page" ftFieldset="Body" ftLabel="Body" 
+	ftSeq="12" ftwizardStep="Web Page" ftFieldset="Body" ftLabel="Body" ftLabelAlignment="block"
 	ftType="richtext" 
 	ftImageArrayField="aObjectIDs" ftImageTypename="dmImage" ftImageField="StandardImage"
 	ftTemplateTypeList="dmImage,dmFile,dmNavigation,dmHTML" ftTemplateWebskinPrefixList="insertHTML"
