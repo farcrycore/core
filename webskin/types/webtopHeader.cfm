@@ -72,11 +72,9 @@
 						</admin:loopwebtop>
 
 					</ul>
-<!--- 
-					<div class="farcry-header-environment">
-						STAGING SERVER (stage.daemon.com.au)
-					</div>
- --->
+
+					<skin:view typename="configEnvironment" webskin="displayLabel" />
+
 				</div>
 				<div class="farcry-header-utility">
 					<div class="farcry-header-logo">

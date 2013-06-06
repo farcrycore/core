@@ -130,18 +130,20 @@ a:hover {
 
 .farcry-header-environment {
 	position: absolute;
+	overflow: hidden;
 	top: 0;
 	left: 50%;
 	margin-left: -12.5%;
-	opacity: 0.75;
 	font-size: 13px;
-	padding: 4px 12px;
-	background: #66cc44;
+	padding: 3px 12px;
+	background: #aaaaaa;
 	color: white;
 	max-height: 0px;
+	text-shadow: 0 1px 0 rgba(0,0,0,0.1);
 }
 .farcry-header-environment:hover {
 	max-height: none;
+	padding: 4px 12px;
 }
 
 
