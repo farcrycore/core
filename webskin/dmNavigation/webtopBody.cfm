@@ -105,6 +105,42 @@
 	<cfset navTitle = "Utility Navigation">
 </cfif>
 
+
+
+<!--- process forms --->
+<ft:processform action="delete" url="refresh">
+	<cfif isDefined("form.objectid") and len(form.objectID)>
+		
+		<cfloop list="#form.objectid#" index="i">
+			<cfset stDeletingObject = application.fapi.getContentObject(objectid=i)>
+			<cfset o = application.fapi.getContentType(stDeletingObject.typename)>
+			<cfset stResult = o.delete(objectid=i)>
+			
+			<cfif isDefined("stResult.bSuccess") AND not stResult.bSuccess>
+				<skin:bubble title="Error deleting - #stDeletingObject.label#" bAutoHide="true" tags="type,#attributes.typename#,error">
+					<cfoutput>#stResult.message#</cfoutput>
+				</skin:bubble>
+			<cfelse>
+				<skin:bubble title="Deleted - #stDeletingObject.label# <a href='?id=#url.id#&typename=dmArchive&bodyView=webtopBody&archivetype=#attributes.typename#' style='margin-left:10px;'>Undo</a>" bAutoHide="true" tags="type,#attributes.typename#,deleted,info" />
+			</cfif>
+		</cfloop>
+	</cfif>
+</ft:processform>
+<ft:processform action="unlock" url="refresh"> 
+	<cfif isDefined("form.objectid") and len(form.objectID)>
+		
+		<cfloop list="#form.objectid#" index="i">
+			<cfset stLockedObject = application.fapi.getContentObject(objectid=i)>
+			<cfset o = application.fapi.getContentType(stLockedObject.typename)>
+			<cfset o.setlock(objectid=i, locked=false)>
+		</cfloop>
+	
+	</cfif>
+	
+</ft:processForm>
+
+
+
 <cfoutput>
 
 	<h1><i class="icon-sitemap"></i> #navTitle#</h1>
@@ -113,6 +149,7 @@
 		<button class="btn btn-primary" type="button"><i class="icon-plus"></i> Add</button>
 		<button class="btn" type="button"><i class="icon-move"></i> Move</button>
 		<!--<button class="btn" type="button"><i class="icon-trash"></i> Delete</button>-->
+		<ft:button text="Delete" value="delete" title="Delete" icon="icon-trash" rbkey="objectadmin.buttons.delete" confirmText="Are you sure you want to delete the selected content item(s)?" />
 		<button class="btn" type="button">More <i class="caret"></i></button>
 	</p>
 
@@ -120,6 +157,8 @@
 		<input class="span2" type="text" placeholder="Search..." style="width: 240px;">
 		<button class="btn" style="height: 30px; border-radius:0"><b class="icon-search only-icon"></b></button>
 	</div>
+
+	<ft:form name="farcrytree" style="clear:both">
 
 	<table class="objectadmin table table-hover farcry-objectadmin">
 	<thead>
@@ -143,6 +182,8 @@
 		</tr>
 	</tbody>
 	</table>
+
+	</ft:form>
 
 
 	<div id="preview-container" class="" style="position: fixed; width:0; background: red; top: 74px; right: 0; bottom: 0; z-index: 120; overflow:visible;">
@@ -588,7 +629,7 @@
 
 			var html = 
 				'<tr class="' + row["class"] + '" data-objectid="' + row["objectid"] + '" data-typename="' + row["typename"] + '" data-nlevel="' + row["nlevel"] + '" data-indentlevel="' + row["indentlevel"] + '" data-nodetype="' + row["nodetype"] + '" data-parentid="' + row["parentid"] + '"> '
-				+	'<td class="fc-hidden-compact" nowrap="nowrap"><input name="treeObjectID" type="checkbox" value="' + row["objectid"] + '" class="checkbox">&nbsp;' + locked + '</td> '
+				+	'<td class="fc-hidden-compact" nowrap="nowrap"><input name="objectid" type="checkbox" value="' + row["objectid"] + '" class="checkbox">&nbsp;' + locked + '</td> '
 				+	'<td class="objectadmin-actions"> '
 				+		'<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" onclick="$fc.objectAdminAction(\'Overview\', \'' + overviewURL + '\'); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button> '
 				+		'<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button" onclick="$fc.objectAdminAction(\'Edit Page\', \'' + row["editURL"] + '\', { onHidden: function(){ reloadTreeBranch(\'' + row["objectid"] + '\'); } }); return false;"><i class="icon-pencil"></i> Edit</button> '
