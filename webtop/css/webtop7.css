@@ -842,7 +842,7 @@ body .uniForm .focused {
 
 
 .fc-modal {
-	max-width: 990px;
+	max-width: 1050px;
 }
 
 
@@ -1042,13 +1042,7 @@ legend + .control-group {
     max-width: 440px;
     min-width: 240px;
 }
-.controls input[type="file"],
-.controls input[type="image"],
-.controls input[type="submit"],
-.controls input[type="reset"],
-.controls input[type="button"],
-.controls input[type="radio"],
-.controls input[type="checkbox"] {
+.controls input[type="file"], .controls input[type="image"], .controls input[type="submit"], .controls input[type="reset"], .controls input[type="button"], .controls input[type="radio"], .controls input[type="checkbox"] {
 	width: auto;
 	min-width: auto;
 	max-width: auto;
@@ -1083,11 +1077,15 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 }
 
 .multiField .form-actions {
-	max-width: 440px;
+	max-width: 438px;
 }
 .multiField .form-actions .btn {
 	padding: 4px 8px;
 	background: #ddd;
+	font-size: 13px;
+}
+.multiField .form-actions select {
+	width: auto;
 }
 
 
