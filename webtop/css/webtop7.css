@@ -1086,6 +1086,7 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 }
 .multiField .form-actions select {
 	width: auto;
+	min-width: auto;
 }
 
 
