@@ -17,8 +17,10 @@
 
 	table row hover orange: #fff6eb
 
-	DONE
-	V active / focus colour on edit button
+	environment production: #66cc44
+	environment staging: #ffcc00
+	environment development: #aaaaaa
+
 
 	TODO
 	- use less and replace colours with variables
@@ -552,6 +554,10 @@ table.table-hover tbody tr:hover > td {
 	font-size: inherit;
 }
 
+.btn h1 {
+	color: inherit;
+}
+
 
 /* visibility of items in "compact" grid */
 .fc-visible-compact {
@@ -841,6 +847,11 @@ body .uniForm .focused {
 }
 
 
+.modal-header h3 {
+	font-size: 18px;
+	line-height: 24px;
+}
+
 .fc-modal {
 	max-width: 1050px;
 }
@@ -1063,6 +1074,7 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 
 .help-inline {
 	color: #999;
+	padding-left: 0;
 	padding-top: 8px;
 	font-size: 13px;
 }
@@ -1077,7 +1089,7 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 }
 
 .multiField .form-actions {
-	max-width: 438px;
+	
 }
 .multiField .form-actions .btn {
 	padding: 4px 8px;
