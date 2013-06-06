@@ -23,4 +23,4 @@
 
 <ft:button value="edit" text="#stobj.label#" selectedobjectid="#stobj.objectid#" rendertype="link" />
 
-<cfsetting enablecfoutputonly="true" />
+<cfsetting enablecfoutputonly="false" />
