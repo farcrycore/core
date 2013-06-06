@@ -187,6 +187,7 @@
 			<cfset stFolderRow["indentlevel"] = navIndentLevel>
 			<cfset stFolderRow["spacer"] = repeatString('<i class="fc-icon-spacer"></i>', navIndentLevel+1)>
 			<cfset stFolderRow["statuslabel"] = thisStatusLabel>
+			<cfset stFolderRow["locked"] = false>
 			<cfset stFolderRow["nodeicon"] = thisNodeIcon>
 			<cfset stFolderRow["editURL"] = "#application.url.webtop#/edittabEdit.cfm?typename=#stNav.typename#&objectid=#stNav.objectid#">
 			<cfset stFolderRow["previewURL"] = application.fapi.getLink(typename="dmNavigation", objectid=stNav.objectid, urlparameters="flushcache=1&showdraft=1")>
@@ -242,6 +243,7 @@
 			<cfset stLeafNode = aLeafNodes[i]>
 			<cfset stLeafNode.bHasVersion = false>
 			<cfparam name="stLeafNode.status" default="">
+			<cfparam name="stLeafNode.locked" default="false">
 
 			<!--- check for a versioned object of this leaf node --->
 			<cfif structKeyExists(stLeafNode, "versionid") AND structKeyExists(stLeafNode, "status")>
@@ -323,6 +325,7 @@
 			<cfset stLeafRow["indentlevel"] = leafIndentLevel>
 			<cfset stLeafRow["spacer"] = repeatString('<i class="fc-icon-spacer"></i>', leafIndentLevel)>
 			<cfset stLeafRow["statuslabel"] = thisStatusLabel>
+			<cfset stLeafRow["locked"] = stLeafNode.locked>
 			<cfset stLeafRow["nodeicon"] = thisLeafIcon>
 			<cfset stLeafRow["editURL"] = thisEditURL>
 			<cfset stLeafRow["previewURL"] = application.fapi.getLink(typename=stLeafNode.typename, objectid=stLeafNode.objectid, urlparameters="flushcache=1&showdraft=1")>

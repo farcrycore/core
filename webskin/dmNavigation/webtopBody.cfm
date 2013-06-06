@@ -566,6 +566,10 @@
 			var createURL = "#application.url.webtop#/conjuror/evocation.cfm?parenttype=dmNavigation&typename=dmNavigation&objectid=" + row["objectid"];
 			var deleteURL = "#application.url.webtop#/navajo/delete.cfm?objectid=" + row["objectid"];
 
+			var locked = "";
+			if (row["locked"] == true) {
+				locked = "<img src='#application.url.webtop#/images/treeImages/customIcons/padlock.gif'>";
+			}
 
 			var dropdown = "";
 			if (row["nodetype"] == "folder") {
@@ -584,7 +588,7 @@
 
 			var html = 
 				'<tr class="' + row["class"] + '" data-objectid="' + row["objectid"] + '" data-typename="' + row["typename"] + '" data-nlevel="' + row["nlevel"] + '" data-indentlevel="' + row["indentlevel"] + '" data-nodetype="' + row["nodetype"] + '" data-parentid="' + row["parentid"] + '"> '
-				+	'<td class="fc-hidden-compact"><input type="checkbox" class="checkbox"></td> '
+				+	'<td class="fc-hidden-compact" nowrap="nowrap"><input name="treeObjectID" type="checkbox" value="' + row["objectid"] + '" class="checkbox">&nbsp;' + locked + '</td> '
 				+	'<td class="objectadmin-actions"> '
 				+		'<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" onclick="$fc.objectAdminAction(\'Overview\', \'' + overviewURL + '\'); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button> '
 				+		'<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button" onclick="$fc.objectAdminAction(\'Edit Page\', \'' + row["editURL"] + '\', { onHidden: function(){ reloadTreeBranch(\'' + row["objectid"] + '\'); } }); return false;"><i class="icon-pencil"></i> Edit</button> '
