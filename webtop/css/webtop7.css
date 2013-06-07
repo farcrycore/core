@@ -1082,7 +1082,9 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 	color: #333;
 }
 
-.help-inline {
+.controls .help-inline {
+	display: block;
+	clear: both;
 	color: #999;
 	padding-left: 0;
 	padding-top: 8px;
