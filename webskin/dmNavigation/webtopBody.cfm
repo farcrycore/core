@@ -145,13 +145,19 @@
 
 	<h1><i class="icon-sitemap"></i> #navTitle#</h1>
 
-	<p class="farcry-button-bar btn-group pull-left">
-		<button class="btn btn-primary" type="button"><i class="icon-plus"></i> Add</button>
+	<div class="farcry-button-bar btn-group pull-left">
+		<button class="btn btn-primary" type="button" onclick="alert('Coming soon...');"><i class="icon-plus"></i> Add Page</button>
 		<button class="btn" type="button"><i class="icon-move"></i> Move</button>
-		<!--<button class="btn" type="button"><i class="icon-trash"></i> Delete</button>-->
-		<ft:button text="Delete" value="delete" title="Delete" icon="icon-trash" rbkey="objectadmin.buttons.delete" confirmText="Are you sure you want to delete the selected content item(s)?" />
-		<button class="btn" type="button">More <i class="caret"></i></button>
-	</p>
+		<!--- <ft:button text="Delete" value="delete" title="Delete" icon="icon-trash" rbkey="objectadmin.buttons.delete" confirmText="Are you sure you want to delete the selected content item(s)?" /> --->
+
+		<div class="btn-group">
+			<button data-toggle="dropdown" class="btn btn-group dropdown-toggle" type="button">More <i class="caret"></i></button>
+			<ul class="dropdown-menu">
+				<li><a href="##" class="fc-btn-"><i class="icon-undo icon-fixed-width"></i> Undelete</a></li>
+			</ul>
+		</div>
+
+	</div>
 
 	<div class="input-prepend input-append pull-right">
 		<input class="span2" type="text" placeholder="Search..." style="width: 240px;">
@@ -163,7 +169,7 @@
 	<table class="objectadmin table table-hover farcry-objectadmin">
 	<thead>
 		<tr>
-			<th class="fc-col-checkbox fc-hidden-compact"></th>
+			<th class="fc-col-min fc-hidden-compact"></th>
 			<th class="fc-col-actions">Actions</th>
 			<th>Title</th>
 			<th class="fc-visible-compact">URL</th>
@@ -618,7 +624,10 @@
 						'<li><a href="##" class="fc-add" onclick="$fc.objectAdminAction(\'Add Page\', \'' + createURL + '\', { onHidden: function(){ reloadTreeBranch(\'' + row["objectid"] + '\'); } }); return false;"><i class="icon-plus icon-fixed-width"></i> Add Page</a></li> '
 					+	'<li><a href="##" class="fc-zoom"><i class="icon-zoom-in icon-fixed-width"></i> Zoom</a></li> '
 					+	'<li class="divider"></li> '
-					+	'<li><a href="##" class=""><i class="icon-trash icon-fixed-width"></i> Delete</a></li> '
+					+	'<li><a href="##" class="fc-copyto" onclick="alert(\'Coming soon...\');"><i class="icon-copy icon-fixed-width"></i> Copy to...</a></li> '
+					+	'<li><a href="##" class="fc-moveto" onclick="alert(\'Coming soon...\');"><i class="icon-move icon-fixed-width"></i> Move to...</a></li> '
+					+	'<li class="divider"></li> '
+					+	'<li><a href="##" class="" onclick="alert(\'Coming soon...\');"><i class="icon-trash icon-fixed-width"></i> Delete</a></li> '
 				;
 			}
 			else if (row["nodetype"] == "leaf") {
@@ -629,7 +638,7 @@
 
 			var html = 
 				'<tr class="' + row["class"] + '" data-objectid="' + row["objectid"] + '" data-typename="' + row["typename"] + '" data-nlevel="' + row["nlevel"] + '" data-indentlevel="' + row["indentlevel"] + '" data-nodetype="' + row["nodetype"] + '" data-parentid="' + row["parentid"] + '"> '
-				+	'<td class="fc-hidden-compact" nowrap="nowrap"><input name="objectid" type="checkbox" value="' + row["objectid"] + '" class="checkbox">&nbsp;' + locked + '</td> '
+				+	'<td class="fc-col-min fc-hidden-compact" nowrap="nowrap">' + locked + '</td> '
 				+	'<td class="objectadmin-actions"> '
 				+		'<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" onclick="$fc.objectAdminAction(\'Overview\', \'' + overviewURL + '\'); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button> '
 				+		'<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button" onclick="$fc.objectAdminAction(\'Edit Page\', \'' + row["editURL"] + '\', { onHidden: function(){ reloadTreeBranch(\'' + row["objectid"] + '\'); } }); return false;"><i class="icon-pencil"></i> Edit</button> '

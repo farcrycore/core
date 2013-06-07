@@ -713,6 +713,10 @@ th.objectadmin-sortable span:hover {
 }
 .farcry-button-bar .btn {
 	padding: 8px 14px;
+	border-radius: 0;
+}
+.farcry-button-bar .btn:first-child {
+	border-radius: 0;
 }
 
 /* overrides for existing farcry buttonHolder */
