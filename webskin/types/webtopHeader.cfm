@@ -84,9 +84,9 @@
 						<div class="farcry-header-profile dropdown-toggle" data-toggle="dropdown">
 							<span class="avatar">
 								<cfif len(webtopAvatar)>
-									<img src="#webtopAvatar#" width="24" height="25">
+									<img src="#webtopAvatar#" width="24" height="25" onerror="this.style.visibility='hidden';">
 								<cfelse>
-									<img class="gravatar" src="//www.gravatar.com/avatar/#webtopGravatarHash#?d=404" width="24" height="25" onerror="this.style.visibility='hidden';">
+									<img src="//www.gravatar.com/avatar/#webtopGravatarHash#?d=404" width="24" height="25" onerror="this.style.visibility='hidden';">
 								</cfif>
 								<i class="icon-user"></i>
 							</span>

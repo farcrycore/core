@@ -403,11 +403,10 @@ a:hover {
 	position: absolute;
 	top: 0;
 	left: 0;
-}
-.farcry-header-profile .avatar .gravatar {
 	background: #fff;
+	width: 24px;
+	height: 25px;
 }
-
 
 .farcry-header-profile .cog {
 	display: none;
@@ -613,6 +612,11 @@ table.farcry-objectadmin td {
 
 
 /* objectadmin columns */
+table.farcry-objectadmin .fc-col-min {
+	width: 0;
+	padding-left: 2px;
+	padding-right: 2px;
+}
 .fc-col-checkbox {
 	width: 1.5em;
 }
