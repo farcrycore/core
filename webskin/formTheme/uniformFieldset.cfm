@@ -27,7 +27,7 @@
 <cfparam name="attributes.legend" default=""><!--- The legend of the fieldset if required. --->
 <cfparam name="attributes.style" default=""><!--- The style to apply to the fieldset. --->
 <cfparam name="attributes.helpTitle" default=""><!--- The helping title for the fieldset. --->
-<cfparam name="attributes.helpText" default=""><!--- The helping text for the fieldset. --->
+<cfparam name="attributes.helpSection" default=""><!--- The helping text for the fieldset. --->
 
 
 <cfif thistag.ExecutionMode eq "start">
@@ -50,13 +50,13 @@
 		<cfoutput><h2 class="legend">#trim(attributes.legend)#</h2></cfoutput>
 	</cfif>
 	
-	<cfif len(attributes.helpText)>
+	<cfif len(attributes.helpSection)>
 		<cfoutput>
         	<div class="helpsection">
 				<cfif len(attributes.helpTitle)>
 					<h4>#attributes.helpTitle#</h4>
 				</cfif>
-				<p>#attributes.helpText#</p>
+				<p>#attributes.helpSection#</p>
 			</div>	
         </cfoutput>
 	</cfif>

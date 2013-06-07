@@ -1074,6 +1074,14 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 	border-radius: 1px;
 }
 
+.helpsection {
+	margin-bottom: 30px;
+	color: #333;
+}
+.helpsection h4 {
+	color: #333;
+}
+
 .help-inline {
 	color: #999;
 	padding-left: 0;

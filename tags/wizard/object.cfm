@@ -28,7 +28,7 @@
 	<cfparam name="attributes.IncludeFieldSet" default="1">
 	<cfparam name="attributes.legend" default=""><!--- fieldset legend --->
 	<cfparam name="attributes.helpTitle" default=""><!--- title for the help section --->
-	<cfparam name="attributes.helpText" default=""><!--- text to provide help information for the fieldset --->
+	<cfparam name="attributes.helpSection" default=""><!--- text to provide help information for the fieldset --->
 	<cfparam name="attributes.IncludeBR" default="1">
 	<cfparam name="attributes.InTable" default="0">
 	<cfparam name="attributes.insidePLP" default="0"><!--- how are we rendering the form --->
@@ -525,7 +525,7 @@
 		  - field
 			 --->
 		<cfif attributes.IncludeFieldSet>
-			<ft:fieldset legend="#attributes.legend#" helpTitle="#attributes.helpTitle#" helpText="#attributes.helpText#">
+			<ft:fieldset legend="#attributes.legend#" helpTitle="#attributes.helpTitle#" helpSection="#attributes.helpSection#">
 				<cfoutput>#fieldsHTML#</cfoutput>
 			</ft:fieldset>
 		<cfelse>
