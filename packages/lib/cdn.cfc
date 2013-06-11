@@ -508,7 +508,7 @@
 		</cfif>
 		
 		<!--- Check the size of the uploaded file --->
-		<cfif structkeyexists(arguments,"sizeLimit") and arguments.sizeLimit and getFileInfo(arguments.localfile).filesize gt arguments.sizeLimit>
+		<cfif structkeyexists(arguments,"sizeLimit") and arguments.sizeLimit and getFileInfo("#tmpdir##cffile.serverFile#").size gt arguments.sizeLimit>
 			<cffile action="delete" file="#tmpdir#/#cffile.serverFile#" />
 			<cfset application.fapi.throw(message="{1} is not within the file size limit of {2}MB",type="uploaderror",substituteValues=[ cffile.serverFile, round(arguments.sizeLimit/1048576) ]) />
 		</cfif>
