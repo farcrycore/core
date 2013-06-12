@@ -138,44 +138,39 @@
 			<cfset result = this.factory.role.checkWebskin(role=arguments.role,type=arguments.type,webskin=arguments.webskin) />
 			
 		<cfelseif NOT len(arguments.object) AND len(arguments.type) and len(arguments.permission)>
-		
 			
 			<cfset genericPermissionID = application.security.factory.permission.getID(name="generic#arguments.permission#")>
 			
 			<cfif len(genericPermissionID)>
 				
 				<cfset barnacleID = application.fapi.getContentType("farCoapi").getCoapiObjectID(arguments.type)>
-				<cfset bPermitted = 0 />
 				
 				<cfloop list="#arguments.role#" index="iRole">
-					<cfset bRight = application.fapi.getContentType("farBarnacle").getRight(role="#iRole#", permission="#genericPermissionID#", object="#barnacleID#", objecttype="farCoapi")>
-					<cfif bRight EQ 1>
-						<cfset result = 1 />
+					<cfset bRight = this.factory.barnacle.getRight(role="#iRole#", permission="#genericPermissionID#", object="#barnacleID#", objecttype="farCoapi")>
+					
+					<cfif bRight eq 0>
+						<cfset bRight = this.factory.role.getRight(role="#iRole#", permission="#genericPermissionID#") />
+						
+						<cfif bRight eq 1>
+							<cfset result = true />
+							<cfbreak>
+						<cfelseif result eq -1>
+							<cfset result = false />
+						</cfif>
+					<cfelseif bRight EQ 1>
+						<cfset result = true />
 						<cfbreak>
-					<cfelseif bRight eq -1>
-						<cfset result = -1 />
+					<cfelseif bRight eq -1 and result eq -1>
+						<cfset result = false />
 					</cfif>
 				</cfloop>
 				
-				<cfif result EQ 0>
-					<cfset result = this.factory.role.getRight(role=arguments.role, permission=genericPermissionID) />
-				<cfelseif result EQ -1>
-					<cfset result = 0 />
-				</cfif>
 			<cfelse>
-				<!--- This should only happen for checks to object permissions that don't have corresponding type permissions --->
-				<cfset result = 1 />
-			</cfif>
 			
-		<!--- 
-			<cfif this.factory.permission.permissionExists("#arguments.type##arguments.permission#")>
-				<cfset result = this.factory.role.getRight(role=arguments.role, permission=this.factory.permission.getID("#arguments.type##arguments.permission#")) />
-			<cfelseif this.factory.permission.permissionExists("generic#arguments.permission#")>
-				<cfset result = this.factory.role.getRight(role=arguments.role, permission=this.factory.permission.getID("generic#arguments.permission#")) />
-			<cfelse>
 				<!--- This should only happen for checks to object permissions that don't have corresponding type permissions --->
 				<cfset result = 1 />
-			</cfif> --->
+				
+			</cfif>
 		
 		<cfelseif len(arguments.permission)>
 		
