@@ -323,7 +323,7 @@ object methods
 		<cfset result = valuelist(qConfig.configkey) />
 		
 		<cfloop list="#application.factory.oUtils.getComponents('forms')#" index="thisform">
-			<cfif left(thisform,6) eq "config" and not listcontains(result,application.stCOAPI[thisform].key)>
+			<cfif left(thisform,6) eq "config" and not listFindNoCase(result,application.stCOAPI[thisform].key)>
 				<cfset result = listappend(result,application.stCOAPI[thisform].key) />
 			</cfif>
 		</cfloop>
