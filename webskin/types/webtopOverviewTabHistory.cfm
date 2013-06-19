@@ -64,12 +64,12 @@
 <!--- Live objects --->
 <cfif structkeyexists(stObj,"versionid") and stObj.status eq "approved">
 	<!--- Approved version --->
-	<skin:view typename="dmArchive" webskin="displayTeaserStandard" liveObject="#stObj#" mode="select" r_html="stLocal.selectHTML" />
+	<skin:view typename="dmArchive" webskin="displayTeaserStandard" liveObject="#stObj#" mode="select" r_html="selectHTML" />
 	
 	<cfset stVersion = structnew() />
 	<cfset stVersion["objectid"] = stObj.objectid />
 	<cfset stVersion["typename"] = stObj.typename />
-	<cfset stVersion["select_html"] = stLocal.selectHTML />
+	<cfset stVersion["select_html"] = selectHTML />
 	<cfset arrayappend(aVersions,stVersion) />
 	
 	<!--- Find any draft / pending versions --->
@@ -80,41 +80,41 @@
 			<cfset stLocal.stObject[thiscol] = stLocal.q[thiscol][stLocal.qArchives.currentrow] />
 		</cfloop>
 		
-		<skin:view typename="dmArchive" webskin="displayTeaserStandard" liveObject="#stLocal.stObject#" mode="select" r_html="stLocal.selectHTML" />
+		<skin:view typename="dmArchive" webskin="displayTeaserStandard" liveObject="#stLocal.stObject#" mode="select" r_html="selectHTML" />
 		
 		<cfset stVersion = structnew() />
 		<cfset stVersion["objectid"] = stLocal.stObject.objectid />
 		<cfset stVersion["typename"] = stLocal.stObject.typename />
-		<cfset stVersion["select_html"] = stLocal.selectHTML />
+		<cfset stVersion["select_html"] = selectHTML />
 		<cfset arrayappend(aVersions,stVersion) />
 	</cfif>
 <cfelseif structkeyexists(stObj,"versionid") and len(stObj.versionid)>
 	<!--- Approved version of this draft --->
 	<cfset stLocal.stObject = application.fapi.getContentObject(typename=stObj.typename,objectid=stObj.versionID) />
-	<skin:view typename="dmArchive" webskin="displayTeaserStandard" liveObject="#stLocal.stObject#" mode="select" r_html="stLocal.selectHTML" />
+	<skin:view typename="dmArchive" webskin="displayTeaserStandard" liveObject="#stLocal.stObject#" mode="select" r_html="selectHTML" />
 	
 	<cfset stVersion = structnew() />
 	<cfset stVersion["objectid"] = stLocal.stObject.objectid />
 	<cfset stVersion["typename"] = stLocal.stObject.typename />
-	<cfset stVersion["select_html"] = stLocal.selectHTML />
+	<cfset stVersion["select_html"] = selectHTML />
 	<cfset arrayappend(aVersions,stVersion) />
 	
 	<!--- This draft --->
-	<skin:view typename="dmArchive" webskin="displayTeaserStandard" liveObject="#stObj#" mode="select" r_html="stLocal.selectHTML" />
+	<skin:view typename="dmArchive" webskin="displayTeaserStandard" liveObject="#stObj#" mode="select" r_html="selectHTML" />
 	
 	<cfset stVersion = structnew() />
 	<cfset stVersion["objectid"] = stObj.objectid />
 	<cfset stVersion["typename"] = stObj.typename />
-	<cfset stVersion["select_html"] = stLocal.selectHTML />
+	<cfset stVersion["select_html"] = selectHTML />
 	<cfset arrayappend(aVersions,stVersion) />
 <cfelse>
 	<!--- Either an ordinary object, or a draft with no approved version --->
-	<skin:view typename="dmArchive" webskin="displayTeaserStandard" liveObject="#stObj#" mode="select" r_html="stLocal.selectHTML" />
+	<skin:view typename="dmArchive" webskin="displayTeaserStandard" liveObject="#stObj#" mode="select" r_html="selectHTML" />
 	
 	<cfset stVersion = structnew() />
 	<cfset stVersion["objectid"] = stObj.objectid />
 	<cfset stVersion["typename"] = stObj.typename />
-	<cfset stVersion["select_html"] = stLocal.selectHTML />
+	<cfset stVersion["select_html"] = selectHTML />
 	<cfset arrayappend(aVersions,stVersion) />
 </cfif>
 
@@ -131,12 +131,12 @@
 		<cfset stLocal.stArchive[thiscol] = stLocal.qArchives[thiscol][stLocal.qArchives.currentrow] />
 	</cfloop>
 	
-	<skin:view stObject="#stLocal.stArchive#" webskin="displayTeaserStandard" mode="select" r_html="stLocal.selectHTML" />
+	<skin:view stObject="#stLocal.stArchive#" webskin="displayTeaserStandard" mode="select" r_html="selectHTML" />
 	
 	<cfset stVersion = structnew() />
 	<cfset stVersion["objectid"] = stLocal.stArchive.objectid />
 	<cfset stVersion["typename"] = "dmArchive" />
-	<cfset stVersion["select_html"] = stLocal.selectHTML />
+	<cfset stVersion["select_html"] = selectHTML />
 	<cfset arrayappend(aVersions,stVersion) />
 </cfloop>
 
