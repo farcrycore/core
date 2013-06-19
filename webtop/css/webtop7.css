@@ -1074,7 +1074,12 @@ legend + .control-group {
 	-moz-box-sizing: content-box; 	
 	box-sizing: content-box;
 	height: 20px;
+	outline: none;
 }
+.controls select[multiple], .controls select[size] {
+	height: auto;
+}
+
 .controls textarea {
 	min-height: 80px;
 }
