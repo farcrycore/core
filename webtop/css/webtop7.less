@@ -1,0 +1,1159 @@
+/*
+
+	TODO
+	- use less and replace colours with variables
+	- on button hover / active colours use a function to lighten / darken the colour set in the variable
+
+*/
+
+/* colors */
+
+/* default - blue */
+@fc-primary-active: #0e65a2;
+@fc-primary-light: #3e84b5;
+@fc-tertiary-active: #ff9900;
+
+@fc-dropdown-hover: #dae8f2;
+@fc-row-hover: #fff6eb;
+
+@fc-link: #e17000;
+
+
+/* red */
+/*
+@fc-primary-active: #a20e0e;
+@fc-primary-light: #b53e3e;
+@fc-tertiary-active: #ff9900;
+
+@fc-dropdown-hover: #f2dada;
+@fc-row-hover: #fff6eb;
+
+@fc-link: #e17000;
+*/
+
+/* green */
+/*
+@fc-primary-active: #456708;
+@fc-primary-light: #65950d;
+@fc-tertiary-active: #ff9900;
+
+@fc-dropdown-hover: #eff4e6;
+@fc-row-hover: #eff4e6;
+
+@fc-link: #65950d;
+*/
+
+
+
+body {
+	/*font-family: Arial, Helvetica, sans-serif;*/
+	/*font-family: 'Droid Sans', sans-serif;*/
+	/*font-family: 'Source Sans Pro', sans-serif;*/
+	/*font-family: 'Open Sans', sans-serif;*/
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	line-height: 20px;
+
+}
+body.webtop {
+	padding-top: 128px;
+	background: #fff url(images/pw_maze_white.png) repeat 0 95px;
+	background: #eee;
+}
+
+body.webtop-modal {
+	padding-top: 10px;
+	background: #fff;
+}
+
+/* fix bootstrap default fonts */
+input, button, select, textarea {
+	font-family: Arial, Helvetica, sans-serif
+}
+
+
+h1, h2, h3, h4, h5, h6 {
+	color: #333;
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight: normal;
+	margin: 0 0 10px 0;
+}
+
+h1 [class^="icon-"] {
+	display: inline-block;
+	position: relative;
+	top: -0.15em;
+	margin-right: 5px;
+	color: #999999;
+	font-size: 75%;
+}
+
+a {
+	color: @fc-link;
+}
+a:hover {
+	color: @fc-link;
+}
+
+
+
+.farcry-header {
+	background: #fff;
+	font-family: Arial, Helvetica, sans-serif;
+	z-index: 99;
+
+	box-shadow: 0 0 8px rgba(0,0,0,0.25);
+}
+
+.farcry-header-top {
+	display: table;
+}
+.farcry-header-top img {
+	max-width: none; /* remove bootstrap "fix" on images in tables */
+}
+.farcry-header-top-row {
+	display: table-row;
+}
+
+.farcry-header-brand {
+	display: table-cell;
+	vertical-align: middle;
+	padding: 0 25px 0 0;
+	height: 70px; /* acts as min-height on a table cell */
+}
+.farcry-header-brand a {
+	white-space: nowrap;
+	color: #000;
+	font-weight: bold;
+	font-size: 150%;
+}
+.farcry-header-brand img {
+	/* fit inside 150x60 */
+}
+
+.farcry-header-tabs {
+	display: table-cell;
+	vertical-align: bottom;
+	width: 90%;
+
+	font-weight: bold;
+}
+
+.farcry-header-environment {
+	position: absolute;
+	overflow: hidden;
+	top: 0;
+	left: 50%;
+	margin-left: -12.5%;
+	font-size: 13px;
+	padding: 3px 12px;
+	background: #aaaaaa;
+	color: white;
+	max-height: 0px;
+	text-shadow: 0 1px 0 rgba(0,0,0,0.1);
+}
+.farcry-header-environment:hover {
+	max-height: none;
+	padding: 4px 12px;
+}
+
+
+
+/* customise bootstrap tabs for the main farcry tabbed nav */
+
+.navbar .farcry-header-tabs .nav-tabs {
+	border-bottom: none;
+	margin-left: 1px;
+}
+.navbar .farcry-header-tabs .nav-tabs > li {
+	margin-bottom: 0;
+	margin-left: -1px;
+}
+.navbar .farcry-header-tabs .nav a {
+	color: #333;
+	background: #f1f1f1;
+	box-shadow: none;
+	border: none;
+	border-radius: 0;
+	transition: color 0.1s, background 0.1s, text-shadow 0.1s;
+}
+.navbar .farcry-header-tabs .nav a:hover,
+.navbar .farcry-header-tabs .nav a:focus {
+	background: @fc-primary-light;
+	color: #fff;
+	text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+}
+.navbar .farcry-header-tabs .nav .active a,
+.navbar .farcry-header-tabs .nav a:active {
+	background: @fc-primary-active;
+	color: #fff;
+	text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+}
+
+/* customise bootstrap nav for the secondary farcry nav bar */
+.navbar .farcry-secondary-nav .navbar-inner {
+	border-top: 3px solid @fc-primary-active;
+	background: @fc-primary-active;
+	filter: none;
+	border-bottom: 1px solid @fc-primary-active;
+	min-height: 36px;
+
+	font-weight: bold;
+}
+.navbar .farcry-secondary-nav .nav {
+	padding-top: 1px;
+	padding-bottom: 2px;
+}
+.navbar .farcry-secondary-nav .navbar-inner .nav > li > a {
+	padding-top: 6px;
+	padding-bottom: 6px;
+	color: #fff;
+	text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+	transition: color 0.1s, background 0.1s, text-shadow 0.1s;
+}
+.navbar .farcry-secondary-nav .navbar-inner .nav > li > a:hover,
+.navbar .farcry-secondary-nav .navbar-inner .nav > .active > a,
+.navbar .farcry-secondary-nav .navbar-inner .nav > .active > a:hover,
+.navbar .farcry-secondary-nav .navbar-inner .nav > .active > a:focus {
+	color: #fff;
+	background: @fc-primary-light;
+	box-shadow: none;
+}
+
+.navbar .farcry-secondary-nav .nav > li {
+	margin-right: 3px;
+}
+
+.navbar .farcry-secondary-nav .nav > li.dropdown.open .dropdown-toggle {
+	background: @fc-primary-light;
+	color: #fff;
+	text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+}
+.navbar .farcry-secondary-nav .nav > li:hover > a {
+	background: @fc-primary-light;
+	color: #fff;
+	text-shadow: 0 1px 1px rgba(0,0,0,0.25);
+}
+
+/* bootstrap extension to support mega menus with multiple nav lists per dropdown */
+.dropdown .dropdown-mega-menu {
+}
+.dropdown-mega-menu ul {
+	width: 100%;
+}
+.mega-2 {
+	min-width: 380px;
+}
+.mega-2 ul {
+	width: 50%;
+}
+.mega-3 {
+	min-width: 570px;
+}
+.mega-3 ul {
+	width: 33.3%;
+}
+.mega-4 {
+	min-width: 760px;
+}
+.mega-4 ul {
+	width: 25%;
+}
+
+.dropdown .dropdown-menu.dropdown-mega-menu {
+	border: 3px solid @fc-primary-light;
+	border-radius: 0;
+	margin-top: -1px;
+	padding-top: 5px;
+}
+
+.dropdown .dropdown-menu.dropdown-mega-menu ul {
+	float: left;
+	margin: 0;
+	list-style: none;
+	padding: 0;
+	height: 100%;
+}
+.dropdown .dropdown-menu.dropdown-mega-menu ul li {
+	border-right: 1px solid @fc-dropdown-hover;
+}
+.dropdown .dropdown-menu.dropdown-mega-menu ul:last-child li {
+	border-right: none;
+}
+.dropdown .dropdown-menu.dropdown-mega-menu ul li.nav-header {
+	margin: 0;
+	padding: 12px 14px 3px 14px;
+	color: @fc-primary-active;
+}
+.dropdown .dropdown-menu.dropdown-mega-menu ul li.nav-header:first-child {
+	padding-top: 3px;
+}
+
+.dropdown .dropdown-menu.dropdown-mega-menu li > a {
+	display: block;
+	padding: 3px 14px;
+	clear: both;
+	font-weight: normal;
+	line-height: 20px;
+	color: #333333;
+	/*white-space: nowrap;*/
+	min-width: 120px;
+}
+.dropdown .dropdown-menu.dropdown-mega-menu li:hover > a,
+.dropdown .dropdown-menu.dropdown-mega-menu li > a:focus {
+	padding: 3px 14px;
+	background: @fc-dropdown-hover;
+	color: #333;
+	text-decoration: none;
+}
+.dropdown .dropdown-menu.dropdown-mega-menu .active > a,
+.dropdown .dropdown-menu.dropdown-mega-menu .active > a:hover,
+.dropdown .dropdown-menu.dropdown-mega-menu .active > a:focus {
+	background: @fc-dropdown-hover;
+	color: #333;
+}
+
+
+/* customise bootstrap dropdown menu */
+.dropdown-menu {
+	border-radius: 0;
+	margin-top: -1px;
+	padding-top: 5px;
+}
+.dropdown-menu li > a {
+	color: #333;
+	padding: 3px 14px;
+	filter: none;
+}
+.dropdown-menu li:hover > a,
+.dropdown-menu li > a:focus {
+	color: #333;
+	background: @fc-dropdown-hover;
+	text-decoration: none;
+}
+.dropdown-menu .active > a,
+.dropdown-menu .active:hover > a,
+.dropdown-menu .active > a:focus {
+	background: @fc-dropdown-hover;
+	color: #333;
+	padding: 3px 14px;
+}
+.dropdown-menu li.nav-header {
+	padding: 3px 14px;
+	color: @fc-primary-active;
+}
+
+.dropdown-submenu > .dropdown-menu {
+	border-radius: 0;
+}
+
+
+.dropdown-submenu > a:after {
+	border-left-color: #333;
+	margin-right: -5px;
+}
+.dropdown-submenu:hover > a:after {
+	border-left-color: #333;
+}
+
+/* icons in drop down menus */
+.dropdown-menu i[class^="icon-"] {
+	color: #555;
+}
+
+
+.farcry-header-utility {
+	display: table-cell;
+	vertical-align: middle;
+	white-space: nowrap;
+}
+
+.farcry-header-logo {
+	display: inline-block;
+	padding: 10px 15px;
+	border-right: 1px solid #eee;
+}
+
+.farcry-header-user {
+	display: inline-block;
+	padding: 10px 10px;
+	margin-left: 5px;
+	cursor: pointer;
+}
+.farcry-header-user .icon-user {
+	display: inline-block;
+	margin-top: 5px;	
+}
+.farcry-header-user.open,
+.farcry-header-user:hover {
+	background: #f2f2f2;
+}
+.farcry-header-user.open .avatar,
+.farcry-header-user:hover .avatar {
+	display: none;
+}
+.farcry-header-user.open .cog,
+.farcry-header-user:hover .cog {
+	display: inline-block;
+}
+
+.farcry-header-profile .avatar {
+	position: relative;
+	display: inline-block;
+	margin-right: 7px;
+	background: @fc-primary-light;
+	color: #fff;
+	width: 24px;
+	height: 25px;
+	font-size: 14px;
+	line-height: 25px;
+	text-align: center;
+	vertical-align: middle;
+}
+.farcry-header-profile .avatar img {
+	position: absolute;
+	top: 0;
+	left: 0;
+	background: #fff;
+	width: 24px;
+	height: 25px;
+}
+
+.farcry-header-profile .cog {
+	display: none;
+	margin-right: 7px;
+	background: #555;
+	color: #fff;
+	width: 24px;
+	height: 24px;
+	padding-top: 1px;
+	font-size: 14px;
+	line-height: 25px;
+	text-align: center;
+	vertical-align: middle;
+}
+
+
+#favourites a {
+	display:inline-block;
+}
+	 #favourites .favourited {
+		padding-right:2px;
+		display:inline-block;
+	}
+	#favourites .favourited.active {
+		color:#ffff00;
+	}
+	#favourites .favourites-toggle {
+		padding-left:2px;
+		display:inline-block;
+	}
+	#favourites .dropdown-menu .none { 
+		font-weight:normal;
+		color: #333333;
+	    filter: none;
+	    padding: 3px 14px; 
+	}
+	#favourites .dropdown-menu a { 
+		display:block;
+	}
+
+
+.farcry-main {
+	background: white;
+	border: 1px solid #E3E3E3;
+	border-radius: 2px 2px 2px 2px;
+	margin: -8px 8px 8px 8px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+}
+
+.farcry-footer {
+
+}
+.farcry-footer .span12 {
+	text-align: right;
+	color: #bbb;
+	font-size: 80%;
+}
+.farcry-footer a {
+	color: #999;
+}
+.farcry-footer strong {
+	font-weight: normal;
+}
+
+
+
+/* customise bootstrap table styles */
+table.table th {
+	border-bottom: 2px solid #ddd;
+	font-family: Arial, Helvetica, sans-serif;
+}
+table.table tbody + tbody {
+	border: none;
+}
+
+table.table td {
+	padding: 7px;
+	font-family: Arial, Helvetica, sans-serif;
+}
+table.table-hover tbody tr:hover > td {
+	background: @fc-row-hover;
+}
+
+
+
+.table-striped tbody > tr.selected > td, 
+.table-striped tbody > tr.selected:nth-child(2n+1) > td, 
+.table-striped tbody > tr.selected > th, 
+.table-striped tbody > tr.selected:nth-child(2n+1) > th { 
+	background-color: #F9E6D4;
+}
+
+
+/* customise bootstrap button styles */
+.btn {
+	background: #e8e8e8;
+	border-radius: 0;
+	border: 0;
+	color: #555;
+	box-shadow: 0 0 1px rgba(0,0,0,0.25) inset;
+	font-family: Arial, Helvetica, sans-serif;
+}
+.btn:hover,
+.btn:focus {
+	background: #f8f8f8;
+	box-shadow: 0 0 1px rgba(0,0,0,0.4) inset;
+	/*text-shadow: 0 1px 1px #000;*/
+	/*color: #fff;*/
+}
+.btn:active {
+	background: #cccccc;
+}
+.btn-primary {
+	background: @fc-primary-light;
+	text-shadow: none;
+	color: #fff;
+	box-shadow: 0 0 1px rgba(0,0,0,0.5) inset;
+}
+.btn-primary:hover,
+.btn-primary:focus {
+	background: @fc-primary-active;
+	box-shadow: 0 0 1px rgba(0,0,0,0.7) inset;
+	text-shadow: none;
+	color: #fff;
+}
+.btn-primary:active {
+	background: #0c5582;
+	text-shadow: none;
+	color: #fff;
+}
+
+/* tweak icon position in buttons */
+.btn [class^="icon"] {
+	/*font-size: 16px;*/
+	margin-top: 0;
+	margin-right: 2px;
+	margin-left: -4px;
+	text-shadow: none;
+}
+.btn [class^="icon"].only-icon {
+	margin: 0 -2px 0 -2px;
+}
+
+.btn.small {
+	font-size: inherit;
+}
+
+.btn h1 {
+	color: inherit;
+}
+
+
+/* visibility of items in "compact" grid */
+.fc-visible-compact {
+	display: none;
+}
+.fc-compact .fc-visible-compact {
+	display: block;
+}
+.fc-compact th.fc-visible-compact,
+.fc-compact td.fc-visible-compact {
+	display: table-cell;
+}
+.fc-compact .fc-hidden-compact {
+	display: none;
+}
+
+
+.fc-nowrap {
+	white-space: nowrap;
+}
+.fc-nowrap-ellipsis {
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+/* objectadmin styles */
+table.farcry-objectadmin td {
+	padding: 7px 7px 6px 7px;
+}
+.farcry-objectadmin-body {
+	margin-top: 1em;
+}
+.farcry-objectadmin input[type="checkbox"] {
+	margin: 0;
+}
+.farcry-objectadmin td.objectadmin-actions {
+	padding: 3px;
+}
+.farcry-objectadmin td.objectadmin-actions .btn {
+	margin-left: 0px;
+}
+.farcry-objectadmin td.objectadmin-actions .btn-group > .btn:first-child {
+	border-radius: 0;
+}
+
+.farcry-objectadmin .checkbox {
+	margin-top: -2px;
+	padding: 0;
+}
+
+
+/* objectadmin columns */
+table.farcry-objectadmin .fc-col-min {
+	width: 0;
+	padding-left: 2px;
+	padding-right: 2px;
+}
+.fc-col-checkbox {
+	width: 1.5em;
+}
+.fc-col-actions {
+	width: 12em;
+}
+.fc-col-status {
+	width: 9em;
+}
+.fc-col-date {
+	width: 11em;
+}
+
+/* compact objectadmin columns */
+.farcry-objectadmin.fc-compact .fc-col-actions {
+	width: 4em;
+}
+
+/* objectadmin sortable */
+th.objectadmin-sortable span {
+	cursor: pointer;
+}
+th.objectadmin-sortable span:hover {
+	text-decoration: underline;
+}
+
+
+/* overrides for existing farcry objectadmin buttons */
+.objectadmin-actions {
+	text-align: left !important;
+	padding: 3px;
+	padding-right: 12px;
+}
+.objectadmin-actions .btn {
+	margin-right: -2px;
+}
+
+.objectadmin-actions .jquery-ui-split-button .btn {
+	background: #e8e8e8;
+	border-radius: 0 !important;
+	border: 0;
+	margin: 0 -2px 0 0;
+	padding: 4px 12px;
+	color: #555;
+	box-shadow: 0 0 1px rgba(0,0,0,0.25) inset;
+	font-family: Arial, Helvetica, sans-serif;
+}
+.objectadmin-actions .jquery-ui-split-button .btn .ui-button-text {
+	padding: 0;
+	line-height: inherit;
+}
+.objectadmin-actions .jquery-ui-split-button .btn:hover,
+.objectadmin-actions .jquery-ui-split-button .btn:focus {
+	background: #f8f8f8;
+	box-shadow: 0 0 1px rgba(0,0,0,0.4) inset;
+	/*text-shadow: 0 1px 1px #000;*/
+	/*color: #fff;*/
+}
+.objectadmin-actions .jquery-ui-split-button .btn:active {
+	background: #cccccc;
+}
+
+
+
+.uniForm .btn.btn-primary {
+	background: @fc-primary-light;
+	text-shadow: none;
+	color: #fff;
+	border: none;
+	box-shadow: 0 0 1px rgba(0,0,0,0.4) inset;
+}
+.uniForm .btn.btn-primary:hover,
+.uniForm .btn.btn-primary:focus {
+	background: @fc-primary-active;
+	box-shadow: 0 0 1px rgba(0,0,0,0.6) inset;
+	text-shadow: none;
+	color: #fff;
+}
+.uniForm .btn.btn-primary:active {
+	background: #0c5582;
+	text-shadow: none;
+	color: #fff;
+}
+
+
+/* farcry button bar */
+.farcry-button-bar {
+	background: #f8f8f8;
+}
+.farcry-button-bar.btn-group > .btn {
+	margin-left: 0;
+	margin-right: 2px;
+	border-radius: 0;
+}
+.farcry-button-bar .btn {
+	padding: 8px 14px;
+	border-radius: 0;
+}
+.farcry-button-bar .btn:first-child {
+	border-radius: 0;
+}
+
+/* overrides for existing farcry buttonHolder */
+body .uniForm .buttonHolder {
+	background: none;
+	border: none;
+	padding: ;
+	margin: 0.5em 0 1em 0;
+	border-top: 1px solid #e3e3e3;
+	background: #f8f8f8;
+}
+.uniForm .buttonHolder.farcry-button-bar {
+	background: none;
+	border: none;
+	padding: 0;
+	margin: 0 0 1em 0;
+
+}
+
+
+/* overrides for uniform forms */
+body .uniForm .fieldset .legend {
+	font-size: 100%;
+	padding: 0 0 9px 6px;
+}
+body .uniForm .focused {
+	background: #f8f8f8 !important;
+}
+
+
+/* tall buttons */
+.farcry-button-bar .btn-tall {
+	padding: 16px 18px;
+}
+.farcry-button-bar .btn-tall.btn-primary {
+
+}
+
+/* tall buttons with 2 lines of text */
+.farcry-button-bar .btn-tall2 {
+	padding: 10px 18px;
+	vertical-align: middle;
+}
+.btn.btn-tall2 [class^="icon"] {
+	float: left;
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+.btn-tall2 .btn-label {
+	float: left;
+	text-align: left;
+	line-height: 16px;
+	margin-left: 0.5em;
+}
+.btn-tall2 .btn-label small {
+	display: block;
+	font-size: 80%;
+	font-weight: normal;
+}
+
+
+/* split buttons */
+.btn-group  .btn.btn-split {
+	border-radius: 0;
+}
+.btn-group > .btn-split + .dropdown-toggle {
+	border-radius: 0;
+	box-shadow:	0 0 1px rgba(0,0,0,0.2) inset;
+	margin-left: -1px;
+	margin-right: 2px;
+	background: #dddddd;
+}
+.btn-group.open > .btn-split + .dropdown-toggle, 
+.btn-group > .btn-split + .dropdown-toggle:hover {
+	background: #cccccc;
+}
+
+
+
+/* farcry object admin edit button */
+.farcry-objectadmin .btn {
+
+}
+.farcry-objectadmin .btn-edit:hover {
+	background: @fc-tertiary-active;
+	text-shadow: none;
+	color: #fff;
+}
+.farcry-objectadmin .btn-edit:active {
+	background: #dd7700;
+	text-shadow: none;
+	color: #fff;
+}
+
+
+/* customising bootstrap label tags */
+.label {
+	text-shadow: none;
+}
+
+/* override old farcry label styles in objectadmin */
+.uniForm .farcry-objectadmin .label {
+	display: inline;
+	padding: 2px 4px;
+	line-height: 14px;
+}
+
+
+
+/* customising bootstrap pagination */
+/* comment out for now... this selector will be slow */
+/*
+.pagination > ul > li > a,
+.pagination > ul > li > span {
+	border-radius: 0;
+}
+*/
+
+/* customise bootstrap alerts */
+.alert {
+    border-radius: 0;
+}
+
+/* customise bootstrap modals */
+.modal-backdrop {
+	background: #fff;
+}
+
+.modal {
+	width: 960px;
+	max-width: 95%;
+	height: 90%;
+	max-height: 80%;
+	margin-left: -480px;
+
+	border-radius: 2px;
+	border: 1px solid #c0c0c0;
+}
+
+
+.modal-header h3 {
+	font-size: 18px;
+	line-height: 24px;
+}
+
+.fc-modal {
+	max-width: 1050px;
+}
+
+
+
+/* objectadmin tree */
+
+/*
+.objectadmin .ui-sortable-placeholder {
+	border-top: 3px solid #999;
+	border-bottom: 3px solid #999;
+	visibility: visible !important;
+	width: 100%;
+	height: 35px !important;
+	padding: 0 !important;
+}
+.objectadmin .ui-sortable-placeholder td {
+	padding: 0 !important;
+}
+*/
+
+.objectadmin .ui-sortable-helper {
+	box-shadow: 0 0 16px rgba(0,0,0,0.2);
+}
+
+
+.fc-treestate-visible {
+	display: table-row;
+}
+.fc-treestate-hidden,
+.fc-treestate-hidden-dragging {
+	display: none;
+}
+.fc-treestate-disabled {
+	opacity: 0.4;
+}
+
+.fc-treestate-dragging,
+.fc-treestate-dragging .fc-treestate-collapse .fc-tree-title:hover,
+.fc-treestate-dragging .fc-treestate-expand .fc-tree-title:hover {
+	cursor: move;
+}
+
+.fc-icon-treestate,
+.fc-icon-spacer {
+	width: 1em;
+}
+.fc-icon-treestate:before,
+.fc-icon-spacer::before {
+	display: inline-block;
+	position: relative;
+	width: 13px;
+	height: 14px;
+	background: #999;
+	color: #fff;
+	font-size: 15px;
+	font-weight: bold;
+	text-align: center;
+	border-radius: 2px;
+	padding-right: 1px;
+	margin-top: -5px;
+	margin-right: 5px;
+	line-height: 16px;
+	vertical-align: middle;
+}
+.fc-treestate-expand .fc-icon-treestate:before {
+	content: "+";
+}
+.fc-treestate-collapse .fc-icon-treestate:before {
+	content: "-";
+	line-height: 13px;
+}
+.fc-icon-spacer::before {
+	width: 13px;
+	background: none;
+	border-radius: none;
+	content: " ";
+}
+
+.fc-treestate-collapse .fc-tree-title:hover,
+.fc-treestate-expand .fc-tree-title:hover {
+	cursor: pointer;
+	color: #000;
+}
+.fc-tree-title:hover .fc-icon-treestate:before {
+	background: #555;
+}
+
+
+.fc-tree-title .icon-stack {
+	width: 16px;
+	height: 16px;
+	margin-right: 4px;
+	font-size: 16px;
+	line-height: 17px;
+	text-align: left;
+	vertical-align: text-top;
+}
+tr:hover .fc-tree-title .icon-folder-close,
+tr:hover .fc-tree-title .icon-folder-open {
+	font-size: 18px;
+}
+
+.farcry-objectadmin .icon-stack .icon-pencil {
+    color: @fc-tertiary-active;
+    font-size: 0.8em;
+    line-height: 0.9;
+    text-align: right;
+    right: -2px;
+    text-shadow: 0 1px 0 #FFFFFF;
+}
+
+
+.fc-tree-title .icon-folder-close,
+.fc-tree-title .icon-folder-open {
+	color: @fc-primary-light;
+}
+.fc-tree-title:hover .icon-folder-close,
+.fc-tree-title:hover .icon-folder-open {
+	color: @fc-primary-active;
+}
+.fc-tree-title .icon-file {
+	color: #999;
+	font-size: 18px;
+}
+
+
+.fc-treestate-loading .fc-tree-title span::after {
+	display: inline-block;
+	font-size: 16px;
+	
+}
+
+
+/* pagination */
+.pagination a:focus {
+	color: inherit;
+}
+.pagination .pagination-totals {
+	color: #888;
+}
+.pagination .numberCount {
+	font-weight: bold;
+}
+
+
+/* bootstrap alerts */
+body .alert {
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+/* bootstrap icon conflicts */
+.icon-cog,
+.icon-file,
+.icon-folder-close,
+.icon-folder-open,
+.icon-minus,
+.icon-pencil,
+.icon-plus,
+.icon-question-sign,
+.icon-search,
+.icon-star,
+.icon-trash
+{
+	background: none;
+}
+
+
+
+/* customise bootstrap forms */
+
+legend {
+	color: @fc-primary-active;
+	border-color: #eee;
+}
+
+legend + .control-group {
+	margin-top: 0;
+}
+
+.control-group {
+	margin-bottom: 20px;
+}
+
+.form-horizontal .control-label {
+	text-align: left;
+	width: 240px;
+	color: #000;
+}
+
+.form-horizontal .controls {
+	margin-left: 240px;
+}
+
+.controls input, .controls select, .controls textarea, .uneditable-input {
+    width: 90%;
+    max-width: 440px;
+    min-width: 240px;
+}
+.controls input[type="file"], .controls input[type="image"], .controls input[type="submit"], .controls input[type="reset"], .controls input[type="button"], .controls input[type="radio"], .controls input[type="checkbox"] {
+	width: auto;
+	min-width: auto;
+	max-width: auto;
+}
+.controls select {
+	-webkit-box-sizing: content-box;
+	-moz-box-sizing: content-box; 	
+	box-sizing: content-box;
+	height: 20px;
+	outline: none;
+}
+.controls select[multiple], .controls select[size] {
+	height: auto;
+}
+
+.controls textarea {
+	min-height: 80px;
+}
+
+select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"], .uneditable-input {
+	border-radius: 1px;
+}
+
+.helpsection {
+	margin-bottom: 30px;
+	color: #333;
+}
+.helpsection h4 {
+	color: #333;
+}
+
+.controls .help-inline {
+	display: block;
+	clear: both;
+	color: #999;
+	padding-left: 0;
+	padding-top: 8px;
+	font-size: 13px;
+}
+
+.form-actions {
+	text-align: right;
+	border-top: 1px solid #ddd;
+	background: #fff;
+}
+.form-actions .btn {
+	padding: 8px 20px;
+}
+
+.multiField .form-actions {
+	
+}
+.multiField .form-actions .btn {
+	padding: 4px 8px;
+	background: #ddd;
+	font-size: 13px;
+}
+.multiField .form-actions select {
+	width: auto;
+	min-width: auto;
+}
+
+
+/* fix br clear */
+br[style^="clear:both"] {
+	display: none;
+}
+
+
+/* MEDIA QUERIES AND RESPONSIVE RELATED STYLES */
+
+/* match bootstrap media query and change header to absolute instead of fixed */
+@media only screen and (max-width: 1024px) {
+	.navbar-fixed-top {
+		position: absolute;
+	}
+}
+/* undo bootstrap responsive nav padding changes */
+.navbar-fixed-top .navbar-inner {
+	padding: 0;
+}
+
