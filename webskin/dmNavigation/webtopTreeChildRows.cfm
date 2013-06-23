@@ -22,7 +22,7 @@
 <cfset bRenderRoot = true>
 
 <!--- when a relative nlevel has been passed in, do not render the root and  --->
-<cfif url.relativeNLevel gt 0>
+<cfif url.relativeNLevel neq 0>
 	<cfset bRenderRoot = false>
 	<!--- the loading depth should be increased by 1 when when a relative nlevel has been passed in --->
 	<cfset treeLoadingDepth = treeLoadingDepth + 1>
@@ -109,10 +109,12 @@
 		</cfif>
 
 		<!--- if this node is expanded then show it as collapsable --->
-		<cfif bExpanded>
-			<cfset thisClass = "fc-treestate-collapse">
-		<cfelse>
-			<cfset thisClass = "fc-treestate-expand">
+		<cfif expandable eq 1>
+			<cfif bExpanded>
+				<cfset thisClass = "fc-treestate-collapse">
+			<cfelse>
+				<cfset thisClass = "fc-treestate-expand">
+			</cfif>
 		</cfif>
 
 
@@ -184,6 +186,7 @@
 			<cfset stFolderRow["label"] = stNav.label>
 			<cfset stFolderRow["datetimelastupdated"] = "#lsDateFormat(stNav.datetimelastupdated)# #lsTimeFormat(stNav.datetimelastupdated)#">
 			<cfset stFolderRow["prettydatetimelastupdated"] = application.fapi.prettyDate(stNav.datetimelastupdated)>
+			<cfset stFolderRow["expandable"] = expandable>
 			<cfset stFolderRow["indentlevel"] = navIndentLevel>
 			<cfset stFolderRow["spacer"] = repeatString('<i class="fc-icon-spacer"></i>', navIndentLevel+1)>
 			<cfset stFolderRow["statuslabel"] = thisStatusLabel>
@@ -200,7 +203,7 @@
 			<cfelse>
 
 				<cfoutput>
-					<tr class="#stFolderRow["class"]#" data-objectid="#stFolderRow["objectid"]#" data-nlevel="#stFolderRow["nlevel"]#" data-indentlevel="#stFolderRow["indentlevel"]#" data-nodetype="#stFolderRow["nodetype"]#" data-parentid="#stFolderRow["parentid"]#">
+					<tr class="#stFolderRow["class"]#" data-objectid="#stFolderRow["objectid"]#" data-nlevel="#stFolderRow["nlevel"]#" data-expandable="#stFolderRow["expandable"]#" data-indentlevel="#stFolderRow["indentlevel"]#" data-nodetype="#stFolderRow["nodetype"]#" data-parentid="#stFolderRow["parentid"]#">
 						<td class="fc-hidden-compact"><input type="checkbox" class="checkbox"></td>
 						<td class="objectadmin-actions">
 							<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" onclick="$fc.objectAdminAction('#stFolderRow["label"]#', '#stFolderRow["overviewURL"]#'); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button>
@@ -322,6 +325,7 @@
 			<cfset stLeafRow["label"] = stLeafNode.label>
 			<cfset stLeafRow["datetimelastupdated"] = "#lsDateFormat(lastupdated)# #lsTimeFormat(lastupdated)#">
 			<cfset stLeafRow["prettydatetimelastupdated"] = application.fapi.prettyDate(stLeafNode.datetimelastupdated)>
+			<cfset stLeafRow["expandable"] = 0>
 			<cfset stLeafRow["indentlevel"] = leafIndentLevel>
 			<cfset stLeafRow["spacer"] = repeatString('<i class="fc-icon-spacer"></i>', leafIndentLevel)>
 			<cfset stLeafRow["statuslabel"] = thisStatusLabel>
