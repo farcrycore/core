@@ -2,7 +2,7 @@
 <!--- @@displayname: Summary options (CLIENTUD) --->
 <!--- @@description: Farcry UD specific options --->
 
-<cfset stUser = createObject("component", application.stcoapi["farUser"].packagePath).getByUserID(listfirst(stObj.username,"_")) />
+<cfset stUser = createObject("component", application.stcoapi["farUser"].packagePath).getByUserID(listdeleteat(stObj.username,listlen(stObj.username,"_"),"_")) />
 
 <cfoutput>
 	<li>
