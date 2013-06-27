@@ -121,6 +121,10 @@
 		<skin:registerJS	id="webtop7" core="true"
 							baseHREF='#application.url.webtop#/js'
 							lFiles="webtop7.js" />
+							
+		<skin:registerJS	id="typeahead" core="true"
+							baseHREF="#application.url.webtop#/thirdparty/select2" 
+							lFiles="select2.js,typeahead.js" />
 		
 		<!--- CSS LIBRARIES --->
 		<skin:registerCSS 	id="webtop7"
@@ -220,7 +224,9 @@
 							baseHREF="#application.url.webtop#/js/ext"
 							lFiles="/resources/css/ext-all.css" />		
 							
-							
+		<skin:registerCSS	id="typeahead" 
+							baseHREf="#application.url.webtop#/thirdparty/select2" 
+							lFiles="select2.css" append=".chzn-container-multi .chzn-choices .search-choice .search-choice-close { padding:0; }" />	
 														
 	</cffunction>	
 	

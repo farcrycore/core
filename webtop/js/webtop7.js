@@ -6,7 +6,7 @@ $j(document).delegate(".favourited","click",function(){
 	if (self.is(".active"))
 		$fc.removeFavourite(self.data("remove"),self.data("this"));
 	else
-		$fc.addFavourite(self.data("add"),self.data("this"),$j("h1").text());
+		$fc.addFavourite(self.data("add"),self.data("this"),$j("h1").first().text());
 	
 	return false;
 });

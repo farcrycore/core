@@ -78,8 +78,8 @@
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 		
 		<skin:loadJS id="fc-jquery" />
-		<skin:loadJS id="typeahead" baseHREF="/farcry/core/webtop/thirdparty/select2" lFiles="select2.js,typeahead.js" />
-		<skin:loadCSS id="typeahead" baseHREf="/farcry/core/webtop/thirdparty/select2" lFiles="select2.css" append=".chzn-container-multi .chzn-choices .search-choice .search-choice-close { padding:0; }" />
+		<skin:loadJS id="typeahead" />
+		<skin:loadCSS id="typeahead" />
 		
 		<cfsavecontent variable="html">
 			<cfoutput>
@@ -95,7 +95,7 @@
 								data-placeholder="#arguments.stMetadata.ftPlaceholder#" 
 								data-value="#convertPropertyToValue(arguments.stMetadata.value,arguments.stMetadata.ftJoin)#" 
 								
-								data-data='#getResultsAsJSON(typename=arguments.stMetadata.ftJoin,search='',paginate=false,lValidStatus=lValidStatus)#'
+								data-data="#replace(getResultsAsJSON(typename=arguments.stMetadata.ftJoin,search='',paginate=false,lValidStatus=lValidStatus),'"','&quot;','ALL')#"
 								data-createoptions='#getCreatesAsJSON(createOptions=createOptions)#'
 								
 								value="<cfif arguments.stMetadata.type eq 'array'>#arraytolist(arguments.stMetadata.value)#<cfelse>#arguments.stMetadata.value#</cfif>" />

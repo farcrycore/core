@@ -26,6 +26,7 @@
 				values : self.data("value"),
 				data : self.data("data") || undefined,
 				createoptions : self.data("createoptions") || undefined,
+				minimumInputLength : self.data("minimuminputlength")===undefined ? 3 : self.data("minimuminputlength"),
 				pagesize : 15
 			},config);
 			thisconfig.multiple = stringtruthyness[thisconfig.multiple];
@@ -73,7 +74,7 @@
 			
 			if (thisconfig.data) {
 				self.select2({
-					minimumInputLength: 3,
+					minimumInputLength: thisconfig.minimumInputLength,
 					multiple: thisconfig.multiple,
 					allowClear: !thisconfig.multiple,
 					placeholder: thisconfig.placeholder,
@@ -101,7 +102,7 @@
 			}
 			else {
 				self.select2({
-					minimumInputLength: 3,
+					minimumInputLength: thisconfig.minimumInputLength,
 					multiple: thisconfig.multiple,
 					allowClear: !thisconfig.multiple,
 					placeholder: thisconfig.placeholder,

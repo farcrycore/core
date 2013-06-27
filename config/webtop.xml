@@ -24,11 +24,7 @@
 			</menu>
 			<menu id="MediaLibraryContent" sequence="20" label="Media Assets">
 				<menuitem id="listdmimage" sequence="10" label="Image Library" link="/admin/customadmin.cfm?module=customlists/dmimage.cfm" relatedtype="dmImage" />
-				<menuitem id="bulkimageupload" sequence="30" label="Bulk Image Upload" link="/admin/multipleImagesUploader.cfm" />
 				<menuitem id="listdmfile" sequence="20" label="Document Library" link="/admin/customadmin.cfm?module=customlists/dmfile.cfm" relatedtype="dmFile" />
-				<!-- removing bulk file uploader until UI is improved
-				<menuitem id="bulkfileupload" sequence="40" label="Bulk File Upload" link="/conjuror/invocation.cfm?typename=bulkFileUpload" />
-				 -->
 			</menu>
 			<menu id="categorisation" sequence="40" permission="ContentCategorisationTab" label="Category Management">
 				<menuitem id="managekeywords" sequence="10" label="Manage Keywords" typename="dmCategory" />		
@@ -87,8 +83,8 @@
 				<menuitem id="reattachnodes" sequence="30" label="Reattach Orphan Folders" link="/admin/reattachnodes.cfm" />
 				<menuitem id="reattachnodescategory" sequence="40" label="Reattach Orphan Categories" link="/admin/reattachnodescategory.cfm" />
 				<menuitem id="fixfilelocations" sequence="50" label="Fix File Locations" link="/admin/customadmin.cfm?module=utilities/fixfilelocations.cfm" />
-				<menuitem id="cdnmigrationtool" sequence="50" label="CDN Migration Tool" link="/admin/customadmin.cfm?module=utilities/cdnmigrator.cfm" />
-			    <menuitem id="listfilelocations" sequence="60" label="List File Locations" link="/admin/customadmin.cfm?module=utilities/listfilelocations.cfm" />
+				<menuitem id="cdnmigrationtool" sequence="60" label="CDN Migration Tool" link="/admin/customadmin.cfm?module=utilities/cdnmigrator.cfm" />
+			    <menuitem id="listfilelocations" sequence="70" label="List File Locations" link="/admin/customadmin.cfm?module=utilities/listfilelocations.cfm" />
 			</menu>
 			<menu id="menufumanagement" sequence="80" label="Manage Friendly URLs">
 				<menuitem id="fumanagement" sequence="10" label="Manage Friendly URLs" link="/admin/customadmin.cfm?module=customlists/farFU.cfm" />
@@ -96,6 +92,11 @@
 			</menu>
 			<menu id="emails" sequence="90" label="Email">
 				<menuitem id="sendemail" sequence="10" label="Send Email" link="/admin/customadmin.cfm?module=utilities/email.cfm" />
+			</menu>
+			<menu id="tasksqueue" sequence="100" label="Task Queue">
+				<menuitem id="queuethreads" sequence="10" label="Threads" typename="configTaskQueue" bodyView="webtopBody" />
+				<menuitem id="queuetasks" sequence="20" label="Queued Tasks" typename="farQueueTask" bodyView="webtopBody" />
+				<menuitem id="queueresults" sequence="30" label="Queue Results" typename="farQueueResult" bodyView="webtopBody" />
 			</menu>
 			<menu id="securitytools" sequence="150" label="Security Tools">
 				<menuitem id="upgradepasswords" sequence="10" label="Upgrade Password Security" link="/admin/customadmin.cfm?module=utilities/upgradePasswords.cfm" />

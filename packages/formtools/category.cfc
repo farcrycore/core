@@ -135,7 +135,7 @@
 		<!--- --------------------------- --->
 		<!--- Perform any validation here --->
 		<!--- --------------------------- --->
-		<cfinvoke  component="#application.packagepath#.farcry.category" method="assignCategories" returnvariable="stStatus">
+		<cfinvoke  component="#application.fapi.getContentType('dmCategory')#" method="assignCategories" returnvariable="stStatus">
 			<cfinvokeargument name="objectID" value="#arguments.ObjectID#"/>
 			<cfinvokeargument name="lCategoryIDs" value="#arguments.stFieldPost.Value#"/>
 			<cfinvokeargument name="alias" value="#arguments.stMetadata.ftAlias#"/>

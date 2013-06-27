@@ -1147,3 +1147,7 @@ br[style^="clear:both"] {
 	padding: 0;
 }
 
+#tooltip h3 {
+	font-size: 15px;
+	line-height: 18px;
+}

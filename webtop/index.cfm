@@ -21,11 +21,6 @@
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin">
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
 
-<cfparam name="url.objectid" default="">
-<cfparam name="url.typename" default="">
-<cfparam name="url.view" default="">
-<cfparam name="url.bodyView" default="">
-
 <!--- get sections --->
 <cfset stWebtop = application.factory.oWebtop.getAllItems()>
 
@@ -81,41 +76,23 @@
 <!--- should use url variables first, then variables from webtop.xml, then default values --->
 <cfset stItem = application.factory.oWebtop.getItemDetails(stWebtop, url.id)>
 <cfif structKeyExists(stItem, "type")>
-	<cfset url.typename = stItem.type>
+	<cfparam name="url.typename" default="#stItem.type#" />
 </cfif>
 <cfif structKeyExists(stItem, "typename")>
-	<cfset url.typename = stItem.typename>
+	<cfparam name="url.typename" default="#stItem.typename#" />
 </cfif>
 <cfif structKeyExists(stItem, "view")>
-	<cfset url.view = stItem.view>
+	<cfparam name="url.view" default="#stItem.view#" />
 </cfif>
 <cfif structKeyExists(stItem, "bodyView")>
-	<cfset url.bodyView = stItem.bodyView>
+	<cfparam name="url.bodyView" default="#stItem.bodyView#" />
 </cfif>
 
-<cfif NOT len(url.typename)>
-	<cfif structKeyExists(stItem, "type")>
-		<cfset url.typename = stItem.type>
-	<cfelse>
-		<cfset url.typename = "dmNavigation">
-	</cfif>
-<cfelse>
-	<cfset stItem.bodyInclude = "" />
-</cfif>
-<cfif NOT len(url.view)>
-	<cfif structKeyExists(stItem, "view")>
-		<cfset url.view = stItem.view>
-	<cfelse>
-		<cfset url.view = "webtopPageStandard">
-	</cfif>
-</cfif>
-<cfif NOT len(url.bodyView)>
-	<cfif structKeyExists(stItem, "bodyView")>
-		<cfset url.bodyView = stItem.bodyView>
-	<cfelse>
-		<cfset url.bodyView = "webtopBody">
-	</cfif>
-</cfif>
+<cfparam name="url.objectid" default="" />
+<cfparam name="url.typename" default="dmNavigation" />
+<cfparam name="stItem.bodyInclude" default="" />
+<cfparam name="url.view" default="webtopPageStandard" />
+<cfparam name="url.bodyView" default="webtopBody" />
 
 
 <!--- execute the view on the type / object --->

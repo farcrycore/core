@@ -425,6 +425,8 @@ $out:$
 					</cfif>
 				</cfloop>
 			</cfloop>
+			
+			<cfset application.stCOAPI[thistype].oFactory = createobject("component",application.stCOAPI[thistype].packagepath) />
 		</cfloop>
 
 		<cfset updateJoins(application.stCOAPI) />

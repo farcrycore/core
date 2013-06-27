@@ -815,7 +815,13 @@
 							<cfif field neq listfirst(arguments.content.columnlist)>
 								<cfset tmp.append(",") />
 							</cfif>
-							<cfset tmp.append(arguments.content[field][arguments.content.currentrow]) />
+							<cfif isnumeric(arguments.content[field][arguments.content.currentrow]) or isboolean(arguments.content[field][arguments.content.currentrow])>
+								<cfset tmp.append(arguments.content[field][arguments.content.currentrow]) />
+							<cfelse>
+								<cfset tmp.append('"') />
+								<cfset tmp.append(arguments.content[field][arguments.content.currentrow]) />
+								<cfset tmp.append('"') />
+							</cfif>
 						</cfloop>
 					</cfloop>
 					<cfset arguments.content = tmp.toString() />

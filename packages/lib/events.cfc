@@ -2,6 +2,8 @@
 	
 	<cffunction name="init" access="public" output="false" returntype="any">
 		
+		<cfset this.oUtils = createobject("component","farcry.core.packages.farcry.utils") />
+		
 		<cfset initializeListenerCache() />
 		
 		<cfreturn this />
@@ -47,8 +49,7 @@
 	
 	<cffunction name="initializeListenerCache" access="public" output="false" returntype="struct">
 		
-		<cfset var oUtils = createobject("component","farcry.core.packages.farcry.utils") />
-		<cfset var components = oUtils.getComponents(package="events") />
+		<cfset var components = this.oUtils.getComponents(package="events") />
 		<cfset var lPaths = "" />
 		<cfset var thiscomponent = "" />
 		<cfset var thispath = "" />
@@ -58,7 +59,7 @@
 		<cfset var stCache = getListenerCache() />
 		
 		<cfloop list="#components#" index="thiscomponent">
-			<cfset lPaths = oUtils.getPath(package="events",component=thiscomponent,scope="ALL") />
+			<cfset lPaths = this.oUtils.getPath(package="events",component=thiscomponent,scope="ALL") />
 			
 			<cfloop list="#lpaths#" index="thispath">
 				<cfset o = createobject("component",thispath) />
@@ -94,7 +95,7 @@
 			<cfreturn stCache[arguments.component] />
 		</cfif>
 		
-		<cfset components = oUtils.getComponents(package="events") />
+		<cfset components = this.oUtils.getComponents(package="events") />
 		<cfloop list="#component#" index="thiscomponent">
 			<cfset lPaths = application.fc.utils.getPath(package="events",component=thiscomponent,scope="ALL")>
 			<cfloop index="componentPath" list="#lPaths#">
