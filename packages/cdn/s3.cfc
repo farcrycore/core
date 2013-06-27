@@ -27,7 +27,7 @@
 		</cfif>
 		
 		<cfif not structkeyexists(st,"domain")>
-			<cfset st.domain = "s3-#st.config.region#.amazonaws.com" />
+			<cfset st.domain = "s3-#st.region#.amazonaws.com" />
 		</cfif>
 		
 		<cfif structkeyexists(st,"security") and not listfindnocase("public,private",arguments.config.security)>
