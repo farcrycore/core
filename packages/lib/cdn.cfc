@@ -5,6 +5,11 @@
 		<cfset var thispath = "" />
 		<cfset var thiscdn = "" />
 		<cfset var utils = createobject("component","farcry.core.packages.farcry.utils") />
+		<cfset var engine = "unknown" />
+		
+		<cfif isdefined("application.sysinfo.engine.engine")>
+			<cfset engine = application.sysinfo.engine.engine />
+		</cfif>
 		
 		<!--- Initialize CDN components --->
 		<cfset this.cdns = structnew() />
@@ -12,7 +17,7 @@
 			<cfset this.cdns[thiscdn] = createobject("component",utils.getPath("cdn",thiscdn)) />
 			
 			<cfif structkeyexists(this.cdns[thiscdn],"init")>
-				<cfset this.cdns[thiscdn].init(cdn=this) />
+				<cfset this.cdns[thiscdn].init(cdn=this,engine=engine) />
 			</cfif>
 		</cfloop>
 		
