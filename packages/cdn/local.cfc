@@ -257,7 +257,7 @@
 		<cfquery dbtype="query" name="qDir">
 			SELECT 		'#arguments.dir#/' + name AS file 
 			FROM 		qDir 
-			WHERE		not name like "%/.%"
+			WHERE		not name like '%/.%'
 			ORDER BY 	name
 		</cfquery>
 		

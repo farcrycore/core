@@ -1,6 +1,9 @@
 <cfcomponent displayname="S3" hint="Encapsulates file persistence functionality" output="false" persistent="false">
 	
 	<cffunction name="init" returntype="any">
+		<cfargument name="engine" type="string" required="true" />
+		
+		<cfset this.engine = arguments.engine />
 		
 		<cfreturn this />
 	</cffunction>
@@ -27,7 +30,10 @@
 		</cfif>
 		
 		<cfif not structkeyexists(st,"domain")>
-			<cfset st.domain = "s3-#st.config.region#.amazonaws.com" />
+			<cfset st.domain = "s3-#st.region#.amazonaws.com" />
+			<cfset st.domainType = "s3" />
+		<cfelse>
+			<cfset st.domainType = "custom" />
 		</cfif>
 		
 		<cfif structkeyexists(st,"security") and not listfindnocase("public,private",arguments.config.security)>
@@ -37,7 +43,7 @@
 		</cfif>
 		
 		<cfif structkeyexists(st,"pathPrefix")>
-			<cfif not left(st.pathPrefix,1) eq "/">
+			<cfif len(st.pathPrefix) and not left(st.pathPrefix,1) eq "/">
 				<cfset st.pathPrefix = "/" & st.pathPrefix />
 			</cfif>
 			<cfif right(st.pathPrefix,1) eq "/">
@@ -115,7 +121,11 @@
 		</cfif>
 		
 		<!--- Prepend bucket and pathPrefix --->
-		<cfset urlpath = "/#arguments.config.bucket##arguments.config.pathPrefix##urlpath#">
+		<cfif arguments.config.domainType eq "s3">
+			<cfset urlpath = "/#arguments.config.bucket##arguments.config.pathPrefix##urlpath#" />
+		<cfelse>
+			<cfset urlpath = "#arguments.config.pathPrefix##urlpath#" />
+		</cfif>
 		
 		<!--- URL encode the filename --->
 		<cfset urlpath = rereplace(urlpath,"[^/]+\.\w+$",replacelist(urlencodedformat(listlast(urlpath,"/")),"%2D,%2E,%5F","-,.,_"))>
@@ -223,27 +233,32 @@
 		
 		<cfset var fullpath = getS3Path(config=arguments.config,file=arguments.file) />
 		<cfset var filedir = getDirectoryFromPath(arguments.file) />
+		<cfset var stAttrs = structnew() />
+		<cfset var tmpfile = "" />
 		
 		<cfif structkeyexists(application,"fapi")>
 			<cfset application.fapi.addRequestLog("Writing S3 file [#arguments.file#]") />
 		</cfif>
 		
+		<cfif not ioDirectoryExists(config=arguments.config,dir=getDirectoryFromPath(arguments.file))>
+			<cfset ioCreateDirectory(config=arguments.config,dir=getDirectoryFromPath(arguments.file)) />
+		</cfif>
+		
 		<cfswitch expression="#arguments.datatype#">
 			<cfcase value="text">
-				<cffile action="write" file="#fullpath#" output="#arguments.data#" />
+				<cfset putObject(config=arguments.config,file=arguments.file,data=arguments.data) />
 			</cfcase>
 			
 			<cfcase value="binary">
-				<cffile action="write" file="#fullpath#" output="#arguments.data#" />
+				<cfset putObject(config=arguments.config,file=arguments.file,data=arguments.data) />
 			</cfcase>
 			
 			<cfcase value="image">
-				<cfset imageWrite(arguments.data,fullpath,arguments.quality,true) />
+				<cfset tmpfile = getTempDirectory() & createuuid() & "." & listlast(arguments.file,".") />
+				<cfset imageWrite(arguments.data,tmpfile,arguments.quality,true) />
+				<cfset ioMoveFile(source_localpath=tmpfile,dest_config=arguments.config,dest_file=arguments.file) />
 			</cfcase>
 		</cfswitch>
-		
-		<cfset storeSetMetadata(fullpath, getMeta(config=arguments.config,file=arguments.file)) />
-		<cfset storeSetACL(fullpath, getACL(config=arguments.config)) />
 	</cffunction>
 	
 	<cffunction name="ioReadFile" returntype="any" access="public" output="false" hint="Reads from the specified file">
@@ -283,46 +298,54 @@
 		<cfset var destfile = "" />
 		<cfset var acl = "" />
 		<cfset var tmpfile = "" />
+		<cfset var stAttrs = structnew() />
 		
-		<cfif structkeyexists(arguments,"source_config") and structkeyexists(arguments,"dest_config") and arguments.source_config.server neq arguments.dest_config.bucket>
-		
+		<cfif structkeyexists(arguments,"source_config") and structkeyexists(arguments,"dest_config")>
+			
 			<!--- Inter-bucket move --->
+			<cfif not structkeyexists(arguments,"dest_file")>
+				<cfset arguments.dest_file = arguments.source_file />
+			</cfif>
+			
 			<cfset tmpfile = getTempDirectory() & createuuid() & ".tmp" />
 			<cfset ioMoveFile(source_config=arguments.source_config,source_file=arguments.source_file,dest_localpath=tmpfile) />
-			<cfset ioMoveFile(source_localpath=tmpfile,dest_config=arguments.dest_config,dest_file=arguments_dest_file) />
+			<cfset ioMoveFile(source_localpath=tmpfile,dest_config=arguments.dest_config,dest_file=arguments.dest_file) />
 			
-		<cfelse>
+		<cfelseif structkeyexists(arguments,"source_config")>
 			
-			<!--- Intra-bucket move --->
-			<cfif structkeyexists(arguments,"source_config") and structkeyexists(arguments,"source_file")>
-				<cfparam name="arguments.dest_file" default="#arguments.source_file#" />
-				<cfset sourcefile = getS3Path(config=arguments.source_config,file=arguments.source_file) />
-			<cfelseif structkeyexists(arguments,"source_localpath")>
-				<cfset sourcefile = arguments.source_localpath />
+			<!--- move from S3 source to local destination --->
+			<cfset sourcefile = getS3Path(config=arguments.source_config,file=arguments.source_file) />
+			<cfset destfile = arguments.dest_localpath />
+			
+			<cfif not directoryExists(getDirectoryFromPath(destfile))>
+				<cfdirectory action="create" directory="#getDirectoryFromPath(destfile)#" mode="774" />
 			</cfif>
 			
-			<cfif structkeyexists(arguments,"dest_config") and (structkeyexists(arguments,"dest_file") or structkeyexists(arguments,"source_file"))>
-				<cfset destfile = getS3Path(config=arguments.dest_config,file=arguments.dest_file) />
-				
-				<cfif structkeyexists(arguments,"source_config") and structkeyexists(arguments,"source_file")>
-					<cffile action="move" source="#sourcefile#" destination="#destfile#" nameconflict="overwrite" />
-				<cfelse>
-					<cffile action="copy" source="#sourcefile#" destination="#destfile#" nameconflict="overwrite" />
-					<cffile action="delete" file="#sourcefile#" />
-				</cfif>
-				
-				<cfset storeSetMetadata(destfile, getMeta(config=arguments.dest_config,file=arguments.dest_file)) />
-				<cfset storeSetACL(destfile, getACL(arguments.dest_config)) />
-			<cfelseif structkeyexists(arguments,"dest_localpath")>
-				<cfset destfile = arguments.dest_localpath />
-				
-				<cfif not directoryExists(getDirectoryFromPath(destfile))>
-					<cfdirectory action="create" directory="#getDirectoryFromPath(destfile)#" mode="774" />
-				</cfif>
-				
-				<cffile action="copy" source="#sourcefile#" destination="#destfile#" mode="664" nameconflict="overwrite" />
-				<cffile action="delete" file="#sourcefile#" />
+			<cffile action="copy" source="#sourcefile#" destination="#destfile#" mode="664" nameconflict="overwrite" />
+			<cffile action="delete" file="#sourcefile#" />
+			
+		<cfelseif structkeyexists(arguments,"dest_config") and this.engine eq "railo">
+			
+			<!--- move from local source to S3 destination (Railo version) --->
+			<cfif not ioDirectoryExists(config=arguments.dest_config,dir=getDirectoryFromPath(arguments.dest_file))>
+				<cfset ioCreateDirectory(config=arguments.dest_config,dir=getDirectoryFromPath(arguments.dest_file)) />
 			</cfif>
+			
+			<cfset putObject(config=arguments_dest_config,file=dest_file,localfile=arguments.source_localpath) />
+			<cffile action="delete" file="#arguments.source_localpath#" />
+			
+		<cfelseif structkeyexists(arguments,"dest_config") and this.engine eq "coldfusion">
+		
+			<!--- move from local source to S3 destination (ColdFusion version) --->
+			<cfset sourcefile = arguments.source_localpath />
+			<cfset destfile = getS3Path(config=arguments.dest_config,file=arguments.dest_file) />
+			
+			<cffile action="copy" source="#sourcefile#" destination="#destfile#" nameconflict="overwrite" />
+			<cffile action="delete" file="#sourcefile#" />
+			
+			<cfset storeSetMetadata(destfile, getMeta(config=arguments.dest_config,file=arguments.dest_file)) />
+			<cfset storeSetACL(destfile, getACL(arguments.dest_config)) />
+			
 		</cfif>
 		
 	</cffunction>
@@ -339,41 +362,53 @@
 		<cfset var destfile = "">
 		<cfset var acl = "" />
 		<cfset var tmpfile = "" />
+		<cfset var stAttrs = structnew() />
 		
-		<cfif structkeyexists(arguments,"source_config") and structkeyexists(arguments,"dest_config") and arguments.source_config.bucket neq arguments.dest_config.bucket>
+		<cfif structkeyexists(arguments,"source_config") and structkeyexists(arguments,"dest_config")>
 		
 			<!--- Inter-bucket copy --->
+			<cfif not structkeyexists(arguments,"dest_file")>
+				<cfset arguments.dest_file = arguments.source_file />
+			</cfif>
+			
 			<cfset tmpfile = getTempDirectory() & createuuid() & ".tmp" />
 			<cfset ioCopyFile(source_config=arguments.source_config,source_file=arguments.source_file,dest_localpath=tmpfile) />
 			<cfset ioMoveFile(source_localpath=tmpfile,dest_config=arguments.dest_config,dest_file=arguments_dest_file) />
-			
-		<cfelse>
-			
-			<!--- Intra-bucket copy --->
-			<cfif structkeyexists(arguments,"source_config") and structkeyexists(arguments,"source_file")>
-				<cfparam name="arguments.dest_file" default="#arguments.source_file#" />
-				<cfset sourcefile = getS3Path(config=arguments.source_config,file=arguments.source_file) />
-			<cfelseif structkeyexists(arguments,"source_localpath")>
-				<cfset sourcefile = arguments.source_localpath />
-			</cfif>
-			
-			<cfif structkeyexists(arguments,"dest_config") and (structkeyexists(arguments,"dest_file") or structkeyexists(arguments,"source_file"))>
-				<cfset destfile = getS3Path(config=arguments.dest_config,file=arguments.dest_file) />
-				
-				<cffile action="copy" source="#sourcefile#" destination="#destfile#" nameconflict="overwrite" />
-				
-				<cfset storeSetMetadata(destfile, getMeta(config=arguments.dest_config,file=arguments.dest_file)) />
-				<cfset storeSetACL(destfile, getACL(arguments.dest_config)) />
-			<cfelseif structkeyexists(arguments,"dest_localpath")>
-				<cfset destfile = arguments.dest_localpath />
-				
-				<cfif not directoryExists(getDirectoryFromPath(destfile))>
-					<cfdirectory action="create" directory="#getDirectoryFromPath(destfile)#" mode="774" />
-				</cfif>
-				
-				<cffile action="copy" source="#sourcefile#" destination="#destfile#" mode="664" nameconflict="overwrite" />
-			</cfif>
 		
+		<cfelseif structkeyexists(arguments,"source_config")>
+			
+			<!--- copy from S3 source to local destination --->
+			<cfset sourcefile = getS3Path(config=arguments.source_config,file=arguments.source_file) />
+			<cfset destfile = arguments.dest_localpath />
+			
+			<cfif not directoryExists(getDirectoryFromPath(destfile))>
+				<cfdirectory action="create" directory="#getDirectoryFromPath(destfile)#" mode="774" />
+			</cfif>
+			
+			<cffile action="copy" source="#sourcefile#" destination="#destfile#" mode="664" nameconflict="overwrite" />
+			
+		<cfelseif structkeyexists(arguments,"dest_config") and this.engine eq "railo">
+			
+			<!--- copy from local source to S3 destination (Railo version) --->
+			<cfset sourcefile = arguments.source_localpath />
+			
+			<cfif not ioDirectoryExists(config=arguments.dest_config,dir=getDirectoryFromPath(arguments.dest_file))>
+				<cfset ioCreateDirectory(config=arguments.dest_config,dir=getDirectoryFromPath(arguments.dest_file)) />
+			</cfif>
+			
+			<cfset putObject(config=arguments.dest_config,file=arguments.dest_file,localfile=arguments.source_localpath) />
+			
+		<cfelseif structkeyexists(arguments,"dest_config") and this.engine eq "coldfusion">
+			
+			<!--- copy from local source to S3 destination (ColdFusion version) --->
+			<cfset sourcefile = arguments.source_localpath />
+			<cfset destfile = getS3Path(config=arguments.dest_config,file=arguments.dest_file) />
+			
+			<cffile action="copy" source="#sourcefile#" destination="#destfile#" nameconflict="overwrite" />
+			
+			<cfset storeSetMetadata(destfile, getMeta(config=arguments.dest_config,file=arguments.dest_file)) />
+			<cfset storeSetACL(destfile, getACL(arguments.dest_config)) />
+			
 		</cfif>
 	</cffunction>
 	
@@ -389,15 +424,25 @@
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="dir" type="string" required="true" />
 		
-		<!--- in S3 all directories are implied by the keys of files (this plugin assumes the bucket already exists) --->
-		<cfreturn true />
+		<cfif this.engine eq "railo">
+			<cfreturn directoryexists(getS3Path(config=arguments.config,file=arguments.dir)) />
+		<cfelse>
+			<!--- on ColdFusion directories are implicit --->
+			<cfreturn true />
+		</cfif>
 	</cffunction>
 	
 	<cffunction name="ioCreateDirectory" returntype="void" access="public" output="false" hint="Creates the specified directory. It assumes that it does not already exist, and will create all missing directories">
 		<cfargument name="config" type="struct" required="true" />
 		<cfargument name="dir" type="string" required="true" />
 		
-		<!--- in S3 all directories are implied by the keys of files (this plugin assumes the bucket already exists) --->
+		<cfset var s3path = "" />
+		
+		<cfif this.engine eq "railo">
+			<cfset s3path = getS3Path(config=arguments.config,file=arguments.dir) />
+			<cfdirectory action="create" directory="#s3path#" mode="777" />
+			<cfset storeSetACL(s3path, getACL(arguments.config)) />
+		</cfif>
 	</cffunction>
 	
 	<cffunction name="ioGetDirectoryListing" returntype="query" access="public" output="false" hint="Returns a query of the directory containing a 'file' column only. This filename will be equivilent to what is passed into other CDN functions.">
@@ -423,6 +468,91 @@
 		</cfif>
 		
 		<cfreturn qDir />
+	</cffunction>
+	
+	
+	<cffunction name="putObject" access="public" output="false" returntype="string" hint="Uses the S3 rest API to upload data to S3">
+		<cfargument name="config" type="struct" required="true" />
+		<cfargument name="file" type="string" required="true" />
+		<cfargument name="localfile" type="string" required="false" />
+		<cfargument name="data" type="any" required="false" />
+		
+		<cfset var stHeaders = structnew() />
+		<cfset var stAMZHeaders = structnew() />
+		<cfset var stMeta = getMeta(config=arguments.config,file=arguments.file) />
+		<cfset var i = 0 />
+		<cfset var sortedAMZ = "" />
+		<cfset var amz = "" />
+		<cfset var signature = "" />
+		<cfset var timestamp = GetHTTPTimeString(Now()) />
+		<cfset var cfhttp = "" />
+		<cfset var results = "" />
+		<cfset var path = "" />
+		
+		<cfif structkeyexists(arguments,"localfile")>
+			<cfset arguments.data = fileReadBinary(arguments.localfile) />
+		</cfif>
+		
+		<cfif left(arguments.file,1) neq "/">
+			<cfset path = arguments.config.pathPrefix & "/" & arguments.file />
+		<cfelse>
+			<cfset path = arguments.config.pathPrefix & arguments.file />
+		</cfif>
+		
+		<!--- add ACL --->
+		<cfset stAMZHeaders["x-amz-grant-full-control"] = "" />
+		<cfloop from="1" to="#arraylen(arguments.config.admins)#" index="i">
+			<cfif isvalid("email",arguments.config.admins[i])>
+				<cfset stAMZHeaders["x-amz-grant-full-control"] = listappend(stAMZHeaders["x-amz-grant-full-control"],'emailAddress="#arguments.config.admins[i]#"',', ') />
+			<cfelse>
+				<cfset stAMZHeaders["x-amz-grant-full-control"] = listappend(stAMZHeaders["x-amz-grant-full-control"],'id="#arguments.config.admins[i]#"',', ') />
+			</cfif>
+		</cfloop>
+		
+		<cfif arguments.config.security eq "public">
+			<cfset stAMZHeaders["x-amz-grant-read"] = 'uri="http://acs.amazonaws.com/groups/global/AllUsers"' />
+		</cfif>
+		
+		<!--- add content type --->
+		<cfset stHeaders["content-type"] = stMeta.content_type />
+		
+		<!--- prepare amz headers in sorted order --->
+		<cfset sortedAMZ = listToArray(listSort(structKeyList(stAMZHeaders),'textnocase')) />
+		<cfloop from="1" to="#arraylen(sortedAMZ)#" index="i">
+			<cfset stHeaders[sortedAMZ[i]] = stAMZHeaders[sortedAMZ[i]] />
+			<cfset amz = amz & "\n" & sortedAMZ[i] & ":" & stAMZHeaders[sortedAMZ[i]] />
+		</cfloop>
+		
+		<!--- create signature --->
+		<cfset signature = replace("PUT\n\n#stHeaders['content-type']#\n#timestamp##amz#\n/#arguments.config.bucket##path#","\n","#chr(10)#","all") />
+		
+		<!--- REST call --->
+		<cfhttp method="PUT" url="https://#arguments.config.bucket#.s3.amazonaws.com#path#" charset="utf-8" result="cfhttp" timeout="1800">
+			<!--- Amazon Global Headers --->
+			<cfhttpparam type="header" name="Date" value="#timestamp#" />
+			<cfhttpparam type="header" name="Authorization" value="AWS #arguments.config.accessKeyId#:#hmac_sha1(signature,arguments.config.awsSecretKey)#" />
+			
+			<!--- Headers --->
+			<cfloop collection="#stHeaders#" item="i">
+				<cfhttpparam type="header" name="#i#" value="#stHeaders[i]#" />
+			</cfloop>
+			
+			<!--- Body --->
+			<cfhttpparam type="body" value="#arguments.data#" />
+		</cfhttp>
+		
+		<!--- check XML parsing --->
+		<cfif isXML(cfhttp.fileContent)>
+			<cfset results = XMLParse(cfhttp.fileContent) />
+			
+			<!--- check for errors --->
+			<cfif structkeyexists(results,"error")>
+				<!--- check error xml --->
+				<cfset application.fapi.throw(message="Error accessing S3 API: {1}",type="s3error",detail=serializeJSON({signature:signature,result:results}),substituteValues=[ results.error.message.XMLText ]) />
+			</cfif>
+		<cfelseif NOT listFindNoCase("200,204",listfirst(cfhttp.statuscode," "))>
+			<cfset application.fapi.throw(message="Error accessing S3 API: {1}",type="s3error",detail=cfhttp.filecontent,substituteValues=[ cfhttp.statuscode ]) />
+		</cfif>
 	</cffunction>
 	
 </cfcomponent>
