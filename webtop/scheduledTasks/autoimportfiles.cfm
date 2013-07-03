@@ -31,17 +31,9 @@
 		</cfcase>
 	</cfswitch>
 	
-	<cfif len(typename) and right(filename,4) neq ".log">
+	<cfif len(typename) and application.stCOAPI[typename].bBulkUpload and right(filename,4) neq ".log">
 		<cftry>
-			<cfset qMetadata = application.types[typename].qMetadata />
-			
-			<cfloop query="qMetadata">
-				<cfif structkeyexists(application.stCOAPI[typename].stProps[qMetadata.propertyname].metadata,"ftBulkUploadTarget") 
-					and application.stCOAPI[typename].stProps[qMetadata.propertyname].metadata.ftBulkUploadTarget>
-					
-					<cfset uploadTarget = qMetadata.propertyname />
-				</cfif>
-			</cfloop>
+			<cfset uploadTarget = application.stCOAPI[typename].bulkUploadTarget />
 			
 			<cfif structkeyexists(application.stCOAPI[typename].stProps[uploadTarget].metadata,"ftAllowedExtensions")>
 				<cfset allowedExtensions = application.stCOAPI[typename].stProps[uploadTarget].metadata.ftAllowedExtensions />

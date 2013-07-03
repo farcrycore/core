@@ -296,11 +296,11 @@ type properties
 	<cfargument name="stProperties" required="true" type="struct">
 	<cfargument name="stFields" required="true" type="struct">
 	<cfargument name="stFormPost" required="false" type="struct">		
-	<cflog file="debug" text="figure out title">
+	
 	<cfif not structkeyexists(arguments.stProperties,"title") or not len(arguments.stProperties.title) and structkeyexists(arguments.stProperties,"sourceImage")>
 		<cfset arguments.stProperties.title = listfirst(listlast(arguments.stProperties.sourceImage,"/"),".") />
 	</cfif>
-	<cflog file="debug" text="figure out alt">
+	
 	<cfif not structkeyexists(arguments.stProperties,"alt") or not len(arguments.stProperties.alt) and structkeyexists(arguments.stProperties,"sourceImage")>
 		<cfset arguments.stProperties.alt = listfirst(listlast(arguments.stProperties.sourceImage,"/"),".") />
 	</cfif>
@@ -308,7 +308,7 @@ type properties
 	<cfif structkeyexists(arguments.stProperties,"title")>
 		<cfset arguments.stProperties.label = arguments.stProperties.title />
 	</cfif>
-	<cflog file="debug" text="super before save">
+	
 	<cfreturn super.beforeSave(argumentCollection=arguments) />
 </cffunction>
 

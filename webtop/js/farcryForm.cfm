@@ -531,6 +531,18 @@
 		
 	};	
 	
+	fcForm.openLibraryBulkUpload = function(typename,objectid,property,id) {
+		var filterTypename = $j('##' + id + '-bulkupload-type').val();
+		$fc.openBootstrapModal({
+			title:'Bulk Upload',
+			url: '#application.url.webtop#/index.cfm?typename='+filterTypename+'&view=webtopPageModal&bodyView=webtopBodyBulkUpload&parentType='+typename+'&parentObjectID='+objectid+'&parentProperty=' + property + '&fieldname=' + id,
+			onHidden:	function () {
+							fcForm.refreshProperty(typename,objectid,property,id);
+							return true;
+						}
+		});
+	};	
+	
 	fcForm.openLibraryEdit = function(typename,objectid,property,id,editid) {
 		var newDialogDiv = $j("<div id='" + typename + objectid + property + "'><iframe style='width:100%;height:100%;border-width:0px;' frameborder='0'></iframe></div>")
 		$j("body").prepend(newDialogDiv);

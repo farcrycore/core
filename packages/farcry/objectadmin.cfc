@@ -481,7 +481,7 @@ environment references (might be nice to clean these up)
 
 		}
 		
-		if (isdefined("application.stCOAPI.#attributes.typename#.bBulkUpload") and application.stCOAPI[attributes.typename].bBulkUpload){
+		if (application.stCOAPI[attributes.typename].bBulkUpload){
 			// undelete button
 				stBut=structNew();
 				stBut.type="button";

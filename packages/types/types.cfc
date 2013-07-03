@@ -408,7 +408,7 @@ default handlers
 		
 		<!--- standard createData  --->
 		<cfset stNewObject = createData(argumentCollection=arguments) />
-		<cflog file="debug" text="onfilechange">
+		
 		<!--- if the formtool has an onFileChange function, run it --->
 		<cfif structkeyexists(application.formtools[uploadfieldtype].oFactory,"onFileChange")>
 			<cfset application.formtools[uploadfieldtype].oFactory.onFileChange(
@@ -417,9 +417,9 @@ default handlers
 				value=arguments.stProperties[arguments.uploadfield]
 			) />
 		</cfif>
-		<cflog file="debug" text="categories">
+		
 		<!--- if the object has any category fields filled out, update the refCategories table --->
-		<cftry><cfloop collection="#arguments.stProperties#" item="thisfield">
+		<cfloop collection="#arguments.stProperties#" item="thisfield">
 			<cfif isdefined("application.stCOAPI.#typename#.stProps.#thisfield#.metadata.ftType") 
 				and application.stCOAPI[typename].stProps[thisfield].metadata.ftType eq "category"
 				and listlen(arguments.stProperties[thisfield])>
@@ -428,8 +428,8 @@ default handlers
 				<cfset stFP.value = arguments.stProperties[thisfield] />
 				<cfset application.formtools.category.oFactory.validate(objectid=arguments.stProperties.objectid,typename=typename,stFieldPost=stFP,stMetadata=application.stCOAPI[typename].stProps[thisfield].metadata) />
 			</cfif>
-		</cfloop><cfcatch><cflog file="debug" text="#cfcatch.message# #serializeJSON(cfcatch)#"><cfabort></cfcatch></cftry>
-		<cflog file="debug" text="return">
+		</cfloop>
+		
 		<cfreturn stNewObject>
 	</cffunction>
 	

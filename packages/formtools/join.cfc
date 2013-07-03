@@ -24,7 +24,9 @@
 	<cfproperty name="ftFirstListLabel" default="-- SELECT --" hint="Used with ftRenderType, this is the value of the first element in the list"/>
 	<cfproperty name="ftLibraryData" default="" hint="Name of a function to return the library data. By default will look for ./webskin/typename/librarySelected.cfm"/><!--- Name of a function to return the library data --->
 	<cfproperty name="ftLibraryDataTypename" default="" hint="Typename containing the function defined in ftLibraryData"/><!--- Typename containing the function defined in ftLibraryData --->	
-
+	
+	<cfproperty name="ftAllowBulkUpload" default="false" options="true,false" hint="Allows user to upload items in bulk. Only used for array properties." />
+	
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" >
 	<cfimport taglib="/farcry/core/tags/grid" prefix="grid" />
@@ -328,6 +330,40 @@
 								
 								
 							</cfif>
+							
+							<cfif arguments.stMetadata.ftAllowBulkUpload and arguments.stMetadata.type eq "array">
+								<cfset lBulkUploadable = "" />
+								<cfloop list="#arguments.stMetadata.ftJoin#" index="i">
+									<cfif application.stCOAPI[i].bBulkUpload>
+										<cfset lBulkUploadable = listappend(lBulkUploadable,i) />
+									</cfif>
+								</cfloop>
+								
+								<cfif listLen(lBulkUploadable) GT 1>
+									<select id="#arguments.fieldname#-bulkupload-type">
+										<option value="">- Bulk Upload -</option>
+										<cfloop list="#lBulkUploadable#" index="i">
+											<option value="#trim(i)#">#application.fapi.getContentTypeMetadata(i, 'displayname', i)#</option>
+										</cfloop>
+									</select>
+									<skin:onReady>
+										$j('###arguments.fieldname#-bulkupload-type').change(function() {
+											fcForm.openLibraryBulkUpload('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');
+										});
+									</skin:onReady>
+								<cfelseif len(lBulkUploadable)>
+									<ft:button	Type="button" 
+												priority="secondary"
+												class="small"
+												value="bulkupload" 
+												text="Bulk Upload" 
+												onClick="fcForm.openLibraryBulkUpload('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');" />
+									
+																	
+									<input type="hidden" id="#arguments.fieldname#-bulkupload-type" value="#lBulkUploadable#" />
+								</cfif>
+							</cfif>
+							
 							<cfif stActions.ftAllowSelect>
 								<ft:button	Type="button" 
 											priority="secondary"

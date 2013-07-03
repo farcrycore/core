@@ -39,6 +39,10 @@ FileCollection = Backbone.Collection.extend({
 			this.options[k] = options[k];
 	},
 	
+	getFileIDs : function FileCollection_getFileIDs(){
+		return this.pluck("fileID");
+	},
+	
 	checkStatus : function FileCollection_checkStatus(){
 		Backbone.$.getJSON(this.options.statusURL + (this.options.statusURL.indexOf("?")>-1 ? "&" : "?") + "&uploader=" + this.options.uploaderID, this.updateStatus);
 	},

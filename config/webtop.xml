@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <webtop>
 	<section id="home" sequence="1000" permission="MainNavMyFarcryTab" label="Overview">
-		<subsection id="overview" sequence="100" sidebar="overview/sidebar.cfm" content="overview/content.cfm" label="Overview" />
+		<subsection id="overview" sequence="100" sidebar="overview/sidebar.cfm" typename="dmProfile" bodyView="webtopBodyHome" label="Overview" />
 	</section>
 	<section id="site" sequence="2000" permission="MainNavSiteTab" label="Site" altexpansion="400" description="Manage your website's menu structure and HTML content">
 		<subsection id="tree" sequence="1" permission="MainNavSiteTab" label="Navigation" sidebar="site/sidebar.cfm" content="inc/content_overview.html" typename="dmNavigation">

@@ -6,19 +6,18 @@
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/core" prefix="core" />
 
-<cfif isdefined("application.stCOAPI.#stObj.name#.bBulkUpload") and application.stCOAPI[stObj.name].bBulkUpload>
+<cfif application.stCOAPI[stObj.name].bBulkUpload>
+	
+	<cfif isdefined("url.parentType")>
+		<cfset mode = "formtool" />
+	<cfelse>
+		<cfset mode = "standalone" />
+	</cfif>
 	
 	<!--- Find default properties and upload target --->
-	<cfset qMetadata = application.types[stobj.name].qMetadata >
-	<cfset lDefaultFields = "" />
-	<cfset lEditFields = "" />
-	<cfset uploadTarget = "" />
-	
-	<cfquery dbtype="query" name="qMetadata">
-		SELECT 		*
-		FROM 		qMetadata
-		ORDER BY 	ftSeq
-	</cfquery>
+	<cfset lDefaultFields = application.stCOAPI[stObj.name].bulkUploadDefaultFields />
+	<cfset lEditFields = application.stCOAPI[stObj.name].bulkUploadEditFields />
+	<cfset uploadTarget = application.stCOAPI[stObj.name].bulkUploadTarget />
 	
 	<cfset exit = false />
 	<ft:processform action="Save and Close">
@@ -34,27 +33,6 @@
 		</cfoutput>
 		<cfexit method="exittemplate" />
 	</cfif>
-	
-	<cfloop query="qMetadata">
-		<cfif len(qMetadata.ftSeq) 
-			and structkeyexists(application.stCOAPI[stObj.name].stProps[qMetadata.propertyname].metadata,"ftBulkUploadDefault") 
-			and application.stCOAPI[stObj.name].stProps[qMetadata.propertyname].metadata.ftBulkUploadDefault>
-			
-			<cfset lDefaultFields = listappend(lDefaultFields,qMetadata.propertyname) />
-		</cfif>
-		
-		<cfif structkeyexists(application.stCOAPI[stObj.name].stProps[qMetadata.propertyname].metadata,"ftBulkUploadEdit") 
-			and application.stCOAPI[stObj.name].stProps[qMetadata.propertyname].metadata.ftBulkUploadEdit>
-			
-			<cfset lEditFields = listappend(lEditFields,qMetadata.propertyname) />
-		</cfif>
-		
-		<cfif structkeyexists(application.stCOAPI[stObj.name].stProps[qMetadata.propertyname].metadata,"ftBulkUploadTarget") 
-			and application.stCOAPI[stObj.name].stProps[qMetadata.propertyname].metadata.ftBulkUploadTarget>
-			
-			<cfset uploadTarget = qMetadata.propertyname />
-		</cfif>
-	</cfloop>
 	
 	<cfif structkeyexists(form,"action")>
 		<cfset url.action = form.action />
@@ -94,6 +72,9 @@
 				defaults : stDefaults
 			} />
 			<cfset application.fc.lib.tasks.addTask(taskID=form.fileID,jobID=form.uploaderID,action="bulkupload.upload",details=stTask) />
+			
+			<!--- session only object for webskins --->
+			<cfset application.fapi.setData(typename=stObj.name,objectid=form.fileID,bSessionOnly="true") />
 			
 			<cfset stResult = structnew() />
 			<cfset stResult["files"] = arraynew(1) />
@@ -254,7 +235,7 @@
 		<script id="added-file-template" type="text/x-handlebars-template">
 			<span class="pull-right">
 				<span class="status">#application.fapi.getResource(key='webtop.utilities.bulkupload.status.queuedToUpload@text',default='Queued to upload')#</span>
-				<i class="remove icon-remove"></i>
+				<i class="remove icon-remove" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeunuploaded@text',default='Cancel upload')#"></i>
 			</span>
 			<div class="information">
 				<span class="name">{{name}}</span>
@@ -264,7 +245,7 @@
 		<script id="uploading-file-template" type="text/x-handlebars-template">
 			<span class="pull-right">
 				<span class="status">#application.fapi.getResource(key='webtop.utilities.bulkupload.status.uploading@text',default='Uploading <span class="progress-loaded">{{filesize progress.loading}}</span> of <span class="progress-total">{{filesize progress.total}}</span>, <span class="progress-bitrate">{{bitrate progress.bitrate}}</span>')#</span>
-				<i class="remove icon-remove"></i>
+				<i class="remove icon-remove" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeunuploaded@text',default='Cancel upload')#"></i>
 			</span>
 			<div class="information">
 				<span class="name">{{name}}</span>
@@ -277,7 +258,7 @@
 		<script id="uploaddone-file-template" type="text/x-handlebars-template">
 			<span class="pull-right">
 				<span class="status"><i class='icon-spinner icon-spin'></i> #application.fapi.getResource(key='webtop.utilities.bulkupload.status.queuedForProcessing@text',default='Queued for processing')#</span>
-				<i class="remove icon-remove"></i>
+				<i class="remove icon-remove" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeunprocessed@text',default='Remove file (this file will still be added to the database)')#"></i>
 			</span>
 			<div class="information">
 				<span class="name">{{name}}</span>
@@ -294,8 +275,8 @@
 						{{{editHTML}}}
 					</td>
 					<td width='50px' valign='top' class='actions'>
-						<i class='save icon-save'></i>
-						<i class="remove icon-remove"></i>
+						<i class='save icon-save' title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.save@text',default='Save content changes')#"></i>
+						<i class="remove icon-remove" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeprocessed@text',default='Remove file (this file will not be removed from the database)')#"></i>
 					</td>
 				</tr>
 			</table>
@@ -303,7 +284,7 @@
 		<script id="saved-file-template" type="text/x-handlebars-template">
 			<span class="pull-right">
 				<span class="status">#application.fapi.getResource(key='webtop.utilities.bulkupload.status.saved@text',default='Saved')#</span>
-				<i class="remove icon-remove"></i>
+				<i class="remove icon-remove" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeprocessed@text',default='Remove file (this file will not be removed from the database)')#"></i>
 			</span>
 			<div class="information">
 				{{##if teaserHTML}}
@@ -317,7 +298,7 @@
 		<script id="failed-file-template" type="text/x-handlebars-template">
 			<span class="pull-right">
 				<span class="status">#application.fapi.getResource(key='webtop.utilities.bulkupload.status.failed@text',default='Failed')#</span>
-				<i class="remove icon-remove"></i>
+				<i class="remove icon-remove" title="#application.fapi.getResource(key='webtop.utilities.bulkupload.hint.removeunprocessed@text',default='Remove file')#"></i>
 			</span>
 			<div class="information">
 				{{##if teaserHTML}}
@@ -451,7 +432,11 @@
 		</cfoutput>
 		
 		<ft:buttonPanel>
-			<cfif true>
+			<cfif mode eq "formtool">
+				<span>NOTE: Files that haven't been processed will still be added, but may appear in the array as (incomplete). Files that haven't been uploaded will NOT be added.</span>
+				<ft:button value="Add Items" onclick="$j('###url.fieldname#', parent.document).val($j('###url.fieldname#', parent.document).val() + ',' + Window.app.fileCollection.getFileIDs()); $fc.closeBootstrapModal();" />
+				<ft:button value="Cancel" onclick="$fc.closeBootstrapModal();" />
+			<cfelseif mode eq "standalone">
 				<ft:button value="Save and Close" />
 				<ft:button value="Close" onclick="$fc.closeBootstrapModal();" />
 			</cfif>

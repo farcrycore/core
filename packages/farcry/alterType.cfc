@@ -256,6 +256,7 @@ $out:$
 		<cfset var o = "" /><!--- Instantiated component --->
 		<cfset var stMetadata = structnew() /><!--- Component metadata --->
 		<cfset var tableMetadata = createobject('component','farcry.core.packages.fourq.TableMetadata').init() /><!--- Table metadata collection --->
+		<cfset var qMetadata = "" />
 		
 		<!--- <cftry> --->
 			<cfset stResult.packagepath = application.factory.oUtils.getPath(arguments.package,arguments.name) />
@@ -331,6 +332,37 @@ $out:$
 					</cfcase>
 				</cfswitch>
 				
+				<!--- get bulk upload info from properties --->
+				<cfparam name="stResult.bBulkUpload" default="false" />
+				<cfif isdefined("stResult.bBulkUpload") and stResult.bBulkUpload>
+					<cfset stResult.bulkUploadDefaultFields = "" />
+					<cfset stResult.bulkUploadEditFields = "" />
+					<cfset stResult.bulkUploadTarget = "" />
+					
+					<cfquery dbtype="query" name="qMetadata">SELECT * FROM stResult.qMetadata ORDER BY ftSeq</cfquery>
+					
+					<cfloop query="qMetadata">
+						<cfif len(qMetadata.ftSeq) 
+							and structkeyexists(stResult.stProps[qMetadata.propertyname].metadata,"ftBulkUploadDefault") 
+							and stResult.stProps[qMetadata.propertyname].metadata.ftBulkUploadDefault>
+							
+							<cfset stResult.bulkUploadDefaultFields = listappend(stResult.bulkUploadDefaultFields,qMetadata.propertyname) />
+						</cfif>
+						
+						<cfif structkeyexists(stResult.stProps[qMetadata.propertyname].metadata,"ftBulkUploadEdit") 
+							and stResult.stProps[qMetadata.propertyname].metadata.ftBulkUploadEdit>
+							
+							<cfset stResult.bulkUploadEditFields = listappend(stResult.bulkUploadEditFields,qMetadata.propertyname) />
+						</cfif>
+						
+						<cfif structkeyexists(stResult.stProps[qMetadata.propertyname].metadata,"ftBulkUploadTarget") 
+							and stResult.stProps[qMetadata.propertyname].metadata.ftBulkUploadTarget>
+							
+							<cfset stResult.bulkUploadTarget = qMetadata.propertyname />
+							<cfset stResult.bBulkUpload = true />
+						</cfif>
+					</cfloop>
+				</cfif>
 			</cfif>
 		
 			<!--- <cfcatch>
