@@ -216,26 +216,49 @@
 
 
 
-	<div id="minitree-container" class="" style="position: fixed; width:400px; height: 500px; left: 50%; top: 50%; z-index: 120; overflow:visible;">
-		<div id="minitree" style="position: absolute; top: -250px; left: -200px; width: 100%; height: 100%; box-shadow: 0 0 16px rgba(0,0,0,0.32); background: ##fff; overflow: auto;">
+	<div id="minitree-container" class="" style="display: none; position: fixed; width:400px; height: 500px; left: 50%; top: 50%; z-index: 120; overflow:visible;">
+		<div id="minitree" style="position: absolute; top: -250px; left: -200px; width: 100%; height: 100%; border: 1px solid ##ccc; border-radius: 2px; box-shadow: 0 0 16px rgba(0,0,0,0.32); background: ##fff;">
 
 			<div class="modal-header">
 				<button type="button" class="close" aria-hidden="true">&times;</button>
-				<h4 style="margin:0; padding-top: 2px; margin-right: 20px; line-height: 24px"> Move To / Copy To...</h4>
+				<h4 style="margin:0; padding-top: 2px; margin-right: 20px; line-height: 24px"><i class="icon-move" style="display:inline-block; font-size: 16px; width: 16px; height: 16px;"></i> Move</h4>
 			</div>
 
-			<table id="farcry-minitree" class="objectadmin table table-hover farcry-objectadmin">
-			<thead>
-				<tr>
-					<th>Navigation</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td><i class="icon-spinner icon-spin"></i> &nbsp;Loading...</td>
-				</tr>
-			</tbody>
-			</table>
+			<div class="modal-body" style="overflow: auto; height: 368px; max-height: 368px;">
+
+				<table class="objectadmin table table-hover farcry-objectadmin">
+				<thead>
+					<tr>
+						<th>This folder</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="fc-tree-title fc-nowrap"><a href="##" class="fc-treestate-toggle"><i class="fc-icon-treestate"></i></a><span class="icon-stack"><i class="icon-folder-close"></i></span> <span>Getting Started</span></td>
+					</tr>
+				</tbody>
+				</table>
+
+				<table id="farcry-minitree" class="objectadmin table table-hover farcry-objectadmin">
+				<thead>
+					<tr>
+						<th>Will be moved into the selected folder...</th>
+					</tr>
+				</thead>
+				<tbody style="max-height: 200px; overflow: auto;">
+					<tr>
+						<td><i class="icon-spinner icon-spin"></i> &nbsp;Loading...</td>
+					</tr>
+				</tbody>
+				</table>
+
+			</div>
+
+			<div class="modal-footer" style="border: none; border-radius: 0; -moz-border-radius: 0">
+				<a href="##" class="btn btn-primary">Move</a>
+				<a href="##" class="btn">Cancel</a>
+			</div>
+
 
 		</div>
 	</div>
@@ -419,6 +442,8 @@
 				events: {
 					"click .fc-treestate-toggle" : "clickToggle",
 					"click .fc-tree-title" : "clickTitle",
+					"click .fc-copyto" : "clickCopyTo",
+					"click .fc-moveto" : "clickMoveTo",
 					"click .fc-zoom" : "clickZoom"
 				},
 
@@ -463,6 +488,18 @@
 				clickTitle: function clickTitle(evt){
 					$j(evt.currentTarget).find(".fc-treestate-toggle").click();
 				},
+
+
+				clickCopyTo: function SiteTreeView_clickCopyTo(evt){
+					var objectid = $j(evt.currentTarget).closest("tr").data("objectid");
+
+					$j("##minitree-container").show();
+				},
+
+				clickMoveTo: function SiteTreeView_clickMoveTo(evt){
+					this.clickCopyTo(evt);
+				},
+
 
 				clickZoom: function SiteTreeView_clickZoom(evt){
 					var objectid = $j(evt.currentTarget).closest("tr").data("objectid");
@@ -775,8 +812,8 @@
 								'<li><a href="##" class="fc-add" onclick="$fc.objectAdminAction(\'Add Page\', \'' + createURL + '\', { onHidden: function(){ reloadTreeBranch(\'' + row["objectid"] + '\'); } }); return false;"><i class="icon-plus icon-fixed-width"></i> Add Page</a></li> '
 							+	'<li><a href="##" class="fc-zoom"><i class="icon-zoom-in icon-fixed-width"></i> Zoom</a></li> '
 							+	'<li class="divider"></li> '
-							+	'<li><a href="##" class="fc-copyto" onclick="alert(\'Coming soon...\');"><i class="icon-copy icon-fixed-width"></i> Copy to...</a></li> '
-							+	'<li><a href="##" class="fc-moveto" onclick="alert(\'Coming soon...\');"><i class="icon-move icon-fixed-width"></i> Move to...</a></li> '
+							+	'<li><a href="##" class="fc-copyto"><i class="icon-copy icon-fixed-width"></i> Copy to...</a></li> '
+							+	'<li><a href="##" class="fc-moveto"><i class="icon-move icon-fixed-width"></i> Move to...</a></li> '
 							+	'<li class="divider"></li> '
 							+	'<li><a href="##" class="" onclick="alert(\'Coming soon...\');"><i class="icon-trash icon-fixed-width"></i> Delete</a></li> '
 						;
