@@ -87,7 +87,7 @@
 		<cfset childrenLoaded = false>
 
 		<!--- find child folders --->
-		<cfif qTree.recordCount gt qTree.currentRow + 1 AND qTree.nlevel[qTree.currentRow+1] gt qTree.nlevel>
+		<cfif qTree.nRight - qTree.nLeft gt 1>
 			<cfset expandable = 1>
 			<cfif qTree.nlevel lt treeMaxLevel>
 				<cfset childrenLoaded = true>	
