@@ -497,7 +497,7 @@
 		
 		<cfset var showError = false />
 		
-		<cfif reFindNoCase("^#application.url.webtop#", cgi.script_name)>
+		<cfif reFindNoCase("^#application.url.webtop#", cgi.script_name) or (structkeyexist(url,"view") and refindnocase("^webtop",url.view))>
 			<cfset showError = true />
 		<cfelseif isdefined("url.debug") AND url.debug>
 			<cfset showError = true />

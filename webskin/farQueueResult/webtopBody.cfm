@@ -202,7 +202,7 @@
 					newoptions.push({
 						id : results.jobs[i].jobID,
 						text : results.jobs[i].jobType + ", created by " + results.jobs[i].ownedBy + " (" + formatDate(results.jobs[i].datetimeLatest) + ")",
-						librarySelected : results.jobs[i].jobType + ", created by " + results.jobs[i].ownedBy + " (" + formatDate(results.jobs[i].datetimeLatest) + ") <div class='pull-right'>" + results.jobs[i].colourHash + "</div>"
+						librarySelected : results.jobs[i].jobType + ", created by " + results.jobs[i].ownedBy + " (" + formatDate(results.jobs[i].datetimeLatest) + ") " + results.jobs[i].colourHash + ""
 					});
 					
 					// update label if necessary

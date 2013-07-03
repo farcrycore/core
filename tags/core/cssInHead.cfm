@@ -5,108 +5,110 @@
 
 <cfif thistag.executionMode eq "Start">
 
-	<cfparam name="request.mode.ajax" default="0">
 	<cfparam name="request.mode.flushcache" default="0">
 	<cfparam name="request.mode.livecombine" default="0">
-
-	<cfif NOT request.mode.ajax>
-		<cfparam name="request.inHead.aCSSLibraries" default="#arrayNew(1)#" />
-		<cfparam name="request.inHead.stCSSLibraries" default="#structNew()#" />
-		<cfset aCSS = arraynew(1) />
-		
-		<!--- Processes library packages --->
-		<cfset toremove = "" />
-		<cfloop from="#arraylen(request.inHead.aCSSLibraries)#" to="1" index="i" step="-1">
-			<cfset stCSS = duplicate(request.inHead.stCSSLibraries[request.inHead.aCSSLibraries[i]]) />
-			<cfif len(stCSS.lCombineIDs)>
-				<!--- Remove these libraries from the stack (has to be done outside this loop) --->
-				<cfset toremove = listappend(toremove,stCSS.lCombineIDs) />
-				
-				<!--- Add the files of these libraries to the package --->
-				<cfloop list="#application.fc.utils.listReverse(stCSS.lCombineIDs)#" index="thisid">
-					<cfif structkeyexists(request.inHead.stCSSLibraries,thisid)>
-						<cfset stCSS.lFullFilebaseHREFs = listprepend(stCSS.lFullFilebaseHREFs,request.inHead.stCSSLibraries[thisid].lFullFilebaseHREFs)>
-					<cfelseif structkeyexists(application.fc.stCSSLibraries,thisid)>
-						<cfset stCSS.lFullFilebaseHREFs = listprepend(stCSS.lFullFilebaseHREFs,application.fc.stCSSLibraries[thisid].lFullFilebaseHREFs)>
-					</cfif>
-				</cfloop>
-			</cfif>
-			<cfset arrayprepend(aCSS,stCSS) />
-		</cfloop>
-		<cfloop from="#arraylen(aCSS)#" to="1" index="i" step="-1">
-			<cfif refindnocase("(^|,)#aCSS[i].id#(,|$)",toremove)>
-				<cfset arraydeleteat(aCSS,i) />
-			</cfif>
-		</cfloop>
-		
-		<!--- If XMTHML, then we need the trailing slash --->
-		<cfset tagEnding = application.fapi.getDocType().tagEnding />
 	
-		<cfloop from="1" to="#arrayLen(aCSS)#" index="i">
-		
-			<cfset stCSS = aCSS[i] />
-		
-			<cfif structKeyExists(stCSS, "bCombine") AND stCSS.bCombine>
-				<cfset idHash = hash("#stCSS.baseHREF##stCSS.lFiles##stCSS.lCombineIDs##stCSS.prepend##stCSS.append#") />
+	<cfparam name="request.inHead.aCSSLibraries" default="#arrayNew(1)#" />
+	<cfparam name="request.inHead.stCSSLibraries" default="#structNew()#" />
+	<cfset aCSS = arraynew(1) />
+	
+	<!--- Processes library packages --->
+	<cfset toremove = "" />
+	<cfloop from="#arraylen(request.inHead.aCSSLibraries)#" to="1" index="i" step="-1">
+		<cfset stCSS = duplicate(request.inHead.stCSSLibraries[request.inHead.aCSSLibraries[i]]) />
+		<cfif len(stCSS.lCombineIDs)>
+			<!--- Remove these libraries from the stack (has to be done outside this loop) --->
+			<cfset toremove = listappend(toremove,stCSS.lCombineIDs) />
 			
-				<cfset sCacheFileName = "" />
-			
-				<cfif structKeyExists(application.fc.stCSSLibraries,idHash)>
-					<cfif structKeyExists(application.fc.stCSSLibraries[idHash],"sCacheFileName")>
-						<cfif fileExists('#application.path.cache#/#application.fc.stCSSLibraries[idHash].sCacheFileName#')>
-							<cfset sCacheFileName = application.fc.stCSSLibraries[idHash].sCacheFileName />
-							
-							<cfif request.mode.livecombine>
-								<cfset latest = createdatetime(1970,1,1,1,1,1) />
-								<cfloop list="#stCSS.lFullFilebaseHREFs#" index="thisfile">
-									<cfset stAttr = getFileInfo(expandpath(thisfile)) />
-									<cfif datecompare(latest,stAttr.lastmodified) lt 0>
-										<cfset latest = stAttr.lastmodified />
-									</cfif>
-								</cfloop>
-								
-								<cfif not structkeyexists(application.fc.stCSSLibraries[idHash],"modified") or datecompare(application.fc.stCSSLibraries[idHash].modified,latest) lt 0>
-									<cfset application.fc.stCSSLibraries[idHash].modified = latest />
-									<cfset sCacheFileName = "" />
+			<!--- Add the files of these libraries to the package --->
+			<cfloop list="#application.fc.utils.listReverse(stCSS.lCombineIDs)#" index="thisid">
+				<cfif structkeyexists(request.inHead.stCSSLibraries,thisid)>
+					<cfset stCSS.lFullFilebaseHREFs = listprepend(stCSS.lFullFilebaseHREFs,request.inHead.stCSSLibraries[thisid].lFullFilebaseHREFs)>
+				<cfelseif structkeyexists(application.fc.stCSSLibraries,thisid)>
+					<cfset stCSS.lFullFilebaseHREFs = listprepend(stCSS.lFullFilebaseHREFs,application.fc.stCSSLibraries[thisid].lFullFilebaseHREFs)>
+				</cfif>
+			</cfloop>
+		</cfif>
+		<cfset arrayprepend(aCSS,stCSS) />
+	</cfloop>
+	<cfloop from="#arraylen(aCSS)#" to="1" index="i" step="-1">
+		<cfif refindnocase("(^|,)#aCSS[i].id#(,|$)",toremove)>
+			<cfset arraydeleteat(aCSS,i) />
+		</cfif>
+	</cfloop>
+	
+	<!--- If XMTHML, then we need the trailing slash --->
+	<cfset tagEnding = application.fapi.getDocType().tagEnding />
+	
+	<cfif structkeyexists(attributes,"r_html")>
+		<cfparam name="caller.#attributes.r_html#" default="#arraynew(1)#" />
+	</cfif>
+	
+	<cfloop from="1" to="#arrayLen(aCSS)#" index="i">
+	
+		<cfset stCSS = aCSS[i] />
+	
+		<cfif structKeyExists(stCSS, "bCombine") AND stCSS.bCombine>
+			<cfset idHash = hash("#stCSS.baseHREF##stCSS.lFiles##stCSS.lCombineIDs##stCSS.prepend##stCSS.append#") />
+		
+			<cfset sCacheFileName = "" />
+		
+			<cfif structKeyExists(application.fc.stCSSLibraries,idHash)>
+				<cfif structKeyExists(application.fc.stCSSLibraries[idHash],"sCacheFileName")>
+					<cfif fileExists('#application.path.cache#/#application.fc.stCSSLibraries[idHash].sCacheFileName#')>
+						<cfset sCacheFileName = application.fc.stCSSLibraries[idHash].sCacheFileName />
+						
+						<cfif request.mode.livecombine>
+							<cfset latest = createdatetime(1970,1,1,1,1,1) />
+							<cfloop list="#stCSS.lFullFilebaseHREFs#" index="thisfile">
+								<cfset stAttr = getFileInfo(expandpath(thisfile)) />
+								<cfif datecompare(latest,stAttr.lastmodified) lt 0>
+									<cfset latest = stAttr.lastmodified />
 								</cfif>
+							</cfloop>
+							
+							<cfif not structkeyexists(application.fc.stCSSLibraries[idHash],"modified") or datecompare(application.fc.stCSSLibraries[idHash].modified,latest) lt 0>
+								<cfset application.fc.stCSSLibraries[idHash].modified = latest />
+								<cfset sCacheFileName = "" />
 							</cfif>
 						</cfif>
 					</cfif>
-				<cfelse>
-					<cfset application.fapi.registerCSS(	id="#idHash#", 
-															baseHREF="#stCSS.baseHREF#", 
-															media="#stCSS.media#", 
-															condition="#stCSS.condition#", 
-															prepend="#stCSS.prepend#", 
-															append="#stCSS.append#", 
-															bCombine="#stCSS.bCombine#"
-															) />
 				</cfif>
-				
-				<cfif not len(sCacheFileName) and stCSS.bCombine>
-					<cflock name="#idhash#" timeout="10">
-						<cfif structKeyExists(application.fc.stCSSLibraries,idHash) 
-							and structKeyExists(application.fc.stCSSLibraries[idHash],"sCacheFileName")
-							and fileExists('#application.path.cache#/#application.fc.stCSSLibraries[idHash].sCacheFileName#')>
-							
-							<cfset sCacheFileName = application.fc.stCSSLibraries[idHash].sCacheFileName />
-							
-						<cfelse>
-						
-							<cfset sCacheFileName = application.fc.utils.combine(	id=stCSS.id,
-																					files=stCSS.lFullFilebaseHREFs,
-																					type="css",
-																					prepend=stCSS.prepend,
-																					append=stCSS.append) />
-					
-							<cfset application.fc.stCSSLibraries[idHash].sCacheFileName = sCacheFileName />
-						
-						</cfif>
-					</cflock>
-				</cfif>
+			<cfelse>
+				<cfset application.fapi.registerCSS(	id="#idHash#", 
+														baseHREF="#stCSS.baseHREF#", 
+														media="#stCSS.media#", 
+														condition="#stCSS.condition#", 
+														prepend="#stCSS.prepend#", 
+														append="#stCSS.append#", 
+														bCombine="#stCSS.bCombine#"
+														) />
 			</cfif>
-		
-			<cfsavecontent variable="css">
+			
+			<cfif not len(sCacheFileName) and stCSS.bCombine>
+				<cflock name="#idhash#" timeout="10">
+					<cfif structKeyExists(application.fc.stCSSLibraries,idHash) 
+						and structKeyExists(application.fc.stCSSLibraries[idHash],"sCacheFileName")
+						and fileExists('#application.path.cache#/#application.fc.stCSSLibraries[idHash].sCacheFileName#')>
+						
+						<cfset sCacheFileName = application.fc.stCSSLibraries[idHash].sCacheFileName />
+						
+					<cfelse>
+					
+						<cfset sCacheFileName = application.fc.utils.combine(	id=stCSS.id,
+																				files=stCSS.lFullFilebaseHREFs,
+																				type="css",
+																				prepend=stCSS.prepend,
+																				append=stCSS.append) />
+				
+						<cfset application.fc.stCSSLibraries[idHash].sCacheFileName = sCacheFileName />
+					
+					</cfif>
+				</cflock>
+			</cfif>
+		</cfif>
+	
+		<cfsavecontent variable="css">
 <cfoutput>#chr(13)#
   <!-- 
   ID: #stCSS.id#<cfif len(stCSS.lCombineIDs)>
@@ -115,33 +117,41 @@
   -->
 </cfoutput>
 			
-				<cfif len(stCSS.condition)>
-					<cfoutput>  <!--[#stCSS.condition#]>#chr(13)#</cfoutput>
-				</cfif>
-			
-				<cfif stCSS.bCombine>
-					<cfset stLoc = application.fc.lib.cdn.ioGetFileLocation(location='cache',file=sCacheFileName) />
-					<cfoutput><link rel="stylesheet" id="stylesheet-#stCSS.id#" type="text/css" href="#stLoc.path#" media="#stCSS.media#" #tagEnding#></cfoutput>
-				<cfelseif stCSS.bExternal>
-					<cfif len(trim(stCSS.prepend))><cfoutput><style type="text/css">#stCSS.prepend#</style></cfoutput></cfif>
-					<cfloop list="#stCSS.lFiles#" index="i">
-						<cfoutput><link rel="stylesheet" type="text/css" href="#i#" media="#stCSS.media#" #tagEnding#></cfoutput>
-					</cfloop>
-					<cfif len(trim(stCSS.append))><cfoutput><style type="text/css">#stCSS.append#</style></cfoutput></cfif>
-				<cfelse>
-					<cfif len(trim(stCSS.prepend))><cfoutput><style type="text/css">#stCSS.prepend#</style></cfoutput></cfif>
-					<cfloop list="#stCSS.lFiles#" index="i">
-						<cfoutput><link rel="stylesheet" type="text/css" href="#cgi.http_host##stCSS.baseHREF#/#i#" media="#stCSS.media#" #tagEnding#></cfoutput>
-					</cfloop>
-					<cfif len(trim(stCSS.append))><cfoutput><style type="text/css">#stCSS.append#</style></cfoutput></cfif>
-				</cfif>
-				<cfif len(stCSS.condition)>
-					<cfoutput>  <![endif]-->#chr(13)#</cfoutput>	
-				</cfif>
-			</cfsavecontent>
-
-			<cfhtmlhead text="#css#" />
+			<cfif len(stCSS.condition)>
+				<cfoutput>  <!--[#stCSS.condition#]>#chr(13)#</cfoutput>
+			</cfif>
 		
-		</cfloop>
-	</cfif>
+			<cfif stCSS.bCombine>
+				<cfset stLoc = application.fc.lib.cdn.ioGetFileLocation(location='cache',file=sCacheFileName) />
+				<cfoutput><link rel="stylesheet" id="stylesheet-#stCSS.id#" type="text/css" href="#stLoc.path#" media="#stCSS.media#" #tagEnding#></cfoutput>
+			<cfelseif stCSS.bExternal>
+				<cfoutput><meta id="stylesheet-#stJS.id#" name="cssid" content="#stCSS.id#"></cfoutput>
+				<cfif len(trim(stCSS.prepend))><cfoutput><style type="text/css">#stCSS.prepend#</style></cfoutput></cfif>
+				<cfloop list="#stCSS.lFiles#" index="i">
+					<cfoutput><link rel="stylesheet" type="text/css" href="#i#" media="#stCSS.media#" #tagEnding#></cfoutput>
+				</cfloop>
+				<cfif len(trim(stCSS.append))><cfoutput><style type="text/css">#stCSS.append#</style></cfoutput></cfif>
+			<cfelse>
+				<cfoutput><meta id="stylesheet-#stJS.id#" name="cssid" content="#stCSS.id#"></cfoutput>
+				<cfif len(trim(stCSS.prepend))><cfoutput><style type="text/css">#stCSS.prepend#</style></cfoutput></cfif>
+				<cfloop list="#stCSS.lFiles#" index="i">
+					<cfoutput><link rel="stylesheet" type="text/css" href="#cgi.http_host##stCSS.baseHREF#/#i#" media="#stCSS.media#" #tagEnding#></cfoutput>
+				</cfloop>
+				<cfif len(trim(stCSS.append))><cfoutput><style type="text/css">#stCSS.append#</style></cfoutput></cfif>
+			</cfif>
+			<cfif len(stCSS.condition)>
+				<cfoutput>  <![endif]-->#chr(13)#</cfoutput>	
+			</cfif>
+		</cfsavecontent>
+		
+		<cfif structkeyexists(attributes,"r_html")>
+			<cfset st = structnew() />
+			<cfset st["id"] = "stylesheet-#stCSS.id#" />
+			<cfset st["html"] = css />
+			<cfset arrayappend(caller[attributes.r_html],st) />
+		<cfelse>
+			<cfhtmlhead text="#css#" />
+		</cfif>
+	
+	</cfloop>
 </cfif>

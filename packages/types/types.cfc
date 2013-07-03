@@ -25,7 +25,6 @@ system attributes
 <cfproperty name="label" displayname="Label" type="nstring" hint="Object label or title." required="no" default="" ftLabel="Label"> 
 <cfproperty name="datetimecreated" displayname="Datetime created" type="date" hint="Timestamp for record creation." required="yes" default="" ftType="datetime" ftLabel="Created"> 
 <cfproperty name="createdby" displayname="Created by" type="nstring" hint="Username for creator." required="yes" default="" ftLabel="Created By">
-<!--- bowden --->
 <cfproperty name="ownedby" displayname="Owned by" type="nstring" hint="Username for owner." required="No" default="" ftLabel="Owned By" ftType="list" ftRenderType="dropdown" ftListData="getOwners">
 <cfproperty name="datetimelastupdated" displayname="Datetime lastupdated" type="date" hint="Timestamp for record last modified." required="yes" default="" ftType="datetime" ftLabel="Last Updated" ftShowTime="true" ftTimeMask="long"> 
 <cfproperty name="lastupdatedby" displayname="Last updated by" type="nstring" hint="Username for modifier." required="yes" default="" ftLabel="Last Updated By">
@@ -217,16 +216,15 @@ default handlers
 				arguments.stProperties.createdby = arguments.user;		
 			if(NOT structKeyExists(arguments.stProperties,"lastupdatedby"))
 				arguments.stProperties.lastupdatedby = arguments.user;	
-				
-			stNewObject = super.createData(arguments.stProperties,arguments.stProperties.objectid,arguments.dsn);
-			
 		</cfscript>
+		
+		<cfset stNewObject = super.createData(arguments.stProperties,arguments.stProperties.objectid,arguments.dsn) />
 		
 		<!--- needs to be isDefined because application.stcoapi may not exist yet --->
 		<cfif arguments.bAudit and (not isDefined("application.stcoapi.#getTypeName()#.bAudit") or application.stcoapi[getTypeName()].bAudit)>
 			<farcry:logevent object="#stNewObject.objectid#" type="types" event="create" notes="#arguments.auditNote#" />
 		</cfif>
-
+		
 		<!--- Announce the save event to listeners --->
 		<cfset application.fc.lib.events.announce(	component="fcTypes", eventName="saved",
 													typename=getTypeName(),
@@ -362,6 +360,78 @@ default handlers
 		<cfreturn stresult>
 	</cffunction>
 	
+	<cffunction name="createFromUpload" access="public" returntype="any" output="false" hint="Creates an instance of an object based on an asynchronous upload">
+		<cfargument name="stProperties" type="struct" required="true" hint="Structure of properties for the new object instance">
+		<cfargument name="user" type="string" required="true" hint="Username for object creator" default="">
+		<cfargument name="uploadfield" type="string" requried="true" hint="The field taht the file was uploaded to" />
+		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Created">
+		<cfargument name="dsn" required="No" default="#application.dsn#">
+		<cfargument name="bAudit" type="boolean" default="true" required="false" hint="Set to false to disable logging" />
+		
+		<cfset var stNewObject = "" />
+		<cfset var uploadfieldtype = application.stCOAPI[arguments.stProperties.typename].stProps[arguments.uploadfield].metadata.ftType />
+		<cfset var typename = "" />
+		<cfset var thisfield = "" />
+		<cfset var stFP = structnew() />
+		
+		<cfif structkeyexists(arguments.stProperties,"typename")>
+			<cfset typename = arguments.stProperties.typename />
+		<cfelse>
+			<cfset typename = getTypeName() />
+		</cfif>
+		
+		<!--- if an image, resize as necessary and create dependant images --->
+		<cfif uploadfieldtype eq "image">
+			<cfset stFixed = application.formtools.image.oFactory.fixImage(
+				arguments.stProperties[arguments.uploadfield],
+				application.stCOAPI[typename].stProps[arguments.uploadfield].metadata,
+				application.stCOAPI[typename].stProps[arguments.uploadfield].metadata.ftAutoGenerateType,
+				application.stCOAPI[typename].stProps[arguments.uploadfield].metadata.ftQuality
+			) />
+			
+			<cfloop collection="#application.stCOAPI[typename].stProps#" item="thisfield">
+				<cfif isdefined("application.stCOAPI.#typename#.stProps.#thisfield#.metadata.ftType") 
+					and application.stCOAPI[typename].stProps[thisfield].metadata.ftType eq "image"
+					and isdefined("application.stCOAPI.#typename#.stProps.#thisfield#.metadata.ftSourceField")
+					and listfirst(application.stCOAPI[typename].stProps[thisfield].metadata.ftSourceField,":") eq arguments.uploadfield>
+					
+					<cfset stFP[thisfield] = structnew() />
+					
+				</cfif>
+			</cfloop>
+			
+			<cfset arguments.stProperties = application.formtools.image.oFactory.ImageAutoGenerateBeforeSave(typename=typename,stProperties=arguments.stProperties,stFields=application.stCOAPI[typename].stProps,stFormPost=stFP) />
+		</cfif>
+		
+		<!--- rely on beforeSave to fill out any fields that should be based on the file by default --->
+		<cfset arguments.stProperties = beforeSave(stProperties=arguments.stProperties,stFields=application.stCOAPI[typename].stProps) />
+		
+		<!--- standard createData  --->
+		<cfset stNewObject = createData(argumentCollection=arguments) />
+		<cflog file="debug" text="onfilechange">
+		<!--- if the formtool has an onFileChange function, run it --->
+		<cfif structkeyexists(application.formtools[uploadfieldtype].oFactory,"onFileChange")>
+			<cfset application.formtools[uploadfieldtype].oFactory.onFileChange(
+				stObject=arguments.stProperties,
+				stMetadata=application.stCOAPI[typename].stProps[arguments.uploadfield].metadata,
+				value=arguments.stProperties[arguments.uploadfield]
+			) />
+		</cfif>
+		<cflog file="debug" text="categories">
+		<!--- if the object has any category fields filled out, update the refCategories table --->
+		<cftry><cfloop collection="#arguments.stProperties#" item="thisfield">
+			<cfif isdefined("application.stCOAPI.#typename#.stProps.#thisfield#.metadata.ftType") 
+				and application.stCOAPI[typename].stProps[thisfield].metadata.ftType eq "category"
+				and listlen(arguments.stProperties[thisfield])>
+				
+				<cfset stFP = structnew() />
+				<cfset stFP.value = arguments.stProperties[thisfield] />
+				<cfset application.formtools.category.oFactory.validate(objectid=arguments.stProperties.objectid,typename=typename,stFieldPost=stFP,stMetadata=application.stCOAPI[typename].stProps[thisfield].metadata) />
+			</cfif>
+		</cfloop><cfcatch><cflog file="debug" text="#cfcatch.message# #serializeJSON(cfcatch)#"><cfabort></cfcatch></cftry>
+		<cflog file="debug" text="return">
+		<cfreturn stNewObject>
+	</cffunction>
 	
 
 	
@@ -476,26 +546,7 @@ default handlers
 		
 		<ft:processForm action="save,cancel" exit="true">
 		</ft:processForm>
-
-		<!--- <ft:processForm >
-			<!--- get parent to update tree --->
-			<cfset stObj=getData(arguments.objectid)>
-			<nj:treeGetRelations typename="#stObj.typename#" objectId="#stObj.ObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1">
-			<!--- update tree --->
-			<nj:updateTree objectId="#parentID#">
-			<cfswitch expression="#url.ref#">
-			<cfcase value="overview">
-				<cfoutput>
-				<script language="javascript" type="text/javascript">
-				location.href = "#application.url.farcry#/edittabOverview.cfm?objectid=#stObj.ObjectID#";
-				</script>
-				</cfoutput>
-			</cfcase>
-			</cfswitch>
-
-			<cfabort>
-		</ft:processForm> --->
-
+		
 					
 		<cfset stObj=getData(arguments.objectid)>	
 		<ft:form>
@@ -705,14 +756,14 @@ default handlers
 		<cfargument name="stFields" required="true" type="struct">
 		<cfargument name="stFormPost" required="false" type="struct">		
 
-		<cfset var newLabel = autoSetLabel(stProperties=arguments.stProperties) />
+		<cfset var newLabel = "" />
 		
+		<cfset newLabel = autoSetLabel(stProperties=arguments.stProperties) />
 		
 		<cfif len(trim(newLabel))>
 			<cfset arguments.stProperties.label = newLabel />
 		</cfif>
 		
-
 		<cfset stProperties.datetimelastupdated = now() />
 		
 		<cfreturn stProperties>
@@ -729,10 +780,8 @@ default handlers
 		 --->
 		<cfset var newLabel = "" />
 		
-		<cfif structKeyExists(arguments.stProperties, "typename") AND application.stcoapi[arguments.stProperties.typename].bAutoSetLabel>
-			
-			<skin:view stObject="#arguments.stProperties#" webskin="displayLabel" alternateHTML="" r_html="newLabel" />
-			
+		<cfif not isdefined("request.inthread") and structKeyExists(arguments.stProperties, "typename") AND application.stcoapi[arguments.stProperties.typename].bAutoSetLabel>
+			<cfset newLabel = getView(stObject=arguments.stProperties,template="displayLabel",alternateHTML="") />
 		</cfif>
 		
 		<cfreturn trim(newLabel) />

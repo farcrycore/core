@@ -32,6 +32,18 @@
 							lFiles="jquery-ui-1.8.15.custom.min.js" />
 		<skin:registerJS 	id="jquery-ui" aliasof="fc-jquery-ui" core="false" />
 		
+		<skin:registerJS 	id="fc-underscore" core="true"
+							baseHREF="#application.url.webtop#/thirdparty/underscore"
+							lFiles="underscore.js" />
+		
+		<skin:registerJS 	id="fc-backbone" core="true"
+							baseHREF="#application.url.webtop#/thirdparty/backbone"
+							lFiles="backbone.js" />
+		
+		<skin:registerJS 	id="fc-handlebars" core="true"
+							baseHREF="#application.url.webtop#/thirdparty/handlebars"
+							lFiles="handlebars.js" />
+		
 		<skin:registerJS 	id="tinymce" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/tiny_mce"
 							lFiles="jquery.tinymce.js" />
@@ -75,6 +87,14 @@
 							baseHREF="#application.url.webtop#/thirdparty/gritter/js"
 							lFiles="jquery.gritter.js" />
 
+		<skin:registerJS	id="jquery-file-upload" core="true"
+							baseHREF="#application.url.webtop#/thirdparty/jQuery-File-Upload-8.1.0"
+							lFiles="vendor/jquery.ui.widget.js,jquery.iframe-transport.js,jquery.fileupload.js,jquery.fileupload-process.js,jquery.fileupload-validate.js,jquery.fileupload-validate.js" />
+		
+		<skin:registerJS	id="bulk-upload" core="true"
+							baseHREF="#application.url.webtop#/js/bulkUploader"
+							lFiles="bulk-upload.js" />
+							
 		<skin:registerJS 	id="farcry-form" core="true"
 							baseHREF="#application.url.webtop#"
 							lFiles="/js/farcryForm.cfm,/thirdparty/loadmask/jquery.loadmask.min.js,/thirdparty/jquery-treeview/jquery.treeview.js,/thirdparty/jquery-treeview/jquery.treeview.async.js" />
@@ -134,6 +154,10 @@
 		<skin:registerCSS 	id="webtop"
 							baseHREF="#application.url.webtop#/css"
 							lFiles="reset.css,fonts.css,main.css" />
+							
+		<skin:registerCSS	id="bulk-upload"
+							baseHREF="#application.url.webtop#/js/bulkUploader"
+							lFiles="bulk-upload.css" />
 							
 		<skin:registerCSS 	id="fc-login"
 							baseHREF="#application.url.webtop#/css"

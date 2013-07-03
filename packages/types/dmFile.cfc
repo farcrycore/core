@@ -51,7 +51,21 @@ object methods
 	<cfreturn getFile>
 </cffunction>
 
-
+<cffunction name="BeforeSave" access="public" output="false" returntype="struct">
+	<cfargument name="stProperties" required="true" type="struct">
+	<cfargument name="stFields" required="true" type="struct">
+	<cfargument name="stFormPost" required="false" type="struct">		
+	
+	<cfif not structkeyexists(arguments.stProperties,"title") or not len(arguments.stProperties.title) and structkeyexists(arguments.stProperties,"filename")>
+		<cfset arguments.stProperties.title = listfirst(listlast(arguments.stProperties.filename,"/"),".") />
+	</cfif>
+	
+	<cfif structkeyexists(arguments.stProperties,"title")>
+		<cfset arguments.stProperties.label = arguments.stProperties.title />
+	</cfif>
+	
+	<cfreturn super.beforeSave(argumentCollection=arguments) />
+</cffunction>
 
 	
 </cfcomponent>

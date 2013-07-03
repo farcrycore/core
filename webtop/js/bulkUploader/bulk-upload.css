@@ -1,0 +1,63 @@
+#defaultProperties {
+	margin-bottom:10px;
+}
+#defaultProperties .title {
+	background-color:#E8E8E8;
+	padding:5px;
+	cursor:pointer;
+}
+#defaultProperties .title i {
+	margin:2px;
+}
+#defaultProperties .body {
+	display:none;
+	padding:5px;
+	border:1px #E8E8E8 solid;
+}
+
+.targetarea {
+	border:2px #0e65a2 dashed;
+	height:200px;
+	text-align:center;
+}
+.targetarea.dragover {
+	border:4px #3e84b5 dashed;
+}
+.targetarea .fileinput-button{
+	margin-top:70px;
+}
+.targetarea.dragover .fileinput-button{
+	margin-top:68px;
+}
+.fileinput-button {
+    overflow: hidden;
+    position: relative;
+}
+.fileinput-button input {
+    cursor: pointer;
+    direction: ltr;
+    font-size: 23px;
+    margin: 0;
+    opacity: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    transform: translate(-300px, 0px) scale(4);
+}
+.upload-queue {
+	margin-top: 20px;
+}
+.upload-queue .file {
+	padding: 8px 14px;
+	border-bottom: 1px solid #CCCCCC;
+}
+.upload-queue .information span {
+	margin-right:10px;
+}
+.upload-queue .status{
+	font-weight:bold;
+	margin-right:10px;
+}
+.upload-queue .remove {
+	cursor:pointer;
+}

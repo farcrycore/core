@@ -45,71 +45,18 @@ $out:$
 <cfif not structKeyExists(request.fc, "bLocating") and not structKeyExists(request,"fcInitError")>
 
 	<skin:pop format="gritter" />
-
-
-
 	
 	<!--- Add the loaded libraries into the header --->
-	<core:cssInHead />
-	<core:jsInHead />
-	
-	
-	
-	<cfif structKeyExists(Request,"inHead") AND NOT structIsEmpty(Request.InHead) AND NOT request.mode.ajax>		
-	<!--- Check for each stPlaceInHead variable and output relevent html/css/js --->
-			
-	<cfsavecontent variable="variables.placeInHead">		
-				
-		<!--- This is the result of any skin:htmlHead calls --->
-		<cfparam name="request.inhead.stCustom" default="#structNew()#" />
-		<cfparam name="request.inhead.aCustomIDs" default="#arrayNew(1)#" />
+	<cfif not isdefined("request.mode.ajax") or not request.mode.ajax>
+		<core:inHead variable="aHead" />
 		
-		<cfif arrayLen(request.inhead.aCustomIDs)>
-			<cfloop from="1" to="#arrayLen(request.inHead.aCustomIDs)#" index="i">
-				<cfif structKeyExists(request.inHead.stCustom, request.inHead.aCustomIDs[i])>
-					<cfoutput>
-					#request.inHead.stCustom[request.inHead.aCustomIDs[i]]#
-					</cfoutput>
-				</cfif>
-			</cfloop>
-		</cfif>
-		
-			
-		<!--- This is the result of any skin:onReady calls --->
-		<cfparam name="request.inhead.stOnReady" default="#structNew()#" />
-		<cfparam name="request.inhead.aOnReadyIDs" default="#arrayNew(1)#" />
-		
-		<cfif arrayLen(request.inhead.aOnReadyIDs)>
-			<cfoutput>
-			<script type="text/javascript">
-				$j(document).ready(function() {	
-			</cfoutput>
-			
-			<cfloop from="1" to="#arrayLen(request.inHead.aOnReadyIDs)#" index="i">
-				<cfif structKeyExists(request.inHead.stOnReady, request.inHead.aOnReadyIDs[i])>
-					<cfoutput>
-					#request.inHead.stOnReady[request.inHead.aOnReadyIDs[i]]#
-					</cfoutput>
-				</cfif>
-			</cfloop>
-			
-			<cfoutput>
-				})
-			</script>
-			</cfoutput>
-			
-		</cfif>
-	
-	</cfsavecontent>
-	
-	<cfif len(variables.placeInHead)>
-		<cftry>
- 			<cfhtmlHead text="#variables.placeInHead#" />
-			<cfcatch type="any">
-				<cfset application.fapi.throw(argumentCollection="#cfcatch#") />
-			</cfcatch>
-		</cftry>	
-	</cfif>
+		<cfloop from="1" to="#arraylen(aHead)#" index="i">
+			<cfif aHead[i].id eq "onReady">
+				<cfhtmlHead text="<script type='text/javascript'>$j(document).ready(function(){ #aHead[i].html# });</script>" />
+			<cfelse>
+				<cfhtmlHead text="#aHead[i].html#" />
+			</cfif>
+		</cfloop>
 	</cfif>
 	
 	<cfif not GetPageContext().GetResponse().IsCommitted()>

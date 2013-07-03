@@ -155,7 +155,13 @@
 			<cfif expandable AND NOT childrenLoaded>
 				<cfset thisClass = thisClass & " fc-treestate-notloaded">
 			</cfif>
+			
 
+			<!--- urls --->
+			<cfset thisOverviewURL = "#application.url.webtop#/edittabOverview.cfm?typename=#stNav.typename#&objectid=#stNav.objectid#&ref=overview">
+			<cfset thisEditURL = "#application.url.webtop#/edittabEdit.cfm?objectid=#stNav.objectid#&typename=#stNav.typename#">
+			<cfset thisPreviewURL = application.fapi.getLink(typename="dmNavigation", objectid=stNav.objectid, urlparameters="flushcache=1&showdraft=1")>
+			
 			<!--- vary the status labels and icon by the object status --->
 			<cfset thisStatusLabel = "">
 			<cfset thisFolderIcon = "icon-folder-close">
@@ -281,8 +287,14 @@
 				<cfif url.bLoadCollapsed OR bUnexpandedAncestor>
 					<cfset thisClass = "fc-treestate-hidden">
 				</cfif>
-
-
+			
+			
+			<!--- urls --->
+			<cfset thisOverviewURL = "#application.url.webtop#/edittabOverview.cfm?typename=#stLeafNode.typename#&objectid=#stLeafNode.objectid#&ref=overview">
+			<cfset thisEditURL = "#application.url.webtop#/edittabEdit.cfm?objectid=#stLeafNode.objectid#&typename=#stLeafNode.typename#">
+			<cfset thisPreviewURL = application.fapi.getLink(typename=stLeafNode.typename, objectid=stLeafNode.objectid, urlparameters="flushcache=1&showdraft=1")>
+			
+			
 				<!--- vary the status labels, icon, and edit URL by the object status --->
 				<cfset thisStatusLabel = "">
 				<cfset thisLeafIcon = "<span class='icon-stack'><i class='icon-file'></i></span>">

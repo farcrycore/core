@@ -94,7 +94,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 <cfparam name="attributes.numPageDisplay" default="5" type="numeric">
 
 <cfparam name="attributes.lButtons" default="*" type="string">
-<cfparam name="attributes.lButtonsEmpty" default="add,undelete" type="string">
+<cfparam name="attributes.lButtonsEmpty" default="add,bulkupload,undelete" type="string">
 <cfparam name="attributes.bPaginateTop" default="true" type="boolean">
 <cfparam name="attributes.bPaginateBottom" default="true" type="boolean">
 <cfparam name="attributes.bDisplayTotalRecords" default="true" type="boolean" />
@@ -478,8 +478,6 @@ user --->
 		</cfif>
 	</cfif>
 	
-	<cfset bulkuploadURL = application.fapi.getLink(typename=attributes.typename,view="webtopPageModal",bodyView="webtopBodyBulkUpload") />
-	
 	<ft:processForm action="add">
 		<skin:onReady>
 			<cfoutput>
@@ -590,18 +588,6 @@ user --->
 		<cfelse>
 			<cfset message_error = "No Objects Selected">	
 		</cfif>	
-	</ft:processForm>
-	
-	<ft:processForm action="Bulk Upload">
-		<skin:onReady>
-			<cfoutput>
-				$fc.objectAdminAction('Administration', '#application.fapi.fixURL(addvalues="typename=#attributes.typename#&view=webtopPageModal&bodyView=webtopBodyBulkUpload")#');
-			</cfoutput>
-		</skin:onReady>
-	</ft:processForm>
-	
-	<ft:processForm action="Undelete">
-		<cflocation url="?id=#url.id#&typename=dmArchive&bodyView=webtopBody&archivetype=#attributes.typename#" addtoken="false" />
 	</ft:processForm>
 	
 	<!-----------------------------------------------

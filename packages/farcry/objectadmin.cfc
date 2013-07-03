@@ -467,6 +467,7 @@ environment references (might be nice to clean these up)
 				stBut.permission=application.security.checkPermission(permission="Approve",type=attributes.permissionset);
 				stBut.buttontype="approve";
 				arrayAppend(aDefaultButtons,stBut);
+				
 				//send to draft
 				stBut=structNew();
 				stBut.type="submit";
@@ -480,6 +481,19 @@ environment references (might be nice to clean these up)
 
 		}
 		
+		if (isdefined("application.stCOAPI.#attributes.typename#.bBulkUpload") and application.stCOAPI[attributes.typename].bBulkUpload){
+			// undelete button
+				stBut=structNew();
+				stBut.type="button";
+				stBut.name="bulkupload";
+				stBut.value="Bulk Upload";
+				stBut.class="f-submit";
+				stBut.onClick="$fc.objectAdminAction('Bulk Upload', '" & application.fapi.getLink(type=attributes.typename,view="webtopPageModal",bodyView="webtopBodyBulkUpload") & "'); return false;";
+				stBut.permission=application.security.checkPermission(permission="Create",type=attributes.permissionset);
+				stBut.buttontype="bulkupload";
+				arrayAppend(aDefaultButtons,stBut);
+		}
+		
 		if (structkeyexists(application.stCOAPI,attributes.typename) and application.stCOAPI[attributes.typename].bArchive){
 			// undelete button
 				stBut=structNew();
@@ -487,7 +501,7 @@ environment references (might be nice to clean these up)
 				stBut.name="undelete";
 				stBut.value="Undelete";
 				stBut.class="f-submit";
-				stBut.onClick="";
+				stBut.onClick="$fc.objectAdminAction('Undelete', '" & application.fapi.getLink(typename="dmArchive",view="webtopPageModal",bodyView="webtopBody",urlParameters="archivetype=#attributes.typename#") & "'); return false;";;
 				stBut.permission=application.security.checkPermission(permission="Create",type=attributes.permissionset);
 				stBut.buttontype="undelete";
 				arrayAppend(aDefaultButtons,stBut);

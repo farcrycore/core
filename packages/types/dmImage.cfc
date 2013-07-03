@@ -17,18 +17,21 @@
 --->
 <cfcomponent 
 	extends="types" 
-	displayname="Image" hint="A global image library that can be referenced from other content types. All images have a source image and an automatically generated standard and thumbnail size image for use within your content.">
+	displayname="Image" hint="A global image library that can be referenced from other content types. All images have a source image and an automatically generated standard and thumbnail size image for use within your content."
+	bBulkUpload="true">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->
 <cfproperty 
 	name="title" type="string" hint="Image title." required="no" default="" blabel="true" 
-	ftSeq="2" ftFieldset="General Details" ftlabel="Image Title" ftValidation="required" />
+	ftSeq="2" ftFieldset="General Details" ftlabel="Image Title" ftValidation="required"
+	ftBulkUploadEdit="true" />
 
 <cfproperty 
 	name="alt" type="string" dbprecision="1000" hint="Alternate text" required="no" default=""
 	ftSeq="4" ftFieldset="General Details" ftlabel="Alternative Text"
-	fttype="longchar" ftlimit="999" /> 
+	fttype="longchar" ftlimit="999"
+	ftBulkUploadEdit="true" /> 
 
 <!--- image file locations --->
 <cfproperty 
@@ -41,6 +44,7 @@ type properties
 	ftImageWidth="" 
 	ftImageHeight=""
 	ftbUploadOnly="true"
+	ftBulkUploadTarget="true"
 	ftHint="Upload your high quality source image here."  />
 
 <cfproperty ftSeq="24" ftFieldset="Image Files" name="StandardImage" type="string" hint="The URL location of the optimised uploaded image that should be used for general display" required="no" default="" 
@@ -73,7 +77,8 @@ type properties
 <cfproperty 
 	name="catImage" type="string" dbprecision="1000" hint="Image categorisation." required="no" default="" 
 	ftSeq="42" ftFieldset="Categorisation" ftlabel="Category" 
-	fttype="category" ftalias="dmimage" ftselectmultiple="true" />
+	fttype="category" ftalias="dmimage" ftselectmultiple="true"
+	ftBulkUploadDefault="true" />
 
 <!--- system property; ie. not in default edit handlers --->
 <cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft" ftlabel="Status" />
@@ -285,6 +290,26 @@ type properties
 		<cftrace category="dmImage" type="warning" text="The filePath or fileName passed to function rendorURLImagePath in dmImage.cfc is empty which will cause the image not to display">
 	</cfif>
 	<cfreturn imagePath>
+</cffunction>
+
+<cffunction name="BeforeSave" access="public" output="false" returntype="struct">
+	<cfargument name="stProperties" required="true" type="struct">
+	<cfargument name="stFields" required="true" type="struct">
+	<cfargument name="stFormPost" required="false" type="struct">		
+	<cflog file="debug" text="figure out title">
+	<cfif not structkeyexists(arguments.stProperties,"title") or not len(arguments.stProperties.title) and structkeyexists(arguments.stProperties,"sourceImage")>
+		<cfset arguments.stProperties.title = listfirst(listlast(arguments.stProperties.sourceImage,"/"),".") />
+	</cfif>
+	<cflog file="debug" text="figure out alt">
+	<cfif not structkeyexists(arguments.stProperties,"alt") or not len(arguments.stProperties.alt) and structkeyexists(arguments.stProperties,"sourceImage")>
+		<cfset arguments.stProperties.alt = listfirst(listlast(arguments.stProperties.sourceImage,"/"),".") />
+	</cfif>
+	
+	<cfif structkeyexists(arguments.stProperties,"title")>
+		<cfset arguments.stProperties.label = arguments.stProperties.title />
+	</cfif>
+	<cflog file="debug" text="super before save">
+	<cfreturn super.beforeSave(argumentCollection=arguments) />
 </cffunction>
 
 
