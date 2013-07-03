@@ -597,6 +597,12 @@
 			var createURL = "#application.url.webtop#/conjuror/evocation.cfm?parenttype=dmNavigation&typename=dmNavigation&objectid=" + row["objectid"];
 			var deleteURL = "#application.url.webtop#/navajo/delete.cfm?objectid=" + row["objectid"];
 
+			var reloadTreeBranchObjectID = row["objectid"];
+			if (row["nodetype"] == "leaf") {
+				reloadTreeBranchObjectID = row["parentid"];
+			}
+
+
 			var locked = "";
 			if (row["locked"] == true) {
 				locked = "<img src='#application.url.webtop#/images/treeImages/customIcons/padlock.gif'>";
@@ -627,8 +633,8 @@
 			if (!options.bRenderTreeOnly) {
 				colActions = ''
 					+	'<td class="objectadmin-actions"> '
-					+		'<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" onclick="$fc.objectAdminAction(\'Overview\', \'' + overviewURL + '\'); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button> '
-					+		'<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button" onclick="$fc.objectAdminAction(\'Edit Page\', \'' + row["editURL"] + '\', { onHidden: function(){ reloadTreeBranch(\'' + row["objectid"] + '\'); } }); return false;"><i class="icon-pencil"></i> Edit</button> '
+					+		'<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" onclick="$fc.objectAdminAction(\'Overview\', \'' + overviewURL + '\', { onHidden: function(){ reloadTreeBranch(\'' + reloadTreeBranchObjectID + '\'); } }); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button> '
+					+		'<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button" onclick="$fc.objectAdminAction(\'Edit Page\', \'' + row["editURL"] + '\', { onHidden: function(){ reloadTreeBranch(\'' + reloadTreeBranchObjectID + '\'); } }); return false;"><i class="icon-pencil"></i> Edit</button> '
 					+		'<a href="' + row["previewURL"] + '" class="btn fc-btn-preview fc-tooltip" title="" data-original-title="Preview"><i class="icon-eye-open only-icon"></i></a> '
 					+		'<div class="btn-group"> '
 					+			'<button data-toggle="dropdown" class="btn dropdown-toggle" type="button"><i class="icon-caret-down only-icon"></i></button> '
