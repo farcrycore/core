@@ -9,6 +9,7 @@
 <cfparam name="url.bReloadBranch" default="false">
 <cfparam name="url.bLoadRoot" default="false">
 <cfparam name="url.bLoadCollapsed" default="false">
+<cfparam name="url.bIgnoreExpandedNodes" default="false">
 <cfparam name="url.bLoadLeafNodes" default="true">
 <cfparam name="url.responsetype" default="html">
 
@@ -93,13 +94,13 @@
 			</cfif>
 		</cfif>
 		<!--- find child leaves --->
-		<cfif arrayLen(stNav.aObjectIDs) gt 0>
-			<cfset expandable = 1>
-			<cfif qTree.nlevel lt treeMaxLevel>
-				<cfif stParam.bLoadLeafNodes>
+		<cfif stParam.bLoadLeafNodes>
+			<cfif arrayLen(stNav.aObjectIDs) gt 0>
+				<cfset expandable = 1>
+				<cfif qTree.nlevel lt treeMaxLevel>
 					<cfset aLeafNodes = oTree.getLeaves(qTree.objectid)>
+					<cfset childrenLoaded = true>	
 				</cfif>
-				<cfset childrenLoaded = true>	
 			</cfif>
 		</cfif>
 
@@ -107,7 +108,7 @@
 		<cfif bRootNode AND NOT url.bLoadCollapsed>
 			<cfset bExpanded = true>
 		</cfif>
-		<cfif listFindNoCase(cookie.FARCRYTREEEXPANDEDNODES, stNav.objectid, "|")>
+		<cfif listFindNoCase(cookie.FARCRYTREEEXPANDEDNODES, stNav.objectid, "|") AND NOT url.bIgnoreExpandedNodes>
 			<cfset expandable = 1>
 			<cfset bExpanded = true>
 		</cfif>
@@ -145,7 +146,7 @@
 				<cfset thisClass = thisClass & " fc-treestate-hidden">
 			<cfelseif qTree.parentid eq rootObjectID>
 				<cfset thisClass = thisClass & " fc-treestate-visible">
-			<cfelseif bExpanded OR listFindNoCase(cookie.FARCRYTREEEXPANDEDNODES, qTree.parentid, "|")>
+			<cfelseif bExpanded OR (listFindNoCase(cookie.FARCRYTREEEXPANDEDNODES, qTree.parentid, "|") AND NOT url.bIgnoreExpandedNodes)>
 				<cfset thisClass = thisClass & " fc-treestate-visible">
 			<cfelse>
 				<cfset thisClass = thisClass & " fc-treestate-hidden">

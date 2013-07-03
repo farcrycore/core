@@ -4,8 +4,14 @@
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft">
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
 
+<skin:loadJS id="fc-jquery" />
+<skin:loadJS id="fc-underscore" />
+<skin:loadJS id="fc-backbone" />
+<skin:loadJS id="fc-handlebars" />
+
 <skin:loadJS id="farcry-form" />
 <skin:loadJS id="fc-farcry-devicetype" />
+
 
 <!--- 
 
@@ -166,7 +172,7 @@
 
 	<ft:form name="farcrytree" style="clear:both">
 
-	<table class="objectadmin table table-hover farcry-objectadmin">
+	<table id="farcry-sitetree" class="objectadmin table table-hover farcry-objectadmin">
 	<thead>
 		<tr>
 			<th class="fc-col-min fc-hidden-compact"></th>
@@ -207,6 +213,34 @@
 
 		</div>
 	</div>
+
+
+
+	<div id="minitree-container" class="" style="position: fixed; width:400px; height: 500px; left: 50%; top: 50%; z-index: 120; overflow:visible;">
+		<div id="minitree" style="position: absolute; top: -250px; left: -200px; width: 100%; height: 100%; box-shadow: 0 0 16px rgba(0,0,0,0.32); background: ##fff; overflow: auto;">
+
+			<div class="modal-header">
+				<button type="button" class="close" aria-hidden="true">&times;</button>
+				<h4 style="margin:0; padding-top: 2px; margin-right: 20px; line-height: 24px"> Move To / Copy To...</h4>
+			</div>
+
+			<table id="farcry-minitree" class="objectadmin table table-hover farcry-objectadmin">
+			<thead>
+				<tr>
+					<th>Navigation</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><i class="icon-spinner icon-spin"></i> &nbsp;Loading...</td>
+				</tr>
+			</tbody>
+			</table>
+
+		</div>
+	</div>
+
+
 
 
 	<script type="text/javascript">
@@ -336,382 +370,6 @@
 		});
 
 
-		/* tree */
-
-		function getParentId(o) {
-			return o.data("parentid");
-		}
-		function getNodeType(o) {
-			return o.data("nodetype");
-		}
-
-		function getRowById(id) {
-			return $j(".objectadmin tr[data-objectid="+ id + "]");
-		}
-
-		function getDescendantsById(id, bIncludeSelf) {
-			bIncludeSelf = bIncludeSelf || false;
-
-			var row = getRowById(id);
-			var nlevel = row.data("nlevel");
-
-			// get siblings until is nlevel less than or equal to the row nlevel
-			var children = $j();
-			var done = false;
-			var next = row;
-			if (bIncludeSelf) {
-				children = children.add(next);
-			}
-			while (done != true) {
-				next = next.next();
-				if (next.data("nlevel") > nlevel) {
-					children = children.add(next);
-				}
-				else {
-					done = true;
-					if (next.hasClass("ui-sortable-placeholder")) {
-						done = false;
-					}
-				}
-			}
-
-			return children;
-		}
-
-
-		function getChildRows(id) {
-			return $j(".objectadmin tr[data-parentid="+ id +"]");
-		}
-
-
-		function getExpandedNodes() {
-			var expandedNodes = $j(".farcry-objectadmin tr.fc-treestate-collapse");
-			var aExpandedNodes = [];
-			expandedNodes.each(function(){
-				var thisObjectid = $j(this).data("objectid");
-				aExpandedNodes.push(thisObjectid);
-			});
-
-			return aExpandedNodes.join('|');
-		}
-
-		function setExpandedNodesCookie(lObjectid) {
-			lObjectid = lObjectid || getExpandedNodes();
-			// set session only cookie
-			document.cookie = "FARCRYTREEEXPANDEDNODES=" + lObjectid + "; expires=0; path=/;";
-		}
-
-		function reloadTreeBranch(id) {
-			var row = getRowById(id);
-			loadTreeChildRows(row, true);
-		}
-
-
-
-
-		function loadExpandedAjaxNodes(id) {
-			// default id to root node
-			var root = $j(".farcry-objectadmin tbody tr:first");
-			id = id || root.data("objectid");
-
-			var children = getChildRows(id);
-
-			children.each(function(){
-				var childRow = $j(this);
-				if (childRow.hasClass("fc-treestate-collapse") && childRow.hasClass("fc-treestate-notloaded")) {
-
-					loadTreeChildRows(childRow);
-				}
-				else {
-					loadExpandedAjaxNodes(childRow.data("objectid"));
-				}
-			});
-
-		}
-
-
-		function loadTreeData(data, options) {
-
-			var treeContent = $j(".objectadmin tbody");
-
-			// construct markup from data
-			var aRowMarkup = [];
-			for (i=0; i<data.rows.length; i++) {
-				var rowhtml = getRowMarkup(data.rows[i], options);
-				aRowMarkup.push(rowhtml);
-			}
-
-			treeContent.html(aRowMarkup.join(""));
-
-			loadExpandedAjaxNodes();
-
-		}
-
-
-		function loadTree(rootobjectid, options) {
-
-			var treeContent = $j(".objectadmin tbody");
-
-
-			$j.ajax({
-				url: "#application.url.webtop#/index.cfm?typename=dmNavigation&objectid=" + rootobjectid + "&view=webtopTreeChildRows&bLoadRoot=true&ajaxmode=1&responsetype=json",
-				datatype: "json",
-				success: function(response) {
-					response.success = response.success || false;
-					if (response.success) {
-
-						// construct markup from response
-						var aRowMarkup = [];
-						for (i=0; i<response.rows.length; i++) {
-							var rowhtml = getRowMarkup(response.rows[i], options);
-							aRowMarkup.push(rowhtml);
-						}
-
-						treeContent.html(aRowMarkup.join(""));
-
-
-					}
-					else {
-// TODO: alert the user of an error with this request
-					}
-				},
-				error: function() {
-// TODO: alert the user of an error with this request
-
-				},
-				complete: function() {
-					loadExpandedAjaxNodes();
-
-				}
-			});
-
-		}
-
-
-		function loadTreeChildRows(row, bReloadBranch, options) {
-
-			bReloadBranch = bReloadBranch || false;
-
-			var id = row.data("objectid");
-			var relativenlevel = row.data("indentlevel");
-			var descendants = $j();
-			var loadCollapsed = false;
-
-			row.removeClass("fc-treestate-notloaded").addClass("fc-treestate-loading");
-			row.find(".fc-tree-title").first().append("<i class='icon-spinner icon-spin' style='margin-left:0.5em'></i>");
-
-
-			// if reloading a branch, find the deepest descendant nlevel in this branch so that an appropriate depth can be loaded
-			if (bReloadBranch) {
-				descendants = getDescendantsById(id, true);
-				// maintain the collapsed state of the branch when loading
-				if (row.hasClass("fc-treestate-expand")) {
-					loadCollapsed = true;
-				}
-			}
-
-			$j.ajax({
-				url: "#application.url.webtop#/index.cfm?typename=dmNavigation&objectid=" + id + "&view=webtopTreeChildRows&bReloadBranch=" + bReloadBranch + "&loadCollapsed=" + loadCollapsed + "&ajaxmode=1&responsetype=json",
-				data: {
-					"relativenlevel": relativenlevel
-				},
-				datatype: "json",
-				success: function(response) {
-					response.success = response.success || false;
-					if (response.success) {
-
-						// construct markup from response
-						var aRowMarkup = [];
-						for (i=0; i<response.rows.length; i++) {
-							var rowhtml = getRowMarkup(response.rows[i], options);
-							aRowMarkup.push(rowhtml);
-							
-						}
-
-						if (bReloadBranch) {
-							$j(aRowMarkup.join("")).insertAfter(descendants.last());
-							descendants.remove();
-						}
-						else {
-							$j(aRowMarkup.join("")).insertAfter(row);
-							row.removeClass("fc-treestate-loading fc-treestate-expand").addClass("fc-treestate-collapse");
-							row.find(".fc-tree-title .icon-folder-close").removeClass("icon-folder-close").addClass("icon-folder-open");
-						}
-					}
-					else {
-// TODO: alert the user of an error with this request
-					}
-				},
-				error: function() {
-// TODO: alert the user of an error with this request
-					row.removeClass("fc-treestate-loading").addClass("fc-treestate-notloaded");
-				},
-				complete: function() {
-					row.find(".fc-tree-title i.icon-spinner").remove();
-					setExpandedNodesCookie();
-					loadExpandedAjaxNodes(id);
-
-				}
-			});
-
-			return;
-		}
-
-		function expandTreeRows(row) {
-			var id = row.data("objectid");
-			var children = getChildRows(id);
-
-			row.removeClass("fc-treestate-expand").addClass("fc-treestate-collapse");
-			row.find(".fc-tree-title .icon-folder-close").removeClass("icon-folder-close").addClass("icon-folder-open");
-
-			children.each(function(){
-				var childRow = $j(this);
-				childRow.removeClass("fc-treestate-hidden").addClass("fc-treestate-visible");
-				if (childRow.hasClass("fc-treestate-collapse")) {
-					expandTreeRows(childRow);
-				}
-			});
-
-		}
-
-
-		function collapseTreeRow(row) {
-			var id = row.data("objectid");
-			var descendants = getDescendantsById(id);
-
-			row.removeClass("fc-treestate-collapse").addClass("fc-treestate-expand");
-			row.find(".fc-tree-title .icon-folder-open").removeClass("icon-folder-open").addClass("icon-folder-close");
-			descendants.removeClass("fc-treestate-visible").addClass("fc-treestate-hidden");
-
-		}
-
-
-
-		function getRowMarkup(row, options) {
-			options = options || {};
-			options.bRenderLeafNodes = options.bRenderLeafNodes || true;
-			options.bRenderTreeOnly = options.bRenderTreeOnly || false;
-
-
-			var overviewURL = "#application.url.webtop#/edittabOverview.cfm?typename=" + row["typename"] + "&objectid=" + row["objectid"];
-			var createURL = "#application.url.webtop#/conjuror/evocation.cfm?parenttype=dmNavigation&typename=dmNavigation&objectid=" + row["objectid"];
-			var deleteURL = "#application.url.webtop#/navajo/delete.cfm?objectid=" + row["objectid"];
-
-			var reloadTreeBranchObjectID = row["objectid"];
-			if (row["nodetype"] == "leaf") {
-				reloadTreeBranchObjectID = row["parentid"];
-			}
-
-
-			var locked = "";
-			if (row["locked"] == true) {
-				locked = "<img src='#application.url.webtop#/images/treeImages/customIcons/padlock.gif'>";
-			}
-			var colCheckbox = '';
-			if (!options.bRenderTreeOnly) {
-				colCheckbox = '<td class="fc-col-min fc-hidden-compact" nowrap="nowrap">' + locked + '</td> ';
-			}
-
-			var dropdown = "";
-			if (row["nodetype"] == "folder") {
-				dropdown = 
-						'<li><a href="##" class="fc-add" onclick="$fc.objectAdminAction(\'Add Page\', \'' + createURL + '\', { onHidden: function(){ reloadTreeBranch(\'' + row["objectid"] + '\'); } }); return false;"><i class="icon-plus icon-fixed-width"></i> Add Page</a></li> '
-					+	'<li><a href="##" class="fc-zoom"><i class="icon-zoom-in icon-fixed-width"></i> Zoom</a></li> '
-					+	'<li class="divider"></li> '
-					+	'<li><a href="##" class="fc-copyto" onclick="alert(\'Coming soon...\');"><i class="icon-copy icon-fixed-width"></i> Copy to...</a></li> '
-					+	'<li><a href="##" class="fc-moveto" onclick="alert(\'Coming soon...\');"><i class="icon-move icon-fixed-width"></i> Move to...</a></li> '
-					+	'<li class="divider"></li> '
-					+	'<li><a href="##" class="" onclick="alert(\'Coming soon...\');"><i class="icon-trash icon-fixed-width"></i> Delete</a></li> '
-				;
-			}
-			else if (row["nodetype"] == "leaf") {
-				dropdown = 
-						'<li><a href="##" class=""><i class="icon-trash icon-fixed-width"></i> Delete</a></li> '
-				;
-			}
-			var colActions = '';
-			if (!options.bRenderTreeOnly) {
-				colActions = ''
-					+	'<td class="objectadmin-actions"> '
-					+		'<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" onclick="$fc.objectAdminAction(\'Overview\', \'' + overviewURL + '\', { onHidden: function(){ reloadTreeBranch(\'' + reloadTreeBranchObjectID + '\'); } }); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button> '
-					+		'<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button" onclick="$fc.objectAdminAction(\'Edit Page\', \'' + row["editURL"] + '\', { onHidden: function(){ reloadTreeBranch(\'' + reloadTreeBranchObjectID + '\'); } }); return false;"><i class="icon-pencil"></i> Edit</button> '
-					+		'<a href="' + row["previewURL"] + '" class="btn fc-btn-preview fc-tooltip" title="" data-original-title="Preview"><i class="icon-eye-open only-icon"></i></a> '
-					+		'<div class="btn-group"> '
-					+			'<button data-toggle="dropdown" class="btn dropdown-toggle" type="button"><i class="icon-caret-down only-icon"></i></button> '
-					+			'<div class="dropdown-menu"> '
-					+				'<li class="fc-visible-compact"><a href="##" class="fc-btn-overview"><i class="icon-th icon-fixed-width"></i> Overview</a></li> '
-					+				'<li class="fc-visible-compact"><a href="##" class="fc-btn-edit"><i class="icon-pencil icon-fixed-width"></i> Edit</a></li> '
-					+				'<li class="fc-visible-compact"><a href="##" class="fc-btn-preview"><i class="icon-eye-open icon-fixed-width"></i> Preview</a></li> '
-					+				'<li class="divider fc-visible-compact"></li> '
-					+       		dropdown
-					+			'</div> '
-					+		'</div> '
-					+	'</td> '
-				;
-			}
-
-			var colURL = '';
-			if (!options.bRenderTreeOnly) {
-				colURL = '<td class="fc-nowrap-ellipsis fc-visible-compact">' + row["previewURL"] + '</td> ';
-			}
-
-			var colStatus = '';
-			if (!options.bRenderTreeOnly) {
-				colStatus = '<td class="fc-hidden-compact">' + row["statuslabel"] + '</td> ';
-			}
-
-			var colDateTime = '';
-			if (!options.bRenderTreeOnly) {
-				colDateTime = '<td class="fc-hidden-compact" title="' + row["datetimelastupdated"] + '">' + row["prettydatetimelastupdated"] + '</td> ';
-			}
-
-
-			var html = 
-				'<tr class="' + row["class"] + '" data-objectid="' + row["objectid"] + '" data-typename="' + row["typename"] + '" data-nlevel="' + row["nlevel"] + '" data-expandable="' + row["expandable"] + '" data-indentlevel="' + row["indentlevel"] + '" data-nodetype="' + row["nodetype"] + '" data-parentid="' + row["parentid"] + '"> '
-				+	colCheckbox
-				+	colActions
-				+	'<td class="fc-tree-title fc-nowrap">' + row["spacer"] + '<a class="fc-treestate-toggle" href="##"><i class="fc-icon-treestate"></i></a>' + row["nodeicon"] + ' <span>' + row["label"] + '</span></td> '
-				+	colURL
-				+	colStatus
-				+	colDateTime
-				+'</tr> '
-			;
-
-			return html;
-		}
-
-
-
-		/* objectadmin tree expand/collapse */
-		$j(".objectadmin").on("click", ".fc-treestate-toggle", function(evt){
-			var table = $j(this).closest(".objectadmin");
-			var row = $j(this).closest("tr");
-
-			if (row.hasClass("fc-treestate-notloaded")) {
-				loadTreeChildRows(row);
-			}
-			else if (row.hasClass("fc-treestate-expand")) {
-				expandTreeRows(row);
-				setExpandedNodesCookie();
-			}
-			else if (row.hasClass("fc-treestate-collapse")) {
-				collapseTreeRow(row);
-				setExpandedNodesCookie();
-			}
-			return false;
-		});
-
-		$j(".objectadmin").on("click", ".fc-tree-title", function(evt){
-			$j(this).find(".fc-treestate-toggle").click();
-		});
-
-		$j(".objectadmin").on("click", ".fc-zoom", function(evt){
-			var id = $j(this).closest("tr").data("objectid");
-			if (id.length) {
-				window.location = "#application.fapi.fixURL(removevalues="alias,rootobjectid")#&rootobjectid=" + id;
-			}
-		});
-
 	</script>
 
 
@@ -723,10 +381,487 @@
 	<script type="text/javascript">
 
 		$j(function(){
-			loadTreeData(#jsonData#);
+			//loadTreeData(#jsonData#);
 		});
 
 	</script>
+
+
+	<skin:htmlHead><cfoutput>
+		<script type="text/javascript">
+			App = {};
+
+
+			SiteTreeView = Backbone.View.extend({
+				initialize: function SiteTreeView_initialize(options){
+
+					options = options || {};
+					options.bRenderTreeOnly = options.bRenderTreeOnly || false;
+					options.bIgnoreExpandedNodes = options.bIgnoreExpandedNodes || false;
+					options.bLoadLeafNodes = options.bLoadLeafNodes || true;
+
+					this.bRenderTreeOnly = options.bRenderTreeOnly;
+					this.bIgnoreExpandedNodes = options.bIgnoreExpandedNodes;
+					this.bLoadLeafNodes = options.bLoadLeafNodes;
+
+					if (options.data) {
+						this.data = options.data;
+						this.render();
+					}
+
+					if (options.rootObjectID) {
+						this.rootObjectID = options.rootObjectID;
+						this.loadTree(this.rootObjectID);
+					}
+
+				},
+
+				events: {
+					"click .fc-treestate-toggle" : "clickToggle",
+					"click .fc-tree-title" : "clickTitle",
+					"click .fc-zoom" : "clickZoom"
+				},
+
+				
+				render: function SiteTreeView_render(){
+
+					var treeContent = $j("tbody", this.$el);
+
+					// construct markup from data
+					var aRowMarkup = [];
+					for (i=0; i<this.data.rows.length; i++) {
+						var rowhtml = this.getRowMarkup(this.data.rows[i]);
+						aRowMarkup.push(rowhtml);
+					}
+
+					treeContent.html(aRowMarkup.join(""));
+
+					this.loadExpandedAjaxNodes();
+
+				},
+
+
+				clickToggle: function clickToggle(evt){
+					var table = $j(evt.currentTarget).closest(".objectadmin");
+					var row = $j(evt.currentTarget).closest("tr");
+
+					if (row.hasClass("fc-treestate-notloaded")) {
+						this.loadTreeChildRows(row);
+					}
+					else if (row.hasClass("fc-treestate-expand")) {
+						this.expandTreeRows(row);
+						this.setExpandedNodesCookie();
+					}
+					else if (row.hasClass("fc-treestate-collapse")) {
+						this.collapseTreeRow(row);
+						this.setExpandedNodesCookie();
+					}
+
+					return false;
+				},
+
+				clickTitle: function clickTitle(evt){
+					$j(evt.currentTarget).find(".fc-treestate-toggle").click();
+				},
+
+				clickZoom: function SiteTreeView_clickZoom(evt){
+					var objectid = $j(evt.currentTarget).closest("tr").data("objectid");
+					if (objectid.length) {
+						window.location = "#application.fapi.fixURL(removevalues="alias,rootobjectid")#&rootobjectid=" + objectid;
+					}
+				},
+
+
+
+
+				getParentId: function SiteTreeView_getParentId(o) {
+					return o.data("parentid");
+				},
+				getNodeType: function SiteTreeView_getNodeType(o) {
+					return o.data("nodetype");
+				},
+
+				getRowById: function SiteTreeView_getRowById(id) {
+					return $j("tr[data-objectid="+ id + "]", this.$el);
+				},
+
+				getDescendantsById: function SiteTreeView_getDescendantsById(id, bIncludeSelf) {
+					bIncludeSelf = bIncludeSelf || false;
+
+					var row = this.getRowById(id);
+					var nlevel = row.data("nlevel");
+
+					// get siblings until is nlevel less than or equal to the row nlevel
+					var children = $j();
+					var done = false;
+					var next = row;
+					if (bIncludeSelf) {
+						children = children.add(next);
+					}
+					while (done != true) {
+						next = next.next();
+						if (next.data("nlevel") > nlevel) {
+							children = children.add(next);
+						}
+						else {
+							done = true;
+							if (next.hasClass("ui-sortable-placeholder")) {
+								done = false;
+							}
+						}
+					}
+
+					return children;
+				},
+
+
+				getChildRows: function SiteTreeView_getChildRows(id) {
+					return $j("tr[data-parentid="+ id +"]", this.$el);
+				},
+
+
+				getExpandedNodes: function SiteTreeView_getExpandedNodes() {
+					var expandedNodes = $j("tr.fc-treestate-collapse", this.$el);
+					var aExpandedNodes = [];
+					expandedNodes.each(function(){
+						var thisObjectid = $j(this).data("objectid");
+						aExpandedNodes.push(thisObjectid);
+					});
+
+					return aExpandedNodes.join('|');
+				},
+
+				setExpandedNodesCookie: function SiteTreeView_setExpandedNodesCookie(lObjectid) {
+					lObjectid = lObjectid || this.getExpandedNodes();
+					// set session only cookie
+					if (!this.bIgnoreExpandedNodes) {
+						document.cookie = "FARCRYTREEEXPANDEDNODES=" + lObjectid + "; expires=0; path=/;";
+					}
+				},
+
+				reloadTreeBranch: function SiteTreeView_reloadTreeBranch(id) {
+					var row = this.getRowById(id);
+					this.loadTreeChildRows(row, true);
+				},
+
+
+
+
+				loadExpandedAjaxNodes: function SiteTreeView_loadExpandedAjaxNodes(id) {
+
+					var self = this;
+
+					// default id to root node
+					var root = $j("tbody tr:first", this.$el);
+					id = id || root.data("objectid");
+
+					var children = this.getChildRows(id);
+
+					children.each(function(){
+						var childRow = $j(this);
+						if (childRow.hasClass("fc-treestate-collapse") && childRow.hasClass("fc-treestate-notloaded")) {
+
+							self.loadTreeChildRows(childRow);
+						}
+						else {
+							self.loadExpandedAjaxNodes(childRow.data("objectid"));
+						}
+					});
+
+				},
+
+
+				loadTreeData: function SiteTreeView_loadTreeData(data) {
+
+					var treeContent = $j("tbody", this.$el);
+
+					// construct markup from data
+					var aRowMarkup = [];
+					for (i=0; i<data.rows.length; i++) {
+						var rowhtml = this.getRowMarkup(data.rows[i]);
+						aRowMarkup.push(rowhtml);
+					}
+
+					treeContent.html(aRowMarkup.join(""));
+
+					this.loadExpandedAjaxNodes();
+
+				},
+
+
+				loadTree: function SiteTreeView_loadTree(rootobjectid) {
+
+					var self = this;
+					var treeContent = $j("tbody", this.$el);
+
+					var urlParams = ''
+						+	'&bLoadLeafNodes=' + this.bLoadLeafNodes 
+						+	'&bIgnoreExpandedNodes=' + this.bIgnoreExpandedNodes
+						+	'&bRenderTreeOnly=' + this.bRenderTreeOnly
+					;
+
+
+					$j.ajax({
+						url: "#application.url.webtop#/index.cfm?typename=dmNavigation&objectid=" + rootobjectid + "&view=webtopTreeChildRows&bLoadRoot=true&ajaxmode=1&responsetype=json" + urlParams,
+						datatype: "json",
+						success: function(response) {
+							response.success = response.success || false;
+							if (response.success) {
+
+								// construct markup from response
+								var aRowMarkup = [];
+								for (i=0; i<response.rows.length; i++) {
+									var rowhtml = self.getRowMarkup(response.rows[i]);
+									aRowMarkup.push(rowhtml);
+								}
+
+								treeContent.html(aRowMarkup.join(""));
+
+
+							}
+							else {
+		// TODO: alert the user of an error with this request
+							}
+						},
+						error: function() {
+		// TODO: alert the user of an error with this request
+
+						},
+						complete: function() {
+							if (!self.bIgnoreExpandedNodes) {
+								self.loadExpandedAjaxNodes();
+							}
+						}
+					});
+
+				},
+
+
+
+				loadTreeChildRows: function SiteTreeView_loadTreeChildRows(row, bReloadBranch) {
+
+					bReloadBranch = bReloadBranch || false;
+
+					var self = this;
+
+					var id = row.data("objectid");
+					var relativenlevel = row.data("indentlevel");
+					var descendants = $j();
+					var loadCollapsed = false;
+
+					var urlParams = ''
+						+	'&bLoadLeafNodes=' + this.bLoadLeafNodes 
+						+	'&bIgnoreExpandedNodes=' + this.bIgnoreExpandedNodes
+						+	'&bRenderTreeOnly=' + this.bRenderTreeOnly
+					;
+
+					row.removeClass("fc-treestate-notloaded").addClass("fc-treestate-loading");
+					row.find(".fc-tree-title").first().append("<i class='icon-spinner icon-spin' style='margin-left:0.5em'></i>");
+
+
+					// if reloading a branch, find the deepest descendant nlevel in this branch so that an appropriate depth can be loaded
+					if (bReloadBranch) {
+						descendants = this.getDescendantsById(id, true);
+						// maintain the collapsed state of the branch when loading
+						if (row.hasClass("fc-treestate-expand")) {
+							loadCollapsed = true;
+						}
+					}
+
+					$j.ajax({
+						url: "#application.url.webtop#/index.cfm?typename=dmNavigation&objectid=" + id + "&view=webtopTreeChildRows&bReloadBranch=" + bReloadBranch + "&loadCollapsed=" + loadCollapsed + "&ajaxmode=1&responsetype=json" + urlParams,
+						data: {
+							"relativenlevel": relativenlevel
+						},
+						datatype: "json",
+						success: function(response) {
+							response.success = response.success || false;
+							if (response.success) {
+
+								// construct markup from response
+								var aRowMarkup = [];
+								for (i=0; i<response.rows.length; i++) {
+									var rowhtml = self.getRowMarkup(response.rows[i]);
+									aRowMarkup.push(rowhtml);
+									
+								}
+
+								if (bReloadBranch) {
+									$j(aRowMarkup.join("")).insertAfter(descendants.last());
+									descendants.remove();
+								}
+								else {
+									$j(aRowMarkup.join("")).insertAfter(row);
+									row.removeClass("fc-treestate-loading fc-treestate-expand").addClass("fc-treestate-collapse");
+									row.find(".fc-tree-title .icon-folder-close").removeClass("icon-folder-close").addClass("icon-folder-open");
+								}
+							}
+							else {
+		// TODO: alert the user of an error with this request
+							}
+						},
+						error: function() {
+		// TODO: alert the user of an error with this request
+							row.removeClass("fc-treestate-loading").addClass("fc-treestate-notloaded");
+						},
+						complete: function() {
+							row.find(".fc-tree-title i.icon-spinner").remove();
+							self.setExpandedNodesCookie();
+							self.loadExpandedAjaxNodes(id);
+
+						}
+					});
+
+					return;
+				},
+
+
+				expandTreeRows: function SiteTreeView_expandTreeRows(row) {
+
+					var self = this;
+
+					var id = row.data("objectid");
+					var children = this.getChildRows(id);
+
+					row.removeClass("fc-treestate-expand").addClass("fc-treestate-collapse");
+					row.find(".fc-tree-title .icon-folder-close").removeClass("icon-folder-close").addClass("icon-folder-open");
+
+					children.each(function(){
+						var childRow = $j(this);
+						childRow.removeClass("fc-treestate-hidden").addClass("fc-treestate-visible");
+						if (childRow.hasClass("fc-treestate-collapse")) {
+							self.expandTreeRows(childRow);
+						}
+					});
+
+				},
+
+
+				collapseTreeRow: function SiteTreeView_collapseTreeRow(row) {
+					var id = row.data("objectid");
+					var descendants = this.getDescendantsById(id);
+
+					row.removeClass("fc-treestate-collapse").addClass("fc-treestate-expand");
+					row.find(".fc-tree-title .icon-folder-open").removeClass("icon-folder-open").addClass("icon-folder-close");
+					descendants.removeClass("fc-treestate-visible").addClass("fc-treestate-hidden");
+
+				},
+
+
+				getRowMarkup: function SiteTreeView_getRowMarkup(row) {
+
+					var overviewURL = "#application.url.webtop#/edittabOverview.cfm?typename=" + row["typename"] + "&objectid=" + row["objectid"];
+					var createURL = "#application.url.webtop#/conjuror/evocation.cfm?parenttype=dmNavigation&typename=dmNavigation&objectid=" + row["objectid"];
+					var deleteURL = "#application.url.webtop#/navajo/delete.cfm?objectid=" + row["objectid"];
+
+					var reloadTreeBranchObjectID = row["objectid"];
+					if (row["nodetype"] == "leaf") {
+						reloadTreeBranchObjectID = row["parentid"];
+					}
+
+
+					var locked = "";
+					if (row["locked"] == true) {
+						locked = "<img src='#application.url.webtop#/images/treeImages/customIcons/padlock.gif'>";
+					}
+					var colCheckbox = '';
+					if (!this.bRenderTreeOnly) {
+						colCheckbox = '<td class="fc-col-min fc-hidden-compact" nowrap="nowrap">' + locked + '</td> ';
+					}
+
+					var dropdown = "";
+					if (row["nodetype"] == "folder") {
+						dropdown = 
+								'<li><a href="##" class="fc-add" onclick="$fc.objectAdminAction(\'Add Page\', \'' + createURL + '\', { onHidden: function(){ reloadTreeBranch(\'' + row["objectid"] + '\'); } }); return false;"><i class="icon-plus icon-fixed-width"></i> Add Page</a></li> '
+							+	'<li><a href="##" class="fc-zoom"><i class="icon-zoom-in icon-fixed-width"></i> Zoom</a></li> '
+							+	'<li class="divider"></li> '
+							+	'<li><a href="##" class="fc-copyto" onclick="alert(\'Coming soon...\');"><i class="icon-copy icon-fixed-width"></i> Copy to...</a></li> '
+							+	'<li><a href="##" class="fc-moveto" onclick="alert(\'Coming soon...\');"><i class="icon-move icon-fixed-width"></i> Move to...</a></li> '
+							+	'<li class="divider"></li> '
+							+	'<li><a href="##" class="" onclick="alert(\'Coming soon...\');"><i class="icon-trash icon-fixed-width"></i> Delete</a></li> '
+						;
+					}
+					else if (row["nodetype"] == "leaf") {
+						dropdown = 
+								'<li><a href="##" class=""><i class="icon-trash icon-fixed-width"></i> Delete</a></li> '
+						;
+					}
+					var colActions = '';
+					if (!this.bRenderTreeOnly) {
+						colActions = ''
+							+	'<td class="objectadmin-actions"> '
+							+		'<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" onclick="$fc.objectAdminAction(\'Overview\', \'' + overviewURL + '\', { onHidden: function(){ reloadTreeBranch(\'' + reloadTreeBranchObjectID + '\'); } }); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button> '
+							+		'<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button" onclick="$fc.objectAdminAction(\'Edit Page\', \'' + row["editURL"] + '\', { onHidden: function(){ reloadTreeBranch(\'' + reloadTreeBranchObjectID + '\'); } }); return false;"><i class="icon-pencil"></i> Edit</button> '
+							+		'<a href="' + row["previewURL"] + '" class="btn fc-btn-preview fc-tooltip" title="" data-original-title="Preview"><i class="icon-eye-open only-icon"></i></a> '
+							+		'<div class="btn-group"> '
+							+			'<button data-toggle="dropdown" class="btn dropdown-toggle" type="button"><i class="icon-caret-down only-icon"></i></button> '
+							+			'<div class="dropdown-menu"> '
+							+				'<li class="fc-visible-compact"><a href="##" class="fc-btn-overview"><i class="icon-th icon-fixed-width"></i> Overview</a></li> '
+							+				'<li class="fc-visible-compact"><a href="##" class="fc-btn-edit"><i class="icon-pencil icon-fixed-width"></i> Edit</a></li> '
+							+				'<li class="fc-visible-compact"><a href="##" class="fc-btn-preview"><i class="icon-eye-open icon-fixed-width"></i> Preview</a></li> '
+							+				'<li class="divider fc-visible-compact"></li> '
+							+       		dropdown
+							+			'</div> '
+							+		'</div> '
+							+	'</td> '
+						;
+					}
+
+					var colURL = '';
+					if (!this.bRenderTreeOnly) {
+						colURL = '<td class="fc-nowrap-ellipsis fc-visible-compact">' + row["previewURL"] + '</td> ';
+					}
+
+					var colStatus = '';
+					if (!this.bRenderTreeOnly) {
+						colStatus = '<td class="fc-hidden-compact">' + row["statuslabel"] + '</td> ';
+					}
+
+					var colDateTime = '';
+					if (!this.bRenderTreeOnly) {
+						colDateTime = '<td class="fc-hidden-compact" title="' + row["datetimelastupdated"] + '">' + row["prettydatetimelastupdated"] + '</td> ';
+					}
+
+
+					var html = 
+						'<tr class="' + row["class"] + '" data-objectid="' + row["objectid"] + '" data-typename="' + row["typename"] + '" data-nlevel="' + row["nlevel"] + '" data-expandable="' + row["expandable"] + '" data-indentlevel="' + row["indentlevel"] + '" data-nodetype="' + row["nodetype"] + '" data-parentid="' + row["parentid"] + '"> '
+						+	colCheckbox
+						+	colActions
+						+	'<td class="fc-tree-title fc-nowrap">' + row["spacer"] + '<a class="fc-treestate-toggle" href="##"><i class="fc-icon-treestate"></i></a>' + row["nodeicon"] + ' <span>' + row["label"] + '</span></td> '
+						+	colURL
+						+	colStatus
+						+	colDateTime
+						+'</tr> '
+					;
+
+					return html;
+				}
+
+
+			});
+
+
+			$j(function() {
+
+				App.siteTreeView = new SiteTreeView({
+					el: "##farcry-sitetree",
+					data: #jsonData#
+				});
+
+				App.miniTreeView = new SiteTreeView({
+					el: "##farcry-minitree",
+					rootObjectID: "#rootObjectID#",
+					bRenderTreeOnly: true,
+					bIgnoreExpandedNodes: true,
+					bLoadLeafNodes: "false"
+				});
+
+
+			});
+		</script>
+	</cfoutput></skin:htmlHead>
+
+
 
 
 </cfoutput>
