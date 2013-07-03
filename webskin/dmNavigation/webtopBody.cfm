@@ -449,14 +449,14 @@
 */
 
 
-		function loadTreeData(data) {
+		function loadTreeData(data, options) {
 
 			var treeContent = $j(".objectadmin tbody");
 
 			// construct markup from data
 			var aRowMarkup = [];
 			for (i=0; i<data.rows.length; i++) {
-				var rowhtml = getRowMarkup(data.rows[i]);
+				var rowhtml = getRowMarkup(data.rows[i], options);
 				aRowMarkup.push(rowhtml);
 			}
 
@@ -467,7 +467,7 @@
 		}
 
 
-		function loadTree(rootobjectid) {
+		function loadTree(rootobjectid, options) {
 
 			var treeContent = $j(".objectadmin tbody");
 
@@ -482,7 +482,7 @@
 						// construct markup from response
 						var aRowMarkup = [];
 						for (i=0; i<response.rows.length; i++) {
-							var rowhtml = getRowMarkup(response.rows[i]);
+							var rowhtml = getRowMarkup(response.rows[i], options);
 							aRowMarkup.push(rowhtml);
 						}
 
@@ -507,7 +507,7 @@
 		}
 
 
-		function loadTreeChildRows(row, bReloadBranch) {
+		function loadTreeChildRows(row, bReloadBranch, options) {
 
 			bReloadBranch = bReloadBranch || false;
 
@@ -542,7 +542,7 @@
 						// construct markup from response
 						var aRowMarkup = [];
 						for (i=0; i<response.rows.length; i++) {
-							var rowhtml = getRowMarkup(response.rows[i]);
+							var rowhtml = getRowMarkup(response.rows[i], options);
 							aRowMarkup.push(rowhtml);
 							
 						}
@@ -606,7 +606,10 @@
 
 
 
-		function getRowMarkup(row) {
+		function getRowMarkup(row, options) {
+			options = options || {};
+			options.bRenderLeafNodes = options.bRenderLeafNodes || true;
+			options.bRenderTreeOnly = options.bRenderTreeOnly || false;
 
 
 			var overviewURL = "#application.url.webtop#/edittabOverview.cfm?typename=" + row["typename"] + "&objectid=" + row["objectid"];
@@ -616,6 +619,10 @@
 			var locked = "";
 			if (row["locked"] == true) {
 				locked = "<img src='#application.url.webtop#/images/treeImages/customIcons/padlock.gif'>";
+			}
+			var colCheckbox = '';
+			if (!options.bRenderTreeOnly) {
+				colCheckbox = '<td class="fc-col-min fc-hidden-compact" nowrap="nowrap">' + locked + '</td> ';
 			}
 
 			var dropdown = "";
@@ -635,29 +642,51 @@
 						'<li><a href="##" class=""><i class="icon-trash icon-fixed-width"></i> Delete</a></li> '
 				;
 			}
+			var colActions = '';
+			if (!options.bRenderTreeOnly) {
+				colActions = ''
+					+	'<td class="objectadmin-actions"> '
+					+		'<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" onclick="$fc.objectAdminAction(\'Overview\', \'' + overviewURL + '\'); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button> '
+					+		'<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button" onclick="$fc.objectAdminAction(\'Edit Page\', \'' + row["editURL"] + '\', { onHidden: function(){ reloadTreeBranch(\'' + row["objectid"] + '\'); } }); return false;"><i class="icon-pencil"></i> Edit</button> '
+					+		'<a href="' + row["previewURL"] + '" class="btn fc-btn-preview fc-tooltip" title="" data-original-title="Preview"><i class="icon-eye-open only-icon"></i></a> '
+					+		'<div class="btn-group"> '
+					+			'<button data-toggle="dropdown" class="btn dropdown-toggle" type="button"><i class="icon-caret-down only-icon"></i></button> '
+					+			'<div class="dropdown-menu"> '
+					+				'<li class="fc-visible-compact"><a href="##" class="fc-btn-overview"><i class="icon-th icon-fixed-width"></i> Overview</a></li> '
+					+				'<li class="fc-visible-compact"><a href="##" class="fc-btn-edit"><i class="icon-pencil icon-fixed-width"></i> Edit</a></li> '
+					+				'<li class="fc-visible-compact"><a href="##" class="fc-btn-preview"><i class="icon-eye-open icon-fixed-width"></i> Preview</a></li> '
+					+				'<li class="divider fc-visible-compact"></li> '
+					+       		dropdown
+					+			'</div> '
+					+		'</div> '
+					+	'</td> '
+				;
+			}
+
+			var colURL = '';
+			if (!options.bRenderTreeOnly) {
+				colURL = '<td class="fc-nowrap-ellipsis fc-visible-compact">' + row["previewURL"] + '</td> ';
+			}
+
+			var colStatus = '';
+			if (!options.bRenderTreeOnly) {
+				colStatus = '<td class="fc-hidden-compact">' + row["statuslabel"] + '</td> ';
+			}
+
+			var colDateTime = '';
+			if (!options.bRenderTreeOnly) {
+				colDateTime = '<td class="fc-hidden-compact" title="' + row["datetimelastupdated"] + '">' + row["prettydatetimelastupdated"] + '</td> ';
+			}
+
 
 			var html = 
 				'<tr class="' + row["class"] + '" data-objectid="' + row["objectid"] + '" data-typename="' + row["typename"] + '" data-nlevel="' + row["nlevel"] + '" data-expandable="' + row["expandable"] + '" data-indentlevel="' + row["indentlevel"] + '" data-nodetype="' + row["nodetype"] + '" data-parentid="' + row["parentid"] + '"> '
-				+	'<td class="fc-col-min fc-hidden-compact" nowrap="nowrap">' + locked + '</td> '
-				+	'<td class="objectadmin-actions"> '
-				+		'<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" onclick="$fc.objectAdminAction(\'Overview\', \'' + overviewURL + '\'); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button> '
-				+		'<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button" onclick="$fc.objectAdminAction(\'Edit Page\', \'' + row["editURL"] + '\', { onHidden: function(){ reloadTreeBranch(\'' + row["objectid"] + '\'); } }); return false;"><i class="icon-pencil"></i> Edit</button> '
-				+		'<a href="' + row["previewURL"] + '" class="btn fc-btn-preview fc-tooltip" title="" data-original-title="Preview"><i class="icon-eye-open only-icon"></i></a> '
-				+		'<div class="btn-group"> '
-				+			'<button data-toggle="dropdown" class="btn dropdown-toggle" type="button"><i class="icon-caret-down only-icon"></i></button> '
-				+			'<div class="dropdown-menu"> '
-				+				'<li class="fc-visible-compact"><a href="##" class="fc-btn-overview"><i class="icon-th icon-fixed-width"></i> Overview</a></li> '
-				+				'<li class="fc-visible-compact"><a href="##" class="fc-btn-edit"><i class="icon-pencil icon-fixed-width"></i> Edit</a></li> '
-				+				'<li class="fc-visible-compact"><a href="##" class="fc-btn-preview"><i class="icon-eye-open icon-fixed-width"></i> Preview</a></li> '
-				+				'<li class="divider fc-visible-compact"></li> '
-				+       		dropdown
-				+			'</div> '
-				+		'</div> '
-				+	'</td> '
+				+	colCheckbox
+				+	colActions
 				+	'<td class="fc-tree-title fc-nowrap">' + row["spacer"] + '<a class="fc-treestate-toggle" href="##"><i class="fc-icon-treestate"></i></a>' + row["nodeicon"] + ' <span>' + row["label"] + '</span></td> '
-				+	'<td class="fc-nowrap-ellipsis fc-visible-compact">' + row["previewURL"] + '</td> '
-				+	'<td class="fc-hidden-compact">' + row["statuslabel"] + '</td> '
-				+	'<td class="fc-hidden-compact" title="' + row["datetimelastupdated"] + '">' + row["prettydatetimelastupdated"] + '</td> '
+				+	colURL
+				+	colStatus
+				+	colDateTime
 				+'</tr> '
 			;
 
