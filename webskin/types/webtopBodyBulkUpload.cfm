@@ -208,7 +208,7 @@
 	<skin:loadJS id="fc-underscore" />
 	<skin:loadJS id="fc-backbone" />
 	<skin:loadJS id="fc-handlebars" />
-	<skin:loadJS id="bulk-upload" bCombine="false" />
+	<skin:loadJS id="bulk-upload" />
 	<skin:loadCSS id="fc-jquery-ui" />
 	<skin:loadCSS id="fc-fontawesome" />
 	<skin:loadCSS id="bulk-upload" />
