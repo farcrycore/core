@@ -429,25 +429,6 @@
 
 		}
 
-/*
-		function expandTreeRows(row) {
-			var id = row.data("objectid");
-			var children = getChildRows(id);
-
-			row.removeClass("fc-treestate-expand").addClass("fc-treestate-collapse");
-			row.find(".fc-tree-title .icon-folder-close").removeClass("icon-folder-close").addClass("icon-folder-open");
-
-			children.each(function(){
-				var childRow = $j(this);
-				childRow.removeClass("fc-treestate-hidden").addClass("fc-treestate-visible");
-				if (childRow.hasClass("fc-treestate-collapse")) {
-					expandTreeRows(childRow);
-				}
-			});
-
-		}
-*/
-
 
 		function loadTreeData(data, options) {
 
