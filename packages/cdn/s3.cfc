@@ -155,6 +155,11 @@
 		
 		<cfset stResult["content_type"] = getPageContext().getServletContext().getMimeType(arguments.file) />
 		
+		<!--- corrections --->
+		<cfif stResult.content_type eq "application/javascript">
+			<cfset stResult.content_type = "text/javascript" />
+		</cfif>
+		
 		<cfreturn stResult />
 	</cffunction>
 	
@@ -488,7 +493,10 @@
 		<cfset var cfhttp = "" />
 		<cfset var results = "" />
 		<cfset var path = "" />
-		
+		<cfset var stDetail = structNew() />
+		<cfset var substituteValues = arrayNew(1) />
+
+
 		<cfif structkeyexists(arguments,"localfile")>
 			<cfset arguments.data = fileReadBinary(arguments.localfile) />
 		</cfif>
@@ -548,10 +556,17 @@
 			<!--- check for errors --->
 			<cfif structkeyexists(results,"error")>
 				<!--- check error xml --->
-				<cfset application.fapi.throw(message="Error accessing S3 API: {1}",type="s3error",detail=serializeJSON({signature:signature,result:results}),substituteValues=[ results.error.message.XMLText ]) />
+				<cfset stDetail = structNew()>
+				<cfset stDetail["signature"] = signature>
+				<cfset stDetail["result"] = results>
+				<cfset substituteValues = arrayNew(1)>
+				<cfset substituteValues[1] = results.error.message.XMLText>
+				<cfset application.fapi.throw(message="Error accessing S3 API: {1}",type="s3error",detail=serializeJSON(stDetail),substituteValues=substituteValues) />
 			</cfif>
 		<cfelseif NOT listFindNoCase("200,204",listfirst(cfhttp.statuscode," "))>
-			<cfset application.fapi.throw(message="Error accessing S3 API: {1}",type="s3error",detail=cfhttp.filecontent,substituteValues=[ cfhttp.statuscode ]) />
+			<cfset substituteValues = arrayNew(1)>
+			<cfset substituteValues[1] = cfhttp.statuscode>
+			<cfset application.fapi.throw(message="Error accessing S3 API: {1}",type="s3error",detail=cfhttp.filecontent,substituteValues=substituteValues) />
 		</cfif>
 	</cffunction>
 	

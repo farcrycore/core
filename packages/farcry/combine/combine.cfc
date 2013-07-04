@@ -280,7 +280,7 @@
 		<cfset var newImagePath = "" />
 		
 		<cfloop condition="structisempty(st) or (arraylen(st.pos) and st.pos[1])">
-			<cfset st = refindnocase("url\([""']?(/\w[^)]+)[""']?\)",arguments.css,1,true) />
+			<cfset st = refindnocase("url\([""']?(/\w[^)""']+)[""']?\)",arguments.css,1,true) />
 			
 			<cfif arraylen(st.pos) and st.pos[1]>
 				<cfset imageURL = mid(arguments.css,st.pos[2],st.len[2]) />
@@ -291,8 +291,7 @@
 					<cfset imageURL = application.fc.lib.cdn.ioCopyFile(source_localpath=imagePath,dest_location="cache",dest_file=imageURL) />
 				</cfif>
 				
-				<cfset newImagePath = application.fc.lib.cdn.ioGetFileLocation(location="cache",file=imageURL).path />
-				<cfset arguments.css = left(arguments.css,st.pos[1]-1) & "url('" & newImagePath & "')" & mid(arguments.css,st.pos[1]+st.len[1]+1,len(arguments.css)) />
+				<cfset arguments.css = left(arguments.css,st.pos[1]-1) & "url('" & mid(imageURL,2,len(imageURL)) & "')" & mid(arguments.css,st.pos[1]+st.len[1],len(arguments.css)) />
 			</cfif>
 		</cfloop>
 		
