@@ -217,6 +217,7 @@
 	<cffunction name="ioGetFileLocation" returntype="struct" output="false" hint="Returns serving information for the file - either method=redirect + path=URL OR method=stream + path=local path">
 		<cfargument name="location" type="string" required="true" />
 		<cfargument name="file" type="string" required="true" />
+		<cfargument name="admin" type="boolean" required="false" default="false" />
 		
 		<cfset var config = this.locations[arguments.location] />
 		

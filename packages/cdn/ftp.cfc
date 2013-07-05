@@ -370,7 +370,11 @@
 		
 		<cfset var connectionname = "" />
 		<cfset var cfftp = structnew() />
-		<cfset var tmpfile = getTemporaryFile(config=arguments.config,file=arguments.file) />
+		<cfset var tmpfile = getCachedFile(config=arguments.config,file=arguments.file) />
+		
+		<cfif not len(tmpfile)>
+			<cfset tmpfile = getTemporaryFile(config=arguments.config,file=arguments.file) />
+		</cfif>
 		
 		<!--- Write data to a temporary file --->
 		<cfswitch expression="#arguments.datatype#">

@@ -165,10 +165,6 @@
 	    <cfparam name="arguments.stMetadata.ftAllowedExtensions" default="jpg,jpeg,png,gif"><!--- The extentions allowed to be uploaded --->
 	    <cfparam name="arguments.stMetadata.ftSizeLimit" default="0" />
 		
-	    <cfif len(arguments.stMetadata.value) and not fileexists(application.path.imageroot & arguments.stMetadata.value)>
-			<cfset arguments.stMetadata.value = "" />
-		</cfif>
-	    
 	    <skin:loadJS id="jquery" />
 	    <skin:loadJS id="jquery-tooltip" />
 	    <skin:loadJS id="jquery-tooltip-auto" />
@@ -249,7 +245,7 @@
 						    <div style="margin-left:15px;">Generating image...</div>
 						</div>
 						<cfif len(arguments.stMetadata.value)>
-						    <cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stMetadata.value) />
+						    <cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stMetadata.value,admin=true) />
 						    <cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=arguments.stMetadata.value,datatype='image')#" structName="stImage" />
 						    <cfset previewwidth = stImage.width />
 						    <cfset previewheight = stImage.height />
@@ -319,7 +315,7 @@
 					    	</div>
 						</div>
 						<cfif len(arguments.stMetadata.value)>
-						    <cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stMetadata.value) />
+						    <cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stMetadata.value,admin=true) />
 						    <cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=arguments.stMetadata.value,datatype='image')#" structName="stImage" />
 						    <cfset previewwidth = stImage.width />
 						    <cfset previewheight = stImage.height />
@@ -413,7 +409,7 @@
 		
 		<!--- Preview --->
 		<cfif len(arguments.stMetadata.value)>
-		    <cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stMetadata.value) />
+		    <cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stMetadata.value,admin=true) />
 		    <cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=arguments.stMetadata.value,datatype='image')#" structName="stImage" />
 		    <cfset previewwidth = stImage.width />
 		    <cfset previewheight = stImage.height />
@@ -524,7 +520,7 @@
 	    	<cfparam name="url.allowcancel" default="1" />
 	    	
 			<cfif len(source)>
-				<cfset stLoc = application.fc.lib.cdn.ioGetFileLocation(location="images",file=source) />
+				<cfset stLoc = application.fc.lib.cdn.ioGetFileLocation(location="images",file=source,admin=true) />
 				
 				<cfsavecontent variable="html"><cfoutput>
 					<div style="float:left;background-color:##cccccc;height:100%;width:65%;margin-right:1%;">
@@ -614,7 +610,7 @@
 				
 				<cfif not structkeyexists(stResult,"error")>
 					<cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=stResult.value,datatype='image')#" structName="stImage" />
-					<cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=stResult.value) />
+					<cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=stResult.value,admin=true) />
 					<cfset stJSON["value"] = stResult.value />
 					<cfset stJSON["filename"] = listlast(stResult.value,'/') />
 					<cfset stJSON["fullpath"] = stFile.path />
@@ -654,7 +650,7 @@
 				
 				<cfif not structkeyexists(stResult,"error")>
 					<cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=stResult.value,datatype='image')#" structName="stImage" />
-					<cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=stResult.value) />
+					<cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=stResult.value,admin=true) />
 					<cfset stJSON["value"] = stResult.value />
 					<cfset stJSON["filename"] = listlast(stResult.value,'/') />
 					<cfset stJSON["fullpath"] = stFile.path />
@@ -777,7 +773,7 @@
 			<cfset arguments.destination = "/#arguments.destination#" />
 		</cfif>
 		
-		<cfif ((structkeyexists(form,arguments.uploadfield) and len(form[arguments.uploadfield])) or (isBoolean(stFieldPost.DELETE) and stFieldPost.DELETE)) and len(arguments.existingfile) AND fileExists("#application.path.imageRoot##arguments.existingfile#")>
+		<cfif ((structkeyexists(form,arguments.uploadfield) and len(form[arguments.uploadfield])) or (isBoolean(stFieldPost.DELETE) and stFieldPost.DELETE)) and len(arguments.existingfile) AND application.fc.lib.cdn.ioFileExists(location="images",file=arguments.existingfile)>
 			
 			<cfset archivedFile = application.fc.lib.cdn.ioMoveFile(source_location="images",source_file=arguments.existingfile,dest_location="archive",dest_file="#arguments.destination#/#arguments.objectid#-#DateDiff('s', 'January 1 1970 00:00', now())#-#listLast(arguments.existingfile, '/')#") />
 			
@@ -964,7 +960,7 @@
 		
 		<cfsavecontent variable="html">
 			<cfif len(arguments.stMetadata.value)>
-				<cfset stLoc = getFileLocation(stObject=arguments.stObject,stMetadata=arguments.stMetadata) />
+				<cfset stLoc = getFileLocation(stObject=arguments.stObject,stMetadata=arguments.stMetadata,admin=true) />
 				<cfoutput><img src="#stLoc.path#" border="0"</cfoutput>
 				<cfif arguments.stMetadata.ftAutoGenerateType EQ "ForceSize" OR arguments.stMetadata.ftAutoGenerateType EQ "Pad" >
 					<cfif len(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth GT 0><cfoutput> width="#arguments.stMetadata.ftImageWidth#"</cfoutput></cfif>
