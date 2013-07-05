@@ -76,7 +76,7 @@
 		</cfif>
 		
 		<cfif not structkeyexists(st,"localCacheSize")>
-			<cfset st["localCacheSize"] = 5 />
+			<cfset st["localCacheSize"] = 0 />
 		</cfif>
 		
 		<cfif structkeyexists(st,"maxAge") and not refind("^\d+$",st.maxAge)>
