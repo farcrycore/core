@@ -4,7 +4,7 @@
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
-<cfset stUser = createObject("component", application.stcoapi["farUser"].packagePath).getByUserID(listfirst(stObj.username,"_")) />
+<cfset stUser = createObject("component", application.stcoapi["farUser"].packagePath).getByUserID(listdeleteat(stObj.username,listlen(stObj.username,"_"),"_")) />
 
 <cfoutput>
 	<li>
