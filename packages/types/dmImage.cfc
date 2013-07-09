@@ -190,9 +190,10 @@ type properties
 	<cfif stLocal.relatedQty GTE 1>
 		<cfset stReturn.bSuccess = false>
 		<cfset stReturn.message = stReturn.message & "Sorry image [#stObj.label#] cannot be delete because it is associated to <strong>#stLocal.relatedQty#</strong> other item(s).<br />">
+		<cfreturn stReturn>
+	<cfelse>
+		<cfreturn super.delete(argumentCollection=arguments) />
 	</cfif>
-	
-	<cfreturn stReturn>
 </cffunction>
 
 <cffunction name="checkForExisting" access="public" output="No" returntype="struct" hint="Checks to see if an existing image object already uses that name">

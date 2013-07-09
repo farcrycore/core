@@ -1418,6 +1418,7 @@
 		<cfargument name="stObject" type="struct" required="false" hint="Provides the object" />
 		
 		<cfargument name="stMetadata" type="struct" required="false" hint="Property metadata" />
+		<cfargument name="admin" type="boolean" required="false" default="false" />
 		
 		<cfset var stResult = structnew() />
 		
@@ -1429,7 +1430,7 @@
 			<cfreturn stResult />
 		</cfif>
 		
-		<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stObject[arguments.stMetadata.name]) />
+		<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stObject[arguments.stMetadata.name],admin=arguments.admin) />
 		
 		<cfreturn stResult />
 	</cffunction>
