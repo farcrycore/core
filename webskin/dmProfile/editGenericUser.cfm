@@ -25,7 +25,7 @@ ACTION
 VIEW	
 ------------------------------>
 <cfoutput>
-	<h1>EDIT: #listfirst(stObj.username,"_")# - #stObj.userdirectory#</h1>
+	<h1>EDIT: #listdeleteat(stObj.username,listlen(stObj.username,"_"),"_")# - #stObj.userdirectory#</h1>
 </cfoutput>
 
 <ft:form>
