@@ -40,8 +40,19 @@ START WEBSKIN
 </cfoutput>
 
 <ft:fieldset legend="#application.fapi.getContentTypeMetadata(stobj.typename,'displayname',stobj.typename)# Information">
-	
-	<ft:object stObject="#stObj#" lFields="title,alt,thumbnailImage" format="display" bShowFieldHints="false" />	
+	<ft:field label="Title" bMultiField="true">
+		<cfoutput>#stobj.title#</cfoutput>
+	</ft:field>	
+	<ft:field label="Alternate Text" bMultiField="true">
+		<cfoutput>#stobj.alt#</cfoutput>
+	</ft:field>	
+	<ft:field label="Thumbnail" bMultiField="true">
+		<cfif len(stobj.ThumbnailImage)>
+			<cfoutput><img src="#application.fc.lib.cdn.ioGetFileLocation(location='images',file=stobj.thumbnailImage,admin=true).path#" /></cfoutput>
+		<cfelse>
+			<cfoutput>-- no thumbnail --</cfoutput>
+		</cfif>
+	</ft:field>	
 	
 	<cfif structKeyExists(stobj, "teaser")>
 		<ft:field label="Teaser" bMultiField="true">
@@ -54,7 +65,6 @@ START WEBSKIN
 		</ft:field>
 	</cfif>
 </ft:fieldset>
-
 
 
 <cfsetting enablecfoutputonly="false">

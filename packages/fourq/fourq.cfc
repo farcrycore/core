@@ -269,8 +269,11 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			</cfif>
 				
 			<cfif NOT structIsEmpty(stObj)>	
-	
-				<cfset stWebskin = application.fc.lib.objectbroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, template=arguments.template, hashKey="#arguments.hashKey#") />		
+				
+				<cfif not structkeyexists(stObj,"datetimeLastUpdated") or not isdate(stObj.datetimeLastUpdated)>
+					<cfset stObj.datetimeLastUpdated = now() />
+				</cfif>
+				<cfset stWebskin = application.fc.lib.objectbroker.getWebskin(objectid=stobj.objectid, typename=stobj.typename, datetimeLastUpdated=stobj.datetimeLastUpdated, template=arguments.template, hashKey="#arguments.hashKey#") />		
 				
 				<cfif len(stWebskin.webskinHTML)>			
 					<cfset application.fapi.addRequestLog("Retrieved webskin from cache [#stobj.objectid#, #stobj.typename#, #arguments.template#, #stWebskin.webskinCacheID#]") />
@@ -540,7 +543,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			<cfif request.aAncestorWebskins[arrayLen(request.aAncestorWebskins)].okToCache>
 				<!--- Add the webskin to the object broker if required --->
 				<cfset application.fapi.addRequestLog("Caching webskin [#arguments.stobj.objectid#, #arguments.stobj.typename#, #arguments.webskinTemplate#, #arguments.webskinCacheID#]") />
-				<cfset bAdded = application.fc.lib.objectbroker.addWebskin(objectid=arguments.stobj.objectid, typename=arguments.stobj.typename, template=arguments.webskinTemplate, webskinCacheID=arguments.webskinCacheID, html=webskinHTML, stCurrentView=stCurrentView) />
+				<cfset bAdded = application.fc.lib.objectbroker.addWebskin(objectid=arguments.stobj.objectid, typename=arguments.stobj.typename, datetimeLastUpdated=arguments.stobj.datetimeLastUpdated, template=arguments.webskinTemplate, webskinCacheID=arguments.webskinCacheID, html=webskinHTML, stCurrentView=stCurrentView) />
 			</cfif>
 		</cfif>
 		

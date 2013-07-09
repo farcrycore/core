@@ -9,7 +9,7 @@
 		<col style="width:10px;" />
 		<col style="" />
 		<tr class="nowrap" style="background:transparent;">
-			<td style="background:transparent;"><img src="#application.fapi.getImageWebRoot()##stobj.thumbnailImage#" title="#HTMLEditFormat(stObj.title)#" /></td>
+			<td style="background:transparent;"><img src="#application.fc.lib.cdn.ioGetFileLocation(location='images',file=stobj.thumbnailImage,admin=true).path#" title="#HTMLEditFormat(stObj.title)#" /></td>
 			<td style="background:transparent;">&nbsp;</td>
 			<td style="background:transparent;">
 				#stObj.title#

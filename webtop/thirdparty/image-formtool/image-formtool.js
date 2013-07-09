@@ -289,7 +289,7 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 	    				},
 	    				"working" : function onImageFormtoolCloseAutogenerate(event){
 	    					imageformtool.inputs.resizemethod.val("");
-		    				imageformtool.inputs.deletef.val("true");
+		    				imageformtool.inputs.deletef.val("false");
 	    				},
 	    				"traditional" : function onImageFormtoolCloseTraditional(event){ 
 	    					imageformtool.inputs.traditional.val(""); 

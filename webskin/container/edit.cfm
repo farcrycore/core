@@ -49,14 +49,7 @@
 		</ft:buttonPanel>
 	</ft:form>
 	
-	<skin:view objectid="#stobj.objectid#" typename="#stObj.typename#" webskin="displayAdminToolbar" alternatehtml="" original="#stOriginal#" />
-	
-	
-	<cfoutput><div id="#replace(containerID,'-','','ALL')#"></cfoutput>
-	
-	<skin:view stObject="#stConObj#" webskin="displayContainer" alternatehtml="" original="#stOriginal#" />
-	
-	<cfoutput></div></cfoutput>
+	<con:container label="#stObj.label#" defaultMirrorLabel="#stObj.label#">
 
 	<ft:form>
 		<ft:buttonPanel>
