@@ -86,6 +86,9 @@
 <cfparam name="url.rootobjectid" default="#application.fapi.getNavId(url.alias)#">
 
 
+<cfparam name="farcryRootObjectid" default="#application.fapi.getNavId("root")#">
+
+
 <!--- find root node --->
 <cfif isDefined("url.rootobjectid") AND isValid("uuid", url.rootobjectid)>
 	<cfset rootObjectID = url.rootobjectid>
@@ -401,14 +404,6 @@
 		<skin:view objectid="#rootObjectID#" typename="dmNavigation" webskin="webtopTreeChildRows" responsetype="json" />
 	</cfsavecontent>
 
-	<script type="text/javascript">
-
-		$j(function(){
-			//loadTreeData(#jsonData#);
-		});
-
-	</script>
-
 
 	<skin:htmlHead><cfoutput>
 		<script type="text/javascript">
@@ -416,16 +411,21 @@
 
 
 			SiteTreeView = Backbone.View.extend({
+
+				options: {
+					bRenderTreeOnly: false,
+					bIgnoreExpandedNodes: false,
+					bLoadLeafNodes: true
+				},
+
+
 				initialize: function SiteTreeView_initialize(options){
 
-					options = options || {};
-					options.bRenderTreeOnly = options.bRenderTreeOnly || false;
-					options.bIgnoreExpandedNodes = options.bIgnoreExpandedNodes || false;
-					options.bLoadLeafNodes = options.bLoadLeafNodes || true;
-
-					this.bRenderTreeOnly = options.bRenderTreeOnly;
-					this.bIgnoreExpandedNodes = options.bIgnoreExpandedNodes;
-					this.bLoadLeafNodes = options.bLoadLeafNodes;
+					if (options.type == "mini") {
+						this.options.bRenderTreeOnly = true;
+						this.options.bIgnoreExpandedNodes = true;
+						this.options.bLoadLeafNodes = false;
+					}
 
 					if (options.data) {
 						this.data = options.data;
@@ -632,9 +632,9 @@
 					var treeContent = $j("tbody", this.$el);
 
 					var urlParams = ''
-						+	'&bLoadLeafNodes=' + this.bLoadLeafNodes 
-						+	'&bIgnoreExpandedNodes=' + this.bIgnoreExpandedNodes
-						+	'&bRenderTreeOnly=' + this.bRenderTreeOnly
+						+	'&bLoadLeafNodes=' + this.options.bLoadLeafNodes 
+						+	'&bIgnoreExpandedNodes=' + this.options.bIgnoreExpandedNodes
+						+	'&bRenderTreeOnly=' + this.options.bRenderTreeOnly
 					;
 
 
@@ -687,9 +687,9 @@
 					var loadCollapsed = false;
 
 					var urlParams = ''
-						+	'&bLoadLeafNodes=' + this.bLoadLeafNodes 
-						+	'&bIgnoreExpandedNodes=' + this.bIgnoreExpandedNodes
-						+	'&bRenderTreeOnly=' + this.bRenderTreeOnly
+						+	'&bLoadLeafNodes=' + this.options.bLoadLeafNodes 
+						+	'&bIgnoreExpandedNodes=' + this.options.bIgnoreExpandedNodes
+						+	'&bRenderTreeOnly=' + this.options.bRenderTreeOnly
 					;
 
 					row.removeClass("fc-treestate-notloaded").addClass("fc-treestate-loading");
@@ -802,7 +802,7 @@
 						locked = "<img src='#application.url.webtop#/images/treeImages/customIcons/padlock.gif'>";
 					}
 					var colCheckbox = '';
-					if (!this.bRenderTreeOnly) {
+					if (!this.options.bRenderTreeOnly) {
 						colCheckbox = '<td class="fc-col-min fc-hidden-compact" nowrap="nowrap">' + locked + '</td> ';
 					}
 
@@ -824,7 +824,7 @@
 						;
 					}
 					var colActions = '';
-					if (!this.bRenderTreeOnly) {
+					if (!this.options.bRenderTreeOnly) {
 						colActions = ''
 							+	'<td class="objectadmin-actions"> '
 							+		'<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" onclick="$fc.objectAdminAction(\'Overview\', \'' + overviewURL + '\', { onHidden: function(){ reloadTreeBranch(\'' + reloadTreeBranchObjectID + '\'); } }); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button> '
@@ -845,17 +845,17 @@
 					}
 
 					var colURL = '';
-					if (!this.bRenderTreeOnly) {
+					if (!this.options.bRenderTreeOnly) {
 						colURL = '<td class="fc-nowrap-ellipsis fc-visible-compact">' + row["previewURL"] + '</td> ';
 					}
 
 					var colStatus = '';
-					if (!this.bRenderTreeOnly) {
+					if (!this.options.bRenderTreeOnly) {
 						colStatus = '<td class="fc-hidden-compact">' + row["statuslabel"] + '</td> ';
 					}
 
 					var colDateTime = '';
-					if (!this.bRenderTreeOnly) {
+					if (!this.options.bRenderTreeOnly) {
 						colDateTime = '<td class="fc-hidden-compact" title="' + row["datetimelastupdated"] + '">' + row["prettydatetimelastupdated"] + '</td> ';
 					}
 
@@ -887,10 +887,8 @@
 
 				App.miniTreeView = new SiteTreeView({
 					el: "##farcry-minitree",
-					rootObjectID: "#rootObjectID#",
-					bRenderTreeOnly: true,
-					bIgnoreExpandedNodes: true,
-					bLoadLeafNodes: "false"
+					rootObjectID: "#farcryRootObjectid#",
+					type: "mini"
 				});
 
 
