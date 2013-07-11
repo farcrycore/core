@@ -43,7 +43,7 @@ ACTION
 VIEW	
 ------------------------------>
 <cfoutput>
-	<h1>EDIT: #listdeleteat(stObj.username,listlen(stObj.username,"_"),"_")# - #stObj.userdirectory#</h1>
+	<h1>EDIT: <cfif listlen(stObj.username,"_")> #listdeleteat(stObj.username,listlen(stObj.username,"_"),"_")#</cfif> - #stObj.userdirectory#</h1>
 </cfoutput>
 
 <ft:form>

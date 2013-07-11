@@ -207,7 +207,7 @@
 		<cfset fullpath = arguments.config.pathPrefix & fullpath />
 		
 		<!--- URL encode the filename --->
-		<cfset fullpath = rereplace(fullpath,"[^/]+\.\w+$",replacelist(urlencodedformat(listlast(fullpath,"/")),"%2D,%2E,%5F","-,.,_"))>
+		<cfset fullpath = replacelist(urlencodedformat(fullpath),"%2F,%20,%2D,%2E,%5F","/, ,-,.,_")>
 		
 		<cfset fullpath = "s3://#arguments.config.accessKeyId#:#arguments.config.awsSecretKey#@#arguments.config.bucket##fullpath#" />
 		
@@ -236,7 +236,7 @@
 		</cfif>
 		
 		<!--- URL encode the filename --->
-		<cfset urlpath = rereplace(urlpath,"[^/]+\.\w+$",replacelist(urlencodedformat(listlast(urlpath,"/")),"%2D,%2E,%5F","-,.,_"))>
+		<cfset urlpath = replacelist(urlencodedformat(urlpath),"%2F,%20,%2D,%2E,%5F","/, ,-,.,_")>
 		
 		<cfif structkeyexists(arguments.config,"security") and arguments.config.security eq "private">
 			<cfset epochTime = DateDiff("s", DateConvert("utc2Local", "January 1 1970 00:00"), now()) + arguments.config.urlExpiry />
@@ -271,7 +271,13 @@
 		</cfif>
 		
 		<cfif structkeyexists(arguments.config,"maxAge")>
-			<cfset stResult.cache_control = "max-age=#arguments.config.maxAge#, s-maxage=#arguments.config.maxAge#" />
+			<cfparam name="stResult.cache_control" default="" />
+			<cfset stResult.cache_control = rereplace(listappend(stResult.cache_control,"max-age=#arguments.config.maxAge#"),",([^ ])",", \1","ALL") />
+		</cfif>
+		
+		<cfif structkeyexists(arguments.config,"sMaxAge")>
+			<cfparam name="stResult.cache_control" default="" />
+			<cfset stResult.cache_control = rereplace(listappend(stResult.cache_control,"s-maxage=#arguments.config.maxAge#"),",([^ ])",", \1","ALL") />
 		</cfif>
 		
 		<cfreturn stResult />
@@ -729,7 +735,7 @@
 		</cfloop>
 		
 		<!--- create signature --->
-		<cfset signature = replace("PUT\n\n#stHeaders['content-type']#\n#timestamp##amz#\n/#arguments.config.bucket##path#","\n","#chr(10)#","all") />
+		<cfset signature = replace("PUT\n\n#stHeaders['content-type']#\n#timestamp##amz#\n/#arguments.config.bucket##replacelist(urlencodedformat(path),"%2F,%2D,%2E,%5F","/,-,.,_")#","\n","#chr(10)#","all") />
 		
 		<!--- REST call --->
 		<cfhttp method="PUT" url="https://#arguments.config.bucket#.s3.amazonaws.com#path#" charset="utf-8" result="cfhttp" timeout="1800">
@@ -758,7 +764,8 @@
 				<cfset stDetail["result"] = results>
 				<cfset substituteValues = arrayNew(1)>
 				<cfset substituteValues[1] = results.error.message.XMLText>
-				<cfset application.fapi.throw(message="Error accessing S3 API: {1}",type="s3error",detail=serializeJSON(stDetail),substituteValues=substituteValues) />
+				<cfset substituteValues[2] = signature>
+				<cfset application.fapi.throw(message="Error accessing S3 API: {1} [signature={2}]",type="s3error",detail=serializeJSON(stDetail),substituteValues=substituteValues) />
 			</cfif>
 		<cfelseif NOT listFindNoCase("200,204",listfirst(cfhttp.statuscode," "))>
 			<cfset substituteValues = arrayNew(1)>
