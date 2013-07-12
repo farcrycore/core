@@ -73,13 +73,13 @@
 	<cfreturn this.currentPage />
 </cffunction>
 <cffunction name="getTotalPages" access="public" output="false" returntype="numeric" hint="Get the total number of pages">
-	<cfreturn numberFormat(this.totalPages) />
+	<cfreturn this.totalPages />
 </cffunction>
 <cffunction name="getFirstPage" access="public" output="false" returntype="numeric" hint="Get the first page in the pagination loop">
-	<cfreturn numberFormat(this.firstPage) />
+	<cfreturn this.firstPage />
 </cffunction>
 <cffunction name="getLastPage" access="public" output="false" returntype="numeric" hint="Get the last page in the pagination loop">
-	<cfreturn numberFormat(this.lastPage) />
+	<cfreturn this.lastPage />
 </cffunction>
 	
 <cffunction name="getRecordFrom" access="public" output="false" returntype="numeric" hint="Get the first row of the recordset for the current page of the pagination.">
