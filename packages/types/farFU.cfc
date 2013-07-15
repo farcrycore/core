@@ -780,10 +780,14 @@
 			<cfif structkeyexists(stResult,"__redirectionURL") and not structKeyExists(stResult, "ajaxmode")>
 				<!--- Don't want to resend the furl --->
 				<cfset structdelete(stLocalURL,"furl") />
-				
+				<cftry>
+				<cfif not isvalid("integer",stResult.__redirectionType)>
+					<cfset stResult.__redirectionType = 301>
+				</cfif>
 				<cfheader statuscode="#stResult['__redirectionType']#"><!--- statustext="Moved permanently" --->
 				<cfheader name="Location" value="#application.fapi.fixURL(url=stResult['__redirectionURL'],addvalues=application.factory.oUtils.deleteQueryVariable('furl,objectid',cgi.query_string))#">
 				<cfabort>
+				<cfcatch><cfdump var="##"></cfcatch></cftry>
 			</cfif>
 			
 			<!--- If the user went to an objectid=xyz URL, but should be using a friendly URL, redirect them --->
