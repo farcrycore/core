@@ -1453,7 +1453,7 @@
 			<cfreturn "" />
 		</cfif>
 		
-		<cfreturn application.fc.lib.cdn.ioCopyFile(source_pathlocation="images",source_file=currentfilename,dest_location="images",dest_file=newfilename,nameconflict="makeunique",uniqueamong="images") />
+		<cfreturn application.fc.lib.cdn.ioCopyFile(source_location="images",source_file=currentfilename,dest_location="images",dest_file=newfilename,nameconflict="makeunique",uniqueamong="images") />
 	</cffunction>
 	
 	<cffunction name="failed" access="public" output="false" returntype="struct" hint="This will return a struct with stMessage">
