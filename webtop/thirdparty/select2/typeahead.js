@@ -119,7 +119,7 @@
 					formatResult: formatResult
 				});
 			}
-			
+
 			self.bind("change",function(e){
 				if (typeof(e.val)=="string" && e.val.length && e.val.slice(0,1) == "_"){
 					$j(this).select2("val","");
@@ -137,8 +137,8 @@
 					
 					fcForm.openLibraryAdd(thisconfig.typename,thisconfig.objectid,propertyname,fieldname);
 				}
-			}).select2("val", aValues);
-			
+			}).select2("data", aValues);
+
 			if (!fcForm.typeaheadOldRefreshProperty){
 				fcForm.typeaheadOldRefreshProperty = fcForm.refreshProperty
 				fcForm.refreshProperty = function(typename,objectid,property,id){
