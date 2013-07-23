@@ -177,7 +177,7 @@ It just ignores the inner ones.
 						onsubmit: false, // let the onsubmit function handle the validation
 						errorElement: "p",
 						errorClass: "errorField",					   
-						wrapper: "div",  // a wrapper around the error message					   
+						//wrapper: "div",  // a wrapper around the error message					   
 						errorPlacement: function(error, element) {
 					  		error.prependTo( element.closest("div.ctrlHolder") );
 				        },

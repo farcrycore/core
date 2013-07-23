@@ -493,7 +493,7 @@
 					
 					<cfset variables.formValidationMessageInner = request.stFarcryFormValidation[stObj.ObjectID][i].stError.message>
 					<cfsavecontent variable="variables.formValidationMessage">
-						<cfoutput><p class="errorField" htmlfor="#variables.prefix##i#" for="#variables.prefix##i#">#request.stFarcryFormValidation[stObj.ObjectID][i].stError.message#</p></cfoutput>
+						<cfoutput><p class="errorField" for="#variables.prefix##i#">#request.stFarcryFormValidation[stObj.ObjectID][i].stError.message#</p></cfoutput>
 						<!--- <div class="#request.stFarcryFormValidation[stObj.ObjectID][i].stError.class#">#request.stFarcryFormValidation[stObj.ObjectID][i].stError.message#</div> --->
 					</cfsavecontent>
 					
