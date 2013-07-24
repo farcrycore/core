@@ -40,7 +40,11 @@
 		</cfif>
 		
 		<cfif not structkeyexists(st,"domain")>
-			<cfset st.domain = "s3-#st.region#.amazonaws.com" />
+			<cfif not structkeyexists(arguments.config.region) or not len(arguments.config.region) or arguments.config.region eq "us-east-1">
+				<cfset st.domain = "s3.amazonaws.com" />
+			<cfelse>
+				<cfset st.domain = "s3-#st.region#.amazonaws.com" />
+			</cfif>
 			<cfset st.domainType = "s3" />
 		<cfelse>
 			<cfset st.domainType = "custom" />
@@ -250,7 +254,9 @@
 			<cfset urlpath = urlpath & "?AWSAccessKeyId=#arguments.config.accessKeyId#&Expires=#epochTime#&Signature=#urlencodedformat(HMAC_SHA1(signature,arguments.config.awsSecretKey))#" />
 		</cfif>
 		
-		<cfif arguments.config.domainType eq "s3" or arguments.s3Path>
+		<cfif not structkeyexists(arguments.config.region) or not len(arguments.config.region) or arguments.config.region eq "us-east-1">
+			<cfreturn "//s3.amazonaws.com" & urlpath />
+		<cfelseif arguments.config.domainType eq "s3" or arguments.s3Path>
 			<cfreturn "//s3-#arguments.config.region#.amazonaws.com" & urlpath />
 		<cfelse>
 			<cfreturn "//" & arguments.config.domain & urlpath />
