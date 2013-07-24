@@ -81,6 +81,7 @@
 	
 	<cffunction name="normalizePath" returntype="string" access="public" output="false" hint="Normalizes filename character set, replaces '\' with '/', removes trailing '/'">
 		<cfargument name="path" type="string" required="true" />
+		<cfargument name="allowSpaces" type="boolean" require="false" default="true" />
 		
 		<!--- Normalize slashes to forward slash --->
 		<cfset arguments.path = replace(arguments.path,"\","/","ALL") />
@@ -93,6 +94,10 @@
 			<cfset arguments.path = left(arguments.path,2) & reReplaceNoCase(mid(arguments.path,3,len(arguments.path)), "[^a-z0-9\.\-\_/ ]","", "all") />
 		<cfelse>
 			<cfset arguments.path = reReplaceNoCase(arguments.path, "[^a-z0-9\.\-\_/ ]","", "all") />
+		</cfif>
+		
+		<cfif not arguments.allowSpaces>
+			<cfset arguments.path = replace(arguments.path," ","","ALL") />
 		</cfif>
 		
 		<!--- Remove trailing slash --->
@@ -169,7 +174,7 @@
 		<cfset var i = 0 />
 		<cfset var currentfile = arguments.file />
 		
-		<cfset arguments.file = normalizePath(arguments.file) />
+		<cfset arguments.file = normalizePath(arguments.file,false) />
 		
 		<cfif structkeyexists(arguments,"locations")>
 			<cfloop condition="len(ioFindFile(locations=arguments.locations,file=currentfile))">
