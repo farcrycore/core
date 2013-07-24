@@ -219,7 +219,8 @@
 
 
 
-	<div id="minitree-container" class="" style="display: none; position: fixed; width:400px; height: 500px; left: 50%; top: 50%; z-index: 120; overflow:visible;">
+<script id="tree-dialog" type="text/x-handlebars-template">
+	<div id="minitree-container" class="" style="display: none; position: fixed; z-index:1050; width:400px; height: 500px; left: 50%; top: 50%; overflow:visible;">
 		<div id="minitree" style="position: absolute; top: -250px; left: -200px; width: 100%; height: 100%; border: 1px solid ##ccc; border-radius: 2px; box-shadow: 0 0 16px rgba(0,0,0,0.32); background: ##fff;">
 
 			<div class="modal-header">
@@ -259,14 +260,14 @@
 
 			<div class="modal-footer" style="border: none; border-radius: 0; -moz-border-radius: 0">
 				<a href="##" class="btn btn-primary">Move</a>
-				<a href="##" class="btn">Cancel</a>
+				<a href="##" class="btn btn-cancel">Cancel</a>
 			</div>
 
 
 		</div>
 	</div>
-
-
+	<div class="modal-backdrop fade in"></div>
+</script>
 
 
 	<script type="text/javascript">
@@ -410,6 +411,40 @@
 			App = {};
 
 
+			TreeDialogView = Backbone.View.extend({
+
+				el: "body",
+
+				initialize: function TreeDialogView_initialize(options){
+
+					this.template = Handlebars.compile(Backbone.$("##tree-dialog").html());
+					this.render();
+
+				},
+
+				events: {
+					"click .modal-header .close": "close",
+					"click .btn-cancel": "close"
+				},
+
+	
+				render: function TreeDialogView_render(){
+
+					this.$el.append(Backbone.$(this.template()));   
+
+				},
+
+
+				close: function close(evt){
+					Backbone.$("##minitree-container").remove();
+					Backbone.$(".modal-backdrop").remove();
+
+				}
+
+			});
+
+
+
 			SiteTreeView = Backbone.View.extend({
 
 				options: {
@@ -493,7 +528,17 @@
 				clickCopyTo: function SiteTreeView_clickCopyTo(evt){
 					var objectid = $j(evt.currentTarget).closest("tr").data("objectid");
 
+					App.treeDialogView = new TreeDialogView();
+
+					App.miniTreeView = new SiteTreeView({
+						el: "##farcry-minitree",
+						rootObjectID: "#farcryRootObjectid#",
+						type: "mini"
+					});
+
+
 					$j("##minitree-container").show();
+
 				},
 
 				clickMoveTo: function SiteTreeView_clickMoveTo(evt){
@@ -883,12 +928,6 @@
 				App.siteTreeView = new SiteTreeView({
 					el: "##farcry-sitetree",
 					data: #jsonData#
-				});
-
-				App.miniTreeView = new SiteTreeView({
-					el: "##farcry-minitree",
-					rootObjectID: "#farcryRootObjectid#",
-					type: "mini"
 				});
 
 
