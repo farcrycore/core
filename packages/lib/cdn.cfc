@@ -83,6 +83,12 @@
 		<cfargument name="path" type="string" required="true" />
 		<cfargument name="allowSpaces" type="boolean" require="false" default="true" />
 		
+		<cfset var regex = "[^a-z0-9\.\-\_/]+" />
+		
+		<cfif not arguments.allowSpaces>
+			<cfset regex = "[^a-z0-9\.\-\_/ ]+" />
+		</cfif>
+		
 		<!--- Normalize slashes to forward slash --->
 		<cfset arguments.path = replace(arguments.path,"\","/","ALL") />
 		
@@ -91,13 +97,9 @@
 		
 		<!--- Remove potentially invalid characters --->
 		<cfif refindnocase("\w:",arguments.path)>
-			<cfset arguments.path = left(arguments.path,2) & reReplaceNoCase(mid(arguments.path,3,len(arguments.path)), "[^a-z0-9\.\-\_/ ]","", "all") />
+			<cfset arguments.path = left(arguments.path,2) & reReplaceNoCase(mid(arguments.path,3,len(arguments.path)), regex, "-", "all") />
 		<cfelse>
 			<cfset arguments.path = reReplaceNoCase(arguments.path, "[^a-z0-9\.\-\_/ ]","", "all") />
-		</cfif>
-		
-		<cfif not arguments.allowSpaces>
-			<cfset arguments.path = replace(arguments.path," ","","ALL") />
 		</cfif>
 		
 		<!--- Remove trailing slash --->
