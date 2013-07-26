@@ -409,10 +409,12 @@
 		
 		<cfif structkeyexists(arguments.data,"dbType")>
 			<cfset type = arguments.data.dbType />
-		<cfelse>
+		<cfelseif structkeyexists(arguments.data,"type")>
 			<cfset type = arguments.data.type />
+		<cfelse>
+			<cfset type = "string" />
 		</cfif>
-		
+
 		<cfif structkeyexists(arguments.data,"dbPrimaryKey")>
 			<cfset bPrimaryKey = arguments.data.dbPrimaryKey />
 		</cfif>
