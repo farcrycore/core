@@ -58,10 +58,10 @@
 
 	<!--- output home --->
 	<cfif qNav.currentRow eq 1 AND attributes.bIncludeHome>
-		<cfset stHome = application.fapi.getContentObject(typename="dmNavigation", objectid=application.fapi.getNavId(attributes.homeAlias))>
-		<cfoutput><#attributes.itemTag# class="#stHome.lNavIDAlias#<cfif request.navID eq stHome.objectid> active</cfif>">#attributes.itemMarkupStart#</cfoutput>
-		<cfset href = application.fapi.getLink(type="dmNavigation", objectid="#stHome.objectid#")>
-		<cfoutput><a href="#href#">#stHome.title#</a></cfoutput>
+		<cfset qHomeNode = o.getNode(objectID=application.fapi.getNavId(attributes.homeAlias))>
+		<cfoutput><#attributes.itemTag# class="#attributes.homeAlias#<cfif request.navID eq qHomeNode.objectid> active</cfif>">#attributes.itemMarkupStart#</cfoutput>
+		<cfset href = application.fapi.getLink(type="dmNavigation", objectid="#qHomeNode.objectid#")>
+		<cfoutput><a href="#href#">#qHomeNode.objectName#</a></cfoutput>
 		<cfoutput>#attributes.itemMarkupEnd#</#attributes.itemTag#></cfoutput>
 	</cfif>
 
