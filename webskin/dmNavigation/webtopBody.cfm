@@ -220,12 +220,12 @@
 
 
 <script id="tree-dialog" type="text/x-handlebars-template">
-	<div id="minitree-container" class="" style="display: none; position: fixed; z-index:1050; width:400px; height: 500px; left: 50%; top: 50%; overflow:visible;">
+	<div id="minitree-container" class="" style="position: fixed; z-index:1050; width:400px; height: 500px; left: 50%; top: 50%; overflow:visible;">
 		<div id="minitree" style="position: absolute; top: -250px; left: -200px; width: 100%; height: 100%; border: 1px solid ##ccc; border-radius: 2px; box-shadow: 0 0 16px rgba(0,0,0,0.32); background: ##fff;">
 
 			<div class="modal-header">
 				<button type="button" class="close" aria-hidden="true">&times;</button>
-				<h4 style="margin:0; padding-top: 2px; margin-right: 20px; line-height: 24px"><i class="icon-move" style="display:inline-block; font-size: 16px; width: 16px; height: 16px;"></i> Move</h4>
+				<h4 style="margin:0; padding-top: 2px; margin-right: 20px; line-height: 24px"><i class="icon-move" style="display:inline-block; font-size: 16px; width: 16px; height: 16px;"></i> {{title}}</h4>
 			</div>
 
 			<div class="modal-body" style="overflow: auto; height: 368px; max-height: 368px;">
@@ -233,20 +233,20 @@
 				<table class="objectadmin table table-hover farcry-objectadmin">
 				<thead>
 					<tr>
-						<th>This folder</th>
+						<th>{{sourceText}}</th>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
-						<td class="fc-tree-title fc-nowrap"><a href="##" class="fc-treestate-toggle"><i class="fc-icon-treestate"></i></a><span class="icon-stack"><i class="icon-folder-close"></i></span> <span>Getting Started</span></td>
+						<td class="fc-tree-title fc-nowrap"><a href="##" class="fc-treestate-toggle"><i class="fc-icon-treestate"></i></a><span class="icon-stack"><i class="icon-folder-close"></i></span> <span>{{sourceName}}</span></td>
 					</tr>
 				</tbody>
 				</table>
 
-				<table id="farcry-minitree" class="objectadmin table table-hover farcry-objectadmin">
+				<table id="farcry-minitree" class="objectadmin table table-hover farcry-objectadmin table-unselectable">
 				<thead>
 					<tr>
-						<th>Will be moved into the selected folder...</th>
+						<th>{{targetText}}</th>
 					</tr>
 				</thead>
 				<tbody style="max-height: 200px; overflow: auto;">
@@ -259,7 +259,7 @@
 			</div>
 
 			<div class="modal-footer" style="border: none; border-radius: 0; -moz-border-radius: 0">
-				<a href="##" class="btn btn-primary">Move</a>
+				<a href="##" class="btn btn-primary btn-submit" style="text-transform:capitalize">{{submitLabel}}</a>
 				<a href="##" class="btn btn-cancel">Cancel</a>
 			</div>
 
@@ -413,32 +413,52 @@
 
 			TreeDialogView = Backbone.View.extend({
 
-				el: "body",
+				options: {
+					title: "Move",
+					submitLabel: "Move",
+					sourceText: "This folder",
+					sourceName: null,
+					sourceObjectID: null,
+					targetText: "Will be moved into the selected folder..."
+
+				},
 
 				initialize: function TreeDialogView_initialize(options){
-
 					this.template = Handlebars.compile(Backbone.$("##tree-dialog").html());
-					this.render();
 
+					this.render();
 				},
 
 				events: {
-					"click .modal-header .close": "close",
-					"click .btn-cancel": "close"
+					"click .modal-header .close, .btn-cancel": "close",
+					"click .btn-submit": "submit"
+
 				},
 
-	
-				render: function TreeDialogView_render(){
 
-					this.$el.append(Backbone.$(this.template()));   
+				render: function TreeDialogView_render(){
+					this.$el.html(this.template(this.options));
+					Backbone.$("body").append(this.$el);   
+
+					this.treeView = new SiteTreeView({
+						el: "##farcry-minitree",
+						rootObjectID: "#farcryRootObjectid#",
+						type: "mini"
+					});
+					this.treeView.render();
 
 				},
 
 
 				close: function close(evt){
-					Backbone.$("##minitree-container").remove();
-					Backbone.$(".modal-backdrop").remove();
+					this.remove();
+				},
 
+				submit: function close(evt){
+					alert("Coming soon...");
+					// check for selected nav item
+					
+					//this.remove();
 				}
 
 			});
@@ -450,7 +470,12 @@
 				options: {
 					bRenderTreeOnly: false,
 					bIgnoreExpandedNodes: false,
-					bLoadLeafNodes: true
+					bLoadLeafNodes: true,
+					bExpandOnTitleCellClick: true,
+					bSelectOnTitleCellClick: false,
+
+					data: null,
+					rootObjectID: null
 				},
 
 
@@ -460,16 +485,8 @@
 						this.options.bRenderTreeOnly = true;
 						this.options.bIgnoreExpandedNodes = true;
 						this.options.bLoadLeafNodes = false;
-					}
-
-					if (options.data) {
-						this.data = options.data;
-						this.render();
-					}
-
-					if (options.rootObjectID) {
-						this.rootObjectID = options.rootObjectID;
-						this.loadTree(this.rootObjectID);
+						this.options.bExpandOnTitleCellClick = false;
+						this.options.bSelectOnTitleCellClick = true;
 					}
 
 				},
@@ -477,26 +494,30 @@
 				events: {
 					"click .fc-treestate-toggle" : "clickToggle",
 					"click .fc-tree-title" : "clickTitle",
+					"dblclick .fc-tree-title" : "clickTitle",
 					"click .fc-copyto" : "clickCopyTo",
 					"click .fc-moveto" : "clickMoveTo",
 					"click .fc-zoom" : "clickZoom"
 				},
 
-				
+
 				render: function SiteTreeView_render(){
 
 					var treeContent = $j("tbody", this.$el);
 
-					// construct markup from data
-					var aRowMarkup = [];
-					for (i=0; i<this.data.rows.length; i++) {
-						var rowhtml = this.getRowMarkup(this.data.rows[i]);
-						aRowMarkup.push(rowhtml);
+					if (this.options.rootObjectID) {
+						this.loadTree(this.options.rootObjectID);
 					}
-
-					treeContent.html(aRowMarkup.join(""));
-
-					this.loadExpandedAjaxNodes();
+					else {
+						// construct markup from data
+						var aRowMarkup = [];
+						for (i=0; i<this.options.data.rows.length; i++) {
+							var rowhtml = this.getRowMarkup(this.options.data.rows[i]);
+							aRowMarkup.push(rowhtml);
+						}
+						treeContent.html(aRowMarkup.join(""));
+						this.loadExpandedAjaxNodes();
+					}
 
 				},
 
@@ -521,28 +542,57 @@
 				},
 
 				clickTitle: function clickTitle(evt){
-					$j(evt.currentTarget).find(".fc-treestate-toggle").click();
+					if (this.options.bExpandOnTitleCellClick) {
+						$j(evt.currentTarget).find(".fc-treestate-toggle").click();
+					}
+					else {
+						if (this.options.bSelectOnTitleCellClick) {
+							this.selectRow($j(evt.currentTarget).closest("tr"));
+						}
+						if (evt.type == "dblclick") {
+							$j(evt.currentTarget).find(".fc-treestate-toggle").click();
+						}
+					}
 				},
 
 
 				clickCopyTo: function SiteTreeView_clickCopyTo(evt){
-					var objectid = $j(evt.currentTarget).closest("tr").data("objectid");
 
-					App.treeDialogView = new TreeDialogView();
+					var row = $j(evt.currentTarget).closest("tr")
+					var objectid = row.data("objectid");
+					var sourceName = row.find(".fc-tree-title").text();
 
-					App.miniTreeView = new SiteTreeView({
-						el: "##farcry-minitree",
-						rootObjectID: "#farcryRootObjectid#",
-						type: "mini"
+					this.treeDialogView = new TreeDialogView({
+
+						title: "Copy to...",
+						submitLabel: "Copy",
+						sourceText: "This folder",
+						sourceObjectID: objectid,
+						sourceName: sourceName,
+						targetText: "Will be copied into the selected folder..."
+
 					});
-
-
-					$j("##minitree-container").show();
+					this.treeDialogView.render();
 
 				},
 
 				clickMoveTo: function SiteTreeView_clickMoveTo(evt){
-					this.clickCopyTo(evt);
+
+					var row = $j(evt.currentTarget).closest("tr")
+					var objectid = row.data("objectid");
+					var sourceName = row.find(".fc-tree-title").text();
+
+					this.treeDialogView = new TreeDialogView({
+
+						title: "Move to...",
+						submitLabel: "Move",
+						sourceText: "This folder",
+						sourceObjectID: objectid,
+						sourceName: sourceName,
+						targetText: "Will be moved into the selected folder..."
+					});
+					this.treeDialogView.render();
+
 				},
 
 
@@ -830,6 +880,15 @@
 				},
 
 
+				selectRow: function SiteTreeView_selectRow(row) {
+					var id = row.data("objectid");
+
+					row.closest("tbody").find("tr").removeClass("selected");
+					row.addClass("selected");
+
+				},
+
+
 				getRowMarkup: function SiteTreeView_getRowMarkup(row) {
 
 					var overviewURL = "#application.url.webtop#/edittabOverview.cfm?typename=" + row["typename"] + "&objectid=" + row["objectid"];
@@ -929,6 +988,7 @@
 					el: "##farcry-sitetree",
 					data: #jsonData#
 				});
+				App.siteTreeView.render();
 
 
 			});

@@ -492,6 +492,10 @@ table.table-hover tbody tr:hover > td {
 	background: #fff6eb;
 }
 
+table.table-hover tbody tr.selected > td {
+	background: #F9E6D4;
+}
+
 
 
 .table-striped tbody > tr.selected > td, 
@@ -499,6 +503,15 @@ table.table-hover tbody tr:hover > td {
 .table-striped tbody > tr.selected > th, 
 .table-striped tbody > tr.selected:nth-child(2n+1) > th { 
 	background-color: #F9E6D4;
+}
+
+.table-unselectable td, .table-unselectable td span {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 
