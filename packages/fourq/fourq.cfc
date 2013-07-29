@@ -907,6 +907,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 		<cfset var oType = "" />
 		<cfset var addedtoBroker = "" />
 		<cfset var tempObjectStore = structNew() />
+		<cfset var typename = getTablename() />
 				
 		<!--- init fourq --->
 		<cfset fourqInit() />	
@@ -933,13 +934,13 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 
 		<cfelse>
 			<cfif isdefined("request.mode.rebuild") and request.mode.rebuild eq "page">
-				<cfset application.fc.lib.objectbroker.RemoveFromObjectBroker(arguments.objectid,variables.typename) />
+				<cfset application.fc.lib.objectbroker.RemoveFromObjectBroker(arguments.objectid,typename) />
 			</cfif>
 			
 			<cfif arguments.bUseInstanceCache AND NOT arguments.bArraysAsStructs>
 				<!--- Attempt to get the object from the ObjectBroker --->
 				<!--- getFromObjectBroker returns an empty struct if the object is not in the broker --->
-				<cfset stobj = application.fc.lib.objectbroker.getFromObjectBroker(ObjectID=arguments.objectid,typename=variables.typename)>
+				<cfset stobj = application.fc.lib.objectbroker.getFromObjectBroker(ObjectID=arguments.objectid,typename=typename)>
 			</cfif>
 
 			<cfif structisEmpty(stObj)>
@@ -951,7 +952,7 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			
 				<!--- Attempt to add the object to the broker --->
 				<cfif NOT arguments.bArraysAsStructs AND NOT arguments.bShallow>
-					<cfset addedtoBroker = application.fc.lib.objectbroker.AddToObjectBroker(stobj=stobj,typename=variables.typename)>
+					<cfset addedtoBroker = application.fc.lib.objectbroker.AddToObjectBroker(stobj=stobj,typename=typename)>
 				</cfif>
 			</cfif>	
 
