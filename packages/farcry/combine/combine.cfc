@@ -187,7 +187,7 @@
 			<cfif sType EQ "CSS">
 				
 				<cfset fileDir = application.factory.oUtils.listSlice(sFilePath,1,-2,"/") />
-				<cfset sFileContent = rereplace(rereplace(sFileContent,"url\(['""]?/?([^'""\)]+)['""]?\)","url('#fileDir#/\1')","ALL"),"/[^/]+/../","/","ALL") />
+				<cfset sFileContent = rereplace(rereplace(sFileContent,"url\(['""]?/?([^'""\)]+)['""]?\)","url('#fileDir#/\1')","ALL"),"/[^/]+/\.\./","/","ALL") />
 				
 			 </cfif>
 			 
