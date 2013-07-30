@@ -762,6 +762,7 @@
 		<cfargument name="content" type="any" required="true" />
 		<cfargument name="type" type="string" required="true" />
 		<cfargument name="filename" type="string" required="false" />
+		<cfargument name="ccToWords" type="boolean" required="false" default="false" hint="Used for csv types. If set to true, column names in camel case are converted to separate words. e.g. SomeCol => Some Col" />
 		
 		<cfset var tmp = "" />
 		<cfset var field = "" />
@@ -798,7 +799,7 @@
 					<cfwddx action="cfml2wddx" input="#arguments.content#" output="arguments.content" />
 				</cfif>
 			</cfcase>
-			<cfcase value="csv">
+			<cfcase value="csv,text/csv" delimiters=",">
 				<cfset arguments.type = "text/csv" />
 				<cfif isquery(arguments.content)>
 					<cfset tmp = createObject("java","java.lang.StringBuffer").init() />
@@ -806,7 +807,13 @@
 						<cfif field neq listfirst(arguments.content.columnlist)>
 							<cfset tmp.append(",") />
 						</cfif>
-						<cfset tmp.append(field) />
+						<cfset tmp.append('"') />
+						<cfif structKeyExists(arguments,"ccToWords") and arguments.ccToWords>
+							<cfset tmp.append(rereplace(file,"(\w)([A-Z])","$1 $2","ALL")) />
+						<cfelse>
+							<cfset tmp.append(field) />
+						</cfif>
+						<cfset tmp.append('"') />
 					</cfloop>
 					<cfloop query="arguments.content">
 						<cfset tmp.append("
@@ -852,7 +859,11 @@
 		</cfif>
 		
 		<!--- stream the content --->
-		<cfcontent type="#arguments.type#" variable="#ToBinary( ToBase64( trim(arguments.content) ) )#" reset="Yes" />
+		<cfif listfirst(arguments.type,"/") eq "text">
+			<cfcontent type="#arguments.type#" variable="#ToBinary( ToBase64( trim(arguments.content) ) )#" reset="Yes" />
+		<cfelse>
+			<cfcontent type="#arguments.type#" variable="#arguments.content#" reset="Yes" />
+		</cfif>
 	</cffunction>
 	
 	

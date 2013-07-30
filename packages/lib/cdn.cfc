@@ -30,8 +30,6 @@
 			<cfset setLocation(name="archive",cdn="local",fullpath=normalizePath(application.path.mediaArchive)) />
 			<cfset setLocation(name="publicfiles",cdn="local",fullpath=normalizePath(application.path.defaultFilePath),urlpath=normalizePath(application.url.fileRoot)) />
 			<cfset setLocation(name="privatefiles",cdn="local",fullpath=normalizePath(application.path.secureFilePath)) />
-			<cfset setLocation(name="temp",cdn="local",fullpath=normalizePath(application.path.project & "/tmp")) />
-			<cfset setLocation(name="drop",cdn="local",fullpath=normalizePath(application.path.project & "/drop")) />
 		</cfif>
 		
 		<cfreturn this />
@@ -469,56 +467,6 @@
 		<cfreturn resultfilename />
 	</cffunction>
 	
-	<cffunction name="ioValidateFile" returntype="string" access="public" output="false" hint="Validates the specified file and returns an error if there is one">
-		<cfargument name="location" type="string" required="false" />
-		<cfargument name="file" type="string" required="false" />
-		<cfargument name="localpath" type="string" required="false" />
-		
-		<cfargument name="acceptextensions" type="string" required="false" />
-		<cfargument name="sizeLimit" type="numeric" required="false" />
-		<cfargument name="existingfile" type="string" requried="false" />
-		
-		<cfset var message = "" />
-		
-		<!--- Check the extension --->
-		<cfif structkeyexists(arguments,"acceptextensions") 
-			AND len(arguments.acceptextensions) 
-			AND (
-				(structkeyexists(arguments,"file") AND not listfindnocase(arguments.acceptextensions,listlast(arguments.file,".")))
-				OR (structkeyexists(arguments,"localpath") AND not listfindnocase(arguments.acceptextensions,listlast(arguments.localpath,".")))
-			)>
-			
-			<cfset message = "Invalid extension. Valid extensions are {1}" />
-			<cfreturn application.fapi.getResource(key="FAPI.throw.#rereplaceNoCase(message, '[^/w]+', '_', 'all')#@message", default=message, substituteValues=replace(arguments.acceptextensions,",",", ","ALL")) />
-		</cfif>
-		
-		<!--- Check the size of the uploaded file --->
-		<cfif structkeyexists(arguments,"sizeLimit") 
-			AND arguments.sizeLimit gt 0
-			AND (
-				(structkeyexists(arguments,"localpath") and getFileInfo(arguments.localpath).filesize gt arguments.sizeLimit)
-				OR (structkeyexists(arguments,"location") and ioGetFileSize(location=arguments.location,file=arguments.file) gt arguments.sizeLimit)
-			)>
-			
-			<cfset message = "File size is not within limit of {1}MB" />
-			<cfreturn application.fapi.getResource(key="FAPI.throw.#rereplaceNoCase(message, '[^/w]+', '_', 'all')#@message", default=message, substituteValues=round(arguments.sizeLimit/1048576)) />
-		</cfif>
-		
-		<!--- file destinations must must have the same extension as the new file --->
-		<cfif structkeyexists(arguments,"existingFile") 
-			AND refind("\.\w+$",arguments.existingFile) 
-			AND (
-				(structkeyexists(arguments,"file") AND listlast(arguments.file,".") neq listlast(arguments.existingFile,"."))
-				OR (structkeyexists(arguments,"localpath") AND listlast(arguments.localpath,".") neq listlast(arguments.existingFile,"."))
-			)>
-			<cflog file="debug" text="#serializeJSON(arguments)#">
-			<cfset message = "New file must have the same extension. Current extension is [{1}]" />
-			<cfreturn application.fapi.getResource(key="FAPI.throw.#rereplaceNoCase(message, '[^/w]+', '_', 'all')#@message", default=message, substituteValues=listlast(arguments.existingFile,".")) />
-		</cfif>
-		
-		<cfreturn "" />
-	</cffunction>
-	
 	<!--- @@description: 
 		<p>Uploads the a file to the specified location.</p>
 		
@@ -540,8 +488,8 @@
 		<cfargument name="field" type="string" required="true" />
 		<cfargument name="nameconflict" type="string" required="false" default="overwrite" options="makeunique,overwrite" />
 		<cfargument name="uniqueamong" type="string" required="false" default="" hint="If nameconflict=makeunique, then the file is made to be unique among this list of locations" />
-		<cfargument name="acceptextensions" type="string" required="false" default="" />
-		<cfargument name="sizeLimit" type="numeric" required="false" default="" />
+		<cfargument name="acceptextensions" type="string" required="false" />
+		<cfargument name="sizeLimit" type="numeric" required="false" />
 		
 		<cfset var filename = "" />
 		<cfset var cffile = structnew() />
@@ -559,21 +507,29 @@
 		
 		<cffile action="upload" filefield="#arguments.field#" destination="#tmpdir#" nameconflict="MakeUnique" mode="664" result="cffile" />
 		
-		<cfset errormessage = ioValidateFile(
-			localpath="#tmpdir#/#cffile.serverFile#",
-			acceptextensions=arguments.acceptextensions,
-			sizeLimit=arguments.sizeLimit,
-			existingFile=arguments.destination
-		) />
-		<cfif len(errormessage)>
-			<cfthrow message="#errormessage#" type="uploaderror" />
+		<!--- Check the uploaded extension --->
+		<cfif structkeyexists(arguments,"acceptextensions") and len(arguments.acceptextensions) and not listfindnocase(arguments.acceptextensions,listlast(cffile.serverFile,"."))>
+			<cffile action="delete" file="#tmpdir#/#cffile.serverFile#" />
+			<cfset application.fapi.throw(message="Invalid extension. Valid extensions are {1}",type="uploaderror",substituteValues=[ replace(arguments.acceptextensions,",",", ","ALL") ]) />
+		</cfif>
+		
+		<!--- Check the size of the uploaded file --->
+		<cfif structkeyexists(arguments,"sizeLimit") and arguments.sizeLimit and getFileInfo("#tmpdir##cffile.serverFile#").size gt arguments.sizeLimit>
+			<cffile action="delete" file="#tmpdir#/#cffile.serverFile#" />
+			<cfset application.fapi.throw(message="{1} is not within the file size limit of {2}MB",type="uploaderror",substituteValues=[ cffile.serverFile, round(arguments.sizeLimit/1048576) ]) />
 		</cfif>
 		
 		<!--- DESTINATION can specify a directory or a file --->
 		<cfif refind("\.\w+$",arguments.destination)>
-			<cfset filename = arguments.destination />
+			<!--- file destinations must must have the same extension as the new file --->
+			<cfif listlast(arguments.destination,".") eq listlast(cffile.serverFile)>
+				<cfset filename = arguments.destination />
+			<cfelse>
+				<cffile action="delete" file="#tmpdir#/#cffile.serverFile#" />
+				<cfset application.fapi.throw(message="New file must have the same extension. Current extension is {1}",type="uploaderror",substituteValues=[ listlast(arguments.destination,".") ]) />
+			</cfif>
 		<cfelse>
-			<cfset filename = normalizePath(arguments.destination & "/" & cffile.ClientFile) />
+			<cfset filename = arguments.destination & "/" & cffile.ServerFile />
 		</cfif>
 		
 		<cfset filename = ioMoveFile(source_localpath="#tmpdir##cffile.serverFile#",dest_location=arguments.location,dest_file=filename,nameconflict=arguments.nameconflict,uniqueamong=arguments.uniqueamong) />

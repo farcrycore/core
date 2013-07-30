@@ -35,14 +35,17 @@
 		<skin:registerJS 	id="fc-underscore" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/underscore"
 							lFiles="underscore.js" />
+		<skin:registerJS 	id="underscore" aliasof="fc-underscore" core="false" />
 		
 		<skin:registerJS 	id="fc-backbone" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/backbone"
 							lFiles="backbone.js" />
+		<skin:registerJS 	id="backbone" aliasof="fc-backbone" core="false" />
 		
 		<skin:registerJS 	id="fc-handlebars" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/handlebars"
 							lFiles="handlebars.js" />
+		<skin:registerJS 	id="handlebars" aliasof="fc-handlebars" core="false" />
 		
 		<skin:registerJS 	id="tinymce" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/tiny_mce"
