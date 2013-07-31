@@ -37,9 +37,6 @@
 		</cfif>
 	</cfloop>
 	
-	<!--- If XMTHML, then we need the trailing slash --->
-	<cfset tagEnding = application.fapi.getDocType().tagEnding />
-	
 	<cfif structkeyexists(attributes,"r_html")>
 		<cfparam name="caller.#attributes.r_html#" default="#arraynew(1)#" />
 	</cfif>
@@ -123,19 +120,19 @@
 		
 			<cfif stCSS.bCombine>
 				<cfset stLoc = application.fc.lib.cdn.ioGetFileLocation(location='cache',file=sCacheFileName) />
-				<cfoutput><link rel="stylesheet" id="stylesheet-#stCSS.id#" type="text/css" href="#stLoc.path#" media="#stCSS.media#" #tagEnding#></cfoutput>
+				<cfoutput><link rel="stylesheet" id="stylesheet-#stCSS.id#" type="text/css" href="#stLoc.path#" media="#stCSS.media#"></cfoutput>
 			<cfelseif stCSS.bExternal>
 				<cfoutput><meta id="stylesheet-#stCSS.id#" name="cssid" content="#stCSS.id#"></cfoutput>
 				<cfif len(trim(stCSS.prepend))><cfoutput><style type="text/css">#stCSS.prepend#</style></cfoutput></cfif>
 				<cfloop list="#stCSS.lFiles#" index="i">
-					<cfoutput><link rel="stylesheet" type="text/css" href="#i#" media="#stCSS.media#" #tagEnding#></cfoutput>
+					<cfoutput><link rel="stylesheet" type="text/css" href="#i#" media="#stCSS.media#"></cfoutput>
 				</cfloop>
 				<cfif len(trim(stCSS.append))><cfoutput><style type="text/css">#stCSS.append#</style></cfoutput></cfif>
 			<cfelse>
 				<cfoutput><meta id="stylesheet-#stCSS.id#" name="cssid" content="#stCSS.id#"></cfoutput>
 				<cfif len(trim(stCSS.prepend))><cfoutput><style type="text/css">#stCSS.prepend#</style></cfoutput></cfif>
 				<cfloop list="#stCSS.lFiles#" index="i">
-					<cfoutput><link rel="stylesheet" type="text/css" href="#cgi.http_host##stCSS.baseHREF#/#i#" media="#stCSS.media#" #tagEnding#></cfoutput>
+					<cfoutput><link rel="stylesheet" type="text/css" href="#cgi.http_host##stCSS.baseHREF#/#i#" media="#stCSS.media#"></cfoutput>
 				</cfloop>
 				<cfif len(trim(stCSS.append))><cfoutput><style type="text/css">#stCSS.append#</style></cfoutput></cfif>
 			</cfif>

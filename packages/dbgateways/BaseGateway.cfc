@@ -330,11 +330,8 @@
 					<cfloop list="#arraytolist(arguments.schema.indexes.primary.fields)#" index="thisfield">
 						<cfif NOT bFirst>AND</cfif><cfset bFirst = false />
 						
-						<cfif arguments.schema.fields[thisfield].type eq "numeric">
-							#thisfield# = <cfqueryparam cfsqltype="cf_sql_numeric" value="#arguments.stProperties[thisfield]#" />
-						<cfelse><!--- String --->
-							#thisfield# = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.stProperties[thisfield]#" />
-						</cfif>
+						<cfset stVal = getValueForDB(schema=arguments.schema.fields[thisfield],value=arguments.stProperties[thisfield]) />
+						#thisfield#=<cfqueryparam cfsqltype="#stVal.cfsqltype#" null="#stVal.null#" value="#stVal.value#" />
 					</cfloop>
 		</cfquery>
 		
@@ -362,11 +359,8 @@
 							<cfloop list="#arraytolist(arguments.schema.indexes.primary.fields)#" index="thisfield">
 								<cfif NOT bFirst>AND</cfif><cfset bFirst = false />
 								
-								<cfif arguments.schema.fields[thisfield].type eq "numeric">
-									#thisfield# = <cfqueryparam cfsqltype="cf_sql_numeric" value="#arguments.stProperties[thisfield]#" />
-								<cfelse><!--- String --->
-									#thisfield# = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.stProperties[thisfield]#" />
-								</cfif>
+								<cfset stVal = getValueForDB(schema=arguments.schema.fields[thisfield],value=arguments.stProperties[thisfield]) />
+								#thisfield#=<cfqueryparam cfsqltype="#stVal.cfsqltype#" null="#stVal.null#" value="#stVal.value#" />
 							</cfloop>
 				</cfquery>
 				

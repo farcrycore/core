@@ -55,7 +55,7 @@
 
 <ft:objectAdmin
 	typename="#stObj.name#"
-	columnList="objectid,taskOwnedBy,action,jobType,jobID,taskStatus,taskTimestamp,threadID"
+	columnList="taskOwnedBy,action,jobType,jobID,taskStatus,taskTimestamp,threadID"
 	sortableColumns="taskOwnedBy,action,jobID,taskStatus,taskTimestamp"
 	lFilterFields="action,jobID,taskOwnedBy,taskStatus"
 	sqlOrderBy="taskTimestamp DESC"
