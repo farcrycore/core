@@ -81,13 +81,6 @@
 	
 	<cffunction name="normalizePath" returntype="string" access="public" output="false" hint="Normalizes filename character set, replaces '\' with '/', removes trailing '/'">
 		<cfargument name="path" type="string" required="true" />
-		<cfargument name="allowSpaces" type="boolean" require="false" default="true" />
-		
-		<cfset var regex = "[^a-z0-9\.\-\_/]+" />
-		
-		<cfif not arguments.allowSpaces>
-			<cfset regex = "[^a-z0-9\.\-\_/ ]+" />
-		</cfif>
 		
 		<!--- Normalize slashes to forward slash --->
 		<cfset arguments.path = replace(arguments.path,"\","/","ALL") />
@@ -97,7 +90,7 @@
 		
 		<!--- Remove potentially invalid characters --->
 		<cfif refindnocase("\w:",arguments.path)>
-			<cfset arguments.path = left(arguments.path,2) & reReplaceNoCase(mid(arguments.path,3,len(arguments.path)), regex, "-", "all") />
+			<cfset arguments.path = left(arguments.path,2) & reReplaceNoCase(mid(arguments.path,3,len(arguments.path)), "[^a-z0-9\.\-\_/ ]","", "all") />
 		<cfelse>
 			<cfset arguments.path = reReplaceNoCase(arguments.path, "[^a-z0-9\.\-\_/ ]","", "all") />
 		</cfif>
@@ -176,7 +169,7 @@
 		<cfset var i = 0 />
 		<cfset var currentfile = arguments.file />
 		
-		<cfset arguments.file = normalizePath(arguments.file,false) />
+		<cfset arguments.file = normalizePath(arguments.file) />
 		
 		<cfif structkeyexists(arguments,"locations")>
 			<cfloop condition="len(ioFindFile(locations=arguments.locations,file=currentfile))">
@@ -529,11 +522,11 @@
 		<!--- DESTINATION can specify a directory or a file --->
 		<cfif refind("\.\w+$",arguments.destination)>
 			<!--- file destinations must must have the same extension as the new file --->
-			<cfif listlast(arguments.destination,".") eq listlast(cffile.serverFile)>
+			<cfif listlast(arguments.destination,".") eq listlast(cffile.serverFile,".")>
 				<cfset filename = arguments.destination />
 			<cfelse>
 				<cffile action="delete" file="#tmpdir#/#cffile.serverFile#" />
-				<cfset application.fapi.throw(message="New file must have the same extension. Current extension is {1}",type="uploaderror",substituteValues=[ listlast(arguments.destination,".") ]) />
+				<cfset application.fapi.throw(message="New file must have the same extension. Current extension is {1} and new extension is {2}.",type="uploaderror",substituteValues=[ listlast(arguments.destination,"."), listlast(cffile.serverFile,".") ]) />
 			</cfif>
 		<cfelse>
 			<cfset filename = arguments.destination & "/" & cffile.ServerFile />

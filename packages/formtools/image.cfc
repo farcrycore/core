@@ -736,7 +736,7 @@
 		   
 			<!--- image is too small - only generate image for specific methods --->
 			<cfset stGeneratedImage = GenerateImage(argumentCollection=stGeneratedImageArgs) />
-			<cfreturn passed(arguments.stMetadata.ftDestination & "/" & stGeneratedImage.filename) />
+			<cfreturn passed(stGeneratedImage.filename) />
 			
 		<cfelseif (stGeneratedImageArgs.width gt 0 and stGeneratedImageArgs.width lt stImage.width)
 			or (stGeneratedImageArgs.height gt 0 and stGeneratedImageArgs.height lt stImage.height)
@@ -784,7 +784,7 @@
 		
 	  	<cfif structkeyexists(form,arguments.uploadfield) and len(form[arguments.uploadfield])>
 	  	
-	    	<cfif len(arguments.existingfile) and application.fc.lib.cdn.ioFileExists(location="images",file=arguments.existingfile)>
+	    	<cfif len(arguments.existingfile)>
 	    		
 				<!--- This means there is already a file associated with this object. The new file must have the same name. --->
 				<cftry>
@@ -1453,7 +1453,7 @@
 			<cfreturn "" />
 		</cfif>
 		
-		<cfreturn application.fc.lib.cdn.ioCopyFile(source_location="images",source_file=currentfilename,dest_location="images",dest_file=newfilename,nameconflict="makeunique",uniqueamong="images") />
+		<cfreturn application.fc.lib.cdn.ioCopyFile(source_pathlocation="images",source_file=currentfilename,dest_location="images",dest_file=newfilename,nameconflict="makeunique",uniqueamong="images") />
 	</cffunction>
 	
 	<cffunction name="failed" access="public" output="false" returntype="struct" hint="This will return a struct with stMessage">
