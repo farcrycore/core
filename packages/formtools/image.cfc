@@ -554,7 +554,7 @@
 									.find(".image-crop-width").html(parseInt(c.w)).end()
 									.find(".image-crop-height").html(parseInt(c.h)).end()
 									.find(".image-crop-quality").html((q*100).toFixed(0)).end();
-							imageformtool.applyCrop();
+							imageformtool.applyCrop(true);
 	    				});
 	    				
 	    				if (sourceField.length>0){
@@ -673,13 +673,16 @@
 	    				
 	    			};
 	    			
-	    			this.applyCrop = function imageFormtoolApplyCrop(){
+	    			this.applyCrop = function imageFormtoolApplyCrop(bForceCrop){
 	    				imageformtool.multiview.selectView("working");
-	    				
+
+	    				var postvalues = imageformtool.getPostValues();
+	    				postvalues.bForceCrop = bForceCrop || false;
+
 						$j.ajax({
 							type : "POST",
 							url : imageformtool.url,
-							data : imageformtool.getPostValues(),
+							data : postvalues,
 							success : function imageFormtoolApplyCropSuccess(results){
 								// results is null if there is already an image 
 								if (results) {
@@ -1208,7 +1211,10 @@
 			<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"Quality") or not isnumeric(arguments.stFieldPost.stSupporting.Quality)><cfset arguments.stFieldPost.stSupporting.Quality = arguments.stMetadata.ftQuality /></cfif>
 			
 			<cfif len(stResult.value)>
-				<cfset stFixed = fixImage("#application.path.imageroot##stResult.value#",arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
+
+				<!--- force crop for custom crop --->
+				<cfparam name="form.bForceCrop" default="false">		
+				<cfset stFixed = fixImage("#application.path.imageroot##stResult.value#",arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality,form.bForceCrop) />
 				
 				<cfset stJSON = structnew() />
 				<cfif stFixed.bSuccess>
@@ -1254,7 +1260,8 @@
 		<cfargument name="stMetadata" type="struct" required="true" hint="Property metadata" />
 		<cfargument name="resizeMethod" type="string" required="true" default="#arguments.stMetadata.ftAutoGenerateType#" hint="The resizing method to use to fix the size." />
 		<cfargument name="quality" type="string" required="true" default="#arguments.stMetadata.ftQuality#" hint="Quality setting to use for resizing" />
-		
+		<cfargument name="bForceCrop" type="boolean" required="false" default="false" hint="Used to force the custom cropping" />
+
 		<cfset var stGeneratedImageArgs = structnew() />
 		<cfset var stImage = structnew() />
 		<cfset var stGeneratedImage = structnew() />
@@ -1303,6 +1310,7 @@
 				(stGeneratedImageArgs.width gt 0 and stGeneratedImageArgs.width gt stImage.width)
 		   		or (stGeneratedImageArgs.height gt 0 and stGeneratedImageArgs.height gt stImage.height)
 			)
+			or arguments.bForceCrop
 			and listfindnocase("forceresize,pad,center,topleft,topcenter,topright,left,right,bottomleft,bottomcenter,bottomright",stGeneratedImageArgs.ResizeMethod)>
 		   
 			<!--- image is too small - only generate image for specific methods --->
@@ -1311,7 +1319,8 @@
 			
 		<cfelseif (stGeneratedImageArgs.width gt 0 and stGeneratedImageArgs.width lt stImage.width)
 			or (stGeneratedImageArgs.height gt 0 and stGeneratedImageArgs.height lt stImage.height)
-			or len(stGeneratedImageArgs.lCustomEffects)>
+			or len(stGeneratedImageArgs.lCustomEffects)
+			or arguments.bForceCrop>
 			
 			<cfset stGeneratedImage = GenerateImage(argumentCollection=stGeneratedImageArgs) />
 			<cfreturn passed(arguments.stMetadata.ftDestination & "/" & stGeneratedImage.filename) />
