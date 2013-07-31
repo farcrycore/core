@@ -1310,7 +1310,6 @@
 				(stGeneratedImageArgs.width gt 0 and stGeneratedImageArgs.width gt stImage.width)
 		   		or (stGeneratedImageArgs.height gt 0 and stGeneratedImageArgs.height gt stImage.height)
 			)
-			or arguments.bForceCrop
 			and listfindnocase("forceresize,pad,center,topleft,topcenter,topright,left,right,bottomleft,bottomcenter,bottomright",stGeneratedImageArgs.ResizeMethod)>
 		   
 			<!--- image is too small - only generate image for specific methods --->
