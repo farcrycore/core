@@ -271,6 +271,12 @@
 		
 		<cfset stResult["content_type"] = getPageContext().getServletContext().getMimeType(arguments.file) />
 		
+		<cfif not isdefined("stResult.content_type")>
+			<cfif listfindnocase("jpg,jpeg",listlast(arguments.file,"."))>
+				<cfset stResult["content_type"] = "image/jpeg" />
+			</cfif>
+		</cfif>
+		
 		<!--- corrections --->
 		<cfif stResult.content_type eq "application/javascript">
 			<cfset stResult.content_type = "text/javascript" />
