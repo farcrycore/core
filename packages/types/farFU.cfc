@@ -198,16 +198,16 @@
 			However, if no default is available, we will automatically get the custom first or else finally the system
 			 --->
 			<cfquery datasource="#application.dsn#" name="stLocal.qDefault">
-			SELECT objectid 
-			FROM farFU
-			WHERE refObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.refObjectID#" />
-			AND fuStatus > 0
-			ORDER BY bDefault DESC, fuStatus DESC 
+			SELECT farFU.objectid as objectid,refobjects.typename as typename
+			FROM farFU INNER JOIN refObjects on farFu.refobjectid = refObjects.objectid
+			WHERE farFU.refObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.refObjectID#" />
+			AND farFU.fuStatus > 0
+			ORDER BY farFU.bDefault DESC, farFU.fuStatus DESC 
 			</cfquery>		
 		
 			<cfif stLocal.qDefault.recordCount>
 				<cfset stLocal.stDefaultFU = getData(objectid="#stLocal.qDefault.objectID#") />
-				<cfset setMapping(objectid="#stLocal.qDefault.objectID#", bForce="true") /><!--- Setting bForce ensures that this FU is used as the default because it MAY not have a default set. --->
+				<cfset setMapping(objectid="#stLocal.qDefault.objectID#", bForce="true", typename="#stLocal.qDefault.typename#") /><!--- Setting bForce ensures that this FU is used as the default because it MAY not have a default set. --->
 			</cfif>
 		</cfif>
 		
@@ -587,11 +587,17 @@
 	<cffunction name="setMapping" access="public" output="false" returntype="void" hint="Add a FU record to the application scope mapping table.">
 		<cfargument name="objectid" required="true" hint="The objectid of the farFU record we wish to add to the mapping tables.">
 		<cfargument name="bForce" required="false" default="false" hint="Force the URL Struct to use this as the FU and not look for a default. This captures the problem where there IS no default.">
+		<cfargument name="typename" required="false" default="" hint="The typename of the object">
 		
 		<cfset var stFU = getData(objectid="#arguments.objectid#") />
 		<cfset var thisfu = "" />
 		
-		<cfset this.stMappings[stFU.friendlyURL] = createURLStruct(farFUID=arguments.objectid,bForce=arguments.bForce) />
+		<cfif structkeyexists(arguments,"typename")>
+			<cfset this.stMappings[stFU.friendlyURL] = createURLStruct(farFUID=arguments.objectid,bForce=arguments.bForce,typename="#arguments.typename#") />			
+		<cfelse>
+			<cfset this.stMappings[stFU.friendlyURL] = createURLStruct(farFUID=arguments.objectid,bForce=arguments.bForce) />
+		</cfif>
+		
 		
 		<cfif stFU.bDefault>
 			<!--- fu lookup --->
@@ -599,7 +605,7 @@
 			
 			<!--- Remove archived URLs from the cache - ensures that they will get reloaded with redirect information --->
 			<cfloop collection="#this.stMappings#" item="thisfu">
-				<cfif structkeyexists(this.stMappings[thisfu],"objectid") and this.stMappings[thisfu].objectid eq stFU.refobjectid and thisfu neq stFU.friendlyURL>
+				<cfif isDefined("thisfu") and structkeyexists(this.stMappings[thisfu],"objectid") and this.stMappings[thisfu].objectid eq stFU.refobjectid and thisfu neq stFU.friendlyURL>
 					<cfset structdelete(this.stMappings,thisfu) />
 				</cfif>
 			</cfloop>
@@ -834,16 +840,17 @@
 			<cfreturn duplicate(this.stMappings[arguments.friendlyURL]) />
 		</cfif>
 		
+		
 		<!--- Strongest match: the exact FU is in database --->
 		<cfquery datasource="#arguments.dsn#" name="stLocal.qGet">
-			SELECT		objectid,friendlyURL
-			FROM		#application.dbowner#farFU
-			WHERE		friendlyURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.friendlyURL#" />
-			ORDER BY 	bDefault DESC, fuStatus DESC
+			SELECT		farFU.objectid as objectid,farFU.friendlyURL as friendlyURL,refobjects.typename as typename
+			FROM 		farFU INNER JOIN refObjects on farFu.refobjectid = refObjects.objectid
+			WHERE		farFU.friendlyURL = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.friendlyURL#" />
+			ORDER BY 	farFU.bDefault DESC, farFU.fuStatus DESC
 		</cfquery>
 		
 		<cfif stLocal.qGet.recordcount>
-			<cfset this.stMappings[arguments.friendlyURL] = createURLStruct(farFUID=stLocal.qGet.objectid[1]) />
+			<cfset this.stMappings[arguments.friendlyURL] = createURLStruct(farFUID=stLocal.qGet.objectid[1],typename=stLocal.qGet.typename[1]) />
 			<cfreturn duplicate(this.stMappings[arguments.friendlyURL]) />
 		</cfif>
 		
@@ -891,6 +898,7 @@
 		<cfargument name="fuParameters" type="string" required="false" hint="The portion of the furl value that needs to be parsed" />
 		<cfargument name="bForce" required="false" default="false" hint="Force the URL Struct to use this as the FU and not look for a default. This captures the problem where there IS no default.">
 		<cfargument name="stFU" type="struct" required="false" hint="The full farFU object" />
+		<cfargument name="typename" type="string" required="false" hint="The typename of the farFUID" />
 		
 		<cfset var stResult = structnew() />
 		<cfset var qsToken = "" />
@@ -902,7 +910,11 @@
 		
 		<cfif structkeyexists(arguments,"farFUID") and not structkeyexists(arguments,"stFU")>
 			<cfset arguments.stFU = getData(objectid=arguments.farFUID) />
-			<cfset arguments.stFU.refTypename = application.fapi.findType(arguments.stFU.refObjectID) />
+			<cfif not structkeyexists(arguments,"typename")>
+				<cfset arguments.stFU.refTypename = application.fapi.findType(arguments.stFU.refObjectID) />
+			<cfelse>
+				<cfset arguments.stFU.refTypename = arguments.typename>
+			</cfif>
 		</cfif>
 		
 		<cfif structkeyexists(arguments,"stFU")><!--- Grab URL variables from the farFU object --->
