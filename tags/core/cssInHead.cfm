@@ -2,7 +2,8 @@
 <cfif thistag.executionMode eq "End">
 	<!--- Do Nothing --->
 </cfif>
-
+<cfparam name="request.mode.ajax" default="0">
+<cfparam name="request.mode.flushcache" default="0">
 <cfif thistag.executionMode eq "Start">
 
 	<cfparam name="request.mode.ajax" default="0">
