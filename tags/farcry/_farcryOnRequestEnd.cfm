@@ -40,7 +40,8 @@ $out:$
 <cfimport taglib="/farcry/core/tags/core" prefix="core" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/misc" prefix="misc" />
-
+<cfparam name="request.MODE.LVALIDSTATUS" default="approved">
+<cfparam name="request.MODE.FLUSHCACHE" default="false">
 <!--- If we are in the middle of a <skin:location> or we failed to init then we dont want to output a bunch of javascript --->
 <cfif not structKeyExists(request.fc, "bLocating") and not structKeyExists(request,"fcInitError")>
 
