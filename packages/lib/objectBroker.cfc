@@ -334,6 +334,7 @@
 		<cfset var WebskinCacheID = "" />
 		<cfset var iFormField = "" />
 		<cfset var iViewState = "" />
+		<cfset var varname = "" />
 	
 		
 		<!--- Always prefixed with the hash key. This can be overridden in the webskin call. It will include any cfparam attributes. --->
@@ -369,26 +370,23 @@
 
 		<cfif listLen(arguments.lcacheByVars)>
 			<cfloop list="#listSort(arguments.lcacheByVars, 'text')#" index="iViewState">
+				<cfset varname = trim(listfirst(iViewState,":")) />
 				
 				<cftry>
-					<cfif isDefined(trim(listfirst(iViewState,":")))>
-						<cfset WebskinCacheID = listAppend(WebskinCacheID, "#listfirst(iViewState,':')#:#evaluate(trim(listfirst(iViewState,':')))#") />
+					<cfif isvalid("variablename",varname) and isdefined(varname)>
+						<cfset WebskinCacheID = listAppend(WebskinCacheID, "#varname#:#evaluate(varname)#") />
+					<cfelseif find("(",varname) and isdefined(listfirst(varname,"("))>
+						<cfset WebskinCacheID = listAppend(WebskinCacheID, "#varname#:#evaluate(varname)#") />
 					<cfelse>
 						<!--- If the var is defined with a default (e.g. @@cacheByVars: url.page:1), the default is incorporated into the hash --->
 						<!--- If the var does not define a default (e.g. @@cacheByVars: url.error), that valueless string indicates the null --->
 						<cfset WebskinCacheID = listAppend(WebskinCacheID, "#iViewState#") />
 					</cfif>		
-				
+					
 					<cfcatch type="any">
-						<cftry>
-							<cfset WebskinCacheID = listAppend(WebskinCacheID, "#listfirst(iViewState,':')#:#evaluate(trim(listfirst(iViewState,':')))#") />
-							
-							<cfcatch type="any">
-								<cfset WebskinCacheID = listAppend(WebskinCacheID, "#listfirst(iViewState,':')#:invalidVarName") />
-							</cfcatch>
-						</cftry>						
+						<cfset WebskinCacheID = listAppend(WebskinCacheID, "#varname#:invalidVarName") />
 					</cfcatch>
-				</cftry>		
+				</cftry>
 			</cfloop>								
 		</cfif>
 
