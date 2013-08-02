@@ -687,8 +687,10 @@
 		<cfloop collection="#stResult.indexes#" item="thisindex">
 			<cfloop from="1" to="#arraylen(stResult.indexes[thisindex].fields)#" index="thispos">
 				<cfset thisfield = stResult.indexes[thisindex].fields[thispos] />
+			<cfif isvalid("variableName","#thisfield#")>
 				<cfparam name="stResult.fields.#thisfield#.index" default="" />
 				<cfset stResult.fields[thisfield].index = listsort(listappend(stResult.fields[thisfield].index,"#thisindex#:#thispos#"),"textnocase","asc") />
+			</cfif>
 			</cfloop>
 		</cfloop>
 		
