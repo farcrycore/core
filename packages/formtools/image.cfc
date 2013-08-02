@@ -650,9 +650,10 @@
 		
 		<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"ResizeMethod") or not len(arguments.stFieldPost.stSupporting.ResizeMethod)><cfset arguments.stFieldPost.stSupporting.ResizeMethod = arguments.stMetadata.ftAutoGenerateType /></cfif>
 		<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"Quality") or not isnumeric(arguments.stFieldPost.stSupporting.Quality)><cfset arguments.stFieldPost.stSupporting.Quality = arguments.stMetadata.ftQuality /></cfif>
-		
+			
 		<cfif len(stResult.value)>
-			<cfset stFixed = fixImage(stResult.value,arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
+			<cfparam name="form.bForceCrop" default="false">
+			<cfset stFixed = fixImage(stResult.value,arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality,form.bForceCrop) />
 			
 			<cfset stJSON = structnew() />
 			<cfif stFixed.bSuccess>
@@ -683,103 +684,115 @@
 				<cfreturn serializeJSON(stJSON) />
 			</cfif>
 		</cfif>
-	</cfif>
-	
-	<cfif isdefined("url.callback")>
-		<cfreturn "#url.callback#({})" />
-	<cfelse>
-		<cfreturn "{}" />
-	</cfif>
-</cffunction>
-
-<cffunction name="fixImage" access="public" output="false" returntype="struct" hint="Fixes an image's size, returns true if the image needed to be corrected and false otherwise">
-	<cfargument name="filename" type="string" required="true" hint="The image" />
-	<cfargument name="stMetadata" type="struct" required="true" hint="Property metadata" />
-	<cfargument name="resizeMethod" type="string" required="true" default="#arguments.stMetadata.ftAutoGenerateType#" hint="The resizing method to use to fix the size." />
-	<cfargument name="quality" type="string" required="true" default="#arguments.stMetadata.ftQuality#" hint="Quality setting to use for resizing" />
-	
-	<cfset var stGeneratedImageArgs = structnew() />
-	<cfset var stImage = structnew() />
-	<cfset var stGeneratedImage = structnew() />
-	<cfset var q = "" />
-	<cfset var thisimage = application.fc.lib.cdn.ioReadFile(location="images",file=arguments.filename,datatype="image") />
-	
-	<cfimage action="info" source="#thisimage#" structname="stImage" />
-	
-	<cfparam name="arguments.stMetadata.ftCropPosition" default="center" />
-	<cfparam name="arguments.stMetadata.ftCustomEffectsObjName" default="imageEffects" />
-	<cfparam name="arguments.stMetadata.ftLCustomEffects" default="" />
-	<cfparam name="arguments.stMetadata.ftConvertImageToFormat" default="" />
-	<cfparam name="arguments.stMetadata.ftbSetAntialiasing" default="true" />
-	<cfparam name="arguments.stMetadata.ftInterpolation" default="blackman" />
-	<cfparam name="arguments.stMetadata.ftQuality" default="#arguments.quality#" />
-	<cfif not len(arguments.resizeMethod)><cfset arguments.resizeMethod = arguments.stMetadata.ftAutoGenerateType /></cfif>
-	
-	<cfset stGeneratedImageArgs.Source = arguments.filename />
-	<cfset stGeneratedImageArgs.Destination = arguments.filename />
-	
-	<cfif isNumeric(arguments.stMetadata.ftImageWidth)>
-		<cfset stGeneratedImageArgs.width = arguments.stMetadata.ftImageWidth />
-	<cfelse>
-		<cfset stGeneratedImageArgs.width = 0 />
-	</cfif>
-	
-	<cfif isNumeric(arguments.stMetadata.ftImageHeight)>
-		<cfset stGeneratedImageArgs.Height = arguments.stMetadata.ftImageHeight />
-	<cfelse>
-		<cfset stGeneratedImageArgs.Height = 0 />
-	</cfif>
-	
-	<cfset stGeneratedImageArgs.customEffectsObjName = arguments.stMetadata.ftCustomEffectsObjName />
-	<cfset stGeneratedImageArgs.lCustomEffects = arguments.stMetadata.ftLCustomEffects />
-	<cfset stGeneratedImageArgs.convertImageToFormat = arguments.stMetadata.ftConvertImageToFormat />
-	<cfset stGeneratedImageArgs.bSetAntialiasing = arguments.stMetadata.ftBSetAntialiasing />
-	<cfif not isValid("boolean", stGeneratedImageArgs.bSetAntialiasing)>
-		<cfset stGeneratedImageArgs.bSetAntialiasing = true />
-	</cfif>
-	<cfset stGeneratedImageArgs.interpolation = arguments.stMetadata.ftInterpolation />
-	<cfset stGeneratedImageArgs.quality = arguments.stMetadata.ftQuality />
-	<cfset stGeneratedImageArgs.bUploadOnly = false />
-	<cfset stGeneratedImageArgs.PadColor = arguments.stMetadata.ftPadColor />
-	<cfset stGeneratedImageArgs.ResizeMethod = arguments.resizeMethod />
-	
-	<cfif (stGeneratedImageArgs.width gt 0 and stGeneratedImageArgs.width neq stImage.width)
-		   or (stGeneratedImageArgs.height gt 0 and stGeneratedImageArgs.height neq stImage.height)
-		   or len(stGeneratedImageArgs.lCustomEffects)>
-		<cfset stGeneratedImage = GenerateImage(argumentCollection=stGeneratedImageArgs) />
 		
-		<cfreturn passed(stGeneratedImage.filename) />
-	<cfelse>
-		<cfreturn passed(arguments.filename) />
-	</cfif>
-</cffunction>
-
-<cffunction name="handleFilePost" access="public" output="false" returntype="struct" hint="Handles image post and returns standard formtool result struct">
-	<cfargument name="objectid" type="uuid" required="true" hint="The objectid of the edited object" />
-	<cfargument name="existingfile" type="string" required="true" hint="Current value of property" />
-	<cfargument name="uploadfield" type="string" required="true" hint="Traditional form saves will use <PREFIX><PROPERTY>NEW, ajax posts will use <PROPERTY>NEW ... so the caller needs to say which it is" />
-	<cfargument name="destination" type="string" required="true" hint="Destination of file" />
-	<cfargument name="allowedExtensions" type="string" required="true" hint="The acceptable extensions" />
-	<cfargument name="sizeLimit" type="numeric" required="false" default="0" hint="Maximum size of file in bytes" />
-	<cfargument name="bArchive" type="boolean" required="true" hint="True to archive old files" />
-	<cfargument name="stFieldPost" type="struct" required="false" default="#structnew()#" hint="The supplementary data" />
+		<cfif isdefined("url.callback")>
+			<cfreturn "#url.callback#({})" />
+		<cfelse>
+			<cfreturn "{}" />
+		</cfif>
+	</cffunction>
 	
-	<cfset var uploadFileName = "" />
-	<cfset var archivedFile = "" />
-	<cfset var stResult = passed(arguments.existingfile) />
-	<cfset var stFile = structnew() />
+	<cffunction name="fixImage" access="public" output="false" returntype="struct" hint="Fixes an image's size, returns true if the image needed to be corrected and false otherwise">
+		<cfargument name="filename" type="string" required="true" hint="The image" />
+		<cfargument name="stMetadata" type="struct" required="true" hint="Property metadata" />
+		<cfargument name="resizeMethod" type="string" required="true" default="#arguments.stMetadata.ftAutoGenerateType#" hint="The resizing method to use to fix the size." />
+		<cfargument name="quality" type="string" required="true" default="#arguments.stMetadata.ftQuality#" hint="Quality setting to use for resizing" />
+		<cfargument name="bForceCrop" type="boolean" required="false" default="false" hint="Used to force the custom cropping" />
 	
-	<cfparam name="stFieldPost.NEW" default="" />
-	<cfparam name="stFieldPost.DELETE" default="false" /><!--- Boolean --->
+		<cfset var stGeneratedImageArgs = structnew() />
+		<cfset var stImage = structnew() />
+		<cfset var stGeneratedImage = structnew() />
+		<cfset var q = "" />
+		<cfset var thisimage = application.fc.lib.cdn.ioReadFile(location="images",file=arguments.filename,datatype="image") />
+		
+		<cfimage action="info" source="#thisimage#" structname="stImage" />
+		
+		<cfparam name="arguments.stMetadata.ftCropPosition" default="center" />
+		<cfparam name="arguments.stMetadata.ftCustomEffectsObjName" default="imageEffects" />
+		<cfparam name="arguments.stMetadata.ftLCustomEffects" default="" />
+		<cfparam name="arguments.stMetadata.ftConvertImageToFormat" default="" />
+		<cfparam name="arguments.stMetadata.ftbSetAntialiasing" default="true" />
+		<cfparam name="arguments.stMetadata.ftInterpolation" default="blackman" />
+		<cfparam name="arguments.stMetadata.ftQuality" default="#arguments.quality#" />
+		<cfif not len(arguments.resizeMethod)><cfset arguments.resizeMethod = arguments.stMetadata.ftAutoGenerateType /></cfif>
+		
+		<cfset stGeneratedImageArgs.Source = arguments.filename />
+		<cfset stGeneratedImageArgs.Destination = arguments.filename />
+		
+		<cfif isNumeric(arguments.stMetadata.ftImageWidth)>
+			<cfset stGeneratedImageArgs.width = arguments.stMetadata.ftImageWidth />
+		<cfelse>
+			<cfset stGeneratedImageArgs.width = 0 />
+		</cfif>
+		
+		<cfif isNumeric(arguments.stMetadata.ftImageHeight)>
+			<cfset stGeneratedImageArgs.Height = arguments.stMetadata.ftImageHeight />
+		<cfelse>
+			<cfset stGeneratedImageArgs.Height = 0 />
+		</cfif>
+		
+		<cfset stGeneratedImageArgs.customEffectsObjName = arguments.stMetadata.ftCustomEffectsObjName />
+		<cfset stGeneratedImageArgs.lCustomEffects = arguments.stMetadata.ftLCustomEffects />
+		<cfset stGeneratedImageArgs.convertImageToFormat = arguments.stMetadata.ftConvertImageToFormat />
+		<cfset stGeneratedImageArgs.bSetAntialiasing = arguments.stMetadata.ftBSetAntialiasing />
+		<cfif not isValid("boolean", stGeneratedImageArgs.bSetAntialiasing)>
+			<cfset stGeneratedImageArgs.bSetAntialiasing = true />
+		</cfif>
+		<cfset stGeneratedImageArgs.interpolation = arguments.stMetadata.ftInterpolation />
+		<cfset stGeneratedImageArgs.quality = arguments.stMetadata.ftQuality />
+		<cfset stGeneratedImageArgs.bUploadOnly = false />
+		<cfset stGeneratedImageArgs.PadColor = arguments.stMetadata.ftPadColor />
+		<cfset stGeneratedImageArgs.ResizeMethod = arguments.resizeMethod />
+		
+		<cfif (
+				(stGeneratedImageArgs.width gt 0 and stGeneratedImageArgs.width gt stImage.width)
+		   		or (stGeneratedImageArgs.height gt 0 and stGeneratedImageArgs.height gt stImage.height)
+			)
+			and listfindnocase("forceresize,pad,center,topleft,topcenter,topright,left,right,bottomleft,bottomcenter,bottomright",stGeneratedImageArgs.ResizeMethod)>
+		   
+			<!--- image is too small - only generate image for specific methods --->
+			<cfset stGeneratedImage = GenerateImage(argumentCollection=stGeneratedImageArgs) />
+			<cfreturn passed(stGeneratedImage.filename) />
+			
+		<cfelseif (stGeneratedImageArgs.width gt 0 and stGeneratedImageArgs.width lt stImage.width)
+			or (stGeneratedImageArgs.height gt 0 and stGeneratedImageArgs.height lt stImage.height)
+			or len(stGeneratedImageArgs.lCustomEffects)
+			or arguments.bForceCrop>
+			
+			<cfset stGeneratedImage = GenerateImage(argumentCollection=stGeneratedImageArgs) />
+			<cfreturn passed(stGeneratedImage.filename) />
+			
+		<cfelse>
+			<cfreturn passed(arguments.filename) />
+		</cfif>
+	</cffunction>
 	
-	<cfset stResult.bChanged = false />
-	
-	<!--- If developer has entered an ftDestination, make sure it starts with a slash --->
-	<cfif len(arguments.destination) AND left(arguments.destination,1) NEQ "/">
-		<cfset arguments.destination = "/#arguments.destination#" />
-	</cfif>
-	
-	<cfif (
+	<cffunction name="handleFilePost" access="public" output="false" returntype="struct" hint="Handles image post and returns standard formtool result struct">
+		<cfargument name="objectid" type="uuid" required="true" hint="The objectid of the edited object" />
+		<cfargument name="existingfile" type="string" required="true" hint="Current value of property" />
+		<cfargument name="uploadfield" type="string" required="true" hint="Traditional form saves will use <PREFIX><PROPERTY>NEW, ajax posts will use <PROPERTY>NEW ... so the caller needs to say which it is" />
+		<cfargument name="destination" type="string" required="true" hint="Destination of file" />
+		<cfargument name="allowedExtensions" type="string" required="true" hint="The acceptable extensions" />
+		<cfargument name="sizeLimit" type="numeric" required="false" default="0" hint="Maximum size of file in bytes" />
+		<cfargument name="bArchive" type="boolean" required="true" hint="True to archive old files" />
+		<cfargument name="stFieldPost" type="struct" required="false" default="#structnew()#" hint="The supplementary data" />
+		
+		<cfset var uploadFileName = "" />
+		<cfset var archivedFile = "" />
+		<cfset var stResult = passed(arguments.existingfile) />
+		<cfset var stFile = structnew() />
+		
+		<cfparam name="stFieldPost.NEW" default="" />
+		<cfparam name="stFieldPost.DELETE" default="false" /><!--- Boolean --->
+		
+		<cfset stResult.bChanged = false />
+		
+		<!--- If developer has entered an ftDestination, make sure it starts with a slash --->
+		<cfif len(arguments.destination) AND left(arguments.destination,1) NEQ "/">
+			<cfset arguments.destination = "/#arguments.destination#" />
+		</cfif>
+		
+		<cfif (
 				(
 					structkeyexists(form,arguments.uploadfield) 
 					AND len(form[arguments.uploadfield])
@@ -813,7 +826,7 @@
 		</cfif>
 		
 	  	<cfif structkeyexists(form,arguments.uploadfield) and len(form[arguments.uploadfield])>
-	  		
+	  	
 	    	<cfif len(arguments.existingfile) and application.fc.lib.cdn.ioFileExists(location="images",file=arguments.existingfile)>
 	    		
 				<!--- This means there is already a file associated with this object. The new file must have the same name. --->
@@ -1485,7 +1498,7 @@
 			<cfreturn /><!--- No file attached --->
 		</cfif>
 		
-		<cfif application.fc.lib.cdn.ioFileExists(location="images",file="/#arguments.stObject[arguments.stMetadata.name]#")>
+		<cfif (not structkeyexists(arguments.stObject,"versionID") or not len(arguments.stObject.versionID)) and application.fc.lib.cdn.ioFileExists(location="images",file="/#arguments.stObject[arguments.stMetadata.name]#")>
 			<cfset application.fc.lib.cdn.ioDeleteFile(location="images",file="/#arguments.stObject[arguments.stMetadata.name]#") />
 		<cfelse>
 			<cfreturn /><!--- File doesn't actually exist --->

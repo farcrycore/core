@@ -156,11 +156,11 @@
 			<cfset stLine["template"] = stException.TagContext[i].template />
 			<cfset stLine["line"] = stException.TagContext[i].line />
 			
-			<cfif left(stLine.template,len(application.path.core)) eq application.path.core>
+			<cfif isDefined("application.path.core") and left(stLine.template,len(application.path.core)) eq application.path.core>
 				<cfset stLine["location"] = "core" />
-			<cfelseif left(stLine.template,len(application.path.plugins)) eq application.path.plugins>
+			<cfelseif isDefined("application.path.plugins") and left(stLine.template,len(application.path.plugins)) eq application.path.plugins>
 				<cfset stLine["location"] = listfirst(mid(stLine.template,len(application.path.plugins)+1,len(stLine.template)),"/\") />
-			<cfelseif left(stLine.template,len(application.path.project)) eq application.path.project or left(stLine.template,len(application.path.webroot)) eq application.path.webroot>
+			<cfelseif isDefined("application.path.project") and left(stLine.template,len(application.path.project)) eq application.path.project or (isDefined("application.path.webroot") and left(stLine.template,len(application.path.webroot)) eq application.path.webroot)>
 				<cfset stLine["location"] = "project" />
 			<cfelseif refindnocase("\.java$",stLine.template)>
 				<cfset stLine["location"] = "java" />
@@ -443,7 +443,7 @@
 	<cffunction name="getStack" access="public" returntype="array" output="false" hint="Returns a stack array">
 		<cfargument name="bIncludeCore" type="boolean" required="false" default="true" />
 		<cfargument name="bIncludeJava" type="boolean" required="false" default="true" />
-		<cfargument name="ignoreLines" type="numeric" required="false" default="0" hint="Number of stack lines to omit from result" />
+		<cfargument name="ignoreLines" type="numeric" required="false" default="1" hint="Number of stack lines to omit from result" />
 		
 		<cfset var aResult = arraynew(1) />
 		<cfset var aStacktrace = createobject("java","java.lang.Throwable").getStackTrace() />
@@ -461,14 +461,14 @@
 				<cfset found = found + 1 />
 			</cfif>
 			
-			<cfif found gt 1>
-				<cfif left(stLine.template,len(application.path.core)) eq application.path.core>
+			<cfif found gt 1 and structkeyexists(stLine,"template")>
+				<cfif left(stLine["template"],len(application.path.core)) eq application.path.core>
 					<cfset stLine["location"] = "core" />
-				<cfelseif left(stLine.template,len(application.path.plugins)) eq application.path.plugins>
-					<cfset stLine["location"] = listfirst(mid(stLine.template,len(application.path.plugins)+1,len(stLine.template)),"/\") />
-				<cfelseif left(stLine.template,len(application.path.project)) eq application.path.project or left(stLine.template,len(application.path.webroot)) eq application.path.webroot>
+				<cfelseif left(stLine["template"],len(application.path.plugins)) eq application.path.plugins>
+					<cfset stLine["location"] = listfirst(mid(stLine["template"],len(application.path.plugins)+1,len(stLine["template"])),"/\") />
+				<cfelseif left(stLine["template"],len(application.path.project)) eq application.path.project or left(stLine["template"],len(application.path.webroot)) eq application.path.webroot>
 					<cfset stLine["location"] = "project" />
-				<cfelseif refindnocase("\.java$",stLine.template)>
+				<cfelseif refindnocase("\.java$",stLine["template"])>
 					<cfset stLine["location"] = "java" />
 				<cfelse>
 					<cfset stLine["location"] = "external" />

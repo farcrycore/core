@@ -187,33 +187,7 @@
 			<cfif sType EQ "CSS">
 				
 				<cfset fileDir = application.factory.oUtils.listSlice(sFilePath,1,-2,"/") />
-					
-	
-				<cfset start = findNoCase("url(",sFileContent) />
-				
-				<cfloop condition="start GT 0">
-					
-					
-					<cfset nextCharPos = 4>
-					<cfset nextChar = mid(sFileContent,start+4,1) />
-					
-					<cfif nextChar EQ '"'>
-						<cfset nextCharPos = 5>
-					</cfif>		
-					
-					<cfif nextChar EQ "'">
-						<cfset nextCharPos = 5>
-					</cfif>
-					
-					<cfset nextChar = mid(sFileContent,start+nextCharPos,1) />
-					
-					<cfif nextChar NEQ "/">		
-						<cfset sFileContent = insert("#fileDir#/",sFileContent,start+nextCharPos-1)>					
-					</cfif>
-					
-					<cfset start = findNoCase("url(", sFileContent, start+nextCharPos) />	
-					
-				</cfloop>	
+				<cfset sFileContent = rereplace(rereplace(sFileContent,"url\(['""]?/?([^'""\)]+)['""]?\)","url('#fileDir#/\1')","ALL"),"/[^/]+/\.\./","/","ALL") />
 				
 			 </cfif>
 			 

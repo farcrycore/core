@@ -403,6 +403,7 @@
 		<cfset var thiscol = "" />
 		<cfset var thisext = structnew() />
 		<cfset var bFirst = false />
+		<cfset var errordetail = "" />
 		
 		<cfimport taglib="/farcry/core/tags/farcry" prefix="farcry" />
 		
@@ -455,8 +456,15 @@
 			</cfquery>
 			
 		 	<cfcatch type="database">
+				<cfif isDefined("cfcatch.detail")>
+					<cfset errordetail = cfcatch.detail>
+				<cfelseif isDefined("cfcatch.message")>
+					<cfset errordetail = cfcatch.message>
+				<cfelse>
+					<cfset errordetail = "unknown database error">
+				</cfif>
 				<!--- Looks like a property has not yet been deployed. If so, simply try a select * --->
-				<cflog file="fourq" text="Error running getdata() for #arguments.objectID# (#arguments.schema.tablename#): #cfcatch.detail#"  />
+				<cflog file="fourq" text="Error running getdata() for #arguments.objectID# (#arguments.schema.tablename#): #errordetail#"  />
 				<cfquery datasource="#this.dsn#" name="qGetData">
 					SELECT 	*
 					FROM 	#this.dbowner##arguments.schema.tablename#

@@ -332,7 +332,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 	</cffunction>
 
 	
-	<cffunction name="getItem" access="public" output="false" returntype="struct" hint="Returns a translated webtop struct with all restricted items filtered out">
+<cffunction name="getItem" access="public" output="false" returntype="struct" hint="Returns a translated webtop struct with all restricted items filtered out">
 		<cfargument name="parent" type="any" required="false" default="#this.stWebtop#" hint="The parent item to retrieve" />
 		<cfargument name="honoursecurity" type="boolean" required="false" default="true" hint="Set to false to ignore security" />
 		<cfargument name="duplicated" type="boolean" required="false" default="false" hint="Used to ensure the struct is only duplicated once" />
@@ -360,6 +360,8 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfif NOT isObject(arguments.oBarnacle)>
 			<cfset oBarnacle = application.fapi.getContentType("farBarnacle")>
 		</cfif>
+		<cfset var webtopAccessPermissionID = application.fapi.getContentType("farPermission").getID('admin')>
+		<cfset var currentRoles = application.security.getCurrentRoles()>
 		
 		<cfif isstruct(arguments.parent)>
 			<!--- Use that as stResult --->
@@ -398,6 +400,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		</cfif>
 		
 		<!--- Remove children that the user doesn't have permission for --->
+
 		<cfloop collection="#stResult.children#" item="id">
 			
 			<cfset bPermitted = -1 />
@@ -434,6 +437,8 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 				<cfset structdelete(stResult.children,id) />
 			</cfif>
 		</cfloop>
+		
+		
 		
 		<!--- Update child order based on sequence values of filtered children --->
 		<cfset stResult.childorder = arraytolist(structsort(stResult.children,"numeric","asc","sequence")) />

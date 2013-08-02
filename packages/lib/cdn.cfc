@@ -522,11 +522,11 @@
 		<!--- DESTINATION can specify a directory or a file --->
 		<cfif refind("\.\w+$",arguments.destination)>
 			<!--- file destinations must must have the same extension as the new file --->
-			<cfif listlast(arguments.destination,".") eq listlast(cffile.serverFile)>
+			<cfif listlast(arguments.destination,".") eq listlast(cffile.serverFile,".")>
 				<cfset filename = arguments.destination />
 			<cfelse>
 				<cffile action="delete" file="#tmpdir#/#cffile.serverFile#" />
-				<cfset application.fapi.throw(message="New file must have the same extension. Current extension is {1}",type="uploaderror",substituteValues=[ listlast(arguments.destination,".") ]) />
+				<cfset application.fapi.throw(message="New file must have the same extension. Current extension is {1} and new extension is {2}.",type="uploaderror",substituteValues=[ listlast(arguments.destination,"."), listlast(cffile.serverFile,".") ]) />
 			</cfif>
 		<cfelse>
 			<cfset filename = arguments.destination & "/" & cffile.ServerFile />

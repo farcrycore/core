@@ -366,7 +366,7 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 						.find(".image-crop-width").html(parseInt(c.w)).end()
 						.find(".image-crop-height").html(parseInt(c.h)).end()
 						.find(".image-crop-quality").html((q*100).toFixed(0)).end();
-				imageformtool.applyCrop();
+				imageformtool.applyCrop(true);
 			});
 			
 			if (sourceField.length>0){
@@ -489,13 +489,16 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 			
 		};
 		
-		this.applyCrop = function imageFormtoolApplyCrop(){
+		this.applyCrop = function imageFormtoolApplyCrop(bForceCrop){
 			imageformtool.multiview.selectView("working");
 			
+			var postvalues = imageformtool.getPostValues();
+	    	postvalues.bForceCrop = bForceCrop || false;
+	    	
 			$j.ajax({
 				type : "POST",
 				url : imageformtool.url,
-				data : imageformtool.getPostValues(),
+				data : postvalues,
 				success : function imageFormtoolApplyCropSuccess(results){
 					// results is null if there is already an image 
 					if (results) {

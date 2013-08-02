@@ -700,7 +700,7 @@
 		
 		<cfimport taglib="/farcry/core/tags/security" prefix="sec" />
 		
-		<cfif len(arguments.stObject[arguments.stMetadata.name])>
+		<cfif (not structkeyexists(arguments.stObject,"versionID") or not len(arguments.stObject.versionID)) and len(arguments.stObject[arguments.stMetadata.name])>
 			<cfset currentLocation = application.fc.lib.cdn.ioFindFile(locations="privatefiles,publicfiles",file=arguments.stObject[arguments.stMetadata.name]) />
 			
 			<cfif len(currentLocation)>
