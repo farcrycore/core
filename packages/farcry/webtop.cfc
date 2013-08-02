@@ -314,7 +314,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfreturn arguments.item />
 	</cffunction>
 	
-	<cffunction name="getItem" access="public" output="false" returntype="struct" hint="Returns a translated webtop struct with all restricted items filtered out">
+<cffunction name="getItem" access="public" output="false" returntype="struct" hint="Returns a translated webtop struct with all restricted items filtered out">
 		<cfargument name="parent" type="any" required="false" default="#this.stWebtop#" hint="The parent item to retrieve" />
 		<cfargument name="honoursecurity" type="boolean" required="false" default="true" hint="Set to false to ignore security" />
 		<cfargument name="duplicated" type="boolean" required="false" default="false" hint="Used to ensure the struct is only duplicated once" />
@@ -328,6 +328,8 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfset var barnacleID = "">
 		<cfset var webtopPermissionID = application.security.factory.permission.getID(name="viewWebtopItem")>
 		<cfset var oBarnacle = application.fapi.getContentType("farBarnacle")>
+		<cfset var webtopAccessPermissionID = application.fapi.getContentType("farPermission").getID('admin')>
+		<cfset var currentRoles = application.security.getCurrentRoles()>
 		
 		<cfif isstruct(arguments.parent)>
 			<!--- Use that as stResult --->
@@ -366,28 +368,45 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		</cfif>
 		
 		<!--- Remove children that the user doesn't have permission for --->
+
 		<cfloop collection="#stResult.children#" item="id">
 			
-			<cfset bPermitted = 0 />
-			<cfset barnacleID = hash(stResult.children[id].rbKey)>
-			
-			<cfloop list="#application.security.getCurrentRoles()#" index="iRole">
-				<cfset bRight = oBarnacle.getRight(role="#iRole#", permission="#webtopPermissionID#", object="#barnacleID#", objecttype="webtop")>
-				<cfif bRight NEQ 0>
-					<cfset bPermitted = bRight>
-				</cfif>
-				<cfif bRight GT 0>
-					<cfbreak>
-				</cfif>
-			</cfloop>
+			<cfset bPermitted = -1 />
+			<cfset hashKey = hash("#webtopPermissionID#-#currentRoles#-#stResult.children[id].rbKey#") />
+
+			<cfif structKeyExists(application.security.stPermissions, "#hashKey#")>
+				<cfset bPermitted = application.security.stPermissions[hashKey] />
+			<cfelse>
+				<cfset barnacleID = hash(stResult.children[id].rbKey)>
+				
+				<cfloop list="#currentRoles#" index="iRole">
+					
+					<cfset stCurrentRole = application.fapi.getContentObject(typename="farRole", objectid="#iRole#")>
+					
+					<cfif application.fapi.arrayFind(stCurrentRole.aPermissions, webtopAccessPermissionID)>
+						<cfset bRight = oBarnacle.getRight(role="#iRole#", permission="#webtopPermissionID#", object="#barnacleID#", objecttype="webtop")>
+						
+						<cfif bRight GTE 0>
+							<cfset bPermitted = 1>
+							<cfbreak>
+						</cfif>
+					</cfif>
+				</cfloop>
+
+				<cfset application.security.stPermissions[hashKey] = bPermitted />
+
+			</cfif>
+
 			
 			<cfif not arguments.honoursecurity or bPermitted GTE 0>
-				<cfset getItem(stResult.children[id],arguments.honoursecurity,true) />
+				<cfset getItem(parent=stResult.children[id], honoursecurity=arguments.honoursecurity, duplicated=true, webtopPermissionID=webtopPermissionID, currentRoles=currentRoles, oBarnacle=oBarnacle) />
 			<cfelse>
 				<!--- Remove restricted child --->
 				<cfset structdelete(stResult.children,id) />
 			</cfif>
 		</cfloop>
+		
+		
 		
 		<!--- Update child order based on sequence values of filtered children --->
 		<cfset stResult.childorder = arraytolist(structsort(stResult.children,"numeric","asc","sequence")) />
