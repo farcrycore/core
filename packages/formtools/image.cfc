@@ -231,457 +231,458 @@
 							</div>
 						</cfif>
 						<div id="#arguments.fieldname#_autogenerate" class="autogenerate-view"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
-						<span class="image-status" title="#metadatainfo#"><i class="icon-question-sign" style="float:left;"></i></span>
-					    <div style="margin-left:15px;">
-							Image will be automatically generated based on the image selected for #application.stCOAPI[arguments.typename].stProps[listfirst(arguments.stMetadata.ftSourceField,":")].metadata.ftLabel#.<br>
-							<cfif arguments.stMetadata.ftAllowResize>
-								<div class="image-custom-crop"<cfif not structkeyexists(arguments.stObject,arguments.stMetadata.ftSourceField) or not len(arguments.stObject[listfirst(arguments.stMetadata.ftSourceField,":")])> style="display:none;"</cfif>>
-									<input type="hidden" name="#arguments.fieldname#RESIZEMETHOD" id="#arguments.fieldname#RESIZEMETHOD" value="" />
-									<input type="hidden" name="#arguments.fieldname#QUALITY" id="#arguments.fieldname#QUALITY" value="" />
-									<ft:button value="Select Exactly How To Crop Your Image" class="image-crop-select-button" type="button" onclick="return false;" />
-									<div id="#arguments.fieldname#_croperror" class="alert alert-error" style="margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
-					    			<div class="alert alert-info image-crop-information" style="padding:0.7em;margin-top:0.7em;display:none;">Your crop settings will be applied when you save. <a href="##" class="image-crop-cancel-button">Cancel custom crop</a></div>
-								</div>
+							<span class="image-status" title="#metadatainfo#"><i class="icon-question-sign" style="float:left;"></i></span>
+						    <div style="margin-left:15px;">
+								Image will be automatically generated based on the image selected for #application.stCOAPI[arguments.typename].stProps[listfirst(arguments.stMetadata.ftSourceField,":")].metadata.ftLabel#.<br>
+								<cfif arguments.stMetadata.ftAllowResize>
+									<div class="image-custom-crop"<cfif not structkeyexists(arguments.stObject,arguments.stMetadata.ftSourceField) or not len(arguments.stObject[listfirst(arguments.stMetadata.ftSourceField,":")])> style="display:none;"</cfif>>
+										<input type="hidden" name="#arguments.fieldname#RESIZEMETHOD" id="#arguments.fieldname#RESIZEMETHOD" value="" />
+										<input type="hidden" name="#arguments.fieldname#QUALITY" id="#arguments.fieldname#QUALITY" value="" />
+										<ft:button value="Select Exactly How To Crop Your Image" class="image-crop-select-button" type="button" onclick="return false;" />
+										<div id="#arguments.fieldname#_croperror" class="alert alert-error" style="margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
+						    			<div class="alert alert-info image-crop-information" style="padding:0.7em;margin-top:0.7em;display:none;">Your crop settings will be applied when you save. <a href="##" class="image-crop-cancel-button">Cancel custom crop</a></div>
+									</div>
+								</cfif>
+								<div><cfif arguments.stMetadata.ftAllowUpload><a href="##upload" class="select-view">Upload - I want to use my own image</a></cfif><span class="image-cancel-replace" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><cfif arguments.stMetadata.ftAllowUpload> | </cfif><a href="##complete" class="select-view">Cancel - I don't want to replace this image</a></span></div>
+							</div>
+						</div>
+						<div id="#arguments.fieldname#_working" class="working-view" style="display:none;">
+							<span class="image-status" title="#metadatainfo#"><i class="icon-spinner icon-spin" style="float:left;"></i></span>
+						    <div style="margin-left:15px;">Generating image...</div>
+						</div>
+						<cfif len(arguments.stMetadata.value)>
+						    <cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stMetadata.value) />
+						    <cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=arguments.stMetadata.value,datatype='image')#" structName="stImage" />
+						    <cfset previewwidth = stImage.width />
+						    <cfset previewheight = stImage.height />
+						    <cfif previewwidth gt 400>
+								<cfset previewheight = previewheight * 400 / previewwidth />
+								<cfset previewwidth = 400 />
 							</cfif>
-							<div><cfif arguments.stMetadata.ftAllowUpload><a href="##upload" class="select-view">Upload - I want to use my own image</a></cfif><span class="image-cancel-replace" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><cfif arguments.stMetadata.ftAllowUpload> | </cfif><a href="##complete" class="select-view">Cancel - I don't want to replace this image</a></span></div>
-						</div>
-					</div>
-					<div id="#arguments.fieldname#_working" class="working-view" style="display:none;">
-						<span class="image-status" title="#metadatainfo#"><i class="icon-spinner icon-spin" style="float:left;"></i></span>
-					    <div style="margin-left:15px;">Generating image...</div>
-					</div>
-					<cfif len(arguments.stMetadata.value)>
-					    <cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stMetadata.value) />
-					    <cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=arguments.stMetadata.value,datatype='image')#" structName="stImage" />
-					    <cfset previewwidth = stImage.width />
-					    <cfset previewheight = stImage.height />
-					    <cfif previewwidth gt 400>
-							<cfset previewheight = previewheight * 400 / previewwidth />
-							<cfset previewwidth = 400 />
-						</cfif>
-					    <cfif previewheight gt 400>
-							<cfset previewwidth = previewwidth * 400 / previewheight />
-							<cfset previewheight = 400 />
-						</cfif>
-					    <div id="#arguments.fieldname#_complete" class="complete-view">
-				    		<span class="image-status" title=""><i class="icon-picture" style="float:left;">&nbsp;</i></span>
-				    		<div style="margin-left:15px;">
-					    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#stFile.path#' width='#previewwidth#' height='#previewheight#' />" href="#stFile.path#" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
-					    		Size: <span class="image-size">#round(application.fc.lib.cdn.ioGetFileSize(location="images",file=arguments.stMetadata.value)/1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
-					    		<div class="image-resize-information alert alert-info" style="margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
-					    	</div>
-						</div>
-					<cfelse>
-					    <div id="#arguments.fieldname#_complete" class="complete-view" style="display:none;">
-				    		<span class="image-status" title=""><i class="icon-picture" style="float:left;"></i></span>
-				    		<div style="margin-left:15px;">
-					    		<span class="image-filename"></span> ( <a class="image-preview" title="<img src='' />" href="##" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
-					    		Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
-								<div class="image-resize-information alert alert-info" style="margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
-					    	</div>
-						</div>
-					</cfif>
-				</div>
-				<script type="text/javascript">$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').init('#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#','#arguments.stMetadata.ftSourceField#',#arguments.stMetadata.ftImageWidth#,#arguments.stMetadata.ftImageHeight#,false,#arguments.stMetadata.ftSizeLimit#);</script>
-			</div>
-		</cfoutput></cfsavecontent>
-		
-	<cfelse>
-		
-		<!--- This IS the source field --->
-	    <cfsavecontent variable="html"><cfoutput>
-		    <div class="multiField">
-				<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
-				<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="false" />
-				<div id="#arguments.fieldname#-multiview">
-			    	<div id="#arguments.fieldname#_upload" class="upload-view"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
-						<a href="##traditional" class="fc-btn select-view" title="Switch between traditional upload and inline upload" style="float:left;"><i class="icon-random">&nbsp;</i></a>
-						<div style="margin-left:15px">
-				    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
-				    		<div id="#arguments.fieldname#_uploaderror" class="alert alert-error" style="margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
-				    		<div><i style="float:left;" title="#metadatainfo#" class="icon-question-sign"></i> <span style="float:left;">Select an image to upload from your computer.</span></div>
-				    		<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##back" class="select-view">Cancel - I don't want to replace this image</a></div>
-				    	</div>
-					</div>
-			    	<div id="#arguments.fieldname#_traditional" class="traditional-view" style="display:none;">
-			    		<a href="##back" class="fc-btn select-view" title="Switch between traditional upload and inline upload" style="float:left;"><i class="icon-random">&nbsp;</i></a>
-						<div style="margin-left:15px">
-				    		<input type="file" name="#arguments.fieldname#TRADITIONAL" id="#arguments.fieldname#TRADITIONAL" />
-				    		<div><i style="float:left;" title="#metadatainfo#" class="icon-question-sign"></i> <span style="float:left;">Select an image to upload from your computer.</span></div>
-				    		<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##back" class="select-view">Cancel - I don't want to replace this image</a></div>
-				    	</div>
-					</div>
-			    	<div id="#arguments.fieldname#_delete" class="delete-view" style="display:none;">
-			    		<span class="image-status" title=""><i class="icon-picture" style="float:left;"></i></span>
-						<div style="margin-left:15px">
-				    		<ft:button class="image-delete-button" value="Delete this image" type="button" onclick="return false;" />
-				    		<ft:button class="image-deleteall-button" value="Delete this and the related images" type="button" onclick="return false;" />
-				    		
-				    		<div class="image-cancel-upload"><a href="##back" class="select-view">Cancel - I don't want to delete</a></div>
-				    	</div>
-					</div>
-					<cfif len(arguments.stMetadata.value)>
-					    <cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stMetadata.value) />
-					    <cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=arguments.stMetadata.value,datatype='image')#" structName="stImage" />
-					    <cfset previewwidth = stImage.width />
-					    <cfset previewheight = stImage.height />
-					    <cfif previewwidth gt 400>
-							<cfset previewheight = previewheight * 400 / previewwidth />
-							<cfset previewwidth = 400 />
-						</cfif>
-					    <cfif previewheight gt 400>
-							<cfset previewwidth = previewwidth * 400 / previewheight />
-							<cfset previewheight = 400 />
-						</cfif>
-					    <div id="#arguments.fieldname#_complete" class="complete-view">
-				    		<span class="image-status" title=""><i class="icon-picture" style="float:left;">&nbsp;</i></span>
-				    		<div style="margin-left:15px;">
-					    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#stFile.path#' width='#previewwidth#' height='#previewheight#' />" href="#stFile.path#" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
-					    		Size: <span class="image-size">#round(application.fc.lib.cdn.ioGetFileSize(location='images',file=arguments.stMetadata.value)/1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
-								<div class="image-resize-information alert alert-info" style="margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
-					    	</div>
-						</div>
-					<cfelse>
-					    <div id="#arguments.fieldname#_complete" class="complete-view" style="display:none;">
-				    		<span class="image-status" title=""><i class="icon-picture" style="float:left;"></i></span>
-				    		<div style="margin-left:15px;">
-					    		<span class="image-filename"></span> ( <a class="image-preview" title="<img src='' />" href="##" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
-					    		Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
-					    		<div class="image-resize-information alert alert-info" style="margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
-					    	</div>
-						</div>
-					</cfif>
-				</div>
-				<script type="text/javascript">$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').init('#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#','#arguments.stMetadata.ftSourceField#',#arguments.stMetadata.ftImageWidth#,#arguments.stMetadata.ftImageHeight#,false,#arguments.stMetadata.ftSizeLimit#);</script>
-				<cfif len(arguments.stMetadata.ftInlineDependants)><div style="margin-top: 10px; margin-left: 20px; font-weight: bold; font-style: italic;">Image sizes:</div></cfif>
-			</cfoutput>
-			
-			<cfloop list="#arguments.stMetadata.ftInlineDependants#" index="thisdependant">
-				<cfif structkeyexists(arguments.stObject,thisdependant)>
-					<cfset stAltMeta = duplicate(arguments.stPackage.stProps[thisdependant].metadata) />
-					<cfset stAltMeta.ftAllowUpload = arguments.stMetadata.ftInlineUpload />
-					<cfset stAltMeta.value = arguments.stObject[stAltMeta.name] />
-					<cfoutput>#editInline(typename=arguments.typename,stObject=arguments.stObject,stMetadata=stAltMeta,fieldname="#prefix##stAltMeta.name#",stPackage=arguments.stPackage,prefix=prefix)#</cfoutput>
-				</cfif>
-			</cfloop>
-			
-			<cfoutput></div></cfoutput>
-	    </cfsavecontent>
-		
-	</cfif>
-    
-    <cfreturn html>
-</cffunction>
-
-<cffunction name="editInline" output="false" returntype="string" hint="UI for editing a dependant image inline as part of the source field">
-	<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
-    <cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
-    <cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
-    <cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
-    <cfargument name="stPackage" required="true" type="struct" hint="Contains the metadata for the all fields for the current typename.">
-    <cfargument name="prefix" required="true" type="string" hint="Form prefix" />
-    
-	<cfset var html = "" />
-	<cfset var metadatainfo = "" />
-	<cfset var preview = "" />
-	<cfset var predefinedCrops = { none="None",center="Crop Center",fitinside="Fit Inside",forcesize="Force Size",pad="Pad",topcenter="Crop Top Center",topleft="Crop Top Left",topright="Crop Top Right",left="Crop Left",right="Crop Right",bottomright="Crop Bottom Left",bottomright="Crop Bottom Center" } />
-    <cfset var stImage = structnew() />
-    <cfset var stFile = structnew() />
-    
-	<cfparam name="arguments.stMetadata.ftHint" default="" />
-    <cfparam name="arguments.stMetadata.ftstyle" default="">
-    <cfparam name="arguments.stMetadata.ftDestination" default="/images">
-    <cfparam name="arguments.stMetadata.ftSourceField" default="">
-    <cfparam name="arguments.stMetadata.ftCreateFromSourceOption" default="true">
-    <cfparam name="arguments.stMetadata.ftCreateFromSourceDefault" default="true">
-    <cfparam name="arguments.stMetadata.ftAllowUpload" default="true">
-    <cfparam name="arguments.stMetadata.ftAllowResize" default="true">
-    <cfparam name="arguments.stMetadata.ftAllowResizeQuality" default="false">
-	<cfif not structkeyexists(arguments.stMetadata,"ftImageWidth") or not isnumeric(arguments.stMetadata.ftImageWidth)><cfset arguments.stMetadata.ftImageWidth = 0 /></cfif>
-	<cfif not structkeyexists(arguments.stMetadata,"ftImageHeight") or not isnumeric(arguments.stMetadata.ftImageHeight)><cfset arguments.stMetadata.ftImageHeight = 0 /></cfif>
-    <cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside">
-    <cfparam name="arguments.stMetadata.ftPadColor" default="##ffffff">
-    <cfparam name="arguments.stMetadata.ftShowConversionInfo" default="true"><!--- Set to false to hide the conversion information that will be applied to the uploaded image --->
-    <cfparam name="arguments.stMetadata.ftAllowedExtensions" default="jpg,jpeg,png,gif"><!--- The extentions allowed to be uploaded --->
-    <cfparam name="arguments.stMetadata.ftSizeLimit" default="0" />
-	
-    <!--- Metadata --->
-    <cfsavecontent variable="metadatainfo">
-		<cfif (isnumeric(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth gt 0) or (isnumeric(arguments.stMetadata.ftImageHeight) and arguments.stMetadata.ftImageHeight gt 0)>
-			<cfoutput>Dimensions: <cfif isnumeric(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth gt 0>#arguments.stMetadata.ftImageWidth#<cfelse>any width</cfif> x <cfif isnumeric(arguments.stMetadata.ftImageHeight) and arguments.stMetadata.ftImageHeight gt 0>#arguments.stMetadata.ftImageHeight#<cfelse>any height</cfif> (#predefinedCrops[arguments.stMetadata.ftAutoGenerateType]#)<br>Quality Setting: #round(arguments.stMetadata.ftQuality*100)#%<br></cfoutput>
-		</cfif>
-		<cfoutput>Image must be of type #arguments.stMetadata.ftAllowedExtensions#</cfoutput>
-	</cfsavecontent>
-	
-	<!--- Preview --->
-	<cfif len(arguments.stMetadata.value)>
-	    <cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stMetadata.value) />
-	    <cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=arguments.stMetadata.value,datatype='image')#" structName="stImage" />
-	    <cfset previewwidth = stImage.width />
-	    <cfset previewheight = stImage.height />
-	    <cfif previewwidth gt 400>
-			<cfset previewheight = previewheight * 400 / previewwidth />
-			<cfset previewwidth = 400 />
-		</cfif>
-	    <cfif previewheight gt 400>
-			<cfset previewwidth = previewwidth * 400 / previewheight />
-			<cfset previewheight = 400 />
-		</cfif>
-		<cfset preview = "<img src='#stFile.path#' width='#previewwidth#' height='#previewheight#' /><br><div style='width:#previewwidth#px;'>#round(application.fc.lib.cdn.ioGetFileSize(location='images',file=arguments.stMetadata.value)/1024)#</span>KB, #stImage.width#px x #stImage.height#px</div>" />
-	<cfelse>
-		<cfset preview = "" />
-	</cfif>
-    
-	<cfsavecontent variable="html"><cfoutput>
-		<div id="#arguments.fieldname#-inline" style="margin-left:20px;">
-		
-			<input type="hidden" name="#arguments.fieldname#RESIZEMETHOD" id="#arguments.fieldname#RESIZEMETHOD" value="" />
-			<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="false" />
-			<span class="image-status" title="<cfif len(arguments.stMetadata.ftHint)>#arguments.stMetadata.ftHint#<br></cfif>#metadatainfo#"><i class="icon-picture" style="float:left;"></i></span>
-			<span class="dependant-label">#arguments.stMetadata.ftLabel#</span>
-			<span class="dependant-options"<cfif not len(arguments.stMetadata.value) and not len(arguments.stObject[arguments.stMetadata.ftSourceField]) and not arguments.stMetadata.ftAllowUpload> style="display:none;"</cfif>>
-				(
-					<span class="not-cancel">
-						<span class="action-preview action"<cfif not len(arguments.stMetadata.value)> style="display:none;"</cfif>>
-							<a class="image-preview" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank" title="#preview#">Preview</a> | 
-						</span>
-						<span class="action-crop action"<cfif not len(arguments.stObject[listfirst(arguments.stMetadata.ftSourceField,":")])> style="display:none;"</cfif>>
-							<a class="image-crop-select-button" href="##">Custom crop</a><cfif arguments.stMetadata.ftAllowUpload> | </cfif>
-						</span>
-						<cfif arguments.stMetadata.ftAllowUpload><span class="action-upload action"><a href="##upload" class="image-upload-select-button select-view">Upload</a></span></cfif>
-					</span>
-					<cfif arguments.stMetadata.ftAllowUpload><span class="action-cancel action" style="display:none;"><a href="##cancel" class="select-view">Cancel</a></span></cfif>
-				)
-			</span>
-			<cfif arguments.stMetadata.ftAllowUpload>
-				<div id="#arguments.fieldname#-multiview">
-					<div id="#arguments.fieldname#_cancel" class="cancel-view"></div>
-			    	<div id="#arguments.fieldname#_upload" class="upload-view" style="display:none;">
-		    			<a href="##traditional" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><i class="icon-random">&nbsp;</i></a>
-						<div style="margin-left:15px">
-				    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
-				    		<div id="#arguments.fieldname#_uploaderror" class="alert alert-error" style="margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
-				    		<div><i style="float:left;" title="#metadatainfo#" class="icon-question-sign"></i> <span style="float:left;">Select an image to upload from your computer.</span></div>
-				    	</div>
-					</div>
-			    	<div id="#arguments.fieldname#_traditional" class="traditional-view" style="display:none;">
-		    			<a href="##upload" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><i class="icon-random">&nbsp;</i></a>
-			    		<div style="margin-left:15px">
-				    		<input type="file" name="#arguments.fieldname#TRADITIONAL" id="#arguments.fieldname#TRADITIONAL" />
-				    		<div><i style="float:left;" title="#metadatainfo#" class="icon-question-sign"></i> <span style="float:left;">Select an image to upload from your computer.</span></div>
-				    	</div>
-					</div>
-				</div>
-			</cfif>
-			<script type="text/javascript">$fc.imageformtool('#arguments.prefix#','#arguments.stMetadata.name#').init('#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#','#arguments.stMetadata.ftSourceField#',#arguments.stMetadata.ftImageWidth#,#arguments.stMetadata.ftImageHeight#,true,#arguments.stMetadata.ftSizeLimit#);</script>
-			<br class="clear">
-		</div>
-	</cfoutput></cfsavecontent>
-	
-	<cfreturn html />
-</cffunction>
-
-<cffunction name="ajax" output="false" returntype="string" hint="Response to ajax requests for this formtool">
-	<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
-	<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
-	<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
-	<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
-	
-	<cfset var stResult = structnew() />
-	<cfset var stFixed = structnew() />
-	<cfset var stSource = structnew() />
-	<cfset var stFile = structnew() />
-	<cfset var stImage = structnew() />
-	<cfset var stLoc = structnew() />
-	<cfset var resizeinfo = "" />
-	<cfset var source = "" />
-	<cfset var html = "" />
-	<cfset var json = "" />
-	<cfset var stJSON = structnew() />
-    <cfset var prefix = left(arguments.fieldname,len(arguments.fieldname)-len(arguments.stMetadata.name)) />
-	
-	<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
-	
-	<cfif structkeyexists(url,"check")>
-		<cfif isdefined("url.callback")>
-			<cfreturn "#url.callback#([])" />
-		<cfelse>
-			<cfreturn "[]" />
-		</cfif>
-	</cfif>
-	
-	<cfif structkeyexists(url,"crop")>
-		<cfset source = arguments.stObject[listfirst(arguments.stMetadata.ftSourceField,":")] />
-		<cfif isArray(source) and arrayLen(source)>
-			<cfset source = source[1] />
-		</cfif>
-		<cfif isvalid("uuid",source)>
-			<cfset stSource = application.fapi.getContentObject(objectid=source) />
-			<cfset source = stSource[listlast(arguments.stMetadata.ftSourceField,":")] />
-		</cfif>
-		
-		<cfif not structkeyexists(arguments.stMetadata,"ftImageWidth") or not isnumeric(arguments.stMetadata.ftImageWidth)><cfset arguments.stMetadata.ftImageWidth = 0 /></cfif>
-		<cfif not structkeyexists(arguments.stMetadata,"ftImageHeight") or not isnumeric(arguments.stMetadata.ftImageHeight)><cfset arguments.stMetadata.ftImageHeight = 0 /></cfif>
-    	<cfparam name="arguments.stMetadata.ftAllowResizeQuality" default="false">
-    	<cfparam name="url.allowcancel" default="1" />
-    	
-		<cfif len(source)>
-			<cfset stLoc = application.fc.lib.cdn.ioGetFileLocation(location="images",file=source) />
-			
-			<cfsavecontent variable="html"><cfoutput>
-				<div style="float:left;background-color:##cccccc;height:100%;width:65%;margin-right:1%;">
-					<img id="cropable-image" src="#stLoc.path#" />
-				</div>
-				<div style="float:left;width:33%;">
-					<div class="image-crop-instructions" style="overflow-y:auto;overlow-y:hidden;">
-						<p class="image-resize-information alert alert-info">
-							<strong style="font-weight:bold">Selection:</strong><br>
-							Coordinates: (<span id="image-crop-a-x">?</span>,<span id="image-crop-a-y">?</span>) to (<span id="image-crop-b-x">?</span>,<span id="image-crop-b-y">?</span>)<br>
-							<span id="image-crop-dimensions">Dimensions: <span id="image-crop-width">?</span>px x <span id="image-crop-height">?</span>px</span><br>
-							<cfif arguments.stMetadata.ftImageWidth gt 0 and arguments.stMetadata.ftImageHeight gt 0>
-								Ratio: 
-								<cfif arguments.stMetadata.ftImageWidth gt arguments.stMetadata.ftImageHeight>
-									#numberformat(arguments.stMetadata.ftImageWidth/arguments.stMetadata.ftImageHeight,"9.99")#:1
-								<cfelseif arguments.stMetadata.ftImageWidth lt arguments.stMetadata.ftImageHeight>
-									1:#numberformat(arguments.stMetadata.ftImageHeight/arguments.stMetadata.ftImageWidth,"9.99")#
-								<cfelse><!--- Equal --->
-									1:1
-								</cfif> <span style="font-style:italic;">(Fixed aspect ratio)</span><br>
-							<cfelse>
-								Ratio: <span id="image-crop-ratio-num">?</span>:<span id="image-crop-ratio-den">?</span><br>
+						    <cfif previewheight gt 400>
+								<cfset previewwidth = previewwidth * 400 / previewheight />
+								<cfset previewheight = 400 />
 							</cfif>
-							<strong style="font-weight:bold">Output:</strong><br>
-							Dimensions: <span id="image-crop-width-final">#arguments.stMetadata.ftImageWidth#</span>px x <span id="image-crop-height-final">#arguments.stMetadata.ftImageHeight#</span>px<br>
-							Quality: <cfif arguments.stMetadata.ftAllowResizeQuality><input id="image-crop-quality" value="#arguments.stMetadata.ftQuality#" /><cfelse>#round(arguments.stMetadata.ftQuality*100)#%<input type="hidden" id="image-crop-quality" value="#arguments.stMetadata.ftQuality#" /></cfif>
-						</p>
-						<p id="image-crop-warning alert" style="display:none;">
-							<strong style="font-weight:bold">Warning:</strong> The selected crop area is smaller than the output size. To avoid poor image quality choose a larger crop or use a higher resolution source image.
-						</p>							
-						<p style="margin-top: 0.7em">To select a crop area:</p>
-						<ol style="padding-left:20px;padding-top:0.7em">
-							<li style="list-style:decimal outside;">Click and drag from the point on the image where the top left corner of the crop will start to the bottom right corner where the crop will finish.</li>
-							<li style="list-style:decimal outside;">You can drag the selection box around the image if it isn't in the right place, or drag the edges and corners if the box isn't the right shape.</li>
-							<li style="list-style:decimal outside;">Click "Crop and Resize" when you're done.</li>
-						</ol>
+						    <div id="#arguments.fieldname#_complete" class="complete-view">
+					    		<span class="image-status" title=""><i class="icon-picture" style="float:left;">&nbsp;</i></span>
+					    		<div style="margin-left:15px;">
+						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#stFile.path#' width='#previewwidth#' height='#previewheight#' />" href="#stFile.path#" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
+						    		Size: <span class="image-size">#round(application.fc.lib.cdn.ioGetFileSize(location="images",file=arguments.stMetadata.value)/1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
+						    		<div class="image-resize-information alert alert-info" style="margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
+						    	</div>
+							</div>
+						<cfelse>
+						    <div id="#arguments.fieldname#_complete" class="complete-view" style="display:none;">
+					    		<span class="image-status" title=""><i class="icon-picture" style="float:left;"></i></span>
+					    		<div style="margin-left:15px;">
+						    		<span class="image-filename"></span> ( <a class="image-preview" title="<img src='' />" href="##" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
+						    		Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
+									<div class="image-resize-information alert alert-info" style="margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
+						    	</div>
+							</div>
+						</cfif>
 					</div>
-					<div class="uniForm image-crop-actions">
-						<ft:buttonPanel style="border:none;background: none">
-							<ft:button value="Crop and Resize" id="image-crop-finalize" onclick="$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').finalizeCrop();return false;" />
-							<cfif url.allowcancel>
-								<a href="##" id="image-crop-cancel" style="position:relative;top:13px;padding-right:10px;background:none">Cancel</a>
-							</cfif>
-						</ft:buttonPanel>
-					</div>
+					<script type="text/javascript">$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').init('#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#','#arguments.stMetadata.ftSourceField#',#arguments.stMetadata.ftImageWidth#,#arguments.stMetadata.ftImageHeight#,false,#arguments.stMetadata.ftSizeLimit#);</script>
 				</div>
 			</cfoutput></cfsavecontent>
 			
-			<cfreturn html />
 		<cfelse>
-			<cfreturn "<p>The source field is empty. <a href='##' onclick='$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').endCrop();return false;'>Close</a></p>" />
-		</cfif>
-	</cfif>
-	
-	<cfset stResult = handleFilePost(
-			objectid=arguments.stObject.objectid,
-			existingfile=arguments.stMetadata.value,
-			uploadfield="#arguments.stMetadata.name#NEW",
-			destination=arguments.stMetadata.ftDestination,
-			allowedExtensions=arguments.stMetadata.ftAllowedExtensions,
-			stFieldPost=arguments.stFieldPost.stSupporting,
-			sizeLimit=arguments.stMetadata.ftSizeLimit,
-			bArchive=application.stCOAPI[arguments.typename].bArchive and (not structkeyexists(arguments.stMetadata,"ftArchive") or arguments.stMetadata.ftArchive)
-		) />
-	
-	<cfif isdefined("stResult.stError.message") and len(stResult.stError.message)>
-		<cfset stJSON = structnew() />
-		<cfset stJSON["error"] = stResult.stError.message />
-		<cfset stJSON["value"] = stResult.value />
-		
-		<cfif isdefined("url.callback")>
-			<cfreturn "#url.callback#(#serializeJSON(stJSON)#)" />
-		<cfelse>
-			<cfreturn serializeJSON(stJSON) />
-		</cfif>
-	</cfif>
-	
-	<cfif stResult.bChanged>
-	
-		<cfif isdefined("stResult.value") and len(stResult.value)>
-		
-			<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"ResizeMethod") or not isnumeric(arguments.stFieldPost.stSupporting.ResizeMethod)><cfset arguments.stFieldPost.stSupporting.ResizeMethod = arguments.stMetadata.ftAutoGenerateType /></cfif>
-			<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"Quality") or not isnumeric(arguments.stFieldPost.stSupporting.Quality)><cfset arguments.stFieldPost.stSupporting.Quality = arguments.stMetadata.ftQuality /></cfif>
 			
-			<cfset stFixed = fixImage(stResult.value,arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
-			
-			<cfset stJSON = structnew() />
-			<cfif stFixed.bSuccess>
-				<cfset stJSON["resizedetails"] = structnew() />
-				<cfset stJSON["resizedetails"]["method"] = arguments.stFieldPost.stSupporting.ResizeMethod />
-				<cfset stJSON["resizedetails"]["quality"] = round(arguments.stFieldPost.stSupporting.Quality*100) />
-				<cfset stResult.value = stFixed.value />
-			<cfelseif structkeyexists(stFixed,"error")>
-				<!--- Do nothing - an error from fixImage means there was no resize --->
-			</cfif>
-			
-			<cfif not structkeyexists(stResult,"error")>
-				<cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=stResult.value,datatype='image')#" structName="stImage" />
-				<cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=stResult.value) />
-				<cfset stJSON["value"] = stResult.value />
-				<cfset stJSON["filename"] = listlast(stResult.value,'/') />
-				<cfset stJSON["fullpath"] = stFile.path />
-				<cfset stJSON["size"] = round(application.fc.lib.cdn.ioGetFileSize(location="images",file=stResult.value)/1024) />
-				<cfset stJSON["width"] = stImage.width />
-				<cfset stJSON["height"] = stImage.height />
-			
-				<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
-			</cfif>
-			
-			<cfif isdefined("url.callback")>
-				<cfreturn "#url.callback#(#serializeJSON(stJSON)#)" />
-			<cfelse>
-				<cfreturn serializeJSON(stJSON) />
-			</cfif>
-		</cfif>
-	</cfif>
-	
-	<cfif not len(stResult.value) and structkeyexists(arguments.stMetadata,"ftSourceField") and len(arguments.stMetadata.ftSourceField)>
-	
-		<cfset stResult = handleFileSource(sourceField=arguments.stMetadata.ftSourceField,stObject=arguments.stObject,destination=arguments.stMetadata.ftDestination,stFields=application.stCOAPI[arguments.typename].stProps) />
-		
-		<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"ResizeMethod") or not len(arguments.stFieldPost.stSupporting.ResizeMethod)><cfset arguments.stFieldPost.stSupporting.ResizeMethod = arguments.stMetadata.ftAutoGenerateType /></cfif>
-		<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"Quality") or not isnumeric(arguments.stFieldPost.stSupporting.Quality)><cfset arguments.stFieldPost.stSupporting.Quality = arguments.stMetadata.ftQuality /></cfif>
-			
-		<cfif len(stResult.value)>
-			<cfparam name="form.bForceCrop" default="false">
-			<cfset stFixed = fixImage(stResult.value,arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality,form.bForceCrop) />
-			
-			<cfset stJSON = structnew() />
-			<cfif stFixed.bSuccess>
-				<cfset stJSON["resizedetails"] = structnew() />
-				<cfset stJSON["resizedetails"]["method"] = arguments.stFieldPost.stSupporting.ResizeMethod />
-				<cfset stJSON["resizedetails"]["quality"] = round(arguments.stFieldPost.stSupporting.Quality*100) />
-			<cfelseif structkeyexists(stFixed,"error")>
-				<!--- Do nothing - an error from fixImage means there was no resize --->
-			</cfif>
-			
-			<cfif not structkeyexists(stResult,"error")>
-				<cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=stResult.value,datatype='image')#" structName="stImage" />
-				<cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=stResult.value) />
-				<cfset stJSON["value"] = stResult.value />
-				<cfset stJSON["filename"] = listlast(stResult.value,'/') />
-				<cfset stJSON["fullpath"] = stFile.path />
-				<cfset stJSON["size"] = round(application.fc.lib.cdn.ioGetFileSize(location="images",file=stResult.value)/1024) />
-				<cfset stJSON["width"] = stImage.width />
-				<cfset stJSON["height"] = stImage.height />
-				<cfset stJSON["q"] = cgi.query_string />
+			<!--- This IS the source field --->
+		    <cfsavecontent variable="html"><cfoutput>
+			    <div class="multiField">
+					<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
+					<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="false" />
+					<div id="#arguments.fieldname#-multiview">
+				    	<div id="#arguments.fieldname#_upload" class="upload-view"<cfif len(arguments.stMetadata.value)> style="display:none;"</cfif>>
+							<a href="##traditional" class="fc-btn select-view" title="Switch between traditional upload and inline upload" style="float:left;"><i class="icon-random">&nbsp;</i></a>
+							<div style="margin-left:15px">
+					    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
+					    		<div id="#arguments.fieldname#_uploaderror" class="alert alert-error" style="margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
+					    		<div><i style="float:left;" title="#metadatainfo#" class="icon-question-sign"></i> <span style="float:left;">Select an image to upload from your computer.</span></div>
+					    		<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##back" class="select-view">Cancel - I don't want to replace this image</a></div>
+					    	</div>
+						</div>
+				    	<div id="#arguments.fieldname#_traditional" class="traditional-view" style="display:none;">
+				    		<a href="##back" class="fc-btn select-view" title="Switch between traditional upload and inline upload" style="float:left;"><i class="icon-random">&nbsp;</i></a>
+							<div style="margin-left:15px">
+					    		<input type="file" name="#arguments.fieldname#TRADITIONAL" id="#arguments.fieldname#TRADITIONAL" />
+					    		<div><i style="float:left;" title="#metadatainfo#" class="icon-question-sign"></i> <span style="float:left;">Select an image to upload from your computer.</span></div>
+					    		<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##back" class="select-view">Cancel - I don't want to replace this image</a></div>
+					    	</div>
+						</div>
+				    	<div id="#arguments.fieldname#_delete" class="delete-view" style="display:none;">
+				    		<span class="image-status" title=""><i class="icon-picture" style="float:left;"></i></span>
+							<div style="margin-left:15px">
+					    		<ft:button class="image-delete-button" value="Delete this image" type="button" onclick="return false;" />
+					    		<ft:button class="image-deleteall-button" value="Delete this and the related images" type="button" onclick="return false;" />
+					    		
+					    		<div class="image-cancel-upload"><a href="##back" class="select-view">Cancel - I don't want to delete</a></div>
+					    	</div>
+						</div>
+						<cfif len(arguments.stMetadata.value)>
+						    <cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stMetadata.value) />
+						    <cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=arguments.stMetadata.value,datatype='image')#" structName="stImage" />
+						    <cfset previewwidth = stImage.width />
+						    <cfset previewheight = stImage.height />
+						    <cfif previewwidth gt 400>
+								<cfset previewheight = previewheight * 400 / previewwidth />
+								<cfset previewwidth = 400 />
+							</cfif>
+						    <cfif previewheight gt 400>
+								<cfset previewwidth = previewwidth * 400 / previewheight />
+								<cfset previewheight = 400 />
+							</cfif>
+						    <div id="#arguments.fieldname#_complete" class="complete-view">
+					    		<span class="image-status" title=""><i class="icon-picture" style="float:left;">&nbsp;</i></span>
+					    		<div style="margin-left:15px;">
+						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#stFile.path#' width='#previewwidth#' height='#previewheight#' />" href="#stFile.path#" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
+						    		Size: <span class="image-size">#round(application.fc.lib.cdn.ioGetFileSize(location='images',file=arguments.stMetadata.value)/1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
+									<div class="image-resize-information alert alert-info" style="margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
+						    	</div>
+							</div>
+						<cfelse>
+						    <div id="#arguments.fieldname#_complete" class="complete-view" style="display:none;">
+					    		<span class="image-status" title=""><i class="icon-picture" style="float:left;"></i></span>
+					    		<div style="margin-left:15px;">
+						    		<span class="image-filename"></span> ( <a class="image-preview" title="<img src='' />" href="##" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
+						    		Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
+						    		<div class="image-resize-information alert alert-info" style="margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
+						    	</div>
+							</div>
+						</cfif>
+					</div>
+					<script type="text/javascript">$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').init('#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#','#arguments.stMetadata.ftSourceField#',#arguments.stMetadata.ftImageWidth#,#arguments.stMetadata.ftImageHeight#,false,#arguments.stMetadata.ftSizeLimit#);</script>
+					<cfif len(arguments.stMetadata.ftInlineDependants)><div style="margin-top: 10px; margin-left: 20px; font-weight: bold; font-style: italic;">Image sizes:</div></cfif>
+				</cfoutput>
 				
-				<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
+				<cfloop list="#arguments.stMetadata.ftInlineDependants#" index="thisdependant">
+					<cfif structkeyexists(arguments.stObject,thisdependant)>
+						<cfset stAltMeta = duplicate(arguments.stPackage.stProps[thisdependant].metadata) />
+						<cfset stAltMeta.ftAllowUpload = arguments.stMetadata.ftInlineUpload />
+						<cfset stAltMeta.value = arguments.stObject[stAltMeta.name] />
+						<cfoutput>#editInline(typename=arguments.typename,stObject=arguments.stObject,stMetadata=stAltMeta,fieldname="#prefix##stAltMeta.name#",stPackage=arguments.stPackage,prefix=prefix)#</cfoutput>
+					</cfif>
+				</cfloop>
+				
+				<cfoutput></div></cfoutput>
+		    </cfsavecontent>
+			
+		</cfif>
+	    
+	    <cfreturn html>
+	</cffunction>
+
+	<cffunction name="editInline" output="false" returntype="string" hint="UI for editing a dependant image inline as part of the source field">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+	    <cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+	    <cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+	    <cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+	    <cfargument name="stPackage" required="true" type="struct" hint="Contains the metadata for the all fields for the current typename.">
+	    <cfargument name="prefix" required="true" type="string" hint="Form prefix" />
+	    
+		<cfset var html = "" />
+		<cfset var metadatainfo = "" />
+		<cfset var preview = "" />
+		<cfset var predefinedCrops = { none="None",center="Crop Center",fitinside="Fit Inside",forcesize="Force Size",pad="Pad",topcenter="Crop Top Center",topleft="Crop Top Left",topright="Crop Top Right",left="Crop Left",right="Crop Right",bottomright="Crop Bottom Left",bottomright="Crop Bottom Center" } />
+	    <cfset var stImage = structnew() />
+	    <cfset var stFile = structnew() />
+	    
+		<cfparam name="arguments.stMetadata.ftHint" default="" />
+	    <cfparam name="arguments.stMetadata.ftstyle" default="">
+	    <cfparam name="arguments.stMetadata.ftDestination" default="/images">
+	    <cfparam name="arguments.stMetadata.ftSourceField" default="">
+	    <cfparam name="arguments.stMetadata.ftCreateFromSourceOption" default="true">
+	    <cfparam name="arguments.stMetadata.ftCreateFromSourceDefault" default="true">
+	    <cfparam name="arguments.stMetadata.ftAllowUpload" default="true">
+	    <cfparam name="arguments.stMetadata.ftAllowResize" default="true">
+	    <cfparam name="arguments.stMetadata.ftAllowResizeQuality" default="false">
+		<cfif not structkeyexists(arguments.stMetadata,"ftImageWidth") or not isnumeric(arguments.stMetadata.ftImageWidth)><cfset arguments.stMetadata.ftImageWidth = 0 /></cfif>
+		<cfif not structkeyexists(arguments.stMetadata,"ftImageHeight") or not isnumeric(arguments.stMetadata.ftImageHeight)><cfset arguments.stMetadata.ftImageHeight = 0 /></cfif>
+	    <cfparam name="arguments.stMetadata.ftAutoGenerateType" default="FitInside">
+	    <cfparam name="arguments.stMetadata.ftPadColor" default="##ffffff">
+	    <cfparam name="arguments.stMetadata.ftShowConversionInfo" default="true"><!--- Set to false to hide the conversion information that will be applied to the uploaded image --->
+	    <cfparam name="arguments.stMetadata.ftAllowedExtensions" default="jpg,jpeg,png,gif"><!--- The extentions allowed to be uploaded --->
+	    <cfparam name="arguments.stMetadata.ftSizeLimit" default="0" />
+		
+	    <!--- Metadata --->
+	    <cfsavecontent variable="metadatainfo">
+			<cfif (isnumeric(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth gt 0) or (isnumeric(arguments.stMetadata.ftImageHeight) and arguments.stMetadata.ftImageHeight gt 0)>
+				<cfoutput>Dimensions: <cfif isnumeric(arguments.stMetadata.ftImageWidth) and arguments.stMetadata.ftImageWidth gt 0>#arguments.stMetadata.ftImageWidth#<cfelse>any width</cfif> x <cfif isnumeric(arguments.stMetadata.ftImageHeight) and arguments.stMetadata.ftImageHeight gt 0>#arguments.stMetadata.ftImageHeight#<cfelse>any height</cfif> (#predefinedCrops[arguments.stMetadata.ftAutoGenerateType]#)<br>Quality Setting: #round(arguments.stMetadata.ftQuality*100)#%<br></cfoutput>
 			</cfif>
+			<cfoutput>Image must be of type #arguments.stMetadata.ftAllowedExtensions#</cfoutput>
+		</cfsavecontent>
+		
+		<!--- Preview --->
+		<cfif len(arguments.stMetadata.value)>
+		    <cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stMetadata.value) />
+		    <cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=arguments.stMetadata.value,datatype='image')#" structName="stImage" />
+		    <cfset previewwidth = stImage.width />
+		    <cfset previewheight = stImage.height />
+		    <cfif previewwidth gt 400>
+				<cfset previewheight = previewheight * 400 / previewwidth />
+				<cfset previewwidth = 400 />
+			</cfif>
+		    <cfif previewheight gt 400>
+				<cfset previewwidth = previewwidth * 400 / previewheight />
+				<cfset previewheight = 400 />
+			</cfif>
+			<cfset preview = "<img src='#stFile.path#' width='#previewwidth#' height='#previewheight#' /><br><div style='width:#previewwidth#px;'>#round(application.fc.lib.cdn.ioGetFileSize(location='images',file=arguments.stMetadata.value)/1024)#</span>KB, #stImage.width#px x #stImage.height#px</div>" />
+		<cfelse>
+			<cfset preview = "" />
+		</cfif>
+	    
+		<cfsavecontent variable="html"><cfoutput>
+			<div id="#arguments.fieldname#-inline" style="margin-left:20px;">
+			
+				<input type="hidden" name="#arguments.fieldname#RESIZEMETHOD" id="#arguments.fieldname#RESIZEMETHOD" value="" />
+				<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="false" />
+				<span class="image-status" title="<cfif len(arguments.stMetadata.ftHint)>#arguments.stMetadata.ftHint#<br></cfif>#metadatainfo#"><i class="icon-picture" style="float:left;"></i></span>
+				<span class="dependant-label">#arguments.stMetadata.ftLabel#</span>
+				<span class="dependant-options"<cfif not len(arguments.stMetadata.value) and not len(arguments.stObject[arguments.stMetadata.ftSourceField]) and not arguments.stMetadata.ftAllowUpload> style="display:none;"</cfif>>
+					(
+						<span class="not-cancel">
+							<span class="action-preview action"<cfif not len(arguments.stMetadata.value)> style="display:none;"</cfif>>
+								<a class="image-preview" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank" title="#preview#">Preview</a> | 
+							</span>
+							<span class="action-crop action"<cfif not len(arguments.stObject[listfirst(arguments.stMetadata.ftSourceField,":")])> style="display:none;"</cfif>>
+								<a class="image-crop-select-button" href="##">Custom crop</a><cfif arguments.stMetadata.ftAllowUpload> | </cfif>
+							</span>
+							<cfif arguments.stMetadata.ftAllowUpload><span class="action-upload action"><a href="##upload" class="image-upload-select-button select-view">Upload</a></span></cfif>
+						</span>
+						<cfif arguments.stMetadata.ftAllowUpload><span class="action-cancel action" style="display:none;"><a href="##cancel" class="select-view">Cancel</a></span></cfif>
+					)
+				</span>
+				<cfif arguments.stMetadata.ftAllowUpload>
+					<div id="#arguments.fieldname#-multiview">
+						<div id="#arguments.fieldname#_cancel" class="cancel-view"></div>
+				    	<div id="#arguments.fieldname#_upload" class="upload-view" style="display:none;">
+			    			<a href="##traditional" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><i class="icon-random">&nbsp;</i></a>
+							<div style="margin-left:15px">
+					    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
+					    		<div id="#arguments.fieldname#_uploaderror" class="alert alert-error" style="margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
+					    		<div><i style="float:left;" title="#metadatainfo#" class="icon-question-sign"></i> <span style="float:left;">Select an image to upload from your computer.</span></div>
+					    	</div>
+						</div>
+				    	<div id="#arguments.fieldname#_traditional" class="traditional-view" style="display:none;">
+			    			<a href="##upload" class="select-view" title="Switch between traditional upload and inline upload" style="float:left;"><i class="icon-random">&nbsp;</i></a>
+				    		<div style="margin-left:15px">
+					    		<input type="file" name="#arguments.fieldname#TRADITIONAL" id="#arguments.fieldname#TRADITIONAL" />
+					    		<div><i style="float:left;" title="#metadatainfo#" class="icon-question-sign"></i> <span style="float:left;">Select an image to upload from your computer.</span></div>
+					    	</div>
+						</div>
+					</div>
+				</cfif>
+				<script type="text/javascript">$fc.imageformtool('#arguments.prefix#','#arguments.stMetadata.name#').init('#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=true)#','#replace(rereplace(arguments.stMetadata.ftAllowedExtensions,"(^|,)(\w+)","\1*.\2","ALL"),",",";","ALL")#','#arguments.stMetadata.ftSourceField#',#arguments.stMetadata.ftImageWidth#,#arguments.stMetadata.ftImageHeight#,true,#arguments.stMetadata.ftSizeLimit#);</script>
+				<br class="clear">
+			</div>
+		</cfoutput></cfsavecontent>
+		
+		<cfreturn html />
+	</cffunction>
+
+	<cffunction name="ajax" output="false" returntype="string" hint="Response to ajax requests for this formtool">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+		
+		<cfset var stResult = structnew() />
+		<cfset var stFixed = structnew() />
+		<cfset var stSource = structnew() />
+		<cfset var stFile = structnew() />
+		<cfset var stImage = structnew() />
+		<cfset var stLoc = structnew() />
+		<cfset var resizeinfo = "" />
+		<cfset var source = "" />
+		<cfset var html = "" />
+		<cfset var json = "" />
+		<cfset var stJSON = structnew() />
+	    <cfset var prefix = left(arguments.fieldname,len(arguments.fieldname)-len(arguments.stMetadata.name)) />
+		
+		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
+		
+		<cfif structkeyexists(url,"check")>
+			<cfif isdefined("url.callback")>
+				<cfreturn "#url.callback#([])" />
+			<cfelse>
+				<cfreturn "[]" />
+			</cfif>
+		</cfif>
+		
+		<cfif structkeyexists(url,"crop")>
+			<cfset source = arguments.stObject[listfirst(arguments.stMetadata.ftSourceField,":")] />
+			<cfif isArray(source) and arrayLen(source)>
+				<cfset source = source[1] />
+			</cfif>
+			<cfif isvalid("uuid",source)>
+				<cfset stSource = application.fapi.getContentObject(objectid=source) />
+				<cfset source = stSource[listlast(arguments.stMetadata.ftSourceField,":")] />
+			</cfif>
+			
+			<cfif not structkeyexists(arguments.stMetadata,"ftImageWidth") or not isnumeric(arguments.stMetadata.ftImageWidth)><cfset arguments.stMetadata.ftImageWidth = 0 /></cfif>
+			<cfif not structkeyexists(arguments.stMetadata,"ftImageHeight") or not isnumeric(arguments.stMetadata.ftImageHeight)><cfset arguments.stMetadata.ftImageHeight = 0 /></cfif>
+	    	<cfparam name="arguments.stMetadata.ftAllowResizeQuality" default="false">
+	    	<cfparam name="url.allowcancel" default="1" />
+	    	
+			<cfif len(source)>
+				<cfset stLoc = application.fc.lib.cdn.ioGetFileLocation(location="images",file=source) />
+				
+				<cfsavecontent variable="html"><cfoutput>
+					<div style="float:left;background-color:##cccccc;height:100%;width:65%;margin-right:1%;">
+						<img id="cropable-image" src="#stLoc.path#" />
+					</div>
+					<div style="float:left;width:33%;">
+						<div class="image-crop-instructions" style="overflow-y:auto;overlow-y:hidden;">
+							<p class="image-resize-information alert alert-info">
+								<strong style="font-weight:bold">Selection:</strong><br>
+								Coordinates: (<span id="image-crop-a-x">?</span>,<span id="image-crop-a-y">?</span>) to (<span id="image-crop-b-x">?</span>,<span id="image-crop-b-y">?</span>)<br>
+								<span id="image-crop-dimensions">Dimensions: <span id="image-crop-width">?</span>px x <span id="image-crop-height">?</span>px</span><br>
+								<cfif arguments.stMetadata.ftImageWidth gt 0 and arguments.stMetadata.ftImageHeight gt 0>
+									Ratio: 
+									<cfif arguments.stMetadata.ftImageWidth gt arguments.stMetadata.ftImageHeight>
+										#numberformat(arguments.stMetadata.ftImageWidth/arguments.stMetadata.ftImageHeight,"9.99")#:1
+									<cfelseif arguments.stMetadata.ftImageWidth lt arguments.stMetadata.ftImageHeight>
+										1:#numberformat(arguments.stMetadata.ftImageHeight/arguments.stMetadata.ftImageWidth,"9.99")#
+									<cfelse><!--- Equal --->
+										1:1
+									</cfif> <span style="font-style:italic;">(Fixed aspect ratio)</span><br>
+								<cfelse>
+									Ratio: <span id="image-crop-ratio-num">?</span>:<span id="image-crop-ratio-den">?</span><br>
+								</cfif>
+								<strong style="font-weight:bold">Output:</strong><br>
+								Dimensions: <span id="image-crop-width-final">#arguments.stMetadata.ftImageWidth#</span>px x <span id="image-crop-height-final">#arguments.stMetadata.ftImageHeight#</span>px<br>
+								Quality: <cfif arguments.stMetadata.ftAllowResizeQuality><input id="image-crop-quality" value="#arguments.stMetadata.ftQuality#" /><cfelse>#round(arguments.stMetadata.ftQuality*100)#%<input type="hidden" id="image-crop-quality" value="#arguments.stMetadata.ftQuality#" /></cfif>
+							</p>
+							<p id="image-crop-warning alert" style="display:none;">
+								<strong style="font-weight:bold">Warning:</strong> The selected crop area is smaller than the output size. To avoid poor image quality choose a larger crop or use a higher resolution source image.
+							</p>							
+							<p style="margin-top: 0.7em">To select a crop area:</p>
+							<ol style="padding-left:20px;padding-top:0.7em">
+								<li style="list-style:decimal outside;">Click and drag from the point on the image where the top left corner of the crop will start to the bottom right corner where the crop will finish.</li>
+								<li style="list-style:decimal outside;">You can drag the selection box around the image if it isn't in the right place, or drag the edges and corners if the box isn't the right shape.</li>
+								<li style="list-style:decimal outside;">Click "Crop and Resize" when you're done.</li>
+							</ol>
+						</div>
+						<div class="uniForm image-crop-actions">
+							<ft:buttonPanel style="border:none;background: none">
+								<ft:button value="Crop and Resize" id="image-crop-finalize" onclick="$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').finalizeCrop();return false;" />
+								<cfif url.allowcancel>
+									<a href="##" id="image-crop-cancel" style="position:relative;top:13px;padding-right:10px;background:none">Cancel</a>
+								</cfif>
+							</ft:buttonPanel>
+						</div>
+					</div>
+				</cfoutput></cfsavecontent>
+				
+				<cfreturn html />
+			<cfelse>
+				<cfreturn "<p>The source field is empty. <a href='##' onclick='$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').endCrop();return false;'>Close</a></p>" />
+			</cfif>
+		</cfif>
+		
+		<cfset stResult = handleFilePost(
+				objectid=arguments.stObject.objectid,
+				existingfile=arguments.stMetadata.value,
+				uploadfield="#arguments.stMetadata.name#NEW",
+				destination=arguments.stMetadata.ftDestination,
+				allowedExtensions=arguments.stMetadata.ftAllowedExtensions,
+				stFieldPost=arguments.stFieldPost.stSupporting,
+				sizeLimit=arguments.stMetadata.ftSizeLimit,
+				bArchive=application.stCOAPI[arguments.typename].bArchive and (not structkeyexists(arguments.stMetadata,"ftArchive") or arguments.stMetadata.ftArchive)
+			) />
+		
+		<cfif isdefined("stResult.stError.message") and len(stResult.stError.message)>
+			<cfset stJSON = structnew() />
+			<cfset stJSON["error"] = stResult.stError.message />
+			<cfset stJSON["value"] = stResult.value />
 			
 			<cfif isdefined("url.callback")>
 				<cfreturn "#url.callback#(#serializeJSON(stJSON)#)" />
 			<cfelse>
 				<cfreturn serializeJSON(stJSON) />
+			</cfif>
+		</cfif>
+		
+		<cfif stResult.bChanged>
+		
+			<cfif isdefined("stResult.value") and len(stResult.value)>
+			
+				<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"ResizeMethod") or not isnumeric(arguments.stFieldPost.stSupporting.ResizeMethod)><cfset arguments.stFieldPost.stSupporting.ResizeMethod = arguments.stMetadata.ftAutoGenerateType /></cfif>
+				<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"Quality") or not isnumeric(arguments.stFieldPost.stSupporting.Quality)><cfset arguments.stFieldPost.stSupporting.Quality = arguments.stMetadata.ftQuality /></cfif>
+				
+				<cfset stFixed = fixImage(stResult.value,arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
+				
+				<cfset stJSON = structnew() />
+				<cfif stFixed.bSuccess>
+					<cfset stJSON["resizedetails"] = structnew() />
+					<cfset stJSON["resizedetails"]["method"] = arguments.stFieldPost.stSupporting.ResizeMethod />
+					<cfset stJSON["resizedetails"]["quality"] = round(arguments.stFieldPost.stSupporting.Quality*100) />
+					<cfset stResult.value = stFixed.value />
+				<cfelseif structkeyexists(stFixed,"error")>
+					<!--- Do nothing - an error from fixImage means there was no resize --->
+				</cfif>
+				
+				<cfif not structkeyexists(stResult,"error")>
+					<cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=stResult.value,datatype='image')#" structName="stImage" />
+					<cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=stResult.value) />
+					<cfset stJSON["value"] = stResult.value />
+					<cfset stJSON["filename"] = listlast(stResult.value,'/') />
+					<cfset stJSON["fullpath"] = stFile.path />
+					<cfset stJSON["size"] = round(application.fc.lib.cdn.ioGetFileSize(location="images",file=stResult.value)/1024) />
+					<cfset stJSON["width"] = stImage.width />
+					<cfset stJSON["height"] = stImage.height />
+				
+					<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
+				</cfif>
+				
+				<cfif isdefined("url.callback")>
+					<cfreturn "#url.callback#(#serializeJSON(stJSON)#)" />
+				<cfelse>
+					<cfreturn serializeJSON(stJSON) />
+				</cfif>
+			</cfif>
+		</cfif>
+		
+		<cfif not len(stResult.value) and structkeyexists(arguments.stMetadata,"ftSourceField") and len(arguments.stMetadata.ftSourceField)>
+		
+			<cfset stResult = handleFileSource(sourceField=arguments.stMetadata.ftSourceField,stObject=arguments.stObject,destination=arguments.stMetadata.ftDestination,stFields=application.stCOAPI[arguments.typename].stProps) />
+			
+			<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"ResizeMethod") or not len(arguments.stFieldPost.stSupporting.ResizeMethod)><cfset arguments.stFieldPost.stSupporting.ResizeMethod = arguments.stMetadata.ftAutoGenerateType /></cfif>
+			<cfif not structkeyexists(arguments.stFieldPost.stSupporting,"Quality") or not isnumeric(arguments.stFieldPost.stSupporting.Quality)><cfset arguments.stFieldPost.stSupporting.Quality = arguments.stMetadata.ftQuality /></cfif>
+				
+			<cfif len(stResult.value)>
+				<cfparam name="form.bForceCrop" default="false">
+				<cfset stFixed = fixImage(stResult.value,arguments.stMetadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality,form.bForceCrop) />
+				
+				<cfset stJSON = structnew() />
+				<cfif stFixed.bSuccess>
+					<cfset stJSON["resizedetails"] = structnew() />
+					<cfset stJSON["resizedetails"]["method"] = arguments.stFieldPost.stSupporting.ResizeMethod />
+					<cfset stJSON["resizedetails"]["quality"] = round(arguments.stFieldPost.stSupporting.Quality*100) />
+				<cfelseif structkeyexists(stFixed,"error")>
+					<!--- Do nothing - an error from fixImage means there was no resize --->
+				</cfif>
+				
+				<cfif not structkeyexists(stResult,"error")>
+					<cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=stResult.value,datatype='image')#" structName="stImage" />
+					<cfset stFile = application.fc.lib.cdn.ioGetFileLocation(location="images",file=stResult.value) />
+					<cfset stJSON["value"] = stResult.value />
+					<cfset stJSON["filename"] = listlast(stResult.value,'/') />
+					<cfset stJSON["fullpath"] = stFile.path />
+					<cfset stJSON["size"] = round(application.fc.lib.cdn.ioGetFileSize(location="images",file=stResult.value)/1024) />
+					<cfset stJSON["width"] = stImage.width />
+					<cfset stJSON["height"] = stImage.height />
+					<cfset stJSON["q"] = cgi.query_string />
+					
+					<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stResult.value) />
+				</cfif>
+				
+				<cfif isdefined("url.callback")>
+					<cfreturn "#url.callback#(#serializeJSON(stJSON)#)" />
+				<cfelse>
+					<cfreturn serializeJSON(stJSON) />
+				</cfif>
 			</cfif>
 		</cfif>
 		
