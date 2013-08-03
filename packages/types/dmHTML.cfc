@@ -74,6 +74,7 @@ type properties
 	ftlimit="69" ftLimitOverage="warn" ftAutoResize="true"
 	ftHint="If specified, the SEO title will be used instead of the page title for the TITLE tag. This title will be used as the preferred title by search engines. Different search engines have different lengths of snippet title: Google 69, Yahoo 72, Bing 65."
 	fttype="longchar"
+	ftRenderWebskinBefore="editSEOPreview"
 	fthelptitle="Search Engine Optimization" 
 	ftHelpSection="The keywords and description that you enter here will provide search engines with extra information that describes your page. Remember that a good SEO strategy is much more than just a good description and keywords." />
 	
