@@ -68,11 +68,11 @@ START WEBSKIN
 		<cfset stLocal.stResults = application.fc.lib.diff.getObjectDiff(getData(objectid=stObj.versionID),stObj) />
 		<cfif stLocal.stResults.countDifferent eq 0>
 			<cfoutput>
-				<div id="OKMsg"><p>
-					<i class="icon-exclamation" style="float: left; margin-right: .3em;"></i>
-					Your draft is identical to the approved version. 
+				<div class="alert alert-warning" style="margin-top: 0; margin-bottom: 1.5em">
+					<i class="icon-exclamation-sign"></i>&nbsp;
+					This draft is identical to the approved version.
 					<a href="navajo/delete.cfm?ObjectId=#stobj.objectId#&returnto=#urlencodedformat('#cgi.script_name#?objectid=#stObj.versionid#&ref=#url.ref#')#&ref=#url.ref#" onclick="if (!confirm('Are you sure you wish to discard this draft version? The approved version will remain.')) return false;">Discard draft</a>?
-				</p></div>
+				</div>
 			</cfoutput>
 		</cfif>
 	</cfif>
