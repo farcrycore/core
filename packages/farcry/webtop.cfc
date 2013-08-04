@@ -360,8 +360,6 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfif NOT isObject(arguments.oBarnacle)>
 			<cfset oBarnacle = application.fapi.getContentType("farBarnacle")>
 		</cfif>
-		<cfset var webtopAccessPermissionID = application.fapi.getContentType("farPermission").getID('admin')>
-		<cfset var currentRoles = application.security.getCurrentRoles()>
 		
 		<cfif isstruct(arguments.parent)>
 			<!--- Use that as stResult --->
