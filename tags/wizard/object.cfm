@@ -490,8 +490,8 @@
 					<cfparam name="ftFieldMetadata.errorMessage" default="">
 
 					<!--- webskin rendered before the field (ftRenderWebskinBefore) --->
-					<cfif isDefined("Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].ftRenderWebskinBefore") AND len(Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].ftRenderWebskinBefore)>
-						<skin:view stObject="#stObj#" webskin="#Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].ftRenderWebskinBefore#" />
+					<cfif isDefined("ftFieldMetadata.ftRenderWebskinBefore") AND len(ftFieldMetadata.ftRenderWebskinBefore)>
+						<skin:view stObject="#stObj#" webskin="#ftFieldMetadata.ftRenderWebskinBefore#" />
 					</cfif>
 
 					<ft:field 	for="#ftFieldMetadata.formFieldName#" 
@@ -507,8 +507,8 @@
 					</ft:field>
 
 					<!--- webskin rendered after the field (ftRenderWebskinAfter) --->
-					<cfif isDefined("Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].ftRenderWebskinAfter") AND len(Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].ftRenderWebskinAfter)>
-						<skin:view stObject="#stObj#" webskin="#Request.farcryForm.stObjects[variables.prefix]['MetaData'][i].ftRenderWebskinAfter#" />
+					<cfif isDefined("ftFieldMetadata.ftRenderWebskinAfter") AND len(ftFieldMetadata.ftRenderWebskinAfter)>
+						<skin:view stObject="#stObj#" webskin="#ftFieldMetadata.ftRenderWebskinAfter#" />
 					</cfif>
 
 				</cfif>
