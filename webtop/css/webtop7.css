@@ -1079,7 +1079,7 @@ legend + .control-group {
 }
 .controls input[type="file"], .controls input[type="image"], .controls input[type="submit"], .controls input[type="reset"], .controls input[type="button"], .controls input[type="radio"], .controls input[type="checkbox"] {
 	width: auto;
-	min-width: auto;
+	min-width: 0;
 	max-width: auto;
 }
 .controls select {
