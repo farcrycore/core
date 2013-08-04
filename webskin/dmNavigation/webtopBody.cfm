@@ -23,13 +23,14 @@
 	V edit URL for an approved/draft versioned object different to normaly types objects?
 	V make edit button work properly (no dupes)
 	V previews should refresh only when the device webskins change
+	V root/home/utility nodes MUST NOT be used in destructive operations
 
 
 	easy wins
 	---------
 
 	V zoom on a particular node / tree section
-		- zoom to the users "home node" by default
+		V zoom to the users "home node" by default
 		- move "up" button (one level) if within the users home node
 		V how should we deal with utility navigation? use a different page / menu item
 
@@ -47,8 +48,7 @@
 	-----------
 
 	- add, move, more? toolbar buttons
-		- context sensitive? delete, approve, send to draft, request approval
-		- root/home/utility nodes MUST NOT be deleted
+		- root/home/utility nodes MUST NOT be used in destructive operations
 
 	- sorting...
 
@@ -915,12 +915,18 @@
 						dropdown = 
 								'<li><a href="##" class="fc-add" onclick="$fc.objectAdminAction(\'Add Page\', \'' + createURL + '\', { onHidden: function(){ reloadTreeBranch(\'' + row["objectid"] + '\'); } }); return false;"><i class="icon-plus icon-fixed-width"></i> Add Page</a></li> '
 							+	'<li><a href="##" class="fc-zoom"><i class="icon-zoom-in icon-fixed-width"></i> Zoom</a></li> '
-							+	'<li class="divider"></li> '
-							+	'<li><a href="##" class="fc-copyto"><i class="icon-copy icon-fixed-width"></i> Copy to...</a></li> '
-							+	'<li><a href="##" class="fc-moveto"><i class="icon-move icon-fixed-width"></i> Move to...</a></li> '
-							+	'<li class="divider"></li> '
-							+	'<li><a href="##" class="" onclick="alert(\'Coming soon...\');"><i class="icon-trash icon-fixed-width"></i> Delete</a></li> '
 						;
+
+						// desctructive operations only allowed on nodes that are not protected
+						if (row["protectednode"] == false) {
+							dropdown = dropdown
+								+	'<li class="divider"></li> '
+								+	'<li><a href="##" class="fc-copyto"><i class="icon-copy icon-fixed-width"></i> Copy to...</a></li> '
+								+	'<li><a href="##" class="fc-moveto"><i class="icon-move icon-fixed-width"></i> Move to...</a></li> '
+								+	'<li class="divider"></li> '
+								+	'<li><a href="##" class="" onclick="alert(\'Coming soon...\');"><i class="icon-trash icon-fixed-width"></i> Delete</a></li> '
+							;
+						}
 					}
 					else if (row["nodetype"] == "leaf") {
 						dropdown = 

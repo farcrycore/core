@@ -11,10 +11,8 @@
 <cfparam name="url.bLoadCollapsed" default="false">
 <cfparam name="url.bIgnoreExpandedNodes" default="false">
 <cfparam name="url.bLoadLeafNodes" default="true">
-<cfparam name="url.responsetype" default="html">
 
 <cfparam name="stParam.bLoadLeafNodes" default="#url.bLoadLeafNodes#">
-<cfparam name="stParam.responsetype" default="#url.responsetype#">
 
 
 <!--- root node --->
@@ -41,6 +39,12 @@
 	<cfset url.relativeNLevel = 0>
 </cfif>
 
+
+<!--- PROTECTED TREE NODES --->
+<cfset lProtectedNavIDs = "">
+<cfset lProtectedNavIDs = listAppend(lProtectedNavIDs, application.fapi.getNavID("root"))>
+<cfset lProtectedNavIDs = listAppend(lProtectedNavIDs, application.fapi.getNavID("home"))>
+<cfset lProtectedNavIDs = listAppend(lProtectedNavIDs, application.fapi.getNavID("hidden"))>
 
 
 <!--- initialize expanded tree nodes --->
@@ -69,345 +73,278 @@
 
 
 <cfset stResponse = structNew()>
+<cfset stResponse["success"] = true>
 <cfset stResponse["rows"] = arrayNew(1)>
 
-<cfsavecontent variable="html">
-	
-	<cfloop query="qTree">
 
-		<!--- look up the nav node --->
-		<cfset stNav = application.fapi.getContentObject(typename="dmNavigation", objectid=qTree.objectid)>
 
-		<cfset thisClass = "">
-		<cfset bRootNode = stNav.objectid eq rootObjectID>
-		<cfset bExpanded = false>
-		<cfset expandable = 0>
-		<cfset bUnexpandedAncestor = false>
-		<cfset aLeafNodes = arrayNew(1)>
-		<cfset childrenLoaded = false>
+<cfloop query="qTree">
 
-		<!--- find child folders --->
-		<cfif qTree.nRight - qTree.nLeft gt 1>
+	<!--- look up the nav node --->
+	<cfset stNav = application.fapi.getContentObject(typename="dmNavigation", objectid=qTree.objectid)>
+
+	<cfset thisClass = "">
+	<cfset bRootNode = stNav.objectid eq rootObjectID>
+	<cfset bProtectedNode = false>
+	<cfset bExpanded = false>
+	<cfset expandable = 0>
+	<cfset bUnexpandedAncestor = false>
+	<cfset aLeafNodes = arrayNew(1)>
+	<cfset childrenLoaded = false>
+
+	<!--- find child folders --->
+	<cfif qTree.nRight - qTree.nLeft gt 1>
+		<cfset expandable = 1>
+		<cfif qTree.nlevel lt treeMaxLevel>
+			<cfset childrenLoaded = true>	
+		</cfif>
+	</cfif>
+	<!--- find child leaves --->
+	<cfif stParam.bLoadLeafNodes>
+		<cfif arrayLen(stNav.aObjectIDs) gt 0>
 			<cfset expandable = 1>
 			<cfif qTree.nlevel lt treeMaxLevel>
+				<cfset aLeafNodes = oTree.getLeaves(qTree.objectid)>
 				<cfset childrenLoaded = true>	
 			</cfif>
 		</cfif>
-		<!--- find child leaves --->
-		<cfif stParam.bLoadLeafNodes>
-			<cfif arrayLen(stNav.aObjectIDs) gt 0>
-				<cfset expandable = 1>
-				<cfif qTree.nlevel lt treeMaxLevel>
-					<cfset aLeafNodes = oTree.getLeaves(qTree.objectid)>
-					<cfset childrenLoaded = true>	
+	</cfif>
+
+	<!--- determine if this node is protected from destructive operations --->
+	<cfif listFindNoCase(lProtectedNavIDs, stNav.objectid)>
+		<cfset bProtectedNode = true>
+	</cfif>
+
+	<!--- determine if this node is currently expanded --->
+	<cfif bRootNode AND NOT url.bLoadCollapsed>
+		<cfset bExpanded = true>
+	</cfif>
+	<cfif listFindNoCase(cookie.FARCRYTREEEXPANDEDNODES, stNav.objectid, "|") AND NOT url.bIgnoreExpandedNodes>
+		<cfset expandable = 1>
+		<cfset bExpanded = true>
+	</cfif>
+
+	<!--- if this node is expanded then show it as collapsable --->
+	<cfif expandable eq 1>
+		<cfif bExpanded>
+			<cfset thisClass = "fc-treestate-collapse">
+		<cfelse>
+			<cfset thisClass = "fc-treestate-expand">
+		</cfif>
+	</cfif>
+
+
+	<!--- tree indentation depth relative to the base nlevel of the page and the expandability of the node --->
+	<cfset navIndentLevel = qTree.nlevel - baseNLevel - expandable + url.relativeNLevel>
+
+
+	<!--- check that all visible ancestors are expanded --->
+	<cfset qAncestors = oTree.getAncestors(objectid=qTree.objectid, nlevel=qTree.nlevel-baseNLevel-1)>
+	<cfloop query="qAncestors">
+		<cfif NOT listFindNoCase(cookie.FARCRYTREEEXPANDEDNODES, qAncestors.objectid, "|") AND qAncestors.nlevel gt 0>
+			<!--- unexpanded ancestor found, so this node is not visible --->
+			<cfset bUnexpandedAncestor = true>
+		</cfif>
+	</cfloop>
+
+
+	<cfif bRenderRoot OR qTree.objectid neq rootObjectID>
+
+		<!--- if this node is expanded, or the parent nav node is expanded then this nav node will be visible --->
+		<cfif bUnexpandedAncestor>
+			<cfset thisClass = thisClass & " fc-treestate-hidden">
+		<cfelseif url.bLoadCollapsed AND NOT bRootNode>
+			<cfset thisClass = thisClass & " fc-treestate-hidden">
+		<cfelseif qTree.parentid eq rootObjectID>
+			<cfset thisClass = thisClass & " fc-treestate-visible">
+		<cfelseif bExpanded OR (listFindNoCase(cookie.FARCRYTREEEXPANDEDNODES, qTree.parentid, "|") AND NOT url.bIgnoreExpandedNodes)>
+			<cfset thisClass = thisClass & " fc-treestate-visible">
+		<cfelse>
+			<cfset thisClass = thisClass & " fc-treestate-hidden">
+		</cfif>
+
+		<!--- load children using ajax --->
+		<cfif expandable AND NOT childrenLoaded>
+			<cfset thisClass = thisClass & " fc-treestate-notloaded">
+		</cfif>
+		
+
+		<!--- urls --->
+		<cfset thisOverviewURL = "#application.url.webtop#/edittabOverview.cfm?typename=#stNav.typename#&objectid=#stNav.objectid#&ref=overview">
+		<cfset thisEditURL = "#application.url.webtop#/edittabEdit.cfm?objectid=#stNav.objectid#&typename=#stNav.typename#">
+		<cfset thisPreviewURL = application.fapi.getLink(typename="dmNavigation", objectid=stNav.objectid, urlparameters="flushcache=1&showdraft=1")>
+		
+		<!--- vary the status labels and icon by the object status --->
+		<cfset thisStatusLabel = "">
+		<cfset thisFolderIcon = "icon-folder-close">
+		<cfif bExpanded>
+			<cfset thisFolderIcon = "icon-folder-open">
+		</cfif>
+		<cfset thisNodeIcon = "<span class='icon-stack'><i class='#thisFolderIcon#'></i></span>">
+
+		<cfif stNav.status eq "draft">
+			<!--- types object with draft status --->
+			<cfset thisStatusLabel = "<span class='label label-warning'>#application.rb.getResource("constants.status.#stNav.status#@label",stNav.status)#</span>">
+			<cfset thisNodeIcon = "<span class='icon-stack'><i class='#thisFolderIcon#'></i><i class='icon-pencil'></i></span>">
+
+		<cfelseif stNav.status eq "approved">
+			<!--- types object with approved status --->
+			<cfset thisStatusLabel = "<span class='label label-info'>#application.rb.getResource("constants.status.#stNav.status#@label",stNav.status)#</span>">
+
+		<cfelse>
+			<!--- object with other status --->
+			<cfset thisStatusLabel = "<span class='label'>#application.rb.getResource("constants.status.#stNav.status#@label",stNav.status)#</span>">
+
+		</cfif>
+
+
+		<!--- build nav node object --->
+		<cfset stFolderRow = structNew()>
+		<cfset stFolderRow["objectid"] = stNav.objectid>
+		<cfset stFolderRow["typename"] = stNav.typename>
+		<cfset stFolderRow["class"] = thisClass>
+		<cfset stFolderRow["nlevel"] = qTree.nlevel>
+		<cfset stFolderRow["nodetype"] = "folder">
+		<cfset stFolderRow["protectednode"] = bProtectedNode>
+		<cfset stFolderRow["parentid"] = qTree.parentid>
+		<cfset stFolderRow["label"] = stNav.label>
+		<cfset stFolderRow["datetimelastupdated"] = "#lsDateFormat(stNav.datetimelastupdated)# #lsTimeFormat(stNav.datetimelastupdated)#">
+		<cfset stFolderRow["prettydatetimelastupdated"] = application.fapi.prettyDate(stNav.datetimelastupdated)>
+		<cfset stFolderRow["expandable"] = expandable>
+		<cfset stFolderRow["indentlevel"] = navIndentLevel>
+		<cfset stFolderRow["spacer"] = repeatString('<i class="fc-icon-spacer"></i>', navIndentLevel+1)>
+		<cfset stFolderRow["statuslabel"] = thisStatusLabel>
+		<cfset stFolderRow["locked"] = false>
+		<cfset stFolderRow["nodeicon"] = thisNodeIcon>
+		<cfset stFolderRow["editURL"] = "#application.url.webtop#/edittabEdit.cfm?typename=#stNav.typename#&objectid=#stNav.objectid#">
+		<cfset stFolderRow["previewURL"] = application.fapi.getLink(typename="dmNavigation", objectid=stNav.objectid, urlparameters="flushcache=1&showdraft=1")>
+
+
+		<!--- add nav node data to response array --->
+		<cfset arrayAppend(stResponse["rows"], stFolderRow)>
+
+	</cfif>
+
+
+	<cfif stParam.bLoadLeafNodes>
+		
+		<cfloop from="1" to="#arrayLen(aLeafNodes)#" index="i">
+
+			<cfset stLeafNode = aLeafNodes[i]>
+			<cfset stLeafNode.bHasVersion = false>
+			<cfparam name="stLeafNode.status" default="">
+			<cfparam name="stLeafNode.locked" default="false">
+
+			<!--- check for a versioned object of this leaf node --->
+			<cfif structKeyExists(stLeafNode, "versionid") AND structKeyExists(stLeafNode, "status")>
+				<cfquery name="qVersionedObject" datasource="#application.dsn#" >
+					SELECT objectid,status,datetimelastupdated 
+					FROM #application.dbowner##stLeafNode.typename# 
+					WHERE versionid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stLeafNode.objectid#">
+				</cfquery>
+				<cfif qVersionedObject.recordCount eq 1>
+					<cfset stLeafNode.bHasVersion = true>
+					<cfset stLeafNode.versionObjectid = qVersionedObject.objectID>
+					<cfset stLeafNode.versionStatus = qVersionedObject.status>
+					<cfset stLeafNode.versionDatetimelastupdated = qVersionedObject.datetimelastupdated>
 				</cfif>
 			</cfif>
-		</cfif>
 
-		<!--- determine if this node is currently expanded --->
-		<cfif bRootNode AND NOT url.bLoadCollapsed>
-			<cfset bExpanded = true>
-		</cfif>
-		<cfif listFindNoCase(cookie.FARCRYTREEEXPANDEDNODES, stNav.objectid, "|") AND NOT url.bIgnoreExpandedNodes>
-			<cfset expandable = 1>
-			<cfset bExpanded = true>
-		</cfif>
 
-		<!--- if this node is expanded then show it as collapsable --->
-		<cfif expandable eq 1>
-			<cfif bExpanded>
-				<cfset thisClass = "fc-treestate-collapse">
-			<cfelse>
-				<cfset thisClass = "fc-treestate-expand">
+			<!--- leaf nodes are indented 2 "spaces" deeper than nav nodes (one for the expander icon, one for the extra level of indentation) --->
+			<cfset leafIndentLevel = navIndentLevel + 3>
+
+			<cfset thisClass = "fc-treestate-hidden">
+			<!--- if the parent nav node is expanded then the leaf will be visible --->
+			<cfif bRootNode OR bExpanded>
+				<cfset thisClass = "fc-treestate-visible">					
 			</cfif>
-		</cfif>
-
-
-		<!--- tree indentation depth relative to the base nlevel of the page and the expandability of the node --->
-		<cfset navIndentLevel = qTree.nlevel - baseNLevel - expandable + url.relativeNLevel>
-
-
-		<!--- check that all visible ancestors are expanded --->
-		<cfset qAncestors = oTree.getAncestors(objectid=qTree.objectid, nlevel=qTree.nlevel-baseNLevel-1)>
-		<cfloop query="qAncestors">
-			<cfif NOT listFindNoCase(cookie.FARCRYTREEEXPANDEDNODES, qAncestors.objectid, "|") AND qAncestors.nlevel gt 0>
-				<!--- unexpanded ancestor found, so this node is not visible --->
-				<cfset bUnexpandedAncestor = true>
-			</cfif>
-		</cfloop>
-
-
-		<cfif bRenderRoot OR qTree.objectid neq rootObjectID>
-
-			<!--- if this node is expanded, or the parent nav node is expanded then this nav node will be visible --->
-			<cfif bUnexpandedAncestor>
-				<cfset thisClass = thisClass & " fc-treestate-hidden">
-			<cfelseif url.bLoadCollapsed AND NOT bRootNode>
-				<cfset thisClass = thisClass & " fc-treestate-hidden">
-			<cfelseif qTree.parentid eq rootObjectID>
-				<cfset thisClass = thisClass & " fc-treestate-visible">
-			<cfelseif bExpanded OR (listFindNoCase(cookie.FARCRYTREEEXPANDEDNODES, qTree.parentid, "|") AND NOT url.bIgnoreExpandedNodes)>
-				<cfset thisClass = thisClass & " fc-treestate-visible">
-			<cfelse>
-				<cfset thisClass = thisClass & " fc-treestate-hidden">
-			</cfif>
-
-			<!--- load children using ajax --->
-			<cfif expandable AND NOT childrenLoaded>
-				<cfset thisClass = thisClass & " fc-treestate-notloaded">
-			</cfif>
-			
-
-			<!--- urls --->
-			<cfset thisOverviewURL = "#application.url.webtop#/edittabOverview.cfm?typename=#stNav.typename#&objectid=#stNav.objectid#&ref=overview">
-			<cfset thisEditURL = "#application.url.webtop#/edittabEdit.cfm?objectid=#stNav.objectid#&typename=#stNav.typename#">
-			<cfset thisPreviewURL = application.fapi.getLink(typename="dmNavigation", objectid=stNav.objectid, urlparameters="flushcache=1&showdraft=1")>
-			
-			<!--- vary the status labels and icon by the object status --->
-			<cfset thisStatusLabel = "">
-			<cfset thisFolderIcon = "icon-folder-close">
-			<cfif bExpanded>
-				<cfset thisFolderIcon = "icon-folder-open">
-			</cfif>
-			<cfset thisNodeIcon = "<span class='icon-stack'><i class='#thisFolderIcon#'></i></span>">
-
-			<cfif stNav.status eq "draft">
-				<!--- types object with draft status --->
-				<cfset thisStatusLabel = "<span class='label label-warning'>#application.rb.getResource("constants.status.#stNav.status#@label",stNav.status)#</span>">
-				<cfset thisNodeIcon = "<span class='icon-stack'><i class='#thisFolderIcon#'></i><i class='icon-pencil'></i></span>">
-
-			<cfelseif stNav.status eq "approved">
-				<!--- types object with approved status --->
-				<cfset thisStatusLabel = "<span class='label label-info'>#application.rb.getResource("constants.status.#stNav.status#@label",stNav.status)#</span>">
-
-			<cfelse>
-				<!--- object with other status --->
-				<cfset thisStatusLabel = "<span class='label'>#application.rb.getResource("constants.status.#stNav.status#@label",stNav.status)#</span>">
-
-			</cfif>
-
-
-			<cfset stFolderRow = structNew()>
-			<cfset stFolderRow["objectid"] = stNav.objectid>
-			<cfset stFolderRow["typename"] = stNav.typename>
-			<cfset stFolderRow["class"] = thisClass>
-			<cfset stFolderRow["nlevel"] = qTree.nlevel>
-			<cfset stFolderRow["nodetype"] = "folder">
-			<cfset stFolderRow["parentid"] = qTree.parentid>
-			<cfset stFolderRow["label"] = stNav.label>
-			<cfset stFolderRow["datetimelastupdated"] = "#lsDateFormat(stNav.datetimelastupdated)# #lsTimeFormat(stNav.datetimelastupdated)#">
-			<cfset stFolderRow["prettydatetimelastupdated"] = application.fapi.prettyDate(stNav.datetimelastupdated)>
-			<cfset stFolderRow["expandable"] = expandable>
-			<cfset stFolderRow["indentlevel"] = navIndentLevel>
-			<cfset stFolderRow["spacer"] = repeatString('<i class="fc-icon-spacer"></i>', navIndentLevel+1)>
-			<cfset stFolderRow["statuslabel"] = thisStatusLabel>
-			<cfset stFolderRow["locked"] = false>
-			<cfset stFolderRow["nodeicon"] = thisNodeIcon>
-			<cfset stFolderRow["editURL"] = "#application.url.webtop#/edittabEdit.cfm?typename=#stNav.typename#&objectid=#stNav.objectid#">
-			<cfset stFolderRow["previewURL"] = application.fapi.getLink(typename="dmNavigation", objectid=stNav.objectid, urlparameters="flushcache=1&showdraft=1")>
-
-
-			<cfif stParam.responsetype eq "json">
-
-				<cfset arrayAppend(stResponse["rows"], stFolderRow)>
-
-			<cfelse>
-
-				<cfoutput>
-					<tr class="#stFolderRow["class"]#" data-objectid="#stFolderRow["objectid"]#" data-nlevel="#stFolderRow["nlevel"]#" data-expandable="#stFolderRow["expandable"]#" data-indentlevel="#stFolderRow["indentlevel"]#" data-nodetype="#stFolderRow["nodetype"]#" data-parentid="#stFolderRow["parentid"]#">
-						<td class="fc-hidden-compact"><input type="checkbox" class="checkbox"></td>
-						<td class="objectadmin-actions">
-							<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" onclick="$fc.objectAdminAction('#stFolderRow["label"]#', '#stFolderRow["overviewURL"]#'); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button>
-							<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button" onclick="$fc.objectAdminAction('#stFolderRow["label"]#', '#stFolderRow["editURL"]#', { onHidden: function(){ reloadTreeBranch('#stFolderRow["objectid"]#'); } }); return false;"><i class="icon-pencil"></i> Edit</button>
-							<a href="#stFolderRow["previewURL"]#" class="btn fc-btn-preview fc-tooltip" title="" data-original-title="Preview"><i class="icon-eye-open only-icon"></i></a>
-
-	<div class="btn-group"> 
-		<button data-toggle="dropdown" class="btn dropdown-toggle" type="button"><i class="icon-caret-down only-icon"></i></button>
-		<div class="dropdown-menu">
-			<li class="fc-visible-compact"><a href="##" class="fc-btn-overview"><i class="icon-th icon-fixed-width"></i> Overview</a></li>
-			<li class="fc-visible-compact"><a href="##" class="fc-btn-edit"><i class="icon-pencil icon-fixed-width"></i> Edit</a></li>
-			<li class="fc-visible-compact"><a href="##" class="fc-btn-preview"><i class="icon-eye-open icon-fixed-width"></i> Preview</a></li>
-			<li class="divider fc-visible-compact"></li>
-			<li><a href="##" class="fc-add" onclick="$fc.objectAdminAction('Add Page', '#stFolderRow["createURL"]#', { onHidden: function(){ reloadTreeBranch('#stFolderRow["objectid"]#'); } }); return false;"><i class="icon-plus icon-fixed-width"></i> Add Page</a></li>
-			<li><a href="##" class="fc-zoom"><i class="icon-zoom-in icon-fixed-width"></i> Zoom</a></li>
-
-			<li class="divider"></li>
-			<li><a href="##" class=""><i class="icon-trash icon-fixed-width"></i> Delete</a></li>
-
-		</div>
-	</div>
-
-
-
-						</td>
-						<td class="fc-tree-title fc-nowrap">#stFolderRow["spacer"]#<a class="fc-treestate-toggle" href="##"><i class="fc-icon-treestate"></i></a>#thisNodeIcon# <span>#stFolderRow["label"]#</span></td>
-						<td class="fc-nowrap-ellipsis fc-visible-compact">#stFolderRow["previewURL"]#</td>
-						<td class="fc-hidden-compact">#stFolderRow["statuslabel"]#</td>
-						<td class="fc-hidden-compact" title="#stFolderRow["datetimelastupdated"]#">#stFolderRow["prettydatetimelastupdated"]#</td>
-					</tr>
-				</cfoutput>
-			</cfif>
-
-		</cfif>
-
-
-		<cfif stParam.bLoadLeafNodes>
-			
-			<cfloop from="1" to="#arrayLen(aLeafNodes)#" index="i">
-
-				<cfset stLeafNode = aLeafNodes[i]>
-				<cfset stLeafNode.bHasVersion = false>
-				<cfparam name="stLeafNode.status" default="">
-				<cfparam name="stLeafNode.locked" default="false">
-
-				<!--- check for a versioned object of this leaf node --->
-				<cfif structKeyExists(stLeafNode, "versionid") AND structKeyExists(stLeafNode, "status")>
-					<cfquery name="qVersionedObject" datasource="#application.dsn#" >
-						SELECT objectid,status,datetimelastupdated 
-						FROM #application.dbowner##stLeafNode.typename# 
-						WHERE versionid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#stLeafNode.objectid#">
-					</cfquery>
-					<cfif qVersionedObject.recordCount eq 1>
-						<cfset stLeafNode.bHasVersion = true>
-						<cfset stLeafNode.versionObjectid = qVersionedObject.objectID>
-						<cfset stLeafNode.versionStatus = qVersionedObject.status>
-						<cfset stLeafNode.versionDatetimelastupdated = qVersionedObject.datetimelastupdated>
-					</cfif>
-				</cfif>
-
-
-				<!--- leaf nodes are indented 2 "spaces" deeper than nav nodes (one for the expander icon, one for the extra level of indentation) --->
-				<cfset leafIndentLevel = navIndentLevel + 3>
-
+			<!--- if the branch is loaded collapsed OR there is an unexpanded ancesotr then the leaf will be hidden --->
+			<cfif url.bLoadCollapsed OR bUnexpandedAncestor>
 				<cfset thisClass = "fc-treestate-hidden">
-				<!--- if the parent nav node is expanded then the leaf will be visible --->
-				<cfif bRootNode OR bExpanded>
-					<cfset thisClass = "fc-treestate-visible">					
-				</cfif>
-				<!--- if the branch is loaded collapsed OR there is an unexpanded ancesotr then the leaf will be hidden --->
-				<cfif url.bLoadCollapsed OR bUnexpandedAncestor>
-					<cfset thisClass = "fc-treestate-hidden">
-				</cfif>
-			
-			
+			</cfif>
+		
+		
 			<!--- urls --->
 			<cfset thisOverviewURL = "#application.url.webtop#/edittabOverview.cfm?typename=#stLeafNode.typename#&objectid=#stLeafNode.objectid#&ref=overview">
 			<cfset thisEditURL = "#application.url.webtop#/edittabEdit.cfm?objectid=#stLeafNode.objectid#&typename=#stLeafNode.typename#">
 			<cfset thisPreviewURL = application.fapi.getLink(typename=stLeafNode.typename, objectid=stLeafNode.objectid, urlparameters="flushcache=1&showdraft=1")>
 			
-			
-				<!--- vary the status labels, icon, and edit URL by the object status --->
-				<cfset thisStatusLabel = "">
-				<cfset thisLeafIcon = "<span class='icon-stack'><i class='icon-file'></i></span>">
-				<cfset thisEditURL = "#application.url.webtop#/edittabEdit.cfm?typename=#stLeafNode.typename#&objectid=#stLeafNode.objectid#">
-				<cfif stLeafNode.bHasVersion>
-					<!--- versioned object with multiple records --->
-					<cfset thisStatusLabel = "<span class='label label-warning'>#application.rb.getResource("constants.status.#stLeafNode.versionStatus#@label",stLeafNode.versionStatus)#</span> + <span class='label label-info'>#application.rb.getResource("constants.status.#stLeafNode.status#@label",stLeafNode.status)#</span>">
-					<cfset thisLeafIcon = "<span class='icon-stack'><i class='icon-file'></i><i class='icon-pencil'></i></span>">
-					<cfset thisEditURL = "#application.url.webtop#/edittabEdit.cfm?typename=#stLeafNode.typename#&objectid=#stLeafNode.versionObjectid#">
+		
+			<!--- vary the status labels, icon, and edit URL by the object status --->
+			<cfset thisStatusLabel = "">
+			<cfset thisLeafIcon = "<span class='icon-stack'><i class='icon-file'></i></span>">
+			<cfset thisEditURL = "#application.url.webtop#/edittabEdit.cfm?typename=#stLeafNode.typename#&objectid=#stLeafNode.objectid#">
+			<cfif stLeafNode.bHasVersion>
+				<!--- versioned object with multiple records --->
+				<cfset thisStatusLabel = "<span class='label label-warning'>#application.rb.getResource("constants.status.#stLeafNode.versionStatus#@label",stLeafNode.versionStatus)#</span> + <span class='label label-info'>#application.rb.getResource("constants.status.#stLeafNode.status#@label",stLeafNode.status)#</span>">
+				<cfset thisLeafIcon = "<span class='icon-stack'><i class='icon-file'></i><i class='icon-pencil'></i></span>">
+				<cfset thisEditURL = "#application.url.webtop#/edittabEdit.cfm?typename=#stLeafNode.typename#&objectid=#stLeafNode.versionObjectid#">
 
-				<cfelseif stLeafNode.status eq "draft">
-					<!--- types object with draft status --->
-					<cfset thisStatusLabel = "<span class='label label-warning'>#application.rb.getResource("constants.status.#stLeafNode.status#@label",stLeafNode.status)#</span>">
-					<cfset thisLeafIcon = "<span class='icon-stack'><i class='icon-file'></i><i class='icon-pencil'></i></span>">
+			<cfelseif stLeafNode.status eq "draft">
+				<!--- types object with draft status --->
+				<cfset thisStatusLabel = "<span class='label label-warning'>#application.rb.getResource("constants.status.#stLeafNode.status#@label",stLeafNode.status)#</span>">
+				<cfset thisLeafIcon = "<span class='icon-stack'><i class='icon-file'></i><i class='icon-pencil'></i></span>">
 
-				<cfelseif stLeafNode.status eq "approved">
-					<!--- types object with approved status --->
-					<cfset thisStatusLabel = "<span class='label label-info'>#application.rb.getResource("constants.status.#stLeafNode.status#@label",stLeafNode.status)#</span>">
-					
-					<cfif structKeyExists(stLeafNode, "versionid") AND stLeafNode.status eq "approved">
-						<!--- versioned object with approved only --->
-						<cfset thisEditURL = "#application.url.webtop#/navajo/createDraftObject.cfm?typename=#stLeafNode.typename#&objectid=#stLeafNode.objectid#">
-					</cfif>
-
-				<cfelse>
-					<!--- object with other status --->
-					<cfset thisStatusLabel = "<span class='label'>#application.rb.getResource("constants.status.#stLeafNode.status#@label",stLeafNode.status)#</span>">
+			<cfelseif stLeafNode.status eq "approved">
+				<!--- types object with approved status --->
+				<cfset thisStatusLabel = "<span class='label label-info'>#application.rb.getResource("constants.status.#stLeafNode.status#@label",stLeafNode.status)#</span>">
+				
+				<cfif structKeyExists(stLeafNode, "versionid") AND stLeafNode.status eq "approved">
+					<!--- versioned object with approved only --->
+					<cfset thisEditURL = "#application.url.webtop#/navajo/createDraftObject.cfm?typename=#stLeafNode.typename#&objectid=#stLeafNode.objectid#">
 				</cfif>
 
-
-				<!--- newest updated date --->
-				<cfset lastupdated = stLeafNode.datetimelastupdated>
-				<cfif stLeafNode.bHasVersion AND isValid("date", stLeafNode.versionDatetimelastupdated)>
-					<cfset lastupdated = stLeafNode.versionDatetimelastupdated>
-				</cfif>
+			<cfelse>
+				<!--- object with other status --->
+				<cfset thisStatusLabel = "<span class='label'>#application.rb.getResource("constants.status.#stLeafNode.status#@label",stLeafNode.status)#</span>">
+			</cfif>
 
 
-				<cfset stLeafRow = structNew()>
-				<cfset stLeafRow["objectid"] = stLeafNode.objectid>
-				<cfset stLeafRow["typename"] = stLeafNode.typename>
-				<cfset stLeafRow["class"] = thisClass>
-				<cfset stLeafRow["nlevel"] = qTree.nlevel + 1>
-				<cfset stLeafRow["nodetype"] = "leaf">
-				<cfset stLeafRow["parentid"] = stNav.objectid>
-				<cfset stLeafRow["label"] = stLeafNode.label>
-				<cfset stLeafRow["datetimelastupdated"] = "#lsDateFormat(lastupdated)# #lsTimeFormat(lastupdated)#">
-				<cfset stLeafRow["prettydatetimelastupdated"] = application.fapi.prettyDate(stLeafNode.datetimelastupdated)>
-				<cfset stLeafRow["expandable"] = 0>
-				<cfset stLeafRow["indentlevel"] = leafIndentLevel>
-				<cfset stLeafRow["spacer"] = repeatString('<i class="fc-icon-spacer"></i>', leafIndentLevel)>
-				<cfset stLeafRow["statuslabel"] = thisStatusLabel>
-				<cfset stLeafRow["locked"] = stLeafNode.locked>
-				<cfset stLeafRow["nodeicon"] = thisLeafIcon>
-				<cfset stLeafRow["editURL"] = thisEditURL>
-				<cfset stLeafRow["previewURL"] = application.fapi.getLink(typename=stLeafNode.typename, objectid=stLeafNode.objectid, urlparameters="flushcache=1&showdraft=1")>
+			<!--- newest updated date --->
+			<cfset lastupdated = stLeafNode.datetimelastupdated>
+			<cfif stLeafNode.bHasVersion AND isValid("date", stLeafNode.versionDatetimelastupdated)>
+				<cfset lastupdated = stLeafNode.versionDatetimelastupdated>
+			</cfif>
 
 
-				<cfif stParam.responsetype eq "json">
+			<!--- build leaf node object --->
+			<cfset stLeafRow = structNew()>
+			<cfset stLeafRow["objectid"] = stLeafNode.objectid>
+			<cfset stLeafRow["typename"] = stLeafNode.typename>
+			<cfset stLeafRow["class"] = thisClass>
+			<cfset stLeafRow["nlevel"] = qTree.nlevel + 1>
+			<cfset stLeafRow["nodetype"] = "leaf">
+			<cfset stLeafRow["parentid"] = stNav.objectid>
+			<cfset stLeafRow["label"] = stLeafNode.label>
+			<cfset stLeafRow["datetimelastupdated"] = "#lsDateFormat(lastupdated)# #lsTimeFormat(lastupdated)#">
+			<cfset stLeafRow["prettydatetimelastupdated"] = application.fapi.prettyDate(stLeafNode.datetimelastupdated)>
+			<cfset stLeafRow["expandable"] = 0>
+			<cfset stLeafRow["indentlevel"] = leafIndentLevel>
+			<cfset stLeafRow["spacer"] = repeatString('<i class="fc-icon-spacer"></i>', leafIndentLevel)>
+			<cfset stLeafRow["statuslabel"] = thisStatusLabel>
+			<cfset stLeafRow["locked"] = stLeafNode.locked>
+			<cfset stLeafRow["nodeicon"] = thisLeafIcon>
+			<cfset stLeafRow["editURL"] = thisEditURL>
+			<cfset stLeafRow["previewURL"] = application.fapi.getLink(typename=stLeafNode.typename, objectid=stLeafNode.objectid, urlparameters="flushcache=1&showdraft=1")>
 
-					<cfset arrayAppend(stResponse["rows"], stLeafRow)>
 
-				<cfelse>
+			<!--- add leaf node to response array --->
+			<cfset arrayAppend(stResponse["rows"], stLeafRow)>
 
-					<cfoutput>
-						<tr class="#stLeafRow["class"]#" data-objectid="#stLeafRow["objectid"]#" data-nlevel="#stLeafRow["nlevel"]#" data-nodetype="#stLeafRow["nodetype"]#" data-parentid="#stLeafRow["parentid"]#">
-							<td class="fc-hidden-compact"><input type="checkbox" class="checkbox"></td>
-							<td class="objectadmin-actions">
-								<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" onclick="$fc.objectAdminAction('#stLeafRow["label"]#', '#stLeafRow["overviewURL"]#'); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button>
-								<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button" onclick="$fc.objectAdminAction('#stLeafRow["label"]#', '#stLeafRow["editURL"]#'); return false;"><i class="icon-pencil"></i> Edit</button>
-								<a href="#stLeafRow["previewURL"]#" class="btn fc-btn-preview fc-tooltip" title="" data-original-title="Preview"><i class="icon-eye-open only-icon"></i></a>
 
-		<div class="btn-group"> 
-			<button data-toggle="dropdown" class="btn dropdown-toggle" type="button"><i class="icon-caret-down only-icon"></i></button>
-			<div class="dropdown-menu">
-				<li class="fc-visible-compact"><a href="##" class="fc-btn-overview"><i class="icon-th icon-fixed-width"></i> Overview</a></li>
-				<li class="fc-visible-compact"><a href="##" class="fc-btn-edit"><i class="icon-pencil icon-fixed-width"></i> Edit</a></li>
-				<li class="fc-visible-compact"><a href="##" class="fc-btn-preview"><i class="icon-eye-open icon-fixed-width"></i> Preview</a></li>
-				<li class="divider fc-visible-compact"></li>
-				<li><a href="##" class=""><i class="icon-trash icon-fixed-width"></i> Delete</a></li>
+		</cfloop>
 
-			</div>
-		</div>
-							</td>
-							<td class="fc-tree-title fc-nowrap">#stLeafRow["spacer"]##stLeafRow["nodeicon"]# #stLeafRow["label"]#</td>
-							<td class="fc-nowrap-ellipsis fc-visible-compact">#stLeafRow["previewURL"]#</td>
-							<td class="fc-hidden-compact">#stLeafRow["statuslabel"]#</td>
-							<td class="fc-hidden-compact" title="#stLeafRow["datetimelastupdated"]#">#stLeafRow["prettydatetimelastupdated"]#</td>
-						</tr>
-					</cfoutput>
+	</cfif>
 
-				</cfif>
+</cfloop>
 
-			</cfloop>
-
-		</cfif>
-
-	</cfloop>
-
-</cfsavecontent>
 
 <!--- output response --->
-<cfset out = html>
-
-<cfif stParam.responsetype eq "json">
-	<cfset stResponse["success"] = true>
-	<cfif request.mode.ajax>
-		<cfcontent reset="true" type="application/json">		
-	</cfif>
-	<cfset out = serializeJSON(stResponse)>
+<cfif request.mode.ajax>
+	<cfcontent reset="true" type="application/json">		
 </cfif>
-
-<cfoutput>#out#</cfoutput>
+<cfoutput>#serializeJSON(stResponse)#</cfoutput>
 
 
 <cfsetting enablecfoutputonly="false">
