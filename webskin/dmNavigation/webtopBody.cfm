@@ -443,7 +443,8 @@
 					this.treeView = new SiteTreeView({
 						el: "##farcry-minitree",
 						rootObjectID: "#farcryRootObjectid#",
-						type: "mini"
+						type: "mini",
+						expandTo: this.options.sourceObjectID
 					});
 					this.treeView.render();
 
@@ -470,12 +471,14 @@
 				options: {
 					bRenderTreeOnly: false,
 					bIgnoreExpandedNodes: false,
+					bSaveExpandedNodes: true,
 					bLoadLeafNodes: true,
 					bExpandOnTitleCellClick: true,
 					bSelectOnTitleCellClick: false,
 
 					data: null,
-					rootObjectID: null
+					rootObjectID: null,
+					expandTo: null
 				},
 
 
@@ -484,6 +487,7 @@
 					if (options.type == "mini") {
 						this.options.bRenderTreeOnly = true;
 						this.options.bIgnoreExpandedNodes = true;
+						this.options.bSaveExpandedNodes = false;
 						this.options.bLoadLeafNodes = false;
 						this.options.bExpandOnTitleCellClick = false;
 						this.options.bSelectOnTitleCellClick = true;
@@ -666,7 +670,7 @@
 				setExpandedNodesCookie: function SiteTreeView_setExpandedNodesCookie(lObjectid) {
 					lObjectid = lObjectid || this.getExpandedNodes();
 					// set session only cookie
-					if (!this.bIgnoreExpandedNodes) {
+					if (this.options.bSaveExpandedNodes) {
 						document.cookie = "FARCRYTREEEXPANDEDNODES=" + lObjectid + "; expires=0; path=/;";
 					}
 				},
@@ -730,6 +734,7 @@
 						+	'&bLoadLeafNodes=' + this.options.bLoadLeafNodes 
 						+	'&bIgnoreExpandedNodes=' + this.options.bIgnoreExpandedNodes
 						+	'&bRenderTreeOnly=' + this.options.bRenderTreeOnly
+						+	'&expandTo=' + this.options.expandTo
 					;
 
 
@@ -785,6 +790,7 @@
 						+	'&bLoadLeafNodes=' + this.options.bLoadLeafNodes 
 						+	'&bIgnoreExpandedNodes=' + this.options.bIgnoreExpandedNodes
 						+	'&bRenderTreeOnly=' + this.options.bRenderTreeOnly
+						+	'&expandTo=' + this.options.expandTo
 					;
 
 					row.removeClass("fc-treestate-notloaded").addClass("fc-treestate-loading");

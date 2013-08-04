@@ -12,7 +12,15 @@
 <cfparam name="url.bIgnoreExpandedNodes" default="false">
 <cfparam name="url.bLoadLeafNodes" default="true">
 
+<cfparam name="cookie.FARCRYTREEEXPANDEDNODES" default="">
+<cfparam name="url.expandedNodes" default="#cookie.FARCRYTREEEXPANDEDNODES#">
+<cfparam name="url.expandTo" default="">
+
+<cfparam name="stParam.expandedNodes" default="#url.expandedNodes#">
 <cfparam name="stParam.bLoadLeafNodes" default="#url.bLoadLeafNodes#">
+
+
+<cfset oTree = createObject("component","farcry.core.packages.farcry.tree")>
 
 
 <!--- root node --->
@@ -47,15 +55,23 @@
 <cfset lProtectedNavIDs = listAppend(lProtectedNavIDs, application.fapi.getNavID("hidden"))>
 
 
-<!--- initialize expanded tree nodes --->
-<cfparam name="cookie.FARCRYTREEEXPANDEDNODES" default="">
-<!--- add the root node if not loading collapsed --->
-<cfif NOT url.bLoadCollapsed AND NOT listFindNoCase(cookie.FARCRYTREEEXPANDEDNODES, rootObjectID, "|")>
-	<cfset cookie.FARCRYTREEEXPANDEDNODES = listAppend(cookie.FARCRYTREEEXPANDEDNODES, rootObjectID, "|")>
+<!--- set up expanded tree nodes --->
+<cfif len(url.expandTo) AND isValid("uuid", url.expandTo)>
+	<!--- find the expandTo node that was passed in and get its ancestors --->
+	<cfset qExpandToAncestors = oTree.getAncestors(objectid=url.expandTo, bIncludeSelf=true)>
+	<cfset stParam.expandedNodes = valueList(qExpandToAncestors.objectid, "|")>
+	<cfset url.bIgnoreExpandedNodes = false>
+<cfelse>
+	<!--- only update the expanded nodes cookie if no expandTo node was passed in --->
+	<!--- add the root node if not loading collapsed --->
+	<cfif NOT url.bLoadCollapsed AND NOT listFindNoCase(cookie.FARCRYTREEEXPANDEDNODES, rootObjectID, "|")>
+		<cfset cookie.FARCRYTREEEXPANDEDNODES = listAppend(cookie.FARCRYTREEEXPANDEDNODES, rootObjectID, "|")>
+		<cfset stParam.expandedNodes = cookie.FARCRYTREEEXPANDEDNODES>
+	</cfif>
 </cfif>
 
 
-<cfset oTree = createObject("component","farcry.core.packages.farcry.tree")>
+<!--- get tree data --->
 <cfset qTree = oTree.getDescendants(objectid=rootObjectID, depth=treeLoadingDepth, bIncludeSelf=true)>
 
 <!--- if no tree nodes were found it means the object is missing, since the tree lookup should always "includeSelf" --->
@@ -119,7 +135,7 @@
 	<cfif bRootNode AND NOT url.bLoadCollapsed>
 		<cfset bExpanded = true>
 	</cfif>
-	<cfif listFindNoCase(cookie.FARCRYTREEEXPANDEDNODES, stNav.objectid, "|") AND NOT url.bIgnoreExpandedNodes>
+	<cfif listFindNoCase(stParam.expandedNodes, stNav.objectid, "|") AND NOT url.bIgnoreExpandedNodes>
 		<cfset expandable = 1>
 		<cfset bExpanded = true>
 	</cfif>
@@ -141,7 +157,7 @@
 	<!--- check that all visible ancestors are expanded --->
 	<cfset qAncestors = oTree.getAncestors(objectid=qTree.objectid, nlevel=qTree.nlevel-baseNLevel-1)>
 	<cfloop query="qAncestors">
-		<cfif NOT listFindNoCase(cookie.FARCRYTREEEXPANDEDNODES, qAncestors.objectid, "|") AND qAncestors.nlevel gt 0>
+		<cfif NOT listFindNoCase(stParam.expandedNodes, qAncestors.objectid, "|") AND qAncestors.nlevel gt 0>
 			<!--- unexpanded ancestor found, so this node is not visible --->
 			<cfset bUnexpandedAncestor = true>
 		</cfif>
@@ -157,7 +173,7 @@
 			<cfset thisClass = thisClass & " fc-treestate-hidden">
 		<cfelseif qTree.parentid eq rootObjectID>
 			<cfset thisClass = thisClass & " fc-treestate-visible">
-		<cfelseif bExpanded OR (listFindNoCase(cookie.FARCRYTREEEXPANDEDNODES, qTree.parentid, "|") AND NOT url.bIgnoreExpandedNodes)>
+		<cfelseif bExpanded OR (listFindNoCase(stParam.expandedNodes, qTree.parentid, "|") AND NOT url.bIgnoreExpandedNodes)>
 			<cfset thisClass = thisClass & " fc-treestate-visible">
 		<cfelse>
 			<cfset thisClass = thisClass & " fc-treestate-hidden">
