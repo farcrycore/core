@@ -90,7 +90,7 @@ $out:$
 			<input type="hidden" name="typename" value="#stObj.typename#">
 			<input type="hidden" name="finishURL" value="#url.finishURL#">
 			<cfif isDefined("URL.approveURL")>
-				<input type="hidden" name="approveURL" value="#URLEncodedFormat(url.approveURL)#">
+				<input type="hidden" name="approveURL" value="#application.fc.lib.esapi.encodeForURL(url.approveURL)#">
 			</cfif>
 			
 			<span class="formTitle">#application.rb.getResource("workflow.labels.addComment@label","Add Comment")#:</span><br>

@@ -119,7 +119,7 @@ object methods
 				<cfoutput>
 					<input type="hidden" name="#arguments.fieldname#formname" value="#stObj.typename#" />
 					<input type="hidden" name="#arguments.fieldname#objectid" value="#stObj.objectid#" />
-					<input type="hidden" name="#arguments.fieldname#" value="#htmlEditFormat(arguments.stMetadata.value)#" />
+					<input type="hidden" name="#arguments.fieldname#" value="#application.fc.lib.esapi.encodeForHTMLAttribute(arguments.stMetadata.value)#" />
 				</cfoutput>
 			</cfsavecontent>
 			
@@ -165,7 +165,7 @@ object methods
 			<ft:validateFormObjects typename="#arguments.stFieldPost.stSupporting.formname#">
 				<cfloop collection="#stProperties#" item="prop">
 					<cfif isValid("string", stProperties[prop])>
-						<cfset stProperties[prop] = HTMLEditformat(stProperties[prop])>
+						<cfset stProperties[prop] = application.fc.lib.esapi.encodeForHTML(stProperties[prop])>
 					</cfif>
 					<cfif not listcontainsnocase("typename,objectid",prop)>
 						<cfset stResult.bSuccess = stResult.bSuccess and request.stFarcryFormValidation[stProperties.ObjectID][prop].bSuccess />

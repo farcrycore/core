@@ -74,7 +74,7 @@ $out:$
 			if (StartPos GT 0) {
 				EndString=mid(referer,StartPos+2,Len(referer));
 				Keywords=ReReplaceNoCase(EndString,'&.*','','ALL');
-				Keywords=URLDecode(Keywords);
+				Keywords=application.fc.lib.esapi.DecodeFromURL(Keywords);
 				}
 			
 			// add row to query

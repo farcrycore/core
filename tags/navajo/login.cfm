@@ -26,7 +26,7 @@
 
 </cfoutput>
 
-<cfset returnUrl = URLDecode(url.returnUrl)>
+<cfset returnUrl = application.fc.lib.esapi.DecodeFromURL(url.returnUrl)>
 <cfset returnUrl = replace( returnUrl, "logout=1", "" )>
 <cfset returnUrl = replace( returnUrl, "&&", "" )>
 

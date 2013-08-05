@@ -97,7 +97,7 @@ the latter is the policy group for anonymous...
 		<cfscript>
 			application.factory.oAuthentication.logout();
 		</cfscript>
-		<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#" addtoken="No">
+		<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#application.fc.lib.esapi.encodeForURL(cgi.script_name&'?'&cgi.query_string)#" addtoken="No">
 		<cfabort>
 	</cfif>
 

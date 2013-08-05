@@ -103,7 +103,7 @@ $TODO: there shouldn't be anything scoped from outside of the tag! Make this an 
 	st.heading = '#application.rb.getResource("edit")#';
 	st.align = "center";
 	st.columnType = 'eval';
-	editobjectURL = "#application.url.farcry#/navajo/edit.cfm?objectid=##recordset.objectID[recordset.currentrow]##&type=#stGrid.typename#&finishURL=##URLEncodedFormat(stGrid.finishURL)##";
+	editobjectURL = "#application.url.farcry#/navajo/edit.cfm?objectid=##recordset.objectID[recordset.currentrow]##&type=#stGrid.typename#&finishURL=##application.fc.lib.esapi.encodeForURL(stGrid.finishURL)##";
 	st.value = "iif(iObjectEditPermission eq 1,DE(iif(locked and lockedby neq '##application.security.getCurrentUserID()##',DE('<span style=""color:red"">Locked</span>'),DE('<a href=''#editObjectURL#''><img src=""#application.url.farcry#/images/treeImages/edit.gif"" border=""0""></a>'))),DE('<img src=""#application.url.farcry#/images/treeImages/edit.gif"" border=""0"">'))";
 	arrayAppend(stGrid.aTable,st);
 
@@ -282,9 +282,9 @@ if (isDefined("form.status"))
 		else
 			status = 'unknown';
 		// custom tag to add user comments
-		statusurl = "#application.url.farcry#/navajo/objectComment.cfm?status=#status#&objectID=#form.objectID#&finishURL=#URLEncodedFormat(stGrid.finishURL)#";
+		statusurl = "#application.url.farcry#/navajo/objectComment.cfm?status=#status#&objectID=#form.objectID#&finishURL=#application.fc.lib.esapi.encodeForURL(stGrid.finishURL)#";
 		if (isDefined("stgrid.approveURL"))
-			statusurl = statusurl & "&approveURL=#URLEncodedFormat(stGrid.approveURL)#";
+			statusurl = statusurl & "&approveURL=#application.fc.lib.esapi.encodeForURL(stGrid.approveURL)#";
 
 		far_location(url=statusurl);
 

@@ -88,7 +88,7 @@ $out:$
 		</script>
 	</cfoutput>
 	<!--- display text area --->
-	<cfoutput><textarea name="#attributes.textareaname#" id="#attributes.textareaname#" cols="60" rows="20">#htmlEditFormat(attributes.value)#</textarea></cfoutput>
+	<cfoutput><textarea name="#attributes.textareaname#" id="#attributes.textareaname#" cols="60" rows="20">#application.fc.lib.esapi.encodeForHTML(attributes.value)#</textarea></cfoutput>
 
 <cfelse>
 
@@ -576,13 +576,13 @@ $out:$
 
 					eop.loadEditor();
 				</script>
-				 <textarea name="#attributes.textareaname#" cols="1" rows="1" style="visibility:hidden;"><cfoutput>#HtmlEditFormat(attributes.value)#</cfoutput></textarea>
+				 <textarea name="#attributes.textareaname#" cols="1" rows="1" style="visibility:hidden;"><cfoutput>#application.fc.lib.esapi.encodeForHTML(attributes.value)#</cfoutput></textarea>
 		    	 <!--This hidden textarea field will receive the CSSData on submitting the form.-->
 				 <cfset cssText = "">
 				 <cfif fileExists(expandPath(application.config.eoPro4.defaultcss))>
 					<cffile action="read" file="#expandPath(application.config.eoPro4.defaultcss)#" variable="cssText">
 				 </cfif>
-		    	 <textarea name="CSSText" cols="1" rows="1" style="visibility:hidden;"><cfoutput>#HtmlEditFormat(CSSText)#</cfoutput></textarea>
+		    	 <textarea name="CSSText" cols="1" rows="1" style="visibility:hidden;"><cfoutput>#application.fc.lib.esapi.encodeForHTML(CSSText)#</cfoutput></textarea>
 				 <script>
 				 	eop.setHTMLData(document.editform.#attributes.textareaname#.value);
 		          	eop.setStyleSheet(document.editform.CSSText.value);

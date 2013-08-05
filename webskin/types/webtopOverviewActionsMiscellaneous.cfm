@@ -205,7 +205,7 @@ START WEBSKIN
 								<!--- check user can delete --->
 									<cfif stOverviewParams.stPermissions.iDelete eq 1>
 										<cfif structkeyexists(stobj,"versionid") and len(stObj.versionid)>
-											<cfset returnto = "returnto=#urlencodedformat('#cgi.script_name#?objectid=#stObj.versionid#&ref=#url.ref#')#" />
+											<cfset returnto = "returnto=#application.fc.lib.esapi.encodeForURL('#cgi.script_name#?objectid=#stObj.versionid#&ref=#url.ref#')#" />
 										<cfelse>
 											<cfset returnto = "" />
 										</cfif>

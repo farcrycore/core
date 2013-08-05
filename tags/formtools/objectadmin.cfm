@@ -431,7 +431,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 			</cfloop>
 		</cfif>	
 		
-		<cfset copyURL = '#application.url.webtop#/conjuror/invocation.cfm?objectid=#listfirst(form.objectid)#&typename=#attributes.typename#&method=#attributes.copyMethod#&ref=iframe&module=#attributes.module##pluginURL#&editURL=#urlencodedformat(editURL)#' />
+		<cfset copyURL = '#application.url.webtop#/conjuror/invocation.cfm?objectid=#listfirst(form.objectid)#&typename=#attributes.typename#&method=#attributes.copyMethod#&ref=iframe&module=#attributes.module##pluginURL#&editURL=#application.fc.lib.esapi.encodeForURL(editURL)#' />
 		<cfif not structIsEmpty(attributes.copyUrlParams)>
 			<cfloop collection="#attributes.copyUrlParams#" item="key">
 				<cfset copyURL="#copyURL#&#key#=#attributes.copyUrlParams[key]#">
@@ -627,9 +627,9 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 				status = 'unknown';
 			}
 			// pass list of objectids to comment template to add user comments
-			statusurl = "#application.url.farcry#/conjuror/changestatus.cfm?typename=#attributes.typename#&status=#status#&objectID=#form.objectID#&finishURL=#URLEncodedFormat(cgi.script_name)#?#URLEncodedFormat(cgi.query_string)#";
+			statusurl = "#application.url.farcry#/conjuror/changestatus.cfm?typename=#attributes.typename#&status=#status#&objectID=#form.objectID#&finishURL=#application.fc.lib.esapi.encodeForURL(cgi.script_name)#?#application.fc.lib.esapi.encodeForURL(cgi.query_string)#";
 			if (isDefined("stgrid.approveURL")) {
-				statusurl = statusurl & "&approveURL=#URLEncodedFormat(stGrid.approveURL)#";
+				statusurl = statusurl & "&approveURL=#application.fc.lib.esapi.encodeForURL(stGrid.approveURL)#";
 			}
 		} else {
 			response = "#application.rb.getResource('objectadmin.messages.noobjectselected@text','No content items were selected for this operation')#";

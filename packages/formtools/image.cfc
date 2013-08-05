@@ -837,7 +837,7 @@
 						    <div id="#arguments.fieldname#_complete" class="complete-view">
 					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
 					    		<div style="margin-left:15px;">
-						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#application.url.imageroot##getDirectoryFromPath(arguments.stMetadata.value)##urlencodedformat(getFileFromPath(arguments.stMetadata.value))#' width='#previewwidth#' height='#previewheight#' />" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
+						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#application.url.imageroot##getDirectoryFromPath(arguments.stMetadata.value)##application.fc.lib.esapi.encodeForURL(getFileFromPath(arguments.stMetadata.value))#' width='#previewwidth#' height='#previewheight#' />" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
 						    		Size: <span class="image-size">#round(stFile.size/1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
 						    		<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
 						    	</div>
@@ -907,7 +907,7 @@
 						    <div id="#arguments.fieldname#_complete" class="complete-view">
 					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
 					    		<div style="margin-left:15px;">
-						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#application.url.imageroot##getDirectoryFromPath(arguments.stMetadata.value)##urlencodedformat(getFileFromPath(arguments.stMetadata.value))#' width='#previewwidth#' height='#previewheight#' />" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
+						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#application.url.imageroot##getDirectoryFromPath(arguments.stMetadata.value)##application.fc.lib.esapi.encodeForURL(getFileFromPath(arguments.stMetadata.value))#' width='#previewwidth#' height='#previewheight#' />" href="#application.url.imageroot##arguments.stMetadata.value#" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
 						    		Size: <span class="image-size">#round(stFile.size/1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
 									<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
 						    	</div>
@@ -1187,7 +1187,7 @@
 					<cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" />
 					<cfset stJSON["value"] = stResult.value />
 					<cfset stJSON["filename"] = listlast(stResult.value,'/') />
-					<cfset stJSON["fullpath"] = application.url.imageroot & getDirectoryFromPath(stResult.value) & urlencodedformat(getFileFromPath(stResult.value)) />
+					<cfset stJSON["fullpath"] = application.url.imageroot & getDirectoryFromPath(stResult.value) & application.fc.lib.esapi.encodeForURL(getFileFromPath(stResult.value)) />
 					<cfset stJSON["size"] = round(stFile.size/1024) />
 					<cfset stJSON["width"] = stImage.width />
 					<cfset stJSON["height"] = stImage.height />
@@ -1231,7 +1231,7 @@
 					<cfimage action="info" source="#application.path.imageroot##stResult.value#" structName="stImage" />
 					<cfset stJSON["value"] = stResult.value />
 					<cfset stJSON["filename"] = listlast(stResult.value,'/') />
-					<cfset stJSON["fullpath"] = application.url.imageroot & getDirectoryFromPath(stResult.value) & urlencodedformat(getFileFromPath(stResult.value)) />
+					<cfset stJSON["fullpath"] = application.url.imageroot & getDirectoryFromPath(stResult.value) & application.fc.lib.esapi.encodeForURL(getFileFromPath(stResult.value)) />
 					<cfset stJSON["size"] = round(stFile.size/1024) />
 					<cfset stJSON["width"] = stImage.width />
 					<cfset stJSON["height"] = stImage.height />
@@ -2176,7 +2176,7 @@
 		<cfset r_stResult.value = arguments.value />
 		<cfset r_stResult.bSuccess = false />
 		<cfset r_stResult.stError = structNew() />
-		<cfset r_stResult.stError.message = HTMLEditFormat(arguments.message) />
+		<cfset r_stResult.stError.message = application.fc.lib.esapi.encodeForHTML(arguments.message) />
 		<cfset r_stResult.stError.class = arguments.class />
 		<cfset r_stResult.bChanged = false />
 		

@@ -545,7 +545,7 @@
 		
 		<!--- Normalise FU --->
 		<cfif findNoCase("furl=",arguments.url)>
-			<cfset arguments.url = replacenocase(arguments.url,"/index.cfm",urldecode(rereplacenocase(arguments.url,"(.*(\?|#arguments.ampDelim#)furl\=)([^&]+)(.*)","\3"),'#charset#')) />
+			<cfset arguments.url = replacenocase(arguments.url,"/index.cfm",application.fc.lib.esapi.DecodeFromURL(rereplacenocase(arguments.url,"(.*(\?|#arguments.ampDelim#)furl\=)([^&]+)(.*)","\3"),'#charset#')) />
 		</cfif>
 		
 		<cfif application.fc.factory.farFU.isUsingFU() AND not find("?",arguments.url) and arguments.url neq "/">
@@ -610,8 +610,8 @@
 		<cfset var lCharsNotAllowedInFUs = ".,"",',&,@,%,=,/,\" />
 		<cfset var bAllowFriendlyUrls = true />
 
-		<!--- In case the url value was urlencoded, urldecode it --->
-		<cfset arguments.value = urlDecode(arguments.value, "#charset#") />
+		<!--- In case the url value was urlencoded, application.fc.lib.esapi.DecodeFromURL it --->
+		<cfset arguments.value = application.fc.lib.esapi.DecodeFromURL(arguments.value, "#charset#") />
 
 		<!--- If any of the following special characters are found, don't use friendly urls here or it will fail in modern browsers that remove urlencoding for most characters (like Firefox and Chrome) --->
 		<cfloop index="i" list="#lCharsNotAllowedInFUs#">
@@ -622,7 +622,7 @@
 		</cfloop>
 		
 		<!--- now urlencode the url value --->
-		<cfset arguments.value = urlEncodedFormat(arguments.value, "#charset#") />
+		<cfset arguments.value = application.fc.lib.esapi.encodeForURL(arguments.value, "#charset#") />
 
 		<cfif application.fc.factory.farFU.isUsingFU() AND not find("?",arguments.url) and arguments.url neq "/" and bAllowFriendlyUrls is true>
 			<cfif refindnocase("/#arguments.key#(/|$)",arguments.url)>

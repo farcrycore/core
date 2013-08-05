@@ -72,7 +72,7 @@ The item "<cfif isDefined("stObj.title") and len(trim(stObj.title))>#stObj.title
 You may approve/decline this object by browsing to farcry and viewing this item in your pending approval list on the farcry overview page.
 
 		<cfif isDefined("arguments.approveURL")>
-#urldecode(arguments.approveURL)#&objectID=#arguments.objectID#&status=pending<cfelse>
+#application.fc.lib.esapi.DecodeFromURL(arguments.approveURL)#&objectID=#arguments.objectID#&status=pending<cfelse>
 #application.config.general.adminServer##application.url.farcry#/index.cfm</cfif>
 
 		<cfif arguments.comment neq "">

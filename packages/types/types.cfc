@@ -1493,7 +1493,7 @@ default handlers
 				<cfelse>
 					<cfset name = "#q.firstName# #q.lastName#" />
 				</cfif>
-				<cfset lResult = listAppend(lResult, HTMLEditFormat("#q.objectid#:#name#")) />
+				<cfset lResult = listAppend(lResult, application.fc.lib.esapi.encodeForHTML("#q.objectid#:#name#")) />
 			</cfloop>
 		
 		</cfif>

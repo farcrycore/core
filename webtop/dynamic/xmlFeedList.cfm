@@ -158,7 +158,7 @@ function confirmDelete(objectID){
 		<cfelse>
 			<cfoutput query="recordSet" startrow="#startRow#" maxrows="#numRecords#"> 
 			<cfscript>
-				finishURL = URLEncodedFormat("#cgi.SCRIPT_NAME#?#CGI.QUERY_STRING#");
+				finishURL = application.fc.lib.esapi.encodeForURL("#cgi.SCRIPT_NAME#?#CGI.QUERY_STRING#");
 				editObjectURL = "#application.url.farcry#/navajo/edit.cfm?objectid=#objectID#&finishUrl=#finishURL#&type=#stArgs.typename#";
 				previewURL = "#application.url.webroot#/index.cfm?objectID=#objectID#&flushcache=1&mode=preview";
 				validateURL = "#application.url.webroot#/index.cfm?objectID=#objectID#&flushcache=1&mode=validate";
@@ -196,7 +196,7 @@ function confirmDelete(objectID){
 				<td nowrap valign="top">
 				<!--- get permissions  --->
 					<form action="" method="post">
-					<cfset finishURL = URLEncodedFormat("#cgi.SCRIPT_NAME#?#CGI.QUERY_STRING#")>
+					<cfset finishURL = application.fc.lib.esapi.encodeForURL("#cgi.SCRIPT_NAME#?#CGI.QUERY_STRING#")>
 					<input type="button" value="#application.rb.getResource("add")#" width="100" style="width:100;" class="normalbttnstyle" name="add" onClick="window.location='#application.url.farcry#/navajo/createObject.cfm?typename=#stArgs.typename#&finishURL=#finishURL#';" >
 					</form>					
 				</td>

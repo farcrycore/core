@@ -70,11 +70,11 @@
 	<cfset newline = "
 " />
 	<cfloop from="1" to="#arraylen(aLog)#" index="i">
-		<cfoutput><div class="sql">#htmlifyWhitespace(listfirst(aLog[i],newline))##htmlifyWhitespace(htmleditformat(formatter.format(listrest(aLog[i],newline))))#</div></cfoutput>	
+		<cfoutput><div class="sql">#htmlifyWhitespace(listfirst(aLog[i],newline))##htmlifyWhitespace(application.fc.lib.esapi.encodeForHTML(formatter.format(listrest(aLog[i],newline))))#</div></cfoutput>	
 	</cfloop>
 <cfelse>
 	<cfloop from="1" to="#arraylen(aLog)#" index="i">
-		<cfoutput><div class="sql">#htmlifyWhitespace(htmleditformat(aLog[i]))#</div></cfoutput>	
+		<cfoutput><div class="sql">#htmlifyWhitespace(application.fc.lib.esapi.encodeForHTML(aLog[i]))#</div></cfoutput>	
 	</cfloop>
 </cfif>
 
