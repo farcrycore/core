@@ -76,11 +76,11 @@ $out:$
 
 <cfif Attributes.WDDX neq "undefined">
 <!-- eWebEditPro WDDX data -->
-<input type="hidden" name="#Attributes.Name#WDDX" value="#HTMLEditFormat(Attributes.WDDX)#"> 
+<input type="hidden" name="#Attributes.Name#WDDX" value="#application.fc.lib.esapi.encodeForHTMLAttribute(Attributes.WDDX)#"> 
 </cfif>
 
 <!-- eWebEditPro content -->
-<input type="hidden" name="#Attributes.Name#" value="#HTMLEditFormat(Attributes.Value)#">
+<input type="hidden" name="#Attributes.Name#" value="#application.fc.lib.esapi.encodeForHTMLAttribute(Attributes.Value)#">
 
 <script language="JavaScript1.2">
 <!--

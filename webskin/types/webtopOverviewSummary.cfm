@@ -71,7 +71,7 @@ START WEBSKIN
 				<div id="OKMsg"><p>
 					<span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;">&nbsp;</span>
 					Your draft is identical to the approved version. 
-					<a href="navajo/delete.cfm?ObjectId=#stobj.objectId#&returnto=#urlencodedformat('#cgi.script_name#?objectid=#stObj.versionid#&ref=#url.ref#')#&ref=#url.ref#" onclick="if (!confirm('Are you sure you wish to discard this draft version? The approved version will remain.')) return false;">Discard draft</a>?
+					<a href="navajo/delete.cfm?ObjectId=#stobj.objectId#&returnto=#application.fc.lib.esapi.encodeForURL('#cgi.script_name#?objectid=#stObj.versionid#&ref=#url.ref#')#&ref=#url.ref#" onclick="if (!confirm('Are you sure you wish to discard this draft version? The approved version will remain.')) return false;">Discard draft</a>?
 				</p></div>
 			</cfoutput>
 		</cfif>

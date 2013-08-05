@@ -71,7 +71,7 @@
 				<cfset siteName=arguments.aSites[i].getSiteName()>
 				<cfoutput>
 					 <sitemap>
-		      			<loc>#urlencodedFormat("http://#trim(arguments.servername)#/#arguments.siteMapsDirectoryName#/#siteName#.xml")#</loc>
+		      			<loc>#application.fc.lib.esapi.encodeForURL("http://#trim(arguments.servername)#/#arguments.siteMapsDirectoryName#/#siteName#.xml")#</loc>
 		      			<lastmod>#arguments.lastmod#</lastmod>
 		   			</sitemap>
 				</cfoutput>

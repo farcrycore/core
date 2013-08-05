@@ -71,7 +71,7 @@ stProfile = o_profile.getProfile(userName=stObj.lastupdatedby);
 	<cfset title = "undefined" />
 </cfif>
 <cfif isDefined("arguments.approveURL")>
-	<cfset link = "#urldecode(arguments.approveURL)#&objectID=#arguments.objectID#&status=draft" />
+	<cfset link = "#application.fc.lib.esapi.DecodeFromURL(arguments.approveURL)#&objectID=#arguments.objectID#&status=draft" />
 <cfelse>
 	<cfset link = "#application.config.general.adminServer##application.url.farcry#/index.cfm?section=dynamic&objectID=#arguments.objectID#&status=draft" />
 </cfif>

@@ -196,7 +196,7 @@
 </cfoutput>
 
 <cfoutput>
-<input type="hidden" name="#Attributes.Field#" value="#HTMLEditFormat(Attributes.HTML)#">
+<input type="hidden" name="#Attributes.Field#" value="#application.fc.lib.esapi.encodeForHTMLAttribute(Attributes.HTML)#">
 <!--- hidden field to pass CSS document --->
 <cfif Len(Attributes.BaseCSS)>
 <input type="hidden" name="#IIF(Attributes.CSSField EQ 'soEditorCSS', DE('#Attributes.CSSField##Attributes.Field#'),DE(Attributes.CSSField))#" value="#Attributes.BaseCSS#">

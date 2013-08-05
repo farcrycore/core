@@ -871,7 +871,7 @@
 					<cfset stJSON["objectid"] = stNewObject.objectid />
 					<cfset stJSON["value"] = stResult.value />
 					<cfset stJSON["filename"] = listlast(stResult.value,"/") />
-					<cfset stJSON["fullpath"] = application.path.fileroot & getDirectoryFromPath(stResult.value) & urlencodedformat(getFileFromPath(stResult.value)) />
+					<cfset stJSON["fullpath"] = application.path.fileroot & getDirectoryFromPath(stResult.value) & application.fc.lib.esapi.encodeForURL(getFileFromPath(stResult.value)) />
 					<cfset stJSON["size"] = round(stFile.size/1024) />
 					<skin:view objectid="#stNewObject.objectid#" typename="#arguments.stMetadata.ftJoin#" webskin="#arguments.stMetadata.ftListWebskin#" bIgnoreSecurity="true" r_html="html" alternateHTML="OBJECT NO LONGER EXISTS" />
 					<cfset stJSON["html"] = html />
@@ -921,7 +921,7 @@
 						<cfset stJSON["objectid"] = stNewObject.objectid />
 						<cfset stJSON["value"] = stResult.value />
 						<cfset stJSON["filename"] = listlast(stResult.value,'/') />
-						<cfset stJSON["fullpath"] = application.url.imageroot & getDirectoryFromPath(stResult.value) & urlencodedformat(getFileFromPath(stResult.value)) />
+						<cfset stJSON["fullpath"] = application.url.imageroot & getDirectoryFromPath(stResult.value) & application.fc.lib.esapi.encodeForURL(getFileFromPath(stResult.value)) />
 						<cfset stJSON["size"] = round(stFile.size/1024) />
 						<skin:view objectid="#stNewObject.objectid#" typename="#arguments.stMetadata.ftJoin#" webskin="#arguments.stMetadata.ftListWebskin#" bIgnoreSecurity="true" r_html="html" alternateHTML="OBJECT NO LONGER EXISTS" />
 						<cfset stJSON["html"] = html />

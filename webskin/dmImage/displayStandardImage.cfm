@@ -23,7 +23,7 @@
 
 
 <cfoutput>
-<img src="#application.fapi.getImageWebRoot()##stobj.StandardImage#" alt="#HTMLEditFormat(stobj.alt)#" title="#HTMLEditFormat(stobj.title)#" />
+<img src="#application.fapi.getImageWebRoot()##stobj.StandardImage#" alt="#application.fc.lib.esapi.encodeForHTMLAttribute(stobj.alt)#" title="#application.fc.lib.esapi.encodeForHTMLAttribute(stobj.title)#" />
 </cfoutput>
 
 <cfsetting enablecfoutputonly="false">

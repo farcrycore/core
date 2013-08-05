@@ -49,7 +49,7 @@
 		<cfargument name="urlvaluepair" required="Yes" hint="URL value pair to be appended to urlstring">
 		<cfscript>
 			completeURL = arguments.urlstring;
-			if(findnocase(".cfm?",URLDecode(completeURL)))
+			if(findnocase(".cfm?",application.fc.lib.esapi.DecodeFromURL(completeURL)))
 				append = "&";
 			else
 				append = "?";

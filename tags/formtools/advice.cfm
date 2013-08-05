@@ -17,7 +17,7 @@
 	<cfset stResult.value = attributes.value />
 	<cfset stResult.bSuccess = false />
 	<cfset stResult.stError = structNew() />
-	<cfset stResult.stError.message = HTMLEditFormat(attributes.message) />
+	<cfset stResult.stError.message = application.fc.lib.esapi.encodeForHTML(attributes.message) />
 	<cfset stResult.stError.class = attributes.class />
 	<cfset request.stFarcryFormValidation["#attributes.objectid#"][attributes.field] = stResult />
 

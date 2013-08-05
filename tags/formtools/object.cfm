@@ -451,7 +451,7 @@
 				<cfelse>
 					<cfset hiddenValue = variables.stObj[i] />
 				</cfif> --->
-				<cfoutput><input type="hidden" id="#variables.prefix##ftFieldMetadata.Name#" name="#variables.prefix##ftFieldMetadata.Name#" value="#hiddenValue#" /></cfoutput>
+				<cfoutput><input type="hidden" id="#variables.prefix##ftFieldMetadata.Name#" name="#variables.prefix##ftFieldMetadata.Name#" value="#application.fc.lib.esapi.encodeForHTMLAttribute(hiddenValue)#" /></cfoutput>
 			</cfsavecontent>
 			
 			<cfif NOT len(Attributes.r_stFields)>

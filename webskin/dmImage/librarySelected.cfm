@@ -9,17 +9,17 @@
 		<col style="width:10px;" />
 		<col style="" />
 		<tr class="nowrap" style="background:transparent;">
-			<td style="background:transparent;"><img src="#application.fapi.getImageWebRoot()##stobj.thumbnailImage#" title="#HTMLEditFormat(stObj.title)#" /></td>
+			<td style="background:transparent;"><img src="#application.fapi.getImageWebRoot()##stobj.thumbnailImage#" title="#application.fc.lib.esapi.encodeForHTMLAttribute(stObj.title)#" /></td>
 			<td style="background:transparent;">&nbsp;</td>
 			<td style="background:transparent;">
-				#stObj.title#
-				<cfif len(stobj.alt)><br /><em>(#stobj.alt#)</em></cfif>
+				#application.fc.lib.esapi.encodeForHTML(stObj.title)#
+				<cfif len(stobj.alt)><br /><em>(#application.fc.lib.esapi.encodeForHTML(stobj.alt)#)</em></cfif>
 			</td>
 		</tr>
 		</table>
 	</cfoutput>
 <cfelseif len(stobj.label)>
-	<cfoutput>#stobj.label#</cfoutput>
+	<cfoutput>#application.fc.lib.esapi.encodeForHTML(stobj.label)#</cfoutput>
 <cfelse>
 	<cfoutput>#stobj.objectid#</cfoutput>
 </cfif>
