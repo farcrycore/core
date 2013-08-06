@@ -29,7 +29,7 @@
 	            <p>
 	               Use this function if you want to rebuild the tree from scratch using only the parent/child relationship as the basis.
 	            </p>
-	            <form action="rebuildTree.cfm" method="post" onSubmit="return confirm('Are you sure you want to rebuild the tree?')">
+	            <form action="" method="post" onSubmit="return confirm('Are you sure you want to rebuild the tree?')">
 	                Select the typename of the tree to be rebuilt:
 	                <select name="typename">
 	                    <cfloop query="qTypeNames">
