@@ -65,7 +65,7 @@
 						<cfset stProperties[curAncestor.properties[j].name].origin = "" />
 					</cfif>
 					<cfset stProperties[curAncestor.properties[j].name].origin = curAncestor.name />
-					<cfset success = structAppend(stProperties[curAncestor.properties[j].name].metadata, curAncestor.properties[j],false) />
+					<cfset success = structAppend(stProperties[curAncestor.properties[j].name].metadata, curAncestor.properties[j],true) />
 				</cfloop>
 			</cfif>
 		</cfloop>
