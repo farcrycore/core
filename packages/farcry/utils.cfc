@@ -545,7 +545,7 @@
 		
 		<!--- Normalise FU --->
 		<cfif findNoCase("furl=",arguments.url)>
-			<cfset arguments.url = replacenocase(arguments.url,"/index.cfm",application.fc.lib.esapi.DecodeFromURL(rereplacenocase(arguments.url,"(.*(\?|#arguments.ampDelim#)furl\=)([^&]+)(.*)","\3"),'#charset#')) />
+			<cfset arguments.url = replacenocase(arguments.url,"/index.cfm",urlDecode(rereplacenocase(arguments.url,"(.*(\?|#arguments.ampDelim#)furl\=)([^&]+)(.*)","\3"),'#charset#')) />
 		</cfif>
 		
 		<cfif application.fc.factory.farFU.isUsingFU() AND not find("?",arguments.url) and arguments.url neq "/">
