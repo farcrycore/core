@@ -1,4 +1,4 @@
-<cfcomponent>
+<cfcomponent output="false">
 
 	<cfset bInclude = false>
 	<cfset bHasESAPI = false>
@@ -26,7 +26,7 @@
 
 
 	<!--- missing method will be called when esapi compatibility methods have not been included --->
-	<cffunction name="onMissingMethod">
+	<cffunction name="onMissingMethod" output="false">
 		<cfargument name="missingMethodName" type="string">
 		<cfargument name="missingMethodArguments" type="struct">
 
