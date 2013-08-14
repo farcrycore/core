@@ -135,8 +135,7 @@
 	<cfif bRootNode AND NOT url.bLoadCollapsed>
 		<cfset bExpanded = true>
 	</cfif>
-	<cfif listFindNoCase(stParam.expandedNodes, stNav.objectid, "|") AND NOT url.bIgnoreExpandedNodes>
-		<cfset expandable = 1>
+	<cfif expandable eq 1 AND listFindNoCase(stParam.expandedNodes, stNav.objectid, "|") AND NOT url.bIgnoreExpandedNodes>
 		<cfset bExpanded = true>
 	</cfif>
 
@@ -152,6 +151,8 @@
 
 	<!--- tree indentation depth relative to the base nlevel of the page and the expandability of the node --->
 	<cfset navIndentLevel = qTree.nlevel - baseNLevel - expandable + url.relativeNLevel>
+
+	<cfset navSpacers = 1 + (qTree.nlevel - baseNLevel) + url.relativeNLevel - expandable>
 
 
 	<!--- check that all visible ancestors are expanded --->
@@ -228,12 +229,20 @@
 		<cfset stFolderRow["prettydatetimelastupdated"] = application.fapi.prettyDate(stNav.datetimelastupdated)>
 		<cfset stFolderRow["expandable"] = expandable>
 		<cfset stFolderRow["indentlevel"] = navIndentLevel>
-		<cfset stFolderRow["spacer"] = repeatString('<i class="fc-icon-spacer"></i>', navIndentLevel+1)>
+		<!--- <cfset stFolderRow["spacer"] = repeatString('<i class="fc-icon-spacer"></i>', navIndentLevel+1)> --->
 		<cfset stFolderRow["statuslabel"] = thisStatusLabel>
 		<cfset stFolderRow["locked"] = false>
 		<cfset stFolderRow["nodeicon"] = thisNodeIcon>
 		<cfset stFolderRow["editURL"] = "#application.url.webtop#/edittabEdit.cfm?typename=#stNav.typename#&objectid=#stNav.objectid#">
 		<cfset stFolderRow["previewURL"] = application.fapi.getLink(typename="dmNavigation", objectid=stNav.objectid, urlparameters="flushcache=1&showdraft=1")>
+
+<!--- debugging only --->
+		<cfset stFolderRow["treeMaxLevel"] = treeMaxLevel>
+		<cfset stFolderRow["baseNLevel"] = baseNLevel>
+		<cfset stFolderRow["treeLoadingDepth"] = treeLoadingDepth>
+
+		<cfset stFolderRow["spacers"] = javaCast("int", navSpacers)>
+
 
 
 		<!--- add nav node data to response array --->
@@ -269,6 +278,7 @@
 
 			<!--- leaf nodes are indented 2 "spaces" deeper than nav nodes (one for the expander icon, one for the extra level of indentation) --->
 			<cfset leafIndentLevel = navIndentLevel + 3>
+			<cfset leafSpacers = navSpacers + 2>
 
 			<cfset thisClass = "fc-treestate-hidden">
 			<!--- if the parent nav node is expanded then the leaf will be visible --->
@@ -337,13 +347,14 @@
 			<cfset stLeafRow["prettydatetimelastupdated"] = application.fapi.prettyDate(stLeafNode.datetimelastupdated)>
 			<cfset stLeafRow["expandable"] = 0>
 			<cfset stLeafRow["indentlevel"] = leafIndentLevel>
-			<cfset stLeafRow["spacer"] = repeatString('<i class="fc-icon-spacer"></i>', leafIndentLevel)>
+			<!--- <cfset stLeafRow["spacer"] = repeatString('<i class="fc-icon-spacer"></i>', leafIndentLevel)> --->
 			<cfset stLeafRow["statuslabel"] = thisStatusLabel>
 			<cfset stLeafRow["locked"] = stLeafNode.locked>
 			<cfset stLeafRow["nodeicon"] = thisLeafIcon>
 			<cfset stLeafRow["editURL"] = thisEditURL>
 			<cfset stLeafRow["previewURL"] = application.fapi.getLink(typename=stLeafNode.typename, objectid=stLeafNode.objectid, urlparameters="flushcache=1&showdraft=1")>
 
+			<cfset stLeafRow["spacers"] = javaCast("int", leafSpacers)>
 
 			<!--- add leaf node to response array --->
 			<cfset arrayAppend(stResponse["rows"], stLeafRow)>

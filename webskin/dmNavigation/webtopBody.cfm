@@ -426,7 +426,6 @@
 				initialize: function TreeDialogView_initialize(options){
 					this.template = Handlebars.compile(Backbone.$("##tree-dialog").html());
 
-					this.render();
 				},
 
 				events: {
@@ -470,7 +469,6 @@
 
 				options: {
 					bRenderTreeOnly: false,
-					bIgnoreExpandedNodes: false,
 					bSaveExpandedNodes: true,
 					bLoadLeafNodes: true,
 					bExpandOnTitleCellClick: true,
@@ -486,7 +484,6 @@
 
 					if (options.type == "mini") {
 						this.options.bRenderTreeOnly = true;
-						this.options.bIgnoreExpandedNodes = true;
 						this.options.bSaveExpandedNodes = false;
 						this.options.bLoadLeafNodes = false;
 						this.options.bExpandOnTitleCellClick = false;
@@ -732,11 +729,9 @@
 
 					var urlParams = ''
 						+	'&bLoadLeafNodes=' + this.options.bLoadLeafNodes 
-						+	'&bIgnoreExpandedNodes=' + this.options.bIgnoreExpandedNodes
 						+	'&bRenderTreeOnly=' + this.options.bRenderTreeOnly
 						+	'&expandTo=' + this.options.expandTo
 					;
-
 
 					$j.ajax({
 						url: "#application.url.webtop#/index.cfm?typename=dmNavigation&objectid=" + rootobjectid + "&view=webtopTreeChildRows&bLoadRoot=true&ajaxmode=1&responsetype=json" + urlParams,
@@ -765,9 +760,7 @@
 
 						},
 						complete: function() {
-							if (!self.bIgnoreExpandedNodes) {
-								self.loadExpandedAjaxNodes();
-							}
+							self.loadExpandedAjaxNodes();
 						}
 					});
 
@@ -782,16 +775,10 @@
 					var self = this;
 
 					var id = row.data("objectid");
-					var relativenlevel = row.data("indentlevel");
+					var relativenlevel = row.data("nlevel") - 1;
+
 					var descendants = $j();
 					var loadCollapsed = false;
-
-					var urlParams = ''
-						+	'&bLoadLeafNodes=' + this.options.bLoadLeafNodes 
-						+	'&bIgnoreExpandedNodes=' + this.options.bIgnoreExpandedNodes
-						+	'&bRenderTreeOnly=' + this.options.bRenderTreeOnly
-						+	'&expandTo=' + this.options.expandTo
-					;
 
 					row.removeClass("fc-treestate-notloaded").addClass("fc-treestate-loading");
 					row.find(".fc-tree-title").first().append("<i class='icon-spinner icon-spin' style='margin-left:0.5em'></i>");
@@ -807,9 +794,18 @@
 					}
 
 					$j.ajax({
-						url: "#application.url.webtop#/index.cfm?typename=dmNavigation&objectid=" + id + "&view=webtopTreeChildRows&bReloadBranch=" + bReloadBranch + "&loadCollapsed=" + loadCollapsed + "&ajaxmode=1&responsetype=json" + urlParams,
+						url: "#application.url.webtop#/index.cfm",
 						data: {
-							"relativenlevel": relativenlevel
+							"typename": "dmNavigation",
+							"objectid": id,
+							"view": "webtopTreeChildRows",
+							"ajaxmode": 1,
+							"relativenlevel": relativenlevel,
+							"bReloadBranch": bReloadBranch,
+							"loadCollapsed": loadCollapsed,
+							"bLoadLeafNodes": this.options.bLoadLeafNodes,
+							"bRenderTreeOnly": this.options.bRenderTreeOnly,
+							"expandTo": this.options.expandTo
 						},
 						datatype: "json",
 						success: function(response) {
@@ -939,6 +935,7 @@
 								'<li><a href="##" class=""><i class="icon-trash icon-fixed-width"></i> Delete</a></li> '
 						;
 					}
+
 					var colActions = '';
 					if (!this.options.bRenderTreeOnly) {
 						colActions = ''
@@ -975,12 +972,13 @@
 						colDateTime = '<td class="fc-hidden-compact" title="' + row["datetimelastupdated"] + '">' + row["prettydatetimelastupdated"] + '</td> ';
 					}
 
+					var spacer = '<i class="fc-icon-spacer-' + row["spacers"] + '"></i>';
 
 					var html = 
 						'<tr class="' + row["class"] + '" data-objectid="' + row["objectid"] + '" data-typename="' + row["typename"] + '" data-nlevel="' + row["nlevel"] + '" data-expandable="' + row["expandable"] + '" data-indentlevel="' + row["indentlevel"] + '" data-nodetype="' + row["nodetype"] + '" data-parentid="' + row["parentid"] + '"> '
 						+	colCheckbox
 						+	colActions
-						+	'<td class="fc-tree-title fc-nowrap">' + row["spacer"] + '<a class="fc-treestate-toggle" href="##"><i class="fc-icon-treestate"></i></a>' + row["nodeicon"] + ' <span>' + row["label"] + '</span></td> '
+						+	'<td class="fc-tree-title fc-nowrap">' + spacer + '<a class="fc-treestate-toggle" href="##"><i class="fc-icon-treestate"></i></a>' + row["nodeicon"] + ' <span>' + row["label"] + '</span></td> '
 						+	colURL
 						+	colStatus
 						+	colDateTime
