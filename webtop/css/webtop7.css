@@ -922,7 +922,7 @@ body .uniForm .focused {
 
 .fc-icon-treestate,
 .fc-icon-spacer {
-	width: 1em;
+	width: 20px;
 }
 .fc-icon-spacer-1 { width: 20px; }
 .fc-icon-spacer-2 { width: 40px; }
@@ -940,7 +940,8 @@ body .uniForm .focused {
 .fc-icon-spacer-14 { width: 280px; }
 .fc-icon-spacer-15 { width: 300px; }
 .fc-icon-spacer-16 { width: 320px; }
-i[class^=fc-icon-spacer-] {
+
+.fc-tree-title i[class^=fc-icon-spacer-] {
 	display: inline-block;
 	height: 16px;
 }
@@ -958,7 +959,7 @@ i[class^=fc-icon-spacer-] {
 	border-radius: 2px;
 	padding-right: 1px;
 	margin-top: -5px;
-	margin-right: 6px;
+	margin-right: 5px;
 	line-height: 16px;
 	vertical-align: middle;
 }
@@ -982,7 +983,8 @@ i[class^=fc-icon-spacer-] {
 .fc-tree-title .icon-stack {
 	width: 16px;
 	height: 16px;
-	margin-right: 4px;
+	margin-left: 0px;
+	margin-right: 3px;
 	font-size: 16px;
 	line-height: 17px;
 	text-align: left;
@@ -1014,6 +1016,7 @@ tr:hover .fc-tree-title .icon-folder-open {
 .fc-tree-title .icon-file {
 	color: #999;
 	font-size: 18px;
+	margin-left: -1px;
 }
 
 
