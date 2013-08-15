@@ -924,8 +924,28 @@ body .uniForm .focused {
 .fc-icon-spacer {
 	width: 1em;
 }
-.fc-icon-treestate:before,
-.fc-icon-spacer::before {
+.fc-icon-spacer-1 { width: 20px; }
+.fc-icon-spacer-2 { width: 40px; }
+.fc-icon-spacer-3 { width: 60px; }
+.fc-icon-spacer-4 { width: 80px; }
+.fc-icon-spacer-5 { width: 100px; }
+.fc-icon-spacer-6 { width: 120px; }
+.fc-icon-spacer-7 { width: 140px; }
+.fc-icon-spacer-8 { width: 160px; }
+.fc-icon-spacer-9 { width: 180px; }
+.fc-icon-spacer-10 { width: 200px; }
+.fc-icon-spacer-11 { width: 220px; }
+.fc-icon-spacer-12 { width: 240px; }
+.fc-icon-spacer-13 { width: 260px; }
+.fc-icon-spacer-14 { width: 280px; }
+.fc-icon-spacer-15 { width: 300px; }
+.fc-icon-spacer-16 { width: 320px; }
+i[class^=fc-icon-spacer-] {
+	display: inline-block;
+	height: 16px;
+}
+
+.fc-icon-treestate:before {
 	display: inline-block;
 	position: relative;
 	width: 13px;
@@ -938,7 +958,7 @@ body .uniForm .focused {
 	border-radius: 2px;
 	padding-right: 1px;
 	margin-top: -5px;
-	margin-right: 5px;
+	margin-right: 6px;
 	line-height: 16px;
 	vertical-align: middle;
 }
@@ -949,13 +969,6 @@ body .uniForm .focused {
 	content: "-";
 	line-height: 13px;
 }
-.fc-icon-spacer::before {
-	width: 13px;
-	background: none;
-	border-radius: none;
-	content: " ";
-}
-
 .fc-treestate-collapse .fc-tree-title:hover,
 .fc-treestate-expand .fc-tree-title:hover {
 	cursor: pointer;

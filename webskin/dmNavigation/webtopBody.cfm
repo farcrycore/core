@@ -457,7 +457,7 @@
 				submit: function close(evt){
 					alert("Coming soon...");
 					// check for selected nav item
-					
+
 					//this.remove();
 				}
 
@@ -753,11 +753,16 @@
 							}
 							else {
 		// TODO: alert the user of an error with this request
+console.log("200 success=false");
+console.log(response);
+alert(response.message);
 							}
 						},
-						error: function() {
+						error: function(response) {
 		// TODO: alert the user of an error with this request
-
+console.log("Non-200 error");
+console.log(response);
+alert(response.message);
 						},
 						complete: function() {
 							self.loadExpandedAjaxNodes();
@@ -775,7 +780,7 @@
 					var self = this;
 
 					var id = row.data("objectid");
-					var relativenlevel = row.data("nlevel") - 1;
+					var relativenlevel = row.data("spacers");
 
 					var descendants = $j();
 					var loadCollapsed = false;
@@ -975,7 +980,7 @@
 					var spacer = '<i class="fc-icon-spacer-' + row["spacers"] + '"></i>';
 
 					var html = 
-						'<tr class="' + row["class"] + '" data-objectid="' + row["objectid"] + '" data-typename="' + row["typename"] + '" data-nlevel="' + row["nlevel"] + '" data-expandable="' + row["expandable"] + '" data-indentlevel="' + row["indentlevel"] + '" data-nodetype="' + row["nodetype"] + '" data-parentid="' + row["parentid"] + '"> '
+						'<tr class="' + row["class"] + '" data-objectid="' + row["objectid"] + '" data-typename="' + row["typename"] + '" data-nlevel="' + row["nlevel"] + '" data-spacers="' + row["spacers"] + '" data-expandable="' + row["expandable"] + '" data-nodetype="' + row["nodetype"] + '" data-parentid="' + row["parentid"] + '"> '
 						+	colCheckbox
 						+	colActions
 						+	'<td class="fc-tree-title fc-nowrap">' + spacer + '<a class="fc-treestate-toggle" href="##"><i class="fc-icon-treestate"></i></a>' + row["nodeicon"] + ' <span>' + row["label"] + '</span></td> '

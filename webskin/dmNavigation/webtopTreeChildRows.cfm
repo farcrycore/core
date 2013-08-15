@@ -39,12 +39,16 @@
 <!--- when reloading a branch, render the root and indent by 1 --->
 <cfif url.bReloadBranch>
 	<cfset bRenderRoot = true>
-	<cfset url.relativeNLevel = url.relativeNLevel + 1>
+	<cfset url.relativeNLevel = url.relativeNLevel - 1>
 </cfif>
 <!--- when loading the root, render the root and don't indent --->
 <cfif url.bLoadRoot>
 	<cfset bRenderRoot = true>
 	<cfset url.relativeNLevel = 0>
+</cfif>
+<!--- increase the relative nlevel when the root is not being rendered / branch is not being reloaded--->
+<cfif NOT bRenderRoot>
+	<cfset url.relativeNLevel = url.relativeNLevel + 1>
 </cfif>
 
 
@@ -80,10 +84,11 @@
 </cfif>
 
 <!--- tree depth is relative to the root nlevel of the "page" --->
-<cfset baseNLevel = qTree.nlevel>
-<cfif NOT bRenderRoot>
+<cfset baseNLevel = qTree.nlevel + 1>
+<cfif bRenderRoot>
 	<cfset baseNLevel = baseNLevel - 1>
 </cfif>
+
 
 <cfset treeMaxLevel = baseNLevel + treeLoadingDepth>
 
@@ -150,9 +155,7 @@
 
 
 	<!--- tree indentation depth relative to the base nlevel of the page and the expandability of the node --->
-	<cfset navIndentLevel = qTree.nlevel - baseNLevel - expandable + url.relativeNLevel>
-
-	<cfset navSpacers = 1 + (qTree.nlevel - baseNLevel) + url.relativeNLevel - expandable>
+	<cfset navSpacers = (1 - expandable) + qTree.nlevel - baseNLevel + url.relativeNLevel>
 
 
 	<!--- check that all visible ancestors are expanded --->
@@ -228,8 +231,6 @@
 		<cfset stFolderRow["datetimelastupdated"] = "#lsDateFormat(stNav.datetimelastupdated)# #lsTimeFormat(stNav.datetimelastupdated)#">
 		<cfset stFolderRow["prettydatetimelastupdated"] = application.fapi.prettyDate(stNav.datetimelastupdated)>
 		<cfset stFolderRow["expandable"] = expandable>
-		<cfset stFolderRow["indentlevel"] = navIndentLevel>
-		<!--- <cfset stFolderRow["spacer"] = repeatString('<i class="fc-icon-spacer"></i>', navIndentLevel+1)> --->
 		<cfset stFolderRow["statuslabel"] = thisStatusLabel>
 		<cfset stFolderRow["locked"] = false>
 		<cfset stFolderRow["nodeicon"] = thisNodeIcon>
@@ -277,7 +278,6 @@
 
 
 			<!--- leaf nodes are indented 2 "spaces" deeper than nav nodes (one for the expander icon, one for the extra level of indentation) --->
-			<cfset leafIndentLevel = navIndentLevel + 3>
 			<cfset leafSpacers = navSpacers + 2>
 
 			<cfset thisClass = "fc-treestate-hidden">
@@ -346,8 +346,6 @@
 			<cfset stLeafRow["datetimelastupdated"] = "#lsDateFormat(lastupdated)# #lsTimeFormat(lastupdated)#">
 			<cfset stLeafRow["prettydatetimelastupdated"] = application.fapi.prettyDate(stLeafNode.datetimelastupdated)>
 			<cfset stLeafRow["expandable"] = 0>
-			<cfset stLeafRow["indentlevel"] = leafIndentLevel>
-			<!--- <cfset stLeafRow["spacer"] = repeatString('<i class="fc-icon-spacer"></i>', leafIndentLevel)> --->
 			<cfset stLeafRow["statuslabel"] = thisStatusLabel>
 			<cfset stLeafRow["locked"] = stLeafNode.locked>
 			<cfset stLeafRow["nodeicon"] = thisLeafIcon>
