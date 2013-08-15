@@ -236,14 +236,7 @@
 		<cfset stFolderRow["nodeicon"] = thisNodeIcon>
 		<cfset stFolderRow["editURL"] = "#application.url.webtop#/edittabEdit.cfm?typename=#stNav.typename#&objectid=#stNav.objectid#">
 		<cfset stFolderRow["previewURL"] = application.fapi.getLink(typename="dmNavigation", objectid=stNav.objectid, urlparameters="flushcache=1&showdraft=1")>
-
-<!--- debugging only --->
-		<cfset stFolderRow["treeMaxLevel"] = treeMaxLevel>
-		<cfset stFolderRow["baseNLevel"] = baseNLevel>
-		<cfset stFolderRow["treeLoadingDepth"] = treeLoadingDepth>
-
 		<cfset stFolderRow["spacers"] = javaCast("int", navSpacers)>
-
 
 
 		<!--- add nav node data to response array --->
@@ -351,7 +344,6 @@
 			<cfset stLeafRow["nodeicon"] = thisLeafIcon>
 			<cfset stLeafRow["editURL"] = thisEditURL>
 			<cfset stLeafRow["previewURL"] = application.fapi.getLink(typename=stLeafNode.typename, objectid=stLeafNode.objectid, urlparameters="flushcache=1&showdraft=1")>
-
 			<cfset stLeafRow["spacers"] = javaCast("int", leafSpacers)>
 
 			<!--- add leaf node to response array --->
