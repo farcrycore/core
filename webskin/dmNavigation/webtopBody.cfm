@@ -31,15 +31,15 @@
 
 	V zoom on a particular node / tree section
 		V zoom to the users "home node" by default
-		- move "up" button (one level) if within the users home node
 		V how should we deal with utility navigation? use a different page / menu item
+		- move "up" button (one level) if within the users home node
 
 	- options dropdown:
 		- hook up existing functionality first
 			- create
 			- status
-			- permissions
-			- properties
+			X permissions
+			X properties
 			- delete
 		- move node to a new parent
 
@@ -48,9 +48,8 @@
 	-----------
 
 	- add, move, more? toolbar buttons
-		- root/home/utility nodes MUST NOT be used in destructive operations
 
-	- sorting...
+	- sorting
 
 	- search... ajax auto complete / select2
 		- click on a result sets the zoomed node root 
@@ -154,9 +153,11 @@
 
 	<h1><i class="icon-sitemap"></i> #navTitle#</h1>
 
-	<div class="farcry-button-bar btn-group pull-left">
+	<div class="farcry-button-bar btn-group pull-left" style="margin-bottom: 5px">
 		<button class="btn btn-primary" type="button" onclick="alert('Coming soon...');"><i class="icon-plus"></i> Add Page</button>
-		<button class="btn" type="button"><i class="icon-move"></i> Move</button>
+		<!--- <button class="btn" type="button"><i class="icon-level-up"></i> Up a Level</button> --->
+		<!--- <button class="btn" type="button"><i class="icon-reorder"></i> Sort Order</button> --->
+
 		<!--- <ft:button text="Delete" value="delete" title="Delete" icon="icon-trash" rbkey="objectadmin.buttons.delete" confirmText="Are you sure you want to delete the selected content item(s)?" /> --->
 
 		<div class="btn-group">
@@ -168,10 +169,12 @@
 
 	</div>
 
+<!---
 	<div class="input-prepend input-append pull-right">
 		<input class="span2" type="text" placeholder="Search..." style="width: 240px;">
 		<button class="btn" style="height: 30px; border-radius:0"><b class="icon-search only-icon"></b></button>
 	</div>
+--->
 
 	<ft:form name="farcrytree" style="clear:both">
 
@@ -922,14 +925,32 @@ alert(response.message);
 						dropdown = 
 								'<li><a href="##" class="fc-add" onclick="$fc.objectAdminAction(\'Add Page\', \'' + createURL + '\', { onHidden: function(){ reloadTreeBranch(\'' + row["objectid"] + '\'); } }); return false;"><i class="icon-plus icon-fixed-width"></i> Add Page</a></li> '
 							+	'<li><a href="##" class="fc-zoom"><i class="icon-zoom-in icon-fixed-width"></i> Zoom</a></li> '
+							+	'<li class="dropdown-submenu"><a href="##" class=""><i class="icon-fixed-width"></i> Status</a><ul class="dropdown-menu"> '
+							+		'<li><a href="##" class="">Approve</a></li> '
+							+		'<li><a href="##" class="">Approve Branch</a></li> '
+							+		'<li><a href="##" class="">Send To Draft</a></li> '
+							+		'<li><a href="##" class="">Send Branch To Draft</a></li> '
+							+	'</ul></li> '
 						;
 
-						// desctructive operations only allowed on nodes that are not protected
+						// destructive operations only allowed on nodes that are not protected
 						if (row["protectednode"] == false) {
 							dropdown = dropdown
 								+	'<li class="divider"></li> '
+								+	'<li><a href="##" class="fc-sort"><i class="icon-reorder icon-fixed-width"></i> Sort Order...</a></li> '
 								+	'<li><a href="##" class="fc-copyto"><i class="icon-copy icon-fixed-width"></i> Copy to...</a></li> '
 								+	'<li><a href="##" class="fc-moveto"><i class="icon-move icon-fixed-width"></i> Move to...</a></li> '
+							;
+						}
+/*
+						dropdown = dropdown
+							+	'<li class="divider"></li> '
+							+	'<li><a href="##" class="fc-permissions"><i class="icon-key icon-fixed-width"></i> Permissions</a></li> '
+						;
+*/
+						// destructive operations only allowed on nodes that are not protected
+						if (row["protectednode"] == false) {
+							dropdown = dropdown
 								+	'<li class="divider"></li> '
 								+	'<li><a href="##" class="" onclick="alert(\'Coming soon...\');"><i class="icon-trash icon-fixed-width"></i> Delete</a></li> '
 							;
@@ -937,7 +958,16 @@ alert(response.message);
 					}
 					else if (row["nodetype"] == "leaf") {
 						dropdown = 
-								'<li><a href="##" class=""><i class="icon-trash icon-fixed-width"></i> Delete</a></li> '
+								'<li class="dropdown-submenu"><a href="##" class=""><i class="icon-fixed-width"></i> Status</a><ul class="dropdown-menu"> '
+							+		'<li><a href="##" class="">Approve</a></li> '
+							+		'<li><a href="##" class="">Send To Draft</a></li> '
+							+	'</ul></li> '
+							+	'<li class="divider"></li> '
+							+	'<li><a href="##" class="fc-sort"><i class="icon-reorder icon-fixed-width"></i> Sort Order...</a></li> '
+							+	'<li><a href="##" class="fc-copyto"><i class="icon-copy icon-fixed-width"></i> Copy to...</a></li> '
+							+	'<li><a href="##" class="fc-moveto"><i class="icon-move icon-fixed-width"></i> Move to...</a></li> '
+							+	'<li class="divider"></li> '
+							+	'<li><a href="##" class=""><i class="icon-trash icon-fixed-width"></i> Delete</a></li> '
 						;
 					}
 
