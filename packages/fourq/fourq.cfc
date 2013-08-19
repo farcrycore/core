@@ -462,8 +462,8 @@ So in the case of a database called 'fourq' - the correct application.dbowner va
 			</farcry:traceWebskin>
 		</cfsavecontent>	
 		
-		<cfif structKeyExists(request,"mode") AND (request.mode.flushcache EQ 1 OR request.mode.showdraft EQ 1 OR request.mode.tracewebskins eq 1 OR request.mode.design eq 1 OR request.mode.lvalidstatus NEQ "approved" OR (structKeyExists(url, "updateapp") AND url.updateapp EQ 1))>
-			<!--- NOT CACHING SO IGNORE --->
+			<!--- DON'T CACHE IN SITUATIONS WHERE THE CONTENT IS NOT FOR PUBLIC CONSUMPTION --->
+		<cfif structKeyExists(request,"mode") AND (request.mode.showdraft EQ 1 OR request.mode.tracewebskins eq 1 OR request.mode.design eq 1 OR request.mode.lvalidstatus NEQ "approved" OR (structKeyExists(url, "updateapp") AND url.updateapp EQ 1))>
 		<cfelse>
 			<cfif arrayLen(request.aAncestorWebskins)>
 				
