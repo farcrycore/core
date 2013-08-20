@@ -43,6 +43,8 @@
 			- delete
 		- move node to a new parent
 
+	- disable the source node when choosing the destination node for copy to / move to
+
 
 	followed by
 	-----------
@@ -551,7 +553,10 @@
 					}
 					else {
 						if (this.options.bSelectOnTitleCellClick) {
-							this.selectRow($j(evt.currentTarget).closest("tr"));
+							var clickedRow = $j(evt.currentTarget).closest("tr");
+							if (!clickedRow.hasClass("fc-treestate-disabled")) {
+								this.selectRow(clickedRow);
+							}
 						}
 						if (evt.type == "dblclick") {
 							$j(evt.currentTarget).find(".fc-treestate-toggle").click();

@@ -13,9 +13,11 @@
 <cfparam name="url.bLoadLeafNodes" default="true">
 
 <cfparam name="cookie.FARCRYTREEEXPANDEDNODES" default="">
+<cfparam name="url.disableNode" default="">
 <cfparam name="url.expandedNodes" default="#cookie.FARCRYTREEEXPANDEDNODES#">
 <cfparam name="url.expandTo" default="">
 
+<cfparam name="stParam.disableNode" default="#url.disableNode#">
 <cfparam name="stParam.expandedNodes" default="#url.expandedNodes#">
 <cfparam name="stParam.bLoadLeafNodes" default="#url.bLoadLeafNodes#">
 
@@ -62,7 +64,8 @@
 <!--- set up expanded tree nodes --->
 <cfif len(url.expandTo) AND isValid("uuid", url.expandTo)>
 	<!--- find the expandTo node that was passed in and get its ancestors --->
-	<cfset qExpandToAncestors = oTree.getAncestors(objectid=url.expandTo, bIncludeSelf=true)>
+	<cfset qExpandToAncestors = oTree.getAncestors(objectid=url.expandTo, bIncludeSelf=false)>
+	<cfset stParam.disableNode = url.expandTo>
 	<cfset stParam.expandedNodes = valueList(qExpandToAncestors.objectid, "|")>
 	<cfset url.bIgnoreExpandedNodes = false>
 <cfelse>
@@ -107,6 +110,7 @@
 	<cfset thisClass = "">
 	<cfset bRootNode = stNav.objectid eq rootObjectID>
 	<cfset bProtectedNode = false>
+	<cfset bDisabled = false>
 	<cfset bExpanded = false>
 	<cfset expandable = 0>
 	<cfset bUnexpandedAncestor = false>
@@ -135,6 +139,13 @@
 	<cfif listFindNoCase(lProtectedNavIDs, stNav.objectid)>
 		<cfset bProtectedNode = true>
 	</cfif>
+
+	<!--- determine if this node is disabled --->
+	<cfif stParam.disableNode eq stNav.objectid>
+		<cfset bDisabled = true>
+		<cfset expandable = 0>
+	</cfif>
+
 
 	<!--- determine if this node is currently expanded --->
 	<cfif bRootNode AND NOT url.bLoadCollapsed>
@@ -187,7 +198,11 @@
 		<cfif expandable AND NOT childrenLoaded>
 			<cfset thisClass = thisClass & " fc-treestate-notloaded">
 		</cfif>
-		
+
+		<!--- disabled node --->
+		<cfif bDisabled>
+			<cfset thisClass = thisClass & " fc-treestate-disabled">
+		</cfif>
 
 		<!--- urls --->
 		<cfset thisOverviewURL = "#application.url.webtop#/edittabOverview.cfm?typename=#stNav.typename#&objectid=#stNav.objectid#&ref=overview">
