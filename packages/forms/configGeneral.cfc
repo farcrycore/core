@@ -1,4 +1,4 @@
-<cfcomponent displayname="General Config" hint="General configuration settings for the web application." extends="forms" output="false" key="general">
+<cfcomponent displayname="General Configuration" hint="General configuration settings for the web application." extends="forms" output="false" key="general">
 
 <!--- site description --->
 	<cfproperty ftSeq="10" ftFieldset="Site Description" name="sitetitle" type="string" default="farcry" hint="???" ftLabel="Site title" ftType="string" />

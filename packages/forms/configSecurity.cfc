@@ -1,4 +1,4 @@
-<cfcomponent displayname="Security Config" extends="farcry.core.packages.forms.forms" key="security"
+<cfcomponent displayname="Security Configuration" extends="farcry.core.packages.forms.forms" key="security"
 	hint="Security configuration settings for the web application." output="false">
 
 	<!--- Directories and storage --->
