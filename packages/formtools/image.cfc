@@ -1890,12 +1890,12 @@
 					<cfset usePercent = widthPercent>
 					<cfset pixels = newImage.width * usePercent + 1>
 					<cfset cropYOrigin = ((newImage.height - arguments.Height)/2)>
-					<cfset imageResize(newImage,pixels,"") />
+					<cfset imageResize(newImage,pixels,"",arguments.interpolation) />
 				<cfelse>
 					<cfset usePercent = heightPercent>
 					<cfset pixels = newImage.height * usePercent + 1>
 					<cfset cropXOrigin = ((newImage.width - arguments.Height)/2)>
-					<cfset imageResize(newImage,"",pixels) />
+					<cfset imageResize(newImage,"",pixels,arguments.interpolation) />
 				</cfif>
 				
 				<!--- Set the xy offset for cropping, if not provided defaults to center --->
