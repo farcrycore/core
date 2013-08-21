@@ -26,8 +26,6 @@
 	V root/home/utility nodes MUST NOT be used in destructive operations
 
 
-	easy wins
-	---------
 
 	V zoom on a particular node / tree section
 		V zoom to the users "home node" by default
@@ -45,33 +43,21 @@
 
 	- disable the source node when choosing the destination node for copy to / move to
 
-
-	followed by
-	-----------
-
-	- add, move, more? toolbar buttons
+	- reload row / branch after closing overview/edit modal
 
 	- sorting
 
-	- search... ajax auto complete / select2
-		- click on a result sets the zoomed node root 
-		- or just expand the tree to that point and scroll to / highlight it?
-
-	- permissions? derpa?
+	- backbone preview view (separate, reusable for objectadmin), pass preview view into tree view for use
 
 
-	nice to have, undecided
-	-----------------------
-
-	- can modals somehow make reloading the whole page optional? 
-		- alternatively, reload the table body rows only?
-
-
-	dead last
+	finally
 	---------
 	
 	- use resource bundles for all labels in this webtopBody AND webtopTreeChildRows
 	- config: set up a config for device type widths
+	- search... ajax auto complete / select2
+		- click on a result sets the zoomed node root 
+		- or just expand the tree to that point and scroll to / highlight it?
 
 
  --->
@@ -97,11 +83,15 @@
 	<cfset rootObjectID = application.fapi.getNavId("home")>
 </cfif>
 
+
+<!--- TODO: move this into a config --->
 <!--- get device type preview widths --->
 <cfset deviceWidth = structNew()>
 <cfset deviceWidth["desktop"] = 1050>
 <cfset deviceWidth["tablet"] = 768>
 <cfset deviceWidth["mobile"] = 480>
+
+
 <!--- get current device type --->
 <cfset currentDevice = application.fc.lib.device.getDeviceType()>
 <cfif NOT listFindNoCase("desktop,tablet,mobile", currentDevice)>
