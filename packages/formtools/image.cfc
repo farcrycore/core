@@ -435,6 +435,7 @@
 		<cfsavecontent variable="html"><cfoutput>
 			<div id="#arguments.fieldname#-inline" style="margin-left:20px;">
 			
+				<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
 				<input type="hidden" name="#arguments.fieldname#RESIZEMETHOD" id="#arguments.fieldname#RESIZEMETHOD" value="" />
 				<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="false" />
 				<span class="image-status" title="<cfif len(arguments.stMetadata.ftHint)>#arguments.stMetadata.ftHint#<br></cfif>#metadatainfo#"><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
@@ -1189,12 +1190,12 @@
 					<cfset usePercent = widthPercent>
 					<cfset pixels = newImage.width * usePercent + 1>
 					<cfset cropYOrigin = ((newImage.height - arguments.Height)/2)>
-					<cfset imageResize(newImage,pixels,"") />
+					<cfset imageResize(newImage,pixels,"",arguments.interpolation) />
 				<cfelse>
 					<cfset usePercent = heightPercent>
 					<cfset pixels = newImage.height * usePercent + 1>
 					<cfset cropXOrigin = ((newImage.width - arguments.Height)/2)>
-					<cfset imageResize(newImage,"",pixels) />
+					<cfset imageResize(newImage,"",pixels,arguments.interpolation) />
 				</cfif>
 				
 				<!--- Set the xy offset for cropping, if not provided defaults to center --->
