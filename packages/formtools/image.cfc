@@ -310,7 +310,7 @@
 					
 					// Load and add events to crop HTML
 					jQuery.ajaxSetup({ timeout:5000 });
-					jQuery("##image-crop-ui").load(url+"&crop=1&allowcancel="+allowcancel,postvalues,function cropperLoadDialog(){
+					jQuery("##image-crop-ui").load(url+"&crop=1&allowcancel="+allowcancel+"&ajaxmode=1",postvalues,function cropperLoadDialog(){
 						var $x1 = jQuery("##image-crop-a-x");
 						var $y1 = jQuery("##image-crop-a-y");
 						var $x2 = jQuery("##image-crop-b-x");
