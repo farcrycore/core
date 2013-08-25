@@ -41,7 +41,7 @@
 			- delete
 		- move node to a new parent
 
-	- disable the source node when choosing the destination node for copy to / move to
+	V disable the source node when choosing the destination node for copy to / move to
 
 	- reload row / branch after closing overview/edit modal
 
@@ -491,6 +491,7 @@
 					"click .fc-treestate-toggle" : "clickToggle",
 					"click .fc-tree-title" : "clickTitle",
 					"dblclick .fc-tree-title" : "clickTitle",
+					"click .fc-btn-overview" : "clickOverview",
 					"click .fc-copyto" : "clickCopyTo",
 					"click .fc-moveto" : "clickMoveTo",
 					"click .fc-zoom" : "clickZoom"
@@ -552,6 +553,37 @@
 							$j(evt.currentTarget).find(".fc-treestate-toggle").click();
 						}
 					}
+				},
+
+
+				clickOverview: function clickTitle(evt){
+
+					var self = this;
+					var clickedRow = $j(evt.currentTarget).closest("tr");
+
+					var typename = clickedRow.data("typename");
+					var objectid = clickedRow.data("objectid");
+					var nodetype = clickedRow.data("nodetype");
+					var parentid = clickedRow.data("parentid");
+
+					var overviewURL = "#application.url.webtop#/edittabOverview.cfm?typename=" + typename + "&objectid=" + objectid;
+					var createURL = "#application.url.webtop#/conjuror/evocation.cfm?parenttype=dmNavigation&typename=dmNavigation&objectid=" + objectid;
+					var deleteURL = "#application.url.webtop#/navajo/delete.cfm?objectid=" + objectid;
+
+					// node to reload
+					var reloadid = objectid;
+					if (nodetype == "leaf") {
+						reloadid = parentid;
+					}
+
+
+					$fc.objectAdminAction('Overview', overviewURL, { 
+						onHidden: function(){ 
+							self.reloadTreeBranch(reloadid);
+						} 
+					}); 
+
+					return false;
 				},
 
 
@@ -805,7 +837,7 @@ alert(response.message);
 							"ajaxmode": 1,
 							"relativenlevel": relativenlevel,
 							"bReloadBranch": bReloadBranch,
-							"loadCollapsed": loadCollapsed,
+							"bLoadCollapsed": loadCollapsed,
 							"bLoadLeafNodes": this.options.bLoadLeafNodes,
 							"bRenderTreeOnly": this.options.bRenderTreeOnly,
 							"expandTo": this.options.expandTo
@@ -900,6 +932,7 @@ alert(response.message);
 					var createURL = "#application.url.webtop#/conjuror/evocation.cfm?parenttype=dmNavigation&typename=dmNavigation&objectid=" + row["objectid"];
 					var deleteURL = "#application.url.webtop#/navajo/delete.cfm?objectid=" + row["objectid"];
 
+
 					var reloadTreeBranchObjectID = row["objectid"];
 					if (row["nodetype"] == "leaf") {
 						reloadTreeBranchObjectID = row["parentid"];
@@ -918,7 +951,7 @@ alert(response.message);
 					var dropdown = "";
 					if (row["nodetype"] == "folder") {
 						dropdown = 
-								'<li><a href="##" class="fc-add" onclick="$fc.objectAdminAction(\'Add Page\', \'' + createURL + '\', { onHidden: function(){ reloadTreeBranch(\'' + row["objectid"] + '\'); } }); return false;"><i class="icon-plus icon-fixed-width"></i> Add Page</a></li> '
+								'<li><a href="##" class="fc-add" onclick="$fc.objectAdminAction(\'Add Page\', \'' + createURL + '\', { onHidden: function(){ this.reloadTreeBranch(\'' + row["objectid"] + '\'); } }); return false;"><i class="icon-plus icon-fixed-width"></i> Add Page</a></li> '
 							+	'<li><a href="##" class="fc-zoom"><i class="icon-zoom-in icon-fixed-width"></i> Zoom</a></li> '
 							+	'<li class="dropdown-submenu"><a href="##" class=""><i class="icon-fixed-width"></i> Status</a><ul class="dropdown-menu"> '
 							+		'<li><a href="##" class="">Approve</a></li> '
@@ -970,8 +1003,8 @@ alert(response.message);
 					if (!this.options.bRenderTreeOnly) {
 						colActions = ''
 							+	'<td class="objectadmin-actions"> '
-							+		'<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" onclick="$fc.objectAdminAction(\'Overview\', \'' + overviewURL + '\', { onHidden: function(){ reloadTreeBranch(\'' + reloadTreeBranchObjectID + '\'); } }); return false;" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button> '
-							+		'<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button" onclick="$fc.objectAdminAction(\'Edit Page\', \'' + row["editURL"] + '\', { onHidden: function(){ reloadTreeBranch(\'' + reloadTreeBranchObjectID + '\'); } }); return false;"><i class="icon-pencil"></i> Edit</button> '
+							+		'<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button> '
+							+		'<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button" onclick="$fc.objectAdminAction(\'Edit Page\', \'' + row["editURL"] + '\', { onHidden: function(){ this.reloadTreeBranch(\'' + reloadTreeBranchObjectID + '\'); } }); return false;"><i class="icon-pencil"></i> Edit</button> '
 							+		'<a href="' + row["previewURL"] + '" class="btn fc-btn-preview fc-tooltip" title="" data-original-title="Preview"><i class="icon-eye-open only-icon"></i></a> '
 							+		'<div class="btn-group"> '
 							+			'<button data-toggle="dropdown" class="btn dropdown-toggle" type="button"><i class="icon-caret-down only-icon"></i></button> '

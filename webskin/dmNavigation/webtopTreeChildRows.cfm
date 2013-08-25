@@ -41,7 +41,6 @@
 <!--- when reloading a branch, render the root and indent by 1 --->
 <cfif url.bReloadBranch>
 	<cfset bRenderRoot = true>
-	<cfset url.relativeNLevel = url.relativeNLevel - 1>
 </cfif>
 <!--- when loading the root, render the root and don't indent --->
 <cfif url.bLoadRoot>
