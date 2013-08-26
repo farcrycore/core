@@ -142,6 +142,7 @@
 	    <cfset var prefix = left(arguments.fieldname,len(arguments.fieldname)-len(arguments.stMetadata.name)) />
 	    <cfset var thisdependant = "" />
 	    <cfset var stAltMeta = structnew() />
+	    <cfset var error = "" />
 		
 		
 		<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
@@ -196,6 +197,11 @@
 			<cfoutput>Image must be of type #arguments.stMetadata.ftAllowedExtensions#</cfoutput>
 		</cfsavecontent>
 	    
+	    <cfif len(arguments.stMetadata.value) and not application.fc.lib.cdn.ioFileExists(location="images",file=arguments.stMetadata.value)>
+			<cfset arguments.stMetadata.value = "" />
+			<cfset error = application.fapi.getResource("formtools.image.message.imagenotfound@text","The previous image can't be found in the file system. You should upload a new image or talk to your administrator before saving.") />
+		</cfif>
+	    
 	    <cfif len(arguments.stMetadata.ftSourceField)>
 			
 			<!--- This image will be generated from the source field --->
@@ -209,7 +215,7 @@
 				    			<a href="##traditional" class="fc-btn select-view" title="Switch between traditional upload and inline upload" style="float:left;"><i class="icon-random"></i></a>
 								<div style="margin-left:15px">
 						    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
-						    		<div id="#arguments.fieldname#_uploaderror" class="alert alert-error" style="margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
+						    		<div id="#arguments.fieldname#_uploaderror" class="alert alert-error" style="margin-top:0.7em;margin-bottom:0.7em;<cfif not len(error)>display:none;</cfif>">#error#</div>
 						    		<div><i style="float:left;" title="#metadatainfo#" class="icon-question-sign"></i> <span style="float:left;">Select an image to upload from your computer.</span></div>
 						    		<div class="image-cancel-upload" style="clear:both;"><a href="##back" class="select-view">Cancel - I don't want to upload an image</a></div>
 						    	</div>
@@ -298,7 +304,7 @@
 							<a href="##traditional" class="fc-btn select-view" title="Switch between traditional upload and inline upload" style="float:left;"><i class="icon-random">&nbsp;</i></a>
 							<div style="margin-left:15px">
 					    		<input type="file" name="#arguments.fieldname#NEW" id="#arguments.fieldname#NEW" />
-					    		<div id="#arguments.fieldname#_uploaderror" class="alert alert-error" style="margin-top:0.7em;margin-bottom:0.7em;display:none;"></div>
+					    		<div id="#arguments.fieldname#_uploaderror" class="alert alert-error" style="margin-top:0.7em;margin-bottom:0.7em;<cfif not len(error)>display:none;</cfif>">#error#</div>
 					    		<div><i style="float:left;" title="#metadatainfo#" class="icon-question-sign"></i> <span style="float:left;">Select an image to upload from your computer.</span></div>
 					    		<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><a href="##back" class="select-view">Cancel - I don't want to replace this image</a></div>
 					    	</div>

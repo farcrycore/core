@@ -199,11 +199,14 @@
 			However, if no default is available, we will automatically get the custom first or else finally the system
 			 --->
 			<cfquery datasource="#application.dsn#" name="stLocal.qDefault">
-			SELECT farFU.objectid as objectid,refobjects.typename as typename
-			FROM farFU INNER JOIN refObjects on farFu.refobjectid = refObjects.objectid
-			WHERE farFU.refObjectID = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.refObjectID#" />
-			AND farFU.fuStatus > 0
-			ORDER BY farFU.bDefault DESC, farFU.fuStatus DESC 
+				SELECT 		f.objectid as objectid, r.typename as typename
+				FROM 		farFU f
+							INNER JOIN 
+							refObjects r
+							on f.refobjectid = r.objectid
+				WHERE 		f.refobjectid = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.refObjectID#" />
+							AND f.fuStatus > 0
+				ORDER BY 	f.bDefault DESC, f.fuStatus DESC 
 			</cfquery>		
 		
 			<cfif stLocal.qDefault.recordCount>

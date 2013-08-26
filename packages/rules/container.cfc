@@ -540,15 +540,21 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 				<!--- Detaermin the type of rule --->
 				<cfset rule = application.fapi.findType(arguments.aRules[i]) />
 				
-				<cfif application.fapi.hasWebskin(rule,"execute")>
-					<skin:view objectid="#arguments.aRules[i]#" typename="#rule#" webskin="execute" r_html="ruleHTML" />
+				<cfif len(rule)>
+					<cfif application.fapi.hasWebskin(rule,"execute")>
+						<skin:view objectid="#arguments.aRules[i]#" typename="#rule#" webskin="execute" r_html="ruleHTML" />
+					<cfelse>
+						<cfsavecontent variable="ruleHTML">
+							<cfoutput>#application.fapi.getContentType(rule).execute(objectid=arguments.aRules[i])#</cfoutput>
+						</cfsavecontent>
+					</cfif>
+					
+					<cfset arrayappend(request.aInvocations, ruleHTML) />
 				<cfelse>
-					<cfsavecontent variable="ruleHTML">
-						<cfoutput>#application.fapi.getContentType(rule).execute(objectid=arguments.aRules[i])#</cfoutput>
-					</cfsavecontent>
+					<cfif isdefined("url.debug") and url.debug EQ 1>
+						<skin:bubble title="Error with rule" message="Could not resolve rule type for rule #i# on container #arguments.originalID#" />
+					</cfif>
 				</cfif>
-				
-				<cfset arrayappend(request.aInvocations, ruleHTML) />
 							
 			  	<cfcatch type="any">
 					
