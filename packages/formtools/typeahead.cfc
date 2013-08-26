@@ -287,8 +287,10 @@
 			<cfif listlen(arguments.value[i],"|") eq 2>
 				<cfset result = listappend(result,arguments.value[i]) />
 			<cfelse>
-				<cfset st = application.fapi.getContentObject(objectid=arguments.value[i]) />
-				<cfset result = listappend(result,"#st.objectid#|#st.label#") />
+				<cfif isValid("uuid", arguments.value[i])>
+					<cfset st = application.fapi.getContentObject(objectid=arguments.value[i]) />
+					<cfset result = listappend(result,"#st.objectid#|#st.label#") />
+				</cfif>
 			</cfif>
 		</cfloop>
 		
