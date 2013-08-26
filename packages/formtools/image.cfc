@@ -1579,7 +1579,7 @@
 		
 		<cfset currentlocation = application.fc.lib.cdn.ioFindFile(locations="images",file=currentfilename) />
 		
-		<cfif not len(currentpath)>
+		<cfif isDefined("currentlocation") and not len(currentlocation)>
 			<cfreturn "" />
 		</cfif>
 		

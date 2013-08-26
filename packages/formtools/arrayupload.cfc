@@ -111,7 +111,7 @@
 		<skin:loadCSS id="jquery-modal" />
 		<skin:loadCSS id="fc-fontawesome" />
 	    
-		<skin:loadJS id="array-upload"><script type="text/javascript"><cfoutput>
+		<skin:loadJS id="array-upload"><cfoutput>
 		<!--- <skin:htmlHead id="array-upload-js"><cfoutput><script type="text/javascript"> --->
 			(function($){
 				if (!fcForm.arrayuploadwrapped){
@@ -461,7 +461,7 @@
 		    		return this[prefix+property];
 		    	};
 			})(jQuery);
-		</cfoutput></script></skin:loadJS>
+		</cfoutput></skin:loadJS>
 		<!--- </script></cfoutput></skin:htmlHead> --->
 		<skin:loadCSS id="array-upload"><style type="text/css"><cfoutput>
 			.fc-arrayupload-item { zoom:1; }
@@ -855,7 +855,7 @@
 				<cfreturn serializeJSON(stJSON) />
 			</cfif>
 			
-			<cfif stResult.bChanged and isdefined("stResult.value") and len(stResult.value)>
+			<cfif isdefined("stResult.bSuccess") and stResult.bSuccess and isdefined("stResult.value") and len(stResult.value)>
 				
 				<cfif application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata.ftType eq "file">
 					
@@ -889,9 +889,9 @@
 					</cfif>
 					
 					<cftry>
+						<cfset stJSON = structnew() />
 						<cfset stFixed = application.formtools.image.oFactory.fixImage(stResult.value,application.stCOAPI[arguments.stMetadata.ftJoin].stProps[arguments.stMetadata.ftFileProperty].metadata,arguments.stFieldPost.stSupporting.ResizeMethod,arguments.stFieldPost.stSupporting.Quality) />
 						
-						<cfset stJSON = structnew() />
 						<cfset stNewObject = application.fapi.getNewContentObject(typename=arguments.stMetadata.ftJoin) />
 						<cfset stNewObject.label = listfirst(listlast(stResult.value,"/"),".") />
 						<cfif structkeyexists(application.stCOAPI[arguments.stMetadata.ftJoin].stProps,"title")>
