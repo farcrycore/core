@@ -341,11 +341,17 @@ FileUploadView = Backbone.View.extend({
 			fileID : data.formData.fileID
 		});
 		
-		if (file && data.error){
+		if (file && data.result.error){
 			file.set({
 				status : "failed",
-				error : data.error,
+				error : data.result.error,
 				jqXHR : undefined
+			});
+		}
+		else if (data.result.error && Window.app && Window.app.errorCollection){
+			Window.app.errorCollection.add({
+				message : data.result.error.message,
+				error: data.result.error
 			});
 		}
 		else if (file){

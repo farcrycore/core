@@ -488,7 +488,7 @@ environment references (might be nice to clean these up)
 				stBut.name="bulkupload";
 				stBut.value="Bulk Upload";
 				stBut.class="f-submit";
-				stBut.onClick="$fc.objectAdminAction('Bulk Upload', '" & application.fapi.getLink(type=attributes.typename,view="webtopPageModal",bodyView="webtopBodyBulkUpload") & "'); return false;";
+				stBut.onClick="$fc.objectAdminAction('Bulk Upload', '" & application.fapi.getLink(type=attributes.typename,view="webtopPageModal",bodyView="webtopBodyBulkUpload",ampdelim="&") & "'); return false;";
 				stBut.permission=application.security.checkPermission(permission="Create",type=attributes.permissionset);
 				stBut.buttontype="bulkupload";
 				arrayAppend(aDefaultButtons,stBut);

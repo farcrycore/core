@@ -30,6 +30,7 @@
 			<cfset setLocation(name="archive",cdn="local",fullpath=normalizePath(application.path.mediaArchive)) />
 			<cfset setLocation(name="publicfiles",cdn="local",fullpath=normalizePath(application.path.defaultFilePath),urlpath=normalizePath(application.url.fileRoot)) />
 			<cfset setLocation(name="privatefiles",cdn="local",fullpath=normalizePath(application.path.secureFilePath)) />
+			<cfset setLocation(name="temp",cdn="local",fullpath=getTempDirectory()) />
 		</cfif>
 		
 		<cfreturn this />
