@@ -490,10 +490,11 @@
 					"dblclick .fc-tree-title" : "clickTitle",
 					"click .fc-btn-overview" : "clickOverview",
 					"click .fc-btn-edit" : "clickEdit",
+					"click .fc-zoom" : "clickZoom",
+					"click .fc-changestatus" : "clickStatus",
 					"click .fc-copyto" : "clickCopyTo",
 					"click .fc-moveto" : "clickMoveTo",
-					"click .fc-zoom" : "clickZoom",
-					"click .fc-changestatus" : "clickStatus"
+					"click .fc-delete" : "clickDelete"
 				},
 
 
@@ -611,48 +612,6 @@
 				},
 
 
-				clickCopyTo: function SiteTreeView_clickCopyTo(evt){
-
-					var row = $j(evt.currentTarget).closest("tr")
-					var objectid = row.data("objectid");
-					var sourceName = row.find(".fc-tree-title").text();
-
-					this.treeDialogView = new TreeDialogView({
-
-						title: "Copy to...",
-						submitLabel: "Copy",
-						sourceText: "This folder",
-						sourceObjectID: objectid,
-						sourceName: sourceName,
-						targetText: "Will be copied into the selected folder..."
-
-					});
-					this.treeDialogView.render();
-
-					return true;
-				},
-
-				clickMoveTo: function SiteTreeView_clickMoveTo(evt){
-
-					var row = $j(evt.currentTarget).closest("tr")
-					var objectid = row.data("objectid");
-					var sourceName = row.find(".fc-tree-title").text();
-
-					this.treeDialogView = new TreeDialogView({
-
-						title: "Move to...",
-						submitLabel: "Move",
-						sourceText: "This folder",
-						sourceObjectID: objectid,
-						sourceName: sourceName,
-						targetText: "Will be moved into the selected folder..."
-					});
-					this.treeDialogView.render();
-
-					return true;
-				},
-
-
 				clickZoom: function SiteTreeView_clickZoom(evt){
 					var objectid = $j(evt.currentTarget).closest("tr").data("objectid");
 					if (objectid.length) {
@@ -704,6 +663,96 @@
 					return true;
 				},
 
+
+				clickCopyTo: function SiteTreeView_clickCopyTo(evt){
+
+					var row = $j(evt.currentTarget).closest("tr")
+					var objectid = row.data("objectid");
+					var sourceName = row.find(".fc-tree-title").text();
+
+					this.treeDialogView = new TreeDialogView({
+
+						title: "Copy to...",
+						submitLabel: "Copy",
+						sourceText: "This folder",
+						sourceObjectID: objectid,
+						sourceName: sourceName,
+						targetText: "Will be copied into the selected folder..."
+
+					});
+					this.treeDialogView.render();
+
+					return true;
+				},
+
+				clickMoveTo: function SiteTreeView_clickMoveTo(evt){
+
+					var row = $j(evt.currentTarget).closest("tr")
+					var objectid = row.data("objectid");
+					var sourceName = row.find(".fc-tree-title").text();
+
+					this.treeDialogView = new TreeDialogView({
+
+						title: "Move to...",
+						submitLabel: "Move",
+						sourceText: "This folder",
+						sourceObjectID: objectid,
+						sourceName: sourceName,
+						targetText: "Will be moved into the selected folder..."
+					});
+					this.treeDialogView.render();
+
+					return true;
+				},
+
+				clickDelete: function SiteTreeView_clickDelete(evt){
+
+					var self = this;
+
+					var row = $j(evt.currentTarget).closest("tr")
+					var objectid = row.data("objectid");
+					var parentid = row.data("parentid");
+					var sourceName = row.find(".fc-tree-title").text();
+					var nodetype = row.data("nodetype");
+
+					// node to reload
+					var reloadid = parentid;
+
+					if (confirm("Are you sure you want to delete '" + sourceName + "'?")) {
+
+						$j.ajax({
+							url: "#application.url.webtop#/index.cfm?typename=dmNavigation&view=webtopAjaxTreeAction&action=delete&ajaxmode=1&objectid=" + objectid + "&responsetype=json",
+							datatype: "json",
+							success: function(response) {
+								response.success = response.success || false;
+								if (response.success) {
+
+									// reload tree branch
+									self.reloadTreeBranch(reloadid);
+
+								}
+								else {
+		// TODO: alert the user of an error with this request
+console.log("200 success=false");
+console.log(response);
+alert(response.message);
+								}
+							},
+							error: function(response) {
+		// TODO: alert the user of an error with this request
+console.log("Non-200 error");
+console.log(response);
+alert(response.message);
+							},
+							complete: function() {
+								//self.loadExpandedAjaxNodes();
+							}
+						});
+
+					}
+
+					return true;
+				},
 
 
 
@@ -1053,7 +1102,7 @@ alert(response.message);
 						if (row["protectednode"] == false) {
 							dropdown = dropdown
 								+	'<li class="divider"></li> '
-								+	'<li><a href="##" class="" onclick="alert(\'Coming soon...\');"><i class="icon-trash icon-fixed-width"></i> Delete</a></li> '
+								+	'<li><a href="##" class="fc-delete"><i class="icon-trash icon-fixed-width"></i> Delete</a></li> '
 							;
 						}
 					}
@@ -1068,7 +1117,7 @@ alert(response.message);
 							+	'<li><a href="##" class="fc-copyto"><i class="icon-copy icon-fixed-width"></i> Copy to...</a></li> '
 							+	'<li><a href="##" class="fc-moveto"><i class="icon-move icon-fixed-width"></i> Move to...</a></li> '
 							+	'<li class="divider"></li> '
-							+	'<li><a href="##" class=""><i class="icon-trash icon-fixed-width"></i> Delete</a></li> '
+							+	'<li><a href="##" class="fc-delete"><i class="icon-trash icon-fixed-width"></i> Delete</a></li> '
 						;
 					}
 
