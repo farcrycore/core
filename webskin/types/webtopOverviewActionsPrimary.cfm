@@ -352,19 +352,12 @@ START WEBSKIN
 
 
 		<!--- preview object --->
-		<cfswitch expression="#url.ref#">
-			<cfcase value="iframe">
-				<cfset target = "_top" />
-			</cfcase>
-			
-			<cfdefaultcase>
-				<cfset target = "_winPreview" />
-			</cfdefaultcase>
-		</cfswitch>
+		<cfset target = "_winPreview" />
+		
 		<ft:button 	value="Preview" 
 					text="PREVIEW<br>View Content Item"
 					title="View Content Item"
-					class="secondary span3  btn-block" 
+					class="secondary span3 btn-block" 
 					rbkey="workflow.buttons.preview" 
 					url="#application.url.webroot#/index.cfm?objectid=#stobj.objectid#&flushcache=1&showdraft=1" 
 					target="#target#" />
@@ -372,15 +365,13 @@ START WEBSKIN
 	
 	</cfif>
 
-	<cfif session.overviewRef EQ "iframe">
-		<ft:button 	value="Close" 
-					text="DONE<br>Finished with this item"
-					title="Finished with this item"
-					class="secondary span3  btn-block" 
-					type="button" 
-					rbkey="workflow.buttons.close" 
-					onClick="$fc.closeBootstrapModal();" />
-	</cfif>
+	<ft:button 	value="Close" 
+				text="DONE<br>Finished with this item"
+				title="Finished with this item"
+				class="secondary span3  btn-block" 
+				type="button" 
+				rbkey="workflow.buttons.close" 
+				onClick="$fc.closeBootstrapModal();" />
 
 <cfsetting enablecfoutputonly="false">
 
