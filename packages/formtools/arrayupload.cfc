@@ -1,34 +1,83 @@
-<cfcomponent displayname="Array Upload" hint="A cross between the array and image formtools" extends="farcry.core.packages.formtools.field" output="false">
+<cfcomponent displayname="Array Upload" 
+	extends="farcry.core.packages.formtools.field"
+	hint="A cross between the array and image formtools; designed for use on the front-end. Consider bulk upload options on array for the webtop." output="false">
 
-	<cfproperty name="ftJoin" required="true" default="" options="comma seperated list of types" hint="A single related content type e.g 'dmImage'"/>
-	<cfproperty name="ftAllowSelect" required="false" default="true" options="true,false" hint="Allows user to select existing records within the library picker"/>
-	<cfproperty name="ftAllowCreate" required="false" default="true" options="true,false" hint="Allows user create new record within the library picker"/>
-	<cfproperty name="ftAllowEdit" required="false" default="false" options="true,false" hint="Allows user edit new record within the library picker"/>
-	<cfproperty name="ftAllowRemoveAll" required="false" default="false" options="true,false" hint="Allows user to remove all items at once"/>
-	<cfproperty name="ftRemoveType" required="false" default="remove" options="delete,detach" hint="detach will only remove from the join, delete will remove from the database"/><!--- detach or delete --->
-	
-	<cfproperty name="ftFileProperty" required="false" default="" hint="The property on the related type that the file is uploaded against. This defaults to sourceImage for dmImage and filename for dmFile. Other relationships must have an explicit value.">
-	<cfproperty name="ftAllowedFileExtensions" required="false" default="" hint="The list of file extensions allowed. The default is to borrow the attribute on the related file property." />
-	<cfproperty name="ftSizeLimit" required="false" default="" hint="The upload size limit. The default is to borrow the attribute on the related file property." />
-	<cfproperty name="ftSimUploadLimit" required="false" default="1" hint="The maximum number of simultaneous uploads." />
-	<cfproperty name="ftEditableProperties" required="false" default="" hint="If ftAllowEdit is enabled, this property restricts which properties are ediable. Note that using this value will switch the default edit dialog to a minimalist one suitable for front end use.">
-	
-	<cfproperty name="ftlibrarydatasqlwhere" required="false" default="" hint="A simple where clause filter for the library data result set. Must be in the form PROPERTY OPERATOR VALUE. For example, status = 'approved'"/><!--- detach or delete --->
-	<cfproperty name="ftlibrarydatasqlorderby" required="false" default="datetimelastupdated desc" hint="Nominate a specific property to order library results by."/><!--- detach or delete --->
-	
-	<cfproperty name="ftView" default="list" type="string" options="tiled,list" hint="Allows the formtool to be switched between the traditional list view of normal array fields and a tiled view appropriate for images." />
-	<cfproperty name="ftTileWidth" default="100" type="numeric" hint="Width of item tile" />
-	<cfproperty name="ftTileHeight" default="100" type="numeric" hint="Height of item tile">
-	
-	<cfproperty name="ftListWebskin" default="librarySelected" type="string" hint="The webskin to use for items displayed in the form" />
-	<cfproperty name="ftLibrarySelectedWebskin" default="librarySelected" type="string" hint="The webskin to use for items displayed in the library picker" />
-	<cfproperty name="ftLibraryListItemWidth" default="" type="string" hint="???" />
-	<cfproperty name="ftLibraryListItemHeight" default="" type="string" hint="???"/>
-	<cfproperty name="ftFirstListLabel" default="-- SELECT --" hint="Used with ftRenderType, this is the value of the first element in the list"/>
-	<cfproperty name="ftLibraryData" default="" hint="Name of a function to return the library data. By default will look for ./webskin/typename/librarySelected.cfm"/><!--- Name of a function to return the library data --->
-	<cfproperty name="ftLibraryDataTypename" default="" hint="Typename containing the function defined in ftLibraryData"/><!--- Typename containing the function defined in ftLibraryData --->	
-	
-	
+	<cfproperty name="ftlibrarydatasqlwhere" required="false" default=""
+		hint="A simple where clause filter for the library data result set. Must be in the form PROPERTY OPERATOR VALUE. For example, status = 'approved'">
+
+	<cfproperty name="ftJoin" required="true" default="" 
+		options="comma seperated list of types"
+		hint="A single related content type e.g 'dmImage'">
+
+	<cfproperty name="ftAllowCreate" required="false" default="true" 
+		options="true,false"
+		hint="Allows user create new record within the library picker">
+
+	<cfproperty name="ftAllowEdit" required="false" default="false" 
+		options="true,false"
+		hint="Allows user edit new record within the library picker">
+
+	<cfproperty name="ftAllowRemoveAll" required="false" default="false" 
+		options="true,false"
+		hint="Allows user to remove all items at once">
+
+	<cfproperty name="ftRemoveType" required="false" default="remove" 
+		options="delete,detach"
+		hint="detach will only remove from the join, delete will remove from the database">
+
+	<cfproperty name="ftFileProperty" required="false" default=""
+		hint="The property on the related type that the file is uploaded against. This defaults to sourceImage for dmImage and filename for dmFile. Other relationships must have an explicit value.">
+
+	<cfproperty name="ftAllowedFileExtensions" required="false" default=""
+		hint="The list of file extensions allowed. The default is to borrow the attribute on the related file property.">
+
+	<cfproperty name="ftSizeLimit" required="false" default=""
+		hint="The upload size limit. The default is to borrow the attribute on the related file property.">
+
+	<cfproperty name="ftSimUploadLimit" required="false" default="1"
+		hint="The maximum number of simultaneous uploads.">
+
+	<cfproperty name="ftEditableProperties" required="false" default=""
+		hint="If ftAllowEdit is enabled, this property restricts which properties are ediable. Note that using this value will switch the default edit dialog to a minimalist one suitable for front end use.">
+
+	<cfproperty name="ftAllowSelect" required="false" default="true" 
+		options="true,false"
+		hint="Allows user to select existing records within the library picker">
+
+	<cfproperty name="ftlibrarydatasqlorderby" required="false" default="datetimelastupdated desc"
+		hint="Nominate a specific property to order library results by.">
+
+	<cfproperty name="ftView" type="string" default="list" 
+		options="tiled,list"
+		hint="Allows the formtool to be switched between the traditional list view of normal array fields and a tiled view appropriate for images.">
+
+	<cfproperty name="ftTileWidth" type="numeric" default="100"
+		hint="Width of item tile">
+
+	<cfproperty name="ftTileHeight" type="numeric" default="100"
+		hint="Height of item tile">
+
+	<cfproperty name="ftListWebskin" type="string" default="librarySelected"
+		hint="The webskin to use for items displayed in the form">
+
+	<cfproperty name="ftLibrarySelectedWebskin" type="string" default="librarySelected"
+		hint="The webskin to use for items displayed in the library picker">
+
+	<cfproperty name="ftLibraryListItemWidth" type="string" default=""
+		hint="???">
+
+	<cfproperty name="ftLibraryListItemHeight" type="string" default=""
+		hint="???">
+
+	<cfproperty name="ftFirstListLabel" default="-- SELECT --"
+		hint="Used with ftRenderType, this is the value of the first element in the list">
+
+	<cfproperty name="ftLibraryData" default=""
+		hint="Name of a function to return the library data. By default will look for ./webskin/typename/librarySelected.cfm">
+
+	<cfproperty name="ftLibraryDataTypename" default=""
+		hint="Typename containing the function defined in ftLibraryData">
+
 	
 	<cffunction name="init" access="public" returntype="any" output="false" hint="Returns a copy of this initialised object">
 		
