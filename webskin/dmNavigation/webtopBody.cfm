@@ -24,8 +24,8 @@
 	V make edit button work properly (no dupes)
 	V previews should refresh only when the device webskins change
 	V root/home/utility nodes MUST NOT be used in destructive operations
-
-
+	V reload row / branch after closing overview/edit modal
+	V disable the source node when choosing the destination node for copy to / move to
 
 	V zoom on a particular node / tree section
 		V zoom to the users "home node" by default
@@ -41,18 +41,14 @@
 			- delete
 		- move node to a new parent
 
-	V disable the source node when choosing the destination node for copy to / move to
+	- drag drop sorting
 
-	- reload row / branch after closing overview/edit modal
-
-	- sorting
-
-	- backbone preview view (separate, reusable for objectadmin), pass preview view into tree view for use
 
 
 	finally
 	---------
 	
+	- backbone preview view (separate, reusable for objectadmin), pass preview view into tree view for use
 	- use resource bundles for all labels in this webtopBody AND webtopTreeChildRows
 	- config: set up a config for device type widths
 	- search... ajax auto complete / select2
@@ -205,6 +201,7 @@
 				<button style="margin-left: -2px" class="btn btn-edit" type="button" onclick="previewDevice('desktop', #deviceWidth["desktop"]#);"><i class="icon-desktop"></i>&nbsp;Desktop</button>
 				<button style="margin-left: -2px" class="btn btn-edit" type="button" onclick="previewDevice('tablet', #deviceWidth["tablet"]#);"><i class="icon-tablet"></i>&nbsp;Tablet</button>
 				<button style="margin-left: -2px" class="btn btn-edit" type="button" onclick="previewDevice('mobile', #deviceWidth["mobile"]#);"><i class="icon-mobile-phone"></i>&nbsp;Mobile</button>
+				&nbsp; <a href="##" target="_blank" onclick="this.href=document.getElementById('previewiframe').contentWindow.location.href;" title="Open in new tab" style="text-decoration:none; color:##777; position:relative; top: 2px;"><i class="icon-external-link"></i></a>
 			</div>
 
 			<iframe id="previewiframe" src="http://#cgi.http_host#/" frameborder="0" border="0" width="100%" height="100%" style="position: absolute; top: 40;"></iframe>
