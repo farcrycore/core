@@ -15,7 +15,8 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<cfcomponent extends="types" displayname="Include" hint="Include miscellaneous CFML templates or content type webskins." 
+<cfcomponent extends="types" displayname="Include" 
+	hint="Include miscellaneous CFML templates or content type webskins." 
 	bUseInTree="true" bFriendly="true"
 	bObjectBroker="true">
 <!------------------------------------------------------------------------

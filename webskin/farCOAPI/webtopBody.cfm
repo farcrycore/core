@@ -151,6 +151,23 @@
 	<cfdump var="#aResults#">
 </cfif>
 
+<cffunction name="getIcon" output="false" returntype="string" hint="Returns icon for typename or default for others.">
+	<cfargument name="typename" type="string" required="true" />
+
+	<!--- set default of table for non-types; eg. schema --->
+	<cfset var icon = "icon-table">
+
+	<cfif structKeyExists(application.stcoapi, arguments.typename)>
+		<cfset icon = application.stcoapi[arguments.typename].icon>
+	</cfif>
+
+	<cfif NOT len(icon)>
+		<cfset icon = "icon-question-sign">
+	</cfif>
+
+	<cfreturn icon />
+</cffunction>
+
 <cffunction name="summariseConflicts" output="false" returntype="string" hint="Returns a string summarising the conflicts passed in">
 	<cfargument name="stConflicts" type="struct" required="true" />
 	
@@ -362,7 +379,7 @@
 				<cfoutput>
 					<tr class="#qTypes.class#">
 						<td class="class">#ucase(left(qTypes.class,1))##mid(qTypes.class,2,10)#</td>
-						<td class="name">#qTypes.label#</td>
+						<td class="name"><i class="#getIcon(qtypes.typename)#"></i> #qTypes.label#</td>
 						<td class="conflicts">
 							<a href="#application.url.webtop#/index.cfm?id=#url.id#&typename=farCOAPI&view=webtopPageModal&bodyview=webtopBodyConflicts&typepath=#qTypes.packagepath#" class="openindialog" data-title="#qTypes.label# Conflicts" id="#qTypes.typename#_conflicts">Resolve conflicts</a>
 							<skin:tooltip id="#qTypes.typename#_conflicts" selector="###qTypes.typename#_conflicts" message="#qTypes.conflicts#" />
@@ -414,7 +431,7 @@
 			<cfoutput>
 				<tr class="#qTypes.class#">
 					<td class="class">#ucase(left(qTypes.class,1))##mid(qTypes.class,2,10)#</td>
-					<td class="name">#qTypes.label#</td>
+					<td class="name"><i class="#getIcon(qtypes.typename)#"></i> #qTypes.label#</td>
 					<td class="location">
 						<cfloop list="#qTypes.locations#" index="thispath">
 							<span title="#listlast(thispath,':')#">#listfirst(thispath,':')#</span><cfif thispath neq listlast(qTypes.locations)>, </cfif>

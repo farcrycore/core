@@ -99,7 +99,7 @@
 							<td>
 								<cfif structKeyExists(application.stCOAPI,contentTypename)>
 									<cfif len(application.stCOAPI[contentTypename].icon)>
-										<i class="icon-#application.stCOAPI[contentTypename].icon#"></i>
+										<i class="#application.stCOAPI[contentTypename].icon#"></i>
 									<cfelse>
 										<i class="icon-file"></i>
 									</cfif>
@@ -132,7 +132,7 @@
 							<tr>
 								<td>
 									<cfif len(application.stCOAPI[contentTypename].icon)>
-										<i class="icon-#application.stCOAPI[contentTypename].icon#"></i>
+										<i class="#application.stCOAPI[contentTypename].icon#"></i>
 									<cfelse>
 										<i class="icon-file"></i>
 									</cfif>
@@ -187,7 +187,7 @@
 													<cfset iconClass = "file" />
 												</cfif>
 												
-												<option value="#aTypesUseInTree[i].typename#" title="<i class='icon-#iconClass#'></i>">#aTypesUseInTree[i].description#</option>
+												<option value="#aTypesUseInTree[i].typename#" title="<i class='#iconClass#'></i>">#aTypesUseInTree[i].description#</option>
 											</cfif>
 										</cfloop>
 										
@@ -210,7 +210,7 @@
 							<td>
 								<cfif structKeyExists(application.stCOAPI,contentTypename)>
 									<cfif len(application.stCOAPI[contentTypename].icon)>
-										<i class="icon-#application.stCOAPI[contentTypename].icon#"></i>
+										<i class="#application.stCOAPI[contentTypename].icon#"></i>
 									<cfelse>
 										<i class="icon-file"></i>
 									</cfif>

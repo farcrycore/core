@@ -1,5 +1,5 @@
 <cfsetting enablecfoutputonly="true">
-<!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
+<!--- @@Copyright: Daemon Pty Limited 2002-2013, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
 
@@ -104,73 +104,63 @@ FARCRY INCLUDE FILES
 </skin:htmlHead>
 
 <cfoutput>
-<table class="layout" style="width:100%;padding:5px;table-layout:fixed;margin-bottom:10px;">
-<tr>
-	<td style="width:35px;">
+	<h1>
 		<cfif len(application.stCOAPI[stobj.typename].icon)>
-			<i class="icon-#application.stCOAPI[stobj.typename].icon# icon-2x"></i>
+			<i class="#application.stCOAPI[stobj.typename].icon#"></i>
 		<cfelse>
-			<i class="icon-file icon-2x"></i>
+			<i class="icon-file"></i>
 		</cfif>
-	</td>
-	<td style="vertical-align:center;"><h1 style="text-align:left;">#stobj.label#</h1></td>
-	<td>
+		#stobj.label#
+	</h1>
 
-		<!--- CONTENT ITEM STATUS --->
-		<cfif structKeyExists(stobj,"status")>
-			
-			
-			<cfswitch expression="#stobj.status#">
-			<cfcase value="draft">
-				
-				<grid:div class="draft">
-					<cfoutput>
-						<div>DRAFT</div>
-						<div style="font-size:11px;">last updated <span style="cursor:pointer;" title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</span></div>
-						
-						<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
-							<div style="font-size:11px;"><skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="typename=#stObj.typename#&versionID=#stobj.versionID#" linktext="show approved version" /></div>
-						</cfif>
-					</cfoutput>
-				</grid:div>
-				
-			</cfcase>
-			<cfcase value="pending">
-				
-					<grid:div class="pending">
-						<cfoutput>
-							<div>PENDING</div>
-							<div style="font-size:11px;">awaiting approval since <span style="cursor:pointer;" title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</span></div>
-							
-							<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
-								<div style="font-size:11px;"><skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="typename=#stObj.typename#&versionID=#stobj.versionID#" linktext="show approved version" /></div>
-							</cfif>
-						</cfoutput>
-					</grid:div>
-			</cfcase>
-			<cfcase value="approved">
-				
-					<grid:div class="approved">
-						<cfoutput>
-							<div>APPROVED</div> 
-							<div style="font-size:11px;">last approved <span style="cursor:pointer;" title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</span></div>
-							
-							<cfif structKeyExists(stobj,"versionID") AND structKeyExists(stobj,"status") AND stobj.status EQ "approved">
-								<cfset qDraft = application.factory.oVersioning.checkIsDraft(objectid=stobj.objectid,type=stobj.typename)>
-								<cfif qDraft.recordcount>
-									<div style="font-size:11px;"><skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="typename=#stObj.typename#&versionID=#qDraft.objectid#" linktext="show #qDraft.status# version" /></div>
-								</cfif>
-							</cfif>	
-						</cfoutput>
-					</grid:div>
-				
-			</cfcase>
-			</cfswitch>
+	<!--- CONTENT ITEM STATUS --->
+	<cfif structKeyExists(stobj,"status")>			
 		
-		</cfif>	
-	</td>
-</tr>
-</table>
+		<cfswitch expression="#stobj.status#">
+		<cfcase value="draft">
+			
+			<cfoutput>
+				<div class="draft">
+					<div>DRAFT</div>
+					<div style="font-size:11px;">last updated <span style="cursor:pointer;" title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</span></div>
+					
+					<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
+						<div style="font-size:11px;"><skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="typename=#stObj.typename#&versionID=#stobj.versionID#" linktext="show approved version" /></div>
+					</cfif>
+				</div>
+			</cfoutput>
+			
+		</cfcase>
+		<cfcase value="pending">
+			<cfoutput>
+			<div class="pending">
+				<div>PENDING</div>
+				<div style="font-size:11px;">awaiting approval since <span style="cursor:pointer;" title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</span></div>
+				
+				<cfif structKeyExists(stobj, "versionID") AND len(stobj.versionID)>
+					<div style="font-size:11px;"><skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="typename=#stObj.typename#&versionID=#stobj.versionID#" linktext="show approved version" /></div>
+				</cfif>
+			</div>
+			</cfoutput>
+		</cfcase>
+		<cfcase value="approved">
+			<cfoutput>
+			<div class="approved">
+				<div>APPROVED</div> 
+				<div style="font-size:11px;">last approved <span style="cursor:pointer;" title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</span></div>
+				
+				<cfif structKeyExists(stobj,"versionID") AND structKeyExists(stobj,"status") AND stobj.status EQ "approved">
+					<cfset qDraft = application.factory.oVersioning.checkIsDraft(objectid=stobj.objectid,type=stobj.typename)>
+					<cfif qDraft.recordcount>
+						<div style="font-size:11px;"><skin:buildLink href="#application.url.webtop#/edittabOverview.cfm" urlParameters="typename=#stObj.typename#&versionID=#qDraft.objectid#" linktext="show #qDraft.status# version" /></div>
+					</cfif>
+				</cfif>
+				</div>
+			</cfoutput>
+		</cfcase>
+		</cfswitch>
+	
+	</cfif>	
 </cfoutput>
 
 			

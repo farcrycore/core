@@ -416,11 +416,11 @@
 						<td style="padding:5px;vertical-align:top;border:1px solid ##DFDFDF;border-width:1px 0px 1px 1px;">
 							<input type="radio" name="#arguments.fieldname#typename" id="#arguments.fieldname#typename" value="#qTypes.typename#" />
 						</td>
-						<td style="padding:5px;vertical-align:top;border:1px solid ##DFDFDF;border-width:1px 0px 1px 0px;">
+						<td style="padding:8px;vertical-align:top;border:1px solid ##DFDFDF;border-width:1px 0px 1px 0px;">
 							<cfif len(application.stCOAPI[qTypes.typename].icon)>
-								<i class="icon-#application.stCOAPI[qTypes.typename].icon# icon-large"></i>
+								<i class="#application.stCOAPI[qTypes.typename].icon# icon-3x"></i>
 							<cfelse>
-								<i class="icon-file icon-large"></i>
+								<i class="icon-file icon-3x"></i>
 							</cfif>
 						</td>
 						<td style="vertical-align:top;border:1px solid ##DFDFDF;border-width:1px 1px 1px 0px;">

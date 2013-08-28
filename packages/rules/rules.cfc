@@ -1,4 +1,4 @@
-<!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
+<!--- @@Copyright: Daemon Pty Limited 2002-2013, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
 
@@ -15,36 +15,24 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/packages/rules/rules.cfc,v 1.15 2005/08/09 03:54:40 geoff Exp $
-$Author: geoff $
-$Date: 2005/08/09 03:54:40 $
-$Name: milestone_3-0-1 $
-$Revision: 1.15 $
+<!--- @@Description: Rules Abstract Class --->
 
-|| DESCRIPTION || 
-$Description: Abstract Rules Class $
+<cfcomponent 
+	extends="farcry.core.packages.fourq.fourq" bAbstract="true"
+	displayname="Publishing Rules" 
+	hint="Extend this abstract class to enable a publishing rule."
+	icon="icon-wrench">
 
+	<cfproperty name="objectID" type="uuid" required="true">
+	<cfproperty name="label" type="string" default="">
+	<cfproperty name="datetimelastupdated" displayname="Datetime Lastupdated" type="date" hint="Timestamp for record last modified." required="no" default="" ftType="datetime" ftLabel="Last Updated"> 
 
-|| DEVELOPER ||
-$Developer: Brendan Sisson (brendan@daemon.com.au) $
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
---->
-
-<cfcomponent displayname="Rules Object" bAbstract="true" extends="farcry.core.packages.fourq.fourq" hint="Rules is an abstract class that contains">
-	<cfproperty name="objectID" type="uuid" required="true" />
-	<cfproperty name="label" type="nstring" default="">
-	
-	<cfproperty name="datetimelastupdated" displayname="Datetime lastupdated" type="date" hint="Timestamp for record last modified." required="no" default="" ftType="datetime" ftLabel="Last Updated"> 
-
-
+	<!--- import tag libraries --->
 	<cfimport taglib="/farcry/core/tags/formtools/" prefix="ft">	
 	<cfimport taglib="/farcry/core/tags/wizard/" prefix="wiz">	
 	<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">	
+	<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
+		
 	
 	<cffunction name="getWebskins" returntype="query" access="public" output="false" hint="Returns a query of all available webskins. Search through project first, then any library's that have been included.">
 		<cfargument name="typename" type="string" default="#getTypename()#" hint="Typename of instance." />
@@ -76,8 +64,6 @@ $out:$
 				<cfset arguments.user = 'anonymous' />			
 			</cfif>
 		</cfif>
-		
-		<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
 		
 		<cfif not structKeyExists(arguments.stProperties,"objectid")>
 			<cfset arguments.stProperties.objectid = application.fc.utils.createJavaUUID() />

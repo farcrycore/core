@@ -15,7 +15,11 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<cfcomponent extends="farcry.core.packages.fourq.fourq" bAbstract="true" displayname="Base Content Type" hint="Abstract class. Provides default handlers and system attributes for content object types.  This component should never be instantiated directly -- it should only be inherited.">
+<cfcomponent 
+	extends="farcry.core.packages.fourq.fourq" bAbstract="true" 
+	displayname="Base Content Type" 
+	hint="Abstract class. Provides default handlers and system attributes for content object types.  This component should never be instantiated directly -- it should only be inherited."
+	icon="icon-file-text">
 
 <!--------------------------------------------------------------------
 system attributes
@@ -958,7 +962,7 @@ default handlers
 				<cfoutput>
 					<h1>
 						<cfif len(application.stCOAPI[stobj.typename].icon)>
-							<i class="icon-#application.stCOAPI[stobj.typename].icon# icon-large"></i>
+							<i class="#application.stCOAPI[stobj.typename].icon# icon-large"></i>
 						<cfelse>
 							<i class="icon-file icon-large"></i>
 						</cfif>
@@ -999,7 +1003,7 @@ default handlers
 
 	</cffunction>
 	
-	<cffunction name="copy" access="public" output="true" returntype="void" hint="Default edit handler.">
+	<cffunction name="copy" access="public" output="true" returntype="void" hint="Duplicate the content item with a new objectid.">
 		<cfargument name="ObjectID" required="yes" type="string" default="" />
 		<cfargument name="onExitProcess" required="no" type="any" default="Refresh" />
 		

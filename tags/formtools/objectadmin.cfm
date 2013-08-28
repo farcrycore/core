@@ -1,5 +1,5 @@
 <cfsetting enablecfoutputonly="yes">
-<!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
+<!--- @@Copyright: Daemon Pty Limited 2002-2013, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
 
@@ -15,21 +15,6 @@
 
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
---->
-<!---
-|| VERSION CONTROL ||
-$Header:  $
-$Author: $
-$Date:  $
-$Name:  $
-$Revision: $
-
-|| DESCRIPTION || 
-$Description:  -- $
-
-
-|| DEVELOPER ||
-$Developer: Matthew Bryant (mat@daemon.com.au)$
 --->
 
 <!--- import tag libraries --->
@@ -194,18 +179,14 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 	
 	<cfif len(attributes.title)>
 		<cfoutput>
-		<table class="layout" style="padding:5px;margin-bottom:10px;">
-		<tr>
-			<td style="width:35px;">
-				<cfif len(application.stCOAPI[attributes.typename].icon)>
-					<i class="icon-#application.stCOAPI[attributes.typename].icon# icon-2x"></i>
-				<cfelse>
-					<i class="icon-file icon-2x"></i>
-				</cfif>
-			</td>
-			<td style="vertical-align:center;"><h1><admin:resource key="#attributes.rbkey#@title" var1="#typelabel#">#attributes.title#</admin:resource></h1></td>
-		</tr>
-		</table>			
+		<h1>
+			<cfif len(application.stCOAPI[attributes.typename].icon)>
+				<i class="#application.stCOAPI[attributes.typename].icon#"></i>
+			<cfelse>
+				<i class="icon-file"></i>
+			</cfif>
+			<admin:resource key="#attributes.rbkey#@title" var1="#typelabel#">#attributes.title#</admin:resource>
+		</h1>
 		</cfoutput>
 	</cfif>
 	
@@ -1056,7 +1037,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 									#st.select# 
 									<!--- #st.recordSetRow#			 --->					
 									<cfif structKeyExists(st,"locked") AND st.locked neq 0>
-										<img src='#application.url.farcry#/images/treeImages/customIcons/padlock.gif'>
+										<i class="icon-lock icon-large"></i>
 									</cfif>
 								</td>
 								</cfoutput>

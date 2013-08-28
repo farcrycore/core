@@ -624,6 +624,9 @@ table.farcry-objectadmin td {
 	padding: 0;
 }
 
+.farcry-objectadmin .icon-lock {
+	color: #ff9900;
+}
 
 /* objectadmin columns */
 table.farcry-objectadmin .fc-col-min {

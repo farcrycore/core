@@ -103,7 +103,7 @@
 <tr>
 	<td style="width:50px;">
 		<cfif len(application.stCOAPI[stObj.typename].icon)>
-			<i class="icon-#application.stCOAPI[stObj.typename].icon# icon-large"></i>
+			<i class="#application.stCOAPI[stObj.typename].icon# icon-large"></i>
 		<cfelse>
 			<i class="icon-file icon-large"></i>
 		</cfif>

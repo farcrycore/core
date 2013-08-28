@@ -1,4 +1,4 @@
-<!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
+<!--- @@Copyright: Daemon Pty Limited 2002-2013, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
 
@@ -14,24 +14,6 @@
 
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
---->
-<!---
-|| VERSION CONTROL ||
-$Header:  $
-$Author: $
-$Date:  $
-$Name:  $
-$Revision: $
-
-|| DESCRIPTION || 
-$Description:  -- $
-
-
-|| DEVELOPER ||
-$Developer: Matthew Bryant (mat@daemon.com.au)$
-
-|| ATTRIBUTES ||
-$in: SessionID -- $
 --->
 <cfimport taglib="/farcry/core/tags/core/" prefix="core" >
 <cfimport taglib="/farcry/core/tags/wizard/" prefix="wiz" >
@@ -243,7 +225,7 @@ $in: SessionID -- $
 				</ul>	
 			</div>
 	
-			<h1><i class="icon-#attributes.icon# icon-large"></i>
+			<h1><i class="#attributes.icon# icon-large"></i>
 				<cfif len(attributes.title)>
 					#attributes.title#
 				<cfelse>
