@@ -49,7 +49,7 @@
 		
 		<skin:registerJS 	id="tinymce" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/tiny_mce"
-							lFiles="jquery.tinymce.js" />
+							lFiles="jquery.tinymce.min.js" />
 
 		<skin:registerJS 	id="jquery-validate" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/jquery-validate"
@@ -170,7 +170,7 @@
 							baseHREF="#application.url.webtop#/thirdparty/bootstrap"
 							lFiles="bootstrap.min.css"
 							bCombined="false" />
-							
+		
 		<skin:registerCSS	id="fc-uniform"
 							baseHREF="#application.url.webtop#"
 							lFiles="/thirdparty/uni-form/css/uni-form-generic.css,/thirdparty/uni-form/css/uni-form.css"

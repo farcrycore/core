@@ -54,21 +54,36 @@
 		}
 	};
 	
+	function getFormData(){
+		var result = {};
+
+		$j('input,select,textarea').each(function(){
+			var self = $j(this), name = self.attr("name");
+
+			result[name] = result[name] || [];
+
+			if ((!(self.is("[type=radio]") || self.is("[type=radio]")) || self.is(":checked")) && self.val()!=="")
+				result[name].push(self.val());
+		});
+
+		for (var k in result)
+			result[k] = result[k].join();
+
+		return result;
+	};
+
 	function getValueData(base,prefix){
+		var formdata = getFormData();
+
 		base = base || {};
 		var property = "";
 		
 		// get the post values
 		for (var property in base) {
-			var inputs = $j('input[name='+prefix+property+'],select[name='+prefix+property+'],textarea[name='+prefix+property+']');
-			if (inputs.size()) {
-				base[property] = [];
-				inputs.each(function(){ 
-					var self = $j(this);
-					if ((!(self.is("[type=radio]") || self.is("[type=radio]")) || self.is(":checked")) && self.val()!=="") base[property].push(self.val());
-				});
-				base[property] = base[property].join();
-			}
+			if (formdata[prefix+property])
+				base[property] = formdata[prefix+property];
+			else
+				base[property] = "";
 		}
 		
 		return base;

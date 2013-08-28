@@ -18,7 +18,7 @@
 	
 	<cfproperty name="ftLabelAlignment" required="false" default="inline" options="inline,block" hint="Used by FarCry Form Layouts for positioning of labels. inline or block." />
 	<cfproperty name="ftWidth" required="false" default="100%" hint="Width required for the rich text editor." />
-	<cfproperty name="ftHeight" required="false" default="280px" hint="Height required for the rich text editor." />
+	<cfproperty name="ftHeight" required="false" default="380px" hint="Height required for the rich text editor." />
 	<cfproperty name="ftContentCSS" required="false" default="" hint="This option enables you to specify a custom CSS file that extends the theme content CSS. This CSS file is the one used within the editor (the editable area). This option can also be a comma separated list of URLs." />
 	<cfproperty name="ftRichtextConfig" required="false" default="" hint="A custom method to use to load the richtext config." />
 	
@@ -42,6 +42,9 @@
 		<cfset var external_image_list_url = "#application.url.webtop#/facade/TinyMCEImageList.cfm?relatedObjectid=#arguments.stObject.ObjectID#&relatedTypename=#arguments.typename#&ftImageListFilterTypename=#arguments.stMetadata.ftImageListFilterTypename#&ftImageListFilterProperty=#arguments.stMetadata.ftImageListFilterProperty#&ajaxMode=1" />
 		<cfset var external_link_list_url = "#application.url.webtop#/facade/TinyMCELinkList.cfm?relatedObjectid=#arguments.stObject.ObjectID#&relatedTypename=#arguments.typename#&ftLinkListFilterTypenames=#arguments.stMetadata.ftLinkListFilterTypenames#&ajaxMode=1" />
 		<cfset var oType = application.fapi.getContentType(arguments.typename) />
+		<cfset var aRelatedTypes = arraynew(1) />
+		<cfset var stType = structnew() />
+		<cfset var thistype = "" />
 		
 		<!--- IMPORT TAG LIBRARIES --->
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
@@ -55,10 +58,29 @@
 			<cfset configJS = getConfig(stMetadata="#arguments.stMetadata#") />
 		</cfif>	
 		
-			
+		<cfif not len(arguments.stMetadata.ftContentCSS)>
+			<cfset arguments.stMetadata.ftContentCSS = "#application.url.webtop#/thirdparty/bootstrap/bootstrap-tinymce.css" />
+		</cfif>
+
 		<skin:loadJS id="fc-jquery" />
 		<skin:loadJS id="tinymce" />
 		
+		<cfif len(arguments.stMetadata.ftTemplateTypeList)>
+			<cfloop list="#arguments.stMetadata.ftTemplateTypeList#" index="thistype">
+				<cfset stType = structnew() />
+				<cfset stType["id"] = thistype />
+				<cfset stType["label"] = thistype />
+
+				<cfif isdefined("application.stCOAPI.#thistype#.displayname")>
+					<cfset stType["label"] = application.stCOAPI[thistype].displayname />
+				</cfif>
+
+				<cfset arrayappend(aRelatedTypes,stType) />
+			</cfloop>
+		</cfif>
+
+
+
 		<cfsavecontent variable="html">
 			
 			<cfoutput>
@@ -66,16 +88,16 @@
 				$j(function() {
 					$j('###arguments.fieldname#').tinymce({
 
-					script_url : '#application.url.webtop#/thirdparty/tiny_mce/tiny_mce.js',
+					script_url : '#application.url.webtop#/thirdparty/tiny_mce/tinymce.min.js',
 
-					farcryobjectid: "#arguments.stObject.ObjectID#",
-					farcrytypename: "#arguments.stobject.Typename#",
-					farcryrichtextfield: "#arguments.stMetadata.name#",
+					farcryrelatedtypes: #serializeJSON(aRelatedTypes)#,
+					optionsURL: "#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=false)#&action=templateoptions",
+					previewURL: "#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=false)#&action=templatehtml",
 					<cfif len(configJS)>
 						#configJS#,
 					</cfif>
-					external_image_list_url : "#external_image_list_url#",
-					external_link_list_url : "#external_link_list_url#"
+					image_list : "#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=false)#&action=imageoptions&relatedTypename=#arguments.stMetadata.ftImageListFilterTypename#&relatedProperty=#arguments.stMetadata.ftImageListFilterProperty#",
+					link_list : "#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=false)#&action=linkoptions&relatedTypename=#arguments.stMetadata.ftLinkListFilterTypenames#"
 					<cfif len(arguments.stMetadata.ftWidth)>
 						,width : "#arguments.stMetadata.ftWidth#"
 					</cfif>
@@ -94,9 +116,9 @@
 				.richtext .formHint {float:left;}
 				</style>
 
-				<br style="clear:both;" #application.fapi.getDocType().tagEnding#>
+				<br style="clear:both;">
 				<textarea  name="#arguments.fieldname#" id="#arguments.fieldname#" class="textareaInput #arguments.stMetadata.ftClass#" style="width: 100%; #arguments.stMetadata.ftStyle#">#arguments.stMetadata.value#</textarea>
-				<br style="clear:both;" #application.fapi.getDocType().tagEnding#>
+				<br style="clear:both;">
 			</cfoutput>
 		</cfsavecontent>
 		
@@ -141,6 +163,319 @@
 		
 	</cffunction>
 
+
+	<cffunction name="ajax" output="false" returntype="string" hint="Response to ajax requests for this formtool">
+		<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
+		<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
+		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
+		<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
+		
+		<cfset var stLocals = structnew() />
+		<cfset var stResult = structnew() />
+		<cfset var stObj = getLatestObject(arguments.stObject) />
+
+		<cfif url.action eq "templateoptions">
+			<cfparam name="url.relatedtypename" />
+
+			<cfreturn serializeJSON(getTemplateOptions(
+				stObject=stObj,
+				stMetadata=arguments.stMetadata,
+				relatedtypename=url.relatedtypename
+			)) />
+		</cfif>
+
+		<cfif url.action eq "templatehtml">
+			<cfparam name="url.relatedtypename" />
+			<cfparam name="url.relatedobjectid" />
+			<cfparam name="url.relatedwebskin" />
+
+			<cfreturn application.fapi.getContentType(url.relatedtypename).getView(
+				typename=url.relatedtypename,
+				objectid=url.relatedobjectid, 
+				template=url.relatedwebskin
+			) />	
+		</cfif>
+
+		<cfif url.action eq "imageoptions">
+			<cfparam name="url.relatedtypename" />
+			<cfparam name="url.relatedproperty" />
+
+			<cfreturn serializeJSON(getImageOptions(
+				stObject=stObj,
+				stMetadata=arguments.stMetadata,
+				relatedtypename=url.relatedtypename,
+				relatedproperty=url.relatedproperty
+			)) />
+		</cfif>
+
+		<cfif url.action eq "linkoptions">
+			<cfparam name="url.relatedtypename" />
+
+			<cfreturn serializeJSON(getLinkOptions(
+				stObject=stObj,
+				stMetadata=arguments.stMetadata,
+				relatedtypename=url.relatedtypename
+			)) />
+		</cfif>
+	</cffunction>
+
+	<cffunction name="getLatestObject" access="public" output="false" returntype="struct">
+		<cfargument name="stObject" type="struct" required="true" />
+
+		<cfset var stNew = duplicate(arguments.stObject) />
+		<cfset var stWizard = structnew() />
+		<cfset var stFormFieldName = "" />
+		<cfset var stProps = application.stCOAPI[stNew.typename].stProps />
+
+		<cfset structappend(stNew,application.fapi.getContentObject(typename=stNew.typename,objectid=stNew.objectid),false) />
+
+		<!--- Get wizard data if exists --->
+		<cfif structKeyExists(form,"wizardid") and len(form.wizardid)>
+			<cfset form.wizardid = listFirst(form.wizardid)> <!--- got the wizard id twice sometimes --->
+			<cfset stWizard = application.fapi.getContentType("dmWizard").Read(wizardID=form.wizardid)>
+			<cfset structappend(stNew,stWizard.Data[arguments.stObject.objectid],true) />
+		</cfif>
+
+		<!--- Overwrite data if user currently changing some relations - Hidden fields passed in via ajax --->
+		<cfloop list="#structKeyList(stProps)#" index="fieldname">
+			<cfset fcFormFieldName = "fc#replace(stNew.objectid,"-","","all")##fieldname#">
+			<cfif structKeyExists(form,fcFormFieldName)>
+				<cfif stProps[fieldname].metadata.type EQ "array">
+					<cfset stNew[fieldname] = listToArray(form[fcFormFieldName])>
+				<cfelse>
+					<!--- don't replace objectid --->
+					<cfif fieldname NEQ 'ObjectID'>
+						<cfset stNew[fieldname] = form[fcFormFieldName]>
+					</cfif>
+				</cfif>
+			</cfif>
+		</cfloop> 
+
+		<cfreturn stNew />
+	</cffunction>
+
+	<cffunction name="getTemplateOptions" access="public" output="false" returntype="struct">
+		<cfargument name="stObject" type="struct" required="true" />
+		<cfargument name="stMetadata" type="struct" required="true" />
+		<cfargument name="relatedtypename" type="string" required="true" />
+
+		<cfset var stProps = application.stcoapi[arguments.stObject.typename].stprops />
+		<cfset var lRelated = "" />
+		<cfset var fieldname = "" />
+		<cfset var templateWebskinPrefix = "" />
+		<cfset var stResult = structnew() />
+		<cfset var qRelated = "" />
+		<cfset var qWebskins = "" />
+		<cfset var stItem = structnew() />
+		
+		<cfparam name="arguments.stMetadata.ftTemplateTypeList" default="" />
+		<cfparam name="arguments.stMetadata.ftTemplateSnippetWebskinPrefix" default="insertSnippet" />
+		<cfparam name="arguments.stMetadata.ftTemplateWebskinPrefixList" default="insertHTML" />
+		
+		<cfif listfind(stProps[arguments.stMetadata.name].metadata.ftTemplateTypeList,url.relatedtypename) LTE listLen(arguments.stMetadata.ftTemplateWebskinPrefixList)>
+			<cfset templateWebskinPrefix = listgetat(arguments.stMetadata.ftTemplateWebskinPrefixList,listfind(arguments.stMetadata.ftTemplateTypeList,arguments.relatedtypename)) />
+		<cfelse>
+			<cfset templateWebskinPrefix = listLast(arguments.stMetadata.ftTemplateWebskinPrefixList) />
+		</cfif>
+		
+		<cfloop collection="#stProps#" item="fieldname">
+			<cfif (stProps[fieldname].metadata.type EQ "array" OR stProps[fieldname].metadata.type EQ "UUID" AND structKeyExists(stProps[fieldname].metadata, "ftJoin"))
+				AND listContainsNoCase(stProps[fieldname].metadata.ftJoin,arguments.relatedtypename)>
+				
+				<cfif stProps[fieldname].metadata.type EQ "array" and arraylen(arguments.stObject[fieldname])>
+					<cfset lRelated = listAppend(lRelated, arrayToList(arguments.stObject[fieldname])) />
+				<cfelseif stProps[fieldname].metadata.type EQ "UUID" and len(arguments.stObject[fieldname])>
+					<cfset lRelated = listAppend(lRelated, arguments.stObject[fieldname]) />
+				</cfif>
+			</cfif>
+		</cfloop>
+		
+
+		<!--- items --->
+		<cfset stResult["items"] = arraynew(1) />
+		
+		<cfquery datasource="#application.dsn#" name="qRelated">
+			select 	* 
+			from 	#arguments.relatedtypename#
+			where 	objectid IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#lRelated#" />)
+		</cfquery>
+		
+		<cfloop query="qRelated">
+			<cfset stItem = structnew() />
+			<cfset stItem["value"] = qRelated.objectid />
+			<cfset stItem["text"] = qRelated.label />
+			<cfset arrayappend(stResult["items"],stItem) />
+		</cfloop>
+
+
+		<!--- webskins --->
+		<cfset stResult["webskins"] = arraynew(1) />
+		<cfset qWebskins = application.fapi.getContentType(arguments.relatedtypename).getWebskins(
+			typename=arguments.relatedtypename, 
+			prefix=templateWebskinPrefix
+		) />
+		
+		<cfloop query="qWebskins">
+			<cfset stItem = structnew() />
+			<cfset stItem["value"] = listfirst(qWebskins.name,".") />
+			<cfset stItem["text"] = qWebskins.displayname />
+			<cfset arrayappend(stResult["webskins"],stItem) />
+		</cfloop>
+
+
+		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="getImageOptions" access="public" output="false" returntype="struct">
+		<cfargument name="stObject" typename="struct" required="true" />
+		<cfargument name="stMetadata" typename="struct" required="true" />
+		<cfargument name="relatedTypename" typename="string" required="true" />
+		<cfargument name="relatedProperty" typename="string" required="true" />
+
+		<cfset var stResult = structnew() />
+		<cfset var qImages = querynew("") />
+		<cfset var stProps = application.stCOAPI[arguments.stObject.typename].stProps />
+		<cfset var lRelated = "" />
+		<cfset var fieldname = "" />
+		<cfset var stImage = structnew() />
+
+		<cfsetting showdebugoutput="false" />
+
+		<cfset stResult["images"] = arraynew() />
+
+		<cfloop collection="#stProps#" item="fieldname">
+			<cfif (
+					stProps[fieldname].metadata.type EQ "array" 
+					OR stProps[fieldname].metadata.type EQ "UUID" 
+				)
+				AND structKeyExists(stProps[fieldname].metadata, "ftJoin")
+				AND listfindnocase(stProps[fieldname].metadata.ftJoin,arguments.relatedTypename)>
+				
+				<cfif stProps[fieldname].metadata.type EQ "array" AND arraylen(arguments.stObject[fieldname])>
+
+					<cfset lRelated = listAppend(lRelated, arrayToList(arguments.stObject[fieldname])) />
+					
+				<cfelseif stProps[fieldname].metadata.type EQ "UUID" AND len(arguments.stObject[fieldname])>
+					
+					<cfset lRelated = listAppend(lRelated, arguments.stObject[fieldname]) />
+					
+				</cfif>
+			</cfif>
+		</cfloop>
+
+		<cfif len(lRelated)>
+			<cfset qImages = application.fapi.getContentObjects(
+				typename=arguments.relatedTypename,
+				status="draft,pending,approved",
+				lProperties="objectid,label,#arguments.relatedProperty# as image",
+				objectid_in=lRelated
+			) />
+		</cfif>
+
+		<cfloop query="qImages">
+			<cfset stImage = structnew() />
+			<cfset stImage["title"] = qImages.label />
+			<cfset stImage["url"] = application.fc.lib.cdn.ioGetFileLocation(
+				location="images",
+				file=qImages.image,
+				admin=true
+			).path />
+			<cfset arrayappend(stResult["images"],stImage) />
+		</cfloop>
+
+		<cfreturn stResult />
+	</cffunction>
+
+	<cffunction name="getLinkOptions" access="public" output="false" returntype="struct">
+		<cfargument name="stObject" typename="struct" required="true" />
+		<cfargument name="stMetadata" typename="struct" required="true" />
+		<cfargument name="relatedTypename" typename="string" required="true" />
+		
+		<cfset var stResult = structnew() />
+		<cfset var qRelated = queryNew("") />
+		<cfset var stProps = application.stCOAPI[arguments.stObject.typename].stProps />
+		<cfset var qSiteMap = createObject("component","#application.packagepath#.farcry.tree").getDescendants(
+			objectid=application.fapi.getNavID('home'), 
+			bIncludeSelf=1
+		) />
+		<cfset var stLinks = structnew() />
+		<cfset var stLink = structnew() />
+		<cfset var lRelated = "" />
+		<cfset var fieldname = "" />
+		<cfset var thistype = "" />
+		<cfset var qRelated = "" />
+		
+		<cfsetting showdebugoutput="false" />
+
+		<cfset stResult["links"] = arraynew(1) />
+
+		<cfif qSiteMap.recordCount>
+			<cfset stLinks = structnew() />
+			<cfset stLinks["text"] = "Site Tree" />
+			<cfset stLinks["value"] = " " />
+			<cfset stLinks["menu"] = arraynew(1) />
+
+			<cfloop query="qSiteMap">
+				<cfset stLink = structnew() />
+				<cfset stLink["text"] = RepeatString('-', qSiteMap.nLevel) & " " & qSiteMap.objectname />
+				<cfset stLink["value"] = application.fapi.getLink(objectid=qSiteMap.objectid) />
+				<cfset arrayappend(stLinks["menu"],stLink) />
+			</cfloop>
+
+			<cfset arrayappend(stResult["links"],stLinks) />
+		</cfif>
+
+		<!--- related content --->
+		<cfset lRelated = "" />
+		<cfloop list="#structKeyList(stProps)#" index="fieldname">
+			<cfif (
+					stProps[fieldname].metadata.type EQ "array" 
+					OR stProps[fieldname].metadata.type EQ "UUID" 
+				)
+				AND structKeyExists(stProps[fieldname].metadata, "ftJoin")>
+				
+				<cfif stProps[fieldname].metadata.type EQ "array" AND arraylen(stObject[fieldname])>
+
+					<cfset lRelated = listAppend(lRelated, arrayToList(stObject[fieldname])) />
+					
+				<cfelseif stProps[fieldname].metadata.type EQ "UUID" AND len(stObject[fieldname])>
+					
+					<cfset lRelated = listAppend(lRelated, stObject[fieldname]) />
+					
+				</cfif>
+			</cfif>
+		</cfloop>
+
+		<cfif len(lRelated)>
+			<cfloop list="#arguments.relatedTypename#" index="thistype">
+				<cfset qRelated = application.fapi.getContentObjects(
+					typename=thistype,
+					status="draft,pending,approved",
+					lProperties="objectid,label",
+					objectid_in=lRelated
+				) />
+				
+				<cfif qRelated.recordcount>
+					<cfset stLinks = structnew() />
+					<cfset stLinks["text"] = application.stCOAPI[thistype].displayname />
+					<cfset stLinks["value"] = " " />
+					<cfset stLinks["menu"] = arraynew(1) />
+
+					<cfloop query="qRelated">
+						<cfset stLink = structnew() />
+						<cfset stLink["text"] = qRelated.label />
+						<cfset stLink["value"] = application.fapi.getLink(objectid=qRelated.objectid) />
+						<cfset arrayappend(stLinks["menu"],stLink) />
+					</cfloop>
+
+					<cfset arrayappend(stResult["links"],stLinks) />
+				</cfif>
+			</cfloop>
+		</cfif>
+
+		<cfreturn stResult />
+	</cffunction>
+
 	<cffunction name="getConfig" access="public" output="false" returntype="string" hint="This will return the configuration that will be used by the richtext field">
 		<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 		
@@ -148,18 +483,10 @@
 		
 		<cfsavecontent variable="configJS">
 			<cfoutput>			
-				theme : "advanced",
-				plugins : "safari,farcrycontenttemplates,spellchecker,pagebreak,style,layer,table,save,advhr,advimage,advlink,emotions,iespell,inlinepopups,insertdatetime,preview,media,searchreplace,print,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,xhtmlxtras,template",
-				theme_advanced_buttons2_add : "separator,spellchecker,farcrycontenttemplates",
-				theme_advanced_buttons3_add_before : "tablecontrols,separator",			
-				theme_advanced_buttons3_add : "separator,fullscreen,pasteword,pastetext",				
-				theme_advanced_toolbar_location : "top",
-				theme_advanced_toolbar_align : "left",
-				theme_advanced_path_location : "bottom",
-				theme_advanced_resize_horizontal : true,
-				theme_advanced_resizing : true,
-				theme_advanced_resizing_use_cookie : false,
+				plugins : "farcrycontenttemplates,layer,table,hr,image_farcry,link_farcry,insertdatetime,media,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,anchor,charmap,code,textcolor",
 				extended_valid_elements: "code,colgroup,col,thead,tfoot,tbody,abbr,blockquote,cite,button,textarea[name|class|cols|rows],script[type],img[style|class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name]",
+				menubar : false,
+				toolbar : "undo redo | cut copy paste pastetext | styleselect | bold italic underline | bullist numlist link image table farcrycontenttemplates | code fullpage",
 				remove_linebreaks : false,
 				forced_root_block : 'p',
 				relative_urls : false
