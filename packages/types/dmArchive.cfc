@@ -1,4 +1,4 @@
-<!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
+<!--- @@Copyright: Daemon Pty Limited 2002-2013, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
 
@@ -15,27 +15,13 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/packages/types/dmArchive.cfc,v 1.10 2005/08/09 03:54:40 geoff Exp $
-$Author: geoff $
-$Date: 2005/08/09 03:54:40 $
-$Name: milestone_3-0-1 $
-$Revision: 1.10 $
-
-|| DESCRIPTION || 
-$Description: dmArchive type $
-
-
-|| DEVELOPER ||
-$Developer: Brendan Sisson (brendan@daemon.com.au) $
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
---->
-
-<cfcomponent extends="types" displayname="dmArchive handler" hint="archive objects" bRefObjects="false" bAudit="false" bArchive="false" bSystem="true">
+<cfcomponent 
+	displayname="Content Archive" 
+	extends="types" 
+	hint="Archive: universal container for archived and deleted content items." 
+	bRefObjects="false" bAudit="false" bArchive="false" bSystem="true"
+	icon="icon-archive">
+	
 	<!------------------------------------------------------------------------
 	type properties
 	------------------------------------------------------------------------->

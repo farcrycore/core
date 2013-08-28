@@ -1,4 +1,4 @@
-<!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
+<!--- @@Copyright: Daemon Pty Limited 2002-2013, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
 
@@ -18,7 +18,8 @@
 <cfcomponent extends="types" displayname="Include" 
 	hint="Include miscellaneous CFML templates or content type webskins." 
 	bUseInTree="true" bFriendly="true"
-	bObjectBroker="true">
+	bObjectBroker="true"
+	icon="icon-signin">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->

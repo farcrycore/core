@@ -1,4 +1,4 @@
-<!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
+<!--- @@Copyright: Daemon Pty Limited 2002-2013, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
 
@@ -15,7 +15,12 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<cfcomponent extends="types" displayName="User Profile" hint="Every user in the system has their own profile from staff to community members. You can create new users, edit existing ones or change the group they belong to.">
+<cfcomponent 
+	displayName="User Profile" 
+	extends="types" 
+	hint="Every user in the system has their own profile from staff to community members. You can create new users, edit existing ones or change the group they belong to."
+	icon="icon-user">
+
 <!------------------------------
 TYPE PROPERTIES
 -------------------------------->

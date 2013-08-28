@@ -1,4 +1,4 @@
-<!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
+<!--- @@Copyright: Daemon Pty Limited 2002-2013, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
 
@@ -15,25 +15,12 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/packages/farcry/category.cfc,v 1.46.2.2 2006/02/02 00:34:33 geoff Exp $
-$Author: geoff $
-$Date: 2006/02/02 00:34:33 $
-$Name: milestone_3-0-1 $
-$Revision: 1.46.2.2 $
-
-|| DESCRIPTION || 
-$Description: Set of functions to perform metadata characterisation $
-$TODO: refactor this component 20050614GB
-		- possibly should extend tree.cfc
-		- method calls need to be better thought out (some are ridiculous)
-$
-|| DEVELOPER ||
-$Developer: Paul Harrison (paul@daemon.com.au) $
---->
-
-<cfcomponent displayname="category" extends="types" hint="Set of functions to perform metadata characterisation" bAbstract="true" bDocument="true" scopelocation="application.factory.oCategory">
+<cfcomponent 
+	displayname="Category" 
+	extends="types" bAbstract="true" 
+	hint="Abstract class defining categories. Set of functions to perform metadata characterisation" 
+	bDocument="true" scopelocation="application.factory.oCategory"
+	icon="icon-tags">
 	
 	<cfproperty ftseq="1" ftfieldset="General Details" name="categoryLabel" type="string" required="true" default="(incomplete)" hint="Label used in nested tree table." ftLabel="Label" bLabel="true" />
 	<cfproperty ftseq="2" ftfieldset="General Details" name="alias" type="string" hint="Alias used for application.catid" ftLabel="Alias" />

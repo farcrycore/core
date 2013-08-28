@@ -1,4 +1,4 @@
-<!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
+<!--- @@Copyright: Daemon Pty Limited 2002-2013, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
 
@@ -15,7 +15,13 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<cfcomponent displayname="Webfeed" hint="Generate web feeds based on your content type. Feeds can be filtered by category. RSS, Atom and iTunes feeds are supported." extends="types" output="false" icon="rss" bFriendly="true" bSystem="true">
+<cfcomponent displayname="Webfeed" 
+	extends="types" output="false" 
+	hint="DEPRECATED: Use a type webskin instead." 
+	bFriendly="true" bSystem="true"
+	bdeprecated="true"
+	icon="icon-ban-circle">
+
 	<cfproperty ftSeq="1" ftWizardStep="General" ftFieldset="Feed" name="title" type="string" default="" hint="The name of the feed" ftLabel="Title" ftType="string" ftValidation="required" />
 	<cfproperty ftSeq="2" ftWizardStep="General" ftFieldset="Feed" name="subtitle" type="string" default="" hint="" ftLabel="Subtitle" ftType="string" ftHint="Displays best if it is only a few words long" />
 	<cfproperty ftSeq="3" ftWizardStep="General" ftFieldset="Feed" name="directory" type="string" default="" hint="The directory the scheduled job should put the files" ftLabel="XML directory" ftType="string" ftHint="Path from the web root where xml files (rss.xml,atom.xml,itunes.xml) should be stored. Defaults to /feeds/##title-with-dashes##" />

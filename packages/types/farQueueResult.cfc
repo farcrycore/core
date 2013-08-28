@@ -4,7 +4,8 @@
 	bObjectBroker="false"
 	bFriendly="false" 
 	bAudit="false"
-	bSystem="true">
+	bSystem="true"
+	icon="icon-cogs">
 	
 	<cfproperty name="taskID" type="string" required="false" 
 		ftSeq="1" ftWizardStep="Task Result" ftFieldset="Task Result" ftLabel="Task" 

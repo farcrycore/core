@@ -1,4 +1,4 @@
-<!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
+<!--- @@Copyright: Daemon Pty Limited 2002-2013, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
 
@@ -18,7 +18,8 @@
 <cfcomponent 
 	extends="types" 
 	displayname="Image" hint="A global image library that can be referenced from other content types. All images have a source image and an automatically generated standard and thumbnail size image for use within your content."
-	bBulkUpload="true">
+	bBulkUpload="true"
+	icon="icon-picture">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->

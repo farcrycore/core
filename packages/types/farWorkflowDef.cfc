@@ -1,4 +1,11 @@
-<cfcomponent displayname="Farcry Task Definition" hint="Workflow definitions are used as template to create workflow instances" extends="types" output="false" description="Acts as a template for the creation of workflow instances" fuAlias="fc-workflow-def" bSystem="true">
+<cfcomponent 
+	displayname="Farcry Task Definition" 
+	extends="types" output="false"
+	hint="Workflow definitions are used as template to create workflow instances" 
+	description="Acts as a template for the creation of workflow instances" 
+	fuAlias="fc-workflow-def" bSystem="true"
+	icon="icon-cogs">
+
 	<cfproperty ftSeq="1" ftFieldset="" name="title" type="string" default="" hint="Title of workflow definition" ftLabel="Title" ftType="string" />
 	<cfproperty ftSeq="2" ftFieldset="" name="description" type="longchar" default="" hint="Description of workflow definition" ftLabel="Description" />
 	<cfproperty ftSeq="3" ftFieldset="" name="aTaskDefs" type="array" default="" hint="An array of task definitions. These are the default tasks created for a workflow on start" ftLabel="Task Definitions" ftType="array" ftJoin="farTaskDef" ftAllowLibraryEdit="true" />

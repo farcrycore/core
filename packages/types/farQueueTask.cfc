@@ -4,7 +4,8 @@
 	bObjectBroker="false"
 	bFriendly="false" 
 	bAudit="false"
-	bSystem="true">
+	bSystem="true"
+	icon="icon-cogs">
 	
 	<cfproperty name="objectid" ftLabel="Task ID" 
 		ftDisplayMethod="ftDisplayUUID" />

@@ -1,4 +1,10 @@
-<cfcomponent bAbstract="true" displayname="Base Form Component" hint="Abstract class. Provides default handlers and defines structure for a form." extends="farcry.core.packages.types.types" bObjectBroker="0">
+<cfcomponent 
+	displayname="Base Form Component" 
+	extends="farcry.core.packages.types.types" bAbstract="true" 
+	hint="Abstract class. Provides default handlers and defines structure for a form." 
+	bObjectBroker="false"
+	icon="icon-code">
+
 	<cfproperty name="objectid" type="uuid" ftDefault="application.fc.utils.createJavaUUID()" ftDefaultType="evaluate" />
 
 	<!--- 

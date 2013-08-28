@@ -1,4 +1,4 @@
-<!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
+<!--- @@Copyright: Daemon Pty Limited 2002-2013, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
 
@@ -15,7 +15,13 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<cfcomponent displayname="Role" extends="types" output="false" hint="Groups can be assigned to any number of Roles.  Roles in turn are collections of permissions that determine what priveleges a specific group of users has within the system." bsystem="true" bArchive="true">
+<cfcomponent 
+	displayname="Role" 
+	extends="types" output="false" 
+	hint="Groups can be assigned to any number of Roles.  Roles in turn are collections of permissions that determine what priveleges a specific group of users has within the system." 
+	bsystem="true" bArchive="true"
+	icon="icon-group">
+
 <!---------------------------------------------- 
 type properties
 ----------------------------------------------->
