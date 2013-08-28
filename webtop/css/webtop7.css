@@ -993,6 +993,16 @@ body .uniForm .focused {
 	text-align: left;
 	vertical-align: text-top;
 }
+
+.fc-tree-title [class^=icon-] {
+	color: #999;
+	font-size: 18px;
+}
+.fc-tree-title [class^=icon-folder-] {
+	font-size: 16px;
+}
+
+
 tr:hover .fc-tree-title .icon-folder-close,
 tr:hover .fc-tree-title .icon-folder-open {
 	font-size: 18px;
@@ -1015,11 +1025,6 @@ tr:hover .fc-tree-title .icon-folder-open {
 .fc-tree-title:hover .icon-folder-close,
 .fc-tree-title:hover .icon-folder-open {
 	color: #0e65a2;
-}
-.fc-tree-title .icon-file {
-	color: #999;
-	font-size: 18px;
-	margin-left: -1px;
 }
 
 
