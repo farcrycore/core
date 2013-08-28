@@ -492,6 +492,7 @@
 					"click .fc-tree-title" : "clickTitle",
 					"dblclick .fc-tree-title" : "clickTitle",
 					"click .fc-btn-overview" : "clickOverview",
+					"click .fc-btn-edit" : "clickEdit",
 					"click .fc-copyto" : "clickCopyTo",
 					"click .fc-moveto" : "clickMoveTo",
 					"click .fc-zoom" : "clickZoom"
@@ -567,8 +568,6 @@
 					var parentid = clickedRow.data("parentid");
 
 					var overviewURL = "#application.url.webtop#/edittabOverview.cfm?typename=" + typename + "&objectid=" + objectid;
-					var createURL = "#application.url.webtop#/conjuror/evocation.cfm?parenttype=dmNavigation&typename=dmNavigation&objectid=" + objectid;
-					var deleteURL = "#application.url.webtop#/navajo/delete.cfm?objectid=" + objectid;
 
 					// node to reload
 					var reloadid = objectid;
@@ -582,6 +581,33 @@
 							self.reloadTreeBranch(reloadid);
 						} 
 					}); 
+
+					return false;
+				},
+
+				clickEdit: function clickTitle(evt){
+
+					var self = this;
+					var clickedRow = $j(evt.currentTarget).closest("tr");
+
+					var typename = clickedRow.data("typename");
+					var objectid = clickedRow.data("objectid");
+					var nodetype = clickedRow.data("nodetype");
+					var parentid = clickedRow.data("parentid");
+
+					var editURL = clickedRow.data("editurl");
+
+					// node to reload
+					var reloadid = objectid;
+					if (nodetype == "leaf") {
+						reloadid = parentid;
+					}
+
+					$fc.objectAdminAction('Edit Page', editURL, {
+						onHidden: function(){ 
+							self.reloadTreeBranch(reloadid);
+						}
+					});
 
 					return false;
 				},
@@ -1004,7 +1030,7 @@ alert(response.message);
 						colActions = ''
 							+	'<td class="objectadmin-actions"> '
 							+		'<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button> '
-							+		'<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button" onclick="$fc.objectAdminAction(\'Edit Page\', \'' + row["editURL"] + '\', { onHidden: function(){ this.reloadTreeBranch(\'' + reloadTreeBranchObjectID + '\'); } }); return false;"><i class="icon-pencil"></i> Edit</button> '
+							+		'<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button"><i class="icon-pencil"></i> Edit</button> '
 							+		'<a href="' + row["previewURL"] + '" class="btn fc-btn-preview fc-tooltip" title="" data-original-title="Preview"><i class="icon-eye-open only-icon"></i></a> '
 							+		'<div class="btn-group"> '
 							+			'<button data-toggle="dropdown" class="btn dropdown-toggle" type="button"><i class="icon-caret-down only-icon"></i></button> '
@@ -1038,7 +1064,7 @@ alert(response.message);
 					var spacer = '<i class="fc-icon-spacer-' + row["spacers"] + '"></i>';
 
 					var html = 
-						'<tr class="' + row["class"] + '" data-objectid="' + row["objectid"] + '" data-typename="' + row["typename"] + '" data-nlevel="' + row["nlevel"] + '" data-spacers="' + row["spacers"] + '" data-expandable="' + row["expandable"] + '" data-nodetype="' + row["nodetype"] + '" data-parentid="' + row["parentid"] + '"> '
+						'<tr class="' + row["class"] + '" data-objectid="' + row["objectid"] + '" data-typename="' + row["typename"] + '" data-nlevel="' + row["nlevel"] + '" data-spacers="' + row["spacers"] + '" data-expandable="' + row["expandable"] + '" data-nodetype="' + row["nodetype"] + '" data-parentid="' + row["parentid"] + '" data-editurl="' + row["editURL"] + '"> '
 						+	colCheckbox
 						+	colActions
 						+	'<td class="fc-tree-title fc-nowrap">' + spacer + '<a class="fc-treestate-toggle" href="##"><i class="fc-icon-treestate"></i></a>' + row["nodeicon"] + ' <span>' + row["label"] + '</span></td> '
