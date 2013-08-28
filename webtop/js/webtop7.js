@@ -20,6 +20,7 @@ $fc.addFavourite = function(api,url,label){
 			$j(".favourites-menu li:nth-child("+result.position+")").before("<li><a href='"+url+"'>"+label+"</a></li>");
 			$j(".favourites-menu li.none").hide();
 			$j(".favourited").addClass("active");
+			$j(".favourited i").removeClass("icon-star-empty").addClass("icon-star");
 		}
 	});
 };
@@ -29,9 +30,11 @@ $fc.removeFavourite = function(api,url){
 	$j.getJSON(api+(api.indexOf("?")>-1?"&":"?")+"favURL="+encodeURIComponent(url),function(result){
 		if (result.success){
 			$j(".favourites-menu li:nth-child("+result.position+")").remove();
-			if ($j(".favourites-menu > li").size()===1)
+			if ($j(".favourites-menu > li").size()===1){
 				$j(".favourites-menu li.none").show();
+			}
 			$j(".favourited").removeClass("active");
+			$j(".favourited i").removeClass("icon-star").addClass("icon-star-empty");
 		}
 	});
 };
