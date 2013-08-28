@@ -492,7 +492,8 @@
 					"click .fc-btn-edit" : "clickEdit",
 					"click .fc-copyto" : "clickCopyTo",
 					"click .fc-moveto" : "clickMoveTo",
-					"click .fc-zoom" : "clickZoom"
+					"click .fc-zoom" : "clickZoom",
+					"click .fc-changestatus" : "clickStatus"
 				},
 
 
@@ -554,7 +555,7 @@
 				},
 
 
-				clickOverview: function clickTitle(evt){
+				clickOverview: function clickOverview(evt){
 
 					var self = this;
 					var clickedRow = $j(evt.currentTarget).closest("tr");
@@ -582,7 +583,7 @@
 					return false;
 				},
 
-				clickEdit: function clickTitle(evt){
+				clickEdit: function clickEdit(evt){
 
 					var self = this;
 					var clickedRow = $j(evt.currentTarget).closest("tr");
@@ -628,6 +629,7 @@
 					});
 					this.treeDialogView.render();
 
+					return true;
 				},
 
 				clickMoveTo: function SiteTreeView_clickMoveTo(evt){
@@ -647,6 +649,7 @@
 					});
 					this.treeDialogView.render();
 
+					return true;
 				},
 
 
@@ -655,6 +658,50 @@
 					if (objectid.length) {
 						window.location = "#application.fapi.fixURL(removevalues="alias,rootobjectid")#&rootobjectid=" + objectid;
 					}
+					return true;
+				},
+
+
+				clickStatus: function SiteTreeView_clickStatus(evt){
+
+					var objectid = $j(evt.currentTarget).closest("tr").data("objectid");
+					var status = $j(evt.currentTarget).data("status");
+					var versionobjectid = $j(evt.currentTarget).data("versionobjectid") || "";
+
+					var params = "";
+
+					if (status == "approve" || status == "approvebranch") {
+						params = "status=approved";
+						if (versionobjectid.length) {
+							params += "&objectid=" + versionobjectid;
+						}
+						else {
+							params += "&objectid=" + objectid;
+						}
+						if (status == "approvebranch") {
+							params += "&approvebranch=1";
+						}
+					}
+					else if (status == "draft" || status == "draftbranch") {
+						params = "status=draft";
+						if (versionobjectid.length) {
+							params += "&objectid=" + versionobjectid;
+						}
+						else {
+							params += "&objectid=" + objectid;
+						}
+						if (status == "draftbranch") {
+							params += "&approvebranch=1";
+						}
+					}
+					else {
+						console.log("Warning: unsupported status change");
+					}
+
+
+					$fc.objectAdminAction('Status', '#application.url.farcry#/navajo/approve.cfm?' + params);
+
+					return true;
 				},
 
 
@@ -957,8 +1004,11 @@ alert(response.message);
 
 
 					var reloadTreeBranchObjectID = row["objectid"];
+					var versionObjectID = "";
+
 					if (row["nodetype"] == "leaf") {
 						reloadTreeBranchObjectID = row["parentid"];
+						versionObjectID = row["versionobjectid"];
 					}
 
 
@@ -977,10 +1027,10 @@ alert(response.message);
 								'<li><a href="##" class="fc-add" onclick="$fc.objectAdminAction(\'Add Page\', \'' + createURL + '\', { onHidden: function(){ this.reloadTreeBranch(\'' + row["objectid"] + '\'); } }); return false;"><i class="icon-plus icon-fixed-width"></i> Add Page</a></li> '
 							+	'<li><a href="##" class="fc-zoom"><i class="icon-zoom-in icon-fixed-width"></i> Zoom</a></li> '
 							+	'<li class="dropdown-submenu"><a href="##" class=""><i class="icon-fixed-width"></i> Status</a><ul class="dropdown-menu"> '
-							+		'<li><a href="##" class="">Approve</a></li> '
-							+		'<li><a href="##" class="">Approve Branch</a></li> '
-							+		'<li><a href="##" class="">Send To Draft</a></li> '
-							+		'<li><a href="##" class="">Send Branch To Draft</a></li> '
+							+		'<li><a href="##" class="fc-changestatus" data-status="approve">Approve</a></li> '
+							+		'<li><a href="##" class="fc-changestatus" data-status="approvebranch">Approve Branch</a></li> '
+							+		'<li><a href="##" class="fc-changestatus" data-status="draft">Send To Draft</a></li> '
+							+		'<li><a href="##" class="fc-changestatus" data-status="draftbranch">Send Branch To Draft</a></li> '
 							+	'</ul></li> '
 						;
 
@@ -1010,8 +1060,8 @@ alert(response.message);
 					else if (row["nodetype"] == "leaf") {
 						dropdown = 
 								'<li class="dropdown-submenu"><a href="##" class=""><i class="icon-fixed-width"></i> Status</a><ul class="dropdown-menu"> '
-							+		'<li><a href="##" class="">Approve</a></li> '
-							+		'<li><a href="##" class="">Send To Draft</a></li> '
+							+		'<li><a href="##" class="fc-changestatus" data-status="approve">Approve</a></li> '
+							+		'<li><a href="##" class="fc-changestatus" data-status="draft">Send To Draft</a></li> '
 							+	'</ul></li> '
 							+	'<li class="divider"></li> '
 							+	'<li><a href="##" class="fc-sort"><i class="icon-reorder icon-fixed-width"></i> Sort Order...</a></li> '
@@ -1061,7 +1111,7 @@ alert(response.message);
 					var spacer = '<i class="fc-icon-spacer-' + row["spacers"] + '"></i>';
 
 					var html = 
-						'<tr class="' + row["class"] + '" data-objectid="' + row["objectid"] + '" data-typename="' + row["typename"] + '" data-nlevel="' + row["nlevel"] + '" data-spacers="' + row["spacers"] + '" data-expandable="' + row["expandable"] + '" data-nodetype="' + row["nodetype"] + '" data-parentid="' + row["parentid"] + '" data-editurl="' + row["editURL"] + '"> '
+						'<tr class="' + row["class"] + '" data-objectid="' + row["objectid"] + '" data-typename="' + row["typename"] + '" data-nlevel="' + row["nlevel"] + '" data-spacers="' + row["spacers"] + '" data-expandable="' + row["expandable"] + '" data-nodetype="' + row["nodetype"] + '" data-parentid="' + row["parentid"] + '" data-versionobjectid="' + versionObjectID + '" data-editurl="' + row["editURL"] + '"> '
 						+	colCheckbox
 						+	colActions
 						+	'<td class="fc-tree-title fc-nowrap">' + spacer + '<a class="fc-treestate-toggle" href="##"><i class="fc-icon-treestate"></i></a>' + row["nodeicon"] + ' <span>' + row["label"] + '</span></td> '

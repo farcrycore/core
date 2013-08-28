@@ -267,6 +267,7 @@
 			<cfset stLeafNode.bHasVersion = false>
 			<cfparam name="stLeafNode.status" default="">
 			<cfparam name="stLeafNode.locked" default="false">
+			<cfparam name="stLeafNode.versionObjectid" default="">
 
 			<!--- check for a versioned object of this leaf node --->
 			<cfif structKeyExists(stLeafNode, "versionid") AND structKeyExists(stLeafNode, "status")>
@@ -349,6 +350,7 @@
 			<cfset stLeafRow["nlevel"] = qTree.nlevel + 1>
 			<cfset stLeafRow["nodetype"] = "leaf">
 			<cfset stLeafRow["parentid"] = stNav.objectid>
+			<cfset stLeafRow["versionobjectid"] = stLeafNode.versionObjectid>
 			<cfset stLeafRow["label"] = stLeafNode.label>
 			<cfset stLeafRow["datetimelastupdated"] = "#lsDateFormat(lastupdated)# #lsTimeFormat(lastupdated)#">
 			<cfset stLeafRow["prettydatetimelastupdated"] = application.fapi.prettyDate(stLeafNode.datetimelastupdated)>

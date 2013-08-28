@@ -954,7 +954,11 @@
 		
 		$j(document).on("click",".fc-btn, .dropdown-menu>li>a", function(e) {
 			
-			var fcSettings = $j(this).data('fcSettings');	
+			var fcSettings = $j(this).data('fcSettings');
+
+			if (!fcSettings) {
+				return true;
+			}
 			
 			if( fcSettings.CLICK ) {
 				
