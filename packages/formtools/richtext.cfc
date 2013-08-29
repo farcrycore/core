@@ -1,5 +1,5 @@
 <!--- @@description:
-	<p>Displays wyswyg editor with farcry plugins to add images, files, videos etc</p> --->
+	<p>Displays tinyMCE 4.x WYSIWYG editor with farcry plugins to add images, files, videos etc</p> --->
 
 <!--- @@examples:
 	<p>Example from dmHTML in farcry core</p>
