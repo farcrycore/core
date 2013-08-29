@@ -881,6 +881,7 @@ body .uniForm .focused {
 
 .fc-modal {
 	max-width: 1050px;
+	z-index: 66000;
 }
 
 

@@ -352,7 +352,8 @@
 										});
 									</skin:onReady>
 								<cfelseif len(lBulkUploadable)>
-									<ft:button	Type="button" 
+									<ft:button	id="#arguments.fieldname#-bulkupload-btn"
+												Type="button" 
 												priority="secondary"
 												class="small"
 												value="bulkupload" 

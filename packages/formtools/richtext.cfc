@@ -45,6 +45,9 @@
 		<cfset var aRelatedTypes = arraynew(1) />
 		<cfset var stType = structnew() />
 		<cfset var thistype = "" />
+		<cfset var imageUploadField = "" />
+		<cfset var thisfield = "" />
+		<cfset var stProp = structnew() />
 		
 		<!--- IMPORT TAG LIBRARIES --->
 		<cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
@@ -79,7 +82,14 @@
 			</cfloop>
 		</cfif>
 
-
+		<cfif listlen(arguments.stMetadata.ftImageListFilterTypename) eq 1 and application.stCOAPI[arguments.stMetadata.ftImageListFilterTypename].bBulkUpload>
+			<cfloop collection="#application.stCOAPI[arguments.typename].stProps#" item="thisfield">
+				<cfset stProp = application.stCOAPI[arguments.typename].stProps[thisfield].metadata />
+				<cfif stProp.type eq "array" and structkeyexists(stProp,"ftJoin") and listfindnocase(stProp.ftJoin,arguments.stMetadata.ftImageListFilterTypename) and stProp.ftAllowBulkUpload>
+					<cfset imageUploadField = rereplacenocase(arguments.fieldname,"#arguments.stMetadata.name#$",stProp.name) />
+				</cfif>
+			</cfloop>
+		</cfif>
 
 		<cfsavecontent variable="html">
 			
@@ -98,6 +108,10 @@
 					</cfif>
 					image_list : "#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=false)#&action=imageoptions&relatedTypename=#arguments.stMetadata.ftImageListFilterTypename#&relatedProperty=#arguments.stMetadata.ftImageListFilterProperty#",
 					link_list : "#getAjaxURL(typename=arguments.typename,stObject=arguments.stObject,stMetadata=arguments.stMetadata,fieldname=arguments.fieldname,combined=false)#&action=linkoptions&relatedTypename=#arguments.stMetadata.ftLinkListFilterTypenames#"
+					<cfif len(imageUploadField)>
+						, imageUploadField : #serializeJSON(imageUploadField)#
+						, imageUploadType : #serializeJSON(arguments.stMetadata.ftImageListFilterTypename)#
+					</cfif>
 					<cfif len(arguments.stMetadata.ftWidth)>
 						,width : "#arguments.stMetadata.ftWidth#"
 					</cfif>
@@ -486,7 +500,7 @@
 				plugins : "farcrycontenttemplates,layer,table,hr,image_farcry,link_farcry,insertdatetime,media,searchreplace,contextmenu,paste,directionality,fullscreen,noneditable,visualchars,nonbreaking,anchor,charmap,code,textcolor",
 				extended_valid_elements: "code,colgroup,col,thead,tfoot,tbody,abbr,blockquote,cite,button,textarea[name|class|cols|rows],script[type],img[style|class|src|border=0|alt|title|hspace|vspace|width|height|align|onmouseover|onmouseout|name]",
 				menubar : false,
-				toolbar : "undo redo | cut copy paste pastetext | styleselect | bold italic underline | bullist numlist link image table farcrycontenttemplates | code fullpage",
+				toolbar : "undo redo | cut copy paste pastetext | styleselect | bold italic underline | bullist numlist link image table farcryuploadcontent farcrycontenttemplates | code fullpage",
 				remove_linebreaks : false,
 				forced_root_block : 'p',
 				relative_urls : false
