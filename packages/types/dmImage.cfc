@@ -42,8 +42,9 @@ type properties
 	ftCreateFromSourceOption="false" 
 	ftAllowResize="false"
 	ftDestination="/images/dmImage/SourceImage" 
-	ftImageWidth="" 
-	ftImageHeight=""
+	ftImageWidth="2048" 
+	ftImageHeight="2048"
+	ftAutoGenerateType="FitInside"
 	ftbUploadOnly="true"
 	ftBulkUploadTarget="true"
 	ftHint="Upload your high quality source image here."  />
@@ -51,14 +52,14 @@ type properties
 <cfproperty ftSeq="24" ftFieldset="Image Files" name="StandardImage" type="string" hint="The URL location of the optimised uploaded image that should be used for general display" required="no" default="" 
 	ftType="Image" 
 	ftDestination="/images/dmImage/StandardImage" 
-	ftImageWidth="600" 
+	ftImageWidth="700" 
 	ftAutoGenerateType="FitInside" 
 	ftSourceField="SourceImage" 
 	ftCreateFromSourceDefault="true" 
 	ftAllowUpload="true" 
-	ftQuality=".75"
+	ftQuality=".85"
 	ftlabel="Mid Size Image"
-	ftHint="This image is generally used throughout your project as the main image. Most often you would have this created automatically from the high quality source image you upload." />  
+	ftHint="Mid-size image is used for the body content of your pages." />  
 
 <cfproperty 
 	name="ThumbnailImage" type="string" hint="The URL location of the thumnail of the uploaded image that should be used in " required="no" default="" 
@@ -71,8 +72,8 @@ type properties
 	ftSourceField="SourceImage" 
 	ftCreateFromSourceDefault="true" 
 	ftAllowUpload="true" 
-	ftQuality=".75"
-	ftHint="This image is generally used throughout your project as the thumbnail teaser image. Most often you would have this created automatically from the high quality source image you upload." />
+	ftQuality=".85"
+	ftHint="Thumbnail image is used a teaser or admin preview image." />
 
 <!--- image categorisation --->
 <cfproperty 
@@ -85,22 +86,10 @@ type properties
 <cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft" ftlabel="Status" />
 
 
-<!--- deprecated: legacy image properties --->
-<cfproperty name="width" type="nstring" hint="Image width (blank for default)" required="no" default="">  
-<cfproperty name="height" type="nstring" hint="Image height (blank for default)" required="no" default="">  
-<cfproperty name="bAutoGenerateThumbnail" type="numeric" hint="Flag to indicate if to automatically generate a thumbnail form the default image" required="no" default="1" ftType="boolean">
-<cfproperty name="imagefile" type="string" hint="The image file to be uploaded" required="No" default="">
-<cfproperty name="thumbnail" type="string" hint="The name of the thumbnail image to be uploaded" required="no" default="">  
-<cfproperty name="optimisedImage" type="string" hint="The name of the optimised image to be uploaded" required="no" default="">  
-<cfproperty name="originalImagePath" type="string" hint="The location in the filesystem where the original image is stored." required="No" default=""> 
-<cfproperty name="thumbnailImagePath" editHandler="void" type="string" hint="The location in the filesystem where the thumbnail image is stored." required="no" default=""> 
-<cfproperty name="optimisedImagePath" editHandler="void" type="string" hint="The location in the filesystem where the optimized image is stored." required="no" default=""> 
-<cfproperty name="bLibrary" type="numeric" hint="Legacy field... no longer used" required="no" default="1" ftType="boolean" ftlabel="Add to Library" />
-
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 
-<cffunction name="ftDisplayThumbnail" access="public" output="true" returntype="string" hint="This will return a string of formatted HTML text to display.">
+<cffunction name="ftDisplayThumbnail" access="public" output="false" returntype="string" hint="Override display of filepath to show image in formtool display mode.">
 	<cfargument name="typename" required="true" type="string" hint="The name of the type that this field is part of.">
 	<cfargument name="stObject" required="true" type="struct" hint="The object of the record that this field is part of.">
 	<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
@@ -108,49 +97,15 @@ type properties
 
 	<cfparam name="arguments.stMetadata.ftDestination" default="/images">
 
-	<cfset Request.inHead.Lightbox = 1>
 	<cfsavecontent variable="html">
 		<cfoutput>
-		<cfif structKeyExists(stobject, "OptimisedImage") AND len(stObject.OptimisedImage)>
-			<a href="#stObject.OptimisedImage#" rel="lightbox[Collections]">
-				<img src="#arguments.stMetadata.value#">
-			</a><br />			
-			&nbsp;&nbsp;&nbsp;&nbsp;    
-			
-			 
-			
-		<cfelse>
 			<img src="#arguments.stMetadata.value#">
-		</cfif>
 		</cfoutput>	
-
 	</cfsavecontent>
 	
 	<cfreturn html>
 </cffunction>
 	
-
-<cffunction name="display" access="public" output="true">
-	<cfargument name="objectid" required="yes" type="UUID">
-	
-	<!--- getData for object edit --->
-	<cfset stObj = this.getData(arguments.objectid)>
-	
-	<cfif stObj.thumbnailimage neq "">
-		<cfoutput>#getI18Property("thumbnailimage","label")# <br /><div style="margin-left:20px;margin-top:20px;"><img src="#application.url.webroot##stObj.thumbnailimage#" alt="#stObj.alt#" border="0"></div></cfoutput>
-	</cfif>
-	<cfif stObj.standardimage neq "">
-		<cfoutput>getI18Property("standardimage","label") <br /><div style="margin-left:20px;margin-top:20px;"><img src="#application.url.webroot##stObj.StandardImage#" alt="#stObj.alt#" border="0"></div></cfoutput>
-	</cfif>
-	<cfif stObj.sourceimage neq "">
-		<cfoutput>#getI18Property("sourceimage","label")# <br /><div style="margin-left:20px;margin-top:20px;"><img src="#application.url.webroot##stObj.sourceimage#" alt="#stObj.alt#" border="0"></div></cfoutput>
-	</cfif>
-	
-	<cfif stObj.sourceimage eq "" and stObj.thumbnailimage eq "" and stObj.standardimage eq "">
-		<cfoutput><div style="margin-left:20px;margin-top:20px;">File does not exist.</div></cfoutput>
-	</cfif> 
-</cffunction>
-
 <cffunction name="delete" access="public" hint="Specific delete method for dmImage. Removes physical files from ther server." returntype="struct">
 	<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the object being deleted">
 	
