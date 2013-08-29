@@ -79,7 +79,6 @@ test for the existance of each and act accordingly
 	application.factory.oAuthorisation = createobject("component","#application.packagepath#.security.authorisation");
 	application.factory.oWebtop = createobject("component","#application.packagepath#.farcry.webtop").init();
 	application.factory.oUtils = createobject("component","#application.packagepath#.farcry.utils");
-	application.factory.oAudit = createObject("component","#application.packagepath#.farcry.audit");
 	application.factory.oTree = createObject("component","#application.packagepath#.farcry.tree");
 	application.factory.oCache = createObject("component","#application.packagepath#.farcry.cache");
 	application.factory.oLocking = createObject("component","#application.packagepath#.farcry.locking");

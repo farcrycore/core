@@ -72,7 +72,6 @@ $out:$
 	<cfabort>
 </cffunction> --->
 <cfscript>
-	oAudit = createObject("component","#application.packagepath#.farcry.audit");
 	//get all the descendants for source
 	//dump(srcObj);
 	

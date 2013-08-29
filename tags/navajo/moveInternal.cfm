@@ -56,7 +56,6 @@ $out:$
 <cfscript>
 	typename = stObj.typename;
 	oNav = createObject("component", application.types.dmNavigation.typePath);
-	oAudit = createObject("component","#application.packagepath#.farcry.audit");
 	if (stObj.typename IS 'dmNavigation')
 	{
 		qGetParent = application.factory.oTree.getParentID(objectID = stObj.objectID);

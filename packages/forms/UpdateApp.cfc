@@ -99,7 +99,6 @@
 		<cfset application.factory.oAlterType = createobject("component","#application.packagepath#.farcry.alterType") />
 		<cfset application.factory.oAuthorisation = createobject("component","#application.packagepath#.security.authorisation") />
 		<cfset application.factory.oUtils = createobject("component","#application.packagepath#.farcry.utils") />
-		<cfset application.factory.oAudit = createObject("component","#application.packagepath#.farcry.audit") />
 		<cfset application.factory.oTree = createObject("component","#application.packagepath#.farcry.tree") />
 		<cfset application.factory.oCache = createObject("component","#application.packagepath#.farcry.cache") />
 		<cfset application.factory.oLocking = createObject("component","#application.packagepath#.farcry.locking") />
