@@ -1,5 +1,7 @@
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
-<!--- @@deprecated: do not use this!!! let me burn this in a fire... 20130830 GB--->
+<!--- @@deprecated: 
+		do not use this!!! let me burn this in a fire... 20130830 GB
+		move useful functions to something like lib.utils eg. sanitiseFileName --->
 
 <cfcomponent 
 	bdeprecated="true"
