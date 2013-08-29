@@ -13,7 +13,11 @@
 <!--- 
  // contributor properites 
 --------------------------------------------------------------------------------->
-	<cfproperty ftSeq="20" ftFieldset="Editing Options" name="genericadminnumitems" type="numeric" default="15" hint="???" ftLabel="Generic admin number of items" ftType="integer" />
+	<cfproperty ftSeq="20" ftFieldset="Editing Options" name="genericadminnumitems" type="numeric" default="25" hint="???" ftLabel="Content Admin Size" ftType="integer"
+		fthint="Number of rows to show per page by default on content admin grids." />
+	<!--- TODO: default locale should be the first locale nominated in the farcryconstructor --->
+	<cfproperty ftSeq="20" ftFieldset="Editing Options" name="locale" type="string" default="en_AU" hint="???" ftLabel="Default Locale" ftType="string" 
+		fthint="Nominate a default locale for the site."/>
 
 <!--- sysadmin properties --->
 	<cfproperty ftSeq="21" ftFieldset="SysAdmin Properties" name="adminemail" type="string" default="support@daemon.com.au" hint="The email address to be used by the system for admin functions" ftLabel="Administration email" ftType="email" />
@@ -52,7 +56,7 @@
 	<cfproperty name="categorycachetimespan" type="numeric" default="0" hint="???" ftLabel="Category cache timespan" ftType="integer" />
 	<cfproperty name="contentreviewdayspan" type="numeric" default="90" hint="???" ftLabel="Content review day span" ftType="integer" />
 	<cfproperty name="exportpath" type="string" default="www/xml" hint="???" ftLabel="Export path" ftType="string" />
-	<cfproperty name="locale" type="string" default="en_AU" hint="???" ftLabel="Locale" ftType="string" />
+	
 
 	<cfproperty name="defaultUserDirectory" type="string" default="" ftHint="Deprecated; new option is under Security Config" ftLabel="Default user directory" ftType="string" />
 
