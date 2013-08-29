@@ -1,42 +1,9 @@
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
-<!--- @@License:
-    This file is part of FarCry.
+<!--- @@deprecated: do not use this!!! let me burn this in a fire... 20130830 GB--->
 
-    FarCry is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-
-    FarCry is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
---->
-<!---
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/packages/farcry/form.cfc,v 1.20 2005/09/16 14:09:59 paul Exp $
-$Author: paul $
-$Date: 2005/09/16 14:09:59 $
-$Name: milestone_3-0-1 $
-$Revision: 1.20 $
-
-|| DESCRIPTION ||
-$Description: form cfc $
-
-
-|| DEVELOPER ||
-$Developer: Brendan Sisson (brendan@daemon.com.au) $
-$Developer: Paul Harrison (harrisonp@cbs.curtin.edu.au) $
-
-|| ATTRIBUTES ||
-$in: $
-$out:$
---->
-
-<cfcomponent displayname="Form" hint="Manages common form functions">
+<cfcomponent 
+	bdeprecated="true"
+	displayname="Form" hint="Manages common form functions" >
 
 	<cffunction name="sanitiseFileName">
 		<cfargument name="serverfile" required="yes">
@@ -63,7 +30,7 @@ $out:$
 	<cffunction name="uploadFile" hint="Uploads a file">
 		<cfargument name="formField" hint="The name of the field that contains the file to be uploaded" required="true"   type="string">
 		<cfargument name="destination" hint="Directory file is to be uploaded to - must pass in absolute path" type="string" default="#application.path.defaultImagePath#">
-		<cfargument name="nameconflict" hint="File write behavior" type="string" default="#application.config.general.fileNameConflict#">
+		<cfargument name="nameconflict" hint="File write behavior" type="string" default="MAKEUNIQUE">
 		<cfargument  name="accept" hint="File types to accept" type="string" default="">
 
 		<cfset var stReturn = structNew()>
