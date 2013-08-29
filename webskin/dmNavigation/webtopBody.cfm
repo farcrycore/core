@@ -406,11 +406,13 @@
 			TreeDialogView = Backbone.View.extend({
 
 				options: {
+					actionURL: null,
 					title: "Move",
 					submitLabel: "Move",
-					sourceText: "This folder",
-					sourceName: null,
 					sourceObjectID: null,
+					sourceName: null,
+					sourceText: "This folder",
+					targetObjectID: null,
 					targetText: "Will be moved into the selected folder..."
 
 				},
@@ -446,11 +448,17 @@
 					this.remove();
 				},
 
-				submit: function close(evt){
-					alert("Coming soon...");
-					// check for selected nav item
-
-					//this.remove();
+				submit: function submit(evt){
+					// get selected nav item
+					this.options.targetObjectID = this.treeView.getSelectedObjectID();
+					// do the move
+					if (this.options.targetObjectID.length) {
+						this.treeView.doMoveTo(this.options.sourceObjectID, this.options.targetObjectID);
+						this.close();
+					}
+					else {
+						alert("Please select a destination folder");
+					}
 				}
 
 			});
@@ -705,6 +713,58 @@
 					return true;
 				},
 
+				doMoveTo: function SiteTreeView_doMoveTo(sourceobjectid, targetobjectid){
+
+					var self = this;
+
+					$j.ajax({
+						url: "#application.url.webtop#/index.cfm",
+						data: {
+							"typename": "dmNavigation",
+							"view": "webtopAjaxTreeAction",
+							"action": "move",
+							"ajaxmode": 1,
+							"responsetype": "json",
+
+							"sourceobjectid": sourceobjectid,
+							"targetobjectid": targetobjectid
+						},
+						datatype: "json",
+						success: function(response) {
+							response.success = response.success || false;
+							if (response.success) {
+
+alert("BING");
+								// reload tree source branch and target branch
+								self.reloadTreeBranch(sourceobjectid);
+								var parentid = self.getParentId(self.getRowById(targetobjectid));
+								self.reloadTreeBranch(parentid);
+
+							}
+							else {
+	// TODO: alert the user of an error with this request
+console.log("200 success=false");
+console.log(response);
+alert(response.message);
+							}
+						},
+						error: function(response) {
+	// TODO: alert the user of an error with this request
+console.log("Non-200 error");
+console.log(response);
+alert(response.message);
+						},
+						complete: function() {
+							//self.loadExpandedAjaxNodes();
+						}
+					});
+
+
+
+
+					return true;
+				},
+
 				clickDelete: function SiteTreeView_clickDelete(evt){
 
 					var self = this;
@@ -712,7 +772,7 @@
 					var row = $j(evt.currentTarget).closest("tr")
 					var objectid = row.data("objectid");
 					var parentid = row.data("parentid");
-					var sourceName = row.find(".fc-tree-title").text();
+					var sourceName = row.find(".fc-tree-title").text().replace(/^\s+|\s+$/g, "");
 					var nodetype = row.data("nodetype");
 
 					// node to reload
@@ -721,7 +781,7 @@
 					if (confirm("Are you sure you want to delete '" + sourceName + "'?")) {
 
 						$j.ajax({
-							url: "#application.url.webtop#/index.cfm?typename=dmNavigation&view=webtopAjaxTreeAction&action=delete&ajaxmode=1&objectid=" + objectid + "&responsetype=json",
+							url: "#application.url.webtop#/index.cfm?typename=dmNavigation&view=webtopAjaxTreeAction&action=delete&ajaxmode=1&sourceobjectid=" + objectid + "&responsetype=json",
 							datatype: "json",
 							success: function(response) {
 								response.success = response.success || false;
@@ -825,8 +885,6 @@ alert(response.message);
 					var row = this.getRowById(id);
 					this.loadTreeChildRows(row, true);
 				},
-
-
 
 
 				loadExpandedAjaxNodes: function SiteTreeView_loadExpandedAjaxNodes(id) {
@@ -1042,6 +1100,17 @@ alert(response.message);
 					row.closest("tbody").find("tr").removeClass("selected");
 					row.addClass("selected");
 
+				},
+
+				getSelectedRow: function SiteTreeView_getSelectedRow() {
+					var row = $j("tbody tr.selected", this.$el).eq(0);
+					return row;
+				},
+
+				getSelectedObjectID: function SiteTreeView_getSelectedObjectID() {
+					var row = this.getSelectedRow();
+					var objectid = row.data("objectid") || "";
+					return objectid;
 				},
 
 
