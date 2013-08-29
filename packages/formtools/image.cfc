@@ -1548,7 +1548,7 @@
 		<cfif len(arguments.stObject[arguments.stMetadata.name]) and application.fc.lib.cdn.ioFileExists(location="images",file=arguments.stObject[arguments.stMetadata.name])>
 			<cfset archiveFile = "/#arguments.stObject.typename#/#arguments.archiveID#.#arguments.stMetadata.name#.#ListLast(arguments.stObject[arguments.stMetadata.name],'.')#" />
 			
-			<cfset application.fc.lib.cdn.ioMoveFile(source_location="images",source_file=arguments.stObject[arguments.stMetadata.name],dest_location="archive",dest_file=archiveFile) />
+			<cfset application.fc.lib.cdn.ioCopyFile(source_location="images",source_file=arguments.stObject[arguments.stMetadata.name],dest_location="archive",dest_file=archiveFile) />
 		</cfif>
 		
 		<cfreturn archiveFile />
