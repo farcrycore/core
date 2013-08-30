@@ -355,7 +355,7 @@
 
 		<cfsetting showdebugoutput="false" />
 
-		<cfset stResult["images"] = arraynew() />
+		<cfset stResult["images"] = arraynew(1) />
 
 		<cfloop collection="#stProps#" item="fieldname">
 			<cfif (
