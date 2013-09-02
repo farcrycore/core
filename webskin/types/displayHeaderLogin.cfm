@@ -40,8 +40,8 @@
 		<body>
 			<div id="header">
 				<div class="container-fluid">
-					<h1><a href="http://www.farcrycore.org/" target="_blank" class="logo farcry-logo">FarCry Core</a></h1>
 					<h1><a href="#application.url.webroot#/" target="_blank" class="logo webtop-logo"<cfif structKeyExists(application.config.general,'webtopLogoPath') and application.config.general.webtopLogoPath NEQ ""> style="background-image:url(#application.config.general.webtopLogoPath#);text-indent:-99999px;"</cfif>>#application.config.general.siteTitle#</a></h1>
+					<h1><a href="http://www.farcrycore.org/" target="_blank" class="logo farcry-logo">FarCry Core</a></h1>
 				</div><!-- /.container -->
 			</div><!-- /##header -->
 			<div id="content-main">
