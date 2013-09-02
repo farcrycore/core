@@ -11,6 +11,7 @@
 <cfset stProperties = structNew() />
 <cfset stProperties.objectid = arguments.categoryID />
 <cfset stProperties.categoryLabel = arguments.categoryLabel />
+<cfset stProperties.label = arguments.categoryLabel />
 <cfset stResult = createObject("component", application.stcoapi["dmCategory"].packagePath).createData(stProperties="#stProperties#") />
 
 
