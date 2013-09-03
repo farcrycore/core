@@ -19,7 +19,7 @@
 	extends="farcry.core.packages.fourq.fourq" bAbstract="true" 
 	displayname="Base Content Type" 
 	hint="Abstract class. Provides default handlers and system attributes for content object types.  This component should never be instantiated directly -- it should only be inherited."
-	icon="icon-file-text">
+	icon="icon-file-alt">
 
 <!--------------------------------------------------------------------
 system attributes
