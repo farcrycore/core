@@ -56,7 +56,7 @@ type properties
 <cfproperty 
 	name="aObjectIDs" type="array" hint="Related media items for this content item." required="no" default=""
 	ftSeq="13" ftwizardStep="Web Page" ftFieldset="Relationships" ftLabel="Associated Media" 
-	ftType="array" ftJoin="dmImage,dmFile,dmFlash" 
+	ftType="array" ftJoin="dmImage,dmFile" 
 	ftShowLibraryLink="false" ftAllowAttach="true" ftAllowAdd="true" ftAllowEdit="true" ftRemoveType="detach"
 	bSyncStatus="true">
 
