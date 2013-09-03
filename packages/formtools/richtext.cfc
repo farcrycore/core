@@ -26,7 +26,11 @@
 	<cfproperty name="ftImageListFilterProperty" required="false" default="standardImage" hint="The related image typename property that contains the image we want to insert from the advimage plugin" />
 	<cfproperty name="ftLinkListFilterTypenames" required="false" default="" hint="The list of related typenames to filter the link list on in the advlink plugin." />
 
-	
+	<cfproperty name="ftTemplateTypeList" required="false" default="" hint="The list of related typenames to show content templates for." />
+	<cfproperty name="ftTemplateSnippetWebskinPrefix" required="false" default="insertSnippet" hint="The webskin prefix used to insert content template snippets." />
+	<cfproperty name="ftTemplateWebskinPrefixList" required="false" default="insertHTML" hint="The webskin prefix used to insert content." />
+
+
 	<cffunction name="init" access="public" returntype="farcry.core.packages.formtools.richtext" output="false" hint="Returns a copy of this initialised object">
 		<cfreturn this>
 	</cffunction>
@@ -282,10 +286,7 @@
 		<cfset var qWebskins = "" />
 		<cfset var stItem = structnew() />
 		
-		<cfparam name="arguments.stMetadata.ftTemplateTypeList" default="" />
-		<cfparam name="arguments.stMetadata.ftTemplateSnippetWebskinPrefix" default="insertSnippet" />
-		<cfparam name="arguments.stMetadata.ftTemplateWebskinPrefixList" default="insertHTML" />
-		
+
 		<cfif listfind(stProps[arguments.stMetadata.name].metadata.ftTemplateTypeList,url.relatedtypename) LTE listLen(arguments.stMetadata.ftTemplateWebskinPrefixList)>
 			<cfset templateWebskinPrefix = listgetat(arguments.stMetadata.ftTemplateWebskinPrefixList,listfind(arguments.stMetadata.ftTemplateTypeList,arguments.relatedtypename)) />
 		<cfelse>
