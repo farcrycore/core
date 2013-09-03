@@ -386,14 +386,14 @@
 		<cfif this.totalPages GT this.pageLinks>
 			<cfset setLink(linkID="first", page="1", bDisabled=true) />
 		<cfelse>
-			<cfset setLink(linkID="first", page="1", bHidden="true") />
+			<cfset setLink(linkID="first", page="1", bHidden="false") />
 		</cfif>
 		<cfset setLink(linkID="previous", page="1", bDisabled=true) />
 	<cfelse>
 		<cfif this.totalPages GT this.pageLinks>
 			<cfset setLink(linkID="first", page="1") />
 		<cfelse>
-			<cfset setLink(linkID="first", page="1", bHidden="true") />
+			<cfset setLink(linkID="first", page="1", bHidden="false") />
 	   	</cfif>
 	   	<cfset setLink(linkID="previous", page="#this.currentPage-1#") />
 	</cfif>		
@@ -415,14 +415,14 @@
 		<cfif this.totalPages GT this.pageLinks>
 			<cfset setLink(linkID="last", page="#this.totalPages#") />
 		<cfelse>
-			<cfset setLink(linkID="last", page="#this.totalPages#", bHidden="true") />
+			<cfset setLink(linkID="last", page="#this.totalPages#", bHidden="false") />
 		</cfif>
 	<cfelse>
 		<cfset setLink(linkID="next", page="#this.totalRecords#", bDisabled="true") />
 		<cfif this.totalPages GT this.pageLinks>
 			<cfset setLink(linkID="last", page="#this.totalPages#", bDisabled="true") />
 		<cfelse>
-			<cfset setLink(linkID="last", page="#this.totalPages#", bHidden="true") />
+			<cfset setLink(linkID="last", page="#this.totalPages#", bHidden="false") />
 		</cfif>
 	</cfif>
 	
