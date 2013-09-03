@@ -595,7 +595,7 @@
 		<cfset var stFU = getData(objectid="#arguments.objectid#") />
 		<cfset var thisfu = "" />
 		
-		<cfif structkeyexists(arguments,"typename")>
+		<cfif structkeyexists(arguments,"typename") and len(arguments.typename)>
 			<cfset this.stMappings[stFU.friendlyURL] = createURLStruct(farFUID=arguments.objectid,bForce=arguments.bForce,typename="#arguments.typename#") />			
 		<cfelse>
 			<cfset this.stMappings[stFU.friendlyURL] = createURLStruct(farFUID=arguments.objectid,bForce=arguments.bForce) />
