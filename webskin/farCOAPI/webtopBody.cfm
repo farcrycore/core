@@ -431,7 +431,7 @@
 			<cfoutput>
 				<tr class="#qTypes.class#">
 					<td class="class">#ucase(left(qTypes.class,1))##mid(qTypes.class,2,10)#</td>
-					<td class="name"><i class="#getIcon(qtypes.typename)#"></i> #qTypes.label#</td>
+					<td class="name"><i class="#getIcon(qtypes.typename)# icon-fixed-width" style="font-size:16px;color:##777"></i> #qTypes.label#</td>
 					<td class="location">
 						<cfloop list="#qTypes.locations#" index="thispath">
 							<span title="#listlast(thispath,':')#">#listfirst(thispath,':')#</span><cfif thispath neq listlast(qTypes.locations)>, </cfif>
