@@ -183,7 +183,7 @@
 			<cfif len(application.stCOAPI[attributes.typename].icon)>
 				<i class="#application.stCOAPI[attributes.typename].icon#"></i>
 			<cfelse>
-				<i class="icon-file"></i>
+				<i class="icon-file-alt"></i>
 			</cfif>
 			<admin:resource key="#attributes.rbkey#@title" var1="#typelabel#">#attributes.title#</admin:resource>
 		</h1>
@@ -1055,6 +1055,8 @@
 							 		<cfelseif st.status eq "draft/approved">
 							 			<cfset statusOutput = "<span class='label label-warning'>" & statusOutput & "</span>">
 							 			<cfset statusOutput = replace(statusOutput, " + ", "</span> + <span class='label label-info'>", "one")>
+							 		<cfelse>
+							 			<cfset statusOutput = "<span class='label'>" & statusOutput & "</span>">
 						 			</cfif>
 						 		</cfif>
 						 		<cfoutput><td style="white-space:nowrap;">#statusOutput#</td></cfoutput>
