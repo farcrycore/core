@@ -185,37 +185,37 @@
 				<cfloop collection="#arguments.stConflicts.tables[thistable].fields#" item="thisfield">
 					<cfswitch expression="#arguments.stConflicts.tables[thistable].fields[thisfield].resolution#">
 						<cfcase value="+">
-							<cfset arrayappend(changes,"<span class='undeployed field'>&nbsp;&nbsp;&nbsp;+ #thisfield#</span>") />
+							<cfset arrayappend(changes,"<div class='undeployed field'><i class='icon-fixed-width'></i><i class='icon-plus-sign icon-fixed-width'></i> #thisfield#</div>") />
 						</cfcase>
 						<cfcase value="x">
-							<cfset arrayappend(changes,"<span class='altered field'>&nbsp;&nbsp;&nbsp;x #thisfield#</span>") />
+							<cfset arrayappend(changes,"<div class='altered field'><i class='icon-fixed-width'></i><i class='icon-question-sign icon-fixed-width'></i> #thisfield#</div>") />
 						</cfcase>
 						<cfcase value="-">
-							<cfset arrayappend(changes,"<span class='deleted field'>&nbsp;&nbsp;&nbsp;- #thisfield#</span>") />
+							<cfset arrayappend(changes,"<div class='deleted field'><i class='icon-fixed-width'></i><i class='icon-remove-sign icon-fixed-width'></i> #thisfield#</div>") />
 						</cfcase>
 					</cfswitch>
 				</cfloop>
 				<cfloop collection="#arguments.stConflicts.tables[thistable].indexes#" item="thisindex">
 					<cfswitch expression="#arguments.stConflicts.tables[thistable].indexes[thisindex].resolution#">
 						<cfcase value="+">
-							<cfset arrayappend(changes,"<span class='undeployed field'>&nbsp;&nbsp;&nbsp;+ #thisindex#</span>") />
+							<cfset arrayappend(changes,"<div class='undeployed field'><i class='icon-fixed-width'></i><i class='icon-plus-sign icon-fixed-width'></i> #thisindex#</div>") />
 						</cfcase>
 						<cfcase value="x">
-							<cfset arrayappend(changes,"<span class='altered field'>&nbsp;&nbsp;&nbsp;x #thisindex#</span>") />
+							<cfset arrayappend(changes,"<div class='altered field'><i class='icon-fixed-width'></i><i class='icon-question-sign icon-fixed-width'></i> #thisindex#</div>") />
 						</cfcase>
 						<cfcase value="-">
-							<cfset arrayappend(changes,"<span class='deleted field'>&nbsp;&nbsp;&nbsp;- #thisindex#</span>") />
+							<cfset arrayappend(changes,"<div class='deleted field'><i class='icon-fixed-width'></i><i class='icon-remove-sign icon-fixed-width'></i> #thisindex#</div>") />
 						</cfcase>
 					</cfswitch>
 				</cfloop>
 					
-				<cfset summary = listappend(summary,"<div class='altered table'>x #thistable#</div> <ul><li>#arraytolist(changes,'</li><li>')#</li></ul>"," ") />
+				<cfset summary = listappend(summary,"<div class='altered table'><i class='icon-question-sign icon-fixed-width'></i> #thistable#</div> <div>#arrayToList(changes,"")#</div>"," ") />
 			</cfcase>
 			<cfcase value="+">
-				<cfset summary = listappend(summary,"<div class='undeployed table'>+ #thistable#</div>"," ") />
+				<cfset summary = listappend(summary,"<div class='undeployed table'><i class='icon-plus-sign icon-fixed-width'></i> #thistable#</div>"," ") />
 			</cfcase>
 			<cfcase value="-">
-				<cfset summary = listappend(summary,"<div class='deleted table'>- #thistable#</div>"," ") />
+				<cfset summary = listappend(summary,"<div class='deleted table'><i class='icon-remove-sign icon-fixed-width'></i> #thistable#</div>"," ") />
 			</cfcase>
 		</cfswitch>
 	</cfloop>
@@ -379,7 +379,7 @@
 				<cfoutput>
 					<tr class="#qTypes.class#">
 						<td class="class">#ucase(left(qTypes.class,1))##mid(qTypes.class,2,10)#</td>
-						<td class="name"><i class="#getIcon(qtypes.typename)#"></i> #qTypes.label#</td>
+						<td class="name"><i class="#getIcon(qtypes.typename)# icon-fixed-width" style="font-size:16px;color:##777"></i> #qTypes.label#</td>
 						<td class="conflicts">
 							<a href="#application.url.webtop#/index.cfm?id=#url.id#&typename=farCOAPI&view=webtopPageModal&bodyview=webtopBodyConflicts&typepath=#qTypes.packagepath#" class="openindialog" data-title="#qTypes.label# Conflicts" id="#qTypes.typename#_conflicts">Resolve conflicts</a>
 							<skin:tooltip id="#qTypes.typename#_conflicts" selector="###qTypes.typename#_conflicts" message="#qTypes.conflicts#" />
