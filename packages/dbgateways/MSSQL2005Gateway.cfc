@@ -45,7 +45,7 @@
 									</cfif>
 								</cfcase>
 								<cfcase value="string">nvarchar(#stProp.precision#)</cfcase>
-								<cfcase value="longchar">ntext</cfcase>
+								<cfcase value="longchar">nvarchar(MAX)</cfcase>
 								<cfcase value="datetime">datetime</cfcase>
 							</cfswitch>
 							
@@ -127,7 +127,7 @@
 						</cfif>
 					</cfcase>
 					<cfcase value="string">nvarchar(#stProp.precision#)</cfcase>
-					<cfcase value="longchar">ntext</cfcase>
+					<cfcase value="longchar">nvarchar(MAX)</cfcase>
 					<cfcase value="datetime">datetime</cfcase>
 				</cfswitch>
 				<cfif stProp.nullable>NULL<cfelse>NOT NULL</cfif>
@@ -244,7 +244,7 @@
 						</cfif>
 					</cfcase>
 					<cfcase value="string">nvarchar(#stProp.precision#)</cfcase>
-					<cfcase value="longchar">ntext</cfcase>
+					<cfcase value="longchar">nvarchar(MAX)</cfcase>
 					<cfcase value="datetime">datetime</cfcase>
 				</cfswitch>
 				<cfif stProp.nullable>NULL<cfelse>NOT NULL</cfif>
@@ -349,7 +349,7 @@
 				from		information_schema.columns
 				where		table_name=<cfqueryparam cfsqltype="cf_sql_varchar" value="#mytable#">
 			</cfquery>
-			
+
 			<!--- Loop thru columns --->
 			<cfloop query="qColumns">
 				<cfset stColumn = structnew() />
@@ -375,7 +375,7 @@
 				
 				<cfswitch expression="#qColumns.data_type#">
 					<cfcase value="longtext,text,ntext" delimiters=",">
-						<cfset stColumn.type = "longchar" />
+						<cfset stColumn.type = "ntext" />
 					</cfcase>
 					<cfcase value="bit">
 						<cfset stColumn.type = "numeric" />
@@ -385,7 +385,8 @@
 						<cfset stColumn.type = "string" />
 						<cfset stColumn.precision = qColumns.character_maximum_length />
 						<cfif stColumn.precision eq "-1">
-							<cfset stColumn.precision = "MAX" />
+							<cfset stColumn.type = "longchar" />
+							<cfset stColumn.precision = "" />
 						</cfif>
 					</cfcase>
 					<cfcase value="decimal,numeric,int" delimiters=",">

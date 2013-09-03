@@ -803,7 +803,7 @@
 		<cfargument name="expected" type="struct" required="true" hint="The expected schema" />
 		<cfargument name="actual" type="struct" required="true" hint="The actual schema" />
 		
-		<cfreturn arguments.expected.nullable neq arguments.actual.nullable OR arguments.expected.default neq arguments.actual.default OR arguments.expected.type neq arguments.actual.type />
+		<cfreturn arguments.expected.nullable neq arguments.actual.nullable OR arguments.expected.default neq arguments.actual.default OR arguments.expected.type neq arguments.actual.type OR arguments.expected.precision neq arguments.actual.precision />
 	</cffunction>
 	
 	<cffunction name="diffSchema" access="public" returntype="struct" output="false" hint="Compares type metadata to the actual database schema">
@@ -828,7 +828,7 @@
 			<cfset stResult.tables[arguments.schema.tablename] = structnew() />
 			<cfset stResult.tables[arguments.schema.tablename].fields = structnew() />
 			<cfset stResult.tables[arguments.schema.tablename].indexes = structnew() />
-			
+
 			<!--- Fields --->
 			<cfloop collection="#arguments.schema.fields#" item="thisfield">
 				<cfset stThisResult = structnew() />
