@@ -48,60 +48,63 @@ $out:$
 	sql = "
 	select nleft, typename from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.objectid#'";
 	q = scriptQuery(sql=sql, dsn=arguments.dsn);
+
+	if (q.recordCount) {
 	
-	oldleft = q.nleft;
-	typename = q.typename;
-	
-	// get nleft
-	nLeftSql = "select nleft from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.objectid#' and typename = '#typename#'";
-	qNLeft = scriptQuery(sql=nLeftSql, dsn=arguments.dsn);
-	
-	// get nright
-	nRightSql = "select nright from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.objectid#' and typename = '#typename#'";
-	qNRight = scriptQuery(sql=nRightSql, dsn=arguments.dsn);
-	
-	// get the number of objects that are descendants of the object, plus the object itself. times 2, so that we can 
-	// move the lefts and rights back of the remaining nodes.
-	sql = "
-		select count(*)*2 AS objCount
-		from #arguments.dbowner#nested_tree_objects
-		where nleft between #qNleft.nleft#
-		and #qNRight.nright# 
-		and typename = '#typename#'";
-	q = scriptQuery(sql=sql, dsn=arguments.dsn);	
-	count = q.objCount;
-	
-	// delete the object itself, and its spawn
-	sql = "
-		delete from #arguments.dbowner#nested_tree_objects
-		where objectid = '#arguments.objectid#'
-		or nleft between #qNleft.nleft#
-		and #qNRight.nright# 
-		and typename = '#typename#'";
-	scriptQuery(sql=sql, dsn=arguments.dsn);	
-	
-	// contract the other nodes left hands
-	sql = "
-		update #arguments.dbowner#nested_tree_objects
-		set 	nleft = nleft - #count#
-		where  nleft > #oldleft#
-		and typename = '#typename#'";
-	scriptQuery(sql=sql, dsn=arguments.dsn);	
-	
-	// contract the other nodes right hands
-	sql = "
-		update #arguments.dbowner#nested_tree_objects
-		set 	nright = nright - #count#
-		where  nright > #oldleft#
-		and typename = '#typename#'";
-	scriptQuery(sql=sql, dsn=arguments.dsn);	
+		oldleft = q.nleft;
+		typename = q.typename;
+		
+		// get nleft
+		nLeftSql = "select nleft from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.objectid#' and typename = '#typename#'";
+		qNLeft = scriptQuery(sql=nLeftSql, dsn=arguments.dsn);
+		
+		// get nright
+		nRightSql = "select nright from #arguments.dbowner#nested_tree_objects where objectid = '#arguments.objectid#' and typename = '#typename#'";
+		qNRight = scriptQuery(sql=nRightSql, dsn=arguments.dsn);
+		
+		// get the number of objects that are descendants of the object, plus the object itself. times 2, so that we can 
+		// move the lefts and rights back of the remaining nodes.
+		sql = "
+			select count(*)*2 AS objCount
+			from #arguments.dbowner#nested_tree_objects
+			where nleft between #qNleft.nleft#
+			and #qNRight.nright# 
+			and typename = '#typename#'";
+		q = scriptQuery(sql=sql, dsn=arguments.dsn);	
+		count = q.objCount;
+		
+		// delete the object itself, and its spawn
+		sql = "
+			delete from #arguments.dbowner#nested_tree_objects
+			where objectid = '#arguments.objectid#'
+			or nleft between #qNleft.nleft#
+			and #qNRight.nright# 
+			and typename = '#typename#'";
+		scriptQuery(sql=sql, dsn=arguments.dsn);	
+		
+		// contract the other nodes left hands
+		sql = "
+			update #arguments.dbowner#nested_tree_objects
+			set 	nleft = nleft - #count#
+			where  nleft > #oldleft#
+			and typename = '#typename#'";
+		scriptQuery(sql=sql, dsn=arguments.dsn);	
+		
+		// contract the other nodes right hands
+		sql = "
+			update #arguments.dbowner#nested_tree_objects
+			set 	nright = nright - #count#
+			where  nright > #oldleft#
+			and typename = '#typename#'";
+		scriptQuery(sql=sql, dsn=arguments.dsn);
+
+	}
 	</cfscript>
 
 	<cfcatch>
 		<!--- set negative result --->
 		<cfset stTmp.bSucess = "false">
 		<cfset stTmp.message = cfcatch>
-		<cfdump var="#cfcatch#"><cfabort>
 	</cfcatch>
 
 </cftry>

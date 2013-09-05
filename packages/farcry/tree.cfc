@@ -216,8 +216,6 @@ $out:$
 
 		<cfquery datasource="#arguments.dsn#" name="qReturn">#preservesinglequotes(stLocal.sql)#</cfquery>
 
-    <cfelse>
-      <cfthrow message="#arguments.objectid# is not a valid objectID for getDescendants()">
     </cfif>
 	
     <cfreturn qReturn />
