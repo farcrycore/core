@@ -1009,46 +1009,12 @@ default handlers
 		
 		<cfset var stObj = getData(objectid=arguments.objectid) />
 		<cfset var duplicateID = "" />
-		<cfset var qMetadata = application.stCOAPI[stobj.typename].qMetadata />
-		<cfset var lWizardSteps = "" />
-		<cfset var iWizardStep = "" />
-		<cfset var lFieldSets = "" />
-		<cfset var iFieldSet = "" />
-		<cfset var thisjoin = "" />
-		<cfset var stSearch = structnew() />
-		<cfset var qRelated = "" />
-		<cfset var qAllRelated = querynew("objectid,typename,objectlabel,typenamelabel") />
-		<cfset var stCount = structnew() />
+		<cfset var qAllRelated = relatedCopyableContent(objectid=arguments.objectid) />
 		
 		<cfparam name="url.editURL" />
 		
-		<!--- Get list of related content --->
-		<cfparam name="application.stCOAPI.#stObj.typename#.aJoins" default="#arraynew(1)#" />
-		<cfloop from="1" to="#arraylen(application.stCOAPI[stObj.typename].aJoins)#" index="thisjoin">
-			<cfif application.stCOAPI[stObj.typename].aJoins[thisjoin].direction eq "from" and application.stCOAPI[stObj.typename].aJoins[thisjoin].type eq "uuid" 
-					and (not structkeyexists(application.stCOAPI[application.stCOAPI[stObj.typename].aJoins[thisjoin].coapiType],"bCopyable") or application.stCOAPI[application.stCOAPI[stObj.typename].aJoins[thisjoin].coapiType].bCopyable)>
-				<cfset stSearch = structnew() />
-				<cfset stSearch.typename = application.stCOAPI[stObj.typename].aJoins[thisjoin].coapiType />
-				<cfset stSearch.lProperties = "objectid,label" />
-				<cfset stSearch["#application.stCOAPI[stObj.typename].aJoins[thisjoin].property#_eq"] = arguments.objectid />
-				<cfset qRelated = application.fapi.getContentObjects(argumentCollection=stSearch) />
-				<cfset stCount[qRelated.typename] = qRelated.recordcount />
-				<cfloop query="qRelated">
-					<cfset queryaddrow(qAllRelated) />
-					<cfset querysetcell(qAllRelated,"objectid",qRelated.objectid) />
-					<cfset querysetcell(qAllRelated,"objectlabel",qRelated.label) />
-					<cfset querysetcell(qAllRelated,"typename",qRelated.typename) />
-					<cfif structkeyexists(application.stCOAPI[qRelated.typename],"displayname")>
-						<cfset querysetcell(qAllRelated,"typenamelabel",application.stCOAPI[qRelated.typename].displayname) />
-					<cfelse>
-						<cfset querysetcell(qAllRelated,"typenamelabel",qRelated.typename) />
-					</cfif>
-				</cfloop>
-			</cfif>
-		</cfloop>
-		
 		<cfif qAllRelated.recordcount>
-			
+
 			<ft:processForm action="Save" Exit="true">
 				<cfif len(form.copyrelated)>
 					<cfquery dbtype="query" name="qAllRelated">
@@ -1109,7 +1075,7 @@ default handlers
 					<ft:field label="#qAllRelated.typenamelabel#" bMultifield="true">
 						<input type="checkbox" name="copyrelated" id="copyrelated" value="#qAllRelated.typename#" class="checkboxInput" checked />
 						<input type="hidden" name="copyrelated" value="" />
-						<a href="###qAllRelated.typename#_showhide" onclick="$j('###qAllRelated.typename#_showhide').toggle();return false;">#stCount[qAllRelated.typename]# item/s</a>
+						<a href="###qAllRelated.typename#_showhide" onclick="$j('###qAllRelated.typename#_showhide').toggle();return false;">#qAllRelated.typenametotal# item/s</a>
 						<div id="#qAllRelated.typename#_showhide" style="display:none;"><cfoutput>#qAllRelated.objectlabel#<br></cfoutput></div>
 					</ft:field>
 				</cfoutput>
@@ -1135,12 +1101,79 @@ default handlers
 		</cfif>
 
 	</cffunction>
-	
+
+	<cffunction name="relatedCopyableContent" access="public" hint="Gets the related, copyable content for an object which can then be used in a call to duplicateObject">
+		<cfargument name="objectid" type="uuid" required="true" hint="Primary object" />
+
+		<cfset var stObj = application.fapi.getContentObject(objectid=arguments.objectid)>
+		<cfset var stLeaf = structnew() />
+		<cfset var i = 0 />
+		<cfset var thisjoin = "" />
+		<cfset var stSearch = structnew() />
+		<cfset var qRelated = "" />
+		<cfset var qAllRelated = querynew("objectid,typename,objectlabel,typenamelabel,typenametotal,jointypename,joinproperty") />
+
+		<cfparam name="application.stCOAPI.#stObj.typename#.aJoins" default="#arraynew(1)#" />
+		<cfloop from="1" to="#arraylen(application.stCOAPI[stObj.typename].aJoins)#" index="thisjoin">
+			<!--- Get related one-to-one content --->
+			<cfif application.stCOAPI[stObj.typename].aJoins[thisjoin].direction eq "from" 
+					and application.stCOAPI[stObj.typename].aJoins[thisjoin].type eq "uuid" 
+					and (not structkeyexists(application.stCOAPI[application.stCOAPI[stObj.typename].aJoins[thisjoin].coapiType],"bCopyable") or application.stCOAPI[application.stCOAPI[stObj.typename].aJoins[thisjoin].coapiType].bCopyable)>
+				<cfset stSearch = structnew() />
+				<cfset stSearch.typename = application.stCOAPI[stObj.typename].aJoins[thisjoin].coapiType />
+				<cfset stSearch.lProperties = "objectid,label" />
+				<cfset stSearch["#application.stCOAPI[stObj.typename].aJoins[thisjoin].property#_eq"] = arguments.objectid />
+				<cfset qRelated = application.fapi.getContentObjects(argumentCollection=stSearch) />
+				<cfloop query="qRelated">
+					<cfset queryaddrow(qAllRelated) />
+					<cfset querysetcell(qAllRelated,"objectid",qRelated.objectid) />
+					<cfset querysetcell(qAllRelated,"objectlabel",qRelated.label) />
+					<cfset querysetcell(qAllRelated,"typename",qRelated.typename) />
+					<cfif structkeyexists(application.stCOAPI[qRelated.typename],"displayname")>
+						<cfset querysetcell(qAllRelated,"typenamelabel",application.stCOAPI[qRelated.typename].displayname) />
+					<cfelse>
+						<cfset querysetcell(qAllRelated,"typenamelabel",qRelated.typename) />
+					</cfif>
+					<cfset querysetcell(qAllRelated,"typenametotal",qRelated.recordcount) />
+					<cfset querysetcell(qAllRelated,"jointypename",stSearch.typename) />
+					<cfset querysetcell(qAllRelated,"joinproperty",application.stCOAPI[stObj.typename].aJoins[thisjoin].property) />
+				</cfloop>
+			</cfif>
+
+			<!--- Get attached leaf nodes for dmNavigation --->
+			<cfif stObj.typename eq "dmNavigation"
+					and application.stCOAPI[stObj.typename].aJoins[thisjoin].direction eq "to" 
+					and application.stCOAPI[stObj.typename].aJoins[thisjoin].property eq "aObjectIDs">
+				<cfloop from="1" to="#arrayLen(stObj.aObjectIDs)#" index="i">
+					<cfset stLeaf = application.fapi.getContentObject(objectid=stObj.aObjectIDs[i])>
+					<cfset queryaddrow(qAllRelated) />
+					<cfset querysetcell(qAllRelated,"objectid",stLeaf.objectid) />
+					<cfset querysetcell(qAllRelated,"objectlabel",stLeaf.label) />
+					<cfset querysetcell(qAllRelated,"typename",stLeaf.typename) />
+					<cfif structkeyexists(application.stCOAPI[stLeaf.typename],"displayname")>
+						<cfset querysetcell(qAllRelated,"typenamelabel",application.stCOAPI[stLeaf.typename].displayname) />
+					<cfelse>
+						<cfset querysetcell(qAllRelated,"typenamelabel",stLeaf.typename) />
+					</cfif>
+					<cfset querysetcell(qAllRelated,"typenametotal",1) />
+					<cfset querysetcell(qAllRelated,"jointypename","dmNavigation") />
+					<cfset querysetcell(qAllRelated,"joinproperty","aObjectIDs") />
+				</cfloop>
+			</cfif>
+
+		</cfloop>
+
+		<cfreturn qAllRelated>
+	</cffunction>
+
 	<cffunction name="duplicateObject" access="public" hint="Underlying functionality for 'copy' action - a primary object and a recordset containing related content is passed in, which are duplicated and the new id's returned">
 		<cfargument name="objectid" type="uuid" required="true" hint="Primary object" />
-		<cfargument name="qRelated" type="query" required="false" default="#querynew('objectid,typename')#" hint="Related content to be duplcated also" />
+		<cfargument name="qRelated" type="query" required="false" default="#querynew('objectid,typename,jointypename,joinproperty,newid')#" hint="Related content to be duplcated also" />
+		<cfargument name="bAutoAttachToTree" type="boolean" required="false" default="true" hint="Should this method automatically attach to the newly duplicated object to the same point in the tree as the existing object" />
 		
 		<cfset var stDuplicate = structnew() />
+		<cfset var i = 0 />
+		<cfset var thisjoin = "" />
 		<cfset var user = "anonymous" />
 		<cfset var parentID = "" />
 		<cfset var oNav = application.fapi.getContentType(typename="dmNavigation") />
@@ -1150,18 +1183,21 @@ default handlers
 		<cfset var oCon = application.fapi.getContentType("container") />
 		<cfset var stObj = getData(arguments.objectid) />
 		<cfset var newmainid = application.fapi.getUUID() />
+		<cfset var newaObjectIDs = arrayNew(1)>
 		
 		<cfif application.security.isLoggedIn()>
 			<cfset arguments.User = application.security.getCurrentUserID()>
 		</cfif>
 			
 		<cfquery dbtype="query" name="arguments.qRelated">
-			select objectid, typename, '' as newid from arguments.qRelated
+			select objectid, typename, jointypename, joinproperty, '' as newid from arguments.qRelated
 		</cfquery>
 		
 		<cfset queryaddrow(arguments.qRelated) />
 		<cfset querysetcell(arguments.qRelated,"objectid",arguments.objectid) />
 		<cfset querysetcell(arguments.qRelated,"typename",getTypename()) />
+		<cfset querysetcell(arguments.qRelated,"jointypename",getTypename()) />
+		<cfset querysetcell(arguments.qRelated,"joinproperty",getTypename()) />
 		<cfset querysetcell(arguments.qRelated,"newid",newmainid) />
 		
 		<cfloop query="arguments.qRelated">
@@ -1180,6 +1216,11 @@ default handlers
 			<cfelse>
 				<cfset stDuplicate.objectid = newmainid />
 			</cfif>
+
+			<!--- build dmNavigation aObjectIDs array --->
+			<cfif arguments.qRelated.jointypename eq "dmNavigation" AND arguments.qRelated.joinproperty eq "aObjectIDs">
+				<cfset arrayAppend(newaObjectIDs, stDuplicate.objectid)>
+			</cfif>
 			
 			<!--- Update system properties --->
 			<cfset stDuplicate.createdby = user />
@@ -1197,23 +1238,32 @@ default handlers
 					<cfset stDuplicate[thisprop] = application.formtools[application.stCOAPI[arguments.qRelated.typename].stProps[thisprop].metadata.ftType].oFactory.duplicateFile(stDuplicate,application.stCOAPI[arguments.qRelated.typename].stProps[thisprop].metadata) />
 				</cfif>
 			</cfloop>
-			
+
+			<!--- for dmNavigation use the new aObjectIDs array of the duplicated objects --->
+			<cfif arguments.qRelated.currentRow eq arguments.qRelated.recordcount AND arguments.qRelated.typename eq "dmNavigation">
+				<cfset stDuplicate.aObjectIDs = newaObjectIDs>
+			</cfif>
+
+			<!--- save the duplicated object --->
 			<cfset application.fapi.setData(stProperties=stDuplicate) />
 			
 			<!--- Copy containers --->
 			<cfset oCon.copyContainers(arguments.qRelated.objectid,stDuplicate.objectid) />
-			
-			<!--- Put the copy into the next place in the tree --->
-			<cfif arguments.qRelated.typename eq "dmNavigation">
-				<cfset parentID = application.factory.oTree.getParentID(objectid=arguments.qRelated.objectid) />
-				<cfset application.factory.oTree.setChild(parentID=parentID,objectid=stDuplicate.objectid,objectname=stDuplicate.label,typename=arguments.qRelated.typename,pos=1000) />
-			<cfelseif structkeyexists(application.stCOAPI[arguments.qRelated.typename],"bUseInTree") and application.stCOAPI[arguments.qRelated.typename].bUseInTree>
-				<cfset parentID = oNav.getParent(objectid=arguments.qRelated.objectid).parentid[1] />
-				<cfset stNav = oNav.getData(objectid=parentID) />
-				<cfset arrayappend(stNav.aObjectIDs,stDuplicate.objectid) />
-				<cfset oNav.setData(stProperties=stNav) />
+
+
+			<cfif arguments.bAutoAttachToTree>
+				<!--- Put the copy into the next place in the tree --->
+				<cfif arguments.qRelated.typename eq "dmNavigation">
+					<cfset parentID = application.factory.oTree.getParentID(objectid=arguments.qRelated.objectid) />
+					<cfset application.factory.oTree.setChild(parentID=parentID.parentID,objectid=stDuplicate.objectid,objectname=stDuplicate.label,typename=arguments.qRelated.typename,pos=1000) />
+				<cfelseif structkeyexists(application.stCOAPI[arguments.qRelated.typename],"bUseInTree") and application.stCOAPI[arguments.qRelated.typename].bUseInTree>
+					<cfset parentID = oNav.getParent(objectid=arguments.qRelated.objectid).parentid[1] />
+					<cfset stNav = oNav.getData(objectid=parentID) />
+					<cfset arrayappend(stNav.aObjectIDs,stDuplicate.objectid) />
+					<cfset oNav.setData(stProperties=stNav) />
+				</cfif>
 			</cfif>
-			
+
 			<!--- Update the query with the new id --->
 			<cfset querysetcell(arguments.qRelated,"newid",stDuplicate.objectid,arguments.qRelated.currentrow) />
 			
