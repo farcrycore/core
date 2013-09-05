@@ -230,12 +230,12 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td class="fc-tree-title fc-nowrap"><a href="##" class="fc-treestate-toggle"><i class="fc-icon-treestate"></i></a><span class="icon-stack"><i class="icon-folder-close"></i></span> <span>{{sourceName}}</span></td>
+						<td class="fc-tree-title fc-nowrap"><a class="fc-treestate-toggle"><i class="fc-icon-treestate"></i></a><span class="icon-stack"><i class="icon-folder-close"></i></span> <span>{{sourceName}}</span></td>
 					</tr>
 				</tbody>
 				</table>
 
-				<table id="farcry-minitree" class="objectadmin table table-hover farcry-objectadmin table-unselectable">
+				<table id="farcry-minitree" class="objectadmin table table-hover table-hover-all farcry-objectadmin table-unselectable">
 				<thead>
 					<tr>
 						<th>{{targetText}}</th>
@@ -251,8 +251,8 @@
 			</div>
 
 			<div class="modal-footer" style="border: none; border-radius: 0; -moz-border-radius: 0">
-				<a href="##" class="btn btn-primary btn-submit" style="text-transform:capitalize">{{submitLabel}}</a>
-				<a href="##" class="btn btn-cancel">Cancel</a>
+				<a class="btn btn-primary btn-submit" style="text-transform:capitalize">{{submitLabel}}</a>
+				<a class="btn btn-cancel">Cancel</a>
 			</div>
 
 
@@ -398,7 +398,7 @@
 	</cfsavecontent>
 
 
-	<skin:htmlHead><cfoutput>
+	<skin:htmlHead>
 		<script type="text/javascript">
 			App = {};
 
@@ -406,14 +406,17 @@
 			TreeDialogView = Backbone.View.extend({
 
 				options: {
+					primaryTreeView: null,
+
+					action: null,
 					actionURL: null,
-					title: "Move",
-					submitLabel: "Move",
+					title: "",
+					submitLabel: "Submit",
 					sourceObjectID: null,
 					sourceName: null,
-					sourceText: "This folder",
+					sourceText: "Source folder...",
 					targetObjectID: null,
-					targetText: "Will be moved into the selected folder..."
+					targetText: "Destination folder..."
 
 				},
 
@@ -449,12 +452,27 @@
 				},
 
 				submit: function submit(evt){
+
 					// get selected nav item
 					this.options.targetObjectID = this.treeView.getSelectedObjectID();
-					// do the move
 					if (this.options.targetObjectID.length) {
-						this.treeView.doMoveTo(this.options.sourceObjectID, this.options.targetObjectID);
-						this.close();
+
+						// get the treeview that will perform the operations
+						var treeview = this.treeView;
+						if (this.options.primaryTreeView) {
+							treeview = this.options.primaryTreeView;
+						}
+
+
+						if (this.options.action == "copy") {
+							treeview.doCopyTo(this.options.sourceObjectID, this.options.targetObjectID);
+							this.close();
+						}
+						else if (this.options.action == "move") {
+							treeview.doMoveTo(this.options.sourceObjectID, this.options.targetObjectID);
+							this.close();
+						}
+
 					}
 					else {
 						alert("Please select a destination folder");
@@ -481,6 +499,8 @@
 
 
 				initialize: function SiteTreeView_initialize(options){
+
+					_.bindAll(this, 'doMoveTo', 'doCopyTo');
 
 					if (options.type == "mini") {
 						this.options.bRenderTreeOnly = true;
@@ -674,12 +694,15 @@
 
 				clickCopyTo: function SiteTreeView_clickCopyTo(evt){
 
-					var row = $j(evt.currentTarget).closest("tr")
+					var self = this;
+
+					var row = $j(evt.currentTarget).closest("tr");
 					var objectid = row.data("objectid");
 					var sourceName = row.find(".fc-tree-title").text();
 
 					this.treeDialogView = new TreeDialogView({
-
+						primaryTreeView: self,
+						action: "copy",
 						title: "Copy to...",
 						submitLabel: "Copy",
 						sourceText: "This folder",
@@ -693,36 +716,19 @@
 					return true;
 				},
 
-				clickMoveTo: function SiteTreeView_clickMoveTo(evt){
 
-					var row = $j(evt.currentTarget).closest("tr")
-					var objectid = row.data("objectid");
-					var sourceName = row.find(".fc-tree-title").text();
-
-					this.treeDialogView = new TreeDialogView({
-
-						title: "Move to...",
-						submitLabel: "Move",
-						sourceText: "This folder",
-						sourceObjectID: objectid,
-						sourceName: sourceName,
-						targetText: "Will be moved into the selected folder..."
-					});
-					this.treeDialogView.render();
-
-					return true;
-				},
-
-				doMoveTo: function SiteTreeView_doMoveTo(sourceobjectid, targetobjectid){
+				doCopyTo: function SiteTreeView_doCopyTo(sourceobjectid, targetobjectid){
 
 					var self = this;
+					var sourceRow = this.getRowById(sourceobjectid);
+					this.showLoadingIndicator(sourceRow);
 
 					$j.ajax({
 						url: "#application.url.webtop#/index.cfm",
 						data: {
 							"typename": "dmNavigation",
 							"view": "webtopAjaxTreeAction",
-							"action": "move",
+							"action": "copy",
 							"ajaxmode": 1,
 							"responsetype": "json",
 
@@ -734,9 +740,7 @@
 							response.success = response.success || false;
 							if (response.success) {
 
-alert("BING");
-								// reload tree source branch and target branch
-								self.reloadTreeBranch(sourceobjectid);
+								// reload tree target branch
 								var parentid = self.getParentId(self.getRowById(targetobjectid));
 								self.reloadTreeBranch(parentid);
 
@@ -755,7 +759,86 @@ console.log(response);
 alert(response.message);
 						},
 						complete: function() {
-							//self.loadExpandedAjaxNodes();
+							self.removeLoadingIndicator(sourceRow);
+						}
+					});
+
+
+
+
+					return true;
+				},
+
+
+				clickMoveTo: function SiteTreeView_clickMoveTo(evt){
+
+					var self = this;
+
+					var row = $j(evt.currentTarget).closest("tr");
+					var objectid = row.data("objectid");
+					var sourceName = row.find(".fc-tree-title").text();
+
+					this.treeDialogView = new TreeDialogView({
+						primaryTreeView: self,
+						action: "move",
+						title: "Move to...",
+						submitLabel: "Move",
+						sourceText: "This folder",
+						sourceObjectID: objectid,
+						sourceName: sourceName,
+						targetText: "Will be moved into the selected folder..."
+					});
+					this.treeDialogView.render();
+
+					return true;
+				},
+
+				doMoveTo: function SiteTreeView_doMoveTo(sourceobjectid, targetobjectid){
+
+					var self = this;
+
+					var sourceRow = this.getRowById(sourceobjectid);
+					var parentid = this.getParentId(sourceRow);
+					this.showDisabled(sourceRow);
+					this.showLoadingIndicator(sourceRow);
+
+					$j.ajax({
+						url: "#application.url.webtop#/index.cfm",
+						data: {
+							"typename": "dmNavigation",
+							"view": "webtopAjaxTreeAction",
+							"action": "move",
+							"ajaxmode": 1,
+							"responsetype": "json",
+
+							"sourceobjectid": sourceobjectid,
+							"targetobjectid": targetobjectid
+						},
+						datatype: "json",
+						success: function(response) {
+							response.success = response.success || false;
+							if (response.success) {
+
+								// reload tree source parent branch and target branch
+								self.reloadTreeBranch(parentid);
+								self.reloadTreeBranch(targetobjectid);
+
+							}
+							else {
+	// TODO: alert the user of an error with this request
+console.log("200 success=false");
+console.log(response);
+alert(response.message);
+							}
+						},
+						error: function(response) {
+	// TODO: alert the user of an error with this request
+console.log("Non-200 error");
+console.log(response);
+alert(response.message);
+						},
+						complete: function() {
+							this.removeDisabled(sourceRow);
 						}
 					});
 
@@ -774,6 +857,8 @@ alert(response.message);
 					var parentid = row.data("parentid");
 					var sourceName = row.find(".fc-tree-title").text().replace(/^\s+|\s+$/g, "");
 					var nodetype = row.data("nodetype");
+
+					this.showDisabled(row);
 
 					// node to reload
 					var reloadid = parentid;
@@ -824,7 +909,7 @@ alert(response.message);
 				},
 
 				getRowById: function SiteTreeView_getRowById(id) {
-					return $j("tr[data-objectid="+ id + "]", this.$el);
+					return Backbone.$("tr[data-objectid="+ id + "]", this.$el);
 				},
 
 				getDescendantsById: function SiteTreeView_getDescendantsById(id, bIncludeSelf) {
@@ -979,6 +1064,24 @@ alert(response.message);
 				},
 
 
+				showDisabled: function SiteTreeView_showDisabled(row) {
+					row.addClass("fc-treestate-disabled");
+				},
+
+				removeDisabled: function SiteTreeView_removeDisabled(row) {
+					row.removeClass("fc-treestate-disabled");
+				},
+
+
+				showLoadingIndicator: function SiteTreeView_showLoadingIndicator(row) {
+					row.removeClass("fc-treestate-notloaded").addClass("fc-treestate-loading");
+					row.find(".fc-tree-title").first().append("<i class='icon-spinner icon-spin' style='margin-left:0.5em'></i>");
+				},
+
+				removeLoadingIndicator: function SiteTreeView_removeLoadingIndicator(row) {
+					row.find(".fc-tree-title i.icon-spinner").remove()
+				},
+
 
 				loadTreeChildRows: function SiteTreeView_loadTreeChildRows(row, bReloadBranch) {
 
@@ -992,8 +1095,8 @@ alert(response.message);
 					var descendants = $j();
 					var loadCollapsed = false;
 
-					row.removeClass("fc-treestate-notloaded").addClass("fc-treestate-loading");
-					row.find(".fc-tree-title").first().append("<i class='icon-spinner icon-spin' style='margin-left:0.5em'></i>");
+					row.removeClass("fc-treestate-notloaded");
+					this.showLoadingIndicator(row);
 
 
 					// if reloading a branch, find the deepest descendant nlevel in this branch so that an appropriate depth can be loaded
@@ -1051,7 +1154,7 @@ alert(response.message);
 							row.removeClass("fc-treestate-loading").addClass("fc-treestate-notloaded");
 						},
 						complete: function() {
-							row.find(".fc-tree-title i.icon-spinner").remove();
+							self.removeLoadingIndicator(row);
 							self.setExpandedNodesCookie();
 							self.loadExpandedAjaxNodes(id);
 
@@ -1142,13 +1245,13 @@ alert(response.message);
 					var dropdown = "";
 					if (row["nodetype"] == "folder") {
 						dropdown = 
-								'<li><a href="##" class="fc-add" onclick="$fc.objectAdminAction(\'Add Page\', \'' + createURL + '\', { onHidden: function(){ this.reloadTreeBranch(\'' + row["objectid"] + '\'); } }); return false;"><i class="icon-plus icon-fixed-width"></i> Add Page</a></li> '
-							+	'<li><a href="##" class="fc-zoom"><i class="icon-zoom-in icon-fixed-width"></i> Zoom</a></li> '
-							+	'<li class="dropdown-submenu"><a href="##" class=""><i class="icon-fixed-width"></i> Status</a><ul class="dropdown-menu"> '
-							+		'<li><a href="##" class="fc-changestatus" data-status="approve">Approve</a></li> '
-							+		'<li><a href="##" class="fc-changestatus" data-status="approvebranch">Approve Branch</a></li> '
-							+		'<li><a href="##" class="fc-changestatus" data-status="draft">Send To Draft</a></li> '
-							+		'<li><a href="##" class="fc-changestatus" data-status="draftbranch">Send Branch To Draft</a></li> '
+								'<li><a class="fc-add" onclick="$fc.objectAdminAction(\'Add Page\', \'' + createURL + '\', { onHidden: function(){ this.reloadTreeBranch(\'' + row["objectid"] + '\'); } }); return false;"><i class="icon-plus icon-fixed-width"></i> Add Page</a></li> '
+							+	'<li><a class="fc-zoom"><i class="icon-zoom-in icon-fixed-width"></i> Zoom</a></li> '
+							+	'<li class="dropdown-submenu"><a class=""><i class="icon-fixed-width"></i> Status</a><ul class="dropdown-menu"> '
+							+		'<li><a class="fc-changestatus" data-status="approve">Approve</a></li> '
+							+		'<li><a class="fc-changestatus" data-status="approvebranch">Approve Branch</a></li> '
+							+		'<li><a class="fc-changestatus" data-status="draft">Send To Draft</a></li> '
+							+		'<li><a class="fc-changestatus" data-status="draftbranch">Send Branch To Draft</a></li> '
 							+	'</ul></li> '
 						;
 
@@ -1156,37 +1259,37 @@ alert(response.message);
 						if (row["protectednode"] == false) {
 							dropdown = dropdown
 								+	'<li class="divider"></li> '
-								+	'<li><a href="##" class="fc-sort"><i class="icon-reorder icon-fixed-width"></i> Sort Order...</a></li> '
-								+	'<li><a href="##" class="fc-copyto"><i class="icon-copy icon-fixed-width"></i> Copy to...</a></li> '
-								+	'<li><a href="##" class="fc-moveto"><i class="icon-move icon-fixed-width"></i> Move to...</a></li> '
+								+	'<li><a class="fc-sort"><i class="icon-reorder icon-fixed-width"></i> Sort Order...</a></li> '
+								+	'<li><a class="fc-copyto"><i class="icon-copy icon-fixed-width"></i> Copy to...</a></li> '
+								+	'<li><a class="fc-moveto"><i class="icon-move icon-fixed-width"></i> Move to...</a></li> '
 							;
 						}
 /*
 						dropdown = dropdown
 							+	'<li class="divider"></li> '
-							+	'<li><a href="##" class="fc-permissions"><i class="icon-key icon-fixed-width"></i> Permissions</a></li> '
+							+	'<li><a class="fc-permissions"><i class="icon-key icon-fixed-width"></i> Permissions</a></li> '
 						;
 */
 						// destructive operations only allowed on nodes that are not protected
 						if (row["protectednode"] == false) {
 							dropdown = dropdown
 								+	'<li class="divider"></li> '
-								+	'<li><a href="##" class="fc-delete"><i class="icon-trash icon-fixed-width"></i> Delete</a></li> '
+								+	'<li><a class="fc-delete"><i class="icon-trash icon-fixed-width"></i> Delete</a></li> '
 							;
 						}
 					}
 					else if (row["nodetype"] == "leaf") {
 						dropdown = 
-								'<li class="dropdown-submenu"><a href="##" class=""><i class="icon-fixed-width"></i> Status</a><ul class="dropdown-menu"> '
-							+		'<li><a href="##" class="fc-changestatus" data-status="approve">Approve</a></li> '
-							+		'<li><a href="##" class="fc-changestatus" data-status="draft">Send To Draft</a></li> '
+								'<li class="dropdown-submenu"><a class=""><i class="icon-fixed-width"></i> Status</a><ul class="dropdown-menu"> '
+							+		'<li><a class="fc-changestatus" data-status="approve">Approve</a></li> '
+							+		'<li><a class="fc-changestatus" data-status="draft">Send To Draft</a></li> '
 							+	'</ul></li> '
 							+	'<li class="divider"></li> '
-							+	'<li><a href="##" class="fc-sort"><i class="icon-reorder icon-fixed-width"></i> Sort Order...</a></li> '
-							+	'<li><a href="##" class="fc-copyto"><i class="icon-copy icon-fixed-width"></i> Copy to...</a></li> '
-							+	'<li><a href="##" class="fc-moveto"><i class="icon-move icon-fixed-width"></i> Move to...</a></li> '
+							+	'<li><a class="fc-sort"><i class="icon-reorder icon-fixed-width"></i> Sort Order...</a></li> '
+							+	'<li><a class="fc-copyto"><i class="icon-copy icon-fixed-width"></i> Copy to...</a></li> '
+							+	'<li><a class="fc-moveto"><i class="icon-move icon-fixed-width"></i> Move to...</a></li> '
 							+	'<li class="divider"></li> '
-							+	'<li><a href="##" class="fc-delete"><i class="icon-trash icon-fixed-width"></i> Delete</a></li> '
+							+	'<li><a class="fc-delete"><i class="icon-trash icon-fixed-width"></i> Delete</a></li> '
 						;
 					}
 
@@ -1200,9 +1303,9 @@ alert(response.message);
 							+		'<div class="btn-group"> '
 							+			'<button data-toggle="dropdown" class="btn dropdown-toggle" type="button"><i class="icon-caret-down only-icon"></i></button> '
 							+			'<div class="dropdown-menu"> '
-							+				'<li class="fc-visible-compact"><a href="##" class="fc-btn-overview"><i class="icon-th icon-fixed-width"></i> Overview</a></li> '
-							+				'<li class="fc-visible-compact"><a href="##" class="fc-btn-edit"><i class="icon-pencil icon-fixed-width"></i> Edit</a></li> '
-							+				'<li class="fc-visible-compact"><a href="##" class="fc-btn-preview"><i class="icon-eye-open icon-fixed-width"></i> Preview</a></li> '
+							+				'<li class="fc-visible-compact"><a class="fc-btn-overview"><i class="icon-th icon-fixed-width"></i> Overview</a></li> '
+							+				'<li class="fc-visible-compact"><a class="fc-btn-edit"><i class="icon-pencil icon-fixed-width"></i> Edit</a></li> '
+							+				'<li class="fc-visible-compact"><a class="fc-btn-preview"><i class="icon-eye-open icon-fixed-width"></i> Preview</a></li> '
 							+				'<li class="divider fc-visible-compact"></li> '
 							+       		dropdown
 							+			'</div> '
@@ -1257,9 +1360,7 @@ alert(response.message);
 
 			});
 		</script>
-	</cfoutput></skin:htmlHead>
-
-
+	</skin:htmlHead>
 
 
 </cfoutput>

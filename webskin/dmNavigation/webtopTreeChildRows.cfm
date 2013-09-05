@@ -86,13 +86,11 @@
 </cfif>
 
 <!--- tree depth is relative to the root nlevel of the "page" --->
-<cfset baseNLevel = qTree.nlevel + 1>
-<cfif bRenderRoot>
-	<cfset baseNLevel = baseNLevel - 1>
-</cfif>
-
-
+<cfset baseNLevel = qTree.nlevel>
 <cfset treeMaxLevel = baseNLevel + treeLoadingDepth>
+<cfif NOT bRenderRoot>
+	<cfset baseNLevel = baseNLevel + 1>
+</cfif>
 
 
 <cfset stResponse = structNew()>
@@ -181,7 +179,9 @@
 	<cfif bRenderRoot OR qTree.objectid neq rootObjectID>
 
 		<!--- if this node is expanded, or the parent nav node is expanded then this nav node will be visible --->
-		<cfif bUnexpandedAncestor>
+		<cfif qTree.parentid eq rootObjectID AND NOT url.bIgnoreExpandedNodes>
+			<cfset thisClass = thisClass & " fc-treestate-visible">
+		<cfelseif bUnexpandedAncestor>
 			<cfset thisClass = thisClass & " fc-treestate-hidden">
 		<cfelseif url.bLoadCollapsed AND NOT bRootNode>
 			<cfset thisClass = thisClass & " fc-treestate-hidden">

@@ -491,9 +491,12 @@ table.table td {
 table.table-hover tbody tr:hover > td {
 	background: #fff6eb;
 }
-
 table.table-hover tbody tr.selected > td {
 	background: #F9E6D4;
+}
+
+table.table-hover-all tbody tr:hover {
+	cursor: pointer;
 }
 
 

@@ -65,20 +65,50 @@
 						<!--- move the branch in the NTM --->
 					 	<cftry> 
 							<!--- exclusive lock to prevent corruption --->
-							<cflock scope="application" type="EXCLUSIVE" timeout="1" throwontimeout="yes">
+							<cflock name="#application.applicationname#_fcTreeOperations" type="EXCLUSIVE" timeout="1" throwontimeout="yes">
 								<cfset application.factory.oTree.moveBranch(dsn=application.dsn, objectid=url.sourceobjectid, parentID=url.targetobjectid)>
+								<!--- rebuild the tree because moveBranch cant handle moving a nav node into one of its siblings --->
+								<cfset application.factory.oTree.rebuildTree(typename="dmNavigation")>
 							</cflock>
 
-							<cfcatch>
+							<cfcatch type="lock">
 								<cfset stResponse["success"] = false>
 								<cfset stResponse["message"] = application.rb.getResource('sitetree.messages.branchLockoutBlurb@text','Another editor is currently modifying the hierarchy. Please refresh the site overview tree and try again.')>
+							</cfcatch>
+							<cfcatch>
+								<cfset stResponse["success"] = false>
+								<cfset stResponse["error"] = cfcatch>
+								<cfset stResponse["message"] = cfcatch.message>
 							</cfcatch>
 						</cftry> 
 					</cfif>
 
 					<cfif url.action eq "copy">
-						<cfset stResponse["success"] = false>
-						<cfset stResponse["message"] = "NOT IMPLEMENTED YET">
+						<!--- duplicate the object --->
+						<cfset qAllRelated = relatedCopyableContent(objectid=url.sourceobjectid)>
+						<cfset newObjectId = duplicateObject(objectid=url.sourceobjectid, qRelated=qAllRelated, bAutoAttachToTree=false)>
+						<!--- get the new object --->
+						<cfset stNewObject = application.fapi.getContentObject(objectid=newObjectId)>
+
+						<!--- move the branch in the NTM --->
+					 	<cftry> 
+							<cflock name="#application.applicationname#_fcTreeOperations" type="EXCLUSIVE" timeout="1" throwontimeout="yes">
+								<!--- set the new parent for dmNavigation nodes --->
+								<cfif stNewObject.typename eq "dmNavigation">
+									<cfset application.factory.oTree.setChild(parentID=url.targetobjectid,objectid=stNewObject.objectid,objectname=stNewObject.label,typename=stNewObject.typename,pos=1000)>
+								</cfif>
+							</cflock>
+
+							<cfcatch type="lock">
+								<cfset stResponse["success"] = false>
+								<cfset stResponse["message"] = application.rb.getResource('sitetree.messages.branchLockoutBlurb@text','Another editor is currently modifying the hierarchy. Please refresh the site overview tree and try again.')>
+							</cfcatch>
+							<cfcatch>
+								<cfset stResponse["success"] = false>
+								<cfset stResponse["error"] = cfcatch>
+								<cfset stResponse["message"] = cfcatch.message>
+							</cfcatch>
+						</cftry> 
 					</cfif>
 					
 				<cfelse>
@@ -105,14 +135,27 @@
 									<cfset oNav.setData(stProperties=stTargetObject,auditNote="Child moved")>
 								<cfelse>
 									<cfset stResponse["success"] = false>
-									<cfset stResponse["message"] = "Source node not found">
+									<cfset stResponse["message"] = "Source object not found">
 								</cfif>
 
 							</cfif>
 
 							<cfif url.action eq "copy">
-								<cfset stResponse["success"] = false>
-								<cfset stResponse["message"] = "NOT IMPLEMENTED YET">
+
+								<!--- duplicate the object --->
+								<cfset oType = application.fapi.getContentType(typename=stSourceObject.typename)>
+								<cfset qAllRelated = oType.relatedCopyableContent(objectid=url.sourceobjectid)>
+								<cfset newObjectId = oType.duplicateObject(objectid=url.sourceobjectid, qRelated=qAllRelated, bAutoAttachToTree=false)>
+
+								<!--- append the leaf node to the target nav node --->
+								<cfif isValid("uuid", newObjectId)>
+									<cfset arrayAppend(stTargetObject.aObjectIDs, newObjectId)>
+									<cfset application.fapi.setData(stProperties=stTargetObject)>
+								<cfelse>
+									<cfset stResponse["success"] = false>
+									<cfset stResponse["message"] = "Unable to copy source object">
+								</cfif>
+
 							</cfif>
 							
 						</cfif>
@@ -123,19 +166,36 @@
 
 				</cfif>
 
+			<cfelse>
+				<cfset stResponse["success"] = false>
+				<cfset stResponse["message"] = "You do not have permission to perform this action.">
 			</cfif>
 
 		</cfif>
 
 	<cfelseif url.action eq "delete">
 
-		<cfset thisTypename = application.fapi.findType(objectid=url.sourceobjectid)>
-		<cfset oType = application.fapi.getContentType(typename=thisTypename)>
-		<cfset stResult = oType.delete(objectid=url.sourceobjectID)>
+		<!--- check permission --->
+		<cfset hasPermission = false>
+		<cfif application.security.checkPermission(permission="delete",object=url.sourceobjectid)>
+			<cfset hasPermission = true>
+		</cfif>
 
-		<cfif isDefined("stResult.bSuccess") AND NOT stResult.bSuccess>
+		<cfif hasPermission>
+
+			<!--- delete action is the same for both navigation nodes and leaf nodes --->
+			<cfset thisTypename = application.fapi.findType(objectid=url.sourceobjectid)>
+			<cfset oType = application.fapi.getContentType(typename=thisTypename)>
+			<cfset stResult = oType.delete(objectid=url.sourceobjectID)>
+
+			<cfif isDefined("stResult.bSuccess") AND NOT stResult.bSuccess>
+				<cfset stResponse["success"] = false>
+				<cfset stResponse["message"] = stResult.message>
+			</cfif>
+
+		<cfelse>
 			<cfset stResponse["success"] = false>
-			<cfset stResponse["message"] = stResult.message>
+			<cfset stResponse["message"] = "You do not have permission to perform this action.">
 		</cfif>
 
 	</cfif>
