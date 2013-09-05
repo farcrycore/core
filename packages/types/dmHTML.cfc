@@ -58,6 +58,7 @@ type properties
 	ftSeq="13" ftwizardStep="Web Page" ftFieldset="Relationships" ftLabel="Associated Media" 
 	ftType="array" ftJoin="dmImage,dmFile" 
 	ftShowLibraryLink="false" ftAllowAttach="true" ftAllowAdd="true" ftAllowEdit="true" ftRemoveType="detach"
+	ftallowbulkupload="true"
 	bSyncStatus="true">
 
 <cfproperty 
