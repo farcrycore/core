@@ -112,7 +112,7 @@
 	<cfproperty name="ftWatermark" type="string" hint="The path relative to the webroot of an image to use as a watermark." required="false" default="" />
 	<cfproperty name="ftWatermarkTransparency" type="numeric" hint="The transparency to apply to the watermark." required="false" default="90" />
 	<cfproperty name="ftSizeLimit" type="numeric" hint="File size limit for upload. 0 is no-limit" required="false" default="0" />
-	
+	<cfproperty name="ftShowMetadata" type="boolean" default="true" hint="If this is set to false, the file size and dimensions of the current image are not displayed to the user" />
 	
 	
 	<!--- 
@@ -142,6 +142,8 @@
 	    <cfset var prefix = left(arguments.fieldname,len(arguments.fieldname)-len(arguments.stMetadata.name)) />
 	    <cfset var thisdependant = "" />
 	    <cfset var stAltMeta = structnew() />
+	    <cfset var bFileExists = getFileExists(arguments.stMetadata.value) />
+	    <cfset var imagePath = "" />
 	    <cfset var error = "" />
 		
 		
@@ -192,10 +194,11 @@
 		</cfsavecontent>
 	    
 	    <cfif len(arguments.stMetadata.value)>
-			<cfset stImage = getImageInfo(arguments.stMetadata.value,true) />
-			<cfif not len(stImage.path)>
+			<cfif not bFileExists>
 				<cfset arguments.stMetadata.value = "" />
 				<cfset error = application.fapi.getResource("formtools.image.message.imagenotfound@text","The previous image can't be found in the file system. You should upload a new image or talk to your administrator before saving.") />
+			<cfelse>
+				<cfset imagePath = getFileLocation(stObject=arguments.stObject,stMetadata=arguments.stMetadata,admin=true).path />
 			</cfif>
 		</cfif>
 	    
@@ -253,32 +256,29 @@
 							<span class="image-status" title="#metadatainfo#"><span id="indicator" class="ui-icon" style="float:left;">>&nbsp;</span></span>
 						    <div style="margin-left:15px;">Generating image...</div>
 						</div>
-						<cfif structkeyexists(stImage,"path") and len(stImage.path)>
-						    <cfset previewwidth = stImage.width />
-						    <cfset previewheight = stImage.height />
-						    <cfif previewwidth gt 400>
-								<cfset previewheight = previewheight * 400 / previewwidth />
-								<cfset previewwidth = 400 />
-							</cfif>
-						    <cfif previewheight gt 400>
-								<cfset previewwidth = previewwidth * 400 / previewheight />
-								<cfset previewheight = 400 />
-							</cfif>
+						
+						<cfif bFileExists>
 						    <div id="#arguments.fieldname#_complete" class="complete-view">
 					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
 					    		<div style="margin-left:15px;">
-						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#stImage.path#' width='#previewwidth#' height='#previewheight#' />" href="#stImage.path#" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
-						    		Size: <span class="image-size">#round(stImage.size / 1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
-						    		<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
+						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
+						    		<cfif arguments.stMetadata.ftShowMetadata>
+							    		<cfset stImage = getImageInfo(file=arguments.stMetadata.value,admin=true) />
+							    		
+							    		Size: <span class="image-size">#round(stImage.size / 1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
+							    		<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
+							    	</cfif>
 						    	</div>
 							</div>
 						<cfelse>
 						    <div id="#arguments.fieldname#_complete" class="complete-view" style="display:none;">
 					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
 					    		<div style="margin-left:15px;">
-						    		<span class="image-filename"></span> ( <a class="image-preview" title="<img src='' />" href="##" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
-						    		Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
-									<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
+						    		<span class="image-filename"></span> ( <a class="image-preview" title="<img src='' style='max-width:400px; max-height:400px;' />" href="##" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
+						    		<cfif arguments.stMetadata.ftShowMetadata>
+							    		Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
+										<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
+									</cfif>
 						    	</div>
 							</div>
 						</cfif>
@@ -321,32 +321,28 @@
 					    		<div class="image-cancel-upload"><a href="##back" class="select-view">Cancel - I don't want to delete</a></div>
 					    	</div>
 						</div>
-						<cfif structkeyexists(stImage,"path") and len(stImage.path)>
-						    <cfset previewwidth = stImage.width />
-						    <cfset previewheight = stImage.height />
-						    <cfif previewwidth gt 400>
-								<cfset previewheight = previewheight * 400 / previewwidth />
-								<cfset previewwidth = 400 />
-							</cfif>
-						    <cfif previewheight gt 400>
-								<cfset previewwidth = previewwidth * 400 / previewheight />
-								<cfset previewheight = 400 />
-							</cfif>
+						<cfif bFileExists>
 						    <div id="#arguments.fieldname#_complete" class="complete-view">
 					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
 					    		<div style="margin-left:15px;">
-						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#stImage.path#' width='#previewwidth#' height='#previewheight#' />" href="#stImage.path#" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
-						    		Size: <span class="image-size">#round(stImage.size / 1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
-									<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
+						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
+						    		<cfif arguments.stMetadata.ftShowMetadata>
+							    		<cfset stImage = getImageInfo(file=arguments.stMetadata.value,admin=true) />
+							    		
+								    	Size: <span class="image-size">#round(stImage.size / 1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
+										<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
+									</cfif>
 						    	</div>
 							</div>
 						<cfelse>
 						    <div id="#arguments.fieldname#_complete" class="complete-view" style="display:none;">
 					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
 					    		<div style="margin-left:15px;">
-						    		<span class="image-filename"></span> ( <a class="image-preview" title="<img src='' />" href="##" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
-						    		Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
-						    		<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
+						    		<span class="image-filename"></span> ( <a class="image-preview" title="<img src='' style='max-width:400px; max-height:400px;' />" href="##" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
+						    		<cfif arguments.stMetadata.ftShowMetadata>
+							    		Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
+							    		<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
+							    	</cfif>
 						    	</div>
 							</div>
 						</cfif>
@@ -386,6 +382,9 @@
 		<cfset var predefinedCrops = { none="None",center="Crop Center",fitinside="Fit Inside",forcesize="Force Size",pad="Pad",topcenter="Crop Top Center",topleft="Crop Top Left",topright="Crop Top Right",left="Crop Left",right="Crop Right",bottomright="Crop Bottom Left",bottomright="Crop Bottom Center" } />
 	    <cfset var stImage = structnew() />
 	    <cfset var stFile = structnew() />
+	    <cfset var bFileExists = getFileExists(arguments.stMetadata.value) />
+	    <cfset var imagePath = "" />
+	    <cfset var error = "" />
 	    
 		<cfparam name="arguments.stMetadata.ftHint" default="" />
 	    <cfparam name="arguments.stMetadata.ftstyle" default="">
@@ -413,19 +412,12 @@
 		</cfsavecontent>
 		
 		<!--- Preview --->
-		<cfif len(arguments.stMetadata.value)>
-			<cfset stImage = getImageInfo(arguments.stMetadata.value,true) />
-		    <cfset previewwidth = stImage.width />
-		    <cfset previewheight = stImage.height />
-		    <cfif previewwidth gt 400>
-				<cfset previewheight = previewheight * 400 / previewwidth />
-				<cfset previewwidth = 400 />
+		<cfif bFileExists>
+			<cfset preview = "<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" />
+			<cfif arguments.stMetadata.ftShowMetadata>
+				<cfset stImage = getImageInfo(file=arguments.stMetadata.value,admin=true) />
+				<cfset preview = preview & "<br><div style='width:#previewwidth#px;'>#round(stImage.size/1024)#</span>KB, #stImage.width#px x #stImage.height#px</div>" />
 			</cfif>
-		    <cfif previewheight gt 400>
-				<cfset previewwidth = previewwidth * 400 / previewheight />
-				<cfset previewheight = 400 />
-			</cfif>
-			<cfset preview = "<img src='#stImage.path#' width='#previewwidth#' height='#previewheight#' /><br><div style='width:#previewwidth#px;'>#round(stImage.size/1024)#</span>KB, #stImage.width#px x #stImage.height#px</div>" />
 		<cfelse>
 			<cfset preview = "" />
 		</cfif>
@@ -493,7 +485,7 @@
 		<cfset var stImage = structnew() />
 		<cfset var stLoc = structnew() />
 		<cfset var resizeinfo = "" />
-		<cfset var source = "" />
+		<cfset var sourceField = "" />
 		<cfset var html = "" />
 		<cfset var json = "" />
 		<cfset var stJSON = structnew() />
@@ -510,13 +502,14 @@
 		</cfif>
 		
 		<cfif structkeyexists(url,"crop")>
-			<cfset source = arguments.stObject[listfirst(arguments.stMetadata.ftSourceField,":")] />
-			<cfif isArray(source) and arrayLen(source)>
-				<cfset source = source[1] />
-			</cfif>
-			<cfif isvalid("uuid",source)>
-				<cfset stSource = application.fapi.getContentObject(objectid=source) />
-				<cfset source = stSource[listlast(arguments.stMetadata.ftSourceField,":")] />
+			<cfset stSource = arguments.stObject />
+			<cfset sourceField = listfirst(arguments.stMetadata.ftSourceField,":") />
+			<cfif isArray(stSource[sourceField]) and arrayLen(stSource[sourceField])>
+				<cfset stSource = application.fapi.getContentObject(objectid=stSource[sourceField][1]) />
+				<cfset sourceField = listlast(arguments.stMetadata.ftSourceField,":") />
+			<cfelseif issimplevalue(stSource[sourceField]) and isvalid("uuid",stSource[sourceField])>
+				<cfset stSource = application.fapi.getContentObject(objectid=stSource[sourceField]) />
+				<cfset sourceField = listlast(arguments.stMetadata.ftSourceField,":") />
 			</cfif>
 			
 			<cfif not structkeyexists(arguments.stMetadata,"ftImageWidth") or not isnumeric(arguments.stMetadata.ftImageWidth)><cfset arguments.stMetadata.ftImageWidth = 0 /></cfif>
@@ -524,8 +517,8 @@
 	    	<cfparam name="arguments.stMetadata.ftAllowResizeQuality" default="false">
 	    	<cfparam name="url.allowcancel" default="1" />
 	    	
-			<cfif len(source)>
-				<cfset stLoc = getFileLocation(stObject=arguments.stObject,stMetadata=arguments.stMetadata,admin=true) />
+			<cfif len(sourceField)>
+				<cfset stLoc = getFileLocation(stObject=stSource,stMetadata=application.stCOAPI[stSource.typename].stProps[sourceField].metadata,admin=true) />
 				
 				<cfsavecontent variable="html"><cfoutput>
 					<div style="float:left;background-color:##cccccc;height:100%;width:65%;margin-right:1%;">
@@ -614,13 +607,20 @@
 				</cfif>
 				
 				<cfif not structkeyexists(stResult,"error")>
-					<cfset stImage = getImageInfo(stFixed.value,true) />
 					<cfset stJSON["value"] = stFixed.value />
 					<cfset stJSON["filename"] = listlast(stResult.value,'/') />
 					<cfset stJSON["fullpath"] = stFixed.value />
-					<cfset stJSON["size"] = round(stImage.size / 1024) />
-					<cfset stJSON["width"] = stImage.width />
-					<cfset stJSON["height"] = stImage.height />
+					
+					<cfif arguments.stMetadata.ftShowMetadata>
+						<cfset stImage = getImageInfo(stFixed.value,true) />
+						<cfset stJSON["size"] = round(stImage.size / 1024) />
+						<cfset stJSON["width"] = stImage.width />
+						<cfset stJSON["height"] = stImage.height />
+					<cfelse>
+						<cfset stJSON["size"] = 0 />
+						<cfset stJSON["width"] = 0 />
+						<cfset stJSON["height"] = 0 />
+					</cfif>
 				
 					<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stFixed.value) />
 				</cfif>
@@ -655,14 +655,21 @@
 				</cfif>
 				
 				<cfif not structkeyexists(stResult,"error")>
-					<cfset stImage = getImageInfo(stFixed.value,true) />
 					<cfset stJSON["value"] = stFixed.value />
 					<cfset stJSON["filename"] = listlast(stResult.value,'/') />
 					<cfset stJSON["fullpath"] = stFixed.value />
-					<cfset stJSON["size"] = round(stImage.size / 1024) />
-					<cfset stJSON["width"] = stImage.width />
-					<cfset stJSON["height"] = stImage.height />
 					<cfset stJSON["q"] = cgi.query_string />
+					
+					<cfif arguments.stMetadata.ftShowMetadata>
+						<cfset stImage = getImageInfo(stFixed.value,true) />
+						<cfset stJSON["size"] = round(stImage.size / 1024) />
+						<cfset stJSON["width"] = stImage.width />
+						<cfset stJSON["height"] = stImage.height />
+					<cfelse>
+						<cfset stJSON["size"] = 0 />
+						<cfset stJSON["width"] = 0 />
+						<cfset stJSON["height"] = 0 />
+					</cfif>
 					
 					<cfset onFileChange(typename=arguments.typename,objectid=arguments.stObject.objectid,stMetadata=arguments.stMetadata,value=stFixed.value) />
 				</cfif>
@@ -1025,6 +1032,16 @@
 		
 	</cffunction>
 	
+	
+	<cffunction name="getFileExists" access="public" output="false" returntype="boolean" hint="Returns true if file is non-empty and exists">
+		<cfargument name="file" type="string" required="true" />
+		
+		<cfif len(arguments.file)>
+			<cfreturn application.fc.lib.cdn.ioGetFileExists(location="images",file=arguments.file) />
+		<cfelse>
+			<cfreturn false />
+		</cfif>
+	</cffunction>
 	
 	<cffunction name="getImageInfo" access="public" output="false" returntype="struct" hint="Returns information about image">
 		<cfargument name="file" type="string" required="true" />
