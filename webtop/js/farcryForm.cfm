@@ -507,11 +507,11 @@
 		
 		$fc.openBootstrapModal({
 			title:'Library',
-			url: '#application.fapi.getWebroot()#/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=webtopPageModal&bodyview=displayLibraryTabs' + '&property=' + property + '&fieldname=' + id + '&' + urlparameters,
-			onHidden:	function () {
-							fcForm.refreshProperty(typename,objectid,property,id);
-							return true;
-						}
+			url: '#application.url.webtop#/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=webtopPageModal&bodyview=displayLibraryTabs' + '&property=' + property + '&fieldname=' + id + '&' + urlparameters,
+			onHidden: function () {
+				fcForm.refreshProperty(typename,objectid,property,id);
+				return true;
+			}
 		});
 	};
 	
@@ -519,31 +519,16 @@
 	fcForm.openLibraryAdd = function(typename,objectid,property,id) {
 		var newDialogDiv = $j("<div id='" + typename + objectid + property + "'><iframe style='width:100%;height:100%;border-width:0px;' frameborder='0'></iframe></div>")
 		var filterTypename = $j('##' + id + '-add-type').val();
-		$j("body").prepend(newDialogDiv);
-		$j("html").css('overflow', 'hidden');
-		$j("div.ui-dialog", parent.document.body).addClass('nested');
-		$j(newDialogDiv).dialog({
-			bgiframe: true,
-			modal: true,
+
+		$fc.openBootstrapModal({
 			title:'Add New',
-			closeOnEscape: false,
-			draggable:false,
-			resizable:false,
-			width: $j(window).width()-20,
-			height: $j(window).height()-20,
-			close: function(event, ui) {
-				$j("html").css('overflow', 'auto');
-				$j("div.ui-dialog", parent.document.body).removeClass('nested');
+			url: '#application.url.webtop#/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=webtopPageModal&bodyView=displayLibraryAdd' + '&property=' + property + '&filterTypename=' + filterTypename,
+			onHidden: function () {
 				fcForm.refreshProperty(typename,objectid,property,id);
-				$j(newDialogDiv).dialog( 'destroy' );
-				$j(newDialogDiv).remove();
+				return true;
 			}
-			
 		});
-		$j(newDialogDiv).dialog('open');
-		//OPEN URL IN IFRAME ie. not in ajaxmode
-		$j('iframe',$j(newDialogDiv)).attr('src','#application.fapi.getWebroot()#/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=displayLibraryAdd' + '&property=' + property + '&filterTypename=' + filterTypename);
-		
+
 	};	
 	
 	fcForm.openLibraryBulkUpload = function(typename,objectid,property,id) {
@@ -551,10 +536,10 @@
 		$fc.openBootstrapModal({
 			title:'Bulk Upload',
 			url: '#application.url.webtop#/index.cfm?typename='+filterTypename+'&view=webtopPageModal&bodyView=webtopBodyBulkUpload&parentType='+typename+'&parentObjectID='+objectid+'&parentProperty=' + property + '&fieldname=' + id,
-			onHidden:	function () {
-							fcForm.refreshProperty(typename,objectid,property,id);
-							return true;
-						}
+			onHidden: function () {
+				fcForm.refreshProperty(typename,objectid,property,id);
+				return true;
+			}
 		});
 	};	
 	
@@ -583,7 +568,7 @@
 		});
 		$j(newDialogDiv).dialog('open');
 		//OPEN URL IN IFRAME ie. not in ajaxmode
-		$j('iframe',$j(newDialogDiv)).attr('src','#application.fapi.getWebroot()#/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=displayLibraryEdit' + '&property=' + property + '&editid=' + editid);
+		$j('iframe',$j(newDialogDiv)).attr('src','#application.url.webtop#/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=webtopPageModal&bodyView=displayLibraryEdit' + '&property=' + property + '&editid=' + editid);
 		
 	};	
 	
@@ -591,7 +576,7 @@
 		$j.ajax({
 			cache: false,
 			type: "POST",
- 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
+ 			url: '#application.url.webtop#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
 			data: {deleteID: itemids },
 			dataType: "html",
 			complete: function(data){
@@ -612,7 +597,7 @@
 		$j.ajax({
 			cache: false,
 			type: "POST",
- 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
+ 			url: '#application.url.webtop#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxUpdateJoin' + '&property=' + property,
 			data: {deleteID: itemids },
 			dataType: "html",
 			complete: function(data){
@@ -644,7 +629,7 @@
 		
 		$j('tr.selector-wrap')
 			.filter(':has(input:checked)')
-			.addClass('rowselected')
+			.addClass('selected')
 		    .end()
 		  .click(function(event) {	
 		    if (event.target.type !== 'checkbox' && event.target.type !== 'radio') {
@@ -661,10 +646,10 @@
   			
 		$j("input.checker").click(function(e) {			
 			if(e.target.type == 'radio'){
-				$j('tr.selector-wrap').removeClass('rowselected');
-				$j(this).parents('tr.selector-wrap').addClass('rowselected');
+				$j('tr.selector-wrap').removeClass('selected');
+				$j(this).parents('tr.selector-wrap').addClass('selected');
 			} else {
-				$j(this).parents('tr.selector-wrap').toggleClass('rowselected');
+				$j(this).parents('tr.selector-wrap').toggleClass('selected');
 			};
 						
 		});
@@ -692,7 +677,7 @@
 		$j.ajax({
 			type: "POST",
 			cache: false,
- 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxRefreshJoinProperty' + '&property=' + property + '&prefix=' + prefix,
+ 			url: '#application.url.webtop#/index.cfm?ajaxmode=1&type=' + typename + '&objectid=' + objectid + '&view=displayAjaxRefreshJoinProperty' + '&property=' + property + '&prefix=' + prefix,
 		 	success: function(msg){
 				$j("##" + id + '-library-wrapper').html(msg);
 				fcForm.initSortable(typename,objectid,property,id);	
@@ -819,19 +804,19 @@
 		},
 		statusupdate: function(property) {
 			var nbrSelections = userselection.length;
-			var statusText = '<div class="ui-state-highlight ui-corner-all">' + nbrSelections + ' items selected.</div>';
+			var statusText = '<div class="alert alert-success">' + nbrSelections + ' items selected.</div>';
 		
 			if(nbrSelections == 0) {
-				statusText = '<div class="ui-state-error ui-corner-all">No items have been selected.</div>';
+				statusText = '<div class="alert alert-info">No items have been selected.</div>';
 			}
 			
 			$j('##librarySummary-' + typename + '-' + property).html(statusText);
 		},
 		reinitpage: function() {
-			$j('tr.selector-wrap').removeClass('rowselected');
+			$j('tr.selector-wrap').removeClass('selected');
 			$j("tr.selector-wrap input[name='selected']").attr('checked',false);
 			$j.each(userselection, function(){
-				$j("tr.selector-wrap input[value='"+this+"']").attr('checked',true).parents('tr.selector-wrap').addClass('rowselected');
+				$j("tr.selector-wrap input[value='"+this+"']").attr('checked',true).parents('tr.selector-wrap').addClass('selected');
 			});
 		}
 	};
@@ -906,14 +891,14 @@
 			 
 			return $fc.openBootstrapModal({
 				title:'Edit',
-				url:'#application.fapi.getWebroot()#/index.cfm?view=webtopPageStandard&bodyView=edit&objectid=' + libraryObjectID,
+				url:'#application.url.webtop#/index.cfm?view=webtopPageStandard&bodyView=edit&objectid=' + libraryObjectID,
 				onShown:function(){},
 				onHidden:function(){
 
 					$j.ajax({
 						type: "POST",
 						cache: false,
-			 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + $wrapper.attr('ft:typename') + '&objectid=' + $wrapper.attr('ft:objectid') + '&view=displayAjaxRefreshJoinProperty' + '&property=' + $wrapper.attr('ft:property'),
+			 			url: '#application.url.webtop#/index.cfm?ajaxmode=1&type=' + $wrapper.attr('ft:typename') + '&objectid=' + $wrapper.attr('ft:objectid') + '&view=displayAjaxRefreshJoinProperty' + '&property=' + $wrapper.attr('ft:property'),
 					 	success: function(msg){
 							$wrapper.html(msg);
 					   	},
@@ -949,7 +934,7 @@
 					$j.ajax({
 						type: "POST",
 						cache: false,
-			 			url: '#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=' + $wrapper.attr('ft:typename') + '&objectid=' + $wrapper.attr('ft:objectid') + '&view=displayAjaxRefreshJoinProperty' + '&property=' + $wrapper.attr('ft:property'),
+			 			url: '#application.url.webtop#/index.cfm?ajaxmode=1&type=' + $wrapper.attr('ft:typename') + '&objectid=' + $wrapper.attr('ft:objectid') + '&view=displayAjaxRefreshJoinProperty' + '&property=' + $wrapper.attr('ft:property'),
 					 	success: function(msg){
 							$wrapper.html(msg);
 							//fcForm.initSortable(typename,objectid,property,id);	
@@ -961,7 +946,7 @@
 				
 			});
 			$j(newDialogDiv).dialog('open');
-			$j('iframe',$j(newDialogDiv)).attr('src','#application.fapi.getWebroot()#/index.cfm?type=' + $wrapper.attr('ft:typename') + '&objectid=' + $wrapper.attr('ft:objectid') + '&view=displayLibraryTabs' + '&property=' + $wrapper.attr('ft:property'));
+			$j('iframe',$j(newDialogDiv)).attr('src','#application.url.webtop#/index.cfm?type=' + $wrapper.attr('ft:typename') + '&objectid=' + $wrapper.attr('ft:objectid') + '&view=displayLibraryTabs' + '&property=' + $wrapper.attr('ft:property'));
 				 
 		});	
 			

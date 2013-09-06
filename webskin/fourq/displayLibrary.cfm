@@ -12,6 +12,8 @@
 <cfimport taglib="/farcry/core/tags/grid" prefix="grid" />
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
+<cfset request.fc.inwebtop = true />
+
 <cfif application.fapi.isLoggedIn()>
 	<cfparam name="url.property" type="string" />
 	<cfparam name="url.filterTypename" type="string" default="" />
@@ -112,32 +114,19 @@
 	</cfif>
 	
 	<cfset qResult = qAll />
-	
+
 	<cfset formAction = application.fapi.getLink(type='#stobj.typename#', objectid='#stobj.objectid#', view='displayLibrary', urlParameters="filterTypename=#url.filterTypename#&property=#url.property#&ajaxmode=1") />
 	
 	<ft:form name="#stobj.typename#_#url.property#_#url.filterTypename#" bAjaxSubmission="true" action="#formAction#">		
-		<grid:div class="fc-shadowbox" style="width:350px;margin:0px auto 10px auto;"><!---  style="padding:5px; border: 1px solid ##CCCCCC;background-color:##f1f1f1;margin-bottom:5px; " --->
+		<grid:div style="margin:0 0 10px auto;"><!---  style="padding:5px; border: 1px solid ##CCCCCC;background-color:##f1f1f1;margin-bottom:5px; " --->
 			<cfoutput>
-			<table class="layout">
-			<tr>
-				<td>
-					<div class="filter-field-wrap" style="margin-right:10px;" ft:objectid="87A874A0-C775-11E0-8342040CCEE182E2" ft:typename="toroFilterSale" ft:property="term" ft:default="">
-						
-						<label for="fc87A874A0C77511E08342040CCEE182E2term" class="label" style="font-size:11px;">Search label</label> 
-						<input type="text" id="searchTypename-#stobj.typename#-#url.property#-#url.filterTypename#" name="searchTypename" class="textInput" value="#form.searchTypename#" style="width:150px;font-size:11px;" />
-				
-					</div>		
-				</td>
-				<td style="vertical-align:bottom;">
-					<ft:button value="Search" class="small" priority="primary" />
-				</td>
-				<cfif len(form.searchTypename)>
-					<td style="vertical-align:bottom;">
-						<ft:button value="Clear Search" class="small" priority="secondary" style="float:left;" onClick="$j('##searchTypename-#stobj.typename#-#url.property#-#url.filterTypename#').attr('value','');" />
-					</td>
-				</cfif>
-			</tr>
-			</table>
+				<div class="filter-field-wrap input-prepend input-append">
+					<input type="text" placeholder="Search..." id="searchTypename-#stobj.typename#-#url.property#-#url.filterTypename#" name="searchTypename" class="textInput" value="#form.searchTypename#" style="width:250px;" />
+					<cfif len(form.searchTypename)>
+						<button style="height: 30px; border-radius:0; font-size: 20px; font-weight: bold; padding: 4px 10px;" onClick="$j('##searchTypename-#stobj.typename#-#url.property#-#url.filterTypename#').attr('value',''); $j('##submit-#stobj.typename#-#url.property#-#url.filterTypename#').click(); return false;" class="btn" type="button">&times;</button>
+					</cfif>
+					<button id="submit-#stobj.typename#-#url.property#-#url.filterTypename#" style="height: 30px; border-radius:0" class="btn" value="Submit" type="submit"><b class="icon-search only-icon"></b></button>
+				</div>
 			</cfoutput>
 		</grid:div>
 			
@@ -165,7 +154,7 @@
 
 			<cfif stCurrentRow.bFirst>
 				<cfoutput>
-				<table class="objectAdmin" style="width:99%;table-layout:fixed;">
+				<table class="farcry-objectadmin table table-striped table-hover">
 				</cfoutput>
 			</cfif>
 				
@@ -195,7 +184,6 @@
 		<script type="text/javascript">
 		$j(function(){
 			fcForm.initLibrary('#stobj.typename#','#stobj.objectid#','#url.property#');
-			
 			fcForm.selections.reinitpage();
 		});
 		</script>

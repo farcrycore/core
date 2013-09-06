@@ -297,7 +297,7 @@
 						<cfoutput><input type="hidden" id="#arguments.fieldname#" name="#arguments.fieldname#" value="" /></cfoutput>
 					</cfif>
 					
-					<ft:buttonPanel style="border:none;">
+					<ft:buttonPanel style="border:none; text-align:left;">
 						
 					<cfoutput>
 
@@ -305,26 +305,16 @@
 							
 
 								<cfif listLen(arguments.stMetadata.ftJoin) GT 1>
-									<select id="#arguments.fieldname#-add-type">
-										<option value="">- Create New -</option>
-										<cfloop list="#arguments.stMetadata.ftJoin#" index="i">
-											<option value="#trim(i)#">#application.fapi.getContentTypeMetadata(i, 'displayname', i)#</option>
-										</cfloop>
-									</select>
-									<skin:onReady>
-										$j('###arguments.fieldname#-add-type').change(function() {
-											fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');
-										});
-									</skin:onReady>
+									<div class="btn-group">
+										<a id="#arguments.fieldname#-add-type" class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-plus"></i> Create &nbsp;&nbsp;<i class="icon-caret-down icon-only" style="margin-right:-4px;"></i></a>
+										<ul class="dropdown-menu">
+											<cfloop list="#arguments.stMetadata.ftJoin#" index="i">
+												<li value="#trim(i)#"><a onclick="fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');">#application.fapi.getContentTypeMetadata(i, 'displayname', i)#</a></li>
+											</cfloop>
+										</ul>
+									</div>
 								<cfelse>
-									<ft:button	Type="button" 
-												priority="secondary"
-												class="small"
-												value="Create" 
-												text="create" 
-												onClick="fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');" />
-									
-																	
+									<a class="btn" onclick="fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');"><i class="icon-plus"></i> Create</a>
 									<input type="hidden" id="#arguments.fieldname#-add-type" value="#arguments.stMetadata.ftJoin#" />
 								</cfif>
 								
@@ -366,12 +356,7 @@
 							</cfif>
 							
 							<cfif stActions.ftAllowSelect>
-								<ft:button	Type="button" 
-											priority="secondary"
-											class="small"
-											value="select" 
-											onClick="fcForm.openLibrarySelect('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');" />
-								
+								<a class="btn" onclick="fcForm.openLibrarySelect('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');"><i class="icon-search"></i> Select</a>
 							</cfif>
 							
 							<cfif listLen(joinItems) and arguments.stMetadata.ftAllowRemoveAll>

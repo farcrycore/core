@@ -14,6 +14,7 @@ FARCRY IMPORT FILES
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin" />
 
+<cfset request.fc.inwebtop = true />
 <cfset request.fc.bShowTray = false />
 <skin:loadJS id="fc-jquery" />
 

@@ -17,6 +17,7 @@ FARCRY IMPORT FILES
 
 
 
+<cfset request.fc.inwebtop = true />
 <cfset request.fc.bShowTray = false />
 <skin:loadJS id="fc-jquery" />
 

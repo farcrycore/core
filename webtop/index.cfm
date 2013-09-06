@@ -76,10 +76,10 @@
 <!--- should use url variables first, then variables from webtop.xml, then default values --->
 <cfset stItem = application.factory.oWebtop.getItemDetails(stWebtop, url.id)>
 <cfif structKeyExists(stItem, "type")>
-	<cfparam name="url.typename" default="#stItem.type#" />
+	<cfparam name="defaultTypename" default="#stItem.type#" />
 </cfif>
 <cfif structKeyExists(stItem, "typename")>
-	<cfparam name="url.typename" default="#stItem.typename#" />
+	<cfparam name="defaultTypename" default="#stItem.typename#" />
 </cfif>
 <cfif structKeyExists(stItem, "view")>
 	<cfparam name="url.view" default="#stItem.view#" />
@@ -88,11 +88,13 @@
 	<cfparam name="url.bodyView" default="#stItem.bodyView#" />
 </cfif>
 
+<cfparam name="defaultTypename" default="dmNavigation" />
+<cfparam name="url.type" default="#defaultTypename#" />
+<cfparam name="url.typename" default="#url.type#" />
 <cfparam name="url.objectid" default="" />
-<cfparam name="url.typename" default="dmNavigation" />
-<cfparam name="stItem.bodyInclude" default="" />
 <cfparam name="url.view" default="webtopPageStandard" />
 <cfparam name="url.bodyView" default="webtopBody" />
+<cfparam name="stItem.bodyInclude" default="" />
 
 
 <!--- execute the view on the type / object --->

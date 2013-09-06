@@ -13,6 +13,8 @@ FARCRY IMPORT FILES
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/grid" prefix="grid" />
 
+<cfset request.fc.inwebtop = true />
+
 <!------------------ 
 START WEBSKIN
  ------------------>

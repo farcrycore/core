@@ -313,6 +313,7 @@ a:hover {
 .dropdown-menu li > a {
 	color: #333;
 	padding: 3px 14px;
+	cursor: pointer;
 	filter: none;
 }
 .dropdown-menu li:hover > a,
@@ -559,7 +560,7 @@ table.table-hover-all tbody tr:hover {
 /* tweak icon position in buttons */
 .btn [class^="icon"] {
 	/*font-size: 16px;*/
-	margin-top: 0;
+	/*margin-top: 0;*/
 	margin-right: 2px;
 	margin-left: -4px;
 	text-shadow: none;
@@ -812,6 +813,12 @@ body .uniForm .focused {
 .btn-group.open > .btn-split + .dropdown-toggle, 
 .btn-group > .btn-split + .dropdown-toggle:hover {
 	background: #cccccc;
+}
+
+.btn-group > .btn:first-child,
+.btn-group > .btn:last-child, 
+.btn-group > .dropdown-toggle {
+    border-radius: 0;
 }
 
 
@@ -1159,9 +1166,10 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 	
 }
 .multiField .form-actions .btn {
-	padding: 4px 8px;
+	padding: 4px 14px;
 	background: #ddd;
-	font-size: 13px;
+	font-size: 14px;
+	margin: 0;
 }
 .multiField .form-actions select {
 	width: auto;

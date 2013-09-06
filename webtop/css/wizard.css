@@ -18,7 +18,7 @@
 
 #genadmin-wrap th {font-size:105%;line-height:1.3}
 
-#wizard-content {clear:left;margin: 0 35px 0 0;padding-right: 30px; overflow:hidden; *overflow:visible; }
+#wizard-content {clear:left; padding-right: 160px; }
 #wizard-content textarea#body {float:left;width:97%}
 /*#wizard-content table {width:97%;float:left}*/
 /*#wizard-content td {padding:0;border:none}*/

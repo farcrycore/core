@@ -34,7 +34,7 @@ FARCRY IMPORT FILES
 START WEBSKIN
  ------------------>
 
-<cfif structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true>
+<cfif isDefined("request.fc.inwebtop") AND request.fc.inwebtop eq true>
 
 	<cfif getPageTo() GT 1>
 		<cfoutput>

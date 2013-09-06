@@ -17,8 +17,8 @@
 	<cfparam name="url.fieldname" default="fc#Replace(stObj.objectid,'-','','all')##url.property#" />
 	
 	<skin:loadJS id="fc-jquery" />
-	<skin:loadJS id="fc-jquery-ui" />
-	<skin:loadCSS id="jquery-ui" />	
+	<skin:loadJS id="fc-bootstrap" />
+	<skin:loadCSS id="fc-fontawesome" />	
 	
 	<cfset stMetadata = application.fapi.getPropertyMetadata(typename="#stobj.typename#", property="#url.property#") />
 
@@ -33,13 +33,12 @@
 
 	<cfset stMetadata = application.fapi.getFormtool(stMetadata.ftType).prepMetadata(stObject = stobj, stMetadata = stMetadata) />
 	
-	<admin:header title="Library Selector" style="width:99%;height:99%">		
 	
 	<ft:form>				
 	<cfoutput>
 	<!-- summary pod with green arrow -->
-	<div class="summary-pod" style="width:99%;margin-bottom: 10px;">
-		<span id="librarySummary-#stobj.typename#-#url.property#" style="text-align:center;width:100%;"><p>&nbsp;</p></span>
+	<div class="summary-pod" style="margin-bottom: 10px;">
+		<div id="librarySummary-#stobj.typename#-#url.property#" style="text-align:center;"></div>
 		
 		<cfset formAction = application.fapi.getLink(type='#stobj.typename#', objectid='#stobj.objectid#', view='displayLibrarySelected', urlParameters="property=#url.property#&ajaxmode=1") />
 		<!---<ft:button value="show selected" renderType="link" type="button" onclick="farcryForm_ajaxSubmission('#request.farcryform.name#','#formAction#')" class="green" />--->
@@ -52,29 +51,33 @@
 	<cfif listLen(stMetadata.ftJoin) GT 1>
 		<!--- IF WE HAVE SELECTED ITEMS, SHOW THE BUTTON TO VIEW THEM --->
 		<cfoutput>
-		<div id="tabs">
-			<ul>
-				<cfloop list="#stMetadata.ftJoin#" index="i">
-					<!---<li><a href="###i#" >#application.fapi.getContentTypeMetadata(i,'displayName',i)#</a></li>--->
-					<li><a href="#application.fapi.getWebroot()#/index.cfm?ajaxmode=1&type=#url.type#&objectid=#url.objectid#&view=displayLibrary&property=#url.property#&filterTypename=#i#">#application.fapi.getContentTypeMetadata(i,'displayName',i)#</a></li>
-				</cfloop>
-			</ul>
-		<!---	<cfloop list="#stMetadata.ftJoin#" index="i">
-				<div id="#i#">
-					<h3>#i#</h3>
-					<skin:view stobject="#stobj#" webskin="displayLibrary" />
-				</div>
-			</cfloop>--->
 
-		</div>	
+			<div class="tabbable">
+				<ul class="nav nav-tabs">    
+					<cfloop list="#stMetadata.ftJoin#" index="i">
+						<li <cfif listFirst(stMetadata.ftJoin) eq i>class="active"</cfif>><a data-toggle="tabajax" href="#application.url.webtop#/index.cfm?ajaxmode=1&type=#url.type#&objectid=#url.objectid#&view=displayLibrary&property=#url.property#&filterTypename=#i#&ajaxmode=1">#application.fapi.getContentTypeMetadata(i,'displayName',i)#</a></li>
+					</cfloop>
+				</ul>
+				<div>
+					<div id="tabajax-content"></div>
+				</div>
+			</div>
+
 		</cfoutput>
 		
 		<skin:onReady>
 			<cfoutput>
-				
-				$j("##tabs").tabs({
-					
+
+				$j('[data-toggle="tabajax"]').click(function(e) {
+					e.preventDefault();
+					$tab = $j(this);
+					$j("##tabajax-content").load($tab.attr('href'), function(){
+						$tab.tab('show');
+					});
 				});
+
+				$j('.tabbable .nav-tabs li.active a').click();
+				
 			</cfoutput>
 		</skin:onReady>	
 	<cfelse>
@@ -87,6 +90,5 @@
 		</cfoutput>
 	</skin:onReady>	
 	
-	<admin:footer>
 	
 </cfif>
