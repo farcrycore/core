@@ -42,7 +42,7 @@ type properties
 <cfproperty 
 	name="teaserImage" type="uuid" ftType="uuid" hint="UUID of image to display in teaser" required="no" default=""
 	ftSeq="11" ftwizardStep="Web Page" ftFieldset="Teaser" ftLabel="Teaser Image"
-	ftJoin="dmImage" ftLibraryData="getTeaserImageLibraryData" ftLibraryDataTypename="dmHTML">
+	ftJoin="dmImage">
 
 <cfproperty 
 	name="Body" type="longchar" hint="Main body of content." required="no" default="" 
@@ -64,7 +64,7 @@ type properties
 <cfproperty 
 	name="aRelatedIDs" type="array" ftType="array" hint="Holds object pointers to related objects. Can be of mixed types." required="no" default="" 
 	ftSeq="14" ftwizardStep="Web Page" ftFieldset="Relationships" ftLabel="Associated Content"
-	ftJoin="dmNavigation,dmHTML" >
+	ftJoin="dmNavigation,dmHTML" ftAllowCreate="false">
 
 <!--- 
  // seo
@@ -183,32 +183,5 @@ object methods
 	</cfif>
 </cffunction>
 
-<cffunction name="getTeaserImageLibraryData" access="public" output="false" returntype="query" hint="Return a query for all images already associated to this object.">
-	<cfargument name="primaryID" type="uuid" required="true" hint="ObjectID of the object that we are attaching to" />
-	<cfargument name="qFilter" type="query" required="false" default="#queryNew('key')#" hint="If a library verity search has been run, this is the qResultset of that search" />
-	
-	<cfset var q = queryNew("blah") />
-		
-	<!--- 
-	Run the entire query and return in to the library. Let the library handle the pagination.
-	 --->
-	<cfquery datasource="#application.dsn#" name="q">
-	SELECT data as objectid, dmImage.label, dmImage.thumbnailimage, dmImage.title, dmImage.alt
-	FROM dmHTML_aObjectIDs 
-	INNER JOIN 
-		 dmImage ON dmHTML_aObjectIDs.data = dmImage.objectid
-	WHERE parentid = '#arguments.primaryID#'
-	<cfif qFilter.RecordCount>
-		AND data IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#qFilter.key#" />)
-	</cfif>
-	ORDER BY seq
-	</cfquery>
-	
-	<cfreturn q />
-	
-</cffunction>
-
-
 
 </cfcomponent>
-
