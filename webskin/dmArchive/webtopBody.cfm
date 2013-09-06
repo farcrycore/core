@@ -79,12 +79,19 @@
 	<cfelse>
 		<cfset title = "Undelete #url.archiveType#" />
 	</cfif>
-
+	
 	<cfset stButton = structnew() />
-	<cfset stButton.text = "Go back" />
-	<cfset stButton.value = "goback" />
-	<cfset stButton.permission = "" />
-	<cfset stButton.onclick = "" />
+	<cfif structkeyexists(url,"dialogID")>
+		<cfset stButton.text = "Close" />
+		<cfset stButton.value = "close" />
+		<cfset stButton.permission = "" />
+		<cfset stButton.onclick = "top.$fc.closeBootstrapModal(); return false;" />
+	<cfelse>
+		<cfset stButton.text = "Go back" />
+		<cfset stButton.value = "goback" />
+		<cfset stButton.permission = "" />
+		<cfset stButton.onclick = "" />
+	</cfif>
 	<cfset arrayappend(aButtons,stButton) />
 </cfif>
 
@@ -96,9 +103,9 @@
 	lFilterFields="label,objecttypename,username"
 	sqlorderby="datetimecreated desc"
 	sqlwhere="#sqlWhere#"
-	lButtons="undelete,cascadingundelete,goback" aButtons="#aButtons#"
+	lButtons="undelete,cascadingundelete,goback,close" aButtons="#aButtons#"
 	bEditCol="false"
 	emptymessage="No archives available for undelete"
-	lButtonsEmpty="goback" />
+	lButtonsEmpty="goback,close" />
 
 <cfsetting enablecfoutputonly="false" />

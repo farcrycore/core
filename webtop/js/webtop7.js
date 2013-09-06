@@ -11,6 +11,14 @@ $j(document).delegate(".favourited","click",function(){
 	return false;
 });
 
+$j(document).delegate(".undo-delete","click",function(){
+	var href = this.href + (this.href.indexOf("?")>-1 ? "&" : "?") + "view=webtopPageModal";
+	
+	$fc.objectAdminAction('Undelete', href);
+	
+	return false;
+});
+
 $fc = window.$fc || {}
 
 // add this page to favourites

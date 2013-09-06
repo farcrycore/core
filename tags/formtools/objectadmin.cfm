@@ -214,7 +214,7 @@
 						<cfoutput>#stResult.message#</cfoutput>
 					</skin:bubble>
 				<cfelse>
-					<skin:bubble title="Deleted - #stDeletingObject.label# <a href='?id=#url.id#&typename=dmArchive&bodyView=webtopBody&archivetype=#attributes.typename#' style='margin-left:10px;'>undo</a>" bAutoHide="true" tags="type,#attributes.typename#,deleted,info" />
+					<skin:bubble title="Deleted - #stDeletingObject.label# <a class='undo-delete' href='#application.url.webtop#/index.cfm?typename=dmArchive&bodyView=webtopBody&archivetype=#attributes.typename#' style='margin-left:10px;'>undo</a>" bAutoHide="true" tags="type,#attributes.typename#,deleted,info" />
 				</cfif>
 			</cfloop>
 		</cfif>
