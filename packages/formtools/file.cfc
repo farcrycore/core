@@ -61,7 +61,7 @@
 	<cfproperty name="ftFacade" default="#chr(35)#application.url.webtop#chr(35)#/facade/fileupload/upload.cfm" hint="location of uploader facade." />
 	<cfproperty name="ftFileTypes" default="*.*" hint="Used when ftRenderType is set to flash (default *.*) or jquery (default *.jpg;*.JPG;*.jpeg;*.JPEG;), extentions allowed to be uploaded. " />
 	<cfproperty name="ftFileDescription" default="File Types" hint="Used when ftRenderType is set to HTML, text display above upload control." />
-	<cfproperty name="ftMaxSize" default="-1" hint="Maximum filesize upload in bytes." />
+	<cfproperty name="ftMaxSize" default="0" hint="Maximum filesize upload in bytes." />
 	<cfproperty name="ftOnComplete" default="" hint="Used when ftRenderType is set to HTML, javascript to execute after file upload." />
 					
 	<!--- jquery edit handler options --->

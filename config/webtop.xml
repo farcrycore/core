@@ -24,7 +24,7 @@
 			</menu>
 			<menu id="MediaLibraryContent" sequence="20" label="Media Assets">
 				<menuitem id="listdmimage" sequence="10" label="Image Library" link="/admin/customadmin.cfm?module=customlists/dmimage.cfm" relatedtype="dmImage" />
-				<menuitem id="listdmfile" sequence="20" label="Document Library" link="/admin/customadmin.cfm?module=customlists/dmfile.cfm" relatedtype="dmFile" />
+				<menuitem id="listdmfile" sequence="20" label="Document Library" typename="dmFile" />
 			</menu>
 			<menu id="categorisation" sequence="40" permission="ContentCategorisationTab" label="Category Management">
 				<menuitem id="managekeywords" sequence="10" label="Manage Keywords" typename="dmCategory" />		

@@ -460,7 +460,12 @@ $out:$
 			
 			<cfset application.stCOAPI[thistype].oFactory = createobject("component",application.stCOAPI[thistype].packagepath) />
 		</cfloop>
-
+		
+		<cfset application.coapiID = structnew() />
+		<cfloop collection="#application.stCOAPI#" item="thistype">
+			<cfset application.stCOAPI.farCoapi.oFactory.getCoapiObject(thistype) />
+		</cfloop>
+		
 		<cfset updateJoins(application.stCOAPI) />
 	</cffunction>
 

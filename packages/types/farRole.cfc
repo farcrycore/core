@@ -839,7 +839,7 @@ object methods
 			<cfset aResults = application.fc.lib.db.deployChanges(aChanges,application.dsn) />
 			
 			<cfquery datasource="#application.dsn#">
-				delete from farPermission_aRelatedTypes where data in ('farCoapi','webtop')
+				delete from farPermission_aRelatedtypes where data in ('farCoapi','webtop')
 			</cfquery>
 			<cfset application.fapi.addRequestLog("Removed pre-existing farCOAPI / webtop permissions") />
 			
@@ -875,7 +875,7 @@ object methods
 					update farPermission set bSystem=1 where objectid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#qGenericPermissions.objectid#" />
 				</cfquery>
 				<cfquery datasource="#application.dsn#">
-					insert into farPermission_aRelatedTypes (parentid,seq,data,typename) values (
+					insert into farPermission_aRelatedtypes (parentid,seq,data,typename) values (
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#qGenericPermissions.objectid#" />, 
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="100" />, 
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="farCoapi" />, 
@@ -960,7 +960,7 @@ object methods
 					update farPermission set bSystem=1 where objectid=<cfqueryparam cfsqltype="cf_sql_varchar" value="#viewWebtopItemID#" />
 				</cfquery>
 				<cfquery datasource="#application.dsn#">
-					insert into farPermission_aRelatedTypes (parentid,seq,data,typename) values (
+					insert into farPermission_aRelatedtypes (parentid,seq,data,typename) values (
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#viewWebtopItemID#" />, 
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="101" />, 
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="webtop" />, 
@@ -979,7 +979,7 @@ object methods
 					)
 				</cfquery>
 				<cfquery datasource="#application.dsn#">
-					insert into farPermission_aRelatedTypes (parentid,seq,data,typename) values (
+					insert into farPermission_aRelatedtypes (parentid,seq,data,typename) values (
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="#tempID#" />, 
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="101" />, 
 						<cfqueryparam cfsqltype="cf_sql_varchar" value="webtop" />, 

@@ -79,7 +79,7 @@
 <cfparam name="attributes.numPageDisplay" default="5" type="numeric">
 
 <cfparam name="attributes.lButtons" default="*" type="string">
-<cfparam name="attributes.lButtonsEmpty" default="add,bulkupload,undelete" type="string">
+<cfparam name="attributes.lButtonsEmpty" default="add,bulk upload,undelete" type="string">
 <cfparam name="attributes.bPaginateTop" default="true" type="boolean">
 <cfparam name="attributes.bPaginateBottom" default="true" type="boolean">
 <cfparam name="attributes.bDisplayTotalRecords" default="true" type="boolean" />
