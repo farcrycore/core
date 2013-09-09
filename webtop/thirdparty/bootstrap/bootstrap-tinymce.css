@@ -64,6 +64,7 @@ html {
 body {
 	font-size: 14px;
   font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.5;
 }
 a:focus {
   outline: thin dotted #333;
@@ -298,19 +299,19 @@ h6 small {
 h1,
 h2,
 h3 {
-  line-height: 40px;
+  line-height: 32px;
 }
 h1 {
-  font-size: 38.5px;
+  font-size: 28px;
 }
 h2 {
-  font-size: 31.5px;
+  font-size: 24px;
 }
 h3 {
-  font-size: 24.5px;
+  font-size: 22px;
 }
 h4 {
-  font-size: 17.5px;
+  font-size: 18px;
 }
 h5 {
   font-size: 14px;
