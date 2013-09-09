@@ -1037,7 +1037,7 @@
 		<cfargument name="file" type="string" required="true" />
 		
 		<cfif len(arguments.file)>
-			<cfreturn application.fc.lib.cdn.ioGetFileExists(location="images",file=arguments.file) />
+			<cfreturn application.fc.lib.cdn.ioFileExists(location="images",file=arguments.file) />
 		<cfelse>
 			<cfreturn false />
 		</cfif>
