@@ -24,6 +24,10 @@
 <cfelse>
 	<cfset seoDescriptionDefault = reReplace(stObj.body,"<[^>]*>","","all")>
 </cfif>
+<cfif len(seoDescriptionDefault) gt 170>
+	<cfset seoDescriptionDefault = left(seoDescriptionDefault, 170) & "...">
+</cfif>
+<!--- default extendedmetadata --->
 <cfif NOT len(stObj.extendedmetadata)>
 	<cfset stObj.extendedmetadata = seoDescriptionDefault>
 </cfif>

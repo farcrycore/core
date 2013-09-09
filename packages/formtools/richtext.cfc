@@ -504,7 +504,8 @@
 				toolbar : "undo redo | cut copy paste pastetext | styleselect | bold italic underline | bullist numlist link image table farcryuploadcontent farcrycontenttemplates | code fullpage",
 				remove_linebreaks : false,
 				forced_root_block : 'p',
-				relative_urls : false
+				relative_urls : false,
+				entity_encoding : 'raw'
 			</cfoutput>
 		</cfsavecontent>
 		
