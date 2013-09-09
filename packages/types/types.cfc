@@ -1056,7 +1056,7 @@ default handlers
 				<cfoutput>
 					<h1>
 						<cfif len(application.stCOAPI[stobj.typename].icon)>
-							<i class="icon-#application.stCOAPI[stobj.typename].icon# icon-large"></i>
+							<i class="#application.stCOAPI[stobj.typename].icon# icon-large"></i>
 						<cfelse>
 							<i class="icon-file icon-large"></i>
 						</cfif>
