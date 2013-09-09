@@ -491,11 +491,10 @@ $out:$
 	<cfset var stObj = structnew()>
 	
 	<cfquery datasource="#arguments.dsn#" name="q">
-		SELECT r.* 
-		FROM         
-	 		#arguments.dbOwner#dmNavigation_aObjectIDs o INNER JOIN 
-        	refObjects r ON r.objectid = o.data 
-		WHERE  o.parentid IN ('#ListChangeDelims(arguments.lNodeIds,"','",",")#')
+		SELECT data AS objectid, typename
+		FROM
+			#arguments.dbOwner#dmNavigation_aObjectIDs o 
+		WHERE o.parentid IN ('#ListChangeDelims(arguments.lNodeIds,"','",",")#')
 		ORDER BY seq
 	</cfquery>
 	
