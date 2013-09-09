@@ -261,7 +261,7 @@
 						    <div id="#arguments.fieldname#_complete" class="complete-view">
 					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
 					    		<div style="margin-left:15px;">
-						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
+						    		<span class="image-filename">#listfirst(listlast(arguments.stMetadata.value,"/"),"?")#</span> ( <a class="image-preview" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
 						    		<cfif arguments.stMetadata.ftShowMetadata>
 							    		<cfset stImage = getImageInfo(file=arguments.stMetadata.value,admin=true) />
 							    		
@@ -325,7 +325,7 @@
 						    <div id="#arguments.fieldname#_complete" class="complete-view">
 					    		<span class="image-status" title=""><span class="ui-icon ui-icon-image" style="float:left;">&nbsp;</span></span>
 					    		<div style="margin-left:15px;">
-						    		<span class="image-filename">#listlast(arguments.stMetadata.value,"/")#</span> ( <a class="image-preview" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
+						    		<span class="image-filename">#listfirst(listlast(arguments.stMetadata.value,"/"),"?")#</span> ( <a class="image-preview" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
 						    		<cfif arguments.stMetadata.ftShowMetadata>
 							    		<cfset stImage = getImageInfo(file=arguments.stMetadata.value,admin=true) />
 							    		
@@ -608,7 +608,7 @@
 				
 				<cfif not structkeyexists(stResult,"error")>
 					<cfset stJSON["value"] = stFixed.value />
-					<cfset stJSON["filename"] = listlast(stResult.value,'/') />
+					<cfset stJSON["filename"] = listfirst(listlast(stResult.value,'/'),"?") />
 					<cfset stJSON["fullpath"] = stFixed.value />
 					
 					<cfif arguments.stMetadata.ftShowMetadata>
@@ -656,7 +656,7 @@
 				
 				<cfif not structkeyexists(stResult,"error")>
 					<cfset stJSON["value"] = stFixed.value />
-					<cfset stJSON["filename"] = listlast(stResult.value,'/') />
+					<cfset stJSON["filename"] = listfirst(listlast(stResult.value,'/'),"?") />
 					<cfset stJSON["fullpath"] = stFixed.value />
 					<cfset stJSON["q"] = cgi.query_string />
 					
