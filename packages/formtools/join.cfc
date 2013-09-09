@@ -302,57 +302,47 @@
 					<cfoutput>
 
 							<cfif arguments.stMetadata.ftAllowCreate>
-							
 
 								<cfif listLen(arguments.stMetadata.ftJoin) GT 1>
 									<div class="btn-group">
-										<a id="#arguments.fieldname#-add-type" class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-plus"></i> Create &nbsp;&nbsp;<i class="icon-caret-down icon-only" style="margin-right:-4px;"></i></a>
+										<a class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-plus"></i> Create &nbsp;&nbsp;<i class="icon-caret-down icon-only" style="margin-right:-4px;"></i></a>
 										<ul class="dropdown-menu">
 											<cfloop list="#arguments.stMetadata.ftJoin#" index="i">
-												<li value="#trim(i)#"><a onclick="fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');">#application.fapi.getContentTypeMetadata(i, 'displayname', i)#</a></li>
+												<li value="#trim(i)#"><a onclick="$j('###arguments.fieldname#-add-type').val('#trim(i)#'); fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');">#application.fapi.getContentTypeMetadata(i, 'displayname', i)#</a></li>
 											</cfloop>
 										</ul>
 									</div>
 								<cfelse>
 									<a class="btn" onclick="fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');"><i class="icon-plus"></i> Create</a>
-									<input type="hidden" id="#arguments.fieldname#-add-type" value="#arguments.stMetadata.ftJoin#" />
 								</cfif>
-								
-								
+								<input type="hidden" id="#arguments.fieldname#-add-type" value="#arguments.stMetadata.ftJoin#" />
+
 							</cfif>
 							
 							<cfif arguments.stMetadata.ftAllowBulkUpload and arguments.stMetadata.type eq "array">
+
 								<cfset lBulkUploadable = "" />
 								<cfloop list="#arguments.stMetadata.ftJoin#" index="i">
 									<cfif application.stCOAPI[i].bBulkUpload>
 										<cfset lBulkUploadable = listappend(lBulkUploadable,i) />
 									</cfif>
 								</cfloop>
-								
+
 								<cfif listLen(lBulkUploadable) GT 1>
-									<select id="#arguments.fieldname#-bulkupload-type">
-										<option value="">- Bulk Upload -</option>
-										<cfloop list="#lBulkUploadable#" index="i">
-											<option value="#trim(i)#">#application.fapi.getContentTypeMetadata(i, 'displayname', i)#</option>
-										</cfloop>
-									</select>
-									<skin:onReady>
-										$j('###arguments.fieldname#-bulkupload-type').change(function() {
-											fcForm.openLibraryBulkUpload('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');
-										});
-									</skin:onReady>
+									<div class="btn-group">
+										<a class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-cloud-upload"></i> Bulk Upload &nbsp;&nbsp;<i class="icon-caret-down icon-only" style="margin-right:-4px;"></i></a>
+										<ul class="dropdown-menu">
+											<cfloop list="#lBulkUploadable#" index="i">
+												<li value="#trim(i)#"><a onclick="$j('###arguments.fieldname#-bulkupload-type').val('#trim(i)#'); fcForm.openLibraryBulkUpload('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');">#application.fapi.getContentTypeMetadata(i, 'displayname', i)#</a></li>
+											</cfloop>
+										</ul>
+									</div>
+									<input type="hidden" id="#arguments.fieldname#-bulkupload-type" value="#lBulkUploadable#" />
 								<cfelseif len(lBulkUploadable)>
-									<ft:button	id="#arguments.fieldname#-bulkupload-btn"
-												Type="button" 
-												priority="secondary"
-												class="small"
-												value="bulkupload" 
-												text="Bulk Upload" 
-												onClick="fcForm.openLibraryBulkUpload('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');" />
-									
-																	
+									<a class="btn" onclick="fcForm.openLibraryBulkUpload('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');"><i class="icon-cloud-upload"></i> Bulk Upload</a>
 									<input type="hidden" id="#arguments.fieldname#-bulkupload-type" value="#lBulkUploadable#" />
 								</cfif>
+
 							</cfif>
 							
 							<cfif stActions.ftAllowSelect>
