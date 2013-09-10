@@ -426,7 +426,12 @@ $out:$
 				</cfloop>
 			</cfloop>
 		</cfloop>
-
+		
+		<cfset application.coapiID = structnew() />
+		<cfloop collection="#application.stCOAPI#" item="thistype">
+			<cfset application.stCOAPI.farCoapi.oFactory.getCoapiObject(thistype) />
+		</cfloop>
+		
 		<cfset updateJoins(application.stCOAPI) />
 	</cffunction>
 
