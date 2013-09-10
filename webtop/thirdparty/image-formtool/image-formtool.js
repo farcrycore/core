@@ -135,6 +135,7 @@
 			var $rn = jQuery("#image-crop-ratio-num");
 			var $rd = jQuery("#image-crop-ratio-den");
 			var $warning = jQuery("#image-crop-warning");
+			
 			jQuery("#cropable-image").Jcrop({
 				//"minSize" : [width,height],
 				"aspectRatio" : (width && height)?width/height:0,

@@ -171,6 +171,7 @@
 		</cfif>
 	    
 	    <skin:loadJS id="fc-jquery" />
+	    <skin:loadCSS id="jquery-ui" />
 	    <skin:loadJS id="jquery-tooltip" />
 	    <skin:loadJS id="jquery-tooltip-auto" />
 	    <skin:loadCSS id="jquery-tooltip" />
@@ -537,7 +538,7 @@
 				
 				<cfsavecontent variable="html"><cfoutput>
 					<div style="float:left;background-color:##cccccc;height:100%;width:65%;margin-right:1%;">
-						<img id="cropable-image" src="#stLoc.path#" />
+						<img id="cropable-image" src="#stLoc.path#" style="max-width:none;" />
 					</div>
 					<div style="float:left;width:33%;">
 						<div class="image-crop-instructions" style="overflow-y:auto;overlow-y:hidden;">
