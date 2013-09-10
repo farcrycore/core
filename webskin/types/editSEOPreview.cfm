@@ -2,12 +2,16 @@
 
 <cfset fieldPrefix = "fc#replace(stObj.objectid, "-", "", "all")#">
 
+<!--- TODO: use the actual canonical domain rather than cgi.http_host--->
 <cfset canonicalDomain = cgi.http_host>
 <cfset seoTitleDefault = "">
 <cfset seoDescriptionDefault = "">
 
-<!--- default title --->
-<cfif structKeyExists(stObj, "title") AND len(stObj.title)>
+<!--- title --->
+<cfparam name="stObj.label" default="">
+<cfparam name="stObj.title" default="">
+<cfparam name="stObj.seoTitle" default="">
+<cfif len(stObj.title)>
 	<cfset seoTitleDefault = reReplace(stObj.title,"<[^>]*>","","all")>
 <cfelse>
 	<cfset seoTitleDefault = stObj.label>
@@ -18,16 +22,16 @@
 <cfif len(stObj.seoTitle) gt 69>
 	<cfset stObj.seoTitle = left(stObj.seoTitle, 69) & "...">
 </cfif>
-<!--- default descriptiom --->
+
+<!--- description --->
+<cfparam name="stObj.body" default="">
+<cfparam name="stObj.teaser" default="">
+<cfparam name="stObj.extendedmetadata" default="">
 <cfif structKeyExists(stObj, "teaser") AND len(stObj.teaser)>
 	<cfset seoDescriptionDefault = reReplace(stObj.teaser,"<[^>]*>","","all")>
 <cfelse>
 	<cfset seoDescriptionDefault = reReplace(stObj.body,"<[^>]*>","","all")>
 </cfif>
-<cfif len(seoDescriptionDefault) gt 170>
-	<cfset seoDescriptionDefault = left(seoDescriptionDefault, 170) & "...">
-</cfif>
-<!--- default extendedmetadata --->
 <cfif NOT len(stObj.extendedmetadata)>
 	<cfset stObj.extendedmetadata = seoDescriptionDefault>
 </cfif>
@@ -78,7 +82,7 @@
 }
 </style>
 
-<script>
+<script type="text/javascript">
 $j(function(){
 
 	function truncate(str, length) {
@@ -90,7 +94,7 @@ $j(function(){
 
 	$j("###fieldPrefix#seoTitle").on("keyup blur", function(){
 		var str = truncate($j(this).val(), 69);
-		if (str.length) {
+		if ($j.trim(str).length) {
 			$j(".google-seo-title").text(str);
 		}
 		else {
@@ -99,7 +103,7 @@ $j(function(){
 	})
 	$j("###fieldPrefix#extendedmetadata").on("keyup blur", function(){
 		var str = truncate($j(this).val(), 170);
-		if (str.length) {
+		if ($j.trim(str).length) {
 			$j(".google-seo-description").text(str);
 		}
 		else {
@@ -111,9 +115,9 @@ $j(function(){
 
 <div class="google-seo-container">
 	<div class="google-preview">Google Search Result Preview</div>
-	<div class="google-seo-title" data-value="#htmlEditFormat(seoTitleDefault)#">#stObj.seoTitle#</div>
+	<div class="google-seo-title" data-value="#htmlEditFormat(stObj.seoTitle)#">#stObj.seoTitle#</div>
 	<div class="google-seo-url">#canonicalDomain##application.fapi.getLink(objectid=stObj.objectid)#</div>
-	<div class="google-seo-description" data-value="#htmlEditFormat(seoDescriptionDefault)#">#stObj.extendedmetadata#</div>
+	<div class="google-seo-description" data-value="#htmlEditFormat(stObj.extendedmetadata)#">#stObj.extendedmetadata#</div>
 </div>
 </cfoutput>
 
