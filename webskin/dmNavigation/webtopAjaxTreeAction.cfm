@@ -161,7 +161,7 @@
 						</cfif>
 					<cfelse>
 						<cfset stResponse["success"] = false>
-						<cfset stResponse["message"] = "Parent not found">
+						<cfset stResponse["message"] = "Parent navigation folder not found">
 					</cfif>
 
 				</cfif>
@@ -175,27 +175,57 @@
 
 	<cfelseif url.action eq "delete">
 
-		<!--- check permission --->
-		<cfset hasPermission = false>
-		<cfif application.security.checkPermission(permission="delete",object=url.sourceobjectid)>
-			<cfset hasPermission = true>
+		<!--- for leaf nodes look up the parent --->
+		<cfset oNav = application.fapi.getContentType(typename="dmNavigation")>
+
+		<cfif stSourceObject.typename eq "dmNavigation">
+			<cfset stSourceObjectParent = stSourceObject>
+		<cfelse>
+			<cfset qGetParent = oNav.getParent(objectid=url.sourceobjectid)>
+
+			<cfif qGetParent.recordCount AND isValid("uuid", qGetParent.parentID)>
+				<cfset stSourceObjectParent = application.fapi.getContentObject(typename="dmNavigation", objectid=qGetParent.parentID)>
+			<cfelse>
+				<cfset stResponse["success"] = false>
+				<cfset stResponse["message"] = "Parent navigation folder not found">
+			</cfif>
 		</cfif>
 
-		<cfif hasPermission>
+		<cfif stResponse["success"] eq true AND NOT isDefined("stSourceObjectParent.bDefaultObject")>
 
-			<!--- delete action is the same for both navigation nodes and leaf nodes --->
-			<cfset thisTypename = application.fapi.findType(objectid=url.sourceobjectid)>
-			<cfset oType = application.fapi.getContentType(typename=thisTypename)>
-			<cfset stResult = oType.delete(objectid=url.sourceobjectID)>
+			<!--- check permission --->
+			<cfset hasPermission = false>
+			<cfif application.security.checkPermission(permission="delete",object=stSourceObjectParent.objectid)>
+				<cfset hasPermission = true>
+			</cfif>
 
-			<cfif isDefined("stResult.bSuccess") AND NOT stResult.bSuccess>
+			<cfif hasPermission>
+
+				<cfif stSourceObject.typename neq "dmNavigation">
+					<!--- remove the leaf node from the array --->
+					<cfif arrayDelete(stSourceObjectParent.aObjectIDs, url.sourceobjectid)>
+						<cfset oNav.setData(stProperties=stSourceObjectParent)>
+					</cfif>
+				</cfif>
+
+				<!--- delete the source node --->
+				<cfset thisTypename = application.fapi.findType(objectid=url.sourceobjectid)>
+				<cfset oType = application.fapi.getContentType(typename=thisTypename)>
+				<cfset stResult = oType.delete(objectid=url.sourceobjectID)>
+
+				<cfif isDefined("stResult.bSuccess") AND NOT stResult.bSuccess>
+					<cfset stResponse["success"] = false>
+					<cfset stResponse["message"] = stResult.message>
+				</cfif>
+
+			<cfelse>
 				<cfset stResponse["success"] = false>
-				<cfset stResponse["message"] = stResult.message>
+				<cfset stResponse["message"] = "You do not have permission to perform this action.">
 			</cfif>
 
 		<cfelse>
 			<cfset stResponse["success"] = false>
-			<cfset stResponse["message"] = "You do not have permission to perform this action.">
+			<cfset stResponse["message"] = "Parent navigation folder not found">
 		</cfif>
 
 	</cfif>
