@@ -9,7 +9,7 @@
 		<col style="width:10px;" />
 		<col style="" />
 		<tr class="nowrap" style="background:transparent;">
-			<td style="background:transparent;"><img src="#getFileLocation(stObject=stObj,fieldname=thumbnailImage,admin=true).path#" title="#HTMLEditFormat(stObj.title)#" /></td>
+			<td style="background:transparent;"><img src="#getFileLocation(stObject=stObj,fieldname='thumbnailImage',admin=true).path#" title="#HTMLEditFormat(stObj.title)#" /></td>
 			<td style="background:transparent;">&nbsp;</td>
 			<td style="background:transparent;">
 				#stObj.title#

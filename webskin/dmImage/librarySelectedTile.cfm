@@ -4,7 +4,7 @@
 
 <cfif StructKeyExists(stObj,"thumbnailImage") AND len(stobj.thumbnailImage)>
 	<cfoutput>
-		<img src="#getFileLocation(stObject=stObj,fieldname=thumbnailImage,admin=true).path#" title="#HTMLEditFormat(stObj.title)#" style="clear:both;" />
+		<img src="#getFileLocation(stObject=stObj,fieldname='thumbnailImage',admin=true).path#" title="#HTMLEditFormat(stObj.title)#" style="clear:both;" />
 		#stObj.title#
 		<cfif len(stobj.alt)><br /><em>(#stobj.alt#)</em></cfif>
 	</cfoutput>
