@@ -49,39 +49,24 @@ FARCRY INCLUDE FILES
 	.draft {
 		float:right;
 		outline: none;
-		color: ##fff;
-		border: 1px solid ##595959;
-		background: -webkit-gradient(linear,left bottom,left top,color-stop(1,##D52D2D),color-stop(0,##cc0000));
 		font-weight: bold;
-		text-shadow: 0 1px 0 ##000;
 		font-size: 14px;
-		<!--- -webkit-border-radius: 3px; --->
 		padding:5px 10px 5px 10px ;
 		text-align:center;
 	}
 	.pending {
 		float:right;
 		outline: none;
-		color: ##000;
-		border: 1px solid ##8f6e09;
-		background: -webkit-gradient(linear,left bottom,left top,color-stop(1,##fede00),color-stop(0,##f6b623));
 		font-weight: bold;
-		text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
 		font-size: 14px;
-		<!--- -webkit-border-radius: 3px; --->
 		padding:5px 10px 5px 10px ;
 		text-align:center;
 	}
 	.approved {
 		float:right;
 		outline: none;
-		color: ##000;
-		border: 1px solid ##0e7109;
-		background: -webkit-gradient(linear,left bottom,left top,color-stop(1,##4ED837),color-stop(0,##00B500));
 		font-weight: bold;
-		text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
 		font-size: 14px;
-		<!--- -webkit-border-radius: 3px; --->
 		padding:5px 10px 5px 10px ;
 		text-align:center;
 	}
@@ -91,27 +76,19 @@ FARCRY INCLUDE FILES
 	.approved a {
 		background:transparent;
 		text-shadow: none;
-		color:##fff;
+		color:inherit;
 	}
 	
 	.draft a:hover,
 	.pending a:hover,
 	.approved a:hover {
-		color:##eee;
+		color:inherit;
 	}
 </style>
 </cfoutput>
 </skin:htmlHead>
 
 <cfoutput>
-	<h1>
-		<cfif len(application.stCOAPI[stobj.typename].icon)>
-			<i class="#application.stCOAPI[stobj.typename].icon#"></i>
-		<cfelse>
-			<i class="icon-file"></i>
-		</cfif>
-		#stobj.label#
-	</h1>
 
 	<!--- CONTENT ITEM STATUS --->
 	<cfif structKeyExists(stobj,"status")>			
@@ -120,7 +97,7 @@ FARCRY INCLUDE FILES
 		<cfcase value="draft">
 			
 			<cfoutput>
-				<div class="draft">
+				<div class="draft alert alert-error pull-right">
 					<div>DRAFT</div>
 					<div style="font-size:11px;">last updated <span style="cursor:pointer;" title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</span></div>
 					
@@ -133,7 +110,7 @@ FARCRY INCLUDE FILES
 		</cfcase>
 		<cfcase value="pending">
 			<cfoutput>
-			<div class="pending">
+			<div class="pending alert alert-warning pull-right">
 				<div>PENDING</div>
 				<div style="font-size:11px;">awaiting approval since <span style="cursor:pointer;" title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</span></div>
 				
@@ -145,7 +122,7 @@ FARCRY INCLUDE FILES
 		</cfcase>
 		<cfcase value="approved">
 			<cfoutput>
-			<div class="approved">
+			<div class="approved alert alert-success pull-right">
 				<div>APPROVED</div> 
 				<div style="font-size:11px;">last approved <span style="cursor:pointer;" title="#dateFormat(stobj.dateTimeLastUpdated,'dd mmm yyyy')# #timeFormat(stobj.dateTimeLastUpdated,'hh:mm tt')#">#application.fapi.prettyDate(stobj.dateTimeLastUpdated)#</span></div>
 				
@@ -161,6 +138,16 @@ FARCRY INCLUDE FILES
 		</cfswitch>
 	
 	</cfif>	
+
+	<h1>
+		<cfif len(application.stCOAPI[stobj.typename].icon)>
+			<i class="#application.stCOAPI[stobj.typename].icon#"></i>
+		<cfelse>
+			<i class="icon-file"></i>
+		</cfif>
+		#stobj.label#
+	</h1>
+
 </cfoutput>
 
 			
