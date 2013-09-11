@@ -250,7 +250,7 @@
 			<cfif refindnocase("\.core\.packages\.",stMD.fullname)>
 				<cfset sendback[1].locations = listappend(sendback[1].locations,"Core:#stMD.fullname#") />
 				<cfset sendback[1].locationids = listappend(sendback[1].locationids,"core") />
-			<cfelseif refindnocase("\.plugins\.\w+\.packages",stMD.fullname)>
+			<cfelseif refindnocase("\.plugins\.\w+\.packages",stMD.fullname) and structkeyexists(stLocations,rereplacenocase(stMD.fullname,".*\.plugins\.(\w+)\.packages.*","\1"))>
 				<cfset plugin = rereplacenocase(stMD.fullname,".*\.plugins\.(\w+)\.packages.*","\1") />
 				<cfset sendback[1].locations = listappend(sendback[1].locations,"#stLocations[plugin]#:#stMD.fullname#") />
 				<cfset sendback[1].locationids = listappend(sendback[1].locationids,plugin) />

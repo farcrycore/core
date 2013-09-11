@@ -97,7 +97,7 @@
 		
 		<!--- Remove trailing slash --->
 		<cfif right(arguments.path,1) eq "/">
-			<cfset arguments.path = left(arguments.path,len(arguments.path-1)) />
+			<cfset arguments.path = left(arguments.path,len(arguments.path)-1) />
 		</cfif>
 		
 		<cfreturn arguments.path />
