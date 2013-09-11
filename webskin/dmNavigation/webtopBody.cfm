@@ -1235,7 +1235,7 @@ alert(response.message);
 
 					var locked = "";
 					if (row["locked"] == true) {
-						locked = "<img src='#application.url.webtop#/images/treeImages/customIcons/padlock.gif'>";
+						locked = '<i class="icon-lock icon-large"></i>';
 					}
 					var colCheckbox = '';
 					if (!this.options.bRenderTreeOnly) {
