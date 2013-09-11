@@ -507,6 +507,8 @@
 			<cfset showError = true />
 		<cfelseif isdefined("request.mode.debug") and request.mode.debug>
 			<cfset showError = true />
+		<cfelseif cgi.remote_addr eq "127.0.0.1">
+			<cfset showError = true />
 		</cfif>
 		
 		<cfparam name="application.url.webtop" default="/webtop">
