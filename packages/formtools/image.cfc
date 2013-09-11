@@ -413,7 +413,7 @@
 		
 		<!--- Preview --->
 		<cfif bFileExists>
-			<cfset preview = "<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" />
+			<cfset preview = "<img src='#getFileLocation(stObject=arguments.stObject,stMetadata=arguments.stMetadata,admin=true).path#' style='max-width:400px; max-height:400px;' />" />
 			<cfif arguments.stMetadata.ftShowMetadata>
 				<cfset stImage = getImageInfo(file=arguments.stMetadata.value,admin=true) />
 				<cfset preview = preview & "<br><div style='width:#previewwidth#px;'>#round(stImage.size/1024)#</span>KB, #stImage.width#px x #stImage.height#px</div>" />
