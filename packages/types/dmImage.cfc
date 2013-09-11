@@ -82,10 +82,6 @@ type properties
 	fttype="category" ftalias="dmimage" ftselectmultiple="true"
 	ftBulkUploadDefault="true" />
 
-<!--- system property; ie. not in default edit handlers --->
-<cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft" ftlabel="Status" />
-
-
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/formtools/" prefix="ft" >
 
