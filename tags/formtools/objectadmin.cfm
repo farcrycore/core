@@ -1049,19 +1049,22 @@
 								<cfoutput><td class="objectadmin-actions" nowrap="nowrap" style="">#st.action#</td></cfoutput>
 							</cfif>
 
-				 			<cfset statusOutput = application.rb.getResource("constants.status.#st.status#@label",st.status)>
-							<cfif isDefined("request.fc.inwebtop") AND request.fc.inwebtop eq 1>
-					 			<cfif st.status eq "draft">
-						 			<cfset statusOutput = "<span class='label label-warning'>" & statusOutput & "</span>">
-						 		<cfelseif st.status eq "approved">
-						 			<cfset statusOutput = "<span class='label label-info'>" & statusOutput & "</span>">
-						 		<cfelseif st.status eq "draft/approved">
-						 			<cfset statusOutput = "<span class='label label-warning'>" & statusOutput & "</span>">
-						 			<cfset statusOutput = replace(statusOutput, " + ", "</span> + <span class='label label-info'>", "one")>
-						 		<cfelse>
-						 			<cfset statusOutput = "<span class='label'>" & statusOutput & "</span>">
-					 			</cfif>
-					 		</cfif>
+				 			<cfset statusOutput = "">
+				 			<cfif structKeyExists(st, "status")>
+					 			<cfset statusOutput = application.rb.getResource("constants.status.#st.status#@label",st.status)>
+								<cfif isDefined("request.fc.inwebtop") AND request.fc.inwebtop eq 1>
+						 			<cfif st.status eq "draft">
+							 			<cfset statusOutput = "<span class='label label-warning'>" & statusOutput & "</span>">
+							 		<cfelseif st.status eq "approved">
+							 			<cfset statusOutput = "<span class='label label-info'>" & statusOutput & "</span>">
+							 		<cfelseif st.status eq "draft/approved">
+							 			<cfset statusOutput = "<span class='label label-warning'>" & statusOutput & "</span>">
+							 			<cfset statusOutput = replace(statusOutput, " + ", "</span> + <span class='label label-info'>", "one")>
+							 		<cfelse>
+							 			<cfset statusOutput = "<span class='label'>" & statusOutput & "</span>">
+						 			</cfif>
+						 		</cfif>
+				 			</cfif>
 
 					 		<cfif structKeyExists(st,"bHasMultipleVersion")>
 						 		<cfoutput><td style="white-space:nowrap;">#statusOutput#</td></cfoutput>

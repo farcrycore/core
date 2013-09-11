@@ -4,10 +4,10 @@
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft">
 
 <ft:objectAdmin
-	typename="#stObj.name#"
-	columnList="label,thumbnailImage,status,datetimecreated,datetimelastupdated"
-	sortableColumns="label,status,datetimecreated,datetimelastupdated"
-	lFilterFields="label"
+	typename="dmImage"
+	columnList="title,thumbnailImage,status,datetimecreated,datetimelastupdated"
+	sortableColumns="title,status,datetimecreated,datetimelastupdated"
+	lFilterFields="title,catImage"
 	sqlOrderBy="datetimelastupdated DESC" />
 
 
