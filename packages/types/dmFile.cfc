@@ -1,4 +1,4 @@
-<!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
+<!--- @@Copyright: Daemon Pty Limited 2002-2013, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
 
@@ -15,26 +15,52 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<cfcomponent extends="types" displayname="File"  hint="A global document library that can be referenced from other content types.  Documents can be secured or open to all depending on your settings." bBulkUpload="true">
+<cfcomponent 
+	extends="types" displayname="File"  
+	hint="A global document library that can be referenced from other content types.  Documents can be secured or open to all depending on your settings." 
+	bBulkUpload="true">
 	
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->
-<cfproperty ftSeq="1" ftFieldset="File Details" name="title" type="string" hint="Meaningful reference title for file" required="no" default="" ftLabel="Title" blabel="true" ftBulkUploadEdit="true" />
-<cfproperty ftSeq="2" ftFieldset="File Details" name="description" type="longchar" hint="A description of the file to be uploaded." required="No" default="" fttype="longchar" ftLabel="Description" ftBulkUploadEdit="true" />
-<cfproperty ftSeq="3" ftFieldset="File Details" name="filename" type="string" hint="The name of the file to be uploaded" required="no" default="" ftType="file" ftLabel="File" ftDestination="/dmfile" ftSecure="false" ftBulkUploadTarget="true" />
+	<cfproperty name="title" type="string" required="no" default="" 
+		ftSeq="1" ftFieldset="File Details" ftLabel="Title" 
+		blabel="true" ftBulkUploadEdit="true"
+		hint="Meaningful reference title for file">
 
-<cfproperty ftSeq="20" ftFieldset="Publishing Details" name="documentDate" type="date" hint="The date of the attached file." required="no" default="" ftLabel="Publish Date" ftDefaultType="Evaluate" ftDefault="now()" ftType="datetime" ftDateFormatMask="dd mmm yyyy" ftTimeFormatMask="hh:mm tt" ftToggleOffDateTime="false" />
-<cfproperty ftSeq="30" ftFieldset="Categorisation" name="catFile" type="string" hint="Flag to make file shared." required="no" ftLabel="Category" ftType="category" ftalias="dmfile" ftBulkUploadDefault="true" />
+	<cfproperty name="description" type="longchar" required="No" default="" 
+		ftSeq="2" ftFieldset="File Details" ftLabel="Description" 
+		ftType="longchar" 
+		ftBulkUploadEdit="true"
+		hint="A description of the file to be uploaded.">
 
-<!--- system property --->
-<cfproperty name="status" type="string" hint="Status of the node (draft, pending, approved)." required="yes" default="draft">
+	<cfproperty name="filename" type="string" required="no" default="" 
+		ftSeq="3" ftFieldset="File Details" ftLabel="File" 
+		ftType="file" ftDestination="/dmfile" 
+		ftSecure="false" ftBulkUploadTarget="true"
+		hint="The name of the file to be uploaded">
 
+	<cfproperty name="documentDate" type="date" required="no" default="" 
+		ftSeq="4" ftFieldset="Publishing Details" ftLabel="Publish Date" 
+		ftType="datetime" ftDefaultType="Evaluate" ftDefault="now()" 
+		ftDateFormatMask="dd mmm yyyy" ftTimeFormatMask="hh:mm tt" ftToggleOffDateTime="false"
+		hint="The date of the attached file.">
+
+	<cfproperty name="catFile" type="string" required="no" 
+		ftSeq="5" ftFieldset="Categorisation" ftLabel="Category" 
+		ftType="category" ftAlias="dmfile" 
+		ftBulkUploadDefault="true"
+		hint="Flag to make file shared.">
+
+<!--- 
+ // system property 
+--------------------------------------------------------------------------------->
+	<cfproperty name="status" type="string" required="yes" default="draft"
+		hint="Status of the node (draft, pending, approved).">
 
 <!------------------------------------------------------------------------
 object methods
 ------------------------------------------------------------------------->
-
 <cffunction name="fileInfo" output="false" returntype="query" access="private">
 	<cfargument name="fileName" type="string" required="true" />
 	

@@ -5,8 +5,9 @@
 
 <ft:objectAdmin
 	typename="dmFile"
-	columnList="title,status,datetimecreated,datetimelastupdated"
-	sortableColumns="title,status,datetimecreated,datetimelastupdated"
+	title="Document Library"
+	columnList="title,status,datetimecreated,datetimelastupdated,documentDate"
+	sortableColumns="title,status,datetimecreated,datetimelastupdated,documentDate"
 	lFilterFields="title,catFile"
 	sqlOrderBy="datetimelastupdated DESC" />
 
