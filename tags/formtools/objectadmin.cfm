@@ -689,7 +689,7 @@
 	<!--- ONLY SHOW THE FILTERING IF WE HAVE RECORDS OR IF WE ARE ALREADY FILTERING --->
 	<cfif listLen(attributes.lFilterFields) AND (listLen(HTMLfiltersAttributes) OR stRecordset.q.recordCount)>
 		<ft:form Name="#attributes.name#Filter" Validation="#attributes.bFilterValidation#">	
-			<cfif NOT (structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true)>
+			<cfif NOT (isDefined("request.fc.inwebtop") AND request.fc.inwebtop eq 1)>
 				<ft:button type="button" value="Filter" icon="icon-search" class="small" priority="primary" style="" text="#application.rb.getResource('objectadmin.messages.Filtering@text','Show Filter')#" onclick="$j('##filterForm').toggle('blind');" />
 			</cfif>
 				
@@ -713,7 +713,7 @@
 	</cfif>
 
 
-	<cfif structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true>
+	<cfif isDefined("request.fc.inwebtop") AND request.fc.inwebtop eq 1>
 		<cfoutput>
 			<form id="farcry-objectadmin-form" action="" method="post" class="input-prepend input-append pull-right" style="position: relative; z-index:2">
 				<cfif len(attributes.lFilterFields)>
@@ -767,7 +767,7 @@
 
 								<cfset icon = "">
 								<cfset class = "">
-								<cfif structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true>
+								<cfif isDefined("request.fc.inwebtop") AND request.fc.inwebtop eq 1>
 									<!--- bootstrap --->
 									<cfif structkeyexists(attributes.aButtons[i],"icon")>
 										<cfset icon =  attributes.aButtons[i].icon />
@@ -844,7 +844,7 @@
 				
 				<cfoutput>
 
-				<cfif structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true>
+				<cfif isDefined("request.fc.inwebtop") AND request.fc.inwebtop eq 1>
 					<table width="100%" class="farcry-objectadmin table table-striped table-hover">
 				<cfelse>
 					<table width="100%" class="objectAdmin">
@@ -900,7 +900,10 @@
 
 							<cfset headerColumnStyle = "">
 							<cfif isDefined("PrimaryPackage.stProps.#trim(i)#.metadata.ftType") AND PrimaryPackage.stProps[#trim(i)#].metadata.ftType eq "datetime">
-								<cfset headerColumnStyle = "width: 10em;">
+								<cfset headerColumnStyle = "width: 8em;">
+							</cfif>
+							<cfif i eq "status">
+								<cfset headerColumnStyle = "width: 9em;">								
 							</cfif>
 
 							<cfset orderField = listFirst(session.objectadminFilterObjects[attributes.typename].sqlOrderBy, " ")>
@@ -945,7 +948,7 @@
 					</cfoutput>
 					
 
-					<cfif len(attributes.SortableColumns) AND NOT (structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true)>
+					<cfif len(attributes.SortableColumns) AND NOT (isDefined("request.fc.inwebtop") AND request.fc.inwebtop eq 1)>
 						<cfoutput>
 						<tr>
 						</cfoutput>
@@ -1023,7 +1026,7 @@
 				<cfset st = application.fapi.structMerge(st,stObjectAdminData) />
 
 
-				<cfif structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true>
+				<cfif isDefined("request.fc.inwebtop") AND request.fc.inwebtop eq 1>
 					<cfset st.currentRowClass = "">
 				</cfif>
 					
@@ -1045,20 +1048,22 @@
 							<cfif attributes.bShowActionList>
 								<cfoutput><td class="objectadmin-actions" nowrap="nowrap" style="">#st.action#</td></cfoutput>
 							</cfif>
+
+				 			<cfset statusOutput = application.rb.getResource("constants.status.#st.status#@label",st.status)>
+							<cfif isDefined("request.fc.inwebtop") AND request.fc.inwebtop eq 1>
+					 			<cfif st.status eq "draft">
+						 			<cfset statusOutput = "<span class='label label-warning'>" & statusOutput & "</span>">
+						 		<cfelseif st.status eq "approved">
+						 			<cfset statusOutput = "<span class='label label-info'>" & statusOutput & "</span>">
+						 		<cfelseif st.status eq "draft/approved">
+						 			<cfset statusOutput = "<span class='label label-warning'>" & statusOutput & "</span>">
+						 			<cfset statusOutput = replace(statusOutput, " + ", "</span> + <span class='label label-info'>", "one")>
+						 		<cfelse>
+						 			<cfset statusOutput = "<span class='label'>" & statusOutput & "</span>">
+					 			</cfif>
+					 		</cfif>
+
 					 		<cfif structKeyExists(st,"bHasMultipleVersion")>
-					 			<cfset statusOutput = application.rb.getResource("constants.status.#st.status#@label",st.status)>
-								<cfif structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true>
-						 			<cfif st.status eq "draft">
-							 			<cfset statusOutput = "<span class='label label-warning'>" & statusOutput & "</span>">
-							 		<cfelseif st.status eq "approved">
-							 			<cfset statusOutput = "<span class='label label-info'>" & statusOutput & "</span>">
-							 		<cfelseif st.status eq "draft/approved">
-							 			<cfset statusOutput = "<span class='label label-warning'>" & statusOutput & "</span>">
-							 			<cfset statusOutput = replace(statusOutput, " + ", "</span> + <span class='label label-info'>", "one")>
-							 		<cfelse>
-							 			<cfset statusOutput = "<span class='label'>" & statusOutput & "</span>">
-						 			</cfif>
-						 		</cfif>
 						 		<cfoutput><td style="white-space:nowrap;">#statusOutput#</td></cfoutput>
 							</cfif>
 	
@@ -1091,13 +1096,8 @@
 							
 								<cfloop list="#attributes.columnlist#" index="i">
 									<cfif structKeyExists(stFields, i)>
-										<cfif i eq "status" AND structKeyExists(request, "fcwebtopbootstrap") AND request.fcwebtopbootstrap eq true>
-											<cfset stFields[i].HTML = reReplace(stFields[i].HTML, "(.)", "\u\1", "one")>
-											<cfif stFields[i].HTML eq "draft">
-												<cfset stFields[i].HTML = "<span class='label label-warning'>#stFields[i].HTML#</span>">
-											<cfelseif stFields[i].HTML eq "approved">
-												<cfset stFields[i].HTML = "<span class='label label-info'>#stFields[i].HTML#</span>">
-											</cfif>
+										<cfif i eq "status">
+											<cfset stFields[i].HTML = statusOutput>
 										</cfif>
 										<cfoutput><td>#stFields[i].HTML#</td></cfoutput>			
 									<cfelse>
@@ -1111,7 +1111,6 @@
 						</cfoutput>
 					
 					
-				<!--- </ft:paginateLoop> --->
 			<cfif st.bLast>
 				<cfoutput></table></cfoutput>
 			</cfif>

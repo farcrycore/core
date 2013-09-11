@@ -1,13 +1,14 @@
 <cfsetting enablecfoutputonly="true">
-<!--- @@displayname: Default Webtop Body --->
+<!--- @@displayname: Files Webtop Body --->
 
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft">
 
 <ft:objectAdmin
 	typename="dmFile"
-	columnList="title,datetimelastUpdated,status"
-	sortableColumns="title,datetimelastUpdated,status"
+	columnList="title,status,datetimecreated,datetimelastupdated"
+	sortableColumns="title,status,datetimecreated,datetimelastupdated"
 	lFilterFields="title,catFile"
-	sqlOrderBy="datetimelastUpdated DESC" />
+	sqlOrderBy="datetimelastupdated DESC" />
+
 
 <cfsetting enablecfoutputonly="false">

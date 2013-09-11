@@ -23,7 +23,7 @@
 				<menuitem id="quicksitebuilder" sequence="10" label="Quick Site Builder" link="/admin/quickBuilder.cfm" description="Build your information hierarchy with the Quick Site Builder.  Useful for rapidly creating new sites or branches of content in the site overview tree." />
 			</menu>
 			<menu id="MediaLibraryContent" sequence="20" label="Media Assets">
-				<menuitem id="listdmimage" sequence="10" label="Image Library" link="/admin/customadmin.cfm?module=customlists/dmimage.cfm" relatedtype="dmImage" />
+				<menuitem id="listdmimage" sequence="10" label="Image Library" typename="dmImage" />
 				<menuitem id="listdmfile" sequence="20" label="Document Library" typename="dmFile" />
 			</menu>
 			<menu id="categorisation" sequence="40" permission="ContentCategorisationTab" label="Category Management">

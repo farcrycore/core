@@ -1,11 +1,11 @@
 <cfsetting enablecfoutputonly="true">
-<!--- @@displayname: Default Webtop Body --->
+<!--- @@displayname: Images Webtop Body --->
 
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft">
 
 <ft:objectAdmin
 	typename="#stObj.name#"
-	columnList="label,status,datetimecreated,datetimelastupdated"
+	columnList="label,thumbnailImage,status,datetimecreated,datetimelastupdated"
 	sortableColumns="label,status,datetimecreated,datetimelastupdated"
 	lFilterFields="label"
 	sqlOrderBy="datetimelastupdated DESC" />
