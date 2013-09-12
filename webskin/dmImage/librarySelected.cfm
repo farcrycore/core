@@ -5,7 +5,7 @@
 <cfif StructKeyExists(stObj,"thumbnailImage") AND len(stobj.thumbnailImage)>
 	<cfoutput>
 		<table class="layout" style="width:99%;table-layout:fixed;background:transparent;">
-		<col style="width:100px;" />
+		<col style="" />
 		<col style="width:10px;" />
 		<col style="" />
 		<tr class="nowrap" style="background:transparent;">
