@@ -774,17 +774,7 @@
 									<cfelse>
 										<cfswitch expression="#attributes.aButtons[i].value#">
 											<cfcase value="Add">
-												<cfset icon = "icon-plus">
 												<cfset class = "btn-primary">
-											</cfcase>
-											<cfcase value="Copy">
-												<cfset icon = "icon-copy">
-											</cfcase>
-											<cfcase value="Delete">
-												<cfset icon = "icon-trash">
-											</cfcase>
-											<cfcase value="Unlock">
-												<cfset icon = "icon-unlock">
 											</cfcase>
 										</cfswitch>
 									</cfif>
