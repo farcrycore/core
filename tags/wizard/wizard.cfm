@@ -283,8 +283,6 @@
 				<input type="hidden" name="SelectedObjectID" class="fc-selected-object-id" value="" /><!--- Hidden Field to take a UUID from the attributes.SelectedObjectID on ft:button --->
 			
 				<input type="hidden" name="farcryFormValidation" id="farcryFormValidation#attributes.name#" class="fc-server-side-validation" value="#attributes.validation#" /><!--- Let the form submission know if it to perform serverside validation --->
-		
-			</form>
 			</cfoutput>
 			
 			

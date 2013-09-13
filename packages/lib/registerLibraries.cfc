@@ -47,9 +47,9 @@
 							lFiles="handlebars.js" />
 		<skin:registerJS 	id="handlebars" aliasof="fc-handlebars" core="false" />
 		
-		<skin:registerJS 	id="tinymce" core="true"
+		<skin:registerJS 	id="tinymce" core="true" bCombine="false"
 							baseHREF="#application.url.webtop#/thirdparty/tiny_mce"
-							lFiles="jquery.tinymce.min.js" />
+							lFiles="tinymce.min.js" />
 
 		<skin:registerJS 	id="jquery-validate" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/jquery-validate"

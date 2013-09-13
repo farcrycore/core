@@ -100,7 +100,8 @@
 			<cfoutput>
 				<script language="javascript" type="text/javascript">
 				$j(function() {
-					$j('###arguments.fieldname#').tinymce({
+					tinymce.init({
+					selector: '###arguments.fieldname#',
 
 					script_url : '#application.url.webtop#/thirdparty/tiny_mce/tinymce.min.js',
 
