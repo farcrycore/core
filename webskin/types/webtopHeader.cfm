@@ -14,7 +14,7 @@
 
 <!--- init user profile info --->
 <cfset webtopUsername = "FarCry User">
-<cfset webtopGravatarHash = "00000000000000000000000000000000">
+<cfset webtopGravatarHash = "">
 <cfset webtopAvatar = "">
 <cfif structKeyExists(session.dmProfile,"firstname") AND len(session.dmProfile.firstname)>
 	<cfset webtopUsername = session.dmProfile.firstname>
@@ -85,7 +85,7 @@
 							<span class="avatar">
 								<cfif len(webtopAvatar)>
 									<img src="#webtopAvatar#" width="24" height="25" onerror="this.style.visibility='hidden';">
-								<cfelse>
+								<cfelseif webtopGravatarHash neq "">
 									<img src="//www.gravatar.com/avatar/#webtopGravatarHash#?d=404" width="24" height="25" onerror="this.style.visibility='hidden';">
 								</cfif>
 								<i class="icon-user"></i>
