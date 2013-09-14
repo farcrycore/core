@@ -19,8 +19,8 @@
 <!---------------------------------------------- 
 type properties
 ----------------------------------------------->
-	<cfproperty name="configkey" type="string" default="" hint="The variable used in the config struct" ftLabel="Key" ftType="string" ftValidation="required" bLabel="true" />
-	<cfproperty ftSeq="1" ftFieldSet="Config" name="configdata" type="longchar" default="" hint="The config values encoded in WDDX" ftLabel="Config" ftType="longchar" ftShowLabel="false" />
+	<cfproperty name="configkey" type="string" default="" hint="The variable used in the config struct" ftLabel="Config" ftType="string" ftValidation="required" />
+	<cfproperty ftSeq="1" ftFieldSet="Config" name="configdata" type="longchar" default="" hint="The config values encoded in JSON" ftLabel="Config" ftType="longchar" ftShowLabel="false" />
 
 <!---------------------------------------------- 
 object methods
@@ -226,6 +226,18 @@ object methods
 		</cfif>
 		
 		<cfreturn stObj />
+	</cffunction>
+
+ 	<cffunction name="autoSetLabel" access="public" output="false" returntype="string" hint="Automagically sets the label">
+		<cfargument name="stProperties" required="true" type="struct">
+
+		<cfset var newLabel = "">
+		<cfset var configTypename = getForm(key=stProperties.configkey)>
+		<cfif isDefined("application.stCOAPI.#configTypename#")>
+			<cfset newLabel = trim(application.stCOAPI[configTypename].displayname)>			
+		</cfif>
+		
+		<cfreturn newLabel>
 	</cffunction>
 	
 	<cffunction name="getConfig" access="public" output="true" returntype="struct" hint="Finds the config for the specified config, create it if it doesn't exist, then return it">

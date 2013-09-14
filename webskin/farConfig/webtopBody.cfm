@@ -1,4 +1,4 @@
-<cfsetting enablecfoutputonly="true" />
+<cfsetting enablecfoutputonly="true">
 
 <!--- import tag libraries --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
@@ -49,8 +49,8 @@ VIEW
 <cfset aCustomColumns = arraynew(1) />
 
 <cfset aCustomColumns[1] = structnew() />
-<cfset aCustomColumns[1].title = "Key" />
-<cfset aCustomColumns[1].sortable = true />
+<cfset aCustomColumns[1].title = "Config" />
+<cfset aCustomColumns[1].sortable = false />
 <cfset aCustomColumns[1].property = "configkey" />
 <cfset aCustomColumns[1].webskin = "displayCellEditLink" />
 
@@ -70,16 +70,18 @@ VIEW
 <cfset aButtons[2].permission = 1 />
 <cfset aButtons[2].onclick = "" />
 
-<ft:objectadmin typename="farConfig" 
-				title="Manage Configuration" 
-				columnList="datetimelastupdated" 
-				sqlorderby="configkey asc" 
-				sortableColumns="datetimelastupdated" 
-				aCustomColumns="#aCustomColumns#" 
-				bSelectCol="true" 
-				bShowActionList="false"
-				lfilterfields="configkey"
-				aButtons="#aButtons#"
-				lButtons="Delete / Reset,Reload configuration" />
 
-<cfsetting enablecfoutputonly="true" />
+<ft:objectadmin typename="farConfig" 
+	title="Manage Configuration" 
+	columnList="configkey,datetimelastupdated" 
+	sqlorderby="label asc" 
+	sortableColumns=""
+	aCustomColumns="#aCustomColumns#" 
+	bSelectCol="true" 
+	bShowActionList="false"
+	lfilterfields="label"
+	aButtons="#aButtons#"
+	lButtons="Delete / Reset,Reload configuration" />
+
+
+<cfsetting enablecfoutputonly="true">
