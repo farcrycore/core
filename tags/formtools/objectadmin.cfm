@@ -1114,8 +1114,8 @@
 		
 	
 	<cfelse>
-		<cfif listLen(HTMLfiltersAttributes)>
-			<cfoutput><div class="alert alert-error">NO RESULTS MATCHED YOUR FILTER</div></cfoutput>
+		<cfif listLen(HTMLfiltersAttributes) OR len(form.q)>
+			<cfoutput><div class="alert alert-error">No results matched your filter</div></cfoutput>
 		<cfelse>
 			<cfoutput><div class="alert alert-info"><admin:resource key="#attributes.rbkey#.emptymessage@text" var1="#typelabel#">#attributes.emptymessage#</admin:resource></div></cfoutput>
 		</cfif>
