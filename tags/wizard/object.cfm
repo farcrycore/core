@@ -499,8 +499,7 @@
 								labelAlignment="#ftFieldMetadata.ftLabelAlignment#" 
 								hint="#iif(attributes.bShowFieldHints,'ftFieldMetadata.ftHint','""')#" 
 								errorMessage="#ftFieldMetadata.errorMessage#"
-								class="#ftFieldMetadata.ftType# #ftFieldMetadata.errorClass#"
-								style="#ftFieldMetadata.ftStyle#">
+								class="#ftFieldMetadata.ftType# #ftFieldMetadata.errorClass#">
 											
 						<cfoutput>#ftFieldMetadata.html#</cfoutput>
 						
