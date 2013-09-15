@@ -1128,6 +1128,17 @@ legend + .control-group {
 	height: auto;
 }
 
+.controls input.fc-date {
+    min-width: 0;
+    max-width: 220px;
+    width: 200px;
+}
+.controls select.fc-time {
+	min-width: 0;
+	max-width: 50px;
+}
+
+
 .controls textarea {
 	min-height: 80px;
 }

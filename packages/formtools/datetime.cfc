@@ -283,7 +283,7 @@
 					
 					<div id="#arguments.fieldname#-wrap">
 						<!--- <label class="inlineLabel" for="#arguments.fieldname#"></label> --->
-						<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftCFDateFormatMask)#" class="textInput #arguments.stMetadata.ftClass#" style="width:100px;#arguments.stMetadata.ftStyle#" >
+						<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftCFDateFormatMask)#" class="textInput fc-date #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#" >
 						<input type="hidden" name="#arguments.fieldname#rendertype" id="#arguments.fieldname#rendertype" value="#arguments.stMetadata.ftRenderType#">
 						
 						<skin:onReady>
@@ -303,18 +303,18 @@
 						</skin:onReady>
 
 						<cfif arguments.stMetadata.ftShowTime>
-							<select name="#arguments.fieldname#Hour">
+							<select class="fc-time" name="#arguments.fieldname#Hour">
 							<cfloop from="1" to="12" index="i">
 								<option value="#i#"<cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'h') EQ i> selected="selected"</cfif>>#i#</option>
 							</cfloop>
 							</select>
-							<select name="#arguments.fieldname#Minute">
+							<select class="fc-time" name="#arguments.fieldname#Minute">
 								<option value="00">00</option>
 								<cfloop from="1" to="60" index="i">
 									<option value="#numberFormat(i, '00')#"<cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'m') EQ i> selected="selected"</cfif>>#numberFormat(i, '00')#</option>
 								</cfloop>
 							</select>
-							<select name="#arguments.fieldname#Period">
+							<select class="fc-time" name="#arguments.fieldname#Period">
 								<option value="AM"<cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'tt') EQ "AM"> selected="selected"</cfif>>AM</option>
 								<option value="PM"<cfif isDate(arguments.stMetadata.value) AND TimeFormat(arguments.stMetadata.value,'tt') EQ "PM"> selected="selected"</cfif>>PM</option>
 							</select>
