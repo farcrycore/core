@@ -121,7 +121,7 @@
 								<li class="#class#<cfif url.sub eq subsection.id> active</cfif>"><a href="?id=#lcase(url.sec)#.#lcase(subsection.id)#"><cfif isdefined("subsection.icon")><i class="#subsection.icon#"></i> </cfif>#trim(subsection.label)#</a></li>
 							<cfelse>
 								<li id="nav-#subsection.id#" class="dropdown #class#<cfif url.sub eq subsection.id> active</cfif>">
-									<a href="?id=#lcase(url.sec)#.#lcase(subsection.id)#"><cfif isdefined("subsection.icon")><i class="#subsection.icon#"></i> </cfif>#trim(subsection.label)#</a>
+									<a href="?id=#lcase(url.sec)#.#lcase(subsection.id)#"><cfif isdefined("subsection.icon")><i class="#subsection.icon#"></i> </cfif>#trim(subsection.label)# <i class="icon-caret-down" style="opacity:0.5"></i></a>
 
 									<cfset menuitemCount = 0>
 									<cfset columnCount = 1>
@@ -166,7 +166,7 @@
 								title="#application.fapi.getResource('webtop.utilities.favourites.favourite@text','Add or remove this page from your favourites')#" 
 								data-this="#application.fapi.fixURL()#" 
 								data-add="#application.fapi.getLink(type='dmProfile',view='ajaxAddFavourite')#" 
-								data-remove="#application.fapi.getLink(type='dmProfile',view='ajaxRemoveFavourite')#"><i class="<cfif active>icon-star<cfelse>icon-star-empty</cfif>"></i></a><a href="##" class="dropdown favourites-toggle" data-toggle="dropdown"><admin:resource key="webtop.utilties.favourites.favouritesmenu@text">Favourites</admin:resource> <i class="icon-caret-down"></i></a>
+								data-remove="#application.fapi.getLink(type='dmProfile',view='ajaxRemoveFavourite')#"><i class="<cfif active>icon-star<cfelse>icon-star-empty</cfif>"></i></a><a href="##" class="dropdown favourites-toggle" data-toggle="dropdown"><admin:resource key="webtop.utilties.favourites.favouritesmenu@text">Favourites</admin:resource> <i class="icon-caret-down" style="opacity:0.5"></i></a>
 							<ul class="favourites-menu dropdown-menu">
 								<cfloop array="#aFavourites#" index="thisfavourite">
 									<li><a href="#thisfavourite.url#">#thisfavourite.label#</a></li>
