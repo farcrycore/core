@@ -58,10 +58,7 @@ object methods
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 		
 		<!--- If the field already has a value then use that --->
-		<cfwddx action="wddx2cfml" input="#arguments.stMetadata.value#" output="stObj" />
-		<cfloop collection="#stObj#" item="thisprop">
-			<cfset stObj[thisprop] = replacelist(stObj[thisprop],"&gt;,&lt;,&apos;,&quot;,&amp;",">,<,',"",&") />
-		</cfloop>
+		<cfset stObj = deserializeJSON(arguments.stMetadata.value)>
 		
 		<!--- If the config is unknown, attempt to match it by form key --->
 		<cfif not structkeyexists(stObj,"typename")>
@@ -159,7 +156,7 @@ object methods
 		
 		<!--- If a previous version was passed in, get it, otherwise get the default for the new form --->
 		<cfif len(arguments.stFieldPost.value)>
-			<cfwddx action="wddx2cfml" input="#arguments.stFieldPost.value#" output="stObj" />
+			<cfset stObj = deserializeJSON(arguments.stFieldPost.value)>
 			
 			<!--- Validate the data --->
 			<ft:validateFormObjects typename="#arguments.stFieldPost.stSupporting.formname#">
@@ -182,58 +179,47 @@ object methods
 			<!--- No validation required --->
 		</cfif>
 		
-		<!--- Convert result back to WDDX --->
-		<cfwddx action="cfml2wddx" input="#stObj#" output="stResult.value" />
+		<!--- Convert result back to JSON --->
+		<cfset stResult.value = serializeJSON(stObj)>
 		
 		<cfreturn stResult>
 	</cffunction>
 	
-	<cffunction name="migrateConfig" access="public" output="false" returntype="struct" hint="Creates a new config record based on pre 4.1 data">
-		<cfargument name="key" type="string" required="true" hint="The key of the old config record" />
+
+	<cffunction name="migrateConfigWDDXtoJSON" access="public" output="true" returntype="string" hint="Updates a pre-FC7 WDDX config to JSON format. Returns the new JSON data on success, empty string if nothing was migrated.">
+		<cfargument name="objectid" type="string" required="true" hint="The objectid of the config record">
 		
-		<cfset var stResult = structnew() />
-		<cfset var qConfig = "" />
-		<cfset var wConfig = "" />
-		<cfset var stObj = structnew() />
-		
-		<cfquery datasource="#application.dsn#" name="qConfig">
-			select		configname, wConfig
-			from		#application.dbowner#config
-			where		configname = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.key#">
-		</cfquery>
-		
-		<cfif qConfig.recordcount>
-			<!--- Set up the config item values --->
-			<cfset stObj.objectid = application.fc.utils.createJavaUUID() />
-			<cfset stObj.typename = "farConfig" />
-			<cfset stObj.configkey = trim(arguments.key) />
-			
-			<!--- Get data --->
-			<cfwddx action="wddx2cfml" input="#qConfig.wConfig#" output="stResult" />
-			
-			<!--- Find the config form component with that key and get the default values --->
-			<cfloop list="#application.factory.oUtils.getComponents('forms')#" index="thisform">
-				<cfif left(thisform,6) eq "config" and application.stCOAPI[thisform].key eq trim(arguments.key)>
-					<cfset structappend(stResult,createobject("component",application.stCOAPI[thisform].packagepath).getData(application.fc.utils.createJavaUUID()),false) />
-					<cfset stResult.typename = thisform />
+		<cfset var result = "">
+		<cfset var stConfig = structNew()>
+		<cfset var stObj = getData(objectid=arguments.objectid)>
+		<cfset var formkey = "">
+
+		<cfif isWDDX(stObj.configdata)>
+			<!--- read the existing WDDX config, converting previously escaped chars --->
+			<cfwddx action="wddx2cfml" input="#stObj.configdata#" output="stConfig">
+			<cfloop collection="#stConfig#" item="formkey">
+				<cfif issimplevalue(stConfig[formkey])>
+					<cfset stConfig[formkey] = replacelist(stConfig[formkey],"&gt;,&lt;,&apos;,&quot;,&amp;",">,<,',"",&") />
 				</cfif>
 			</cfloop>
-			
-			<cfwddx action="cfml2wddx" input="#stResult#" output="stObj.configdata" />
-			
-			<!--- Save the config data --->
-			<cfset createData(stProperties=stObj) />
+			<!--- save the new JSON config --->
+			<cfset stObj.configdata = serializeJSON(stConfig)>
+			<cfset stObj.label = autoSetLabel(stProperties=stObj)>
+			<cfset setData(stProperties=stObj)>
+
+			<cfset result = stObj.configdata>
 		</cfif>
-		
-		<cfreturn stObj />
+
+		<cfreturn result>
 	</cffunction>
 
  	<cffunction name="autoSetLabel" access="public" output="false" returntype="string" hint="Automagically sets the label">
 		<cfargument name="stProperties" required="true" type="struct">
 
-		<cfset var newLabel = "">
+		<cfset var newLabel = stProperties.configkey>
 		<cfset var configTypename = getForm(key=stProperties.configkey)>
-		<cfif isDefined("application.stCOAPI.#configTypename#")>
+
+		<cfif isDefined("application.stCOAPI.#configTypename#.displayname")>
 			<cfset newLabel = trim(application.stCOAPI[configTypename].displayname)>			
 		</cfif>
 		
@@ -244,8 +230,9 @@ object methods
 		<cfargument name="key" type="string" required="true" hint="The key of the config to load" />
 		<cfargument name="bAudit" type="boolean" default="true" required="false" hint="Allows the installer to not audit" />
 		
-		<cfset var stResult = structnew() />
+		<cfset var stResult = "" />
 		<cfset var qConfig = "" />
+		<cfset var migratedConfig = "" />
 		<cfset var stObj = structnew() />
 		<cfset var thisform = "" />
 		<cfset var wConfig = "" />
@@ -263,14 +250,19 @@ object methods
 		</cfquery>
 		
 		<cfif qConfig.recordcount>
-			<!--- If the config item exists convert the data to a struct --->
-			<cfwddx action="wddx2cfml" input="#qConfig.configdata[1]#" output="stResult" />
-			<cfloop collection="#stResult#" item="formkey">
-				<cfif issimplevalue(stResult[formkey])><cfset stResult[formkey] = replacelist(stResult[formkey],"&gt;,&lt;,&apos;,&quot;,&amp;",">,<,',"",&") /></cfif>
-			</cfloop>
+			<!--- migrate old WDDX configs to JSON --->
+			<cfif isWDDX(qConfig.configdata[1])>
+				<cfset migratedConfig = migrateConfigWDDXtoJSON(objectid=qConfig.objectid[1])>
+				<cfset querySetCell(qConfig, "configdata", migratedConfig, 1)>
+			</cfif>
+
+			<!--- deserialise JSON into config struct --->
+			<cfif isJSON(qConfig.configdata[1])>
+				<cfset stResult = deserializeJSON(qConfig.configdata[1])>				
+			</cfif>
 		</cfif>
 		
-		<!--- Make sure the result is a struct --->
+		<!--- make sure the result is a struct --->
 		<cfif not isstruct(stResult)>
 			<cfset stResult = structnew() />
 			<cfset bChanged = true />
@@ -293,7 +285,7 @@ object methods
 		
 		<cfif bChanged>
 			<!--- Copy the result back to an stObj --->
-			<cfwddx action="cfml2wddx" input="#stResult#" output="stObj.configdata" />
+			<cfset stObj.configdata = serializeJSON(stResult)>
 			
 			<!--- Set up the config item values --->
 			<cfif qConfig.recordcount>
@@ -303,6 +295,7 @@ object methods
 			</cfif>
 			<cfset stObj.typename = "farConfig" />
 			<cfset stObj.configkey = arguments.key />
+			<cfset stObj.label = autoSetLabel(stProperties=stObj)>				
 			<cfset stObj.datetimecreated = now() />
 				
 			<!--- Save the config data (ensures that new configs and new properties are saved) --->
@@ -349,10 +342,7 @@ object methods
 		<cfset var config = "" />
 		<cfset var thisprop = "" />
 		
-		<cfwddx action="wddx2cfml" input="#arguments.stProperties.configdata#" output="config" />
-		<cfloop collection="#config#" item="thisprop">
-			<cfset config[thisprop] = replacelist(config[thisprop],"&gt;,&lt;,&apos;,&quot;,&amp;",">,<,',"",&") />
-		</cfloop>
+		<cfset config = deserializeJSON(arguments.stProperties.configdata)>
 		
 		<!--- run the config object's process method --->
 		<cfset config = application.fapi.getContentType(getForm(arguments.stProperties.configKey)).process(fields = config) />
