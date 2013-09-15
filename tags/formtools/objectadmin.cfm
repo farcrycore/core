@@ -1260,7 +1260,7 @@
 						
 						<cfif attributes.bPreviewCol>
 							<li>
-								<ft:button value="Preview" title="Preview this object" renderType="link" type="button" onclick="$fc.objectAdminAction('Preview', '#application.url.webroot#/index.cfm?flushcache=1&objectid=#arguments.st.objectid#&type=#attributes.typename#');" />
+								<a href="##" type="button" onclick="$fc.objectAdminAction('Preview', '#application.url.webroot#/index.cfm?flushcache=1&objectid=#arguments.st.objectid#&type=#attributes.typename#');">Preview</a>
 							</li>
 						</cfif>		
 						
