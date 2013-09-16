@@ -952,7 +952,7 @@
 			
 			
 		
-		$j(document).on("click",".fc-btn, .dropdown-menu>li>a", function(e) {
+		$j(document).on("click",".fc-btn, .fc-btn-link", function(e) {
 			
 			var fcSettings = $j(this).data('fcSettings');
 

@@ -258,7 +258,7 @@ It just ignores the inner ones.
 					
 					#attributes.onSubmit#;
 					
-					$j("###attributes.Name# .fc-btn, ###attributes.Name# .jquery-ui-split-button ul li a").each(function(index,el){
+					$j("###attributes.Name# .fc-btn, ###attributes.Name# .fc-btn-link").each(function(index,el){
 						
 						if( $j(el).attr('fc:disableOnSubmit') ) {
 							 $j(el).attr('disabled', 'disabled');

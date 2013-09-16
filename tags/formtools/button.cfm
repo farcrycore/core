@@ -179,16 +179,7 @@
 	<cfif not len(attributes.r_stButton)>
 		<cfswitch expression="#attributes.renderType#">
 		<cfcase value="link">
-			
-			<cfif NOT listFindNoCase(GetBaseTagList(),"cf_dropdownMenu")>
-				<!--- 
-				Do not add the farcry button class if within a dropdown menu as it screws styles.
-				The action is still handled with the selector .dropdown-menu>li>a
-				  --->
-				<cfset attributes.class = listPrepend(attributes.class, "fc-btn", " ")>
-			</cfif>
-			
-			<cfoutput><a id="#attributes.id#" name="#attributes.id#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="#attributes.class#" style="#attributes.style#" href="##" <cfif attributes.dropdownToggle>data-toggle="dropdown"</cfif>>#attributes.text#</a></cfoutput>
+			<cfoutput><a id="#attributes.id#" name="#attributes.id#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="fc-btn-link #attributes.class#" style="#attributes.style#" href="##" <cfif attributes.dropdownToggle>data-toggle="dropdown"</cfif>>#attributes.text#</a></cfoutput>
 		</cfcase>
 		<cfcase value="button">
 			<cfoutput><button id="#attributes.id#" name="FarcryForm#attributes.Type#Button=#attributes.value#" type="#attributes.type#" value="#attributes.value#" <cfif len(attributes.title)> title="#attributes.title#"</cfif> class="fc-btn #attributes.class#" style="#attributes.style#;" <cfif attributes.disabled>disabled</cfif>  <cfif attributes.dropdownToggle>data-toggle="dropdown"</cfif>>#attributes.text#</button></cfoutput>
