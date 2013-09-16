@@ -151,7 +151,7 @@
 		<div class="btn-group">
 			<button data-toggle="dropdown" class="btn btn-group dropdown-toggle" type="button">More <i class="caret"></i></button>
 			<ul class="dropdown-menu">
-				<li><a href="##" class="fc-btn-"><i class="icon-undo icon-fixed-width"></i> Undelete</a></li>
+				<li><a href="##" class="fc-btn-undelete" onclick="$fc.objectAdminAction('Undelete', '#application.url.webtop#/index.cfm?typename=dmArchive&view=webtopPageModal&bodyView=webtopBody&archivetype=dmNavigation'); return false;"><i class="icon-undo icon-fixed-width"></i> Undelete</a></li>
 			</ul>
 		</div>
 
