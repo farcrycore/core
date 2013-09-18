@@ -48,6 +48,9 @@ $out:$
 <cfparam name="url.status" default="0">
 <cfparam name="attributes.lObjectIDs" default="#url.objectId#">
 
+<skin:loadCSS id="fc-bootstrap" />
+<skin:loadCSS id="fc-fontawesome" />
+<skin:loadCSS id="webtop7" />
 
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
@@ -55,9 +58,21 @@ $out:$
 
 <cfset changestatus = true>
 
+<cfoutput>
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+</head>
+<body class="webtop-modal">
+	<div class="container-fluid">
+		<div class="row-fluid">
+			<div class="span12">
+			</cfoutput>
+
 <!--- show comment form --->
 <cfif not isdefined("form.commentLog")>
-
 	<cfset stApprovers = "*" />
 	<cfset astObj = arraynew(1) />
 	<cfset oWorkflow = createobject("component","#application.packagepath#.farcry.workflow") />
@@ -98,14 +113,13 @@ $out:$
 		}
 		</script>
 		<ft:form>
-		<h1>
-			<cfif isDefined("URL.draftObjectID")>
-				#application.rb.getResource("workflow.messages.objStatusRequest@text","Set content item status for underlying draft content item to 'request'")#
-			<cfelse>
-				#application.rb.formatRBString("workflow.messages.setObjStatus@text",url.status,"Set content item status to {1}")#
-			</cfif>
-		</h1>
-			
+			<h1>
+				<cfif isDefined("URL.draftObjectID")>
+					#application.rb.getResource("workflow.messages.objStatusRequest@text","Set content item status for underlying draft content item to 'request'")#
+				<cfelse>
+					#application.rb.formatRBString("workflow.messages.setObjStatus@text",url.status,"Set content item status to {1}")#
+				</cfif>
+			</h1>
 			<ft:fieldset>
 				<ft:field label="#application.rb.getResource("workflow.fields.addComments@label","Add your comments:")#">
 					<textarea cols="80" rows="10"  name="commentLog" class="textareaInput"></textarea>
@@ -144,12 +158,9 @@ $out:$
 </cfif>
 
 <cfif changestatus eq true>
-
-	<ft:processForm action="Submit">	
-	
+	<ft:processForm action="Submit">
 		<cfloop index="attributes.objectID" list="#attributes.lObjectIDs#">
 			<cfset stObj = application.fapi.getContentObject(objectid=attributes.objectid) />
-			
 			<cfset stRules = application.factory.oVersioning.getVersioningRules(objectid=stObj.objectid,typename=stObj.typename) />
 
 			<cfif not structkeyexists(stObj, "status")>
@@ -166,43 +177,35 @@ $out:$
 			<nj:getNavigation objectId="#stObj.objectID#" bInclusive="1" r_stObject="stNav" r_ObjectId="objectId">
 	
 			<cfif url.status eq "approved">
-			
 				<cfset status = "approved">
 				<cfset permission = "approve,canApproveOwnContent">
 				<cfset active = 1>
 				<!--- send out emails informing object has been approved --->
 				<cfset application.factory.oVersioning.approveEmail_approved(objectid=stObj.objectid,comment=form.commentlog) />
-
-
 			<cfelseif url.status eq "draft">
 				<cfset status = 'draft'>
 				<cfset permission = "approve,canApproveOwnContent">
 				<!--- send out emails informing object has been sent back to draft --->
 				<cfset application.factory.oVersioning.approveEmail_draft(objectid=stObj.objectid,comment=form.commentlog) />
 				<cfset active = 0>
-				
 			<cfelseif url.status eq "requestApproval">
 				<cfset status = "pending">
 				<cfset permission = "requestApproval">
 				<cfset active = 0>
-				
 				<!--- checkk if underlying draft obejct --->
 				<cfif isDefined("URL.draftObjectID")>
 					<cfset pendingObject = "#URL.draftObjectID#"/>
 				<cfelse>
 					<cfset pendingObject = "#stObj.objectID#"/>
 				</cfif>
-				
 				<!--- send out emails informing object needs approval --->
 				<cfif not isdefined("form.lApprovers") or not len(form.lApprovers) or listfindnocase(form.lApprovers,"all")>
 					<cfset form.lApprovers = "all" />
 				</cfif>
 				<cfset application.factory.oVersioning.approveEmail_pending(objectid=pendingObject,comment=form.commentLog,lApprovers=form.lApprovers) />
-				
 			<cfelse>
 				<cfoutput><b>#application.rb.formatRBString("workflow.messages.unknownStatusPassed@text",url.status,"Unknown status passed. ({1})")#<b><br></cfoutput><cfabort>
 			</cfif>
-	
 			<cfif isstruct(stNav)>
 				<cfscript>
 					for(x = 1;x LTE listLen(permission);x=x+1)
@@ -214,7 +217,6 @@ $out:$
 							break;
 					}	
 				</cfscript>
-				
 				<cfif iState neq 1><cfoutput>
 					<script type="text/javascript">						
 						<cfset defaultText="You don't have approval permission on the subnode {1}" />
@@ -223,13 +225,13 @@ $out:$
 					</script></cfoutput><cfabort>
 				</cfif>
 			</cfif>
+			
 			<cfif url.status eq "approve">
 				<cfscript>
 					iState = application.security.checkPermission(permission="CanApproveOwnContent",object=stNav.objectId);	
 				</cfscript>
 			
 				<cfif iState neq 1>
-		
 					<cfif request.bLoggedIn>
 						<cfif session.security.userid eq stObj.attr_lastUpdatedBy><cfoutput>
 							<script type="text/javascript">
@@ -245,7 +247,6 @@ $out:$
 							window.close();
 						</script></cfoutput><cfabort>
 					</cfif>
-					
 				</cfif>
 			</cfif>
 			<!--- Call this to get all descendants of this node --->
@@ -284,7 +285,7 @@ $out:$
 				</cfif>
 			</cfif>
 									
-			<cfoutput>Changing status....<br></cfoutput>
+			<cfoutput><h1>Changing status…</h1></cfoutput>
 			
 			<!--- update the structure data for object update --->
 			<cfloop list="#keyList#" index="key">
@@ -379,7 +380,10 @@ $out:$
 	</cfif>
 	
 </cfif>                                                                                
-<cfoutput>
+			<cfoutput>
+			</div>
+		</div>
+	</div>
 </body>
 </html>
 </cfoutput>
