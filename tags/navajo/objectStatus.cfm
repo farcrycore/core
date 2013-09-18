@@ -48,28 +48,14 @@ $out:$
 <cfparam name="url.status" default="0">
 <cfparam name="attributes.lObjectIDs" default="#url.objectId#">
 
-<skin:loadCSS id="fc-bootstrap" />
-<skin:loadCSS id="fc-fontawesome" />
-<skin:loadCSS id="webtop7" />
-
 <!--- set up page header --->
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
 <admin:header>
 
 <cfset changestatus = true>
 
-<cfoutput>
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-</head>
-<body class="webtop-modal">
-	<div class="container-fluid">
-		<div class="row-fluid">
-			<div class="span12">
-			</cfoutput>
+<!--- set up page header --->
+<skin:view typename="dmHTML" webskin="webtopHeaderModal" />
 
 <!--- show comment form --->
 <cfif not isdefined("form.commentLog")>
@@ -380,12 +366,8 @@ $out:$
 	</cfif>
 	
 </cfif>                                                                                
-			<cfoutput>
-			</div>
-		</div>
-	</div>
-</body>
-</html>
-</cfoutput>
+
+<!--- setup footer --->
+<skin:view typename="dmHTML" webskin="webtopFooterModal" />
 
 <cfsetting enablecfoutputonly="No">
