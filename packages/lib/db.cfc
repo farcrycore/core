@@ -163,6 +163,7 @@
 		<cfset var stResult = duplicate(arguments.existing) />
 		<cfset var stProp = structnew() />
 		<cfset var i = "" />
+		<cfset var j = "" />
 		<cfset var tmpMD = structnew() />
 		<cfset var stPropMap = structnew() />
 		<cfset var aProps = arraynew(1) />
@@ -390,6 +391,15 @@
 		<cfset var stResult = "" />
 		<cfset var index = "" />
 		<cfset var savable = true />
+		
+		<!--- incorporate formtool specific defaults --->
+		<cfif structkeyexists(arguments.data,"ftType") and isdefined("application.formtools.#arguments.data.ftType#.stProps")>
+			<cfloop collection="#application.formtools[arguments.data.ftType].stProps#" item="j">
+				<cfif not structkeyexists(arguments.data,j) and structkeyexists(application.formtools[arguments.data.ftType].stProps[j].METADATA,"default")>
+					<cfset arguments.data[j] = application.formtools[arguments.data.ftType].stProps[j].METADATA.default />
+				</cfif>
+			</cfloop>
+		</cfif>
 		
 		<cfif structkeyexists(arguments.data,"dbNullable")>
 			<cfset nullable = arguments.data.dbNullable />
