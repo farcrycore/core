@@ -882,7 +882,7 @@
 						destination=arguments.destination,
 						acceptextensions=arguments.allowedExtensions,
 						field=arguments.uploadfield,
-						sizeLimit=arguments.sizeLimit
+						sizeLimit=arguments.sizeLimit,
 						nameconflict="makeunique") />
 					
 					<cfset stResult = passed(uploadFileName) />
