@@ -320,10 +320,6 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 
 			$j(imageformtool).bind("filechange",function onImageFormtoolFilechangeUpdate(event,results){
 				if (results.value && results.value.length>0){
-					var previewsize = { width:results.width, height:results.height };
-					if (previewsize.width > 400) previewsize = { width:400, height:previewsize.height*400/previewsize.width };
-					if (previewsize.height > 400) previewsize = { width:previewsize.width*400/previewsize.height, height:400 };
-
 					var complete = imageformtool.multiview.findView("complete")
 						.find(".image-status").attr("title","This file has been updated on the server").tooltip({ delay: 0, showURL: false	}).html('<span class="ui-icon ui-icon-info" style="float:left;">&nbsp;</span>').end()
 						.find(".image-filename").html(results.filename).end()
@@ -340,13 +336,13 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 					}
 					if (imageformtool.inline){
 						imageformtool.inlineview
-							.find("a.image-preview").attr("href",results.fullpath).attr("title","<img src='"+results.fullpath+"?"+new Date().getTime()+"' width='"+previewsize.width.toString()+"px' height='"+previewsize.height.toString()+"px' /><br><div style='width:"+previewsize.width.toString()+"px;'>"+results.size.toString()+"</span>KB, "+results.width.toString()+"px x "+results.height+"px</div>").tooltip({ delay: 0, showURL: false	}).end()
+							.find("a.image-preview").attr("href",results.fullpath).attr("title","<img src='"+results.fullpath+"?"+new Date().getTime()+"' style='max-width:400px; max-height:400px;'><br><div style='width:"+previewsize.width.toString()+"px;'>"+results.size.toString()+"</span>KB, "+results.width.toString()+"px x "+results.height+"px</div>").tooltip({ delay: 0, showURL: false	}).end()
 							.find("span.action-preview").show().end()
 							.find("span.dependant-options").show().end();
 						imageformtool.multiview.selectView("cancel");
 					}
 					else{
-						imageformtool.multiview.find("a.image-preview").attr("href",results.fullpath).attr("title","<img src='"+results.fullpath+"?"+new Date().getTime()+"' width='"+previewsize.width.toString()+"px' height='"+previewsize.height.toString()+"px' />").tooltip({ delay: 0, showURL: false	}).end()
+						imageformtool.multiview.find("a.image-preview").attr("href",results.fullpath).attr("title","<img src='"+results.fullpath+"?"+new Date().getTime()+"' style='max-width:400px; max-height:400px;'>").tooltip({ delay: 0, showURL: false	}).end()
 						imageformtool.multiview.selectView("complete");
 					}
 				}
@@ -453,7 +449,7 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 				'onError'		: function(event, ID, fileObj, errorObj){
 					imageformtool.inputs.newf.uploadifyClearQueue();
 					if (errorObj.type === "HTTP")
-						$j(imageformtool).trigger("fileerror",[ "upload",errorObj.status.toString(),'Error '+errorObj.type+": "+errorObj.status ]);
+						$j(imageformtool).trigger("fileerror",[ "upload",errorObj.info.toString(),'Error '+errorObj.type+": "+errorObj.info ]);
 					else if (errorObj.type ==="File Size")
 						$j(imageformtool).trigger("fileerror",[ "upload","filesize",fileObj.name+" is not within the file size limit of "+Math.round(imageformtool.sizeLimit/1048576)+"MB" ]);
 					else

@@ -98,7 +98,7 @@
 		
 		<!--- Remove trailing slash --->
 		<cfif right(arguments.path,1) eq "/">
-			<cfset arguments.path = left(arguments.path,len(arguments.path-1)) />
+			<cfset arguments.path = left(arguments.path,len(arguments.path)-1) />
 		</cfif>
 		
 		<cfreturn arguments.path />
@@ -530,7 +530,7 @@
 				<cfset application.fapi.throw(message="New file must have the same extension. Current extension is {1} and new extension is {2}.",type="uploaderror",substituteValues=[ listlast(arguments.destination,"."), listlast(cffile.serverFile,".") ]) />
 			</cfif>
 		<cfelse>
-			<cfset filename = arguments.destination & "/" & cffile.ServerFile />
+			<cfset filename = normalizePath(arguments.destination & "/" & cffile.ServerFile) />
 		</cfif>
 		
 		<cfset filename = ioMoveFile(source_localpath="#tmpdir##cffile.serverFile#",dest_location=arguments.location,dest_file=filename,nameconflict=arguments.nameconflict,uniqueamong=arguments.uniqueamong) />

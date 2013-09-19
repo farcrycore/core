@@ -1640,6 +1640,8 @@ default handlers
 		
 		<cfargument name="fieldname" type="string" required="false" hint="Property metadata" />
 		
+		<cfargument name="admin" type="boolean" required="false" default="false" />
+		
 		
 		<cfset var i = "" />
 		

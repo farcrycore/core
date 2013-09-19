@@ -39,31 +39,8 @@ START WEBSKIN
 	</div>
 </cfoutput>
 
-<ft:fieldset legend="#application.fapi.getContentTypeMetadata(stobj.typename,'displayname',stobj.typename)# Information">
-	<ft:field label="Title" bMultiField="true">
-		<cfoutput>#stobj.title#</cfoutput>
-	</ft:field>	
-	<ft:field label="Alternate Text" bMultiField="true">
-		<cfoutput>#stobj.alt#</cfoutput>
-	</ft:field>	
-	<ft:field label="Thumbnail" bMultiField="true">
-		<cfif len(stobj.ThumbnailImage)>
-			<cfoutput><img src="#application.fc.lib.cdn.ioGetFileLocation(location='images',file=stobj.thumbnailImage,admin=true).path#" /></cfoutput>
-		<cfelse>
-			<cfoutput>-- no thumbnail --</cfoutput>
-		</cfif>
-	</ft:field>	
-	
-	<cfif structKeyExists(stobj, "teaser")>
-		<ft:field label="Teaser" bMultiField="true">
-			<cfoutput><cfif len(stobj.teaser)>#stobj.teaser#<cfelse>-- none --</cfif></cfoutput>
-		</ft:field>
-	</cfif>
-	<cfif structKeyExists(stobj, "displayMethod")>
-		<ft:field label="Webskin">
-			<cfoutput>#application.fapi.getWebskinDisplayName(stobj.typename, stobj.displayMethod)# (#stobj.displayMethod#)</cfoutput>
-		</ft:field>
-	</cfif>
+<ft:fieldset legend="#application.fapi.getContentTypeMetadata(stobj.typename,'displayname',stobj.typename)# Information">\
+	<ft:object stObject="#stObj#" lFields="title,alt,thumbnailImage,teaser,displayMethod" format="display" />\
 </ft:fieldset>
 
 
