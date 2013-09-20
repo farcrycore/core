@@ -210,9 +210,11 @@
 				<cfset stResult.different = (stResult.left neq stResult.right) />
 			</cfcase>
 			<cfcase value="integer">
-				<cfset stResult.leftHighlighted = round(stResult.left) />
-				<cfset stResult.rightHighlighted = round(stResult.right) />
-				<cfset stResult.different = (stResult.left neq stResult.right) />
+				<cfif isNumeric(stResult.left) and isNumeric(stResult.right)>
+					<cfset stResult.leftHighlighted = round(stResult.left) />
+					<cfset stResult.rightHighlighted = round(stResult.right) />
+					<cfset stResult.different = (stResult.left neq stResult.right) />
+				</cfif>
 			</cfcase>
 			<cfcase value="uuid">
 				<cfset stResult.leftHighlighted = "" />
