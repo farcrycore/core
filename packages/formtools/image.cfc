@@ -1577,7 +1577,7 @@
 			<cfreturn stResult />
 		</cfif>
 		
-		<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.file,admin=true) />
+		<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stObject[arguments.stMetadata.value],admin=arguments.admin) />
 		
 		<cfreturn stResult />
 	</cffunction>
