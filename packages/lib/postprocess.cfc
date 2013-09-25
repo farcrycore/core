@@ -128,19 +128,26 @@
 		<cfargument name="width" type="numeric" required="false" default="560" />
 		<cfargument name="height" type="numeric" required="false" default="315" />
 		
-		<cfset var replacement = '<iframe width="#arguments.width#" height="#arguments.height#" src="http://www.youtube.com/embed/$2" frameborder="0" allowfullscreen></iframe>' />
+		<cfset var replacement = '<iframe width="#arguments.width#" height="#arguments.height#" src="$2://www.youtube.com/embed/$4?wmode=transparent" frameborder="0" allowfullscreen></iframe>' />
 		
-		<!--- 1. http://www.youtube.com/watch?v=yLeNvCJbM90&version=3&hl=en_US&rel=0 --->
-		<!--- 2. http://youtu.be/yLeNvCJbM90?version=3&hl=en_US&rel=0 --->
-		<!--- 3. http://www.youtube.com/v/yLeNvCJbM90?version=3&hl=en_US&rel=0 --->
-		<!--- 4. http://www.youtube.com/watch?v=x-rG8p7-A74  --->
-		<!--- 5. http://www.youtube.com/watch?v=_SkcrPsLc1M --->
+		<!--- HTTP --->
+		<!---  1. http://www.youtube.com/watch?v=yLeNvCJbM90&version=3&hl=en_US&rel=0 --->
+		<!---  2. http://youtu.be/yLeNvCJbM90?version=3&hl=en_US&rel=0 --->
+		<!---  3. http://www.youtube.com/v/yLeNvCJbM90?version=3&hl=en_US&rel=0 --->
+		<!---  4. http://www.youtube.com/watch?v=x-rG8p7-A74  --->
+		<!---  5. http://www.youtube.com/watch?v=_SkcrPsLc1M --->
+		<!--- HTTPS --->
+		<!---  6. https://www.youtube.com/watch?v=yLeNvCJbM90&version=3&hl=en_US&rel=0 --->
+		<!---  7. https://youtu.be/yLeNvCJbM90?version=3&hl=en_US&rel=0 --->
+		<!---  8. https://www.youtube.com/v/yLeNvCJbM90?version=3&hl=en_US&rel=0 --->
+		<!---  9. https://www.youtube.com/watch?v=x-rG8p7-A74  --->
+		<!--- 10. https://www.youtube.com/watch?v=_SkcrPsLc1M --->
 		
-		<!--- This regex matches URLs similar to test case 1 --->
-		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br ?/?>|^|\n)\s*(?:<a [^>]+>)?http:\/\/(?:www\.)?youtube\.com\/watch\?v=([\w-_]+)[^\s]*?(?:</a>)?\s*(</p>|<br ?/?>|$|\n)",replacement) />
+		<!--- This regex matches URLs similar to test case 1,4,5,6,9,10 --->
+		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br ?/?>|^|\n)\s*(?:<a [^>]+>)?(http|https):\/\/(?:www\.)?(youtube\.com\/watch\?v=)([\w-_]+)[^\s]*?(?:</a>)?\s*(</p>|<br ?/?>|$|\n)",replacement) />
 		
-		<!--- This regex matches URLs similar to test cases 2 & 3 --->
-		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br ?/?>|^|\n)\s*(?:<a [^>]+>)?http:\/\/(?:(?:www\.)?youtube\.com\/v|youtu\.be)\/([\w-_]+)[^\s]*?(?:</a>)\s*?(</p>|<br ?/?>|$|\n)",replacement) />
+		<!--- This regex matches URLs similar to test cases 2,3,7,8 --->
+		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br ?/?>|^|\n)\s*(?:<a [^>]+>)?(http|https):\/\/(?:www\.)?(youtube\.com\/v\/|youtu\.be\/)\s*([\w-_]+)[^\s]*(</p>|<br ?/?>|$|\n)",replacement) />
 		
 		<cfreturn arguments.input />
 	</cffunction>
@@ -150,12 +157,13 @@
 		<cfargument name="width" type="numeric" required="false" default="500" />
 		<cfargument name="height" type="numeric" required="false" default="281" />
 		
-		<cfset var replacement = '<iframe src="http://player.vimeo.com/video/$2" width="#arguments.width#" height="#arguments.height#" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>' />
+		<cfset var replacement = '<iframe src="$2://player.vimeo.com/video/$3" width="#arguments.width#" height="#arguments.height#" frameborder="0" webkitAllowFullScreen mozallowfullscreen allowFullScreen></iframe>' />
 		
 		<!--- 1. http://vimeo.com/50351080 --->
+		<!--- 2. https://vimeo.com/50351080 --->
 		
 		<!--- This regex matches URLs similar to test case 1 --->
-		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br ?/?>|^|\n)\s*(?:<a [^>]+>)?http:\/\/vimeo\.com\/(\w+)[^\s]*?(?:</a>)?\s*(</p>|<br ?/?>|$|\n)",replacement) />
+		<cfset arguments.input = regexReplace(arguments.input,"(<p>|<br ?/?>|^|\n)\s*(?:<a [^>]+>)?(http|https):\/\/vimeo\.com\/(\w+)[^\s]*?(?:</a>)?\s*(</p>|<br ?/?>|$|\n)",replacement) />
 		
 		<cfreturn arguments.input />
 	</cffunction>
