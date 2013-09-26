@@ -24,12 +24,12 @@
 		<!--- JS LIBRARIES --->
 		<skin:registerJS 	id="fc-jquery" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/jquery/js"
-							lFiles="jquery-1.7.2.min.js,noconflict.js" />
+							lFiles="jquery-1.9.1.min.js,noconflict.js" />
 		<skin:registerJS 	id="jquery" aliasof="fc-jquery" core="false" />
 			
 		<skin:registerJS 	id="fc-jquery-ui" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/jquery/js"
-							lFiles="jquery-ui-1.8.15.custom.min.js" />
+							lFiles="jquery-ui-1.10.3.custom.min.js" />
 		<skin:registerJS 	id="jquery-ui" aliasof="fc-jquery-ui" core="false" />
 		
 		<skin:registerJS 	id="fc-underscore" core="true"
@@ -141,6 +141,10 @@
 							baseHREF='#application.url.webtop#/thirdparty/bootstrap'
 							lFiles="bootstrap.min.js" />
 		
+		<skin:registerJS	id="bootstrap-datepicker" core="true"
+							baseHREF="#application.url.webtop#/thirdparty/bootstrap-datepicker"
+							lFiles="bootstrap-datepicker.js" />
+		
 		<skin:registerJS	id="webtop7" core="true"
 							baseHREF='#application.url.webtop#/js'
 							lFiles="webtop7.js" />
@@ -171,6 +175,10 @@
 							lFiles="bootstrap.min.css"
 							bCombined="false" />
 		
+		<skin:registerCSS	id="bootstrap-datepicker"
+							baseHREF="#application.url.webtop#/thirdparty/bootstrap-datepicker"
+							lFiles="bootstrap-datepicker.css" />
+		
 		<skin:registerCSS	id="fc-uniform"
 							baseHREF="#application.url.webtop#"
 							lFiles="/thirdparty/uni-form/css/uni-form-generic.css,/thirdparty/uni-form/css/uni-form.css"
@@ -185,8 +193,8 @@
 							lFiles="font-awesome.css" />
 							
 		<skin:registerCSS 	id="jquery-ui"
-							baseHREF="#application.url.webtop#/thirdparty/jquery/css/Aristo"
-							lFiles="jquery-ui-1.8.7.custom.css,custom.css" />
+							baseHREF="#application.url.webtop#/thirdparty/jquery/css/smoothness"
+							lFiles="jquery-ui-1.10.3.custom.css" />
 		
 		<skin:registerCSS	id="image-formtool"
 							baseHREF="#application.url.webtop#/thirdparty/image-formtool"

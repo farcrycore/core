@@ -219,7 +219,7 @@ object methods
 		<cfset var newLabel = stProperties.configkey>
 		<cfset var configTypename = getForm(key=stProperties.configkey)>
 
-		<cfif isDefined("application.stCOAPI.#configTypename#.displayname")>
+		<cfif len(configTypename) and isDefined("application.stCOAPI.#configTypename#.displayname")>
 			<cfset newLabel = trim(application.stCOAPI[configTypename].displayname)>			
 		</cfif>
 		
@@ -341,11 +341,14 @@ object methods
 		
 		<cfset var config = "" />
 		<cfset var thisprop = "" />
+		<cfset var configTypename = getForm(arguments.stProperties.configKey) />
 		
 		<cfset config = deserializeJSON(arguments.stProperties.configdata)>
 		
 		<!--- run the config object's process method --->
-		<cfset config = application.fapi.getContentType(getForm(arguments.stProperties.configKey)).process(fields = config) />
+		<cfif len(configTypename) and structkeyexists(application.stCOAPI,configTypename)>
+			<cfset config = application.fapi.getContentType(configTypename).process(fields = config) />
+		</cfif>
 		
 		<cfset application.config[arguments.stProperties.configkey] = duplicate(config) />
 		

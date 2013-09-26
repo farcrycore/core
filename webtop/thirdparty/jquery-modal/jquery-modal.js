@@ -27,7 +27,7 @@ if(typeof($fc) == 'undefined'){
 			.html(html)
 			.css({
 				"top":        $(document).scrollTop()+$(window).height()/2,
-				"left":       "50%",				
+				"left":       "50%",	
 				"width":      width,
 				"height":     height
 			})
@@ -36,7 +36,11 @@ if(typeof($fc) == 'undefined'){
 				"margin-left": -($(".fc-overlaycontainer").width()/2) //to position it in the middle
 			})
 			.animate({"opacity":"1"}, 400, "linear")
-			.find(".closeModal").bind("click",function(){ fc.closeModal();return false; });
+			.find("> div").css({	
+				"width":      width,
+				"height":     height
+			}).end()
+			.find(".closeModal").bind("click",function(){ fc.closeModal();return false; }).end();
 		fc.Container = $(".fc-overlaycontainer");
 	};
 	

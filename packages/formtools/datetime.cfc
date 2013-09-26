@@ -58,7 +58,7 @@
 	<cfproperty name="ftCFDateFormatMask" default="d mmm yyyy" hint="The format mask used when first rendering the date. This should be a coldfusion dateformat mask." />
 	<cfproperty name="ftToggleOffDateTime" default="false" hint="Provides an optional toggle to hide the date if its not required" />
 
-	<cfproperty name="ftDateFormatMask" default="dd mmmm yyyy" hint="Coldfusion mask for date for edit handler" />
+	<cfproperty name="ftDateFormatMask" default="d M yy" hint="Coldfusion mask for date for edit handler" />
 	<cfproperty name="ftStartYearShift" default="0" hint="Used when ftRenderType is set to dropDown, sets start of year range in select list." />
 	<cfproperty name="ftEndYearShift" default="-100" hint="Used when ftRenderType is set to dropDown, sets end of year range in select list." />
 	<cfproperty name="ftStartYear" default="" hint="Used when ftRenderType is set to dropDown, sets the value of the first year in year range." />
@@ -252,8 +252,11 @@
 			<cfparam name="arguments.stMetadata.ftMaxDate" default="" />
 			<cfparam name="arguments.stMetadata.ftMinDate" default="" />
 			
-			<skin:loadJS id="fc-jquery-ui" />
-			<skin:loadCSS id="jquery-ui" />
+			<skin:loadJS id="fc-jquery" />
+			<skin:loadJS id="fc-bootstrap" />
+			<skin:loadJS id="bootstrap-datepicker" />
+			<skin:loadCSS id="fc-bootstrap" />
+			<skin:loadCSS id="bootstrap-datepicker" />
 			
 			<!--- Just in case the developer has included lowercase mmmm or mmm which is not valid, we are changing to uppercase MMMM and MMM respectively. --->
 			
@@ -283,21 +286,14 @@
 					
 					<div id="#arguments.fieldname#-wrap">
 						<!--- <label class="inlineLabel" for="#arguments.fieldname#"></label> --->
-						<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftCFDateFormatMask)#" class="textInput fc-date #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#" >
+						<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)#" class="datepicker #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#" >
 						<input type="hidden" name="#arguments.fieldname#rendertype" id="#arguments.fieldname#rendertype" value="#arguments.stMetadata.ftRenderType#">
 						
 						<skin:onReady>
 							<cfoutput>
-								$j("###arguments.fieldname#").datepicker({
-									dateFormat:'#arguments.stMetadata.ftJQDateFormatMask#',
-									showOn: 'both', 
-									buttonImage: '#application.url.farcry#/js/dateTimePicker/cal.gif', 
-									buttonImageOnly: true,						
-									onSelect: function(dateText, inst) {
-										$j(this).trigger('change');
-									}
-									<cfif len(arguments.stMetadata.ftMaxDate)>, maxDate: #cf2jsDate(arguments.stMetadata.ftMaxDate)#</cfif>
-									<cfif len(arguments.stMetadata.ftMinDate)>, minDate: #cf2jsDate(arguments.stMetadata.ftMinDate)#</cfif>
+								$j('###arguments.fieldname#').datepicker({
+								    format: '#arguments.stMetadata.ftDateFormatMask#',
+								    autoclose: true
 								});
 							</cfoutput>
 						</skin:onReady>

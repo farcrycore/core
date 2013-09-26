@@ -178,7 +178,7 @@
 		<!--- Find out how many results there will be --->
 		<cfif bHasVersionID>
 			<cfquery name="#qCountName#" datasource="#application.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
-				SELECT count(distinct objectid) as CountAll
+				SELECT sum(distinct objectid) as CountAll
 				from (
 					<!--- Return the objectid's of matching approved/draft-only content --->
 					SELECT tbl.objectid
@@ -525,20 +525,43 @@
 				<cfif bHasversionID>
 					,(SELECT count(d.objectid) FROM #arguments.typename# d WHERE d.versionid = tbl.objectid) as bHasMultipleVersion
 				</cfif> 
-			FROM #arguments.typename# tbl
-			
-			WHERE #preserveSingleQuotes(arguments.SqlWhere)#
-			<cfif l_sqlCatIds neq "">
-				AND objectid IN (
-					SELECT DISTINCT objectid
-					FROM refCategories
-					WHERE categoryID IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
-				)
-			</cfif>
-			
-			<cfif bHasVersionID> 
-			and versionID is null 
-			</cfif> 
+			FROM 
+				#arguments.typename# tbl
+				inner join
+				(
+					SELECT	objectid
+					FROM 	#arguments.typename#
+					
+					WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+					<cfif l_sqlCatIds neq "">
+						AND objectid IN (
+							SELECT DISTINCT objectid
+							FROM refCategories
+							WHERE categoryID IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
+						)
+					</cfif>
+					
+					<cfif bHasVersionID> 
+							AND (versionid = '' OR versionid IS NULL)
+							
+						UNION
+						
+						SELECT	versionID
+						FROM 	#arguments.typename# tbl
+						
+						WHERE #preserveSingleQuotes(arguments.SqlWhere)#
+						<cfif l_sqlCatIds neq "">
+							AND objectid IN (
+								SELECT DISTINCT objectid
+								FROM refCategories
+								WHERE categoryID IN (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
+							)
+						</cfif>
+							
+							AND versionid <> ''
+					</cfif>
+				) filter
+				on tbl.objectid=filter.objectid
 			
 			<cfif len(trim(arguments.sqlOrderBy))>
 				ORDER BY #preserveSingleQuotes(arguments.sqlOrderBy)#
