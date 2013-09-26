@@ -1145,7 +1145,7 @@
 		<cfset var stImage = structnew() />
 		<cfset var stResult = structnew() />
 		
-		<cfif application.fc.cdn.ioFileExists(location="image",file=arguments.file)>
+		<cfif application.fc.lib.cdn.ioFileExists(location="image",file=arguments.file)>
 			
 			<cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=arguments.file,datatype='image')#" structName="stImage" />
 			
