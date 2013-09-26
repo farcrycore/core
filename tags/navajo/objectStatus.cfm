@@ -48,9 +48,6 @@ $out:$
 <cfparam name="url.status" default="0">
 <cfparam name="attributes.lObjectIDs" default="#url.objectId#">
 
-<!--- set up page header --->
-<cfimport taglib="/farcry/core/tags/admin/" prefix="admin">
-<admin:header>
 
 <cfset changestatus = true>
 
