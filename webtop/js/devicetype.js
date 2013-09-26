@@ -22,15 +22,15 @@ $fc.getDeviceType = function() {
 
 $j(function(){
 
-	$j(".fc-switch-device-desktop").live("click", function(){
+	$j(".fc-switch-device-desktop").on("click", function(){
 		$fc.switchDeviceType("desktop");
 		return false;
 	});
-	$j(".fc-switch-device-mobile").live("click", function(){
+	$j(".fc-switch-device-mobile").on("click", function(){
 		$fc.switchDeviceType("mobile");
 		return false;
 	});
-	$j(".fc-switch-device-tablet").live("click", function(){
+	$j(".fc-switch-device-tablet").on("click", function(){
 		$fc.switchDeviceType("tablet");
 		return false;
 	});
