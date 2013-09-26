@@ -178,7 +178,7 @@
 		<!--- Find out how many results there will be --->
 		<cfif bHasVersionID>
 			<cfquery name="#qCountName#" datasource="#application.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
-				SELECT sum(distinct objectid) as CountAll
+				SELECT COUNT(objectid) as CountAll
 				from (
 					<!--- Return the objectid's of matching approved/draft-only content --->
 					SELECT tbl.objectid
