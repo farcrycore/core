@@ -143,7 +143,7 @@
 				<skin:loadCSS id="fc-fontawesome" />
 				<skin:onReady><script type="text/javascript"><cfoutput>
 					$j("body").prepend("<div id='header-message-block'></div>");
-					$j("span.close-message").live("click",function(){
+					$j("span.close-message").on("click",function(){
 						$j(this).parents(".message").slideUp();
 						return false;
 					});

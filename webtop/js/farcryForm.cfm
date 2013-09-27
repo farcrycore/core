@@ -23,8 +23,8 @@
 		$fc.watchingtracker[prefix][property] = $fc.watchingtracker[prefix][property] || {};
 		
 		//add the watches
-		$j("select[name="+prefix+property+"], input[name="+prefix+property+"][type=text], input[name="+prefix+property+"][type=password]").live("change",{ prefix:prefix, property: property },ajaxUpdate);
-		$j("input[name="+prefix+property+"][type=checkbox], input[name="+prefix+property+"][type=radio]").live("click",{ prefix:prefix, property: property },ajaxUpdate);
+		$j("select[name="+prefix+property+"], input[name="+prefix+property+"][type=text], input[name="+prefix+property+"][type=password]").on("change",{ prefix:prefix, property: property },ajaxUpdate);
+		$j("input[name="+prefix+property+"][type=checkbox], input[name="+prefix+property+"][type=radio]").on("click",{ prefix:prefix, property: property },ajaxUpdate);
 		var el = $j("input[name="+prefix+property+"][type=hidden]");
 		if (el.size()){
 			var lastvalue = el.val();

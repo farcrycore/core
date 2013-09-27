@@ -302,9 +302,9 @@
 								}
 							});
 							
-							$("> li",arrayuploadformtool.displaylist).live("mouseover",function(e){
+							$("> li",arrayuploadformtool.displaylist).on("mouseover",function(e){
 								$(this).addClass("fc-grabbable");
-							}).live("mouseout",function(e){
+							}).on("mouseout",function(e){
 								$(this).removeClass("fc-grabbable");
 							});
 							

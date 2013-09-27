@@ -124,7 +124,7 @@ $fc.reloadContainer = function(containerID,containerURL){
 	   }
 	 });
 };
-$j('a.con-refresh').live(
+$j('a.con-refresh').on(
 	"click",
 	function( event ){
 		$fc.reloadContainer(
@@ -134,7 +134,7 @@ $j('a.con-refresh').live(
 		return false;
 	}
 );	
-$j('a.con-admin').live(
+$j('a.con-admin').on(
 	"click",
 	function( event ){
 		$fc.containerAdmin(

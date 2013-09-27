@@ -2521,7 +2521,7 @@
 		<skin:onReady><cfoutput>
 			var profile = #serializeJSON(arguments.profile,true)#;
 			
-			$j("area").live("click",function(){
+			$j("area").on("click",function(){
 				$j("div.request-profile-details-selected").css("font-weight","normal").removeClass("request-profile-details-selected");
 				$j("##"+this.href.split("##")[1]).css("font-weight","bold").addClass("request-profile-details-selected");
 				$j("##request-profile-deatils").scrollTop($j(this.href).position.top);

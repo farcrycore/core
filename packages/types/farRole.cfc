@@ -663,7 +663,7 @@ object methods
 					return result;
 				};
 				
-				$j("##selectfilterstype,##selectfilterswebskin").live("change",function(){
+				$j("##selectfilterstype,##selectfilterswebskin").on("change",function(){
 					var type = $j("##selectfilterstype").val();
 					var webskin = $j("##selectfilterswebskin").val();
 					$j("##filterresult tbody tr").hide();
