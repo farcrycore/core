@@ -29,7 +29,7 @@
 			
 		<skin:registerJS 	id="fc-jquery-ui" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/jquery/js"
-							lFiles="jquery-ui-1.10.3.custom.min.js" />
+							lFiles="jquery-ui-1.10.3.custom.min.js" bCombine="false" />
 		<skin:registerJS 	id="jquery-ui" aliasof="fc-jquery-ui" core="false" />
 		
 		<skin:registerJS 	id="fc-underscore" core="true"
