@@ -56,15 +56,21 @@
 							lFiles="jquery.validate.js" />
 
 		<skin:registerJS 	id="jquery-tooltip" core="true"
-							baseHREF="#application.url.webtop#/thirdparty/jquery-tooltip"
-							lFiles="jquery.tooltip.min.js" />
-		
+							baseHREF="#application.url.webtop#/thirdparty/jquery-tooltipster/js"
+							lFiles="jquery.tooltipster.min.js" />
+
 		<skin:registerJS	id="jquery-tooltip-auto" core="true">
 							<cfoutput>
 								jQuery(function(){
-									jQuery('a[title],div[title],span[title],area[title]').not('.fancybox,.nojqtooltip').tooltip({ 
-									    delay: 0, 
-									    showURL: false
+									// tooltip for title attributes
+									$j('a[title],div[title],span[title],area[title]').not('.fancybox,.nojqtooltip,.fc-tooltip,.fc-richtooltip').tooltip();
+									// tooltip for fc-tooltip elements
+									$j('.fc-tooltip').tooltip();
+									// rich tooltip for fc-richtooltip elements
+									$j('.fc-richtooltip').tooltipster({
+										theme: ".tooltipster-light",
+										delay: 0,
+										speed: 200
 									});
 								});
 							</cfoutput>
@@ -237,7 +243,6 @@
 							baseHREF="#application.url.webtop#"
 							lFiles="/css/pagination.css" />
 
-							
 		<skin:registerCSS 	id="gritter"
 							baseHREF="#application.url.webtop#/thirdparty/gritter/css"
 							lFiles="gritter.css" />
@@ -250,11 +255,11 @@
 							lDependsOn="jquery-ui,jquery-tooltip"
 							baseHREF="#application.url.webtop#/css"
 							lFiles="tray.css" />
-				
+
 		<skin:registerCSS 	id="jquery-tooltip"
-							baseHREF="#application.url.webtop#/thirdparty/jquery-tooltip"
-							lFiles="jquery.tooltip.css" />		
-				
+							baseHREF="#application.url.webtop#/thirdparty/jquery-tooltipster/css"
+							lFiles="tooltipster.css,themes/tooltipster-light.css" />
+
 		<skin:registerCSS 	id="ext"
 							baseHREF="#application.url.webtop#/js/ext"
 							lFiles="/resources/css/ext-all.css" />		

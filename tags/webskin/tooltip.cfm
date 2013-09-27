@@ -59,6 +59,7 @@ FARCRY IMPORT FILES
 <cfparam name="attributes.selector" type="string" /><!--- The id of the dom element that you wish to have the tooltip display on hover. --->
 <cfparam name="attributes.message" default="" /><!--- The actual message. If this is blank, the text between the opening and the closing tag will be used (generatedContent) --->
 <cfparam name="attributes.class" default="" /><!--- The css class to be assigned to the tooltip div --->
+<cfparam name="attributes.position" default="" /><!--- The css class to be assigned to the tooltip div --->
 
 
 <cfif thistag.executionMode eq "Start">
@@ -85,17 +86,18 @@ FARCRY IMPORT FILES
 		This crazy code checking is because of a bug in the tooltip when rendering tips with multiple nodes matching the selector when rendered via ajax.
 		We are basically checking to see if a tooltip has already been rendered and if so, do not initialize it again.
 	--->
-	<skin:onReady id="tooltip-#attributes.id#">
+	<skin:onReady id="tooltipster-#attributes.id#">
 	<cfoutput>
-		$j('#attributes.selector#').tooltip({ 
-		    delay: 0, 
-		    showURL: false,
-			<cfif len(attributes.class)>
-				extraClass: '#attributes.class#',
-			</cfif> 
-		    bodyHandler: function() { 
-		        return '#jsStringFormat(attributes.message)#'; 
-		    } 
+		$j('#attributes.selector#').tooltipster({ 
+			theme: ".tooltipster-light",
+			<cfif len(attributes.position)>
+			position: "#attributes.position#",
+			</cfif>
+			<cfif len(attributes.message)>
+			content: '#jsStringFormat(attributes.message)#',
+			</cfif>
+			delay: 0, 
+			speed: 200			
 		});
 	</cfoutput>
 	</skin:onReady>

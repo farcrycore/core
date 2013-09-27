@@ -55,9 +55,6 @@
 				return false;
 			});
 
-			/* testing tooltips */
-			$j(".fc-tooltip").tooltip();
-
 			/* remove updateapp from URL */
 			var newURL = window.location.href.replace(/(updateapp=.*?([&]+|$))/gi, "").replace(/&$/gi, "");
 			if (window.history.replaceState && newURL != window.location.href) {

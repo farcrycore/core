@@ -209,13 +209,13 @@
 					</cfswitch>
 				</cfloop>
 					
-				<cfset summary = listappend(summary,"<div class='altered table'><i class='icon-question-sign icon-fixed-width'></i> #thistable#</div> <div>#arrayToList(changes,"")#</div>"," ") />
+				<cfset summary = listappend(summary,"<p class='altered coapitable'><i class='icon-question-sign icon-fixed-width'></i> #thistable#</p> <div>#arrayToList(changes,"")#</div>"," ") />
 			</cfcase>
 			<cfcase value="+">
-				<cfset summary = listappend(summary,"<div class='undeployed table'><i class='icon-plus-sign icon-fixed-width'></i> #thistable#</div>"," ") />
+				<cfset summary = listappend(summary,"<p class='undeployed coapitable'><i class='icon-plus-sign icon-fixed-width'></i> #thistable#</p>"," ") />
 			</cfcase>
 			<cfcase value="-">
-				<cfset summary = listappend(summary,"<div class='deleted table'><i class='icon-remove-sign icon-fixed-width'></i> #thistable#</div>"," ") />
+				<cfset summary = listappend(summary,"<p class='deleted coapitable'><i class='icon-remove-sign icon-fixed-width'></i> #thistable#</p>"," ") />
 			</cfcase>
 		</cfswitch>
 	</cfloop>
@@ -305,6 +305,7 @@
 <skin:loadJS id="fc-jquery-ui" />
 <skin:loadCSS id="jquery-ui" />
 
+
 <skin:htmlHead><cfoutput>
 	<style type="text/css">
 		.undeployed { color:##23d729; }
@@ -382,7 +383,7 @@
 						<td class="name"><i class="#getIcon(qtypes.typename)# icon-fixed-width" style="font-size:16px;color:##777"></i> #qTypes.label#</td>
 						<td class="conflicts">
 							<a href="#application.url.webtop#/index.cfm?id=#url.id#&typename=farCOAPI&view=webtopPageModal&bodyview=webtopBodyConflicts&typepath=#qTypes.packagepath#" class="openindialog" data-title="#qTypes.label# Conflicts" id="#qTypes.typename#_conflicts">Resolve conflicts</a>
-							<skin:tooltip id="#qTypes.typename#_conflicts" selector="###qTypes.typename#_conflicts" message="#qTypes.conflicts#" />
+							<skin:tooltip id="#qTypes.typename#_conflicts" selector="###qTypes.typename#_conflicts" position="bottom" message="#qTypes.conflicts#" />
 						</td>
 						<td class="actions"><input type="checkbox" name="deploydefaults" value="#qTypes.packagepath#" /></td>
 					</tr>
