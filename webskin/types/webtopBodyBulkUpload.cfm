@@ -402,9 +402,9 @@
 <cfoutput>
 	<h1>
 		<cfif len(application.stCOAPI[stObj.name].icon)>
-			<i class="#application.stCOAPI[stObj.name].icon# icon-large"></i>
+			<i class="#application.stCOAPI[stObj.name].icon#"></i>
 		<cfelse>
-			<i class="icon-file icon-large"></i>
+			<i class="icon-file"></i>
 		</cfif>
 		#typelabel#<!--- : <admin:resource key="webtop.utilities.bulkupload@title">Bulk Upload</admin:resource> --->
 	</h1>

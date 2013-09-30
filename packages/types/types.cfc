@@ -962,9 +962,9 @@ default handlers
 				<cfoutput>
 					<h1>
 						<cfif len(application.stCOAPI[stobj.typename].icon)>
-							<i class="#application.stCOAPI[stobj.typename].icon# icon-large"></i>
+							<i class="#application.stCOAPI[stobj.typename].icon#"></i>
 						<cfelse>
-							<i class="icon-file icon-large"></i>
+							<i class="icon-file"></i>
 						</cfif>
 						#stobj.label#
 					</h1>
@@ -1056,9 +1056,9 @@ default handlers
 				<cfoutput>
 					<h1>
 						<cfif len(application.stCOAPI[stobj.typename].icon)>
-							<i class="#application.stCOAPI[stobj.typename].icon# icon-large"></i>
+							<i class="#application.stCOAPI[stobj.typename].icon#"></i>
 						<cfelse>
-							<i class="icon-file icon-large"></i>
+							<i class="icon-file"></i>
 						</cfif>
 						#stobj.label#
 					</h1>

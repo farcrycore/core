@@ -225,7 +225,7 @@
 				</ul>	
 			</div>
 	
-			<h1><i class="#attributes.icon# icon-large"></i>
+			<h1><i class="#attributes.icon#"></i>
 				<cfif len(attributes.title)>
 					#attributes.title#
 				<cfelse>

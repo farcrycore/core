@@ -99,19 +99,14 @@
 </cfoutput></script></skin:onReady>
 
 <cfoutput>
-<table class="layout" style="width:100%;padding:5px;">
-<tr>
-	<td style="width:50px;">
+	<h1>
 		<cfif len(application.stCOAPI[stObj.typename].icon)>
-			<i class="#application.stCOAPI[stObj.typename].icon# icon-large"></i>
+			<i class="#application.stCOAPI[stObj.typename].icon#"></i>
 		<cfelse>
-			<i class="icon-file icon-large"></i>
-		</cfif>
-	</td>
-	<td><h1>#stobj.label#</h1></td>
-	
-</tr>
-</table>
+			<i class="icon-file"></i>
+		</cfif> 
+		#stobj.label#
+	</h1>
 </cfoutput>
 
 	
