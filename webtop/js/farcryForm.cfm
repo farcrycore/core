@@ -1,4 +1,7 @@
+<cfsetting enablecfoutputonly="true">
+
 <cfoutput>
+<cfsilent><script></cfsilent><!--- trick editor to highlight syntax --->
 
 	if(typeof($fc) == 'undefined'){
 		var $fc = {};
@@ -628,22 +631,22 @@
 		fcForm.initLibrarySummary(typename,objectid,property,urlParams);	
 		
 		$j('tr.selector-wrap')
-			.filter(':has(input:checked)')
+			.has('input:checked')
 			.addClass('selected')
-		    .end()
-		  .click(function(event) {	
-		    if (event.target.type !== 'checkbox' && event.target.type !== 'radio') {
-			  $j('input', this).attr('checked', function() {
-		        $j(this).attr('checked',!this.checked);
-				$j(this).trigger('click');
-				if(this.type == 'checkbox'){
-					return !this.checked;
-				}
-		      });
+			.end()
+		.click(function(event) {	
+			if (event.target.type !== 'checkbox' && event.target.type !== 'radio') {
+				$j('input', this).attr('checked', function() {
+					$j(this).attr('checked',(this.checked=="checked" ? "" : "checked"));
+					$j(this).trigger('click');
+					if(this.type == 'checkbox'){
+						return this.checked=="checked" ? "" : "checked";
+					}
+				});
 			};
-		 });
-  
-  			
+		});
+
+
 		$j("input.checker").click(function(e) {			
 			if(e.target.type == 'radio'){
 				$j('tr.selector-wrap').removeClass('selected');
@@ -656,9 +659,9 @@
 		
 		$j("input.checkall").click(function(e) {			
 			if($j(e.target).attr('checked')){
-				$j("input.checker").attr('checked','checked');
+				$j("input.checker").attr('checked',true);
 			} else {
-				$j("input.checker").attr('checked','checked');
+				$j("input.checker").attr('checked',false);
 			};
 						
 		});
@@ -699,66 +702,6 @@
 		
 	}
 		
-	
-	//dimScreen()
-	//by Brandon Goldman
-	$j.extend({
-	    //dims the screen
-	    dimScreen: function(speed, opacity, callback) {
-	        if(jQuery('##__dimScreen').size() > 0) return;
-	        
-	        if(typeof speed == 'function') {
-	            callback = speed;
-	            speed = null;
-	        }
-	
-	        if(typeof opacity == 'function') {
-	            callback = opacity;
-	            opacity = null;
-	        }
-	
-	        if(speed < 1) {
-	            var placeholder = opacity;
-	            opacity = speed;
-	            speed = placeholder;
-	        }
-	        
-	        if(opacity >= 1) {
-	            var placeholder = speed;
-	            speed = opacity;
-	            opacity = placeholder;
-	        }
-	
-	        speed = (speed > 0) ? speed : 500;
-	        opacity = (opacity > 0) ? opacity : 0.5;
-	        return jQuery('<div></div>').attr({
-	                id: '__dimScreen'
-	                ,fade_opacity: opacity
-	                ,speed: speed
-	            }).css({
-	            background: '##000'
-	            ,height: jQuery(document).height() + 'px'
-	            ,left: '0px'
-	            ,opacity: 0
-	            ,position: 'absolute'
-	            ,top: '0px'
-	            ,width: jQuery(document).width() + 'px'
-	            ,zIndex: 999
-	        }).appendTo(document.body).fadeTo(speed, opacity, callback);
-	    },
-		    
-	    //stops current dimming of the screen
-	    dimScreenStop: function(callback) {
-	        var x = jQuery('##__dimScreen');
-	        var opacity = x.attr('fade_opacity');
-	        var speed = x.attr('speed');
-	        x.fadeOut(speed, function() {
-	            x.remove();
-	            if(typeof callback == 'function') callback();
-	        });
-	    }
-	});		
-						
 
 	
 	var userselection = [];
@@ -770,16 +713,16 @@
 			property = aProperty;
 			id = aId;
 			
-			inputField = $j('##'+aId,parent.document);
-			
+			inputField = $j('##'+aId, parent.document);
+
 			if(inputField.val().length) {
 				userselection = inputField.val().split(',');
 			}
-			
+
 			fcForm.selections.statusupdate(property);
-			
-			$j("tr.selector-wrap input[name='selected']").live('click', function(e) {
-				var el = $j(this);
+
+			$j("body").on('click', "tr.selector-wrap input[name='selected']", function(e) {
+				var el = $j(e.currentTarget);
 				if (el.is(':radio')) {
 					userselection = [el.val()];
 				} else if (el.is(':checked')) {
@@ -816,7 +759,7 @@
 			$j('tr.selector-wrap').removeClass('selected');
 			$j("tr.selector-wrap input[name='selected']").attr('checked',false);
 			$j.each(userselection, function(){
-				$j("tr.selector-wrap input[value='"+this+"']").attr('checked',true).parents('tr.selector-wrap').addClass('selected');
+				$j("tr.selector-wrap input[value='"+this+"']").prop('checked',true).parents('tr.selector-wrap').addClass('selected');
 			});
 		}
 	};
@@ -1030,5 +973,9 @@
 			};
 			return false;
 		});	
-	});					
-</cfoutput>					
+	});		
+
+<cfsilent></script></cfsilent><!--- /trick editor to highlight syntax --->
+</cfoutput>
+
+<cfsetting enablecfoutputonly="false">
