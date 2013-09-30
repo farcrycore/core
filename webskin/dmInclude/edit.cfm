@@ -77,7 +77,7 @@
 				<cfoutput>
 				<script type="text/javascript">
 					function getDisplayMethod(typename,fieldname,property) {
-						var webskinTypename = $j('###stFields.webskinTypename.FORMFIELDNAME#').attr('value');
+						var webskinTypename = $j('###stFields.webskinTypename.FORMFIELDNAME#').val();
 						var webskin = $j('###stFields.webskin.FORMFIELDNAME#').attr('value');
 					
 						$j.ajax({
@@ -99,10 +99,9 @@
 		
 	
 			<cfoutput>	
-			<fieldset class="fieldset">
-				<legend class="legend">OPTION 1: Content View</legend>
-				<div class="ctrlHolder inlineLabels list">
-					#stFields.webskinTypename.label#
+			<ft:fieldset legend="OPTION 1: Content View">
+				<ft:field label="#stFields.webskinTypename.label#">
+					
 					
 					<select name="#stFields.webskinTypename.FORMFIELDNAME#" id="#stFields.webskinTypename.FORMFIELDNAME#" class="selectInput" onchange="getDisplayMethod('dmInclude','#stFields.webskin.FORMFIELDNAME#','webskin')">
 						<option value="">None selected</option>
@@ -111,21 +110,19 @@
 						</cfloop>	
 					</select>
 					
-				</div>
+				</ft:field>
 				
-				<br class="clearer"/>
 				
-				<div class="ctrlHolder inlineLabels webskin">
-					#stFields.webskin.label#
+				<ft:field label="#stFields.webskin.label#">
 					
-						<div id="#stFields.webskin.FORMFIELDNAME#-wrap">
-							<small>Select a content type above</small>
-							<input type="hidden" name="#stFields.webskin.FORMFIELDNAME#" id="#stFields.webskin.FORMFIELDNAME#" value="#stFields.webskin.value#" />
-						</div>
+					<div id="#stFields.webskin.FORMFIELDNAME#-wrap">
+						<small>Select a content type above</small>
+						<input type="hidden" name="#stFields.webskin.FORMFIELDNAME#" id="#stFields.webskin.FORMFIELDNAME#" value="#stFields.webskin.value#" />
+					</div>
 					
-				</div>
+				</ft:field>
 			
-			</fieldset>
+			</ft:fieldset>
 			</cfoutput>
 					
 			<skin:onReady>
