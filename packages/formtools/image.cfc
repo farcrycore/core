@@ -1050,7 +1050,7 @@
 		<cfset var stImage = structnew() />
 		<cfset var stResult = structnew() />
 		
-		<cfif application.fc.cdn.ioFileExists(location="image",file=arguments.file)>
+		<cfif application.fc.lib.cdn.ioFileExists(location="images",file=arguments.file)>
 			
 			<cfimage action="info" source="#application.fc.lib.cdn.ioReadFile(location='images',file=arguments.file,datatype='image')#" structName="stImage" />
 			
@@ -1480,8 +1480,8 @@
 			<cfset stResult.error = "No file defined" />
 			<cfreturn stResult />
 		</cfif>
-		
-		<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.file,admin=true) />
+
+		<cfset stResult = application.fc.lib.cdn.ioGetFileLocation(location="images",file=arguments.stMetadata.value,admin=true) />
 		
 		<cfreturn stResult />
 	</cffunction>
