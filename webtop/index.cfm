@@ -21,6 +21,9 @@
 <cfimport taglib="/farcry/core/tags/admin" prefix="admin">
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
 
+<cfset request.fc.inWebtop = 1>
+
+
 <!--- get sections --->
 <cfset stWebtop = application.factory.oWebtop.getAllItems()>
 

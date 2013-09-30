@@ -6,9 +6,6 @@
 <cfparam name="session.writingDir" default="ltr" />
 <cfparam name="session.userLanguage" default="en" />
 
-<cfset request.fcwebtopbootstrap = true>
-<cfset request.fc.inWebtop = 1>
-
 
 <cfoutput><!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" dir="#session.writingDir#" lang="#session.userLanguage#">

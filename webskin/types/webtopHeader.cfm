@@ -6,8 +6,6 @@
 <cfparam name="session.writingDir" default="ltr" />
 <cfparam name="session.userLanguage" default="en" />
 
-<cfset request.fcwebtopbootstrap = true>
-<cfset request.fc.inWebtop = 1>
 
 <!--- get sections --->
 <cfset stWebtop = application.factory.oWebtop.getAllItems() />
