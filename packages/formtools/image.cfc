@@ -145,6 +145,7 @@
 	    <cfset var bFileExists = getFileExists(arguments.stMetadata.value) />
 	    <cfset var imagePath = "" />
 	    <cfset var error = "" />
+	    <cfset var imageMaxWidth = 400 />
 		
 		
 		<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
@@ -200,6 +201,13 @@
 			<cfoutput>Image must be of type #arguments.stMetadata.ftAllowedExtensions#</cfoutput>
 		</cfsavecontent>
 	    
+		<cfif bFileExists>
+			<cfset stImage = getImageInfo(file=arguments.stMetadata.value,admin=true) />
+			<cfif stImage.width lt imageMaxWidth>
+				<cfset imageMaxWidth = stImage.width>
+			</cfif>
+		</cfif>
+
 	    <cfif len(arguments.stMetadata.value)>
 			<cfif not bFileExists>
 				<cfset arguments.stMetadata.value = "" />
@@ -258,9 +266,8 @@
 						<cfif bFileExists>
 							<div id="#arguments.fieldname#_complete" class="complete-view">
 								<span class="image-status" title=""><i class="icon-picture icon-fixed-width"></i></span>
-								<span class="image-filename">#listfirst(listlast(arguments.stMetadata.value,"/"),"?")#</span> ( <a class="image-preview fc-richtooltip" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
+								<span class="image-filename">#listfirst(listlast(arguments.stMetadata.value,"/"),"?")#</span> ( <a class="image-preview fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
 								<cfif arguments.stMetadata.ftShowMetadata>
-									<cfset stImage = getImageInfo(file=arguments.stMetadata.value,admin=true) />
 									<i class="icon-blank icon-fixed-width"></i> Size: <span class="image-size">#round(stImage.size / 1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
 									<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
 								</cfif>
@@ -268,7 +275,7 @@
 						<cfelse>
 							<div id="#arguments.fieldname#_complete" class="complete-view" style="display:none;">
 								<span class="image-status" title=""><i class="icon-picture icon-fixed-width"></i></span>
-								<span class="image-filename"></span> ( <a class="image-preview fc-richtooltip" title="<img src='' style='max-width:400px; max-height:400px;' />" href="##" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
+								<span class="image-filename"></span> ( <a class="image-preview fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='' style='max-width:400px; max-height:400px;' />" href="##" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
 								<cfif arguments.stMetadata.ftShowMetadata>
 									<i class="icon-blank icon-fixed-width"></i> Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
 									<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
@@ -310,9 +317,8 @@
 						<cfif bFileExists>
 							<div id="#arguments.fieldname#_complete" class="complete-view">
 								<span class="image-status" title=""><i class="icon-picture icon-fixed-width"></i></span>
-								<span class="image-filename">#listfirst(listlast(arguments.stMetadata.value,"/"),"?")#</span> ( <a class="image-preview fc-richtooltip" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
+								<span class="image-filename">#listfirst(listlast(arguments.stMetadata.value,"/"),"?")#</span> ( <a class="image-preview fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
 								<cfif arguments.stMetadata.ftShowMetadata>
-									<cfset stImage = getImageInfo(file=arguments.stMetadata.value,admin=true) />
 									<i class="icon-blank icon-fixed-width"></i> Size: <span class="image-size">#round(stImage.size / 1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
 									<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
 								</cfif>
@@ -320,7 +326,7 @@
 						<cfelse>
 						    <div id="#arguments.fieldname#_complete" class="complete-view" style="display:none;">
 								<span class="image-status" title=""><i class="icon-picture icon-fixed-width"></i></span>
-								<span class="image-filename"></span> ( <a class="image-preview fc-richtooltip" title="<img src='' style='max-width:400px; max-height:400px;' />" href="##" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
+								<span class="image-filename"></span> ( <a class="image-preview fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='' style='max-width:400px; max-height:400px;' />" href="##" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
 								<cfif arguments.stMetadata.ftShowMetadata>
 									<i class="icon-blank icon-fixed-width"></i> Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
 									<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
@@ -394,7 +400,7 @@
 		
 		<!--- Preview --->
 		<cfif bFileExists>
-			<cfset preview = "<img src='#getFileLocation(stObject=arguments.stObject,stMetadata=arguments.stMetadata,admin=true).path#' style='max-width:400px; max-height:400px;' />" />
+			<cfset preview = "<img src='#getFileLocation(stObject=arguments.stObject,stMetadata=arguments.stMetadata,admin=true).path#' style='width:400px; max-width:400px; max-height:400px;' />" />
 			<cfif arguments.stMetadata.ftShowMetadata>
 				<cfset stImage = getImageInfo(file=arguments.stMetadata.value,admin=true) />
 				<cfset preview = preview & "<br><div style='width:#previewwidth#px;'>#round(stImage.size/1024)#</span>KB, #stImage.width#px x #stImage.height#px</div>" />
@@ -499,7 +505,7 @@
 				
 				<cfsavecontent variable="html"><cfoutput>
 					<div style="float:left;background-color:##cccccc;height:100%;width:65%;margin-right:1%;">
-						<img id="cropable-image" src="#stLoc.path#" style="max-width:none;" />
+						<img id="cropable-image" src="#stLoc.path#" style="width:400px; max-width:none;" />
 					</div>
 					<div style="float:left;width:33%;">
 						<div class="image-crop-instructions" style="overflow-y:auto;overlow-y:hidden;">

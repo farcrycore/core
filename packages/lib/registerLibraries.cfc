@@ -67,10 +67,17 @@
 									// tooltip for fc-tooltip elements
 									$j('.fc-tooltip').tooltip();
 									// rich tooltip for fc-richtooltip elements
-									$j('.fc-richtooltip').tooltipster({
-										theme: ".tooltipster-light",
-										delay: 0,
-										speed: 200
+									$j('.fc-richtooltip').each(function(){
+										var $this = $j(this);
+										var position = $this.data("tooltip-position") || "";
+										var width = $this.data("tooltip-width") || 0;
+										$this.tooltipster({
+											theme: ".tooltipster-light",
+											position: position,
+											fixedWidth: width,
+											delay: 0,
+											speed: 200
+										});
 									});
 								});
 							</cfoutput>
