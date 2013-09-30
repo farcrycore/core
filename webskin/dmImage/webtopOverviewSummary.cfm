@@ -39,8 +39,8 @@ START WEBSKIN
 	</div>
 </cfoutput>
 
-<ft:fieldset legend="#application.fapi.getContentTypeMetadata(stobj.typename,'displayname',stobj.typename)# Information">\
-	<ft:object stObject="#stObj#" lFields="title,alt,thumbnailImage,teaser,displayMethod" format="display" />\
+<ft:fieldset legend="#application.fapi.getContentTypeMetadata(stobj.typename,'displayname',stobj.typename)# Information">
+	<ft:object stObject="#stObj#" lFields="title,alt,thumbnailImage,teaser,displayMethod" format="display" />
 </ft:fieldset>
 
 
