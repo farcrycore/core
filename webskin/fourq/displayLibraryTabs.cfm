@@ -55,7 +55,7 @@
 			<div class="tabbable">
 				<ul class="nav nav-tabs">    
 					<cfloop list="#stMetadata.ftJoin#" index="i">
-						<li <cfif listFirst(stMetadata.ftJoin) eq i>class="active"</cfif>><a data-toggle="tabajax" href="#application.url.webtop#/index.cfm?ajaxmode=1&type=#url.type#&objectid=#url.objectid#&view=displayLibrary&property=#url.property#&filterTypename=#i#&ajaxmode=1">#application.fapi.getContentTypeMetadata(i,'displayName',i)#</a></li>
+						<li <cfif listFirst(stMetadata.ftJoin) eq i>class="active"</cfif>><a data-toggle="tab" data-target="tabajax-content" href="#application.url.webtop#/index.cfm?ajaxmode=1&type=#url.type#&objectid=#url.objectid#&view=displayLibrary&property=#url.property#&filterTypename=#i#">#application.fapi.getContentTypeMetadata(i,'displayName',i)#</a></li>
 					</cfloop>
 				</ul>
 				<div>
@@ -67,8 +67,7 @@
 		
 		<skin:onReady>
 			<cfoutput>
-
-				$j('[data-toggle="tabajax"]').click(function(e) {
+				$j('[data-toggle="tab"]').click(function(e) {
 					e.preventDefault();
 					$tab = $j(this);
 					$j("##tabajax-content").load($tab.attr('href'), function(){
