@@ -40,14 +40,17 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <title>[#application.applicationname#] #application.config.general.sitetitle# - FarCry Webtop</title>
 
-<!--- TODO: register --->
-	<skin:loadCSS id="fc-bootstrap" />
-	<skin:loadCSS id="fc-fontawesome" />
-	<skin:loadCSS id="webtop7" />
-	<!--- <skin:loadCSS id="fc-icons" /> --->
-	<skin:loadJS id="fc-jquery" />
-	<skin:loadJS id="fc-bootstrap" />
-	<skin:loadJS id="webtop7" />
+<skin:loadCSS id="fc-bootstrap" />
+<skin:loadCSS id="fc-fontawesome" />
+<skin:loadCSS id="webtop7" />
+
+<skin:loadJS id="fc-jquery" />
+<skin:loadJS id="fc-jquery-ui" />
+<skin:loadJS id="fc-bootstrap" />
+<skin:loadJS id="jquery-tooltip" />
+<skin:loadJS id="jquery-tooltip-auto" />
+<skin:loadJS id="webtop7" />
+
 </head>
 <body id="sec-#url.sec#" class="webtop">
 
