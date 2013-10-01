@@ -442,8 +442,8 @@ a:hover {
 	#favourites .dropdown-menu .none { 
 		font-weight:normal;
 		color: #333333;
-	    filter: none;
-	    padding: 3px 14px; 
+		filter: none;
+		padding: 3px 14px; 
 	}
 	#favourites .dropdown-menu a { 
 		display:block;
@@ -818,7 +818,7 @@ body .uniForm .focused {
 .btn-group > .btn:first-child,
 .btn-group > .btn:last-child, 
 .btn-group > .dropdown-toggle {
-    border-radius: 0;
+	border-radius: 0;
 }
 
 
@@ -864,7 +864,7 @@ body .uniForm .focused {
 
 /* customise bootstrap alerts */
 .alert {
-    border-radius: 0;
+	border-radius: 0;
 }
 
 /* customise bootstrap modals */
@@ -1020,12 +1020,12 @@ tr:hover .fc-tree-title .icon-folder-open {
 }
 
 .farcry-objectadmin .icon-stack .icon-pencil {
-    color: orange;
-    font-size: 0.8em;
-    line-height: 0.9;
-    text-align: right;
-    right: -2px;
-    text-shadow: 0 1px 0 #FFFFFF;
+	color: orange;
+	font-size: 0.8em;
+	line-height: 0.9;
+	text-align: right;
+	right: -2px;
+	text-shadow: 0 1px 0 #FFFFFF;
 }
 
 
@@ -1108,10 +1108,15 @@ legend + .control-group {
 }
 
 .controls input, .controls select, .controls textarea, .uneditable-input {
-    width: 90%;
-    max-width: 440px;
-    min-width: 240px;
+	width: 90%;
+	max-width: 440px;
+	min-width: 240px;
 }
+.controls input.fc-datepicker {
+	max-width: 205px;
+	min-width: 208px;
+}
+
 .controls input[type="file"], .controls input[type="image"], .controls input[type="submit"], .controls input[type="reset"], .controls input[type="button"], .controls input[type="radio"], .controls input[type="checkbox"] {
 	width: auto;
 	min-width: 0;
@@ -1129,9 +1134,9 @@ legend + .control-group {
 }
 
 .controls input.fc-date {
-    min-width: 0;
-    max-width: 220px;
-    width: 200px;
+	min-width: 0;
+	max-width: 220px;
+	width: 200px;
 }
 .controls select.fc-time {
 	min-width: 0;

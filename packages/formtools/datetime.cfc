@@ -54,11 +54,8 @@
 
 	<!--- edit handler options --->
 	<cfproperty name="ftRenderType" default="jquery" hint="This formtool offers a number of ways to render the input. (dropdown, jquery, dateJS)" />
-	<cfproperty name="ftJQDateFormatMask" default="d M yy" hint="The format mask used by the jQuery UI when returning a date from the calendar. For a full list of the possible formats see http://docs.jquery.com/UI/Datepicker/formatDate" />
-	<cfproperty name="ftCFDateFormatMask" default="d mmm yyyy" hint="The format mask used when first rendering the date. This should be a coldfusion dateformat mask." />
 	<cfproperty name="ftToggleOffDateTime" default="false" hint="Provides an optional toggle to hide the date if its not required" />
-
-	<cfproperty name="ftDateFormatMask" default="d M yy" hint="Coldfusion mask for date for edit handler" />
+	<cfproperty name="ftDateFormatMask" default="d mmm yyyy" hint="Coldfusion mask for date for edit handler" />
 	<cfproperty name="ftStartYearShift" default="0" hint="Used when ftRenderType is set to dropDown, sets start of year range in select list." />
 	<cfproperty name="ftEndYearShift" default="-100" hint="Used when ftRenderType is set to dropDown, sets end of year range in select list." />
 	<cfproperty name="ftStartYear" default="" hint="Used when ftRenderType is set to dropDown, sets the value of the first year in year range." />
@@ -176,9 +173,6 @@
 		<cfswitch expression="#arguments.stMetadata.ftRenderType#">
 		
 		<cfcase value="dropdown">
-			<cfparam name="arguments.stMetadata.ftDateFormatMask" default="dd mmmm yyyy">
-			<cfparam name="arguments.stMetadata.ftStartYearShift" default="0">
-			<cfparam name="arguments.stMetadata.ftEndYearShift" default="-100">
 			<cfif not isdefined("arguments.stMetadata.ftStartYear") or not len(arguments.stMetadata.ftStartYear)>
 				<cfset arguments.stMetadata.ftStartYear = year(now()) + arguments.stMetadata.ftStartYearShift />
 			</cfif>
@@ -252,7 +246,9 @@
 			<cfparam name="arguments.stMetadata.ftMaxDate" default="" />
 			<cfparam name="arguments.stMetadata.ftMinDate" default="" />
 			
+			<!--- load jquery-ui before bootstrap-datepicker so that bootstrap-datepicker overwrites it --->
 			<skin:loadJS id="fc-jquery" />
+			<skin:loadJS id="fc-jquery-ui" />
 			<skin:loadJS id="fc-bootstrap" />
 			<skin:loadJS id="bootstrap-datepicker" />
 			<skin:loadCSS id="fc-bootstrap" />
@@ -285,14 +281,25 @@
 					</cfif>
 					
 					<div id="#arguments.fieldname#-wrap">
-						<!--- <label class="inlineLabel" for="#arguments.fieldname#"></label> --->
-						<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)#" class="datepicker #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#" >
+
+						<div class="input-prepend">
+							<span class="add-on"><i class="icon-calendar"></i></span>
+							<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)#" class="datepicker fc-datepicker #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#" >
+						</div>
+
 						<input type="hidden" name="#arguments.fieldname#rendertype" id="#arguments.fieldname#rendertype" value="#arguments.stMetadata.ftRenderType#">
-						
+
+						<!--- convert CF date masks into masks that will work with bootstrap-datepicker --->
+						<cfset jsDateFormatMask = arguments.stMetadata.ftDateFormatMask>
+						<cfset jsDateFormatMask = replace(jsDateFormatMask, "dddd", "DD")>
+						<cfset jsDateFormatMask = replace(jsDateFormatMask, "ddd", "D")>
+						<cfset jsDateFormatMask = replace(jsDateFormatMask, "mmmm", "MM")>
+						<cfset jsDateFormatMask = replace(jsDateFormatMask, "mmm", "M")>
+
 						<skin:onReady>
 							<cfoutput>
 								$j('###arguments.fieldname#').datepicker({
-								    format: '#arguments.stMetadata.ftDateFormatMask#',
+								    format: '#jsDateFormatMask#',
 								    autoclose: true
 								});
 							</cfoutput>
@@ -467,7 +474,7 @@
 						<cfset newTime = timeFormat(createTime(arguments.stFieldPost.stSupporting.hour, arguments.stFieldPost.stSupporting.minute, 0), 'hh:mm:ss tt') />
 					</cfif>
 							
-					<cfset newDate = CreateODBCDateTime("#DateFormat(arguments.stFieldPost.Value,arguments.stMetadata.ftCFDateFormatMask)# #newTime#") />
+					<cfset newDate = CreateODBCDateTime("#DateFormat(arguments.stFieldPost.Value,arguments.stMetadata.ftDateFormatMask)# #newTime#") />
 					<cfset stResult = passed(value="#newDate#") />
 					<cfcatch type="any">
 						<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="You need to select a valid date.") />
