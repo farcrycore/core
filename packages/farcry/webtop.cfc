@@ -49,7 +49,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfloop list="#dirlist#" index="thisdir">
 			<!--- If any custom admin xml files exist, we need to add them to our custom admin XML array --->
 			<cfif directoryExists("#thisdir#")>
-				<cfdirectory action="list" directory="#thisdir#" filter="*.xml" name="qCustomAdmin" />
+				<cfdirectory action="list" directory="#thisdir#" filter="*.xml" name="qCustomAdmin" listinfo="name" />
 				
 				<cfloop query="qCustomAdmin">
 					<!--- For each custom admin --->
