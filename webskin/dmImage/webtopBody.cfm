@@ -6,9 +6,10 @@
 <ft:objectadmin
 	typename="dmImage"
     title="Image Library"
-	columnList="ThumbnailImage,title,alt,datetimelastUpdated,catImage" 
-	sortableColumns="title,datetimelastUpdated"
+	lCustomColumns="Thumbnail:cellThumbnail,Title / Alt:cellDescription"
+	columnList="catImage,datetimelastupdated"
+	sortableColumns="title,datetimelastupdated"
 	lFilterFields="title,alt,catImage"
-	sqlorderby="datetimelastUpdated desc" />
+	sqlorderby="datetimelastupdated DESC" />
 
 <cfsetting enablecfoutputonly="false">
