@@ -115,7 +115,7 @@
 		var current_crop_selection = null;
 		
 		// Add crop dialog markup
-		jQuery("body").append("<div id='image-crop-overlay'><div class='ui-widget-overlay' style='width:"+docwidth+"px;height:"+docheight+"px;'></div><div style='width:"+(overlaywidth+22)+"px;height:"+(overlayheight+22)+"px;position:absolute;left:"+overlayleft+"px; top:"+overlaytop+"px;' class='ui-widget-shadow ui-corner-all'></div><div id='image-crop-ui' class='ui-widget ui-widget-content ui-corner-all' style='position: absolute;width:"+overlaywidth+"px;height:"+overlayheight+"px;left:"+overlayleft+"px;top:"+overlaytop+"px; padding: 10px;'></div></div>");
+		jQuery("body").append("<div id='image-crop-overlay'><div class='ui-widget-overlay' style='width:"+docwidth+"px;height:"+docheight+"px;'></div><div style='width:"+(overlaywidth+22)+"px;height:"+(overlayheight+22)+"px;position:absolute;left:"+overlayleft+"px; top:"+overlaytop+"px;' class='ui-widget-shadow ui-corner-all'></div><div id='image-crop-ui' class='' style='position: absolute;background:white;width:"+overlaywidth+"px;height:"+overlayheight+"px;left:"+overlayleft+"px;top:"+overlaytop+"px; padding: 10px;'></div></div>");
 		
 		// Add event to end cropping when the overlay is clicked
 		if (allowcancel) jQuery("#image-crop-overlay .ui-widget-overlay").bind("click",function onCropperOverlayClick(e) { if (this==e.target) cropper.cancelCrop(); });
@@ -320,8 +320,9 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 
 			$j(imageformtool).bind("filechange",function onImageFormtoolFilechangeUpdate(event,results){
 				if (results.value && results.value.length>0){
+					var imageMaxWidth = (results.width < 400) ? results.width : 400;
 					var complete = imageformtool.multiview.findView("complete")
-						.find(".image-status").attr("title","This file has been updated on the server").tooltip({ delay: 0, showURL: false	}).html('<span class="ui-icon ui-icon-info" style="float:left;">&nbsp;</span>').end()
+						.find(".image-status").html('<i class="icon-picture icon-fixed-width"></i>').end()
 						.find(".image-filename").html(results.filename).end()
 						.find(".image-size").html(results.size).end()
 						.find(".image-width").html(results.width).end()
@@ -336,13 +337,13 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 					}
 					if (imageformtool.inline){
 						imageformtool.inlineview
-							.find("a.image-preview").attr("href",results.fullpath).attr("title","<img src='"+results.fullpath+"?"+new Date().getTime()+"' style='max-width:400px; max-height:400px;'><br><div style='width:"+previewsize.width.toString()+"px;'>"+results.size.toString()+"</span>KB, "+results.width.toString()+"px x "+results.height+"px</div>").tooltip({ delay: 0, showURL: false	}).end()
+							.find("a.image-preview").attr("href",results.fullpath).tooltipster("update", "<img src='"+results.fullpath+"?"+new Date().getTime()+"' style='width:"+imageMaxWidth+"px; max-width:400px; max-height:400px;'><br><div style='width:"+previewsize.width.toString()+"px;'>"+results.size.toString()+"</span>KB, "+results.width.toString()+"px x "+results.height+"px</div>").end()
 							.find("span.action-preview").show().end()
 							.find("span.dependant-options").show().end();
 						imageformtool.multiview.selectView("cancel");
 					}
 					else{
-						imageformtool.multiview.find("a.image-preview").attr("href",results.fullpath).attr("title","<img src='"+results.fullpath+"?"+new Date().getTime()+"' style='max-width:400px; max-height:400px;'>").tooltip({ delay: 0, showURL: false	}).end()
+						imageformtool.multiview.find("a.image-preview").attr("href",results.fullpath).tooltipster("update", "<img src='"+results.fullpath+"?"+new Date().getTime()+"' style='width:"+imageMaxWidth+"px; max-width:400px; max-height:400px;'>");
 						imageformtool.multiview.selectView("complete");
 					}
 				}
@@ -570,6 +571,6 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 	if (!this[prefix+property]) this[prefix+property] = new ImageFormtool(prefix,property);
 	return this[prefix+property];
 };
-$fc.imageformtool.buttonImg = '/webtop/thirdparty/jquery.uploadify-v2.1.4//selectImage.png';
+$fc.imageformtool.buttonImg = '/webtop/thirdparty/jquery.uploadify-v2.1.4/selectImage.png';
 $fc.imageformtool.uploader = '/webtop/thirdparty/jquery.uploadify-v2.1.4/uploadify.swf';
 $fc.imageformtool.cancelImg = '/webtop/thirdparty/jquery.uploadify-v2.1.4/cancel.png';

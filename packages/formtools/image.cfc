@@ -269,7 +269,7 @@
 								<span class="image-filename">#listfirst(listlast(arguments.stMetadata.value,"/"),"?")#</span> ( <a class="image-preview fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
 								<cfif arguments.stMetadata.ftShowMetadata>
 									<i class="icon-blank icon-fixed-width"></i> Size: <span class="image-size">#round(stImage.size / 1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
-									<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
+									<div class="image-resize-information alert alert-info" style="margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
 								</cfif>
 							</div>
 						<cfelse>
@@ -278,7 +278,7 @@
 								<span class="image-filename"></span> ( <a class="image-preview fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='' style='max-width:400px; max-height:400px;' />" href="##" target="_blank">Preview</a><span class="regenerate-link"> | <a href="##autogenerate" class="select-view">Regenerate</a></span> <cfif arguments.stMetadata.ftAllowUpload>| <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a></cfif> )<br>
 								<cfif arguments.stMetadata.ftShowMetadata>
 									<i class="icon-blank icon-fixed-width"></i> Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
-									<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div><br>
+									<div class="image-resize-information alert alert-info" style="margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
 								</cfif>
 							</div>
 						</cfif>
@@ -320,7 +320,7 @@
 								<span class="image-filename">#listfirst(listlast(arguments.stMetadata.value,"/"),"?")#</span> ( <a class="image-preview fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
 								<cfif arguments.stMetadata.ftShowMetadata>
 									<i class="icon-blank icon-fixed-width"></i> Size: <span class="image-size">#round(stImage.size / 1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
-									<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
+									<div class="image-resize-information alert alert-info" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
 								</cfif>
 							</div>
 						<cfelse>
@@ -329,7 +329,7 @@
 								<span class="image-filename"></span> ( <a class="image-preview fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='' style='max-width:400px; max-height:400px;' />" href="##" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
 								<cfif arguments.stMetadata.ftShowMetadata>
 									<i class="icon-blank icon-fixed-width"></i> Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
-									<div class="image-resize-information ui-state-highlight ui-corner-all" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
+									<div class="image-resize-information alert alert-info" style="padding:0.7em;margin-top:0.7em;display:none;">Resized to <span class="image-width"></span>px x <span class="image-height"></span>px (<span class="image-quality"></span>% quality)</div>
 								</cfif>
 							</div>
 						</cfif>
@@ -529,23 +529,21 @@
 								Dimensions: <span id="image-crop-width-final">#arguments.stMetadata.ftImageWidth#</span>px x <span id="image-crop-height-final">#arguments.stMetadata.ftImageHeight#</span>px<br>
 								Quality: <cfif arguments.stMetadata.ftAllowResizeQuality><input id="image-crop-quality" value="#arguments.stMetadata.ftQuality#" /><cfelse>#round(arguments.stMetadata.ftQuality*100)#%<input type="hidden" id="image-crop-quality" value="#arguments.stMetadata.ftQuality#" /></cfif>
 							</p>
-							<p id="image-crop-warning alert" style="display:none;">
+							<p id="image-crop-warning" class="alert alert-warning" style="display:none;">
 								<strong style="font-weight:bold">Warning:</strong> The selected crop area is smaller than the output size. To avoid poor image quality choose a larger crop or use a higher resolution source image.
 							</p>							
 							<p style="margin-top: 0.7em">To select a crop area:</p>
-							<ol style="padding-left:20px;padding-top:0.7em">
+							<ol style="padding-left:10px;padding-top:0.7em">
 								<li style="list-style:decimal outside;">Click and drag from the point on the image where the top left corner of the crop will start to the bottom right corner where the crop will finish.</li>
 								<li style="list-style:decimal outside;">You can drag the selection box around the image if it isn't in the right place, or drag the edges and corners if the box isn't the right shape.</li>
 								<li style="list-style:decimal outside;">Click "Crop and Resize" when you're done.</li>
 							</ol>
 						</div>
-						<div class="uniForm image-crop-actions">
-							<ft:buttonPanel style="border:none;background: none">
-								<ft:button value="Crop and Resize" id="image-crop-finalize" onclick="$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').finalizeCrop();return false;" />
-								<cfif url.allowcancel>
-									<a href="##" id="image-crop-cancel" style="position:relative;top:13px;padding-right:10px;background:none">Cancel</a>
-								</cfif>
-							</ft:buttonPanel>
+						<div class="image-crop-actions">
+							<button id="image-crop-finalize" class="btn btn-large btn-primary" onclick="$fc.imageformtool('#prefix#','#arguments.stMetadata.name#').finalizeCrop();return false;">Crop and Resize</button>
+							<cfif url.allowcancel>
+								<a href="##" id="image-crop-cancel" class="btn btn-link" style="border:none;box-shadow:none;background:none">Cancel</a>
+							</cfif>
 						</div>
 					</div>
 				</cfoutput></cfsavecontent>
