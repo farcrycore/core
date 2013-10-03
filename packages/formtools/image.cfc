@@ -505,7 +505,7 @@
 				
 				<cfsavecontent variable="html"><cfoutput>
 					<div style="float:left;background-color:##cccccc;height:100%;width:65%;margin-right:1%;">
-						<img id="cropable-image" src="#stLoc.path#" style="width:400px; max-width:none;" />
+						<img id="cropable-image" src="#stLoc.path#" style="max-width:none;" />
 					</div>
 					<div style="float:left;width:33%;">
 						<div class="image-crop-instructions" style="overflow-y:auto;overlow-y:hidden;">
