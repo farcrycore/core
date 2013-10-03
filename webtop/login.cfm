@@ -24,6 +24,8 @@
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/core/" prefix="core" />
 
+<cfset request.fc.inWebtop = 1>
+
 <!--------------------------------------
 CUSTOM LOGIN
 - deprecated: Custom logins should be constructed using the login type webskins; displayHeaderLogin, displayFooterLogin.
