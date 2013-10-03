@@ -1,8 +1,10 @@
 <cfsetting enablecfoutputonly="true" />
 <!--- @@displayname: Provides an interface for formtools to provide AJAX functionality --->
 
-
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
+
+<!--- explicitly set ajax request mode --->
+<cfset request.mode.ajax = 1>
 
 <cfloop collection="#url#" item="key">
 	<cfif refindnocase("/formtool/\w+",key)>
