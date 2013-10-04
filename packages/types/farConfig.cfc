@@ -170,7 +170,7 @@ object methods
 					
 				</cfloop>
 				
-				<cfset stObj = duplicate(stProperties) />
+				<cfset structappend(stObj,stProperties,true) />
 			</ft:validateFormObjects>
 		<cfelse>
 			<cfset stObj = createobject("component",application.stCOAPI[arguments.stFieldPost.stSupporting.formname].packagepath).getData(application.fc.utils.createJavaUUID()) />
