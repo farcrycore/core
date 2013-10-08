@@ -687,7 +687,7 @@
 
 
 	<!--- ONLY SHOW THE FILTERING IF WE HAVE RECORDS OR IF WE ARE ALREADY FILTERING --->
-	<cfif listLen(attributes.lFilterFields) AND (listLen(HTMLfiltersAttributes) OR stRecordset.q.recordCount)>
+	<cfif listLen(attributes.lFilterFields) AND attributes.lFilterFields neq "label" AND (listLen(HTMLfiltersAttributes) OR stRecordset.q.recordCount)>
 		<ft:form Name="#attributes.name#Filter" Validation="#attributes.bFilterValidation#">	
 			<cfif NOT (isDefined("request.fc.inwebtop") AND request.fc.inwebtop eq 1)>
 				<ft:button type="button" value="Filter" icon="icon-search" class="small" priority="primary" style="" text="#application.rb.getResource('objectadmin.messages.Filtering@text','Show Filter')#" onclick="$j('##filterForm').toggle('blind');" />
@@ -716,7 +716,7 @@
 	<cfif isDefined("request.fc.inwebtop") AND request.fc.inwebtop eq 1>
 		<cfoutput>
 			<form id="farcry-objectadmin-form" action="" method="post" class="input-prepend input-append pull-right" style="position: relative; z-index:2">
-				<cfif len(attributes.lFilterFields)>
+				<cfif len(attributes.lFilterFields) AND attributes.lFilterFields neq "label">
 					<button type="button" class="btn fc-tooltip" onclick="$j('##filterForm').toggle('blind'); " style="height: 30px; border-radius:0" data-toggle="tooltip" data-placement="top" title="" data-original-title="Advanced Filtering"><b class="icon-filter only-icon"></b></button>
 				</cfif>
 				<input id="farcry-objectadmin-q" name="q" class="span2" type="text" placeholder="Search..." value="#form.q#" style="width: 240px;">
