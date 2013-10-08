@@ -254,10 +254,6 @@ type properties
 		<cfset arguments.stProperties.title = listfirst(listlast(arguments.stProperties.sourceImage,"/"),".") />
 	</cfif>
 	
-	<cfif not structkeyexists(arguments.stProperties,"alt") or not len(arguments.stProperties.alt) and structkeyexists(arguments.stProperties,"sourceImage")>
-		<cfset arguments.stProperties.alt = listfirst(listlast(arguments.stProperties.sourceImage,"/"),".") />
-	</cfif>
-	
 	<cfif structkeyexists(arguments.stProperties,"title")>
 		<cfset arguments.stProperties.label = arguments.stProperties.title />
 	</cfif>
