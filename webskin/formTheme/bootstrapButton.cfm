@@ -34,9 +34,6 @@
 	<skin:loadJS id="fc-jquery" />
 	<skin:loadJS id="farcry-form" />
 	
-	<skin:loadCSS id="fc-bootstrap" />
-	
-	
 	<cfif len(attributes.priority)>	
 		
 		<cfif listFindNoCase(GetBaseTagList(),"cf_splitButton") AND attributes.renderType EQ "link">

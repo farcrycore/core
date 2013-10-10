@@ -60,9 +60,7 @@
 		<cfset thisTag.generatedContent = "" />
 	</cfif>
 	
-	<skin:loadJS id="fc-bootstrap" />
 	<cfif attributes.bAddFormCSS>
-		<skin:loadCSS id="fc-bootstrap" />
 		<skin:loadCSS id="farcry-form" />
 	</cfif>
 

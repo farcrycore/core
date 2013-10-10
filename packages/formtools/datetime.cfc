@@ -251,10 +251,8 @@
 			<skin:loadJS id="fc-jquery-ui" />
 			<skin:loadJS id="fc-bootstrap" />
 			<skin:loadJS id="bootstrap-datepicker" />
-			<skin:loadCSS id="fc-bootstrap" />
 			<skin:loadCSS id="bootstrap-datepicker" />
 			
-			<!--- Just in case the developer has included lowercase mmmm or mmm which is not valid, we are changing to uppercase MMMM and MMM respectively. --->
 			
 			<cfif isDefined("session.dmProfile.locale") AND len(session.dmProfile.locale)>
 				<cfset locale = session.dmProfile.locale>
