@@ -124,7 +124,7 @@ FileView = Backbone.View.extend({
 	events : {
 		"click .remove" : "removeFile",
 		"click .save" : "saveFile",
-		"click .info" : "showInfo"
+		"click .icon-info" : "showInfo"
 	},
 	
 	render : function FileView_render(){

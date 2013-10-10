@@ -17,12 +17,13 @@
 --->
 <!--- @@Developer: Blair Mackenzie (blair@daemon.com.au) --->
 <cfcomponent displayname="FarCry User" hint="User model for the Farcry User Directory." extends="types" output="false" description="" fuAlias="user" bSystem="true">
-	<cfproperty ftSeq="1" ftFieldset="User" name="userid" type="string" default="" hint="The unique id for this user. Used for logging in" ftLabel="User ID" ftType="string" bLabel="true" ftValidation="required" />
+	<cfproperty ftSeq="1" ftFieldset="User" name="userid" type="string" default="" hint="The unique id for this user. Used for logging in" ftLabel="User ID" ftType="string" bLabel="true" ftValidation="required" ftIndex="true" />
 	<cfproperty ftSeq="2" ftFieldset="User" name="password" type="string" default="" hint="" ftLabel="Password" ftType="password" ftRenderType="confirmpassword" ftShowLabel="false" ftValidation="required" ftValidateOldMethod="ftCheckOldPassword" ftValidateNewMethod="ftCheckPasswordPolicy" />
 	<cfproperty ftSeq="3" ftFieldset="User" name="userstatus" type="string" default="active" hint="The status of this user; active, inactive, pending." ftLabel="User status" ftType="list" ftList="active:Active,inactive:Inactive,pending:Pending" />
 	<cfproperty ftSeq="4" ftFieldset="User" name="aGroups" type="array" default="" hint="The groups this member is a member of" ftLabel="Groups" ftType="array" ftJoin="farGroup" />
 	<cfproperty name="lGroups" type="longchar" default="" hint="The groups this member is a member of (list generated automatically)" ftLabel="Groups" ftType="arrayList" ftArrayField="aGroups" ftJoin="farGroup" />
 
+	<cfproperty name="failedLogins" type="longchar" default="[]" ftDefault="[]" hint="Log of failed logins" />
 	<cfproperty name="forgotPasswordHash" type="string" default="" hint="A hash stored temporarily to reset user password" />
 	
 	<cffunction name="getByUserID" access="public" output="false" returntype="struct" hint="Returns the data struct for the specified user id">
@@ -242,4 +243,60 @@
 		<cfreturn stResult />
 	</cffunction>
 	
+	<cffunction name="addLoginFailure" access="public" output="false" returntype="numeric" hint="Adds information about a login failure to a user record">
+		<cfargument name="objectID" type="uuid" required="false" />
+		<cfargument name="userID" type="string" required="false" />
+		<cfargument name="reason" type="string" required="true" />
+
+		<cfset var stObject = "" />
+		<cfset var aFailures = arraynew(1) />
+		<cfset var stFailure = structnew() />
+		<cfset var dateTolerance = DateAdd("n",0-application.config.general.loginAttemptsTimeOut,Now()) />
+		
+		<cfif structkeyexists(arguments,"objectID")>
+			<cfset stObject = getData(arguments.objectID) />
+		<cfelse>
+			<cfset stObject = getByUserID(arguments.userID) />
+		</cfif>
+
+		<cfif not structisempty(stObject)>
+	        <cfif isJSON(stObject.failedLogins)>
+		        <cfset aFailures = deserializeJSON(stObject.failedLogins) />
+	        </cfif>
+
+			<!--- remove redundant failures --->
+			<cfloop condition="arraylen(aFailures) and aFailures[1].timestamp lt dateTolerance or arraylen(aFailures) gt application.config.general.loginAttemptsAllowed">
+				<cfset arraydeleteat(aFailures,1) />
+			</cfloop>
+
+			<!--- add new failure --->
+			<cfset stFailure["timestamp"] = now() />
+			<cfset stFailure["reason"] = arguments.reason />
+			<cfset arrayappend(aFailures,stFailure) />
+
+			<cfset stObject.failedLogins = serializeJSON(aFailures) />
+			<cfset setData(stProperties=stObject) />
+		</cfif>
+
+		<cfreturn arraylen(aFailures) />
+	</cffunction>
+
+	<cffunction name="resetLoginFailures" access="public" output="false" returntype="void" hint="Resets the login failures recorded">
+		<cfargument name="objectID" type="uuid" required="true" />
+
+		<cfset var stObject = "" />
+
+		<cfif structkeyexists(arguments,"objectID")>
+			<cfset stObject = getData(arguments.objectID) />
+		<cfelse>
+			<cfset stObject = getByUserID(arguments.userID) />
+		</cfif>
+
+		<cfif not structisempty(stObject)>
+			<cfset stObject.loginFailures = "[]" />
+
+			<cfset setData(stProperties=stObject) />
+		</cfif>
+	</cffunction>
+
 </cfcomponent>

@@ -132,7 +132,9 @@
 		<cfelseif structKeyExists(arguments.stFieldPost.stSupporting, "Confirm")>
 			
 			<!--- The new and confirm password must be non-blank and be equal including case --->
-			<cfif not len(arguments.stFieldPost.value) OR compare(arguments.stFieldPost.value,arguments.stFieldPost.stSupporting.Confirm)>
+			<cfif not len(arguments.stFieldPost.value)>
+				<cfset stResult = failed(value="", message="You have not entered a password") />
+			<cfelseif not len(arguments.stFieldPost.value) OR compare(arguments.stFieldPost.value,arguments.stFieldPost.stSupporting.Confirm)>
 				<cfset stResult = failed(value="", message="Your password confirmation did not match.") />
 			<cfelse>
 				<!--- Perform new-value validation --->

@@ -1008,7 +1008,7 @@
 				</cfif>
 				
 				
-				<cfset stObjectAdminData = getObjectAdminData(st="#st#", typename="#attributes.typename#", stPermissions="#stPermissions#") />
+				<cfset stObjectAdminData = getObjectAdminData(st=duplicate(st), typename="#attributes.typename#", stPermissions="#stPermissions#") />
 				<cfset st = application.fapi.structMerge(st,stObjectAdminData) />
 
 
