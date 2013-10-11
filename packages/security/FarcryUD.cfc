@@ -21,6 +21,15 @@
 		</cfif>
 	</cffunction>
 	
+	<cffunction name="passwordIsStale" access="public" output="false" returntype="boolean" hint="Returns true if the password needs to be hashed">
+		<cfargument name="hashedPassword" type="string" required="true" hint="Hashed password" />
+		<cfargument name="password" type="string" required="true" hint="Source password" />
+		
+		<cfset var hashName = getOutputHashName() />
+
+		<cfreturn application.security.cryptlib.hashedPasswordIsStale(hashedPassword=arguments.hashedPassword,password=arguments.password,hashname=hashName) />
+	</cffunction>
+
 	<cffunction name="queryUserPassword" access="private" output="false" returntype="query" hint="Return a query of farUser rows that match the provided credentials">
 		<cfargument name="username" type="string" required="true" />
 		<cfargument name="password" type="string" required="true" />
@@ -53,7 +62,7 @@
 			</cfquery>
 
 			<!--- Does the hashed password need to be updated? --->
-			<cfif application.security.cryptlib.hashedPasswordIsStale(hashedPassword=qUser.password,password=arguments.password,hashname=hashName)>
+			<cfif passwordIsStale(hashedPassword=qUser.password,password=arguments.password)>
 				<cfquery datasource="#application.dsn#">
 					update	#application.dbowner#farUser
 					set		password=<cfqueryparam cfsqltype="cf_sql_varchar" value="#application.security.cryptlib.encodePassword(password=arguments.password,hashname=hashName)#" />

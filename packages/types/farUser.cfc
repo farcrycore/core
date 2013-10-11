@@ -16,7 +16,7 @@
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
 <!--- @@Developer: Blair Mackenzie (blair@daemon.com.au) --->
-<cfcomponent displayname="FarCry User" hint="User model for the Farcry User Directory." extends="types" output="false" description="" fuAlias="user" bSystem="true">
+<cfcomponent displayname="FarCry User" hint="User model for the Farcry User Directory." extends="types" output="false" description="" fuAlias="user" bSystem="true" ud="CLIENTUD">
 	<cfproperty ftSeq="1" ftFieldset="User" name="userid" type="string" default="" hint="The unique id for this user. Used for logging in" ftLabel="User ID" ftType="string" bLabel="true" ftValidation="required" ftIndex="true" />
 	<cfproperty ftSeq="2" ftFieldset="User" name="password" type="string" default="" hint="" ftLabel="Password" ftType="password" ftRenderType="confirmpassword" ftShowLabel="false" ftValidation="required" ftValidateOldMethod="ftCheckOldPassword" ftValidateNewMethod="ftCheckPasswordPolicy" />
 	<cfproperty ftSeq="3" ftFieldset="User" name="userstatus" type="string" default="active" hint="The status of this user; active, inactive, pending." ftLabel="User status" ftType="list" ftList="active:Active,inactive:Inactive,pending:Pending" />
@@ -121,10 +121,10 @@
 		<cfset var stUser = getData(objectid=arguments.stProperties.objectid) />
 		<cfset var oProfile = createObject("component", application.stcoapi["dmProfile"].packagePath) />
 		<cfset var stUsersProfile = structNew() />
-		<cfset var oClientUD = application.security.userdirectories.CLIENTUD /> 
+		<cfset var oUD = application.security.userdirectories[application.stCOAPI.farUser.ud] /> 
 		
-		<cfif structKeyExists(arguments.stProperties,"password") and oClientUD.bEncrypted and arguments.stProperties.password neq stUser.password>
-			<cfset arguments.stProperties.password = application.security.cryptlib.encodePassword(password=arguments.stProperties.password,hashName=oClientUD.getOutputHashName()) />
+		<cfif structKeyExists(arguments.stProperties,"password") and oUD.passwordIsStale(hashedPassword=stUser.password,password=arguments.stProperties.password)>
+			<cfset arguments.stProperties.password = application.security.cryptlib.encodePassword(password=arguments.stProperties.password,hashName=oUD.getOutputHashName()) />
 		</cfif>
 		
 		<!--- Clear security cache --->
@@ -139,10 +139,10 @@
 		<cfargument name="auditNote" type="string" required="true" hint="Note for audit trail" default="Created">
 		<cfargument name="dsn" required="No" default="#application.dsn#"> 
 		
-		<cfset var oClientUD = application.security.userdirectories.CLIENTUD /> 
+		<cfset var oUD = application.security.userdirectories[application.stCOAPI.farUser.ud] /> 
 		
-		<cfif structKeyExists(arguments.stProperties,"password") and oClientUD.bEncrypted>
-			<cfset arguments.stProperties.password = application.security.cryptlib.encodePassword(password=arguments.stProperties.password,hashName=oClientUD.getOutputHashName()) />
+		<cfif structKeyExists(arguments.stProperties,"password") and oUD.passwordIsStale(hashedPassword=stUser.password,password=arguments.stProperties.password)>
+			<cfset arguments.stProperties.password = application.security.cryptlib.encodePassword(password=arguments.stProperties.password,hashName=oUD.getOutputHashName()) />
 		</cfif>
 		
 		<cfreturn super.createData(arguments.stProperties,arguments.user,arguments.auditNote,arguments.dsn) />
