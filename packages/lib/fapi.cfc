@@ -859,7 +859,7 @@
 		</cfif>
 		
 		<!--- stream the content --->
-		<cfif listfirst(arguments.type,"/") eq "text">
+		<cfif isSimpleValue(arguments.content)>
 			<cfcontent type="#arguments.type#" variable="#ToBinary( ToBase64( trim(arguments.content) ) )#" reset="Yes" />
 		<cfelse>
 			<cfcontent type="#arguments.type#" variable="#arguments.content#" reset="Yes" />
