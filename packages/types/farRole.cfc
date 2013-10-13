@@ -128,6 +128,7 @@ object methods
 		<cfset var qProfiles = querynew("empty") />
 		<cfset var userlist = "" />
 		<cfset var thisuser = "" />
+		<cfset var user	= '' />
 		
 		<cfloop list="#arguments.roles#" index="role">
 			<cfset arrayappend(users,"") />
@@ -205,9 +206,11 @@ object methods
 		<cfargument name="role" type="string" required="true" hint="The roles to check" />
 		<cfargument name="permission" type="string" required="false" default="" hint="The permission to retrieve" />
 		
-		<cfset thisrole = "" />
-		<cfset thisresult = -1 />
-		<cfset qRole = "" />
+		
+		<cfset var thisrole = "" />
+		<cfset var thisresult = -1 />
+		<cfset var qRole = "" />
+		<cfset var stResult	= '' />
 		
 		<cfif not isvalid("uuid",arguments.permission)>
 			<cfset arguments.permission = application.security.factory.permission.getID(arguments.permission) />
@@ -510,6 +513,7 @@ object methods
 		<cfset var i = 0 />
 		<cfset var qObjects = "" />
 		<cfset var stO = structnew() />
+		<cfset var typepermissiontype	= '' />
 		
 		<!--- Remove related barnacles --->
 		<cfquery datasource="#application.dsn#" name="qBarnacles">
@@ -751,6 +755,7 @@ object methods
 		<cfset var methodname = "" />
 		<cfset var types = "" />
 		<cfset var webskin = "" />
+		<cfset var webskinsendback	= '' />
 		
 		<cfimport taglib="/farcry/core/tags/misc" prefix="misc" />
 		
@@ -802,7 +807,19 @@ object methods
 		<cfset var k = 0 />
 		<cfset var c = 0 />
 		<cfset var bDoUpgrade = NOT structKeyExists(stPermissionMetadata.fields, "bDisabled") />
-		
+		<cfset var stCoapiType	= '' />
+		<cfset var stRole	= '' />
+		<cfset var viewWebtopItemID	= '' />
+		<cfset var tempID	= '' />
+		<cfset var stLevel1	= '' />
+		<cfset var barnacleID	= '' />
+		<cfset var securityPermissionID	= '' />
+		<cfset var stLevel2	= '' />
+		<cfset var stLevel3	= '' />
+		<cfset var stLevel4	= '' />
+		<cfset var iType	= '' />
+		<cfset var l	= '' />
+
 		<cfif not bDoUpgrade>
 			<cfquery datasource="#application.dsn#" name="q">select distinct bDisabled from farPermission</cfquery>
 			<cfset bDoUpgrade = (q.recordcount eq 1) />

@@ -5,6 +5,7 @@
 		<!--- INITIALISE LIBRARIES --->
 		<cfset var oUtils = createobject("component","farcry.core.packages.farcry.utils") />
 		<cfset var libraries = oUtils.getComponents("lib") />
+		<cfset var libraryname	= '' />
 		
 		<cfloop list="#libraries#" index="libraryname">
 			<cfif not refindnocase("(^|,)#libraryname#(,|$)","fapi,lib")>

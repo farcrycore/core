@@ -55,7 +55,10 @@
 		<cfset var stProp = "" />
 		<cfset var stProps = "" />
 		<cfset var sqlResult = "" />
-			
+		<cfset var qProperties	= '' />
+		<cfset var ftType	= '' />
+		<cfset var i	= '' />
+
 		<cfif len(arguments.filterID)>
 			<cfset stFilter = getData(arguments.filterID) />
 			
@@ -132,7 +135,10 @@
 		<cfset var stProp = "" />
 		<cfset var stProps = "" />
 		<cfset var sqlResult = "" />
-			
+		<cfset var qProperties	= '' />
+		<cfset var ftLabel	= '' />
+		<cfset var i	= '' />
+
 		<cfif len(arguments.filterID)>
 			<cfset stFilter = getData(arguments.filterID) />
 			

@@ -88,7 +88,7 @@ default handlers
 		<cfset var stObj = getData(arguments.objectID)>
 		<cfset var stResult = StructNew()>
 		<cfset var stReturn = StructNew()>
-		
+		<cfset var qVersionedObjects	= '' />
 
 		<cfif not len(arguments.user)>
 			<cfif application.security.isLoggedIn()>

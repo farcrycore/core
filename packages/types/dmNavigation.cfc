@@ -74,6 +74,7 @@
 		<cfset var i = "" />
 		<cfset var j = "" />
 		<cfset var q = queryNew("value,name") />
+		<cfset var stNav	= '' />
 		
 		<cfset queryaddrow(q,1) />
 		<cfset querysetcell(q, "value", "") />
@@ -125,6 +126,8 @@
 		<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of element needing a parent">
 		<cfargument name="dsn" required="yes" type="string" default="#application.dsn#">
 		
+		<cfset var qGetParent	= '' />
+		
 		<cfquery name="qGetParent" datasource="#arguments.dsn#">
 			SELECT parentid FROM #application.dbowner#dmNavigation_aObjectIDs
 			WHERE data = '#arguments.objectid#'	
@@ -139,6 +142,8 @@
 		<cfargument name="status" required="no" type="string" default="approved">
 			<cfset var o = createObject("component", "#application.packagepath#.farcry.tree")>
 			<cfset var navFilter=arrayNew(1)>
+			<cfset var qNav	= '' />
+			
 			<cfset navfilter[1]="status = '#arguments.status#'">
 			<cfset qNav = o.getDescendants(objectid=arguments.objectid, lColumns='title,lNavIDAlias, status', depth=1, afilter=navfilter)>
 		<cfreturn qNav>
@@ -150,6 +155,8 @@
 		<cfargument name="status" required="no" type="string" default="approved">
 			<cfset var o = createObject("component", "#application.packagepath#.farcry.tree")>
 			<cfset var navFilter=arrayNew(1)>
+			<cfset var qNav	= '' />
+			
 			<cfset navfilter[1]="status = '#arguments.status#'">
 			<cfset qNav = o.getDescendants(objectid=arguments.objectid, lColumns='title,lNavIDAlias, status', depth=0, afilter=navfilter)>
 		<cfreturn qNav>
@@ -174,8 +181,8 @@
 		<cfset var fuUrl = "" />
 		<cfset var i = 0 />
 		<cfset var objType = "" />
-		
 		<cfset var stReturn = StructNew()>
+		<cfset var oType	= '' />
 		
 		<cfif not len(arguments.user)>
 			<cfif application.security.isLoggedIn()>
@@ -277,7 +284,8 @@
 	
 		<cfset var stResult = structNew()>
 		<cfset var q = "">
-	
+		<cfset var i	= '' />
+		
 		<!--- $TODO: all app vars should be passed in as arguments! 
 		move application.dbowner (and others no doubt) GB$ --->
 		<cfquery datasource="#arguments.dsn#" name="q">
@@ -313,7 +321,7 @@
 		<cfargument name="objectid" required="yes" type="UUID" hint="Object ID of the selected object">
 		
 		<!--- get object details --->
-		<cfset stObj = getData(arguments.objectid)>
+		<cfset var stObj = getData(arguments.objectid)>
 		
 		<cfinclude template="_dmNavigation/renderOverview.cfm">
 		
@@ -337,7 +345,8 @@
 	
 		<cfset var aReturn = ArrayNew(1)>
 		<cfset var aTypes = listToArray(arguments.lTypes)>
-	
+		<cfset var i	= '' />
+		
 		<!--- build core types first --->
 		<cfloop index="i" from="1" to="#arrayLen(aTypes)#">
 			<cfif structKeyExists(Application.types[aTypes[i]],"bUseInTree")

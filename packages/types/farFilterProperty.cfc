@@ -51,7 +51,7 @@
 		<cfset var qArrayField = "" />
 		<cfset var formtool = "" />
 		<cfset var stFilter = application.fapi.getContentObject(typename="farFilter", objectid="#arguments.stObject.filterID#") />
-				
+		<cfset var stPropertyMetadata	= '' />	
 		
 		<skin:loadJS id="fc-jquery-ui" />
 		<skin:loadCSS id="jquery-ui" />
@@ -192,7 +192,10 @@
 		<cfset var qMetadata = application.types[stFilter.filterTypename].qMetadata>
 		<cfset var qFieldSets = "" />
 		<cfset var lFieldSets = "" />
-		
+		<cfset var iFieldset	= '' />
+		<cfset var i	= '' />
+		<cfset var qFieldset	= '' />
+
 		<cfquery dbtype="query" name="qFieldSets">
 		SELECT ftFieldset
 		FROM qMetadata
@@ -266,6 +269,7 @@
 		<cfset var formtoolName = "" />
 		<cfset var oFormtool = "" />
 		<cfset var lFilterOptions = "" />
+		<cfset var i	= '' />
 		
 		<cfsavecontent variable="html">
 			<cfif len(stobject.property)>
@@ -315,7 +319,8 @@
 		<cfset var filterType = "" />
 		<cfset var ui = "" />
 		<cfset var stProps = structNew() />
-
+		<cfset var formtool	= '' />
+		
 		 
 		<cfsavecontent variable="html">
 			

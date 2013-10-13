@@ -180,8 +180,8 @@
 		<cfset var result = -1 />
 		<cfset var typename = "" />
 		<cfset var qResult = "" />
-		
 		<cfset var inheritedRightHashID = hash("#arguments.barnacle#-#arguments.role#-#arguments.permission#-#arguments.object#-#arguments.requestcache#") />
+		<cfset var qSecured	= '' />
 
 		<cfparam name="request.stinheritedRightCache" default="#structNew()#" />
 		

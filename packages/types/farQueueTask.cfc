@@ -144,6 +144,7 @@
 
 		<cfset var html = "" />
 		<cfset var colourisable = "" />
+		<cfset var stInfo	= '' />
 		
 		<cfif len(arguments.stMetadata.value)>
 			<cfset colourisable = rereplace(mid(arguments.stMetadata.value,8,36),"[^\dABCDEF]","","ALL") />

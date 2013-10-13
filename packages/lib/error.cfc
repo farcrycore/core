@@ -252,6 +252,7 @@
 		
 		<cfset var output = createObject("java","java.lang.StringBuffer").init() />
 		<cfset var first = true />
+		<cfset var i	= '' />
 		
 		<cfswitch expression="#arguments.format#">
 			<cfcase value="json">

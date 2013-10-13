@@ -52,6 +52,7 @@
 		<cfargument name="singleton" type="boolean" required="false" default="false" />
 		
 		<cfset var oResult = "" />
+		<cfset var message	= '' />
 		
 		<cfif structKeyExists(application.stCoapi, arguments.typename) and (arguments.singleton or isdefined("request.inthread"))>
 			<cfset oResult = application.stcoapi["#arguments.typename#"].oFactory />
@@ -507,6 +508,7 @@
 		
 		<cfset var o = "" />
 		<cfset var lReserved = "objectid,typename,stProperties,dsn,dbtype,dbowner,auditNote,bAudit,bSessionOnly,bAfterSave" />
+		<cfset var i	= '' />
 	
 		<cfif not structKeyExists(arguments.stProperties, "objectid")>
 			<cfset arguments.stProperties.objectid = arguments.objectid />
@@ -1275,6 +1277,7 @@
 			<cfargument name="alternateAlias" required="false" default="home" />
 			
 			<cfset var result = "" />
+			<cfset var message	= '' />
 			
 			<cfif CheckNavID(arguments.alias)>
 				<cfset result = application.navid[arguments.alias] />
@@ -1291,7 +1294,7 @@
 		<cffunction name="checkCatID" access="public" returntype="boolean" output="false" hint="Returns true if the category alias is found.">
 			<cfargument name="alias" required="true" hint="The category alias" />
 	
-			<cfset result = "" />
+			<cfset var result = "" />
 			
 			<cfif structKeyExists(application, "catID") AND len(arguments.alias)>
 				<cfset result = structKeyExists(application.catID, arguments.alias) />
@@ -1383,6 +1386,7 @@
 			<cfset var linkID = "" />
 			<cfset var stLocal = StructNew()>
 			<cfset var jsParameters = "">
+			<cfset var i	= '' />
 			
 			<!--- Setup URL Parameters --->
 			<cfif listLen(arguments.urlParameters, "&")>
@@ -1669,6 +1673,7 @@
 		
 		<cfset var stResult = structNew() />
 		<cfset var lReserved = "message,detail,type,name,errNumber,stackTrace,tagContext" />
+		<cfset var i	= '' />
 		
 
 		<cfset stResult.bSuccess = true />
@@ -1701,6 +1706,7 @@
 		
 		<cfset var stResult = structNew() />
 		<cfset var lReserved = "message,detail,type,name,errNumber,stackTrace,tagContext" />
+		<cfset var i	= '' />
 		
 		<cfset stResult.bSuccess = false />
 		<cfset stResult.message = arguments.message />
@@ -1817,7 +1823,9 @@
 		<cfargument name="elements" type="Any" required="true" hint="The elements in the array to remove. Can be an array or a list." />
 		
 		<cfset var oCaster = "" /><!--- Used in case of Railo --->
-		
+		<cfset var x	= '' />
+		<cfset var i	= '' />
+
 		<cfif isSimpleValue(arguments.elements)>
 			<cfset arguments.elements = listToArray(arguments.elements) />
 		</cfif>

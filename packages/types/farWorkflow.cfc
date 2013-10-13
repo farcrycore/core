@@ -42,6 +42,7 @@
 		<cfargument name="stProperties" type="struct" required="true" />
 		
 		<cfset var result = "" />
+		<cfset var stWorkflowDef	= '' />
 		
   		<cfif structKeyExists(stProperties, "workflowDefID") AND len(stProperties.workflowDefID)>
 			<cfset stWorkflowDef = createObject("component", application.stcoapi.farWorkflowDef.packagePath).getData(objectid="#stProperties.workflowDefID#") />
@@ -227,7 +228,7 @@
 		<cfset var lWorkflowIDs = "" />
 		<cfset var stInstance = structNew() />
 		<cfset var stObject = createObject("component", application.stcoapi["#arguments.referenceTypename#"].packagepath).getData(objectid="#arguments.referenceID#") />
-		
+		<cfset var bShowActions	= '' />
 		
 		<cfif structKeyExists(stobject, "status") AND stObject.status EQ "draft">
 			<cfset lWorkflowIDs = getWorkflowList(typename="#stObject.typename#") />

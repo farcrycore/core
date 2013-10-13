@@ -601,6 +601,7 @@
 		<cfset var bSuccess = false />
 		<cfset var stCacheEntry = structNew() />
 		<cfset var aObjectIds = arrayNew(1) />
+		<cfset var oCaster	= '' />
 		
 		<cfif application.bObjectBroker>
 			<!--- if the type is to be stored in the objectBroker --->

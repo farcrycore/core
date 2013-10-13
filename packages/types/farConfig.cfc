@@ -54,7 +54,10 @@ object methods
 		<cfset var legend = "" />
 		<cfset var IncludeFieldSet = true />
 		<cfset var thisprop = "" />
-		
+		<cfset var lFieldSets	= '' />
+		<cfset var iFieldset	= '' />
+		<cfset var qFieldset	= '' />
+
 		<cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 		
 		<!--- If the field already has a value then use that --->
@@ -363,7 +366,9 @@ object methods
 		<cfset var qMetadata = application.types[stobj.typename].qMetadata />
 		<cfset var displayname = stObj.configkey />
 		<cfset var thisform = "" />
-		
+		<cfset var onExitProcess	= '' />
+		<cfset var qFields	= '' />
+
 		<cfloop collection="#application.stCOAPI#" item="thisform">
 			<cfif left(thisform,6) eq "config" and structkeyexists(application.stCOAPI[thisform],"key") and application.stCOAPI[thisform].key eq stObj.configkey and structkeyexists(application.stCOAPI[thisform],"displayname")>
 				<cfset displayname = application.stCOAPI[thisform].displayname />

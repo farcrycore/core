@@ -91,6 +91,8 @@ type properties
 	<cfargument name="stMetadata" required="true" type="struct" hint="This is the metadata that is either setup as part of the type.cfc or overridden when calling ft:object by using the stMetadata argument.">
 	<cfargument name="fieldname" required="true" type="string" hint="This is the name that will be used for the form field. It includes the prefix that will be used by ft:processform.">
 
+	<cfset var html	= '' />
+
 	<cfparam name="arguments.stMetadata.ftDestination" default="/images">
 
 	<cfsavecontent variable="html">
@@ -110,6 +112,8 @@ type properties
 	<cfset var stObj = getData(arguments.objectid)>
 	<cfset var stReturn = StructNew()>
 	<cfset var relatedTable = "">
+	<cfset var type	= '' />
+	<cfset var prop	= '' />
 
 	<cfset stReturn.bSuccess = true>
 	<cfset stReturn.message = "">
@@ -216,31 +220,36 @@ type properties
 	<cfargument name="filePath" type="string" hint="file path of thumbnail" required="true">
 	<cfargument name="fileName" type="string" hint="file name of thumbnail" required="true">
 	
+	<cfset var imagePath	= '' />
+	<cfset var imagePos	= '' />
+	<cfset var listElement	= '' />
+	<cfset var i	= '' />
+
 	<cfif Len(application.url.webroot) AND application.url.webroot NEQ "/" >
 		<cfset imagePath= application.url.webroot >
 	<cfelse>
 		<cfset imagePath= "" >
 	</cfif>
 
-	<cfif len(filePath) and len(fileName)>
+	<cfif len(arguments.filePath) and len(arguments.fileName)>
 		<!--- change all backslashes to forward slashes --->
-		<cfset filePath = replace(filePath, "\", "/", "all")>
-		<cfset imagePos = listfindNoCase(filePath, "images", "/")>
-		<!--- create a new imagepath string by looping over filePath as a list and getting all elements after and including "images" --->
+		<cfset arguments.filePath = replace(arguments.filePath, "\", "/", "all")>
+		<cfset imagePos = listfindNoCase(arguments.filepath, "images", "/")>
+		<!--- create a new imagepath string by looping over arguments.filepath as a list and getting all elements after and including "images" --->
 		<cftry>
-		<cfloop from="#imagePos#" to ="#listlen(filePath, '/')#" index="i">
-			<cfset listElement = listgetAt(filePath, i, "/")>
+		<cfloop from="#imagePos#" to ="#listlen(arguments.filepath, '/')#" index="i">
+			<cfset listElement = listgetAt(arguments.filepath, i, "/")>
 			<cfset imagePath = "#imagePath#/#listElement#">
 		</cfloop>
-		<!--- add the file name onto the filepath --->
+		<!--- add the file name onto the arguments.filepath --->
 		<cfset imagePath="#imagePath#/#arguments.filename#">
 		
 		<cfcatch type="any">
-			<cftrace type="error" text="Unable to determine imagepath. filepath: #arguments.filepath# filename: #arguments.filename#" category="dmimage">
+			<cftrace type="error" text="Unable to determine imagepath. arguments.filepath: #arguments.filepath# arguments.filename: #arguments.filename#" category="dmimage">
 		</cfcatch>
 		</cftry>
 	<cfelse>
-		<cftrace category="dmImage" type="warning" text="The filePath or fileName passed to function rendorURLImagePath in dmImage.cfc is empty which will cause the image not to display">
+		<cftrace category="dmImage" type="warning" text="The arguments.filepath or arguments.fileName passed to function rendorURLImagePath in dmImage.cfc is empty which will cause the image not to display">
 	</cfif>
 	<cfreturn imagePath>
 </cffunction>

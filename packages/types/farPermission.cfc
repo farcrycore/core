@@ -70,6 +70,7 @@ library data methods; used by formtools
 		<cfset var qResult = querynew("objectid,label","varchar,varchar") />
 		<cfset var ud = "" />
 		<cfset var group = "" />
+		<cfset var thistype	= '' />
 		
 		<cfif structkeyexists(application.stCOAPI,"farBarnacle")>
 			<cfloop list="#application.stCOAPI.farBarnacle.stProps.referenceid.metadata.ftJoin#" index="thistype">

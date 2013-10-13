@@ -529,6 +529,13 @@
 	
 	
 	<cffunction name="migrate" access="private" hint="Migrates the legacy reffriendlyURL table to the new hotness farFU">
+		
+		<cfset var lLegacyFields	= '' />
+		<cfset var stProps	= '' />
+		<cfset var stResult	= '' />
+		<cfset var i	= '' />
+		<cfset var qLegacy	= '' />
+
 		<cfquery datasource="#application.dsn#" name="qLegacy">
 		SELECT * FROM reffriendlyURL
 		</cfquery>
@@ -1219,6 +1226,8 @@
 	<cffunction name="deleteMapping" access="public" returntype="boolean" hint="Deletes an FU mapping from cache, and removes related record from the farFU table." output="false">
 		<cfargument name="alias" required="yes" type="string">
 		
+		<cfset var qDelete	= '' />
+		
 		<cfquery datasource="#application.dsn#" name="qDelete">
 		DELETE	
 		FROM	#application.dbowner#farFU 				
@@ -1236,6 +1245,7 @@
 		
 		<cfset var stMappings = initialiseMappings()>
 		<cfset var stFU = structnew()>
+		<cfset var i	= '' />
 		
 		<cfloop collection="#stMappings#" item="i">
 			<cfif findnocase(domain,i)>
@@ -1419,6 +1429,7 @@
 		<cfset var stView = "" />
 		<cfset var bMustUseRegularURLParams = false />
 		<cfset var qLookup = "" />
+		<cfset var stFUObject	= '' />
 		
 		<cfif len(arguments.type)>
 			<cfif isdefined("application.stCOAPI.#arguments.type#.fuAlias") and len(application.stCOAPI[arguments.type].fuAlias)>
@@ -1630,6 +1641,8 @@
 		<cfargument name="stForm" required="yes" hint="friendly url struct" type="struct" />
 
 		<cfset var stLocal = StructNew()>
+		<cfset var stResult	= '' />
+		
 		<cfset stLocal.returnstruct = StructNew()>
 		<cfset stLocal.returnstruct.bSuccess = 1>
 		<cfset stLocal.returnstruct.message = "">

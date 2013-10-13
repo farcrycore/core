@@ -17,6 +17,7 @@
 		<cfset var thisarg = "" />
 		<cfset var output = arguments.input />
 		<cfset var starttime = 0 />
+		<cfset var theseargs	= '' />
 		
 		<cfloop list="#arguments.functions#" delimiters=";" index="thisprocess">
 			<cfif refind("^\w+(\.\w+)?(\((\w+=\w+,?)*\))?$",thisprocess)>

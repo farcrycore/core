@@ -24,10 +24,8 @@
 		<cfset var stTask = getData(objectid="#arguments.primaryID#") />
 		<cfset var stTaskDef = createObject("component", application.stcoapi.farTaskDef.packagePath).getData(objectid="#stTask.taskDefID#") />
 		<cfset var q = queryNew("objectid,label")>
-				
-		<cfset lProfileIDs = createObject("component", application.stcoapi.farRole.packagePath).getAuthenticatedProfiles(roles="#arrayToList(stTaskDef.aRoles)#") />
-
-
+		<cfset var lProfileIDs	= createObject("component", application.stcoapi.farRole.packagePath).getAuthenticatedProfiles(roles="#arrayToList(stTaskDef.aRoles)#") />
+		
 		<cfif len(lProfileIDs)>
 			<cfquery datasource="#application.dsn#" name="q">
 			SELECT objectid, firstName as label
@@ -47,7 +45,11 @@
 		<cfset var qWorkflowTasks = queryNew("blah") />
 		<cfset var stUpdateWorkflow = structNew() />
 		<cfset var stResult = structNew() />
-			
+		<cfset var oWorkflow	= '' />
+		<cfset var stWorkflow	= '' />
+		<cfset var oWorkflowDef	= '' />
+		<cfset var stWorkflowDef	= '' />
+
 		<cfquery datasource="#application.dsn#" name="qWorkflow">
 		SELECT * FROM farWorkflow_aTaskIDs
 		WHERE data = <cfqueryparam cfsqltype="cf_sql_varchar" value="#arguments.stProperties.objectid#">

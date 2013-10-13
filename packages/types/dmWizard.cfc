@@ -19,6 +19,10 @@
 		<cfargument name="UserLogin" required="no" type="String" default="unknown">
 		<cfargument name="ReferenceID" required="no" type="String">
 		
+		<cfset var stwizard	= '' />
+		<cfset var qwizard	= '' />
+		<cfset var stwizardData	= '' />
+
 		<cfif arguments.userLogin EQ "unknown" AND application.security.isLoggedIn()>
 			<cfset arguments.userlogin = application.security.getCurrentUserID()>
 		</cfif>
@@ -72,7 +76,9 @@
 		<cfset var typename = "" />
 		<cfset var stResult = structnew() />
 		<cfset var stWizard = structnew() />
-		
+		<cfset var o	= '' />
+		<cfset var st	= '' />
+
 		<cfset stProperties.UserLogin = arguments.UserLogin>
 		<cfset stProperties.ReferenceID = arguments.ReferenceID>
 		
@@ -111,7 +117,12 @@
 		<cfargument name="Steps" required="no" type="string" default="">
 		<cfargument name="Data" required="no" type="Struct">
 		
-		<cfset stwizard = getData(objectID=arguments.objectid) />
+		<cfset var stwizard	= getData(objectID=arguments.objectid) />
+		<cfset var stResult	= '' />
+		<cfset var stProperties	= '' />
+		<cfset var bsuccess	= '' />
+		<cfset var i	= '' />
+		<cfset var stwizardData	= '' />
 			
 	
 		<cfif isDefined("arguments.CurrentStep") AND len(arguments.CurrentStep)>
@@ -155,7 +166,7 @@
 		
 		<cfset var stResult = structNew() />
 		<cfset var stwizard = read(wizardID=arguments.wizardID) />
-	
+		<cfset var prop	= '' />
 		
 		<cfif structKeyExists(stWizard.data, arguments.stProperties.objectid)>
 			<!--- Make sure the struct passed in has an objectid --->

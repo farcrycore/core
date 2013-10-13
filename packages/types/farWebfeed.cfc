@@ -261,6 +261,7 @@
 		<cfset var html = "" />
 		<cfset var qProperties = querynew("name,value","varchar,varchar") />
 		<cfset var propname = "" />
+		<cfset var fttype	= '' />
 		
 		<cfif len(arguments.stObject.itemtype)>
 			<cfloop collection="#application.stCOAPI[arguments.stObject.itemtype].stProps#" item="propname">
@@ -450,6 +451,7 @@
 		<cfset var html = "" />
 		<cfset var qProperties = querynew("name,value","varchar,varchar") />
 		<cfset var propname = "" />
+		<cfset var fttype	= '' />
 		
 		<cfif len(arguments.stObject.itemtype)>
 			<cfloop collection="#application.stCOAPI[arguments.stObject.itemtype].stProps#" item="propname">
@@ -504,6 +506,7 @@
 		<cfset var html = "" />
 		<cfset var qProperties = querynew("name,value","varchar,varchar") />
 		<cfset var propname = "" />
+		<cfset var fttype	= '' />
 		
 		<cfif len(arguments.stObject.itemtype)>
 			<cfloop collection="#application.stCOAPI[arguments.stObject.itemtype].stProps#" item="propname">
@@ -555,6 +558,7 @@
 		<cfset var html = "" />
 		<cfset var qProperties = querynew("name,value","varchar,varchar") />
 		<cfset var propname = "" />
+		<cfset var fttype	= '' />
 		
 		<cfif len(arguments.stObject.itemtype)>
 			<cfloop collection="#application.stCOAPI[arguments.stObject.itemtype].stProps#" item="propname">

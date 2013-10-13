@@ -245,7 +245,9 @@
 		<cfset var i = 0 />
 		<cfset var j = 0 />
 		<cfset var objectTypename = "" />
-		
+		<cfset var tmp	= '' />
+		<cfset var stArchiveDetail	= '' />
+
 		<cfif stArchive.bDeleted eq false>
 			<cfwddx action="cfml2wddx" input="#stArchive#" output="tmp">
 			<cfthrow message="Archive has not been flagged as the delete archive" type="undelete" detail="#tmp#" />

@@ -90,6 +90,7 @@
 		<cfset var thiscomponent = "" />
 		<cfset var o = "" />
 		<cfset var stMeta = structnew() />
+		<cfset var lPaths	= '' />
 		
 		<cfif arguments.cache and structkeyexists(stCache,arguments.component)>
 			<cfreturn stCache[arguments.component] />

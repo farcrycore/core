@@ -100,7 +100,11 @@
 		
 		<!--- local vars --->
 		<cfset var qLog = "" />	
-	
+		<cfset var thisDay	= '' />
+		<cfset var qDrop	= '' />
+		<cfset var qCreate	= '' />
+		<cfset var qPopulate	= '' />
+
 		<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
 		
 		<cfswitch expression="#application.dbtype#">
@@ -213,7 +217,12 @@
 		
 		<!--- local vars --->
 		<cfset var qLog = "">
-	
+		<cfset var thisWeek	= '' />
+		<cfset var nextWeek	= '' />
+		<cfset var qDrop	= '' />
+		<cfset var qCreate	= '' />
+		<cfset var qPopulate	= '' />
+
 		<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry" />
 	
 		<farcry:deprecated message="getUserActivityWeekly should be replaced with ????" />

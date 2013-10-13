@@ -125,6 +125,7 @@ OBJECT METHODS
 		
 		<cfset var combinedUsername = "#arguments.username#_#arguments.ud#" />
 		<cfset var profileID = "" />
+		<cfset var qProfile	= '' />
 		
 		<!--- Use the  --->
 		<cfquery name="qProfile" datasource="#application.dsn#">

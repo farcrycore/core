@@ -21,6 +21,7 @@
 		<cfset var stTask = structnew() />
 		<cfset var aStack = application.fc.lib.error.getStack(bIncludeJava=false,ignoreLines=1) />
 		<cfset var i = 0 />
+		<cfset var stResult	= '' />
 		
 		<!--- store an ongoing stack trace for the task --->
 		<cfif structkeyexists(request,"inthread") and isdefined("thread.task")>
@@ -391,7 +392,10 @@
 	<cffunction name="startProcessingThread" output="false" access="public" returntype="string" description="If the thread limit hasn't been reached, this starts a new one">
 		<cfset var thisThread = "" />
 		<cfset var i = 0 />
-		
+		<cfset var thread	= '' />
+		<cfset var stResult	= '' />
+		<cfset var existingtrace	= '' />
+
 		<cfif structcount(this.threads) lt application.config.taskqueue.maxThreads>
 			<cfset thisthread = "thread_" & replace(createuuid(),"-","","ALL") />
 			<cfset this.threads[thisthread] = {

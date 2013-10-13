@@ -177,6 +177,7 @@
 		<cfset var stLocal = StructNew()>
 		<cfset var sqlMaxRows = "">
 		<cfset var bSqlMax = 0>
+		<cfset var rData	= '' />
 		
 		<cfparam name="request.mode.showdraft" default="false" />
 		
@@ -296,6 +297,7 @@
 	<cffunction name="getHierarchies" access="public" output="false" hint="Returns a query of all first level nodes keyed by typename 'categories' in the nested tree model." returntype="query" bDocument="true">
 		<cfset var qroot="">
 		<cfset var qHierarchies="">
+		<cfset var objectName	= '' />
 		
 		<cfscript>
 			// Get root node
@@ -352,6 +354,8 @@
 		<cfargument name="alias" type="string" required="true" />
 		<cfargument name="dsn" required="false" type="string" default="#application.dsn#">
 		<cfargument name="dbowner" required="false" type="string" default="#application.dbowner#">
+		
+		<cfset var setAlias	= '' />
 		
 		<cfquery datasource="#application.dsn#" name="setAlias">
 			UPDATE #application.dbowner#dmCategory
@@ -434,6 +438,7 @@
 		
 		<cfset var qGetCategories="">
 		<cfset var lCategoryIDs="">
+		<cfset var lDescendents	= '' />
 		
 		<cfif isDefined("arguments.Alias") and len(arguments.Alias) and structKeyExists(application.catid,arguments.Alias)>
 			<cfset lDescendents = getCategoryBranchAsList(lCategoryIDs=application.catid[arguments.Alias]) />
@@ -515,7 +520,8 @@
 		<cfset var stObjects=structNew()>
 		<cfset var stTmp=structNew()>
 		<cfset var qChildren="">
-				
+		<cfset var key	= '' />
+			
 		<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 		
 		<cfscript>
@@ -579,9 +585,9 @@
 	<cffunction name="updateTree">
 		<cfargument name="lObjectIds">
 		<cfargument name="dsn" type="string" required="No" default="#application.dsn#" hint="Database DSN">
-		<cfscript>
-			jscode = getTreeData(arguments.lobjectids);
-		</cfscript>
+		
+		<cfset var jscode = getTreeData(arguments.lobjectids) />
+		
 			
 		<cfoutput>
 		<script>
@@ -666,7 +672,11 @@
 		--->
 			
 		<cfset var stReturn = StructNew()>
-		<cfset var stLocal = StructNew()>			
+		<cfset var stLocal = StructNew()>	
+		<cfset var qGetDataPage	= '' />
+		<cfset var qGetData	= '' />
+		<cfset var qGetCount	= '' />
+		
 		<cfset stReturn.bSuccess = 1>
 		<cfset stReturn.message = "">
 		<cfset stReturn.totalRecords = 0>

@@ -61,10 +61,13 @@ object methods
 
 <cffunction name="listTemplates" access="public" output="true" returntype="query" hint="Lists available scheduled tasks, both core and custom">
 	
+	<cfset var qTemplates	= queryNew("displayName, path") />
+	<cfset var plugin	= '' />
+	<cfset var qCore	= '' />
+	<cfset var qCustom	= '' />
+
 	<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 
-	<cfset qTemplates = queryNew("displayName, path")>
-		
 	<!--- get core templates --->	
 	<nj:listTemplates typename="dmCron" path="#application.path.core#/webtop/scheduledTasks" prefix="" r_qMethods="qCore">
 	
@@ -121,6 +124,8 @@ object methods
 	<cfargument name="dsn" required="No" default="#application.dsn#">
 	<cfargument name="bSessionOnly" type="boolean" required="false" default="false"><!--- This property allows you to save the changes to the Temporary Object Store for the life of the current session. ---> 
 	<cfargument name="bAfterSave" type="boolean" required="false" default="true" hint="This allows the developer to skip running the types afterSave function.">	
+	
+	<cfset var stExistingObj	= '' />
 	
 	<cfif not arguments.bSessionOnly and structKeyExists(arguments.stProperties,"title")>
 		<!--- check if task has been renamed --->

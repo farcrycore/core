@@ -39,7 +39,7 @@ object methods
 	<cfargument name="objectid" required="yes" type="UUID">
 	
 	<!--- getData for object display --->
-	<cfset stObj = getData(arguments.objectid)>
+	<cfset var stObj = getData(arguments.objectid)>
 	<cfinclude template="_dmEmail/display.cfm">
 </cffunction>
 
@@ -47,11 +47,14 @@ object methods
 	<cfargument name="objectid" required="yes" type="UUID">
 	
 	<!--- getData for object display --->
-	<cfset stObj = getData(arguments.objectid)>
+	<cfset var stObj = getData(arguments.objectid)>
 	<cfinclude template="_dmEmail/send.cfm">
 </cffunction>
 
 <cffunction name="getAllObjects" access="public" output="false" hint="Gets all emails">
+	
+	<cfset var qEmails	= '' />
+	
 	<!--- get emails --->
 	<cfquery name="qEmails" datasource="#application.dsn#">
 		SELECT *
@@ -66,6 +69,7 @@ object methods
 
 	<cfset var aPolicyGroups = application.factory.oAuthorisation.getAllPolicyGroups() />
 	<cfset var lPolicyGroups = "" />
+	<cfset var group	= '' />
 	
 	<cfloop from="1" to="#arrayLen(aPolicyGroups)#" index="group">
 		<cfset lPolicyGroups = listAppend(lPolicyGroups, "#aPolicyGroups[group].PolicyGroupId#:#aPolicyGroups[group].PolicyGroupName#")>

@@ -391,6 +391,7 @@
 		<cfset var stResult = "" />
 		<cfset var index = "" />
 		<cfset var savable = true />
+		<cfset var j	= '' />
 		
 		<!--- incorporate formtool specific defaults --->
 		<cfif structkeyexists(arguments.data,"ftType") and isdefined("application.formtools.#arguments.data.ftType#.stProps")>
