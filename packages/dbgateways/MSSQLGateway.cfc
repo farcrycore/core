@@ -77,6 +77,68 @@
 	</cffunction>
 
 	<!--- DEPLOYMENT --->
+	
+	<cffunction name="getDeploySchemaSQL" access="public" output="false" returntype="string" hint="The returns the sql for Deployment of the table structure for a FarCry type into a MySQL database.">
+		<cfargument name="schema" type="struct" required="true" />
+		
+		<cfset var resultSQL = "">
+		<cfset var bAddedOne = false />
+		
+		<cfsavecontent variable="resultSQL">
+			<cfoutput>
+			CREATE TABLE #this.dbowner##arguments.schema.tablename#(
+			
+			<cfloop collection="#arguments.schema.fields#" item="thisfield">
+				<cfif arguments.schema.fields[thisfield].type neq "array">
+					<cfif bAddedOne>,</cfif>
+					<cfset bAddedOne = true />
+					
+					<cfset stProp = arguments.schema.fields[thisfield] />
+					
+					#stProp.name# 
+					<cfswitch expression="#stProp.type#">
+						<cfcase value="numeric">
+							<cfif stProp.precision eq "1,0">
+								bit
+							<cfelse>
+								decimal(#stProp.precision#)
+							</cfif>
+						</cfcase>
+						<cfcase value="string">
+							<cfif stProp.precision eq "MAX">
+								nvarchar(4000)
+							<cfelse>
+								nvarchar(#stProp.precision#)
+							</cfif>
+						</cfcase>
+						<cfcase value="longchar">ntext</cfcase>
+						<cfcase value="datetime">datetime</cfcase>
+					</cfswitch>
+					
+					<cfif stProp.nullable>NULL<cfelse>NOT NULL</cfif>
+					
+					<cfif stProp.type neq "longchar" and (not stProp.type eq "numeric" or isnumeric(stProp.default))>
+						<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
+						<cfif stVal.null>
+							DEFAULT NULL
+						<cfelseif stVal.cfsqltype eq "cf_sql_varchar">
+							DEFAULT '#stVal.value#'
+						<cfelseif stVal.cfsqltype eq "cf_sql_date">
+							DEFAULT '#dateformat(stVal.value,"YYYY-MM-DD")#T#timeformat(stVal.value,"hh:mm:s")#'
+						<cfelseif isNumeric(stVal.value)>
+							DEFAULT #stVal.value#
+						</cfif>
+					</cfif>
+				</cfif>
+			</cfloop>
+			
+			); 
+		</cfoutput>
+		</cfsavecontent>
+		
+		<cfreturn resultSQL>
+	</cffunction>
+	
 	<cffunction name="deploySchema" access="public" output="false" returntype="struct" hint="Deploys the table structure for a FarCry type into a MySQL database.">
 		<cfargument name="schema" type="struct" required="true" />
 		<cfargument name="bDropTable" type="boolean" required="false" default="false" />
@@ -90,6 +152,7 @@
 		<cfset var stProp = structnew() />
 		<cfset var bAddedOne = false />
 		<cfset var i = 0 />
+		<cfset var deploySchemaSQL = "" />
 		
 		<cfset stResult.results = arraynew(1) />
     	<cfset stResult.bSuccess = true />
@@ -100,54 +163,9 @@
 		
 		<cfif not isDeployed(schema=arguments.schema)>
 			<cftry>
+				<cfset deploySchemaSQL = getDeploySchemaSQL(schema="#arguments.schema#")>
 				<cfquery datasource="#this.dsn#" result="queryresult">
-					CREATE TABLE #this.dbowner##arguments.schema.tablename#(
-					
-					<cfloop collection="#arguments.schema.fields#" item="thisfield">
-						<cfif arguments.schema.fields[thisfield].type neq "array">
-							<cfif bAddedOne>,</cfif>
-							<cfset bAddedOne = true />
-							
-							<cfset stProp = arguments.schema.fields[thisfield] />
-							
-							#stProp.name# 
-							<cfswitch expression="#stProp.type#">
-								<cfcase value="numeric">
-									<cfif stProp.precision eq "1,0">
-										bit
-									<cfelse>
-										decimal(#stProp.precision#)
-									</cfif>
-								</cfcase>
-								<cfcase value="string">
-									<cfif stProp.precision eq "MAX">
-										nvarchar(4000)
-									<cfelse>
-										nvarchar(#stProp.precision#)
-									</cfif>
-								</cfcase>
-								<cfcase value="longchar">ntext</cfcase>
-								<cfcase value="datetime">datetime</cfcase>
-							</cfswitch>
-							
-							<cfif stProp.nullable>NULL<cfelse>NOT NULL</cfif>
-							
-							<cfif stProp.type neq "longchar" and (not stProp.type eq "numeric" or isnumeric(stProp.default))>
-								<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
-								<cfif stVal.null>
-									DEFAULT NULL
-								<cfelseif stVal.cfsqltype eq "cf_sql_varchar">
-									DEFAULT '#stVal.value#'
-								<cfelseif stVal.cfsqltype eq "cf_sql_date">
-									DEFAULT '#dateformat(stVal.value,"YYYY-MM-DD")#T#timeformat(stVal.value,"hh:mm:s")#'
-								<cfelse>
-									DEFAULT #stVal.value#
-								</cfif>
-							</cfif>
-						</cfif>
-					</cfloop>
-					
-					); 
+					#preserveSingleQuotes(deploySchemaSQL)#
 				</cfquery>
 				
 				<cfset arrayappend(stResult.results,queryresult) />
@@ -570,6 +588,62 @@
 		<cfreturn stResult />
 	</cffunction>
 	
+	<cffunction name="getInsertSQL" access="public" output="false" returntype="string" hint="Returns the SQL to insert data into the table specified and used by the Farcry Content Export">
+		<cfargument name="table" type="string" required="true" />
+		<cfargument name="aTableColMD" type="array" required="true" />
+		<cfargument name="orderBy" type="string" required="true" />
+		<cfargument name="from" type="numeric" default="1" />
+		<cfargument name="to" type="numeric" default="0" />
+		
+		<cfset var resultSQL = "">
+		<cfset var j = 0>
+		
+		<cfsavecontent variable="resultSQL">
+		
+		<cfoutput>
+		SELECT (		
+			<cfloop index="j" from="1" to="#ArrayLen(arguments.aTableColMD)#">
+				<cfif j NEQ 1>
+					 +
+				</cfif>
+				
+				<cfif FindNoCase("char", arguments.aTableColMD[j].TypeName)
+			    OR FindNoCase("unique", arguments.aTableColMD[j].TypeName)
+			    OR FindNoCase("xml", arguments.aTableColMD[j].TypeName)
+			     >
+					
+					'|---|' + COALESCE(#arguments.aTableColMD[j].Name#,'') + '|---|'
+					<!--- '|---|' + isNull(#arguments.aTableColMD[j].Name#,'') + '|---|' --->
+				<cfelseif FindNoCase("text", arguments.aTableColMD[j].TypeName)>
+						'|---|' + COALESCE( CONVERT( varchar(MAX) , #arguments.aTableColMD[j].Name#),'') + '|---|'
+						<!--- '|---|' + isNull(CONVERT ( varchar(MAX) , #arguments.aTableColMD[j].Name#),'') + '|---|' --->
+					<cfelseif FindNoCase("date", arguments.aTableColMD[j].TypeName)>
+					'|---|' + COALESCE( CONVERT ( varchar , #arguments.aTableColMD[j].Name#, 21) ,'NULL') + '|---|'
+					<!--- '|---|' + isNull(CONVERT ( varchar , #arguments.aTableColMD[j].Name#, 21),'NULL') + '|---|' --->
+				<cfelse>
+					<!--- <cfset temp = temp & qryTemp[#arguments.aTableColMD[j].Name#][i] > --->
+					COALESCE( CONVERT( varchar, #arguments.aTableColMD[j].Name#),'|???|')
+					<!--- isNull(CONVERT ( varchar , #arguments.aTableColMD[j].Name#),'|???|') --->
+				</cfif>
+				
+				<cfif j NEQ ArrayLen(arguments.aTableColMD) >
+					 + ','
+				</cfif>
+				
+			</cfloop>
+			) as insertValues
+		FROM (
+		    SELECT *, ROW_NUMBER() OVER (ORDER BY #arguments.orderBy# desc) AS RowNum
+		    FROM #arguments.table#
+		) AS MyDerivedTable
+		WHERE MyDerivedTable.RowNum BETWEEN #arguments.from# AND #arguments.to#
+		</cfoutput>
+		
+		</cfsavecontent>
+				
+		<cfreturn resultSQL>	
+	</cffunction>
+	
 	<!--- DATABASE INTROSPECTION --->
 	<cffunction name="introspectIndexes" returntype="struct" access="private" output="false" hint="Constructs metadata struct for table indexes">
 		<cfargument name="tablename" type="string" required="True" hint="The table to introspect" />
@@ -690,7 +764,7 @@
 							<cfset stColumn.precision = "MAX" />
 						</cfif>
 					</cfcase>
-					<cfcase value="decimal,numeric,int,bigint" delimiters=",">
+					<cfcase value="decimal,numeric,int,real,bigint" delimiters=",">
 						<cfset stColumn.type = "numeric" />
 						<cfset stColumn.precision = "#qColumns.numeric_precision#,#qColumns.numeric_scale#" />
 					</cfcase>

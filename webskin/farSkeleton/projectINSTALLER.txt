@@ -1,0 +1,451 @@
+<cfsetting requesttimeout="10000" />
+<cfdirectory action="list" directory="#expandPath('/farcry/projects')#" name="qProjects" />
+
+
+
+
+
+<cfif structKeyExists(form, "installAction") AND form.installAction EQ "Update Constructor">
+	<cffile action="read" file="#qProjects.directory#/#qProjects.name#/www/farcryConstructor.cfm" variable="farcryConstructor" />
+
+
+	<cfset farcryConstructor = rereplacenocase(farcryConstructor,'(.*<cfset\s*?THIS.Name\s*?=\s*?["'']).*?(["''].*)', '\1#form.projectName#\2' , 'all') />
+	<cfset farcryConstructor = rereplacenocase(farcryConstructor,'(.*<cfset\s*?THIS.displayName\s*?=\s*?["'']).*?(["''].*)', '\1#form.projectName#\2' , 'all') />
+	<cfset farcryConstructor = rereplacenocase(farcryConstructor,'(.*<cfset\s*?THIS.dsn\s*?=\s*?["'']).*?(["''].*)', '\1#form.dsn#\2' , 'all') />
+	<cfset farcryConstructor = rereplacenocase(farcryConstructor,'(.*<cfset\s*?THIS.dbType\s*?=\s*?["'']).*?(["''].*)', '\1#form.dbType#\2' , 'all') />
+	<cfset farcryConstructor = rereplacenocase(farcryConstructor,'(.*<cfset\s*?THIS.dbOwner\s*?=\s*?["'']).*?(["''].*)', '\1#form.dbOwner#\2' , 'all') />
+
+	<cffile action="write" file="#qProjects.directory#/#qProjects.name#/www/farcryConstructor.cfm" output="#farcryConstructor#" nameconflict="overwrite" />
+
+	<cflocation url="#cgi.script_name#" />
+</cfif>
+
+<cfif structKeyExists(form, "installAction") AND form.installAction EQ "Install">
+	
+	<cfset sqlDirectory = "#qProjects.directory#/#qProjects.name#/install">
+	
+	<cfset sqlFilePrefix = "DEPLOY-#form.dbType#_">
+	<cfdirectory action="list" directory="#sqlDirectory#" name="qSQLFiles" filter="#sqlFilePrefix#*.sql" />
+	
+
+	<cfif qSQLFiles.recordCount>
+		
+		<cfloop query="qSQLFiles">
+			<cffile action="read"  file="#sqlDirectory#/#qSQLFiles.NAME#" variable="SQL">
+			
+			<cftry>
+				<cfquery datasource="#form.dsn#" name="qInsert">
+				#PreserveSingleQuotes(SQL)#
+				</cfquery>
+			
+			<cfcatch type="any">
+				<cfdump var="#cfcatch#"><cfabort>
+
+			</cfcatch>
+			</cftry>
+			<cfoutput><div>DONE - #sqlDirectory#/#qSQLFiles.NAME#</cfoutput><cfflush>
+		</cfloop>
+		
+		
+	</cfif>
+	
+	<cfset sqlFilePrefix = "INSERT-">
+	<cfdirectory action="list" directory="#sqlDirectory#" name="qSQLFiles" filter="#sqlFilePrefix#*.sql" />
+	
+
+	<cfif qSQLFiles.recordCount>
+		
+		<cfloop query="qSQLFiles">
+			<cffile action="read"  file="#sqlDirectory#/#qSQLFiles.NAME#" variable="SQL">
+			
+			<cftry>
+				<cfquery datasource="#form.dsn#" name="qInsert">
+				#PreserveSingleQuotes(SQL)#
+				</cfquery>
+	
+			
+			<cfcatch type="any">
+				<cfdump var="#cfcatch#"><cfabort>
+			</cfcatch>
+			</cftry>
+			
+			<cfoutput><div>DONE - #sqlDirectory#/#qSQLFiles.NAME#</cfoutput><cfflush>
+		</cfloop>
+		
+		
+	</cfif>
+	 
+	<!--- Update the farcry password --->
+	<cfquery datasource="#form.dsn#">
+		update		#form.dbowner#farUser
+		set			password=<cfqueryparam cfsqltype="cf_sql_varchar" value="farcry" />
+		where		userid=<cfqueryparam cfsqltype="cf_sql_varchar" value="farcry" />
+	</cfquery>
+
+	<cfdirectory action="list" directory="#qProjects.directory#/#qProjects.name#/www" name="qWebroot" />
+	<cfloop query="qWebroot">
+	
+		<cfif qWebroot.type eq "file">
+	        <cffile action="copy" source="#qWebroot.directory#/#qWebroot.name#" destination="#expandPath('/')#">
+	    <cfelseif qWebroot.type eq "dir">
+	        <cfset dCopy(source="#qWebroot.directory#/#qWebroot.name#", destination="#expandPath('/')#/#qWebroot.name#", ignore="") />
+	    </cfif>
+
+	</cfloop>
+	
+
+	<cflocation url="#cgi.script_name#" />
+</cfif>
+
+<cfoutput>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>New FARCRY Project</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
+	<link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+  </head>
+  <body>
+    <h1>New FARCRY Project</h1>
+    
+	<p>You have not installed the project. Would you like to install now?</p>
+	<cffile action="read" file="#qProjects.directory#/#qProjects.name#/www/farcryConstructor.cfm" variable="farcryConstructor" />
+
+
+	<cfset stInstall = structNew()>
+	<cfset stInstall.name = rereplacenocase(farcryConstructor,'.*<cfset\s*?THIS.Name\s*?=\s*?["''](.*?)["''].*', '\1' , 'all') />
+	<cfset stInstall.dsn = rereplacenocase(farcryConstructor,'.*<cfset\s*?THIS.dsn\s*?=\s*?["''](.*?)["''].*', '\1' , 'all') />
+	<cfset stInstall.dbType = rereplacenocase(farcryConstructor,'.*<cfset\s*?THIS.dbType\s*?=\s*?["''](.*?)["''].*', '\1' , 'all') />
+	<cfset stInstall.dbOwner = rereplacenocase(farcryConstructor,'.*<cfset\s*?THIS.dbOwner\s*?=\s*?["''](.*?)["''].*', '\1' , 'all') />
+
+
+	<form class="form-horizontal" action="#cgi.script_name#?#cgi.query_string#" enctype="multipart/form-data" method="post">
+	  <div class="control-group">
+	    <label class="control-label" for="inputEmail">Project Name</label>
+	    <div class="controls">
+	      <input type="text" name="projectName" placeholder="Project Name" value="#stInstall.name#">
+	    </div>
+	  </div>
+
+	  <div class="control-group">
+	    <label class="control-label" for="inputEmail">Farcry User Password</label>
+	    <div class="controls">
+	      <input type="text" name="farcryUserPassword" placeholder="" value="farcry">
+	    </div>
+	  </div>
+
+
+ 	  <cfset stCheckDSN = checkDSN(dsn="#stInstall.dsn#", dbOwner="#stInstall.dbOwner#") />
+	  <div class="control-group">
+	    <label class="control-label" for="inputEmail">DSN Name</label>
+	    <div class="controls">
+	      <input type="text" name="dsn" placeholder="DSN" value="#stInstall.dsn#">
+
+	     
+	      <cfif NOT stCheckDSN.bSuccess>
+	      	<span class="help-block error">#stCheckDSN.errorTitle#</span>
+	      	<span class="help-block error">#stCheckDSN.errorDescription#</span>
+	      </cfif>
+
+	      <cftry>
+			<cfdbinfo
+			    datasource="#stInstall.dsn#"
+			    name="stDBInfo" type="version">
+			    #stDBInfo.DATABASE_PRODUCTNAME#
+			<cfcatch type="any">
+				INVALID DATASOURCE
+			</cfcatch>
+		</cftry>
+
+
+	    </div>
+	  </div>
+
+	  <cfset stCheckDBType = checkDBType(dsn="#stInstall.dsn#", dbOwner="#stInstall.dbOwner#", dbType="#stInstall.dbType#") />
+	  <div class="control-group">
+	    <label class="control-label" for="inputEmail">DB Type</label>
+	    <div class="controls">
+	    	<select name="dbType" class="span3">
+			  <option value="h2" <cfif stInstall.dbType EQ "h2">selected</cfif>>H2</option>
+			  <option value="mssql2005" <cfif stInstall.dbType EQ "mssql2005">selected</cfif>>Microsoft SQL 2005</option>
+			  <option value="mssql" <cfif stInstall.dbType EQ "mssql">selected</cfif>>Microsoft SQL 2000 and before</option>
+			  <option value="mysql" <cfif stInstall.dbType EQ "mysql">selected</cfif>>MySQL</option>
+			</select>
+
+	      <cfif NOT stCheckDBType.bSuccess>
+	      	<span class="help-block error">#stCheckDBType.errorTitle#</span>
+	      	<span class="help-block error">#stCheckDBType.errorDescription#</span>
+	      </cfif>
+	    </div>
+	  </div>
+
+	  <div class="control-group">
+	    <label class="control-label" for="inputEmail">DB Owner</label>
+	    <div class="controls">
+	      <input type="text" name="dbOwner" placeholder="" value="#stInstall.dbOwner#">
+	    </div>
+	  </div>
+
+
+
+	  
+	 
+	  <div class="control-group">
+	    <div class="controls">
+	    	<cfif stCheckDSN.bSuccess AND stCheckDBType.bSuccess>
+	    		<button type="submit" class="btn" name="installAction" value="Install">Install</button>
+	    	</cfif>
+	      	<button type="submit" class="btn" name="installAction" value="Update Constructor">Update Constructor</button>
+	    </div>
+	  </div>
+	</form>
+
+
+    <script src="http://code.jquery.com/jquery.js"></script>
+  </body>
+</html>
+	
+</cfoutput>
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<cffunction name="checkDSN" access="public" returntype="struct" output="false" hint="Check to see whether the DSN entered by the user is valid">
+		<cfargument name="DSN" type="string" required="true" hint="DSN to check" />
+		<cfargument name="DBOwner" type="string" required="true" hint="The database owner" />
+
+		<cfset var qCheckDSN = queryNew("blah") />
+		<cfset var stResult = structNew() />
+		<cfset stResult.bSuccess = true />
+		<cfset stResult.errorTitle = "" />
+		<cfset stResult.errorDescription = "" />
+		
+
+		<cftry>
+			<!--- run any query to see if the DSN is valid --->
+			<cfquery name="qCheckDSN" datasource="#arguments.dsn#">
+				SELECT 'patrick' AS theMAN
+			</cfquery>
+			
+			<cfcatch type="database">
+				<cftry>						
+					<!--- First check for oracle will fail. This is the oracle check.
+					Run any query to see if the DSN is valid --->
+					<cfquery name="qCheckDSN" datasource="#arguments.dsn#">
+						SELECT 'patrick' AS theMAN from dual
+					</cfquery>
+					
+					<cfcatch type="database">
+						<cftry>
+							<!--- Both checks for HSQLDB will fail. see if this might an HSQLDB --->
+							<cfquery name="qCheckDSN" datasource="#arguments.dsn#">
+								SET READONLY FALSE;
+							</cfquery>
+							
+							<cfcatch type="database">
+								<cfset stResult.bSuccess = false />
+								<cfset stResult.errorTitle = "Invalid Datasource (DSN)" />
+								<cfsavecontent variable="stResult.errorDescription">
+									<cfoutput>
+									<p>Your DSN (#arguments.dsn#) is invalid.</p>
+									<p>Please check it is setup and verifies within the ColdFusion Administrator.</p>
+									</cfoutput>
+								</cfsavecontent>
+							</cfcatch>
+						</cftry>
+					</cfcatch>
+					
+				</cftry>
+			</cfcatch>
+			
+		</cftry>
+		
+		<cfif stResult.bSuccess>
+			<cfset stResult = checkExistingDatabase(dbOwner="#arguments.dbOwner#",dsn="#arguments.dsn#") />
+		</cfif>
+		
+		<cfreturn stResult />
+	
+	</cffunction>
+	
+	
+	
+	<cffunction name="checkExistingDatabase" access="public" returntype="struct" output="false" hint="Check to see whether a farcry database exists">
+		<cfargument name="DSN" type="string" required="true" hint="DSN to check" />
+		<cfargument name="DBOwner" type="string" required="true" hint="The database owner" />
+
+		<cfset var qCheckDSN = queryNew("blah") />
+		<cfset var bExists = true />
+		<cfset var stResult = structNew() />
+		<cfset stResult.bSuccess = true />
+		<cfset stResult.errorTitle = "" />
+		<cfset stResult.errorDescription = "" />
+
+		<cftry>
+		
+			<!--- run any query to see if there is an existing farcry project in the database --->
+			<cfquery name="qCheckDSN" datasource="#arguments.dsn#">
+				SELECT	count(objectId) AS theCount
+				FROM	#arguments.DBOwner#refObjects
+			</cfquery>
+			
+			<cfcatch type="database">
+				<cfset bExists = false />
+			</cfcatch>
+			
+		</cftry>
+		
+		<cfif bExists>
+			
+			<cfset stResult.bSuccess = false />
+			<cfset stResult.errorTitle = "Existing Farcry Database Found" />
+			<cfsavecontent variable="stResult.errorDescription">
+				<cfoutput>
+				<p>Your database contains an existing Farcry application.</p>
+				<p>You can only install into an empty database.</p>
+				</cfoutput>			
+			</cfsavecontent>
+		
+		</cfif>		
+		
+		<cfreturn stResult />
+	
+	</cffunction>	
+	
+
+	
+	<cffunction name="checkDBType" access="public" returntype="struct" output="false" hint="Check to see whether the database is Oracle">
+		<cfargument name="DSN" type="string" required="true" hint="DSN to check" />
+		<cfargument name="DBType" type="string" required="true" hint="Type of DB to check" />
+		<cfargument name="DBOwner" type="string" required="true" hint="The database owner" />
+
+		<cfset var qCheckDSN = queryNew("blah") />
+		<cfset var bCorrectDB = true />
+		<cfset var databaseTypeName = "" />
+		<cfset var stResult = structNew() />
+		<cfset stResult.bSuccess = true />
+		<cfset stResult.errorTitle = "" />
+		<cfset stResult.errorDescription = "" />
+
+		<cftry>
+			<cfswitch expression="#arguments.DBType#">
+			<cfcase value="ora">
+				<cfset databaseTypeName = "Oracle" />
+				<!--- run an oracle specific query --->
+				<cfquery name="qCheckDSN" datasource="#arguments.dsn#">
+				SELECT 'aj' AS theMAN from dual
+				</cfquery>
+			</cfcase>
+			<cfcase value="MSSQL,MSSQL2005" delimiters=",">
+				<cfset databaseTypeName = arguments.DBType />
+				<!--- run an MSSQL specific query --->
+				<cfquery name="qCheckDSN" datasource="#arguments.dsn#">
+				SELECT	count(*) AS theCount
+				FROM	#arguments.DBOwner#sysobjects
+				</cfquery>
+			</cfcase>
+			<cfcase value="MySQL">
+				<cfset databaseTypeName = "MySQL" />						
+				<!--- test temp table creation --->
+				<cfquery name="qTestPrivledges" datasource="#arguments.dsn#">
+					create temporary table tblTemp1
+					(
+					test  VARCHAR(255) NOT NULL
+					)
+				</cfquery>	
+				<!--- delete temp table --->
+				<cfquery name="qDeleteTemp" datasource="#arguments.dsn#">
+					DROP TABLE IF EXISTS tblTemp1
+				</cfquery>							
+			</cfcase>
+			<cfcase value="Postgres">
+				<cfset databaseTypeName = "Postgres" />						
+				<!--- TODO: perform test to validate dbtype is postgres --->									
+			</cfcase>
+			
+			<cfcase value="HSQLDB">
+				<cfset databaseTypeName = "HSQLDB" />
+				<!--- TODO: perform test to validate dbtype is HSQLDB --->									
+			</cfcase>
+			
+			</cfswitch>
+			
+			<cfcatch type="database">
+				<cfset bCorrectDB = false />
+			</cfcatch>
+			
+		</cftry>
+		
+		<cfif not bCorrectDB>
+			
+			<cfset stResult.bSuccess = false />
+			<cfset stResult.errorTitle = "Not A #databaseTypeName# Database" />
+			<cfsavecontent variable="stResult.errorDescription">
+				<cfoutput>
+				<p>Your database does not appear to be #databaseTypeName#.</p>
+				<p>Please check the database type and try again.</p>
+				<cfif arguments.DBType eq "MySQL"><p>Please check that the database user has permission to create temporary tables.</p></cfif>
+				</cfoutput>			
+			</cfsavecontent>
+		
+		</cfif>		
+		
+		<cfreturn stResult />
+	
+	</cffunction>
+
+
+
+
+
+<!---
+ Copies a directory.
+ v1.0 by Joe Rinehart
+ v2.0 mod by [author not noted]
+ v3.1 mod by Anthony Petruzzi
+ v3.2 mod by Adam Cameron under guidance of Justin Z (removing NAMECONFLICT argument which was never supported in file-copy operations)
+ 
+ @param source      Source directory. (Required)
+ @param destination      Destination directory. (Required)
+ @param ignore      List of folders, files to ignore. Defaults to nothing. (Optional)
+ @return Returns nothing. 
+ @author Joe Rinehart (joe.rinehart@gmail.com) 
+ @version 3.2, March 21, 2013 
+--->
+<cffunction name="dCopy" output="false" returntype="void">
+    <cfargument name="source" required="true" type="string">
+    <cfargument name="destination" required="true" type="string">
+    <cfargument name="ignore" required="false" type="string" default="">
+
+    <cfset var contents = "">
+    
+    <cfif not(directoryExists(arguments.destination))>
+        <cfdirectory action="create" directory="#arguments.destination#">
+    </cfif>
+    
+    <cfdirectory action="list" directory="#arguments.source#" name="contents">
+
+    <cfif len(arguments.ignore)>
+        <cfquery dbtype="query" name="contents">
+        select * from contents where name not in(#ListQualify(arguments.ignore, "'")#)
+        </cfquery>
+    </cfif>
+    
+    <cfloop query="contents">
+        <cfif contents.type eq "file">
+            <cffile action="copy" source="#arguments.source#/#name#" destination="#arguments.destination#/#name#">
+        <cfelseif contents.type eq "dir" AND name neq '.svn'>
+            <cfset dCopy(arguments.source & "/" & name, arguments.destination & "/" & name)>
+        </cfif>
+    </cfloop>
+</cffunction>

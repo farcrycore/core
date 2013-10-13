@@ -1,6 +1,59 @@
 <cfcomponent extends="MySQLGateway" dbType="h2:H2" usesDBOwner="false">
 	
 	<!--- DEPLOYMENT --->
+	
+	<cffunction name="getDeploySchemaSQL" access="public" output="false" returntype="string" hint="The returns the sql for Deployment of the table structure for a FarCry type into a MySQL database.">
+		<cfargument name="schema" type="struct" required="true" />
+		
+		<cfset var resultSQL = "">
+		<cfset var bAddedOne = false />
+		
+		<cfsavecontent variable="resultSQL">
+			<cfoutput>
+			CREATE TABLE #this.dbowner##arguments.schema.tablename#(
+			
+			<cfloop collection="#arguments.schema.fields#" item="thisfield">
+				<cfif arguments.schema.fields[thisfield].type neq "array">
+					<cfif bAddedOne>,</cfif>
+					<cfset bAddedOne = true />
+					
+					<cfset stProp = arguments.schema.fields[thisfield] />
+					
+					#stProp.name# 
+					<cfswitch expression="#stProp.type#">
+						<cfcase value="numeric">
+							<cfif stProp.precision eq "1,0">
+								tinyint(1)
+							<cfelse>
+								decimal(#stProp.precision#)
+							</cfif>
+						</cfcase>
+						<cfcase value="string">
+							<cfif stProp.precision eq "MAX">
+								varchar(2000)
+							<cfelse>
+								varchar(#stProp.precision#)
+							</cfif>
+						</cfcase>
+						<cfcase value="longchar">longtext</cfcase>
+						<cfcase value="datetime">datetime</cfcase>
+					</cfswitch>
+					
+					<cfif stProp.nullable>NULL<cfelse>NOT NULL</cfif>
+					
+					<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
+					<cfif stProp.type neq "longchar" and (not stProp.type eq "numeric" or isnumeric(stProp.default))>DEFAULT <cfif stVal.null>NULL<cfelseif stVal.cfsqltype eq "cf_sql_varchar">'#stVal.value#'<cfelseif stVal.cfsqltype eq "cf_sql_timestamp">'#dateformat(stVal.value,"yyyy-MM-dd")# #timeformat(stVal.value,"hh:mm:ss")#'<cfelse>#stVal.value#</cfif></cfif>
+				</cfif>
+			</cfloop>
+			
+			);
+			</cfoutput>
+		</cfsavecontent>
+		
+		
+		<cfreturn resultSQL>
+	</cffunction>
+	
 	<cffunction name="deploySchema" access="public" output="false" returntype="struct" hint="Deploys the table structure for a FarCry type into a MySQL database.">
 		<cfargument name="schema" type="struct" required="true" />
 		<cfargument name="bDropTable" type="boolean" required="false" default="false" />
@@ -14,6 +67,7 @@
 		<cfset var stProp = structnew() />
 		<cfset var bAddedOne = false />
 		<cfset var i = 0 />
+		<cfset var deploySchemaSQL = "" />
 		
 		<cfset stResult.results = arraynew(1) />
     	<cfset stResult.bSuccess = true />
@@ -24,44 +78,9 @@
 		
 		<cfif not isDeployed(schema=arguments.schema)>
 			<cftry>
+				<cfset deploySchemaSQL = getDeploySchemaSQL(schema="#arguments.schema#")>
 				<cfquery datasource="#this.dsn#" result="queryresult">
-					CREATE TABLE #this.dbowner##arguments.schema.tablename#(
-					
-					<cfloop collection="#arguments.schema.fields#" item="thisfield">
-						<cfif arguments.schema.fields[thisfield].type neq "array">
-							<cfif bAddedOne>,</cfif>
-							<cfset bAddedOne = true />
-							
-							<cfset stProp = arguments.schema.fields[thisfield] />
-							
-							#stProp.name# 
-							<cfswitch expression="#stProp.type#">
-								<cfcase value="numeric">
-									<cfif stProp.precision eq "1,0">
-										tinyint(1)
-									<cfelse>
-										decimal(#stProp.precision#)
-									</cfif>
-								</cfcase>
-								<cfcase value="string">
-									<cfif stProp.precision eq "MAX">
-										varchar(2000)
-									<cfelse>
-										varchar(#stProp.precision#)
-									</cfif>
-								</cfcase>
-								<cfcase value="longchar">longtext</cfcase>
-								<cfcase value="datetime">datetime</cfcase>
-							</cfswitch>
-							
-							<cfif stProp.nullable>NULL<cfelse>NOT NULL</cfif>
-							
-							<cfset stVal = getValueForDB(schema=stProp,value=stProp.default) />
-							<cfif stProp.type neq "longchar" and (not stProp.type eq "numeric" or isnumeric(stProp.default))>DEFAULT <cfif stVal.null>NULL<cfelseif stVal.cfsqltype eq "cf_sql_varchar">'#stVal.value#'<cfelseif stVal.cfsqltype eq "cf_sql_timestamp">'#dateformat(stVal.value,"yyyy-MM-dd")# #timeformat(stVal.value,"hh:mm:ss")#'<cfelse>#stVal.value#</cfif></cfif>
-						</cfif>
-					</cfloop>
-					
-					); 
+					#deploySchemaSQL#
 				</cfquery>
 				
 				<cfset arrayappend(stResult.results,queryresult) />
