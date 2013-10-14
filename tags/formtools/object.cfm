@@ -843,16 +843,20 @@
 						<skin:view stObject="#stObj#" webskin="#ftFieldMetadata.ftRenderWebskinBefore#" />
 					</cfif>
 
-					<ft:field 	for="#ftFieldMetadata.formFieldName#" 
-								label="#ftFieldMetadata.ftLabel#" 
-								labelAlignment="#ftFieldMetadata.ftLabelAlignment#" 
-								hint="#iif(attributes.bShowFieldHints,'ftFieldMetadata.ftHint','""')#" 
-								errorMessage="#ftFieldMetadata.errorMessage#"
-								class="#ftFieldMetadata.ftType# #ftFieldMetadata.errorClass#">
+					<cfif ftFieldMetadata.ftShowLabel>
+						<ft:field 	for="#ftFieldMetadata.formFieldName#" 
+									label="#ftFieldMetadata.ftLabel#" 
+									labelAlignment="#ftFieldMetadata.ftLabelAlignment#" 
+									hint="#iif(attributes.bShowFieldHints,'ftFieldMetadata.ftHint','""')#" 
+									errorMessage="#ftFieldMetadata.errorMessage#"
+									class="#ftFieldMetadata.ftType# #ftFieldMetadata.errorClass#">
 
+							<cfoutput>#ftFieldMetadata.html#</cfoutput>
+							
+						</ft:field>
+					<cfelse>
 						<cfoutput>#ftFieldMetadata.html#</cfoutput>
-						
-					</ft:field>
+					</cfif>
 
 					<!--- webskin rendered after the field (ftRenderWebskinAfter) --->
 					<cfif isDefined("ftFieldMetadata.ftRenderWebskinAfter") AND len(ftFieldMetadata.ftRenderWebskinAfter)>

@@ -123,7 +123,7 @@
 		<cfset var stUsersProfile = structNew() />
 		<cfset var oUD = application.security.userdirectories[application.stCOAPI.farUser.ud] /> 
 		
-		<cfif structKeyExists(arguments.stProperties,"password") and oUD.passwordIsStale(hashedPassword=stUser.password,password=arguments.stProperties.password)>
+		<cfif structKeyExists(arguments.stProperties,"password") and stUser.password neq arguments.stProperties.password and getmetadata(application.security.cryptlib.findHash(arguments.stProperties.password)).alias eq getmetadata(application.security.cryptlib.getHashComponent('none')).alias>
 			<cfset arguments.stProperties.password = application.security.cryptlib.encodePassword(password=arguments.stProperties.password,hashName=oUD.getOutputHashName()) />
 		</cfif>
 		
@@ -141,7 +141,7 @@
 		
 		<cfset var oUD = application.security.userdirectories[application.stCOAPI.farUser.ud] /> 
 		
-		<cfif structKeyExists(arguments.stProperties,"password") and oUD.passwordIsStale(hashedPassword=stUser.password,password=arguments.stProperties.password)>
+		<cfif structKeyExists(arguments.stProperties,"password") and getmetadata(application.security.cryptlib.findHash(arguments.stProperties.password)).alias eq getmetadata(application.security.cryptlib.getHashComponent('none')).alias>
 			<cfset arguments.stProperties.password = application.security.cryptlib.encodePassword(password=arguments.stProperties.password,hashName=oUD.getOutputHashName()) />
 		</cfif>
 		
