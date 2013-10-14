@@ -1080,7 +1080,12 @@ body .alert {
 	background: none;
 }
 
+/* bootstrap misc */
 
+code {
+	color: #555;
+	margin: 0px 2px;
+}
 
 /* customise bootstrap forms */
 
