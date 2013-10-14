@@ -108,7 +108,7 @@ default handlers
 		<cfset var result = "" />
 		<cfset var pos	= '' />
 		<cfset var count	= '' />
-		<cfset var template	= '' />
+		<cfset var templateContent	= '' />
 		
 		<cfif NOT structKeyExists(arguments, "path")>
 			<cfif len(arguments.typename) AND len(arguments.template)>
@@ -119,13 +119,13 @@ default handlers
 		</cfif>
 		
 		<cfif len(arguments.path) and fileExists(Expandpath(arguments.path))>
-			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="template">
+			<cffile action="READ" file="#Expandpath(arguments.path)#" variable="templateContent">
 		
-			<cfset pos = findNoCase('@@displayname:', template)>
+			<cfset pos = findNoCase('@@displayname:', templateContent)>
 			<cfif pos GT 0>
 				<cfset pos = pos + 14>
-				<cfset count = findNoCase('--->', template, pos)-pos>
-				<cfset result = listLast(mid(template,  pos, count), ":")>
+				<cfset count = findNoCase('--->', templateContent, pos)-pos>
+				<cfset result = listLast(mid(templateContent,  pos, count), ":")>
 			</cfif>	
 		</cfif>
 		
@@ -811,7 +811,6 @@ default handlers
 		<cfset var iWizardStep = "" />
 		<cfset var lFieldSets = "" />
 		<cfset var iFieldSet = "" />
-		<cfset var onExitProcess	= '' />
 		<cfset var qwizardSteps	= '' />
 		<cfset var qwizardStep	= '' />
 		<cfset var qFieldSets	= '' />
@@ -1025,7 +1024,6 @@ default handlers
 		<cfset var stObj = getData(objectid=arguments.objectid) />
 		<cfset var duplicateID = "" />
 		<cfset var qAllRelated = relatedCopyableContent(objectid=arguments.objectid) />
-		<cfset var onExitProcess	= '' />
 		
 		<cfparam name="url.editURL" />
 		

@@ -366,7 +366,6 @@ object methods
 		<cfset var qMetadata = application.types[stobj.typename].qMetadata />
 		<cfset var displayname = stObj.configkey />
 		<cfset var thisform = "" />
-		<cfset var onExitProcess	= '' />
 		<cfset var qFields	= '' />
 
 		<cfloop collection="#application.stCOAPI#" item="thisform">
