@@ -431,6 +431,20 @@
 	};
 
 
+	$fc.objectAdminTrayAction = function(title,url,settings) {
+
+		settings = $j.extend({
+			title: title,
+			url: url
+		}, settings);
+
+		var fcTrayModalTPL = $j("<div class='fc-tray'><div id='fcModal' class='modal fade fc-modal' style='' tabindex='-1' role='dialog' aria-labelledby='fcModalLabel' aria-hidden='true'><div class='modal-header'><button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button><h3 id='fcModalLabel'>Modal</h3></div><div class='modal-body' style='width: auto;min-height: 0px;max-height:900px;height: 455px;position: relative;border: 0;padding: 0;background: 0;overflow: auto;zoom: 1;'><iframe style='width: 100%;height: 99%;border-width: 0px;margin: 0;padding: 0;' frameborder='0'></iframe></div></div></div>");
+		$j("body").append(fcTrayModalTPL);
+
+		return $fc.openBootstrapModal(settings);		
+	};
+
+
 
 	$fc.closeBootstrapModal = function(){	
 		parent.$j('##fcModal').modal('hide');	
@@ -455,45 +469,49 @@
 		}, $settings);
 
 		var modalLeftPos = 0;
-		var fcModalTPL = $j("<div id='fcModal' class='modal hide fade fc-modal' style='' tabindex='-1' role='dialog' aria-labelledby='fcModalLabel' aria-hidden='true'><div class='modal-header'><button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button><h3 id='fcModalLabel'>Modal</h3></div><div class='modal-body' style='width: auto;min-height: 0px;max-height:900px;height: 455px;position: relative;border: 0;padding: 0;background: 0;overflow: auto;zoom: 1;'><iframe style='width: 100%;height: 99%;border-width: 0px;margin: 0;padding: 0;' frameborder='0'></iframe></div></div>");
-		if($j("##fcModal").length == 0) {
+		var fcModalTPL = $j("<div id='fcModal' class='modal hide fade fc-modal' style='' tabindex='-1' role='dialog' aria-labelledby='fcModalLabel' aria-hidden='true'><div class='modal-header'><button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button><h3 id='fcModalLabel'>Modal</h3></div><div class='modal-body' style='width: auto;min-height: 0px;max-height:900px;height: 455px;position: relative;border: 0;padding: 0;background: 0;overflow: auto;zoom: 1;'><iframe style='width: 100%;height: 100%;border-width: 0px;margin: 0;padding: 0;' frameborder='0'></iframe></div></div>");
+
+		var $fcModal = $j("##fcModal");
+
+		if($fcModal.length == 0) {
 			$j("body").append(fcModalTPL);
 		}
 		
-		$j('##fcModalLabel',$j('##fcModal')).html($settings.title);
+		$j('##fcModalLabel',$fcModal).html($settings.title);
 		
 		
-		$j('##fcModal').css('top', '15px');
-		$j('##fcModal').css('margin-left', '0px');
-		$j('##fcModal').css('max-height', $settings.height);
+		$fcModal.css('top', '15px');
+		$fcModal.css('margin-left', '0px');
+		$fcModal.css('max-height', $settings.height);
 		
-		$j('##fcModal').css('height', $settings.height);
-		$j('.modal-body').css('max-height', $settings.height);
-		$j('##fcModal').css('width', $settings.width);
-		$j('.modal-body').css('max-width', $settings.width);
+		$fcModal.css('height', $settings.height);
+		$fcModal.css('width', $settings.width);
+		$j('.modal-body',$fcModal).css('max-height', $settings.height);
+		$j('.modal-body',$fcModal).css('max-width', $settings.width);
 		
-		$j('.modal-body',$j('##fcModal')).css('height', $settings.height - 41);
+		$j('.modal-body',$fcModal).css('height', $settings.height - 45);
 	
-	 	modalLeftPos = ( $j(window).width() - $j('##fcModal').width() ) / 2;
-		$j('##fcModal').css('left', modalLeftPos);
+	 	modalLeftPos = ( $j(window).width() - $fcModal.width() ) / 2;
+		$fcModal.css('left', modalLeftPos);
 	
 	
-		$j('##fcModal').modal({
+		$fcModal.off("shown").on('shown', function () {
+			
+			if ( $settings.url.indexOf("?") < 0 ) { $settings.url = $settings.url + '?' };
+			$settings.url=$settings.url + '&dialogID=fcModal'
+			$j('iframe',$fcModal).attr('src',$settings.url);
+
+			$j("html").css('overflow', 'hidden');
+			$settings.onShown();
+			
+		}).off("hidden").on('hidden', function () {
+			$j("html").css('overflow', 'auto');
+			$j('iframe',$fcModal).attr('src','');
+			$settings.onHidden();	
+
+		}).modal({
 			keyboard: $settings.keyboard,
 			backdrop: $settings.backdrop
-			}).off("shown").on('shown', function () {
-				
-				if ( $settings.url.indexOf("?") < 0 ) { $settings.url = $settings.url + '?' };
-				$settings.url=$settings.url + '&dialogID=fcModal'
-				$j('iframe',$j('##fcModal')).attr('src',$settings.url);
-				
-				$j("html").css('overflow', 'hidden');
-				$settings.onShown();
-				
-			}).off("hidden").on('hidden', function () {
-				$j("html").css('overflow', 'auto');
-				$j('iframe',$j('##fcModal')).attr('src','');
-				$settings.onHidden();			
 		});
 	};
 					

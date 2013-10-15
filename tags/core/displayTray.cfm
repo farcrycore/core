@@ -40,11 +40,11 @@
 		<!--- import libraries --->
 		<skin:loadJS id="fc-jquery" />
 		<skin:loadJS id="fc-jquery-ui" />
-		<skin:loadJS id="fc-bootstrap" />
+		<skin:loadJS id="fc-bootstrap-tray" />
 		<skin:loadJS id="jquery-tooltip" />
 		<skin:loadJS id="farcry-form" />
 		<skin:loadCSS id="jquery-ui" />
-		<skin:loadCSS id="fc-bootstrap" />
+		<skin:loadCSS id="fc-bootstrap-tray" />
 		<skin:loadCSS id="farcry-form" />
 		<skin:loadCSS id="farcry-tray" />	
 		<skin:loadCSS id="jquery-tooltip" />
@@ -84,7 +84,7 @@
 		}
 			
 		$fc.editTrayObject = function(typename,objectid) {
-			$fc.objectAdminAction('Inline Edit', '#application.url.webtop#/edittabOverview.cfm?typename=' + typename + '&objectid=' + objectid + '&method=edit&ref=iframe');		
+			$fc.objectAdminTrayAction('Inline Edit', '#application.url.webtop#/edittabOverview.cfm?typename=' + typename + '&objectid=' + objectid + '&method=edit&ref=iframe');		
 		};	
 		
 		

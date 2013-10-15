@@ -153,7 +153,11 @@
 		<skin:registerJS	id="fc-bootstrap" core="true"
 							baseHREF='#application.url.webtop#/thirdparty/bootstrap'
 							lFiles="bootstrap.min.js" />
-		
+
+		<skin:registerJS	id="fc-bootstrap-tray" core="true"
+							baseHREF='#application.url.webtop#/thirdparty/bootstrap-tray'
+							lFiles="bootstrap.js" />
+
 		<skin:registerJS	id="bootstrap-datepicker" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/bootstrap-datepicker"
 							lFiles="bootstrap-datepicker.js" />
@@ -187,7 +191,12 @@
 							baseHREF="#application.url.webtop#/thirdparty/bootstrap"
 							lFiles="bootstrap.min.css"
 							bCombined="false" />
-		
+
+		<skin:registerCSS	id="fc-bootstrap-tray"
+							baseHREF="#application.url.webtop#/thirdparty/bootstrap-tray"
+							lFiles="bootstrap.css"
+							bCombined="false" />
+
 		<skin:registerCSS	id="bootstrap-datepicker"
 							baseHREF="#application.url.webtop#/thirdparty/bootstrap-datepicker"
 							lFiles="bootstrap-datepicker.css" />
