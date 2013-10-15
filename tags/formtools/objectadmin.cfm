@@ -512,7 +512,7 @@ $Developer: Matthew Bryant (mat@daemon.com.au)$
 		<skin:onReady>
 			<cfoutput>
 				<cfif structkeyexists(form,"objectid")>
-					$fc.objectAdminAction('Administration', '#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=requestapproval');.
+					$fc.objectAdminAction('Administration', '#application.url.farcry#/navajo/approve.cfm?objectid=#form.objectid#&status=requestapproval');
 				<cfelse>
 					<cfset message_error = "No Objects Selected">	
 				</cfif>
