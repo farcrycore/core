@@ -183,9 +183,10 @@
 		<cfset var i = 0 />
 		<cfset var currentfile = arguments.file />
 		
-		<cfset arguments.file = sanitizeFilename(arguments.file) />
+		<cfset arguments.file = normalizePath(arguments.file) />
 		
 		<cfif structkeyexists(arguments,"locations")>
+			<cfset arguments.file = sanitizeFilename(arguments.file) />
 			<cfloop condition="len(ioFindFile(locations=arguments.locations,file=currentfile))">
 				<cfset i = i + 1 />
 				<cfset currentfile = rereplace(arguments.file,"(\.\w+)?$","#i#\1") />
