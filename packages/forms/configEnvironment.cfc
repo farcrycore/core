@@ -72,7 +72,7 @@
 
 	<!--- canonical methods --->
 
-	<cffunction name="getCanonicalDomain" returntype="string">
+	<cffunction name="getCanonicalDomain" output="false" returntype="string">
 		<cfset var domain = application.fapi.getConfig("environment", "canonicalDomain")>
 		<cfif NOT len(domain)>
 			<cfset domain = "">
@@ -80,7 +80,7 @@
 		<cfreturn domain>
 	</cffunction>
 
-	<cffunction name="getCanonicalProtocol" returntype="string">
+	<cffunction name="getCanonicalProtocol" output="false" returntype="string">
 		<cfset var protocol = application.fapi.getConfig("environment", "canonicalProtocol")>
 		<cfif NOT len(protocol)>
 			<cfif cgi.https eq "off">
@@ -92,7 +92,7 @@
 		<cfreturn protocol>
 	</cffunction>
 
-	<cffunction name="getCanonicalURL" returntype="string">
+	<cffunction name="getCanonicalURL" output="false" returntype="string">
 		<cfset var canonical = "#getCanonicalProtocol()#://#getCanonicalDomain()#">
 		<cfreturn canonical>
 	</cffunction>
@@ -100,7 +100,7 @@
 
 	<!--- environment methods --->
 
-	<cffunction name="getEnvironment" returntype="string">
+	<cffunction name="getEnvironment" output="false" returntype="string">
 		<cfargument name="hostname" default="#listFirst(cgi.http_host, ":")#">
 		<cfargument name="ip" default="#cgi.remote_addr#">
 
@@ -125,13 +125,13 @@
 		<cfreturn "unknown">
 	</cffunction>
 
-	<cffunction name="getLabel" returntype="string">
+	<cffunction name="getLabel" output="false" returntype="string">
 		<cfargument name="environment" default="#getEnvironment()#">
 
 		<cfreturn application.fapi.getConfig("environment", "label" & arguments.environment)>
 	</cffunction>
 	
-	<cffunction name="getColor" returntype="string">
+	<cffunction name="getColor" output="false" returntype="string">
 		<cfargument name="environment" default="#getEnvironment()#">
 
 		<cfset var color = application.fapi.getConfig("environment", "color" & arguments.environment)>
