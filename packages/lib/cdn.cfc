@@ -102,7 +102,20 @@
 		
 		<cfreturn arguments.path />
 	</cffunction>
-	
+
+	<cffunction name="sanitizeFilename" returntype="string" access="public" output="false" hint="Sanitizes filename character set, removing invalid characters">
+		<cfargument name="filename" type="string" required="true" />
+
+		<!--- Replace consecutive whitespace with a single dash --->
+		<cfset arguments.filename = rereplace(arguments.filename,"\s+","-","ALL") />
+
+		<!--- Remove potentially invalid characters --->
+		<cfset arguments.filename = reReplaceNoCase(arguments.filename, "[^a-z0-9\.\-\_/]","", "all") />
+
+		<cfreturn arguments.filename />
+	</cffunction>
+
+
 	<!--- @@description: 
 		<p>Does what it says on the box. Checks a single location to see if a file exists.</p>
 		
@@ -172,6 +185,7 @@
 		<cfset arguments.file = normalizePath(arguments.file) />
 		
 		<cfif structkeyexists(arguments,"locations")>
+			<cfset arguments.file = sanitizeFilename(arguments.file) />
 			<cfloop condition="len(ioFindFile(locations=arguments.locations,file=currentfile))">
 				<cfset i = i + 1 />
 				<cfset currentfile = rereplace(arguments.file,"(\.\w+)?$","#i#\1") />
