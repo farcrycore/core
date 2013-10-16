@@ -492,7 +492,7 @@
 		<!--- /DEPRECATED --->
 		
 		<!--- First login flag --->
-		<cfif application.fapi.isDefaultObject(session.dmProfile)>
+		<cfif structkeyexists(session.security,"bDefaultObject") and session.security.bDefaultObject>
 			<cfset session.security.firstlogin = true />
 			
 			<!--- DEPRECATED --->
