@@ -492,16 +492,16 @@
 		<!--- /DEPRECATED --->
 		
 		<!--- First login flag --->
-		<cfif createObject("component", application.stcoapi["farLog"].packagePath).filterLog(userid=session.security.userid,type="security",event="login").recordcount>
-			<cfset session.security.firstlogin = false />
-			
-			<!--- DEPRECATED --->
-			<cfset session.firstLogin = false />
-		<cfelse>
+		<cfif application.fapi.isDefaultObject(session.dmProfile)>
 			<cfset session.security.firstlogin = true />
 			
 			<!--- DEPRECATED --->
 			<cfset session.firstlogin = true />
+		<cfelse>
+			<cfset session.security.firstlogin = false />
+			
+			<!--- DEPRECATED --->
+			<cfset session.firstLogin = false />
 		</cfif>
 		
 		<!--- Log the result --->
