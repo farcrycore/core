@@ -109,7 +109,7 @@
 <cfparam name="attributes.copyUrlParams" default="#structnew()#" /><!--- if any extra params need to be passed into the copy screen need to a struct e.g paramStruct.parentid='whatever'--->
 <cfparam name="attributes.editUrlParams" default="#structnew()#" /><!--- if any extra params need to be passed into the edit screen need to a struct e.g paramStruct.parentid='whatever'--->
 
-<cfparam name="attributes.emptymessage" default="You do not currently have an content. Use the [Add] button above to begin." />
+<cfparam name="attributes.emptymessage" default="You do not currently have any content. Use the [Add] button above to begin." />
 
 <!--- Convert attributes.lCustomColumns to array of structs --->
 <cfif listLen(attributes.lCustomColumns)>

@@ -17,16 +17,20 @@
 		ftSeq="10" ftFieldset="Password Policy" ftLabel="Minimum Password Length"
 		ftHint="Set the minimum number of number characters required for a password. Choose 0 for no minimum length.">
 
+	<cfproperty name="bIncludeLetters" type="boolean" ftType="boolean" default="0" 
+		ftSeq="11" ftFieldset="Password Policy" ftLabel="Must include alphabetic characters"
+		ftHint="">
+
 	<cfproperty name="bIncludeMixedCase" type="boolean" ftType="boolean" default="0" 
-		ftSeq="11" ftFieldset="Password Policy" ftLabel="Must include mix of UPPER and lower case letters"
+		ftSeq="12" ftFieldset="Password Policy" ftLabel="Must include mix of UPPER and lower case letters"
 		ftHint="">
 
 	<cfproperty name="bIncludeNumeric" type="boolean" ftType="boolean" default="0" 
-		ftSeq="12" ftFieldset="Password Policy" ftLabel="Must include Numeric characters"
+		ftSeq="13" ftFieldset="Password Policy" ftLabel="Must include Numeric characters"
 		ftHint="">
 
 	<cfproperty name="bIncludeSymbol" type="boolean" ftType="boolean" default="0" 
-		ftSeq="13" ftFieldset="Password Policy" ftLabel="Must include Punctuation or Symbol characters"
+		ftSeq="14" ftFieldset="Password Policy" ftLabel="Must include Punctuation or Symbol characters"
 		ftHint="">
 
 	<cfproperty name="passwordPolicyHint" type="string" ftType="longchar" default="Minimum password length of 6 characters." 
@@ -79,6 +83,9 @@
 
 		<cfif int(application.config.security.passwordMinLength) gt 0>
 			<cfset regex = regex & "(?=.{#application.config.security.passwordMinLength#})">
+		</cfif>
+		<cfif application.config.security.bIncludeLetters>
+			<cfset regex = regex & "(?=.*[a-bA-Z])">
 		</cfif>
 		<cfif application.config.security.bIncludeMixedCase>
 			<cfset regex = regex & "(?=.*[a-z])(?=.*[A-Z])">
