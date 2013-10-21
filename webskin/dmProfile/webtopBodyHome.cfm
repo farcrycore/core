@@ -35,7 +35,7 @@
 	
 	<cfoutput>
 		<h3>Content You Have In Draft <img id="tip_contentInDraft" src="#application.url.webtop#/images/tooltip.png" /></h3>
-		<table width="100%" class="objectAdmin">
+		<table width="100%" class="table table-striped">
 			<thead>
 				<tr>			
 					<th>Type</th>
@@ -73,7 +73,7 @@
 	
 	<cfoutput>
 	<h3>Content You Need to Review <img id="tip_contentReview" src="#application.url.webtop#/images/tooltip.png" /></h3>
-		<table width="100%" class="objectAdmin">
+		<table width="100%" class="table table-striped">
 		<thead>
 			<tr>			
 				<th>Type</th>
@@ -117,7 +117,7 @@
 	
 	<cfoutput>
 		<h3>Content Pending Approval <img id="tip_contentPending" src="#application.url.webtop#/images/tooltip.png" /></h3>
-		<table width="100%" class="objectAdmin">
+		<table width="100%" class="table table-striped">
 			<thead>
 				<tr>			
 					<th>Type</th>
@@ -150,7 +150,7 @@
 	
 	<cfoutput>
 		<h3>Recent Activity <img id="tip_contentActivity" src="#application.url.webtop#/images/tooltip.png" /></h3>
-		<table width="100%" class="objectAdmin">
+		<table width="100%" class="table table-striped">
 			<thead>
 				<tr>			
 					<th>Type</th>
