@@ -1091,6 +1091,10 @@ alert(response.message);
 
 					var id = row.data("objectid");
 					var relativenlevel = row.data("spacers");
+					// correct the relativenlevel for non-expandable folder nodes
+					if (row.data("nodetype") == "folder" && row.data("expandable") == 0) {
+						relativenlevel -= 1;
+					}
 
 					var descendants = $j();
 					var loadCollapsed = false;

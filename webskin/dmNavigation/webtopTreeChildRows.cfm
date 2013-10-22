@@ -145,7 +145,7 @@
 
 
 	<!--- determine if this node is currently expanded --->
-	<cfif bRootNode AND NOT url.bLoadCollapsed>
+	<cfif expandable eq 1 AND bRootNode AND NOT url.bLoadCollapsed>
 		<cfset bExpanded = true>
 	</cfif>
 	<cfif expandable eq 1 AND listFindNoCase(stParam.expandedNodes, stNav.objectid, "|") AND NOT url.bIgnoreExpandedNodes>
