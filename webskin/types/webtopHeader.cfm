@@ -103,8 +103,10 @@
 							<li class="nav-header">Developer Tools</li>
 							<li><a href="#application.fapi.fixURL(addvalues='tracewebskins=1')#">Webskin Tracer</a></li>
 							<li><a href="#application.fapi.fixURL(addvalues='profile=1')#">Profiler</a></li> --->
-							<li class="divider"></li>
-							<li><a href="#application.fapi.fixURL(addvalues='updateapp=1')#">Update Application</a></li>
+							<cfif application.security.checkPermission(permission="developer")>
+								<li class="divider"></li>
+								<li><a href="#application.fapi.fixURL(addvalues='updateapp=1')#">Update Application</a></li>
+							</cfif>
 							<li class="divider"></li>
 							<li><a href="#application.url.webtop#?logout=1"><admin:resource key="coapi.dmProfile.general.logout">Logout</admin:resource></a></li>
 						</ul>

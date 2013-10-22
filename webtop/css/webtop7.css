@@ -1232,3 +1232,18 @@ br[style^="clear:both"] {
 	font-size: 15px;
 	line-height: 18px;
 }
+
+@media print {
+	body.webtop {
+		padding-top:0;
+	}
+	
+	.farcry-header, .farcry-footer, .btn {
+		display: none;
+	}
+
+	.farcry-main {
+		border: 0 none transparent;
+		margin: 0;
+	}
+}
