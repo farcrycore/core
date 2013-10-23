@@ -17,7 +17,7 @@
 <ft:field label="Version">
 	<cfoutput>#application.sysInfo.farcryVersionTagLine#</cfoutput>
 </ft:field>
-<ft:field label="Latt Modified">
+<ft:field label="Last Modified">
 	<cfoutput>#lcase(timeformat(coreLastModified,'hh:mmtt'))#, #dateformat(coreLastModified,'d mmm yyyy')#</cfoutput>
 </ft:field>
 
