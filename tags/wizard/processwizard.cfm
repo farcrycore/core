@@ -13,8 +13,8 @@
 
 <cfif thistag.ExecutionMode EQ "Start">
 
-	<cfif isDefined("FORM.FarcryFormSubmitted") AND isDefined("FarcryFormSubmitButtonClicked#FORM.FarcryFormSubmitted#") AND len(evaluate("FarcryFormSubmitButtonClicked#FORM.FarcryFormSubmitted#"))>
-		<cfset FORM.FarcryFormSubmitButton = evaluate("FarcryFormSubmitButtonClicked#FORM.FarcryFormSubmitted#") />
+	<cfif StructKeyExists(FORM, 'FarcryFormSubmitted') AND StructKeyExists(FORM, 'FarcryFormSubmitButtonClicked#FORM.FarcryFormSubmitted#') AND FORM['FarcryFormSubmitButtonClicked#FORM.FarcryFormSubmitted#'] NEQ "">
+		<cfset FORM.FarcryFormSubmitButton = evaluate("FORM.FarcryFormSubmitButtonClicked#FORM.FarcryFormSubmitted#") />
 	</cfif>
 	
 	<!--- Determine if we are processing the Action or the current step --->
