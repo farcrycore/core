@@ -218,7 +218,12 @@
 
 			<!--- execute the git command --->
 			<cfset stAttributes.errorVariable = "outputError">
-			<cfexecute name="#execName#" arguments="#execArgs#" timeout="15" variable="output" attributeCollection="#stAttributes#" />
+			<cftry>
+				<cfexecute name="#execName#" arguments="#execArgs#" timeout="15" variable="output" attributeCollection="#stAttributes#" />
+				<cfcatch>
+					<cfset outputError = "#cfcatch.message# #cfcatch.detail#">
+				</cfcatch>
+			</cftry>
 		</cfif>
 
 		<cfset stResult["path"] = arguments.path>
@@ -260,7 +265,12 @@
 
 			<!--- execute the svn command --->
 			<cfset stAttributes.errorVariable = "outputError">
-			<cfexecute name="#execName#" arguments="#execArgs#" timeout="15" variable="output" attributeCollection="#stAttributes#" />
+			<cftry>
+				<cfexecute name="#execName#" arguments="#execArgs#" timeout="15" variable="output" attributeCollection="#stAttributes#" />
+				<cfcatch>
+					<cfset outputError = "#cfcatch.message# #cfcatch.detail#">
+				</cfcatch>
+			</cftry>
 		</cfif>
 
 		<cfset stResult["path"] = arguments.path>
