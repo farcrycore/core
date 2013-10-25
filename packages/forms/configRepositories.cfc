@@ -4,12 +4,12 @@
 	<cfproperty name="gitExecutable" type="string" default="C:\Program Files (x86)\Git\bin\git.exe" required="false"
 		ftSeq="1" ftFieldset="Executable Paths" ftLabel="Git Executable"
 		ftType="string"
-		ftHint="e.g. git or C:\Program Files (x86)\Git\bin\git.exe">
+		ftHint="e.g. /usr/bin/git or C:\Program Files (x86)\Git\bin\git.exe">
 
 	<cfproperty name="svnExecutable" type="string" default="C:\Program Files\TortoiseSVN\bin\svn.exe" required="false"
 		ftSeq="2" ftFieldset="Executable Paths" ftLabel="SVN Executable"
 		ftType="string"
-		ftHint="e.g. svn or C:\Program Files\TortoiseSVN\bin\svn.exe">
+		ftHint="e.g. /usr/bin/svn or C:\Program Files\TortoiseSVN\bin\svn.exe">
 
 
 	<!--- repository methods --->
@@ -80,61 +80,100 @@
 		<cfset pathSVNDir = arguments.path & "/.svn">
 		<cfset bSVNDirExists = directoryExists(pathSVNDir)>
 
-		<!--- check git remote service --->
-		<cfset stCmdResult = executeGitCommand("remote -v", arguments.path)>
-		<cfif stCmdResult.success>
-			<cfif findNoCase("github.com", stCmdResult.output)>
-				<cfset stResult["service"] = "github">
-			<cfelseif findNoCase("bitbucket.org", stCmdResult.output)>
-				<cfset stResult["service"] = "bitbucket">
-			<cfelse>
-				<cfset stResult["service"] = "other">
-			</cfif>
-		</cfif>
-		<!--- check git origin url --->
-		<cfset stCmdResult = executeGitCommand("config --get remote.origin.url", arguments.path)>
-		<cfif stCmdResult.success>
-			<cfset stResult["origin"] = stCmdResult.output>
-		</cfif>
-		<!--- check current git branch --->
-		<cfset stCmdResult = executeGitCommand("branch", arguments.path)>
-		<cfif stCmdResult.success>
-			<cfset stResult["branch"] = reReplaceNoCase(stCmdResult.output, ".*\* (.*)\b.*", "\1")>
-		</cfif>
-		<!--- check current git commit hash --->
-		<cfset stCmdResult = executeGitCommand("rev-parse --short HEAD", arguments.path)>
-		<cfif stCmdResult.success>
-			<cfset stResult["commit"] = stCmdResult.output>
-		</cfif>
-		<!--- check current git commit date --->
-		<cfset stCmdResult = executeGitCommand("log --pretty=format:%ad --date=short -1", arguments.path)>
-		<cfif stCmdResult.success>
-			<cfset stResult["date"] = stCmdResult.output>
-		</cfif>
-		<!--- check for dirty git repo --->
-		<cfset stCmdResult = executeGitCommand("ls-files -m -o --exclude-standard", arguments.path)>
-		<cfif stCmdResult.success>
-			<cfset stResult["isDirty"] = len(stCmdResult.output) ? true : false>
-			<cfset stResult["dirtyFiles"] = stCmdResult.output>
-		</cfif>
-
-		<!--- check svn url --->
-		<cfset stCmdResult = executeSVNCommand("info", arguments.path)>
-		<cfif stCmdResult.success>
-			<cfset stResult["url"] = reReplaceNoCase(stCmdResult.output, ".*URL: (.*?)[\s].*", "\1")>
-			<cfset stResult["revision"] = reReplaceNoCase(stCmdResult.output, ".*Revision: (.*?)[\s].*", "\1")>
-			<cfset stResult["date"] = reReplaceNoCase(stCmdResult.output, ".*Last Changed Date: (.*?)[\s].*", "\1")>
-		</cfif>
-		<!--- check for dirty svn repo --->
-		<cfset stCmdResult = executeSVNCommand("diff --internal-diff", arguments.path)>
-		<cfif stCmdResult.success>
-			<cfset stResult["isDirty"] = len(stCmdResult.output) ? true : false>
-		</cfif>
-
 		<cfif bGitDirExists>
 			<cfset stResult["type"] = "git">
+
+			<!--- check git origin url --->
+			<cfset stCmdResult = executeGitCommand("config --get remote.origin.url", arguments.path)>
+			<cfset stResult["success"] = false>
+			<cfset stResult["error"] = "">
+			<cfset stResult["origin"] = "">
+			<cfif stCmdResult.success>
+				<cfset stResult["origin"] = stCmdResult.output>
+				<cfset stResult["success"] = true>
+			<cfelse>
+				<cfset stResult["error"] = appendError(stResult["error"], stCmdResult.error)>
+			</cfif>
+			<!--- check git remote service --->
+			<cfset stCmdResult = executeGitCommand("remote -v", arguments.path)>
+			<cfset stResult["service"] = "other">
+			<cfif stCmdResult.success>
+				<cfif findNoCase("github.com", stCmdResult.output)>
+					<cfset stResult["service"] = "github">
+				<cfelseif findNoCase("bitbucket.org", stCmdResult.output)>
+					<cfset stResult["service"] = "bitbucket">
+				</cfif>
+			<cfelse>
+				<cfset stResult["success"] = false>
+				<cfset stResult["error"] = appendError(stResult["error"], stCmdResult.error)>
+			</cfif>
+			<!--- check current git branch --->
+			<cfset stCmdResult = executeGitCommand("branch", arguments.path)>
+			<cfset stResult["branch"] = "">
+			<cfif stCmdResult.success>
+				<cfset stResult["branch"] = reReplaceNoCase(stCmdResult.output, ".*\* (.*)\b.*", "\1")>
+			<cfelse>
+				<cfset stResult["success"] = false>
+				<cfset stResult["error"] = appendError(stResult["error"], stCmdResult.error)>
+			</cfif>
+			<!--- check current git commit hash --->
+			<cfset stCmdResult = executeGitCommand("rev-parse --short HEAD", arguments.path)>
+			<cfset stResult["commit"] = "">
+			<cfif stCmdResult.success>
+				<cfset stResult["commit"] = stCmdResult.output>
+			<cfelse>
+				<cfset stResult["success"] = false>
+				<cfset stResult["error"] = appendError(stResult["error"], stCmdResult.error)>
+			</cfif>
+			<!--- check current git commit date --->
+			<cfset stCmdResult = executeGitCommand("log --pretty=format:%ad --date=short -1", arguments.path)>
+			<cfset stResult["date"] = "">
+			<cfif stCmdResult.success>
+				<cfset stResult["date"] = stCmdResult.output>
+			<cfelse>
+				<cfset stResult["success"] = false>
+				<cfset stResult["error"] = appendError(stResult["error"], stCmdResult.error)>
+			</cfif>
+			<!--- check for dirty git repo --->
+			<cfset stCmdResult = executeGitCommand("ls-files -m -o --exclude-standard", arguments.path)>
+			<cfset stResult["isDirty"] = false>
+			<cfset stResult["dirtyFiles"] = "">
+			<cfif stCmdResult.success>
+				<cfset stResult["isDirty"] = len(stCmdResult.output) ? true : false>
+				<cfset stResult["dirtyFiles"] = stCmdResult.output>
+			<cfelse>
+				<cfset stResult["success"] = false>
+				<cfset stResult["error"] = appendError(stResult["error"], stCmdResult.error)>
+			</cfif>
+
 		<cfelseif bSVNDirExists>
 			<cfset stResult["type"] = "svn">
+
+			<!--- check svn url --->
+			<cfset stCmdResult = executeSVNCommand("info", arguments.path)>
+			<cfset stResult["success"] = false>
+			<cfset stResult["error"] = "">
+			<cfset stResult["url"] = "">
+			<cfset stResult["revision"] = "">
+			<cfset stResult["date"] = "">
+			<cfif stCmdResult.success>
+				<cfset stResult["url"] = reReplaceNoCase(stCmdResult.output, ".*URL: (.*?)[\s].*", "\1")>
+				<cfset stResult["revision"] = reReplaceNoCase(stCmdResult.output, ".*Revision: (.*?)[\s].*", "\1")>
+				<cfset stResult["date"] = reReplaceNoCase(stCmdResult.output, ".*Last Changed Date: (.*?)[\s].*", "\1")>
+				<cfset stResult["success"] = true>
+			<cfelse>
+				<cfset stResult["error"] = appendError(stResult["error"], stCmdResult.error)>
+			</cfif>
+			<!--- check for dirty svn repo --->
+			<cfset stCmdResult = executeSVNCommand("diff --internal-diff", arguments.path)>
+			<cfset stResult["isDirty"] = false>
+			<cfif stCmdResult.success>
+				<cfset stResult["isDirty"] = len(stCmdResult.output) ? true : false>
+			<cfelse>
+				<cfset stResult["success"] = false>
+				<cfset stResult["error"] = appendError(stResult["error"], stCmdResult.error)>
+			</cfif>
+
 		<cfelse>
 			<cfset stResult["type"] = "unversioned">
 		</cfif>
@@ -223,5 +262,16 @@
 		<cfreturn stResult>
 	</cffunction>
 
+	<cffunction name="appendError" returntype="string">
+		<cfargument name="currentError" required="true">
+		<cfargument name="newError" required="true">
+
+		<cfset var result = currentError>
+		<cfif NOT findNoCase(newError, currentError)>
+			<cfset result = result & newError>
+		</cfif>
+
+		<cfreturn result>
+	</cffunction>
 
 </cfcomponent>

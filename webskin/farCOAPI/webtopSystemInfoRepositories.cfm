@@ -25,20 +25,28 @@
 		<tbody>
 		<cfloop from="1" to="#arrayLen(stRepoData["git"])#" index="i">
 			<cfset stRepo = stRepoData["git"][i]>
-			<tr>
-				<td nowrap="nowrap">
-					<span <cfif stRepo.isDirty>style="color: red"<cfelse>style="color: green"</cfif>>
-					<i class="icon-#stRepo.service# icon-fixed-width"></i> 
-					#stRepo.name#
-					</span>
-				</td>
-				<td>#stRepo.origin# (#stRepo.branch# #stRepo.commit#) #stRepo.date#</td>
-				<td>
-					<cfif stRepo.isDirty>
-						#replace(stRepo.dirtyFiles, chr(10), "<br>", "all")#
-					</cfif>
-				</td>
-			</tr>
+			<cfif stRepo.success>
+				<tr>
+					<td nowrap="nowrap">
+						<span <cfif stRepo.isDirty>style="color: red"<cfelse>style="color: green"</cfif>>
+						<i class="icon-#stRepo.service# icon-fixed-width"></i> 
+						#stRepo.name#
+						</span>
+					</td>
+					<td>#stRepo.origin# (#stRepo.branch# #stRepo.commit#) #stRepo.date#</td>
+					<td>
+						<cfif stRepo.isDirty>
+							#replace(stRepo.dirtyFiles, chr(10), "<br>", "all")#
+						</cfif>
+					</td>
+				</tr>
+			<cfelse>
+				<tr>
+					<td nowrap="nowrap">#stRepo.name#</td>
+					<td>#stRepo.error#</td>
+					<td></td>
+				</tr>				
+			</cfif>
 		</cfloop>
 		</tbody>
 		</table>
@@ -56,17 +64,25 @@
 		<tbody>
 		<cfloop from="1" to="#arrayLen(stRepoData["svn"])#" index="i">
 			<cfset stRepo = stRepoData["svn"][i]>
-			<tr>
-				<td nowrap="nowrap">
-					<span <cfif stRepo.isDirty>style="color: red"<cfelse>style="color: green"</cfif>>
-					<i class="icon-book icon-fixed-width"></i> 
-					#stRepo.name#
-					</span>
-				</td>
-				<td>#stRepo.url# (r#stRepo.revision#) #stRepo.date#</td>
-				<td>
-				</td>
-			</tr>
+			<cfif stRepo.success>
+				<tr>
+					<td nowrap="nowrap">
+						<span <cfif stRepo.isDirty>style="color: red"<cfelse>style="color: green"</cfif>>
+						<i class="icon-book icon-fixed-width"></i> 
+						#stRepo.name#
+						</span>
+					</td>
+					<td>#stRepo.url# (r#stRepo.revision#) #stRepo.date#</td>
+					<td>
+					</td>
+				</tr>
+			<cfelse>
+				<tr>
+					<td nowrap="nowrap">#stRepo.name#</td>
+					<td>#stRepo.error#</td>
+					<td></td>
+				</tr>	
+			</cfif>
 		</cfloop>
 		</tbody>
 		</table>
