@@ -1,0 +1,104 @@
+<cfsetting enablecfoutputonly="true">
+<!--- @@displayname: Repositories --->
+<!--- @@seq: 500 --->
+
+<cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
+
+<cfset oRepo = application.fapi.getContentType(typename="configRepositories")>
+
+<!--- get repository data --->
+<cfset aPaths = oRepo.getAllRepositoryPaths()>
+<cfset stRepoData = oRepo.processRepositoryPaths(aPaths)>
+
+
+<cfoutput>
+
+	<cfif structKeyExists(stRepoData, "git")>
+		<table class="table">
+		<thead>
+		<tr>
+			<th style="width: 220px">Git Repository</th>
+			<th>URL (branch commit) Date</th>
+			<th></th>
+		</tr>
+		</thead>
+		<tbody>
+		<cfloop from="1" to="#arrayLen(stRepoData["git"])#" index="i">
+			<cfset stRepo = stRepoData["git"][i]>
+			<tr>
+				<td nowrap="nowrap">
+					<span <cfif stRepo.isDirty>style="color: red"<cfelse>style="color: green"</cfif>>
+					<i class="icon-#stRepo.service# icon-fixed-width"></i> 
+					#stRepo.name#
+					</span>
+				</td>
+				<td>#stRepo.origin# (#stRepo.branch# #stRepo.commit#) #stRepo.date#</td>
+				<td>
+					<cfif stRepo.isDirty>
+						#replace(stRepo.dirtyFiles, chr(10), "<br>", "all")#
+					</cfif>
+				</td>
+			</tr>
+		</cfloop>
+		</tbody>
+		</table>
+	</cfif>
+
+	<cfif structKeyExists(stRepoData, "svn")>
+		<table class="table">
+		<thead>
+		<tr>
+			<th style="width: 220px">SVN Repository</th>
+			<th>URL (revision) Date</th>
+			<th></th>
+		</tr>
+		</thead>
+		<tbody>
+		<cfloop from="1" to="#arrayLen(stRepoData["svn"])#" index="i">
+			<cfset stRepo = stRepoData["svn"][i]>
+			<tr>
+				<td nowrap="nowrap">
+					<span <cfif stRepo.isDirty>style="color: red"<cfelse>style="color: green"</cfif>>
+					<i class="icon-book icon-fixed-width"></i> 
+					#stRepo.name#
+					</span>
+				</td>
+				<td>#stRepo.url# (r#stRepo.revision#) #stRepo.date#</td>
+				<td>
+				</td>
+			</tr>
+		</cfloop>
+		</tbody>
+		</table>
+	</cfif>
+
+	<cfif structKeyExists(stRepoData, "unversioned")>
+		<table class="table">
+		<thead>
+		<tr>
+			<th style="width: 220px">Unversioned</th>
+			<th></th>
+			<th></th>
+		</tr>
+		</thead>
+		<tbody>
+		<cfloop from="1" to="#arrayLen(stRepoData["unversioned"])#" index="i">
+			<cfset stRepo = stRepoData["unversioned"][i]>
+			<tr>
+				<td nowrap="nowrap">
+					<i class="icon-folder-close icon-fixed-width"></i> 
+					#stRepo.name#
+				</td>
+				<td nowrap="nowrap"></td>
+				<td>
+				</td>
+			</tr>
+		</cfloop>
+		</tbody>
+		</table>
+	</cfif>
+
+</cfoutput>
+
+
+<cfsetting enablecfoutputonly="false">
