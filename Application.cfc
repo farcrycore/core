@@ -667,15 +667,9 @@
 			<cfelse>
 				<cfset installLink = "#cgi.context_path#/farcry/core/webtop/install/noProject.cfm" />
 			</cfif>
-			
+
 			<cflocation url="#installLink#" addtoken="false">
 			
-			<cfoutput>
-				<h1>FarCry Project Not Found</h1>
-				<p>I'm terribly sorry, I can't find a FarCry project on this server to administer.</p>
-				<p><a href="#installLink#">CLICK HERE TO INSTALL A NEW PROJECT</a></p>
-			</cfoutput>
-			<cfabort />		
 		</cfif>
 	
 		<cfreturn loc />
