@@ -8,7 +8,7 @@
 
 <!--- get repository data --->
 <cfset aPaths = oRepo.getAllRepositoryPaths()>
-<cfset stRepoData = oRepo.processRepositoryPaths(aPaths)>
+<cfset stRepoData = oRepo.processRepositoryPaths(aPaths, true)>
 
 
 <cfoutput>

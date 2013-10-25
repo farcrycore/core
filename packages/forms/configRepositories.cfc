@@ -37,28 +37,34 @@
 		<cfreturn aPaths>
 	</cffunction>
 
-	<cffunction name="processRepositoryPaths" returntype="struct">
+	<cffunction name="processRepositoryPaths" returntype="any">
 		<cfargument name="aPaths" required="true">
+		<cfargument name="nestedResults" required="false" default="false">
 
-		<cfset var stResult = structNew()>
+		<cfset var result = arrayNew(1)>
 		<cfset var i = 0>
 		<cfset var stRepo = structNew()>
 
+		<cfif arguments.nestedResults>
+			<cfset result = structNew()>
+			<cfset result["git"] = arrayNew(1)>
+			<cfset result["svn"] = arrayNew(1)>
+			<cfset result["unversioned"] = arrayNew(1)>
+		</cfif>
+
 		<!--- process paths --->
-		<cfset stResult["git"] = arrayNew(1)>
-		<cfset stResult["svn"] = arrayNew(1)>
-		<cfset stResult["unversioned"] = arrayNew(1)>
-
 		<cfloop from="1" to="#arrayLen(aPaths)#" index="i">
-
 			<!--- get the repo data --->
 			<cfset stRepo = processRepository(aPaths[i])>
-			<!--- add the repository to the appropriate array --->
-			<cfset arrayAppend(stResult[stRepo.type], stRepo)>
-
+			<!--- add the repository to the array --->
+			<cfif arguments.nestedResults>
+				<cfset arrayAppend(result[stRepo.type], stRepo)>
+			<cfelse>
+				<cfset arrayAppend(result, stRepo)>
+			</cfif>
 		</cfloop>
 
-		<cfreturn stResult>
+		<cfreturn result>
 	</cffunction>
 
 	<cffunction name="processRepository" returntype="struct">
@@ -194,6 +200,7 @@
 		<cfset var gitExecutable = "">
 		<cfset var execName = "">
 		<cfset var execArgs = "">
+		<cfset var stAttributes = structNew()>
 
 		<!--- only execute the command on git repositories --->
 		<cfif bGitDirExists>
@@ -210,7 +217,8 @@
 			</cfif>
 
 			<!--- execute the git command --->
-			<cfexecute name="#execName#" arguments="#execArgs#" timeout="15" variable="output" errorVariable="outputError" />
+			<cfset stAttributes.errorVariable = "outputError">
+			<cfexecute name="#execName#" arguments="#execArgs#" timeout="15" variable="output" attributeCollection="#stAttributes#" />
 		</cfif>
 
 		<cfset stResult["path"] = arguments.path>
@@ -234,6 +242,7 @@
 		<cfset var svnExecutable = "">
 		<cfset var execName = "">
 		<cfset var execArgs = "">
+		<cfset var stAttributes = structNew()>
 
 		<!--- only execute the command on svn repositories --->
 		<cfif bSVNDirExists>
@@ -250,7 +259,8 @@
 			</cfif>
 
 			<!--- execute the svn command --->
-			<cfexecute name="#execName#" arguments="#execArgs#" timeout="15" variable="output" errorVariable="outputError" />
+			<cfset stAttributes.errorVariable = "outputError">
+			<cfexecute name="#execName#" arguments="#execArgs#" timeout="15" variable="output" attributeCollection="#stAttributes#" />
 		</cfif>
 
 		<cfset stResult["path"] = arguments.path>
