@@ -32,7 +32,11 @@
 			<cfset arrayAppend(aPaths, path)>
 		</cfloop>
 		<!--- project --->
-		<cfset arrayAppend(aPaths, application.path.project)>	
+		<cfif listLast(application.path.webroot, "\/") eq "www">
+			<cfset arrayAppend(aPaths, application.path.project)>
+		<cfelse>
+			<cfset arrayAppend(aPaths, application.path.webroot)>
+		</cfif>
 
 		<cfreturn aPaths>
 	</cffunction>
