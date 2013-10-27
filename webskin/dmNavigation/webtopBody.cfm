@@ -120,13 +120,12 @@
 </ft:processForm>
 
 
-
 <cfoutput>
 
 	<h1><i class="icon-sitemap"></i> #navTitle#</h1>
 
 	<div class="farcry-button-bar btn-group pull-left" style="margin-bottom: 5px">
-		<button class="btn btn-primary" type="button" onclick="alert('Coming soon...');"><i class="icon-plus"></i> Add Page</button>
+		<button class="btn btn-primary fc-btn-addpage" type="button"><i class="icon-plus"></i> Add Page</button>
 		<!--- <button class="btn" type="button"><i class="icon-level-up"></i> Up a Level</button> --->
 		<!--- <button class="btn" type="button"><i class="icon-reorder"></i> Sort Order</button> --->
 
@@ -207,6 +206,7 @@
 
 			<div class="modal-body" style="overflow: auto; height: 368px; max-height: 368px;">
 
+				{{##if sourceObjectID}}
 				<table class="objectadmin table table-hover farcry-objectadmin">
 				<thead>
 					<tr>
@@ -219,6 +219,7 @@
 					</tr>
 				</tbody>
 				</table>
+				{{/if}}
 
 				<table id="farcry-minitree" class="objectadmin table table-hover table-hover-all farcry-objectadmin table-unselectable">
 				<thead>
@@ -500,7 +501,11 @@
 						}
 
 
-						if (this.options.action == "copy") {
+						if (typeof this.options.action == "function") {
+							this.options.action(this.options.sourceObjectID, this.options.targetObjectID);
+							this.close();
+						}
+						else if (this.options.action == "copy") {
 							treeview.doCopyTo(this.options.sourceObjectID, this.options.targetObjectID);
 							this.close();
 						}
@@ -1410,6 +1415,30 @@ alert(response.message);
 					}
 				});
 				App.previewView.render();
+
+
+
+				$j(".farcry-button-bar .fc-btn-addpage").on("click", function(){
+
+					addPageDialogView = new TreeDialogView({
+						action: function(sourceObjectID, targetObjectID){
+							var createURL = "#application.url.webtop#/conjuror/evocation.cfm?parenttype=dmNavigation&typename=dmNavigation&objectid=" + targetObjectID;
+							$fc.objectAdminAction('Add Page', createURL, { 
+								onHidden: function(){ 
+									App.siteTreeView.loadTree("#rootObjectID#"); 
+								}
+							});
+
+						},
+						title: "Add Page...",
+						submitLabel: "Create",
+						targetText: "Add a page in the selected folder..."
+
+					});
+					addPageDialogView.render();					
+
+				});
+
 
 			});
 		</script>
