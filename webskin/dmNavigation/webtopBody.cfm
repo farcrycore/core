@@ -178,7 +178,6 @@
 <script id="preview-dialog" type="text/x-handlebars-template">
 	<div id="preview-container" class="" style="position: fixed; width:0; background: red; top: 74px; right: 0; bottom: 0; z-index: 120; overflow:visible;">
 		<div id="preview" style="position: absolute; right: -{{deviceWidth.current}}px; width: {{deviceWidth.current}}px; max-width: {{deviceWidth.current}}px; height: 100%; box-shadow: 0 0 16px rgba(0,0,0,0.32); background: ##fff;">
-
 			<div class="modal-header">
 				<button type="button" class="close" aria-hidden="true">&times;</button>
 				<h4 style="margin:0; float:left; padding-top: 2px; margin-right: 20px; line-height: 24px"><i id="previewicon" class="icon-eye-open" style="display:inline-block; font-size: 16px; width: 16px; height: 16px;"></i> Preview</h4>
@@ -187,9 +186,7 @@
 				<button style="margin-left: -2px" class="btn btn-device" type="button" data-device="mobile" data-devicewidth="{{deviceWidth.mobile}}"><i class="icon-mobile-phone"></i>&nbsp;Mobile</button>
 				&nbsp; <a href="##" target="_blank" onclick="this.href=document.getElementById('previewiframe').contentWindow.location.href;" title="Open in new tab" style="text-decoration:none; color:##777; position:relative; top: 2px;"><i class="icon-external-link"></i></a>
 			</div>
-
-			<iframe id="previewiframe" src="http://#cgi.http_host#/" frameborder="0" border="0" width="100%" height="100%" style="position: absolute; top: 40;"></iframe>
-
+			<iframe id="previewiframe" src="{{previewURL}}" frameborder="0" border="0" width="100%" height="100%" style="position: absolute; top: 40;"></iframe>
 		</div>
 	</div>
 </script>
