@@ -80,19 +80,18 @@
 </cfif>
 
 
-<!--- TODO: move this into a config --->
 <!--- get device type preview widths --->
 <cfset deviceWidth = structNew()>
 <cfset deviceWidth["desktop"] = 1050>
 <cfset deviceWidth["tablet"] = 768>
 <cfset deviceWidth["mobile"] = 480>
 
-
 <!--- get current device type --->
 <cfset currentDevice = application.fc.lib.device.getDeviceType()>
 <cfif NOT listFindNoCase("desktop,tablet,mobile", currentDevice)>
 	<cfset currentDevice = "desktop">
 </cfif>
+
 
 <!--- navigation type --->
 <cfset navTitle = "Site Navigation">
@@ -192,15 +191,16 @@
 	</ft:form>
 
 
+<script id="preview-dialog" type="text/x-handlebars-template">
 	<div id="preview-container" class="" style="position: fixed; width:0; background: red; top: 74px; right: 0; bottom: 0; z-index: 120; overflow:visible;">
-		<div id="preview" style="position: absolute; right: -#deviceWidth[currentDevice]#px; width: #deviceWidth[currentDevice]#px; max-width: #deviceWidth[currentDevice]#px; height: 100%; box-shadow: 0 0 16px rgba(0,0,0,0.32); background: ##fff;">
+		<div id="preview" style="position: absolute; right: -{{deviceWidth.current}}px; width: {{deviceWidth.current}}px; max-width: {{deviceWidth.current}}px; height: 100%; box-shadow: 0 0 16px rgba(0,0,0,0.32); background: ##fff;">
 
 			<div class="modal-header">
-				<button type="button" class="close" onclick="showPreview();" aria-hidden="true">&times;</button>
+				<button type="button" class="close" aria-hidden="true">&times;</button>
 				<h4 style="margin:0; float:left; padding-top: 2px; margin-right: 20px; line-height: 24px"><i id="previewicon" class="icon-eye-open" style="display:inline-block; font-size: 16px; width: 16px; height: 16px;"></i> Preview</h4>
-				<button style="margin-left: -2px" class="btn btn-edit" type="button" onclick="previewDevice('desktop', #deviceWidth["desktop"]#);"><i class="icon-desktop"></i>&nbsp;Desktop</button>
-				<button style="margin-left: -2px" class="btn btn-edit" type="button" onclick="previewDevice('tablet', #deviceWidth["tablet"]#);"><i class="icon-tablet"></i>&nbsp;Tablet</button>
-				<button style="margin-left: -2px" class="btn btn-edit" type="button" onclick="previewDevice('mobile', #deviceWidth["mobile"]#);"><i class="icon-mobile-phone"></i>&nbsp;Mobile</button>
+				<button style="margin-left: -2px" class="btn btn-device" type="button" data-device="desktop" data-devicewidth="{{deviceWidth.desktop}}"><i class="icon-desktop"></i>&nbsp;Desktop</button>
+				<button style="margin-left: -2px" class="btn btn-device" type="button" data-device="tablet" data-devicewidth="{{deviceWidth.tablet}}"><i class="icon-tablet"></i>&nbsp;Tablet</button>
+				<button style="margin-left: -2px" class="btn btn-device" type="button" data-device="mobile" data-devicewidth="{{deviceWidth.mobile}}"><i class="icon-mobile-phone"></i>&nbsp;Mobile</button>
 				&nbsp; <a href="##" target="_blank" onclick="this.href=document.getElementById('previewiframe').contentWindow.location.href;" title="Open in new tab" style="text-decoration:none; color:##777; position:relative; top: 2px;"><i class="icon-external-link"></i></a>
 			</div>
 
@@ -208,6 +208,8 @@
 
 		</div>
 	</div>
+</script>
+
 
 
 
@@ -262,134 +264,6 @@
 </script>
 
 
-	<script type="text/javascript">
-
-		/* preview */
-
-		function showPreview(previewURL, bShow) {
-			previewURL = previewURL || null;
-			bShow = bShow || null;
-
-			var w = $j("##preview").width();
-			var maxWidth = $j("body").width();
-			var h = $j("##preview").height();
-			var $iframe = $j("##preview iframe").height(h - 45);
-			var iframe = document.getElementById("previewiframe");
-
-			if (w > maxWidth) {
-				w = maxWidth;
-			}
-
-			previewMaxWidth(maxWidth);
-
-			if ($j("##preview").hasClass("visible") || bShow === false || previewURL == null) {
-				if (previewURL != null && $iframe.attr("src") != previewURL) {
-					$iframe.attr("src", previewURL);
-					previewLoading();
-				}
-				else {
-					$j("##preview").removeClass("visible").animate({ right: w * -1 }, 250);
-				}
-			}
-			else {
-				$iframe.attr("src", previewURL);
-				previewLoading();
-				$j("##preview").addClass("visible").animate({ right: 0 }, 250);
-			}
-
-
-		}
-
-		function previewDevice(targetDeviceType, width) {
-			var enabledWebskins = {};
-			// note: desktop should always be defaulted to false here 
-			enabledWebskins["desktop"] = false;
-			enabledWebskins["tablet"] = false;
-			enabledWebskins["mobile"] = false;
-			<cfif application.fc.lib.device.isTabletWebskinsEnabled()>
-				enabledWebskins["tablet"] = true;
-			</cfif>
-			<cfif application.fc.lib.device.isMobileWebskinsEnabled()>
-				enabledWebskins["mobile"] = true;
-			</cfif>
-
-			// get the previous device type
-			var previousDeviceType = $fc.getDeviceType();
-
-			// set the new target device type
-			$fc.setDeviceTypeCookie(targetDeviceType);
-			// set the new device width
-			previewWidth(width);
-
-			// reload if different webskins will be used
-				// previous == target (do nothing)
-				// desktop -> tablet (only if target enabled)
-				// desktop -> mobile (only if target enabled)
-				// tablet -> desktop (only if previous enabled)
-				// mobile -> desktop (only if previous enabled)
-				// tablet -> mobile (if either enabled)
-				// mobile -> tablet (if either enabled)
-			if (previousDeviceType == targetDeviceType) {
-				// no reload
-			}
-			else if (previousDeviceType == "desktop" && enabledWebskins[targetDeviceType]) {
-				previewReload();
-			}
-			else if (targetDeviceType == "desktop" && enabledWebskins[previousDeviceType]) {
-				previewReload();
-			}
-			else if (enabledWebskins[previousDeviceType] || enabledWebskins[targetDeviceType]) {
-				previewReload();
-			}
-		}
-
-		function previewReload() {
-			var iframe = document.getElementById("previewiframe");
-			iframe.contentWindow.location.reload();
-			previewLoading();
-		}
-
-		function previewLoading() {
-			var iframe = document.getElementById("previewiframe");
-			$j("##previewicon").attr("class", "icon-spinner icon-spin");
-			iframe.onload = (function() {
-				$j("##previewicon").attr("class", "icon-eye-open");
-			});
-		}
-
-		function previewWidth(w) {
-			$j("##preview").animate({ width: w }, 200);
-		}
-
-		function previewMaxWidth(w) {
-			$j("##preview").css("max-width", w);
-		}
-
-		/* resize the preview when the browser changes */ 
-		$j(window).resize(function resizePreview() {
-			// update the max width
-			var w = $j(document.body).width();
-			previewMaxWidth(w);
-			// keep the preview off screen
-			if (!$j("##preview").hasClass("visible")) {
-				$j("##preview").css("right", -w);
-			}
-		});
-
-		$j(function() {
-
-			/* bind preview buttons */
-			$j(".farcry-objectadmin").on("click", ".objectadmin-actions a.fc-btn-preview", function(evt){
-				//evt.preventDefault();
-				var previewURL = $j(this).attr("href");
-				showPreview(previewURL);
-				return false;
-			});
-
-		});
-
-
-	</script>
 
 
 	<!--- get root tree data --->
@@ -401,6 +275,186 @@
 	<skin:htmlHead>
 		<script type="text/javascript">
 			App = {};
+
+
+			PreviewView = Backbone.View.extend({
+
+				options: {
+					attachTo: null,
+					previewURL: null,
+					currentDevice: "desktop",
+
+					bUseTabletWebskins: false,
+					bUseMobileWebskins: false,
+					deviceWidth: {
+						desktop: 1050,
+						tablet: 768,
+						mobile: 480,
+						// optional, current device width is looked up on init
+						current: 1050
+					}
+
+				},
+
+				initialize: function PreviewView_initialize(options){
+					this.template = Handlebars.compile(Backbone.$("##preview-dialog").html());
+					// look up the width of the current device
+					this.options.deviceWidth.current = this.options.deviceWidth[this.options.currentDevice] || this.options.deviceWidth.current;
+
+				},
+
+				events: {
+					"click .modal-header .close, .btn-cancel": "close",
+					"click .modal-header .btn-device": "clickDevice"
+
+				},
+
+				clickDevice: function PreviewView_clickDevice(evt){
+					var button = Backbone.$(evt.currentTarget);
+					var device = button.data("device");
+					var deviceWidth = button.data("devicewidth");
+
+					this.previewDevice(device, deviceWidth);
+
+					return false;
+				},
+
+				render: function PreviewView_render(){
+					var self = this;
+
+					this.$el.html(this.template(this.options));
+					Backbone.$("body").append(this.$el);   
+
+					// bind preview buttons on the element being attached to
+					Backbone.$(this.options.attachTo).on("click", ".fc-btn-preview", function(evt){
+						var previewURL = Backbone.$(this).attr("href");
+						self.showPreview(previewURL);
+						return false;
+					});
+
+					// resize the preview when the browser changes
+					Backbone.$(window).resize(function resizePreview() {
+						// update the max width
+						var w = Backbone.$(document.body).width();
+						self.previewMaxWidth(w);
+						// update the iframe height
+						var h = Backbone.$("##preview").height();
+						Backbone.$("##preview iframe").height(h - 45);
+
+						// keep the preview off screen
+						if (!Backbone.$("##preview").hasClass("visible")) {
+							Backbone.$("##preview").css("right", -w);
+						}
+					});
+
+
+				},
+
+				showPreview: function PreviewView_showPreview(previewURL, bShow) {
+					previewURL = previewURL || null;
+					bShow = bShow || null;
+
+					var self = this;
+
+					var w = Backbone.$("##preview").width();
+					var maxWidth = Backbone.$("body").width();
+					// update the iframe height
+					var h = Backbone.$("##preview").height();
+					var $iframe = Backbone.$("##preview iframe").height(h - 45);
+
+					if (w > maxWidth) {
+						w = maxWidth;
+					}
+
+					self.previewMaxWidth(maxWidth);
+
+					if (Backbone.$("##preview").hasClass("visible") || bShow === false || previewURL == null) {
+						if (previewURL != null && $iframe.attr("src") != previewURL) {
+							$iframe.attr("src", previewURL);
+							self.previewLoading();
+						}
+						else {
+							Backbone.$("##preview").removeClass("visible").animate({ right: w * -1 }, 250);
+						}
+					}
+					else {
+						if (previewURL != null && $iframe.attr("src") != previewURL) {
+							$iframe.attr("src", previewURL);
+							self.previewLoading();
+						}
+						Backbone.$("##preview").addClass("visible").animate({ right: 0 }, 250);
+					}
+
+				},
+
+				previewDevice: function PreviewView_previewDevice(targetDeviceType, width) {
+
+					var self = this;
+
+					// desktop is false to avoid reloads when device specific webskins are not used
+					var reloadWebskin = {
+						"desktop": false,
+						"tablet": this.options.bUseTabletWebskins,
+						"mobile": this.options.bUseMobileWebskins
+					};
+
+					// get the previous device type
+					var previousDeviceType = $fc.getDeviceType();
+					// set the new target device type
+					$fc.setDeviceTypeCookie(targetDeviceType);
+					// set the new device width
+					self.previewWidth(width);
+
+					// reload if different webskins will be used
+						// previous == target (do nothing)
+						// desktop -> tablet (only if target enabled)
+						// desktop -> mobile (only if target enabled)
+						// tablet -> desktop (only if previous enabled)
+						// mobile -> desktop (only if previous enabled)
+						// tablet -> mobile (if either enabled)
+						// mobile -> tablet (if either enabled)
+					if (previousDeviceType == targetDeviceType) {
+						// no reload
+					}
+					else if (previousDeviceType == "desktop" && reloadWebskin[targetDeviceType]) {
+						self.previewReload();
+					}
+					else if (targetDeviceType == "desktop" && reloadWebskin[previousDeviceType]) {
+						self.previewReload();
+					}
+					else if (reloadWebskin[previousDeviceType] || reloadWebskin[targetDeviceType]) {
+						self.previewReload();
+					}
+				},
+
+				previewReload: function PreviewView_previewReload() {
+					var iframe = document.getElementById("previewiframe");
+					iframe.contentWindow.location.reload();
+					this.previewLoading();
+				},
+
+				previewLoading: function PreviewView_previewLoading() {
+					var iframe = document.getElementById("previewiframe");
+					Backbone.$("##previewicon").attr("class", "icon-spinner icon-spin");
+					iframe.onload = (function() {
+						Backbone.$("##previewicon").attr("class", "icon-eye-open");
+					});
+				},
+
+				previewWidth: function PreviewView_previewWidth(w) {
+					Backbone.$("##preview").animate({ width: w }, 200);
+				},
+
+				previewMaxWidth: function PreviewView_previewMaxWidth(w) {
+					Backbone.$("##preview").css("max-width", w);
+				},
+
+
+				close: function close(evt){
+					this.showPreview();
+				}
+
+			});
 
 
 			TreeDialogView = Backbone.View.extend({
@@ -1361,6 +1415,19 @@ alert(response.message);
 				});
 				App.siteTreeView.render();
 
+				App.previewView = new PreviewView({
+					attachTo: "##farcry-sitetree",
+					previewURL: "http://#cgi.http_host#/",
+					currentDevice: "#currentDevice#",
+					bUseTabletWebskins: #application.fc.lib.device.isTabletWebskinsEnabled()#,
+					bUseMobileWebskins: #application.fc.lib.device.isMobileWebskinsEnabled()#,
+					deviceWidth: {
+						desktop: #deviceWidth["desktop"]#,
+						tablet: #deviceWidth["tablet"]#,
+						mobile: #deviceWidth["mobile"]#
+					}
+				});
+				App.previewView.render();
 
 			});
 		</script>
