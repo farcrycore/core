@@ -79,21 +79,12 @@
 	<cfset rootObjectID = application.fapi.getNavId("home")>
 </cfif>
 
-
-<!--- get current device type --->
-<cfset currentDevice = application.fc.lib.device.getDeviceType()>
-<cfif NOT listFindNoCase("desktop,tablet,mobile", currentDevice)>
-	<cfset currentDevice = "desktop">
-</cfif>
-
-
 <!--- navigation type --->
 <cfset navTitle = "Site Navigation">
 <!--- TODO: built-in "navigation types" with separate menu items? testing changing the page heading... --->
 <cfif listLast(url.id, ".") eq "utility">
 	<cfset navTitle = "Utility Navigation">
 </cfif>
-
 
 
 <!--- process forms --->
@@ -205,8 +196,6 @@
 </script>
 
 
-
-
 <script id="tree-dialog" type="text/x-handlebars-template">
 	<div id="minitree-container" class="" style="position: fixed; z-index:1050; width:400px; height: 500px; left: 50%; top: 50%; overflow:visible;">
 		<div id="minitree" style="position: absolute; top: -250px; left: -200px; width: 100%; height: 100%; border: 1px solid ##ccc; border-radius: 2px; box-shadow: 0 0 16px rgba(0,0,0,0.32); background: ##fff;">
@@ -256,7 +245,6 @@
 	</div>
 	<div class="modal-backdrop fade in"></div>
 </script>
-
 
 
 
@@ -1412,7 +1400,7 @@ alert(response.message);
 				App.previewView = new PreviewView({
 					attachTo: "##farcry-sitetree",
 					previewURL: "http://#cgi.http_host#/",
-					currentDevice: "#currentDevice#",
+					currentDevice: "#application.fc.lib.device.getDeviceType()#",
 					bUseTabletWebskins: #application.fc.lib.device.isTabletWebskinsEnabled()#,
 					bUseMobileWebskins: #application.fc.lib.device.isMobileWebskinsEnabled()#,
 					deviceWidth: {
