@@ -141,9 +141,9 @@ FARCRY INCLUDE FILES
 
 	<h1>
 		<cfif len(application.stCOAPI[stobj.typename].icon)>
-			<i class="#application.stCOAPI[stobj.typename].icon#"></i>
+			<i class="fa #application.stCOAPI[stobj.typename].icon#"></i>
 		<cfelse>
-			<i class="icon-file"></i>
+			<i class="fa fa-file"></i>
 		</cfif>
 		#stobj.label#
 	</h1>

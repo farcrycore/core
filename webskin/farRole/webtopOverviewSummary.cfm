@@ -1,5 +1,5 @@
 <cfsetting enablecfoutputonly="true">
-<!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
+<!--- @@Copyright: Daemon Pty Limited 2002-2013, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
 
@@ -32,15 +32,14 @@ FARCRY INCLUDE FILES
 START WEBSKIN
  ------------------>
 
-
 <!--- 
 editSitePermissions,editTypePermissions,editWebtopPermissions
  --->
 <cfoutput>
 	<div class="developer-actions">
 		<div class="objectid" style="display:none;">#stObj.objectid#</div>
-		<a onclick="var oid = $j(this).siblings('.objectid').toggle();selectText(oid[0]);return false;" title="See objectid" class="icon-tag">&nbsp;</a>
-		<a onclick="$fc.openDialog('Property Dump', '#application.url.farcry#/object_dump.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#');return false;" title="Open a window containing all the raw data of this content item" class="icon-list-alt">&nbsp;</a>
+		<a onclick="var oid = $j(this).siblings('.objectid').toggle();selectText(oid[0]);return false;" title="See objectid"><i class="fa fa-tag"></i></a>
+		<a onclick="$fc.openDialog('Property Dump', '#application.url.farcry#/object_dump.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#');return false;" title="Open a window containing all the raw data of this content item"><i class="fa fa-list"></i></a>
 	</div>
 </cfoutput>
 
@@ -65,7 +64,6 @@ editSitePermissions,editTypePermissions,editWebtopPermissions
 	</ft:field>	
 	
 </ft:fieldset>
-
 
 
 <cfsetting enablecfoutputonly="false">

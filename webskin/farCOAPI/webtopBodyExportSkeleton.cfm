@@ -99,7 +99,7 @@
 							<td><i id="progress-#iTable#" class="fa fa-check-square-o" style="color:green;" title="Complete"></i></td>
 							<td id="response-#iTable#">Already Complete</td>
 						<cfelse>
-							<td><i id="progress-#iTable#" class="fa fa-times-square-o" style="color:orange;" title="pending"></i></td>
+							<td><i id="progress-#iTable#" class="fa fa-times-circle" style="color:orange;" title="pending"></i></td>
 							<td id="response-#iTable#"></td>
 							<skin:onReady>
 								$j.ajaxq('ajaxExportTable',{
@@ -112,7 +112,7 @@
 									$j('##progress-#iTable#').removeClass('fa-check-square-o').addClass('fa-spinner fa-spin').attr('title','Processing');
 								},
 								success: function(data){;
-									$j('##progress-#iTable#').removeClass('fa-times-square-o fa-spinner fa-spin').addClass('fa-check-square-o').css('color','green').attr('title','Success');
+									$j('##progress-#iTable#').removeClass('fa-times-circle fa-spinner fa-spin').addClass('fa-check-square-o').css('color','green').attr('title','Success');
 									$j('##response-#iTable#').html(data);
 
 									if (data.BEXPORTCOMPLETE == 1){
@@ -125,7 +125,7 @@
 									
 								}, 
 								error: function(data){	
-									$j('##progress-#iTable#').removeClass('fa-times-square-o fa-spinner fa-spin').addClass('fa-exclamation-triangle').css('color','red').attr('title','Error');
+									$j('##progress-#iTable#').removeClass('fa-times-circle fa-spinner fa-spin').addClass('fa-exclamation-triangle').css('color','red').attr('title','Error');
 									$j('##response-#iTable#').html(data.statusText);
 									$j('##btn-retry').show();
 								},

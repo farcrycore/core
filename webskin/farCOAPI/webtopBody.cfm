@@ -191,7 +191,7 @@
 							<cfset arrayappend(changes,"<div class='altered field'><i class='fa fa-question-square-o fa-fw'></i> #thisfield#</div>") />
 						</cfcase>
 						<cfcase value="-">
-							<cfset arrayappend(changes,"<div class='deleted field'><i class='fa fa-times-square-o fa-fw'></i> #thisfield#</div>") />
+							<cfset arrayappend(changes,"<div class='deleted field'><i class='fa fa-times-circle fa-fw'></i> #thisfield#</div>") />
 						</cfcase>
 					</cfswitch>
 				</cfloop>
@@ -204,7 +204,7 @@
 							<cfset arrayappend(changes,"<div class='altered field'><i class='fa fa-question-square-o fa-fw'></i> #thisindex#</div>") />
 						</cfcase>
 						<cfcase value="-">
-							<cfset arrayappend(changes,"<div class='deleted field'><i class='fa fa-times-square-o fa-fw'></i> #thisindex#</div>") />
+							<cfset arrayappend(changes,"<div class='deleted field'><i class='fa fa-times-circle fa-fw'></i> #thisindex#</div>") />
 						</cfcase>
 					</cfswitch>
 				</cfloop>
@@ -215,7 +215,7 @@
 				<cfset summary = listappend(summary,"<p class='undeployed coapitable'><i class='fa fa-plus-square-o fa-fw'></i> #thistable#</p>"," ") />
 			</cfcase>
 			<cfcase value="-">
-				<cfset summary = listappend(summary,"<p class='deleted coapitable'><i class='fa fa-times-square-o fa-fw'></i> #thistable#</p>"," ") />
+				<cfset summary = listappend(summary,"<p class='deleted coapitable'><i class='fa fa-times-circle fa-fw'></i> #thistable#</p>"," ") />
 			</cfcase>
 		</cfswitch>
 	</cfloop>

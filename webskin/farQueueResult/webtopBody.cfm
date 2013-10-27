@@ -72,7 +72,7 @@
 			.listing .results .alert:last-child {
 				border-bottom: 1px solid;
 			}
-			.alert .icon-info {
+			.alert .fa-info-circle {
 				cursor:pointer;
 			}
 			.info {
@@ -111,7 +111,7 @@
 			jobs[jobID] = 0;
 			
 			$j("<div id='listing-"+jobID+"' class='listing' style='display:none;'><div class='actions'><button class='btn clear-btn' data-jobid='"+jobID+"'>Clear Results</button> <span class='job-type'>?</span> created by <span class='job-owner'>?</span>, <span class='job-tasks'>?</span> tasks queued</div><div class='results'></div>").appendTo($j("##job-results-listing"));
-			$j("<li id='tab-"+jobID+"' data-jobid='"+jobID+"'><a href='##'><span class='job-label'><i class='icon-spinner icon-spin'></i></span> <span class='badge badge-success job-new-good' style='display:none;'>?</span><span class='badge badge-important job-new-bad' style='display:none;'>?</span> &nbsp;&nbsp;<i class='icon-remove remove-results'></i></a></li>").data("countgood",0).data("countbad",0).appendTo($j("##job-result-tabs")).trigger("click");
+			$j("<li id='tab-"+jobID+"' data-jobid='"+jobID+"'><a href='##'><span class='job-label'><i class='fa fa-spinner fa-spin'></i></span> <span class='badge badge-success job-new-good' style='display:none;'>?</span><span class='badge badge-important job-new-bad' style='display:none;'>?</span> &nbsp;&nbsp;<i class='fa fa-minus-square-o remove-results'></i></a></li>").data("countgood",0).data("countbad",0).appendTo($j("##job-result-tabs")).trigger("click");
 			
 			return false;
 		});
@@ -150,7 +150,7 @@
 			return false;
 		});
 		
-		$j("##job-results-listing").on("click",".icon-info",function(e){
+		$j("##job-results-listing").on("click",".fa-info-circle",function(e){
 			$j(e.currentTarget).parent().siblings(".info").toggle();
 		});
 		
@@ -220,16 +220,16 @@
 						for (var j=0, jj=results.jobs[i].newresults.length; j<jj; j++){
 							if (results.jobs[i].newresults[j].result.error){
 								countbad += 1;
-								newhtml.unshift("<div class='alert alert-error'><div class='pull-right'><i class='icon-info'></i></div>" + formatDate(results.jobs[i].newresults[j].tick) + "&nbsp;&nbsp;" + (results.jobs[i].newresults[j].result.error ? results.jobs[i].newresults[j].result.error.message : "") + "<div class='info'><pre>" + syntaxHighlight(results.jobs[i].newresults[j].result)+"</pre></div></div>");
+								newhtml.unshift("<div class='alert alert-error'><div class='pull-right'><i class='fa fa-info-circle'></i></div>" + formatDate(results.jobs[i].newresults[j].tick) + "&nbsp;&nbsp;" + (results.jobs[i].newresults[j].result.error ? results.jobs[i].newresults[j].result.error.message : "") + "<div class='info'><pre>" + syntaxHighlight(results.jobs[i].newresults[j].result)+"</pre></div></div>");
 							}
 							else{
 								countgood += 1;
-								newhtml.unshift("<div class='alert alert-success'><div class='pull-right'><i class='icon-info'></i></div>" + formatDate(results.jobs[i].newresults[j].tick) + "&nbsp;&nbsp;" + (results.jobs[i].newresults[j].result.message ? results.jobs[i].newresults[j].result.message : "")  + "<div class='info'><pre>" + syntaxHighlight(results.jobs[i].newresults[j].result)+"</pre></div></div>");
+								newhtml.unshift("<div class='alert alert-success'><div class='pull-right'><i class='fa fa-info-circle'></i></div>" + formatDate(results.jobs[i].newresults[j].tick) + "&nbsp;&nbsp;" + (results.jobs[i].newresults[j].result.message ? results.jobs[i].newresults[j].result.message : "")  + "<div class='info'><pre>" + syntaxHighlight(results.jobs[i].newresults[j].result)+"</pre></div></div>");
 							}
 						}
 						listing.prepend(newhtml.join(""));
 						
-						tab.find(".job-label:has(.icon-spinner)").html(results.jobs[i].colourHash);
+						tab.find(".job-label:has(.fa-spinner)").html(results.jobs[i].colourHash);
 						if (!tab.is(".active")){
 							tab.data("countgood",tab.data("countgood")+countgood);
 							tab.data("countbad",tab.data("countbad")+countbad);

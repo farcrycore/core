@@ -21,9 +21,9 @@
 	
 	<cfset stMetadata = application.fapi.getPropertyMetadata(typename="#stobj.typename#", property="#url.property#") />
 
-	<!------------------------------------------------------------------------------------------------
+	<!------------------------------------------------------------------------------------
 	Loop over the url and if any url parameters match any formtool metadata (prefix 'ft'), then override the metadata.
-	 ------------------------------------------------------------------------------------------------>
+	 ------------------------------------------------------------------------------------>
 	<cfloop collection="#url#" item="md">
 		<cfif left(md,2) EQ "ft" AND structKeyExists(stMetadata, md)>
 			<cfset stMetadata[md] = url[md] />
@@ -125,7 +125,7 @@
 					<cfif len(form.searchTypename)>
 						<button style="height: 30px; border-radius:0; font-size: 20px; font-weight: bold; padding: 4px 10px;" onClick="$j('##searchTypename-#stobj.typename#-#url.property#-#url.filterTypename#').attr('value',''); $j('##submit-#stobj.typename#-#url.property#-#url.filterTypename#').click(); return false;" class="btn" type="button">&times;</button>
 					</cfif>
-					<button id="submit-#stobj.typename#-#url.property#-#url.filterTypename#" style="height: 30px; border-radius:0" class="btn" value="Submit" type="submit"><b class="icon-search only-icon"></b></button>
+					<button id="submit-#stobj.typename#-#url.property#-#url.filterTypename#" style="height: 30px; border-radius:0" class="btn" value="Submit" type="submit"><i class="fa fa-search"></i></button>
 				</div>
 			</cfoutput>
 		</grid:div>

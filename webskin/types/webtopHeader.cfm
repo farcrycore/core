@@ -96,7 +96,7 @@
 							</span>
 							<span class="cog"><i class="fa fa-cog"></i></span>
 
-							<span>#webtopUsername# &nbsp;<b class="icon-caret-down"></b></span>
+							<span>#webtopUsername# &nbsp;<b class="fa fa-caret-down"></b></span>
 						</div>
 						<ul class="dropdown-menu pull-right">
 							<li><a href="#application.url.webtop#?id=home.overview&typename=dmProfile&objectid=#session.dmProfile.objectid#&bodyView=editOwn"><admin:resource key="coapi.dmProfile.general.editprofile">Edit Profile</admin:resource></a></li>
