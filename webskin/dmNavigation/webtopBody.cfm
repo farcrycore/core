@@ -80,12 +80,6 @@
 </cfif>
 
 
-<!--- get device type preview widths --->
-<cfset deviceWidth = structNew()>
-<cfset deviceWidth["desktop"] = 1050>
-<cfset deviceWidth["tablet"] = 768>
-<cfset deviceWidth["mobile"] = 480>
-
 <!--- get current device type --->
 <cfset currentDevice = application.fc.lib.device.getDeviceType()>
 <cfif NOT listFindNoCase("desktop,tablet,mobile", currentDevice)>
@@ -1422,9 +1416,9 @@ alert(response.message);
 					bUseTabletWebskins: #application.fc.lib.device.isTabletWebskinsEnabled()#,
 					bUseMobileWebskins: #application.fc.lib.device.isMobileWebskinsEnabled()#,
 					deviceWidth: {
-						desktop: #deviceWidth["desktop"]#,
-						tablet: #deviceWidth["tablet"]#,
-						mobile: #deviceWidth["mobile"]#
+						desktop: #application.fapi.getConfig("device", "desktopWidth")#,
+						tablet: #application.fapi.getConfig("device", "tabletWidth")#,
+						mobile: #application.fapi.getConfig("device", "mobileWidth")#
 					}
 				});
 				App.previewView.render();
