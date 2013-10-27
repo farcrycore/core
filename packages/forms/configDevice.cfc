@@ -5,7 +5,7 @@
 		ftSeq="1" ftFieldset="Device Widths" ftLabel="Desktop Width"
 		ftType="string" 
 		ftHint="e.g. 1050"
-		ftHelpSection="Configure the device screen width (in pixel) for previewing content as a particular device type.">
+		ftHelpSection="Configure the screen width (in pixels) for previewing content as a particular device type.">
 
 	<cfproperty name="tabletWidth" type="string" default="768" required="false"
 		ftSeq="2" ftFieldset="Device Widths" ftLabel="Tablet Width"
@@ -15,7 +15,8 @@
 	<cfproperty name="mobileWidth" type="string" default="480" required="false"
 		ftSeq="3" ftFieldset="Device Widths" ftLabel="Mobile Width"
 		ftType="string" 
-		ftHint="e.g. 480">
+		ftHint="e.g. 480"
+		ftRenderWebskinAfter="editDeviceWebskins">
 
 
 </cfcomponent>
