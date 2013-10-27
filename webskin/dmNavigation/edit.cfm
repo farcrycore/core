@@ -41,7 +41,7 @@
 	<cfoutput>
 		<script type="text/javascript">
 			<cfif len(newContentID)>
-				location.href = '#application.url.webtop#/edittabEdit.cfm?typename=dmNavigation&objectid=#newContentID#&ref=overview&typename=#application.fapi.findType(newContentID)#';
+				location.href = '#application.url.webtop#/edittabEdit.cfm?typename=#application.fapi.findType(newContentID)#&objectid=#newContentID#&ref=overview';
 			<cfelse>
 				location.href = '#application.url.webtop#/edittabOverview.cfm?typename=dmNavigation&objectid=#stObj.ObjectID#';
 			</cfif>
