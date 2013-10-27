@@ -95,6 +95,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 	aCustomColumns="#aCustomColumns#" 
 	sortableColumns="fuStatus"
 	lFilterFields="refobjectid,friendlyURL,fuStatus"
+	bPreviewCol="false"
 	sqlorderby="friendlyURL"
 	module="customlists/farFU.cfm"
 	stFilterMetaData="#stFilterMetaData#" />

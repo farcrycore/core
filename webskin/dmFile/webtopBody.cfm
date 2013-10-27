@@ -9,6 +9,7 @@
 	columnList="title,status,datetimecreated,datetimelastupdated,documentDate"
 	sortableColumns="title,status,datetimecreated,datetimelastupdated,documentDate"
 	lFilterFields="title,catFile"
+	bPreviewCol="false"
 	sqlOrderBy="datetimelastupdated DESC" />
 
 

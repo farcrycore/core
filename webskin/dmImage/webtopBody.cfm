@@ -10,6 +10,7 @@
 	columnList="catImage,datetimelastupdated"
 	sortableColumns="title,datetimelastupdated"
 	lFilterFields="title,alt,catImage"
+	bPreviewCol="false"
 	sqlorderby="datetimelastupdated DESC" />
 
 <cfsetting enablecfoutputonly="false">

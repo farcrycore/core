@@ -16,6 +16,7 @@
 	sortableColumns="title,datetimelastUpdated,lastupdatedby"
 	lFilterFields="title"
 	sqlorderby="datetimelastUpdated desc"
+	bPreviewCol="false"
 	lCustomActions="Run Task" />
 
 <admin:footer />

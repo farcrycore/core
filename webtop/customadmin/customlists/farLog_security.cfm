@@ -33,6 +33,7 @@
 	sortableColumns="userid,event,notes,datetimecreated"
 	lFilterFields="userid,event,notes,datetimecreated"
 	stFilterMetaData="#stFilterMetaData#"
+	bPreviewCol="false"
 	sqlorderby="datetimecreated desc"
 	sqlwhere="type='security'"
 	module="customlists/farLog_security.cfm" />

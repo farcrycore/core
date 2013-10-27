@@ -36,6 +36,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 	columnList="title,isdefault"
 	sortableColumns="title"
 	lFilterFields="title"
+    bPreviewCol="false"
 	sqlorderby="title asc" />
 
 <admin:footer />
