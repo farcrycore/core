@@ -26,7 +26,11 @@
 
 
 <skin:loadJS id="fc-jquery" />
+<skin:loadJS id="fc-underscore" />
+<skin:loadJS id="fc-backbone" />
+<skin:loadJS id="fc-handlebars" />
 <skin:loadJS id="farcry-form" />
+<skin:loadJS id="fc-farcry-devicetype" />
 <skin:loadJS id="fc-jquery-ui" />
 <skin:loadCSS id="jquery-ui" />
 <skin:loadCSS id="objectadmin-ie7" />
@@ -1123,8 +1127,30 @@
 	</ft:form>
 
 	<cfoutput>
+		<!--- load handlebars templates --->
+		<skin:hbs template="preview-dialog">
+
+		<script src="#application.url.webtop#/app/views/previewView.js" type="text/javascript"></script>
 		<script type="text/javascript">
+			App = {};
+
 			$j(function(){
+
+
+				App.previewView = new PreviewView({
+					attachTo: ".farcry-objectadmin",
+					previewURL: "http://#cgi.http_host#/",
+					currentDevice: "#application.fc.lib.device.getDeviceType()#",
+					bUseTabletWebskins: #application.fc.lib.device.isTabletWebskinsEnabled()#,
+					bUseMobileWebskins: #application.fc.lib.device.isMobileWebskinsEnabled()#,
+					deviceWidth: {
+						desktop: #application.fapi.getConfig("device", "desktopWidth")#,
+						tablet: #application.fapi.getConfig("device", "tabletWidth")#,
+						mobile: #application.fapi.getConfig("device", "mobileWidth")#
+					}
+				});
+				App.previewView.render();
+
 				$j(".farcry-objectadmin").on("click", "th.objectadmin-sortable span", function() {
 					var f = $j(this).closest("form");
 					var th = $j(this).parent();
@@ -1244,23 +1270,19 @@
 			
 			</cfif>
 			
-		
+			<cfif attributes.bPreviewCol>
+				<cfif attributes.bPreviewCol>
+					<a href="#application.fapi.getLink(type=attributes.typename, objectid=arguments.st.objectid)#" class="btn fc-btn-preview" target="_blank" title="Preview"><i class="icon-eye-open only-icon"></i></a>
+				</cfif>		
+			</cfif>
 			
-			<cfif attributes.bPreviewCol or len(attributes.lCustomActions)>
+			<cfif len(attributes.lCustomActions)>
 				<cfoutput><div class="btn-group"></cfoutput>
 				
 					<ft:button value="toggle" text="" icon=" ,caret" dropdownToggle="true" type="button" />
 					
 					<cfoutput>
 						<div class="dropdown-menu">
-						
-						<cfif attributes.bPreviewCol>
-							<li>
-								<a href="##" type="button" onclick="$fc.objectAdminAction('Preview', '#application.url.webroot#/index.cfm?flushcache=1&objectid=#arguments.st.objectid#&type=#attributes.typename#');">Preview</a>
-							</li>
-						</cfif>		
-						
-								
 				
 						<cfif listLen(attributes.lCustomActions)>
 							<cfloop list="#attributes.lCustomActions#" index="i">
