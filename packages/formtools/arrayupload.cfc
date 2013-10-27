@@ -446,7 +446,7 @@
 								},
 								dataType: "html",
 								success: function(data){
-		    						$("##join-item-#arguments.stMetadata.name#-"+objectid+" .fc-edit").html("<i class='icon-pencil'></i>");
+		    						$("##join-item-#arguments.stMetadata.name#-"+objectid+" .fc-edit").html("<i class='fa fa-pencil'></i>");
 									$fc.openModal(data,"auto","auto",true);
 								}
 							});
@@ -543,12 +543,12 @@
 									<div class="fc-grabbar">&nbsp;</div>
 									<div class="fc-arrayupload-actions">
 										<cfif stActions.ftAllowEdit>
-											<a href="##" class="fc-edit" onclick="<cfif len(arguments.stMetadata.ftEditableProperties)>$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').editItem('#joinItems[i]#');<cfelse>fcForm.openLibraryEdit('#arguments.typename#','#arguments.stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems[i]#');</cfif>return false;" title="Edit"><i class="icon-pencil"></i></a>
+											<a href="##" class="fc-edit" onclick="<cfif len(arguments.stMetadata.ftEditableProperties)>$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').editItem('#joinItems[i]#');<cfelse>fcForm.openLibraryEdit('#arguments.typename#','#arguments.stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems[i]#');</cfif>return false;" title="Edit"><i class="fa fa-pencil"></i></a>
 										</cfif>
 										<cfif stActions.ftRemoveType EQ "delete">
-											<a href="##" class="fc-remove" onclick="if (confirm('Are you sure you want to delete this item? Doing so will immediately remove this item from the database.')) $fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').removeItems([ '#joinItems[i]#' ]);return false;" title="Remove"><i class="icon-remove"></i></a>
+											<a href="##" class="fc-remove" onclick="if (confirm('Are you sure you want to delete this item? Doing so will immediately remove this item from the database.')) $fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').removeItems([ '#joinItems[i]#' ]);return false;" title="Remove"><i class="fa fa-minus-circle-o"></i></a>
 										<cfelseif stActions.ftRemoveType EQ "remove">
-											<a href="##" class="fc-remove" onclick="if (confirm('Are you sure you want to remove this item? Doing so will only unlink this content item. The content will remain in the database.')) $fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').removeItems([ '#joinItems[i]#' ]);return false;" title="Remove"><i class="icon-remove"></i></a>
+											<a href="##" class="fc-remove" onclick="if (confirm('Are you sure you want to remove this item? Doing so will only unlink this content item. The content will remain in the database.')) $fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').removeItems([ '#joinItems[i]#' ]);return false;" title="Remove"><i class="fa fa-minus-circle-o"></i></a>
 										</cfif>
 									</div>
 									<input type="hidden" name="#arguments.fieldname#" value="#joinItems[i]#" />
@@ -568,12 +568,12 @@
 											</td>
 											<td class="" style="padding:3px;white-space:nowrap;">
 												<cfif stActions.ftAllowEdit>
-													<a href="##" class="fc-edit" onclick="<cfif len(arguments.stMetadata.ftEditableProperties)>$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').editItem('#joinItems[i]#');<cfelse>fcForm.openLibraryEdit('#arguments.typename#','#arguments.stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems[i]#');</cfif>return false;" title="Edit"><i class="icon-pencil"></i></a>
+													<a href="##" class="fc-edit" onclick="<cfif len(arguments.stMetadata.ftEditableProperties)>$fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').editItem('#joinItems[i]#');<cfelse>fcForm.openLibraryEdit('#arguments.typename#','#arguments.stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#joinItems[i]#');</cfif>return false;" title="Edit"><i class="fa fa-pencil"></i></a>
 												</cfif>
 												<cfif stActions.ftRemoveType EQ "delete">
-													<a href="##" class="fc-remove" onclick="if (confirm('Are you sure you want to delete this item? Doing so will immediately remove this item from the database.')) $fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').removeItems([ '#joinItems[i]#' ]);return false;" title="Remove"><i class="icon-remove"></i></a>
+													<a href="##" class="fc-remove" onclick="if (confirm('Are you sure you want to delete this item? Doing so will immediately remove this item from the database.')) $fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').removeItems([ '#joinItems[i]#' ]);return false;" title="Remove"><i class="fa fa-minus-square-o"></i></a>
 												<cfelseif stActions.ftRemoveType EQ "remove">
-													<a href="##" class="fc-remove" onclick="if (confirm('Are you sure you want to remove this item? Doing so will only unlink this content item. The content will remain in the database.')) $fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').removeItems([ '#joinItems[i]#' ]);return false;" title="Remove"><i class="icon-remove"></i></a>
+													<a href="##" class="fc-remove" onclick="if (confirm('Are you sure you want to remove this item? Doing so will only unlink this content item. The content will remain in the database.')) $fc.arrayuploadformtool('#prefix#','#arguments.stMetadata.name#').removeItems([ '#joinItems[i]#' ]);return false;" title="Remove"><i class="fa fa-minus-square-o"></i></a>
 												</cfif>
 											</td>
 										</tr>
@@ -641,7 +641,7 @@
 									<div class="fc-grabbar">&nbsp;</div>
 									<div class="fc-arrayupload-actions">
 										<a href="javascript:$j('##{{fieldname}}UPLOAD').uploadifyCancel('{{ID}}')" title="Cancel Upload">
-											<i class="icon-close"></i>
+											<i class="fa fa-times-circle-o"></i>
 										</a>
 									</div>
 									{{filename}} ({{filesize}})
@@ -658,9 +658,9 @@
 								<div class="fc-tile-view-container" style="width:#arguments.stMetadata.ftTileWidth#px;height:#arguments.stMetadata.ftTileHeight#px;">
 									<div class="fc-grabbar">&nbsp;</div>
 									<div class="fc-arrayupload-actions">
-										{{if-allowedit}}<a href="##" class="fc-edit" onclick="{{if-quickedit}}$fc.arrayuploadformtool('{{prefix}}','{{property}}').editItem('{{itemid}}');{{if-quickedit}}{{ifnot-quickedit}}fcForm.openLibraryEdit('{{typename}}','{{objectid}}','{{property}}','{{fieldname}}','{{itemid}}');{{ifnot-quickedit}}return false;" title="Edit"><i class="icon-pencil"></i></a>{{if-allowedit}}
-										{{if-allowdelete}}<a href="##" class="fc-remove" onclick="if (confirm('Are you sure you want to delete this item? Doing so will immediately remove this item from the database.')) $fc.arrayuploadformtool('{{prefix}}','{{property}}').removeItems([ '{{itemid}}' ]);return false;" title="Remove"><i class="icon-remove"></i></a>{{if-allowdelete}}
-										{{if-allowremove}}<a href="##" class="fc-remove" onclick="if (confirm('Are you sure you want to remove this item? Doing so will only unlink this content item. The content will remain in the database.')) $fc.arrayuploadformtool('{{prefix}}','{{property}}').removeItems([ '{{itemid}}' ]);return false;" title="Remove"><i class="icon-remove"></i></a>{{if-allowremove}}
+										{{if-allowedit}}<a href="##" class="fc-edit" onclick="{{if-quickedit}}$fc.arrayuploadformtool('{{prefix}}','{{property}}').editItem('{{itemid}}');{{if-quickedit}}{{ifnot-quickedit}}fcForm.openLibraryEdit('{{typename}}','{{objectid}}','{{property}}','{{fieldname}}','{{itemid}}');{{ifnot-quickedit}}return false;" title="Edit"><i class="fa fa-pencil"></i></a>{{if-allowedit}}
+										{{if-allowdelete}}<a href="##" class="fc-remove" onclick="if (confirm('Are you sure you want to delete this item? Doing so will immediately remove this item from the database.')) $fc.arrayuploadformtool('{{prefix}}','{{property}}').removeItems([ '{{itemid}}' ]);return false;" title="Remove"><i class="fa fa-minus-circle-o"></i></a>{{if-allowdelete}}
+										{{if-allowremove}}<a href="##" class="fc-remove" onclick="if (confirm('Are you sure you want to remove this item? Doing so will only unlink this content item. The content will remain in the database.')) $fc.arrayuploadformtool('{{prefix}}','{{property}}').removeItems([ '{{itemid}}' ]);return false;" title="Remove"><i class="fa fa-minus-circle-o"></i></a>{{if-allowremove}}
 									</div>
 									<input type="hidden" name="{{fieldname}}" value="{{itemid}}" />
 									{{displayhtml}}
@@ -686,7 +686,7 @@
 											</td>
 											<td class="" style="padding:3px;white-space:nowrap;">
 												<a href="javascript:$j('##{{fieldname}}UPLOAD').uploadifyCancel('{{ID}}')" title="Cancel Upload">
-													<i class="icon-remove"></i>
+													<i class="fa fa-minus-circle-o"></i>
 												</a>
 											</td>
 										</tr>
@@ -702,9 +702,9 @@
 											<td class="fc-grabbar">&nbsp;&nbsp;</td>
 											<td class="" style="width:100%;padding:3px;"><input type="hidden" name="{{fieldname}}" value="{{itemid}}" />{{displayhtml}}</td>
 											<td class="" style="padding:3px;white-space:nowrap;">
-												{{if-allowedit}}<a href="##" class="fc-edit" onclick="{{if-quickedit}}$fc.arrayuploadformtool('{{prefix}}','{{property}}').editItem('{{itemid}}');{{if-quickedit}}{{ifnot-quickedit}}fcForm.openLibraryEdit('{{typename}}','{{objectid}}','{{property}}','{{fieldname}}','{{itemid}}');{{ifnot-quickedit}}return false;" title="Edit"><i class="icon-pencil"></i></a>{{if-allowedit}}
-												{{if-allowdelete}}<a href="##" class="fc-remove" onclick="if (confirm('Are you sure you want to delete this item? Doing so will immediately remove this item from the database.')) $fc.arrayuploadformtool('{{prefix}}','{{property}}').removeItems([ '{{itemid}}' ]);return false;" title="Remove"><span class="icon-remove"></span></a>{{if-allowdelete}}
-												{{if-allowremove}}<a href="##" class="fc-remove" onclick="if (confirm('Are you sure you want to remove this item? Doing so will only unlink this content item. The content will remain in the database.')) $fc.arrayuploadformtool('{{prefix}}','{{property}}').removeItems([ '{{itemid}}' ]);return false;" title="Remove"><i class="icon-remove"></i></a>{{if-allowremove}}
+												{{if-allowedit}}<a href="##" class="fc-edit" onclick="{{if-quickedit}}$fc.arrayuploadformtool('{{prefix}}','{{property}}').editItem('{{itemid}}');{{if-quickedit}}{{ifnot-quickedit}}fcForm.openLibraryEdit('{{typename}}','{{objectid}}','{{property}}','{{fieldname}}','{{itemid}}');{{ifnot-quickedit}}return false;" title="Edit"><i class="fa fa-pencil"></i></a>{{if-allowedit}}
+												{{if-allowdelete}}<a href="##" class="fc-remove" onclick="if (confirm('Are you sure you want to delete this item? Doing so will immediately remove this item from the database.')) $fc.arrayuploadformtool('{{prefix}}','{{property}}').removeItems([ '{{itemid}}' ]);return false;" title="Remove"><span class="fa fa-minus-circle-o"></span></a>{{if-allowdelete}}
+												{{if-allowremove}}<a href="##" class="fc-remove" onclick="if (confirm('Are you sure you want to remove this item? Doing so will only unlink this content item. The content will remain in the database.')) $fc.arrayuploadformtool('{{prefix}}','{{property}}').removeItems([ '{{itemid}}' ]);return false;" title="Remove"><i class="fa fa-minus-circle-o"></i></a>{{if-allowremove}}
 											</td>
 										</tr>
 									</table>

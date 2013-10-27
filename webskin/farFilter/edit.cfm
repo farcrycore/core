@@ -39,8 +39,8 @@ ORDER BY datetimecreated
 		<ft:field label="#stFields.property.html#" labelAlignment="inline" bMultiField="true">
 			
 			<grid:div style="float:right;">
-				<ft:button value="Delete Filter Property" text="" icon="icon-minus" selectedObjectID="#qProperties.objectid#" />
-				<ft:button value="Add Filter Property" text="" icon="icon-plus" selectedObjectID="#stobj.objectid#" />
+				<ft:button value="Delete Filter Property" text="" icon="fa-minus-square-o" selectedObjectID="#qProperties.objectid#" />
+				<ft:button value="Add Filter Property" text="" icon="fa-plus-square-o" selectedObjectID="#stobj.objectid#" />
 			</grid:div>
 			<cfoutput>
 				#stFields.type.html#

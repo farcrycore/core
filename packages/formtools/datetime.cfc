@@ -281,7 +281,7 @@
 					<div id="#arguments.fieldname#-wrap">
 
 						<div class="input-prepend">
-							<span class="add-on"><i class="icon-calendar"></i></span>
+							<span class="add-on"><i class="fa-calendar"></i></span>
 							<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#DateFormat(arguments.stMetadata.value,arguments.stMetadata.ftDateFormatMask)#" class="datepicker fc-datepicker #arguments.stMetadata.ftClass#" style="#arguments.stMetadata.ftStyle#" >
 						</div>
 

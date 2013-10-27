@@ -248,7 +248,7 @@
 								<li id="join-item-#arguments.stMetadata.name#-#i#" class="sort #iif(counter mod 2,de('oddrow'),de('evenrow'))#" serialize="#i#" style="border:1px solid ##ebebeb;padding:5px;zoom:1;">
 									<table style="width:100%;">
 									<tr>
-									<td class="" style="cursor:move;padding:3px;"><i class="icon-sort"></i></td>
+									<td class="" style="cursor:move;padding:3px;"><i class="fa fa-sort"></i></td>
 									<td class="" style="cursor:move;width:100%;padding:3px;">#htmlLabel#</td>
 									<td class="" style="padding:3px;white-space:nowrap;">
 										
@@ -305,7 +305,7 @@
 
 								<cfif listLen(arguments.stMetadata.ftJoin) GT 1>
 									<div class="btn-group">
-										<a class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-plus"></i> Create &nbsp;&nbsp;<i class="icon-caret-down icon-only" style="margin-right:-4px;"></i></a>
+										<a class="btn dropdown-toggle" data-toggle="dropdown"><i class="fa fa-plus-square-o"></i> Create &nbsp;&nbsp;<i class="fa fa-caret-down" style="margin-right:-4px;"></i></a>
 										<ul class="dropdown-menu">
 											<cfloop list="#arguments.stMetadata.ftJoin#" index="i">
 												<li value="#trim(i)#"><a onclick="$j('###arguments.fieldname#-add-type').val('#trim(i)#'); fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');">#application.fapi.getContentTypeMetadata(i, 'displayname', i)#</a></li>
@@ -313,7 +313,7 @@
 										</ul>
 									</div>
 								<cfelse>
-									<a class="btn" onclick="fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');"><i class="icon-plus"></i> Create</a>
+									<a class="btn" onclick="fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');"><i class="fa fa-plus-square-o"></i> Create</a>
 								</cfif>
 								<input type="hidden" id="#arguments.fieldname#-add-type" value="#arguments.stMetadata.ftJoin#" />
 
@@ -330,7 +330,7 @@
 
 								<cfif listLen(lBulkUploadable) GT 1>
 									<div class="btn-group">
-										<a class="btn dropdown-toggle" data-toggle="dropdown"><i class="icon-cloud-upload"></i> Bulk Upload &nbsp;&nbsp;<i class="icon-caret-down icon-only" style="margin-right:-4px;"></i></a>
+										<a class="btn dropdown-toggle" data-toggle="dropdown"><i class="fa fa-cloud-upload"></i> Bulk Upload &nbsp;&nbsp;<i class="fa fa-caret-down" style="margin-right:-4px;"></i></a>
 										<ul class="dropdown-menu">
 											<cfloop list="#lBulkUploadable#" index="i">
 												<li value="#trim(i)#"><a onclick="$j('###arguments.fieldname#-bulkupload-type').val('#trim(i)#'); fcForm.openLibraryBulkUpload('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');">#application.fapi.getContentTypeMetadata(i, 'displayname', i)#</a></li>
@@ -339,14 +339,14 @@
 									</div>
 									<input type="hidden" id="#arguments.fieldname#-bulkupload-type" value="#lBulkUploadable#" />
 								<cfelseif len(lBulkUploadable)>
-									<a class="btn" onclick="fcForm.openLibraryBulkUpload('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');"><i class="icon-cloud-upload"></i> Bulk Upload</a>
+									<a class="btn" onclick="fcForm.openLibraryBulkUpload('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');"><i class="fa fa-cloud-upload"></i> Bulk Upload</a>
 									<input type="hidden" id="#arguments.fieldname#-bulkupload-type" value="#lBulkUploadable#" />
 								</cfif>
 
 							</cfif>
 							
 							<cfif stActions.ftAllowSelect>
-								<a class="btn" onclick="fcForm.openLibrarySelect('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');"><i class="icon-search"></i> Select</a>
+								<a class="btn" onclick="fcForm.openLibrarySelect('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');"><i class="fa fa-search"></i> Select</a>
 							</cfif>
 							
 							<cfif listLen(joinItems) and arguments.stMetadata.ftAllowRemoveAll>
@@ -479,7 +479,7 @@
 		
 		<cfset var aField = ArrayNew(1) />
 		<cfset var qArrayRecords = queryNew("blah") />
-		<cfset var stResult = structNew()>	
+		<cfset var stResult = structNew()>
 		<cfset var i = "" />
 		<cfset var lColumn = "" />
 		<cfset var qArrayRecordRow = queryNew("blah") />

@@ -185,9 +185,9 @@
 		<cfoutput>
 		<h1>
 			<cfif len(application.stCOAPI[attributes.typename].icon)>
-				<i class="#application.stCOAPI[attributes.typename].icon#"></i>
+				<i class="fa #application.stCOAPI[attributes.typename].icon#"></i>
 			<cfelse>
-				<i class="icon-file-alt"></i>
+				<i class="fa fa-file-o"></i>
 			</cfif>
 			<admin:resource key="#attributes.rbkey#@title" var1="#typelabel#">#attributes.title#</admin:resource>
 		</h1>
@@ -690,7 +690,7 @@
 	<cfif listLen(attributes.lFilterFields) AND attributes.lFilterFields neq "label">
 		<ft:form Name="#attributes.name#Filter" Validation="#attributes.bFilterValidation#">	
 			<cfif NOT (isDefined("request.fc.inwebtop") AND request.fc.inwebtop eq 1)>
-				<ft:button type="button" value="Filter" icon="icon-search" class="small" priority="primary" style="" text="#application.rb.getResource('objectadmin.messages.Filtering@text','Show Filter')#" onclick="$j('##filterForm').toggle('blind');" />
+				<ft:button type="button" value="Filter" icon="fa fa-search" class="small" priority="primary" style="" text="#application.rb.getResource('objectadmin.messages.Filtering@text','Show Filter')#" onclick="$j('##filterForm').toggle('blind');" />
 			</cfif>
 				
 			<cfoutput>
@@ -717,13 +717,13 @@
 		<cfoutput>
 			<form id="farcry-objectadmin-form" action="" method="post" class="input-prepend input-append pull-right" style="position: relative; z-index:2">
 				<cfif len(attributes.lFilterFields) AND attributes.lFilterFields neq "label">
-					<button type="button" class="btn fc-tooltip" onclick="$j('##filterForm').toggle('blind'); " style="height: 30px; border-radius:0" data-toggle="tooltip" data-placement="top" title="" data-original-title="Advanced Filtering"><b class="icon-filter only-icon"></b></button>
+					<button type="button" class="btn fc-tooltip" onclick="$j('##filterForm').toggle('blind'); " style="height: 30px; border-radius:0" data-toggle="tooltip" data-placement="top" title="" data-original-title="Advanced Filtering"><b class="fa fa-filter"></b></button>
 				</cfif>
 				<input id="farcry-objectadmin-q" name="q" class="span2" type="text" placeholder="Search..." value="#form.q#" style="width: 240px;">
 				<cfif len(form.q)>
 					<button type="button" class="btn" onclick="$j('##farcry-objectadmin-q').val(''); $j('##farcry-objectadmin-form').submit();" style="height: 30px; border-radius:0; font-size: 20px; font-weight: bold; padding: 4px 10px;">&times;</button>
 				</cfif>
-				<button type="submit" class="btn" style="height: 30px; border-radius:0"><b class="icon-search only-icon"></b></button>
+				<button type="submit" class="btn" style="height: 30px; border-radius:0"><b class="fa fa-search"></b></button>
 			</form>				
 		</cfoutput>
 	</cfif>
@@ -784,7 +784,7 @@
 									<cfset attributes.aButtons[i].hint = "" />
 								</cfif>
 								
-								<ft:button text="#buttontext#" value="#attributes.aButtons[i].value#" title="#attributes.aButtons[i].hint#" class="#class#" icon="#icon#" rbkey="objectadmin.buttons.#rereplace(attributes.aButtons[i].value,'[^\w]+','','ALL')#" onclick="#onclickJS#" confirmText="#attributes.aButtons[i].confirmText#" />
+								<ft:button text="#buttontext#" value="#attributes.aButtons[i].value#" title="#attributes.aButtons[i].hint#" class="#class#" icon="fa #icon#" rbkey="objectadmin.buttons.#rereplace(attributes.aButtons[i].value,'[^\w]+','','ALL')#" onclick="#onclickJS#" confirmText="#attributes.aButtons[i].confirmText#" />
 							</cfif>
 						</cfif>
 					</cfif>
@@ -921,9 +921,9 @@
 
 									<cfif orderField eq i>
 										<cfif orderDirection eq "ASC">
-											<i class="icon-caret-up"></i>
+											<i class="fa fa-caret-up"></i>
 										<cfelseif orderDirection eq "DESC">
-											<i class="icon-caret-down"></i>
+											<i class="fa fa-caret-down"></i>
 										</cfif>
 									</cfif>
 								</span>
@@ -1030,7 +1030,7 @@
 									#st.select# 
 									<!--- #st.recordSetRow#			 --->					
 									<cfif structKeyExists(st,"locked") AND st.locked neq 0>
-										<i class="icon-lock icon-large"></i>
+										<i class="fa fa-lock fa-lg"></i>
 									</cfif>
 								</td>
 								</cfoutput>
@@ -1236,33 +1236,33 @@
 		
 		
 			<cfif attributes.bViewCol>	
-				<ft:button value="Overview" text="" title="Open up the overview screen for this object" icon="icon-th" type="button" onclick="$fc.objectAdminAction('Administration', '#overviewURL#&objectid=#arguments.st.objectid#');" />
+				<ft:button value="Overview" text="" title="Open up the overview screen for this object" icon="fa fa-th" type="button" onclick="$fc.objectAdminAction('Administration', '#overviewURL#&objectid=#arguments.st.objectid#');" />
 			</cfif>
 			<cfif attributes.bEditCol>
 		
 				<!--- We do not include the Edit Link if workflow is available for this content item. The user must go to the overview page. --->
 				<cfif not listLen(lWorkflowTypenames)>	
 					<cfif structKeyExists(arguments.st,"locked") AND arguments.st.locked neq 0 AND arguments.st.lockedby neq '#application.security.getCurrentUserID()#'>
-						<ft:button value="Unlock" text="" title="Unlock this object" style="margin-left:0px;" icon="icon-unlock" class="" type="submit" selectedObjectID="#arguments.st.objectid#" />
+						<ft:button value="Unlock" text="" title="Unlock this object" style="margin-left:0px;" icon="fa fa-unlock" class="" type="submit" selectedObjectID="#arguments.st.objectid#" />
 					<cfelseif structKeyExists(arguments.stPermissions, "iEdit") AND arguments.stPermissions.iEdit>
 						<cfif structKeyExists(arguments.st,"bHasMultipleVersion")>
 							<cfif NOT(arguments.st.bHasMultipleVersion) AND arguments.st.status EQ "approved">
 								
-									<ft:button value="Create Draft Object" text="Edit" title="Create a draft version of this object and begin editing" icon="icon-pencil"  class="btn-edit" type="button" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
+									<ft:button value="Create Draft Object" text="Edit" title="Create a draft version of this object and begin editing" icon="fa fa-pencil"  class="btn-edit" type="button" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
 								
 							<cfelseif arguments.st.bHasMultipleVersion>
 								<!--- Still go to the create draft page but that page will find the already existing draft and not create a new one. --->
 								
-									<ft:button value="Edit Draft" text="Edit" title="Edit the draft version of this object" type="button" icon="icon-pencil" class="btn-edit" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
+									<ft:button value="Edit Draft" text="Edit" title="Edit the draft version of this object" type="button" icon="fa fa-pencil" class="btn-edit" onclick="$fc.objectAdminAction('Administration', '#createDraftURL#&objectid=#arguments.st.objectid#');" />
 											
 							<cfelse>
 								
-									<ft:button value="Edit" text="Edit" title="Edit this object" type="button" icon="icon-pencil" class="btn-edit" onclick="$fc.objectAdminAction('Administration', '#editURL#&objectid=#arguments.st.objectid#');" />
+									<ft:button value="Edit" text="Edit" title="Edit this object" type="button" icon="fa fa-pencil" class="btn-edit" onclick="$fc.objectAdminAction('Administration', '#editURL#&objectid=#arguments.st.objectid#');" />
 									
 							</cfif>
 						<cfelse>
 							
-								<ft:button value="Edit" text="Edit" title="Edit this object" type="button" icon="icon-pencil" class="btn-edit" onclick="$fc.objectAdminAction('Administration', '#editURL#&objectid=#arguments.st.objectid#');" />
+								<ft:button value="Edit" text="Edit" title="Edit this object" type="button" icon="fa fa-pencil" class="btn-edit" onclick="$fc.objectAdminAction('Administration', '#editURL#&objectid=#arguments.st.objectid#');" />
 							
 						</cfif>
 					</cfif>
@@ -1272,7 +1272,7 @@
 			
 			<cfif attributes.bPreviewCol>
 				<cfif attributes.bPreviewCol>
-					<a href="#application.fapi.getLink(type=attributes.typename, objectid=arguments.st.objectid)#" class="btn fc-btn-preview" target="_blank" title="Preview"><i class="icon-eye-open only-icon"></i></a>
+					<a href="#application.fapi.getLink(type=attributes.typename, objectid=arguments.st.objectid)#" class="btn fc-btn-preview" target="_blank" title="Preview"><i class="fa fa-eye"></i></a>
 				</cfif>		
 			</cfif>
 			

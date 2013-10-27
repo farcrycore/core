@@ -405,7 +405,7 @@ environment references (might be nice to clean these up)
 			stBut.onClick="";
 			stBut.permission=application.security.checkPermission(permission="Create",type=attributes.permissionset);
 			stBut.buttontype="add";
-			stBut.icon="icon-plus";
+			stBut.icon="fa-plus";
 			arrayAppend(aDefaultButtons,stBut);
 		
 		// Copy button
@@ -417,7 +417,7 @@ environment references (might be nice to clean these up)
 			stBut.onClick="";
 			stBut.permission=application.security.checkPermission(permission="Create",type=attributes.permissionset) and application.security.checkPermission(permission="Edit",type=attributes.permissionset);
 			stBut.buttontype="copy";
-			stBut.icon="icon-copy";
+			stBut.icon="fa-copy";
 			arrayAppend(aDefaultButtons,stBut);
 		
 		// delete object(s)
@@ -431,7 +431,7 @@ environment references (might be nice to clean these up)
 			stBut.confirmText="Are you sure you wish to delete these objects?";
 			stBut.permission=application.security.checkPermission(permission="Delete",type=attributes.permissionset);
 			stBut.buttontype="delete";
-			stBut.icon="icon-trash";
+			stBut.icon="fa-trash-o";
 			arrayAppend(aDefaultButtons,stBut);
 
 		// check if there are locked objects
@@ -444,7 +444,7 @@ environment references (might be nice to clean these up)
 			stBut.onClick="";
 			stBut.permission="";
 			stBut.buttontype="unlock";
-			stBut.icon="icon-unlock";
+			stBut.icon="fa-unlock";
 			arrayAppend(aDefaultButtons,stBut);
 		}
 		
@@ -495,7 +495,7 @@ environment references (might be nice to clean these up)
 				stBut.onClick="$fc.objectAdminAction('Bulk Upload', '#application.url.webtop#/index.cfm?typename=#attributes.typename#&view=webtopPageModal&bodyView=webtopBodyBulkUpload'); return false;";
 				stBut.permission=application.security.checkPermission(permission="Create",type=attributes.permissionset);
 				stBut.buttontype="bulkupload";
-				stBut.icon="icon-cloud-upload";
+				stBut.icon="fa-cloud-upload";
 				arrayAppend(aDefaultButtons,stBut);
 		}
 		
@@ -509,6 +509,7 @@ environment references (might be nice to clean these up)
 				stBut.onClick="$fc.objectAdminAction('Undelete', '#application.url.webtop#/index.cfm?typename=dmArchive&view=webtopPageModal&bodyView=webtopBody&archivetype=#attributes.typename#'); return false;";;
 				stBut.permission=application.security.checkPermission(permission="Create",type=attributes.permissionset);
 				stBut.buttontype="undelete";
+				stBut.icon="fa-undo";
 				arrayAppend(aDefaultButtons,stBut);
 		}
 	</cfscript>

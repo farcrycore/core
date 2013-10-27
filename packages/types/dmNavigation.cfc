@@ -18,7 +18,7 @@
 <cfcomponent name="dmNavigation" extends="types" displayname="Navigation" 
 	hint="Navigation nodes are combined with the ntm_navigation table to build the site layout model for the FarCry CMS system." 
 	bUseInTree="1" bFriendly="1" bObjectBroker="true"
-	icon="icon-folder-open">
+	icon="fa-folder-open">
 	<!------------------------------------------------------------------------
 	type properties
 	------------------------------------------------------------------------->	
@@ -427,9 +427,9 @@
 						</td>
 						<td style="padding:8px;vertical-align:top;border:1px solid ##DFDFDF;border-width:1px 0px 1px 0px;">
 							<cfif len(application.stCOAPI[qTypes.typename].icon)>
-								<i class="#application.stCOAPI[qTypes.typename].icon# icon-2x"></i>
+								<i class="fa #application.stCOAPI[qTypes.typename].icon# fa-2x"></i>
 							<cfelse>
-								<i class="icon-file icon-2x"></i>
+								<i class="fa fa-file fa-2x"></i>
 							</cfif>
 						</td>
 						<td style="vertical-align:top;border:1px solid ##DFDFDF;border-width:1px 1px 1px 0px;">

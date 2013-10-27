@@ -3,7 +3,7 @@
 	extends="farcry.core.packages.types.types" bAbstract="true" 
 	hint="Abstract class. Provides default handlers and defines structure for a form." 
 	bObjectBroker="false"
-	icon="icon-code">
+	icon="fa-code">
 
 	<cfproperty name="objectid" type="uuid" ftDefault="application.fc.utils.createJavaUUID()" ftDefaultType="evaluate" />
 

@@ -211,7 +211,7 @@
 							lFiles="" /><!--- icons.css. removed for incompatibility with font-awesome. re-apply as required. --->
 							
 		<skin:registerCSS	id="fc-fontawesome"
-							baseHREF="#application.url.webtop#/thirdparty/font-awesome-3.2.1/css"
+							baseHREF="#application.url.webtop#/thirdparty/font-awesome-4.0.0/css"
 							lFiles="font-awesome.css" />
 							
 		<skin:registerCSS 	id="jquery-ui"

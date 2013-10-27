@@ -5,7 +5,7 @@
 	bFriendly="false" 
 	bAudit="false"
 	bSystem="true"
-	icon="icon-cogs">
+	icon="fa-cogs">
 	
 	<cfproperty name="objectid" ftLabel="Task ID" 
 		ftDisplayMethod="ftDisplayUUID" />

@@ -16,15 +16,45 @@
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
 <!--- @@Developer: Blair Mackenzie (blair@daemon.com.au) --->
-<cfcomponent displayname="FarCry User" hint="User model for the Farcry User Directory." extends="types" output="false" description="" fuAlias="user" bSystem="true" ud="CLIENTUD">
-	<cfproperty ftSeq="1" ftFieldset="User" name="userid" type="string" default="" hint="The unique id for this user. Used for logging in" ftLabel="User ID" ftType="string" bLabel="true" ftValidation="required" ftIndex="true" />
-	<cfproperty ftSeq="2" ftFieldset="User" name="password" type="string" default="" hint="" ftLabel="Password" ftType="password" ftRenderType="confirmpassword" ftShowLabel="false" ftValidation="required" ftValidateOldMethod="ftCheckOldPassword" ftValidateNewMethod="ftCheckPasswordPolicy" />
-	<cfproperty ftSeq="3" ftFieldset="User" name="userstatus" type="string" default="active" hint="The status of this user; active, inactive, pending." ftLabel="User status" ftType="list" ftList="active:Active,inactive:Inactive,pending:Pending" />
-	<cfproperty ftSeq="4" ftFieldset="User" name="aGroups" type="array" default="" hint="The groups this member is a member of" ftLabel="Groups" ftType="array" ftJoin="farGroup" />
-	<cfproperty name="lGroups" type="longchar" default="" hint="The groups this member is a member of (list generated automatically)" ftLabel="Groups" ftType="arrayList" ftArrayField="aGroups" ftJoin="farGroup" />
+<cfcomponent 
+	extends="types" displayname="FarCry User" 
+	hint="User model for the Farcry User Directory." output="false" 
+	fuAlias="user" bSystem="true" ud="CLIENTUD">
 
-	<cfproperty name="failedLogins" type="longchar" default="[]" ftDefault="[]" hint="Log of failed logins" />
-	<cfproperty name="forgotPasswordHash" type="string" default="" hint="A hash stored temporarily to reset user password" />
+	<cfproperty name="userid" type="string" default="" 
+		ftSeq="1" ftFieldset="User" ftLabel="User ID" 
+		ftType="string" 
+		bLabel="true" ftValidation="required" ftIndex="true"
+		hint="The unique id for this user. Used for logging in">
+
+	<cfproperty name="password" type="string" default="" 
+		ftSeq="2" ftFieldset="User" ftLabel="Password" 
+		ftType="password" ftRenderType="confirmpassword" 
+		ftShowLabel="false" ftValidation="required" ftValidateOldMethod="ftCheckOldPassword" ftValidateNewMethod="ftCheckPasswordPolicy">
+
+	<cfproperty name="userstatus" type="string" default="active" 
+		ftSeq="3" ftFieldset="User" ftLabel="User status" 
+		ftType="list" 
+		ftList="active:Active,inactive:Inactive,pending:Pending"
+		hint="The status of this user; active, inactive, pending.">
+
+	<cfproperty name="aGroups" type="array" default="" 
+		ftSeq="4" ftFieldset="User" ftLabel="Groups" 
+		ftType="array" ftJoin="farGroup"
+		hint="The groups this member is a member of">
+
+	<cfproperty name="lGroups" type="longchar" default="" 
+		ftLabel="" 
+		ftType="arrayList" ftJoin="farGroup" 
+		ftArrayField="aGroups"
+		hint="The groups this member is a member of (list generated automatically)">
+
+	<cfproperty name="failedLogins" type="longchar" default="[]" 
+		ftDefault="[]"
+		hint="Log of failed logins">
+
+	<cfproperty name="forgotPasswordHash" type="string" default=""
+		hint="A hash stored temporarily to reset user password">
 	
 	<cffunction name="getByUserID" access="public" output="false" returntype="struct" hint="Returns the data struct for the specified user id">
 		<cfargument name="userid" type="string" required="true" hint="The user id" />

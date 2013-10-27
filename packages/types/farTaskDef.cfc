@@ -3,7 +3,7 @@
 	extends="types" output="false"
 	hint="Task definitions are used as template to create task instances" 
 	fuAlias="fc-task-def" bSystem="true"
-	icon="icon-ban-circle">
+	icon="fa-ban">
 
 	<cfproperty ftSeq="1" ftFieldset="General Details" name="title" type="string" default="" hint="Title of task definition" ftLabel="Title" ftType="string" />
 	<cfproperty ftSeq="2" ftFieldset="General Details" name="description" type="longchar" default="" hint="Description of task definition" ftLabel="Description" />

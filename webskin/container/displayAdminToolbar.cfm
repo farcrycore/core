@@ -175,7 +175,7 @@ $j('a.con-admin').on(
 				con:url="#containerURL#"
 				rule:title="Add new rule to container: #stParam.desc#">
 				
-				<i class="icon-plus" style="float:left;"></i>
+				<i class="fa fa-plus-square-o" style="float:left;"></i>
 			</a>	
 			<skin:toolTip selector=".con-add-rule">Add a new rule into this container.</skin:toolTip>
 			
@@ -187,14 +187,14 @@ $j('a.con-admin').on(
 				con:url="#containerURL#"
 				rule:title="Manage Reflection: #stParam.desc#">
 				
-				<i class="icon-copy" style="float:left;"></i>
+				<i class="fa fa-copy" style="float:left;"></i>
 			</a>
 			<skin:toolTip selector=".con-manage-reflection">Set this container to use a reflection.<br>Reflections are containers that are centrally managed from the webtop.</skin:toolTip>
 			
 			<!--- REFRESH CONTAINER --->
 	
 			<a class="con-refresh con-refresh-container" href="#containerURL#" con:id="#containerID#" title="Refresh container">
-				<i class="icon-refresh" style="float:left;"></i>
+				<i class="fa fa-refresh" style="float:left;"></i>
 			</a>
 			<skin:toolTip selector=".con-refresh-container">Refresh the contents of this container.</skin:toolTip>
 		</div>

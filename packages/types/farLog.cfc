@@ -3,15 +3,42 @@
 	hint="Manages FarCry Event logs" 
 	extends="types" output="false" 
 	bRefObjects="false" fuAlias="fc-log" bObjectBroker="0" bSystem="true"
-	icon="icon-list">
+	icon="fa-list">
 
-	<cfproperty name="object" type="uuid" default="" hint="The associated object" ftSeq="1" ftFieldset="" ftLabel="Object" ftType="string" />
-	<cfproperty name="type" type="string" default="" hint="The type of the object or event group (e.g. security, coapi)" ftSeq="2" ftFieldset="" ftLabel="Object type" ftType="string" />
-	<cfproperty name="event" type="string" default="" hint="The event this log is associated with" ftSeq="3" ftFieldset="" ftLabel="Event" ftType="string" />
-	<cfproperty name="location" type="string" default="" hint="The location of the event if relevant" ftSeq="4" ftFieldset="" ftLabel="Location" ftType="string" />
-	<cfproperty name="userid" type="string" default="" hint="The id of the user" ftSeq="5" ftFieldset="" ftLabel="User" ftType="string" />
-	<cfproperty name="ipaddress" type="string" default="" hint="IP address of user" ftSeq="6" ftFieldset="" ftLabel="IP address" ftType="string" />
-	<cfproperty name="notes" type="longchar" default="" hint="Extra notes" ftSeq="7" ftFieldset="" ftLabel="Notes" ftType="longchar" />
+	<cfproperty name="object" type="uuid" default="" 
+		ftSeq="1" ftFieldset="" ftLabel="Object" 
+		ftType="string"
+		hint="The associated object">
+
+	<cfproperty name="type" type="string" default="" 
+		ftSeq="2" ftFieldset="" ftLabel="Object type" 
+		ftType="string"
+		hint="The type of the object or event group (e.g. security, coapi)">
+
+	<cfproperty name="event" type="string" default="" 
+		ftSeq="3" ftFieldset="" ftLabel="Event" 
+		ftType="string"
+		hint="The event this log is associated with">
+
+	<cfproperty name="location" type="string" default="" 
+		ftSeq="4" ftFieldset="" ftLabel="Location" 
+		ftType="string"
+		hint="The location of the event if relevant">
+
+	<cfproperty name="userid" type="string" default="" 
+		ftSeq="5" ftFieldset="" ftLabel="User" 
+		ftType="string"
+		hint="The id of the user">
+
+	<cfproperty name="ipaddress" type="string" default="" 
+		ftSeq="6" ftFieldset="" ftLabel="IP address" 
+		ftType="string"
+		hint="IP address of user">
+
+	<cfproperty name="notes" type="longchar" default="" 
+		ftSeq="7" ftFieldset="" ftLabel="Notes" 
+		ftType="longchar"
+		hint="Extra notes">
 
 	<cffunction name="createData" access="public" returntype="any" output="false" hint="Creates an instance of an object">
 		<cfargument name="stProperties" type="struct" required="true" hint="Structure of properties for the new object instance">

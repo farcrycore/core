@@ -21,7 +21,7 @@
 	extends="farcry.core.packages.fourq.fourq" bAbstract="true"
 	displayname="Publishing Rules" 
 	hint="Extend this abstract class to enable a publishing rule."
-	icon="icon-wrench">
+	icon="fa-wrench">
 
 	<cfproperty name="objectID" type="uuid" required="true">
 	<cfproperty name="label" type="string" default="">

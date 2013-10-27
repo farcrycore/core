@@ -101,9 +101,9 @@
 <cfoutput>
 	<h1>
 		<cfif len(application.stCOAPI[stObj.typename].icon)>
-			<i class="#application.stCOAPI[stObj.typename].icon#"></i>
+			<i class="fa #application.stCOAPI[stObj.typename].icon#"></i>
 		<cfelse>
-			<i class="icon-file"></i>
+			<i class="fa fa-file-o"></i>
 		</cfif> 
 		#stobj.label#
 	</h1>

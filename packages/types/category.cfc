@@ -20,12 +20,22 @@
 	extends="types" bAbstract="true" 
 	hint="Abstract class defining categories. Set of functions to perform metadata characterisation" 
 	bDocument="true" scopelocation="application.factory.oCategory"
-	icon="icon-tags">
+	icon="fa-tags">
 	
-	<cfproperty ftseq="1" ftfieldset="General Details" name="categoryLabel" type="string" required="true" default="(incomplete)" hint="Label used in nested tree table." ftLabel="Label" bLabel="true" />
-	<cfproperty ftseq="2" ftfieldset="General Details" name="alias" type="string" hint="Alias used for application.catid" ftLabel="Alias" />
-	<cfproperty ftseq="3" ftfieldset="Media" name="imgCategory" type="string" hint="Image" ftType="image" ftLabel="Image" />
-	
+	<cfproperty name="categoryLabel" type="string" required="true" default="(incomplete)" 
+		ftSeq="1" ftFieldset="General Details" ftLabel="Label" 
+		bLabel="true"
+		hint="Label used in nested tree table.">
+
+	<cfproperty name="alias" type="string" 
+		ftSeq="2" ftFieldset="General Details" ftLabel="Alias"
+		hint="Alias used for application.catid">
+
+	<cfproperty name="imgCategory" type="string" 
+		ftSeq="3" ftFieldset="Media" ftLabel="Image" 
+		ftType="image"
+		hint="Image">
+			
 	<cffunction name="setData" access="public" output="false" returntype="struct" hint="Update the record for an objectID including array properties.  Pass in a structure of property values; arrays should be passed as an array." bDocument="true">
 	
 		<cfset var stResult = structNew() />

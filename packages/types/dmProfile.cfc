@@ -19,7 +19,7 @@
 	displayName="User Profile" 
 	extends="types" 
 	hint="Every user in the system has their own profile from staff to community members. You can create new users, edit existing ones or change the group they belong to."
-	icon="icon-user">
+	icon="fa-user">
 
 <!------------------------------
 TYPE PROPERTIES

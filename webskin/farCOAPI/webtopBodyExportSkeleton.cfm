@@ -81,7 +81,7 @@
 	<cfif stSkeletonExport.bSetupComplete AND isStruct(stSkeletonExport.exportData)>
 		<cfoutput>
 		<cfif bExportComplete>
-			<p><i id="progress" class="icon-ok" style="color:green;" title="Complete"></i> Export is Complete</p>
+			<p><i id="progress" class="fa fa-check-square-o" style="color:green;" title="Complete"></i> Export is Complete</p>
 		<cfelse>
 			<div id="exportTable-wrap">
 				<p>Tables to Export: #arrayLen(stSkeletonExport.exportData.aTables)#</p>
@@ -96,10 +96,10 @@
 					
 						
 						<cfif stSkeletonExport.exportData.aTables[iTable].bComplete>
-							<td><i id="progress-#iTable#" class="icon-ok" style="color:green;" title="Complete"></i></td>
+							<td><i id="progress-#iTable#" class="fa fa-check-square-o" style="color:green;" title="Complete"></i></td>
 							<td id="response-#iTable#">Already Complete</td>
 						<cfelse>
-							<td><i id="progress-#iTable#" class="icon-remove" style="color:orange;" title="pending"></i></td>
+							<td><i id="progress-#iTable#" class="fa fa-times-square-o" style="color:orange;" title="pending"></i></td>
 							<td id="response-#iTable#"></td>
 							<skin:onReady>
 								$j.ajaxq('ajaxExportTable',{
@@ -109,14 +109,14 @@
 								url: '/index.cfm?ajaxmode=1&type=farSkeleton&objectid=#stSkeletonExport.objectid#&view=ajaxExportTable&position=#iTable#&sqlFilesPath=#urlEncodedFormat(stSkeletonExport.exportData.sqlFilesPath)#', 
 								
 								beforeSend: function(data){
-									$j('##progress-#iTable#').removeClass('icon-remove').addClass('icon-spinner icon-spin').attr('title','Processing');
+									$j('##progress-#iTable#').removeClass('fa-check-square-o').addClass('fa-spinner fa-spin').attr('title','Processing');
 								},
 								success: function(data){;
-									$j('##progress-#iTable#').removeClass('icon-remove icon-spinner icon-spin').addClass('icon-ok').css('color','green').attr('title','Success');
+									$j('##progress-#iTable#').removeClass('fa-times-square-o fa-spinner fa-spin').addClass('fa-check-square-o').css('color','green').attr('title','Success');
 									$j('##response-#iTable#').html(data);
 
 									if (data.BEXPORTCOMPLETE == 1){
-										$j('##exportTable-wrap').html('<p><i id="progress" class="icon-ok" style="color:green;" title="Complete"></i> Export is Complete</p>');
+										$j('##exportTable-wrap').html('<p><i id="progress" class="fa fa-check-square-o" style="color:green;" title="Complete"></i> Export is Complete</p>');
 										$j('##btn-export').hide('slow');
 										$j('##btn-download').show();
 										$j('##btn-start-again').show();
@@ -125,7 +125,7 @@
 									
 								}, 
 								error: function(data){	
-									$j('##progress-#iTable#').removeClass('icon-remove icon-spinner icon-spin').addClass('icon-warning-sign').css('color','red').attr('title','Error');
+									$j('##progress-#iTable#').removeClass('fa-times-square-o fa-spinner fa-spin').addClass('fa-exclamation-triangle').css('color','red').attr('title','Error');
 									$j('##response-#iTable#').html(data.statusText);
 									$j('##btn-retry').show();
 								},

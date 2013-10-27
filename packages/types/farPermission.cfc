@@ -19,7 +19,7 @@
 	extends="types" output="false" 
 	hint="Each permission corresponds to a right to perform an action, access a section of the webtop, or view a webskin. A collection of permssions is called a Role." 
 	bsystem="true"
-	icon="icon-key">
+	icon="fa-key">
 <!---------------------------------------------- 
 type properties
 ----------------------------------------------->

@@ -20,7 +20,7 @@
 	extends="types" output="false" 
 	hint="Groups can be assigned to any number of Roles.  Roles in turn are collections of permissions that determine what priveleges a specific group of users has within the system." 
 	bsystem="true" bArchive="true"
-	icon="icon-group">
+	icon="fa-group">
 
 <!---------------------------------------------- 
 type properties

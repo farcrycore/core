@@ -19,7 +19,7 @@
 	hint="Include miscellaneous CFML templates or content type webskins." 
 	bUseInTree="true" bFriendly="true"
 	bObjectBroker="true"
-	icon="icon-signin">
+	icon="fa-signin">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->

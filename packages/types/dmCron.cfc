@@ -15,27 +15,52 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| DESCRIPTION || 
-$Description: dmCron Type (scheduled tasks) $
-
-|| DEVELOPER ||
-$Developer: Geoff Bowers (modius@daemon.com.au) $
---->
-<cfcomponent extends="types" displayname="Scheduled Tasks" hint="Scheduled tasks can be created to run periodic maintenance tasks unattended. Select from a list of available tasks and schedule when they should run." bsystem="true">
+<cfcomponent 
+	extends="types" displayname="Scheduled Tasks" 
+	hint="Scheduled tasks can be created to run periodic maintenance tasks unattended. Select from a list of available tasks and schedule when they should run." 
+	bsystem="true"
+	icon="fa-tasks">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->	
-<cfproperty ftseq="1" ftfieldset="General Details" name="title" ftlabel="Title" type="nstring" hint="Title of the feed" required="no" default="">
-<cfproperty ftseq="2" ftfieldset="General Details" name="description" ftlabel="Description" type="longchar" hint="Description of the feed" required="no" default="">
-<cfproperty ftseq="3" ftfieldset="General Details" name="template" ftlabel="Template" type="string" hint="Url of file to be scheduled" required="no" default="" fttype="list" ftlistdata="getTemplateList">
+	<cfproperty name="title" type="string" required="no" default="" 
+		ftSeq="1" ftFieldset="General Details" ftLabel="Title"
+		hint="Title of the feed">
 
-<cfproperty ftseq="21" ftfieldset="Settings" name="parameters" type="string" hint="Url parameters for file" required="no" default="">
-<cfproperty ftseq="22" ftfieldset="Settings" name="frequency" type="string" hint="How often task is run" required="no" default="daily" fttype="list" ftlist="Once:Run once,Daily:Every day,Weekly:Every week,Monthly:Every month,3600:Every hour,1800:Every half-hour,900:Every 15. minute,60:Every minute">
-<cfproperty ftseq="23" ftfieldset="Settings" name="startDate" fttype="datetime" type="date" hint="Start date for task" required="no" default="">
-<cfproperty ftseq="24" ftfieldset="Settings" name="endDate" fttype="datetime" type="date" hint="End date for task" required="no" default="">
-<cfproperty ftseq="25" ftfieldset="Settings" name="timeOut" type="numeric" hint="time out period" required="no" default="60" fttype="int">
+	<cfproperty name="description" type="longchar" required="no" default="" 
+		ftSeq="2" ftFieldset="General Details" ftLabel="Description"
+		hint="Description of the feed">
 
+	<cfproperty name="template" type="string" required="no" default="" 
+		ftSeq="3" ftFieldset="General Details" ftLabel="Template" 
+		ftType="list" 
+		ftListData="getTemplateList"
+		hint="Url of file to be scheduled">
+
+	<cfproperty name="parameters" type="string" required="no" default="" 
+		ftSeq="4" ftFieldset="Settings"
+		hint="Url parameters for file">
+
+	<cfproperty name="frequency" type="string" required="no" default="daily" 
+		ftSeq="5" ftFieldset="Settings" 
+		ftType="list" 
+		ftList="Once:Run once,Daily:Every day,Weekly:Every week,Monthly:Every month,3600:Every hour,1800:Every half-hour,900:Every 15. minute,60:Every minute"
+		hint="How often task is run">
+
+	<cfproperty name="startDate" type="date" required="no" default="" 
+		ftSeq="6" ftFieldset="Settings" 
+		ftType="datetime"
+		hint="Start date for task">
+
+	<cfproperty name="endDate" type="date" required="no" default="" 
+		ftSeq="7" ftFieldset="Settings" 
+		ftType="datetime"
+		hint="End date for task">
+
+	<cfproperty name="timeOut" type="numeric" required="no" default="60" 
+		ftSeq="8" ftFieldset="Settings" 
+		ftType="int"
+		hint="time out period">
 
 <!------------------------------------------------------------------------
 object methods 

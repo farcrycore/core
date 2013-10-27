@@ -210,16 +210,16 @@
 		
 		<!--- vary the status labels and icon by the object status --->
 		<cfset thisStatusLabel = "">
-		<cfset thisFolderIcon = "icon-folder-close">
+		<cfset thisFolderIcon = "fa-folder-o">
 		<cfif bExpanded>
-			<cfset thisFolderIcon = "icon-folder-open">
+			<cfset thisFolderIcon = "fa-folder-open-o">
 		</cfif>
-		<cfset thisNodeIcon = "<span class='icon-stack'><i class='#thisFolderIcon#'></i></span>">
+		<cfset thisNodeIcon = "<span class='fa-stack'><i class='fa #thisFolderIcon# fa-stack-1x'></i></span>">
 
 		<cfif stNav.status eq "draft">
 			<!--- types object with draft status --->
 			<cfset thisStatusLabel = "<span class='label label-warning'>#application.rb.getResource("constants.status.#stNav.status#@label",stNav.status)#</span>">
-			<cfset thisNodeIcon = "<span class='icon-stack'><i class='#thisFolderIcon#'></i><i class='icon-pencil'></i></span>">
+			<cfset thisNodeIcon = "<span class='fa-stack'><i class='fa #thisFolderIcon# fa-stack-1x'></i><i class='fa fa-pencil fa-stack-1x'></i></span>">
 
 		<cfelseif stNav.status eq "approved">
 			<!--- types object with approved status --->
@@ -307,18 +307,18 @@
 		
 			<!--- vary the status labels, icon, and edit URL by the object status --->
 			<cfset thisStatusLabel = "">
-			<cfset thisLeafIcon = "<span class='icon-stack'><i class='icon-file-alt'></i></span>">
+			<cfset thisLeafIcon = "<span class='fa-stack'><i class='fa fa-file-o fa-stack-1x'></i></span>">
 			<cfset thisEditURL = "#application.url.webtop#/edittabEdit.cfm?typename=#stLeafNode.typename#&objectid=#stLeafNode.objectid#">
 			<cfif stLeafNode.bHasVersion>
 				<!--- versioned object with multiple records --->
 				<cfset thisStatusLabel = "<span class='label label-warning'>#application.rb.getResource("constants.status.#stLeafNode.versionStatus#@label",stLeafNode.versionStatus)#</span> + <span class='label label-info'>#application.rb.getResource("constants.status.#stLeafNode.status#@label",stLeafNode.status)#</span>">
-				<cfset thisLeafIcon = "<span class='icon-stack'><i class='icon-file-alt'></i><i class='icon-pencil'></i></span>">
+				<cfset thisLeafIcon = "<span class='fa-stack'><i class='fa fa-file-o fa-stack-1x'></i><i class='fa fa-pencil fa-stack-1x'></i></span>">
 				<cfset thisEditURL = "#application.url.webtop#/edittabEdit.cfm?typename=#stLeafNode.typename#&objectid=#stLeafNode.versionObjectid#">
 
 			<cfelseif stLeafNode.status eq "draft">
 				<!--- types object with draft status --->
 				<cfset thisStatusLabel = "<span class='label label-warning'>#application.rb.getResource("constants.status.#stLeafNode.status#@label",stLeafNode.status)#</span>">
-				<cfset thisLeafIcon = "<span class='icon-stack'><i class='icon-file-alt'></i><i class='icon-pencil'></i></span>">
+				<cfset thisLeafIcon = "<span class='fa-stack'><i class='fa fa-file-o fa-stack-1x'></i><i class='fa fa-pencil fa-stack-1x'></i></span>">
 
 			<cfelseif stLeafNode.status eq "approved">
 				<!--- types object with approved status --->

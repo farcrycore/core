@@ -31,10 +31,10 @@
 	<cfoutput>
 		<h1>Task Queue Threads</h1>
 		<div class="buttonHolder farcry-button-bar btn-group" style="text-align:left;">
-			<ft:button value="Start a Thread" title="Starts a thread if the configured rules allows it. NOTE: if there are no tasks to process, the thread will finish immediately." class="btn-primary" icon="icon-plus" />
+			<ft:button value="Start a Thread" title="Starts a thread if the configured rules allows it. NOTE: if there are no tasks to process, the thread will finish immediately." class="btn-primary" icon="fa-plus-square-o" />
 			
 			<cfif structcount(stThreads) and application.sysinfo.engine.engine eq "coldfusion">
-				<ft:button value="Kill Thread" text="Kill Threads" title="Kills the selected threads, and requeues the tasks they are working on" icon="icon-remove" onclick="if (!confirm('Are you sure you want to terminate the selected threads?')) return false;" />
+				<ft:button value="Kill Thread" text="Kill Threads" title="Kills the selected threads, and requeues the tasks they are working on" icon="fa-times-circle-o" onclick="if (!confirm('Are you sure you want to terminate the selected threads?')) return false;" />
 			</cfif>
 		</div>
 		<div class="farcry-objectadmin-body">
@@ -65,7 +65,7 @@
 					</td>
 					<td class="objectadmin-actions" nowrap="nowrap" style="">
 						<cfif application.sysinfo.engine.engine eq "coldfusion">
-							<ft:button value="Kill Thread" text="" title="Kill this thread" icon="icon-remove" selectedObjectID="#stThreads[thisthread].threadID#" onclick="if (!confirm('Are you sure you want to terminate this thread? If the task has not been completed it will be requeued.')) return false;" />
+							<ft:button value="Kill Thread" text="" title="Kill this thread" icon="fa-times-circle-o" selectedObjectID="#stThreads[thisthread].threadID#" onclick="if (!confirm('Are you sure you want to terminate this thread? If the task has not been completed it will be requeued.')) return false;" />
 						</cfif>
 					</td>
 					<td>#thisthread#</td>

@@ -39,6 +39,7 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <title>[#application.applicationname#] #application.config.general.sitetitle# - FarCry Webtop</title>
+</cfoutput>
 
 <skin:loadCSS id="fc-bootstrap" />
 <skin:loadCSS id="fc-fontawesome" />
@@ -51,6 +52,7 @@
 <skin:loadJS id="jquery-tooltip-auto" />
 <skin:loadJS id="webtop7" />
 
+<cfoutput>
 </head>
 <body id="sec-#url.sec#" class="webtop">
 
@@ -90,9 +92,9 @@
 								<cfelseif webtopGravatarHash neq "">
 									<img src="//www.gravatar.com/avatar/#webtopGravatarHash#?d=404" width="24" height="25" onerror="this.style.visibility='hidden';">
 								</cfif>
-								<i class="icon-user"></i>
+								<i class="fa fa-user"></i>
 							</span>
-							<span class="cog"><i class="icon-cog"></i></span>
+							<span class="cog"><i class="fa fa-cog"></i></span>
 
 							<span>#webtopUsername# &nbsp;<b class="icon-caret-down"></b></span>
 						</div>
@@ -125,7 +127,7 @@
 								<li class="#class#<cfif url.sub eq subsection.id> active</cfif>"><a href="?id=#lcase(url.sec)#.#lcase(subsection.id)#"><cfif isdefined("subsection.icon")><i class="#subsection.icon#"></i> </cfif>#trim(subsection.label)#</a></li>
 							<cfelse>
 								<li id="nav-#subsection.id#" class="dropdown #class#<cfif url.sub eq subsection.id> active</cfif>">
-									<a href="?id=#lcase(url.sec)#.#lcase(subsection.id)#"><cfif isdefined("subsection.icon")><i class="#subsection.icon#"></i> </cfif>#trim(subsection.label)# <i class="icon-caret-down" style="opacity:0.5"></i></a>
+									<a href="?id=#lcase(url.sec)#.#lcase(subsection.id)#"><cfif isdefined("subsection.icon")><i class="#subsection.icon#"></i> </cfif>#trim(subsection.label)# <i class="fa fa-caret-down" style="opacity:0.5"></i></a>
 
 									<cfset menuitemCount = 0>
 									<cfset columnCount = 1>
@@ -170,7 +172,7 @@
 								title="#application.fapi.getResource('webtop.utilities.favourites.favourite@text','Add or remove this page from your favourites')#" 
 								data-this="#application.fapi.fixURL()#" 
 								data-add="#application.fapi.getLink(type='dmProfile',view='ajaxAddFavourite')#" 
-								data-remove="#application.fapi.getLink(type='dmProfile',view='ajaxRemoveFavourite')#"><i class="<cfif active>icon-star<cfelse>icon-star-empty</cfif>"></i></a><a href="##" class="dropdown favourites-toggle" data-toggle="dropdown"><admin:resource key="webtop.utilties.favourites.favouritesmenu@text">Favourites</admin:resource> <i class="icon-caret-down" style="opacity:0.5"></i></a>
+								data-remove="#application.fapi.getLink(type='dmProfile',view='ajaxRemoveFavourite')#"><i class="fa <cfif active>fa-star<cfelse>fa-star-o</cfif>"></i></a><a href="##" class="dropdown favourites-toggle" data-toggle="dropdown"><admin:resource key="webtop.utilties.favourites.favouritesmenu@text">Favourites</admin:resource> <i class="fa fa-caret-down" style="opacity:0.5"></i></a>
 							<ul class="favourites-menu dropdown-menu">
 								<cfloop array="#aFavourites#" index="thisfavourite">
 									<li><a href="#thisfavourite.url#">#thisfavourite.label#</a></li>
@@ -178,7 +180,7 @@
 								<li class="none" <cfif arraylen(aFavourites)>style="display:none;"</cfif>><admin:resource key="webtop.utilities.favourites.none@text">No favourites</admin:resource></li>
 							</ul>
 						</li>
-						<li><a href="##"><i class="icon-question-sign"></i> Help</a></li>
+						<li><a href="##"><i class="fa fa-question-circle"></i> Help</a></li>
 					</ul>
 				</div>
 			</div>

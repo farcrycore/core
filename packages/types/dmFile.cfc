@@ -18,7 +18,8 @@
 <cfcomponent 
 	extends="types" displayname="File"  
 	hint="A global document library that can be referenced from other content types.  Documents can be secured or open to all depending on your settings." 
-	bBulkUpload="true">
+	bBulkUpload="true"
+	icon="fa-file-text">
 	
 <!------------------------------------------------------------------------
 type properties

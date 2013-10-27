@@ -20,7 +20,7 @@
 	extends="types" output="false" 
 	hint="Users can be assigned to any number of groups.  Groups in turn are mapped to roles within the system which determine what a user has permission to do."
 	bsystem="true"
-	icon="icon-group">
+	icon="fa-group">
 
 <!---------------------------------------------- 
 type properties

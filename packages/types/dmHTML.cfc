@@ -19,7 +19,8 @@
 <cfcomponent extends="versions" displayname="HTML Page" 
 	hint="Forms the basis of the content framework of the site. HTML content items often include containers and publishing rules." 
 	bUseInTree="1" bFriendly="1" fuAlias="html"
-	bObjectBroker="1" >
+	bObjectBroker="1"
+	icon="fa-file-o">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->	

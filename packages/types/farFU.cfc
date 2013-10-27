@@ -3,7 +3,8 @@
 	bDocument="true" scopelocation="application.fc.factory.farFU" 
 	bObjectBroker="true" objectBrokerMaxObjects="10000" 
 	fuAlias="fu"
-	bSystem="true">
+	bSystem="true"
+	icon="fa-link-square">
 	
 	<cfproperty 
 		name="refobjectid" type="string" default="" hint="stores the objectid of the related object" 

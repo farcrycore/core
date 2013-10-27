@@ -19,7 +19,7 @@
 	extends="farcry.core.packages.fourq.fourq" bAbstract="true" 
 	displayname="Base Content Type" 
 	hint="Abstract class. Provides default handlers and system attributes for content object types.  This component should never be instantiated directly -- it should only be inherited."
-	icon="icon-file-alt">
+	icon="fa-file-o">
 
 <!--------------------------------------------------------------------
 system attributes
@@ -978,7 +978,7 @@ default handlers
 						<cfif len(application.stCOAPI[stobj.typename].icon)>
 							<i class="#application.stCOAPI[stobj.typename].icon#"></i>
 						<cfelse>
-							<i class="icon-file"></i>
+							<i class="fa fa-file-o"></i>
 						</cfif>
 						#stobj.label#
 					</h1>
@@ -1072,7 +1072,7 @@ default handlers
 						<cfif len(application.stCOAPI[stobj.typename].icon)>
 							<i class="#application.stCOAPI[stobj.typename].icon#"></i>
 						<cfelse>
-							<i class="icon-file"></i>
+							<i class="fa fa-file-o"></i>
 						</cfif>
 						#stobj.label#
 					</h1>

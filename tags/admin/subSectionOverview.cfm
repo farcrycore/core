@@ -16,23 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header: /cvs/farcry/core/tags/admin/menu.cfm,v 1.6 2005/10/07 04:06:17 daniela Exp $
-$Author: daniela $
-$Date: 2005/10/07 04:06:17 $
-$Name:  $
-$Revision: 1.6 $
-
-|| DESCRIPTION || 
-$Description: Sidebar menu custom tag. 
-Generates sidebar subsection menu and permissions 
-based on webtop xml for subsection.$
-
-|| DEVELOPER ||
-$Developer: Geoff Bowers (modius@daemon.com.au)$
-$Developer: Guy Phanvongsa (guy@daemon.com.au)$
---->
+<!--- @@description: Sidebar menu custom tag. Generates sidebar subsection menu and permissions based on webtop xml for subsection.
+mon.com.au) --->
 
 <cfswitch expression="#thistag.executionmode#">
 	<cfcase value="start">
@@ -99,7 +84,7 @@ $Developer: Guy Phanvongsa (guy@daemon.com.au)$
 					<cfif len(menuitem.icon)>
 						<cfoutput>
 							<a href="#menuitem.link#" target="content">
-								<i class="icon-#menuitem.icon# icon-large"></i>
+								<i class="fa #menuitem.icon# fa-lg"></i>
 							</a>
 						</cfoutput>
 					</cfif>

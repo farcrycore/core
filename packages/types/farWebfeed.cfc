@@ -20,7 +20,7 @@
 	hint="DEPRECATED: Use a type webskin instead." 
 	bFriendly="true" bSystem="true"
 	bdeprecated="true"
-	icon="icon-ban-circle">
+	icon="fa-ban">
 
 	<cfproperty ftSeq="1" ftWizardStep="General" ftFieldset="Feed" name="title" type="string" default="" hint="The name of the feed" ftLabel="Title" ftType="string" ftValidation="required" />
 	<cfproperty ftSeq="2" ftWizardStep="General" ftFieldset="Feed" name="subtitle" type="string" default="" hint="" ftLabel="Subtitle" ftType="string" ftHint="Displays best if it is only a few words long" />

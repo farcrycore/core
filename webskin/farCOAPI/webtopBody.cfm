@@ -155,14 +155,14 @@
 	<cfargument name="typename" type="string" required="true" />
 
 	<!--- set default of table for non-types; eg. schema --->
-	<cfset var icon = "icon-table">
+	<cfset var icon = "fa-table">
 
 	<cfif structKeyExists(application.stcoapi, arguments.typename)>
 		<cfset icon = application.stcoapi[arguments.typename].icon>
 	</cfif>
 
 	<cfif NOT len(icon)>
-		<cfset icon = "icon-question-sign">
+		<cfset icon = "fa-question-circle-o">
 	</cfif>
 
 	<cfreturn icon />
@@ -185,37 +185,37 @@
 				<cfloop collection="#arguments.stConflicts.tables[thistable].fields#" item="thisfield">
 					<cfswitch expression="#arguments.stConflicts.tables[thistable].fields[thisfield].resolution#">
 						<cfcase value="+">
-							<cfset arrayappend(changes,"<div class='undeployed field'><i class='icon-fixed-width'></i><i class='icon-plus-sign icon-fixed-width'></i> #thisfield#</div>") />
+							<cfset arrayappend(changes,"<div class='undeployed field'><i class='fa fa-plus-square-o fa-fw'></i> #thisfield#</div>") />
 						</cfcase>
 						<cfcase value="x">
-							<cfset arrayappend(changes,"<div class='altered field'><i class='icon-fixed-width'></i><i class='icon-question-sign icon-fixed-width'></i> #thisfield#</div>") />
+							<cfset arrayappend(changes,"<div class='altered field'><i class='fa fa-question-square-o fa-fw'></i> #thisfield#</div>") />
 						</cfcase>
 						<cfcase value="-">
-							<cfset arrayappend(changes,"<div class='deleted field'><i class='icon-fixed-width'></i><i class='icon-remove-sign icon-fixed-width'></i> #thisfield#</div>") />
+							<cfset arrayappend(changes,"<div class='deleted field'><i class='fa fa-times-square-o fa-fw'></i> #thisfield#</div>") />
 						</cfcase>
 					</cfswitch>
 				</cfloop>
 				<cfloop collection="#arguments.stConflicts.tables[thistable].indexes#" item="thisindex">
 					<cfswitch expression="#arguments.stConflicts.tables[thistable].indexes[thisindex].resolution#">
 						<cfcase value="+">
-							<cfset arrayappend(changes,"<div class='undeployed field'><i class='icon-fixed-width'></i><i class='icon-plus-sign icon-fixed-width'></i> #thisindex#</div>") />
+							<cfset arrayappend(changes,"<div class='undeployed field'><i class='fa fa-plus-square-o fa-fw'></i> #thisindex#</div>") />
 						</cfcase>
 						<cfcase value="x">
-							<cfset arrayappend(changes,"<div class='altered field'><i class='icon-fixed-width'></i><i class='icon-question-sign icon-fixed-width'></i> #thisindex#</div>") />
+							<cfset arrayappend(changes,"<div class='altered field'><i class='fa fa-question-square-o fa-fw'></i> #thisindex#</div>") />
 						</cfcase>
 						<cfcase value="-">
-							<cfset arrayappend(changes,"<div class='deleted field'><i class='icon-fixed-width'></i><i class='icon-remove-sign icon-fixed-width'></i> #thisindex#</div>") />
+							<cfset arrayappend(changes,"<div class='deleted field'><i class='fa fa-times-square-o fa-fw'></i> #thisindex#</div>") />
 						</cfcase>
 					</cfswitch>
 				</cfloop>
 					
-				<cfset summary = listappend(summary,"<p class='altered coapitable'><i class='icon-question-sign icon-fixed-width'></i> #thistable#</p> <div>#arrayToList(changes,"")#</div>"," ") />
+				<cfset summary = listappend(summary,"<p class='altered coapitable'><i class='fa fa-question-square-o fa-fw'></i> #thistable#</p> <div>#arrayToList(changes,"")#</div>"," ") />
 			</cfcase>
 			<cfcase value="+">
-				<cfset summary = listappend(summary,"<p class='undeployed coapitable'><i class='icon-plus-sign icon-fixed-width'></i> #thistable#</p>"," ") />
+				<cfset summary = listappend(summary,"<p class='undeployed coapitable'><i class='fa fa-plus-square-o fa-fw'></i> #thistable#</p>"," ") />
 			</cfcase>
 			<cfcase value="-">
-				<cfset summary = listappend(summary,"<p class='deleted coapitable'><i class='icon-remove-sign icon-fixed-width'></i> #thistable#</p>"," ") />
+				<cfset summary = listappend(summary,"<p class='deleted coapitable'><i class='fa fa-times-square-o fa-fw'></i> #thistable#</p>"," ") />
 			</cfcase>
 		</cfswitch>
 	</cfloop>
@@ -384,7 +384,7 @@
 				<cfoutput>
 					<tr class="#qTypes.class#">
 						<td class="class">#ucase(left(qTypes.class,1))##mid(qTypes.class,2,10)#</td>
-						<td class="name"><i class="#getIcon(qtypes.typename)# icon-fixed-width" style="font-size:16px;color:##777"></i> #qTypes.label#</td>
+						<td class="name"><i class="fa #getIcon(qtypes.typename)# fa-fw" style="color:##777"></i> #qTypes.label#</td>
 						<td class="conflicts">
 							<a href="#application.url.webtop#/index.cfm?id=#url.id#&typename=farCOAPI&view=webtopPageModal&bodyview=webtopBodyConflicts&typepath=#qTypes.packagepath#" class="openindialog" data-title="#qTypes.label# Conflicts" id="#qTypes.typename#_conflicts">Resolve conflicts</a>
 							<skin:tooltip id="#qTypes.typename#_conflicts" selector="###qTypes.typename#_conflicts" position="bottom" message="#qTypes.conflicts#" />
@@ -436,7 +436,7 @@
 			<cfoutput>
 				<tr class="#qTypes.class#">
 					<td class="class">#ucase(left(qTypes.class,1))##mid(qTypes.class,2,10)#</td>
-					<td class="name"><i class="#getIcon(qtypes.typename)# icon-fixed-width" style="font-size:16px;color:##777"></i> #qTypes.label#</td>
+					<td class="name"><i class="fa #getIcon(qtypes.typename)# fa-fw" style="color:##777"></i> #qTypes.label#</td>
 					<td class="location">
 						<cfloop list="#qTypes.locations#" index="thispath">
 							<span title="#listlast(thispath,':')#">#listfirst(thispath,':')#</span><cfif thispath neq listlast(qTypes.locations)>, </cfif>

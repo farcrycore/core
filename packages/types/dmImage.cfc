@@ -19,7 +19,7 @@
 	extends="types" 
 	displayname="Image" hint="A global image library that can be referenced from other content types. All images have a source image and an automatically generated standard and thumbnail size image for use within your content."
 	bBulkUpload="true"
-	icon="icon-picture">
+	icon="fa-picture-o">
 <!------------------------------------------------------------------------
 type properties
 ------------------------------------------------------------------------->

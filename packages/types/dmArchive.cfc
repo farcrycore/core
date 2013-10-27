@@ -20,7 +20,7 @@
 	extends="types" 
 	hint="Archive: universal container for archived and deleted content items." 
 	bRefObjects="false" bAudit="false" bArchive="false" bSystem="true"
-	icon="icon-archive">
+	icon="fa-archive">
 	
 	<!------------------------------------------------------------------------
 	type properties

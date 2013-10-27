@@ -3,7 +3,7 @@
 	extends="types" output="false" 
 	hint="Workflow instance contains details of the work to be performed" 
 	fuAlias="fc-workflow" bSystem="true"
-	icon="icon-cogs">
+	icon="fa-cogs">
 
 	<cfproperty ftSeq="1" ftFieldset="" name="title" type="string" default="" hint="Title of workflow instance" ftLabel="Title" ftType="string" ftValidation="required" />
 	<cfproperty ftSeq="2" ftFieldset="" name="description" type="longchar" default="" hint="Description of work to be performed" ftLabel="Description" />

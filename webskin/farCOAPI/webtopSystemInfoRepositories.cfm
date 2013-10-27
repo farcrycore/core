@@ -29,7 +29,7 @@
 				<tr>
 					<td nowrap="nowrap">
 						<span <cfif stRepo.isDirty>style="color: red"<cfelse>style="color: green"</cfif>>
-						<i class="icon-#stRepo.service# icon-fixed-width"></i> 
+						<i class="fa fa-#stRepo.service# fa-fw"></i> 
 						#stRepo.name#
 						</span>
 					</td>
@@ -68,7 +68,7 @@
 				<tr>
 					<td nowrap="nowrap">
 						<span <cfif stRepo.isDirty>style="color: red"<cfelse>style="color: green"</cfif>>
-						<i class="icon-book icon-fixed-width"></i> 
+						<i class="fa fa-book fa-fw"></i> 
 						#stRepo.name#
 						</span>
 					</td>
@@ -102,7 +102,7 @@
 			<cfset stRepo = stRepoData["unversioned"][i]>
 			<tr>
 				<td nowrap="nowrap">
-					<i class="icon-folder-close icon-fixed-width"></i> 
+					<i class="fa fa-folder fa-fw"></i> 
 					#stRepo.name#
 				</td>
 				<td nowrap="nowrap"></td>
