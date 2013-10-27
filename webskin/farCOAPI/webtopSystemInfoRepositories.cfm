@@ -13,7 +13,7 @@
 
 <cfoutput>
 
-	<cfif structKeyExists(stRepoData, "git")>
+	<cfif structKeyExists(stRepoData, "git") AND arrayLen(stRepoData.git)>
 		<table class="table">
 		<thead>
 		<tr>
@@ -52,7 +52,7 @@
 		</table>
 	</cfif>
 
-	<cfif structKeyExists(stRepoData, "svn")>
+	<cfif structKeyExists(stRepoData, "svn") AND arrayLen(stRepoData.svn)>
 		<table class="table">
 		<thead>
 		<tr>
@@ -88,7 +88,7 @@
 		</table>
 	</cfif>
 
-	<cfif structKeyExists(stRepoData, "unversioned")>
+	<cfif structKeyExists(stRepoData, "unversioned") AND arrayLen(stRepoData.unversioned)>
 		<table class="table">
 		<thead>
 		<tr>

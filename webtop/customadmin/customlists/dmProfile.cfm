@@ -81,9 +81,10 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 	columnList="username,userdirectory,firstname,lastname" 
 	sortableColumns="userid,userstatus"
 	lFilterFields="username"
-	sqlorderby="username asc" 
 	lCustomActions="Change password,Preview Webtop Security"
 	lButtons="#lButtons#"
+	bPreviewCol="false"
+	sqlorderby="username asc" 
  />
 
 <admin:footer />

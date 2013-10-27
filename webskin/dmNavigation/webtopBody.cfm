@@ -12,6 +12,10 @@
 <skin:loadJS id="farcry-form" />
 <skin:loadJS id="fc-farcry-devicetype" />
 
+<!--- load handlebars templates --->
+<skin:hbs template="preview-dialog">
+<skin:hbs template="tree-dialog">
+
 
 <!--- 
 
@@ -79,28 +83,12 @@
 	<cfset rootObjectID = application.fapi.getNavId("home")>
 </cfif>
 
-
-<!--- TODO: move this into a config --->
-<!--- get device type preview widths --->
-<cfset deviceWidth = structNew()>
-<cfset deviceWidth["desktop"] = 1050>
-<cfset deviceWidth["tablet"] = 768>
-<cfset deviceWidth["mobile"] = 480>
-
-
-<!--- get current device type --->
-<cfset currentDevice = application.fc.lib.device.getDeviceType()>
-<cfif NOT listFindNoCase("desktop,tablet,mobile", currentDevice)>
-	<cfset currentDevice = "desktop">
-</cfif>
-
 <!--- navigation type --->
 <cfset navTitle = "Site Navigation">
 <!--- TODO: built-in "navigation types" with separate menu items? testing changing the page heading... --->
 <cfif listLast(url.id, ".") eq "utility">
 	<cfset navTitle = "Utility Navigation">
 </cfif>
-
 
 
 <!--- process forms --->
@@ -136,13 +124,12 @@
 </ft:processForm>
 
 
-
 <cfoutput>
 
 	<h1><i class="icon-sitemap"></i> #navTitle#</h1>
 
 	<div class="farcry-button-bar btn-group pull-left" style="margin-bottom: 5px">
-		<button class="btn btn-primary" type="button" onclick="alert('Coming soon...');"><i class="icon-plus"></i> Add Page</button>
+		<button class="btn btn-primary fc-btn-addpage" type="button"><i class="icon-plus"></i> Add Page</button>
 		<!--- <button class="btn" type="button"><i class="icon-level-up"></i> Up a Level</button> --->
 		<!--- <button class="btn" type="button"><i class="icon-reorder"></i> Sort Order</button> --->
 
@@ -192,206 +179,6 @@
 	</ft:form>
 
 
-	<div id="preview-container" class="" style="position: fixed; width:0; background: red; top: 74px; right: 0; bottom: 0; z-index: 120; overflow:visible;">
-		<div id="preview" style="position: absolute; right: -#deviceWidth[currentDevice]#px; width: #deviceWidth[currentDevice]#px; max-width: #deviceWidth[currentDevice]#px; height: 100%; box-shadow: 0 0 16px rgba(0,0,0,0.32); background: ##fff;">
-
-			<div class="modal-header">
-				<button type="button" class="close" onclick="showPreview();" aria-hidden="true">&times;</button>
-				<h4 style="margin:0; float:left; padding-top: 2px; margin-right: 20px; line-height: 24px"><i id="previewicon" class="icon-eye-open" style="display:inline-block; font-size: 16px; width: 16px; height: 16px;"></i> Preview</h4>
-				<button style="margin-left: -2px" class="btn btn-edit" type="button" onclick="previewDevice('desktop', #deviceWidth["desktop"]#);"><i class="icon-desktop"></i>&nbsp;Desktop</button>
-				<button style="margin-left: -2px" class="btn btn-edit" type="button" onclick="previewDevice('tablet', #deviceWidth["tablet"]#);"><i class="icon-tablet"></i>&nbsp;Tablet</button>
-				<button style="margin-left: -2px" class="btn btn-edit" type="button" onclick="previewDevice('mobile', #deviceWidth["mobile"]#);"><i class="icon-mobile-phone"></i>&nbsp;Mobile</button>
-				&nbsp; <a href="##" target="_blank" onclick="this.href=document.getElementById('previewiframe').contentWindow.location.href;" title="Open in new tab" style="text-decoration:none; color:##777; position:relative; top: 2px;"><i class="icon-external-link"></i></a>
-			</div>
-
-			<iframe id="previewiframe" src="http://#cgi.http_host#/" frameborder="0" border="0" width="100%" height="100%" style="position: absolute; top: 40;"></iframe>
-
-		</div>
-	</div>
-
-
-
-<script id="tree-dialog" type="text/x-handlebars-template">
-	<div id="minitree-container" class="" style="position: fixed; z-index:1050; width:400px; height: 500px; left: 50%; top: 50%; overflow:visible;">
-		<div id="minitree" style="position: absolute; top: -250px; left: -200px; width: 100%; height: 100%; border: 1px solid ##ccc; border-radius: 2px; box-shadow: 0 0 16px rgba(0,0,0,0.32); background: ##fff;">
-
-			<div class="modal-header">
-				<button type="button" class="close" aria-hidden="true">&times;</button>
-				<h4 style="margin:0; padding-top: 2px; margin-right: 20px; line-height: 24px"><i class="icon-move" style="display:inline-block; font-size: 16px; width: 16px; height: 16px;"></i> {{title}}</h4>
-			</div>
-
-			<div class="modal-body" style="overflow: auto; height: 368px; max-height: 368px;">
-
-				<table class="objectadmin table table-hover farcry-objectadmin">
-				<thead>
-					<tr>
-						<th>{{sourceText}}</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td class="fc-tree-title fc-nowrap"><a class="fc-treestate-toggle"><i class="fc-icon-treestate"></i></a><span class="icon-stack"><i class="icon-folder-close"></i></span> <span>{{sourceName}}</span></td>
-					</tr>
-				</tbody>
-				</table>
-
-				<table id="farcry-minitree" class="objectadmin table table-hover table-hover-all farcry-objectadmin table-unselectable">
-				<thead>
-					<tr>
-						<th>{{targetText}}</th>
-					</tr>
-				</thead>
-				<tbody style="max-height: 200px; overflow: auto;">
-					<tr>
-						<td><i class="icon-spinner icon-spin"></i> &nbsp;Loading...</td>
-					</tr>
-				</tbody>
-				</table>
-
-			</div>
-
-			<div class="modal-footer" style="border: none; border-radius: 0; -moz-border-radius: 0">
-				<a class="btn btn-primary btn-submit" style="text-transform:capitalize">{{submitLabel}}</a>
-				<a class="btn btn-cancel">Cancel</a>
-			</div>
-
-
-		</div>
-	</div>
-	<div class="modal-backdrop fade in"></div>
-</script>
-
-
-	<script type="text/javascript">
-
-		/* preview */
-
-		function showPreview(previewURL, bShow) {
-			previewURL = previewURL || null;
-			bShow = bShow || null;
-
-			var w = $j("##preview").width();
-			var maxWidth = $j("body").width();
-			var h = $j("##preview").height();
-			var $iframe = $j("##preview iframe").height(h - 45);
-			var iframe = document.getElementById("previewiframe");
-
-			if (w > maxWidth) {
-				w = maxWidth;
-			}
-
-			previewMaxWidth(maxWidth);
-
-			if ($j("##preview").hasClass("visible") || bShow === false || previewURL == null) {
-				if (previewURL != null && $iframe.attr("src") != previewURL) {
-					$iframe.attr("src", previewURL);
-					previewLoading();
-				}
-				else {
-					$j("##preview").removeClass("visible").animate({ right: w * -1 }, 250);
-				}
-			}
-			else {
-				$iframe.attr("src", previewURL);
-				previewLoading();
-				$j("##preview").addClass("visible").animate({ right: 0 }, 250);
-			}
-
-
-		}
-
-		function previewDevice(targetDeviceType, width) {
-			var enabledWebskins = {};
-			// note: desktop should always be defaulted to false here 
-			enabledWebskins["desktop"] = false;
-			enabledWebskins["tablet"] = false;
-			enabledWebskins["mobile"] = false;
-			<cfif application.fc.lib.device.isTabletWebskinsEnabled()>
-				enabledWebskins["tablet"] = true;
-			</cfif>
-			<cfif application.fc.lib.device.isMobileWebskinsEnabled()>
-				enabledWebskins["mobile"] = true;
-			</cfif>
-
-			// get the previous device type
-			var previousDeviceType = $fc.getDeviceType();
-
-			// set the new target device type
-			$fc.setDeviceTypeCookie(targetDeviceType);
-			// set the new device width
-			previewWidth(width);
-
-			// reload if different webskins will be used
-				// previous == target (do nothing)
-				// desktop -> tablet (only if target enabled)
-				// desktop -> mobile (only if target enabled)
-				// tablet -> desktop (only if previous enabled)
-				// mobile -> desktop (only if previous enabled)
-				// tablet -> mobile (if either enabled)
-				// mobile -> tablet (if either enabled)
-			if (previousDeviceType == targetDeviceType) {
-				// no reload
-			}
-			else if (previousDeviceType == "desktop" && enabledWebskins[targetDeviceType]) {
-				previewReload();
-			}
-			else if (targetDeviceType == "desktop" && enabledWebskins[previousDeviceType]) {
-				previewReload();
-			}
-			else if (enabledWebskins[previousDeviceType] || enabledWebskins[targetDeviceType]) {
-				previewReload();
-			}
-		}
-
-		function previewReload() {
-			var iframe = document.getElementById("previewiframe");
-			iframe.contentWindow.location.reload();
-			previewLoading();
-		}
-
-		function previewLoading() {
-			var iframe = document.getElementById("previewiframe");
-			$j("##previewicon").attr("class", "icon-spinner icon-spin");
-			iframe.onload = (function() {
-				$j("##previewicon").attr("class", "icon-eye-open");
-			});
-		}
-
-		function previewWidth(w) {
-			$j("##preview").animate({ width: w }, 200);
-		}
-
-		function previewMaxWidth(w) {
-			$j("##preview").css("max-width", w);
-		}
-
-		/* resize the preview when the browser changes */ 
-		$j(window).resize(function resizePreview() {
-			// update the max width
-			var w = $j(document.body).width();
-			previewMaxWidth(w);
-			// keep the preview off screen
-			if (!$j("##preview").hasClass("visible")) {
-				$j("##preview").css("right", -w);
-			}
-		});
-
-		$j(function() {
-
-			/* bind preview buttons */
-			$j(".farcry-objectadmin").on("click", ".objectadmin-actions a.fc-btn-preview", function(evt){
-				//evt.preventDefault();
-				var previewURL = $j(this).attr("href");
-				showPreview(previewURL);
-				return false;
-			});
-
-		});
-
-
-	</script>
-
-
 	<!--- get root tree data --->
 	<cfsavecontent variable="jsonData">
 		<skin:view objectid="#rootObjectID#" typename="dmNavigation" webskin="webtopTreeChildRows" responsetype="json" />
@@ -399,6 +186,7 @@
 
 
 	<skin:htmlHead>
+		<script src="#application.url.webtop#/app/views/PreviewView.js" type="text/javascript"></script>
 		<script type="text/javascript">
 			App = {};
 
@@ -464,7 +252,11 @@
 						}
 
 
-						if (this.options.action == "copy") {
+						if (typeof this.options.action == "function") {
+							this.options.action(this.options.sourceObjectID, this.options.targetObjectID);
+							this.close();
+						}
+						else if (this.options.action == "copy") {
 							treeview.doCopyTo(this.options.sourceObjectID, this.options.targetObjectID);
 							this.close();
 						}
@@ -1303,7 +1095,7 @@ alert(response.message);
 							+	'<td class="objectadmin-actions"> '
 							+		'<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" title="" type="button" data-original-title="Object Overview"><i class="icon-th only-icon"></i></button> '
 							+		'<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button"><i class="icon-pencil"></i> Edit</button> '
-							+		'<a href="' + row["previewURL"] + '" class="btn fc-btn-preview fc-tooltip" title="" data-original-title="Preview"><i class="icon-eye-open only-icon"></i></a> '
+							+		'<a href="' + row["previewURL"] + '" class="btn fc-btn-preview fc-tooltip" title="Preview"><i class="icon-eye-open only-icon"></i></a> '
 							+		'<div class="btn-group"> '
 							+			'<button data-toggle="dropdown" class="btn dropdown-toggle" type="button"><i class="icon-caret-down only-icon"></i></button> '
 							+			'<div class="dropdown-menu"> '
@@ -1360,6 +1152,43 @@ alert(response.message);
 					data: #jsonData#
 				});
 				App.siteTreeView.render();
+
+				App.previewView = new PreviewView({
+					attachTo: "##farcry-sitetree",
+					previewURL: "http://#cgi.http_host#/",
+					currentDevice: "#application.fc.lib.device.getDeviceType()#",
+					bUseTabletWebskins: #application.fc.lib.device.isTabletWebskinsEnabled()#,
+					bUseMobileWebskins: #application.fc.lib.device.isMobileWebskinsEnabled()#,
+					deviceWidth: {
+						desktop: #application.fapi.getConfig("device", "desktopWidth")#,
+						tablet: #application.fapi.getConfig("device", "tabletWidth")#,
+						mobile: #application.fapi.getConfig("device", "mobileWidth")#
+					}
+				});
+				App.previewView.render();
+
+
+
+				$j(".farcry-button-bar .fc-btn-addpage").on("click", function(){
+
+					addPageDialogView = new TreeDialogView({
+						action: function(sourceObjectID, targetObjectID){
+							var createURL = "#application.url.webtop#/conjuror/evocation.cfm?parenttype=dmNavigation&typename=dmNavigation&objectid=" + targetObjectID;
+							$fc.objectAdminAction('Add Page', createURL, { 
+								onHidden: function(){ 
+									App.siteTreeView.loadTree("#rootObjectID#"); 
+								}
+							});
+
+						},
+						title: "Add Page...",
+						submitLabel: "Create",
+						targetText: "Add a page in the selected folder..."
+
+					});
+					addPageDialogView.render();					
+
+				});
 
 
 			});

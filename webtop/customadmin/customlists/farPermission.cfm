@@ -43,6 +43,7 @@ $Developer: Blair McKenzie (blair@daemon.com.au) $
 	aCustomColumns="#aCustomColumns#"
 	sortableColumns="shortcut,bSystem,bDisabled"
 	lFilterFields="shortcut"
+    bPreviewCol="false"
 	sqlorderby="shortcut asc" />
 
 <admin:footer />
