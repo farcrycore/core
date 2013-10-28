@@ -888,49 +888,52 @@
 						
 						<cfloop list="#attributes.columnlist#" index="i">
 
-							<cfset headerColumnStyle = "">
-							<cfif isDefined("PrimaryPackage.stProps.#trim(i)#.metadata.ftType") AND PrimaryPackage.stProps[#trim(i)#].metadata.ftType eq "datetime">
-								<cfset headerColumnStyle = "width: 8em;">
-							</cfif>
-							<cfif i eq "status">
-								<cfset headerColumnStyle = "width: 9em;">								
-							</cfif>
+							<cfif isDefined("PrimaryPackage.stProps.#trim(i)#")>
 
-							<cfset orderField = listFirst(session.objectadminFilterObjects[attributes.typename].sqlOrderBy, " ")>
-							<cfset orderDirection = listLast(session.objectadminFilterObjects[attributes.typename].sqlOrderBy, " ")>
-
-							<cfset sortableClass = "">
-							<cfset sortableDirection = "">
-							<cfif listFindNoCase(attributes.sortableColumns, i)>
-								<cfset sortableClass = "objectadmin-sortable">
-								<cfif orderField eq i>
-									<cfset sortableDirection = orderDirection>
-								<cfelse>
-									<cfset sortableDirection = "DESC">
+								<cfset headerColumnStyle = "">
+								<cfif isDefined("PrimaryPackage.stProps.#trim(i)#.metadata.ftType") AND PrimaryPackage.stProps[#trim(i)#].metadata.ftType eq "datetime">
+									<cfset headerColumnStyle = "width: 8em;">
 								</cfif>
-							</cfif>
-								
-							<cfoutput>
-								<th class="#sortableClass#" data-field="#i#" data-direction="#sortableDirection#" data-form="#request.farcryForm.name#" style="#headerColumnStyle#">
-								<span>
-									<cfif isDefined("PrimaryPackage.stProps.#trim(i)#.metadata.ftLabel")>
-										#o.getI18Property(i,"label")#
-									<cfelse>
-										#i#
-									</cfif>
+								<cfif i eq "status">
+									<cfset headerColumnStyle = "width: 9em;">
+								</cfif>
 
+								<cfset orderField = listFirst(session.objectadminFilterObjects[attributes.typename].sqlOrderBy, " ")>
+								<cfset orderDirection = listLast(session.objectadminFilterObjects[attributes.typename].sqlOrderBy, " ")>
+
+								<cfset sortableClass = "">
+								<cfset sortableDirection = "">
+								<cfif listFindNoCase(attributes.sortableColumns, i)>
+									<cfset sortableClass = "objectadmin-sortable">
 									<cfif orderField eq i>
-										<cfif orderDirection eq "ASC">
-											<i class="fa fa-caret-up"></i>
-										<cfelseif orderDirection eq "DESC">
-											<i class="fa fa-caret-down"></i>
-										</cfif>
+										<cfset sortableDirection = orderDirection>
+									<cfelse>
+										<cfset sortableDirection = "DESC">
 									</cfif>
-								</span>
-								</th>
-							</cfoutput>
+								</cfif>
 
-							
+								<cfoutput>
+									<th class="#sortableClass#" data-field="#i#" data-direction="#sortableDirection#" data-form="#request.farcryForm.name#" style="#headerColumnStyle#">
+									<span>
+										<cfif isDefined("PrimaryPackage.stProps.#trim(i)#.metadata.ftLabel")>
+											#o.getI18Property(i,"label")#
+										<cfelse>
+											#i#
+										</cfif>
+
+										<cfif orderField eq i>
+											<cfif orderDirection eq "ASC">
+												<i class="fa fa-caret-up"></i>
+											<cfelseif orderDirection eq "DESC">
+												<i class="fa fa-caret-down"></i>
+											</cfif>
+										</cfif>
+									</span>
+									</th>
+								</cfoutput>
+
+							</cfif>
+
 						</cfloop>
 						
 					<cfoutput>
@@ -987,19 +990,23 @@
 							</cfif>
 					
 							<cfloop list="#attributes.columnlist#" index="i">
-								<cfoutput><th></cfoutput>					
-									<cfif listContainsNoCase(attributes.SortableColumns,i)>
-										<cfoutput>
-										<select name="#i#sqlOrderBy" onchange="javascript:$j('##sqlOrderBy').attr('value',this.value);btnSubmit('#request.farcryForm.name#', 'sort');" style="width:80px;">
-											<option value=""></option>
-											<option value="#i# asc"<cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# asc"> selected="selected"</cfif>><admin:resource key="#attributes.rbkey#.asc@label">asc</admin:resource></option>
-											<option value="#i# desc"<cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# desc"> selected="selected"</cfif>><admin:resource key="#attributes.rbkey#.desc@label">desc</admin:resource></option>
-										</select>
-										</cfoutput>
-									<cfelse>
-										<cfoutput>&nbsp;</cfoutput>
-									</cfif>
-								<cfoutput></th></cfoutput>
+
+								<cfif isDefined("PrimaryPackage.stProps.#trim(i)#")>
+									<cfoutput><th></cfoutput>
+										<cfif listContainsNoCase(attributes.SortableColumns,i)>
+											<cfoutput>
+											<select name="#i#sqlOrderBy" onchange="javascript:$j('##sqlOrderBy').attr('value',this.value);btnSubmit('#request.farcryForm.name#', 'sort');" style="width:80px;">
+												<option value=""></option>
+												<option value="#i# asc"<cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# asc"> selected="selected"</cfif>><admin:resource key="#attributes.rbkey#.asc@label">asc</admin:resource></option>
+												<option value="#i# desc"<cfif session.objectadminFilterObjects[attributes.typename].sqlOrderBy EQ "#i# desc"> selected="selected"</cfif>><admin:resource key="#attributes.rbkey#.desc@label">desc</admin:resource></option>
+											</select>
+											</cfoutput>
+										<cfelse>
+											<cfoutput>&nbsp;</cfoutput>
+										</cfif>
+									<cfoutput></th></cfoutput>
+								</cfif>
+
 							</cfloop>
 						<cfoutput>
 						</tr>
@@ -1088,13 +1095,18 @@
 								<ft:object objectID="#st.objectid#" typename="#attributes.typename#" lFields="#attributes.columnlist#" format="display" r_stFields="stFields" />
 							
 								<cfloop list="#attributes.columnlist#" index="i">
-									<cfif structKeyExists(stFields, i)>
-										<cfif i eq "status">
-											<cfset stFields[i].HTML = statusOutput>
+
+									<cfif isDefined("PrimaryPackage.stProps.#trim(i)#")>
+
+										<cfif structKeyExists(stFields, i)>
+											<cfif i eq "status">
+												<cfset stFields[i].HTML = statusOutput>
+											</cfif>
+											<cfoutput><td>#stFields[i].HTML#</td></cfoutput>
+										<cfelse>
+											<cfoutput><td>-- not available --</td>	</cfoutput>
 										</cfif>
-										<cfoutput><td>#stFields[i].HTML#</td></cfoutput>			
-									<cfelse>
-										<cfoutput><td>-- not available --</td>	</cfoutput>			
+
 									</cfif>
 									
 								</cfloop>	
