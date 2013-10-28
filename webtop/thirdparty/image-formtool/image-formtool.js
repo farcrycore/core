@@ -322,7 +322,7 @@ $fc.imageformtool = function imageFormtoolObject(prefix,property,bUUID){
 				if (results.value && results.value.length>0){
 					var imageMaxWidth = (results.width < 400) ? results.width : 400;
 					var complete = imageformtool.multiview.findView("complete")
-						.find(".image-status").html('<i class="icon-picture icon-fixed-width"></i>').end()
+						.find(".image-status").html('<i class="fa fa-picture-o fa-fw"></i>').end()
 						.find(".image-filename").html(results.filename).end()
 						.find(".image-size").html(results.size).end()
 						.find(".image-width").html(results.width).end()
