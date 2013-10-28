@@ -21,14 +21,15 @@
 <!--- @@author: Matthew Bryant (mbryant@daemon.com.au) --->
 
 <cfoutput>
-					</div><!-- /.content-main -->
-				</div><!-- /.content-block -->
-				<div class="footer">
-					<p class="copyright">Copyright &copy; <a href="http://www.daemon.com.au" target="_blank">Daemon</a> 1997-#year(now())#.<br />#application.sysInfo.farcryVersionTagLine#</p>
-				</div>
-			</div><!-- /##content-main -->
-		</body>
-	</html>
+				</div><!-- /.content-main -->
+			</div><!-- /.content-block -->
+			<div class="footer">
+				<p class="copyright">Copyright &copy; <a href="http://www.daemon.com.au" target="_blank">Daemon</a> 1997-#year(now())#.<br />#application.sysInfo.farcryVersionTagLine#</p>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
 </cfoutput>
 
 <cfsetting enablecfoutputonly="false">

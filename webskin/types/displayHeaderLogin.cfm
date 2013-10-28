@@ -27,29 +27,37 @@
 <skin:loadJS id="fc-jquery" />
 <skin:loadJS id="fc-bootstrap" />
 
-<cfoutput>
-	<!DOCTYPE HTML>
-	<html>
-		<head>
-			<meta charset="UTF-8">
-			<title>FarCry Login</title>
-			<meta name="viewport" content="width=device-width, initial-scale=1.0">
-			<link href="#application.url.webtop#/css/icons.css" rel="stylesheet" media="screen">
-		</head>
 
-		<body>
-			<div id="header">
-				<div class="container-fluid">
-					<h1><a href="#application.url.webroot#/" target="_blank" class="logo webtop-logo"<cfif structKeyExists(application.config.general,'webtopLogoPath') and application.config.general.webtopLogoPath NEQ ""> style="background-image:url(#application.config.general.webtopLogoPath#);text-indent:-99999px;"</cfif>>#application.config.general.siteTitle#</a></h1>
-					<h1><a href="http://www.farcrycore.org/" target="_blank" class="logo farcry-logo">FarCry Core</a></h1>
-				</div><!-- /.container -->
-			</div><!-- /##header -->
-			<div id="content-main">
-				<div class="content-block">
-					<div class="content-header">
-						<h3>Sign In to FarCry</h3>
-					</div><!-- /.content-header -->
-					<div class="content-main">
+<cfset bWebtopLogo = false>
+<cfset bWebtopBackground = false>
+
+<cfif structKeyExists(application.config.general,'webtopLogoPath') and application.config.general.webtopLogoPath NEQ "">
+	<cfset bWebtopLogo = true>
+</cfif>
+<cfif structKeyExists(application.config.general,'webtopBackgroundPath') and application.config.general.webtopBackgroundPath NEQ "">
+	<cfset bWebtopBackground = true>
+</cfif>
+
+
+<cfoutput>
+<!DOCTYPE HTML>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>FarCry Login</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="#application.url.webtop#/css/icons.css" rel="stylesheet" media="screen">
+</head>
+
+<body <cfif bWebtopBackground>style="background-image:url(#application.config.general.webtopBackgroundPath#);"</cfif>>
+	<div class="wrap" <cfif bWebtopBackground>style="background-image:url(#application.url.webtop#/css/images/bg-mask-dot.png);"</cfif>>
+		<div class="content-main">
+			<div class="content-block">
+				<div id="header" class="clearfix">
+					<h1 class="pull-left"><a href="#application.url.webroot#/" target="_blank" class="logo webtop-logo" <cfif bWebtopLogo>style="background-image:url(#application.config.general.webtopLogoPath#);text-indent:-99999px;"<cfelse>style="width:auto;height:40px;"</cfif>>#application.config.general.siteTitle#</a></h1>
+					<h1 class="pull-right"><a href="http://www.farcrycore.org/" target="_blank" class="logo farcry-logo">FarCry Core</a></h1>
+				</div>
+				<div class="content-pod">
 </cfoutput>
 
 <cfsetting enablecfoutputonly="false">

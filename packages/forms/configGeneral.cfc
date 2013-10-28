@@ -9,6 +9,11 @@
 		ftType="image" ftDestination="/wsimages"
 		ftAutoGenerateType="fitinside" ftImageWidth="180" ftImageHeight="60"
 		ftAllowUpload="true" ftbUploadOnly="true" ftQuality="1.0" ftInterpolation="blackman">
+	<cfproperty name="webtopbackgroundpath" type="string" default="" 
+		ftSeq="14" ftFieldset="Site Description" ftLabel="Webtop Login Background" 
+		ftType="image" ftDestination="/wsimages"
+		ftAutoGenerateType="fitinside" ftImageWidth="1600" ftImageHeight="1600"
+		ftAllowUpload="true" ftbUploadOnly="true" ftQuality="1.0" ftInterpolation="blackman">
 
 <!--- 
  // contributor properites 

@@ -1,57 +1,96 @@
 html {
-  min-height:100%;
+  height:100%;
 }
 body {
-  background:#eeeeee url(images/bg-login.png) 0 150px repeat-x;
-  min-height:100%;
+  height: 100%;
   padding-top:0;
   font-family: Arial, Helvetica, sans-serif;
+  background: #eee;
+  background-size: cover;
+  background-position: center center;
 }
 
 input, button, select, textarea {
   font-family: Arial, Helvetica, sans-serif
 }
 
-#content-main {
-  background:url(images/bg-login-center-blue.png) 50% 0 no-repeat;
-  margin-bottom:50px;
-  padding-top:50px;
-}
-#content-main h3 {
-  font-size:18px;
-  font-weight:normal;
-  line-height:20px;
-  margin: 0;
+.wrap {
+  width: 100%;
+  height: 100%;
+  background-position: 0 0;
+  background-repeat: repeat;
 }
 
-.content-header {
-  background:#f1f1f1;
-  border-bottom:1px solid #cccccc;
-  color:#333333;
-  padding: 10px 15px;
-  position:relative;
-  text-shadow:0 1px 0 #ffffff;
+#header {
+  padding: 25px 25px 10px 25px;
 }
+#header h1 {
+  margin:0;
+  font-size: 24px;
+  line-height: 1;
+}
+
+#header .webtop-logo {
+  display: block;
+  color:#303030;
+  font-size:24px;
+  font-weight:300;
+  height:60px;
+  line-height:1em;
+  background-position: top left;
+  background-repeat: no-repeat;
+
+}
+#header .webtop-logo:hover,
+#header .webtop-logo:active {
+  color:#000000;
+  text-decoration:none;
+}
+#header .farcry-logo {
+  display: block;
+  width:62px;
+  height: 19px;
+  background:url(../images/farcry.png) top right no-repeat;
+  text-indent:-99999px;
+}
+#header h1 .webtop-logo {
+  width: 180px
+}
+
+
 .content-main {
+  padding: 20px 10px;
+}
+
+.content-main .content-block {
+  background:#ffffff;
+  border:1px solid #cccccc;
+  margin: 0 auto;
+  max-width: 520px;
+  -webkit-box-shadow:0 4px 16px rgba(0,0,0,0.2);
+  -moz-box-shadow:0 4px 16px rgba(0,0,0,0.2);
+  box-shadow:0 4px 16px rgba(0,0,0,0.2);
+}
+
+
+.content-pod {
   border:1px solid #ffffff;
-  padding:15px 15px 5px;
-}
-.content-main > *:first-child {
-  margin-top:0;
+  padding: 5px 25px 30px 25px;
 }
 
-#content-main form {
-  padding:20px 0;
+
+.content-main form {
+  padding:0;
+  margin:0;
 }
 
-#content-main form fieldset {
+.content-main form fieldset {
   margin:0;
   padding: 0;
 }
 
-
-#content-main form input[type="text"],
-#content-main form input[type="password"] {
+.content-main form input[type="text"],
+.content-main form input[type="password"] {
   font-size:19px;
   height:26px;
   line-height:26px;
@@ -60,37 +99,16 @@ input, button, select, textarea {
   border-radius: 0;
 }
 
-#content-main .uniForm .inlineLabels input[type="text"],
-#content-main .uniForm .inlineLabels input[type="password"],
-#content-main .uniForm .inlineLabels .textInput,
-#content-main .uniForm .inlineLabels .selectInput {
-  width: 97%;
-  height:auto;
-  font-size: 14px;
-  line-height: 16px;
-  padding: 5px;
-  margin-bottom: 2px;
-  border-radius: 0;
-}
-#content-main .uniForm .inlineLabels .selectInput {
-  padding: 4px;
-  box-sizing: border;
-}
-
-#content-main .uniForm .label {
-  text-shadow: none;
-}
-
-#content-main form .help-inline {
+.content-main form .help-inline {
   font-size:12px;
   margin-top:12px;
-  padding-right:5px;
+  padding-left:0;
 }
-#content-main form .btn-group {
+.content-main form .btn-group {
   float:right;
 }
 
-#content-main .btn {
+.content-main .btn {
   background: #e8e8e8;
   border-radius: 0;
   border: 0;
@@ -98,36 +116,36 @@ input, button, select, textarea {
   box-shadow: 0 0 1px rgba(0,0,0,0.25) inset;
   font-family: Arial, Helvetica, sans-serif;
 }
-#content-main .btn:hover,
-#content-main .btn:focus {
+.content-main .btn:hover,
+.content-main .btn:focus {
   background: #f8f8f8;
   box-shadow: 0 0 1px rgba(0,0,0,0.4) inset;
   /*text-shadow: 0 1px 1px #000;*/
   /*color: #fff;*/
 }
-#content-main .btn:active {
+.content-main .btn:active {
   background: #cccccc;
 }
-#content-main .btn-primary {
+.content-main .btn-primary {
   background: #3e84b5;
   text-shadow: none;
   color: #fff;
   box-shadow: 0 0 1px rgba(0,0,0,0.4) inset;
 }
-#content-main .btn-primary:hover,
-#content-main .btn-primary:focus {
+.content-main .btn-primary:hover,
+.content-main .btn-primary:focus {
   background: #0e65a2;
   box-shadow: 0 0 1px rgba(0,0,0,0.6) inset;
   text-shadow: none;
   color: #fff;
 }
-#content-main .btn-primary:active {
+.content-main .btn-primary:active {
   background: #0c5582;
   text-shadow: none;
   color: #fff;
 }
 
-#content-main .btn-group .btn {
+.content-main .btn-group .btn {
   border-radius: 0;
 }
 
@@ -156,150 +174,49 @@ input, button, select, textarea {
 }
 
 
-#content-main .content-block {
-  background:#ffffff;
-  border:1px solid #cccccc;
-  margin:0 auto 20px auto;
-  width:520px;
-  -webkit-box-shadow:0 4px 16px rgba(0,0,0,0.2);
-  -moz-box-shadow:0 4px 16px rgba(0,0,0,0.2);
-  box-shadow:0 4px 16px rgba(0,0,0,0.2);
-}
-
-#content-main .footer {
+.content-main .footer {
   margin:20px auto 0 auto;
-  width:520px;  
+  max-width:520px;  
 }
 
-#content-main .copyright {
+.content-main .copyright {
   font-size:11px;
   line-height: 15px;
   padding:0 5px;
   text-align:right;
   color: #bbbbbb;
 }
-#content-main .copyright a {
+.content-main .copyright a {
   color: #999999;
 }
-#content-main .copyright strong {
+.content-main .copyright strong {
   font-weight: normal;
 }
 
-#header {
-  padding-top:60px;
-  text-align:center;
-  background: #ffffff;
-}
-#header h1 {
-  border-left:1px solid #ebebeb;
-  display:inline-block;
-  *display:inline;
-  margin:0;
-  padding:0 40px;
-  *zoom:1;
-}
-#header h1:first-child {
-  border-left:none;
-}
-#header .logo {
-  color:#303030;
-  display:inline-block;
-  *display:inline;
-  font-size:24px;
-  font-weight:300;
-  height:60px;
-  line-height:60px;
-  margin:15px 0;
-  *zoom:1;
-  background-position: left center;
-  background-repeat: no-repeat;
-  -webkit-transition:color 0.3s;
-  -moz-transition:color 0.3s;
-  -o-transition:color 0.3s;
-  transition:color 0.3s;
-}
-#header .logo:hover,
-#header .logo:active {
-  color:#000000;
-  text-decoration:none;
-  -webkit-transition:color 0.3s;
-  -moz-transition:color 0.3s;
-  -o-transition:color 0.3s;
-  transition:color 0.3s;
-}
-#header h1 .farcry-logo {
-  width:145px;
-  background:url(images/farcry-logo.png) center no-repeat;
-  text-indent:-99999px;
-}
-#header h1 .webtop-logo {
-  width: 180px
-}
+
+
 
 li a.active { background-color:#3E84B5; color:#FFF; }
-@media (max-height:670px){
-  body {
-    background-position:0 90px;
-  }
-  #header {
-    padding-top:0;
-  }
-}
-@media (max-width:979px){
-  body {
-    background-position:0 90px;
-  }
-  #header {
-    padding-top:0;
-  }
-}
-@media (max-width:767px){
-  body {
-    background-position:0 90px;
-  }
-  #header .container-fluid {
-    padding: 0;
-  }
-  #content-main {
-  }
-  #content-main .content-block {
-    margin:0 10px;
-  }
-  #content-main form {
-    padding:10px 0;
-  }
-  #content-main form fieldset {
-    margin:0 8px;
-  }
-  #content-main form input[type="text"],
-  #content-main form input[type="password"] {
-    margin-left:-8px;
-    width:100%;
-  }
-  #content-main form label {
-    margin-left:-8px;
-  }
-  #content-main .content-block {
-    width:auto;
-  }
-  #content-main .footer {
-    width:auto;
-    padding-right: 12px;
-  }
-  #header h1 {
-    border:none;
-    display:block;
-    padding:0;
-    margin: 10px;
-    font-size: 25px;
-    line-height: 25px;
-  }
-  #header h1 .logo {
-    margin:0;
-  }
-  #header h1 .farcry-logo {
-    display: none;
-  }  
 
+
+@media (min-height:670px){
+  body {
+  }
+  .content-main {
+    padding-top: 120px;
+  }
+}
+
+@media (max-width:767px){
+  .content-main .content-block {
+    max-width: 100%;
+  }
+  .content-main .footer {
+    max-width: 100%;
+  }
+
+}
+
+@media (max-width:979px){
 
 }
