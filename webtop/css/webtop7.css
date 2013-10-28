@@ -69,7 +69,7 @@ h1, h2, h3, h4, h5, h6 {
 	margin: 0 0 10px 0;
 }
 
-h1 [class^="icon-"] {
+h1 i.fa {
 	display: inline-block;
 	position: relative;
 	top: -0.15em;
@@ -348,7 +348,7 @@ a:hover {
 }
 
 /* icons in drop down menus */
-.dropdown-menu i[class^="icon-"] {
+.dropdown-menu i.fa {
 	color: #555;
 }
 
@@ -371,7 +371,7 @@ a:hover {
 	margin-left: 5px;
 	cursor: pointer;
 }
-.farcry-header-user .icon-user {
+.farcry-header-user .fa-user {
 	display: inline-block;
 	margin-top: 5px;	
 }
@@ -558,14 +558,14 @@ table.table-hover-all tbody tr:hover {
 }
 
 /* tweak icon position in buttons */
-.btn [class^="icon"] {
+.btn .fa {
 	/*font-size: 16px;*/
 	/*margin-top: 0;*/
 	margin-right: 2px;
 	margin-left: -4px;
 	text-shadow: none;
 }
-.btn [class^="icon"].only-icon {
+.btn .fa.only-icon {
 	margin: 0 -2px 0 -2px;
 }
 
@@ -628,7 +628,7 @@ table.farcry-objectadmin td {
 	padding: 0;
 }
 
-.farcry-objectadmin .icon-lock {
+.farcry-objectadmin .fa-lock {
 	color: #ff9900;
 }
 
@@ -781,7 +781,7 @@ body .uniForm .focused {
 	padding: 10px 18px;
 	vertical-align: middle;
 }
-.btn.btn-tall2 [class^="icon"] {
+.btn.btn-tall2 .fa {
 	float: left;
 	margin-top: 0.5em;
 	margin-bottom: 0.5em;
@@ -955,7 +955,7 @@ body .uniForm .focused {
 .fc-icon-spacer-15 { width: 300px; }
 .fc-icon-spacer-16 { width: 320px; }
 
-.fc-tree-title i[class^=fc-icon-spacer-] {
+.fc-tree-title i[class*=fc-icon-spacer-] {
 	display: inline-block;
 	height: 16px;
 }
@@ -994,7 +994,7 @@ body .uniForm .focused {
 }
 
 
-.fc-tree-title .icon-stack {
+.fc-tree-title .fa-stack {
 	width: 16px;
 	height: 16px;
 	margin-left: 0px;
@@ -1005,21 +1005,21 @@ body .uniForm .focused {
 	vertical-align: text-top;
 }
 
-.fc-tree-title [class^=icon-] {
+.fc-tree-title .fa {
 	color: #999;
 	font-size: 18px;
 }
-.fc-tree-title [class^=icon-folder-] {
+.fc-tree-title [class*=fa-folder] {
 	font-size: 16px;
 }
 
 
-tr:hover .fc-tree-title .icon-folder-close,
-tr:hover .fc-tree-title .icon-folder-open {
+tr:hover .fc-tree-title .fa-folder,
+tr:hover .fc-tree-title .fa-folder-open {
 	font-size: 18px;
 }
 
-.farcry-objectadmin .icon-stack .icon-pencil {
+.farcry-objectadmin .fa-stack .fa-pencil {
 	color: orange;
 	font-size: 0.8em;
 	line-height: 0.9;
@@ -1029,12 +1029,12 @@ tr:hover .fc-tree-title .icon-folder-open {
 }
 
 
-.fc-tree-title .icon-folder-close,
-.fc-tree-title .icon-folder-open {
+.fc-tree-title .fa-folder,
+.fc-tree-title .fa-folder-open {
 	color: #4b8bba;
 }
-.fc-tree-title:hover .icon-folder-close,
-.fc-tree-title:hover .icon-folder-open {
+.fc-tree-title:hover .fa-folder,
+.fc-tree-title:hover .fa-folder-open {
 	color: #0e65a2;
 }
 
@@ -1210,7 +1210,7 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 
 
 /* fix br clear */
-br[style^="clear:both"] {
+br[style*="clear:both"] {
 	display: none;
 }
 

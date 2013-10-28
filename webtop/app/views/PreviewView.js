@@ -157,9 +157,9 @@ PreviewView = Backbone.View.extend({
 
 	previewLoading: function PreviewView_previewLoading() {
 		var iframe = document.getElementById("previewiframe");
-		Backbone.$("#previewicon").attr("class", "icon-spinner icon-spin");
+		Backbone.$("#previewicon").attr("class", "fa fa-refresh fa-spin fa-fw");
 		iframe.onload = (function() {
-			Backbone.$("#previewicon").attr("class", "icon-eye-open");
+			Backbone.$("#previewicon").attr("class", "fa fa-eye fa-fw");
 		});
 	},
 

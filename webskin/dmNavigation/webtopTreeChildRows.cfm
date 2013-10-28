@@ -210,9 +210,9 @@
 		
 		<!--- vary the status labels and icon by the object status --->
 		<cfset thisStatusLabel = "">
-		<cfset thisFolderIcon = "fa-folder-o">
+		<cfset thisFolderIcon = "fa-folder">
 		<cfif bExpanded>
-			<cfset thisFolderIcon = "fa-folder-open-o">
+			<cfset thisFolderIcon = "fa-folder-open">
 		</cfif>
 		<cfset thisNodeIcon = "<span class='fa-stack'><i class='fa #thisFolderIcon# fa-stack-1x'></i></span>">
 

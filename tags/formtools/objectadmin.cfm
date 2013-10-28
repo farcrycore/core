@@ -717,13 +717,13 @@
 		<cfoutput>
 			<form id="farcry-objectadmin-form" action="" method="post" class="input-prepend input-append pull-right" style="position: relative; z-index:2">
 				<cfif len(attributes.lFilterFields) AND attributes.lFilterFields neq "label">
-					<button type="button" class="btn fc-tooltip" onclick="$j('##filterForm').toggle('blind'); " style="height: 30px; border-radius:0" data-toggle="tooltip" data-placement="top" title="" data-original-title="Advanced Filtering"><b class="fa fa-filter"></b></button>
+					<button type="button" class="btn fc-tooltip" onclick="$j('##filterForm').toggle('blind'); " style="height: 30px; border-radius:0" data-toggle="tooltip" data-placement="top" title="" data-original-title="Advanced Filtering"><b class="fa fa-filter only-icon"></b></button>
 				</cfif>
 				<input id="farcry-objectadmin-q" name="q" class="span2" type="text" placeholder="Search..." value="#form.q#" style="width: 240px;">
 				<cfif len(form.q)>
 					<button type="button" class="btn" onclick="$j('##farcry-objectadmin-q').val(''); $j('##farcry-objectadmin-form').submit();" style="height: 30px; border-radius:0; font-size: 20px; font-weight: bold; padding: 4px 10px;">&times;</button>
 				</cfif>
-				<button type="submit" class="btn" style="height: 30px; border-radius:0"><b class="fa fa-search"></b></button>
+				<button type="submit" class="btn btn-primary" style="height: 30px; border-radius:0"><b class="fa fa-search only-icon"></b></button>
 			</form>				
 		</cfoutput>
 	</cfif>
@@ -895,7 +895,7 @@
 									<cfset headerColumnStyle = "width: 8em;">
 								</cfif>
 								<cfif i eq "status">
-									<cfset headerColumnStyle = "width: 9em;">
+									<cfset headerColumnStyle = "width: 9em;">								
 								</cfif>
 
 								<cfset orderField = listFirst(session.objectadminFilterObjects[attributes.typename].sqlOrderBy, " ")>
@@ -992,7 +992,7 @@
 							<cfloop list="#attributes.columnlist#" index="i">
 
 								<cfif isDefined("PrimaryPackage.stProps.#trim(i)#")>
-									<cfoutput><th></cfoutput>
+									<cfoutput><th></cfoutput>					
 										<cfif listContainsNoCase(attributes.SortableColumns,i)>
 											<cfoutput>
 											<select name="#i#sqlOrderBy" onchange="javascript:$j('##sqlOrderBy').attr('value',this.value);btnSubmit('#request.farcryForm.name#', 'sort');" style="width:80px;">
@@ -1102,9 +1102,9 @@
 											<cfif i eq "status">
 												<cfset stFields[i].HTML = statusOutput>
 											</cfif>
-											<cfoutput><td>#stFields[i].HTML#</td></cfoutput>
+											<cfoutput><td>#stFields[i].HTML#</td></cfoutput>			
 										<cfelse>
-											<cfoutput><td>-- not available --</td>	</cfoutput>
+											<cfoutput><td>-- not available --</td>	</cfoutput>			
 										</cfif>
 
 									</cfif>
@@ -1284,7 +1284,7 @@
 			
 			<cfif attributes.bPreviewCol>
 				<cfif attributes.bPreviewCol>
-					<a href="#application.fapi.getLink(type=attributes.typename, objectid=arguments.st.objectid)#" class="btn fc-btn-preview" target="_blank" title="Preview"><i class="fa fa-eye"></i></a>
+					<a href="#application.fapi.getLink(type=attributes.typename, objectid=arguments.st.objectid)#" class="btn fc-btn-preview" target="_blank" title="Preview"><i class="fa fa-eye only-icon"></i></a>
 				</cfif>		
 			</cfif>
 			

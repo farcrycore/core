@@ -128,14 +128,14 @@
 	<h1><i class="fa fa-sitemap"></i> #navTitle#</h1>
 
 	<div class="farcry-button-bar btn-group pull-left" style="margin-bottom: 5px">
-		<button class="btn btn-primary fc-btn-addpage" type="button"><i class="fa fa-plus-square-o"></i> Add Page</button>
+		<button class="btn btn-primary fc-btn-addpage" type="button"><i class="fa fa-plus"></i> Add Page</button>
 		<!--- <button class="btn" type="button"><i class="fa fa-level-up"></i> Up a Level</button> --->
 		<!--- <button class="btn" type="button"><i class="fa fa-reorder"></i> Sort Order</button> --->
 
 		<!--- <ft:button text="Delete" value="delete" title="Delete" icon="fa fa-trash" rbkey="objectadmin.buttons.delete" confirmText="Are you sure you want to delete the selected content item(s)?" /> --->
 
 		<div class="btn-group">
-			<button data-toggle="dropdown" class="btn btn-group dropdown-toggle" type="button">More <i class="fa fa-caret-down"></i></button>
+			<button data-toggle="dropdown" class="btn btn-group dropdown-toggle" type="button">More &nbsp;<i class="fa fa-caret-down"></i></button>
 			<ul class="dropdown-menu">
 				<li><a href="##" class="fc-btn-undelete" onclick="$fc.objectAdminAction('Undelete', '#application.url.webtop#/index.cfm?typename=dmArchive&view=webtopPageModal&bodyView=webtopBody&archivetype=dmNavigation'); return false;"><i class="fa fa-undo fa-fw"></i> Undelete</a></li>
 			</ul>
@@ -167,7 +167,7 @@
 		<tr>
 			<td></td>
 			<td></td>
-			<td><i class="fa-spinner fa-spin"></i> &nbsp;Loading...</td>
+			<td><i class="fa fa-spinner fa-spin"></i> &nbsp;Loading...</td>
 			<td></td>
 			<td></td>
 			<td></td>
@@ -866,7 +866,7 @@ alert(response.message);
 
 				showLoadingIndicator: function SiteTreeView_showLoadingIndicator(row) {
 					row.removeClass("fc-treestate-notloaded").addClass("fc-treestate-loading");
-					row.find(".fc-tree-title").first().append("<i class='fa-spinner fa-spin' style='margin-left:0.5em'></i>");
+					row.find(".fc-tree-title").first().append("<i class='fa fa-spinner fa-spin' style='margin-left:0.5em'></i>");
 				},
 
 				removeLoadingIndicator: function SiteTreeView_removeLoadingIndicator(row) {
@@ -937,7 +937,7 @@ alert(response.message);
 								else {
 									$j(aRowMarkup.join("")).insertAfter(row);
 									row.removeClass("fc-treestate-loading fc-treestate-expand").addClass("fc-treestate-collapse");
-									row.find(".fc-tree-title .fa-folder-close").removeClass("fa-folder-close").addClass("fa-folder-open");
+									row.find(".fc-tree-title .fa-folder").removeClass("fa-folder").addClass("fa-folder-open");
 								}
 							}
 							else {
@@ -968,7 +968,7 @@ alert(response.message);
 					var children = this.getChildRows(id);
 
 					row.removeClass("fc-treestate-expand").addClass("fc-treestate-collapse");
-					row.find(".fc-tree-title .fa-folder-close").removeClass("fa-folder-close").addClass("fa-folder-open");
+					row.find(".fc-tree-title .fa-folder").removeClass("fa-folder").addClass("fa-folder-open");
 
 					children.each(function(){
 						var childRow = $j(this);
@@ -986,7 +986,7 @@ alert(response.message);
 					var descendants = this.getDescendantsById(id);
 
 					row.removeClass("fc-treestate-collapse").addClass("fc-treestate-expand");
-					row.find(".fc-tree-title .fa-folder-open").removeClass("fa-folder-open").addClass("fa-folder-close");
+					row.find(".fc-tree-title .fa-folder-open").removeClass("fa-folder-open").addClass("fa-folder");
 					descendants.removeClass("fc-treestate-visible").addClass("fc-treestate-hidden");
 
 				},
@@ -1092,11 +1092,11 @@ alert(response.message);
 					if (!this.options.bRenderTreeOnly) {
 						colActions = ''
 							+	'<td class="objectadmin-actions"> '
-							+		'<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" title="" type="button" data-original-title="Object Overview"><i class="fa fa-th"></i></button> '
+							+		'<button class="btn fc-btn-overview fc-hidden-compact fc-tooltip" title="" type="button" data-original-title="Object Overview"><i class="fa fa-th only-icon"></i></button> '
 							+		'<button class="btn btn-edit fc-btn-edit fc-hidden-compact" type="button"><i class="fa fa-pencil"></i> Edit</button> '
-							+		'<a href="' + row["previewURL"] + '" class="btn fc-btn-preview fc-tooltip" title="Preview"><i class="fa fa-eye"></i></a> '
+							+		'<a href="' + row["previewURL"] + '" class="btn fc-btn-preview fc-tooltip" title="Preview"><i class="fa fa-eye only-icon"></i></a> '
 							+		'<div class="btn-group"> '
-							+			'<button data-toggle="dropdown" class="btn dropdown-toggle" type="button"><i class="fa fa-caret-down"></i></button> '
+							+			'<button data-toggle="dropdown" class="btn dropdown-toggle" type="button"><i class="fa fa-caret-down only-icon"></i></button> '
 							+			'<div class="dropdown-menu"> '
 							+				'<li class="fc-visible-compact"><a class="fc-btn-overview"><i class="fa fa-th fa-fw"></i> Overview</a></li> '
 							+				'<li class="fc-visible-compact"><a class="fc-btn-edit"><i class="fa fa-pencil fa-fw"></i> Edit</a></li> '
