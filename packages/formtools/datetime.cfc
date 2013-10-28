@@ -153,14 +153,14 @@
 			<skin:onReady>
 			<cfoutput>	
 			<cfif application.fapi.showFarcryDate(arguments.stMetadata.value) >
-				$j("###arguments.fieldname#include").attr('checked', true);
+				$j("###arguments.fieldname#include").prop('checked', true);
 			<cfelse>
 				$j("###arguments.fieldname#-wrap").hide();
 				$j("###arguments.fieldname#").val('');
 			</cfif>
 			
-			$j("###arguments.fieldname#include").click(function() {
-				if ($j("###arguments.fieldname#include").attr('checked')) {	
+			$j("###arguments.fieldname#include").on("click", function() {
+				if ($j("###arguments.fieldname#include").prop('checked')) {	
 					$j("###arguments.fieldname#-wrap").show("slow");				
 				} else {					
 					$j("###arguments.fieldname#-wrap").hide("slow");
@@ -201,7 +201,7 @@
 					<cfif arguments.stMetadata.ftToggleOffDateTime>
 						<cfoutput>
 						<label class="inlineLabel" for="#arguments.fieldname#include">
-							<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" class="checkboxInput" style="float:left;" value="1" >
+							<input type="checkbox" name="#arguments.fieldname#include" id="#arguments.fieldname#include" class="checkboxInput" value="1" >
 							<input type="hidden" name="#arguments.fieldname#include" value="0">
 							Include Date
 						</label>
