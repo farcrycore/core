@@ -1,27 +1,27 @@
 <cfsetting enablecfoutputonly="true">
-<!--- @@displayname: Core --->
-<!--- @@seq: 100 --->
+<!--- @@displayname: Project --->
+<!--- @@seq: 250 --->
 
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 
+<cfset projectPath = expandpath("/farcry/projects/#application.projectdirectoryname#") />
 
-<cfset coreLastModified = createdatetime(1970,1,1,0,0,0) />
-<cfdirectory action="list" directory="#expandpath('/farcry/core')#" recurse="true" type="file" name="q" />
+<ft:field label="Project Name">
+	<cfoutput>#application.applicationname#</cfoutput>
+</ft:field>
+
+<cfset projectLastModified = createdatetime(1970,1,1,0,0,0) />
+<cfdirectory action="list" directory="#projectPath#" recurse="true" type="file" name="q" />
 <cfloop query="q">
-	<cfif coreLastModified lt q.dateLastModified and q.dateLastModified lte now()>
-		<cfset coreLastModified = q.dateLastModified />
+	<cfif projectLastModified lt q.dateLastModified and q.dateLastModified lte now()>
+		<cfset projectLastModified = q.dateLastModified />
 	</cfif>
 </cfloop>
-
-
-<ft:field label="Version">
-	<cfoutput>#application.sysInfo.farcryVersionTagLine#</cfoutput>
-</ft:field>
 <ft:field label="Last Modified">
-	<cfoutput>#lcase(timeformat(coreLastModified,'hh:mmtt'))#, #dateformat(coreLastModified,'d mmm yyyy')#</cfoutput>
+	<cfoutput>#lcase(timeformat(projectLastModified,'hh:mmtt'))#, #dateformat(projectLastModified,'d mmm yyyy')#</cfoutput>
 </ft:field>
 
-<cfset stRepo = application.fapi.getContentType(typename="configRepositories").processRepository(expandpath("/farcry/core")) />
+<cfset stRepo = application.fapi.getContentType(typename="configRepositories").processRepository(projectPath) />
 <ft:field label="Version Control"><cfoutput>
 	<cfswitch expression="#stRepo.type#">
 		<cfcase value="git">
