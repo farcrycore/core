@@ -40,7 +40,7 @@ ORDER BY datetimecreated
 			
 			<grid:div style="float:right;">
 				<ft:button value="Delete Filter Property" text="" icon="fa-minus-square-o" selectedObjectID="#qProperties.objectid#" />
-				<ft:button value="Add Filter Property" text="" icon="fa-plus-square-o" selectedObjectID="#stobj.objectid#" />
+				<ft:button value="Add Filter Property" text="" icon="fa-plus" selectedObjectID="#stobj.objectid#" />
 			</grid:div>
 			<cfoutput>
 				#stFields.type.html#

@@ -305,7 +305,7 @@
 
 								<cfif listLen(arguments.stMetadata.ftJoin) GT 1>
 									<div class="btn-group">
-										<a class="btn dropdown-toggle" data-toggle="dropdown"><i class="fa fa-plus-square-o"></i> Create &nbsp;&nbsp;<i class="fa fa-caret-down" style="margin-right:-4px;"></i></a>
+										<a class="btn dropdown-toggle" data-toggle="dropdown"><i class="fa fa-plus"></i> Create &nbsp;&nbsp;<i class="fa fa-caret-down" style="margin-right:-4px;"></i></a>
 										<ul class="dropdown-menu">
 											<cfloop list="#arguments.stMetadata.ftJoin#" index="i">
 												<li value="#trim(i)#"><a onclick="$j('###arguments.fieldname#-add-type').val('#trim(i)#'); fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');">#application.fapi.getContentTypeMetadata(i, 'displayname', i)#</a></li>
@@ -313,7 +313,7 @@
 										</ul>
 									</div>
 								<cfelse>
-									<a class="btn" onclick="fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');"><i class="fa fa-plus-square-o"></i> Create</a>
+									<a class="btn" onclick="fcForm.openLibraryAdd('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#');"><i class="fa fa-plus"></i> Create</a>
 								</cfif>
 								<input type="hidden" id="#arguments.fieldname#-add-type" value="#arguments.stMetadata.ftJoin#" />
 

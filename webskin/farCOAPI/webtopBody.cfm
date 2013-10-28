@@ -185,7 +185,7 @@
 				<cfloop collection="#arguments.stConflicts.tables[thistable].fields#" item="thisfield">
 					<cfswitch expression="#arguments.stConflicts.tables[thistable].fields[thisfield].resolution#">
 						<cfcase value="+">
-							<cfset arrayappend(changes,"<div class='undeployed field'><i class='fa fa-plus-square-o fa-fw'></i> #thisfield#</div>") />
+							<cfset arrayappend(changes,"<div class='undeployed field'><i class='fa fa-plus fa-fw'></i> #thisfield#</div>") />
 						</cfcase>
 						<cfcase value="x">
 							<cfset arrayappend(changes,"<div class='altered field'><i class='fa fa-question-square-o fa-fw'></i> #thisfield#</div>") />
@@ -198,7 +198,7 @@
 				<cfloop collection="#arguments.stConflicts.tables[thistable].indexes#" item="thisindex">
 					<cfswitch expression="#arguments.stConflicts.tables[thistable].indexes[thisindex].resolution#">
 						<cfcase value="+">
-							<cfset arrayappend(changes,"<div class='undeployed field'><i class='fa fa-plus-square-o fa-fw'></i> #thisindex#</div>") />
+							<cfset arrayappend(changes,"<div class='undeployed field'><i class='fa fa-plus fa-fw'></i> #thisindex#</div>") />
 						</cfcase>
 						<cfcase value="x">
 							<cfset arrayappend(changes,"<div class='altered field'><i class='fa fa-question-square-o fa-fw'></i> #thisindex#</div>") />
@@ -212,7 +212,7 @@
 				<cfset summary = listappend(summary,"<p class='altered coapitable'><i class='fa fa-question-square-o fa-fw'></i> #thistable#</p> <div>#arrayToList(changes,"")#</div>"," ") />
 			</cfcase>
 			<cfcase value="+">
-				<cfset summary = listappend(summary,"<p class='undeployed coapitable'><i class='fa fa-plus-square-o fa-fw'></i> #thistable#</p>"," ") />
+				<cfset summary = listappend(summary,"<p class='undeployed coapitable'><i class='fa fa-plus fa-fw'></i> #thistable#</p>"," ") />
 			</cfcase>
 			<cfcase value="-">
 				<cfset summary = listappend(summary,"<p class='deleted coapitable'><i class='fa fa-times-circle fa-fw'></i> #thistable#</p>"," ") />

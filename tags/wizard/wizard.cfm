@@ -225,7 +225,10 @@
 				</ul>	
 			</div>
 	
-			<h1><i class="#attributes.icon#"></i>
+			<h1>
+				<cfif len(attributes.icon)>
+					<i class="fa #attributes.icon#"></i>
+				</cfif>
 				<cfif len(attributes.title)>
 					#attributes.title#
 				<cfelse>

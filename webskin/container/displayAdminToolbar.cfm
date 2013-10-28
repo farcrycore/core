@@ -175,7 +175,7 @@ $j('a.con-admin').on(
 				con:url="#containerURL#"
 				rule:title="Add new rule to container: #stParam.desc#">
 				
-				<i class="fa fa-plus-square-o" style="float:left;"></i>
+				<i class="fa fa-plus" style="float:left;"></i>
 			</a>	
 			<skin:toolTip selector=".con-add-rule">Add a new rule into this container.</skin:toolTip>
 			

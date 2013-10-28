@@ -309,14 +309,14 @@
 							<div class="image-cancel-upload" style="clear:both;<cfif not len(arguments.stMetadata.value)>display:none;</cfif>"><i class="fa fa-times-cirlce-o fa-fw"></i> <a href="##back" class="select-view">Cancel - I don't want to replace this image</a></div>
 						</div>
 						<div id="#arguments.fieldname#_delete" class="delete-view" style="display:none;">
-							<span class="image-status" title=""><i class="fa fa-picture fa-fw"></i></span>
+							<span class="image-status" title=""><i class="fa fa-picture-o fa-fw"></i></span>
 							<ft:button class="image-delete-button" value="Delete this image" type="button" onclick="return false;" />
 							<ft:button class="image-deleteall-button" value="Delete this and the related images" type="button" onclick="return false;" />
 							<div class="image-cancel-upload"><i class="fa fa-times-cirlce-o fa-fw"></i> <a href="##back" class="select-view">Cancel - I don't want to delete</a></div>
 						</div>
 						<cfif bFileExists>
 							<div id="#arguments.fieldname#_complete" class="complete-view">
-								<span class="image-status" title=""><i class="fa fa-picture fa-fw"></i></span>
+								<span class="image-status" title=""><i class="fa fa-picture-o fa-fw"></i></span>
 								<span class="image-filename">#listfirst(listlast(arguments.stMetadata.value,"/"),"?")#</span> ( <a class="image-preview fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='#imagePath#' style='max-width:400px; max-height:400px;' />" href="#imagePath#" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
 								<cfif arguments.stMetadata.ftShowMetadata>
 									<i class="fa fa-info-circle-o fa-fw"></i> Size: <span class="image-size">#round(stImage.size / 1024)#</span>KB, Dimensions: <span class="image-width">#stImage.width#</span>px x <span class="image-height">#stImage.height#</span>px
@@ -325,7 +325,7 @@
 							</div>
 						<cfelse>
 						    <div id="#arguments.fieldname#_complete" class="complete-view" style="display:none;">
-								<span class="image-status" title=""><i class="fa fa-picture fa-fw"></i></span>
+								<span class="image-status" title=""><i class="fa fa-picture-o fa-fw"></i></span>
 								<span class="image-filename"></span> ( <a class="image-preview fc-richtooltip" data-tooltip-position="bottom" data-tooltip-width="#imageMaxWidth#" title="<img src='' style='max-width:400px; max-height:400px;' />" href="##" target="_blank">Preview</a> | <a href="##upload" class="select-view">Upload</a> | <a href="##delete" class="select-view">Delete</a> )<br>
 								<cfif arguments.stMetadata.ftShowMetadata>
 									<i class="fa fa-info-circle-o fa-fw"></i> Size: <span class="image-size"></span>KB, Dimensions: <span class="image-width"></span>px x <span class="image-height"></span>px
@@ -415,7 +415,7 @@
 				<input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#arguments.stMetadata.value#" />
 				<input type="hidden" name="#arguments.fieldname#RESIZEMETHOD" id="#arguments.fieldname#RESIZEMETHOD" value="" />
 				<input type="hidden" name="#arguments.fieldname#DELETE" id="#arguments.fieldname#DELETE" value="false" />
-				<span class="image-status" title="<cfif len(arguments.stMetadata.ftHint)>#arguments.stMetadata.ftHint#<br></cfif>#metadatainfo#"><i class="fa fa-picture fa-fw"></i></span>
+				<span class="image-status" title="<cfif len(arguments.stMetadata.ftHint)>#arguments.stMetadata.ftHint#<br></cfif>#metadatainfo#"><i class="fa fa-picture-o fa-fw"></i></span>
 				<span class="dependant-label">#arguments.stMetadata.ftLabel#</span>
 				<span class="dependant-options"<cfif not len(arguments.stMetadata.value) and not len(arguments.stObject[arguments.stMetadata.ftSourceField]) and not arguments.stMetadata.ftAllowUpload> style="display:none;"</cfif>>
 					(

@@ -31,7 +31,7 @@
 	<cfoutput>
 		<h1>Task Queue Threads</h1>
 		<div class="buttonHolder farcry-button-bar btn-group" style="text-align:left;">
-			<ft:button value="Start a Thread" title="Starts a thread if the configured rules allows it. NOTE: if there are no tasks to process, the thread will finish immediately." class="btn-primary" icon="fa-plus-square-o" />
+			<ft:button value="Start a Thread" title="Starts a thread if the configured rules allows it. NOTE: if there are no tasks to process, the thread will finish immediately." class="btn-primary" icon="fa-plus" />
 			
 			<cfif structcount(stThreads) and application.sysinfo.engine.engine eq "coldfusion">
 				<ft:button value="Kill Thread" text="Kill Threads" title="Kills the selected threads, and requeues the tasks they are working on" icon="fa-times-circle-o" onclick="if (!confirm('Are you sure you want to terminate the selected threads?')) return false;" />

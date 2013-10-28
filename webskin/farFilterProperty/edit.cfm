@@ -17,7 +17,7 @@
 	</td>
 	<td style="white-space:nowrap;">
 		<ft:button value="Delete Filter Property" text="" icon="fa-minus-square-o" selectedObjectID="#stobj.objectid#" />
-		<ft:button value="Add Filter Property" text="" icon="fa-plus-square-o" selectedObjectID="#stobj.filterID#" />
+		<ft:button value="Add Filter Property" text="" icon="fa-plus" selectedObjectID="#stobj.filterID#" />
 	</td>
 </tr>
 </cfoutput>
