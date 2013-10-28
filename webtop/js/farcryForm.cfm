@@ -538,9 +538,7 @@
 	
 
 	fcForm.openLibraryAdd = function(typename,objectid,property,id) {
-		var newDialogDiv = $j("<div id='" + typename + objectid + property + "'><iframe style='width:100%;height:100%;border-width:0px;' frameborder='0'></iframe></div>")
 		var filterTypename = $j('##' + id + '-add-type').val();
-
 		$fc.openBootstrapModal({
 			title:'Add New',
 			url: '#application.url.webtop#/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=webtopPageModal&bodyView=displayLibraryAdd' + '&property=' + property + '&filterTypename=' + filterTypename,
@@ -549,7 +547,6 @@
 				return true;
 			}
 		});
-
 	};	
 	
 	fcForm.openLibraryBulkUpload = function(typename,objectid,property,id) {
@@ -565,32 +562,16 @@
 	};	
 	
 	fcForm.openLibraryEdit = function(typename,objectid,property,id,editid) {
-		var newDialogDiv = $j("<div id='" + typename + objectid + property + "'><iframe style='width:100%;height:100%;border-width:0px;' frameborder='0'></iframe></div>")
-		$j("body").prepend(newDialogDiv);
-		$j("html").css('overflow', 'hidden');	
-		$j("div.ui-dialog", parent.document.body).addClass('nested');	
-		$j(newDialogDiv).dialog({
-			bgiframe: true,
-			modal: true,
+		//$j("html").css('overflow', 'hidden');	
+		//$j("div.ui-dialog", parent.document.body).addClass('nested');	
+		$fc.openBootstrapModal({
 			title:'Edit',
-			closeOnEscape: false,
-			draggable:false,
-			resizable:false,
-			width: $j(window).width()-20,
-			height: $j(window).height()-20,
-			close: function(event, ui) {
-				$j("html").css('overflow', 'auto');
-				$j("div.ui-dialog", parent.document.body).removeClass('nested');
+			url: '#application.url.webtop#/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=webtopPageModal&bodyView=displayLibraryEdit' + '&property=' + property + '&editid=' + editid + '&iframe=1',
+			onHidden: function () {
 				fcForm.refreshProperty(typename,objectid,property,id);
-				$j(newDialogDiv).dialog( 'destroy' );
-				$j(newDialogDiv).remove();
+				return true;
 			}
-			
 		});
-		$j(newDialogDiv).dialog('open');
-		//OPEN URL IN IFRAME ie. not in ajaxmode
-		$j('iframe',$j(newDialogDiv)).attr('src','#application.url.webtop#/index.cfm?type=' + typename + '&objectid=' + objectid + '&view=webtopPageModal&bodyView=displayLibraryEdit' + '&property=' + property + '&editid=' + editid);
-		
 	};	
 	
 	fcForm.deleteLibraryItem = function(typename,objectid,property,formfieldname,itemids) {

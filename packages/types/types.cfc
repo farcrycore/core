@@ -828,9 +828,7 @@ default handlers
 			<cfsavecontent variable="onExitProcess.content">
 				<cfoutput>
 					<script type="text/javascript">
-						<!--- parent.location.reload(); --->
 						parent.location = parent.location;
-						parent.closeDialog();		
 					</script>
 				</cfoutput>
 			</cfsavecontent>
