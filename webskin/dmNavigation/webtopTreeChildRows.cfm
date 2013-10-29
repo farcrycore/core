@@ -5,18 +5,20 @@
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft">
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
 
+
 <cfparam name="url.relativeNLevel" default="0">
 <cfparam name="url.bReloadBranch" default="false">
 <cfparam name="url.bLoadRoot" default="false">
 <cfparam name="url.bLoadCollapsed" default="false">
 <cfparam name="url.bIgnoreExpandedNodes" default="false">
 <cfparam name="url.bLoadLeafNodes" default="true">
-
-<cfparam name="cookie.FARCRYTREEEXPANDEDNODES" default="">
 <cfparam name="url.disableNode" default="">
-<cfparam name="url.expandedNodes" default="#cookie.FARCRYTREEEXPANDEDNODES#">
 <cfparam name="url.expandTo" default="">
 
+<cfparam name="cookie.FARCRYTREEEXPANDEDNODES" default="">
+<cfparam name="url.expandedNodes" default="#cookie.FARCRYTREEEXPANDEDNODES#">
+
+<cfparam name="stParam.bLoadRoot" default="#url.bLoadRoot#">
 <cfparam name="stParam.disableNode" default="#url.disableNode#">
 <cfparam name="stParam.expandedNodes" default="#url.expandedNodes#">
 <cfparam name="stParam.bLoadLeafNodes" default="#url.bLoadLeafNodes#">
@@ -43,7 +45,7 @@
 	<cfset bRenderRoot = true>
 </cfif>
 <!--- when loading the root, render the root and don't indent --->
-<cfif url.bLoadRoot>
+<cfif stParam.bLoadRoot>
 	<cfset bRenderRoot = true>
 	<cfset url.relativeNLevel = 0>
 </cfif>
@@ -145,10 +147,9 @@
 
 
 	<!--- determine if this node is currently expanded --->
-	<cfif expandable eq 1 AND bRootNode AND NOT url.bLoadCollapsed>
+	<cfif expandable eq 1 AND bRootNode AND url.bLoadCollapsed eq false>
 		<cfset bExpanded = true>
-	</cfif>
-	<cfif expandable eq 1 AND listFindNoCase(stParam.expandedNodes, stNav.objectid, "|") AND NOT url.bIgnoreExpandedNodes>
+	<cfelseif expandable eq 1 AND listFindNoCase(stParam.expandedNodes, stNav.objectid, "|") AND NOT url.bIgnoreExpandedNodes>
 		<cfset bExpanded = true>
 	</cfif>
 
@@ -179,7 +180,9 @@
 	<cfif bRenderRoot OR qTree.objectid neq rootObjectID>
 
 		<!--- if this node is expanded, or the parent nav node is expanded then this nav node will be visible --->
-		<cfif qTree.parentid eq rootObjectID AND NOT url.bIgnoreExpandedNodes>
+		<cfif bRenderRoot AND qTree.objectid eq rootObjectID>
+			<cfset thisClass = thisClass & " fc-treestate-visible">
+		<cfelseif qTree.parentid eq rootObjectID AND NOT url.bIgnoreExpandedNodes>
 			<cfset thisClass = thisClass & " fc-treestate-visible">
 		<cfelseif bUnexpandedAncestor>
 			<cfset thisClass = thisClass & " fc-treestate-hidden">
@@ -293,12 +296,16 @@
 			<cfif bRootNode OR bExpanded>
 				<cfset thisClass = "fc-treestate-visible">					
 			</cfif>
-			<!--- if the branch is loaded collapsed OR there is an unexpanded ancesotr then the leaf will be hidden --->
+			<!--- if the branch is loaded collapsed OR there is an unexpanded ancestor then the leaf will be hidden --->
 			<cfif url.bLoadCollapsed OR bUnexpandedAncestor>
 				<cfset thisClass = "fc-treestate-hidden">
 			</cfif>
-		
-		
+			<!--- always render children of the root node if it is visible --->
+			<cfif bRootNode AND bRenderRoot AND NOT url.bLoadCollapsed>
+				<cfset thisClass = "fc-treestate-visible">
+			</cfif>
+
+
 			<!--- urls --->
 			<cfset thisOverviewURL = "#application.url.webtop#/edittabOverview.cfm?typename=#stLeafNode.typename#&objectid=#stLeafNode.objectid#&ref=overview">
 			<cfset thisEditURL = "#application.url.webtop#/edittabEdit.cfm?objectid=#stLeafNode.objectid#&typename=#stLeafNode.typename#">

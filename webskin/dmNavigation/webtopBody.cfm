@@ -180,7 +180,7 @@
 
 	<!--- get root tree data --->
 	<cfsavecontent variable="jsonData">
-		<skin:view objectid="#rootObjectID#" typename="dmNavigation" webskin="webtopTreeChildRows" responsetype="json" />
+		<skin:view objectid="#rootObjectID#" typename="dmNavigation" webskin="webtopTreeChildRows" bLoadRoot="true" responsetype="json" />
 	</cfsavecontent>
 
 
@@ -321,11 +321,8 @@
 
 					var treeContent = $j("tbody", this.$el);
 
-					if (this.options.rootObjectID) {
-						this.loadTree(this.options.rootObjectID);
-					}
-					else {
-						// construct markup from data
+					if (this.options.data) {
+						// construct markup from inline data
 						var aRowMarkup = [];
 						for (i=0; i<this.options.data.rows.length; i++) {
 							var rowhtml = this.getRowMarkup(this.options.data.rows[i]);
@@ -333,6 +330,10 @@
 						}
 						treeContent.html(aRowMarkup.join(""));
 						this.loadExpandedAjaxNodes();
+					}
+					else {
+						// load tree via ajax
+						this.loadTree(this.options.rootObjectID);
 					}
 
 				},
@@ -882,6 +883,8 @@ alert(response.message);
 
 					var id = row.data("objectid");
 					var relativenlevel = row.data("spacers");
+					// check for reloading the root node
+					var bLoadRoot = (id == this.options.rootObjectID);
 					// correct the relativenlevel for non-expandable folder nodes
 					if (row.data("nodetype") == "folder" && row.data("expandable") == 0) {
 						relativenlevel -= 1;
@@ -897,8 +900,8 @@ alert(response.message);
 					// if reloading a branch, find the deepest descendant nlevel in this branch so that an appropriate depth can be loaded
 					if (bReloadBranch) {
 						descendants = this.getDescendantsById(id, true);
-						// maintain the collapsed state of the branch when loading
-						if (row.hasClass("fc-treestate-expand")) {
+						// maintain the collapsed state of the branch when loading, except on root nodes
+						if (!bLoadRoot && row.hasClass("fc-treestate-expand")) {
 							loadCollapsed = true;
 						}
 					}
@@ -912,6 +915,7 @@ alert(response.message);
 							"ajaxmode": 1,
 							"relativenlevel": relativenlevel,
 							"bReloadBranch": bReloadBranch,
+							"bLoadRoot": bLoadRoot,
 							"bLoadCollapsed": loadCollapsed,
 							"bLoadLeafNodes": this.options.bLoadLeafNodes,
 							"bRenderTreeOnly": this.options.bRenderTreeOnly,
@@ -1148,6 +1152,7 @@ alert(response.message);
 
 				App.siteTreeView = new SiteTreeView({
 					el: "##farcry-sitetree",
+					rootObjectID: '#rootObjectID#',
 					data: #jsonData#
 				});
 				App.siteTreeView.render();
