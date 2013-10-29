@@ -258,7 +258,7 @@
 												priority="secondary"
 												class="small"
 												value="Edit"
-												text="edit" 
+												text="Edit" 
 												onClick="fcForm.openLibraryEdit('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#i#');" />
 								
 										</cfif>
@@ -269,7 +269,7 @@
 												priority="secondary"
 												class="small"
 												value="Delete" 
-												text="delete" 
+												text="Delete" 
 												confirmText="Are you sure you want to delete this item? Doing so will immediately remove this item from the database." 
 												onClick="fcForm.deleteLibraryItem('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#i#');" />
 										<cfelseif stActions.ftRemoveType EQ "remove">
@@ -278,7 +278,7 @@
 												priority="secondary"
 												class="small"
 												value="Remove" 
-												text="remove" 
+												text="Remove" 
 												confirmText="Are you sure you want to remove this item? Doing so will only unlink this content item. The content will remain in the database." 
 												onClick="fcForm.detachLibraryItem('#stObject.typename#','#stObject.objectid#','#arguments.stMetadata.name#','#arguments.fieldname#','#i#');" />
 								 
