@@ -367,7 +367,6 @@ a:hover {
 
 .farcry-header-user {
 	display: inline-block;
-	padding: 10px 10px;
 	margin-left: 5px;
 	cursor: pointer;
 }
@@ -386,6 +385,10 @@ a:hover {
 .farcry-header-user.open .cog,
 .farcry-header-user:hover .cog {
 	display: inline-block;
+}
+
+.farcry-header-profile {
+	padding: 10px;
 }
 
 .farcry-header-profile .avatar {
