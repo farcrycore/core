@@ -75,9 +75,16 @@ input, button, select, textarea {
 
 .content-pod {
   border:1px solid #ffffff;
-  padding: 5px 25px 30px 25px;
+  padding: 15px 25px 30px 25px;
 }
 
+
+.content-main h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-weight: normal;
+  line-height: 100%;
+}
 
 .content-main form {
   padding:0;
@@ -145,6 +152,11 @@ input, button, select, textarea {
   color: #fff;
 }
 
+.content-main .btn-group .btn-primary {
+  box-shadow: 0 0 1px rgba(0,0,0,0.4) inset;
+}
+
+
 .content-main .btn-group .btn {
   border-radius: 0;
 }
@@ -173,6 +185,9 @@ input, button, select, textarea {
   padding: 3px 14px;
 }
 
+.btn-group.open .btn-primary.dropdown-toggle {
+  background: #0e65a2;
+}
 
 .content-main .footer {
   margin:20px auto 0 auto;
@@ -184,16 +199,15 @@ input, button, select, textarea {
   line-height: 15px;
   padding:0 5px;
   text-align:right;
-  color: #bbbbbb;
+  color: #555;
+  opacity: 0.5;
 }
 .content-main .copyright a {
-  color: #999999;
+  color: #111;
 }
 .content-main .copyright strong {
   font-weight: normal;
 }
-
-
 
 
 li a.active { background-color:#3E84B5; color:#FFF; }

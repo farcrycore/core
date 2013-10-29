@@ -3,17 +3,23 @@
 <!--- site description --->
 	<cfproperty ftSeq="10" ftFieldset="Site Description" name="sitetitle" type="string" default="farcry" hint="???" ftLabel="Site title" ftType="string" />
 	<cfproperty ftSeq="11" ftFieldset="Site Description" name="sitetagline" type="string" default="tell it to someone who cares" hint="???" ftLabel="Site tag line" ftType="string" />
-	<cfproperty ftSeq="12" ftFieldset="Site Description" name="sitelogopath" type="string" default="" hint="???" ftLabel="Logo path" ftType="string" />
-	<cfproperty name="webtoplogopath" type="string" default="" 
-		ftSeq="13" ftFieldset="Site Description" ftLabel="Webtop Logo" 
+
+<!--- webtop / login appearance --->
+	<cfproperty name="webtopLogoPath" type="string" default="" 
+		ftSeq="13" ftFieldset="Webtop / Login Appearance" ftLabel="Webtop Logo" 
 		ftType="image" ftDestination="/wsimages"
 		ftAutoGenerateType="fitinside" ftImageWidth="180" ftImageHeight="60"
 		ftAllowUpload="true" ftbUploadOnly="true" ftQuality="1.0" ftInterpolation="blackman">
-	<cfproperty name="webtopbackgroundpath" type="string" default="" 
-		ftSeq="14" ftFieldset="Site Description" ftLabel="Webtop Login Background" 
+	<cfproperty name="webtopBackgroundPath" type="string" default="" 
+		ftSeq="14" ftFieldset="Webtop / Login Appearance" ftLabel="Login Background" 
 		ftType="image" ftDestination="/wsimages"
 		ftAutoGenerateType="fitinside" ftImageWidth="1600" ftImageHeight="1600"
-		ftAllowUpload="true" ftbUploadOnly="true" ftQuality="1.0" ftInterpolation="blackman">
+		ftAllowUpload="true" ftbUploadOnly="true" ftQuality="1.0" ftInterpolation="blackman"
+		ftHint="Upload a large image that will fill the background of the login page">
+	<cfproperty name="bWebtopBackgroundMask" type="boolean" default="false" 
+		ftSeq="15" ftFieldset="Webtop / Login Appearance" ftLabel="Login Background Mask"
+		ftType="boolean"
+		ftHint="Display a subtle texture that will mask the login background image (recommended for low resolution photos)">
 
 <!--- 
  // contributor properites 
@@ -41,6 +47,7 @@
 
 
 <!--- deprecated properties; backward compatability only --->
+	<cfproperty name="sitelogopath" type="string" default="" hint="???" ftLabel="Logo path" ftType="string" />
 	<cfproperty name="showforgotpassword" type="boolean" default="1" hint="???" ftLabel="Show forgot password" ftType="boolean" />
 	<cfproperty name="sessiontimeout" type="numeric" default="60" hint="???" ftLabel="Session timeout" ftType="integer" />
 	<cfproperty name="bdoarchive" type="boolean" default="0" hint="???" ftLabel="Do archives" ftType="boolean" />

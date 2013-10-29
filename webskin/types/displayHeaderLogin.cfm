@@ -22,21 +22,18 @@
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
+<cfset request.fc.inwebtop = true>
+
+
 <skin:loadCSS id="fc-bootstrap" />
 <skin:loadCSS id="fc-login" />
 <skin:loadJS id="fc-jquery" />
 <skin:loadJS id="fc-bootstrap" />
 
 
-<cfset bWebtopLogo = false>
-<cfset bWebtopBackground = false>
-
-<cfif structKeyExists(application.config.general,'webtopLogoPath') and application.config.general.webtopLogoPath NEQ "">
-	<cfset bWebtopLogo = true>
-</cfif>
-<cfif structKeyExists(application.config.general,'webtopBackgroundPath') and application.config.general.webtopBackgroundPath NEQ "">
-	<cfset bWebtopBackground = true>
-</cfif>
+<cfset webtopLogoPath = application.fapi.getConfig("general", "webtopLogoPath", "")>
+<cfset webtopBackgroundPath = application.fapi.getConfig("general", "webtopBackgroundPath", "")>
+<cfset bWebtopBackgroundMask = application.fapi.getConfig("general", "bWebtopBackgroundMask", false)>
 
 
 <cfoutput>
@@ -49,12 +46,12 @@
 	<link href="#application.url.webtop#/css/icons.css" rel="stylesheet" media="screen">
 </head>
 
-<body <cfif bWebtopBackground>style="background-image:url(#application.config.general.webtopBackgroundPath#);"</cfif>>
-	<div class="wrap" <cfif bWebtopBackground>style="background-image:url(#application.url.webtop#/css/images/bg-mask-dot.png);"</cfif>>
+<body <cfif len(webtopBackgroundPath)>style="background-image:url(#webtopBackgroundPath#);"</cfif>>
+	<div class="wrap" <cfif bWebtopBackgroundMask>style="background-image:url(#application.url.webtop#/css/images/bg-mask-dot.png);"</cfif>>
 		<div class="content-main">
 			<div class="content-block">
 				<div id="header" class="clearfix">
-					<h1 class="pull-left"><a href="#application.url.webroot#/" target="_blank" class="logo webtop-logo" <cfif bWebtopLogo>style="background-image:url(#application.config.general.webtopLogoPath#);text-indent:-99999px;"<cfelse>style="width:auto;height:40px;"</cfif>>#application.config.general.siteTitle#</a></h1>
+					<h1 class="pull-left"><a href="#application.url.webroot#/" target="_blank" class="logo webtop-logo" <cfif len(webtopLogoPath)>style="background-image:url(#webtopLogoPath#);text-indent:-99999px;"<cfelse>style="width:auto;height:40px;"</cfif>>#application.config.general.siteTitle#</a></h1>
 					<h1 class="pull-right"><a href="http://www.farcrycore.org/" target="_blank" class="logo farcry-logo">FarCry Core</a></h1>
 				</div>
 				<div class="content-pod">
