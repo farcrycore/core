@@ -209,12 +209,12 @@
 		<!--- --------------------------- --->
 		<cfparam name="arguments.stFieldPost.stSupporting.Include" default="true">
 		
-		<cfif ListGetAt(arguments.stFieldPost.stSupporting.Include,1)>
+		<cfif Listfirst(arguments.stFieldPost.stSupporting.Include)>
 		
-			<cfif len(trim(arguments.stFieldPost.Value))>
-				<cfset stResult.value = trim(arguments.stFieldPost.Value)>
+			<cfif structKeyExists(arguments.stMetadata, "ftValidation") AND listFindNoCase(arguments.stMetadata.ftValidation, "required") AND NOT len(stFieldPost.Value)>
+				<cfset stResult = failed(value="#arguments.stFieldPost.value#", message="This is a required field.") />
 			<cfelse>
-				<cfset stResult.value = "">
+				<cfset stResult.value = trim(arguments.stFieldPost.Value)>
 			</cfif>
 			
 		<cfelse>
