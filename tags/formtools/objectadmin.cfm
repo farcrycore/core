@@ -1142,7 +1142,7 @@
 		<!--- load handlebars templates --->
 		<skin:hbs template="preview-dialog">
 
-		<script src="#application.url.webtop#/app/views/previewView.js" type="text/javascript"></script>
+		<script src="#application.url.webtop#/app/views/PreviewView.js" type="text/javascript"></script>
 		<script type="text/javascript">
 			App = {};
 
