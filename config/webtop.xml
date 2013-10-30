@@ -19,9 +19,6 @@
 	</section>
 	<section id="content" sequence="3000" permission="MainNavContentTab" label="Content" description="Edit and add to your library of media and general content">
 		<subsection id="contentpublishing" sequence="10" label="Content Publishing">
-			<menu id="menuquickbuilder" sequence="10" label="Quick Site Builder">
-				<menuitem id="quicksitebuilder" sequence="10" label="Quick Site Builder" link="/admin/quickBuilder.cfm" description="Build your information hierarchy with the Quick Site Builder.  Useful for rapidly creating new sites or branches of content in the site overview tree." />
-			</menu>
 			<menu id="MediaLibraryContent" sequence="20" label="Media Assets">
 				<menuitem id="listdmimage" sequence="10" label="Image Library" typename="dmImage" />
 				<menuitem id="listdmfile" sequence="20" label="Document Library" typename="dmFile" />
@@ -30,25 +27,33 @@
 				<menuitem id="managekeywords" sequence="10" label="Manage Keywords" typename="dmCategory" />		
 				<menuitem id="quickcategorybuilder" sequence="20" label="Category Tree Quick Builder" link="/admin/quickBuilderCat.cfm" />	
 			</menu>
-			<menu id="exportfeeds" sequence="50" label="Content Export">
-				<menuitem id="exportSkeleton" sequence="21" label="Export As Project Skeleton" link="/content/exportSkeleton.cfm" />
-				<menuitem id="exportgeneral" sequence="20" label="General Export" link="/content/export.cfm" />
-			</menu>
-			<menu id="containermanagement" sequence="60" label="Container Management">
-				<menuitem id="reflectedContainers" sequence="10" label="Reflected Containers" link="/admin/customadmin.cfm?module=customlists/container.cfm" />		
-			</menu>
-			<menu id="undeletemenu" sequence="70" label="Undelete Content">
+			<menu id="undeletemenu" sequence="70" label="Content Archive">
 				<menuitem id="undelete" sequence="10" label="Undelete Content" typename="dmArchive" />
+			</menu>
+		</subsection>
+		<subsection id="containermanagement" sequence="10" label="Rules &amp; Containers">
+			<menu id="containermanagementmenu" sequence="60" label="Container Management">
+				<menuitem id="reflectedContainers" sequence="10" label="Reflected Containers" link="/admin/customadmin.cfm?module=customlists/container.cfm" />		
 			</menu>
 		</subsection>
 	</section>
 
 	<section id="admin" sequence="4000" permission="MainNavAdminTab" label="Admin" description="Configure and secure your website">
 		<subsection id="general" sequence="10" label="General Admin" permission="AdminGeneralTab">
+			<menu id="sysinfo" sequence="10" label="Information">
+				<menuitem id="systeminfo" sequence="40" label="System Information" type="farCOAPI" bodyView="webtopBodySystemInfo" />
+			</menu>
 			<menu id="configuration" sequence="10" label="Configuration">
 				<menuitem id="listfarconfig" sequence="1" permission="developer" label="Edit Config" typename="farConfig" />
 				<menuitem id="scheduledtasks" sequence="10" label="Scheduled Tasks" link="/customadmin/customlists/dmCron.cfm" relatedtype="dmCron" />
 			</menu>
+			
+			<menu id="cachemanagement" sequence="220" label="Cache Management">
+				<menuitem id="objbrokersummary" sequence="10" label="Object Broker Report" link="/admin/objectBrokerReport.cfm" />
+			</menu>
+		</subsection>
+		
+		<subsection id="security" sequence="50" permission="AdminGeneralTab" label="Security" >
 			<menu id="farcryud" sequence="100" label="User Directory" permission="SecurityPolicyManagementTab">
 				<menuitem id="listprofiles" sequence="10" label="Users" link="/admin/customadmin.cfm?module=customlists/dmProfile.cfm" relatedtype="dmProfile" />
 				<menuitem id="listfargroup" sequence="20" label="Groups" link="/admin/customadmin.cfm?module=customlists/farGroup.cfm" relatedtype="farGroup" />
@@ -61,8 +66,8 @@
 				<menuitem id="securitylogs" sequence="10" label="Security Logs" link="/admin/customadmin.cfm?module=customlists/farLog_security.cfm" />
 				<menuitem id="useractivityovertime" sequence="30" label="User Activity Over Time" link="/admin/customadmin.cfm?module=customlists/farUserActivity.cfm" />
 			</menu>
-			<menu id="cachemanagement" sequence="220" label="Cache Management">
-				<menuitem id="objbrokersummary" sequence="10" label="Object Broker Report" link="/admin/objectBrokerReport.cfm" />
+			<menu id="securitytools" sequence="150" label="Security Tools">
+				<menuitem id="upgradepasswords" sequence="10" label="Upgrade Password Security" link="/admin/customadmin.cfm?module=utilities/upgradePasswords.cfm" />
 			</menu>
 		</subsection>
 		
@@ -71,36 +76,34 @@
 				<menuitem id="updateapp" sequence="10" label="Reload application" typename="UpdateApp" />
 				<!--<menuitem id="manageplugins" sequence="20" label="Add / Remove Plugins" link="/admin/manageplugins.cfm" />-->
 				<menuitem id="scopedump" sequence="30" label="Scope Dump" link="/admin/yxplorer.cfm" />
-				<menuitem id="systeminfo" sequence="40" label="System Information" type="farCOAPI" bodyView="webtopBodySystemInfo" />
+				
 			</menu>
 			<menu id="coapitools" sequence="20" label="COAPI Tools">
 				<menuitem id="coapioverview" sequence="10" label="COAPI Content Types" typename="farCOAPI" />
 				<menuitem id="coapisqllog" sequence="20" label="SQL Log" typename="farCOAPI" bodyView="webtopBodySQLLog" />
 			</menu>
-			<menu id="diagnostics" sequence="30" label="Diagnostics">
+			<menu id="coapirepair" sequence="30" label="COAPI Repair Tools">
 				<menuitem id="rebuildtree" sequence="10" label="Rebuild Tree Metadata" link="/admin/rebuildTree.cfm" />
 				<menuitem id="fixrefObjects" sequence="20" label="Fix RefObjects Table" link="/admin/fixRefObjects.cfm" />
-				<menuitem id="reattachnodes" sequence="30" label="Reattach Orphan Folders" link="/admin/reattachnodes.cfm" />
-				<menuitem id="reattachnodescategory" sequence="40" label="Reattach Orphan Categories" link="/admin/reattachnodescategory.cfm" />
-				<menuitem id="fixfilelocations" sequence="50" label="Fix File Locations" link="/admin/customadmin.cfm?module=utilities/fixfilelocations.cfm" />
-				<menuitem id="cdnmigrationtool" sequence="60" label="CDN Migration Tool" link="/admin/customadmin.cfm?module=utilities/cdnmigrator.cfm" />
-			    <menuitem id="listfilelocations" sequence="70" label="List File Locations" link="/admin/customadmin.cfm?module=utilities/listfilelocations.cfm" />
 			</menu>
-			<menu id="menufumanagement" sequence="80" label="Manage Friendly URLs">
-				<menuitem id="fumanagement" sequence="10" label="Manage Friendly URLs" link="/admin/customadmin.cfm?module=customlists/farFU.cfm" />
+			<menu id="filetools" sequence="30" label="File Tools">
+				<menuitem id="cdnmigrationtool" sequence="50" label="CDN Migration Tool" link="/admin/customadmin.cfm?module=utilities/cdnmigrator.cfm" />
+			    <menuitem id="fixfilelocations" sequence="60" label="Fix File Locations" link="/admin/customadmin.cfm?module=utilities/fixfilelocations.cfm" />
+				<menuitem id="listfilelocations" sequence="70" label="List File Locations" link="/admin/customadmin.cfm?module=utilities/listfilelocations.cfm" />
+			</menu>
+			<menu id="menufumanagement" sequence="80" label="Friendly URL Tools">
+				<menuitem id="fumanagement" sequence="10" label="Inspect Friendly URLs" link="/admin/customadmin.cfm?module=customlists/farFU.cfm" />
 				<menuitem id="furebuild" sequence="20" label="Rebuild Friendly URLs" link="/admin/rebuildFU.cfm" />
 			</menu>
-			<menu id="emails" sequence="90" label="Email">
-				<menuitem id="sendemail" sequence="10" label="Send Email" link="/admin/customadmin.cfm?module=utilities/email.cfm" />
+			<menu id="emails" sequence="90" label="Test Email">
+				<menuitem id="sendemail" sequence="10" label="Send Test Email" link="/admin/customadmin.cfm?module=utilities/email.cfm" />
 			</menu>
 			<menu id="tasksqueue" sequence="100" label="Task Queue">
 				<menuitem id="queuethreads" sequence="10" label="Threads" typename="configTaskQueue" bodyView="webtopBody" />
 				<menuitem id="queuetasks" sequence="20" label="Queued Tasks" typename="farQueueTask" bodyView="webtopBody" />
 				<menuitem id="queueresults" sequence="30" label="Queue Results" typename="farQueueResult" bodyView="webtopBody" />
 			</menu>
-			<menu id="securitytools" sequence="150" label="Security Tools">
-				<menuitem id="upgradepasswords" sequence="10" label="Upgrade Password Security" link="/admin/customadmin.cfm?module=utilities/upgradePasswords.cfm" />
-			</menu>
+
 		</subsection>
 
 	</section>
