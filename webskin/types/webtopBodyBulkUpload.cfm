@@ -73,11 +73,11 @@
 		</cfloop>
 		
 		<cfset stTask = {
-			objectid : form.fileID,
-			tempfile : filename,
-			typename : stObj.name,
-			targetfield : uploadTarget,
-			defaults : stDefaults
+			objectid = form.fileID,
+			tempfile = filename,
+			typename = stObj.name,
+			targetfield = uploadTarget,
+			defaults = stDefaults
 		} />
 		<cfset application.fc.lib.tasks.addTask(taskID=form.fileID,jobID=form.uploaderID,action="bulkupload.upload",details=stTask) />
 		
