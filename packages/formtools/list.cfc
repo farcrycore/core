@@ -114,7 +114,7 @@
 		<cfreturn this>
 	</cffunction>
 
-	<cffunction name="getListData" access="private" output="false" returntype="string" hint="This will return a list that is used by the edit function">
+	<cffunction name="getListData" access="public" output="false" returntype="string" hint="This will return a list that is used by the edit function">
 		<cfargument name="objectid" required="false" type="string" default="" hint="The objectid of the record we are getting the list for if available.">
 		<cfargument name="typename" required="true" type="string" hint="The name of the type that this property is part of.">
 		<cfargument name="property" required="true" type="string" hint="The name of the property">
