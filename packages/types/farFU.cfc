@@ -8,11 +8,11 @@
 	
 	<cfproperty 
 		name="refobjectid" type="string" default="" hint="stores the objectid of the related object" 
-		ftSeq="1" ftLabel="Ref ObjectID" />
+		ftSeq="1" ftLabel="Ref ObjectID" dbIndex="true" />
 		
 	<cfproperty 
 		name="friendlyURL" type="string" default="" hint="The Actual Friendly URL" bLabel="true"
-		ftSeq="2" ftLabel="Friendly URL"  />
+		ftSeq="2" ftLabel="Friendly URL" dbIndex="true"  />
 		
 	<cfproperty 
 		name="queryString" type="string" default="" hint="The query string that will be parsed and placed in the url scope of the request" 
