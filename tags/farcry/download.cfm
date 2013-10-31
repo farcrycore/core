@@ -116,26 +116,6 @@ accommodate legacy implementations
 </cfif>
 
 
-<!--- todo: determine config for logging options; stats is being deprecated --->
-<!--- log download --->
-<cfinvoke component="#application.packagepath#.farcry.stats" method="logEntry">
-	<cfinvokeargument name="pageId" value="#attributes.objectid#"/>
-	<cfinvokeargument name="navId" value="#attributes.objectid#"/>
-	<cfinvokeargument name="remoteIP" value="#cgi.REMOTE_ADDR#"/>
-	<cfinvokeargument name="sessionId" value="#trim(session.sessionId)#"/>
-	<cftry>
-		<cfinvokeargument name="browser" value="#trim(cgi.HTTP_USER_AGENT)#"/>
-		<cfcatch><cfinvokeargument name="browser" value="Unknown"/></cfcatch>
-	</cftry>
-	<!--- check is a user is logged in --->
-	<cfif application.security.isLoggedIn()>
-		<cfinvokeargument name="userid" value="#application.security.getCurrentUserID()#"/>
-	<cfelse>
-		<cfinvokeargument name="userid" value="Anonymous"/>
-	</cfif>
-</cfinvoke>
-
-
 <!--- What to do if the returned struct is empty (i.e. user doesn't have permission) --->
 <cfif structisempty(stLocation) or stLocation.method eq "none">
 	

@@ -104,7 +104,6 @@
 		<cfset application.factory.oLocking = createObject("component","#application.packagepath#.farcry.locking") />
 		<cfset application.factory.oVersioning = createObject("component","#application.packagepath#.farcry.versioning") />
 		<cfset application.factory.oWorkflow = createObject("component","#application.packagepath#.farcry.workflow") />
-		<cfset application.factory.oStats = createObject("component","#application.packagepath#.farcry.stats") />
 		<cfset application.factory.oCategory = createObject("component","#application.packagepath#.farcry.category") />
 		<cfset application.factory.oGenericAdmin = createObject("component","#application.packagepath#.farcry.genericAdmin") />
 		<cfset application.factory.oCon = createObject("component","#application.packagepath#.rules.container") />
