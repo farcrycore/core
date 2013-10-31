@@ -1,5 +1,4 @@
-<cfsetting enablecfoutputonly="Yes">
-<cfsilent>
+<cfsetting enablecfoutputonly="true">
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -22,9 +21,6 @@
 
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
-<cfif not thisTag.HasEndTag>
-	<cfabort showerror="skin:location requires an end tag." />
-</cfif>
 
 <cfif thistag.executionMode eq "Start">
 
@@ -89,8 +85,23 @@
 		<cfset stParams = structNew() />
 		<cfset stParams.returnURL = returnURL />
 		
-		<skin:location href="#loginURL#" stparameters="#stParams#" />
+		<cfif structKeyExists(request.mode, "ajax") AND request.mode.ajax eq 1
+				AND structKeyExists(url, "responsetype") AND url.responsetype eq "json">
+
+			<cfset stResponse = structNew()>
+			<cfset stResponse["success"] = false>
+			<cfset stResponse["message"] = "You are not currently logged in.">
+			<cfset stResponse["returnURL"] = returnURL>
+			
+			<cfcontent reset="true">
+			<cfheader statuscode="403" statustext="Not logged in">
+			<cfoutput>#serializeJSON(stResponse)#</cfoutput>
+			<cfabort>
+
+		<cfelse>
+			<skin:location href="#loginURL#" stparameters="#stParams#" />
+		</cfif>
 	</cfif>
 </cfif>
-	
-</cfsilent>
+
+<cfsetting enablecfoutputonly="false">
