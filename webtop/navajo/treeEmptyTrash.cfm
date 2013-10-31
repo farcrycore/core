@@ -33,6 +33,3 @@
 	}
 	
 </cfscript>
-
-
-<nj:updateTree objectId="#application.navid.rubbish#">

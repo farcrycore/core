@@ -176,6 +176,5 @@ $out:$
 		o.createData(stProperties=stAllObjects[key]);
 	}
 	
-	updateTree(objectID =URl.destObjectId);
 </cfscript>
 </cflock>

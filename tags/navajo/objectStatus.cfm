@@ -335,9 +335,6 @@ $out:$
 			</cfloop>
 		</cfloop>
 
-		<cfif isstruct(stNav)>
-			<nj:updateTree ObjectId="#stNav.objectId#">
-		</cfif>
 	</ft:processForm>
 
 	<cfif listlen(url.objectid) gt 1 and not find(cgi.SCRIPT_NAME,cgi.http_referer)>

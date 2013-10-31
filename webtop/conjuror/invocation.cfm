@@ -164,10 +164,6 @@
 				<!--- site tree redirect --->
 				<cfset onExitProcess.Type = "HTML" />
 				<cfsavecontent variable="onExitProcess.Content">
-					<!--- get parent to update tree --->
-					<nj:treeGetRelations typename="#returnStruct.typename#" objectId="#returnStruct.ObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1">
-					<!--- update tree --->
-					<nj:updateTree objectId="#parentID#">
 					<cfoutput>
 					<script type="text/javascript">
 						window.location.href = '#application.url.webtop#/edittabOverview.cfm?typename=#typename#&objectid=#returnStruct.ObjectID#&ref=#url.ref#';

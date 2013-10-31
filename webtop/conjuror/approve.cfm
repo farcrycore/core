@@ -1,13 +1,5 @@
-<!--- 
-Merge of ..admin/navajo/approve.cfm and ../tags/navajo/objectstatus.cfm 
---->
-
-<cfsetting enablecfoutputonly="Yes">
-<cfprocessingDirective pageencoding="utf-8">
-<cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
-<cfimport taglib="/farcry/core/tags/webskin/" prefix="skin">
-<cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
-
+<cfsetting enablecfoutputonly="true">
+<cfprocessingdirective pageencoding="utf-8">
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -46,8 +38,6 @@ $in: $
 $out:$
 --->
 
-<cfsetting enablecfoutputonly="Yes">
-<cfprocessingDirective pageencoding="utf-8">
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
 <cfimport taglib="/farcry/core/tags/farcry/" prefix="farcry">
@@ -284,21 +274,16 @@ $out:$
 		</cfloop>
 		
 	</cfloop>
-	<cfif isstruct(stNav)>
-	   <nj:updateTree ObjectId="#stNav.objectId#">
-	</cfif>
-	
+
 	<cfoutput><script>
 		if( window.opener && window.opener.parent )	window.close();
 		else location.href = '#application.url.farcry#/edittabOverview.cfm?objectid=#returnObjectID#';
 	</script></cfoutput>
 
-</cfif>                                                                                
+</cfif>
 <cfoutput>
 </body>
 </html>
 </cfoutput>
 
-<cfsetting enablecfoutputonly="No">
-
-<cfsetting enablecfoutputonly="No">
+<cfsetting enablecfoutputonly="false">

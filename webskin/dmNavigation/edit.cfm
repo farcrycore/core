@@ -32,12 +32,6 @@
 </ft:processForm>
 
 <ft:processForm action="Save" bHideForms="true">
-	<!--- get parent to update tree --->
-	<nj:treeGetRelations typename="#stObj.typename#" objectId="#stObj.ObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1">
-	
-	<!--- update tree --->
-	<nj:updateTree objectId="#parentID#">
-	
 	<cfoutput>
 		<script type="text/javascript">
 			<cfif len(newContentID)>
@@ -50,13 +44,6 @@
 </ft:processForm>
 
 <ft:processForm action="Manage" bHideForms="true">
-	
-	<!--- get parent to update tree --->
-	<nj:treeGetRelations typename="#stObj.typename#" objectId="#stObj.ObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1">
-	
-	<!--- update tree --->
-	<nj:updateTree objectId="#parentID#">
-		
 	<cfif structKeyExists(form, "selectedObjectID")>
 		<cfoutput>
 			<script type="text/javascript">
@@ -68,13 +55,6 @@
 
 <ft:processForm action="Cancel" bHideForms="true">
 	<cfset setLock(stObj=stObj,locked=false) />
-	
-	<!--- get parent to update tree --->
-	<nj:treeGetRelations typename="#stObj.typename#" objectId="#stObj.ObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1">
-	
-	<!--- update tree --->
-	<nj:updateTree objectId="#parentID#">
-	
 	<cfoutput>
 		<script type="text/javascript">
 			location.href = '#application.url.webtop#/edittabOverview.cfm?typename=dmNavigation&objectid=#stObj.ObjectID#';

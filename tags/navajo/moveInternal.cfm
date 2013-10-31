@@ -110,7 +110,7 @@ $out:$
 			<!--- make the move --->
 			<cfset application.factory.oTree.moveBranch(dsn=application.dsn,objectid=stobj.objectid,parentid=parentobjectid,pos=newposition) />
 			<farcry:logevent object="#url.objectid#" type="sitetree" event="movenode" notes="Object moved to child position #newposition#" />
-			<cfset updateTree(objectID =parentObjectID) />
+
 		<cfelse>
 			<cfset key = "aObjectIds" />
 		
@@ -141,18 +141,10 @@ $out:$
 			<cfset oType.setData(stProperties=stParentObject,auditNote="object moved to child position #newpos#") />
 			
 			<farcry:logevent objectid="#url.objectid#" type="sitetree" event="movenode" notes="Object moved to child position #newpos#" />
-			
-			<cfset updateTree(objectID =parentObjectID) />
+
 		</cfif>
 	</cfif>
 
-	<cfoutput>
-		<script type="text/javascript">
-			var objSideTree = parent.parent['sideTree'];
-			if(objSideTree)
-				objSideTree.location = objSideTree.location;
-		</script>
-	</cfoutput>
 </cfif>
 
 </cflock>

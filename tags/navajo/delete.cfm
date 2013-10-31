@@ -86,16 +86,8 @@ $out: <separate entry for each variable>$
 		<!--- type specific delete options --->
 		<cfset oType.delete(stObj.objectId)>
 	
-		<!--- Update the tree view --->
-		<!--- <nj:updateTree objectId="#parentObjectID#"> --->
-		
 		<!--- update overview page --->
 		<cfoutput><script type="text/javascript">
-		// check if edited from Content or Site (via sidetree)
-		//if(parent['sidebar'].frames['sideTree']) 
-		//	parent['sidebar'].frames['sideTree'].location= parent['sidebar'].frames['sideTree'].location;
-		//}
-			
 		if (opener.$fc.objectAdminActionDiv === undefined) {
 		//do nothing
 		} else {

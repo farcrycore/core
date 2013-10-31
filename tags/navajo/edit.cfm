@@ -120,10 +120,6 @@ $out:$
 			</cfcase>
 			
 			<cfdefaultcase>
-				<!--- get parent for update tree --->
-				<cf_getNavigation objectId="#attributes.objectid#" bInclusive="1" r_stObject="stNav" r_ObjectId="navIdSrcPerm">
-				<!--- update tree --->
-				<cf_updateTree objectId="#navIdSrcPerm#" complete=0>
 				<!--- reload overview page --->
 				<cfoutput><script type="text/javascript">
 					window.location = '#application.url.farcry#/edittabOverview.cfm?typename=#attributes.typename#&objectid=#attributes.objectid#&ref=#url.ref#';
@@ -164,12 +160,6 @@ $out:$
 	<cfset onExitProcess = structNew() />
 	<cfset onExitProcess.Type = "HTML" />
 	<cfsavecontent variable="onExitProcess.Content">
-		<!--- get parent to update tree --->
-		<nj:treeGetRelations typename="#stObj.typename#" objectId="#stObj.ObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1">
-		
-		<!--- update tree --->
-		<nj:updateTree objectId="#parentID#">
-		
 		<cfoutput>
 		<script type="text/javascript">
 			location.href = '#application.url.farcry#/edittabOverview.cfm?typename=#attributes.typename#&objectid=#stObj.ObjectID#&ref=#url.ref#';

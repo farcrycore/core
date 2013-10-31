@@ -28,18 +28,10 @@
 
 
 <ft:processForm action="Manage">
-	
-	<!--- get parent to update tree --->
-	<nj:treeGetRelations typename="#stObj.typename#" objectId="#stObj.ObjectID#" get="parents" r_lObjectIds="ParentID" bInclusive="1">
-	
-	<!--- update tree --->
-	<nj:updateTree objectId="#parentID#">
-		
 	<cfif structKeyExists(form, "selectedObjectID")>
 		<skin:location url="#application.url.webtop#/edittabOverview.cfm?objectid=#form.selectedObjectID#" />
 	</cfif>
 </ft:processForm>
-
 
 
 

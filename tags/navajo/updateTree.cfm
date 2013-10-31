@@ -1,3 +1,4 @@
+<cfsetting enablecfoutputonly="true">
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -34,11 +35,7 @@ $Developer: Paul Harrison (harrisonp@curtin.edu.au)$
 $in: objectid $
 $out:$
 --->
-<cfprocessingDirective pageencoding="utf-8"><cfoutput>
-<script type="text/javascript">
-// update tree
-if(parent['sidebar'].frames['sideTree'] && parent['sidebar'].frames['sideTree'].getObjectDataAndRender)
-	parent['sidebar'].frames['sideTree'].getObjectDataAndRender('#attributes.objectId#');
-if (parent.updateObject)
-	parent.updateObject('#attributes.objectid#');
-</script></cfoutput>
+
+<cfset application.fapi.deprecated("nj:updateTree is deprecated as of FarCry 7.0")>
+
+<cfsetting enablecfoutputonly="false">

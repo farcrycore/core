@@ -194,10 +194,6 @@ Parent Object: URL.OBJECTID
 			</cfscript>
 		</cfif>
 			
-		<cfif len(stParent.objectID)>
-			<!--- output JS to refresh the overview tree --->
-			<nj:updateTree objectId="#stParent.objectID#" complete="0">
-		</cfif>
 	</cfif>
 	
 	<!--- Now that we know its type and new objectID go and edit the object --->

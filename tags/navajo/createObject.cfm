@@ -127,10 +127,6 @@ $out:$
 			
 		</cfif>
 		
-		<cfif len(stParent.objectID)>
-			<!--- Refresh the tree --->
-			<nj:updateTree objectId="#stParent.objectID#" complete="0">
-		</cfif>
 	</cfif>
 	
 	<!--- Now that we know its type and new objectID go and edit the object now --->

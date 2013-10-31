@@ -124,9 +124,8 @@
 </cffunction>
 
 <cffunction name="updateTree">
+	<!--- @@deprecated: old site tree no longer used --->
 	<cfargument name="objectid" required="true">
-	<cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
-	<nj:updateTree objectId="#arguments.objectid#">
 </cffunction>
 
 <cffunction name="far_trace">

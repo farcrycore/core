@@ -94,12 +94,6 @@ $out:$
 		<!--- Log this activity against live object --->
 		<farcry:logevent object="#url.objectid#" type="coapi" event="delete" notes="Deleted Draft Object (#stObj.label#)" />
 		
-		<!--- get parent for update tree --->
-		<cf_getNavigation objectId="#url.ObjectId#" bInclusive="1" r_stObject="stNav" r_ObjectId="navIdSrcPerm">
-		
-		<!--- update tree --->
-		<cf_updateTree objectId="#navIdSrcPerm#" complete=0>
-		
 		<!--- reload overview page --->
 		<cfoutput>
 			<script language="JavaScript">

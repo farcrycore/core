@@ -123,7 +123,6 @@
 		<cfset var stResult = structnew() />
 		<cfset var stArchive = structnew() />
 		<cfset var stArchiveDetail = structnew() />
-		<cfset var stNav = structnew() />
 		<cfset var q = "" />
 		<cfset var stMeta = structnew() />
 		<cfset var stParent = structnew() />
@@ -220,13 +219,6 @@
 				<cfset setData(stProperties=stArchive) />
 			</cfif>
 			
-			<cfif application.stCOAPI[typename].bUseInTree>
-				<!--- update tree --->
-				<nj:getNavigation objectId="#arguments.objectID#" bInclusive="1" r_stObject="stNav" r_ObjectId="arguments.objectId">
-				<cfif isstruct(stNav) and structkeyexists(stNav,"objectid")>
-					<nj:updateTree ObjectId="#stNav.objectId#">
-				</cfif>
-			</cfif>						
 		</cflock>
 		
 		<cfreturn stResult />

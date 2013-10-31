@@ -1,10 +1,5 @@
-<!--- 
-merge of ../admin/navajo/createObject.cfm and ../tags/navajo/createObject.cfm
- --->
-<cfprocessingDirective pageencoding="utf-8">
-<cfimport taglib="/farcry/core/tags/navajo" prefix="nj">
-<cfsetting enablecfoutputonly="Yes">
-
+<cfsetting enablecfoutputonly="true">
+<cfprocessingdirective pageencoding="utf-8">
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -43,12 +38,9 @@ $in: $
 $out:$
 --->
 
-<cfsetting enablecfoutputonly="Yes">
-
-<cfprocessingDirective pageencoding="utf-8">
-
 <cfimport taglib="/farcry/core/packages/fourq/tags/" prefix="q4">
 <cfimport taglib="/farcry/core/tags/navajo/" prefix="nj">
+
 <cfinclude template="/farcry/core/webtop/includes/utilityFunctions.cfm">
 
 
@@ -133,13 +125,9 @@ $out:$
 			</cfscript>
 			
 		</cfif>
-		
-		<cfif len(stParent.objectID)>
-			<!--- Refresh the tree --->
-			<nj:updateTree objectId="#stParent.objectID#" complete="0">
-		</cfif>
+
 	</cfif>
-	
+
 	<!--- Now that we know its type and new objectID go and edit the object now --->
 	<cfscript>
 		st = filterStructure(URL,'objectid,nodetype');
@@ -153,6 +141,4 @@ $out:$
 	
 </cfif>
 
-<cfsetting enablecfoutputonly="No">
-
-<cfsetting enablecfoutputonly="No">
+<cfsetting enablecfoutputonly="false">

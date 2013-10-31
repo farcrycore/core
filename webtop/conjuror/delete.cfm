@@ -61,9 +61,6 @@ merge of ../admin/navajo/delete.cfm and ../tags/navajo/delete.cfm
 			oType.delete(stObj.objectId);
 		</cfscript>
 		
-		<!--- Update the tree view --->
-		<nj:updateTree objectId="#parentObjectID#"> 
-		
 		<!--- update overview page --->
 		<cfoutput>
 			<script>

@@ -130,10 +130,7 @@ $out:$
 		
 		<cflock scope="Application"  type="EXCLUSIVE" timeout="1" throwontimeout="Yes">
 			<cfscript>
-				
 				application.factory.oTree.moveBranch(dsn=application.dsn,objectID=URL.srcObjectID,parentID=URL.destObjectID);
-				
-				//updatetree(objectid=srcParentObjectID);
 			</cfscript>
 		</cflock>
 			 <cfcatch>
@@ -141,10 +138,6 @@ $out:$
 			 	<cfoutput>
 				<h2>#application.rb.getResource('sitetree.messages.branchLockoutBlurb@heading','Branch Lockout')#</h2>
 				<p>#application.rb.getResource('sitetree.messages.branchLockoutBlurb@text','Another editor is currently modifying the hierarchy. Please refresh the site overview tree and try again.')#</p>
-				<script>
-					top['frames']['treeFrame'].alert("#application.rb.getResource('sitetree.messages.branchLockoutBlurb@text','Another editor is currently modifying the hierarchy. Please refresh the site overview tree and try again.')#");
-					top['frames']['treeFrame'].enableDragAndDrop();
-				</script>
 				</cfoutput>
 				<cfabort>
 			</cfcatch>
@@ -193,20 +186,6 @@ $out:$
 	<cfelse>
 		<farcry:logevent objectid="#srcobj.objectid#" type="sitetree" event="movenode" notes="Object moved to new parentid #url.destObjectID#" />
 	</cfif>
-	
-	<!--- update overview page --->
-	<cfoutput>
-	
-	<script>
-		srcobjid='#URL.srcObjectID#';	
-		destNavObjectId ='#destObj.objectid#';	
-		if(top['sidebar'].frames['sideTree'])
-		{
-			top.frames['sidebar'].frames['sideTree'].updateTree(src=srcobjid,dest=destNavObjectId,srcobj='#url.srcObjectid#');
-			top.frames['sidebar'].frames['sideTree'].enableDragAndDrop();
-		}
-	</script>
-	</cfoutput>
 
 </cfif>
 
