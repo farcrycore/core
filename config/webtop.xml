@@ -17,8 +17,8 @@
 			</menu>
 		</subsection>
 	</section>
-	<section id="content" sequence="3000" permission="MainNavContentTab" label="Content" description="Edit and add to your library of media and general content">
-		<subsection id="contentpublishing" sequence="10" label="Content Publishing">
+	<section id="content" sequence="3000" permission="MainNavContentTab" label="Content">
+		<subsection id="mediacategories" sequence="10" label="Media &amp; Categories">
 			<menu id="MediaLibraryContent" sequence="20" label="Media Assets">
 				<menuitem id="listdmimage" sequence="10" label="Image Library" typename="dmImage" />
 				<menuitem id="listdmfile" sequence="20" label="Document Library" typename="dmFile" />
@@ -40,20 +40,18 @@
 
 	<section id="admin" sequence="4000" permission="MainNavAdminTab" label="Admin" description="Configure and secure your website">
 		<subsection id="general" sequence="10" label="General Admin" permission="AdminGeneralTab">
-			<menu id="sysinfo" sequence="10" label="Information">
-				<menuitem id="systeminfo" sequence="40" label="System Information" type="farCOAPI" bodyView="webtopBodySystemInfo" />
-			</menu>
-			<menu id="configuration" sequence="10" label="Configuration">
-				<menuitem id="listfarconfig" sequence="1" permission="developer" label="Edit Config" typename="farConfig" />
+			<menu id="settings" sequence="10" label="Application Settings">
+				<menuitem id="listfarconfig" sequence="1" label="Config Files" typename="farConfig" />
 				<menuitem id="scheduledtasks" sequence="10" label="Scheduled Tasks" link="/customadmin/customlists/dmCron.cfm" relatedtype="dmCron" />
 			</menu>
 			
-			<menu id="cachemanagement" sequence="220" label="Cache Management">
-				<menuitem id="objbrokersummary" sequence="10" label="Object Broker Report" link="/admin/objectBrokerReport.cfm" />
+			<menu id="systemstatus" sequence="220" label="System Status">
+				<menuitem id="systeminfo" sequence="40" label="System Information" type="farCOAPI" bodyView="webtopBodySystemInfo" />
+				<menuitem id="objbrokersummary" sequence="10" label="Caching Status" link="/admin/objectBrokerReport.cfm" />
 			</menu>
 		</subsection>
 		
-		<subsection id="security" sequence="50" permission="AdminGeneralTab" label="Security" >
+		<subsection id="security" sequence="50" permission="AdminGeneralTab" label="Users &amp; Roles" >
 			<menu id="farcryud" sequence="100" label="User Directory" permission="SecurityPolicyManagementTab">
 				<menuitem id="listprofiles" sequence="10" label="Users" link="/admin/customadmin.cfm?module=customlists/dmProfile.cfm" relatedtype="dmProfile" />
 				<menuitem id="listfargroup" sequence="20" label="Groups" link="/admin/customadmin.cfm?module=customlists/farGroup.cfm" relatedtype="farGroup" />
