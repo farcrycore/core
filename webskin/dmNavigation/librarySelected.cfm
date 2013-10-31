@@ -5,19 +5,7 @@
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 
 <!--- Change me if desired --->
-<cfset myDelimeter = ">" />
-
-<cfsavecontent variable="dmNavigationLibrarySelectedHead">
-<cfoutput>
-<style type="text/css" media="all">
-  div.librarySelect { display: block; clear: both; margin: 5px 0; }
-  div.librarySelect h2 { margin: 0; padding: 0; }
-  div.librarySelect span { clear: left; font-size: .95em; color: ##555; }
-</style>
-</cfoutput>
-</cfsavecontent>
-
-<skin:htmlHead id="dmNavigationLibrarySelectedHead" text="#variables.dmNavigationLibrarySelectedHead#" />
+<cfset myDelimeter = " > " />
 
 <cfif listFindNoCase("Root,Images,Files,Trash", stObj.label) is false>
   <cfset qAncestors = application.factory.oTree.getAncestors(objectid=stObj.objectid, bIncludeSelf=true) />
@@ -31,8 +19,8 @@
 
   <cfoutput>
   <div class="librarySelect">
-    <h2>#stObj.label#</h2>
-    <span>#lAncestorNames#</span>
+    <span>#stObj.label#</span><br>
+    <span class="muted">#lAncestorNames#</span>
   </div>
   </cfoutput>
 </cfif>
