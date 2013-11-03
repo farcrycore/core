@@ -50,9 +50,6 @@
 	});
 </cfoutput></skin:onReady>
 
-<cfset aLog = application.fc.lib.db.getLog(asArray=true) /> --->
-<cfset formatter = createobject("java","org.hibernate.jdbc.util.BasicFormatterImpl").init() />
-
 <cfoutput>
 	<h1>
 		<admin:resource key="webtop.utilities.coapisqllog@title">SQL Log</admin:resource>
@@ -63,9 +60,24 @@
 			&middot;
 			<a href="##selectall" class="selectall">select all</a>
 		</span>
-	</h1>	
+	</h1>
 	<div id="sqllog">
 </cfoutput>
+
+<cftry>
+	<cfset aLog = arrayNew(1)>
+	<cfset aLog = application.fc.lib.db.getLog(asArray=true) /> --->
+	<cfset formatter = createobject("java","org.hibernate.jdbc.util.BasicFormatterImpl").init() />
+<cfcatch>
+	<cfoutput>
+	<div class="alert alert-block alert-error">
+		<h4>Log file error!</h4>
+		<p><code>#cfcatch.message#</code></p>
+		<p>Why not try configuring some SQL tables to log first.</p>
+	</div>
+	</cfoutput>
+</cfcatch>
+</cftry>
 
 <cfif url.format>
 	<cfset newline = "
