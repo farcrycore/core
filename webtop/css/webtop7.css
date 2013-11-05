@@ -901,25 +901,6 @@ body .uniForm .focused {
 
 /* objectadmin tree */
 
-/*
-.objectadmin .ui-sortable-placeholder {
-	border-top: 3px solid #999;
-	border-bottom: 3px solid #999;
-	visibility: visible !important;
-	width: 100%;
-	height: 35px !important;
-	padding: 0 !important;
-}
-.objectadmin .ui-sortable-placeholder td {
-	padding: 0 !important;
-}
-*/
-
-.objectadmin .ui-sortable-helper {
-	box-shadow: 0 0 16px rgba(0,0,0,0.2);
-}
-
-
 .fc-treestate-visible {
 	display: table-row;
 }
@@ -1047,6 +1028,23 @@ tr:hover .fc-tree-title .fa-folder-open {
 	font-size: 16px;
 	
 }
+
+
+/* tree sorting */
+
+#farcry-sorttree .ui-sortable-helper {
+	box-shadow: 0 0 16px rgba(0,0,0,0.2);
+}
+
+#farcry-sorttree .ui-sortable-helper .fc-tree-title {
+	display: block;
+	background: #fff6eb
+}
+#farcry-sorttree .ui-sortable a,
+#farcry-sorttree .ui-sortable td {
+	cursor: move;
+}
+
 
 
 /* pagination */

@@ -14,6 +14,7 @@
 <cfparam name="url.bLoadLeafNodes" default="true">
 <cfparam name="url.disableNode" default="">
 <cfparam name="url.expandTo" default="">
+<cfparam name="url.depth" default="2">
 
 <cfparam name="cookie.FARCRYTREEEXPANDEDNODES" default="">
 <cfparam name="url.expandedNodes" default="#cookie.FARCRYTREEEXPANDEDNODES#">
@@ -31,7 +32,7 @@
 <cfset rootObjectID = stObj.objectid>
 
 <!--- tree depth to load --->
-<cfset treeLoadingDepth = 2>
+<cfset treeLoadingDepth = url.depth>
 <cfset bRenderRoot = true>
 
 <!--- when a relative nlevel has been passed in, do not render the root and  --->

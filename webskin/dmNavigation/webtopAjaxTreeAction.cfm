@@ -9,6 +9,8 @@
 <cfparam name="url.sourceobjectid" default="">
 <cfparam name="url.targetobjectid" default="">
 <cfparam name="url.action" default="">
+<cfparam name="url.nodetype" default="">
+<cfparam name="url.nodes" default="">
 
 
 <cfset oTree = createObject("component","farcry.core.packages.farcry.tree")>
@@ -19,7 +21,7 @@
 
 
 <!--- validate action --->
-<cfif NOT listFindNoCase("copy,move,delete", url.action)>
+<cfif NOT listFindNoCase("copy,move,delete,sort", url.action)>
 	<cfset stResponse["success"] = false>
 	<cfset stResponse["message"] = "There was an error with the tree action">
 <cfelseif NOT isValid("uuid", url.sourceobjectid)>
@@ -28,6 +30,9 @@
 <cfelseif listFindNoCase("copy,move", url.action) AND NOT isValid("uuid", url.targetobjectid)>
 	<cfset stResponse["success"] = false>
 	<cfset stResponse["message"] = "There was an error with the tree action target object">
+<cfelseif listFindNoCase("sort", url.action) AND (NOT listFindNoCase("folder,leaf", url.nodetype) OR NOT listLen(url.nodes))>
+	<cfset stResponse["success"] = false>
+	<cfset stResponse["message"] = "There was an error with the tree sort nodes">
 </cfif>
 
 <!--- get the object --->
@@ -226,6 +231,76 @@
 		<cfelse>
 			<cfset stResponse["success"] = false>
 			<cfset stResponse["message"] = "Parent navigation folder not found">
+		</cfif>
+
+
+	<cfelseif url.action eq "sort">
+
+		<cfset bSaveSort = true>
+
+		<!--- check to see if the nodes are still in the original order (i.e. no sort to be done) --->
+		<cfif url.nodetype eq "folder">
+			<cfset qChildren = application.factory.oTree.getChildren(dsn=application.dsn, objectid=stSourceObject.objectid)>
+			<cfif url.nodes eq valueList(qChildren.objectid)>
+				<!--- nothing to do, fail silently --->
+				<cfset bSaveSort = false>
+			</cfif>
+		<cfelseif url.nodetype eq "leaf">
+			<cfif url.nodes eq arrayToList(stSourceObject.aObjectIDs)>
+				<!--- nothing to do, fail silently --->
+				<cfset bSaveSort = false>
+			</cfif>
+		</cfif>
+
+
+		<cfif bSaveSort eq true>
+
+			<!--- check permission --->
+			<cfset hasPermission = false>
+			<cfif application.security.checkPermission(permission="create",object=stSourceObject.objectid)>
+				<cfset hasPermission = true>
+			</cfif>
+
+			<cfif hasPermission>
+
+				<cfset aNodes = listToArray(url.nodes)>
+
+				<cfif url.nodetype eq "folder">
+
+					<!--- insert each node in the first position, starting from the end of the array --->
+					<cfloop from="#arrayLen(aNodes)#" to="1" step="-1" index="i">
+						<cfset stResult = application.factory.oTree.moveBranch(objectid=aNodes[i], parentid=stSourceObject.objectid, pos=1) />
+					</cfloop>
+
+				 	<cftry> 
+						<cflock name="#application.applicationname#_fcTreeOperations" type="EXCLUSIVE" timeout="1" throwontimeout="yes">
+						</cflock>
+
+						<cfcatch type="lock">
+							<cfset stResponse["success"] = false>
+							<cfset stResponse["message"] = application.rb.getResource('sitetree.messages.branchLockoutBlurb@text','Another editor is currently modifying the hierarchy. Please refresh the site overview tree and try again.')>
+						</cfcatch>
+						<cfcatch>
+							<cfset stResponse["success"] = false>
+							<cfset stResponse["error"] = cfcatch>
+							<cfset stResponse["message"] = cfcatch.message>
+						</cfcatch>
+					</cftry> 
+
+				<cfelseif url.nodetype eq "leaf">
+
+					<cfset stSourceObject.aObjectIDs = aNodes>
+
+					<cfset oNav = application.fapi.getContentType(typename="dmNavigation")>
+					<cfset oNav.setData(stProperties=stSourceObject,auditNote="Changed sort order")>
+
+				</cfif>
+
+			<cfelse>
+				<cfset stResponse["success"] = false>
+				<cfset stResponse["message"] = "You do not have permission to perform this action.">
+			</cfif>
+
 		</cfif>
 
 	</cfif>

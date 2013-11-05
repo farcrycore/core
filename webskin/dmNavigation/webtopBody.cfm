@@ -5,6 +5,7 @@
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
 
 <skin:loadJS id="fc-jquery" />
+<skin:loadJS id="fc-jquery-ui" />
 <skin:loadJS id="fc-underscore" />
 <skin:loadJS id="fc-backbone" />
 <skin:loadJS id="fc-handlebars" />
@@ -15,6 +16,7 @@
 <!--- load handlebars templates --->
 <skin:hbs template="preview-dialog">
 <skin:hbs template="tree-dialog">
+<skin:hbs template="tree-sort">
 
 
 <!--- 
@@ -35,25 +37,25 @@
 		V how should we deal with utility navigation? use a different page / menu item
 		- move "up" button (one level) if within the users home node
 
-	- options dropdown:
-		- hook up existing functionality first
-			- create
-			- status
+	V drag drop sorting
+
+	V options dropdown:
+		V hook up existing functionality first
+			V create
+			V status
 			X permissions
 			X properties
-			- delete
-		- move node to a new parent
-
-	- drag drop sorting
-
+			V delete
+		V move node to a new parent
 
 
 	finally
 	---------
 	
-	- backbone preview view (separate, reusable for objectadmin), pass preview view into tree view for use
+	V backbone preview view (separate, reusable for objectadmin), pass preview view into tree view for use
+	V config: set up a config for device type widths
+
 	- use resource bundles for all labels in this webtopBody AND webtopTreeChildRows
-	- config: set up a config for device type widths
 	- search... ajax auto complete / select2
 		- click on a result sets the zoomed node root 
 		- or just expand the tree to that point and scroll to / highlight it?
@@ -274,6 +276,141 @@
 
 
 
+			TreeSortView = Backbone.View.extend({
+
+				options: {
+					primaryTreeView: null,
+
+					title: "",
+					submitLabel: "Submit",
+					sourceParentID: null,
+					nodetype: null,
+					targetText: "",
+
+					nodes: []
+
+				},
+
+				initialize: function TreeSortView_initialize(options){
+					this.template = Handlebars.compile(Backbone.$("##tree-sort").html());
+
+				},
+
+				events: {
+					"click .modal-header .close, .btn-cancel": "close",
+					"click .btn-submit": "submit"
+
+				},
+
+
+				render: function TreeSortView_render(){
+
+					var self = this;
+					var i = 0;
+
+					this.$el.html(this.template(this.options));
+					Backbone.$("body").append(this.$el);   
+
+					var treeContent = $j("tbody", this.$el);
+
+
+					$j.ajax({
+						url: "#application.url.webtop#/index.cfm?typename=dmNavigation&objectid=" + this.options.sourceParentID + "&view=webtopTreeChildRows&bLoadRoot=true&depth=1&bRenderRoot=false&bIgnoreExpandedNodes=true&ajaxmode=1&responsetype=json",
+						datatype: "json",
+						success: function(response) {
+							response.success = response.success || false;
+							if (response.success) {
+
+								self.options.nodes = [];
+
+								// get rows with the same nodetype and parentid
+								for (i=0; i<response.rows.length; i++) {
+									if (response.rows[i].nodetype == self.options.nodetype && response.rows[i].parentid == self.options.sourceParentID) {
+
+										self.options.nodes.push(response.rows[i]);
+
+									}
+								}
+
+								// render the rows
+								var aRowMarkup = [];
+
+								for (i=0; i<self.options.nodes.length; i++) {
+									var row = self.options.nodes[i];
+									// change spacer indent level by node type
+									row["spacers"] -= self.options.nodetype == "leaf" ? 2 : 1;
+									var spacer = '<i class="fc-icon-spacer-' + row["spacers"] + '"></i>';
+
+									var html = 
+										'<tr class="' + row["class"] + '" data-objectid="' + row["objectid"] + '" data-typename="' + row["typename"] + '" data-nlevel="' + row["nlevel"] + '" data-spacers="' + row["spacers"] + '" data-expandable="' + row["expandable"] + '" data-nodetype="' + row["nodetype"] + '" data-parentid="' + row["parentid"] + '"> '
+										+	'<td class="fc-tree-title fc-nowrap">' + spacer + '<a class="fc-treestate-toggle" href="javascript:void(0);"><i class="fc-icon-treestate"></i></a>' + row["nodeicon"] + ' <span>' + row["label"] + '</span></td> '
+										+'</tr> '
+									;
+
+									aRowMarkup.push(html);
+								}
+
+								treeContent.html(aRowMarkup.join(""));
+
+								// make sortable
+								treeContent.sortable({
+									axis: "y",
+									cursor: "move",
+									tolerance: "pointer"
+								});
+
+							}
+							else {
+		// TODO: alert the user of an error with this request
+console.log("200 success=false");
+console.log(response);
+alert(response.message);
+							}
+						},
+						error: function(response) {
+		// TODO: alert the user of an error with this request
+console.log("Non-200 error");
+console.log(response);
+alert(response.message);
+						},
+						complete: function() {
+							
+						}
+					});
+
+				},
+
+
+				close: function close(evt){
+					this.remove();
+				},
+
+				submit: function submit(evt){
+
+					var self = this;
+
+					var sortedRows = $j("tbody", this.$el).find("tr");
+					var aNodes = [];
+
+					// add the sorted objectids to the array
+					sortedRows.each(function(){
+						var row = Backbone.$(this);
+						var objectid = row.data("objectid");
+						aNodes.push(objectid);
+
+					});
+
+					if (aNodes.length) {
+						this.options.primaryTreeView.doSort(this.options.sourceParentID, this.options.nodetype, aNodes);
+						this.close();
+					}
+
+				}
+
+			});
+
+
+
 			SiteTreeView = Backbone.View.extend({
 
 				options: {
@@ -291,7 +428,7 @@
 
 				initialize: function SiteTreeView_initialize(options){
 
-					_.bindAll(this, 'doMoveTo', 'doCopyTo');
+					_.bindAll(this, 'doMoveTo', 'doCopyTo', 'doSort');
 
 					if (options.type == "mini") {
 						this.options.bRenderTreeOnly = true;
@@ -311,6 +448,7 @@
 					"click .fc-btn-edit" : "clickEdit",
 					"click .fc-zoom" : "clickZoom",
 					"click .fc-changestatus" : "clickStatus",
+					"click .fc-sort" : "clickSort",
 					"click .fc-copyto" : "clickCopyTo",
 					"click .fc-moveto" : "clickMoveTo",
 					"click .fc-delete" : "clickDelete"
@@ -482,6 +620,91 @@
 
 					return true;
 				},
+
+
+
+				clickSort: function SiteTreeView_clickSort(evt){
+
+					var self = this;
+					var row = $j(evt.currentTarget).closest("tr");
+					var objectid = row.data("objectid");
+					var nodetype = row.data("nodetype");
+					var parentid = row.data("parentid");
+
+
+					// get sibling rows of the same type
+					var siblings = this.$el.find("tr[data-parentid="+ parentid +"][data-nodetype=" + nodetype + "]");
+
+					// show the sort ui
+					if (siblings.length > 1) {
+
+						this.treeSortView = new TreeSortView({
+							primaryTreeView: self,
+							sourceParentID: parentid,
+							nodetype: nodetype,
+							title: "Sort Order...",
+							submitLabel: "Save",
+							targetText: "Drag and drop the items to sort them..."
+
+						});
+						this.treeSortView.render();
+
+					}
+
+
+					return true;
+				},
+
+				doSort: function SiteTreeView_doSort(sourceparentid, nodetype, aNodes){
+
+					var self = this;
+
+					var sourceRow = this.getRowById(sourceparentid);
+					this.showLoadingIndicator(sourceRow);
+
+					$j.ajax({
+						url: "#application.url.webtop#/index.cfm",
+						data: {
+							"typename": "dmNavigation",
+							"view": "webtopAjaxTreeAction",
+							"action": "sort",
+							"ajaxmode": 1,
+							"responsetype": "json",
+
+							"sourceobjectid": sourceparentid,
+							"nodetype": nodetype,
+							"nodes": aNodes.join(",")
+						},
+						datatype: "json",
+						success: function(response) {
+							response.success = response.success || false;
+							if (response.success) {
+
+								// reload tree parent branch
+								self.reloadTreeBranch(sourceparentid);
+
+							}
+							else {
+	// TODO: alert the user of an error with this request
+console.log("200 success=false");
+console.log(response);
+alert(response.message);
+							}
+						},
+						error: function(response) {
+	// TODO: alert the user of an error with this request
+console.log("Non-200 error");
+console.log(response);
+alert(response.message);
+						},
+						complete: function() {
+						}
+					});
+
+
+					return true;
+				},
+
 
 
 				clickCopyTo: function SiteTreeView_clickCopyTo(evt){
@@ -866,8 +1089,11 @@ alert(response.message);
 
 
 				showLoadingIndicator: function SiteTreeView_showLoadingIndicator(row) {
+					var titleCell = row.find(".fc-tree-title").first();
 					row.removeClass("fc-treestate-notloaded").addClass("fc-treestate-loading");
-					row.find(".fc-tree-title").first().append("<i class='fa fa-spinner fa-spin' style='margin-left:0.5em'></i>");
+					if (!titleCell.find("i.fa-spinner").length) {
+						titleCell.append("<i class='fa fa-spinner fa-spin' style='margin-left:0.5em'></i>");
+					}
 				},
 
 				removeLoadingIndicator: function SiteTreeView_removeLoadingIndicator(row) {
