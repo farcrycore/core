@@ -394,7 +394,7 @@
 				FROM #arguments.typename# tbl
 				<cfif bHasVersionID>
 					WHERE objectid in (
-						SELECT tbl.objectid
+						SELECT COALESCE(NULLIF(tbl.versionid,''),tbl.objectid)
 						FROM #arguments.typename# tbl 			
 						WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 						<cfif l_sqlCatIds neq "">
@@ -404,21 +404,6 @@
 							    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
 							    )				
 						</cfif>
-						AND (tbl.versionid = '' OR tbl.versionid IS NULL)
-						
-						UNION
-						
-						SELECT tbl.versionid as objectid
-						FROM #arguments.typename# tbl
-						WHERE #preserveSingleQuotes(arguments.SqlWhere)#
-						<cfif l_sqlCatIds neq "">
-							AND objectid in (
-							    select distinct objectid 
-							    from refCategories 
-							    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
-							    )				
-						</cfif>
-						and versionid<>''
 					)
 				<cfelse>			
 					WHERE #preserveSingleQuotes(arguments.SqlWhere)#
@@ -476,8 +461,8 @@
 				<cfquery name="qrecordcount" datasource="#application.dsn#" cachedwithin="#arguments.cacheTimeSpan#">
 					SELECT count(distinct objectid) as CountAll
 					from (
-						<!--- Return the objectid's of matching approved/draft-only content --->
-						SELECT tbl.objectid
+						<!--- Return the objectid's of matching editable-draft content or approved/draft-only content --->
+						SELECT COALESCE(NULLIF(tbl.versionid,''),tbl.objectid)
 						FROM #arguments.typename# tbl 			
 						WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 						<cfif l_sqlCatIds neq "">
@@ -487,22 +472,6 @@
 							    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
 							    )				
 						</cfif>
-						AND (tbl.versionid = '' OR tbl.versionid IS NULL)
-						
-						UNION
-						
-						<!--- Return the approved objectid of matching editable-draft content --->
-						SELECT tbl.versionid as objectid
-						FROM #arguments.typename# tbl
-						WHERE #preserveSingleQuotes(arguments.SqlWhere)#
-						<cfif l_sqlCatIds neq "">
-							AND objectid in (
-							    select distinct objectid 
-							    from refCategories 
-							    where categoryID in (<cfqueryparam cfsqltype="cf_sql_varchar" list="true" value="#l_sqlCatIds#" />)
-							    )				
-						</cfif>
-						and versionid<>''
 					) joined
 				</cfquery>
 			<cfelse>
