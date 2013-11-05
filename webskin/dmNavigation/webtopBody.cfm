@@ -1314,7 +1314,7 @@ alert(response.message);
 							+	'<li><a class="fc-copyto"><i class="fa fa-copy fa-fw"></i> Copy to...</a></li> '
 							+	'<li><a class="fc-moveto"><i class="fa fa-move fa-fw"></i> Move to...</a></li> '
 							+	'<li class="divider"></li> '
-							+	'<li><a class="fc-delete"><i class="fa fa-trash fa-fw"></i> Delete</a></li> '
+							+	'<li><a class="fc-delete"><i class="fa fa-trash-o fa-fw"></i> Delete</a></li> '
 						;
 					}
 
