@@ -162,7 +162,7 @@
 	</cfif>
 
 	<cfif NOT len(icon)>
-		<cfset icon = "fa-question-circle-o">
+		<cfset icon = "fa-question-circle">
 	</cfif>
 
 	<cfreturn icon />

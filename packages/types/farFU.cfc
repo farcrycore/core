@@ -4,7 +4,7 @@
 	bObjectBroker="true" objectBrokerMaxObjects="10000" 
 	fuAlias="fu"
 	bSystem="true"
-	icon="fa-link-square">
+	icon="fa-link">
 	
 	<cfproperty 
 		name="refobjectid" type="string" default="" hint="stores the objectid of the related object" 
