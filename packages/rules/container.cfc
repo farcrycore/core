@@ -558,7 +558,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au) $
 							
 			  	<cfcatch type="any">
 					
-					<cfset oError.logData(oError.normalizeError(cfcatch)) />
+					<!--- <cfset oError.logData(oError.normalizeError(cfcatch)) /> --->
 					
 					<!--- show error if debugging --->
 					<cfif isdefined("url.debug") and url.debug EQ 1>
