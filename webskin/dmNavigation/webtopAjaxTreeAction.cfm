@@ -237,15 +237,18 @@
 	<cfelseif url.action eq "sort">
 
 		<cfset bSaveSort = true>
+		<cfset aExistingNodes = arrayNew(1)>
 
 		<!--- check to see if the nodes are still in the original order (i.e. no sort to be done) --->
 		<cfif url.nodetype eq "folder">
 			<cfset qChildren = application.factory.oTree.getChildren(dsn=application.dsn, objectid=stSourceObject.objectid)>
+			<cfset aExistingNodes = listToArray(valueList(qChildren.objectid))>
 			<cfif url.nodes eq valueList(qChildren.objectid)>
 				<!--- nothing to do, fail silently --->
 				<cfset bSaveSort = false>
 			</cfif>
 		<cfelseif url.nodetype eq "leaf">
+			<cfset aExistingNodes = stSourceObject.aObjectIDs>
 			<cfif url.nodes eq arrayToList(stSourceObject.aObjectIDs)>
 				<!--- nothing to do, fail silently --->
 				<cfset bSaveSort = false>
@@ -267,13 +270,22 @@
 
 				<cfif url.nodetype eq "folder">
 
-					<!--- insert each node in the first position, starting from the end of the array --->
-					<cfloop from="#arrayLen(aNodes)#" to="1" step="-1" index="i">
-						<cfset stResult = application.factory.oTree.moveBranch(objectid=aNodes[i], parentid=stSourceObject.objectid, pos=1) />
-					</cfloop>
-
 				 	<cftry> 
 						<cflock name="#application.applicationname#_fcTreeOperations" type="EXCLUSIVE" timeout="1" throwontimeout="yes">
+
+							<cfset bMove = false>
+
+							<cfloop from="1" to="#arrayLen(aNodes)#" index="i">
+								<!--- only move nodes to the right of the first difference --->
+								<cfif aNodes[i] neq aExistingNodes[i]>
+									<cfset bMove = true>
+								</cfif>
+								<cfif bMove eq true>
+									<!--- move the branch --->
+									<cfset stResult = application.factory.oTree.moveBranch(objectid=aNodes[i], parentid=stSourceObject.objectid, pos=i) />
+								</cfif>
+							</cfloop>
+
 						</cflock>
 
 						<cfcatch type="lock">
