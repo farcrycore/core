@@ -1,3 +1,7 @@
+<cfsetting enablecfoutputonly="true" /> 
+<!--- @@displayname: Export Skeleton --->
+<!--- @@author: Matt Bryant --->
+
 <!--- tag libraries --->
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft">
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin">
@@ -170,22 +174,4 @@
 	</ft:buttonPanel>
 </ft:form>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<cfsetting enablecfoutputonly="false" /> 

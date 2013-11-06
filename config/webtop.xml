@@ -47,7 +47,7 @@
 			
 			<menu id="systemstatus" sequence="220" label="System Status">
 				<menuitem id="systeminfo" sequence="40" label="System Information" type="farCOAPI" bodyView="webtopBodySystemInfo" />
-				<menuitem id="objbrokersummary" sequence="10" label="Caching Status" link="/admin/objectBrokerReport.cfm" />
+				<menuitem id="objbrokersummary" sequence="50" label="Caching Status" link="/admin/objectBrokerReport.cfm" />
 			</menu>
 		</subsection>
 		
@@ -101,7 +101,10 @@
 				<menuitem id="queuetasks" sequence="20" label="Queued Tasks" typename="farQueueTask" bodyView="webtopBody" />
 				<menuitem id="queueresults" sequence="30" label="Queue Results" typename="farQueueResult" bodyView="webtopBody" />
 			</menu>
+			<menu id="skeleton" sequence="100" label="Skeleton">
+				<menuitem id="skeletonexport" sequence="10" label="Skeleton Export" typename="farCOAPI" bodyView="webtopBodyExportSkeleton" />
 
+			</menu>
 		</subsection>
 
 	</section>
