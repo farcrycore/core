@@ -185,10 +185,10 @@
 				<cfloop collection="#arguments.stConflicts.tables[thistable].fields#" item="thisfield">
 					<cfswitch expression="#arguments.stConflicts.tables[thistable].fields[thisfield].resolution#">
 						<cfcase value="+">
-							<cfset arrayappend(changes,"<div class='undeployed field'><i class='fa fa-plus fa-fw'></i> #thisfield#</div>") />
+							<cfset arrayappend(changes,"<div class='undeployed field'><i class='fa fa-plus-circle fa-fw'></i> #thisfield#</div>") />
 						</cfcase>
 						<cfcase value="x">
-							<cfset arrayappend(changes,"<div class='altered field'><i class='fa fa-question-square-o fa-fw'></i> #thisfield#</div>") />
+							<cfset arrayappend(changes,"<div class='altered field'><i class='fa fa-question-circle fa-fw'></i> #thisfield#</div>") />
 						</cfcase>
 						<cfcase value="-">
 							<cfset arrayappend(changes,"<div class='deleted field'><i class='fa fa-times-circle fa-fw'></i> #thisfield#</div>") />
@@ -198,10 +198,10 @@
 				<cfloop collection="#arguments.stConflicts.tables[thistable].indexes#" item="thisindex">
 					<cfswitch expression="#arguments.stConflicts.tables[thistable].indexes[thisindex].resolution#">
 						<cfcase value="+">
-							<cfset arrayappend(changes,"<div class='undeployed field'><i class='fa fa-plus fa-fw'></i> #thisindex#</div>") />
+							<cfset arrayappend(changes,"<div class='undeployed field'><i class='fa fa-plus-circle fa-fw'></i> #thisindex#</div>") />
 						</cfcase>
 						<cfcase value="x">
-							<cfset arrayappend(changes,"<div class='altered field'><i class='fa fa-question-square-o fa-fw'></i> #thisindex#</div>") />
+							<cfset arrayappend(changes,"<div class='altered field'><i class='fa fa-question-circle fa-fw'></i> #thisindex#</div>") />
 						</cfcase>
 						<cfcase value="-">
 							<cfset arrayappend(changes,"<div class='deleted field'><i class='fa fa-times-circle fa-fw'></i> #thisindex#</div>") />
@@ -209,13 +209,13 @@
 					</cfswitch>
 				</cfloop>
 					
-				<cfset summary = listappend(summary,"<p class='altered coapitable'><i class='fa fa-question-square-o fa-fw'></i> #thistable#</p> <div>#arrayToList(changes,"")#</div>"," ") />
+				<cfset summary = listappend(summary,"<div class='altered coapitable'><i class='fa fa-question-circle fa-fw'></i> #thistable#</div> <div>#arrayToList(changes,"")#</div>"," ") />
 			</cfcase>
 			<cfcase value="+">
-				<cfset summary = listappend(summary,"<p class='undeployed coapitable'><i class='fa fa-plus fa-fw'></i> #thistable#</p>"," ") />
+				<cfset summary = listappend(summary,"<div class='undeployed coapitable'><i class='fa fa-plus-circle fa-fw'></i> #thistable#</div>"," ") />
 			</cfcase>
 			<cfcase value="-">
-				<cfset summary = listappend(summary,"<p class='deleted coapitable'><i class='fa fa-times-circle fa-fw'></i> #thistable#</p>"," ") />
+				<cfset summary = listappend(summary,"<div class='deleted coapitable'><i class='fa fa-times-circle fa-fw'></i> #thistable#</div>"," ") />
 			</cfcase>
 		</cfswitch>
 	</cfloop>
@@ -349,7 +349,7 @@
 		},1500);
 	};
 	$j(document).on("click","input[name=logallchanges]",function(){
-		$j("th.logchanges input, td.logchanges input").not(this).attr("checked",$j(this).attr("checked")=="checked"?true:false);
+		$j("th.logchanges input, td.logchanges input").not(this).prop("checked",$j(this).prop("checked"));
 		updateLogChanges();
 	});
 	$j(document).on("click","input[name=logchanges]",updateLogChanges);
@@ -368,13 +368,17 @@
 	<ft:form>
 		<cfoutput>
 			<h2>Conflicts</h2>
+			<div class="alert alert-info">
+				<i class="fa fa-info-circle"></i> Use "Apply Default Resolutions" to deploy or repair the schema. Individually "Resolve conflicts" to make destructive changes such dropping a column.
+			</div>
+
 			<table style="width:100%;table-layout:fixed;" class="farcry-objectadmin table table-striped table-hover">
 				<thead>
 					<tr>
 						<th class="class">Class</th>
 						<th class="name">Name</th>
 						<th class="conflicts">Conflict</th>
-						<th class="actions"><label><input type="checkbox" name="selectall" value="" onclick="$j('input[name=deploydefaults]').attr('checked',(this.checked?'checked':''));" /> Apply Defaults</label></th>
+						<th class="actions"><input id="applydefaults" type="checkbox" name="selectall" value="" onclick="$j('input[name=deploydefaults]').prop('checked',$j(this).prop('checked'));" /> <label style="display:inline" for="applydefaults">Apply Defaults</label></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -401,11 +405,9 @@
 		<ft:buttonPanel>
 			<cfoutput>
 				<div class="pull-right">
-					<label>Show debug output <input type="checkbox" name="debug" value="1"<cfif (structkeyexists(form,"debug") and form.debug) or (structkeyexists(url,"debug") and url.debug)> checked</cfif>></label>&nbsp;
-					<label>Show SQL <input type="checkbox" name="sql" value="1"<cfif (structkeyexists(form,"sql") and form.sql) or (structkeyexists(url,"sql") and url.sql)> checked</cfif>></label>&nbsp;
-			</cfoutput>
-			<ft:button value="Apply Default Resolutions" />
-			<cfoutput>
+					<input id="showdebug" type="checkbox" name="debug" style="margin:0" value="1"<cfif (structkeyexists(form,"debug") and form.debug) or (structkeyexists(url,"debug") and url.debug)> checked</cfif>> <label for="showdebug">Show debug output</label>&nbsp;
+					<input id="showsql" type="checkbox" name="sql" style="margin:0" value="1"<cfif (structkeyexists(form,"sql") and form.sql) or (structkeyexists(url,"sql") and url.sql)> checked</cfif>> <label for="showsql">Show SQL</label>&nbsp;
+					<ft:button value="Apply Default Resolutions" />
 				</div>
 			</cfoutput>
 		</ft:buttonPanel>

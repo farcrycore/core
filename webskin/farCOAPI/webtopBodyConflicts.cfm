@@ -213,12 +213,10 @@
 	<ft:buttonPanel>
 		<cfoutput>
 			<div class="pull-right">
-				<label>Show debug output <input type="checkbox" name="debug" value="1"<cfif (structkeyexists(form,"debug") and form.debug) or (structkeyexists(url,"debug") and url.debug)> checked</cfif>></label>&nbsp;
-				<label>Show SQL <input type="checkbox" name="sql" value="1"<cfif (structkeyexists(form,"sql") and form.sql) or (structkeyexists(url,"sql") and url.sql)> checked</cfif>></label>&nbsp;
-		</cfoutput>
-		<ft:button value="Deploy Changes" />
-		<ft:button value="Cancel" />
-		<cfoutput>
+				<input id="showdebug" type="checkbox" name="debug" style="margin:0" value="1"<cfif (structkeyexists(form,"debug") and form.debug) or (structkeyexists(url,"debug") and url.debug)> checked</cfif>> <label for="showdebug">Show debug output</label>&nbsp;
+				<input id="showsql" type="checkbox" name="sql" style="margin:0" value="1"<cfif (structkeyexists(form,"sql") and form.sql) or (structkeyexists(url,"sql") and url.sql)> checked</cfif>> <label for="showsql">Show SQL</label>&nbsp;
+				<ft:button value="Deploy Changes" />
+				<ft:button value="Cancel" />
 			</div>
 		</cfoutput>
 	</ft:buttonPanel>
