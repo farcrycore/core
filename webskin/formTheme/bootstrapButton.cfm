@@ -62,7 +62,7 @@
 		 
 		<cfif listLen(attributes.icon)>
 			<cfif len(trim(listFirst(attributes.icon)))>
-				<i class="#trim(listFirst(attributes.icon))#"></i>
+				<i class="fa #trim(listFirst(attributes.icon))#"></i>
 			</cfif>
 		</cfif>
 		 
@@ -71,7 +71,7 @@
 		
 		<cfif listLen(attributes.icon)>
 			<cfif listLen(attributes.icon) GT 1 AND len(trim(listLast(attributes.icon)))>
-				<i class="#trim(listLast(attributes.icon))#"></i>
+				<i class="fa #trim(listLast(attributes.icon))#"></i>
 			</cfif>
 		</cfif>
 	</button>
