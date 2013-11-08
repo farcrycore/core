@@ -85,7 +85,7 @@
 			<cfset regex = regex & "(?=.{#application.config.security.passwordMinLength#})">
 		</cfif>
 		<cfif application.config.security.bIncludeLetters>
-			<cfset regex = regex & "(?=.*[a-bA-Z])">
+			<cfset regex = regex & "(?=.*[[:alpha:]])">
 		</cfif>
 		<cfif application.config.security.bIncludeMixedCase>
 			<cfset regex = regex & "(?=.*[a-z])(?=.*[A-Z])">
