@@ -898,6 +898,30 @@ body .uniForm .focused {
 }
 
 
+/* preview dialog */
+
+#preview-container {
+	position: fixed;
+	overflow: visible;
+	width: 0;
+	top: 74px;
+	right: 0;
+	bottom: 0;
+	z-index: 120;
+}
+.webtop-modal #preview-container {
+	top: 0;
+}
+
+#preview {
+	position: absolute;
+	height: 100%;
+	background: #fff;
+}
+#preview.visible {
+	box-shadow: 0 0 16px rgba(0,0,0,0.32);
+}
+
 
 /* objectadmin tree */
 
