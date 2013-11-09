@@ -20,7 +20,6 @@
 <skin:loadJS id="farcry-form" />
 
 <skin:loadCSS id="jquery-ui" />
-<skin:loadCSS id="fc-fontawesome" />
 
 
 <skin:htmlHead id="containers"><cfoutput>
@@ -175,7 +174,7 @@ $j('a.con-admin').on(
 				con:url="#containerURL#"
 				rule:title="Add new rule to container: #stParam.desc#">
 				
-				<i class="fa fa-plus" style="float:left;"></i>
+				<span class="ui-icon ui-icon-plusthick" style="float:left;">&nbsp;</span>
 			</a>	
 			<skin:toolTip selector=".con-add-rule">Add a new rule into this container.</skin:toolTip>
 			
@@ -187,14 +186,14 @@ $j('a.con-admin').on(
 				con:url="#containerURL#"
 				rule:title="Manage Reflection: #stParam.desc#">
 				
-				<i class="fa fa-copy" style="float:left;"></i>
+				<span class="ui-icon ui-icon-copy" style="float:left;">&nbsp;</span>
 			</a>
 			<skin:toolTip selector=".con-manage-reflection">Set this container to use a reflection.<br>Reflections are containers that are centrally managed from the webtop.</skin:toolTip>
 			
 			<!--- REFRESH CONTAINER --->
 	
 			<a class="con-refresh con-refresh-container" href="#containerURL#" con:id="#containerID#" title="Refresh container">
-				<i class="fa fa-refresh" style="float:left;"></i>
+				<span class="ui-icon ui-icon-refresh" style="float:left;">&nbsp;</span>
 			</a>
 			<skin:toolTip selector=".con-refresh-container">Refresh the contents of this container.</skin:toolTip>
 		</div>
