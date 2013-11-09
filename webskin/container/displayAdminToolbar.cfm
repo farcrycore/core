@@ -20,6 +20,7 @@
 <skin:loadJS id="farcry-form" />
 
 <skin:loadCSS id="jquery-ui" />
+<skin:loadCSS id="fc-bootstrap-tray" />
 
 
 <skin:htmlHead id="containers"><cfoutput>
@@ -85,30 +86,6 @@
 
 <skin:onReady id="container-js">
 <cfoutput>
-$fc.containerAdmin = function(title,url,containerID,containerURL){
-	var fcDialog = $j("<div id='" + containerID + "-dialog'><iframe style='width:99%;height:99%;border-width:0px;'></iframe></div>")
-	w = $j(window).width() < 800 ? $j(window).width()-50 : 800;
-	h = $j(window).height() < 600 ? $j(window).height()-50 : 600;
-	
-	$j("body").prepend(fcDialog);
-	$j(fcDialog).dialog({
-		bgiframe: true,
-		modal: true,
-		closeOnEscape: false,
-		title:title,
-		width: w,
-		height: h,
-		close: function(event, ui) {
-			$fc.reloadContainer(containerID,containerURL);
-			$j('##' + containerID + '-dialog').html(''); <!--- remove iframe to avoid loading again when destroying dialog --->
-			$j(fcDialog).dialog( 'destroy' ).remove();
-		}
-		
-	});
-	$j(fcDialog).dialog('open');
-	$j('iframe',$j(fcDialog)).attr('src',url);
-};		
-
 $fc.reloadContainer = function(containerID,containerURL){
 
 	$j('##' + containerID).html("<div id='ajaxindicator'><img src='#application.url.farcry#/images/loading.gif' /></div>");
@@ -136,12 +113,12 @@ $j('a.con-refresh').on(
 $j('a.con-admin').on(
 	"click",
 	function( event ){
-		$fc.containerAdmin(
-			$j(this).attr('rule:title'), 
-			$j(this).attr('href'),
-			$j(this).attr('con:id'),
-			$j(this).attr('con:url')								
-		);
+		$fc.objectAdminTrayAction($j(this).attr('rule:title'), $j(this).attr('href'), null, null, {
+			onHidden: function() {
+				$fc.reloadContainer($j(this).attr('con:id'),$j(this).attr('con:url'));
+			}
+		});
+
 		return false;
 	}
 );			

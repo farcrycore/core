@@ -51,23 +51,18 @@
 <ft:form>
 
 	<cfoutput>
-		<fieldset class="fieldset">
-			
+		<fieldset>
 			<cfloop query="qRules">
 				<cfif not qRules.rulename eq "container">
-					<div class="ctrlHolder blockLabels">
-						<label class="label" for="newrule">
-							<ft:button value="Add Rule" text="#qRules.displayName#"  rendertype="link"  selectedObjectID="#qRules.rulename#" />						
-						</label>
-						
-						<div class="multiField">
-							<cfif structKeyExists(application.rules['#qRules.rulename#'],'hint')>
-								
-								
-							</cfif>			
-							
+					<div class="form-horizontal" style="border-bottom: 1px solid ##eee;">
+						<div class="control-group" style="margin: 10px 0 5px 0">
+							<label class="control-label">
+								<ft:button value="Add Rule" text="#qRules.displayName#" rendertype="link" selectedObjectID="#qRules.rulename#" />
+							</label>
+							<div class="controls">
+								<p class="muted" style="padding-top: 5px">#application.rules[qRules.rulename].hint#</p>
+							</div>
 						</div>
-						<p class="formHint">#application.rules[qRules.rulename].hint#</p>
 					</div>
 				</cfif>
 			</cfloop>

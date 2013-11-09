@@ -34,19 +34,23 @@
 	
 	<cfoutput>
 		
-		<fieldset class="fieldset">
-			
-			<div class="ctrlHolder inlineLabels">
-				<label class="label" for="reflectionid"> Select Reflection : </label>
-				
-				<select name="reflectionid" id="reflectionid" class="selectInput">
-					<option value=""<cfif stObj.mirrorid EQ ""> selected="selected"</cfif>>Not reflected</option>
-					<cfloop query="qListReflections">
-						<option value="#qListReflections.objectid#"<cfif stObj.mirrorid EQ qListReflections.objectid> selected="selected"</cfif>>#qListReflections.label#</option>
-					</cfloop>
-				</select>
-				
-				<p class="formHint">Select the container you wish to reflect. This means that you will be using the container selected here instead of the container that would ordinarily be shown. </p>
+		<fieldset>
+
+			<div class="form-horizontal">
+				<div class="control-group" style="margin: 10px 0 5px 0">
+					<label class="control-label" for="reflectionid">
+						Select Reflection
+					</label>
+					<div class="controls">
+						<select name="reflectionid" id="reflectionid" class="selectInput">
+							<option value=""<cfif stObj.mirrorid EQ ""> selected="selected"</cfif>>Not reflected</option>
+							<cfloop query="qListReflections">
+								<option value="#qListReflections.objectid#"<cfif stObj.mirrorid EQ qListReflections.objectid> selected="selected"</cfif>>#qListReflections.label#</option>
+							</cfloop>
+						</select>						
+						<p class="help-inline">Select the container you wish to reflect. This means that you will be using the container selected here instead of the container that would ordinarily be shown. </p>
+					</div>
+				</div>
 			</div>
 		</fieldset>
 	</cfoutput>
