@@ -462,7 +462,7 @@
 					SELECT count(distinct objectid) as CountAll
 					from (
 						<!--- Return the objectid's of matching editable-draft content or approved/draft-only content --->
-						SELECT COALESCE(NULLIF(tbl.versionid,''),tbl.objectid)
+						SELECT COALESCE(NULLIF(tbl.versionid,''),tbl.objectid) as objectid
 						FROM #arguments.typename# tbl 			
 						WHERE #preserveSingleQuotes(arguments.SqlWhere)#
 						<cfif l_sqlCatIds neq "">
