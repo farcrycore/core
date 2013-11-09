@@ -14,14 +14,13 @@
 
 <cfset ruleDisplayName = application.fapi.getContentTypeMetadata(stobj.typename, "displayName", stobj.typename) />
 
-<skin:loadCSS id="fc-fontawesome" />
 
 <cfoutput>
 	<div class="ruleadmin">
 		
 		<!--- Rule Label --->
 		<div style="float:left;padding:2px;">
-			<strong>RULE:</strong> #application.stCOAPI[stObj.typename].displayname#
+			<span style="font-size:10px;">RULE:</span> #application.stCOAPI[stObj.typename].displayname#
 		</div>	
 	
 		<div style="float:right;">
@@ -32,10 +31,8 @@
 				rule:title="#ruleDisplayName#"
 				con:id="#containerID#"
 				con:url="#containerURL#">
-				<span class="fa-stack">
-					<i class="fa fa-square-o fa-stack-2x"></i>
-					<i class="fa fa-pencil fa-stack-1x"></i>
-				</span>
+				
+				<span class="ui-icon ui-icon-pencil" style="float:left;">&nbsp;</span>
 			</a>
 			<skin:toolTip selector=".con-edit-rule">Edit the settings applicable to this rule.</skin:toolTip>
 			
@@ -48,10 +45,7 @@
 					class="con-refresh con-move-up-rule" 
 					href="#actionURL#" 
 					con:id="#containerID#">
-					<span class="fa-stack">
-						<i class="fa fa-square-o fa-stack-2x"></i>
-						<i class="fa fa-caret-up fa-stack-1x"></i>
-					</span>
+					<span class="ui-icon ui-icon-circle-triangle-n" style="float:left;">&nbsp;</span>
 				</a>
 				<skin:toolTip selector=".con-move-up-rule">Move this rule UP in the container.</skin:toolTip>
 			</cfif>
@@ -64,10 +58,7 @@
 					class="con-refresh con-move-down-rule" 
 					href="#actionURL#" 
 					con:id="#containerID#">
-					<span class="fa-stack">
-						<i class="fa fa-square-o fa-stack-2x"></i>
-						<i class="fa fa-caret-down fa-stack-1x"></i>
-					</span>
+					<span class="ui-icon ui-icon-circle-triangle-s" style="float:left;">&nbsp;</span>
 				</a>
 				<skin:toolTip selector=".con-move-down-rule">Move this rule DOWN in the container.</skin:toolTip>
 			
@@ -80,10 +71,7 @@
 				class="con-refresh con-delete-rule" 
 				href="#actionURL#" 
 				con:id="#containerID#">
-				<span class="fa-stack">
-					<i class="fa fa-square-o fa-stack-2x"></i>
-					<i class="fa fa-times fa-stack-1x"></i>
-				</span>
+				<span class="ui-icon ui-icon-circle-close" style="float:left;">&nbsp;</span>
 			</a>
 			<skin:toolTip selector=".con-delete-rule">Delete this rule from the container.</skin:toolTip>
 		</div>
