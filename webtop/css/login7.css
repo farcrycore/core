@@ -213,14 +213,19 @@ input, button, select, textarea {
 li a.active { background-color:#3E84B5; color:#FFF; }
 
 
-@media (min-height:670px){
-  body {
-  }
+/* height media queries*/
+@media (min-height:641px){
   .content-main {
-    padding-top: 120px;
+    padding-top: 90px;
+  }
+}
+@media (min-height:769px){
+  .content-main {
+    padding-top: 150px;
   }
 }
 
+/* width media queries */
 @media (max-width:767px){
   .content-main .content-block {
     max-width: 100%;
@@ -228,9 +233,7 @@ li a.active { background-color:#3E84B5; color:#FFF; }
   .content-main .footer {
     max-width: 100%;
   }
-
 }
-
 @media (max-width:979px){
 
 }
