@@ -36,7 +36,7 @@
 <cfoutput><!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" dir="#session.writingDir#" lang="#session.userLanguage#">
 <head>
-<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <title>[#application.applicationname#] #application.config.general.sitetitle# - FarCry Webtop</title>
 </cfoutput>
