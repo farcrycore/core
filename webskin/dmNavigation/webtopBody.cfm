@@ -977,7 +977,10 @@ alert(response.message);
 					lObjectid = lObjectid || this.getExpandedNodes();
 					// set session only cookie
 					if (this.options.bSaveExpandedNodes) {
-						document.cookie = "FARCRYTREEEXPANDEDNODES=" + lObjectid + "; expires=0; path=/;";
+						// set expanded nodes cookie to expire 8 hours from now
+						var date = new Date();
+						date.setTime(date.getTime()+(8*60*60*1000));
+						document.cookie = "FARCRYTREEEXPANDEDNODES=" + lObjectid + "; expires=" + date.toGMTString() + "; path=/;";
 					}
 				},
 
