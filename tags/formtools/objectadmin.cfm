@@ -1291,7 +1291,7 @@
 			<cfif len(attributes.lCustomActions)>
 				<cfoutput><div class="btn-group"></cfoutput>
 				
-					<ft:button value="toggle" text="" icon=" ,caret" dropdownToggle="true" type="button" />
+					<ft:button value="toggle" text="" icon=" ,fa-caret-down" dropdownToggle="true" type="button" />
 					
 					<cfoutput>
 						<div class="dropdown-menu">
