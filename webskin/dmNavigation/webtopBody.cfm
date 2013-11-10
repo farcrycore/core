@@ -311,11 +311,22 @@
 					this.$el.html(this.template(this.options));
 					Backbone.$("body").append(this.$el);   
 
-					var treeContent = $j("tbody", this.$el);
+					var treeContent = Backbone.$("tbody", this.$el);
 
 
-					$j.ajax({
-						url: "#application.url.webtop#/index.cfm?typename=dmNavigation&objectid=" + this.options.sourceParentID + "&view=webtopTreeChildRows&bLoadRoot=true&depth=1&bRenderRoot=false&bIgnoreExpandedNodes=true&ajaxmode=1&responsetype=json",
+					Backbone.$.ajax({
+						url: "#application.url.webtop#/index.cfm",
+						data: {
+							"typename": "dmNavigation",
+							"objectid": this.options.sourceParentID,
+							"view": "webtopTreeChildRows",
+							"ajaxmode": 1,
+							"responsetype": "json",
+							"bLoadRoot": true,
+							"depth": 1,
+							"bRenderRoot": false,
+							"bIgnoreExpandedNodes": true
+						},
 						datatype: "json",
 						success: function(response) {
 							response.success = response.success || false;
@@ -389,7 +400,7 @@ alert(response.message);
 
 					var self = this;
 
-					var sortedRows = $j("tbody", this.$el).find("tr");
+					var sortedRows = Backbone.$("tbody", this.$el).find("tr");
 					var aNodes = [];
 
 					// add the sorted objectids to the array
@@ -457,7 +468,7 @@ alert(response.message);
 
 				render: function SiteTreeView_render(){
 
-					var treeContent = $j("tbody", this.$el);
+					var treeContent = Backbone.$("tbody", this.$el);
 
 					if (this.options.data) {
 						// construct markup from inline data
@@ -478,8 +489,8 @@ alert(response.message);
 
 
 				clickToggle: function clickToggle(evt){
-					var table = $j(evt.currentTarget).closest(".objectadmin");
-					var row = $j(evt.currentTarget).closest("tr");
+					var table = Backbone.$(evt.currentTarget).closest(".objectadmin");
+					var row = Backbone.$(evt.currentTarget).closest("tr");
 
 					if (row.hasClass("fc-treestate-notloaded")) {
 						this.loadTreeChildRows(row);
@@ -498,17 +509,17 @@ alert(response.message);
 
 				clickTitle: function clickTitle(evt){
 					if (this.options.bExpandOnTitleCellClick) {
-						$j(evt.currentTarget).find(".fc-treestate-toggle").click();
+						Backbone.$(evt.currentTarget).find(".fc-treestate-toggle").click();
 					}
 					else {
 						if (this.options.bSelectOnTitleCellClick) {
-							var clickedRow = $j(evt.currentTarget).closest("tr");
+							var clickedRow = Backbone.$(evt.currentTarget).closest("tr");
 							if (!clickedRow.hasClass("fc-treestate-disabled")) {
 								this.selectRow(clickedRow);
 							}
 						}
 						if (evt.type == "dblclick") {
-							$j(evt.currentTarget).find(".fc-treestate-toggle").click();
+							Backbone.$(evt.currentTarget).find(".fc-treestate-toggle").click();
 						}
 					}
 				},
@@ -517,7 +528,7 @@ alert(response.message);
 				clickOverview: function clickOverview(evt){
 
 					var self = this;
-					var clickedRow = $j(evt.currentTarget).closest("tr");
+					var clickedRow = Backbone.$(evt.currentTarget).closest("tr");
 
 					var typename = clickedRow.data("typename");
 					var objectid = clickedRow.data("objectid");
@@ -545,7 +556,7 @@ alert(response.message);
 				clickEdit: function clickEdit(evt){
 
 					var self = this;
-					var clickedRow = $j(evt.currentTarget).closest("tr");
+					var clickedRow = Backbone.$(evt.currentTarget).closest("tr");
 
 					var typename = clickedRow.data("typename");
 					var objectid = clickedRow.data("objectid");
@@ -571,7 +582,7 @@ alert(response.message);
 
 
 				clickZoom: function SiteTreeView_clickZoom(evt){
-					var objectid = $j(evt.currentTarget).closest("tr").data("objectid");
+					var objectid = Backbone.$(evt.currentTarget).closest("tr").data("objectid");
 					if (objectid.length) {
 						window.location = "#application.fapi.fixURL(removevalues="alias,rootobjectid")#&rootobjectid=" + objectid;
 					}
@@ -581,9 +592,9 @@ alert(response.message);
 
 				clickStatus: function SiteTreeView_clickStatus(evt){
 
-					var objectid = $j(evt.currentTarget).closest("tr").data("objectid");
-					var status = $j(evt.currentTarget).data("status");
-					var versionobjectid = $j(evt.currentTarget).data("versionobjectid") || "";
+					var objectid = Backbone.$(evt.currentTarget).closest("tr").data("objectid");
+					var status = Backbone.$(evt.currentTarget).data("status");
+					var versionobjectid = Backbone.$(evt.currentTarget).data("versionobjectid") || "";
 
 					var params = "";
 
@@ -626,7 +637,7 @@ alert(response.message);
 				clickSort: function SiteTreeView_clickSort(evt){
 
 					var self = this;
-					var row = $j(evt.currentTarget).closest("tr");
+					var row = Backbone.$(evt.currentTarget).closest("tr");
 					var objectid = row.data("objectid");
 					var nodetype = row.data("nodetype");
 					var parentid = row.data("parentid");
@@ -662,7 +673,7 @@ alert(response.message);
 					var sourceRow = this.getRowById(sourceparentid);
 					this.showLoadingIndicator(sourceRow);
 
-					$j.ajax({
+					Backbone.$.ajax({
 						url: "#application.url.webtop#/index.cfm",
 						data: {
 							"typename": "dmNavigation",
@@ -670,7 +681,6 @@ alert(response.message);
 							"action": "sort",
 							"ajaxmode": 1,
 							"responsetype": "json",
-
 							"sourceobjectid": sourceparentid,
 							"nodetype": nodetype,
 							"nodes": aNodes.join(",")
@@ -711,7 +721,7 @@ alert(response.message);
 
 					var self = this;
 
-					var row = $j(evt.currentTarget).closest("tr");
+					var row = Backbone.$(evt.currentTarget).closest("tr");
 					var objectid = row.data("objectid");
 					var sourceName = row.find(".fc-tree-title").text();
 
@@ -738,7 +748,7 @@ alert(response.message);
 					var sourceRow = this.getRowById(sourceobjectid);
 					this.showLoadingIndicator(sourceRow);
 
-					$j.ajax({
+					Backbone.$.ajax({
 						url: "#application.url.webtop#/index.cfm",
 						data: {
 							"typename": "dmNavigation",
@@ -789,7 +799,7 @@ alert(response.message);
 
 					var self = this;
 
-					var row = $j(evt.currentTarget).closest("tr");
+					var row = Backbone.$(evt.currentTarget).closest("tr");
 					var objectid = row.data("objectid");
 					var sourceName = row.find(".fc-tree-title").text();
 
@@ -817,15 +827,14 @@ alert(response.message);
 					this.showDisabled(sourceRow);
 					this.showLoadingIndicator(sourceRow);
 
-					$j.ajax({
+					Backbone.$.ajax({
 						url: "#application.url.webtop#/index.cfm",
 						data: {
 							"typename": "dmNavigation",
 							"view": "webtopAjaxTreeAction",
-							"action": "move",
 							"ajaxmode": 1,
 							"responsetype": "json",
-
+							"action": "move",
 							"sourceobjectid": sourceobjectid,
 							"targetobjectid": targetobjectid
 						},
@@ -853,10 +862,9 @@ console.log(response);
 alert(response.message);
 						},
 						complete: function() {
-							this.removeDisabled(sourceRow);
+							self.removeDisabled(sourceRow);
 						}
 					});
-
 
 
 
@@ -867,7 +875,7 @@ alert(response.message);
 
 					var self = this;
 
-					var row = $j(evt.currentTarget).closest("tr")
+					var row = Backbone.$(evt.currentTarget).closest("tr")
 					var objectid = row.data("objectid");
 					var parentid = row.data("parentid");
 					var sourceName = row.find(".fc-tree-title").text().replace(/^\s+|\s+$/g, "");
@@ -880,8 +888,16 @@ alert(response.message);
 
 					if (confirm("Are you sure you want to delete '" + sourceName + "'?")) {
 
-						$j.ajax({
-							url: "#application.url.webtop#/index.cfm?typename=dmNavigation&view=webtopAjaxTreeAction&action=delete&ajaxmode=1&sourceobjectid=" + objectid + "&responsetype=json",
+						Backbone.$.ajax({
+							url: "#application.url.webtop#/index.cfm",
+							data: {
+								"typename": "dmNavigation",
+								"view": "webtopAjaxTreeAction",
+								"ajaxmode": 1,
+								"responsetype": "json",
+								"action": "delete",
+								"sourceobjectid": objectid
+							},
 							datatype: "json",
 							success: function(response) {
 								response.success = response.success || false;
@@ -934,7 +950,7 @@ alert(response.message);
 					var nlevel = row.data("nlevel");
 
 					// get siblings until is nlevel less than or equal to the row nlevel
-					var children = $j();
+					var children = Backbone.$();
 					var done = false;
 					var next = row;
 					if (bIncludeSelf) {
@@ -958,15 +974,15 @@ alert(response.message);
 
 
 				getChildRows: function SiteTreeView_getChildRows(id) {
-					return $j("tr[data-parentid="+ id +"]", this.$el);
+					return Backbone.$("tr[data-parentid="+ id +"]", this.$el);
 				},
 
 
 				getExpandedNodes: function SiteTreeView_getExpandedNodes() {
-					var expandedNodes = $j("tr.fc-treestate-collapse", this.$el);
+					var expandedNodes = Backbone.$("tr.fc-treestate-collapse", this.$el);
 					var aExpandedNodes = [];
 					expandedNodes.each(function(){
-						var thisObjectid = $j(this).data("objectid");
+						var thisObjectid = Backbone.$(this).data("objectid");
 						aExpandedNodes.push(thisObjectid);
 					});
 
@@ -995,13 +1011,13 @@ alert(response.message);
 					var self = this;
 
 					// default id to root node
-					var root = $j("tbody tr:first", this.$el);
+					var root = Backbone.$("tbody tr:first", this.$el);
 					id = id || root.data("objectid");
 
 					var children = this.getChildRows(id);
 
 					children.each(function(){
-						var childRow = $j(this);
+						var childRow = Backbone.$(this);
 						if (childRow.hasClass("fc-treestate-collapse") && childRow.hasClass("fc-treestate-notloaded")) {
 
 							self.loadTreeChildRows(childRow);
@@ -1016,7 +1032,7 @@ alert(response.message);
 
 				loadTreeData: function SiteTreeView_loadTreeData(data) {
 
-					var treeContent = $j("tbody", this.$el);
+					var treeContent = Backbone.$("tbody", this.$el);
 
 					// construct markup from data
 					var aRowMarkup = [];
@@ -1035,16 +1051,21 @@ alert(response.message);
 				loadTree: function SiteTreeView_loadTree(rootobjectid) {
 
 					var self = this;
-					var treeContent = $j("tbody", this.$el);
+					var treeContent = Backbone.$("tbody", this.$el);
 
-					var urlParams = ''
-						+	'&bLoadLeafNodes=' + this.options.bLoadLeafNodes 
-						+	'&bRenderTreeOnly=' + this.options.bRenderTreeOnly
-						+	'&expandTo=' + this.options.expandTo
-					;
-
-					$j.ajax({
-						url: "#application.url.webtop#/index.cfm?typename=dmNavigation&objectid=" + rootobjectid + "&view=webtopTreeChildRows&bLoadRoot=true&ajaxmode=1&responsetype=json" + urlParams,
+					Backbone.$.ajax({
+						url: "#application.url.webtop#/index.cfm",
+						data: {
+							"typename": "dmNavigation",
+							"objectid": rootobjectid,
+							"view": "webtopTreeChildRows",
+							"ajaxmode": 1,
+							"responsetype": "json",
+							"bLoadRoot": true,
+							"bLoadLeafNodes": this.options.bLoadLeafNodes,
+							"bRenderTreeOnly": this.options.bRenderTreeOnly,
+							"expandTo": this.options.expandTo
+						},
 						datatype: "json",
 						success: function(response) {
 							response.success = response.success || false;
@@ -1119,7 +1140,7 @@ alert(response.message);
 						relativenlevel -= 1;
 					}
 
-					var descendants = $j();
+					var descendants = Backbone.$();
 					var loadCollapsed = false;
 
 					row.removeClass("fc-treestate-notloaded");
@@ -1135,13 +1156,14 @@ alert(response.message);
 						}
 					}
 
-					$j.ajax({
+					Backbone.$.ajax({
 						url: "#application.url.webtop#/index.cfm",
 						data: {
 							"typename": "dmNavigation",
 							"objectid": id,
 							"view": "webtopTreeChildRows",
 							"ajaxmode": 1,
+							"responsetype": "json",
 							"relativenlevel": relativenlevel,
 							"bReloadBranch": bReloadBranch,
 							"bLoadRoot": bLoadRoot,
@@ -1164,11 +1186,11 @@ alert(response.message);
 								}
 
 								if (bReloadBranch) {
-									$j(aRowMarkup.join("")).insertAfter(descendants.last());
+									Backbone.$(aRowMarkup.join("")).insertAfter(descendants.last());
 									descendants.remove();
 								}
 								else {
-									$j(aRowMarkup.join("")).insertAfter(row);
+									Backbone.$(aRowMarkup.join("")).insertAfter(row);
 									row.removeClass("fc-treestate-loading fc-treestate-expand").addClass("fc-treestate-collapse");
 									row.find(".fc-tree-title .fa-folder").removeClass("fa-folder").addClass("fa-folder-open");
 								}
@@ -1204,7 +1226,7 @@ alert(response.message);
 					row.find(".fc-tree-title .fa-folder").removeClass("fa-folder").addClass("fa-folder-open");
 
 					children.each(function(){
-						var childRow = $j(this);
+						var childRow = Backbone.$(this);
 						childRow.removeClass("fc-treestate-hidden").addClass("fc-treestate-visible");
 						if (childRow.hasClass("fc-treestate-collapse")) {
 							self.expandTreeRows(childRow);
@@ -1234,7 +1256,7 @@ alert(response.message);
 				},
 
 				getSelectedRow: function SiteTreeView_getSelectedRow() {
-					var row = $j("tbody tr.selected", this.$el).eq(0);
+					var row = Backbone.$("tbody tr.selected", this.$el).eq(0);
 					return row;
 				},
 
