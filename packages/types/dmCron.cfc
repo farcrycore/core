@@ -38,28 +38,28 @@ type properties
 		hint="Url of file to be scheduled">
 
 	<cfproperty name="parameters" type="string" required="no" default="" 
-		ftSeq="4" ftFieldset="Settings"
+		ftSeq="4" ftFieldset="Settings" ftLabel="URL Parameters"
 		hint="Url parameters for file">
 
 	<cfproperty name="frequency" type="string" required="no" default="daily" 
-		ftSeq="5" ftFieldset="Settings" 
+		ftSeq="5" ftFieldset="Settings" ftLabel="Frequency"
 		ftType="list" 
 		ftList="Once:Run once,Daily:Every day,Weekly:Every week,Monthly:Every month,3600:Every hour,1800:Every half-hour,900:Every 15. minute,60:Every minute"
 		hint="How often task is run">
 
-	<cfproperty name="startDate" type="date" required="no" default="" 
-		ftSeq="6" ftFieldset="Settings" 
-		ftType="datetime"
+	<cfproperty name="startDate" type="date" required="true" default=""
+		ftSeq="6" ftFieldset="Settings" ftLabel="Start Date"
+		ftType="datetime" ftValidation="required"
 		hint="Start date for task">
 
-	<cfproperty name="endDate" type="date" required="no" default="" 
-		ftSeq="7" ftFieldset="Settings" 
-		ftType="datetime"
+	<cfproperty name="endDate" type="date" required="true" default=""
+		ftSeq="7" ftFieldset="Settings" ftLabel="End Date"
+		ftType="datetime" ftValidation="required"
 		hint="End date for task">
 
-	<cfproperty name="timeOut" type="numeric" required="no" default="60" 
-		ftSeq="8" ftFieldset="Settings" 
-		ftType="int"
+	<cfproperty name="timeOut" type="integer" required="no" default="60" 
+		ftSeq="8" ftFieldset="Settings" ftLabel="Timeout"
+		ftType="integer"
 		hint="time out period">
 
 <!------------------------------------------------------------------------
