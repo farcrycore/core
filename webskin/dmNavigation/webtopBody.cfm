@@ -203,6 +203,7 @@
 					submitLabel: "Submit",
 					sourceObjectID: null,
 					sourceName: null,
+					sourceNodeIsFolder: null,
 					sourceText: "Source folder...",
 					targetObjectID: null,
 					targetText: "Destination folder..."
@@ -723,16 +724,22 @@ alert(response.message);
 
 					var row = Backbone.$(evt.currentTarget).closest("tr");
 					var objectid = row.data("objectid");
+					var nodetype = row.data("nodetype");
 					var sourceName = row.find(".fc-tree-title").text();
+					var sourceText = "This folder";
+					if (nodetype == "leaf") {
+						sourceText = "This item";
+					}
 
 					this.treeDialogView = new TreeDialogView({
 						primaryTreeView: self,
 						action: "copy",
 						title: "Copy to...",
 						submitLabel: "Copy",
-						sourceText: "This folder",
+						sourceText: sourceText,
 						sourceObjectID: objectid,
 						sourceName: sourceName,
+						sourceNodeIsFolder: nodetype == "folder",
 						targetText: "Will be copied into the selected folder..."
 
 					});
@@ -801,16 +808,22 @@ alert(response.message);
 
 					var row = Backbone.$(evt.currentTarget).closest("tr");
 					var objectid = row.data("objectid");
+					var nodetype = row.data("nodetype");
 					var sourceName = row.find(".fc-tree-title").text();
+					var sourceText = "This folder";
+					if (nodetype == "leaf") {
+						sourceText = "This item";
+					}
 
 					this.treeDialogView = new TreeDialogView({
 						primaryTreeView: self,
 						action: "move",
 						title: "Move to...",
 						submitLabel: "Move",
-						sourceText: "This folder",
+						sourceText: sourceText,
 						sourceObjectID: objectid,
 						sourceName: sourceName,
+						sourceNodeIsFolder: nodetype == "folder",
 						targetText: "Will be moved into the selected folder..."
 					});
 					this.treeDialogView.render();

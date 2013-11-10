@@ -17,7 +17,14 @@
 			</thead>
 			<tbody>
 				<tr>
-					<td class="fc-tree-title fc-nowrap"><a class="fc-treestate-toggle"><i class="fc-icon-treestate"></i></a><span class="fa-stack"><i class="fa fa-folder-close"></i></span> <span>{{sourceName}}</span></td>
+					<td class="fc-tree-title fc-nowrap">
+						{{#if sourceNodeIsFolder}}
+							<span class="fa-stack"><i class="fa fa-folder"></i></span> 
+						{{else}}
+							<span class="fa-stack"><i class="fa fa-file-o"></i></span> 
+						{{/if}}
+						<span>{{sourceName}}</span>
+					</td>
 				</tr>
 			</tbody>
 			</table>
