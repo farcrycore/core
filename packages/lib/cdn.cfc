@@ -76,7 +76,13 @@
 			</cfif>
 		</cfloop>
 		
-		<cfset this.locations[arguments.name] = this.cdns[arguments.cdn].validateConfig(config=arguments.locationinfo) />
+		<cfset this.locations[arguments.name] = validateLocation(arguments.locationinfo) />
+	</cffunction>
+	
+	<cffunction name="validateLocation" output="false" access="public" returntype="struct" hint="Validates the provided config">
+		<cfargument name="locationinfo" type="struct" required="false" default="#structnew()#" />
+		
+		<cfreturn this.cdns[arguments.locationinfo.cdn].validateConfig(config=arguments.locationinfo) />
 	</cffunction>
 	
 	<cffunction name="normalizePath" returntype="string" access="public" output="false" hint="Normalizes filename character set, replaces '\' with '/', removes trailing '/'">
