@@ -597,9 +597,13 @@
 				</cfif>
 				
 				<cfif not structkeyexists(stResult,"error")>
+					<cfset stImage = duplicate(arguments.stObject) />
+					<cfset stImage[arguments.stMetadata.name] = stFixed.value />
+					<cfset stLoc = getFileLocation(stObject=stImage,stMetadata=arguments.stMetadata,admin=true) />
+					
 					<cfset stJSON["value"] = stFixed.value />
 					<cfset stJSON["filename"] = listfirst(listlast(stResult.value,'/'),"?") />
-					<cfset stJSON["fullpath"] = stFixed.value />
+					<cfset stJSON["fullpath"] = stLoc.path />
 					
 					<cfif arguments.stMetadata.ftShowMetadata>
 						<cfset stImage = getImageInfo(stFixed.value,true) />
@@ -644,9 +648,13 @@
 				</cfif>
 				
 				<cfif not structkeyexists(stResult,"error")>
+					<cfset stImage = duplicate(arguments.stObject) />
+					<cfset stImage[arguments.stMetadata.name] = stFixed.value />
+					<cfset stLoc = getFileLocation(stObject=stImage,stMetadata=arguments.stMetadata,admin=true) />
+					
 					<cfset stJSON["value"] = stFixed.value />
 					<cfset stJSON["filename"] = listfirst(listlast(stResult.value,'/'),"?") />
-					<cfset stJSON["fullpath"] = stFixed.value />
+					<cfset stJSON["fullpath"] = stLoc.path />
 					<cfset stJSON["q"] = cgi.query_string />
 					
 					<cfif arguments.stMetadata.ftShowMetadata>
