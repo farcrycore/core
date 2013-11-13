@@ -86,7 +86,7 @@
 	<ft:buttonPanel>
 		<ft:button value="Create" />
 		<cfif structkeyexists(url,"iframe")>
-			<ft:button value="Close" onclick="parent.$j('##dialog').dialog('close');return false;" />
+			<ft:button value="Close" onclick="$fc.closeBootstrapModal();return false;" />
 		</cfif>
 	</ft:buttonPanel>
 

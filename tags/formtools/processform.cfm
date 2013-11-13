@@ -177,8 +177,7 @@
 					<cfsavecontent variable="stLocal.onExitProcess.content">
 						<cfoutput>
 						<script type="text/javascript">
-						<!--- parent.$j('###url.dialogID#').dialog('close'); --->
-						parent.$j('##fcModal').modal('hide');
+						$fc.closeBootstrapModal();
 						</script>
 						</cfoutput>
 					</cfsavecontent>

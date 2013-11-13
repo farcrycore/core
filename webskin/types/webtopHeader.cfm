@@ -50,6 +50,7 @@
 <skin:loadJS id="fc-bootstrap" />
 <skin:loadJS id="jquery-tooltip" />
 <skin:loadJS id="jquery-tooltip-auto" />
+<skin:loadJS id="farcry-form" />
 <skin:loadJS id="webtop7" />
 
 <cfoutput>

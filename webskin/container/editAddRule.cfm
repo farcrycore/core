@@ -26,7 +26,7 @@
 
 <ft:processform action="Cancel" bHideForms="true">
 	<skin:onReady>
-		<cfoutput>parent.$j('###containerID#-dialog').dialog('close');</cfoutput>	
+		<cfoutput>$fc.closeBootstrapModal();</cfoutput>	
 	</skin:onReady>
 </ft:processform>
 

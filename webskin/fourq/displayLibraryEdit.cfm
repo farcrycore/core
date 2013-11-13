@@ -36,7 +36,7 @@ START WEBSKIN
 	<cfoutput>
 	<script type="text/javascript">
 	$j(function() {
-		parent.$j('###stobj.typename##stobj.objectid##url.property#').dialog('close');	
+		$fc.closeBootstrapModal();
 	});
 	</script>
 	</cfoutput>

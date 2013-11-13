@@ -21,6 +21,7 @@
 
 <skin:loadJS id="fc-jquery" />
 <skin:loadJS id="fc-bootstrap" />
+<skin:loadJS id="farcry-form" />
 
 </head>
 <body class="webtop-modal">

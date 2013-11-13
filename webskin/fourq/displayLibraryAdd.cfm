@@ -75,7 +75,7 @@ START WEBSKIN
 							<cfelse>
 								$j('###formHiddenInputName#', parent.document).val('#newLibraryObjectID#');
 							</cfif>
-							parent.$j('###stobj.typename##stobj.objectid##url.property#').dialog('close');
+							$fc.closeBootstrapModal();
 						}
 					});		
 				});
@@ -105,7 +105,7 @@ START WEBSKIN
 							<cfelse>
 								$j('###formHiddenInputName#', parent.document).val('#newLibraryObjectID#');
 							</cfif>
-							parent.$j('###stobj.typename##stobj.objectid##url.property#').dialog('close');
+							$fc.closeBootstrapModal();
 						}
 					});		
 				});
@@ -119,7 +119,7 @@ START WEBSKIN
 		--------------------------->
 		<cfsavecontent variable="stOnExit.content"><cfoutput>
 			<script type="text/javascript">
-				parent.$j('###stobj.typename##stobj.objectid##url.property#').dialog('close');
+				$fc.closeBootstrapModal();
 			</script>
 		</cfoutput></cfsavecontent>
 	</ft:processForm>
@@ -129,7 +129,7 @@ START WEBSKIN
 		--------------------------->
 		<cfsavecontent variable="stOnExit.content"><cfoutput>
 			<script type="text/javascript">
-				parent.$j('###stobj.typename##stobj.objectid##url.property#').dialog('close');
+				$fc.closeBootstrapModal();
 			</script>
 		</cfoutput></cfsavecontent>
 	</wiz:processWizard>
@@ -169,7 +169,7 @@ START WEBSKIN
 	 -------------------------------------------------->	
 	<skin:onReady>
 	<cfoutput>
-	parent.$j('###stobj.typename##stobj.objectid##url.property#').dialog('option', 'title', 'Add New #application.fapi.getContentTypeMetadata(url.filterTypename, 'displayName', url.filterTypename)#');
+	$fc.changeBootstrapModalTitle("Add New #application.fapi.getContentTypeMetadata(url.filterTypename, 'displayName', url.filterTypename)#");
 	</cfoutput>
 	</skin:onReady>
 

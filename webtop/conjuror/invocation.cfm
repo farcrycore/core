@@ -118,10 +118,10 @@
 					<cfif returnStruct.typename eq "container">
 						<cfoutput>
 							<script type="text/javascript">
-								parent.$j('.ui-dialog-content').dialog('close');
+								$fc.closeBootstrapModal();
 							</script>
 						</cfoutput>
-				<cfelse>
+					<cfelse>
 						<cfoutput>
 							<script type="text/javascript">
 								location.href = '#application.url.farcry#/edittabOverview.cfm?typename=#typename#&objectid=#returnStruct.ObjectID#&ref=#url.ref#';
@@ -156,7 +156,7 @@
 				<cfsavecontent variable="onExitProcess.content">
 					<cfoutput>
 					<script type="text/javascript">
-					parent.$j('##fcModal').modal('hide');
+					$fc.closeBootstrapModal();
 					</script>
 					</cfoutput>
 				</cfsavecontent>

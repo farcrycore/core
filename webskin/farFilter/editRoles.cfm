@@ -11,7 +11,7 @@
 <ft:processForm action="Save,Cancel" bHideForms="true">
 	<cfoutput>
 	<script type="text/javascript">
-		parent.$j('##fc-dialog-iframe').dialog('close');				
+		$fc.closeBootstrapModal();
 	</script>
 	</cfoutput>
 </ft:processForm>

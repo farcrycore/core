@@ -134,7 +134,7 @@
 		<cfsavecontent variable="onExitProcess.content">
 			<cfoutput>
 				<script type="text/javascript">
-					parent.$j('###containerID#-dialog').dialog('close');				
+					$fc.closeBootstrapModal();
 				</script>
 			</cfoutput>
 		</cfsavecontent>
