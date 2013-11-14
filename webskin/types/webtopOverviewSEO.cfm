@@ -50,7 +50,7 @@ START WEBSKIN
 			<cfoutput>
 			A friendly URL is automatically generated to improve your search engine ranking and make it easy for humans to read. 
 			You can  
-			<a href="##" onclick="$fc.openDialogIFrame('Manage Friendly URL\'s for #JSStringFormat(stobj.label)# (#stobj.typename#)', '#application.url.webtop#/manage_friendlyurl.cfm?objectid=#stobj.objectid#')">change the default or add custom friendly URLs</a>
+			<a href="#application.url.webtop#/index.cfm?typename=#stObj.typename#&objectid=#stobj.objectid#&view=webtopPageModal&bodyView=webtopBodyManageFUs" onclick="$fc.openDialogIFrame('Manage Friendly URL\'s for #JSStringFormat(stobj.label)# (#stobj.typename#)', this.href); return false;">change the default or add custom friendly URLs</a>
 			to meet your requirements.
 			</cfoutput>
 		</ft:fieldsetHelp>
@@ -102,7 +102,7 @@ START WEBSKIN
 			
 			<ft:fieldHint>
 				<cfoutput>
-				You can <a href="##" onclick="$fc.openDialogIFrame('Manage Friendly URL\'s for #JSStringFormat(stobj.label)# (#stobj.typename#)', '#application.url.webtop#/manage_friendlyurl.cfm?objectid=#stobj.objectid#')">add additional friendly URLs</a> 
+				You can <a href="#application.url.webtop#/index.cfm?typename=#stObj.typename#&objectid=#stobj.objectid#&bodyView=webtopPageModal&view=webtopBodyManageFUs" onclick="$fc.openDialogIFrame('Manage Friendly URL\'s for #JSStringFormat(stobj.label)# (#stobj.typename#)', this.href); return false;">add additional friendly URLs</a> 
 				to promote this content item.
 				</cfoutput>
 			</ft:fieldHint>
