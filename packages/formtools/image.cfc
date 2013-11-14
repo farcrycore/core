@@ -169,10 +169,6 @@
 	    <cfparam name="arguments.stMetadata.ftAllowedExtensions" default="jpg,jpeg,png,gif"><!--- The extentions allowed to be uploaded --->
 	    <cfparam name="arguments.stMetadata.ftSizeLimit" default="0" />
 		
-	    <cfif len(arguments.stMetadata.value) and not fileexists(application.path.imageroot & arguments.stMetadata.value)>
-			<cfset arguments.stMetadata.value = "" />
-		</cfif>
-	    
 	    <skin:loadJS id="fc-jquery" />
 	    <skin:loadCSS id="jquery-ui" />
 	    <skin:loadJS id="jquery-tooltip" />
