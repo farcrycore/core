@@ -32,7 +32,7 @@
 
 
 <cfset webtopLogoPath = application.fapi.getConfig("general", "webtopLogoPath", "")>
-<cfset webtopBackgroundPath = application.fapi.getConfig("general", "webtopBackgroundPath", "")>
+<cfset webtopBackgroundPath = application.fc.lib.cdn.ioGetFileLocation(location="images",file=application.fapi.getConfig("general", "webtopBackgroundPath", "")).path>
 <cfset bWebtopBackgroundMask = application.fapi.getConfig("general", "bWebtopBackgroundMask", false)>
 
 
