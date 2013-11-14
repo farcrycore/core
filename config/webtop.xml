@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <webtop>
-	<section id="home" sequence="1000" permission="MainNavMyFarcryTab" label="Overview">
-		<subsection id="overview" sequence="100" sidebar="overview/sidebar.cfm" typename="dmProfile" bodyView="webtopBodyHome" label="Overview" />
+	<section id="dashboard" sequence="1000" permission="MainNavMyFarcryTab" label="Dashboard">
+		<subsection id="webtopdashboard" sequence="100" typename="farWebtopDashboard" bodyView="webtopBody" label="Dashboard" />
 	</section>
 	<section id="site" sequence="2000" permission="MainNavSiteTab" label="Site" altexpansion="400" description="Manage your website's menu structure and HTML content">
 		<subsection id="tree" sequence="1" permission="MainNavSiteTab" label="Navigation" sidebar="site/sidebar.cfm" content="inc/content_overview.html" typename="dmNavigation">
@@ -43,6 +43,8 @@
 			<menu id="settings" sequence="10" label="Application Settings">
 				<menuitem id="listfarconfig" sequence="1" label="Config Files" typename="farConfig" />
 				<menuitem id="scheduledtasks" sequence="10" label="Scheduled Tasks" link="/customadmin/customlists/dmCron.cfm" relatedtype="dmCron" />
+				<menuitem id="webtopDashboards sequence="20" label="Webtop Dashboards" type="farWebtopDashboard" bodyView="webtopBodyAdmin" />
+			
 			</menu>
 			
 			<menu id="systemstatus" sequence="220" label="System Status">
