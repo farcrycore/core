@@ -1,9 +1,8 @@
 <cfsetting enablecfoutputonly="true">
 <!--- @@displayname: Core System Info --->
 <!--- @@seq: 100 --->
-<!--- @@bAjax: 1 --->
-<!--- @@cardClass: fc-card-medium --->
-<!--- @@cardHeight: 250px --->
+<!--- @@bAjax: 0 --->
+<!--- @@cardClass: fc-card-small --->
 
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 

@@ -29,26 +29,29 @@
 		<cfset stCurrentDashboard = application.fapi.getContentObject(typename="farWebtopDashboard", objectid="#qWebtopDashboards.objectid#")>
 	</cfif>
 	
+	<!--- <cfdump var="#qWebtopDashboards#"> --->
 
 	<cfif qWebtopDashboards.recordCount GT 1>
 		<cfoutput>
-		<ft:buttonGroup>
-			<ft:button value="Select Dashboard: #stCurrentDashboard.title#" type="button" icon=" ,caret" dropdownToggle="true" />
-		
-			<ft:dropdownMenu class="pull-right">
+		<div class="farcry-button-bar btn-group pull-left" style="margin-bottom: 5px">
+		<div class="btn-group">
+			<button data-toggle="dropdown" class="btn btn-group dropdown-toggle" type="button"><i class="fa fa-tachometer fa-2x"></i> Select Dashboard: #stCurrentDashboard.title#</button>
+			<ul class="dropdown-menu">
 				<cfloop query="qWebtopDashboards">
-					<li>
-						<ft:button 
-								value="Change Dashboard" 
-								text="#qWebtopDashboards.title#"
-								selectedObjectID="#qWebtopDashboards.objectid#"
-								validate="false" 
-								renderType="link" />
-					</li>
-				</cfloop>	
-				
-			</ft:dropdownMenu>
-		</ft:buttonGroup>
+				<li>
+					<ft:button 
+						value="Change Dashboard" 
+						text="#qWebtopDashboards.title#"
+						selectedObjectID="#qWebtopDashboards.objectid#"
+						validate="false" 
+						renderType="link" /> 
+					<!--- <a href="##" class="" onclick="$selectedObjectID('#qWebtopDashboards.objectid#'); btnSubmit('#request.farcryform.name#','Change Dashboard'); return false;"><i class="fa fa-tachometer fa-fw"></i> #qWebtopDashboards.title#</a> --->
+				</li>
+				</cfloop>
+			</ul>
+		</div>
+	</div>
+
 		</cfoutput>
 	</cfif>
 	
@@ -80,7 +83,7 @@
 		
 		<cfquery dbtype="query" name="qDashboardCardWebskins">
 		SELECT * FROM qWebskins
-		WHERE lower(qWebskins.name) LIKE 'webtopdashboardcard%'
+		WHERE lower(qWebskins.name) LIKE 'webtopdashboard%'
 		</cfquery>
 	
 		<cfoutput query="qDashboardCardWebskins">
@@ -119,3 +122,5 @@
 		</cfloop>
 	</grid:div>
 </cfif>
+
+</ft:form>

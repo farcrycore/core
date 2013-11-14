@@ -42,7 +42,7 @@
 			
 			<cfquery dbtype="query" name="qDashboardCardWebskins">
 			SELECT * FROM qWebskins
-			WHERE lower(qWebskins.name) LIKE 'webtopdashboardcard%'
+			WHERE lower(qWebskins.name) LIKE 'webtopdashboard%'
 			</cfquery>
 		
 			<cfoutput query="qDashboardCardWebskins">

@@ -2,7 +2,7 @@
 <!--- @@displayname: dashboard --->
 <!--- @@description: dashboard --->
 <cfcomponent displayname="dashboard" output="false" extends="forms"
-  hint="Overview dashboard for the webtop."
+  hint="Miscellaneous, cross type content for webtop dashboards."
   bObjectBroker="true">
 
 <!--- 

@@ -15,23 +15,24 @@
 <cfset stSkeletonExport = application.fapi.getNewContentObject(typename="farSkeleton", key="NewExport") />
 <cfset bExportComplete = application.fapi.getContentType("farSkeleton").isExportComplete(stSkeletonExport.objectid) />
 
+<!--- 
+ // process form 
+--------------------------------------------------------------------------------->
 <ft:processForm action="Start Again" url="refresh">
 	<cfset structDelete(session.stTempObjectStoreKeys.farSkeleton,"NewExport")>
 </ft:processForm>
 
 
 <ft:processForm action="Download Package">
-
 	<cfif fileExists("#application.path.webroot#/project.zip")>
 		<cffile action="delete"  file="#application.path.webroot#/project.zip">	
 	</cfif>
 	
-
 	<cfset oZip.AddFiles(zipFilePath="#application.path.webroot#/project.zip", directory="#application.path.project#/project_export", recurse="true", compression=0, savePaths="false") />
 	
-
 	<skin:location url="/project.zip" />
 </ft:processForm>
+
 
 <ft:processForm action="Delete Old Export" url="refresh">
 	
@@ -41,6 +42,7 @@
 	<skin:location url="#cgi.script_name#?#cgi.query_string#" />
 
 </ft:processForm>
+
 
 <ft:processForm action="Export Now" url="refresh">
 	
@@ -52,14 +54,17 @@
 		<skin:bubble message="#stResult.message#" />
 		<skin:location url="#cgi.script_name#?#cgi.query_string#" />
 	</cfif>
-
-
 		
 </ft:processForm>
 
 
 
+<!--- 
+ // view: export project 
+--------------------------------------------------------------------------------->
 <skin:loadJS id="jquery-ajaxq" />
+
+<cfdump var="#stobj#">
 
 <ft:form>
 	
@@ -76,9 +81,13 @@
 
 
 	<cfif stSkeletonExport.bSetupComplete>
-		<ft:object typename="#stSkeletonExport.typename#" objectid="#stSkeletonExport.objectid#" format="display" legend="Export for Hosting" lFields="name,updateAppKey,bIncludeMedia,lExcludeData" />
+		<ft:object typename="#stSkeletonExport.typename#" objectid="#stSkeletonExport.objectid#"
+			legend="Download Project Skeleton" format="display" 
+			lFields="name,updateAppKey,bIncludeMedia,lExcludeData" />
 	<cfelse>
-		<ft:object typename="#stSkeletonExport.typename#" objectid="#stSkeletonExport.objectid#" legend="Export for Hosting" lFields="name,updateAppKey,bIncludeMedia,lExcludeData" />
+		<ft:object typename="#stSkeletonExport.typename#" objectid="#stSkeletonExport.objectid#"
+			legend="Create Project Skeleton" 
+			lFields="name,updateAppKey,bIncludeMedia,lExcludeData" />
 	</cfif>
 	
 
@@ -95,8 +104,7 @@
 				<table class="table" style="width:auto;">
 				<cfloop from="1" to="#arrayLen(stSkeletonExport.exportData.aTables)#" index="iTable">
 					<tr>
-						<td>#stSkeletonExport.exportData.aTables[iTable].name#</td>	
-						
+						<td>#stSkeletonExport.exportData.aTables[iTable].name#</td>
 					
 						
 						<cfif stSkeletonExport.exportData.aTables[iTable].bComplete>
