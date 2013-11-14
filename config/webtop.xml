@@ -43,7 +43,7 @@
 			<menu id="settings" sequence="10" label="Application Settings">
 				<menuitem id="listfarconfig" sequence="1" label="Config Files" typename="farConfig" />
 				<menuitem id="scheduledtasks" sequence="10" label="Scheduled Tasks" link="/customadmin/customlists/dmCron.cfm" relatedtype="dmCron" />
-				<menuitem id="webtopDashboards sequence="20" label="Webtop Dashboards" type="farWebtopDashboard" bodyView="webtopBodyAdmin" />
+				<menuitem id="webtopDashboards" sequence="20" label="Webtop Dashboards" type="farWebtopDashboard" bodyView="webtopBodyAdmin" />
 			
 			</menu>
 			
