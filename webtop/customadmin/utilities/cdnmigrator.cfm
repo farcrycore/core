@@ -7,13 +7,21 @@
 
 
 <cfif isdefined("url.copy")>
-	<cfset stResult = structnew() />
-	<cfset stResult["file"] = url.copy />
-	<cfset stResult["source"] = url.from />
-	<cfset stResult["destination"] = url.to />
-	
-	<cfset application.fc.lib.cdn.ioCopyFile(source_location=url.from,source_file=url.copy,dest_location=url.to) />
-	<cfset stResult["success"] = true />
+	<cftry>
+		<cfset stResult = structnew() />
+		<cfset stResult["file"] = url.copy />
+		<cfset stResult["source"] = url.from />
+		<cfset stResult["destination"] = url.to />
+		
+		<cfset application.fc.lib.cdn.ioCopyFile(source_location=url.from,source_file=url.copy,dest_location=url.to) />
+		<cfset stResult["success"] = true />
+		
+		<cfcatch>
+			<cfset stResult = structnew() />
+			<cfset stResult["success"] = false />
+			<cfset stResult["error"] = cfcatch.message />
+		</cfcatch>
+	</cftry>
 	
 	<cfcontent type="text/json" variable="#ToBinary( ToBase64( serializeJSON(stResult) ) )#" reset="Yes">
 </cfif>
@@ -73,7 +81,10 @@
 		th.status, td.status { width:80px; }
 		.status-not-applicable { color:##666666; }
 		.status-success { color:##01a100; }
+		.status-process { color:##C09853; }
 		.status-failure { color:##FF0000; }
+		.table-striped tbody tr:hover td { background-color:##FFF6EB; }
+		.table-striped tbody tr.selected td { background-color:##F9E6D4; }
 	</style>
 	<script type="text/javascript">
 		var files = #serializeJSON(listtoarray(valuelist(qFiles.file)))#;
@@ -100,19 +111,22 @@
 				processingfile = getNextFile();
 				
 				if (processingfile>-1){
+					$j("##file-"+(processingfile+1))
+						.find(".status").removeClass("status-not-applicable").removeClass("status-success").removeClass("status-failure").addClass("status-process").html("...").attr("title","processing").end();
+					
 					$j.getJSON("#application.fapi.fixURL()#&copy="+encodeURI(files[processingfile])+"&from="+$j("##source_location").val()+"&to="+$j("##target_location").val(),function(data){
 						if (data.success){
 							$j("##file-"+(processingfile+1))
 								.removeClass("selected")
 								.find("input[name=files]").attr("checked",null).end()
 								.find(".intarget").removeClass("in-location-No").removeClass("in-location-Yes").addClass("in-location-Yes").html("Yes").end()
-								.find(".status").removeClass("status-not-applicable").removeClass("status-success").removeClass("status-failure").addClass("status-success").html("Done").end();
+								.find(".status").removeClass("status-not-applicable").removeClass("status-process").addClass("status-success").html("Done").end();
 						}
 						else{
 							$j("##file-"+(processingfile+1))
 								.removeClass("selected")
 								.find("input[name=files]").attr("checked",null).end()
-								.find(".status").removeClass("status-not-applicable").removeClass("status-success").removeClass("status-failure").addClass("status-failure").html("Error").attr("title",data.error).end();
+								.find(".status").removeClass("status-not-applicable").removeClass("status-process").addClass("status-failure").html("Error").attr("title",data.error).end();
 						}
 						
 						copyFiles("next");
@@ -127,9 +141,9 @@
 </cfoutput>
 <skin:onReady><cfoutput>
 	$j("##allfiles").click(function(){
-		var tr = $j("##files tbody input[name=files]").attr("checked",$j(this).attr("checked")==="checked"?"checked":null).parents("tr.file");
+		var tr = $j("##files tbody input[name=files]").prop("checked",$j(this).prop("checked")).parents("tr.file");
 		
-		if ($j(this).attr("checked")==="checked")
+		if ($j(this).prop("checked"))
 			tr.addClass("selected");
 		else
 			tr.removeClass("selected")
@@ -138,9 +152,9 @@
 		var target = $j(event.target), input = $j("input[name=files]",this), self = $j(this);
 		
 		if (!target.is("input"))
-			input.attr("checked",input.attr("checked")==="checked"?null:"checked");
+			input.prop("checked",!input.prop("checked"));
 		
-		if (input.attr("checked") === "checked")
+		if (input.prop("checked"))
 			self.addClass("selected");
 		else
 			self.removeClass("selected");
@@ -193,7 +207,7 @@
 	<cfif qFiles.recordcount>
 		<ft:field label="Files" bMultiField="true">
 			<cfoutput>
-				<table id="files" class="objectAdmin" style="width:100%;table-layout:fixed;">
+				<table id="files" class="table table-striped">
 					<thead>
 						<tr>
 							<th class="select"><input type="checkbox" id="allfiles"></th>
