@@ -224,18 +224,34 @@
 	
 	
 	<cffunction name="unescapeUnicode" access="public" output="false" returntype="string" hint="Replaces unicode escape sequences with actual characters">
-		<cfargument name="source" type="string" required="true" />
+		<cfargument name="input" type="string" required="true" />
 		
 		<cfset var st = structnew() />
 		
 		<cfloop condition="structisempty(st) or arraylen(st.pos) gte 2">
-			<cfset st = REFindNoCase("\\u([a-f0-9]{1,4})",arguments.source,1,true) />
+			<cfset st = REFindNoCase("\\u([a-f0-9]{1,4})",arguments.input,1,true) />
 			<cfif arraylen(st.pos) gte 2>
-				<cfset arguments.source = mid(arguments.source,1,st.pos[1]-1) & chr(inputBaseN(mid(arguments.source,st.pos[2],st.len[2]),16)) & mid(arguments.source,st.pos[1]+st.len[1],10000) />
+				<cfset arguments.input = mid(arguments.input,1,st.pos[1]-1) & chr(inputBaseN(mid(arguments.input,st.pos[2],st.len[2]),16)) & mid(arguments.input,st.pos[1]+st.len[1],10000) />
 			</cfif>
 		</cfloop>
 		
-		<cfreturn arguments.source />
+		<cfreturn arguments.input />
+	</cffunction>
+	
+	<cffunction name="rewriteImages" access="public" output="false" returntype="string" hint="Updates /images src and links to point to the CDN URLs">
+		<cfargument name="input" type="string" required="true" />
+		
+		<cfset var st = structnew() />
+		
+		<cfloop condition="structisempty(st) or arraylen(st.pos) gte 2">
+			<cfset st = REFindNoCase("((?:src|href)=['""])(/images/[^'""]+)(['""])",arguments.input,1,true) />
+			
+			<cfif arraylen(st.pos) gte 2>
+				<cfset arguments.input = mid(arguments.input,1,st.pos[1]-1) & mid(arguments.input,st.pos[2],st.len[2]) & application.fc.lib.cdn.ioGetFileLocation(location="images",file=mid(arguments.input,st.pos[3],st.len[3])).path & mid(arguments.input,st.pos[4],st.len[4]) & mid(arguments.input,st.pos[1]+st.len[1],10000) />
+			</cfif>
+		</cfloop>
+		
+		<cfreturn arguments.input />
 	</cffunction>
 	
 </cfcomponent>
