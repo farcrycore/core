@@ -1126,6 +1126,9 @@ legend + .control-group {
 .control-group {
 	margin-bottom: 20px;
 }
+.control-group.hidden {
+	display: none;
+}
 
 .form-horizontal .control-label {
 	text-align: left;
