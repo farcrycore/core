@@ -85,4 +85,77 @@
 		
 		<cfreturn qWebtopDashboards>
 	</cffunction>
+
+	<cffunction name="hasDashboards">
+		<cfset var qWebtopDashboards = queryNew("objectid")>
+		<cfset var result = 0>
+
+		<cfquery datasource="#application.dsn#" name="qWebtopDashboards">
+		SELECT count(objectid) as counter
+		FROM farWebtopDashboard
+		</cfquery>
+
+		<cfif qWebtopDashboards.counter GT 0>
+			<cfset result = 1>
+		</cfif>
+		
+		<cfreturn result>
+	</cffunction>
+
+
+	 <cffunction name="dynamicMenu" access="public" output="false" returntype="struct">
+	        
+	        <cfset var stResult = structnew() />
+	        <cfset var thisitem = "" />
+	        <cfset var id = "" />
+	        <cfset var qWebtopDashboards = application.fapi.getContentType("farWebtopDashboard").getPermittedWebtopDashboards() />
+	        
+	        
+	        <cfset stResult.children = structnew() />
+	        
+	        <cfif qWebtopDashboards.recordcount>
+		        	
+		        <cfloop query="qWebtopDashboards">
+		            <cfset id = qWebtopDashboards.objectid />
+		            
+		            <cfset stResult.children[id] = structnew() />
+		            <cfset stResult.children[id].altexpansion = 0 />
+		            <cfset stResult.children[id].type = "subsection" />
+		            <cfset stResult.children[id].mergetype = "" />
+		            <cfset stResult.children[id].sequence = "0" />
+		            <cfset stResult.children[id].containermanagement = "" />
+		            <cfset stResult.children[id].icon = "" />
+		            <cfset stResult.children[id].label = qWebtopDashboards.title />
+		            <cfset stResult.children[id].rbkey = "dashboard.#id#" />
+		            <cfset stResult.children[id].children = structnew() />
+		            <cfset stResult.children[id].id = id />
+		            <cfset stResult.children[id].labelType = "" />
+		            <cfset stResult.children[id].relatedType = "" />
+		            <cfset stResult.children[id].typename = "farWebtopDashboard" />
+		            <cfset stResult.children[id].bodyView = "webtopBody" />
+		        </cfloop>
+		        
+	        <cfelse>
+	        	<cfset id = 'Overview' />
+	            
+	            <cfset stResult.children[id] = structnew() />
+	            <cfset stResult.children[id].altexpansion = 0 />
+	            <cfset stResult.children[id].type = "subsection" />
+	            <cfset stResult.children[id].mergetype = "" />
+	            <cfset stResult.children[id].sequence = "0" />
+	            <cfset stResult.children[id].containermanagement = "" />
+	            <cfset stResult.children[id].icon = "" />
+	            <cfset stResult.children[id].label = "Overview" />
+	            <cfset stResult.children[id].rbkey = "dashboard.#id#" />
+	            <cfset stResult.children[id].children = structnew() />
+	            <cfset stResult.children[id].id = id />
+	            <cfset stResult.children[id].labelType = "" />
+	            <cfset stResult.children[id].relatedType = "" />
+	            <cfset stResult.children[id].typename = "farWebtopDashboard" />
+	            <cfset stResult.children[id].bodyView = "webtopBody" />
+	        </cfif>
+	        <cfreturn stResult />
+	    </cffunction>
+
+
 </cfcomponent>
