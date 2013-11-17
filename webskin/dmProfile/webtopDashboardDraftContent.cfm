@@ -2,7 +2,7 @@
 <!--- @@displayname: Dashboard Draft Content --->
 <!--- @@viewstack: fragment --->
 <!--- @@viewbinding: type --->
-<!--- @@cardClass: fc-card-medium --->
+<!--- @@cardClass: fc-dashboard-card-medium --->
 
 
 
@@ -19,17 +19,21 @@
 <!--- 
  // show draft content 
 --------------------------------------------------------------------------------->
+
+<skin:tooltip selector="##tip_contentInDraft"><cfoutput>
+	<p>These are content items where:</p>
+	<ul>
+		<li>They are in draft</li>
+		<li>You were the last one to save them while in draft</li>
+	</ul>
+</cfoutput></skin:tooltip>
+
+<cfoutput><h3>Content You Have In Draft <i id="tip_contentInDraft" class="fa fa-info"></i></h3></cfoutput>
+
 <cfif qdraft.recordcount>
-	<skin:tooltip selector="##tip_contentInDraft"><cfoutput>
-		<p>These are content items where:</p>
-		<ul>
-			<li>They are in draft</li>
-			<li>You were the last one to save them while in draft</li>
-		</ul>
-	</cfoutput></skin:tooltip>
 	
 	<cfoutput>
-		<h3>Content You Have In Draft <i id="tip_contentInDraft" class="fa fa-info"></i></h3>
+		
 		<table width="100%" class="table table-striped">
 			<thead>
 				<tr>			
@@ -54,6 +58,8 @@
 			</tbody>
 		</table>
 	</cfoutput>
+<cfelse>
+	<cfoutput>No items in draft.</cfoutput>
 </cfif>
 
 <cfsetting enablecfoutputonly="false" />

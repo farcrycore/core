@@ -2,7 +2,7 @@
 <!--- @@displayname: Dashboard Pending Content --->
 <!--- @@viewstack: fragment --->
 <!--- @@viewbinding: type --->
-<!--- @@cardClass: fc-card-medium --->
+<!--- @@cardClass: fc-dashboard-card-medium --->
 
 
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
@@ -18,13 +18,20 @@
 <!--- 
  // show pending content 
 --------------------------------------------------------------------------------->
+
+<skin:tooltip selector="##tip_contentPending"><cfoutput>
+	<p>Content items pending approval</p>
+</cfoutput></skin:tooltip>
+
+<cfoutput>
+<h3>Content Pending Approval <img id="tip_contentPending" src="#application.url.webtop#/images/tooltip.png" /></h3>
+</cfoutput>
+
 <cfif qPending.recordcount>
-	<skin:tooltip selector="##tip_contentPending"><cfoutput>
-		<p>Content items pending approval</p>
-	</cfoutput></skin:tooltip>
+	
 	
 	<cfoutput>
-		<h3>Content Pending Approval <img id="tip_contentPending" src="#application.url.webtop#/images/tooltip.png" /></h3>
+		
 		<table width="100%" class="table table-striped">
 			<thead>
 				<tr>			
@@ -49,6 +56,8 @@
 			</tbody>
 		</table>
 	</cfoutput>
+<cfelse>
+	<cfoutput><p>No items pending approval.</p></cfoutput>
 </cfif>
 
 <cfsetting enablecfoutputonly="false" />

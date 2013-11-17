@@ -2,7 +2,7 @@
 <!--- @@displayname: Core System Info --->
 <!--- @@seq: 100 --->
 <!--- @@bAjax: 0 --->
-<!--- @@cardClass: fc-card-small --->
+<!--- @@cardClass: fc-dashboard-card-small --->
 
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
 
