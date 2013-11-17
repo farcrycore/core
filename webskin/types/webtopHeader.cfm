@@ -100,7 +100,7 @@
 							<span>#webtopUsername# &nbsp;<b class="fa fa-caret-down"></b></span>
 						</div>
 						<ul class="dropdown-menu pull-right">
-							<li><a href="#application.url.webtop#?id=home.overview&typename=dmProfile&objectid=#session.dmProfile.objectid#&bodyView=editOwn"><admin:resource key="coapi.dmProfile.general.editprofile">Edit Profile</admin:resource></a></li>
+							<li><a href="#application.url.webtop#?id=dashboard&typename=dmProfile&objectid=#session.dmProfile.objectid#&bodyView=editOwn"><admin:resource key="coapi.dmProfile.general.editprofile">Edit Profile</admin:resource></a></li>
 							<skin:view typename="dmProfile" objectid="#session.dmProfile.objectid#" webskin="displaySummaryOptions#application.security.getCurrentUD()#" alternateHTML="" />
 							<!--- <li class="divider"></li>
 							<li class="nav-header">Developer Tools</li>
