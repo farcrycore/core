@@ -33,6 +33,7 @@
 
 <cfset webtopLogoPath = application.fapi.getConfig("general", "webtopLogoPath", "")>
 <cfset webtopBackgroundPath = application.fc.lib.cdn.ioGetFileLocation(location="images",file=application.fapi.getConfig("general", "webtopBackgroundPath", "")).path>
+<cfset webtopBackgroundPosition = application.fapi.getConfig("general", "webtopBackgroundPosition", '')>
 <cfset bWebtopBackgroundMask = application.fapi.getConfig("general", "bWebtopBackgroundMask", false)>
 
 
@@ -46,7 +47,7 @@
 	<link href="#application.url.webtop#/css/icons.css" rel="stylesheet" media="screen">
 </head>
 
-<body <cfif len(webtopBackgroundPath)>style="background-image:url(#webtopBackgroundPath#);"</cfif>>
+<body style="<cfif len(webtopBackgroundPath)>background-image:url(#webtopBackgroundPath#);</cfif><cfif len(webtopBackgroundPosition)>background-position:#webtopBackgroundPosition#;</cfif>">
 	<div class="wrap" <cfif bWebtopBackgroundMask>style="background-image:url(#application.url.webtop#/css/images/bg-mask-dot.png);"</cfif>>
 		<div class="content-main">
 			<div class="content-block">

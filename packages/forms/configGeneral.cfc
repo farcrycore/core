@@ -16,8 +16,13 @@
 		ftAutoGenerateType="fitinside" ftImageWidth="1600" ftImageHeight="1600"
 		ftAllowUpload="true" ftbUploadOnly="true" ftQuality="1.0" ftInterpolation="blackman"
 		ftHint="Upload a large image that will fill the background of the login page">
+	<cfproperty name="webtopBackgroundPosition" type="string" default="" 
+		ftSeq="15" ftFieldset="Webtop / Login Appearance" ftLabel="Login Background Position" 
+		ftType="list"
+		ftList="left top,left center,left bottom,right top,right center,right bottom,center top,:center center,center bottom"
+		ftHint="The css position of the login background position">
 	<cfproperty name="bWebtopBackgroundMask" type="boolean" default="false" 
-		ftSeq="15" ftFieldset="Webtop / Login Appearance" ftLabel="Login Background Mask"
+		ftSeq="16" ftFieldset="Webtop / Login Appearance" ftLabel="Login Background Mask"
 		ftType="boolean"
 		ftHint="Display a subtle texture that will mask the login background image (recommended for low resolution photos)">
 
