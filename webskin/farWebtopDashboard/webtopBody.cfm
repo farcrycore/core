@@ -64,6 +64,19 @@ function lessDashboardCard(cardID) {
 	opacity:1;
 	filter:alpha(opacity=100);
 }
+
+.fc-dashboard-card-small {
+	width:20%;
+}
+.fc-dashboard-card-medium {
+	width:45%;
+}
+.fc-dashboard-card-large {
+	width:70%;
+}
+.fc-dashboard-card-xlarge {
+	width:100%;
+}
 </cfoutput>
 </skin:loadCSS>
 
@@ -159,7 +172,7 @@ function lessDashboardCard(cardID) {
 				<cfset stDashboardCard.webskin = qDashboardCardWebskins.methodname>
 				<cfset stDashboardCard.displayname = application.stCoapi[stDashboardCard.typename].stWebskins[stDashboardCard.webskin].displayname>
 				
-				<cfloop list="bAjax:0,cardHeight:auto,cardClass:fc-card-medium" index="iCardMetadata">
+				<cfloop list="bAjax:0,cardHeight:auto,cardClass:fc-dashboard-card-medium" index="iCardMetadata">
 					<cfif structKeyExists(application.stCoapi[stDashboardCard.typename].stWebskins[stDashboardCard.webskin], listFirst(iCardMetadata,":"))>
 						<cfset stDashboardCard[listFirst(iCardMetadata,":")] = application.stCoapi[stDashboardCard.typename].stWebskins[stDashboardCard.webskin][listFirst(iCardMetadata,":")]>
 					<cfelse>
@@ -181,7 +194,7 @@ function lessDashboardCard(cardID) {
 		<grid:div id="card-container">
 			<cfloop from="1" to="#arrayLen(aDashboardCardWebskins)#" index="i">
 
-				<grid:div id="card-#i#" class="dashboard-card well" style="position:relative;padding:0px;height:100px;width:620px;overflow:hidden;"><!--- #aDashboardCardWebskins[i].cardHeight# --->
+				<grid:div id="card-#i#" class="dashboard-card well #aDashboardCardWebskins[i].cardClass#" style="position:relative;padding:0px;height:#aDashboardCardWebskins[i].cardHeight#;overflow:hidden;"><!---  --->
 					<grid:div id="card-#i#-inner" class="dashboard-card-inner clearfix" style="padding:10px;">
 						<skin:view typename="#aDashboardCardWebskins[i].typename#" webskin="#aDashboardCardWebskins[i].webskin#"  bAjax="#aDashboardCardWebskins[i].bAjax#" ajaxShowloadIndicator="true" ajaxindicatorText="Loading #aDashboardCardWebskins[i].displayName#...">
 					</grid:div>
@@ -211,11 +224,11 @@ function lessDashboardCard(cardID) {
 	initDashboardCardToggle();
 	
  	$container = $j('##card-container');
-		// initialize
-		$container.masonry({
-		  columnWidth: 50,
-		  itemSelector: '.dashboard-card'
-		});
+	// initialize
+	$container.masonry({
+	  columnWidth: 50,
+	  itemSelector: '.dashboard-card'
+	});
 
 
 </cfoutput>
