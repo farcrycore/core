@@ -1,8 +1,6 @@
-
 <cfimport taglib="/farcry/core/tags/grid" prefix="grid" />
 <cfimport taglib="/farcry/core/tags/webskin" prefix="skin" />
 <cfimport taglib="/farcry/core/tags/formtools" prefix="ft" />
-<cfimport taglib="../../tags" prefix="toro" />
 
 
 <skin:loadJS id="jquery" />
@@ -141,7 +139,7 @@ function lessDashboardCard(cardID) {
 			<cfset stDashboardCard.webskin = listLast(iCard,':')>
 			<cfset stDashboardCard.displayname = application.stCoapi[stDashboardCard.typename].stWebskins[stDashboardCard.webskin].displayname>
 			
-			<cfloop list="bAjax:0,cardWidth:auto,cardHeight:auto" index="iCardMetadata">
+			<cfloop list="bAjax:0,cardWidth:auto,cardHeight:auto,cardClass:fc-dashboard-card-medium" index="iCardMetadata">
 				<cfif structKeyExists(application.stCoapi[stDashboardCard.typename].stWebskins[stDashboardCard.webskin], listFirst(iCardMetadata,":"))>
 					<cfset stDashboardCard[listFirst(iCardMetadata,":")] = application.stCoapi[stDashboardCard.typename].stWebskins[stDashboardCard.webskin][listFirst(iCardMetadata,":")]>
 				<cfelse>
@@ -208,15 +206,12 @@ function lessDashboardCard(cardID) {
 
 
 				</grid:div>
-
-
-
-				
+	
 
 			</cfloop>
 		</grid:div>
 <cfelse>
-	<cfoutput><h1>WELCOME TO FARCRY</h1></cfoutput>
+	<cfoutput><h1>Welcome to FarCry</h1></cfoutput>
 </cfif>
 
 <skin:onReady>
