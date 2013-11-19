@@ -377,3 +377,16 @@
 .farcryTrayContainer .ui-icon-none {
 	background-position: -1000px -1000px;
 }
+
+
+/* responsive */
+
+@media (max-width: 768px) {
+	.farcryTrayContainer {
+		margin: 0;
+	}
+	.farcryTrayTitle {
+		display: none;
+	}
+
+}
