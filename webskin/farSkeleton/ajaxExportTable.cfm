@@ -7,7 +7,7 @@
 		<cfdirectory action="create" directory="#application.path.project#/install/sql" />
 	</cfif>
 	<cfloop from="1" to="#arrayLen(stTable.aDeploySQL)#" index="iType">
-		<cffile action="write" file="#url.sqlFilesPath#/DEPLOY-#stTable.aDeploySQL[iType].dbType#_#stTable.name#.sql" output="#stTable.aDeploySQL[iType].sql#">
+		<cffile action="write" file="#url.sqlFilesPath#/DEPLOY-#stTable.aDeploySQL[iType].dbType#_#stTable.name#.sql" output="#stTable.aDeploySQL[iType].sql#" charset="utf-8">
 	</cfloop>
 	
 	<cfloop from="1" to="#arrayLen(stTable.aInsertSQL)#" index="iPage">
@@ -31,7 +31,7 @@
 		</cfsavecontent>
 		
 					   													
-		<cffile action="write" file="#url.sqlFilesPath#/INSERT-#stTable.name#-#iPage#.sql" output="#insertSQL#">
+		<cffile action="write" file="#url.sqlFilesPath#/INSERT-#stTable.name#-#iPage#.sql" output="#insertSQL#" charset="utf-8">
 			
 	</cfloop>
 		
