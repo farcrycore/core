@@ -1,17 +1,22 @@
 <cfsetting requesttimeout="999" />
-
+<!--- 
+ // export table data 
+ - called via AJAX from ./webskin/farCOAPI/webtopBodyExportSkeleton.cfm
+ 	/index.cfm?ajaxmode=1&type=farSkeleton&objectid=#stSkeletonExport.objectid#&view=ajaxExportTable&position=#iTable#&sqlFilesPath=#urlEncodedFormat(stSkeletonExport.exportData.sqlFilesPath)#
+--------------------------------------------------------------------------------->
 <cftry>
 	<cfset stTable = stobj.exportData.aTables[url.position]>
 
-	<cfif NOT directoryExists("#application.path.project#/install/sql")>
-		<cfdirectory action="create" directory="#application.path.project#/install/sql" />
+	<!--- create folder under current project for SQL install scripts --->
+	<cfif NOT directoryExists("#application.path.project#/install")>
+		<cfdirectory action="create" directory="#application.path.project#/install" />
 	</cfif>
+
 	<cfloop from="1" to="#arrayLen(stTable.aDeploySQL)#" index="iType">
-		<cffile action="write" file="#url.sqlFilesPath#/DEPLOY-#stTable.aDeploySQL[iType].dbType#_#stTable.name#.sql" output="#stTable.aDeploySQL[iType].sql#" charset="utf-8">
+		<cffile action="write" file="#stobj.exportData.sqlFilesPath#/DEPLOY-#stTable.aDeploySQL[iType].dbType#_#stTable.name#.sql" output="#stTable.aDeploySQL[iType].sql#" charset="utf-8">
 	</cfloop>
 	
 	<cfloop from="1" to="#arrayLen(stTable.aInsertSQL)#" index="iPage">
-		
 		
 		<cfset insertSQL = stTable.aInsertSQL[iPage]>
 		<cfquery datasource="#application.dsn#" name="qryTemp">
@@ -34,12 +39,9 @@
 		<cffile action="write" file="#url.sqlFilesPath#/INSERT-#stTable.name#-#iPage#.sql" output="#insertSQL#" charset="utf-8">
 			
 	</cfloop>
-		
-	
-	<cfset stTable.bComplete = 1>
 
+	<cfset stTable.bComplete = 1>
 	<cfset setData(stProperties="#stobj#", bSessionOnly="true") />
-	
 
 
 	<!--- RETURN RESULT --->
@@ -54,7 +56,6 @@
 		variable="#toBinary( toBase64( serializeJSON( stResult ) ) )#"
 		/>
 
-	
 	
 	<!--- CATCH ANY ERRORS --->
 	<cfcatch type="any">

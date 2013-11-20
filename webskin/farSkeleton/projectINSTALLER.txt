@@ -1,5 +1,5 @@
 <cfsetting requesttimeout="10000" />
-<cfdirectory action="list" directory="#expandPath('/farcry/projects')#" name="qProjects" />
+<cfdirectory action="list" directory="#expandPath('/farcry/projects')#" name="qProjects" type="dir" />
 
 
 
@@ -82,6 +82,7 @@
 		where		userid=<cfqueryparam cfsqltype="cf_sql_varchar" value="farcry" />
 	</cfquery>
 
+<!---
 	<cfdirectory action="list" directory="#qProjects.directory#/#qProjects.name#/www" name="qWebroot" />
 	<cfloop query="qWebroot">
 	
@@ -92,7 +93,7 @@
 	    </cfif>
 
 	</cfloop>
-	
+--->
 
 	<cflocation url="#cgi.script_name#" />
 </cfif>
@@ -444,7 +445,7 @@
     <cfloop query="contents">
         <cfif contents.type eq "file">
             <cffile action="copy" source="#arguments.source#/#name#" destination="#arguments.destination#/#name#">
-        <cfelseif contents.type eq "dir" AND name neq '.svn'>
+        <cfelseif contents.type eq "dir" AND name neq '.svn' AND name neq '.git'>
             <cfset dCopy(arguments.source & "/" & name, arguments.destination & "/" & name)>
         </cfif>
     </cfloop>
