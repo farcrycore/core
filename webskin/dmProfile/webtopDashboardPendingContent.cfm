@@ -2,7 +2,7 @@
 <!--- @@displayname: Dashboard Pending Content --->
 <!--- @@viewstack: fragment --->
 <!--- @@viewbinding: type --->
-<!--- @@cardClass: fc-dashboard-card-medium --->
+<!--- @@cardClass: fc-dashboard-card-large --->
 
 
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />

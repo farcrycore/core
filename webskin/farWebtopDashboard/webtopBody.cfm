@@ -53,6 +53,28 @@ function lessDashboardCard(cardID) {
 
 <skin:loadCSS>
 <cfoutput>
+.farcry-main {
+	border: none;
+	background: none;
+	padding: 12px;
+}
+##card-container {
+	max-width: 980px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.dashboard-card {
+	border: 1px solid ##ddd;
+	background: white;
+	margin-bottom: 8px;
+	box-shadow: 0 0 2px rgba(0,0,0,0.05);
+}
+
+.dashboard-card-inner {
+	padding: 10px;
+}
+
 .dashboard-card-toggle a {
 	opacity:0.2;
 	filter:alpha(opacity=20);
@@ -64,72 +86,44 @@ function lessDashboardCard(cardID) {
 }
 
 .fc-dashboard-card-small {
-	width:20%;
+	width: 230px;
 }
 .fc-dashboard-card-medium {
-	width:45%;
+	width: 468px;
 }
 .fc-dashboard-card-large {
-	width:70%;
+	width: 706px;
 }
 .fc-dashboard-card-xlarge {
-	width:100%;
+	width: 944px;
 }
+
+@media (max-width: 767px) {
+	.fc-dashboard-card-small,
+	.fc-dashboard-card-medium,
+	.fc-dashboard-card-large,
+	.fc-dashboard-card-xlarge {
+		width: 100%;
+	}
+
+}
+
+
 </cfoutput>
 </skin:loadCSS>
 
 
-<cfset qPermittedWebtopDashboards = application.fapi.getContentType("farWebtopDashboard").getPermittedWebtopDashboards() />
-<!--- 
-<cfparam name="session.webtopDashboardID" default="">
-
-<ft:processForm action="Change Dashboard" url="refresh">
-	<cfset session.webtopDashboardID = form.selectedObjectID>
-</ft:processForm> --->
-
 <cfparam name="url.id" default="dashboard.overview" />
-
 <cfset currentWebtopDashboardID = listLast(url.id,".")>
 
-
-<ft:form>
-
-
-
+<cfset qPermittedWebtopDashboards = application.fapi.getContentType("farWebtopDashboard").getPermittedWebtopDashboards() />
 <cfset aDashboardCardWebskins = arrayNew(1)>
 
 
 
 <cfif isValid("uuid", currentWebtopDashboardID) AND listFindNoCase(valueList(qPermittedWebtopDashboards.objectid),currentWebtopDashboardID)>
+
 	<cfset stCurrentDashboard = application.fapi.getContentObject(typename="farWebtopDashboard", objectid="#currentWebtopDashboardID#")>
-	
-
-	
-	<!--- <cfdump var="#qPermittedWebtopDashboards#"> --->
-<!--- 
-	<cfif qPermittedWebtopDashboards.recordCount GT 1>
-		<cfoutput>
-		<div class="farcry-button-bar btn-group pull-left" style="margin-bottom: 5px">
-		<div class="btn-group">
-			<button data-toggle="dropdown" class="btn btn-group dropdown-toggle" type="button"><i class="fa fa-tachometer fa-2x"></i> Select Dashboard: #stCurrentDashboard.title#</button>
-			<ul class="dropdown-menu">
-				<cfloop query="qPermittedWebtopDashboards">
-				<li>
-					<ft:button 
-						value="Change Dashboard" 
-						text="#qPermittedWebtopDashboards.title#"
-						selectedObjectID="#qPermittedWebtopDashboards.objectid#"
-						validate="false" 
-						renderType="link" /> 
-					<!--- <a href="##" class="" onclick="$selectedObjectID('#qPermittedWebtopDashboards.objectid#'); btnSubmit('#request.farcryform.name#','Change Dashboard'); return false;"><i class="fa fa-tachometer fa-fw"></i> #qPermittedWebtopDashboards.title#</a> --->
-				</li>
-				</cfloop>
-			</ul>
-		</div>
-	</div>
-
-		</cfoutput>
-	</cfif> --->
 	
 	<cfloop list="#stCurrentDashboard.lCards#" index="iCard">
 	
@@ -170,7 +164,7 @@ function lessDashboardCard(cardID) {
 				<cfset stDashboardCard.webskin = qDashboardCardWebskins.methodname>
 				<cfset stDashboardCard.displayname = application.stCoapi[stDashboardCard.typename].stWebskins[stDashboardCard.webskin].displayname>
 				
-				<cfloop list="bAjax:0,cardHeight:auto,cardClass:fc-dashboard-card-medium" index="iCardMetadata">
+				<cfloop list="bAjax:0,cardWidth:auto,cardHeight:auto,cardClass:fc-dashboard-card-medium" index="iCardMetadata">
 					<cfif structKeyExists(application.stCoapi[stDashboardCard.typename].stWebskins[stDashboardCard.webskin], listFirst(iCardMetadata,":"))>
 						<cfset stDashboardCard[listFirst(iCardMetadata,":")] = application.stCoapi[stDashboardCard.typename].stWebskins[stDashboardCard.webskin][listFirst(iCardMetadata,":")]>
 					<cfelse>
@@ -187,29 +181,27 @@ function lessDashboardCard(cardID) {
 	
 </cfif>
 
-<!--- 300,620,940,1260 --->
+
+<!--- output dashboard cards --->
+
 <cfif arrayLen(aDashboardCardWebskins)>
-		<grid:div id="card-container">
-			<cfloop from="1" to="#arrayLen(aDashboardCardWebskins)#" index="i">
+	<grid:div id="card-container">
+		<cfloop from="1" to="#arrayLen(aDashboardCardWebskins)#" index="i">
 
-				<grid:div id="card-#i#" class="dashboard-card well #aDashboardCardWebskins[i].cardClass#" style="position:relative;padding:0px;height:#aDashboardCardWebskins[i].cardHeight#;overflow:hidden;"><!---  --->
-					<grid:div id="card-#i#-inner" class="dashboard-card-inner clearfix" style="padding:10px;">
-						<skin:view typename="#aDashboardCardWebskins[i].typename#" webskin="#aDashboardCardWebskins[i].webskin#"  bAjax="#aDashboardCardWebskins[i].bAjax#" ajaxShowloadIndicator="true" ajaxindicatorText="Loading #aDashboardCardWebskins[i].displayName#...">
-					</grid:div>
-
-					<cfoutput>
+			<grid:div id="card-#i#" class="dashboard-card #aDashboardCardWebskins[i].cardClass#" style="position:relative;padding:0px;height:#aDashboardCardWebskins[i].cardHeight#;overflow:hidden;"><!---  --->
+				<grid:div id="card-#i#-inner" class="dashboard-card-inner clearfix">
+					<skin:view typename="#aDashboardCardWebskins[i].typename#" webskin="#aDashboardCardWebskins[i].webskin#"  bAjax="#aDashboardCardWebskins[i].bAjax#" ajaxShowloadIndicator="true" ajaxindicatorText="Loading #aDashboardCardWebskins[i].displayName#...">
+				</grid:div>
+				<cfoutput>
 					<div id="card-#i#-toggle" class="dashboard-card-toggle" style="position:absolute;bottom:0px;display:none;width:100%;text-align:center;">
 						<a id="card-#i#-show-more" href="##" class="card-show-more" onclick="return moreDashboardCard('card-#i#');"><i class="fa fa-caret-square-o-down fa-2x"></i></a>
 						<a id="card-#i#-show-less" href="##" class="card-show-less" style="display:none;" onclick="return lessDashboardCard('card-#i#');"><i class="fa fa-caret-square-o-up fa-2x"></i></a>
 					</div>
-					</cfoutput>
+				</cfoutput>
+			</grid:div>
 
-
-				</grid:div>
-	
-
-			</cfloop>
-		</grid:div>
+		</cfloop>
+	</grid:div>
 <cfelse>
 	<cfoutput><h1>Welcome to FarCry</h1></cfoutput>
 </cfif>
@@ -221,13 +213,11 @@ function lessDashboardCard(cardID) {
  	$container = $j('##card-container');
 	// initialize
 	$container.masonry({
-	  columnWidth: 50,
-	  itemSelector: '.dashboard-card'
+	  "gutter": 8,
+	  "itemSelector": '.dashboard-card'
 	});
 
 
 </cfoutput>
 </skin:onReady>
 
-
-</ft:form>

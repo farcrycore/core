@@ -2,7 +2,7 @@
 <!--- @@displayname: Dashboard Draft Content --->
 <!--- @@viewstack: fragment --->
 <!--- @@viewbinding: type --->
-<!--- @@cardClass: fc-dashboard-card-medium --->
+<!--- @@cardClass: fc-dashboard-card-large --->
 
 
 
@@ -59,7 +59,7 @@
 		</table>
 	</cfoutput>
 <cfelse>
-	<cfoutput>No items in draft.</cfoutput>
+	<cfoutput><p>No items in draft.</p></cfoutput>
 </cfif>
 
 <cfsetting enablecfoutputonly="false" />
