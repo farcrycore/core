@@ -65,6 +65,7 @@ function lessDashboardCard(cardID) {
 }
 
 .dashboard-card {
+	min-height: 200px;
 	border: 1px solid ##ddd;
 	background: white;
 	margin-bottom: 8px;
