@@ -93,12 +93,11 @@
 			SELECT count(objectid) as counter
 			FROM farWebtopDashboard
 			</cfquery>
-			<cfcatch type="any">
-			</cfcatch>
-
 			<cfif qWebtopDashboards.counter GT 0>
 				<cfset result = 1>
 			</cfif>
+			<cfcatch type="any">
+			</cfcatch>
 		</cftry>
 
 		<cfreturn result>
