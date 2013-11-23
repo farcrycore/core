@@ -70,34 +70,6 @@
 		ftHint="e.g. ##CC3333">
 
 
-	<!--- canonical methods --->
-
-	<cffunction name="getCanonicalDomain" output="false" returntype="string">
-		<cfset var domain = application.fapi.getConfig("environment", "canonicalDomain")>
-		<cfif NOT len(domain)>
-			<cfset domain = "">
-		</cfif>
-		<cfreturn domain>
-	</cffunction>
-
-	<cffunction name="getCanonicalProtocol" output="false" returntype="string">
-		<cfset var protocol = application.fapi.getConfig("environment", "canonicalProtocol")>
-		<cfif NOT len(protocol)>
-			<cfif cgi.https eq "off">
-				<cfset protocol = "http">
-			<cfelse>
-				<cfset protocol = "https">
-			</cfif>
-		</cfif>
-		<cfreturn protocol>
-	</cffunction>
-
-	<cffunction name="getCanonicalURL" output="false" returntype="string">
-		<cfset var canonical = "#getCanonicalProtocol()#://#getCanonicalDomain()#">
-		<cfreturn canonical>
-	</cffunction>
-
-
 	<!--- environment methods --->
 
 	<cffunction name="getEnvironment" output="false" returntype="string">

@@ -1,30 +1,63 @@
 <cfcomponent displayname="Canonical URL Functions" output="false">
 
 	<cffunction name="getCanonicalURL" returntype="string" output="false">
+		<cfargument name="objectid" type="string" required="false" default="">
+		<cfargument name="typename" type="string" required="false" default="">
+		<cfargument name="stObject" type="struct" required="false" default="#structNew()#">
+		<cfargument name="bUseHostname" type="boolean" required="false" default="false">
 
 		<cfset var canonical = "">
+		<cfset var protocol = getCanonicalProtocol()>
+		<cfset var domain = getCanonicalDomain(bUseHostname=arguments.bUseHostname)>
+		<cfset var objectFU = getCanonicalFU(argumentCollection=arguments)>
+
+		<!--- build canonical, fall back to absolute path when domain name is missing --->
+		<cfif len(protocol) AND len(domain) AND len(objectFU)>
+			<cfset canonical = protocol & "://" & domain & objectFU>
+		<cfelseif len(objectFU)>
+			<cfset canonical = objectFU>
+		</cfif>
+
+		<cfreturn canonical>
+	</cffunction>
+
+
+	<cffunction name="getCanonicalFU" returntype="string" output="false">
+		<cfargument name="objectid" type="string" required="false" default="">
+		<cfargument name="typename" type="string" required="false" default="">
+		<cfargument name="stObject" type="struct" required="false" default="#structNew()#">
+
 		<cfset var objectFU = "">
 		<cfset var currentFU = "">
-		<cfset var protocol = "">
-		<cfset var domain = "">
 		<cfset var stNav = "">
 
 		<cfimport taglib="/farcry/core/tags/navajo" prefix="nj" />
 
-		<cfif refindnocase("^/index.cfm",cgi.script_name) AND structKeyExists(request, "stObj") and isDefined("request.stObj.objectId")>
+		<!--- set objectid / typename --->
+		<cfif NOT structIsEmpty(arguments.stObject)>
+			<cfset arguments.objectid = arguments.stObject.objectid>
+			<cfset arguments.typename = arguments.stObject.typename>
+		<cfelseif len(arguments.objectid) AND NOT len(arguments.typename) AND structKeyExists(request, "stObj")>
+			<cfset arguments.typename = request.stObj.typename>
+		<cfelseif structKeyExists(request, "stObj")>
+			<cfset arguments.objectid = request.stObj.objectid>
+			<cfset arguments.typename = request.stObj.typename>
+		</cfif>
+
+		<cfif isValid("uuid", arguments.objectid) AND len(arguments.typename)>
 
 			<!--- get the object FU --->
-			<nj:getNavigation objectId="#request.stObj.objectId#" r_stobject="stNav" />
+			<nj:getNavigation objectId="#arguments.objectid#" r_stobject="stNav" />
 			<cfif isStruct(stNav) and structKeyExists(stNav, "objectid") AND len(stNav.objectid)>
 				<!--- if the object is in the tree look up the nav node --->
 				<cfset objectFU = application.fapi.getLink(typename="dmNavigation", objectid=stNav.objectID)>
 			<cfelse>
 				<!--- otherwise look up the object itself --->
-				<cfset objectFU = application.fapi.getLink(typename=request.stObj.typename, objectid=request.stObj.objectid)>
+				<cfset objectFU = application.fapi.getLink(typename=arguments.typename, objectid=arguments.objectid)>
 			</cfif>
 
-			<!--- get the current FU --->
-			<cfif structKeyExists(url, "furl") AND len(url.furl)>
+			<!--- match the current friendly URL if this is the request object --->
+			<cfif structKeyExists(request, "stObj") AND arguments.objectid eq request.stObj.objectid AND structKeyExists(url, "furl") AND len(url.furl)>
 				<cfset currentFU = application.fapi.fixURL(url.furl)>
 				<!--- use the current FU if the object FU is just an objectid --->
 				<cfif len(objectFU) gt 1 AND isValid("uuid", right(objectFU, len(objectFU)-1))>
@@ -36,35 +69,40 @@
 				</cfif>
 			</cfif>
 
-			<!--- get the production protocol and domain name --->
-			<cfset protocol = getCanonicalProtocol()>
-			<cfset domain = getCanonicalDomain()>
-
-			<!--- build canonical --->
-			<cfif len(protocol) AND len(domain) AND len(objectFU)>
-				<cfset canonical = protocol & "://" & domain & objectFU>
-			<cfelseif len(objectFU)>
-				<cfset canonical = objectFU>
-			</cfif>
-
 		</cfif>
 
-		<cfreturn canonical>
+		<cfreturn objectFU>
 	</cffunction>
 
 
 	<cffunction name="getCanonicalDomain" returntype="string" output="false">
-		<cfset var oEnvironment = application.fapi.getContentType(typename="configEnvironment")>
-		<cfset var domain = oEnvironment.getCanonicalDomain()>
+		<cfargument name="bUseHostname" type="boolean" required="false" default="false">
 
+		<cfset var domain = application.fapi.getConfig("environment", "canonicalDomain", "")>
+		<cfif arguments.bUseHostname AND NOT len(domain)>
+			<cfset domain = CGI.HTTP_HOST>
+		</cfif>
 		<cfreturn domain>
 	</cffunction>
 
 	<cffunction name="getCanonicalProtocol" returntype="string" output="false">
-		<cfset var oEnvironment = application.fapi.getContentType(typename="configEnvironment")>
-		<cfset var protocol = oEnvironment.getCanonicalProtocol()>
-
+		<cfset var protocol = application.fapi.getConfig("environment", "canonicalProtocol", "")>
+		<cfif NOT len(protocol)>
+			<cfif cgi.https eq "off">
+				<cfset protocol = "http">
+			<cfelse>
+				<cfset protocol = "https">
+			</cfif>
+		</cfif>
 		<cfreturn protocol>
 	</cffunction>
+
+	<cffunction name="getCanonicalBaseURL" returntype="string" output="false">
+		<cfargument name="bUseHostname" type="boolean" required="false" default="true">
+		<!--- default to using the current hostname when generating a base URL by itself --->
+		<cfset var baseURL = "#getCanonicalProtocol()#://#getCanonicalDomain(bUseHostname=arguments.bUseHostname)#">
+		<cfreturn baseURL>
+	</cffunction>
+
 
 </cfcomponent>
