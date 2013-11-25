@@ -24,7 +24,7 @@
 		<cfset var description = getPreferredProperty(stObject=stObj, lProperties=arguments.lProperties)>
 
 		<cfif len(description) gt 200>
-			<cfset description = left(description, 200)>
+			<cfset description = left(description, 200) & "...">
 		</cfif>
 
 		<cfreturn description>
