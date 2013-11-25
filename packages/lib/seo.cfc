@@ -1,4 +1,100 @@
-<cfcomponent displayname="Canonical URL Functions" output="false">
+<cfcomponent displayname="SEO Functions" output="false">
+
+	<!--- seo / metadata methods --->
+
+	<cffunction name="getTitle" returntype="string" output="false">
+		<cfargument name="objectid" type="string" required="false" default="">
+		<cfargument name="typename" type="string" required="false" default="">
+		<cfargument name="stObject" type="struct" required="false" default="#structNew()#">
+		<cfargument name="lProperties" type="string" required="false" default="seoTitle,title,label">
+
+		<cfset var stObj = getPreferredObject(argumentCollection=arguments)>
+		<cfset var title = getPreferredProperty(stObject=stObj, lProperties=arguments.lProperties)>
+
+		<cfreturn title>
+	</cffunction>
+
+	<cffunction name="getDescription" returntype="string" output="false">
+		<cfargument name="objectid" type="string" required="false" default="">
+		<cfargument name="typename" type="string" required="false" default="">
+		<cfargument name="stObject" type="struct" required="false" default="#structNew()#">
+		<cfargument name="lProperties" type="string" required="false" default="seoDescription,extendedmetadata,teaser,body">
+
+		<cfset var stObj = getPreferredObject(argumentCollection=arguments)>
+		<cfset var description = getPreferredProperty(stObject=stObj, lProperties=arguments.lProperties)>
+
+		<cfif len(description) gt 200>
+			<cfset description = left(description, 200)>
+		</cfif>
+
+		<cfreturn description>
+	</cffunction>
+
+	<cffunction name="getKeywords" returntype="string" output="false">
+		<cfargument name="objectid" type="string" required="false" default="">
+		<cfargument name="typename" type="string" required="false" default="">
+		<cfargument name="stObject" type="struct" required="false" default="#structNew()#">
+		<cfargument name="lProperties" type="string" required="false" default="seoKeywords,metaKeywords">
+
+		<cfset var stObj = getPreferredObject(argumentCollection=arguments)>
+		<cfset var keywords = getPreferredProperty(stObject=stObj, lProperties=arguments.lProperties)>
+
+		<cfreturn keywords>
+	</cffunction>
+
+
+	<cffunction name="getPreferredObject" returntype="struct" output="false">
+		<cfargument name="objectid" type="string" required="false" default="">
+		<cfargument name="typename" type="string" required="false" default="">
+		<cfargument name="stObject" type="struct" required="false" default="#structNew()#">
+
+		<cfset var stObj = structNew()>
+
+		<!--- get stObj --->
+		<cfif NOT structIsEmpty(arguments.stObject)>
+			<cfset stObj = arguments.stObject>
+		<cfelseif len(arguments.objectid) AND len(arguments.typename)>
+			<cfset stObj = application.fapi.getContentObject(typename=arguments.typename, objectid=arguments.objectid)>
+		<cfelseif len(arguments.objectid)>
+			<cfset stObj = application.fapi.getContentObject(objectid=arguments.objectid)>
+		<cfelseif structKeyExists(request, "stObj")>
+			<cfset stObj = request.stObj>
+		<cfelse>
+			<cfthrow message="Missing an objectid, stObject, or request.stObj">
+		</cfif>
+
+		<cfreturn stObj>
+	</cffunction>
+
+	<cffunction name="getPreferredProperty" returntype="string" output="false">
+		<cfargument name="stObject" type="struct" required="true">
+		<cfargument name="lProperties" type="string" required="false" default="seoTitle,title,label">
+		<cfargument name="stripHTML" type="boolean" required="false" default="true">
+
+		<cfset var value = "">
+		<cfset var item = "">
+
+		<cfif NOT structIsEmpty(arguments.stObject)>
+			<cfloop list="#arguments.lProperties#" index="item">
+				<!--- return the first matching property value --->
+				<cfif structKeyExists(arguments.stObject, item) AND len(trim(arguments.stObject[item]))>
+					<cfif arguments.stripHTML>
+						<cfset value = reReplace(arguments.stObject[item], "<[^>]*>", "", "all")>
+					<cfelse>
+						<cfset value = arguments.stObject[item]>
+					</cfif>
+					<cfif len(trim(value))>
+						<cfbreak>
+					</cfif>
+				</cfif>
+			</cfloop>
+		</cfif>
+
+		<cfreturn value>
+	</cffunction>
+
+
+	<!--- canonical methods --->
 
 	<cffunction name="getCanonicalURL" returntype="string" output="false">
 		<cfargument name="objectid" type="string" required="false" default="">
@@ -33,7 +129,7 @@
 
 		<cfimport taglib="/farcry/core/tags/navajo" prefix="nj" />
 
-		<!--- set objectid / typename --->
+		<!--- get objectid / typename --->
 		<cfif NOT structIsEmpty(arguments.stObject)>
 			<cfset arguments.objectid = arguments.stObject.objectid>
 			<cfset arguments.typename = arguments.stObject.typename>
