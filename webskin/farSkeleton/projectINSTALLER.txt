@@ -4,7 +4,6 @@
 
 
 
-
 <cfif structKeyExists(form, "installAction") AND form.installAction EQ "Update Constructor">
 	<cffile action="read" file="#qProjects.directory#/#qProjects.name#/www/farcryConstructor.cfm" variable="farcryConstructor" />
 

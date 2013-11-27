@@ -135,47 +135,102 @@
 	</cffunction>
 
 	<cffunction name="zipSQLData">
-		<cfif fileExists("#application.path.webroot#/projectdata.zip")>
-			<cffile action="delete"  file="#application.path.webroot#/projectdata.zip">	
+		<!--- build zip in temp directory --->
+		<cfset var zipFile = "#getTempDirectory()##application.applicationname#-data.zip" />
+		
+		<cfif fileExists(zipFile)>
+			<cffile action="delete"  file="#zipFile#">	
 		</cfif>
 		
 		<cfzip action="zip" recurse="true" 
 			source="#application.path.project#/install"
-			file="#application.path.webroot#/projectdata.zip" />
+			file="#zipFile#" />
 		
-		<cfreturn "projectdata.zip">
+		<cfreturn zipFile>
 
 	</cffunction>
 
-	<cffunction name="buildInstaller" hint="Package code into a zip for the installer.">
-		<cfargument name="objectid">
-
+	<cffunction name="zipInstaller" hint="Package code into a ZIP for the installer; excludes media.">
 		
+		<cfset var zipFile = "#getTempDirectory()##application.applicationname#-project.zip">
+		<cfset var excludeDir = ".git|.svn|mediaArchive|www/cache|www/images|www/files">
 
+		<cfset var qProject = getDirContents(
+							directory=application.path.project, 
+							ignoreDirectories=excludeDir, 
+							ignoreFiles="project.zip")>
 
+		<cfset var qCore = getDirContents(
+							directory=expandpath("/farcry/core"), 
+							ignoreDirectories=excludeDir, 
+							ignoreFiles="project.zip")>
 
-		<!--- create project_export directory --->
-		<cfdirectory action="create" directory="#application.path.project#/project_export/farcry" mode="777" />
+		<cfset var qPlugins = getDirContents(
+							directory=expandpath("/farcry/plugins"), 
+							ignoreDirectories=excludeDir, 
+							ignoreFiles="project.zip")>
 		
+		<!--- create ZIP for entire project, core and plugins --->
+		<cfzip action="zip" file="#zipFile#" overwrite="true">
 
-		<!--- copy core, plugins, and filtered project files into installer --->
-		<!--- TODO: all these file writes should be in a separate function; only SQL should be exported here --->
-		<cfset dCopy(source="#expandPath('/farcry/core')#", destination="#application.path.project#/project_export/farcry/core", ignore="") />
-		<cfset dCopy(source="#expandPath('/farcry/plugins')#", destination="#application.path.project#/project_export/farcry/plugins", ignore="") /> 
-		<cfset dCopy(source="#application.path.project#", destination="#application.path.project#/project_export/farcry/projects/#application.applicationName#", ignore="www,project_export,install,securefiles") />
-		<cfset dCopy(source="#application.path.webroot#", destination="#application.path.project#/project_export/farcry/projects/#application.applicationName#/www", ignore="WEB-INF,farcry,project.zip,cache,images,files") />
-		
+			<cfloop query="qProject">
+				<cfif qproject.type neq "Dir">
+					<cfset filepath = "farcry/projects/" & application.projectDirectoryName & replacenocase(qProject.directory, application.path.project, "") & "/" & qproject.name>
+					<cfzipparam
+						source="#qProject.directory#/#qproject.name#"
+						entrypath="#filepath#" />
+				</cfif>
+			</cfloop>
+
+			<cfloop query="qCore">
+				<cfif qCore.type neq "Dir">
+					<cfset filepath = "farcry/core/" & replacenocase(qCore.directory, expandpath("/farcry/core"), "") & "/" & qCore.name>
+					<cfzipparam
+						source="#qCore.directory#/#qCore.name#"
+						entrypath="#filepath#" />
+				</cfif>
+			</cfloop>
+
+			<cfloop query="qPlugins">
+				<cfif qPlugins.type neq "Dir">
+					<cfset filepath = "farcry/plugins/" & replacenocase(qPlugins.directory, expandpath("/farcry/plugins"), "") & "/" & qPlugins.name>
+					<cfzipparam
+						source="#qPlugins.directory#/#qPlugins.name#"
+						entrypath="#filepath#" />
+				</cfif>
+			</cfloop>
+
+		</cfzip>
 		<!--- create installer CFM into ./farcry --->
 		<!--- TODO: needs blank Application.cfm to block framework interference --->
-		<cffile action="copy" source="#expandPath('/farcry/core')#/webskin/farSkeleton/projectINSTALLER.txt" destination="#application.path.project#/project_export/farcry" />
-		<cffile action="rename" source="#application.path.project#/project_export/farcry/projectINSTALLER.txt" destination="#application.path.project#/project_export/farcry/index.cfm">
+		<!--- <cffile action="copy" source="#expandPath('/farcry/core')#/webskin/farSkeleton/projectINSTALLER.txt" destination="#application.path.project#/project_export/farcry" /> --->
+		<!--- <cffile action="rename" source="#application.path.project#/project_export/farcry/projectINSTALLER.txt" destination="#application.path.project#/project_export/farcry/index.cfm"> --->
 		
-		<!--- create project install folder for SQL scripts --->
-		<!--- TODO: SQL should be exported to existing project ./install instead; add README with export timestamp --->
-		<cfdirectory action="create" directory="#application.path.project#/project_export/farcry/projects/#application.applicationName#/install" />
+		<cfreturn zipfile />
 
+	</cffunction>
 
+	<cffunction name="getDirContents" hint="Recursive CFDIRECTORY with ignore option and remove hidden by default. Ignore delimited by pipes." access="private">
+		<cfargument name="directory" type="string" default="">
+		<cfargument name="ignoreFiles" type="string" default="">
+		<cfargument name="ignoreDirectories" type="string" default=".git|.svn">
+		<cfargument name="showHidden" type="boolean" default="false">
+		<cfset var qDir = "">
+		<cfset var aDir = listtoarray(arguments.ignoreDirectories, "|")>
 
+		<cfdirectory action="list" directory="#expandPath(arguments.directory)#" name="qDir" recurse="true" />
+		
+		<cfquery dbtype="query" name="qDir">
+		SELECT * FROM qDir 
+		WHERE 0=0
+		<cfif len(arguments.ignoreFiles)>AND name NOT IN (#ListQualify(arguments.ignoreFiles, "'", "|")#)</cfif>
+		<cfif NOT arguments.showhidden>AND attributes <> 'H'</cfif>
+		<cfloop from="1" to="#arrayLen(aDir)#" index="i">
+			AND directory NOT LIKE '%/#aDir[i]#%'
+		</cfloop>
+		</cfquery>
+
+		<cfreturn qDir>
 	</cffunction>
 
 

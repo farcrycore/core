@@ -25,9 +25,18 @@
 <!--- ## create zip of data only and download --->
 <ft:processForm action="Download Data">
 	<cfset zipFile = oSkeleton.zipSQLDATA()>
-	<skin:location url="/#zipFile#" />
+	<cfheader name="Content-disposition" value="attachment;filename=#application.applicationname#-data.zip" />
+	<cfheader name="content-length" value="#getFileInfo(zipFile).size#" />
+	<cfcontent type="application/zip" file="#zipFile#" reset="true" />
 </ft:processForm>
 
+<!--- ## create zip of code and data only and download --->
+<ft:processForm action="Download Code And Data">
+	<cfset zipFile = oSkeleton.zipInstaller()>
+	<cfheader name="Content-disposition" value="attachment;filename=#application.applicationname#-project.zip" />
+	<cfheader name="content-length" value="#getFileInfo(zipFile).size#" />
+	<cfcontent type="application/zip" file="#zipFile#" reset="true" />
+</ft:processForm>
 
 <ft:processForm action="Delete Old Export" url="refresh">
 	<cfset stResult = oSkeleton.deleteOldExport() />
@@ -85,20 +94,20 @@
 	<h3><i class="fa fa-book"></i> Project Data Only (#numberFormat(SQLDataSize, "99.99")# Mb)</h3>
 	<p>FarCry project data can be used to replace the data in an existing project, perform a database only installation or database migration.</p>
 	</cfoutput>
-	<ft:button value="Download Data" icon="fa fa-download" class="btn-primary btn-large" />
+	<ft:button value="Download Data" icon="fa fa-download" class="btn-primary btn-large" disableOnSubmit="false" />
 	<ft:button value="Refresh Data" icon="fa fa-repeat" class="btn-large" />
 	<cfoutput></div></cfoutput>
 	
 	<cfoutput><div style="padding-top: 15px">
 	<h3><i class="fa fa-code"></i> Project Code &amp; Data</h3></cfoutput>
 	<cfoutput><p>This export includes the project data, code base, core framework and all installed plugins.</p></cfoutput>
-	<ft:button value="Download Code &amp; Data" icon="fa fa-download" class="btn-primary btn-large" />
+	<ft:button value="Download Code And Data" icon="fa fa-download" class="btn-primary btn-large" disableOnSubmit="false" />
 	<cfoutput></div></cfoutput>
 	
 	<cfoutput><div style="padding-top: 15px">
 	<h3><i class="fa fa-picture-o"></i> Project Media, Code, &amp; Data</h3></cfoutput>
 	<cfoutput><p>Choose this option only if you want the complete kit and dice, including all images and files.</p></cfoutput>
-	<ft:button value="Download Media, Code, &amp; Data" icon="fa fa-download" class="btn-primary btn-large disabled" />
+	<ft:button value="Download Media, Code, &amp; Data" icon="fa fa-download" class="btn-primary btn-large disabled" disableOnSubmit="false" />
 	<cfoutput></div></cfoutput>
 </ft:form>
 
