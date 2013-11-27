@@ -1663,7 +1663,7 @@ default handlers
 		
 		<!--- Get the object if not passed in --->
 		<cfif not structkeyexists(arguments,"stObject")>
-			<cfset arguments.stObject = getData(objectid=arguments.objectid,typename=arguments.typename) />
+			<cfset arguments.stObject = application.fapi.getContentObject(objectid=arguments.objectid,typename=arguments.typename) />
 		</cfif>
 		
 		<!--- Determine which property to use if not passed in --->
