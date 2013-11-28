@@ -1486,6 +1486,7 @@
 		<cfif NOT len(arguments.stObject[arguments.stMetadata.name])>
 			<cfset stResult = structnew() />
 			<cfset stResult.method = "none" />
+			<cfset stResult.path = "" />
 			<cfset stResult.error = "No file defined" />
 			<cfreturn stResult />
 		</cfif>
