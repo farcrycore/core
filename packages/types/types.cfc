@@ -1659,34 +1659,38 @@ default handlers
 		
 		
 		<cfset var i = "" />
-		<cfset var stResult	= '' />
+		<cfset var stResult = structnew() />
+		<cfset stResult.path = "" />
 		
 		<!--- Get the object if not passed in --->
-		<cfif not structkeyexists(arguments,"stObject")>
+		<cfif isValid("uuid", arguments.objectid) AND NOT structkeyexists(arguments,"stObject")>
 			<cfset arguments.stObject = application.fapi.getContentObject(objectid=arguments.objectid,typename=arguments.typename) />
 		</cfif>
 		
-		<!--- Determine which property to use if not passed in --->
-		<cfif not structkeyexists(arguments,"fieldname")>
-			<!--- Name of the file field has not been sent. We need to loop though the type to determine which field contains the file path --->
-			<cfloop list="#structKeyList(application.types[arguments.stObject.typename].stprops)#" index="i">
-				<cfif application.fapi.getPropertyMetadata(arguments.stObject.typename,i,"ftType","") EQ "file">
-					<cfset arguments.stMetadata = application.types[arguments.stObject.typename].stprops[i].metadata />
-					<cfbreak />
+		<cfif structkeyexists(arguments,"stObject")>
+			<!--- Determine which property to use if not passed in --->
+			<cfif not structkeyexists(arguments,"fieldname")>
+				<!--- Name of the file field has not been sent. We need to loop though the type to determine which field contains the file path --->
+				<cfloop list="#structKeyList(application.types[arguments.stObject.typename].stprops)#" index="i">
+					<cfif application.fapi.getPropertyMetadata(arguments.stObject.typename,i,"ftType","") EQ "file">
+						<cfset arguments.stMetadata = application.types[arguments.stObject.typename].stprops[i].metadata />
+						<cfbreak />
+					</cfif>
+				</cfloop>
+				
+				<!--- Throw an error if the field couldn't be determined --->
+				<cfif not structkeyexists(arguments,"stMetadata")>
+					<cfset stResult.message = "Fieldname for the file reference could not be determined" />
+					<cfreturn stResult />
 				</cfif>
-			</cfloop>
-			
-			<!--- Throw an error if the field couldn't be determined --->
-			<cfif not structkeyexists(arguments,"stMetadata")>
-				<cfset stResult = structnew() />
-				<cfset stResult.message = "Fieldname for the file reference could not be determined" />
-				<cfreturn stResult />
+			<cfelse>
+				<cfset arguments.stMetadata = application.stCOAPI[arguments.stObject.typename].stProps[arguments.fieldname].metadata />
 			</cfif>
-		<cfelse>
-			<cfset arguments.stMetadata = application.stCOAPI[arguments.stObject.typename].stProps[arguments.fieldname].metadata />
+
+			<cfset stResult = application.formtools[arguments.stMetadata.ftType].oFactory.getFileLocation(argumentcollection=arguments) />
 		</cfif>
-		
-		<cfreturn application.formtools[arguments.stMetadata.ftType].oFactory.getFileLocation(argumentcollection=arguments) />
+
+		<cfreturn stResult>
 	</cffunction>
 	
 </cfcomponent>
