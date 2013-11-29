@@ -155,6 +155,18 @@
 				<cfset stResult["success"] = false>
 				<cfset stResult["error"] = appendError(stResult["error"], stCmdResult.error)>
 			</cfif>
+			<!--- check for unpushed commits --->
+			<cfset stCmdResult = executeGitCommand("log --pretty=oneline --abbrev-commit @{u}..HEAD", arguments.path)>
+			<cfset stResult["isUnpushed"] = false>
+			<cfset stResult["unpushedFiles"] = "">
+			<cfif stCmdResult.success>
+				<cfset stResult["isUnpushed"] = len(stCmdResult.output) ? true : false>
+				<cfset stResult["unpushedFiles"] = stCmdResult.output>
+			<cfelse>
+				<cfset stResult["success"] = false>
+				<cfset stResult["error"] = appendError(stResult["error"], stCmdResult.error)>
+			</cfif>
+
 
 		<cfelseif bSVNDirExists>
 			<cfset stResult["type"] = "svn">
