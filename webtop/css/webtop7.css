@@ -1189,8 +1189,9 @@ legend + .control-group {
 	min-width: 0;
 	max-width: 50px;
 }
-
-
+.typeahead {
+	z-index: 0;
+}
 .controls textarea {
 	min-height: 80px;
 }
