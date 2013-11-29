@@ -36,10 +36,6 @@
 
 
 body {
-	/*font-family: Arial, Helvetica, sans-serif;*/
-	/*font-family: 'Droid Sans', sans-serif;*/
-	/*font-family: 'Source Sans Pro', sans-serif;*/
-	/*font-family: 'Open Sans', sans-serif;*/
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 14px;
 	line-height: 20px;
@@ -286,7 +282,6 @@ a:hover {
 	font-weight: normal;
 	line-height: 20px;
 	color: #333333;
-	/*white-space: nowrap;*/
 	min-width: 120px;
 }
 .dropdown .dropdown-menu.dropdown-mega-menu li:hover > a,
@@ -431,26 +426,27 @@ a:hover {
 #favourites a {
 	display:inline-block;
 }
-	 #favourites .favourited {
-		padding-right:2px;
-		display:inline-block;
-	}
-	#favourites .favourited.active {
-		color:#ffff00;
-	}
-	#favourites .favourites-toggle {
-		padding-left:2px;
-		display:inline-block;
-	}
-	#favourites .dropdown-menu .none { 
-		font-weight:normal;
-		color: #333333;
-		filter: none;
-		padding: 3px 14px; 
-	}
-	#favourites .dropdown-menu a { 
-		display:block;
-	}
+
+#favourites .favourited {
+	padding-right:2px;
+	display:inline-block;
+}
+#favourites .favourited.active {
+	color:#ffff00;
+}
+#favourites .favourites-toggle {
+	padding-left:2px;
+	display:inline-block;
+}
+#favourites .dropdown-menu .none { 
+	font-weight:normal;
+	color: #333333;
+	filter: none;
+	padding: 3px 14px; 
+}
+#favourites .dropdown-menu a { 
+	display:block;
+}
 
 
 .farcry-main {
@@ -856,15 +852,6 @@ body .uniForm .focused {
 
 
 
-/* customising bootstrap pagination */
-/* comment out for now... this selector will be slow */
-/*
-.pagination > ul > li > a,
-.pagination > ul > li > span {
-	border-radius: 0;
-}
-*/
-
 /* customise bootstrap alerts */
 .alert {
 	border-radius: 0;
@@ -1241,6 +1228,12 @@ select, textarea, input[type="text"], input[type="password"], input[type="dateti
 }
 
 
+#tooltip h3 {
+	font-size: 15px;
+	line-height: 18px;
+}
+
+
 /* fix br clear */
 br[style*="clear:both"] {
 	display: none;
@@ -1260,11 +1253,7 @@ br[style*="clear:both"] {
 	padding: 0;
 }
 
-#tooltip h3 {
-	font-size: 15px;
-	line-height: 18px;
-}
-
+/* print styles */
 @media print {
 	body.webtop {
 		padding-top:0;
