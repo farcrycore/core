@@ -118,7 +118,6 @@
 				<cfset id = qWebtopDashboards.objectid />
 
 				<cfset stResult.children[id] = structnew() />
-				<cfset stResult.children[id].altexpansion = 0 />
 				<cfset stResult.children[id].type = "subsection" />
 				<cfset stResult.children[id].mergetype = "" />
 				<cfset stResult.children[id].sequence = "0" />
@@ -138,7 +137,6 @@
 			<cfset id = 'Overview' />
 
 			<cfset stResult.children[id] = structnew() />
-			<cfset stResult.children[id].altexpansion = 0 />
 			<cfset stResult.children[id].type = "subsection" />
 			<cfset stResult.children[id].mergetype = "" />
 			<cfset stResult.children[id].sequence = "0" />

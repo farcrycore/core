@@ -274,9 +274,6 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<!--- Define default label type --->
 		<cfparam name="arguments.item.labelType" default="" />
 		
-		<!--- Default sidebar expander behaviour --->
-		<cfparam name="arguments.item.altexpansion" default="0" />
-		
 		<!--- Update children --->
 		<cfparam name="arguments.item.children" default="#structNew()#" />
 		<cfloop collection="#arguments.item.children#" item="id">
