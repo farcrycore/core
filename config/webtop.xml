@@ -4,7 +4,7 @@
 		<subsection id="webtopdashboard" sequence="100" typename="farWebtopDashboard" bodyView="webtopBody" label="Dashboard" />
 	</section>
 	<section id="site" sequence="2000" permission="MainNavSiteTab" label="Site" altexpansion="400" description="Manage your website's menu structure and HTML content">
-		<subsection id="tree" sequence="1" permission="MainNavSiteTab" label="Navigation" sidebar="site/sidebar.cfm" content="inc/content_overview.html" typename="dmNavigation">
+		<subsection id="tree" sequence="1" permission="MainNavSiteTab" label="Navigation" typename="dmNavigation">
 			<menu id="nav" sequence="1" label="Site Tree">
 				<menuitem id="home" sequence="1" label="Site Navigation" typename="dmNavigation" />
 				<menuitem id="utility" sequence="2" label="Utility Navigation" typename="dmNavigation" urlparameters="alias=hidden" />
