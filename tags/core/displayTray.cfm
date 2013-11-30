@@ -88,11 +88,9 @@
 		};	
 		
 		
-		// only show the tray if we are not in a frame
-		if (top === self) { 		
-			$j("body").append("<div id='farcryTray'></div>");	
-			$fc.loadTray();
-		}	
+		// show the tray
+		$j("body").append("<div id='farcryTray'></div>");	
+		$fc.loadTray();
 		
 		</skin:onReady>
 	

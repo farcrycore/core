@@ -61,7 +61,7 @@ PreviewView = Backbone.View.extend({
 			self.previewMaxWidth(w);
 			// update the iframe height
 			var h = Backbone.$("#preview").height();
-			Backbone.$("#preview iframe").height(h - 45);
+			Backbone.$("#preview iframe").height(h - 47);
 
 			// keep the preview off screen
 			if (!Backbone.$("#preview").hasClass("visible")) {
@@ -82,7 +82,7 @@ PreviewView = Backbone.View.extend({
 		var maxWidth = Backbone.$("body").width();
 		// update the iframe height
 		var h = Backbone.$("#preview").height();
-		var $iframe = Backbone.$("#preview iframe").height(h - 45);
+		var $iframe = Backbone.$("#preview iframe").height(h - 47);
 
 		if (w > maxWidth) {
 			w = maxWidth;
