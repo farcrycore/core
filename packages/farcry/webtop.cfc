@@ -487,43 +487,6 @@ $Developer: Blair McKenzie (blair@daemon.com.au)$
 		<cfreturn stResult />
 	</cffunction>
 
-	<cffunction name="getAttributeUrl" access="public" output="false" returntype="string" hint="Takes the webtop struct of a subsection, returns the string of a url to use for the sidebar.">
-		<cfargument name="item" type="any" required="true" hint="The item being queried" />
-		<cfargument name="attr" type="string" required="false" default="sidebar" hint="The attribute that contains the url" />
-		<cfargument name="params" type="struct" required="false" default="#structnew()#" hint="Parameters to add to the query string" />
-	
-		<cfset var sReturn = "custom/#arguments.attr#.cfm" />  <!--- this seems like a good default url --->
-		<cfset var urlUtil = createobject("component","UrlUtility") />
-		<cfset var stParams = StructNew() />
-		<cfset var id = "" />
-		<cfset var stItem = getItem(arguments.item) />
-		
-		<!--- if the 'sidebar' attribute exists, make it the base url --->
-		<cfif StructKeyExists(stItem, arguments.attr)>
-			<cfset sReturn = stItem[arguments.attr] />
-		</cfif>
-		
-		<!--- add anything in our query_string to the url params --->
-		<!--- getUrlParamStruct looks for the '?' --->
-		<cfset stParams = urlUtil.getURLParamStruct("?" & CGI.QUERY_STRING) />
-		
-		<!--- if 'id' attribute exists, REPLACE any 'sub' url param with this value --->
-		<cfif StructKeyExists(stItem, "id")>
-			<cfset stParams.sub = stItem.id />
-		</cfif>
-		
-		<!--- Add passed in params --->
-		<cfloop collection="#arguments.params#" item="id">
-			<cfset stParams[id] = arguments.params[id] />
-		</cfloop>
-		
-		<!--- generate the sidebar url by appending the params we've accumulated --->
-		<cfset sReturn = urlUtil.appendURLParams(address=sReturn, paramStruct=stParams, replaceExisting=false) />
-		
-		<cfreturn sReturn />
-	</cffunction>
-
-
 	<cffunction name="getItemByID" output="false" returntype="struct">
 		<cfargument name="stWebtop" type="struct" required="true">
 		<cfargument name="id" type="string" required="true">
