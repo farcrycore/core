@@ -115,11 +115,9 @@
 							baseHREF="#application.url.webtop#"
 							lFiles="/js/farcryForm.cfm,/thirdparty/loadmask/jquery.loadmask.min.js,/thirdparty/jquery-treeview/jquery.treeview.js,/thirdparty/jquery-treeview/jquery.treeview.async.js" />
 		
-		
 		<skin:registerJS 	id="fc-uniform" core="true"
 							baseHREF="#application.url.webtop#"
 							lFiles="/thirdparty/uni-form/js/uni-form.jquery.js" />
-		
 		
 		<skin:registerJS	id="jquery-tree" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/jqTree"
@@ -128,15 +126,7 @@
 		<skin:registerJS	id="category-formtool" core="true"
 							baseHREF="#application.url.webtop#/thirdparty/jqTree"
 							lFiles="category-formtool.js" />
-		
-		<skin:registerJS 	id="fc-ext" core="true"
-							baseHREF="#application.url.webtop#/js/ext"
-							lFiles="/adapter/ext/ext-base.js,/ext-all.js">
-							<cfoutput>
-							Ext.BLANK_IMAGE_URL = '#application.url.webtop#/js/ext/resources/images/default/s.gif';
-							</cfoutput>
-		</skin:registerJS>
-		
+
 		<skin:registerJS 	id="fc-farcry-devicetype" core="true"
 							baseHREF="#application.url.webtop#/js"
 							lFiles="devicetype.js" />
@@ -276,10 +266,6 @@
 							baseHREF="#application.url.webtop#/thirdparty/jquery-tooltipster/css"
 							lFiles="tooltipster.css,themes/tooltipster-light.css" />
 
-		<skin:registerCSS 	id="ext"
-							baseHREF="#application.url.webtop#/js/ext"
-							lFiles="/resources/css/ext-all.css" />		
-							
 		<skin:registerCSS	id="typeahead" 
 							baseHREf="#application.url.webtop#/thirdparty/select2" 
 							lFiles="select2.css" append=".chzn-container-multi .chzn-choices .search-choice .search-choice-close { padding:0; }" />	
