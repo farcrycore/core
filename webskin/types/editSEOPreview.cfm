@@ -2,8 +2,7 @@
 
 <cfset fieldPrefix = "fc#replace(stObj.objectid, "-", "", "all")#">
 
-<!--- TODO: use the actual canonical domain rather than cgi.http_host--->
-<cfset canonicalDomain = cgi.http_host>
+<cfset canonicalDomain = application.fc.lib.seo.getCanonicalDomain(bUseHostname=true)>
 <cfset seoTitleDefault = "">
 <cfset seoDescriptionDefault = "">
 
