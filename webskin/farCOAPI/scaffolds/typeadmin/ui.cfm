@@ -11,7 +11,7 @@
 			<td align="right"><input type="checkbox" value="true" name="generateTypeAdmin" id="generateTypeAdmin" /></td>
 			<td>
 				<label for="generateTypeAdmin" style="width:auto;">Create type admin interface</label>
-				<cfif fileexists("#application.path.project#/customadmin/#url.typename#.xml") or fileexists("#application.path.project#/customadmin/customlists/#url.typename#.cfm")>
+				<cfif fileexists("#application.path.project#/customadmin/#url.scaffoldtypename#.xml") or fileexists("#application.path.project#/customadmin/customlists/#url.scaffoldtypename#.cfm")>
 					<span style="color:red;">(file/s exist and would be overwritten)</span>
 				</cfif>
 			</td>
@@ -24,7 +24,7 @@
 			<td align="right"><label for="typeadminColumns" style="width:auto;">Columns</label></td>
 			<td valign="top">
 				<select multiple="multiple" name="typeadminColumns" id="typeadminColumns" size="8">
-					<cfloop query="application.stCOAPI.#url.typename#.qMetaData">
+					<cfloop query="application.stCOAPI.#url.scaffoldtypename#.qMetaData">
 						<cfif not listcontains("ObjectID,lockedBy,locked,ownedby,status",propertyname)>
 							<option value="#propertyname#">#propertyname#</option>
 						</cfif>

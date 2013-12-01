@@ -11,7 +11,7 @@
 			<td align="right"><input type="checkbox" value="true" name="generateRuleLatest" id="generateRuleLatest" /></td>
 			<td>
 				<label for="generateRuleLatest" style="width:auto;">Create "List latest" rule</label>
-				<cfif fileexists("#application.path.project#/packages/rules/ruleLatest#url.typename#.cfc") or fileexists("#application.path.project#/webskin/ruleLatest#url.typename#/execute.cfm")>
+				<cfif fileexists("#application.path.project#/packages/rules/ruleLatest#url.scaffoldtypename#.cfc") or fileexists("#application.path.project#/webskin/ruleLatest#url.scaffoldtypename#/execute.cfm")>
 					<span style="color:red;">(file/s exist and would be overwritten)</span>
 				</cfif>
 			</td>
@@ -20,7 +20,7 @@
 			<td align="right"><input type="checkbox" value="true" name="generateRuleSelected" id="generateRuleSelected" /></td>
 			<td>
 				<label for="generateRuleSelected" style="width:auto;">Create "List selected" rule</label>
-				<cfif fileexists("#application.path.project#/packages/rules/ruleSelected#url.typename#.cfc") or fileexists("#application.path.project#/webskin/ruleSelected#url.typename#/execute.cfm")>
+				<cfif fileexists("#application.path.project#/packages/rules/ruleSelected#url.scaffoldtypename#.cfc") or fileexists("#application.path.project#/webskin/ruleSelected#url.scaffoldtypename#/execute.cfm")>
 					<span style="color:red;">(file/s exist and would be overwritten)</span>
 				</cfif>
 			</td>

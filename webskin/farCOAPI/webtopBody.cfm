@@ -452,7 +452,7 @@
 						</cfif>
 						<cfif listcontains("rule,type",qTypes.class)>
 							&middot;
-							<a href="#application.fapi.getLink(type='farCOAPI',view='webtopPageModal',bodyview='webtopBodyScaffold',urlParameters='typename=#qTypes.typename#')#" class="openindialog" data-title="Scaffold">Scaffold</a>
+							<a href="#application.url.webtop#/index.cfm?typename=farCOAPI&view=webtopPageModal&bodyview=webtopBodyScaffold&scaffoldtypename=#qTypes.typename#&iframe=1" class="openindialog" data-title="Scaffold">Scaffold</a>
 						</cfif>
 					</td>
 					<td class="logchanges"><input type="checkbox" name="logchanges" value="#qTypes.typename#" title="Log changes on THIS type" <cfif listfindnocase(lLogChangeFlags,qTypes.typename)>checked</cfif> /></td>

@@ -18,7 +18,8 @@
 <cfimport taglib="/farcry/core/tags/admin/" prefix="admin" />
 <cfimport taglib="/farcry/core/tags/webskin/" prefix="skin" />
 
-<admin:header>
+<skin:loadJS id="fc-jquery-ui" />
+<skin:loadCSS id="jquery-ui" />
 
 <skin:loadCSS><style type="text/css"><cfoutput>
 	body {text-align:left;}
@@ -85,12 +86,10 @@
 	<ft:buttonPanel>
 		<ft:button value="Create" />
 		<cfif structkeyexists(url,"iframe")>
-			<ft:button value="Close" onclick="$fc.closeBootstrapModal();return false;" />
+			<ft:button value="Close" type="button" onclick="$fc.closeBootstrapModal();return false;" />
 		</cfif>
 	</ft:buttonPanel>
 
 </ft:form>
-
-<admin:footer>
 
 <cfsetting enablecfoutputonly="false" />
