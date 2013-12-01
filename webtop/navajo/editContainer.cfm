@@ -119,7 +119,6 @@ $Developer: Paul Harrison (paul@daemon.com.au) $
 <html dir="#session.writingDir#" lang="#session.userLanguage#">
 <head>
 	<meta content="text/html; charset=UTF-8" http-equiv="content-type">
-	<link href="#application.url.farcry#/css/admin.css" rel="stylesheet" type="text/css">
 	<link href="#application.url.farcry#/css/tabs.css" rel="stylesheet" type="text/css">
 	<script type="text/javascript" src="../includes/synchtab.js"></script>
 	<cfinclude template="../includes/editcontainer_js.cfm">

@@ -9,7 +9,6 @@
 <html dir="#session.writingDir#" lang="#session.userLanguage#">
 	
 <head>
-	<link type="text/css" rel="stylesheet" href="#application.url.farcry#/css/admin.css">
 	<meta content="text/html; charset=UTF-8" http-equiv="content-type">
 </head>
 

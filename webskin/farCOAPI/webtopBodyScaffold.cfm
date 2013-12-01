@@ -20,7 +20,6 @@
 
 <admin:header>
 
-<skin:loadCSS lFiles="#application.url.farcry#/css/yui/reset-fonts.css" />
 <skin:loadCSS><style type="text/css"><cfoutput>
 	body {text-align:left;}
 		

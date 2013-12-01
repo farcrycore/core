@@ -45,7 +45,6 @@ $out:$
 <html dir="#session.writingDir#" lang="#session.userLanguage#">
 <head>
 	<title>#application.rb.getResource("appNameAdministration")#</title>
-	<link href="#application.url.farcry#/css/admin.css" rel="stylesheet" type="text/css">
 	<meta content="text/html; charset=UTF-8" http-equiv="content-type">
 </head>
 

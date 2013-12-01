@@ -363,9 +363,6 @@ LIBRARY DATA
 	</cfquery>
 </cfif> --->
 
-<!--- Put JS and CSS for TabStyle1 into the header --->
-<cfset Request.InHead.TabStyle1 = 1>
-
 
 <cfif listLen(PrimaryPackage.stProps[url.primaryFieldname].metadata.ftJoin) GT 1>
 	<ft:form>
