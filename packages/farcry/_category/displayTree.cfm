@@ -2,7 +2,6 @@
 
 <cfoutput>
 
-<LINK href="#application.url.farcry#/css/overviewFrame.css" rel="stylesheet" type="text/css">
 <style type="text/css">
 body {background:##fff}
 </style>

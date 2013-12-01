@@ -53,7 +53,6 @@ $out:$
 <head>
 	<title>helpMenuFrame</title>
 	<misc:cacheControl>
-	<LINK href="../css/overviewFrame.css" rel="stylesheet" type="text/css">
 	<meta content="text/html; charset=UTF-8" http-equiv="content-type">
 </head>
 
