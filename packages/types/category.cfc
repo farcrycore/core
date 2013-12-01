@@ -385,7 +385,7 @@
 		<cfargument name="dsn" required="no" default="#application.dsn#">
 		<cfargument name="typename" required="no" default="dmCategory">
 
-		<cfinclude template="_category/displayTree.cfm">
+		<cfset application.fapi.deprecated("category.cfc displayTree() is deprecated as of FarCry 7.0")>
 		
 	</cffunction>
 	

@@ -24,46 +24,6 @@ h6 {font-size: 14px}
 
 
 
-
-
-/* =IFRAMES */
-body.iframed, body.iframed-home {padding-left:14px;background: #5B7FB9 url("images/g2_sidebar_wider_bg.gif") no-repeat fixed 0 0;padding-top:14px;width:83%;height:90%}
-	body.iframed li, body.iframed-home li {font-size:86%;background: transparent url("images/sprites.gif") no-repeat 0 -200px}
-	body.iframed ul, body.iframed-home ul {margin-bottom:6px}
-	body.iframed h3, body.iframed-home h3 {text-transform:uppercase;color:#fff;font-size:86%;border-top: 1px solid #7B96C0;padding: 6px 0 0 3px;margin-top:0}
-	body.iframed, body.iframed-home {color:#fff}
-	body.iframed a:link, body.iframed a:visited, body.iframed a:hover, body.iframed a:active {color:#fff;background-color:transparent;text-decoration:none;padding:0}
-	body.iframed a:hover, body.iframed a:active {background-color:#97ACCD}
-body.iframed-tree {height:80%}
-
-#iframe-sideTree {width:100%;height:100%;}
-
-
-body.iframed-content {background: #fff url("images/content_bg_2.gif") no-repeat fixed 0 -20px;width:96%;height:90%; padding-left:1px;}
-body.iframed-content h3 {margin-top:0;font-size:135%}
-.iframe-nav-form {margin: 0 0 10px}
-.iframe-nav-form-zoom {border-bottom: 1px solid #f1f1f1;padding: 3px 0 10px;margin:0 0 1em;}
-.iframe-nav-form-zoom select {margin-bottom:-2px}
-
-
-/* =TREE RESIZING */
-
-	/* =SITE SECTION */
-	#tree-button-max {display:block;position:absolute;top:299px;left:203px;width:29px;height:38px;background: transparent url("images/sprites.gif") no-repeat 0 -300px}
-	#tree-button-max span {display:none}
-	#tree-button-min {display:block;display:none;position:absolute;top:299px;left:402px;width:29px;height:38px;background: transparent url("images/sprites.gif") no-repeat 0 -350px}
-	#tree-button-min span {display:none}
-	#tree-button-max:hover {background-position: -50px -300px}
-	#tree-button-min:hover {background-position: -50px -350px}
-
-	/* =OTHER SECTIONs */
-	#content-button-max {display:block;position:absolute;top:299px;left:203px;width:29px;height:38px;background: transparent url("images/sprites.gif") no-repeat 0 -350px}
-	#content-button-max span {display:none}
-	#content-button-min {display:block;display:none;position:absolute;top:299px;left:3px;width:29px;height:38px;background: transparent url("images/sprites.gif") no-repeat 0 -300px}
-	#content-button-min span {display:none}
-	#content-button-max:hover {background-position: -50px -350px}
-	#content-button-min:hover {background-position: -50px -300px}
-
 /* =POPUP */
 body.popup {background: #fff;padding: 0 10px}
 body.popup h1 {margin: 10px 0 .4em}
@@ -121,24 +81,6 @@ body.popup #content {margin:0;background:transparent;padding:0}
 
 ul.object-overview-actions {margin-right: 130px}
 
-/* =ALL BLUE LEFT HAND COL */
-body.iframed-home a:link {color:#fff} 
-body.iframed-home a:visited {color:#fff} 
-body.iframed-home a:hover, body.iframed-home a:active {color:#26568D;background-color:#fff} 
-
-
-.refreshtree {display:inline;height:18px;width:16px;margin-left:5px}
-.refreshtree img {height:16px;width:16px;margin-bottom: -2px;background:none}
-body.iframed .upone a:link, body.iframed .upone a:visited, body.iframed .upone a:hover, body.iframed .upone a:active, 
-body.iframed .refreshtree a:link, body.iframed .refreshtree a:visited, body.iframed .refreshtree a:hover, body.iframed .refreshtree a:active {background:none}
-
-.upone {position:absolute;top:48px;right:21px}
-
-/* =LAYOUT-FOOTER */
-#footer {background:#ffffff url(images/footer_bg.gif) repeat-x;vertical-align:bottom;border-top:2px solid #4371AE;}
-#footer p {margin:0;text-align:right;font-size: 86%;color:#2E4F7A;padding:2px 20px 2px 2px;}
-#footer a:link, #footer a:visited, #footer a:hover, #footer a:active {color:#2E4F7A;}
-#footer a:hover, #footer a:active {background:#97ACCD none repeat scroll 0 0;}
 
 /* =DEFINITION LISTS */
 dl {margin: 0 0 1.5em}
@@ -283,24 +225,6 @@ ul.x-tab-strip li a {padding:0px;}
   float:none;
 }
 
-
-table.navtree td {
-	font-size:11px;
-	font-weight:normal;
-	vertical-align:middle;
-	padding:0px;
-	color:#ffffff;
-	line-height:normal;
-}
-table.navtree td.objectname {
-	padding-left:5px;
-}
-table.navtree td.objectname a {
-	cursor:pointer;
-	color:#ffffff;
-	text-decoration:underline;
-}
-			
 
 table.object-admin-actions {
 	margin:0px;
