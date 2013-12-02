@@ -72,25 +72,25 @@ type properties
 --------------------------------------------------------------------------------------------------->
 <cfproperty 
 	name="seoTitle" type="string" hint="SEO title of content item." required="no" default="" 
-	ftSeq="32" ftwizardStep="SEO" ftFieldset="SEO" ftlabel="SEO Title"
-	ftlimit="69" ftLimitOverage="warn" ftAutoResize="true"
-	ftHint="If specified, the SEO title will be used instead of the page title for the TITLE tag. This title will be used as the preferred title by search engines. Different search engines have different lengths of snippet title: Google 69, Yahoo 72, Bing 65."
-	fttype="longchar"
+	ftSeq="32" ftWizardStep="SEO" ftFieldset="SEO" ftLabel="SEO Title"
+	ftLimit="69" ftLimitOverage="warn" ftAutoResize="true"
+	ftHint="Optional: The title in the search result defaults to the page title"
+	ftType="longchar"
 	ftRenderWebskinBefore="editSEOPreview"
-	fthelptitle="Search Engine Optimization" 
-	ftHelpSection="The keywords and description that you enter here will provide search engines with extra information that describes your page. Remember that a good SEO strategy is much more than just a good description and keywords." />
+	ftHelpTitle="Search Engine Optimization" 
+	ftHelpSection="Search Engines will automatically detect the page title and show a description snippet in the context of a user's search terms. You can use the fields below to suggest a title or description that might better match what a user is searching for." />
 	
 <cfproperty 
 	name="extendedmetadata" type="longchar" hint="HTML head section for extended keywords." required="no" default=""
-	ftSeq="35" ftwizardStep="SEO" ftFieldset="SEO" ftlabel="Description Tag"
-	ftHint="Concise summary of the page. Different search engines have different character limits (including spaces) for their search snippet: Google 156, Yahoo 161, Bing 150."
+	ftSeq="35" ftwizardStep="SEO" ftFieldset="SEO" ftlabel="SEO Description"
+	ftHint="Optional: The description in the search result defaults to the teaser or body content"
 	ftType="longchar" ftLimit="170" ftLimitOverage="warn"
 	ftAutoResize="true" />
 
 <cfproperty 
 	name="metaKeywords" type="longchar" hint="HTML head section metakeywords." required="no" default="" 
-	ftSeq="38" ftwizardStep="SEO" ftFieldset="SEO" ftLabel="Keyword Tag(s)"
-	ftHint="Keep it simple and relevant: 10-20 keywords per page. Limited to 900 characters including spaces."
+	ftSeq="38" ftwizardStep="SEO" ftFieldset="SEO" ftLabel="SEO Keywords"
+	ftHint="Optional: 10-20 keywords per page at most, limited to 900 characters"
 	ftType="longchar" ftLimit="900"
 	ftAutoResize="true" ftLimitOverage="warn" />
 
