@@ -541,7 +541,9 @@
 		</cfif>
 
 		
-		<cfcontent reset="true" />
+		<cfif NOT arguments.abort>
+			<cfcontent reset="true" />
+		</cfif>
 		<cfheader statuscode="#statuscode#" statustext="#statusmessage#" />
 		
 		<cfif reFindNoCase("^#application.url.webtop#", cgi.script_name)>
