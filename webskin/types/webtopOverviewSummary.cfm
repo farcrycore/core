@@ -32,34 +32,8 @@ FARCRY INCLUDE FILES
 START WEBSKIN
  ------------------>
 
-<skin:htmlHead id="select-text"><cfoutput><script type="text/javascript">
-	function selectText(element) {
-	    var doc = document;
-	    if (typeof(element) == "String") element = doc.getElementById(element);    
-	    if (doc.body.createTextRange) { // ms
-	        var range = doc.body.createTextRange();
-	        range.moveToElementText(element);
-	        range.select();
-	    } else if (window.getSelection) {
-	        var selection = window.getSelection();
-	        if (selection.setBaseAndExtent) { // webkit
-	            selection.setBaseAndExtent(element, 0, element, 1);
-	        } else { // moz, opera
-	            var range = doc.createRange();
-	            range.selectNodeContents(element);
-	            selection.removeAllRanges();
-	            selection.addRange(range);
-	        }
-	    }
-	}
-</script></cfoutput></skin:htmlHead>
-<cfoutput>
-	<div class="developer-actions">
-		<div class="objectid" style="display:none;">#stObj.objectid#</div>
-		<a onclick="var oid = $j(this).siblings('.objectid').toggle();selectText(oid[0]);return false;" title="See objectid"><i class="fa fa-tag"></i></a>
-		<a onclick="$fc.openDialog('Property Dump', '#application.url.farcry#/object_dump.cfm?objectid=#stobj.objectid#&typename=#stobj.typename#');return false;" title="Open a window containing all the raw data of this content item"><i class="fa fa-list"></i></a>
-	</div>
-</cfoutput>
+<skin:view stObject="#stObj#" webskin="webtopOverviewDevActions" />
+
 
 <ft:fieldset legend="#application.fapi.getContentTypeMetadata(stobj.typename,'displayname',stobj.typename)# Information">
 	
@@ -170,5 +144,6 @@ START WEBSKIN
 		</ft:field>
 	</cfif>
 </ft:fieldset>
+
 
 <cfsetting enablecfoutputonly="false">
