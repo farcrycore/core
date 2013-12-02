@@ -3,6 +3,11 @@
 <cfset fieldPrefix = "fc#replace(stObj.objectid, "-", "", "all")#">
 
 <cfset canonicalDomain = application.fc.lib.seo.getCanonicalDomain(bUseHostname=true)>
+<cfif structKeyExists(stObj, "versionid") AND isValid("uuid", stObj.versionid)>
+	<cfset canonicalFU = application.fc.lib.seo.getCanonicalFU(objectid=stObj.versionid, typename=stObj.typename)>
+<cfelse>
+	<cfset canonicalFU = application.fc.lib.seo.getCanonicalFU(stObject=stObj)>
+</cfif>
 <cfset seoTitleDefault = "">
 <cfset seoDescriptionDefault = "">
 
@@ -122,7 +127,7 @@ $j(function(){
 <div class="google-seo-container">
 	<div class="google-preview">Google Search Result Preview</div>
 	<div class="google-seo-title" data-value="#htmlEditFormat(seoTitleDefault)#">#stObj.seoTitle#</div>
-	<div class="google-seo-url">#canonicalDomain##application.fapi.getLink(objectid=stObj.objectid)#</div>
+	<div class="google-seo-url">#canonicalDomain##canonicalFU#</div>
 	<div class="google-seo-description" data-value="#htmlEditFormat(seoDescriptionDefault)#">#stObj.seoDescription#</div>
 </div>
 </cfoutput>
