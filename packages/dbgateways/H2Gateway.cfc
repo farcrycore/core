@@ -80,7 +80,7 @@
 			<cftry>
 				<cfset deploySchemaSQL = getDeploySchemaSQL(schema="#arguments.schema#")>
 				<cfquery datasource="#this.dsn#" result="queryresult">
-					#deploySchemaSQL#
+					#preserveSingleQuotes(deploySchemaSQL)#
 				</cfquery>
 				
 				<cfset arrayappend(stResult.results,queryresult) />
