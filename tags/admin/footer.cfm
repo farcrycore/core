@@ -1,4 +1,4 @@
-<cfsetting enablecfoutputonly="Yes">
+<cfsetting enablecfoutputonly="true">
 <!--- @@Copyright: Daemon Pty Limited 2002-2008, http://www.daemon.com.au --->
 <!--- @@License:
     This file is part of FarCry.
@@ -16,33 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with FarCry.  If not, see <http://www.gnu.org/licenses/>.
 --->
-<!---
-|| VERSION CONTROL ||
-$Header:  $
-$Author:  $
-$Date: $
-$Name:  $
-$Revision: $
 
-|| DESCRIPTION || 
-$Description: Admin footer $
+<cfset application.fapi.deprecated(message="admin:footer is deprecated; the webtop now uses webtop* webskins") />
 
-|| DEVELOPER ||
-$Developer: Brendan Sisson (brendan@daemon.com.au)$
---->
-
-
-
-<cfexit method="exittag" />
-
-<!--- exit tag if its been closed, ie don't run twice --->
-<cfif thistag.executionmode eq "end">
-	<cfexit method="exittag" />
-</cfif>
-
-<cfoutput>
-</body>
-</html>
-</cfoutput>
-
-<cfsetting enablecfoutputonly="No">
+<cfsetting enablecfoutputonly="false">
