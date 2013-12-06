@@ -114,16 +114,19 @@
 		</cfif>
 		
 		<cfsavecontent variable="JS">
-<cfoutput>
-  <!-- 
-  ID: #stJS.id#<cfif len(stJS.lCombineIDs)>
-  PACKAGED: #stJS.lCombineIDs#</cfif>
-  FILES: #stJS.lFullFilebaseHREFs#
-  -->
+
+			<cfoutput>#chr(13)#</cfoutput>
+			<cfif structKeyExists(url, "debug") AND url.debug eq 1>
+<cfoutput><!-- 
+ID: #stJS.id#<cfif len(stJS.lCombineIDs)>
+PACKAGED: #stJS.lCombineIDs#</cfif>
+FILES: #stJS.lFullFilebaseHREFs#
+-->
 </cfoutput>
+			</cfif>
 				
 			<cfif len(stJS.condition)>
-				<cfoutput>  <!--[#stJS.condition#]>#chr(13)#</cfoutput>
+				<cfoutput><!--[#stJS.condition#]>#chr(13)#</cfoutput>
 			</cfif>
 			
 			<cfif stJS.bCombine>
@@ -145,7 +148,7 @@
 				<cfif len(trim(stJS.append))><cfoutput><script type="text/javascript">#stJS.append#</script></cfoutput></cfif>
 			</cfif>
 			<cfif len(stJS.condition)>
-				<cfoutput>  <![endif]-->#chr(13)#</cfoutput>	
+				<cfoutput>#chr(13)#<![endif]--></cfoutput>	
 			</cfif>	
 			
 		</cfsavecontent>

@@ -107,16 +107,19 @@
 		</cfif>
 	
 		<cfsavecontent variable="css">
-<cfoutput>#chr(13)#
-  <!-- 
-  ID: #stCSS.id#<cfif len(stCSS.lCombineIDs)>
-  PACKAGED: #stCSS.lCombineIDs#</cfif>
-  FILES: #stCSS.lFullFilebaseHREFs#
-  -->
+
+			<cfoutput>#chr(13)#</cfoutput>
+			<cfif structKeyExists(url, "debug") AND url.debug eq 1>
+<cfoutput><!-- 
+ID: #stCSS.id#<cfif len(stCSS.lCombineIDs)>
+PACKAGED: #stCSS.lCombineIDs#</cfif>
+FILES: #stCSS.lFullFilebaseHREFs#
+-->
 </cfoutput>
-			
+			</cfif>
+
 			<cfif len(stCSS.condition)>
-				<cfoutput>  <!--[#stCSS.condition#]>#chr(13)#</cfoutput>
+				<cfoutput><!--[#stCSS.condition#]>#chr(13)#</cfoutput>
 			</cfif>
 		
 			<cfif stCSS.bCombine>
@@ -138,7 +141,7 @@
 				<cfif len(trim(stCSS.append))><cfoutput><style type="text/css">#stCSS.append#</style></cfoutput></cfif>
 			</cfif>
 			<cfif len(stCSS.condition)>
-				<cfoutput>  <![endif]-->#chr(13)#</cfoutput>	
+				<cfoutput>#chr(13)#<![endif]--></cfoutput>	
 			</cfif>
 		</cfsavecontent>
 		
