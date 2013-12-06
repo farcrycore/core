@@ -30,7 +30,7 @@
 
 #wizard-nav {clear:both;float:right;width:140px; margin-right: -20px; margin-top: 10px;}
 #wizard-nav ul {margin: 0 0 15px;padding:0;list-style-type:none} 
-#wizard-nav li {margin:0;padding:0;background:none;font: normal 100%/2 arial;border-bottom: 1px solid #e8e8e8;text-transform:capitalize}
+#wizard-nav li {margin:0;padding:5px 0;background:none;font: normal 100% arial;border-bottom: 1px solid #e8e8e8;text-transform:capitalize}
 #wizard-nav a:link, #wizard-nav a:visited {color:#666}
 #wizard-nav a:link strong , #wizard-nav a:visited strong {color:#E17000}
 #wizard-nav a:hover, #wizard-nav a:active {color:#E17000;background:#fff}
