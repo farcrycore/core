@@ -103,7 +103,7 @@ $j(function(){
 		return str;
 	}
 
-	$j("###fieldPrefix#seoTitle").on("keyup blur", function(){
+	function onUpdateTitle() {
 		var str = truncate($j(this).val(), 69);
 		if ($j.trim(str).length) {
 			$j(".google-seo-title").text(str);
@@ -111,8 +111,9 @@ $j(function(){
 		else {
 			$j(".google-seo-title").text($j(".google-seo-title").data("value"));
 		}
-	})
-	$j("###fieldPrefix#seoDescription").on("keyup blur", function(){
+	}
+
+	function onUpdateDescription(){
 		var str = truncate($j(this).val(), 170);
 		if ($j.trim(str).length) {
 			$j(".google-seo-description").text(str);
@@ -120,7 +121,12 @@ $j(function(){
 		else {
 			$j(".google-seo-description").text($j(".google-seo-description").data("value"));
 		}
-	})
+	}
+
+	$j("###fieldPrefix#seoTitle").on("keyup blur", onUpdateTitle);
+	$j("###fieldPrefix#seoDescription").on("keyup blur", onUpdateDescription);
+	$j("###fieldPrefix#extendedmetadata").on("keyup blur", onUpdateDescription);
+
 });
 </script>
 
