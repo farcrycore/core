@@ -133,7 +133,7 @@
 				<cfoutput><meta id="stylesheet-#stCSS.id#" name="cssid" content="#stCSS.id#"></cfoutput>
 				<cfif len(trim(stCSS.prepend))><cfoutput><style type="text/css">#stCSS.prepend#</style></cfoutput></cfif>
 				<cfloop list="#stCSS.lFiles#" index="i">
-					<cfoutput><link rel="stylesheet" type="text/css" href="#cgi.http_host##stCSS.baseHREF#/#i#" media="#stCSS.media#"></cfoutput>
+					<cfoutput><link rel="stylesheet" type="text/css" href="#stCSS.baseHREF#/#i#" media="#stCSS.media#"></cfoutput>
 				</cfloop>
 				<cfif len(trim(stCSS.append))><cfoutput><style type="text/css">#stCSS.append#</style></cfoutput></cfif>
 			</cfif>
