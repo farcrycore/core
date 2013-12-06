@@ -39,7 +39,7 @@
 	<cfset setPageInfo() />
 	
 	<!--- ADD THE URL AND FORM VARIABLES TO THE DYNAMIC CACHE VARS --->
-	<cfset application.fapi.setAncestorsCacheByVars(keys='form.paginationpage#this.paginationID#,url.page#this.paginationID#') />
+	<cfset application.fapi.setAncestorsCacheByVars(keys='form.paginationpage#this.paginationID#,url.#this.paginationID#') />
 		
 	<cfif this.bStickyPages AND len(this.paginationID)>
 		<cfset application.fapi.setAncestorsCacheByVars(keys='session.fcpagination.#this.paginationID#') />
@@ -280,7 +280,7 @@
 	<!--- SORT OUT THE ACTION URL --->
 	<cfif NOT len(trim(this.actionURL))>
 		
-		<cfset this.actionURL = application.fapi.fixURL(removevalues="+Page#this.paginationID#") />
+		<cfset this.actionURL = application.fapi.fixURL(removevalues="+#this.paginationID#") />
 	
 		</cfif>
 </cffunction>
@@ -291,8 +291,8 @@
 	
 
 	<cfif this.CurrentPage eq 0 or not isNumeric(this.currentPage)>
-		<cfif structKeyExists(url,"page#this.paginationID#")>
-			<cfset this.CurrentPage = url["page#this.paginationID#"]>
+		<cfif structKeyExists(url,this.paginationID)>
+			<cfset this.CurrentPage = url[this.paginationID]>
 		<cfelseif structKeyExists(form, "paginationpage#this.paginationID#")>
 			<cfset this.CurrentPage = form["paginationpage#this.paginationID#"]>		
 		</cfif>
@@ -517,7 +517,7 @@
 <cffunction name="getPaginationLinkHREF" access="private" output="false" returntype="string" hint="Returns the HREF for the pagination Link">
 	<cfargument name="page" required="true" />
 	
-	<cfset var result = application.fapi.fixURL(url=this.actionURL,addvalues="page#this.paginationID#=#arguments.page#",ampDelim="&amp;") />
+	<cfset var result = application.fapi.fixURL(url=this.actionURL,addvalues="#this.paginationID#=#arguments.page#",ampDelim="&amp;") />
 	
 	<cfreturn result />
 </cffunction>	
