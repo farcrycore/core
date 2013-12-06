@@ -23,8 +23,10 @@
 	<cfloop collection="#arguments#" item="i">
 		<cfset this[i] = arguments[i] />
 	</cfloop>
-
-
+	
+	<cfif len(trim(this.paginationID)) is false>
+		<cfset this.paginationID = "page" />
+	</cfif>
 	
 	<!--- SETUP THE RECORDSET --->	
 	<cfset setRecordset() />
