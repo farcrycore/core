@@ -4,6 +4,6 @@
 
 <cfparam name="stObj.title" default="" type="string" />
 
-<cfoutput><img src="#application.fapi.getImageWebRoot()##stobj.standardImage#" alt="#HTMLEditFormat(stObj.alt)#" /></cfoutput>
+<cfoutput><img src="#application.fapi.getImageWebRoot()##stobj.standardImage#" alt="#application.fc.lib.esapi.encodeForHTMLAttribute(stObj.alt)#" /></cfoutput>
 
 <cfsetting enablecfoutputonly="false">

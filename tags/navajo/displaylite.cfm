@@ -145,7 +145,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
     				<cflocation url="#cgi.script_name#?#cgi.query_string#&showdraft=1" addtoken="No">
     			<cfelse>
     				<!--- send to login page and return in draft mode --->
-    				<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#&error=draft&showdraft=1" addtoken="No">
+    				<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#application.fc.lib.esapi.encodeForURL(cgi.script_name&'?'&cgi.query_string)#&error=draft&showdraft=1" addtoken="No">
     			</cfif>
     		</cfif>
     	</cfif>
@@ -161,7 +161,7 @@ $Developer: Geoff Bowers (modius@daemon.com.au)$
 	<!--- If the user is not logged in and are trying to view a draft - request login --->
 	<cfif isDefined("stobj.status")>
 		<cfif stObj.status IS "DRAFT" AND NOT application.security.isLoggedIn()>
-			<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#&error=draft&showdraft=1" addtoken="No">
+			<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#application.fc.lib.esapi.encodeForURL(cgi.script_name&'?'&cgi.query_string)#&error=draft&showdraft=1" addtoken="No">
 		</cfif>
 	</cfif>
 	<nj:getNavigation objectId="#stObj.objectId#" r_stobject="stNav">
@@ -194,7 +194,7 @@ the latter is the policy group for anonymous...
 <cfif iHasViewPermission NEQ 1>
 	<!--- log out the user --->
 	<cfset application.factory.oAuthentication.logout()>
-	<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#URLEncodedFormat(cgi.script_name&'?'&cgi.query_string)#" addtoken="No">
+	<cflocation url="#application.url.farcry#/login.cfm?returnUrl=#application.fc.lib.esapi.encodeForURL(cgi.script_name&'?'&cgi.query_string)#" addtoken="No">
 	<cfabort>
 </cfif>
 

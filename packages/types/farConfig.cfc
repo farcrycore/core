@@ -119,7 +119,7 @@ object methods
 				<cfoutput>
 					<input type="hidden" name="#arguments.fieldname#formname" value="#stObj.typename#" />
 					<input type="hidden" name="#arguments.fieldname#objectid" value="#stObj.objectid#" />
-					<input type="hidden" name="#arguments.fieldname#" value="#htmlEditFormat(arguments.stMetadata.value)#" />
+					<input type="hidden" name="#arguments.fieldname#" value="#application.fc.lib.esapi.encodeForHTMLAttribute(arguments.stMetadata.value)#" />
 				</cfoutput>
 			</cfsavecontent>
 			

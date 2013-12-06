@@ -364,9 +364,9 @@
 					<cfset output.append("<tr><th valign='top'>#padResource('error.details.postprocessurl@label','Post-process URL')#:</th><td><ul>") />
 					<cfloop list="#listsort(structkeylist(arguments.exception.url),'textnocase')#" index="i">
 						<cfif issimplevalue(arguments.exception.url[i])>
-							<cfset output.append("<li>#i# = #htmleditformat(arguments.exception.url[i])#</li>") />
+							<cfset output.append("<li>#i# = #application.fc.lib.esapi.encodeForHTML(arguments.exception.url[i])#</li>") />
 						<cfelse>
-							<cfset output.append("<li>#i# = #htmleditformat(serializeJSON(arguments.exception.url[i]))#</li>") />
+							<cfset output.append("<li>#i# = #application.fc.lib.esapi.encodeForHTML(serializeJSON(arguments.exception.url[i]))#</li>") />
 						</cfif>
 					</cfloop>
 					<cfset output.append("</ul></td></tr>") />

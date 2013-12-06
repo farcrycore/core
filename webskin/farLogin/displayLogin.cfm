@@ -34,7 +34,7 @@ FARCRY IMPORT FILES
 <cfset qExtraOptions = querynew("label,url,selected","varchar,varchar,bit") />
 
 <cfif structKeyExists(url,'returnurl') and len(trim(url.returnurl))>
-	<cfset stLocal.loginparams = 'returnurl='&urlEncodedFormat(url.returnurl) />
+	<cfset stLocal.loginparams = 'returnurl='&application.fc.lib.esapi.encodeForURL(url.returnurl) />
 <cfelse>
 	<cfset stLocal.loginparams = '' />
 </cfif>

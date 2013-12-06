@@ -479,16 +479,16 @@ NOTES       : Dave Shuck - created
 						<cfset falsePositiveURL = replace("#getConfig().akismetBlogURL#cfformprotect/akismetFailure.cfm?type=ham","://","^^","all")>
 						<cfset falsePositiveURL = replace(falsePositiveURL,"//","/","all")>
 						<cfset falsePositiveURL = replace(falsePositiveURL,"^^","://","all")>
-						<cfset falsePositiveURL = falsePositiveURL&"&user_ip=#urlEncodedFormat(cgi.remote_addr,'utf-8')#">
-						<cfset falsePositiveURL = falsePositiveURL&"&referrer=#urlEncodedFormat(cgi.http_referer,'utf-8')#">
-						<cfset falsePositiveURL = falsePositiveURL&"&comment_author=#urlEncodedFormat(form[getConfig().akismetFormNameField],'utf-8')#">
+						<cfset falsePositiveURL = falsePositiveURL&"&user_ip=#application.fc.lib.esapi.encodeForURL(cgi.remote_addr,'utf-8')#">
+						<cfset falsePositiveURL = falsePositiveURL&"&referrer=#application.fc.lib.esapi.encodeForURL(cgi.http_referer,'utf-8')#">
+						<cfset falsePositiveURL = falsePositiveURL&"&comment_author=#application.fc.lib.esapi.encodeForURL(form[getConfig().akismetFormNameField],'utf-8')#">
 						<cfif getConfig().akismetFormEmailField neq "">
-						<cfset falsePositiveURL = falsePositiveURL&"&comment_author_email=#urlEncodedFormat(form[getConfig().akismetFormEmailField],'utf-8')#">
+						<cfset falsePositiveURL = falsePositiveURL&"&comment_author_email=#application.fc.lib.esapi.encodeForURL(form[getConfig().akismetFormEmailField],'utf-8')#">
 						</cfif>
 						<cfif getConfig().akismetFormURLField neq "">
-						<cfset falsePositiveURL = falsePositiveURL&"&comment_author_url=#urlEncodedFormat(form[getConfig().akismetFormURLField],'utf-8')#">
+						<cfset falsePositiveURL = falsePositiveURL&"&comment_author_url=#application.fc.lib.esapi.encodeForURL(form[getConfig().akismetFormURLField],'utf-8')#">
 						</cfif>
-						<cfset falsePositiveURL = falsePositiveURL&"&comment_content=#urlEncodedFormat(form[getConfig().akismetFormBodyField],'utf-8')#">
+						<cfset falsePositiveURL = falsePositiveURL&"&comment_content=#application.fc.lib.esapi.encodeForURL(form[getConfig().akismetFormBodyField],'utf-8')#">
 						<li>Akisment thinks this is spam, if it's not please mark this as a
 						false positive by <cfoutput><a href="#falsePositiveURL#">clicking here</a></cfoutput>.</li>
 					<cfelseif StructKeyExists(arguments.TestResults,"akismet") AND arguments.TestResults.akismet.ValidKey AND arguments.TestResults.akismet.Pass>
@@ -497,16 +497,16 @@ NOTES       : Dave Shuck - created
 						<cfset missedSpamURL = replace("#getConfig().akismetBlogURL#cfformprotect/akismetFailure.cfm?type=spam","://","^^","all")>
 						<cfset missedSpamURL = replace(missedSpamURL,"//","/","all")>
 						<cfset missedSpamURL = replace(missedSpamURL,"^^","://","all")>
-						<cfset missedSpamURL = missedSpamURL&"&user_ip=#urlEncodedFormat(cgi.remote_addr,'utf-8')#">
-						<cfset missedSpamURL = missedSpamURL&"&referrer=#urlEncodedFormat(cgi.http_referer,'utf-8')#">
-						<cfset missedSpamURL = missedSpamURL&"&comment_author=#urlEncodedFormat(form[getConfig().akismetFormNameField],'utf-8')#">
+						<cfset missedSpamURL = missedSpamURL&"&user_ip=#application.fc.lib.esapi.encodeForURL(cgi.remote_addr,'utf-8')#">
+						<cfset missedSpamURL = missedSpamURL&"&referrer=#application.fc.lib.esapi.encodeForURL(cgi.http_referer,'utf-8')#">
+						<cfset missedSpamURL = missedSpamURL&"&comment_author=#application.fc.lib.esapi.encodeForURL(form[getConfig().akismetFormNameField],'utf-8')#">
 						<cfif getConfig().akismetFormEmailField neq "">
-						<cfset missedSpamURL = missedSpamURL&"&comment_author_email=#urlEncodedFormat(form[getConfig().akismetFormEmailField],'utf-8')#">
+						<cfset missedSpamURL = missedSpamURL&"&comment_author_email=#application.fc.lib.esapi.encodeForURL(form[getConfig().akismetFormEmailField],'utf-8')#">
 						</cfif>
 						<cfif getConfig().akismetFormURLField neq "">
-						<cfset missedSpamURL = missedSpamURL&"&comment_author_url=#urlEncodedFormat(form[getConfig().akismetFormURLField],'utf-8')#">
+						<cfset missedSpamURL = missedSpamURL&"&comment_author_url=#application.fc.lib.esapi.encodeForURL(form[getConfig().akismetFormURLField],'utf-8')#">
 						</cfif>
-						<cfset missedSpamURL = missedSpamURL&"&comment_content=#urlEncodedFormat(form[getConfig().akismetFormBodyField],'utf-8')#">
+						<cfset missedSpamURL = missedSpamURL&"&comment_content=#application.fc.lib.esapi.encodeForURL(form[getConfig().akismetFormBodyField],'utf-8')#">
 						Akismet did not think this message was spam.  If it was, please <a href="#missedSpamURL#">notify Akismet</a> that it
 						missed one.
 					</cfif>
@@ -578,16 +578,16 @@ NOTES       : Dave Shuck - created
 			<cfset falsePositiveURL = replace("#getConfig().akismetBlogURL#cfformprotect/akismetFailure.cfm?type=ham","://","^^","all")>
 			<cfset falsePositiveURL = replace(falsePositiveURL,"//","/","all")>
 			<cfset falsePositiveURL = replace(falsePositiveURL,"^^","://","all")>
-			<cfset falsePositiveURL = falsePositiveURL&"&user_ip=#urlEncodedFormat(cgi.remote_addr,'utf-8')#">
-			<cfset falsePositiveURL = falsePositiveURL&"&referrer=#urlEncodedFormat(cgi.http_referer,'utf-8')#">
-			<cfset falsePositiveURL = falsePositiveURL&"&comment_author=#urlEncodedFormat(form[getConfig().akismetFormNameField],'utf-8')#">
+			<cfset falsePositiveURL = falsePositiveURL&"&user_ip=#application.fc.lib.esapi.encodeForURL(cgi.remote_addr,'utf-8')#">
+			<cfset falsePositiveURL = falsePositiveURL&"&referrer=#application.fc.lib.esapi.encodeForURL(cgi.http_referer,'utf-8')#">
+			<cfset falsePositiveURL = falsePositiveURL&"&comment_author=#application.fc.lib.esapi.encodeForURL(form[getConfig().akismetFormNameField],'utf-8')#">
 			<cfif getConfig().akismetFormEmailField neq "">
-				<cfset falsePositiveURL = falsePositiveURL&"&comment_author_email=#urlEncodedFormat(form[getConfig().akismetFormEmailField],'utf-8')#">
+				<cfset falsePositiveURL = falsePositiveURL&"&comment_author_email=#application.fc.lib.esapi.encodeForURL(form[getConfig().akismetFormEmailField],'utf-8')#">
 			</cfif>
 			<cfif getConfig().akismetFormURLField neq "">
-				<cfset falsePositiveURL = falsePositiveURL&"&comment_author_url=#urlEncodedFormat(form[getConfig().akismetFormURLField],'utf-8')#">
+				<cfset falsePositiveURL = falsePositiveURL&"&comment_author_url=#application.fc.lib.esapi.encodeForURL(form[getConfig().akismetFormURLField],'utf-8')#">
 			</cfif>
-			<cfset falsePositiveURL = falsePositiveURL&"&comment_content=#urlEncodedFormat(form[getConfig().akismetFormBodyField],'utf-8')#">
+			<cfset falsePositiveURL = falsePositiveURL&"&comment_content=#application.fc.lib.esapi.encodeForURL(form[getConfig().akismetFormBodyField],'utf-8')#">
 			<cfset LogText = LogText & "<br />--- Akisment thinks this is spam, if it's not please mark this as a
 							false positive by visiting: #falsePositiveURL#" />
 		<cfelseif StructKeyExists(arguments.TestResults,"akismet") AND arguments.TestResults.akismet.ValidKey AND arguments.TestResults.akismet.Pass>
@@ -596,16 +596,16 @@ NOTES       : Dave Shuck - created
 			<!--- <cfset missedSpamURL = replace("#getConfig().akismetBlogURL#cfformprotect/akismetFailure.cfm?type=spam","://","^^","all")>
 			<cfset missedSpamURL = replace(missedSpamURL,"//","/","all")>
 			<cfset missedSpamURL = replace(missedSpamURL,"^^","://","all")>
-			<cfset missedSpamURL = missedSpamURL&"&user_ip=#urlEncodedFormat(cgi.remote_addr,'utf-8')#">
-			<cfset missedSpamURL = missedSpamURL&"&referrer=#urlEncodedFormat(cgi.http_referer,'utf-8')#">
-			<cfset missedSpamURL = missedSpamURL&"&comment_author=#urlEncodedFormat(form[getConfig().akismetFormNameField],'utf-8')#">
+			<cfset missedSpamURL = missedSpamURL&"&user_ip=#application.fc.lib.esapi.encodeForURL(cgi.remote_addr,'utf-8')#">
+			<cfset missedSpamURL = missedSpamURL&"&referrer=#application.fc.lib.esapi.encodeForURL(cgi.http_referer,'utf-8')#">
+			<cfset missedSpamURL = missedSpamURL&"&comment_author=#application.fc.lib.esapi.encodeForURL(form[getConfig().akismetFormNameField],'utf-8')#">
 			<cfif getConfig().akismetFormEmailField neq "">
-				<cfset missedSpamURL = missedSpamURL&"&comment_author_email=#urlEncodedFormat(form[getConfig().akismetFormEmailField],'utf-8')#">
+				<cfset missedSpamURL = missedSpamURL&"&comment_author_email=#application.fc.lib.esapi.encodeForURL(form[getConfig().akismetFormEmailField],'utf-8')#">
 			</cfif>
 			<cfif getConfig().akismetFormURLField neq "">
-				<cfset missedSpamURL = missedSpamURL&"&comment_author_url=#urlEncodedFormat(form[getConfig().akismetFormURLField],'utf-8')#">
+				<cfset missedSpamURL = missedSpamURL&"&comment_author_url=#application.fc.lib.esapi.encodeForURL(form[getConfig().akismetFormURLField],'utf-8')#">
 			</cfif>
-			<cfset missedSpamURL = missedSpamURL&"&comment_content=#urlEncodedFormat(form[getConfig().akismetFormBodyField],'utf-8')#">
+			<cfset missedSpamURL = missedSpamURL&"&comment_content=#application.fc.lib.esapi.encodeForURL(form[getConfig().akismetFormBodyField],'utf-8')#">
 			<cfset LogText = LogText & "<br />--- Akismet did not think this message was spam.  If it was, please visit: #missedSpamURL#" /> --->
 		</cfif>
 					

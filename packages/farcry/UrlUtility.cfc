@@ -150,7 +150,7 @@ $Developer: Tyler Ham (tylerh@austin.utexas.edu)$
             // I'm modifying the previous line so that url-encoded values are automatically
             // decoded (seems like that's what would be expected of this component).
             // -Tyler Ham (tylerh@austin.utexas.edu), 2005-08-17
-            urlStruct[paramName] = URLDecode(paramValue);
+            urlStruct[paramName] = application.fc.lib.esapi.DecodeFromURL(paramValue);
           } else {
             urlStruct[paramName] = "";
           }

@@ -21,7 +21,7 @@
 <cfif isstruct(attributes.parameters)>
 	<cfset temp = "" />
 	<cfloop collection="#attributes.parameters#" item="thiskey">
-		<cfset temp = listappend(temp,"#lcase(thiskey)#=#urlencodedformat(attributes[thiskey])#","&") />
+		<cfset temp = listappend(temp,"#lcase(thiskey)#=#application.fc.lib.esapi.encodeForURL(attributes[thiskey])#","&") />
 	</cfloop>
 	<cfset attributes.parameters = temp />
 </cfif>

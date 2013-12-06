@@ -22,7 +22,7 @@
 	</cfif>
 			
 			
-	<cfif structKeyExists(form, "FARCRYFORMPREFIXES") AND structKeyExists(form, "farcryFormValidation") AND form.farcryFormValidation>
+	<cfif structKeyExists(form, "FARCRYFORMPREFIXES")>
 		<cfloop list="#form.FARCRYFORMPREFIXES#" index="prefix">
 			
 			<cfif structKeyExists(form, "#prefix#objectid")>

@@ -64,7 +64,7 @@ accommodate legacy implementations
 <cfparam name="attributes.fieldname" type="string" default="" />
 <cfparam name="attributes.typename" type="string" default="" />
 <cfparam name="attributes.disp" type="string" default="attachment" />
-<cfparam name="attributes.loginpath" default="#application.fapi.getLink(href=application.url.publiclogin,urlParameters='returnUrl='&URLEncodedFormat(cgi.script_name&'?'&cgi.query_string))#" type="string">
+<cfparam name="attributes.loginpath" default="#application.fapi.getLink(href=application.url.publiclogin,urlParameters='returnUrl='&application.fc.lib.esapi.encodeForURL(cgi.script_name&'?'&cgi.query_string))#" type="string">
 
 <!--- determine typename if its not supplied --->
 <cfif not len(attributes.typename)>

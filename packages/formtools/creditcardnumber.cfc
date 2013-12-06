@@ -53,7 +53,7 @@
 		
 		<cfsavecontent variable="html"><cfoutput>
 			<div class="multiField">
-				<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#HTMLEditFormat(arguments.stMetadata.value)#" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" maxLength="#arguments.stMetadata.dbPrecision#" />
+				<input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#application.fc.lib.esapi.encodeForHTMLAttribute(arguments.stMetadata.value)#" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" maxLength="#arguments.stMetadata.dbPrecision#" />
 				
 				<script type="text/javascript">
 					(function($){

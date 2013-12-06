@@ -226,7 +226,7 @@
 				
 				
 				
-				<cfset facade = "#arguments.stMetadata.ftFacade#?#session.urltoken#&typename=#arguments.typename#&property=#arguments.stMetadata.name#&fieldname=#arguments.fieldname#&current=#urlencodedformat(arguments.stMetadata.value)#&farcryProject=#application.applicationName#">
+				<cfset facade = "#arguments.stMetadata.ftFacade#?#session.urltoken#&typename=#arguments.typename#&property=#arguments.stMetadata.name#&fieldname=#arguments.fieldname#&current=#application.fc.lib.esapi.encodeForURL(arguments.stMetadata.value)#&farcryProject=#application.applicationName#">
 				
 				<skin:loadJS id="fc-jquery" />
 				
@@ -293,7 +293,7 @@
 				
 				<skin:loadJS id="fc-jquery" />
 				
-				<cfset facade = "#arguments.stMetadata.ftFacade#?#session.urltoken#&typename=#arguments.typename#&property=#arguments.stMetadata.name#&fieldname=#arguments.fieldname#&current=#urlencodedformat(arguments.stMetadata.value)#&farcryProject=#application.applicationName#">
+				<cfset facade = "#arguments.stMetadata.ftFacade#?#session.urltoken#&typename=#arguments.typename#&property=#arguments.stMetadata.name#&fieldname=#arguments.fieldname#&current=#application.fc.lib.esapi.encodeForURL(arguments.stMetadata.value)#&farcryProject=#application.applicationName#">
 				
 				<cfsavecontent variable="html">
 					<cfoutput>

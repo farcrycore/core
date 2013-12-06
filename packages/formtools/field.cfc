@@ -47,7 +47,7 @@
 		</cfif>
 	
 		<cfsavecontent variable="html">
-			<cfoutput><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#HTMLEditFormat(arguments.stMetadata.value)#" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" placeholder="#arguments.stMetadata.ftPlaceholder#" <cfif maxLength neq 0>maxLength="#maxLength#"</cfif> /></cfoutput>
+			<cfoutput><input type="text" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#application.fc.lib.esapi.encodeForHTMLAttribute(arguments.stMetadata.value)#" class="textInput #arguments.stMetadata.ftclass#" style="#arguments.stMetadata.ftstyle#" placeholder="#arguments.stMetadata.ftPlaceholder#" <cfif maxLength neq 0>maxLength="#maxLength#"</cfif> /></cfoutput>
 		</cfsavecontent>
 		
 		<cfreturn html>
@@ -101,7 +101,7 @@
 		<cfset r_stResult.value = arguments.value />
 		<cfset r_stResult.bSuccess = false />
 		<cfset r_stResult.stError = structNew() />
-		<cfset r_stResult.stError.message = HTMLEditFormat(arguments.message) />
+		<cfset r_stResult.stError.message = application.fc.lib.esapi.encodeForHTML(arguments.message) />
 		<cfset r_stResult.stError.class = arguments.class />
 		
 		<cfreturn r_stResult />

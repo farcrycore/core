@@ -1620,7 +1620,7 @@
 		<cfset r_stResult.value = arguments.value />
 		<cfset r_stResult.bSuccess = false />
 		<cfset r_stResult.stError = structNew() />
-		<cfset r_stResult.stError.message = HTMLEditFormat(arguments.message) />
+		<cfset r_stResult.stError.message = application.fc.lib.esapi.encodeForHTML(arguments.message) />
 		<cfset r_stResult.stError.class = arguments.class />
 		<cfset r_stResult.bChanged = false />
 		

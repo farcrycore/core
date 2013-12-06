@@ -18,7 +18,7 @@
 		<cfparam name="arguments.stMetadata.ftStyle" default="width:50px;" />
 
 		<cfsavecontent variable="html">
-			<cfoutput><input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#htmlEditFormat(arguments.stMetadata.value)#" style="#arguments.stMetadata.ftstyle#" class="#arguments.stMetadata.ftClass#" /></cfoutput>
+			<cfoutput><input type="hidden" name="#arguments.fieldname#" id="#arguments.fieldname#" value="#application.fc.lib.esapi.encodeForHTMLAttribute(arguments.stMetadata.value)#" style="#arguments.stMetadata.ftstyle#" class="#arguments.stMetadata.ftClass#" /></cfoutput>
 		</cfsavecontent>
 
 		<cfreturn html />
